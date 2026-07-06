@@ -106,6 +106,7 @@ internal static class AfGcczShoutBridge
 			return false;
 		}
 		return ruleInspectionBlock.IndexOf(InjectedRuleBlockMarker, StringComparison.OrdinalIgnoreCase) >= 0
+			|| ruleInspectionBlock.IndexOf(SiegeCastleAftermathProfile.InjectedRuleBlockMarker, StringComparison.OrdinalIgnoreCase) >= 0
 			|| ruleInspectionBlock.IndexOf("【附加规则:" + RuleId + "】", StringComparison.OrdinalIgnoreCase) >= 0;
 	}
 
@@ -179,7 +180,8 @@ internal static class AfGcczShoutBridge
 			{
 				return;
 			}
-			string siegeSection = InjectedRuleBlockMarker + "\n" + siegePrompt.Trim();
+			string marker = SiegeAiInterventionBehavior.GetRuntimeInjectedRuleBlockMarkerForExternal();
+			string siegeSection = (string.IsNullOrWhiteSpace(marker) ? InjectedRuleBlockMarker : marker.Trim()) + "\n" + siegePrompt.Trim();
 			shoutPromptContext.Extras = string.IsNullOrWhiteSpace(shoutPromptContext.Extras)
 				? siegeSection
 				: (shoutPromptContext.Extras.TrimEnd() + "\n" + siegeSection);
@@ -222,6 +224,11 @@ internal static class AfGcczShoutBridge
 	internal static bool TryProcessActionTags(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, ref string text, out bool actionHandled, bool replyIsDirectPlayerResponse = false)
 	{
 		return SiegeAiInterventionBehavior.TryProcessAiActionTags(targetHero, targetCharacter, targetAgentIndex, ref text, out actionHandled, replyIsDirectPlayerResponse);
+	}
+
+	internal static bool TryProcessFixedKeywordAction(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string playerText, bool replyIsDirectPlayerResponse, out bool actionHandled)
+	{
+		return SiegeAiInterventionBehavior.TryProcessFixedKeywordActionForExternal(targetHero, targetCharacter, targetAgentIndex, playerText, replyIsDirectPlayerResponse, out actionHandled);
 	}
 
 	internal static bool ShouldCaptureSharedReliefTransfer(int targetAgentIndex)

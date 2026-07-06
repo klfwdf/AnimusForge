@@ -262,6 +262,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static bool _soldierDefaultFollowOrderIssued;
 	private static bool _playerOrderControllerPrimed;
 	private static bool _civilianOrderControllerPrimed;
+	private static bool _castleSceneRosterPlanLogged;
+	private static SiegeCastleAftermathStateSnapshot _castleAftermathState = SiegeCastleAftermathStateProfile.CreateDefault();
+	private static readonly HashSet<SiegeCastleAftermathActionKind> AppliedCastleAftermathActions = new HashSet<SiegeCastleAftermathActionKind>();
+	private static readonly List<SiegeCastleAftermathActionKind> CastleAftermathActionHistory = new List<SiegeCastleAftermathActionKind>();
 	private static float _civilianGatherStartedAt = -1f;
 	private static float _nextCivilianGatherTickTime;
 	private static int _civilianGatherMessengerSpeechBudget;
@@ -350,18 +354,27 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static Vec3 _civilianAssemblyForward;
 	private static Clan _previousSettlementOwnerClan;
 	private static MobileParty _besiegerParty;
+	private static bool _setsSettlementEntryVictoryContext;
+	private static string _setsSettlementEntryVictorySource = "";
 	private static Settlement _activeSettlement;
 	private static Team _interventionPlayerCommandTeam;
 	private static Team _interventionCivilianEnemyTeam;
 	private static TroopRoster _selectedInterventionRoster;
+	private static TroopRoster _selectedInterventionPrisonerRoster;
+	private static bool _castlePrisonersAutoSummoned;
+	private static Location _pendingCastleInterventionMissionLocation;
+	private static string _pendingCastleInterventionMissionSource = "";
+	private static int _pendingCastleInterventionMissionTicks;
+	private static bool _pendingCastleInterventionMissionRoutedThroughMenu;
 	private static Dictionary<MobileParty, float> _partyContributions = new Dictionary<MobileParty, float>();
-	private static bool _setsSettlementEntryVictoryContext;
-	private static string _setsSettlementEntryVictorySource = "";
 	private static readonly Dictionary<int, PlunderInteraction> ActivePlunderInteractions = new Dictionary<int, PlunderInteraction>();
 	private static readonly Dictionary<int, CivilianGatherInteraction> ActiveCivilianGatherInteractions = new Dictionary<int, CivilianGatherInteraction>();
 	private static readonly HashSet<string> LootedTargets = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 	private static readonly HashSet<string> CivilianRobberyTargets = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 	private static readonly HashSet<int> AlliedAgentIndexes = new HashSet<int>();
+	private static readonly HashSet<int> CastlePrisonerAgentIndexes = new HashSet<int>();
+	private static readonly List<SiegeCastlePrisonerAllocationRequest> CastlePrisonerAllocationRequests = new List<SiegeCastlePrisonerAllocationRequest>();
+	private static Dictionary<string, string> _pendingCastleLordIntroductionLetters = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 	private static readonly HashSet<int> BannerBearerAgentIndexes = new HashSet<int>();
 	private static readonly HashSet<int> CountedMassacreVictims = new HashSet<int>();
 	private static readonly HashSet<Hero> PendingInterventionNotableDeaths = new HashSet<Hero>();
@@ -463,6 +476,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		dataStore.SyncData("_gcczRallyOathLoyaltyLockValueBySettlement_v1", ref _rallyOathLoyaltyLockValueBySettlement);
 		dataStore.SyncData("_gcczRallyOathRecruitmentBuffUntilDayBySettlement_v1", ref _rallyOathRecruitmentBuffUntilDayBySettlement);
 		dataStore.SyncData("_gcczRecruitmentSuppressionUntilDayBySettlement_v1", ref _recruitmentSuppressionUntilDayBySettlement);
+		dataStore.SyncData("_gcczPendingCastleLordIntroductionLetters_v1", ref _pendingCastleLordIntroductionLetters);
 		_repopulationProsperityDebuffUntilDayBySettlement ??= new Dictionary<string, int>();
 		_repopulationProsperityLastObservedBySettlement ??= new Dictionary<string, float>();
 		_civicProsperityBuffUntilDayBySettlement ??= new Dictionary<string, int>();
@@ -472,6 +486,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_rallyOathLoyaltyLockValueBySettlement ??= new Dictionary<string, float>();
 		_rallyOathRecruitmentBuffUntilDayBySettlement ??= new Dictionary<string, int>();
 		_recruitmentSuppressionUntilDayBySettlement ??= new Dictionary<string, int>();
+		_pendingCastleLordIntroductionLetters ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 	}
 
 	private void OnDailyTickTown(Town town)
@@ -493,6 +508,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		ClearRepopulationProsperityDebuffs();
 		ClearRecruitmentSuppressionDebuffs();
 		ClearCivicPositiveBuffs();
+		ClearPendingCastleLordIntroductionLetters();
 		ResetAftermathRuntimeGuards(SiegeAftermathTransitionSourceProfile.ResetNewGameCreatedSource);
 	}
 
@@ -564,11 +580,14 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				args.optionLeaveType = GameMenuOption.LeaveType.Continue;
 				return false;
 			}
-			bool baseEnabled = settlement != null && settlement.IsTown && PlayerEncounter.LocationEncounter != null && ResolveInterventionLocation(settlement) != null;
+			bool baseEnabled = settlement != null
+				&& SiegeInterventionEntryProfile.IsSupportedSettlementKind(settlement.IsTown, settlement.IsCastle)
+				&& PlayerEncounter.LocationEncounter != null
+				&& ResolveInterventionLocation(settlement) != null;
 			args.IsEnabled = baseEnabled;
 			args.optionLeaveType = GameMenuOption.LeaveType.Submenu;
 			args.Tooltip = new TextObject(baseEnabled
-				? SiegeInterventionEntryProfile.EnabledTooltip
+				? SiegeInterventionEntryProfile.BuildEnabledTooltip(settlement?.IsCastle == true)
 				: SiegeInterventionEntryProfile.MissingSceneTooltip);
 			return true;
 		}
@@ -615,10 +634,17 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			PrepareInterventionEntryRuntime(settlement, SiegeInterventionEntryProfile.SceneEntryCleanupSource);
 			InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.BuildTroopSelectionInstructionMessage(AutoSummonCount), Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
-			InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.DecisionPolicyMessage, Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
+			InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.BuildDecisionPolicyMessage(settlement.IsCastle), Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
 			if (!TryOpenInterventionTroopSelection(args, location))
 			{
-				OpenInterventionMissionNow(location, SiegeInterventionEntryProfile.SelectionUnavailableMissionSource);
+				if (settlement.IsCastle)
+				{
+					QueueCastleInterventionMissionOpen(location, SiegeInterventionEntryProfile.SelectionUnavailableMissionSource);
+				}
+				else
+				{
+					OpenInterventionMissionNow(location, SiegeInterventionEntryProfile.SelectionUnavailableMissionSource);
+				}
 			}
 		}
 		catch (Exception ex)
@@ -642,7 +668,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					|| _pendingEncounterFinish
 					|| _hasPendingAftermath
 					|| _directMassacreAftermathScriptPending
-					|| _directPlunderAftermathScriptPending;
+					|| _directPlunderAftermathScriptPending
+					|| _pendingCastleInterventionMissionLocation != null;
 			}
 			if (Mission.Current != null)
 			{
@@ -652,7 +679,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				|| _pendingEncounterFinish
 				|| _hasPendingAftermath
 				|| _directMassacreAftermathScriptPending
-				|| _directPlunderAftermathScriptPending;
+				|| _directPlunderAftermathScriptPending
+				|| _pendingCastleInterventionMissionLocation != null;
 		}
 		catch
 		{
@@ -669,7 +697,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return false;
 			}
 			Location location = ResolveInterventionLocation(settlement);
-			if (location == null || PlayerEncounter.LocationEncounter == null)
+			if (location == null)
+			{
+				return false;
+			}
+			if (!CanOpenInterventionMissionNow(location))
 			{
 				Logger.Log("SiegeAiIntervention", "TryStartFromSettlementEntryVictory deferred; location encounter unavailable. Settlement=" + (settlement.StringId ?? "N/A") + ", Source=" + (source ?? "N/A"));
 				return false;
@@ -679,7 +711,12 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			PrepareInterventionEntryRuntime(settlement, bridgeSource);
 			int maxSelected = Math.Max(AutoSummonCount, selectedRoster?.TotalManCount ?? 0);
 			StoreSelectedInterventionRoster(selectedRoster, maxSelected);
-			OpenInterventionMissionNow(location, bridgeSource);
+			if (!OpenInterventionMissionNow(location, bridgeSource))
+			{
+				ResetAftermathRuntimeGuards("sets_victory_open_failed");
+				Logger.Log("SiegeAiIntervention", "TryStartFromSettlementEntryVictory deferred after open check. Settlement=" + (settlement.StringId ?? "N/A") + ", Source=" + bridgeSource);
+				return false;
+			}
 			ApplySetsSettlementEntryCaptureIfNeeded(settlement, bridgeSource);
 			InformationManager.DisplayMessage(new InformationMessage("【SETS内部暴乱】已转入 GCCZ 攻城处置。", Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
 			Logger.Log("SiegeAiIntervention", "Started GCCZ from SETS victory. Settlement=" + (settlement.StringId ?? "N/A") + ", Selected=" + (_selectedInterventionRoster?.TotalManCount ?? 0) + ", Source=" + bridgeSource);
@@ -700,7 +737,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_activeSettlement = settlement;
 		_besiegerParty = MobileParty.MainParty;
 		_previousSettlementOwnerClan = settlement?.OwnerClan;
-		_partyContributions = BuildSafePartyContributions(_besiegerParty);
+		_partyContributions = new Dictionary<MobileParty, float>();
+		if (_besiegerParty != null)
+		{
+			_partyContributions[_besiegerParty] = 100f;
+		}
 		Logger.Log("SiegeAiIntervention", "Prepared SETS settlement-entry capture context. Settlement=" + (settlement?.StringId ?? "N/A") + ", PreviousOwner=" + (_previousSettlementOwnerClan?.StringId ?? "null") + ", Source=" + _setsSettlementEntryVictorySource);
 	}
 
@@ -790,17 +831,22 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_civilianAssemblyForward = Vec3.Forward;
 		CaptureNativeSiegeContext(settlement);
 		ResetSessionCounters();
-		string cleanup = string.IsNullOrWhiteSpace(cleanupSource) ? SiegeInterventionEntryProfile.SceneEntryCleanupSource : cleanupSource;
-		SceneTauntBehavior.ClearArmedCarryoverForExternal(cleanup);
-		SceneTauntBehavior.ClearPendingLocalDungeonCaptivityForExternal(cleanup);
-		SceneTauntBehavior.ClearPendingForcedPlayerExecutionForExternal(cleanup);
-		SceneTauntBehavior.ClearPendingMainHeroBattleDeathForExternal(cleanup);
+		string source = string.IsNullOrWhiteSpace(cleanupSource) ? SiegeInterventionEntryProfile.SceneEntryCleanupSource : cleanupSource;
+		SceneTauntBehavior.ClearArmedCarryoverForExternal(source);
+		SceneTauntBehavior.ClearPendingLocalDungeonCaptivityForExternal(source);
+		SceneTauntBehavior.ClearPendingForcedPlayerExecutionForExternal(source);
+		SceneTauntBehavior.ClearPendingMainHeroBattleDeathForExternal(source);
 	}
 
 	private static bool TryOpenInterventionTroopSelection(MenuCallbackArgs args, Location location)
 	{
 		try
 		{
+			Settlement settlement = ResolveCurrentSettlement();
+			if (settlement?.IsCastle == true)
+			{
+				return TryOpenCastleInterventionRosterSelection(location);
+			}
 			if (location == null || args?.MenuContext?.Handler == null || MobileParty.MainParty?.MemberRoster == null)
 			{
 				return false;
@@ -885,6 +931,145 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			Logger.Log("SiegeAiIntervention", "TryOpenTroopSelectionRuntimeCompat failed: " + ex.Message);
 			return false;
+		}
+	}
+
+	private static bool TryOpenCastleInterventionRosterSelection(Location location)
+	{
+		try
+		{
+			if (location == null || MobileParty.MainParty?.MemberRoster == null)
+			{
+				return false;
+			}
+			TroopRoster selectableMembers = BuildInterventionTroopSelectionFullRoster();
+			TroopRoster selectablePrisoners = BuildCastleSelectablePrisonerRoster();
+			if ((selectableMembers?.TotalManCount ?? 0) <= 0 && (selectablePrisoners?.TotalManCount ?? 0) <= 0)
+			{
+				return false;
+			}
+			TroopRoster initialMembers = BuildDefaultInterventionTroopSelection(selectableMembers, SiegeCastleSceneRosterProfile.MaxSelectedPlayerSoldiers);
+			TroopRoster initialPrisoners = BuildDefaultCastlePrisonerSelection(selectablePrisoners, SiegeCastleSceneRosterProfile.MaxSelectedPrisoners);
+			_selectedInterventionRoster = null;
+			_selectedInterventionPrisonerRoster = null;
+			InformationManager.DisplayMessage(new InformationMessage(SiegeCastleSceneRosterProfile.BuildSelectionInstructionMessage(), Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
+			OpenCastleInterventionRosterSelectionScreen(
+				selectableMembers,
+				selectablePrisoners,
+				initialMembers,
+				initialPrisoners,
+				location);
+			Logger.Log("SiegeAiIntervention", "Opened castle intervention roster selection. Members=" + (selectableMembers?.TotalManCount ?? 0) + ", Prisoners=" + (selectablePrisoners?.TotalManCount ?? 0));
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "TryOpenCastleInterventionRosterSelection failed: " + ex.Message);
+			return false;
+		}
+	}
+
+	private static void OpenCastleInterventionRosterSelectionScreen(TroopRoster leftMemberRoster, TroopRoster leftPrisonerRoster, TroopRoster rightMemberRoster, TroopRoster rightPrisonerRoster, Location location)
+	{
+		PartyScreenLogic logic = new PartyScreenLogic();
+		PartyScreenLogicInitializationData data = new PartyScreenLogicInitializationData
+		{
+			LeftOwnerParty = null,
+			RightOwnerParty = MobileParty.MainParty?.Party,
+			LeftMemberRoster = leftMemberRoster ?? TroopRoster.CreateDummyTroopRoster(),
+			LeftPrisonerRoster = leftPrisonerRoster ?? TroopRoster.CreateDummyTroopRoster(),
+			RightMemberRoster = rightMemberRoster ?? TroopRoster.CreateDummyTroopRoster(),
+			RightPrisonerRoster = rightPrisonerRoster ?? TroopRoster.CreateDummyTroopRoster(),
+			LeftLeaderHero = null,
+			RightLeaderHero = PartyBase.MainParty?.LeaderHero,
+			LeftPartyMembersSizeLimit = Math.Max(0, leftMemberRoster?.TotalManCount ?? 0),
+			LeftPartyPrisonersSizeLimit = Math.Max(0, leftPrisonerRoster?.TotalManCount ?? 0),
+			RightPartyMembersSizeLimit = SiegeCastleSceneRosterProfile.MaxSelectedPlayerSoldiers,
+			RightPartyPrisonersSizeLimit = SiegeCastleSceneRosterProfile.MaxSelectedPrisoners,
+			LeftPartyName = new TextObject("可选士兵 / 俘虏"),
+			RightPartyName = new TextObject("带入城堡处置现场"),
+			TroopTransferableDelegate = CastleInterventionTroopTransferableDelegate,
+			CanTalkToTroopDelegate = null,
+			PartyPresentationDoneButtonDelegate = CastleInterventionSelectionDoneHandler,
+			PartyPresentationDoneButtonConditionDelegate = CastleInterventionSelectionDoneCondition,
+			PartyPresentationCancelButtonActivateDelegate = null,
+			PartyPresentationCancelButtonDelegate = null,
+			PartyScreenClosedDelegate = delegate(PartyBase leftOwnerParty, TroopRoster leftMembers, TroopRoster leftPrisoners, PartyBase rightOwnerParty, TroopRoster rightMembers, TroopRoster rightPrisoners, bool fromCancel)
+			{
+				OnCastleInterventionRosterSelectionClosed(location, leftMembers, leftPrisoners, rightMembers, rightPrisoners, fromCancel);
+			},
+			IsDismissMode = true,
+			IsTroopUpgradesDisabled = true,
+			Header = null,
+			TransferHealthiesGetWoundedsFirst = true,
+			ShowProgressBar = false,
+			MemberTransferState = PartyScreenLogic.TransferState.Transferable,
+			PrisonerTransferState = PartyScreenLogic.TransferState.Transferable,
+			AccompanyingTransferState = PartyScreenLogic.TransferState.Transferable,
+			PartyScreenMode = PartyScreenHelper.PartyScreenMode.Normal
+		};
+		logic.Initialize(data);
+		PartyState state = Game.Current.GameStateManager.CreateState<PartyState>();
+		state.PartyScreenLogic = logic;
+		state.IsDonating = false;
+		state.PartyScreenMode = PartyScreenHelper.PartyScreenMode.Normal;
+		Game.Current.GameStateManager.PushState((GameState)(object)state, 0);
+	}
+
+	private static bool CastleInterventionSelectionDoneHandler(TroopRoster leftMemberRoster, TroopRoster leftPrisonRoster, TroopRoster rightMemberRoster, TroopRoster rightPrisonRoster, FlattenedTroopRoster takenPrisonerRoster, FlattenedTroopRoster releasedPrisonerRoster, bool isForced, PartyBase leftParty = null, PartyBase rightParty = null)
+	{
+		return true;
+	}
+
+	private static Tuple<bool, TextObject> CastleInterventionSelectionDoneCondition(TroopRoster leftMemberRoster, TroopRoster leftPrisonRoster, TroopRoster rightMemberRoster, TroopRoster rightPrisonRoster, int leftLimitNum, int rightLimitNum)
+	{
+		int memberCount = Math.Max(0, rightMemberRoster?.TotalManCount ?? 0);
+		int prisonerCount = Math.Max(0, rightPrisonRoster?.TotalManCount ?? 0);
+		if (memberCount > SiegeCastleSceneRosterProfile.MaxSelectedPlayerSoldiers)
+		{
+			return new Tuple<bool, TextObject>(false, new TextObject("带入士兵不能超过 " + SiegeCastleSceneRosterProfile.MaxSelectedPlayerSoldiers + " 人。"));
+		}
+		if (prisonerCount > SiegeCastleSceneRosterProfile.MaxSelectedPrisoners)
+		{
+			return new Tuple<bool, TextObject>(false, new TextObject("带入俘虏不能超过 " + SiegeCastleSceneRosterProfile.MaxSelectedPrisoners + " 人。"));
+		}
+		return new Tuple<bool, TextObject>(true, TextObject.GetEmpty());
+	}
+
+	private static bool CastleInterventionTroopTransferableDelegate(CharacterObject character, PartyScreenLogic.TroopType type, PartyScreenLogic.PartyRosterSide side, PartyBase leftOwnerParty)
+	{
+		return character != null && !character.IsPlayerCharacter && !character.IsNotTransferableInPartyScreen;
+	}
+
+	private static void OnCastleInterventionRosterSelectionClosed(Location location, TroopRoster leftMemberRoster, TroopRoster leftPrisonRoster, TroopRoster rightMemberRoster, TroopRoster rightPrisonRoster, bool fromCancel)
+	{
+		try
+		{
+			if (fromCancel)
+			{
+				_selectedInterventionRoster = null;
+				_selectedInterventionPrisonerRoster = null;
+				InformationManager.DisplayMessage(new InformationMessage("【城堡处置】已取消带兵/俘虏入堡。", Color.FromUint(SiegeInterventionEntryProfile.SelectionFallbackMessageColor)));
+				return;
+			}
+			TroopRoster selectedMembers = BuildCastleMemberSelectionRosterFromUi(rightMemberRoster, SiegeCastleSceneRosterProfile.MaxSelectedPlayerSoldiers);
+			TroopRoster selectedPrisoners = BuildCastlePrisonerSelectionRosterFromUi(rightPrisonRoster, SiegeCastleSceneRosterProfile.MaxSelectedPrisoners);
+			StoreSelectedInterventionRoster(selectedMembers, SiegeCastleSceneRosterProfile.MaxSelectedPlayerSoldiers);
+			StoreSelectedInterventionPrisonerRoster(selectedPrisoners, SiegeCastleSceneRosterProfile.MaxSelectedPrisoners);
+			int selectedSoldiers = _selectedInterventionRoster?.TotalManCount ?? 0;
+			int selectedPrisonersCount = _selectedInterventionPrisonerRoster?.TotalManCount ?? 0;
+			InformationManager.DisplayMessage(new InformationMessage(SiegeCastleSceneRosterProfile.BuildSelectionConfirmedMessage(selectedSoldiers, selectedPrisonersCount), Color.FromUint(SiegeInterventionEntryProfile.SelectionConfirmedMessageColor)));
+			QueueCastleInterventionMissionOpen(location, SiegeInterventionEntryProfile.TroopSelectionDoneMissionSource);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "OnCastleInterventionRosterSelectionClosed failed: " + ex.Message);
+			_selectedInterventionRoster = null;
+			_selectedInterventionPrisonerRoster = null;
+			if (location != null)
+			{
+				QueueCastleInterventionMissionOpen(location, SiegeInterventionEntryProfile.SelectionUnavailableMissionSource);
+			}
 		}
 	}
 
@@ -980,6 +1165,121 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static TroopRoster BuildCastleSelectablePrisonerRoster()
+	{
+		TroopRoster selected = TroopRoster.CreateDummyTroopRoster();
+		try
+		{
+			TroopRoster sourceRoster = PartyBase.MainParty?.PrisonRoster ?? MobileParty.MainParty?.PrisonRoster;
+			if (sourceRoster == null)
+			{
+				return selected;
+			}
+			for (int i = 0; i < sourceRoster.Count; i++)
+			{
+				TroopRosterElement element = sourceRoster.GetElementCopyAtIndex(i);
+				CharacterObject character = element.Character;
+				if (character == null || character.IsPlayerCharacter || element.Number <= 0)
+				{
+					continue;
+				}
+				int number = character.IsHero ? Math.Max(1, element.Number) : Math.Max(0, element.Number);
+				int wounded = character.IsHero ? 0 : Math.Min(number, Math.Max(0, element.WoundedNumber));
+				if (number > 0)
+				{
+					selected.AddToCounts(character, number, false, wounded, Math.Max(0, element.Xp), true, -1);
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "BuildCastleSelectablePrisonerRoster failed: " + ex.Message);
+		}
+		return selected;
+	}
+
+	private static TroopRoster BuildDefaultCastlePrisonerSelection(TroopRoster fullRoster, int maxCount)
+	{
+		return BuildCastlePrisonerSelectionRosterFromUi(fullRoster, maxCount);
+	}
+
+	private static TroopRoster BuildCastleMemberSelectionRosterFromUi(TroopRoster sourceRoster, int maxCount)
+	{
+		TroopRoster selected = TroopRoster.CreateDummyTroopRoster();
+		try
+		{
+			if (sourceRoster == null || maxCount <= 0)
+			{
+				return selected;
+			}
+			int remaining = SiegeCastleSceneRosterProfile.ClampSelectedPlayerSoldierCount(maxCount);
+			for (int i = 0; i < sourceRoster.Count && remaining > 0; i++)
+			{
+				TroopRosterElement element = sourceRoster.GetElementCopyAtIndex(i);
+				CharacterObject character = element.Character;
+				if (!IsSelectableInterventionTroop(character) || element.Number <= 0)
+				{
+					continue;
+				}
+				int available = character.HeroObject != null ? element.Number : Math.Max(0, element.Number - element.WoundedNumber);
+				int number = Math.Min(remaining, available);
+				if (number <= 0)
+				{
+					continue;
+				}
+				selected.AddToCounts(character, number, false, 0, 0, true, -1);
+				remaining -= number;
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "BuildCastleMemberSelectionRosterFromUi failed: " + ex.Message);
+		}
+		return selected;
+	}
+
+	private static TroopRoster BuildCastlePrisonerSelectionRosterFromUi(TroopRoster sourceRoster, int maxCount)
+	{
+		TroopRoster selected = TroopRoster.CreateDummyTroopRoster();
+		try
+		{
+			if (sourceRoster == null || maxCount <= 0)
+			{
+				return selected;
+			}
+			int remaining = SiegeCastleSceneRosterProfile.ClampSelectedPrisonerCount(maxCount);
+			for (int i = 0; i < sourceRoster.Count && remaining > 0; i++)
+			{
+				TroopRosterElement element = sourceRoster.GetElementCopyAtIndex(i);
+				CharacterObject character = element.Character;
+				if (character == null || character.IsPlayerCharacter || element.Number <= 0)
+				{
+					continue;
+				}
+				int number = Math.Min(remaining, Math.Max(0, element.Number));
+				if (number <= 0)
+				{
+					continue;
+				}
+				int wounded = character.IsHero ? 0 : Math.Min(number, Math.Max(0, element.WoundedNumber));
+				selected.AddToCounts(character, number, false, wounded, Math.Max(0, element.Xp), true, -1);
+				remaining -= number;
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "BuildCastlePrisonerSelectionRosterFromUi failed: " + ex.Message);
+		}
+		return selected;
+	}
+
+	private static void StoreSelectedInterventionPrisonerRoster(TroopRoster sourceRoster, int maxCount)
+	{
+		TroopRoster selected = BuildCastlePrisonerSelectionRosterFromUi(sourceRoster, maxCount);
+		_selectedInterventionPrisonerRoster = selected.TotalManCount > 0 ? selected : null;
+		Logger.Log("SiegeAiIntervention", "Stored castle intervention prisoner selection. Count=" + (_selectedInterventionPrisonerRoster?.TotalManCount ?? 0));
+	}
+
 	private static bool CanChangeInterventionTroopSelectionStatus(CharacterObject character)
 	{
 		return IsSelectableInterventionTroop(character);
@@ -1011,17 +1311,203 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		Logger.Log("SiegeAiIntervention", "Stored intervention troop selection. Count=" + (_selectedInterventionRoster?.TotalManCount ?? 0));
 	}
 
-	private static void OpenInterventionMissionNow(Location location, string source)
+	private static void QueueCastleInterventionMissionOpen(Location location, string source)
 	{
-		PlayerEncounter.LocationEncounter.CreateAndOpenMissionController(location, null, null, null);
-		Logger.Log("SiegeAiIntervention", "Opened intervention mission through normal location controller. Source=" + (source ?? "N/A") + ", SelectedRoster=" + (_selectedInterventionRoster?.TotalManCount ?? 0));
+		if (location == null)
+		{
+			return;
+		}
+		_pendingCastleInterventionMissionLocation = location;
+		_pendingCastleInterventionMissionSource = string.IsNullOrWhiteSpace(source) ? SiegeInterventionEntryProfile.TroopSelectionDoneMissionSource : source.Trim();
+		_pendingCastleInterventionMissionTicks = 0;
+		_pendingCastleInterventionMissionRoutedThroughMenu = false;
+		GcczDiagnosticLog.Log("CastleMissionEntry", "deferredOpenQueued source=" + _pendingCastleInterventionMissionSource + " activeState=" + GetActiveGameStateName());
+		Logger.Log("SiegeAiIntervention", "Queued castle intervention mission open after party-state close. Source=" + _pendingCastleInterventionMissionSource);
+	}
+
+	private static bool TryProcessPendingCastleInterventionMissionOpen()
+	{
+		Location location = _pendingCastleInterventionMissionLocation;
+		if (location == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (Mission.Current != null)
+			{
+				ClearPendingCastleInterventionMissionOpen();
+				return false;
+			}
+			_pendingCastleInterventionMissionTicks++;
+			string stateName = GetActiveGameStateName();
+			bool partyStateActive = stateName.IndexOf("Party", StringComparison.OrdinalIgnoreCase) >= 0;
+			if (_pendingCastleInterventionMissionTicks <= 1 || (partyStateActive && _pendingCastleInterventionMissionTicks < 30))
+			{
+				if (_pendingCastleInterventionMissionTicks == 1 || _pendingCastleInterventionMissionTicks % 10 == 0)
+				{
+					GcczDiagnosticLog.Log("CastleMissionEntry", "deferredOpenWaiting ticks=" + _pendingCastleInterventionMissionTicks + " activeState=" + stateName);
+				}
+				return true;
+			}
+			string source = string.IsNullOrWhiteSpace(_pendingCastleInterventionMissionSource) ? SiegeInterventionEntryProfile.TroopSelectionDoneMissionSource : _pendingCastleInterventionMissionSource;
+			int elapsedTicks = _pendingCastleInterventionMissionTicks;
+			if (!_pendingCastleInterventionMissionRoutedThroughMenu)
+			{
+				if (!TryRouteCastleInterventionMissionThroughSettlementMenu(location, source + "_deferred", elapsedTicks, stateName))
+				{
+					ClearPendingCastleInterventionMissionOpen();
+					ResetAftermathRuntimeGuards("castle_deferred_open_route_failed");
+					InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.EntryFailedMessage, Color.FromUint(SiegeInterventionEntryProfile.MissingSceneMessageColor)));
+					return false;
+				}
+				_pendingCastleInterventionMissionRoutedThroughMenu = true;
+				return true;
+			}
+			if (elapsedTicks < 90)
+			{
+				if (elapsedTicks % 15 == 0)
+				{
+					GcczDiagnosticLog.Log("CastleMissionEntry", "deferredOpenRoutedWaiting ticks=" + elapsedTicks + " activeState=" + stateName);
+				}
+				return true;
+			}
+			ClearPendingCastleInterventionMissionOpen();
+			ResetAftermathRuntimeGuards("castle_deferred_open_timeout");
+			GcczDiagnosticLog.Log("CastleMissionEntry", "deferredOpenTimeout ticks=" + elapsedTicks + " activeState=" + stateName);
+			InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.EntryFailedMessage, Color.FromUint(SiegeInterventionEntryProfile.MissingSceneMessageColor)));
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "TryProcessPendingCastleInterventionMissionOpen failed: " + ex.Message);
+			GcczDiagnosticLog.Log("CastleMissionEntry", "deferredOpenFailed error=" + ex.Message);
+			ClearPendingCastleInterventionMissionOpen();
+			ResetAftermathRuntimeGuards("castle_deferred_open_exception");
+			return false;
+		}
+	}
+
+	internal static bool TryPumpPendingCastleInterventionMissionOpenForExternal(string source)
+	{
+		try
+		{
+			if (_pendingCastleInterventionMissionLocation == null)
+			{
+				return false;
+			}
+			if (_pendingCastleInterventionMissionTicks <= 0 || _pendingCastleInterventionMissionTicks % 30 == 0)
+			{
+				GcczDiagnosticLog.Log("CastleMissionEntry", "deferredOpenPump source=" + (source ?? "N/A") + " activeState=" + GetActiveGameStateName() + " currentMenu=" + GetCurrentGameMenuId());
+			}
+			return TryProcessPendingCastleInterventionMissionOpen();
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "TryPumpPendingCastleInterventionMissionOpenForExternal failed. Source=" + (source ?? "N/A") + ", Error=" + ex.Message);
+			GcczDiagnosticLog.Log("CastleMissionEntry", "deferredOpenPumpFailed source=" + (source ?? "N/A") + " error=" + ex.Message);
+			return false;
+		}
+	}
+
+	private static void ClearPendingCastleInterventionMissionOpen()
+	{
+		_pendingCastleInterventionMissionLocation = null;
+		_pendingCastleInterventionMissionSource = "";
+		_pendingCastleInterventionMissionTicks = 0;
+		_pendingCastleInterventionMissionRoutedThroughMenu = false;
+	}
+
+	private static bool TryRouteCastleInterventionMissionThroughSettlementMenu(Location location, string source, int elapsedTicks, string stateName)
+	{
+		try
+		{
+			Settlement settlement = ResolveCurrentSettlement();
+			if (location == null || settlement?.IsCastle != true || PlayerEncounter.LocationEncounter == null || Campaign.Current?.GameMenuManager == null)
+			{
+				return false;
+			}
+			Campaign.Current.GameMenuManager.NextLocation = location;
+			Campaign.Current.GameMenuManager.PreviousLocation = null;
+			GcczDiagnosticLog.Log("CastleMissionEntry", "routeThroughCastleMenu ticks=" + elapsedTicks + " activeState=" + (stateName ?? "N/A") + " source=" + (source ?? "N/A") + " location=" + (location.StringId ?? "N/A"));
+			Logger.Log("SiegeAiIntervention", "Routing castle intervention mission through vanilla castle menu. Source=" + (source ?? "N/A") + ", Location=" + (location.StringId ?? "N/A"));
+			GameMenu.SwitchToMenu("castle");
+			return true;
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				if (Campaign.Current?.GameMenuManager != null)
+				{
+					Campaign.Current.GameMenuManager.NextLocation = null;
+					Campaign.Current.GameMenuManager.PreviousLocation = null;
+				}
+			}
+			catch
+			{
+			}
+			Logger.Log("SiegeAiIntervention", "TryRouteCastleInterventionMissionThroughSettlementMenu failed. Source=" + (source ?? "N/A") + ", Error=" + ex.Message);
+			GcczDiagnosticLog.Log("CastleMissionEntry", "routeThroughCastleMenuFailed error=" + ex.Message);
+			return false;
+		}
+	}
+
+	private static string GetCurrentGameMenuId()
+	{
+		try
+		{
+			return Campaign.Current?.CurrentMenuContext?.GameMenu?.StringId ?? "N/A";
+		}
+		catch
+		{
+			return "N/A";
+		}
+	}
+
+	private static string GetActiveGameStateName()
+	{
+		try
+		{
+			return Game.Current?.GameStateManager?.ActiveState?.GetType().Name ?? "N/A";
+		}
+		catch
+		{
+			return "N/A";
+		}
+	}
+
+	private static bool OpenInterventionMissionNow(Location location, string source)
+	{
+		try
+		{
+			if (!CanOpenInterventionMissionNow(location))
+			{
+				Logger.Log("SiegeAiIntervention", "OpenInterventionMissionNow skipped; location encounter unavailable. Source=" + (source ?? "N/A"));
+				return false;
+			}
+			PlayerEncounter.LocationEncounter.CreateAndOpenMissionController(location, null, null, null);
+			Logger.Log("SiegeAiIntervention", "Opened intervention mission through normal location controller. Source=" + (source ?? "N/A") + ", SelectedRoster=" + (_selectedInterventionRoster?.TotalManCount ?? 0));
+			GcczDiagnosticLog.Log("CastleMissionEntry", "openMissionNow source=" + (source ?? "N/A") + " selectedSoldiers=" + (_selectedInterventionRoster?.TotalManCount ?? 0) + " selectedPrisoners=" + (_selectedInterventionPrisonerRoster?.TotalManCount ?? 0));
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "OpenInterventionMissionNow failed. Source=" + (source ?? "N/A") + ", Error=" + ex);
+			return false;
+		}
+	}
+
+	private static bool CanOpenInterventionMissionNow(Location location)
+	{
+		return location != null && PlayerEncounter.LocationEncounter != null;
 	}
 
 	private static Location ResolveInterventionLocation(Settlement settlement)
 	{
 		try
 		{
-			if (settlement == null || !settlement.IsTown)
+			if (settlement == null || !SiegeInterventionEntryProfile.IsSupportedSettlementKind(settlement.IsTown, settlement.IsCastle))
 			{
 				return null;
 			}
@@ -1030,7 +1516,15 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return null;
 			}
-			return complex.GetLocationWithId("center") ?? complex.FindAll(x => x == "center").FirstOrDefault();
+			foreach (string locationId in SiegeInterventionEntryProfile.GetPreferredLocationIds(settlement.IsTown, settlement.IsCastle))
+			{
+				Location location = complex.GetLocationWithId(locationId) ?? complex.FindAll(x => x == locationId).FirstOrDefault();
+				if (location != null)
+				{
+					return location;
+				}
+			}
+			return null;
 		}
 		catch
 		{
@@ -1116,7 +1610,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		AfGcczShoutBridge.ResetPostprocessFrequencyForMissionBoundary(SiegePostprocessFrequencyProfile.MissionStartResetSource);
 		try
 		{
-			if (mission is Mission missionPopulation && missionPopulation.GetMissionBehavior<InterventionNativeTownCivilianPopulationMissionBehavior>() == null)
+			if (ResolveCurrentSettlement()?.IsTown == true
+				&& mission is Mission missionPopulation
+				&& missionPopulation.GetMissionBehavior<InterventionNativeTownCivilianPopulationMissionBehavior>() == null)
 			{
 				missionPopulation.AddMissionBehavior(new InterventionNativeTownCivilianPopulationMissionBehavior(_activeSettlementId));
 			}
@@ -1146,6 +1642,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		RemoveUnsafeAssemblyCivilianAgents(mission);
 		TrackSceneCivilianAgents(mission);
 		MaintainCivilianAssembly(mission, SiegeCivilianAssemblyProfile.MissionAfterStartSource, force: true);
+		MaybeRecordCastleSceneRosterPlan(mission, SiegeCastleSceneRosterProfile.MissionAfterStartSource, force: false);
 	}
 
 	private void OnMissionTick(float dt)
@@ -1181,7 +1678,15 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			if (!_alliedTroopsAutoSummoned)
 			{
 				_alliedTroopsAutoSummoned = true;
-				SummonAlliedTroops(AutoSummonCount, SiegeInterventionEntryProfile.AutoEnterSummonSource);
+				int summonCount = IsCastleAftermathInterventionActive()
+					? SiegeCastleSceneRosterProfile.MaxSelectedPlayerSoldiers
+					: AutoSummonCount;
+				SummonAlliedTroops(summonCount, SiegeInterventionEntryProfile.AutoEnterSummonSource);
+			}
+			if (IsCastleAftermathInterventionActive() && !_castlePrisonersAutoSummoned)
+			{
+				_castlePrisonersAutoSummoned = true;
+				SummonCastleSelectedPrisoners(mission, SiegeCastleSceneRosterProfile.MissionAfterStartSource);
 			}
 			if (!_massacreVictoryReached)
 			{
@@ -1201,6 +1706,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				}
 			}
 			TryTriggerOngoingAmbientReactions(mission);
+			MaybeRecordCastleSceneRosterPlan(mission, SiegeCastleSceneRosterProfile.ControlTickSource, force: false);
 		}
 		if (_plunderStarted && !_massacreStarted && currentTime >= _nextPlunderTickTime)
 		{
@@ -1266,6 +1772,18 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			if (IsCastleAftermathInterventionSettlement())
+			{
+				SiegeMissionExitOutcomeDecision castleDecision = SiegeCastleMissionExitOutcomeProfile.Resolve(_castleAftermathState, _hasPendingAftermath);
+				GcczDiagnosticLog.Log("CastleMissionExit", SiegeCastleMissionExitOutcomeProfile.BuildDiagnosticText(castleDecision));
+				if (!castleDecision.HasDecision)
+				{
+					return;
+				}
+				MarkPendingAftermath(ToNativeAftermathKind(castleDecision.AftermathKind), castleDecision.TriggerSource, castleDecision.TriggerDetail);
+				return;
+			}
+
 			bool needsFallbackPolicy = !_culturalRepopulationRequested && !_massacreStarted && !_plunderStarted && !_hasPendingAftermath;
 			SiegeMissionExitOutcomeDecision decision = SiegeMissionExitOutcomeProfile.Resolve(
 				_culturalRepopulationRequested,
@@ -1292,6 +1810,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private void OnCampaignTick(float dt)
 	{
+		ProcessPendingCastleLordIntroductionLetters();
+		if (TryProcessPendingCastleInterventionMissionOpen())
+		{
+			return;
+		}
 		if (TryRunDirectMassacreAftermathScript())
 		{
 			return;
@@ -1514,6 +2037,30 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
+
+	private static void ForceTriggerSoldierAppeasementNeed(string outcomeName)
+	{
+		try
+		{
+			if (_soldierAppeasementRequired || _massacreStarted || _culturalRepopulationRequested)
+			{
+				return;
+			}
+			_soldierAppeasementCheckDone = true;
+			_soldierAppeasementRequired = true;
+			_soldierAppeasementApplied = false;
+			_soldierAppeasementMoralePenaltyApplied = false;
+			SiegeSoldierAppeasementProfile soldierProfile = new SiegeSoldierAppeasementProfile();
+			RecordInterventionMemory(soldierProfile.NeedMemoryTitle, soldierProfile.BuildNeedMemoryText(outcomeName));
+			InformationManager.DisplayMessage(new InformationMessage(soldierProfile.NeedMessageText, Color.FromUint(soldierProfile.NeedMessageColor)));
+			GcczDiagnosticLog.Log("CastleAftermath", "forcedSoldierAppeasement outcome=" + (outcomeName ?? "N/A"));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "ForceTriggerSoldierAppeasementNeed failed: " + ex.Message);
+		}
+	}
+
 	private static bool ApplySoldierAppeasementChoice(int targetAgentIndex)
 	{
 		try
@@ -1688,6 +2235,401 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static bool IsCastleAftermathInterventionActive()
+	{
+		try
+		{
+			return IsActiveInCurrentMission() && ResolveCurrentSettlement()?.IsCastle == true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsCastleAftermathInterventionSettlement()
+	{
+		try
+		{
+			if (_activeMode == InterventionMode.None && _pendingMode == InterventionMode.None)
+			{
+				return false;
+			}
+			return ResolveCurrentSettlement()?.IsCastle == true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static string BuildCastleAftermathRuntimeFactBlock()
+	{
+		try
+		{
+			Settlement settlement = ResolveCurrentSettlement();
+			string castleName = settlement?.Name?.ToString() ?? _activeSettlementName;
+			SiegeCastleSceneRosterPlan plan = BuildCastleSceneRosterPlan();
+			int captiveLordCount = Math.Max(CountCastleCaptiveLordAgents(), plan.VisibleCaptiveLordCount);
+			int surrenderedGarrisonCount = Math.Max(CountCastleSurrenderedGarrisonAgents(), plan.VisibleSurrenderedGarrisonCount);
+			int carriedRegularPrisonerCount = CountCastleCarriedRegularPrisonerSource();
+			string factBlock = SiegeCastleAftermathProfile.BuildRuntimeFactBlock(
+				castleName,
+				captiveLordCount,
+				surrenderedGarrisonCount,
+				Math.Max(CountActiveAlliedInterventionSoldiers(), plan.AlliedSoldierCount),
+				plan.HasArmory,
+				carriedRegularPrisonerCount);
+			string stateLine = SiegeCastleAftermathStateProfile.BuildRuntimeStateLine(_castleAftermathState);
+			string historyLine = SiegeCastleActionHistoryProfile.BuildRuntimeHistoryLine(CastleAftermathActionHistory);
+			string rosterLine = plan.HasAnySceneObject ? "\n" + SiegeCastleSceneRosterProfile.BuildSceneSummary(plan, castleName) : string.Empty;
+			return factBlock + "\n" + stateLine + "\n" + historyLine + rosterLine;
+		}
+		catch
+		{
+			return SiegeCastleAftermathProfile.BuildRuntimeFactBlock(_activeSettlementName, 0, 0, 0, hasArmory: false);
+		}
+	}
+
+	private static int CountCastleCaptiveLordAgents()
+	{
+		try
+		{
+			Mission mission = Mission.Current;
+			if (mission?.Agents == null)
+			{
+				return 0;
+			}
+			int count = 0;
+			foreach (Agent agent in mission.Agents)
+			{
+				CharacterObject character = agent?.Character as CharacterObject;
+				if (agent == null || agent == Agent.Main || !agent.IsHuman || !agent.IsActive() || character?.HeroObject == null)
+				{
+					continue;
+				}
+				if (!IsRuntimeAlliedSoldierAgent(agent, character, character.HeroObject))
+				{
+					count++;
+				}
+			}
+			return count;
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static int CountCastleSurrenderedGarrisonAgents()
+	{
+		try
+		{
+			Mission mission = Mission.Current;
+			if (mission?.Agents == null)
+			{
+				return 0;
+			}
+			int count = 0;
+			foreach (Agent agent in mission.Agents)
+			{
+				CharacterObject character = agent?.Character as CharacterObject;
+				if (agent == null || agent == Agent.Main || !agent.IsHuman || !agent.IsActive() || character == null)
+				{
+					continue;
+				}
+				if (IsRuntimeAlliedSoldierAgent(agent, character, character.HeroObject))
+				{
+					continue;
+				}
+				if (IsCastleSelectedPrisonerAgent(agent))
+				{
+					continue;
+				}
+				if (character.IsSoldier || IsGuardOrSoldier(character))
+				{
+					count++;
+				}
+			}
+			return count;
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static int CountActiveAlliedInterventionSoldiers()
+	{
+		try
+		{
+			Mission mission = Mission.Current;
+			if (mission?.Agents == null)
+			{
+				return 0;
+			}
+			int count = 0;
+			foreach (Agent agent in mission.Agents)
+			{
+				CharacterObject character = agent?.Character as CharacterObject;
+				if (agent == null || agent == Agent.Main || !agent.IsHuman || !agent.IsActive())
+				{
+					continue;
+				}
+				if (IsRuntimeAlliedSoldierAgent(agent, character, character?.HeroObject))
+				{
+					count++;
+				}
+			}
+			return count;
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static SiegeCastleSceneRosterPlan BuildCastleSceneRosterPlan()
+	{
+		try
+		{
+			Settlement settlement = ResolveCurrentSettlement();
+			int captiveLordSourceCount = Math.Max(CountCastleCaptiveLordAgents(), CountMainPartyHeroPrisoners());
+			int surrenderedGarrisonSourceCount = Math.Max(CountCastleSurrenderedGarrisonAgents(), CountSettlementGarrisonTroops(settlement));
+			return SiegeCastleSceneRosterProfile.BuildPlan(
+				captiveLordSourceCount,
+				surrenderedGarrisonSourceCount,
+				CountActiveAlliedInterventionSoldiers(),
+				hasArmory: settlement?.IsCastle == true);
+		}
+		catch
+		{
+			return SiegeCastleSceneRosterProfile.BuildPlan(0, 0, CountActiveAlliedInterventionSoldiers(), hasArmory: false);
+		}
+	}
+
+	private static int CountMainPartyHeroPrisoners()
+	{
+		try
+		{
+			TroopRoster roster = PartyBase.MainParty?.PrisonRoster;
+			if (roster == null)
+			{
+				return 0;
+			}
+			int count = 0;
+			for (int i = 0; i < roster.Count; i++)
+			{
+				TroopRosterElement element = roster.GetElementCopyAtIndex(i);
+				CharacterObject character = element.Character;
+				if (character?.HeroObject != null)
+				{
+					count += Math.Max(1, element.Number);
+				}
+			}
+			return count;
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static int CountMainPartyRegularPrisoners()
+	{
+		try
+		{
+			return CountRegularPrisonersInRoster(PartyBase.MainParty?.PrisonRoster);
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static int CountRegularPrisonersInRoster(TroopRoster roster)
+	{
+		try
+		{
+			if (roster == null)
+			{
+				return 0;
+			}
+			int count = 0;
+			for (int i = 0; i < roster.Count; i++)
+			{
+				TroopRosterElement element = roster.GetElementCopyAtIndex(i);
+				CharacterObject character = element.Character;
+				if (character != null && character.HeroObject == null)
+				{
+					count += Math.Max(0, element.Number);
+				}
+			}
+			return count;
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static int CountSelectedCastleRegularPrisoners()
+	{
+		try
+		{
+			int selectedRosterCount = CountRegularPrisonersInRoster(_selectedInterventionPrisonerRoster);
+			int spawnedCount = 0;
+			Mission mission = Mission.Current;
+			if (mission?.Agents != null && CastlePrisonerAgentIndexes.Count > 0)
+			{
+				foreach (Agent agent in mission.Agents)
+				{
+					if (agent == null || !CastlePrisonerAgentIndexes.Contains(agent.Index))
+					{
+						continue;
+					}
+					CharacterObject character = agent.Character as CharacterObject;
+					if (character != null && character.HeroObject == null)
+					{
+						spawnedCount++;
+					}
+				}
+			}
+			return Math.Max(selectedRosterCount, spawnedCount);
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static int CountCastleCarriedRegularPrisonerSource()
+	{
+		try
+		{
+			return SiegeCastleFinalSideEffectProfile.ResolveCarriedRegularPrisonerSourceCount(
+				CountSelectedCastleRegularPrisoners(),
+				CountMainPartyRegularPrisoners());
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static int CountSettlementGarrisonTroops(Settlement settlement)
+	{
+		try
+		{
+			TroopRoster roster = settlement?.Town?.GarrisonParty?.MemberRoster;
+			return Math.Max(0, roster?.TotalManCount ?? 0);
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static void MaybeRecordCastleSceneRosterPlan(Mission mission, string source, bool force)
+	{
+		try
+		{
+			Settlement settlement = ResolveCurrentSettlement();
+			if (!SiegeCastleSceneRosterProfile.ShouldUseCastleSceneRosterBridge(settlement?.IsCastle == true, IsActiveInCurrentMission()) || mission == null)
+			{
+				return;
+			}
+			if (_castleSceneRosterPlanLogged && !force)
+			{
+				return;
+			}
+			SiegeCastleSceneRosterPlan plan = BuildCastleSceneRosterPlan();
+			if (!plan.HasAnySceneObject)
+			{
+				return;
+			}
+			_castleSceneRosterPlanLogged = true;
+			string castleName = settlement?.Name?.ToString() ?? _activeSettlementName;
+			string summary = SiegeCastleSceneRosterProfile.BuildSceneSummary(plan, castleName);
+			RecordInterventionMemory("城堡军务", summary);
+			GcczDiagnosticLog.Log(SiegeCastleSceneRosterProfile.ScenePlanLogCategory, SiegeCastleSceneRosterProfile.BuildDiagnosticText(plan, source));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "MaybeRecordCastleSceneRosterPlan failed: " + ex.Message);
+		}
+	}
+
+	private static string BuildCastleAgentRoleRuntimeContext(Agent agent, CharacterObject character, Hero hero, bool alliedSoldier)
+	{
+		try
+		{
+			SiegeCastleAgentRoleKind role = ResolveCastleAgentRole(agent, character, hero, alliedSoldier);
+			CharacterObject resolved = character ?? hero?.CharacterObject;
+			Hero resolvedHero = hero ?? resolved?.HeroObject;
+			string agentName = agent?.Name?.ToString() ?? resolvedHero?.Name?.ToString() ?? resolved?.Name?.ToString() ?? string.Empty;
+			return SiegeCastleAgentRoleProfile.BuildRoleContext(role, agentName, agent?.Index ?? 0);
+		}
+		catch
+		{
+			return SiegeCastleAgentRoleProfile.BuildRoleContext(SiegeCastleAgentRoleKind.Unknown, string.Empty);
+		}
+	}
+
+	private static SiegeCastleAgentRoleKind ResolveCastleAgentRole(Agent agent, CharacterObject character, Hero hero, bool alliedSoldier)
+	{
+		try
+		{
+			CharacterObject resolved = character ?? hero?.CharacterObject;
+			Hero resolvedHero = hero ?? resolved?.HeroObject;
+			bool isHero = resolvedHero != null;
+			bool soldierOrGuard = resolved != null && (resolved.IsSoldier || IsGuardOrSoldier(resolved));
+			bool playerPartyOrSelectedTroop = IsMainPartyOrSelectedInterventionTroop(resolved);
+			bool selectedPrisoner = IsCastleSelectedPrisonerAgent(agent);
+			return SiegeCastleAgentRoleProfile.ResolveRole(alliedSoldier, isHero, soldierOrGuard, playerPartyOrSelectedTroop, selectedPrisoner);
+		}
+		catch
+		{
+			return SiegeCastleAgentRoleKind.Unknown;
+		}
+	}
+
+	private static bool IsCastleSelectedPrisonerAgent(Agent agent)
+	{
+		try
+		{
+			if (agent == null)
+			{
+				return false;
+			}
+			if (CastlePrisonerAgentIndexes.Contains(agent.Index))
+			{
+				return true;
+			}
+			return IsCastleAftermathInterventionActive() && agent.Origin is PrisonerAgentOrigin;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static SiegeCastleAgentRoleKind ResolveCastleAgentRoleForActionTarget(int targetAgentIndex)
+	{
+		try
+		{
+			Agent targetAgent = TryGetAgent(targetAgentIndex);
+			CharacterObject targetCharacter = targetAgent?.Character as CharacterObject;
+			Hero targetHero = targetCharacter?.HeroObject;
+			bool alliedSoldier = IsRuntimeAlliedSoldierAgent(targetAgent, targetCharacter, targetHero);
+			return ResolveCastleAgentRole(targetAgent, targetCharacter, targetHero, alliedSoldier);
+		}
+		catch
+		{
+			return SiegeCastleAgentRoleKind.Unknown;
+		}
+	}
+
 	internal static string BuildRuntimePromptForAgent(Hero hero, NpcDataPacket npc, int agentIndex)
 	{
 		if (!IsActiveInCurrentMission())
@@ -1701,6 +2643,15 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		if (!alliedSoldier && IsNpcRuntimeAlliedSoldierFallback(npc, character))
 		{
 			alliedSoldier = true;
+		}
+		if (IsCastleAftermathInterventionActive())
+		{
+			string castleFactBlock = BuildCastleAftermathRuntimeFactBlock();
+			string castleRoleContext = BuildCastleAgentRoleRuntimeContext(agent, character, hero, alliedSoldier);
+			string castleMemoryContext = AppendRuntimeContext(
+				BuildInterventionMemoryContext(SiegeInterventionMemoryAudience.General),
+				BuildPlayerCommanderRuntimeContext(alliedSoldier, false));
+			return AppendRuntimeContext(AppendRuntimeContext(castleFactBlock, castleRoleContext), castleMemoryContext);
 		}
 		bool guard = IsGuardOrSoldier(character);
 		bool civilian = IsCivilianForIntervention(character);
@@ -1764,7 +2715,12 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			Hero resolvedHero = hero ?? resolved?.HeroObject;
 			bool alliedSoldier = IsRuntimeAlliedSoldierAgent(agent, resolved, resolvedHero);
 			bool civilian = IsCivilianForIntervention(resolved);
-			return SiegeRuntimePromptProfile.BuildImmediateReactionIdentityOverride(ResolvePlayerCharacterNameForContext(), alliedSoldier, civilian);
+			string identity = SiegeRuntimePromptProfile.BuildImmediateReactionIdentityOverride(ResolvePlayerCharacterNameForContext(), alliedSoldier, civilian);
+			if (IsCastleAftermathInterventionActive())
+			{
+				return AppendRuntimeContext(identity, BuildCastleAgentRoleRuntimeContext(agent, resolved, resolvedHero, alliedSoldier));
+			}
+			return identity;
 		}
 		catch
 		{
@@ -1777,10 +2733,21 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		return IsActiveInCurrentMission();
 	}
 
+	internal static string GetRuntimeInjectedRuleBlockMarkerForExternal()
+	{
+		return IsCastleAftermathInterventionActive()
+			? SiegeCastleAftermathProfile.InjectedRuleBlockMarker
+			: SiegePostprocessRuleCatalog.InjectedRuleBlockMarker;
+	}
+
 	internal static List<PostprocessRuleEntry> BuildRuntimePostprocessRulesForExternal()
 	{
 		try
 		{
+			if (IsCastleAftermathInterventionActive())
+			{
+				return BuildFallbackCastleAftermathPostprocessRules();
+			}
 			List<PostprocessRuleEntry> configured = AIConfigHandler.GetGuardrailRulePostprocessRules(SiegePostprocessRuleCatalog.RuleId) ?? new List<PostprocessRuleEntry>();
 			List<PostprocessRuleEntry> rules = configured.Count > 0 ? configured : BuildFallbackSiegeInterventionPostprocessRules();
 			bool destructiveAllowed = IsDestructiveInterventionAllowed();
@@ -1809,7 +2776,18 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private static List<PostprocessRuleEntry> BuildFallbackSiegeInterventionPostprocessRules()
 	{
-		return SiegePostprocessRuleCatalog.GetFallbackRules()
+			return SiegePostprocessRuleCatalog.GetFallbackRules()
+			.Select(rule => new PostprocessRuleEntry
+			{
+				Tag = rule.Tag,
+				Description = rule.Description
+			})
+			.ToList();
+	}
+
+	private static List<PostprocessRuleEntry> BuildFallbackCastleAftermathPostprocessRules()
+	{
+		return SiegeCastleAftermathProfile.GetPostprocessRules()
 			.Select(rule => new PostprocessRuleEntry
 			{
 				Tag = rule.Tag,
@@ -1824,6 +2802,19 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			Agent agent = TryGetAgent(targetAgentIndex);
 			CharacterObject character = agent?.Character as CharacterObject;
+			if (IsCastleAftermathInterventionActive())
+			{
+				string speakerName = agent?.Name?.ToString() ?? character?.Name?.ToString() ?? SiegePostprocessContextBuilder.DefaultSpeakerName;
+				string castleContext = BuildCastleAftermathRuntimeFactBlock();
+				bool castleAlliedSoldier = IsRuntimeAlliedSoldierAgent(agent, character, character?.HeroObject);
+				string castleRoleContext = BuildCastleAgentRoleRuntimeContext(agent, character, character?.HeroObject, castleAlliedSoldier);
+				return AppendRuntimeContext(castleContext,
+					castleRoleContext
+					+ "\n"
+					+ "【当前说话人】" + speakerName + "\n"
+					+ "【后处理边界】当前只能输出城堡军务标签；不要输出城镇平民宽恕/救济/搜掠/血洗/殖民标签。"
+					+ (replyIsDirectPlayerResponse ? "\n【直接回应】本轮是NPC直接回应玩家。" : ""));
+			}
 			bool alliedSoldier = IsRuntimeAlliedSoldierAgent(agent, character, character?.HeroObject);
 			bool civilian = IsCivilianForIntervention(character);
 			bool destructiveAllowed = IsDestructiveInterventionAllowed();
@@ -1882,6 +2873,38 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
+	internal static bool TryProcessFixedKeywordActionForExternal(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string playerText, bool playerCommandContext, out bool actionHandled)
+	{
+		actionHandled = false;
+		if (!playerCommandContext || !IsActiveInCurrentMission())
+		{
+			return false;
+		}
+
+		try
+		{
+			if (!SiegeFixedKeywordActionProfile.TryBuildTagText(playerText, IsCastleAftermathInterventionActive(), out string tagText, out SiegeFixedKeywordActionDefinition definition))
+			{
+				return false;
+			}
+
+			RecordInterventionMemory("固定词测试", SiegeFixedKeywordActionProfile.BuildMatchedMemoryText(definition, playerText));
+			GcczDiagnosticLog.Log("FixedKeywordAction", SiegeFixedKeywordActionProfile.BuildMatchedDiagnosticText(definition)
+				+ " targetAgent=" + targetAgentIndex);
+			string generatedTagText = tagText;
+			bool processed = TryProcessAiActionTags(targetHero, targetCharacter, targetAgentIndex, ref generatedTagText, out actionHandled, replyIsDirectPlayerResponse: true);
+			Logger.Log("SiegeAiIntervention", "Processed fixed keyword action. Tag=" + tagText
+				+ ", Handled=" + actionHandled
+				+ ", TargetAgent=" + targetAgentIndex);
+			return processed;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "TryProcessFixedKeywordActionForExternal failed: " + ex.Message);
+			return false;
+		}
+	}
+
 	internal static bool TryProcessAiActionTags(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, ref string text, out bool actionHandled, bool replyIsDirectPlayerResponse = false)
 	{
 		actionHandled = false;
@@ -1893,6 +2916,12 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			if (!IsActiveInCurrentMission())
 			{
+				text = StripSiegeTags(text);
+				return true;
+			}
+			if (IsCastleAftermathInterventionActive())
+			{
+				actionHandled = TryProcessCastleAftermathActionTags(text, targetAgentIndex, replyIsDirectPlayerResponse);
 				text = StripSiegeTags(text);
 				return true;
 			}
@@ -2057,6 +3086,1350 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			Logger.Log("SiegeAiIntervention", "TryProcessAiActionTags failed: " + ex.Message);
 			text = StripSiegeTags(text);
 			return actionHandled;
+		}
+	}
+
+	private static bool TryProcessCastleAftermathActionTags(string rawText, int targetAgentIndex, bool playerCommandContext)
+	{
+		try
+		{
+			bool handled = false;
+			SiegeCastleAgentRoleKind targetRole = ResolveCastleAgentRoleForActionTarget(targetAgentIndex);
+			foreach (SiegeCastleAftermathRuleDefinition rule in SiegeCastleAftermathProfile.GetRules())
+			{
+				if (string.IsNullOrWhiteSpace(rule.CanonicalTag)
+					|| !SiegeCastlePrisonerAllocationProfile.TryFindTagInstance(rawText, rule, out SiegeCastleActionTagInstance tagInstance))
+				{
+					continue;
+				}
+
+				SiegeCastleAftermathActionKind kind = tagInstance.Kind;
+				SiegeCastleAftermathEffectProfile effect = SiegeCastleAftermathProfile.GetEffect(kind);
+				string actorName = ResolvePlayerCharacterNameForContext();
+				string castleName = string.IsNullOrWhiteSpace(_activeSettlementName) ? "这座城堡" : _activeSettlementName;
+				SiegeCastleActionAuthorityDecision authorityDecision = SiegeCastleActionAuthorityProfile.Evaluate(kind, targetRole, playerCommandContext);
+				if (!authorityDecision.Allowed)
+				{
+					RecordInterventionMemory(SiegeCastleActionAuthorityProfile.MemoryTitle, SiegeCastleActionAuthorityProfile.BuildBlockedMemoryText(kind, targetRole, castleName));
+					InformationManager.DisplayMessage(new InformationMessage(SiegeCastleActionAuthorityProfile.BuildBlockedMessageText(kind), Color.FromUint(0xFFFFC266u)));
+					GcczDiagnosticLog.Log(SiegeCastleActionAuthorityProfile.DiagnosticCategory, SiegeCastleActionAuthorityProfile.BuildDiagnosticText(authorityDecision, kind, targetRole, playerCommandContext)
+						+ " targetAgent=" + targetAgentIndex);
+					handled = true;
+					continue;
+				}
+
+				SiegeCastleActionRepeatDecision repeatDecision = SiegeCastleActionRepeatProfile.Evaluate(kind, AppliedCastleAftermathActions.Contains(kind));
+				if (!repeatDecision.Allowed)
+				{
+					RecordInterventionMemory(SiegeCastleActionRepeatProfile.MemoryTitle, SiegeCastleActionRepeatProfile.BuildDuplicateMemoryText(kind, castleName));
+					InformationManager.DisplayMessage(new InformationMessage(SiegeCastleActionRepeatProfile.BuildDuplicateMessageText(kind), Color.FromUint(0xFFFFC266u)));
+					GcczDiagnosticLog.Log(SiegeCastleActionRepeatProfile.DiagnosticCategory, SiegeCastleActionRepeatProfile.BuildDiagnosticText(repeatDecision, kind)
+						+ " targetAgent=" + targetAgentIndex);
+					handled = true;
+					continue;
+				}
+
+				SiegeCastleActionGateDecision gateDecision = SiegeCastleActionGateProfile.Evaluate(_castleAftermathState, kind, effect);
+				if (!gateDecision.Allowed)
+				{
+					RecordInterventionMemory(SiegeCastleActionGateProfile.MemoryTitle, SiegeCastleActionGateProfile.BuildBlockedMemoryText(kind, castleName));
+					InformationManager.DisplayMessage(new InformationMessage(SiegeCastleActionGateProfile.BuildBlockedMessageText(kind), Color.FromUint(0xFFFFC266u)));
+					GcczDiagnosticLog.Log(SiegeCastleActionGateProfile.DiagnosticCategory, SiegeCastleActionGateProfile.BuildDiagnosticText(gateDecision, kind)
+						+ " targetAgent=" + targetAgentIndex);
+					handled = true;
+					continue;
+				}
+
+				_castleAftermathState = SiegeCastleAftermathStateProfile.ApplyAction(_castleAftermathState, kind, effect);
+				if (AppliedCastleAftermathActions.Add(kind))
+				{
+					CastleAftermathActionHistory.Add(kind);
+				}
+				RecordCastlePrisonerAllocationRequestIfNeeded(tagInstance, castleName);
+				RecordInterventionMemory("城堡军务", SiegeCastleAftermathProfile.BuildActionMemoryText(kind, actorName, castleName));
+				RecordInterventionMemory("城堡军务状态", SiegeCastleAftermathStateProfile.BuildActionStateMemoryText(kind, _castleAftermathState));
+				ApplyCastleAftermathRuntimeSideEffects(kind, effect, targetAgentIndex, castleName, rawText);
+				uint color = effect.IsDestructive ? 0xFFFF7777u : 0xFFB6F7A8u;
+				InformationManager.DisplayMessage(new InformationMessage(SiegeCastleAftermathProfile.BuildActionMessageText(kind), Color.FromUint(color)));
+				GcczDiagnosticLog.Log("CastleAftermath", SiegeCastleAftermathStateProfile.BuildDiagnosticText(kind, _castleAftermathState)
+					+ " targetAgent=" + targetAgentIndex);
+				handled = true;
+			}
+
+			return handled;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "TryProcessCastleAftermathActionTags failed: " + ex.Message);
+			return false;
+		}
+	}
+
+
+	private static void RecordCastlePrisonerAllocationRequestIfNeeded(SiegeCastleActionTagInstance tagInstance, string castleName)
+	{
+		try
+		{
+			if (tagInstance.Kind == SiegeCastleAftermathActionKind.Unknown || !SiegeCastlePrisonerAllocationProfile.IsRegularPrisonerAllocationAction(tagInstance.Kind))
+			{
+				return;
+			}
+			string safeCastleName = string.IsNullOrWhiteSpace(castleName) ? "这座城堡" : castleName.Trim();
+			int surrenderedSourceCount = Math.Max(CountCastleSurrenderedGarrisonAgents(), CountSettlementGarrisonTroops(ResolveCurrentSettlement()));
+			int regularSourceCount = Math.Max(0, surrenderedSourceCount) + Math.Max(0, CountCastleCarriedRegularPrisonerSource());
+			int requestedCount = tagInstance.HasExplicitCount ? tagInstance.ExplicitCount : SiegeCastlePrisonerAllocationProfile.NoExplicitQuantity;
+			if (!tagInstance.HasExplicitCount && tagInstance.Kind == SiegeCastleAftermathActionKind.RecruitGarrison)
+			{
+				requestedCount = regularSourceCount;
+			}
+			if (requestedCount == SiegeCastlePrisonerAllocationProfile.NoExplicitQuantity)
+			{
+				return;
+			}
+			CastlePrisonerAllocationRequests.Add(new SiegeCastlePrisonerAllocationRequest(tagInstance.Kind, requestedCount));
+			SiegeCastlePrisonerAllocationPlan allocationPlan = SiegeCastlePrisonerAllocationProfile.BuildPlan(regularSourceCount, CastlePrisonerAllocationRequests);
+			RecordInterventionMemory(SiegeCastlePrisonerAllocationProfile.MemoryTitle, SiegeCastlePrisonerAllocationProfile.BuildMemoryText(allocationPlan, safeCastleName));
+			GcczDiagnosticLog.Log(SiegeCastlePrisonerAllocationProfile.DiagnosticCategory, SiegeCastlePrisonerAllocationProfile.BuildDiagnosticText(allocationPlan)
+				+ " latestTag=" + (tagInstance.CanonicalTagWithQuantity ?? "N/A"));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "RecordCastlePrisonerAllocationRequestIfNeeded failed: " + ex.Message);
+		}
+	}
+
+
+	private static string FormatSigned(int value)
+	{
+		return value > 0 ? "+" + value : value.ToString();
+	}
+
+	private static void ApplyCastleAftermathRuntimeSideEffects(SiegeCastleAftermathActionKind kind, SiegeCastleAftermathEffectProfile effect, int targetAgentIndex, string castleName, string rawText)
+	{
+		try
+		{
+			if (!IsCastleAftermathInterventionActive())
+			{
+				return;
+			}
+			switch (kind)
+			{
+				case SiegeCastleAftermathActionKind.HonorCaptives:
+					RecordInterventionMemory("城堡俘虏信任", "玩家选择优待战俘：俘虏信任 " + FormatSigned(effect.CaptiveTrustDelta) + "，己方士气压力 " + FormatSigned(effect.PlayerTroopMoraleDelta) + "；需要对士兵执行安兵，否则离场结算会产生士气惩罚。");
+					if (effect.RequiresSoldierAppeasement)
+					{
+						ForceTriggerSoldierAppeasementNeed(SiegeCastleAftermathProfile.GetActionLabel(kind));
+					}
+					break;
+				case SiegeCastleAftermathActionKind.SeizeArmory:
+					if (ResolveCastleAgentRoleForActionTarget(targetAgentIndex) == SiegeCastleAgentRoleKind.CaptiveLordOrCommander)
+					{
+						TransferCastleLordEquipmentToPlayer(targetAgentIndex, castleName);
+					}
+					else
+					{
+						ApplyCastleTroopMoraleDelta(effect.PlayerTroopMoraleDelta, SiegeCastleAftermathProfile.GetActionLabel(kind));
+						PrepareCastleArmoryLoot(effect, castleName);
+					}
+					break;
+				case SiegeCastleAftermathActionKind.RecruitGarrison:
+					ApplyCastleTroopMoraleDelta(effect.PlayerTroopMoraleDelta, SiegeCastleAftermathProfile.GetActionLabel(kind));
+					RecruitCastlePrisonersToPlayer(ResolveCastleAllocatedPrisonerCount(kind), castleName);
+					break;
+				case SiegeCastleAftermathActionKind.LaborPrisoners:
+					AssignCastlePrisonersToLabor(ResolveCastleAllocatedPrisonerCount(kind), castleName, effect);
+					break;
+				case SiegeCastleAftermathActionKind.SlaughterGarrison:
+					SlaughterCastlePrisoners(ResolveCastleAllocatedPrisonerCount(kind), castleName, effect);
+					break;
+				case SiegeCastleAftermathActionKind.SellPrisoners:
+					SellCastlePrisoners(ResolveCastleAllocatedPrisonerCount(kind), castleName, effect);
+					break;
+				case SiegeCastleAftermathActionKind.DemandRansom:
+					ApplyCastleLordRelationDelta(targetAgentIndex, effect.LordRelationDelta, SiegeCastleAftermathProfile.GetActionLabel(kind));
+					break;
+				case SiegeCastleAftermathActionKind.ExecuteLord:
+					ApplyCastleExecutionRelationDelta(targetAgentIndex, effect);
+					ExecuteCastleLordInScene(targetAgentIndex, castleName);
+					break;
+				case SiegeCastleAftermathActionKind.RecruitLord:
+					RecordCastleLordRecruitmentIntent(targetAgentIndex, castleName, rawText);
+					break;
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "ApplyCastleAftermathRuntimeSideEffects failed: " + ex.Message);
+		}
+	}
+
+	private static void ApplyCastleTroopMoraleDelta(int moraleDelta, string reason)
+	{
+		try
+		{
+			if (moraleDelta == 0 || MobileParty.MainParty == null)
+			{
+				return;
+			}
+			MobileParty.MainParty.RecentEventsMorale += moraleDelta;
+			string text = "【城堡处置】" + (string.IsNullOrWhiteSpace(reason) ? "军务" : reason.Trim()) + "：己方部队士气 " + FormatSigned(moraleDelta) + "。";
+			RecordInterventionMemory("城堡士气", text);
+			InformationManager.DisplayMessage(new InformationMessage(text, Color.FromUint(moraleDelta >= 0 ? 0xFFB6F7A8u : 0xFFFFC266u)));
+			GcczDiagnosticLog.Log("CastleAftermath", "troopMoraleDelta=" + moraleDelta + " reason=" + (reason ?? "N/A") + " moraleNow=" + MobileParty.MainParty.Morale);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "ApplyCastleTroopMoraleDelta failed: " + ex.Message);
+		}
+	}
+
+	private static int ResolveCastleAllocatedPrisonerCount(SiegeCastleAftermathActionKind kind)
+	{
+		try
+		{
+			int surrenderedSourceCount = Math.Max(CountCastleSurrenderedGarrisonAgents(), CountSettlementGarrisonTroops(ResolveCurrentSettlement()));
+			int regularSourceCount = Math.Max(0, surrenderedSourceCount) + Math.Max(0, CountCastleCarriedRegularPrisonerSource());
+			SiegeCastlePrisonerAllocationPlan allocationPlan = SiegeCastlePrisonerAllocationProfile.BuildPlan(regularSourceCount, CastlePrisonerAllocationRequests);
+			switch (kind)
+			{
+				case SiegeCastleAftermathActionKind.HonorCaptives:
+					return allocationPlan.HonoredPrisonerCount;
+				case SiegeCastleAftermathActionKind.RecruitGarrison:
+					return allocationPlan.RecruitedPrisonerCount > 0 ? allocationPlan.RecruitedPrisonerCount : Math.Max(0, regularSourceCount);
+				case SiegeCastleAftermathActionKind.SeizeArmory:
+					return allocationPlan.ArmoryPrisonerCount;
+				case SiegeCastleAftermathActionKind.LaborPrisoners:
+					return allocationPlan.LaborPrisonerCount;
+				case SiegeCastleAftermathActionKind.SlaughterGarrison:
+					return allocationPlan.SlaughteredPrisonerCount;
+				case SiegeCastleAftermathActionKind.SellPrisoners:
+					return allocationPlan.SoldPrisonerCount;
+				default:
+					return 0;
+			}
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+	private static void RecruitCastlePrisonersToPlayer(int requestedCount, string castleName)
+	{
+		try
+		{
+			int requested = Math.Max(0, requestedCount);
+			TroopRoster recruitRoster = BuildCastleRegularPrisonerActionRoster(requested, out int estimatedValue);
+			int recruited = TransferCastlePrisonersToMemberRoster(recruitRoster);
+			string safeCastleName = string.IsNullOrWhiteSpace(castleName) ? "这座城堡" : castleName.Trim();
+			string text = recruited > 0
+				? "【城堡处置】" + safeCastleName + "已有 " + recruited + " 名普通士兵俘虏被直接收编进玩家部队。"
+				: "【城堡处置】收编战俘已记录，但当前未能从玩家俘虏栏转入普通士兵俘虏。";
+			RecordInterventionMemory("城堡收编战俘", text + " 估算原赎卖价值=" + Math.Max(0, estimatedValue) + "。");
+			InformationManager.DisplayMessage(new InformationMessage(text, Color.FromUint(0xFFFFC266u)));
+			GcczDiagnosticLog.Log("CastleAftermath", "recruitPrisoners requested=" + requested + " recruited=" + recruited + " estimatedRansomValue=" + estimatedValue);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "RecruitCastlePrisonersToPlayer failed: " + ex.Message);
+		}
+	}
+	private static void AssignCastlePrisonersToLabor(int requestedCount, string castleName, SiegeCastleAftermathEffectProfile effect)
+	{
+		try
+		{
+			TroopRoster laborRoster = BuildCastleRegularPrisonerActionRoster(requestedCount, out int estimatedValue);
+			int removed = RemoveCastlePrisonersFromMainParty(laborRoster);
+			ApplyCastleLordRelationDelta(-1, effect.LordRelationDelta, SiegeCastleAftermathProfile.GetActionLabel(SiegeCastleAftermathActionKind.LaborPrisoners));
+			string safeCastleName = string.IsNullOrWhiteSpace(castleName) ? "这座城堡" : castleName.Trim();
+			string text = "【城堡处置】" + safeCastleName + "已派出 " + removed + " 名普通士兵俘虏劳役/农奴；附属村庄产出计划 "
+				+ FormatSigned(effect.BoundVillageProductionBonusPercent) + "%，俘虏恐惧 " + FormatSigned(effect.CaptiveFearDelta) + "。";
+			RecordInterventionMemory("城堡战俘劳役", text + " 估算原赎卖价值=" + Math.Max(0, estimatedValue) + "。");
+			InformationManager.DisplayMessage(new InformationMessage(text, Color.FromUint(0xFFFFC266u)));
+			GcczDiagnosticLog.Log("CastleAftermath", "laborPrisoners requested=" + Math.Max(0, requestedCount) + " removed=" + removed + " fear=" + effect.CaptiveFearDelta + " estimatedRansomValue=" + estimatedValue);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "AssignCastlePrisonersToLabor failed: " + ex.Message);
+		}
+	}
+	private static void SlaughterCastlePrisoners(int requestedCount, string castleName, SiegeCastleAftermathEffectProfile effect)
+	{
+		try
+		{
+			TroopRoster slaughterRoster = BuildCastleRegularPrisonerActionRoster(requestedCount, out int estimatedValue);
+			int removed = RemoveCastlePrisonersFromMainParty(slaughterRoster);
+			ApplyCastleLordRelationDelta(-1, effect.LordRelationDelta, SiegeCastleAftermathProfile.GetActionLabel(SiegeCastleAftermathActionKind.SlaughterGarrison));
+			ApplyCastleTroopMoraleDelta(effect.PlayerTroopMoraleDelta, SiegeCastleAftermathProfile.GetActionLabel(SiegeCastleAftermathActionKind.SlaughterGarrison));
+			int grantedXp = GrantCastleSlaughterTroopExperience(removed, effect.PlayerTroopXpWeight);
+			string safeCastleName = string.IsNullOrWhiteSpace(castleName) ? "这座城堡" : castleName.Trim();
+			string text = "【城堡处置】" + safeCastleName + "已屠戮 " + removed + " 名普通士兵俘虏；己方部队获得经验 " + Math.Max(0, grantedXp) + "，俘虏恐惧 " + FormatSigned(effect.CaptiveFearDelta) + "。";
+			RecordInterventionMemory("城堡屠戮守军", text + " 估算放弃赎卖价值=" + Math.Max(0, estimatedValue) + "。");
+			InformationManager.DisplayMessage(new InformationMessage(text, Color.FromUint(0xFFFF7777u)));
+			GcczDiagnosticLog.Log("CastleAftermath", "slaughterPrisoners requested=" + Math.Max(0, requestedCount) + " removed=" + removed + " xp=" + grantedXp + " fear=" + effect.CaptiveFearDelta + " estimatedRansomValue=" + estimatedValue);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "SlaughterCastlePrisoners failed: " + ex.Message);
+		}
+	}
+	private static void SellCastlePrisoners(int requestedCount, string castleName, SiegeCastleAftermathEffectProfile effect)
+	{
+		try
+		{
+			TroopRoster sellRoster = BuildCastleRegularPrisonerActionRoster(requestedCount, out int estimatedValue);
+			int soldCount = Math.Max(0, sellRoster?.TotalManCount ?? 0);
+			if (soldCount > 0 && PartyBase.MainParty != null)
+			{
+				SellPrisonersAction.ApplyForSelectedPrisoners(PartyBase.MainParty, null, sellRoster);
+			}
+			ApplyCastleLordRelationDelta(-1, effect.LordRelationDelta, SiegeCastleAftermathProfile.GetActionLabel(SiegeCastleAftermathActionKind.SellPrisoners));
+			ApplyCastleTroopMoraleDelta(effect.PlayerTroopMoraleDelta, SiegeCastleAftermathProfile.GetActionLabel(SiegeCastleAftermathActionKind.SellPrisoners));
+			string safeCastleName = string.IsNullOrWhiteSpace(castleName) ? "这座城堡" : castleName.Trim();
+			string text = soldCount > 0
+				? "【城堡处置】" + safeCastleName + "已按原版赎卖价格贩卖 " + soldCount + " 名普通士兵俘虏，估算收入 " + Math.Max(0, estimatedValue) + " 第纳尔。"
+				: "【城堡处置】贩卖俘虏已记录，但未找到可贩卖的普通士兵俘虏；请使用数量标签。";
+			RecordInterventionMemory("城堡贩卖俘虏", text + " 俘虏恐惧 " + FormatSigned(effect.CaptiveFearDelta) + "。");
+			InformationManager.DisplayMessage(new InformationMessage(text, Color.FromUint(0xFFB6F7A8u)));
+			GcczDiagnosticLog.Log("CastleAftermath", "sellPrisoners requested=" + Math.Max(0, requestedCount) + " sold=" + soldCount + " estimatedRansomValue=" + estimatedValue + " fear=" + effect.CaptiveFearDelta);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "SellCastlePrisoners failed: " + ex.Message);
+		}
+	}
+	private static TroopRoster BuildCastleRegularPrisonerActionRoster(int requestedCount, out int estimatedRansomValue)
+	{
+		estimatedRansomValue = 0;
+		TroopRoster actionRoster = TroopRoster.CreateDummyTroopRoster();
+		try
+		{
+			int remaining = Math.Max(0, requestedCount);
+			TroopRoster sourceRoster = PartyBase.MainParty?.PrisonRoster ?? MobileParty.MainParty?.PrisonRoster;
+			if (sourceRoster == null || remaining <= 0)
+			{
+				return actionRoster;
+			}
+			List<CharacterObject> priority = BuildCastlePrisonerPriorityCharacters();
+			foreach (CharacterObject character in priority)
+			{
+				if (remaining <= 0)
+				{
+					break;
+				}
+				AddCastlePrisonerStackToActionRoster(sourceRoster, actionRoster, character, ref remaining, ref estimatedRansomValue);
+			}
+			for (int i = 0; i < sourceRoster.Count && remaining > 0; i++)
+			{
+				TroopRosterElement element = sourceRoster.GetElementCopyAtIndex(i);
+				AddCastlePrisonerStackToActionRoster(sourceRoster, actionRoster, element.Character, ref remaining, ref estimatedRansomValue);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "BuildCastleRegularPrisonerActionRoster failed: " + ex.Message);
+		}
+		return actionRoster;
+	}
+	private static List<CharacterObject> BuildCastlePrisonerPriorityCharacters()
+	{
+		List<CharacterObject> result = new List<CharacterObject>();
+		try
+		{
+			HashSet<CharacterObject> seen = new HashSet<CharacterObject>();
+			TroopRoster selected = _selectedInterventionPrisonerRoster;
+			if (selected == null)
+			{
+				return result;
+			}
+			for (int i = 0; i < selected.Count; i++)
+			{
+				CharacterObject character = selected.GetElementCopyAtIndex(i).Character;
+				if (character != null && character.HeroObject == null && seen.Add(character))
+				{
+					result.Add(character);
+				}
+			}
+		}
+		catch
+		{
+		}
+		return result;
+	}
+	private static int AddCastlePrisonerStackToActionRoster(TroopRoster sourceRoster, TroopRoster actionRoster, CharacterObject character, ref int remaining, ref int estimatedRansomValue)
+	{
+		try
+		{
+			if (sourceRoster == null || actionRoster == null || character == null || character.HeroObject != null || remaining <= 0)
+			{
+				return 0;
+			}
+			int existingIndex = actionRoster.FindIndexOfTroop(character);
+			int existing = existingIndex >= 0 ? actionRoster.GetElementNumber(existingIndex) : 0;
+			int index = sourceRoster.FindIndexOfTroop(character);
+			if (index < 0)
+			{
+				return 0;
+			}
+			TroopRosterElement source = sourceRoster.GetElementCopyAtIndex(index);
+			int available = Math.Max(0, source.Number - existing);
+			int move = Math.Min(available, remaining);
+			if (move <= 0)
+			{
+				return 0;
+			}
+			int wounded = Math.Min(move, Math.Max(0, source.WoundedNumber));
+			int xp = source.Number <= 0 ? 0 : Math.Max(0, (source.Xp * move) / Math.Max(1, source.Number));
+			actionRoster.AddToCounts(character, move, insertAtFront: false, woundedCount: wounded, xpChange: xp, removeDepleted: true, index: -1);
+			estimatedRansomValue += CalculateCastlePrisonerRansomValue(character) * move;
+			remaining -= move;
+			return move;
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+	private static int TransferCastlePrisonersToMemberRoster(TroopRoster transferRoster)
+	{
+		int moved = 0;
+		try
+		{
+			TroopRoster prisonRoster = PartyBase.MainParty?.PrisonRoster ?? MobileParty.MainParty?.PrisonRoster;
+			TroopRoster memberRoster = MobileParty.MainParty?.MemberRoster ?? PartyBase.MainParty?.MemberRoster;
+			if (transferRoster == null || prisonRoster == null || memberRoster == null)
+			{
+				return 0;
+			}
+			for (int i = 0; i < transferRoster.Count; i++)
+			{
+				TroopRosterElement element = transferRoster.GetElementCopyAtIndex(i);
+				CharacterObject character = element.Character;
+				if (character == null || character.HeroObject != null || element.Number <= 0)
+				{
+					continue;
+				}
+				int sourceIndex = prisonRoster.FindIndexOfTroop(character);
+				if (sourceIndex < 0)
+				{
+					continue;
+				}
+				TroopRosterElement source = prisonRoster.GetElementCopyAtIndex(sourceIndex);
+				int count = Math.Min(Math.Max(0, element.Number), Math.Max(0, source.Number));
+				if (count <= 0)
+				{
+					continue;
+				}
+				int wounded = Math.Min(count, Math.Min(Math.Max(0, element.WoundedNumber), Math.Max(0, source.WoundedNumber)));
+				int xp = Math.Max(0, element.Xp);
+				prisonRoster.AddToCounts(character, -count, insertAtFront: false, woundedCount: -wounded, xpChange: -xp, removeDepleted: true, index: -1);
+				memberRoster.AddToCounts(character, count, insertAtFront: false, woundedCount: wounded, xpChange: xp, removeDepleted: true, index: -1);
+				moved += count;
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "TransferCastlePrisonersToMemberRoster failed: " + ex.Message);
+		}
+		return moved;
+	}
+	private static int RemoveCastlePrisonersFromMainParty(TroopRoster removeRoster)
+	{
+		int removed = 0;
+		try
+		{
+			TroopRoster prisonRoster = PartyBase.MainParty?.PrisonRoster ?? MobileParty.MainParty?.PrisonRoster;
+			if (removeRoster == null || prisonRoster == null)
+			{
+				return 0;
+			}
+			for (int i = 0; i < removeRoster.Count; i++)
+			{
+				TroopRosterElement element = removeRoster.GetElementCopyAtIndex(i);
+				CharacterObject character = element.Character;
+				if (character == null || character.HeroObject != null || element.Number <= 0)
+				{
+					continue;
+				}
+				int sourceIndex = prisonRoster.FindIndexOfTroop(character);
+				if (sourceIndex < 0)
+				{
+					continue;
+				}
+				TroopRosterElement source = prisonRoster.GetElementCopyAtIndex(sourceIndex);
+				int count = Math.Min(Math.Max(0, element.Number), Math.Max(0, source.Number));
+				if (count <= 0)
+				{
+					continue;
+				}
+				int wounded = Math.Min(count, Math.Min(Math.Max(0, element.WoundedNumber), Math.Max(0, source.WoundedNumber)));
+				int xp = Math.Max(0, element.Xp);
+				prisonRoster.AddToCounts(character, -count, insertAtFront: false, woundedCount: -wounded, xpChange: -xp, removeDepleted: true, index: -1);
+				removed += count;
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "RemoveCastlePrisonersFromMainParty failed: " + ex.Message);
+		}
+		return removed;
+	}
+	private static int CalculateCastlePrisonerRansomValue(CharacterObject character)
+	{
+		try
+		{
+			return Math.Max(1, Campaign.Current.Models.RansomValueCalculationModel.PrisonerRansomValue(character, Hero.MainHero));
+		}
+		catch
+		{
+			return 1;
+		}
+	}
+	private static int GrantCastleSlaughterTroopExperience(int prisonerCount, int xpWeight)
+	{
+		try
+		{
+			TroopRoster memberRoster = MobileParty.MainParty?.MemberRoster ?? PartyBase.MainParty?.MemberRoster;
+			int totalXp = Math.Max(0, prisonerCount) * Math.Max(0, xpWeight);
+			if (memberRoster == null || totalXp <= 0)
+			{
+				return 0;
+			}
+			int eligible = 0;
+			for (int i = 0; i < memberRoster.Count; i++)
+			{
+				TroopRosterElement element = memberRoster.GetElementCopyAtIndex(i);
+				CharacterObject character = element.Character;
+				if (character != null && character.HeroObject == null && element.Number > 0)
+				{
+					eligible += Math.Max(0, element.Number);
+				}
+			}
+			if (eligible <= 0)
+			{
+				return 0;
+			}
+			int granted = 0;
+			for (int i = 0; i < memberRoster.Count; i++)
+			{
+				TroopRosterElement element = memberRoster.GetElementCopyAtIndex(i);
+				CharacterObject character = element.Character;
+				if (character == null || character.HeroObject != null || element.Number <= 0)
+				{
+					continue;
+				}
+				int stackXp = Math.Max(1, (totalXp * Math.Max(0, element.Number)) / eligible);
+				memberRoster.AddXpToTroop(character, stackXp);
+				granted += stackXp;
+			}
+			return granted;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "GrantCastleSlaughterTroopExperience failed: " + ex.Message);
+			return 0;
+		}
+	}
+
+	private static void PrepareCastleArmoryLoot(SiegeCastleAftermathEffectProfile effect, string castleName)
+	{
+		try
+		{
+			if (!effect.GrantsArmoryLoot)
+			{
+				return;
+			}
+			int prisonerSourceCount = ResolveCastleArmoryLootPrisonerCount();
+			int movedTotal = PrepareCastleSoldierArmoryLoot(prisonerSourceCount, out int movedKinds, out int movedValue);
+			string safeCastleName = string.IsNullOrWhiteSpace(castleName) ? "这座城堡" : castleName.Trim();
+			string text = movedTotal > 0
+				? "【城堡处置】" + safeCastleName + "士兵军械已登记 " + movedTotal + " 件；按约等于同数量战斗战利品 " + SiegeCastlePrisonerAllocationProfile.SoldierArmoryLootPercent + "% 领取。"
+				: "【城堡处置】" + safeCastleName + "军械接收已记录；当前未从士兵俘虏装备中抽取到可转移武器。";
+			RecordInterventionMemory("城堡军械", text);
+			InformationManager.DisplayMessage(new InformationMessage(text, Color.FromUint(0xFFB6F7A8u)));
+			GcczDiagnosticLog.Log("CastleAftermath", "armoryLootPrepared castle=" + safeCastleName + " weight=" + effect.ArmoryReceiptWeight + " prisonerSource=" + prisonerSourceCount + " movedItems=" + movedTotal + " movedKinds=" + movedKinds + " movedValue=" + movedValue);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "PrepareCastleArmoryLoot failed: " + ex.Message);
+		}
+	}
+
+	private static int ResolveCastleArmoryLootPrisonerCount()
+	{
+		try
+		{
+			int surrenderedSourceCount = Math.Max(CountCastleSurrenderedGarrisonAgents(), CountSettlementGarrisonTroops(ResolveCurrentSettlement()));
+			int regularSourceCount = Math.Max(0, surrenderedSourceCount) + Math.Max(0, CountCastleCarriedRegularPrisonerSource());
+			SiegeCastlePrisonerAllocationPlan allocationPlan = SiegeCastlePrisonerAllocationProfile.BuildPlan(regularSourceCount, CastlePrisonerAllocationRequests);
+			if (allocationPlan.ArmoryPrisonerCount > 0)
+			{
+				return allocationPlan.ArmoryPrisonerCount;
+			}
+			return Math.Min(SiegeCastleSceneRosterProfile.MaxSelectedPrisoners, regularSourceCount);
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static int PrepareCastleSoldierArmoryLoot(int prisonerSourceCount, out int movedKinds, out int movedValue)
+	{
+		movedKinds = 0;
+		movedValue = 0;
+		try
+		{
+			int remainingTroops = Math.Max(0, prisonerSourceCount);
+			if (remainingTroops <= 0 || MobileParty.MainParty == null)
+			{
+				return 0;
+			}
+			if (_pendingLootRoster == null)
+			{
+				_pendingLootRoster = new ItemRoster();
+			}
+			HashSet<string> movedKindKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			int movedTotal = AddCastleSoldierArmoryLootFromRoster(_selectedInterventionPrisonerRoster, remainingTroops, movedKindKeys, ref movedValue, out int consumed);
+			remainingTroops = Math.Max(0, remainingTroops - consumed);
+			if (remainingTroops > 0)
+			{
+				Settlement settlement = ResolveCurrentSettlement();
+				movedTotal += AddCastleSoldierArmoryLootFromRoster(settlement?.Town?.GarrisonParty?.MemberRoster, remainingTroops, movedKindKeys, ref movedValue, out consumed);
+			}
+			if (movedTotal > 0)
+			{
+				_pendingLootScreen = true;
+				_lastLootItemTotal += movedTotal;
+				_lastLootStackKinds += movedKindKeys.Count;
+				_lastLootValue += movedValue;
+			}
+			movedKinds = movedKindKeys.Count;
+			return movedTotal;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "PrepareCastleSoldierArmoryLoot failed: " + ex.Message);
+			return 0;
+		}
+	}
+
+	private static int AddCastleSoldierArmoryLootFromRoster(TroopRoster roster, int maxTroops, HashSet<string> movedKindKeys, ref int movedValue, out int consumedTroops)
+	{
+		consumedTroops = 0;
+		int movedTotal = 0;
+		try
+		{
+			if (roster == null || maxTroops <= 0)
+			{
+				return 0;
+			}
+			for (int i = 0; i < roster.Count && consumedTroops < maxTroops; i++)
+			{
+				TroopRosterElement element = roster.GetElementCopyAtIndex(i);
+				CharacterObject character = element.Character;
+				if (character == null || character.HeroObject != null || element.Number <= 0)
+				{
+					continue;
+				}
+				int troopCount = Math.Min(Math.Max(0, element.Number), maxTroops - consumedTroops);
+				for (int troop = 0; troop < troopCount; troop++)
+				{
+					consumedTroops++;
+					movedTotal += AddCastleSoldierArmoryLootFromCharacter(character, movedKindKeys, ref movedValue);
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "AddCastleSoldierArmoryLootFromRoster failed: " + ex.Message);
+		}
+		return movedTotal;
+	}
+
+	private static int AddCastleSoldierArmoryLootFromCharacter(CharacterObject character, HashSet<string> movedKindKeys, ref int movedValue)
+	{
+		int moved = 0;
+		try
+		{
+			Equipment equipment = character?.Equipment;
+			if (equipment == null)
+			{
+				return 0;
+			}
+			for (EquipmentIndex slot = EquipmentIndex.WeaponItemBeginSlot; slot < EquipmentIndex.NumAllWeaponSlots; slot++)
+			{
+				EquipmentElement element = equipment[slot];
+				if (element.Item == null || MBRandom.RandomFloat * 100f > SiegeCastlePrisonerAllocationProfile.SoldierArmoryLootPercent)
+				{
+					continue;
+				}
+				_pendingLootRoster.AddToCounts(element, 1);
+				moved++;
+				movedKindKeys?.Add(element.Item.StringId ?? "item");
+				movedValue += Math.Max(0, RewardSystemBehavior.Instance?.GetInventoryActualItemUnitValueForExternal(element) ?? element.Item.Value);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "AddCastleSoldierArmoryLootFromCharacter failed: " + ex.Message);
+		}
+		return moved;
+	}
+
+	private static void TransferCastleLordEquipmentToPlayer(int targetAgentIndex, string castleName)
+	{
+		try
+		{
+			Hero targetHero = ResolveCastleActionTargetHero(targetAgentIndex);
+			Equipment equipment = targetHero?.BattleEquipment;
+			ItemRoster playerItems = MobileParty.MainParty?.ItemRoster ?? PartyBase.MainParty?.ItemRoster;
+			if (targetHero == null || equipment == null || playerItems == null)
+			{
+				return;
+			}
+
+			int movedCount = 0;
+			int movedValue = 0;
+			int movedWeaponCount = 0;
+			int movedArmorCount = 0;
+			for (EquipmentIndex slot = EquipmentIndex.WeaponItemBeginSlot; slot < EquipmentIndex.NumAllWeaponSlots; slot++)
+			{
+				if (MoveCastleLordEquipmentSlotToPlayer(equipment, slot, playerItems, ref movedValue))
+				{
+					movedWeaponCount++;
+					movedCount++;
+				}
+			}
+			for (EquipmentIndex slot = EquipmentIndex.ArmorItemBeginSlot; slot < EquipmentIndex.ArmorItemEndSlot; slot++)
+			{
+				if (MoveCastleLordEquipmentSlotToPlayer(equipment, slot, playerItems, ref movedValue))
+				{
+					movedArmorCount++;
+					movedCount++;
+				}
+			}
+
+			Agent targetAgent = TryGetAgent(targetAgentIndex);
+			StripCastlePrisonerWeapons(targetAgent);
+			if (movedCount <= 0)
+			{
+				RecordInterventionMemory("城堡领主军械", (targetHero.Name?.ToString() ?? "被俘领主") + "没有可收缴的武器或盔甲。");
+				return;
+			}
+
+			if (_pendingLootRoster == null)
+			{
+				_pendingLootRoster = new ItemRoster();
+			}
+			string safeCastleName = string.IsNullOrWhiteSpace(castleName) ? "这座城堡" : castleName.Trim();
+			string text = "【城堡处置】已接收" + (targetHero.Name?.ToString() ?? "被俘领主") + "武器 " + movedWeaponCount + " 件、盔甲 " + movedArmorCount + " 件，估值 " + movedValue + "。";
+			RecordInterventionMemory("城堡领主军械", safeCastleName + "：" + text);
+			InformationManager.DisplayMessage(new InformationMessage(text, Color.FromUint(0xFFB6F7A8u)));
+			GcczDiagnosticLog.Log("CastleAftermath", "lordEquipmentTransferred hero=" + (targetHero.StringId ?? "N/A") + " weapons=" + movedWeaponCount + " armor=" + movedArmorCount + " items=" + movedCount + " value=" + movedValue);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "TransferCastleLordEquipmentToPlayer failed: " + ex.Message);
+		}
+	}
+
+	private static bool MoveCastleLordEquipmentSlotToPlayer(Equipment equipment, EquipmentIndex slot, ItemRoster playerItems, ref int movedValue)
+	{
+		if (equipment == null || playerItems == null || slot < EquipmentIndex.WeaponItemBeginSlot || slot >= EquipmentIndex.ArmorItemEndSlot)
+		{
+			return false;
+		}
+		EquipmentElement element = equipment[slot];
+		if (element.Item == null)
+		{
+			return false;
+		}
+		playerItems.AddToCounts(element, 1);
+		equipment[slot] = EquipmentElement.Invalid;
+		movedValue += Math.Max(0, RewardSystemBehavior.Instance?.GetInventoryActualItemUnitValueForExternal(element) ?? element.Item.Value);
+		return true;
+	}
+
+	private static void StripCastlePrisonerWeapons(Agent agent)
+	{
+		if (agent == null || !agent.IsActive())
+		{
+			return;
+		}
+		try
+		{
+			agent.TryToSheathWeaponInHand(Agent.HandIndex.OffHand, Agent.WeaponWieldActionType.Instant);
+			agent.TryToSheathWeaponInHand(Agent.HandIndex.MainHand, Agent.WeaponWieldActionType.Instant);
+		}
+		catch
+		{
+		}
+		for (EquipmentIndex slot = EquipmentIndex.WeaponItemBeginSlot; slot < EquipmentIndex.NumAllWeaponSlots; slot++)
+		{
+			try
+			{
+				agent.RemoveEquippedWeapon(slot);
+			}
+			catch
+			{
+			}
+		}
+		try
+		{
+			agent.InvalidateAIWeaponSelections();
+			agent.UpdateWeapons();
+		}
+		catch
+		{
+		}
+	}
+
+	private static void ExecuteCastleLordInScene(int targetAgentIndex, string castleName)
+	{
+		try
+		{
+			Hero targetHero = ResolveCastleActionTargetHero(targetAgentIndex);
+			if (targetHero == null || targetHero == Hero.MainHero)
+			{
+				return;
+			}
+
+			bool wasAlive = targetHero.IsAlive;
+			try
+			{
+				if (wasAlive)
+				{
+					KillCharacterAction.ApplyByExecution(targetHero, Hero.MainHero, true, true);
+				}
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("SiegeAiIntervention", "ApplyByExecution castle lord failed, fallback murder: " + ex.Message);
+				if (targetHero.IsAlive)
+				{
+					KillCharacterAction.ApplyByMurder(targetHero, Hero.MainHero, true);
+				}
+			}
+
+			Agent targetAgent = TryGetAgent(targetAgentIndex);
+			if (targetAgent == null)
+			{
+				targetAgent = FindCastleAgentForHero(targetHero);
+			}
+			ForceKillCastleAgentVisual(targetAgent, Agent.Main ?? Mission.Current?.MainAgent);
+
+			string safeCastleName = string.IsNullOrWhiteSpace(castleName) ? "这座城堡" : castleName.Trim();
+			string text = "【城堡处置】" + (targetHero.Name?.ToString() ?? "被俘领主") + "已在" + safeCastleName + "被处决。";
+			RecordInterventionMemory("城堡处决领主", text);
+			InformationManager.DisplayMessage(new InformationMessage(text, Color.FromUint(0xFFFF7777u)));
+			GcczDiagnosticLog.Log("CastleAftermath", "lordExecuted hero=" + (targetHero.StringId ?? "N/A") + " aliveBefore=" + wasAlive + " aliveAfter=" + targetHero.IsAlive + " agent=" + (targetAgent?.Index.ToString() ?? "N/A"));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "ExecuteCastleLordInScene failed: " + ex.Message);
+		}
+	}
+
+	private static Agent FindCastleAgentForHero(Hero hero)
+	{
+		try
+		{
+			if (hero == null || Mission.Current?.Agents == null)
+			{
+				return null;
+			}
+			foreach (Agent agent in Mission.Current.Agents)
+			{
+				CharacterObject character = agent?.Character as CharacterObject;
+				if (agent != null && agent.IsHuman && agent.IsActive() && character?.HeroObject == hero)
+				{
+					return agent;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return null;
+	}
+
+	private static void ForceKillCastleAgentVisual(Agent victim, Agent killer)
+	{
+		try
+		{
+			if (victim == null || victim.State == AgentState.Killed)
+			{
+				return;
+			}
+			victim.SetMortalityState(Agent.MortalityState.Mortal);
+			Agent attacker = killer ?? Mission.Current?.MainAgent ?? victim;
+			if (attacker == null || attacker.Monster == null || victim.Monster == null)
+			{
+				return;
+			}
+			Blow blow = new Blow(attacker.Index);
+			blow.DamageType = DamageTypes.Blunt;
+			blow.BoneIndex = victim.Monster.HeadLookDirectionBoneIndex;
+			blow.GlobalPosition = victim.Position;
+			blow.GlobalPosition.z += victim.GetEyeGlobalHeight();
+			blow.BaseMagnitude = 2000f;
+			blow.WeaponRecord.FillAsMeleeBlow(null, null, -1, -1);
+			blow.InflictedDamage = 2000;
+			blow.SwingDirection = victim.LookDirection;
+			blow.Direction = blow.SwingDirection;
+			blow.DamageCalculated = true;
+			sbyte mainHandItemBoneIndex = attacker.Monster.MainHandItemBoneIndex;
+			AttackCollisionData collisionData = AttackCollisionData.GetAttackCollisionDataForDebugPurpose(_attackBlockedWithShield: false, _correctSideShieldBlock: false, _isAlternativeAttack: false, _isColliderAgent: true, _collidedWithShieldOnBack: false, _isMissile: false, _isMissileBlockedWithWeapon: false, _missileHasPhysics: false, _entityExists: false, _thrustTipHit: false, _missileGoneUnderWater: false, _missileGoneOutOfBorder: false, CombatCollisionResult.StrikeAgent, -1, 0, 2, blow.BoneIndex, BoneBodyPartType.Head, mainHandItemBoneIndex, Agent.UsageDirection.AttackLeft, -1, CombatHitResultFlags.NormalHit, 0.5f, 1f, 0f, 0f, 0f, 0f, 0f, 0f, Vec3.Up, blow.Direction, blow.GlobalPosition, Vec3.Zero, Vec3.Zero, victim.Velocity, Vec3.Up);
+			victim.RegisterBlow(blow, in collisionData);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "ForceKillCastleAgentVisual failed: " + ex.Message);
+		}
+	}
+
+	private static Hero ResolveCastleActionTargetHero(int targetAgentIndex)
+	{
+		try
+		{
+			Agent targetAgent = TryGetAgent(targetAgentIndex);
+			CharacterObject character = targetAgent?.Character as CharacterObject;
+			Hero directHero = character?.HeroObject;
+			if (directHero != null && !IsRuntimeAlliedSoldierAgent(targetAgent, character, directHero))
+			{
+				return directHero;
+			}
+
+			Mission mission = Mission.Current;
+			if (mission?.Agents == null)
+			{
+				return directHero;
+			}
+			foreach (Agent agent in mission.Agents)
+			{
+				CharacterObject candidateCharacter = agent?.Character as CharacterObject;
+				Hero candidateHero = candidateCharacter?.HeroObject;
+				if (agent == null || agent == Agent.Main || !agent.IsHuman || !agent.IsActive() || candidateHero == null)
+				{
+					continue;
+				}
+				if (!IsRuntimeAlliedSoldierAgent(agent, candidateCharacter, candidateHero))
+				{
+					return candidateHero;
+				}
+			}
+			return directHero;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static void ApplyCastleLordRelationDelta(int targetAgentIndex, int relationDelta, string reason)
+	{
+		try
+		{
+			Hero targetHero = ResolveCastleActionTargetHero(targetAgentIndex);
+			if (targetHero == null || relationDelta == 0)
+			{
+				return;
+			}
+			ChangeRelationAction.ApplyPlayerRelation(targetHero, relationDelta);
+			string text = "【城堡处置】" + targetHero.Name + " 对玩家好感 " + FormatSigned(relationDelta) + "（" + (reason ?? "城堡军务") + "）。";
+			RecordInterventionMemory("城堡领主关系", text);
+			GcczDiagnosticLog.Log("CastleAftermath", "lordRelationDelta=" + relationDelta + " hero=" + targetHero.StringId + " reason=" + (reason ?? "N/A"));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "ApplyCastleLordRelationDelta failed: " + ex.Message);
+		}
+	}
+
+	private static void ApplyCastleExecutionRelationDelta(int targetAgentIndex, SiegeCastleAftermathEffectProfile effect)
+	{
+		try
+		{
+			Hero targetHero = ResolveCastleActionTargetHero(targetAgentIndex);
+			if (targetHero == null)
+			{
+				return;
+			}
+			bool clanLeader = targetHero.Clan != null && targetHero.Clan.Leader == targetHero;
+			int relationDelta = clanLeader ? effect.ClanLeaderRelationDelta : effect.NonLeaderRelationDelta;
+			ApplyCastleLordRelationDelta(targetAgentIndex, relationDelta, clanLeader ? "处决族长" : "处决领主");
+			RecordInterventionMemory("城堡处决领主", targetHero.Name + "是" + (clanLeader ? "家族族长" : "非族长领主") + "，本次关系惩罚按 " + FormatSigned(relationDelta) + " 记录。");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "ApplyCastleExecutionRelationDelta failed: " + ex.Message);
+		}
+	}
+
+	private static void RecordCastleLordRecruitmentIntent(int targetAgentIndex, string castleName, string rawText)
+	{
+		try
+		{
+			Hero targetHero = ResolveCastleActionTargetHero(targetAgentIndex);
+			string targetName = targetHero?.Name?.ToString() ?? "当前战败领主";
+			bool clanLeader = targetHero?.Clan != null && targetHero.Clan.Leader == targetHero;
+			Hero clanLeaderHero = targetHero?.Clan?.Leader;
+			Kingdom playerKingdom = Clan.PlayerClan?.Kingdom;
+			bool playerRuler = playerKingdom != null && playerKingdom.Leader == Hero.MainHero;
+			string path;
+			if (clanLeader)
+			{
+				if (playerKingdom == null)
+				{
+					path = "玩家没有加入国家：该领主应表达拥立玩家为王。";
+				}
+				else if (playerRuler)
+				{
+					path = "玩家是统治者：该领主可请求带家族加入玩家国家。";
+				}
+				else
+				{
+					path = "玩家不是统治者：该领主应请求玩家带他去见统治者。";
+				}
+			}
+			else
+			{
+				path = SiegeCastleLordIntroductionProfile.BuildNonLeaderPathText(targetName, clanLeaderHero?.Name?.ToString() ?? "家族族长");
+			}
+			string safeCastleName = string.IsNullOrWhiteSpace(castleName) ? "这座城堡" : castleName.Trim();
+			string text = safeCastleName + "战败领主收编意图：" + targetName + "；" + path;
+			RecordInterventionMemory("城堡收编领主", text);
+			RecordCastleLordRecruitmentSceneMemory(targetHero, ResolveCurrentSettlement(), text);
+			if (!clanLeader && targetHero != null && clanLeaderHero != null)
+			{
+				ScheduleCastleLordIntroductionLetter(targetHero, clanLeaderHero, safeCastleName, rawText);
+			}
+			InformationManager.DisplayMessage(new InformationMessage("【城堡处置】已记录收编领主路径：" + path, Color.FromUint(0xFFB6F7A8u)));
+			GcczDiagnosticLog.Log("CastleAftermath", "recruitLordIntent hero=" + (targetHero?.StringId ?? "N/A") + " clanLeader=" + clanLeader + " playerKingdom=" + (playerKingdom?.StringId ?? "N/A") + " playerRuler=" + playerRuler);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "RecordCastleLordRecruitmentIntent failed: " + ex.Message);
+		}
+	}
+
+	private static void RecordCastleLordRecruitmentSceneMemory(Hero targetHero, Settlement settlement, string memoryText)
+	{
+		try
+		{
+			if (targetHero == null || string.IsNullOrWhiteSpace(memoryText))
+			{
+				return;
+			}
+			int currentDay = GetCurrentCampaignDay();
+			string stableKey = "gccz_castle_lord_recruit_scene:" + (targetHero.StringId ?? "lord") + ":" + currentDay;
+			MyBehavior.RecordNpcActionForExternal(
+				targetHero,
+				memoryText,
+				stableKey,
+				SiegeCastleLordIntroductionProfile.PlayerIntroductionMemoryKind,
+				isMajor: false,
+				isRecent: true,
+				targetHero: Hero.MainHero,
+				settlement: settlement,
+				locationText: settlement?.Name?.ToString() ?? "",
+				allowNonLordHero: false,
+				won: true);
+			PlayerNotorietyBehavior.RecordPublicMemoryForExternal(
+				targetHero,
+				settlement,
+				memoryText,
+				"private",
+				"GCCZ城堡战败被俘收编场景",
+				currentDay,
+				BuildCurrentGameDateTextForGccz());
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "RecordCastleLordRecruitmentSceneMemory failed: " + ex.Message);
+		}
+	}
+
+	private static void ScheduleCastleLordIntroductionLetter(Hero introducer, Hero clanLeader, string castleName, string rawAiText)
+	{
+		try
+		{
+			if (introducer == null || clanLeader == null || string.IsNullOrWhiteSpace(introducer.StringId) || string.IsNullOrWhiteSpace(clanLeader.StringId))
+			{
+				return;
+			}
+			if (_pendingCastleLordIntroductionLetters == null)
+			{
+				_pendingCastleLordIntroductionLetters = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			}
+			int currentDay = GetCurrentCampaignDay();
+			int deliveryDays = SiegeCastleLordIntroductionProfile.ClampDeliveryDays(MBRandom.RandomInt(SiegeCastleLordIntroductionProfile.MinDeliveryDays, SiegeCastleLordIntroductionProfile.MaxDeliveryDays + 1));
+			int dueDay = currentDay + deliveryDays;
+			string safeCastleName = string.IsNullOrWhiteSpace(castleName) ? "这座城堡" : castleName.Trim();
+			string fallback = SiegeCastleLordIntroductionProfile.BuildFallbackLetterBody(introducer.Name?.ToString(), clanLeader.Name?.ToString(), safeCastleName);
+			string letterBody = SiegeCastleLordIntroductionProfile.SanitizeAiLetterBody(StripSiegeTags(rawAiText), fallback);
+			string key = "castle_lord_intro:" + introducer.StringId + ":" + clanLeader.StringId + ":" + currentDay + ":" + Guid.NewGuid().ToString("N");
+			string record = BuildCastleLordIntroductionLetterRecord(
+				dueDay,
+				introducer.StringId,
+				clanLeader.StringId,
+				_activeSettlementId ?? "",
+				safeCastleName,
+				introducer.Name?.ToString() ?? "当前战败领主",
+				clanLeader.Name?.ToString() ?? "家族族长",
+				letterBody);
+			_pendingCastleLordIntroductionLetters[key] = record;
+			string queuedMemory = SiegeCastleLordIntroductionProfile.BuildQueuedMemoryText(safeCastleName, introducer.Name?.ToString(), clanLeader.Name?.ToString(), deliveryDays, letterBody);
+			RecordInterventionMemory(SiegeCastleLordIntroductionProfile.MemoryTitle, queuedMemory);
+			GcczDiagnosticLog.Log(SiegeCastleLordIntroductionProfile.DiagnosticCategory, SiegeCastleLordIntroductionProfile.BuildDiagnosticText(introducer.StringId, clanLeader.StringId, dueDay, currentDay) + " queued=1 key=" + key);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "ScheduleCastleLordIntroductionLetter failed: " + ex.Message);
+		}
+	}
+
+	private static void ProcessPendingCastleLordIntroductionLetters()
+	{
+		try
+		{
+			if (_pendingCastleLordIntroductionLetters == null || _pendingCastleLordIntroductionLetters.Count <= 0 || Campaign.Current == null)
+			{
+				return;
+			}
+			int currentDay = GetCurrentCampaignDay();
+			List<string> deliveredKeys = null;
+			foreach (KeyValuePair<string, string> pair in _pendingCastleLordIntroductionLetters.ToList())
+			{
+				if (!TryParseCastleLordIntroductionLetterRecord(
+					pair.Value,
+					out int dueDay,
+					out string introducerId,
+					out string leaderId,
+					out string settlementId,
+					out string castleName,
+					out string introducerName,
+					out string leaderName,
+					out string letterBody))
+				{
+					deliveredKeys ??= new List<string>();
+					deliveredKeys.Add(pair.Key);
+					continue;
+				}
+				if (dueDay > currentDay)
+				{
+					continue;
+				}
+				Hero introducer = FindHeroByStringId(introducerId);
+				Hero leader = FindHeroByStringId(leaderId);
+				Settlement settlement = FindSettlementByStringId(settlementId);
+				string deliveredMemory = SiegeCastleLordIntroductionProfile.BuildDeliveredMemoryText(castleName, introducer?.Name?.ToString() ?? introducerName, leader?.Name?.ToString() ?? leaderName, letterBody);
+				RecordInterventionMemory(SiegeCastleLordIntroductionProfile.MemoryTitle, deliveredMemory);
+				RecordCastleLordIntroductionMemoryForLeader(leader, introducer, settlement, deliveredMemory, pair.Key, currentDay);
+				InformationManager.DisplayMessage(new InformationMessage("【城堡处置】" + (introducer?.Name?.ToString() ?? introducerName) + "的引荐信已送达" + (leader?.Name?.ToString() ?? leaderName) + "。", Color.FromUint(0xFFB6F7A8u)));
+				GcczDiagnosticLog.Log(SiegeCastleLordIntroductionProfile.DiagnosticCategory, SiegeCastleLordIntroductionProfile.BuildDiagnosticText(introducerId, leaderId, dueDay, currentDay) + " delivered=1 key=" + pair.Key);
+				deliveredKeys ??= new List<string>();
+				deliveredKeys.Add(pair.Key);
+			}
+			if (deliveredKeys != null)
+			{
+				foreach (string key in deliveredKeys)
+				{
+					_pendingCastleLordIntroductionLetters.Remove(key);
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "ProcessPendingCastleLordIntroductionLetters failed: " + ex.Message);
+		}
+	}
+
+	private static void RecordCastleLordIntroductionMemoryForLeader(Hero leader, Hero introducer, Settlement settlement, string deliveredMemory, string stableKeySuffix, int currentDay)
+	{
+		try
+		{
+			if (leader == null || string.IsNullOrWhiteSpace(deliveredMemory))
+			{
+				return;
+			}
+			string stableKey = "gccz_castle_lord_intro:" + (stableKeySuffix ?? leader.StringId ?? "leader");
+			MyBehavior.RecordNpcActionForExternal(
+				leader,
+				deliveredMemory,
+				stableKey,
+				SiegeCastleLordIntroductionProfile.PlayerIntroductionMemoryKind,
+				isMajor: false,
+				isRecent: true,
+				targetHero: Hero.MainHero,
+				settlement: settlement,
+				locationText: settlement?.Name?.ToString() ?? "",
+				allowNonLordHero: false,
+				won: true);
+			PlayerNotorietyBehavior.RecordPublicMemoryForExternal(
+				leader,
+				settlement,
+				deliveredMemory,
+				"private",
+				"GCCZ城堡领主引荐信",
+				currentDay,
+				BuildCurrentGameDateTextForGccz());
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "RecordCastleLordIntroductionMemoryForLeader failed: " + ex.Message);
+		}
+	}
+
+	private static void ClearPendingCastleLordIntroductionLetters()
+	{
+		try
+		{
+			_pendingCastleLordIntroductionLetters?.Clear();
+		}
+		catch
+		{
+		}
+	}
+
+	private static string BuildCastleLordIntroductionLetterRecord(int dueDay, string introducerId, string leaderId, string settlementId, string castleName, string introducerName, string leaderName, string letterBody)
+	{
+		return Math.Max(0, dueDay).ToString()
+			+ "|" + EncodeCastleLordIntroductionField(introducerId)
+			+ "|" + EncodeCastleLordIntroductionField(leaderId)
+			+ "|" + EncodeCastleLordIntroductionField(settlementId)
+			+ "|" + EncodeCastleLordIntroductionField(castleName)
+			+ "|" + EncodeCastleLordIntroductionField(introducerName)
+			+ "|" + EncodeCastleLordIntroductionField(leaderName)
+			+ "|" + EncodeCastleLordIntroductionField(letterBody);
+	}
+
+	private static bool TryParseCastleLordIntroductionLetterRecord(string record, out int dueDay, out string introducerId, out string leaderId, out string settlementId, out string castleName, out string introducerName, out string leaderName, out string letterBody)
+	{
+		dueDay = 0;
+		introducerId = "";
+		leaderId = "";
+		settlementId = "";
+		castleName = "";
+		introducerName = "";
+		leaderName = "";
+		letterBody = "";
+		try
+		{
+			string[] parts = (record ?? "").Split('|');
+			if (parts.Length < 8 || !int.TryParse(parts[0], out dueDay))
+			{
+				return false;
+			}
+			introducerId = DecodeCastleLordIntroductionField(parts[1]);
+			leaderId = DecodeCastleLordIntroductionField(parts[2]);
+			settlementId = DecodeCastleLordIntroductionField(parts[3]);
+			castleName = DecodeCastleLordIntroductionField(parts[4]);
+			introducerName = DecodeCastleLordIntroductionField(parts[5]);
+			leaderName = DecodeCastleLordIntroductionField(parts[6]);
+			letterBody = DecodeCastleLordIntroductionField(parts[7]);
+			return !string.IsNullOrWhiteSpace(leaderId);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static string EncodeCastleLordIntroductionField(string value)
+	{
+		return Convert.ToBase64String(Encoding.UTF8.GetBytes(value ?? ""));
+	}
+
+	private static string DecodeCastleLordIntroductionField(string value)
+	{
+		if (string.IsNullOrWhiteSpace(value))
+		{
+			return "";
+		}
+		try
+		{
+			return Encoding.UTF8.GetString(Convert.FromBase64String(value));
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static Hero FindHeroByStringId(string heroId)
+	{
+		if (string.IsNullOrWhiteSpace(heroId))
+		{
+			return null;
+		}
+		try
+		{
+			return Hero.AllAliveHeroes?.FirstOrDefault(hero => string.Equals(hero?.StringId ?? "", heroId.Trim(), StringComparison.OrdinalIgnoreCase));
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static Settlement FindSettlementByStringId(string settlementId)
+	{
+		if (string.IsNullOrWhiteSpace(settlementId))
+		{
+			return null;
+		}
+		try
+		{
+			return Settlement.All?.FirstOrDefault(settlement => string.Equals(settlement?.StringId ?? "", settlementId.Trim(), StringComparison.OrdinalIgnoreCase));
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static string BuildCurrentGameDateTextForGccz()
+	{
+		try
+		{
+			return CampaignTime.Now.ToString();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static void ApplyCastleFinalGameEffectsIfNeeded(Settlement settlement, SiegeCastleFinalEffectPlan plan, bool isCastleFinalEffect)
+	{
+		try
+		{
+			if (!isCastleFinalEffect || settlement?.Town == null)
+			{
+				return;
+			}
+			if (plan.CastleLoyaltyDelta != 0)
+			{
+				settlement.Town.Loyalty += plan.CastleLoyaltyDelta;
+			}
+			if (plan.CastleSecurityDelta != 0)
+			{
+				settlement.Town.Security += plan.CastleSecurityDelta;
+			}
+			int captiveLordCount = Math.Max(CountCastleCaptiveLordAgents(), CountMainPartyHeroPrisoners());
+			int ransomGold = Math.Min(SiegeCastleFinalSideEffectProfile.MaxRansomGold, Math.Max(0, plan.RansomGoldWeight) * Math.Max(0, captiveLordCount) * SiegeCastleFinalSideEffectProfile.RansomGoldPerWeightPerLord);
+			if (ransomGold > 0)
+			{
+				AwardGoldToPlayer(ransomGold, "城堡赎金");
+				InformationManager.DisplayMessage(new InformationMessage("【城堡处置】收到战败领主赎金 " + ransomGold + " 第纳尔。", Color.FromUint(0xFFB6F7A8u)));
+			}
+			RecordInterventionMemory("城堡最终副作用", "城堡忠诚 " + FormatSigned(plan.CastleLoyaltyDelta) + "，城堡治安 " + FormatSigned(plan.CastleSecurityDelta) + "，赎金 " + Math.Max(0, ransomGold) + " 第纳尔。附属村庄产出/收编俘虏/劳役战俘保留为计划日志，等待后续独立落地。" );
+			GcczDiagnosticLog.Log("CastleAftermath", "finalGameEffects castle=" + (settlement.StringId ?? "N/A") + " loyalty=" + plan.CastleLoyaltyDelta + " security=" + plan.CastleSecurityDelta + " ransomGold=" + ransomGold);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "ApplyCastleFinalGameEffectsIfNeeded failed: " + ex.Message);
 		}
 	}
 
@@ -2819,6 +5192,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
+			if (TryPumpPendingCastleInterventionMissionOpenForExternal("native_menu_activation:" + menuId))
+			{
+				return true;
+			}
 			string activationSource = SiegeAftermathTransitionSourceProfile.BuildNativeMenuActivationSource(menuId);
 			if (TryHandleDirectMassacreAftermathMenuForExternal(menuId, activationSource))
 			{
@@ -2867,6 +5244,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		return _activeMode != InterventionMode.None
 			|| _pendingMode != InterventionMode.None
+			|| _pendingCastleInterventionMissionLocation != null
 			|| _pendingSummarySwitch
 			|| _pendingEncounterFinish
 			|| _hasPendingAftermath
@@ -2879,6 +5257,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			if (TryPumpPendingCastleInterventionMissionOpenForExternal("native_menu_init:" + (source ?? "N/A")))
+			{
+				return true;
+			}
 			if (_directPlunderAftermathScriptPending)
 			{
 				TryRunDirectPlunderAftermathScript(SiegeAftermathTransitionSourceProfile.BuildNativeMenuInitSource(source));
@@ -5336,7 +7718,15 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		if (!_alliedTroopsAutoSummoned)
 		{
 			_alliedTroopsAutoSummoned = true;
-			SummonAlliedTroops(AutoSummonCount, SiegeInterventionEntryProfile.EnsureAlliedTroopsSummonSource);
+			int summonCount = IsCastleAftermathInterventionActive()
+				? SiegeCastleSceneRosterProfile.MaxSelectedPlayerSoldiers
+				: AutoSummonCount;
+			SummonAlliedTroops(summonCount, SiegeInterventionEntryProfile.EnsureAlliedTroopsSummonSource);
+		}
+		if (IsCastleAftermathInterventionActive() && !_castlePrisonersAutoSummoned)
+		{
+			_castlePrisonersAutoSummoned = true;
+			SummonCastleSelectedPrisoners(Mission.Current, SiegeInterventionEntryProfile.EnsureAlliedTroopsSummonSource);
 		}
 	}
 
@@ -5373,7 +7763,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 		foreach (Agent agent in mission.Agents.ToList())
 		{
-			if (agent == null || !agent.IsHuman || !agent.IsActive() || agent == Agent.Main || AlliedAgentIndexes.Contains(agent.Index))
+			if (agent == null || !agent.IsHuman || !agent.IsActive() || agent == Agent.Main || AlliedAgentIndexes.Contains(agent.Index) || CastlePrisonerAgentIndexes.Contains(agent.Index))
 			{
 				continue;
 			}
@@ -6930,6 +9320,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		try
 		{
 			if (!IsActiveInCurrentMission())
+			{
+				return false;
+			}
+			if (IsCastleSelectedPrisonerAgent(agent))
 			{
 				return false;
 			}
@@ -9560,7 +11954,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		int count = Math.Max(1, Math.Min(requestedCount, MaxSummonPerAction));
+		int maxSummonCount = IsCastleAftermathInterventionActive()
+			? SiegeCastleSceneRosterProfile.MaxSelectedPlayerSoldiers
+			: MaxSummonPerAction;
+		int count = Math.Max(1, Math.Min(requestedCount, maxSummonCount));
 		List<CharacterObject> troops = PickInterventionTroops(count);
 		if (troops.Count == 0)
 		{
@@ -9673,6 +12070,98 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			return true;
 		}
 		return false;
+	}
+
+	private static bool SummonCastleSelectedPrisoners(Mission mission, string source)
+	{
+		try
+		{
+			Agent main = Agent.Main ?? mission?.MainAgent;
+			Team team = mission?.PlayerTeam ?? main?.Team;
+			if (!IsCastleAftermathInterventionActive() || mission == null || main == null || team == null)
+			{
+				return false;
+			}
+			TroopRoster prisoners = _selectedInterventionPrisonerRoster;
+			if (prisoners == null || prisoners.TotalManCount <= 0)
+			{
+				prisoners = BuildDefaultCastlePrisonerSelection(BuildCastleSelectablePrisonerRoster(), SiegeCastleSceneRosterProfile.MaxSelectedPrisoners);
+			}
+			if (prisoners == null || prisoners.TotalManCount <= 0)
+			{
+				Logger.Log("SiegeAiIntervention", "No castle prisoners selected for scene. Source=" + (source ?? "N/A"));
+				return false;
+			}
+			FormationClass prisonerFormationClass = GetCastlePrisonerFormationClass();
+			Formation prisonerFormation = team.GetFormation(prisonerFormationClass);
+			MarkFormationPlayerCommandable(prisonerFormation, main);
+			int totalToSpawn = SiegeCastleSceneRosterProfile.ClampSelectedPrisonerCount(prisoners.TotalManCount);
+			int spawned = 0;
+			for (int i = 0; i < prisoners.Count && spawned < totalToSpawn; i++)
+			{
+				TroopRosterElement element = prisoners.GetElementCopyAtIndex(i);
+				CharacterObject character = element.Character;
+				if (character == null || element.Number <= 0)
+				{
+					continue;
+				}
+				int count = Math.Min(Math.Max(0, element.Number), totalToSpawn - spawned);
+				for (int j = 0; j < count && spawned < totalToSpawn; j++)
+				{
+					try
+					{
+						PrisonerAgentOrigin origin = new PrisonerAgentOrigin(character);
+						CommandableOriginRuntimeIds.Add(RuntimeHelpers.GetHashCode(origin));
+						Agent agent = BannerlordApiCompat.SpawnPrisonerInspectionTroop(mission, origin, totalToSpawn, spawned, prisonerFormationClass);
+						if (agent == null)
+						{
+							Logger.Log("SiegeAiIntervention", "Castle prisoner spawn returned null. Troop=" + (character.StringId ?? character.Name?.ToString() ?? "unknown"));
+							continue;
+						}
+						NotifyAgentBuiltForMission(agent, mission);
+						StripCastlePrisonerWeapons(agent);
+						CastlePrisonerAgentIndexes.Add(agent.Index);
+						AssignAgentToPlayerFormation(agent, prisonerFormationClass, refreshFormationOrders: false);
+						agent.DisableScriptedMovement();
+						agent.SetWatchState(Agent.WatchState.Patrolling);
+						spawned++;
+					}
+					catch (Exception ex)
+					{
+						Logger.Log("SiegeAiIntervention", "Spawn castle prisoner failed: " + ex.Message);
+					}
+				}
+			}
+			if (spawned > 0)
+			{
+				TrySetPlayerFormationFollowOrder(prisonerFormationClass, source);
+				TryPrimePlayerOrderController(mission, source, force: true);
+				InformationManager.DisplayMessage(new InformationMessage("【城堡处置】已带入俘虏 " + spawned + " 人，编入" + SiegeCastleSceneRosterProfile.PrisonerFormationLabel + "。", Color.FromUint(SiegeInterventionEntryProfile.SummonedTroopsMessageColor)));
+				Logger.Log("SiegeAiIntervention", "Spawned castle prisoners=" + spawned + ", Source=" + (source ?? "N/A"));
+				return true;
+			}
+			return false;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "SummonCastleSelectedPrisoners failed: " + ex.Message);
+			return false;
+		}
+	}
+
+	private static FormationClass GetCastlePrisonerFormationClass()
+	{
+		try
+		{
+			FormationClass formationClass = (FormationClass)SiegeCastleSceneRosterProfile.PrisonerFormationClassIndex;
+			return formationClass >= FormationClass.Infantry && formationClass < FormationClass.NumberOfRegularFormations
+				? formationClass
+				: FormationClass.Ranged;
+		}
+		catch
+		{
+			return FormationClass.Ranged;
+		}
 	}
 
 	private static int SpawnInterventionBannerBearers(Mission mission, Agent main, Team team, PartyBase party, string source)
@@ -10775,6 +13264,60 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static void RecordCastleFinalEffectIntentIfNeeded(Settlement settlement, SiegeCastleFinalEffectPlan plan, bool isCastleFinalEffect)
+	{
+		if (!isCastleFinalEffect)
+		{
+			return;
+		}
+		try
+		{
+			string castleName = settlement?.Name?.ToString() ?? _activeSettlementName;
+			string castleId = settlement?.StringId ?? _activeSettlementId;
+			RecordInterventionMemory(SiegeCastleFinalEffectProfile.MemoryTitle, SiegeCastleFinalEffectProfile.BuildMemoryText(plan, castleName));
+			GcczDiagnosticLog.Log(SiegeCastleFinalEffectProfile.DiagnosticCategory, SiegeCastleFinalEffectProfile.BuildDiagnosticText(plan, castleId));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "RecordCastleFinalEffectIntentIfNeeded failed: " + ex.Message);
+		}
+	}
+
+	private static void RecordCastleFinalSideEffectPlanIfNeeded(Settlement settlement, SiegeCastleFinalEffectPlan finalEffect, bool isCastleFinalEffect)
+	{
+		if (!isCastleFinalEffect)
+		{
+			return;
+		}
+		try
+		{
+			int surrenderedGarrisonSourceCount = Math.Max(CountCastleSurrenderedGarrisonAgents(), CountSettlementGarrisonTroops(settlement));
+			int carriedRegularPrisonerSourceCount = CountCastleCarriedRegularPrisonerSource();
+			int captiveLordSourceCount = Math.Max(CountCastleCaptiveLordAgents(), CountMainPartyHeroPrisoners());
+			int regularPrisonerSourceCount = Math.Max(0, surrenderedGarrisonSourceCount) + Math.Max(0, carriedRegularPrisonerSourceCount);
+			SiegeCastlePrisonerAllocationPlan allocationPlan = SiegeCastlePrisonerAllocationProfile.BuildPlan(regularPrisonerSourceCount, CastlePrisonerAllocationRequests);
+			SiegeCastleFinalSideEffectPlan sideEffectPlan = SiegeCastleFinalSideEffectProfile.BuildPlan(
+				finalEffect,
+				surrenderedGarrisonSourceCount,
+				carriedRegularPrisonerSourceCount,
+				captiveLordSourceCount,
+				allocationPlan);
+			string castleName = settlement?.Name?.ToString() ?? _activeSettlementName;
+			string castleId = settlement?.StringId ?? _activeSettlementId;
+			if (allocationPlan.HasExplicitAllocation)
+			{
+				RecordInterventionMemory(SiegeCastlePrisonerAllocationProfile.MemoryTitle, SiegeCastlePrisonerAllocationProfile.BuildMemoryText(allocationPlan, castleName));
+				GcczDiagnosticLog.Log(SiegeCastlePrisonerAllocationProfile.DiagnosticCategory, SiegeCastlePrisonerAllocationProfile.BuildDiagnosticText(allocationPlan));
+			}
+			RecordInterventionMemory(SiegeCastleFinalSideEffectProfile.MemoryTitle, SiegeCastleFinalSideEffectProfile.BuildMemoryText(sideEffectPlan, castleName));
+			GcczDiagnosticLog.Log(SiegeCastleFinalSideEffectProfile.DiagnosticCategory, SiegeCastleFinalSideEffectProfile.BuildDiagnosticText(sideEffectPlan, castleId));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "RecordCastleFinalSideEffectPlanIfNeeded failed: " + ex.Message);
+		}
+	}
+
 	private static bool FinalizePendingAftermath(string reason)
 	{
 		if (!_hasPendingAftermath)
@@ -10797,6 +13340,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			Dictionary<MobileParty, float> contributions = BuildSafePartyContributions(attackerParty);
 			SiegeAftermathAction.SiegeAftermath aftermath = _pendingAftermath;
+			bool isCastleFinalEffect = IsCastleAftermathInterventionSettlement();
+			SiegeCastleFinalEffectPlan castleFinalEffect = isCastleFinalEffect
+				? SiegeCastleFinalEffectProfile.BuildPlan(_castleAftermathState, aftermath == SiegeAftermathAction.SiegeAftermath.Devastate)
+				: default;
 			if (aftermath == SiegeAftermathAction.SiegeAftermath.Pillage || aftermath == SiegeAftermathAction.SiegeAftermath.Devastate)
 			{
 				ReturnSharedCivilianReliefPoolToPlayerForNegativeOutcome(reason ?? aftermath.ToString());
@@ -10825,7 +13372,17 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			ApplyPendingPositiveNotableRelationsForFinalAftermath(settlement, aftermath);
 			ApplyPendingPositiveNotableTrustForFinalAftermath(settlement, aftermath);
 			CommitPendingInterventionNotableDeaths(SiegeNotableSceneDeathProfile.SettlementResolutionKillReason);
-			ApplyPendingMarketLootForFinalAftermath(aftermath);
+			if (SiegeCastleFinalEffectProfile.ShouldSkipTownMarketLoot(isCastleFinalEffect, castleFinalEffect))
+			{
+				GcczDiagnosticLog.Log(SiegeCastleFinalEffectProfile.DiagnosticCategory, "skippedTownMarketLoot reason=" + SiegeCastleFinalEffectProfile.TownMarketLootSkippedReason);
+			}
+			else
+			{
+				ApplyPendingMarketLootForFinalAftermath(aftermath);
+			}
+			ApplyCastleFinalGameEffectsIfNeeded(settlement, castleFinalEffect, isCastleFinalEffect);
+			RecordCastleFinalEffectIntentIfNeeded(settlement, castleFinalEffect, isCastleFinalEffect);
+			RecordCastleFinalSideEffectPlanIfNeeded(settlement, castleFinalEffect, isCastleFinalEffect);
 			TrySetNativePlayerEncounterAftermathForSummary(aftermath);
 			MyBehavior.Instance?.RecordAnimusForgeSiegeInterventionForExternal(attackerParty, settlement, aftermath, previousOwner, _pendingAftermathTrigger, _pendingAftermathDetail, Math.Min(AutoSummonCount, CountHealthyMainPartySoldiers()), _lastLootItemTotal, _lastLootStackKinds, _lastLootValue, _lastMarketGoldLoot, _lastCivilianGoldLoot, _lastCivilianTargetsLooted, _lastKilledCivilianUnits, _lastKilledNotables, _plunderStarted, _massacreStarted);
 			_pendingSummaryAftermath = aftermath;
@@ -12427,12 +14984,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			var agents = Mission.Current?.Agents;
-			if (agentIndex < 0 || agents == null)
+			if (agentIndex < 0 || Mission.Current?.Agents == null)
 			{
 				return null;
 			}
-			return agents.FirstOrDefault(a => a != null && a.Index == agentIndex);
+			return Mission.Current.Agents.FirstOrDefault(a => a != null && a.Index == agentIndex);
 		}
 		catch
 		{
@@ -12482,12 +15038,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private static bool IsActiveInCurrentMission()
 	{
-		Mission mission = Mission.Current;
-		if (_activeMode == InterventionMode.None || mission == null)
-		{
-			return false;
-		}
-		if (mission.GetMissionBehavior<InterventionMissionBehavior>() == null)
+		if (_activeMode == InterventionMode.None || Mission.Current == null)
 		{
 			return false;
 		}
@@ -12541,7 +15092,14 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_soldierDefaultFollowOrderIssued = false;
 		_playerOrderControllerPrimed = false;
 		_civilianOrderControllerPrimed = false;
+		_castleSceneRosterPlanLogged = false;
+		_castleAftermathState = SiegeCastleAftermathStateProfile.CreateDefault();
+		AppliedCastleAftermathActions.Clear();
+		CastleAftermathActionHistory.Clear();
 		_selectedInterventionRoster = null;
+		_selectedInterventionPrisonerRoster = null;
+		_castlePrisonersAutoSummoned = false;
+		ClearPendingCastleInterventionMissionOpen();
 		_civilianGatherStartedAt = -1f;
 		_nextCivilianGatherTickTime = 0f;
 		_civilianGatherMessengerSpeechBudget = 0;
@@ -12616,6 +15174,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		LootedTargets.Clear();
 		CivilianRobberyTargets.Clear();
 		AlliedAgentIndexes.Clear();
+		CastlePrisonerAgentIndexes.Clear();
+		CastlePrisonerAllocationRequests.Clear();
 		BannerBearerAgentIndexes.Clear();
 		CountedMassacreVictims.Clear();
 		PendingInterventionNotableDeaths.Clear();
@@ -12724,9 +15284,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_activeSettlementName = "";
 		_previousSettlementOwnerClan = null;
 		_besiegerParty = null;
-		_activeSettlement = null;
 		_setsSettlementEntryVictoryContext = false;
 		_setsSettlementEntryVictorySource = "";
+		_activeSettlement = null;
 		_interventionPlayerCommandTeam = null;
 		_interventionCivilianEnemyTeam = null;
 		_partyContributions = new Dictionary<MobileParty, float>();

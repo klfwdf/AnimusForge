@@ -16579,6 +16579,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			shouldRecordPlayerInput ? promptPlayerText : "",
 			shouldRecordPlayerInput,
 			"native_conversation");
+		if (shouldRecordPlayerInput)
+		{
+			bool fixedSiegeActionHandled;
+			if (AfGcczShoutBridge.TryProcessFixedKeywordAction(targetHero, targetCharacter, nativeTargetAgentIndex, promptPlayerText, replyIsDirectPlayerResponse: true, out fixedSiegeActionHandled) && fixedSiegeActionHandled)
+			{
+				Logger.Log("ShoutBehavior", "[NativeConversation] siege_intervention fixed keyword handled target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown"));
+			}
+		}
 		List<RewardSystemBehavior.DuelStakeOption> nativeDuelStakeOptions = null;
 		if (duelPostprocessSelected && nativeDuelTargetHero != null && RewardSystemBehavior.Instance != null)
 		{
@@ -23790,6 +23798,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					bool replyIsDirectPlayerResponse = firstTurn;
 					bool siegeInterventionPostprocessSelected = AfGcczShoutBridge.ShouldContinuePostprocess(siegeInterventionRuleInjected, postprocessPreprocessHits);
 					siegeInterventionPostprocessSelected = AfGcczShoutBridge.ShouldAllowPostprocessByFrequency(siegeInterventionPostprocessSelected, playerText, replyIsDirectPlayerResponse, "scene_queue");
+					if (replyIsDirectPlayerResponse)
+					{
+						bool fixedSiegeActionHandled;
+						if (AfGcczShoutBridge.TryProcessFixedKeywordAction(speakingHero, npcCharacter, currentSpeaker.AgentIndex, playerText, replyIsDirectPlayerResponse, out fixedSiegeActionHandled) && fixedSiegeActionHandled)
+						{
+							Logger.Log("ShoutBehavior", "[SceneConversation] siege_intervention fixed keyword handled npc=" + (speakingHero?.StringId ?? currentSpeaker?.Name ?? "unknown"));
+						}
+					}
 					bool npcSurrenderPostprocessSelected = IsNpcSurrenderPostprocessContext();
 					bool royalPostprocessSelected = AIConfigHandler.IsRoyalAbdicationPostprocessTargetForExternal(speakingHero ?? npcCharacter?.HeroObject);
 					relayPostprocessSelected = multiNpcScene && !endRequested && speakableCandidates.Count > 1;
