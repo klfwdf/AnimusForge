@@ -472,6 +472,14 @@ public class SubModule : MBSubModuleBase
 			{
 				Logger.LogTrace("SubModule", ">>> NobleGathering patches init failed: " + ex18f.Message);
 			}
+			try
+			{
+				SexualConceptionBehavior.RegisterHarmonyPatches(harmony);
+			}
+			catch (Exception ex18g)
+			{
+				Logger.LogTrace("SubModule", ">>> SexualConception patches init failed: " + ex18g.Message);
+			}
 			Logger.LogTrace("SubModule", ">>> Harmony patches applied.");
 		}
 		catch (Exception ex18)
