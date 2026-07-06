@@ -1661,6 +1661,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		TryKeepMissionExitImmediatelyAvailable(mission);
 		EnsureInterventionMissionCombatModeForPlayerDamage(mission);
 		EnsureInterventionPlayerCommandTeam(mission);
+		TryMaintainTownCivilianSceneGoldDrops(mission, dt);
 		float currentTime = mission.CurrentTime;
 		PumpPendingAmbientReactions(mission);
 		if (currentTime >= _nextControlTickTime)
@@ -1729,6 +1730,23 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 		catch
 		{
+		}
+	}
+
+	private static void TryMaintainTownCivilianSceneGoldDrops(Mission mission, float dt)
+	{
+		try
+		{
+			Settlement settlement = ResolveCurrentSettlement() ?? Settlement.CurrentSettlement;
+			if (mission == null || settlement?.IsTown != true || settlement.IsCastle)
+			{
+				return;
+			}
+			SceneTauntMissionBehavior.TryMaintainSceneGoldDropsForExternal(dt, "gccz_town_scene_gold_tick");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "Maintaining GCCZ town civilian scene gold drops failed: " + ex.Message);
 		}
 	}
 
@@ -11728,6 +11746,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private static void OnInterventionAgentRemoved(Agent affectedAgent, Agent affectorAgent, AgentState agentState)
 	{
+		TrySpawnTownCivilianSceneGoldDrop(affectedAgent, agentState, "intervention_agent_removed");
 		if (!_massacreStarted)
 		{
 			TryHandleLocalPlayerCivilianDownForIntervention(affectedAgent, affectorAgent, agentState);
@@ -11759,6 +11778,38 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			_lastKilledCivilianUnits++;
 		}
 		TryLootCivilianAgent(affectedAgent, massacre: true, force: true);
+	}
+
+	private static void TrySpawnTownCivilianSceneGoldDrop(Agent affectedAgent, AgentState agentState, string source)
+	{
+		try
+		{
+			if (!IsActiveInCurrentMission())
+			{
+				return;
+			}
+			if (agentState != AgentState.Killed && agentState != AgentState.Unconscious)
+			{
+				return;
+			}
+			Settlement settlement = ResolveCurrentSettlement() ?? Settlement.CurrentSettlement;
+			if (settlement?.IsTown != true || settlement.IsCastle)
+			{
+				return;
+			}
+			if (!IsEligibleCivilianAgent(affectedAgent, includeHeroes: false, requireActive: false))
+			{
+				return;
+			}
+			if (SceneTauntMissionBehavior.TrySpawnSceneGoldDropForExternal(affectedAgent, agentState, source ?? "gccz_town_civilian_down"))
+			{
+				Logger.Log("SiegeAiIntervention", "Spawned GCCZ town civilian scene gold drop via AF SceneTaunt bridge. Agent=" + affectedAgent.Index + ", State=" + agentState + ", Source=" + (source ?? "N/A"));
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "Spawning GCCZ town civilian scene gold drop failed: " + ex.Message);
+		}
 	}
 
 	private static bool TryHandleLocalPlayerCivilianDownForIntervention(Agent affectedAgent, Agent affectorAgent, AgentState agentState)

@@ -4280,6 +4280,47 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		}
 	}
 
+	internal static bool TrySpawnSceneGoldDropForExternal(Agent affectedAgent, AgentState agentState, string source)
+	{
+		try
+		{
+			Mission mission = affectedAgent?.Mission ?? Mission.Current;
+			SceneTauntMissionBehavior behavior = mission?.GetMissionBehavior<SceneTauntMissionBehavior>();
+			if (behavior == null)
+			{
+				LogSceneGoldDiag($"external_spawn_skip behavior_null source={source ?? "N/A"}");
+				return false;
+			}
+			int beforeCount = behavior._sceneGoldDrops.Count;
+			behavior.RegisterSceneGoldEligibleAgent(affectedAgent, "external_" + (string.IsNullOrWhiteSpace(source) ? "unknown" : source.Trim()));
+			behavior.TrySpawnSceneGoldDropForKnockdown(affectedAgent, agentState);
+			return behavior._sceneGoldDrops.Count > beforeCount;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "External scene gold drop spawn failed: " + ex.Message);
+			return false;
+		}
+	}
+
+	internal static void TryMaintainSceneGoldDropsForExternal(float dt, string source)
+	{
+		try
+		{
+			SceneTauntMissionBehavior behavior = Mission.Current?.GetMissionBehavior<SceneTauntMissionBehavior>();
+			if (behavior == null)
+			{
+				return;
+			}
+			behavior.TryMaintainSceneGoldCoinMotion(dt);
+			behavior.TryHandleSceneGoldPickupInput();
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "External scene gold drop tick failed (" + (source ?? "N/A") + "): " + ex.Message);
+		}
+	}
+
 	private List<SceneGoldCoinSim> TryCreateSceneGoldEntities(Vec3 sourcePosition, int visualGoldAmount, out bool usesNativeItemPhysics)
 	{
 		usesNativeItemPhysics = false;
