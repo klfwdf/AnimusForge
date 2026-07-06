@@ -632,7 +632,27 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			return _activeMode != InterventionMode.None || _pendingMode != InterventionMode.None;
+			if (_pendingMode != InterventionMode.None)
+			{
+				return true;
+			}
+			if (_activeMode == InterventionMode.None)
+			{
+				return _pendingSummarySwitch
+					|| _pendingEncounterFinish
+					|| _hasPendingAftermath
+					|| _directMassacreAftermathScriptPending
+					|| _directPlunderAftermathScriptPending;
+			}
+			if (Mission.Current != null)
+			{
+				return IsActiveInCurrentMission();
+			}
+			return _pendingSummarySwitch
+				|| _pendingEncounterFinish
+				|| _hasPendingAftermath
+				|| _directMassacreAftermathScriptPending
+				|| _directPlunderAftermathScriptPending;
 		}
 		catch
 		{

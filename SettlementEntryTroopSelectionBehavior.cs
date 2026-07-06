@@ -556,6 +556,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			}
 			if (SiegeAiInterventionBehavior.IsInterventionMissionOpenOrPendingForExternal())
 			{
+				SettlementEntryTroopSelectionLog.Log("Skipped settlement entry followers; GCCZ intervention is open or pending. settlement=" + SafeSettlementId(settlement) + ", location=" + (nextLocation?.StringId ?? "null"));
 				return false;
 			}
 			return true;
