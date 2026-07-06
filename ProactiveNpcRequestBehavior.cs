@@ -90,6 +90,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			storageJson = CampaignSaveChunkHelper.LoadChunkedString(dataStore, StorageKey, "ProactiveNpcRequest");
 			ProactiveNpcRequestStorage storage = string.IsNullOrWhiteSpace(storageJson) ? null : JsonConvert.DeserializeObject<ProactiveNpcRequestStorage>(storageJson);
 			_activeSession = storage?.ActiveSession;
+			NormalizeActiveSessionSingleNeed();
 			_heroCooldownUntilDays = NormalizeCooldownDictionary(storage?.HeroCooldownUntilDays);
 			_needCooldownUntilDays = NormalizeCooldownDictionary(storage?.NeedCooldownUntilDays);
 			_globalCooldownUntilHours = storage?.GlobalCooldownUntilHours ?? 0f;
@@ -845,16 +846,16 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		{
 			return null;
 		}
-		List<string> needTypes = NormalizeNeedTypes(ordered.Select(c => c.NeedType), ordered[0].NeedType);
-		if (needTypes.Count > 3)
+		ProactiveCandidate selected = ordered[0];
+		string selectedNeedType = NormalizeNeedType(selected.NeedType);
+		if (string.IsNullOrWhiteSpace(selectedNeedType))
 		{
-			needTypes = needTypes.Take(3).ToList();
+			return null;
 		}
-		ProactiveCandidate combined = ordered.FirstOrDefault(c => string.Equals(c.NeedType, needTypes[0], StringComparison.OrdinalIgnoreCase)) ?? ordered[0];
-		combined.NeedTypes = needTypes;
-		combined.NeedType = needTypes[0];
-		combined.NeedUrgency = ordered.Max(c => c.NeedUrgency) + Math.Min(12f, Math.Max(0, needTypes.Count - 1) * 4f);
-		return combined;
+		selected.NeedTypes = new List<string> { selectedNeedType };
+		selected.NeedType = selectedNeedType;
+		selected.NeedUrgency = Clamp(selected.NeedUrgency, 0f, 100f);
+		return selected;
 	}
 
 	private static List<string> FilterPlayerEligibleNeedTypes(ProactiveCandidate candidate, IEnumerable<string> needTypes, string fallbackNeedType)
@@ -881,7 +882,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			List<string> eligible = raw
 				.Where(needType => IsPlayerEligibleForProactiveNeed(candidate, needType, out _))
 				.ToList();
-			return eligible.Count <= 0 ? new List<string>() : NormalizeNeedTypes(eligible, eligible[0]);
+			return eligible.Count <= 0 ? new List<string>() : NormalizeSingleNeedType(eligible, eligible[0]);
 		}
 		catch
 		{
@@ -1820,7 +1821,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			HeroId = GetHeroKey(hero),
 			PartyId = (party.StringId ?? "").Trim(),
 			NeedType = string.IsNullOrWhiteSpace(candidate.NeedType) ? NeedFoodShortage : candidate.NeedType,
-			NeedTypes = NormalizeNeedTypes(candidate.NeedTypes, candidate.NeedType),
+			NeedTypes = NormalizeSingleNeedType(candidate.NeedTypes, candidate.NeedType),
 			Stage = "Chasing",
 			CreatedAtHours = NowHours(),
 			ExpiresAtHours = NowHours() + ActiveRequestTtlHours,
@@ -2228,7 +2229,29 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		{
 			return new List<string> { NeedFoodShortage };
 		}
-		return NormalizeNeedTypes(_activeSession.NeedTypes, string.IsNullOrWhiteSpace(_activeSession.NeedType) ? NeedFoodShortage : _activeSession.NeedType);
+		return NormalizeSingleNeedType(_activeSession.NeedTypes, string.IsNullOrWhiteSpace(_activeSession.NeedType) ? NeedFoodShortage : _activeSession.NeedType);
+	}
+
+	private void NormalizeActiveSessionSingleNeed()
+	{
+		if (_activeSession == null)
+		{
+			return;
+		}
+		List<string> normalized = NormalizeSingleNeedType(_activeSession.NeedTypes, string.IsNullOrWhiteSpace(_activeSession.NeedType) ? NeedFoodShortage : _activeSession.NeedType);
+		_activeSession.NeedTypes = normalized;
+		_activeSession.NeedType = normalized.Count > 0 ? normalized[0] : NeedFoodShortage;
+	}
+
+	private static List<string> NormalizeSingleNeedType(IEnumerable<string> needTypes, string fallbackNeedType)
+	{
+		List<string> normalized = NormalizeNeedTypes(needTypes, fallbackNeedType);
+		string first = normalized.FirstOrDefault();
+		if (string.IsNullOrWhiteSpace(first))
+		{
+			first = NeedFoodShortage;
+		}
+		return new List<string> { first };
 	}
 
 	private static List<string> NormalizeNeedTypes(IEnumerable<string> needTypes, string fallbackNeedType)
@@ -2497,10 +2520,6 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		string playerName = (MyBehavior.BuildPlayerPublicDisplayNameForExternal() ?? "玩家").Trim();
 		string npcName = hero?.Name?.ToString() ?? "你";
 		List<string> activeNeedTypes = GetActiveNeedTypes();
-		if (activeNeedTypes.Count > 1)
-		{
-			return BuildCombinedOpeningFact(hero, party, playerName, npcName, activeNeedTypes);
-		}
 		string needType = activeNeedTypes.Count > 0 ? activeNeedTypes[0] : (string.IsNullOrWhiteSpace(_activeSession?.NeedType) ? NeedFoodShortage : _activeSession.NeedType);
 		if (string.Equals(needType, NeedDiplomacy, StringComparison.OrdinalIgnoreCase))
 		{
@@ -2567,24 +2586,6 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			return BuildMoneyShortageOpeningFact(party, playerName, npcName);
 		}
 		return BuildFoodShortageOpeningFact(party, playerName, npcName);
-	}
-
-	private string BuildCombinedOpeningFact(Hero hero, MobileParty party, string playerName, string npcName, List<string> needTypes)
-	{
-		List<string> normalized = NormalizeNeedTypes(needTypes, NeedFoodShortage);
-		if (normalized.Count <= 1)
-		{
-			return BuildOpeningFact(hero);
-		}
-		List<string> items = new List<string>();
-		for (int i = 0; i < normalized.Count && i < 3; i++)
-		{
-			items.Add((i + 1).ToString() + ". " + BuildOpeningNeedSummary(normalized[i], hero, party, playerName, npcName));
-		}
-		string intro = _activeSession?.IsTestFallback == true
-			? npcName + "，测试模式下你被选为 NPC 主动接触测试对象。"
-			: npcName + "，你主动追上" + playerName + "。";
-		return "[AFEF NPC行为补充] " + intro + "你并非来开战，而是有数件事想谈：" + string.Join("；", items) + "。你应该先开口说明这些来意，可以按紧急程度合并表达，不要把这些当作" + playerName + "主动提出的话。不要假定任何交易、赎买、转移俘虏、借款、欠款、还款承诺、记账、入队或效力关系已经由系统成立。";
 	}
 
 	private string BuildOpeningNeedSummary(string needType, Hero hero, MobileParty party, string playerName, string npcName)
@@ -3000,13 +3001,8 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 
 	private static string BuildOpeningPrompt(IEnumerable<string> needTypes)
 	{
-		List<string> normalized = NormalizeNeedTypes(needTypes, NeedFoodShortage);
-		if (normalized.Count <= 1)
-		{
-			return BuildOpeningPrompt(normalized.Count > 0 ? normalized[0] : NeedFoodShortage);
-		}
-		List<string> labels = normalized.Take(3).Select(GetNeedPromptLabel).Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
-		return "请你先开口说明自己主动追上玩家的来意。你同时有多个请求，可以按紧急程度合并表达，依次围绕：" + string.Join("；", labels) + "。只输出你作为NPC说出的话。不要假定任何交易、赎买、转移俘虏、借款、欠款、还款承诺、记账、婚约、结盟、军事行动、入队或效力关系已经成立。";
+		List<string> normalized = NormalizeSingleNeedType(needTypes, NeedFoodShortage);
+		return BuildOpeningPrompt(normalized.Count > 0 ? normalized[0] : NeedFoodShortage);
 	}
 
 	private static string BuildOpeningPrompt(string needType)
