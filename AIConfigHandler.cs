@@ -781,8 +781,8 @@ public static class AIConfigHandler
 		text = ReplaceActionPostprocessOptionalSection(text, "{npc_name}的物品清单：", "shared_item_list", sharedItemList);
 		text = ReplaceActionPostprocessOptionalSection(text, "玩家可见装备：", "player_item_list", playerItemList);
 		text = ReplaceActionPostprocessOptionalSection(text, "债务提示：", "debt_hint", debtHint);
-		text = ReplaceActionPostprocessOptionalSection(text, "玩家家族可婚配未婚成员（事实清单）：", "marriage_player_candidates", marriagePlayerCandidates);
-		text = ReplaceActionPostprocessOptionalSection(text, "对方家族可婚配未婚成员（事实清单）：", "marriage_target_candidates", marriageTargetCandidates);
+		text = ReplaceActionPostprocessOptionalSection(text, "玩家家族可婚配成员（允许已有配偶，事实清单）：", "marriage_player_candidates", marriagePlayerCandidates);
+		text = ReplaceActionPostprocessOptionalSection(text, "对方家族可婚配成员（允许已有配偶，事实清单）：", "marriage_target_candidates", marriageTargetCandidates);
 		text = ReplaceActionPostprocessOptionalSection(text, "当前可直接成立的正规婚配组合与现有婚姻（事实清单）：", "marriage_fact_hint", null);
 		text = text.Replace("{tag_rules}", string.IsNullOrWhiteSpace(tagRules) ? "（无）" : tagRules.Trim())
 			.Replace("{mood_rules}", string.IsNullOrWhiteSpace(moodRules) ? "（无）" : moodRules.Trim())
@@ -806,8 +806,8 @@ public static class AIConfigHandler
 		runtimeContext = NormalizeActionPostprocessNameReferences(runtimeContext, npcName);
 		text = ReplaceActionPostprocessOptionalSection(text, "玩家可见装备：", "player_item_list", playerItemList);
 		text = ReplaceActionPostprocessOptionalSection(text, "{npc_name}的物品清单：", "shared_item_list", sharedItemList);
-		text = ReplaceActionPostprocessOptionalSection(text, "玩家家族可婚配未婚成员（事实清单）：", "marriage_player_candidates", marriagePlayerCandidates);
-		text = ReplaceActionPostprocessOptionalSection(text, "对方家族可婚配未婚成员（事实清单）：", "marriage_target_candidates", marriageTargetCandidates);
+		text = ReplaceActionPostprocessOptionalSection(text, "玩家家族可婚配成员（允许已有配偶，事实清单）：", "marriage_player_candidates", marriagePlayerCandidates);
+		text = ReplaceActionPostprocessOptionalSection(text, "对方家族可婚配成员（允许已有配偶，事实清单）：", "marriage_target_candidates", marriageTargetCandidates);
 		text = ReplaceActionPostprocessOptionalSection(text, "当前可直接成立的正规婚配组合与现有婚姻（事实清单）：", "marriage_fact_hint", null);
 		text = ReplaceActionPostprocessOptionalSection(text, "债务提示：", "debt_hint", debtHint);
 		text = ReplaceActionPostprocessOptionalSection(text, "运行时补充事实：", "runtime_context", runtimeContext);
@@ -6435,12 +6435,12 @@ public static class AIConfigHandler
 			const string text4 = "__AFEF_PLAYER_FACT__";
 			const string text5 = "__PLAYER_CLAN_FACT__";
 			text2 = text2.Replace("[AFEF玩家行为补充]", text4);
-			text2 = text2.Replace("【玩家家族可婚配未婚成员（事实清单）】", text5);
+			text2 = text2.Replace("【玩家家族可婚配成员（允许已有配偶，事实清单）】", text5);
 			text2 = text2.Replace("玩家家族", "__PLAYER_CLAN__");
 			text2 = text2.Replace("玩家", text3);
 			text2 = text2.Replace("__PLAYER_CLAN__", "玩家家族");
 			text2 = text2.Replace(text4, "[AFEF玩家行为补充]");
-			text2 = text2.Replace(text5, "【玩家家族可婚配未婚成员（事实清单）】");
+			text2 = text2.Replace(text5, "【玩家家族可婚配成员（允许已有配偶，事实清单）】");
 			return text2;
 		}
 		catch

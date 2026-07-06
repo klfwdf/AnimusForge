@@ -19379,16 +19379,6 @@ public class MyBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
-		try
-		{
-			if (hero.Spouse != null)
-			{
-				return false;
-			}
-		}
-		catch
-		{
-		}
 		if (player != null && hero == player)
 		{
 			return false;
@@ -19428,16 +19418,6 @@ public class MyBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
-		try
-		{
-			if (hero.Spouse != null)
-			{
-				return false;
-			}
-		}
-		catch
-		{
-		}
 		return true;
 	}
 
@@ -19457,6 +19437,22 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static string GetNativeSpouseLabelForMarriagePrompt(Hero hero)
+	{
+		try
+		{
+			Hero spouse = hero?.Spouse;
+			if (spouse != null)
+			{
+				return " | 原版当前配偶=" + (spouse.Name?.ToString() ?? spouse.StringId ?? "未知");
+			}
+		}
+		catch
+		{
+		}
+		return "";
+	}
+
 	private static string BuildClanUnmarriedCandidatesForPrompt(Hero npcHero, Hero player, int maxEntries = 12)
 	{
 		try
@@ -19473,7 +19469,7 @@ public class MyBehavior : CampaignBehaviorBase
 				select h).Take(Math.Max(1, maxEntries)).ToList();
 			if (list.Count <= 0)
 			{
-				return "无（该家族当前没有基础适婚条件下的未婚成员）";
+				return "无（该家族当前没有基础适婚条件下的可婚配成员）";
 			}
 			StringBuilder stringBuilder = new StringBuilder();
 			for (int i = 0; i < list.Count; i++)
@@ -19491,13 +19487,13 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					text2 = "（族长）";
 				}
-				stringBuilder.AppendLine("- " + text + text2 + $" | 性别={marriageCandidateGenderLabelForPrompt} | 年龄={num} | targetHeroId={hero.StringId}");
+				stringBuilder.AppendLine("- " + text + text2 + $" | 性别={marriageCandidateGenderLabelForPrompt} | 年龄={num}" + GetNativeSpouseLabelForMarriagePrompt(hero) + $" | targetHeroId={hero.StringId}");
 			}
 			return stringBuilder.ToString().TrimEnd();
 		}
 		catch
 		{
-			return "无（生成未婚名单时发生异常）";
+			return "无（生成可婚配成员名单时发生异常）";
 		}
 	}
 
@@ -19778,8 +19774,8 @@ public class MyBehavior : CampaignBehaviorBase
 		if (includeMarriageCandidates)
 		{
 			int marriageCandidateMaxAgeSettingForPrompt = GetMarriageCandidateMaxAgeSettingForPrompt();
-			stringBuilder.AppendLine("【玩家家族可婚配未婚成员（事实清单）】");
-			stringBuilder.AppendLine($"筛选口径：仅列出玩家家族内部基础适婚池（年龄 {MarriageCandidateMinAgeForPrompt}-{marriageCandidateMaxAgeSettingForPrompt}、未婚、非囚犯）。具体能否与对方成员成婚，仍以性别限制、年龄差和运行时婚姻规则为准。");
+			stringBuilder.AppendLine("【玩家家族可婚配成员（允许已有配偶，事实清单）】");
+			stringBuilder.AppendLine($"筛选口径：列出玩家家族内部基础适婚池（年龄 {MarriageCandidateMinAgeForPrompt}-{marriageCandidateMaxAgeSettingForPrompt}、非囚犯）。多配偶已允许，已有配偶不是拒绝理由；具体能否与对方成员成婚，仍以性别限制、年龄差、非重复婚姻和运行时婚姻规则为准。");
 			stringBuilder.AppendLine(BuildPlayerClanUnmarriedCandidatesForPrompt(playerHero, targetHero, 12));
 		}
 		return stringBuilder.ToString().Trim();
@@ -20003,8 +19999,8 @@ public class MyBehavior : CampaignBehaviorBase
 		if (includeMarriageCandidates)
 		{
 			int marriageCandidateMaxAgeSettingForPrompt = GetMarriageCandidateMaxAgeSettingForPrompt();
-			stringBuilder.AppendLine("【该家族可婚配未婚成员（事实清单）】");
-			stringBuilder.AppendLine($"筛选口径：仅列出该家族内部基础适婚池（年龄 {MarriageCandidateMinAgeForPrompt}-{marriageCandidateMaxAgeSettingForPrompt}、未婚、非囚犯）。具体能否与玩家家族成员成婚，仍以性别限制、年龄差和运行时婚姻规则为准。");
+			stringBuilder.AppendLine("【该家族可婚配成员（允许已有配偶，事实清单）】");
+			stringBuilder.AppendLine($"筛选口径：列出该家族内部基础适婚池（年龄 {MarriageCandidateMinAgeForPrompt}-{marriageCandidateMaxAgeSettingForPrompt}、非囚犯）。多配偶已允许，已有配偶不是拒绝理由；具体能否与玩家家族成员成婚，仍以性别限制、年龄差、非重复婚姻和运行时婚姻规则为准。");
 			stringBuilder.AppendLine(BuildClanUnmarriedCandidatesForPrompt(npcHero, Hero.MainHero, 12));
 		}
 		if (includeTradePricing && RewardSystemBehavior.Instance != null)
@@ -20825,7 +20821,7 @@ public class MyBehavior : CampaignBehaviorBase
 				select h).Take(Math.Max(1, maxEntries)).ToList();
 			if (list.Count <= 0)
 			{
-				return "无（玩家家族当前没有基础适婚条件下的未婚成员）";
+				return "无（玩家家族当前没有基础适婚条件下的可婚配成员）";
 			}
 			StringBuilder stringBuilder = new StringBuilder();
 			for (int i = 0; i < list.Count; i++)
@@ -20843,13 +20839,13 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					text2 = "（玩家家族族长）";
 				}
-				stringBuilder.AppendLine("- " + text + text2 + $" | 性别={marriageCandidateGenderLabelForPrompt} | 年龄={num} | playerClanHeroId={hero.StringId}");
+				stringBuilder.AppendLine("- " + text + text2 + $" | 性别={marriageCandidateGenderLabelForPrompt} | 年龄={num}" + GetNativeSpouseLabelForMarriagePrompt(hero) + $" | playerClanHeroId={hero.StringId}");
 			}
 			return stringBuilder.ToString().TrimEnd();
 		}
 		catch
 		{
-			return "无（生成玩家家族未婚名单时发生异常）";
+			return "无（生成玩家家族可婚配成员名单时发生异常）";
 		}
 	}
 
@@ -34894,26 +34890,26 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void OpenDevEventReportDetail(EventRecordEntry entry, int returnPage)
 	{
-		InformationManager.ShowInquiry(new InquiryData("周报正文 - " + ((entry?.Title ?? "").Trim()), string.IsNullOrWhiteSpace(entry?.Summary) ? "当前这条事件还没有正文。" : entry.Summary.Trim(), isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回事件详情", "", delegate
+		ShowDevLargeTextOrInquiry("周报正文 - " + ((entry?.Title ?? "").Trim()), "", string.IsNullOrWhiteSpace(entry?.Summary) ? "当前这条事件还没有正文。" : entry.Summary.Trim(), delegate
 		{
 			OpenDevEventRecordDetail(entry, returnPage);
-		}, null));
+		}, "返回事件详情");
 	}
 
 	private void OpenDevEventShortSummaryDetail(EventRecordEntry entry, int returnPage)
 	{
-		InformationManager.ShowInquiry(new InquiryData("短摘要 - " + ((entry?.Title ?? "").Trim()), string.IsNullOrWhiteSpace(entry?.ShortSummary) ? "当前这条事件还没有短摘要。" : entry.ShortSummary.Trim(), isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回事件详情", "", delegate
+		ShowDevLargeTextOrInquiry("短摘要 - " + ((entry?.Title ?? "").Trim()), "", string.IsNullOrWhiteSpace(entry?.ShortSummary) ? "当前这条事件还没有短摘要。" : entry.ShortSummary.Trim(), delegate
 		{
 			OpenDevEventRecordDetail(entry, returnPage);
-		}, null));
+		}, "返回事件详情");
 	}
 
 	private void OpenDevEventTagDetail(EventRecordEntry entry, int returnPage)
 	{
-		InformationManager.ShowInquiry(new InquiryData("标签层 - " + ((entry?.Title ?? "").Trim()), string.IsNullOrWhiteSpace(entry?.TagText) ? "当前这条事件还没有标签层。" : entry.TagText.Trim(), isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回事件详情", "", delegate
+		ShowDevLargeTextOrInquiry("标签层 - " + ((entry?.Title ?? "").Trim()), "", string.IsNullOrWhiteSpace(entry?.TagText) ? "当前这条事件还没有标签层。" : entry.TagText.Trim(), delegate
 		{
 			OpenDevEventRecordDetail(entry, returnPage);
-		}, null));
+		}, "返回事件详情");
 	}
 
 	private void OpenDevEventMaterialList(EventRecordEntry entry, int returnPage, int page)
@@ -35047,10 +35043,10 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void OpenDevEventPromptDetail(EventRecordEntry entry, int returnPage)
 	{
-		InformationManager.ShowInquiry(new InquiryData("请求 Prompt - " + ((entry?.Title ?? "").Trim()), string.IsNullOrWhiteSpace(entry?.PromptText) ? "当前没有保存该条周报的请求 Prompt。" : entry.PromptText.Trim(), isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回事件详情", "", delegate
+		ShowDevLargeTextOrInquiry("请求 Prompt - " + ((entry?.Title ?? "").Trim()), "", string.IsNullOrWhiteSpace(entry?.PromptText) ? "当前没有保存该条周报的请求 Prompt。" : entry.PromptText.Trim(), delegate
 		{
 			OpenDevEventRecordDetail(entry, returnPage);
-		}, null));
+		}, "返回事件详情");
 	}
 
 	private static string BuildDevEventMaterialItemLabel(EventMaterialReference material)
@@ -35076,10 +35072,10 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		string text = BuildDevEventMaterialDetailText(material);
 		string text2 = BuildDevEventMaterialItemLabel(material);
-		InformationManager.ShowInquiry(new InquiryData("素材详情 - " + text2, text, isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回事件详情", "", delegate
+		ShowDevLargeTextOrInquiry("素材详情 - " + text2, "", text, delegate
 		{
 			OpenDevEventMaterialList(entry, returnPage, returnMaterialPage);
-		}, null));
+		}, "返回素材列表");
 	}
 
 	private string BuildDevEventMaterialDetailText(EventMaterialReference material)
@@ -43698,6 +43694,11 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		if (!CanAwardWeeklyReportReadingXp(mainHero, out string ineligibleReason))
+		{
+			Logger.Log("EventWeeklyReport", "[ReadingXp] skipped eventId=" + text + " reason=" + ineligibleReason);
+			return;
+		}
 		EventRecordEntry eventRecordEntry = FindWeeklyReportRecordById(text);
 		if (eventRecordEntry == null)
 		{
@@ -43740,17 +43741,10 @@ public class MyBehavior : CampaignBehaviorBase
 		int batchCharm = _weeklyReportReadingXpPendingCharm;
 		int batchLeadership = _weeklyReportReadingXpPendingLeadership;
 		int batchSteward = _weeklyReportReadingXpPendingSteward;
-		if (batchLeadership > 0)
+		if (!TryAwardWeeklyReportReadingXpBatch(mainHero, batchLeadership, batchCharm, batchSteward, out string awardFailureReason))
 		{
-			mainHero.AddSkillXp(DefaultSkills.Leadership, batchLeadership);
-		}
-		if (batchCharm > 0)
-		{
-			mainHero.AddSkillXp(DefaultSkills.Charm, batchCharm);
-		}
-		if (batchSteward > 0)
-		{
-			mainHero.AddSkillXp(DefaultSkills.Steward, batchSteward);
+			Logger.Log("EventWeeklyReport", "[ReadingXp][WARN] batch_award_failed count=" + batchCount + " charm=" + batchCharm + " leadership=" + batchLeadership + " steward=" + batchSteward + " reason=" + awardFailureReason);
+			return;
 		}
 		_weeklyReportReadingXpPendingCount = 0;
 		_weeklyReportReadingXpPendingCharm = 0;
@@ -43758,6 +43752,65 @@ public class MyBehavior : CampaignBehaviorBase
 		_weeklyReportReadingXpPendingSteward = 0;
 		InformationManager.DisplayMessage(new InformationMessage("周报研读突破：累计研读 " + batchCount + " 篇，魅力 +" + batchCharm + "，统御 +" + batchLeadership + "，管理 +" + batchSteward + "。"));
 		Logger.Log("EventWeeklyReport", "[ReadingXp] batch_awarded count=" + batchCount + " charm=" + batchCharm + " leadership=" + batchLeadership + " steward=" + batchSteward);
+	}
+
+	private static bool CanAwardWeeklyReportReadingXp(Hero hero, out string reason)
+	{
+		reason = "";
+		if (hero == null)
+		{
+			reason = "hero_null";
+			return false;
+		}
+		if (hero.HeroDeveloper == null)
+		{
+			reason = "hero_developer_null";
+			return false;
+		}
+		try
+		{
+			if (hero.IsChild)
+			{
+				reason = "main_hero_under_age age=" + Math.Round(hero.Age, 2);
+				return false;
+			}
+		}
+		catch (Exception ex)
+		{
+			reason = "age_check_failed " + ex.Message;
+			return false;
+		}
+		return true;
+	}
+
+	private static bool TryAwardWeeklyReportReadingXpBatch(Hero hero, int leadershipXp, int charmXp, int stewardXp, out string failureReason)
+	{
+		failureReason = "";
+		if (!CanAwardWeeklyReportReadingXp(hero, out failureReason))
+		{
+			return false;
+		}
+		try
+		{
+			if (leadershipXp > 0)
+			{
+				hero.AddSkillXp(DefaultSkills.Leadership, leadershipXp);
+			}
+			if (charmXp > 0)
+			{
+				hero.AddSkillXp(DefaultSkills.Charm, charmXp);
+			}
+			if (stewardXp > 0)
+			{
+				hero.AddSkillXp(DefaultSkills.Steward, stewardXp);
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			failureReason = ex.GetType().Name + ": " + ex.Message;
+			return false;
+		}
 	}
 
 	private void NormalizeWeeklyReportReadingXpPendingBatch()

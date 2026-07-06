@@ -617,6 +617,7 @@ public class SubModule : MBSubModuleBase
 			RunWatchedTickPhase("SubModule.MyBehavior.OnEngineTick", () => MyBehavior.Instance?.OnEngineTick());
 			RunWatchedTickPhase("SubModule.CourierDeliveryBehavior.OnEngineTick", () => CourierDeliveryBehavior.Instance?.OnEngineTick());
 			RunWatchedTickPhase("SubModule.DuelBehavior.OnEngineTick", () => DuelBehavior.Instance?.OnEngineTick());
+			RunWatchedTickPhase("SubModule.RewardSystemBehavior.OnEngineTick", () => RewardSystemBehavior.Instance?.OnEngineTick());
 			RunWatchedTickPhase("SubModule.LordEncounterBehavior.OnEngineTick", () => LordEncounterBehavior.OnEngineTick());
 			RunWatchedTickPhase("SubModule.AnimusForgeTerminalBehavior.OnEngineTick", () => AnimusForgeTerminalBehavior.Instance?.OnEngineTick());
 			RunWatchedTickPhase("SubModule.CustomPolicyBehavior.OnEngineTick", () => CustomPolicyBehavior.Instance?.OnEngineTick());

@@ -35,6 +35,7 @@ namespace AnimusForge;
 public class RewardSystemBehavior : CampaignBehaviorBase
 {
 	private const int RewardQuickInfoDurationMs = 5000;
+	private const float JoinPartyConversationCloseDelaySeconds = 5f;
 
 	private const string NotableMarketPromptPrefix = "market@";
 	private const int NotableMarketInventoryPromptMaxItems = 40;
@@ -494,6 +495,50 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	private static Mission _promotedNonHeroCompanionMission;
 
+	private sealed class PendingWildernessNonHeroJoinConversationClose
+	{
+		public PartyBase SourcePartyBase;
+
+		public MobileParty SourceParty;
+
+		public CharacterObject TargetCharacter;
+
+		public int TargetAgentIndex;
+
+		public string SourcePartyId;
+
+		public string TargetCharacterId;
+
+		public long CreatedUtcTicks;
+	}
+
+	private sealed class PendingHeroJoinConversationClose
+	{
+		public Hero JoinedHero;
+
+		public CharacterObject TargetCharacter;
+
+		public PartyBase OriginalParty;
+
+		public MobileParty OriginalMobileParty;
+
+		public string JoinedHeroId;
+
+		public string TargetCharacterId;
+
+		public string OriginalPartyId;
+
+		public long CreatedUtcTicks;
+	}
+
+	private static readonly object WildernessNonHeroJoinConversationCloseLock = new object();
+
+	private static readonly object HeroJoinConversationCloseLock = new object();
+
+	private static PendingWildernessNonHeroJoinConversationClose _pendingWildernessNonHeroJoinConversationClose;
+
+	private static PendingHeroJoinConversationClose _pendingHeroJoinConversationClose;
+
 	public static RewardSystemBehavior Instance { get; private set; }
 
 	private static void ShowRewardQuickInfo(string message, Hero npcHero)
@@ -544,6 +589,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		CampaignEvents.OnPlayerPartyKnockedOrKilledTroopEvent.AddNonSerializedListener(this, OnPlayerPartyKnockedOrKilledTroop);
 		CampaignEvents.OnQuestCompletedEvent.AddNonSerializedListener(this, OnQuestCompleted);
 		CampaignEvents.CompanionRemoved.AddNonSerializedListener(this, OnCompanionRemoved);
+		CampaignEvents.TickEvent.AddNonSerializedListener(this, OnCampaignTick);
 	}
 
 	public static void RegisterHarmonyPatches(Harmony harmony)
@@ -1071,6 +1117,18 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		CleanupPlayerCompanionLordCacheDuplicates("game_load_finished");
 		RepairInactivePromotedPlayerCompanions("game_load_finished");
 		BackfillHeroJoinOriginalClanRecordsForExistingPlayerCompanions();
+	}
+
+	public void OnEngineTick()
+	{
+		TryClosePendingWildernessNonHeroJoinConversation();
+		TryClosePendingHeroJoinConversation();
+	}
+
+	private void OnCampaignTick(float dt)
+	{
+		TryClosePendingWildernessNonHeroJoinConversation();
+		TryClosePendingHeroJoinConversation();
 	}
 
 	private static void ClearPromotedNonHeroCompanionCache()
@@ -4693,6 +4751,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				statusText = $"执行跳过：{joiningHero.Name} 已经在玩家队伍中。";
 				return false;
 			}
+			MobileParty originalMobileParty = joiningHero.PartyBelongedTo;
+			PartyBase originalParty = originalMobileParty?.Party;
 			List<string> transitionNotes = new List<string>();
 			// Capture the original clan before AddCompanionAction changes Hero.Clan through CompanionOf.
 			Clan originalClan = GetHeroBackingClan(joiningHero) ?? joiningHero.Clan;
@@ -4752,6 +4812,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			PlayerEncounter.LocationEncounter?.RemoveAccompanyingCharacter(joiningHero);
 			string transitionSummary = BuildRecruitmentTransitionSummary(transitionNotes);
 			statusText = $"执行成功：{joiningHero.Name} 已加入玩家队伍{transitionSummary}。";
+			ScheduleHeroJoinConversationClose(joiningHero, originalParty, originalMobileParty);
 			return true;
 		}
 		catch (Exception ex)
@@ -4876,8 +4937,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		int beforePrisoners = Math.Max(0, sourceParty.Party?.PrisonRoster?.TotalManCount ?? 0);
 		int movedMembers = MoveWildernessNonHeroPartyMembersToMainParty(sourceParty);
 		int movedPrisoners = MoveWildernessNonHeroPartyPrisonersToMainParty(sourceParty);
-		TryDestroyEmptyWildernessNonHeroJoinParty(sourceParty);
-		TryRequestLeaveWildernessNonHeroJoinEncounter(sourcePartyBase);
 		if (movedMembers <= 0 && movedPrisoners <= 0)
 		{
 			statusText = "执行失败：未能从野外非英雄队伍转入任何成员或俘虏。";
@@ -4893,6 +4952,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		string beforeText = beforeMembers > movedMembers || beforePrisoners > movedPrisoners ? $"（原成员 {beforeMembers}，原俘虏 {beforePrisoners}）" : "";
 		statusText = $"执行成功：{partyName} 已同意加入玩家队伍，已转入 {movedMembers} 名成员{prisonerText}{beforeText}。";
 		Logger.Log("RewardSystemBehavior", "[NonHeroJoin] wilderness_party_join source=" + (sourceParty.StringId ?? "") + " members=" + movedMembers + " prisoners=" + movedPrisoners + " target=" + (joiningCharacter?.StringId ?? "") + " agentIndex=" + targetAgentIndex);
+		ScheduleWildernessNonHeroJoinConversationClose(sourcePartyBase, sourceParty, joiningCharacter, targetAgentIndex);
 		return true;
 	}
 
@@ -5062,23 +5122,264 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void TryRequestLeaveWildernessNonHeroJoinEncounter(PartyBase joinedParty)
+	private static void ScheduleWildernessNonHeroJoinConversationClose(PartyBase sourcePartyBase, MobileParty sourceParty, CharacterObject joiningCharacter, int targetAgentIndex)
+	{
+		if (sourcePartyBase == null && sourceParty == null)
+		{
+			return;
+		}
+		PendingWildernessNonHeroJoinConversationClose pending = new PendingWildernessNonHeroJoinConversationClose
+		{
+			SourcePartyBase = sourcePartyBase,
+			SourceParty = sourceParty,
+			TargetCharacter = joiningCharacter,
+			TargetAgentIndex = targetAgentIndex,
+			SourcePartyId = sourceParty?.StringId ?? "",
+			TargetCharacterId = joiningCharacter?.StringId ?? "",
+			CreatedUtcTicks = DateTime.UtcNow.Ticks
+		};
+		lock (WildernessNonHeroJoinConversationCloseLock)
+		{
+			_pendingWildernessNonHeroJoinConversationClose = pending;
+		}
+		Logger.Log("RewardSystemBehavior", "[NonHeroJoin] scheduled delayed conversation close source=" + pending.SourcePartyId + " target=" + pending.TargetCharacterId + " agentIndex=" + targetAgentIndex);
+	}
+
+	private static void ScheduleHeroJoinConversationClose(Hero joinedHero, PartyBase originalParty, MobileParty originalMobileParty)
+	{
+		if (joinedHero == null)
+		{
+			return;
+		}
+		PendingHeroJoinConversationClose pending = new PendingHeroJoinConversationClose
+		{
+			JoinedHero = joinedHero,
+			TargetCharacter = joinedHero.CharacterObject,
+			OriginalParty = originalParty,
+			OriginalMobileParty = originalMobileParty,
+			JoinedHeroId = joinedHero.StringId ?? "",
+			TargetCharacterId = joinedHero.CharacterObject?.StringId ?? "",
+			OriginalPartyId = originalMobileParty?.StringId ?? "",
+			CreatedUtcTicks = DateTime.UtcNow.Ticks
+		};
+		lock (HeroJoinConversationCloseLock)
+		{
+			_pendingHeroJoinConversationClose = pending;
+		}
+		Logger.Log("RewardSystemBehavior", "[HeroJoin] scheduled delayed conversation close hero=" + pending.JoinedHeroId + " originalParty=" + pending.OriginalPartyId);
+	}
+
+	private static void TryClosePendingWildernessNonHeroJoinConversation()
+	{
+		PendingWildernessNonHeroJoinConversationClose pending = null;
+		try
+		{
+			lock (WildernessNonHeroJoinConversationCloseLock)
+			{
+				if (_pendingWildernessNonHeroJoinConversationClose == null)
+				{
+					return;
+				}
+				long elapsedTicks = DateTime.UtcNow.Ticks - _pendingWildernessNonHeroJoinConversationClose.CreatedUtcTicks;
+				if (elapsedTicks < (long)(JoinPartyConversationCloseDelaySeconds * TimeSpan.TicksPerSecond))
+				{
+					return;
+				}
+				pending = _pendingWildernessNonHeroJoinConversationClose;
+				_pendingWildernessNonHeroJoinConversationClose = null;
+			}
+			ExecutePendingWildernessNonHeroJoinConversationClose(pending);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("RewardSystemBehavior", "[NonHeroJoin] delayed close failed: " + ex.Message);
+		}
+	}
+
+	private static void TryClosePendingHeroJoinConversation()
+	{
+		PendingHeroJoinConversationClose pending = null;
+		try
+		{
+			lock (HeroJoinConversationCloseLock)
+			{
+				if (_pendingHeroJoinConversationClose == null)
+				{
+					return;
+				}
+				long elapsedTicks = DateTime.UtcNow.Ticks - _pendingHeroJoinConversationClose.CreatedUtcTicks;
+				if (elapsedTicks < (long)(JoinPartyConversationCloseDelaySeconds * TimeSpan.TicksPerSecond))
+				{
+					return;
+				}
+				pending = _pendingHeroJoinConversationClose;
+				_pendingHeroJoinConversationClose = null;
+			}
+			ExecutePendingHeroJoinConversationClose(pending);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("RewardSystemBehavior", "[HeroJoin] delayed close failed: " + ex.Message);
+		}
+	}
+
+	private static void ExecutePendingWildernessNonHeroJoinConversationClose(PendingWildernessNonHeroJoinConversationClose pending)
+	{
+		if (pending == null)
+		{
+			return;
+		}
+		bool encounterMatches = DoesPendingWildernessNonHeroJoinEncounterMatch(pending);
+		bool conversationMatches = encounterMatches && DoesPendingWildernessNonHeroJoinConversationMatch(pending);
+		if (encounterMatches)
+		{
+			PlayerEncounter.LeaveEncounter = true;
+		}
+		if (conversationMatches)
+		{
+			TryEndCurrentConversationForJoinAction("wilderness_nonhero_join_party_delayed_close");
+		}
+		TryDestroyEmptyWildernessNonHeroJoinParty(pending.SourceParty);
+		Logger.Log("RewardSystemBehavior", "[NonHeroJoin] delayed close applied conversation=" + conversationMatches + " encounter=" + encounterMatches + " source=" + (pending.SourcePartyId ?? "") + " target=" + (pending.TargetCharacterId ?? ""));
+	}
+
+	private static void ExecutePendingHeroJoinConversationClose(PendingHeroJoinConversationClose pending)
+	{
+		if (pending == null)
+		{
+			return;
+		}
+		bool conversationMatches = DoesPendingHeroJoinConversationMatch(pending);
+		bool encounterMatches = DoesPendingHeroJoinEncounterMatch(pending);
+		if (encounterMatches)
+		{
+			PlayerEncounter.LeaveEncounter = true;
+		}
+		if (conversationMatches)
+		{
+			TryEndCurrentConversationForJoinAction("hero_join_party_delayed_close");
+		}
+		Logger.Log("RewardSystemBehavior", "[HeroJoin] delayed close applied conversation=" + conversationMatches + " encounter=" + encounterMatches + " hero=" + (pending.JoinedHeroId ?? "") + " originalParty=" + (pending.OriginalPartyId ?? ""));
+	}
+
+	private static bool DoesPendingWildernessNonHeroJoinConversationMatch(PendingWildernessNonHeroJoinConversationClose pending)
+	{
+		if (pending == null)
+		{
+			return false;
+		}
+		CharacterObject currentCharacter = Campaign.Current?.ConversationManager?.OneToOneConversationCharacter ?? CharacterObject.OneToOneConversationCharacter;
+		if (currentCharacter == null)
+		{
+			return false;
+		}
+		if (pending.TargetCharacter != null && currentCharacter == pending.TargetCharacter)
+		{
+			return true;
+		}
+		return !string.IsNullOrEmpty(pending.TargetCharacterId) && string.Equals(currentCharacter.StringId, pending.TargetCharacterId, StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool DoesPendingWildernessNonHeroJoinEncounterMatch(PendingWildernessNonHeroJoinConversationClose pending)
+	{
+		if (pending == null || PlayerEncounter.Current == null)
+		{
+			return false;
+		}
+		PartyBase encountered = PlayerEncounterCompat.GetEncounteredPartySafe() ?? PlayerEncounter.EncounteredParty;
+		if (encountered == null)
+		{
+			return false;
+		}
+		if (pending.SourcePartyBase != null && encountered == pending.SourcePartyBase)
+		{
+			return true;
+		}
+		if (pending.SourceParty != null && encountered.MobileParty == pending.SourceParty)
+		{
+			return true;
+		}
+		return !string.IsNullOrEmpty(pending.SourcePartyId) && string.Equals(encountered.MobileParty?.StringId, pending.SourcePartyId, StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool DoesPendingHeroJoinConversationMatch(PendingHeroJoinConversationClose pending)
+	{
+		if (pending == null)
+		{
+			return false;
+		}
+		CharacterObject currentCharacter = Campaign.Current?.ConversationManager?.OneToOneConversationCharacter ?? CharacterObject.OneToOneConversationCharacter;
+		if (currentCharacter == null)
+		{
+			return false;
+		}
+		Hero currentHero = currentCharacter.HeroObject;
+		if (pending.JoinedHero != null && currentHero == pending.JoinedHero)
+		{
+			return true;
+		}
+		if (!string.IsNullOrEmpty(pending.JoinedHeroId) && string.Equals(currentHero?.StringId, pending.JoinedHeroId, StringComparison.OrdinalIgnoreCase))
+		{
+			return true;
+		}
+		if (pending.TargetCharacter != null && currentCharacter == pending.TargetCharacter)
+		{
+			return true;
+		}
+		return !string.IsNullOrEmpty(pending.TargetCharacterId) && string.Equals(currentCharacter.StringId, pending.TargetCharacterId, StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool DoesPendingHeroJoinEncounterMatch(PendingHeroJoinConversationClose pending)
+	{
+		if (pending == null || PlayerEncounter.Current == null)
+		{
+			return false;
+		}
+		PartyBase encountered = PlayerEncounterCompat.GetEncounteredPartySafe() ?? PlayerEncounter.EncounteredParty;
+		if (encountered == null)
+		{
+			return false;
+		}
+		if (pending.OriginalParty != null && encountered == pending.OriginalParty)
+		{
+			return true;
+		}
+		if (pending.OriginalMobileParty != null && encountered.MobileParty == pending.OriginalMobileParty)
+		{
+			return true;
+		}
+		if (!string.IsNullOrEmpty(pending.OriginalPartyId) && string.Equals(encountered.MobileParty?.StringId, pending.OriginalPartyId, StringComparison.OrdinalIgnoreCase))
+		{
+			return true;
+		}
+		Hero leaderHero = encountered.LeaderHero;
+		if (pending.JoinedHero != null && leaderHero == pending.JoinedHero)
+		{
+			return true;
+		}
+		return !string.IsNullOrEmpty(pending.JoinedHeroId) && string.Equals(leaderHero?.StringId, pending.JoinedHeroId, StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static void TryEndCurrentConversationForJoinAction(string staleReason)
 	{
 		try
 		{
-			if (joinedParty == null || PlayerEncounter.Current == null)
+			if ((Campaign.Current?.ConversationManager?.OneToOneConversationCharacter ?? CharacterObject.OneToOneConversationCharacter) == null)
 			{
 				return;
 			}
-			PartyBase encountered = PlayerEncounterCompat.GetEncounteredPartySafe() ?? PlayerEncounter.EncounteredParty;
-			if (encountered == joinedParty)
-			{
-				PlayerEncounter.LeaveEncounter = true;
-				ConversationExceptionGuard.MarkCurrentConversationStale("wilderness_nonhero_join_party");
-			}
+			Campaign.Current?.ConversationManager?.EndConversation();
 		}
-		catch
+		catch (Exception ex)
 		{
+			Logger.Log("RewardSystemBehavior", "[JoinParty] delayed EndConversation failed: " + ex.Message);
+			try
+			{
+				ConversationExceptionGuard.MarkCurrentConversationStale(string.IsNullOrWhiteSpace(staleReason) ? "join_party_delayed_close" : staleReason);
+			}
+			catch
+			{
+			}
 		}
 	}
 
