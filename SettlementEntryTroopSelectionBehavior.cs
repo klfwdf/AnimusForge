@@ -84,6 +84,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		PatchEncounterEntry(harmony, typeof(VillageEncounter), nameof(VillageEncounter.CreateAndOpenMissionController), nameof(VillageCreateAndOpenMissionControllerPrefix), "village-center");
 		PatchEndMissionGuard(harmony, typeof(BasicLeaveMissionLogic), nameof(BasicLeaveMissionLogic.OnEndMissionRequest), "basic-leave");
 		PatchEndMissionGuard(harmony, typeof(MissionFightHandler), nameof(MissionFightHandler.OnEndMissionRequest), "mission-fight");
+		PatchEndMissionGuardByTypeName(harmony, "SandBox.Missions.MissionLogics.LeaveMissionLogic", "OnEndMissionRequest", "leave-mission");
 		PatchSetsUsableProtection(harmony);
 	}
 
@@ -292,6 +293,17 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		}
 		harmony.Patch(target, prefix: new HarmonyMethod(typeof(SettlementEntryTroopSelectionBehavior), nameof(AllowSetsVictoryEndMissionGuardPrefix)));
 		SettlementEntryTroopSelectionLog.Log("Harmony patch registered for " + label + " end-mission guard.");
+	}
+
+	private static void PatchEndMissionGuardByTypeName(Harmony harmony, string typeName, string methodName, string label)
+	{
+		Type logicType = AccessTools.TypeByName(typeName);
+		if (logicType == null)
+		{
+			SettlementEntryTroopSelectionLog.Log(label + " end-mission guard type not found.");
+			return;
+		}
+		PatchEndMissionGuard(harmony, logicType, methodName, label);
 	}
 
 	private static void PatchSetsUsableProtection(Harmony harmony)

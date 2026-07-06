@@ -356,6 +356,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static MobileParty _besiegerParty;
 	private static bool _setsSettlementEntryVictoryContext;
 	private static string _setsSettlementEntryVictorySource = "";
+	private static bool _setsSettlementEntryWallRescueSuppressionLogged;
 	private static Settlement _activeSettlement;
 	private static Team _interventionPlayerCommandTeam;
 	private static Team _interventionCivilianEnemyTeam;
@@ -734,6 +735,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		_setsSettlementEntryVictoryContext = true;
 		_setsSettlementEntryVictorySource = string.IsNullOrWhiteSpace(source) ? "SETS_town_victory" : source;
+		_setsSettlementEntryWallRescueSuppressionLogged = false;
 		_activeSettlement = settlement;
 		_besiegerParty = MobileParty.MainParty;
 		_previousSettlementOwnerClan = settlement?.OwnerClan;
@@ -6599,12 +6601,26 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static bool IsSetsSettlementEntryVictoryIntervention()
+	{
+		return _setsSettlementEntryVictoryContext;
+	}
+
 	private static bool ShouldUseTemporaryWallRescue(Agent agent, Mission mission, Vec3 target, string source)
 	{
 		try
 		{
 			if (agent == null || mission == null || !agent.IsActive())
 			{
+				return false;
+			}
+			if (IsSetsSettlementEntryVictoryIntervention())
+			{
+				if (!_setsSettlementEntryWallRescueSuppressionLogged)
+				{
+					_setsSettlementEntryWallRescueSuppressionLogged = true;
+					Logger.Log("SiegeAiIntervention", "Suppressed wall-pass teleport rescue during SETS-started GCCZ mission. Source=" + (source ?? "N/A"));
+				}
 				return false;
 			}
 			float distanceSq = agent.Position.DistanceSquared(target);
@@ -15238,6 +15254,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			_besiegerParty = null;
 			_setsSettlementEntryVictoryContext = false;
 			_setsSettlementEntryVictorySource = "";
+			_setsSettlementEntryWallRescueSuppressionLogged = false;
 			_interventionPlayerCommandTeam = null;
 			_interventionCivilianEnemyTeam = null;
 			_partyContributions = new Dictionary<MobileParty, float>();
@@ -15286,6 +15303,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_besiegerParty = null;
 		_setsSettlementEntryVictoryContext = false;
 		_setsSettlementEntryVictorySource = "";
+		_setsSettlementEntryWallRescueSuppressionLogged = false;
 		_activeSettlement = null;
 		_interventionPlayerCommandTeam = null;
 		_interventionCivilianEnemyTeam = null;
