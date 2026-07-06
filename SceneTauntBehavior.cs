@@ -6248,6 +6248,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	internal static bool ShouldBlockSceneExitExternal(Mission mission)
 	{
+		if (SettlementEntryTroopSelectionBehavior.ShouldBypassSceneTauntExitBlockForExternal(mission))
+		{
+			return false;
+		}
 		try
 		{
 			if (mission?.GetMissionBehavior<SceneTauntMissionBehavior>()?.ShouldBlockSceneExit() ?? false)
@@ -8980,6 +8984,10 @@ public class SceneTauntConsequenceMissionLogic : MissionLogic
 	public override InquiryData OnEndMissionRequest(out bool canPlayerLeave)
 	{
 		canPlayerLeave = true;
+		if (SettlementEntryTroopSelectionBehavior.ShouldBypassSceneTauntExitBlockForExternal(Mission.Current))
+		{
+			return null;
+		}
 		SceneTauntMissionBehavior missionBehavior = Mission.Current?.GetMissionBehavior<SceneTauntMissionBehavior>();
 		if (missionBehavior != null && missionBehavior.ShouldBlockSceneExit())
 		{

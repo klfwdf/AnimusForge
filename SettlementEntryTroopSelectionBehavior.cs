@@ -44,6 +44,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	private const float DefenderReserveStuckNudgeSeconds = 20f;
 	private const float DefenderReserveStuckRetrySeconds = 50f;
 	private const float ProtectedFollowerHostilitySuppressionSeconds = 8f;
+	private const float VictoryEndMissionFallbackDelaySeconds = 2f;
 	private const string LordHallLocationId = "lordshall";
 	private const string TownCenterLocationId = "center";
 	private const string CastleCenterLocationId = "center";
@@ -1193,6 +1194,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private bool _conflictActive;
 		private bool _victoryReached;
 		private bool _victoryQueued;
+		private bool _victoryEndMissionRequested;
 		private bool _politicalConsequenceApplied;
 		private Team _playerTeam;
 		private Team _enemyTeam;
@@ -1201,6 +1203,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private float _protectedFollowerHostilitySuppressionUntil;
 		private float _nextDefenderReserveWaveTime;
 		private float _lastDefenderReserveProgressTime;
+		private float _victoryReachedTime = -1f;
 		private int _lastDefenderReserveLiveEnemyCount = -1;
 		private bool _defenderReserveStuckNudged;
 		private int _defenderReservePhaseIndex;
@@ -1236,6 +1239,10 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			if (_conflictFeaturesEnabled && _conflictActive && !_victoryReached)
 			{
 				RefreshSetsUsableProtectionState("tick");
+			}
+			if (_conflictFeaturesEnabled && _victoryReached)
+			{
+				TryForceVictoryMissionEnd("tick");
 			}
 			if (!_conflictFeaturesEnabled || !_conflictActive || _victoryReached || base.Mission == null || base.Mission.CurrentTime < _nextEnemyCheckTime)
 			{
@@ -2688,12 +2695,44 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				return;
 			}
 			_victoryReached = true;
+			_victoryReachedTime = base.Mission?.CurrentTime ?? 0f;
 			_conflictActive = false;
 			ClearSetsUsableProtectionState("sets_victory");
 			PrepareVictoryExit(source);
 			QueueVictoryPostMissionFlow(source);
-			InformationManager.DisplayMessage(new InformationMessage("【SETS内部暴乱】城镇守卫、民兵、驻军与驻城领主部队已被击溃。按 TAB 退出后直接进入 GCCZ 攻城处置。", Color.FromUint(SuccessColor)));
+			InformationManager.DisplayMessage(new InformationMessage("【SETS内部暴乱】城镇守卫、民兵、驻军与驻城领主部队已被击溃。按 TAB 退出；若无响应将自动进入 GCCZ 攻城处置。", Color.FromUint(SuccessColor)));
 			SettlementEntryTroopSelectionLog.Log("Victory reached. settlement=" + _settlementId + ", survivors=" + (_survivingRoster?.TotalManCount ?? 0) + ", source=" + source);
+		}
+
+		private void TryForceVictoryMissionEnd(string source)
+		{
+			if (_victoryEndMissionRequested)
+			{
+				return;
+			}
+			try
+			{
+				Mission mission = base.Mission;
+				if (mission == null || mission.IsMissionEnding)
+				{
+					return;
+				}
+				float victoryReachedTime = _victoryReachedTime < 0f ? mission.CurrentTime : _victoryReachedTime;
+				if (mission.CurrentTime - victoryReachedTime < VictoryEndMissionFallbackDelaySeconds)
+				{
+					return;
+				}
+				_victoryEndMissionRequested = true;
+				PrepareVictoryExit(source + "_force_end");
+				mission.NextCheckTimeEndMission = 0f;
+				mission.EndMission();
+				SettlementEntryTroopSelectionLog.Log("Forced SETS victory mission end. settlement=" + _settlementId + ", source=" + source);
+			}
+			catch (Exception ex)
+			{
+				_victoryEndMissionRequested = false;
+				SettlementEntryTroopSelectionLog.Log("Forced SETS victory mission end failed. settlement=" + _settlementId + ", error=" + ex.Message);
+			}
 		}
 
 		private void QueueVictoryPostMissionFlow(string source)
