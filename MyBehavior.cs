@@ -12573,6 +12573,30 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static void RecordNobleGatheringWeeklyMaterialForExternal(string stableKey, string label, string snapshotText, string kingdomId, string settlementId, string actorHeroId, bool includeInWorld)
+	{
+		try
+		{
+			MyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			behavior?.RecordEventSourceMaterial(
+				"noble_gathering",
+				label,
+				snapshotText,
+				stableKey,
+				kingdomId,
+				settlementId,
+				includeInWorld,
+				includeInKingdom: true,
+				actorHeroId: actorHeroId,
+				actorKingdomId: kingdomId);
+			Logger.Log("EventWeeklyReport", "[NobleGathering] source_material_recorded key=" + (stableKey ?? "") + " kingdom=" + (kingdomId ?? "") + " world=" + includeInWorld);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EventWeeklyReport", "[NobleGathering][WARN] record weekly material failed: " + ex.Message);
+		}
+	}
+
 	public static void RecordCustomPolicyWeeklyMaterialForExternal(string recordId, string policyName, string dateText, string policySummary, string feedbackSummary, string effectSummary, string playerKingdomId, string playerKingdomName, string targetKingdomId, string targetKingdomName, string effectId, int submittedDay, string gameDate, bool includeInWorld)
 	{
 		try
@@ -28210,7 +28234,7 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			if (playerWon)
 			{
-				stringBuilder.AppendLine("【战斗结果】你刚刚在一场正式的决斗中输给了" + playerDisplayName + "。请在态度和言语中体现这一点，并认真考虑履行你在决斗前约定的赌注或补偿。");
+				stringBuilder.AppendLine("【战斗结果】你刚刚在一场正式的决斗中输给了" + playerDisplayName + "。无论失败来自倒地、低血量、逃跑或撤退，这都已经按决斗失败结算；你可以不甘、恼怒或嘴硬，但不能否认自己输了。请认真考虑履行你在决斗前约定的赌注或补偿。");
 				if (AIConfigHandler.RewardEnabled)
 				{
 					flag7 = true;

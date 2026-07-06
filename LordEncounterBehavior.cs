@@ -6476,9 +6476,9 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			int encounterReleaseVanillaSafePassageQuote = TryGetEncounterReleaseVanillaSafePassageQuote(resolvedTarget);
 			string text2 = (encounterReleaseVanillaSafePassageQuote > 0) ? $"按原版谈判口径，这次“安全放行并约定五天内不主动攻击”的参考估值约为 {encounterReleaseVanillaSafePassageQuote} 第纳尔，你可以把它当作软参考来谈价、索赔或换物，但不必机械照搬这个数字。" : "";
-			return $"【遭遇放走规则】本轮可以谈是否放{text}离开；可要求赔偿、立誓、交人、交钱或别的交换。{text2}只有你最终明确同意让{text}立刻离开，才算真的放走；还在谈条件就不算。";
+			return $"【遭遇放走规则】你和你的的部队试图向{text}发起攻击，但本轮可以谈是否放{text}离开；可要求赔偿、立誓、交人、交钱或别的交换。{text2}只有你最终明确同意让{text}立刻离开，才算真的放走；还在谈条件就不算。";
 		}
-		return $"【遭遇放走规则】你绝不可以放{text}走,他是你的势力的敌人，你必须在回复末尾输出标签[ACTION:MEETING_TAUNT_BATTLE]让你的部队攻击他";
+		return $"【遭遇放走规则】你和你的的部队试图向{text}发起攻击，并且你绝不可以放{text}走,他是你的势力的敌人，你必须在回复末尾输出标签[ACTION:MEETING_TAUNT_BATTLE]让你的部队攻击他";
 	}
 
 	internal static List<PostprocessRuleEntry> BuildMeetingPlayerReleasePostprocessRulesForExternal(Hero target)

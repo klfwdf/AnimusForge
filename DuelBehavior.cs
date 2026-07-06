@@ -230,10 +230,28 @@ public class DuelBehavior : CampaignBehaviorBase
 		public override void OnAgentRemoved(Agent affectedAgent, Agent affectorAgent, AgentState agentState, KillingBlow blow)
 		{
 			base.OnAgentRemoved(affectedAgent, affectorAgent, agentState, blow);
-			if (_runtime != null && !_runtime.SettlementDone && (agentState == AgentState.Killed || agentState == AgentState.Unconscious))
+			if (_runtime == null || _runtime.SettlementDone)
+			{
+				return;
+			}
+			if (TrySettleRemovedParticipant(affectedAgent, agentState, "OnAgentRemoved"))
+			{
+				return;
+			}
+			if (IsDuelDefeatRemovalState(agentState))
 			{
 				TryResolveResultFromAgents("OnAgentRemoved");
 			}
+		}
+
+		public override void OnAgentFleeing(Agent affectedAgent)
+		{
+			base.OnAgentFleeing(affectedAgent);
+			if (_runtime == null || _runtime.SettlementDone)
+			{
+				return;
+			}
+			TrySettleFleeingParticipant(affectedAgent, "OnAgentFleeing");
 		}
 
 		private void CacheBattleEndLogic()
@@ -320,17 +338,111 @@ public class DuelBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				if (agent == base.Mission?.MainAgent || agent == Agent.Main || agent.IsMainAgent)
+				if (IsPlayerParticipant(agent))
 				{
 					return true;
 				}
-				CharacterObject character = agent.Character as CharacterObject;
+				return IsTargetParticipant(agent);
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
+		private bool IsPlayerParticipant(Agent agent)
+		{
+			try
+			{
+				return agent != null && (agent == base.Mission?.MainAgent || agent == Agent.Main || agent.IsMainAgent);
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
+		private bool IsTargetParticipant(Agent agent)
+		{
+			try
+			{
+				CharacterObject character = agent?.Character as CharacterObject;
 				return character != null && _runtime?.TargetCharacter != null && character == _runtime.TargetCharacter;
 			}
 			catch
 			{
 				return false;
 			}
+		}
+
+		private static bool IsDuelDefeatRemovalState(AgentState agentState)
+		{
+			return agentState == AgentState.Killed || agentState == AgentState.Unconscious || agentState == AgentState.Routed;
+		}
+
+		private static bool IsAgentDefeatedOrFleeing(Agent agent)
+		{
+			if (agent == null)
+			{
+				return false;
+			}
+			try
+			{
+				if (agent.State == AgentState.Killed || agent.State == AgentState.Unconscious || agent.State == AgentState.Routed)
+				{
+					return true;
+				}
+				if (!agent.IsActive() || agent.Health <= 0f)
+				{
+					return true;
+				}
+				if (agent.IsRunningAway)
+				{
+					return true;
+				}
+			}
+			catch
+			{
+			}
+			return false;
+		}
+
+		private bool TrySettleRemovedParticipant(Agent affectedAgent, AgentState agentState, string source)
+		{
+			if (!IsDuelDefeatRemovalState(agentState))
+			{
+				return false;
+			}
+			if (IsPlayerParticipant(affectedAgent))
+			{
+				SettleWildernessDuelRuntime(_runtime, playerDefeated: true, source + ":" + agentState);
+				_leaveTime = (base.Mission?.CurrentTime ?? 0f) + 2f;
+				return true;
+			}
+			if (IsTargetParticipant(affectedAgent))
+			{
+				SettleWildernessDuelRuntime(_runtime, playerDefeated: false, source + ":" + agentState);
+				_leaveTime = (base.Mission?.CurrentTime ?? 0f) + 2f;
+				return true;
+			}
+			return false;
+		}
+
+		private bool TrySettleFleeingParticipant(Agent affectedAgent, string source)
+		{
+			if (IsPlayerParticipant(affectedAgent))
+			{
+				SettleWildernessDuelRuntime(_runtime, playerDefeated: true, source + ":player_flee");
+				_leaveTime = (base.Mission?.CurrentTime ?? 0f) + 2f;
+				return true;
+			}
+			if (IsTargetParticipant(affectedAgent))
+			{
+				SettleWildernessDuelRuntime(_runtime, playerDefeated: false, source + ":target_flee");
+				_leaveTime = (base.Mission?.CurrentTime ?? 0f) + 2f;
+				return true;
+			}
+			return false;
 		}
 
 		private Agent FindTargetAgent()
@@ -366,8 +478,8 @@ public class DuelBehavior : CampaignBehaviorBase
 				{
 					return;
 				}
-				bool playerDown = !player.IsActive() || player.State == AgentState.Killed || player.State == AgentState.Unconscious || player.Health <= 0f;
-				bool targetDown = target != null && (!target.IsActive() || target.State == AgentState.Killed || target.State == AgentState.Unconscious || target.Health <= 0f);
+				bool playerDown = IsAgentDefeatedOrFleeing(player);
+				bool targetDown = target != null && IsAgentDefeatedOrFleeing(target);
 				if (!playerDown && !targetDown && target != null && player.HealthLimit > 0f && target.HealthLimit > 0f)
 				{
 					float threshold = DuelSettings.GetHealthThreshold();
@@ -2137,11 +2249,36 @@ public class DuelBehavior : CampaignBehaviorBase
 				return false;
 			}
 			Logger.Log("DuelBehavior", "[WildernessDuel][FallbackArena] source=" + (source ?? "") + " reason=" + (reason ?? "") + " target=" + (targetCharacter.HeroObject?.StringId ?? targetCharacter.StringId));
-			InformationManager.DisplayMessage(new InformationMessage("无法识别当前野外决斗场景，已改为前往竞技场。", Color.FromUint(4294901760u)));
-			return Instance.TryTeleportToArenaForDuel(targetCharacter);
+			string message = reason != null && reason.IndexOf("army", StringComparison.OrdinalIgnoreCase) >= 0
+				? "目标处于军团遭遇中，为避免野外决斗卡加载，已改为前往竞技场。"
+				: "无法识别当前野外决斗场景，已改为前往竞技场。";
+			InformationManager.DisplayMessage(new InformationMessage(message, Color.FromUint(4294901760u)));
+			_arenaMissionActive = true;
+			_arenaMissionLeaveRequested = false;
+			_arenaMissionLeaveReadyTime = 0f;
+			_arenaMissionStartedOnce = false;
+			_arenaMissionOpeningGraceUntilUtcTicks = DateTime.UtcNow.AddSeconds(120.0).Ticks;
+			_returnToMapAfterIndependentDuel = true;
+			bool opened = Instance.TryTeleportToArenaForDuel(targetCharacter);
+			if (!opened)
+			{
+				_arenaMissionActive = false;
+				_arenaMissionLeaveRequested = false;
+				_arenaMissionLeaveReadyTime = 0f;
+				_arenaMissionStartedOnce = false;
+				_arenaMissionOpeningGraceUntilUtcTicks = 0L;
+				_returnToMapAfterIndependentDuel = false;
+			}
+			return opened;
 		}
 		catch (Exception ex)
 		{
+			_arenaMissionActive = false;
+			_arenaMissionLeaveRequested = false;
+			_arenaMissionLeaveReadyTime = 0f;
+			_arenaMissionStartedOnce = false;
+			_arenaMissionOpeningGraceUntilUtcTicks = 0L;
+			_returnToMapAfterIndependentDuel = false;
 			Logger.Log("DuelBehavior", "[WildernessDuel][FallbackArena][ERROR] " + ex);
 			return false;
 		}
@@ -2206,6 +2343,58 @@ public class DuelBehavior : CampaignBehaviorBase
 		{
 			blockedReason = ex.Message;
 			return false;
+		}
+	}
+
+	private static bool ShouldUseArenaFallbackForArmyWildernessDuel(CharacterObject targetCharacter, out string reason)
+	{
+		reason = "";
+		try
+		{
+			Hero target = targetCharacter?.HeroObject;
+			MobileParty targetParty = target?.PartyBelongedTo;
+			if (target == null || targetParty == null)
+			{
+				return false;
+			}
+			Army army = targetParty.Army;
+			if (army == null)
+			{
+				return false;
+			}
+			if (targetParty.LeaderHero != target)
+			{
+				return false;
+			}
+			MobileParty leaderParty = army.LeaderParty;
+			if (leaderParty == null)
+			{
+				reason = "target party belongs to an army with a missing leader party";
+				return true;
+			}
+			if (leaderParty == targetParty)
+			{
+				reason = "target is an army leader";
+				return true;
+			}
+			try
+			{
+				if (leaderParty.AttachedParties != null && leaderParty.AttachedParties.Contains(targetParty))
+				{
+					reason = "target leads an attached army party";
+					return true;
+				}
+			}
+			catch
+			{
+			}
+			reason = "target party belongs to an army";
+			return true;
+		}
+		catch (Exception ex)
+		{
+			reason = "army target check failed: " + ex.GetType().Name;
+			return true;
 		}
 	}
 
@@ -3517,6 +3706,13 @@ public class DuelBehavior : CampaignBehaviorBase
 				Logger.Log("DuelBehavior", "[WildernessDuel] blocked: " + blockedReason);
 				LogWildernessDuelDiagnostic("open.blocked " + blockedReason, diagnosticId, target);
 				LogDuelLoadingCheckpoint("wilderness.open.blocked " + blockedReason, diagnosticId, target, null, immediate: true);
+				return false;
+			}
+			if (ShouldUseArenaFallbackForArmyWildernessDuel(targetCharacter, out string fallbackReason))
+			{
+				Logger.Log("DuelBehavior", "[WildernessDuel] arena fallback required before dummy map event: " + fallbackReason + ", target=" + (target?.StringId ?? targetCharacter.StringId));
+				LogWildernessDuelDiagnostic("open.army_arena_fallback " + fallbackReason, diagnosticId, target);
+				LogDuelLoadingCheckpoint("wilderness.open.army_arena_fallback " + fallbackReason, diagnosticId, target, null, immediate: true);
 				return false;
 			}
 			if (IsCampaignConversationActive())
