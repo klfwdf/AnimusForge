@@ -1182,6 +1182,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private readonly List<DefenderReserveEntry> _remainingDefenderReserve;
 		private readonly HashSet<int> _alliedAgentIndexes = new HashSet<int>();
 		private readonly HashSet<int> _enemyAgentIndexes = new HashSet<int>();
+		private readonly HashSet<int> _victoryObjectiveEnemyAgentIndexes = new HashSet<int>();
 		private readonly HashSet<int> _spawnedDefenderReserveAgentIndexes = new HashSet<int>();
 		private readonly HashSet<int> _settledCasualtyAgentIndexes = new HashSet<int>();
 		private readonly HashSet<int> _settledDefenderReserveAgentIndexes = new HashSet<int>();
@@ -1250,6 +1251,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			}
 			_nextEnemyCheckTime = base.Mission.CurrentTime + 1f;
 			MaintainConflictTeams();
+			PruneNonObjectiveCombatants("tick");
 			RefreshEnemyCombatTargets();
 			int liveEnemyCount = CountLiveTrackedEnemies();
 			ObserveDefenderReserveProgress(liveEnemyCount);
@@ -1284,11 +1286,11 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			}
 			bool affectorIsPlayerSide = IsPlayerSideAgent(affectorAgent);
 			bool affectedIsPlayerSide = IsPlayerSideAgent(affectedAgent);
-			if (affectorIsPlayerSide && !affectedIsPlayerSide && IsGuardOrSoldierAgent(affectedAgent))
+			if (affectorIsPlayerSide && !affectedIsPlayerSide && IsVictoryObjectiveSceneAgent(affectedAgent))
 			{
 				StartConflict("player_side_hit_guard", affectedAgent);
 			}
-			else if (affectedIsPlayerSide && !affectorIsPlayerSide && IsGuardOrSoldierAgent(affectorAgent))
+			else if (affectedIsPlayerSide && !affectorIsPlayerSide && IsVictoryObjectiveSceneAgent(affectorAgent))
 			{
 				StartConflict("guard_hit_player_side", affectorAgent);
 			}
@@ -1318,6 +1320,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					SettleDefenderReserveDefeat(affectedAgent, "agent_removed_" + agentState);
 				}
 				_enemyAgentIndexes.Remove(affectedAgent.Index);
+				_victoryObjectiveEnemyAgentIndexes.Remove(affectedAgent.Index);
 				_spawnedDefenderReserveAgentIndexes.Remove(affectedAgent.Index);
 				_defenderReserveAgentSourceRosters.Remove(affectedAgent.Index);
 				_defenderReserveAgentWaveNumbers.Remove(affectedAgent.Index);
@@ -1515,7 +1518,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				if (initialEnemy != null && !IsPlayerSideAgent(initialEnemy) && IsGuardOrSoldierAgent(initialEnemy))
+				if (initialEnemy != null && !IsPlayerSideAgent(initialEnemy) && IsVictoryObjectiveSceneAgent(initialEnemy))
 				{
 					MarkEnemyAgent(initialEnemy);
 				}
@@ -1529,7 +1532,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					{
 						continue;
 					}
-					if (IsGuardOrSoldierAgent(agent))
+					if (IsVictoryObjectiveSceneAgent(agent))
 					{
 						MarkEnemyAgent(agent);
 					}
@@ -1547,6 +1550,11 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 
 		private void MarkEnemyAgent(Agent agent)
 		{
+			MarkEnemyAgent(agent, victoryObjective: true);
+		}
+
+		private void MarkEnemyAgent(Agent agent, bool victoryObjective)
+		{
 			if (agent == null || _enemyTeam == null || IsPlayerSideAgent(agent))
 			{
 				return;
@@ -1557,6 +1565,10 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			}
 			agent.SetWatchState(Agent.WatchState.Alarmed);
 			_enemyAgentIndexes.Add(agent.Index);
+			if (victoryObjective)
+			{
+				_victoryObjectiveEnemyAgentIndexes.Add(agent.Index);
+			}
 			AssignEnemyAgentCombatTarget(agent, agent.Index);
 		}
 
@@ -1616,6 +1628,12 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 
 		private bool IsLiveTrackedEnemy(Agent agent)
 		{
+			return IsLiveTrackedCombatEnemy(agent)
+				&& _victoryObjectiveEnemyAgentIndexes.Contains(agent.Index);
+		}
+
+		private bool IsLiveTrackedCombatEnemy(Agent agent)
+		{
 			return agent != null
 				&& agent.IsHuman
 				&& agent.IsActive()
@@ -1623,6 +1641,94 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				&& _enemyAgentIndexes.Contains(agent.Index)
 				&& agent.State != AgentState.Killed
 				&& agent.State != AgentState.Unconscious;
+		}
+
+		private int PruneNonObjectiveCombatants(string reason)
+		{
+			try
+			{
+				Mission mission = base.Mission;
+				if (mission == null)
+				{
+					return 0;
+				}
+				Team neutralTeam = null;
+				List<Agent> nonObjectiveEnemies = new List<Agent>();
+				foreach (Agent agent in mission.Agents)
+				{
+					if (ShouldPruneNonObjectiveCombatAgent(agent))
+					{
+						nonObjectiveEnemies.Add(agent);
+					}
+				}
+				for (int i = 0; i < nonObjectiveEnemies.Count; i++)
+				{
+					Agent agent = nonObjectiveEnemies[i];
+					if (neutralTeam == null)
+					{
+						neutralTeam = EnsureNeutralTeam(mission);
+					}
+					NeutralizeEnemyAgent(agent, neutralTeam);
+					_enemyAgentIndexes.Remove(agent.Index);
+					_victoryObjectiveEnemyAgentIndexes.Remove(agent.Index);
+					_spawnedDefenderReserveAgentIndexes.Remove(agent.Index);
+					_defenderReserveAgentSourceRosters.Remove(agent.Index);
+					_defenderReserveAgentWaveNumbers.Remove(agent.Index);
+				}
+				if (nonObjectiveEnemies.Count > 0)
+				{
+					SettlementEntryTroopSelectionLog.Log("Pruned non-objective combatants. settlement=" + _settlementId + ", reason=" + reason + ", count=" + nonObjectiveEnemies.Count);
+					RefreshSetsUsableProtectionState("prune_non_objective_enemies");
+				}
+				return nonObjectiveEnemies.Count;
+			}
+			catch (Exception ex)
+			{
+				SettlementEntryTroopSelectionLog.Log("PruneNonObjectiveCombatants failed. reason=" + reason + ", error=" + ex.Message);
+				return 0;
+			}
+		}
+
+		private bool ShouldPruneNonObjectiveCombatAgent(Agent agent)
+		{
+			if (agent == null
+				|| !agent.IsHuman
+				|| !agent.IsActive()
+				|| agent.State == AgentState.Killed
+				|| agent.State == AgentState.Unconscious
+				|| IsPlayerSideAgent(agent)
+				|| _victoryObjectiveEnemyAgentIndexes.Contains(agent.Index)
+				|| _spawnedDefenderReserveAgentIndexes.Contains(agent.Index)
+				|| IsVictoryObjectiveSceneAgent(agent))
+			{
+				return false;
+			}
+			return IsAgentHostileToPlayerSide(agent);
+		}
+
+		private bool IsAgentHostileToPlayerSide(Agent agent)
+		{
+			try
+			{
+				if (agent == null || _playerTeam == null || agent.Team == null)
+				{
+					return false;
+				}
+				if (_enemyTeam != null && agent.Team == _enemyTeam)
+				{
+					return true;
+				}
+				if (agent.Team.IsEnemyOf(_playerTeam) || _playerTeam.IsEnemyOf(agent.Team))
+				{
+					return true;
+				}
+				Agent main = Agent.Main;
+				return main != null && agent.IsEnemyOf(main);
+			}
+			catch
+			{
+				return false;
+			}
 		}
 
 		private void RefreshEnemyCombatTargets()
@@ -1870,7 +1976,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				List<Agent> enemies = new List<Agent>();
 				foreach (Agent agent in mission.Agents)
 				{
-					if (IsLiveTrackedEnemy(agent))
+					if (IsLiveTrackedCombatEnemy(agent))
 					{
 						enemies.Add(agent);
 					}
@@ -1885,6 +1991,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					}
 					NeutralizeEnemyAgent(agent, neutralTeam);
 					_enemyAgentIndexes.Remove(agent.Index);
+					_victoryObjectiveEnemyAgentIndexes.Remove(agent.Index);
 					_spawnedDefenderReserveAgentIndexes.Remove(agent.Index);
 					_defenderReserveAgentSourceRosters.Remove(agent.Index);
 					_defenderReserveAgentWaveNumbers.Remove(agent.Index);
@@ -2352,6 +2459,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					if (asEnemy)
 					{
 						_enemyAgentIndexes.Add(spawnedAgent.Index);
+						_victoryObjectiveEnemyAgentIndexes.Add(spawnedAgent.Index);
 						_spawnedDefenderReserveAgentIndexes.Add(spawnedAgent.Index);
 						if (defenderEntry?.SourceRoster != null)
 						{
@@ -2503,6 +2611,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					agent.SetTeam(_playerTeam, true);
 				}
 				_enemyAgentIndexes.Remove(agent.Index);
+				_victoryObjectiveEnemyAgentIndexes.Remove(agent.Index);
 				_spawnedDefenderReserveAgentIndexes.Remove(agent.Index);
 				_defenderReserveAgentSourceRosters.Remove(agent.Index);
 				_defenderReserveAgentWaveNumbers.Remove(agent.Index);
@@ -2784,9 +2893,9 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			return agent != null && (agent == Agent.Main || _alliedAgentIndexes.Contains(agent.Index));
 		}
 
-		private static bool IsGuardOrSoldierAgent(Agent agent)
+		private static bool IsVictoryObjectiveSceneAgent(Agent agent)
 		{
-			return agent != null && agent.IsHuman && agent.IsActive() && IsGuardOrSoldier(agent.Character as CharacterObject);
+			return agent != null && agent.IsHuman && agent.IsActive() && (IsGuardOrSoldier(agent.Character as CharacterObject) || IsLordCombatant(agent.Character as CharacterObject));
 		}
 
 		private static bool IsGuardOrSoldier(CharacterObject character)
@@ -2796,6 +2905,12 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				|| character.Occupation == Occupation.PrisonGuard
 				|| character.Occupation == Occupation.BannerBearer
 				|| character.Occupation == Occupation.CaravanGuard);
+		}
+
+		private static bool IsLordCombatant(CharacterObject character)
+		{
+			Hero hero = character?.HeroObject;
+			return hero != null && hero != Hero.MainHero && (hero.IsLord || hero.Occupation == Occupation.Lord || character.Occupation == Occupation.Lord);
 		}
 	}
 

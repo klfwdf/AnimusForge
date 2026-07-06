@@ -3164,6 +3164,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		{
 			return false;
 		}
+		if (IsSetsSelectedEntryFollower(targetAgent))
+		{
+			return false;
+		}
 		CharacterObject characterObject = targetAgent.Character as CharacterObject;
 		if (SceneTauntBehavior.IsPlayerProtectedSceneAttackTarget(characterObject?.HeroObject))
 		{
@@ -5272,6 +5276,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		{
 			return true;
 		}
+		if (IsSetsSelectedEntryFollower(agent))
+		{
+			return true;
+		}
 		Agent main = Agent.Main;
 		if (main == null || agent.Team == null || main.Team == null || agent.Team != main.Team)
 		{
@@ -5301,7 +5309,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			return false;
 		}
 		Agent agent = ResolveTargetAgent(targetHero, targetCharacter, targetAgentIndex);
-		return agent != null && agent.IsHuman && agent.IsActive();
+		return agent != null && agent.IsHuman && agent.IsActive() && !IsSetsSelectedEntryFollower(agent);
 	}
 
 	internal bool TryStartConflict(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string targetKey, bool fromVerbalTaunt = false, bool playerUsedWeaponOverride = false)
@@ -5966,7 +5974,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		foreach (int item in _guardAgentIndices)
 		{
 			Agent agent = Mission.Current?.Agents?.FirstOrDefault(a => a != null && a.Index == item && a.IsActive());
-			if (agent == null || !IsAgentWithinArmedBystanderReactionRadius(agent, main) || !_armedEscalationBehaviorFactRolledAgentIndices.Add(item))
+			if (agent == null || IsSetsSelectedEntryFollower(agent) || !IsAgentWithinArmedBystanderReactionRadius(agent, main) || !_armedEscalationBehaviorFactRolledAgentIndices.Add(item))
 			{
 				continue;
 			}
@@ -5979,7 +5987,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		hashSet.UnionWith(_guardAgentIndices);
 		foreach (Agent agent2 in Mission.Current?.Agents ?? Enumerable.Empty<Agent>())
 		{
-			if (agent2 == null || !agent2.IsActive() || !agent2.IsHuman || hashSet.Contains(agent2.Index))
+			if (agent2 == null || !agent2.IsActive() || !agent2.IsHuman || hashSet.Contains(agent2.Index) || IsSetsSelectedEntryFollower(agent2))
 			{
 				continue;
 			}
@@ -6030,6 +6038,11 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		Mission mission = Mission.Current;
 		if (string.IsNullOrWhiteSpace(factText) || targetAgentIndex < 0 || !_conflictActive || !_armedConflict || mission == null)
+		{
+			return false;
+		}
+		Agent targetAgent = mission.Agents?.FirstOrDefault(a => a != null && a.Index == targetAgentIndex && a.IsActive());
+		if (IsSetsSelectedEntryFollower(targetAgent))
 		{
 			return false;
 		}
@@ -6626,6 +6639,11 @@ public class SceneTauntMissionBehavior : MissionBehavior
 						AddUniqueAgent(list, agent);
 						continue;
 					}
+					if (IsSetsSelectedEntryFollower(agent))
+					{
+						AddUniqueAgent(list, agent);
+						continue;
+					}
 					Hero hero = (agent.Character as CharacterObject)?.HeroObject;
 					if (SceneTauntBehavior.IsPlayerMainPartyHero(hero))
 					{
@@ -6720,7 +6738,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			}
 			foreach (Agent agent in agents)
 			{
-				if (agent == null || !agent.IsHuman || !agent.IsActive() || hashSet.Contains(agent.Index))
+				if (agent == null || !agent.IsHuman || !agent.IsActive() || hashSet.Contains(agent.Index) || IsSetsSelectedEntryFollower(agent))
 				{
 					continue;
 				}
@@ -6755,7 +6773,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			}
 			foreach (Agent agent in agents)
 			{
-				if (agent == null || !agent.IsHuman || !agent.IsActive() || hashSet.Contains(agent.Index))
+				if (agent == null || !agent.IsHuman || !agent.IsActive() || hashSet.Contains(agent.Index) || IsSetsSelectedEntryFollower(agent))
 				{
 					continue;
 				}
@@ -8174,6 +8192,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				return false;
 			}
+			if (IsSetsSelectedEntryFollower(agent))
+			{
+				return false;
+			}
 			if (SceneTauntBehavior.IsChildSceneProtectedTarget(agent.Character as CharacterObject))
 			{
 				return false;
@@ -8296,6 +8318,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		try
 		{
 			if (agent == null || !agent.IsHuman || !agent.IsActive() || agent.IsMainAgent || !agent.IsAIControlled)
+			{
+				return false;
+			}
+			if (IsSetsSelectedEntryFollower(agent))
 			{
 				return false;
 			}
@@ -8444,6 +8470,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				return false;
 			}
+			if (IsSetsSelectedEntryFollower(agent))
+			{
+				return false;
+			}
 			CharacterObject characterObject = agent.Character as CharacterObject;
 			if (characterObject == null || IsGuardLikeCharacter(characterObject) || SceneTauntBehavior.IsSceneLordTauntTarget(characterObject.HeroObject))
 			{
@@ -8492,7 +8522,23 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				return false;
 			}
+			if (IsSetsSelectedEntryFollower(agent))
+			{
+				return false;
+			}
 			return !ShouldForceArmedCivilianBystanderToFlee(agent);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsSetsSelectedEntryFollower(Agent agent)
+	{
+		try
+		{
+			return SettlementEntryTroopSelectionBehavior.IsSetsSelectedFollowerAgentForExternal(agent);
 		}
 		catch
 		{
