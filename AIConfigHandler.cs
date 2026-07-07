@@ -364,6 +364,24 @@ public static class AIConfigHandler
 		}
 	}
 
+	private static bool IsPlayerClanLordTarget(Hero targetHero)
+	{
+		try
+		{
+			Clan playerClan = Clan.PlayerClan ?? Hero.MainHero?.Clan;
+			return targetHero != null
+				&& playerClan != null
+				&& targetHero != Hero.MainHero
+				&& targetHero.Clan == playerClan
+				&& targetHero.Occupation == Occupation.Lord
+				&& targetHero.CompanionOf == null;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	private static bool IsPlayerPartyTradeLimitedRule(string ruleId)
 	{
 		string text = (ruleId ?? "").Trim();
@@ -4195,54 +4213,99 @@ public static class AIConfigHandler
 		return text;
 	}
 
-	private static List<string> ParseAuxiliaryGuardrailRuleCodes(string content, IEnumerable<GuardrailAuxiliaryTopic> topics)
+	private static bool TryParseAuxiliaryGuardrailRuleCodes(string content, IEnumerable<GuardrailAuxiliaryTopic> topics, out List<string> codes, out string error)
 	{
-		List<string> list = new List<string>();
+		codes = new List<string>();
+		error = "";
+		string text = StripAuxiliaryJsonCodeFence(content);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			error = "empty_content";
+			return false;
+		}
+		Dictionary<string, string> dictionary = (topics ?? Enumerable.Empty<GuardrailAuxiliaryTopic>())
+			.Where((GuardrailAuxiliaryTopic x) => x != null && !string.IsNullOrWhiteSpace(x.Code))
+			.GroupBy((GuardrailAuxiliaryTopic x) => NormalizeRuleCode(x.Code, x.RuleId, x.Label), StringComparer.OrdinalIgnoreCase)
+			.Where((IGrouping<string, GuardrailAuxiliaryTopic> g) => !string.IsNullOrWhiteSpace(g.Key))
+			.ToDictionary((IGrouping<string, GuardrailAuxiliaryTopic> g) => g.Key, (IGrouping<string, GuardrailAuxiliaryTopic> g) => g.First().RuleId ?? "", StringComparer.OrdinalIgnoreCase);
+		if (dictionary.Count <= 0)
+		{
+			error = "no_known_rule_codes";
+			return false;
+		}
+		JObject jObject;
 		try
 		{
-			string text = (content ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(text))
-			{
-				return list;
-			}
-			Dictionary<string, string> dictionary = (topics ?? Enumerable.Empty<GuardrailAuxiliaryTopic>()).Where((GuardrailAuxiliaryTopic x) => x != null && !string.IsNullOrWhiteSpace(x.Code)).GroupBy((GuardrailAuxiliaryTopic x) => x.Code.Trim(), StringComparer.OrdinalIgnoreCase).ToDictionary((IGrouping<string, GuardrailAuxiliaryTopic> g) => NormalizeRuleCode(g.Key, "", ""), (IGrouping<string, GuardrailAuxiliaryTopic> g) => g.First().RuleId ?? "", StringComparer.OrdinalIgnoreCase);
-			HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			try
-			{
-				JObject jObject = JObject.Parse(StripAuxiliaryJsonCodeFence(text));
-				JArray jArray = jObject["rule_codes"] as JArray;
-				if (jArray != null)
-				{
-					foreach (JToken item in jArray)
-					{
-						string text2 = NormalizeRuleCode(item?.ToString() ?? "", "", "");
-						if (!string.IsNullOrWhiteSpace(text2) && dictionary.ContainsKey(text2) && hashSet.Add(text2))
-						{
-							list.Add(text2);
-						}
-					}
-				}
-			}
-			catch
-			{
-			}
-			if (list.Count > 0)
-			{
-				return list;
-			}
-			foreach (Match item2 in Regex.Matches(text, "[A-Z][A-Z0-9_]{1,48}", RegexOptions.CultureInvariant))
-			{
-				string text3 = NormalizeRuleCode(item2?.Value ?? "", "", "");
-				if (!string.IsNullOrWhiteSpace(text3) && dictionary.ContainsKey(text3) && hashSet.Add(text3))
-				{
-					list.Add(text3);
-				}
-			}
+			jObject = JObject.Parse(text);
 		}
-		catch
+		catch (Exception ex)
 		{
+			error = "invalid_json:" + ex.GetType().Name;
+			return false;
 		}
-		return list;
+		JToken token = jObject["rule_codes"];
+		if (token == null || token.Type == JTokenType.Null)
+		{
+			error = "missing_rule_codes";
+			return false;
+		}
+		if (!(token is JArray jArray))
+		{
+			error = "rule_codes_not_array";
+			return false;
+		}
+		if (jArray.Count <= 0)
+		{
+			error = "rule_codes_empty";
+			return false;
+		}
+		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (JToken item in jArray)
+		{
+			if (item == null || item.Type != JTokenType.String)
+			{
+				error = "rule_code_not_string";
+				codes.Clear();
+				return false;
+			}
+			string code = NormalizeRuleCode(item.ToString(), "", "");
+			if (string.IsNullOrWhiteSpace(code))
+			{
+				error = "rule_code_empty";
+				codes.Clear();
+				return false;
+			}
+			if (!dictionary.ContainsKey(code))
+			{
+				error = "unknown_rule_code:" + code;
+				codes.Clear();
+				return false;
+			}
+			if (seen.Add(code))
+			{
+				codes.Add(code);
+			}
+		}
+		if (codes.Count <= 0)
+		{
+			error = "rule_codes_empty_after_dedupe";
+			return false;
+		}
+		return true;
+	}
+
+	private static string BuildAuxiliaryPreprocessFormatError(string reason, string content)
+	{
+		string preview = (content ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+		if (preview.Length > 700)
+		{
+			preview = preview.Substring(0, 700) + "...";
+		}
+		if (string.IsNullOrWhiteSpace(preview))
+		{
+			preview = "(empty)";
+		}
+		return "（API响应格式错误）前处理规则选择返回格式错误：" + (string.IsNullOrWhiteSpace(reason) ? "unknown" : reason.Trim()) + "。必须只输出 JSON 对象，且包含非空 rule_codes 字符串数组。原始输出：" + preview;
 	}
 
 	public static void PublishAuxiliaryMentionedEntitiesForExternal(string userText, string secondaryText, string runtimeGuardrailContext, string content)
@@ -4614,27 +4677,30 @@ public static class AIConfigHandler
 				return false;
 			}
 			string text2 = BuildAuxiliaryGuardrailRoutingPrompt(userText, secondaryText, runtimeGuardrailContext, list, snapshot.ReturnCap);
-			if (!TryCallAuxiliaryRuleRouterApi(apiUrl, apiKey, modelName, text2, out var content, out var error))
+			string content = "";
+			List<string> list2;
+			while (true)
 			{
-				Logger.Log("GuardrailSemantic", "auxiliary_router failed reason=" + error);
-				snapshot = null;
-				return false;
+				if (!TryCallAuxiliaryRuleRouterApi(apiUrl, apiKey, modelName, text2, out content, out var error))
+				{
+					Logger.Log("GuardrailSemantic", "auxiliary_router failed reason=" + error);
+					snapshot = null;
+					return false;
+				}
+				if (TryParseAuxiliaryGuardrailRuleCodes(content, list, out list2, out var parseError))
+				{
+					break;
+				}
+				string formatError = BuildAuxiliaryPreprocessFormatError(parseError, content);
+				Logger.Log("GuardrailSemantic", "auxiliary_router format_error reason=" + parseError + " raw=" + JsonConvert.ToString(content ?? ""));
+				LogAuxiliaryRouterTokenTrace("auxiliary_router_format_error", BuildAuxiliaryRouterMessages(text2), "[AUXILIARY ROUTER PARSE]" + "\n" + "url=" + apiUrl + "\n" + "model=" + modelName + "\n" + "reason=" + parseError + "\n" + "ai_response=" + "\n" + (content ?? ""), 0);
+				if (!LlmRetryPrompt.PromptRetryBlocking("前处理规则选择", formatError))
+				{
+					throw new PreprocessFormatException(formatError);
+				}
+				Logger.Log("GuardrailSemantic", "auxiliary_router retry_after_format_error reason=" + parseError);
 			}
 			PublishAuxiliaryMentionedEntitiesForExternal(userText, secondaryText, runtimeGuardrailContext, content);
-			List<string> list2 = ParseAuxiliaryGuardrailRuleCodes(content, list);
-			if (list2.Count <= 0)
-			{
-				foreach (GuardrailRuleEval value in snapshot.Rules.Values)
-				{
-					if (value != null)
-					{
-						value.RejectReason = "auxiliary_api_no_topic";
-					}
-				}
-				Logger.Log("GuardrailSemantic", "auxiliary_router no_topic raw=" + JsonConvert.ToString(content ?? ""));
-				LogAuxiliaryRouterTokenTrace("auxiliary_router_no_topic", BuildAuxiliaryRouterMessages(text2), "[AUXILIARY ROUTER PARSE]" + "\n" + "url=" + apiUrl + "\n" + "model=" + modelName + "\n" + "reason=no_topic" + "\n" + "ai_response=" + "\n" + (content ?? ""), 0);
-				return true;
-			}
 			HashSet<string> hashSet2 = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			List<string> list3 = new List<string>();
 			for (int j = 0; j < list2.Count; j++)
@@ -4702,6 +4768,10 @@ public static class AIConfigHandler
 			Logger.Log("GuardrailSemantic", $"auxiliary_router success returnCap={snapshot.ReturnCap} raw={JsonConvert.ToString(content ?? "")} selected={string.Join(",", list3)}");
 			return true;
 		}
+		catch (PreprocessFormatException)
+		{
+			throw;
+		}
 		catch (Exception ex)
 		{
 			Logger.Log("GuardrailSemantic", "auxiliary_router exception=" + ex.Message);
@@ -4741,17 +4811,26 @@ public static class AIConfigHandler
 			}
 			int returnCap = Math.Max(1, topN <= 0 ? GuardrailRuleReturnCap : topN);
 			string prompt = BuildAuxiliaryGuardrailRoutingPrompt(userText, secondaryText, runtimeGuardrailContext, topics, returnCap);
-			if (!TryCallAuxiliaryRuleRouterApi(apiUrl, apiKey, modelName, prompt, out var content, out error))
+			string content = "";
+			List<string> codes;
+			while (true)
 			{
-				return false;
+				if (!TryCallAuxiliaryRuleRouterApi(apiUrl, apiKey, modelName, prompt, out content, out error))
+				{
+					return false;
+				}
+				if (TryParseAuxiliaryGuardrailRuleCodes(content, topics, out codes, out var parseError))
+				{
+					break;
+				}
+				error = BuildAuxiliaryPreprocessFormatError(parseError, content);
+				if (!LlmRetryPrompt.PromptRetryBlocking("前处理规则选择", error))
+				{
+					return false;
+				}
+				Logger.Log("AIConfig", "[AuxiliaryRuleRouter] user requested retry after format error: " + parseError);
 			}
 			PublishAuxiliaryMentionedEntitiesForExternal(userText, secondaryText, runtimeGuardrailContext, content);
-			List<string> codes = ParseAuxiliaryGuardrailRuleCodes(content, topics);
-			if (codes.Count <= 0)
-			{
-				error = "rule_codes_parse_empty";
-				return false;
-			}
 			foreach (string code in codes)
 			{
 				GuardrailAuxiliaryTopic topic = topics.FirstOrDefault((GuardrailAuxiliaryTopic x) => x != null && string.Equals(NormalizeRuleCode(x.Code, x.RuleId, x.Label), code, StringComparison.OrdinalIgnoreCase));
@@ -5206,6 +5285,10 @@ public static class AIConfigHandler
 			snapshot = guardrailEvalSnapshot;
 			return snapshot != null && snapshot.Rules != null && snapshot.Rules.Count > 0;
 		}
+		catch (PreprocessFormatException)
+		{
+			throw;
+		}
 		catch (Exception ex)
 		{
 			try
@@ -5562,6 +5645,10 @@ public static class AIConfigHandler
 			{
 				list = list.Take(num).ToList();
 			}
+		}
+		catch (PreprocessFormatException)
+		{
+			throw;
 		}
 		catch
 		{
@@ -6722,6 +6809,17 @@ public static class AIConfigHandler
 		}
 		try
 		{
+			Clan playerClan = Clan.PlayerClan ?? Hero.MainHero?.Clan;
+			if (playerClan != null && targetHero.Clan == playerClan)
+			{
+				return "already_in_player_family";
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
 			if (MobileParty.MainParty != null && targetHero.PartyBelongedTo == MobileParty.MainParty)
 			{
 				return "already_in_player_party";
@@ -7293,7 +7391,7 @@ public static class AIConfigHandler
 		try
 		{
 			Hero hero = targetHero ?? ResolveConversationTargetHero();
-			bool suppressPlayerPartyTarget = IsPlayerPartyTradeLimitedTarget(hero);
+			bool suppressPlayerPartyTarget = IsPlayerPartyTradeLimitedTarget(hero) && IsPlayerClanLordTarget(hero);
 			if (suppressPlayerPartyTarget)
 			{
 				includePersonalJoinRule = false;

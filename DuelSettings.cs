@@ -1123,9 +1123,9 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("8. 婚姻规则")]
 	public int MarriageCandidateMaxAgeGap { get; set; } = 25;
 
-	[SettingPropertyBool("婚配名单仅限异性", Order = 2, RequireRestart = false, HintText = "开启后，家族可婚配名单将按玩家异性过滤。默认开启。")]
+	[SettingPropertyBool("婚配名单仅限异性（旧兼容）", Order = 2, RequireRestart = false, HintText = "旧配置项保留用于兼容；当前婚姻机制允许同性婚配。默认关闭。")]
 	[SettingPropertyGroup("8. 婚姻规则")]
-	public bool MarriageRequireOppositeGender { get; set; } = true;
+	public bool MarriageRequireOppositeGender { get; set; } = false;
 
 	private string _playerCustomPromptRule = LoadPlayerCustomPromptRuleFromDiskOrDefault();
 

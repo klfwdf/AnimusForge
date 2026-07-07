@@ -1,5 +1,5 @@
 {
-    "AuxiliaryRoutingGuidance":  "优先看最新玩家请求；历史只补指代。话题用于规则注入，不是剧情摘要。\n必须选4个时，明确核心机制优先；弱补位才用 NPC_RECENT/NPC_MAJOR。\nNPC回复可确认玩家请求，但不能把未由玩家提出的强机制当补位。\n弱补位也要有语义：NPC_RECENT=近期行动传闻；NPC_MAJOR=长期身世背景；\n不要用 SETTLEMENT/VASSALAGE/ISSUE/MEETING_RELEASE/HERO_JOIN/REWARD/WORLD_MAP/DUEL/SCENE_MOVE 凑数。\nAFEF/历史中“已转交固定资产”只是已发生事实；只有最新交换在谈新的买卖/交付才选 SETTLEMENT。\n本地“请带路/跟着我走/随我走”选 SCENE_MOVE，不选 COMMANDS_AND_REQUESTS。\nDIPLOMACY: 议和/停战/通商/贡金/条约/战后赔偿/割地/放行条件。\nNPC_JOIN: NPC或明确人物向玩家效忠、追随、加入玩家队伍或阵营。\nPLAYER_JOIN: 玩家自己加入/离开某王国，成为雇佣兵或封臣。\nCOMMANDS_AND_REQUESTS: 只限大地图部队移动/跟随/攻击命令。\nSETTLEMENT: 只限领地/工坊/商队等所有权交付。\nITEM_TRANSFER: 本轮有金额、资源、赎金、贡金、摊派、报酬、借债/还债就选。",
+    "AuxiliaryRoutingGuidance":  "优先看最新玩家请求；历史只补指代。话题用于规则注入，不是剧情摘要。\n必须选4个时，明确核心机制优先；弱补位才用 NPC_RECENT/NPC_MAJOR。\nNPC回复可确认玩家请求，但不能把未由玩家提出的强机制当补位。\n弱补位也要有语义：NPC_RECENT=近期行动传闻；NPC_MAJOR=长期身世背景；\n不要用 SETTLEMENT/VASSALAGE/ISSUE/MEETING_RELEASE/HERO_JOIN/REWARD/WORLD_MAP/DUEL/SCENE_MOVE 凑数。\nAFEF/历史中“已转交固定资产”只是已发生事实；只有最新交换在谈新的买卖/交付才选 SETTLEMENT。\n本地“请带路/跟着我走/随我走”选 SCENE_MOVE，不选 COMMANDS_AND_REQUESTS。\nDIPLOMACY: 议和/停战/通商/贡金/条约/战后赔偿/割地/放行条件。\nNPC_JOIN: NPC或明确人物向玩家效忠、追随、加入玩家家族、队伍或阵营。\nPLAYER_JOIN: 玩家自己加入/离开某王国，成为雇佣兵或封臣。\nCOMMANDS_AND_REQUESTS: 只限大地图部队移动/跟随/攻击命令。\nSETTLEMENT: 只限领地/工坊/商队等所有权交付。\nITEM_TRANSFER: 本轮有金额、资源、赎金、贡金、摊派、报酬、借债/还债就选。",
     "Duel":  {
                  "IsEnabled":  true,
                  "TopicNumber":  1,
@@ -144,12 +144,12 @@
                                                                 "vassal_target_unknown":  "【势力效力规则】玩家当前是 {playerKingdom} 的正式封臣，但本轮目标势力未知。不得批准退出或加入，只能说明需找当前效力方或目标势力领袖。",
                                                                 "vassal_same_kingdom":  "【势力效力规则】玩家当前已是本势力（{playerKingdom}）的正式封臣。如果他不想干了，你可以根据情况选择是否挽留，但是他执意要走，你必须正式同意",
                                                                 "vassal_other_kingdom":  "【势力效力规则】玩家当前是 {playerKingdom} 的正式封臣。你属于 {targetKingdom}，不能代表 {playerKingdom} 批准退出；若他要为你效力，先让他去和当前宗主解除封臣契约。",
-                                                                "player_ruler_target_unknown":  "【家族归附规则】你没有可识别的家族身份，不能代表任何家族向 {playerKingdom} 归附。若玩家招揽你或询问家族效忠，请说明必须与目标家族的族长谈。家族归附不同于你本人加入玩家队伍；如果玩家只说“加入我、跟我、为我效力、来我麾下”但没有明确是家族归附还是本人入队，你必须追问澄清，不要作出正式承诺。",
+                                                                "player_ruler_target_unknown":  "【家族归附规则】你没有可识别的家族身份，不能代表任何家族向 {playerKingdom} 归附。若玩家招揽你或询问家族效忠，请说明必须与目标家族的族长谈。家族归附不同于你本人加入玩家家族并随队；如果玩家只说“加入我、跟我、为我效力、来我麾下”但没有明确是家族归附还是本人加入，你必须追问澄清，不要作出正式承诺。",
                                                                 "player_ruler_target_player_clan":  "【家族归附规则】玩家家族已经是 {playerKingdom} 的执政家族，不能被重复招揽。若玩家提到招揽玩家家族，只需说明他已经是这个王国的统治者。",
                                                                 "player_ruler_target_eliminated":  "【家族归附规则】你的家族 {targetClan} 已经灭亡或不可用，不能再作为领主家族向 {playerKingdom} 归附。",
                                                                 "player_ruler_target_same_kingdom":  "【家族归附规则】你的家族 {targetClan} 已经效力于 {playerKingdom}，不能重复宣誓加入。若玩家询问，只需说明你们已经是其麾下领主。",
-                                                                "player_ruler_target_not_leader":  "【家族归附规则】你属于 {targetClan} 家族，但你不是族长，不能代表整个家族宣誓归附。若玩家招揽你的家族，你必须引导玩家去找家族族长 {targetClanLeader}；不得替族长承诺本家族加入 {playerKingdom}。家族归附不同于你本人加入玩家队伍；如果玩家只说“加入我、跟我、为我效力、来我麾下”但没有明确是家族归附还是本人入队，你必须追问澄清，不要作出正式承诺。",
-                                                                "player_ruler_target_ready":  "【家族归附规则】你是 {targetClan} 家族族长，玩家是 {playerKingdom} 的统治者。你可以决定是否带领整个家族加入 {playerKingdom} 并作为领主效力。这不是你个人成为玩家同伴，也不是加入玩家队伍；这是整个家族改变王国归属。若你同意，默认代表 {targetClan} 当前拥有的城镇、城堡及其附属村庄也随家族一起归入 {playerKingdom}；除非玩家明确要求放弃封地，否则不要把归附说成只带人不带地。只有玩家明确谈到家族、王国、封臣、领主、归附或效忠玩家王国时，才按家族归附理解。若玩家只说“加入我、跟我、为我效力、来我麾下”等模糊招揽，但没有说明是让你本人入队还是让整个家族归附，你必须追问澄清，不要把话说成正式承诺。是否同意取决于利益、承诺、战争局势、安全、封地、关系和你的性格。只有当你在正文里最终明确答应带领 {targetClan} 家族加入 {playerKingdom} 时，才算同意；若你仍在讨价还价、要求保证、要求报酬、要求封地、拒绝、犹豫、反问或表示以后再谈，就不算同意。"
+                                                                "player_ruler_target_not_leader":  "【家族归附规则】你属于 {targetClan} 家族，但你不是族长，不能代表整个家族宣誓归附。若玩家招揽你的家族，你必须引导玩家去找家族族长 {targetClanLeader}；不得替族长承诺本家族加入 {playerKingdom}。家族归附不同于你本人加入玩家家族并随队；如果玩家只说“加入我、跟我、为我效力、来我麾下”但没有明确是家族归附还是本人加入，你必须追问澄清，不要作出正式承诺。",
+                                                                "player_ruler_target_ready":  "【家族归附规则】你是 {targetClan} 家族族长，玩家是 {playerKingdom} 的统治者。你可以决定是否带领整个家族加入 {playerKingdom} 并作为领主效力。这不是你个人加入玩家家族或随玩家队伍行动；这是整个家族改变王国归属。若你同意，默认代表 {targetClan} 当前拥有的城镇、城堡及其附属村庄也随家族一起归入 {playerKingdom}；除非玩家明确要求放弃封地，否则不要把归附说成只带人不带地。只有玩家明确谈到家族、王国、封臣、领主、归附或效忠玩家王国时，才按家族归附理解。若玩家只说“加入我、跟我、为我效力、来我麾下”等模糊招揽，但没有说明是让你本人加入玩家家族还是让整个家族归附，你必须追问澄清，不要把话说成正式承诺。是否同意取决于利益、承诺、战争局势、安全、封地、关系和你的性格。只有当你在正文里最终明确答应带领 {targetClan} 家族加入 {playerKingdom} 时，才算同意；若你仍在讨价还价、要求保证、要求报酬、要求封地、拒绝、犹豫、反问或表示以后再谈，就不算同意。"
                                                             },
                             "RuntimeConstraintTemplates":  {
                                                                "no_player_clan":  "【运行时硬约束】未找到玩家家族信息。本轮只能解释情况，不能真的批准加入或退出任何势力。",
@@ -163,11 +163,11 @@
                                                                "vassal_target_unknown":  "【运行时硬约束】玩家当前是 {playerKingdom} 的正式封臣，但本轮目标势力未知。不得批准退出或加入，只能维持现状或说明需找正确对象。",
                                                                "vassal_same_kingdom":  "【运行时硬约束】玩家当前已是本势力（{playerKingdom}）正式封臣。禁止重复加入本势力；如需变更，只能讨论退出当前效力。",
                                                                "vassal_other_kingdom":  "【运行时硬约束】玩家当前是 {playerKingdom} 的正式封臣，而对话对象属于 {targetKingdom}。你不能代表 {playerKingdom} 批准退出，也不可承诺新的加入流程；若坚持转投，必须先找当前宗主处理。",
-                                                               "player_ruler_target_unknown":  "【家族归附边界】你不能代表任何家族归附。不要承诺家族加入 {playerKingdom}，只能引导玩家去找目标家族族长。若玩家的招揽话术没有明确区分“本人入队”和“家族归附”，必须追问澄清，不作正式承诺。",
+                                                               "player_ruler_target_unknown":  "【家族归附边界】你不能代表任何家族归附。不要承诺家族加入 {playerKingdom}，只能引导玩家去找目标家族族长。若玩家的招揽话术没有明确区分“本人加入玩家家族”和“家族归附”，必须追问澄清，不作正式承诺。",
                                                                "player_ruler_target_player_clan":  "【家族归附边界】玩家家族已经是 {playerKingdom} 的执政家族。不要重复承诺玩家家族加入，只说明现状。",
                                                                "player_ruler_target_eliminated":  "【家族归附边界】你的家族 {targetClan} 已经灭亡或不可用。不要承诺家族加入 {playerKingdom}。",
                                                                "player_ruler_target_same_kingdom":  "【家族归附边界】你的家族 {targetClan} 已经效力于 {playerKingdom}。不要重复宣誓加入，只说明你们已经是其麾下领主。",
-                                                               "player_ruler_target_not_leader":  "【家族归附边界】你不是 {targetClan} 家族族长，不能代表全族归附。只有族长 {targetClanLeader} 可以作出这个决定；你必须引导玩家去找族长。若玩家的招揽话术没有明确区分“本人入队”和“家族归附”，必须追问澄清，不作正式承诺。",
+                                                               "player_ruler_target_not_leader":  "【家族归附边界】你不是 {targetClan} 家族族长，不能代表全族归附。只有族长 {targetClanLeader} 可以作出这个决定；你必须引导玩家去找族长。若玩家的招揽话术没有明确区分“本人加入玩家家族”和“家族归附”，必须追问澄清，不作正式承诺。",
                                                                "player_ruler_target_ready":  "【家族归附边界】你可以同意、拒绝或继续谈条件。只有当你已经决定并明确答应带领 {targetClan} 家族加入 {playerKingdom} 时，才把话说成正式承诺；正式归附默认携带 {targetClan} 当前拥有的城镇、城堡及其附属村庄一起加入玩家王国，不要承诺把封地留给旧王国。如果你还需要报酬、封地、保证、时间或更多说服，就明确说还没答应。若玩家只是模糊说“加入我、跟我、为我效力、来我麾下”，必须先追问他是要你本人加入队伍，还是要你的家族归附他的王国。"
                                                            },
                             "TriggerKeywords":  [
@@ -408,6 +408,10 @@
                                                      {
                                                          "Tag":  "[ACTION:SETTLEMENT_TRANSFER:TO_PLAYER:固定资产ID或编号]",
                                                          "Description":  "当\u003clatest_reply\u003e中NPC把【你当前可转移固定资产】里的城市、城堡、工坊、商队或固定资产交给玩家、割让给玩家、归玩家、移交给玩家时输出。成立短语包括：归你、从此刻起便是您的、将重归你的名下、我会割让、同意割让、正式移交、印信/账簿交给你、愿带着领地向你效忠。NPC只是可以签字/可以谈/成交吗/怎么样/若你保证且没有成立短语时禁止输出。只用可转移清单原始ID，禁止中文名和玩家资产清单。"
+                                                     },
+                                                     {
+                                                         "Tag":  "[ACTION:SETTLEMENT_TRANSFER:TO_NPC:固定资产ID或编号]",
+                                                         "Description":  "当\u003clatest_reply\u003e中NPC明确接受玩家把【玩家当前可手动交付固定资产】里的城市、城堡、工坊、商队或固定资产交给NPC、转给NPC家族、归NPC所有、正式收下或同意接收时输出。成立短语包括：我接受、成交、契约已成、印信/账簿我收下、此后归我家族、照此办理、我愿接收。NPC只是询价、反问、要求先付条件、说可以谈或等待玩家确认时禁止输出。只用玩家资产清单原始ID，禁止中文名和NPC资产清单。"
                                                      }
                                                  ],
                             "TriggerKeywords":  [
@@ -576,14 +580,14 @@
                             "Group":  "social",
                             "Priority":  74,
                             "TopicNumber":  13,
-                            "TopicLabel":  "Recruit NPCs to Player\u0027s Party",
+                            "TopicLabel":  "Recruit NPCs to Player\u0027s Clan",
                             "Code":  "NPC_JOIN",
-                            "NonHeroInstruction":  "【加入玩家队伍规则】非英雄NPC也可以被玩家招募",
-                            "Instruction":  "【加入玩家队伍规则】这里只处理当前说话者本人加入玩家队伍，当玩家同伴或随玩家行动；取决于家族关系、私人关系和信任度。",
+                            "NonHeroInstruction":  "【加入玩家家族规则】非英雄NPC也可以被玩家招募；若升格为 Hero，将成为玩家家族成员并随队行动。",
+                            "Instruction":  "【加入玩家家族规则】这里只处理当前说话者本人加入玩家家族，并随玩家队伍行动；不是整个家族归附。是否同意取决于家族关系、私人关系和信任度。",
                             "PostprocessRules":  [
                                                      {
                                                          "Tag":  "[A:H_J_P_P]",
-                                                         "Description":  "仅当当前说话的有名NPC本人在\u003clatest_reply\u003e中明确加入玩家队伍、跟随玩家、为玩家效力或随玩家同行时输出。NPC要求玩家先支付雇佣金/定金、先答应条件，或末尾问你觉得公平吗/如何时，还未成交，禁止输出。第三人加入、家族/氏族归附不得用本标签。"
+                                                         "Description":  "仅当当前说话的有名NPC本人在\u003clatest_reply\u003e中明确成为玩家家族成员、加入玩家队伍、跟随玩家、为玩家效力或随玩家同行时输出。NPC要求玩家先支付雇佣金/定金、先答应条件，或末尾问你觉得公平吗/如何时，还未成交，禁止输出。第三人加入、家族/氏族归附不得用本标签。"
                                                      },
                                                      {
                                                          "Tag":  "[ACTION:KINGDOM_SERVICE:CLAN_JOIN_PLAYER_KINGDOM:{targetClanId}]",
@@ -591,8 +595,9 @@
                                                      }
                                                  ],
                             "RuntimeInstructionTemplates":  {
-                                                                "already_in_player_party":  "【加入玩家队伍动态事实】你已经处于玩家的队伍当中。",
-                                                                "already_in_player_kingdom":  "【加入玩家队伍动态事实】你已经处于玩家的王国中。如果玩家提出要你加入他的队伍，你可以考虑是否同意,注意，要求你的部队跟随和加入队伍有本质区别。"
+                                                                "already_in_player_party":  "【加入玩家家族动态事实】你已经处于玩家队伍当中；若你已经是玩家家族成员，只说明现状，不重复承诺。",
+                                                                "already_in_player_family":  "【加入玩家家族动态事实】你已经是玩家家族成员。如果玩家要求你随队行动，你可以确认加入或留在玩家队伍。",
+                                                                "already_in_player_kingdom":  "【加入玩家家族动态事实】你已经处于玩家王国中，但不一定是玩家家族成员。若玩家提出要你本人加入玩家家族并随队行动，你可以考虑是否同意；你的部队跟随与本人加入不同。"
                                                             },
                             "TriggerKeywords":  [
                                                     "加入我的队伍吧。",
@@ -602,7 +607,7 @@
                                                     "别待在这里了，跟我走吧。",
                                                     "我想把你招进我的队伍。",
                                                     "你以后就跟着我混。",
-                                                    "来当我的同伴吧。",
+                                                    "成为我的家族成员吧。",
                                                     "你亲自加入我的队伍，和我一起上路。",
                                                     "你跟我走，从现在起就是我的人了。",
                                                     "带你的家族加入我的王国吧。",

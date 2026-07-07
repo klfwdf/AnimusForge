@@ -4726,6 +4726,117 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static bool IsHeroPlayerClanLordInMainParty(Hero hero)
+	{
+		try
+		{
+			Clan playerClan = Clan.PlayerClan;
+			MobileParty mainParty = MobileParty.MainParty;
+			return hero != null
+				&& playerClan != null
+				&& mainParty != null
+				&& hero.Clan == playerClan
+				&& hero.Occupation == Occupation.Lord
+				&& hero.CompanionOf == null
+				&& (hero.PartyBelongedTo == mainParty || IsHeroInParty(hero, mainParty));
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool TryMoveHeroToPlayerClanAsLordAndMainParty(Hero hero, string reason, out string statusText)
+	{
+		statusText = "";
+		try
+		{
+			Clan playerClan = Clan.PlayerClan;
+			MobileParty mainParty = MobileParty.MainParty;
+			if (hero == null)
+			{
+				statusText = "执行失败：缺少要加入玩家家族的目标英雄。";
+				return false;
+			}
+			if (playerClan == null || mainParty == null)
+			{
+				statusText = "执行失败：玩家家族或玩家队伍不可用。";
+				return false;
+			}
+			if (hero.CompanionOf != null)
+			{
+				hero.CompanionOf = null;
+			}
+			if (hero.Occupation != Occupation.Lord)
+			{
+				hero.SetNewOccupation(Occupation.Lord);
+			}
+			bool alreadyAliveLord = false;
+			try
+			{
+				alreadyAliveLord = playerClan.AliveLords?.Contains(hero) == true;
+			}
+			catch
+			{
+				alreadyAliveLord = false;
+			}
+			if (hero.Clan != playerClan || !alreadyAliveLord)
+			{
+				if (hero.Clan == playerClan && !alreadyAliveLord)
+				{
+					hero.Clan = null;
+				}
+				hero.Clan = playerClan;
+			}
+			try
+			{
+				hero.UpdateHomeSettlement();
+			}
+			catch
+			{
+			}
+			if (hero.PartyBelongedTo != mainParty && !IsHeroInParty(hero, mainParty))
+			{
+				AddHeroToPartyAction.Apply(hero, mainParty, showNotification: true);
+			}
+			Logger.Log("RewardSystemBehavior", "[HeroJoin] moved_to_player_clan reason=" + (reason ?? "") + " hero=" + (hero.StringId ?? "") + " clan=" + (hero.Clan?.StringId ?? "") + " occupation=" + hero.Occupation + " party=" + (hero.PartyBelongedTo?.StringId ?? ""));
+			return true;
+		}
+		catch (Exception ex)
+		{
+			statusText = "执行失败（加入玩家家族异常）：" + ex.Message;
+			Logger.Log("RewardSystemBehavior", "[HeroJoin] move_to_player_clan_failed reason=" + (reason ?? "") + " hero=" + (hero?.StringId ?? "") + " error=" + ex.Message);
+			return false;
+		}
+	}
+
+	private static void RecordHeroJoinedPlayerClanForExternal(Hero hero, string reason)
+	{
+		try
+		{
+			if (hero == null || hero == Hero.MainHero)
+			{
+				return;
+			}
+			string heroKey = GetHeroRecordKey(hero);
+			if (string.IsNullOrWhiteSpace(heroKey))
+			{
+				return;
+			}
+			string heroName = hero.Name?.ToString() ?? "该英雄";
+			Settlement settlement = Settlement.CurrentSettlement ?? hero.CurrentSettlement ?? MobileParty.MainParty?.CurrentSettlement;
+			string locationText = settlement?.Name?.ToString() ?? "";
+			string stableKey = "player_clan_join:" + heroKey + ":" + GetCampaignDayIndex();
+			MyBehavior.RecordNpcActionForExternal(hero, "你加入了玩家家族，成为玩家家族成员，并随玩家队伍行动。", stableKey + ":npc", "player_clan_join", isMajor: true, isRecent: true, targetHero: Hero.MainHero, settlement: settlement, locationText: locationText, allowNonLordHero: true, won: true);
+			MyBehavior.RecordPlayerActionForExternal("你招募了" + heroName + "加入玩家家族，并随你的队伍行动。", stableKey + ":player", "player_clan_join", isMajor: true, targetHero: hero, settlement: settlement, locationText: locationText, won: true);
+			Logger.Log("RewardSystemBehavior", "[HeroJoin] action_history_recorded reason=" + (reason ?? "") + " hero=" + heroKey);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("RewardSystemBehavior", "[HeroJoin] action_history_record_failed reason=" + (reason ?? "") + " hero=" + (hero?.StringId ?? "") + " error=" + ex.Message);
+		}
+	}
+
 	public bool TryApplyHeroJoinPlayerPartyForExternal(Hero joiningHero, out string statusText)
 	{
 		statusText = "";
@@ -4733,7 +4844,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			if (joiningHero == null)
 			{
-				statusText = "执行失败：缺少要加入队伍的目标英雄。";
+				statusText = "执行失败：缺少要加入玩家家族的目标英雄。";
 				return false;
 			}
 			if (joiningHero == Hero.MainHero)
@@ -4746,15 +4857,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				statusText = "执行失败：玩家家族或玩家队伍不可用。";
 				return false;
 			}
-			if ((joiningHero.PartyBelongedTo == MobileParty.MainParty || IsHeroInParty(joiningHero, MobileParty.MainParty)) && joiningHero.IsPlayerCompanion)
+			if (IsHeroPlayerClanLordInMainParty(joiningHero))
 			{
-				statusText = $"执行跳过：{joiningHero.Name} 已经在玩家队伍中。";
+				statusText = $"执行跳过：{joiningHero.Name} 已经是玩家家族成员并在玩家队伍中。";
 				return false;
 			}
 			MobileParty originalMobileParty = joiningHero.PartyBelongedTo;
 			PartyBase originalParty = originalMobileParty?.Party;
 			List<string> transitionNotes = new List<string>();
-			// Capture the original clan before AddCompanionAction changes Hero.Clan through CompanionOf.
 			Clan originalClan = GetHeroBackingClan(joiningHero) ?? joiningHero.Clan;
 			Kingdom originalKingdom = originalClan?.Kingdom;
 			bool originalClanWasRulingClan = originalKingdom != null && originalKingdom.RulingClan == originalClan;
@@ -4803,15 +4913,18 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				LeaveSettlementAction.ApplyForCharacterOnly(joiningHero);
 			}
-			AddCompanionAction.Apply(Clan.PlayerClan, joiningHero);
-			AddHeroToPartyAction.Apply(joiningHero, MobileParty.MainParty, showNotification: true);
+			if (!TryMoveHeroToPlayerClanAsLordAndMainParty(joiningHero, "hero_join_party", out statusText))
+			{
+				return false;
+			}
 			if (LocationComplex.Current != null)
 			{
 				LocationComplex.Current.RemoveCharacterIfExists(joiningHero);
 			}
 			PlayerEncounter.LocationEncounter?.RemoveAccompanyingCharacter(joiningHero);
 			string transitionSummary = BuildRecruitmentTransitionSummary(transitionNotes);
-			statusText = $"执行成功：{joiningHero.Name} 已加入玩家队伍{transitionSummary}。";
+			RecordHeroJoinedPlayerClanForExternal(joiningHero, "hero_join_party");
+			statusText = $"执行成功：{joiningHero.Name} 已成为玩家家族成员，并加入玩家队伍{transitionSummary}。";
 			ScheduleHeroJoinConversationClose(joiningHero, originalParty, originalMobileParty);
 			return true;
 		}
@@ -4847,7 +4960,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		responseText = latestReplyWithoutTag;
 		if (!string.IsNullOrWhiteSpace(statusText))
 		{
-			string text = (flag ? "【加入队伍】" : "【加入队伍失败】") + statusText;
+			bool promotedPlayerClanLord = flag && promotedHero != null && promotedHero.Clan == Clan.PlayerClan && promotedHero.Occupation == Occupation.Lord;
+			string text = (flag ? (promotedPlayerClanLord ? "【加入家族】" : "【加入队伍】") : "【加入队伍失败】") + statusText;
 			string factName = promotedHero?.Name?.ToString() ?? ResolveNonHeroFullDisplayName(joiningCharacter, promptDisplayName, promptGivenName, targetAgentIndex);
 			generatedFacts.Add("[AFEF NPC行为补充] " + (string.IsNullOrWhiteSpace(factName) ? "NPC" : factName) + ": " + statusText);
 			notifications.Add(text);
@@ -4892,7 +5006,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				promotedHero = existingPromotedHero;
 				string heroName = existingPromotedHero?.Name?.ToString() ?? ResolveNonHeroFullDisplayName(joiningCharacter, promptDisplayName, promptGivenName, targetAgentIndex);
-				statusText = $"执行跳过：{heroName} 已经由当前场景 NPC 升格为 Hero 同伴，不能重复招募生成新的 Hero。";
+				statusText = $"执行跳过：{heroName} 已经由当前场景 NPC 升格为玩家家族 Hero，不能重复招募生成新的 Hero。";
 				return false;
 			}
 			int count;
@@ -5460,14 +5574,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		hero.StaticBodyProperties = bodyProperties.StaticProperties;
 		hero.Weight = ClampBodyShape01(bodyProperties.DynamicProperties.Weight);
 		hero.Build = ClampBodyShape01(bodyProperties.DynamicProperties.Build);
-		hero.SetNewOccupation(Occupation.Wanderer);
 		TryActivatePromotedCompanionHero(hero, "new_nonhero_promotion");
 		ApplyTemplateSkillsToHero(hero, template);
 		ApplyPromotedCompanionRandomTraits(hero, template);
 		CopyCapturedEquipmentToHero(hero, capturedEquipment);
-		AddCompanionAction.Apply(Clan.PlayerClan, hero);
-		CleanupPlayerCompanionLordCacheDuplicates("after_nonhero_promotion");
-		AddHeroToPartyAction.Apply(hero, MobileParty.MainParty, showNotification: true);
+		if (!TryMoveHeroToPlayerClanAsLordAndMainParty(hero, "nonhero_join_party_promotion", out statusText))
+		{
+			return false;
+		}
 		LogPromotedCompanionGovernorEligibility(hero, "after_nonhero_promotion");
 		RememberPromotedNonHeroCompanion(targetAgentIndex, hero);
 		bool sceneFollowStarted = ShoutBehavior.TryForceSceneFollowPlayerForExternal(targetAgentIndex, transient: true, reason: "nonhero_join_party_promotion");
@@ -5480,13 +5594,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			dialogueHistory.Add((string.IsNullOrWhiteSpace(originalFullName) ? "NPC" : originalFullName) + ": " + cleanLatestReply);
 		}
-		string joinFact = $"{hero.Name} 原为{originalTroopName}，在 {sceneLabel} 同意追随玩家并加入玩家队伍。";
+		string joinFact = $"{hero.Name} 原为{originalTroopName}，在 {sceneLabel} 同意追随玩家，成为玩家家族成员并加入玩家队伍。";
 		MyBehavior.AppendExternalDialogueHistory(hero, null, null, "[AFEF NPC行为补充] " + joinFact);
+		RecordHeroJoinedPlayerClanForExternal(hero, "nonhero_join_party_promotion");
 		AppendPromotedHeroPriorHistory(hero, dialogueHistory);
 		string equipmentSummary = BuildEquipmentSummaryForPrompt(capturedEquipment);
 		_ = MyBehavior.GeneratePromotedNonHeroCompanionProfileForExternalAsync(hero, personalName, originalFullName, originalTroopName, template.StringId ?? "", cultureName, sceneLabel, joinFact, BuildDialogueHistoryForPrompt(dialogueHistory), equipmentSummary);
 		promotedHero = hero;
-		statusText = $"执行成功：{originalFullName} 已升格为 Hero 同伴“{hero.Name}”，并加入玩家队伍{(sceneFollowStarted ? "，当前场景中已开始跟随玩家" : "")}。";
+		statusText = $"执行成功：{originalFullName} 已升格为玩家家族 Hero“{hero.Name}”，并加入玩家队伍{(sceneFollowStarted ? "，当前场景中已开始跟随玩家" : "")}。";
 		return true;
 	}
 
@@ -14924,6 +15039,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			bool anyVassalageApplied = false;
 			bool anyKingdomAnnexationApplied = false;
 			bool anySettlementTransferApplied = false;
+			bool anySettlementTransferToPlayerApplied = false;
+			bool anySettlementTransferToNpcApplied = false;
 			bool anyHeroJoinPlayerPartyApplied = false;
 			Settlement notableMarketSettlement = ResolveNotableMarketSettlement(giver);
 			bool giverUsesNotableMarket = IsNotableMarketHero(giver, notableMarketSettlement);
@@ -15477,13 +15594,15 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 						anySettlementTransferApplied = true;
 						if (string.Equals(directionToken, "TO_PLAYER", StringComparison.OrdinalIgnoreCase))
 						{
+							anySettlementTransferToPlayerApplied = true;
 							giverFacts.Add($"你已经将固定资产 {text3} 转交给玩家。");
-							receiverFacts.Add($"你已经从 {giverName} 那里取得了 {text3}。");
+							receiverFacts.Add($"你已经从 {giverName} 那里取得了固定资产 {text3}。");
 						}
 						else
 						{
-							giverFacts.Add($"玩家已经将固定资产 {text3} 转交给你。");
-							receiverFacts.Add($"你已经将 {text3} 转交给了 {giverName}。");
+							anySettlementTransferToNpcApplied = true;
+							giverFacts.Add($"玩家已经将固定资产 {text3} 转交给你或你的家族。");
+							receiverFacts.Add($"你已经将固定资产 {text3} 转交给了 {giverName}。");
 						}
 					}
 					else if (!string.IsNullOrWhiteSpace(statusText))
@@ -15509,15 +15628,15 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 						if (flag2)
 						{
 							anyHeroJoinPlayerPartyApplied = true;
-							giverFacts.Add($"你已经加入了 {receiverName} 的队伍。");
-							receiverFacts.Add($"{giverName} 已加入你的队伍。");
+							giverFacts.Add($"你已经加入了 {receiverName} 的家族，并随玩家队伍行动。");
+							receiverFacts.Add($"{giverName} 已加入你的家族，并随你的队伍行动。");
 						}
 						else
 						{
 							giverFacts.Add(statusText);
 							receiverFacts.Add(statusText);
 						}
-						InformationManager.DisplayMessage(new InformationMessage((flag2 ? "【加入队伍】" : "【加入队伍失败】") + statusText, flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
+						InformationManager.DisplayMessage(new InformationMessage((flag2 ? "【加入家族】" : "【加入队伍失败】") + statusText, flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
 					}
 				}
 				return string.Empty;
@@ -15564,7 +15683,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					MyBehavior.AppendExternalNpcFact(receiver, string.Join(" ", receiverFacts));
 				}
 			}
-			TryRecordRewardActionHistory(giver, receiver, giverName, receiverName, giverFacts, receiverFacts, anyActualGiveToPlayer, anyDebtRecorded, anyDebtPaymentApplied, anyRoyalAbdicationApplied, anyKingdomServiceApplied, anyVassalageApplied, anyKingdomAnnexationApplied, anySettlementTransferApplied);
+			TryRecordRewardActionHistory(giver, receiver, giverName, receiverName, giverFacts, receiverFacts, anyActualGiveToPlayer, anyDebtRecorded, anyDebtPaymentApplied, anyRoyalAbdicationApplied, anyKingdomServiceApplied, anyVassalageApplied, anyKingdomAnnexationApplied, anySettlementTransferApplied, anySettlementTransferToPlayerApplied, anySettlementTransferToNpcApplied);
 		}
 		catch (Exception ex)
 		{
@@ -15583,7 +15702,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void TryRecordRewardActionHistory(Hero giver, Hero receiver, string giverName, string receiverName, List<string> giverFacts, List<string> receiverFacts, bool anyActualGiveToPlayer, bool anyDebtRecorded, bool anyDebtPaymentApplied, bool anyRoyalAbdicationApplied, bool anyKingdomServiceApplied, bool anyVassalageApplied, bool anyKingdomAnnexationApplied, bool anySettlementTransferApplied)
+	private static void TryRecordRewardActionHistory(Hero giver, Hero receiver, string giverName, string receiverName, List<string> giverFacts, List<string> receiverFacts, bool anyActualGiveToPlayer, bool anyDebtRecorded, bool anyDebtPaymentApplied, bool anyRoyalAbdicationApplied, bool anyKingdomServiceApplied, bool anyVassalageApplied, bool anyKingdomAnnexationApplied, bool anySettlementTransferApplied, bool anySettlementTransferToPlayerApplied, bool anySettlementTransferToNpcApplied)
 	{
 		try
 		{
@@ -15599,7 +15718,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			string actionKind = ResolveRewardActionHistoryKind(anyActualGiveToPlayer, anyDebtRecorded, anyDebtPaymentApplied, anyRoyalAbdicationApplied, anyKingdomServiceApplied, anyVassalageApplied, anyKingdomAnnexationApplied, anySettlementTransferApplied);
+			string actionKind = ResolveRewardActionHistoryKind(anyActualGiveToPlayer, anyDebtRecorded, anyDebtPaymentApplied, anyRoyalAbdicationApplied, anyKingdomServiceApplied, anyVassalageApplied, anyKingdomAnnexationApplied, anySettlementTransferApplied, anySettlementTransferToPlayerApplied, anySettlementTransferToNpcApplied);
 			string summary = BuildRewardActionHistorySummary(giverFacts, receiverFacts);
 			if (string.IsNullOrWhiteSpace(summary))
 			{
@@ -15621,7 +15740,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static string ResolveRewardActionHistoryKind(bool anyActualGiveToPlayer, bool anyDebtRecorded, bool anyDebtPaymentApplied, bool anyRoyalAbdicationApplied, bool anyKingdomServiceApplied, bool anyVassalageApplied, bool anyKingdomAnnexationApplied, bool anySettlementTransferApplied)
+	private static string ResolveRewardActionHistoryKind(bool anyActualGiveToPlayer, bool anyDebtRecorded, bool anyDebtPaymentApplied, bool anyRoyalAbdicationApplied, bool anyKingdomServiceApplied, bool anyVassalageApplied, bool anyKingdomAnnexationApplied, bool anySettlementTransferApplied, bool anySettlementTransferToPlayerApplied, bool anySettlementTransferToNpcApplied)
 	{
 		if (anyKingdomAnnexationApplied)
 		{
@@ -15637,6 +15756,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		if (anySettlementTransferApplied)
 		{
+			if (anySettlementTransferToNpcApplied && !anySettlementTransferToPlayerApplied)
+			{
+				return "asset_transfer_to_npc";
+			}
+			if (anySettlementTransferToPlayerApplied && !anySettlementTransferToNpcApplied)
+			{
+				return "asset_transfer_to_player";
+			}
 			return "asset_transfer";
 		}
 		if (anyDebtPaymentApplied)
@@ -15659,6 +15786,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		case "royal_abdication":
 		case "persuasion_defection":
 			prefix = "你与" + playerName + "完成了一项势力归附或政治承诺：";
+			break;
+		case "asset_transfer_to_player":
+			prefix = "你将固定资产转交给" + playerName + "：";
+			break;
+		case "asset_transfer_to_npc":
+			prefix = "玩家将固定资产转交给你或你的家族：";
 			break;
 		case "asset_transfer":
 			prefix = "你与" + playerName + "完成了一项固定资产转移：";
@@ -15685,6 +15818,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		case "royal_abdication":
 		case "persuasion_defection":
 			prefix = "你与" + npcName + "完成了一项势力归附或政治承诺：";
+			break;
+		case "asset_transfer_to_player":
+			prefix = "你从" + npcName + "那里取得了固定资产：";
+			break;
+		case "asset_transfer_to_npc":
+			prefix = "你主动将固定资产交给" + npcName + "：";
 			break;
 		case "asset_transfer":
 			prefix = "你与" + npcName + "完成了一项固定资产转移：";

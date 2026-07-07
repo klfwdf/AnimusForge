@@ -15960,6 +15960,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				directSw.Stop();
 				Logger.Log("ShoutBehavior", "[NativeConversation] " + op + " direct failed target=" + target + " agent=" + targetAgentIndex + " ms=" + Math.Round(directSw.Elapsed.TotalMilliseconds, 2) + " error=" + ex.Message);
 				FreezeWatchdog.Mark("NativeConversation." + op + "_direct_exception", ex.GetType().Name + ": " + ex.Message + " target=" + target + " agent=" + targetAgentIndex, immediate: true);
+				if (ex is PreprocessFormatException)
+				{
+					return Task.FromException<T>(ex);
+				}
 				return Task.FromResult(fallback);
 			}
 		}
@@ -15990,6 +15994,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					actionSw.Stop();
 					Logger.Log("ShoutBehavior", "[NativeConversation] " + op + " main-thread failed target=" + target + " agent=" + targetAgentIndex + " ms=" + Math.Round(actionSw.Elapsed.TotalMilliseconds, 2) + " error=" + ex.Message);
 					FreezeWatchdog.Mark("NativeConversation." + op + "_mainthread_exception", ex.GetType().Name + ": " + ex.Message + " target=" + target + " agent=" + targetAgentIndex, immediate: true);
+					if (ex is PreprocessFormatException)
+					{
+						tcs.TrySetException(ex);
+						return;
+					}
 					tcs.TrySetResult(fallback);
 				}
 			});
@@ -18861,7 +18870,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return HasInjectedRuleBlockForPostprocess(instructions, ruleId);
 	}
 
-	private static void MarkWeeklyMemoryMaterialTriggerForScene(Hero targetHero, CharacterObject targetCharacter, string npcName, string normalizedTags, int targetAgentIndex, List<RewardSystemBehavior.RewardItemInfo> rewardOptions, List<MyBehavior.PartyTransferPromptEntry> partyTransferTroopOptions, List<MyBehavior.PartyTransferPromptEntry> partyTransferPrisonerOptions, List<MyBehavior.SettlementTransferPromptEntry> settlementTransferNpcOptions, bool forceLooseSession = false)
+	private static void MarkWeeklyMemoryMaterialTriggerForScene(Hero targetHero, CharacterObject targetCharacter, string npcName, string normalizedTags, int targetAgentIndex, List<RewardSystemBehavior.RewardItemInfo> rewardOptions, List<MyBehavior.PartyTransferPromptEntry> partyTransferTroopOptions, List<MyBehavior.PartyTransferPromptEntry> partyTransferPrisonerOptions, List<MyBehavior.SettlementTransferPromptEntry> settlementTransferNpcOptions, List<MyBehavior.SettlementTransferPromptEntry> settlementTransferPlayerOptions = null, bool forceLooseSession = false)
 	{
 		try
 		{
@@ -18888,7 +18897,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				return;
 			}
 			int sceneSessionId = forceLooseSession ? -1 : TryGetCurrentSceneHistorySessionIdForHistoryPersistence();
-			MyBehavior.MarkWeeklyMemoryMaterialTriggerForExternal(memoryHero, nonHeroMemoryId, string.IsNullOrWhiteSpace(memoryName) ? "NPC" : memoryName, normalizedTags, sceneSessionId, -1, targetAgentIndex, rewardOptions, partyTransferTroopOptions, partyTransferPrisonerOptions, settlementTransferNpcOptions, suppressImplicitDialogueSession: forceLooseSession);
+			MyBehavior.MarkWeeklyMemoryMaterialTriggerForExternal(memoryHero, nonHeroMemoryId, string.IsNullOrWhiteSpace(memoryName) ? "NPC" : memoryName, normalizedTags, sceneSessionId, -1, targetAgentIndex, rewardOptions, partyTransferTroopOptions, partyTransferPrisonerOptions, settlementTransferNpcOptions, settlementTransferPlayerOptions, suppressImplicitDialogueSession: forceLooseSession);
 		}
 		catch (Exception ex)
 		{
@@ -19244,7 +19253,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				merged = AIConfigHandler.ActionPostprocessFallbackMoodTag;
 			}
-			MarkWeeklyMemoryMaterialTriggerForScene(targetHero, targetCharacter, displayName, merged, targetAgentIndex, rewardOptions, partyTransferTroopOptions, partyTransferPrisonerOptions, settlementTransferNpcOptions, forceLooseWeeklyMemoryMaterialSession);
+			MarkWeeklyMemoryMaterialTriggerForScene(targetHero, targetCharacter, displayName, merged, targetAgentIndex, rewardOptions, partyTransferTroopOptions, partyTransferPrisonerOptions, settlementTransferNpcOptions, null, forceLooseWeeklyMemoryMaterialSession);
 			string final = (text + "\n" + merged).Trim();
 			Logger.Log("CourierDelivery", "[UnifiedPostprocess] RAW=\n" + content + "\nFINAL=\n" + final + "\n");
 			return final;
@@ -20609,7 +20618,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		StringBuilder stringBuilder = new StringBuilder();
 		AppendCompactSettlementTransferPostprocessSectionForScene(stringBuilder, "【你当前可转移固定资产】：", npcOptions);
 		AppendCompactSettlementTransferPostprocessSectionForScene(stringBuilder, "【玩家当前可手动交付固定资产（仅供手动交付参考）：】", playerOptions);
-		stringBuilder.AppendLine("玩家固定资产清单只用于理解玩家手动交付语境；后处理不得生成 TO_NPC 标签。");
+		if ((playerOptions ?? new List<MyBehavior.SettlementTransferPromptEntry>()).Any(MyBehavior.IsSettlementTransferEntryValidForExternal))
+		{
+			stringBuilder.AppendLine("NPC接受玩家把【玩家当前可手动交付固定资产】交给自己时，输出[ACTION:SETTLEMENT_TRANSFER:TO_NPC:玩家资产ID]；NPC把【你当前可转移固定资产】交给玩家时，输出[ACTION:SETTLEMENT_TRANSFER:TO_PLAYER:NPC资产ID]。ID只能来自对应清单。");
+		}
+		else
+		{
+			stringBuilder.AppendLine("本链路未提供玩家固定资产清单；后处理不得生成 TO_NPC 标签。");
+		}
 		return stringBuilder.ToString().TrimEnd();
 	}
 
@@ -20781,6 +20797,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			if (string.IsNullOrWhiteSpace(text5))
 			{
 				text5 = text4;
+			}
+			if (settlementTransferPromptEntry == null)
+			{
+				continue;
 			}
 			string item2 = "[ACTION:SETTLEMENT_TRANSFER:" + text3 + ":" + text5 + "]";
 			if (hashSet.Add(item2))
@@ -22069,7 +22089,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			text21 = AIConfigHandler.ActionPostprocessFallbackMoodTag;
 		}
-		MarkWeeklyMemoryMaterialTriggerForScene(targetHero, targetCharacter, text20, StripAutoGroupRelaySignal(text21), targetAgentIndex, rewardOptions, partyTransferTroopOptions, partyTransferPrisonerOptions, settlementTransferNpcOptions);
+		MarkWeeklyMemoryMaterialTriggerForScene(targetHero, targetCharacter, text20, StripAutoGroupRelaySignal(text21), targetAgentIndex, rewardOptions, partyTransferTroopOptions, partyTransferPrisonerOptions, settlementTransferNpcOptions, settlementTransferPlayerOptions);
 		string text22 = (text + "\n" + text21).Trim();
 		Logger.Log("ShoutBehavior", "[UnifiedPostprocess] RAW=\n" + content + "\nFINAL=\n" + text22 + "\n");
 		return text22;
@@ -23121,6 +23141,19 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			catch (Exception ex)
 			{
 				Logger.Log("ShoutBehavior", "[ERROR] ProcessShoutConfirmedInternal background failed: " + ex.Message);
+				if (ex is PreprocessFormatException)
+				{
+					_mainThreadActions.Enqueue(delegate
+					{
+						try
+						{
+							InformationManager.DisplayMessage(new InformationMessage("AnimusForge 前处理失败：" + ex.Message, new Color(1f, 0.35f, 0.25f)));
+						}
+						catch
+						{
+						}
+					});
+				}
 			}
 		});
 	}
