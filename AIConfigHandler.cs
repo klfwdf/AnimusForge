@@ -4204,13 +4204,107 @@ public static class AIConfigHandler
 
 	private static string StripAuxiliaryJsonCodeFence(string content)
 	{
-		string text = (content ?? "").Trim();
+		string text = (content ?? "").Trim('\uFEFF', '\u200B', '\u200C', '\u200D', ' ', '\t', '\r', '\n');
 		if (text.StartsWith("```", StringComparison.Ordinal))
 		{
-			text = Regex.Replace(text, "^```(?:json)?\\s*", "", RegexOptions.IgnoreCase).Trim();
-			text = Regex.Replace(text, "\\s*```$", "", RegexOptions.CultureInvariant).Trim();
+			int firstLineEnd = text.IndexOf('\n');
+			if (firstLineEnd >= 0)
+			{
+				text = text.Substring(firstLineEnd + 1).Trim();
+			}
+			int lastFence = text.LastIndexOf("```", StringComparison.Ordinal);
+			if (lastFence >= 0)
+			{
+				text = text.Substring(0, lastFence).Trim();
+			}
 		}
-		return text;
+		text = Regex.Replace(text, "^(?:json)\\s*(?=[\\r\\n{\\[])", "", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant).Trim();
+		string jsonPayload = ExtractFirstAuxiliaryJsonPayload(text);
+		return string.IsNullOrWhiteSpace(jsonPayload) ? text : jsonPayload;
+	}
+
+	private static string ExtractFirstAuxiliaryJsonPayload(string text)
+	{
+		text = (text ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		for (int i = 0; i < text.Length; i++)
+		{
+			if (text[i] == '{')
+			{
+				string payload = ExtractBalancedAuxiliaryJsonPayload(text, i, '{', '}');
+				if (!string.IsNullOrWhiteSpace(payload))
+				{
+					return payload;
+				}
+			}
+			if (text[i] == '[')
+			{
+				string payload = ExtractBalancedAuxiliaryJsonPayload(text, i, '[', ']');
+				if (!string.IsNullOrWhiteSpace(payload))
+				{
+					return payload;
+				}
+			}
+		}
+		return "";
+	}
+
+	private static string ExtractBalancedAuxiliaryJsonPayload(string text, int start, char open, char close)
+	{
+		text = text ?? "";
+		if (start < 0 || start >= text.Length || text[start] != open)
+		{
+			return "";
+		}
+		bool inString = false;
+		bool escaped = false;
+		int depth = 0;
+		for (int i = start; i < text.Length; i++)
+		{
+			char ch = text[i];
+			if (inString)
+			{
+				if (escaped)
+				{
+					escaped = false;
+				}
+				else if (ch == '\\')
+				{
+					escaped = true;
+				}
+				else if (ch == '"')
+				{
+					inString = false;
+				}
+				continue;
+			}
+			if (ch == '"')
+			{
+				inString = true;
+				continue;
+			}
+			if (ch == open)
+			{
+				depth++;
+				continue;
+			}
+			if (ch == close)
+			{
+				depth--;
+				if (depth == 0)
+				{
+					return text.Substring(start, i - start + 1).Trim();
+				}
+				if (depth < 0)
+				{
+					return "";
+				}
+			}
+		}
+		return "";
 	}
 
 	private static bool TryParseAuxiliaryGuardrailRuleCodes(string content, IEnumerable<GuardrailAuxiliaryTopic> topics, out List<string> codes, out string error)
@@ -4223,63 +4317,53 @@ public static class AIConfigHandler
 			error = "empty_content";
 			return false;
 		}
-		Dictionary<string, string> dictionary = (topics ?? Enumerable.Empty<GuardrailAuxiliaryTopic>())
-			.Where((GuardrailAuxiliaryTopic x) => x != null && !string.IsNullOrWhiteSpace(x.Code))
-			.GroupBy((GuardrailAuxiliaryTopic x) => NormalizeRuleCode(x.Code, x.RuleId, x.Label), StringComparer.OrdinalIgnoreCase)
-			.Where((IGrouping<string, GuardrailAuxiliaryTopic> g) => !string.IsNullOrWhiteSpace(g.Key))
-			.ToDictionary((IGrouping<string, GuardrailAuxiliaryTopic> g) => g.Key, (IGrouping<string, GuardrailAuxiliaryTopic> g) => g.First().RuleId ?? "", StringComparer.OrdinalIgnoreCase);
+		Dictionary<string, string> dictionary = BuildAuxiliaryRuleCodeLookup(topics);
 		if (dictionary.Count <= 0)
 		{
 			error = "no_known_rule_codes";
 			return false;
 		}
-		JObject jObject;
+		JToken rootToken;
 		try
 		{
-			jObject = JObject.Parse(text);
+			rootToken = JToken.Parse(text);
 		}
 		catch (Exception ex)
 		{
 			error = "invalid_json:" + ex.GetType().Name;
 			return false;
 		}
-		JToken token = jObject["rule_codes"];
+		JToken token = rootToken;
+		if (rootToken is JObject jObject)
+		{
+			token = GetJsonPropertyIgnoreCase(jObject, "rule_codes", "ruleCodes", "topic_codes", "topicCodes", "rules", "rule_ids", "ruleIds", "topics", "codes", "selected_rule_codes", "selectedRuleCodes");
+		}
 		if (token == null || token.Type == JTokenType.Null)
 		{
 			error = "missing_rule_codes";
 			return false;
 		}
-		if (!(token is JArray jArray))
+		List<string> rawCodes = ReadAuxiliaryRuleCodeValues(token, out error);
+		if (rawCodes == null)
 		{
-			error = "rule_codes_not_array";
-			return false;
-		}
-		if (jArray.Count <= 0)
-		{
-			error = "rule_codes_empty";
 			return false;
 		}
 		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (JToken item in jArray)
+		List<string> unknownCodes = new List<string>();
+		foreach (string rawCode in rawCodes)
 		{
-			if (item == null || item.Type != JTokenType.String)
-			{
-				error = "rule_code_not_string";
-				codes.Clear();
-				return false;
-			}
-			string code = NormalizeRuleCode(item.ToString(), "", "");
+			string code = NormalizeRuleCode(rawCode, "", "");
 			if (string.IsNullOrWhiteSpace(code))
 			{
-				error = "rule_code_empty";
-				codes.Clear();
-				return false;
+				continue;
 			}
 			if (!dictionary.ContainsKey(code))
 			{
-				error = "unknown_rule_code:" + code;
-				codes.Clear();
-				return false;
+				if (!unknownCodes.Contains(code, StringComparer.OrdinalIgnoreCase))
+				{
+					unknownCodes.Add(code);
+				}
+				continue;
 			}
 			if (seen.Add(code))
 			{
@@ -4288,10 +4372,110 @@ public static class AIConfigHandler
 		}
 		if (codes.Count <= 0)
 		{
-			error = "rule_codes_empty_after_dedupe";
-			return false;
+			error = "";
+			if (unknownCodes.Count > 0)
+			{
+				Logger.Log("GuardrailSemantic", "auxiliary_router no_known_rule_codes ignored=" + string.Join(",", unknownCodes.Take(8)));
+			}
+			return true;
+		}
+		if (unknownCodes.Count > 0)
+		{
+			Logger.Log("GuardrailSemantic", "auxiliary_router ignored_unknown_codes=" + string.Join(",", unknownCodes.Take(8)) + " accepted=" + string.Join(",", codes));
 		}
 		return true;
+	}
+
+	private static Dictionary<string, string> BuildAuxiliaryRuleCodeLookup(IEnumerable<GuardrailAuxiliaryTopic> topics)
+	{
+		Dictionary<string, string> lookup = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		foreach (GuardrailAuxiliaryTopic topic in topics ?? Enumerable.Empty<GuardrailAuxiliaryTopic>())
+		{
+			string ruleId = (topic?.RuleId ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(ruleId))
+			{
+				continue;
+			}
+			AddAuxiliaryRuleCodeLookupKey(lookup, topic.Code, ruleId);
+			AddAuxiliaryRuleCodeLookupKey(lookup, ruleId, ruleId);
+			AddAuxiliaryRuleCodeLookupKey(lookup, NormalizeRuleCode("", ruleId, topic.Label), ruleId);
+			if (topic.Number > 0)
+			{
+				AddAuxiliaryRuleCodeLookupKey(lookup, topic.Number.ToString(System.Globalization.CultureInfo.InvariantCulture), ruleId);
+				AddAuxiliaryRuleCodeLookupKey(lookup, "TOPIC_" + topic.Number.ToString(System.Globalization.CultureInfo.InvariantCulture), ruleId);
+				AddAuxiliaryRuleCodeLookupKey(lookup, "T" + topic.Number.ToString(System.Globalization.CultureInfo.InvariantCulture), ruleId);
+			}
+		}
+		return lookup;
+	}
+
+	private static void AddAuxiliaryRuleCodeLookupKey(Dictionary<string, string> lookup, string key, string ruleId)
+	{
+		if (lookup == null || string.IsNullOrWhiteSpace(ruleId))
+		{
+			return;
+		}
+		string normalized = NormalizeRuleCode(key, "", "");
+		if (string.IsNullOrWhiteSpace(normalized) || string.Equals(normalized, "RULE", StringComparison.OrdinalIgnoreCase))
+		{
+			return;
+		}
+		if (!lookup.ContainsKey(normalized))
+		{
+			lookup[normalized] = ruleId;
+		}
+	}
+
+	private static List<string> ReadAuxiliaryRuleCodeValues(JToken token, out string error)
+	{
+		error = "";
+		List<string> values = new List<string>();
+		if (token is JArray array)
+		{
+			foreach (JToken item in array)
+			{
+				if (item == null || item.Type == JTokenType.Null)
+				{
+					continue;
+				}
+				if (item.Type == JTokenType.String || item.Type == JTokenType.Integer)
+				{
+					string value = (item.ToString() ?? "").Trim();
+					if (!string.IsNullOrWhiteSpace(value))
+					{
+						values.Add(value);
+					}
+					continue;
+				}
+				if (item is JObject obj)
+				{
+					JToken valueToken = GetJsonPropertyIgnoreCase(obj, "code", "rule_code", "ruleCode", "topic_code", "topicCode", "id", "rule_id", "ruleId", "topic_id", "topicId", "name", "label", "number");
+					string value = (valueToken?.ToString() ?? "").Trim();
+					if (!string.IsNullOrWhiteSpace(value))
+					{
+						values.Add(value);
+						continue;
+					}
+				}
+				error = "rule_code_not_string_or_integer";
+				return null;
+			}
+			return values;
+		}
+		if (token.Type == JTokenType.String || token.Type == JTokenType.Integer)
+		{
+			foreach (string part in Regex.Split(token.ToString() ?? "", "[,，;；\\s]+"))
+			{
+				string value = (part ?? "").Trim();
+				if (!string.IsNullOrWhiteSpace(value))
+				{
+					values.Add(value);
+				}
+			}
+			return values;
+		}
+		error = "rule_codes_not_array_or_string";
+		return null;
 	}
 
 	private static string BuildAuxiliaryPreprocessFormatError(string reason, string content)
@@ -4305,7 +4489,7 @@ public static class AIConfigHandler
 		{
 			preview = "(empty)";
 		}
-		return "（API响应格式错误）前处理规则选择返回格式错误：" + (string.IsNullOrWhiteSpace(reason) ? "unknown" : reason.Trim()) + "。必须只输出 JSON 对象，且包含非空 rule_codes 字符串数组。原始输出：" + preview;
+		return "（API响应格式错误）前处理规则选择返回格式错误：" + (string.IsNullOrWhiteSpace(reason) ? "unknown" : reason.Trim()) + "。必须输出可解析 JSON 对象，并包含 rule_codes/rules/topics/rule_ids 等话题字段。原始输出：" + preview;
 	}
 
 	public static void PublishAuxiliaryMentionedEntitiesForExternal(string userText, string secondaryText, string runtimeGuardrailContext, string content)
@@ -4701,6 +4885,12 @@ public static class AIConfigHandler
 				Logger.Log("GuardrailSemantic", "auxiliary_router retry_after_format_error reason=" + parseError);
 			}
 			PublishAuxiliaryMentionedEntitiesForExternal(userText, secondaryText, runtimeGuardrailContext, content);
+			if (list2.Count <= 0)
+			{
+				Logger.Log("GuardrailSemantic", "auxiliary_router no_known_topic raw=" + JsonConvert.ToString(content ?? "") + "; fallback=semantic");
+				snapshot = null;
+				return false;
+			}
 			HashSet<string> hashSet2 = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			List<string> list3 = new List<string>();
 			for (int j = 0; j < list2.Count; j++)
@@ -4831,6 +5021,12 @@ public static class AIConfigHandler
 				Logger.Log("AIConfig", "[AuxiliaryRuleRouter] user requested retry after format error: " + parseError);
 			}
 			PublishAuxiliaryMentionedEntitiesForExternal(userText, secondaryText, runtimeGuardrailContext, content);
+			if (codes.Count <= 0)
+			{
+				error = "no_known_rule_codes";
+				Logger.Log("AIConfig", "[AuxiliaryRuleRouter] no known rule codes; raw=" + JsonConvert.ToString(content ?? ""));
+				return false;
+			}
 			foreach (string code in codes)
 			{
 				GuardrailAuxiliaryTopic topic = topics.FirstOrDefault((GuardrailAuxiliaryTopic x) => x != null && string.Equals(NormalizeRuleCode(x.Code, x.RuleId, x.Label), code, StringComparison.OrdinalIgnoreCase));

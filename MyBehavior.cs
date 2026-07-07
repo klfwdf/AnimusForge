@@ -30378,11 +30378,14 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		if (jArray.Count <= 0)
 		{
-			error = "memory_ids_empty";
-			return false;
+			return true;
 		}
 		foreach (JToken item in jArray)
 		{
+			if (item == null || item.Type == JTokenType.Null)
+			{
+				continue;
+			}
 			string raw = (item?.ToString() ?? "").Trim().TrimStart('#');
 			if (!int.TryParse(raw, out var result))
 			{
@@ -30392,21 +30395,12 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			if (!allowed.Contains(result))
 			{
-				error = "unknown_memory_id:" + result;
-				selectedIds.Clear();
-				return false;
+				continue;
 			}
 			if (seen.Add(result))
 			{
 				selectedIds.Add(result);
 			}
-		}
-		int expected = Math.Max(1, finalCount);
-		if (selectedIds.Count != expected)
-		{
-			error = "memory_ids_count_mismatch expected=" + expected + " actual=" + selectedIds.Count;
-			selectedIds.Clear();
-			return false;
 		}
 		return true;
 	}
@@ -30422,7 +30416,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			preview = "(empty)";
 		}
-		return "（API响应格式错误）压缩记忆前处理返回格式错误：" + (string.IsNullOrWhiteSpace(reason) ? "unknown" : reason.Trim()) + "。必须只输出 JSON 对象，且包含数量正确的 memory_ids 数组。原始输出：" + preview;
+		return "（API响应格式错误）压缩记忆前处理返回格式错误：" + (string.IsNullOrWhiteSpace(reason) ? "unknown" : reason.Trim()) + "。必须输出可解析 JSON 对象，并包含 memory_ids 数组。原始输出：" + preview;
 	}
 
 	private void ShowCompressedMemoryBlockingPopup(string title, string message)
