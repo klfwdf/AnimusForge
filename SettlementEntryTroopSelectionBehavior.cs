@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Helpers;
 using HarmonyLib;
@@ -67,6 +68,8 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	private static readonly Dictionary<int, float> SetsUsableProtectionLastLogTimes = new Dictionary<int, float>();
 	private static bool _setsActiveUsableProtection;
 	private static bool _setsEntryMissionActive;
+	private static bool _setsOrderControllerPrimed;
+	private static float _nextSetsOrderControllerPrimeTime;
 
 	private enum EntryProfileKind
 	{
@@ -216,6 +219,283 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		}
 	}
 
+	internal static bool ShouldInjectSetsOrderViewsForExternal(Mission mission)
+	{
+		try
+		{
+			mission ??= Mission.Current;
+			return IsSetsCommandMissionCandidate(mission);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	internal static Team ResolveSetsPlayerCommandTeamForExternal(Mission mission, string source = null)
+	{
+		try
+		{
+			mission ??= Mission.Current;
+			if (!IsSetsCommandMissionCandidate(mission))
+			{
+				return null;
+			}
+			Agent main = Agent.Main ?? mission?.MainAgent;
+			Team playerTeam = mission?.PlayerTeam ?? main?.Team;
+			if (mission == null || main == null || !main.IsActive())
+			{
+				return playerTeam;
+			}
+			if (playerTeam == null || !playerTeam.IsPlayerGeneral)
+			{
+				try
+				{
+					uint color = Hero.MainHero?.MapFaction?.Color ?? 0xFF2020FFu;
+					uint color2 = Hero.MainHero?.MapFaction?.Color2 ?? 0xFF101080u;
+					playerTeam = mission.Teams.Add(BattleSideEnum.Attacker, color, color2, Hero.MainHero?.Clan?.Banner, isPlayerGeneral: true, isPlayerSergeant: false);
+					mission.PlayerTeam = playerTeam;
+				}
+				catch
+				{
+					playerTeam = mission.PlayerTeam ?? main.Team;
+				}
+			}
+			else
+			{
+				mission.PlayerTeam = playerTeam;
+			}
+			if (playerTeam != null && main.Team != playerTeam)
+			{
+				main.SetTeam(playerTeam, true);
+			}
+			return playerTeam;
+		}
+		catch (Exception ex)
+		{
+			SettlementEntryTroopSelectionLog.Log("ResolveSetsPlayerCommandTeamForExternal failed. source=" + (source ?? "N/A") + ", error=" + ex.Message);
+			return null;
+		}
+	}
+
+	internal static bool EnsureSetsCommandUiReadyForExternal(Mission mission, string source, bool force = false, bool preserveSelection = true)
+	{
+		try
+		{
+			mission ??= Mission.Current;
+			if (!IsSetsCommandMissionCandidate(mission) || mission.Mode == MissionMode.Conversation || mission.Mode == MissionMode.Barter)
+			{
+				return false;
+			}
+			float now = mission.CurrentTime;
+			if (!force && _setsOrderControllerPrimed)
+			{
+				return SetsPlayerHasCommandableAgentsForExternal(mission) && TryResolveSetsNativeOrderControllerForExternal(mission) != null;
+			}
+			if (!force && now < _nextSetsOrderControllerPrimeTime)
+			{
+				return SetsPlayerHasCommandableAgentsForExternal(mission) && TryResolveSetsNativeOrderControllerForExternal(mission) != null;
+			}
+			_nextSetsOrderControllerPrimeTime = now + 2f;
+			Team playerTeam = ResolveSetsPlayerCommandTeamForExternal(mission, source);
+			Agent main = Agent.Main ?? mission.MainAgent;
+			if (playerTeam == null || main == null)
+			{
+				return false;
+			}
+			int commandable = 0;
+			HashSet<Formation> commandFormations = new HashSet<Formation>();
+			foreach (Agent agent in mission.Agents?.ToList() ?? new List<Agent>())
+			{
+				if (!IsSetsSelectedFollowerAgentForExternal(agent) || agent == main)
+				{
+					continue;
+				}
+				if (agent.Team != playerTeam)
+				{
+					agent.SetTeam(playerTeam, true);
+				}
+				AssignSetsAgentToPlayerFormation(agent, playerTeam, FormationClass.Infantry);
+				if (agent.Formation != null)
+				{
+					MarkFormationPlayerCommandable(agent.Formation, main);
+					commandFormations.Add(agent.Formation);
+					commandable++;
+				}
+			}
+			if (commandable <= 0)
+			{
+				return false;
+			}
+			bool hasExistingSelection = false;
+			try
+			{
+				hasExistingSelection = playerTeam.PlayerOrderController?.SelectedFormations != null && playerTeam.PlayerOrderController.SelectedFormations.Count > 0;
+			}
+			catch
+			{
+			}
+			bool shouldInitializeSelection = !preserveSelection && !hasExistingSelection;
+			foreach (Formation formation in commandFormations)
+			{
+				MarkFormationPlayerCommandable(formation, main);
+				if (shouldInitializeSelection)
+				{
+					try { playerTeam.PlayerOrderController?.SelectFormation(formation); } catch { }
+				}
+			}
+			if (shouldInitializeSelection)
+			{
+				try { playerTeam.PlayerOrderController?.SelectAllFormations(false); } catch { }
+				try { playerTeam.MasterOrderController?.SelectAllFormations(false); } catch { }
+			}
+			_setsOrderControllerPrimed = true;
+			SettlementEntryTroopSelectionLog.Log("Primed SETS player order controller. source=" + (source ?? "N/A") + ", commandable=" + commandable + ", formations=" + commandFormations.Count + ", preserveSelection=" + preserveSelection + ", existingSelection=" + hasExistingSelection);
+			return TryResolveSetsNativeOrderControllerForExternal(mission) != null;
+		}
+		catch (Exception ex)
+		{
+			SettlementEntryTroopSelectionLog.Log("EnsureSetsCommandUiReadyForExternal failed. source=" + (source ?? "N/A") + ", error=" + ex.Message);
+			return false;
+		}
+	}
+
+	internal static bool SetsPlayerHasCommandableAgentsForExternal(Mission mission)
+	{
+		try
+		{
+			mission ??= Mission.Current;
+			Team playerTeam = ResolveSetsPlayerCommandTeamForExternal(mission, "has_commandable_agents");
+			Agent main = Agent.Main ?? mission?.MainAgent;
+			return mission?.Agents != null && playerTeam != null && mission.Agents.Any(a => IsSetsSelectedFollowerAgentForExternal(a) && a != main && a.Team == playerTeam && a.Formation != null);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	internal static bool NativeOrderControllerHasSelectedFormationsForSetsExternal(Mission mission)
+	{
+		try
+		{
+			OrderController orderController = TryResolveSetsNativeOrderControllerForExternal(mission);
+			return orderController != null && SetsPlayerHasCommandableAgentsForExternal(mission);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	internal static OrderController TryResolveSetsNativeOrderControllerForExternal(Mission mission)
+	{
+		try
+		{
+			mission ??= Mission.Current;
+			if (!IsSetsCommandMissionCandidate(mission) || mission.Mode == MissionMode.Conversation || mission.Mode == MissionMode.Barter)
+			{
+				return null;
+			}
+			Team playerTeam = ResolveSetsPlayerCommandTeamForExternal(mission, "resolve_order_controller") ?? mission.PlayerTeam ?? Agent.Main?.Team ?? mission.MainAgent?.Team;
+			return playerTeam?.PlayerOrderController ?? playerTeam?.MasterOrderController;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static bool IsSetsCommandMissionCandidate(Mission mission)
+	{
+		try
+		{
+			if (mission == null || mission.IsMissionEnding)
+			{
+				return false;
+			}
+			if (_setsEntryMissionActive && ReferenceEquals(_setsSelectedFollowerMission, mission))
+			{
+				return true;
+			}
+			if (mission.GetMissionBehavior<SettlementEntryTroopSelectionMissionLogic>() != null)
+			{
+				return true;
+			}
+			return _pendingMissionEntry != null;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static void AssignSetsAgentToPlayerFormation(Agent agent, Team team, FormationClass formationClass)
+	{
+		try
+		{
+			Formation formation = team?.GetFormation(formationClass);
+			if (agent == null || formation == null || !agent.IsHuman || !agent.IsActive())
+			{
+				return;
+			}
+			if (agent.Team != team)
+			{
+				agent.SetTeam(team, true);
+			}
+			agent.Formation = formation;
+			MarkFormationPlayerCommandable(formation, Agent.Main ?? agent.Mission?.MainAgent);
+			agent.TryAttachToFormation();
+			agent.SetShouldCatchUpWithFormation(true);
+			agent.UpdateFormationOrders();
+		}
+		catch (Exception ex)
+		{
+			SettlementEntryTroopSelectionLog.Log("AssignSetsAgentToPlayerFormation failed. error=" + ex.Message);
+		}
+	}
+
+	private static void MarkFormationPlayerCommandable(Formation formation, Agent playerOwner)
+	{
+		try
+		{
+			if (formation == null)
+			{
+				return;
+			}
+			try
+			{
+				formation.SetControlledByAI(false, false);
+			}
+			catch
+			{
+				TrySetFormationProperty(formation, nameof(Formation.IsAIControlled), false);
+			}
+			TrySetFormationProperty(formation, nameof(Formation.HasPlayerControlledTroop), true);
+			if (playerOwner != null && playerOwner.IsActive())
+			{
+				TrySetFormationProperty(formation, nameof(Formation.PlayerOwner), playerOwner);
+			}
+		}
+		catch (Exception ex)
+		{
+			SettlementEntryTroopSelectionLog.Log("MarkFormationPlayerCommandable failed. error=" + ex.Message);
+		}
+	}
+
+	private static void TrySetFormationProperty(Formation formation, string propertyName, object value)
+	{
+		try
+		{
+			PropertyInfo property = formation?.GetType().GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+			MethodInfo setter = property?.GetSetMethod(true);
+			setter?.Invoke(formation, new object[] { value });
+		}
+		catch
+		{
+		}
+	}
+
 	private static void SetSetsSelectedFollowerState(Mission mission, bool active, string source)
 	{
 		try
@@ -226,6 +506,11 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				_setsSelectedFollowerMission = mission;
 			}
 			_setsEntryMissionActive = active && mission != null;
+			if (!active)
+			{
+				_setsOrderControllerPrimed = false;
+				_nextSetsOrderControllerPrimeTime = 0f;
+			}
 			SettlementEntryTroopSelectionLog.Log("SETS selected follower state updated. source=" + source + ", active=" + _setsEntryMissionActive + ", tracked=" + SetsSelectedFollowerAgentIndexes.Count);
 		}
 		catch
@@ -259,6 +544,8 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			SetsSelectedFollowerAgentIndexes.Clear();
 			_setsSelectedFollowerMission = null;
 			_setsEntryMissionActive = false;
+			_setsOrderControllerPrimed = false;
+			_nextSetsOrderControllerPrimeTime = 0f;
 			SettlementEntryTroopSelectionLog.Log("Cleared SETS selected follower state. source=" + source);
 		}
 		catch
@@ -1237,6 +1524,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				TrySpawnSelectedAllies("TickFallback");
 			}
 			MaintainProtectedFollowersFriendlyState();
+			EnsureSetsCommandUiReadyForExternal(base.Mission, _conflictActive ? "tick_conflict" : "tick", force: false, preserveSelection: true);
 			if (_conflictFeaturesEnabled && _conflictActive && !_victoryReached)
 			{
 				RefreshSetsUsableProtectionState("tick");
@@ -1361,6 +1649,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				if (spawned > 0)
 				{
 					TrySetFollowerFormationFollowOrder(mission, main);
+					EnsureSetsCommandUiReadyForExternal(mission, "spawn_selected_allies", force: true, preserveSelection: false);
 					string message = "【SETS】随行人员已进入场景，可按原版指挥调整。";
 					if (_conflictFeaturesEnabled)
 					{
@@ -1390,6 +1679,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				ApplyTownRiotPoliticalConsequences(source);
 				EnsurePlayerTeam(mission, main, requireCommandTeam: true);
 				KeepPlayerEntryFollowersCommandable(refreshFormation: true);
+				EnsureSetsCommandUiReadyForExternal(mission, "conflict_start", force: true, preserveSelection: true);
 				EnsureEnemyTeam(mission);
 				if (mission.Mode != MissionMode.Battle && mission.Mode != MissionMode.Conversation && mission.Mode != MissionMode.Barter)
 				{
@@ -2497,9 +2787,54 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					return;
 				}
 				agent.Formation = formation;
+				if (team?.IsPlayerGeneral == true)
+				{
+					MarkFormationPlayerCommandable(formation, Agent.Main ?? agent.Mission?.MainAgent);
+				}
 				agent.TryAttachToFormation();
 				agent.SetShouldCatchUpWithFormation(true);
 				agent.UpdateFormationOrders();
+			}
+			catch
+			{
+			}
+		}
+
+		private static void MarkFormationPlayerCommandable(Formation formation, Agent playerOwner)
+		{
+			try
+			{
+				if (formation == null)
+				{
+					return;
+				}
+				try
+				{
+					formation.SetControlledByAI(false, false);
+				}
+				catch
+				{
+					TrySetFormationProperty(formation, nameof(Formation.IsAIControlled), false);
+				}
+				TrySetFormationProperty(formation, nameof(Formation.HasPlayerControlledTroop), true);
+				if (playerOwner != null && playerOwner.IsActive())
+				{
+					TrySetFormationProperty(formation, nameof(Formation.PlayerOwner), playerOwner);
+				}
+			}
+			catch (Exception ex)
+			{
+				SettlementEntryTroopSelectionLog.Log("MarkFormationPlayerCommandable failed. error=" + ex.Message);
+			}
+		}
+
+		private static void TrySetFormationProperty(Formation formation, string propertyName, object value)
+		{
+			try
+			{
+				PropertyInfo property = formation?.GetType().GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+				MethodInfo setter = property?.GetSetMethod(true);
+				setter?.Invoke(formation, new object[] { value });
 			}
 			catch
 			{
@@ -2515,6 +2850,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				{
 					return;
 				}
+				MarkFormationPlayerCommandable(formation, main);
 				formation.SetMovementOrder(MovementOrder.MovementOrderFollow(main));
 				formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLoose);
 			}

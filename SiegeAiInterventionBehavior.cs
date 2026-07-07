@@ -15882,11 +15882,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				if (!SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal())
+				Mission mission = Mission.Current;
+				if (!IsInterventionOrSetsCommandOrderSceneActive(mission))
 				{
 					return true;
 				}
-				Mission mission = Mission.Current;
 				if (mission == null || mission.IsMissionEnding || mission.Mode == MissionMode.Conversation || mission.Mode == MissionMode.Barter)
 				{
 					return true;
@@ -15955,7 +15955,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				if (!SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal())
+				if (!IsInterventionOrSetsCommandOrderSceneActive(Mission.Current))
 				{
 					return;
 				}
@@ -15971,7 +15971,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				if (!SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal())
+				if (!IsInterventionOrSetsCommandOrderSceneActive(Mission.Current))
 				{
 					return true;
 				}
@@ -16093,15 +16093,131 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			return true;
 		}
 
+		private static bool IsSetsCommandOrderSceneActive(Mission mission = null)
+		{
+			try
+			{
+				return SettlementEntryTroopSelectionBehavior.ShouldInjectSetsOrderViewsForExternal(mission ?? Mission.Current);
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
+		private static bool IsInterventionOrSetsCommandOrderSceneActive(Mission mission = null)
+		{
+			return SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal() || IsSetsCommandOrderSceneActive(mission);
+		}
+
+		private static bool EnsureCommandOrderUiReady(Mission mission, string source, bool force = false, bool preserveSelection = true)
+		{
+			mission ??= Mission.Current;
+			if (SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal())
+			{
+				return SiegeAiInterventionBehavior.EnsureInterventionCommandUiReadyForExternal(mission, source);
+			}
+			if (IsSetsCommandOrderSceneActive(mission))
+			{
+				return SettlementEntryTroopSelectionBehavior.EnsureSetsCommandUiReadyForExternal(mission, "sets_" + (source ?? "order_ui"), force, preserveSelection);
+			}
+			return false;
+		}
+
+		private static Team ResolveCommandOrderTeam(Mission mission, string source)
+		{
+			mission ??= Mission.Current;
+			if (SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal())
+			{
+				return SiegeAiInterventionBehavior.ResolveInterventionPlayerCommandTeamForExternal(mission, source);
+			}
+			if (IsSetsCommandOrderSceneActive(mission))
+			{
+				return SettlementEntryTroopSelectionBehavior.ResolveSetsPlayerCommandTeamForExternal(mission, "sets_" + (source ?? "resolve_team"));
+			}
+			return null;
+		}
+
+		private static OrderController TryResolveCommandOrderController(Mission mission)
+		{
+			mission ??= Mission.Current;
+			if (SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal())
+			{
+				return SiegeAiInterventionBehavior.TryResolveNativeOrderControllerForExternal(mission);
+			}
+			if (IsSetsCommandOrderSceneActive(mission))
+			{
+				return SettlementEntryTroopSelectionBehavior.TryResolveSetsNativeOrderControllerForExternal(mission);
+			}
+			return null;
+		}
+
+		private static bool PlayerHasCommandableAgents(Mission mission)
+		{
+			mission ??= Mission.Current;
+			if (SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal())
+			{
+				return SiegeAiInterventionBehavior.InterventionPlayerHasCommandableAgentsForExternal(mission);
+			}
+			if (IsSetsCommandOrderSceneActive(mission))
+			{
+				return SettlementEntryTroopSelectionBehavior.SetsPlayerHasCommandableAgentsForExternal(mission);
+			}
+			return false;
+		}
+
+		private static bool NativeOrderControllerHasSelectedFormations(Mission mission)
+		{
+			mission ??= Mission.Current;
+			if (SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal())
+			{
+				return SiegeAiInterventionBehavior.NativeOrderControllerHasSelectedFormationsForExternal(mission);
+			}
+			if (IsSetsCommandOrderSceneActive(mission))
+			{
+				return SettlementEntryTroopSelectionBehavior.NativeOrderControllerHasSelectedFormationsForSetsExternal(mission);
+			}
+			return false;
+		}
+
+		private static bool TryBindCommandOrderController(OrderTroopPlacer orderTroopPlacer, string source)
+		{
+			try
+			{
+				if (orderTroopPlacer == null || !IsInterventionOrSetsCommandOrderSceneActive(orderTroopPlacer.Mission ?? Mission.Current) || OrderTroopPlacerOrderControllerField == null)
+				{
+					return false;
+				}
+				OrderController orderController = TryResolveCommandOrderController(orderTroopPlacer.Mission ?? Mission.Current);
+				if (orderController == null)
+				{
+					return false;
+				}
+				object current = OrderTroopPlacerOrderControllerField.GetValue(orderTroopPlacer);
+				if (!ReferenceEquals(current, orderController))
+				{
+					OrderTroopPlacerOrderControllerField.SetValue(orderTroopPlacer, orderController);
+					Logger.Log("SiegeAiIntervention", "Bound SETS/intervention native OrderTroopPlacer order controller. Source=" + (source ?? "N/A"));
+				}
+				return true;
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("SiegeAiIntervention", "TryBindCommandOrderController failed (" + (source ?? "N/A") + "): " + ex.Message);
+				return false;
+			}
+		}
+
 		private static void PrepareOrderUiInitializePrefix()
 		{
 			try
 			{
-				if (!SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal())
+				Mission mission = Mission.Current;
+				if (!IsInterventionOrSetsCommandOrderSceneActive(mission))
 				{
 					return;
 				}
-				SiegeAiInterventionBehavior.EnsureInterventionCommandUiReadyForExternal(Mission.Current, SiegeNativeBridgeSourceProfile.OrderUiInitializeSource);
+				EnsureCommandOrderUiReady(mission, SiegeNativeBridgeSourceProfile.OrderUiInitializeSource);
 			}
 			catch
 			{
@@ -16112,11 +16228,12 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				if (!SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal())
+				Mission mission = Mission.Current;
+				if (!IsInterventionOrSetsCommandOrderSceneActive(mission))
 				{
 					return true;
 				}
-				__result = SiegeAiInterventionBehavior.ResolveInterventionPlayerCommandTeamForExternal(Mission.Current, SiegeNativeBridgeSourceProfile.MissionOrderVmTeamSource);
+				__result = ResolveCommandOrderTeam(mission, SiegeNativeBridgeSourceProfile.MissionOrderVmTeamSource);
 				return __result == null;
 			}
 			catch
@@ -16129,12 +16246,13 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				if (!SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal())
+				Mission mission = Mission.Current;
+				if (!IsInterventionOrSetsCommandOrderSceneActive(mission))
 				{
 					return true;
 				}
-				SiegeAiInterventionBehavior.EnsureInterventionCommandUiReadyForExternal(Mission.Current, SiegeNativeBridgeSourceProfile.MissionOrderVmControllerSource);
-				__result = SiegeAiInterventionBehavior.TryResolveNativeOrderControllerForExternal(Mission.Current);
+				EnsureCommandOrderUiReady(mission, SiegeNativeBridgeSourceProfile.MissionOrderVmControllerSource);
+				__result = TryResolveCommandOrderController(mission);
 				return __result == null;
 			}
 			catch
@@ -16148,12 +16266,13 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				if (!SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal())
+				Mission mission = Mission.Current;
+				if (!IsInterventionOrSetsCommandOrderSceneActive(mission))
 				{
 					return true;
 				}
-				SiegeAiInterventionBehavior.EnsureInterventionCommandUiReadyForExternal(Mission.Current, SiegeNativeBridgeSourceProfile.MissionOrderVmHasTroopsSource);
-				__result = SiegeAiInterventionBehavior.InterventionPlayerHasCommandableAgentsForExternal(Mission.Current);
+				EnsureCommandOrderUiReady(mission, SiegeNativeBridgeSourceProfile.MissionOrderVmHasTroopsSource);
+				__result = PlayerHasCommandableAgents(mission);
 				return false;
 			}
 			catch
@@ -16167,16 +16286,16 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				if (!SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal())
+				Mission mission = Mission.Current;
+				if (!IsInterventionOrSetsCommandOrderSceneActive(mission))
 				{
 					return true;
 				}
-				Mission mission = Mission.Current;
 				if (mission == null || mission.IsMissionEnding || mission.Mode == MissionMode.Conversation || mission.Mode == MissionMode.Barter)
 				{
 					return true;
 				}
-				__result = SiegeAiInterventionBehavior.EnsureInterventionCommandUiReadyForExternal(mission, SiegeNativeBridgeSourceProfile.MissionOrderVmCheckOpenSource) && SiegeAiInterventionBehavior.InterventionPlayerHasCommandableAgentsForExternal(mission);
+				__result = EnsureCommandOrderUiReady(mission, SiegeNativeBridgeSourceProfile.MissionOrderVmCheckOpenSource) && PlayerHasCommandableAgents(mission);
 				return false;
 			}
 			catch
@@ -16190,17 +16309,18 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				if (!SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal())
+				Mission mission = __instance?.Mission ?? Mission.Current;
+				if (!IsInterventionOrSetsCommandOrderSceneActive(mission))
 				{
 					return true;
 				}
-				OrderController orderController = SiegeAiInterventionBehavior.TryResolveNativeOrderControllerForExternal(__instance?.Mission ?? Mission.Current);
+				OrderController orderController = TryResolveCommandOrderController(mission);
 				if (orderController == null)
 				{
 					__result = null;
 					return false;
 				}
-				SiegeAiInterventionBehavior.TryBindNativeOrderControllerForExternal(__instance, SiegeNativeBridgeSourceProfile.OrderControllerGetterSource);
+				TryBindCommandOrderController(__instance, SiegeNativeBridgeSourceProfile.OrderControllerGetterSource);
 				__result = orderController;
 				return false;
 			}
@@ -16215,11 +16335,12 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				if (!SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal())
+				Mission mission = __instance?.Mission ?? Mission.Current;
+				if (!IsInterventionOrSetsCommandOrderSceneActive(mission))
 				{
 					return true;
 				}
-				__result = SiegeAiInterventionBehavior.NativeOrderControllerHasSelectedFormationsForExternal(__instance?.Mission ?? Mission.Current);
+				__result = NativeOrderControllerHasSelectedFormations(mission);
 				return false;
 			}
 			catch
@@ -16233,11 +16354,12 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				if (!SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal())
+				Mission mission = __instance?.Mission ?? Mission.Current;
+				if (!IsInterventionOrSetsCommandOrderSceneActive(mission))
 				{
 					return true;
 				}
-				__result = SiegeAiInterventionBehavior.NativeOrderControllerHasSelectedFormationsForExternal(__instance?.Mission ?? Mission.Current);
+				__result = NativeOrderControllerHasSelectedFormations(mission);
 				return false;
 			}
 			catch
@@ -16249,7 +16371,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 		private static void BindOrderTroopPlacerAfterStartPostfix(OrderTroopPlacer __instance)
 		{
-			SiegeAiInterventionBehavior.TryBindNativeOrderControllerForExternal(__instance, SiegeNativeBridgeSourceProfile.OrderPlacerAfterStartSource);
+			if (IsInterventionOrSetsCommandOrderSceneActive(__instance?.Mission ?? Mission.Current))
+			{
+				TryBindCommandOrderController(__instance, SiegeNativeBridgeSourceProfile.OrderPlacerAfterStartSource);
+			}
 		}
 
 
@@ -16257,12 +16382,12 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				if (!SiegeAiInterventionBehavior.ShouldInjectInterventionOrderViewsForExternal(mission))
+				if (!SiegeAiInterventionBehavior.ShouldInjectInterventionOrderViewsForExternal(mission) && !SettlementEntryTroopSelectionBehavior.ShouldInjectSetsOrderViewsForExternal(mission))
 				{
 					return;
 				}
 				int oldCount = __result?.Length ?? 0;
-				SiegeAiInterventionBehavior.EnsureInterventionCommandUiReadyForExternal(mission, SiegeNativeBridgeSourceProfile.InjectNativeOrderViewsSource);
+				EnsureCommandOrderUiReady(mission, SiegeNativeBridgeSourceProfile.InjectNativeOrderViewsSource, force: true, preserveSelection: true);
 				__result = BuildInterventionNativeOrderViews(mission, __result);
 				Logger.Log("SiegeAiIntervention", "Extended intervention mission views with native order UI while preserving settlement leave view. ViewMethod=" + (__originalMethod?.Name ?? "N/A") + ", OldViews=" + oldCount + ", NewViews=" + (__result?.Length ?? 0));
 			}
