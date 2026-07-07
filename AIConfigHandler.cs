@@ -664,6 +664,11 @@ public static class AIConfigHandler
 			{
 				return false;
 			}
+			Kingdom playerKingdom = playerClan.Kingdom;
+			if (playerKingdom != null && (playerKingdom.RulingClan == playerClan || playerKingdom.Leader == Hero.MainHero))
+			{
+				return false;
+			}
 			Clan targetClan = hero.Clan;
 			if (targetClan == null || targetClan.IsEliminated || targetClan == playerClan)
 			{
