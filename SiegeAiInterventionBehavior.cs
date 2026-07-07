@@ -363,6 +363,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static TroopRoster _selectedInterventionRoster;
 	private static TroopRoster _selectedInterventionPrisonerRoster;
 	private static bool _castlePrisonersAutoSummoned;
+	private static string _activeInterventionLocationId = "";
+	private static bool _castleLordHallFallbackLimitMessageShown;
 	private static Location _pendingCastleInterventionMissionLocation;
 	private static string _pendingCastleInterventionMissionSource = "";
 	private static int _pendingCastleInterventionMissionTicks;
@@ -1319,6 +1321,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		_activeInterventionLocationId = location.StringId ?? "";
 		_pendingCastleInterventionMissionLocation = location;
 		_pendingCastleInterventionMissionSource = string.IsNullOrWhiteSpace(source) ? SiegeInterventionEntryProfile.TroopSelectionDoneMissionSource : source.Trim();
 		_pendingCastleInterventionMissionTicks = 0;
@@ -1488,6 +1491,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				Logger.Log("SiegeAiIntervention", "OpenInterventionMissionNow skipped; location encounter unavailable. Source=" + (source ?? "N/A"));
 				return false;
 			}
+			_activeInterventionLocationId = location.StringId ?? "";
 			PlayerEncounter.LocationEncounter.CreateAndOpenMissionController(location, null, null, null);
 			Logger.Log("SiegeAiIntervention", "Opened intervention mission through normal location controller. Source=" + (source ?? "N/A") + ", SelectedRoster=" + (_selectedInterventionRoster?.TotalManCount ?? 0));
 			GcczDiagnosticLog.Log("CastleMissionEntry", "openMissionNow source=" + (source ?? "N/A") + " selectedSoldiers=" + (_selectedInterventionRoster?.TotalManCount ?? 0) + " selectedPrisoners=" + (_selectedInterventionPrisonerRoster?.TotalManCount ?? 0));
@@ -1682,7 +1686,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				_alliedTroopsAutoSummoned = true;
 				int summonCount = IsCastleAftermathInterventionActive()
-					? SiegeCastleSceneRosterProfile.MaxSelectedPlayerSoldiers
+					? ResolveCastleScenePlayerSoldierSpawnLimit(SiegeCastleSceneRosterProfile.MaxSelectedPlayerSoldiers)
 					: AutoSummonCount;
 				SummonAlliedTroops(summonCount, SiegeInterventionEntryProfile.AutoEnterSummonSource);
 			}
@@ -2264,6 +2268,70 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		catch
 		{
 			return false;
+		}
+	}
+
+	private static bool IsCastleLordHallFallbackScene()
+	{
+		try
+		{
+			return IsCastleAftermathInterventionActive()
+				&& string.Equals(_activeInterventionLocationId ?? "", SiegeInterventionEntryProfile.CastleLordHallLocationId, StringComparison.OrdinalIgnoreCase);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static int ResolveCastleScenePlayerSoldierSpawnLimit(int requestedCount)
+	{
+		return ResolveCastleSceneSpawnLimit(
+			requestedCount,
+			SiegeCastleSceneRosterProfile.ResolveScenePlayerSoldierSpawnLimit(IsCastleLordHallFallbackScene()),
+			"selectedSoldiers");
+	}
+
+	private static int ResolveCastleScenePrisonerSpawnLimit(int requestedCount)
+	{
+		return ResolveCastleSceneSpawnLimit(
+			requestedCount,
+			SiegeCastleSceneRosterProfile.ResolveScenePrisonerSpawnLimit(IsCastleLordHallFallbackScene()),
+			"selectedPrisoners");
+	}
+
+	private static int ResolveCastleSceneSpawnLimit(int requestedCount, int limit, string counterName)
+	{
+		int safeRequested = Math.Max(0, requestedCount);
+		int safeLimit = Math.Max(0, limit);
+		int resolved = safeLimit <= 0 ? 0 : Math.Min(safeRequested, safeLimit);
+		if (IsCastleLordHallFallbackScene() && safeRequested > resolved)
+		{
+			MaybeNotifyCastleLordHallFallbackLimit(counterName, safeRequested, resolved);
+		}
+		return resolved;
+	}
+
+	private static void MaybeNotifyCastleLordHallFallbackLimit(string counterName, int requestedCount, int resolvedCount)
+	{
+		try
+		{
+			string text = "lordHallFallbackLimit location=" + (_activeInterventionLocationId ?? "N/A")
+				+ " counter=" + (counterName ?? "N/A")
+				+ " requested=" + Math.Max(0, requestedCount)
+				+ " resolved=" + Math.Max(0, resolvedCount);
+			GcczDiagnosticLog.Log("CastleMissionEntry", text);
+			Logger.Log("SiegeAiIntervention", "Castle aftermath lordhall fallback spawn limit: " + text);
+			if (!_castleLordHallFallbackLimitMessageShown)
+			{
+				_castleLordHallFallbackLimitMessageShown = true;
+				InformationManager.DisplayMessage(new InformationMessage(
+					"【城堡处置】当前城堡缺少可用外院场景，已改用大厅兜底并限制展示人数以避免闪退。",
+					Color.FromUint(SiegeInterventionEntryProfile.SelectionFallbackMessageColor)));
+			}
+		}
+		catch
+		{
 		}
 	}
 
@@ -12022,7 +12090,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			return false;
 		}
 		int maxSummonCount = IsCastleAftermathInterventionActive()
-			? SiegeCastleSceneRosterProfile.MaxSelectedPlayerSoldiers
+			? ResolveCastleScenePlayerSoldierSpawnLimit(SiegeCastleSceneRosterProfile.MaxSelectedPlayerSoldiers)
 			: MaxSummonPerAction;
 		int count = Math.Max(1, Math.Min(requestedCount, maxSummonCount));
 		List<CharacterObject> troops = PickInterventionTroops(count);
@@ -12162,7 +12230,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			FormationClass prisonerFormationClass = GetCastlePrisonerFormationClass();
 			Formation prisonerFormation = team.GetFormation(prisonerFormationClass);
 			MarkFormationPlayerCommandable(prisonerFormation, main);
-			int totalToSpawn = SiegeCastleSceneRosterProfile.ClampSelectedPrisonerCount(prisoners.TotalManCount);
+			int totalToSpawn = ResolveCastleScenePrisonerSpawnLimit(SiegeCastleSceneRosterProfile.ClampSelectedPrisonerCount(prisoners.TotalManCount));
 			int spawned = 0;
 			for (int i = 0; i < prisoners.Count && spawned < totalToSpawn; i++)
 			{
@@ -15166,6 +15234,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_selectedInterventionRoster = null;
 		_selectedInterventionPrisonerRoster = null;
 		_castlePrisonersAutoSummoned = false;
+		_activeInterventionLocationId = "";
+		_castleLordHallFallbackLimitMessageShown = false;
 		ClearPendingCastleInterventionMissionOpen();
 		_civilianGatherStartedAt = -1f;
 		_nextCivilianGatherTickTime = 0f;

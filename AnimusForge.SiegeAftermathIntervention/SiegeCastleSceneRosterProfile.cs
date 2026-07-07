@@ -19,6 +19,10 @@ public static class SiegeCastleSceneRosterProfile
 
     public const int MaxSelectedPrisoners = 200;
 
+    public const int LordHallFallbackMaxSelectedPlayerSoldiers = 20;
+
+    public const int LordHallFallbackMaxSelectedPrisoners = 40;
+
     public const int PlayerSoldierFormationClassIndex = 0;
 
     public const int PrisonerFormationClassIndex = 1;
@@ -62,6 +66,16 @@ public static class SiegeCastleSceneRosterProfile
     public static int ClampSelectedPrisonerCount(int requestedCount)
     {
         return ClampCount(requestedCount, MaxSelectedPrisoners);
+    }
+
+    public static int ResolveScenePlayerSoldierSpawnLimit(bool isLordHallFallback)
+    {
+        return isLordHallFallback ? LordHallFallbackMaxSelectedPlayerSoldiers : MaxSelectedPlayerSoldiers;
+    }
+
+    public static int ResolveScenePrisonerSpawnLimit(bool isLordHallFallback)
+    {
+        return isLordHallFallback ? LordHallFallbackMaxSelectedPrisoners : MaxSelectedPrisoners;
     }
 
     public static bool IsPlayerSoldierFormationIndex(int formationIndex)
@@ -161,6 +175,8 @@ public static class SiegeCastleSceneRosterProfile
             + " prisonerFormation=" + PrisonerFormationClassIndex
             + " maxSelectedSoldiers=" + MaxSelectedPlayerSoldiers
             + " maxSelectedPrisoners=" + MaxSelectedPrisoners
+            + " lordHallFallbackMaxSoldiers=" + LordHallFallbackMaxSelectedPlayerSoldiers
+            + " lordHallFallbackMaxPrisoners=" + LordHallFallbackMaxSelectedPrisoners
             + " armory=" + plan.HasArmory;
     }
 

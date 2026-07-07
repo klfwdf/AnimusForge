@@ -10,6 +10,8 @@ public static class SiegeInterventionEntryProfile
 {
     public const string TownCenterLocationId = "center";
 
+    public const string CastleCenterLocationId = TownCenterLocationId;
+
     public const string CastleLordHallLocationId = "lordshall";
 
     public const int DefaultAutoSummonCount = 50;
@@ -104,7 +106,7 @@ public static class SiegeInterventionEntryProfile
     {
         if (isCastle)
         {
-            return new[] { CastleLordHallLocationId, TownCenterLocationId };
+            return new[] { CastleCenterLocationId, CastleLordHallLocationId };
         }
 
         if (isTown)
