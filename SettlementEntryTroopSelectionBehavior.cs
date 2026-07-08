@@ -1539,7 +1539,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			}
 			_nextEnemyCheckTime = base.Mission.CurrentTime + 1f;
 			MaintainConflictTeams();
-			PruneNonObjectiveCombatants("tick");
+			PruneNonObjectiveVictoryTracking("tick");
 			RefreshEnemyCombatTargets();
 			int liveEnemyCount = CountLiveTrackedEnemies();
 			ObserveDefenderReserveProgress(liveEnemyCount);
@@ -1933,91 +1933,52 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				&& agent.State != AgentState.Unconscious;
 		}
 
-		private int PruneNonObjectiveCombatants(string reason)
+		private int PruneNonObjectiveVictoryTracking(string reason)
 		{
 			try
 			{
 				Mission mission = base.Mission;
-				if (mission == null)
+				if (mission == null || _enemyAgentIndexes.Count == 0)
 				{
 					return 0;
 				}
-				Team neutralTeam = null;
-				List<Agent> nonObjectiveEnemies = new List<Agent>();
+				List<int> nonObjectiveTrackedEnemies = new List<int>();
 				foreach (Agent agent in mission.Agents)
 				{
-					if (ShouldPruneNonObjectiveCombatAgent(agent))
+					if (agent == null
+						|| !agent.IsHuman
+						|| !agent.IsActive()
+						|| agent.State == AgentState.Killed
+						|| agent.State == AgentState.Unconscious
+						|| !_enemyAgentIndexes.Contains(agent.Index)
+						|| _victoryObjectiveEnemyAgentIndexes.Contains(agent.Index)
+						|| _spawnedDefenderReserveAgentIndexes.Contains(agent.Index)
+						|| IsVictoryObjectiveSceneAgent(agent))
 					{
-						nonObjectiveEnemies.Add(agent);
+						continue;
 					}
+					nonObjectiveTrackedEnemies.Add(agent.Index);
 				}
-				for (int i = 0; i < nonObjectiveEnemies.Count; i++)
+				for (int i = 0; i < nonObjectiveTrackedEnemies.Count; i++)
 				{
-					Agent agent = nonObjectiveEnemies[i];
-					if (neutralTeam == null)
-					{
-						neutralTeam = EnsureNeutralTeam(mission);
-					}
-					NeutralizeEnemyAgent(agent, neutralTeam);
-					_enemyAgentIndexes.Remove(agent.Index);
-					_victoryObjectiveEnemyAgentIndexes.Remove(agent.Index);
-					_spawnedDefenderReserveAgentIndexes.Remove(agent.Index);
-					_defenderReserveAgentSourceRosters.Remove(agent.Index);
-					_defenderReserveAgentWaveNumbers.Remove(agent.Index);
+					int agentIndex = nonObjectiveTrackedEnemies[i];
+					_enemyAgentIndexes.Remove(agentIndex);
+					_victoryObjectiveEnemyAgentIndexes.Remove(agentIndex);
+					_spawnedDefenderReserveAgentIndexes.Remove(agentIndex);
+					_defenderReserveAgentSourceRosters.Remove(agentIndex);
+					_defenderReserveAgentWaveNumbers.Remove(agentIndex);
 				}
-				if (nonObjectiveEnemies.Count > 0)
+				if (nonObjectiveTrackedEnemies.Count > 0)
 				{
-					SettlementEntryTroopSelectionLog.Log("Pruned non-objective combatants. settlement=" + _settlementId + ", reason=" + reason + ", count=" + nonObjectiveEnemies.Count);
-					RefreshSetsUsableProtectionState("prune_non_objective_enemies");
+					SettlementEntryTroopSelectionLog.Log("Pruned non-objective SETS victory tracking only. settlement=" + _settlementId + ", reason=" + reason + ", count=" + nonObjectiveTrackedEnemies.Count);
+					RefreshSetsUsableProtectionState("prune_non_objective_victory_tracking");
 				}
-				return nonObjectiveEnemies.Count;
+				return nonObjectiveTrackedEnemies.Count;
 			}
 			catch (Exception ex)
 			{
-				SettlementEntryTroopSelectionLog.Log("PruneNonObjectiveCombatants failed. reason=" + reason + ", error=" + ex.Message);
+				SettlementEntryTroopSelectionLog.Log("PruneNonObjectiveVictoryTracking failed. reason=" + reason + ", error=" + ex.Message);
 				return 0;
-			}
-		}
-
-		private bool ShouldPruneNonObjectiveCombatAgent(Agent agent)
-		{
-			if (agent == null
-				|| !agent.IsHuman
-				|| !agent.IsActive()
-				|| agent.State == AgentState.Killed
-				|| agent.State == AgentState.Unconscious
-				|| IsPlayerSideAgent(agent)
-				|| _victoryObjectiveEnemyAgentIndexes.Contains(agent.Index)
-				|| _spawnedDefenderReserveAgentIndexes.Contains(agent.Index)
-				|| IsVictoryObjectiveSceneAgent(agent))
-			{
-				return false;
-			}
-			return IsAgentHostileToPlayerSide(agent);
-		}
-
-		private bool IsAgentHostileToPlayerSide(Agent agent)
-		{
-			try
-			{
-				if (agent == null || _playerTeam == null || agent.Team == null)
-				{
-					return false;
-				}
-				if (_enemyTeam != null && agent.Team == _enemyTeam)
-				{
-					return true;
-				}
-				if (agent.Team.IsEnemyOf(_playerTeam) || _playerTeam.IsEnemyOf(agent.Team))
-				{
-					return true;
-				}
-				Agent main = Agent.Main;
-				return main != null && agent.IsEnemyOf(main);
-			}
-			catch
-			{
-				return false;
 			}
 		}
 
