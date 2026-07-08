@@ -6,6 +6,7 @@ using Helpers;
 using HarmonyLib;
 using SandBox;
 using SandBox.Missions.MissionLogics;
+using SandBox.Objects.AreaMarkers;
 using SandBox.Objects.Usables;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
@@ -34,13 +35,16 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	private const int MaxActiveDefenderReserveWaves = 4;
 	private const float DefenderReserveWaveIntervalSeconds = 30f;
 	private const int SameKingdomRiotRelationPenalty = -30;
-	private const bool NonTownGcczBridgeEnabled = false;
 	private const float AlliedSpawnBaseDistance = 8f;
 	private const float AlliedSpawnRowDistance = 2.8f;
 	private const float AlliedSpawnLateralSpacing = 3.2f;
 	private const float EnemyDoorSpawnBaseDistance = 4f;
 	private const float EnemyDoorSpawnRowDistance = 3.4f;
 	private const float EnemyDoorSpawnLateralSpacing = 4f;
+	private const int DefenderReserveWorkshopSpawnGroupSize = 10;
+	private const int EnemyWorkshopSpawnGridColumns = 5;
+	private const float EnemyWorkshopSpawnRowDistance = 2.6f;
+	private const float EnemyWorkshopSpawnLateralSpacing = 3f;
 	private const int SpawnGridColumns = 8;
 	private const float DefenderReserveStuckNudgeSeconds = 20f;
 	private const float DefenderReserveStuckRetrySeconds = 50f;
@@ -48,8 +52,6 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	private const float VictoryEndMissionFallbackDelaySeconds = 2f;
 	private const string LordHallLocationId = "lordshall";
 	private const string TownCenterLocationId = "center";
-	private const string CastleCenterLocationId = "center";
-	private const string VillageCenterLocationId = "village_center";
 	private const uint InfoColor = 0xFFDFC16Bu;
 	private const uint WarningColor = 0xFFFF6B6Bu;
 	private const uint SuccessColor = 0xFF8DDC7Eu;
@@ -60,7 +62,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	private static TroopRoster _otherSettlementProfile;
 	private static PendingProfileSelection _pendingProfileSelection;
 	private static PendingMissionEntry _pendingMissionEntry;
-	private static PendingGcczEntry _pendingGcczEntry;
+	private static PendingSettlementVictoryMenuEntry _pendingVictoryMenuEntry;
 	private static Mission _setsActiveUsableProtectionMission;
 	private static Mission _setsSelectedFollowerMission;
 	private static readonly HashSet<int> SetsActiveUsableProtectionAgentIndexes = new HashSet<int>();
@@ -142,25 +144,25 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	internal static void QueueGcczAfterTownVictory(string settlementId, TroopRoster survivingRoster, string source)
+	internal static void QueueSettlementTakenMenuAfterTownVictory(string settlementId, TroopRoster survivingRoster, string source)
 	{
 		if (string.IsNullOrWhiteSpace(settlementId))
 		{
 			return;
 		}
 		Settlement settlement = Settlement.Find(settlementId);
-		if (settlement != null && !settlement.IsTown && !NonTownGcczBridgeEnabled)
+		if (settlement != null && !settlement.IsTown)
 		{
-			SettlementEntryTroopSelectionLog.Log("Ignored SETS GCCZ queue for non-town settlement. settlement=" + SafeSettlementId(settlement) + ", source=" + (source ?? ""));
+			SettlementEntryTroopSelectionLog.Log("Ignored SETS victory menu queue for non-town settlement. settlement=" + SafeSettlementId(settlement) + ", source=" + (source ?? ""));
 			return;
 		}
-		_pendingGcczEntry = new PendingGcczEntry
+		_pendingVictoryMenuEntry = new PendingSettlementVictoryMenuEntry
 		{
 			SettlementId = settlementId,
 			SurvivingRoster = CloneRoster(survivingRoster, int.MaxValue),
 			Source = string.IsNullOrWhiteSpace(source) ? "SETS_town_victory" : source
 		};
-		SettlementEntryTroopSelectionLog.Log("Queued GCCZ after SETS town victory. settlement=" + settlementId + ", survivors=" + (_pendingGcczEntry.SurvivingRoster?.TotalManCount ?? 0) + ", source=" + _pendingGcczEntry.Source);
+		SettlementEntryTroopSelectionLog.Log("Queued native settlement-taken menu after SETS town victory. settlement=" + settlementId + ", survivors=" + (_pendingVictoryMenuEntry.SurvivingRoster?.TotalManCount ?? 0) + ", source=" + _pendingVictoryMenuEntry.Source);
 	}
 
 	private void OnNewGameCreated(CampaignGameStarter starter)
@@ -179,7 +181,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	{
 		_pendingProfileSelection = null;
 		_pendingMissionEntry = null;
-		_pendingGcczEntry = null;
+		_pendingVictoryMenuEntry = null;
 		ClearSetsUsableProtectionState(source);
 		ClearSetsSelectedFollowerState(source);
 		SettlementEntryTroopSelectionLog.Log("Runtime cleared. source=" + source);
@@ -789,13 +791,13 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 
 	private static bool CastleCreateAndOpenMissionControllerPrefix(CastleEncounter __instance, Location nextLocation, Location previousLocation, CharacterObject talkToChar, string playerSpecialSpawnTag)
 	{
-		TryPrepareSettlementEntryMission(__instance?.Settlement, nextLocation, CastleCenterLocationId, "castle");
+		// SETS castle entry/conflict is intentionally blocked until the castle aftermath bridge is fixed.
 		return true;
 	}
 
 	private static bool VillageCreateAndOpenMissionControllerPrefix(VillageEncounter __instance, Location nextLocation, Location previousLocation, CharacterObject talkToChar, string playerSpecialSpawnTag)
 	{
-		TryPrepareSettlementEntryMission(__instance?.Settlement, nextLocation, VillageCenterLocationId, "village");
+		// SETS village entry/conflict is intentionally blocked until the village aftermath bridge is fixed.
 		return true;
 	}
 
@@ -838,7 +840,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			if (!(settlement.IsTown || settlement.IsCastle || settlement.IsVillage))
+			if (!settlement.IsTown)
 			{
 				return false;
 			}
@@ -850,7 +852,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			if (_pendingMissionEntry != null || _pendingGcczEntry != null)
+			if (_pendingMissionEntry != null || _pendingVictoryMenuEntry != null)
 			{
 				return false;
 			}
@@ -1047,7 +1049,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			TryPumpPendingGcczEntry(source);
+			TryPumpPendingSettlementTakenMenu(source);
 		}
 		catch (Exception ex)
 		{
@@ -1055,9 +1057,9 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static bool TryPumpPendingGcczEntry(string source)
+	private static bool TryPumpPendingSettlementTakenMenu(string source)
 	{
-		if (_pendingGcczEntry == null)
+		if (_pendingVictoryMenuEntry == null)
 		{
 			return false;
 		}
@@ -1065,30 +1067,30 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		{
 			return true;
 		}
-		Settlement settlement = Settlement.Find(_pendingGcczEntry.SettlementId);
+		Settlement settlement = Settlement.Find(_pendingVictoryMenuEntry.SettlementId);
 		if (settlement == null)
 		{
-			SettlementEntryTroopSelectionLog.Log("Dropping pending GCCZ; settlement missing. settlement=" + (_pendingGcczEntry.SettlementId ?? "") + ", source=" + (source ?? ""));
-			_pendingGcczEntry = null;
+			SettlementEntryTroopSelectionLog.Log("Dropping pending SETS victory menu; settlement missing. settlement=" + (_pendingVictoryMenuEntry.SettlementId ?? "") + ", source=" + (source ?? ""));
+			_pendingVictoryMenuEntry = null;
 			return false;
 		}
-		if (!settlement.IsTown && !NonTownGcczBridgeEnabled)
+		if (!settlement.IsTown)
 		{
-			SettlementEntryTroopSelectionLog.Log("Dropping pending GCCZ; non-town bridge disabled. settlement=" + SafeSettlementId(settlement) + ", source=" + (source ?? ""));
-			_pendingGcczEntry = null;
+			SettlementEntryTroopSelectionLog.Log("Dropping pending SETS victory menu; non-town SETS is blocked. settlement=" + SafeSettlementId(settlement) + ", source=" + (source ?? ""));
+			_pendingVictoryMenuEntry = null;
 			return false;
 		}
-		PendingGcczEntry pending = _pendingGcczEntry;
-		_pendingGcczEntry = null;
+		PendingSettlementVictoryMenuEntry pending = _pendingVictoryMenuEntry;
+		_pendingVictoryMenuEntry = null;
 		string bridgeSource = string.IsNullOrWhiteSpace(pending.Source) ? source : pending.Source;
-		bool opened = SiegeAiInterventionBehavior.TryStartFromSettlementEntryVictory(settlement, pending.SurvivingRoster, bridgeSource);
+		bool opened = SiegeAiInterventionBehavior.TryOpenSettlementEntryVictoryMenu(settlement, pending.SurvivingRoster, bridgeSource);
 		if (!opened)
 		{
-			_pendingGcczEntry = pending;
-			SettlementEntryTroopSelectionLog.Log("GCCZ bridge not ready; will retry. settlement=" + SafeSettlementId(settlement) + ", source=" + (source ?? "") + ", hasLocationEncounter=" + (PlayerEncounter.LocationEncounter != null));
+			_pendingVictoryMenuEntry = pending;
+			SettlementEntryTroopSelectionLog.Log("Native settlement-taken menu bridge not ready; will retry. settlement=" + SafeSettlementId(settlement) + ", source=" + (source ?? "") + ", hasLocationEncounter=" + (PlayerEncounter.LocationEncounter != null));
 			return true;
 		}
-		SettlementEntryTroopSelectionLog.Log("Opened pending GCCZ after SETS town victory. settlement=" + SafeSettlementId(settlement) + ", source=" + (source ?? ""));
+		SettlementEntryTroopSelectionLog.Log("Opened native settlement-taken menu after SETS town victory. settlement=" + SafeSettlementId(settlement) + ", source=" + (source ?? ""));
 		return true;
 	}
 
@@ -1442,7 +1444,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		public string SceneKind;
 	}
 
-	private sealed class PendingGcczEntry
+	private sealed class PendingSettlementVictoryMenuEntry
 	{
 		public string SettlementId;
 		public TroopRoster SurvivingRoster;
@@ -2120,10 +2122,10 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				}
 				if (noProgressSeconds >= DefenderReserveStuckRetrySeconds)
 				{
-					int repositioned = RepositionLiveTrackedEnemiesAtLordHallDoor("SETS_wave_stuck_retry");
+					int repositioned = RepositionLiveTrackedEnemiesAtReserveSpawns("SETS_wave_stuck_retry");
 					RefreshEnemyCombatTargets();
 					ResetDefenderReserveProgress(CountLiveTrackedEnemies(), "stuck_retry");
-					SettlementEntryTroopSelectionLog.Log("Defender reserve wave lord-hall retry applied. settlement=" + _settlementId + ", wave=" + _defenderReserveWaveIndex + ", activeWaves=" + CountActiveDefenderReserveWaves() + ", liveEnemies=" + liveEnemyCount + ", repositioned=" + repositioned + ", noProgressSeconds=" + noProgressSeconds.ToString("0.0"));
+					SettlementEntryTroopSelectionLog.Log("Defender reserve wave spawn retry applied. settlement=" + _settlementId + ", wave=" + _defenderReserveWaveIndex + ", activeWaves=" + CountActiveDefenderReserveWaves() + ", liveEnemies=" + liveEnemyCount + ", repositioned=" + repositioned + ", noProgressSeconds=" + noProgressSeconds.ToString("0.0"));
 					return false;
 				}
 			}
@@ -2134,7 +2136,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			return false;
 		}
 
-		private int RepositionLiveTrackedEnemiesAtLordHallDoor(string reason)
+		private int RepositionLiveTrackedEnemiesAtReserveSpawns(string reason)
 		{
 			try
 			{
@@ -2144,9 +2146,9 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				{
 					return 0;
 				}
-				if (!TryGetLordHallDoorSpawnFrame(out MatrixFrame doorFrame))
+				if (!TryGetEnemyReserveSpawnFrames(out List<MatrixFrame> spawnFrames, out string spawnSource))
 				{
-					SettlementEntryTroopSelectionLog.Log("Skipped defender reserve lord-hall retry; no lord hall door spawn. settlement=" + _settlementId + ", reason=" + reason);
+					SettlementEntryTroopSelectionLog.Log("Skipped defender reserve spawn retry; no workshop or fallback spawn. settlement=" + _settlementId + ", reason=" + reason);
 					return 0;
 				}
 				List<Agent> enemies = new List<Agent>();
@@ -2161,39 +2163,29 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				{
 					return 0;
 				}
-				Vec3 forward = doorFrame.rotation.f;
-				forward.z = 0f;
-				if (forward.LengthSquared < 0.01f)
-				{
-					forward = Vec3.Forward;
-				}
-				forward.Normalize();
-				Vec3 right = Vec3.CrossProduct(forward, Vec3.Up);
-				if (right.LengthSquared < 0.01f)
-				{
-					right = Vec3.Side;
-				}
-				right.Normalize();
 				int moved = 0;
 				for (int i = 0; i < enemies.Count; i++)
 				{
 					Agent agent = enemies[i];
-					int row = i / SpawnGridColumns;
-					int column = i % SpawnGridColumns;
-					float lateralIndex = column - (SpawnGridColumns - 1) * 0.5f;
-					Vec3 position = doorFrame.origin
-						+ forward * (EnemyDoorSpawnBaseDistance + row * EnemyDoorSpawnRowDistance)
-						+ right * (lateralIndex * EnemyDoorSpawnLateralSpacing);
+					MatrixFrame spawnFrame = spawnFrames[SelectEnemyReserveSpawnFrameIndex(i, spawnFrames.Count, spawnSource)];
+					Vec3 position = ResolveEnemyReserveSpawnPosition(spawnFrame, i, spawnSource);
 					if (mission.Scene != null)
 					{
 						position.z = mission.Scene.GetGroundHeightAtPosition(position);
 					}
 					agent.TeleportToPosition(position);
-					Vec3 direction = main != null && main.IsActive() ? main.Position - position : forward * -1f;
+					Vec3 fallbackForward = spawnFrame.rotation.f;
+					fallbackForward.z = 0f;
+					if (fallbackForward.LengthSquared < 0.01f)
+					{
+						fallbackForward = Vec3.Forward;
+					}
+					fallbackForward.Normalize();
+					Vec3 direction = main != null && main.IsActive() ? main.Position - position : fallbackForward * -1f;
 					direction.z = 0f;
 					if (direction.LengthSquared < 0.01f)
 					{
-						direction = forward * -1f;
+						direction = fallbackForward * -1f;
 					}
 					direction.Normalize();
 					Vec2 moveDirection = direction.AsVec2;
@@ -2205,12 +2197,12 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					AssignEnemyAgentCombatTarget(agent, agent.Index + i);
 					moved++;
 				}
-				SettlementEntryTroopSelectionLog.Log("Repositioned live tracked enemies at lord hall door. settlement=" + _settlementId + ", reason=" + reason + ", moved=" + moved);
+				SettlementEntryTroopSelectionLog.Log("Repositioned live tracked enemies at reserve spawns. settlement=" + _settlementId + ", source=" + spawnSource + ", reason=" + reason + ", moved=" + moved);
 				return moved;
 			}
 			catch (Exception ex)
 			{
-				SettlementEntryTroopSelectionLog.Log("RepositionLiveTrackedEnemiesAtLordHallDoor failed. reason=" + reason + ", error=" + ex.Message);
+				SettlementEntryTroopSelectionLog.Log("RepositionLiveTrackedEnemiesAtReserveSpawns failed. reason=" + reason + ", error=" + ex.Message);
 				return 0;
 			}
 		}
@@ -2417,7 +2409,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				RefreshEnemyCombatTargets();
 				if (spawned > 0)
 				{
-					InformationManager.DisplayMessage(new InformationMessage("【SETS内部暴乱】" + GetDefenderReservePhaseDisplayName(phaseKind) + "从领主大厅门口加入镇压（第 " + waveNumber + " 波，场上最多 " + MaxActiveDefenderReserveWaves + " 波）。", Color.FromUint(WarningColor)));
+					InformationManager.DisplayMessage(new InformationMessage("【SETS内部暴乱】" + GetDefenderReservePhaseDisplayName(phaseKind) + "从城镇工坊区加入镇压（第 " + waveNumber + " 波，场上最多 " + MaxActiveDefenderReserveWaves + " 波）。", Color.FromUint(WarningColor)));
 				}
 				SettlementEntryTroopSelectionLog.Log("Spawned defender reserve wave. settlement=" + _settlementId + ", wave=" + waveNumber + ", activeWaves=" + CountActiveDefenderReserveWaves() + "/" + MaxActiveDefenderReserveWaves + ", phase=" + phaseKind + ", requested=" + troops.Count + ", spawned=" + spawned + ", skipped=" + Math.Max(0, troops.Count - spawned) + ", remainingTotal=" + (_remainingDefenderReserve?.Count ?? 0) + ", nextWaveTime=" + _nextDefenderReserveWaveTime.ToString("0.0"));
 			}
@@ -2545,6 +2537,126 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			return troops;
 		}
 
+		private bool TryGetEnemyReserveSpawnFrames(out List<MatrixFrame> frames, out string spawnSource)
+		{
+			if (TryGetTownWorkshopSpawnFrames(out frames))
+			{
+				spawnSource = "workshop";
+				return true;
+			}
+			if (TryGetLordHallDoorSpawnFrame(out MatrixFrame fallbackFrame))
+			{
+				frames = new List<MatrixFrame> { fallbackFrame };
+				spawnSource = "lord_hall_fallback";
+				return true;
+			}
+			frames = null;
+			spawnSource = "none";
+			return false;
+		}
+
+		private bool TryGetTownWorkshopSpawnFrames(out List<MatrixFrame> frames)
+		{
+			frames = new List<MatrixFrame>();
+			try
+			{
+				Mission mission = base.Mission;
+				Settlement settlement = Settlement.Find(_settlementId);
+				if (mission == null || settlement?.IsTown != true)
+				{
+					return false;
+				}
+				List<WorkshopAreaMarker> markers = mission.ActiveMissionObjects?
+					.FindAllWithType<WorkshopAreaMarker>()?
+					.Where(marker => marker != null && marker.AreaIndex > 0 && marker.GameEntity != null)
+					.OrderBy(marker => marker.AreaIndex)
+					.ToList();
+				if (markers == null || markers.Count == 0)
+				{
+					return false;
+				}
+				for (int i = 0; i < markers.Count; i++)
+				{
+					WorkshopAreaMarker marker = markers[i];
+					if (marker.GameEntity.HasTag("workshop_area_marker") == false)
+					{
+						continue;
+					}
+					try
+					{
+						if (marker.GetWorkshop()?.WorkshopType?.IsHidden == true)
+						{
+							continue;
+						}
+					}
+					catch
+					{
+					}
+					MatrixFrame frame = marker.GameEntity.GetGlobalFrame();
+					frame.rotation.OrthonormalizeAccordingToForwardAndKeepUpAsZAxis();
+					if (mission.Scene != null)
+					{
+						frame.origin.z = mission.Scene.GetGroundHeightAtPosition(frame.origin);
+					}
+					if (frame.origin.LengthSquared > 0.01f)
+					{
+						frames.Add(frame);
+					}
+				}
+				if (frames.Count > 0)
+				{
+					SettlementEntryTroopSelectionLog.Log("Resolved town workshop spawn frames. settlement=" + _settlementId + ", count=" + frames.Count);
+					return true;
+				}
+			}
+			catch (Exception ex)
+			{
+				SettlementEntryTroopSelectionLog.Log("Resolve town workshop spawn frames failed. settlement=" + _settlementId + ", error=" + ex.Message);
+			}
+			return false;
+		}
+
+		private static int SelectEnemyReserveSpawnFrameIndex(int troopIndex, int frameCount, string spawnSource)
+		{
+			if (frameCount <= 1)
+			{
+				return 0;
+			}
+			if (string.Equals(spawnSource, "workshop", StringComparison.OrdinalIgnoreCase))
+			{
+				return Math.Min(frameCount - 1, Math.Max(0, troopIndex / DefenderReserveWorkshopSpawnGroupSize));
+			}
+			return 0;
+		}
+
+		private static Vec3 ResolveEnemyReserveSpawnPosition(MatrixFrame spawnFrame, int troopIndex, string spawnSource)
+		{
+			Vec3 forward = spawnFrame.rotation.f;
+			forward.z = 0f;
+			if (forward.LengthSquared < 0.01f)
+			{
+				forward = Vec3.Forward;
+			}
+			forward.Normalize();
+			Vec3 right = Vec3.CrossProduct(forward, Vec3.Up);
+			if (right.LengthSquared < 0.01f)
+			{
+				right = Vec3.Side;
+			}
+			right.Normalize();
+			bool workshopSpawn = string.Equals(spawnSource, "workshop", StringComparison.OrdinalIgnoreCase);
+			int localIndex = workshopSpawn ? troopIndex % DefenderReserveWorkshopSpawnGroupSize : troopIndex;
+			int columns = workshopSpawn ? EnemyWorkshopSpawnGridColumns : SpawnGridColumns;
+			int row = localIndex / columns;
+			int column = localIndex % columns;
+			float lateralIndex = column - (columns - 1) * 0.5f;
+			float forwardDistance = workshopSpawn
+				? (row - 0.5f) * EnemyWorkshopSpawnRowDistance
+				: EnemyDoorSpawnBaseDistance + row * EnemyDoorSpawnRowDistance;
+			float lateralDistance = lateralIndex * (workshopSpawn ? EnemyWorkshopSpawnLateralSpacing : EnemyDoorSpawnLateralSpacing);
+			return spawnFrame.origin + forward * forwardDistance + right * lateralDistance;
+		}
+
 		private bool TryGetLordHallDoorSpawnFrame(out MatrixFrame frame)
 		{
 			frame = MatrixFrame.Identity;
@@ -2626,13 +2738,9 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			int spawned = 0;
 			Vec3 anchor = main.Position;
 			Vec3 forward = main.LookDirection;
-			MatrixFrame doorFrame = MatrixFrame.Identity;
-			bool useLordHallDoorSpawn = asEnemy && TryGetLordHallDoorSpawnFrame(out doorFrame);
-			if (useLordHallDoorSpawn)
-			{
-				anchor = doorFrame.origin;
-				forward = doorFrame.rotation.f;
-			}
+			List<MatrixFrame> enemyReserveSpawnFrames = null;
+			string enemyReserveSpawnSource = null;
+			bool useEnemyReserveSpawnFrames = asEnemy && TryGetEnemyReserveSpawnFrames(out enemyReserveSpawnFrames, out enemyReserveSpawnSource);
 			if (forward.LengthSquared < 0.01f)
 			{
 				forward = Vec3.Forward;
@@ -2665,6 +2773,11 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				Vec3 position = asEnemy
 					? anchor + forward * forwardDistance + right * lateralDistance
 					: anchor - forward * forwardDistance + right * lateralDistance;
+				if (useEnemyReserveSpawnFrames)
+				{
+					MatrixFrame spawnFrame = enemyReserveSpawnFrames[SelectEnemyReserveSpawnFrameIndex(i, enemyReserveSpawnFrames.Count, enemyReserveSpawnSource)];
+					position = ResolveEnemyReserveSpawnPosition(spawnFrame, i, enemyReserveSpawnSource);
+				}
 				Vec3 direction = asEnemy ? (main.Position - position) : forward;
 				direction.z = 0f;
 				if (direction.LengthSquared < 0.01f)
@@ -3106,7 +3219,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			ClearSetsUsableProtectionState("sets_victory");
 			PrepareVictoryExit(source);
 			QueueVictoryPostMissionFlow(source);
-			InformationManager.DisplayMessage(new InformationMessage("【SETS内部暴乱】城镇守卫、民兵、驻军与驻城领主部队已被击溃。按 TAB 退出；若无响应将自动进入 GCCZ 攻城处置。", Color.FromUint(SuccessColor)));
+			InformationManager.DisplayMessage(new InformationMessage("【SETS内部暴乱】城镇守卫、民兵、驻军与驻城领主部队已被击溃。按 TAB 退出后进入原版围城战胜利处置菜单，可选择原版处置或 GCCZ 攻城处置。", Color.FromUint(SuccessColor)));
 			SettlementEntryTroopSelectionLog.Log("Victory reached. settlement=" + _settlementId + ", survivors=" + (_survivingRoster?.TotalManCount ?? 0) + ", source=" + source);
 		}
 
@@ -3149,7 +3262,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			}
 			_victoryQueued = true;
 			string queueSource = string.IsNullOrWhiteSpace(source) ? "SETS_town_victory" : source;
-			QueueGcczAfterTownVictory(_settlementId, _survivingRoster, queueSource);
+			QueueSettlementTakenMenuAfterTownVictory(_settlementId, _survivingRoster, queueSource);
 		}
 
 		private void PrepareVictoryExit(string source)

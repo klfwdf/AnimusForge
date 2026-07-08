@@ -647,7 +647,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					|| _pendingEncounterFinish
 					|| _hasPendingAftermath
 					|| _directMassacreAftermathScriptPending
-					|| _directPlunderAftermathScriptPending
+					|| _directPlunderAftermathScriptPending;
 			}
 			if (Mission.Current != null)
 			{
@@ -657,7 +657,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				|| _pendingEncounterFinish
 				|| _hasPendingAftermath
 				|| _directMassacreAftermathScriptPending
-				|| _directPlunderAftermathScriptPending
+				|| _directPlunderAftermathScriptPending;
 		}
 		catch
 		{
@@ -665,7 +665,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	internal static bool TryStartFromSettlementEntryVictory(Settlement settlement, TroopRoster selectedRoster, string source)
+	internal static bool TryOpenSettlementEntryVictoryMenu(Settlement settlement, TroopRoster selectedRoster, string source)
 	{
 		try
 		{
@@ -673,36 +673,25 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			Location location = ResolveInterventionLocation(settlement);
-			if (location == null)
+			if (Campaign.Current == null || MobileParty.MainParty == null)
 			{
 				return false;
 			}
-			if (!CanOpenInterventionMissionNow(location))
-			{
-				Logger.Log("SiegeAiIntervention", "TryStartFromSettlementEntryVictory deferred; location encounter unavailable. Settlement=" + (settlement.StringId ?? "N/A") + ", Source=" + (source ?? "N/A"));
-				return false;
-			}
-			string bridgeSource = string.IsNullOrWhiteSpace(source) ? "SETS_town_victory" : source;
+			string bridgeSource = string.IsNullOrWhiteSpace(source) ? "SETS_town_victory_menu" : source;
 			PrepareSetsSettlementEntryVictoryContext(settlement, bridgeSource);
-			PrepareInterventionEntryRuntime(settlement, bridgeSource);
 			int maxSelected = Math.Max(AutoSummonCount, selectedRoster?.TotalManCount ?? 0);
 			StoreSelectedInterventionRoster(selectedRoster, maxSelected);
-			if (!OpenInterventionMissionNow(location, bridgeSource))
-			{
-				ResetAftermathRuntimeGuards("sets_victory_open_failed");
-				Logger.Log("SiegeAiIntervention", "TryStartFromSettlementEntryVictory deferred after open check. Settlement=" + (settlement.StringId ?? "N/A") + ", Source=" + bridgeSource);
-				return false;
-			}
-			ApplySetsSettlementEntryCaptureIfNeeded(settlement, bridgeSource);
-			InformationManager.DisplayMessage(new InformationMessage("【SETS内部暴乱】已转入 GCCZ 攻城处置。", Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
-			Logger.Log("SiegeAiIntervention", "Started GCCZ from SETS victory. Settlement=" + (settlement.StringId ?? "N/A") + ", Selected=" + (_selectedInterventionRoster?.TotalManCount ?? 0) + ", Source=" + bridgeSource);
+			ApplySetsSettlementEntryCaptureIfNeeded(settlement, bridgeSource + "_capture_before_native_menu");
+			PrepareNativeSettlementTakenMenuContextForSets(settlement, bridgeSource);
+			GameMenu.ActivateGameMenu(SiegeAftermathMenuProfile.SettlementTakenMenuId);
+			InformationManager.DisplayMessage(new InformationMessage("【SETS内部暴乱】已进入原版围城战胜利处置菜单；可选择原版处置，也可选择 GCCZ 攻城处置。", Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
+			Logger.Log("SiegeAiIntervention", "Opened native settlement-taken menu from SETS victory. Settlement=" + (settlement.StringId ?? "N/A") + ", Selected=" + (_selectedInterventionRoster?.TotalManCount ?? 0) + ", Source=" + bridgeSource);
 			return true;
 		}
 		catch (Exception ex)
 		{
-			ResetAftermathRuntimeGuards("sets_victory_start_exception");
-			Logger.Log("SiegeAiIntervention", "TryStartFromSettlementEntryVictory failed: " + ex);
+			ResetAftermathRuntimeGuards("sets_victory_menu_exception");
+			Logger.Log("SiegeAiIntervention", "TryOpenSettlementEntryVictoryMenu failed: " + ex);
 			return false;
 		}
 	}
@@ -721,6 +710,38 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			_partyContributions[_besiegerParty] = 100f;
 		}
 		Logger.Log("SiegeAiIntervention", "Prepared SETS settlement-entry capture context. Settlement=" + (settlement?.StringId ?? "N/A") + ", PreviousOwner=" + (_previousSettlementOwnerClan?.StringId ?? "null") + ", Source=" + _setsSettlementEntryVictorySource);
+	}
+
+	private static void PrepareNativeSettlementTakenMenuContextForSets(Settlement settlement, string source)
+	{
+		try
+		{
+			SiegeAftermathCampaignBehavior behavior = Campaign.Current?.GetCampaignBehavior<SiegeAftermathCampaignBehavior>();
+			if (behavior == null || settlement == null)
+			{
+				Logger.Log("SiegeAiIntervention", "Skipped native settlement-taken menu context for SETS; behavior or settlement missing. Source=" + (source ?? "N/A"));
+				return;
+			}
+			MobileParty attackerParty = MobileParty.MainParty;
+			Clan previousOwner = _previousSettlementOwnerClan ?? settlement.OwnerClan ?? Clan.PlayerClan;
+			Dictionary<MobileParty, float> contributions = BuildSafePartyContributions(attackerParty);
+			Type type = typeof(SiegeAftermathCampaignBehavior);
+			type.GetField("_besiegerParty", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(behavior, attackerParty);
+			type.GetField("_prevSettlementOwnerClan", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(behavior, previousOwner);
+			type.GetField("_siegeEventPartyContributions", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(behavior, contributions);
+			type.GetField("_wasPlayerArmyMember", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(behavior, false);
+			type.GetField("_settlementProsperityCache", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(behavior, -1f);
+			FieldInfo damagedBuildingsField = type.GetField("_playerEncounterAftermathDamagedBuildings", BindingFlags.Instance | BindingFlags.NonPublic);
+			if (damagedBuildingsField?.GetValue(behavior) is System.Collections.IDictionary damagedBuildings)
+			{
+				damagedBuildings.Clear();
+			}
+			Logger.Log("SiegeAiIntervention", "Prepared native settlement-taken menu context for SETS. Settlement=" + (settlement.StringId ?? "N/A") + ", PreviousOwner=" + (previousOwner?.StringId ?? "null") + ", Source=" + (source ?? "N/A"));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "PrepareNativeSettlementTakenMenuContextForSets failed. Settlement=" + (settlement?.StringId ?? "N/A") + ", Source=" + (source ?? "N/A") + ", Error=" + ex.Message);
+		}
 	}
 
 	private static void ApplySetsSettlementEntryCaptureIfNeeded(Settlement settlement, string reason)
@@ -829,8 +850,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			TroopRoster initialSelections = BuildDefaultInterventionTroopSelection(fullRoster, AutoSummonCount);
-			_selectedInterventionRoster = null;
+			TroopRoster initialSelections = _selectedInterventionRoster != null && _selectedInterventionRoster.TotalManCount > 0
+				? _selectedInterventionRoster
+				: BuildDefaultInterventionTroopSelection(fullRoster, AutoSummonCount);
 			Action<TroopRoster> onDone = delegate(TroopRoster selectedRoster)
 			{
 				StoreSelectedInterventionRoster(selectedRoster, AutoSummonCount);
