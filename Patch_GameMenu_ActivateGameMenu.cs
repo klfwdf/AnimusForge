@@ -40,7 +40,7 @@ public static class Patch_GameMenu_ActivateGameMenu
 			}
 			if (SiegeAiInterventionBehavior.ShouldRedirectResolvedAftermathMenuForExternal(menuId))
 			{
-				Logger.LogTrace("UI_Intercept", "Skipping native siege aftermath menu after GCCZ resolution and finishing encounter. Menu=" + (menuId ?? "N/A"));
+				Logger.LogTrace("UI_Intercept", "Skipping native siege aftermath menu after GCCZ resolution and queueing encounter finish. Menu=" + (menuId ?? "N/A"));
 				SiegeAiInterventionBehavior.TryHandleNativeAftermathMenuInitForExternal("GameMenu.ActivateGameMenu:" + (menuId ?? "N/A"));
 				if (logEncounterDiag)
 				{

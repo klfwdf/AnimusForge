@@ -1855,22 +1855,28 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		TryPumpPendingEncounterFinishForExternal(SiegeAftermathTransitionSourceProfile.CampaignTickPostMissionFinishSource);
+	}
+
+	internal static bool TryPumpPendingEncounterFinishForExternal(string source)
+	{
 		if ((!_pendingSummarySwitch && !_pendingEncounterFinish) || Mission.Current != null)
 		{
-			return;
+			return false;
 		}
+		string finishSource = string.IsNullOrWhiteSpace(source) ? SiegeAftermathTransitionSourceProfile.GameStateDeferredFinishPumpSource : source;
 		bool keepPending = false;
 		try
 		{
 			if (_nativeDevastateAftermathFlowActive && !_pendingLootScreenShown)
 			{
 				keepPending = true;
-				return;
+				return true;
 			}
 			if (_hasPendingAftermath)
 			{
 				keepPending = true;
-				return;
+				return true;
 			}
 			if (_pendingLootScreen && !_pendingLootScreenShown && _pendingLootRoster != null && _pendingLootRoster.Count > 0)
 			{
@@ -1883,12 +1889,12 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 						_pendingLootRoster
 					}
 				});
-				return;
+				return true;
 			}
 			if (_pendingLootScreenShown && Game.Current?.GameStateManager?.ActiveState is InventoryState)
 			{
 				keepPending = true;
-				return;
+				return true;
 			}
 			SiegeAftermathAction.SiegeAftermath aftermath = _pendingEncounterFinish ? _pendingEncounterFinishAftermath : _pendingSummaryAftermath;
 			TrySetNativePlayerEncounterAftermathForSummary(aftermath);
@@ -1898,18 +1904,20 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			if (!_pendingEncounterFinish)
 			{
-				QueueEncounterFinishAfterIntervention(aftermath, SiegeAftermathTransitionSourceProfile.CampaignTickPostMissionFinishSource, 0, forceDelay: false);
+				QueueEncounterFinishAfterIntervention(aftermath, finishSource, 0, forceDelay: false);
 			}
-			if (!TryFinishPlayerEncounterAfterInterventionNow(aftermath, SiegeAftermathTransitionSourceProfile.CampaignTickPostMissionFinishSource))
+			if (!TryFinishPlayerEncounterAfterInterventionNow(aftermath, finishSource))
 			{
 				keepPending = true;
-				return;
+				return true;
 			}
+			return true;
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("SiegeAiIntervention", "Finishing after intervention failed: " + ex.Message);
+			Logger.Log("SiegeAiIntervention", "Finishing after intervention failed. Source=" + finishSource + ", Error=" + ex.Message);
 			keepPending = true;
+			return false;
 		}
 		finally
 		{
@@ -5316,7 +5324,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					PrepareCompletedInterventionSummary(aftermath);
 				}
 				QueueEncounterFinishAfterIntervention(aftermath, transitionSource, 0, forceDelay: true);
-				TryFinishPlayerEncounterAfterInterventionNow(aftermath, transitionSource);
+				Logger.Log("SiegeAiIntervention", "Queued deferred AF siege encounter finish from native menu activation. Menu=" + menuId + ", Source=" + transitionSource);
 			}
 			Logger.Log("SiegeAiIntervention", "Suppressed native siege aftermath menu during GCCZ transition. Menu=" + menuId + ", MissionActive=" + (Mission.Current != null) + ", PendingSummary=" + _pendingSummarySwitch + ", PendingFinish=" + _pendingEncounterFinish + ", PendingAftermath=" + _hasPendingAftermath + ", Resolved=" + _afAftermathResolved);
 			return true;
@@ -5374,9 +5382,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				Logger.Log("SiegeAiIntervention", "Auto-routed native siege aftermath menu to Devastate summary for AF massacre. Source=" + (source ?? "N/A"));
 				return true;
 			}
-			QueueEncounterFinishAfterIntervention(_completedAftermath, SiegeAftermathTransitionSourceProfile.BuildNativeMenuInitSource(source), 0, forceDelay: true);
-			TryFinishPlayerEncounterAfterInterventionNow(_completedAftermath, SiegeAftermathTransitionSourceProfile.BuildNativeMenuInitSource(source));
-			Logger.Log("SiegeAiIntervention", "Suppressed native siege aftermath menu init and requested encounter finish after AF resolved aftermath. Source=" + (source ?? "N/A"));
+			string deferredFinishSource = SiegeAftermathTransitionSourceProfile.BuildNativeMenuDeferredFinishSource(source);
+			QueueEncounterFinishAfterIntervention(_completedAftermath, deferredFinishSource, 0, forceDelay: true);
+			Logger.Log("SiegeAiIntervention", "Suppressed native siege aftermath menu init and queued deferred encounter finish after AF resolved aftermath. Source=" + deferredFinishSource);
 			return true;
 		}
 		catch (Exception ex)

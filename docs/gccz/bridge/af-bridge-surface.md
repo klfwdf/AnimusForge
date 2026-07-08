@@ -364,6 +364,12 @@ Follow-up outcome tuning: finalized GCCZ destructive settlement effects now use 
 - `Patch_SiegeAftermath_Continue_AFMassacreLoot` is the bridge for native Devastate contextual-summary continue, so GCCZ can open pending loot or finish the encounter after the native summary.
 - `Patch_GameStateManager_OnTick_AFMassacreLoot` is a guarded fallback pump. It calls the same direct script pump facades and is safe because the scripts return when no direct aftermath is pending, a mission is still active, or the loot screen already opened.
 
+## 2026-07-08 resolved aftermath deferred finish guard
+
+- Resolved native aftermath menu guards (`GameMenu.ActivateGameMenu`, `GameMenu.SwitchToMenu`, and native aftermath menu init prefixes) must only suppress the stale vanilla menu and queue encounter finish; they must not call `PlayerEncounter.Finish(true)` synchronously inside the menu activation/switch/init prefix stack.
+- The queued finish is pumped from `CampaignTick` / `GameStateManager.OnTick` through `TryPumpPendingEncounterFinishForExternal(...)`, after the menu prefix returns. This avoids reentrant crash reports after town GCCZ positive outcomes such as `[ACTION:宽恕]`.
+- Direct destructive loot flows may keep their own guarded loot/finish timing; the deferred-finish rule is for already-resolved non-direct fallback aftermath menus.
+
 ## 2026-06-24 AF094 normal town-center entry with raised civilian population
 
 - Fused `G:\AFMOD\new-0.9.6\SiegeAiInterventionBehavior.cs` opens GCCZ personal-entry through `PlayerEncounter.LocationEncounter.CreateAndOpenMissionController(center, ...)`, matching a normal non-siege town-center entry.

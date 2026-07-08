@@ -1,4 +1,5 @@
 using System;
+using AnimusForge.SiegeAftermathIntervention;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CampaignBehaviors;
@@ -54,7 +55,7 @@ public static class Patch_GameMenu_SwitchToMenu_AFResolvedSiegeAftermath
 			}
 			if (SiegeAiInterventionBehavior.ShouldRedirectResolvedAftermathMenuForExternal(menuId))
 			{
-				Logger.LogTrace("UI_Intercept", "Skipping native siege aftermath SwitchToMenu after GCCZ resolution and finishing encounter. Menu=" + (menuId ?? "N/A"));
+				Logger.LogTrace("UI_Intercept", "Skipping native siege aftermath SwitchToMenu after GCCZ resolution and queueing encounter finish. Menu=" + (menuId ?? "N/A"));
 				SiegeAiInterventionBehavior.TryHandleNativeAftermathMenuInitForExternal("GameMenu.SwitchToMenu:" + (menuId ?? "N/A"));
 				return false;
 			}
@@ -118,6 +119,7 @@ public static class Patch_GameStateManager_OnTick_AFMassacreLoot
 			SiegeAiInterventionBehavior.TryPumpPendingCastleInterventionMissionOpenForExternal("GameStateManager.OnTick");
 			SiegeAiInterventionBehavior.TryPumpDirectMassacreAftermathScriptForExternal("GameStateManager.OnTick");
 			SiegeAiInterventionBehavior.TryPumpDirectPlunderAftermathScriptForExternal("GameStateManager.OnTick");
+			SiegeAiInterventionBehavior.TryPumpPendingEncounterFinishForExternal(SiegeAftermathTransitionSourceProfile.GameStateDeferredFinishPumpSource);
 		}
 		catch (Exception ex)
 		{
