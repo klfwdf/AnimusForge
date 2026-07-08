@@ -24,6 +24,8 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 	private const int RecentActionWindowDays = 10;
 	private const int MaxRecentActions = 96;
 	private const int MaxMajorMaterials = 180;
+	private const int SummaryBatchSize = 24;
+	private const int MaxSummarizedMaterialKeys = 512;
 	private const int MaxSummaryRetries = 3;
 	private const int PersonalKnownBonusPerLine = 3;
 	private const int CourierReplyKnownBonus = 1;
@@ -131,6 +133,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 			return "recentActions=" + recent
 				+ " majorMaterials=" + materials
 				+ " pendingMaterials=" + pending
+				+ " summarizedMaterialKeys=" + (state.SummarizedMaterialKeys?.Count ?? 0)
 				+ " npcKnowledge=" + (state.NpcKnowledge?.Count ?? 0)
 				+ " cultures=" + (state.CultureNotoriety?.Count ?? 0)
 				+ " summaryBytes=" + summaryBytes
@@ -949,7 +952,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		}
 		_state = NormalizeState(_state);
 		string key = NormalizeStableKey(material.StableKey, material.Text, material.Day);
-		if (_state.MajorMaterials.Any(x => x != null && string.Equals(x.StableKey ?? "", key, StringComparison.OrdinalIgnoreCase)))
+		if (IsKnownMajorMaterialKey(key))
 		{
 			return;
 		}
@@ -970,6 +973,20 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		TryStartSummaryProcessing();
 	}
 
+	private bool IsKnownMajorMaterialKey(string key)
+	{
+		string normalizedKey = (key ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(normalizedKey))
+		{
+			return false;
+		}
+		if (_state?.MajorMaterials?.Any(x => x != null && string.Equals(x.StableKey ?? "", normalizedKey, StringComparison.OrdinalIgnoreCase)) == true)
+		{
+			return true;
+		}
+		return _state?.SummarizedMaterialKeys?.Any(x => string.Equals(x ?? "", normalizedKey, StringComparison.OrdinalIgnoreCase)) == true;
+	}
+
 	private void OnDailyTick()
 	{
 		_state = NormalizeState(_state);
@@ -984,13 +1001,17 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		FinalizeConversation(characters);
 	}
 
-	private void TryStartSummaryProcessing()
+	private void TryStartSummaryProcessing(bool force = false)
 	{
 		if (_summaryProcessing)
 		{
 			return;
 		}
-		if (!HasSummaryWorkDue())
+		if (!force && !HasSummaryWorkDue())
+		{
+			return;
+		}
+		if (force && !HasPendingMajorMaterials() && !IsMajorSummaryOverPromptLimit())
 		{
 			return;
 		}
@@ -1005,8 +1026,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		{
 			return true;
 		}
-		bool hasPendingMaterials = _state.MajorMaterials.Any(x => x != null && !x.Summarized);
-		if (!hasPendingMaterials)
+		if (!HasPendingMajorMaterials())
 		{
 			return false;
 		}
@@ -1018,8 +1038,14 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		return GetCurrentGameDayIndex() - _state.LastSummaryDay >= interval;
 	}
 
+	private bool HasPendingMajorMaterials()
+	{
+		return _state?.MajorMaterials != null && _state.MajorMaterials.Any(x => x != null && !x.Summarized);
+	}
+
 	private async Task ProcessSummaryAsync()
 	{
+		bool continueAfterBatch = false;
 		try
 		{
 			_state = NormalizeState(_state);
@@ -1027,7 +1053,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 				.Where(x => x != null && !x.Summarized)
 				.OrderBy(x => x.Day)
 				.ThenBy(x => x.CreatedUtcTicks)
-				.Take(24)
+				.Take(SummaryBatchSize)
 				.ToList();
 			bool compactOnly = sourceMaterials.Count == 0 && IsMajorSummaryOverPromptLimit();
 			if (sourceMaterials.Count == 0 && !compactOnly)
@@ -1040,6 +1066,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 			if (TryParseSummaryResponse(response, out string summary, out double delta, out string error))
 			{
 				ApplySummarySuccess(sourceMaterials, summary, delta);
+				continueAfterBatch = HasPendingMajorMaterials();
 				return;
 			}
 			_state.SummaryRetryCount++;
@@ -1059,10 +1086,13 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 						if (material != null)
 						{
 							material.Summarized = true;
+							RememberSummarizedMaterialKey(material);
 						}
 					}
+					PruneSummarizedMajorMaterials();
 				}
 				_state.SummaryRetryCount = 0;
+				continueAfterBatch = HasPendingMajorMaterials();
 			}
 		}
 		catch (Exception ex)
@@ -1073,6 +1103,10 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		finally
 		{
 			_summaryProcessing = false;
+			if (continueAfterBatch)
+			{
+				TryStartSummaryProcessing(force: true);
+			}
 		}
 	}
 
@@ -1168,11 +1202,13 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 			}
 			materialCount++;
 			material.Summarized = true;
+			RememberSummarizedMaterialKey(material);
 			foreach (string cultureId in NormalizeCultureList(material.CultureIds))
 			{
 				cultures.Add(cultureId);
 			}
 		}
+		PruneSummarizedMajorMaterials();
 		if (materialCount <= 0)
 		{
 			delta = 0.0;
@@ -2376,6 +2412,93 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		return text.Substring(0, maxChars - 3).TrimEnd() + "...";
 	}
 
+	private void RememberSummarizedMaterialKey(PlayerHistoryMaterial material)
+	{
+		if (material == null)
+		{
+			return;
+		}
+		RememberSummarizedMaterialKey(NormalizeStableKey(material.StableKey, material.Text, material.Day));
+	}
+
+	private void RememberSummarizedMaterialKey(string key)
+	{
+		_state = NormalizeState(_state);
+		RememberSummarizedMaterialKey(_state, key);
+	}
+
+	private static void RememberSummarizedMaterialKey(PlayerNotorietyState state, string key)
+	{
+		if (state == null)
+		{
+			return;
+		}
+		string normalizedKey = (key ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(normalizedKey))
+		{
+			return;
+		}
+		state.SummarizedMaterialKeys = NormalizeSummarizedMaterialKeys(state.SummarizedMaterialKeys);
+		state.SummarizedMaterialKeys.RemoveAll(x => string.Equals(x ?? "", normalizedKey, StringComparison.OrdinalIgnoreCase));
+		state.SummarizedMaterialKeys.Add(normalizedKey);
+		if (state.SummarizedMaterialKeys.Count > MaxSummarizedMaterialKeys)
+		{
+			state.SummarizedMaterialKeys = state.SummarizedMaterialKeys
+				.Skip(state.SummarizedMaterialKeys.Count - MaxSummarizedMaterialKeys)
+				.ToList();
+		}
+	}
+
+	private void PruneSummarizedMajorMaterials()
+	{
+		_state = PruneSummarizedMajorMaterials(NormalizeState(_state));
+	}
+
+	private static PlayerNotorietyState PruneSummarizedMajorMaterials(PlayerNotorietyState state)
+	{
+		if (state?.MajorMaterials == null)
+		{
+			return state ?? new PlayerNotorietyState();
+		}
+		foreach (PlayerHistoryMaterial material in state.MajorMaterials)
+		{
+			if (material?.Summarized == true)
+			{
+				RememberSummarizedMaterialKey(state, NormalizeStableKey(material.StableKey, material.Text, material.Day));
+			}
+		}
+		state.MajorMaterials = state.MajorMaterials
+			.Where(x => x != null && !x.Summarized && !string.IsNullOrWhiteSpace(x.Text))
+			.OrderBy(x => x.Day)
+			.ThenBy(x => x.CreatedUtcTicks)
+			.Take(MaxMajorMaterials)
+			.ToList();
+		state.SummarizedMaterialKeys = NormalizeSummarizedMaterialKeys(state.SummarizedMaterialKeys);
+		return state;
+	}
+
+	private static List<string> NormalizeSummarizedMaterialKeys(IEnumerable<string> keys)
+	{
+		List<string> normalized = new List<string>();
+		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (string rawKey in keys ?? Enumerable.Empty<string>())
+		{
+			string key = (rawKey ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(key) || !seen.Add(key))
+			{
+				continue;
+			}
+			normalized.Add(key);
+		}
+		if (normalized.Count > MaxSummarizedMaterialKeys)
+		{
+			normalized = normalized
+				.Skip(normalized.Count - MaxSummarizedMaterialKeys)
+				.ToList();
+		}
+		return normalized;
+	}
+
 	private static PlayerNotorietyState NormalizeState(PlayerNotorietyState state)
 	{
 		state ??= new PlayerNotorietyState();
@@ -2383,6 +2506,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		state.NpcKnowledge ??= new Dictionary<string, PlayerNpcKnowledgeState>(StringComparer.OrdinalIgnoreCase);
 		state.RecentActions ??= new List<PlayerActionEntry>();
 		state.MajorMaterials ??= new List<PlayerHistoryMaterial>();
+		state.SummarizedMaterialKeys = NormalizeSummarizedMaterialKeys(state.SummarizedMaterialKeys);
 		state.MajorSummary = (state.MajorSummary ?? "").Trim();
 		if (state.LastSummaryDay == 0 && state.UpdatedUtcTicks == 0 && string.IsNullOrWhiteSpace(state.MajorSummary))
 		{
@@ -2416,9 +2540,8 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 			.Select(NormalizeHistoryMaterial)
 			.OrderBy(x => x.Day)
 			.ThenBy(x => x.CreatedUtcTicks)
-			.Take(MaxMajorMaterials)
 			.ToList();
-		return state;
+		return PruneSummarizedMajorMaterials(state);
 	}
 
 	private static PlayerActionEntry NormalizeActionEntry(PlayerActionEntry entry)
@@ -3300,6 +3423,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		public Dictionary<string, PlayerNpcKnowledgeState> NpcKnowledge = new Dictionary<string, PlayerNpcKnowledgeState>(StringComparer.OrdinalIgnoreCase);
 		public List<PlayerActionEntry> RecentActions = new List<PlayerActionEntry>();
 		public List<PlayerHistoryMaterial> MajorMaterials = new List<PlayerHistoryMaterial>();
+		public List<string> SummarizedMaterialKeys = new List<string>();
 		public string MajorSummary = "";
 		public int LastSummaryDay = -1;
 		public int LastSequence;

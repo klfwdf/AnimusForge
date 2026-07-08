@@ -728,12 +728,12 @@ public static class AIConfigHandler
 		}
 	}
 
-	public static List<PostprocessRuleEntry> BuildRuntimeRoyalPostprocessRulesForExternal(Hero targetHero)
+	public static List<PostprocessRuleEntry> BuildRuntimeRoyalPostprocessRulesForExternal(Hero targetHero, bool postprocessRuleSelected)
 	{
 		List<PostprocessRuleEntry> list = new List<PostprocessRuleEntry>();
 		try
 		{
-			if (!IsRoyalAbdicationPostprocessTargetForExternal(targetHero))
+			if (!postprocessRuleSelected || !IsRoyalAbdicationPostprocessTargetForExternal(targetHero))
 			{
 				return list;
 			}

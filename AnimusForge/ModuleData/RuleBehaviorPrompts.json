@@ -1,5 +1,5 @@
 {
-    "AuxiliaryRoutingGuidance":  "优先看最新玩家请求；历史只补指代。话题用于规则注入，不是剧情摘要。\n必须选4个时，明确核心机制优先；弱补位才用 NPC_RECENT/NPC_MAJOR。\nNPC回复可确认玩家请求，但不能把未由玩家提出的强机制当补位。\n弱补位也要有语义：NPC_RECENT=近期行动传闻；NPC_MAJOR=长期身世背景；\n不要用 SETTLEMENT/VASSALAGE/ISSUE/MEETING_RELEASE/HERO_JOIN/REWARD/WORLD_MAP/DUEL/SCENE_MOVE 凑数。\nAFEF/历史中“已转交固定资产”只是已发生事实；只有最新交换在谈新的买卖/交付才选 SETTLEMENT。\n本地“请带路/跟着我走/随我走”选 SCENE_MOVE，不选 COMMANDS_AND_REQUESTS。\nDIPLOMACY: 议和/停战/通商/贡金/条约/战后赔偿/割地/放行条件。\nNPC_JOIN: NPC或明确人物向玩家效忠、追随、加入玩家家族、队伍或阵营。\nPLAYER_JOIN: 玩家自己加入/离开某王国，成为雇佣兵或封臣。\nCOMMANDS_AND_REQUESTS: 只限大地图部队移动/跟随/攻击命令。\nSETTLEMENT: 只限领地/工坊/商队等所有权交付。\nITEM_TRANSFER: 本轮有金额、资源、赎金、贡金、摊派、报酬、借债/还债就选。",
+    "AuxiliaryRoutingGuidance":  "优先看最新玩家请求；历史只补指代。话题用于规则注入，不是剧情摘要。",
     "Duel":  {
                  "IsEnabled":  true,
                  "TopicNumber":  1,

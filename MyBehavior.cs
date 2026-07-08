@@ -27772,6 +27772,11 @@ public class MyBehavior : CampaignBehaviorBase
 		AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter);
 		AfGcczShoutBridge.AddExclusivePreprocessRuleExclusions(excludedRuleIdSet);
 		AddPreprocessOnlyResidentRuleExclusions(excludedRuleIdSet);
+		if (AfGcczShoutBridge.ShouldBypassPreprocessForActiveScene())
+		{
+			Logger.Log("CourierDelivery", "[Preprocess] skipped: active GCCZ siege aftermath scene uses unconditional postprocess routing.");
+			return result;
+		}
 		string targetKingdomId = ResolveTargetKingdomIdForRules(targetHero, targetCharacter, kingdomIdOverride);
 		AIConfigHandler.SetGuardrailRuntimeTargetKingdom(targetKingdomId);
 		AIConfigHandler.SetGuardrailRuntimeTargetHero(targetHero?.StringId ?? targetCharacter?.HeroObject?.StringId ?? "");
@@ -27965,10 +27970,16 @@ public class MyBehavior : CampaignBehaviorBase
 		int num2 = DuelSettings.GetSettings()?.MinimumClanTier ?? 0;
 		bool isQualified = num >= num2;
 		string npcLastUtterance = GetLatestNpcDialogueUtterance(targetHero, targetCharacter, targetAgentIndex);
+		bool bypassRulePreprocess = AfGcczShoutBridge.ShouldBypassPreprocessForActiveScene();
+		bool allowRulePreprocess = !suppressDynamicRuleAndLore && !bypassRulePreprocess;
+		if (bypassRulePreprocess)
+		{
+			Logger.Log("Logic", "[RuleInjectionDebug] stage=single_aux_preprocess skipped=gccz_active targetHero=" + (targetHero?.StringId ?? "null") + " targetCharacter=" + (targetCharacter?.StringId ?? "null"));
+		}
 		List<string> auxiliaryRuleHitIds = null;
 		HashSet<string> auxiliaryRuleHitIdSet = null;
 		bool useAuxiliaryRuleHitSet = false;
-		if (!suppressDynamicRuleAndLore && AIConfigHandler.UseAuxiliaryRuleApiRetrieval)
+		if (allowRulePreprocess && AIConfigHandler.UseAuxiliaryRuleApiRetrieval)
 		{
 			try
 			{
@@ -27995,11 +28006,13 @@ public class MyBehavior : CampaignBehaviorBase
 				useAuxiliaryRuleHitSet = false;
 			}
 		}
-		List<string> forcedRuleHitIds = NormalizePreselectedPromptRuleIds(forcedPreprocessRuleIds)
-			.Where((string x) => !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, x))
-			.Where((string x) => !IsRuntimeGatedPreprocessRuleId(x)
-				|| AIConfigHandler.CanInjectRuleTopicIntoPreprocessForExternal(x, hasAnyHero))
-			.ToList();
+		List<string> forcedRuleHitIds = bypassRulePreprocess
+			? new List<string>()
+			: NormalizePreselectedPromptRuleIds(forcedPreprocessRuleIds)
+				.Where((string x) => !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, x))
+				.Where((string x) => !IsRuntimeGatedPreprocessRuleId(x)
+					|| AIConfigHandler.CanInjectRuleTopicIntoPreprocessForExternal(x, hasAnyHero))
+				.ToList();
 		if (forcedRuleHitIds.Count > 0)
 		{
 			if (auxiliaryRuleHitIds == null)
@@ -28022,7 +28035,7 @@ public class MyBehavior : CampaignBehaviorBase
 		bool flag = false;
 		string matchedKeyword = "";
 		float score = 0f;
-		if (!suppressDynamicRuleAndLore && !IsPromptRuleExcluded(excludedRuleIdSet, "duel"))
+		if (allowRulePreprocess && !IsPromptRuleExcluded(excludedRuleIdSet, "duel"))
 		{
 			if (useAuxiliaryRuleHitSet)
 			{
@@ -28044,7 +28057,7 @@ public class MyBehavior : CampaignBehaviorBase
 		bool flag3 = false;
 		string matchedKeyword2 = "";
 		float score2 = 0f;
-		if (!suppressDynamicRuleAndLore && AIConfigHandler.RewardEnabled && !IsPromptRuleExcluded(excludedRuleIdSet, "reward"))
+		if (allowRulePreprocess && AIConfigHandler.RewardEnabled && !IsPromptRuleExcluded(excludedRuleIdSet, "reward"))
 		{
 			if (useAuxiliaryRuleHitSet)
 			{
@@ -28065,7 +28078,7 @@ public class MyBehavior : CampaignBehaviorBase
 		bool flag4 = false;
 		string matchedKeyword3 = "";
 		float score3 = 0f;
-		if (!suppressDynamicRuleAndLore && AIConfigHandler.LoanEnabled && !IsPromptRuleExcluded(excludedRuleIdSet, "loan"))
+		if (allowRulePreprocess && AIConfigHandler.LoanEnabled && !IsPromptRuleExcluded(excludedRuleIdSet, "loan"))
 		{
 			if (useAuxiliaryRuleHitSet)
 			{
@@ -28086,7 +28099,7 @@ public class MyBehavior : CampaignBehaviorBase
 		bool flag5 = false;
 		string matchedKeyword4 = "";
 		float score4 = 0f;
-		if (!suppressDynamicRuleAndLore && AIConfigHandler.SurroundingsEnabled && !IsPromptRuleExcluded(excludedRuleIdSet, "surroundings"))
+		if (allowRulePreprocess && AIConfigHandler.SurroundingsEnabled && !IsPromptRuleExcluded(excludedRuleIdSet, "surroundings"))
 		{
 			if (useAuxiliaryRuleHitSet)
 			{
@@ -28107,7 +28120,7 @@ public class MyBehavior : CampaignBehaviorBase
 		string matchedKeyword5 = "";
 		float score5 = 0f;
 		bool flag6 = false;
-		if (!suppressDynamicRuleAndLore && !IsPromptRuleExcluded(excludedRuleIdSet, "kingdom_service"))
+		if (allowRulePreprocess && !IsPromptRuleExcluded(excludedRuleIdSet, "kingdom_service"))
 		{
 			if (useAuxiliaryRuleHitSet)
 			{
@@ -28128,7 +28141,7 @@ public class MyBehavior : CampaignBehaviorBase
 		string matchedKeyword6 = "";
 		float score6 = 0f;
 		bool marriageHit = false;
-		if (!suppressDynamicRuleAndLore && !IsPromptRuleExcluded(excludedRuleIdSet, "marriage"))
+		if (allowRulePreprocess && !IsPromptRuleExcluded(excludedRuleIdSet, "marriage"))
 		{
 			if (useAuxiliaryRuleHitSet)
 			{
@@ -28149,7 +28162,7 @@ public class MyBehavior : CampaignBehaviorBase
 		string matchedKeyword7 = "";
 		float score7 = 0f;
 		bool partyTransferHit = false;
-		if (!suppressDynamicRuleAndLore && !IsPromptRuleExcluded(excludedRuleIdSet, "party_transfer"))
+		if (allowRulePreprocess && !IsPromptRuleExcluded(excludedRuleIdSet, "party_transfer"))
 		{
 			if (useAuxiliaryRuleHitSet)
 			{
@@ -28170,7 +28183,7 @@ public class MyBehavior : CampaignBehaviorBase
 		string matchedKeyword8 = "";
 		float score8 = 0f;
 		bool worldMapPartyCommandHit = false;
-		if (!suppressDynamicRuleAndLore && !IsPromptRuleExcluded(excludedRuleIdSet, "worldmap_party_command"))
+		if (allowRulePreprocess && !IsPromptRuleExcluded(excludedRuleIdSet, "worldmap_party_command"))
 		{
 			if (useAuxiliaryRuleHitSet)
 			{
@@ -28186,7 +28199,7 @@ public class MyBehavior : CampaignBehaviorBase
 				worldMapPartyCommandHit = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "worldmap_party_command", guardrailWorldMapInstruction, guardrailWorldMapKeywords, out matchedKeyword8, out score8, excludedRuleIdSet);
 			}
 		}
-		if (!suppressDynamicRuleAndLore && TryConsumeRuleStickyCarry(targetHero, targetCharacter, input, out var carryDuel, out var carryReward, out var carryLoan))
+		if (allowRulePreprocess && TryConsumeRuleStickyCarry(targetHero, targetCharacter, input, out var carryDuel, out var carryReward, out var carryLoan))
 		{
 			if (!flag && carryDuel && !IsPromptRuleExcluded(excludedRuleIdSet, "duel"))
 			{
@@ -28207,7 +28220,7 @@ public class MyBehavior : CampaignBehaviorBase
 				score3 = Math.Max(score3, 0.18f);
 			}
 		}
-		if (!suppressDynamicRuleAndLore)
+		if (allowRulePreprocess)
 		{
 			UpdateRuleStickyCarryFromHits(targetHero, targetCharacter, liveDuelSemanticHit, liveRewardSemanticHit, liveLoanSemanticHit);
 		}
@@ -28215,7 +28228,7 @@ public class MyBehavior : CampaignBehaviorBase
 		bool flag7 = flag3;
 		bool flag8 = flag4;
 		bool persistentAdpDebtPostprocess = false;
-		if (!suppressDynamicRuleAndLore && AIConfigHandler.LoanEnabled && !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, "loan") && RewardSystemBehavior.Instance != null)
+		if (allowRulePreprocess && AIConfigHandler.LoanEnabled && !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, "loan") && RewardSystemBehavior.Instance != null)
 		{
 			try
 			{
@@ -28232,7 +28245,7 @@ public class MyBehavior : CampaignBehaviorBase
 			flag8 = flag8 || AIConfigHandler.LoanEnabled;
 		}
 		string value = "";
-		if (!suppressDynamicRuleAndLore && !flag2 && !flag7 && !flag8 && !flag5)
+		if (allowRulePreprocess && !flag2 && !flag7 && !flag8 && !flag5)
 		{
 			value = AIConfigHandler.BuildGuardrailClarificationHint(input, flag, score, flag3, score2, flag4, score3, flag5, score4);
 		}
@@ -28418,7 +28431,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		LogShoutPromptContextStage("world_runtime_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "chars=" + stringBuilder.Length);
 		LogShoutPromptContextStage("triggered_rules_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "suppressDynamic=" + suppressDynamicRuleAndLore);
-		string value8 = suppressDynamicRuleAndLore ? "" : BuildTriggeredRuleInstructions(input, targetHero, flag2, isQualified, num, flag7, flag8, flag5, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, npcLastUtterance, includeDuelStakeContext, playerWonLastDuelForRule, worldMapPartyCommandHit, excludedRuleIdSet, auxiliaryRuleHitIds, IsPromptRuleExcluded(explicitExcludedRuleIdSet, "meeting_taunt"));
+		string value8 = allowRulePreprocess ? BuildTriggeredRuleInstructions(input, targetHero, flag2, isQualified, num, flag7, flag8, flag5, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, npcLastUtterance, includeDuelStakeContext, playerWonLastDuelForRule, worldMapPartyCommandHit, excludedRuleIdSet, auxiliaryRuleHitIds, IsPromptRuleExcluded(explicitExcludedRuleIdSet, "meeting_taunt")) : "";
 		LogShoutPromptContextStage("triggered_rules_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "ruleLen=" + ((value8 ?? "").Length));
 		bool excludeNpcShortReport2 = ShouldExcludeNpcShortReportFromWeeklyShortLayer(value8, targetHero, targetCharacter, kingdomIdOverride);
 		string value8a = BuildWeeklyShortReportsPromptBlock(targetHero, targetCharacter, kingdomIdOverride, excludeNpcShortReport2);
@@ -32026,7 +32039,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
 		}
-		List<PostprocessRuleEntry> royalRules = AIConfigHandler.BuildRuntimeRoyalPostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject) ?? new List<PostprocessRuleEntry>();
+		List<PostprocessRuleEntry> royalRules = AIConfigHandler.BuildRuntimeRoyalPostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject, postprocessRuleSelected: false) ?? new List<PostprocessRuleEntry>();
 		List<PostprocessRuleEntry> actionRules = MergePostprocessRules(rules, royalRules);
 		if (actionRules == null || actionRules.Count == 0)
 		{
@@ -32147,7 +32160,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			text2 = string.IsNullOrWhiteSpace(extraFact) ? "（无）" : NormalizePlayerNameForPostprocess(extraFact.Trim(), text9);
 		}
-		List<PostprocessRuleEntry> royalRules = AIConfigHandler.BuildRuntimeRoyalPostprocessRulesForExternal(targetHero) ?? new List<PostprocessRuleEntry>();
+		List<PostprocessRuleEntry> royalRules = AIConfigHandler.BuildRuntimeRoyalPostprocessRulesForExternal(targetHero, postprocessRuleSelected: false) ?? new List<PostprocessRuleEntry>();
 		List<PostprocessRuleEntry> list = MergePostprocessRules(AIConfigHandler.BuildRuntimeKingdomServicePostprocessRules() ?? new List<PostprocessRuleEntry>(), royalRules);
 		if (list.Count == 0)
 		{
@@ -32194,7 +32207,7 @@ public class MyBehavior : CampaignBehaviorBase
 			return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
 		}
 		string text11 = targetHero?.Name?.ToString() ?? "NPC";
-		List<PostprocessRuleEntry> royalRules = AIConfigHandler.BuildRuntimeRoyalPostprocessRulesForExternal(targetHero) ?? new List<PostprocessRuleEntry>();
+		List<PostprocessRuleEntry> royalRules = AIConfigHandler.BuildRuntimeRoyalPostprocessRulesForExternal(targetHero, postprocessRuleSelected: false) ?? new List<PostprocessRuleEntry>();
 		List<PostprocessRuleEntry> actionRules = MergePostprocessRules(AIConfigHandler.DuelPostprocessRules, royalRules);
 		string text2 = NormalizePlayerNameForPostprocess(BuildGuardrailSemanticContext(targetHero, extraFact), text11);
 		if (string.IsNullOrWhiteSpace(text2))
