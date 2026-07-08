@@ -50,7 +50,7 @@ public static class SiegeActionTagCatalog
 
     public const string CulturalRepopulationTagPattern = @"\[ACTION:(?:10|SIEGE_CULTURAL_REPOPULATION|SIEGE_PURGE_REPOPULATION|殖民)\]";
 
-    public const string AnyActionTagPattern = @"\[ACTION:(?:10|[1-9]|SIEGE_[A-Z_]+|宽恕|救济|宣抚|盟誓|安兵|召集|抢钱|搜掠|血洗|殖民|优待战俘|索要赎金|收编领主|收编战俘|接收军械|战俘劳役|屠戮守军|贩卖俘虏|处决领主)(?::\d+)?\]";
+    public const string AnyActionTagPattern = @"\[ACTION:(?:10|[1-9]|SIEGE_[A-Z_]+|宽恕|救济|宣抚|盟誓|安兵|召集|抢钱|搜掠|血洗|殖民)(?::\d+)?\]";
 
     private static readonly Regex ActionTagRegex = new Regex(
         @"\[ACTION:(?<name>10|[1-9]|SIEGE_[A-Z_]+|宽恕|救济|宣抚|盟誓|安兵|召集|抢钱|搜掠|血洗|殖民)(?::\d+)?\]",

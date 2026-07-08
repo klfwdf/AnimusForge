@@ -27,16 +27,6 @@ public static class SiegeFixedKeywordActionProfile
         new SiegeFixedKeywordActionDefinition(SiegeFixedKeywordActionScope.Town, "搜掠", "[ACTION:搜掠]", false),
         new SiegeFixedKeywordActionDefinition(SiegeFixedKeywordActionScope.Town, "血洗", "[ACTION:血洗]", false),
         new SiegeFixedKeywordActionDefinition(SiegeFixedKeywordActionScope.Town, "殖民", "[ACTION:殖民]", false),
-
-        new SiegeFixedKeywordActionDefinition(SiegeFixedKeywordActionScope.Castle, "优待战俘", "[ACTION:优待战俘]", true),
-        new SiegeFixedKeywordActionDefinition(SiegeFixedKeywordActionScope.Castle, "索要赎金", "[ACTION:索要赎金]", false),
-        new SiegeFixedKeywordActionDefinition(SiegeFixedKeywordActionScope.Castle, "收编领主", "[ACTION:收编领主]", false),
-        new SiegeFixedKeywordActionDefinition(SiegeFixedKeywordActionScope.Castle, "收编战俘", "[ACTION:收编战俘]", false),
-        new SiegeFixedKeywordActionDefinition(SiegeFixedKeywordActionScope.Castle, "接收军械", "[ACTION:接收军械]", true),
-        new SiegeFixedKeywordActionDefinition(SiegeFixedKeywordActionScope.Castle, "战俘劳役", "[ACTION:战俘劳役]", false),
-        new SiegeFixedKeywordActionDefinition(SiegeFixedKeywordActionScope.Castle, "屠戮守军", "[ACTION:屠戮守军]", false),
-        new SiegeFixedKeywordActionDefinition(SiegeFixedKeywordActionScope.Castle, "贩卖俘虏", "[ACTION:贩卖俘虏]", false),
-        new SiegeFixedKeywordActionDefinition(SiegeFixedKeywordActionScope.Castle, "处决领主", "[ACTION:处决领主]", false),
     };
 
     public static IReadOnlyList<SiegeFixedKeywordActionDefinition> GetDefinitions()
@@ -49,7 +39,7 @@ public static class SiegeFixedKeywordActionProfile
         return Definitions.Where(definition => definition.Scope == scope).ToArray();
     }
 
-    public static bool TryBuildTagText(string playerText, bool castleAftermath, out string tagText, out SiegeFixedKeywordActionDefinition definition)
+    public static bool TryBuildTagText(string playerText, out string tagText, out SiegeFixedKeywordActionDefinition definition)
     {
         tagText = string.Empty;
         definition = default;
@@ -60,14 +50,8 @@ public static class SiegeFixedKeywordActionProfile
             return false;
         }
 
-        SiegeFixedKeywordActionScope scope = castleAftermath ? SiegeFixedKeywordActionScope.Castle : SiegeFixedKeywordActionScope.Town;
         foreach (SiegeFixedKeywordActionDefinition candidate in Definitions)
         {
-            if (candidate.Scope != scope)
-            {
-                continue;
-            }
-
             if (ContainsFixedKeyword(normalized, candidate))
             {
                 tagText = candidate.CanonicalTag;
@@ -81,7 +65,7 @@ public static class SiegeFixedKeywordActionProfile
 
     public static string BuildMatchedMemoryText(SiegeFixedKeywordActionDefinition definition, string playerText)
     {
-        string scope = definition.Scope == SiegeFixedKeywordActionScope.Castle ? "城堡" : "城镇";
+        const string scope = "城镇";
         return "固定词测试触发" + scope + "标签：" + definition.CanonicalTag
             + "；关键词=" + definition.Keyword
             + "；玩家原文=" + NormalizeForLog(playerText);
@@ -135,7 +119,6 @@ public static class SiegeFixedKeywordActionProfile
 public enum SiegeFixedKeywordActionScope
 {
     Town,
-    Castle,
 }
 
 public readonly struct SiegeFixedKeywordActionDefinition

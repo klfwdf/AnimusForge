@@ -116,7 +116,6 @@ public static class Patch_GameStateManager_OnTick_AFMassacreLoot
 	{
 		try
 		{
-			SiegeAiInterventionBehavior.TryPumpPendingCastleInterventionMissionOpenForExternal("GameStateManager.OnTick");
 			SiegeAiInterventionBehavior.TryPumpDirectMassacreAftermathScriptForExternal("GameStateManager.OnTick");
 			SiegeAiInterventionBehavior.TryPumpDirectPlunderAftermathScriptForExternal("GameStateManager.OnTick");
 			SiegeAiInterventionBehavior.TryPumpPendingEncounterFinishForExternal(SiegeAftermathTransitionSourceProfile.GameStateDeferredFinishPumpSource);

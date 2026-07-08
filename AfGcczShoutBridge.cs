@@ -106,7 +106,6 @@ internal static class AfGcczShoutBridge
 			return false;
 		}
 		return ruleInspectionBlock.IndexOf(InjectedRuleBlockMarker, StringComparison.OrdinalIgnoreCase) >= 0
-			|| ruleInspectionBlock.IndexOf(SiegeCastleAftermathProfile.InjectedRuleBlockMarker, StringComparison.OrdinalIgnoreCase) >= 0
 			|| ruleInspectionBlock.IndexOf("【附加规则:" + RuleId + "】", StringComparison.OrdinalIgnoreCase) >= 0;
 	}
 

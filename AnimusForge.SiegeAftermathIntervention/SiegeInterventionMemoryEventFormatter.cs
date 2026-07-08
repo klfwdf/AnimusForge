@@ -11,7 +11,7 @@ public static class SiegeInterventionMemoryEventFormatter
     private static readonly Regex SequencePrefixRegex = new Regex("^\\s*\\d+\\s*[\\.．、:]\\s*", RegexOptions.Compiled);
 
     private static readonly Regex AnySiegeTagRegex = new Regex(
-        "\\[ACTION:(?:SIEGE_[A-Z_]+|宽恕|救济|宣抚|盟誓|安兵|召集|抢钱|搜掠|血洗|殖民|优待战俘|索要赎金|收编领主|收编战俘|接收军械|战俘劳役|屠戮守军|贩卖俘虏|处决领主)(?::\\d+)?\\]",
+        "\\[ACTION:(?:SIEGE_[A-Z_]+|宽恕|救济|宣抚|盟誓|安兵|召集|抢钱|搜掠|血洗|殖民)(?::\\d+)?\\]",
         RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
     private static readonly Regex WhitespaceRegex = new Regex("\\s+", RegexOptions.Compiled);

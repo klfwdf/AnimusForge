@@ -53,17 +53,6 @@ public static class SiegePostprocessTagNormalizer
             }
         }
 
-        foreach (SiegeCastleAftermathRuleDefinition rule in SiegeCastleAftermathProfile.GetRules())
-        {
-            if (string.IsNullOrWhiteSpace(rule.CanonicalTag)
-                || !AllowsAny(allowed, new[] { rule.CanonicalTag })
-                || !SiegeCastlePrisonerAllocationProfile.TryFindTagInstance(text, rule, out SiegeCastleActionTagInstance instance))
-            {
-                continue;
-            }
-
-            Add(instance.CanonicalTagWithQuantity);
-        }
 
         string mood = string.Empty;
         foreach (Match moodMatch in MoodTagRegex.Matches(text))
