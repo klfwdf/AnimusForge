@@ -36,7 +36,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	private const int DefenderReservePhaseCount = 3;
 	private const int MaxActiveDefenderReserveWaves = 4;
 	private const float DefenderReserveWaveIntervalSeconds = 30f;
-	private const int AttachedSettlementRiotRelationPenalty = -70;
+	private const int RulerRiotRelationPenalty = -70;
 	private const float AlliedSpawnBaseDistance = 8f;
 	private const float AlliedSpawnRowDistance = 2.8f;
 	private const float AlliedSpawnLateralSpacing = 3.2f;
@@ -147,7 +147,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	internal static void QueueSettlementTakenMenuAfterTownVictory(string settlementId, TroopRoster survivingRoster, string source, bool skipOwnershipTransfer = false)
+	internal static void QueueSettlementTakenMenuAfterTownVictory(string settlementId, TroopRoster survivingRoster, string source, bool skipOwnershipTransfer = false, bool setsOwnedIncident = false, bool setsOwnedIncidentKilledNotable = false)
 	{
 		if (string.IsNullOrWhiteSpace(settlementId))
 		{
@@ -164,9 +164,11 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			SettlementId = settlementId,
 			SurvivingRoster = CloneRoster(survivingRoster, int.MaxValue),
 			Source = string.IsNullOrWhiteSpace(source) ? "SETS_town_victory" : source,
-			SkipOwnershipTransfer = skipOwnershipTransfer
+			SkipOwnershipTransfer = skipOwnershipTransfer,
+			SetsOwnedIncident = setsOwnedIncident,
+			SetsOwnedIncidentKilledNotable = setsOwnedIncidentKilledNotable
 		};
-		SettlementEntryTroopSelectionLog.Log("Queued native settlement-taken menu after SETS town victory. settlement=" + settlementId + ", survivors=" + (_pendingVictoryMenuEntry.SurvivingRoster?.TotalManCount ?? 0) + ", source=" + _pendingVictoryMenuEntry.Source + ", skipOwnershipTransfer=" + skipOwnershipTransfer);
+		SettlementEntryTroopSelectionLog.Log("Queued native settlement-taken menu after SETS town victory. settlement=" + settlementId + ", survivors=" + (_pendingVictoryMenuEntry.SurvivingRoster?.TotalManCount ?? 0) + ", source=" + _pendingVictoryMenuEntry.Source + ", skipOwnershipTransfer=" + skipOwnershipTransfer + ", ownedIncident=" + setsOwnedIncident + ", killedNotable=" + setsOwnedIncidentKilledNotable);
 	}
 
 	private void OnNewGameCreated(CampaignGameStarter starter)
@@ -234,6 +236,20 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		}
 		catch
 		{
+			return false;
+		}
+	}
+
+	internal static bool TryGatherOwnedOrAttachedTownSceneAgentsForExternal(int seedAgentIndex, string source)
+	{
+		try
+		{
+			SettlementEntryTroopSelectionMissionLogic logic = Mission.Current?.GetMissionBehavior<SettlementEntryTroopSelectionMissionLogic>();
+			return logic != null && logic.TryGatherOwnedOrAttachedTownSceneAgents(seedAgentIndex, source);
+		}
+		catch (Exception ex)
+		{
+			SettlementEntryTroopSelectionLog.Log("TryGatherOwnedOrAttachedTownSceneAgentsForExternal failed. source=" + (source ?? "N/A") + ", error=" + ex.Message);
 			return false;
 		}
 	}
@@ -1100,7 +1116,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		PendingSettlementVictoryMenuEntry pending = _pendingVictoryMenuEntry;
 		_pendingVictoryMenuEntry = null;
 		string bridgeSource = string.IsNullOrWhiteSpace(pending.Source) ? source : pending.Source;
-		bool opened = SiegeAiInterventionBehavior.TryOpenSettlementEntryVictoryMenu(settlement, pending.SurvivingRoster, bridgeSource, !pending.SkipOwnershipTransfer);
+		bool opened = SiegeAiInterventionBehavior.TryOpenSettlementEntryVictoryMenu(settlement, pending.SurvivingRoster, bridgeSource, !pending.SkipOwnershipTransfer, pending.SetsOwnedIncident, pending.SetsOwnedIncidentKilledNotable);
 		if (!opened)
 		{
 			_pendingVictoryMenuEntry = pending;
@@ -1467,6 +1483,8 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		public TroopRoster SurvivingRoster;
 		public string Source;
 		public bool SkipOwnershipTransfer;
+		public bool SetsOwnedIncident;
+		public bool SetsOwnedIncidentKilledNotable;
 	}
 
 	private sealed class DefenderReserveEntry
@@ -1504,6 +1522,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private bool _spawnedAllies;
 		private bool _conflictActive;
 		private bool _ownedSettlementIncidentTriggered;
+		private bool _ownedSettlementIncidentKilledNotable;
 		private bool _victoryReached;
 		private bool _victoryQueued;
 		private bool _victoryEndMissionRequested;
@@ -1661,6 +1680,11 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			}
 			_lastProtectedFollowerHealth.Remove(affectedAgent.Index);
 			_recentProtectedFollowerFriendlyFireHits.Remove(affectedAgent.Index);
+			if (_conflictFeaturesEnabled && _ownedSettlementIncidentTriggered && agentState == AgentState.Killed && IsPlayerSideAgent(affectorAgent) && !IsPlayerSideAgent(affectedAgent) && IsOwnedSettlementIncidentNotable(affectedAgent))
+			{
+				_ownedSettlementIncidentKilledNotable = true;
+				SettlementEntryTroopSelectionLog.Log("SETS owned/attached settlement incident notable killed. settlement=" + _settlementId + ", troop=" + SafeCharacterId(affectedAgent.Character as CharacterObject));
+			}
 			if (_alliedAgentIndexes.Contains(affectedAgent.Index) && agentState == AgentState.Killed)
 			{
 				if (IsPlayerSideAgent(affectorAgent))
@@ -1815,10 +1839,10 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					Hero ownerLeader = ownerClan.Leader;
 					if (ownerLeader != null && ownerLeader != Hero.MainHero)
 					{
-						ChangeRelationAction.ApplyPlayerRelation(ownerLeader, AttachedSettlementRiotRelationPenalty, true, true);
+						ChangeRelationAction.ApplyPlayerRelation(ownerLeader, RulerRiotRelationPenalty, true, true);
 						InformationManager.DisplayMessage(new InformationMessage("【SETS内部暴乱】你攻击了附属领主的城镇，与城镇所有者关系恶化。", Color.FromUint(WarningColor)));
 					}
-					SettlementEntryTroopSelectionLog.Log("Applied ruler riot relation penalty. settlement=" + _settlementId + ", ownerClan=" + (ownerClan?.StringId ?? "null") + ", penalty=" + AttachedSettlementRiotRelationPenalty + ", source=" + source);
+					SettlementEntryTroopSelectionLog.Log("Applied ruler riot relation penalty. settlement=" + _settlementId + ", ownerClan=" + (ownerClan?.StringId ?? "null") + ", penalty=" + RulerRiotRelationPenalty + ", source=" + source);
 					return;
 				}
 				ChangeKingdomAction.ApplyByLeaveWithRebellionAgainstKingdom(playerClan, true);
@@ -2079,7 +2103,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				}
 				MaintainOwnedSettlementIncidentPanic(force: true);
 				ClearSetsUsableProtectionState("owned_settlement_incident");
-				InformationManager.DisplayMessage(new InformationMessage("【SETS】城镇内冲突已触发，平民正在逃散。可随时按 TAB 退出后进入原版围城战胜利处置菜单，可选择原版处置或 GCCZ 攻城处置。", Color.FromUint(WarningColor)));
+				InformationManager.DisplayMessage(new InformationMessage("【SETS】自有/附属城镇事件已触发，平民正在逃散。可随时按 TAB 退出后进入 SETS 专用处置菜单。", Color.FromUint(WarningColor)));
 				SettlementEntryTroopSelectionLog.Log("Owned/attached settlement incident started. settlement=" + _settlementId + ", source=" + (source ?? "") + ", target=" + SafeCharacterId(initialTarget?.Character as CharacterObject));
 			}
 			catch (Exception ex)
@@ -2095,33 +2119,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				return;
 			}
 			_politicalConsequenceApplied = true;
-			try
-			{
-				Settlement settlement = Settlement.Find(_settlementId);
-				Clan playerClan = Clan.PlayerClan;
-				Clan ownerClan = settlement?.OwnerClan;
-				if (settlement == null || playerClan == null || ownerClan == null || ownerClan == playerClan)
-				{
-					return;
-				}
-				Kingdom playerKingdom = playerClan.Kingdom ?? Hero.MainHero?.Clan?.Kingdom;
-				bool playerIsRuler = playerKingdom != null && (playerKingdom.RulingClan == playerClan || playerKingdom.Leader == Hero.MainHero);
-				if (!playerIsRuler || ownerClan.Kingdom != playerKingdom)
-				{
-					return;
-				}
-				Hero ownerLeader = ownerClan.Leader;
-				if (ownerLeader != null && ownerLeader != Hero.MainHero)
-				{
-					ChangeRelationAction.ApplyPlayerRelation(ownerLeader, AttachedSettlementRiotRelationPenalty, true, true);
-					InformationManager.DisplayMessage(new InformationMessage("【SETS】你在附属领主的城镇制造冲突，与城镇所有者关系大幅恶化。", Color.FromUint(WarningColor)));
-				}
-				SettlementEntryTroopSelectionLog.Log("Applied attached settlement incident relation penalty. settlement=" + _settlementId + ", ownerClan=" + (ownerClan?.StringId ?? "null") + ", penalty=" + AttachedSettlementRiotRelationPenalty + ", source=" + source);
-			}
-			catch (Exception ex)
-			{
-				SettlementEntryTroopSelectionLog.Log("ApplyOwnedSettlementIncidentConsequences failed. settlement=" + _settlementId + ", source=" + (source ?? "") + ", error=" + ex);
-			}
+			SettlementEntryTroopSelectionLog.Log("Deferred owned/attached settlement incident relation penalty to post-mission SETS/GCCZ outcome. settlement=" + _settlementId + ", source=" + (source ?? ""));
 		}
 
 		private void MaintainOwnedSettlementIncidentPanic(bool force)
@@ -2634,6 +2632,48 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			}
 		}
 
+		internal bool TryGatherOwnedOrAttachedTownSceneAgents(int seedAgentIndex, string source)
+		{
+			try
+			{
+				Mission mission = base.Mission;
+				Agent main = Agent.Main ?? mission?.MainAgent;
+				if (!IsOwnedOrAttachedTownEntryActive() || mission?.Agents == null || main == null || !main.IsActive())
+				{
+					return false;
+				}
+				EnsurePlayerTeam(mission, main, requireCommandTeam: true);
+				KeepPlayerEntryFollowersCommandable(refreshFormation: true);
+				int gathered = 0;
+				foreach (Agent agent in mission.Agents.ToList())
+				{
+					if (agent == null || !agent.IsHuman || !agent.IsActive() || agent == main || agent.IsMainAgent)
+					{
+						continue;
+					}
+					if (IsPlayerSideAgent(agent))
+					{
+						AssignAgentToFormation(agent, _playerTeam, FormationClass.Infantry);
+						gathered++;
+						continue;
+					}
+					if (ShoutBehavior.TryForceSceneFollowPlayerForExternal(agent.Index, transient: true, reason: "sets_owned_attached_gather"))
+					{
+						gathered++;
+					}
+				}
+				TrySetFollowerFormationFollowOrder(mission, main);
+				EnsureSetsCommandUiReadyForExternal(mission, "owned_attached_gather", force: true, preserveSelection: true);
+				SettlementEntryTroopSelectionLog.Log("SETS owned/attached town gather executed. settlement=" + _settlementId + ", source=" + (source ?? "") + ", seed=" + seedAgentIndex + ", gathered=" + gathered);
+				return gathered > 0;
+			}
+			catch (Exception ex)
+			{
+				SettlementEntryTroopSelectionLog.Log("TryGatherOwnedOrAttachedTownSceneAgents failed. settlement=" + _settlementId + ", source=" + (source ?? "") + ", error=" + ex.Message);
+				return false;
+			}
+		}
+
 		private void KeepPlayerEntryFollowersCommandable(bool refreshFormation)
 		{
 			try
@@ -3099,6 +3139,12 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					continue;
 				}
 				PartyBase originParty = defenderEntry?.SourceParty ?? fallbackOriginParty;
+				if (!asEnemy && TryAdoptExistingSelectedHeroAgent(troop, team, source, out Agent adoptedAgent))
+				{
+					spawned++;
+					spawnedCharacters?.Add(troop);
+					continue;
+				}
 				int row = i / SpawnGridColumns;
 				int column = i % SpawnGridColumns;
 				float lateralIndex = column - (SpawnGridColumns - 1) * 0.5f;
@@ -3186,6 +3232,55 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				}
 			}
 			return spawned;
+		}
+
+		private bool TryAdoptExistingSelectedHeroAgent(CharacterObject troop, Team team, string source, out Agent adoptedAgent)
+		{
+			adoptedAgent = null;
+			try
+			{
+				Hero selectedHero = troop?.HeroObject;
+				Mission mission = base.Mission;
+				if (selectedHero == null || mission?.Agents == null || team == null)
+				{
+					return false;
+				}
+				foreach (Agent candidate in mission.Agents.ToList())
+				{
+					if (candidate == null || !candidate.IsHuman || !candidate.IsActive() || candidate == Agent.Main || candidate.IsMainAgent)
+					{
+						continue;
+					}
+					CharacterObject candidateCharacter = candidate.Character as CharacterObject;
+					Hero candidateHero = candidateCharacter?.HeroObject;
+					if (candidateHero != selectedHero && !CharactersMatch(candidateCharacter, troop))
+					{
+						continue;
+					}
+					adoptedAgent = candidate;
+					break;
+				}
+				if (adoptedAgent == null)
+				{
+					return false;
+				}
+				if (adoptedAgent.Team != team)
+				{
+					adoptedAgent.SetTeam(team, true);
+				}
+				adoptedAgent.SetWatchState(Agent.WatchState.Patrolling);
+				_alliedAgentIndexes.Add(adoptedAgent.Index);
+				RegisterSetsSelectedFollowerAgent(adoptedAgent, "adopt_existing_selected_hero");
+				CacheProtectedFollowerHealth(adoptedAgent);
+				AssignAgentToFormation(adoptedAgent, team, FormationClass.Infantry);
+				SettlementEntryTroopSelectionLog.Log("Adopted existing selected hero scene agent instead of spawning duplicate. settlement=" + _settlementId + ", source=" + (source ?? "") + ", agent=" + adoptedAgent.Index + ", hero=" + (selectedHero.StringId ?? SafeCharacterId(troop)));
+				return true;
+			}
+			catch (Exception ex)
+			{
+				SettlementEntryTroopSelectionLog.Log("TryAdoptExistingSelectedHeroAgent failed. troop=" + SafeCharacterId(troop) + ", error=" + ex.Message);
+				return false;
+			}
 		}
 
 		private static void AssignAgentToFormation(Agent agent, Team team, FormationClass formationClass)
@@ -3615,7 +3710,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			}
 			_victoryQueued = true;
 			string queueSource = string.IsNullOrWhiteSpace(source) ? "SETS_town_victory" : source;
-			QueueSettlementTakenMenuAfterTownVictory(_settlementId, _survivingRoster, queueSource, skipOwnershipTransfer: _isOwnSettlement || _ownedSettlementIncidentTriggered);
+			QueueSettlementTakenMenuAfterTownVictory(_settlementId, _survivingRoster, queueSource, skipOwnershipTransfer: _isOwnSettlement || _ownedSettlementIncidentTriggered, setsOwnedIncident: _ownedSettlementIncidentTriggered, setsOwnedIncidentKilledNotable: _ownedSettlementIncidentKilledNotable);
 		}
 
 		private void PrepareVictoryExit(string source)
@@ -3671,6 +3766,12 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			return IsOwnedSettlementIncidentTarget(agent)
 				&& !IsGuardOrSoldier(character)
 				&& !IsLordCombatant(character);
+		}
+
+		private static bool IsOwnedSettlementIncidentNotable(Agent agent)
+		{
+			Hero hero = (agent?.Character as CharacterObject)?.HeroObject;
+			return hero != null && hero.IsNotable;
 		}
 
 		private static bool IsVictoryObjectiveSceneAgent(Agent agent)

@@ -1931,6 +1931,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private static readonly Regex SceneFollowStopTagRegex = new Regex("\\[(?:STP|ACTION:SCENE_STOP_FOLLOW)\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
+	private static readonly Regex SetsOwnedSettlementGatherActionTagRegex = new Regex(SiegeActionTagCatalog.GatherCiviliansTagPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
 	private static readonly Regex SceneEndChatActionTagRegex = new Regex("\\[END\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
 	private static readonly FieldInfo PrisonBreakPrisonerAgentField = typeof(PrisonBreakMissionController).GetField("_prisonerAgent", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -8646,7 +8648,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 
 	private static bool HasDeferredDirectGameActionTag(string text)
 	{
-		return Regex.IsMatch(text ?? "", "\\[(?:ACTION:(?:GIVE_GOLD|GIVE_ITEM|DEBT_|DEBT_PAY|SETTLEMENT_TRANSFER|KINGDOM_SERVICE|JOIN_MERCENARY|JOIN_VASSAL|TRADE_TRUST|KING_ABDICATE_TO_PLAYER|VASSALAGE|KINGDOM_ANNEX|PROPOSE|VOTE_DEAL|WORLDMAP_ORDER|DUEL|ISSUE_|QUEST_TURN_IN|NOBLE_GATHERING|INTIMACY_INTERNAL|MEETING_TAUNT_BATTLE|LET_PLAYER_GO|ENCOUNTER_RELEASE_PLAYER|NPC_SURRENDER|SIEGE_)[^\\]]*|A:H_J_P_P|AD;[^\\]]*|ADP[:;][^\\]]*)\\]", RegexOptions.IgnoreCase);
+		return Regex.IsMatch(text ?? "", "\\[(?:ACTION:(?:GIVE_GOLD|GIVE_ITEM|DEBT_|DEBT_PAY|SETTLEMENT_TRANSFER|KINGDOM_SERVICE|JOIN_MERCENARY|JOIN_VASSAL|TRADE_TRUST|KING_ABDICATE_TO_PLAYER|VASSALAGE|KINGDOM_ANNEX|PROPOSE|VOTE_DEAL|WORLDMAP_ORDER|DUEL|ISSUE_|QUEST_TURN_IN|NOBLE_GATHERING|INTIMACY_INTERNAL|MEETING_TAUNT_BATTLE|LET_PLAYER_GO|ENCOUNTER_RELEASE_PLAYER|NPC_SURRENDER|SIEGE_|6|召集)[^\\]]*|A:H_J_P_P|AD;[^\\]]*|ADP[:;][^\\]]*)\\]", RegexOptions.IgnoreCase);
 	}
 
 	private bool TryApplyDeferredScenePostprocessActionTagsDirectly(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, ref string tags)
@@ -15600,6 +15602,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return false;
 		}
 		Agent agent = agents.FirstOrDefault((Agent a) => a != null && a.Index == npc.AgentIndex);
+		string content = tags;
+		bool setsOwnedGather = TryProcessSetsOwnedSettlementGatherActionTag(npc.AgentIndex, ref content);
+		if (setsOwnedGather && string.IsNullOrWhiteSpace(content))
+		{
+			return true;
+		}
 		if (IsPrisonBreakRescueMissionActive() && (SceneFollowStartTagRegex.IsMatch(tags) || SceneFollowStopTagRegex.IsMatch(tags)))
 		{
 			Agent commandAgent = ResolvePrisonBreakSceneFollowCommandAgent(agent);
@@ -15615,7 +15623,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			Logger.Log("ShoutBehavior", "[NativeConversation] scene mechanism direct skip agent=" + (npc?.AgentIndex ?? -1) + " reason=agent_unavailable tags=" + ((tags ?? "").Replace("\r", "\\r").Replace("\n", "\\n")));
 			return false;
 		}
-		string content = tags;
 		SceneSummonConversationSession sceneSummonConversationSession = null;
 		ActiveSceneSummonRequest activeSceneSummonRequest = null;
 		ActiveSceneGuideRequest activeSceneGuideRequest = null;
@@ -15624,7 +15631,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		bool endChat = TryConsumeSceneEndChatActionTag(npc, agent, ref content, out sceneSummonConversationSession);
 		bool summon = !string.IsNullOrWhiteSpace(content) && TryTriggerSceneSummonAction(npc, agent, sceneSummonTargets, ref content, out activeSceneSummonRequest);
 		bool guide = !string.IsNullOrWhiteSpace(content) && TryTriggerSceneGuideAction(npc, agent, sceneGuideTargets, sceneSummonTargets, ref content, out activeSceneGuideRequest);
-		bool handled = stopFollow || startFollow || endChat || summon || guide;
+		bool handled = setsOwnedGather || stopFollow || startFollow || endChat || summon || guide;
 		if (!handled)
 		{
 			Logger.Log("ShoutBehavior", "[NativeConversation] scene mechanism direct no-op agent=" + npc.AgentIndex + " tags=" + ((tags ?? "").Replace("\r", "\\r").Replace("\n", "\\n")));
@@ -15653,7 +15660,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			SchedulePreparedSceneGuideLaunch(activeSceneGuideRequest, null, "");
 		}
-		Logger.Log("ShoutBehavior", "[NativeConversation] scene mechanism direct result agent=" + npc.AgentIndex + " stop=" + stopFollow + " start=" + startFollow + " end=" + endChat + " summon=" + summon + " guide=" + guide + " remaining=" + ((content ?? "").Replace("\r", "\\r").Replace("\n", "\\n")));
+		Logger.Log("ShoutBehavior", "[NativeConversation] scene mechanism direct result agent=" + npc.AgentIndex + " setsGather=" + setsOwnedGather + " stop=" + stopFollow + " start=" + startFollow + " end=" + endChat + " summon=" + summon + " guide=" + guide + " remaining=" + ((content ?? "").Replace("\r", "\\r").Replace("\n", "\\n")));
 		return true;
 	}
 
@@ -15697,6 +15704,35 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
+	private bool TryProcessSetsOwnedSettlementGatherActionTag(int targetAgentIndex, ref string content)
+	{
+		try
+		{
+			if (string.IsNullOrWhiteSpace(content) || !SetsOwnedSettlementGatherActionTagRegex.IsMatch(content))
+			{
+				return false;
+			}
+			Mission mission = Mission.Current;
+			if (!SettlementEntryTroopSelectionBehavior.IsOwnedOrAttachedTownEntryActiveForExternal(mission))
+			{
+				return false;
+			}
+			content = SetsOwnedSettlementGatherActionTagRegex.Replace(content, "").Trim();
+			bool handled = SettlementEntryTroopSelectionBehavior.TryGatherOwnedOrAttachedTownSceneAgentsForExternal(targetAgentIndex, "sets_owned_dialogue_gather");
+			if (handled)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("【SETS】已召集场景内人员向你靠拢。", Color.FromUint(SetsOwnedSettlementIncidentProfile.MessageColor)));
+			}
+			Logger.Log("ShoutBehavior", "[NativeConversation] SETS owned/attached gather tag handled=" + handled + " agent=" + targetAgentIndex);
+			return handled;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ShoutBehavior", "[NativeConversation] SETS owned/attached gather action failed: " + ex.Message);
+			return false;
+		}
+	}
+
 	private void ApplyNativeConversationActionTags(Hero targetHero, CharacterObject targetCharacter, ref string content, int targetAgentIndexOverride = -1)
 	{
 		if (string.IsNullOrWhiteSpace(content))
@@ -15708,6 +15744,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		try
 		{
 			LogNativeActionStep("start", targetHero, targetCharacter, content);
+			TryProcessSetsOwnedSettlementGatherActionTag(resolvedTargetAgentIndex, ref content);
 			int siegeAgentIndex = resolvedTargetAgentIndex;
 			bool siegeActionHandled;
 			LogNativeActionStep("siege_before", targetHero, targetCharacter, content);
@@ -21155,6 +21192,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		text2 = Regex.Replace(text2, "\\[(?:GUI|ACTION:SCENE_GUIDE):[^\\]]*\\]", "", RegexOptions.IgnoreCase);
 		text2 = Regex.Replace(text2, "\\[(?:FOL|ACTION:SCENE_FOLLOW_PLAYER)\\]", "", RegexOptions.IgnoreCase);
 		text2 = Regex.Replace(text2, "\\[(?:STP|ACTION:SCENE_STOP_FOLLOW)\\]", "", RegexOptions.IgnoreCase);
+		text2 = SetsOwnedSettlementGatherActionTagRegex.Replace(text2, "");
 		text2 = Regex.Replace(text2, "\\[END\\]", "", RegexOptions.IgnoreCase);
 		return text2.Trim();
 	}
@@ -21168,7 +21206,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		List<string> list = new List<string>();
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (Match item in Regex.Matches(text2, "\\[(?:(?:ASS|ACTION:SCENE_SUMMON):[^\\]\\r\\n]+|(?:GUI|ACTION:SCENE_GUIDE):[^\\]\\r\\n]+|FOL|ACTION:SCENE_FOLLOW_PLAYER|STP|ACTION:SCENE_STOP_FOLLOW|END)\\]", RegexOptions.IgnoreCase))
+		foreach (Match item in Regex.Matches(text2, "\\[(?:(?:ASS|ACTION:SCENE_SUMMON):[^\\]\\r\\n]+|(?:GUI|ACTION:SCENE_GUIDE):[^\\]\\r\\n]+|ACTION:(?:6|SIEGE_GATHER_CIVILIANS|召集)|FOL|ACTION:SCENE_FOLLOW_PLAYER|STP|ACTION:SCENE_STOP_FOLLOW|END)\\]", RegexOptions.IgnoreCase))
 		{
 			string text3 = (item?.Value ?? "").Trim();
 			if (!string.IsNullOrWhiteSpace(text3) && hashSet.Add(text3))
@@ -21218,6 +21256,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return list;
 		}
 		List<PostprocessRuleEntry> guardrailRulePostprocessRules = AIConfigHandler.GetGuardrailRulePostprocessRules("scene_mechanism_actions") ?? new List<PostprocessRuleEntry>();
+		if (SettlementEntryTroopSelectionBehavior.IsOwnedOrAttachedTownEntryActiveForExternal(Mission.Current))
+		{
+			AddSceneMechanismPostprocessRule(list, new HashSet<string>(StringComparer.OrdinalIgnoreCase), SiegeActionTagCatalog.GatherCiviliansPromptTag, "SETS自有/附属城镇：NPC明确接受召集、传令或命令现场人员到玩家身边时触发。");
+		}
 		if (guardrailRulePostprocessRules.Count == 0)
 		{
 			return list;
@@ -21331,7 +21373,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return list;
 		}
 		HashSet<string> hashSet = new HashSet<string>(list, StringComparer.OrdinalIgnoreCase);
-		foreach (Match item in Regex.Matches(raw ?? "", "\\[(?:FOL|ACTION:SCENE_FOLLOW_PLAYER|STP|ACTION:SCENE_STOP_FOLLOW|END|(?:ASS|ACTION:SCENE_SUMMON):[^\\]\\r\\n]+|(?:GUI|ACTION:SCENE_GUIDE):[^\\]\\r\\n]+)\\]", RegexOptions.IgnoreCase))
+		foreach (Match item in Regex.Matches(raw ?? "", "\\[(?:FOL|ACTION:SCENE_FOLLOW_PLAYER|STP|ACTION:SCENE_STOP_FOLLOW|END|ACTION:(?:6|SIEGE_GATHER_CIVILIANS|召集)|(?:ASS|ACTION:SCENE_SUMMON):[^\\]\\r\\n]+|(?:GUI|ACTION:SCENE_GUIDE):[^\\]\\r\\n]+)\\]", RegexOptions.IgnoreCase))
 		{
 			string text = (item?.Value ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(text))
@@ -21362,6 +21404,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					return list2;
 				}
 			}
+			if (SetsOwnedSettlementGatherActionTagRegex.IsMatch(text) && hashSet.Contains(SiegeActionTagCatalog.GatherCiviliansPromptTag))
+			{
+				return new List<string> { SiegeActionTagCatalog.GatherCiviliansPromptTag };
+			}
 			if (Regex.IsMatch(text, "\\[(?:FOL|ACTION:SCENE_FOLLOW_PLAYER)\\]", RegexOptions.IgnoreCase) && hashSet.Contains("[ACTION:SCENE_FOLLOW_PLAYER]"))
 			{
 				return new List<string> { "[ACTION:SCENE_FOLLOW_PLAYER]" };
@@ -21377,6 +21423,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		bool flag = false;
 		bool flag2 = false;
 		bool flag3 = false;
+		bool setsOwnedGatherRuleEnabled = false;
 		foreach (PostprocessRuleEntry rule in rules ?? new List<PostprocessRuleEntry>())
 		{
 			string text = (rule?.Tag ?? "").Trim();
@@ -21397,6 +21444,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			if (string.Equals(text, "[END]", StringComparison.OrdinalIgnoreCase))
 			{
 				flag3 = true;
+				continue;
+			}
+			if (SetsOwnedSettlementGatherActionTagRegex.IsMatch(text))
+			{
+				setsOwnedGatherRuleEnabled = true;
 				continue;
 			}
 			if (text.StartsWith("[ACTION:SCENE_SUMMON:", StringComparison.OrdinalIgnoreCase))
@@ -21430,6 +21482,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		if (flag3 && Regex.IsMatch(raw ?? "", "\\[END\\]", RegexOptions.IgnoreCase) && hashSet3.Add("[END]"))
 		{
 			actionTags.Add("[END]");
+		}
+		if (setsOwnedGatherRuleEnabled && SetsOwnedSettlementGatherActionTagRegex.IsMatch(raw ?? "") && hashSet3.Add(SiegeActionTagCatalog.GatherCiviliansPromptTag))
+		{
+			actionTags.Add(SiegeActionTagCatalog.GatherCiviliansPromptTag);
 		}
 		List<string> list3 = new List<string>();
 		HashSet<string> hashSet4 = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
