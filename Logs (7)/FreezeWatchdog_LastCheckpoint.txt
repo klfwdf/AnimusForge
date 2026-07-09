@@ -1,0 +1,101 @@
+﻿AnimusForge FreezeWatchdog last checkpoint
+time=2026-07-08 02:34:06.565
+trigger=[FREEZE_GAP] no_frame_ms=2195.22 dtMs=66.67 frame=2459 mainThread=33 active=(none) activeMs=0.00 lastCompleted=SubModule.OnApplicationTick.frame_end lastCompletedAgeMs=2195.30 heartbeatAgeMs=0.00 context={state=MapState mission=False conversation=False menu=} recent={02:34:04.370 frame=2458 tid=33 begin SubModule.AnimusForgeTerminalBehavior.OnEngineTick | 02:34:04.370 frame=2458 tid=33 end SubModule.AnimusForgeTerminalBehavior.OnEngineTick elapsedMs=0.53 | 02:34:04.370 frame=2458 tid=33 begin Su...
+state=frame=2459 mainThread=33 active=(none) activeMs=0.00 lastCompleted=SubModule.OnApplicationTick.frame_end lastCompletedAgeMs=2195.30 heartbeatAgeMs=0.00 context={state=MapState mission=False conversation=False menu=}
+recent:
+02:34:02.094 frame=2457 tid=33 begin SubModule.NativeConversationAnswerAreaController.OnApplicationTick
+02:34:02.094 frame=2457 tid=33 end SubModule.NativeConversationAnswerAreaController.OnApplicationTick elapsedMs=0.00
+02:34:02.094 frame=2457 tid=33 begin SubModule.ShoutBehavior.NativeConversationTts.OnApplicationTick
+02:34:02.094 frame=2457 tid=33 end SubModule.ShoutBehavior.NativeConversationTts.OnApplicationTick elapsedMs=0.00
+02:34:02.094 frame=2457 tid=33 begin SubModule.ConversationHelper.Tick
+02:34:02.094 frame=2457 tid=33 end SubModule.ConversationHelper.Tick elapsedMs=0.00
+02:34:02.094 frame=2457 tid=33 begin SubModule.ProcessPendingInitialApiGuideNotice
+02:34:02.094 frame=2457 tid=33 end SubModule.ProcessPendingInitialApiGuideNotice elapsedMs=0.00
+02:34:02.094 frame=2457 tid=33 begin SubModule.Logger.OnApplicationTick
+02:34:02.094 frame=2457 tid=33 end SubModule.Logger.OnApplicationTick elapsedMs=0.00
+02:34:02.094 frame=2457 tid=33 begin SubModule.BannerlordExceptionSentinel.OnApplicationTick
+02:34:02.094 frame=2457 tid=33 end SubModule.BannerlordExceptionSentinel.OnApplicationTick elapsedMs=0.01
+02:34:02.094 frame=2457 tid=33 begin SubModule.McmDropdownRuntimeRefresh.OnApplicationTick
+02:34:02.094 frame=2457 tid=33 end SubModule.McmDropdownRuntimeRefresh.OnApplicationTick elapsedMs=0.00
+02:34:02.094 frame=2457 tid=33 begin SubModule.EncyclopediaHeroPersonaPatch.OnApplicationTick
+02:34:02.094 frame=2457 tid=33 end SubModule.EncyclopediaHeroPersonaPatch.OnApplicationTick elapsedMs=0.00
+02:34:02.094 frame=2457 tid=33 begin SubModule.ModOnboardingBehavior.OnEngineTick
+02:34:02.094 frame=2457 tid=33 end SubModule.ModOnboardingBehavior.OnEngineTick elapsedMs=0.00
+02:34:02.094 frame=2457 tid=33 begin SubModule.MyBehavior.OnEngineTick
+02:34:02.094 frame=2457 tid=33 end SubModule.MyBehavior.OnEngineTick elapsedMs=0.00
+02:34:02.094 frame=2457 tid=33 begin SubModule.CourierDeliveryBehavior.OnEngineTick
+02:34:02.094 frame=2457 tid=33 end SubModule.CourierDeliveryBehavior.OnEngineTick elapsedMs=0.00
+02:34:02.094 frame=2457 tid=33 begin SubModule.DuelBehavior.OnEngineTick
+02:34:02.095 frame=2457 tid=33 end SubModule.DuelBehavior.OnEngineTick elapsedMs=0.00
+02:34:02.095 frame=2457 tid=33 begin SubModule.RewardSystemBehavior.OnEngineTick
+02:34:02.095 frame=2457 tid=33 end SubModule.RewardSystemBehavior.OnEngineTick elapsedMs=0.00
+02:34:02.095 frame=2457 tid=33 begin SubModule.LordEncounterBehavior.OnEngineTick
+02:34:02.095 frame=2457 tid=33 end SubModule.LordEncounterBehavior.OnEngineTick elapsedMs=0.00
+02:34:02.095 frame=2457 tid=33 begin SubModule.AnimusForgeTerminalBehavior.OnEngineTick
+02:34:02.095 frame=2457 tid=33 end SubModule.AnimusForgeTerminalBehavior.OnEngineTick elapsedMs=0.68
+02:34:02.095 frame=2457 tid=33 begin SubModule.CustomPolicyBehavior.OnEngineTick
+02:34:02.095 frame=2457 tid=33 end SubModule.CustomPolicyBehavior.OnEngineTick elapsedMs=0.00
+02:34:02.095 frame=2457 tid=33 begin SubModule.NobleGatheringBehavior.OnEngineTick
+02:34:02.095 frame=2457 tid=33 end SubModule.NobleGatheringBehavior.OnEngineTick elapsedMs=0.03
+02:34:02.095 frame=2457 tid=33 begin SubModule.VassalageBehavior.OnEngineTick
+02:34:02.095 frame=2457 tid=33 end SubModule.VassalageBehavior.OnEngineTick elapsedMs=0.01
+02:34:02.095 frame=2457 tid=33 begin SubModule.PerfProbe.EndFrame
+02:34:02.095 frame=2457 tid=33 end SubModule.PerfProbe.EndFrame elapsedMs=0.00
+02:34:02.095 frame=2457 tid=33 frame_end SubModule.OnApplicationTick frame=2457
+02:34:04.369 frame=2458 tid=33 frame_begin SubModule.OnApplicationTick dtMs=66.67 frame=2458
+02:34:04.370 frame=2458 tid=33 begin SubModule.ShoutTextInputPopup.ProcessDeferredCloseIfNeeded
+02:34:04.370 frame=2458 tid=33 end SubModule.ShoutTextInputPopup.ProcessDeferredCloseIfNeeded elapsedMs=0.01
+02:34:04.370 frame=2458 tid=33 begin SubModule.ShoutTextInputPopup.CloseForSystemInterruptionIfNeeded
+02:34:04.370 frame=2458 tid=33 end SubModule.ShoutTextInputPopup.CloseForSystemInterruptionIfNeeded elapsedMs=0.00
+02:34:04.370 frame=2458 tid=33 begin SubModule.ShoutTextInputPopup.KeepMissionPausedIfOpen
+02:34:04.370 frame=2458 tid=33 end SubModule.ShoutTextInputPopup.KeepMissionPausedIfOpen elapsedMs=0.00
+02:34:04.370 frame=2458 tid=33 begin SubModule.DevWeeklyReportPopup.ProcessDeferredCloseIfNeeded
+02:34:04.370 frame=2458 tid=33 end SubModule.DevWeeklyReportPopup.ProcessDeferredCloseIfNeeded elapsedMs=0.00
+02:34:04.370 frame=2458 tid=33 begin SubModule.PlayerNotorietyPopup.ProcessDeferredCloseIfNeeded
+02:34:04.370 frame=2458 tid=33 end SubModule.PlayerNotorietyPopup.ProcessDeferredCloseIfNeeded elapsedMs=0.00
+02:34:04.370 frame=2458 tid=33 begin SubModule.AnimusForgeConversationHistoryLogPopup.OnApplicationTick
+02:34:04.370 frame=2458 tid=33 end SubModule.AnimusForgeConversationHistoryLogPopup.OnApplicationTick elapsedMs=0.00
+02:34:04.370 frame=2458 tid=33 begin SubModule.AnimusForgeNativeConversationOverlay.OnApplicationTick
+02:34:04.370 frame=2458 tid=33 end SubModule.AnimusForgeNativeConversationOverlay.OnApplicationTick elapsedMs=0.02
+02:34:04.370 frame=2458 tid=33 begin SubModule.ShoutBehavior.MainThreadActions.OnApplicationTick
+02:34:04.370 frame=2458 tid=33 end SubModule.ShoutBehavior.MainThreadActions.OnApplicationTick elapsedMs=0.00
+02:34:04.370 frame=2458 tid=33 begin SubModule.NativeConversationAnswerAreaController.OnApplicationTick
+02:34:04.370 frame=2458 tid=33 end SubModule.NativeConversationAnswerAreaController.OnApplicationTick elapsedMs=0.00
+02:34:04.370 frame=2458 tid=33 begin SubModule.ShoutBehavior.NativeConversationTts.OnApplicationTick
+02:34:04.370 frame=2458 tid=33 end SubModule.ShoutBehavior.NativeConversationTts.OnApplicationTick elapsedMs=0.00
+02:34:04.370 frame=2458 tid=33 begin SubModule.ConversationHelper.Tick
+02:34:04.370 frame=2458 tid=33 end SubModule.ConversationHelper.Tick elapsedMs=0.00
+02:34:04.370 frame=2458 tid=33 begin SubModule.ProcessPendingInitialApiGuideNotice
+02:34:04.370 frame=2458 tid=33 end SubModule.ProcessPendingInitialApiGuideNotice elapsedMs=0.00
+02:34:04.370 frame=2458 tid=33 begin SubModule.Logger.OnApplicationTick
+02:34:04.370 frame=2458 tid=33 end SubModule.Logger.OnApplicationTick elapsedMs=0.01
+02:34:04.370 frame=2458 tid=33 begin SubModule.BannerlordExceptionSentinel.OnApplicationTick
+02:34:04.370 frame=2458 tid=33 end SubModule.BannerlordExceptionSentinel.OnApplicationTick elapsedMs=0.00
+02:34:04.370 frame=2458 tid=33 begin SubModule.McmDropdownRuntimeRefresh.OnApplicationTick
+02:34:04.370 frame=2458 tid=33 end SubModule.McmDropdownRuntimeRefresh.OnApplicationTick elapsedMs=0.00
+02:34:04.370 frame=2458 tid=33 begin SubModule.EncyclopediaHeroPersonaPatch.OnApplicationTick
+02:34:04.370 frame=2458 tid=33 end SubModule.EncyclopediaHeroPersonaPatch.OnApplicationTick elapsedMs=0.00
+02:34:04.370 frame=2458 tid=33 begin SubModule.ModOnboardingBehavior.OnEngineTick
+02:34:04.370 frame=2458 tid=33 end SubModule.ModOnboardingBehavior.OnEngineTick elapsedMs=0.00
+02:34:04.370 frame=2458 tid=33 begin SubModule.MyBehavior.OnEngineTick
+02:34:04.370 frame=2458 tid=33 end SubModule.MyBehavior.OnEngineTick elapsedMs=0.00
+02:34:04.370 frame=2458 tid=33 begin SubModule.CourierDeliveryBehavior.OnEngineTick
+02:34:04.370 frame=2458 tid=33 end SubModule.CourierDeliveryBehavior.OnEngineTick elapsedMs=0.00
+02:34:04.370 frame=2458 tid=33 begin SubModule.DuelBehavior.OnEngineTick
+02:34:04.370 frame=2458 tid=33 end SubModule.DuelBehavior.OnEngineTick elapsedMs=0.00
+02:34:04.370 frame=2458 tid=33 begin SubModule.RewardSystemBehavior.OnEngineTick
+02:34:04.370 frame=2458 tid=33 end SubModule.RewardSystemBehavior.OnEngineTick elapsedMs=0.00
+02:34:04.370 frame=2458 tid=33 begin SubModule.LordEncounterBehavior.OnEngineTick
+02:34:04.370 frame=2458 tid=33 end SubModule.LordEncounterBehavior.OnEngineTick elapsedMs=0.00
+02:34:04.370 frame=2458 tid=33 begin SubModule.AnimusForgeTerminalBehavior.OnEngineTick
+02:34:04.370 frame=2458 tid=33 end SubModule.AnimusForgeTerminalBehavior.OnEngineTick elapsedMs=0.53
+02:34:04.370 frame=2458 tid=33 begin SubModule.CustomPolicyBehavior.OnEngineTick
+02:34:04.370 frame=2458 tid=33 end SubModule.CustomPolicyBehavior.OnEngineTick elapsedMs=0.00
+02:34:04.370 frame=2458 tid=33 begin SubModule.NobleGatheringBehavior.OnEngineTick
+02:34:04.370 frame=2458 tid=33 end SubModule.NobleGatheringBehavior.OnEngineTick elapsedMs=0.02
+02:34:04.370 frame=2458 tid=33 begin SubModule.VassalageBehavior.OnEngineTick
+02:34:04.370 frame=2458 tid=33 end SubModule.VassalageBehavior.OnEngineTick elapsedMs=0.01
+02:34:04.370 frame=2458 tid=33 begin SubModule.PerfProbe.EndFrame
+02:34:04.370 frame=2458 tid=33 end SubModule.PerfProbe.EndFrame elapsedMs=0.00
+02:34:04.370 frame=2458 tid=33 frame_end SubModule.OnApplicationTick frame=2458
+02:34:06.565 frame=2459 tid=33 frame_begin SubModule.OnApplicationTick dtMs=66.67 frame=2459
