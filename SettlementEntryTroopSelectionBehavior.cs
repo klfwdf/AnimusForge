@@ -51,6 +51,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	private const float DefenderReserveStuckNudgeSeconds = 20f;
 	private const float DefenderReserveStuckRetrySeconds = 50f;
 	private const float ProtectedFollowerHostilitySuppressionSeconds = 8f;
+	private const float ProtectedFollowerFriendlyFireDuplicateWindowSeconds = 0.05f;
 	private const float VictoryEndMissionFallbackDelaySeconds = 2f;
 	private const string LordHallLocationId = "lordshall";
 	private const string TownCenterLocationId = "center";
@@ -1497,6 +1498,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private readonly Dictionary<int, TroopRoster> _defenderReserveAgentSourceRosters = new Dictionary<int, TroopRoster>();
 		private readonly Dictionary<int, int> _defenderReserveAgentWaveNumbers = new Dictionary<int, int>();
 		private readonly Dictionary<int, float> _lastProtectedFollowerHealth = new Dictionary<int, float>();
+		private readonly Dictionary<int, ProtectedFollowerFriendlyFireHitRecord> _recentProtectedFollowerFriendlyFireHits = new Dictionary<int, ProtectedFollowerFriendlyFireHitRecord>();
 		private static readonly MethodInfo AgentSetTargetAgentMethod = AccessTools.Method(typeof(Agent), "SetTargetAgent", new[] { typeof(Agent) });
 		private static readonly MethodInfo AgentSetAutomaticTargetSelectionMethod = AccessTools.Method(typeof(Agent), "SetAutomaticTargetSelection", new[] { typeof(bool) });
 		private bool _spawnedAllies;
@@ -1519,6 +1521,13 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private bool _defenderReserveStuckNudged;
 		private int _defenderReservePhaseIndex;
 		private int _defenderReserveWaveIndex;
+
+		private struct ProtectedFollowerFriendlyFireHitRecord
+		{
+			public int AffectorIndex;
+			public float MissionTime;
+			public float Damage;
+		}
 
 		public SettlementEntryTroopSelectionMissionLogic(PendingMissionEntry entry)
 		{
@@ -1628,6 +1637,11 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		public override void OnScoreHit(Agent affectedAgent, Agent affectorAgent, WeaponComponentData attackerWeapon, bool isBlocked, bool isSiegeEngineHit, in Blow blow, in AttackCollisionData collisionData, float damagedHp, float hitDistance, float shotDifficulty)
 		{
 			base.OnScoreHit(affectedAgent, affectorAgent, attackerWeapon, isBlocked, isSiegeEngineHit, in blow, in collisionData, damagedHp, hitDistance, shotDifficulty);
+			if (IsProtectedFollowerFriendlyFire(affectedAgent, affectorAgent))
+			{
+				ProtectFollowerFromFriendlyFire(affectedAgent, affectorAgent, in blow);
+				return;
+			}
 			if (damagedHp <= 0f || !_conflictFeaturesEnabled || !_isOwnSettlement || _ownedSettlementIncidentTriggered)
 			{
 				return;
@@ -1646,6 +1660,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				return;
 			}
 			_lastProtectedFollowerHealth.Remove(affectedAgent.Index);
+			_recentProtectedFollowerFriendlyFireHits.Remove(affectedAgent.Index);
 			if (_alliedAgentIndexes.Contains(affectedAgent.Index) && agentState == AgentState.Killed)
 			{
 				if (IsPlayerSideAgent(affectorAgent))
@@ -3273,17 +3288,25 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				{
 					return;
 				}
-				float cachedHealth = 0f;
-				bool hasCachedHealth = _lastProtectedFollowerHealth.TryGetValue(affectedAgent.Index, out cachedHealth);
-				float restoredHealth = affectedAgent.Health + Math.Max(0f, blow.InflictedDamage);
-				if (hasCachedHealth)
+				float damage = Math.Max(0f, blow.InflictedDamage);
+				int affectorIndex = affectorAgent?.Index ?? -1;
+				float missionTime = base.Mission?.CurrentTime ?? 0f;
+				bool duplicateHit = IsDuplicateProtectedFollowerFriendlyFire(affectedAgent.Index, affectorIndex, missionTime, damage);
+				if (!duplicateHit)
 				{
-					restoredHealth = Math.Max(restoredHealth, cachedHealth);
-				}
-				restoredHealth = ClampProtectedFollowerHealth(restoredHealth, affectedAgent.HealthLimit);
-				if (affectedAgent.Health < restoredHealth)
-				{
-					affectedAgent.Health = restoredHealth;
+					float cachedHealth = 0f;
+					bool hasCachedHealth = _lastProtectedFollowerHealth.TryGetValue(affectedAgent.Index, out cachedHealth);
+					float restoredHealth = affectedAgent.Health + damage;
+					if (hasCachedHealth)
+					{
+						restoredHealth = Math.Max(restoredHealth, cachedHealth);
+					}
+					restoredHealth = ClampProtectedFollowerHealth(restoredHealth, affectedAgent.HealthLimit);
+					if (affectedAgent.Health < restoredHealth)
+					{
+						affectedAgent.Health = restoredHealth;
+					}
+					RememberProtectedFollowerFriendlyFire(affectedAgent.Index, affectorIndex, missionTime, damage);
 				}
 				ExtendProtectedFollowerHostilitySuppression();
 				ForceProtectedFollowerFriendlyState(affectedAgent);
@@ -3293,12 +3316,40 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					ClearAgentCombatTarget(affectorAgent);
 				}
 				CacheProtectedFollowerHealth(affectedAgent);
-				SettlementEntryTroopSelectionLog.Log("Protected SETS follower from player-side friendly fire. troop=" + SafeCharacterId(affectedAgent.Character as CharacterObject) + ", affector=" + SafeCharacterId(affectorAgent.Character as CharacterObject) + ", health=" + affectedAgent.Health.ToString("0.0"));
+				SettlementEntryTroopSelectionLog.Log("Protected SETS follower from player-side friendly fire. troop=" + SafeCharacterId(affectedAgent.Character as CharacterObject) + ", affector=" + SafeCharacterId(affectorAgent.Character as CharacterObject) + ", health=" + affectedAgent.Health.ToString("0.0") + ", duplicateHit=" + duplicateHit);
 			}
 			catch (Exception ex)
 			{
 				SettlementEntryTroopSelectionLog.Log("ProtectFollowerFromFriendlyFire failed. error=" + ex.Message);
 			}
+		}
+
+		private bool IsDuplicateProtectedFollowerFriendlyFire(int affectedIndex, int affectorIndex, float missionTime, float damage)
+		{
+			try
+			{
+				if (!_recentProtectedFollowerFriendlyFireHits.TryGetValue(affectedIndex, out ProtectedFollowerFriendlyFireHitRecord record))
+				{
+					return false;
+				}
+				return record.AffectorIndex == affectorIndex
+					&& MathF.Abs(record.MissionTime - missionTime) <= ProtectedFollowerFriendlyFireDuplicateWindowSeconds
+					&& MathF.Abs(record.Damage - damage) <= 0.5f;
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
+		private void RememberProtectedFollowerFriendlyFire(int affectedIndex, int affectorIndex, float missionTime, float damage)
+		{
+			_recentProtectedFollowerFriendlyFireHits[affectedIndex] = new ProtectedFollowerFriendlyFireHitRecord
+			{
+				AffectorIndex = affectorIndex,
+				MissionTime = missionTime,
+				Damage = damage
+			};
 		}
 
 		private void MaintainProtectedFollowersFriendlyState()
@@ -3420,27 +3471,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			{
 				return true;
 			}
-			if (agent.IsActive() && _playerTeam != null && agent.Team == _playerTeam && IsSelectedEntryFollowerCharacter(agent.Character as CharacterObject))
-			{
-				_alliedAgentIndexes.Add(agent.Index);
-				RegisterSetsSelectedFollowerAgent(agent, "attach_existing_agent");
-				CacheProtectedFollowerHealth(agent);
-				SettlementEntryTroopSelectionLog.Log("Attached existing scene agent as SETS protected follower. troop=" + SafeCharacterId(agent.Character as CharacterObject) + ", index=" + agent.Index);
-				return true;
-			}
 			return false;
-		}
-
-		private bool IsSelectedEntryFollowerCharacter(CharacterObject character)
-		{
-			try
-			{
-				return character != null && _selectedRoster != null && _selectedRoster.FindIndexOfTroop(character) >= 0;
-			}
-			catch
-			{
-				return false;
-			}
 		}
 
 		private static void ClearAgentCombatTarget(Agent agent)

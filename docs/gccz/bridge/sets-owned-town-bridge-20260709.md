@@ -10,6 +10,8 @@
 ## GCCZ/AF 桥接约束
 
 - 自有/附属城镇从 SETS 进入原版 `menu_settlement_taken` 时，必须保留当前城主，不应把附属领主城镇转给玩家家族。
+- SETS 随行士兵身份以本次 mission 内注册的 agent index 白名单为准；不要按普通场景阵营或同 troop 模板把无关 NPC 直接当随行，现有场景 agent 不再用同 troop 模板自动挂成 SETS 随行。
+- 玩家侧误伤 SETS 随行士兵时，`OnAgentHit` 与 `OnScoreHit` 都必须恢复随行士兵友军状态并清理敌对目标，避免 AF/SceneTaunt/原版伤害路径让随行士兵反目。
 - `SiegeAiInterventionBehavior.TryOpenSettlementEntryVictoryMenu(...)` 因此带 `transferOwnership` 参数：
   - `true`：他方/敌对城镇 SETS 胜利，按原 SETS 捕获逻辑转移给玩家家族。
   - `false`：自有/附属城镇 SETS 事件，仅打开原版胜利菜单/GCCZ 入口，不执行占领转移。
