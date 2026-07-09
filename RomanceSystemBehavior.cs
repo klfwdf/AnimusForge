@@ -321,6 +321,140 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		return null;
 	}
 
+	private bool HasActiveMarriageRecord(Hero left, Hero right)
+	{
+		try
+		{
+			MarriageRecord marriageRecord = GetMarriageRecord(left, right);
+			return marriageRecord != null && marriageRecord.IsActive;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool HasActiveAnimusMarriageRecord(Hero left, Hero right)
+	{
+		try
+		{
+			return Instance?.HasActiveMarriageRecord(left, right) == true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool HasExistingMarriageBetween(Hero left, Hero right)
+	{
+		if (left == null || right == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (left.Spouse == right || right.Spouse == left)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return HasActiveAnimusMarriageRecord(left, right);
+	}
+
+	private static bool HasDifferentNativeSpouse(Hero hero, Hero intendedSpouse)
+	{
+		try
+		{
+			return hero?.Spouse != null && hero.Spouse != intendedSpouse;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool ShouldUseAnimusForgeMultiMarriage(Hero left, Hero right)
+	{
+		return HasDifferentNativeSpouse(left, right) || HasDifferentNativeSpouse(right, left);
+	}
+
+	private static bool IsSameGenderMarriagePair(Hero left, Hero right)
+	{
+		try
+		{
+			return left != null && right != null && left.IsFemale == right.IsFemale;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static Clan GetClanAfterAnimusMarriage(Hero firstHero, Hero secondHero)
+	{
+		if (firstHero == null || secondHero == null)
+		{
+			return firstHero?.Clan ?? secondHero?.Clan;
+		}
+		try
+		{
+			if (!IsSameGenderMarriagePair(firstHero, secondHero))
+			{
+				Clan vanillaClan = Campaign.Current?.Models?.MarriageModel?.GetClanAfterMarriage(firstHero, secondHero);
+				if (vanillaClan != null)
+				{
+					return vanillaClan;
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("Romance", "[WARN] GetClanAfterMarriage fallback used: " + ex);
+		}
+		try
+		{
+			if (firstHero.IsHumanPlayerCharacter)
+			{
+				return firstHero.Clan;
+			}
+			if (secondHero.IsHumanPlayerCharacter)
+			{
+				return secondHero.Clan;
+			}
+			if (firstHero.Clan?.Leader == firstHero)
+			{
+				return firstHero.Clan;
+			}
+			if (secondHero.Clan?.Leader == secondHero)
+			{
+				return secondHero.Clan;
+			}
+		}
+		catch
+		{
+		}
+		return firstHero.Clan ?? secondHero.Clan;
+	}
+
+	private IEnumerable<MarriageRecord> EnumerateActiveMarriageRecords()
+	{
+		if (_marriageRecordStorage == null || _marriageRecordStorage.Count <= 0)
+		{
+			yield break;
+		}
+		foreach (string value in _marriageRecordStorage.Values.ToList())
+		{
+			if (TryDeserializeMarriageRecord(value, out var record) && record != null && record.IsActive)
+			{
+				yield return record;
+			}
+		}
+	}
+
 	private void RemoveMarriageRecord(Hero left, Hero right)
 	{
 		string text = BuildMarriageRecordKey(left?.StringId, right?.StringId);
@@ -380,7 +514,18 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		return "- " + GetHeroDisplayWithClan(hero) + $"（{tokenName}={hero.StringId}，性别={GetMarriageGenderLabel(hero)}，年龄={hero.Age:0.#}）";
+		string text = "";
+		try
+		{
+			if (hero.Spouse != null)
+			{
+				text = "，原版当前配偶=" + (hero.Spouse.Name?.ToString() ?? hero.Spouse.StringId ?? "未知");
+			}
+		}
+		catch
+		{
+		}
+		return "- " + GetHeroDisplayWithClan(hero) + $"（{tokenName}={hero.StringId}，性别={GetMarriageGenderLabel(hero)}，年龄={hero.Age:0.#}{text}）";
 	}
 
 	private static string BuildFactBlock(string title, List<string> lines, string emptyText = "（无）")
@@ -437,6 +582,33 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		Clan clan = Hero.MainHero?.Clan;
 		Clan clan2 = speaker?.Clan;
+		foreach (MarriageRecord record in EnumerateActiveMarriageRecords())
+		{
+			Hero hero = FindHeroById(record.LeftHeroId);
+			Hero hero2 = FindHeroById(record.RightHeroId);
+			if (hero == null || hero2 == null)
+			{
+				continue;
+			}
+			bool flag = false;
+			if (clan != null && clan2 != null)
+			{
+				flag = (hero.Clan == clan && hero2.Clan == clan2) || (hero2.Clan == clan && hero.Clan == clan2);
+			}
+			if (!flag && speaker != null && Hero.MainHero != null)
+			{
+				flag = (hero == Hero.MainHero && hero2 == speaker) || (hero2 == Hero.MainHero && hero == speaker);
+			}
+			if (!flag)
+			{
+				continue;
+			}
+			string text = BuildMarriageRecordKey(hero.StringId, hero2.StringId);
+			if (hashSet.Add(text))
+			{
+				yield return "- " + GetHeroDisplayWithClanAndGender(hero) + " 与 " + GetHeroDisplayWithClanAndGender(hero2) + " 已成婚；" + BuildBridePriceSummary(record) + "。";
+			}
+		}
 		if (clan != null && clan2 != null)
 		{
 			foreach (Hero item in GetClanMembersCompat(clan))
@@ -474,7 +646,8 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			List<string> list3 = ((speaker?.Clan != null) ? GetClanMembersCompat(speaker.Clan).Where(IsFormalMarriageCandidate).Select((Hero x) => BuildMarriageHeroFactLine(x, "targetHeroId")).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList() : new List<string>());
 			List<string> list4 = EnumerateFormalMarriageCandidatePairLines(speaker).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.AppendLine("【玩家家族可婚配未婚成员（事实清单）】");
+			stringBuilder.AppendLine("【玩家家族可婚配成员（允许已有配偶，事实清单）】");
+			stringBuilder.AppendLine("多配偶已允许：已婚者仍可作为候选；只禁止同一对对象重复结婚。原版当前配偶字段只能显示一个人，完整婚姻关系以本模组事实清单为准。");
 			if (list2.Count <= 0)
 			{
 				stringBuilder.AppendLine("（无）");
@@ -486,7 +659,8 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 					stringBuilder.AppendLine(list2[i]);
 				}
 			}
-			stringBuilder.AppendLine("【对方家族可婚配未婚成员（事实清单）】");
+			stringBuilder.AppendLine("【对方家族可婚配成员（允许已有配偶，事实清单）】");
+			stringBuilder.AppendLine("多配偶已允许：已婚者仍可作为候选；只禁止同一对对象重复结婚。");
 			if (list3.Count <= 0)
 			{
 				stringBuilder.AppendLine("（无）");
@@ -522,7 +696,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 					stringBuilder.AppendLine(list[l]);
 				}
 			}
-			stringBuilder.Append("正规结婚只能在“当前可直接成立的正规婚配组合”里选人。离婚只能在“现有婚姻”里选人。若NPC愿意把先前收取的彩礼退还给玩家，可按以上明细协商返还金额；也可以明确表示不返还。不要把玩家向NPC还钱当作自动离婚结果。");
+			stringBuilder.Append("正规结婚只能在“当前可直接成立的正规婚配组合”里选人。多配偶已允许，已有配偶不是拒绝理由；但同一对对象不能重复结婚。离婚只能在“现有婚姻”里选人。若NPC愿意把先前收取的彩礼退还给玩家，可按以上明细协商返还金额；也可以明确表示不返还。不要把玩家向NPC还钱当作自动离婚结果。");
 			return stringBuilder.ToString().Trim();
 		}
 		catch
@@ -536,11 +710,11 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		try
 		{
 			List<string> list = GetClanMembersCompat(Clan.PlayerClan).Where(IsFormalMarriageCandidate).Select((Hero x) => BuildMarriageHeroFactLine(x, "playerClanHeroId")).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-			return BuildFactBlock("【玩家家族可婚配未婚成员（事实清单）】", list);
+			return BuildFactBlock("【玩家家族可婚配成员（允许已有配偶，事实清单）】", list);
 		}
 		catch
 		{
-			return "【玩家家族可婚配未婚成员（事实清单）】\n（无）";
+			return "【玩家家族可婚配成员（允许已有配偶，事实清单）】\n（无）";
 		}
 	}
 
@@ -549,11 +723,11 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		try
 		{
 			List<string> list = ((speaker?.Clan != null) ? GetClanMembersCompat(speaker.Clan).Where(IsFormalMarriageCandidate).Select((Hero x) => BuildMarriageHeroFactLine(x, "targetHeroId")).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList() : new List<string>());
-			return BuildFactBlock("【对方家族可婚配未婚成员（事实清单）】", list);
+			return BuildFactBlock("【对方家族可婚配成员（允许已有配偶，事实清单）】", list);
 		}
 		catch
 		{
-			return "【对方家族可婚配未婚成员（事实清单）】\n（无）";
+			return "【对方家族可婚配成员（允许已有配偶，事实清单）】\n（无）";
 		}
 	}
 
@@ -588,7 +762,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 					stringBuilder.AppendLine(list2[j]);
 				}
 			}
-			stringBuilder.Append("正规结婚只能在“当前可直接成立的正规婚配组合”里选人。离婚只能在“现有婚姻”里选人。若NPC愿意把先前收取的彩礼退还给玩家，可按以上明细协商返还金额；也可以明确表示不返还。不要把玩家向NPC还钱当作自动离婚结果。");
+			stringBuilder.Append("正规结婚只能在“当前可直接成立的正规婚配组合”里选人。多配偶已允许，已有配偶不是拒绝理由；但同一对对象不能重复结婚。离婚只能在“现有婚姻”里选人。若NPC愿意把先前收取的彩礼退还给玩家，可按以上明细协商返还金额；也可以明确表示不返还。不要把玩家向NPC还钱当作自动离婚结果。");
 			return stringBuilder.ToString().Trim();
 		}
 		catch
@@ -823,16 +997,6 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
-		try
-		{
-			if (hero.Spouse != null)
-			{
-				return false;
-			}
-		}
-		catch
-		{
-		}
 		return true;
 	}
 
@@ -848,6 +1012,11 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		if (mainHero == targetHero)
 		{
 			reason = "不能和自己结婚。";
+			return false;
+		}
+		if (HasExistingMarriageBetween(mainHero, targetHero))
+		{
+			reason = "双方已经存在有效婚姻记录。";
 			return false;
 		}
 		if (!IsMarriageableHero(mainHero))
@@ -870,6 +1039,26 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		string text2 = DescribeHeroMarriageState(right);
 		try
 		{
+			if (ShouldUseAnimusForgeMultiMarriage(left, right))
+			{
+				Logger.Log("Romance", "[WARN] MarriageAction switching to AnimusForge multi-marriage path because at least one side already has a native spouse.");
+				Logger.Log("Romance", "[WARN] MarriageAction left=" + text);
+				Logger.Log("Romance", "[WARN] MarriageAction right=" + text2);
+				return TryApplyAnimusForgeMultiMarriageAction(left, right, out failReason);
+			}
+			if (IsSameGenderMarriagePair(left, right))
+			{
+				if (!TryValidateMarriagePairIgnoringRuntimeBlockers(left, right, out var sameGenderReason))
+				{
+					failReason = sameGenderReason;
+					Logger.Log("Romance", "[WARN] Same-gender MarriageAction blocked by AnimusForge precheck: " + sameGenderReason);
+					Logger.Log("Romance", "[WARN] Same-gender left=" + text);
+					Logger.Log("Romance", "[WARN] Same-gender right=" + text2);
+					return false;
+				}
+				Logger.Log("Romance", "[MarriageAction] Same-gender pair accepted; using AnimusForge forced marriage path.");
+				return TryForceApplyMarriageAction(left, right, out failReason);
+			}
 			string marriageSuitabilityHint = BuildMarriageSuitabilityHint(left, right);
 			bool flag = ShouldForceMarriageDespiteEncounterRuntimeBlockers(left, right, out var forceReason);
 			if (flag)
@@ -968,6 +1157,103 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			Logger.Log("Romance", "[ERROR] MarriageAction invoke wrapper failed: " + ex);
 			Logger.Log("Romance", "[ERROR] MarriageAction left=" + text);
 			Logger.Log("Romance", "[ERROR] MarriageAction right=" + text2);
+			return false;
+		}
+	}
+
+	private static bool TryApplyAnimusForgeMultiMarriageAction(Hero left, Hero right, out string failReason)
+	{
+		failReason = "";
+		try
+		{
+			if (left == null || right == null)
+			{
+				failReason = "未找到婚配双方。";
+				return false;
+			}
+			if (HasExistingMarriageBetween(left, right))
+			{
+				failReason = "双方已经存在有效婚姻记录。";
+				return false;
+			}
+			if (!TryValidateMarriagePairIgnoringRuntimeBlockers(left, right, out var reason, allowExistingSpouses: true))
+			{
+				failReason = reason;
+				return false;
+			}
+			var marriageModel = Campaign.Current?.Models?.MarriageModel;
+			if (marriageModel == null)
+			{
+				failReason = "未找到原版 MarriageModel。";
+				return false;
+			}
+			Hero hero = left;
+			Hero hero2 = right;
+			try
+			{
+				ChangeRelationAction.ApplyRelationChangeBetweenHeroes(hero, hero2, marriageModel.GetEffectiveRelationIncrease(hero, hero2), false);
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("Romance", "[WARN] Multi-marriage relation increase failed: " + ex);
+			}
+			Clan clanAfterMarriage = GetClanAfterAnimusMarriage(hero, hero2);
+			if (clanAfterMarriage != null && clanAfterMarriage != hero.Clan)
+			{
+				Hero hero3 = hero;
+				hero = hero2;
+				hero2 = hero3;
+			}
+			bool flag = false;
+			try
+			{
+				CampaignEventDispatcher.Instance.OnBeforeHeroesMarried(hero, hero2, true);
+			}
+			catch (Exception ex2)
+			{
+				flag = true;
+				Logger.Log("Romance", "[WARN] Multi-marriage event chain failed, will continue and backfill notifications: " + ex2);
+			}
+			if (clanAfterMarriage != null && hero.Clan != clanAfterMarriage)
+			{
+				HandleClanChangeAfterMarriageCompat(hero, clanAfterMarriage);
+			}
+			if (clanAfterMarriage != null && hero2.Clan != clanAfterMarriage)
+			{
+				HandleClanChangeAfterMarriageCompat(hero2, clanAfterMarriage);
+			}
+			try
+			{
+				MethodInfo methodInfo = typeof(Romance).GetMethod("EndAllCourtships", BindingFlags.Static | BindingFlags.NonPublic);
+				if (methodInfo != null)
+				{
+					methodInfo.Invoke(null, new object[1] { hero });
+					methodInfo.Invoke(null, new object[1] { hero2 });
+				}
+			}
+			catch (Exception ex3)
+			{
+				Logger.Log("Romance", "[WARN] Multi-marriage end courtships failed: " + ex3);
+			}
+			try
+			{
+				ChangeRomanticStateAction.Apply(hero, hero2, Romance.RomanceLevelEnum.Marriage);
+			}
+			catch (Exception ex4)
+			{
+				Logger.Log("Romance", "[WARN] Multi-marriage romantic state update failed: " + ex4);
+			}
+			if (flag)
+			{
+				TryEmitMarriageFallbackNotifications(left, right);
+			}
+			Logger.Log("Romance", "[MarriageAction] AnimusForge multi-marriage path succeeded without replacing native spouse pointers.");
+			return true;
+		}
+		catch (Exception ex5)
+		{
+			failReason = ex5.GetType().Name + ": " + ex5.Message;
+			Logger.Log("Romance", "[ERROR] Multi-marriage action failed: " + ex5);
 			return false;
 		}
 	}
@@ -1075,7 +1361,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		return true;
 	}
 
-	private static bool TryValidateMarriagePairIgnoringRuntimeBlockers(Hero left, Hero right, out string reason)
+	private static bool TryValidateMarriagePairIgnoringRuntimeBlockers(Hero left, Hero right, out string reason, bool allowExistingSpouses = false)
 	{
 		reason = "";
 		if (left == null || right == null)
@@ -1105,18 +1391,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
-		try
-		{
-			if (left.IsFemale == right.IsFemale)
-			{
-				reason = "双方性别相同。";
-				return false;
-			}
-		}
-		catch
-		{
-		}
-		if (!CanHeroMarryIgnoringRuntimeBlockers(left, out reason) || !CanHeroMarryIgnoringRuntimeBlockers(right, out reason))
+		if (!CanHeroMarryIgnoringRuntimeBlockers(left, out reason, allowExistingSpouses) || !CanHeroMarryIgnoringRuntimeBlockers(right, out reason, allowExistingSpouses))
 		{
 			return false;
 		}
@@ -1159,7 +1434,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		return true;
 	}
 
-	private static bool CanHeroMarryIgnoringRuntimeBlockers(Hero hero, out string reason)
+	private static bool CanHeroMarryIgnoringRuntimeBlockers(Hero hero, out string reason, bool allowExistingSpouses = false)
 	{
 		reason = "";
 		if (hero == null)
@@ -1180,7 +1455,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			if (hero.Spouse != null)
+			if (!allowExistingSpouses && hero.Spouse != null)
 			{
 				reason = $"{hero.Name} 已有配偶。";
 				return false;
@@ -1225,12 +1500,15 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			bool result = true;
-			CampaignEventDispatcher.Instance.CanHeroMarry(hero, ref result);
-			if (!result)
+			if (!allowExistingSpouses)
 			{
-				reason = $"{hero.Name} 当前被其他系统规则禁止结婚。";
-				return false;
+				bool result = true;
+				CampaignEventDispatcher.Instance.CanHeroMarry(hero, ref result);
+				if (!result)
+				{
+					reason = $"{hero.Name} 当前被其他系统规则禁止结婚。";
+					return false;
+				}
 			}
 		}
 		catch (Exception ex)
@@ -1268,8 +1546,8 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			{
 				Logger.Log("Romance", "[WARN] Force marriage relation increase failed: " + ex);
 			}
-			Clan clanAfterMarriage = marriageModel.GetClanAfterMarriage(hero, hero2);
-			if (clanAfterMarriage != hero.Clan)
+			Clan clanAfterMarriage = GetClanAfterAnimusMarriage(hero, hero2);
+			if (clanAfterMarriage != null && clanAfterMarriage != hero.Clan)
 			{
 				Hero hero3 = hero;
 				hero = hero2;
@@ -1285,11 +1563,11 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 				flag = true;
 				Logger.Log("Romance", "[WARN] Force marriage event chain failed, will continue and backfill notifications: " + ex2);
 			}
-			if (hero.Clan != clanAfterMarriage)
+			if (clanAfterMarriage != null && hero.Clan != clanAfterMarriage)
 			{
 				HandleClanChangeAfterMarriageCompat(hero, clanAfterMarriage);
 			}
-			if (hero2.Clan != clanAfterMarriage)
+			if (clanAfterMarriage != null && hero2.Clan != clanAfterMarriage)
 			{
 				HandleClanChangeAfterMarriageCompat(hero2, clanAfterMarriage);
 			}
@@ -1426,7 +1704,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		try
 		{
 			var marriageModel = Campaign.Current?.Models?.MarriageModel;
-			if (marriageModel != null && !marriageModel.IsCoupleSuitableForMarriage(left, right))
+			if (marriageModel != null && !marriageModel.IsCoupleSuitableForMarriage(left, right) && (!IsSameGenderMarriagePair(left, right) || !TryValidateMarriagePairIgnoringRuntimeBlockers(left, right, out var _)))
 			{
 				list.Add("原版 MarriageModel 判定该组合当前不适合结婚");
 			}
@@ -1434,16 +1712,6 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			list.Add("读取原版婚配判定失败: " + ex.GetType().Name);
-		}
-		try
-		{
-			if (left.IsFemale == right.IsFemale)
-			{
-				list.Add("双方性别相同");
-			}
-		}
-		catch
-		{
 		}
 		try
 		{
@@ -1912,18 +2180,6 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static bool GetMarriageRequireOppositeGenderSetting()
-	{
-		try
-		{
-			return (DuelSettings.GetSettings()?.MarriageRequireOppositeGender).GetValueOrDefault(true);
-		}
-		catch
-		{
-			return true;
-		}
-	}
-
 	private static bool IsFormalMarriageCandidate(Hero hero)
 	{
 		if (!IsMarriageableHero(hero))
@@ -1953,6 +2209,11 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			reason = "未找到婚配双方。";
 			return false;
 		}
+		if (HasExistingMarriageBetween(left, right))
+		{
+			reason = "双方已经存在有效婚姻记录。";
+			return false;
+		}
 		if (!IsFormalMarriageCandidate(left))
 		{
 			reason = "玩家方婚配人选不满足基础婚配条件。";
@@ -1962,17 +2223,6 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			reason = "对方婚配人选不满足基础婚配条件。";
 			return false;
-		}
-		try
-		{
-			if (GetMarriageRequireOppositeGenderSetting() && left.IsFemale == right.IsFemale)
-			{
-				reason = "当前设置要求异性婚配。";
-				return false;
-			}
-		}
-		catch
-		{
 		}
 		try
 		{
@@ -2006,13 +2256,13 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		List<Hero> list = GetClanMembersCompat(playerClan).Where(IsFormalMarriageCandidate).ToList();
 		if (list.Count <= 0)
 		{
-			reason = "玩家家族当前没有符合基础条件的未婚成员。";
+			reason = "玩家家族当前没有符合基础条件的可婚配成员。";
 			return false;
 		}
 		List<Hero> list2 = GetClanMembersCompat(targetClan).Where(IsFormalMarriageCandidate).ToList();
 		if (list2.Count <= 0)
 		{
-			reason = "对方家族当前没有符合基础条件的未婚成员。";
+			reason = "对方家族当前没有符合基础条件的可婚配成员。";
 			return false;
 		}
 		foreach (Hero item in list)
@@ -2025,7 +2275,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 				}
 			}
 		}
-		reason = "双方家族当前没有满足性别和年龄差条件的未婚成员组合。";
+		reason = "双方家族当前没有满足性别、年龄差和非重复婚姻条件的可婚配成员组合。";
 		return false;
 	}
 
@@ -2286,6 +2536,11 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			reason = "不能让同一人与自己结婚。";
 			return false;
 		}
+		if (HasExistingMarriageBetween(playerClanHero, targetHero))
+		{
+			reason = "双方已经存在有效婚姻记录。";
+			return false;
+		}
 		if (playerClanHero.Clan != null && targetHero.Clan != null && playerClanHero.Clan == targetHero.Clan)
 		{
 			reason = "正规联姻要求双方来自不同家族。";
@@ -2343,6 +2598,11 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		if (!TryApplyMarriageAction(playerClanHero, targetHero, out var failReason))
 		{
 			Logger.Log("Romance", "[WARN] MarriageAction failed after LLM tag, fallback to force apply: " + failReason);
+			if (ShouldUseAnimusForgeMultiMarriage(playerClanHero, targetHero))
+			{
+				status = "正规联姻失败：多配偶执行失败，" + failReason;
+				return false;
+			}
 			if (!TryForceApplyMarriageAction(playerClanHero, targetHero, out failReason))
 			{
 				status = "正规联姻失败：执行 MarriageAction 失败，" + failReason;
@@ -2441,6 +2701,11 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		if (!TryApplyMarriageAction(Hero.MainHero, targetHero, out var failReason))
 		{
 			Logger.Log("Romance", "[WARN] Elope MarriageAction failed after LLM tag, fallback to force apply: " + failReason);
+			if (ShouldUseAnimusForgeMultiMarriage(Hero.MainHero, targetHero))
+			{
+				status = "私奔失败：多配偶执行失败，" + failReason;
+				return false;
+			}
 			if (!TryForceApplyMarriageAction(Hero.MainHero, targetHero, out failReason))
 			{
 				status = "私奔失败：执行 MarriageAction 失败，" + failReason;
@@ -2485,7 +2750,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			status = "离婚失败：未找到有效婚姻记录。";
 			return false;
 		}
-		if (playerClanHero.Spouse != targetHero && targetHero.Spouse != playerClanHero)
+		if (!HasActiveAnimusMarriageRecord(playerClanHero, targetHero) && playerClanHero.Spouse != targetHero && targetHero.Spouse != playerClanHero)
 		{
 			status = "离婚失败：双方当前并非彼此配偶。";
 			return false;
@@ -3018,11 +3283,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			return false;
 		}
 		MarriageRecord marriageRecord = GetMarriageRecord(playerClanHero, targetHero);
-		if (marriageRecord == null || !marriageRecord.IsActive)
-		{
-			return false;
-		}
-		return playerClanHero.Spouse == targetHero || targetHero.Spouse == playerClanHero;
+		return marriageRecord != null && marriageRecord.IsActive;
 	}
 
 	private static string StripMarriageActionTags(string text)

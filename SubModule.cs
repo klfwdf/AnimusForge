@@ -480,6 +480,14 @@ public class SubModule : MBSubModuleBase
 			{
 				Logger.LogTrace("SubModule", ">>> NobleGathering patches init failed: " + ex18f.Message);
 			}
+			try
+			{
+				SexualConceptionBehavior.RegisterHarmonyPatches(harmony);
+			}
+			catch (Exception ex18g)
+			{
+				Logger.LogTrace("SubModule", ">>> SexualConception patches init failed: " + ex18g.Message);
+			}
 			Logger.LogTrace("SubModule", ">>> Harmony patches applied.");
 		}
 		catch (Exception ex18)
@@ -606,6 +614,7 @@ public class SubModule : MBSubModuleBase
 			RunWatchedTickPhase("SubModule.PlayerNotorietyPopup.ProcessDeferredCloseIfNeeded", () => PlayerNotorietyPopup.ProcessDeferredCloseIfNeeded());
 			RunWatchedTickPhase("SubModule.AnimusForgeConversationHistoryLogPopup.OnApplicationTick", () => AnimusForgeConversationHistoryLogPopup.OnApplicationTick());
 			RunWatchedTickPhase("SubModule.AnimusForgeNativeConversationOverlay.OnApplicationTick", () => AnimusForgeNativeConversationOverlay.OnApplicationTick());
+			RunWatchedTickPhase("SubModule.ShoutBehavior.MainThreadActions.OnApplicationTick", () => ShoutBehavior.OnApplicationTickForMainThreadActionsExternal());
 			RunWatchedTickPhase("SubModule.NativeConversationAnswerAreaController.OnApplicationTick", () => NativeConversationAnswerAreaController.OnApplicationTick());
 			RunWatchedTickPhase("SubModule.ShoutBehavior.NativeConversationTts.OnApplicationTick", () => ShoutBehavior.OnApplicationTickForNativeConversationTtsExternal());
 			RunWatchedTickPhase("SubModule.ConversationHelper.Tick", () => ConversationHelper.Tick());
@@ -618,6 +627,7 @@ public class SubModule : MBSubModuleBase
 			RunWatchedTickPhase("SubModule.MyBehavior.OnEngineTick", () => MyBehavior.Instance?.OnEngineTick());
 			RunWatchedTickPhase("SubModule.CourierDeliveryBehavior.OnEngineTick", () => CourierDeliveryBehavior.Instance?.OnEngineTick());
 			RunWatchedTickPhase("SubModule.DuelBehavior.OnEngineTick", () => DuelBehavior.Instance?.OnEngineTick());
+			RunWatchedTickPhase("SubModule.RewardSystemBehavior.OnEngineTick", () => RewardSystemBehavior.Instance?.OnEngineTick());
 			RunWatchedTickPhase("SubModule.LordEncounterBehavior.OnEngineTick", () => LordEncounterBehavior.OnEngineTick());
 			RunWatchedTickPhase("SubModule.AnimusForgeTerminalBehavior.OnEngineTick", () => AnimusForgeTerminalBehavior.Instance?.OnEngineTick());
 			RunWatchedTickPhase("SubModule.CustomPolicyBehavior.OnEngineTick", () => CustomPolicyBehavior.Instance?.OnEngineTick());

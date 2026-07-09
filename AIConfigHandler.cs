@@ -364,6 +364,24 @@ public static class AIConfigHandler
 		}
 	}
 
+	private static bool IsPlayerClanLordTarget(Hero targetHero)
+	{
+		try
+		{
+			Clan playerClan = Clan.PlayerClan ?? Hero.MainHero?.Clan;
+			return targetHero != null
+				&& playerClan != null
+				&& targetHero != Hero.MainHero
+				&& targetHero.Clan == playerClan
+				&& targetHero.Occupation == Occupation.Lord
+				&& targetHero.CompanionOf == null;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	private static bool IsPlayerPartyTradeLimitedRule(string ruleId)
 	{
 		string text = (ruleId ?? "").Trim();
@@ -650,6 +668,8 @@ public static class AIConfigHandler
 
 	public static List<PostprocessRuleEntry> RoyalPostprocessRules => _actionPostprocess?.RoyalPostprocessRules ?? new List<PostprocessRuleEntry>();
 
+	public static List<PostprocessRuleEntry> IntimacyPostprocessRules => _actionPostprocess?.IntimacyPostprocessRules ?? new List<PostprocessRuleEntry>();
+
 	public static List<PostprocessRuleEntry> ActionPostprocessMoodRules => _actionPostprocess?.MoodRules ?? new List<PostprocessRuleEntry>();
 
 	public static bool IsRoyalAbdicationPostprocessTargetForExternal(Hero targetHero)
@@ -659,6 +679,11 @@ public static class AIConfigHandler
 			Hero hero = targetHero ?? ResolveConversationTargetHero();
 			Clan playerClan = Clan.PlayerClan;
 			if (hero == null || hero == Hero.MainHero || playerClan == null || Hero.MainHero == null)
+			{
+				return false;
+			}
+			Kingdom playerKingdom = playerClan.Kingdom;
+			if (playerKingdom != null && (playerKingdom.RulingClan == playerClan || playerKingdom.Leader == Hero.MainHero))
 			{
 				return false;
 			}
@@ -703,12 +728,12 @@ public static class AIConfigHandler
 		}
 	}
 
-	public static List<PostprocessRuleEntry> BuildRuntimeRoyalPostprocessRulesForExternal(Hero targetHero)
+	public static List<PostprocessRuleEntry> BuildRuntimeRoyalPostprocessRulesForExternal(Hero targetHero, bool postprocessRuleSelected)
 	{
 		List<PostprocessRuleEntry> list = new List<PostprocessRuleEntry>();
 		try
 		{
-			if (!IsRoyalAbdicationPostprocessTargetForExternal(targetHero))
+			if (!postprocessRuleSelected || !IsRoyalAbdicationPostprocessTargetForExternal(targetHero))
 			{
 				return list;
 			}
@@ -779,8 +804,8 @@ public static class AIConfigHandler
 		text = ReplaceActionPostprocessOptionalSection(text, "{npc_name}的物品清单：", "shared_item_list", sharedItemList);
 		text = ReplaceActionPostprocessOptionalSection(text, "玩家可见装备：", "player_item_list", playerItemList);
 		text = ReplaceActionPostprocessOptionalSection(text, "债务提示：", "debt_hint", debtHint);
-		text = ReplaceActionPostprocessOptionalSection(text, "玩家家族可婚配未婚成员（事实清单）：", "marriage_player_candidates", marriagePlayerCandidates);
-		text = ReplaceActionPostprocessOptionalSection(text, "对方家族可婚配未婚成员（事实清单）：", "marriage_target_candidates", marriageTargetCandidates);
+		text = ReplaceActionPostprocessOptionalSection(text, "玩家家族可婚配成员（允许已有配偶，事实清单）：", "marriage_player_candidates", marriagePlayerCandidates);
+		text = ReplaceActionPostprocessOptionalSection(text, "对方家族可婚配成员（允许已有配偶，事实清单）：", "marriage_target_candidates", marriageTargetCandidates);
 		text = ReplaceActionPostprocessOptionalSection(text, "当前可直接成立的正规婚配组合与现有婚姻（事实清单）：", "marriage_fact_hint", null);
 		text = text.Replace("{tag_rules}", string.IsNullOrWhiteSpace(tagRules) ? "（无）" : tagRules.Trim())
 			.Replace("{mood_rules}", string.IsNullOrWhiteSpace(moodRules) ? "（无）" : moodRules.Trim())
@@ -804,8 +829,8 @@ public static class AIConfigHandler
 		runtimeContext = NormalizeActionPostprocessNameReferences(runtimeContext, npcName);
 		text = ReplaceActionPostprocessOptionalSection(text, "玩家可见装备：", "player_item_list", playerItemList);
 		text = ReplaceActionPostprocessOptionalSection(text, "{npc_name}的物品清单：", "shared_item_list", sharedItemList);
-		text = ReplaceActionPostprocessOptionalSection(text, "玩家家族可婚配未婚成员（事实清单）：", "marriage_player_candidates", marriagePlayerCandidates);
-		text = ReplaceActionPostprocessOptionalSection(text, "对方家族可婚配未婚成员（事实清单）：", "marriage_target_candidates", marriageTargetCandidates);
+		text = ReplaceActionPostprocessOptionalSection(text, "玩家家族可婚配成员（允许已有配偶，事实清单）：", "marriage_player_candidates", marriagePlayerCandidates);
+		text = ReplaceActionPostprocessOptionalSection(text, "对方家族可婚配成员（允许已有配偶，事实清单）：", "marriage_target_candidates", marriageTargetCandidates);
 		text = ReplaceActionPostprocessOptionalSection(text, "当前可直接成立的正规婚配组合与现有婚姻（事实清单）：", "marriage_fact_hint", null);
 		text = ReplaceActionPostprocessOptionalSection(text, "债务提示：", "debt_hint", debtHint);
 		text = ReplaceActionPostprocessOptionalSection(text, "运行时补充事实：", "runtime_context", runtimeContext);
@@ -4179,63 +4204,292 @@ public static class AIConfigHandler
 
 	private static string StripAuxiliaryJsonCodeFence(string content)
 	{
-		string text = (content ?? "").Trim();
+		string text = (content ?? "").Trim('\uFEFF', '\u200B', '\u200C', '\u200D', ' ', '\t', '\r', '\n');
 		if (text.StartsWith("```", StringComparison.Ordinal))
 		{
-			text = Regex.Replace(text, "^```(?:json)?\\s*", "", RegexOptions.IgnoreCase).Trim();
-			text = Regex.Replace(text, "\\s*```$", "", RegexOptions.CultureInvariant).Trim();
+			int firstLineEnd = text.IndexOf('\n');
+			if (firstLineEnd >= 0)
+			{
+				text = text.Substring(firstLineEnd + 1).Trim();
+			}
+			int lastFence = text.LastIndexOf("```", StringComparison.Ordinal);
+			if (lastFence >= 0)
+			{
+				text = text.Substring(0, lastFence).Trim();
+			}
 		}
-		return text;
+		text = Regex.Replace(text, "^(?:json)\\s*(?=[\\r\\n{\\[])", "", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant).Trim();
+		string jsonPayload = ExtractFirstAuxiliaryJsonPayload(text);
+		return string.IsNullOrWhiteSpace(jsonPayload) ? text : jsonPayload;
 	}
 
-	private static List<string> ParseAuxiliaryGuardrailRuleCodes(string content, IEnumerable<GuardrailAuxiliaryTopic> topics)
+	private static string ExtractFirstAuxiliaryJsonPayload(string text)
 	{
-		List<string> list = new List<string>();
+		text = (text ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		for (int i = 0; i < text.Length; i++)
+		{
+			if (text[i] == '{')
+			{
+				string payload = ExtractBalancedAuxiliaryJsonPayload(text, i, '{', '}');
+				if (!string.IsNullOrWhiteSpace(payload))
+				{
+					return payload;
+				}
+			}
+			if (text[i] == '[')
+			{
+				string payload = ExtractBalancedAuxiliaryJsonPayload(text, i, '[', ']');
+				if (!string.IsNullOrWhiteSpace(payload))
+				{
+					return payload;
+				}
+			}
+		}
+		return "";
+	}
+
+	private static string ExtractBalancedAuxiliaryJsonPayload(string text, int start, char open, char close)
+	{
+		text = text ?? "";
+		if (start < 0 || start >= text.Length || text[start] != open)
+		{
+			return "";
+		}
+		bool inString = false;
+		bool escaped = false;
+		int depth = 0;
+		for (int i = start; i < text.Length; i++)
+		{
+			char ch = text[i];
+			if (inString)
+			{
+				if (escaped)
+				{
+					escaped = false;
+				}
+				else if (ch == '\\')
+				{
+					escaped = true;
+				}
+				else if (ch == '"')
+				{
+					inString = false;
+				}
+				continue;
+			}
+			if (ch == '"')
+			{
+				inString = true;
+				continue;
+			}
+			if (ch == open)
+			{
+				depth++;
+				continue;
+			}
+			if (ch == close)
+			{
+				depth--;
+				if (depth == 0)
+				{
+					return text.Substring(start, i - start + 1).Trim();
+				}
+				if (depth < 0)
+				{
+					return "";
+				}
+			}
+		}
+		return "";
+	}
+
+	private static bool TryParseAuxiliaryGuardrailRuleCodes(string content, IEnumerable<GuardrailAuxiliaryTopic> topics, out List<string> codes, out string error)
+	{
+		codes = new List<string>();
+		error = "";
+		string text = StripAuxiliaryJsonCodeFence(content);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			error = "empty_content";
+			return false;
+		}
+		Dictionary<string, string> dictionary = BuildAuxiliaryRuleCodeLookup(topics);
+		if (dictionary.Count <= 0)
+		{
+			error = "no_known_rule_codes";
+			return false;
+		}
+		JToken rootToken;
 		try
 		{
-			string text = (content ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(text))
+			rootToken = JToken.Parse(text);
+		}
+		catch (Exception ex)
+		{
+			error = "invalid_json:" + ex.GetType().Name;
+			return false;
+		}
+		JToken token = rootToken;
+		if (rootToken is JObject jObject)
+		{
+			token = GetJsonPropertyIgnoreCase(jObject, "rule_codes", "ruleCodes", "topic_codes", "topicCodes", "rules", "rule_ids", "ruleIds", "topics", "codes", "selected_rule_codes", "selectedRuleCodes");
+		}
+		if (token == null || token.Type == JTokenType.Null)
+		{
+			error = "missing_rule_codes";
+			return false;
+		}
+		List<string> rawCodes = ReadAuxiliaryRuleCodeValues(token, out error);
+		if (rawCodes == null)
+		{
+			return false;
+		}
+		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		List<string> unknownCodes = new List<string>();
+		foreach (string rawCode in rawCodes)
+		{
+			string code = NormalizeRuleCode(rawCode, "", "");
+			if (string.IsNullOrWhiteSpace(code))
 			{
-				return list;
+				continue;
 			}
-			Dictionary<string, string> dictionary = (topics ?? Enumerable.Empty<GuardrailAuxiliaryTopic>()).Where((GuardrailAuxiliaryTopic x) => x != null && !string.IsNullOrWhiteSpace(x.Code)).GroupBy((GuardrailAuxiliaryTopic x) => x.Code.Trim(), StringComparer.OrdinalIgnoreCase).ToDictionary((IGrouping<string, GuardrailAuxiliaryTopic> g) => NormalizeRuleCode(g.Key, "", ""), (IGrouping<string, GuardrailAuxiliaryTopic> g) => g.First().RuleId ?? "", StringComparer.OrdinalIgnoreCase);
-			HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			try
+			if (!dictionary.ContainsKey(code))
 			{
-				JObject jObject = JObject.Parse(StripAuxiliaryJsonCodeFence(text));
-				JArray jArray = jObject["rule_codes"] as JArray;
-				if (jArray != null)
+				if (!unknownCodes.Contains(code, StringComparer.OrdinalIgnoreCase))
 				{
-					foreach (JToken item in jArray)
+					unknownCodes.Add(code);
+				}
+				continue;
+			}
+			if (seen.Add(code))
+			{
+				codes.Add(code);
+			}
+		}
+		if (codes.Count <= 0)
+		{
+			error = "";
+			if (unknownCodes.Count > 0)
+			{
+				Logger.Log("GuardrailSemantic", "auxiliary_router no_known_rule_codes ignored=" + string.Join(",", unknownCodes.Take(8)));
+			}
+			return true;
+		}
+		if (unknownCodes.Count > 0)
+		{
+			Logger.Log("GuardrailSemantic", "auxiliary_router ignored_unknown_codes=" + string.Join(",", unknownCodes.Take(8)) + " accepted=" + string.Join(",", codes));
+		}
+		return true;
+	}
+
+	private static Dictionary<string, string> BuildAuxiliaryRuleCodeLookup(IEnumerable<GuardrailAuxiliaryTopic> topics)
+	{
+		Dictionary<string, string> lookup = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		foreach (GuardrailAuxiliaryTopic topic in topics ?? Enumerable.Empty<GuardrailAuxiliaryTopic>())
+		{
+			string ruleId = (topic?.RuleId ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(ruleId))
+			{
+				continue;
+			}
+			AddAuxiliaryRuleCodeLookupKey(lookup, topic.Code, ruleId);
+			AddAuxiliaryRuleCodeLookupKey(lookup, ruleId, ruleId);
+			AddAuxiliaryRuleCodeLookupKey(lookup, NormalizeRuleCode("", ruleId, topic.Label), ruleId);
+			if (topic.Number > 0)
+			{
+				AddAuxiliaryRuleCodeLookupKey(lookup, topic.Number.ToString(System.Globalization.CultureInfo.InvariantCulture), ruleId);
+				AddAuxiliaryRuleCodeLookupKey(lookup, "TOPIC_" + topic.Number.ToString(System.Globalization.CultureInfo.InvariantCulture), ruleId);
+				AddAuxiliaryRuleCodeLookupKey(lookup, "T" + topic.Number.ToString(System.Globalization.CultureInfo.InvariantCulture), ruleId);
+			}
+		}
+		return lookup;
+	}
+
+	private static void AddAuxiliaryRuleCodeLookupKey(Dictionary<string, string> lookup, string key, string ruleId)
+	{
+		if (lookup == null || string.IsNullOrWhiteSpace(ruleId))
+		{
+			return;
+		}
+		string normalized = NormalizeRuleCode(key, "", "");
+		if (string.IsNullOrWhiteSpace(normalized) || string.Equals(normalized, "RULE", StringComparison.OrdinalIgnoreCase))
+		{
+			return;
+		}
+		if (!lookup.ContainsKey(normalized))
+		{
+			lookup[normalized] = ruleId;
+		}
+	}
+
+	private static List<string> ReadAuxiliaryRuleCodeValues(JToken token, out string error)
+	{
+		error = "";
+		List<string> values = new List<string>();
+		if (token is JArray array)
+		{
+			foreach (JToken item in array)
+			{
+				if (item == null || item.Type == JTokenType.Null)
+				{
+					continue;
+				}
+				if (item.Type == JTokenType.String || item.Type == JTokenType.Integer)
+				{
+					string value = (item.ToString() ?? "").Trim();
+					if (!string.IsNullOrWhiteSpace(value))
 					{
-						string text2 = NormalizeRuleCode(item?.ToString() ?? "", "", "");
-						if (!string.IsNullOrWhiteSpace(text2) && dictionary.ContainsKey(text2) && hashSet.Add(text2))
-						{
-							list.Add(text2);
-						}
+						values.Add(value);
+					}
+					continue;
+				}
+				if (item is JObject obj)
+				{
+					JToken valueToken = GetJsonPropertyIgnoreCase(obj, "code", "rule_code", "ruleCode", "topic_code", "topicCode", "id", "rule_id", "ruleId", "topic_id", "topicId", "name", "label", "number");
+					string value = (valueToken?.ToString() ?? "").Trim();
+					if (!string.IsNullOrWhiteSpace(value))
+					{
+						values.Add(value);
+						continue;
 					}
 				}
+				error = "rule_code_not_string_or_integer";
+				return null;
 			}
-			catch
+			return values;
+		}
+		if (token.Type == JTokenType.String || token.Type == JTokenType.Integer)
+		{
+			foreach (string part in Regex.Split(token.ToString() ?? "", "[,，;；\\s]+"))
 			{
-			}
-			if (list.Count > 0)
-			{
-				return list;
-			}
-			foreach (Match item2 in Regex.Matches(text, "[A-Z][A-Z0-9_]{1,48}", RegexOptions.CultureInvariant))
-			{
-				string text3 = NormalizeRuleCode(item2?.Value ?? "", "", "");
-				if (!string.IsNullOrWhiteSpace(text3) && dictionary.ContainsKey(text3) && hashSet.Add(text3))
+				string value = (part ?? "").Trim();
+				if (!string.IsNullOrWhiteSpace(value))
 				{
-					list.Add(text3);
+					values.Add(value);
 				}
 			}
+			return values;
 		}
-		catch
+		error = "rule_codes_not_array_or_string";
+		return null;
+	}
+
+	private static string BuildAuxiliaryPreprocessFormatError(string reason, string content)
+	{
+		string preview = (content ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+		if (preview.Length > 700)
 		{
+			preview = preview.Substring(0, 700) + "...";
 		}
-		return list;
+		if (string.IsNullOrWhiteSpace(preview))
+		{
+			preview = "(empty)";
+		}
+		return "（API响应格式错误）前处理规则选择返回格式错误：" + (string.IsNullOrWhiteSpace(reason) ? "unknown" : reason.Trim()) + "。必须输出可解析 JSON 对象，并包含 rule_codes/rules/topics/rule_ids 等话题字段。原始输出：" + preview;
 	}
 
 	public static void PublishAuxiliaryMentionedEntitiesForExternal(string userText, string secondaryText, string runtimeGuardrailContext, string content)
@@ -4607,26 +4861,35 @@ public static class AIConfigHandler
 				return false;
 			}
 			string text2 = BuildAuxiliaryGuardrailRoutingPrompt(userText, secondaryText, runtimeGuardrailContext, list, snapshot.ReturnCap);
-			if (!TryCallAuxiliaryRuleRouterApi(apiUrl, apiKey, modelName, text2, out var content, out var error))
+			string content = "";
+			List<string> list2;
+			while (true)
 			{
-				Logger.Log("GuardrailSemantic", "auxiliary_router failed reason=" + error);
-				snapshot = null;
-				return false;
+				if (!TryCallAuxiliaryRuleRouterApi(apiUrl, apiKey, modelName, text2, out content, out var error))
+				{
+					Logger.Log("GuardrailSemantic", "auxiliary_router failed reason=" + error);
+					snapshot = null;
+					return false;
+				}
+				if (TryParseAuxiliaryGuardrailRuleCodes(content, list, out list2, out var parseError))
+				{
+					break;
+				}
+				string formatError = BuildAuxiliaryPreprocessFormatError(parseError, content);
+				Logger.Log("GuardrailSemantic", "auxiliary_router format_error reason=" + parseError + " raw=" + JsonConvert.ToString(content ?? ""));
+				LogAuxiliaryRouterTokenTrace("auxiliary_router_format_error", BuildAuxiliaryRouterMessages(text2), "[AUXILIARY ROUTER PARSE]" + "\n" + "url=" + apiUrl + "\n" + "model=" + modelName + "\n" + "reason=" + parseError + "\n" + "ai_response=" + "\n" + (content ?? ""), 0);
+				if (!LlmRetryPrompt.PromptRetryBlocking("前处理规则选择", formatError))
+				{
+					throw new PreprocessFormatException(formatError);
+				}
+				Logger.Log("GuardrailSemantic", "auxiliary_router retry_after_format_error reason=" + parseError);
 			}
 			PublishAuxiliaryMentionedEntitiesForExternal(userText, secondaryText, runtimeGuardrailContext, content);
-			List<string> list2 = ParseAuxiliaryGuardrailRuleCodes(content, list);
 			if (list2.Count <= 0)
 			{
-				foreach (GuardrailRuleEval value in snapshot.Rules.Values)
-				{
-					if (value != null)
-					{
-						value.RejectReason = "auxiliary_api_no_topic";
-					}
-				}
-				Logger.Log("GuardrailSemantic", "auxiliary_router no_topic raw=" + JsonConvert.ToString(content ?? ""));
-				LogAuxiliaryRouterTokenTrace("auxiliary_router_no_topic", BuildAuxiliaryRouterMessages(text2), "[AUXILIARY ROUTER PARSE]" + "\n" + "url=" + apiUrl + "\n" + "model=" + modelName + "\n" + "reason=no_topic" + "\n" + "ai_response=" + "\n" + (content ?? ""), 0);
-				return true;
+				Logger.Log("GuardrailSemantic", "auxiliary_router no_known_topic raw=" + JsonConvert.ToString(content ?? "") + "; fallback=semantic");
+				snapshot = null;
+				return false;
 			}
 			HashSet<string> hashSet2 = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			List<string> list3 = new List<string>();
@@ -4695,6 +4958,10 @@ public static class AIConfigHandler
 			Logger.Log("GuardrailSemantic", $"auxiliary_router success returnCap={snapshot.ReturnCap} raw={JsonConvert.ToString(content ?? "")} selected={string.Join(",", list3)}");
 			return true;
 		}
+		catch (PreprocessFormatException)
+		{
+			throw;
+		}
 		catch (Exception ex)
 		{
 			Logger.Log("GuardrailSemantic", "auxiliary_router exception=" + ex.Message);
@@ -4734,15 +5001,30 @@ public static class AIConfigHandler
 			}
 			int returnCap = Math.Max(1, topN <= 0 ? GuardrailRuleReturnCap : topN);
 			string prompt = BuildAuxiliaryGuardrailRoutingPrompt(userText, secondaryText, runtimeGuardrailContext, topics, returnCap);
-			if (!TryCallAuxiliaryRuleRouterApi(apiUrl, apiKey, modelName, prompt, out var content, out error))
+			string content = "";
+			List<string> codes;
+			while (true)
 			{
-				return false;
+				if (!TryCallAuxiliaryRuleRouterApi(apiUrl, apiKey, modelName, prompt, out content, out error))
+				{
+					return false;
+				}
+				if (TryParseAuxiliaryGuardrailRuleCodes(content, topics, out codes, out var parseError))
+				{
+					break;
+				}
+				error = BuildAuxiliaryPreprocessFormatError(parseError, content);
+				if (!LlmRetryPrompt.PromptRetryBlocking("前处理规则选择", error))
+				{
+					return false;
+				}
+				Logger.Log("AIConfig", "[AuxiliaryRuleRouter] user requested retry after format error: " + parseError);
 			}
 			PublishAuxiliaryMentionedEntitiesForExternal(userText, secondaryText, runtimeGuardrailContext, content);
-			List<string> codes = ParseAuxiliaryGuardrailRuleCodes(content, topics);
 			if (codes.Count <= 0)
 			{
-				error = "rule_codes_parse_empty";
+				error = "no_known_rule_codes";
+				Logger.Log("AIConfig", "[AuxiliaryRuleRouter] no known rule codes; raw=" + JsonConvert.ToString(content ?? ""));
 				return false;
 			}
 			foreach (string code in codes)
@@ -5199,6 +5481,10 @@ public static class AIConfigHandler
 			snapshot = guardrailEvalSnapshot;
 			return snapshot != null && snapshot.Rules != null && snapshot.Rules.Count > 0;
 		}
+		catch (PreprocessFormatException)
+		{
+			throw;
+		}
 		catch (Exception ex)
 		{
 			try
@@ -5555,6 +5841,10 @@ public static class AIConfigHandler
 			{
 				list = list.Take(num).ToList();
 			}
+		}
+		catch (PreprocessFormatException)
+		{
+			throw;
 		}
 		catch
 		{
@@ -6433,12 +6723,12 @@ public static class AIConfigHandler
 			const string text4 = "__AFEF_PLAYER_FACT__";
 			const string text5 = "__PLAYER_CLAN_FACT__";
 			text2 = text2.Replace("[AFEF玩家行为补充]", text4);
-			text2 = text2.Replace("【玩家家族可婚配未婚成员（事实清单）】", text5);
+			text2 = text2.Replace("【玩家家族可婚配成员（允许已有配偶，事实清单）】", text5);
 			text2 = text2.Replace("玩家家族", "__PLAYER_CLAN__");
 			text2 = text2.Replace("玩家", text3);
 			text2 = text2.Replace("__PLAYER_CLAN__", "玩家家族");
 			text2 = text2.Replace(text4, "[AFEF玩家行为补充]");
-			text2 = text2.Replace(text5, "【玩家家族可婚配未婚成员（事实清单）】");
+			text2 = text2.Replace(text5, "【玩家家族可婚配成员（允许已有配偶，事实清单）】");
 			return text2;
 		}
 		catch
@@ -6712,6 +7002,17 @@ public static class AIConfigHandler
 		if (targetHero == null || targetHero == Hero.MainHero)
 		{
 			return "";
+		}
+		try
+		{
+			Clan playerClan = Clan.PlayerClan ?? Hero.MainHero?.Clan;
+			if (playerClan != null && targetHero.Clan == playerClan)
+			{
+				return "already_in_player_family";
+			}
+		}
+		catch
+		{
 		}
 		try
 		{
@@ -7286,7 +7587,7 @@ public static class AIConfigHandler
 		try
 		{
 			Hero hero = targetHero ?? ResolveConversationTargetHero();
-			bool suppressPlayerPartyTarget = IsPlayerPartyTradeLimitedTarget(hero);
+			bool suppressPlayerPartyTarget = IsPlayerPartyTradeLimitedTarget(hero) && IsPlayerClanLordTarget(hero);
 			if (suppressPlayerPartyTarget)
 			{
 				includePersonalJoinRule = false;

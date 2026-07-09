@@ -2242,7 +2242,10 @@ namespace AnimusForge
 				}
 
 				StringBuilder sb = new StringBuilder();
-				List<VoteDealAgendaEntry> agendas = BuildVoteDealAgendaEntries(npc);
+				string npcClanId = npc?.Clan?.StringId ?? "";
+				List<VoteDealAgendaEntry> agendas = BuildVoteDealAgendaEntries(npc)
+					.Where(a => a?.Decision?.ProposerClan == null || !string.Equals(a.Decision.ProposerClan.StringId, npcClanId, StringComparison.Ordinal))
+					.ToList();
 				if (agendas.Count == 0)
 				{
 					sb.AppendLine("【投票交易后处理清单】当前没有可拉票的活跃议程。玩家可能与NPC讨论未来可能提出的提案，但因无法确定具体议程和选项，禁止输出 VOTE_DEAL。");
@@ -2252,10 +2255,8 @@ namespace AnimusForge
 				sb.AppendLine("【投票交易后处理清单】以下 A/O 编号只供后处理输出隐藏标签使用，不得让NPC正文照读。玩家可以用议程名称、城镇/国家/政策名、候选人、家族名、支持/反对等自然说法表达拉票目标；只有能唯一匹配到一个议程和一个选项时，才允许输出 [ACTION:VOTE_DEAL:议程编号:选项编号:权重:备注]。");
 				foreach (VoteDealAgendaEntry agenda in agendas)
 				{
-					bool isOwnProposal = agenda.Decision.ProposerClan?.StringId == (npc?.Clan?.StringId ?? "");
-					string proposerNote = isOwnProposal ? "【你的家族提案，不可交易】 " : "";
 					string timing = agenda.RemainingDays > 0 ? $"剩余 {agenda.RemainingDays:F1} 天" : "即将投票";
-					sb.AppendLine($"{agenda.Code}: [{agenda.TypeLabel}] {agenda.Title}（提案人:{agenda.ProposerName}，{timing}）{proposerNote}");
+					sb.AppendLine($"{agenda.Code}: [{agenda.TypeLabel}] {agenda.Title}（提案人:{agenda.ProposerName}，{timing}）");
 					foreach (VoteDealOptionEntry option in agenda.Options)
 					{
 						string sponsorText = string.IsNullOrWhiteSpace(option.SponsorName) || option.SponsorName == "未知" ? "" : $"；赞助/候选:{option.SponsorName}";
@@ -2263,7 +2264,7 @@ namespace AnimusForge
 						sb.AppendLine($"- {option.Code}: {option.Title}{sponsorText}{descriptionText}");
 					}
 				}
-				sb.AppendLine("【投票交易后处理硬约束】若玩家或NPC没有把议程与选项说清楚、多个议程或多个选项都可能匹配、NPC只是继续谈条件或拒绝，禁止输出 VOTE_DEAL。若NPC不是家族族长，禁止输出VOTE_DEAL。若NPC所属氏族是某议程的提案氏族，禁止就该议程输出VOTE_DEAL。若NPC已对同一议程有承诺，禁止改投其他选项。");
+				sb.AppendLine("【投票交易后处理硬约束】若玩家或NPC没有把议程与选项说清楚、多个议程或多个选项都可能匹配、NPC只是继续谈条件或拒绝，禁止输出 VOTE_DEAL。若NPC不是家族族长，禁止输出VOTE_DEAL。若NPC已对同一议程有承诺，禁止改投其他选项。");
 				return sb.ToString().TrimEnd();
 			}
 			catch (Exception ex)

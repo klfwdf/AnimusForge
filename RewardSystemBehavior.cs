@@ -35,6 +35,7 @@ namespace AnimusForge;
 public class RewardSystemBehavior : CampaignBehaviorBase
 {
 	private const int RewardQuickInfoDurationMs = 5000;
+	private const float JoinPartyConversationCloseDelaySeconds = 5f;
 
 	private const string NotableMarketPromptPrefix = "market@";
 	private const int NotableMarketInventoryPromptMaxItems = 40;
@@ -494,6 +495,50 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	private static Mission _promotedNonHeroCompanionMission;
 
+	private sealed class PendingWildernessNonHeroJoinConversationClose
+	{
+		public PartyBase SourcePartyBase;
+
+		public MobileParty SourceParty;
+
+		public CharacterObject TargetCharacter;
+
+		public int TargetAgentIndex;
+
+		public string SourcePartyId;
+
+		public string TargetCharacterId;
+
+		public long CreatedUtcTicks;
+	}
+
+	private sealed class PendingHeroJoinConversationClose
+	{
+		public Hero JoinedHero;
+
+		public CharacterObject TargetCharacter;
+
+		public PartyBase OriginalParty;
+
+		public MobileParty OriginalMobileParty;
+
+		public string JoinedHeroId;
+
+		public string TargetCharacterId;
+
+		public string OriginalPartyId;
+
+		public long CreatedUtcTicks;
+	}
+
+	private static readonly object WildernessNonHeroJoinConversationCloseLock = new object();
+
+	private static readonly object HeroJoinConversationCloseLock = new object();
+
+	private static PendingWildernessNonHeroJoinConversationClose _pendingWildernessNonHeroJoinConversationClose;
+
+	private static PendingHeroJoinConversationClose _pendingHeroJoinConversationClose;
+
 	public static RewardSystemBehavior Instance { get; private set; }
 
 	private static void ShowRewardQuickInfo(string message, Hero npcHero)
@@ -544,6 +589,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		CampaignEvents.OnPlayerPartyKnockedOrKilledTroopEvent.AddNonSerializedListener(this, OnPlayerPartyKnockedOrKilledTroop);
 		CampaignEvents.OnQuestCompletedEvent.AddNonSerializedListener(this, OnQuestCompleted);
 		CampaignEvents.CompanionRemoved.AddNonSerializedListener(this, OnCompanionRemoved);
+		CampaignEvents.TickEvent.AddNonSerializedListener(this, OnCampaignTick);
 	}
 
 	public static void RegisterHarmonyPatches(Harmony harmony)
@@ -1071,6 +1117,18 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		CleanupPlayerCompanionLordCacheDuplicates("game_load_finished");
 		RepairInactivePromotedPlayerCompanions("game_load_finished");
 		BackfillHeroJoinOriginalClanRecordsForExistingPlayerCompanions();
+	}
+
+	public void OnEngineTick()
+	{
+		TryClosePendingWildernessNonHeroJoinConversation();
+		TryClosePendingHeroJoinConversation();
+	}
+
+	private void OnCampaignTick(float dt)
+	{
+		TryClosePendingWildernessNonHeroJoinConversation();
+		TryClosePendingHeroJoinConversation();
 	}
 
 	private static void ClearPromotedNonHeroCompanionCache()
@@ -4668,6 +4726,117 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static bool IsHeroPlayerClanLordInMainParty(Hero hero)
+	{
+		try
+		{
+			Clan playerClan = Clan.PlayerClan;
+			MobileParty mainParty = MobileParty.MainParty;
+			return hero != null
+				&& playerClan != null
+				&& mainParty != null
+				&& hero.Clan == playerClan
+				&& hero.Occupation == Occupation.Lord
+				&& hero.CompanionOf == null
+				&& (hero.PartyBelongedTo == mainParty || IsHeroInParty(hero, mainParty));
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool TryMoveHeroToPlayerClanAsLordAndMainParty(Hero hero, string reason, out string statusText)
+	{
+		statusText = "";
+		try
+		{
+			Clan playerClan = Clan.PlayerClan;
+			MobileParty mainParty = MobileParty.MainParty;
+			if (hero == null)
+			{
+				statusText = "执行失败：缺少要加入玩家家族的目标英雄。";
+				return false;
+			}
+			if (playerClan == null || mainParty == null)
+			{
+				statusText = "执行失败：玩家家族或玩家队伍不可用。";
+				return false;
+			}
+			if (hero.CompanionOf != null)
+			{
+				hero.CompanionOf = null;
+			}
+			if (hero.Occupation != Occupation.Lord)
+			{
+				hero.SetNewOccupation(Occupation.Lord);
+			}
+			bool alreadyAliveLord = false;
+			try
+			{
+				alreadyAliveLord = playerClan.AliveLords?.Contains(hero) == true;
+			}
+			catch
+			{
+				alreadyAliveLord = false;
+			}
+			if (hero.Clan != playerClan || !alreadyAliveLord)
+			{
+				if (hero.Clan == playerClan && !alreadyAliveLord)
+				{
+					hero.Clan = null;
+				}
+				hero.Clan = playerClan;
+			}
+			try
+			{
+				hero.UpdateHomeSettlement();
+			}
+			catch
+			{
+			}
+			if (hero.PartyBelongedTo != mainParty && !IsHeroInParty(hero, mainParty))
+			{
+				AddHeroToPartyAction.Apply(hero, mainParty, showNotification: true);
+			}
+			Logger.Log("RewardSystemBehavior", "[HeroJoin] moved_to_player_clan reason=" + (reason ?? "") + " hero=" + (hero.StringId ?? "") + " clan=" + (hero.Clan?.StringId ?? "") + " occupation=" + hero.Occupation + " party=" + (hero.PartyBelongedTo?.StringId ?? ""));
+			return true;
+		}
+		catch (Exception ex)
+		{
+			statusText = "执行失败（加入玩家家族异常）：" + ex.Message;
+			Logger.Log("RewardSystemBehavior", "[HeroJoin] move_to_player_clan_failed reason=" + (reason ?? "") + " hero=" + (hero?.StringId ?? "") + " error=" + ex.Message);
+			return false;
+		}
+	}
+
+	private static void RecordHeroJoinedPlayerClanForExternal(Hero hero, string reason)
+	{
+		try
+		{
+			if (hero == null || hero == Hero.MainHero)
+			{
+				return;
+			}
+			string heroKey = GetHeroRecordKey(hero);
+			if (string.IsNullOrWhiteSpace(heroKey))
+			{
+				return;
+			}
+			string heroName = hero.Name?.ToString() ?? "该英雄";
+			Settlement settlement = Settlement.CurrentSettlement ?? hero.CurrentSettlement ?? MobileParty.MainParty?.CurrentSettlement;
+			string locationText = settlement?.Name?.ToString() ?? "";
+			string stableKey = "player_clan_join:" + heroKey + ":" + GetCampaignDayIndex();
+			MyBehavior.RecordNpcActionForExternal(hero, "你加入了玩家家族，成为玩家家族成员，并随玩家队伍行动。", stableKey + ":npc", "player_clan_join", isMajor: true, isRecent: true, targetHero: Hero.MainHero, settlement: settlement, locationText: locationText, allowNonLordHero: true, won: true);
+			MyBehavior.RecordPlayerActionForExternal("你招募了" + heroName + "加入玩家家族，并随你的队伍行动。", stableKey + ":player", "player_clan_join", isMajor: true, targetHero: hero, settlement: settlement, locationText: locationText, won: true);
+			Logger.Log("RewardSystemBehavior", "[HeroJoin] action_history_recorded reason=" + (reason ?? "") + " hero=" + heroKey);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("RewardSystemBehavior", "[HeroJoin] action_history_record_failed reason=" + (reason ?? "") + " hero=" + (hero?.StringId ?? "") + " error=" + ex.Message);
+		}
+	}
+
 	public bool TryApplyHeroJoinPlayerPartyForExternal(Hero joiningHero, out string statusText)
 	{
 		statusText = "";
@@ -4675,7 +4844,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			if (joiningHero == null)
 			{
-				statusText = "执行失败：缺少要加入队伍的目标英雄。";
+				statusText = "执行失败：缺少要加入玩家家族的目标英雄。";
 				return false;
 			}
 			if (joiningHero == Hero.MainHero)
@@ -4688,13 +4857,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				statusText = "执行失败：玩家家族或玩家队伍不可用。";
 				return false;
 			}
-			if ((joiningHero.PartyBelongedTo == MobileParty.MainParty || IsHeroInParty(joiningHero, MobileParty.MainParty)) && joiningHero.IsPlayerCompanion)
+			if (IsHeroPlayerClanLordInMainParty(joiningHero))
 			{
-				statusText = $"执行跳过：{joiningHero.Name} 已经在玩家队伍中。";
+				statusText = $"执行跳过：{joiningHero.Name} 已经是玩家家族成员并在玩家队伍中。";
 				return false;
 			}
+			MobileParty originalMobileParty = joiningHero.PartyBelongedTo;
+			PartyBase originalParty = originalMobileParty?.Party;
 			List<string> transitionNotes = new List<string>();
-			// Capture the original clan before AddCompanionAction changes Hero.Clan through CompanionOf.
 			Clan originalClan = GetHeroBackingClan(joiningHero) ?? joiningHero.Clan;
 			Kingdom originalKingdom = originalClan?.Kingdom;
 			bool originalClanWasRulingClan = originalKingdom != null && originalKingdom.RulingClan == originalClan;
@@ -4743,15 +4913,19 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				LeaveSettlementAction.ApplyForCharacterOnly(joiningHero);
 			}
-			AddCompanionAction.Apply(Clan.PlayerClan, joiningHero);
-			AddHeroToPartyAction.Apply(joiningHero, MobileParty.MainParty, showNotification: true);
+			if (!TryMoveHeroToPlayerClanAsLordAndMainParty(joiningHero, "hero_join_party", out statusText))
+			{
+				return false;
+			}
 			if (LocationComplex.Current != null)
 			{
 				LocationComplex.Current.RemoveCharacterIfExists(joiningHero);
 			}
 			PlayerEncounter.LocationEncounter?.RemoveAccompanyingCharacter(joiningHero);
 			string transitionSummary = BuildRecruitmentTransitionSummary(transitionNotes);
-			statusText = $"执行成功：{joiningHero.Name} 已加入玩家队伍{transitionSummary}。";
+			RecordHeroJoinedPlayerClanForExternal(joiningHero, "hero_join_party");
+			statusText = $"执行成功：{joiningHero.Name} 已成为玩家家族成员，并加入玩家队伍{transitionSummary}。";
+			ScheduleHeroJoinConversationClose(joiningHero, originalParty, originalMobileParty);
 			return true;
 		}
 		catch (Exception ex)
@@ -4786,7 +4960,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		responseText = latestReplyWithoutTag;
 		if (!string.IsNullOrWhiteSpace(statusText))
 		{
-			string text = (flag ? "【加入队伍】" : "【加入队伍失败】") + statusText;
+			bool promotedPlayerClanLord = flag && promotedHero != null && promotedHero.Clan == Clan.PlayerClan && promotedHero.Occupation == Occupation.Lord;
+			string text = (flag ? (promotedPlayerClanLord ? "【加入家族】" : "【加入队伍】") : "【加入队伍失败】") + statusText;
 			string factName = promotedHero?.Name?.ToString() ?? ResolveNonHeroFullDisplayName(joiningCharacter, promptDisplayName, promptGivenName, targetAgentIndex);
 			generatedFacts.Add("[AFEF NPC行为补充] " + (string.IsNullOrWhiteSpace(factName) ? "NPC" : factName) + ": " + statusText);
 			notifications.Add(text);
@@ -4831,7 +5006,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				promotedHero = existingPromotedHero;
 				string heroName = existingPromotedHero?.Name?.ToString() ?? ResolveNonHeroFullDisplayName(joiningCharacter, promptDisplayName, promptGivenName, targetAgentIndex);
-				statusText = $"执行跳过：{heroName} 已经由当前场景 NPC 升格为 Hero 同伴，不能重复招募生成新的 Hero。";
+				statusText = $"执行跳过：{heroName} 已经由当前场景 NPC 升格为玩家家族 Hero，不能重复招募生成新的 Hero。";
 				return false;
 			}
 			int count;
@@ -4876,8 +5051,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		int beforePrisoners = Math.Max(0, sourceParty.Party?.PrisonRoster?.TotalManCount ?? 0);
 		int movedMembers = MoveWildernessNonHeroPartyMembersToMainParty(sourceParty);
 		int movedPrisoners = MoveWildernessNonHeroPartyPrisonersToMainParty(sourceParty);
-		TryDestroyEmptyWildernessNonHeroJoinParty(sourceParty);
-		TryRequestLeaveWildernessNonHeroJoinEncounter(sourcePartyBase);
 		if (movedMembers <= 0 && movedPrisoners <= 0)
 		{
 			statusText = "执行失败：未能从野外非英雄队伍转入任何成员或俘虏。";
@@ -4893,6 +5066,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		string beforeText = beforeMembers > movedMembers || beforePrisoners > movedPrisoners ? $"（原成员 {beforeMembers}，原俘虏 {beforePrisoners}）" : "";
 		statusText = $"执行成功：{partyName} 已同意加入玩家队伍，已转入 {movedMembers} 名成员{prisonerText}{beforeText}。";
 		Logger.Log("RewardSystemBehavior", "[NonHeroJoin] wilderness_party_join source=" + (sourceParty.StringId ?? "") + " members=" + movedMembers + " prisoners=" + movedPrisoners + " target=" + (joiningCharacter?.StringId ?? "") + " agentIndex=" + targetAgentIndex);
+		ScheduleWildernessNonHeroJoinConversationClose(sourcePartyBase, sourceParty, joiningCharacter, targetAgentIndex);
 		return true;
 	}
 
@@ -5062,23 +5236,264 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void TryRequestLeaveWildernessNonHeroJoinEncounter(PartyBase joinedParty)
+	private static void ScheduleWildernessNonHeroJoinConversationClose(PartyBase sourcePartyBase, MobileParty sourceParty, CharacterObject joiningCharacter, int targetAgentIndex)
+	{
+		if (sourcePartyBase == null && sourceParty == null)
+		{
+			return;
+		}
+		PendingWildernessNonHeroJoinConversationClose pending = new PendingWildernessNonHeroJoinConversationClose
+		{
+			SourcePartyBase = sourcePartyBase,
+			SourceParty = sourceParty,
+			TargetCharacter = joiningCharacter,
+			TargetAgentIndex = targetAgentIndex,
+			SourcePartyId = sourceParty?.StringId ?? "",
+			TargetCharacterId = joiningCharacter?.StringId ?? "",
+			CreatedUtcTicks = DateTime.UtcNow.Ticks
+		};
+		lock (WildernessNonHeroJoinConversationCloseLock)
+		{
+			_pendingWildernessNonHeroJoinConversationClose = pending;
+		}
+		Logger.Log("RewardSystemBehavior", "[NonHeroJoin] scheduled delayed conversation close source=" + pending.SourcePartyId + " target=" + pending.TargetCharacterId + " agentIndex=" + targetAgentIndex);
+	}
+
+	private static void ScheduleHeroJoinConversationClose(Hero joinedHero, PartyBase originalParty, MobileParty originalMobileParty)
+	{
+		if (joinedHero == null)
+		{
+			return;
+		}
+		PendingHeroJoinConversationClose pending = new PendingHeroJoinConversationClose
+		{
+			JoinedHero = joinedHero,
+			TargetCharacter = joinedHero.CharacterObject,
+			OriginalParty = originalParty,
+			OriginalMobileParty = originalMobileParty,
+			JoinedHeroId = joinedHero.StringId ?? "",
+			TargetCharacterId = joinedHero.CharacterObject?.StringId ?? "",
+			OriginalPartyId = originalMobileParty?.StringId ?? "",
+			CreatedUtcTicks = DateTime.UtcNow.Ticks
+		};
+		lock (HeroJoinConversationCloseLock)
+		{
+			_pendingHeroJoinConversationClose = pending;
+		}
+		Logger.Log("RewardSystemBehavior", "[HeroJoin] scheduled delayed conversation close hero=" + pending.JoinedHeroId + " originalParty=" + pending.OriginalPartyId);
+	}
+
+	private static void TryClosePendingWildernessNonHeroJoinConversation()
+	{
+		PendingWildernessNonHeroJoinConversationClose pending = null;
+		try
+		{
+			lock (WildernessNonHeroJoinConversationCloseLock)
+			{
+				if (_pendingWildernessNonHeroJoinConversationClose == null)
+				{
+					return;
+				}
+				long elapsedTicks = DateTime.UtcNow.Ticks - _pendingWildernessNonHeroJoinConversationClose.CreatedUtcTicks;
+				if (elapsedTicks < (long)(JoinPartyConversationCloseDelaySeconds * TimeSpan.TicksPerSecond))
+				{
+					return;
+				}
+				pending = _pendingWildernessNonHeroJoinConversationClose;
+				_pendingWildernessNonHeroJoinConversationClose = null;
+			}
+			ExecutePendingWildernessNonHeroJoinConversationClose(pending);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("RewardSystemBehavior", "[NonHeroJoin] delayed close failed: " + ex.Message);
+		}
+	}
+
+	private static void TryClosePendingHeroJoinConversation()
+	{
+		PendingHeroJoinConversationClose pending = null;
+		try
+		{
+			lock (HeroJoinConversationCloseLock)
+			{
+				if (_pendingHeroJoinConversationClose == null)
+				{
+					return;
+				}
+				long elapsedTicks = DateTime.UtcNow.Ticks - _pendingHeroJoinConversationClose.CreatedUtcTicks;
+				if (elapsedTicks < (long)(JoinPartyConversationCloseDelaySeconds * TimeSpan.TicksPerSecond))
+				{
+					return;
+				}
+				pending = _pendingHeroJoinConversationClose;
+				_pendingHeroJoinConversationClose = null;
+			}
+			ExecutePendingHeroJoinConversationClose(pending);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("RewardSystemBehavior", "[HeroJoin] delayed close failed: " + ex.Message);
+		}
+	}
+
+	private static void ExecutePendingWildernessNonHeroJoinConversationClose(PendingWildernessNonHeroJoinConversationClose pending)
+	{
+		if (pending == null)
+		{
+			return;
+		}
+		bool encounterMatches = DoesPendingWildernessNonHeroJoinEncounterMatch(pending);
+		bool conversationMatches = encounterMatches && DoesPendingWildernessNonHeroJoinConversationMatch(pending);
+		if (encounterMatches)
+		{
+			PlayerEncounter.LeaveEncounter = true;
+		}
+		if (conversationMatches)
+		{
+			TryEndCurrentConversationForJoinAction("wilderness_nonhero_join_party_delayed_close");
+		}
+		TryDestroyEmptyWildernessNonHeroJoinParty(pending.SourceParty);
+		Logger.Log("RewardSystemBehavior", "[NonHeroJoin] delayed close applied conversation=" + conversationMatches + " encounter=" + encounterMatches + " source=" + (pending.SourcePartyId ?? "") + " target=" + (pending.TargetCharacterId ?? ""));
+	}
+
+	private static void ExecutePendingHeroJoinConversationClose(PendingHeroJoinConversationClose pending)
+	{
+		if (pending == null)
+		{
+			return;
+		}
+		bool conversationMatches = DoesPendingHeroJoinConversationMatch(pending);
+		bool encounterMatches = DoesPendingHeroJoinEncounterMatch(pending);
+		if (encounterMatches)
+		{
+			PlayerEncounter.LeaveEncounter = true;
+		}
+		if (conversationMatches)
+		{
+			TryEndCurrentConversationForJoinAction("hero_join_party_delayed_close");
+		}
+		Logger.Log("RewardSystemBehavior", "[HeroJoin] delayed close applied conversation=" + conversationMatches + " encounter=" + encounterMatches + " hero=" + (pending.JoinedHeroId ?? "") + " originalParty=" + (pending.OriginalPartyId ?? ""));
+	}
+
+	private static bool DoesPendingWildernessNonHeroJoinConversationMatch(PendingWildernessNonHeroJoinConversationClose pending)
+	{
+		if (pending == null)
+		{
+			return false;
+		}
+		CharacterObject currentCharacter = Campaign.Current?.ConversationManager?.OneToOneConversationCharacter ?? CharacterObject.OneToOneConversationCharacter;
+		if (currentCharacter == null)
+		{
+			return false;
+		}
+		if (pending.TargetCharacter != null && currentCharacter == pending.TargetCharacter)
+		{
+			return true;
+		}
+		return !string.IsNullOrEmpty(pending.TargetCharacterId) && string.Equals(currentCharacter.StringId, pending.TargetCharacterId, StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool DoesPendingWildernessNonHeroJoinEncounterMatch(PendingWildernessNonHeroJoinConversationClose pending)
+	{
+		if (pending == null || PlayerEncounter.Current == null)
+		{
+			return false;
+		}
+		PartyBase encountered = PlayerEncounterCompat.GetEncounteredPartySafe() ?? PlayerEncounter.EncounteredParty;
+		if (encountered == null)
+		{
+			return false;
+		}
+		if (pending.SourcePartyBase != null && encountered == pending.SourcePartyBase)
+		{
+			return true;
+		}
+		if (pending.SourceParty != null && encountered.MobileParty == pending.SourceParty)
+		{
+			return true;
+		}
+		return !string.IsNullOrEmpty(pending.SourcePartyId) && string.Equals(encountered.MobileParty?.StringId, pending.SourcePartyId, StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool DoesPendingHeroJoinConversationMatch(PendingHeroJoinConversationClose pending)
+	{
+		if (pending == null)
+		{
+			return false;
+		}
+		CharacterObject currentCharacter = Campaign.Current?.ConversationManager?.OneToOneConversationCharacter ?? CharacterObject.OneToOneConversationCharacter;
+		if (currentCharacter == null)
+		{
+			return false;
+		}
+		Hero currentHero = currentCharacter.HeroObject;
+		if (pending.JoinedHero != null && currentHero == pending.JoinedHero)
+		{
+			return true;
+		}
+		if (!string.IsNullOrEmpty(pending.JoinedHeroId) && string.Equals(currentHero?.StringId, pending.JoinedHeroId, StringComparison.OrdinalIgnoreCase))
+		{
+			return true;
+		}
+		if (pending.TargetCharacter != null && currentCharacter == pending.TargetCharacter)
+		{
+			return true;
+		}
+		return !string.IsNullOrEmpty(pending.TargetCharacterId) && string.Equals(currentCharacter.StringId, pending.TargetCharacterId, StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool DoesPendingHeroJoinEncounterMatch(PendingHeroJoinConversationClose pending)
+	{
+		if (pending == null || PlayerEncounter.Current == null)
+		{
+			return false;
+		}
+		PartyBase encountered = PlayerEncounterCompat.GetEncounteredPartySafe() ?? PlayerEncounter.EncounteredParty;
+		if (encountered == null)
+		{
+			return false;
+		}
+		if (pending.OriginalParty != null && encountered == pending.OriginalParty)
+		{
+			return true;
+		}
+		if (pending.OriginalMobileParty != null && encountered.MobileParty == pending.OriginalMobileParty)
+		{
+			return true;
+		}
+		if (!string.IsNullOrEmpty(pending.OriginalPartyId) && string.Equals(encountered.MobileParty?.StringId, pending.OriginalPartyId, StringComparison.OrdinalIgnoreCase))
+		{
+			return true;
+		}
+		Hero leaderHero = encountered.LeaderHero;
+		if (pending.JoinedHero != null && leaderHero == pending.JoinedHero)
+		{
+			return true;
+		}
+		return !string.IsNullOrEmpty(pending.JoinedHeroId) && string.Equals(leaderHero?.StringId, pending.JoinedHeroId, StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static void TryEndCurrentConversationForJoinAction(string staleReason)
 	{
 		try
 		{
-			if (joinedParty == null || PlayerEncounter.Current == null)
+			if ((Campaign.Current?.ConversationManager?.OneToOneConversationCharacter ?? CharacterObject.OneToOneConversationCharacter) == null)
 			{
 				return;
 			}
-			PartyBase encountered = PlayerEncounterCompat.GetEncounteredPartySafe() ?? PlayerEncounter.EncounteredParty;
-			if (encountered == joinedParty)
-			{
-				PlayerEncounter.LeaveEncounter = true;
-				ConversationExceptionGuard.MarkCurrentConversationStale("wilderness_nonhero_join_party");
-			}
+			Campaign.Current?.ConversationManager?.EndConversation();
 		}
-		catch
+		catch (Exception ex)
 		{
+			Logger.Log("RewardSystemBehavior", "[JoinParty] delayed EndConversation failed: " + ex.Message);
+			try
+			{
+				ConversationExceptionGuard.MarkCurrentConversationStale(string.IsNullOrWhiteSpace(staleReason) ? "join_party_delayed_close" : staleReason);
+			}
+			catch
+			{
+			}
 		}
 	}
 
@@ -5159,14 +5574,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		hero.StaticBodyProperties = bodyProperties.StaticProperties;
 		hero.Weight = ClampBodyShape01(bodyProperties.DynamicProperties.Weight);
 		hero.Build = ClampBodyShape01(bodyProperties.DynamicProperties.Build);
-		hero.SetNewOccupation(Occupation.Wanderer);
 		TryActivatePromotedCompanionHero(hero, "new_nonhero_promotion");
 		ApplyTemplateSkillsToHero(hero, template);
 		ApplyPromotedCompanionRandomTraits(hero, template);
 		CopyCapturedEquipmentToHero(hero, capturedEquipment);
-		AddCompanionAction.Apply(Clan.PlayerClan, hero);
-		CleanupPlayerCompanionLordCacheDuplicates("after_nonhero_promotion");
-		AddHeroToPartyAction.Apply(hero, MobileParty.MainParty, showNotification: true);
+		if (!TryMoveHeroToPlayerClanAsLordAndMainParty(hero, "nonhero_join_party_promotion", out statusText))
+		{
+			return false;
+		}
 		LogPromotedCompanionGovernorEligibility(hero, "after_nonhero_promotion");
 		RememberPromotedNonHeroCompanion(targetAgentIndex, hero);
 		bool sceneFollowStarted = ShoutBehavior.TryForceSceneFollowPlayerForExternal(targetAgentIndex, transient: true, reason: "nonhero_join_party_promotion");
@@ -5179,13 +5594,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			dialogueHistory.Add((string.IsNullOrWhiteSpace(originalFullName) ? "NPC" : originalFullName) + ": " + cleanLatestReply);
 		}
-		string joinFact = $"{hero.Name} 原为{originalTroopName}，在 {sceneLabel} 同意追随玩家并加入玩家队伍。";
+		string joinFact = $"{hero.Name} 原为{originalTroopName}，在 {sceneLabel} 同意追随玩家，成为玩家家族成员并加入玩家队伍。";
 		MyBehavior.AppendExternalDialogueHistory(hero, null, null, "[AFEF NPC行为补充] " + joinFact);
+		RecordHeroJoinedPlayerClanForExternal(hero, "nonhero_join_party_promotion");
 		AppendPromotedHeroPriorHistory(hero, dialogueHistory);
 		string equipmentSummary = BuildEquipmentSummaryForPrompt(capturedEquipment);
 		_ = MyBehavior.GeneratePromotedNonHeroCompanionProfileForExternalAsync(hero, personalName, originalFullName, originalTroopName, template.StringId ?? "", cultureName, sceneLabel, joinFact, BuildDialogueHistoryForPrompt(dialogueHistory), equipmentSummary);
 		promotedHero = hero;
-		statusText = $"执行成功：{originalFullName} 已升格为 Hero 同伴“{hero.Name}”，并加入玩家队伍{(sceneFollowStarted ? "，当前场景中已开始跟随玩家" : "")}。";
+		statusText = $"执行成功：{originalFullName} 已升格为玩家家族 Hero“{hero.Name}”，并加入玩家队伍{(sceneFollowStarted ? "，当前场景中已开始跟随玩家" : "")}。";
 		return true;
 	}
 
@@ -14623,6 +15039,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			bool anyVassalageApplied = false;
 			bool anyKingdomAnnexationApplied = false;
 			bool anySettlementTransferApplied = false;
+			bool anySettlementTransferToPlayerApplied = false;
+			bool anySettlementTransferToNpcApplied = false;
 			bool anyHeroJoinPlayerPartyApplied = false;
 			Settlement notableMarketSettlement = ResolveNotableMarketSettlement(giver);
 			bool giverUsesNotableMarket = IsNotableMarketHero(giver, notableMarketSettlement);
@@ -15176,13 +15594,15 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 						anySettlementTransferApplied = true;
 						if (string.Equals(directionToken, "TO_PLAYER", StringComparison.OrdinalIgnoreCase))
 						{
+							anySettlementTransferToPlayerApplied = true;
 							giverFacts.Add($"你已经将固定资产 {text3} 转交给玩家。");
-							receiverFacts.Add($"你已经从 {giverName} 那里取得了 {text3}。");
+							receiverFacts.Add($"你已经从 {giverName} 那里取得了固定资产 {text3}。");
 						}
 						else
 						{
-							giverFacts.Add($"玩家已经将固定资产 {text3} 转交给你。");
-							receiverFacts.Add($"你已经将 {text3} 转交给了 {giverName}。");
+							anySettlementTransferToNpcApplied = true;
+							giverFacts.Add($"玩家已经将固定资产 {text3} 转交给你或你的家族。");
+							receiverFacts.Add($"你已经将固定资产 {text3} 转交给了 {giverName}。");
 						}
 					}
 					else if (!string.IsNullOrWhiteSpace(statusText))
@@ -15208,15 +15628,15 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 						if (flag2)
 						{
 							anyHeroJoinPlayerPartyApplied = true;
-							giverFacts.Add($"你已经加入了 {receiverName} 的队伍。");
-							receiverFacts.Add($"{giverName} 已加入你的队伍。");
+							giverFacts.Add($"你已经加入了 {receiverName} 的家族，并随玩家队伍行动。");
+							receiverFacts.Add($"{giverName} 已加入你的家族，并随你的队伍行动。");
 						}
 						else
 						{
 							giverFacts.Add(statusText);
 							receiverFacts.Add(statusText);
 						}
-						InformationManager.DisplayMessage(new InformationMessage((flag2 ? "【加入队伍】" : "【加入队伍失败】") + statusText, flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
+						InformationManager.DisplayMessage(new InformationMessage((flag2 ? "【加入家族】" : "【加入队伍失败】") + statusText, flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
 					}
 				}
 				return string.Empty;
@@ -15263,7 +15683,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					MyBehavior.AppendExternalNpcFact(receiver, string.Join(" ", receiverFacts));
 				}
 			}
-			TryRecordRewardActionHistory(giver, receiver, giverName, receiverName, giverFacts, receiverFacts, anyActualGiveToPlayer, anyDebtRecorded, anyDebtPaymentApplied, anyRoyalAbdicationApplied, anyKingdomServiceApplied, anyVassalageApplied, anyKingdomAnnexationApplied, anySettlementTransferApplied);
+			TryRecordRewardActionHistory(giver, receiver, giverName, receiverName, giverFacts, receiverFacts, anyActualGiveToPlayer, anyDebtRecorded, anyDebtPaymentApplied, anyRoyalAbdicationApplied, anyKingdomServiceApplied, anyVassalageApplied, anyKingdomAnnexationApplied, anySettlementTransferApplied, anySettlementTransferToPlayerApplied, anySettlementTransferToNpcApplied);
 		}
 		catch (Exception ex)
 		{
@@ -15282,7 +15702,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void TryRecordRewardActionHistory(Hero giver, Hero receiver, string giverName, string receiverName, List<string> giverFacts, List<string> receiverFacts, bool anyActualGiveToPlayer, bool anyDebtRecorded, bool anyDebtPaymentApplied, bool anyRoyalAbdicationApplied, bool anyKingdomServiceApplied, bool anyVassalageApplied, bool anyKingdomAnnexationApplied, bool anySettlementTransferApplied)
+	private static void TryRecordRewardActionHistory(Hero giver, Hero receiver, string giverName, string receiverName, List<string> giverFacts, List<string> receiverFacts, bool anyActualGiveToPlayer, bool anyDebtRecorded, bool anyDebtPaymentApplied, bool anyRoyalAbdicationApplied, bool anyKingdomServiceApplied, bool anyVassalageApplied, bool anyKingdomAnnexationApplied, bool anySettlementTransferApplied, bool anySettlementTransferToPlayerApplied, bool anySettlementTransferToNpcApplied)
 	{
 		try
 		{
@@ -15298,7 +15718,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			string actionKind = ResolveRewardActionHistoryKind(anyActualGiveToPlayer, anyDebtRecorded, anyDebtPaymentApplied, anyRoyalAbdicationApplied, anyKingdomServiceApplied, anyVassalageApplied, anyKingdomAnnexationApplied, anySettlementTransferApplied);
+			string actionKind = ResolveRewardActionHistoryKind(anyActualGiveToPlayer, anyDebtRecorded, anyDebtPaymentApplied, anyRoyalAbdicationApplied, anyKingdomServiceApplied, anyVassalageApplied, anyKingdomAnnexationApplied, anySettlementTransferApplied, anySettlementTransferToPlayerApplied, anySettlementTransferToNpcApplied);
 			string summary = BuildRewardActionHistorySummary(giverFacts, receiverFacts);
 			if (string.IsNullOrWhiteSpace(summary))
 			{
@@ -15320,7 +15740,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static string ResolveRewardActionHistoryKind(bool anyActualGiveToPlayer, bool anyDebtRecorded, bool anyDebtPaymentApplied, bool anyRoyalAbdicationApplied, bool anyKingdomServiceApplied, bool anyVassalageApplied, bool anyKingdomAnnexationApplied, bool anySettlementTransferApplied)
+	private static string ResolveRewardActionHistoryKind(bool anyActualGiveToPlayer, bool anyDebtRecorded, bool anyDebtPaymentApplied, bool anyRoyalAbdicationApplied, bool anyKingdomServiceApplied, bool anyVassalageApplied, bool anyKingdomAnnexationApplied, bool anySettlementTransferApplied, bool anySettlementTransferToPlayerApplied, bool anySettlementTransferToNpcApplied)
 	{
 		if (anyKingdomAnnexationApplied)
 		{
@@ -15336,6 +15756,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		if (anySettlementTransferApplied)
 		{
+			if (anySettlementTransferToNpcApplied && !anySettlementTransferToPlayerApplied)
+			{
+				return "asset_transfer_to_npc";
+			}
+			if (anySettlementTransferToPlayerApplied && !anySettlementTransferToNpcApplied)
+			{
+				return "asset_transfer_to_player";
+			}
 			return "asset_transfer";
 		}
 		if (anyDebtPaymentApplied)
@@ -15358,6 +15786,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		case "royal_abdication":
 		case "persuasion_defection":
 			prefix = "你与" + playerName + "完成了一项势力归附或政治承诺：";
+			break;
+		case "asset_transfer_to_player":
+			prefix = "你将固定资产转交给" + playerName + "：";
+			break;
+		case "asset_transfer_to_npc":
+			prefix = "玩家将固定资产转交给你或你的家族：";
 			break;
 		case "asset_transfer":
 			prefix = "你与" + playerName + "完成了一项固定资产转移：";
@@ -15384,6 +15818,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		case "royal_abdication":
 		case "persuasion_defection":
 			prefix = "你与" + npcName + "完成了一项势力归附或政治承诺：";
+			break;
+		case "asset_transfer_to_player":
+			prefix = "你从" + npcName + "那里取得了固定资产：";
+			break;
+		case "asset_transfer_to_npc":
+			prefix = "你主动将固定资产交给" + npcName + "：";
 			break;
 		case "asset_transfer":
 			prefix = "你与" + npcName + "完成了一项固定资产转移：";

@@ -170,6 +170,10 @@ public static class WorldEntityRetrievalService
 
 		public string Affiliation;
 
+		public string RelationToContextHero;
+
+		public string RelationToPlayer;
+
 		public string ShipInfo;
 
 		public string Direction;
@@ -1912,7 +1916,26 @@ public static class WorldEntityRetrievalService
 			return index + ". 名称：未知；数量：0";
 		}
 		string shipSegment = string.IsNullOrWhiteSpace(party.ShipInfo) ? "" : ("；舰船：" + party.ShipInfo.Trim());
-		return index + ". 名称：" + party.Name + "；数量：" + party.Count + shipSegment + "；部队ID：" + party.Id + "；从属：" + party.Affiliation + "；方位：" + party.Direction + "；距离：" + FormatDistance(party.Distance);
+		string relationSegment = BuildVisiblePartyRelationPromptSegment(party);
+		return index + ". 名称：" + party.Name + "；数量：" + party.Count + shipSegment + "；部队ID：" + party.Id + "；从属：" + party.Affiliation + relationSegment + "；方位：" + party.Direction + "；距离：" + FormatDistance(party.Distance);
+	}
+
+	private static string BuildVisiblePartyRelationPromptSegment(VisiblePartyCandidate party)
+	{
+		if (party == null)
+		{
+			return "";
+		}
+		List<string> parts = new List<string>();
+		if (!string.IsNullOrWhiteSpace(party.RelationToContextHero))
+		{
+			parts.Add("与NPC关系：" + party.RelationToContextHero.Trim());
+		}
+		if (!string.IsNullOrWhiteSpace(party.RelationToPlayer))
+		{
+			parts.Add("与玩家关系：" + party.RelationToPlayer.Trim());
+		}
+		return parts.Count == 0 ? "" : ("；" + string.Join("；", parts));
 	}
 
 	private static void AppendHeroMainFacts(StringBuilder sb, List<EntityMatch<Hero>> matches, string playerDisplayName, Hero contextHero)
@@ -3144,6 +3167,7 @@ public static class WorldEntityRetrievalService
 		Dictionary<string, VisiblePartyCandidate> selected = new Dictionary<string, VisiblePartyCandidate>(StringComparer.OrdinalIgnoreCase);
 		try
 		{
+			Hero playerHero = Hero.MainHero;
 			List<MobileParty> observers = new List<MobileParty>();
 			AddObserverParty(observers, MobileParty.MainParty);
 			AddObserverParty(observers, contextHero?.PartyBelongedTo);
@@ -3177,6 +3201,8 @@ public static class WorldEntityRetrievalService
 						Name = SafeName(party.Name, id),
 						Count = GetPartyMemberCount(party),
 						Affiliation = FormatPartyAffiliation(party),
+						RelationToContextHero = FormatVisiblePartyRelationToHero(party, contextHero),
+						RelationToPlayer = FormatVisiblePartyRelationToHero(party, playerHero),
 						ShipInfo = MapSeaContextGuard.BuildMobilePartyShipPromptText(party),
 						Direction = FormatDirection(observer.Position, party.Position),
 						Distance = distance
@@ -3259,6 +3285,219 @@ public static class WorldEntityRetrievalService
 		{
 			return false;
 		}
+	}
+
+	private static string FormatVisiblePartyRelationToHero(MobileParty party, Hero referenceHero)
+	{
+		if (party == null || referenceHero == null)
+		{
+			return "";
+		}
+		try
+		{
+			Hero partyHero = GetVisiblePartyHero(party);
+			if (IsHeroParty(referenceHero, party) || IsSameHero(referenceHero, partyHero))
+			{
+				return "本人部队";
+			}
+			string stance = FormatFactionRelationBand(ResolveHeroPromptFaction(referenceHero), ResolvePartyPromptFaction(party));
+			string personal = FormatPartyHeroPersonalRelationBand(referenceHero, partyHero);
+			if (!string.IsNullOrWhiteSpace(personal))
+			{
+				return string.IsNullOrWhiteSpace(stance) ? ("个人" + personal) : (stance + "，个人" + personal);
+			}
+			return string.IsNullOrWhiteSpace(stance) ? "未知" : stance;
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static Hero GetVisiblePartyHero(MobileParty party)
+	{
+		try
+		{
+			return party?.LeaderHero ?? party?.Owner;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static bool IsHeroParty(Hero hero, MobileParty party)
+	{
+		try
+		{
+			return hero != null && party != null && hero.PartyBelongedTo == party;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static string FormatPartyHeroPersonalRelationBand(Hero referenceHero, Hero partyHero)
+	{
+		try
+		{
+			if (referenceHero == null || partyHero == null || IsSameHero(referenceHero, partyHero))
+			{
+				return "";
+			}
+			return TryGetRelationValueForPrompt(referenceHero, partyHero, out int relation) ? FormatRelationBand(relation) : "";
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static IFaction ResolveHeroPromptFaction(Hero hero)
+	{
+		try
+		{
+			if (hero?.MapFaction != null)
+			{
+				return hero.MapFaction;
+			}
+			if (hero?.Clan?.Kingdom != null)
+			{
+				return hero.Clan.Kingdom;
+			}
+			return hero?.Clan;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static IFaction ResolvePartyPromptFaction(MobileParty party)
+	{
+		try
+		{
+			if (party?.MapFaction != null)
+			{
+				return party.MapFaction;
+			}
+			if (party?.ActualClan?.Kingdom != null)
+			{
+				return party.ActualClan.Kingdom;
+			}
+			if (party?.ActualClan != null)
+			{
+				return party.ActualClan;
+			}
+			return ResolveHeroPromptFaction(GetVisiblePartyHero(party));
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static string FormatFactionRelationBand(IFaction referenceFaction, IFaction partyFaction)
+	{
+		try
+		{
+			if (referenceFaction == null || partyFaction == null)
+			{
+				return "";
+			}
+			if (IsSameFaction(referenceFaction, partyFaction))
+			{
+				return "友好";
+			}
+			if (AreFactionsAtWar(referenceFaction, partyFaction))
+			{
+				return "敌对";
+			}
+			if (AreFactionKingdomsAllied(referenceFaction, partyFaction))
+			{
+				return "友好";
+			}
+			return "中立";
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static bool IsSameFaction(IFaction first, IFaction second)
+	{
+		try
+		{
+			if (first == null || second == null)
+			{
+				return false;
+			}
+			if (ReferenceEquals(first, second) || first == second)
+			{
+				return true;
+			}
+			string firstId = (first.StringId ?? "").Trim();
+			string secondId = (second.StringId ?? "").Trim();
+			return !string.IsNullOrWhiteSpace(firstId) && string.Equals(firstId, secondId, StringComparison.OrdinalIgnoreCase);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool AreFactionsAtWar(IFaction first, IFaction second)
+	{
+		try
+		{
+			return first != null && second != null && !IsSameFaction(first, second) && first.IsAtWarWith(second);
+		}
+		catch
+		{
+			try
+			{
+				return second != null && first != null && !IsSameFaction(first, second) && second.IsAtWarWith(first);
+			}
+			catch
+			{
+				return false;
+			}
+		}
+	}
+
+	private static bool AreFactionKingdomsAllied(IFaction first, IFaction second)
+	{
+		try
+		{
+			Kingdom firstKingdom = ResolveFactionKingdom(first);
+			Kingdom secondKingdom = ResolveFactionKingdom(second);
+			return firstKingdom != null && secondKingdom != null && firstKingdom != secondKingdom && IsAlly(firstKingdom, secondKingdom);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static Kingdom ResolveFactionKingdom(IFaction faction)
+	{
+		try
+		{
+			if (faction is Kingdom kingdom)
+			{
+				return kingdom;
+			}
+			if (faction is Clan clan)
+			{
+				return clan.Kingdom;
+			}
+		}
+		catch
+		{
+		}
+		return null;
 	}
 
 	private static float GetObserverPartyRange(MobileParty observer)

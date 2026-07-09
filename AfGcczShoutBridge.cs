@@ -39,6 +39,11 @@ internal static class AfGcczShoutBridge
 		return IsActive();
 	}
 
+	internal static bool ShouldBypassPreprocessForActiveScene()
+	{
+		return IsActive();
+	}
+
 	internal static bool IsExclusivePreprocessRuleId(string ruleId)
 	{
 		return string.Equals((ruleId ?? string.Empty).Trim(), RuleId, StringComparison.OrdinalIgnoreCase);
@@ -111,17 +116,17 @@ internal static class AfGcczShoutBridge
 
 	internal static bool ShouldRunPostprocessFromPreprocessHits(IEnumerable<string> preprocessRuleHits)
 	{
-		return IsActive() && HasPreprocessRuleHit(preprocessRuleHits);
+		return IsActive();
 	}
 
 	internal static bool ShouldRunPostprocessFromPrompt(string ruleInspectionBlock, IEnumerable<string> preprocessRuleHits)
 	{
-		return IsActive() && (HasInjectedRuleBlock(ruleInspectionBlock) || HasPreprocessRuleHit(preprocessRuleHits));
+		return IsActive() && (ShouldBypassPreprocessForActiveScene() || HasInjectedRuleBlock(ruleInspectionBlock) || HasPreprocessRuleHit(preprocessRuleHits));
 	}
 
 	internal static bool ShouldContinuePostprocess(bool alreadySelected, IEnumerable<string> preprocessRuleHits)
 	{
-		return IsActive() && (alreadySelected || HasPreprocessRuleHit(preprocessRuleHits));
+		return IsActive() && (ShouldBypassPreprocessForActiveScene() || alreadySelected || HasPreprocessRuleHit(preprocessRuleHits));
 	}
 
 	internal static bool ShouldAllowPostprocessByFrequency(bool selected, string playerText, bool replyIsDirectPlayerResponse, string source)
@@ -184,7 +189,6 @@ internal static class AfGcczShoutBridge
 			shoutPromptContext.Extras = string.IsNullOrWhiteSpace(shoutPromptContext.Extras)
 				? siegeSection
 				: (shoutPromptContext.Extras.TrimEnd() + "\n" + siegeSection);
-			EnsurePreprocessRuleHit(shoutPromptContext);
 		}
 		catch (Exception ex)
 		{
@@ -259,21 +263,5 @@ internal static class AfGcczShoutBridge
 			SiegeSharedReliefBridgeProfile.ShoutGiveItemSource);
 	}
 
-	private static void EnsurePreprocessRuleHit(MyBehavior.ShoutPromptContext shoutPromptContext)
-	{
-		if (ShouldUseExclusivePreprocessRuleRouting())
-		{
-			shoutPromptContext.PreprocessRuleIds = new List<string> { RuleId };
-			return;
-		}
-		if (shoutPromptContext.PreprocessRuleIds == null)
-		{
-			shoutPromptContext.PreprocessRuleIds = new List<string>();
-		}
-		if (!shoutPromptContext.PreprocessRuleIds.Any(x => string.Equals(x, RuleId, StringComparison.OrdinalIgnoreCase)))
-		{
-			shoutPromptContext.PreprocessRuleIds.Add(RuleId);
-		}
-	}
 }
 

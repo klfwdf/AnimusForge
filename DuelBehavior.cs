@@ -1668,6 +1668,44 @@ public class DuelBehavior : CampaignBehaviorBase
 
 	public static bool IsArenaMissionActive => _arenaMissionActive;
 
+	internal static bool ShouldSuppressReinforcementSystem(Mission mission)
+	{
+		try
+		{
+			if (!_returnToMapAfterIndependentDuel)
+			{
+				return false;
+			}
+			if (_wildernessDuelRuntime != null && !_wildernessDuelRuntime.CleanupDone)
+			{
+				return true;
+			}
+			if (_arenaMissionActive)
+			{
+				long nowTicks = DateTime.UtcNow.Ticks;
+				if (_arenaMissionOpeningGraceUntilUtcTicks <= 0L || nowTicks <= _arenaMissionOpeningGraceUntilUtcTicks)
+				{
+					return true;
+				}
+			}
+			if (mission != null)
+			{
+				try
+				{
+					return mission.GetMissionBehavior<WildernessDuelBattleMissionLogic>() != null;
+				}
+				catch
+				{
+					return false;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
 	public static bool IsFormalDuelActive
 	{
 		get
@@ -3766,6 +3804,7 @@ public class DuelBehavior : CampaignBehaviorBase
 			{
 				throw new InvalidOperationException("CampaignMission.OpenBattleMission returned non-Mission.");
 			}
+			ReinforcementSystemCompatibility.RemoveReinforcementMissionBehaviors(mission, "wilderness_duel_open");
 			LogDuelLoadingCheckpoint("wilderness.StartAttackMission.before", diagnosticId, target, rec, immediate: true);
 			PlayerEncounter.StartAttackMission();
 			LogDuelLoadingCheckpoint("wilderness.StartAttackMission.after", diagnosticId, target, rec, immediate: true);

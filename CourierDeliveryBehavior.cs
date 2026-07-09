@@ -2870,6 +2870,21 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			ShoutNetwork.RecordPrimaryRequestBodyForTokenStats(request.Messages, MainReplyMaxTokens, "courier_reply_preflight");
 			await GenerateNpcReplyAsync(request).ConfigureAwait(false);
 		}
+		catch (PreprocessFormatException ex)
+		{
+			Log("background prepare reply preprocess failed session=" + sessionId + " error=" + ex.Message);
+			EnqueueMainThreadActionForGeneration(runtimeGeneration, () =>
+			{
+				try
+				{
+					InformationManager.DisplayMessage(new InformationMessage("信使回信前处理失败：" + ex.Message, Colors.Red));
+				}
+				catch
+				{
+				}
+				FailCourierReplyGenerationOnMainThread(sessionId, runtimeGeneration, "reply_preprocess_failed");
+			}, "reply_preprocess_failed");
+		}
 		catch (Exception ex)
 		{
 			Log("background prepare reply failed session=" + sessionId + " error=" + ex);
@@ -3130,6 +3145,18 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			InboundLetterGenerationRequest request = BuildInboundLetterGenerationRequestOnMainThread(session, sender, fallbackLetter, runtimeGeneration);
 			ShoutNetwork.RecordPrimaryRequestBodyForTokenStats(request.Messages, MainReplyMaxTokens, "courier_inbound_letter_preflight");
 			_ = Task.Run(() => GenerateInboundNpcLetterAsync(request));
+		}
+		catch (PreprocessFormatException ex)
+		{
+			Log("prepare inbound letter preprocess failed session=" + sessionId + " error=" + ex.Message);
+			try
+			{
+				InformationManager.DisplayMessage(new InformationMessage("信使来信前处理失败：" + ex.Message, Colors.Red));
+			}
+			catch
+			{
+			}
+			FailInboundLetterGenerationOnMainThread(sessionId, runtimeGeneration, null, "inbound_letter_preprocess_failed");
 		}
 		catch (Exception ex)
 		{

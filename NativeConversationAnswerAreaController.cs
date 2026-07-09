@@ -93,6 +93,7 @@ public static class NativeConversationAnswerAreaController
 			_suppressed = false;
 			snapshot = new List<RootState>(Roots);
 		}
+		List<RootState> failedRoots = null;
 		foreach (RootState root in snapshot)
 		{
 			try
@@ -102,8 +103,10 @@ public static class NativeConversationAnswerAreaController
 			catch (Exception ex)
 			{
 				Logger.Log("NativeConversationUI", "[WARN] Failed to force-restore native answer area: " + ex.Message);
+				(failedRoots ??= new List<RootState>()).Add(root);
 			}
 		}
+		RemoveFailedRoots(failedRoots);
 	}
 
 	public static void OnApplicationTick()
@@ -129,6 +132,7 @@ public static class NativeConversationAnswerAreaController
 			snapshot = new List<RootState>(Roots);
 			suppressed = _suppressed;
 		}
+		List<RootState> failedRoots = null;
 		foreach (RootState root in snapshot)
 		{
 			try
@@ -138,6 +142,23 @@ public static class NativeConversationAnswerAreaController
 			catch (Exception ex)
 			{
 				Logger.Log("NativeConversationUI", "[WARN] Failed to update native answer area: " + ex.Message);
+				(failedRoots ??= new List<RootState>()).Add(root);
+			}
+		}
+		RemoveFailedRoots(failedRoots);
+	}
+
+	private static void RemoveFailedRoots(List<RootState> failedRoots)
+	{
+		if (failedRoots == null || failedRoots.Count == 0)
+		{
+			return;
+		}
+		lock (Sync)
+		{
+			foreach (RootState root in failedRoots)
+			{
+				Roots.Remove(root);
 			}
 		}
 	}
@@ -246,10 +267,18 @@ public static class NativeConversationAnswerAreaController
 			{
 				return;
 			}
-			int count = widget.ChildCount;
+			int count = GetChildCountSafe(widget);
 			for (int i = 0; i < count; i++)
 			{
-				Widget child = widget.GetChild(i);
+				Widget child;
+				try
+				{
+					child = widget.GetChild(i);
+				}
+				catch
+				{
+					continue;
+				}
 				AddState(child, preserveLayout: false);
 				AddDescendantStates(child);
 			}

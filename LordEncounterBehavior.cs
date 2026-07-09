@@ -6975,10 +6975,13 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				Logger.Log("NpcSurrender", "Conversation/dialog NPC surrender failed because encounter battle is unavailable. Target=" + targetId + " party=" + GetPartyLogName(encounterParty) + " source=" + (reason ?? "N/A"));
 				return false;
 			}
+			List<PartyBase> surrenderParties = BuildNpcSurrenderParties(encounterParty, targetHero, targetCharacter, mapEvent);
+			BattleSideEnum surrenderSide = ResolveNpcSurrenderOpponentSide(mapEvent);
+			int addedParties = EnsureNpcSurrenderPartiesOnBattleSide(mapEvent, surrenderSide, surrenderParties, reason ?? "native_conversation_npc_surrender");
 			try
 			{
 				mapEvent.SetOverrideWinner(mapEvent.PlayerSide);
-				Logger.Log("NpcSurrender", "Forced NPC surrender battle winner to player side. Target=" + targetId + " party=" + GetPartyLogName(encounterParty) + " battleState=" + mapEvent.BattleState + " source=" + (reason ?? "N/A"));
+				Logger.Log("NpcSurrender", "Forced NPC surrender battle winner to player side. Target=" + targetId + " party=" + GetPartyLogName(encounterParty) + " surrenderParties=" + (surrenderParties?.Count ?? 0) + " addedParties=" + addedParties + " battleState=" + mapEvent.BattleState + " source=" + (reason ?? "N/A"));
 			}
 			catch (Exception ex)
 			{
@@ -6994,6 +6997,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 				Logger.Log("NpcSurrender", "PlayerEncounter.Update after NPC surrender failed: " + ex.Message);
 			}
+			int capturedFallbackHeroes = CaptureRemainingNpcSurrenderPartyHeroes(surrenderParties, reason ?? "native_conversation_npc_surrender");
 			try
 			{
 				AnimusForgeQuickInfo.Show("对方已投降，正在进入俘虏与战利品结算。", targetHero?.CharacterObject ?? targetCharacter);
@@ -7009,7 +7013,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			catch
 			{
 			}
-			Logger.Log("NpcSurrender", "Executed conversation/dialog NPC surrender. Target=" + targetId + " party=" + GetPartyLogName(encounterParty) + " currentMenu=" + (currentMenu ?? "null") + " battleState=" + mapEvent.BattleState + " reason=" + (reason ?? "N/A"));
+			Logger.Log("NpcSurrender", "Executed conversation/dialog NPC surrender. Target=" + targetId + " party=" + GetPartyLogName(encounterParty) + " surrenderParties=" + (surrenderParties?.Count ?? 0) + " addedParties=" + addedParties + " fallbackCapturedHeroes=" + capturedFallbackHeroes + " currentMenu=" + (currentMenu ?? "null") + " battleState=" + mapEvent.BattleState + " reason=" + (reason ?? "N/A"));
 			return true;
 		}
 		catch (Exception ex)
@@ -7017,6 +7021,365 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			Logger.Log("NpcSurrender", "Execute conversation/dialog NPC surrender failed. Target=" + targetId + " source=" + (reason ?? "N/A") + " error=" + ex.Message);
 			return false;
 		}
+	}
+
+	private static List<PartyBase> BuildNpcSurrenderParties(PartyBase encounterParty, Hero targetHero, CharacterObject targetCharacter, MapEvent mapEvent)
+	{
+		List<PartyBase> result = new List<PartyBase>();
+		void AddParty(PartyBase party)
+		{
+			if (!IsEligibleNpcSurrenderParty(party, mapEvent) || result.Contains(party))
+			{
+				return;
+			}
+			result.Add(party);
+		}
+		void AddMobileParty(MobileParty mobileParty)
+		{
+			AddParty(mobileParty?.Party);
+		}
+		void AddArmy(Army army)
+		{
+			if (army == null)
+			{
+				return;
+			}
+			try
+			{
+				if (MobileParty.MainParty?.Army != null && army == MobileParty.MainParty.Army)
+				{
+					return;
+				}
+			}
+			catch
+			{
+			}
+			try
+			{
+				AddMobileParty(army.LeaderParty);
+			}
+			catch
+			{
+			}
+			try
+			{
+				if (army.Parties != null)
+				{
+					foreach (MobileParty party in army.Parties)
+					{
+						AddMobileParty(party);
+					}
+				}
+			}
+			catch
+			{
+			}
+			try
+			{
+				if (army.LeaderParty?.AttachedParties != null)
+				{
+					foreach (MobileParty party in army.LeaderParty.AttachedParties)
+					{
+						AddMobileParty(party);
+					}
+				}
+			}
+			catch
+			{
+			}
+		}
+		void AddPartyAndArmy(PartyBase party)
+		{
+			AddParty(party);
+			MobileParty mobileParty = party?.MobileParty;
+			if (mobileParty == null)
+			{
+				return;
+			}
+			try
+			{
+				AddArmy(mobileParty.Army);
+			}
+			catch
+			{
+			}
+			try
+			{
+				AddMobileParty(mobileParty.AttachedTo);
+				AddArmy(mobileParty.AttachedTo?.Army);
+			}
+			catch
+			{
+			}
+			try
+			{
+				if (mobileParty.AttachedParties != null)
+				{
+					foreach (MobileParty attachedParty in mobileParty.AttachedParties)
+					{
+						AddMobileParty(attachedParty);
+						AddArmy(attachedParty?.Army);
+					}
+				}
+			}
+			catch
+			{
+			}
+		}
+		try
+		{
+			AddPartyAndArmy(encounterParty);
+			AddPartyAndArmy(targetHero?.PartyBelongedTo?.Party);
+			AddPartyAndArmy(targetCharacter?.HeroObject?.PartyBelongedTo?.Party);
+			AddPartyAndArmy(MobileParty.ConversationParty?.Party);
+			AddPartyAndArmy(PlayerEncounterCompat.GetEncounteredPartySafe());
+			AddNpcSurrenderMapEventSideParties(result, mapEvent);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcSurrender", "Build NPC surrender party list failed: " + ex.Message);
+		}
+		return result;
+	}
+
+	private static void AddNpcSurrenderMapEventSideParties(List<PartyBase> result, MapEvent mapEvent)
+	{
+		if (result == null || mapEvent == null)
+		{
+			return;
+		}
+		try
+		{
+			BattleSideEnum surrenderSide = ResolveNpcSurrenderOpponentSide(mapEvent);
+			if (surrenderSide != BattleSideEnum.Attacker && surrenderSide != BattleSideEnum.Defender)
+			{
+				return;
+			}
+			MapEventSide side = mapEvent.GetMapEventSide(surrenderSide);
+			if (side?.Parties == null)
+			{
+				return;
+			}
+			foreach (MapEventParty mapEventParty in side.Parties)
+			{
+				PartyBase party = mapEventParty?.Party;
+				if (IsEligibleNpcSurrenderParty(party, mapEvent) && !result.Contains(party))
+				{
+					result.Add(party);
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcSurrender", "Add existing map-event side parties for NPC surrender failed: " + ex.Message);
+		}
+	}
+
+	private static bool IsEligibleNpcSurrenderParty(PartyBase party, MapEvent mapEvent)
+	{
+		if (party == null || PartyBase.MainParty == null)
+		{
+			return false;
+		}
+		if (party == PartyBase.MainParty || party.MobileParty == MobileParty.MainParty)
+		{
+			return false;
+		}
+		if (party.MobileParty == null)
+		{
+			return false;
+		}
+		try
+		{
+			MobileParty mobileParty = party.MobileParty;
+			if (MobileParty.MainParty?.Army != null && mobileParty?.Army == MobileParty.MainParty.Army)
+			{
+				return false;
+			}
+			if (mobileParty?.AttachedTo == MobileParty.MainParty)
+			{
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			MapEvent existingMapEvent = party.MapEvent;
+			if (existingMapEvent != null && mapEvent != null && existingMapEvent != mapEvent)
+			{
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (!party.IsActive && party.MapEvent != mapEvent)
+			{
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		return true;
+	}
+
+	private static BattleSideEnum ResolveNpcSurrenderOpponentSide(MapEvent mapEvent)
+	{
+		try
+		{
+			if (mapEvent != null && (mapEvent.PlayerSide == BattleSideEnum.Attacker || mapEvent.PlayerSide == BattleSideEnum.Defender))
+			{
+				return mapEvent.GetOtherSide(mapEvent.PlayerSide);
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			BattleSideEnum side = PartyBase.MainParty?.OpponentSide ?? BattleSideEnum.None;
+			if (side == BattleSideEnum.Attacker || side == BattleSideEnum.Defender)
+			{
+				return side;
+			}
+		}
+		catch
+		{
+		}
+		return BattleSideEnum.None;
+	}
+
+	private static int EnsureNpcSurrenderPartiesOnBattleSide(MapEvent mapEvent, BattleSideEnum surrenderSide, List<PartyBase> surrenderParties, string reason)
+	{
+		if (mapEvent == null || surrenderParties == null || surrenderParties.Count == 0 || (surrenderSide != BattleSideEnum.Attacker && surrenderSide != BattleSideEnum.Defender))
+		{
+			return 0;
+		}
+		MapEventSide side = null;
+		try
+		{
+			side = mapEvent.GetMapEventSide(surrenderSide);
+		}
+		catch
+		{
+			side = null;
+		}
+		if (side == null)
+		{
+			return 0;
+		}
+		int added = 0;
+		int skippedDifferentSide = 0;
+		foreach (PartyBase party in surrenderParties)
+		{
+			try
+			{
+				if (!IsEligibleNpcSurrenderParty(party, mapEvent))
+				{
+					continue;
+				}
+				if (party.MapEventSide == side)
+				{
+					continue;
+				}
+				if (party.MapEventSide != null && party.MapEventSide != side)
+				{
+					skippedDifferentSide++;
+					continue;
+				}
+				party.MapEventSide = side;
+				added++;
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("NpcSurrender", "Failed to add surrender party to battle side. Party=" + GetPartyLogName(party) + " side=" + surrenderSide + " reason=" + (reason ?? "N/A") + " error=" + ex.Message);
+			}
+		}
+		try
+		{
+			mapEvent.RecalculateStrengthOfSides();
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcSurrender", "Recalculate strength after NPC surrender army join failed: " + ex.Message);
+		}
+		Logger.Log("NpcSurrender", "Prepared NPC surrender battle side. Side=" + surrenderSide + " parties=" + surrenderParties.Count + " added=" + added + " skippedDifferentSide=" + skippedDifferentSide + " reason=" + (reason ?? "N/A"));
+		return added;
+	}
+
+	private static int CaptureRemainingNpcSurrenderPartyHeroes(List<PartyBase> surrenderParties, string source)
+	{
+		if (surrenderParties == null || surrenderParties.Count == 0)
+		{
+			return 0;
+		}
+		HashSet<Hero> heroes = new HashSet<Hero>();
+		foreach (PartyBase party in surrenderParties)
+		{
+			try
+			{
+				if (!IsEligibleNpcSurrenderParty(party, null))
+				{
+					continue;
+				}
+				Hero leader = party.LeaderHero;
+				if (leader != null && leader != Hero.MainHero)
+				{
+					heroes.Add(leader);
+				}
+				TroopRoster roster = party.MemberRoster;
+				if (roster == null)
+				{
+					continue;
+				}
+				for (int i = 0; i < roster.Count; i++)
+				{
+					CharacterObject character = roster.GetElementCopyAtIndex(i).Character;
+					Hero hero = character?.IsHero == true ? character.HeroObject : null;
+					if (hero != null && hero != Hero.MainHero)
+					{
+						heroes.Add(hero);
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("NpcSurrender", "Collect remaining surrender party heroes failed. Party=" + GetPartyLogName(party) + " source=" + (source ?? "unknown") + " error=" + ex.Message);
+			}
+		}
+		int captured = 0;
+		foreach (Hero hero in heroes)
+		{
+			try
+			{
+				if (hero == null || hero == Hero.MainHero)
+				{
+					continue;
+				}
+				if (hero.IsPrisoner && hero.PartyBelongedToAsPrisoner == PartyBase.MainParty)
+				{
+					continue;
+				}
+				if (TryMoveHeroToMainPartyPrisoners(hero.CharacterObject, source ?? "npc_surrender_army_fallback"))
+				{
+					captured++;
+				}
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("NpcSurrender", "Capture remaining surrender hero failed. Hero=" + (hero?.StringId ?? "") + " source=" + (source ?? "unknown") + " error=" + ex.Message);
+			}
+		}
+		if (captured > 0)
+		{
+			Logger.Log("NpcSurrender", "Captured remaining surrender party heroes. Count=" + captured + " source=" + (source ?? "unknown"));
+		}
+		return captured;
 	}
 
 	private static void BeginNpcSurrenderHeroConversationSkip(PartyBase encounterParty, string reason)

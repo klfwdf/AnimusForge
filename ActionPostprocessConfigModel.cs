@@ -18,5 +18,7 @@ public class ActionPostprocessConfigModel
 
 	public List<PostprocessRuleEntry> RoyalPostprocessRules { get; set; } = new List<PostprocessRuleEntry>();
 
+	public List<PostprocessRuleEntry> IntimacyPostprocessRules { get; set; } = new List<PostprocessRuleEntry>();
+
 	public List<PostprocessRuleEntry> MoodRules { get; set; } = new List<PostprocessRuleEntry>();
 }
