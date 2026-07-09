@@ -665,7 +665,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	internal static bool TryOpenSettlementEntryVictoryMenu(Settlement settlement, TroopRoster selectedRoster, string source)
+	internal static bool TryOpenSettlementEntryVictoryMenu(Settlement settlement, TroopRoster selectedRoster, string source, bool transferOwnership = true)
 	{
 		try
 		{
@@ -678,14 +678,22 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return false;
 			}
 			string bridgeSource = string.IsNullOrWhiteSpace(source) ? "SETS_town_victory_menu" : source;
+			ResetAftermathRuntimeGuards("sets_victory_menu_prepare");
 			PrepareSetsSettlementEntryVictoryContext(settlement, bridgeSource);
 			int maxSelected = Math.Max(AutoSummonCount, selectedRoster?.TotalManCount ?? 0);
 			StoreSelectedInterventionRoster(selectedRoster, maxSelected);
-			ApplySetsSettlementEntryCaptureIfNeeded(settlement, bridgeSource + "_capture_before_native_menu");
+			if (transferOwnership)
+			{
+				ApplySetsSettlementEntryCaptureIfNeeded(settlement, bridgeSource + "_capture_before_native_menu");
+			}
+			else
+			{
+				Logger.Log("SiegeAiIntervention", "Skipped SETS settlement-entry ownership transfer for already-owned/attached town. Settlement=" + (settlement.StringId ?? "N/A") + ", Source=" + bridgeSource);
+			}
 			PrepareNativeSettlementTakenMenuContextForSets(settlement, bridgeSource);
 			GameMenu.ActivateGameMenu(SiegeAftermathMenuProfile.SettlementTakenMenuId);
 			InformationManager.DisplayMessage(new InformationMessage("【SETS内部暴乱】已进入原版围城战胜利处置菜单；可选择原版处置，也可选择 GCCZ 攻城处置。", Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
-			Logger.Log("SiegeAiIntervention", "Opened native settlement-taken menu from SETS victory. Settlement=" + (settlement.StringId ?? "N/A") + ", Selected=" + (_selectedInterventionRoster?.TotalManCount ?? 0) + ", Source=" + bridgeSource);
+			Logger.Log("SiegeAiIntervention", "Opened native settlement-taken menu from SETS victory. Settlement=" + (settlement.StringId ?? "N/A") + ", Selected=" + (_selectedInterventionRoster?.TotalManCount ?? 0) + ", Source=" + bridgeSource + ", transferOwnership=" + transferOwnership);
 			return true;
 		}
 		catch (Exception ex)

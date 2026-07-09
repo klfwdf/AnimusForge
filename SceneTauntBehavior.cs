@@ -4036,6 +4036,11 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		}
 		bool attackerWeaponIsReal = IsMissionWeaponRealWeapon(attackerWeapon);
 		Logger.LogVerbose("SceneTaunt", "attack_timing_on_agent_hit:" + affectedAgent.Index, () => $"[AttackTiming] on_agent_hit time={Mission.Current?.CurrentTime:0.###} location={(CampaignMission.Current?.Location?.StringId ?? "").Trim().ToLowerInvariant()} settlement={Settlement.CurrentSettlement?.StringId} target={affectedAgent.Name} targetIndex={affectedAgent.Index} weapon={attackerWeaponIsReal} conflict={_conflictActive} armed={_armedConflict}", 1.0);
+		if (SettlementEntryTroopSelectionBehavior.IsOwnedOrAttachedTownEntryActiveForExternal(Mission.Current))
+		{
+			Logger.LogVerbose("SceneTaunt", "sets_owned_entry_suppress_hit:" + affectedAgent.Index, () => $"Suppressed SceneTaunt conflict because SETS owned/attached town entry is active. Target={affectedAgent.Name}", 1.0);
+			return;
+		}
 		if (TryPrimeOwnedSettlementPassiveAttackOnHit(affectedAgent, "player_physical_hit"))
 		{
 			return;
@@ -4078,6 +4083,11 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			return;
 		}
 		Logger.LogVerbose("SceneTaunt", "attack_timing_on_score_hit:" + affectedAgent.Index, () => $"[AttackTiming] on_score_hit time={Mission.Current?.CurrentTime:0.###} location={(CampaignMission.Current?.Location?.StringId ?? "").Trim().ToLowerInvariant()} settlement={Settlement.CurrentSettlement?.StringId} target={affectedAgent.Name} targetIndex={affectedAgent.Index} weapon={IsWeaponComponentRealWeapon(attackerWeapon)} damage={damagedHp:0.##} blocked={isBlocked} conflict={_conflictActive} armed={_armedConflict}", 1.0);
+		if (SettlementEntryTroopSelectionBehavior.IsOwnedOrAttachedTownEntryActiveForExternal(Mission.Current))
+		{
+			Logger.LogVerbose("SceneTaunt", "sets_owned_entry_suppress_score_hit:" + affectedAgent.Index, () => $"Suppressed SceneTaunt score-hit conflict because SETS owned/attached town entry is active. Target={affectedAgent.Name}", 1.0);
+			return;
+		}
 		if (TryHandleOwnedSettlementPassiveAttackDamage(affectedAgent, damagedHp, "player_physical_score_hit"))
 		{
 			return;
@@ -5300,6 +5310,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	internal bool CanStartConflict(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex)
 	{
 		_fightHandler = _fightHandler ?? Mission.Current?.GetMissionBehavior<MissionFightHandler>();
+		if (SettlementEntryTroopSelectionBehavior.IsOwnedOrAttachedTownEntryActiveForExternal(Mission.Current))
+		{
+			return false;
+		}
 		if (_conflictActive || Mission.Current == null || _fightHandler == null || Settlement.CurrentSettlement == null)
 		{
 			return false;
@@ -5443,6 +5457,11 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			Logger.LogVerbose("SceneTaunt", "attack_timing_try_start:" + (targetAgent?.Index ?? -1), () => $"[AttackTiming] try_start_conflict_from_physical_attack time={Mission.Current?.CurrentTime:0.###} location={(CampaignMission.Current?.Location?.StringId ?? "").Trim().ToLowerInvariant()} settlement={Settlement.CurrentSettlement?.StringId} reason={reason} target={(targetAgent?.Name?.ToString() ?? "null")} targetIndex={(targetAgent != null ? targetAgent.Index : -1)} playerUsedWeapon={playerUsedWeapon} conflict={_conflictActive} armed={_armedConflict}", 1.0);
 			if (_conflictActive || targetAgent == null || !targetAgent.IsHuman || !targetAgent.IsActive())
 			{
+				return false;
+			}
+			if (SettlementEntryTroopSelectionBehavior.IsOwnedOrAttachedTownEntryActiveForExternal(Mission.Current))
+			{
+				Logger.LogVerbose("SceneTaunt", "sets_owned_entry_suppress_physical_start:" + targetAgent.Index, () => $"Suppressed SceneTaunt physical conflict start because SETS owned/attached town entry is active. Reason={reason}", 1.0);
 				return false;
 			}
 			CharacterObject characterObject = targetAgent.Character as CharacterObject;
