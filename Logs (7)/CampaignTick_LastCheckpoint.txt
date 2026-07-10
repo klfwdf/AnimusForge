@@ -1,0 +1,6 @@
+﻿Campaign tick last checkpoint
+updated=2026-07-08 02:34:06.377
+last=ENTER seq=1 count=1 method=TaleWorlds.CampaignSystem.CampaignEventDispatcher.Tick campaignTime=1086年冬季15日/day=91301/hour=10 mainParty=MobileParty{id=player_party,name=尚先的部队,active=True,leader=main_hero,owner=main_hero,clan=player_faction,mapFaction=豳周_kingdom,settlement=null,lastSettlement=castle_HX3,targetSettlement=null,targetParty=null,default=GoToPoint,short=GoToPoint,atSea=False,mapEvent=null,army=null,component=TaleWorlds.CampaignSystem.Party.PartyComponents.LordPartyComponent,ai=disabled=False,noNew=False,rethink=False,hour=5335} args=[float:0]
+writeIntervalMs=1000
+
+02:34:06.377 ENTER seq=1 count=1 method=TaleWorlds.CampaignSystem.CampaignEventDispatcher.Tick campaignTime=1086年冬季15日/day=91301/hour=10 mainParty=MobileParty{id=player_party,name=尚先的部队,active=True,leader=main_hero,owner=main_hero,clan=player_faction,mapFaction=豳周_kingdom,settlement=null,lastSettlement=castle_HX3,targetSettlement=null,targetParty=null,default=GoToPoint,short=GoToPoint,atSea=False,mapEvent=null,army=null,component=TaleWorlds.CampaignSystem.Party.PartyComponents.LordPartyComponent,ai=disabled=False,noNew=False,rethink=False,hour=5335} args=[float:0]

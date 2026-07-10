@@ -22085,6 +22085,8 @@ public class MyBehavior : CampaignBehaviorBase
 			int promptListMax = PromptListRetrievalService.GetMaxCandidateCount();
 			List<SettlementTransferPromptEntry> list2 = PromptListRetrievalService.FilterSettlementTransferEntries(list2All, mentions, promptListMax);
 			List<SettlementTransferPromptEntry> list3 = PromptListRetrievalService.FilterSettlementTransferEntries(list3All, mentions, promptListMax);
+			PromptListRetrievalService.PublishSettlementTransferSnapshot(PromptListRetrievalService.SettlementTransferNpcAssetsSnapshotScope, targetHero, targetCharacter, -1, list2);
+			PromptListRetrievalService.PublishSettlementTransferSnapshot(PromptListRetrievalService.SettlementTransferPlayerAssetsSnapshotScope, targetHero, targetCharacter, -1, list3);
 			StringBuilder stringBuilder = new StringBuilder();
 			string text2 = RewardSystemBehavior.Instance?.BuildSettlementTransferPromptGuidanceForAI(hero, targetCharacter);
 			if (!string.IsNullOrWhiteSpace(text2))
@@ -22403,6 +22405,8 @@ public class MyBehavior : CampaignBehaviorBase
 			List<PartyTransferPromptEntry> list4Filtered = PromptListRetrievalService.FilterPartyTransferEntries(list4, mentions, promptListMax, isPrisoner: false);
 			List<PartyTransferPromptEntry> list6 = PromptListRetrievalService.FilterPartyTransferEntries(list6All, mentions, promptListMax, isPrisoner: false);
 			List<PartyTransferPromptEntry> list7 = PromptListRetrievalService.FilterPartyTransferEntries(list7All, mentions, promptListMax, isPrisoner: true);
+			PromptListRetrievalService.PublishPartyTransferSnapshot(PromptListRetrievalService.PartyTransferTroopsSnapshotScope, targetHero, targetCharacter, targetAgentIndex, list6);
+			PromptListRetrievalService.PublishPartyTransferSnapshot(PromptListRetrievalService.PartyTransferPrisonersSnapshotScope, targetHero, targetCharacter, targetAgentIndex, list7);
 			StringBuilder stringBuilder = new StringBuilder();
 			string runtimeHint = flag ? AIConfigHandler.BuildRuntimePartyTransferInstructionForExternal(targetHero, targetCharacter) : "";
 			if (!string.IsNullOrWhiteSpace(runtimeHint))
@@ -22647,8 +22651,14 @@ public class MyBehavior : CampaignBehaviorBase
 				return false;
 			}
 			List<PartyTransferPromptEntry> list = BuildPartyTransferPromptEntriesInternal(targetHero, targetCharacter, targetAgentIndex);
-			List<PartyTransferPromptEntry> list2 = BuildDisplayIndexedPartyTransferEntries(list.Where((PartyTransferPromptEntry x) => x != null && (x.Section == PartyTransferEntrySection.NpcTroops || x.Section == PartyTransferEntrySection.NpcVolunteers)));
-			List<PartyTransferPromptEntry> list3 = BuildDisplayIndexedPartyTransferEntries(list.Where((PartyTransferPromptEntry x) => x != null && x.Section == PartyTransferEntrySection.NpcPrisoners));
+			if (!PromptListRetrievalService.TryGetPartyTransferSnapshot(PromptListRetrievalService.PartyTransferTroopsSnapshotScope, targetHero, targetCharacter, targetAgentIndex, out var list2))
+			{
+				list2 = BuildDisplayIndexedPartyTransferEntries(list.Where((PartyTransferPromptEntry x) => x != null && (x.Section == PartyTransferEntrySection.NpcTroops || x.Section == PartyTransferEntrySection.NpcVolunteers)));
+			}
+			if (!PromptListRetrievalService.TryGetPartyTransferSnapshot(PromptListRetrievalService.PartyTransferPrisonersSnapshotScope, targetHero, targetCharacter, targetAgentIndex, out var list3))
+			{
+				list3 = BuildDisplayIndexedPartyTransferEntries(list.Where((PartyTransferPromptEntry x) => x != null && x.Section == PartyTransferEntrySection.NpcPrisoners));
+			}
 			PartyBase party = Hero.MainHero?.PartyBelongedTo?.Party ?? MobileParty.MainParty?.Party;
 			string text2 = ResolvePartyTransferTargetDisplayName(targetHero, targetCharacter, targetAgentIndex);
 			bool flag = false;
@@ -25708,19 +25718,19 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void AddWorldMapCommandRuleExclusionForTarget(HashSet<string> excludedRuleIds, Hero targetHero, CharacterObject targetCharacter = null)
+	private static void AddWorldMapCommandRuleExclusionForTarget(HashSet<string> excludedRuleIds, Hero targetHero, CharacterObject targetCharacter = null, int targetAgentIndex = -1)
 	{
 		if (excludedRuleIds == null)
 		{
 			return;
 		}
-		if (ShouldExcludeWorldMapCommandRuleForTarget(targetHero, targetCharacter))
+		if (ShouldExcludeWorldMapCommandRuleForTarget(targetHero, targetCharacter, targetAgentIndex))
 		{
 			excludedRuleIds.Add("worldmap_party_command");
 		}
 	}
 
-	private static bool ShouldExcludeWorldMapCommandRuleForTarget(Hero targetHero, CharacterObject targetCharacter = null)
+	private static bool ShouldExcludeWorldMapCommandRuleForTarget(Hero targetHero, CharacterObject targetCharacter = null, int targetAgentIndex = -1)
 	{
 		try
 		{
@@ -25735,7 +25745,11 @@ public class MyBehavior : CampaignBehaviorBase
 					|| hero.Occupation == Occupation.Artisan
 					|| hero.Occupation == Occupation.Preacher;
 			}
-			return targetCharacter != null && !targetCharacter.IsHero;
+			if (targetCharacter != null && !targetCharacter.IsHero)
+			{
+				return !WorldMapPartyCommandBehavior.CanUseNonHeroPartyFallbackForExternal(targetCharacter, targetAgentIndex);
+			}
+			return false;
 		}
 		catch
 		{
@@ -25971,7 +25985,7 @@ public class MyBehavior : CampaignBehaviorBase
 		int num = AIConfigHandler.GuardrailRuleReturnCap;
 		HashSet<string> excludedRuleIdSet = BuildPromptRuleIdSet(excludedRuleIds);
 		AddPlayerCompanionOrFamilyRuleExclusionsForTarget(excludedRuleIdSet, targetHero, targetCharacter);
-		AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter);
+		AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter, targetAgentIndex);
 		AddSceneMoveRuleExclusionForCurrentMission(excludedRuleIdSet);
 		string targetKingdomId = ResolveTargetKingdomIdForRules(targetHero, targetCharacter, kingdomIdOverride);
 		AIConfigHandler.SetGuardrailRuntimeTargetKingdom(targetKingdomId);
@@ -26180,7 +26194,7 @@ public class MyBehavior : CampaignBehaviorBase
 		case "siege_intervention_aftermath":
 			return !AIConfigHandler.CanInjectRuleTopicIntoPreprocessForExternal(id, hasAnyHero);
 		case "worldmap_party_command":
-			return ShouldExcludeWorldMapCommandRuleForTarget(hero, targetCharacter);
+			return ShouldExcludeWorldMapCommandRuleForTarget(hero, targetCharacter, targetAgentIndex);
 		case "party_transfer":
 			return !IsPartyTransferRuleEligible(hero, targetCharacter);
 		case "settlement_transfer":
@@ -26465,7 +26479,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			HashSet<string> excludedRuleIdSet = BuildPromptRuleIdSet(excludedRuleIds);
 			AddPlayerCompanionOrFamilyRuleExclusionsForTarget(excludedRuleIdSet, targetHero, targetCharacter);
-			AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter);
+			AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter, targetAgentIndex);
 			AddSceneMoveRuleExclusionForCurrentMission(excludedRuleIdSet);
 			StringBuilder stringBuilder = new StringBuilder();
 			if (useDuelContext && !IsPromptRuleExcluded(excludedRuleIdSet, "duel"))
@@ -27769,7 +27783,7 @@ public class MyBehavior : CampaignBehaviorBase
 		List<string> result = new List<string>();
 		HashSet<string> excludedRuleIdSet = BuildPromptRuleIdSet(excludedRuleIds);
 		AddPlayerCompanionOrFamilyRuleExclusionsForTarget(excludedRuleIdSet, targetHero, targetCharacter);
-		AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter);
+		AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter, targetAgentIndex);
 		AfGcczShoutBridge.AddExclusivePreprocessRuleExclusions(excludedRuleIdSet);
 		AddPreprocessOnlyResidentRuleExclusions(excludedRuleIdSet);
 		if (AfGcczShoutBridge.ShouldBypassPreprocessForActiveScene())
@@ -27915,7 +27929,7 @@ public class MyBehavior : CampaignBehaviorBase
 		HashSet<string> explicitExcludedRuleIdSet = BuildPromptRuleIdSet(excludedRuleIds);
 		HashSet<string> excludedRuleIdSet = new HashSet<string>(explicitExcludedRuleIdSet, StringComparer.OrdinalIgnoreCase);
 		AddPlayerCompanionOrFamilyRuleExclusionsForTarget(excludedRuleIdSet, targetHero, targetCharacter);
-		AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter);
+		AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter, targetAgentIndex);
 		AddSceneMoveRuleExclusionForCurrentMission(excludedRuleIdSet);
 		AfGcczShoutBridge.AddExclusivePreprocessRuleExclusions(excludedRuleIdSet);
 		HashSet<string> preprocessExcludedRuleIdSet = preprocessExcludedRuleIds == null ? new HashSet<string>(excludedRuleIdSet, StringComparer.OrdinalIgnoreCase) : BuildPromptRuleIdSet(preprocessExcludedRuleIds);
@@ -32078,14 +32092,20 @@ public class MyBehavior : CampaignBehaviorBase
 				if (targetHero != null)
 				{
 					List<RewardSystemBehavior.RewardItemInfo> allRewardOptions = RewardSystemBehavior.Instance.BuildHeroRewardPostprocessItems(targetHero);
-					list = PromptListRetrievalService.FilterRewardItems(allRewardOptions, promptListMentions, promptListMax);
+					if (!PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsSnapshotScope, targetHero, targetCharacter, -1, out list))
+					{
+						list = PromptListRetrievalService.FilterRewardItems(allRewardOptions, promptListMentions, promptListMax);
+					}
 					text5 = BuildRewardPostprocessItemList(list, RewardSystemBehavior.Instance.GetRewardPostprocessGoldForHero(targetHero));
 					text12 = NormalizePlayerNameForPostprocess(RewardSystemBehavior.Instance.BuildDebtHintForAI(targetHero), text7);
 				}
 				else if (targetCharacter != null)
 				{
 					List<RewardSystemBehavior.RewardItemInfo> allRewardOptions = RewardSystemBehavior.Instance.BuildSettlementMerchantPostprocessItems(targetCharacter);
-					list = PromptListRetrievalService.FilterRewardItems(allRewardOptions, promptListMentions, promptListMax);
+					if (!PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.SettlementMerchantItemsSnapshotScope, null, targetCharacter, -1, out list))
+					{
+						list = PromptListRetrievalService.FilterRewardItems(allRewardOptions, promptListMentions, promptListMax);
+					}
 					int num = RewardSystemBehavior.Instance.GetSettlementMarketTradeGold(Settlement.CurrentSettlement);
 					text5 = BuildRewardPostprocessItemList(list, num);
 					text12 = NormalizePlayerNameForPostprocess(RewardSystemBehavior.Instance.BuildSettlementMerchantDebtHintForAI(targetCharacter), text7);

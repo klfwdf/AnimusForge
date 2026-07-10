@@ -120,6 +120,7 @@ public class DuelBehavior : CampaignBehaviorBase
 		public override void OnBehaviorInitialize()
 		{
 			base.OnBehaviorInitialize();
+			EnsureMainHeroHealthForWildernessDuel("mission.OnBehaviorInitialize");
 			CacheBattleEndLogic();
 			TryDisableBattleEndLogic("OnBehaviorInitialize");
 			if (_runtime != null)
@@ -142,6 +143,8 @@ public class DuelBehavior : CampaignBehaviorBase
 			TryDisableBattleEndLogic("AfterStart");
 			try
 			{
+				EnsureMainHeroHealthForWildernessDuel("mission.AfterStart");
+				EnsureMainAgentHealthForWildernessDuel("mission.AfterStart");
 				if (base.Mission != null && base.Mission.Mode == MissionMode.Deployment)
 				{
 					base.Mission.SetMissionMode(MissionMode.Battle, atStart: true);
@@ -279,6 +282,45 @@ public class DuelBehavior : CampaignBehaviorBase
 			catch (Exception ex)
 			{
 				Logger.Log("DuelBehavior", "[WildernessDuel][WARN] battle_end_disable " + source + ": " + ex.Message);
+			}
+		}
+
+		private void EnsureMainAgentHealthForWildernessDuel(string source)
+		{
+			try
+			{
+				Hero mainHero = Hero.MainHero;
+				int requiredHeroHitPoints = ResolveWildernessDuelMinimumPlayerHitPoints(mainHero, out var maxHitPoints, out var woundedHealthLimit, out var requiredRatio);
+				if (requiredHeroHitPoints <= 0 || maxHitPoints <= 0)
+				{
+					return;
+				}
+				requiredRatio = Math.Min(1f, Math.Max(0.01f, requiredHeroHitPoints / (float)maxHitPoints));
+				Agent player = base.Mission?.MainAgent ?? Agent.Main;
+				if (player == null || !IsPlayerParticipant(player) || player.HealthLimit <= 0f)
+				{
+					return;
+				}
+				float requiredHealth = player.HealthLimit * requiredRatio;
+				if (requiredHealth < 1f)
+				{
+					requiredHealth = 1f;
+				}
+				if (requiredHealth > player.HealthLimit)
+				{
+					requiredHealth = player.HealthLimit;
+				}
+				if (player.Health + 0.001f >= requiredHealth)
+				{
+					return;
+				}
+				float before = player.Health;
+				player.Health = requiredHealth;
+				Logger.Log("DuelBehavior", "[WildernessDuel] raised main agent health source=" + (source ?? "") + " from=" + before.ToString("0.##") + " to=" + player.Health.ToString("0.##") + "/" + player.HealthLimit.ToString("0.##") + " requiredRatio=" + requiredRatio.ToString("0.##") + " woundedLimit=" + woundedHealthLimit);
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("DuelBehavior", "[WildernessDuel][WARN] ensure main agent health failed source=" + (source ?? "") + ": " + ex.Message);
 			}
 		}
 
@@ -1604,6 +1646,8 @@ public class DuelBehavior : CampaignBehaviorBase
 
 	private const string WildernessDuelDummyPartyPrefix = "animusforge_wilderness_duel_";
 
+	private const float WildernessDuelPlayerHealthMargin = 0.01f;
+
 	private static WildernessDuelBattleRuntime _wildernessDuelRuntime;
 
 	private static long _wildernessDuelEncounterMenuGuardUntilUtcTicks;
@@ -2433,6 +2477,84 @@ public class DuelBehavior : CampaignBehaviorBase
 		{
 			reason = "army target check failed: " + ex.GetType().Name;
 			return true;
+		}
+	}
+
+	private static int ResolveWildernessDuelMinimumPlayerHitPoints(Hero hero, out int maxHitPoints, out int woundedHealthLimit, out float requiredRatio)
+	{
+		maxHitPoints = 0;
+		woundedHealthLimit = 0;
+		requiredRatio = 0f;
+		if (hero == null)
+		{
+			return 0;
+		}
+		try
+		{
+			maxHitPoints = hero.MaxHitPoints;
+			woundedHealthLimit = hero.WoundedHealthLimit;
+			if (maxHitPoints <= 0)
+			{
+				return 0;
+			}
+			requiredRatio = DuelSettings.GetHealthThreshold() + WildernessDuelPlayerHealthMargin;
+			if (float.IsNaN(requiredRatio) || float.IsInfinity(requiredRatio))
+			{
+				requiredRatio = 0.36f;
+			}
+			if (requiredRatio < 0.01f)
+			{
+				requiredRatio = 0.01f;
+			}
+			if (requiredRatio > 1f)
+			{
+				requiredRatio = 1f;
+			}
+			int requiredHitPoints = (int)Math.Ceiling(maxHitPoints * requiredRatio);
+			if (woundedHealthLimit >= requiredHitPoints)
+			{
+				requiredHitPoints = woundedHealthLimit + 1;
+			}
+			if (requiredHitPoints < 1)
+			{
+				requiredHitPoints = 1;
+			}
+			if (requiredHitPoints > maxHitPoints)
+			{
+				requiredHitPoints = maxHitPoints;
+			}
+			return requiredHitPoints;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("DuelBehavior", "[WildernessDuel][WARN] resolve player minimum health failed: " + ex.Message);
+			return 0;
+		}
+	}
+
+	private static bool EnsureMainHeroHealthForWildernessDuel(string source)
+	{
+		try
+		{
+			Hero mainHero = Hero.MainHero;
+			int requiredHitPoints = ResolveWildernessDuelMinimumPlayerHitPoints(mainHero, out var maxHitPoints, out var woundedHealthLimit, out var requiredRatio);
+			if (mainHero == null || requiredHitPoints <= 0 || maxHitPoints <= 0)
+			{
+				return false;
+			}
+			int before = mainHero.HitPoints;
+			if (before >= requiredHitPoints)
+			{
+				return false;
+			}
+			mainHero.HitPoints = requiredHitPoints;
+			Logger.Log("DuelBehavior", "[WildernessDuel] raised main hero health source=" + (source ?? "") + " from=" + before + " to=" + mainHero.HitPoints + "/" + maxHitPoints + " requiredRatio=" + requiredRatio.ToString("0.##") + " woundedLimit=" + woundedHealthLimit);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("DuelBehavior", "[WildernessDuel][WARN] ensure main hero health failed source=" + (source ?? "") + ": " + ex.Message);
+			return false;
 		}
 	}
 
@@ -3769,6 +3891,7 @@ public class DuelBehavior : CampaignBehaviorBase
 				return false;
 			}
 			LogDuelLoadingCheckpoint("wilderness.initializer.ready", diagnosticId, target, rec, immediate: true);
+			EnsureMainHeroHealthForWildernessDuel("open.before_runtime_create");
 			CleanupWildernessDuelRuntime(_wildernessDuelRuntime, "open.new_request_cleanup");
 			LogDuelLoadingCheckpoint("wilderness.runtime.create.before", diagnosticId, target, rec, immediate: true);
 			WildernessDuelBattleRuntime runtime = CreateWildernessDuelRuntime(targetCharacter, diagnosticId);

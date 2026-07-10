@@ -5256,6 +5256,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			_pendingWildernessNonHeroJoinConversationClose = pending;
 		}
+		ConversationExceptionGuard.MarkCurrentConversationStale("wilderness_nonhero_join_party_scheduled_close");
 		Logger.Log("RewardSystemBehavior", "[NonHeroJoin] scheduled delayed conversation close source=" + pending.SourcePartyId + " target=" + pending.TargetCharacterId + " agentIndex=" + targetAgentIndex);
 	}
 
@@ -5280,6 +5281,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			_pendingHeroJoinConversationClose = pending;
 		}
+		ConversationExceptionGuard.MarkCurrentConversationStale("hero_join_party_scheduled_close");
 		Logger.Log("RewardSystemBehavior", "[HeroJoin] scheduled delayed conversation close hero=" + pending.JoinedHeroId + " originalParty=" + pending.OriginalPartyId);
 	}
 
@@ -12873,7 +12875,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		long num = 0L;
 		int num2 = 0;
-		foreach (RewardItemInfo item in heroVisibleEquipmentItemsForPrompt.OrderByDescending((RewardItemInfo x) => x.Count).ThenBy((RewardItemInfo x) => x.StringId, StringComparer.Ordinal))
+		List<RewardItemInfo> selectedItems = heroVisibleEquipmentItemsForPrompt
+			.Where((RewardItemInfo x) => x != null && x.Item != null)
+			.OrderByDescending((RewardItemInfo x) => x.Count)
+			.ThenBy((RewardItemInfo x) => x.StringId, StringComparer.Ordinal)
+			.Take(Math.Max(1, maxItems))
+			.ToList();
+		PromptListRetrievalService.PublishRewardItemSnapshot(PromptListRetrievalService.PlayerVisibleEquipmentSnapshotScope, hero, hero?.CharacterObject, -1, selectedItems);
+		foreach (RewardItemInfo item in selectedItems)
 		{
 			if (item == null || item.Item == null)
 			{
@@ -12923,7 +12932,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine("【玩家可见装备实际估值】以下为玩家当前穿戴/携行装备按库存实际价值计算（第纳尔）：");
 		int num2 = 0;
-		foreach (RewardItemInfo item in heroVisibleEquipmentItemsForPrompt.OrderByDescending((RewardItemInfo x) => x.Count).ThenBy((RewardItemInfo x) => x.StringId, StringComparer.Ordinal))
+		List<RewardItemInfo> selectedItems = heroVisibleEquipmentItemsForPrompt
+			.Where((RewardItemInfo x) => x != null && x.Item != null)
+			.OrderByDescending((RewardItemInfo x) => x.Count)
+			.ThenBy((RewardItemInfo x) => x.StringId, StringComparer.Ordinal)
+			.Take(Math.Max(1, maxItems))
+			.ToList();
+		PromptListRetrievalService.PublishRewardItemSnapshot(PromptListRetrievalService.PlayerVisibleEquipmentSnapshotScope, hero, hero?.CharacterObject, -1, selectedItems);
+		foreach (RewardItemInfo item in selectedItems)
 		{
 			if (item == null || item.Item == null)
 			{
@@ -12968,8 +12984,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		Dictionary<string, ItemGuidePriceInfo> dictionary = new Dictionary<string, ItemGuidePriceInfo>(StringComparer.OrdinalIgnoreCase);
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine("以下为玩家当前穿戴的装备和携带的武器：");
-		int num = 0;
-		foreach (RewardItemInfo item in heroVisibleEquipmentItemsForPrompt.OrderByDescending((RewardItemInfo x) => x.Count).ThenBy((RewardItemInfo x) => x.StringId, StringComparer.Ordinal))
+		List<RewardItemInfo> selectedItems = heroVisibleEquipmentItemsForPrompt
+			.Where((RewardItemInfo x) => x != null && x.Item != null)
+			.OrderByDescending((RewardItemInfo x) => x.Count)
+			.ThenBy((RewardItemInfo x) => x.StringId, StringComparer.Ordinal)
+			.Take(Math.Max(1, maxItems))
+			.ToList();
+		PromptListRetrievalService.PublishRewardItemSnapshot(PromptListRetrievalService.PlayerVisibleEquipmentSnapshotScope, hero, hero?.CharacterObject, -1, selectedItems);
+		foreach (RewardItemInfo item in selectedItems)
 		{
 			if (item == null || item.Item == null)
 			{
@@ -12990,11 +13012,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				.Append(" | guidePrice=")
 				.Append(Math.Max(1, value.UnitPrice))
 				.AppendLine();
-			num++;
-			if (num >= Math.Max(1, maxItems))
-			{
-				break;
-			}
 		}
 		return stringBuilder.ToString().Trim();
 	}
@@ -13170,9 +13187,18 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return "（无）";
 		}
+		List<RewardItemInfo> filteredItems;
+		if (!PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.PlayerVisibleEquipmentSnapshotScope, hero, hero?.CharacterObject, -1, out filteredItems))
+		{
+			filteredItems = heroVisibleEquipmentItemsForPrompt
+				.Where((RewardItemInfo x) => x != null && x.Item != null)
+				.OrderByDescending((RewardItemInfo x) => x.Count)
+				.ThenBy((RewardItemInfo x) => x.StringId, StringComparer.Ordinal)
+				.Take(Math.Max(1, maxItems))
+				.ToList();
+		}
 		StringBuilder stringBuilder = new StringBuilder();
-		int num = 0;
-		foreach (RewardItemInfo item in heroVisibleEquipmentItemsForPrompt.OrderByDescending((RewardItemInfo x) => x.Count).ThenBy((RewardItemInfo x) => x.StringId, StringComparer.Ordinal))
+		foreach (RewardItemInfo item in filteredItems)
 		{
 			if (item == null || item.Item == null)
 			{
@@ -13186,11 +13212,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				.Append(" | inventoryUnitValue=")
 				.Append(Math.Max(1, GetVisibleEquipmentActualUnitValue(item)))
 				.AppendLine();
-			num++;
-			if (num >= Math.Max(1, maxItems))
-			{
-				break;
-			}
 		}
 		return stringBuilder.Length > 0 ? stringBuilder.ToString().TrimEnd() : "（无）";
 	}
@@ -13207,7 +13228,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			return "（无）";
 		}
 		List<RewardItemInfo> orderedItems = heroVisibleEquipmentItemsForPrompt.OrderByDescending((RewardItemInfo x) => x.Count).ThenBy((RewardItemInfo x) => x.StringId, StringComparer.Ordinal).ToList();
-		List<RewardItemInfo> filteredItems = PromptListRetrievalService.FilterRewardItems(orderedItems, mentions, maxItems);
+		List<RewardItemInfo> filteredItems;
+		if (!PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.PlayerVisibleEquipmentSnapshotScope, hero, hero?.CharacterObject, -1, out filteredItems))
+		{
+			filteredItems = PromptListRetrievalService.FilterRewardItems(orderedItems, mentions, maxItems);
+		}
 		StringBuilder stringBuilder = new StringBuilder();
 		foreach (RewardItemInfo item in filteredItems)
 		{
@@ -13243,6 +13268,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				allOptions = allOptions.Where((RewardItemInfo x) => !x.IsPrivateEquipment).ToList();
 			}
 			List<RewardItemInfo> options = PromptListRetrievalService.FilterRewardItems(allOptions, mentions, maxItems);
+			PromptListRetrievalService.PublishRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsSnapshotScope, hero, hero?.CharacterObject, -1, options);
 			int gold = IsNotableMarketHero(hero, ResolveNotableMarketSettlement(hero)) ? GetRewardPostprocessGoldForHero(hero) : GetHeroGold(hero);
 			return BuildFilteredItemSummaryForAI(options, gold, includeGuidePrice, allOptions, "你");
 		}
@@ -13261,6 +13287,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				.Where((RewardItemInfo x) => x != null && x.Item != null && x.Count > 0)
 				.ToList();
 			List<RewardItemInfo> options = PromptListRetrievalService.FilterRewardItems(allOptions, mentions, maxItems);
+			PromptListRetrievalService.PublishRewardItemSnapshot(PromptListRetrievalService.SettlementMerchantItemsSnapshotScope, null, character, -1, options);
 			int gold = GetSettlementMarketTradeGold(settlement);
 			return BuildFilteredItemSummaryForAI(options, gold, includeGuidePrice, allOptions, "你");
 		}
