@@ -46,6 +46,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	private const int SpawnGridColumns = 8;
 	private const float DefenderReserveStuckNudgeSeconds = 20f;
 	private const float DefenderReserveStuckRetrySeconds = 50f;
+	private const float EnemyInitialTargetLockSeconds = 1.5f;
 	private const float ProtectedFollowerHostilitySuppressionSeconds = 8f;
 	private const float ProtectedFollowerFriendlyFireDuplicateWindowSeconds = 0.05f;
 	private const float VictoryEndMissionFallbackDelaySeconds = 2f;
@@ -677,6 +678,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		{
 			if (__instance == null
 				|| !IsOwnedOrAttachedTownEntryActiveForExternal(__instance)
+				|| !SceneTauntBehavior.IsPeaceSceneConflictEnabled()
 				|| attacker == null
 				|| victim == null
 				|| !attacker.IsMainAgent
@@ -1563,9 +1565,11 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private readonly Dictionary<int, float> _lastProtectedFollowerHealth = new Dictionary<int, float>();
 		private readonly Dictionary<int, ProtectedFollowerFriendlyFireHitRecord> _recentProtectedFollowerFriendlyFireHits = new Dictionary<int, ProtectedFollowerFriendlyFireHitRecord>();
 		private readonly Dictionary<int, int> _defenderReserveRecoveryCursorByWorkshopFrame = new Dictionary<int, int>();
+		private readonly Dictionary<int, float> _enemyInitialTargetReleaseTimes = new Dictionary<int, float>();
 		private static readonly MethodInfo AgentSetTargetAgentMethod = AccessTools.Method(typeof(Agent), "SetTargetAgent", new[] { typeof(Agent) });
 		private static readonly MethodInfo AgentSetAutomaticTargetSelectionMethod = AccessTools.Method(typeof(Agent), "SetAutomaticTargetSelection", new[] { typeof(bool) });
 		private bool _spawnedAllies;
+		private bool _enemyFormationChargeOrderIssued;
 		private bool _conflictActive;
 		private bool _ownedSettlementIncidentTriggered;
 		private bool _townRiotKilledNotable;
@@ -1643,7 +1647,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			_nextEnemyCheckTime = base.Mission.CurrentTime + 1f;
 			MaintainConflictTeams();
 			PruneNonObjectiveVictoryTracking("tick");
-			RefreshEnemyCombatTargets();
+			RefreshEnemyNativeCombatOrders();
 			int liveEnemyCount = CountLiveTrackedEnemies();
 			ObserveDefenderReserveProgress(liveEnemyCount);
 			if (TryRecoverStalledDefenderReserve(liveEnemyCount))
@@ -1726,6 +1730,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			}
 			_lastProtectedFollowerHealth.Remove(affectedAgent.Index);
 			_recentProtectedFollowerFriendlyFireHits.Remove(affectedAgent.Index);
+			_enemyInitialTargetReleaseTimes.Remove(affectedAgent.Index);
 			if (_conflictFeaturesEnabled && (_ownedSettlementIncidentTriggered || _conflictActive) && agentState == AgentState.Killed && IsPlayerSideAgent(affectorAgent) && !IsPlayerSideAgent(affectedAgent) && IsOwnedSettlementIncidentNotable(affectedAgent))
 			{
 				_townRiotKilledNotable = true;
@@ -2367,7 +2372,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			}
 		}
 
-		private void RefreshEnemyCombatTargets()
+		private void RefreshEnemyNativeCombatOrders()
 		{
 			try
 			{
@@ -2375,14 +2380,14 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				{
 					if (IsLiveTrackedEnemy(agent))
 					{
-						AssignEnemyAgentCombatTarget(agent, agent.Index);
+						MaintainEnemyAgentNativeCombat(agent);
 					}
 				}
 				EnsureEnemyFormationEngagesPlayer();
 			}
 			catch (Exception ex)
 			{
-				SettlementEntryTroopSelectionLog.Log("RefreshEnemyCombatTargets failed. error=" + ex.Message);
+				SettlementEntryTroopSelectionLog.Log("RefreshEnemyNativeCombatOrders failed. error=" + ex.Message);
 			}
 		}
 
@@ -2407,15 +2412,59 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					agent.InvalidateTargetAgent();
 					AgentSetAutomaticTargetSelectionMethod?.Invoke(agent, new object[] { false });
 					AgentSetTargetAgentMethod.Invoke(agent, new object[] { target });
+					_enemyInitialTargetReleaseTimes[agent.Index] = (base.Mission?.CurrentTime ?? 0f) + EnemyInitialTargetLockSeconds;
 				}
 				else
 				{
+					_enemyInitialTargetReleaseTimes.Remove(agent.Index);
+					agent.InvalidateTargetAgent();
+					agent.ClearTargetFrame();
+					AgentSetTargetAgentMethod?.Invoke(agent, new object[] { null });
 					AgentSetAutomaticTargetSelectionMethod?.Invoke(agent, new object[] { true });
 				}
 			}
 			catch (Exception ex)
 			{
 				SettlementEntryTroopSelectionLog.Log("AssignEnemyAgentCombatTarget failed. agent=" + agent?.Index + ", error=" + ex.Message);
+			}
+		}
+
+		private void MaintainEnemyAgentNativeCombat(Agent agent)
+		{
+			try
+			{
+				if (!IsLiveTrackedEnemy(agent))
+				{
+					return;
+				}
+				if (_enemyTeam != null && agent.Team != _enemyTeam)
+				{
+					agent.SetTeam(_enemyTeam, true);
+				}
+				agent.SetWatchState(Agent.WatchState.Alarmed);
+				Formation enemyFormation = _enemyTeam?.GetFormation(FormationClass.Infantry);
+				if (enemyFormation != null && agent.Formation != enemyFormation)
+				{
+					AssignAgentToFormation(agent, _enemyTeam, FormationClass.Infantry);
+				}
+				if (!_enemyInitialTargetReleaseTimes.TryGetValue(agent.Index, out float releaseTime))
+				{
+					return;
+				}
+				if ((base.Mission?.CurrentTime ?? 0f) < releaseTime)
+				{
+					return;
+				}
+				agent.ResetEnemyCaches();
+				agent.InvalidateTargetAgent();
+				agent.ClearTargetFrame();
+				AgentSetTargetAgentMethod?.Invoke(agent, new object[] { null });
+				AgentSetAutomaticTargetSelectionMethod?.Invoke(agent, new object[] { true });
+				_enemyInitialTargetReleaseTimes.Remove(agent.Index);
+			}
+			catch (Exception ex)
+			{
+				SettlementEntryTroopSelectionLog.Log("MaintainEnemyAgentNativeCombat failed. agent=" + agent?.Index + ", error=" + ex.Message);
 			}
 		}
 
@@ -2447,6 +2496,10 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		{
 			try
 			{
+				if (_enemyFormationChargeOrderIssued)
+				{
+					return;
+				}
 				Formation enemyFormation = _enemyTeam?.GetFormation(FormationClass.Infantry);
 				if (enemyFormation == null)
 				{
@@ -2454,6 +2507,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				}
 				enemyFormation.SetMovementOrder(MovementOrder.MovementOrderCharge);
 				enemyFormation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLine);
+				_enemyFormationChargeOrderIssued = true;
 			}
 			catch
 			{
@@ -2499,14 +2553,14 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				if (!_defenderReserveStuckNudged && noProgressSeconds >= DefenderReserveStuckNudgeSeconds)
 				{
 					_defenderReserveStuckNudged = true;
-					RefreshEnemyCombatTargets();
-					SettlementEntryTroopSelectionLog.Log("Defender reserve wave retarget nudge applied. settlement=" + _settlementId + ", wave=" + _defenderReserveWaveIndex + ", activeWaves=" + CountActiveDefenderReserveWaves() + ", liveEnemies=" + liveEnemyCount + ", noProgressSeconds=" + noProgressSeconds.ToString("0.0"));
+					RefreshEnemyNativeCombatOrders();
+					SettlementEntryTroopSelectionLog.Log("Defender reserve native charge nudge applied. settlement=" + _settlementId + ", wave=" + _defenderReserveWaveIndex + ", activeWaves=" + CountActiveDefenderReserveWaves() + ", liveEnemies=" + liveEnemyCount + ", noProgressSeconds=" + noProgressSeconds.ToString("0.0"));
 					return false;
 				}
 				if (noProgressSeconds >= DefenderReserveStuckRetrySeconds)
 				{
 					int repositioned = RepositionLiveTrackedEnemiesAtReserveSpawns("SETS_wave_stuck_retry");
-					RefreshEnemyCombatTargets();
+					RefreshEnemyNativeCombatOrders();
 					ResetDefenderReserveProgress(CountLiveTrackedEnemies(), "stuck_retry");
 					SettlementEntryTroopSelectionLog.Log("Defender reserve wave spawn retry applied. settlement=" + _settlementId + ", wave=" + _defenderReserveWaveIndex + ", activeWaves=" + CountActiveDefenderReserveWaves() + ", liveEnemies=" + liveEnemyCount + ", repositioned=" + repositioned + ", noProgressSeconds=" + noProgressSeconds.ToString("0.0"));
 					return false;
@@ -2603,10 +2657,6 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					direction.Normalize();
 					Vec2 moveDirection = direction.AsVec2;
 					agent.SetMovementDirection(in moveDirection);
-					if (main != null && main.IsActive())
-					{
-						agent.SetTargetPosition(main.Position.AsVec2);
-					}
 					AssignEnemyAgentCombatTarget(agent, agent.Index + i);
 					moved++;
 				}
@@ -2861,7 +2911,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				_nextDefenderReserveWaveTime = (base.Mission?.CurrentTime ?? 0f) + DefenderReserveWaveIntervalSeconds;
 				RefreshSetsUsableProtectionState("defender_reserve_wave");
 				ResetDefenderReserveProgress(CountLiveTrackedEnemies(), "defender_reserve_wave_" + waveNumber);
-				RefreshEnemyCombatTargets();
+				RefreshEnemyNativeCombatOrders();
 				if (spawned > 0)
 				{
 					InformationManager.DisplayMessage(new InformationMessage("【SETS内部暴乱】" + GetDefenderReservePhaseDisplayName(phaseKind) + "从城镇工坊区加入镇压（第 " + waveNumber + " 波，场上最多 " + MaxActiveDefenderReserveWaves + " 波）。", Color.FromUint(WarningColor)));
@@ -3049,17 +3099,12 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					}
 					MatrixFrame frame = marker.GameEntity.GetGlobalFrame();
 					frame.rotation.OrthonormalizeAccordingToForwardAndKeepUpAsZAxis();
-					if (mission.Scene != null)
+					if (!TryResolveReachableWorkshopSpawnAnchor(mission, frame.origin, out Vec3 workshopAnchor))
 					{
-						frame.origin.z = mission.Scene.GetGroundHeightAtPosition(frame.origin);
-						WorldPosition workshopAnchor = new WorldPosition(mission.Scene, frame.origin);
-						if (workshopAnchor.GetNearestNavMesh() == UIntPtr.Zero)
-						{
-							SettlementEntryTroopSelectionLog.Log("Skipped town workshop spawn marker without reachable navmesh. settlement=" + _settlementId + ", area=" + marker.AreaIndex);
-							continue;
-						}
-						frame.origin = workshopAnchor.GetNavMeshVec3();
+						SettlementEntryTroopSelectionLog.Log("Skipped town workshop spawn marker without a clear path to player. settlement=" + _settlementId + ", area=" + marker.AreaIndex);
+						continue;
 					}
+					frame.origin = workshopAnchor;
 					if (frame.origin.LengthSquared > 0.01f)
 					{
 						frames.Add(frame);
@@ -3076,6 +3121,101 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				SettlementEntryTroopSelectionLog.Log("Resolve town workshop spawn frames failed. settlement=" + _settlementId + ", error=" + ex.Message);
 			}
 			return false;
+		}
+
+		private static bool TryResolveReachableWorkshopSpawnAnchor(Mission mission, Vec3 markerOrigin, out Vec3 anchor)
+		{
+			anchor = markerOrigin;
+			try
+			{
+				Scene scene = mission?.Scene;
+				Agent main = Agent.Main ?? mission?.MainAgent;
+				if (scene == null || main == null || !main.IsActive())
+				{
+					return false;
+				}
+				markerOrigin.z = scene.GetGroundHeightAtPosition(markerOrigin);
+				List<Vec3> candidates = new List<Vec3>();
+				PathFaceRecord markerFace = PathFaceRecord.NullFaceRecord;
+				scene.GetNavMeshFaceIndex(ref markerFace, markerOrigin, true);
+				if (markerFace.IsValid())
+				{
+					Vec3 faceCenter = markerOrigin;
+					scene.GetNavMeshCenterPosition(markerFace.FaceIndex, ref faceCenter);
+					if (faceCenter.DistanceSquared(markerOrigin) <= 64f)
+					{
+						candidates.Add(faceCenter);
+					}
+				}
+				candidates.Add(markerOrigin);
+				for (int i = 0; i < 8; i++)
+				{
+					candidates.Add(mission.GetRandomPositionAroundPoint(markerOrigin, 0.8f, 4f, true));
+				}
+				WorldPosition playerWorld = new WorldPosition(scene, main.Position);
+				if (playerWorld.GetNearestNavMesh() == UIntPtr.Zero)
+				{
+					return false;
+				}
+				float bestScore = float.MinValue;
+				Vec3 bestAnchor = markerOrigin;
+				for (int i = 0; i < candidates.Count; i++)
+				{
+					Vec3 candidate = candidates[i];
+					candidate.z = scene.GetGroundHeightAtPosition(candidate);
+					WorldPosition candidateWorld = new WorldPosition(scene, candidate);
+					if (candidateWorld.GetNearestNavMesh() == UIntPtr.Zero
+						|| !scene.GetPathDistanceBetweenPositions(ref candidateWorld, ref playerWorld, 0.45f, out float pathDistance))
+					{
+						continue;
+					}
+					candidate = candidateWorld.GetNavMeshVec3();
+					int clearance = CountWorkshopAnchorClearDirections(scene, candidateWorld, candidate);
+					if (clearance < 3)
+					{
+						continue;
+					}
+					float score = clearance * 100f - pathDistance * 0.01f - candidate.Distance(markerOrigin) * 0.1f;
+					if (score > bestScore)
+					{
+						bestScore = score;
+						bestAnchor = candidate;
+					}
+				}
+				if (bestScore == float.MinValue)
+				{
+					return false;
+				}
+				anchor = bestAnchor;
+				return true;
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
+		private static int CountWorkshopAnchorClearDirections(Scene scene, WorldPosition anchorWorld, Vec3 anchor)
+		{
+			int clearDirections = 0;
+			Vec2[] directions =
+			{
+				new Vec2(1f, 0f),
+				new Vec2(-1f, 0f),
+				new Vec2(0f, 1f),
+				new Vec2(0f, -1f)
+			};
+			for (int i = 0; i < directions.Length; i++)
+			{
+				Vec3 probe = anchor + new Vec3(directions[i] * 1.2f);
+				probe.z = scene.GetGroundHeightAtPosition(probe);
+				WorldPosition probeWorld = new WorldPosition(scene, probe);
+				if (probeWorld.GetNearestNavMesh() != UIntPtr.Zero && scene.IsLineToPointClear(ref anchorWorld, ref probeWorld, 0.45f))
+				{
+					clearDirections++;
+				}
+			}
+			return clearDirections;
 		}
 
 		private static int SelectEnemyReserveSpawnFrameIndex(int troopIndex, int frameCount, string spawnSource)
