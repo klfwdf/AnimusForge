@@ -30,6 +30,34 @@ public static class SetsOwnedSettlementIncidentProfile
 
     public const int CulturalRepopulationRelationPenalty = -100;
 
+    public static int ResolveOwnerRelationPenalty(
+        SiegeAftermathResolutionKind aftermath,
+        bool notableKilled,
+        bool culturalRepopulation)
+    {
+        if (aftermath == SiegeAftermathResolutionKind.Pillage)
+        {
+            return PlunderRelationPenalty;
+        }
+
+        if (aftermath == SiegeAftermathResolutionKind.Devastate)
+        {
+            return culturalRepopulation
+                ? CulturalRepopulationRelationPenalty
+                : MassacreRelationPenalty;
+        }
+
+        return notableKilled
+            ? NotableKilledRelationPenalty
+            : MinorIncidentRelationPenalty;
+    }
+
+    public static int ResolveAdditionalPenaltyAfterNative(int desiredTotalPenalty, int nativePenalty)
+    {
+        int additionalPenalty = desiredTotalPenalty - nativePenalty;
+        return additionalPenalty < 0 ? additionalPenalty : 0;
+    }
+
     public static string BuildMenuText(string playerName, string settlementName)
     {
         return NormalizeName(playerName, "玩家") + "在" + NormalizeName(settlementName, "这座城镇") + "大开杀戒。接下来，剩余平民的命运由你决定。";

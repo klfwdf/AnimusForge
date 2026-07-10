@@ -36,7 +36,6 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	private const int DefenderReservePhaseCount = 3;
 	private const int MaxActiveDefenderReserveWaves = 4;
 	private const float DefenderReserveWaveIntervalSeconds = 30f;
-	private const int RulerRiotRelationPenalty = -70;
 	private const float AlliedSpawnBaseDistance = 8f;
 	private const float AlliedSpawnRowDistance = 2.8f;
 	private const float AlliedSpawnLateralSpacing = 3.2f;
@@ -44,9 +43,6 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	private const float EnemyDoorSpawnRowDistance = 3.4f;
 	private const float EnemyDoorSpawnLateralSpacing = 4f;
 	private const int DefenderReserveWorkshopSpawnGroupSize = 10;
-	private const int EnemyWorkshopSpawnGridColumns = 5;
-	private const float EnemyWorkshopSpawnRowDistance = 2.6f;
-	private const float EnemyWorkshopSpawnLateralSpacing = 3f;
 	private const int SpawnGridColumns = 8;
 	private const float DefenderReserveStuckNudgeSeconds = 20f;
 	private const float DefenderReserveStuckRetrySeconds = 50f;
@@ -147,7 +143,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	internal static void QueueSettlementTakenMenuAfterTownVictory(string settlementId, TroopRoster survivingRoster, string source, bool skipOwnershipTransfer = false, bool setsOwnedIncident = false, bool setsOwnedIncidentKilledNotable = false)
+	internal static void QueueSettlementTakenMenuAfterTownVictory(string settlementId, TroopRoster survivingRoster, string source, bool skipOwnershipTransfer = false, bool setsOwnedIncident = false, bool setsTownRiotKilledNotable = false)
 	{
 		if (string.IsNullOrWhiteSpace(settlementId))
 		{
@@ -166,9 +162,9 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			Source = string.IsNullOrWhiteSpace(source) ? "SETS_town_victory" : source,
 			SkipOwnershipTransfer = skipOwnershipTransfer,
 			SetsOwnedIncident = setsOwnedIncident,
-			SetsOwnedIncidentKilledNotable = setsOwnedIncidentKilledNotable
+			SetsTownRiotKilledNotable = setsTownRiotKilledNotable
 		};
-		SettlementEntryTroopSelectionLog.Log("Queued native settlement-taken menu after SETS town victory. settlement=" + settlementId + ", survivors=" + (_pendingVictoryMenuEntry.SurvivingRoster?.TotalManCount ?? 0) + ", source=" + _pendingVictoryMenuEntry.Source + ", skipOwnershipTransfer=" + skipOwnershipTransfer + ", ownedIncident=" + setsOwnedIncident + ", killedNotable=" + setsOwnedIncidentKilledNotable);
+		SettlementEntryTroopSelectionLog.Log("Queued native settlement-taken menu after SETS town victory. settlement=" + settlementId + ", survivors=" + (_pendingVictoryMenuEntry.SurvivingRoster?.TotalManCount ?? 0) + ", source=" + _pendingVictoryMenuEntry.Source + ", skipOwnershipTransfer=" + skipOwnershipTransfer + ", ownedIncident=" + setsOwnedIncident + ", killedNotable=" + setsTownRiotKilledNotable);
 	}
 
 	private void OnNewGameCreated(CampaignGameStarter starter)
@@ -1116,7 +1112,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		PendingSettlementVictoryMenuEntry pending = _pendingVictoryMenuEntry;
 		_pendingVictoryMenuEntry = null;
 		string bridgeSource = string.IsNullOrWhiteSpace(pending.Source) ? source : pending.Source;
-		bool opened = SiegeAiInterventionBehavior.TryOpenSettlementEntryVictoryMenu(settlement, pending.SurvivingRoster, bridgeSource, !pending.SkipOwnershipTransfer, pending.SetsOwnedIncident, pending.SetsOwnedIncidentKilledNotable);
+		bool opened = SiegeAiInterventionBehavior.TryOpenSettlementEntryVictoryMenu(settlement, pending.SurvivingRoster, bridgeSource, !pending.SkipOwnershipTransfer, pending.SetsOwnedIncident, pending.SetsTownRiotKilledNotable);
 		if (!opened)
 		{
 			_pendingVictoryMenuEntry = pending;
@@ -1484,7 +1480,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		public string Source;
 		public bool SkipOwnershipTransfer;
 		public bool SetsOwnedIncident;
-		public bool SetsOwnedIncidentKilledNotable;
+		public bool SetsTownRiotKilledNotable;
 	}
 
 	private sealed class DefenderReserveEntry
@@ -1517,12 +1513,13 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private readonly Dictionary<int, int> _defenderReserveAgentWaveNumbers = new Dictionary<int, int>();
 		private readonly Dictionary<int, float> _lastProtectedFollowerHealth = new Dictionary<int, float>();
 		private readonly Dictionary<int, ProtectedFollowerFriendlyFireHitRecord> _recentProtectedFollowerFriendlyFireHits = new Dictionary<int, ProtectedFollowerFriendlyFireHitRecord>();
+		private readonly Dictionary<int, int> _defenderReserveRecoveryCursorByWorkshopFrame = new Dictionary<int, int>();
 		private static readonly MethodInfo AgentSetTargetAgentMethod = AccessTools.Method(typeof(Agent), "SetTargetAgent", new[] { typeof(Agent) });
 		private static readonly MethodInfo AgentSetAutomaticTargetSelectionMethod = AccessTools.Method(typeof(Agent), "SetAutomaticTargetSelection", new[] { typeof(bool) });
 		private bool _spawnedAllies;
 		private bool _conflictActive;
 		private bool _ownedSettlementIncidentTriggered;
-		private bool _ownedSettlementIncidentKilledNotable;
+		private bool _townRiotKilledNotable;
 		private bool _victoryReached;
 		private bool _victoryQueued;
 		private bool _victoryEndMissionRequested;
@@ -1680,10 +1677,10 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			}
 			_lastProtectedFollowerHealth.Remove(affectedAgent.Index);
 			_recentProtectedFollowerFriendlyFireHits.Remove(affectedAgent.Index);
-			if (_conflictFeaturesEnabled && _ownedSettlementIncidentTriggered && agentState == AgentState.Killed && IsPlayerSideAgent(affectorAgent) && !IsPlayerSideAgent(affectedAgent) && IsOwnedSettlementIncidentNotable(affectedAgent))
+			if (_conflictFeaturesEnabled && (_ownedSettlementIncidentTriggered || _conflictActive) && agentState == AgentState.Killed && IsPlayerSideAgent(affectorAgent) && !IsPlayerSideAgent(affectedAgent) && IsOwnedSettlementIncidentNotable(affectedAgent))
 			{
-				_ownedSettlementIncidentKilledNotable = true;
-				SettlementEntryTroopSelectionLog.Log("SETS owned/attached settlement incident notable killed. settlement=" + _settlementId + ", troop=" + SafeCharacterId(affectedAgent.Character as CharacterObject));
+				_townRiotKilledNotable = true;
+				SettlementEntryTroopSelectionLog.Log("SETS town riot notable killed. settlement=" + _settlementId + ", troop=" + SafeCharacterId(affectedAgent.Character as CharacterObject));
 			}
 			if (_alliedAgentIndexes.Contains(affectedAgent.Index) && agentState == AgentState.Killed)
 			{
@@ -1829,25 +1826,27 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					return;
 				}
 				Kingdom playerKingdom = playerClan.Kingdom ?? Hero.MainHero?.Clan?.Kingdom;
-				if (playerKingdom == null || ownerClan.Kingdom != playerKingdom)
+				if (playerKingdom != null && ownerClan.Kingdom == playerKingdom)
 				{
-					return;
-				}
-				bool playerIsRuler = playerKingdom.RulingClan == playerClan || playerKingdom.Leader == Hero.MainHero;
-				if (playerIsRuler)
-				{
-					Hero ownerLeader = ownerClan.Leader;
-					if (ownerLeader != null && ownerLeader != Hero.MainHero)
+					bool playerIsRuler = playerKingdom.RulingClan == playerClan || playerKingdom.Leader == Hero.MainHero;
+					if (playerIsRuler)
 					{
-						ChangeRelationAction.ApplyPlayerRelation(ownerLeader, RulerRiotRelationPenalty, true, true);
-						InformationManager.DisplayMessage(new InformationMessage("【SETS内部暴乱】你攻击了附属领主的城镇，与城镇所有者关系恶化。", Color.FromUint(WarningColor)));
+						SettlementEntryTroopSelectionLog.Log("Skipped hostility for ruler attacking an attached town; outcome relation penalty is deferred. settlement=" + _settlementId + ", ownerClan=" + (ownerClan.StringId ?? "null") + ", source=" + source);
+						return;
 					}
-					SettlementEntryTroopSelectionLog.Log("Applied ruler riot relation penalty. settlement=" + _settlementId + ", ownerClan=" + (ownerClan?.StringId ?? "null") + ", penalty=" + RulerRiotRelationPenalty + ", source=" + source);
+					ChangeKingdomAction.ApplyByLeaveWithRebellionAgainstKingdom(playerClan, true);
+					InformationManager.DisplayMessage(new InformationMessage("【SETS内部暴乱】你攻击了本国城镇，已按保留土地财产的叛国处理。", Color.FromUint(WarningColor)));
+					SettlementEntryTroopSelectionLog.Log("Applied vassal riot rebellion. settlement=" + _settlementId + ", oldKingdom=" + (playerKingdom.StringId ?? "null") + ", source=" + source);
 					return;
 				}
-				ChangeKingdomAction.ApplyByLeaveWithRebellionAgainstKingdom(playerClan, true);
-				InformationManager.DisplayMessage(new InformationMessage("【SETS内部暴乱】你攻击了本国城镇，已按保留土地财产的叛国处理。", Color.FromUint(WarningColor)));
-				SettlementEntryTroopSelectionLog.Log("Applied vassal riot rebellion. settlement=" + _settlementId + ", oldKingdom=" + (playerKingdom?.StringId ?? "null") + ", source=" + source);
+				IFaction playerFaction = Hero.MainHero?.MapFaction ?? playerClan;
+				IFaction ownerFaction = ownerClan.Kingdom ?? (IFaction)ownerClan;
+				if (playerFaction != null && ownerFaction != null && playerFaction != ownerFaction && !FactionManager.IsAtWarAgainstFaction(playerFaction, ownerFaction))
+				{
+					DeclareWarAction.ApplyByPlayerHostility(playerFaction, ownerFaction);
+					InformationManager.DisplayMessage(new InformationMessage("【SETS内部暴乱】你袭击了该城镇，双方已进入敌对状态。", Color.FromUint(WarningColor)));
+					SettlementEntryTroopSelectionLog.Log("Applied SETS town riot hostility. settlement=" + _settlementId + ", playerFaction=" + (playerFaction.StringId ?? "null") + ", ownerFaction=" + (ownerFaction.StringId ?? "null") + ", source=" + source);
+				}
 			}
 			catch (Exception ex)
 			{
@@ -2498,11 +2497,41 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				{
 					return 0;
 				}
-				int moved = 0;
-				for (int i = 0; i < enemies.Count; i++)
+				bool workshopSpawn = string.Equals(spawnSource, "workshop", StringComparison.OrdinalIgnoreCase);
+				List<KeyValuePair<Agent, int>> recoveryTargets = new List<KeyValuePair<Agent, int>>();
+				if (workshopSpawn)
 				{
-					Agent agent = enemies[i];
-					MatrixFrame spawnFrame = spawnFrames[SelectEnemyReserveSpawnFrameIndex(i, spawnFrames.Count, spawnSource)];
+					for (int frameIndex = 0; frameIndex < spawnFrames.Count; frameIndex++)
+					{
+						List<Agent> frameEnemies = new List<Agent>();
+						for (int enemyIndex = 0; enemyIndex < enemies.Count; enemyIndex++)
+						{
+							if (SelectEnemyReserveSpawnFrameIndex(enemyIndex, spawnFrames.Count, spawnSource) == frameIndex)
+							{
+								frameEnemies.Add(enemies[enemyIndex]);
+							}
+						}
+						if (frameEnemies.Count <= 0)
+						{
+							continue;
+						}
+						_defenderReserveRecoveryCursorByWorkshopFrame.TryGetValue(frameIndex, out int cursor);
+						recoveryTargets.Add(new KeyValuePair<Agent, int>(frameEnemies[cursor % frameEnemies.Count], frameIndex));
+						_defenderReserveRecoveryCursorByWorkshopFrame[frameIndex] = cursor + 1;
+					}
+				}
+				else
+				{
+					for (int i = 0; i < enemies.Count; i++)
+					{
+						recoveryTargets.Add(new KeyValuePair<Agent, int>(enemies[i], SelectEnemyReserveSpawnFrameIndex(i, spawnFrames.Count, spawnSource)));
+					}
+				}
+				int moved = 0;
+				for (int i = 0; i < recoveryTargets.Count; i++)
+				{
+					Agent agent = recoveryTargets[i].Key;
+					MatrixFrame spawnFrame = spawnFrames[recoveryTargets[i].Value];
 					Vec3 position = ResolveEnemyReserveSpawnPosition(spawnFrame, i, spawnSource);
 					if (mission.Scene != null)
 					{
@@ -2532,7 +2561,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					AssignEnemyAgentCombatTarget(agent, agent.Index + i);
 					moved++;
 				}
-				SettlementEntryTroopSelectionLog.Log("Repositioned live tracked enemies at reserve spawns. settlement=" + _settlementId + ", source=" + spawnSource + ", reason=" + reason + ", moved=" + moved);
+				SettlementEntryTroopSelectionLog.Log("Repositioned live tracked enemies at reserve spawns. settlement=" + _settlementId + ", source=" + spawnSource + ", reason=" + reason + ", moved=" + moved + ", deferred=" + Math.Max(0, enemies.Count - moved));
 				return moved;
 			}
 			catch (Exception ex)
@@ -2974,6 +3003,13 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					if (mission.Scene != null)
 					{
 						frame.origin.z = mission.Scene.GetGroundHeightAtPosition(frame.origin);
+						WorldPosition workshopAnchor = new WorldPosition(mission.Scene, frame.origin);
+						if (workshopAnchor.GetNearestNavMesh() == UIntPtr.Zero)
+						{
+							SettlementEntryTroopSelectionLog.Log("Skipped town workshop spawn marker without reachable navmesh. settlement=" + _settlementId + ", area=" + marker.AreaIndex);
+							continue;
+						}
+						frame.origin = workshopAnchor.GetNavMeshVec3();
 					}
 					if (frame.origin.LengthSquared > 0.01f)
 					{
@@ -3008,6 +3044,10 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 
 		private static Vec3 ResolveEnemyReserveSpawnPosition(MatrixFrame spawnFrame, int troopIndex, string spawnSource)
 		{
+			if (string.Equals(spawnSource, "workshop", StringComparison.OrdinalIgnoreCase))
+			{
+				return spawnFrame.origin;
+			}
 			Vec3 forward = spawnFrame.rotation.f;
 			forward.z = 0f;
 			if (forward.LengthSquared < 0.01f)
@@ -3021,16 +3061,13 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				right = Vec3.Side;
 			}
 			right.Normalize();
-			bool workshopSpawn = string.Equals(spawnSource, "workshop", StringComparison.OrdinalIgnoreCase);
-			int localIndex = workshopSpawn ? troopIndex % DefenderReserveWorkshopSpawnGroupSize : troopIndex;
-			int columns = workshopSpawn ? EnemyWorkshopSpawnGridColumns : SpawnGridColumns;
+			int columns = SpawnGridColumns;
+			int localIndex = troopIndex;
 			int row = localIndex / columns;
 			int column = localIndex % columns;
 			float lateralIndex = column - (columns - 1) * 0.5f;
-			float forwardDistance = workshopSpawn
-				? (row - 0.5f) * EnemyWorkshopSpawnRowDistance
-				: EnemyDoorSpawnBaseDistance + row * EnemyDoorSpawnRowDistance;
-			float lateralDistance = lateralIndex * (workshopSpawn ? EnemyWorkshopSpawnLateralSpacing : EnemyDoorSpawnLateralSpacing);
+			float forwardDistance = EnemyDoorSpawnBaseDistance + row * EnemyDoorSpawnRowDistance;
+			float lateralDistance = lateralIndex * EnemyDoorSpawnLateralSpacing;
 			return spawnFrame.origin + forward * forwardDistance + right * lateralDistance;
 		}
 
@@ -3710,7 +3747,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			}
 			_victoryQueued = true;
 			string queueSource = string.IsNullOrWhiteSpace(source) ? "SETS_town_victory" : source;
-			QueueSettlementTakenMenuAfterTownVictory(_settlementId, _survivingRoster, queueSource, skipOwnershipTransfer: _isOwnSettlement || _ownedSettlementIncidentTriggered, setsOwnedIncident: _ownedSettlementIncidentTriggered, setsOwnedIncidentKilledNotable: _ownedSettlementIncidentKilledNotable);
+			QueueSettlementTakenMenuAfterTownVictory(_settlementId, _survivingRoster, queueSource, skipOwnershipTransfer: _isOwnSettlement || _ownedSettlementIncidentTriggered, setsOwnedIncident: _ownedSettlementIncidentTriggered, setsTownRiotKilledNotable: _townRiotKilledNotable);
 		}
 
 		private void PrepareVictoryExit(string source)

@@ -357,6 +357,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static bool _setsOwnedSettlementIncidentKilledNotable;
 	private static Clan _setsOwnedSettlementIncidentOwnerClan;
 	private static bool _setsOwnedSettlementIncidentPenaltyApplied;
+	private static bool _setsCapturedTownRiotContext;
+	private static bool _setsCapturedTownRiotKilledNotable;
+	private static Clan _setsCapturedTownRiotOriginalOwnerClan;
+	private static bool _setsCapturedTownRiotOwnerPenaltyApplied;
 	private static Settlement _activeSettlement;
 	private static Team _interventionPlayerCommandTeam;
 	private static Team _interventionCivilianEnemyTeam;
@@ -456,6 +460,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		CampaignEvents.OnMissionEndedEvent.AddNonSerializedListener(this, OnMissionEnded);
 		CampaignEvents.TickEvent.AddNonSerializedListener(this, OnCampaignTick);
 		CampaignEvents.DailyTickTownEvent.AddNonSerializedListener(this, OnDailyTickTown);
+		CampaignEvents.OnSiegeAftermathAppliedEvent.AddNonSerializedListener(this, OnSetsTownRiotAftermathApplied);
 	}
 
 	public override void SyncData(IDataStore dataStore)
@@ -741,7 +746,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	internal static bool TryOpenSettlementEntryVictoryMenu(Settlement settlement, TroopRoster selectedRoster, string source, bool transferOwnership = true, bool setsOwnedIncident = false, bool setsOwnedIncidentKilledNotable = false)
+	internal static bool TryOpenSettlementEntryVictoryMenu(Settlement settlement, TroopRoster selectedRoster, string source, bool transferOwnership = true, bool setsOwnedIncident = false, bool setsTownRiotKilledNotable = false)
 	{
 		try
 		{
@@ -760,6 +765,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			StoreSelectedInterventionRoster(selectedRoster, maxSelected);
 			if (transferOwnership)
 			{
+				PrepareSetsCapturedTownRiotContext(settlement, setsTownRiotKilledNotable, bridgeSource);
 				ApplySetsSettlementEntryCaptureIfNeeded(settlement, bridgeSource + "_capture_before_native_menu");
 			}
 			else
@@ -768,10 +774,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			if (setsOwnedIncident)
 			{
-				PrepareSetsOwnedSettlementIncidentContext(settlement, setsOwnedIncidentKilledNotable, bridgeSource);
+				PrepareSetsOwnedSettlementIncidentContext(settlement, setsTownRiotKilledNotable, bridgeSource);
 				GameMenu.ActivateGameMenu(SetsOwnedSettlementIncidentProfile.MenuId);
 				InformationManager.DisplayMessage(new InformationMessage(SetsOwnedSettlementIncidentProfile.BuildEntryInstruction(), Color.FromUint(SetsOwnedSettlementIncidentProfile.MessageColor)));
-				Logger.Log("SiegeAiIntervention", "Opened SETS owned/attached town incident menu. Settlement=" + (settlement.StringId ?? "N/A") + ", Selected=" + (_selectedInterventionRoster?.TotalManCount ?? 0) + ", Source=" + bridgeSource + ", killedNotable=" + setsOwnedIncidentKilledNotable);
+				Logger.Log("SiegeAiIntervention", "Opened SETS owned/attached town incident menu. Settlement=" + (settlement.StringId ?? "N/A") + ", Selected=" + (_selectedInterventionRoster?.TotalManCount ?? 0) + ", Source=" + bridgeSource + ", killedNotable=" + setsTownRiotKilledNotable);
 				return true;
 			}
 			PrepareNativeSettlementTakenMenuContextForSets(settlement, bridgeSource);
@@ -819,7 +825,28 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_setsOwnedSettlementIncidentKilledNotable = false;
 		_setsOwnedSettlementIncidentOwnerClan = null;
 		_setsOwnedSettlementIncidentPenaltyApplied = false;
+		_setsCapturedTownRiotContext = false;
+		_setsCapturedTownRiotKilledNotable = false;
+		_setsCapturedTownRiotOriginalOwnerClan = null;
+		_setsCapturedTownRiotOwnerPenaltyApplied = false;
+		_setsSettlementEntryVictoryContext = false;
+		_setsSettlementEntryVictorySource = "";
+		_setsSettlementEntryWallRescueSuppressionLogged = false;
+		_previousSettlementOwnerClan = null;
+		_besiegerParty = null;
+		_activeSettlement = null;
+		_selectedInterventionRoster = null;
+		_partyContributions = new Dictionary<MobileParty, float>();
 		Logger.Log("SiegeAiIntervention", "Cleared SETS owned/attached settlement incident context. Reason=" + (reason ?? "N/A"));
+	}
+
+	private static void PrepareSetsCapturedTownRiotContext(Settlement settlement, bool killedNotable, string source)
+	{
+		_setsCapturedTownRiotContext = true;
+		_setsCapturedTownRiotKilledNotable = killedNotable;
+		_setsCapturedTownRiotOriginalOwnerClan = settlement?.OwnerClan;
+		_setsCapturedTownRiotOwnerPenaltyApplied = false;
+		Logger.Log("SiegeAiIntervention", "Prepared SETS captured-town riot owner context. Settlement=" + (settlement?.StringId ?? "N/A") + ", OwnerClan=" + (_setsCapturedTownRiotOriginalOwnerClan?.StringId ?? "null") + ", killedNotable=" + killedNotable + ", Source=" + (source ?? "N/A"));
 	}
 
 	private static void PrepareNativeSettlementTakenMenuContextForSets(Settlement settlement, string source)
@@ -913,25 +940,89 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		int penalty = SetsOwnedSettlementIncidentProfile.MinorIncidentRelationPenalty;
-		if (aftermath == SiegeAftermathAction.SiegeAftermath.Pillage)
-		{
-			penalty = SetsOwnedSettlementIncidentProfile.PlunderRelationPenalty;
-		}
-		else if (aftermath == SiegeAftermathAction.SiegeAftermath.Devastate)
-		{
-			penalty = (_culturalRepopulationRequested || _culturalRepopulationApplied)
-				? SetsOwnedSettlementIncidentProfile.CulturalRepopulationRelationPenalty
-				: SetsOwnedSettlementIncidentProfile.MassacreRelationPenalty;
-		}
-		else if (_setsOwnedSettlementIncidentKilledNotable)
-		{
-			penalty = SetsOwnedSettlementIncidentProfile.NotableKilledRelationPenalty;
-		}
-		ApplySetsOwnedSettlementIncidentOwnerPenalty(penalty, reason ?? "sets_owned_town_outcome", onlyIfNotableKilled: false);
+		int desiredPenalty = SetsOwnedSettlementIncidentProfile.ResolveOwnerRelationPenalty(
+			ToStandaloneAftermathKind(aftermath),
+			_setsOwnedSettlementIncidentKilledNotable,
+			_culturalRepopulationRequested || _culturalRepopulationApplied);
+		int nativePenalty = ResolveNativeSettlementOwnerRelationPenalty(aftermath);
+		int additionalPenalty = SetsOwnedSettlementIncidentProfile.ResolveAdditionalPenaltyAfterNative(desiredPenalty, nativePenalty);
+		ApplySetsOwnedSettlementIncidentOwnerPenalty(additionalPenalty, reason ?? "sets_owned_town_outcome", onlyIfNotableKilled: false, desiredTotalPenalty: desiredPenalty);
 	}
 
-	private static void ApplySetsOwnedSettlementIncidentOwnerPenalty(int penalty, string reason, bool onlyIfNotableKilled)
+	private static void ApplySetsCapturedTownRiotOwnerPenalty(SiegeAftermathAction.SiegeAftermath aftermath, string reason)
+	{
+		try
+		{
+			if (!_setsCapturedTownRiotContext || _setsCapturedTownRiotOwnerPenaltyApplied)
+			{
+				return;
+			}
+			Clan ownerClan = _setsCapturedTownRiotOriginalOwnerClan;
+			Hero ownerLeader = ownerClan?.Leader;
+			if (ownerLeader == null || ownerLeader == Hero.MainHero)
+			{
+				_setsCapturedTownRiotContext = false;
+				_setsCapturedTownRiotOwnerPenaltyApplied = true;
+				Logger.Log("SiegeAiIntervention", "Skipped SETS captured-town original owner relation penalty because owner leader is unavailable. OwnerClan=" + (ownerClan?.StringId ?? "null") + ", Reason=" + (reason ?? "N/A"));
+				return;
+			}
+			int desiredPenalty = SetsOwnedSettlementIncidentProfile.ResolveOwnerRelationPenalty(
+				ToStandaloneAftermathKind(aftermath),
+				_setsCapturedTownRiotKilledNotable,
+				_culturalRepopulationRequested || _culturalRepopulationApplied);
+			int nativePenalty = ResolveNativeSettlementOwnerRelationPenalty(aftermath);
+			int additionalPenalty = SetsOwnedSettlementIncidentProfile.ResolveAdditionalPenaltyAfterNative(desiredPenalty, nativePenalty);
+			ChangeRelationAction.ApplyPlayerRelation(ownerLeader, additionalPenalty, true, true);
+			_setsCapturedTownRiotOwnerPenaltyApplied = true;
+			_setsCapturedTownRiotContext = false;
+			InformationManager.DisplayMessage(new InformationMessage(SetsOwnedSettlementIncidentProfile.BuildRelationPenaltyMessage(desiredPenalty), Color.FromUint(SetsOwnedSettlementIncidentProfile.WarningColor)));
+			Logger.Log("SiegeAiIntervention", "Applied SETS captured-town original owner relation penalty. OwnerClan=" + (ownerClan.StringId ?? "null") + ", DesiredTotal=" + desiredPenalty + ", Native=" + nativePenalty + ", Additional=" + additionalPenalty + ", Aftermath=" + aftermath + ", Reason=" + (reason ?? "N/A") + ", killedNotable=" + _setsCapturedTownRiotKilledNotable);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "ApplySetsCapturedTownRiotOwnerPenalty failed. Reason=" + (reason ?? "N/A") + ", Error=" + ex.Message);
+		}
+	}
+
+	private void OnSetsTownRiotAftermathApplied(MobileParty attackerParty, Settlement settlement, SiegeAftermathAction.SiegeAftermath aftermath, Clan previousSettlementOwner, Dictionary<MobileParty, float> partyContributions)
+	{
+		try
+		{
+			if (!_setsSettlementEntryVictoryContext || !_setsCapturedTownRiotContext || attackerParty != MobileParty.MainParty || settlement == null)
+			{
+				return;
+			}
+			if (_activeSettlement != null && !string.Equals(_activeSettlement.StringId, settlement.StringId, StringComparison.Ordinal))
+			{
+				return;
+			}
+			if (_setsCapturedTownRiotOriginalOwnerClan != null && previousSettlementOwner != null && previousSettlementOwner != _setsCapturedTownRiotOriginalOwnerClan)
+			{
+				Logger.Log("SiegeAiIntervention", "Skipped SETS captured-town owner penalty for mismatched previous owner. Expected=" + (_setsCapturedTownRiotOriginalOwnerClan.StringId ?? "null") + ", Actual=" + (previousSettlementOwner.StringId ?? "null") + ", Settlement=" + (settlement.StringId ?? "N/A"));
+				return;
+			}
+			ApplySetsCapturedTownRiotOwnerPenalty(aftermath, "siege_aftermath_applied_event");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "OnSetsTownRiotAftermathApplied failed: " + ex.Message);
+		}
+	}
+
+	private static int ResolveNativeSettlementOwnerRelationPenalty(SiegeAftermathAction.SiegeAftermath aftermath)
+	{
+		if (aftermath == SiegeAftermathAction.SiegeAftermath.Pillage)
+		{
+			return -15;
+		}
+		if (aftermath == SiegeAftermathAction.SiegeAftermath.Devastate)
+		{
+			return -30;
+		}
+		return 0;
+	}
+
+	private static void ApplySetsOwnedSettlementIncidentOwnerPenalty(int penalty, string reason, bool onlyIfNotableKilled, int desiredTotalPenalty = 0)
 	{
 		try
 		{
@@ -962,8 +1053,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			ChangeRelationAction.ApplyPlayerRelation(ownerLeader, penalty, true, true);
 			_setsOwnedSettlementIncidentPenaltyApplied = true;
-			InformationManager.DisplayMessage(new InformationMessage(SetsOwnedSettlementIncidentProfile.BuildRelationPenaltyMessage(penalty), Color.FromUint(SetsOwnedSettlementIncidentProfile.WarningColor)));
-			Logger.Log("SiegeAiIntervention", "Applied SETS owned/attached settlement owner relation penalty. OwnerClan=" + (ownerClan.StringId ?? "null") + ", Penalty=" + penalty + ", Reason=" + (reason ?? "N/A") + ", killedNotable=" + _setsOwnedSettlementIncidentKilledNotable);
+			int reportedPenalty = desiredTotalPenalty < 0 ? desiredTotalPenalty : penalty;
+			InformationManager.DisplayMessage(new InformationMessage(SetsOwnedSettlementIncidentProfile.BuildRelationPenaltyMessage(reportedPenalty), Color.FromUint(SetsOwnedSettlementIncidentProfile.WarningColor)));
+			Logger.Log("SiegeAiIntervention", "Applied SETS owned/attached settlement owner relation penalty. OwnerClan=" + (ownerClan.StringId ?? "null") + ", DesiredTotal=" + reportedPenalty + ", Additional=" + penalty + ", Reason=" + (reason ?? "N/A") + ", killedNotable=" + _setsOwnedSettlementIncidentKilledNotable);
 		}
 		catch (Exception ex)
 		{
@@ -13253,6 +13345,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			_setsOwnedSettlementIncidentKilledNotable = false;
 			_setsOwnedSettlementIncidentOwnerClan = null;
 			_setsOwnedSettlementIncidentPenaltyApplied = false;
+			_setsCapturedTownRiotContext = false;
+			_setsCapturedTownRiotKilledNotable = false;
+			_setsCapturedTownRiotOriginalOwnerClan = null;
+			_setsCapturedTownRiotOwnerPenaltyApplied = false;
 			_interventionPlayerCommandTeam = null;
 			_interventionCivilianEnemyTeam = null;
 			_partyContributions = new Dictionary<MobileParty, float>();
@@ -13306,6 +13402,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_setsOwnedSettlementIncidentKilledNotable = false;
 		_setsOwnedSettlementIncidentOwnerClan = null;
 		_setsOwnedSettlementIncidentPenaltyApplied = false;
+		_setsCapturedTownRiotContext = false;
+		_setsCapturedTownRiotKilledNotable = false;
+		_setsCapturedTownRiotOriginalOwnerClan = null;
+		_setsCapturedTownRiotOwnerPenaltyApplied = false;
 		_activeSettlement = null;
 		_interventionPlayerCommandTeam = null;
 		_interventionCivilianEnemyTeam = null;
