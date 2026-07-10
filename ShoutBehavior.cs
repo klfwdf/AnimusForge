@@ -17028,6 +17028,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			bool fixedSiegeActionHandled;
 			if (AfGcczShoutBridge.TryProcessFixedKeywordAction(targetHero, targetCharacter, nativeTargetAgentIndex, promptPlayerText, replyIsDirectPlayerResponse: true, out fixedSiegeActionHandled) && fixedSiegeActionHandled)
 			{
+				siegeInterventionPostprocessSelected = false;
 				Logger.Log("ShoutBehavior", "[NativeConversation] siege_intervention fixed keyword handled target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown"));
 			}
 		}
@@ -24356,6 +24357,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						bool fixedSiegeActionHandled;
 						if (AfGcczShoutBridge.TryProcessFixedKeywordAction(speakingHero, npcCharacter, currentSpeaker.AgentIndex, playerText, replyIsDirectPlayerResponse, out fixedSiegeActionHandled) && fixedSiegeActionHandled)
 						{
+							siegeInterventionPostprocessSelected = false;
 							Logger.Log("ShoutBehavior", "[SceneConversation] siege_intervention fixed keyword handled npc=" + (speakingHero?.StringId ?? currentSpeaker?.Name ?? "unknown"));
 						}
 					}
