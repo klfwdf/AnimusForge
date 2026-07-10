@@ -1375,6 +1375,10 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("14. GCCZ攻城后处置")]
 	public Action ExportGcczDebugLog { get; set; }
 
+	[SettingPropertyInteger("怀孕几率（%）", 0, 100, "0", Order = 0, RequireRestart = false, HintText = "当亲密行为标签确认本轮已发生性行为和内射后，女方怀孕的概率。0 表示不会怀孕，100 表示必定怀孕。默认 50%。")]
+	[SettingPropertyGroup("15. 亲密行为与怀孕")]
+	public int IntimacyPregnancyChancePercent { get; set; } = 50;
+
 	[SettingPropertyBool("【测试】允许 NPC 拥有自己的臣属国/朝贡国", Order = 0, RequireRestart = false, HintText = "测试功能，默认关闭。开启后，NPC-NPC 议和时，主动求和且国力明显较弱的一方才有低概率成为对方朝贡国。关闭后只阻止新建 NPC 朝贡；已有 NPC 朝贡协议继续贡赋、保护战与和平同步。")]
 	[SettingPropertyGroup("12. 臣属国系统")]
 	public bool EnableNpcTributaryVassalage { get; set; } = false;

@@ -16,7 +16,7 @@ public static class SexualConceptionBehavior
 {
 	public const string IntimacyActionTag = "[ACTION:INTIMACY_INTERNAL]";
 
-	private const float PregnancyChance = 0.15f;
+	private const float DefaultPregnancyChance = 0.5f;
 
 	private static readonly Regex IntimacyTagRegex = new Regex("\\[ACTION:INTIMACY_INTERNAL\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
@@ -28,33 +28,49 @@ public static class SexualConceptionBehavior
 
 	private static bool _pregnancyFatherPatchReady;
 
+	private static string _pregnancyFatherPatchStatus = "not_registered";
+
 	public static void RegisterHarmonyPatches(Harmony harmony)
 	{
 		if (harmony == null)
 		{
 			throw new ArgumentNullException(nameof(harmony));
 		}
-		Type pregnancyType = typeof(PregnancyCampaignBehavior).GetNestedType("Pregnancy", BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
-		ConstructorInfo constructor = pregnancyType?.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, new Type[3]
+		Type pregnancyType = AccessTools.Inner(typeof(PregnancyCampaignBehavior), "Pregnancy");
+		ConstructorInfo constructor = AccessTools.Constructor(pregnancyType, new Type[3]
 		{
 			typeof(Hero),
 			typeof(Hero),
 			typeof(CampaignTime)
-		}, null);
+		});
 		if (constructor == null)
 		{
+			_pregnancyFatherPatchStatus = "constructor_not_found";
 			throw new MissingMethodException("PregnancyCampaignBehavior.Pregnancy(Hero, Hero, CampaignTime)");
 		}
-		harmony.Patch(constructor, new HarmonyMethod(typeof(SexualConceptionBehavior), nameof(PregnancyConstructorPrefix)));
-		_pregnancyFatherPatchReady = true;
-		Logger.Log("SexualConception", "pregnancy father patch ready");
+		MethodInfo prefixMethod = AccessTools.Method(typeof(SexualConceptionBehavior), nameof(PregnancyConstructorPrefix));
+		if (prefixMethod == null)
+		{
+			_pregnancyFatherPatchStatus = "prefix_not_found";
+			throw new MissingMethodException(nameof(PregnancyConstructorPrefix));
+		}
+		harmony.Patch(constructor, new HarmonyMethod(prefixMethod));
+		Patches patchInfo = Harmony.GetPatchInfo(constructor);
+		_pregnancyFatherPatchReady = patchInfo?.Prefixes?.Any((Patch patch) => string.Equals(patch.owner, harmony.Id, StringComparison.Ordinal) && patch.PatchMethod == prefixMethod) == true;
+		_pregnancyFatherPatchStatus = _pregnancyFatherPatchReady ? ("ready owner=" + harmony.Id) : "patch_verification_failed";
+		if (!_pregnancyFatherPatchReady)
+		{
+			throw new InvalidOperationException("Pregnancy father patch verification failed");
+		}
+		Logger.Log("SexualConception", "pregnancy father patch " + _pregnancyFatherPatchStatus);
 	}
 
-	private static void PregnancyConstructorPrefix(Hero pregnantHero, ref Hero father)
+	private static void PregnancyConstructorPrefix(Hero __0, ref Hero __1)
 	{
-		if (_pendingMother == pregnantHero && _pendingFather != null)
+		if (_pendingMother == __0 && _pendingFather != null)
 		{
-			father = _pendingFather;
+			__1 = _pendingFather;
+			Logger.Log("SexualConception", "pregnancy father override mother=" + (__0?.StringId ?? "") + " father=" + (__1?.StringId ?? ""));
 		}
 	}
 
@@ -98,10 +114,20 @@ public static class SexualConceptionBehavior
 		InformationManager.DisplayMessage(new InformationMessage("你与" + npcName + "发生了亲密行为。", Colors.Magenta));
 
 		bool becamePregnant = false;
+		float pregnancyChance = ResolvePregnancyChance();
+		float pregnancyRoll = -1f;
 		string skipReason = "roll_failed";
-		if (CanStartPregnancy(mother, father, out skipReason) && MBRandom.RandomFloat < PregnancyChance)
+		if (CanStartPregnancy(mother, father, out skipReason))
 		{
-			becamePregnant = TryMakePregnantWithFather(mother, father, out skipReason);
+			pregnancyRoll = MBRandom.RandomFloat;
+			if (pregnancyRoll < pregnancyChance)
+			{
+				becamePregnant = TryMakePregnantWithFather(mother, father, out skipReason);
+			}
+			else
+			{
+				skipReason = "roll_failed";
+			}
 		}
 
 		string fact = "[AFEF 玩家行为补充] 玩家与" + npcName + "发生了亲密关系。";
@@ -112,8 +138,22 @@ public static class SexualConceptionBehavior
 				: ("系统已确认" + npcName + "怀孕，父亲是玩家。");
 		}
 		MyBehavior.AppendExternalDialogueHistory(targetHero, null, null, fact);
-		Logger.Log("SexualConception", "intimacy applied target=" + (targetHero.StringId ?? "") + " mother=" + (mother.StringId ?? "") + " father=" + (father.StringId ?? "") + " pregnancy=" + becamePregnant + " result=" + skipReason);
+		Logger.Log("SexualConception", "intimacy applied target=" + (targetHero.StringId ?? "") + " mother=" + (mother.StringId ?? "") + " father=" + (father.StringId ?? "") + " chance=" + pregnancyChance.ToString("0.00") + " roll=" + ((pregnancyRoll < 0f) ? "not_rolled" : pregnancyRoll.ToString("0.0000")) + " pregnancy=" + becamePregnant + " result=" + skipReason + " patch=" + _pregnancyFatherPatchStatus);
 		return true;
+	}
+
+	private static float ResolvePregnancyChance()
+	{
+		try
+		{
+			int percent = DuelSettings.GetSettings()?.IntimacyPregnancyChancePercent ?? 50;
+			return Math.Max(0f, Math.Min(1f, percent / 100f));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SexualConception", "failed to read MCM pregnancy chance, using default 50%: " + ex.Message);
+			return DefaultPregnancyChance;
+		}
 	}
 
 	private static bool TryResolveAdultOppositeSexPair(Hero targetHero, out Hero mother, out Hero father)
@@ -187,7 +227,7 @@ public static class SexualConceptionBehavior
 		}
 		if (!_pregnancyFatherPatchReady)
 		{
-			reason = "father_patch_unavailable";
+			reason = "father_patch_unavailable:" + _pregnancyFatherPatchStatus;
 			return false;
 		}
 		return true;
