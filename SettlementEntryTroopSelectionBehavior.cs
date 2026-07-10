@@ -91,6 +91,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		PatchEndMissionGuard(harmony, typeof(MissionFightHandler), nameof(MissionFightHandler.OnEndMissionRequest), "mission-fight");
 		PatchEndMissionGuardByTypeName(harmony, "SandBox.Missions.MissionLogics.LeaveMissionLogic", "OnEndMissionRequest", "leave-mission");
 		PatchSetsUsableProtection(harmony);
+		PatchOwnedOrAttachedTownDamage(harmony);
 	}
 
 	public override void RegisterEvents()
@@ -647,6 +648,54 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			SettlementEntryTroopSelectionLog.Log("PatchSetsUsableProtection failed. error=" + ex.Message);
+		}
+	}
+
+	private static void PatchOwnedOrAttachedTownDamage(Harmony harmony)
+	{
+		try
+		{
+			MethodInfo target = AccessTools.Method(typeof(Mission), "CancelsDamageAndBlocksAttackBecauseOfNonEnemyCase");
+			MethodInfo prefix = typeof(SettlementEntryTroopSelectionBehavior).GetMethod(nameof(AllowOwnedOrAttachedTownPlayerDamagePrefix), BindingFlags.Static | BindingFlags.NonPublic);
+			if (target == null || prefix == null)
+			{
+				SettlementEntryTroopSelectionLog.Log("SETS owned/attached town damage patch target not found.");
+				return;
+			}
+			harmony.Patch(target, prefix: new HarmonyMethod(prefix));
+			SettlementEntryTroopSelectionLog.Log("Harmony patch registered for SETS owned/attached town player damage.");
+		}
+		catch (Exception ex)
+		{
+			SettlementEntryTroopSelectionLog.Log("PatchOwnedOrAttachedTownDamage failed. error=" + ex.Message);
+		}
+	}
+
+	private static bool AllowOwnedOrAttachedTownPlayerDamagePrefix(Mission __instance, Agent attacker, Agent victim, ref bool __result)
+	{
+		try
+		{
+			if (__instance == null
+				|| !IsOwnedOrAttachedTownEntryActiveForExternal(__instance)
+				|| attacker == null
+				|| victim == null
+				|| !attacker.IsMainAgent
+				|| !victim.IsHuman
+				|| victim.IsMainAgent)
+			{
+				return true;
+			}
+			if (IsSetsSelectedFollowerAgentForExternal(victim))
+			{
+				__result = true;
+				return false;
+			}
+			__result = false;
+			return false;
+		}
+		catch
+		{
+			return true;
 		}
 	}
 
