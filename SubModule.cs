@@ -535,6 +535,7 @@ public class SubModule : MBSubModuleBase
 			campaignGameStarter.AddBehavior(new KnowledgeLibraryBehavior());
 			campaignGameStarter.AddBehavior(new LordEncounterBehavior());
 			campaignGameStarter.AddBehavior(new ProactiveNpcRequestBehavior());
+			campaignGameStarter.AddBehavior(new CompanionProactiveChatBehavior());
 			campaignGameStarter.AddBehavior(new SceneTauntBehavior());
 			campaignGameStarter.AddBehavior(new SiegeAiInterventionBehavior());
 			campaignGameStarter.AddBehavior(new SettlementEntryTroopSelectionBehavior());

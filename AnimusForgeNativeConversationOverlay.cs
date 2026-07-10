@@ -682,13 +682,146 @@ public sealed class AnimusForgeNativeConversationOverlay
 		_ = SubmitAsync(text);
 	}
 
+	private void ShowNativeConversationPreprocessRetryInquiry(string playerText, int generation)
+	{
+		string retryText = AnimusForgeTextInputSanitizer.SanitizeSingleLine(playerText, AnimusForgeTextInputSanitizer.MaxNativeConversationChars).Trim();
+		if (_isClosed || generation != _submitGeneration || string.IsNullOrWhiteSpace(retryText))
+		{
+			return;
+		}
+		try
+		{
+			Logger.Log("NativeConversationOverlay", "Native preprocess timeout retry prompt shown. Generation=" + generation + " inputLen=" + retryText.Length);
+			InformationManager.ShowInquiry(new InquiryData(
+				"原生对话前处理超时",
+				"ONNX/知识检索前处理超过等待上限，或上一轮前处理仍在后台运行。\n\n是否重试刚才这句话？",
+				isAffirmativeOptionShown: true,
+				isNegativeOptionShown: true,
+				"重试",
+				"取消",
+				delegate
+				{
+					RetryNativeConversationTextFromPopup(retryText);
+				},
+				delegate
+				{
+					RestoreNativeConversationRetryText(retryText);
+				}),
+				pauseGameActiveState: true,
+				prioritize: true);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NativeConversationOverlay", "[WARN] Failed to show preprocess retry prompt: " + ex.Message);
+			RestoreNativeConversationRetryText(retryText);
+		}
+	}
+
+	private void ShowNativeConversationNpcOpeningPreprocessRetryInquiry(int generation)
+	{
+		if (_isClosed || generation != _submitGeneration)
+		{
+			return;
+		}
+		try
+		{
+			Logger.Log("NativeConversationOverlay", "Native NPC opening preprocess timeout retry prompt shown. Generation=" + generation);
+			InformationManager.ShowInquiry(new InquiryData(
+				"NPC开口前处理超时",
+				"ONNX/知识检索前处理超过等待上限，或上一轮前处理仍在后台运行。\n\n是否让NPC重新尝试开口？",
+				isAffirmativeOptionShown: true,
+				isNegativeOptionShown: true,
+				"重试",
+				"取消",
+				delegate
+				{
+					RetryNativeConversationNpcOpeningFromPopup();
+				},
+				delegate
+				{
+					FocusInputIfVisible();
+				}),
+				pauseGameActiveState: true,
+				prioritize: true);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NativeConversationOverlay", "[WARN] Failed to show NPC opening preprocess retry prompt: " + ex.Message);
+			FocusInputIfVisible();
+		}
+	}
+
+	private void RetryNativeConversationNpcOpeningFromPopup()
+	{
+		RunOnMainThread(delegate
+		{
+			if (_isClosed)
+			{
+				return;
+			}
+			if (!_dataSource.IsCustomAnswerVisible)
+			{
+				SetInputVisible(true);
+			}
+			if (_isSubmitting)
+			{
+				return;
+			}
+			_ = SubmitNpcInitiatedOpeningAsync();
+		});
+	}
+
+	private void RetryNativeConversationTextFromPopup(string playerText)
+	{
+		string retryText = AnimusForgeTextInputSanitizer.SanitizeSingleLine(playerText, AnimusForgeTextInputSanitizer.MaxNativeConversationChars).Trim();
+		if (string.IsNullOrWhiteSpace(retryText))
+		{
+			return;
+		}
+		RunOnMainThread(delegate
+		{
+			if (_isClosed)
+			{
+				return;
+			}
+			if (!_dataSource.IsCustomAnswerVisible)
+			{
+				SetInputVisible(true);
+			}
+			_dataSource.InputText = retryText;
+			if (_isSubmitting)
+			{
+				return;
+			}
+			_ = SubmitAsync(retryText);
+		});
+	}
+
+	private void RestoreNativeConversationRetryText(string playerText)
+	{
+		string retryText = AnimusForgeTextInputSanitizer.SanitizeSingleLine(playerText, AnimusForgeTextInputSanitizer.MaxNativeConversationChars).Trim();
+		RunOnMainThread(delegate
+		{
+			if (_isClosed)
+			{
+				return;
+			}
+			if (!_dataSource.IsCustomAnswerVisible)
+			{
+				SetInputVisible(true);
+			}
+			_dataSource.InputText = retryText;
+			FocusInputIfVisible();
+		});
+	}
+
 	private void TryStartPendingNpcOpening()
 	{
 		if (_isClosed || _isSubmitting || _npcOpeningAutoStarted)
 		{
 			return;
 		}
-		if (!ProactiveNpcRequestBehavior.HasPendingNativeOpeningForCurrentConversation())
+		if (!NpcInitiatedOpeningRouter.HasPendingNativeOpeningForCurrentConversation())
 		{
 			return;
 		}
@@ -702,6 +835,8 @@ public sealed class AnimusForgeNativeConversationOverlay
 		int generation = ++_submitGeneration;
 		string originalDialogText = ConversationHelper.GetCurrentDialogText();
 		bool receivedVisibleText = false;
+		bool offerPreprocessRetry = false;
+		bool suppressReadyNotice = false;
 		_isSubmitting = true;
 		ClearPendingPostprocessNotice();
 		_dataSource.SetBusy(true);
@@ -739,6 +874,15 @@ public sealed class AnimusForgeNativeConversationOverlay
 					return;
 				}
 				completedReply = (completedReply ?? "").Replace("\r", "").Trim();
+				if (IsSubmitGenerationActive(generation) && ShoutBehavior.IsNativeConversationPreprocessUnavailableTextForExternal(completedReply))
+				{
+					offerPreprocessRetry = true;
+					suppressReadyNotice = true;
+					receivedVisibleText = false;
+					StopWaitingDotsAnimation(generation);
+					ConversationHelper.UpdateDialogText(originalDialogText ?? "");
+					return;
+				}
 				if (IsSubmitGenerationActive(generation) && !string.IsNullOrWhiteSpace(completedReply))
 				{
 					receivedVisibleText = true;
@@ -789,14 +933,21 @@ public sealed class AnimusForgeNativeConversationOverlay
 					_dataSource.SetBusy(false);
 					if (_dataSource.IsCustomAnswerVisible)
 					{
-						ShowInputReadyMessage();
-						PlayInputReadySound();
+						if (!suppressReadyNotice)
+						{
+							ShowInputReadyMessage();
+							PlayInputReadySound();
+						}
 						FocusInputIfVisible();
 					}
 					else
 					{
 						_postRestoreForceRestoreTicks = 8;
 						RestoreNativeConversationInputAfterOrdinaryMode(forceAnswerRestore: true);
+					}
+					if (offerPreprocessRetry)
+					{
+						ShowNativeConversationNpcOpeningPreprocessRetryInquiry(generation);
 					}
 				}
 				else if (!_isClosed && !_dataSource.IsCustomAnswerVisible)
@@ -813,6 +964,8 @@ public sealed class AnimusForgeNativeConversationOverlay
 		int generation = ++_submitGeneration;
 		string originalDialogText = ConversationHelper.GetCurrentDialogText();
 		bool receivedVisibleText = false;
+		bool offerPreprocessRetry = false;
+		bool suppressReadyNotice = false;
 		_isSubmitting = true;
 		ClearPendingPostprocessNotice();
 		_dataSource.SetBusy(true);
@@ -850,6 +1003,16 @@ public sealed class AnimusForgeNativeConversationOverlay
 					return;
 				}
 				completedReply = (completedReply ?? "").Replace("\r", "").Trim();
+				if (IsSubmitGenerationActive(generation) && ShoutBehavior.IsNativeConversationPreprocessUnavailableTextForExternal(completedReply))
+				{
+					offerPreprocessRetry = true;
+					suppressReadyNotice = true;
+					receivedVisibleText = false;
+					StopWaitingDotsAnimation(generation);
+					ConversationHelper.UpdateDialogText(originalDialogText ?? "");
+					_dataSource.InputText = text;
+					return;
+				}
 				if (IsSubmitGenerationActive(generation) && !string.IsNullOrWhiteSpace(completedReply))
 				{
 					receivedVisibleText = true;
@@ -900,14 +1063,21 @@ public sealed class AnimusForgeNativeConversationOverlay
 					_dataSource.SetBusy(false);
 					if (_dataSource.IsCustomAnswerVisible)
 					{
-						ShowInputReadyMessage();
-						PlayInputReadySound();
+						if (!suppressReadyNotice)
+						{
+							ShowInputReadyMessage();
+							PlayInputReadySound();
+						}
 						FocusInputIfVisible();
 					}
 					else
 					{
 						_postRestoreForceRestoreTicks = 8;
 						RestoreNativeConversationInputAfterOrdinaryMode(forceAnswerRestore: true);
+					}
+					if (offerPreprocessRetry)
+					{
+						ShowNativeConversationPreprocessRetryInquiry(text, generation);
 					}
 				}
 				else if (!_isClosed && !_dataSource.IsCustomAnswerVisible)

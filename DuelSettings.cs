@@ -812,6 +812,118 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("7. NPC主动接触")]
 	public int ProactiveNpcMinNeedUrgency { get; set; } = 60;
 
+	[SettingPropertyInteger("请求类型疲劳(天)", 0, 60, "0", Order = 27, RequireRestart = false, HintText = "玩家收到某类主动请求后，该类型在多少游戏日内大幅降低触发概率；0 表示关闭类型疲劳。默认 10 天。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public int ProactiveNpcRequestTypeFatigueDays { get; set; } = 10;
+
+	[SettingPropertyFloatingInteger("疲劳类型概率倍率", 0f, 1f, "0.00", Order = 28, RequireRestart = false, HintText = "处于类型疲劳期的请求，其需求驱动和知名度驱动概率乘以该倍率，同时降低该需求在候选中的优先级。默认 0.20。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public float ProactiveNpcRequestTypeFatigueMultiplier { get; set; } = 0.2f;
+
+	[SettingPropertyBool("启用 NPC 主动来信", Order = 0, RequireRestart = false, HintText = "允许已经认识玩家且具备足够亲密综合分的 NPC 主动派出真实信使。")]
+	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	public bool EnableNpcInitiatedLetters { get; set; } = true;
+
+	[SettingPropertyBool("主动来信测试模式", Order = 1, RequireRestart = false, HintText = "将触发概率提高到 100%，并取消主动来信冷却；仍要求 NPC 认识玩家、位置有效且动机真实。")]
+	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	public bool NpcInitiatedLetterTestMode { get; set; } = false;
+
+	[SettingPropertyInteger("最低亲密综合分", 0, 100, "0", Order = 2, RequireRestart = false, HintText = "私人关系与写信用信任值平均后的最低候选分。默认 10。")]
+	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	public int NpcInitiatedLetterMinBondScore { get; set; } = 10;
+
+	[SettingPropertyInteger("扫描间隔(小时)", 1, 168, "0", Order = 3, RequireRestart = false, HintText = "每隔多少游戏小时扫描一次主动来信候选。默认 24 小时。")]
+	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	public int NpcInitiatedLetterScanIntervalHours { get; set; } = 24;
+
+	[SettingPropertyFloatingInteger("写信概率倍率", 0f, 2f, "0.00", Order = 4, RequireRestart = false, HintText = "单次扫描概率=亲密综合分乘以该倍率。默认 0.25，即 100 分为 25%。")]
+	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	public float NpcInitiatedLetterChanceMultiplier { get; set; } = 0.25f;
+
+	[SettingPropertyInteger("全局冷却(天)", 0, 60, "0", Order = 5, RequireRestart = false, HintText = "任意 NPC 主动发信后，多少游戏日内不再启动下一封主动来信。默认 5 天。")]
+	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	public int NpcInitiatedLetterGlobalCooldownDays { get; set; } = 5;
+
+	[SettingPropertyInteger("低分 NPC 冷却(天)", 1, 120, "0", Order = 6, RequireRestart = false, HintText = "最低综合分 NPC 的发送者冷却。默认 45 天。")]
+	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	public int NpcInitiatedLetterLowScoreCooldownDays { get; set; } = 45;
+
+	[SettingPropertyInteger("高分 NPC 冷却(天)", 1, 60, "0", Order = 7, RequireRestart = false, HintText = "100 综合分 NPC 的发送者冷却。默认 14 天。")]
+	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	public int NpcInitiatedLetterHighScoreCooldownDays { get; set; } = 14;
+
+	[SettingPropertyInteger("最近交流静默期(天)", 0, 30, "0", Order = 8, RequireRestart = false, HintText = "任意渠道刚与该 NPC 交流后，至少等待多少游戏日再允许主动来信。默认 3 天。")]
+	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	public int NpcInitiatedLetterQuietDays { get; set; } = 3;
+
+	[SettingPropertyInteger("公共信任贡献上限", 0, 100, "0", Order = 9, RequireRestart = false, HintText = "公共信任对写信用信任值的正负贡献上限。默认 ±20。")]
+	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	public int NpcInitiatedLetterPublicTrustCap { get; set; } = 20;
+
+	[SettingPropertyInteger("动机疲劳(天)", 0, 120, "0", Order = 10, RequireRestart = false, HintText = "同一 NPC 重复使用同类写信动机时降低权重的持续时间。默认 30 天。")]
+	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	public int NpcInitiatedLetterMotiveFatigueDays { get; set; } = 30;
+
+	[SettingPropertyFloatingInteger("疲劳动机权重倍率", 0f, 1f, "0.00", Order = 11, RequireRestart = false, HintText = "处于疲劳期的问候、近况、事件、情感、请求或外交动机权重倍率。默认 0.25。")]
+	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	public float NpcInitiatedLetterMotiveFatigueMultiplier { get; set; } = 0.25f;
+
+	[SettingPropertyInteger("主动来信目标字数", 80, 1000, "0", Order = 12, RequireRestart = false, HintText = "NPC 主动来信正文的目标字数。默认 220 字。")]
+	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	public int NpcInitiatedLetterTargetChars { get; set; } = 220;
+
+	[SettingPropertyBool("写入主动来信调试日志", Order = 13, RequireRestart = false, HintText = "在 Mod_Logic.txt 中记录候选分数、概率、动机、冷却和跳过原因。")]
+	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	public bool NpcInitiatedLetterDebugLog { get; set; } = false;
+
+	[SettingPropertyBool("启用队内 Hero 主动聊天", Order = 0, RequireRestart = false, HintText = "允许玩家主队中的同伴、家人和其他 Hero 通过地图通知主动请求交谈。")]
+	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
+	public bool EnableCompanionProactiveChat { get; set; } = true;
+
+	[SettingPropertyBool("队内主动聊天测试模式", Order = 1, RequireRestart = false, HintText = "每游戏小时扫描、触发概率为 100% 且忽略冷却；仍要求 Hero 合法、玩家状态安全且存在有效动机。")]
+	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
+	public bool CompanionProactiveChatTestMode { get; set; } = false;
+
+	[SettingPropertyInteger("扫描间隔(小时)", 1, 168, "0", Order = 2, RequireRestart = false, HintText = "每隔多少游戏小时扫描一次队内 Hero。默认 24 小时。")]
+	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
+	public int CompanionProactiveChatScanIntervalHours { get; set; } = 24;
+
+	[SettingPropertyInteger("全局冷却(天)", 0, 120, "0", Order = 3, RequireRestart = false, HintText = "生成一次队内主动聊天通知后，多少游戏日内不再生成下一条。默认 21 天。")]
+	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
+	public int CompanionProactiveChatGlobalCooldownDays { get; set; } = 21;
+
+	[SettingPropertyInteger("同 Hero 冷却(天)", 0, 240, "0", Order = 4, RequireRestart = false, HintText = "同一 Hero 主动请求交谈后，多少游戏日内不会再次发起。默认 48 天。")]
+	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
+	public int CompanionProactiveChatHeroCooldownDays { get; set; } = 48;
+
+	[SettingPropertyInteger("任意交流静默期(天)", 0, 120, "0", Order = 5, RequireRestart = false, HintText = "任意渠道刚与该 Hero 交流后，至少等待多少游戏日再允许其主动聊天。默认 21 天。")]
+	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
+	public int CompanionProactiveChatInteractionQuietDays { get; set; } = 21;
+
+	[SettingPropertyInteger("通知有效期(天)", 1, 30, "0", Order = 6, RequireRestart = false, HintText = "队内主动聊天通知可保留多少游戏日；过期视为婉拒。默认 3 天。")]
+	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
+	public int CompanionProactiveChatNoticeLifetimeDays { get; set; } = 3;
+
+	[SettingPropertyFloatingInteger("触发概率倍率", 0f, 5f, "0.00", Order = 7, RequireRestart = false, HintText = "队内主动聊天每日概率的总体倍率。默认 1.00。")]
+	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
+	public float CompanionProactiveChatChanceMultiplier { get; set; } = 1f;
+
+	[SettingPropertyInteger("动机疲劳(天)", 0, 120, "0", Order = 8, RequireRestart = false, HintText = "同类主动聊天动机被选中后降低权重的持续时间。默认 30 天。")]
+	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
+	public int CompanionProactiveChatMotiveFatigueDays { get; set; } = 30;
+
+	[SettingPropertyFloatingInteger("疲劳动机权重倍率", 0f, 1f, "0.00", Order = 9, RequireRestart = false, HintText = "处于疲劳期的动机候选权重倍率。默认 0.25。")]
+	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
+	public float CompanionProactiveChatMotiveFatigueMultiplier { get; set; } = 0.25f;
+
+	[SettingPropertyInteger("近期事件窗口(天)", 1, 30, "0", Order = 10, RequireRestart = false, HintText = "Hero 或玩家近期真实事件可作为聊天动机的时间窗口。默认 10 天。")]
+	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
+	public int CompanionProactiveChatRecentEventWindowDays { get; set; } = 10;
+
+	[SettingPropertyBool("写入队内主动聊天调试日志", Order = 11, RequireRestart = false, HintText = "在 Mod_Logic.txt 中记录候选、概率、动机、冷却和通知状态。")]
+	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
+	public bool CompanionProactiveChatDebugLog { get; set; } = false;
+
 	[SettingPropertyInteger("玩家履历总结间隔(天)", 1, 30, "0", Order = 0, RequireRestart = false, HintText = "每隔多少游戏日尝试把玩家公开履历素材滚动总结一次。默认 3 天。")]
 	[SettingPropertyGroup("8. 玩家知名度")]
 	public int PlayerNotorietySummaryIntervalDays { get; set; } = 3;

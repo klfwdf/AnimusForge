@@ -1981,7 +1981,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private const int NativeConversationMainThreadPreprocessTimeoutMs = 30000;
 
-	private const int NativeConversationBackgroundPreprocessTimeoutMs = 25000;
+	private const int NativeConversationBackgroundPreprocessTimeoutMs = 120000;
 
 	private ConcurrentQueue<Action> _mainThreadActions = new ConcurrentQueue<Action>();
 
@@ -2470,6 +2470,33 @@ public class ShoutBehavior : CampaignBehaviorBase
 	private static string BuildProactiveSceneOpeningPromptSection(string extraFact, string promptText)
 	{
 		return BuildProactiveSceneOpeningFactText(extraFact, promptText);
+	}
+
+	private static string BuildNpcInitiatedOpeningUserText(string extraFact, string promptText)
+	{
+		List<string> sections = new List<string>();
+		string factBody = StripAfefPrefixForPromptSection(extraFact);
+		if (!string.IsNullOrWhiteSpace(factBody))
+		{
+			sections.Add("【当下事实】\n[AFEF NPC行为补充] " + factBody);
+		}
+		string promptBody = (promptText ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+		if (!string.IsNullOrWhiteSpace(promptBody))
+		{
+			sections.Add("【本轮行为请求】\n" + promptBody);
+		}
+		if (sections.Count == 0)
+		{
+			return "";
+		}
+		return "【NPC主动发起本轮对话】\n" + string.Join("\n\n", sections)
+			+ "\n\n以上 role=user 内容是行为与事实指令，不是玩家说出的台词。";
+	}
+
+	private static string BuildNpcInitiatedOpeningPersistentFactText(string extraFact)
+	{
+		string factBody = StripAfefPrefixForPromptSection(extraFact);
+		return string.IsNullOrWhiteSpace(factBody) ? "" : ("[AFEF NPC行为补充] " + factBody);
 	}
 
 	private static string StripAfefPrefixForPromptSection(string text)
@@ -16045,6 +16072,17 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return "（API请求失败: 原生对话前处理超时或上一轮仍在运行，请稍后重试）";
 	}
 
+	public static bool IsNativeConversationPreprocessUnavailableTextForExternal(string text)
+	{
+		string value = (text ?? "").Replace("\r", "").Trim();
+		if (string.IsNullOrWhiteSpace(value))
+		{
+			return false;
+		}
+		return value.StartsWith("（API请求失败", StringComparison.Ordinal)
+			&& value.IndexOf("原生对话前处理", StringComparison.Ordinal) >= 0;
+	}
+
 	private bool TryAcquireNativeConversationBackgroundPreprocessSlot(long requestId, long runtimeGeneration, string target, int targetAgentIndex)
 	{
 		for (int attempt = 0; attempt < 2; attempt++)
@@ -16783,21 +16821,25 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		Logger.Log("Logic", "[NativePerf] submit_start target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " npcInitiated=" + npcInitiatedOpening + " inputLen=" + playerText.Length);
 		FreezeWatchdog.Mark("NativeConversation.submit_start", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " npcInitiated=" + npcInitiatedOpening + " inputLen=" + playerText.Length, immediate: true);
-		string proactiveExtraFact = "";
-		string proactivePromptText = "";
-		string proactiveFactText = "";
-		bool proactiveNpcOpening = false;
+		string npcOpeningExtraFact = "";
+		string npcOpeningPromptText = "";
+		string npcOpeningUserText = "";
+		string npcOpeningPersistentFactText = "";
+		string npcOpeningSource = "";
+		bool npcOpeningConsumed = false;
 		if (npcInitiatedOpening)
 		{
-			proactiveNpcOpening = ProactiveNpcRequestBehavior.TryConsumePendingNativeOpening(targetHero, out proactiveExtraFact, out proactivePromptText);
-			if (!proactiveNpcOpening)
+			npcOpeningConsumed = NpcInitiatedOpeningRouter.TryConsumePendingNativeOpening(targetHero, out npcOpeningExtraFact, out npcOpeningPromptText, out npcOpeningSource);
+			if (!npcOpeningConsumed)
 			{
 				return "";
 			}
-			proactiveFactText = BuildProactiveSceneOpeningFactText(proactiveExtraFact, proactivePromptText);
+			npcOpeningUserText = BuildNpcInitiatedOpeningUserText(npcOpeningExtraFact, npcOpeningPromptText);
+			npcOpeningPersistentFactText = BuildNpcInitiatedOpeningPersistentFactText(npcOpeningExtraFact);
+			Logger.Log("ShoutBehavior", "[NativeConversation] NPC initiated opening consumed source=" + npcOpeningSource + " target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown"));
 		}
 		string promptPlayerText = npcInitiatedOpening ? "" : playerText;
-		string routingInput = npcInitiatedOpening ? proactiveFactText : promptPlayerText;
+		string routingInput = npcInitiatedOpening ? npcOpeningUserText : promptPlayerText;
 		bool shouldRecordPlayerInput = !npcInitiatedOpening;
 		FreezeWatchdog.Mark("NativeConversation.persona_start", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown"), immediate: true);
 		bool personaReady = await EnsureNativeConversationPersonaReadyAsync(targetHero, onStreamText).ConfigureAwait(false);
@@ -16818,11 +16860,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		// Do not feed vanilla conversation UI text into AF prompt history.
 		string currentNativeDialogText = "";
 		bool hadNativeConversationSessionHistoryBeforeTurn = HasNativeConversationSessionHistory(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, npc);
-		if (proactiveNpcOpening && !string.IsNullOrWhiteSpace(proactiveFactText))
-		{
-			AppendNativeConversationSessionHistory(targetHero, targetCharacter, npcName, "系统", proactiveFactText, "fact", targetAgentIndex: nativeTargetAgentIndex, npc: npc);
-		}
-		string extraFact = proactiveFactText;
+		string extraFact = npcOpeningPersistentFactText;
 		string nativeMeetingTauntRuleBlock = "";
 		string nativeMeetingTauntInstruction = (LordEncounterBehavior.BuildForcedMeetingTauntRuntimeInstructionForExternal(targetHero, targetCharacter) ?? "").Trim();
 		if (!string.IsNullOrWhiteSpace(nativeMeetingTauntInstruction))
@@ -16945,7 +16983,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string layeredPrompt = BuildSceneCompositeUserBlock("", roleTopIntro, taskSystemBlock);
 		layeredPrompt = AppendPlayerCustomPromptRuleToSystemPrompt(layeredPrompt);
 		string sceneDynamicUserBlock = BuildSceneCompositeUserBlock("", roleRuntimeContext, nativeNpcListBlock, trustBlock, miscExtrasSection);
-		List<object> messages = BuildStrictSceneMessagesForNpc(nativeTargetAgentIndex, layeredPrompt, new string[4] { privateRecentWindowSection, persistedWithoutRecentWindow, sceneDynamicUserBlock, BuildSceneCompositeUserBlock("", knowledgeExtrasSection, systemRuleBlock, nativeMeetingTauntRuleBlock) }, null, currentInputAlreadyRecorded: true, currentPlayerInput: promptPlayerText, injectedHistoryMessages: nativeHistoryMessages, includeSceneHistory: false, persistentHistoryMessages: persistentMemoryRoleMessages, pendingCurrentAfefFactMessages: pendingNativeCurrentAfefFacts, useSceneDistanceSpeechLabels: false);
+		List<object> messages = BuildStrictSceneMessagesForNpc(nativeTargetAgentIndex, layeredPrompt, new string[4] { privateRecentWindowSection, persistedWithoutRecentWindow, sceneDynamicUserBlock, BuildSceneCompositeUserBlock("", knowledgeExtrasSection, systemRuleBlock, nativeMeetingTauntRuleBlock) }, new string[1] { npcInitiatedOpening ? npcOpeningUserText : "" }, currentInputAlreadyRecorded: true, currentPlayerInput: promptPlayerText, injectedHistoryMessages: nativeHistoryMessages, includeSceneHistory: false, persistentHistoryMessages: persistentMemoryRoleMessages, pendingCurrentAfefFactMessages: pendingNativeCurrentAfefFacts, useSceneDistanceSpeechLabels: false);
 		Logger.Log("ShoutBehavior", "[NativeConversation] request target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown") + " agentIndex=" + nativeTargetAgentIndex + " messages=" + messages.Count + " includeSceneSessionMemory=" + includeCurrentSceneSessionInPersistedHistory + " persistedChars=" + (persistedHeroHistory?.Length ?? 0) + " preprocessHits=" + ((postprocessPreprocessHits.Count == 0) ? "(none)" : string.Join(",", postprocessPreprocessHits)));
 		Stopwatch nativeMainApiSw = Stopwatch.StartNew();
 		FreezeWatchdog.Mark("NativeConversation.main_reply_start", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " messages=" + messages.Count, immediate: true);
@@ -16997,7 +17035,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string historyForPostprocess = BuildSceneCompositeUserBlock("", privateRecentWindowForPostprocess, scenePublicHistorySection);
 		if (string.IsNullOrWhiteSpace(historyForPostprocess))
 		{
-			historyForPostprocess = proactiveNpcOpening ? proactiveFactText : promptPlayerText;
+			historyForPostprocess = npcOpeningConsumed ? npcOpeningUserText : promptPlayerText;
 		}
 		bool duelPostprocessSelected = duelRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "duel");
 		bool rewardPostprocessSelected = rewardRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "reward");
@@ -17101,17 +17139,17 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				int sceneSessionId = TryGetCurrentSceneHistorySessionIdForHistoryPersistence();
 				if (sceneSessionId >= 0)
 				{
-					MyBehavior.AppendExternalSceneDialogueHistory(targetHero, shouldRecordPlayerInput ? promptPlayerText : null, historyReplyText, proactiveNpcOpening ? proactiveFactText : null, sceneSessionId);
+					MyBehavior.AppendExternalSceneDialogueHistory(targetHero, shouldRecordPlayerInput ? promptPlayerText : null, historyReplyText, npcOpeningConsumed ? npcOpeningPersistentFactText : null, sceneSessionId);
 				}
 				else
 				{
-					MyBehavior.AppendExternalDialogueHistory(targetHero, shouldRecordPlayerInput ? promptPlayerText : null, historyReplyText, proactiveNpcOpening ? proactiveFactText : null);
+					MyBehavior.AppendExternalDialogueHistory(targetHero, shouldRecordPlayerInput ? promptPlayerText : null, historyReplyText, npcOpeningConsumed ? npcOpeningPersistentFactText : null);
 				}
 			}
 			else
 			{
 				int sceneSessionId = TryGetCurrentSceneHistorySessionIdForHistoryPersistence();
-				AppendWildernessNonHeroMemory(npc, targetHero, targetCharacter, nativeTargetAgentIndex, shouldRecordPlayerInput ? promptPlayerText : null, historyReplyText, proactiveNpcOpening ? proactiveFactText : null, sceneSessionId);
+				AppendWildernessNonHeroMemory(npc, targetHero, targetCharacter, nativeTargetAgentIndex, shouldRecordPlayerInput ? promptPlayerText : null, historyReplyText, npcOpeningConsumed ? npcOpeningPersistentFactText : null, sceneSessionId);
 			}
 		}
 		catch
@@ -22400,7 +22438,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, BuildSceneRelayTargetListForPostprocess(relayCandidates, targetAgentIndex));
 		}
 		string text8 = AIConfigHandler.BuildActionPostprocessSystemPrompt(text3, text4, text20, text5, text6, text7, marriagePlayerCandidates, marriageTargetCandidates, marriageFactHint);
-		string text9 = BuildSceneActionPostprocessUserPrompt(actionPostprocessUserPromptTemplate, text3, text20, text2, AIConfigHandler.BuildActionPostprocessLatestReplyBlock(playerText, text, text20, text2), text5, text6, text7, marriagePlayerCandidates, marriageTargetCandidates, marriageFactHint, runtimeContext);
+		string latestReplyBlock = replyIsDirectPlayerResponse
+			? AIConfigHandler.BuildActionPostprocessLatestReplyBlock(playerText, text, text20, text2)
+			: AIConfigHandler.BuildActionPostprocessLatestReplyBlock("", text, text20, null);
+		string text9 = BuildSceneActionPostprocessUserPrompt(actionPostprocessUserPromptTemplate, text3, text20, text2, latestReplyBlock, text5, text6, text7, marriagePlayerCandidates, marriageTargetCandidates, marriageFactHint, runtimeContext);
 		if (!AIConfigHandler.TryCallAuxiliaryActionPostprocess(text8, text9, 5000, 0f, out var content, out var error))
 		{
 			Logger.Log("ShoutBehavior", "[UnifiedPostprocess] 调用失败: " + error);

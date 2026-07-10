@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
+using Helpers;
 using HarmonyLib;
 using Newtonsoft.Json;
 using TaleWorlds.CampaignSystem;
@@ -17,6 +18,7 @@ using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.ComponentInterfaces;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.Election;
+using TaleWorlds.CampaignSystem.Inventory;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Party.PartyComponents;
@@ -585,6 +587,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		ClearGeneratedRewardRuntimeState("register_events");
 		CampaignEvents.OnGameLoadFinishedEvent.AddNonSerializedListener(this, OnGameLoadFinished);
 		CampaignEvents.DailyTickEvent.AddNonSerializedListener(this, OnDailyTick);
+		CampaignEvents.DailyTickSettlementEvent.AddNonSerializedListener(this, OnDailyTickSettlement);
 		CampaignEvents.MapEventEnded.AddNonSerializedListener(this, OnMapEventEnded);
 		CampaignEvents.OnPlayerPartyKnockedOrKilledTroopEvent.AddNonSerializedListener(this, OnPlayerPartyKnockedOrKilledTroop);
 		CampaignEvents.OnQuestCompletedEvent.AddNonSerializedListener(this, OnQuestCompleted);
@@ -661,6 +664,99 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		catch (Exception ex5)
 		{
 			Logger.LogTrace("RewardSystem", ">>> Generated item tooltip patch failed: " + ex5.Message);
+		}
+		try
+		{
+			MethodInfo openScreenAsTrade = AccessTools.Method(typeof(InventoryScreenHelper), nameof(InventoryScreenHelper.OpenScreenAsTrade), new Type[4]
+			{
+				typeof(ItemRoster),
+				typeof(SettlementComponent),
+				typeof(InventoryScreenHelper.InventoryCategoryType),
+				typeof(Action)
+			});
+			MethodInfo openScreenAsTradePrefix = AccessTools.Method(typeof(RewardSystemBehavior), nameof(InventoryScreenHelperOpenScreenAsTradePrefix));
+			if (openScreenAsTrade != null && openScreenAsTradePrefix != null)
+			{
+				patcher.Patch(openScreenAsTrade, prefix: new HarmonyMethod(openScreenAsTradePrefix));
+			}
+		}
+		catch (Exception ex6)
+		{
+			Logger.LogTrace("RewardSystem", ">>> Generated item market trade cleanup patch failed: " + ex6.Message);
+		}
+		try
+		{
+			MethodInfo addTransferCommand = AccessTools.Method(typeof(InventoryLogic), nameof(InventoryLogic.AddTransferCommand), new Type[1] { typeof(TransferCommand) });
+			MethodInfo addTransferCommandPrefix = AccessTools.Method(typeof(RewardSystemBehavior), nameof(InventoryLogicAddTransferCommandPrefix));
+			if (addTransferCommand != null && addTransferCommandPrefix != null)
+			{
+				patcher.Patch(addTransferCommand, prefix: new HarmonyMethod(addTransferCommandPrefix));
+			}
+		}
+		catch (Exception ex7)
+		{
+			Logger.LogTrace("RewardSystem", ">>> Generated item market transfer guard patch failed: " + ex7.Message);
+		}
+		try
+		{
+			MethodInfo addTransferCommands = AccessTools.Method(typeof(InventoryLogic), nameof(InventoryLogic.AddTransferCommands), new Type[1] { typeof(IEnumerable<TransferCommand>) });
+			MethodInfo addTransferCommandsPrefix = AccessTools.Method(typeof(RewardSystemBehavior), nameof(InventoryLogicAddTransferCommandsPrefix));
+			if (addTransferCommands != null && addTransferCommandsPrefix != null)
+			{
+				patcher.Patch(addTransferCommands, prefix: new HarmonyMethod(addTransferCommandsPrefix));
+			}
+		}
+		catch (Exception ex8)
+		{
+			Logger.LogTrace("RewardSystem", ">>> Generated item market batch transfer guard patch failed: " + ex8.Message);
+		}
+		try
+		{
+			MethodInfo sellItems = AccessTools.Method(typeof(SellItemsAction), nameof(SellItemsAction.Apply), new Type[5]
+			{
+				typeof(PartyBase),
+				typeof(PartyBase),
+				typeof(ItemRosterElement),
+				typeof(int),
+				typeof(Settlement)
+			});
+			MethodInfo sellItemsPrefix = AccessTools.Method(typeof(RewardSystemBehavior), nameof(SellItemsActionApplyPrefix));
+			if (sellItems != null && sellItemsPrefix != null)
+			{
+				patcher.Patch(sellItems, prefix: new HarmonyMethod(sellItemsPrefix));
+			}
+		}
+		catch (Exception ex9)
+		{
+			Logger.LogTrace("RewardSystem", ">>> Generated item settlement sale guard patch failed: " + ex9.Message);
+		}
+		try
+		{
+			MethodInfo villagerTrade = AccessTools.Method(typeof(SellGoodsForTradeAction), nameof(SellGoodsForTradeAction.ApplyByVillagerTrade));
+			PatchGeneratedRewardMarketPartySale(patcher, villagerTrade, nameof(VillagerSellGoodsPrefix), nameof(VillagerSellGoodsFinalizer));
+		}
+		catch (Exception ex10)
+		{
+			Logger.LogTrace("RewardSystem", ">>> Generated item villager market sale guard patch failed: " + ex10.Message);
+		}
+		try
+		{
+			MethodInfo caravanSellGoods = AccessTools.Method(typeof(CaravansCampaignBehavior), "SellGoodsInternal");
+			PatchGeneratedRewardMarketPartySale(patcher, caravanSellGoods, nameof(CaravanSellGoodsPrefix), nameof(CaravanSellGoodsFinalizer));
+		}
+		catch (Exception ex11)
+		{
+			Logger.LogTrace("RewardSystem", ">>> Generated item caravan market sale guard patch failed: " + ex11.Message);
+		}
+	}
+
+	private static void PatchGeneratedRewardMarketPartySale(Harmony patcher, MethodInfo original, string prefixName, string finalizerName)
+	{
+		MethodInfo prefix = AccessTools.Method(typeof(RewardSystemBehavior), prefixName);
+		MethodInfo finalizer = AccessTools.Method(typeof(RewardSystemBehavior), finalizerName);
+		if (original != null && prefix != null && finalizer != null)
+		{
+			patcher.Patch(original, prefix: new HarmonyMethod(prefix), finalizer: new HarmonyMethod(finalizer));
 		}
 	}
 
@@ -1113,6 +1209,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		RestoreGeneratedRewardItemDefinitions("game_load_finished");
 		RestoreGeneratedRewardPlayerRosterItems("game_load_finished");
 		RepairGeneratedRewardItemCategories("game_load_finished");
+		RemoveGeneratedRewardItemsFromMarketRosters("game_load_finished");
 		CourierDeliveryBehavior.Instance?.RestoreCourierLetterInventoryItemsAfterGeneratedRewardRestore("reward_game_load_finished");
 		CleanupPlayerCompanionLordCacheDuplicates("game_load_finished");
 		RepairInactivePromotedPlayerCompanions("game_load_finished");
@@ -6974,6 +7071,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			RemoveGeneratedRewardItemsFromMarketRosters("daily_tick");
 			if (_debts == null || _debts.Count <= 0)
 			{
 				return;
@@ -8282,7 +8380,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				ItemRosterElement elementCopyAtIndex = itemRoster.GetElementCopyAtIndex(i);
 				EquipmentElement equipmentElement = elementCopyAtIndex.EquipmentElement;
 				ItemObject item = equipmentElement.Item;
-				if (item == null || elementCopyAtIndex.Amount <= 0)
+				if (item == null || elementCopyAtIndex.Amount <= 0 || (settlement != null && IsGeneratedRewardMarketExcludedItem(item)))
 				{
 					continue;
 				}
@@ -10169,6 +10267,310 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return !string.IsNullOrWhiteSpace(stringId) && stringId.Trim().StartsWith("af_generated_reward_", StringComparison.OrdinalIgnoreCase);
 	}
 
+	private static bool IsGeneratedRewardMarketExcludedItem(ItemObject item)
+	{
+		return IsGeneratedRewardItemStringId(item?.StringId);
+	}
+
+	private static void InventoryScreenHelperOpenScreenAsTradePrefix(ItemRoster leftRoster, SettlementComponent settlementComponent, ref Action doneLogicExtrasDelegate)
+	{
+		try
+		{
+			RemoveGeneratedRewardItemsFromSettlementMarket(settlementComponent?.Settlement, "trade_open");
+			RemoveGeneratedRewardItemsFromRoster(leftRoster, BuildGeneratedRewardMarketRosterLabel(settlementComponent?.Settlement, "trade_roster"), "trade_open_roster");
+			Action originalDone = doneLogicExtrasDelegate;
+			doneLogicExtrasDelegate = delegate
+			{
+				try
+				{
+					originalDone?.Invoke();
+				}
+				finally
+				{
+					RemoveGeneratedRewardItemsFromSettlementMarket(settlementComponent?.Settlement, "trade_close");
+					RemoveGeneratedRewardItemsFromRoster(leftRoster, BuildGeneratedRewardMarketRosterLabel(settlementComponent?.Settlement, "trade_roster"), "trade_close_roster");
+				}
+			};
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardItemMarketGuard] trade_open_cleanup_failed error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+		}
+	}
+
+	private void OnDailyTickSettlement(Settlement settlement)
+	{
+		RemoveGeneratedRewardItemsFromSettlementMarket(settlement, "daily_tick_settlement");
+	}
+
+	private static bool InventoryLogicAddTransferCommandPrefix(InventoryLogic __instance, TransferCommand command)
+	{
+		return !ShouldBlockGeneratedRewardMarketTransfer(__instance, command, notify: true);
+	}
+
+	private static bool InventoryLogicAddTransferCommandsPrefix(InventoryLogic __instance, IEnumerable<TransferCommand> commands)
+	{
+		if (commands == null)
+		{
+			return true;
+		}
+		List<TransferCommand> list = commands.ToList();
+		if (!list.Any((TransferCommand command) => ShouldBlockGeneratedRewardMarketTransfer(__instance, command, notify: false)))
+		{
+			return true;
+		}
+		bool notified = false;
+		foreach (TransferCommand command in list)
+		{
+			if (ShouldBlockGeneratedRewardMarketTransfer(__instance, command, notify: !notified))
+			{
+				notified = true;
+				continue;
+			}
+			__instance?.AddTransferCommand(command);
+		}
+		return false;
+	}
+
+	private static bool SellItemsActionApplyPrefix(PartyBase receiverParty, PartyBase payerParty, ItemRosterElement subject)
+	{
+		if (!IsGeneratedRewardMarketExcludedItem(subject.EquipmentElement.Item))
+		{
+			return true;
+		}
+		bool involvesSettlementMarket = receiverParty?.IsSettlement == true || payerParty?.IsSettlement == true;
+		if (!involvesSettlementMarket)
+		{
+			return true;
+		}
+		try
+		{
+			Logger.Log("Logic", "[RewardItemMarketGuard] blocked_party_settlement_sale item=" + (subject.EquipmentElement.Item.StringId ?? "") + " seller=" + (receiverParty?.Name?.ToString() ?? "") + " buyer=" + (payerParty?.Name?.ToString() ?? ""));
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private static void VillagerSellGoodsPrefix(MobileParty villagerParty, out List<ItemRosterElement> __state)
+	{
+		__state = TakeGeneratedRewardItemsFromRoster(villagerParty?.ItemRoster);
+	}
+
+	private static Exception VillagerSellGoodsFinalizer(MobileParty villagerParty, List<ItemRosterElement> __state, Exception __exception)
+	{
+		RestoreGeneratedRewardItemsToRoster(villagerParty?.ItemRoster, __state);
+		return __exception;
+	}
+
+	private static void CaravanSellGoodsPrefix(MobileParty mobileParty, out List<ItemRosterElement> __state)
+	{
+		__state = TakeGeneratedRewardItemsFromRoster(mobileParty?.ItemRoster);
+	}
+
+	private static Exception CaravanSellGoodsFinalizer(MobileParty mobileParty, List<ItemRosterElement> __state, Exception __exception)
+	{
+		RestoreGeneratedRewardItemsToRoster(mobileParty?.ItemRoster, __state);
+		return __exception;
+	}
+
+	private static List<ItemRosterElement> TakeGeneratedRewardItemsFromRoster(ItemRoster roster)
+	{
+		List<ItemRosterElement> hidden = new List<ItemRosterElement>();
+		if (roster == null)
+		{
+			return hidden;
+		}
+		List<ItemRosterElement> candidates = new List<ItemRosterElement>();
+		try
+		{
+			for (int i = 0; i < roster.Count; i++)
+			{
+				ItemRosterElement element = roster.GetElementCopyAtIndex(i);
+				if (element.Amount > 0 && IsGeneratedRewardMarketExcludedItem(element.EquipmentElement.Item))
+				{
+					candidates.Add(element);
+				}
+			}
+			foreach (ItemRosterElement element in candidates)
+			{
+				roster.AddToCounts(element.EquipmentElement, -element.Amount);
+				hidden.Add(element);
+			}
+		}
+		catch (Exception ex)
+		{
+			RestoreGeneratedRewardItemsToRoster(roster, hidden);
+			hidden.Clear();
+			try
+			{
+				Logger.Log("Logic", "[RewardItemMarketGuard] market_party_hide_failed error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+		}
+		return hidden;
+	}
+
+	private static void RestoreGeneratedRewardItemsToRoster(ItemRoster roster, IEnumerable<ItemRosterElement> hidden)
+	{
+		if (roster == null || hidden == null)
+		{
+			return;
+		}
+		try
+		{
+			foreach (ItemRosterElement element in hidden)
+			{
+				if (element.Amount > 0)
+				{
+					roster.AddToCounts(element.EquipmentElement, element.Amount);
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardItemMarketGuard] market_party_restore_failed error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+		}
+	}
+
+	private static bool ShouldBlockGeneratedRewardMarketTransfer(InventoryLogic inventoryLogic, TransferCommand command, bool notify)
+	{
+		try
+		{
+			if (inventoryLogic == null || !inventoryLogic.IsTrading)
+			{
+				return false;
+			}
+			ItemObject item = command.ElementToTransfer.EquipmentElement.Item;
+			if (!IsGeneratedRewardMarketExcludedItem(item))
+			{
+				return false;
+			}
+			bool involvesMarketSide = command.FromSide == InventoryLogic.InventorySide.OtherInventory || command.ToSide == InventoryLogic.InventorySide.OtherInventory;
+			bool involvesPlayerSide = command.FromSide == InventoryLogic.InventorySide.PlayerInventory
+				|| command.ToSide == InventoryLogic.InventorySide.PlayerInventory
+				|| InventoryLogic.IsEquipmentSide(command.FromSide)
+				|| InventoryLogic.IsEquipmentSide(command.ToSide);
+			if (!involvesMarketSide || !involvesPlayerSide)
+			{
+				return false;
+			}
+			if (notify)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("RP生成物品不会进入市场交易。"));
+			}
+			try
+			{
+				Logger.Log("Logic", "[RewardItemMarketGuard] blocked_trade_transfer item=" + (item.StringId ?? "") + " from=" + command.FromSide + " to=" + command.ToSide + " amount=" + command.Amount.ToString(CultureInfo.InvariantCulture));
+			}
+			catch
+			{
+			}
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static string BuildGeneratedRewardMarketRosterLabel(Settlement settlement, string fallback)
+	{
+		string text = (settlement?.StringId ?? "").Trim();
+		return string.IsNullOrWhiteSpace(text) ? (fallback ?? "") : text;
+	}
+
+	private static int RemoveGeneratedRewardItemsFromRoster(ItemRoster roster, string ownerLabel, string reason)
+	{
+		if (roster == null)
+		{
+			return 0;
+		}
+		int removed = 0;
+		List<ItemRosterElement> toRemove = new List<ItemRosterElement>();
+		try
+		{
+			for (int i = 0; i < roster.Count; i++)
+			{
+				ItemRosterElement element = roster.GetElementCopyAtIndex(i);
+				if (element.Amount > 0 && IsGeneratedRewardMarketExcludedItem(element.EquipmentElement.Item))
+				{
+					toRemove.Add(element);
+				}
+			}
+			foreach (ItemRosterElement element in toRemove)
+			{
+				int amount = Math.Max(0, element.Amount);
+				if (amount <= 0)
+				{
+					continue;
+				}
+				roster.AddToCounts(element.EquipmentElement, -amount);
+				removed += amount;
+			}
+			if (removed > 0)
+			{
+				Logger.Log("Logic", "[RewardItemMarketGuard] removed_market_generated_items reason=" + (reason ?? "") + " owner=" + (ownerLabel ?? "") + " count=" + removed.ToString(CultureInfo.InvariantCulture) + " slots=" + toRemove.Count.ToString(CultureInfo.InvariantCulture));
+			}
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardItemMarketGuard] cleanup_failed reason=" + (reason ?? "") + " owner=" + (ownerLabel ?? "") + " error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+		}
+		return removed;
+	}
+
+	private static int RemoveGeneratedRewardItemsFromSettlementMarket(Settlement settlement, string reason)
+	{
+		try
+		{
+			return RemoveGeneratedRewardItemsFromRoster(settlement?.ItemRoster, BuildGeneratedRewardMarketRosterLabel(settlement, "settlement_market"), reason);
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static int RemoveGeneratedRewardItemsFromMarketRosters(string reason)
+	{
+		int removed = 0;
+		IEnumerable<Settlement> settlements = null;
+		try
+		{
+			settlements = Campaign.Current?.Settlements;
+		}
+		catch
+		{
+		}
+		foreach (Settlement settlement in settlements ?? Enumerable.Empty<Settlement>())
+		{
+			removed += RemoveGeneratedRewardItemsFromSettlementMarket(settlement, reason);
+		}
+		return removed;
+	}
+
 	private GeneratedRewardItemRecord GetGeneratedRewardItemRecord(string generatedStringId)
 	{
 		if (!IsGeneratedRewardItemStringId(generatedStringId))
@@ -10602,19 +11004,13 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		foreach (Settlement settlement in settlements ?? Enumerable.Empty<Settlement>())
 		{
-			ItemRoster roster = null;
 			ItemRoster stash = null;
 			try
 			{
-				roster = settlement?.ItemRoster;
 				stash = settlement?.Stash;
 			}
 			catch
 			{
-			}
-			if (roster != null)
-			{
-				yield return roster;
 			}
 			if (stash != null)
 			{
@@ -11463,7 +11859,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	private static bool MatchesSettlementMerchantPromptStringId(EquipmentElement equipmentElement, string promptStringId)
 	{
-		if (equipmentElement.Item == null || string.IsNullOrWhiteSpace(promptStringId))
+		if (equipmentElement.Item == null || IsGeneratedRewardMarketExcludedItem(equipmentElement.Item) || string.IsNullOrWhiteSpace(promptStringId))
 		{
 			return false;
 		}
@@ -11776,7 +12172,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (settlement == null || string.IsNullOrWhiteSpace(itemId))
+			if (settlement == null || string.IsNullOrWhiteSpace(itemId) || IsGeneratedRewardItemStringId(itemId))
 			{
 				return 0;
 			}
@@ -11790,7 +12186,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				ItemRosterElement elementCopyAtIndex = itemRoster.GetElementCopyAtIndex(i);
 				ItemObject item = elementCopyAtIndex.EquipmentElement.Item;
-				if (item != null && elementCopyAtIndex.Amount > 0 && string.Equals(item.StringId ?? "", itemId, StringComparison.OrdinalIgnoreCase))
+				if (item != null && elementCopyAtIndex.Amount > 0 && !IsGeneratedRewardMarketExcludedItem(item) && string.Equals(item.StringId ?? "", itemId, StringComparison.OrdinalIgnoreCase))
 				{
 					num += elementCopyAtIndex.Amount;
 				}
@@ -11813,7 +12209,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			UsedNoStockFallback = false,
 			UsedBaseValueFallback = true
 		};
-		if (item == null)
+		if (item == null || IsGeneratedRewardMarketExcludedItem(item))
 		{
 			return itemGuidePriceInfo;
 		}
@@ -11979,7 +12375,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	private static bool MatchesSettlementMerchantKind(ItemObject item, SettlementMerchantKind kind)
 	{
-		if (item == null)
+		if (item == null || IsGeneratedRewardMarketExcludedItem(item))
 		{
 			return false;
 		}
@@ -12342,7 +12738,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			ItemRosterElement elementCopyAtIndex = itemRoster.GetElementCopyAtIndex(i);
 			ItemObject item = elementCopyAtIndex.EquipmentElement.Item;
-			if (item != null && elementCopyAtIndex.Amount > 0 && predicate(item))
+			if (item != null && elementCopyAtIndex.Amount > 0 && !IsGeneratedRewardMarketExcludedItem(item) && predicate(item))
 			{
 				return true;
 			}
@@ -12456,7 +12852,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	private static bool MatchesNotableMarketInventory(Hero hero, ItemObject item, Settlement settlement)
 	{
-		if (hero == null || item == null)
+		if (hero == null || item == null || IsGeneratedRewardMarketExcludedItem(item))
 		{
 			return false;
 		}
@@ -17243,7 +17639,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				ItemRosterElement elementCopyAtIndex = itemRoster.GetElementCopyAtIndex(i);
 				EquipmentElement equipmentElement2 = elementCopyAtIndex.EquipmentElement;
 				ItemObject item = equipmentElement2.Item;
-				if (item != null && elementCopyAtIndex.Amount > 0 && string.Equals(item.StringId ?? "", requestedItemId, StringComparison.OrdinalIgnoreCase))
+				if (item != null && elementCopyAtIndex.Amount > 0 && !IsGeneratedRewardMarketExcludedItem(item) && string.Equals(item.StringId ?? "", requestedItemId, StringComparison.OrdinalIgnoreCase))
 				{
 					string text = BuildSettlementMerchantInventoryKey(equipmentElement2);
 					if (!string.IsNullOrWhiteSpace(text))
@@ -17382,7 +17778,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			ItemRosterElement elementCopyAtIndex = itemRoster.GetElementCopyAtIndex(i);
 			ItemObject item = elementCopyAtIndex.EquipmentElement.Item;
-			if (item != null && MatchesItemLookupToken(elementCopyAtIndex.EquipmentElement, lookup))
+			if (item != null && !IsGeneratedRewardMarketExcludedItem(item) && MatchesItemLookupToken(elementCopyAtIndex.EquipmentElement, lookup))
 			{
 				itemObject = item;
 				num += Math.Max(0, elementCopyAtIndex.Amount);

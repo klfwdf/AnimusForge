@@ -15121,6 +15121,11 @@ public class MyBehavior : CampaignBehaviorBase
 		return TryBuildPlayerPublicDisplayNameForPrompt(observer, out var displayName, out var _) ? displayName : "玩家";
 	}
 
+	private static string BuildPlayerPublicDisplayNameForPrompt(string observerKey, string cultureId)
+	{
+		return TryBuildPlayerPublicDisplayNameForPrompt(observerKey, cultureId, out var displayName, out var _) ? displayName : "玩家";
+	}
+
 	private static string BuildPlayerPublicDisplayNameForPrompt(Hero observer, CharacterObject observerCharacter, int targetAgentIndex = -1)
 	{
 		if (observer != null || observerCharacter?.HeroObject != null)
@@ -15155,6 +15160,56 @@ public class MyBehavior : CampaignBehaviorBase
 		try
 		{
 			if (PlayerNotorietyBehavior.DoesObserverKnowPlayerForExternal(observer))
+			{
+				string text = (mainHero.Name?.ToString() ?? "").Trim();
+				if (!string.IsNullOrWhiteSpace(text))
+				{
+					displayName = text;
+					isCompleteIdentity = true;
+					return true;
+				}
+			}
+		}
+		catch
+		{
+		}
+		string text2 = "未知";
+		try
+		{
+			string text3 = (mainHero.Culture?.Name?.ToString() ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text3))
+			{
+				text2 = text3;
+			}
+		}
+		catch
+		{
+		}
+		string text4 = "未知";
+		try
+		{
+			text4 = BuildAgeBracketLabel(mainHero.Age);
+		}
+		catch
+		{
+			text4 = "未知";
+		}
+		displayName = text2 + text4;
+		return !string.IsNullOrWhiteSpace(displayName);
+	}
+
+	private static bool TryBuildPlayerPublicDisplayNameForPrompt(string observerKey, string cultureId, out string displayName, out bool isCompleteIdentity)
+	{
+		displayName = "玩家";
+		isCompleteIdentity = false;
+		Hero mainHero = Hero.MainHero;
+		if (mainHero == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (PlayerNotorietyBehavior.DoesObserverKnowPlayerForExternal(observerKey, cultureId))
 			{
 				string text = (mainHero.Name?.ToString() ?? "").Trim();
 				if (!string.IsNullOrWhiteSpace(text))
@@ -15228,6 +15283,11 @@ public class MyBehavior : CampaignBehaviorBase
 	public static string BuildPlayerPublicDisplayNameForExternal(Hero observer)
 	{
 		return BuildPlayerPublicDisplayNameForPrompt(observer);
+	}
+
+	public static string BuildPlayerPublicDisplayNameForExternal(string observerKey, string cultureId)
+	{
+		return BuildPlayerPublicDisplayNameForPrompt(observerKey, cultureId);
 	}
 
 	private static bool DoesPlayerNotorietyObserverKnowPlayer(Hero observerHero, CharacterObject observerCharacter = null, int targetAgentIndex = -1)
@@ -25385,6 +25445,179 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
+	}
+
+	public static bool HasMeaningfulDialogueHistoryForExternal(Hero hero)
+	{
+		try
+		{
+			MyBehavior behavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			return behavior != null && behavior.HasMeaningfulDialogueHistoryInternal(hero);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	public static int GetLastMeaningfulDialogueDayForExternal(Hero hero)
+	{
+		try
+		{
+			MyBehavior behavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			return behavior?.GetLastMeaningfulDialogueDayInternal(hero) ?? -1;
+		}
+		catch
+		{
+			return -1;
+		}
+	}
+
+	public static bool TryGetLatestNpcRecentActionForExternal(Hero hero, out string stableKey, out string actionText, out int day)
+	{
+		stableKey = "";
+		actionText = "";
+		day = -1;
+		try
+		{
+			MyBehavior behavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			return behavior != null && behavior.TryGetLatestNpcRecentActionInternal(hero, out stableKey, out actionText, out day);
+		}
+		catch
+		{
+			stableKey = "";
+			actionText = "";
+			day = -1;
+			return false;
+		}
+	}
+
+	public static bool TryGetLatestMeaningfulDialogueForExternal(Hero hero, out string stableKey, out string dialogueText, out int day)
+	{
+		stableKey = "";
+		dialogueText = "";
+		day = -1;
+		try
+		{
+			MyBehavior behavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			return behavior != null && behavior.TryGetLatestMeaningfulDialogueInternal(hero, out stableKey, out dialogueText, out day);
+		}
+		catch
+		{
+			stableKey = "";
+			dialogueText = "";
+			day = -1;
+			return false;
+		}
+	}
+
+	private bool HasMeaningfulDialogueHistoryInternal(Hero hero)
+	{
+		return GetLastMeaningfulDialogueDayInternal(hero) >= 0;
+	}
+
+	private int GetLastMeaningfulDialogueDayInternal(Hero hero)
+	{
+		if (hero == null)
+		{
+			return -1;
+		}
+		List<DialogueDay> history = LoadDialogueHistory(hero);
+		foreach (DialogueDay dialogueDay in (history ?? new List<DialogueDay>()).OrderByDescending(x => x?.GameDayIndex ?? -1))
+		{
+			if (dialogueDay?.Lines == null)
+			{
+				continue;
+			}
+			if (dialogueDay.Lines.Any(line => IsMeaningfulDialogueLineForProactiveLetter(line)))
+			{
+				return dialogueDay.GameDayIndex;
+			}
+		}
+		return -1;
+	}
+
+	private bool TryGetLatestMeaningfulDialogueInternal(Hero hero, out string stableKey, out string dialogueText, out int day)
+	{
+		stableKey = "";
+		dialogueText = "";
+		day = -1;
+		if (hero == null)
+		{
+			return false;
+		}
+		List<DialogueDay> history = LoadDialogueHistory(hero) ?? new List<DialogueDay>();
+		foreach (var record in history
+			.Select((value, index) => new { Value = value, Index = index })
+			.OrderByDescending(x => x.Value?.GameDayIndex ?? -1)
+			.ThenByDescending(x => x.Index))
+		{
+			DialogueDay dialogueDay = record.Value;
+			if (dialogueDay?.Lines == null)
+			{
+				continue;
+			}
+			for (int lineIndex = dialogueDay.Lines.Count - 1; lineIndex >= 0; lineIndex--)
+			{
+				string line = (dialogueDay.Lines[lineIndex] ?? "").Trim();
+				if (!IsMeaningfulDialogueLineForProactiveLetter(line))
+				{
+					continue;
+				}
+				string heroId = (hero.StringId ?? "hero").Trim();
+				stableKey = "dialogue:" + heroId + ":" + dialogueDay.GameDayIndex + ":" + record.Index + ":" + lineIndex;
+				dialogueText = line;
+				day = dialogueDay.GameDayIndex;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static bool IsMeaningfulDialogueLineForProactiveLetter(string line)
+	{
+		string text = (line ?? "").Trim();
+		return !string.IsNullOrWhiteSpace(text)
+			&& !IsActiveSceneSessionHistoryLine(text)
+			&& !IsSceneShoutObserverHistoryLine(text)
+			&& !IsLoreInjectionHistoryLine(text)
+			&& !IsSystemFactLine(text)
+			&& !IsPlayerTurnStartLine(text);
+	}
+
+	private bool TryGetLatestNpcRecentActionInternal(Hero hero, out string stableKey, out string actionText, out int day)
+	{
+		stableKey = "";
+		actionText = "";
+		day = -1;
+		if (hero == null)
+		{
+			return false;
+		}
+		string heroKey = GetNpcActionHeroKey(hero);
+		if (string.IsNullOrWhiteSpace(heroKey)
+			|| _npcRecentActions == null
+			|| !_npcRecentActions.TryGetValue(heroKey, out List<NpcActionEntry> entries)
+			|| entries == null)
+		{
+			return false;
+		}
+		NpcActionEntry latest = entries
+			.Where(x => x != null && !string.IsNullOrWhiteSpace(x.Text))
+			.OrderByDescending(x => x.Day)
+			.ThenByDescending(x => x.Order)
+			.ThenByDescending(x => x.Sequence)
+			.FirstOrDefault();
+		if (latest == null)
+		{
+			return false;
+		}
+		stableKey = string.IsNullOrWhiteSpace(latest.StableKey)
+			? ((latest.ActionKind ?? "event") + ":" + latest.Day + ":" + latest.Order + ":" + latest.Sequence)
+			: latest.StableKey.Trim();
+		actionText = latest.Text.Trim();
+		day = latest.Day;
+		return !string.IsNullOrWhiteSpace(stableKey) && !string.IsNullOrWhiteSpace(actionText);
 	}
 
 	public static void AppendExternalNpcFact(Hero hero, string factText)

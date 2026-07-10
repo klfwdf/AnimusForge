@@ -1110,6 +1110,24 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static bool TryGetLatestPlayerRecentActionForExternal(Hero observer, int maxAgeDays, out string stableKey, out string actionText, out int day)
+	{
+		stableKey = "";
+		actionText = "";
+		day = -1;
+		try
+		{
+			return Instance?.TryGetLatestPlayerRecentAction(observer, maxAgeDays, out stableKey, out actionText, out day) == true;
+		}
+		catch
+		{
+			stableKey = "";
+			actionText = "";
+			day = -1;
+			return false;
+		}
+	}
+
 	private static string BuildSummarySystemPrompt()
 	{
 		int targetChars = GetMajorPromptChars();
@@ -1300,6 +1318,51 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		return sb.ToString().Trim();
 	}
 
+	private bool TryGetLatestPlayerRecentAction(Hero observer, int maxAgeDays, out string stableKey, out string actionText, out int day)
+	{
+		stableKey = "";
+		actionText = "";
+		day = -1;
+		if (!IsValidObserver(observer))
+		{
+			return false;
+		}
+		bool isCurrentPartyMember = false;
+		try
+		{
+			MobileParty mainParty = MobileParty.MainParty;
+			isCurrentPartyMember = mainParty != null
+				&& (observer.PartyBelongedTo == mainParty || (observer.CharacterObject != null && mainParty.MemberRoster.GetTroopCount(observer.CharacterObject) > 0));
+		}
+		catch
+		{
+			isCurrentPartyMember = false;
+		}
+		if (!isCurrentPartyMember && !CanObserverKnowRecentActions(observer, courier: false))
+		{
+			return false;
+		}
+		PruneRecentActions();
+		int windowDays = Math.Max(1, Math.Min(RecentActionWindowDays, maxAgeDays));
+		int minDay = GetCurrentGameDayIndex() - windowDays + 1;
+		PlayerActionEntry latest = (_state.RecentActions ?? new List<PlayerActionEntry>())
+			.Where(x => x != null && x.Day >= minDay && !string.IsNullOrWhiteSpace(x.Text))
+			.OrderByDescending(x => x.Day)
+			.ThenByDescending(x => x.Sequence)
+			.ThenByDescending(x => x.Order)
+			.FirstOrDefault();
+		if (latest == null)
+		{
+			return false;
+		}
+		stableKey = string.IsNullOrWhiteSpace(latest.StableKey)
+			? ((latest.ActionKind ?? "player_event") + ":" + latest.Day + ":" + latest.Order + ":" + latest.Sequence)
+			: latest.StableKey.Trim();
+		actionText = latest.Text.Trim();
+		day = latest.Day;
+		return !string.IsNullOrWhiteSpace(stableKey) && !string.IsNullOrWhiteSpace(actionText);
+	}
+
 	private string BuildMajorHistoryForPrompt(string playerDisplayName)
 	{
 		_state = NormalizeState(_state);
@@ -1339,7 +1402,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
+			string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal(observerKey, cultureId);
 			if (!string.IsNullOrWhiteSpace(text))
 			{
 				return NormalizePlayerDisplayName(text);
