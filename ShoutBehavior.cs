@@ -1981,7 +1981,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private const int NativeConversationMainThreadPreprocessTimeoutMs = 30000;
 
-	private const int NativeConversationBackgroundPreprocessTimeoutMs = 120000;
+	private const int NativeConversationBackgroundPreprocessTimeoutMs = 480000;
 
 	private ConcurrentQueue<Action> _mainThreadActions = new ConcurrentQueue<Action>();
 
