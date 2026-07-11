@@ -1141,6 +1141,8 @@ public class MyBehavior : CampaignBehaviorBase
 
 		public int BlockIndex;
 
+		public PendingWeeklyReportBlockCommit CurrentBlockCommit;
+
 		public bool CurrentPreviewCaptured;
 
 		public HashSet<string> CurrentParsedReportIds;
@@ -1156,6 +1158,29 @@ public class MyBehavior : CampaignBehaviorBase
 		public HashSet<string> WeeklyReportNoticeEventIdsQueued = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
 		public TaskCompletionSource<WeeklyReportGenerationResult> CompletionSource;
+	}
+
+	private sealed class PendingWeeklyReportBlockCommit
+	{
+		public WeeklyEventMaterialPreviewGroup Group;
+
+		public string ReportId = "";
+
+		public string Title = "";
+
+		public string ShortSummary = "";
+
+		public string Report = "";
+
+		public string TagText = "";
+
+		public string PromptText = "";
+
+		public List<EventMaterialReference> OrderedMaterials = new List<EventMaterialReference>();
+
+		public List<EventMaterialReference> ClonedMaterials = new List<EventMaterialReference>();
+
+		public int MaterialIndex;
 	}
 
 	private enum DailyMaintenanceTaskKind
@@ -1579,6 +1604,8 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private const int DailyMaintenanceMaxJobsPerTick = 8;
 
+	private const double DeferredMaintenanceRunIntervalMilliseconds = 250.0;
+
 	private readonly Queue<DailyMaintenanceJob> _dailyMaintenanceQueue = new Queue<DailyMaintenanceJob>();
 
 	private readonly HashSet<string> _dailyMaintenanceJobKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -1596,6 +1623,20 @@ public class MyBehavior : CampaignBehaviorBase
 	private readonly Queue<PendingWeeklyReportCommitContext> _pendingWeeklyReportCommits = new Queue<PendingWeeklyReportCommitContext>();
 
 	private int _kingdomStabilityMaintenanceCursor;
+
+	private long _nextDeferredMaintenanceRunTimestamp;
+
+	private bool _weekZeroOpeningSummaryMaintenanceWorldProcessed;
+
+	private List<Kingdom> _weekZeroOpeningSummaryMaintenanceKingdoms;
+
+	private int _weekZeroOpeningSummaryMaintenanceCursor;
+
+	private List<Kingdom> _missedStrategicWorldEventMaintenanceKingdoms;
+
+	private HashSet<string> _missedStrategicWorldEventMaintenanceStableKeys;
+
+	private int _missedStrategicWorldEventMaintenanceCursor;
 
 	private List<EventSourceMaterialEntry> _weeklyEventSourceMaterialBuildSnapshot;
 
@@ -3562,16 +3603,20 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void OnRulingClanChanged(Kingdom kingdom, Clan newRulingClan)
+	private void OnRulingClanChanged(Kingdom kingdom, Clan eventRulingClan)
 	{
 		try
 		{
-			string text = "ruling_clan_changed:" + GetKingdomId(kingdom) + ":" + GetClanId(newRulingClan);
-			string text2 = "你所在的" + GetClanDisplayName(newRulingClan) + "家族已成为" + GetKingdomDisplayName(kingdom, "该王国") + "的执政家族。";
-			foreach (Hero item in GetTrackedLordsForClan(newRulingClan))
+			// Bannerlord 1.3 passes the new ruling clan here, while 1.4.5 passes the old one.
+			// Always read the post-change value from the kingdom so the behavior stays version-neutral.
+			Clan rulingClan = kingdom?.RulingClan;
+			TrySyncModCreatedRebelKingdomBannerToRulingClan(kingdom, eventRulingClan, "ruling_clan_changed");
+			string text = "ruling_clan_changed:" + GetKingdomId(kingdom) + ":" + GetClanId(rulingClan);
+			string text2 = "你所在的" + GetClanDisplayName(rulingClan) + "家族已成为" + GetKingdomDisplayName(kingdom, "该王国") + "的执政家族。";
+			foreach (Hero item in GetTrackedLordsForClan(rulingClan))
 			{
 				NpcActionFacts npcActionFacts = CreateNpcActionFacts("ruling_clan_changed", item);
-				AddUniqueId(npcActionFacts.RelatedClanIds, GetClanId(newRulingClan));
+				AddUniqueId(npcActionFacts.RelatedClanIds, GetClanId(rulingClan));
 				AddUniqueId(npcActionFacts.RelatedKingdomIds, GetKingdomId(kingdom));
 				RecordNpcMajorAction(item, text2, text, npcActionFacts);
 				RecordNpcRecentAction(item, text2, text, facts: npcActionFacts);
@@ -3865,6 +3910,7 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			HashSet<string> existingStableKeys = BuildEventSourceMaterialStableKeySet();
 			foreach (Kingdom kingdom in GetDevEditableKingdoms())
 			{
 				if (kingdom == null || !kingdom.IsEliminated)
@@ -3872,11 +3918,13 @@ public class MyBehavior : CampaignBehaviorBase
 					continue;
 				}
 				string kingdomId = GetKingdomId(kingdom);
-				if (string.IsNullOrWhiteSpace(kingdomId) || HasEventSourceMaterialStableKey("kingdom_destroyed:" + kingdomId))
+				string stableKey = NormalizeNpcActionStableKey("kingdom_destroyed:" + kingdomId, "");
+				if (string.IsNullOrWhiteSpace(kingdomId) || string.IsNullOrWhiteSpace(stableKey) || existingStableKeys.Contains(stableKey))
 				{
 					continue;
 				}
 				RecordKingdomDestroyedMaterial(kingdom, "daily_scan");
+				existingStableKeys.Add(stableKey);
 			}
 		}
 		catch (Exception ex)
@@ -5480,6 +5528,18 @@ public class MyBehavior : CampaignBehaviorBase
 		return elapsedMs >= budgetMs;
 	}
 
+	private bool TryClaimDeferredMaintenanceRunWindow()
+	{
+		long now = Stopwatch.GetTimestamp();
+		if (_nextDeferredMaintenanceRunTimestamp > now)
+		{
+			return false;
+		}
+		long interval = Math.Max(1L, (long)(Stopwatch.Frequency * DeferredMaintenanceRunIntervalMilliseconds / 1000.0));
+		_nextDeferredMaintenanceRunTimestamp = now + interval;
+		return true;
+	}
+
 	private void ProcessDeferredDailyMaintenance()
 	{
 		if (!IsDeferredDailyMaintenanceEnabled())
@@ -5488,25 +5548,42 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		double budgetMs = GetDailyMaintenanceFrameBudgetMs();
 		long startTimestamp = Stopwatch.GetTimestamp();
-		int processedScanCount = ProcessMemoryOverviewCandidateScanBudget(startTimestamp, budgetMs);
+		int processedScanCount;
+		using (PerfProbe.Scope("MyBehavior.DeferredDailyMaintenance.ProcessMemoryOverviewCandidateScan"))
+		{
+			processedScanCount = ProcessMemoryOverviewCandidateScanBudget(startTimestamp, budgetMs);
+		}
 		int processedJobCount = 0;
 		while (_dailyMaintenanceQueue.Count > 0 && processedJobCount < DailyMaintenanceMaxJobsPerTick && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
 		{
 			DailyMaintenanceJob job = _dailyMaintenanceQueue.Dequeue();
 			_dailyMaintenanceJobKeys.Remove(BuildDailyMaintenanceJobKey(job.Kind, job.DayIndex, job.WeekIndex, job.StartDay, job.EndDay));
-			bool completed = ExecuteDailyMaintenanceJob(job, startTimestamp, budgetMs);
+			bool completed;
+			using (PerfProbe.Scope("MyBehavior.DeferredDailyMaintenance.Job." + job.Kind))
+			{
+				completed = ExecuteDailyMaintenanceJob(job, startTimestamp, budgetMs);
+			}
 			if (!completed)
 			{
 				EnqueueDailyMaintenanceJob(job.Kind, job.DayIndex, job.WeekIndex, job.StartDay, job.EndDay, job.Reason);
 			}
 			processedJobCount++;
-			processedScanCount += ProcessMemoryOverviewCandidateScanBudget(startTimestamp, budgetMs);
+			using (PerfProbe.Scope("MyBehavior.DeferredDailyMaintenance.ProcessMemoryOverviewCandidateScan"))
+			{
+				processedScanCount += ProcessMemoryOverviewCandidateScanBudget(startTimestamp, budgetMs);
+			}
 		}
 		if (!IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
 		{
-			ProcessPendingAutoWeeklyReportBuildBudget(startTimestamp, budgetMs);
+			using (PerfProbe.Scope("MyBehavior.DeferredDailyMaintenance.ProcessPendingAutoWeeklyReportBuild"))
+			{
+				ProcessPendingAutoWeeklyReportBuildBudget(startTimestamp, budgetMs);
+			}
 		}
-		processedScanCount += ProcessMemoryOverviewCandidateScanBudget(startTimestamp, budgetMs);
+		using (PerfProbe.Scope("MyBehavior.DeferredDailyMaintenance.ProcessMemoryOverviewCandidateScan"))
+		{
+			processedScanCount += ProcessMemoryOverviewCandidateScanBudget(startTimestamp, budgetMs);
+		}
 		if (processedScanCount > 0 && !_memorySummaryProcessing && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
 		{
 			TryStartMemorySummaryQueue();
@@ -5546,10 +5623,16 @@ public class MyBehavior : CampaignBehaviorBase
 				TryDiscontinueLandlessModRebelKingdoms(string.IsNullOrWhiteSpace(job.Reason) ? "deferred_daily_tick" : job.Reason);
 				break;
 			case DailyMaintenanceTaskKind.EnsureWeekZeroOpeningSummaryEvents:
-				EnsureWeekZeroOpeningSummaryEvents();
+				if (!ProcessWeekZeroOpeningSummaryEventsSlice())
+				{
+					return false;
+				}
 				break;
 			case DailyMaintenanceTaskKind.RecordMissedStrategicWorldEvents:
-				TryRecordMissedStrategicWorldEvents();
+				if (!ProcessMissedStrategicWorldEventsSlice())
+				{
+					return false;
+				}
 				break;
 			case DailyMaintenanceTaskKind.ApplyKingdomStabilityRelationAdjustments:
 				if (!ProcessKingdomStabilityRelationAdjustmentsSlice())
@@ -5884,7 +5967,7 @@ public class MyBehavior : CampaignBehaviorBase
 	private void EnsureWeekZeroOpeningSummaryEvents()
 	{
 		FreezeWatchdog.Mark("WeeklyPrompt.EnsureWeek0.start", "entries=" + (_eventRecordEntries?.Count ?? 0) + " thread=" + Thread.CurrentThread.ManagedThreadId);
-		UpsertWeekZeroOpeningSummaryEvent("world", "", "第0天世界开局概要", _eventWorldOpeningSummary, "世界开局概要", "world_opening_summary");
+		UpsertWeekZeroOpeningSummaryEvent("world", "", "第0天世界开局概要", _eventWorldOpeningSummary, "世界开局概要", "world_opening_summary", sanitizeAfter: false);
 		FreezeWatchdog.Mark("WeeklyPrompt.EnsureWeek0.world_done", "entries=" + (_eventRecordEntries?.Count ?? 0));
 		int kingdomIndex = 0;
 		foreach (Kingdom devEditableKingdom in GetDevEditableKingdoms())
@@ -5896,11 +5979,97 @@ public class MyBehavior : CampaignBehaviorBase
 			if (!string.IsNullOrWhiteSpace(kingdomOpeningSummary))
 			{
 				string text = devEditableKingdom.Name?.ToString() ?? (devEditableKingdom.StringId ?? "王国");
-				UpsertWeekZeroOpeningSummaryEvent("kingdom", devEditableKingdom.StringId ?? "", text + "第0天开局概要", kingdomOpeningSummary, text + " 开局概要", "kingdom_opening_summary");
+				UpsertWeekZeroOpeningSummaryEvent("kingdom", devEditableKingdom.StringId ?? "", text + "第0天开局概要", kingdomOpeningSummary, text + " 开局概要", "kingdom_opening_summary", sanitizeAfter: false);
 			}
 			FreezeWatchdog.Mark("WeeklyPrompt.EnsureWeek0.kingdom_done", "index=" + kingdomIndex + " kingdom=" + diagnosticKingdomId + " entries=" + (_eventRecordEntries?.Count ?? 0));
 		}
+		_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
 		FreezeWatchdog.Mark("WeeklyPrompt.EnsureWeek0.done", "kingdoms=" + kingdomIndex + " entries=" + (_eventRecordEntries?.Count ?? 0) + " thread=" + Thread.CurrentThread.ManagedThreadId);
+	}
+
+	private bool ProcessWeekZeroOpeningSummaryEventsSlice()
+	{
+		try
+		{
+			if (!_weekZeroOpeningSummaryMaintenanceWorldProcessed)
+			{
+				UpsertWeekZeroOpeningSummaryEvent("world", "", "第0天世界开局概要", _eventWorldOpeningSummary, "世界开局概要", "world_opening_summary", sanitizeAfter: false);
+				_weekZeroOpeningSummaryMaintenanceWorldProcessed = true;
+				return false;
+			}
+			if (_weekZeroOpeningSummaryMaintenanceKingdoms == null)
+			{
+				_weekZeroOpeningSummaryMaintenanceKingdoms = GetDevEditableKingdoms();
+				_weekZeroOpeningSummaryMaintenanceCursor = 0;
+			}
+			if (_weekZeroOpeningSummaryMaintenanceCursor < _weekZeroOpeningSummaryMaintenanceKingdoms.Count)
+			{
+				Kingdom kingdom = _weekZeroOpeningSummaryMaintenanceKingdoms[_weekZeroOpeningSummaryMaintenanceCursor++];
+				string summary = GetKingdomOpeningSummary(kingdom);
+				if (!string.IsNullOrWhiteSpace(summary))
+				{
+					string kingdomName = kingdom?.Name?.ToString() ?? (kingdom?.StringId ?? "王国");
+					UpsertWeekZeroOpeningSummaryEvent("kingdom", kingdom?.StringId ?? "", kingdomName + "第0天开局概要", summary, kingdomName + " 开局概要", "kingdom_opening_summary", sanitizeAfter: false);
+				}
+				return false;
+			}
+			FinalizeWeekZeroOpeningSummaryMaintenance();
+			return true;
+		}
+		catch (Exception ex)
+		{
+			FinalizeWeekZeroOpeningSummaryMaintenance();
+			Logger.Log("EventWeeklyReport", "[ERROR] deferred week-zero opening summary maintenance failed: " + ex.Message);
+			return true;
+		}
+	}
+
+	private void FinalizeWeekZeroOpeningSummaryMaintenance()
+	{
+		_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
+		_weekZeroOpeningSummaryMaintenanceWorldProcessed = false;
+		_weekZeroOpeningSummaryMaintenanceKingdoms = null;
+		_weekZeroOpeningSummaryMaintenanceCursor = 0;
+	}
+
+	private bool ProcessMissedStrategicWorldEventsSlice()
+	{
+		try
+		{
+			if (_missedStrategicWorldEventMaintenanceKingdoms == null)
+			{
+				_missedStrategicWorldEventMaintenanceKingdoms = GetDevEditableKingdoms();
+				_missedStrategicWorldEventMaintenanceStableKeys = BuildEventSourceMaterialStableKeySet();
+				_missedStrategicWorldEventMaintenanceCursor = 0;
+			}
+			if (_missedStrategicWorldEventMaintenanceCursor < _missedStrategicWorldEventMaintenanceKingdoms.Count)
+			{
+				Kingdom kingdom = _missedStrategicWorldEventMaintenanceKingdoms[_missedStrategicWorldEventMaintenanceCursor++];
+				string kingdomId = GetKingdomId(kingdom);
+				string stableKey = NormalizeNpcActionStableKey("kingdom_destroyed:" + kingdomId, "");
+				if (kingdom != null && kingdom.IsEliminated && !string.IsNullOrWhiteSpace(stableKey) && !_missedStrategicWorldEventMaintenanceStableKeys.Contains(stableKey))
+				{
+					RecordKingdomDestroyedMaterial(kingdom, "daily_scan");
+					_missedStrategicWorldEventMaintenanceStableKeys.Add(stableKey);
+				}
+				return false;
+			}
+			ResetMissedStrategicWorldEventMaintenance();
+			return true;
+		}
+		catch (Exception ex)
+		{
+			ResetMissedStrategicWorldEventMaintenance();
+			Logger.Log("EventMaterial", "[ERROR] deferred strategic world event scan failed: " + ex.Message);
+			return true;
+		}
+	}
+
+	private void ResetMissedStrategicWorldEventMaintenance()
+	{
+		_missedStrategicWorldEventMaintenanceKingdoms = null;
+		_missedStrategicWorldEventMaintenanceStableKeys = null;
+		_missedStrategicWorldEventMaintenanceCursor = 0;
 	}
 
 	private static string ComputeWeekZeroShortSummarySourceHash(string sourceText)
@@ -6251,7 +6420,7 @@ public class MyBehavior : CampaignBehaviorBase
 		EnsureWeekZeroShortSummaryQueueWorker();
 	}
 
-	private void UpsertWeekZeroOpeningSummaryEvent(string eventKind, string kingdomId, string title, string summary, string materialLabel, string materialType)
+	private void UpsertWeekZeroOpeningSummaryEvent(string eventKind, string kingdomId, string title, string summary, string materialLabel, string materialType, bool sanitizeAfter = true)
 	{
 		FreezeWatchdog.Mark("WeeklyPrompt.UpsertWeek0.start", "kind=" + (eventKind ?? "") + " kingdom=" + (kingdomId ?? "") + " entries=" + (_eventRecordEntries?.Count ?? 0));
 		string text = (summary ?? "").Trim();
@@ -6298,8 +6467,11 @@ public class MyBehavior : CampaignBehaviorBase
 				KingdomId = (kingdomId ?? "").Trim()
 			}
 		};
-		_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
-		FreezeWatchdog.Mark("WeeklyPrompt.UpsertWeek0.sanitize_done", "kind=" + (eventKind ?? "") + " kingdom=" + (kingdomId ?? "") + " entries=" + (_eventRecordEntries?.Count ?? 0));
+		if (sanitizeAfter)
+		{
+			_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
+			FreezeWatchdog.Mark("WeeklyPrompt.UpsertWeek0.sanitize_done", "kind=" + (eventKind ?? "") + " kingdom=" + (kingdomId ?? "") + " entries=" + (_eventRecordEntries?.Count ?? 0));
+		}
 		TryQueueWeekZeroShortSummaryGeneration(eventRecordEntry, text3);
 		FreezeWatchdog.Mark("WeeklyPrompt.UpsertWeek0.queue_done", "kind=" + (eventKind ?? "") + " kingdom=" + (kingdomId ?? "") + " entries=" + (_eventRecordEntries?.Count ?? 0));
 	}
@@ -11809,6 +11981,93 @@ public class MyBehavior : CampaignBehaviorBase
 		return _kingdomStabilityValues != null && _kingdomStabilityValues.ContainsKey(kingdomId);
 	}
 
+	private static Clan FindKingdomClanMatchingBanner(Kingdom kingdom, Banner banner, Clan excludedClan)
+	{
+		try
+		{
+			if (kingdom?.Clans == null || banner == null)
+			{
+				return null;
+			}
+			return kingdom.Clans.FirstOrDefault((Clan clan) => clan != null && clan != excludedClan && clan.Banner != null && clan.Banner.IsContentsSameWith(banner));
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static HashSet<string> BuildEventSourceMaterialStableKeySet(List<EventSourceMaterialEntry> source)
+	{
+		return new HashSet<string>(SanitizeEventSourceMaterials(source).Select((EventSourceMaterialEntry x) => (x?.StableKey ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)), StringComparer.OrdinalIgnoreCase);
+	}
+
+	private HashSet<string> BuildEventSourceMaterialStableKeySet()
+	{
+		return BuildEventSourceMaterialStableKeySet(_eventSourceMaterials);
+	}
+
+	private static void MarkKingdomBannerVisualsDirty(Kingdom kingdom)
+	{
+		try
+		{
+			foreach (Clan clan in (kingdom?.Clans?.ToList() ?? new List<Clan>()))
+			{
+				MarkClanVisualsDirty(clan);
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private bool TrySyncModCreatedRebelKingdomBannerToRulingClan(Kingdom kingdom, Clan eventRulingClan, string reason)
+	{
+		try
+		{
+			if (kingdom == null || kingdom.IsEliminated || !IsKnownOrLegacyModCreatedRebelKingdom(kingdom))
+			{
+				return false;
+			}
+			Clan rulingClan = kingdom.RulingClan;
+			if (rulingClan == null || rulingClan.IsEliminated || rulingClan.Kingdom != kingdom || rulingClan.Banner == null)
+			{
+				Logger.Log("KingdomRebellion", "[ruler_banner_sync_skipped] reason=" + (reason ?? "") + " kingdom=" + GetKingdomId(kingdom) + " rulingClan=" + GetClanId(rulingClan) + " result=invalid_ruling_clan_or_banner");
+				return false;
+			}
+			Banner banner = kingdom.Banner;
+			if (banner != null && banner.IsContentsSameWith(rulingClan.Banner))
+			{
+				return false;
+			}
+			Clan clan = FindKingdomClanMatchingBanner(kingdom, banner, rulingClan);
+			kingdom.Banner = new Banner(rulingClan.Banner);
+			MarkKingdomBannerVisualsDirty(kingdom);
+			Logger.Log("KingdomRebellion", "[ruler_banner_synced] reason=" + (reason ?? "") + " kingdom=" + GetKingdomId(kingdom) + " previousBannerClan=" + GetClanId(clan) + " eventClan=" + GetClanId(eventRulingClan) + " rulingClan=" + GetClanId(rulingClan) + " result=updated");
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("KingdomRebellion", "[ERROR] ruler_banner_sync_failed reason=" + (reason ?? "") + " kingdom=" + GetKingdomId(kingdom) + " eventClan=" + GetClanId(eventRulingClan) + " error=" + ex.Message);
+			return false;
+		}
+	}
+
+	private void SyncModCreatedRebelKingdomBannersOnGameLoad()
+	{
+		try
+		{
+			foreach (Kingdom kingdom in (Kingdom.All?.ToList() ?? new List<Kingdom>()))
+			{
+				TrySyncModCreatedRebelKingdomBannerToRulingClan(kingdom, null, "game_load_finished");
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("KingdomRebellion", "[ERROR] ruler_banner_load_sync_failed error=" + ex.Message);
+		}
+	}
+
 	private bool TryDiscontinueLandlessKingdom(Kingdom kingdom, string reason, bool requireKnownModRebelKingdom, bool allowPlayerKingdom)
 	{
 		try
@@ -16193,10 +16452,18 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				ProcessWeeklyReportUiResume();
 			}
-			bool processedWeeklyReportCommits;
-			using (PerfProbe.Scope("MyBehavior.OnCampaignTick.ProcessPendingWeeklyReportCommits"))
+			bool deferredMaintenanceWindowOpen;
+			using (PerfProbe.Scope("MyBehavior.OnCampaignTick.DeferredMaintenanceScheduler"))
 			{
-				processedWeeklyReportCommits = ProcessPendingWeeklyReportCommits();
+				deferredMaintenanceWindowOpen = TryClaimDeferredMaintenanceRunWindow();
+			}
+			bool processedWeeklyReportCommits = false;
+			if (deferredMaintenanceWindowOpen)
+			{
+				using (PerfProbe.Scope("MyBehavior.OnCampaignTick.ProcessPendingWeeklyReportCommits"))
+				{
+					processedWeeklyReportCommits = ProcessPendingWeeklyReportCommits();
+				}
 			}
 			using (PerfProbe.Scope("MyBehavior.OnCampaignTick.TryPublishUnreadWeeklyReportMapNotifications"))
 			{
@@ -16206,9 +16473,9 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				TryRunCampaignMemoryMaintenance();
 			}
-			using (PerfProbe.Scope("MyBehavior.OnCampaignTick.ProcessDeferredDailyMaintenance"))
+			if (deferredMaintenanceWindowOpen && !processedWeeklyReportCommits)
 			{
-				if (!processedWeeklyReportCommits)
+				using (PerfProbe.Scope("MyBehavior.OnCampaignTick.ProcessDeferredDailyMaintenance"))
 				{
 					ProcessDeferredDailyMaintenance();
 				}
@@ -16270,16 +16537,21 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		long startTimestamp = Stopwatch.GetTimestamp();
+		double budgetMs = GetDailyMaintenanceFrameBudgetMs();
 		if (hasPastDrafts)
 		{
 			using (PerfProbe.Scope("MyBehavior.TryRunCampaignMemoryMaintenance.TrySealPastDailyMemoryDrafts"))
 			{
-				TrySealPastDailyMemoryDrafts();
+				TrySealPastDailyMemoryDrafts(startTimestamp, budgetMs);
 			}
 		}
-		using (PerfProbe.Scope("MyBehavior.TryRunCampaignMemoryMaintenance.TryStartMemorySummaryQueue"))
+		if (!IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
 		{
-			TryStartMemorySummaryQueue();
+			using (PerfProbe.Scope("MyBehavior.TryRunCampaignMemoryMaintenance.TryStartMemorySummaryQueue"))
+			{
+				TryStartMemorySummaryQueue();
+			}
 		}
 	}
 
@@ -18593,6 +18865,7 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		QueueMissingOnnxGateCheck(TimeSpan.Zero);
 		RebuildRuntimeDerivedIndexes();
+		SyncModCreatedRebelKingdomBannersOnGameLoad();
 		if (IsDeferredDailyMaintenanceEnabled())
 		{
 			int currentDay = GetCurrentGameDayIndexSafe();
@@ -42701,6 +42974,12 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void UpsertWeeklyReportEventRecord(WeeklyEventMaterialPreviewGroup group, int weekIndex, string title, string shortSummary, string report, string tagText, string promptText, bool sanitizeAfter = true)
 	{
+		List<EventMaterialReference> materials = OrderWeeklyPreviewMaterials(group?.Materials).Where((EventMaterialReference x) => x != null).Select(CloneEventMaterialReference).ToList();
+		UpsertWeeklyReportEventRecord(group, weekIndex, title, shortSummary, report, tagText, promptText, materials, sanitizeAfter);
+	}
+
+	private void UpsertWeeklyReportEventRecord(WeeklyEventMaterialPreviewGroup group, int weekIndex, string title, string shortSummary, string report, string tagText, string promptText, List<EventMaterialReference> materials, bool sanitizeAfter)
+	{
 		if (_eventRecordEntries == null)
 		{
 			_eventRecordEntries = new List<EventRecordEntry>();
@@ -42731,48 +43010,7 @@ public class MyBehavior : CampaignBehaviorBase
 		eventRecordEntry.PromptText = NeutralizeWeeklyReportScenarioName(promptText);
 		eventRecordEntry.CreatedDay = GetCurrentGameDayIndexSafe();
 		eventRecordEntry.CreatedDate = GetCurrentGameDateTextSafe();
-		eventRecordEntry.Materials = OrderWeeklyPreviewMaterials(group?.Materials).Select(delegate(EventMaterialReference x)
-		{
-			if (x == null)
-			{
-				return null;
-			}
-			return new EventMaterialReference
-			{
-				MaterialType = (x.MaterialType ?? "").Trim(),
-				Label = (x.Label ?? "").Trim(),
-				SnapshotText = (x.SnapshotText ?? "").Trim(),
-				HeroId = (x.HeroId ?? "").Trim(),
-				KingdomId = (x.KingdomId ?? "").Trim(),
-				SettlementId = (x.SettlementId ?? "").Trim(),
-				RecentOnly = x.RecentOnly,
-				ActionKind = (x.ActionKind ?? "").Trim(),
-				ActorHeroId = (x.ActorHeroId ?? "").Trim(),
-				ActorClanId = (x.ActorClanId ?? "").Trim(),
-				ActorKingdomId = (x.ActorKingdomId ?? "").Trim(),
-				TargetHeroId = (x.TargetHeroId ?? "").Trim(),
-				TargetClanId = (x.TargetClanId ?? "").Trim(),
-				TargetKingdomId = (x.TargetKingdomId ?? "").Trim(),
-				SettlementOwnerHeroId = (x.SettlementOwnerHeroId ?? "").Trim(),
-				SettlementOwnerClanId = (x.SettlementOwnerClanId ?? "").Trim(),
-				SettlementOwnerKingdomId = (x.SettlementOwnerKingdomId ?? "").Trim(),
-				PreviousSettlementOwnerHeroId = (x.PreviousSettlementOwnerHeroId ?? "").Trim(),
-				PreviousSettlementOwnerClanId = (x.PreviousSettlementOwnerClanId ?? "").Trim(),
-				PreviousSettlementOwnerKingdomId = (x.PreviousSettlementOwnerKingdomId ?? "").Trim(),
-				LocationText = (x.LocationText ?? "").Trim(),
-				Won = x.Won,
-				RelatedHeroIds = new List<string>((x.RelatedHeroIds ?? new List<string>()).Where((string y) => !string.IsNullOrWhiteSpace(y)).Select((string y) => y.Trim())),
-				RelatedClanIds = new List<string>((x.RelatedClanIds ?? new List<string>()).Where((string y) => !string.IsNullOrWhiteSpace(y)).Select((string y) => y.Trim())),
-				RelatedKingdomIds = new List<string>((x.RelatedKingdomIds ?? new List<string>()).Where((string y) => !string.IsNullOrWhiteSpace(y)).Select((string y) => y.Trim())),
-				SourceStableKeys = new List<string>((x.SourceStableKeys ?? new List<string>()).Where((string y) => !string.IsNullOrWhiteSpace(y)).Select((string y) => y.Trim())),
-				SourceActionKinds = new List<string>((x.SourceActionKinds ?? new List<string>()).Where((string y) => !string.IsNullOrWhiteSpace(y)).Select((string y) => y.Trim())),
-				SourceMaterialCount = Math.Max(0, x.SourceMaterialCount),
-				ActionStableKey = (x.ActionStableKey ?? "").Trim(),
-				ActionDay = x.ActionDay,
-				ActionOrder = x.ActionOrder,
-				ActionSequence = x.ActionSequence
-			};
-		}).Where((EventMaterialReference x) => x != null).ToList();
+		eventRecordEntry.Materials = materials ?? new List<EventMaterialReference>();
 		ApplyWeeklyReportStabilityDelta(group, eventRecordEntry.EventId, eventRecordEntry.TagText);
 		if (sanitizeAfter)
 		{
@@ -43956,7 +44194,10 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			if (context.GroupMap == null)
 			{
-				context.GroupMap = BuildWeeklyReportGroupMap(context.Groups);
+				using (PerfProbe.Scope("MyBehavior.WeeklyReportCommit.BuildGroupMap"))
+				{
+					context.GroupMap = BuildWeeklyReportGroupMap(context.Groups);
+				}
 			}
 			List<WeeklyReportBatchExecutionResult> executions = context.Executions ?? new List<WeeklyReportBatchExecutionResult>();
 			while (context.ExecutionIndex < executions.Count && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
@@ -43989,16 +44230,25 @@ public class MyBehavior : CampaignBehaviorBase
 				List<WeeklyReportBatchBlockResult> blocks = batchResult.Blocks ?? new List<WeeklyReportBatchBlockResult>();
 				while (context.BlockIndex < blocks.Count && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
 				{
-					WeeklyReportBatchBlockResult block = blocks[context.BlockIndex++];
-					if (block != null && block.Parsed && !string.IsNullOrWhiteSpace(block.ReportId) && context.CurrentParsedReportIds.Add(block.ReportId) && context.GroupMap.TryGetValue(block.ReportId, out var group) && group != null)
+					WeeklyReportBatchBlockResult block = blocks[context.BlockIndex];
+					if (block != null && block.Parsed && !string.IsNullOrWhiteSpace(block.ReportId) && !context.CurrentParsedReportIds.Contains(block.ReportId) && context.GroupMap.TryGetValue(block.ReportId, out var group) && group != null)
 					{
-						using (PerfProbe.Scope("MyBehavior.WeeklyReportCommit.UpsertRecord"))
+						if (context.CurrentBlockCommit == null)
 						{
-							UpsertWeeklyReportEventRecord(group, context.WeekIndex, block.Title, block.ShortSummary, block.Report, block.TagText, batchResult.PromptPreview, sanitizeAfter: false);
+							using (PerfProbe.Scope("MyBehavior.WeeklyReportCommit.PrepareRecordMaterials"))
+							{
+								context.CurrentBlockCommit = CreatePendingWeeklyReportBlockCommit(group, block, batchResult.PromptPreview);
+							}
 						}
+						if (!ProcessPendingWeeklyReportBlockCommit(context, startTimestamp, budgetMs))
+						{
+							return false;
+						}
+						context.CurrentParsedReportIds.Add(block.ReportId);
 						TryQueueWeeklyReportMapNoticeForGeneratedReport(group, context.WeekIndex, context.PopupCandidateKingdomIds, context.WeeklyReportNoticeEventIdsQueued);
 						context.SuccessCount++;
 					}
+					context.BlockIndex++;
 					if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
 					{
 						return false;
@@ -44008,17 +44258,24 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					return false;
 				}
-				FinalizePendingWeeklyReportCommitBatch(context, batch, batchResult);
+				using (PerfProbe.Scope("MyBehavior.WeeklyReportCommit.FinalizeBatch"))
+				{
+					FinalizePendingWeeklyReportCommitBatch(context, batch, batchResult);
+				}
 				context.ExecutionIndex++;
 				context.BlockIndex = 0;
 				context.CurrentPreviewCaptured = false;
 				context.CurrentParsedReportIds = null;
+				context.CurrentBlockCommit = null;
 			}
 			if (context.ExecutionIndex < executions.Count)
 			{
 				return false;
 			}
-			FinalizePendingWeeklyReportCommitContext(context);
+			using (PerfProbe.Scope("MyBehavior.WeeklyReportCommit.FinalizeContext"))
+			{
+				FinalizePendingWeeklyReportCommitContext(context);
+			}
 			return true;
 		}
 		catch (Exception ex)
@@ -44031,6 +44288,57 @@ public class MyBehavior : CampaignBehaviorBase
 			});
 			return true;
 		}
+	}
+
+	private static PendingWeeklyReportBlockCommit CreatePendingWeeklyReportBlockCommit(WeeklyEventMaterialPreviewGroup group, WeeklyReportBatchBlockResult block, string promptText)
+	{
+		return new PendingWeeklyReportBlockCommit
+		{
+			Group = group,
+			ReportId = (block?.ReportId ?? "").Trim(),
+			Title = block?.Title ?? "",
+			ShortSummary = block?.ShortSummary ?? "",
+			Report = block?.Report ?? "",
+			TagText = block?.TagText ?? "",
+			PromptText = promptText ?? "",
+			OrderedMaterials = OrderWeeklyPreviewMaterials(group?.Materials).Where((EventMaterialReference x) => x != null).ToList(),
+			ClonedMaterials = new List<EventMaterialReference>()
+		};
+	}
+
+	private bool ProcessPendingWeeklyReportBlockCommit(PendingWeeklyReportCommitContext context, long startTimestamp, double budgetMs)
+	{
+		PendingWeeklyReportBlockCommit pending = context?.CurrentBlockCommit;
+		if (pending == null)
+		{
+			return true;
+		}
+		while (pending.MaterialIndex < pending.OrderedMaterials.Count && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+		{
+			using (PerfProbe.Scope("MyBehavior.WeeklyReportCommit.CloneMaterial"))
+			{
+				EventMaterialReference material = CloneEventMaterialReference(pending.OrderedMaterials[pending.MaterialIndex]);
+				if (material != null)
+				{
+					pending.ClonedMaterials.Add(material);
+				}
+				pending.MaterialIndex++;
+			}
+		}
+		if (pending.MaterialIndex < pending.OrderedMaterials.Count)
+		{
+			return false;
+		}
+		if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+		{
+			return false;
+		}
+		using (PerfProbe.Scope("MyBehavior.WeeklyReportCommit.WriteRecord"))
+		{
+			UpsertWeeklyReportEventRecord(pending.Group, context.WeekIndex, pending.Title, pending.ShortSummary, pending.Report, pending.TagText, pending.PromptText, pending.ClonedMaterials, sanitizeAfter: false);
+		}
+		context.CurrentBlockCommit = null;
+		return true;
 	}
 
 	private void FinalizePendingWeeklyReportCommitBatch(PendingWeeklyReportCommitContext context, WeeklyReportBatchRequest batch, WeeklyReportBatchRequestResult batchResult)

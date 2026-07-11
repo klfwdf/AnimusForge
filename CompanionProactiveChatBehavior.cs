@@ -74,11 +74,14 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 	private const string MotiveFollowUp = "ConversationFollowUp";
 	private const string MotiveCasual = "CasualChat";
 	private const int OpeningRecoverySeconds = 12;
+	private const double PendingNoticeProbeSeconds = 2.0;
 
 	private CompanionChatStorage _storage = new CompanionChatStorage();
 	private readonly HashSet<string> _publishedSessionIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 	private MapNotificationView _registeredMapNotificationView;
 	private long _nextNoticeProbeUtcTicks;
+	private Hero _pendingHeroCache;
+	private string _pendingHeroCacheId = "";
 
 	public static CompanionProactiveChatBehavior Instance { get; private set; }
 
@@ -126,10 +129,12 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 			}
 			_publishedSessionIds.Clear();
 			_registeredMapNotificationView = null;
+			ClearPendingHeroCache();
 		}
 		catch (Exception ex)
 		{
 			_storage = new CompanionChatStorage();
+			ClearPendingHeroCache();
 			Logger.Log("CompanionProactiveChat", "load failed: " + ex.Message);
 		}
 	}
@@ -195,7 +200,7 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 			ConsumePendingSession("expired_before_click");
 			return false;
 		}
-		Hero hero = ResolveHero(pending.HeroId);
+		Hero hero = ResolvePendingHero(pending);
 		if (!IsEligiblePartyHero(hero, MobileParty.MainParty, out string heroReason))
 		{
 			ConsumePendingSession("invalid_before_click:" + heroReason);
@@ -247,7 +252,7 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 		{
 			NormalizeStorage();
 			PruneRuntimeState();
-			ValidatePendingSession();
+			ValidatePendingSession(normalizeStorage: false);
 			if (_storage.PendingSession == null)
 			{
 				TryScheduleChat();
@@ -262,17 +267,35 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 
 	private void OnCampaignTick(float dt)
 	{
+		CompanionChatSession pending = _storage?.PendingSession;
+		if (pending == null)
+		{
+			return;
+		}
+		bool opening = string.Equals(pending.State, StateOpening, StringComparison.OrdinalIgnoreCase);
+		bool unpublishedPending = string.Equals(pending.State, StatePending, StringComparison.OrdinalIgnoreCase)
+			&& !_publishedSessionIds.Contains(pending.Id ?? "");
+		if (!opening && !unpublishedPending)
+		{
+			return;
+		}
 		long nowTicks = DateTime.UtcNow.Ticks;
 		if (nowTicks < _nextNoticeProbeUtcTicks)
 		{
 			return;
 		}
-		_nextNoticeProbeUtcTicks = DateTime.UtcNow.AddSeconds(2.0).Ticks;
+		_nextNoticeProbeUtcTicks = DateTime.UtcNow.AddSeconds(PendingNoticeProbeSeconds).Ticks;
 		try
 		{
-			RecoverStuckOpening();
-			ValidatePendingSession();
-			TryPublishPendingNotification();
+			if (opening)
+			{
+				RecoverStuckOpening();
+			}
+			if (_storage?.PendingSession != null && string.Equals(_storage.PendingSession.State, StatePending, StringComparison.OrdinalIgnoreCase))
+			{
+				ValidatePendingSession(normalizeStorage: false);
+				TryPublishPendingNotification();
+			}
 		}
 		catch
 		{
@@ -675,6 +698,7 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 			ExpiresAtDays = nowDays + noticeDays,
 			State = StatePending
 		};
+		CachePendingHero(hero);
 		int globalDays = settings.CompanionProactiveChatTestMode ? 0 : ClampInt(settings.CompanionProactiveChatGlobalCooldownDays, 0, 120);
 		int heroDays = settings.CompanionProactiveChatTestMode ? 0 : ClampInt(settings.CompanionProactiveChatHeroCooldownDays, 0, 240);
 		_storage.GlobalCooldownUntilDays = nowDays + globalDays;
@@ -743,11 +767,15 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 			+ " motive=" + (pending.MotiveType ?? "")
 			+ " reason=" + (reason ?? ""));
 		_storage.PendingSession = null;
+		ClearPendingHeroCache();
 	}
 
-	private void ValidatePendingSession()
+	private void ValidatePendingSession(bool normalizeStorage = true)
 	{
-		NormalizeStorage();
+		if (normalizeStorage)
+		{
+			NormalizeStorage();
+		}
 		CompanionChatSession pending = _storage.PendingSession;
 		if (pending == null)
 		{
@@ -764,7 +792,7 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 			ConsumePendingSession("expired");
 			return;
 		}
-		Hero hero = ResolveHero(pending.HeroId);
+		Hero hero = ResolvePendingHero(pending);
 		if (!IsEligiblePartyHero(hero, MobileParty.MainParty, out string reason))
 		{
 			ConsumePendingSession("hero_invalid:" + reason);
@@ -801,15 +829,15 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		if (!CanPublishMapNotification() || !TryEnsureMapNotificationRegistered())
-		{
-			return;
-		}
 		if (_publishedSessionIds.Contains(pending.Id ?? ""))
 		{
 			return;
 		}
-		Hero hero = ResolveHero(pending.HeroId);
+		if (!CanPublishMapNotification() || !TryEnsureMapNotificationRegistered())
+		{
+			return;
+		}
+		Hero hero = ResolvePendingHero(pending);
 		if (hero == null)
 		{
 			return;
@@ -1151,6 +1179,36 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 		string value = (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
 		while (value.Contains("  ")) value = value.Replace("  ", " ");
 		return value.Length <= maxChars ? value : value.Substring(0, Math.Max(1, maxChars)).TrimEnd() + "…";
+	}
+
+	private Hero ResolvePendingHero(CompanionChatSession pending)
+	{
+		string heroId = (pending?.HeroId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(heroId))
+		{
+			return null;
+		}
+		if (_pendingHeroCache != null
+			&& string.Equals(_pendingHeroCacheId, heroId, StringComparison.OrdinalIgnoreCase)
+			&& HeroMatchesId(_pendingHeroCache, heroId))
+		{
+			return _pendingHeroCache;
+		}
+		Hero hero = ResolveHero(heroId);
+		CachePendingHero(hero);
+		return hero;
+	}
+
+	private void CachePendingHero(Hero hero)
+	{
+		_pendingHeroCache = hero;
+		_pendingHeroCacheId = HeroId(hero);
+	}
+
+	private void ClearPendingHeroCache()
+	{
+		_pendingHeroCache = null;
+		_pendingHeroCacheId = "";
 	}
 
 	private static Hero ResolveHero(string heroId)

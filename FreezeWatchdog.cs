@@ -478,6 +478,8 @@ internal static class FreezeWatchdog
 			{
 				sb.AppendLine(line);
 			}
+			sb.AppendLine("performance:");
+			sb.AppendLine(PerfProbe.BuildCurrentSnapshotForFreeze());
 			return sb.ToString();
 		}
 		catch
@@ -586,6 +588,18 @@ internal static class FreezeWatchdog
 		{
 			Volatile.Write(ref _cachedRuntimeContext, "state=unknown");
 			Interlocked.Exchange(ref _cachedRuntimeContextUtcTicks, DateTime.UtcNow.Ticks);
+		}
+	}
+
+	internal static string GetCachedRuntimeContextForDiagnostics()
+	{
+		try
+		{
+			return Volatile.Read(ref _cachedRuntimeContext) ?? "state=unknown";
+		}
+		catch
+		{
+			return "state=unknown";
 		}
 	}
 

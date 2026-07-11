@@ -258,9 +258,9 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	public const int ApiMaxTokensMaximum = 64000;
 
-	public const int DefaultGeneralApiMaxTokens = 8000;
+	public const int DefaultGeneralApiMaxTokens = 12000;
 
-	public const int DefaultEventAndRebellionApiMaxTokens = 8000;
+	public const int DefaultEventAndRebellionApiMaxTokens = 12000;
 
 	public const int LlmRequestTimeoutMilliseconds = 480000;
 
@@ -367,7 +367,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("1. AI 核心配置/1. 主API（正文生成）", GroupOrder = -300)]
 	public float MainApiTemperature { get; set; } = 0.8f;
 
-	[SettingPropertyInteger("最大输出Tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "主API正文生成调用的 max_tokens。默认 8000；如果接口不支持过高上限，可能会被接口拒绝。")]
+	[SettingPropertyInteger("最大输出Tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "主API正文生成调用的 max_tokens。默认 12000；如果接口不支持过高上限，可能会被接口拒绝。")]
 	[SettingPropertyGroup("1. AI 核心配置/1. 主API（正文生成）", GroupOrder = -300)]
 	public int MainApiMaxTokens { get; set; } = DefaultGeneralApiMaxTokens;
 
@@ -642,11 +642,15 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		}
 	}
 
-	[SettingPropertyBool("【性能】延后日结维护", Order = 11, RequireRestart = false, HintText = "开启后，每日结算只登记 AnimusForge 维护任务，记忆总览、王国维护和周报准备会在后续大地图 tick 中按预算分批执行。默认开启。")]
+	[SettingPropertyBool("【性能】启用性能监控", Order = 11, RequireRestart = false, HintText = "开启后采集 FPS、慢帧和各 Tick/Scope 耗时，每30秒向 Mod_Logic.txt 写入一次聚合结果，并把当前窗口附加到冻结检查点。关闭后立即停止采样与周期输出。默认开启。")]
+	[SettingPropertyGroup("4. 开发者选项")]
+	public bool EnablePerformanceMonitor { get; set; } = true;
+
+	[SettingPropertyBool("【性能】延后日结维护", Order = 12, RequireRestart = false, HintText = "开启后，每日结算只登记 AnimusForge 维护任务，记忆总览、王国维护和周报准备会在后续大地图中按预算分批执行，最多每250毫秒运行一次。默认开启。")]
 	[SettingPropertyGroup("4. 开发者选项")]
 	public bool EnableDeferredDailyMaintenance { get; set; } = true;
 
-	[SettingPropertyInteger("【性能】日结维护每帧预算(ms)", 1, 10, "0", Order = 12, RequireRestart = false, HintText = "延后日结维护开启时，每个大地图 tick 最多用于后台维护的毫秒数。默认 3；调高会更快完成后台任务但更可能产生帧尖峰。")]
+	[SettingPropertyInteger("【性能】日结维护每帧预算(ms)", 1, 10, "0", Order = 13, RequireRestart = false, HintText = "延后日结维护开启时，每个维护窗口最多用于后台维护的毫秒数；窗口最多每250毫秒运行一次。默认 3；调高会更快完成后台任务但更可能产生帧尖峰。")]
 	[SettingPropertyGroup("4. 开发者选项")]
 	public int DailyMaintenanceFrameBudgetMs { get; set; } = 3;
 
@@ -1013,7 +1017,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）", GroupOrder = -290)]
 	public float AuxiliaryApiTemperature { get; set; } = 0f;
 
-	[SettingPropertyInteger("最大输出Tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "前处理API规则检索、规则路由与简易对话链路调用的 max_tokens。默认 8000；如果接口不支持过高上限，可能会被接口拒绝。")]
+	[SettingPropertyInteger("最大输出Tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "前处理API规则检索、规则路由与简易对话链路调用的 max_tokens。默认 12000；如果接口不支持过高上限，可能会被接口拒绝。")]
 	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）", GroupOrder = -290)]
 	public int AuxiliaryApiMaxTokens { get; set; } = DefaultGeneralApiMaxTokens;
 
@@ -1088,7 +1092,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
 	public float ActionPostprocessApiTemperature { get; set; } = 0f;
 
-	[SettingPropertyInteger("最大输出Tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "后处理API动作标签与情绪标签判定调用的 max_tokens。默认 8000；如果接口不支持过高上限，可能会被接口拒绝。")]
+	[SettingPropertyInteger("最大输出Tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "后处理API动作标签与情绪标签判定调用的 max_tokens。默认 12000；如果接口不支持过高上限，可能会被接口拒绝。")]
 	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
 	public int ActionPostprocessApiMaxTokens { get; set; } = DefaultGeneralApiMaxTokens;
 
@@ -1163,7 +1167,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
 	public float EventAndRebellionApiTemperature { get; set; } = 0.8f;
 
-	[SettingPropertyInteger("最大输出Tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "事件周报与王国叛乱建国命名调用的 max_tokens。默认 8000；如果接口不支持过高上限，可能会被接口拒绝。")]
+	[SettingPropertyInteger("最大输出Tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "事件周报与王国叛乱建国命名调用的 max_tokens。默认 12000；如果接口不支持过高上限，可能会被接口拒绝。")]
 	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
 	public int EventAndRebellionApiMaxTokens { get; set; } = DefaultEventAndRebellionApiMaxTokens;
 

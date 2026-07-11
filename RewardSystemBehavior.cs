@@ -6544,6 +6544,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			string kingdomName = targetKingdom.Name?.ToString() ?? targetKingdom.StringId ?? "该王国";
 			string playerClanName = GetClanDisplayNameForNotification(playerClan);
+			string playerDisplayName = MyBehavior.BuildPlayerPublicDisplayNameForExternal(giver);
+			if (string.IsNullOrWhiteSpace(playerDisplayName))
+			{
+				playerDisplayName = "玩家";
+			}
 			if (targetKingdom.RulingClan == playerClan)
 			{
 				statusText = "执行跳过：" + playerClanName + " 已经是 " + kingdomName + " 的执政家族。";
@@ -6579,7 +6584,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			ChangeRulingClanAction.Apply(targetKingdom, playerClan);
 			string transitionSummary = BuildRecruitmentTransitionSummary(transitionNotes);
-			statusText = "执行成功：" + (giver.Name?.ToString() ?? "国王") + " 已将 " + kingdomName + " 的王位让给玩家，" + playerClanName + " 成为新的执政家族" + transitionSummary + "。";
+			statusText = "执行成功：" + (giver.Name?.ToString() ?? "国王") + " 已将 " + kingdomName + " 的王位让给" + playerDisplayName + "，" + playerClanName + " 成为新的执政家族" + transitionSummary + "。";
 			return true;
 		}
 		catch (Exception ex)
