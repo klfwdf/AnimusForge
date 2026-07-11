@@ -3726,41 +3726,71 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
+			_ = Task.Run(() => PrepareAndGenerateInboundLetterOffMainThreadAsync(sessionId, runtimeGeneration));
+		}
+		catch (Exception ex)
+		{
+			Log("queue background inbound letter prepare failed session=" + sessionId + " error=" + ex);
+			FailInboundLetterGenerationOnMainThread(sessionId, runtimeGeneration, null, "inbound_letter_generation_failed");
+		}
+	}
+
+	private async Task PrepareAndGenerateInboundLetterOffMainThreadAsync(string sessionId, long runtimeGeneration)
+	{
+		string fallbackLetter = null;
+		try
+		{
+			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "courier_inbound_prepare_background_start"))
+			{
+				return;
+			}
 			CourierSession session = GetSessionById(sessionId);
 			if (session == null || IsTerminalStage(session) || !IsInboundToPlayer(session))
 			{
 				return;
 			}
 			Hero sender = ResolveSender(session);
-			string fallbackLetter = NormalizeInboundLetterText(string.IsNullOrWhiteSpace(session.InboundFallbackLetter) ? session.LetterText : session.InboundFallbackLetter, session, sender);
+			fallbackLetter = NormalizeInboundLetterText(string.IsNullOrWhiteSpace(session.InboundFallbackLetter) ? session.LetterText : session.InboundFallbackLetter, session, sender);
 			if (sender == null || sender.IsDead)
 			{
-				session.LetterText = fallbackLetter;
-				session.ReplyGenerated = true;
-				session.ReplyGenerationStarted = false;
-				ProcessSessionById(sessionId, "inbound_letter_generated_sender_invalid");
+				string invalidSenderFallback = fallbackLetter;
+				EnqueueMainThreadActionForGeneration(runtimeGeneration, () =>
+				{
+					CourierSession invalidSession = GetSessionById(sessionId);
+					if (invalidSession == null || IsTerminalStage(invalidSession) || !IsInboundToPlayer(invalidSession))
+					{
+						return;
+					}
+					invalidSession.LetterText = invalidSenderFallback;
+					invalidSession.ReplyGenerated = true;
+					invalidSession.ReplyGenerationStarted = false;
+					ProcessSessionById(sessionId, "inbound_letter_generated_sender_invalid");
+				}, "inbound_letter_generated_sender_invalid");
 				return;
 			}
 			InboundLetterGenerationRequest request = BuildInboundLetterGenerationRequestOnMainThread(session, sender, fallbackLetter, runtimeGeneration);
 			ShoutNetwork.RecordPrimaryRequestBodyForTokenStats(request.Messages, MainReplyMaxTokens, "courier_inbound_letter_preflight");
-			_ = Task.Run(() => GenerateInboundNpcLetterAsync(request));
+			await GenerateInboundNpcLetterAsync(request).ConfigureAwait(false);
 		}
 		catch (PreprocessFormatException ex)
 		{
-			Log("prepare inbound letter preprocess failed session=" + sessionId + " error=" + ex.Message);
-			try
+			Log("background prepare inbound letter preprocess failed session=" + sessionId + " error=" + ex.Message);
+			EnqueueMainThreadActionForGeneration(runtimeGeneration, () =>
 			{
-				InformationManager.DisplayMessage(new InformationMessage("信使来信前处理失败：" + ex.Message, Colors.Red));
-			}
-			catch
-			{
-			}
-			FailInboundLetterGenerationOnMainThread(sessionId, runtimeGeneration, null, "inbound_letter_preprocess_failed");
+				try
+				{
+					InformationManager.DisplayMessage(new InformationMessage("信使来信前处理失败：" + ex.Message, Colors.Red));
+				}
+				catch
+				{
+				}
+				FailInboundLetterGenerationOnMainThread(sessionId, runtimeGeneration, fallbackLetter, "inbound_letter_preprocess_failed");
+			}, "inbound_letter_preprocess_failed");
 		}
 		catch (Exception ex)
 		{
-			Log("prepare inbound letter failed session=" + sessionId + " error=" + ex);
-			FailInboundLetterGenerationOnMainThread(sessionId, runtimeGeneration, null, "inbound_letter_generation_failed");
+			Log("background prepare inbound letter failed session=" + sessionId + " error=" + ex);
+			EnqueueMainThreadActionForGeneration(runtimeGeneration, () => FailInboundLetterGenerationOnMainThread(sessionId, runtimeGeneration, fallbackLetter, "inbound_letter_generation_failed"), "inbound_letter_prepare_failed");
 		}
 	}
 
@@ -3772,7 +3802,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		string routingInput = "[NPC主动写信意图] " + seed;
 		Log("inbound letter llm start session=" + session.Id + " sender=" + SafeHeroId(sender));
 		string extraFact = BuildInboundDeliveryFactText(session, delivered: false, sender);
-		Log("[MemoryPerf] history_start reason=courier_inbound session=" + session.Id + " hero=" + SafeHeroId(sender) + " mode=main_thread");
+		Log("[MemoryPerf] history_start reason=courier_inbound session=" + session.Id + " hero=" + SafeHeroId(sender) + " mode=background_prepare");
 		System.Diagnostics.Stopwatch historySw = System.Diagnostics.Stopwatch.StartNew();
 		string historyText = (MyBehavior.BuildHistoryContextForExternal(sender, 24, null, extraFact) ?? "").Trim();
 		historySw.Stop();

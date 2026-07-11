@@ -273,19 +273,16 @@ public static class WorldEntityRetrievalService
 			List<string> allMentions = BuildMergedMentionList(mentions);
 			HashSet<string> activeRuleIdSet = BuildActiveRuleIdSet(activeRuleIds);
 			bool searchItemsFromTerms = ShouldSearchItemEntitiesFromTerms(activeRuleIdSet);
-			bool searchTroopsFromTerms = ShouldSearchTroopEntitiesFromTerms(activeRuleIdSet);
 			List<string> itemMentions = BuildTypedMentionList(mentions?.Items, searchItemsFromTerms ? mentions?.Terms : null);
-			List<string> troopMentions = BuildTypedMentionList(mentions?.Troops, searchTroopsFromTerms ? mentions?.Terms : null);
-			string startDetail = "mentions=" + allMentions.Count + " itemMentions=" + itemMentions.Count + " troopMentions=" + troopMentions.Count + " visibleParties=" + visibleParties.Count + " contextHero=" + (contextHero?.StringId ?? "");
+			string startDetail = "mentions=" + allMentions.Count + " itemMentions=" + itemMentions.Count + " visibleParties=" + visibleParties.Count + " contextHero=" + (contextHero?.StringId ?? "");
 			FreezeWatchdog.Mark("WorldEntityRetrieval.start", startDetail, immediate: true);
-			Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] start mentions=" + allMentions.Count + " heroes=" + CountList(mentions?.Heroes) + " settlements=" + CountList(mentions?.Settlements) + " clans=" + CountList(mentions?.Clans) + " kingdoms=" + CountList(mentions?.Kingdoms) + " items=" + CountList(mentions?.Items) + " troops=" + CountList(mentions?.Troops) + " terms=" + CountList(mentions?.Terms) + " itemMentions=" + itemMentions.Count + " troopMentions=" + troopMentions.Count + " visibleParties=" + visibleParties.Count + " contextHero=" + (contextHero?.StringId ?? "") + " includeResidentKingdoms=" + includeResidentKingdoms + " activeRules=" + FormatMentionsForLog(activeRuleIdSet) + " " + FormatBudgetForLog(budget));
+			Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] start mentions=" + allMentions.Count + " heroes=" + CountList(mentions?.Heroes) + " settlements=" + CountList(mentions?.Settlements) + " clans=" + CountList(mentions?.Clans) + " kingdoms=" + CountList(mentions?.Kingdoms) + " items=" + CountList(mentions?.Items) + " terms=" + CountList(mentions?.Terms) + " itemMentions=" + itemMentions.Count + " visibleParties=" + visibleParties.Count + " contextHero=" + (contextHero?.StringId ?? "") + " includeResidentKingdoms=" + includeResidentKingdoms + " activeRules=" + FormatMentionsForLog(activeRuleIdSet) + " " + FormatBudgetForLog(budget));
 			List<EntityMatch<Hero>> heroes = new List<EntityMatch<Hero>>();
 			List<EntityMatch<Settlement>> settlements = new List<EntityMatch<Settlement>>();
 			List<EntityMatch<Clan>> clans = new List<EntityMatch<Clan>>();
 			List<EntityMatch<Kingdom>> kingdoms = new List<EntityMatch<Kingdom>>();
 			List<EntityMatch<ItemObject>> items = new List<EntityMatch<ItemObject>>();
-			List<EntityMatch<CharacterObject>> troops = new List<EntityMatch<CharacterObject>>();
-			if (allMentions.Count > 0 || itemMentions.Count > 0 || troopMentions.Count > 0)
+			if (allMentions.Count > 0 || itemMentions.Count > 0)
 			{
 				Stopwatch stageSw = Stopwatch.StartNew();
 				int maxInjectedEntities = GetMaxInjectedEntitiesFromSettings();
@@ -294,7 +291,6 @@ public static class WorldEntityRetrievalService
 				List<Clan> clanCandidates = new List<Clan>();
 				List<Kingdom> kingdomCandidates = new List<Kingdom>();
 				List<ItemObject> itemCandidates = new List<ItemObject>();
-				List<CharacterObject> troopCandidates = new List<CharacterObject>();
 				if (allMentions.Count > 0)
 				{
 					heroCandidates = GetHeroCandidates().ToList();
@@ -306,11 +302,7 @@ public static class WorldEntityRetrievalService
 				{
 					itemCandidates = GetItemCandidates().ToList();
 				}
-				if (troopMentions.Count > 0)
-				{
-					troopCandidates = GetTroopCandidates().ToList();
-				}
-				Logger.Log("WorldEntityRetrieval", "mentions total=" + allMentions.Count + " maxInject=" + maxInjectedEntities + " heroes=" + CountList(mentions?.Heroes) + " settlements=" + CountList(mentions?.Settlements) + " clans=" + CountList(mentions?.Clans) + " kingdoms=" + CountList(mentions?.Kingdoms) + " items=" + CountList(mentions?.Items) + " troops=" + CountList(mentions?.Troops) + " terms=" + CountList(mentions?.Terms) + " itemMentions=" + itemMentions.Count + " troopMentions=" + troopMentions.Count + " visibleParties=" + visibleParties.Count + " candidates hero=" + heroCandidates.Count + " settlement=" + settlementCandidates.Count + " clan=" + clanCandidates.Count + " kingdom=" + kingdomCandidates.Count + " item=" + itemCandidates.Count + " troop=" + troopCandidates.Count + " names=" + FormatMentionsForLog(allMentions) + " itemNames=" + FormatMentionsForLog(itemMentions) + " troopNames=" + FormatMentionsForLog(troopMentions));
+				Logger.Log("WorldEntityRetrieval", "mentions total=" + allMentions.Count + " maxInject=" + maxInjectedEntities + " heroes=" + CountList(mentions?.Heroes) + " settlements=" + CountList(mentions?.Settlements) + " clans=" + CountList(mentions?.Clans) + " kingdoms=" + CountList(mentions?.Kingdoms) + " items=" + CountList(mentions?.Items) + " terms=" + CountList(mentions?.Terms) + " itemMentions=" + itemMentions.Count + " visibleParties=" + visibleParties.Count + " candidates hero=" + heroCandidates.Count + " settlement=" + settlementCandidates.Count + " clan=" + clanCandidates.Count + " kingdom=" + kingdomCandidates.Count + " item=" + itemCandidates.Count + " names=" + FormatMentionsForLog(allMentions) + " itemNames=" + FormatMentionsForLog(itemMentions));
 				Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] candidates_ready ms=" + Math.Round(stageSw.Elapsed.TotalMilliseconds, 2));
 				if (allMentions.Count > 0)
 				{
@@ -340,18 +332,10 @@ public static class WorldEntityRetrievalService
 						items = FindMatches("item", itemMentions, itemMentionPriority, itemCandidates, GetItemAliases, (ItemObject x) => "item:" + SafeStringId(x?.StringId), (ItemObject x) => SafeName(x?.Name, x?.StringId ?? "Item"), budget);
 					}
 				}
-				if (troopMentions.Count > 0)
-				{
-					Dictionary<string, int> troopMentionPriority = BuildMentionPriority(troopMentions);
-					if (CanContinueWorldEntityMatch("troop", budget))
-					{
-						troops = FindMatches("troop", troopMentions, troopMentionPriority, troopCandidates, GetTroopAliases, (CharacterObject x) => "troop:" + SafeStringId(x?.StringId), (CharacterObject x) => SafeName(x?.Name, x?.StringId ?? "Troop"), budget);
-					}
-				}
-				Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] all_match_done heroMatches=" + heroes.Count + " settlementMatches=" + settlements.Count + " clanMatches=" + clans.Count + " kingdomMatches=" + kingdoms.Count + " itemMatches=" + items.Count + " troopMatches=" + troops.Count + " ms=" + Math.Round(stageSw.Elapsed.TotalMilliseconds, 2) + " hardBudgetExceeded=" + budget.IsHardExceeded);
+				Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] all_match_done heroMatches=" + heroes.Count + " settlementMatches=" + settlements.Count + " clanMatches=" + clans.Count + " kingdomMatches=" + kingdoms.Count + " itemMatches=" + items.Count + " ms=" + Math.Round(stageSw.Elapsed.TotalMilliseconds, 2) + " hardBudgetExceeded=" + budget.IsHardExceeded);
 				stageSw.Restart();
-				ApplyGlobalInjectionLimit(maxInjectedEntities, ref heroes, ref settlements, ref clans, ref kingdoms, ref items, ref troops);
-				Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] global_limit_done heroMatches=" + heroes.Count + " settlementMatches=" + settlements.Count + " clanMatches=" + clans.Count + " kingdomMatches=" + kingdoms.Count + " itemMatches=" + items.Count + " troopMatches=" + troops.Count + " ms=" + Math.Round(stageSw.Elapsed.TotalMilliseconds, 2));
+				ApplyGlobalInjectionLimit(maxInjectedEntities, ref heroes, ref settlements, ref clans, ref kingdoms, ref items);
+				Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] global_limit_done heroMatches=" + heroes.Count + " settlementMatches=" + settlements.Count + " clanMatches=" + clans.Count + " kingdomMatches=" + kingdoms.Count + " itemMatches=" + items.Count + " ms=" + Math.Round(stageSw.Elapsed.TotalMilliseconds, 2));
 			}
 			else if (visibleParties.Count > 0)
 			{
@@ -363,11 +347,10 @@ public static class WorldEntityRetrievalService
 			List<EntityMatch<Clan>> postprocessClans = CloneEntityMatches(clans);
 			List<EntityMatch<Kingdom>> postprocessKingdoms = CloneEntityMatches(kingdoms);
 			List<EntityMatch<ItemObject>> postprocessItems = CloneEntityMatches(items);
-			List<EntityMatch<CharacterObject>> postprocessTroops = CloneEntityMatches(troops);
 			AddResidentEntityMatches(contextHero, includeResidentKingdoms, ref heroes, ref settlements, ref clans, ref kingdoms);
 			AddPostprocessResidentEntityMatches(contextHero, ref postprocessHeroes, ref postprocessSettlements, ref postprocessClans, ref postprocessKingdoms);
-			Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] resident_done heroMatches=" + heroes.Count + " settlementMatches=" + settlements.Count + " clanMatches=" + clans.Count + " kingdomMatches=" + kingdoms.Count + " itemMatches=" + items.Count + " troopMatches=" + troops.Count + " visibleParties=" + visibleParties.Count + " ms=" + Math.Round(residentSw.Elapsed.TotalMilliseconds, 2));
-			int count = heroes.Count + settlements.Count + clans.Count + kingdoms.Count + items.Count + troops.Count + visibleParties.Count;
+			Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] resident_done heroMatches=" + heroes.Count + " settlementMatches=" + settlements.Count + " clanMatches=" + clans.Count + " kingdomMatches=" + kingdoms.Count + " itemMatches=" + items.Count + " visibleParties=" + visibleParties.Count + " ms=" + Math.Round(residentSw.Elapsed.TotalMilliseconds, 2));
+			int count = heroes.Count + settlements.Count + clans.Count + kingdoms.Count + items.Count + visibleParties.Count;
 			if (count <= 0)
 			{
 				Logger.Log("WorldEntityRetrieval", "no_match mentions=" + FormatMentionsForLog(allMentions));
@@ -377,8 +360,8 @@ public static class WorldEntityRetrievalService
 			Stopwatch buildSw = Stopwatch.StartNew();
 			Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] build_blocks_start matchCount=" + count);
 			FreezeWatchdog.Mark("WorldEntityRetrieval.build_blocks_start", "matchCount=" + count, immediate: true);
-			result.MainPromptBlock = BuildMainPromptBlock(playerDisplayName, contextHero, heroes, settlements, clans, kingdoms, items, troops, visibleParties);
-			result.PostprocessPromptBlock = BuildPostprocessPromptBlock(postprocessHeroes, postprocessSettlements, postprocessClans, postprocessKingdoms, postprocessItems, postprocessTroops, visibleParties);
+			result.MainPromptBlock = BuildMainPromptBlock(playerDisplayName, contextHero, heroes, settlements, clans, kingdoms, items, visibleParties);
+			result.PostprocessPromptBlock = BuildPostprocessPromptBlock(postprocessHeroes, postprocessSettlements, postprocessClans, postprocessKingdoms, postprocessItems, visibleParties);
 			Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] build_blocks_done mainLen=" + ((result.MainPromptBlock ?? "").Length) + " postLen=" + ((result.PostprocessPromptBlock ?? "").Length) + " blockMs=" + Math.Round(buildSw.Elapsed.TotalMilliseconds, 2) + " totalMs=" + Math.Round(totalSw.Elapsed.TotalMilliseconds, 2));
 			FreezeWatchdog.Mark("WorldEntityRetrieval.done", "matches=" + result.MatchCount + " totalMs=" + Math.Round(totalSw.Elapsed.TotalMilliseconds, 2) + " hardBudgetExceeded=" + budget.IsHardExceeded, immediate: true);
 			return result;
@@ -434,11 +417,6 @@ public static class WorldEntityRetrievalService
 	private static bool ShouldSearchItemEntitiesFromTerms(HashSet<string> activeRuleIds)
 	{
 		return ActiveRuleLooksLike(activeRuleIds, "reward", "loan", "debt", "barter", "trade", "exchange", "gift", "item", "goods", "equipment", "asset", "courier", "delivery");
-	}
-
-	private static bool ShouldSearchTroopEntitiesFromTerms(HashSet<string> activeRuleIds)
-	{
-		return ActiveRuleLooksLike(activeRuleIds, "party_transfer", "troop", "unit", "soldier", "prisoner", "captive", "recruit", "worldmap_party_command", "hero_join_party");
 	}
 
 	private static bool ActiveRuleLooksLike(HashSet<string> activeRuleIds, params string[] fragments)
@@ -540,7 +518,7 @@ public static class WorldEntityRetrievalService
 		return value;
 	}
 
-	private static void ApplyGlobalInjectionLimit(int maxCount, ref List<EntityMatch<Hero>> heroes, ref List<EntityMatch<Settlement>> settlements, ref List<EntityMatch<Clan>> clans, ref List<EntityMatch<Kingdom>> kingdoms, ref List<EntityMatch<ItemObject>> items, ref List<EntityMatch<CharacterObject>> troops)
+	private static void ApplyGlobalInjectionLimit(int maxCount, ref List<EntityMatch<Hero>> heroes, ref List<EntityMatch<Settlement>> settlements, ref List<EntityMatch<Clan>> clans, ref List<EntityMatch<Kingdom>> kingdoms, ref List<EntityMatch<ItemObject>> items)
 	{
 		maxCount = ClampMaxInjectedEntities(maxCount);
 		List<Tuple<string, string, int, float, string>> ordered = new List<Tuple<string, string, int, float, string>>();
@@ -549,14 +527,12 @@ public static class WorldEntityRetrievalService
 		AddGlobalLimitItems(ordered, "clan", clans);
 		AddGlobalLimitItems(ordered, "kingdom", kingdoms);
 		AddGlobalLimitItems(ordered, "item", items);
-		AddGlobalLimitItems(ordered, "troop", troops);
 		HashSet<string> keep = new HashSet<string>(ordered.OrderBy((Tuple<string, string, int, float, string> x) => x.Item3).ThenByDescending((Tuple<string, string, int, float, string> x) => x.Item4).ThenBy((Tuple<string, string, int, float, string> x) => x.Item5, StringComparer.OrdinalIgnoreCase).Take(maxCount).Select((Tuple<string, string, int, float, string> x) => x.Item1 + ":" + x.Item2), StringComparer.OrdinalIgnoreCase);
 		heroes = FilterGlobalLimitList("hero", heroes, keep);
 		settlements = FilterGlobalLimitList("settlement", settlements, keep);
 		clans = FilterGlobalLimitList("clan", clans, keep);
 		kingdoms = FilterGlobalLimitList("kingdom", kingdoms, keep);
 		items = FilterGlobalLimitList("item", items, keep);
-		troops = FilterGlobalLimitList("troop", troops, keep);
 	}
 
 	private static void AddGlobalLimitItems<T>(List<Tuple<string, string, int, float, string>> target, string type, IEnumerable<EntityMatch<T>> matches) where T : class
@@ -1143,32 +1119,6 @@ public static class WorldEntityRetrievalService
 		}
 	}
 
-	private static IEnumerable<CharacterObject> GetTroopCandidates()
-	{
-		IEnumerable<CharacterObject> troops = null;
-		try
-		{
-			troops = CharacterObject.All;
-		}
-		catch
-		{
-			troops = null;
-		}
-		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (CharacterObject troop in troops ?? Enumerable.Empty<CharacterObject>())
-		{
-			if (troop == null || troop.IsHero || troop == CharacterObject.PlayerCharacter)
-			{
-				continue;
-			}
-			string id = (troop.StringId ?? SafeName(troop.Name, "")).Trim();
-			if (!string.IsNullOrWhiteSpace(id) && seen.Add(id))
-			{
-				yield return troop;
-			}
-		}
-	}
-
 	private static IEnumerable<string> GetHeroAliases(Hero hero)
 	{
 		return NonEmpty(SafeName(hero?.Name, ""), hero?.StringId, SafeName(hero?.CharacterObject?.Name, ""), hero?.CharacterObject?.StringId);
@@ -1217,54 +1167,6 @@ public static class WorldEntityRetrievalService
 		catch
 		{
 		}
-		return aliases;
-	}
-
-	private static IEnumerable<string> GetTroopAliases(CharacterObject troop)
-	{
-		List<string> aliases = new List<string>();
-		if (troop == null)
-		{
-			return aliases;
-		}
-		AddAlias(aliases, SafeName(troop.Name, ""));
-		AddAlias(aliases, troop.StringId);
-		try
-		{
-			AddAlias(aliases, MyBehavior.GetPartyTransferTroopTypeLabelForExternal(troop));
-			AddAlias(aliases, troop.DefaultFormationClass.ToString());
-			AddTroopTypeAliases(aliases, troop);
-			int tier = Math.Max(0, troop.Tier);
-			AddAlias(aliases, "T" + tier.ToString(CultureInfo.InvariantCulture));
-			AddAlias(aliases, tier.ToString(CultureInfo.InvariantCulture) + "阶");
-			AddAlias(aliases, tier.ToString(CultureInfo.InvariantCulture) + "级");
-			if (tier >= 4)
-			{
-				AddAlias(aliases, "高阶");
-				AddAlias(aliases, "高级");
-				AddAlias(aliases, "精锐");
-			}
-			else if (tier > 0 && tier <= 2)
-			{
-				AddAlias(aliases, "低阶");
-				AddAlias(aliases, "低级");
-				AddAlias(aliases, "新兵");
-			}
-		}
-		catch
-		{
-		}
-		try
-		{
-			AddAlias(aliases, troop.Culture?.Name?.ToString());
-			AddAlias(aliases, troop.Culture?.StringId);
-		}
-		catch
-		{
-		}
-		AddAlias(aliases, "部队");
-		AddAlias(aliases, "士兵");
-		AddAlias(aliases, "兵种");
 		return aliases;
 	}
 
@@ -1385,39 +1287,6 @@ public static class WorldEntityRetrievalService
 		}
 	}
 
-	private static void AddTroopTypeAliases(List<string> aliases, CharacterObject troop)
-	{
-		if (troop == null)
-		{
-			return;
-		}
-		string type = MyBehavior.GetPartyTransferTroopTypeLabelForExternal(troop);
-		AddAlias(aliases, type);
-		if (string.Equals(type, "弓手", StringComparison.Ordinal))
-		{
-			AddAlias(aliases, "弓箭手");
-			AddAlias(aliases, "射手");
-			AddAlias(aliases, "远程");
-		}
-		if (string.Equals(type, "骑兵", StringComparison.Ordinal))
-		{
-			AddAlias(aliases, "马兵");
-			AddAlias(aliases, "骑手");
-			AddAlias(aliases, "骑士");
-		}
-		if (string.Equals(type, "骑射手", StringComparison.Ordinal))
-		{
-			AddAlias(aliases, "骑射");
-			AddAlias(aliases, "马弓手");
-			AddAlias(aliases, "骑弓手");
-		}
-		if (string.Equals(type, "步兵", StringComparison.Ordinal))
-		{
-			AddAlias(aliases, "步卒");
-			AddAlias(aliases, "近战");
-		}
-	}
-
 	private static IEnumerable<string> NonEmpty(params string[] values)
 	{
 		foreach (string value in values ?? Array.Empty<string>())
@@ -1430,7 +1299,7 @@ public static class WorldEntityRetrievalService
 		}
 	}
 
-	private static string BuildMainPromptBlock(string playerDisplayName, Hero contextHero, List<EntityMatch<Hero>> heroes, List<EntityMatch<Settlement>> settlements, List<EntityMatch<Clan>> clans, List<EntityMatch<Kingdom>> kingdoms, List<EntityMatch<ItemObject>> items, List<EntityMatch<CharacterObject>> troops, List<VisiblePartyCandidate> visibleParties)
+	private static string BuildMainPromptBlock(string playerDisplayName, Hero contextHero, List<EntityMatch<Hero>> heroes, List<EntityMatch<Settlement>> settlements, List<EntityMatch<Clan>> clans, List<EntityMatch<Kingdom>> kingdoms, List<EntityMatch<ItemObject>> items, List<VisiblePartyCandidate> visibleParties)
 	{
 		string player = ResolvePlayerDisplayNameForPrompt(playerDisplayName);
 		StringBuilder sb = new StringBuilder();
@@ -1440,7 +1309,6 @@ public static class WorldEntityRetrievalService
 		AppendClanMainFacts(sb, clans);
 		AppendKingdomMainFacts(sb, kingdoms);
 		AppendItemMainFacts(sb, items);
-		AppendTroopMainFacts(sb, troops);
 		AppendVisiblePartyFacts(sb, visibleParties);
 		return StripEntityIdsFromMainPromptBlock(sb.ToString()).Trim();
 	}
@@ -1755,7 +1623,7 @@ public static class WorldEntityRetrievalService
 		return result.Trim();
 	}
 
-	private static string BuildPostprocessPromptBlock(List<EntityMatch<Hero>> heroes, List<EntityMatch<Settlement>> settlements, List<EntityMatch<Clan>> clans, List<EntityMatch<Kingdom>> kingdoms, List<EntityMatch<ItemObject>> items, List<EntityMatch<CharacterObject>> troops, List<VisiblePartyCandidate> visibleParties)
+	private static string BuildPostprocessPromptBlock(List<EntityMatch<Hero>> heroes, List<EntityMatch<Settlement>> settlements, List<EntityMatch<Clan>> clans, List<EntityMatch<Kingdom>> kingdoms, List<EntityMatch<ItemObject>> items, List<VisiblePartyCandidate> visibleParties)
 	{
 		StringBuilder sb = new StringBuilder();
 		sb.AppendLine("可能有效的信息：");
@@ -1806,15 +1674,6 @@ public static class WorldEntityRetrievalService
 			{
 				ItemObject item = items[i].Value;
 				sb.AppendLine((i + 1) + ". 名称：" + SafeName(item?.Name, items[i].Name) + "；类型：" + FormatItemTypeLabel(item) + "；编号：" + items[i].Id + FormatPostprocessMentionHint(items[i]));
-			}
-		}
-		if (troops != null && troops.Count > 0)
-		{
-			sb.AppendLine("【兵种】");
-			for (int i = 0; i < troops.Count; i++)
-			{
-				CharacterObject troop = troops[i].Value;
-				sb.AppendLine((i + 1) + ". 名称：" + SafeName(troop?.Name, troops[i].Name) + "；类型：" + FormatTroopTypeLabel(troop) + "；编号：" + troops[i].Id + FormatPostprocessMentionHint(troops[i]));
 			}
 		}
 		if (visibleParties != null && visibleParties.Count > 0)
@@ -2040,23 +1899,6 @@ public static class WorldEntityRetrievalService
 		}
 	}
 
-	private static void AppendTroopMainFacts(StringBuilder sb, List<EntityMatch<CharacterObject>> matches)
-	{
-		if (matches == null || matches.Count == 0)
-		{
-			return;
-		}
-		sb.AppendLine();
-		sb.AppendLine("【兵种】");
-		for (int i = 0; i < matches.Count; i++)
-		{
-			CharacterObject troop = matches[i].Value;
-			sb.AppendLine((i + 1) + ". " + SafeName(troop?.Name, matches[i].Name) + "（编号：" + matches[i].Id + "；匹配分：" + FormatScore(matches[i].Score) + "；提及：" + matches[i].Mention + "）");
-			sb.AppendLine("文化：" + FormatTroopCulture(troop) + "；类型：" + FormatTroopTypeLabel(troop) + "；阶级：" + FormatInt(troop?.Tier) + "；等级：" + FormatInt(troop?.Level) + "；工资：" + FormatInt(troop?.TroopWage));
-			sb.AppendLine("升级目标：" + FormatTroopUpgradeTargets(troop));
-		}
-	}
-
 	private static string FormatItemTypeLabel(ItemObject item)
 	{
 		try
@@ -2140,56 +1982,6 @@ public static class WorldEntityRetrievalService
 			parts.Add("普通物品");
 		}
 		return string.Join("，", parts);
-	}
-
-	private static string FormatTroopTypeLabel(CharacterObject troop)
-	{
-		try
-		{
-			string label = MyBehavior.GetPartyTransferTroopTypeLabelForExternal(troop);
-			return string.IsNullOrWhiteSpace(label) ? "兵种" : label.Trim();
-		}
-		catch
-		{
-			return "兵种";
-		}
-	}
-
-	private static string FormatTroopCulture(CharacterObject troop)
-	{
-		try
-		{
-			string name = troop?.Culture?.Name?.ToString();
-			if (!string.IsNullOrWhiteSpace(name))
-			{
-				return name.Trim();
-			}
-			string id = troop?.Culture?.StringId;
-			return string.IsNullOrWhiteSpace(id) ? "未知" : id.Trim();
-		}
-		catch
-		{
-			return "未知";
-		}
-	}
-
-	private static string FormatTroopUpgradeTargets(CharacterObject troop)
-	{
-		try
-		{
-			List<string> names = (troop?.UpgradeTargets ?? new CharacterObject[0])
-				.Where((CharacterObject x) => x != null)
-				.Select((CharacterObject x) => SafeName(x.Name, x.StringId))
-				.Where((string x) => !string.IsNullOrWhiteSpace(x))
-				.Distinct(StringComparer.OrdinalIgnoreCase)
-				.Take(4)
-				.ToList();
-			return names.Count == 0 ? "无" : string.Join("、", names);
-		}
-		catch
-		{
-			return "未知";
-		}
 	}
 
 	private static string FormatHeroRelationshipForMainPrompt(string playerDisplayName, Hero contextHero, Hero targetHero)

@@ -4208,16 +4208,16 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 							new
 							{
 								role = "system",
-								content = "你是一个编号输出工具。"
+								content = AIConfigHandler.StrictPreprocessJsonSystemPrompt
 							},
 							new
 							{
 								role = "user",
-								content = "只输出 1,2,3,4"
+								content = "Output exactly this JSON object: {\"rule_codes\":[\"TEST\"],\"mentioned_entities\":{\"heroes\":[],\"settlements\":[],\"clans\":[],\"kingdoms\":[],\"items\":[],\"troops\":[],\"terms\":[]}}"
 							}
 						}
 					};
-					string jsonBody = AIConfigHandler.BuildAuxiliaryRouterRequestJsonForExternal(GetEffectiveApiUrl(AuxiliaryApiUrl), effectiveModelName, requestPayload.messages, 32, 0f, out var controlMode, useConfiguredMaxTokens: false);
+					string jsonBody = AIConfigHandler.BuildAuxiliaryRouterRequestJsonForExternal(GetEffectiveApiUrl(AuxiliaryApiUrl), effectiveModelName, requestPayload.messages, 2048, 0f, out var controlMode, useConfiguredMaxTokens: false);
 					StringContent content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 					string effectiveApiUrl = GetEffectiveApiUrl(AuxiliaryApiUrl);
 					using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
@@ -4229,7 +4229,25 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 					{
 						string reply = TryExtractAssistantReplyText(responseString);
 						string text = (controlMode == "plain") ? "" : " [" + controlMode + "]";
-						InformationManager.DisplayMessage(new InformationMessage("辅助API 连接正常" + text + "：" + (string.IsNullOrWhiteSpace(reply) ? "（返回为空）" : reply.Trim()), Color.FromUint(4278255360u)));
+						bool validEnvelope = AIConfigHandler.TryValidateStrictPreprocessJsonEnvelope(reply, requireMemoryIds: false, out var testEnvelope, out var formatError);
+						if (validEnvelope)
+						{
+							JArray testCodes = testEnvelope?["rule_codes"] as JArray;
+							validEnvelope = testCodes != null && testCodes.Count == 1 && string.Equals(testCodes[0]?.ToString(), "TEST", StringComparison.Ordinal);
+							if (!validEnvelope)
+							{
+								formatError = "unexpected_test_rule_codes";
+							}
+						}
+						if (!validEnvelope)
+						{
+							InformationManager.DisplayMessage(new InformationMessage("[系统] 辅助API可连接" + text + "，但前处理JSON格式不合格：" + formatError, Color.FromUint(4294936576u)));
+							Logger.Log("DuelSettings", "辅助API连接成功但前处理格式错误: " + formatError + " | reply=" + (reply ?? ""));
+						}
+						else
+						{
+							InformationManager.DisplayMessage(new InformationMessage("辅助API 连接及前处理JSON格式正常" + text + "：" + reply.Trim(), Color.FromUint(4278255360u)));
+						}
 					}
 					else
 					{

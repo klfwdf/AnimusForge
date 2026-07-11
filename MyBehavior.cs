@@ -22153,7 +22153,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				stringBuilder.AppendLine(text2.Trim());
 			}
-			stringBuilder.AppendLine("【固定资产转移规则】固定资产包括城市、城堡、工坊、商队和商船队。只认本轮清单；只有你最终明确同意现在把你的清单资产转给玩家，或明确接受玩家把玩家清单资产交给你，才算真的转移。村庄不单独转移。");
+			stringBuilder.AppendLine("【固定资产转移规则】固定资产只认本轮清单；只有你最终明确同意现在把你的清单资产转给玩家，才算真的转移。村庄不单独转移,注意，你绝不可以同意转让【你当前可转移固定资产】中不存在的资产，那会导致转让无效！");
 			stringBuilder.AppendLine("当前与你谈判的人：" + text);
 			AppendSettlementTransferPromptSection(stringBuilder, "【你当前可转移固定资产】：", list2, showPromptIndex: true);
 			string settlementRemainder = PromptListRetrievalService.BuildRemainingSettlementTransferSummary(list2All, list2, "你");
@@ -30489,10 +30489,10 @@ public class MyBehavior : CampaignBehaviorBase
 			Logger.Log("Logic", "[MemoryPerf] memory_preprocess_done hero=" + (debugHeroId ?? "") + " mode=direct candidates=" + list.Count + " finalCount=" + finalCount + " selected=" + selectedIds.Count + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
 			return true;
 		}
-		string system = "You are an AnimusForge preprocessing router. Select compressed memory blocks relevant to the latest player/NPC exchange. Return strict JSON only.";
+		string system = AIConfigHandler.StrictPreprocessJsonSystemPrompt;
 		StringBuilder user = new StringBuilder();
 		int mode = GetMemoryPreprocessModeFromSettings();
-		user.AppendLine(mode == 2 ? "Mode: parallel memory selector request. memory_ids is the required field for this request." : "Mode: unified preprocessing body. Include rule_codes and memory_ids even if rule_codes is empty.");
+		user.AppendLine(mode == 2 ? "Mode: parallel memory selector request. Set rule_codes to an empty array; include memory_ids and mentioned_entities." : "Mode: unified preprocessing body. Include rule_codes, memory_ids, and mentioned_entities even if rule_codes is empty.");
 		user.AppendLine("Output JSON schema: {\"rule_codes\":[],\"memory_ids\":[1,2],\"mentioned_entities\":{\"heroes\":[],\"settlements\":[],\"clans\":[],\"kingdoms\":[],\"items\":[],\"troops\":[],\"terms\":[]}}");
 		user.AppendLine("Select exactly " + Math.Max(1, finalCount) + " memory_ids from the candidate list. If uncertain, choose the closest by semantic relevance. Do not select more than " + Math.Max(1, finalCount) + ".");
 		user.AppendLine("mentioned_entities: heroes named people/titles; settlements places; clans families; kingdoms factions; items item/goods/equipment names or types; troops troop/unit/prisoner names or types; terms other useful raw phrases. Do not extract current speakers or player names just because they are speakers. If ambiguous, also add the raw phrase to terms. Order arrays by recency. Do not extract names from memory candidate titles unless also mentioned in the latest exchange.");
@@ -30560,7 +30560,6 @@ public class MyBehavior : CampaignBehaviorBase
 				ShowCompressedMemoryBlockingPopup("压缩记忆前处理失败", "记忆前处理没有成功：" + error + "\n\n请修复前处理 API 后重试。");
 				return false;
 			}
-			AIConfigHandler.PublishAuxiliaryMentionedEntitiesForExternal(currentInput, secondaryInput, ResolveCurrentMemorySceneLabel(), content);
 		}
 		else if (!AIConfigHandler.TryCallAuxiliarySimpleDialogue(messages, 800, 0f, out content, out error))
 		{
@@ -30573,7 +30572,6 @@ public class MyBehavior : CampaignBehaviorBase
 		else
 		{
 			apiSw.Stop();
-			AIConfigHandler.PublishAuxiliaryMentionedEntitiesForExternal(currentInput, secondaryInput, ResolveCurrentMemorySceneLabel(), content);
 		}
 		if (!TryParseMemoryPreprocessIds(content, list.Select((MemoryRecallCandidate x) => x.DisplayId), finalCount, out selectedIds, out var parseError))
 		{
@@ -30583,6 +30581,7 @@ public class MyBehavior : CampaignBehaviorBase
 			ShowCompressedMemoryBlockingPopup("压缩记忆前处理失败", error + "\n\n请修复前处理提示词或 API 输出后重试。");
 			throw new PreprocessFormatException(error);
 		}
+		AIConfigHandler.PublishAuxiliaryMentionedEntitiesForExternal(currentInput, secondaryInput, ResolveCurrentMemorySceneLabel(), content);
 		if (selectedIds.Count < finalCount)
 		{
 			HashSet<int> selectedSet = new HashSet<int>(selectedIds);
@@ -30604,25 +30603,13 @@ public class MyBehavior : CampaignBehaviorBase
 		HashSet<int> seen = new HashSet<int>();
 		selectedIds = new List<int>();
 		error = "";
-		string text = StripJsonCodeFence(content);
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			error = "empty_content";
-			return false;
-		}
 		if (allowed.Count <= 0)
 		{
 			error = "no_allowed_memory_ids";
 			return false;
 		}
-		JObject jObject;
-		try
+		if (!AIConfigHandler.TryValidateStrictPreprocessJsonEnvelope(content, requireMemoryIds: true, out var jObject, out error))
 		{
-			jObject = JObject.Parse(text);
-		}
-		catch (Exception ex)
-		{
-			error = "invalid_json:" + ex.GetType().Name;
 			return false;
 		}
 		JToken token = jObject["memory_ids"];
@@ -30676,7 +30663,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			preview = "(empty)";
 		}
-		return "（API响应格式错误）压缩记忆前处理返回格式错误：" + (string.IsNullOrWhiteSpace(reason) ? "unknown" : reason.Trim()) + "。必须输出可解析 JSON 对象，并包含 memory_ids 数组。原始输出：" + preview;
+		return "（API响应格式错误）压缩记忆前处理返回格式错误：" + (string.IsNullOrWhiteSpace(reason) ? "unknown" : reason.Trim()) + "。必须只输出一个 JSON 对象，并包含 rule_codes、memory_ids 和完整的 mentioned_entities 数组对象。原始输出：" + preview;
 	}
 
 	private void ShowCompressedMemoryBlockingPopup(string title, string message)
