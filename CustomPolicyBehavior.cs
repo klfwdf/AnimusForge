@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -21,7 +22,7 @@ using TaleWorlds.ScreenSystem;
 
 namespace AnimusForge;
 
-public sealed class CustomPolicyBehavior : CampaignBehaviorBase
+public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 {
 	private const int MaxPolicyNameChars = 100;
 
@@ -41,7 +42,7 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 
 	private const float AiPolicyInfluenceReserve = 100f;
 
-	private const int CustomPolicyDebugLogMaxFieldChars = 200000;
+	private const int CustomPolicyDebugLogMaxFieldChars = 100000;
 
 	private const int CustomPolicyDebugPreviewChars = 1200;
 
@@ -73,17 +74,23 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 
 	private const string SaveKeyActivePolicyEffects = "_afCustomPolicyActiveEffects_v1";
 
+	private const double ActivePolicyMaintenanceDefaultFrameBudgetMs = 3.0;
+
 	private static readonly ConcurrentQueue<Action> MainThreadActions = new ConcurrentQueue<Action>();
-
-	private static readonly object CustomPolicyDebugLogLock = new object();
-
-	private static readonly object CustomPolicyEffectLedgerLogLock = new object();
 
 	private static readonly bool CustomPolicyVerboseSettlementDebugLog = false;
 
 	private readonly Dictionary<string, string> _policyRecordHistory = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
 	private readonly Dictionary<string, string> _activePolicyEffects = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+	private readonly Queue<PendingActivePolicyEffectWork> _pendingActivePolicyEffectWork = new Queue<PendingActivePolicyEffectWork>();
+
+	private readonly HashSet<string> _queuedActivePolicyEffectIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+	private int _activePolicyRuntimeGeneration;
+
+	private int _lastActivePolicyScheduledDay = -1;
 
 	private bool _generationInProgress;
 
@@ -228,6 +235,10 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 		_waitTimeLocked = false;
 		_previousTimeControlMode = CampaignTimeControlMode.Stop;
 		_previousTimeControlLock = false;
+		_activePolicyRuntimeGeneration++;
+		_pendingActivePolicyEffectWork.Clear();
+		_queuedActivePolicyEffectIds.Clear();
+		_lastActivePolicyScheduledDay = -1;
 		if (hadTransientState)
 		{
 			PolicyDebugLog("load-transient-reset", "transient generation state reset after load");
@@ -246,6 +257,14 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 			catch (Exception ex)
 			{
 				Log("main thread action failed: " + ex);
+			}
+		}
+		EnsureActivePolicyEffectWorkScheduled(GetCurrentCampaignDay());
+		if (_pendingActivePolicyEffectWork.Count > 0)
+		{
+			using (PerfProbe.Scope("CustomPolicy.ProcessActivePolicyEffects"))
+			{
+				ProcessActivePolicyEffects(GetCurrentCampaignDay());
 			}
 		}
 	}
@@ -1032,19 +1051,29 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 
 	private void OnDailyTick()
 	{
-		ProcessActivePolicyEffects(GetCurrentCampaignDay());
+		EnsureActivePolicyEffectWorkScheduled(GetCurrentCampaignDay());
 	}
 
 	private void ProcessActivePolicyEffects(int currentDay)
 	{
-		if (_activePolicyEffects.Count <= 0)
+		if (_pendingActivePolicyEffectWork.Count <= 0)
 		{
 			return;
 		}
-		foreach (string key in _activePolicyEffects.Keys.ToList())
+		long startTimestamp = Stopwatch.GetTimestamp();
+		double budgetMs = GetActivePolicyMaintenanceFrameBudgetMs();
+		while (_pendingActivePolicyEffectWork.Count > 0 && !IsActivePolicyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
 		{
+			PendingActivePolicyEffectWork work = _pendingActivePolicyEffectWork.Peek();
+			if (work == null || work.RuntimeGeneration != _activePolicyRuntimeGeneration)
+			{
+				CompleteActivePolicyEffectWork(work, currentDay, requeueIfStillDue: false);
+				continue;
+			}
+			string key = (work.EffectId ?? "").Trim();
 			if (!_activePolicyEffects.TryGetValue(key, out string raw) || string.IsNullOrWhiteSpace(raw))
 			{
+				CompleteActivePolicyEffectWork(work, currentDay, requeueIfStillDue: false);
 				continue;
 			}
 			ActivePolicyEffectSaveData activeEffect = null;
@@ -1056,25 +1085,30 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 			{
 				PolicyDebugLog("daily-load-skip", "active effect parse failed key=" + key + " error=" + ex.Message);
 				_activePolicyEffects.Remove(key);
+				CompleteActivePolicyEffectWork(work, currentDay, requeueIfStillDue: false);
 				continue;
 			}
 			if (activeEffect == null || string.IsNullOrWhiteSpace(activeEffect.EffectId))
 			{
 				_activePolicyEffects.Remove(key);
+				CompleteActivePolicyEffectWork(work, currentDay, requeueIfStillDue: false);
 				continue;
 			}
 			if (activeEffect.RemainingDays <= 0)
 			{
 				MarkPolicyRecordEffectEnded(activeEffect, "持续时间已结束");
 				_activePolicyEffects.Remove(key);
+				CompleteActivePolicyEffectWork(work, currentDay, requeueIfStillDue: false);
 				continue;
 			}
-			if (currentDay <= activeEffect.SubmittedDay || activeEffect.LastAppliedDay >= currentDay)
+			PendingActivePolicyApplicationSaveData pending = activeEffect.PendingApplication;
+			if (pending == null && (currentDay <= activeEffect.SubmittedDay || activeEffect.LastAppliedDay >= currentDay))
 			{
+				CompleteActivePolicyEffectWork(work, currentDay, requeueIfStillDue: false);
 				continue;
 			}
 			Kingdom targetKingdom = ResolveKingdomByIdOrName(activeEffect.TargetKingdomId, activeEffect.TargetKingdomName);
-			if (targetKingdom == null)
+			if (targetKingdom == null || targetKingdom.IsEliminated)
 			{
 				activeEffect.RemainingDays = 0;
 				activeEffect.Ended = true;
@@ -1084,14 +1118,53 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 				PolicyDebugLog("daily-ended-missing-target", "effectId=" + activeEffect.EffectId
 					+ " recordId=" + (activeEffect.RecordId ?? "")
 					+ " target=" + (activeEffect.TargetKingdomName ?? activeEffect.TargetKingdomId ?? ""));
+				CompleteActivePolicyEffectWork(work, currentDay, requeueIfStillDue: false);
 				continue;
 			}
-			AppliedKingdomEffect actual = ApplyActiveEffectToKingdom(targetKingdom, activeEffect, currentDay);
-			activeEffect.LastAppliedDay = currentDay;
+			if (pending == null)
+			{
+				activeEffect.PendingApplication = CreatePendingActivePolicyApplication(targetKingdom, activeEffect, currentDay);
+				_activePolicyEffects[key] = JsonConvert.SerializeObject(activeEffect);
+				return;
+			}
+			if (pending.Day <= activeEffect.LastAppliedDay)
+			{
+				activeEffect.PendingApplication = null;
+				_activePolicyEffects[key] = JsonConvert.SerializeObject(activeEffect);
+				CompleteActivePolicyEffectWork(work, currentDay, requeueIfStillDue: true, activeEffect: activeEffect);
+				continue;
+			}
+			pending.SettlementIds = pending.SettlementIds ?? new List<string>();
+			pending.AppliedEffect = pending.AppliedEffect ?? CreateAppliedKingdomEffect(targetKingdom, activeEffect);
+			pending.AppliedEffect.DetailLines = pending.AppliedEffect.DetailLines ?? new List<string>();
+			if (pending.NextSettlementIndex < pending.SettlementIds.Count)
+			{
+				string settlementId = pending.SettlementIds[pending.NextSettlementIndex];
+				Settlement settlement = ResolveSettlementById(settlementId);
+				long applyTimestamp = Stopwatch.GetTimestamp();
+				using (PerfProbe.Scope("CustomPolicy.ApplyActiveEffectToKingdom"))
+				{
+					ApplyActiveEffectToSettlement(settlement, activeEffect, pending.AppliedEffect, pending.Day);
+				}
+				LogActivePolicyStageIfOverBudget("CustomPolicy.ApplyActiveEffectToKingdom", applyTimestamp, budgetMs, activeEffect.EffectId, settlementId);
+				pending.NextSettlementIndex++;
+				activeEffect.PendingApplication = pending;
+				_activePolicyEffects[key] = JsonConvert.SerializeObject(activeEffect);
+				return;
+			}
+			AppliedKingdomEffect actual = pending.AppliedEffect;
+			long finalizeApplyTimestamp = Stopwatch.GetTimestamp();
+			using (PerfProbe.Scope("CustomPolicy.ApplyActiveEffectToKingdom"))
+			{
+				ApplyKingdomStabilityDailyDelta(targetKingdom, activeEffect, actual);
+			}
+			LogActivePolicyStageIfOverBudget("CustomPolicy.ApplyActiveEffectToKingdom", finalizeApplyTimestamp, budgetMs, activeEffect.EffectId, "stability/finalize");
+			activeEffect.LastAppliedDay = pending.Day;
 			activeEffect.RemainingDays = Math.Max(0, activeEffect.RemainingDays - 1);
 			bool ended = activeEffect.RemainingDays <= 0;
 			activeEffect.Ended = ended;
 			activeEffect.EndReason = ended ? "持续时间结束" : "";
+			activeEffect.PendingApplication = null;
 			UpdatePolicyRecordEffectProgress(activeEffect);
 			if (ended)
 			{
@@ -1103,7 +1176,7 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 			}
 			PolicyDebugLog("daily-apply", "effectId=" + activeEffect.EffectId
 				+ " recordId=" + (activeEffect.RecordId ?? "")
-				+ " day=" + currentDay.ToString(CultureInfo.InvariantCulture)
+				+ " day=" + pending.Day.ToString(CultureInfo.InvariantCulture)
 				+ " remaining=" + activeEffect.RemainingDays.ToString(CultureInfo.InvariantCulture)
 				+ " target=" + actual.KingdomName
 				+ " townCount=" + actual.TownCount.ToString(CultureInfo.InvariantCulture)
@@ -1118,13 +1191,121 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 				+ " stabilityActualDelta=" + actual.KingdomStabilityActualDelta.ToString(CultureInfo.InvariantCulture)
 				+ " detailLines=" + actual.DetailLines.Count.ToString(CultureInfo.InvariantCulture),
 				BuildAppliedEffectDebugSummary(actual));
-			PolicyEffectLedgerLog("daily-apply", BuildPolicyEffectLedgerLine(activeEffect.RecordId, activeEffect.EffectId, actual, currentDay, activeEffect.RemainingDays));
+			PolicyEffectLedgerLog("daily-apply", BuildPolicyEffectLedgerLine(activeEffect.RecordId, activeEffect.EffectId, actual, pending.Day, activeEffect.RemainingDays));
+			CompleteActivePolicyEffectWork(work, currentDay, requeueIfStillDue: !ended, activeEffect: activeEffect);
 		}
 	}
 
-	private AppliedKingdomEffect ApplyActiveEffectToKingdom(Kingdom kingdom, ActivePolicyEffectSaveData activeEffect, int currentDay)
+	private void EnsureActivePolicyEffectWorkScheduled(int currentDay)
 	{
-		AppliedKingdomEffect applied = new AppliedKingdomEffect
+		if (_lastActivePolicyScheduledDay == currentDay)
+		{
+			return;
+		}
+		_lastActivePolicyScheduledDay = currentDay;
+		foreach (KeyValuePair<string, string> item in _activePolicyEffects.ToList())
+		{
+			ActivePolicyEffectSaveData activeEffect;
+			try
+			{
+				activeEffect = JsonConvert.DeserializeObject<ActivePolicyEffectSaveData>(item.Value ?? "");
+			}
+			catch
+			{
+				continue;
+			}
+			if (activeEffect == null || string.IsNullOrWhiteSpace(activeEffect.EffectId) || activeEffect.RemainingDays <= 0)
+			{
+				continue;
+			}
+			bool pending = activeEffect.PendingApplication != null && activeEffect.PendingApplication.Day > activeEffect.LastAppliedDay;
+			bool dueToday = currentDay > activeEffect.SubmittedDay && activeEffect.LastAppliedDay < currentDay;
+			if (pending || dueToday)
+			{
+				EnqueueActivePolicyEffectWork(activeEffect.EffectId);
+			}
+		}
+	}
+
+	private void EnqueueActivePolicyEffectWork(string effectId)
+	{
+		string key = (effectId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(key) || !_queuedActivePolicyEffectIds.Add(key))
+		{
+			return;
+		}
+		_pendingActivePolicyEffectWork.Enqueue(new PendingActivePolicyEffectWork
+		{
+			EffectId = key,
+			RuntimeGeneration = _activePolicyRuntimeGeneration
+		});
+	}
+
+	private void CompleteActivePolicyEffectWork(PendingActivePolicyEffectWork work, int currentDay, bool requeueIfStillDue, ActivePolicyEffectSaveData activeEffect = null)
+	{
+		if (_pendingActivePolicyEffectWork.Count > 0 && object.ReferenceEquals(_pendingActivePolicyEffectWork.Peek(), work))
+		{
+			_pendingActivePolicyEffectWork.Dequeue();
+		}
+		string effectId = (work?.EffectId ?? activeEffect?.EffectId ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(effectId))
+		{
+			_queuedActivePolicyEffectIds.Remove(effectId);
+		}
+		if (requeueIfStillDue && activeEffect != null && activeEffect.RemainingDays > 0 && currentDay > activeEffect.SubmittedDay && activeEffect.LastAppliedDay < currentDay)
+		{
+			EnqueueActivePolicyEffectWork(activeEffect.EffectId);
+		}
+	}
+
+	private static PendingActivePolicyApplicationSaveData CreatePendingActivePolicyApplication(Kingdom kingdom, ActivePolicyEffectSaveData activeEffect, int currentDay)
+	{
+		return new PendingActivePolicyApplicationSaveData
+		{
+			Day = currentDay,
+			SettlementIds = GetKingdomSettlements(kingdom)
+				.Select(x => (x?.StringId ?? "").Trim())
+				.Where(x => !string.IsNullOrWhiteSpace(x))
+				.Distinct(StringComparer.OrdinalIgnoreCase)
+				.ToList(),
+			NextSettlementIndex = 0,
+			AppliedEffect = CreateAppliedKingdomEffect(kingdom, activeEffect)
+		};
+	}
+
+	private static double GetActivePolicyMaintenanceFrameBudgetMs()
+	{
+		try
+		{
+			return Math.Max(1.0, Math.Min(10.0, (DuelSettings.GetSettings()?.DailyMaintenanceFrameBudgetMs).GetValueOrDefault((int)ActivePolicyMaintenanceDefaultFrameBudgetMs)));
+		}
+		catch
+		{
+			return ActivePolicyMaintenanceDefaultFrameBudgetMs;
+		}
+	}
+
+	private static bool IsActivePolicyMaintenanceBudgetExceeded(long startTimestamp, double budgetMs)
+	{
+		return budgetMs > 0.0 && (Stopwatch.GetTimestamp() - startTimestamp) * 1000.0 / Stopwatch.Frequency >= budgetMs;
+	}
+
+	private static void LogActivePolicyStageIfOverBudget(string stageName, long startTimestamp, double budgetMs, string effectId, string target)
+	{
+		double elapsedMs = (Stopwatch.GetTimestamp() - startTimestamp) * 1000.0 / Stopwatch.Frequency;
+		if (budgetMs > 0.0 && elapsedMs >= budgetMs)
+		{
+			Logger.Log("CustomPolicy", "active-effect-stage-over-budget stage=" + (stageName ?? "")
+				+ " elapsedMs=" + elapsedMs.ToString("0.000", CultureInfo.InvariantCulture)
+				+ " budgetMs=" + budgetMs.ToString("0.000", CultureInfo.InvariantCulture)
+				+ " effectId=" + (effectId ?? "")
+				+ " target=" + (target ?? ""));
+		}
+	}
+
+	private static AppliedKingdomEffect CreateAppliedKingdomEffect(Kingdom kingdom, ActivePolicyEffectSaveData activeEffect)
+	{
+		return new AppliedKingdomEffect
 		{
 			EffectId = activeEffect?.EffectId ?? "",
 			KingdomId = kingdom?.StringId ?? activeEffect?.TargetKingdomId ?? "",
@@ -1140,9 +1321,14 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 			RemainingDays = activeEffect?.RemainingDays ?? 0,
 			Reason = activeEffect?.Reason ?? ""
 		};
-		List<Settlement> settlements = GetKingdomSettlements(kingdom);
-		foreach (Settlement settlement in settlements)
+	}
+
+	private void ApplyActiveEffectToSettlement(Settlement settlement, ActivePolicyEffectSaveData activeEffect, AppliedKingdomEffect applied, int currentDay)
+	{
+		if (settlement == null || applied == null)
 		{
+			return;
+		}
 			Town town = settlement?.Town;
 			if (town != null)
 			{
@@ -1287,9 +1473,6 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 				{
 				}
 			}
-		}
-		ApplyKingdomStabilityDailyDelta(kingdom, activeEffect, applied);
-		return applied;
 	}
 
 	private static void ApplyKingdomStabilityDailyDelta(Kingdom kingdom, ActivePolicyEffectSaveData activeEffect, AppliedKingdomEffect applied)
@@ -3384,6 +3567,23 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static Settlement ResolveSettlementById(string settlementId)
+	{
+		string id = (settlementId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(id))
+		{
+			return null;
+		}
+		try
+		{
+			return Settlement.All.FirstOrDefault(x => x != null && string.Equals(x.StringId, id, StringComparison.OrdinalIgnoreCase));
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
 	private static Kingdom GetPlayerKingdom()
 	{
 		return Clan.PlayerClan?.Kingdom ?? Hero.MainHero?.Clan?.Kingdom;
@@ -3838,22 +4038,13 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string logDir = AnimusForgeModulePaths.GetLogsDirectory();
-			if (!string.IsNullOrWhiteSpace(logDir))
-			{
-				Directory.CreateDirectory(logDir);
-			}
-			string logPath = Path.Combine(logDir, "CustomPolicy_Effects.txt");
 			StringBuilder builder = new StringBuilder();
 			builder.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture));
 			builder.Append(" [");
 			builder.Append(string.IsNullOrWhiteSpace(stage) ? "log" : stage.Trim());
 			builder.Append("] ");
 			builder.AppendLine(message ?? "");
-			lock (CustomPolicyEffectLedgerLogLock)
-			{
-				File.AppendAllText(logPath, builder.ToString(), Encoding.UTF8);
-			}
+			Logger.LogToFile("CustomPolicy_Effects.txt", builder.ToString());
 		}
 		catch
 		{
@@ -3864,12 +4055,6 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string logDir = AnimusForgeModulePaths.GetLogsDirectory();
-			if (!string.IsNullOrWhiteSpace(logDir))
-			{
-				Directory.CreateDirectory(logDir);
-			}
-			string logPath = Path.Combine(logDir, "CustomPolicy_Debug.txt");
 			StringBuilder builder = new StringBuilder();
 			builder.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture));
 			builder.Append(" [");
@@ -3882,10 +4067,7 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 				builder.AppendLine(ClipForPolicyDebugLog(detail));
 				builder.AppendLine("--- detail end ---");
 			}
-			lock (CustomPolicyDebugLogLock)
-			{
-				File.AppendAllText(logPath, builder.ToString(), Encoding.UTF8);
-			}
+			Logger.LogToFile("CustomPolicy_Debug.txt", builder.ToString());
 		}
 		catch
 		{
@@ -4238,7 +4420,7 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 
 	private sealed class ActivePolicyEffectSaveData
 	{
-		public int Version { get; set; } = 1;
+		public int Version { get; set; } = 2;
 
 		public string EffectId { get; set; }
 
@@ -4281,6 +4463,26 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 		public bool Ended { get; set; }
 
 		public string EndReason { get; set; }
+
+		public PendingActivePolicyApplicationSaveData PendingApplication { get; set; }
+	}
+
+	private sealed class PendingActivePolicyApplicationSaveData
+	{
+		public int Day { get; set; }
+
+		public List<string> SettlementIds { get; set; } = new List<string>();
+
+		public int NextSettlementIndex { get; set; }
+
+		public AppliedKingdomEffect AppliedEffect { get; set; }
+	}
+
+	private sealed class PendingActivePolicyEffectWork
+	{
+		public string EffectId;
+
+		public int RuntimeGeneration;
 	}
 
 	private sealed class PolicyRecordSaveData

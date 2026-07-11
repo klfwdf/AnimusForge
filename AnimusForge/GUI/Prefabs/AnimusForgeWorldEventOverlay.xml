@@ -1,0 +1,15 @@
+﻿<Prefab>
+  <Window>
+    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
+      <Children>
+        <ButtonWidget WidthSizePolicy="Fixed" SuggestedWidth="120" HeightSizePolicy="Fixed" SuggestedHeight="38" Command.Click="TogglePanel" IsEnabled="true" VerticalAlignment="Bottom" HorizontalAlignment="Left" MarginLeft="616" MarginBottom="18" DoNotPassEventsToChildren="true">
+          <Children>
+            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#1B130DFF" AlphaFactor="0.88" IsEnabled="false" />
+            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="2" MarginRight="2" MarginTop="2" MarginBottom="2" Sprite="frame_9" AlphaFactor="0.34" IsEnabled="false" />
+            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="26" VerticalAlignment="Center" MarginLeft="8" MarginRight="8" Brush="Conversation.HeaderText" Brush.TextHorizontalAlignment="Center" Brush.FontSize="20" Text="@UnreadText" DoNotAcceptEvents="true" />
+          </Children>
+        </ButtonWidget>
+      </Children>
+    </Widget>
+  </Window>
+</Prefab>

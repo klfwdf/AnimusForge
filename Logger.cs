@@ -461,6 +461,27 @@ public static class Logger
 		WriteHumanLine(_eventLogsPath, source, message);
 	}
 
+	public static void LogToFile(string fileName, string content, bool isVerbose = false)
+	{
+		try
+		{
+			string safeFileName = System.IO.Path.GetFileName((fileName ?? "").Trim());
+			if (string.IsNullOrWhiteSpace(safeFileName) || content == null)
+			{
+				return;
+			}
+			string path = AnimusForgeModulePaths.GetLogFilePath(safeFileName);
+			if (string.IsNullOrWhiteSpace(path) || !IsPathEnabled(path))
+			{
+				return;
+			}
+			EnqueueLogWrite(path, content, isVerbose);
+		}
+		catch
+		{
+		}
+	}
+
 	public static void LogEventPromptExchange(string targetLabel, string requestText, string replyText)
 	{
 		try

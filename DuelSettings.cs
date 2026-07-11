@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -70,6 +71,23 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		+ "\n\n数值尺度以可玩性和政策强度为准，不要自动缩小。普通全国政策可以造成每日十几点到几十点变化；强力改革、全国动员、大规模经济制度变更、严酷镇压、系统性赈济或掠夺、羞辱敌国君主、宗教/文化式号召，可以造成每日几十到几百点变化。极端荒唐、灾难性、神权式或暴政式政策也可以造成每日几十到几百点负面变化。"
 		+ "\n\n若玩家在本提示词或政策正文中给出参考数值、单位、倍率、强弱或持续时间，你应按该尺度评判；例如玩家明确要求 300 量级，就应输出接近该量级的每日变化或清楚说明哪些字段采用该量级，不要压成小数、个位数或只当作总变化。";
 
+	private const string PreviousDefaultNpcRulerPolicyPromptForMigration = "你是一个卡拉迪亚大陆的 NPC 统治者政策生成器。你需要根据每个 NPC 王国的统治者、文化、原版政策、近期自定义政策、周报、民众反馈、外交和领地状态，为统治者生成符合其立场与处境的王国政策。"
+		+ "\n\n每条政策必须像国王、可汗、苏丹或执政氏族会实际发布的法令、改革、动员令或公共事务安排，而不是玩家命令、系统说明或现代国家政策。优先围绕财政、粮食、征兵、治安、地方自治、贵族利益、战争压力、商路和民心变化。"
+		+ "\n\n政策影响应复用自定义政策模块的可落地指标：繁荣度、粮食、村庄户数/炉户、忠诚度、治安度、民兵和 AF 王国稳定度。每日影响是每天结算的变化，不是总变化；durationDays 应体现政策持续时间。不影响的指标填 0。数值要保守、可持续、因果清楚，避免无代价超强增益、毁灭性膨胀或与上下文矛盾的结果。"
+		+ "\n\n默认只让政策作用于发布者自己的王国。只有在外交、战争、附庸、贸易封锁或边境冲突等上下文明确支持时，才可以让效果指向其他王国。不要输出玩家扣费、隐藏标签、原版 PolicyObject、Markdown 或解释；民众反馈必须在同一次政策 JSON 中写入 feedbackTitle 与 publicFeedback，代码不会再为这条政策额外请求独立民众反馈链路。";
+
+	private const string PreviousDefaultNpcRulerPolicyPromptWithTechnicalContract = "你是卡拉迪亚大陆上的 NPC 统治者本人。你要根据动态快照中的现实国情，以国王、可汗、苏丹或执政氏族领袖的身份发布真正属于自己的法令、改革、动员令或公共事务安排，而不是写系统说明或千篇一律的政策模板。"
+		+ "\n\n先阅读 RulerPersona。政策名称、措辞、优先事项和愿意承担的代价都应体现这位统治者的个性、经历、文化、家族处境与治理风格；但不能把 traits 机械映射成固定政策，国家现实和生存压力始终优先。"
+		+ "\n\n再按时间阅读两条 PreviousPolicy。每条旧政策和 linkedPublicFeedback 属于同一个 policyId。新政策应明确体现延续、调整、纠正或结束旧路线，并对民众、贵族、军营、商旅或村庄已经表现出的支持、担忧和反弹作出有逻辑的回应。"
+		+ "\n\n战争时期应优先考虑军粮、征召、防御、治安、财政负担、商路受阻和敌我互相消耗；本国动员也可能付出繁荣、粮食、忠诚或稳定代价，不能一面全面战争一面无代价暴增国力。只有 AllowedEffectTargets 中明确列出的当前敌国，且政策正文确实点名该国时，才可产生跨国效果。和平时期才更适合休养、恢复生产、建设与常规治理，但增长仍必须对应国家真实短板。"
+		+ "\n\n每日效果会在每个游戏日重复结算，持续时间要按动态快照中的骑砍季度和年度历法理解。持续越久，每日变化越应轻；任何方向和强弱都必须来自当前事实、政策措施、执行阻力和代价，不能在短期内凭空逆转整个国家。不要套用固定数值模板，也不要把总影响误写成每日影响。"
+		+ "\n\neffects.reason 必须讲清楚“当前事实如何促成政策、政策如何改变现实、为何产生这些方向和强弱”。policyContent、impactSummary、publicFeedback 与 effects 必须相互一致；民众反馈要像政策发布后在卡拉迪亚社会中真实传播的议论与余波。";
+
+	private const string DefaultNpcRulerPolicyPrompt = "让每位 NPC 统治者以符合其身份、文化、个性和经历的方式治理国家。政策名称、措辞、优先事项和愿意承担的代价都应有鲜明的个人色彩，不要写成千篇一律的模板。"
+		+ "\n\n新政策应联系此前的治理路线和民众反应，可以延续有效措施，也可以针对抱怨与失败作出调整、纠正或转向。"
+		+ "\n\n战争时期优先处理军粮、征召、防御、治安、财政负担、商路和敌我消耗，并体现动员对本国造成的真实代价。和平时期更适合休养生产、恢复贸易、建设领地和处理长期矛盾。"
+		+ "\n\n所有政策都应符合国家当前处境和实际执行能力，效果应由具体措施逐步产生，不能无缘无故让国家迅速强盛或衰败。民众反馈应像街市、村庄、军营、商队和贵族厅堂中自然传播的议论。";
+
 	private const int DefaultCustomPolicyGoldCost = 50000;
 
 	private const int DefaultCustomPolicyInfluenceCost = 500;
@@ -81,6 +99,30 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	private const int CustomPolicyPublicFeedbackTargetStepChars = 100;
 
 	private const int DefaultCustomPolicyPublicFeedbackTargetChars = 900;
+
+	private const int NpcRulerPolicyIntervalMinDays = 1;
+
+	private const int NpcRulerPolicyIntervalMaxDays = 30;
+
+	private const int DefaultNpcRulerPolicyIntervalDays = 7;
+
+	private const int NpcRulerPolicyIntervalMinHours = 6;
+
+	private const int NpcRulerPolicyIntervalMaxHours = 720;
+
+	private const int DefaultNpcRulerPolicyIntervalHours = DefaultNpcRulerPolicyIntervalDays * 24;
+
+	private const int NpcRulerPolicyDailyGenerationLimitMin = 1;
+
+	private const int NpcRulerPolicyDailyGenerationLimitMax = 20;
+
+	private const int DefaultNpcRulerPolicyDailyGenerationLimit = 2;
+
+	private const int NpcRulerPolicyMaxKingdomsPerRequestMin = 1;
+
+	private const int NpcRulerPolicyMaxKingdomsPerRequestMax = 6;
+
+	private const int DefaultNpcRulerPolicyMaxKingdomsPerRequest = 2;
 
 	private const string NpcPersonaGenerationRequirementsFileName = "NpcPersonaGenerationRequirements.txt";
 
@@ -96,9 +138,13 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	private const string CustomPolicyEvaluatorPromptJsonFileName = "CustomPolicyEvaluatorPrompt.json";
 
+	private const string NpcRulerPolicyPromptJsonFileName = "NpcRulerPolicyPrompt.json";
+
 	private const string LegacyCustomPromptTextStoreFileName = "CustomPrompts.json";
 
 	private const int CustomPromptTextMaxChars = 60000;
+
+	private const int NpcRulerPolicyEffectivePromptMaxChars = 4000;
 
 	private const long CustomPromptJsonMaxBytes = 262144L;
 
@@ -127,6 +173,8 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		public string NpcPersonaGenerationRequirements { get; set; }
 
 		public string CustomPolicyEvaluatorPrompt { get; set; }
+
+		public string NpcRulerPolicyPrompt { get; set; }
 	}
 
 	private sealed class CustomPromptTextJson
@@ -1167,15 +1215,27 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("9. 提示词扩展")]
 	public Action EditCustomPolicyEvaluatorPrompt { get; set; }
 
-	[SettingPropertyButton("自定义提示词JSON文件夹", -1, true, "", Content = "打开文件夹", Order = 5, RequireRestart = false, HintText = "打开 CustomPrompts 文件夹，可直接编辑五套提示词 JSON。")]
+	private string _npcRulerPolicyPrompt = LoadNpcRulerPolicyPromptFromDiskOrDefault();
+
+	public string NpcRulerPolicyPrompt
+	{
+		get => _npcRulerPolicyPrompt;
+		set => _npcRulerPolicyPrompt = NormalizeNpcRulerPolicyPromptText(value);
+	}
+
+	[SettingPropertyButton("玩家自定义NPC政策提示词", -1, true, "", Content = "打开编辑器", Order = 5, RequireRestart = false, HintText = "用于调整 NPC 统治者制定政策时的治理风格、关注重点和表达倾向。最多保存 60000 字符，每次请求使用前 4000 字符。")]
+	[SettingPropertyGroup("9. 提示词扩展")]
+	public Action EditNpcRulerPolicyPrompt { get; set; }
+
+	[SettingPropertyButton("自定义提示词JSON文件夹", -1, true, "", Content = "打开文件夹", Order = 6, RequireRestart = false, HintText = "打开 CustomPrompts 文件夹，可直接编辑六套提示词 JSON。")]
 	[SettingPropertyGroup("9. 提示词扩展")]
 	public Action OpenCustomPromptTextStoreFolderAction { get; set; }
 
-	[SettingPropertyBool("保留场景喊话动作/内心描写", Order = 6, RequireRestart = false, HintText = "关闭：仍使用详细动作/内心文案，但输出时过滤动作描写、心理活动。开启：保留动作描写和内心活动。")]
+	[SettingPropertyBool("保留场景喊话动作/内心描写", Order = 7, RequireRestart = false, HintText = "关闭：仍使用详细动作/内心文案，但输出时过滤动作描写、心理活动。开启：保留动作描写和内心活动。")]
 	[SettingPropertyGroup("9. 提示词扩展")]
 	public bool UseDetailedSceneSpeechPrompt { get; set; } = false;
 
-	[SettingPropertyBool("保留星号动作描写", Order = 7, RequireRestart = false, HintText = "开启后，即使关闭“保留场景喊话动作/内心描写”，也不会清洗被 **...** 或 *...* 包住的动作内容。")]
+	[SettingPropertyBool("保留星号动作描写", Order = 8, RequireRestart = false, HintText = "开启后，即使关闭“保留场景喊话动作/内心描写”，也不会清洗被 **...** 或 *...* 包住的动作内容。")]
 	[SettingPropertyGroup("9. 提示词扩展")]
 	public bool PreserveSceneAsteriskActions { get; set; } = false;
 
@@ -1194,6 +1254,29 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyInteger("民众反馈目标字数", CustomPolicyPublicFeedbackTargetMinChars, CustomPolicyPublicFeedbackTargetMaxChars, "0", Order = 3, RequireRestart = false, HintText = "控制自定义政策 publicFeedback 的目标中文字符数。读取时按 100 字步进归整；默认 900，最高 1800。")]
 	[SettingPropertyGroup("10. 自定义政策")]
 	public int CustomPolicyPublicFeedbackTargetChars { get; set; } = DefaultCustomPolicyPublicFeedbackTargetChars;
+
+	[SettingPropertyBool("启用NPC统治者政策", Order = 0, RequireRestart = false, HintText = "开启后，NPC 王国统治者政策生成行为可以按间隔扫描并发布政策。关闭只停止新生成，不影响读取既有事件/效果。若对应行为类尚未接入，则该开关不会产生效果。")]
+	[SettingPropertyGroup("13. NPC统治者政策（开发）")]
+	public bool EnableNpcRulerPolicy { get; set; } = true;
+
+	[SettingPropertyInteger("生成检查间隔（天）", NpcRulerPolicyIntervalMinDays, NpcRulerPolicyIntervalMaxDays, "0", Order = 1, RequireRestart = false, HintText = "NPC 统治者政策生成的最小检查间隔。默认 7 天；下限 1 天，上限 30 天。这不是冷却天数。")]
+	[SettingPropertyGroup("13. NPC统治者政策（开发）")]
+	public int NpcRulerPolicyIntervalDays { get; set; } = DefaultNpcRulerPolicyIntervalDays;
+
+	[Obsolete("Use NpcRulerPolicyIntervalDays / GetNpcRulerPolicyIntervalDaysForExternal instead.")]
+	public int NpcRulerPolicyIntervalHours { get; set; } = DefaultNpcRulerPolicyIntervalHours;
+
+	[SettingPropertyInteger("每日最多生成数", NpcRulerPolicyDailyGenerationLimitMin, NpcRulerPolicyDailyGenerationLimitMax, "0", Order = 2, RequireRestart = false, HintText = "限制 NPC 统治者政策每天最多生成多少条。默认 2；这是 token 调度上限，不会改变检查间隔。")]
+	[SettingPropertyGroup("13. NPC统治者政策（开发）")]
+	public int NpcRulerPolicyDailyGenerationLimit { get; set; } = DefaultNpcRulerPolicyDailyGenerationLimit;
+
+	[SettingPropertyInteger("每次请求最多国家数", NpcRulerPolicyMaxKingdomsPerRequestMin, NpcRulerPolicyMaxKingdomsPerRequestMax, "0", Order = 3, RequireRestart = false, HintText = "限制单次 NPC 统治者政策请求里最多放入多少个王国上下文。默认 2；用于探索稳定批量上限，过高可能触发 finish_reason=length；调低可减少单次 token。")]
+	[SettingPropertyGroup("13. NPC统治者政策（开发）")]
+	public int NpcRulerPolicyMaxKingdomsPerRequest { get; set; } = DefaultNpcRulerPolicyMaxKingdomsPerRequest;
+
+	[SettingPropertyBool("NPC统治者政策调试日志", Order = 4, RequireRestart = false, HintText = "开启后，NPC 统治者政策生成行为可输出更多调试日志。")]
+	[SettingPropertyGroup("13. NPC统治者政策（开发）")]
+	public bool NpcRulerPolicyDebugLogs { get; set; } = false;
 
 	[SettingPropertyInteger("周报篇幅档位", 1, 4, "0", Order = 0, RequireRestart = false, HintText = "1=200-400字；2=200-800字；3=200-1200字；4=200-1500字。世界周报和王国周报共用这一档位。")]
 	[SettingPropertyGroup("12. 事件系统（开发）")]
@@ -1266,6 +1349,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 			EnsureWeeklyReportWritingRequirementsLoaded(settings);
 			EnsureNpcPersonaGenerationRequirementsLoaded(settings);
 			EnsureCustomPolicyEvaluatorPromptLoaded(settings);
+			EnsureNpcRulerPolicyPromptLoaded(settings);
 			EnsureLogCleanupDefaultMigration(settings);
 			return settings;
 		}
@@ -1278,6 +1362,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 				EnsureWeeklyReportWritingRequirementsLoaded(result);
 				EnsureNpcPersonaGenerationRequirementsLoaded(result);
 				EnsureCustomPolicyEvaluatorPromptLoaded(result);
+				EnsureNpcRulerPolicyPromptLoaded(result);
 				EnsureLogCleanupDefaultMigration(result);
 				return result;
 			}
@@ -1301,6 +1386,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		EnsureWeeklyReportWritingRequirementsLoaded(_fallbackSettings);
 		EnsureNpcPersonaGenerationRequirementsLoaded(_fallbackSettings);
 		EnsureCustomPolicyEvaluatorPromptLoaded(_fallbackSettings);
+		EnsureNpcRulerPolicyPromptLoaded(_fallbackSettings);
 		if (!_settingsFallbackWarned)
 		{
 			_settingsFallbackWarned = true;
@@ -1446,6 +1532,101 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		}
 	}
 
+	public static bool IsNpcRulerPolicyEnabledForExternal()
+	{
+		try
+		{
+			return GetSettings()?.EnableNpcRulerPolicy ?? true;
+		}
+		catch
+		{
+			return true;
+		}
+	}
+
+	public static int GetNpcRulerPolicyIntervalDaysForExternal()
+	{
+		try
+		{
+			DuelSettings settings = GetSettings();
+			if (settings == null)
+			{
+				return DefaultNpcRulerPolicyIntervalDays;
+			}
+#pragma warning disable CS0618
+			int days = settings.NpcRulerPolicyIntervalDays;
+			if (days <= 0 && settings.NpcRulerPolicyIntervalHours > 0)
+			{
+				days = (int)Math.Ceiling(ClampNpcRulerPolicyIntervalHours(settings.NpcRulerPolicyIntervalHours) / 24.0);
+			}
+			else if (settings.NpcRulerPolicyIntervalHours != DefaultNpcRulerPolicyIntervalHours && days == DefaultNpcRulerPolicyIntervalDays)
+			{
+				days = (int)Math.Ceiling(ClampNpcRulerPolicyIntervalHours(settings.NpcRulerPolicyIntervalHours) / 24.0);
+			}
+#pragma warning restore CS0618
+			return ClampNpcRulerPolicyIntervalDays(days);
+		}
+		catch
+		{
+			return DefaultNpcRulerPolicyIntervalDays;
+		}
+	}
+
+	[Obsolete("Use GetNpcRulerPolicyIntervalDaysForExternal instead.")]
+	public static int GetNpcRulerPolicyIntervalHoursForExternal()
+	{
+		return GetNpcRulerPolicyIntervalDaysForExternal() * 24;
+	}
+
+	public static int GetNpcRulerPolicyDailyGenerationLimitForExternal()
+	{
+		try
+		{
+			return ClampNpcRulerPolicyDailyGenerationLimit(GetSettings()?.NpcRulerPolicyDailyGenerationLimit ?? DefaultNpcRulerPolicyDailyGenerationLimit);
+		}
+		catch
+		{
+			return DefaultNpcRulerPolicyDailyGenerationLimit;
+		}
+	}
+
+	public static int GetNpcRulerPolicyMaxKingdomsPerRequestForExternal()
+	{
+		try
+		{
+			return ClampNpcRulerPolicyMaxKingdomsPerRequest(GetSettings()?.NpcRulerPolicyMaxKingdomsPerRequest ?? DefaultNpcRulerPolicyMaxKingdomsPerRequest);
+		}
+		catch
+		{
+			return DefaultNpcRulerPolicyMaxKingdomsPerRequest;
+		}
+	}
+
+	public static string GetNpcRulerPolicyPromptForExternal()
+	{
+		try
+		{
+			string raw = GetSettings()?.NpcRulerPolicyPrompt;
+			return raw == null ? NormalizeNpcRulerPolicyPromptText(DefaultNpcRulerPolicyPrompt) : NormalizeNpcRulerPolicyPromptText(raw);
+		}
+		catch
+		{
+			return NormalizeNpcRulerPolicyPromptText(DefaultNpcRulerPolicyPrompt);
+		}
+	}
+
+	public static bool IsNpcRulerPolicyDebugLogEnabledForExternal()
+	{
+		try
+		{
+			return GetSettings()?.NpcRulerPolicyDebugLogs ?? false;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	private static int ClampCustomPolicyGoldCost(int value)
 	{
 		return Math.Max(0, Math.Min(500000, value));
@@ -1465,6 +1646,42 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		int clamped = Math.Max(CustomPolicyPublicFeedbackTargetMinChars, Math.Min(CustomPolicyPublicFeedbackTargetMaxChars, value));
 		int rounded = ((clamped + (CustomPolicyPublicFeedbackTargetStepChars / 2)) / CustomPolicyPublicFeedbackTargetStepChars) * CustomPolicyPublicFeedbackTargetStepChars;
 		return Math.Max(CustomPolicyPublicFeedbackTargetMinChars, Math.Min(CustomPolicyPublicFeedbackTargetMaxChars, rounded));
+	}
+
+	private static int ClampNpcRulerPolicyIntervalDays(int value)
+	{
+		if (value <= 0)
+		{
+			value = DefaultNpcRulerPolicyIntervalDays;
+		}
+		return Math.Max(NpcRulerPolicyIntervalMinDays, Math.Min(NpcRulerPolicyIntervalMaxDays, value));
+	}
+
+	private static int ClampNpcRulerPolicyIntervalHours(int value)
+	{
+		if (value <= 0)
+		{
+			value = DefaultNpcRulerPolicyIntervalHours;
+		}
+		return Math.Max(NpcRulerPolicyIntervalMinHours, Math.Min(NpcRulerPolicyIntervalMaxHours, value));
+	}
+
+	private static int ClampNpcRulerPolicyDailyGenerationLimit(int value)
+	{
+		if (value <= 0)
+		{
+			value = DefaultNpcRulerPolicyDailyGenerationLimit;
+		}
+		return Math.Max(NpcRulerPolicyDailyGenerationLimitMin, Math.Min(NpcRulerPolicyDailyGenerationLimitMax, value));
+	}
+
+	private static int ClampNpcRulerPolicyMaxKingdomsPerRequest(int value)
+	{
+		if (value <= 0)
+		{
+			value = DefaultNpcRulerPolicyMaxKingdomsPerRequest;
+		}
+		return Math.Max(NpcRulerPolicyMaxKingdomsPerRequestMin, Math.Min(NpcRulerPolicyMaxKingdomsPerRequestMax, value));
 	}
 
 	public static bool IsPeaceSceneConflictEnabled()
@@ -1618,6 +1835,22 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		catch (Exception ex)
 		{
 			InformationManager.DisplayMessage(new InformationMessage("[提示词扩展] 打开自定义政策评判器提示词编辑器失败: " + ex.Message, Color.FromUint(4294901760u)));
+		}
+	}
+
+	private void OpenNpcRulerPolicyPromptEditor()
+	{
+		try
+		{
+			string initialText = NpcRulerPolicyPrompt ?? "";
+			DevTextEditorHelper.ShowLongTextEditor("编辑玩家自定义NPC政策提示词", "调整 NPC 统治者制定政策时的治理风格、关注重点和表达倾向。", "本地最多保存 60000 字符，每次请求使用前 4000 字符；请把最重要的偏好写在前面。", initialText, delegate(string input)
+			{
+				SaveNpcRulerPolicyPromptFromEditor(input);
+			}, null, "保存", "返回");
+		}
+		catch (Exception ex)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("[提示词扩展] 打开玩家自定义NPC政策提示词编辑器失败: " + ex.Message, Color.FromUint(4294901760u)));
 		}
 	}
 
@@ -1833,6 +2066,39 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		}
 	}
 
+	private void SaveNpcRulerPolicyPromptFromEditor(string input)
+	{
+		string text = NormalizeNpcRulerPolicyPromptText(input);
+		bool hasNonInjectedTail = text.Length > NpcRulerPolicyEffectivePromptMaxChars;
+		NpcRulerPolicyPrompt = text;
+		bool persistedToFile = TryPersistNpcRulerPolicyPromptFile(text);
+		try
+		{
+			DuelSettings settings = GetSettings();
+			if (settings != null)
+			{
+				settings.NpcRulerPolicyPrompt = text;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			BaseSettingsProvider.Instance?.SaveSettings(GetSettings() ?? this);
+			string message = persistedToFile ? "[提示词扩展] 玩家自定义NPC政策提示词已保存。" : "[提示词扩展] 玩家自定义NPC政策提示词已写入本局设置，但本地持久化文件写入失败，请查看日志。";
+			if (hasNonInjectedTail)
+			{
+				message += " 已完整保存 " + text.Length.ToString(CultureInfo.InvariantCulture) + " 字符；NPC 政策请求使用前 " + NpcRulerPolicyEffectivePromptMaxChars.ToString(CultureInfo.InvariantCulture) + " 字符。";
+			}
+			InformationManager.DisplayMessage(new InformationMessage(message, persistedToFile ? Color.FromUint(4282569842u) : Color.FromUint(4294967040u)));
+		}
+		catch (Exception ex)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("[提示词扩展] 保存玩家自定义NPC政策提示词失败，请在 MCM 中再点一次保存: " + ex.Message, Color.FromUint(4294901760u)));
+		}
+	}
+
 	private static void EnsurePlayerCustomPromptRuleLoaded(DuelSettings settings)
 	{
 		if (settings == null)
@@ -1901,6 +2167,18 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		}
 	}
 
+	private static void EnsureNpcRulerPolicyPromptLoaded(DuelSettings settings)
+	{
+		if (settings == null)
+		{
+			return;
+		}
+		if (TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store) && !string.Equals(settings.NpcRulerPolicyPrompt ?? "", store.NpcRulerPolicyPrompt ?? "", StringComparison.Ordinal))
+		{
+			settings.NpcRulerPolicyPrompt = store.NpcRulerPolicyPrompt ?? "";
+		}
+	}
+
 	private static string LoadPlayerCustomPromptRuleFromDiskOrDefault()
 	{
 		return TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store) ? (store.PlayerCustomPromptRule ?? "") : DefaultPlayerCustomPromptRule;
@@ -1929,6 +2207,11 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		}
 		string text = NormalizeCustomPolicyEvaluatorPromptText(store.CustomPolicyEvaluatorPrompt ?? "");
 		return IsBuiltInCustomPolicyEvaluatorPromptText(text) ? DefaultCustomPolicyEvaluatorPrompt : text;
+	}
+
+	private static string LoadNpcRulerPolicyPromptFromDiskOrDefault()
+	{
+		return TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store) ? (store.NpcRulerPolicyPrompt ?? "") : DefaultNpcRulerPolicyPrompt;
 	}
 
 	private static string NormalizePlayerCustomPromptRuleText(string input)
@@ -2014,6 +2297,17 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	{
 		string text = NormalizePromptLineEndings(input);
 		return LimitCustomPromptText(MigrateLegacyCustomPolicyEvaluatorPromptPrefix(text).Trim(), CustomPolicyEvaluatorPromptJsonFileName);
+	}
+
+	private static string NormalizeNpcRulerPolicyPromptText(string input)
+	{
+		string text = LimitCustomPromptText(NormalizePromptLineEndings(input), NpcRulerPolicyPromptJsonFileName);
+		if (string.Equals(text, PreviousDefaultNpcRulerPolicyPromptForMigration, StringComparison.Ordinal)
+			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptWithTechnicalContract, StringComparison.Ordinal))
+		{
+			return DefaultNpcRulerPolicyPrompt;
+		}
+		return text;
 	}
 
 	private static string NormalizePromptLineEndings(string input)
@@ -2129,6 +2423,17 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		return true;
 	}
 
+	private static bool TryReadNpcRulerPolicyPromptFile(out string text)
+	{
+		text = "";
+		if (!TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store))
+		{
+			return false;
+		}
+		text = store.NpcRulerPolicyPrompt ?? "";
+		return true;
+	}
+
 	private static bool TryPersistPlayerCustomPromptRuleFile(string text)
 	{
 		return TryPersistCustomPromptTextFile(PlayerCustomPromptRuleJsonFileName, NormalizePlayerCustomPromptRuleText(text));
@@ -2154,6 +2459,11 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		return TryPersistCustomPromptTextFile(CustomPolicyEvaluatorPromptJsonFileName, NormalizeCustomPolicyEvaluatorPromptText(text));
 	}
 
+	private static bool TryPersistNpcRulerPolicyPromptFile(string text)
+	{
+		return TryPersistCustomPromptTextFile(NpcRulerPolicyPromptJsonFileName, NormalizeNpcRulerPolicyPromptText(text));
+	}
+
 	private static CustomPromptTextStoreJson ReadCustomPromptTextStoreOrDefault()
 	{
 		return TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store) ? store : BuildDefaultCustomPromptTextStore();
@@ -2168,7 +2478,8 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 			KingdomRebellionSystemPrompt = DefaultKingdomRebellionSystemPrompt,
 			WeeklyReportWritingRequirements = DefaultWeeklyReportWritingRequirements,
 			NpcPersonaGenerationRequirements = DefaultNpcPersonaGenerationRequirements,
-			CustomPolicyEvaluatorPrompt = DefaultCustomPolicyEvaluatorPrompt
+			CustomPolicyEvaluatorPrompt = DefaultCustomPolicyEvaluatorPrompt,
+			NpcRulerPolicyPrompt = DefaultNpcRulerPolicyPrompt
 		});
 	}
 
@@ -2266,6 +2577,10 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 				{
 					store.CustomPolicyEvaluatorPrompt = customPolicyPrompt;
 				}
+				if (TryReadCustomPromptTextJsonFile(GetCustomPromptTextFilePath(directory, NpcRulerPolicyPromptJsonFileName), NormalizeNpcRulerPolicyPromptText, store.NpcRulerPolicyPrompt, out string npcRulerPolicyPrompt))
+				{
+					store.NpcRulerPolicyPrompt = npcRulerPolicyPrompt;
+				}
 				store = NormalizeCustomPromptTextStore(store);
 				_customPromptTextStoreFolderHydrated = true;
 				_customPromptTextStoreFolderFingerprint = ComputeCustomPromptTextStoreFingerprint(directory);
@@ -2352,6 +2667,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		WriteCustomPromptTextJsonFileIfMissingUnlocked(GetCustomPromptTextFilePath(directory, WeeklyReportWritingRequirementsJsonFileName), normalized.WeeklyReportWritingRequirements);
 		WriteCustomPromptTextJsonFileIfMissingUnlocked(GetCustomPromptTextFilePath(directory, NpcPersonaGenerationRequirementsJsonFileName), normalized.NpcPersonaGenerationRequirements);
 		WriteCustomPromptTextJsonFileIfMissingUnlocked(GetCustomPromptTextFilePath(directory, CustomPolicyEvaluatorPromptJsonFileName), normalized.CustomPolicyEvaluatorPrompt);
+		WriteCustomPromptTextJsonFileIfMissingUnlocked(GetCustomPromptTextFilePath(directory, NpcRulerPolicyPromptJsonFileName), normalized.NpcRulerPolicyPrompt);
 	}
 
 	private static void WriteCustomPromptTextJsonFileIfMissingUnlocked(string path, string text)
@@ -2386,6 +2702,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		{
 			customPolicyEvaluatorPrompt = DefaultCustomPolicyEvaluatorPrompt;
 		}
+		string npcRulerPolicyPrompt = store.NpcRulerPolicyPrompt == null ? DefaultNpcRulerPolicyPrompt : NormalizeNpcRulerPolicyPromptText(store.NpcRulerPolicyPrompt);
 		return new CustomPromptTextStoreJson
 		{
 			Version = store.Version <= 0 ? 1 : store.Version,
@@ -2393,7 +2710,8 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 			KingdomRebellionSystemPrompt = store.KingdomRebellionSystemPrompt == null ? DefaultKingdomRebellionSystemPrompt : NormalizeKingdomRebellionSystemPromptText(store.KingdomRebellionSystemPrompt),
 			WeeklyReportWritingRequirements = store.WeeklyReportWritingRequirements == null ? DefaultWeeklyReportWritingRequirements : NormalizeWeeklyReportWritingRequirementsText(store.WeeklyReportWritingRequirements),
 			NpcPersonaGenerationRequirements = store.NpcPersonaGenerationRequirements == null ? DefaultNpcPersonaGenerationRequirements : NormalizeNpcPersonaGenerationRequirementsText(store.NpcPersonaGenerationRequirements),
-			CustomPolicyEvaluatorPrompt = customPolicyEvaluatorPrompt
+			CustomPolicyEvaluatorPrompt = customPolicyEvaluatorPrompt,
+			NpcRulerPolicyPrompt = npcRulerPolicyPrompt
 		};
 	}
 
@@ -2410,7 +2728,8 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 			KingdomRebellionSystemPrompt = store.KingdomRebellionSystemPrompt,
 			WeeklyReportWritingRequirements = store.WeeklyReportWritingRequirements,
 			NpcPersonaGenerationRequirements = store.NpcPersonaGenerationRequirements,
-			CustomPolicyEvaluatorPrompt = store.CustomPolicyEvaluatorPrompt
+			CustomPolicyEvaluatorPrompt = store.CustomPolicyEvaluatorPrompt,
+			NpcRulerPolicyPrompt = store.NpcRulerPolicyPrompt
 		};
 	}
 
@@ -2612,7 +2931,8 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 					KingdomRebellionSystemPromptJsonFileName,
 					WeeklyReportWritingRequirementsJsonFileName,
 					NpcPersonaGenerationRequirementsJsonFileName,
-					CustomPolicyEvaluatorPromptJsonFileName
+					CustomPolicyEvaluatorPromptJsonFileName,
+					NpcRulerPolicyPromptJsonFileName
 				};
 				for (int i = 0; i < fileNames.Length; i++)
 				{
@@ -3888,6 +4208,10 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		EditCustomPolicyEvaluatorPrompt = delegate
 		{
 			OpenCustomPolicyEvaluatorPromptEditor();
+		};
+		EditNpcRulerPolicyPrompt = delegate
+		{
+			OpenNpcRulerPolicyPromptEditor();
 		};
 		OpenCustomPromptTextStoreFolderAction = delegate
 		{

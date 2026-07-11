@@ -9624,6 +9624,27 @@ public class MyBehavior : CampaignBehaviorBase
 		return string.IsNullOrWhiteSpace(text) ? "" : text.ToLowerInvariant();
 	}
 
+
+	private static string BuildPrefixedEventSourceStableKey(string prefix, string stableKey, string fallbackText)
+	{
+		string cleanPrefix = NormalizeNpcActionStableKey(prefix, "").TrimEnd(':');
+		string normalizedKey = NormalizeNpcActionStableKey(stableKey, fallbackText);
+		if (string.IsNullOrWhiteSpace(cleanPrefix))
+		{
+			return normalizedKey;
+		}
+		if (string.IsNullOrWhiteSpace(normalizedKey))
+		{
+			return cleanPrefix;
+		}
+		string prefixWithSeparator = cleanPrefix + ":";
+		if (string.Equals(normalizedKey, cleanPrefix, StringComparison.OrdinalIgnoreCase) || normalizedKey.StartsWith(prefixWithSeparator, StringComparison.OrdinalIgnoreCase))
+		{
+			return normalizedKey;
+		}
+		return prefixWithSeparator + normalizedKey;
+	}
+
 	private static string GetClanId(Clan clan)
 	{
 		return (clan?.StringId ?? "").Trim();
@@ -12389,6 +12410,171 @@ public class MyBehavior : CampaignBehaviorBase
 			dayOverride: Math.Max(0, submittedDay),
 			gameDateOverride: string.IsNullOrWhiteSpace(gameDate) ? cleanDate : gameDate.Trim());
 		Logger.Log("EventWeeklyReport", "[CustomPolicy] source_material_recorded recordId=" + (recordId ?? "") + " kingdom=" + targetId + " includeWorld=" + includeInWorld + " length=" + snapshot.Length);
+	}
+
+	public static void RecordNpcPublicFeedbackEventMaterialForExternal(string stableKey, string kingdomId, string kingdomName, string npcHeroId, string npcName, string policyName, string feedbackSummary, int day = -1, string gameDate = "", bool includeInWorld = false)
+	{
+		try
+		{
+			(Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.RecordNpcPublicFeedbackEventMaterialInternal(stableKey, "", "", kingdomId, kingdomName, npcHeroId, npcName, policyName, feedbackSummary, day, gameDate, includeInWorld);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EventWeeklyReport", "[NpcPublicFeedback][WARN] record event material failed: " + ex.Message);
+		}
+	}
+
+	public static void RecordNpcPublicFeedbackEventMaterialForExternal(string eventId, string title, string summary, string detailText, string kingdomId, string kingdomName, string actorHeroId, string actorHeroName, string policyId, string policyName, int day, string gameDate, bool includeInWorld)
+	{
+		try
+		{
+			string text = !string.IsNullOrWhiteSpace(detailText) ? detailText : (!string.IsNullOrWhiteSpace(summary) ? summary : title);
+			(Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.RecordNpcPublicFeedbackEventMaterialInternal(eventId, title, policyId, kingdomId, kingdomName, actorHeroId, actorHeroName, policyName, text, day, gameDate, includeInWorld);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EventWeeklyReport", "[NpcPublicFeedback][WARN] record event material failed: " + ex.Message);
+		}
+	}
+
+	private void RecordNpcPublicFeedbackEventMaterialInternal(string stableKey, string eventTitle, string policyId, string kingdomId, string kingdomName, string npcHeroId, string npcName, string policyName, string feedbackSummary, int day, string gameDate, bool includeInWorld)
+	{
+		string targetId = (kingdomId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(targetId))
+		{
+			Logger.Log("EventWeeklyReport", "[NpcPublicFeedback][SKIP] kingdom_missing stableKey=" + (stableKey ?? ""));
+			return;
+		}
+		string cleanTitle = LimitCustomPolicyWeeklyMaterialText(eventTitle, 80);
+		string cleanPolicyId = LimitCustomPolicyWeeklyMaterialText(policyId, 90);
+		string cleanFeedback = LimitCustomPolicyWeeklyMaterialText(feedbackSummary, 180);
+		if (string.IsNullOrWhiteSpace(cleanFeedback))
+		{
+			return;
+		}
+		string cleanKingdomName = LimitCustomPolicyWeeklyMaterialText(kingdomName, 50);
+		if (string.IsNullOrWhiteSpace(cleanKingdomName))
+		{
+			cleanKingdomName = LimitCustomPolicyWeeklyMaterialText(ResolveKingdomDisplay(targetId), 50);
+		}
+		if (string.IsNullOrWhiteSpace(cleanKingdomName))
+		{
+			cleanKingdomName = "目标王国";
+		}
+		string cleanNpcName = LimitCustomPolicyWeeklyMaterialText(npcName, 50);
+		if (string.IsNullOrWhiteSpace(cleanNpcName))
+		{
+			cleanNpcName = "NPC";
+		}
+		string cleanPolicyName = LimitCustomPolicyWeeklyMaterialText(policyName, 70);
+		StringBuilder sb = new StringBuilder();
+		sb.Append("NPC民众反馈素材。");
+		if (!string.IsNullOrWhiteSpace(cleanTitle))
+		{
+			sb.Append("标题：").Append(cleanTitle.Trim().TrimEnd('。')).Append("。");
+		}
+		sb.Append("王国：").Append(cleanKingdomName).Append("。反馈来源：").Append(cleanNpcName).Append("。");
+		if (!string.IsNullOrWhiteSpace(cleanPolicyName))
+		{
+			sb.Append("关联政策：").Append(cleanPolicyName.Trim().TrimEnd('。')).Append("。");
+		}
+		if (!string.IsNullOrWhiteSpace(cleanPolicyId))
+		{
+			sb.Append("关联政策ID：").Append(cleanPolicyId.Trim().TrimEnd('。')).Append("。");
+		}
+		sb.Append("反馈摘要：").Append(cleanFeedback.Trim().TrimEnd('。')).Append("。");
+		string snapshot = LimitCustomPolicyWeeklyMaterialText(sb.ToString(), 300);
+		if (string.IsNullOrWhiteSpace(snapshot))
+		{
+			return;
+		}
+		string fallbackKey = targetId + ":" + cleanNpcName + ":" + cleanPolicyId + ":" + cleanPolicyName + ":" + cleanTitle + ":" + cleanFeedback;
+		string key = BuildPrefixedEventSourceStableKey("npc_public_feedback", stableKey, fallbackKey);
+		string labelSuffix = !string.IsNullOrWhiteSpace(cleanTitle) ? cleanTitle : cleanPolicyName;
+		RecordEventSourceMaterial(
+			"npc_public_feedback",
+			"民众反馈 - " + cleanKingdomName + (string.IsNullOrWhiteSpace(labelSuffix) ? "" : " / " + labelSuffix),
+			snapshot,
+			key,
+			targetId,
+			"",
+			includeInWorld,
+			includeInKingdom: true,
+			actorHeroId: (npcHeroId ?? "").Trim(),
+			actorKingdomId: targetId,
+			dayOverride: day,
+			gameDateOverride: gameDate);
+	}
+
+	public static void RecordNpcRulerPolicyWeeklyMaterialForExternal(string stableKey, string kingdomId, string kingdomName, string rulerHeroId, string rulerName, string policyName, string policySummary, int day = -1, string gameDate = "", bool includeInWorld = false)
+	{
+		try
+		{
+			(Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.RecordNpcRulerPolicyWeeklyMaterialInternal(stableKey, kingdomId, kingdomName, rulerHeroId, rulerName, policyName, policySummary, day, gameDate, includeInWorld);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EventWeeklyReport", "[NpcRulerPolicy][WARN] record weekly material failed: " + ex.Message);
+		}
+	}
+
+	private void RecordNpcRulerPolicyWeeklyMaterialInternal(string stableKey, string kingdomId, string kingdomName, string rulerHeroId, string rulerName, string policyName, string policySummary, int day, string gameDate, bool includeInWorld)
+	{
+		string targetId = (kingdomId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(targetId))
+		{
+			Logger.Log("EventWeeklyReport", "[NpcRulerPolicy][SKIP] kingdom_missing stableKey=" + (stableKey ?? ""));
+			return;
+		}
+		string cleanPolicyName = LimitCustomPolicyWeeklyMaterialText(policyName, 70);
+		string cleanPolicySummary = LimitCustomPolicyWeeklyMaterialText(policySummary, 180);
+		if (string.IsNullOrWhiteSpace(cleanPolicyName) && string.IsNullOrWhiteSpace(cleanPolicySummary))
+		{
+			return;
+		}
+		if (string.IsNullOrWhiteSpace(cleanPolicyName))
+		{
+			cleanPolicyName = "未命名NPC政策";
+		}
+		string cleanKingdomName = LimitCustomPolicyWeeklyMaterialText(kingdomName, 50);
+		if (string.IsNullOrWhiteSpace(cleanKingdomName))
+		{
+			cleanKingdomName = LimitCustomPolicyWeeklyMaterialText(ResolveKingdomDisplay(targetId), 50);
+		}
+		if (string.IsNullOrWhiteSpace(cleanKingdomName))
+		{
+			cleanKingdomName = "目标王国";
+		}
+		string cleanRulerName = LimitCustomPolicyWeeklyMaterialText(rulerName, 50);
+		if (string.IsNullOrWhiteSpace(cleanRulerName))
+		{
+			cleanRulerName = "NPC统治者";
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.Append("NPC统治者政策素材。王国：").Append(cleanKingdomName).Append("。提出者：").Append(cleanRulerName).Append("。政策：").Append(cleanPolicyName.Trim().TrimEnd('。')).Append("。");
+		if (!string.IsNullOrWhiteSpace(cleanPolicySummary))
+		{
+			sb.Append("政策摘要：").Append(cleanPolicySummary.Trim().TrimEnd('。')).Append("。");
+		}
+		string snapshot = LimitCustomPolicyWeeklyMaterialText(sb.ToString(), 280);
+		if (string.IsNullOrWhiteSpace(snapshot))
+		{
+			return;
+		}
+		string key = BuildPrefixedEventSourceStableKey("npc_ruler_policy", stableKey, targetId + ":" + cleanRulerName + ":" + cleanPolicyName + ":" + cleanPolicySummary);
+		RecordEventSourceMaterial(
+			"npc_ruler_policy",
+			"NPC政策 - " + cleanKingdomName + " / " + cleanPolicyName,
+			snapshot,
+			key,
+			targetId,
+			"",
+			includeInWorld,
+			includeInKingdom: true,
+			actorHeroId: (rulerHeroId ?? "").Trim(),
+			actorKingdomId: targetId,
+			dayOverride: day,
+			gameDateOverride: gameDate);
 	}
 
 	public static void RecordPlayerKingdomRenameWeeklyMaterialForExternal(string oldKingdomName, string newKingdomName, string oldInformalName, string newInformalName, string kingdomId, int day, string gameDate, string stableKey)
@@ -39714,6 +39900,36 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 		}
 		return SanitizeEventRecordEntries(_eventRecordEntries).Where((EventRecordEntry x) => x != null && string.Equals((x.EventKind ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase) && string.Equals((x.ScopeKingdomId ?? "").Trim(), text2, StringComparison.OrdinalIgnoreCase)).OrderByDescending((EventRecordEntry x) => x.WeekIndex).ThenByDescending((EventRecordEntry x) => x.CreatedDay).FirstOrDefault();
+	}
+
+
+	public static string BuildRecentWeeklyReportContextForKingdomExternal(string kingdomId, int maxItems = 3)
+	{
+		return GetLatestKingdomWeeklyShortSummaryForExternal(kingdomId);
+	}
+
+	public static string GetLatestKingdomWeeklyShortSummaryForExternal(string kingdomId)
+	{
+		try
+		{
+			return (Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.GetLatestKingdomWeeklyShortSummaryInternal(kingdomId) ?? "";
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EventWeeklyReport", "[WeeklyShortSummary][WARN] get latest kingdom weekly summary failed: " + ex.Message);
+			return "";
+		}
+	}
+
+	private string GetLatestKingdomWeeklyShortSummaryInternal(string kingdomId)
+	{
+		string text = (kingdomId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		EventRecordEntry latestWeeklyReportRecord = FindLatestWeeklyReportRecord("kingdom", text);
+		return BuildFallbackWeeklyReportShortSummary(latestWeeklyReportRecord?.ShortSummary ?? latestWeeklyReportRecord?.Summary);
 	}
 
 	public List<WeeklyReportBrowserCountryData> GetTerminalWeeklyReportBrowserCountries()
