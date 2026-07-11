@@ -871,12 +871,18 @@ public static class ShoutNetwork
 							onError?.Invoke(httpError);
 							return;
 						}
+						FreezeWatchdog.Mark("PrimaryChat.stream.content_stream_wait_begin", "attempt=" + attempt + " thread=" + Thread.CurrentThread.ManagedThreadId);
 						using Stream stream = await response.Content.ReadAsStreamAsync();
+						FreezeWatchdog.Mark("PrimaryChat.stream.content_stream_wait_end", "attempt=" + attempt + " thread=" + Thread.CurrentThread.ManagedThreadId);
 						using StreamReader reader = new StreamReader(stream, Encoding.UTF8);
+						int readSequence = 0;
 						while (true)
 						{
 							string text;
+							readSequence++;
+							FreezeWatchdog.Mark("PrimaryChat.stream.read_line_begin", "attempt=" + attempt + " read=" + readSequence + " chunks=" + chunkCount + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2) + " thread=" + Thread.CurrentThread.ManagedThreadId);
 							string line = (text = await reader.ReadLineAsync());
+							FreezeWatchdog.Mark("PrimaryChat.stream.read_line_end", "attempt=" + attempt + " read=" + readSequence + " null=" + (text == null) + " chunks=" + chunkCount + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2) + " thread=" + Thread.CurrentThread.ManagedThreadId);
 							if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_read"))
 							{
 								return;
@@ -925,7 +931,9 @@ public static class ShoutNetwork
 										{
 											if (!SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_chunk"))
 											{
+												FreezeWatchdog.Mark("PrimaryChat.stream.chunk_callback_begin", "read=" + readSequence + " chunk=" + chunkCount + " deltaLen=" + text2.Length + " thread=" + Thread.CurrentThread.ManagedThreadId);
 												onChunk?.Invoke(text2);
+												FreezeWatchdog.Mark("PrimaryChat.stream.chunk_callback_end", "read=" + readSequence + " chunk=" + chunkCount + " thread=" + Thread.CurrentThread.ManagedThreadId);
 											}
 										}
 										catch
@@ -1096,7 +1104,9 @@ public static class ShoutNetwork
 			FreezeWatchdog.Mark("PrimaryChat.stream.complete", "resultLen=" + finalText.Length + " chunks=" + chunkCount + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 			if (!SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_complete"))
 			{
+				FreezeWatchdog.Mark("PrimaryChat.stream.complete_callback_begin", "resultLen=" + finalText.Length + " chunks=" + chunkCount + " thread=" + Thread.CurrentThread.ManagedThreadId);
 				onComplete?.Invoke(finalText);
+				FreezeWatchdog.Mark("PrimaryChat.stream.complete_callback_end", "resultLen=" + finalText.Length + " chunks=" + chunkCount + " thread=" + Thread.CurrentThread.ManagedThreadId);
 			}
 		}
 		catch (OperationCanceledException)

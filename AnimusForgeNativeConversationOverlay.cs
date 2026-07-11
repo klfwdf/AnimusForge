@@ -105,12 +105,29 @@ public sealed class AnimusForgeNativeConversationOverlay
 		}
 		try
 		{
-			if (!ShoutBehavior.CanSubmitNativeConversationForExternal() || ShoutTextInputPopup.IsOpen)
+			bool canSubmit;
+			using (FreezeWatchdog.Scope("NativeConversationOverlay.CanSubmit"))
 			{
-				CloseActive();
+				canSubmit = ShoutBehavior.CanSubmitNativeConversationForExternal();
+			}
+			bool shoutPopupOpen;
+			using (FreezeWatchdog.Scope("NativeConversationOverlay.ShoutPopupState"))
+			{
+				shoutPopupOpen = ShoutTextInputPopup.IsOpen;
+			}
+			if (!canSubmit || shoutPopupOpen)
+			{
+				using (FreezeWatchdog.Scope("NativeConversationOverlay.CloseUnavailable"))
+				{
+					CloseActive();
+				}
 				return;
 			}
-			ScreenBase topScreen = ScreenManager.TopScreen;
+			ScreenBase topScreen;
+			using (FreezeWatchdog.Scope("NativeConversationOverlay.GetTopScreen"))
+			{
+				topScreen = ScreenManager.TopScreen;
+			}
 			if (topScreen == null)
 			{
 				return;
@@ -124,7 +141,12 @@ public sealed class AnimusForgeNativeConversationOverlay
 				Show(topScreen);
 				return;
 			}
-			if (_activeOverlay.TickTemporarySystemUiIfNeeded(topScreen))
+			bool temporaryUiHandled;
+			using (FreezeWatchdog.Scope("NativeConversationOverlay.TemporarySystemUi"))
+			{
+				temporaryUiHandled = _activeOverlay.TickTemporarySystemUiIfNeeded(topScreen);
+			}
+			if (temporaryUiHandled)
 			{
 				return;
 			}
@@ -137,7 +159,10 @@ public sealed class AnimusForgeNativeConversationOverlay
 				}
 				return;
 			}
-			_activeOverlay.Tick();
+			using (FreezeWatchdog.Scope("NativeConversationOverlay.Tick"))
+			{
+				_activeOverlay.Tick();
+			}
 		}
 		catch (Exception ex)
 		{
@@ -180,21 +205,61 @@ public sealed class AnimusForgeNativeConversationOverlay
 		{
 			return;
 		}
-		ProcessMainThreadActions();
-		ProcessPostRestoreNativeAnswerRestore();
-		FlushPendingPostprocessNotice();
-		UpdateWaitingDotsAnimation();
-		TickLongWaitEscapeUnlock();
-		_dataSource.SetPersonaEditVisible(ShoutBehavior.CanEditNativeConversationNpcForExternal());
-		_dataSource.SetTagTestVisible(ShoutBehavior.CanOpenNativeConversationTagTestForExternal());
-		TryStartPendingNpcOpening();
+		using (FreezeWatchdog.Scope("NativeConversationOverlay.Tick.MainThreadActions"))
+		{
+			ProcessMainThreadActions();
+		}
+		using (FreezeWatchdog.Scope("NativeConversationOverlay.Tick.PostRestore"))
+		{
+			ProcessPostRestoreNativeAnswerRestore();
+		}
+		using (FreezeWatchdog.Scope("NativeConversationOverlay.Tick.PostprocessNotice"))
+		{
+			FlushPendingPostprocessNotice();
+		}
+		using (FreezeWatchdog.Scope("NativeConversationOverlay.Tick.WaitingAnimation"))
+		{
+			UpdateWaitingDotsAnimation();
+		}
+		using (FreezeWatchdog.Scope("NativeConversationOverlay.Tick.LongWaitUnlock"))
+		{
+			TickLongWaitEscapeUnlock();
+		}
+		bool personaEditVisible;
+		using (FreezeWatchdog.Scope("NativeConversationOverlay.Tick.ResolvePersonaVisibility"))
+		{
+			personaEditVisible = ShoutBehavior.CanEditNativeConversationNpcForExternal();
+		}
+		using (FreezeWatchdog.Scope("NativeConversationOverlay.Tick.ApplyPersonaVisibility"))
+		{
+			_dataSource.SetPersonaEditVisible(personaEditVisible);
+		}
+		bool tagTestVisible;
+		using (FreezeWatchdog.Scope("NativeConversationOverlay.Tick.ResolveTagVisibility"))
+		{
+			tagTestVisible = ShoutBehavior.CanOpenNativeConversationTagTestForExternal();
+		}
+		using (FreezeWatchdog.Scope("NativeConversationOverlay.Tick.ApplyTagVisibility"))
+		{
+			_dataSource.SetTagTestVisible(tagTestVisible);
+		}
+		using (FreezeWatchdog.Scope("NativeConversationOverlay.Tick.PendingNpcOpening"))
+		{
+			TryStartPendingNpcOpening();
+		}
 		if (!_dataSource.IsCustomAnswerVisible)
 		{
-			RestoreNativeConversationInputAfterOrdinaryMode(forceAnswerRestore: false);
+			using (FreezeWatchdog.Scope("NativeConversationOverlay.Tick.RestoreOrdinaryInput"))
+			{
+				RestoreNativeConversationInputAfterOrdinaryMode(forceAnswerRestore: false);
+			}
 		}
 		else
 		{
-			NativeConversationAnswerAreaController.SetSuppressed(true);
+			using (FreezeWatchdog.Scope("NativeConversationOverlay.Tick.SuppressNativeAnswer"))
+			{
+				NativeConversationAnswerAreaController.SetSuppressed(true);
+			}
 		}
 	}
 
@@ -1111,7 +1176,13 @@ public sealed class AnimusForgeNativeConversationOverlay
 			processed++;
 			try
 			{
-				action?.Invoke();
+				string actionName = action?.Method == null
+					? "unknown"
+					: ((action.Method.DeclaringType?.Name ?? "unknown") + "." + action.Method.Name);
+				using (FreezeWatchdog.Scope("NativeConversationOverlay.MainThreadAction." + actionName))
+				{
+					action?.Invoke();
+				}
 			}
 			catch (Exception ex)
 			{
@@ -1160,7 +1231,10 @@ public sealed class AnimusForgeNativeConversationOverlay
 		{
 			return;
 		}
-		ConversationHelper.UpdateDialogText(GetWaitingDotsText(_waitingDotsPhase));
+		using (FreezeWatchdog.Scope("NativeConversationOverlay.WaitingAnimation.UpdateDialogText"))
+		{
+			ConversationHelper.UpdateDialogText(GetWaitingDotsText(_waitingDotsPhase));
+		}
 		_waitingDotsPhase = (_waitingDotsPhase + 1) % 4;
 		_nextWaitingDotsUpdateUtcTicks = ticks + TimeSpan.FromMilliseconds(WaitingDotsIntervalMilliseconds).Ticks;
 	}

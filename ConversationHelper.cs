@@ -1,11 +1,40 @@
 using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Threading;
 
 namespace AnimusForge;
 
 public static class ConversationHelper
 {
+	private readonly struct PendingLockScope : IDisposable
+	{
+		private readonly int _previousOwnerThreadId;
+		private readonly string _previousOwnerOperation;
+		private readonly long _previousOwnerUtcTicks;
+		private readonly bool _contended;
+
+		public PendingLockScope(int previousOwnerThreadId, string previousOwnerOperation, long previousOwnerUtcTicks, bool contended)
+		{
+			_previousOwnerThreadId = previousOwnerThreadId;
+			_previousOwnerOperation = previousOwnerOperation;
+			_previousOwnerUtcTicks = previousOwnerUtcTicks;
+			_contended = contended;
+		}
+
+		public void Dispose()
+		{
+			if (_contended)
+			{
+				FreezeWatchdog.Mark("ConversationHelper.pending_lock_release", GetPendingLockDiagnosticSnapshot());
+			}
+			Volatile.Write(ref _pendingLockOwnerOperation, _previousOwnerOperation);
+			Interlocked.Exchange(ref _pendingLockOwnerUtcTicks, _previousOwnerUtcTicks);
+			Volatile.Write(ref _pendingLockOwnerThreadId, _previousOwnerThreadId);
+			Monitor.Exit(_pendingLock);
+		}
+	}
+
 	private static object _currentVM;
 
 	private static PropertyInfo _dialogTextProp;
@@ -19,6 +48,12 @@ public static class ConversationHelper
 	private static MethodInfo _onPropertyChangedMethod;
 
 	private static readonly object _pendingLock = new object();
+
+	private static int _pendingLockOwnerThreadId;
+
+	private static string _pendingLockOwnerOperation = "";
+
+	private static long _pendingLockOwnerUtcTicks;
 
 	private static readonly double _stopwatchTickSeconds = 1.0 / Stopwatch.Frequency;
 
@@ -60,7 +95,7 @@ public static class ConversationHelper
 	{
 		get
 		{
-			lock (_pendingLock)
+			using (EnterPendingLock("IsTypewriterActive"))
 			{
 				return _typewriterActive;
 			}
@@ -71,7 +106,7 @@ public static class ConversationHelper
 	{
 		get
 		{
-			lock (_pendingLock)
+			using (EnterPendingLock("IsTypewriterWaitingForPlayback"))
 			{
 				return _typewriterActive && _typewriterWaitingForPlayback;
 			}
@@ -209,7 +244,7 @@ public static class ConversationHelper
 		_lastStreamText = null;
 		_tickApplyCount = 0;
 		_refreshReapplyCount = 0;
-		lock (_pendingLock)
+		using (EnterPendingLock("BeginStreaming"))
 		{
 			StopTypewriterNoLock(clearText: true);
 		}
@@ -225,7 +260,7 @@ public static class ConversationHelper
 	public static void UpdateDialogText(string text)
 	{
 		string value = text ?? "";
-		lock (_pendingLock)
+		using (EnterPendingLock("UpdateDialogText"))
 		{
 			if (_typewriterActive && string.Equals(value, _typewriterFullText ?? "", StringComparison.Ordinal))
 			{
@@ -242,7 +277,7 @@ public static class ConversationHelper
 	{
 		string value = text ?? "";
 		double duration = NormalizeTypewriterDuration(value, durationSeconds);
-		lock (_pendingLock)
+		using (EnterPendingLock("StartTypewriterText"))
 		{
 			_typewriterActive = !string.IsNullOrEmpty(value);
 			_typewriterWaitingForPlayback = _typewriterActive && waitForPlayback;
@@ -260,7 +295,7 @@ public static class ConversationHelper
 
 	public static void StartTypewriterPlayback(float durationSeconds = 0f)
 	{
-		lock (_pendingLock)
+		using (EnterPendingLock("StartTypewriterPlayback"))
 		{
 			if (!_typewriterActive)
 			{
@@ -282,7 +317,7 @@ public static class ConversationHelper
 
 	public static bool StartTypewriterPlaybackIfWaiting(float durationSeconds = 0f)
 	{
-		lock (_pendingLock)
+		using (EnterPendingLock("StartTypewriterPlaybackIfWaiting"))
 		{
 			if (!_typewriterActive || !_typewriterWaitingForPlayback)
 			{
@@ -310,7 +345,7 @@ public static class ConversationHelper
 			return;
 		}
 		double duration = Math.Max(0.25, Math.Min(60.0, durationSeconds));
-		lock (_pendingLock)
+		using (EnterPendingLock("AdjustTypewriterDuration"))
 		{
 			if (!_typewriterActive)
 			{
@@ -329,7 +364,7 @@ public static class ConversationHelper
 	public static void Tick()
 	{
 		string text = null;
-		lock (_pendingLock)
+		using (EnterPendingLock("Tick"))
 		{
 			if (!_hasPending)
 			{
@@ -360,7 +395,7 @@ public static class ConversationHelper
 	public static void OnRefreshPostfix()
 	{
 		string typewriterText = null;
-		lock (_pendingLock)
+		using (EnterPendingLock("OnRefreshPostfix"))
 		{
 			if (_typewriterActive)
 			{
@@ -589,11 +624,45 @@ public static class ConversationHelper
 		_nameLabelField = null;
 		_onPropertyChangedMethod = null;
 		_nameSuffix = null;
-		lock (_pendingLock)
+		using (EnterPendingLock("Clear"))
 		{
 			StopTypewriterNoLock(clearText: true);
 			_pendingText = null;
 			_hasPending = false;
 		}
+	}
+
+	internal static string GetPendingLockDiagnosticSnapshot()
+	{
+		try
+		{
+			int ownerThread = Volatile.Read(ref _pendingLockOwnerThreadId);
+			string operation = Volatile.Read(ref _pendingLockOwnerOperation) ?? "";
+			long acquiredTicks = Interlocked.Read(ref _pendingLockOwnerUtcTicks);
+			double heldMs = acquiredTicks > 0L ? Math.Max(0.0, TimeSpan.FromTicks(DateTime.UtcNow.Ticks - acquiredTicks).TotalMilliseconds) : 0.0;
+			return "ownerTid=" + ownerThread + " op=" + (string.IsNullOrWhiteSpace(operation) ? "(none)" : operation) + " heldMs=" + heldMs.ToString("0.00");
+		}
+		catch
+		{
+			return "unavailable";
+		}
+	}
+
+	private static PendingLockScope EnterPendingLock(string operation)
+	{
+		bool contended = !Monitor.TryEnter(_pendingLock);
+		if (contended)
+		{
+			FreezeWatchdog.Mark("ConversationHelper.pending_lock_wait", "waiterTid=" + Thread.CurrentThread.ManagedThreadId + " waiterOp=" + (operation ?? "") + " " + GetPendingLockDiagnosticSnapshot());
+			Monitor.Enter(_pendingLock);
+			FreezeWatchdog.Mark("ConversationHelper.pending_lock_acquired_after_wait", "waiterTid=" + Thread.CurrentThread.ManagedThreadId + " waiterOp=" + (operation ?? ""));
+		}
+		int previousOwnerThreadId = Volatile.Read(ref _pendingLockOwnerThreadId);
+		string previousOwnerOperation = Volatile.Read(ref _pendingLockOwnerOperation);
+		long previousOwnerUtcTicks = Interlocked.Read(ref _pendingLockOwnerUtcTicks);
+		Volatile.Write(ref _pendingLockOwnerThreadId, Thread.CurrentThread.ManagedThreadId);
+		Volatile.Write(ref _pendingLockOwnerOperation, operation ?? "");
+		Interlocked.Exchange(ref _pendingLockOwnerUtcTicks, DateTime.UtcNow.Ticks);
+		return new PendingLockScope(previousOwnerThreadId, previousOwnerOperation, previousOwnerUtcTicks, contended);
 	}
 }

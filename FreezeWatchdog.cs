@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
 using System.Threading;
 using TaleWorlds.CampaignSystem;
@@ -37,15 +38,19 @@ internal static class FreezeWatchdog
 
 	private const string LogSource = "FreezeWatchdog";
 	private const string SnapshotFileName = "FreezeWatchdog_LastCheckpoint.txt";
-	private const int RecentEventLimit = 96;
+	private const string TimelineFileName = "FreezeWatchdog_Timeline.txt";
+	private const int RecentEventLimit = 256;
 	private const double MainThreadSlowScopeMs = 250.0;
 	private const double BackgroundSlowScopeMs = 1000.0;
 	private const double FrameGapReportMs = 1000.0;
 	private const double MonitorHangReportMs = 2500.0;
 	private const double MonitorRepeatMs = 5000.0;
 	private const int MonitorIntervalMs = 1000;
+	private static readonly long RuntimeContextRefreshTicks = TimeSpan.FromMilliseconds(250.0).Ticks;
 
 	private static readonly object SyncRoot = new object();
+	private static readonly object FileWriteRoot = new object();
+	private static readonly UTF8Encoding Utf8WithBom = new UTF8Encoding(encoderShouldEmitUTF8Identifier: true);
 	private static readonly string[] RecentEvents = new string[RecentEventLimit];
 	private static int _recentEventNext;
 	private static int _recentEventCount;
@@ -58,7 +63,14 @@ internal static class FreezeWatchdog
 	private static string _lastCompletedMainScope = "";
 	private static long _lastCompletedMainScopeUtcTicks;
 	private static long _lastMonitorReportTimestamp;
-	private static System.Threading.Timer _monitorTimer;
+	private static string _cachedRuntimeContext = "state=unknown mission=False conversation=False menu=";
+	private static long _cachedRuntimeContextUtcTicks;
+	private static long _nextRuntimeContextRefreshUtcTicks;
+	private static long _skippedFileWriteCount;
+	private static long _fileWriteSequence;
+	private static long _lastSnapshotWrittenSequence;
+	private static Thread _monitorThread;
+	private static long _monitorHeartbeatUtcTicks;
 	private static int _monitorStarted;
 
 	[ThreadStatic]
@@ -123,6 +135,13 @@ internal static class FreezeWatchdog
 			long frame = Interlocked.Increment(ref _frameIndex);
 			double dtMs = Math.Max(0.0, dt * 1000.0);
 			RecordEvent("frame_begin", "SubModule.OnApplicationTick", "dtMs=" + dtMs.ToString("0.00") + " frame=" + frame, threadId);
+			if (DateTime.UtcNow.Ticks >= Interlocked.Read(ref _nextRuntimeContextRefreshUtcTicks))
+			{
+				using (Scope("FreezeWatchdog.CaptureRuntimeContext"))
+				{
+					CaptureRuntimeContextOnMainThread();
+				}
+			}
 			if (previous > 0L)
 			{
 				double gapMs = TimestampDeltaMs(previous, now);
@@ -244,14 +263,37 @@ internal static class FreezeWatchdog
 			{
 				return;
 			}
-			_monitorTimer = new System.Threading.Timer(MonitorCallback, null, MonitorIntervalMs, MonitorIntervalMs);
+			_monitorThread = new Thread(MonitorLoop)
+			{
+				IsBackground = true,
+				Name = "AnimusForge.FreezeWatchdog",
+				Priority = ThreadPriority.BelowNormal
+			};
+			_monitorThread.Start();
+			WriteImmediate("[WATCHDOG_START] schema=3 writer=dedicated_thread runtimeContext=main_thread_cached recentLimit=" + RecentEventLimit + " mainThread=" + Interlocked.CompareExchange(ref _mainThreadId, 0, 0), writeSnapshot: true);
 		}
 		catch
 		{
 		}
 	}
 
-	private static void MonitorCallback(object state)
+	private static void MonitorLoop()
+	{
+		while (true)
+		{
+			try
+			{
+				Thread.Sleep(MonitorIntervalMs);
+				Interlocked.Exchange(ref _monitorHeartbeatUtcTicks, DateTime.UtcNow.Ticks);
+				MonitorOnce();
+			}
+			catch
+			{
+			}
+		}
+	}
+
+	private static void MonitorOnce()
 	{
 		try
 		{
@@ -339,12 +381,47 @@ internal static class FreezeWatchdog
 
 	private static void WriteImmediate(string message, bool writeSnapshot)
 	{
+		long sequence = Interlocked.Increment(ref _fileWriteSequence);
+		if (IsKnownMainThread(Thread.CurrentThread.ManagedThreadId))
+		{
+			try
+			{
+				string queuedMessage = message ?? "";
+				ThreadPool.QueueUserWorkItem(_ => WriteImmediateCore(queuedMessage, writeSnapshot, sequence));
+			}
+			catch
+			{
+			}
+			return;
+		}
+		WriteImmediateCore(message, writeSnapshot, sequence);
+	}
+
+	private static void WriteImmediateCore(string message, bool writeSnapshot, long sequence)
+	{
 		try
 		{
-			Logger.LogImmediate(LogSource, message ?? "");
-			if (writeSnapshot)
+			if (!Monitor.TryEnter(FileWriteRoot, 100))
 			{
-				Logger.WriteLogSnapshotImmediate(SnapshotFileName, BuildSnapshot(message));
+				Interlocked.Increment(ref _skippedFileWriteCount);
+				return;
+			}
+			try
+			{
+				string timelinePath = AnimusForgeModulePaths.GetLogFilePath(TimelineFileName);
+				string snapshotPath = AnimusForgeModulePaths.GetLogFilePath(SnapshotFileName);
+				EnsureParentDirectory(timelinePath);
+				EnsureParentDirectory(snapshotPath);
+				File.AppendAllText(timelinePath, "[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "] [" + LogSource + "] seq=" + sequence + " " + (message ?? "") + Environment.NewLine, Utf8WithBom);
+				if (writeSnapshot && sequence >= _lastSnapshotWrittenSequence)
+				{
+					_lastSnapshotWrittenSequence = sequence;
+					File.WriteAllText(snapshotPath, BuildSnapshot("seq=" + sequence + " " + (message ?? "")), Utf8WithBom);
+				}
+			}
+			finally
+			{
+				Monitor.Exit(FileWriteRoot);
 			}
 		}
 		catch
@@ -375,7 +452,11 @@ internal static class FreezeWatchdog
 			+ " lastCompleted=" + (string.IsNullOrWhiteSpace(lastCompleted) ? "(none)" : Sanitize(lastCompleted, 180))
 			+ " lastCompletedAgeMs=" + AgeMsFromUtcTicks(lastCompletedUtc).ToString("0.00")
 			+ " heartbeatAgeMs=" + AgeMsFromUtcTicks(lastHeartbeatUtc).ToString("0.00")
-			+ " context={" + BuildRuntimeContext() + "}";
+			+ " context={" + (Volatile.Read(ref _cachedRuntimeContext) ?? "state=unknown") + "}"
+			+ " contextAgeMs=" + AgeMsFromUtcTicks(Interlocked.Read(ref _cachedRuntimeContextUtcTicks)).ToString("0.00")
+			+ " monitorAgeMs=" + AgeMsFromUtcTicks(Interlocked.Read(ref _monitorHeartbeatUtcTicks)).ToString("0.00")
+			+ " skippedWrites=" + Interlocked.Read(ref _skippedFileWriteCount)
+			+ " process={" + BuildProcessDiagnostics() + "}";
 		if (includeRecent)
 		{
 			summary += " recent={" + BuildRecentEventsOneLine(12) + "}";
@@ -456,10 +537,12 @@ internal static class FreezeWatchdog
 		}
 	}
 
-	private static string BuildRuntimeContext()
+	private static void CaptureRuntimeContextOnMainThread()
 	{
 		try
 		{
+			long nowTicks = DateTime.UtcNow.Ticks;
+			Interlocked.Exchange(ref _nextRuntimeContextRefreshUtcTicks, nowTicks + RuntimeContextRefreshTicks);
 			string activeState = "";
 			try
 			{
@@ -496,11 +579,52 @@ internal static class FreezeWatchdog
 			{
 				mission = false;
 			}
-			return "state=" + activeState + " mission=" + mission + " conversation=" + conversation + " menu=" + menu;
+			Volatile.Write(ref _cachedRuntimeContext, "state=" + activeState + " mission=" + mission + " conversation=" + conversation + " menu=" + menu);
+			Interlocked.Exchange(ref _cachedRuntimeContextUtcTicks, DateTime.UtcNow.Ticks);
 		}
 		catch
 		{
-			return "state=unknown";
+			Volatile.Write(ref _cachedRuntimeContext, "state=unknown");
+			Interlocked.Exchange(ref _cachedRuntimeContextUtcTicks, DateTime.UtcNow.Ticks);
+		}
+	}
+
+	private static string BuildProcessDiagnostics()
+	{
+		try
+		{
+			ThreadPool.GetAvailableThreads(out int workerAvailable, out int ioAvailable);
+			ThreadPool.GetMaxThreads(out int workerMax, out int ioMax);
+			using Process process = Process.GetCurrentProcess();
+			return "workingSetMB=" + (process.WorkingSet64 / 1048576L)
+				+ " privateMB=" + (process.PrivateMemorySize64 / 1048576L)
+				+ " cpuMs=" + process.TotalProcessorTime.TotalMilliseconds.ToString("0")
+				+ " osThreads=" + process.Threads.Count
+				+ " managedTid=" + Thread.CurrentThread.ManagedThreadId
+				+ " poolWorker=" + workerAvailable + "/" + workerMax
+				+ " poolIo=" + ioAvailable + "/" + ioMax
+				+ " gcMB=" + (GC.GetTotalMemory(forceFullCollection: false) / 1048576L)
+				+ " gc=" + GC.CollectionCount(0) + "/" + GC.CollectionCount(1) + "/" + GC.CollectionCount(2)
+				+ " conversationLock={" + ConversationHelper.GetPendingLockDiagnosticSnapshot() + "}";
+		}
+		catch
+		{
+			return "unavailable";
+		}
+	}
+
+	private static void EnsureParentDirectory(string path)
+	{
+		try
+		{
+			string directory = Path.GetDirectoryName(path);
+			if (!string.IsNullOrWhiteSpace(directory) && !Directory.Exists(directory))
+			{
+				Directory.CreateDirectory(directory);
+			}
+		}
+		catch
+		{
 		}
 	}
 

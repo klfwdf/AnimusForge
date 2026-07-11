@@ -1819,9 +1819,9 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private static readonly Regex MoodTagRegex = new Regex("\\[ACTION:MOOD:([^\\]\\r\\n]+)\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-	private static readonly Regex TransferTroopTagRegex = new Regex("\\[ATT:(\\d+):(\\d+)\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+	private static readonly Regex TransferTroopTagRegex = new Regex("\\[ATT:(ALL|\\d+):(ALL|\\d+)\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-	private static readonly Regex TransferPrisonerTagRegex = new Regex("\\[ATP:(\\d+):(\\d+)\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+	private static readonly Regex TransferPrisonerTagRegex = new Regex("\\[ATP:(ALL|\\d+):(ALL|\\d+)\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
 	private Dictionary<string, PatienceState> _patienceStates = new Dictionary<string, PatienceState>();
 
@@ -5883,16 +5883,24 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void EnsureWeekZeroOpeningSummaryEvents()
 	{
+		FreezeWatchdog.Mark("WeeklyPrompt.EnsureWeek0.start", "entries=" + (_eventRecordEntries?.Count ?? 0) + " thread=" + Thread.CurrentThread.ManagedThreadId);
 		UpsertWeekZeroOpeningSummaryEvent("world", "", "第0天世界开局概要", _eventWorldOpeningSummary, "世界开局概要", "world_opening_summary");
+		FreezeWatchdog.Mark("WeeklyPrompt.EnsureWeek0.world_done", "entries=" + (_eventRecordEntries?.Count ?? 0));
+		int kingdomIndex = 0;
 		foreach (Kingdom devEditableKingdom in GetDevEditableKingdoms())
 		{
+			kingdomIndex++;
+			string diagnosticKingdomId = devEditableKingdom?.StringId ?? "";
+			FreezeWatchdog.Mark("WeeklyPrompt.EnsureWeek0.kingdom_start", "index=" + kingdomIndex + " kingdom=" + diagnosticKingdomId);
 			string kingdomOpeningSummary = GetKingdomOpeningSummary(devEditableKingdom);
 			if (!string.IsNullOrWhiteSpace(kingdomOpeningSummary))
 			{
 				string text = devEditableKingdom.Name?.ToString() ?? (devEditableKingdom.StringId ?? "王国");
 				UpsertWeekZeroOpeningSummaryEvent("kingdom", devEditableKingdom.StringId ?? "", text + "第0天开局概要", kingdomOpeningSummary, text + " 开局概要", "kingdom_opening_summary");
 			}
+			FreezeWatchdog.Mark("WeeklyPrompt.EnsureWeek0.kingdom_done", "index=" + kingdomIndex + " kingdom=" + diagnosticKingdomId + " entries=" + (_eventRecordEntries?.Count ?? 0));
 		}
+		FreezeWatchdog.Mark("WeeklyPrompt.EnsureWeek0.done", "kingdoms=" + kingdomIndex + " entries=" + (_eventRecordEntries?.Count ?? 0) + " thread=" + Thread.CurrentThread.ManagedThreadId);
 	}
 
 	private static string ComputeWeekZeroShortSummarySourceHash(string sourceText)
@@ -6245,6 +6253,7 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void UpsertWeekZeroOpeningSummaryEvent(string eventKind, string kingdomId, string title, string summary, string materialLabel, string materialType)
 	{
+		FreezeWatchdog.Mark("WeeklyPrompt.UpsertWeek0.start", "kind=" + (eventKind ?? "") + " kingdom=" + (kingdomId ?? "") + " entries=" + (_eventRecordEntries?.Count ?? 0));
 		string text = (summary ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(text))
 		{
@@ -6290,7 +6299,9 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 		};
 		_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
+		FreezeWatchdog.Mark("WeeklyPrompt.UpsertWeek0.sanitize_done", "kind=" + (eventKind ?? "") + " kingdom=" + (kingdomId ?? "") + " entries=" + (_eventRecordEntries?.Count ?? 0));
 		TryQueueWeekZeroShortSummaryGeneration(eventRecordEntry, text3);
+		FreezeWatchdog.Mark("WeeklyPrompt.UpsertWeek0.queue_done", "kind=" + (eventKind ?? "") + " kingdom=" + (kingdomId ?? "") + " entries=" + (_eventRecordEntries?.Count ?? 0));
 	}
 
 	private void OnSiegeAftermathApplied(MobileParty attackerParty, Settlement settlement, SiegeAftermathAction.SiegeAftermath aftermathType, Clan previousSettlementOwner, Dictionary<MobileParty, float> partyContributions)
@@ -12846,14 +12857,25 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			(Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.MarkWeeklyMemoryMaterialTriggerInternal(targetHero, nonHeroMemoryId, npcName, normalizedTagText, sceneSessionId, nativeDialogueSessionId, targetAgentIndex, rewardOptions, partyTransferTroopOptions, partyTransferPrisonerOptions, settlementTransferNpcOptions, settlementTransferPlayerOptions, suppressImplicitDialogueSession);
+			(Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.MarkWeeklyMemoryMaterialTriggerInternal(targetHero, nonHeroMemoryId, npcName, normalizedTagText, sceneSessionId, nativeDialogueSessionId, targetAgentIndex, rewardOptions, partyTransferTroopOptions, partyTransferPrisonerOptions, settlementTransferNpcOptions, suppressImplicitDialogueSession);
 		}
 		catch
 		{
 		}
 	}
 
-	private void MarkWeeklyMemoryMaterialTriggerInternal(Hero targetHero, string nonHeroMemoryId, string npcName, string normalizedTagText, int sceneSessionId, int nativeDialogueSessionId, int targetAgentIndex, List<RewardSystemBehavior.RewardItemInfo> rewardOptions, List<PartyTransferPromptEntry> partyTransferTroopOptions, List<PartyTransferPromptEntry> partyTransferPrisonerOptions, List<SettlementTransferPromptEntry> settlementTransferNpcOptions, List<SettlementTransferPromptEntry> settlementTransferPlayerOptions = null, bool suppressImplicitDialogueSession = false)
+	internal static void MarkWeeklyMemoryMaterialTriggerWithAllSnapshotsForExternal(Hero targetHero, string nonHeroMemoryId, string npcName, string normalizedTagText, int sceneSessionId = -1, int nativeDialogueSessionId = -1, int targetAgentIndex = -1, List<RewardSystemBehavior.RewardItemInfo> rewardOptions = null, List<PartyTransferPromptEntry> partyTransferTroopOptions = null, List<PartyTransferPromptEntry> partyTransferPrisonerOptions = null, List<SettlementTransferPromptEntry> settlementTransferNpcOptions = null, bool suppressImplicitDialogueSession = false, List<PartyTransferPromptEntry> partyTransferAllTroopOptions = null, List<PartyTransferPromptEntry> partyTransferAllPrisonerOptions = null)
+	{
+		try
+		{
+			(Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.MarkWeeklyMemoryMaterialTriggerInternal(targetHero, nonHeroMemoryId, npcName, normalizedTagText, sceneSessionId, nativeDialogueSessionId, targetAgentIndex, rewardOptions, partyTransferTroopOptions, partyTransferPrisonerOptions, settlementTransferNpcOptions, suppressImplicitDialogueSession, partyTransferAllTroopOptions, partyTransferAllPrisonerOptions);
+		}
+		catch
+		{
+		}
+	}
+
+	private void MarkWeeklyMemoryMaterialTriggerInternal(Hero targetHero, string nonHeroMemoryId, string npcName, string normalizedTagText, int sceneSessionId, int nativeDialogueSessionId, int targetAgentIndex, List<RewardSystemBehavior.RewardItemInfo> rewardOptions, List<PartyTransferPromptEntry> partyTransferTroopOptions, List<PartyTransferPromptEntry> partyTransferPrisonerOptions, List<SettlementTransferPromptEntry> settlementTransferNpcOptions, bool suppressImplicitDialogueSession = false, List<PartyTransferPromptEntry> partyTransferAllTroopOptions = null, List<PartyTransferPromptEntry> partyTransferAllPrisonerOptions = null)
 	{
 		string memoryId = !string.IsNullOrWhiteSpace(nonHeroMemoryId) ? NormalizeMemoryHeroId(nonHeroMemoryId) : GetMemoryHeroId(targetHero);
 		if (!IsMemoryEntityEligibleForCompressedMemory(memoryId))
@@ -12870,7 +12892,7 @@ public class MyBehavior : CampaignBehaviorBase
 		string gameDate = GetCurrentGameDateTextSafe();
 		List<DailyMemoryDraft> drafts = LoadDailyMemoryDraftsById(memoryId);
 		DailyMemoryDraft draft = drafts.FirstOrDefault((DailyMemoryDraft x) => x != null && x.GameDayIndex == day);
-		WeeklyMemoryMaterialEvaluation evaluation = EvaluateWeeklyMemoryMaterialTags(targetHero, tags, rewardOptions, partyTransferTroopOptions, partyTransferPrisonerOptions, settlementTransferNpcOptions, settlementTransferPlayerOptions);
+		WeeklyMemoryMaterialEvaluation evaluation = EvaluateWeeklyMemoryMaterialTags(targetHero, tags, rewardOptions, partyTransferTroopOptions, partyTransferPrisonerOptions, settlementTransferNpcOptions, partyTransferAllTroopOptions, partyTransferAllPrisonerOptions);
 		TryApplyPlayerTransferredValueToWeeklyMemoryMaterialEvaluation(evaluation, tags, draft, npcName, sceneSessionId, nativeDialogueSessionId);
 		if (evaluation == null || !evaluation.Eligible)
 		{
@@ -13151,7 +13173,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static WeeklyMemoryMaterialEvaluation EvaluateWeeklyMemoryMaterialTags(Hero targetHero, List<string> tags, List<RewardSystemBehavior.RewardItemInfo> rewardOptions, List<PartyTransferPromptEntry> partyTransferTroopOptions, List<PartyTransferPromptEntry> partyTransferPrisonerOptions, List<SettlementTransferPromptEntry> settlementTransferNpcOptions, List<SettlementTransferPromptEntry> settlementTransferPlayerOptions)
+	private static WeeklyMemoryMaterialEvaluation EvaluateWeeklyMemoryMaterialTags(Hero targetHero, List<string> tags, List<RewardSystemBehavior.RewardItemInfo> rewardOptions, List<PartyTransferPromptEntry> partyTransferTroopOptions, List<PartyTransferPromptEntry> partyTransferPrisonerOptions, List<SettlementTransferPromptEntry> settlementTransferNpcOptions, List<PartyTransferPromptEntry> partyTransferAllTroopOptions, List<PartyTransferPromptEntry> partyTransferAllPrisonerOptions)
 	{
 		WeeklyMemoryMaterialEvaluation evaluation = new WeeklyMemoryMaterialEvaluation();
 		evaluation.Tags = NormalizeWeeklyMemoryMaterialTags(tags);
@@ -13167,7 +13189,7 @@ public class MyBehavior : CampaignBehaviorBase
 					reasons.Add("重大标签：" + label);
 				}
 			}
-			long value = EstimateWeeklyMemoryMaterialTagValue(targetHero, tag, rewardOptions, partyTransferTroopOptions, partyTransferPrisonerOptions, settlementTransferNpcOptions, settlementTransferPlayerOptions);
+			long value = EstimateWeeklyMemoryMaterialTagValue(targetHero, tag, rewardOptions, partyTransferTroopOptions, partyTransferPrisonerOptions, settlementTransferNpcOptions, partyTransferAllTroopOptions, partyTransferAllPrisonerOptions);
 			if (value > 0L)
 			{
 				evaluation.EstimatedValueDenars = AddWeeklyMemoryMaterialValue(evaluation.EstimatedValueDenars, value);
@@ -13208,12 +13230,12 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			string text = (tag ?? "").Trim();
 			if (Regex.IsMatch(text, "^\\[ACTION:GIVE_GOLD:\\d+\\]$", RegexOptions.IgnoreCase) ||
-				Regex.IsMatch(text, "^\\[ACTION:GIVE_ITEM:[^\\]\\r\\n:]+:\\d+\\]$", RegexOptions.IgnoreCase) ||
+				Regex.IsMatch(text, "^\\[ACTION:GIVE_ITEM:[^\\]\\r\\n:]+:(?:ALL|\\d+)\\]$", RegexOptions.IgnoreCase) ||
 				Regex.IsMatch(text, "^\\[AD;\\d+;\\d+;(?:P;[^\\]]*|(?!(?:N|P);)[^\\]]*)\\]$", RegexOptions.IgnoreCase) ||
 				Regex.IsMatch(text, "^\\[ADP[:;][^\\]\\r\\n:;]+\\]$", RegexOptions.IgnoreCase) ||
-				Regex.IsMatch(text, "^\\[ATT:\\d+:\\d+\\]$", RegexOptions.IgnoreCase) ||
-				Regex.IsMatch(text, "^\\[ATP:\\d+:\\d+\\]$", RegexOptions.IgnoreCase) ||
-				Regex.IsMatch(text, "^\\[ACTION:SETTLEMENT_TRANSFER:(?:TO_PLAYER|TO_NPC):[^\\]\\r\\n:]+\\]$", RegexOptions.IgnoreCase))
+				Regex.IsMatch(text, "^\\[ATT:(?:ALL|\\d+):(?:ALL|\\d+)\\]$", RegexOptions.IgnoreCase) ||
+				Regex.IsMatch(text, "^\\[ATP:(?:ALL|\\d+):(?:ALL|\\d+)\\]$", RegexOptions.IgnoreCase) ||
+				Regex.IsMatch(text, "^\\[ACTION:SETTLEMENT_TRANSFER:TO_PLAYER:[^\\]\\r\\n:]+\\]$", RegexOptions.IgnoreCase))
 			{
 				return true;
 			}
@@ -13310,7 +13332,7 @@ public class MyBehavior : CampaignBehaviorBase
 		return value;
 	}
 
-	private static long EstimateWeeklyMemoryMaterialTagValue(Hero targetHero, string tag, List<RewardSystemBehavior.RewardItemInfo> rewardOptions, List<PartyTransferPromptEntry> partyTransferTroopOptions, List<PartyTransferPromptEntry> partyTransferPrisonerOptions, List<SettlementTransferPromptEntry> settlementTransferNpcOptions, List<SettlementTransferPromptEntry> settlementTransferPlayerOptions)
+	private static long EstimateWeeklyMemoryMaterialTagValue(Hero targetHero, string tag, List<RewardSystemBehavior.RewardItemInfo> rewardOptions, List<PartyTransferPromptEntry> partyTransferTroopOptions, List<PartyTransferPromptEntry> partyTransferPrisonerOptions, List<SettlementTransferPromptEntry> settlementTransferNpcOptions, List<PartyTransferPromptEntry> partyTransferAllTroopOptions, List<PartyTransferPromptEntry> partyTransferAllPrisonerOptions)
 	{
 		string text = (tag ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(text))
@@ -13338,27 +13360,37 @@ public class MyBehavior : CampaignBehaviorBase
 			Logger.Log("EventWeeklyReport", "[WeeklyMemoryMaterial][WARN] debt_id_value_missing debtId=" + debtId);
 			return 0L;
 		}
-		match = Regex.Match(text, "^\\[ACTION:GIVE_ITEM:([^\\]\\r\\n:]+):(\\d+)\\]$", RegexOptions.IgnoreCase);
+		match = Regex.Match(text, "^\\[ACTION:GIVE_ITEM:([^\\]\\r\\n:]+):(ALL|\\d+)\\]$", RegexOptions.IgnoreCase);
+		if (match.Success && TransferQuantitySpec.IsAllValue(match.Groups[2].Value))
+		{
+			return EstimateAllRewardItemTagValueForWeeklyMemoryMaterial(match.Groups[1].Value, rewardOptions);
+		}
 		if (match.Success && int.TryParse(match.Groups[2].Value, out var itemAmount) && itemAmount > 0)
 		{
 			return EstimateRewardItemTagValueForWeeklyMemoryMaterial(targetHero, match.Groups[1].Value, itemAmount, rewardOptions);
 		}
-		match = Regex.Match(text, "^\\[ATT:(\\d+):(\\d+)\\]$", RegexOptions.IgnoreCase);
+		match = Regex.Match(text, "^\\[ATT:(ALL|\\d+):(ALL|\\d+)\\]$", RegexOptions.IgnoreCase);
+		if (match.Success && (TransferQuantitySpec.IsAllValue(match.Groups[1].Value) || TransferQuantitySpec.IsAllValue(match.Groups[2].Value)))
+		{
+			return CalculatePartyTransferTotalValueForExternal(partyTransferAllTroopOptions, isPrisoner: false);
+		}
 		if (match.Success && int.TryParse(match.Groups[1].Value, out var troopIndex) && int.TryParse(match.Groups[2].Value, out var troopAmount))
 		{
 			return EstimatePartyTransferTagValueForWeeklyMemoryMaterial(partyTransferTroopOptions, troopIndex, troopAmount, isPrisoner: false);
 		}
-		match = Regex.Match(text, "^\\[ATP:(\\d+):(\\d+)\\]$", RegexOptions.IgnoreCase);
+		match = Regex.Match(text, "^\\[ATP:(ALL|\\d+):(ALL|\\d+)\\]$", RegexOptions.IgnoreCase);
+		if (match.Success && (TransferQuantitySpec.IsAllValue(match.Groups[1].Value) || TransferQuantitySpec.IsAllValue(match.Groups[2].Value)))
+		{
+			return CalculatePartyTransferTotalValueForExternal(partyTransferAllPrisonerOptions, isPrisoner: true);
+		}
 		if (match.Success && int.TryParse(match.Groups[1].Value, out var prisonerIndex) && int.TryParse(match.Groups[2].Value, out var prisonerAmount))
 		{
 			return EstimatePartyTransferTagValueForWeeklyMemoryMaterial(partyTransferPrisonerOptions, prisonerIndex, prisonerAmount, isPrisoner: true);
 		}
-		match = Regex.Match(text, "^\\[ACTION:SETTLEMENT_TRANSFER:(TO_PLAYER|TO_NPC):([^\\]\\r\\n:]+)\\]$", RegexOptions.IgnoreCase);
+		match = Regex.Match(text, "^\\[ACTION:SETTLEMENT_TRANSFER:(TO_PLAYER):([^\\]\\r\\n:]+)\\]$", RegexOptions.IgnoreCase);
 		if (match.Success)
 		{
-			string direction = (match.Groups[1].Value ?? "").Trim().ToUpperInvariant();
-			List<SettlementTransferPromptEntry> options = string.Equals(direction, "TO_NPC", StringComparison.OrdinalIgnoreCase) ? settlementTransferPlayerOptions : settlementTransferNpcOptions;
-			SettlementTransferPromptEntry entry = FindSettlementTransferEntryByTokenForWeeklyMemoryMaterial(options, match.Groups[2].Value);
+			SettlementTransferPromptEntry entry = FindSettlementTransferEntryByTokenForWeeklyMemoryMaterial(settlementTransferNpcOptions, match.Groups[2].Value);
 			return Math.Max(0L, entry?.GuidePriceDenars ?? 0);
 		}
 		return 0L;
@@ -13387,6 +13419,27 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return 0L;
 		}
+	}
+
+	private static long EstimateAllRewardItemTagValueForWeeklyMemoryMaterial(string itemToken, List<RewardSystemBehavior.RewardItemInfo> rewardOptions)
+	{
+		RewardSystemBehavior.RewardItemInfo resolved = FindRewardItemByTokenForWeeklyMemoryMaterial(rewardOptions, itemToken);
+		if (resolved == null)
+		{
+			return 0L;
+		}
+		string key = string.IsNullOrWhiteSpace(resolved.PromptStringId) ? (resolved.StringId ?? "").Trim() : resolved.PromptStringId.Trim();
+		long total = 0L;
+		foreach (RewardSystemBehavior.RewardItemInfo item in rewardOptions ?? new List<RewardSystemBehavior.RewardItemInfo>())
+		{
+			string itemKey = string.IsNullOrWhiteSpace(item?.PromptStringId) ? (item?.StringId ?? "").Trim() : item.PromptStringId.Trim();
+			if (item == null || item.Count <= 0 || string.IsNullOrWhiteSpace(key) || !string.Equals(itemKey, key, StringComparison.OrdinalIgnoreCase))
+			{
+				continue;
+			}
+			total = TransferQuantitySpec.AddProduct(total, item.Count, Math.Max(1, item.GuidePrice));
+		}
+		return total;
 	}
 
 	private static long EstimatePartyTransferTagValueForWeeklyMemoryMaterial(List<PartyTransferPromptEntry> options, int promptIndex, int amount, bool isPrisoner)
@@ -13574,10 +13627,6 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		if (text.StartsWith("[ACTION:SETTLEMENT_TRANSFER:", StringComparison.OrdinalIgnoreCase))
 		{
-			if (text.StartsWith("[ACTION:SETTLEMENT_TRANSFER:TO_NPC:", StringComparison.OrdinalIgnoreCase))
-			{
-				return "玩家交出固定资产";
-			}
 			if (text.StartsWith("[ACTION:SETTLEMENT_TRANSFER:TO_PLAYER:", StringComparison.OrdinalIgnoreCase))
 			{
 				return "取得固定资产";
@@ -22146,7 +22195,7 @@ public class MyBehavior : CampaignBehaviorBase
 			List<SettlementTransferPromptEntry> list2 = PromptListRetrievalService.FilterSettlementTransferEntries(list2All, mentions, promptListMax);
 			List<SettlementTransferPromptEntry> list3 = PromptListRetrievalService.FilterSettlementTransferEntries(list3All, mentions, promptListMax);
 			PromptListRetrievalService.PublishSettlementTransferSnapshot(PromptListRetrievalService.SettlementTransferNpcAssetsSnapshotScope, targetHero, targetCharacter, -1, list2);
-			PromptListRetrievalService.PublishSettlementTransferSnapshot(PromptListRetrievalService.SettlementTransferPlayerAssetsSnapshotScope, targetHero, targetCharacter, -1, list3);
+			PromptListRetrievalService.PublishSettlementTransferSnapshot(PromptListRetrievalService.SettlementTransferAllNpcAssetsSnapshotScope, targetHero, targetCharacter, -1, list2All);
 			StringBuilder stringBuilder = new StringBuilder();
 			string text2 = RewardSystemBehavior.Instance?.BuildSettlementTransferPromptGuidanceForAI(hero, targetCharacter);
 			if (!string.IsNullOrWhiteSpace(text2))
@@ -22161,12 +22210,14 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				stringBuilder.AppendLine(settlementRemainder);
 			}
+			stringBuilder.Append("你全部可转固定资产: ").Append(list2All.Count).Append(" 项 | 一次结清指导总值: ").Append(CalculateSettlementTransferTotalValueForExternal(list2All)).AppendLine(" 第纳尔");
 			AppendSettlementTransferPromptSection(stringBuilder, "【玩家当前可手动交付固定资产（仅供手动交付参考）】：", list3, showPromptIndex: true);
 			string playerSettlementRemainder = PromptListRetrievalService.BuildRemainingSettlementTransferSummary(list3All, list3, "玩家");
 			if (!string.IsNullOrWhiteSpace(playerSettlementRemainder))
 			{
 				stringBuilder.AppendLine(playerSettlementRemainder);
 			}
+			stringBuilder.Append("玩家全部可手动交付固定资产: ").Append(list3All.Count).Append(" 项 | 一次结清指导总值: ").Append(CalculateSettlementTransferTotalValueForExternal(list3All)).AppendLine(" 第纳尔");
 			return stringBuilder.ToString().Trim();
 		}
 		catch
@@ -22224,6 +22275,35 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			sb.AppendLine(stringBuilder.ToString());
 		}
+	}
+
+	internal static long CalculateSettlementTransferTotalValueForExternal(IEnumerable<SettlementTransferPromptEntry> entries)
+	{
+		long total = 0L;
+		foreach (SettlementTransferPromptEntry entry in entries ?? Enumerable.Empty<SettlementTransferPromptEntry>())
+		{
+			if (!IsSettlementTransferEntryValidForExternal(entry))
+			{
+				continue;
+			}
+			total = TransferQuantitySpec.AddProduct(total, 1, Math.Max(0, entry.GuidePriceDenars));
+		}
+		return total;
+	}
+
+	internal static long CalculatePartyTransferTotalValueForExternal(IEnumerable<PartyTransferPromptEntry> entries, bool isPrisoner)
+	{
+		long total = 0L;
+		foreach (PartyTransferPromptEntry entry in entries ?? Enumerable.Empty<PartyTransferPromptEntry>())
+		{
+			if (entry == null || entry.Character == null || entry.Count <= 0)
+			{
+				continue;
+			}
+			int unitValue = isPrisoner ? Math.Max(1, entry.BuyPriceDenarsPerUnit) : Math.Max(1, entry.HirePriceDenarsPerUnit);
+			total = TransferQuantitySpec.AddProduct(total, entry.IsHero ? 1 : entry.Count, unitValue);
+		}
+		return total;
 	}
 
 	private static int GetPartyTransferTroopTier(PartyTransferPromptEntry entry)
@@ -22458,6 +22538,7 @@ public class MyBehavior : CampaignBehaviorBase
 			List<PartyTransferPromptEntry> list3 = list2.Where((PartyTransferPromptEntry x) => GetPartyTransferTroopTier(x) > 0 && GetPartyTransferTroopTier(x) <= partyTransferRecruitMaxTier).ToList();
 			List<PartyTransferPromptEntry> list4 = list2.Where((PartyTransferPromptEntry x) => !list3.Contains(x)).ToList();
 			List<PartyTransferPromptEntry> list5 = list.Where((PartyTransferPromptEntry x) => x != null && x.Section == PartyTransferEntrySection.NpcVolunteers).ToList();
+			List<PartyTransferPromptEntry> listAllTroops = BuildDisplayIndexedPartyTransferEntries(list2.Concat(list5));
 			List<PartyTransferPromptEntry> list6All = BuildDisplayIndexedPartyTransferEntries(list3.Concat(list5));
 			List<PartyTransferPromptEntry> list7All = BuildDisplayIndexedPartyTransferEntries(list.Where((PartyTransferPromptEntry x) => x.Section == PartyTransferEntrySection.NpcPrisoners));
 			MentionedWorldEntities mentions = AIConfigHandler.GetLatestAuxiliaryMentionedEntitiesForExternal();
@@ -22467,6 +22548,8 @@ public class MyBehavior : CampaignBehaviorBase
 			List<PartyTransferPromptEntry> list7 = PromptListRetrievalService.FilterPartyTransferEntries(list7All, mentions, promptListMax, isPrisoner: true);
 			PromptListRetrievalService.PublishPartyTransferSnapshot(PromptListRetrievalService.PartyTransferTroopsSnapshotScope, targetHero, targetCharacter, targetAgentIndex, list6);
 			PromptListRetrievalService.PublishPartyTransferSnapshot(PromptListRetrievalService.PartyTransferPrisonersSnapshotScope, targetHero, targetCharacter, targetAgentIndex, list7);
+			PromptListRetrievalService.PublishPartyTransferSnapshot(PromptListRetrievalService.PartyTransferAllTroopsSnapshotScope, targetHero, targetCharacter, targetAgentIndex, listAllTroops);
+			PromptListRetrievalService.PublishPartyTransferSnapshot(PromptListRetrievalService.PartyTransferAllPrisonersSnapshotScope, targetHero, targetCharacter, targetAgentIndex, list7All);
 			StringBuilder stringBuilder = new StringBuilder();
 			string runtimeHint = flag ? AIConfigHandler.BuildRuntimePartyTransferInstructionForExternal(targetHero, targetCharacter) : "";
 			if (!string.IsNullOrWhiteSpace(runtimeHint))
@@ -22498,8 +22581,9 @@ public class MyBehavior : CampaignBehaviorBase
 					stringBuilder.AppendLine("【原版要人募兵】你这里按原版城镇/村庄要人募兵规则实时计算；由于关系、阵营或战况等原版条件，本轮没有向" + text + "开放任何招募槽位。正文只口头拒绝或解释，不写 ATT。");
 				}
 			}
+			stringBuilder.AppendLine("若你明确同意移交全部士兵，全量转移不受本段信任阶级和展示上限限制，但所有Hero都会留下；正文仍只自然答复。");
 			stringBuilder.AppendLine("若你最终明确同意把【你当前可转移俘虏】中的俘虏交给玩家，后处理才会根据正文生成 ATP；正文只口头答应、拒绝或谈条件，不写 ATT/ATP。");
-			stringBuilder.AppendLine("后处理可用于 ATT/ATP 的序号只来自本轮仍带编号的清单。未编号或未展示的兵种/俘虏，绝不可以生成 ATT/ATP。");
+			stringBuilder.AppendLine("单项 ATT/ATP 的序号只来自本轮编号清单；只有明确同意整类全部移交时，才可覆盖未编号或未展示项。");
 			stringBuilder.AppendLine("ATT 只能用于部队序号，ATP 只能用于俘虏序号；数量不得超过当前数量。若本轮尚未明确成交，后处理就不应生成这些标签。");
 			stringBuilder.AppendLine("日薪表示每名士兵每天需要支付多少第纳尔；雇佣价与购买价表示当前谈判指导单价。");
 			stringBuilder.AppendLine("当前与你交易的人：" + text);
@@ -22516,12 +22600,14 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				AppendPartyTransferHiddenTroopSection(stringBuilder, "【由于你对" + text + "不够信任，你当前不可向" + text + "开放招募的更高阶部队】：", list4Filtered);
 			}
+			stringBuilder.Append("全部非Hero士兵: ").Append(listAllTroops.Sum((PartyTransferPromptEntry x) => Math.Max(0, x?.Count ?? 0))).Append(" 人 | 雇佣指导总值: ").Append(CalculatePartyTransferTotalValueForExternal(listAllTroops, isPrisoner: false)).AppendLine(" 第纳尔");
 			AppendPartyTransferPromptSection(stringBuilder, "【你当前可转移俘虏】：", list7, isPrisoner: true, showPromptIndex: true);
 			string prisonerRemainder = PromptListRetrievalService.BuildRemainingPartyTransferSummary(list7All, list7, isPrisoner: true, "你");
 			if (!string.IsNullOrWhiteSpace(prisonerRemainder))
 			{
 				stringBuilder.AppendLine(prisonerRemainder);
 			}
+			stringBuilder.Append("全部俘虏: ").Append(list7All.Sum((PartyTransferPromptEntry x) => Math.Max(0, x?.Count ?? 0))).Append(" 人 | 购买指导总值: ").Append(CalculatePartyTransferTotalValueForExternal(list7All, isPrisoner: true)).AppendLine(" 第纳尔");
 			return stringBuilder.ToString().Trim();
 		}
 		catch
@@ -22536,7 +22622,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return TransferPartyVolunteerEntry(entry, requestedAmount, targetParty);
 		}
-		if (entry == null || targetParty == null || entry.OwnerParty == null || entry.OwnerParty == targetParty || entry.Character == null)
+		if (entry == null || targetParty == null || entry.OwnerParty == null || entry.OwnerParty == targetParty || entry.Character == null || entry.Character.IsHero || entry.Character == CharacterObject.PlayerCharacter)
 		{
 			return 0;
 		}
@@ -22691,89 +22777,161 @@ public class MyBehavior : CampaignBehaviorBase
 		return "[AFEF NPC行为补充] " + npcName + "已将" + amount + "名" + entry.DisplayName + "俘虏交给玩家。";
 	}
 
+	private static string StripPartyTransferTags(string text)
+	{
+		string result = Regex.Replace(text ?? "", "\\[ATT:[^\\]\\r\\n]*\\]", "", RegexOptions.IgnoreCase);
+		return Regex.Replace(result, "\\[ATP:[^\\]\\r\\n]*\\]", "", RegexOptions.IgnoreCase).Trim();
+	}
+
 	public static bool TryApplyPartyTransferTagsForExternal(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, ref string content, out List<string> generatedFacts, out List<string> notifications)
 	{
 		generatedFacts = new List<string>();
 		notifications = new List<string>();
+		List<string> factResults = generatedFacts;
+		List<string> notificationResults = notifications;
 		try
 		{
 			string text = content ?? "";
 			if (!IsPartyTransferRuleEligible(targetHero, targetCharacter))
 			{
-				content = TransferTroopTagRegex.Replace(text, "").Trim();
-				content = TransferPrisonerTagRegex.Replace(content, "").Trim();
+				content = StripPartyTransferTags(text);
 				return false;
 			}
 			MatchCollection matchCollection = TransferTroopTagRegex.Matches(text);
 			MatchCollection matchCollection2 = TransferPrisonerTagRegex.Matches(text);
 			if ((matchCollection?.Count ?? 0) <= 0 && (matchCollection2?.Count ?? 0) <= 0)
 			{
+				content = StripPartyTransferTags(text);
 				return false;
 			}
-			List<PartyTransferPromptEntry> list = BuildPartyTransferPromptEntriesInternal(targetHero, targetCharacter, targetAgentIndex);
-			if (!PromptListRetrievalService.TryGetPartyTransferSnapshot(PromptListRetrievalService.PartyTransferTroopsSnapshotScope, targetHero, targetCharacter, targetAgentIndex, out var list2))
-			{
-				list2 = BuildDisplayIndexedPartyTransferEntries(list.Where((PartyTransferPromptEntry x) => x != null && (x.Section == PartyTransferEntrySection.NpcTroops || x.Section == PartyTransferEntrySection.NpcVolunteers)));
-			}
-			if (!PromptListRetrievalService.TryGetPartyTransferSnapshot(PromptListRetrievalService.PartyTransferPrisonersSnapshotScope, targetHero, targetCharacter, targetAgentIndex, out var list3))
-			{
-				list3 = BuildDisplayIndexedPartyTransferEntries(list.Where((PartyTransferPromptEntry x) => x != null && x.Section == PartyTransferEntrySection.NpcPrisoners));
-			}
+			bool hasTroopSnapshot = PromptListRetrievalService.TryGetPartyTransferSnapshot(PromptListRetrievalService.PartyTransferTroopsSnapshotScope, targetHero, targetCharacter, targetAgentIndex, out var list2);
+			bool hasPrisonerSnapshot = PromptListRetrievalService.TryGetPartyTransferSnapshot(PromptListRetrievalService.PartyTransferPrisonersSnapshotScope, targetHero, targetCharacter, targetAgentIndex, out var list3);
+			bool hasAllTroopSnapshot = PromptListRetrievalService.TryGetPartyTransferSnapshot(PromptListRetrievalService.PartyTransferAllTroopsSnapshotScope, targetHero, targetCharacter, targetAgentIndex, out var allTroops);
+			bool hasAllPrisonerSnapshot = PromptListRetrievalService.TryGetPartyTransferSnapshot(PromptListRetrievalService.PartyTransferAllPrisonersSnapshotScope, targetHero, targetCharacter, targetAgentIndex, out var allPrisoners);
 			PartyBase party = Hero.MainHero?.PartyBelongedTo?.Party ?? MobileParty.MainParty?.Party;
 			string text2 = ResolvePartyTransferTargetDisplayName(targetHero, targetCharacter, targetAgentIndex);
 			bool flag = false;
+			int attemptedEntries = 0;
+			int successfulEntries = 0;
+			int failedOrPartialEntries = 0;
+			long actualUnits = 0L;
+			long actualValue = 0L;
 			if (party != null)
 			{
-				foreach (Match item in matchCollection)
+				void applyTroop(PartyTransferPromptEntry entry, int requested, string source)
 				{
-					if (!item.Success)
+					attemptedEntries++;
+					int applied = TransferPartyMemberEntry(entry, requested, party);
+					Logger.Log("Logic", "[PartyTransfer] ATT source=" + source + " amount=" + requested + " resolved=" + (entry?.DisplayName ?? "null") + " section=" + (entry?.Section.ToString() ?? "null") + " applied=" + applied);
+					if (applied <= 0)
 					{
-						continue;
+						failedOrPartialEntries++;
+						return;
 					}
-					int num = 0;
-					int num2 = 0;
-					int.TryParse(item.Groups[1].Value, out num);
-					int.TryParse(item.Groups[2].Value, out num2);
-					PartyTransferPromptEntry partyTransferPromptEntry = FindDisplayIndexedPartyTransferEntry(list2, num);
-					int num3 = TransferPartyMemberEntry(partyTransferPromptEntry, num2, party);
-					Logger.Log("Logic", "[PartyTransfer] ATT index=" + num + " amount=" + num2 + " resolved=" + (partyTransferPromptEntry?.DisplayName ?? "null") + " section=" + (partyTransferPromptEntry?.Section.ToString() ?? "null") + " applied=" + num3);
-					if (num3 > 0)
+					flag = true;
+					successfulEntries++;
+					if (applied < Math.Max(0, requested))
 					{
-						flag = true;
-						generatedFacts.Add(BuildNpcToPlayerTroopTransferFact(text2, partyTransferPromptEntry, num3));
-						notifications.Add((IsPartyTransferVolunteerEntry(partyTransferPromptEntry) ? "已招募 " : "已获得 ") + num3 + " 名" + partyTransferPromptEntry.DisplayName);
+						failedOrPartialEntries++;
+					}
+					actualUnits = TransferQuantitySpec.AddValue(actualUnits, applied);
+					actualValue = TransferQuantitySpec.AddProduct(actualValue, applied, Math.Max(1, entry?.HirePriceDenarsPerUnit ?? 0));
+					factResults.Add(BuildNpcToPlayerTroopTransferFact(text2, entry, applied));
+					notificationResults.Add((IsPartyTransferVolunteerEntry(entry) ? "已招募 " : "已获得 ") + applied + " 名" + entry.DisplayName);
+				}
+				void applyPrisoner(PartyTransferPromptEntry entry, int requested, string source)
+				{
+					attemptedEntries++;
+					int applied = TransferPartyPrisonerEntry(entry, requested, party);
+					Logger.Log("Logic", "[PartyTransfer] ATP source=" + source + " amount=" + requested + " resolved=" + (entry?.DisplayName ?? "null") + " applied=" + applied);
+					if (applied <= 0)
+					{
+						failedOrPartialEntries++;
+						return;
+					}
+					flag = true;
+					successfulEntries++;
+					if (applied < Math.Max(0, requested))
+					{
+						failedOrPartialEntries++;
+					}
+					actualUnits = TransferQuantitySpec.AddValue(actualUnits, applied);
+					actualValue = TransferQuantitySpec.AddProduct(actualValue, applied, Math.Max(1, entry?.BuyPriceDenarsPerUnit ?? 0));
+					factResults.Add(BuildNpcToPlayerPrisonerTransferFact(text2, entry, applied));
+					notificationResults.Add("已获得 " + (entry.IsHero ? ("俘虏" + entry.DisplayName) : (applied + " 名" + entry.DisplayName + "俘虏")));
+				}
+				bool troopAll = matchCollection.Cast<Match>().Any((Match x) => x.Success && (TransferQuantitySpec.IsAllValue(x.Groups[2].Value) || (TransferQuantitySpec.IsAllValue(x.Groups[1].Value) && int.TryParse(x.Groups[2].Value, out var amount) && amount > 0)));
+				if (troopAll)
+				{
+					if (!hasAllTroopSnapshot)
+					{
+						attemptedEntries++;
+						failedOrPartialEntries++;
+						Logger.Log("Logic", "[PartyTransfer] ATT ALL rejected: authorization snapshot missing.");
+					}
+					foreach (PartyTransferPromptEntry entry in hasAllTroopSnapshot ? allTroops : new List<PartyTransferPromptEntry>())
+					{
+						applyTroop(entry, Math.Max(0, entry?.Count ?? 0), "ALL");
 					}
 				}
-				foreach (Match item2 in matchCollection2)
+				else
 				{
-					if (!item2.Success)
+					if (!hasTroopSnapshot)
 					{
-						continue;
+						attemptedEntries += matchCollection?.Count ?? 0;
+						failedOrPartialEntries += matchCollection?.Count ?? 0;
+						Logger.Log("Logic", "[PartyTransfer] ATT rejected: authorization snapshot missing.");
 					}
-					int num4 = 0;
-					int num5 = 0;
-					int.TryParse(item2.Groups[1].Value, out num4);
-					int.TryParse(item2.Groups[2].Value, out num5);
-					PartyTransferPromptEntry partyTransferPromptEntry2 = FindDisplayIndexedPartyTransferEntry(list3, num4);
-					int num6 = TransferPartyPrisonerEntry(partyTransferPromptEntry2, num5, party);
-					Logger.Log("Logic", "[PartyTransfer] ATP index=" + num4 + " amount=" + num5 + " resolved=" + (partyTransferPromptEntry2?.DisplayName ?? "null") + " applied=" + num6);
-					if (num6 > 0)
+					foreach (Match item in hasTroopSnapshot ? matchCollection.Cast<Match>() : Enumerable.Empty<Match>())
 					{
-						flag = true;
-						generatedFacts.Add(BuildNpcToPlayerPrisonerTransferFact(text2, partyTransferPromptEntry2, num6));
-						notifications.Add("已获得 " + (partyTransferPromptEntry2.IsHero ? ("俘虏" + partyTransferPromptEntry2.DisplayName) : (num6 + " 名" + partyTransferPromptEntry2.DisplayName + "俘虏")));
+						if (item.Success && int.TryParse(item.Groups[1].Value, out var index) && int.TryParse(item.Groups[2].Value, out var amount))
+						{
+							applyTroop(FindDisplayIndexedPartyTransferEntry(list2, index), amount, "index=" + index);
+						}
 					}
 				}
+				bool prisonerAll = matchCollection2.Cast<Match>().Any((Match x) => x.Success && (TransferQuantitySpec.IsAllValue(x.Groups[2].Value) || (TransferQuantitySpec.IsAllValue(x.Groups[1].Value) && int.TryParse(x.Groups[2].Value, out var amount) && amount > 0)));
+				if (prisonerAll)
+				{
+					if (!hasAllPrisonerSnapshot)
+					{
+						attemptedEntries++;
+						failedOrPartialEntries++;
+						Logger.Log("Logic", "[PartyTransfer] ATP ALL rejected: authorization snapshot missing.");
+					}
+					foreach (PartyTransferPromptEntry entry in hasAllPrisonerSnapshot ? allPrisoners : new List<PartyTransferPromptEntry>())
+					{
+						applyPrisoner(entry, Math.Max(0, entry?.Count ?? 0), "ALL");
+					}
+				}
+				else
+				{
+					if (!hasPrisonerSnapshot)
+					{
+						attemptedEntries += matchCollection2?.Count ?? 0;
+						failedOrPartialEntries += matchCollection2?.Count ?? 0;
+						Logger.Log("Logic", "[PartyTransfer] ATP rejected: authorization snapshot missing.");
+					}
+					foreach (Match item in hasPrisonerSnapshot ? matchCollection2.Cast<Match>() : Enumerable.Empty<Match>())
+					{
+						if (item.Success && int.TryParse(item.Groups[1].Value, out var index) && int.TryParse(item.Groups[2].Value, out var amount))
+						{
+							applyPrisoner(FindDisplayIndexedPartyTransferEntry(list3, index), amount, "index=" + index);
+						}
+					}
+				}
+				string batchSummary = "部队与俘虏转移汇总：尝试项" + attemptedEntries + "，成功项" + successfulEntries + "，失败或不足项" + failedOrPartialEntries + "，实际转移" + actualUnits + "人，实际指导总值约" + actualValue + "第纳尔。";
+				factResults.Add("[AFEF NPC行为补充] " + text2 + batchSummary);
+				notificationResults.Add(batchSummary);
+				Logger.Log("Logic", "[PartyTransfer] batch_done troopAll=" + troopAll + " prisonerAll=" + prisonerAll + " attempted=" + attemptedEntries + " succeeded=" + successfulEntries + " failedOrPartial=" + failedOrPartialEntries + " actualUnits=" + actualUnits + " actualValue=" + actualValue);
 			}
-			text = TransferTroopTagRegex.Replace(text, "").Trim();
-			text = TransferPrisonerTagRegex.Replace(text, "").Trim();
+			text = StripPartyTransferTags(text);
 			content = text;
 			return flag;
 		}
 		catch
 		{
-			content = TransferTroopTagRegex.Replace(content ?? "", "").Trim();
-			content = TransferPrisonerTagRegex.Replace(content, "").Trim();
+			content = StripPartyTransferTags(content);
 			return false;
 		}
 	}
@@ -28680,13 +28838,16 @@ public class MyBehavior : CampaignBehaviorBase
 		LogShoutPromptContextStage("triggered_rules_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "suppressDynamic=" + suppressDynamicRuleAndLore);
 		string value8 = allowRulePreprocess ? BuildTriggeredRuleInstructions(input, targetHero, flag2, isQualified, num, flag7, flag8, flag5, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, npcLastUtterance, includeDuelStakeContext, playerWonLastDuelForRule, worldMapPartyCommandHit, excludedRuleIdSet, auxiliaryRuleHitIds, IsPromptRuleExcluded(explicitExcludedRuleIdSet, "meeting_taunt")) : "";
 		LogShoutPromptContextStage("triggered_rules_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "ruleLen=" + ((value8 ?? "").Length));
+		LogShoutPromptContextStage("weekly_short_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "", immediate: false);
 		bool excludeNpcShortReport2 = ShouldExcludeNpcShortReportFromWeeklyShortLayer(value8, targetHero, targetCharacter, kingdomIdOverride);
+		FreezeWatchdog.Mark("ShoutPromptContext.weekly_short_exclusion_done", "excludeNpcKingdom=" + excludeNpcShortReport2 + " thread=" + Thread.CurrentThread.ManagedThreadId);
 		string value8a = BuildWeeklyShortReportsPromptBlock(targetHero, targetCharacter, kingdomIdOverride, excludeNpcShortReport2);
 		if (!string.IsNullOrWhiteSpace(value8a))
 		{
 			stringBuilder.AppendLine(value8a);
 		}
 		LogShoutPromptContextStage("weekly_short_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "shortLen=" + ((value8a ?? "").Length));
+		LogShoutPromptContextStage("policy_context_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "", immediate: false);
 		string value8aa = CustomPolicyBehavior.BuildRecentPolicyContextForNpcExternal(targetHero, targetCharacter, kingdomIdOverride);
 		if (!string.IsNullOrWhiteSpace(value8aa))
 		{
@@ -28698,6 +28859,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			stringBuilder.AppendLine(value8);
 		}
+		LogShoutPromptContextStage("weekly_full_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "", immediate: false);
 		string value8b = BuildTriggeredWeeklyFullReportsPromptBlock(value8, targetHero, targetCharacter, kingdomIdOverride);
 		if (!string.IsNullOrWhiteSpace(value8b))
 		{
@@ -28740,7 +28902,7 @@ public class MyBehavior : CampaignBehaviorBase
 				entityRetrievalRuleIds.Add("worldmap_party_command");
 			}
 			LogShoutPromptContextStage("entity_context_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "rules=" + string.Join(",", entityRetrievalRuleIds));
-			WorldEntityPromptContext entityPromptContext = WorldEntityRetrievalService.BuildPromptContext(mentionedEntities, BuildPlayerPublicDisplayNameForPrompt(entityContextHero, targetCharacter, targetAgentIndex), entityContextHero, includeResidentKingdomEntities, entityRetrievalRuleIds);
+			WorldEntityPromptContext entityPromptContext = WorldEntityRetrievalService.BuildPromptContext(mentionedEntities, BuildPlayerPublicDisplayNameForPrompt(entityContextHero, targetCharacter, targetAgentIndex), entityContextHero, includeResidentKingdomEntities, entityRetrievalRuleIds, input);
 			if (entityPromptContext != null && entityPromptContext.HasContent)
 			{
 				if (!string.IsNullOrWhiteSpace(entityPromptContext.MainPromptBlock))
@@ -31905,12 +32067,13 @@ public class MyBehavior : CampaignBehaviorBase
 		return text2.Trim();
 	}
 
-	private static string BuildRewardPostprocessItemList(List<RewardSystemBehavior.RewardItemInfo> options, int gold)
+	private static string BuildRewardPostprocessItemList(List<RewardSystemBehavior.RewardItemInfo> options, int gold, List<RewardSystemBehavior.RewardItemInfo> allOptions = null)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.Append("第纳尔: ").Append(Math.Max(0, gold)).AppendLine();
 		if (options == null || options.Count <= 0)
 		{
+			stringBuilder.Append("全部可转物品总值: ").Append(RewardSystemBehavior.CalculateRewardItemsTotalValueForExternal(allOptions)).AppendLine(" 第纳尔（不含第纳尔）");
 			return stringBuilder.ToString().TrimEnd();
 		}
 		List<RewardSystemBehavior.RewardItemInfo> list = options.Where((RewardSystemBehavior.RewardItemInfo x) => x != null && !x.IsPrivateEquipment).ToList();
@@ -31946,6 +32109,7 @@ public class MyBehavior : CampaignBehaviorBase
 					.AppendLine();
 			}
 		}
+		stringBuilder.Append("全部可转物品总值: ").Append(RewardSystemBehavior.CalculateRewardItemsTotalValueForExternal(allOptions ?? options)).AppendLine(" 第纳尔（不含第纳尔）");
 		return stringBuilder.ToString().TrimEnd();
 	}
 
@@ -32043,11 +32207,17 @@ public class MyBehavior : CampaignBehaviorBase
 			result2 = Math.Min(Math.Max(1, result2), Math.Max(1, rewardItemInfo.Count));
 			return "[ACTION:" + value + ":" + text2.Trim() + ":" + result2 + "]";
 		}, RegexOptions.IgnoreCase);
-		return Regex.Replace(text2, "\\[ACTION:(GIVE_ITEM|DEBT_ITEM):([^\\]\\r\\n:]+):(\\d+)\\]", delegate(Match m)
+		return Regex.Replace(text2, "\\[ACTION:(GIVE_ITEM|DEBT_ITEM):([^\\]\\r\\n:]+):(ALL|\\d+)\\]", delegate(Match m)
 		{
 			string value2 = m.Groups[1].Value;
 			string token = m.Groups[2].Value;
-			if (!int.TryParse(m.Groups[3].Value, out var result3) || result3 <= 0)
+			bool isAll = string.Equals(value2, "GIVE_ITEM", StringComparison.OrdinalIgnoreCase) && TransferQuantitySpec.IsAllValue(m.Groups[3].Value);
+			int result3 = 0;
+			if (TransferQuantitySpec.IsAllValue(token) && !isAll)
+			{
+				return "";
+			}
+			if (!isAll && (!int.TryParse(m.Groups[3].Value, out result3) || result3 <= 0))
 			{
 				return "";
 			}
@@ -32056,7 +32226,11 @@ public class MyBehavior : CampaignBehaviorBase
 			logRewardItemTranslation("token", token, rewardItemInfo2, text3);
 			if (string.IsNullOrWhiteSpace(text3))
 			{
-				return "[ACTION:" + value2 + ":" + token.Trim() + ":" + result3 + "]";
+				return isAll ? ("[ACTION:GIVE_ITEM:" + token.Trim() + ":ALL]") : ("[ACTION:" + value2 + ":" + token.Trim() + ":" + result3 + "]");
+			}
+			if (isAll)
+			{
+				return "[ACTION:GIVE_ITEM:" + text3.Trim() + ":ALL]";
 			}
 			result3 = Math.Min(Math.Max(1, result3), Math.Max(1, rewardItemInfo2.Count));
 			return "[ACTION:" + value2 + ":" + text3.Trim() + ":" + result3 + "]";
@@ -32104,7 +32278,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}, RegexOptions.IgnoreCase);
 	}
 
-	private static string NormalizeRewardPostprocessTags(string raw, List<RewardSystemBehavior.RewardItemInfo> options)
+	private static string NormalizeRewardPostprocessTags(string raw, List<RewardSystemBehavior.RewardItemInfo> options, List<RewardSystemBehavior.RewardItemInfo> allOptions = null)
 	{
 		List<string> list = new List<string>();
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -32128,6 +32302,22 @@ public class MyBehavior : CampaignBehaviorBase
 			if (hashSet.Add(text2))
 			{
 				list.Add(text2);
+			}
+		}
+		list.RemoveAll((string x) => Regex.IsMatch(x ?? "", "^\\[ACTION:GIVE_ITEM:ALL:\\d+\\]$", RegexOptions.IgnoreCase));
+		bool giveAll = list.Any((string x) => Regex.IsMatch(x ?? "", "^\\[ACTION:GIVE_ITEM:[^\\]\\r\\n:]+:ALL\\]$", RegexOptions.IgnoreCase));
+		if (giveAll)
+		{
+			list.RemoveAll((string x) => (x ?? "").StartsWith("[ACTION:GIVE_ITEM:", StringComparison.OrdinalIgnoreCase));
+			HashSet<string> allItemKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			foreach (RewardSystemBehavior.RewardItemInfo item in allOptions ?? Enumerable.Empty<RewardSystemBehavior.RewardItemInfo>())
+			{
+				string key = string.IsNullOrWhiteSpace(item?.PromptStringId) ? item?.StringId : item.PromptStringId;
+				if (item == null || item.Item == null || item.Count <= 0 || string.IsNullOrWhiteSpace(key) || !allItemKeys.Add(key.Trim()))
+				{
+					continue;
+				}
+				list.Add("[ACTION:GIVE_ITEM:" + key.Trim() + ":ALL]");
 			}
 		}
 		if (string.IsNullOrWhiteSpace(text))
@@ -32295,6 +32485,7 @@ public class MyBehavior : CampaignBehaviorBase
 		string text6 = "（无）";
 		string text12 = "（无）";
 		List<RewardSystemBehavior.RewardItemInfo> list = null;
+		List<RewardSystemBehavior.RewardItemInfo> allList = null;
 		MentionedWorldEntities promptListMentions = AIConfigHandler.GetLatestAuxiliaryMentionedEntitiesForExternal();
 		int promptListMax = PromptListRetrievalService.GetMaxCandidateCount();
 		if (RewardSystemBehavior.Instance != null)
@@ -32311,23 +32502,31 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				if (targetHero != null)
 				{
-					List<RewardSystemBehavior.RewardItemInfo> allRewardOptions = RewardSystemBehavior.Instance.BuildHeroRewardPostprocessItems(targetHero);
+					if (!PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsAllSnapshotScope, targetHero, targetCharacter, -1, out allList))
+					{
+						allList = RewardSystemBehavior.Instance.BuildHeroRewardPostprocessItems(targetHero);
+						PromptListRetrievalService.PublishRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsAllSnapshotScope, targetHero, targetCharacter, -1, allList);
+					}
 					if (!PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsSnapshotScope, targetHero, targetCharacter, -1, out list))
 					{
-						list = PromptListRetrievalService.FilterRewardItems(allRewardOptions, promptListMentions, promptListMax);
+						list = PromptListRetrievalService.FilterRewardItems(allList, promptListMentions, promptListMax);
 					}
-					text5 = BuildRewardPostprocessItemList(list, RewardSystemBehavior.Instance.GetRewardPostprocessGoldForHero(targetHero));
+					text5 = BuildRewardPostprocessItemList(list, RewardSystemBehavior.Instance.GetRewardPostprocessGoldForHero(targetHero), allList);
 					text12 = NormalizePlayerNameForPostprocess(RewardSystemBehavior.Instance.BuildDebtHintForAI(targetHero), text7);
 				}
 				else if (targetCharacter != null)
 				{
-					List<RewardSystemBehavior.RewardItemInfo> allRewardOptions = RewardSystemBehavior.Instance.BuildSettlementMerchantPostprocessItems(targetCharacter);
+					if (!PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.SettlementMerchantItemsAllSnapshotScope, null, targetCharacter, -1, out allList))
+					{
+						allList = RewardSystemBehavior.Instance.BuildSettlementMerchantPostprocessItems(targetCharacter);
+						PromptListRetrievalService.PublishRewardItemSnapshot(PromptListRetrievalService.SettlementMerchantItemsAllSnapshotScope, null, targetCharacter, -1, allList);
+					}
 					if (!PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.SettlementMerchantItemsSnapshotScope, null, targetCharacter, -1, out list))
 					{
-						list = PromptListRetrievalService.FilterRewardItems(allRewardOptions, promptListMentions, promptListMax);
+						list = PromptListRetrievalService.FilterRewardItems(allList, promptListMentions, promptListMax);
 					}
 					int num = RewardSystemBehavior.Instance.GetSettlementMarketTradeGold(Settlement.CurrentSettlement);
-					text5 = BuildRewardPostprocessItemList(list, num);
+					text5 = BuildRewardPostprocessItemList(list, num, allList);
 					text12 = NormalizePlayerNameForPostprocess(RewardSystemBehavior.Instance.BuildSettlementMerchantDebtHintForAI(targetCharacter), text7);
 				}
 			}
@@ -32336,6 +32535,7 @@ public class MyBehavior : CampaignBehaviorBase
 				text5 = "（无）";
 				text12 = "（无）";
 				list = null;
+				allList = null;
 			}
 		}
 		string text8 = AIConfigHandler.BuildActionPostprocessSystemPrompt(text3, text4, text7, text5, text6, text12);
@@ -32345,7 +32545,7 @@ public class MyBehavior : CampaignBehaviorBase
 			Logger.Log("Logic", "[" + logPrefix + "] 调用失败: " + error);
 			return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
 		}
-		string rewardTags = NormalizeRewardPostprocessTags(content, list);
+		string rewardTags = NormalizeRewardPostprocessTags(content, list, allList);
 		string royalTags = royalRules.Count > 0 ? NormalizeKingdomServicePostprocessTags(content, royalRules) : "";
 		string text10 = MergeNormalizedPostprocessBlocks(rewardTags, royalTags);
 		if (string.IsNullOrWhiteSpace(text10))
@@ -32354,7 +32554,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			MarkWeeklyMemoryMaterialTriggerInternal(targetHero ?? targetCharacter?.HeroObject, "", text7, text10, -1, -1, -1, list, null, null, null);
+			MarkWeeklyMemoryMaterialTriggerInternal(targetHero ?? targetCharacter?.HeroObject, "", text7, text10, -1, -1, -1, allList ?? list, null, null, null);
 		}
 		catch (Exception ex)
 		{
@@ -40556,12 +40756,19 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		try
 		{
+			FreezeWatchdog.Mark("WeeklyPrompt.FindLatest.ensure_week0_start", "kind=" + text + " kingdom=" + text2 + " entries=" + (_eventRecordEntries?.Count ?? 0) + " thread=" + Thread.CurrentThread.ManagedThreadId);
 			EnsureWeekZeroOpeningSummaryEvents();
+			FreezeWatchdog.Mark("WeeklyPrompt.FindLatest.ensure_week0_done", "kind=" + text + " kingdom=" + text2 + " entries=" + (_eventRecordEntries?.Count ?? 0) + " thread=" + Thread.CurrentThread.ManagedThreadId);
 		}
 		catch
 		{
 		}
-		return SanitizeEventRecordEntries(_eventRecordEntries).Where((EventRecordEntry x) => x != null && string.Equals((x.EventKind ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase) && string.Equals((x.ScopeKingdomId ?? "").Trim(), text2, StringComparison.OrdinalIgnoreCase)).OrderByDescending((EventRecordEntry x) => x.WeekIndex).ThenByDescending((EventRecordEntry x) => x.CreatedDay).FirstOrDefault();
+		FreezeWatchdog.Mark("WeeklyPrompt.FindLatest.sanitize_start", "kind=" + text + " kingdom=" + text2 + " entries=" + (_eventRecordEntries?.Count ?? 0));
+		List<EventRecordEntry> sanitized = SanitizeEventRecordEntries(_eventRecordEntries);
+		FreezeWatchdog.Mark("WeeklyPrompt.FindLatest.sanitize_done", "kind=" + text + " kingdom=" + text2 + " entries=" + (sanitized?.Count ?? 0));
+		EventRecordEntry result = (sanitized ?? new List<EventRecordEntry>()).Where((EventRecordEntry x) => x != null && string.Equals((x.EventKind ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase) && string.Equals((x.ScopeKingdomId ?? "").Trim(), text2, StringComparison.OrdinalIgnoreCase)).OrderByDescending((EventRecordEntry x) => x.WeekIndex).ThenByDescending((EventRecordEntry x) => x.CreatedDay).FirstOrDefault();
+		FreezeWatchdog.Mark("WeeklyPrompt.FindLatest.query_done", "kind=" + text + " kingdom=" + text2 + " found=" + (result != null));
+		return result;
 	}
 
 	public List<WeeklyReportBrowserCountryData> GetTerminalWeeklyReportBrowserCountries()
@@ -40786,8 +40993,12 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private string BuildWeeklyShortReportsPromptBlock(Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride, bool excludeNpcKingdom)
 	{
+		FreezeWatchdog.Mark("WeeklyPrompt.Short.resolve_npc_kingdom_start", "thread=" + Thread.CurrentThread.ManagedThreadId);
 		string weeklyReportNpcKingdomId = ResolveWeeklyReportNpcKingdomId(targetHero, targetCharacter, kingdomIdOverride);
+		FreezeWatchdog.Mark("WeeklyPrompt.Short.resolve_npc_kingdom_done", "kingdom=" + (weeklyReportNpcKingdomId ?? "") + " thread=" + Thread.CurrentThread.ManagedThreadId);
+		FreezeWatchdog.Mark("WeeklyPrompt.Short.select_kingdoms_start", "npcKingdom=" + (weeklyReportNpcKingdomId ?? "") + " excludeNpc=" + excludeNpcKingdom);
 		List<string> list = SelectWeeklyShortReportKingdomIds(weeklyReportNpcKingdomId, excludeNpcKingdom);
+		FreezeWatchdog.Mark("WeeklyPrompt.Short.select_kingdoms_done", "count=" + (list?.Count ?? 0) + " ids=" + ((list == null || list.Count == 0) ? "(none)" : string.Join(",", list)));
 		if (list.Count == 0)
 		{
 			return "";
@@ -40796,7 +41007,9 @@ public class MyBehavior : CampaignBehaviorBase
 		int num = 0;
 		foreach (string item in list)
 		{
+			FreezeWatchdog.Mark("WeeklyPrompt.Short.record_start", "kingdom=" + (item ?? ""));
 			EventRecordEntry latestWeeklyReportRecord = FindLatestWeeklyReportRecord("kingdom", item);
+			FreezeWatchdog.Mark("WeeklyPrompt.Short.record_done", "kingdom=" + (item ?? "") + " found=" + (latestWeeklyReportRecord != null));
 			string text = BuildFallbackWeeklyReportShortSummary(latestWeeklyReportRecord?.ShortSummary ?? latestWeeklyReportRecord?.Summary);
 			if (latestWeeklyReportRecord == null || string.IsNullOrWhiteSpace(text))
 			{
@@ -40849,26 +41062,34 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private string BuildTriggeredWeeklyFullReportsPromptBlock(string triggeredRuleInstructions, Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride = null)
 	{
+		FreezeWatchdog.Mark("WeeklyPrompt.Full.start", "thread=" + Thread.CurrentThread.ManagedThreadId);
 		bool flag = HasInjectedRuleBlock(triggeredRuleInstructions, "npc_major_actions");
 		bool flag2 = HasInjectedRuleBlock(triggeredRuleInstructions, "npc_recent_actions");
 		bool flag3 = HasInjectedRuleBlock(triggeredRuleInstructions, "surroundings");
 		if (!flag && !flag2 && !flag3)
 		{
+			FreezeWatchdog.Mark("WeeklyPrompt.Full.skip", "reason=no_triggered_weekly_rule");
 			return "";
 		}
+		FreezeWatchdog.Mark("WeeklyPrompt.Full.resolve_kingdoms_start", "major=" + flag + " recent=" + flag2 + " surroundings=" + flag3);
 		string weeklyReportNpcKingdomId = ResolveWeeklyReportNpcKingdomId(targetHero, targetCharacter, kingdomIdOverride);
 		string weeklyReportSurroundingsKingdomId = ResolveWeeklyReportSurroundingsKingdomId(targetHero, targetCharacter, kingdomIdOverride);
+		FreezeWatchdog.Mark("WeeklyPrompt.Full.resolve_kingdoms_done", "npc=" + (weeklyReportNpcKingdomId ?? "") + " surroundings=" + (weeklyReportSurroundingsKingdomId ?? ""));
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		StringBuilder stringBuilder = new StringBuilder();
 		if (flag || flag2)
 		{
+			FreezeWatchdog.Mark("WeeklyPrompt.Full.npc_record_start", "kingdom=" + (weeklyReportNpcKingdomId ?? ""));
 			EventRecordEntry latestWeeklyReportRecord = FindLatestWeeklyReportRecord("kingdom", weeklyReportNpcKingdomId);
+			FreezeWatchdog.Mark("WeeklyPrompt.Full.npc_record_done", "found=" + (latestWeeklyReportRecord != null));
 			string singleWeeklyFullReportPromptBlock = BuildSingleWeeklyFullReportPromptBlock("NPC所属王国完整周报", latestWeeklyReportRecord);
 			if (!string.IsNullOrWhiteSpace(singleWeeklyFullReportPromptBlock) && hashSet.Add("kingdom:" + (weeklyReportNpcKingdomId ?? "").Trim()))
 			{
 				stringBuilder.AppendLine(singleWeeklyFullReportPromptBlock);
 			}
+			FreezeWatchdog.Mark("WeeklyPrompt.Full.world_record_start");
 			EventRecordEntry latestWeeklyReportRecord2 = FindLatestWeeklyReportRecord("world", "");
+			FreezeWatchdog.Mark("WeeklyPrompt.Full.world_record_done", "found=" + (latestWeeklyReportRecord2 != null));
 			string singleWeeklyFullReportPromptBlock2 = BuildSingleWeeklyFullReportPromptBlock("世界完整周报", latestWeeklyReportRecord2);
 			if (!string.IsNullOrWhiteSpace(singleWeeklyFullReportPromptBlock2) && hashSet.Add("world"))
 			{
@@ -40881,7 +41102,9 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		if (flag3)
 		{
+			FreezeWatchdog.Mark("WeeklyPrompt.Full.surroundings_record_start", "kingdom=" + (weeklyReportSurroundingsKingdomId ?? ""));
 			EventRecordEntry latestWeeklyReportRecord3 = FindLatestWeeklyReportRecord("kingdom", weeklyReportSurroundingsKingdomId);
+			FreezeWatchdog.Mark("WeeklyPrompt.Full.surroundings_record_done", "found=" + (latestWeeklyReportRecord3 != null));
 			string singleWeeklyFullReportPromptBlock3 = BuildSingleWeeklyFullReportPromptBlock("周边相关王国完整周报", latestWeeklyReportRecord3);
 			if (!string.IsNullOrWhiteSpace(singleWeeklyFullReportPromptBlock3) && hashSet.Add("kingdom:" + (weeklyReportSurroundingsKingdomId ?? "").Trim()))
 			{
@@ -40892,7 +41115,9 @@ public class MyBehavior : CampaignBehaviorBase
 				stringBuilder.AppendLine(singleWeeklyFullReportPromptBlock3);
 			}
 		}
-		return stringBuilder.ToString().TrimEnd();
+		string result = stringBuilder.ToString().TrimEnd();
+		FreezeWatchdog.Mark("WeeklyPrompt.Full.done", "chars=" + result.Length);
+		return result;
 	}
 
 	private bool ShouldExcludeNpcShortReportFromWeeklyShortLayer(string triggeredRuleInstructions, Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride = null)

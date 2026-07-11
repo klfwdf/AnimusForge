@@ -3160,7 +3160,9 @@ public static class AIConfigHandler
 			FreezeWatchdog.Mark("AuxActionPostprocess.send_begin", "model=" + modelName + " maxTokens=" + Math.Max(16, actualMaxTokens), immediate: true);
 			HttpResponseMessage result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage, timeoutCts.Token).GetAwaiter().GetResult();
 			FreezeWatchdog.Mark("AuxActionPostprocess.response", "status=" + (int)result.StatusCode + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
+			FreezeWatchdog.Mark("AuxActionPostprocess.content_read_begin", "status=" + (int)result.StatusCode + " thread=" + Thread.CurrentThread.ManagedThreadId);
 			string text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+			FreezeWatchdog.Mark("AuxActionPostprocess.content_read_end", "chars=" + ((text ?? "").Length) + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2) + " thread=" + Thread.CurrentThread.ManagedThreadId);
 			if (!result.IsSuccessStatusCode && result.StatusCode == System.Net.HttpStatusCode.BadRequest && controlMode != "plain" && LooksLikeAuxiliaryThinkingControlError(text))
 			{
 				Logger.Log("AIConfig", "[ActionPostprocess] thinking payload rejected; retrying without thinking controls.");
@@ -3174,7 +3176,9 @@ public static class AIConfigHandler
 				FreezeWatchdog.Mark("AuxActionPostprocess.retry_send_begin", "model=" + modelName, immediate: true);
 				result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage2, timeoutCts.Token).GetAwaiter().GetResult();
 				FreezeWatchdog.Mark("AuxActionPostprocess.retry_response", "status=" + (int)result.StatusCode + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
+				FreezeWatchdog.Mark("AuxActionPostprocess.retry_content_read_begin", "status=" + (int)result.StatusCode + " thread=" + Thread.CurrentThread.ManagedThreadId);
 				text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+				FreezeWatchdog.Mark("AuxActionPostprocess.retry_content_read_end", "chars=" + ((text ?? "").Length) + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2) + " thread=" + Thread.CurrentThread.ManagedThreadId);
 				controlMode += "_retry_plain";
 			}
 			if (!result.IsSuccessStatusCode)

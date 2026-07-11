@@ -2862,25 +2862,35 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	private int GetItemTrustValueForHeroGift(Hero hero, ItemObject item, int amount)
 	{
+		return ClampPositiveLongToInt(GetItemGuideValueForHeroGift(hero, item, amount));
+	}
+
+	private long GetItemGuideValueForHeroGift(Hero hero, ItemObject item, int amount)
+	{
 		if (item == null || amount <= 0)
 		{
-			return 0;
+			return 0L;
 		}
 		ItemGuidePriceInfo guidePriceForItemNearHero = GetGuidePriceForItemNearHero(hero ?? Hero.MainHero, item);
-		return ClampPositiveLongToInt((long)Math.Max(1, guidePriceForItemNearHero.UnitPrice) * (long)amount);
+		return TransferQuantitySpec.AddProduct(0L, amount, Math.Max(1, guidePriceForItemNearHero.UnitPrice));
 	}
 
 	private int GetItemTrustValueForMerchantGift(Settlement settlement, ItemObject item, int amount)
 	{
+		return ClampPositiveLongToInt(GetItemGuideValueForMerchantGift(settlement, item, amount));
+	}
+
+	private long GetItemGuideValueForMerchantGift(Settlement settlement, ItemObject item, int amount)
+	{
 		if (item == null || amount <= 0)
 		{
-			return 0;
+			return 0L;
 		}
 		if (settlement != null && TryGetSettlementBuyPrice(settlement, item, out var price) && price > 0)
 		{
-			return ClampPositiveLongToInt((long)price * (long)amount);
+			return TransferQuantitySpec.AddProduct(0L, amount, price);
 		}
-		return GetItemTrustValueForHeroGift(Hero.MainHero, item, amount);
+		return GetItemGuideValueForHeroGift(Hero.MainHero, item, amount);
 	}
 
 	private void ApplyAutoTrustGainFromHeroGiftValue(Hero giver, int addedValue, List<string> giverFacts, List<string> receiverFacts, string giverName)
@@ -6772,8 +6782,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private bool TryApplySettlementTransferAction(Hero giver, Hero receiver, string directionToken, string settlementToken, out string statusText)
+	private bool TryApplySettlementTransferAction(Hero giver, Hero receiver, string directionToken, string settlementToken, out MyBehavior.SettlementTransferPromptEntry authorizedEntry, out string statusText)
 	{
+		authorizedEntry = null;
 		statusText = "";
 		try
 		{
@@ -6783,13 +6794,32 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				return false;
 			}
 			string text = (directionToken ?? "").Trim().ToUpperInvariant();
-			MyBehavior.SettlementTransferPromptEntry entry = MyBehavior.ResolveSettlementTransferEntryForExternal(giver, null, text, settlementToken);
-			if (entry == null)
+			if (!string.Equals(text, "TO_PLAYER", StringComparison.OrdinalIgnoreCase))
+			{
+				statusText = "执行失败：后处理仅允许 NPC 向玩家转移固定资产。";
+				return false;
+			}
+			if (!PromptListRetrievalService.TryGetSettlementTransferSnapshot(PromptListRetrievalService.SettlementTransferAllNpcAssetsSnapshotScope, giver, giver?.CharacterObject, -1, out var authorizedEntries))
+			{
+				statusText = "执行失败：固定资产授权快照缺失。";
+				return false;
+			}
+			string token = (settlementToken ?? "").Trim();
+			authorizedEntry = authorizedEntries.FirstOrDefault((MyBehavior.SettlementTransferPromptEntry x) => x != null &&
+				(string.Equals(MyBehavior.GetSettlementTransferAssetIdForExternal(x), token, StringComparison.OrdinalIgnoreCase) ||
+				 string.Equals((x.AssetId ?? "").Trim(), token, StringComparison.OrdinalIgnoreCase) ||
+				 string.Equals((x.SettlementId ?? "").Trim(), token, StringComparison.OrdinalIgnoreCase) ||
+				 string.Equals((x.DisplayName ?? "").Trim(), token, StringComparison.OrdinalIgnoreCase)));
+			if (authorizedEntry == null && int.TryParse(token, out var promptIndex) && promptIndex > 0)
+			{
+				authorizedEntry = authorizedEntries.FirstOrDefault((MyBehavior.SettlementTransferPromptEntry x) => x != null && x.PromptIndex == promptIndex);
+			}
+			if (authorizedEntry == null)
 			{
 				statusText = "执行失败：未找到可转移的固定资产（" + settlementToken + "）。";
 				return false;
 			}
-			return TryApplySettlementTransferEntryAction(giver, receiver, text, entry, out statusText);
+			return TryApplySettlementTransferEntryAction(giver, receiver, text, authorizedEntry, out statusText);
 		}
 		catch (Exception ex)
 		{
@@ -12912,10 +12942,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			value.Count += elementCopyAtIndex.Amount;
 		}
 		IEnumerable<RewardItemInfo> enumerable = dictionary.Values.OrderByDescending((RewardItemInfo x) => x.Count).ThenBy((RewardItemInfo x) => x.Name, StringComparer.Ordinal);
-		if (maxItems <= 0)
-		{
-			maxItems = NotableMarketPostprocessMaxItems;
-		}
 		if (maxItems > 0)
 		{
 			enumerable = enumerable.Take(maxItems);
@@ -13122,7 +13148,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return list;
 		}
-		EquipmentIndex[] array = new EquipmentIndex[9]
+		EquipmentIndex[] array = new EquipmentIndex[12]
 		{
 			EquipmentIndex.NumAllWeaponSlots,
 			EquipmentIndex.Body,
@@ -13132,7 +13158,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			EquipmentIndex.WeaponItemBeginSlot,
 			EquipmentIndex.Weapon1,
 			EquipmentIndex.Weapon2,
-			EquipmentIndex.Weapon3
+			EquipmentIndex.Weapon3,
+			EquipmentIndex.ExtraWeaponSlot,
+			EquipmentIndex.Horse,
+			EquipmentIndex.HorseHarness
 		};
 		EquipmentIndex[] array2 = array;
 		EquipmentIndex[] array3 = array2;
@@ -13170,7 +13199,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return list;
 		}
-		EquipmentIndex[] array = new EquipmentIndex[9]
+		EquipmentIndex[] array = new EquipmentIndex[12]
 		{
 			EquipmentIndex.NumAllWeaponSlots,
 			EquipmentIndex.Body,
@@ -13180,7 +13209,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			EquipmentIndex.WeaponItemBeginSlot,
 			EquipmentIndex.Weapon1,
 			EquipmentIndex.Weapon2,
-			EquipmentIndex.Weapon3
+			EquipmentIndex.Weapon3,
+			EquipmentIndex.ExtraWeaponSlot,
+			EquipmentIndex.Horse,
+			EquipmentIndex.HorseHarness
 		};
 		EquipmentIndex[] array2 = array;
 		foreach (EquipmentIndex index in array2)
@@ -13659,11 +13691,13 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			List<RewardItemInfo> allOptions = BuildHeroRewardPostprocessItems(hero)
 				.Where((RewardItemInfo x) => x != null && x.Item != null && x.Count > 0)
 				.ToList();
+			PromptListRetrievalService.PublishRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsAllSnapshotScope, hero, hero?.CharacterObject, -1, allOptions);
+			List<RewardItemInfo> displayCandidates = allOptions;
 			if (!includePrivateBattleEquipment)
 			{
-				allOptions = allOptions.Where((RewardItemInfo x) => !x.IsPrivateEquipment).ToList();
+				displayCandidates = allOptions.Where((RewardItemInfo x) => !x.IsPrivateEquipment).ToList();
 			}
-			List<RewardItemInfo> options = PromptListRetrievalService.FilterRewardItems(allOptions, mentions, maxItems);
+			List<RewardItemInfo> options = PromptListRetrievalService.FilterRewardItems(displayCandidates, mentions, maxItems);
 			PromptListRetrievalService.PublishRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsSnapshotScope, hero, hero?.CharacterObject, -1, options);
 			int gold = IsNotableMarketHero(hero, ResolveNotableMarketSettlement(hero)) ? GetRewardPostprocessGoldForHero(hero) : GetHeroGold(hero);
 			return BuildFilteredItemSummaryForAI(options, gold, includeGuidePrice, allOptions, "你");
@@ -13682,6 +13716,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			List<RewardItemInfo> allOptions = BuildSettlementMerchantPostprocessItems(character, settlement)
 				.Where((RewardItemInfo x) => x != null && x.Item != null && x.Count > 0)
 				.ToList();
+			PromptListRetrievalService.PublishRewardItemSnapshot(PromptListRetrievalService.SettlementMerchantItemsAllSnapshotScope, null, character, -1, allOptions);
 			List<RewardItemInfo> options = PromptListRetrievalService.FilterRewardItems(allOptions, mentions, maxItems);
 			PromptListRetrievalService.PublishRewardItemSnapshot(PromptListRetrievalService.SettlementMerchantItemsSnapshotScope, null, character, -1, options);
 			int gold = GetSettlementMarketTradeGold(settlement);
@@ -13700,6 +13735,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		if (options == null || options.Count == 0)
 		{
 			stringBuilder.AppendLine("（本轮检索清单无可显示物品）");
+			stringBuilder.Append("全部可转物品总值: ").Append(CalculateRewardItemsTotalValueForExternal(allOptions)).AppendLine(" 第纳尔（不含第纳尔）");
 			return stringBuilder.ToString().TrimEnd();
 		}
 		List<RewardItemInfo> publicItems = options.Where((RewardItemInfo x) => x != null && !x.IsPrivateEquipment).ToList();
@@ -13711,7 +13747,22 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			stringBuilder.AppendLine(remainder);
 		}
+		stringBuilder.Append("全部可转物品总值: ").Append(CalculateRewardItemsTotalValueForExternal(allOptions ?? options)).AppendLine(" 第纳尔（不含第纳尔）");
 		return stringBuilder.ToString().TrimEnd();
+	}
+
+	internal static long CalculateRewardItemsTotalValueForExternal(IEnumerable<RewardItemInfo> items)
+	{
+		long total = 0L;
+		foreach (RewardItemInfo item in items ?? Enumerable.Empty<RewardItemInfo>())
+		{
+			if (item == null || item.Item == null || item.Count <= 0)
+			{
+				continue;
+			}
+			total = TransferQuantitySpec.AddProduct(total, item.Count, Math.Max(1, item.GuidePrice));
+		}
+		return total;
 	}
 
 	private static void AppendFilteredItemSummarySection(StringBuilder stringBuilder, string header, List<RewardItemInfo> items, bool includeGuidePrice)
@@ -15286,6 +15337,29 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return "";
 	}
 
+	private static string GetRewardItemTransferKey(RewardItemInfo item)
+	{
+		string key = (item?.PromptStringId ?? "").Trim();
+		return string.IsNullOrWhiteSpace(key) ? (item?.StringId ?? "").Trim() : key;
+	}
+
+	private int ResolveAllRewardItemAmount(string itemToken, IEnumerable<RewardItemInfo> contextItems)
+	{
+		string token = (itemToken ?? "").Trim();
+		List<RewardItemInfo> items = (contextItems ?? Enumerable.Empty<RewardItemInfo>()).Where((RewardItemInfo x) => x != null && x.Item != null && x.Count > 0).ToList();
+		if (string.IsNullOrWhiteSpace(token) || items.Count == 0)
+		{
+			return 0;
+		}
+		string resolvedKey = token;
+		if (!items.Any((RewardItemInfo x) => string.Equals(GetRewardItemTransferKey(x), token, StringComparison.OrdinalIgnoreCase)) && TryResolveRewardItemByNameOrId(token, items, out var resolution, "all_count"))
+		{
+			resolvedKey = GetRewardItemTransferKey(resolution?.Info);
+		}
+		long total = items.Where((RewardItemInfo x) => string.Equals(GetRewardItemTransferKey(x), resolvedKey, StringComparison.OrdinalIgnoreCase)).Sum((RewardItemInfo x) => (long)Math.Max(0, x.Count));
+		return (int)Math.Min(int.MaxValue, Math.Max(0L, total));
+	}
+
 	public void ApplyRewardTags(Hero giver, Hero receiver, ref string responseText)
 	{
 		SetLastGeneratedNpcFactLines(null);
@@ -15297,7 +15371,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		try
 		{
 			Regex regex = new Regex("\\[ACTION:GIVE_GOLD:(\\d+)\\]", RegexOptions.IgnoreCase);
-			Regex regex2 = new Regex("\\[ACTION:GIVE_ITEM:([^\\]\\r\\n:]+):(\\d+)\\]", RegexOptions.IgnoreCase);
+			Regex regex2 = new Regex("\\[ACTION:GIVE_ITEM:([^\\]\\r\\n:]+):(ALL|\\d+)\\]", RegexOptions.IgnoreCase);
 			Regex regex3 = new Regex("\\[ACTION:DEBT_GOLD:(\\d+)\\]", RegexOptions.IgnoreCase);
 			Regex regex4 = new Regex("\\[ACTION:DEBT_ADD:(\\d+)\\]", RegexOptions.IgnoreCase);
 			Regex regex5 = new Regex("\\[ACTION:DEBT_ITEM:([^\\]\\r\\n:]+):(\\d+)\\]", RegexOptions.IgnoreCase);
@@ -15317,7 +15391,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			Regex regex19 = new Regex("\\[ACTION:JOIN_VASSAL:([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase);
 			Regex regex20 = new Regex("\\[ACTION:KINGDOM_SERVICE:LEAVE\\]", RegexOptions.IgnoreCase);
 			Regex regex21 = new Regex("\\[ACTION:TRADE_TRUST:(-?\\d+)\\]", RegexOptions.IgnoreCase);
-			Regex regex22 = new Regex("\\[ACTION:SETTLEMENT_TRANSFER:(TO_PLAYER|TO_NPC):([^\\]\\r\\n:]+)\\]", RegexOptions.IgnoreCase);
+			Regex regex22 = new Regex("\\[ACTION:SETTLEMENT_TRANSFER:(TO_PLAYER):([^\\]\\r\\n:]+)\\]", RegexOptions.IgnoreCase);
+			Regex regexSettlementTransferAny = new Regex("\\[ACTION:SETTLEMENT_TRANSFER:[^\\]\\r\\n]*\\]", RegexOptions.IgnoreCase);
 			Regex regex23 = new Regex("\\[AD;(\\d+);(\\d+);(?:(N|P);)?([^\\]]*)\\]", RegexOptions.IgnoreCase);
 			Regex regex24 = new Regex("\\[ADP[:;]([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase);
 			Regex regex25 = new Regex("\\[A:H_J_P_P\\]", RegexOptions.IgnoreCase);
@@ -15463,8 +15538,16 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			bool anyKingdomAnnexationApplied = false;
 			bool anySettlementTransferApplied = false;
 			bool anySettlementTransferToPlayerApplied = false;
-			bool anySettlementTransferToNpcApplied = false;
 			bool anyHeroJoinPlayerPartyApplied = false;
+			int itemTransferAttempted = 0;
+			int itemTransferSucceeded = 0;
+			int itemTransferFailedOrPartial = 0;
+			long itemTransferActualQuantity = 0L;
+			long itemTransferActualValue = 0L;
+			int settlementTransferAttempted = 0;
+			int settlementTransferSucceeded = 0;
+			int settlementTransferFailed = 0;
+			long settlementTransferActualValue = 0L;
 			Settlement notableMarketSettlement = ResolveNotableMarketSettlement(giver);
 			bool giverUsesNotableMarket = IsNotableMarketHero(giver, notableMarketSettlement);
 			string notableMarketLabel = GetSettlementMarketTypeLabel(notableMarketSettlement) + "市场";
@@ -15494,9 +15577,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			responseText = regex2.Replace(responseText, delegate(Match m)
 			{
 				string value4 = m.Groups[1].Value;
-				if (int.TryParse(m.Groups[2].Value, out var result8))
+				itemTransferAttempted++;
+				if (TransferQuantitySpec.TryParse(m.Groups[2].Value, out var quantity))
 				{
-					Logger.Log("Logic", $"[Reward] GIVE_ITEM tag 捕获: giver={giver?.Name} receiver={receiver?.Name} itemId={value4} amount={result8}");
+					if (TransferQuantitySpec.IsAllValue(value4) && !quantity.IsAll)
+					{
+						itemTransferFailedOrPartial++;
+						return string.Empty;
+					}
 					string itemName;
 					string settlementPromptStringId = "";
 					bool isNotableMarketItem = giverUsesNotableMarket && TryParseNotableMarketPromptStringId(value4, out settlementPromptStringId);
@@ -15511,9 +15599,24 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					}
 					string itemIdForFacts = isNotableMarketItem ? settlementPromptStringId : value4;
 					List<RewardItemInfo> itemFactContext = isNotableMarketItem ? BuildSettlementRewardItemResolutionContext(notableMarketSettlement) : BuildHeroRewardItemResolutionContext(giver);
-					int num4 = isNotableMarketItem ? TransferItemFromSettlement(notableMarketSettlement, receiver, settlementPromptStringId, result8, giverName, out itemName, giver?.CharacterObject, forceComplete: receiver == Hero.MainHero) : TransferItemById(giver, receiver, value4, result8, out itemName, forceComplete: receiver == Hero.MainHero && giver != Hero.MainHero);
+					int result8 = quantity.Amount;
+					if (quantity.IsAll)
+					{
+						result8 = PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsAllSnapshotScope, giver, giver?.CharacterObject, -1, out var authorizedItems)
+							? ResolveAllRewardItemAmount(itemIdForFacts, authorizedItems)
+							: 0;
+					}
+					Logger.Log("Logic", $"[Reward] GIVE_ITEM tag 捕获: giver={giver?.Name} receiver={receiver?.Name} itemId={value4} amount={(quantity.IsAll ? "ALL" : result8.ToString())} resolvedAmount={result8}");
+					if (result8 <= 0)
+					{
+						itemTransferFailedOrPartial++;
+						return string.Empty;
+					}
+					int num4 = isNotableMarketItem ? TransferItemFromSettlement(notableMarketSettlement, receiver, settlementPromptStringId, result8, giverName, out itemName, giver?.CharacterObject, forceComplete: !quantity.IsAll && receiver == Hero.MainHero) : TransferItemById(giver, receiver, value4, result8, out itemName, forceComplete: !quantity.IsAll && receiver == Hero.MainHero && giver != Hero.MainHero);
 					if (num4 > 0)
 					{
+						itemTransferSucceeded++;
+						itemTransferActualQuantity = TransferQuantitySpec.AddValue(itemTransferActualQuantity, num4);
 						string text3 = (string.IsNullOrEmpty(itemName) ? value4 : itemName);
 						string text4 = text3;
 						ItemObject itemObject3 = ResolveItemById(itemIdForFacts.Split('@')[0]);
@@ -15530,6 +15633,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 						receiverFacts.Add(isNotableMarketItem ? $"你从 {giverName} 代表的{notableMarketLabel}收到了 {FormatItemAmount(num4, itemObject3, text4)}{text5}。" : $"你从 {giverName} 收到了 {FormatItemAmount(num4, itemObject3, text4)}{text5}。");
 						if (num4 < result8)
 						{
+							itemTransferFailedOrPartial++;
 							string text6 = isNotableMarketItem ? BuildSettlementItemValueFactSuffixForExternal(notableMarketSettlement, itemObject3, result8) : BuildItemValueFactSuffixForExternal(giver ?? receiver, itemObject3, result8);
 							giverFacts.Add($"你本轮原计划交付 {FormatItemAmount(result8, itemObject3, text4)}{text6}，但实际仅交付 {FormatItemAmount(num4, itemObject3, text4)}{text5}（库存不足）。");
 							receiverFacts.Add($"{giverName} 原计划交付 {FormatItemAmount(result8, itemObject3, text4)}{text6}，实际仅交付 {FormatItemAmount(num4, itemObject3, text4)}{text5}。");
@@ -15540,9 +15644,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 							int itemTrustValue = isNotableMarketItem ? GetItemTrustValueForMerchantGift(notableMarketSettlement, itemObject3, num4) : GetItemTrustValueForHeroGift(giver ?? receiver, itemObject3, num4);
 							ApplyAutoTrustGainFromHeroGiftValue(giver, itemTrustValue, giverFacts, receiverFacts, giverName);
 						}
+						long actualItemValue = isNotableMarketItem ? GetItemGuideValueForMerchantGift(notableMarketSettlement, itemObject3, num4) : GetItemGuideValueForHeroGift(giver ?? receiver, itemObject3, num4);
+						itemTransferActualValue = TransferQuantitySpec.AddValue(itemTransferActualValue, actualItemValue);
 					}
 					else
 					{
+						itemTransferFailedOrPartial++;
 						string text5 = ResolveItemById(itemIdForFacts.Split('@')[0])?.Name?.ToString();
 						string text6 = (string.IsNullOrWhiteSpace(text5) ? "该物品" : text5);
 						ItemObject itemObject2 = ResolveItemById(itemIdForFacts.Split('@')[0]);
@@ -15551,8 +15658,19 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 						receiverFacts.Add(isNotableMarketItem ? $"{giverName} 试图代表{notableMarketLabel}交付 {FormatItemAmount(result8, itemObject2, text6)}{text7}，但市场库存不足，本轮未实际交付。" : $"{giverName} 试图交付 {FormatItemAmount(result8, itemObject2, text6)}{text7}，但其库存不足，本轮未实际交付。");
 					}
 				}
+				else
+				{
+					itemTransferFailedOrPartial++;
+				}
 				return string.Empty;
 			});
+			if (itemTransferAttempted > 0)
+			{
+				string itemBatchSummary = "物品转移汇总：尝试项" + itemTransferAttempted + "，成功项" + itemTransferSucceeded + "，失败或不足项" + itemTransferFailedOrPartial + "，实际转移" + itemTransferActualQuantity + "件，实际指导总值约" + itemTransferActualValue + "第纳尔。";
+				giverFacts.Add(itemBatchSummary);
+				receiverFacts.Add(itemBatchSummary);
+				Logger.Log("Logic", "[Reward] item_batch_done attempted=" + itemTransferAttempted + " succeeded=" + itemTransferSucceeded + " failedOrPartial=" + itemTransferFailedOrPartial + " actualQuantity=" + itemTransferActualQuantity + " actualValue=" + itemTransferActualValue);
+			}
 			responseText = regex23.Replace(responseText, delegate(Match m)
 			{
 				if (!int.TryParse(m.Groups[1].Value, out var result8) || !int.TryParse(m.Groups[2].Value, out var result9))
@@ -16000,13 +16118,13 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			responseText = regex22.Replace(responseText, delegate(Match m)
 			{
+				settlementTransferAttempted++;
 				string directionToken = (m.Groups[1].Value ?? "").Trim();
 				string settlementToken = (m.Groups[2].Value ?? "").Trim();
 				if (receiver == Hero.MainHero && giver != Hero.MainHero)
 				{
 					string statusText;
-					bool flag2 = TryApplySettlementTransferAction(giver, receiver, directionToken, settlementToken, out statusText);
-					MyBehavior.SettlementTransferPromptEntry entry = MyBehavior.ResolveSettlementTransferEntryForExternal(giver, null, directionToken, settlementToken);
+					bool flag2 = TryApplySettlementTransferAction(giver, receiver, directionToken, settlementToken, out var entry, out statusText);
 					string text3 = MyBehavior.GetSettlementTransferAssetDisplayNameForExternal(entry);
 					if (string.IsNullOrWhiteSpace(text3) || text3 == "未知资产")
 					{
@@ -16014,22 +16132,16 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					}
 					if (flag2)
 					{
+						settlementTransferSucceeded++;
+						settlementTransferActualValue = TransferQuantitySpec.AddValue(settlementTransferActualValue, Math.Max(0L, entry?.GuidePriceDenars ?? 0L));
 						anySettlementTransferApplied = true;
-						if (string.Equals(directionToken, "TO_PLAYER", StringComparison.OrdinalIgnoreCase))
-						{
-							anySettlementTransferToPlayerApplied = true;
-							giverFacts.Add($"你已经将固定资产 {text3} 转交给玩家。");
-							receiverFacts.Add($"你已经从 {giverName} 那里取得了固定资产 {text3}。");
-						}
-						else
-						{
-							anySettlementTransferToNpcApplied = true;
-							giverFacts.Add($"玩家已经将固定资产 {text3} 转交给你或你的家族。");
-							receiverFacts.Add($"你已经将固定资产 {text3} 转交给了 {giverName}。");
-						}
+						anySettlementTransferToPlayerApplied = true;
+						giverFacts.Add($"你已经将固定资产 {text3} 转交给玩家。");
+						receiverFacts.Add($"你已经从 {giverName} 那里取得了固定资产 {text3}。");
 					}
 					else if (!string.IsNullOrWhiteSpace(statusText))
 					{
+						settlementTransferFailed++;
 						giverFacts.Add(statusText);
 						receiverFacts.Add(statusText);
 					}
@@ -16038,8 +16150,20 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 						InformationManager.DisplayMessage(new InformationMessage((flag2 ? "【固定资产转移】" : "【固定资产转移失败】") + statusText, flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
 					}
 				}
+				else
+				{
+					settlementTransferFailed++;
+				}
 				return string.Empty;
 			});
+			responseText = regexSettlementTransferAny.Replace(responseText, string.Empty);
+			if (settlementTransferAttempted > 0)
+			{
+				string settlementBatchSummary = "固定资产转移汇总：尝试项" + settlementTransferAttempted + "，成功项" + settlementTransferSucceeded + "，失败项" + settlementTransferFailed + "，实际转移" + settlementTransferSucceeded + "项，实际指导总值约" + settlementTransferActualValue + "第纳尔。";
+				giverFacts.Add(settlementBatchSummary);
+				receiverFacts.Add(settlementBatchSummary);
+				Logger.Log("Logic", "[Reward] settlement_batch_done attempted=" + settlementTransferAttempted + " succeeded=" + settlementTransferSucceeded + " failed=" + settlementTransferFailed + " actualValue=" + settlementTransferActualValue);
+			}
 			responseText = regex25.Replace(responseText, delegate
 			{
 				if (receiver == Hero.MainHero && giver != Hero.MainHero)
@@ -16106,7 +16230,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					MyBehavior.AppendExternalNpcFact(receiver, string.Join(" ", receiverFacts));
 				}
 			}
-			TryRecordRewardActionHistory(giver, receiver, giverName, receiverName, giverFacts, receiverFacts, anyActualGiveToPlayer, anyDebtRecorded, anyDebtPaymentApplied, anyRoyalAbdicationApplied, anyKingdomServiceApplied, anyVassalageApplied, anyKingdomAnnexationApplied, anySettlementTransferApplied, anySettlementTransferToPlayerApplied, anySettlementTransferToNpcApplied);
+			TryRecordRewardActionHistory(giver, receiver, giverName, receiverName, giverFacts, receiverFacts, anyActualGiveToPlayer, anyDebtRecorded, anyDebtPaymentApplied, anyRoyalAbdicationApplied, anyKingdomServiceApplied, anyVassalageApplied, anyKingdomAnnexationApplied, anySettlementTransferApplied, anySettlementTransferToPlayerApplied);
 		}
 		catch (Exception ex)
 		{
@@ -16125,7 +16249,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void TryRecordRewardActionHistory(Hero giver, Hero receiver, string giverName, string receiverName, List<string> giverFacts, List<string> receiverFacts, bool anyActualGiveToPlayer, bool anyDebtRecorded, bool anyDebtPaymentApplied, bool anyRoyalAbdicationApplied, bool anyKingdomServiceApplied, bool anyVassalageApplied, bool anyKingdomAnnexationApplied, bool anySettlementTransferApplied, bool anySettlementTransferToPlayerApplied, bool anySettlementTransferToNpcApplied)
+	private static void TryRecordRewardActionHistory(Hero giver, Hero receiver, string giverName, string receiverName, List<string> giverFacts, List<string> receiverFacts, bool anyActualGiveToPlayer, bool anyDebtRecorded, bool anyDebtPaymentApplied, bool anyRoyalAbdicationApplied, bool anyKingdomServiceApplied, bool anyVassalageApplied, bool anyKingdomAnnexationApplied, bool anySettlementTransferApplied, bool anySettlementTransferToPlayerApplied)
 	{
 		try
 		{
@@ -16141,7 +16265,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			string actionKind = ResolveRewardActionHistoryKind(anyActualGiveToPlayer, anyDebtRecorded, anyDebtPaymentApplied, anyRoyalAbdicationApplied, anyKingdomServiceApplied, anyVassalageApplied, anyKingdomAnnexationApplied, anySettlementTransferApplied, anySettlementTransferToPlayerApplied, anySettlementTransferToNpcApplied);
+			string actionKind = ResolveRewardActionHistoryKind(anyActualGiveToPlayer, anyDebtRecorded, anyDebtPaymentApplied, anyRoyalAbdicationApplied, anyKingdomServiceApplied, anyVassalageApplied, anyKingdomAnnexationApplied, anySettlementTransferApplied, anySettlementTransferToPlayerApplied);
 			string summary = BuildRewardActionHistorySummary(giverFacts, receiverFacts);
 			if (string.IsNullOrWhiteSpace(summary))
 			{
@@ -16163,7 +16287,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static string ResolveRewardActionHistoryKind(bool anyActualGiveToPlayer, bool anyDebtRecorded, bool anyDebtPaymentApplied, bool anyRoyalAbdicationApplied, bool anyKingdomServiceApplied, bool anyVassalageApplied, bool anyKingdomAnnexationApplied, bool anySettlementTransferApplied, bool anySettlementTransferToPlayerApplied, bool anySettlementTransferToNpcApplied)
+	private static string ResolveRewardActionHistoryKind(bool anyActualGiveToPlayer, bool anyDebtRecorded, bool anyDebtPaymentApplied, bool anyRoyalAbdicationApplied, bool anyKingdomServiceApplied, bool anyVassalageApplied, bool anyKingdomAnnexationApplied, bool anySettlementTransferApplied, bool anySettlementTransferToPlayerApplied)
 	{
 		if (anyKingdomAnnexationApplied)
 		{
@@ -16179,11 +16303,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		if (anySettlementTransferApplied)
 		{
-			if (anySettlementTransferToNpcApplied && !anySettlementTransferToPlayerApplied)
-			{
-				return "asset_transfer_to_npc";
-			}
-			if (anySettlementTransferToPlayerApplied && !anySettlementTransferToNpcApplied)
+			if (anySettlementTransferToPlayerApplied)
 			{
 				return "asset_transfer_to_player";
 			}
@@ -16529,9 +16649,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		string text = string.IsNullOrWhiteSpace(giverName) ? "对方部队" : giverName.Trim();
 		Regex regex = new Regex("\\[ACTION:GIVE_GOLD:(\\d+)\\]", RegexOptions.IgnoreCase);
-		Regex regex2 = new Regex("\\[ACTION:GIVE_ITEM:([^\\]\\r\\n:]+):(\\d+)\\]", RegexOptions.IgnoreCase);
+		Regex regex2 = new Regex("\\[ACTION:GIVE_ITEM:([^\\]\\r\\n:]+):(ALL|\\d+)\\]", RegexOptions.IgnoreCase);
 		List<string> npcFacts = new List<string>();
 		List<string> playerFacts = new List<string>();
+		int itemTransferAttempted = 0;
+		int itemTransferSucceeded = 0;
+		int itemTransferFailedOrPartial = 0;
+		long itemTransferActualQuantity = 0L;
+		long itemTransferActualValue = 0L;
 		try
 		{
 			responseText = regex.Replace(responseText, delegate(Match m)
@@ -16554,12 +16679,32 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			responseText = regex2.Replace(responseText, delegate(Match m)
 			{
 				string value = m.Groups[1].Value;
-				if (int.TryParse(m.Groups[2].Value, out var result))
+				itemTransferAttempted++;
+				if (TransferQuantitySpec.TryParse(m.Groups[2].Value, out var quantity))
 				{
+					if (TransferQuantitySpec.IsAllValue(value) && !quantity.IsAll)
+					{
+						itemTransferFailedOrPartial++;
+						return string.Empty;
+					}
+					List<RewardItemInfo> allContext = BuildPartyRewardItemResolutionContext(giverParty);
+					int result = quantity.Amount;
+					if (quantity.IsAll)
+					{
+						CharacterObject snapshotCharacter = giverCharacter as CharacterObject;
+						result = PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.PartyRewardItemsAllSnapshotScope, null, snapshotCharacter, -1, out var authorizedItems)
+							? ResolveAllRewardItemAmount(value, authorizedItems)
+							: 0;
+					}
+					if (result <= 0)
+					{
+						itemTransferFailedOrPartial++;
+						return string.Empty;
+					}
 					string itemName;
-					int num = TransferItemFromParty(giverParty, receiver, value, result, text, out itemName, giverCharacter, forceComplete: receiver == Hero.MainHero);
+					int num = TransferItemFromParty(giverParty, receiver, value, result, text, out itemName, giverCharacter, forceComplete: !quantity.IsAll && receiver == Hero.MainHero);
 					ItemObject itemObject = ResolveItemById((value ?? "").Split('@')[0]);
-					if (itemObject == null && TryResolveRewardItemStringId(value, BuildPartyRewardItemResolutionContext(giverParty), out var _, out var resolvedPartyFactItem, "party_give_item_fact"))
+					if (itemObject == null && TryResolveRewardItemStringId(value, allContext, out var _, out var resolvedPartyFactItem, "party_give_item_fact"))
 					{
 						itemObject = resolvedPartyFactItem;
 					}
@@ -16570,23 +16715,39 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					string text2 = string.IsNullOrWhiteSpace(itemName) ? (itemObject?.Name?.ToString() ?? value) : itemName;
 					if (num > 0)
 					{
+						itemTransferSucceeded++;
+						itemTransferActualQuantity = TransferQuantitySpec.AddValue(itemTransferActualQuantity, num);
+						itemTransferActualValue = TransferQuantitySpec.AddValue(itemTransferActualValue, GetItemGuideValueForHeroGift(Hero.MainHero, itemObject, num));
 						string text3 = BuildItemValueFactSuffixForExternal(Hero.MainHero, itemObject, num);
 						npcFacts.Add($"你已经将 {FormatItemAmount(num, itemObject, text2)} 交给玩家{text3}，并从你所在部队的库存中扣除。");
 						playerFacts.Add($"你从 {text} 收到了 {FormatItemAmount(num, itemObject, text2)}{text3}。");
 						if (num < result)
 						{
+							itemTransferFailedOrPartial++;
 							npcFacts.Add($"你原本打算交付 {FormatItemAmount(result, itemObject, text2)}，但你所在部队库存不足，实际只交付了 {FormatItemAmount(num, itemObject, text2)}。");
 							playerFacts.Add($"{text} 原本打算交付 {FormatItemAmount(result, itemObject, text2)}，但实际只交付了 {FormatItemAmount(num, itemObject, text2)}。");
 						}
 					}
 					else
 					{
+						itemTransferFailedOrPartial++;
 						string text3 = BuildItemValueFactSuffixForExternal(Hero.MainHero, itemObject, result);
 						npcFacts.Add($"你试图交付 {FormatItemAmount(result, itemObject, text2)}{text3}，但你所在部队库存不足，本轮未实际交付。");
 					}
 				}
+				else
+				{
+					itemTransferFailedOrPartial++;
+				}
 				return string.Empty;
 			});
+			if (itemTransferAttempted > 0)
+			{
+				string itemBatchSummary = "物品转移汇总：尝试项" + itemTransferAttempted + "，成功项" + itemTransferSucceeded + "，失败或不足项" + itemTransferFailedOrPartial + "，实际转移" + itemTransferActualQuantity + "件，实际指导总值约" + itemTransferActualValue + "第纳尔。";
+				npcFacts.Add(itemBatchSummary);
+				playerFacts.Add(itemBatchSummary);
+				Logger.Log("Logic", "[RewardParty] item_batch_done attempted=" + itemTransferAttempted + " succeeded=" + itemTransferSucceeded + " failedOrPartial=" + itemTransferFailedOrPartial + " actualQuantity=" + itemTransferActualQuantity + " actualValue=" + itemTransferActualValue);
+			}
 			responseText = Regex.Replace(responseText ?? "", "\\[ACTION:DEBT[^\\]]*\\]", string.Empty, RegexOptions.IgnoreCase);
 			responseText = Regex.Replace(responseText, "\\[ACTION:TRADE_TRUST:[^\\]]*\\]", string.Empty, RegexOptions.IgnoreCase);
 			responseText = Regex.Replace(responseText, "\\[AD;[^\\]]+\\]", string.Empty, RegexOptions.IgnoreCase);
@@ -16625,7 +16786,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		string giverName = giverCharacter.Name?.ToString() ?? GetSettlementMerchantRoleLabel(kind);
 		Regex regex = new Regex("\\[ACTION:GIVE_GOLD:(\\d+)\\]", RegexOptions.IgnoreCase);
-		Regex regex2 = new Regex("\\[ACTION:GIVE_ITEM:([^\\]\\r\\n:]+):(\\d+)\\]", RegexOptions.IgnoreCase);
+		Regex regex2 = new Regex("\\[ACTION:GIVE_ITEM:([^\\]\\r\\n:]+):(ALL|\\d+)\\]", RegexOptions.IgnoreCase);
 		Regex regex3 = new Regex("\\[ACTION:DEBT_GOLD:(\\d+)\\]", RegexOptions.IgnoreCase);
 		Regex regex4 = new Regex("\\[ACTION:DEBT_ADD:(\\d+)\\]", RegexOptions.IgnoreCase);
 		Regex regex5 = new Regex("\\[ACTION:DEBT_ITEM:([^\\]\\r\\n:]+):(\\d+)\\]", RegexOptions.IgnoreCase);
@@ -16642,6 +16803,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		Regex regexLegacyDebtTag = new Regex("\\[ACTION:DEBT[^\\]]*\\]", RegexOptions.IgnoreCase);
 		List<string> merchantFacts = new List<string>();
 		List<string> playerFacts = new List<string>();
+		int itemTransferAttempted = 0;
+		int itemTransferSucceeded = 0;
+		int itemTransferFailedOrPartial = 0;
+		long itemTransferActualQuantity = 0L;
+		long itemTransferActualValue = 0L;
 		int? dueDaysOverride = null;
 		int? dueAbsDayOverride = null;
 		bool dueUnlimited = regex9.IsMatch(responseText);
@@ -16712,13 +16878,32 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		responseText = regex2.Replace(responseText, delegate(Match m)
 		{
 			string value = m.Groups[1].Value;
-			if (int.TryParse(m.Groups[2].Value, out var result))
+			itemTransferAttempted++;
+			if (TransferQuantitySpec.TryParse(m.Groups[2].Value, out var quantity))
 			{
+				if (TransferQuantitySpec.IsAllValue(value) && !quantity.IsAll)
+				{
+					itemTransferFailedOrPartial++;
+					return string.Empty;
+				}
+				List<RewardItemInfo> allContext = BuildSettlementRewardItemResolutionContext(currentSettlement);
+				int result = quantity.Amount;
+				if (quantity.IsAll)
+				{
+					result = PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.SettlementMerchantItemsAllSnapshotScope, null, giverCharacter, -1, out var authorizedItems)
+						? ResolveAllRewardItemAmount(value, authorizedItems)
+						: 0;
+				}
+				if (result <= 0)
+				{
+					itemTransferFailedOrPartial++;
+					return string.Empty;
+				}
 				string itemName;
-				int num = TransferItemFromSettlement(currentSettlement, receiver, value, result, giverName, out itemName, giverCharacter, forceComplete: receiver == Hero.MainHero);
+				int num = TransferItemFromSettlement(currentSettlement, receiver, value, result, giverName, out itemName, giverCharacter, forceComplete: !quantity.IsAll && receiver == Hero.MainHero);
 				string text = ((!string.IsNullOrWhiteSpace(itemName)) ? itemName : ResolveSettlementMerchantDisplayNameFromPromptStringId(value));
 				ItemObject itemObject = ResolveItemById(value.Split('@')[0]);
-				if (itemObject == null && TryResolveRewardItemStringId(value, BuildSettlementRewardItemResolutionContext(currentSettlement), out var _, out var resolvedMerchantFactItem, "merchant_give_item_fact"))
+				if (itemObject == null && TryResolveRewardItemStringId(value, allContext, out var _, out var resolvedMerchantFactItem, "merchant_give_item_fact"))
 				{
 					itemObject = resolvedMerchantFactItem;
 					if (string.IsNullOrWhiteSpace(itemName))
@@ -16736,12 +16921,16 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				}
 				if (num > 0)
 				{
+					itemTransferSucceeded++;
+					itemTransferActualQuantity = TransferQuantitySpec.AddValue(itemTransferActualQuantity, num);
+					itemTransferActualValue = TransferQuantitySpec.AddValue(itemTransferActualValue, GetItemGuideValueForMerchantGift(currentSettlement, itemObject, num));
 					string text2 = BuildSettlementItemValueFactSuffixForExternal(currentSettlement, itemObject, num);
 					merchantFacts.Add($"你已经将 {FormatItemAmount(num, itemObject, text)} 交给玩家{text2}。并进入了玩家的的库存");
 					playerFacts.Add($"你从 {giverName} 收到了 {FormatItemAmount(num, itemObject, text)}{text2}。");
 					ApplyAutoTrustGainFromMerchantGiftValue(currentSettlement, kind, GetItemTrustValueForMerchantGift(currentSettlement, itemObject, num), merchantFacts, playerFacts, giverName, giverCharacter);
 					if (num < result)
 					{
+						itemTransferFailedOrPartial++;
 						string text3 = BuildSettlementItemValueFactSuffixForExternal(currentSettlement, itemObject, result);
 						merchantFacts.Add($"你原本打算交付 {FormatItemAmount(result, itemObject, text)}{text3}，但当前商铺库存不足，实际只交付了 {FormatItemAmount(num, itemObject, text)}{text2}。");
 						playerFacts.Add($"{giverName} 原本打算交付 {FormatItemAmount(result, itemObject, text)}{text3}，但实际只交付了 {FormatItemAmount(num, itemObject, text)}{text2}。");
@@ -16749,12 +16938,24 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				}
 				else
 				{
+					itemTransferFailedOrPartial++;
 					string text4 = BuildSettlementItemValueFactSuffixForExternal(currentSettlement, itemObject, result);
 					merchantFacts.Add($"你试图交付 {FormatItemAmount(result, itemObject, text)}{text4}，但当前商铺库存不足，本轮未实际交货。");
 				}
 			}
+			else
+			{
+				itemTransferFailedOrPartial++;
+			}
 			return string.Empty;
 		});
+		if (itemTransferAttempted > 0)
+		{
+			string itemBatchSummary = "物品转移汇总：尝试项" + itemTransferAttempted + "，成功项" + itemTransferSucceeded + "，失败或不足项" + itemTransferFailedOrPartial + "，实际转移" + itemTransferActualQuantity + "件，实际指导总值约" + itemTransferActualValue + "第纳尔。";
+			merchantFacts.Add(itemBatchSummary);
+			playerFacts.Add(itemBatchSummary);
+			Logger.Log("Logic", "[RewardMerchant] item_batch_done attempted=" + itemTransferAttempted + " succeeded=" + itemTransferSucceeded + " failedOrPartial=" + itemTransferFailedOrPartial + " actualQuantity=" + itemTransferActualQuantity + " actualValue=" + itemTransferActualValue);
+		}
 		responseText = regex14.Replace(responseText, delegate(Match m)
 		{
 			if (!int.TryParse(m.Groups[1].Value, out var result8) || !int.TryParse(m.Groups[2].Value, out var result9))
@@ -17332,7 +17533,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 		}
 		List<EquipmentIndex> list = new List<EquipmentIndex>();
-		EquipmentIndex[] array = new EquipmentIndex[7]
+		EquipmentIndex[] array = new EquipmentIndex[12]
 		{
 			EquipmentIndex.NumAllWeaponSlots,
 			EquipmentIndex.Body,
@@ -17340,7 +17541,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			EquipmentIndex.Gloves,
 			EquipmentIndex.Cape,
 			EquipmentIndex.WeaponItemBeginSlot,
-			EquipmentIndex.Weapon1
+			EquipmentIndex.Weapon1,
+			EquipmentIndex.Weapon2,
+			EquipmentIndex.Weapon3,
+			EquipmentIndex.ExtraWeaponSlot,
+			EquipmentIndex.Horse,
+			EquipmentIndex.HorseHarness
 		};
 		EquipmentIndex[] array2 = array;
 		EquipmentIndex[] array3 = array2;

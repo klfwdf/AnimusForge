@@ -20,10 +20,17 @@ public static class PromptListRetrievalService
 	private const float MatchThreshold = 0.66f;
 	public const string PlayerVisibleEquipmentSnapshotScope = "player_visible_equipment";
 	public const string NpcRewardItemsSnapshotScope = "npc_reward_items";
+	internal const string NpcRewardItemsAllSnapshotScope = "npc_reward_items_all";
+	internal const string PartyRewardItemsAllSnapshotScope = "party_reward_items_all";
 	public const string SettlementMerchantItemsSnapshotScope = "settlement_merchant_items";
+	internal const string SettlementMerchantItemsAllSnapshotScope = "settlement_merchant_items_all";
 	public const string PartyTransferTroopsSnapshotScope = "party_transfer_troops";
+	internal const string PartyTransferAllTroopsSnapshotScope = "party_transfer_all_troops";
 	public const string PartyTransferPrisonersSnapshotScope = "party_transfer_prisoners";
+	internal const string PartyTransferAllPrisonersSnapshotScope = "party_transfer_all_prisoners";
 	public const string SettlementTransferNpcAssetsSnapshotScope = "settlement_transfer_npc_assets";
+	internal const string SettlementTransferAllNpcAssetsSnapshotScope = "settlement_transfer_all_npc_assets";
+	[Obsolete("LLM postprocess player-to-NPC asset snapshots are no longer supported.")]
 	public const string SettlementTransferPlayerAssetsSnapshotScope = "settlement_transfer_player_assets";
 
 	private static readonly object CandidateSnapshotLock = new object();
