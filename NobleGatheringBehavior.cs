@@ -1990,8 +1990,11 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 				{
 					enabledCount++;
 				}
-				string label = (alreadySelected ? "[已选] " : "") + "[" + GetClanName(hero?.Clan) + "] " + GetHeroName(hero);
-				string hint = GetHeroName(hero) + " / " + GetClanName(hero?.Clan) + (alreadySelected ? "\n已经在当前宴会名单中。" : enabled ? "\n可发出赴宴邀请；没有独立部队者将按原版旅行机制前往主办地。" : "\n不可邀请：" + reason);
+				string identityLabel = BuildGatheringHeroIdentityLabel(hero);
+				string label = (alreadySelected ? "[已选] " : "") + "[" + GetClanName(hero?.Clan) + "] " + GetHeroName(hero) + "（" + identityLabel + "）";
+				string hint = GetHeroName(hero) + " / " + GetClanName(hero?.Clan)
+					+ "\n" + BuildGatheringHeroIdentityHint(hero)
+					+ (alreadySelected ? "\n已经在当前宴会名单中。" : enabled ? "\n可发出赴宴邀请；没有独立部队者将按原版旅行机制前往主办地。" : "\n不可邀请：" + reason);
 				return new InquiryElement(hero.StringId, label, null, enabled, hint);
 			})
 			.ToList();
@@ -2003,7 +2006,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		}
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData(
 			"召开宴会：选择宾客",
-			"家族：" + GetClanName(clan) + "\n有独立部队的人会直接被调度；留在城里的贵族、总督、无部队英雄会按原版旅行机制前往主办地，宴会结束后返回原驻留地。\n已选宾客：" + currentHeroIds.Count + " 人。",
+			"家族：" + GetClanName(clan) + "\n这是玩家举办的宴会，总督仍可邀请。有独立部队的人会直接被调度；留在城里的贵族、总督、无部队英雄会按原版旅行机制前往主办地，宴会结束后返回原驻留地。\n已选宾客：" + currentHeroIds.Count + " 人。",
 			options,
 			isExitShown: true,
 			0,
@@ -5087,15 +5090,18 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 	private List<Hero> PickNpcInvitees(Hero host, Settlement settlement)
 	{
 		Kingdom kingdom = host?.Clan?.Kingdom;
+		// NPC hosts must not pull governors away from their settlements. Player-hosted
+		// gatherings use a separate candidate path and intentionally keep governors eligible.
 		List<Hero> result = Hero.AllAliveHeroes
 			.Where(hero => hero != null && hero != host && hero.Occupation == Occupation.Lord && hero.Clan?.Kingdom == kingdom)
+			.Where(hero => hero.GovernorOf == null)
 			.Where(hero => hero == Hero.MainHero || IsHeroEligibleForGatheringInvitation(hero, out _))
 			.Where(hero => hero == Hero.MainHero || ShouldNpcConsiderInviting(host, hero))
 			.OrderByDescending(hero => hero == Hero.MainHero ? host.GetRelation(hero) : host.GetRelation(hero))
 			.ThenBy(_ => MBRandom.RandomFloat)
 			.Take(16)
 			.ToList();
-		if (kingdom == Clan.PlayerClan?.Kingdom && Hero.MainHero != host && !result.Contains(Hero.MainHero) && host.GetRelation(Hero.MainHero) >= 10)
+		if (kingdom == Clan.PlayerClan?.Kingdom && Hero.MainHero != null && Hero.MainHero != host && Hero.MainHero.GovernorOf == null && !result.Contains(Hero.MainHero) && host.GetRelation(Hero.MainHero) >= 10)
 		{
 			result.Insert(0, Hero.MainHero);
 		}
@@ -5320,7 +5326,7 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 		{
 			return "尚未选择宾客。";
 		}
-		string names = string.Join("、", heroes.Take(12).Select(GetHeroName));
+		string names = string.Join("、", heroes.Take(12).Select(hero => GetHeroName(hero) + "（" + BuildGatheringHeroIdentityLabel(hero) + "）"));
 		return heroes.Count > 12 ? "已选：" + names + " 等 " + heroes.Count + " 人。" : "已选：" + names;
 	}
 
@@ -5467,6 +5473,47 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 	private static string GetHeroName(Hero hero)
 	{
 		return hero?.Name?.ToString() ?? "未知贵族";
+	}
+
+	private static string BuildGatheringHeroIdentityLabel(Hero hero)
+	{
+		if (hero == null)
+		{
+			return "身份未知";
+		}
+		List<string> identities = new List<string>();
+		if (hero.GovernorOf != null)
+		{
+			identities.Add("总督");
+		}
+		if (hero.Clan?.Kingdom?.Leader == hero)
+		{
+			identities.Add("君主");
+		}
+		if (hero.Clan?.Leader == hero || hero.IsClanLeader)
+		{
+			identities.Add("族长");
+		}
+		if (hero.IsFemale)
+		{
+			identities.Add("女士");
+		}
+		if (identities.Count == 0)
+		{
+			identities.Add("领主");
+		}
+		return string.Join("、", identities);
+	}
+
+	private static string BuildGatheringHeroIdentityHint(Hero hero)
+	{
+		string hint = "身份：" + BuildGatheringHeroIdentityLabel(hero);
+		Settlement governedSettlement = hero?.GovernorOf?.Settlement;
+		if (governedSettlement != null)
+		{
+			hint += "\n管辖：" + GetSettlementName(governedSettlement);
+		}
+		return hint;
 	}
 
 	private static string GetClanName(Clan clan)
