@@ -9630,13 +9630,6 @@ public static class SceneTauntLeaveMissionBlockPatch
 				harmony.Patch(method, prefix: new HarmonyMethod(method2));
 				num++;
 			}
-			Type type2 = AccessTools.TypeByName("SandBox.Missions.MissionLogics.LeaveMissionLogic");
-			MethodInfo method3 = AccessTools.Method(type2, "OnEndMissionRequest");
-			if (type2 != null && method3 != null && method2 != null)
-			{
-				harmony.Patch(method3, prefix: new HarmonyMethod(method2));
-				num++;
-			}
 			MethodInfo method4 = AccessTools.Method(typeof(MissionFightHandler), "OnEndMissionRequest");
 			if (method4 != null && method2 != null)
 			{

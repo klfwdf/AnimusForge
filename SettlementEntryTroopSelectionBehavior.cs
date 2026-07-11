@@ -90,7 +90,6 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		PatchEncounterEntry(harmony, typeof(VillageEncounter), nameof(VillageEncounter.CreateAndOpenMissionController), nameof(VillageCreateAndOpenMissionControllerPrefix), "village-center");
 		PatchEndMissionGuard(harmony, typeof(BasicLeaveMissionLogic), nameof(BasicLeaveMissionLogic.OnEndMissionRequest), "basic-leave");
 		PatchEndMissionGuard(harmony, typeof(MissionFightHandler), nameof(MissionFightHandler.OnEndMissionRequest), "mission-fight");
-		PatchEndMissionGuardByTypeName(harmony, "SandBox.Missions.MissionLogics.LeaveMissionLogic", "OnEndMissionRequest", "leave-mission");
 		PatchSetsUsableProtection(harmony);
 		PatchOwnedOrAttachedTownDamage(harmony);
 	}
@@ -616,17 +615,6 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		SettlementEntryTroopSelectionLog.Log("Harmony patch registered for " + label + " end-mission guard.");
 	}
 
-	private static void PatchEndMissionGuardByTypeName(Harmony harmony, string typeName, string methodName, string label)
-	{
-		Type logicType = AccessTools.TypeByName(typeName);
-		if (logicType == null)
-		{
-			SettlementEntryTroopSelectionLog.Log(label + " end-mission guard type not found.");
-			return;
-		}
-		PatchEndMissionGuard(harmony, logicType, methodName, label);
-	}
-
 	private static void PatchSetsUsableProtection(Harmony harmony)
 	{
 		try
@@ -710,8 +698,12 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			{
 				return true;
 			}
+			if (usableMachine == null)
+			{
+				return true;
+			}
 			TryStopSetsUsableNavigation(agent);
-			LogSetsUsableProtectionSuppression(agent, usableMachine == null ? "SetTargetClear" : "SetTarget");
+			LogSetsUsableProtectionSuppression(agent, "SetTarget");
 			return false;
 		}
 		catch
@@ -1631,10 +1623,6 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			{
 				_nextOwnedSettlementPanicTickTime = base.Mission.CurrentTime + 1f;
 				MaintainOwnedSettlementIncidentPanic(force: false);
-			}
-			if (_defenderConflictEnabled && _conflictActive && !_victoryReached)
-			{
-				RefreshSetsUsableProtectionState("tick");
 			}
 			if (_defenderConflictEnabled && _victoryReached)
 			{
@@ -3231,10 +3219,44 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			return 0;
 		}
 
-		private static Vec3 ResolveEnemyReserveSpawnPosition(MatrixFrame spawnFrame, int troopIndex, string spawnSource)
+		private Vec3 ResolveEnemyReserveSpawnPosition(MatrixFrame spawnFrame, int troopIndex, string spawnSource)
 		{
 			if (string.Equals(spawnSource, "workshop", StringComparison.OrdinalIgnoreCase))
 			{
+				Vec3 workshopForward = spawnFrame.rotation.f;
+				workshopForward.z = 0f;
+				if (workshopForward.LengthSquared < 0.01f)
+				{
+					workshopForward = Vec3.Forward;
+				}
+				workshopForward.Normalize();
+				Vec3 workshopRight = Vec3.CrossProduct(workshopForward, Vec3.Up);
+				if (workshopRight.LengthSquared < 0.01f)
+				{
+					workshopRight = Vec3.Side;
+				}
+				workshopRight.Normalize();
+				int workshopLocalIndex = Math.Abs(troopIndex % DefenderReserveWorkshopSpawnGroupSize);
+				float angle = (float)(Math.PI * 2.0 * workshopLocalIndex / DefenderReserveWorkshopSpawnGroupSize);
+				float radius = workshopLocalIndex % 2 == 0 ? 1.05f : 1.55f;
+				Vec3 radialOffset = workshopForward * ((float)Math.Cos(angle) * radius) + workshopRight * ((float)Math.Sin(angle) * radius);
+				for (int i = 0; i < 3; i++)
+				{
+					float projectionScale = i == 0 ? 1f : (i == 1 ? 0.7f : 0.45f);
+					if (TryProjectWorkshopSpawnPosition(spawnFrame.origin, spawnFrame.origin + radialOffset * projectionScale, out Vec3 projectedPosition))
+					{
+						return projectedPosition;
+					}
+				}
+				Mission mission = base.Mission;
+				for (int i = 0; i < 3 && mission != null; i++)
+				{
+					Vec3 fallbackCandidate = mission.GetRandomPositionAroundPoint(spawnFrame.origin, 0.45f, 1.4f, true);
+					if (TryProjectWorkshopSpawnPosition(spawnFrame.origin, fallbackCandidate, out Vec3 projectedPosition))
+					{
+						return projectedPosition;
+					}
+				}
 				return spawnFrame.origin;
 			}
 			Vec3 forward = spawnFrame.rotation.f;
@@ -3258,6 +3280,37 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			float forwardDistance = EnemyDoorSpawnBaseDistance + row * EnemyDoorSpawnRowDistance;
 			float lateralDistance = lateralIndex * EnemyDoorSpawnLateralSpacing;
 			return spawnFrame.origin + forward * forwardDistance + right * lateralDistance;
+		}
+
+		private bool TryProjectWorkshopSpawnPosition(Vec3 anchor, Vec3 candidate, out Vec3 projectedPosition)
+		{
+			projectedPosition = candidate;
+			try
+			{
+				Scene scene = base.Mission?.Scene;
+				if (scene == null)
+				{
+					return false;
+				}
+				anchor.z = scene.GetGroundHeightAtPosition(anchor);
+				candidate.z = scene.GetGroundHeightAtPosition(candidate);
+				WorldPosition anchorWorld = new WorldPosition(scene, anchor);
+				WorldPosition candidateWorld = new WorldPosition(scene, candidate);
+				if (anchorWorld.GetNearestNavMesh() == UIntPtr.Zero || candidateWorld.GetNearestNavMesh() == UIntPtr.Zero)
+				{
+					return false;
+				}
+				if (!scene.IsLineToPointClear(ref anchorWorld, ref candidateWorld, 0.4f))
+				{
+					return false;
+				}
+				projectedPosition = candidateWorld.GetNavMeshVec3();
+				return true;
+			}
+			catch
+			{
+				return false;
+			}
 		}
 
 		private bool TryGetLordHallDoorSpawnFrame(out MatrixFrame frame)
