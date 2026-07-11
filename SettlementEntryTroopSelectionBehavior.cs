@@ -387,7 +387,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				try { playerTeam.MasterOrderController?.SelectAllFormations(false); } catch { }
 			}
 			_setsOrderControllerPrimed = true;
-			SettlementEntryTroopSelectionLog.Log("Primed SETS player order controller. source=" + (source ?? "N/A") + ", commandable=" + commandable + ", formations=" + commandFormations.Count + ", preserveSelection=" + preserveSelection + ", existingSelection=" + hasExistingSelection);
+			SettlementEntryTroopSelectionLog.LogVerbose("Primed SETS player order controller. source=" + (source ?? "N/A") + ", commandable=" + commandable + ", formations=" + commandFormations.Count + ", preserveSelection=" + preserveSelection + ", existingSelection=" + hasExistingSelection);
 			return TryResolveSetsNativeOrderControllerForExternal(mission) != null;
 		}
 		catch (Exception ex)
@@ -548,7 +548,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				_setsOrderControllerPrimed = false;
 				_nextSetsOrderControllerPrimeTime = 0f;
 			}
-			SettlementEntryTroopSelectionLog.Log("SETS selected follower state updated. source=" + source + ", active=" + _setsEntryMissionActive + ", tracked=" + SetsSelectedFollowerAgentIndexes.Count);
+			SettlementEntryTroopSelectionLog.LogVerbose("SETS selected follower state updated. source=" + source + ", active=" + _setsEntryMissionActive + ", tracked=" + SetsSelectedFollowerAgentIndexes.Count);
 		}
 		catch
 		{
@@ -566,7 +566,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			SetSetsSelectedFollowerState(Mission.Current, active: true, source);
 			if (SetsSelectedFollowerAgentIndexes.Add(agent.Index))
 			{
-				SettlementEntryTroopSelectionLog.Log("Registered SETS selected follower agent. source=" + source + ", agent=" + agent.Index + ", troop=" + SafeCharacterId(agent.Character as CharacterObject));
+				SettlementEntryTroopSelectionLog.LogVerbose("Registered SETS selected follower agent. source=" + source + ", agent=" + agent.Index + ", troop=" + SafeCharacterId(agent.Character as CharacterObject));
 			}
 		}
 		catch
@@ -828,7 +828,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			{
 				SetsUsableProtectionLastLogTimes[index] = now;
 			}
-			SettlementEntryTroopSelectionLog.Log("Suppressed SETS combat agent usable target. source=" + source + ", agent=" + index + ", troop=" + SafeCharacterId(agent?.Character as CharacterObject));
+			SettlementEntryTroopSelectionLog.LogVerbose("Suppressed SETS combat agent usable target. source=" + source + ", agent=" + index + ", troop=" + SafeCharacterId(agent?.Character as CharacterObject));
 		}
 		catch
 		{
@@ -843,7 +843,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			return true;
 		}
 		__result = null;
-		SettlementEntryTroopSelectionLog.Log("Bypassed native end-mission guard for SETS victory.");
+		SettlementEntryTroopSelectionLog.LogVerbose("Bypassed native end-mission guard for SETS victory.");
 		return false;
 	}
 
@@ -2207,7 +2207,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				}
 				if (force)
 				{
-					SettlementEntryTroopSelectionLog.Log("Maintained owned/attached settlement panic. settlement=" + _settlementId + ", fleeing=" + fleeing + ", neutralized=" + neutralized);
+					SettlementEntryTroopSelectionLog.LogVerbose("Maintained owned/attached settlement panic. settlement=" + _settlementId + ", fleeing=" + fleeing + ", neutralized=" + neutralized);
 				}
 			}
 			catch (Exception ex)
@@ -2714,7 +2714,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			_lastDefenderReserveLiveEnemyCount = liveEnemyCount;
 			_lastDefenderReserveProgressTime = base.Mission?.CurrentTime ?? 0f;
 			_defenderReserveStuckNudged = false;
-			SettlementEntryTroopSelectionLog.Log("Defender reserve progress reset. settlement=" + _settlementId + ", source=" + source + ", wave=" + _defenderReserveWaveIndex + ", activeWaves=" + CountActiveDefenderReserveWaves() + ", liveEnemies=" + liveEnemyCount + ", time=" + _lastDefenderReserveProgressTime.ToString("0.0"));
+			SettlementEntryTroopSelectionLog.LogVerbose("Defender reserve progress reset. settlement=" + _settlementId + ", source=" + source + ", wave=" + _defenderReserveWaveIndex + ", activeWaves=" + CountActiveDefenderReserveWaves() + ", liveEnemies=" + liveEnemyCount + ", time=" + _lastDefenderReserveProgressTime.ToString("0.0"));
 		}
 
 		private bool TryRecoverStalledDefenderReserve(int liveEnemyCount)
@@ -3290,7 +3290,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				}
 				if (frames.Count > 0)
 				{
-					SettlementEntryTroopSelectionLog.Log("Resolved town workshop spawn frames. settlement=" + _settlementId + ", count=" + frames.Count);
+					SettlementEntryTroopSelectionLog.LogVerbose("Resolved town workshop spawn frames. settlement=" + _settlementId + ", count=" + frames.Count);
 					return true;
 				}
 			}

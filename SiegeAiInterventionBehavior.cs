@@ -696,10 +696,17 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			Location location = ResolveInterventionLocation(settlement);
 			if (settlement == null || PlayerEncounter.LocationEncounter == null || location == null)
 			{
+				GcczDiagnosticLog.Log("Entry", "blocked settlement=" + (settlement?.StringId ?? "null")
+					+ " hasLocationEncounter=" + (PlayerEncounter.LocationEncounter != null)
+					+ " location=" + (location?.StringId ?? "null"));
 				InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.MissingSceneMessage, Color.FromUint(SiegeInterventionEntryProfile.MissingSceneMessageColor)));
 				return;
 			}
 			PrepareInterventionEntryRuntime(settlement, SiegeInterventionEntryProfile.SceneEntryCleanupSource);
+			GcczDiagnosticLog.Log("Entry", "prepared settlement=" + (settlement.StringId ?? "N/A")
+				+ " location=" + (location.StringId ?? "N/A")
+				+ " setsVictory=" + _setsSettlementEntryVictoryContext
+				+ " setsOwnedIncident=" + _setsOwnedSettlementIncidentContext);
 			InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.BuildTroopSelectionInstructionMessage(AutoSummonCount), Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
 			InformationManager.DisplayMessage(new InformationMessage(_setsOwnedSettlementIncidentContext ? SetsOwnedSettlementIncidentProfile.BuildEntryInstruction() : SiegeInterventionEntryProfile.BuildDecisionPolicyMessage(false), Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
 			if (!TryOpenInterventionTroopSelection(args, location))
@@ -709,6 +716,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
+			GcczDiagnosticLog.Log("Entry", "failed error=" + ex);
 			Logger.Log("SiegeAiIntervention", "EnterIntervention failed: " + ex);
 			InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.EntryFailedMessage, Color.FromUint(SiegeInterventionEntryProfile.MissingSceneMessageColor)));
 		}
@@ -1348,16 +1356,22 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			if (!CanOpenInterventionMissionNow(location))
 			{
+				GcczDiagnosticLog.Log("Mission", "open blocked source=" + (source ?? "N/A") + " location=" + (location?.StringId ?? "null"));
 				Logger.Log("SiegeAiIntervention", "OpenInterventionMissionNow skipped; location encounter unavailable. Source=" + (source ?? "N/A"));
 				return false;
 			}
 			_activeInterventionLocationId = location.StringId ?? "";
 			PlayerEncounter.LocationEncounter.CreateAndOpenMissionController(location, null, null, null);
+			GcczDiagnosticLog.Log("Mission", "open requested source=" + (source ?? "N/A")
+				+ " settlement=" + (_activeSettlementId ?? "N/A")
+				+ " location=" + (_activeInterventionLocationId ?? "N/A")
+				+ " selectedRoster=" + (_selectedInterventionRoster?.TotalManCount ?? 0));
 			Logger.Log("SiegeAiIntervention", "Opened intervention mission through normal location controller. Source=" + (source ?? "N/A") + ", SelectedRoster=" + (_selectedInterventionRoster?.TotalManCount ?? 0));
 			return true;
 		}
 		catch (Exception ex)
 		{
+			GcczDiagnosticLog.Log("Mission", "open failed source=" + (source ?? "N/A") + " error=" + ex);
 			Logger.Log("SiegeAiIntervention", "OpenInterventionMissionNow failed. Source=" + (source ?? "N/A") + ", Error=" + ex);
 			return false;
 		}
@@ -1464,12 +1478,16 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 		if (!DoesLiveCurrentSettlementMatchActiveIntervention())
 		{
+			GcczDiagnosticLog.Log("Mission", "pending start rejected settlementMismatch pendingSettlement=" + (_activeSettlementId ?? "N/A"));
 			Logger.Log("SiegeAiIntervention", "Ignored pending GCCZ mission start because live settlement did not match. PendingSettlement=" + (_activeSettlementId ?? "N/A"));
 			ResetAftermathRuntimeGuards("pending_mission_settlement_mismatch");
 			return;
 		}
 		_activeMode = _pendingMode;
 		_pendingMode = InterventionMode.None;
+		GcczDiagnosticLog.Log("Mission", "started settlement=" + (_activeSettlementId ?? "N/A")
+			+ " mode=" + _activeMode
+			+ " location=" + (_activeInterventionLocationId ?? "N/A"));
 		_nextControlTickTime = 0f;
 		_nextPlunderTickTime = 0f;
 		AfGcczShoutBridge.ResetPostprocessFrequencyForMissionBoundary(SiegePostprocessFrequencyProfile.MissionStartResetSource);
@@ -1507,6 +1525,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		RemoveUnsafeAssemblyCivilianAgents(mission);
 		TrackSceneCivilianAgents(mission);
 		MaintainCivilianAssembly(mission, SiegeCivilianAssemblyProfile.MissionAfterStartSource, force: true);
+		GcczDiagnosticLog.Log("Mission", "after-start prepared settlement=" + (_activeSettlementId ?? "N/A")
+			+ " selectedRoster=" + (_selectedInterventionRoster?.TotalManCount ?? 0)
+			+ " sceneCivilians=" + SceneCivilianAgentIndexes.Count);
 	}
 
 	private void OnMissionTick(float dt)
@@ -1610,12 +1631,20 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			return;
 		}
 		AfGcczShoutBridge.ResetPostprocessFrequencyForMissionBoundary(SiegePostprocessFrequencyProfile.MissionEndResetSource);
+		GcczDiagnosticLog.Log("Mission", "ending settlement=" + (_activeSettlementId ?? "N/A")
+			+ " mode=" + _activeMode
+			+ " pendingAftermath=" + _hasPendingAftermath
+			+ " plunder=" + _plunderStarted
+			+ " massacre=" + _massacreStarted);
 		EnsureMissionExitOutcomeBeforeFinalizing();
 		if (_plunderStarted && !_massacreStarted)
 		{
 			AutoLootRemainingVisibleCiviliansForPlunder();
 		}
 		bool finalized = FinalizePendingAftermath(SiegeAftermathTransitionSourceProfile.MissionEndFinalizeSource);
+		GcczDiagnosticLog.Log("Mission", "ended finalized=" + finalized
+			+ " aftermath=" + _pendingSummaryAftermath
+			+ " lootItems=" + (_pendingLootRoster?.Count ?? 0));
 		if (finalized)
 		{
 			_pendingSummarySwitch = true;
@@ -11320,7 +11349,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			ReturnSharedCivilianReliefPoolToPlayerForNegativeOutcome(triggerSource ?? aftermath.ToString());
 		}
-		if (SiegeAftermathSelectionPolicy.ShouldReplacePendingAftermath(requestedAftermath, ToStandaloneAftermathKind(_pendingAftermath), _hasPendingAftermath, _massacreStarted, _culturalRepopulationRequested))
+		SiegeAftermathAction.SiegeAftermath previousAftermath = _pendingAftermath;
+		bool hadPendingAftermath = _hasPendingAftermath;
+		bool replacePendingAftermath = SiegeAftermathSelectionPolicy.ShouldReplacePendingAftermath(requestedAftermath, ToStandaloneAftermathKind(_pendingAftermath), _hasPendingAftermath, _massacreStarted, _culturalRepopulationRequested);
+		if (replacePendingAftermath)
 		{
 			ResetOutcomeMessageDedupForTrack(aftermath.ToString());
 			_pendingAftermath = aftermath;
@@ -11328,6 +11360,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			_pendingAftermathDetail = (triggerDetail ?? "").Trim();
 		}
 		_hasPendingAftermath = true;
+		GcczDiagnosticLog.Log("Outcome", "pending requested=" + aftermath
+			+ " previous=" + (hadPendingAftermath ? previousAftermath.ToString() : "none")
+			+ " replaced=" + replacePendingAftermath
+			+ " current=" + _pendingAftermath
+			+ " trigger=" + ((_pendingAftermathTrigger ?? string.Empty).Length > 0 ? _pendingAftermathTrigger : "N/A"));
 	}
 
 	private static void ResetOutcomeMessageDedup()
@@ -11423,11 +11460,14 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		if (!_hasPendingAftermath)
 		{
+			GcczDiagnosticLog.LogVerbose("Outcome", "finalize skipped no pending aftermath reason=" + (reason ?? "N/A"));
 			return false;
 		}
 		Settlement settlement = ResolveCurrentSettlement();
 		if (settlement == null || settlement.Town == null)
 		{
+			GcczDiagnosticLog.Log("Outcome", "finalize blocked missing settlement context reason=" + (reason ?? "N/A")
+				+ " activeSettlement=" + (_activeSettlementId ?? "N/A"));
 			return false;
 		}
 		try
@@ -11477,10 +11517,18 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			MarkAftermathResolvedForCompletion(settlement, aftermath);
 			PrepareCompletedInterventionSummary(aftermath);
 			_hasPendingAftermath = false;
+			GcczDiagnosticLog.Log("Outcome", "finalized settlement=" + (settlement.StringId ?? "N/A")
+				+ " aftermath=" + aftermath
+				+ " reason=" + (reason ?? "N/A")
+				+ " lootItems=" + _lastLootItemTotal
+				+ " lootValue=" + _lastLootValue
+				+ " killedCivilians=" + _lastKilledCivilianUnits
+				+ " killedNotables=" + _lastKilledNotables);
 			return true;
 		}
 		catch (Exception ex)
 		{
+			GcczDiagnosticLog.Log("Outcome", "finalize failed reason=" + (reason ?? "N/A") + " error=" + ex);
 			Logger.Log("SiegeAiIntervention", "FinalizePendingAftermath failed: " + ex);
 			return false;
 		}
@@ -12446,6 +12494,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			bool newlyQueued = !_pendingEncounterFinish;
 			if (!_pendingEncounterFinish)
 			{
 				_pendingEncounterFinish = true;
@@ -12457,10 +12506,23 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				_pendingEncounterFinishDelayTicks = Math.Max(0, delayTicks);
 			}
+			string queueLog = "queued aftermath=" + aftermath
+				+ " reason=" + (reason ?? "N/A")
+				+ " delayTicks=" + _pendingEncounterFinishDelayTicks
+				+ " forceDelay=" + forceDelay;
+			if (newlyQueued)
+			{
+				GcczDiagnosticLog.Log("Exit", queueLog);
+			}
+			else
+			{
+				GcczDiagnosticLog.LogVerbose("Exit", queueLog);
+			}
 			Logger.Log("SiegeAiIntervention", "Queued AF siege encounter finish. Reason=" + (reason ?? "N/A") + ", Aftermath=" + aftermath + ", DelayTicks=" + _pendingEncounterFinishDelayTicks);
 		}
 		catch (Exception ex)
 		{
+			GcczDiagnosticLog.Log("Exit", "queue failed reason=" + (reason ?? "N/A") + " error=" + ex.Message);
 			Logger.Log("SiegeAiIntervention", "QueueEncounterFinishAfterIntervention failed: " + ex.Message);
 		}
 	}
@@ -12511,6 +12573,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			if (PlayerEncounter.Current == null)
 			{
+				GcczDiagnosticLog.Log("Exit", "completed source=" + (source ?? "N/A")
+					+ " aftermath=" + aftermath
+					+ " attempts=" + _pendingEncounterFinishAttempts);
 				Logger.Log("SiegeAiIntervention", "AF siege encounter finish completed. Source=" + (source ?? "N/A"));
 				return true;
 			}
@@ -12519,6 +12584,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				try
 				{
 					GameMenu.ExitToLast();
+					GcczDiagnosticLog.Log("Exit", "fallback menu exit source=" + (source ?? "N/A")
+						+ " attempts=" + _pendingEncounterFinishAttempts);
 					Logger.Log("SiegeAiIntervention", "Fallback GameMenu.ExitToLast after AF intervention finish attempts. Source=" + (source ?? "N/A") + ", Attempt=" + _pendingEncounterFinishAttempts);
 				}
 				catch
@@ -12529,6 +12596,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
+			GcczDiagnosticLog.Log("Exit", "finish failed source=" + (source ?? "N/A") + " error=" + ex.Message);
 			Logger.Log("SiegeAiIntervention", "TryFinishPlayerEncounterAfterInterventionNow failed. Source=" + (source ?? "N/A") + ", Error=" + ex.Message);
 			return false;
 		}
@@ -13357,6 +13425,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			_directPlunderLastDeferKey = "";
 			ResetOutcomeMessageDedup();
 			ResetSessionCounters();
+			GcczDiagnosticLog.LogVerbose("Lifecycle", "runtime guards reset reason=" + (reason ?? "N/A"));
 			Logger.Log("SiegeAiIntervention", "Reset AF siege aftermath runtime guards. Reason=" + (reason ?? "N/A"));
 		}
 		catch (Exception ex)

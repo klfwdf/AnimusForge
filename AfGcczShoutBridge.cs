@@ -163,7 +163,7 @@ internal static class AfGcczShoutBridge
 		bool unlimited = DuelSettings.IsGcczNpcResponseUnlimitedEnabled();
 		int configuredLimit = DuelSettings.GetGcczNpcResponseLimit();
 		int allowed = SiegeNpcResponseLimitProfile.ResolveAllowedResponseCount(unlimited, configuredLimit, safeAvailableCount);
-		GcczDiagnosticLog.Log("ResponseLimit", "source=" + NormalizeThrottleSource(source)
+		GcczDiagnosticLog.LogVerbose("ResponseLimit", "source=" + NormalizeThrottleSource(source)
 			+ " unlimited=" + unlimited
 			+ " configured=" + configuredLimit
 			+ " available=" + safeAvailableCount

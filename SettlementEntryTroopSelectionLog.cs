@@ -1,34 +1,53 @@
-using System;
-using System.IO;
-
 namespace AnimusForge;
 
 internal static class SettlementEntryTroopSelectionLog
 {
-	private const string FileName = "SETS.log";
-	private static string _logPath;
+	private static readonly FeatureDiagnosticLogFile LogFile = new FeatureDiagnosticLogFile(
+		"SETS.log",
+		"SETS",
+		"SETS",
+		DuelSettings.IsSetsDiagnosticLogEnabled,
+		DuelSettings.IsSetsVerboseDiagnosticLogEnabled,
+		DuelSettings.GetSetsDiagnosticLogMaxSizeMegabytes);
 
 	public static void Log(string message)
 	{
+		Write(message, verbose: false);
+	}
+
+	public static void LogVerbose(string message)
+	{
+		Write(message, verbose: true);
+	}
+
+	internal static string GetDiagnosticLogPath()
+	{
+		return LogFile.GetLogPath();
+	}
+
+	internal static string GetDiagnosticLogDirectory()
+	{
+		return LogFile.GetLogDirectory();
+	}
+
+	internal static string ExportLogToDesktop()
+	{
+		return LogFile.ExportToDesktop();
+	}
+
+	internal static void ClearLog()
+	{
+		LogFile.Clear();
+	}
+
+	private static void Write(string message, bool verbose)
+	{
 		try
 		{
-			string path = GetLogPath();
-			File.AppendAllText(path, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + " " + (message ?? "") + Environment.NewLine);
+			LogFile.Write("SETS", message, verbose);
 		}
 		catch
 		{
 		}
-	}
-
-	private static string GetLogPath()
-	{
-		if (!string.IsNullOrWhiteSpace(_logPath))
-		{
-			return _logPath;
-		}
-		string dir = AnimusForgeModulePaths.GetLogsDirectory();
-		Directory.CreateDirectory(dir);
-		_logPath = Path.Combine(dir, FileName);
-		return _logPath;
 	}
 }
