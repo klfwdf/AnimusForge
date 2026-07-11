@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using AnimusForge.SiegeAftermathIntervention;
 using Helpers;
 using HarmonyLib;
 using SandBox;
@@ -43,6 +44,9 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	private const float EnemyDoorSpawnRowDistance = 3.4f;
 	private const float EnemyDoorSpawnLateralSpacing = 4f;
 	private const int DefenderReserveWorkshopSpawnGroupSize = 10;
+	private const int DefenderReserveWorkshopGridColumns = 5;
+	private const float DefenderReserveWorkshopGridRowSpacing = 1.5f;
+	private const float DefenderReserveWorkshopGridLateralSpacing = 1.5f;
 	private const int SpawnGridColumns = 8;
 	private const float DefenderReserveStuckNudgeSeconds = 20f;
 	private const float DefenderReserveStuckRetrySeconds = 50f;
@@ -1558,6 +1562,9 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private readonly Dictionary<int, ProtectedFollowerFriendlyFireHitRecord> _recentProtectedFollowerFriendlyFireHits = new Dictionary<int, ProtectedFollowerFriendlyFireHitRecord>();
 		private readonly Dictionary<int, int> _defenderReserveRecoveryCursorByWorkshopFrame = new Dictionary<int, int>();
 		private readonly Dictionary<int, float> _enemyInitialTargetReleaseTimes = new Dictionary<int, float>();
+		private readonly Dictionary<int, Vec3> _enemyWallPassProbePositions = new Dictionary<int, Vec3>();
+		private readonly Dictionary<int, float> _enemyWallPassProbeTimes = new Dictionary<int, float>();
+		private readonly Dictionary<int, float> _enemyWallPassLastStepTimes = new Dictionary<int, float>();
 		private static readonly MethodInfo AgentSetTargetAgentMethod = AccessTools.Method(typeof(Agent), "SetTargetAgent", new[] { typeof(Agent) });
 		private static readonly MethodInfo AgentSetAutomaticTargetSelectionMethod = AccessTools.Method(typeof(Agent), "SetAutomaticTargetSelection", new[] { typeof(bool) });
 		private bool _spawnedAllies;
@@ -1719,6 +1726,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			_lastProtectedFollowerHealth.Remove(affectedAgent.Index);
 			_recentProtectedFollowerFriendlyFireHits.Remove(affectedAgent.Index);
 			_enemyInitialTargetReleaseTimes.Remove(affectedAgent.Index);
+			ClearEnemyWallPassTracking(affectedAgent.Index);
 			if (_conflictFeaturesEnabled && (_ownedSettlementIncidentTriggered || _conflictActive) && agentState == AgentState.Killed && IsPlayerSideAgent(affectorAgent) && !IsPlayerSideAgent(affectedAgent) && IsOwnedSettlementIncidentNotable(affectedAgent))
 			{
 				_townRiotKilledNotable = true;
@@ -2106,6 +2114,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					_spawnedDefenderReserveAgentIndexes.Remove(agentIndex);
 					_defenderReserveAgentSourceRosters.Remove(agentIndex);
 					_defenderReserveAgentWaveNumbers.Remove(agentIndex);
+					ClearEnemyWallPassTracking(agentIndex);
 				}
 				if (nonObjectiveTrackedEnemies.Count > 0)
 				{
@@ -2435,6 +2444,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				{
 					AssignAgentToFormation(agent, _enemyTeam, FormationClass.Infantry);
 				}
+				TryMaintainEnemyWallPassRescue(agent);
 				if (!_enemyInitialTargetReleaseTimes.TryGetValue(agent.Index, out float releaseTime))
 				{
 					return;
@@ -2454,6 +2464,173 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			{
 				SettlementEntryTroopSelectionLog.Log("MaintainEnemyAgentNativeCombat failed. agent=" + agent?.Index + ", error=" + ex.Message);
 			}
+		}
+
+		private void TryMaintainEnemyWallPassRescue(Agent agent)
+		{
+			try
+			{
+				Mission mission = base.Mission;
+				Agent target = FindNearestPlayerSideTarget(agent);
+				if (!IsLiveTrackedEnemy(agent) || mission?.Scene == null || target == null || !target.IsActive())
+				{
+					ClearEnemyWallPassTracking(agent?.Index ?? -1);
+					return;
+				}
+				float distanceSq = agent.Position.DistanceSquared(target.Position);
+				float minTargetDistanceSq = SiegeAgentWallRescueProfile.WallPassTeleportMinDistance * SiegeAgentWallRescueProfile.WallPassTeleportMinDistance;
+				if (distanceSq <= minTargetDistanceSq)
+				{
+					ClearEnemyWallPassTracking(agent.Index);
+					return;
+				}
+				float now = mission.CurrentTime;
+				if (!_enemyWallPassProbeTimes.TryGetValue(agent.Index, out float lastProbeTime))
+				{
+					_enemyWallPassProbePositions[agent.Index] = agent.Position;
+					_enemyWallPassProbeTimes[agent.Index] = now;
+					return;
+				}
+				if (now - lastProbeTime < SiegeAgentWallRescueProfile.ProbeSeconds)
+				{
+					return;
+				}
+				Vec3 lastPosition = _enemyWallPassProbePositions.TryGetValue(agent.Index, out Vec3 probePosition) ? probePosition : agent.Position;
+				_enemyWallPassProbePositions[agent.Index] = agent.Position;
+				_enemyWallPassProbeTimes[agent.Index] = now;
+				float minMovedSq = SiegeAgentWallRescueProfile.MinMovedDistance * SiegeAgentWallRescueProfile.MinMovedDistance;
+				if (agent.Position.DistanceSquared(lastPosition) >= minMovedSq)
+				{
+					return;
+				}
+				if (_enemyWallPassLastStepTimes.TryGetValue(agent.Index, out float lastStepTime)
+					&& now - lastStepTime < SiegeAgentWallRescueProfile.WallPassTeleportCooldownSeconds)
+				{
+					return;
+				}
+				if (TryApplyEnemyWallPassStep(agent, target, out Vec3 rescuePosition))
+				{
+					_enemyWallPassLastStepTimes[agent.Index] = now;
+					_enemyWallPassProbePositions[agent.Index] = rescuePosition;
+					_enemyWallPassProbeTimes[agent.Index] = now;
+					AssignEnemyAgentCombatTarget(agent, agent.Index);
+					SettlementEntryTroopSelectionLog.Log("Applied SETS enemy wall-pass rescue. settlement=" + _settlementId + ", agent=" + agent.Index + ", target=" + target.Index + ", position=" + rescuePosition);
+				}
+			}
+			catch (Exception ex)
+			{
+				SettlementEntryTroopSelectionLog.Log("SETS enemy wall-pass rescue failed. agent=" + agent?.Index + ", error=" + ex.Message);
+			}
+		}
+
+		private Agent FindNearestPlayerSideTarget(Agent source)
+		{
+			Agent nearest = null;
+			float nearestDistanceSq = float.MaxValue;
+			try
+			{
+				if (source == null || base.Mission?.Agents == null)
+				{
+					return Agent.Main ?? base.Mission?.MainAgent;
+				}
+				foreach (Agent candidate in base.Mission.Agents)
+				{
+					if (candidate == null || !candidate.IsHuman || !candidate.IsActive() || !IsPlayerSideAgent(candidate))
+					{
+						continue;
+					}
+					float distanceSq = source.Position.DistanceSquared(candidate.Position);
+					if (distanceSq < nearestDistanceSq)
+					{
+						nearestDistanceSq = distanceSq;
+						nearest = candidate;
+					}
+				}
+			}
+			catch
+			{
+			}
+			return nearest ?? Agent.Main ?? base.Mission?.MainAgent;
+		}
+
+		private bool TryApplyEnemyWallPassStep(Agent agent, Agent target, out Vec3 rescuePosition)
+		{
+			rescuePosition = agent?.Position ?? Vec3.Zero;
+			try
+			{
+				Mission mission = base.Mission;
+				Scene scene = mission?.Scene;
+				if (agent == null || target == null || scene == null)
+				{
+					return false;
+				}
+				Vec3 direction = target.Position - agent.Position;
+				direction.z = 0f;
+				float distance = direction.Normalize();
+				if (distance <= SiegeAgentWallRescueProfile.WallPassTeleportMinDistance)
+				{
+					return false;
+				}
+				float maxStep = Math.Min(SiegeAgentWallRescueProfile.NativeTargetFrameSampleMaxRadius, distance - 1f);
+				float maxStepSq = maxStep * maxStep;
+				Vec3 stepCenter = agent.Position + direction * maxStep;
+				Vec3 bestPosition = agent.Position;
+				float currentTargetDistanceSq = agent.Position.DistanceSquared(target.Position);
+				float bestScore = float.MinValue;
+				for (int i = 0; i < SiegeAgentWallRescueProfile.NativeTargetFrameSampleCount; i++)
+				{
+					Vec3 candidate = i == 0
+						? stepCenter
+						: mission.GetRandomPositionAroundPoint(stepCenter, 0.35f, 2.25f, i % 2 == 0);
+					candidate.z = scene.GetGroundHeightAtPosition(candidate, BodyFlags.CommonCollisionExcludeFlags);
+					WorldPosition candidateWorld = new WorldPosition(scene, candidate);
+					if (candidateWorld.GetNearestNavMesh() == UIntPtr.Zero)
+					{
+						continue;
+					}
+					candidate = candidateWorld.GetNavMeshVec3();
+					float movedSq = candidate.DistanceSquared(agent.Position);
+					float candidateTargetDistanceSq = candidate.DistanceSquared(target.Position);
+					if (movedSq < 0.25f || movedSq > maxStepSq || candidateTargetDistanceSq >= currentTargetDistanceSq - 0.25f)
+					{
+						continue;
+					}
+					Vec3 candidateDirection = candidate - agent.Position;
+					candidateDirection.z = 0f;
+					float directionScore = candidateDirection.LengthSquared > 0.01f ? Vec2.DotProduct(candidateDirection.AsVec2.Normalized(), direction.AsVec2) : -1f;
+					float score = currentTargetDistanceSq - candidateTargetDistanceSq + directionScore * 4f;
+					if (score > bestScore)
+					{
+						bestScore = score;
+						bestPosition = candidate;
+					}
+				}
+				if (bestScore == float.MinValue)
+				{
+					return false;
+				}
+				agent.DisableScriptedMovement();
+				agent.ClearTargetFrame();
+				agent.InvalidateTargetAgent();
+				agent.TeleportToPosition(bestPosition);
+				rescuePosition = bestPosition;
+				return true;
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
+		private void ClearEnemyWallPassTracking(int agentIndex)
+		{
+			if (agentIndex < 0)
+			{
+				return;
+			}
+			_enemyWallPassProbePositions.Remove(agentIndex);
+			_enemyWallPassProbeTimes.Remove(agentIndex);
+			_enemyWallPassLastStepTimes.Remove(agentIndex);
 		}
 
 		private Agent SelectPlayerSideTarget(int seed)
@@ -2689,6 +2866,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					_spawnedDefenderReserveAgentIndexes.Remove(agent.Index);
 					_defenderReserveAgentSourceRosters.Remove(agent.Index);
 					_defenderReserveAgentWaveNumbers.Remove(agent.Index);
+					ClearEnemyWallPassTracking(agent.Index);
 				}
 				SettlementEntryTroopSelectionLog.Log("Neutralized live tracked enemies. reason=" + reason + ", count=" + enemies.Count);
 				RefreshSetsUsableProtectionState("neutralize_enemies");
@@ -3237,13 +3415,15 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				}
 				workshopRight.Normalize();
 				int workshopLocalIndex = Math.Abs(troopIndex % DefenderReserveWorkshopSpawnGroupSize);
-				float angle = (float)(Math.PI * 2.0 * workshopLocalIndex / DefenderReserveWorkshopSpawnGroupSize);
-				float radius = workshopLocalIndex % 2 == 0 ? 1.05f : 1.55f;
-				Vec3 radialOffset = workshopForward * ((float)Math.Cos(angle) * radius) + workshopRight * ((float)Math.Sin(angle) * radius);
+				int workshopRow = workshopLocalIndex / DefenderReserveWorkshopGridColumns;
+				int workshopColumn = workshopLocalIndex % DefenderReserveWorkshopGridColumns;
+				float workshopForwardOffset = (workshopRow - 0.5f) * DefenderReserveWorkshopGridRowSpacing;
+				float workshopLateralOffset = (workshopColumn - (DefenderReserveWorkshopGridColumns - 1) * 0.5f) * DefenderReserveWorkshopGridLateralSpacing;
+				Vec3 gridOffset = workshopForward * workshopForwardOffset + workshopRight * workshopLateralOffset;
 				for (int i = 0; i < 3; i++)
 				{
 					float projectionScale = i == 0 ? 1f : (i == 1 ? 0.7f : 0.45f);
-					if (TryProjectWorkshopSpawnPosition(spawnFrame.origin, spawnFrame.origin + radialOffset * projectionScale, out Vec3 projectedPosition))
+					if (TryProjectWorkshopSpawnPosition(spawnFrame.origin, spawnFrame.origin + gridOffset * projectionScale, out Vec3 projectedPosition))
 					{
 						return projectedPosition;
 					}
