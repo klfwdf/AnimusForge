@@ -50,6 +50,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	private const int SpawnGridColumns = 8;
 	private const float DefenderReserveStuckNudgeSeconds = 20f;
 	private const float DefenderReserveStuckRetrySeconds = 50f;
+	private const int EnemyWallPassRescueBudgetPerRefresh = 4;
 	private const float EnemyInitialTargetLockSeconds = 1.5f;
 	private const float ProtectedFollowerHostilitySuppressionSeconds = 8f;
 	private const float ProtectedFollowerFriendlyFireDuplicateWindowSeconds = 0.05f;
@@ -920,6 +921,10 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
+			if (settlement.IsUnderSiege || settlement.Party?.MapEvent != null || MobileParty.MainParty?.MapEvent != null)
+			{
+				return false;
+			}
 			if (Mission.Current != null || Campaign.Current == null || MobileParty.MainParty?.MemberRoster == null)
 			{
 				return false;
@@ -1586,6 +1591,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private float _nextOwnedSettlementPanicTickTime;
 		private float _victoryReachedTime = -1f;
 		private int _lastDefenderReserveLiveEnemyCount = -1;
+		private int _enemyWallPassRescueBudget;
 		private bool _defenderReserveStuckNudged;
 		private int _defenderReservePhaseIndex;
 		private int _defenderReserveWaveIndex;
@@ -2373,6 +2379,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		{
 			try
 			{
+				_enemyWallPassRescueBudget = EnemyWallPassRescueBudgetPerRefresh;
 				foreach (Agent agent in base.Mission.Agents)
 				{
 					if (IsLiveTrackedEnemy(agent))
@@ -2508,6 +2515,11 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				{
 					return;
 				}
+				if (_enemyWallPassRescueBudget <= 0)
+				{
+					return;
+				}
+				_enemyWallPassRescueBudget--;
 				if (TryApplyEnemyWallPassStep(agent, target, out Vec3 rescuePosition))
 				{
 					_enemyWallPassLastStepTimes[agent.Index] = now;
@@ -3435,6 +3447,15 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					if (TryProjectWorkshopSpawnPosition(spawnFrame.origin, fallbackCandidate, out Vec3 projectedPosition))
 					{
 						return projectedPosition;
+					}
+				}
+				for (int i = 0; i < 6 && mission?.Scene != null; i++)
+				{
+					Vec3 navMeshFallback = mission.GetRandomPositionAroundPoint(spawnFrame.origin, 0.45f, 2.4f, true);
+					WorldPosition fallbackWorld = new WorldPosition(mission.Scene, navMeshFallback);
+					if (fallbackWorld.GetNearestNavMesh() != UIntPtr.Zero && navMeshFallback.DistanceSquared(spawnFrame.origin) > 0.04f)
+					{
+						return fallbackWorld.GetNavMeshVec3();
 					}
 				}
 				return spawnFrame.origin;

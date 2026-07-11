@@ -7914,26 +7914,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void NotifyAgentBuiltForMission(Agent agent, Mission mission)
-	{
-		try
-		{
-			if (agent == null || mission == null)
-			{
-				return;
-			}
-			BattleAgentLogic battleAgentLogic = mission.GetMissionBehavior<BattleAgentLogic>();
-			MethodInfo onAgentBuild = battleAgentLogic?.GetType()
-				.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
-				.FirstOrDefault(m => m.Name == "OnAgentBuild" && m.GetParameters().Length == 2);
-			onAgentBuild?.Invoke(battleAgentLogic, new object[] { agent, null });
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "NotifyAgentBuiltForMission failed: " + ex.Message);
-		}
-	}
-
 	internal static bool ShouldInjectInterventionOrderViewsForExternal(Mission mission)
 	{
 		try
@@ -10295,7 +10275,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				Agent spawnedAgent = mission.SpawnAgent(buildData, false);
 				if (spawnedAgent != null)
 				{
-					NotifyAgentBuiltForMission(spawnedAgent, mission);
 					spawned++;
 					AlliedAgentIndexes.Add(spawnedAgent.Index);
 					RestoreAlliedSoldierFriendlyState(spawnedAgent, 0f, SiegeSoldierCordonProfile.SpawnAlliedTroopRestoreSource, forceFollow: false);
@@ -10426,7 +10405,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					{
 						continue;
 					}
-					NotifyAgentBuiltForMission(spawnedAgent, mission);
 					AlliedAgentIndexes.Add(spawnedAgent.Index);
 					BannerBearerAgentIndexes.Add(spawnedAgent.Index);
 					RestoreAlliedSoldierFriendlyState(spawnedAgent, 0f, SiegeBannerBearerProfile.BannerBearerRestoreSource, forceFollow: false, clearTarget: true);
