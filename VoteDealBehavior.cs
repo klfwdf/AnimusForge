@@ -252,6 +252,28 @@ namespace AnimusForge
 					Logger.Log("VoteDeal", "[Harmony] KingdomDecision.NeedsPlayerResolution getter not found.");
 				}
 
+				try
+				{
+					MethodInfo isSingleClanDecisionMethod = AccessTools.Method(
+						typeof(KingdomDecision),
+						nameof(KingdomDecision.IsSingleClanDecision));
+					if (isSingleClanDecisionMethod != null)
+					{
+						harmony.Patch(
+							isSingleClanDecisionMethod,
+							prefix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_KingdomDecision_IsSingleClanDecision_Prefix)));
+						Logger.Log("VoteDeal", "[Harmony] Interactive single-clan bilateral agenda patch applied.");
+					}
+					else
+					{
+						Logger.Log("VoteDeal", "[Harmony] KingdomDecision.IsSingleClanDecision not found.");
+					}
+				}
+				catch (Exception singleClanPatchEx)
+				{
+					Logger.Log("VoteDeal", $"[BilateralDiplomacy] Interactive single-clan agenda patch failed: {singleClanPatchEx.Message}");
+				}
+
 				// ── Block ForceDecideDecision when TriggerTime is still future ──
 				Type kingdomMgmtVmType = typeof(KingdomManagementVM);
 				if (kingdomMgmtVmType != null)
@@ -992,6 +1014,43 @@ namespace AnimusForge
 				Logger.Log("VoteDeal", $"[AgendaDelay] Failed to start delayed kingdom decision election: {ex.Message}");
 				return false;
 			}
+		}
+
+		// Vanilla auto-resolves one-clan decisions and picks the outcome sponsored by
+		// the player clan. A bilateral counterpart uses that clan only as a technical
+		// proposer, so keep this one case interactive and leave every other decision vanilla.
+		private static bool Patch_KingdomDecision_IsSingleClanDecision_Prefix(
+			KingdomDecision __instance,
+			ref bool __result)
+		{
+			try
+			{
+				if (!RequiresInteractiveSingleClanBilateralVote(__instance)) return true;
+
+				__result = false;
+				Logger.Log(
+					"VoteDeal",
+					$"[BilateralDiplomacy] Single-clan counterpart kept interactive: kingdom={__instance.Kingdom?.StringId}, decision={GetSafeDecisionTitle(__instance)}");
+				return false;
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Single-clan interactive check failed: {ex.Message}");
+				return true;
+			}
+		}
+
+		private static bool RequiresInteractiveSingleClanBilateralVote(KingdomDecision decision)
+		{
+			if (decision == null || decision.IsEnforced) return false;
+
+			Kingdom playerKingdom = Clan.PlayerClan?.Kingdom;
+			if (playerKingdom == null || decision.Kingdom != playerKingdom) return false;
+			if (playerKingdom.RulingClan != Clan.PlayerClan || playerKingdom.Clans.Count != 1) return false;
+			if (!decision.IsPlayerParticipant) return false;
+			if (!IsBilateralDiplomacyCounterpartAgenda(decision)) return false;
+
+			return IsDecisionPendingInKingdom(decision, playerKingdom);
 		}
 
 		private static bool Patch_BilateralDiplomacy_ShouldBeCancelled_Prefix(KingdomDecision __instance, ref bool __result)
