@@ -33,6 +33,7 @@ public static class AIConfigHandler
 	private const int ActionPostprocessMaxHistoryAndLatestEntries = 8;
 	private const int ActionPostprocessRequestTimeoutMilliseconds = DuelSettings.LlmRequestTimeoutMilliseconds;
 	private const string KingAbdicateToPlayerActionTag = "[ACTION:KING_ABDICATE_TO_PLAYER]";
+	internal const string StrictPreprocessJsonSystemPrompt = "You are an AnimusForge preprocessing router. Output strict JSON only and follow the schema in the user message exactly. Include every required field. Never output CSV, bare values, prose, markdown, or code fences.";
 
 	private sealed class ActionPostprocessHistoryEntry
 	{
@@ -2885,7 +2886,7 @@ public static class AIConfigHandler
 			new
 			{
 				role = "system",
-				content = "You are a dialogue retrieval tool. Output only a comma-separated list of topic numbers, or 0 if no topic applies."
+				content = StrictPreprocessJsonSystemPrompt
 			},
 			new
 			{
@@ -3167,7 +3168,9 @@ public static class AIConfigHandler
 			FreezeWatchdog.Mark("AuxActionPostprocess.send_begin", "model=" + modelName + " maxTokens=" + Math.Max(16, actualMaxTokens), immediate: true);
 			HttpResponseMessage result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage, timeoutCts.Token).GetAwaiter().GetResult();
 			FreezeWatchdog.Mark("AuxActionPostprocess.response", "status=" + (int)result.StatusCode + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
+			FreezeWatchdog.Mark("AuxActionPostprocess.content_read_begin", "status=" + (int)result.StatusCode + " thread=" + Thread.CurrentThread.ManagedThreadId);
 			string text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+			FreezeWatchdog.Mark("AuxActionPostprocess.content_read_end", "chars=" + ((text ?? "").Length) + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2) + " thread=" + Thread.CurrentThread.ManagedThreadId);
 			if (!result.IsSuccessStatusCode && result.StatusCode == System.Net.HttpStatusCode.BadRequest && controlMode != "plain" && LooksLikeAuxiliaryThinkingControlError(text))
 			{
 				Logger.Log("AIConfig", "[ActionPostprocess] thinking payload rejected; retrying without thinking controls.");
@@ -3181,7 +3184,9 @@ public static class AIConfigHandler
 				FreezeWatchdog.Mark("AuxActionPostprocess.retry_send_begin", "model=" + modelName, immediate: true);
 				result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage2, timeoutCts.Token).GetAwaiter().GetResult();
 				FreezeWatchdog.Mark("AuxActionPostprocess.retry_response", "status=" + (int)result.StatusCode + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
+				FreezeWatchdog.Mark("AuxActionPostprocess.retry_content_read_begin", "status=" + (int)result.StatusCode + " thread=" + Thread.CurrentThread.ManagedThreadId);
 				text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+				FreezeWatchdog.Mark("AuxActionPostprocess.retry_content_read_end", "chars=" + ((text ?? "").Length) + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2) + " thread=" + Thread.CurrentThread.ManagedThreadId);
 				controlMode += "_retry_plain";
 			}
 			if (!result.IsSuccessStatusCode)
@@ -4092,7 +4097,7 @@ public static class AIConfigHandler
 		stringBuilder.AppendLine("*Latest NPC/player exchange*:");
 		stringBuilder.Append("NPC: ").AppendLine(string.IsNullOrWhiteSpace(text2) ? "(none)" : NormalizeAuxiliaryRoutingRequestText(text2));
 		stringBuilder.Append("Player: ").AppendLine(string.IsNullOrWhiteSpace(text5) ? "(none)" : NormalizeAuxiliaryRoutingRequestText(text5));
-		stringBuilder.AppendLine("Select exactly " + Math.Max(1, topN) + " closest topic codes in rule_codes. Also extract explicit third-party nouns from the latest exchange into mentioned_entities. Use heroes for named people/titles, settlements for places, clans for families, kingdoms for factions, items for item/goods/equipment names or types, troops for troop/unit/prisoner names or types, and terms for other useful raw phrases. Do not extract current speakers or player names just because they are speakers. If ambiguous, put it in the closest bucket and also terms. Order arrays by recency. Output strict JSON only: {\"rule_codes\":[\"CODE\"],\"mentioned_entities\":{\"heroes\":[],\"settlements\":[],\"clans\":[],\"kingdoms\":[],\"items\":[],\"troops\":[],\"terms\":[]}}.");
+		stringBuilder.AppendLine("Select exactly " + Math.Max(1, topN) + " closest topic codes in rule_codes. Also extract explicit third-party nouns from the latest exchange into mentioned_entities. Use heroes for named people/titles, settlements for places, clans for families, kingdoms for factions, items for item/goods/equipment names or types, troops for troop/unit/prisoner names or types, and terms for other useful raw phrases. Do not extract current speakers or player names just because they are speakers. If ambiguous, put it in the closest bucket and also terms. Order arrays by recency. Output one strict JSON object only: {\"rule_codes\":[\"CODE\"],\"mentioned_entities\":{\"heroes\":[],\"settlements\":[],\"clans\":[],\"kingdoms\":[],\"items\":[],\"troops\":[],\"terms\":[]}}.");
 		return SanitizeAuxiliaryRoutingPromptDialogueSections(stringBuilder.ToString()).Trim();
 	}
 
@@ -4231,6 +4236,89 @@ public static class AIConfigHandler
 		return string.IsNullOrWhiteSpace(jsonPayload) ? text : jsonPayload;
 	}
 
+	internal static bool TryValidateStrictPreprocessJsonEnvelope(string content, bool requireMemoryIds, out JObject root, out string error)
+	{
+		root = null;
+		error = "";
+		string text = (content ?? "").Trim('\uFEFF', '\u200B', '\u200C', '\u200D', ' ', '\t', '\r', '\n');
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			error = "empty_content";
+			return false;
+		}
+		try
+		{
+			root = JToken.Parse(text) as JObject;
+		}
+		catch (Exception ex)
+		{
+			error = "invalid_json:" + ex.GetType().Name;
+			return false;
+		}
+		if (root == null)
+		{
+			error = "root_not_object";
+			return false;
+		}
+		if (!ValidateStrictPreprocessArray(root, "rule_codes", JTokenType.String, out error))
+		{
+			return false;
+		}
+		if (requireMemoryIds && !ValidateStrictPreprocessArray(root, "memory_ids", JTokenType.Integer, out error))
+		{
+			return false;
+		}
+		JToken mentionedToken = root["mentioned_entities"];
+		if (mentionedToken == null || mentionedToken.Type == JTokenType.Null)
+		{
+			error = "missing_mentioned_entities";
+			return false;
+		}
+		JObject mentionedEntities = mentionedToken as JObject;
+		if (mentionedEntities == null)
+		{
+			error = "mentioned_entities_not_object";
+			return false;
+		}
+		string[] buckets = new string[7] { "heroes", "settlements", "clans", "kingdoms", "items", "troops", "terms" };
+		for (int i = 0; i < buckets.Length; i++)
+		{
+			if (!ValidateStrictPreprocessArray(mentionedEntities, buckets[i], JTokenType.String, out error, "mentioned_entities_"))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private static bool ValidateStrictPreprocessArray(JObject obj, string fieldName, JTokenType itemType, out string error, string errorPrefix = "")
+	{
+		error = "";
+		JToken token = obj[fieldName];
+		string field = errorPrefix + fieldName;
+		if (token == null || token.Type == JTokenType.Null)
+		{
+			error = "missing_" + field;
+			return false;
+		}
+		JArray array = token as JArray;
+		if (array == null)
+		{
+			error = field + "_not_array";
+			return false;
+		}
+		for (int i = 0; i < array.Count; i++)
+		{
+			JToken item = array[i];
+			if (item == null || item.Type != itemType)
+			{
+				error = field + "_item_not_" + (itemType == JTokenType.Integer ? "integer" : "string");
+				return false;
+			}
+		}
+		return true;
+	}
+
 	private static string ExtractFirstAuxiliaryJsonPayload(string text)
 	{
 		text = (text ?? "").Trim();
@@ -4319,38 +4407,17 @@ public static class AIConfigHandler
 	{
 		codes = new List<string>();
 		error = "";
-		string text = StripAuxiliaryJsonCodeFence(content);
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			error = "empty_content";
-			return false;
-		}
 		Dictionary<string, string> dictionary = BuildAuxiliaryRuleCodeLookup(topics);
 		if (dictionary.Count <= 0)
 		{
 			error = "no_known_rule_codes";
 			return false;
 		}
-		JToken rootToken;
-		try
+		if (!TryValidateStrictPreprocessJsonEnvelope(content, requireMemoryIds: false, out var root, out error))
 		{
-			rootToken = JToken.Parse(text);
-		}
-		catch (Exception ex)
-		{
-			error = "invalid_json:" + ex.GetType().Name;
 			return false;
 		}
-		JToken token = rootToken;
-		if (rootToken is JObject jObject)
-		{
-			token = GetJsonPropertyIgnoreCase(jObject, "rule_codes", "ruleCodes", "topic_codes", "topicCodes", "rules", "rule_ids", "ruleIds", "topics", "codes", "selected_rule_codes", "selectedRuleCodes");
-		}
-		if (token == null || token.Type == JTokenType.Null)
-		{
-			error = "missing_rule_codes";
-			return false;
-		}
+		JToken token = GetJsonPropertyIgnoreCase(root, "rule_codes");
 		List<string> rawCodes = ReadAuxiliaryRuleCodeValues(token, out error);
 		if (rawCodes == null)
 		{
@@ -4360,6 +4427,12 @@ public static class AIConfigHandler
 		List<string> unknownCodes = new List<string>();
 		foreach (string rawCode in rawCodes)
 		{
+			if (Regex.IsMatch((rawCode ?? "").Trim(), "^(?:[0-9]+|TOPIC_[0-9]+|T[0-9]+)$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+			{
+				error = "numeric_rule_code_not_allowed";
+				codes.Clear();
+				return false;
+			}
 			string code = NormalizeRuleCode(rawCode, "", "");
 			if (string.IsNullOrWhiteSpace(code))
 			{
@@ -4407,12 +4480,6 @@ public static class AIConfigHandler
 			AddAuxiliaryRuleCodeLookupKey(lookup, topic.Code, ruleId);
 			AddAuxiliaryRuleCodeLookupKey(lookup, ruleId, ruleId);
 			AddAuxiliaryRuleCodeLookupKey(lookup, NormalizeRuleCode("", ruleId, topic.Label), ruleId);
-			if (topic.Number > 0)
-			{
-				AddAuxiliaryRuleCodeLookupKey(lookup, topic.Number.ToString(System.Globalization.CultureInfo.InvariantCulture), ruleId);
-				AddAuxiliaryRuleCodeLookupKey(lookup, "TOPIC_" + topic.Number.ToString(System.Globalization.CultureInfo.InvariantCulture), ruleId);
-				AddAuxiliaryRuleCodeLookupKey(lookup, "T" + topic.Number.ToString(System.Globalization.CultureInfo.InvariantCulture), ruleId);
-			}
 		}
 		return lookup;
 	}
@@ -4497,7 +4564,7 @@ public static class AIConfigHandler
 		{
 			preview = "(empty)";
 		}
-		return "（API响应格式错误）前处理规则选择返回格式错误：" + (string.IsNullOrWhiteSpace(reason) ? "unknown" : reason.Trim()) + "。必须输出可解析 JSON 对象，并包含 rule_codes/rules/topics/rule_ids 等话题字段。原始输出：" + preview;
+		return "（API响应格式错误）前处理规则选择返回格式错误：" + (string.IsNullOrWhiteSpace(reason) ? "unknown" : reason.Trim()) + "。必须只输出一个 JSON 对象，并包含 rule_codes 字符串数组和完整的 mentioned_entities 数组对象。原始输出：" + preview;
 	}
 
 	public static void PublishAuxiliaryMentionedEntitiesForExternal(string userText, string secondaryText, string runtimeGuardrailContext, string content)

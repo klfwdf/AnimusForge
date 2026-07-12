@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using TaleWorlds.CampaignSystem;
-using TaleWorlds.Core;
-using TaleWorlds.MountAndBlade;
+using System.Text;
+using System.Threading;
 
 namespace AnimusForge;
 
@@ -44,11 +43,11 @@ internal static class PerfProbe
 		}
 	}
 
-	private const double FlushIntervalSeconds = 5.0;
+	private const double FlushIntervalSeconds = 30.0;
 	private const double SlowScopeThresholdMs = 3.0;
 	private const double SlowFrameThresholdMs = 50.0;
 	private const double CriticalFrameThresholdMs = 100.0;
-	private const int TopBucketCount = 14;
+	private const int TopBucketCount = 8;
 
 	private static readonly object SyncRoot = new object();
 	private static readonly Dictionary<string, Bucket> Buckets = new Dictionary<string, Bucket>(StringComparer.Ordinal);
@@ -60,6 +59,7 @@ internal static class PerfProbe
 	private static long _criticalFrameCount;
 	private static double _sumFrameDtMs;
 	private static double _maxFrameDtMs;
+	private static int _enabled = 1;
 
 	public static ScopeToken Scope(string name)
 	{
@@ -81,6 +81,7 @@ internal static class PerfProbe
 	{
 		try
 		{
+			RefreshEnabledState();
 			if (!IsEnabled())
 			{
 				return 0L;
@@ -135,8 +136,49 @@ internal static class PerfProbe
 
 	private static bool IsEnabled()
 	{
-		// Disabled for player diagnostics: the periodic frame window spam drowns out freeze checkpoints.
-		return false;
+		return Volatile.Read(ref _enabled) != 0;
+	}
+
+	private static void RefreshEnabledState()
+	{
+		try
+		{
+			bool enabled = Logger.IsModLogicEnabled && (DuelSettings.GetSettings()?.EnablePerformanceMonitor ?? true);
+			int next = enabled ? 1 : 0;
+			int previous = Interlocked.Exchange(ref _enabled, next);
+			if (previous == next)
+			{
+				return;
+			}
+			ResetWindow(DateTime.UtcNow.Ticks);
+			if (enabled)
+			{
+				Logger.Log("PerfProbe", "monitor_state enabled=true intervalSec=" + FlushIntervalSeconds + " topBuckets=" + TopBucketCount);
+			}
+			else
+			{
+				Logger.Log("PerfProbe", "monitor_state enabled=false");
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private static void ResetWindow(long nowTicks)
+	{
+		lock (SyncRoot)
+		{
+			Buckets.Clear();
+			Events.Clear();
+			_frameCount = 0L;
+			_slowFrameCount = 0L;
+			_criticalFrameCount = 0L;
+			_sumFrameDtMs = 0.0;
+			_maxFrameDtMs = 0.0;
+			_windowStartUtcTicks = nowTicks;
+			_nextFlushUtcTicks = nowTicks + TimeSpan.FromSeconds(FlushIntervalSeconds).Ticks;
+		}
 	}
 
 	private static void RecordFrameDt(float dt)
@@ -258,9 +300,10 @@ internal static class PerfProbe
 		}
 		double windowSec = Math.Max(0.001, TimeSpan.FromTicks(nowTicks - windowStartTicks).TotalSeconds);
 		double avgFrameDt = frameCount > 0L ? sumFrameDtMs / frameCount : 0.0;
+		double avgFps = avgFrameDt > 0.001 ? 1000.0 / avgFrameDt : 0.0;
 		List<string> lines = new List<string>
 		{
-			$"window={windowSec:0.0}s frames={frameCount} avgFrameDtMs={avgFrameDt:0.00} maxFrameDtMs={maxFrameDtMs:0.00} slowFrames>={SlowFrameThresholdMs:0}ms={slowFrameCount} criticalFrames>={CriticalFrameThresholdMs:0}ms={criticalFrameCount} {BuildRuntimeContext()}"
+			$"window={windowSec:0.0}s frames={frameCount} avgFps={avgFps:0.0} avgFrameDtMs={avgFrameDt:0.00} maxFrameDtMs={maxFrameDtMs:0.00} slowFrames>={SlowFrameThresholdMs:0}ms={slowFrameCount} criticalFrames>={CriticalFrameThresholdMs:0}ms={criticalFrameCount} {BuildRuntimeContext()}"
 		};
 		bucketSnapshot.Sort(CompareBucketsByMaxThenSum);
 		int bucketLimit = Math.Min(TopBucketCount, bucketSnapshot.Count);
@@ -272,13 +315,86 @@ internal static class PerfProbe
 			lines.Add($"top[{i + 1}] name={pair.Key} count={bucket.Count} avgMs={avg:0.000} maxMs={bucket.MaxMs:0.000} slow>={SlowScopeThresholdMs:0.0}ms={bucket.SlowCount} sumMs={bucket.SumMs:0.000}");
 		}
 		eventSnapshot.Sort((a, b) => b.Value.CompareTo(a.Value));
-		int eventLimit = Math.Min(8, eventSnapshot.Count);
+		int eventLimit = Math.Min(4, eventSnapshot.Count);
 		for (int i = 0; i < eventLimit; i++)
 		{
 			KeyValuePair<string, long> pair = eventSnapshot[i];
 			lines.Add($"event[{i + 1}] name={pair.Key} count={pair.Value} ratePerSec={(pair.Value / windowSec):0.00}");
 		}
 		return lines;
+	}
+
+	internal static string BuildCurrentSnapshotForFreeze()
+	{
+		try
+		{
+			if (!IsEnabled())
+			{
+				return "disabled_by_mcm";
+			}
+			long nowTicks = DateTime.UtcNow.Ticks;
+			List<KeyValuePair<string, Bucket>> bucketSnapshot = new List<KeyValuePair<string, Bucket>>();
+			long frameCount;
+			long slowFrameCount;
+			long criticalFrameCount;
+			double sumFrameDtMs;
+			double maxFrameDtMs;
+			long windowStartTicks;
+			lock (SyncRoot)
+			{
+				windowStartTicks = _windowStartUtcTicks;
+				frameCount = _frameCount;
+				slowFrameCount = _slowFrameCount;
+				criticalFrameCount = _criticalFrameCount;
+				sumFrameDtMs = _sumFrameDtMs;
+				maxFrameDtMs = _maxFrameDtMs;
+				foreach (KeyValuePair<string, Bucket> pair in Buckets)
+				{
+					Bucket bucket = pair.Value;
+					if (bucket == null)
+					{
+						continue;
+					}
+					bucketSnapshot.Add(new KeyValuePair<string, Bucket>(pair.Key, new Bucket
+					{
+						Count = bucket.Count,
+						SlowCount = bucket.SlowCount,
+						SumMs = bucket.SumMs,
+						MaxMs = bucket.MaxMs
+					}));
+				}
+			}
+			double windowSec = Math.Max(0.001, TimeSpan.FromTicks(nowTicks - windowStartTicks).TotalSeconds);
+			double avgFrameDt = frameCount > 0L ? sumFrameDtMs / frameCount : 0.0;
+			double avgFps = avgFrameDt > 0.001 ? 1000.0 / avgFrameDt : 0.0;
+			StringBuilder result = new StringBuilder();
+			result.Append("window=").Append(windowSec.ToString("0.0"))
+				.Append("s frames=").Append(frameCount)
+				.Append(" avgFps=").Append(avgFps.ToString("0.0"))
+				.Append(" avgFrameDtMs=").Append(avgFrameDt.ToString("0.00"))
+				.Append(" maxFrameDtMs=").Append(maxFrameDtMs.ToString("0.00"))
+				.Append(" slowFrames=").Append(slowFrameCount)
+				.Append(" criticalFrames=").Append(criticalFrameCount);
+			bucketSnapshot.Sort(CompareBucketsByMaxThenSum);
+			int limit = Math.Min(TopBucketCount, bucketSnapshot.Count);
+			for (int i = 0; i < limit; i++)
+			{
+				KeyValuePair<string, Bucket> pair = bucketSnapshot[i];
+				Bucket bucket = pair.Value;
+				double avg = bucket.Count > 0L ? bucket.SumMs / bucket.Count : 0.0;
+				result.AppendLine();
+				result.Append("top[").Append(i + 1).Append("] name=").Append(pair.Key)
+					.Append(" count=").Append(bucket.Count)
+					.Append(" avgMs=").Append(avg.ToString("0.000"))
+					.Append(" maxMs=").Append(bucket.MaxMs.ToString("0.000"))
+					.Append(" slow=").Append(bucket.SlowCount);
+			}
+			return result.ToString();
+		}
+		catch
+		{
+			return "unavailable";
+		}
 	}
 
 	private static int CompareBucketsByMaxThenSum(KeyValuePair<string, Bucket> left, KeyValuePair<string, Bucket> right)
@@ -293,40 +409,6 @@ internal static class PerfProbe
 
 	private static string BuildRuntimeContext()
 	{
-		try
-		{
-			string activeState = "";
-			try
-			{
-				activeState = Game.Current?.GameStateManager?.ActiveState?.GetType()?.Name ?? "";
-			}
-			catch
-			{
-				activeState = "";
-			}
-			string menu = "";
-			try
-			{
-				menu = Campaign.Current?.CurrentMenuContext?.GameMenu?.StringId ?? "";
-			}
-			catch
-			{
-				menu = "";
-			}
-			bool conversation = false;
-			try
-			{
-				conversation = Campaign.Current?.ConversationManager?.IsConversationInProgress == true;
-			}
-			catch
-			{
-				conversation = false;
-			}
-			return $"state={activeState} mission={Mission.Current != null} conversation={conversation} menu={menu}";
-		}
-		catch
-		{
-			return "state=unknown";
-		}
+		return FreezeWatchdog.GetCachedRuntimeContextForDiagnostics();
 	}
 }

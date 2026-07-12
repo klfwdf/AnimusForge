@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Helpers;
 using Newtonsoft.Json;
@@ -19,6 +20,16 @@ namespace AnimusForge;
 
 public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 {
+	public sealed class LetterNeedSnapshot
+	{
+		public string NeedType { get; set; }
+		public string DisplayName { get; set; }
+		public float Urgency { get; set; }
+		public float TypeFatigueMultiplier { get; set; } = 1f;
+		public string FactText { get; set; }
+		public string IntentText { get; set; }
+	}
+
 	private const string StorageKey = "_af_proactive_npc_request_state_v1";
 	private const string NeedFoodShortage = "FoodShortage";
 	private const string NeedMoneyShortage = "MoneyShortage";
@@ -43,15 +54,22 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 	private const int VassalInviteMinPlayerClanTier = 2;
 	private const float KingdomStrongEnoughToSkipMercenaryRatio = 3f;
 	private const float ActiveRequestTtlHours = 18f;
-	private const float NeedCooldownDays = 7f;
+	private const double ActiveEncounterProbeSeconds = 0.35;
+	private const int CandidateScanTargetFrames = 30;
+	private const int CandidateScanMaxPartiesPerTick = 32;
+	private const double CandidateScanFrameBudgetMilliseconds = 3.0;
 
 	private ProactiveNpcRequestSession _activeSession;
 	private Dictionary<string, float> _heroCooldownUntilDays = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
-	private Dictionary<string, float> _needCooldownUntilDays = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
+	private Dictionary<string, float> _needTypeFatigueUntilDays = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
 	private float _globalCooldownUntilHours;
 	private float _lastScanHour = -99999f;
 	private PendingOpeningFact _pendingNativeOpening;
 	private PendingOpeningFact _pendingSceneOpening;
+	private MobileParty _activePartyCache;
+	private string _activePartyCacheId = "";
+	private long _nextActiveEncounterProbeUtcTicks;
+	private ProactiveCandidateScanState _candidateScan;
 
 	public static ProactiveNpcRequestBehavior Instance { get; private set; }
 
@@ -73,11 +91,12 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			{
 				ActiveSession = _activeSession,
 				HeroCooldownUntilDays = _heroCooldownUntilDays,
-				NeedCooldownUntilDays = _needCooldownUntilDays,
+				NeedTypeFatigueUntilDays = _needTypeFatigueUntilDays,
 				GlobalCooldownUntilHours = _globalCooldownUntilHours,
-				LastScanHour = _lastScanHour
+				// Incremental scans are runtime-only. A save during the one-second scan window retries after load.
+				LastScanHour = _candidateScan == null ? _lastScanHour : -99999f
 			});
-			CampaignSaveChunkHelper.LogRawJsonSaveStats(StorageKey, "ProactiveNpcRequest", storageJson, "heroCooldowns=" + (_heroCooldownUntilDays?.Count ?? 0) + " needCooldowns=" + (_needCooldownUntilDays?.Count ?? 0) + " active=" + (_activeSession != null));
+			CampaignSaveChunkHelper.LogRawJsonSaveStats(StorageKey, "ProactiveNpcRequest", storageJson, "heroCooldowns=" + (_heroCooldownUntilDays?.Count ?? 0) + " typeFatigues=" + (_needTypeFatigueUntilDays?.Count ?? 0) + " active=" + (_activeSession != null));
 			CampaignSaveChunkHelper.SaveChunkedString(dataStore, StorageKey, storageJson, "ProactiveNpcRequest");
 			return;
 		}
@@ -92,17 +111,21 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			_activeSession = storage?.ActiveSession;
 			NormalizeActiveSessionSingleNeed();
 			_heroCooldownUntilDays = NormalizeCooldownDictionary(storage?.HeroCooldownUntilDays);
-			_needCooldownUntilDays = NormalizeCooldownDictionary(storage?.NeedCooldownUntilDays);
+			_needTypeFatigueUntilDays = NormalizeCooldownDictionary(storage?.NeedTypeFatigueUntilDays ?? storage?.NeedCooldownUntilDays);
 			_globalCooldownUntilHours = storage?.GlobalCooldownUntilHours ?? 0f;
 			_lastScanHour = storage?.LastScanHour ?? -99999f;
 			_pendingNativeOpening = null;
 			_pendingSceneOpening = null;
+			ClearActivePartyCache();
+			_candidateScan = null;
 		}
 		catch (Exception ex)
 		{
 			_activeSession = null;
 			_heroCooldownUntilDays = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
-			_needCooldownUntilDays = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
+			_needTypeFatigueUntilDays = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
+			ClearActivePartyCache();
+			_candidateScan = null;
 			Logger.Log("ProactiveNpcRequest", "load failed: " + ex.Message);
 		}
 	}
@@ -143,6 +166,45 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 	public static bool IsActiveRequestHero(Hero hero)
 	{
 		return Instance?.IsActiveHero(hero) == true;
+	}
+
+	public static List<LetterNeedSnapshot> GetLetterNeedSnapshotsForExternal(Hero hero)
+	{
+		try
+		{
+			return Instance?.BuildLetterNeedSnapshots(hero) ?? new List<LetterNeedSnapshot>();
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ProactiveNpcRequest", "letter need evaluation failed hero=" + GetHeroKey(hero) + " error=" + ex.Message);
+			return new List<LetterNeedSnapshot>();
+		}
+	}
+
+	public static bool IsNeedTypeActiveForExternal(string needType)
+	{
+		try
+		{
+			string normalized = NormalizeNeedType(needType);
+			return Instance?._activeSession != null
+				&& Instance.GetActiveNeedTypes().Any(x => string.Equals(x, normalized, StringComparison.OrdinalIgnoreCase));
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	public static void RecordLetterNeedDeliveredForExternal(string needType)
+	{
+		try
+		{
+			Instance?.RecordNeedTypeFatigue(needType, "letter_delivered");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ProactiveNpcRequest", "record delivered letter need failed need=" + (needType ?? "") + " error=" + ex.Message);
+		}
 	}
 
 	public static void MarkEncounterOpened(Hero hero)
@@ -288,6 +350,17 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			ProcessCandidateScan();
+			if (_activeSession == null || !string.Equals(_activeSession.Stage, "Chasing", StringComparison.OrdinalIgnoreCase))
+			{
+				return;
+			}
+			long nowTicks = DateTime.UtcNow.Ticks;
+			if (nowTicks < _nextActiveEncounterProbeUtcTicks)
+			{
+				return;
+			}
+			_nextActiveEncounterProbeUtcTicks = DateTime.UtcNow.AddSeconds(ActiveEncounterProbeSeconds).Ticks;
 			TryOpenActiveEncounterWhenClose();
 		}
 		catch (Exception ex)
@@ -312,6 +385,10 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 
 	private void TryStartNewRequest()
 	{
+		if (_candidateScan != null)
+		{
+			return;
+		}
 		DuelSettings settings = DuelSettings.GetSettings();
 		if (settings == null)
 		{
@@ -330,6 +407,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			return;
 		}
 		_lastScanHour = nowHours;
+		PruneExpiredNeedTypeFatigue(NowDays());
 		if (_activeSession != null)
 		{
 			Logger.Log("ProactiveNpcRequest", "scan skipped: active session hero=" + (_activeSession.HeroId ?? "") + " stage=" + (_activeSession.Stage ?? ""));
@@ -355,18 +433,125 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 				return;
 			}
 		}
-		ProactiveCandidate candidate = FindBestRequestCandidate(settings, out CandidateScanStats stats);
-		if (candidate == null)
+		StartCandidateScan(settings, nowHours);
+	}
+
+	private void StartCandidateScan(DuelSettings settings, float nowHours)
+	{
+		MobileParty mainParty = MobileParty.MainParty;
+		if (mainParty == null)
 		{
-			Logger.Log("ProactiveNpcRequest", "scan no candidate: " + stats?.ToLogString());
+			Logger.Log("ProactiveNpcRequest", "scan skipped: main party unavailable when creating incremental scan.");
 			return;
 		}
-		Logger.Log("ProactiveNpcRequest", "scan selected: triggerSource=" + (candidate.TriggerSource ?? "") + " knownMajorBefore=" + candidate.KnownMajorBeforeRequest + " effectiveNotoriety=" + candidate.EffectiveNotorietyAtRequest + " needChance=" + candidate.NeedDrivenChance.ToString("0.##") + " notorietyChance=" + candidate.NotorietyDrivenChance.ToString("0.##") + " selectedUrgency=" + candidate.SelectedNeedUrgency.ToString("0.##") + " need=" + (candidate.NeedType ?? "") + " needs=" + JoinNeedTypesForLog(candidate.NeedTypes, candidate.NeedType) + " hero=" + (candidate.Hero?.StringId ?? "") + " party=" + (candidate.Party?.StringId ?? "") + " kingdom=" + (candidate.TargetKingdomId ?? "") + " playerClanTier=" + candidate.PlayerClanTier + " isKingdomLeader=" + candidate.TargetHeroIsKingdomLeader + " kingdomVassals=" + candidate.KingdomFormalVassalClanCount + "/" + candidate.KingdomTargetVassalClanCount + " kingdomMercs=" + candidate.KingdomMercenaryClanCount + "/" + candidate.KingdomTargetMercenaryClanCount + " kingdomFiefScore=" + candidate.KingdomFiefScore + " kingdomWars=" + candidate.KingdomWarKingdomCount + " kingdomPowerRatio=" + candidate.KingdomPowerRatioToEnemies.ToString("0.00") + " distance=" + candidate.Distance.ToString("0.0") + " foodDays=" + candidate.FoodDays + " partyGold=" + candidate.PartyGold + " totalWage=" + candidate.TotalWage + " unpaidWages=" + candidate.UnpaidWages.ToString("0.00") + " troops=" + candidate.MemberCount + "/" + candidate.PartySizeLimit + " troopRatio=" + candidate.PartySizeRatio.ToString("0.00") + " prisoners=" + candidate.PrisonerCount + "/" + candidate.PrisonerSizeLimit + " heroPrisoners=" + candidate.HeroPrisonerCount + " prisonerRatio=" + candidate.PrisonerSizeRatio.ToString("0.00") + " wageBudget=" + candidate.AvailableWageBudget + " testFallback=" + candidate.IsTestFallback + " stats=" + stats?.ToLogString());
-		Logger.Log("ProactiveNpcRequest", "scan selected extra needs=" + JoinNeedTypesForLog(candidate.NeedTypes, candidate.NeedType) + " morale=" + candidate.Morale.ToString("0.0") + " mounts=" + candidate.MountCount + " packAnimals=" + candidate.PackAnimalCount + " mountRatio=" + candidate.MountRatio.ToString("0.00") + " carry=" + candidate.TotalWeightCarried.ToString("0.0") + "/" + candidate.InventoryCapacity + " carryRatio=" + candidate.CarryRatio.ToString("0.00") + " clanGold=" + candidate.ClanGold + " clanDebt=" + candidate.ClanDebtToKingdom + " captiveClanHeroes=" + candidate.CaptiveClanHeroCount + " captiveHero=" + (candidate.CaptiveClanHeroName ?? "") + " captiveHolder=" + (candidate.CaptiveClanHeroHolderName ?? "") + " captiveLeader=" + candidate.CaptiveClanLeaderHeld + " marriageAdults=" + candidate.MarriageAdultClanHeroCount + " unmarriedAdults=" + candidate.MarriageUnmarriedAdultCount + " firstUnmarried=" + (candidate.MarriageFirstUnmarriedName ?? "") + " revengeScore=" + candidate.RevengePressureScore.ToString("0.0") + " revengeTarget=" + (candidate.RevengeTargetName ?? "") + " fiefProblems=" + candidate.FiefProblemCount + " fief=" + (candidate.FiefProblemName ?? "") + " fiefIssue=" + (candidate.FiefIssueText ?? "") + " allyInfluence=" + candidate.ClanInfluence.ToString("0.0") + " friendlyClans=" + candidate.FriendlyClanCount + " hostileClans=" + candidate.HostileClanCount);
+		List<MobileParty> parties = (MobileParty.AllLordParties ?? Enumerable.Empty<MobileParty>()).Where(party => party != null).ToList();
+		int batchSize = Math.Max(1, (int)Math.Ceiling(parties.Count / (double)CandidateScanTargetFrames));
+		batchSize = Math.Min(CandidateScanMaxPartiesPerTick, batchSize);
+		_candidateScan = new ProactiveCandidateScanState
+		{
+			Settings = settings,
+			Parties = parties,
+			BatchSize = batchSize,
+			Stats = new CandidateScanStats(),
+			StartedAtUtcTicks = DateTime.UtcNow.Ticks
+		};
+		Logger.LogVerbose("ProactiveNpcRequest", "incremental_scan_start", () => "incremental scan started parties=" + parties.Count + " batchSize=" + batchSize + " targetFrames=" + CandidateScanTargetFrames + " nowHours=" + nowHours.ToString("0.0"), 5.0);
+	}
+
+	private void ProcessCandidateScan()
+	{
+		ProactiveCandidateScanState scan = _candidateScan;
+		if (scan == null)
+		{
+			return;
+		}
+		DuelSettings currentSettings = DuelSettings.GetSettings();
+		if (currentSettings == null || !currentSettings.EnableProactiveNpcRequests || _activeSession != null)
+		{
+			Logger.LogVerbose("ProactiveNpcRequest", "incremental_scan_cancel", () => "incremental scan cancelled enabled=" + (currentSettings?.EnableProactiveNpcRequests ?? false) + " active=" + (_activeSession != null), 5.0);
+			_candidateScan = null;
+			return;
+		}
+		if (scan.NextIndex >= scan.Parties.Count)
+		{
+			CompleteCandidateScan(scan);
+			return;
+		}
+		Stopwatch stopwatch = Stopwatch.StartNew();
+		int processed = 0;
+		while (scan.NextIndex < scan.Parties.Count && processed < scan.BatchSize)
+		{
+			scan.WorkingBatch.Clear();
+			scan.WorkingBatch.Add(scan.Parties[scan.NextIndex++]);
+			processed++;
+			ProactiveCandidate batchCandidate = FindBestRequestCandidate(scan.Settings, out CandidateScanStats batchStats, scan.WorkingBatch);
+			scan.Stats.MergeFrom(batchStats);
+			if (IsCandidateBetter(batchCandidate, scan.BestCandidate))
+			{
+				scan.BestCandidate = batchCandidate;
+			}
+			if (stopwatch.Elapsed.TotalMilliseconds >= CandidateScanFrameBudgetMilliseconds)
+			{
+				break;
+			}
+		}
+		if (scan.NextIndex >= scan.Parties.Count)
+		{
+			CompleteCandidateScan(scan);
+		}
+	}
+
+	private void CompleteCandidateScan(ProactiveCandidateScanState scan)
+	{
+		if (!ReferenceEquals(_candidateScan, scan))
+		{
+			return;
+		}
+		_candidateScan = null;
+		DuelSettings settings = DuelSettings.GetSettings();
+		if (settings == null || !settings.EnableProactiveNpcRequests || _activeSession != null)
+		{
+			return;
+		}
+		if (NowHours() < _globalCooldownUntilHours)
+		{
+			Logger.LogVerbose("ProactiveNpcRequest", "incremental_scan_discard", () => "incremental scan discarded after global cooldown began remaining=" + (_globalCooldownUntilHours - NowHours()).ToString("0.0"), 5.0);
+			return;
+		}
+		if (TryGetPlayerBusyReason(out string busyReason))
+		{
+			Logger.LogVerbose("ProactiveNpcRequest", "incremental_scan_discard", () => "incremental scan discarded after player became busy=" + busyReason, 5.0);
+			return;
+		}
+		ProactiveCandidate candidate = scan.BestCandidate;
+		if (candidate == null || candidate.Party == null || !candidate.Party.IsActive)
+		{
+			Logger.Log("ProactiveNpcRequest", "scan no candidate: " + scan.Stats.ToLogString());
+			return;
+		}
+		Logger.Log("ProactiveNpcRequest", "scan selected: triggerSource=" + (candidate.TriggerSource ?? "") + " knownMajorBefore=" + candidate.KnownMajorBeforeRequest + " effectiveNotoriety=" + candidate.EffectiveNotorietyAtRequest + " needChance=" + candidate.NeedDrivenChance.ToString("0.##") + " notorietyChance=" + candidate.NotorietyDrivenChance.ToString("0.##") + " selectedUrgency=" + candidate.SelectedNeedUrgency.ToString("0.##") + " need=" + (candidate.NeedType ?? "") + " hero=" + (candidate.Hero?.StringId ?? "") + " party=" + (candidate.Party?.StringId ?? "") + " distance=" + candidate.Distance.ToString("0.0") + " scanMs=" + TimeSpan.FromTicks(DateTime.UtcNow.Ticks - scan.StartedAtUtcTicks).TotalMilliseconds.ToString("0") + " stats=" + scan.Stats.ToLogString());
 		StartRequest(candidate, settings);
 	}
 
-	private ProactiveCandidate FindBestRequestCandidate(DuelSettings settings, out CandidateScanStats stats)
+	private static bool IsCandidateBetter(ProactiveCandidate candidate, ProactiveCandidate currentBest)
+	{
+		if (candidate == null)
+		{
+			return false;
+		}
+		if (currentBest == null)
+		{
+			return true;
+		}
+		float candidateWeightedUrgency = candidate.NeedUrgency * candidate.NeedTypeFatigueMultiplier;
+		float bestWeightedUrgency = currentBest.NeedUrgency * currentBest.NeedTypeFatigueMultiplier;
+		if (Math.Abs(candidateWeightedUrgency - bestWeightedUrgency) > 0.001f) return candidateWeightedUrgency > bestWeightedUrgency;
+		if (Math.Abs(candidate.NeedUrgency - currentBest.NeedUrgency) > 0.001f) return candidate.NeedUrgency > currentBest.NeedUrgency;
+		if (candidate.EffectiveNotorietyAtRequest != currentBest.EffectiveNotorietyAtRequest) return candidate.EffectiveNotorietyAtRequest > currentBest.EffectiveNotorietyAtRequest;
+		return candidate.Distance < currentBest.Distance;
+	}
+
+	private ProactiveCandidate FindBestRequestCandidate(DuelSettings settings, out CandidateScanStats stats, IEnumerable<MobileParty> sourceParties = null)
 	{
 		stats = new CandidateScanStats();
 		MobileParty mainParty = MobileParty.MainParty;
@@ -378,7 +563,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		float distanceMultiplier = Clamp(settings.ProactiveNpcRequestDistanceMultiplier, 0.5f, 5f);
 		float maxDistance = Math.Max(1f, mainParty.SeeingRange * distanceMultiplier);
 		List<ProactiveCandidate> candidates = new List<ProactiveCandidate>();
-		foreach (MobileParty party in MobileParty.AllLordParties ?? Enumerable.Empty<MobileParty>())
+		foreach (MobileParty party in sourceParties ?? MobileParty.AllLordParties ?? Enumerable.Empty<MobileParty>())
 		{
 			stats.TotalLordParties++;
 			if (!TryBuildBaseCandidate(party, mainParty, settings, out ProactiveCandidate candidate, out string skipReason))
@@ -487,7 +672,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 				stats.Diplomacy++;
 				needCandidates.Add(diplomacyCandidate);
 			}
-			ProactiveCandidate combinedCandidate = BuildCombinedNeedCandidate(needCandidates);
+			ProactiveCandidate combinedCandidate = BuildCombinedNeedCandidate(needCandidates, settings);
 			if (combinedCandidate != null)
 			{
 				stats.NeedCandidates++;
@@ -498,7 +683,8 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			}
 		}
 		return candidates
-			.OrderByDescending(c => c.NeedUrgency)
+			.OrderByDescending(c => c.NeedUrgency * c.NeedTypeFatigueMultiplier)
+			.ThenByDescending(c => c.NeedUrgency)
 			.ThenByDescending(c => c.EffectiveNotorietyAtRequest)
 			.ThenBy(c => c.Distance)
 			.FirstOrDefault();
@@ -534,10 +720,15 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		bool knownMajor = PlayerNotorietyBehavior.HasObserverUnlockedPlayerMajorForExternal(candidate.Hero);
 		int effectiveNotoriety = PlayerNotorietyBehavior.GetEffectiveNotorietyForExternal(candidate.Hero);
 		float knownMultiplier = knownMajor ? GetEffectiveKnownMajorMultiplier(settings) : 1f;
-		float needChance = Clamp(urgency * globalScale * knownMultiplier, 0f, 100f);
+		float typeFatigueMultiplier = Clamp(candidate.NeedTypeFatigueMultiplier, 0f, 1f);
+		if (typeFatigueMultiplier < 0.999f && stats != null)
+		{
+			stats.TypeFatiguedCandidates++;
+		}
+		float needChance = Clamp(urgency * globalScale * knownMultiplier * typeFatigueMultiplier, 0f, 100f);
 		float notorietyChance = knownMajor
 			? 0f
-			: Clamp(effectiveNotoriety * GetEffectiveNotorietyChanceMultiplier(settings) * (urgency / 100f) * globalScale, 0f, 100f);
+			: Clamp(effectiveNotoriety * GetEffectiveNotorietyChanceMultiplier(settings) * (urgency / 100f) * globalScale * typeFatigueMultiplier, 0f, 100f);
 		candidate.KnownMajorBeforeRequest = knownMajor;
 		candidate.EffectiveNotorietyAtRequest = effectiveNotoriety;
 		candidate.NeedDrivenChance = needChance;
@@ -566,6 +757,255 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			stats.TriggerRollFailed++;
 		}
 		return false;
+	}
+
+	private List<LetterNeedSnapshot> BuildLetterNeedSnapshots(Hero hero)
+	{
+		List<LetterNeedSnapshot> result = new List<LetterNeedSnapshot>();
+		DuelSettings settings = DuelSettings.GetSettings();
+		if (hero == null || hero == Hero.MainHero || hero.IsDead || hero.IsPrisoner || hero.IsFugitive || hero.PartyBelongedToAsPrisoner != null)
+		{
+			return result;
+		}
+		ProactiveCandidate source = BuildLetterNeedBaseCandidate(hero, settings);
+		if (source == null)
+		{
+			return result;
+		}
+		List<ProactiveCandidate> candidates = new List<ProactiveCandidate>();
+		if (source.Party != null)
+		{
+			AddLetterNeedCandidate(candidates, TryBuildFoodShortageCandidate, source, settings);
+			AddLetterNeedCandidate(candidates, TryBuildMoneyShortageCandidate, source, settings);
+			AddLetterNeedCandidate(candidates, TryBuildTroopShortageCandidate, source, settings);
+			AddLetterNeedCandidate(candidates, TryBuildPrisonerOverloadCandidate, source, settings);
+			AddLetterNeedCandidate(candidates, TryBuildLowMoraleCandidate, source, settings);
+			AddLetterNeedCandidate(candidates, TryBuildMountShortageCandidate, source, settings);
+			AddLetterNeedCandidate(candidates, TryBuildOverburdenedCandidate, source, settings);
+		}
+		AddLetterNeedCandidate(candidates, TryBuildClanCaptiveCandidate, source, settings);
+		AddLetterNeedCandidate(candidates, TryBuildClanFinanceStrainCandidate, source, settings);
+		AddLetterNeedCandidate(candidates, TryBuildMarriageAlliancePressureCandidate, source, settings);
+		AddLetterNeedCandidate(candidates, TryBuildRevengePressureCandidate, source, settings);
+		AddLetterNeedCandidate(candidates, TryBuildFiefGovernanceAnxietyCandidate, source, settings);
+		AddLetterNeedCandidate(candidates, TryBuildAllySupportCandidate, source, settings);
+		AddLetterNeedCandidate(candidates, TryBuildKingdomMercenaryInviteCandidate, source, settings);
+		AddLetterNeedCandidate(candidates, TryBuildKingdomVassalInviteCandidate, source, settings);
+		AddLetterNeedCandidate(candidates, TryBuildPoliticalAgendaCandidate, source, settings);
+		AddLetterNeedCandidate(candidates, TryBuildDiplomacyCandidate, source, settings);
+
+		float nowDays = NowDays();
+		foreach (ProactiveCandidate candidate in candidates
+			.Where(x => x != null && x.NeedUrgency > 0f)
+			.OrderByDescending(x => x.NeedUrgency))
+		{
+			string needType = NormalizeNeedType(candidate.NeedType);
+			if (string.IsNullOrWhiteSpace(needType) || IsNeedTypeActiveForExternal(needType))
+			{
+				continue;
+			}
+			float remaining = GetNeedTypeFatigueRemainingDays(needType, nowDays);
+			float fatigueMultiplier = remaining > 0f ? GetEffectiveNeedTypeFatigueMultiplier(settings) : 1f;
+			result.Add(new LetterNeedSnapshot
+			{
+				NeedType = needType,
+				DisplayName = GetNeedDisplayName(needType),
+				Urgency = Clamp(candidate.NeedUrgency, 0f, 100f),
+				TypeFatigueMultiplier = fatigueMultiplier,
+				FactText = BuildLetterNeedFact(candidate),
+				IntentText = BuildLetterNeedIntent(candidate)
+			});
+		}
+		return result;
+	}
+
+	private delegate bool TryBuildLetterNeedCandidateDelegate(ProactiveCandidate source, DuelSettings settings, out ProactiveCandidate candidate);
+
+	private static void AddLetterNeedCandidate(List<ProactiveCandidate> result, TryBuildLetterNeedCandidateDelegate builder, ProactiveCandidate source, DuelSettings settings)
+	{
+		if (result == null || builder == null)
+		{
+			return;
+		}
+		if (builder(source, settings, out ProactiveCandidate candidate) && candidate != null)
+		{
+			result.Add(candidate);
+		}
+	}
+
+	private static ProactiveCandidate BuildLetterNeedBaseCandidate(Hero hero, DuelSettings settings)
+	{
+		try
+		{
+			Clan clan = hero?.Clan;
+			MobileParty party = hero?.PartyBelongedTo;
+			if (party == null || !party.IsActive || party.LeaderHero != hero)
+			{
+				party = null;
+			}
+			int foodDays = party == null ? int.MaxValue : SafeFoodDays(party);
+			int partyGold = party == null ? 0 : SafePartyTradeGold(party);
+			int totalWage = party == null ? 0 : SafeTotalWage(party);
+			float unpaidWages = party == null ? 0f : SafeUnpaidWages(party);
+			int memberCount = party == null ? 0 : SafeMemberCount(party);
+			int partySizeLimit = party == null ? 0 : SafePartySizeLimit(party);
+			int prisonerCount = party == null ? 0 : SafePrisonerCount(party);
+			int prisonerSizeLimit = party == null ? 0 : SafePrisonerSizeLimit(party);
+			int inventoryCapacity = party == null ? 0 : SafeInventoryCapacity(party);
+			float totalWeightCarried = party == null ? 0f : SafeTotalWeightCarried(party);
+			int mountCount = party == null ? 0 : SafeMountCount(party);
+			int packAnimalCount = party == null ? 0 : SafePackAnimalCount(party);
+			ClanCaptiveSnapshot captive = BuildClanCaptiveSnapshot(hero);
+			Kingdom kingdom = ResolveHeroKingdom(hero);
+			MarriageAllianceSnapshot marriage = BuildMarriageAllianceSnapshot(hero);
+			FiefGovernanceSnapshot fiefs = BuildFiefGovernanceSnapshot(clan, settings);
+			AllySupportSnapshot allies = BuildAllySupportSnapshot(clan, kingdom, settings);
+			RevengePressureSnapshot revenge = BuildRevengePressureSnapshot(hero, kingdom, captive, fiefs);
+			KingdomManpowerNeedSnapshot manpower = BuildKingdomManpowerNeedSnapshot(kingdom);
+			bool atWar = false;
+			try
+			{
+				atWar = hero?.MapFaction != null && Hero.MainHero?.MapFaction != null && hero.MapFaction.IsAtWarWith(Hero.MainHero.MapFaction);
+			}
+			catch
+			{
+			}
+			return new ProactiveCandidate
+			{
+				Party = party,
+				Hero = hero,
+				Distance = -1f,
+				FoodDays = foodDays,
+				PartyGold = partyGold,
+				TotalWage = totalWage,
+				UnpaidWages = unpaidWages,
+				WageDays = CalculateWageDays(partyGold, totalWage),
+				MemberCount = memberCount,
+				PartySizeLimit = partySizeLimit,
+				PartySizeRatio = CalculatePartySizeRatio(memberCount, partySizeLimit),
+				AvailableWageBudget = party == null ? 0 : SafeAvailableWageBudget(party),
+				PrisonerCount = prisonerCount,
+				PrisonerSizeLimit = prisonerSizeLimit,
+				HeroPrisonerCount = party == null ? 0 : SafeHeroPrisonerCount(party),
+				PrisonerSizeRatio = CalculatePrisonerSizeRatio(prisonerCount, prisonerSizeLimit),
+				Morale = party == null ? 100f : SafeMorale(party),
+				InventoryCapacity = inventoryCapacity,
+				TotalWeightCarried = totalWeightCarried,
+				CarryRatio = CalculateCarryRatio(totalWeightCarried, inventoryCapacity),
+				MountCount = mountCount,
+				PackAnimalCount = packAnimalCount,
+				MountRatio = CalculateAnimalRatio(mountCount, memberCount),
+				PackAnimalRatio = CalculateAnimalRatio(packAnimalCount, memberCount),
+				ClanGold = SafeClanGold(clan),
+				ClanDebtToKingdom = SafeClanDebtToKingdom(clan),
+				CaptiveClanHeroCount = captive.Count,
+				CaptiveClanHeroName = captive.FirstHeroName,
+				CaptiveClanHeroHolderName = captive.FirstHolderName,
+				CaptiveClanLeaderHeld = captive.LeaderHeld,
+				MarriageAdultClanHeroCount = marriage.AdultClanHeroCount,
+				MarriageUnmarriedAdultCount = marriage.UnmarriedAdultCount,
+				MarriageFirstUnmarriedName = marriage.FirstUnmarriedName,
+				MarriageRequesterUnmarried = marriage.RequesterUnmarried,
+				RevengePressureScore = revenge.PressureScore,
+				RevengeTargetName = revenge.TargetName,
+				RevengeReasonText = revenge.ReasonText,
+				FiefProblemCount = fiefs.ProblemCount,
+				FiefProblemName = fiefs.FirstProblemName,
+				FiefLoyalty = fiefs.LowestLoyalty,
+				FiefSecurity = fiefs.LowestSecurity,
+				FiefGarrisonCount = fiefs.LowestGarrisonCount,
+				FiefIssueText = fiefs.IssueText,
+				FiefUnderAttack = fiefs.UnderAttack,
+				ClanInfluence = allies.ClanInfluence,
+				FriendlyClanCount = allies.FriendlyClanCount,
+				HostileClanCount = allies.HostileClanCount,
+				TargetKingdom = kingdom,
+				TargetKingdomId = GetKingdomKey(kingdom),
+				TargetKingdomName = GetKingdomName(kingdom),
+				PlayerClanTier = SafePlayerClanTier(),
+				TargetHeroIsKingdomLeader = IsKingdomLeader(hero, kingdom),
+				TargetClanCanOfferKingdomService = CanClanRepresentKingdom(clan, kingdom),
+				KingdomFormalVassalClanCount = manpower.FormalVassalClanCount,
+				KingdomMercenaryClanCount = manpower.MercenaryClanCount,
+				KingdomFiefScore = manpower.FiefScore,
+				KingdomWarKingdomCount = manpower.WarKingdomCount,
+				KingdomPowerRatioToEnemies = manpower.PowerRatioToEnemies,
+				KingdomTargetMercenaryClanCount = manpower.TargetMercenaryClanCount,
+				KingdomTargetVassalClanCount = manpower.TargetVassalClanCount,
+				KingdomNeedsMercenaries = manpower.NeedsMercenaries,
+				KingdomNeedsVassals = manpower.NeedsVassals,
+				KingdomMercenaryNeedUrgency = manpower.MercenaryNeedUrgency,
+				KingdomVassalNeedUrgency = manpower.VassalNeedUrgency,
+				AtWarWithPlayer = atWar
+			};
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static string BuildLetterNeedFact(ProactiveCandidate candidate)
+	{
+		string npcName = candidate?.Hero?.Name?.ToString() ?? "NPC";
+		string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal(candidate?.Hero) ?? Hero.MainHero?.Name?.ToString() ?? "玩家";
+		string needType = NormalizeNeedType(candidate?.NeedType);
+		string evidence = BuildLetterNeedEvidence(candidate, needType);
+		return "[AFEF NPC行为补充] " + npcName + "当前确实存在“" + GetNeedDisplayName(needType) + "”需求（紧急度 " + Clamp(candidate?.NeedUrgency ?? 0f, 0f, 100f).ToString("0") + "/100）" + evidence + "。" + npcName + "决定主动写信给" + playerName + "，本信只围绕这一项需求提出请求；不要假定玩家已经同意，也不要把未发生的交易、承诺或机制结果写成事实。";
+	}
+
+	private static string BuildLetterNeedIntent(ProactiveCandidate candidate)
+	{
+		string needType = NormalizeNeedType(candidate?.NeedType);
+		return "围绕“" + GetNeedDisplayName(needType) + "”写一封简洁来信，只提出一个主要请求，并严格使用已提供的游戏事实。";
+	}
+
+	private static string BuildLetterNeedEvidence(ProactiveCandidate candidate, string needType)
+	{
+		if (candidate == null)
+		{
+			return "";
+		}
+		if (string.Equals(needType, NeedFoodShortage, StringComparison.OrdinalIgnoreCase)) return "，队伍食物预计还能维持 " + candidate.FoodDays + " 天";
+		if (string.Equals(needType, NeedMoneyShortage, StringComparison.OrdinalIgnoreCase)) return "，队伍现金 " + candidate.PartyGold + "，每日军饷约 " + candidate.TotalWage;
+		if (string.Equals(needType, NeedTroopShortage, StringComparison.OrdinalIgnoreCase)) return "，队伍兵力 " + candidate.MemberCount + "/" + candidate.PartySizeLimit;
+		if (string.Equals(needType, NeedPrisonerOverload, StringComparison.OrdinalIgnoreCase)) return "，俘虏 " + candidate.PrisonerCount + "/" + candidate.PrisonerSizeLimit;
+		if (string.Equals(needType, NeedClanCaptive, StringComparison.OrdinalIgnoreCase)) return "，被俘家族成员 " + candidate.CaptiveClanHeroCount + " 人，首名为 " + (candidate.CaptiveClanHeroName ?? "未知");
+		if (string.Equals(needType, NeedLowMorale, StringComparison.OrdinalIgnoreCase)) return "，队伍士气约 " + candidate.Morale.ToString("0");
+		if (string.Equals(needType, NeedMountShortage, StringComparison.OrdinalIgnoreCase)) return "，坐骑 " + candidate.MountCount + " 匹，队伍成员 " + candidate.MemberCount + " 人";
+		if (string.Equals(needType, NeedOverburdened, StringComparison.OrdinalIgnoreCase)) return "，负重约为容量的 " + (candidate.CarryRatio * 100f).ToString("0") + "%";
+		if (string.Equals(needType, NeedClanFinanceStrain, StringComparison.OrdinalIgnoreCase)) return "，家族金库 " + candidate.ClanGold + "，王国债务 " + candidate.ClanDebtToKingdom;
+		if (string.Equals(needType, NeedMarriageAlliancePressure, StringComparison.OrdinalIgnoreCase)) return "，成年成员 " + candidate.MarriageAdultClanHeroCount + " 人，未婚成年成员 " + candidate.MarriageUnmarriedAdultCount + " 人";
+		if (string.Equals(needType, NeedRevengePressure, StringComparison.OrdinalIgnoreCase)) return "，相关对象为 " + (candidate.RevengeTargetName ?? "未知") + "，缘由为 " + (candidate.RevengeReasonText ?? "当前家族压力");
+		if (string.Equals(needType, NeedFiefGovernanceAnxiety, StringComparison.OrdinalIgnoreCase)) return "，问题封地 " + (candidate.FiefProblemName ?? "未知") + "，问题数 " + candidate.FiefProblemCount + "，情况为 " + (candidate.FiefIssueText ?? "治理压力");
+		if (string.Equals(needType, NeedAllySupport, StringComparison.OrdinalIgnoreCase)) return "，家族影响力 " + candidate.ClanInfluence.ToString("0") + "，友好家族 " + candidate.FriendlyClanCount + "，敌对家族 " + candidate.HostileClanCount;
+		if (string.Equals(needType, NeedKingdomMercenaryInvite, StringComparison.OrdinalIgnoreCase)) return "，王国当前雇佣兵家族 " + candidate.KingdomMercenaryClanCount + "/目标 " + candidate.KingdomTargetMercenaryClanCount;
+		if (string.Equals(needType, NeedKingdomVassalInvite, StringComparison.OrdinalIgnoreCase)) return "，王国当前封臣家族 " + candidate.KingdomFormalVassalClanCount + "/目标 " + candidate.KingdomTargetVassalClanCount;
+		if (string.Equals(needType, NeedPoliticalAgenda, StringComparison.OrdinalIgnoreCase)) return "，当前王国内确实存在待处理议程";
+		if (string.Equals(needType, NeedDiplomacy, StringComparison.OrdinalIgnoreCase)) return "，双方王国当前存在可谈判的外交事项";
+		return "";
+	}
+
+	private static string GetNeedDisplayName(string needType)
+	{
+		if (string.Equals(needType, NeedFoodShortage, StringComparison.OrdinalIgnoreCase)) return "缺粮";
+		if (string.Equals(needType, NeedMoneyShortage, StringComparison.OrdinalIgnoreCase)) return "缺钱";
+		if (string.Equals(needType, NeedTroopShortage, StringComparison.OrdinalIgnoreCase)) return "缺兵";
+		if (string.Equals(needType, NeedPrisonerOverload, StringComparison.OrdinalIgnoreCase)) return "俘虏过载或赎买";
+		if (string.Equals(needType, NeedClanCaptive, StringComparison.OrdinalIgnoreCase)) return "家族成员被俘";
+		if (string.Equals(needType, NeedLowMorale, StringComparison.OrdinalIgnoreCase)) return "队伍士气低落";
+		if (string.Equals(needType, NeedMountShortage, StringComparison.OrdinalIgnoreCase)) return "缺少坐骑";
+		if (string.Equals(needType, NeedOverburdened, StringComparison.OrdinalIgnoreCase)) return "负重压力";
+		if (string.Equals(needType, NeedClanFinanceStrain, StringComparison.OrdinalIgnoreCase)) return "家族财政紧张";
+		if (string.Equals(needType, NeedMarriageAlliancePressure, StringComparison.OrdinalIgnoreCase)) return "联姻压力";
+		if (string.Equals(needType, NeedRevengePressure, StringComparison.OrdinalIgnoreCase)) return "复仇或营救压力";
+		if (string.Equals(needType, NeedFiefGovernanceAnxiety, StringComparison.OrdinalIgnoreCase)) return "封地治理压力";
+		if (string.Equals(needType, NeedAllySupport, StringComparison.OrdinalIgnoreCase)) return "缺少盟友支持";
+		if (string.Equals(needType, NeedKingdomMercenaryInvite, StringComparison.OrdinalIgnoreCase)) return "王国缺少雇佣兵";
+		if (string.Equals(needType, NeedKingdomVassalInvite, StringComparison.OrdinalIgnoreCase)) return "王国缺少封臣";
+		if (string.Equals(needType, NeedPoliticalAgenda, StringComparison.OrdinalIgnoreCase)) return "王国政治议程";
+		if (string.Equals(needType, NeedDiplomacy, StringComparison.OrdinalIgnoreCase)) return "外交谈判";
+		return string.IsNullOrWhiteSpace(needType) ? "具体请求" : needType;
 	}
 
 	private bool TryBuildBaseCandidate(MobileParty party, MobileParty mainParty, DuelSettings settings, out ProactiveCandidate candidate, out string skipReason)
@@ -729,7 +1169,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		{
 			return null;
 		}
-		if (settings?.ProactiveNpcRequestTestMode != true && IsOnCooldown(_needCooldownUntilDays, needType, NowDays()))
+		if (CourierDeliveryBehavior.IsInboundNeedTypeReservedForExternal(needType))
 		{
 			return null;
 		}
@@ -831,15 +1271,24 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static ProactiveCandidate BuildCombinedNeedCandidate(List<ProactiveCandidate> needCandidates)
+	private ProactiveCandidate BuildCombinedNeedCandidate(List<ProactiveCandidate> needCandidates, DuelSettings settings)
 	{
 		if (needCandidates == null || needCandidates.Count <= 0)
 		{
 			return null;
 		}
+		float nowDays = NowDays();
+		foreach (ProactiveCandidate candidate in needCandidates.Where(c => c != null))
+		{
+			candidate.NeedTypeFatigueRemainingDays = GetNeedTypeFatigueRemainingDays(candidate.NeedType, nowDays);
+			candidate.NeedTypeFatigueMultiplier = candidate.NeedTypeFatigueRemainingDays > 0f
+				? GetEffectiveNeedTypeFatigueMultiplier(settings)
+				: 1f;
+		}
 		List<ProactiveCandidate> ordered = needCandidates
 			.Where(c => c != null && !string.IsNullOrWhiteSpace(c.NeedType) && IsPlayerEligibleForProactiveNeed(c, c.NeedType, out _))
-			.OrderByDescending(c => c.NeedUrgency)
+			.OrderByDescending(c => c.NeedUrgency * c.NeedTypeFatigueMultiplier)
+			.ThenByDescending(c => c.NeedUrgency)
 			.ThenByDescending(c => GetNeedPresentationPriority(c.NeedType))
 			.ToList();
 		if (ordered.Count <= 0)
@@ -1831,6 +2280,8 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			NeedDrivenChance = candidate.NeedDrivenChance,
 			NotorietyDrivenChance = candidate.NotorietyDrivenChance,
 			SelectedNeedUrgency = candidate.SelectedNeedUrgency,
+			NeedTypeFatigueMultiplierAtSelection = candidate.NeedTypeFatigueMultiplier,
+			NeedTypeFatigueRemainingDaysAtSelection = candidate.NeedTypeFatigueRemainingDays,
 			LastKnownFoodDays = candidate.FoodDays,
 			LastKnownPartyGold = candidate.PartyGold,
 			LastKnownTotalWage = candidate.TotalWage,
@@ -1885,6 +2336,8 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			KingdomTargetVassalClanCount = candidate.KingdomTargetVassalClanCount,
 			IsTestFallback = candidate.IsTestFallback
 		};
+		CacheActiveParty(party);
+		_nextActiveEncounterProbeUtcTicks = 0L;
 		try
 		{
 			party.Ai?.SetDoNotAttackMainParty(Math.Max(2, (int)ActiveRequestTtlHours));
@@ -1895,7 +2348,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		SetPartyAiAction.GetActionForEngagingParty(party, MobileParty.MainParty, MobileParty.NavigationType.Default, isFromPort: false);
 		int globalCooldown = GetEffectiveGlobalCooldownHours(settings);
 		_globalCooldownUntilHours = NowHours() + globalCooldown;
-		Logger.Log("ProactiveNpcRequest", "started request triggerSource=" + (_activeSession.TriggerSource ?? "") + " knownMajorBefore=" + _activeSession.KnownMajorBeforeRequest + " effectiveNotoriety=" + _activeSession.EffectiveNotorietyAtRequest + " needChance=" + _activeSession.NeedDrivenChance.ToString("0.##") + " notorietyChance=" + _activeSession.NotorietyDrivenChance.ToString("0.##") + " selectedUrgency=" + _activeSession.SelectedNeedUrgency.ToString("0.##") + " need=" + _activeSession.NeedType + " needs=" + JoinNeedTypesForLog(_activeSession.NeedTypes, _activeSession.NeedType) + " hero=" + _activeSession.HeroId + " party=" + _activeSession.PartyId + " kingdom=" + (_activeSession.TargetKingdomId ?? "") + " playerClanTier=" + _activeSession.PlayerClanTier + " isKingdomLeader=" + _activeSession.TargetHeroIsKingdomLeader + " kingdomVassals=" + _activeSession.KingdomFormalVassalClanCount + "/" + _activeSession.KingdomTargetVassalClanCount + " kingdomMercs=" + _activeSession.KingdomMercenaryClanCount + "/" + _activeSession.KingdomTargetMercenaryClanCount + " kingdomFiefScore=" + _activeSession.KingdomFiefScore + " kingdomWars=" + _activeSession.KingdomWarKingdomCount + " kingdomPowerRatio=" + _activeSession.KingdomPowerRatioToEnemies.ToString("0.00") + " foodDays=" + candidate.FoodDays + " partyGold=" + candidate.PartyGold + " totalWage=" + candidate.TotalWage + " unpaidWages=" + candidate.UnpaidWages.ToString("0.00") + " troops=" + candidate.MemberCount + "/" + candidate.PartySizeLimit + " troopRatio=" + candidate.PartySizeRatio.ToString("0.00") + " prisoners=" + candidate.PrisonerCount + "/" + candidate.PrisonerSizeLimit + " heroPrisoners=" + candidate.HeroPrisonerCount + " prisonerRatio=" + candidate.PrisonerSizeRatio.ToString("0.00") + " morale=" + candidate.Morale.ToString("0.0") + " mounts=" + candidate.MountCount + " packAnimals=" + candidate.PackAnimalCount + " mountRatio=" + candidate.MountRatio.ToString("0.00") + " carry=" + candidate.TotalWeightCarried.ToString("0.0") + "/" + candidate.InventoryCapacity + " carryRatio=" + candidate.CarryRatio.ToString("0.00") + " clanGold=" + candidate.ClanGold + " clanDebt=" + candidate.ClanDebtToKingdom + " captiveClanHeroes=" + candidate.CaptiveClanHeroCount + " captiveLeader=" + candidate.CaptiveClanLeaderHeld + " wageBudget=" + candidate.AvailableWageBudget + " distance=" + candidate.Distance.ToString("0.0") + " testFallback=" + candidate.IsTestFallback);
+		Logger.Log("ProactiveNpcRequest", "started request triggerSource=" + (_activeSession.TriggerSource ?? "") + " knownMajorBefore=" + _activeSession.KnownMajorBeforeRequest + " effectiveNotoriety=" + _activeSession.EffectiveNotorietyAtRequest + " needChance=" + _activeSession.NeedDrivenChance.ToString("0.##") + " notorietyChance=" + _activeSession.NotorietyDrivenChance.ToString("0.##") + " selectedUrgency=" + _activeSession.SelectedNeedUrgency.ToString("0.##") + " typeFatigueMultiplier=" + _activeSession.NeedTypeFatigueMultiplierAtSelection.ToString("0.##") + " typeFatigueRemainingDays=" + _activeSession.NeedTypeFatigueRemainingDaysAtSelection.ToString("0.##") + " need=" + _activeSession.NeedType + " needs=" + JoinNeedTypesForLog(_activeSession.NeedTypes, _activeSession.NeedType) + " hero=" + _activeSession.HeroId + " party=" + _activeSession.PartyId + " kingdom=" + (_activeSession.TargetKingdomId ?? "") + " playerClanTier=" + _activeSession.PlayerClanTier + " isKingdomLeader=" + _activeSession.TargetHeroIsKingdomLeader + " kingdomVassals=" + _activeSession.KingdomFormalVassalClanCount + "/" + _activeSession.KingdomTargetVassalClanCount + " kingdomMercs=" + _activeSession.KingdomMercenaryClanCount + "/" + _activeSession.KingdomTargetMercenaryClanCount + " kingdomFiefScore=" + _activeSession.KingdomFiefScore + " kingdomWars=" + _activeSession.KingdomWarKingdomCount + " kingdomPowerRatio=" + _activeSession.KingdomPowerRatioToEnemies.ToString("0.00") + " foodDays=" + candidate.FoodDays + " partyGold=" + candidate.PartyGold + " totalWage=" + candidate.TotalWage + " unpaidWages=" + candidate.UnpaidWages.ToString("0.00") + " troops=" + candidate.MemberCount + "/" + candidate.PartySizeLimit + " troopRatio=" + candidate.PartySizeRatio.ToString("0.00") + " prisoners=" + candidate.PrisonerCount + "/" + candidate.PrisonerSizeLimit + " heroPrisoners=" + candidate.HeroPrisonerCount + " prisonerRatio=" + candidate.PrisonerSizeRatio.ToString("0.00") + " morale=" + candidate.Morale.ToString("0.0") + " mounts=" + candidate.MountCount + " packAnimals=" + candidate.PackAnimalCount + " mountRatio=" + candidate.MountRatio.ToString("0.00") + " carry=" + candidate.TotalWeightCarried.ToString("0.0") + "/" + candidate.InventoryCapacity + " carryRatio=" + candidate.CarryRatio.ToString("0.00") + " clanGold=" + candidate.ClanGold + " clanDebt=" + candidate.ClanDebtToKingdom + " captiveClanHeroes=" + candidate.CaptiveClanHeroCount + " captiveLeader=" + candidate.CaptiveClanLeaderHeld + " wageBudget=" + candidate.AvailableWageBudget + " distance=" + candidate.Distance.ToString("0.0") + " testFallback=" + candidate.IsTestFallback);
 		Logger.Log("ProactiveNpcRequest", "started request extra needs=" + JoinNeedTypesForLog(_activeSession.NeedTypes, _activeSession.NeedType) + " marriageAdults=" + _activeSession.LastKnownMarriageAdultClanHeroCount + " unmarriedAdults=" + _activeSession.LastKnownMarriageUnmarriedAdultCount + " firstUnmarried=" + (_activeSession.LastKnownMarriageFirstUnmarriedName ?? "") + " revengeScore=" + _activeSession.LastKnownRevengePressureScore.ToString("0.0") + " revengeTarget=" + (_activeSession.LastKnownRevengeTargetName ?? "") + " revengeReason=" + (_activeSession.LastKnownRevengeReasonText ?? "") + " fiefProblems=" + _activeSession.LastKnownFiefProblemCount + " fief=" + (_activeSession.LastKnownFiefProblemName ?? "") + " fiefIssue=" + (_activeSession.LastKnownFiefIssueText ?? "") + " fiefLoyalty=" + _activeSession.LastKnownFiefLoyalty.ToString("0.0") + " fiefSecurity=" + _activeSession.LastKnownFiefSecurity.ToString("0.0") + " fiefGarrison=" + _activeSession.LastKnownFiefGarrisonCount + " allyInfluence=" + _activeSession.LastKnownClanInfluence.ToString("0.0") + " friendlyClans=" + _activeSession.LastKnownFriendlyClanCount + " hostileClans=" + _activeSession.LastKnownHostileClanCount);
 	}
 
@@ -2032,6 +2485,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		{
 		}
 		MarkEncounterOpenedInternal(hero);
+		RecordActiveNeedTypeFatigue();
 		LordEncounterBehavior.SetTarget(hero);
 		LordEncounterBehavior.LogEncounterDiagnostic("ProactiveNpcRequest.OpenActiveEncounterMenu", "open_custom_menu", null, hero, party.Party);
 		Logger.Log("ProactiveNpcRequest", "opening custom encounter menu hero=" + GetHeroKey(hero) + " party=" + (party.StringId ?? "") + " distance=" + distance.ToString("0.00") + " trigger=" + triggerDistance.ToString("0.00"));
@@ -2201,26 +2655,37 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		{
 			_heroCooldownUntilDays[heroKey] = nowDays + heroCooldownDays;
 		}
-		if (_activeSession?.IsTestFallback == true || settings?.ProactiveNpcRequestTestMode == true)
+	}
+
+	private void RecordActiveNeedTypeFatigue()
+	{
+		if (_activeSession == null || _activeSession.NeedTypeFatigueRecorded)
 		{
-			foreach (string needType in GetActiveNeedTypes())
-			{
-				if (!string.IsNullOrWhiteSpace(needType))
-				{
-					_needCooldownUntilDays.Remove(needType);
-				}
-			}
+			return;
 		}
-		else
+		foreach (string needType in GetActiveNeedTypes())
 		{
-			foreach (string needType in GetActiveNeedTypes())
-			{
-				if (!string.IsNullOrWhiteSpace(needType))
-				{
-					_needCooldownUntilDays[needType] = nowDays + NeedCooldownDays;
-				}
-			}
+			RecordNeedTypeFatigue(needType, "map_encounter_opened");
 		}
+		_activeSession.NeedTypeFatigueRecorded = true;
+	}
+
+	private void RecordNeedTypeFatigue(string needType, string source)
+	{
+		string normalized = NormalizeNeedType(needType);
+		if (string.IsNullOrWhiteSpace(normalized))
+		{
+			return;
+		}
+		DuelSettings settings = DuelSettings.GetSettings();
+		int fatigueDays = GetEffectiveNeedTypeFatigueDays(settings);
+		if (fatigueDays <= 0)
+		{
+			_needTypeFatigueUntilDays.Remove(normalized);
+			return;
+		}
+		_needTypeFatigueUntilDays[normalized] = NowDays() + fatigueDays;
+		Logger.Log("ProactiveNpcRequest", "type fatigue recorded source=" + (source ?? "") + " need=" + normalized + " durationDays=" + fatigueDays + " multiplier=" + GetEffectiveNeedTypeFatigueMultiplier(settings).ToString("0.##"));
 	}
 
 	private List<string> GetActiveNeedTypes()
@@ -2449,6 +2914,8 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		}
 		Logger.Log("ProactiveNpcRequest", "cleared active request reason=" + (reason ?? "unknown") + " hero=" + (session?.HeroId ?? "") + " needs=" + JoinNeedTypesForLog(session?.NeedTypes, session?.NeedType));
 		_activeSession = null;
+		ClearActivePartyCache();
+		_nextActiveEncounterProbeUtcTicks = 0L;
 	}
 
 	private void ReleasePartyIfStillChasing(MobileParty party)
@@ -2495,6 +2962,18 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		return pending != null && hero != null && string.Equals(pending.HeroId, GetHeroKey(hero), StringComparison.OrdinalIgnoreCase);
 	}
 
+	private void CacheActiveParty(MobileParty party)
+	{
+		_activePartyCache = party;
+		_activePartyCacheId = (party?.StringId ?? "").Trim();
+	}
+
+	private void ClearActivePartyCache()
+	{
+		_activePartyCache = null;
+		_activePartyCacheId = "";
+	}
+
 	private MobileParty ResolveActiveParty()
 	{
 		if (_activeSession == null)
@@ -2502,16 +2981,30 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			return null;
 		}
 		string partyId = (_activeSession.PartyId ?? "").Trim();
+		if (_activePartyCache != null
+			&& _activePartyCache.IsActive
+			&& string.Equals(_activePartyCacheId, partyId, StringComparison.OrdinalIgnoreCase)
+			&& string.Equals((_activePartyCache.StringId ?? "").Trim(), partyId, StringComparison.OrdinalIgnoreCase))
+		{
+			return _activePartyCache;
+		}
+		ClearActivePartyCache();
 		if (!string.IsNullOrWhiteSpace(partyId))
 		{
 			MobileParty party = MobileParty.All?.FirstOrDefault(x => x != null && string.Equals((x.StringId ?? "").Trim(), partyId, StringComparison.OrdinalIgnoreCase));
 			if (party != null)
 			{
+				CacheActiveParty(party);
 				return party;
 			}
 		}
 		Hero hero = ResolveHero(_activeSession.HeroId);
-		return hero?.PartyBelongedTo;
+		MobileParty heroParty = hero?.PartyBelongedTo;
+		if (heroParty != null)
+		{
+			CacheActiveParty(heroParty);
+		}
+		return heroParty;
 	}
 
 	private string BuildOpeningFact(Hero hero)
@@ -3141,6 +3634,70 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			return "当前缺钱、军饷或资金周转压力，请求资助、预付款、雇佣或交易机会";
 		}
 		return "当前缺粮，请求援助或购买食物";
+	}
+
+	public static bool TryGetPlayerInteractionBusyReasonForExternal(bool allowSea, bool allowSettlement, out string reason)
+	{
+		reason = "";
+		try
+		{
+			MobileParty mainParty = MobileParty.MainParty;
+			if (mainParty == null)
+			{
+				reason = "missing_main_party";
+				return true;
+			}
+			if (Mission.Current != null)
+			{
+				reason = "mission_active";
+				return true;
+			}
+			if (PlayerEncounterCompat.IsInPostBattleResultFlow())
+			{
+				reason = "post_battle_result";
+				return true;
+			}
+			if (TryGetPlayerNativeActivityBusyReason(mainParty, out reason))
+			{
+				return true;
+			}
+			if (mainParty.MapEvent != null)
+			{
+				reason = "main_party_map_event";
+				return true;
+			}
+			if (!allowSettlement && mainParty.CurrentSettlement != null)
+			{
+				reason = "main_party_in_settlement";
+				return true;
+			}
+			if (mainParty.IsInRaftState)
+			{
+				reason = "main_party_raft";
+				return true;
+			}
+			if (!allowSea && MapSeaContextGuard.IsMobilePartyAtSeaOrOnWater(mainParty))
+			{
+				reason = "main_party_at_sea";
+				return true;
+			}
+			if (PlayerEncounter.Current != null)
+			{
+				reason = "player_encounter_active";
+				return true;
+			}
+			if (Campaign.Current?.ConversationManager?.IsConversationInProgress == true)
+			{
+				reason = "conversation_in_progress";
+				return true;
+			}
+			return false;
+		}
+		catch (Exception ex)
+		{
+			reason = "exception:" + ex.Message;
+			return true;
+		}
 	}
 
 	private static bool TryGetPlayerBusyReason(out string reason)
@@ -4480,6 +5037,30 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		return result;
 	}
 
+	private float GetNeedTypeFatigueRemainingDays(string needType, float nowDays)
+	{
+		string normalized = NormalizeNeedType(needType);
+		if (string.IsNullOrWhiteSpace(normalized)
+			|| _needTypeFatigueUntilDays == null
+			|| !_needTypeFatigueUntilDays.TryGetValue(normalized, out float untilDays))
+		{
+			return 0f;
+		}
+		return Math.Max(0f, untilDays - nowDays);
+	}
+
+	private void PruneExpiredNeedTypeFatigue(float nowDays)
+	{
+		if (_needTypeFatigueUntilDays == null || _needTypeFatigueUntilDays.Count <= 0)
+		{
+			return;
+		}
+		foreach (string key in _needTypeFatigueUntilDays.Where(pair => pair.Value <= nowDays).Select(pair => pair.Key).ToList())
+		{
+			_needTypeFatigueUntilDays.Remove(key);
+		}
+	}
+
 	private static int GetEffectiveScanIntervalHours(DuelSettings settings)
 	{
 		int value = Clamp(settings?.ProactiveNpcRequestScanIntervalHours ?? 1, 1, 24);
@@ -4506,6 +5087,16 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 	{
 		int value = Clamp(settings?.ProactiveNpcMinNeedUrgency ?? 50, 0, 100);
 		return settings?.ProactiveNpcRequestTestMode == true ? 0 : value;
+	}
+
+	private static int GetEffectiveNeedTypeFatigueDays(DuelSettings settings)
+	{
+		return Clamp(settings?.ProactiveNpcRequestTypeFatigueDays ?? 10, 0, 60);
+	}
+
+	private static float GetEffectiveNeedTypeFatigueMultiplier(DuelSettings settings)
+	{
+		return Clamp(settings?.ProactiveNpcRequestTypeFatigueMultiplier ?? 0.2f, 0f, 1f);
 	}
 
 	private static int GetEffectiveGlobalCooldownHours(DuelSettings settings)
@@ -4580,6 +5171,8 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 	{
 		public ProactiveNpcRequestSession ActiveSession { get; set; }
 		public Dictionary<string, float> HeroCooldownUntilDays { get; set; }
+		public Dictionary<string, float> NeedTypeFatigueUntilDays { get; set; }
+		// Legacy v1 field: old saves stored a hard type cooldown here.
 		public Dictionary<string, float> NeedCooldownUntilDays { get; set; }
 		public float GlobalCooldownUntilHours { get; set; }
 		public float LastScanHour { get; set; }
@@ -4602,6 +5195,8 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		public float NeedDrivenChance { get; set; }
 		public float NotorietyDrivenChance { get; set; }
 		public float SelectedNeedUrgency { get; set; }
+		public float NeedTypeFatigueMultiplierAtSelection { get; set; } = 1f;
+		public float NeedTypeFatigueRemainingDaysAtSelection { get; set; }
 		public int LastKnownFoodDays { get; set; }
 		public int LastKnownPartyGold { get; set; }
 		public int LastKnownTotalWage { get; set; }
@@ -4654,6 +5249,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		public float KingdomPowerRatioToEnemies { get; set; }
 		public int KingdomTargetMercenaryClanCount { get; set; }
 		public int KingdomTargetVassalClanCount { get; set; }
+		public bool NeedTypeFatigueRecorded { get; set; }
 		public bool IsTestFallback { get; set; }
 	}
 
@@ -4741,6 +5337,8 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		public float NeedDrivenChance { get; set; }
 		public float NotorietyDrivenChance { get; set; }
 		public float SelectedNeedUrgency { get; set; }
+		public float NeedTypeFatigueMultiplier { get; set; } = 1f;
+		public float NeedTypeFatigueRemainingDays { get; set; }
 		public bool IsTestFallback { get; set; }
 	}
 
@@ -4802,6 +5400,18 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		public int HostileClanCount { get; set; }
 	}
 
+	private sealed class ProactiveCandidateScanState
+	{
+		public DuelSettings Settings { get; set; }
+		public List<MobileParty> Parties { get; set; } = new List<MobileParty>();
+		public List<MobileParty> WorkingBatch { get; } = new List<MobileParty>(1);
+		public CandidateScanStats Stats { get; set; } = new CandidateScanStats();
+		public ProactiveCandidate BestCandidate { get; set; }
+		public int NextIndex { get; set; }
+		public int BatchSize { get; set; }
+		public long StartedAtUtcTicks { get; set; }
+	}
+
 	private sealed class CandidateScanStats
 	{
 		public bool MainPartyMissing { get; set; }
@@ -4827,6 +5437,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		public int PoliticalAgenda { get; set; }
 		public int Diplomacy { get; set; }
 		public int NeedCandidates { get; set; }
+		public int TypeFatiguedCandidates { get; set; }
 		public int BelowMinUrgency { get; set; }
 		public int NeedDrivenTriggered { get; set; }
 		public int NotorietyDrivenTriggered { get; set; }
@@ -4840,6 +5451,49 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			string key = string.IsNullOrWhiteSpace(reason) ? "unknown" : reason.Trim();
 			_skipReasons.TryGetValue(key, out int count);
 			_skipReasons[key] = count + 1;
+		}
+
+		public void MergeFrom(CandidateScanStats other)
+		{
+			if (other == null)
+			{
+				return;
+			}
+			MainPartyMissing |= other.MainPartyMissing;
+			TotalLordParties += other.TotalLordParties;
+			BaseEligible += other.BaseEligible;
+			InRange += other.InRange;
+			OutOfRange += other.OutOfRange;
+			FoodShortage += other.FoodShortage;
+			MoneyShortage += other.MoneyShortage;
+			TroopShortage += other.TroopShortage;
+			PrisonerOverload += other.PrisonerOverload;
+			ClanCaptive += other.ClanCaptive;
+			LowMorale += other.LowMorale;
+			MountShortage += other.MountShortage;
+			Overburdened += other.Overburdened;
+			ClanFinanceStrain += other.ClanFinanceStrain;
+			MarriageAlliancePressure += other.MarriageAlliancePressure;
+			RevengePressure += other.RevengePressure;
+			FiefGovernanceAnxiety += other.FiefGovernanceAnxiety;
+			AllySupport += other.AllySupport;
+			KingdomMercenaryInvite += other.KingdomMercenaryInvite;
+			KingdomVassalInvite += other.KingdomVassalInvite;
+			PoliticalAgenda += other.PoliticalAgenda;
+			Diplomacy += other.Diplomacy;
+			NeedCandidates += other.NeedCandidates;
+			TypeFatiguedCandidates += other.TypeFatiguedCandidates;
+			BelowMinUrgency += other.BelowMinUrgency;
+			NeedDrivenTriggered += other.NeedDrivenTriggered;
+			NotorietyDrivenTriggered += other.NotorietyDrivenTriggered;
+			TriggerRollFailed += other.TriggerRollFailed;
+			TestFallbackEligible += other.TestFallbackEligible;
+			SelectedByTestFallback |= other.SelectedByTestFallback;
+			foreach (KeyValuePair<string, int> pair in other._skipReasons)
+			{
+				_skipReasons.TryGetValue(pair.Key, out int count);
+				_skipReasons[pair.Key] = count + pair.Value;
+			}
 		}
 
 		public string ToLogString()
@@ -4876,6 +5530,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 				+ " politicalAgenda=" + PoliticalAgenda
 				+ " diplomacy=" + Diplomacy
 				+ " needCandidates=" + NeedCandidates
+				+ " typeFatiguedCandidates=" + TypeFatiguedCandidates
 				+ " belowMinUrgency=" + BelowMinUrgency
 				+ " needDrivenTriggered=" + NeedDrivenTriggered
 				+ " notorietyDrivenTriggered=" + NotorietyDrivenTriggered

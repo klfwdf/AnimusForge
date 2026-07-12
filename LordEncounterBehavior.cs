@@ -5720,9 +5720,49 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		return ApplyHostileEscalationDiplomaticConsequences(defenderParty, targetHero, reason, "MeetingBattle");
 	}
 
+	private static Clan ResolveEncounterDefenderClanForHostileEscalation(PartyBase defenderParty, Hero targetHero)
+	{
+		Clan clan = null;
+		try
+		{
+			clan = targetHero?.Clan ?? targetHero?.PartyBelongedTo?.ActualClan;
+		}
+		catch
+		{
+			clan = null;
+		}
+		if (clan != null)
+		{
+			return clan;
+		}
+		try
+		{
+			clan = defenderParty?.MobileParty?.ActualClan ?? defenderParty?.Owner?.Clan;
+		}
+		catch
+		{
+			clan = null;
+		}
+		if (clan != null)
+		{
+			return clan;
+		}
+		try
+		{
+			return defenderParty?.Settlement?.OwnerClan;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
 	internal static bool ApplyHostileEscalationDiplomaticConsequences(PartyBase defenderParty, Hero targetHero, string reason, string logChannel = "MeetingBattle")
 	{
 		bool flag = false;
+		bool playerWasRulerInSharedKingdom = false;
+		bool defenderClanLeftSharedKingdom = false;
+		Clan sharedKingdomDefenderClan = null;
 		try
 		{
 			if (defenderParty == null)
@@ -5767,18 +5807,39 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				Clan clan = Clan.PlayerClan ?? Hero.MainHero?.Clan;
-				if (clan != null && clan.Kingdom != null)
+				Clan playerClan = Clan.PlayerClan ?? Hero.MainHero?.Clan;
+				Kingdom sharedKingdom = playerClan?.Kingdom;
+				playerWasRulerInSharedKingdom = sharedKingdom != null && sharedKingdom == faction && (sharedKingdom.RulingClan == playerClan || sharedKingdom.Leader == Hero.MainHero);
+				sharedKingdomDefenderClan = ResolveEncounterDefenderClanForHostileEscalation(defenderParty, targetHero);
+				Clan clanToLeave = playerClan;
+				if (playerWasRulerInSharedKingdom)
 				{
-					if (clan.IsUnderMercenaryService)
+					if (sharedKingdomDefenderClan != null && !sharedKingdomDefenderClan.IsEliminated && sharedKingdomDefenderClan != playerClan && sharedKingdomDefenderClan.Kingdom == sharedKingdom)
 					{
-						ChangeKingdomAction.ApplyByLeaveKingdomAsMercenary(clan);
-						Logger.Log(logChannel, "Immediate escalation: player clan left kingdom as mercenary.");
+						clanToLeave = sharedKingdomDefenderClan;
 					}
 					else
 					{
-						ChangeKingdomAction.ApplyByLeaveKingdom(clan);
-						Logger.Log(logChannel, "Immediate escalation: player clan left kingdom.");
+						clanToLeave = null;
+						Logger.Log(logChannel, "Immediate escalation: player ruling clan preserved; no eligible distinct defender clan could be separated. DefenderClan=" + (sharedKingdomDefenderClan?.StringId ?? "null"));
+					}
+				}
+				if (clanToLeave != null && clanToLeave.Kingdom != null)
+				{
+					if (clanToLeave.IsUnderMercenaryService)
+					{
+						ChangeKingdomAction.ApplyByLeaveKingdomAsMercenary(clanToLeave);
+						Logger.Log(logChannel, "Immediate escalation: " + (clanToLeave == playerClan ? "player" : "defender") + " clan left kingdom as mercenary. Clan=" + (clanToLeave.StringId ?? ""));
+					}
+					else
+					{
+						ChangeKingdomAction.ApplyByLeaveKingdom(clanToLeave);
+						Logger.Log(logChannel, "Immediate escalation: " + (clanToLeave == playerClan ? "player" : "defender") + " clan left kingdom. Clan=" + (clanToLeave.StringId ?? ""));
+					}
+					defenderClanLeftSharedKingdom = playerWasRulerInSharedKingdom && clanToLeave == sharedKingdomDefenderClan && clanToLeave.Kingdom != sharedKingdom;
+					if (playerWasRulerInSharedKingdom)
+					{
+						Logger.Log(logChannel, "Immediate escalation: ruler friendly attack separation verified. PlayerClanStayed=" + (playerClan.Kingdom == sharedKingdom) + ", DefenderClanLeft=" + defenderClanLeftSharedKingdom + ", DefenderClan=" + (sharedKingdomDefenderClan?.StringId ?? "null"));
 					}
 					flag = true;
 				}
@@ -5786,6 +5847,22 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			catch (Exception ex)
 			{
 				Logger.Log(logChannel, "Immediate escalation: leave kingdom failed: " + ex.Message);
+			}
+		}
+		if (defenderClanLeftSharedKingdom)
+		{
+			try
+			{
+				PartyBase selectedDefenderParty = targetHero?.PartyBelongedTo?.Party;
+				if (selectedDefenderParty != null)
+				{
+					defenderParty = selectedDefenderParty;
+				}
+				faction2 = targetHero?.MapFaction ?? defenderParty?.MapFaction ?? sharedKingdomDefenderClan;
+			}
+			catch
+			{
+				faction2 = sharedKingdomDefenderClan;
 			}
 		}
 		try
@@ -5837,7 +5914,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 				faction3 = null;
 			}
-			if (faction3 == faction2)
+			if (faction3 == faction2 && !playerWasRulerInSharedKingdom)
 			{
 				try
 				{

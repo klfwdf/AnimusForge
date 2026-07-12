@@ -113,7 +113,10 @@ public static class NativeConversationAnswerAreaController
 	{
 		if (_suppressed)
 		{
-			ApplySuppressionToAll();
+			using (FreezeWatchdog.Scope("NativeConversationAnswerArea.ApplySuppressionToAll"))
+			{
+				ApplySuppressionToAll();
+			}
 		}
 	}
 
@@ -127,17 +130,24 @@ public static class NativeConversationAnswerAreaController
 	{
 		List<RootState> snapshot;
 		bool suppressed;
-		lock (Sync)
+		using (FreezeWatchdog.Scope("NativeConversationAnswerArea.SnapshotRoots"))
 		{
-			snapshot = new List<RootState>(Roots);
-			suppressed = _suppressed;
+			lock (Sync)
+			{
+				snapshot = new List<RootState>(Roots);
+				suppressed = _suppressed;
+			}
 		}
 		List<RootState> failedRoots = null;
-		foreach (RootState root in snapshot)
+		for (int i = 0; i < snapshot.Count; i++)
 		{
+			RootState root = snapshot[i];
 			try
 			{
-				root.Apply(suppressed);
+				using (FreezeWatchdog.Scope("NativeConversationAnswerArea.RootApply." + i))
+				{
+					root.Apply(suppressed);
+				}
 			}
 			catch (Exception ex)
 			{

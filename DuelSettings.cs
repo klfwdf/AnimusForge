@@ -264,9 +264,9 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	public const int ApiMaxTokensMaximum = 64000;
 
-	public const int DefaultGeneralApiMaxTokens = 8000;
+	public const int DefaultGeneralApiMaxTokens = 12000;
 
-	public const int DefaultEventAndRebellionApiMaxTokens = 8000;
+	public const int DefaultEventAndRebellionApiMaxTokens = 12000;
 
 	public const int LlmRequestTimeoutMilliseconds = 480000;
 
@@ -373,7 +373,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("1. AI 核心配置/1. 主API（正文生成）", GroupOrder = -300)]
 	public float MainApiTemperature { get; set; } = 0.8f;
 
-	[SettingPropertyInteger("最大输出Tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "主API正文生成调用的 max_tokens。默认 8000；如果接口不支持过高上限，可能会被接口拒绝。")]
+	[SettingPropertyInteger("最大输出Tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "主API正文生成调用的 max_tokens。默认 12000；如果接口不支持过高上限，可能会被接口拒绝。")]
 	[SettingPropertyGroup("1. AI 核心配置/1. 主API（正文生成）", GroupOrder = -300)]
 	public int MainApiMaxTokens { get; set; } = DefaultGeneralApiMaxTokens;
 
@@ -725,11 +725,15 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		}
 	}
 
-	[SettingPropertyBool("【性能】延后日结维护", Order = 11, RequireRestart = false, HintText = "开启后，每日结算只登记 AnimusForge 维护任务，记忆总览、王国维护和周报准备会在后续大地图 tick 中按预算分批执行。默认开启。")]
+	[SettingPropertyBool("【性能】启用性能监控", Order = 11, RequireRestart = false, HintText = "开启后采集 FPS、慢帧和各 Tick/Scope 耗时，每30秒向 Mod_Logic.txt 写入一次聚合结果，并把当前窗口附加到冻结检查点。关闭后立即停止采样与周期输出。默认开启。")]
+	[SettingPropertyGroup("4. 开发者选项")]
+	public bool EnablePerformanceMonitor { get; set; } = true;
+
+	[SettingPropertyBool("【性能】延后日结维护", Order = 12, RequireRestart = false, HintText = "开启后，每日结算只登记 AnimusForge 维护任务，记忆总览、王国维护和周报准备会在后续大地图中按预算分批执行，最多每250毫秒运行一次。默认开启。")]
 	[SettingPropertyGroup("4. 开发者选项")]
 	public bool EnableDeferredDailyMaintenance { get; set; } = true;
 
-	[SettingPropertyInteger("【性能】日结维护每帧预算(ms)", 1, 10, "0", Order = 12, RequireRestart = false, HintText = "延后日结维护开启时，每个大地图 tick 最多用于后台维护的毫秒数。默认 3；调高会更快完成后台任务但更可能产生帧尖峰。")]
+	[SettingPropertyInteger("【性能】日结维护每帧预算(ms)", 1, 10, "0", Order = 13, RequireRestart = false, HintText = "延后日结维护开启时，每个维护窗口最多用于后台维护的毫秒数；窗口最多每250毫秒运行一次。默认 3；调高会更快完成后台任务但更可能产生帧尖峰。")]
 	[SettingPropertyGroup("4. 开发者选项")]
 	public int DailyMaintenanceFrameBudgetMs { get; set; } = 3;
 
@@ -895,6 +899,118 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("7. NPC主动接触")]
 	public int ProactiveNpcMinNeedUrgency { get; set; } = 60;
 
+	[SettingPropertyInteger("请求类型疲劳(天)", 0, 60, "0", Order = 27, RequireRestart = false, HintText = "玩家收到某类主动请求后，该类型在多少游戏日内大幅降低触发概率；0 表示关闭类型疲劳。默认 10 天。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public int ProactiveNpcRequestTypeFatigueDays { get; set; } = 10;
+
+	[SettingPropertyFloatingInteger("疲劳类型概率倍率", 0f, 1f, "0.00", Order = 28, RequireRestart = false, HintText = "处于类型疲劳期的请求，其需求驱动和知名度驱动概率乘以该倍率，同时降低该需求在候选中的优先级。默认 0.20。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public float ProactiveNpcRequestTypeFatigueMultiplier { get; set; } = 0.2f;
+
+	[SettingPropertyBool("启用 NPC 主动来信", Order = 0, RequireRestart = false, HintText = "允许已经认识玩家且具备足够亲密综合分的 NPC 主动派出真实信使。")]
+	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	public bool EnableNpcInitiatedLetters { get; set; } = true;
+
+	[SettingPropertyBool("主动来信测试模式", Order = 1, RequireRestart = false, HintText = "将触发概率提高到 100%，并取消主动来信冷却；仍要求 NPC 认识玩家、位置有效且动机真实。")]
+	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	public bool NpcInitiatedLetterTestMode { get; set; } = false;
+
+	[SettingPropertyInteger("最低亲密综合分", 0, 100, "0", Order = 2, RequireRestart = false, HintText = "私人关系与写信用信任值平均后的最低候选分。默认 10。")]
+	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	public int NpcInitiatedLetterMinBondScore { get; set; } = 10;
+
+	[SettingPropertyInteger("扫描间隔(小时)", 1, 168, "0", Order = 3, RequireRestart = false, HintText = "每隔多少游戏小时扫描一次主动来信候选。默认 24 小时。")]
+	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	public int NpcInitiatedLetterScanIntervalHours { get; set; } = 24;
+
+	[SettingPropertyFloatingInteger("写信概率倍率", 0f, 2f, "0.00", Order = 4, RequireRestart = false, HintText = "单次扫描概率=亲密综合分乘以该倍率。默认 0.25，即 100 分为 25%。")]
+	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	public float NpcInitiatedLetterChanceMultiplier { get; set; } = 0.25f;
+
+	[SettingPropertyInteger("全局冷却(天)", 0, 60, "0", Order = 5, RequireRestart = false, HintText = "任意 NPC 主动发信后，多少游戏日内不再启动下一封主动来信。默认 5 天。")]
+	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	public int NpcInitiatedLetterGlobalCooldownDays { get; set; } = 5;
+
+	[SettingPropertyInteger("低分 NPC 冷却(天)", 1, 120, "0", Order = 6, RequireRestart = false, HintText = "最低综合分 NPC 的发送者冷却。默认 45 天。")]
+	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	public int NpcInitiatedLetterLowScoreCooldownDays { get; set; } = 45;
+
+	[SettingPropertyInteger("高分 NPC 冷却(天)", 1, 60, "0", Order = 7, RequireRestart = false, HintText = "100 综合分 NPC 的发送者冷却。默认 14 天。")]
+	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	public int NpcInitiatedLetterHighScoreCooldownDays { get; set; } = 14;
+
+	[SettingPropertyInteger("最近交流静默期(天)", 0, 30, "0", Order = 8, RequireRestart = false, HintText = "任意渠道刚与该 NPC 交流后，至少等待多少游戏日再允许主动来信。默认 3 天。")]
+	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	public int NpcInitiatedLetterQuietDays { get; set; } = 3;
+
+	[SettingPropertyInteger("公共信任贡献上限", 0, 100, "0", Order = 9, RequireRestart = false, HintText = "公共信任对写信用信任值的正负贡献上限。默认 ±20。")]
+	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	public int NpcInitiatedLetterPublicTrustCap { get; set; } = 20;
+
+	[SettingPropertyInteger("动机疲劳(天)", 0, 120, "0", Order = 10, RequireRestart = false, HintText = "同一 NPC 重复使用同类写信动机时降低权重的持续时间。默认 30 天。")]
+	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	public int NpcInitiatedLetterMotiveFatigueDays { get; set; } = 30;
+
+	[SettingPropertyFloatingInteger("疲劳动机权重倍率", 0f, 1f, "0.00", Order = 11, RequireRestart = false, HintText = "处于疲劳期的问候、近况、事件、情感、请求或外交动机权重倍率。默认 0.25。")]
+	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	public float NpcInitiatedLetterMotiveFatigueMultiplier { get; set; } = 0.25f;
+
+	[SettingPropertyInteger("主动来信目标字数", 80, 1000, "0", Order = 12, RequireRestart = false, HintText = "NPC 主动来信正文的目标字数。默认 220 字。")]
+	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	public int NpcInitiatedLetterTargetChars { get; set; } = 220;
+
+	[SettingPropertyBool("写入主动来信调试日志", Order = 13, RequireRestart = false, HintText = "在 Mod_Logic.txt 中记录候选分数、概率、动机、冷却和跳过原因。")]
+	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]
+	public bool NpcInitiatedLetterDebugLog { get; set; } = false;
+
+	[SettingPropertyBool("启用队内 Hero 主动聊天", Order = 0, RequireRestart = false, HintText = "允许玩家主队中的同伴、家人和其他 Hero 通过地图通知主动请求交谈。")]
+	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
+	public bool EnableCompanionProactiveChat { get; set; } = true;
+
+	[SettingPropertyBool("队内主动聊天测试模式", Order = 1, RequireRestart = false, HintText = "每游戏小时扫描、触发概率为 100% 且忽略冷却；仍要求 Hero 合法、玩家状态安全且存在有效动机。")]
+	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
+	public bool CompanionProactiveChatTestMode { get; set; } = false;
+
+	[SettingPropertyInteger("扫描间隔(小时)", 1, 168, "0", Order = 2, RequireRestart = false, HintText = "每隔多少游戏小时扫描一次队内 Hero。默认 24 小时。")]
+	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
+	public int CompanionProactiveChatScanIntervalHours { get; set; } = 24;
+
+	[SettingPropertyInteger("全局冷却(天)", 0, 120, "0", Order = 3, RequireRestart = false, HintText = "生成一次队内主动聊天通知后，多少游戏日内不再生成下一条。默认 21 天。")]
+	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
+	public int CompanionProactiveChatGlobalCooldownDays { get; set; } = 21;
+
+	[SettingPropertyInteger("同 Hero 冷却(天)", 0, 240, "0", Order = 4, RequireRestart = false, HintText = "同一 Hero 主动请求交谈后，多少游戏日内不会再次发起。默认 48 天。")]
+	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
+	public int CompanionProactiveChatHeroCooldownDays { get; set; } = 48;
+
+	[SettingPropertyInteger("任意交流静默期(天)", 0, 120, "0", Order = 5, RequireRestart = false, HintText = "任意渠道刚与该 Hero 交流后，至少等待多少游戏日再允许其主动聊天。默认 21 天。")]
+	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
+	public int CompanionProactiveChatInteractionQuietDays { get; set; } = 21;
+
+	[SettingPropertyInteger("通知有效期(天)", 1, 30, "0", Order = 6, RequireRestart = false, HintText = "队内主动聊天通知可保留多少游戏日；过期视为婉拒。默认 3 天。")]
+	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
+	public int CompanionProactiveChatNoticeLifetimeDays { get; set; } = 3;
+
+	[SettingPropertyFloatingInteger("触发概率倍率", 0f, 5f, "0.00", Order = 7, RequireRestart = false, HintText = "队内主动聊天每日概率的总体倍率。默认 1.00。")]
+	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
+	public float CompanionProactiveChatChanceMultiplier { get; set; } = 1f;
+
+	[SettingPropertyInteger("动机疲劳(天)", 0, 120, "0", Order = 8, RequireRestart = false, HintText = "同类主动聊天动机被选中后降低权重的持续时间。默认 30 天。")]
+	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
+	public int CompanionProactiveChatMotiveFatigueDays { get; set; } = 30;
+
+	[SettingPropertyFloatingInteger("疲劳动机权重倍率", 0f, 1f, "0.00", Order = 9, RequireRestart = false, HintText = "处于疲劳期的动机候选权重倍率。默认 0.25。")]
+	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
+	public float CompanionProactiveChatMotiveFatigueMultiplier { get; set; } = 0.25f;
+
+	[SettingPropertyInteger("近期事件窗口(天)", 1, 30, "0", Order = 10, RequireRestart = false, HintText = "Hero 或玩家近期真实事件可作为聊天动机的时间窗口。默认 10 天。")]
+	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
+	public int CompanionProactiveChatRecentEventWindowDays { get; set; } = 10;
+
+	[SettingPropertyBool("写入队内主动聊天调试日志", Order = 11, RequireRestart = false, HintText = "在 Mod_Logic.txt 中记录候选、概率、动机、冷却和通知状态。")]
+	[SettingPropertyGroup("7. NPC主动接触/队内同伴主动聊天")]
+	public bool CompanionProactiveChatDebugLog { get; set; } = false;
+
 	[SettingPropertyInteger("玩家履历总结间隔(天)", 1, 30, "0", Order = 0, RequireRestart = false, HintText = "每隔多少游戏日尝试把玩家公开履历素材滚动总结一次。默认 3 天。")]
 	[SettingPropertyGroup("8. 玩家知名度")]
 	public int PlayerNotorietySummaryIntervalDays { get; set; } = 3;
@@ -984,7 +1100,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）", GroupOrder = -290)]
 	public float AuxiliaryApiTemperature { get; set; } = 0f;
 
-	[SettingPropertyInteger("最大输出Tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "前处理API规则检索、规则路由与简易对话链路调用的 max_tokens。默认 8000；如果接口不支持过高上限，可能会被接口拒绝。")]
+	[SettingPropertyInteger("最大输出Tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "前处理API规则检索、规则路由与简易对话链路调用的 max_tokens。默认 12000；如果接口不支持过高上限，可能会被接口拒绝。")]
 	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）", GroupOrder = -290)]
 	public int AuxiliaryApiMaxTokens { get; set; } = DefaultGeneralApiMaxTokens;
 
@@ -1059,7 +1175,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
 	public float ActionPostprocessApiTemperature { get; set; } = 0f;
 
-	[SettingPropertyInteger("最大输出Tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "后处理API动作标签与情绪标签判定调用的 max_tokens。默认 8000；如果接口不支持过高上限，可能会被接口拒绝。")]
+	[SettingPropertyInteger("最大输出Tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "后处理API动作标签与情绪标签判定调用的 max_tokens。默认 12000；如果接口不支持过高上限，可能会被接口拒绝。")]
 	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
 	public int ActionPostprocessApiMaxTokens { get; set; } = DefaultGeneralApiMaxTokens;
 
@@ -1134,7 +1250,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
 	public float EventAndRebellionApiTemperature { get; set; } = 0.8f;
 
-	[SettingPropertyInteger("最大输出Tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "事件周报与王国叛乱建国命名调用的 max_tokens。默认 8000；如果接口不支持过高上限，可能会被接口拒绝。")]
+	[SettingPropertyInteger("最大输出Tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "事件周报与王国叛乱建国命名调用的 max_tokens。默认 12000；如果接口不支持过高上限，可能会被接口拒绝。")]
 	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
 	public int EventAndRebellionApiMaxTokens { get; set; } = DefaultEventAndRebellionApiMaxTokens;
 
@@ -1381,6 +1497,10 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyButton("清空 SETS.log", -1, true, "", Content = "立即清空", Order = 11, RequireRestart = false, HintText = "只清空当前 SETS.log，不删除上一份轮转日志。")]
 	[SettingPropertyGroup(SiegeNpcResponseLimitProfile.McmGroupName)]
 	public Action ClearSetsDiagnosticLog { get; set; }
+
+	[SettingPropertyInteger("怀孕几率（%）", 0, 100, "0", Order = 0, RequireRestart = false, HintText = "当亲密行为标签确认本轮已发生性行为和内射后，女方怀孕的概率。0 表示不会怀孕，100 表示必定怀孕。默认 50%。")]
+	[SettingPropertyGroup("15. 亲密行为与怀孕")]
+	public int IntimacyPregnancyChancePercent { get; set; } = 50;
 
 	[SettingPropertyBool("【测试】允许 NPC 拥有自己的臣属国/朝贡国", Order = 0, RequireRestart = false, HintText = "测试功能，默认关闭。开启后，NPC-NPC 议和时，主动求和且国力明显较弱的一方才有低概率成为对方朝贡国。关闭后只阻止新建 NPC 朝贡；已有 NPC 朝贡协议继续贡赋、保护战与和平同步。")]
 	[SettingPropertyGroup("12. 臣属国系统")]
@@ -4277,16 +4397,16 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 							new
 							{
 								role = "system",
-								content = "你是一个编号输出工具。"
+								content = AIConfigHandler.StrictPreprocessJsonSystemPrompt
 							},
 							new
 							{
 								role = "user",
-								content = "只输出 1,2,3,4"
+								content = "Output exactly this JSON object: {\"rule_codes\":[\"TEST\"],\"mentioned_entities\":{\"heroes\":[],\"settlements\":[],\"clans\":[],\"kingdoms\":[],\"items\":[],\"troops\":[],\"terms\":[]}}"
 							}
 						}
 					};
-					string jsonBody = AIConfigHandler.BuildAuxiliaryRouterRequestJsonForExternal(GetEffectiveApiUrl(AuxiliaryApiUrl), effectiveModelName, requestPayload.messages, 32, 0f, out var controlMode, useConfiguredMaxTokens: false);
+					string jsonBody = AIConfigHandler.BuildAuxiliaryRouterRequestJsonForExternal(GetEffectiveApiUrl(AuxiliaryApiUrl), effectiveModelName, requestPayload.messages, 2048, 0f, out var controlMode, useConfiguredMaxTokens: false);
 					StringContent content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 					string effectiveApiUrl = GetEffectiveApiUrl(AuxiliaryApiUrl);
 					using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
@@ -4298,7 +4418,25 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 					{
 						string reply = TryExtractAssistantReplyText(responseString);
 						string text = (controlMode == "plain") ? "" : " [" + controlMode + "]";
-						InformationManager.DisplayMessage(new InformationMessage("辅助API 连接正常" + text + "：" + (string.IsNullOrWhiteSpace(reply) ? "（返回为空）" : reply.Trim()), Color.FromUint(4278255360u)));
+						bool validEnvelope = AIConfigHandler.TryValidateStrictPreprocessJsonEnvelope(reply, requireMemoryIds: false, out var testEnvelope, out var formatError);
+						if (validEnvelope)
+						{
+							JArray testCodes = testEnvelope?["rule_codes"] as JArray;
+							validEnvelope = testCodes != null && testCodes.Count == 1 && string.Equals(testCodes[0]?.ToString(), "TEST", StringComparison.Ordinal);
+							if (!validEnvelope)
+							{
+								formatError = "unexpected_test_rule_codes";
+							}
+						}
+						if (!validEnvelope)
+						{
+							InformationManager.DisplayMessage(new InformationMessage("[系统] 辅助API可连接" + text + "，但前处理JSON格式不合格：" + formatError, Color.FromUint(4294936576u)));
+							Logger.Log("DuelSettings", "辅助API连接成功但前处理格式错误: " + formatError + " | reply=" + (reply ?? ""));
+						}
+						else
+						{
+							InformationManager.DisplayMessage(new InformationMessage("辅助API 连接及前处理JSON格式正常" + text + "：" + reply.Trim(), Color.FromUint(4278255360u)));
+						}
 					}
 					else
 					{

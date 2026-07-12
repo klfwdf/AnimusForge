@@ -1060,11 +1060,13 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			string sys = BuildSummarySystemPrompt();
-			string user = BuildSummaryUserPrompt(sourceMaterials);
+			string playerDisplayName = BuildSummaryPlayerDisplayName();
+			string sys = BuildSummarySystemPrompt(playerDisplayName);
+			string user = BuildSummaryUserPrompt(sourceMaterials, playerDisplayName);
 			string response = await MyBehavior.CallAuxiliaryApiTextForExternal(sys, user, "PlayerNotorietySummary");
 			if (TryParseSummaryResponse(response, out string summary, out double delta, out string error))
 			{
+				summary = RenderPlayerActionTextForPrompt(summary, playerDisplayName);
 				ApplySummarySuccess(sourceMaterials, summary, delta);
 				continueAfterBatch = HasPendingMajorMaterials();
 				return;
@@ -1080,7 +1082,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 				}
 				else
 				{
-					_state.MajorSummary = BuildFallbackMajorSummary(_state.MajorSummary, sourceMaterials);
+					_state.MajorSummary = BuildFallbackMajorSummary(_state.MajorSummary, sourceMaterials, playerDisplayName);
 					foreach (PlayerHistoryMaterial material in sourceMaterials)
 					{
 						if (material != null)
@@ -1110,22 +1112,43 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static string BuildSummarySystemPrompt()
+	public static bool TryGetLatestPlayerRecentActionForExternal(Hero observer, int maxAgeDays, out string stableKey, out string actionText, out int day)
+	{
+		stableKey = "";
+		actionText = "";
+		day = -1;
+		try
+		{
+			return Instance?.TryGetLatestPlayerRecentAction(observer, maxAgeDays, out stableKey, out actionText, out day) == true;
+		}
+		catch
+		{
+			stableKey = "";
+			actionText = "";
+			day = -1;
+			return false;
+		}
+	}
+
+	private static string BuildSummarySystemPrompt(string playerDisplayName)
 	{
 		int targetChars = GetMajorPromptChars();
-		return "你是 AnimusForge 的玩家履历与知名度总结器。只输出严格 JSON：{\"summary_content\":\"新的玩家重大履历时间线摘要\",\"notoriety_delta\":0到10之间的小数}。"
+		string playerName = NormalizePlayerDisplayName(playerDisplayName);
+		return "你是 AnimusForge 的" + playerName + "履历与知名度总结器。只输出严格 JSON：{\"summary_content\":\"新的" + playerName + "重大履历时间线摘要\",\"notoriety_delta\":0到10之间的小数}。"
 			+ "把已有摘要与新增素材重新融合成约" + targetChars + "个中文字符且不超过" + targetChars + "个中文字符的时间线摘要；保留关键人物、地点、胜败、承诺和公开影响，删除重复、数字细节和次要过程。"
+			+ "提及玩家时必须一律使用“" + playerName + "”，不得写“你”或“玩家”。"
 			+ "没有新增素材时只压缩已有摘要，notoriety_delta 输出0。不要编造素材没有的事实。"
 			+ "notoriety_delta 表示这批公开素材带来的文化知名度增量，范围0-10；小事应为0到1之间的小数，重大胜利、夺城、处决、王国事件才可接近10。";
 	}
 
-	private string BuildSummaryUserPrompt(List<PlayerHistoryMaterial> materials)
+	private string BuildSummaryUserPrompt(List<PlayerHistoryMaterial> materials, string playerDisplayName)
 	{
+		string playerName = NormalizePlayerDisplayName(playerDisplayName);
 		StringBuilder sb = new StringBuilder();
-		sb.AppendLine("已有玩家履历摘要：");
-		sb.AppendLine(string.IsNullOrWhiteSpace(_state.MajorSummary) ? "（无）" : StripPlayerInternalMarkers(_state.MajorSummary.Trim()));
+		sb.AppendLine("已有" + playerName + "履历摘要：");
+		sb.AppendLine(string.IsNullOrWhiteSpace(_state.MajorSummary) ? "（无）" : RenderPlayerActionTextForPrompt(_state.MajorSummary.Trim(), playerName));
 		sb.AppendLine();
-		sb.AppendLine("新增公开素材：");
+		sb.AppendLine("新增公开素材（" + playerName + "）：");
 		List<PlayerHistoryMaterial> sourceMaterials = materials ?? new List<PlayerHistoryMaterial>();
 		if (sourceMaterials.Count == 0)
 		{
@@ -1137,7 +1160,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 			{
 				continue;
 			}
-			sb.AppendLine("- [" + (string.IsNullOrWhiteSpace(material.GameDate) ? ("第" + material.Day + "日") : material.GameDate.Trim()) + "][" + (material.SourceKind ?? "material") + "][culture:" + string.Join(",", material.CultureIds ?? new List<string>()) + "] " + StripPlayerInternalMarkers(material.Text.Trim()));
+			sb.AppendLine("- [" + (string.IsNullOrWhiteSpace(material.GameDate) ? ("第" + material.Day + "日") : material.GameDate.Trim()) + "][" + (material.SourceKind ?? "material") + "][culture:" + string.Join(",", material.CultureIds ?? new List<string>()) + "] " + RenderPlayerActionTextForPrompt(material.Text.Trim(), playerName));
 		}
 		return sb.ToString().Trim();
 	}
@@ -1300,6 +1323,51 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		return sb.ToString().Trim();
 	}
 
+	private bool TryGetLatestPlayerRecentAction(Hero observer, int maxAgeDays, out string stableKey, out string actionText, out int day)
+	{
+		stableKey = "";
+		actionText = "";
+		day = -1;
+		if (!IsValidObserver(observer))
+		{
+			return false;
+		}
+		bool isCurrentPartyMember = false;
+		try
+		{
+			MobileParty mainParty = MobileParty.MainParty;
+			isCurrentPartyMember = mainParty != null
+				&& (observer.PartyBelongedTo == mainParty || (observer.CharacterObject != null && mainParty.MemberRoster.GetTroopCount(observer.CharacterObject) > 0));
+		}
+		catch
+		{
+			isCurrentPartyMember = false;
+		}
+		if (!isCurrentPartyMember && !CanObserverKnowRecentActions(observer, courier: false))
+		{
+			return false;
+		}
+		PruneRecentActions();
+		int windowDays = Math.Max(1, Math.Min(RecentActionWindowDays, maxAgeDays));
+		int minDay = GetCurrentGameDayIndex() - windowDays + 1;
+		PlayerActionEntry latest = (_state.RecentActions ?? new List<PlayerActionEntry>())
+			.Where(x => x != null && x.Day >= minDay && !string.IsNullOrWhiteSpace(x.Text))
+			.OrderByDescending(x => x.Day)
+			.ThenByDescending(x => x.Sequence)
+			.ThenByDescending(x => x.Order)
+			.FirstOrDefault();
+		if (latest == null)
+		{
+			return false;
+		}
+		stableKey = string.IsNullOrWhiteSpace(latest.StableKey)
+			? ((latest.ActionKind ?? "player_event") + ":" + latest.Day + ":" + latest.Order + ":" + latest.Sequence)
+			: latest.StableKey.Trim();
+		actionText = latest.Text.Trim();
+		day = latest.Day;
+		return !string.IsNullOrWhiteSpace(stableKey) && !string.IsNullOrWhiteSpace(actionText);
+	}
+
 	private string BuildMajorHistoryForPrompt(string playerDisplayName)
 	{
 		_state = NormalizeState(_state);
@@ -1339,7 +1407,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
+			string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal(observerKey, cultureId);
 			if (!string.IsNullOrWhiteSpace(text))
 			{
 				return NormalizePlayerDisplayName(text);
@@ -1357,6 +1425,22 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		return string.IsNullOrWhiteSpace(text) ? "玩家" : text;
 	}
 
+	private static string BuildSummaryPlayerDisplayName()
+	{
+		try
+		{
+			string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				return NormalizePlayerDisplayName(text);
+			}
+		}
+		catch
+		{
+		}
+		return "玩家";
+	}
+
 	private static string StripPlayerInternalMarkers(string text)
 	{
 		return (text ?? "").Replace("\uFF08player\uFF09", "").Replace("(player)", "");
@@ -1371,6 +1455,8 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		}
 		string name = NormalizePlayerDisplayName(playerDisplayName);
 		return text
+			.Replace("玩家的", name + "的")
+			.Replace("玩家", name)
 			.Replace("你们的", name + "一方的")
 			.Replace("你们", name + "一方")
 			.Replace("你方的", name + "一方的")
@@ -2366,17 +2452,18 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		return TrimMajorSummaryFallback(NormalizeLine(input), GetMajorPromptChars());
 	}
 
-	private static string BuildFallbackMajorSummary(string existingSummary, List<PlayerHistoryMaterial> materials)
+	private static string BuildFallbackMajorSummary(string existingSummary, List<PlayerHistoryMaterial> materials, string playerDisplayName)
 	{
+		string playerName = NormalizePlayerDisplayName(playerDisplayName);
 		StringBuilder sb = new StringBuilder();
-		string existing = NormalizeLine(existingSummary);
+		string existing = RenderPlayerActionTextForPrompt(existingSummary, playerName);
 		if (!string.IsNullOrWhiteSpace(existing))
 		{
 			sb.Append(existing);
 		}
 		foreach (PlayerHistoryMaterial material in materials ?? new List<PlayerHistoryMaterial>())
 		{
-			string text = NormalizeLine(material?.Text);
+			string text = RenderPlayerActionTextForPrompt(material?.Text, playerName);
 			if (string.IsNullOrWhiteSpace(text))
 			{
 				continue;
@@ -2386,7 +2473,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 				sb.Append(" ");
 			}
 			sb.Append(string.IsNullOrWhiteSpace(material.GameDate) ? "" : (material.GameDate.Trim() + "："));
-			sb.Append(StripPlayerInternalMarkers(text));
+			sb.Append(text);
 		}
 		return NormalizeMajorSummaryForStorage(sb.ToString());
 	}
