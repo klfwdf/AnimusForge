@@ -64,10 +64,10 @@ public static class SiegeRegionalConflictProfile
         string name = NormalizeTargetName(targetName, "一名平民");
         if (victimDown)
         {
-            return "【区域冲突】" + name + "倒在街上，附近民众惊恐四散。";
+            return "【区域冲突】" + name + "倒地，附近逃散。";
         }
 
-        return "【区域冲突】" + name + "遭到袭击，附近民众陷入恐慌。";
+        return "【区域冲突】" + name + "遭袭，附近恐慌。";
     }
 
     private static string NormalizeTargetName(string targetName, string fallback)
