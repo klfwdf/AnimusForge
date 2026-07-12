@@ -19,6 +19,16 @@ public static class SiegeAgentWallRescueProfile
 
     public const float WallPassTeleportCooldownSeconds = 3.0f;
 
+    public const float SetsEnemyProbeSeconds = 2.0f;
+
+    public const float SetsEnemyTargetMinDistance = 5.0f;
+
+    public const int SetsEnemyRequiredStallProbes = 3;
+
+    public const float SetsEnemyNativeRescueSeconds = 2.5f;
+
+    public const float SetsEnemyNativeRescueCooldownSeconds = 10.0f;
+
     public const float NativeTargetFrameArrivalRadius = 0.6f;
 
     public const float NativeTargetFrameStopDistance = -10f;
@@ -46,4 +56,6 @@ public static class SiegeAgentWallRescueProfile
     public const string NativeDirectRetreatSource = "native_direct_retreat";
 
     public const string WallPassTeleportSource = "agent_wall_pass_teleport";
+
+    public const string SetsEnemyNativeRescueSource = "sets_enemy_native_navmesh_rescue";
 }

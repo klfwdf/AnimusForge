@@ -708,7 +708,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				+ " setsVictory=" + _setsSettlementEntryVictoryContext
 				+ " setsOwnedIncident=" + _setsOwnedSettlementIncidentContext);
 			InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.BuildTroopSelectionInstructionMessage(AutoSummonCount), Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
-			InformationManager.DisplayMessage(new InformationMessage(_setsOwnedSettlementIncidentContext ? SetsOwnedSettlementIncidentProfile.BuildEntryInstruction() : SiegeInterventionEntryProfile.BuildDecisionPolicyMessage(false), Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
+			InformationManager.DisplayMessage(new InformationMessage(_setsOwnedSettlementIncidentContext ? SetsOwnedSettlementIncidentProfile.BuildEntryInstruction() : SiegeInterventionEntryProfile.BuildDecisionPolicyMessage(settlement.IsCastle), Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
 			if (!TryOpenInterventionTroopSelection(args, location))
 			{
 				OpenInterventionMissionNow(location, SiegeInterventionEntryProfile.SelectionUnavailableMissionSource);

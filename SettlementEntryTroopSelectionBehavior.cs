@@ -49,8 +49,6 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	private const float DefenderReserveWorkshopGridLateralSpacing = 1.5f;
 	private const int SpawnGridColumns = 8;
 	private const float DefenderReserveStuckNudgeSeconds = 20f;
-	private const float DefenderReserveStuckRetrySeconds = 50f;
-	private const int EnemyWallPassRescueBudgetPerRefresh = 4;
 	private const float EnemyInitialTargetLockSeconds = 1.5f;
 	private const float ProtectedFollowerHostilitySuppressionSeconds = 8f;
 	private const float ProtectedFollowerFriendlyFireDuplicateWindowSeconds = 0.05f;
@@ -1566,11 +1564,12 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private readonly Dictionary<int, int> _defenderReserveAgentWaveNumbers = new Dictionary<int, int>();
 		private readonly Dictionary<int, float> _lastProtectedFollowerHealth = new Dictionary<int, float>();
 		private readonly Dictionary<int, ProtectedFollowerFriendlyFireHitRecord> _recentProtectedFollowerFriendlyFireHits = new Dictionary<int, ProtectedFollowerFriendlyFireHitRecord>();
-		private readonly Dictionary<int, int> _defenderReserveRecoveryCursorByWorkshopFrame = new Dictionary<int, int>();
 		private readonly Dictionary<int, float> _enemyInitialTargetReleaseTimes = new Dictionary<int, float>();
-		private readonly Dictionary<int, Vec3> _enemyWallPassProbePositions = new Dictionary<int, Vec3>();
-		private readonly Dictionary<int, float> _enemyWallPassProbeTimes = new Dictionary<int, float>();
-		private readonly Dictionary<int, float> _enemyWallPassLastStepTimes = new Dictionary<int, float>();
+		private readonly Dictionary<int, Vec3> _enemyNavigationProbePositions = new Dictionary<int, Vec3>();
+		private readonly Dictionary<int, float> _enemyNavigationProbeTimes = new Dictionary<int, float>();
+		private readonly Dictionary<int, int> _enemyNavigationStallProbeCounts = new Dictionary<int, int>();
+		private readonly Dictionary<int, float> _enemyNavigationLastRescueTimes = new Dictionary<int, float>();
+		private readonly Dictionary<int, float> _enemyNavigationRescueReleaseTimes = new Dictionary<int, float>();
 		private static readonly MethodInfo AgentSetTargetAgentMethod = AccessTools.Method(typeof(Agent), "SetTargetAgent", new[] { typeof(Agent) });
 		private static readonly MethodInfo AgentSetAutomaticTargetSelectionMethod = AccessTools.Method(typeof(Agent), "SetAutomaticTargetSelection", new[] { typeof(bool) });
 		private bool _spawnedAllies;
@@ -1592,7 +1591,6 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private float _nextOwnedSettlementPanicTickTime;
 		private float _victoryReachedTime = -1f;
 		private int _lastDefenderReserveLiveEnemyCount = -1;
-		private int _enemyWallPassRescueBudget;
 		private bool _defenderReserveStuckNudged;
 		private int _defenderReservePhaseIndex;
 		private int _defenderReserveWaveIndex;
@@ -1633,6 +1631,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			}
 			MaintainProtectedFollowersFriendlyState();
 			EnsureSetsCommandUiReadyForExternal(base.Mission, _conflictActive ? "tick_conflict" : "tick", force: false, preserveSelection: true);
+			ReleaseEnemyNavigationRescuesForCombatActions();
 			if (_conflictFeaturesEnabled && _ownedSettlementIncidentTriggered && base.Mission != null && base.Mission.CurrentTime >= _nextOwnedSettlementPanicTickTime)
 			{
 				_nextOwnedSettlementPanicTickTime = base.Mission.CurrentTime + 1f;
@@ -1652,10 +1651,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			RefreshEnemyNativeCombatOrders();
 			int liveEnemyCount = CountLiveTrackedEnemies();
 			ObserveDefenderReserveProgress(liveEnemyCount);
-			if (TryRecoverStalledDefenderReserve(liveEnemyCount))
-			{
-				liveEnemyCount = CountLiveTrackedEnemies();
-			}
+			NudgeStalledDefenderReserve(liveEnemyCount);
 			if (HasRemainingDefenderReserve())
 			{
 				TrySpawnTimedDefenderReserveWave();
@@ -1671,12 +1667,17 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		public override void OnAgentHit(Agent affectedAgent, Agent affectorAgent, in MissionWeapon attackerWeapon, in Blow blow, in AttackCollisionData attackCollisionData)
 		{
 			base.OnAgentHit(affectedAgent, affectorAgent, in attackerWeapon, in blow, in attackCollisionData);
+			bool nativeAlleyFight = IsNativeAlleyCombatant(affectedAgent) || IsNativeAlleyFightActive();
 			if (IsProtectedFollowerFriendlyFire(affectedAgent, affectorAgent))
 			{
-				ProtectFollowerFromFriendlyFire(affectedAgent, affectorAgent, in blow);
+				ProtectFollowerFromFriendlyFire(affectedAgent, affectorAgent, in blow, preserveCombatState: nativeAlleyFight);
 				return;
 			}
 			CacheProtectedFollowerHealth(affectedAgent);
+			if (nativeAlleyFight)
+			{
+				return;
+			}
 			if (_conflictFeaturesEnabled && _isOwnSettlement)
 			{
 				if (!_ownedSettlementIncidentTriggered && IsPlayerSideAgent(affectorAgent) && !IsPlayerSideAgent(affectedAgent) && IsOwnedSettlementIncidentTarget(affectedAgent))
@@ -1708,12 +1709,17 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		public override void OnScoreHit(Agent affectedAgent, Agent affectorAgent, WeaponComponentData attackerWeapon, bool isBlocked, bool isSiegeEngineHit, in Blow blow, in AttackCollisionData collisionData, float damagedHp, float hitDistance, float shotDifficulty)
 		{
 			base.OnScoreHit(affectedAgent, affectorAgent, attackerWeapon, isBlocked, isSiegeEngineHit, in blow, in collisionData, damagedHp, hitDistance, shotDifficulty);
+			bool nativeAlleyFight = IsNativeAlleyCombatant(affectedAgent) || IsNativeAlleyFightActive();
 			if (IsProtectedFollowerFriendlyFire(affectedAgent, affectorAgent))
 			{
-				ProtectFollowerFromFriendlyFire(affectedAgent, affectorAgent, in blow);
+				ProtectFollowerFromFriendlyFire(affectedAgent, affectorAgent, in blow, preserveCombatState: nativeAlleyFight);
 				return;
 			}
-			if (damagedHp <= 0f || !_conflictFeaturesEnabled || !_isOwnSettlement || _ownedSettlementIncidentTriggered)
+			if (damagedHp <= 0f
+				|| !_conflictFeaturesEnabled
+				|| !_isOwnSettlement
+				|| _ownedSettlementIncidentTriggered
+				|| nativeAlleyFight)
 			{
 				return;
 			}
@@ -1735,7 +1741,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			_enemyInitialTargetReleaseTimes.Remove(affectedAgent.Index);
 			_ownedSettlementFleeingCivilianAgentIndexes.Remove(affectedAgent.Index);
 			_ownedSettlementGatheredAgentIndexes.Remove(affectedAgent.Index);
-			ClearEnemyWallPassTracking(affectedAgent.Index);
+			ClearEnemyNavigationTracking(affectedAgent.Index);
 			if (_conflictFeaturesEnabled && (_ownedSettlementIncidentTriggered || _conflictActive) && agentState == AgentState.Killed && IsPlayerSideAgent(affectorAgent) && !IsPlayerSideAgent(affectedAgent) && IsOwnedSettlementIncidentNotable(affectedAgent))
 			{
 				_townRiotKilledNotable = true;
@@ -2123,7 +2129,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					_spawnedDefenderReserveAgentIndexes.Remove(agentIndex);
 					_defenderReserveAgentSourceRosters.Remove(agentIndex);
 					_defenderReserveAgentWaveNumbers.Remove(agentIndex);
-					ClearEnemyWallPassTracking(agentIndex);
+					ClearEnemyNavigationTracking(agentIndex);
 				}
 				if (nonObjectiveTrackedEnemies.Count > 0)
 				{
@@ -2145,7 +2151,13 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			{
 				Mission mission = base.Mission;
 				Agent main = Agent.Main ?? mission?.MainAgent;
-				if (!_conflictFeaturesEnabled || !_isOwnSettlement || mission == null || main == null || !main.IsActive())
+				if (!_conflictFeaturesEnabled
+					|| !_isOwnSettlement
+					|| mission == null
+					|| main == null
+					|| !main.IsActive()
+					|| IsNativeAlleyCombatant(initialTarget)
+					|| IsNativeAlleyFightActive())
 				{
 					return;
 				}
@@ -2394,7 +2406,6 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				_enemyWallPassRescueBudget = EnemyWallPassRescueBudgetPerRefresh;
 				foreach (Agent agent in base.Mission.Agents)
 				{
 					if (IsLiveTrackedEnemy(agent))
@@ -2466,7 +2477,10 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				{
 					AssignAgentToFormation(agent, _enemyTeam, FormationClass.Infantry);
 				}
-				TryMaintainEnemyWallPassRescue(agent);
+				if (TryMaintainEnemyNativeNavigationRescue(agent))
+				{
+					return;
+				}
 				if (!_enemyInitialTargetReleaseTimes.TryGetValue(agent.Index, out float releaseTime))
 				{
 					return;
@@ -2488,7 +2502,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			}
 		}
 
-		private void TryMaintainEnemyWallPassRescue(Agent agent)
+		private bool TryMaintainEnemyNativeNavigationRescue(Agent agent)
 		{
 			try
 			{
@@ -2496,57 +2510,77 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				Agent target = FindNearestPlayerSideTarget(agent);
 				if (!IsLiveTrackedEnemy(agent) || mission?.Scene == null || target == null || !target.IsActive())
 				{
-					ClearEnemyWallPassTracking(agent?.Index ?? -1);
-					return;
+					EndEnemyNativeNavigationRescue(agent);
+					ClearEnemyNavigationTracking(agent?.Index ?? -1);
+					return false;
 				}
 				float distanceSq = agent.Position.DistanceSquared(target.Position);
-				float minTargetDistanceSq = SiegeAgentWallRescueProfile.WallPassTeleportMinDistance * SiegeAgentWallRescueProfile.WallPassTeleportMinDistance;
+				float minTargetDistanceSq = SiegeAgentWallRescueProfile.SetsEnemyTargetMinDistance * SiegeAgentWallRescueProfile.SetsEnemyTargetMinDistance;
 				if (distanceSq <= minTargetDistanceSq)
 				{
-					ClearEnemyWallPassTracking(agent.Index);
-					return;
+					EndEnemyNativeNavigationRescue(agent);
+					ClearEnemyNavigationTracking(agent.Index);
+					return false;
 				}
 				float now = mission.CurrentTime;
-				if (!_enemyWallPassProbeTimes.TryGetValue(agent.Index, out float lastProbeTime))
+				if (IsEnemyBusyWithCombatAction(agent))
 				{
-					_enemyWallPassProbePositions[agent.Index] = agent.Position;
-					_enemyWallPassProbeTimes[agent.Index] = now;
-					return;
+					EndEnemyNativeNavigationRescue(agent);
+					ResetEnemyNavigationProbe(agent.Index, agent.Position, now);
+					return false;
 				}
-				if (now - lastProbeTime < SiegeAgentWallRescueProfile.ProbeSeconds)
+				if (_enemyNavigationRescueReleaseTimes.TryGetValue(agent.Index, out float releaseTime))
 				{
-					return;
+					if (now < releaseTime)
+					{
+						return true;
+					}
+					EndEnemyNativeNavigationRescue(agent);
 				}
-				Vec3 lastPosition = _enemyWallPassProbePositions.TryGetValue(agent.Index, out Vec3 probePosition) ? probePosition : agent.Position;
-				_enemyWallPassProbePositions[agent.Index] = agent.Position;
-				_enemyWallPassProbeTimes[agent.Index] = now;
+				if (!_enemyNavigationProbeTimes.TryGetValue(agent.Index, out float lastProbeTime))
+				{
+					ResetEnemyNavigationProbe(agent.Index, agent.Position, now);
+					return false;
+				}
+				if (now - lastProbeTime < SiegeAgentWallRescueProfile.SetsEnemyProbeSeconds)
+				{
+					return false;
+				}
+				Vec3 lastPosition = _enemyNavigationProbePositions.TryGetValue(agent.Index, out Vec3 probePosition) ? probePosition : agent.Position;
+				_enemyNavigationProbePositions[agent.Index] = agent.Position;
+				_enemyNavigationProbeTimes[agent.Index] = now;
 				float minMovedSq = SiegeAgentWallRescueProfile.MinMovedDistance * SiegeAgentWallRescueProfile.MinMovedDistance;
 				if (agent.Position.DistanceSquared(lastPosition) >= minMovedSq)
 				{
-					return;
+					_enemyNavigationStallProbeCounts.Remove(agent.Index);
+					return false;
 				}
-				if (_enemyWallPassLastStepTimes.TryGetValue(agent.Index, out float lastStepTime)
-					&& now - lastStepTime < SiegeAgentWallRescueProfile.WallPassTeleportCooldownSeconds)
+				int stallCount = _enemyNavigationStallProbeCounts.TryGetValue(agent.Index, out int previousStallCount) ? previousStallCount + 1 : 1;
+				_enemyNavigationStallProbeCounts[agent.Index] = stallCount;
+				if (stallCount < SiegeAgentWallRescueProfile.SetsEnemyRequiredStallProbes)
 				{
-					return;
+					return false;
 				}
-				if (_enemyWallPassRescueBudget <= 0)
+				if (_enemyNavigationLastRescueTimes.TryGetValue(agent.Index, out float lastRescueTime)
+					&& now - lastRescueTime < SiegeAgentWallRescueProfile.SetsEnemyNativeRescueCooldownSeconds)
 				{
-					return;
+					return false;
 				}
-				_enemyWallPassRescueBudget--;
-				if (TryApplyEnemyWallPassStep(agent, target, out Vec3 rescuePosition))
+				if (TryApplyEnemyNativeNavigationRescue(agent, target, out Vec3 rescuePosition))
 				{
-					_enemyWallPassLastStepTimes[agent.Index] = now;
-					_enemyWallPassProbePositions[agent.Index] = rescuePosition;
-					_enemyWallPassProbeTimes[agent.Index] = now;
-					AssignEnemyAgentCombatTarget(agent, agent.Index);
-					SettlementEntryTroopSelectionLog.LogVerbose("Applied SETS enemy wall-pass rescue. settlement=" + _settlementId + ", agent=" + agent.Index + ", target=" + target.Index + ", position=" + rescuePosition);
+					_enemyNavigationLastRescueTimes[agent.Index] = now;
+					_enemyNavigationRescueReleaseTimes[agent.Index] = now + SiegeAgentWallRescueProfile.SetsEnemyNativeRescueSeconds;
+					_enemyNavigationStallProbeCounts.Remove(agent.Index);
+					SettlementEntryTroopSelectionLog.LogVerbose("Applied SETS enemy native navmesh rescue order. source=" + SiegeAgentWallRescueProfile.SetsEnemyNativeRescueSource + ", settlement=" + _settlementId + ", agent=" + agent.Index + ", target=" + target.Index + ", targetPosition=" + rescuePosition);
+					return true;
 				}
+				return false;
 			}
 			catch (Exception ex)
 			{
-				SettlementEntryTroopSelectionLog.Log("SETS enemy wall-pass rescue failed. agent=" + agent?.Index + ", error=" + ex.Message);
+				EndEnemyNativeNavigationRescue(agent);
+				SettlementEntryTroopSelectionLog.Log("SETS enemy native navigation rescue failed. agent=" + agent?.Index + ", error=" + ex.Message);
+				return false;
 			}
 		}
 
@@ -2580,7 +2614,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			return nearest ?? Agent.Main ?? base.Mission?.MainAgent;
 		}
 
-		private bool TryApplyEnemyWallPassStep(Agent agent, Agent target, out Vec3 rescuePosition)
+		private bool TryApplyEnemyNativeNavigationRescue(Agent agent, Agent target, out Vec3 rescuePosition)
 		{
 			rescuePosition = agent?.Position ?? Vec3.Zero;
 			try
@@ -2594,7 +2628,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				Vec3 direction = target.Position - agent.Position;
 				direction.z = 0f;
 				float distance = direction.Normalize();
-				if (distance <= SiegeAgentWallRescueProfile.WallPassTeleportMinDistance)
+				if (distance <= SiegeAgentWallRescueProfile.SetsEnemyTargetMinDistance)
 				{
 					return false;
 				}
@@ -2636,12 +2670,35 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				{
 					return false;
 				}
+				CampaignAgentComponent component = agent.GetComponent<CampaignAgentComponent>();
+				AgentNavigator navigator = component?.AgentNavigator ?? component?.CreateAgentNavigator();
+				if (navigator == null)
+				{
+					return false;
+				}
 				agent.DisableScriptedMovement();
 				agent.ClearTargetFrame();
 				agent.InvalidateTargetAgent();
-				agent.TeleportToPosition(bestPosition);
+				WorldPosition targetWorld = new WorldPosition(scene, bestPosition);
+				Vec2 targetDirection = targetWorld.AsVec2 - agent.Position.AsVec2;
+				float rotation = targetDirection.LengthSquared > 0.04f ? targetDirection.RotationInRadians : agent.LookDirection.AsVec2.RotationInRadians;
+				navigator.SetTargetFrame(targetWorld, rotation, SiegeAgentWallRescueProfile.NativeTargetFrameArrivalRadius, SiegeAgentWallRescueProfile.NativeTargetFrameStopDistance, Agent.AIScriptedFrameFlags.NeverSlowDown, false);
 				rescuePosition = bestPosition;
 				return true;
+			}
+			catch
+			{
+				EndEnemyNativeNavigationRescue(agent, force: true);
+				return false;
+			}
+		}
+
+		private static bool IsEnemyBusyWithCombatAction(Agent agent)
+		{
+			try
+			{
+				return IsCombatActionType(agent?.GetCurrentActionType(0) ?? Agent.ActionCodeType.Other)
+					|| IsCombatActionType(agent?.GetCurrentActionType(1) ?? Agent.ActionCodeType.Other);
 			}
 			catch
 			{
@@ -2649,15 +2706,100 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			}
 		}
 
-		private void ClearEnemyWallPassTracking(int agentIndex)
+		private void ReleaseEnemyNavigationRescuesForCombatActions()
+		{
+			if (_enemyNavigationRescueReleaseTimes.Count <= 0 || base.Mission?.Agents == null)
+			{
+				return;
+			}
+			foreach (int agentIndex in _enemyNavigationRescueReleaseTimes.Keys.ToList())
+			{
+				Agent agent = base.Mission.Agents.FirstOrDefault(candidate => candidate != null && candidate.Index == agentIndex && candidate.IsActive());
+				if (agent == null)
+				{
+					ClearEnemyNavigationTracking(agentIndex);
+					continue;
+				}
+				if (!IsEnemyBusyWithCombatAction(agent))
+				{
+					continue;
+				}
+				EndEnemyNativeNavigationRescue(agent);
+				ResetEnemyNavigationProbe(agentIndex, agent.Position, base.Mission.CurrentTime);
+			}
+		}
+
+		private static bool IsCombatActionType(Agent.ActionCodeType actionType)
+		{
+			int value = (int)actionType;
+			return actionType == Agent.ActionCodeType.ReadyRanged
+				|| actionType == Agent.ActionCodeType.ReleaseRanged
+				|| actionType == Agent.ActionCodeType.ReleaseThrowing
+				|| actionType == Agent.ActionCodeType.ReadyMelee
+				|| actionType == Agent.ActionCodeType.ReleaseMelee
+				|| actionType == Agent.ActionCodeType.Kick
+				|| actionType == Agent.ActionCodeType.KickContinue
+				|| actionType == Agent.ActionCodeType.KickHit
+				|| actionType == Agent.ActionCodeType.WeaponBash
+				|| actionType == Agent.ActionCodeType.HitObject
+				|| actionType == Agent.ActionCodeType.ParriedMelee
+				|| actionType == Agent.ActionCodeType.BlockedMelee
+				|| actionType == Agent.ActionCodeType.StrikeLight
+				|| actionType == Agent.ActionCodeType.StrikeMedium
+				|| actionType == Agent.ActionCodeType.StrikeHeavy
+				|| actionType == Agent.ActionCodeType.StrikeKnockBack
+				|| actionType == Agent.ActionCodeType.MountStrike
+				|| (value >= (int)Agent.ActionCodeType.DefendFist && value <= (int)Agent.ActionCodeType.DefendLeftStaff);
+		}
+
+		private void ResetEnemyNavigationProbe(int agentIndex, Vec3 position, float missionTime)
 		{
 			if (agentIndex < 0)
 			{
 				return;
 			}
-			_enemyWallPassProbePositions.Remove(agentIndex);
-			_enemyWallPassProbeTimes.Remove(agentIndex);
-			_enemyWallPassLastStepTimes.Remove(agentIndex);
+			_enemyNavigationProbePositions[agentIndex] = position;
+			_enemyNavigationProbeTimes[agentIndex] = missionTime;
+			_enemyNavigationStallProbeCounts.Remove(agentIndex);
+		}
+
+		private void EndEnemyNativeNavigationRescue(Agent agent, bool force = false)
+		{
+			if (agent == null || (!force && !_enemyNavigationRescueReleaseTimes.ContainsKey(agent.Index)))
+			{
+				return;
+			}
+			try
+			{
+				agent.DisableScriptedMovement();
+				agent.ClearTargetFrame();
+				agent.ResetEnemyCaches();
+				agent.InvalidateTargetAgent();
+				AgentSetTargetAgentMethod?.Invoke(agent, new object[] { null });
+				AgentSetAutomaticTargetSelectionMethod?.Invoke(agent, new object[] { true });
+			}
+			catch
+			{
+			}
+			_enemyNavigationRescueReleaseTimes.Remove(agent.Index);
+		}
+
+		private void ClearEnemyNavigationTracking(int agentIndex)
+		{
+			if (agentIndex < 0)
+			{
+				return;
+			}
+			if (_enemyNavigationRescueReleaseTimes.ContainsKey(agentIndex))
+			{
+				Agent activeAgent = base.Mission?.Agents?.FirstOrDefault(candidate => candidate != null && candidate.Index == agentIndex);
+				EndEnemyNativeNavigationRescue(activeAgent);
+			}
+			_enemyNavigationProbePositions.Remove(agentIndex);
+			_enemyNavigationProbeTimes.Remove(agentIndex);
+			_enemyNavigationStallProbeCounts.Remove(agentIndex);
+			_enemyNavigationLastRescueTimes.Remove(agentIndex);
+			_enemyNavigationRescueReleaseTimes.Remove(agentIndex);
 		}
 
 		private Agent SelectPlayerSideTarget(int seed)
@@ -2732,14 +2874,14 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			SettlementEntryTroopSelectionLog.LogVerbose("Defender reserve progress reset. settlement=" + _settlementId + ", source=" + source + ", wave=" + _defenderReserveWaveIndex + ", activeWaves=" + CountActiveDefenderReserveWaves() + ", liveEnemies=" + liveEnemyCount + ", time=" + _lastDefenderReserveProgressTime.ToString("0.0"));
 		}
 
-		private bool TryRecoverStalledDefenderReserve(int liveEnemyCount)
+		private void NudgeStalledDefenderReserve(int liveEnemyCount)
 		{
 			try
 			{
 				Mission mission = base.Mission;
 				if (!_conflictFeaturesEnabled || !_conflictActive || _victoryReached || _defenderReserveWaveIndex <= 0 || mission == null || liveEnemyCount <= 0 || _lastDefenderReserveProgressTime <= 0f)
 				{
-					return false;
+					return;
 				}
 				float noProgressSeconds = mission.CurrentTime - _lastDefenderReserveProgressTime;
 				if (!_defenderReserveStuckNudged && noProgressSeconds >= DefenderReserveStuckNudgeSeconds)
@@ -2747,118 +2889,11 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					_defenderReserveStuckNudged = true;
 					RefreshEnemyNativeCombatOrders();
 					SettlementEntryTroopSelectionLog.Log("Defender reserve native charge nudge applied. settlement=" + _settlementId + ", wave=" + _defenderReserveWaveIndex + ", activeWaves=" + CountActiveDefenderReserveWaves() + ", liveEnemies=" + liveEnemyCount + ", noProgressSeconds=" + noProgressSeconds.ToString("0.0"));
-					return false;
-				}
-				if (noProgressSeconds >= DefenderReserveStuckRetrySeconds)
-				{
-					int repositioned = RepositionLiveTrackedEnemiesAtReserveSpawns("SETS_wave_stuck_retry");
-					RefreshEnemyNativeCombatOrders();
-					ResetDefenderReserveProgress(CountLiveTrackedEnemies(), "stuck_retry");
-					SettlementEntryTroopSelectionLog.Log("Defender reserve wave spawn retry applied. settlement=" + _settlementId + ", wave=" + _defenderReserveWaveIndex + ", activeWaves=" + CountActiveDefenderReserveWaves() + ", liveEnemies=" + liveEnemyCount + ", repositioned=" + repositioned + ", noProgressSeconds=" + noProgressSeconds.ToString("0.0"));
-					return false;
 				}
 			}
 			catch (Exception ex)
 			{
-				SettlementEntryTroopSelectionLog.Log("TryRecoverStalledDefenderReserve failed. error=" + ex.Message);
-			}
-			return false;
-		}
-
-		private int RepositionLiveTrackedEnemiesAtReserveSpawns(string reason)
-		{
-			try
-			{
-				Mission mission = base.Mission;
-				Agent main = Agent.Main ?? mission?.MainAgent;
-				if (mission == null)
-				{
-					return 0;
-				}
-				if (!TryGetEnemyReserveSpawnFrames(out List<MatrixFrame> spawnFrames, out string spawnSource))
-				{
-					SettlementEntryTroopSelectionLog.Log("Skipped defender reserve spawn retry; no workshop or fallback spawn. settlement=" + _settlementId + ", reason=" + reason);
-					return 0;
-				}
-				List<Agent> enemies = new List<Agent>();
-				foreach (Agent agent in mission.Agents)
-				{
-					if (IsLiveTrackedEnemy(agent))
-					{
-						enemies.Add(agent);
-					}
-				}
-				if (enemies.Count <= 0)
-				{
-					return 0;
-				}
-				bool workshopSpawn = string.Equals(spawnSource, "workshop", StringComparison.OrdinalIgnoreCase);
-				List<KeyValuePair<Agent, int>> recoveryTargets = new List<KeyValuePair<Agent, int>>();
-				if (workshopSpawn)
-				{
-					for (int frameIndex = 0; frameIndex < spawnFrames.Count; frameIndex++)
-					{
-						List<Agent> frameEnemies = new List<Agent>();
-						for (int enemyIndex = 0; enemyIndex < enemies.Count; enemyIndex++)
-						{
-							if (SelectEnemyReserveSpawnFrameIndex(enemyIndex, spawnFrames.Count, spawnSource) == frameIndex)
-							{
-								frameEnemies.Add(enemies[enemyIndex]);
-							}
-						}
-						if (frameEnemies.Count <= 0)
-						{
-							continue;
-						}
-						_defenderReserveRecoveryCursorByWorkshopFrame.TryGetValue(frameIndex, out int cursor);
-						recoveryTargets.Add(new KeyValuePair<Agent, int>(frameEnemies[cursor % frameEnemies.Count], frameIndex));
-						_defenderReserveRecoveryCursorByWorkshopFrame[frameIndex] = cursor + 1;
-					}
-				}
-				else
-				{
-					for (int i = 0; i < enemies.Count; i++)
-					{
-						recoveryTargets.Add(new KeyValuePair<Agent, int>(enemies[i], SelectEnemyReserveSpawnFrameIndex(i, spawnFrames.Count, spawnSource)));
-					}
-				}
-				int moved = 0;
-				for (int i = 0; i < recoveryTargets.Count; i++)
-				{
-					Agent agent = recoveryTargets[i].Key;
-					MatrixFrame spawnFrame = spawnFrames[recoveryTargets[i].Value];
-					Vec3 position = ResolveEnemyReserveSpawnPosition(spawnFrame, i, spawnSource);
-					if (mission.Scene != null)
-					{
-						position.z = mission.Scene.GetGroundHeightAtPosition(position);
-					}
-					agent.TeleportToPosition(position);
-					Vec3 fallbackForward = spawnFrame.rotation.f;
-					fallbackForward.z = 0f;
-					if (fallbackForward.LengthSquared < 0.01f)
-					{
-						fallbackForward = Vec3.Forward;
-					}
-					fallbackForward.Normalize();
-					Vec3 direction = main != null && main.IsActive() ? main.Position - position : fallbackForward * -1f;
-					direction.z = 0f;
-					if (direction.LengthSquared < 0.01f)
-					{
-						direction = fallbackForward * -1f;
-					}
-					direction.Normalize();
-					Vec2 moveDirection = direction.AsVec2;
-					agent.SetMovementDirection(in moveDirection);
-					AssignEnemyAgentCombatTarget(agent, agent.Index + i);
-					moved++;
-				}
-				SettlementEntryTroopSelectionLog.Log("Repositioned live tracked enemies at reserve spawns. settlement=" + _settlementId + ", source=" + spawnSource + ", reason=" + reason + ", moved=" + moved + ", deferred=" + Math.Max(0, enemies.Count - moved));
-				return moved;
-			}
-			catch (Exception ex)
-			{
-				SettlementEntryTroopSelectionLog.Log("RepositionLiveTrackedEnemiesAtReserveSpawns failed. reason=" + reason + ", error=" + ex.Message);
-				return 0;
+				SettlementEntryTroopSelectionLog.Log("NudgeStalledDefenderReserve failed. error=" + ex.Message);
 			}
 		}
 
@@ -2893,7 +2928,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					_spawnedDefenderReserveAgentIndexes.Remove(agent.Index);
 					_defenderReserveAgentSourceRosters.Remove(agent.Index);
 					_defenderReserveAgentWaveNumbers.Remove(agent.Index);
-					ClearEnemyWallPassTracking(agent.Index);
+					ClearEnemyNavigationTracking(agent.Index);
 				}
 				SettlementEntryTroopSelectionLog.Log("Neutralized live tracked enemies. reason=" + reason + ", count=" + enemies.Count);
 				RefreshSetsUsableProtectionState("neutralize_enemies");
@@ -3872,7 +3907,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				&& IsPlayerSideAgent(affectorAgent);
 		}
 
-		private void ProtectFollowerFromFriendlyFire(Agent affectedAgent, Agent affectorAgent, in Blow blow)
+		private void ProtectFollowerFromFriendlyFire(Agent affectedAgent, Agent affectorAgent, in Blow blow, bool preserveCombatState)
 		{
 			try
 			{
@@ -3900,15 +3935,18 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					}
 					RememberProtectedFollowerFriendlyFire(affectedAgent.Index, affectorIndex, missionTime, damage);
 				}
-				ExtendProtectedFollowerHostilitySuppression();
-				ForceProtectedFollowerFriendlyState(affectedAgent);
-				ClearProtectedFollowersHostilityFromPlayerSide("friendly_fire_hit");
-				if (affectorAgent != null)
+				if (!preserveCombatState)
 				{
-					ClearAgentCombatTarget(affectorAgent);
+					ExtendProtectedFollowerHostilitySuppression();
+					ForceProtectedFollowerFriendlyState(affectedAgent);
+					ClearProtectedFollowersHostilityFromPlayerSide("friendly_fire_hit");
+					if (affectorAgent != null)
+					{
+						ClearAgentCombatTarget(affectorAgent);
+					}
 				}
 				CacheProtectedFollowerHealth(affectedAgent);
-				SettlementEntryTroopSelectionLog.Log("Protected SETS follower from player-side friendly fire. troop=" + SafeCharacterId(affectedAgent.Character as CharacterObject) + ", affector=" + SafeCharacterId(affectorAgent.Character as CharacterObject) + ", health=" + affectedAgent.Health.ToString("0.0") + ", duplicateHit=" + duplicateHit);
+				SettlementEntryTroopSelectionLog.Log("Protected SETS follower from player-side friendly fire. troop=" + SafeCharacterId(affectedAgent.Character as CharacterObject) + ", affector=" + SafeCharacterId(affectorAgent?.Character as CharacterObject) + ", health=" + affectedAgent.Health.ToString("0.0") + ", duplicateHit=" + duplicateHit + ", preserveCombatState=" + preserveCombatState);
 			}
 			catch (Exception ex)
 			{
@@ -3949,7 +3987,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			try
 			{
 				Mission mission = base.Mission;
-				if (mission == null || _alliedAgentIndexes.Count <= 0)
+				if (mission == null || _alliedAgentIndexes.Count <= 0 || IsNativeAlleyFightActive())
 				{
 					return;
 				}
@@ -4246,6 +4284,37 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private bool IsPlayerSideAgent(Agent agent)
 		{
 			return agent != null && (agent == Agent.Main || _alliedAgentIndexes.Contains(agent.Index));
+		}
+
+		private bool IsNativeAlleyFightActive()
+		{
+			try
+			{
+				Mission mission = base.Mission;
+				if (mission == null || _conflictActive || _ownedSettlementIncidentTriggered || mission.Mode != MissionMode.Battle)
+				{
+					return false;
+				}
+				MissionAlleyHandler alleyHandler = mission.GetMissionBehavior<MissionAlleyHandler>();
+				MissionFightHandler fightHandler = mission.GetMissionBehavior<MissionFightHandler>();
+				return alleyHandler != null && fightHandler != null && fightHandler.IsThereActiveFight();
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
+		private static bool IsNativeAlleyCombatant(Agent agent)
+		{
+			try
+			{
+				return agent?.GetComponent<CampaignAgentComponent>()?.AgentNavigator?.MemberOfAlley != null;
+			}
+			catch
+			{
+				return false;
+			}
 		}
 
 		private bool IsOwnedSettlementIncidentTarget(Agent agent)

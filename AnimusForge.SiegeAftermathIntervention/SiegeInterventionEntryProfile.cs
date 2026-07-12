@@ -6,7 +6,7 @@ namespace AnimusForge.SiegeAftermathIntervention;
 /// </summary>
 public static class SiegeInterventionEntryProfile
 {
-    public const string TownCenterLocationId = "center";
+    public const string SettlementCenterLocationId = "center";
 
 
     public const int DefaultAutoSummonCount = 50;
@@ -69,12 +69,14 @@ public static class SiegeInterventionEntryProfile
 
     public static bool IsSupportedSettlementKind(bool isTown, bool isCastle)
     {
-        return isTown;
+        return isTown || isCastle;
     }
 
     public static string BuildEnabledTooltip(bool isCastle)
     {
-        return EnabledTooltip;
+        return isCastle
+            ? "{=!}暂不立即处置战后事务；你将披甲带随行士兵进入城堡庭院，现场决定安抚、宽恕、搜掠或血洗。"
+            : EnabledTooltip;
     }
 
     public static string BuildDecisionPolicyMessage(bool isCastle)
@@ -84,7 +86,7 @@ public static class SiegeInterventionEntryProfile
 
     public static string[] GetPreferredLocationIds(bool isTown, bool isCastle)
     {
-        return isTown ? new[] { TownCenterLocationId } : System.Array.Empty<string>();
+        return isTown || isCastle ? new[] { SettlementCenterLocationId } : System.Array.Empty<string>();
     }
 
     public static string BuildTroopSelectionInstructionMessage(int maxCount)
