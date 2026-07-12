@@ -95,6 +95,11 @@ public static class SetsOwnedSettlementIncidentProfile
         return context;
     }
 
+    public static string BuildGatherRuntimeInstruction()
+    {
+        return "【SETS现场召集】若玩家明确命令你召集、集合或通知场景内所有人员前来，且你在正文中明确接受，系统会让现场人员向玩家靠拢。只自然回复，不要自行书写动作标签；仅找某一个指定人物时仍使用普通传唤或带路。";
+    }
+
     private static string NormalizeName(string value, string fallback)
     {
         return string.IsNullOrWhiteSpace(value) ? fallback : value.Trim();

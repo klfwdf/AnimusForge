@@ -454,6 +454,14 @@ public static class AIConfigHandler
 		{
 			return false;
 		}
+		bool allowSetsOwnedTownSceneCommands = false;
+		try
+		{
+			allowSetsOwnedTownSceneCommands = SettlementEntryTroopSelectionBehavior.IsOwnedOrAttachedTownEntryActiveForExternal(mission);
+		}
+		catch
+		{
+		}
 		if (IsPrisonBreakMission(mission))
 		{
 			return false;
@@ -491,7 +499,7 @@ public static class AIConfigHandler
 		try
 		{
 			MissionMode mode = mission.Mode;
-			if (mode == MissionMode.Battle || mode == MissionMode.Deployment || mode == MissionMode.Duel || mode == MissionMode.Stealth || mode == MissionMode.Tournament)
+			if ((mode == MissionMode.Battle && !allowSetsOwnedTownSceneCommands) || mode == MissionMode.Deployment || mode == MissionMode.Duel || mode == MissionMode.Stealth || mode == MissionMode.Tournament)
 			{
 				return true;
 			}

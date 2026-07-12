@@ -1557,6 +1557,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private readonly HashSet<int> _alliedAgentIndexes = new HashSet<int>();
 		private readonly HashSet<int> _enemyAgentIndexes = new HashSet<int>();
 		private readonly HashSet<int> _ownedSettlementFleeingCivilianAgentIndexes = new HashSet<int>();
+		private readonly HashSet<int> _ownedSettlementGatheredAgentIndexes = new HashSet<int>();
 		private readonly HashSet<int> _victoryObjectiveEnemyAgentIndexes = new HashSet<int>();
 		private readonly HashSet<int> _spawnedDefenderReserveAgentIndexes = new HashSet<int>();
 		private readonly HashSet<int> _settledCasualtyAgentIndexes = new HashSet<int>();
@@ -1732,6 +1733,8 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			_lastProtectedFollowerHealth.Remove(affectedAgent.Index);
 			_recentProtectedFollowerFriendlyFireHits.Remove(affectedAgent.Index);
 			_enemyInitialTargetReleaseTimes.Remove(affectedAgent.Index);
+			_ownedSettlementFleeingCivilianAgentIndexes.Remove(affectedAgent.Index);
+			_ownedSettlementGatheredAgentIndexes.Remove(affectedAgent.Index);
 			ClearEnemyWallPassTracking(affectedAgent.Index);
 			if (_conflictFeaturesEnabled && (_ownedSettlementIncidentTriggered || _conflictActive) && agentState == AgentState.Killed && IsPlayerSideAgent(affectorAgent) && !IsPlayerSideAgent(affectedAgent) && IsOwnedSettlementIncidentNotable(affectedAgent))
 			{
@@ -2196,6 +2199,14 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					if (agent == null || !agent.IsHuman || !agent.IsActive() || IsPlayerSideAgent(agent))
 					{
 						continue;
+					}
+					if (_ownedSettlementGatheredAgentIndexes.Contains(agent.Index))
+					{
+						if (ShoutBehavior.IsSceneFollowingPlayerForExternal(agent.Index))
+						{
+							continue;
+						}
+						_ownedSettlementGatheredAgentIndexes.Remove(agent.Index);
 					}
 					NeutralizeOwnedSettlementNonPlayerAgent(agent, neutralTeam);
 					neutralized++;
@@ -2965,6 +2976,8 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					}
 					if (ShoutBehavior.TryForceSceneFollowPlayerForExternal(agent.Index, transient: true, reason: "sets_owned_attached_gather"))
 					{
+						_ownedSettlementFleeingCivilianAgentIndexes.Remove(agent.Index);
+						_ownedSettlementGatheredAgentIndexes.Add(agent.Index);
 						gathered++;
 					}
 				}

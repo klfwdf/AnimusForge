@@ -4766,6 +4766,10 @@ public class ShoutBehavior : CampaignBehaviorBase
 			return string.IsNullOrWhiteSpace(sceneFollowControlInstruction) ? "" : sceneFollowControlInstruction.Trim();
 		}
 		StringBuilder stringBuilder = new StringBuilder();
+		if (SettlementEntryTroopSelectionBehavior.IsOwnedOrAttachedTownEntryActiveForExternal(Mission.Current))
+		{
+			stringBuilder.AppendLine(SetsOwnedSettlementIncidentProfile.BuildGatherRuntimeInstruction());
+		}
 		AppendSceneUnifiedTargetPromptSection(stringBuilder, sceneSummonTargets, sceneGuideTargets);
 		if (!string.IsNullOrWhiteSpace(sceneSummonClosureInstruction))
 		{
@@ -29251,6 +29255,19 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		catch (Exception ex)
 		{
 			Logger.Log("SceneFollow", "external_force_start_failed agent=" + targetAgentIndex + " reason=" + (reason ?? "") + " error=" + ex.Message);
+			return false;
+		}
+	}
+
+	public static bool IsSceneFollowingPlayerForExternal(int targetAgentIndex)
+	{
+		try
+		{
+			Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex);
+			return agent != null && CurrentInstance?.IsAgentFollowingPlayerBySceneCommand(agent) == true;
+		}
+		catch
+		{
 			return false;
 		}
 	}
