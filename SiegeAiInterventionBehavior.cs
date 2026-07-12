@@ -707,9 +707,21 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				+ " location=" + (location.StringId ?? "N/A")
 				+ " setsVictory=" + _setsSettlementEntryVictoryContext
 				+ " setsOwnedIncident=" + _setsOwnedSettlementIncidentContext);
-			InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.BuildTroopSelectionInstructionMessage(AutoSummonCount), Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
+			InformationManager.DisplayMessage(new InformationMessage(
+				settlement.IsCastle
+					? SiegeCastleRosterSelectionProfile.BuildInstructionMessage()
+					: SiegeInterventionEntryProfile.BuildTroopSelectionInstructionMessage(AutoSummonCount),
+				Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
 			InformationManager.DisplayMessage(new InformationMessage(_setsOwnedSettlementIncidentContext ? SetsOwnedSettlementIncidentProfile.BuildEntryInstruction() : SiegeInterventionEntryProfile.BuildDecisionPolicyMessage(settlement.IsCastle), Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
-			if (!TryOpenInterventionTroopSelection(args, location))
+			bool selectionOpened = settlement.IsCastle
+				? TryOpenCastleInterventionRosterSelection(location)
+				: TryOpenInterventionTroopSelection(args, location);
+			if (!selectionOpened && settlement.IsCastle)
+			{
+				ResetAftermathRuntimeGuards(SiegeCastleRosterSelectionProfile.SelectionFailedSource);
+				InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.EntryFailedMessage, Color.FromUint(SiegeInterventionEntryProfile.MissingSceneMessageColor)));
+			}
+			else if (!selectionOpened)
 			{
 				OpenInterventionMissionNow(location, SiegeInterventionEntryProfile.SelectionUnavailableMissionSource);
 			}
@@ -1155,6 +1167,48 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static bool TryOpenCastleInterventionRosterSelection(Location location)
+	{
+		try
+		{
+			if (location == null || MobileParty.MainParty?.MemberRoster == null)
+			{
+				return false;
+			}
+
+			TroopRoster availableMembers = BuildInterventionTroopSelectionFullRoster();
+			TroopRoster availablePrisoners = BuildCastlePrisonerSelectionFullRoster();
+			TroopRoster initialMembers = BuildDefaultInterventionTroopSelection(
+				availableMembers,
+				SiegeCastleRosterSelectionProfile.MaxAlliedTroops);
+			return CastleAftermathRuntimeBridge.TryOpenRosterSelection(
+				availableMembers,
+				availablePrisoners,
+				initialMembers,
+				delegate(TroopRoster selectedMembers, TroopRoster selectedPrisoners)
+				{
+					StoreSelectedInterventionRoster(selectedMembers, SiegeCastleRosterSelectionProfile.MaxAlliedTroops);
+					CastleAftermathRuntimeBridge.StoreSelectedPrisonerRoster(selectedPrisoners);
+					int alliedCount = _selectedInterventionRoster?.TotalManCount ?? 0;
+					int prisonerCount = CastleAftermathRuntimeBridge.SelectedPrisonerCount;
+					InformationManager.DisplayMessage(new InformationMessage(
+						SiegeCastleRosterSelectionProfile.BuildConfirmedMessage(alliedCount, prisonerCount),
+						Color.FromUint(SiegeInterventionEntryProfile.SelectionConfirmedMessageColor)));
+					OpenInterventionMissionNow(location, SiegeInterventionEntryProfile.TroopSelectionDoneMissionSource);
+				},
+				delegate
+				{
+					ResetAftermathRuntimeGuards(SiegeCastleRosterSelectionProfile.SelectionCanceledSource);
+					Logger.Log("SiegeAiIntervention", "Castle aftermath roster selection canceled.");
+				});
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "Open castle aftermath roster selection failed: " + ex);
+			return false;
+		}
+	}
+
 	private static bool TryOpenTroopSelectionRuntimeCompat(MenuContext menuContext, TroopRoster fullRoster, TroopRoster initialSelections, Action<TroopRoster> onDone)
 	{
 		try
@@ -1273,6 +1327,30 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				fullRoster.AddToCounts(character, available, false, 0, 0, true, -1);
 			}
+		}
+		return fullRoster;
+	}
+
+	private static TroopRoster BuildCastlePrisonerSelectionFullRoster()
+	{
+		TroopRoster fullRoster = TroopRoster.CreateDummyTroopRoster();
+		TroopRoster sourceRoster = PartyBase.MainParty?.PrisonRoster ?? MobileParty.MainParty?.PrisonRoster;
+		if (sourceRoster == null)
+		{
+			return fullRoster;
+		}
+
+		foreach (TroopRosterElement element in sourceRoster.GetTroopRoster())
+		{
+			CharacterObject character = element.Character;
+			if (character == null || character.IsPlayerCharacter || character.IsNotTransferableInPartyScreen || element.Number <= 0)
+			{
+				continue;
+			}
+
+			int number = character.IsHero ? 1 : element.Number;
+			int wounded = character.IsHero ? 0 : Math.Min(number, Math.Max(0, element.WoundedNumber));
+			fullRoster.AddToCounts(character, number, false, wounded, Math.Max(0, element.Xp), true, -1);
 		}
 		return fullRoster;
 	}
@@ -1502,6 +1580,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			if (mission is Mission mission2 && mission2.GetMissionBehavior<InterventionMissionBehavior>() == null)
 			{
 				mission2.AddMissionBehavior(new InterventionMissionBehavior());
+			}
+			if (ResolveCurrentSettlement()?.IsCastle == true && mission is Mission castleMission)
+			{
+				CastleAftermathRuntimeBridge.AttachMissionBehavior(castleMission);
 			}
 		}
 		catch (Exception ex)
@@ -7596,6 +7678,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			character ??= agent?.Character as CharacterObject ?? hero?.CharacterObject;
 			hero ??= character?.HeroObject;
+			if (CastleAftermathRuntimeBridge.IsPrisonerAgent(agent))
+			{
+				return false;
+			}
 			if (character == null || character == CharacterObject.PlayerCharacter || IsProtectedChildCharacter(character) || IsCivilianForIntervention(character) || IsBackstreetOrCriminalCharacter(character))
 			{
 				return false;
@@ -13249,6 +13335,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_playerOrderControllerPrimed = false;
 		_civilianOrderControllerPrimed = false;
 		_selectedInterventionRoster = null;
+		CastleAftermathRuntimeBridge.Reset("reset_session_counters");
 		_activeInterventionLocationId = "";
 		_civilianGatherStartedAt = -1f;
 		_nextCivilianGatherTickTime = 0f;
