@@ -1,15 +1,197 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Newtonsoft.Json;
 using SandBox.View.Map;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Engine.GauntletUI;
+using TaleWorlds.GauntletUI;
+using TaleWorlds.GauntletUI.BaseTypes;
+using TaleWorlds.GauntletUI.Layout;
 using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
 using TaleWorlds.ScreenSystem;
 
 namespace AnimusForge;
+
+public sealed class AnimusForgeWorldEventInboxEntry
+{
+	public int Version { get; set; } = 1;
+	public string EventId { get; set; }
+	public string EventKind { get; set; }
+	public string EventType { get; set; }
+	public string KindLabel { get; set; }
+	public string HeaderRightText { get; set; }
+	public string BodySectionTitleText { get; set; }
+	public string ImpactSectionTitleText { get; set; }
+	public string ImpactText { get; set; }
+	public string Title { get; set; }
+	public string Summary { get; set; }
+	public string DetailText { get; set; }
+	public string KingdomId { get; set; }
+	public string KingdomName { get; set; }
+	public string ActorHeroId { get; set; }
+	public string ActorHeroName { get; set; }
+	public int Day { get; set; }
+	public string GameDate { get; set; }
+	public long CreatedUtcTicks { get; set; }
+	public string StableKey { get; set; }
+	public bool IsRead { get; set; }
+}
+
+public sealed class AnimusForgeWorldEventBehavior : CampaignBehaviorBase
+{
+	private const string SaveKeyRecords = "_afWorldEventInboxRecords_v1";
+	private const string SaveKeyUnread = "_afWorldEventInboxUnread_v1";
+	private const int MaxRecords = 240;
+	private readonly Dictionary<string, string> _records = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+	private readonly HashSet<string> _unread = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+	private long _version;
+
+	public static AnimusForgeWorldEventBehavior Instance { get; private set; }
+
+	public AnimusForgeWorldEventBehavior()
+	{
+		Instance = this;
+	}
+
+	public override void RegisterEvents()
+	{
+		Instance = this;
+	}
+
+	public override void SyncData(IDataStore dataStore)
+	{
+		if (dataStore == null) return;
+		if (dataStore.IsSaving)
+		{
+			Trim();
+			Dictionary<string, string> records = CampaignSaveChunkHelper.FlattenStringDictionary(_records, SaveKeyRecords, "WorldEventInbox");
+			dataStore.SyncData(SaveKeyRecords, ref records);
+			List<string> unread = _unread.ToList();
+			dataStore.SyncData(SaveKeyUnread, ref unread);
+			return;
+		}
+		_records.Clear();
+		_unread.Clear();
+		Dictionary<string, string> stored = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		dataStore.SyncData(SaveKeyRecords, ref stored);
+		foreach (KeyValuePair<string, string> item in CampaignSaveChunkHelper.RestoreStringDictionary(stored, "WorldEventInbox"))
+		{
+			AnimusForgeWorldEventInboxEntry entry = Deserialize(item.Value);
+			if (entry != null) _records[entry.EventId] = JsonConvert.SerializeObject(entry);
+		}
+		List<string> unreadIds = new List<string>();
+		dataStore.SyncData(SaveKeyUnread, ref unreadIds);
+		foreach (string id in unreadIds ?? new List<string>()) if (_records.ContainsKey(id ?? "")) _unread.Add(id);
+		Trim();
+		_version++;
+	}
+
+	public static void UpsertWorldEventForExternal(AnimusForgeWorldEventInboxEntry entry, bool markUnread = true) => Instance?.Upsert(entry, markUnread);
+	public static long GetInboxVersionForExternal() => Instance?._version ?? 0L;
+	public static int GetUnreadCountForExternal() => Instance?._unread.Count ?? 0;
+	public static List<AnimusForgeWorldEventInboxEntry> GetInboxSnapshotForExternal(int maxCount = 80) => Instance?.Snapshot(maxCount) ?? new List<AnimusForgeWorldEventInboxEntry>();
+	public static bool MarkEventReadForExternal(string eventId) => Instance?.MarkRead(eventId) == true;
+	public static void MarkAllReadForExternal() => Instance?.MarkAllRead();
+
+	private void Upsert(AnimusForgeWorldEventInboxEntry entry, bool markUnread)
+	{
+		AnimusForgeWorldEventInboxEntry normalized = Normalize(entry);
+		if (normalized == null) return;
+		if (markUnread)
+		{
+			normalized.IsRead = false;
+			_unread.Add(normalized.EventId);
+		}
+		_records[normalized.EventId] = JsonConvert.SerializeObject(normalized);
+		Trim();
+		_version++;
+	}
+
+	private List<AnimusForgeWorldEventInboxEntry> Snapshot(int maxCount)
+	{
+		return _records.Values.Select(Deserialize).Where(x => x != null).OrderByDescending(x => x.Day).ThenByDescending(x => x.CreatedUtcTicks).Take(Math.Max(1, Math.Min(200, maxCount))).ToList();
+	}
+
+	private bool MarkRead(string eventId)
+	{
+		string id = (eventId ?? "").Trim();
+		if (!_records.TryGetValue(id, out string raw)) return false;
+		AnimusForgeWorldEventInboxEntry entry = Deserialize(raw);
+		if (entry == null) return false;
+		if (entry.IsRead)
+		{
+			bool removed = _unread.Remove(id);
+			if (removed) _version++;
+			return removed;
+		}
+		entry.IsRead = true;
+		_records[id] = JsonConvert.SerializeObject(entry);
+		_unread.Remove(id);
+		_version++;
+		return true;
+	}
+
+	private void MarkAllRead()
+	{
+		foreach (string id in _records.Keys.ToList())
+		{
+			AnimusForgeWorldEventInboxEntry entry = Deserialize(_records[id]);
+			if (entry == null) continue;
+			entry.IsRead = true;
+			_records[id] = JsonConvert.SerializeObject(entry);
+		}
+		_unread.Clear();
+		_version++;
+	}
+
+	private void Trim()
+	{
+		foreach (AnimusForgeWorldEventInboxEntry extra in _records.Values.Select(Deserialize).Where(x => x != null).OrderByDescending(x => x.Day).ThenByDescending(x => x.CreatedUtcTicks).Skip(MaxRecords).ToList())
+		{
+			_records.Remove(extra.EventId);
+			_unread.Remove(extra.EventId);
+		}
+	}
+
+	private static AnimusForgeWorldEventInboxEntry Deserialize(string raw)
+	{
+		try { return Normalize(JsonConvert.DeserializeObject<AnimusForgeWorldEventInboxEntry>(raw ?? "")); } catch { return null; }
+	}
+
+	private static AnimusForgeWorldEventInboxEntry Normalize(AnimusForgeWorldEventInboxEntry entry)
+	{
+		if (entry == null) return null;
+		entry.EventId = First(entry.EventId, entry.StableKey, Guid.NewGuid().ToString("N"));
+		entry.EventKind = First(entry.EventKind, "world_event");
+		entry.KindLabel = First(entry.KindLabel, "世界事件");
+		entry.Title = First(entry.Title, "AnimusForge 事件");
+		entry.Summary = First(entry.Summary, entry.DetailText);
+		entry.DetailText = First(entry.DetailText, entry.Summary);
+		entry.BodySectionTitleText = First(entry.BodySectionTitleText, "事件详情");
+		entry.Day = Math.Max(0, entry.Day);
+		entry.CreatedUtcTicks = entry.CreatedUtcTicks > 0 ? entry.CreatedUtcTicks : DateTime.UtcNow.Ticks;
+		entry.StableKey = First(entry.StableKey, entry.EventId);
+		return entry;
+	}
+
+	private static string First(params string[] values) => (values ?? Array.Empty<string>()).FirstOrDefault(x => !string.IsNullOrWhiteSpace(x))?.Trim() ?? "";
+}
+
+public sealed class AnimusForgeTopDownListPanel : ListPanel
+{
+	public AnimusForgeTopDownListPanel(UIContext context)
+		: base(context)
+	{
+#if BANNERLORD_1_4_OR_GREATER
+		StackLayout.LayoutMethod = LayoutMethod.VerticalTopToBottom;
+#else
+		StackLayout.LayoutMethod = LayoutMethod.VerticalBottomToTop;
+#endif
+	}
+}
 
 public sealed class AnimusForgeWorldEventOverlay
 {
@@ -87,7 +269,7 @@ public sealed class AnimusForgeWorldEventOverlay
 		{
 			return;
 		}
-		long version = NpcPublicFeedbackEventBehavior.GetInboxVersionForExternal();
+		long version = AnimusForgeWorldEventBehavior.GetInboxVersionForExternal();
 		if (version != _lastInboxVersion)
 		{
 			Refresh(force: true);
@@ -99,8 +281,8 @@ public sealed class AnimusForgeWorldEventOverlay
 	{
 		try
 		{
-			_lastInboxVersion = NpcPublicFeedbackEventBehavior.GetInboxVersionForExternal();
-			int unread = NpcPublicFeedbackEventBehavior.GetUnreadCountForExternal();
+			_lastInboxVersion = AnimusForgeWorldEventBehavior.GetInboxVersionForExternal();
+			int unread = AnimusForgeWorldEventBehavior.GetUnreadCountForExternal();
 			_dataSource.UnreadText = unread > 0 ? "事件(" + unread.ToString(CultureInfo.InvariantCulture) + ")" : "事件";
 		}
 		catch (Exception ex)
@@ -209,11 +391,7 @@ public sealed class AnimusForgeWorldEventOverlay
 
 	private static WorldEventInboxPopupData BuildInboxPopupData()
 	{
-		List<AnimusForgeWorldEventInboxEntry> events = NpcPublicFeedbackEventBehavior.GetInboxSnapshotForExternal(EventInboxDisplayLimit);
-		Dictionary<string, NpcRulerPolicyRecord> policiesById = NpcRulerPolicyBehavior.GetRecentPolicyRecordsForExternal(null, 200)
-			.Where(x => x != null && !string.IsNullOrWhiteSpace(x.PolicyId))
-			.GroupBy(x => x.PolicyId.Trim(), StringComparer.OrdinalIgnoreCase)
-			.ToDictionary(x => x.Key, x => x.First(), StringComparer.OrdinalIgnoreCase);
+		List<AnimusForgeWorldEventInboxEntry> events = AnimusForgeWorldEventBehavior.GetInboxSnapshotForExternal(EventInboxDisplayLimit);
 		List<WorldEventCountryGroup> countries = BuildCountryGroups(events);
 		WorldEventInboxPopupData data = new WorldEventInboxPopupData
 		{
@@ -233,7 +411,7 @@ public sealed class AnimusForgeWorldEventOverlay
 			};
 			foreach (AnimusForgeWorldEventInboxEntry entry in country.Events)
 			{
-				WorldEventRecordData record = BuildRecordData(entry, policiesById);
+				WorldEventRecordData record = BuildRecordData(entry);
 				if (record != null)
 				{
 					countryData.Records.Add(record);
@@ -247,44 +425,31 @@ public sealed class AnimusForgeWorldEventOverlay
 		return data;
 	}
 
-	private static WorldEventRecordData BuildRecordData(AnimusForgeWorldEventInboxEntry entry, IReadOnlyDictionary<string, NpcRulerPolicyRecord> policiesById)
+	private static WorldEventRecordData BuildRecordData(AnimusForgeWorldEventInboxEntry entry)
 	{
 		if (entry == null)
 		{
 			return null;
 		}
-		string kind = GetEventKindLabel(entry);
+		string kind = FirstNonEmpty(entry.KindLabel, "世界事件");
 		string date = FirstNonEmpty(entry.GameDate, entry.Day > 0 ? ("第" + entry.Day.ToString(CultureInfo.InvariantCulture) + "天") : "未知日期");
-		NpcRulerPolicyRecord policy = FindPolicyRecord(entry.PolicyId, policiesById);
-		bool isPolicy = IsPolicyEvent(entry);
-		bool isPolicyEvent = IsFeedbackEvent(entry);
-		string title = isPolicy
-			? FirstNonEmpty(policy?.PolicyName, entry.PolicyName, entry.Title, kind)
-			: FirstNonEmpty(entry.Title, entry.PolicyName, kind);
-		string body = isPolicy
-			? FirstNonEmpty(policy?.PolicyContent, ExtractDetailLineValue(entry.DetailText, "政策："), entry.DetailText, entry.Summary)
-			: FirstNonEmpty(entry.DetailText, entry.Summary, policy?.PublicFeedback);
+		string title = FirstNonEmpty(entry.Title, kind);
+		string body = FirstNonEmpty(entry.DetailText, entry.Summary);
 		body = (body ?? "").Replace("\r\n", "\n").Replace("\r", "\n").Trim();
-		string policyName = string.IsNullOrWhiteSpace(entry.PolicyName)
-			? ""
-			: "关联政策：《" + entry.PolicyName.Trim() + "》";
-		string headerRight = isPolicy ? kind : policyName;
 		string meta = BuildRecordMetaText(entry, kind, date);
-		string impact = isPolicy
-			? BuildPolicyImpactDisplay(policy)
-			: "";
+		string impact = entry.ImpactText ?? "";
 		return new WorldEventRecordData
 		{
 			EventId = entry.EventId ?? "",
 			KindLabel = kind,
-			HeaderRightText = headerRight,
+			HeaderRightText = entry.HeaderRightText ?? "",
 			DateText = date,
 			TitleText = title,
 			MetaText = meta,
 			PolicyNameText = "",
 			BodyText = string.IsNullOrWhiteSpace(body) ? "（无详情）" : body,
-			BodySectionTitleText = isPolicy ? "政策内容" : (isPolicyEvent ? "事件经过" : "事件详情"),
-			ImpactSectionTitleText = isPolicy ? "政策影响效果" : "",
+			BodySectionTitleText = FirstNonEmpty(entry.BodySectionTitleText, "事件详情"),
+			ImpactSectionTitleText = entry.ImpactSectionTitleText ?? "",
 			ImpactText = impact,
 			IndexMetaText = date + "  ·  " + kind,
 			UnreadMarkerText = entry.IsRead ? "" : "新",
@@ -292,14 +457,6 @@ public sealed class AnimusForgeWorldEventOverlay
 			HasPolicyName = false,
 			HasImpact = !string.IsNullOrWhiteSpace(impact)
 		};
-	}
-
-	private static NpcRulerPolicyRecord FindPolicyRecord(string policyId, IReadOnlyDictionary<string, NpcRulerPolicyRecord> policiesById)
-	{
-		string id = (policyId ?? "").Trim();
-		return !string.IsNullOrWhiteSpace(id) && policiesById != null && policiesById.TryGetValue(id, out NpcRulerPolicyRecord policy)
-			? policy
-			: null;
 	}
 
 	private static string ExtractDetailLineValue(string detail, string prefix)
@@ -315,45 +472,6 @@ public sealed class AnimusForgeWorldEventOverlay
 		return "";
 	}
 
-	private static string BuildPolicyImpactDisplay(NpcRulerPolicyRecord policy)
-	{
-		List<string> sections = new List<string>();
-		List<NpcRulerPolicyEffectDto> effects = policy?.Effects?.Where(x => x != null).ToList() ?? new List<NpcRulerPolicyEffectDto>();
-		for (int i = 0; i < effects.Count; i++)
-		{
-			NpcRulerPolicyEffectDto effect = effects[i];
-			List<string> deltas = new List<string>();
-			AddEffectDelta(deltas, "繁荣", effect.ProsperityDailyDeltaPerTown, "/城镇");
-			AddEffectDelta(deltas, "粮食", effect.FoodDailyDeltaPerTown, "/城镇");
-			AddEffectDelta(deltas, "炉火", effect.HearthDailyDeltaPerVillage, "/村庄");
-			AddEffectDelta(deltas, "忠诚", effect.LoyaltyDailyDeltaPerTown, "/城镇");
-			AddEffectDelta(deltas, "治安", effect.SecurityDailyDeltaPerTown, "/城镇");
-			AddEffectDelta(deltas, "民兵", effect.MilitiaDailyDeltaPerTown, "/城镇");
-			AddEffectDelta(deltas, "王国稳定度", effect.KingdomStabilityDailyDelta, "");
-
-			List<string> lines = new List<string>
-			{
-				"影响国家：" + FirstNonEmpty(effect.TargetKingdomName, effect.TargetKingdomId, policy?.KingdomName, "未知国家"),
-				"影响效果：" + (deltas.Count > 0 ? string.Join("  ·  ", deltas) : "无可显示的数值变化"),
-				"持续时间：" + effect.DurationDays.ToString(CultureInfo.InvariantCulture) + " 天"
-			};
-			sections.Add(string.Join("\n", lines));
-		}
-		return string.Join("\n\n", sections);
-	}
-
-	private static void AddEffectDelta(List<string> parts, string label, float value, string unit)
-	{
-		if (parts == null || Math.Abs(value) < 0.0001f)
-		{
-			return;
-		}
-		string number = value > 0f
-			? "+" + value.ToString("0.##", CultureInfo.InvariantCulture)
-			: value.ToString("0.##", CultureInfo.InvariantCulture);
-		parts.Add(label + " " + number + (unit ?? ""));
-	}
-
 	private static string BuildRecordMetaText(AnimusForgeWorldEventInboxEntry entry, string kind, string date)
 	{
 		List<string> parts = new List<string>();
@@ -367,7 +485,7 @@ public sealed class AnimusForgeWorldEventOverlay
 		string actor = FirstNonEmpty(entry?.ActorHeroName, entry?.ActorHeroId);
 		if (!string.IsNullOrWhiteSpace(actor))
 		{
-			parts.Add((IsPolicyEvent(entry) ? "发布者：" : (IsFeedbackEvent(entry) ? "关联统治者：" : "相关人物：")) + actor);
+			parts.Add("相关人物：" + actor);
 		}
 		return string.Join("  ·  ", parts);
 	}
@@ -412,7 +530,7 @@ public sealed class AnimusForgeWorldEventOverlay
 				.Where(e => e != null)
 				.OrderByDescending(e => e.Day)
 				.ThenByDescending(e => e.CreatedUtcTicks)
-				.ThenBy(e => IsPolicyEvent(e) ? 0 : (IsFeedbackEvent(e) ? 1 : 2))
+				.ThenBy(e => e.EventKind ?? "", StringComparer.OrdinalIgnoreCase)
 				.ToList();
 		}
 
@@ -442,31 +560,6 @@ public sealed class AnimusForgeWorldEventOverlay
 			group.KingdomName = name;
 		}
 		return group;
-	}
-
-	private static bool IsPolicyEvent(AnimusForgeWorldEventInboxEntry entry)
-	{
-		return string.Equals((entry?.EventKind ?? "").Trim(), "npc_ruler_policy", StringComparison.OrdinalIgnoreCase);
-	}
-
-	private static bool IsFeedbackEvent(AnimusForgeWorldEventInboxEntry entry)
-	{
-		string kind = (entry?.EventKind ?? "").Trim();
-		return string.Equals(kind, "npc_public_feedback", StringComparison.OrdinalIgnoreCase)
-			|| string.Equals(kind, "npc_ruler_policy_event", StringComparison.OrdinalIgnoreCase);
-	}
-
-	private static string GetEventKindLabel(AnimusForgeWorldEventInboxEntry entry)
-	{
-		if (IsPolicyEvent(entry))
-		{
-			return "统治者政策";
-		}
-		if (IsFeedbackEvent(entry))
-		{
-			return "政策衍生事件";
-		}
-		return "世界事件";
 	}
 
 	private static string GetKingdomNameSafe(Kingdom kingdom)
@@ -874,7 +967,7 @@ public sealed class AnimusForgeWorldEventInboxPopupVM : ViewModel
 		WorldEventRecordItemVM selected = RecordItems[index];
 		if (selected.IsUnread)
 		{
-			NpcPublicFeedbackEventBehavior.MarkEventReadForExternal(selected.EventId);
+			AnimusForgeWorldEventBehavior.MarkEventReadForExternal(selected.EventId);
 			selected.MarkRead();
 			CountryItems?.FirstOrDefault(x => x != null && x.IsSelected)?.RefreshUnreadCountFromRecords();
 		}

@@ -1025,57 +1025,6 @@ internal static class NpcPolicyLlmClient
 	}
 }
 
-internal static class NpcPolicyDetailedTraceLog
-{
-	private const int MaxFieldChars = 200000;
-
-	private const string FileName = "NpcPolicy_DetailedTrace.txt";
-
-	internal static void Write(string stage, string message)
-	{
-		Write(stage, message, null);
-	}
-
-	internal static void Write(string stage, string message, string detail)
-	{
-		try
-		{
-			StringBuilder builder = new StringBuilder();
-			builder.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture));
-			builder.Append(" [");
-			builder.Append(string.IsNullOrWhiteSpace(stage) ? "log" : stage.Trim());
-			builder.Append("] ");
-			builder.AppendLine(message ?? "");
-			if (!string.IsNullOrEmpty(detail))
-			{
-				builder.AppendLine("--- detail begin ---");
-				builder.AppendLine(Clip(detail));
-				builder.AppendLine("--- detail end ---");
-			}
-			Logger.LogToFile(FileName, builder.ToString());
-		}
-		catch
-		{
-		}
-	}
-
-	private static string Clip(string text)
-	{
-		if (text == null)
-		{
-			return "";
-		}
-		if (text.Length <= MaxFieldChars)
-		{
-			return text;
-		}
-		return text.Substring(0, MaxFieldChars)
-			+ "\n...[truncated "
-			+ (text.Length - MaxFieldChars).ToString(CultureInfo.InvariantCulture)
-			+ " chars]";
-	}
-}
-
 internal static class NpcPolicyStructuredParseLogger
 {
 	private const int SampleChars = 1200;
@@ -1097,7 +1046,7 @@ internal static class NpcPolicyStructuredParseLogger
 		catch
 		{
 		}
-		NpcPolicyDetailedTraceLog.Write(kind + "-parse-failed", message, "raw_sample:\n" + Clip(raw) + "\n\nextracted_sample:\n" + Clip(extracted));
+		PolicySystemLog.Write("NpcParse", kind + "-parse-failed", message, "raw_sample:\n" + Clip(raw) + "\n\nextracted_sample:\n" + Clip(extracted));
 	}
 
 	private static string CleanField(string text)
@@ -1304,9 +1253,9 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		_policyRecords[record.PolicyId] = JsonConvert.SerializeObject(record);
 		TrimPolicyRecords();
 		UpsertPolicyWorldEvent(record);
-		AnimusForgeWorldEventInboxEntry feedbackEntry = NpcPublicFeedbackEventBehavior.BuildPolicyPublicFeedbackForExternal(record);
-		NpcPublicFeedbackEventBehavior.CommitPolicyPublicFeedbackEventForExternal(feedbackEntry);
-		MyBehavior.RecordUnifiedPolicyWeeklyMaterialForExternal(record);
+		AnimusForgeWorldEventInboxEntry feedbackEntry = BuildPolicyFeedbackWorldEvent(record);
+		AnimusForgeWorldEventBehavior.UpsertWorldEventForExternal(feedbackEntry, markUnread: true);
+		RecordUnifiedPolicyWeeklyMaterial(record);
 		Log("player-policy-registered policy=" + record.PolicyId + " kingdom=" + record.KingdomId);
 		return true;
 	}
@@ -1990,9 +1939,10 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 				stageName = "PolicyCommit.CommitPublicFeedback";
 				using (PerfProbe.Scope(stageName))
 				{
-					context.PublicFeedbackEntry = NpcPublicFeedbackEventBehavior.BuildPolicyPublicFeedbackForExternal(record, context.RecordIndex);
-					if (context.PublicFeedbackEntry != null && NpcPublicFeedbackEventBehavior.CommitPolicyPublicFeedbackEventForExternal(context.PublicFeedbackEntry))
+					context.PublicFeedbackEntry = BuildPolicyFeedbackWorldEvent(record);
+					if (context.PublicFeedbackEntry != null)
 					{
+						AnimusForgeWorldEventBehavior.UpsertWorldEventForExternal(context.PublicFeedbackEntry, markUnread: true);
 						context.PublicFeedbackSavedCount++;
 					}
 					context.Stage = PendingNpcPolicyCommitStage.CreateActiveEffect;
@@ -2173,7 +2123,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 
 	private static void PolicyTraceLog(string stage, string message, string detail = null)
 	{
-		NpcPolicyDetailedTraceLog.Write(stage, message, detail);
+		PolicySystemLog.Write("NpcDetail", stage, message, detail);
 	}
 
 	private static string BuildPolicyJobTracePrefix(NpcPolicyGenerationJob job)
@@ -3194,6 +3144,11 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			{
 				EventId = "npc_ruler_policy:" + NormalizeKeyPart(record.PolicyId),
 				EventKind = "npc_ruler_policy",
+				KindLabel = "统治者政策",
+				HeaderRightText = "统治者政策",
+				BodySectionTitleText = "政策内容",
+				ImpactSectionTitleText = "政策影响效果",
+				ImpactText = BuildEffectSummary(record.Effects),
 				Title = Limit(title, 90),
 				Summary = Limit(FirstNonEmpty(record.ImpactSummary, record.PolicyContent), 260),
 				DetailText = Limit(detail, 1200),
@@ -3201,15 +3156,13 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 				KingdomName = record.KingdomName ?? "",
 				ActorHeroId = record.RulerHeroId ?? "",
 				ActorHeroName = record.RulerName ?? "",
-				PolicyId = record.PolicyId ?? "",
-				PolicyName = record.PolicyName ?? "",
 				Day = Math.Max(0, record.Day),
 				GameDate = record.GameDate ?? "",
 				CreatedUtcTicks = record.CreatedUtcTicks > 0L ? record.CreatedUtcTicks : DateTime.UtcNow.Ticks,
 				StableKey = "npc_ruler_policy:" + (record.PolicyId ?? ""),
 				IsRead = false
 			};
-			NpcPublicFeedbackEventBehavior.UpsertWorldEventForExternal(entry, markUnread: true);
+			AnimusForgeWorldEventBehavior.UpsertWorldEventForExternal(entry, markUnread: true);
 		}
 		catch (Exception ex)
 		{
@@ -3230,13 +3183,112 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			{
 				return 0;
 			}
-			return CustomPolicyBehavior.TryCreateNpcRulerPolicyActiveEffectForExternal(record, effects[effectIndex], out var _, out var _) ? 1 : 0;
+			NpcRulerPolicyEffectDto effect = effects[effectIndex];
+			if (!TryBuildNpcActiveEffectRegistration(record, effect, effectIndex, out PolicyActiveEffectRegistration registration, out string failureReason))
+			{
+				effect.RemainingDays = 0;
+				effect.IsEnded = true;
+				UpdatePolicyEffectStateForExternal(record.PolicyId, effect.EffectId, effect.TargetKingdomId, 0, isEnded: true);
+				PolicySystemLog.Write("Npc", "active-rejected", "policyId=" + (record.PolicyId ?? "") + " target=" + (effect.TargetKingdomId ?? "") + " reason=" + failureReason);
+				return 0;
+			}
+			bool created = CustomPolicyBehavior.TryRegisterPolicyActiveEffectForExternal(registration, out string effectId, out failureReason);
+			bool alreadyActive = !created && (failureReason ?? "").StartsWith("重复政策效果", StringComparison.Ordinal);
+			effect.EffectId = string.IsNullOrWhiteSpace(effectId) ? registration.EffectId : effectId;
+			effect.RemainingDays = created || alreadyActive ? registration.DurationDays : 0;
+			effect.IsEnded = !created && !alreadyActive;
+			UpdatePolicyEffectStateForExternal(record.PolicyId, effect.EffectId, effect.TargetKingdomId, effect.RemainingDays, effect.IsEnded);
+			return created ? 1 : 0;
 		}
 		catch (Exception ex)
 		{
 			Log("custom-policy-bridge-failed " + ex.Message);
 		}
 		return 0;
+	}
+
+	private static AnimusForgeWorldEventInboxEntry BuildPolicyFeedbackWorldEvent(NpcRulerPolicyRecord policy)
+	{
+		if (policy == null || string.IsNullOrWhiteSpace(policy.PublicFeedback)) return null;
+		string eventId = "policy_feedback:" + NormalizeKeyPart(policy.PolicyId);
+		return new AnimusForgeWorldEventInboxEntry
+		{
+			EventId = eventId,
+			EventKind = "ruler_policy_feedback",
+			KindLabel = "政策衍生事件",
+			HeaderRightText = "关联政策：《" + (policy.PolicyName ?? "") + "》",
+			BodySectionTitleText = "事件经过",
+			Title = FirstNonEmpty(policy.FeedbackTitle, "《" + FirstNonEmpty(policy.PolicyName, "新政策") + "》的余波"),
+			Summary = policy.FeedbackDigest ?? "",
+			DetailText = policy.PublicFeedback ?? "",
+			KingdomId = policy.KingdomId ?? "",
+			KingdomName = policy.KingdomName ?? "",
+			ActorHeroId = policy.RulerHeroId ?? "",
+			ActorHeroName = policy.RulerName ?? "",
+			Day = Math.Max(0, policy.Day),
+			GameDate = policy.GameDate ?? "",
+			CreatedUtcTicks = policy.CreatedUtcTicks > 1 ? policy.CreatedUtcTicks - 1 : DateTime.UtcNow.Ticks,
+			StableKey = eventId,
+			IsRead = false
+		};
+	}
+
+	private static bool TryBuildNpcActiveEffectRegistration(NpcRulerPolicyRecord policy, NpcRulerPolicyEffectDto effect, int effectIndex, out PolicyActiveEffectRegistration registration, out string failureReason)
+	{
+		registration = null;
+		failureReason = "";
+		if (policy == null || effect == null || effect.DurationDays <= 0 || !TryValidateNpcPolicyEffectNumbers(effect, out int stability))
+		{
+			failureReason = "政策效果数据无效";
+			return false;
+		}
+		Kingdom issuer = ResolveNpcPolicyKingdomById(policy.KingdomId);
+		Kingdom target = ResolveNpcPolicyKingdomById(effect.TargetKingdomId);
+		if (issuer == null || issuer.IsEliminated || target == null || target.IsEliminated)
+		{
+			failureReason = "发布国或目标王国不存在/已灭亡";
+			return false;
+		}
+		if (target != issuer)
+		{
+			if (!issuer.IsAtWarWith(target))
+			{
+				failureReason = "跨国效果失效：当前未交战";
+				return false;
+			}
+			string policyText = ((policy.PolicyName ?? "") + " " + (policy.PolicyContent ?? "")).Trim();
+			if (!BuildNpcPolicyKingdomMentionCandidates(target).Any(x => !string.IsNullOrWhiteSpace(x) && policyText.IndexOf(x, StringComparison.OrdinalIgnoreCase) >= 0))
+			{
+				failureReason = "跨国效果失效：政策未明确提及目标国";
+				return false;
+			}
+		}
+		if (Math.Abs(effect.ProsperityDailyDeltaPerTown) <= 0.0001f && Math.Abs(effect.FoodDailyDeltaPerTown) <= 0.0001f && Math.Abs(effect.HearthDailyDeltaPerVillage) <= 0.0001f && Math.Abs(effect.LoyaltyDailyDeltaPerTown) <= 0.0001f && Math.Abs(effect.SecurityDailyDeltaPerTown) <= 0.0001f && Math.Abs(effect.MilitiaDailyDeltaPerTown) <= 0.0001f && stability == 0)
+		{
+			failureReason = "没有可落地的每日数值";
+			return false;
+		}
+		string effectId = "npc_ruler_policy:" + NormalizeKeyPart(policy.PolicyId) + ":" + NormalizeKeyPart(target.StringId) + ":" + Math.Max(0, effectIndex).ToString(CultureInfo.InvariantCulture);
+		registration = new PolicyActiveEffectRegistration
+		{
+			EffectId = effectId,
+			RecordId = policy.PolicyId ?? effectId,
+			PolicyName = policy.PolicyName ?? "",
+			DateText = policy.GameDate ?? "",
+			SubmittedDay = Math.Max(0, policy.Day > 0 ? policy.Day : GetCurrentCampaignDay()),
+			TargetKingdomId = target.StringId ?? effect.TargetKingdomId ?? "",
+			TargetKingdomName = GetKingdomName(target),
+			ProsperityDailyDeltaPerTown = effect.ProsperityDailyDeltaPerTown,
+			FoodDailyDeltaPerTown = effect.FoodDailyDeltaPerTown,
+			HearthDailyDeltaPerVillage = effect.HearthDailyDeltaPerVillage,
+			LoyaltyDailyDeltaPerTown = effect.LoyaltyDailyDeltaPerTown,
+			SecurityDailyDeltaPerTown = effect.SecurityDailyDeltaPerTown,
+			MilitiaDailyDeltaPerTown = effect.MilitiaDailyDeltaPerTown,
+			KingdomStabilityDailyDelta = stability,
+			DurationDays = effect.DurationDays,
+			Reason = effect.Reason ?? policy.ImpactSummary ?? ""
+		};
+		return true;
 	}
 
 	private static void InvokeNpcRulerPolicyWeeklyMaterialBridge(NpcRulerPolicyRecord record)
@@ -3247,7 +3299,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			MyBehavior.RecordUnifiedPolicyWeeklyMaterialForExternal(record);
+			RecordUnifiedPolicyWeeklyMaterial(record);
 		}
 		catch (Exception ex)
 		{
@@ -3349,6 +3401,34 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		{
 			NpcPolicyStructuredParseLogger.LogFailure("NpcRulerPolicy", "policy", batchId, route, attempts, FirstNonEmpty(parseSource, "policy") + ":" + ex.GetType().Name + ":" + ex.Message, raw, json);
 			return new List<NpcRulerPolicyRecord>();
+		}
+	}
+
+	private static void RecordUnifiedPolicyWeeklyMaterial(NpcRulerPolicyRecord policy)
+	{
+		if (policy == null || string.IsNullOrWhiteSpace(policy.PolicyId))
+		{
+			return;
+		}
+		List<NpcRulerPolicyEffectDto> effects = (policy.Effects ?? new List<NpcRulerPolicyEffectDto>()).Where(x => x != null && !x.IsEnded && x.RemainingDays > 0 && x.DurationDays > 0).ToList();
+		bool multipleTargets = effects.Select(x => (x.TargetKingdomId ?? "").Trim()).Where(x => x.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase).Count() > 1;
+		for (int i = 0; i < effects.Count; i++)
+		{
+			NpcRulerPolicyEffectDto effect = effects[i];
+			string targetId = FirstNonEmpty(effect.TargetKingdomId, policy.KingdomId);
+			if (string.IsNullOrWhiteSpace(targetId)) continue;
+			string targetName = Limit(FirstNonEmpty(effect.TargetKingdomName, policy.KingdomName, targetId), 50);
+			string policyName = Limit(FirstNonEmpty(policy.PolicyName, "未命名政策"), 70);
+			string snapshot = Limit("统治者政策。发布国：" + Limit(FirstNonEmpty(policy.KingdomName, policy.KingdomId), 50)
+				+ "。发布者：" + Limit(policy.RulerName, 50) + "。政策：《" + policyName + "》"
+				+ "。政策摘要：" + Limit(policy.PolicyDigest, 140) + "。社会反馈：" + Limit(policy.FeedbackDigest, 70)
+				+ "。目标王国：" + targetName + "。每日影响：" + Limit(BuildEffectSummary(new List<NpcRulerPolicyEffectDto> { effect }), 100) + "。", 320);
+			string effectKey = FirstNonEmpty(effect.EffectId, targetId + ":" + i.ToString(CultureInfo.InvariantCulture));
+			bool foreign = !string.IsNullOrWhiteSpace(policy.KingdomId) && !string.Equals(targetId, policy.KingdomId, StringComparison.OrdinalIgnoreCase);
+			MyBehavior.RecordPolicySystemWeeklyMaterialForExternal("ruler_policy", "统治者政策 - " + targetName + " / " + policyName, snapshot,
+				"unified_policy:" + policy.PolicyId + ":" + effectKey, targetId, multipleTargets || foreign,
+				policy.RulerHeroId ?? "", policy.KingdomId ?? "", Math.Max(0, policy.Day), policy.GameDate ?? "");
+			PolicySystemLog.Write("Weekly", "material-recorded", "policyId=" + policy.PolicyId + " target=" + targetId + " chars=" + snapshot.Length.ToString(CultureInfo.InvariantCulture));
 		}
 	}
 
@@ -4217,2028 +4297,5 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 	{
 		[JsonProperty("policies")]
 		public List<NpcRulerPolicyRecord> Policies { get; set; }
-	}
-}
-
-// NPC ruler policy public-feedback events and shared world-event inbox.
-public sealed class AnimusForgeWorldEventInboxEntry
-{
-	public int Version { get; set; } = 1;
-	public string EventId { get; set; }
-	public string EventKind { get; set; }
-	public string EventType { get; set; }
-	public string Title { get; set; }
-	public string Summary { get; set; }
-	public string DetailText { get; set; }
-	public string KingdomId { get; set; }
-	public string KingdomName { get; set; }
-	public string ActorHeroId { get; set; }
-	public string ActorHeroName { get; set; }
-	public string PolicyId { get; set; }
-	public string PolicyName { get; set; }
-	public int Day { get; set; }
-	public string GameDate { get; set; }
-	public long CreatedUtcTicks { get; set; }
-	public string StableKey { get; set; }
-	public bool IsRead { get; set; }
-}
-
-public sealed class NpcPublicFeedbackEventBehavior : CampaignBehaviorBase
-{
-	private const string SaveKeyEventRecords = "_afWorldEventInboxRecords_v1";
-	private const string SaveKeyUnreadEventIds = "_afWorldEventInboxUnread_v1";
-	private const int MaxEventRecordCount = 240;
-	private const int MaxTitleChars = 90;
-	private const int MaxSummaryChars = 260;
-	private const int MaxDetailChars = 1200;
-	private const int MaxFeedbackContextItems = 3;
-	private const int FeedbackMaxTokens = 5000;
-	private const int FeedbackApiHardTimeoutMilliseconds = 540000;
-	private const int FeedbackCommitMaxEventsPerTick = 4;
-	private const double FeedbackCommitFrameBudgetMs = 3.0;
-
-	public static NpcPublicFeedbackEventBehavior Instance { get; private set; }
-
-	private readonly Dictionary<string, string> _eventRecords = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-	private readonly HashSet<string> _unreadEventIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-	private readonly ConcurrentQueue<PendingNpcPolicyCommitContext> _pendingFeedbackCommits = new ConcurrentQueue<PendingNpcPolicyCommitContext>();
-	private readonly object _feedbackGenerationStateLock = new object();
-	private readonly HashSet<string> _feedbackGenerationInFlightKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-	private bool _feedbackGenerationInProgress;
-	private string _feedbackActiveInFlightKey = "";
-	private string _feedbackActiveRequestFingerprint = "";
-	private PendingFeedbackGenerationRequest _pendingFeedbackRequest;
-	private int _lastFeedbackRetryCount;
-	private string _lastFeedbackError = "";
-	private NpcFeedbackRetryContext _lastFeedbackRetryContext;
-	private int _feedbackGenerationVersion;
-	private long _version;
-
-	public NpcPublicFeedbackEventBehavior()
-	{
-		Instance = this;
-	}
-
-	public override void RegisterEvents()
-	{
-		Instance = this;
-		CampaignEvents.OnNewGameCreatedEvent.AddNonSerializedListener(this, OnNewGameCreated);
-		CampaignEvents.OnGameLoadedEvent.AddNonSerializedListener(this, OnGameLoaded);
-		try
-		{
-			Logger.Log("NpcPublicFeedbackEvent", "registered");
-		}
-		catch
-		{
-		}
-		if (Campaign.Current == null)
-		{
-			return;
-		}
-	}
-
-	public override void SyncData(IDataStore dataStore)
-	{
-		if (dataStore == null)
-		{
-			return;
-		}
-		if (dataStore.IsSaving)
-		{
-			TrimEventRecords();
-			Dictionary<string, string> records = CampaignSaveChunkHelper.FlattenStringDictionary(_eventRecords, SaveKeyEventRecords, "WorldEventInbox");
-			dataStore.SyncData(SaveKeyEventRecords, ref records);
-			List<string> unread = _unreadEventIds.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-			dataStore.SyncData(SaveKeyUnreadEventIds, ref unread);
-			Log("save-write records=" + _eventRecords.Count.ToString(CultureInfo.InvariantCulture) + " unread=" + unread.Count.ToString(CultureInfo.InvariantCulture));
-			return;
-		}
-		ClearFeedbackTransientRuntimeForLoadedSave("sync-load", incrementVersion: true);
-		_eventRecords.Clear();
-		_unreadEventIds.Clear();
-		Dictionary<string, string> stored = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-		dataStore.SyncData(SaveKeyEventRecords, ref stored);
-		foreach (KeyValuePair<string, string> item in CampaignSaveChunkHelper.RestoreStringDictionary(stored, "WorldEventInbox"))
-		{
-			string key = (item.Key ?? "").Trim();
-			string raw = (item.Value ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(key) || string.IsNullOrWhiteSpace(raw))
-			{
-				continue;
-			}
-			try
-			{
-				AnimusForgeWorldEventInboxEntry entry = JsonConvert.DeserializeObject<AnimusForgeWorldEventInboxEntry>(raw);
-				if (entry != null && !string.IsNullOrWhiteSpace(entry.EventId))
-				{
-					_eventRecords[key] = JsonConvert.SerializeObject(NormalizeEntry(entry));
-				}
-			}
-			catch (Exception ex)
-			{
-				Log("save-load-skip key=" + key + " error=" + ex.Message);
-			}
-		}
-		List<string> unreadIds = new List<string>();
-		dataStore.SyncData(SaveKeyUnreadEventIds, ref unreadIds);
-		foreach (string id in unreadIds ?? new List<string>())
-		{
-			string clean = (id ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(clean) && _eventRecords.ContainsKey(clean))
-			{
-				_unreadEventIds.Add(clean);
-			}
-		}
-		TrimEventRecords();
-		_version++;
-		Log("save-read records=" + _eventRecords.Count.ToString(CultureInfo.InvariantCulture) + " unread=" + _unreadEventIds.Count.ToString(CultureInfo.InvariantCulture));
-	}
-
-	public void OnEngineTick()
-	{
-		ProcessPendingFeedbackCommits();
-		TryStartPendingFeedbackGeneration("engine-tick");
-	}
-
-	private void OnNewGameCreated(CampaignGameStarter starter)
-	{
-		ClearFeedbackTransientRuntimeForLoadedSave("new_game_created", incrementVersion: true);
-	}
-
-	private void OnGameLoaded(CampaignGameStarter starter)
-	{
-		ClearFeedbackTransientRuntimeForLoadedSave("game_loaded", incrementVersion: true);
-	}
-
-	private void ClearFeedbackTransientRuntimeForLoadedSave(string reason, bool incrementVersion)
-	{
-		_lastFeedbackRetryCount = 0;
-		_lastFeedbackError = "";
-		_lastFeedbackRetryContext = null;
-		while (_pendingFeedbackCommits.TryDequeue(out var _))
-		{
-		}
-		lock (_feedbackGenerationStateLock)
-		{
-			_feedbackGenerationInProgress = false;
-			if (incrementVersion)
-			{
-				_feedbackGenerationVersion++;
-			}
-			_feedbackGenerationInFlightKeys.Clear();
-			_feedbackActiveInFlightKey = "";
-			_feedbackActiveRequestFingerprint = "";
-			_pendingFeedbackRequest = null;
-		}
-		Log("transient-cleared reason=" + (reason ?? ""));
-	}
-
-	private enum FeedbackGenerationBeginStatus
-	{
-		Started,
-		Busy,
-		DuplicateInFlight
-	}
-
-	private static string NormalizeFeedbackInFlightKey(string inFlightKey)
-	{
-		string key = (inFlightKey ?? "").Trim();
-		return string.IsNullOrWhiteSpace(key) ? "npc_feedback:unknown" : key;
-	}
-
-	private static string BuildFeedbackGenerationInFlightKey(string batchId, IReadOnlyList<NpcRulerPolicyRecord> policies)
-	{
-		string batch = (batchId ?? "").Trim();
-		if (!string.IsNullOrWhiteSpace(batch))
-		{
-			return "npc_feedback:" + NormalizeKeyPart(batch);
-		}
-		string policyKey = string.Join(",", (policies ?? Array.Empty<NpcRulerPolicyRecord>())
-			.Where(x => x != null && !string.IsNullOrWhiteSpace(x.PolicyId))
-			.Select(x => x.PolicyId.Trim())
-			.OrderBy(x => x, StringComparer.OrdinalIgnoreCase));
-		return "npc_feedback:" + NormalizeKeyPart(policyKey);
-	}
-
-	private static string BuildFeedbackRequestFingerprint(IReadOnlyList<NpcRulerPolicyRecord> policies)
-	{
-		string policyKey = string.Join("|", (policies ?? Array.Empty<NpcRulerPolicyRecord>())
-			.Where(x => x != null)
-			.Select(x => NormalizeKeyPart(x.PolicyId) + "@" + NormalizeKeyPart(x.KingdomId))
-			.OrderBy(x => x, StringComparer.OrdinalIgnoreCase));
-		return string.IsNullOrWhiteSpace(policyKey) ? "none" : policyKey;
-	}
-
-	private static string BuildPolicyIdsForLog(IReadOnlyList<NpcRulerPolicyRecord> policies)
-	{
-		return Limit(string.Join(",", (policies ?? Array.Empty<NpcRulerPolicyRecord>())
-			.Where(x => x != null && !string.IsNullOrWhiteSpace(x.PolicyId))
-			.Select(x => x.PolicyId.Trim())
-			.Distinct(StringComparer.OrdinalIgnoreCase)
-			.Take(24)), 500);
-	}
-
-	private FeedbackGenerationBeginStatus TryBeginFeedbackGenerationInFlight(string inFlightKey, string requestFingerprint, out string activeInFlightKey)
-	{
-		string key = NormalizeFeedbackInFlightKey(inFlightKey);
-		string fingerprint = requestFingerprint ?? "";
-		lock (_feedbackGenerationStateLock)
-		{
-			activeInFlightKey = _feedbackActiveInFlightKey ?? "";
-			if (_feedbackGenerationInProgress || _feedbackGenerationInFlightKeys.Count > 0)
-			{
-				bool sameKey = _feedbackGenerationInFlightKeys.Contains(key) || string.Equals(activeInFlightKey, key, StringComparison.OrdinalIgnoreCase);
-				bool sameRequest = sameKey && string.Equals(_feedbackActiveRequestFingerprint ?? "", fingerprint, StringComparison.Ordinal);
-				return sameRequest ? FeedbackGenerationBeginStatus.DuplicateInFlight : FeedbackGenerationBeginStatus.Busy;
-			}
-			_feedbackGenerationInFlightKeys.Add(key);
-			_feedbackActiveInFlightKey = key;
-			_feedbackActiveRequestFingerprint = fingerprint;
-			_feedbackGenerationInProgress = true;
-			activeInFlightKey = key;
-			return FeedbackGenerationBeginStatus.Started;
-		}
-	}
-
-	private int NextFeedbackGenerationVersion()
-	{
-		lock (_feedbackGenerationStateLock)
-		{
-			return ++_feedbackGenerationVersion;
-		}
-	}
-
-	private bool TryFinalizeFeedbackGenerationState(string inFlightKey, int version, string reason)
-	{
-		string key = NormalizeFeedbackInFlightKey(inFlightKey);
-		lock (_feedbackGenerationStateLock)
-		{
-			if (version > 0 && version != _feedbackGenerationVersion)
-			{
-				Log("feedback-finalize-skip reason=version-mismatch stage=" + (reason ?? "") + " jobVersion=" + version.ToString(CultureInfo.InvariantCulture) + " currentVersion=" + _feedbackGenerationVersion.ToString(CultureInfo.InvariantCulture) + " key=" + key);
-				return false;
-			}
-			_feedbackGenerationInProgress = false;
-			_feedbackGenerationInFlightKeys.Remove(key);
-			if (string.Equals(_feedbackActiveInFlightKey, key, StringComparison.OrdinalIgnoreCase) || _feedbackGenerationInFlightKeys.Count == 0)
-			{
-				_feedbackActiveInFlightKey = _feedbackGenerationInFlightKeys.FirstOrDefault() ?? "";
-				if (string.IsNullOrWhiteSpace(_feedbackActiveInFlightKey))
-				{
-					_feedbackActiveRequestFingerprint = "";
-				}
-			}
-			return true;
-		}
-	}
-
-	private void DiscardPendingFeedbackRequestForRuntime(long runtimeGeneration, string reason)
-	{
-		bool discarded = false;
-		string batchId = "";
-		lock (_feedbackGenerationStateLock)
-		{
-			if (_pendingFeedbackRequest != null && _pendingFeedbackRequest.RuntimeGeneration == runtimeGeneration)
-			{
-				batchId = _pendingFeedbackRequest.BatchId ?? "";
-				_pendingFeedbackRequest = null;
-				discarded = true;
-			}
-		}
-		if (discarded)
-		{
-			Log("feedback-pending-discard reason=" + (reason ?? "") + " batch=" + batchId);
-		}
-	}
-
-	private void QueuePendingFeedbackRequest(List<NpcRulerPolicyRecord> policySnapshot, string compactWorldContext, string batchId, string inFlightKey, string requestFingerprint, string activeInFlightKey, string reason)
-	{
-		PendingFeedbackGenerationRequest pending = new PendingFeedbackGenerationRequest
-		{
-			BatchId = batchId ?? "",
-			InFlightKey = NormalizeFeedbackInFlightKey(inFlightKey),
-			RequestFingerprint = requestFingerprint ?? "",
-			RuntimeGeneration = SaveRuntimeGuard.CaptureGeneration(),
-			CompactWorldContext = compactWorldContext ?? "",
-			Policies = (policySnapshot ?? new List<NpcRulerPolicyRecord>()).Select(ClonePolicyRecord).Where(x => x != null).ToList()
-		};
-		string replacedBatch = "";
-		lock (_feedbackGenerationStateLock)
-		{
-			replacedBatch = _pendingFeedbackRequest?.BatchId ?? "";
-			_pendingFeedbackRequest = pending;
-		}
-		Log("feedback-pending-upsert reason=" + (reason ?? "in-progress") + " batch=" + (batchId ?? "") + " activeKey=" + (activeInFlightKey ?? "") + " replacedBatch=" + replacedBatch + " policyIds=" + BuildPolicyIdsForLog(policySnapshot));
-	}
-
-	private void TryStartPendingFeedbackGeneration(string reason)
-	{
-		PendingFeedbackGenerationRequest pending = null;
-		lock (_feedbackGenerationStateLock)
-		{
-			if (_feedbackGenerationInProgress || _pendingFeedbackRequest == null)
-			{
-				return;
-			}
-			pending = _pendingFeedbackRequest;
-			_pendingFeedbackRequest = null;
-		}
-		if (pending == null || pending.Policies == null || pending.Policies.Count == 0)
-		{
-			return;
-		}
-		if (SaveRuntimeGuard.IsStale(pending.RuntimeGeneration, "npc_policy_feedback_pending_start"))
-		{
-			Log("feedback-pending-discard reason=stale-runtime batch=" + (pending.BatchId ?? ""));
-			return;
-		}
-		string cleanReason = (reason ?? "").Trim();
-		if (string.Equals(cleanReason, "failed", StringComparison.OrdinalIgnoreCase))
-		{
-			Log("feedback-pending-discard reason=failed batch=" + (pending.BatchId ?? "") + " policies=" + pending.Policies.Count.ToString(CultureInfo.InvariantCulture));
-			return;
-		}
-		Log("feedback-pending-start reason=" + cleanReason + " batch=" + (pending.BatchId ?? "") + " policies=" + pending.Policies.Count.ToString(CultureInfo.InvariantCulture));
-		StartFeedbackGeneration(pending.Policies, pending.CompactWorldContext);
-	}
-
-	public static long GetInboxVersionForExternal()
-	{
-		try
-		{
-			return (Instance ?? Campaign.Current?.GetCampaignBehavior<NpcPublicFeedbackEventBehavior>())?._version ?? 0L;
-		}
-		catch
-		{
-			return 0L;
-		}
-	}
-
-	public static List<AnimusForgeWorldEventInboxEntry> GetInboxSnapshotForExternal(int maxCount = 80)
-	{
-		try
-		{
-			return (Instance ?? Campaign.Current?.GetCampaignBehavior<NpcPublicFeedbackEventBehavior>())?.GetInboxSnapshotInternal(maxCount) ?? new List<AnimusForgeWorldEventInboxEntry>();
-		}
-		catch
-		{
-			return new List<AnimusForgeWorldEventInboxEntry>();
-		}
-	}
-
-	public static int GetUnreadCountForExternal()
-	{
-		try
-		{
-			return (Instance ?? Campaign.Current?.GetCampaignBehavior<NpcPublicFeedbackEventBehavior>())?._unreadEventIds.Count ?? 0;
-		}
-		catch
-		{
-			return 0;
-		}
-	}
-
-	public static bool MarkEventReadForExternal(string eventId)
-	{
-		return (Instance ?? Campaign.Current?.GetCampaignBehavior<NpcPublicFeedbackEventBehavior>())?.MarkEventReadInternal(eventId) == true;
-	}
-
-	public static void MarkAllReadForExternal()
-	{
-		(Instance ?? Campaign.Current?.GetCampaignBehavior<NpcPublicFeedbackEventBehavior>())?.MarkAllReadInternal();
-	}
-
-	public static void UpsertWorldEventForExternal(AnimusForgeWorldEventInboxEntry entry, bool markUnread = true)
-	{
-		try
-		{
-			(Instance ?? Campaign.Current?.GetCampaignBehavior<NpcPublicFeedbackEventBehavior>())?.UpsertWorldEventInternal(entry, markUnread);
-		}
-		catch (Exception ex)
-		{
-			Log("upsert-external-failed " + ex.Message);
-		}
-	}
-
-	public static AnimusForgeWorldEventInboxEntry BuildPolicyPublicFeedbackForExternal(NpcRulerPolicyRecord policy, int index = 0)
-	{
-		try
-		{
-			return (Instance ?? Campaign.Current?.GetCampaignBehavior<NpcPublicFeedbackEventBehavior>())?.BuildPolicyPublicFeedbackEntry(policy, index);
-		}
-		catch (Exception ex)
-		{
-			Log("inline-policy-feedback-build-failed policy=" + (policy?.PolicyId ?? "") + " error=" + ex.Message);
-			return null;
-		}
-	}
-
-	public static bool CommitPolicyPublicFeedbackEventForExternal(AnimusForgeWorldEventInboxEntry entry)
-	{
-		try
-		{
-			return (Instance ?? Campaign.Current?.GetCampaignBehavior<NpcPublicFeedbackEventBehavior>())?.CommitPolicyPublicFeedbackEventInternal(entry) == true;
-		}
-		catch (Exception ex)
-		{
-			Log("inline-policy-feedback-event-failed event=" + (entry?.EventId ?? "") + " error=" + ex.Message);
-			return false;
-		}
-	}
-
-	public static string BuildRecentPublicFeedbackEventContextForKingdomExternal(string kingdomId, int maxItems = MaxFeedbackContextItems)
-	{
-		try
-		{
-			return (Instance ?? Campaign.Current?.GetCampaignBehavior<NpcPublicFeedbackEventBehavior>())?.BuildRecentPublicFeedbackEventContextForKingdomInternal(kingdomId, maxItems) ?? "";
-		}
-		catch
-		{
-			return "";
-		}
-	}
-
-	public static void GenerateFeedbackEventsForPoliciesExternal(IReadOnlyList<NpcRulerPolicyRecord> policies, string compactWorldContext)
-	{
-		try
-		{
-			(Instance ?? Campaign.Current?.GetCampaignBehavior<NpcPublicFeedbackEventBehavior>())?.StartFeedbackGeneration(policies, compactWorldContext);
-		}
-		catch (Exception ex)
-		{
-			Log("feedback-generation-external-failed " + ex.Message);
-		}
-	}
-
-	private AnimusForgeWorldEventInboxEntry BuildPolicyPublicFeedbackEntry(NpcRulerPolicyRecord policy, int index)
-	{
-		if (policy == null || string.IsNullOrWhiteSpace(policy.PublicFeedback))
-		{
-			return null;
-		}
-		string kingdomId = FirstNonEmpty(policy.KingdomId);
-		string kingdomName = FirstNonEmpty(policy.KingdomName, "某王国");
-		string text = Limit(policy.PublicFeedback, MaxDetailChars);
-		if (string.IsNullOrWhiteSpace(kingdomId) || string.IsNullOrWhiteSpace(text))
-		{
-			return null;
-		}
-		string policyKey = FirstNonEmpty(policy.PolicyId, policy.BatchId + ":" + kingdomId + ":" + Math.Max(0, index).ToString(CultureInfo.InvariantCulture));
-		string eventId = "npc_public_feedback:" + NormalizeKeyPart(policyKey);
-		string title = Limit(FirstNonEmpty(policy.FeedbackTitle, "《" + FirstNonEmpty(policy.PolicyName, "新政策") + "》的余波"), MaxTitleChars);
-		long policyTicks = policy.CreatedUtcTicks > 0L ? policy.CreatedUtcTicks : DateTime.UtcNow.Ticks;
-		return new AnimusForgeWorldEventInboxEntry
-		{
-			EventId = eventId,
-			EventKind = "npc_ruler_policy_event",
-			EventType = "",
-			Title = title,
-			Summary = Limit(text, MaxSummaryChars),
-			DetailText = text,
-			KingdomId = kingdomId,
-			KingdomName = kingdomName,
-			ActorHeroId = policy.RulerHeroId ?? "",
-			ActorHeroName = policy.RulerName ?? "",
-			PolicyId = policy.PolicyId ?? "",
-			PolicyName = policy.PolicyName ?? "",
-			Day = Math.Max(0, policy.Day > 0 ? policy.Day : GetCurrentCampaignDay()),
-			GameDate = FirstNonEmpty(policy.GameDate, FormatCurrentCampaignDate()),
-			CreatedUtcTicks = policyTicks > 1L ? policyTicks - 1L : policyTicks,
-			StableKey = eventId,
-			IsRead = false
-		};
-	}
-
-	private bool CommitPolicyPublicFeedbackEventInternal(AnimusForgeWorldEventInboxEntry entry)
-	{
-		if (entry == null || string.IsNullOrWhiteSpace(entry.EventId))
-		{
-			return false;
-		}
-		UpsertWorldEventInternal(entry, markUnread: true);
-		Log("inline-policy-feedback-committed policy=" + (entry.PolicyId ?? "") + " event=" + (entry.EventId ?? ""));
-		return true;
-	}
-
-	private void StartFeedbackGeneration(IReadOnlyList<NpcRulerPolicyRecord> policies, string compactWorldContext)
-	{
-		if (!IsCampaignSessionReady())
-		{
-			Log("feedback-skip reason=campaign-not-ready");
-			return;
-		}
-		List<NpcRulerPolicyRecord> policySnapshot = (policies ?? Array.Empty<NpcRulerPolicyRecord>())
-			.Where(x => x != null && !string.IsNullOrWhiteSpace(x.PolicyId) && !string.IsNullOrWhiteSpace(x.KingdomId))
-			.Take(12)
-			.Select(ClonePolicyRecord)
-			.ToList();
-		if (policySnapshot.Count == 0)
-		{
-			return;
-		}
-		string batchId = policySnapshot.FirstOrDefault()?.BatchId;
-		string inFlightKey = BuildFeedbackGenerationInFlightKey(batchId, policySnapshot);
-		string requestFingerprint = BuildFeedbackRequestFingerprint(policySnapshot);
-		FeedbackGenerationBeginStatus beginStatus = TryBeginFeedbackGenerationInFlight(inFlightKey, requestFingerprint, out string activeInFlightKey);
-		if (beginStatus == FeedbackGenerationBeginStatus.DuplicateInFlight)
-		{
-			Log("feedback-skip reason=duplicate-in-flight batch=" + (batchId ?? "") + " key=" + inFlightKey + " activeKey=" + activeInFlightKey + " skippedPolicyIds=" + BuildPolicyIdsForLog(policySnapshot));
-			return;
-		}
-		if (beginStatus == FeedbackGenerationBeginStatus.Busy)
-		{
-			string pendingReason = string.Equals(NormalizeFeedbackInFlightKey(inFlightKey), NormalizeFeedbackInFlightKey(activeInFlightKey), StringComparison.OrdinalIgnoreCase)
-				? "same-key-updated"
-				: "in-progress";
-			QueuePendingFeedbackRequest(policySnapshot, compactWorldContext, batchId, inFlightKey, requestFingerprint, activeInFlightKey, pendingReason);
-			return;
-		}
-		if (!NpcPolicyLlmClient.IsConfiguredForNpcPolicy(out string apiConfigError))
-		{
-			TryFinalizeFeedbackGenerationState(inFlightKey, 0, "api-not-configured");
-			Log("feedback-skip reason=api-not-configured error=" + apiConfigError);
-			TryStartPendingFeedbackGeneration("api-not-configured");
-			return;
-		}
-		NpcPolicyPrompt prompt;
-		try
-		{
-			prompt = BuildFeedbackPrompt(policySnapshot, compactWorldContext);
-		}
-		catch (Exception ex)
-		{
-			TryFinalizeFeedbackGenerationState(inFlightKey, 0, "message-build-failed");
-			Log("feedback-message-build-failed batch=" + (batchId ?? "") + " error=" + ex);
-			TryStartPendingFeedbackGeneration("message-build-failed");
-			return;
-		}
-		_lastFeedbackRetryContext = null;
-		NpcPolicyFeedbackJob job = new NpcPolicyFeedbackJob
-		{
-			JobId = "npc_policy_feedback:" + NormalizeKeyPart(batchId),
-			BatchId = batchId ?? "",
-			Policies = policySnapshot,
-			CompactWorldContext = compactWorldContext ?? "",
-			SystemPrompt = prompt.SystemPrompt,
-			UserPrompt = prompt.UserPrompt,
-			PromptPreview = prompt.Preview,
-			InFlightKey = inFlightKey,
-			Version = NextFeedbackGenerationVersion(),
-			RuntimeGeneration = SaveRuntimeGuard.CaptureGeneration(),
-			MaxTokens = FeedbackMaxTokens,
-			HardTimeoutMilliseconds = FeedbackApiHardTimeoutMilliseconds,
-			CreatedUtcTicks = DateTime.UtcNow.Ticks
-		};
-		Log("feedback-start batch=" + (batchId ?? "") + " policies=" + policySnapshot.Count.ToString(CultureInfo.InvariantCulture));
-		FeedbackTraceLog("feedback-job-built", BuildFeedbackJobTracePrefix(job), job.PromptPreview);
-		try
-		{
-			_ = Task.Run(() => ProcessFeedbackGenerationJobAsync(job));
-		}
-		catch (Exception ex)
-		{
-			TryFinalizeFeedbackGenerationState(inFlightKey, job.Version, "schedule-failed");
-			_lastFeedbackError = ex.Message;
-			Log("feedback-schedule-failed batch=" + (batchId ?? "") + " error=" + ex);
-			TryStartPendingFeedbackGeneration("schedule-failed");
-		}
-	}
-
-	private async Task ProcessFeedbackGenerationJobAsync(NpcPolicyFeedbackJob job)
-	{
-		NpcPolicyFeedbackResult result = new NpcPolicyFeedbackResult
-		{
-			Job = job
-		};
-		try
-		{
-			if (job == null)
-			{
-				result.Error = "empty feedback generation job";
-			}
-			else if (SaveRuntimeGuard.IsStale(job.RuntimeGeneration, "npc_policy_feedback_start"))
-			{
-				result.Error = SaveRuntimeGuard.BuildStaleRequestErrorText();
-			}
-			else
-			{
-				FeedbackTraceLog("feedback-batch-call-start", BuildFeedbackJobTracePrefix(job), job.PromptPreview);
-				NpcPolicyApiCallResult apiResult = await NpcPolicyLlmClient.CallEventAndRebellionApiWithRetriesAsync(job.SystemPrompt, job.UserPrompt, job.MaxTokens, job.HardTimeoutMilliseconds, "NpcPublicFeedbackEvent", job.RuntimeGeneration, 3);
-				CopyApiResultToFeedbackResult(result, apiResult, accumulateAttempts: false);
-				FeedbackTraceLog("feedback-batch-call-finished", BuildFeedbackResultTracePrefix(result), apiResult.Success ? apiResult.Content : apiResult.ErrorMessage);
-				if (!apiResult.Success)
-				{
-					result.Error = apiResult.ErrorMessage ?? "API请求失败";
-					result.FailureMessages.Add("反馈批量请求失败：" + result.Error);
-				}
-				else
-				{
-					NpcPublicFeedbackResponse response = ParseFeedbackResponse(apiResult.Content, job.BatchId, apiResult.ResolvedRoute, apiResult.AttemptsUsed, "feedback-batch");
-					result.Events = response?.Events ?? new List<NpcPublicFeedbackEventDto>();
-					FeedbackTraceLog("feedback-batch-parse-finished", BuildFeedbackResultTracePrefix(result), "events=" + result.Events.Count.ToString(CultureInfo.InvariantCulture));
-					if (result.Events.Count == 0)
-					{
-						result.Error = "feedback parse produced no events; raw=" + Limit(apiResult.Content, 500);
-						result.FailureMessages.Add(result.Error);
-					}
-					else
-					{
-						result.Success = true;
-					}
-				}
-				List<NpcRulerPolicyRecord> missingPolicies = GetMissingFeedbackPolicies(job.Policies, result.Events);
-				if (missingPolicies.Count > 0)
-				{
-					string missingIds = string.Join(",", missingPolicies.Select(x => x?.PolicyId).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase));
-					result.FailureMessages.Add("Batch public feedback missed " + missingPolicies.Count.ToString(CultureInfo.InvariantCulture) + " policy target(s); weekly-report flow keeps batch result and does not start single-policy fallback. missing=" + missingIds);
-					FeedbackTraceLog("feedback-batch-missing-no-fallback", BuildFeedbackResultTracePrefix(result), missingIds);
-				}
-				if ((result.Events ?? new List<NpcPublicFeedbackEventDto>()).Count > 0)
-				{
-					result.Success = true;
-					result.Error = "";
-				}
-				else if (string.IsNullOrWhiteSpace(result.Error))
-				{
-					result.Error = "feedback generation produced no events";
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			result.Error = ex.ToString();
-			result.FailureMessages.Add(result.Error);
-			FeedbackTraceLog("feedback-exception", BuildFeedbackJobTracePrefix(job), ex.ToString());
-		}
-		finally
-		{
-			_pendingFeedbackCommits.Enqueue(new PendingNpcPolicyCommitContext
-			{
-				FeedbackResult = result
-			});
-			FeedbackTraceLog("feedback-commit-enqueued", BuildFeedbackResultTracePrefix(result), "queued=true");
-		}
-	}
-
-	private async Task TryAppendSinglePolicyFeedbackFallbacksAsync(NpcPolicyFeedbackJob job, NpcPolicyFeedbackResult result, List<NpcRulerPolicyRecord> missingPolicies, string reason)
-	{
-		if (job == null || result == null || missingPolicies == null || missingPolicies.Count == 0)
-		{
-			return;
-		}
-		if (result.IsQuotaLimit || result.IsRateLimit || result.IsRequestsPerMinuteLimit)
-		{
-			result.FailureMessages.Add("跳过民众反馈单政策 fallback：批量请求疑似限流或额度问题。reason=" + (reason ?? ""));
-			return;
-		}
-		List<NpcRulerPolicyRecord> targets = missingPolicies
-			.Where(x => x != null && !string.IsNullOrWhiteSpace(x.PolicyId))
-			.GroupBy(x => x.PolicyId.Trim(), StringComparer.OrdinalIgnoreCase)
-			.Select(x => x.First())
-			.Take(12)
-			.ToList();
-		if (targets.Count == 0)
-		{
-			return;
-		}
-		FeedbackTraceLog("feedback-single-fallback-start", BuildFeedbackJobTracePrefix(job) + " missing=" + targets.Count.ToString(CultureInfo.InvariantCulture) + " reason=" + (reason ?? ""), string.Join("\n", targets.Select(x => x.PolicyId + " " + x.KingdomName + " " + x.PolicyName)));
-		foreach (NpcRulerPolicyRecord policy in targets)
-		{
-			if (SaveRuntimeGuard.IsStale(job.RuntimeGeneration, "npc_policy_feedback_single_fallback"))
-			{
-				result.FailureMessages.Add("民众反馈单政策 fallback 被丢弃：存档运行代际已变化。");
-				return;
-			}
-			if (HasFeedbackEventForPolicy(result.Events, policy))
-			{
-				continue;
-			}
-			NpcPolicyPrompt prompt = BuildFeedbackPrompt(new List<NpcRulerPolicyRecord> { policy }, job.CompactWorldContext);
-			NpcPolicyApiCallResult apiResult = await NpcPolicyLlmClient.CallEventAndRebellionApiWithRetriesAsync(prompt.SystemPrompt, prompt.UserPrompt, job.MaxTokens, job.HardTimeoutMilliseconds, "NpcPublicFeedbackSingleFallback", job.RuntimeGeneration, 3);
-			CopyApiResultToFeedbackResult(result, apiResult, accumulateAttempts: true);
-			FeedbackTraceLog("feedback-single-fallback-finished", BuildFeedbackJobTracePrefix(job) + " policy=" + (policy.PolicyId ?? "") + " success=" + apiResult.Success.ToString(CultureInfo.InvariantCulture) + " attempts=" + apiResult.AttemptsUsed.ToString(CultureInfo.InvariantCulture), apiResult.Success ? apiResult.Content : apiResult.ErrorMessage);
-			if (!apiResult.Success)
-			{
-				result.FallbackFailureCount++;
-				result.FailureMessages.Add("民众反馈单政策 fallback 失败：" + FirstNonEmpty(policy.PolicyName, policy.KingdomName, policy.PolicyId) + " - " + (apiResult.ErrorMessage ?? "未知错误"));
-				if (apiResult.IsQuotaLimit || apiResult.IsRateLimit || apiResult.IsRequestsPerMinuteLimit)
-				{
-					result.FailureMessages.Add("民众反馈 fallback 因限流/额度问题提前停止，避免继续刷请求。");
-					return;
-				}
-				continue;
-			}
-			NpcPublicFeedbackResponse response = ParseFeedbackResponse(apiResult.Content, job.BatchId, apiResult.ResolvedRoute, apiResult.AttemptsUsed, "feedback-single-fallback:" + (policy.PolicyId ?? ""));
-			List<NpcPublicFeedbackEventDto> events = response?.Events ?? new List<NpcPublicFeedbackEventDto>();
-			NpcPublicFeedbackEventDto dto = events.FirstOrDefault(x => x != null);
-			if (dto == null)
-			{
-				result.FallbackFailureCount++;
-				result.FailureMessages.Add("民众反馈单政策 fallback 解析为空：" + FirstNonEmpty(policy.PolicyName, policy.KingdomName, policy.PolicyId));
-				continue;
-			}
-			dto.PolicyId = FirstNonEmpty(dto.PolicyId, policy.PolicyId);
-			dto.KingdomId = FirstNonEmpty(dto.KingdomId, policy.KingdomId);
-			dto.KingdomName = FirstNonEmpty(dto.KingdomName, policy.KingdomName);
-			dto.PolicyName = FirstNonEmpty(dto.PolicyName, policy.PolicyName);
-			result.Events = result.Events ?? new List<NpcPublicFeedbackEventDto>();
-			if (!HasFeedbackEventForPolicy(result.Events, policy))
-			{
-				result.Events.Add(dto);
-				result.FallbackSuccessCount++;
-			}
-		}
-	}
-
-	private void ProcessPendingFeedbackCommits()
-	{
-		long startTimestamp = Stopwatch.GetTimestamp();
-		double budgetMs = FeedbackCommitFrameBudgetMs;
-		while (!IsFeedbackCommitBudgetExceeded(startTimestamp, budgetMs) && _pendingFeedbackCommits.TryPeek(out PendingNpcPolicyCommitContext context))
-		{
-			if (!ProcessPendingFeedbackCommitContext(context, startTimestamp, budgetMs))
-			{
-				return;
-			}
-			_pendingFeedbackCommits.TryDequeue(out var _);
-		}
-	}
-
-	private bool ProcessPendingFeedbackCommitContext(PendingNpcPolicyCommitContext context, long startTimestamp, double budgetMs)
-	{
-		if (context == null)
-		{
-			return true;
-		}
-		NpcPolicyFeedbackResult result = context.FeedbackResult;
-		NpcPolicyFeedbackJob job = result?.Job;
-		try
-		{
-			if (job == null)
-			{
-				Log("feedback-commit-discard reason=missing-job");
-				return true;
-			}
-			if (job.Version != _feedbackGenerationVersion)
-			{
-				Log("feedback-stale version=" + job.Version.ToString(CultureInfo.InvariantCulture));
-				return true;
-			}
-			if (SaveRuntimeGuard.IsStale(job.RuntimeGeneration, "npc_policy_feedback_commit"))
-			{
-				if (TryFinalizeFeedbackGenerationState(job.InFlightKey, job.Version, "stale-runtime"))
-				{
-					DiscardPendingFeedbackRequestForRuntime(job.RuntimeGeneration, "stale-runtime");
-					Log("feedback-discard reason=stale-runtime batch=" + (job.BatchId ?? ""));
-					TryStartPendingFeedbackGeneration("stale-runtime");
-				}
-				return true;
-			}
-			if (!IsCampaignSessionReady())
-			{
-				TryFinalizeFeedbackGenerationState(job.InFlightKey, job.Version, "campaign-not-ready");
-				Log("feedback-discard batch=" + (job.BatchId ?? "") + " reason=campaign-not-ready");
-				return true;
-			}
-			if (result == null || !result.Success)
-			{
-				FinalizeFeedbackFailure(result, result?.Error ?? "unknown feedback generation error");
-				return true;
-			}
-			List<NpcPublicFeedbackEventDto> events = result.Events ?? new List<NpcPublicFeedbackEventDto>();
-			while (context.EventIndex < events.Count
-				&& context.EventsCommittedThisTick < FeedbackCommitMaxEventsPerTick
-				&& !IsFeedbackCommitBudgetExceeded(startTimestamp, budgetMs))
-			{
-				NpcPublicFeedbackEventDto dto = events[context.EventIndex];
-				CommitFeedbackEvent(job, dto, context.EventIndex, ref context.RecordedCount);
-				context.EventIndex++;
-				context.EventsCommittedThisTick++;
-			}
-			context.EventsCommittedThisTick = 0;
-			if (context.EventIndex < events.Count)
-			{
-				return false;
-			}
-			if (!TryFinalizeFeedbackGenerationState(job.InFlightKey, job.Version, "completed"))
-			{
-				return true;
-			}
-			_lastFeedbackRetryCount = 0;
-			if (result.FailureMessages != null && result.FailureMessages.Count > 0)
-			{
-				_lastFeedbackError = Limit(string.Join(" | ", result.FailureMessages), 800);
-				_lastFeedbackRetryContext = CreateFeedbackRetryContext(job, result, _lastFeedbackError);
-				FeedbackTraceLog("feedback-partial-failures", BuildFeedbackResultTracePrefix(result), string.Join("\n", result.FailureMessages));
-			}
-			else
-			{
-				_lastFeedbackError = "";
-				_lastFeedbackRetryContext = null;
-			}
-			Log("feedback-complete batch=" + (job.BatchId ?? "") + " parsed=" + events.Count.ToString(CultureInfo.InvariantCulture) + " recorded=" + context.RecordedCount.ToString(CultureInfo.InvariantCulture) + " attempts=" + result.AttemptsUsed.ToString(CultureInfo.InvariantCulture) + " fallbackSuccess=" + result.FallbackSuccessCount.ToString(CultureInfo.InvariantCulture) + " fallbackFailures=" + result.FallbackFailureCount.ToString(CultureInfo.InvariantCulture));
-			FeedbackTraceLog("feedback-commit-complete", BuildFeedbackResultTracePrefix(result), "recorded=" + context.RecordedCount.ToString(CultureInfo.InvariantCulture));
-			TryStartPendingFeedbackGeneration("completed");
-			return true;
-		}
-		catch (Exception ex)
-		{
-			FinalizeFeedbackFailure(result ?? new NpcPolicyFeedbackResult { Job = job }, ex.ToString());
-			Log("feedback-commit-exception " + ex);
-			return true;
-		}
-	}
-
-	private void CommitFeedbackEvent(NpcPolicyFeedbackJob job, NpcPublicFeedbackEventDto dto, int index, ref int recorded)
-	{
-		if (job == null || dto == null)
-		{
-			return;
-		}
-		NpcRulerPolicyRecord policy = MatchPolicy(job.Policies, dto);
-		string kingdomId = FirstNonEmpty(dto.KingdomId, policy?.KingdomId);
-		string kingdomName = FirstNonEmpty(dto.KingdomName, policy?.KingdomName);
-		string eventId = "npc_public_feedback:" + NormalizeKeyPart(job.BatchId) + ":" + NormalizeKeyPart(kingdomId) + ":" + index.ToString(CultureInfo.InvariantCulture);
-		string title = FirstNonEmpty(dto.EventTitle, kingdomName + "民众反馈");
-		string text = FirstNonEmpty(dto.EventText, dto.Summary);
-		if (string.IsNullOrWhiteSpace(kingdomId) || string.IsNullOrWhiteSpace(text))
-		{
-			return;
-		}
-		AnimusForgeWorldEventInboxEntry entry = new AnimusForgeWorldEventInboxEntry
-		{
-			EventId = eventId,
-			EventKind = "npc_public_feedback",
-			Title = title,
-			Summary = Limit(text, MaxSummaryChars),
-			DetailText = text,
-			KingdomId = kingdomId,
-			KingdomName = kingdomName,
-			ActorHeroId = policy?.RulerHeroId ?? "",
-			ActorHeroName = policy?.RulerName ?? "",
-			PolicyId = FirstNonEmpty(dto.PolicyId, policy?.PolicyId),
-			PolicyName = FirstNonEmpty(dto.PolicyName, policy?.PolicyName),
-			Day = Math.Max(0, policy?.Day ?? GetCurrentCampaignDay()),
-			GameDate = FirstNonEmpty(policy?.GameDate, FormatCurrentCampaignDate()),
-			CreatedUtcTicks = DateTime.UtcNow.Ticks,
-			StableKey = eventId,
-			IsRead = false
-		};
-		UpsertWorldEventInternal(entry, markUnread: true);
-		MyBehavior.RecordNpcPublicFeedbackEventMaterialForExternal(entry.EventId, entry.Title, entry.Summary, entry.DetailText, entry.KingdomId, entry.KingdomName, entry.ActorHeroId, entry.ActorHeroName, entry.PolicyId, entry.PolicyName, entry.Day, entry.GameDate, includeInWorld: true);
-		recorded++;
-	}
-
-	private void FinalizeFeedbackFailure(NpcPolicyFeedbackResult result, string error)
-	{
-		NpcPolicyFeedbackJob job = result?.Job;
-		if (job == null || !TryFinalizeFeedbackGenerationState(job.InFlightKey, job.Version, "failed"))
-		{
-			return;
-		}
-		_lastFeedbackRetryCount = Math.Max(0, result?.AttemptsUsed ?? 0);
-		_lastFeedbackError = Limit(error ?? "未知错误", 800);
-		_lastFeedbackRetryContext = CreateFeedbackRetryContext(job, result, _lastFeedbackError);
-		Log("feedback-failed batch=" + (job.BatchId ?? "") + " attempts=" + _lastFeedbackRetryCount.ToString(CultureInfo.InvariantCulture) + " rateLimit=" + (result?.IsRateLimit ?? false).ToString(CultureInfo.InvariantCulture) + " rpm=" + (result?.IsRequestsPerMinuteLimit ?? false).ToString(CultureInfo.InvariantCulture) + " quota=" + (result?.IsQuotaLimit ?? false).ToString(CultureInfo.InvariantCulture) + " authFailure=" + (result?.IsAuthFailure ?? false).ToString(CultureInfo.InvariantCulture) + " retryAfter=" + ((result?.RetryAfterSeconds)?.ToString(CultureInfo.InvariantCulture) ?? "") + " rawRetryAfter=" + ((result?.RetryAfterSecondsRaw)?.ToString(CultureInfo.InvariantCulture) ?? "") + " retryAfterCapped=" + ((result?.RetryAfterSecondsCapped ?? false) ? "true" : "false") + " error=" + Limit(_lastFeedbackError, 300));
-		FeedbackTraceLog("feedback-failed", BuildFeedbackResultTracePrefix(result), _lastFeedbackError + "\n\n" + string.Join("\n", result?.FailureMessages ?? new List<string>()));
-		DiscardPendingFeedbackRequestForRuntime(job.RuntimeGeneration, "failed");
-	}
-
-	private static void CopyApiResultToFeedbackResult(NpcPolicyFeedbackResult result, NpcPolicyApiCallResult apiResult, bool accumulateAttempts)
-	{
-		if (result == null || apiResult == null)
-		{
-			return;
-		}
-		if (accumulateAttempts)
-		{
-			result.AttemptsUsed += Math.Max(0, apiResult.AttemptsUsed);
-			result.FallbackAttemptsUsed += Math.Max(0, apiResult.AttemptsUsed);
-		}
-		else
-		{
-			result.AttemptsUsed = Math.Max(0, apiResult.AttemptsUsed);
-			result.BatchAttemptsUsed = Math.Max(0, apiResult.AttemptsUsed);
-		}
-		result.RawResponse = apiResult.Content ?? result.RawResponse ?? "";
-		result.IsRateLimit = result.IsRateLimit || apiResult.IsRateLimit;
-		result.IsRequestsPerMinuteLimit = result.IsRequestsPerMinuteLimit || apiResult.IsRequestsPerMinuteLimit;
-		result.IsQuotaLimit = result.IsQuotaLimit || apiResult.IsQuotaLimit;
-		result.IsAuthFailure = result.IsAuthFailure || apiResult.IsAuthFailure;
-		result.RetryAfterSeconds = MaxNullable(result.RetryAfterSeconds, apiResult.RetryAfterSeconds);
-		result.RetryAfterSecondsRaw = MaxNullable(result.RetryAfterSecondsRaw, apiResult.RetryAfterSecondsRaw);
-		result.RetryAfterSecondsCapped = result.RetryAfterSecondsCapped || apiResult.RetryAfterSecondsCapped;
-	}
-
-	private static int? MaxNullable(int? a, int? b)
-	{
-		if (!a.HasValue)
-		{
-			return b;
-		}
-		if (!b.HasValue)
-		{
-			return a;
-		}
-		return Math.Max(a.Value, b.Value);
-	}
-
-	private static List<NpcRulerPolicyRecord> GetMissingFeedbackPolicies(List<NpcRulerPolicyRecord> policies, List<NpcPublicFeedbackEventDto> events)
-	{
-		return (policies ?? new List<NpcRulerPolicyRecord>())
-			.Where(policy => policy != null && !HasFeedbackEventForPolicy(events, policy))
-			.ToList();
-	}
-
-	private static bool HasFeedbackEventForPolicy(List<NpcPublicFeedbackEventDto> events, NpcRulerPolicyRecord policy)
-	{
-		if (policy == null)
-		{
-			return false;
-		}
-		string policyId = (policy.PolicyId ?? "").Trim();
-		string kingdomId = (policy.KingdomId ?? "").Trim();
-		string policyName = (policy.PolicyName ?? "").Trim();
-		return (events ?? new List<NpcPublicFeedbackEventDto>()).Any(dto =>
-			dto != null
-			&& ((!string.IsNullOrWhiteSpace(kingdomId) && string.Equals((dto.KingdomId ?? "").Trim(), kingdomId, StringComparison.OrdinalIgnoreCase))
-				|| (!string.IsNullOrWhiteSpace(policyName) && string.Equals((dto.PolicyName ?? "").Trim(), policyName, StringComparison.OrdinalIgnoreCase))
-				|| (!string.IsNullOrWhiteSpace(policyId) && string.Equals((dto.PolicyId ?? "").Trim(), policyId, StringComparison.OrdinalIgnoreCase))));
-	}
-
-	private static NpcFeedbackRetryContext CreateFeedbackRetryContext(NpcPolicyFeedbackJob job, NpcPolicyFeedbackResult result, string reason)
-	{
-		NpcFeedbackRetryContext context = new NpcFeedbackRetryContext
-		{
-			BatchId = job?.BatchId ?? "",
-			FailedReason = Limit(reason ?? "", 800),
-			AttemptsUsed = Math.Max(0, result?.AttemptsUsed ?? 0),
-			IsRateLimit = result?.IsRateLimit ?? false,
-			IsRequestsPerMinuteLimit = result?.IsRequestsPerMinuteLimit ?? false,
-			IsQuotaLimit = result?.IsQuotaLimit ?? false,
-			IsAuthFailure = result?.IsAuthFailure ?? false,
-			RetryAfterSeconds = result?.RetryAfterSeconds,
-			FallbackSuccessCount = Math.Max(0, result?.FallbackSuccessCount ?? 0),
-			FallbackFailureCount = Math.Max(0, result?.FallbackFailureCount ?? 0)
-		};
-		foreach (NpcRulerPolicyRecord policy in GetMissingFeedbackPolicies(job?.Policies, result?.Events))
-		{
-			string id = (policy?.PolicyId ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(id) && !context.FailedPolicyIds.Contains(id, StringComparer.OrdinalIgnoreCase))
-			{
-				context.FailedPolicyIds.Add(id);
-			}
-		}
-		foreach (string message in result?.FailureMessages ?? new List<string>())
-		{
-			if (!string.IsNullOrWhiteSpace(message))
-			{
-				context.FailureMessages.Add(Limit(message, 500));
-			}
-		}
-		return context;
-	}
-
-	private static bool IsFeedbackCommitBudgetExceeded(long startTimestamp, double budgetMs)
-	{
-		if (budgetMs <= 0.0)
-		{
-			return false;
-		}
-		double elapsedMs = (Stopwatch.GetTimestamp() - startTimestamp) * 1000.0 / Stopwatch.Frequency;
-		return elapsedMs >= budgetMs;
-	}
-
-	private static void FeedbackTraceLog(string stage, string message, string detail = null)
-	{
-		NpcPolicyDetailedTraceLog.Write(stage, message, detail);
-	}
-
-	private static string BuildFeedbackJobTracePrefix(NpcPolicyFeedbackJob job)
-	{
-		if (job == null)
-		{
-			return "job=null";
-		}
-		return "job=" + (job.JobId ?? "")
-			+ " batch=" + (job.BatchId ?? "")
-			+ " policies=" + ((job.Policies?.Count) ?? 0).ToString(CultureInfo.InvariantCulture)
-			+ " version=" + job.Version.ToString(CultureInfo.InvariantCulture);
-	}
-
-	private static string BuildFeedbackResultTracePrefix(NpcPolicyFeedbackResult result)
-	{
-		if (result == null)
-		{
-			return "result=null";
-		}
-		return BuildFeedbackJobTracePrefix(result.Job)
-			+ " success=" + result.Success.ToString(CultureInfo.InvariantCulture)
-			+ " events=" + ((result.Events?.Count) ?? 0).ToString(CultureInfo.InvariantCulture)
-			+ " attempts=" + result.AttemptsUsed.ToString(CultureInfo.InvariantCulture)
-			+ " authFailure=" + result.IsAuthFailure.ToString(CultureInfo.InvariantCulture)
-			+ " retryAfter=" + (result.RetryAfterSeconds?.ToString(CultureInfo.InvariantCulture) ?? "")
-			+ " rawRetryAfter=" + (result.RetryAfterSecondsRaw?.ToString(CultureInfo.InvariantCulture) ?? "")
-			+ " retryAfterCapped=" + (result.RetryAfterSecondsCapped ? "true" : "false")
-			+ " fallbackSuccess=" + result.FallbackSuccessCount.ToString(CultureInfo.InvariantCulture)
-			+ " fallbackFailures=" + result.FallbackFailureCount.ToString(CultureInfo.InvariantCulture);
-	}
-
-	private List<AnimusForgeWorldEventInboxEntry> GetInboxSnapshotInternal(int maxCount)
-	{
-		int limit = Math.Max(1, Math.Min(200, maxCount <= 0 ? 80 : maxCount));
-		return _eventRecords.Values
-			.Select(DeserializeEntry)
-			.Where(x => x != null)
-			.OrderByDescending(x => x.Day)
-			.ThenByDescending(x => x.CreatedUtcTicks)
-			.Take(limit)
-			.Select(CloneEntry)
-			.ToList();
-	}
-
-	private void UpsertWorldEventInternal(AnimusForgeWorldEventInboxEntry entry, bool markUnread)
-	{
-		AnimusForgeWorldEventInboxEntry normalized = NormalizeEntry(entry);
-		if (normalized == null || string.IsNullOrWhiteSpace(normalized.EventId))
-		{
-			return;
-		}
-		string eventId = normalized.EventId.Trim();
-		if (_eventRecords.TryGetValue(eventId, out string raw) && !string.IsNullOrWhiteSpace(raw))
-		{
-			AnimusForgeWorldEventInboxEntry old = DeserializeEntry(raw);
-			if (old != null && old.IsRead && !markUnread)
-			{
-				normalized.IsRead = true;
-			}
-		}
-		if (markUnread)
-		{
-			normalized.IsRead = false;
-			_unreadEventIds.Add(eventId);
-		}
-		else if (normalized.IsRead)
-		{
-			_unreadEventIds.Remove(eventId);
-		}
-		_eventRecords[eventId] = JsonConvert.SerializeObject(normalized);
-		TrimEventRecords();
-		_version++;
-	}
-
-	private bool MarkEventReadInternal(string eventId)
-	{
-		string id = (eventId ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(id) || !_eventRecords.TryGetValue(id, out string raw))
-		{
-			return false;
-		}
-		AnimusForgeWorldEventInboxEntry entry = DeserializeEntry(raw);
-		if (entry == null)
-		{
-			return false;
-		}
-		if (entry.IsRead)
-		{
-			_unreadEventIds.Remove(id);
-			return false;
-		}
-		entry.IsRead = true;
-		_eventRecords[id] = JsonConvert.SerializeObject(entry);
-		_unreadEventIds.Remove(id);
-		_version++;
-		return true;
-	}
-
-	private void MarkAllReadInternal()
-	{
-		foreach (string id in _eventRecords.Keys.ToList())
-		{
-			AnimusForgeWorldEventInboxEntry entry = DeserializeEntry(_eventRecords[id]);
-			if (entry == null)
-			{
-				continue;
-			}
-			entry.IsRead = true;
-			_eventRecords[id] = JsonConvert.SerializeObject(entry);
-		}
-		_unreadEventIds.Clear();
-		_version++;
-	}
-
-	private string BuildRecentPublicFeedbackEventContextForKingdomInternal(string kingdomId, int maxItems)
-	{
-		string id = (kingdomId ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(id))
-		{
-			return "";
-		}
-		List<AnimusForgeWorldEventInboxEntry> list = _eventRecords.Values
-			.Select(DeserializeEntry)
-			.Where(x => x != null && string.Equals((x.KingdomId ?? "").Trim(), id, StringComparison.OrdinalIgnoreCase)
-				&& (string.Equals((x.EventKind ?? "").Trim(), "npc_public_feedback", StringComparison.OrdinalIgnoreCase)
-					|| string.Equals((x.EventKind ?? "").Trim(), "npc_ruler_policy_event", StringComparison.OrdinalIgnoreCase)))
-			.OrderByDescending(x => x.Day)
-			.ThenByDescending(x => x.CreatedUtcTicks)
-			.Take(Math.Max(1, Math.Min(6, maxItems <= 0 ? MaxFeedbackContextItems : maxItems)))
-			.ToList();
-		if (list.Count == 0)
-		{
-			return "";
-		}
-		StringBuilder sb = new StringBuilder();
-		sb.AppendLine("【近期政策衍生事件】");
-		foreach (AnimusForgeWorldEventInboxEntry item in list)
-		{
-			sb.Append("- ").Append(string.IsNullOrWhiteSpace(item.GameDate) ? ("第" + item.Day.ToString(CultureInfo.InvariantCulture) + "天") : item.GameDate.Trim())
-				.Append(" ").Append(Limit(FirstNonEmpty(item.Title, item.PolicyName, "政策余波"), 42));
-			string summary = Limit(FirstNonEmpty(item.Summary, item.DetailText), 100);
-			if (!string.IsNullOrWhiteSpace(summary))
-			{
-				sb.Append("：").Append(summary);
-			}
-			sb.AppendLine();
-		}
-		return sb.ToString().Trim();
-	}
-
-	private void TrimEventRecords()
-	{
-		List<AnimusForgeWorldEventInboxEntry> ordered = _eventRecords.Values.Select(DeserializeEntry).Where(x => x != null)
-			.OrderByDescending(x => x.Day)
-			.ThenByDescending(x => x.CreatedUtcTicks)
-			.ToList();
-		foreach (AnimusForgeWorldEventInboxEntry extra in ordered.Skip(MaxEventRecordCount).ToList())
-		{
-			string id = (extra.EventId ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(id))
-			{
-				_eventRecords.Remove(id);
-				_unreadEventIds.Remove(id);
-			}
-		}
-	}
-
-	private static NpcPolicyPrompt BuildFeedbackPrompt(List<NpcRulerPolicyRecord> policies, string compactWorldContext)
-	{
-		StringBuilder user = new StringBuilder();
-		user.AppendLine("【世界与王国简表】");
-		user.AppendLine(string.IsNullOrWhiteSpace(compactWorldContext) ? "（无额外上下文）" : compactWorldContext.Trim());
-		user.AppendLine();
-		user.AppendLine("【刚发布的统治者政策】");
-		foreach (NpcRulerPolicyRecord policy in policies)
-		{
-			user.AppendLine("- policyId=" + (policy.PolicyId ?? "") + "; kingdomId=" + (policy.KingdomId ?? "") + "; kingdom=" + (policy.KingdomName ?? "") + "; ruler=" + (policy.RulerName ?? "") + "; policy=" + (policy.PolicyName ?? ""));
-			user.AppendLine("  内容：" + Limit(policy.PolicyContent ?? "", 180));
-			user.AppendLine("  每日影响：" + Limit(policy.ImpactSummary ?? "", 160));
-		}
-		user.AppendLine();
-		user.AppendLine("请只输出 JSON 对象：{\"events\":[...]}。events 数量尽量与政策数量一致。每个 event 包含 policyId、kingdomId、kingdomName、policyName、eventTitle、eventText。eventText 是第三人称民众反馈事件，可写街市、军营、村庄、贵族厅堂或商队如何议论，但不要输出政策数值，不要编造不存在的具体人物。不要 Markdown。依据政策分别生成，不要合并。每条 80-180 个中文字符。 ");
-		string system = "你是卡拉迪亚大陆民众反馈事件撰写器。你只负责把统治者政策转成可记录的民间事件，不负责决定政策数值。政策与民众反馈必须分开：不要修改政策，不要输出每日效果，只输出 JSON。";
-		return new NpcPolicyPrompt
-		{
-			SystemPrompt = system,
-			UserPrompt = user.ToString()
-		};
-	}
-
-	private static NpcPublicFeedbackResponse ParseFeedbackResponse(string raw)
-	{
-		return ParseFeedbackResponse(raw, "", "", 0, "feedback");
-	}
-
-	private static NpcPublicFeedbackResponse ParseFeedbackResponse(string raw, string batchId, string route, int attempts, string parseSource)
-	{
-		string json = "";
-		try
-		{
-			json = ExtractJsonObject(raw);
-			if (string.IsNullOrWhiteSpace(json))
-			{
-				NpcPolicyStructuredParseLogger.LogFailure("NpcPublicFeedbackEvent", "feedback", batchId, route, attempts, FirstNonEmpty(parseSource, "feedback") + ":no-json", raw, json);
-				return null;
-			}
-			NpcPublicFeedbackResponse response = JsonConvert.DeserializeObject<NpcPublicFeedbackResponse>(json);
-			if ((response?.Events?.Count ?? 0) == 0)
-			{
-				NpcPolicyStructuredParseLogger.LogFailure("NpcPublicFeedbackEvent", "feedback", batchId, route, attempts, FirstNonEmpty(parseSource, "feedback") + ":no-events", raw, json);
-			}
-			return response;
-		}
-		catch (Exception ex)
-		{
-			NpcPolicyStructuredParseLogger.LogFailure("NpcPublicFeedbackEvent", "feedback", batchId, route, attempts, FirstNonEmpty(parseSource, "feedback") + ":" + ex.GetType().Name + ":" + ex.Message, raw, json);
-			return null;
-		}
-	}
-
-	private static string ExtractJsonObject(string text)
-	{
-		text = (text ?? "").Trim();
-		if (text.StartsWith("```", StringComparison.Ordinal))
-		{
-			text = System.Text.RegularExpressions.Regex.Replace(text, "^```(?:json)?", "", System.Text.RegularExpressions.RegexOptions.IgnoreCase).Trim();
-			text = System.Text.RegularExpressions.Regex.Replace(text, "```$", "", System.Text.RegularExpressions.RegexOptions.IgnoreCase).Trim();
-		}
-		int start = text.IndexOf('{');
-		int end = text.LastIndexOf('}');
-		return start >= 0 && end > start ? text.Substring(start, end - start + 1) : "";
-	}
-
-	private static NpcRulerPolicyRecord MatchPolicy(List<NpcRulerPolicyRecord> policies, NpcPublicFeedbackEventDto dto)
-	{
-		if (policies == null || dto == null)
-		{
-			return null;
-		}
-		string policyId = (dto.PolicyId ?? "").Trim();
-		string kingdomId = (dto.KingdomId ?? "").Trim();
-		string policyName = (dto.PolicyName ?? "").Trim();
-		return policies.FirstOrDefault(x => x != null && !string.IsNullOrWhiteSpace(policyId) && string.Equals((x.PolicyId ?? "").Trim(), policyId, StringComparison.OrdinalIgnoreCase))
-			?? policies.FirstOrDefault(x => x != null && !string.IsNullOrWhiteSpace(kingdomId) && string.Equals((x.KingdomId ?? "").Trim(), kingdomId, StringComparison.OrdinalIgnoreCase))
-			?? policies.FirstOrDefault(x => x != null && !string.IsNullOrWhiteSpace(policyName) && string.Equals((x.PolicyName ?? "").Trim(), policyName, StringComparison.OrdinalIgnoreCase));
-	}
-
-	private static AnimusForgeWorldEventInboxEntry NormalizeEntry(AnimusForgeWorldEventInboxEntry entry)
-	{
-		if (entry == null)
-		{
-			return null;
-		}
-		string id = (entry.EventId ?? entry.StableKey ?? Guid.NewGuid().ToString("N")).Trim();
-		if (string.IsNullOrWhiteSpace(id))
-		{
-			return null;
-		}
-		return new AnimusForgeWorldEventInboxEntry
-		{
-			Version = Math.Max(1, entry.Version),
-			EventId = id,
-			EventKind = Limit((entry.EventKind ?? "world_event").Trim(), 60),
-			EventType = Limit((entry.EventType ?? "").Trim(), 40),
-			Title = Limit(FirstNonEmpty(entry.Title, "AnimusForge 事件"), MaxTitleChars),
-			Summary = Limit(FirstNonEmpty(entry.Summary, entry.DetailText), MaxSummaryChars),
-			DetailText = Limit(FirstNonEmpty(entry.DetailText, entry.Summary), MaxDetailChars),
-			KingdomId = Limit((entry.KingdomId ?? "").Trim(), 80),
-			KingdomName = Limit((entry.KingdomName ?? "").Trim(), 80),
-			ActorHeroId = Limit((entry.ActorHeroId ?? "").Trim(), 80),
-			ActorHeroName = Limit((entry.ActorHeroName ?? "").Trim(), 80),
-			PolicyId = Limit((entry.PolicyId ?? "").Trim(), 120),
-			PolicyName = Limit((entry.PolicyName ?? "").Trim(), 90),
-			Day = Math.Max(0, entry.Day <= 0 ? GetCurrentCampaignDay() : entry.Day),
-			GameDate = Limit(FirstNonEmpty(entry.GameDate, FormatCurrentCampaignDate()), 40),
-			CreatedUtcTicks = entry.CreatedUtcTicks > 0L ? entry.CreatedUtcTicks : DateTime.UtcNow.Ticks,
-			StableKey = Limit(FirstNonEmpty(entry.StableKey, id), 180),
-			IsRead = entry.IsRead
-		};
-	}
-
-	private static AnimusForgeWorldEventInboxEntry CloneEntry(AnimusForgeWorldEventInboxEntry entry)
-	{
-		return NormalizeEntry(entry);
-	}
-
-	private static NpcRulerPolicyRecord ClonePolicyRecord(NpcRulerPolicyRecord policy)
-	{
-		if (policy == null)
-		{
-			return null;
-		}
-		return new NpcRulerPolicyRecord
-		{
-			Version = policy.Version,
-			PolicyId = policy.PolicyId,
-			BatchId = policy.BatchId,
-			KingdomId = policy.KingdomId,
-			KingdomName = policy.KingdomName,
-			RulerHeroId = policy.RulerHeroId,
-			RulerName = policy.RulerName,
-			PolicyName = policy.PolicyName,
-			PolicyContent = policy.PolicyContent,
-			PublicFeedback = policy.PublicFeedback,
-			FeedbackTitle = policy.FeedbackTitle,
-			EventType = policy.EventType,
-			ImpactSummary = policy.ImpactSummary,
-			Day = policy.Day,
-			GameDate = policy.GameDate
-		};
-	}
-
-	private static AnimusForgeWorldEventInboxEntry DeserializeEntry(string raw)
-	{
-		try
-		{
-			return string.IsNullOrWhiteSpace(raw) ? null : NormalizeEntry(JsonConvert.DeserializeObject<AnimusForgeWorldEventInboxEntry>(raw));
-		}
-		catch
-		{
-			return null;
-		}
-	}
-
-	private static string FirstNonEmpty(params string[] values)
-	{
-		foreach (string value in values ?? Array.Empty<string>())
-		{
-			if (!string.IsNullOrWhiteSpace(value))
-			{
-				return value.Trim();
-			}
-		}
-		return "";
-	}
-
-	private static string NormalizeKeyPart(string text)
-	{
-		text = (text ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return "none";
-		}
-		StringBuilder sb = new StringBuilder();
-		foreach (char ch in text)
-		{
-			if (char.IsLetterOrDigit(ch) || ch == '_' || ch == '-')
-			{
-				sb.Append(ch);
-			}
-		}
-		return sb.Length == 0 ? "x" : sb.ToString();
-	}
-
-	private static string Limit(string text, int maxChars)
-	{
-		text = (text ?? "").Replace("\r\n", " ").Replace('\r', ' ').Replace('\n', ' ').Trim();
-		while (text.Contains("  "))
-		{
-			text = text.Replace("  ", " ");
-		}
-		if (maxChars <= 0 || text.Length <= maxChars)
-		{
-			return text;
-		}
-		return text.Substring(0, maxChars).TrimEnd() + "…";
-	}
-
-	private static bool IsCampaignSessionReady()
-	{
-		return Campaign.Current != null;
-	}
-
-	internal static int GetCurrentCampaignDay()
-	{
-		try
-		{
-			return Math.Max(0, (int)Math.Floor(CampaignTime.Now.ToDays));
-		}
-		catch
-		{
-			return 0;
-		}
-	}
-
-	internal static string FormatCurrentCampaignDate()
-	{
-		try
-		{
-			return CampaignTime.Now.ToString();
-		}
-		catch
-		{
-			return "第" + GetCurrentCampaignDay().ToString(CultureInfo.InvariantCulture) + "天";
-		}
-	}
-
-	private static void Log(string message)
-	{
-		try
-		{
-			Logger.Log("NpcPublicFeedbackEvent", message ?? "");
-		}
-		catch
-		{
-		}
-	}
-
-	private sealed class NpcPolicyFeedbackJob
-	{
-		public string JobId = "";
-		public string BatchId = "";
-		public List<NpcRulerPolicyRecord> Policies = new List<NpcRulerPolicyRecord>();
-		public string CompactWorldContext = "";
-		public string SystemPrompt = "";
-		public string UserPrompt = "";
-		public string PromptPreview = "";
-		public string InFlightKey = "";
-		public int Version;
-		public long RuntimeGeneration;
-		public int MaxTokens;
-		public int HardTimeoutMilliseconds;
-		public long CreatedUtcTicks;
-	}
-
-	private sealed class NpcPolicyFeedbackResult
-	{
-		public NpcPolicyFeedbackJob Job;
-		public bool Success;
-		public string RawResponse = "";
-		public string Error = "";
-		public List<NpcPublicFeedbackEventDto> Events = new List<NpcPublicFeedbackEventDto>();
-		public List<string> FailureMessages = new List<string>();
-		public int AttemptsUsed;
-		public int BatchAttemptsUsed;
-		public int FallbackAttemptsUsed;
-		public int FallbackSuccessCount;
-		public int FallbackFailureCount;
-		public bool IsRateLimit;
-		public bool IsRequestsPerMinuteLimit;
-		public bool IsQuotaLimit;
-		public bool IsAuthFailure;
-		public int? RetryAfterSeconds;
-		public int? RetryAfterSecondsRaw;
-		public bool RetryAfterSecondsCapped;
-	}
-
-	private sealed class NpcFeedbackRetryContext
-	{
-		public string BatchId = "";
-		public string FailedReason = "";
-		public int AttemptsUsed;
-		public bool IsRateLimit;
-		public bool IsRequestsPerMinuteLimit;
-		public bool IsQuotaLimit;
-		public bool IsAuthFailure;
-		public int? RetryAfterSeconds;
-		public int FallbackSuccessCount;
-		public int FallbackFailureCount;
-		public List<string> FailedPolicyIds = new List<string>();
-		public List<string> FailureMessages = new List<string>();
-	}
-
-	private sealed class PendingFeedbackGenerationRequest
-	{
-		public string BatchId = "";
-		public string InFlightKey = "";
-		public string RequestFingerprint = "";
-		public long RuntimeGeneration;
-		public List<NpcRulerPolicyRecord> Policies = new List<NpcRulerPolicyRecord>();
-		public string CompactWorldContext = "";
-	}
-
-	private sealed class PendingNpcPolicyCommitContext
-	{
-		public NpcPolicyFeedbackResult FeedbackResult;
-		public int EventIndex;
-		public int RecordedCount;
-		public int EventsCommittedThisTick;
-	}
-
-	private sealed class NpcPublicFeedbackResponse
-	{
-		[JsonProperty("events")]
-		public List<NpcPublicFeedbackEventDto> Events { get; set; }
-	}
-
-	private sealed class NpcPublicFeedbackEventDto
-	{
-		[JsonProperty("policyId")]
-		public string PolicyId { get; set; }
-
-		[JsonProperty("kingdomId")]
-		public string KingdomId { get; set; }
-
-		[JsonProperty("kingdomName")]
-		public string KingdomName { get; set; }
-
-		[JsonProperty("policyName")]
-		public string PolicyName { get; set; }
-
-		[JsonProperty("eventTitle")]
-		public string EventTitle { get; set; }
-
-		[JsonProperty("eventText")]
-		public string EventText { get; set; }
-
-		[JsonProperty("summary")]
-		public string Summary { get; set; }
-	}
-}
-
-// Bridge into CustomPolicyBehavior daily active-effect ledger.
-public sealed partial class CustomPolicyBehavior
-{
-
-	public static void CreateNpcRulerPolicyActiveEffectsForExternal(List<NpcRulerPolicyRecord> records)
-	{
-		try
-		{
-			if (Campaign.Current == null)
-			{
-				PolicyDebugLog("npc-ruler-policy-active-effects-skip", "Campaign.Current 为空，跳过 NPC 政策落地");
-				return;
-			}
-			CustomPolicyBehavior behavior = Instance ?? Campaign.Current.GetCampaignBehavior<CustomPolicyBehavior>();
-			if (behavior == null)
-			{
-				PolicyDebugLog("npc-ruler-policy-active-effects-skip", "CustomPolicyBehavior 未注册");
-				return;
-			}
-			int created = 0;
-			foreach (NpcRulerPolicyRecord policy in records ?? new List<NpcRulerPolicyRecord>())
-			{
-				List<NpcRulerPolicyEffectDto> effects = policy?.Effects ?? new List<NpcRulerPolicyEffectDto>();
-				for (int effectIndex = 0; effectIndex < effects.Count; effectIndex++)
-				{
-					if (behavior.TryCreateNpcRulerPolicyActiveEffectInternal(policy, effects[effectIndex], effectIndex, out var _, out var _))
-					{
-						created++;
-					}
-				}
-			}
-			PolicyDebugLog("npc-ruler-policy-active-effects-created", "records=" + (records?.Count ?? 0).ToString(CultureInfo.InvariantCulture) + " created=" + created.ToString(CultureInfo.InvariantCulture));
-		}
-		catch (Exception ex)
-		{
-			PolicyDebugLog("npc-ruler-policy-active-effects-exception", ex.ToString());
-		}
-	}
-	public static bool TryCreateNpcRulerPolicyActiveEffectForExternal(NpcRulerPolicyRecord policy, NpcRulerPolicyEffectDto effect, out string effectId, out string failureReason)
-	{
-		effectId = "";
-		failureReason = "";
-		try
-		{
-			if (Campaign.Current == null)
-			{
-				failureReason = "Campaign.Current 为空";
-				return false;
-			}
-			CustomPolicyBehavior behavior = Instance ?? Campaign.Current.GetCampaignBehavior<CustomPolicyBehavior>();
-			if (behavior == null)
-			{
-				failureReason = "CustomPolicyBehavior 未注册";
-				return false;
-			}
-			int effectIndex = ResolveNpcRulerPolicyEffectIndex(policy, effect);
-			bool created = behavior.TryCreateNpcRulerPolicyActiveEffectInternal(policy, effect, effectIndex, out effectId, out failureReason);
-			bool alreadyActive = !created && (failureReason ?? "").StartsWith("重复 NPC 政策效果", StringComparison.Ordinal);
-			int remainingDays = created || alreadyActive ? Math.Max(0, effect?.DurationDays ?? 0) : 0;
-			bool isEnded = !created && !alreadyActive;
-			if (effect != null)
-			{
-				effect.EffectId = effectId ?? "";
-				effect.RemainingDays = remainingDays;
-				effect.IsEnded = isEnded;
-			}
-			NpcRulerPolicyBehavior.UpdatePolicyEffectStateForExternal(policy?.PolicyId, effectId, effect?.TargetKingdomId, remainingDays, isEnded);
-			return created;
-		}
-		catch (Exception ex)
-		{
-			failureReason = ex.Message;
-			PolicyDebugLog("npc-ruler-policy-active-effect-exception", ex.ToString());
-			return false;
-		}
-	}
-
-	private bool TryCreateNpcRulerPolicyActiveEffectInternal(NpcRulerPolicyRecord policy, NpcRulerPolicyEffectDto effect, out string effectId, out string failureReason)
-	{
-		int effectIndex = ResolveNpcRulerPolicyEffectIndex(policy, effect);
-		return TryCreateNpcRulerPolicyActiveEffectInternal(policy, effect, effectIndex, out effectId, out failureReason);
-	}
-
-	private bool TryCreateNpcRulerPolicyActiveEffectInternal(NpcRulerPolicyRecord policy, NpcRulerPolicyEffectDto effect, int effectIndex, out string effectId, out string failureReason)
-	{
-		effectId = "";
-		failureReason = "";
-		if (!TryBuildNpcRulerPolicyActiveEffectContext(policy, effect, effectIndex, out NpcRulerPolicyActiveEffectBuildContext context, out failureReason))
-		{
-			return false;
-		}
-		effectId = context.EffectId;
-		if (TryFindExistingNpcRulerPolicyActiveEffect(context, out var _))
-		{
-			failureReason = "重复 NPC 政策效果: " + context.EffectId;
-			LogNpcRulerPolicyDuplicateActiveEffect(context);
-			return false;
-		}
-		ActivePolicyEffectSaveData activeEffect = CreateNpcRulerPolicyActiveEffectSaveData(context);
-		_activePolicyEffects[activeEffect.EffectId] = JsonConvert.SerializeObject(activeEffect);
-		LogNpcRulerPolicyActiveEffectCreated(context, activeEffect);
-		return true;
-	}
-
-	private bool TryBuildNpcRulerPolicyActiveEffectContext(NpcRulerPolicyRecord policy, NpcRulerPolicyEffectDto effect, int effectIndex, out NpcRulerPolicyActiveEffectBuildContext context, out string failureReason)
-	{
-		context = null;
-		failureReason = "";
-		if (policy == null)
-		{
-			failureReason = "policy 为空";
-			return false;
-		}
-		if (effect == null)
-		{
-			failureReason = "effect 为空";
-			return false;
-		}
-		if (Campaign.Current == null)
-		{
-			failureReason = "Campaign.Current 为空";
-			return false;
-		}
-		Kingdom target = ResolveKingdomByIdOrName(effect.TargetKingdomId, effect.TargetKingdomName);
-		if (target == null || target.IsEliminated)
-		{
-			failureReason = "目标王国不存在或已经灭亡: " + ((effect.TargetKingdomId ?? effect.TargetKingdomName) ?? "");
-			return false;
-		}
-		Kingdom issuer = ResolveKingdomByIdOrName(policy.KingdomId, policy.KingdomName);
-		if (issuer == null || issuer.IsEliminated)
-		{
-			failureReason = "政策发布王国不存在或已经灭亡";
-			return false;
-		}
-		if (target != issuer)
-		{
-			if (!issuer.IsAtWarWith(target))
-			{
-				failureReason = "跨国政策效果已失效：发布国与目标国当前不处于战争";
-				return false;
-			}
-			string policyText = ((policy.PolicyName ?? "") + " " + (policy.PolicyContent ?? "")).Trim();
-			if (!NpcRulerPolicyTextMentionsKingdom(policyText, target))
-			{
-				failureReason = "跨国政策效果已拒绝：政策名称或正文没有明确提及目标国";
-				return false;
-			}
-		}
-		int duration = effect.DurationDays;
-		if (duration <= 0)
-		{
-			failureReason = "持续天数无效";
-			return false;
-		}
-		if (!TryReadFiniteNpcPolicyEffect(effect, out float prosperity, out float food, out float hearth, out float loyalty, out float security, out float militia, out int stability))
-		{
-			failureReason = "政策效果包含 NaN、无穷值或无法转换的稳定度";
-			return false;
-		}
-		if (Math.Abs(prosperity) <= 0.0001f && Math.Abs(food) <= 0.0001f && Math.Abs(hearth) <= 0.0001f && Math.Abs(loyalty) <= 0.0001f && Math.Abs(security) <= 0.0001f && Math.Abs(militia) <= 0.0001f && stability == 0)
-		{
-			failureReason = "没有可落地的每日数值";
-			return false;
-		}
-		int submittedDay = Math.Max(0, policy.Day > 0 ? policy.Day : GetCurrentCampaignDay());
-		int stableEffectIndex = Math.Max(0, effectIndex);
-		string stableEffectId = BuildNpcRulerPolicyEffectId(policy, effect, target, stableEffectIndex);
-		context = new NpcRulerPolicyActiveEffectBuildContext
-		{
-			Policy = policy,
-			Effect = effect,
-			TargetKingdom = target,
-			EffectIndex = stableEffectIndex,
-			EffectId = stableEffectId,
-			RecordId = ResolveNpcRulerPolicyRecordId(policy, stableEffectId),
-			PolicyName = LimitDisplayChars(policy.PolicyName ?? "", 100),
-			DateText = string.IsNullOrWhiteSpace(policy.GameDate) ? NpcPublicFeedbackEventBehavior.FormatCurrentCampaignDate() : policy.GameDate.Trim(),
-			SubmittedDay = submittedDay,
-			DurationDays = duration,
-			ProsperityDailyDeltaPerTown = prosperity,
-			FoodDailyDeltaPerTown = food,
-			HearthDailyDeltaPerVillage = hearth,
-			LoyaltyDailyDeltaPerTown = loyalty,
-			SecurityDailyDeltaPerTown = security,
-			MilitiaDailyDeltaPerTown = militia,
-			KingdomStabilityDailyDelta = stability,
-			Reason = LimitDisplayChars(effect.Reason ?? policy.ImpactSummary ?? "", 240)
-		};
-		return true;
-	}
-
-	private bool TryFindExistingNpcRulerPolicyActiveEffect(NpcRulerPolicyActiveEffectBuildContext context, out string rawActiveEffect)
-	{
-		rawActiveEffect = "";
-		return context != null
-			&& !string.IsNullOrWhiteSpace(context.EffectId)
-			&& _activePolicyEffects.TryGetValue(context.EffectId, out rawActiveEffect);
-	}
-
-	private static ActivePolicyEffectSaveData CreateNpcRulerPolicyActiveEffectSaveData(NpcRulerPolicyActiveEffectBuildContext context)
-	{
-		return new ActivePolicyEffectSaveData
-		{
-			EffectId = context?.EffectId ?? "",
-			RecordId = context?.RecordId ?? "",
-			PolicyName = context?.PolicyName ?? "",
-			DateText = context?.DateText ?? "",
-			SubmittedDay = Math.Max(0, context?.SubmittedDay ?? GetCurrentCampaignDay()),
-			CreatedUtcTicks = DateTime.UtcNow.Ticks,
-			TargetKingdomId = context?.TargetKingdom?.StringId ?? (context?.Effect?.TargetKingdomId ?? ""),
-			TargetKingdomName = GetKingdomName(context?.TargetKingdom),
-			ProsperityDailyDeltaPerTown = context?.ProsperityDailyDeltaPerTown ?? 0f,
-			FoodDailyDeltaPerTown = context?.FoodDailyDeltaPerTown ?? 0f,
-			HearthDailyDeltaPerVillage = context?.HearthDailyDeltaPerVillage ?? 0f,
-			LoyaltyDailyDeltaPerTown = context?.LoyaltyDailyDeltaPerTown ?? 0f,
-			SecurityDailyDeltaPerTown = context?.SecurityDailyDeltaPerTown ?? 0f,
-			MilitiaDailyDeltaPerTown = context?.MilitiaDailyDeltaPerTown ?? 0f,
-			KingdomStabilityDailyDelta = context?.KingdomStabilityDailyDelta ?? 0,
-			TotalDurationDays = Math.Max(0, context?.DurationDays ?? 0),
-			RemainingDays = Math.Max(0, context?.DurationDays ?? 0),
-			LastAppliedDay = Math.Max(0, context?.SubmittedDay ?? GetCurrentCampaignDay()),
-			Reason = context?.Reason ?? "",
-			Ended = false,
-			EndReason = ""
-		};
-	}
-
-	private void LogNpcRulerPolicyDuplicateActiveEffect(NpcRulerPolicyActiveEffectBuildContext context)
-	{
-		string duplicateLine = BuildNpcRulerPolicyActiveEffectLogLine(context)
-			+ " submittedDay=" + Math.Max(0, context?.SubmittedDay ?? 0).ToString(CultureInfo.InvariantCulture)
-			+ " activeEffects=" + _activePolicyEffects.Count.ToString(CultureInfo.InvariantCulture);
-		PolicyEffectLedgerLog("npc-active-skip-duplicate", duplicateLine);
-		PolicyDebugLog("npc-active-skip-duplicate", duplicateLine);
-	}
-
-	private void LogNpcRulerPolicyActiveEffectCreated(NpcRulerPolicyActiveEffectBuildContext context, ActivePolicyEffectSaveData activeEffect)
-	{
-		string createdLine = BuildNpcRulerPolicyActiveEffectLogLine(context)
-			+ " recordId=" + SanitizeNpcPolicyLogValue(activeEffect?.RecordId)
-			+ " policy=\"" + SanitizeNpcPolicyLogText(activeEffect?.PolicyName) + "\""
-			+ " submittedDay=" + Math.Max(0, activeEffect?.SubmittedDay ?? 0).ToString(CultureInfo.InvariantCulture)
-			+ " duration=" + Math.Max(0, context?.DurationDays ?? 0).ToString(CultureInfo.InvariantCulture)
-			+ " activeEffects=" + _activePolicyEffects.Count.ToString(CultureInfo.InvariantCulture);
-		PolicyEffectLedgerLog("npc-active-created", createdLine);
-		PolicyDebugLog("npc-active-effects-created", createdLine);
-	}
-
-	private static int ResolveNpcRulerPolicyEffectIndex(NpcRulerPolicyRecord policy, NpcRulerPolicyEffectDto effect)
-	{
-		List<NpcRulerPolicyEffectDto> effects = policy?.Effects;
-		if (effects == null || effects.Count <= 0 || effect == null)
-		{
-			return 0;
-		}
-		for (int i = 0; i < effects.Count; i++)
-		{
-			if (object.ReferenceEquals(effects[i], effect))
-			{
-				return i;
-			}
-		}
-		for (int i = 0; i < effects.Count; i++)
-		{
-			if (NpcRulerPolicyEffectsEquivalent(effects[i], effect))
-			{
-				return i;
-			}
-		}
-		return 0;
-	}
-
-	private static bool NpcRulerPolicyEffectsEquivalent(NpcRulerPolicyEffectDto left, NpcRulerPolicyEffectDto right)
-	{
-		if (left == null || right == null)
-		{
-			return false;
-		}
-		return string.Equals((left.TargetKingdomId ?? "").Trim(), (right.TargetKingdomId ?? "").Trim(), StringComparison.OrdinalIgnoreCase)
-			&& string.Equals((left.TargetKingdomName ?? "").Trim(), (right.TargetKingdomName ?? "").Trim(), StringComparison.OrdinalIgnoreCase)
-			&& Math.Abs(left.ProsperityDailyDeltaPerTown - right.ProsperityDailyDeltaPerTown) < 0.0001f
-			&& Math.Abs(left.FoodDailyDeltaPerTown - right.FoodDailyDeltaPerTown) < 0.0001f
-			&& Math.Abs(left.HearthDailyDeltaPerVillage - right.HearthDailyDeltaPerVillage) < 0.0001f
-			&& Math.Abs(left.LoyaltyDailyDeltaPerTown - right.LoyaltyDailyDeltaPerTown) < 0.0001f
-			&& Math.Abs(left.SecurityDailyDeltaPerTown - right.SecurityDailyDeltaPerTown) < 0.0001f
-			&& Math.Abs(left.MilitiaDailyDeltaPerTown - right.MilitiaDailyDeltaPerTown) < 0.0001f
-			&& Math.Abs(left.KingdomStabilityDailyDelta - right.KingdomStabilityDailyDelta) < 0.0001f
-			&& left.DurationDays == right.DurationDays
-			&& string.Equals((left.Reason ?? "").Trim(), (right.Reason ?? "").Trim(), StringComparison.Ordinal);
-	}
-
-	private static string BuildNpcRulerPolicyEffectId(NpcRulerPolicyRecord policy, NpcRulerPolicyEffectDto effect, Kingdom target, int effectIndex)
-	{
-		return "npc_ruler_policy:"
-			+ ResolveNpcRulerPolicyStablePolicyKey(policy)
-			+ ":"
-			+ NormalizeNpcPolicyKeyPart(target?.StringId ?? effect?.TargetKingdomId ?? effect?.TargetKingdomName)
-			+ ":"
-			+ Math.Max(0, effectIndex).ToString(CultureInfo.InvariantCulture);
-	}
-
-	private static string ResolveNpcRulerPolicyStablePolicyKey(NpcRulerPolicyRecord policy)
-	{
-		if (!string.IsNullOrWhiteSpace(policy?.PolicyId))
-		{
-			return NormalizeNpcPolicyKeyPart(policy.PolicyId);
-		}
-		return "missing:"
-			+ NormalizeNpcPolicyKeyPart(FirstNonEmptyNpcPolicyValue(policy?.BatchId, policy?.KingdomId, policy?.RulerHeroId, (policy?.Day ?? 0).ToString(CultureInfo.InvariantCulture)))
-			+ ":"
-			+ ComputeStableNpcPolicyHash(BuildNpcRulerPolicyFallbackSource(policy));
-	}
-
-	private static string ResolveNpcRulerPolicyRecordId(NpcRulerPolicyRecord policy, string effectId)
-	{
-		return string.IsNullOrWhiteSpace(policy?.PolicyId) ? (effectId ?? "") : policy.PolicyId.Trim();
-	}
-
-	private static string BuildNpcRulerPolicyFallbackSource(NpcRulerPolicyRecord policy)
-	{
-		StringBuilder builder = new StringBuilder();
-		AppendNpcPolicyFallbackSourceField(builder, policy?.BatchId);
-		AppendNpcPolicyFallbackSourceField(builder, policy?.KingdomId);
-		AppendNpcPolicyFallbackSourceField(builder, policy?.RulerHeroId);
-		AppendNpcPolicyFallbackSourceField(builder, (policy?.Day ?? 0).ToString(CultureInfo.InvariantCulture));
-		AppendNpcPolicyFallbackSourceField(builder, policy?.GameDate);
-		AppendNpcPolicyFallbackSourceField(builder, policy?.PolicyName);
-		AppendNpcPolicyFallbackSourceField(builder, policy?.PolicyContent);
-		AppendNpcPolicyFallbackSourceField(builder, policy?.ImpactSummary);
-		return builder.ToString();
-	}
-
-	private static void AppendNpcPolicyFallbackSourceField(StringBuilder builder, string value)
-	{
-		string normalized = (value ?? "").Trim();
-		builder.Append(normalized.Length.ToString(CultureInfo.InvariantCulture));
-		builder.Append(':');
-		builder.Append(normalized);
-		builder.Append('|');
-	}
-
-	private static string FirstNonEmptyNpcPolicyValue(params string[] values)
-	{
-		foreach (string value in values ?? Array.Empty<string>())
-		{
-			if (!string.IsNullOrWhiteSpace(value))
-			{
-				return value.Trim();
-			}
-		}
-		return "none";
-	}
-
-	private static string ComputeStableNpcPolicyHash(string value)
-	{
-		unchecked
-		{
-			ulong hash = 14695981039346656037UL;
-			foreach (char ch in value ?? "")
-			{
-				hash ^= ch;
-				hash *= 1099511628211UL;
-			}
-			return hash.ToString("x16", CultureInfo.InvariantCulture);
-		}
-	}
-
-	private static string BuildNpcRulerPolicyActiveEffectLogLine(NpcRulerPolicyActiveEffectBuildContext context)
-	{
-		StringBuilder builder = new StringBuilder();
-		AppendNpcPolicyLogField(builder, "policyId", context?.Policy?.PolicyId, quoted: false);
-		AppendNpcPolicyLogField(builder, "rulerHeroId", context?.Policy?.RulerHeroId, quoted: false);
-		AppendNpcPolicyLogField(builder, "rulerName", context?.Policy?.RulerName, quoted: true);
-		AppendNpcPolicyLogField(builder, "targetKingdomId", context?.TargetKingdom?.StringId, quoted: false);
-		AppendNpcPolicyLogField(builder, "targetKingdomName", GetKingdomName(context?.TargetKingdom), quoted: true);
-		AppendNpcPolicyLogField(builder, "effectId", context?.EffectId, quoted: false);
-		AppendNpcPolicyLogField(builder, "effectIndex", Math.Max(0, context?.EffectIndex ?? 0).ToString(CultureInfo.InvariantCulture), quoted: false);
-		return builder.ToString();
-	}
-
-	private static void AppendNpcPolicyLogField(StringBuilder builder, string name, string value, bool quoted)
-	{
-		if (builder == null || string.IsNullOrWhiteSpace(name))
-		{
-			return;
-		}
-		if (builder.Length > 0)
-		{
-			builder.Append(' ');
-		}
-		builder.Append(name.Trim());
-		builder.Append('=');
-		if (quoted)
-		{
-			builder.Append('"');
-			builder.Append(SanitizeNpcPolicyLogText(value));
-			builder.Append('"');
-			return;
-		}
-		builder.Append(SanitizeNpcPolicyLogValue(value));
-	}
-
-	private static string SanitizeNpcPolicyLogValue(string value)
-	{
-		return (value ?? "").Trim().Replace("\r", " ").Replace("\n", " ");
-	}
-
-	private static string SanitizeNpcPolicyLogText(string value)
-	{
-		return SanitizeNpcPolicyLogValue(value).Replace("\"", "'");
-	}
-
-	private sealed class NpcRulerPolicyActiveEffectBuildContext
-	{
-		public NpcRulerPolicyRecord Policy;
-
-		public NpcRulerPolicyEffectDto Effect;
-
-		public Kingdom TargetKingdom;
-
-		public int EffectIndex;
-
-		public string EffectId;
-
-		public string RecordId;
-
-		public string PolicyName;
-
-		public string DateText;
-
-		public int SubmittedDay;
-
-		public int DurationDays;
-
-		public float ProsperityDailyDeltaPerTown;
-
-		public float FoodDailyDeltaPerTown;
-
-		public float HearthDailyDeltaPerVillage;
-
-		public float LoyaltyDailyDeltaPerTown;
-
-		public float SecurityDailyDeltaPerTown;
-
-		public float MilitiaDailyDeltaPerTown;
-
-		public int KingdomStabilityDailyDelta;
-
-		public string Reason;
-	}
-
-	private static bool TryReadFiniteNpcPolicyEffect(NpcRulerPolicyEffectDto effect, out float prosperity, out float food, out float hearth, out float loyalty, out float security, out float militia, out int stability)
-	{
-		prosperity = effect?.ProsperityDailyDeltaPerTown ?? 0f;
-		food = effect?.FoodDailyDeltaPerTown ?? 0f;
-		hearth = effect?.HearthDailyDeltaPerVillage ?? 0f;
-		loyalty = effect?.LoyaltyDailyDeltaPerTown ?? 0f;
-		security = effect?.SecurityDailyDeltaPerTown ?? 0f;
-		militia = effect?.MilitiaDailyDeltaPerTown ?? 0f;
-		stability = 0;
-		if (float.IsNaN(prosperity) || float.IsInfinity(prosperity)
-			|| float.IsNaN(food) || float.IsInfinity(food)
-			|| float.IsNaN(hearth) || float.IsInfinity(hearth)
-			|| float.IsNaN(loyalty) || float.IsInfinity(loyalty)
-			|| float.IsNaN(security) || float.IsInfinity(security)
-			|| float.IsNaN(militia) || float.IsInfinity(militia)
-			|| effect == null || float.IsNaN(effect.KingdomStabilityDailyDelta) || float.IsInfinity(effect.KingdomStabilityDailyDelta))
-		{
-			return false;
-		}
-		double rounded = Math.Round(effect.KingdomStabilityDailyDelta, MidpointRounding.AwayFromZero);
-		if (rounded < int.MinValue || rounded > int.MaxValue)
-		{
-			return false;
-		}
-		stability = (int)rounded;
-		return true;
-	}
-
-	private static bool NpcRulerPolicyTextMentionsKingdom(string policyText, Kingdom kingdom)
-	{
-		if (kingdom == null || string.IsNullOrWhiteSpace(policyText))
-		{
-			return false;
-		}
-		string[] candidates =
-		{
-			kingdom.StringId ?? "",
-			GetKingdomName(kingdom),
-			kingdom.Name?.ToString() ?? "",
-			kingdom.Leader?.StringId ?? "",
-			kingdom.Leader?.Name?.ToString() ?? "",
-			kingdom.RulingClan?.StringId ?? "",
-			kingdom.RulingClan?.Name?.ToString() ?? ""
-		};
-		return candidates.Any(x => !string.IsNullOrWhiteSpace(x) && x.Trim().Length >= 2 && policyText.IndexOf(x.Trim(), StringComparison.OrdinalIgnoreCase) >= 0);
-	}
-
-	private static string NormalizeNpcPolicyKeyPart(string value)
-	{
-		value = (value ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(value))
-		{
-			return "none";
-		}
-		System.Text.StringBuilder sb = new System.Text.StringBuilder();
-		foreach (char ch in value)
-		{
-			if (char.IsLetterOrDigit(ch) || ch == '_' || ch == '-' || ch == ':')
-			{
-				sb.Append(ch);
-			}
-		}
-		return sb.Length == 0 ? "x" : sb.ToString();
 	}
 }

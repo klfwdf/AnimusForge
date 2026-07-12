@@ -12318,100 +12318,28 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	public static void RecordUnifiedPolicyWeeklyMaterialForExternal(NpcRulerPolicyRecord policy)
+	public static void RecordPolicySystemWeeklyMaterialForExternal(string eventKind, string label, string snapshot, string stableKey, string targetKingdomId, bool includeInWorld, string actorHeroId, string actorKingdomId, int day, string gameDate)
 	{
 		try
 		{
-			(Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.RecordUnifiedPolicyWeeklyMaterialInternal(policy);
+			(Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.RecordEventSourceMaterial(
+				eventKind,
+				label,
+				snapshot,
+				stableKey,
+				targetKingdomId,
+				"",
+				includeInWorld,
+				includeInKingdom: true,
+				actorHeroId: actorHeroId,
+				actorKingdomId: actorKingdomId,
+				dayOverride: day,
+				gameDateOverride: gameDate);
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("EventWeeklyReport", "[UnifiedPolicy][WARN] record weekly material failed: " + ex.Message);
+			PolicySystemLog.Write("Weekly", "bridge-failed", ex.Message);
 		}
-	}
-
-	private void RecordUnifiedPolicyWeeklyMaterialInternal(NpcRulerPolicyRecord policy)
-	{
-		if (policy == null || string.IsNullOrWhiteSpace(policy.PolicyId))
-		{
-			return;
-		}
-		List<NpcRulerPolicyEffectDto> effects = (policy.Effects ?? new List<NpcRulerPolicyEffectDto>())
-			.Where(x => x != null && !x.IsEnded && x.RemainingDays > 0 && x.DurationDays > 0 && HasUnifiedPolicyDailyDelta(x))
-			.ToList();
-		if (effects.Count == 0)
-		{
-			return;
-		}
-		string issuerId = (policy.KingdomId ?? "").Trim();
-		string issuerName = LimitCustomPolicyWeeklyMaterialText(policy.KingdomName, 50);
-		string rulerName = LimitCustomPolicyWeeklyMaterialText(policy.RulerName, 50);
-		string policyName = LimitCustomPolicyWeeklyMaterialText(policy.PolicyName, 70);
-		string policyDigest = LimitCustomPolicyWeeklyMaterialText(policy.PolicyDigest, 140);
-		string feedbackDigest = LimitCustomPolicyWeeklyMaterialText(policy.FeedbackDigest, 70);
-		bool hasMultipleTargets = effects.Select(x => (x.TargetKingdomId ?? "").Trim()).Where(x => x.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase).Count() > 1;
-		for (int i = 0; i < effects.Count; i++)
-		{
-			NpcRulerPolicyEffectDto effect = effects[i];
-			string targetId = string.IsNullOrWhiteSpace(effect.TargetKingdomId) ? issuerId : effect.TargetKingdomId.Trim();
-			if (string.IsNullOrWhiteSpace(targetId))
-			{
-				continue;
-			}
-			string targetName = LimitCustomPolicyWeeklyMaterialText(string.IsNullOrWhiteSpace(effect.TargetKingdomName) ? issuerName : effect.TargetKingdomName, 50);
-			string effectSummary = LimitCustomPolicyWeeklyMaterialText(BuildUnifiedPolicyWeeklyEffectSummary(effect), 100);
-			StringBuilder sb = new StringBuilder();
-			sb.Append("统治者政策。发布国：").Append(string.IsNullOrWhiteSpace(issuerName) ? issuerId : issuerName).Append("。");
-			if (!string.IsNullOrWhiteSpace(rulerName)) sb.Append("发布者：").Append(rulerName).Append("。");
-			sb.Append("政策：《").Append(string.IsNullOrWhiteSpace(policyName) ? "未命名政策" : policyName).Append("》。");
-			if (!string.IsNullOrWhiteSpace(policyDigest)) sb.Append("政策摘要：").Append(policyDigest.TrimEnd('。')).Append("。");
-			if (!string.IsNullOrWhiteSpace(feedbackDigest)) sb.Append("社会反馈：").Append(feedbackDigest.TrimEnd('。')).Append("。");
-			sb.Append("目标王国：").Append(string.IsNullOrWhiteSpace(targetName) ? targetId : targetName).Append("。");
-			if (!string.IsNullOrWhiteSpace(effectSummary)) sb.Append("每日影响：").Append(effectSummary.TrimEnd('。')).Append("。");
-			string snapshot = LimitCustomPolicyWeeklyMaterialText(sb.ToString(), 320);
-			string effectKey = !string.IsNullOrWhiteSpace(effect.EffectId) ? effect.EffectId.Trim() : targetId + ":" + i.ToString(CultureInfo.InvariantCulture);
-			string stableKey = "unified_policy:" + policy.PolicyId.Trim() + ":" + effectKey;
-			bool isForeignTarget = !string.IsNullOrWhiteSpace(issuerId) && !string.Equals(targetId, issuerId, StringComparison.OrdinalIgnoreCase);
-			RecordEventSourceMaterial(
-				"ruler_policy",
-				"统治者政策 - " + (string.IsNullOrWhiteSpace(targetName) ? targetId : targetName) + " / " + (string.IsNullOrWhiteSpace(policyName) ? "未命名政策" : policyName),
-				snapshot,
-				stableKey,
-				targetId,
-				"",
-				hasMultipleTargets || isForeignTarget,
-				includeInKingdom: true,
-				actorHeroId: (policy.RulerHeroId ?? "").Trim(),
-				actorKingdomId: issuerId,
-				dayOverride: Math.Max(0, policy.Day),
-				gameDateOverride: policy.GameDate ?? "");
-			Logger.Log("EventWeeklyReport", "[UnifiedPolicy] source_material_recorded policyId=" + policy.PolicyId + " target=" + targetId + " length=" + snapshot.Length.ToString(CultureInfo.InvariantCulture));
-		}
-	}
-
-	private static bool HasUnifiedPolicyDailyDelta(NpcRulerPolicyEffectDto effect)
-	{
-		return effect != null && (Math.Abs(effect.ProsperityDailyDeltaPerTown) > 0.0001f
-			|| Math.Abs(effect.FoodDailyDeltaPerTown) > 0.0001f
-			|| Math.Abs(effect.HearthDailyDeltaPerVillage) > 0.0001f
-			|| Math.Abs(effect.LoyaltyDailyDeltaPerTown) > 0.0001f
-			|| Math.Abs(effect.SecurityDailyDeltaPerTown) > 0.0001f
-			|| Math.Abs(effect.MilitiaDailyDeltaPerTown) > 0.0001f
-			|| Math.Abs(effect.KingdomStabilityDailyDelta) > 0.0001f);
-	}
-
-	private static string BuildUnifiedPolicyWeeklyEffectSummary(NpcRulerPolicyEffectDto effect)
-	{
-		if (effect == null) return "";
-		List<string> parts = new List<string>();
-		if (Math.Abs(effect.ProsperityDailyDeltaPerTown) > 0.0001f) parts.Add("繁荣" + effect.ProsperityDailyDeltaPerTown.ToString("+0.##;-0.##", CultureInfo.InvariantCulture));
-		if (Math.Abs(effect.FoodDailyDeltaPerTown) > 0.0001f) parts.Add("粮食" + effect.FoodDailyDeltaPerTown.ToString("+0.##;-0.##", CultureInfo.InvariantCulture));
-		if (Math.Abs(effect.HearthDailyDeltaPerVillage) > 0.0001f) parts.Add("炉火" + effect.HearthDailyDeltaPerVillage.ToString("+0.##;-0.##", CultureInfo.InvariantCulture));
-		if (Math.Abs(effect.LoyaltyDailyDeltaPerTown) > 0.0001f) parts.Add("忠诚" + effect.LoyaltyDailyDeltaPerTown.ToString("+0.##;-0.##", CultureInfo.InvariantCulture));
-		if (Math.Abs(effect.SecurityDailyDeltaPerTown) > 0.0001f) parts.Add("治安" + effect.SecurityDailyDeltaPerTown.ToString("+0.##;-0.##", CultureInfo.InvariantCulture));
-		if (Math.Abs(effect.MilitiaDailyDeltaPerTown) > 0.0001f) parts.Add("民兵" + effect.MilitiaDailyDeltaPerTown.ToString("+0.##;-0.##", CultureInfo.InvariantCulture));
-		if (Math.Abs(effect.KingdomStabilityDailyDelta) > 0.0001f) parts.Add("稳定" + effect.KingdomStabilityDailyDelta.ToString("+0.##;-0.##", CultureInfo.InvariantCulture));
-		return string.Join("、", parts) + "；持续" + effect.DurationDays.ToString(CultureInfo.InvariantCulture) + "天";
 	}
 
 	public static void RecordNpcPublicFeedbackEventMaterialForExternal(string stableKey, string kingdomId, string kingdomName, string npcHeroId, string npcName, string policyName, string feedbackSummary, int day = -1, string gameDate = "", bool includeInWorld = false)

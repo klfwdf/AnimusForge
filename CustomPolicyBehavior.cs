@@ -22,6 +22,26 @@ using TaleWorlds.ScreenSystem;
 
 namespace AnimusForge;
 
+public sealed class PolicyActiveEffectRegistration
+{
+	public string EffectId { get; set; }
+	public string RecordId { get; set; }
+	public string PolicyName { get; set; }
+	public string DateText { get; set; }
+	public int SubmittedDay { get; set; }
+	public string TargetKingdomId { get; set; }
+	public string TargetKingdomName { get; set; }
+	public float ProsperityDailyDeltaPerTown { get; set; }
+	public float FoodDailyDeltaPerTown { get; set; }
+	public float HearthDailyDeltaPerVillage { get; set; }
+	public float LoyaltyDailyDeltaPerTown { get; set; }
+	public float SecurityDailyDeltaPerTown { get; set; }
+	public float MilitiaDailyDeltaPerTown { get; set; }
+	public int KingdomStabilityDailyDelta { get; set; }
+	public int DurationDays { get; set; }
+	public string Reason { get; set; }
+}
+
 public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 {
 	private const int MaxPolicyNameChars = 100;
@@ -99,6 +119,72 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 	public CustomPolicyBehavior()
 	{
 		Instance = this;
+	}
+
+	public static bool TryRegisterPolicyActiveEffectForExternal(PolicyActiveEffectRegistration registration, out string effectId, out string failureReason)
+	{
+		effectId = "";
+		failureReason = "";
+		try
+		{
+			CustomPolicyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<CustomPolicyBehavior>();
+			if (behavior == null)
+			{
+				failureReason = "CustomPolicyBehavior 未注册";
+				return false;
+			}
+			return behavior.TryRegisterPolicyActiveEffectInternal(registration, out effectId, out failureReason);
+		}
+		catch (Exception ex)
+		{
+			failureReason = ex.Message;
+			PolicySystemLog.Write("Effect", "register-exception", ex.ToString());
+			return false;
+		}
+	}
+
+	private bool TryRegisterPolicyActiveEffectInternal(PolicyActiveEffectRegistration registration, out string effectId, out string failureReason)
+	{
+		effectId = "";
+		failureReason = "";
+		if (registration == null || registration.DurationDays <= 0 || string.IsNullOrWhiteSpace(registration.TargetKingdomId))
+		{
+			failureReason = "active effect 注册数据无效";
+			return false;
+		}
+		effectId = string.IsNullOrWhiteSpace(registration.EffectId) ? Guid.NewGuid().ToString("N") : registration.EffectId.Trim();
+		if (_activePolicyEffects.ContainsKey(effectId))
+		{
+			failureReason = "重复政策效果: " + effectId;
+			return false;
+		}
+		ActivePolicyEffectSaveData activeEffect = new ActivePolicyEffectSaveData
+		{
+			EffectId = effectId,
+			RecordId = registration.RecordId ?? "",
+			PolicyName = registration.PolicyName ?? "",
+			DateText = registration.DateText ?? "",
+			SubmittedDay = Math.Max(0, registration.SubmittedDay),
+			CreatedUtcTicks = DateTime.UtcNow.Ticks,
+			TargetKingdomId = registration.TargetKingdomId ?? "",
+			TargetKingdomName = registration.TargetKingdomName ?? "",
+			ProsperityDailyDeltaPerTown = registration.ProsperityDailyDeltaPerTown,
+			FoodDailyDeltaPerTown = registration.FoodDailyDeltaPerTown,
+			HearthDailyDeltaPerVillage = registration.HearthDailyDeltaPerVillage,
+			LoyaltyDailyDeltaPerTown = registration.LoyaltyDailyDeltaPerTown,
+			SecurityDailyDeltaPerTown = registration.SecurityDailyDeltaPerTown,
+			MilitiaDailyDeltaPerTown = registration.MilitiaDailyDeltaPerTown,
+			KingdomStabilityDailyDelta = registration.KingdomStabilityDailyDelta,
+			TotalDurationDays = registration.DurationDays,
+			RemainingDays = registration.DurationDays,
+			LastAppliedDay = Math.Max(0, registration.SubmittedDay),
+			Reason = registration.Reason ?? "",
+			Ended = false,
+			EndReason = ""
+		};
+		_activePolicyEffects[effectId] = JsonConvert.SerializeObject(activeEffect);
+		PolicySystemLog.Write("Effect", "active-created", "recordId=" + activeEffect.RecordId + " effectId=" + effectId + " target=" + activeEffect.TargetKingdomId + " duration=" + activeEffect.TotalDurationDays.ToString(CultureInfo.InvariantCulture));
+		return true;
 	}
 
 	public override void RegisterEvents()
@@ -1472,14 +1558,13 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		}
 		foreach (AppliedKingdomEffect effect in application.KingdomEffects.Where(x => x != null && HasAnyDailyDelta(x) && x.DurationDays > 0))
 		{
-			ActivePolicyEffectSaveData activeEffect = new ActivePolicyEffectSaveData
+			PolicyActiveEffectRegistration registration = new PolicyActiveEffectRegistration
 			{
 				EffectId = string.IsNullOrWhiteSpace(effect.EffectId) ? Guid.NewGuid().ToString("N") : effect.EffectId,
 				RecordId = recordId ?? "",
 				PolicyName = request?.PolicyName ?? "",
 				DateText = request?.DateText ?? "",
 				SubmittedDay = Math.Max(0, request?.SubmittedDay ?? GetCurrentCampaignDay()),
-				CreatedUtcTicks = DateTime.UtcNow.Ticks,
 				TargetKingdomId = effect.KingdomId ?? "",
 				TargetKingdomName = effect.KingdomName ?? "",
 				ProsperityDailyDeltaPerTown = effect.ProsperityDailyDeltaPerTown,
@@ -1489,14 +1574,19 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 				SecurityDailyDeltaPerTown = effect.SecurityDailyDeltaPerTown,
 				MilitiaDailyDeltaPerTown = effect.MilitiaDailyDeltaPerTown,
 				KingdomStabilityDailyDelta = effect.KingdomStabilityDailyDelta,
-				TotalDurationDays = effect.DurationDays,
-				RemainingDays = effect.DurationDays,
-				LastAppliedDay = Math.Max(0, request?.SubmittedDay ?? GetCurrentCampaignDay()),
+				DurationDays = effect.DurationDays,
 				Reason = effect.Reason ?? ""
 			};
-			_activePolicyEffects[activeEffect.EffectId] = JsonConvert.SerializeObject(activeEffect);
-			NpcRulerPolicyBehavior.UpdatePolicyEffectStateForExternal(activeEffect.RecordId, activeEffect.EffectId, activeEffect.TargetKingdomId, activeEffect.RemainingDays, isEnded: false);
-			PolicyEffectLedgerLog("active-created", BuildPolicyEffectLedgerLine(recordId, activeEffect.EffectId, effect, activeEffect.SubmittedDay, activeEffect.RemainingDays));
+			if (TryRegisterPolicyActiveEffectInternal(registration, out string activeEffectId, out string failureReason))
+			{
+				effect.EffectId = activeEffectId;
+				NpcRulerPolicyBehavior.UpdatePolicyEffectStateForExternal(recordId, activeEffectId, registration.TargetKingdomId, registration.DurationDays, isEnded: false);
+				PolicyEffectLedgerLog("active-created", BuildPolicyEffectLedgerLine(recordId, activeEffectId, effect, registration.SubmittedDay, registration.DurationDays));
+			}
+			else
+			{
+				PolicySystemLog.Write("Effect", "player-active-rejected", "recordId=" + (recordId ?? "") + " target=" + registration.TargetKingdomId + " reason=" + failureReason);
+			}
 		}
 		PolicyDebugLog("active-effects-created", BuildPolicyRecordLogPrefix(request, recordId)
 			+ " activeEffects=" + _activePolicyEffects.Count.ToString(CultureInfo.InvariantCulture),
@@ -3687,42 +3777,12 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 
 	private static void PolicyEffectLedgerLog(string stage, string message)
 	{
-		try
-		{
-			StringBuilder builder = new StringBuilder();
-			builder.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture));
-			builder.Append(" [");
-			builder.Append(string.IsNullOrWhiteSpace(stage) ? "log" : stage.Trim());
-			builder.Append("] ");
-			builder.AppendLine(message ?? "");
-			Logger.LogToFile("CustomPolicy_Effects.txt", builder.ToString());
-		}
-		catch
-		{
-		}
+		PolicySystemLog.Write("Effect", stage, message);
 	}
 
 	private static void PolicyDebugLog(string stage, string message, string detail)
 	{
-		try
-		{
-			StringBuilder builder = new StringBuilder();
-			builder.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture));
-			builder.Append(" [");
-			builder.Append(string.IsNullOrWhiteSpace(stage) ? "log" : stage.Trim());
-			builder.Append("] ");
-			builder.AppendLine(message ?? "");
-			if (!string.IsNullOrEmpty(detail))
-			{
-				builder.AppendLine("--- detail begin ---");
-				builder.AppendLine(ClipForPolicyDebugLog(detail));
-				builder.AppendLine("--- detail end ---");
-			}
-			Logger.LogToFile("CustomPolicy_Debug.txt", builder.ToString());
-		}
-		catch
-		{
-		}
+		PolicySystemLog.Write("Player", stage, message, ClipForPolicyDebugLog(detail));
 	}
 
 	private static void PolicyDetailedLog(string stage, string message)
@@ -3732,7 +3792,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 
 	private static void PolicyDetailedLog(string stage, string message, string detail)
 	{
-		CustomPolicyDetailedTraceLog.Write(stage, message, detail);
+		PolicySystemLog.Write("PlayerDetail", stage, message, detail);
 	}
 
 	private static string ClipForPolicyDebugLog(string text)
@@ -4675,70 +4735,6 @@ public sealed class PolicyHistoryRecordData
 	public string ImpactSummaryText { get; set; }
 }
 
-
-internal static class CustomPolicyDetailedTraceLog
-{
-	private const int MaxFieldChars = 1000000;
-
-	private const string FileName = "CustomPolicy_DetailedTrace.txt";
-
-	private static readonly object SyncRoot = new object();
-
-	internal static void Write(string stage, string message)
-	{
-		Write(stage, message, null);
-	}
-
-	internal static void Write(string stage, string message, string detail)
-	{
-		try
-		{
-			string logDir = AnimusForgeModulePaths.GetLogsDirectory();
-			if (!string.IsNullOrWhiteSpace(logDir))
-			{
-				Directory.CreateDirectory(logDir);
-			}
-			string logPath = Path.Combine(logDir, FileName);
-			StringBuilder builder = new StringBuilder();
-			builder.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture));
-			builder.Append(" [");
-			builder.Append(string.IsNullOrWhiteSpace(stage) ? "log" : stage.Trim());
-			builder.Append("] ");
-			builder.AppendLine(message ?? "");
-			if (!string.IsNullOrEmpty(detail))
-			{
-				builder.AppendLine("--- detail begin ---");
-				builder.AppendLine(Clip(detail));
-				builder.AppendLine("--- detail end ---");
-			}
-			lock (SyncRoot)
-			{
-				File.AppendAllText(logPath, builder.ToString(), Encoding.UTF8);
-			}
-		}
-		catch
-		{
-		}
-	}
-
-	internal static string Clip(string text)
-	{
-		if (text == null)
-		{
-			return "";
-		}
-		if (text.Length <= MaxFieldChars)
-		{
-			return text;
-		}
-		return text.Substring(0, MaxFieldChars)
-			+ "\n...[truncated "
-			+ (text.Length - MaxFieldChars).ToString(CultureInfo.InvariantCulture)
-			+ " chars]";
-	}
-}
-
-
 public sealed class CustomPolicyResultPopup
 {
 	private static CustomPolicyResultPopup _activePopup;
@@ -4761,36 +4757,36 @@ public sealed class CustomPolicyResultPopup
 	public static bool Show(string titleText, string bodyText, string closeText)
 	{
 		ScreenBase topScreen = ScreenManager.TopScreen;
-		CustomPolicyDetailedTraceLog.Write("result-popup-show-enter", "topScreen=" + (topScreen?.GetType().FullName ?? "(null)")
+		PolicySystemLog.Write("PlayerUI", "result-popup-show-enter", "topScreen=" + (topScreen?.GetType().FullName ?? "(null)")
 			+ " titleLength=" + (titleText ?? "").Length.ToString(CultureInfo.InvariantCulture)
 			+ " bodyLength=" + (bodyText ?? "").Length.ToString(CultureInfo.InvariantCulture)
 			+ " closeTextLength=" + (closeText ?? "").Length.ToString(CultureInfo.InvariantCulture));
 		if (topScreen == null)
 		{
-			CustomPolicyDetailedTraceLog.Write("result-popup-show-blocked", "reason=topScreen_null bodyLength=" + (bodyText ?? "").Length.ToString(CultureInfo.InvariantCulture));
+			PolicySystemLog.Write("PlayerUI", "result-popup-show-blocked", "reason=topScreen_null bodyLength=" + (bodyText ?? "").Length.ToString(CultureInfo.InvariantCulture));
 			return false;
 		}
 		try
 		{
 			if (_activePopup != null)
 			{
-				CustomPolicyDetailedTraceLog.Write("result-popup-close-existing", "closing existing active popup before opening new one");
+				PolicySystemLog.Write("PlayerUI", "result-popup-close-existing", "closing existing active popup before opening new one");
 			}
 			_activePopup?.Close(silent: true);
 			CustomPolicyResultPopup popup = new CustomPolicyResultPopup(topScreen, titleText, bodyText, closeText);
-			CustomPolicyDetailedTraceLog.Write("result-popup-open-call", "screen=" + topScreen.GetType().FullName
+			PolicySystemLog.Write("PlayerUI", "result-popup-open-call", "screen=" + topScreen.GetType().FullName
 				+ " layerName=CustomPolicyResultPopup"
 				+ " bodyLength=" + (bodyText ?? "").Length.ToString(CultureInfo.InvariantCulture));
 			popup.Open();
 			_activePopup = popup;
-			CustomPolicyDetailedTraceLog.Write("result-popup-show-success", "screen=" + topScreen.GetType().FullName
+			PolicySystemLog.Write("PlayerUI", "result-popup-show-success", "screen=" + topScreen.GetType().FullName
 				+ " bodyLength=" + (bodyText ?? "").Length.ToString(CultureInfo.InvariantCulture));
 			return true;
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("CustomPolicy", "[ERROR] Failed to open policy result popup: " + ex);
-			CustomPolicyDetailedTraceLog.Write("result-popup-show-exception", "bodyLength=" + (bodyText ?? "").Length.ToString(CultureInfo.InvariantCulture), ex.ToString());
+			PolicySystemLog.Write("PlayerUI", "result-popup-show-exception", "bodyLength=" + (bodyText ?? "").Length.ToString(CultureInfo.InvariantCulture), ex.ToString());
 			_activePopup?.Close(silent: true);
 			_activePopup = null;
 			return false;
@@ -4799,24 +4795,24 @@ public sealed class CustomPolicyResultPopup
 
 	private void Open()
 	{
-		CustomPolicyDetailedTraceLog.Write("result-popup-load-movie-start", "movie=CustomPolicyResultPopup bodyLength=" + (_dataSource?.BodyText ?? "").Length.ToString(CultureInfo.InvariantCulture));
+		PolicySystemLog.Write("PlayerUI", "result-popup-load-movie-start", "movie=CustomPolicyResultPopup bodyLength=" + (_dataSource?.BodyText ?? "").Length.ToString(CultureInfo.InvariantCulture));
 		_layer.LoadMovie("CustomPolicyResultPopup", _dataSource);
-		CustomPolicyDetailedTraceLog.Write("result-popup-load-movie-done", "movie=CustomPolicyResultPopup");
+		PolicySystemLog.Write("PlayerUI", "result-popup-load-movie-done", "movie=CustomPolicyResultPopup");
 		_layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.All);
 		try
 		{
 			_layer.Input.RegisterHotKeyCategory(HotKeyManager.GetCategory("GenericPanelGameKeyCategory"));
-			CustomPolicyDetailedTraceLog.Write("result-popup-hotkey-registered", "category=GenericPanelGameKeyCategory");
+			PolicySystemLog.Write("PlayerUI", "result-popup-hotkey-registered", "category=GenericPanelGameKeyCategory");
 		}
 		catch (Exception ex)
 		{
-			CustomPolicyDetailedTraceLog.Write("result-popup-hotkey-register-failed", ex.Message);
+			PolicySystemLog.Write("PlayerUI", "result-popup-hotkey-register-failed", ex.Message);
 		}
-		CustomPolicyDetailedTraceLog.Write("result-popup-add-layer-start", "screen=" + (_screen?.GetType().FullName ?? "(null)"));
+		PolicySystemLog.Write("PlayerUI", "result-popup-add-layer-start", "screen=" + (_screen?.GetType().FullName ?? "(null)"));
 		_screen.AddLayer(_layer);
 		_layer.IsFocusLayer = true;
 		ScreenManager.TrySetFocus(_layer);
-		CustomPolicyDetailedTraceLog.Write("result-popup-add-layer-done", "focusSet=true");
+		PolicySystemLog.Write("PlayerUI", "result-popup-add-layer-done", "focusSet=true");
 	}
 
 	private void HandleCloseRequested()
@@ -4826,7 +4822,7 @@ public sealed class CustomPolicyResultPopup
 
 	private void Close(bool silent)
 	{
-		CustomPolicyDetailedTraceLog.Write("result-popup-close-start", "silent=" + silent.ToString(CultureInfo.InvariantCulture)
+		PolicySystemLog.Write("PlayerUI", "result-popup-close-start", "silent=" + silent.ToString(CultureInfo.InvariantCulture)
 			+ " isClosed=" + _isClosed.ToString(CultureInfo.InvariantCulture));
 		if (_isClosed)
 		{
@@ -4841,12 +4837,12 @@ public sealed class CustomPolicyResultPopup
 		}
 		catch (Exception ex)
 		{
-			CustomPolicyDetailedTraceLog.Write("result-popup-focus-reset-failed", ex.Message);
+			PolicySystemLog.Write("PlayerUI", "result-popup-focus-reset-failed", ex.Message);
 		}
 		try
 		{
 			_screen.RemoveLayer(_layer);
-			CustomPolicyDetailedTraceLog.Write("result-popup-remove-layer-done", "screen=" + (_screen?.GetType().FullName ?? "(null)"));
+			PolicySystemLog.Write("PlayerUI", "result-popup-remove-layer-done", "screen=" + (_screen?.GetType().FullName ?? "(null)"));
 		}
 		catch (Exception ex)
 		{
@@ -4854,14 +4850,14 @@ public sealed class CustomPolicyResultPopup
 			{
 				Logger.Log("CustomPolicy", "[WARN] Failed to remove policy result popup layer: " + ex.Message);
 			}
-			CustomPolicyDetailedTraceLog.Write("result-popup-remove-layer-failed", "silent=" + silent.ToString(CultureInfo.InvariantCulture), ex.ToString());
+			PolicySystemLog.Write("PlayerUI", "result-popup-remove-layer-failed", "silent=" + silent.ToString(CultureInfo.InvariantCulture), ex.ToString());
 		}
 		_dataSource?.OnFinalize();
 		if (ReferenceEquals(_activePopup, this))
 		{
 			_activePopup = null;
 		}
-		CustomPolicyDetailedTraceLog.Write("result-popup-close-done", "activeCleared=" + ReferenceEquals(_activePopup, null).ToString(CultureInfo.InvariantCulture));
+		PolicySystemLog.Write("PlayerUI", "result-popup-close-done", "activeCleared=" + ReferenceEquals(_activePopup, null).ToString(CultureInfo.InvariantCulture));
 	}
 }
 
@@ -4923,14 +4919,14 @@ public sealed class CustomPolicyResultPopupVM : ViewModel
 		TitleText = string.IsNullOrWhiteSpace(titleText) ? "政策已经发布" : titleText.Trim();
 		BodyText = (bodyText ?? "").Trim();
 		CloseText = string.IsNullOrWhiteSpace(closeText) ? "知道了" : closeText.Trim();
-		CustomPolicyDetailedTraceLog.Write("result-popup-vm-created", "titleLength=" + TitleText.Length.ToString(CultureInfo.InvariantCulture)
+		PolicySystemLog.Write("PlayerUI", "result-popup-vm-created", "titleLength=" + TitleText.Length.ToString(CultureInfo.InvariantCulture)
 			+ " bodyLength=" + BodyText.Length.ToString(CultureInfo.InvariantCulture)
 			+ " closeTextLength=" + CloseText.Length.ToString(CultureInfo.InvariantCulture));
 	}
 
 	public void ExecuteClose()
 	{
-		CustomPolicyDetailedTraceLog.Write("result-popup-close-clicked", "bodyLength=" + (BodyText ?? "").Length.ToString(CultureInfo.InvariantCulture));
+		PolicySystemLog.Write("PlayerUI", "result-popup-close-clicked", "bodyLength=" + (BodyText ?? "").Length.ToString(CultureInfo.InvariantCulture));
 		_onClose?.Invoke();
 	}
 }
