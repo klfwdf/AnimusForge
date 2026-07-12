@@ -959,7 +959,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		float range = initialRange + (maxRange - initialRange) * progress;
 		float totalAngle = ShoutInitialTotalAngleRadians + (ShoutMaxTotalAngleRadians - ShoutInitialTotalAngleRadians) * progress;
 		float halfAngle = totalAngle * 0.5f;
-		List<Agent> agents = SelectShoutTargetAgents(ShoutUtils.GetNearbyNPCAgents(range, halfAngle));
+		List<Agent> agents = ShoutUtils.GetNearbyNPCAgents(range, halfAngle) ?? new List<Agent>();
 		Agent primary = ShoutUtils.GetMostCenteredAgent(agents) ?? agents.FirstOrDefault();
 		Dictionary<int, float> candidateDistances = new Dictionary<int, float>();
 		foreach (Agent agent in agents)
@@ -981,18 +981,6 @@ public class ShoutBehavior : CampaignBehaviorBase
 			CandidateAgentIndices = agents.Where((Agent agent) => agent != null).Select((Agent agent) => agent.Index).Distinct().ToList(),
 			CandidatePlayerDistancesMeters = candidateDistances
 		};
-	}
-
-	private static List<Agent> SelectShoutTargetAgents(List<Agent> nearbyAgents)
-	{
-		List<Agent> liveAgents = (nearbyAgents ?? new List<Agent>())
-			.Where((Agent agent) => agent != null && agent.IsHuman && agent.IsActive())
-			.ToList();
-		Agent centeredAgent = ShoutUtils.GetMostCenteredAgent(liveAgents) ?? liveAgents.FirstOrDefault();
-		bool centeredIsSetsFollower = IsSetsSelectedEntryFollower(centeredAgent);
-		return liveAgents
-			.Where((Agent agent) => !IsSetsSelectedEntryFollower(agent) || (centeredIsSetsFollower && agent.Index == centeredAgent.Index))
-			.ToList();
 	}
 
 	private static bool TryGetPlayerPlanarDistanceMeters(Agent targetAgent, out float distanceMeters)
@@ -1446,7 +1434,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 	{
 		if (targetingContext == null)
 		{
-			return SelectShoutTargetAgents(ShoutUtils.GetNearbyNPCAgents());
+			return ShoutUtils.GetNearbyNPCAgents() ?? new List<Agent>();
 		}
 		Mission mission = Mission.Current;
 		var agents = mission?.Agents;
@@ -2607,32 +2595,6 @@ public class ShoutBehavior : CampaignBehaviorBase
 				&& agent.IsActive()
 				&& agent.State == AgentState.Active
 				&& agent.Health > 0f;
-		}
-		catch
-		{
-			return false;
-		}
-	}
-
-	private static bool IsSetsSelectedEntryFollower(Agent agent)
-	{
-		try
-		{
-			return SettlementEntryTroopSelectionBehavior.IsSetsSelectedFollowerAgentForExternal(agent);
-		}
-		catch
-		{
-			return false;
-		}
-	}
-
-	private static bool IsSetsSelectedEntryFollowerNpc(NpcDataPacket npc)
-	{
-		try
-		{
-			return npc != null
-				&& npc.AgentIndex >= 0
-				&& SettlementEntryTroopSelectionBehavior.IsSetsSelectedFollowerAgentForExternal(npc.AgentIndex);
 		}
 		catch
 		{
@@ -3917,7 +3879,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		List<NpcDataPacket> result = new List<NpcDataPacket>();
 		foreach (NpcDataPacket npc in presentNpcs ?? Enumerable.Empty<NpcDataPacket>())
 		{
-			if (npc != null && !IsSetsSelectedEntryFollowerNpc(npc) && !IsSameSceneNpcForPrompt(npc, selfNpc))
+			if (npc != null && !IsSameSceneNpcForPrompt(npc, selfNpc))
 			{
 				result.Add(npc);
 			}
@@ -4108,7 +4070,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 			HashSet<int> seen = new HashSet<int>();
 			foreach (NpcDataPacket npc in presentNpcs ?? Enumerable.Empty<NpcDataPacket>())
 			{
-				if (npc == null || npc.AgentIndex < 0 || npc.AgentIndex == currentSpeakerAgentIndex || IsSetsSelectedEntryFollowerNpc(npc) || !seen.Add(npc.AgentIndex))
+				if (npc == null || npc.AgentIndex < 0 || npc.AgentIndex == currentSpeakerAgentIndex || !seen.Add(npc.AgentIndex))
 				{
 					continue;
 				}
@@ -9731,9 +9693,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				return;
 			}
-			List<Agent> list = (ShoutUtils.GetNearbyNPCAgents() ?? new List<Agent>())
-				.Where(a => a != null && !IsSetsSelectedEntryFollower(a))
-				.ToList();
+			List<Agent> list = ShoutUtils.GetNearbyNPCAgents() ?? new List<Agent>();
 			if (!list.Any((Agent a) => a != null && a.Index == speakerAgent.Index))
 			{
 				list.Add(speakerAgent);
@@ -23573,7 +23533,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					break;
 				}
-				if (n == null || IsSetsSelectedEntryFollowerNpc(n) || !addedAgentIndices.Add(n.AgentIndex))
+				if (n == null || !addedAgentIndices.Add(n.AgentIndex))
 				{
 					continue;
 				}
@@ -23594,7 +23554,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			foreach (NpcDataPacket n in allNpcData)
 			{
-				if (n != null && !IsSetsSelectedEntryFollowerNpc(n))
+				if (n != null)
 				{
 					candidateAgentIndices.Add(n.AgentIndex);
 				}
@@ -31223,9 +31183,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		bool immediateSceneReactionGateEntered = false;
 		try
 		{
-			List<Agent> nearbyNPCAgents = (ShoutUtils.GetNearbyNPCAgents() ?? new List<Agent>())
-				.Where(a => a != null && !IsSetsSelectedEntryFollower(a))
-				.ToList();
+			List<Agent> nearbyNPCAgents = ShoutUtils.GetNearbyNPCAgents() ?? new List<Agent>();
 			Agent agent = nearbyNPCAgents?.FirstOrDefault(a => a != null && a.Index == targetAgentIndex && a.IsActive()) ?? agents.FirstOrDefault(a => a != null && a.Index == targetAgentIndex && a.IsActive());
 			if (!CanAgentParticipateInSceneSpeech(agent))
 			{
