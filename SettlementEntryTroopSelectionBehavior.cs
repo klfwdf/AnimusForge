@@ -68,6 +68,9 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	private static PendingSettlementVictoryMenuEntry _pendingVictoryMenuEntry;
 	private static Mission _setsActiveUsableProtectionMission;
 	private static Mission _setsSelectedFollowerMission;
+	private static Mission _setsNativeAlleyMission;
+	private static readonly FieldInfo NativeAlleyGuardAgentsField = AccessTools.Field(typeof(MissionAlleyHandler), "_guardAgents");
+	private static readonly FieldInfo NativeAlleyFightPositionField = AccessTools.Field(typeof(MissionAlleyHandler), "_fightPosition");
 	private static readonly HashSet<int> SetsActiveUsableProtectionAgentIndexes = new HashSet<int>();
 	private static readonly HashSet<int> SetsSelectedFollowerAgentIndexes = new HashSet<int>();
 	private static readonly Dictionary<int, float> SetsUsableProtectionLastLogTimes = new Dictionary<int, float>();
@@ -95,6 +98,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		PatchEndMissionGuard(harmony, typeof(MissionFightHandler), nameof(MissionFightHandler.OnEndMissionRequest), "mission-fight");
 		PatchSetsUsableProtection(harmony);
 		PatchOwnedOrAttachedTownDamage(harmony);
+		PatchNativeAlleyCompatibility(harmony);
 	}
 
 	public override void RegisterEvents()
@@ -578,6 +582,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		{
 			SetsSelectedFollowerAgentIndexes.Clear();
 			_setsSelectedFollowerMission = null;
+			_setsNativeAlleyMission = null;
 			_setsEntryMissionActive = false;
 			_setsOrderControllerPrimed = false;
 			_nextSetsOrderControllerPrimeTime = 0f;
@@ -661,6 +666,142 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		{
 			SettlementEntryTroopSelectionLog.Log("PatchOwnedOrAttachedTownDamage failed. error=" + ex.Message);
 		}
+	}
+
+	private static void PatchNativeAlleyCompatibility(Harmony harmony)
+	{
+		try
+		{
+			MethodInfo startMethod = AccessTools.Method(typeof(MissionAlleyHandler), nameof(MissionAlleyHandler.StartCommonAreaBattle));
+			MethodInfo startPostfix = typeof(SettlementEntryTroopSelectionBehavior).GetMethod(nameof(SetsNativeAlleyStartPostfix), BindingFlags.Static | BindingFlags.NonPublic);
+			if (startMethod != null && startPostfix != null)
+			{
+				harmony.Patch(startMethod, postfix: new HarmonyMethod(startPostfix));
+			}
+			MethodInfo endMethod = AccessTools.Method(typeof(MissionAlleyHandler), "EndFight");
+			MethodInfo endFinalizer = typeof(SettlementEntryTroopSelectionBehavior).GetMethod(nameof(SetsNativeAlleyEndFightFinalizer), BindingFlags.Static | BindingFlags.NonPublic);
+			if (endMethod != null && endFinalizer != null)
+			{
+				harmony.Patch(endMethod, finalizer: new HarmonyMethod(endFinalizer));
+			}
+			MethodInfo fightEndMethod = AccessTools.Method(typeof(MissionFightHandler), nameof(MissionFightHandler.EndFight));
+			MethodInfo fightEndPostfix = typeof(SettlementEntryTroopSelectionBehavior).GetMethod(nameof(SetsMissionFightEndPostfix), BindingFlags.Static | BindingFlags.NonPublic);
+			if (fightEndMethod != null && fightEndPostfix != null)
+			{
+				harmony.Patch(fightEndMethod, postfix: new HarmonyMethod(fightEndPostfix));
+			}
+			SettlementEntryTroopSelectionLog.Log("Harmony patches registered for SETS/native alley compatibility. start=" + (startMethod != null) + ", end=" + (endMethod != null) + ", fightEnd=" + (fightEndMethod != null));
+		}
+		catch (Exception ex)
+		{
+			SettlementEntryTroopSelectionLog.Log("PatchNativeAlleyCompatibility failed. error=" + ex.Message);
+		}
+	}
+
+	private static void SetsNativeAlleyStartPostfix(bool __runOriginal)
+	{
+		try
+		{
+			Mission mission = Mission.Current;
+			MissionFightHandler fightHandler = mission?.GetMissionBehavior<MissionFightHandler>();
+			if (!__runOriginal || !IsSetsEntryMissionActive(mission) || fightHandler?.IsThereActiveFight() != true)
+			{
+				return;
+			}
+			_setsNativeAlleyMission = mission;
+			List<Agent> guardAgents = NativeAlleyGuardAgentsField?.GetValue(null) as List<Agent>;
+			if (guardAgents == null)
+			{
+				return;
+			}
+			int removed = guardAgents.RemoveAll(IsSetsSelectedFollowerAgentForExternal);
+			if (removed > 0)
+			{
+				SettlementEntryTroopSelectionLog.Log("Removed SETS followers from native alley guard cleanup list. count=" + removed);
+			}
+		}
+		catch (Exception ex)
+		{
+			SettlementEntryTroopSelectionLog.Log("SetsNativeAlleyStartPostfix failed. error=" + ex.Message);
+		}
+	}
+
+	private static Exception SetsNativeAlleyEndFightFinalizer(MissionAlleyHandler __instance, Exception __exception)
+	{
+		Mission mission = __instance?.Mission ?? Mission.Current;
+		if (__exception == null || !IsSetsEntryMissionActive(mission))
+		{
+			return __exception;
+		}
+		try
+		{
+			MissionFightHandler fightHandler = mission?.GetMissionBehavior<MissionFightHandler>();
+			if (_setsNativeAlleyMission == mission && fightHandler != null && fightHandler.IsThereActiveFight())
+			{
+				fightHandler.EndFight(false);
+			}
+			ClearSetsNativeAlleyRuntime(mission, "mission_alley_end_finalizer");
+			if (mission != null && (fightHandler == null || !fightHandler.IsThereActiveFight()))
+			{
+				mission.SetMissionMode(MissionMode.StartUp, atStart: false);
+			}
+			SettlementEntryTroopSelectionLog.Log("Recovered SETS native alley EndFight exception. error=" + __exception.Message);
+		}
+		catch (Exception ex)
+		{
+			SettlementEntryTroopSelectionLog.Log("SETS native alley EndFight finalizer failed. original=" + __exception.Message + ", cleanup=" + ex.Message);
+			return __exception;
+		}
+		return null;
+	}
+
+	private static void SetsMissionFightEndPostfix(MissionFightHandler __instance)
+	{
+		Mission mission = __instance?.Mission ?? Mission.Current;
+		if (_setsNativeAlleyMission == mission)
+		{
+			ClearSetsNativeAlleyRuntime(mission, "mission_fight_end");
+		}
+	}
+
+	private static void ClearSetsNativeAlleyRuntime(Mission mission, string source)
+	{
+		try
+		{
+			List<Agent> guardAgents = NativeAlleyGuardAgentsField?.GetValue(null) as List<Agent>;
+			if (guardAgents != null)
+			{
+				foreach (Agent guardAgent in guardAgents.ToList())
+				{
+					CampaignAgentComponent component = guardAgent?.GetComponent<CampaignAgentComponent>();
+					FightBehavior fightBehavior = component?.AgentNavigator?.GetBehaviorGroup<AlarmedBehaviorGroup>()?.GetBehavior<FightBehavior>();
+					if (fightBehavior != null)
+					{
+						fightBehavior.IsActive = false;
+					}
+				}
+				guardAgents.Clear();
+			}
+			NativeAlleyFightPositionField?.SetValue(null, Vec3.Invalid);
+		}
+		catch (Exception ex)
+		{
+			SettlementEntryTroopSelectionLog.Log("ClearSetsNativeAlleyRuntime failed. source=" + source + ", error=" + ex.Message);
+		}
+		finally
+		{
+			if (_setsNativeAlleyMission == mission)
+			{
+				_setsNativeAlleyMission = null;
+			}
+		}
+	}
+
+	private static bool IsSetsEntryMissionActive(Mission mission)
+	{
+		return mission != null
+			&& _setsEntryMissionActive
+			&& _setsSelectedFollowerMission == mission;
 	}
 
 	private static bool AllowOwnedOrAttachedTownPlayerDamagePrefix(Mission __instance, Agent attacker, Agent victim, ref bool __result)

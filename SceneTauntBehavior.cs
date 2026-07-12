@@ -2115,6 +2115,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	private static readonly FieldInfo OpponentSideAgentsField = AccessTools.Field(typeof(MissionFightHandler), "_opponentSideAgents");
 
 	private static readonly FieldInfo FinishTimerField = AccessTools.Field(typeof(MissionFightHandler), "_finishTimer");
+	private static readonly FieldInfo NativeAlleyFightPositionField = AccessTools.Field(typeof(MissionAlleyHandler), "_fightPosition");
 
 	private const float SceneTauntNativeFightAutoEndDelaySeconds = 3600f;
 
@@ -6564,6 +6565,17 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				Logger.Log("SceneTaunt", "Native criminal conflict start skipped because alley context is unavailable.");
 				return false;
 			}
+			_fightHandler = _fightHandler ?? Mission.Current.GetMissionBehavior<MissionFightHandler>();
+			if (_fightHandler?.IsThereActiveFight() == true)
+			{
+				bool nativeAlleyFightActive = IsNativeAlleyFightCurrentlyActive();
+				if (nativeAlleyFightActive)
+				{
+					RememberNativeCriminalConflictTarget(targetAgent);
+				}
+				Logger.LogVerbose("SceneTaunt", "native_alley_existing_fight:" + targetAgent.Index, () => $"Skipped native alley start because MissionFightHandler is already active. NativeAlley={nativeAlleyFightActive}, Reason={reason}, Target={targetAgent.Name}", 0.5);
+				return nativeAlleyFightActive;
+			}
 			Type type = AccessTools.TypeByName("SandBox.Missions.MissionLogics.MissionAlleyHandler");
 			MethodInfo methodInfo = typeof(Mission).GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).FirstOrDefault((MethodInfo m) => m.Name == "GetMissionBehavior" && m.IsGenericMethodDefinition && m.GetParameters().Length == 0);
 			MethodInfo methodInfo2 = AccessTools.Method(type, "StartCommonAreaBattle");
@@ -6593,6 +6605,23 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		catch (Exception ex)
 		{
 			Logger.Log("SceneTaunt", "Starting native criminal conflict failed: " + ex.Message);
+			return false;
+		}
+	}
+
+	private static bool IsNativeAlleyFightCurrentlyActive()
+	{
+		try
+		{
+			Mission mission = Mission.Current;
+			if (mission?.GetMissionBehavior<MissionAlleyHandler>() == null)
+			{
+				return false;
+			}
+			return NativeAlleyFightPositionField?.GetValue(null) is Vec3 fightPosition && fightPosition != Vec3.Invalid;
+		}
+		catch
+		{
 			return false;
 		}
 	}
