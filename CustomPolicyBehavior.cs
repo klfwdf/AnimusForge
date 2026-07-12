@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -28,8 +28,6 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 
 	private const int MaxPolicyContentChars = 6000;
 
-	private const int PolicyContentDigestMaxChars = 200;
-
 	private const int PolicyPublicFeedbackTargetMinChars = 100;
 
 	private const int PolicyPublicFeedbackTargetMaxChars = 1800;
@@ -55,12 +53,6 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 	private const int MaxPolicyRecordImpactChars = 260;
 
 	private const string SaveKeyPolicyRecordHistory = "_afCustomPolicyRecordHistory_v1";
-
-	private const int MaxPolicyNpcContextItems = 3;
-
-	private const int MaxPolicyNpcContextLineChars = 160;
-
-	private const int MaxPolicyNpcContextChars = 560;
 
 	private const int MaxPolicyRecentActionChars = 160;
 
@@ -107,40 +99,6 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 	public CustomPolicyBehavior()
 	{
 		Instance = this;
-	}
-
-	public static string BuildRecentPolicyContextForNpcExternal(Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride = null)
-	{
-		try
-		{
-			return Instance?.BuildRecentPolicyContextForNpcInternal(targetHero, targetCharacter, kingdomIdOverride) ?? "";
-		}
-		catch (Exception ex)
-		{
-			PolicyDebugLog("npc-policy-context-failed", ex.Message);
-			return "";
-		}
-	}
-
-	public static void LogNpcPolicyContextInjectionForExternal(Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride, string contextText)
-	{
-		try
-		{
-			if (string.IsNullOrWhiteSpace(contextText))
-			{
-				return;
-			}
-			int lineCount = contextText.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries).Length;
-			PolicyDebugLog("npc-policy-context-injected",
-				BuildNpcPolicyContextLogTarget(targetHero, targetCharacter, kingdomIdOverride)
-				+ " contextLength=" + contextText.Length.ToString(CultureInfo.InvariantCulture)
-				+ " lineCount=" + lineCount.ToString(CultureInfo.InvariantCulture),
-				LimitDisplayChars(contextText, 2000));
-		}
-		catch (Exception ex)
-		{
-			PolicyDebugLog("npc-policy-context-injection-log-failed", ex.Message);
-		}
 	}
 
 	public override void RegisterEvents()
@@ -620,7 +578,6 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 			if (policyRecordWritten)
 			{
 				RecordPolicyPublishAsPlayerAction(request, result, application, recordId);
-				RecordPolicyPublishAsWeeklyMaterial(request, result, feedback, application, recordId);
 			}
 			string impactText = BuildImpactPopupText(request, feedback, application, costDeducted: true);
 			PolicyDebugLog("complete-success", BuildPolicyRecordLogPrefix(request, recordId)
@@ -1538,6 +1495,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 				Reason = effect.Reason ?? ""
 			};
 			_activePolicyEffects[activeEffect.EffectId] = JsonConvert.SerializeObject(activeEffect);
+			NpcRulerPolicyBehavior.UpdatePolicyEffectStateForExternal(activeEffect.RecordId, activeEffect.EffectId, activeEffect.TargetKingdomId, activeEffect.RemainingDays, isEnded: false);
 			PolicyEffectLedgerLog("active-created", BuildPolicyEffectLedgerLine(recordId, activeEffect.EffectId, effect, activeEffect.SubmittedDay, activeEffect.RemainingDays));
 		}
 		PolicyDebugLog("active-effects-created", BuildPolicyRecordLogPrefix(request, recordId)
@@ -1570,6 +1528,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		NpcRulerPolicyBehavior.UpdatePolicyEffectStateForExternal(activeEffect.RecordId, activeEffect.EffectId, activeEffect.TargetKingdomId, activeEffect.RemainingDays, activeEffect.Ended);
 		try
 		{
 			if (!_policyRecordHistory.TryGetValue(activeEffect.RecordId, out string raw) || string.IsNullOrWhiteSpace(raw))
@@ -2083,7 +2042,8 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 			+ "\n\n请只输出 JSON 对象。下面是字段说明，不是示例值：\n"
 			+ "- publicFeedback:string，玩家可见第三人称民众反馈，约 " + publicFeedbackTargetText + " 个中文字符，可写街市、村庄、贵族、军营、流言等反应。\n"
 			+ "- impactSummary:string，简短概述会影响哪些数值与方向。\n"
-			+ "- policyContentDigest:string，压缩政策正文，不超过 200 字，保留影响数值所需事实。\n"
+			+ "- policyContentDigest:string，用一到两句完整短句压缩政策目的、措施、目标与代价，建议 80-140 个中文字符。\n"
+			+ "- feedbackDigest:string，用一句完整短句压缩民众反馈，建议 40-70 个中文字符，保留主要支持、反对、担忧或社会反应。\n"
 			+ costSchemaText
 			+ "- effects:array，你直接决定的最终每日持续效果；默认且首选只输出 1 条玩家王国 effect。如果政策名和政策正文没有明确提到他国，effects 必须只包含玩家王国。只有政策名或政策正文明确提到其他王国 ID、王国名称、该国领袖/氏族/定居点且足以指向该王国时，才允许输出其他王国 effect 或多条 effect；世界上下文、王国索引、知识库上下文中出现的他国不算明确提及；否则不得把未提及的他国作为目标。\n"
 			+ "每个 effect 必须包含：targetKingdomId:string；targetKingdomName:string；prosperityDailyDeltaPerTown:number；foodDailyDeltaPerTown:number；hearthDailyDeltaPerVillage:number；loyaltyDailyDeltaPerTown:number；securityDailyDeltaPerTown:number；militiaDailyDeltaPerTown:number；kingdomStabilityDailyDelta:number；durationDays:positive integer；reason:string。\n"
@@ -2412,10 +2372,15 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		assessment.ExecutionReach = CleanPolicyDisplayText(assessment.ExecutionReach ?? "");
 		assessment.DurationLogic = CleanPolicyDisplayText(assessment.DurationLogic ?? "");
 		assessment.NumericIntent = CleanPolicyDisplayText(assessment.NumericIntent ?? "");
-		assessment.PolicyContentDigest = LimitDisplayChars(CleanPolicyDisplayText(assessment.PolicyContentDigest ?? ""), PolicyContentDigestMaxChars);
+		assessment.PolicyContentDigest = CleanPolicyDisplayText(assessment.PolicyContentDigest ?? "");
 		if (string.IsNullOrWhiteSpace(assessment.PolicyContentDigest))
 		{
-			assessment.PolicyContentDigest = BuildPolicyContentDigest(request);
+			assessment.PolicyContentDigest = assessment.ImpactSummary;
+		}
+		assessment.FeedbackDigest = CleanPolicyDisplayText(assessment.FeedbackDigest ?? "");
+		if (string.IsNullOrWhiteSpace(assessment.FeedbackDigest))
+		{
+			assessment.FeedbackDigest = assessment.ImpactSummary;
 		}
 		assessment.Effects = NormalizeMainAssessmentEffects(request, assessment.Effects);
 		return assessment;
@@ -2461,12 +2426,6 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 				|| Math.Abs(effect.SecurityDailyDeltaPerTown) > 0.0001f
 				|| Math.Abs(effect.MilitiaDailyDeltaPerTown) > 0.0001f
 				|| GetKingdomStabilityDailyDelta(effect) != 0));
-	}
-
-	private static string BuildPolicyContentDigest(PolicyDraftRequest request)
-	{
-		string text = CompactPolicyContextText(request?.PolicyContent ?? "");
-		return LimitDisplayChars(CleanPolicyDisplayText(text), PolicyContentDigestMaxChars);
 	}
 
 	private static string NormalizePolicyChoice(string value, string fallback, params string[] allowed)
@@ -2762,6 +2721,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 			record.ImpactEffectsSummary = LimitDisplayChars(BuildPolicyRecordEffectSummary(record), MaxPolicyRecordImpactChars);
 			_policyRecordHistory[record.RecordId] = JsonConvert.SerializeObject(record);
 			TrimPolicyRecordHistory();
+			RegisterUnifiedPlayerPolicy(request, generationResult, feedback, application, record.RecordId, record.CreatedUtcTicks);
 			PolicyDebugLog("history-recorded", BuildPolicyRecordLogPrefix(request, record.RecordId)
 				+ " historyCount=" + _policyRecordHistory.Count.ToString(CultureInfo.InvariantCulture),
 				BuildPolicyRecordDebugSummary(record));
@@ -2824,68 +2784,6 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			PolicyDebugLog("player-action-record-failed", BuildPolicyRecordLogPrefix(request, recordId), ex.ToString());
-		}
-	}
-
-	private void RecordPolicyPublishAsWeeklyMaterial(PolicyDraftRequest request, PolicyGenerationResult generationResult, string feedback, PolicyApplicationResult application, string recordId)
-	{
-		try
-		{
-			if (request == null || !HasAnyActualAppliedEffect(application) || string.IsNullOrWhiteSpace(recordId))
-			{
-				return;
-			}
-			List<AppliedKingdomEffect> effects = (application?.KingdomEffects ?? new List<AppliedKingdomEffect>())
-				.Where(effect => effect != null && effect.DurationDays > 0 && HasAnyDailyDelta(effect))
-				.ToList();
-			if (effects.Count == 0)
-			{
-				return;
-			}
-			string policySummary = LimitDisplayChars(CompactPolicyContextText(ResolvePolicySummaryForPlayerAction(request, generationResult)), MaxPolicyWeeklyMaterialSummaryChars);
-			string feedbackSummary = LimitDisplayChars(CompactPolicyContextText(CleanPolicyDisplayText(feedback ?? "")), MaxPolicyWeeklyMaterialFeedbackChars);
-			string playerKingdomId = (request.PlayerKingdomId ?? "").Trim();
-			string playerKingdomName = string.IsNullOrWhiteSpace(request.PlayerKingdomName) ? "玩家王国" : request.PlayerKingdomName.Trim();
-			bool hasMultipleTargetKingdoms = effects.Select(effect => (effect.KingdomId ?? "").Trim()).Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(StringComparer.OrdinalIgnoreCase).Count() > 1;
-			foreach (AppliedKingdomEffect effect in effects)
-			{
-				string targetKingdomId = (effect.KingdomId ?? "").Trim();
-				string targetKingdomName = string.IsNullOrWhiteSpace(effect.KingdomName) ? "目标王国" : effect.KingdomName.Trim();
-				bool isForeignTarget = !string.IsNullOrWhiteSpace(targetKingdomId)
-					&& !string.IsNullOrWhiteSpace(playerKingdomId)
-					&& !string.Equals(targetKingdomId, playerKingdomId, StringComparison.OrdinalIgnoreCase);
-				bool includeInWorld = hasMultipleTargetKingdoms || isForeignTarget;
-				string effectSummary = LimitDisplayChars(BuildPolicyWeeklyMaterialEffectSummary(effect), MaxPolicyWeeklyMaterialEffectChars);
-				MyBehavior.RecordCustomPolicyWeeklyMaterialForExternal(
-					recordId,
-					request.PolicyName ?? "未命名政策",
-					request.DateText ?? "",
-					policySummary,
-					feedbackSummary,
-					effectSummary,
-					playerKingdomId,
-					playerKingdomName,
-					targetKingdomId,
-					targetKingdomName,
-					effect.EffectId ?? "",
-					Math.Max(0, request.SubmittedDay),
-					request.DateText ?? "",
-					includeInWorld);
-				PolicyDebugLog("weekly-material-recorded",
-					BuildPolicyRecordLogPrefix(request, recordId)
-					+ " targetKingdomId=" + targetKingdomId
-					+ " targetKingdomName=" + targetKingdomName
-					+ " includeInWorld=" + includeInWorld
-					+ " includeInKingdom=true"
-					+ " summaryLength=" + policySummary.Length.ToString(CultureInfo.InvariantCulture)
-					+ " feedbackLength=" + feedbackSummary.Length.ToString(CultureInfo.InvariantCulture)
-					+ " effectLength=" + effectSummary.Length.ToString(CultureInfo.InvariantCulture),
-					"policySummary=" + policySummary + "\nfeedbackSummary=" + feedbackSummary + "\neffectSummary=" + effectSummary);
-			}
-		}
-		catch (Exception ex)
-		{
-			PolicyDebugLog("weekly-material-record-failed", BuildPolicyRecordLogPrefix(request, recordId), ex.ToString());
 		}
 	}
 
@@ -3196,300 +3094,6 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 			+ "；持续 " + Math.Max(0, durationDays).ToString(CultureInfo.InvariantCulture) + " 天。";
 	}
 
-	private string BuildRecentPolicyContextForNpcInternal(Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride = null)
-	{
-		try
-		{
-			string targetKingdomId = ResolvePolicyNpcKingdomId(targetHero, targetCharacter, kingdomIdOverride);
-			string playerKingdomId = (GetPlayerKingdom()?.StringId ?? "").Trim();
-			HashSet<string> relevantKingdomIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			if (!string.IsNullOrWhiteSpace(targetKingdomId))
-			{
-				relevantKingdomIds.Add(targetKingdomId.Trim());
-			}
-			if (!string.IsNullOrWhiteSpace(playerKingdomId))
-			{
-				relevantKingdomIds.Add(playerKingdomId.Trim());
-			}
-			if (relevantKingdomIds.Count == 0)
-			{
-				return "";
-			}
-			string targetKingdomName = BuildPolicyContextKingdomNames(relevantKingdomIds);
-			List<PolicyRecordSaveData> recentRecords = LoadPolicyRecordHistory()
-				.Where((PolicyRecordSaveData record) => relevantKingdomIds.Any((string kingdomId) => RecordTouchesKingdom(record, kingdomId)))
-				.Take(3)
-				.ToList();
-			List<ActivePolicyEffectSaveData> activeEffects = LoadActivePolicyEffectSnapshot()
-				.Where((ActivePolicyEffectSaveData effect) => relevantKingdomIds.Any((string kingdomId) => ActiveEffectTouchesKingdom(effect, kingdomId)))
-				.ToList();
-			HashSet<string> coveredRecordIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			HashSet<string> coveredEffectIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			foreach (PolicyRecordSaveData record in recentRecords.Where((PolicyRecordSaveData x) => x != null))
-			{
-				if (!string.IsNullOrWhiteSpace(record.RecordId))
-				{
-					coveredRecordIds.Add(record.RecordId.Trim());
-				}
-				if (record.Effects != null)
-				{
-					foreach (PolicyRecordEffectSaveData effect in record.Effects.Where((PolicyRecordEffectSaveData x) => x != null))
-					{
-						if (!string.IsNullOrWhiteSpace(effect.EffectId))
-						{
-							coveredEffectIds.Add(effect.EffectId.Trim());
-						}
-					}
-				}
-			}
-			List<ActivePolicyEffectSaveData> recentActiveEffects = activeEffects
-				.Where((ActivePolicyEffectSaveData effect) => effect != null
-					&& !string.IsNullOrWhiteSpace(effect.EffectId)
-					&& !coveredEffectIds.Contains(effect.EffectId.Trim())
-					&& (string.IsNullOrWhiteSpace(effect.RecordId) || !coveredRecordIds.Contains(effect.RecordId.Trim())))
-				.Take(MaxPolicyNpcContextItems)
-				.ToList();
-			if (recentRecords.Count == 0 && recentActiveEffects.Count == 0)
-			{
-				return "";
-			}
-			List<string> contextLines = new List<string>();
-			foreach (PolicyRecordSaveData record in recentRecords)
-			{
-				if (contextLines.Count >= MaxPolicyNpcContextItems)
-				{
-					break;
-				}
-				string line = BuildRecentPolicyRecordContextLine(record);
-				if (!string.IsNullOrWhiteSpace(line))
-				{
-					contextLines.Add(line);
-				}
-			}
-			foreach (ActivePolicyEffectSaveData activeEffect in recentActiveEffects)
-			{
-				if (contextLines.Count >= MaxPolicyNpcContextItems)
-				{
-					break;
-				}
-				string line = BuildRecentActivePolicyEffectContextLine(activeEffect);
-				if (!string.IsNullOrWhiteSpace(line))
-				{
-					contextLines.Add(line);
-				}
-			}
-			if (contextLines.Count == 0)
-			{
-				return "";
-			}
-			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.AppendLine("【近期王国政策背景】");
-			stringBuilder.AppendLine(targetKingdomName + "最近自定义政策事实，最多三条；只作背景参考，不当成规则。");
-			foreach (string line in contextLines)
-			{
-				stringBuilder.AppendLine(line);
-			}
-			string contextText = LimitDisplayChars(stringBuilder.ToString().TrimEnd(), MaxPolicyNpcContextChars);
-			PolicyDebugLog("npc-policy-context-built",
-				BuildNpcPolicyContextLogTarget(targetHero, targetCharacter, kingdomIdOverride)
-				+ " targetKingdomId=" + targetKingdomId
-				+ " playerKingdomId=" + playerKingdomId
-				+ " relevantKingdomIds=" + string.Join(",", relevantKingdomIds)
-				+ " recentRecords=" + recentRecords.Count.ToString(CultureInfo.InvariantCulture)
-				+ " activeEffects=" + activeEffects.Count.ToString(CultureInfo.InvariantCulture)
-				+ " extraActiveEffects=" + recentActiveEffects.Count.ToString(CultureInfo.InvariantCulture)
-				+ " contextLines=" + contextLines.Count.ToString(CultureInfo.InvariantCulture)
-				+ " contextLength=" + contextText.Length.ToString(CultureInfo.InvariantCulture),
-				LimitDisplayChars(contextText, 2000));
-			return contextText;
-		}
-		catch (Exception ex)
-		{
-			PolicyDebugLog("npc-policy-context-build-failed", ex.Message);
-			return "";
-		}
-	}
-
-	private static string BuildNpcPolicyContextLogTarget(Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride)
-	{
-		string heroName = targetHero?.Name?.ToString() ?? "";
-		string heroId = targetHero?.StringId ?? "";
-		string characterName = targetCharacter?.Name?.ToString() ?? "";
-		string characterId = targetCharacter?.StringId ?? "";
-		return "targetHero=" + heroName
-			+ " heroId=" + heroId
-			+ " targetCharacter=" + characterName
-			+ " characterId=" + characterId
-			+ " kingdomIdOverride=" + ((kingdomIdOverride ?? "").Trim());
-	}
-
-	private static string BuildRecentPolicyRecordContextLine(PolicyRecordSaveData record)
-	{
-		if (record == null)
-		{
-			return "";
-		}
-		string dateText = string.IsNullOrWhiteSpace(record.DateText) ? "未知日期" : record.DateText.Trim();
-		string policyName = string.IsNullOrWhiteSpace(record.PolicyName) ? "未命名政策" : record.PolicyName.Trim();
-		string contentSummary = CompactPolicyContextText(record.PolicyContentSummary ?? "");
-		contentSummary = LimitDisplayChars(contentSummary, 70);
-		string impactSummary = CompactPolicyContextText(record.ImpactEffectsSummary ?? record.ImpactSummary ?? "");
-		if (string.IsNullOrWhiteSpace(impactSummary))
-		{
-			impactSummary = CompactPolicyContextText(BuildPolicyRecordEffectSummary(record));
-		}
-		impactSummary = LimitDisplayChars(impactSummary, 70);
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.Append("- ").Append(dateText).Append("《").Append(policyName).Append("》");
-		if (!string.IsNullOrWhiteSpace(contentSummary))
-		{
-			stringBuilder.Append("：").Append(contentSummary);
-		}
-		if (!string.IsNullOrWhiteSpace(impactSummary))
-		{
-			stringBuilder.Append("；效果：").Append(impactSummary);
-		}
-		return LimitDisplayChars(stringBuilder.ToString().TrimEnd(), MaxPolicyNpcContextLineChars);
-	}
-
-	private static string BuildRecentActivePolicyEffectContextLine(ActivePolicyEffectSaveData effect)
-	{
-		if (effect == null)
-		{
-			return "";
-		}
-		string policyName = string.IsNullOrWhiteSpace(effect.PolicyName) ? "未命名政策" : effect.PolicyName.Trim();
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.Append("- 《").Append(policyName).Append("》仍在生效：");
-		string status = effect.Ended || effect.RemainingDays <= 0
-			? "已结束"
-			: "剩余 " + effect.RemainingDays.ToString(CultureInfo.InvariantCulture) + "/" + effect.TotalDurationDays.ToString(CultureInfo.InvariantCulture) + " 天";
-		stringBuilder.Append("每日繁荣度 ").Append(FormatSigned(effect.ProsperityDailyDeltaPerTown));
-		stringBuilder.Append("；粮食 ").Append(FormatSigned(effect.FoodDailyDeltaPerTown));
-		stringBuilder.Append("；户数 ").Append(FormatSigned(effect.HearthDailyDeltaPerVillage));
-		stringBuilder.Append("；忠诚度 ").Append(FormatSigned(effect.LoyaltyDailyDeltaPerTown));
-		stringBuilder.Append("；治安 ").Append(FormatSigned(effect.SecurityDailyDeltaPerTown));
-		stringBuilder.Append("；民兵 ").Append(FormatSigned(effect.MilitiaDailyDeltaPerTown));
-		stringBuilder.Append("；稳定度 ").Append(FormatSigned(effect.KingdomStabilityDailyDelta));
-		stringBuilder.Append("，").Append(status);
-		if (!string.IsNullOrWhiteSpace(effect.Reason))
-		{
-			stringBuilder.Append("；").Append(LimitDisplayChars(CompactPolicyContextText(effect.Reason), 40));
-		}
-		return LimitDisplayChars(stringBuilder.ToString().TrimEnd(), MaxPolicyNpcContextLineChars);
-	}
-
-	private List<ActivePolicyEffectSaveData> LoadActivePolicyEffectSnapshot()
-	{
-		List<ActivePolicyEffectSaveData> list = new List<ActivePolicyEffectSaveData>();
-		foreach (KeyValuePair<string, string> item in _activePolicyEffects)
-		{
-			if (string.IsNullOrWhiteSpace(item.Value))
-			{
-				continue;
-			}
-			try
-			{
-				ActivePolicyEffectSaveData activeEffect = JsonConvert.DeserializeObject<ActivePolicyEffectSaveData>(item.Value);
-				if (activeEffect != null && !string.IsNullOrWhiteSpace(activeEffect.EffectId) && !activeEffect.Ended && activeEffect.RemainingDays > 0)
-				{
-					list.Add(activeEffect);
-				}
-			}
-			catch
-			{
-			}
-		}
-		return list.OrderByDescending((ActivePolicyEffectSaveData x) => x.SubmittedDay).ThenByDescending((ActivePolicyEffectSaveData x) => x.CreatedUtcTicks).ToList();
-	}
-
-	private static string ResolvePolicyNpcKingdomId(Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride = null)
-	{
-		string text = (kingdomIdOverride ?? "").Trim();
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			return text;
-		}
-		text = GetFactionId(targetHero?.Clan?.Kingdom);
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			return text;
-		}
-		text = GetFactionId(targetHero?.MapFaction);
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			return text;
-		}
-		Hero heroObject = targetCharacter?.HeroObject;
-		text = GetFactionId(heroObject?.Clan?.Kingdom);
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			return text;
-		}
-		text = GetFactionId(heroObject?.MapFaction);
-		return (text ?? "").Trim();
-	}
-
-	private static string GetFactionId(IFaction faction)
-	{
-		return (faction?.StringId ?? "").Trim();
-	}
-
-	private string BuildPolicyContextKingdomNames(IEnumerable<string> kingdomIds)
-	{
-		List<string> names = new List<string>();
-		foreach (string kingdomId in kingdomIds ?? Enumerable.Empty<string>())
-		{
-			string id = (kingdomId ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(id))
-			{
-				continue;
-			}
-			Kingdom kingdom = ResolveKingdomByIdOrName(id, null);
-			string name = GetKingdomName(kingdom);
-			if (string.IsNullOrWhiteSpace(name) || string.Equals(name, "未知王国", StringComparison.OrdinalIgnoreCase))
-			{
-				name = id;
-			}
-			if (!names.Any((string x) => string.Equals(x, name, StringComparison.OrdinalIgnoreCase)))
-			{
-				names.Add(name);
-			}
-		}
-		return names.Count > 0 ? string.Join("、", names) : "相关王国";
-	}
-
-	private static bool RecordTouchesKingdom(PolicyRecordSaveData record, string kingdomId)
-	{
-		string text = (kingdomId ?? "").Trim();
-		if (record == null || string.IsNullOrWhiteSpace(text))
-		{
-			return false;
-		}
-		if (string.Equals((record.PlayerKingdomId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase))
-		{
-			return true;
-		}
-		if (record.Effects == null)
-		{
-			return false;
-		}
-		foreach (PolicyRecordEffectSaveData effect in record.Effects.Where((PolicyRecordEffectSaveData x) => x != null))
-		{
-			if (string.Equals((effect.KingdomId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private static bool ActiveEffectTouchesKingdom(ActivePolicyEffectSaveData effect, string kingdomId)
-	{
-		string text = (kingdomId ?? "").Trim();
-		return effect != null && !string.IsNullOrWhiteSpace(text) && string.Equals((effect.TargetKingdomId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase);
-	}
-
 	private static string CompactPolicyContextText(string text)
 	{
 		text = (text ?? "").Replace("\r\n", " ").Replace('\r', ' ').Replace('\n', ' ').Trim();
@@ -3565,6 +3169,53 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		{
 			return new List<Settlement>();
 		}
+	}
+
+	private static void RegisterUnifiedPlayerPolicy(PolicyDraftRequest request, PolicyGenerationResult generationResult, string feedback, PolicyApplicationResult application, string recordId, long createdUtcTicks)
+	{
+		if (request == null || string.IsNullOrWhiteSpace(recordId))
+		{
+			return;
+		}
+		NpcRulerPolicyRecord unified = new NpcRulerPolicyRecord
+		{
+			Version = 3,
+			PolicyId = recordId,
+			BatchId = "player",
+			KingdomId = request.PlayerKingdomId ?? "",
+			KingdomName = request.PlayerKingdomName ?? "",
+			RulerHeroId = Hero.MainHero?.StringId ?? "",
+			RulerName = Hero.MainHero?.Name?.ToString() ?? "",
+			PolicyName = request.PolicyName ?? "未命名政策",
+			PolicyContent = request.PolicyContent ?? "",
+			PolicyDigest = generationResult?.MainAssessment?.PolicyContentDigest ?? "",
+			PublicFeedback = CleanPolicyDisplayText(feedback ?? ""),
+			FeedbackTitle = "《" + (request.PolicyName ?? "未命名政策") + "》的民间回响",
+			FeedbackDigest = generationResult?.MainAssessment?.FeedbackDigest ?? "",
+			ImpactSummary = CleanPolicyDisplayText(generationResult?.Postprocess?.ImpactSummary ?? ""),
+			Day = Math.Max(0, request.SubmittedDay),
+			GameDate = request.DateText ?? "",
+			CreatedUtcTicks = createdUtcTicks,
+			IsPlayerPolicy = true,
+			Effects = (application?.KingdomEffects ?? new List<AppliedKingdomEffect>()).Where(x => x != null).Select(x => new NpcRulerPolicyEffectDto
+			{
+				TargetKingdomId = x.KingdomId ?? "",
+				TargetKingdomName = x.KingdomName ?? "",
+				ProsperityDailyDeltaPerTown = x.ProsperityDailyDeltaPerTown,
+				FoodDailyDeltaPerTown = x.FoodDailyDeltaPerTown,
+				HearthDailyDeltaPerVillage = x.HearthDailyDeltaPerVillage,
+				LoyaltyDailyDeltaPerTown = x.LoyaltyDailyDeltaPerTown,
+				SecurityDailyDeltaPerTown = x.SecurityDailyDeltaPerTown,
+				MilitiaDailyDeltaPerTown = x.MilitiaDailyDeltaPerTown,
+				KingdomStabilityDailyDelta = x.KingdomStabilityDailyDelta,
+				DurationDays = x.DurationDays,
+				EffectId = x.EffectId ?? "",
+				RemainingDays = Math.Max(0, x.RemainingDays > 0 ? x.RemainingDays : x.DurationDays),
+				IsEnded = x.RemainingDays <= 0 && x.DurationDays <= 0,
+				Reason = x.Reason ?? ""
+			}).ToList()
+		};
+		NpcRulerPolicyBehavior.RegisterPlayerPolicyForExternal(unified);
 	}
 
 	private static Settlement ResolveSettlementById(string settlementId)
@@ -4302,6 +3953,9 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 
 		[JsonProperty("policyContentDigest")]
 		public string PolicyContentDigest { get; set; }
+
+		[JsonProperty("feedbackDigest")]
+		public string FeedbackDigest { get; set; }
 
 		[JsonProperty("effects")]
 		public List<PolicyEffectDto> Effects { get; set; }

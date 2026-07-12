@@ -83,10 +83,20 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		+ "\n\n每日效果会在每个游戏日重复结算，持续时间要按动态快照中的骑砍季度和年度历法理解。持续越久，每日变化越应轻；任何方向和强弱都必须来自当前事实、政策措施、执行阻力和代价，不能在短期内凭空逆转整个国家。不要套用固定数值模板，也不要把总影响误写成每日影响。"
 		+ "\n\neffects.reason 必须讲清楚“当前事实如何促成政策、政策如何改变现实、为何产生这些方向和强弱”。policyContent、impactSummary、publicFeedback 与 effects 必须相互一致；民众反馈要像政策发布后在卡拉迪亚社会中真实传播的议论与余波。";
 
-	private const string DefaultNpcRulerPolicyPrompt = "让每位 NPC 统治者以符合其身份、文化、个性和经历的方式治理国家。政策名称、措辞、优先事项和愿意承担的代价都应有鲜明的个人色彩，不要写成千篇一律的模板。"
+	private const string PreviousDefaultNpcRulerPolicyPromptBeforeDerivedEvent = "让每位 NPC 统治者以符合其身份、文化、个性和经历的方式治理国家。政策名称、措辞、优先事项和愿意承担的代价都应有鲜明的个人色彩，不要写成千篇一律的模板。"
 		+ "\n\n新政策应联系此前的治理路线和民众反应，可以延续有效措施，也可以针对抱怨与失败作出调整、纠正或转向。"
 		+ "\n\n战争时期优先处理军粮、征召、防御、治安、财政负担、商路和敌我消耗，并体现动员对本国造成的真实代价。和平时期更适合休养生产、恢复贸易、建设领地和处理长期矛盾。"
 		+ "\n\n所有政策都应符合国家当前处境和实际执行能力，效果应由具体措施逐步产生，不能无缘无故让国家迅速强盛或衰败。民众反馈应像街市、村庄、军营、商队和贵族厅堂中自然传播的议论。";
+
+	private const string PreviousDefaultNpcRulerPolicyPromptWithTypedEvent = "让每位 NPC 统治者依据本国文化、统治结构、实际身份、个性和经历，以统治者本人直接发言的方式治理国家。政策名称、措辞、优先事项和愿意承担的代价都应有鲜明的个人色彩，不要写成旁观者新闻摘要或千篇一律的模板。"
+		+ "\n\n直接发言的文体、称谓和是否使用显式代词，应从该国文化、统治者头衔、家族与封臣关系中自然形成，不套用统一自称。新政策应联系此前的治理路线和政策余波，可以延续有效措施，也可以针对失败、抱怨或意外代价作出调整、纠正或转向。"
+		+ "\n\n战争时期优先处理军粮、征召、防御、治安、财政负担、商路和敌我消耗，并体现动员对本国造成的真实代价。和平时期更适合休养生产、恢复贸易、建设领地和处理长期矛盾。"
+		+ "\n\n所有政策都应符合国家当前处境和实际执行能力，效果应由具体措施逐步产生，不能无缘无故让国家迅速强盛或衰败。每项政策伴随一件与实际效果直接相关的社会事件，让谣言、信仰、平民、领主、军营、商旅、官吏或边境局势等最合理的一方自然介入并展现政策如何落地。";
+
+	private const string DefaultNpcRulerPolicyPrompt = "让每位 NPC 统治者依据本国文化、统治结构、实际身份、个性和经历，以统治者本人直接发言的方式治理国家。政策名称、措辞、优先事项和愿意承担的代价都应有鲜明的个人色彩，不要写成旁观者新闻摘要或千篇一律的模板。"
+		+ "\n\n直接发言的文体、称谓和是否使用显式代词，应从该国文化、统治者头衔、家族与封臣关系中自然形成，不套用统一自称。新政策应联系此前的治理路线和政策余波，可以延续有效措施，也可以针对失败、抱怨或意外代价作出调整、纠正或转向。"
+		+ "\n\n战争时期优先处理军粮、征召、防御、治安、财政负担、商路和敌我消耗，并体现动员对本国造成的真实代价。和平时期更适合休养生产、恢复贸易、建设领地和处理长期矛盾。"
+		+ "\n\n所有政策都应符合国家当前处境和实际执行能力，效果强弱应与政策规模、覆盖范围、执行阻力、持续时间和真实代价相称，不要把所有影响自动压成微小数值。每项政策伴随一件与实际效果直接相关的具体事件，事件内容由当前文化、人物关系、利益冲突和国家局势自由形成，不套用固定类型、题材清单或轮换模板。";
 
 	private const int DefaultCustomPolicyGoldCost = 50000;
 
@@ -2303,7 +2313,9 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	{
 		string text = LimitCustomPromptText(NormalizePromptLineEndings(input), NpcRulerPolicyPromptJsonFileName);
 		if (string.Equals(text, PreviousDefaultNpcRulerPolicyPromptForMigration, StringComparison.Ordinal)
-			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptWithTechnicalContract, StringComparison.Ordinal))
+			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptWithTechnicalContract, StringComparison.Ordinal)
+			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptBeforeDerivedEvent, StringComparison.Ordinal)
+			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptWithTypedEvent, StringComparison.Ordinal))
 		{
 			return DefaultNpcRulerPolicyPrompt;
 		}
