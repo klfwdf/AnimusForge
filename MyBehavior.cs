@@ -576,6 +576,10 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private class NpcPersonaProfile
 	{
+		public string HeroId;
+
+		public string HeroName;
+
 		public string Personality;
 
 		public string Background;
@@ -1137,6 +1141,8 @@ public class MyBehavior : CampaignBehaviorBase
 
 		public int BlockIndex;
 
+		public PendingWeeklyReportBlockCommit CurrentBlockCommit;
+
 		public bool CurrentPreviewCaptured;
 
 		public HashSet<string> CurrentParsedReportIds;
@@ -1152,6 +1158,29 @@ public class MyBehavior : CampaignBehaviorBase
 		public HashSet<string> WeeklyReportNoticeEventIdsQueued = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
 		public TaskCompletionSource<WeeklyReportGenerationResult> CompletionSource;
+	}
+
+	private sealed class PendingWeeklyReportBlockCommit
+	{
+		public WeeklyEventMaterialPreviewGroup Group;
+
+		public string ReportId = "";
+
+		public string Title = "";
+
+		public string ShortSummary = "";
+
+		public string Report = "";
+
+		public string TagText = "";
+
+		public string PromptText = "";
+
+		public List<EventMaterialReference> OrderedMaterials = new List<EventMaterialReference>();
+
+		public List<EventMaterialReference> ClonedMaterials = new List<EventMaterialReference>();
+
+		public int MaterialIndex;
 	}
 
 	private enum DailyMaintenanceTaskKind
@@ -1503,7 +1532,7 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private const int MaxMajorNpcActionEntriesPerHero = 160;
 
-	private const int MajorNpcBattleTroopThreshold = 1000;
+	private const int MajorNpcBattleTroopThreshold = 500;
 
 	private const int UniversalApiDefaultMaxTokens = DuelSettings.DefaultGeneralApiMaxTokens;
 
@@ -1520,6 +1549,10 @@ public class MyBehavior : CampaignBehaviorBase
 	private const int RebelKingdomInitialStabilityValue = 50;
 
 	private const long WeeklyMemoryMaterialValueThresholdDenars = 20000L;
+
+	private const double ShoutPromptContextSlowStageMs = 1000.0;
+
+	private const double ShoutPromptContextHardBudgetMs = 15000.0;
 
 	private Dictionary<string, List<DialogueDay>> _dialogueHistory = new Dictionary<string, List<DialogueDay>>();
 
@@ -1571,6 +1604,8 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private const int DailyMaintenanceMaxJobsPerTick = 8;
 
+	private const double DeferredMaintenanceRunIntervalMilliseconds = 250.0;
+
 	private readonly Queue<DailyMaintenanceJob> _dailyMaintenanceQueue = new Queue<DailyMaintenanceJob>();
 
 	private readonly HashSet<string> _dailyMaintenanceJobKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -1588,6 +1623,20 @@ public class MyBehavior : CampaignBehaviorBase
 	private readonly Queue<PendingWeeklyReportCommitContext> _pendingWeeklyReportCommits = new Queue<PendingWeeklyReportCommitContext>();
 
 	private int _kingdomStabilityMaintenanceCursor;
+
+	private long _nextDeferredMaintenanceRunTimestamp;
+
+	private bool _weekZeroOpeningSummaryMaintenanceWorldProcessed;
+
+	private List<Kingdom> _weekZeroOpeningSummaryMaintenanceKingdoms;
+
+	private int _weekZeroOpeningSummaryMaintenanceCursor;
+
+	private List<Kingdom> _missedStrategicWorldEventMaintenanceKingdoms;
+
+	private HashSet<string> _missedStrategicWorldEventMaintenanceStableKeys;
+
+	private int _missedStrategicWorldEventMaintenanceCursor;
 
 	private List<EventSourceMaterialEntry> _weeklyEventSourceMaterialBuildSnapshot;
 
@@ -1651,9 +1700,19 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private int _lastProcessedKingdomRebellionWeek = -1;
 
+	private const int WeeklyReportReadingXpBatchSize = 20;
+
 	private List<string> _unreadWeeklyReportNoticeEventIds = new List<string>();
 
 	private List<string> _weeklyReportReadingXpClaimedEventIds = new List<string>();
+
+	private int _weeklyReportReadingXpPendingCount;
+
+	private int _weeklyReportReadingXpPendingCharm;
+
+	private int _weeklyReportReadingXpPendingLeadership;
+
+	private int _weeklyReportReadingXpPendingSteward;
 
 	private readonly HashSet<string> _weeklyReportNoticeEventIdsShownThisSession = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
@@ -1761,6 +1820,8 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private HashSet<string> _recentlyDefeatedByPlayer = new HashSet<string>();
 
+	private readonly HashSet<string> _playerDefeatedHeroBattleFactKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
 	private HashSet<string> _recentlyReleasedPrisoners = new HashSet<string>();
 
 	private static int _cachedPlayerClanTier;
@@ -1799,9 +1860,9 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private static readonly Regex MoodTagRegex = new Regex("\\[ACTION:MOOD:([^\\]\\r\\n]+)\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-	private static readonly Regex TransferTroopTagRegex = new Regex("\\[ATT:(\\d+):(\\d+)\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+	private static readonly Regex TransferTroopTagRegex = new Regex("\\[ATT:(ALL|\\d+):(ALL|\\d+)\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-	private static readonly Regex TransferPrisonerTagRegex = new Regex("\\[ATP:(\\d+):(\\d+)\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+	private static readonly Regex TransferPrisonerTagRegex = new Regex("\\[ATP:(ALL|\\d+):(ALL|\\d+)\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
 	private Dictionary<string, PatienceState> _patienceStates = new Dictionary<string, PatienceState>();
 
@@ -2026,9 +2087,11 @@ public class MyBehavior : CampaignBehaviorBase
 		CampaignEvents.OnSessionLaunchedEvent.AddNonSerializedListener(this, OnSessionLaunched);
 		CampaignEvents.OnGameLoadFinishedEvent.AddNonSerializedListener(this, OnGameLoadFinished);
 		CampaignEvents.OnMissionStartedEvent.AddNonSerializedListener(this, OnMissionStarted);
+		CampaignEvents.BattleStarted.AddNonSerializedListener(this, OnBattleStartedForEncounterDiag);
 		CampaignEvents.OnSaveOverEvent.AddNonSerializedListener(this, OnSaveOver);
 		CampaignEvents.ConversationEnded.AddNonSerializedListener(this, OnMemoryConversationEnded);
 		CampaignEvents.TickEvent.AddNonSerializedListener(this, OnCampaignTick);
+		CampaignEvents.OnPlayerBattleEndEvent.AddNonSerializedListener(this, OnPlayerBattleEndForDefeatMemory);
 		CampaignEvents.MapEventEnded.AddNonSerializedListener(this, OnMapEventEnded);
 		CampaignEvents.OnQuestCompletedEvent.AddNonSerializedListener(this, OnQuestCompletedForActionHistory);
 		CampaignEvents.NewCompanionAdded.AddNonSerializedListener(this, OnNewCompanionAddedForActionHistory);
@@ -2104,6 +2167,7 @@ public class MyBehavior : CampaignBehaviorBase
 		try
 		{
 			ClearRuleStickyCarry();
+			_playerDefeatedHeroBattleFactKeys.Clear();
 			_memorySummaryProcessing = false;
 			_memorySummaryFailurePopupActive = false;
 			_nativeConversationMemorySessionCounter = 0;
@@ -2186,9 +2250,7 @@ public class MyBehavior : CampaignBehaviorBase
 					Hero hero = party.Party?.LeaderHero;
 					if (hero != null && hero != Hero.MainHero && hero.IsLord)
 					{
-						_recentlyDefeatedByPlayer.Add(hero.StringId);
-						Logger.Log("BattleStatus", $"原版战斗结束：玩家击败了 {hero.Name}");
-						AppendExternalDialogueHistory(hero, null, null, $"你在一场战斗中被 {Hero.MainHero.Name} 击败了。");
+						RecordPlayerDefeatedHeroBattleFact(mapEvent, mapEventSide, hero, "map_event_ended");
 					}
 				}
 			}
@@ -2199,28 +2261,87 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			TrackNpcActionsFromMapEvent(mapEvent);
+			RecordPlayerBattleDefeatRecentAction(mapEvent);
 		}
 		catch (Exception ex2)
 		{
-			Logger.Log("NpcAction", "[ERROR] TrackNpcActionsFromMapEvent: " + ex2.Message);
+			Logger.Log("NpcAction", "[ERROR] RecordPlayerBattleDefeatRecentAction: " + ex2.Message);
+		}
+		try
+		{
+			TrackNpcActionsFromMapEvent(mapEvent);
+		}
+		catch (Exception ex3)
+		{
+			Logger.Log("NpcAction", "[ERROR] TrackNpcActionsFromMapEvent: " + ex3.Message);
 		}
 		try
 		{
 			RecordPlayerRoutineBanditDefeatRecentAction(mapEvent);
 		}
-		catch (Exception ex3)
+		catch (Exception ex4)
 		{
-			Logger.Log("NpcAction", "[ERROR] RecordPlayerRoutineBanditDefeatRecentAction: " + ex3.Message);
+			Logger.Log("NpcAction", "[ERROR] RecordPlayerRoutineBanditDefeatRecentAction: " + ex4.Message);
 		}
 		try
 		{
 			RecordPlayerHideoutClearRecentAction(mapEvent);
 		}
-		catch (Exception ex4)
+		catch (Exception ex5)
 		{
-			Logger.Log("NpcAction", "[ERROR] RecordPlayerHideoutClearRecentAction: " + ex4.Message);
+			Logger.Log("NpcAction", "[ERROR] RecordPlayerHideoutClearRecentAction: " + ex5.Message);
 		}
+	}
+
+	private void OnPlayerBattleEndForDefeatMemory(MapEvent mapEvent)
+	{
+		try
+		{
+			if (mapEvent == null || !mapEvent.IsPlayerMapEvent || !mapEvent.HasWinner || mapEvent.WinningSide != mapEvent.PlayerSide)
+			{
+				return;
+			}
+			MapEventSide defeatedSide = GetMapEventDefeatedSide(mapEvent);
+			if (defeatedSide?.Parties == null)
+			{
+				return;
+			}
+			foreach (MapEventParty party in defeatedSide.Parties)
+			{
+				Hero hero = party?.Party?.LeaderHero;
+				if (hero != null && hero != Hero.MainHero && hero.IsLord)
+				{
+					RecordPlayerDefeatedHeroBattleFact(mapEvent, defeatedSide, hero, "player_battle_end");
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("BattleStatus", "[ERROR] OnPlayerBattleEndForDefeatMemory: " + ex.Message);
+		}
+	}
+
+	private void RecordPlayerDefeatedHeroBattleFact(MapEvent mapEvent, MapEventSide defeatedSide, Hero defeatedHero, string reason)
+	{
+		if (mapEvent == null || defeatedHero == null || defeatedHero == Hero.MainHero || string.IsNullOrWhiteSpace(defeatedHero.StringId) || !mapEvent.IsPlayerMapEvent || !mapEvent.HasWinner || mapEvent.WinningSide != mapEvent.PlayerSide)
+		{
+			return;
+		}
+		defeatedSide ??= GetMapEventDefeatedSide(mapEvent);
+		if (defeatedSide == null)
+		{
+			return;
+		}
+		string locationLabel = GetMapEventLocationLabel(mapEvent);
+		string stableKey = BuildPlayerDefeatedHeroBattleFactKey(mapEvent, defeatedSide, defeatedHero, locationLabel);
+		if (!_playerDefeatedHeroBattleFactKeys.Add(stableKey))
+		{
+			return;
+		}
+		_recentlyDefeatedByPlayer.Add(defeatedHero.StringId);
+		Logger.Log("BattleStatus", "玩家击败领主事实写入 reason=" + (reason ?? "") + " hero=" + defeatedHero.StringId + " name=" + (defeatedHero.Name?.ToString() ?? ""));
+		AppendExternalDialogueHistory(defeatedHero, null, null, BuildPlayerDefeatedHeroDialogueFact(mapEvent, defeatedSide, locationLabel));
+		RecordNpcDefeatedByPlayerRecentAction(mapEvent, defeatedSide, defeatedHero);
 	}
 
 	public static void RecordNpcActionForExternal(Hero actorHero, string text, string stableKey, string actionKind, bool isMajor, bool isRecent, Hero targetHero = null, Settlement settlement = null, string locationText = null, bool allowNonLordHero = false, bool? won = null)
@@ -2359,6 +2480,206 @@ public class MyBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("NpcAction", "[ERROR] OnGovernorChangedForActionHistory: " + ex.Message);
+		}
+	}
+
+	private void RecordNpcDefeatedByPlayerRecentAction(MapEvent mapEvent, MapEventSide defeatedSide, Hero defeatedHero)
+	{
+		if (mapEvent == null || defeatedHero == null || defeatedHero == Hero.MainHero || !mapEvent.IsPlayerMapEvent || !mapEvent.HasWinner || mapEvent.WinningSide != mapEvent.PlayerSide)
+		{
+			return;
+		}
+		defeatedSide ??= GetMapEventDefeatedSide(mapEvent);
+		if (defeatedSide == null || !ShouldTrackNpcActionHero(defeatedHero))
+		{
+			return;
+		}
+		string locationLabel = GetMapEventLocationLabel(mapEvent);
+		string text = BuildNpcDefeatedByPlayerRecentActionText(mapEvent, defeatedSide, locationLabel);
+		string stableKey = BuildMapEventParticipantStableKey(mapEvent, defeatedSide, defeatedHero, locationLabel);
+		bool isMajor = ShouldRecordMajorBattleAction(GetMapEventTroopCount(mapEvent));
+		RecordExternalNpcAction(defeatedHero, text, stableKey, "map_event", isMajor, isRecent: true, targetHero: Hero.MainHero, settlement: mapEvent.MapEventSettlement, locationText: locationLabel, allowNonLordHero: false, won: false);
+	}
+
+	private void RecordPlayerBattleDefeatRecentAction(MapEvent mapEvent)
+	{
+		if (mapEvent == null || !mapEvent.IsPlayerMapEvent || !mapEvent.HasWinner || mapEvent.WinningSide == mapEvent.PlayerSide || Hero.MainHero == null)
+		{
+			return;
+		}
+		MapEventSide playerSide = GetMapEventSideByBattleSide(mapEvent, mapEvent.PlayerSide);
+		if (playerSide == null)
+		{
+			return;
+		}
+		string locationLabel = GetMapEventLocationLabel(mapEvent);
+		string text = BuildPlayerBattleDefeatRecentActionText(mapEvent, playerSide, locationLabel);
+		string stableKey = BuildMapEventParticipantStableKey(mapEvent, playerSide, Hero.MainHero, locationLabel);
+		Hero targetHero = playerSide.OtherSide?.LeaderParty?.LeaderHero;
+		bool isMajor = ShouldRecordMajorBattleAction(GetMapEventTroopCount(mapEvent));
+		RecordExternalPlayerAction(text, stableKey, "map_event", isMajor, targetHero, mapEvent.MapEventSettlement, locationLabel, won: false);
+	}
+
+	private static string BuildMapEventParticipantStableKey(MapEvent mapEvent, MapEventSide side, Hero hero, string locationLabel)
+	{
+		string mapEventStableKey = BuildMapEventStableKey(mapEvent, locationLabel);
+		return mapEventStableKey + ":side:" + side?.MissionSide + ":hero:" + (hero?.StringId ?? "");
+	}
+
+	private static string BuildPlayerDefeatedHeroBattleFactKey(MapEvent mapEvent, MapEventSide defeatedSide, Hero defeatedHero, string locationLabel)
+	{
+		List<string> list = new List<string>
+		{
+			"player_defeated_hero_fact",
+			GetCurrentGameDayIndexSafe().ToString(),
+			NormalizeWeeklyPromptKeyPart(mapEvent?.StringId),
+			NormalizeWeeklyPromptKeyPart(locationLabel),
+			NormalizeWeeklyPromptKeyPart(mapEvent == null ? "" : mapEvent.PlayerSide.ToString()),
+			NormalizeWeeklyPromptKeyPart(defeatedSide == null ? "" : defeatedSide.MissionSide.ToString()),
+			GetHeroId(defeatedHero),
+			GetHeroId(defeatedSide?.LeaderParty?.LeaderHero),
+			GetHeroId(defeatedSide?.OtherSide?.LeaderParty?.LeaderHero),
+			NormalizeWeeklyPromptKeyPart(BuildMapEventStableKey(mapEvent, locationLabel))
+		};
+		return string.Join(":", list.Where((string x) => !string.IsNullOrWhiteSpace(x)));
+	}
+
+	private bool HasRecordedPlayerDefeatedHeroBattleFact(MapEvent mapEvent, MapEventSide defeatedSide, Hero defeatedHero)
+	{
+		if (mapEvent == null || defeatedSide == null || defeatedHero == null)
+		{
+			return false;
+		}
+		string locationLabel = GetMapEventLocationLabel(mapEvent);
+		string stableKey = BuildPlayerDefeatedHeroBattleFactKey(mapEvent, defeatedSide, defeatedHero, locationLabel);
+		return !string.IsNullOrWhiteSpace(stableKey) && _playerDefeatedHeroBattleFactKeys.Contains(stableKey);
+	}
+
+	private static MapEventSide GetMapEventSideByBattleSide(MapEvent mapEvent, BattleSideEnum side)
+	{
+		if (mapEvent == null)
+		{
+			return null;
+		}
+		if (side == BattleSideEnum.Attacker)
+		{
+			return mapEvent.AttackerSide;
+		}
+		if (side == BattleSideEnum.Defender)
+		{
+			return mapEvent.DefenderSide;
+		}
+		return null;
+	}
+
+	private static string BuildPlayerDefeatedHeroDialogueFact(MapEvent mapEvent, MapEventSide defeatedSide, string locationLabel)
+	{
+		string playerName = Hero.MainHero?.Name?.ToString()?.Trim();
+		if (string.IsNullOrWhiteSpace(playerName))
+		{
+			playerName = "玩家";
+		}
+		string place = string.IsNullOrWhiteSpace(locationLabel) ? "野外" : locationLabel.Trim();
+		string battleKind = "战斗";
+		if (mapEvent?.IsSiegeAssault == true || mapEvent?.IsSiegeOutside == true || mapEvent?.IsSallyOut == true)
+		{
+			battleKind = "攻守战";
+		}
+		else if (mapEvent?.IsRaid == true)
+		{
+			battleKind = "袭掠战";
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.Append("[AFEF玩家行为补充] 你刚在").Append(place).Append("的").Append(battleKind).Append("中被").Append(playerName).Append("一方击败；这场战败已经发生。");
+		string winningLords = BuildTrackedHeroListText(defeatedSide?.OtherSide, 4);
+		if (!string.IsNullOrWhiteSpace(winningLords))
+		{
+			stringBuilder.Append(" 胜方主要领主：").Append(winningLords).Append('。');
+		}
+		return stringBuilder.ToString();
+	}
+
+	private static string BuildNpcDefeatedByPlayerRecentActionText(MapEvent mapEvent, MapEventSide defeatedSide, string locationLabel)
+	{
+		string playerName = Hero.MainHero?.Name?.ToString()?.Trim();
+		if (string.IsNullOrWhiteSpace(playerName))
+		{
+			playerName = "玩家";
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+		if (mapEvent?.IsSiegeAssault == true || mapEvent?.IsSiegeOutside == true || mapEvent?.IsSallyOut == true)
+		{
+			stringBuilder.Append("你在").Append(string.IsNullOrWhiteSpace(locationLabel) ? "某处要塞" : locationLabel.Trim()).Append("的攻守战中被").Append(playerName).Append("一方击败。");
+		}
+		else if (mapEvent?.IsRaid == true)
+		{
+			stringBuilder.Append("你在").Append(string.IsNullOrWhiteSpace(locationLabel) ? "某处村庄" : locationLabel.Trim()).Append("的袭掠战中被").Append(playerName).Append("一方击败。");
+		}
+		else
+		{
+			stringBuilder.Append("你在").Append(string.IsNullOrWhiteSpace(locationLabel) ? "野外" : locationLabel.Trim()).Append("的战斗中被").Append(playerName).Append("一方击败。");
+		}
+		AppendBattleOpponentDetails(stringBuilder, defeatedSide?.OtherSide, "胜方");
+		AppendBattleCasualtyDetails(stringBuilder, defeatedSide, defeatedSide?.OtherSide);
+		return stringBuilder.ToString();
+	}
+
+	private static string BuildPlayerBattleDefeatRecentActionText(MapEvent mapEvent, MapEventSide playerSide, string locationLabel)
+	{
+		string opponentLabel = BuildMapEventSideNarrativeLabel(playerSide?.OtherSide);
+		if (string.IsNullOrWhiteSpace(opponentLabel))
+		{
+			opponentLabel = "敌军";
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+		if (mapEvent?.IsSiegeAssault == true || mapEvent?.IsSiegeOutside == true || mapEvent?.IsSallyOut == true)
+		{
+			stringBuilder.Append("玩家在").Append(string.IsNullOrWhiteSpace(locationLabel) ? "某处要塞" : locationLabel.Trim()).Append("的攻守战中败给了").Append(opponentLabel).Append("。");
+		}
+		else if (mapEvent?.IsRaid == true)
+		{
+			stringBuilder.Append("玩家在").Append(string.IsNullOrWhiteSpace(locationLabel) ? "某处村庄" : locationLabel.Trim()).Append("的袭掠战中败给了").Append(opponentLabel).Append("。");
+		}
+		else
+		{
+			stringBuilder.Append("玩家在").Append(string.IsNullOrWhiteSpace(locationLabel) ? "野外" : locationLabel.Trim()).Append("的战斗中败给了").Append(opponentLabel).Append("。");
+		}
+		AppendBattleOpponentDetails(stringBuilder, playerSide?.OtherSide, "胜方");
+		AppendBattleCasualtyDetails(stringBuilder, playerSide, playerSide?.OtherSide);
+		return stringBuilder.ToString();
+	}
+
+	private static void AppendBattleOpponentDetails(StringBuilder stringBuilder, MapEventSide opponentSide, string label)
+	{
+		if (stringBuilder == null || opponentSide == null)
+		{
+			return;
+		}
+		string sideLabel = string.IsNullOrWhiteSpace(label) ? "对方" : label.Trim();
+		string lords = BuildTrackedHeroListText(opponentSide, 6);
+		if (!string.IsNullOrWhiteSpace(lords))
+		{
+			stringBuilder.Append(' ').Append(sideLabel).Append("领主：").Append(lords).Append('。');
+		}
+		string nonLordParties = BuildMapEventNonLordPartyListText(opponentSide, 5);
+		if (!string.IsNullOrWhiteSpace(nonLordParties))
+		{
+			stringBuilder.Append(' ').Append(sideLabel).Append("非领主部队：").Append(nonLordParties).Append('。');
+		}
+	}
+
+	private static void AppendBattleCasualtyDetails(StringBuilder stringBuilder, MapEventSide defeatedSide, MapEventSide winningSide)
+	{
+		if (stringBuilder == null)
+		{
+			return;
+		}
+		string defeatedCasualties = BuildMapEventCasualtyText(defeatedSide);
+		string winningCasualties = BuildMapEventCasualtyText(winningSide);
+		if (!string.IsNullOrWhiteSpace(defeatedCasualties) || !string.IsNullOrWhiteSpace(winningCasualties))
+		{
+			stringBuilder.Append(" 败方死伤：").Append(string.IsNullOrWhiteSpace(defeatedCasualties) ? "不详" : defeatedCasualties);
+			stringBuilder.Append("；胜方死伤：").Append(string.IsNullOrWhiteSpace(winningCasualties) ? "不详" : winningCasualties).Append('。');
 		}
 	}
 
@@ -3282,16 +3603,20 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void OnRulingClanChanged(Kingdom kingdom, Clan newRulingClan)
+	private void OnRulingClanChanged(Kingdom kingdom, Clan eventRulingClan)
 	{
 		try
 		{
-			string text = "ruling_clan_changed:" + GetKingdomId(kingdom) + ":" + GetClanId(newRulingClan);
-			string text2 = "你所在的" + GetClanDisplayName(newRulingClan) + "家族已成为" + GetKingdomDisplayName(kingdom, "该王国") + "的执政家族。";
-			foreach (Hero item in GetTrackedLordsForClan(newRulingClan))
+			// Bannerlord 1.3 passes the new ruling clan here, while 1.4.5 passes the old one.
+			// Always read the post-change value from the kingdom so the behavior stays version-neutral.
+			Clan rulingClan = kingdom?.RulingClan;
+			TrySyncModCreatedRebelKingdomBannerToRulingClan(kingdom, eventRulingClan, "ruling_clan_changed");
+			string text = "ruling_clan_changed:" + GetKingdomId(kingdom) + ":" + GetClanId(rulingClan);
+			string text2 = "你所在的" + GetClanDisplayName(rulingClan) + "家族已成为" + GetKingdomDisplayName(kingdom, "该王国") + "的执政家族。";
+			foreach (Hero item in GetTrackedLordsForClan(rulingClan))
 			{
 				NpcActionFacts npcActionFacts = CreateNpcActionFacts("ruling_clan_changed", item);
-				AddUniqueId(npcActionFacts.RelatedClanIds, GetClanId(newRulingClan));
+				AddUniqueId(npcActionFacts.RelatedClanIds, GetClanId(rulingClan));
 				AddUniqueId(npcActionFacts.RelatedKingdomIds, GetKingdomId(kingdom));
 				RecordNpcMajorAction(item, text2, text, npcActionFacts);
 				RecordNpcRecentAction(item, text2, text, facts: npcActionFacts);
@@ -3585,6 +3910,7 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			HashSet<string> existingStableKeys = BuildEventSourceMaterialStableKeySet();
 			foreach (Kingdom kingdom in GetDevEditableKingdoms())
 			{
 				if (kingdom == null || !kingdom.IsEliminated)
@@ -3592,11 +3918,13 @@ public class MyBehavior : CampaignBehaviorBase
 					continue;
 				}
 				string kingdomId = GetKingdomId(kingdom);
-				if (string.IsNullOrWhiteSpace(kingdomId) || HasEventSourceMaterialStableKey("kingdom_destroyed:" + kingdomId))
+				string stableKey = NormalizeNpcActionStableKey("kingdom_destroyed:" + kingdomId, "");
+				if (string.IsNullOrWhiteSpace(kingdomId) || string.IsNullOrWhiteSpace(stableKey) || existingStableKeys.Contains(stableKey))
 				{
 					continue;
 				}
 				RecordKingdomDestroyedMaterial(kingdom, "daily_scan");
+				existingStableKeys.Add(stableKey);
 			}
 		}
 		catch (Exception ex)
@@ -5026,6 +5354,7 @@ public class MyBehavior : CampaignBehaviorBase
 			Settlement settlement = hero?.CurrentSettlement ?? Settlement.CurrentSettlement;
 			PlayerNotorietyBehavior.RecordPublicMemoryForExternal(hero, settlement, block.PlayerHistoryMaterial, block.PlayerPublicity, block.PlayerPublicityReason, block.GameDayIndex, block.GameDate);
 		}
+		RecordPublicDailyMemoryWeeklyMaterial(block);
 		RecordWeeklyMemoryMaterialForBlock(block);
 		TryEnqueueMemoryOverviewForMemoryId(memoryId, job.HeroName, blocks);
 	}
@@ -5199,6 +5528,18 @@ public class MyBehavior : CampaignBehaviorBase
 		return elapsedMs >= budgetMs;
 	}
 
+	private bool TryClaimDeferredMaintenanceRunWindow()
+	{
+		long now = Stopwatch.GetTimestamp();
+		if (_nextDeferredMaintenanceRunTimestamp > now)
+		{
+			return false;
+		}
+		long interval = Math.Max(1L, (long)(Stopwatch.Frequency * DeferredMaintenanceRunIntervalMilliseconds / 1000.0));
+		_nextDeferredMaintenanceRunTimestamp = now + interval;
+		return true;
+	}
+
 	private void ProcessDeferredDailyMaintenance()
 	{
 		if (!IsDeferredDailyMaintenanceEnabled())
@@ -5207,25 +5548,42 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		double budgetMs = GetDailyMaintenanceFrameBudgetMs();
 		long startTimestamp = Stopwatch.GetTimestamp();
-		int processedScanCount = ProcessMemoryOverviewCandidateScanBudget(startTimestamp, budgetMs);
+		int processedScanCount;
+		using (PerfProbe.Scope("MyBehavior.DeferredDailyMaintenance.ProcessMemoryOverviewCandidateScan"))
+		{
+			processedScanCount = ProcessMemoryOverviewCandidateScanBudget(startTimestamp, budgetMs);
+		}
 		int processedJobCount = 0;
 		while (_dailyMaintenanceQueue.Count > 0 && processedJobCount < DailyMaintenanceMaxJobsPerTick && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
 		{
 			DailyMaintenanceJob job = _dailyMaintenanceQueue.Dequeue();
 			_dailyMaintenanceJobKeys.Remove(BuildDailyMaintenanceJobKey(job.Kind, job.DayIndex, job.WeekIndex, job.StartDay, job.EndDay));
-			bool completed = ExecuteDailyMaintenanceJob(job, startTimestamp, budgetMs);
+			bool completed;
+			using (PerfProbe.Scope("MyBehavior.DeferredDailyMaintenance.Job." + job.Kind))
+			{
+				completed = ExecuteDailyMaintenanceJob(job, startTimestamp, budgetMs);
+			}
 			if (!completed)
 			{
 				EnqueueDailyMaintenanceJob(job.Kind, job.DayIndex, job.WeekIndex, job.StartDay, job.EndDay, job.Reason);
 			}
 			processedJobCount++;
-			processedScanCount += ProcessMemoryOverviewCandidateScanBudget(startTimestamp, budgetMs);
+			using (PerfProbe.Scope("MyBehavior.DeferredDailyMaintenance.ProcessMemoryOverviewCandidateScan"))
+			{
+				processedScanCount += ProcessMemoryOverviewCandidateScanBudget(startTimestamp, budgetMs);
+			}
 		}
 		if (!IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
 		{
-			ProcessPendingAutoWeeklyReportBuildBudget(startTimestamp, budgetMs);
+			using (PerfProbe.Scope("MyBehavior.DeferredDailyMaintenance.ProcessPendingAutoWeeklyReportBuild"))
+			{
+				ProcessPendingAutoWeeklyReportBuildBudget(startTimestamp, budgetMs);
+			}
 		}
-		processedScanCount += ProcessMemoryOverviewCandidateScanBudget(startTimestamp, budgetMs);
+		using (PerfProbe.Scope("MyBehavior.DeferredDailyMaintenance.ProcessMemoryOverviewCandidateScan"))
+		{
+			processedScanCount += ProcessMemoryOverviewCandidateScanBudget(startTimestamp, budgetMs);
+		}
 		if (processedScanCount > 0 && !_memorySummaryProcessing && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
 		{
 			TryStartMemorySummaryQueue();
@@ -5265,10 +5623,16 @@ public class MyBehavior : CampaignBehaviorBase
 				TryDiscontinueLandlessModRebelKingdoms(string.IsNullOrWhiteSpace(job.Reason) ? "deferred_daily_tick" : job.Reason);
 				break;
 			case DailyMaintenanceTaskKind.EnsureWeekZeroOpeningSummaryEvents:
-				EnsureWeekZeroOpeningSummaryEvents();
+				if (!ProcessWeekZeroOpeningSummaryEventsSlice())
+				{
+					return false;
+				}
 				break;
 			case DailyMaintenanceTaskKind.RecordMissedStrategicWorldEvents:
-				TryRecordMissedStrategicWorldEvents();
+				if (!ProcessMissedStrategicWorldEventsSlice())
+				{
+					return false;
+				}
 				break;
 			case DailyMaintenanceTaskKind.ApplyKingdomStabilityRelationAdjustments:
 				if (!ProcessKingdomStabilityRelationAdjustmentsSlice())
@@ -5602,16 +5966,110 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void EnsureWeekZeroOpeningSummaryEvents()
 	{
-		UpsertWeekZeroOpeningSummaryEvent("world", "", "第0天世界开局概要", _eventWorldOpeningSummary, "世界开局概要", "world_opening_summary");
+		FreezeWatchdog.Mark("WeeklyPrompt.EnsureWeek0.start", "entries=" + (_eventRecordEntries?.Count ?? 0) + " thread=" + Thread.CurrentThread.ManagedThreadId);
+		UpsertWeekZeroOpeningSummaryEvent("world", "", "第0天世界开局概要", _eventWorldOpeningSummary, "世界开局概要", "world_opening_summary", sanitizeAfter: false);
+		FreezeWatchdog.Mark("WeeklyPrompt.EnsureWeek0.world_done", "entries=" + (_eventRecordEntries?.Count ?? 0));
+		int kingdomIndex = 0;
 		foreach (Kingdom devEditableKingdom in GetDevEditableKingdoms())
 		{
+			kingdomIndex++;
+			string diagnosticKingdomId = devEditableKingdom?.StringId ?? "";
+			FreezeWatchdog.Mark("WeeklyPrompt.EnsureWeek0.kingdom_start", "index=" + kingdomIndex + " kingdom=" + diagnosticKingdomId);
 			string kingdomOpeningSummary = GetKingdomOpeningSummary(devEditableKingdom);
 			if (!string.IsNullOrWhiteSpace(kingdomOpeningSummary))
 			{
 				string text = devEditableKingdom.Name?.ToString() ?? (devEditableKingdom.StringId ?? "王国");
-				UpsertWeekZeroOpeningSummaryEvent("kingdom", devEditableKingdom.StringId ?? "", text + "第0天开局概要", kingdomOpeningSummary, text + " 开局概要", "kingdom_opening_summary");
+				UpsertWeekZeroOpeningSummaryEvent("kingdom", devEditableKingdom.StringId ?? "", text + "第0天开局概要", kingdomOpeningSummary, text + " 开局概要", "kingdom_opening_summary", sanitizeAfter: false);
 			}
+			FreezeWatchdog.Mark("WeeklyPrompt.EnsureWeek0.kingdom_done", "index=" + kingdomIndex + " kingdom=" + diagnosticKingdomId + " entries=" + (_eventRecordEntries?.Count ?? 0));
 		}
+		_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
+		FreezeWatchdog.Mark("WeeklyPrompt.EnsureWeek0.done", "kingdoms=" + kingdomIndex + " entries=" + (_eventRecordEntries?.Count ?? 0) + " thread=" + Thread.CurrentThread.ManagedThreadId);
+	}
+
+	private bool ProcessWeekZeroOpeningSummaryEventsSlice()
+	{
+		try
+		{
+			if (!_weekZeroOpeningSummaryMaintenanceWorldProcessed)
+			{
+				UpsertWeekZeroOpeningSummaryEvent("world", "", "第0天世界开局概要", _eventWorldOpeningSummary, "世界开局概要", "world_opening_summary", sanitizeAfter: false);
+				_weekZeroOpeningSummaryMaintenanceWorldProcessed = true;
+				return false;
+			}
+			if (_weekZeroOpeningSummaryMaintenanceKingdoms == null)
+			{
+				_weekZeroOpeningSummaryMaintenanceKingdoms = GetDevEditableKingdoms();
+				_weekZeroOpeningSummaryMaintenanceCursor = 0;
+			}
+			if (_weekZeroOpeningSummaryMaintenanceCursor < _weekZeroOpeningSummaryMaintenanceKingdoms.Count)
+			{
+				Kingdom kingdom = _weekZeroOpeningSummaryMaintenanceKingdoms[_weekZeroOpeningSummaryMaintenanceCursor++];
+				string summary = GetKingdomOpeningSummary(kingdom);
+				if (!string.IsNullOrWhiteSpace(summary))
+				{
+					string kingdomName = kingdom?.Name?.ToString() ?? (kingdom?.StringId ?? "王国");
+					UpsertWeekZeroOpeningSummaryEvent("kingdom", kingdom?.StringId ?? "", kingdomName + "第0天开局概要", summary, kingdomName + " 开局概要", "kingdom_opening_summary", sanitizeAfter: false);
+				}
+				return false;
+			}
+			FinalizeWeekZeroOpeningSummaryMaintenance();
+			return true;
+		}
+		catch (Exception ex)
+		{
+			FinalizeWeekZeroOpeningSummaryMaintenance();
+			Logger.Log("EventWeeklyReport", "[ERROR] deferred week-zero opening summary maintenance failed: " + ex.Message);
+			return true;
+		}
+	}
+
+	private void FinalizeWeekZeroOpeningSummaryMaintenance()
+	{
+		_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
+		_weekZeroOpeningSummaryMaintenanceWorldProcessed = false;
+		_weekZeroOpeningSummaryMaintenanceKingdoms = null;
+		_weekZeroOpeningSummaryMaintenanceCursor = 0;
+	}
+
+	private bool ProcessMissedStrategicWorldEventsSlice()
+	{
+		try
+		{
+			if (_missedStrategicWorldEventMaintenanceKingdoms == null)
+			{
+				_missedStrategicWorldEventMaintenanceKingdoms = GetDevEditableKingdoms();
+				_missedStrategicWorldEventMaintenanceStableKeys = BuildEventSourceMaterialStableKeySet();
+				_missedStrategicWorldEventMaintenanceCursor = 0;
+			}
+			if (_missedStrategicWorldEventMaintenanceCursor < _missedStrategicWorldEventMaintenanceKingdoms.Count)
+			{
+				Kingdom kingdom = _missedStrategicWorldEventMaintenanceKingdoms[_missedStrategicWorldEventMaintenanceCursor++];
+				string kingdomId = GetKingdomId(kingdom);
+				string stableKey = NormalizeNpcActionStableKey("kingdom_destroyed:" + kingdomId, "");
+				if (kingdom != null && kingdom.IsEliminated && !string.IsNullOrWhiteSpace(stableKey) && !_missedStrategicWorldEventMaintenanceStableKeys.Contains(stableKey))
+				{
+					RecordKingdomDestroyedMaterial(kingdom, "daily_scan");
+					_missedStrategicWorldEventMaintenanceStableKeys.Add(stableKey);
+				}
+				return false;
+			}
+			ResetMissedStrategicWorldEventMaintenance();
+			return true;
+		}
+		catch (Exception ex)
+		{
+			ResetMissedStrategicWorldEventMaintenance();
+			Logger.Log("EventMaterial", "[ERROR] deferred strategic world event scan failed: " + ex.Message);
+			return true;
+		}
+	}
+
+	private void ResetMissedStrategicWorldEventMaintenance()
+	{
+		_missedStrategicWorldEventMaintenanceKingdoms = null;
+		_missedStrategicWorldEventMaintenanceStableKeys = null;
+		_missedStrategicWorldEventMaintenanceCursor = 0;
 	}
 
 	private static string ComputeWeekZeroShortSummarySourceHash(string sourceText)
@@ -5962,8 +6420,9 @@ public class MyBehavior : CampaignBehaviorBase
 		EnsureWeekZeroShortSummaryQueueWorker();
 	}
 
-	private void UpsertWeekZeroOpeningSummaryEvent(string eventKind, string kingdomId, string title, string summary, string materialLabel, string materialType)
+	private void UpsertWeekZeroOpeningSummaryEvent(string eventKind, string kingdomId, string title, string summary, string materialLabel, string materialType, bool sanitizeAfter = true)
 	{
+		FreezeWatchdog.Mark("WeeklyPrompt.UpsertWeek0.start", "kind=" + (eventKind ?? "") + " kingdom=" + (kingdomId ?? "") + " entries=" + (_eventRecordEntries?.Count ?? 0));
 		string text = (summary ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(text))
 		{
@@ -6008,8 +6467,13 @@ public class MyBehavior : CampaignBehaviorBase
 				KingdomId = (kingdomId ?? "").Trim()
 			}
 		};
-		_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
+		if (sanitizeAfter)
+		{
+			_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
+			FreezeWatchdog.Mark("WeeklyPrompt.UpsertWeek0.sanitize_done", "kind=" + (eventKind ?? "") + " kingdom=" + (kingdomId ?? "") + " entries=" + (_eventRecordEntries?.Count ?? 0));
+		}
 		TryQueueWeekZeroShortSummaryGeneration(eventRecordEntry, text3);
+		FreezeWatchdog.Mark("WeeklyPrompt.UpsertWeek0.queue_done", "kind=" + (eventKind ?? "") + " kingdom=" + (kingdomId ?? "") + " entries=" + (_eventRecordEntries?.Count ?? 0));
 	}
 
 	private void OnSiegeAftermathApplied(MobileParty attackerParty, Settlement settlement, SiegeAftermathAction.SiegeAftermath aftermathType, Clan previousSettlementOwner, Dictionary<MobileParty, float> partyContributions)
@@ -11538,6 +12002,93 @@ public class MyBehavior : CampaignBehaviorBase
 		return _kingdomStabilityValues != null && _kingdomStabilityValues.ContainsKey(kingdomId);
 	}
 
+	private static Clan FindKingdomClanMatchingBanner(Kingdom kingdom, Banner banner, Clan excludedClan)
+	{
+		try
+		{
+			if (kingdom?.Clans == null || banner == null)
+			{
+				return null;
+			}
+			return kingdom.Clans.FirstOrDefault((Clan clan) => clan != null && clan != excludedClan && clan.Banner != null && clan.Banner.IsContentsSameWith(banner));
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static HashSet<string> BuildEventSourceMaterialStableKeySet(List<EventSourceMaterialEntry> source)
+	{
+		return new HashSet<string>(SanitizeEventSourceMaterials(source).Select((EventSourceMaterialEntry x) => (x?.StableKey ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)), StringComparer.OrdinalIgnoreCase);
+	}
+
+	private HashSet<string> BuildEventSourceMaterialStableKeySet()
+	{
+		return BuildEventSourceMaterialStableKeySet(_eventSourceMaterials);
+	}
+
+	private static void MarkKingdomBannerVisualsDirty(Kingdom kingdom)
+	{
+		try
+		{
+			foreach (Clan clan in (kingdom?.Clans?.ToList() ?? new List<Clan>()))
+			{
+				MarkClanVisualsDirty(clan);
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private bool TrySyncModCreatedRebelKingdomBannerToRulingClan(Kingdom kingdom, Clan eventRulingClan, string reason)
+	{
+		try
+		{
+			if (kingdom == null || kingdom.IsEliminated || !IsKnownOrLegacyModCreatedRebelKingdom(kingdom))
+			{
+				return false;
+			}
+			Clan rulingClan = kingdom.RulingClan;
+			if (rulingClan == null || rulingClan.IsEliminated || rulingClan.Kingdom != kingdom || rulingClan.Banner == null)
+			{
+				Logger.Log("KingdomRebellion", "[ruler_banner_sync_skipped] reason=" + (reason ?? "") + " kingdom=" + GetKingdomId(kingdom) + " rulingClan=" + GetClanId(rulingClan) + " result=invalid_ruling_clan_or_banner");
+				return false;
+			}
+			Banner banner = kingdom.Banner;
+			if (banner != null && banner.IsContentsSameWith(rulingClan.Banner))
+			{
+				return false;
+			}
+			Clan clan = FindKingdomClanMatchingBanner(kingdom, banner, rulingClan);
+			kingdom.Banner = new Banner(rulingClan.Banner);
+			MarkKingdomBannerVisualsDirty(kingdom);
+			Logger.Log("KingdomRebellion", "[ruler_banner_synced] reason=" + (reason ?? "") + " kingdom=" + GetKingdomId(kingdom) + " previousBannerClan=" + GetClanId(clan) + " eventClan=" + GetClanId(eventRulingClan) + " rulingClan=" + GetClanId(rulingClan) + " result=updated");
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("KingdomRebellion", "[ERROR] ruler_banner_sync_failed reason=" + (reason ?? "") + " kingdom=" + GetKingdomId(kingdom) + " eventClan=" + GetClanId(eventRulingClan) + " error=" + ex.Message);
+			return false;
+		}
+	}
+
+	private void SyncModCreatedRebelKingdomBannersOnGameLoad()
+	{
+		try
+		{
+			foreach (Kingdom kingdom in (Kingdom.All?.ToList() ?? new List<Kingdom>()))
+			{
+				TrySyncModCreatedRebelKingdomBannerToRulingClan(kingdom, null, "game_load_finished");
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("KingdomRebellion", "[ERROR] ruler_banner_load_sync_failed error=" + ex.Message);
+		}
+	}
+
 	private bool TryDiscontinueLandlessKingdom(Kingdom kingdom, string reason, bool requireKnownModRebelKingdom, bool allowPlayerKingdom)
 	{
 		try
@@ -12318,6 +12869,30 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static void RecordNobleGatheringWeeklyMaterialForExternal(string stableKey, string label, string snapshotText, string kingdomId, string settlementId, string actorHeroId, bool includeInWorld)
+	{
+		try
+		{
+			MyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			behavior?.RecordEventSourceMaterial(
+				"noble_gathering",
+				label,
+				snapshotText,
+				stableKey,
+				kingdomId,
+				settlementId,
+				includeInWorld,
+				includeInKingdom: true,
+				actorHeroId: actorHeroId,
+				actorKingdomId: kingdomId);
+			Logger.Log("EventWeeklyReport", "[NobleGathering] source_material_recorded key=" + (stableKey ?? "") + " kingdom=" + (kingdomId ?? "") + " world=" + includeInWorld);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EventWeeklyReport", "[NobleGathering][WARN] record weekly material failed: " + ex.Message);
+		}
+	}
+
 	public static void RecordPolicySystemWeeklyMaterialForExternal(string eventKind, string label, string snapshot, string stableKey, string targetKingdomId, bool includeInWorld, string actorHeroId, string actorKingdomId, int day, string gameDate)
 	{
 		try
@@ -12582,7 +13157,7 @@ public class MyBehavior : CampaignBehaviorBase
 		Logger.Log("EventWeeklyReport", "[PlayerSceneConflict] source_material_recorded day=" + day + " kingdom=" + kingdomId + " settlement=" + resolvedSettlementId + " key=" + key);
 	}
 
-	public static void MarkWeeklyMemoryMaterialTriggerForExternal(Hero targetHero, string nonHeroMemoryId, string npcName, string normalizedTagText, int sceneSessionId = -1, int nativeDialogueSessionId = -1, int targetAgentIndex = -1, List<RewardSystemBehavior.RewardItemInfo> rewardOptions = null, List<PartyTransferPromptEntry> partyTransferTroopOptions = null, List<PartyTransferPromptEntry> partyTransferPrisonerOptions = null, List<SettlementTransferPromptEntry> settlementTransferNpcOptions = null, bool suppressImplicitDialogueSession = false)
+	public static void MarkWeeklyMemoryMaterialTriggerForExternal(Hero targetHero, string nonHeroMemoryId, string npcName, string normalizedTagText, int sceneSessionId = -1, int nativeDialogueSessionId = -1, int targetAgentIndex = -1, List<RewardSystemBehavior.RewardItemInfo> rewardOptions = null, List<PartyTransferPromptEntry> partyTransferTroopOptions = null, List<PartyTransferPromptEntry> partyTransferPrisonerOptions = null, List<SettlementTransferPromptEntry> settlementTransferNpcOptions = null, List<SettlementTransferPromptEntry> settlementTransferPlayerOptions = null, bool suppressImplicitDialogueSession = false)
 	{
 		try
 		{
@@ -12593,7 +13168,18 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void MarkWeeklyMemoryMaterialTriggerInternal(Hero targetHero, string nonHeroMemoryId, string npcName, string normalizedTagText, int sceneSessionId, int nativeDialogueSessionId, int targetAgentIndex, List<RewardSystemBehavior.RewardItemInfo> rewardOptions, List<PartyTransferPromptEntry> partyTransferTroopOptions, List<PartyTransferPromptEntry> partyTransferPrisonerOptions, List<SettlementTransferPromptEntry> settlementTransferNpcOptions, bool suppressImplicitDialogueSession = false)
+	internal static void MarkWeeklyMemoryMaterialTriggerWithAllSnapshotsForExternal(Hero targetHero, string nonHeroMemoryId, string npcName, string normalizedTagText, int sceneSessionId = -1, int nativeDialogueSessionId = -1, int targetAgentIndex = -1, List<RewardSystemBehavior.RewardItemInfo> rewardOptions = null, List<PartyTransferPromptEntry> partyTransferTroopOptions = null, List<PartyTransferPromptEntry> partyTransferPrisonerOptions = null, List<SettlementTransferPromptEntry> settlementTransferNpcOptions = null, bool suppressImplicitDialogueSession = false, List<PartyTransferPromptEntry> partyTransferAllTroopOptions = null, List<PartyTransferPromptEntry> partyTransferAllPrisonerOptions = null)
+	{
+		try
+		{
+			(Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.MarkWeeklyMemoryMaterialTriggerInternal(targetHero, nonHeroMemoryId, npcName, normalizedTagText, sceneSessionId, nativeDialogueSessionId, targetAgentIndex, rewardOptions, partyTransferTroopOptions, partyTransferPrisonerOptions, settlementTransferNpcOptions, suppressImplicitDialogueSession, partyTransferAllTroopOptions, partyTransferAllPrisonerOptions);
+		}
+		catch
+		{
+		}
+	}
+
+	private void MarkWeeklyMemoryMaterialTriggerInternal(Hero targetHero, string nonHeroMemoryId, string npcName, string normalizedTagText, int sceneSessionId, int nativeDialogueSessionId, int targetAgentIndex, List<RewardSystemBehavior.RewardItemInfo> rewardOptions, List<PartyTransferPromptEntry> partyTransferTroopOptions, List<PartyTransferPromptEntry> partyTransferPrisonerOptions, List<SettlementTransferPromptEntry> settlementTransferNpcOptions, bool suppressImplicitDialogueSession = false, List<PartyTransferPromptEntry> partyTransferAllTroopOptions = null, List<PartyTransferPromptEntry> partyTransferAllPrisonerOptions = null)
 	{
 		string memoryId = !string.IsNullOrWhiteSpace(nonHeroMemoryId) ? NormalizeMemoryHeroId(nonHeroMemoryId) : GetMemoryHeroId(targetHero);
 		if (!IsMemoryEntityEligibleForCompressedMemory(memoryId))
@@ -12610,7 +13196,7 @@ public class MyBehavior : CampaignBehaviorBase
 		string gameDate = GetCurrentGameDateTextSafe();
 		List<DailyMemoryDraft> drafts = LoadDailyMemoryDraftsById(memoryId);
 		DailyMemoryDraft draft = drafts.FirstOrDefault((DailyMemoryDraft x) => x != null && x.GameDayIndex == day);
-		WeeklyMemoryMaterialEvaluation evaluation = EvaluateWeeklyMemoryMaterialTags(targetHero, tags, rewardOptions, partyTransferTroopOptions, partyTransferPrisonerOptions, settlementTransferNpcOptions);
+		WeeklyMemoryMaterialEvaluation evaluation = EvaluateWeeklyMemoryMaterialTags(targetHero, tags, rewardOptions, partyTransferTroopOptions, partyTransferPrisonerOptions, settlementTransferNpcOptions, partyTransferAllTroopOptions, partyTransferAllPrisonerOptions);
 		TryApplyPlayerTransferredValueToWeeklyMemoryMaterialEvaluation(evaluation, tags, draft, npcName, sceneSessionId, nativeDialogueSessionId);
 		if (evaluation == null || !evaluation.Eligible)
 		{
@@ -12730,11 +13316,70 @@ public class MyBehavior : CampaignBehaviorBase
 		_pendingWeeklyMemoryMaterialTriggers = SanitizeWeeklyMemoryMaterialTriggers(_pendingWeeklyMemoryMaterialTriggers).Where((WeeklyMemoryMaterialTrigger x) => x != null && x.GameDayIndex >= minDay).ToList();
 	}
 
+	private void RecordPublicDailyMemoryWeeklyMaterial(CompressedMemoryBlock block)
+	{
+		string publicity = (block?.PlayerPublicity ?? "").Trim().ToLowerInvariant();
+		if (block == null || (publicity != "public" && publicity != "leaked_public"))
+		{
+			return;
+		}
+		string material = (block.PlayerHistoryMaterial ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(material))
+		{
+			return;
+		}
+		if (!ResolvePlayerFootholdKingdomForWeeklyMemoryMaterial(out var kingdomId, out var settlementId))
+		{
+			Logger.Log("EventWeeklyReport", "[PublicDailyMemory][SKIP] foothold_kingdom_missing block=" + (block.Id ?? "") + " memory=" + (block.HeroId ?? ""));
+			return;
+		}
+		string blockId = (block.Id ?? BuildCompressedMemoryBlockId(block.HeroId, block.GameDayIndex)).Trim();
+		string stableHash = ComputeWeeklyMemoryMaterialHash(blockId + "|" + kingdomId + "|" + material);
+		string stableKey = "public_daily_memory:" + kingdomId + ":" + blockId + ":" + stableHash;
+		string label = "公开聊天日结 - " + (string.IsNullOrWhiteSpace(block.HeroName) ? "NPC" : block.HeroName.Trim());
+		string snapshot = BuildPublicDailyMemoryWeeklyMaterialSnapshotText(block, material);
+		RecordEventSourceMaterial("public_daily_memory", label, snapshot, stableKey, kingdomId, settlementId, includeInWorld: false, includeInKingdom: true, actorHeroId: GetHeroId(Hero.MainHero), actorKingdomId: kingdomId, dayOverride: block.GameDayIndex, gameDateOverride: block.GameDate);
+		Logger.Log("EventWeeklyReport", "[PublicDailyMemory] source_material_recorded block=" + blockId + " kingdom=" + kingdomId + " publicity=" + publicity);
+	}
+
+	private static string BuildPublicDailyMemoryWeeklyMaterialSnapshotText(CompressedMemoryBlock block, string material)
+	{
+		StringBuilder sb = new StringBuilder();
+		string npcName = (block?.HeroName ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(npcName))
+		{
+			npcName = "NPC";
+		}
+		string date = string.IsNullOrWhiteSpace(block?.GameDate) ? ("第" + Math.Max(0, block?.GameDayIndex ?? 0) + "日") : block.GameDate.Trim();
+		sb.Append("公开聊天日结素材：").Append(date).Append(" ").Append(FormatMemoryHourRange(block?.StartHour ?? 0, block?.EndHour ?? 0)).Append("，玩家与 ").Append(npcName).Append(" 的交流被日结标记为公开。");
+		List<string> scenes = (block?.Scenes ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace((x ?? "").Trim())).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).Take(4).ToList();
+		if (scenes.Count > 0)
+		{
+			sb.Append(" 场景：").Append(string.Join("、", scenes)).Append("。");
+		}
+		if (!string.IsNullOrWhiteSpace(block?.RichTitle))
+		{
+			sb.Append(" 日结标题：").Append(block.RichTitle.Trim()).Append("。");
+		}
+		sb.Append(" 公开素材：").Append((material ?? "").Trim()).Append("。");
+		if (!string.IsNullOrWhiteSpace(block?.PlayerPublicityReason))
+		{
+			sb.Append(" 公开原因：").Append(block.PlayerPublicityReason.Trim()).Append("。");
+		}
+		return sb.ToString().Trim();
+	}
+
 	private void RecordWeeklyMemoryMaterialForBlock(CompressedMemoryBlock block)
 	{
 		List<WeeklyMemoryMaterialTrigger> triggers = SanitizeWeeklyMemoryMaterialTriggers(block?.WeeklyMaterialTriggers);
 		if (block == null || triggers.Count == 0)
 		{
+			return;
+		}
+		string publicity = (block.PlayerPublicity ?? "").Trim().ToLowerInvariant();
+		if (publicity != "public" && publicity != "leaked_public")
+		{
+			Logger.Log("EventWeeklyReport", "[WeeklyMemoryMaterial][SKIP] hidden_by_daily_publicity block=" + (block.Id ?? "") + " publicity=" + (string.IsNullOrWhiteSpace(publicity) ? "empty" : publicity) + " triggers=" + triggers.Count);
 			return;
 		}
 		foreach (IGrouping<string, WeeklyMemoryMaterialTrigger> group in triggers.GroupBy((WeeklyMemoryMaterialTrigger x) => (x.FootholdKingdomId ?? "").Trim(), StringComparer.OrdinalIgnoreCase))
@@ -12771,6 +13416,14 @@ public class MyBehavior : CampaignBehaviorBase
 		if (!string.IsNullOrWhiteSpace(block?.Summary))
 		{
 			sb.Append(" 记忆摘要：").Append(block.Summary.Trim()).Append("。");
+		}
+		if (!string.IsNullOrWhiteSpace(block?.PlayerPublicity))
+		{
+			sb.Append(" 日结公开判定：").Append(block.PlayerPublicity.Trim()).Append("。");
+		}
+		if (!string.IsNullOrWhiteSpace(block?.PlayerPublicityReason))
+		{
+			sb.Append(" 公开判定原因：").Append(block.PlayerPublicityReason.Trim()).Append("。");
 		}
 		List<string> scenes = (block?.Scenes ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace((x ?? "").Trim())).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).Take(4).ToList();
 		if (scenes.Count > 0)
@@ -12824,7 +13477,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static WeeklyMemoryMaterialEvaluation EvaluateWeeklyMemoryMaterialTags(Hero targetHero, List<string> tags, List<RewardSystemBehavior.RewardItemInfo> rewardOptions, List<PartyTransferPromptEntry> partyTransferTroopOptions, List<PartyTransferPromptEntry> partyTransferPrisonerOptions, List<SettlementTransferPromptEntry> settlementTransferNpcOptions)
+	private static WeeklyMemoryMaterialEvaluation EvaluateWeeklyMemoryMaterialTags(Hero targetHero, List<string> tags, List<RewardSystemBehavior.RewardItemInfo> rewardOptions, List<PartyTransferPromptEntry> partyTransferTroopOptions, List<PartyTransferPromptEntry> partyTransferPrisonerOptions, List<SettlementTransferPromptEntry> settlementTransferNpcOptions, List<PartyTransferPromptEntry> partyTransferAllTroopOptions, List<PartyTransferPromptEntry> partyTransferAllPrisonerOptions)
 	{
 		WeeklyMemoryMaterialEvaluation evaluation = new WeeklyMemoryMaterialEvaluation();
 		evaluation.Tags = NormalizeWeeklyMemoryMaterialTags(tags);
@@ -12840,7 +13493,7 @@ public class MyBehavior : CampaignBehaviorBase
 					reasons.Add("重大标签：" + label);
 				}
 			}
-			long value = EstimateWeeklyMemoryMaterialTagValue(targetHero, tag, rewardOptions, partyTransferTroopOptions, partyTransferPrisonerOptions, settlementTransferNpcOptions);
+			long value = EstimateWeeklyMemoryMaterialTagValue(targetHero, tag, rewardOptions, partyTransferTroopOptions, partyTransferPrisonerOptions, settlementTransferNpcOptions, partyTransferAllTroopOptions, partyTransferAllPrisonerOptions);
 			if (value > 0L)
 			{
 				evaluation.EstimatedValueDenars = AddWeeklyMemoryMaterialValue(evaluation.EstimatedValueDenars, value);
@@ -12881,11 +13534,11 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			string text = (tag ?? "").Trim();
 			if (Regex.IsMatch(text, "^\\[ACTION:GIVE_GOLD:\\d+\\]$", RegexOptions.IgnoreCase) ||
-				Regex.IsMatch(text, "^\\[ACTION:GIVE_ITEM:[^\\]\\r\\n:]+:\\d+\\]$", RegexOptions.IgnoreCase) ||
+				Regex.IsMatch(text, "^\\[ACTION:GIVE_ITEM:[^\\]\\r\\n:]+:(?:ALL|\\d+)\\]$", RegexOptions.IgnoreCase) ||
 				Regex.IsMatch(text, "^\\[AD;\\d+;\\d+;(?:P;[^\\]]*|(?!(?:N|P);)[^\\]]*)\\]$", RegexOptions.IgnoreCase) ||
 				Regex.IsMatch(text, "^\\[ADP[:;][^\\]\\r\\n:;]+\\]$", RegexOptions.IgnoreCase) ||
-				Regex.IsMatch(text, "^\\[ATT:\\d+:\\d+\\]$", RegexOptions.IgnoreCase) ||
-				Regex.IsMatch(text, "^\\[ATP:\\d+:\\d+\\]$", RegexOptions.IgnoreCase) ||
+				Regex.IsMatch(text, "^\\[ATT:(?:ALL|\\d+):(?:ALL|\\d+)\\]$", RegexOptions.IgnoreCase) ||
+				Regex.IsMatch(text, "^\\[ATP:(?:ALL|\\d+):(?:ALL|\\d+)\\]$", RegexOptions.IgnoreCase) ||
 				Regex.IsMatch(text, "^\\[ACTION:SETTLEMENT_TRANSFER:TO_PLAYER:[^\\]\\r\\n:]+\\]$", RegexOptions.IgnoreCase))
 			{
 				return true;
@@ -12983,7 +13636,7 @@ public class MyBehavior : CampaignBehaviorBase
 		return value;
 	}
 
-	private static long EstimateWeeklyMemoryMaterialTagValue(Hero targetHero, string tag, List<RewardSystemBehavior.RewardItemInfo> rewardOptions, List<PartyTransferPromptEntry> partyTransferTroopOptions, List<PartyTransferPromptEntry> partyTransferPrisonerOptions, List<SettlementTransferPromptEntry> settlementTransferNpcOptions)
+	private static long EstimateWeeklyMemoryMaterialTagValue(Hero targetHero, string tag, List<RewardSystemBehavior.RewardItemInfo> rewardOptions, List<PartyTransferPromptEntry> partyTransferTroopOptions, List<PartyTransferPromptEntry> partyTransferPrisonerOptions, List<SettlementTransferPromptEntry> settlementTransferNpcOptions, List<PartyTransferPromptEntry> partyTransferAllTroopOptions, List<PartyTransferPromptEntry> partyTransferAllPrisonerOptions)
 	{
 		string text = (tag ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(text))
@@ -13011,25 +13664,37 @@ public class MyBehavior : CampaignBehaviorBase
 			Logger.Log("EventWeeklyReport", "[WeeklyMemoryMaterial][WARN] debt_id_value_missing debtId=" + debtId);
 			return 0L;
 		}
-		match = Regex.Match(text, "^\\[ACTION:GIVE_ITEM:([^\\]\\r\\n:]+):(\\d+)\\]$", RegexOptions.IgnoreCase);
+		match = Regex.Match(text, "^\\[ACTION:GIVE_ITEM:([^\\]\\r\\n:]+):(ALL|\\d+)\\]$", RegexOptions.IgnoreCase);
+		if (match.Success && TransferQuantitySpec.IsAllValue(match.Groups[2].Value))
+		{
+			return EstimateAllRewardItemTagValueForWeeklyMemoryMaterial(match.Groups[1].Value, rewardOptions);
+		}
 		if (match.Success && int.TryParse(match.Groups[2].Value, out var itemAmount) && itemAmount > 0)
 		{
 			return EstimateRewardItemTagValueForWeeklyMemoryMaterial(targetHero, match.Groups[1].Value, itemAmount, rewardOptions);
 		}
-		match = Regex.Match(text, "^\\[ATT:(\\d+):(\\d+)\\]$", RegexOptions.IgnoreCase);
+		match = Regex.Match(text, "^\\[ATT:(ALL|\\d+):(ALL|\\d+)\\]$", RegexOptions.IgnoreCase);
+		if (match.Success && (TransferQuantitySpec.IsAllValue(match.Groups[1].Value) || TransferQuantitySpec.IsAllValue(match.Groups[2].Value)))
+		{
+			return CalculatePartyTransferTotalValueForExternal(partyTransferAllTroopOptions, isPrisoner: false);
+		}
 		if (match.Success && int.TryParse(match.Groups[1].Value, out var troopIndex) && int.TryParse(match.Groups[2].Value, out var troopAmount))
 		{
 			return EstimatePartyTransferTagValueForWeeklyMemoryMaterial(partyTransferTroopOptions, troopIndex, troopAmount, isPrisoner: false);
 		}
-		match = Regex.Match(text, "^\\[ATP:(\\d+):(\\d+)\\]$", RegexOptions.IgnoreCase);
+		match = Regex.Match(text, "^\\[ATP:(ALL|\\d+):(ALL|\\d+)\\]$", RegexOptions.IgnoreCase);
+		if (match.Success && (TransferQuantitySpec.IsAllValue(match.Groups[1].Value) || TransferQuantitySpec.IsAllValue(match.Groups[2].Value)))
+		{
+			return CalculatePartyTransferTotalValueForExternal(partyTransferAllPrisonerOptions, isPrisoner: true);
+		}
 		if (match.Success && int.TryParse(match.Groups[1].Value, out var prisonerIndex) && int.TryParse(match.Groups[2].Value, out var prisonerAmount))
 		{
 			return EstimatePartyTransferTagValueForWeeklyMemoryMaterial(partyTransferPrisonerOptions, prisonerIndex, prisonerAmount, isPrisoner: true);
 		}
-		match = Regex.Match(text, "^\\[ACTION:SETTLEMENT_TRANSFER:TO_PLAYER:([^\\]\\r\\n:]+)\\]$", RegexOptions.IgnoreCase);
+		match = Regex.Match(text, "^\\[ACTION:SETTLEMENT_TRANSFER:(TO_PLAYER):([^\\]\\r\\n:]+)\\]$", RegexOptions.IgnoreCase);
 		if (match.Success)
 		{
-			SettlementTransferPromptEntry entry = FindSettlementTransferEntryByTokenForWeeklyMemoryMaterial(settlementTransferNpcOptions, match.Groups[1].Value);
+			SettlementTransferPromptEntry entry = FindSettlementTransferEntryByTokenForWeeklyMemoryMaterial(settlementTransferNpcOptions, match.Groups[2].Value);
 			return Math.Max(0L, entry?.GuidePriceDenars ?? 0);
 		}
 		return 0L;
@@ -13058,6 +13723,27 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return 0L;
 		}
+	}
+
+	private static long EstimateAllRewardItemTagValueForWeeklyMemoryMaterial(string itemToken, List<RewardSystemBehavior.RewardItemInfo> rewardOptions)
+	{
+		RewardSystemBehavior.RewardItemInfo resolved = FindRewardItemByTokenForWeeklyMemoryMaterial(rewardOptions, itemToken);
+		if (resolved == null)
+		{
+			return 0L;
+		}
+		string key = string.IsNullOrWhiteSpace(resolved.PromptStringId) ? (resolved.StringId ?? "").Trim() : resolved.PromptStringId.Trim();
+		long total = 0L;
+		foreach (RewardSystemBehavior.RewardItemInfo item in rewardOptions ?? new List<RewardSystemBehavior.RewardItemInfo>())
+		{
+			string itemKey = string.IsNullOrWhiteSpace(item?.PromptStringId) ? (item?.StringId ?? "").Trim() : item.PromptStringId.Trim();
+			if (item == null || item.Count <= 0 || string.IsNullOrWhiteSpace(key) || !string.Equals(itemKey, key, StringComparison.OrdinalIgnoreCase))
+			{
+				continue;
+			}
+			total = TransferQuantitySpec.AddProduct(total, item.Count, Math.Max(1, item.GuidePrice));
+		}
+		return total;
 	}
 
 	private static long EstimatePartyTransferTagValueForWeeklyMemoryMaterial(List<PartyTransferPromptEntry> options, int promptIndex, int amount, bool isPrisoner)
@@ -13245,6 +13931,10 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		if (text.StartsWith("[ACTION:SETTLEMENT_TRANSFER:", StringComparison.OrdinalIgnoreCase))
 		{
+			if (text.StartsWith("[ACTION:SETTLEMENT_TRANSFER:TO_PLAYER:", StringComparison.OrdinalIgnoreCase))
+			{
+				return "取得固定资产";
+			}
 			return "固定资产转移";
 		}
 		if (text.StartsWith("[ACTION:KINGDOM_SERVICE:", StringComparison.OrdinalIgnoreCase))
@@ -14784,6 +15474,11 @@ public class MyBehavior : CampaignBehaviorBase
 		return TryBuildPlayerPublicDisplayNameForPrompt(observer, out var displayName, out var _) ? displayName : "玩家";
 	}
 
+	private static string BuildPlayerPublicDisplayNameForPrompt(string observerKey, string cultureId)
+	{
+		return TryBuildPlayerPublicDisplayNameForPrompt(observerKey, cultureId, out var displayName, out var _) ? displayName : "玩家";
+	}
+
 	private static string BuildPlayerPublicDisplayNameForPrompt(Hero observer, CharacterObject observerCharacter, int targetAgentIndex = -1)
 	{
 		if (observer != null || observerCharacter?.HeroObject != null)
@@ -14818,6 +15513,56 @@ public class MyBehavior : CampaignBehaviorBase
 		try
 		{
 			if (PlayerNotorietyBehavior.DoesObserverKnowPlayerForExternal(observer))
+			{
+				string text = (mainHero.Name?.ToString() ?? "").Trim();
+				if (!string.IsNullOrWhiteSpace(text))
+				{
+					displayName = text;
+					isCompleteIdentity = true;
+					return true;
+				}
+			}
+		}
+		catch
+		{
+		}
+		string text2 = "未知";
+		try
+		{
+			string text3 = (mainHero.Culture?.Name?.ToString() ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text3))
+			{
+				text2 = text3;
+			}
+		}
+		catch
+		{
+		}
+		string text4 = "未知";
+		try
+		{
+			text4 = BuildAgeBracketLabel(mainHero.Age);
+		}
+		catch
+		{
+			text4 = "未知";
+		}
+		displayName = text2 + text4;
+		return !string.IsNullOrWhiteSpace(displayName);
+	}
+
+	private static bool TryBuildPlayerPublicDisplayNameForPrompt(string observerKey, string cultureId, out string displayName, out bool isCompleteIdentity)
+	{
+		displayName = "玩家";
+		isCompleteIdentity = false;
+		Hero mainHero = Hero.MainHero;
+		if (mainHero == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (PlayerNotorietyBehavior.DoesObserverKnowPlayerForExternal(observerKey, cultureId))
 			{
 				string text = (mainHero.Name?.ToString() ?? "").Trim();
 				if (!string.IsNullOrWhiteSpace(text))
@@ -14891,6 +15636,11 @@ public class MyBehavior : CampaignBehaviorBase
 	public static string BuildPlayerPublicDisplayNameForExternal(Hero observer)
 	{
 		return BuildPlayerPublicDisplayNameForPrompt(observer);
+	}
+
+	public static string BuildPlayerPublicDisplayNameForExternal(string observerKey, string cultureId)
+	{
+		return BuildPlayerPublicDisplayNameForPrompt(observerKey, cultureId);
 	}
 
 	private static bool DoesPlayerNotorietyObserverKnowPlayer(Hero observerHero, CharacterObject observerCharacter = null, int targetAgentIndex = -1)
@@ -15142,6 +15892,10 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			Hero leaderHero = party?.Party?.LeaderHero;
 			if (!ShouldTrackNpcActionHero(leaderHero, allowNonLordHero))
+			{
+				continue;
+			}
+			if (!won && mapEvent.IsPlayerMapEvent && mapEvent.HasWinner && mapEvent.WinningSide == mapEvent.PlayerSide && HasRecordedPlayerDefeatedHeroBattleFact(mapEvent, side, leaderHero))
 			{
 				continue;
 			}
@@ -15743,10 +16497,18 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				ProcessWeeklyReportUiResume();
 			}
-			bool processedWeeklyReportCommits;
-			using (PerfProbe.Scope("MyBehavior.OnCampaignTick.ProcessPendingWeeklyReportCommits"))
+			bool deferredMaintenanceWindowOpen;
+			using (PerfProbe.Scope("MyBehavior.OnCampaignTick.DeferredMaintenanceScheduler"))
 			{
-				processedWeeklyReportCommits = ProcessPendingWeeklyReportCommits();
+				deferredMaintenanceWindowOpen = TryClaimDeferredMaintenanceRunWindow();
+			}
+			bool processedWeeklyReportCommits = false;
+			if (deferredMaintenanceWindowOpen)
+			{
+				using (PerfProbe.Scope("MyBehavior.OnCampaignTick.ProcessPendingWeeklyReportCommits"))
+				{
+					processedWeeklyReportCommits = ProcessPendingWeeklyReportCommits();
+				}
 			}
 			using (PerfProbe.Scope("MyBehavior.OnCampaignTick.TryPublishUnreadWeeklyReportMapNotifications"))
 			{
@@ -15756,9 +16518,9 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				TryRunCampaignMemoryMaintenance();
 			}
-			using (PerfProbe.Scope("MyBehavior.OnCampaignTick.ProcessDeferredDailyMaintenance"))
+			if (deferredMaintenanceWindowOpen && !processedWeeklyReportCommits)
 			{
-				if (!processedWeeklyReportCommits)
+				using (PerfProbe.Scope("MyBehavior.OnCampaignTick.ProcessDeferredDailyMaintenance"))
 				{
 					ProcessDeferredDailyMaintenance();
 				}
@@ -15820,16 +16582,21 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		long startTimestamp = Stopwatch.GetTimestamp();
+		double budgetMs = GetDailyMaintenanceFrameBudgetMs();
 		if (hasPastDrafts)
 		{
 			using (PerfProbe.Scope("MyBehavior.TryRunCampaignMemoryMaintenance.TrySealPastDailyMemoryDrafts"))
 			{
-				TrySealPastDailyMemoryDrafts();
+				TrySealPastDailyMemoryDrafts(startTimestamp, budgetMs);
 			}
 		}
-		using (PerfProbe.Scope("MyBehavior.TryRunCampaignMemoryMaintenance.TryStartMemorySummaryQueue"))
+		if (!IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
 		{
-			TryStartMemorySummaryQueue();
+			using (PerfProbe.Scope("MyBehavior.TryRunCampaignMemoryMaintenance.TryStartMemorySummaryQueue"))
+			{
+				TryStartMemorySummaryQueue();
+			}
 		}
 	}
 
@@ -16266,7 +17033,7 @@ public class MyBehavior : CampaignBehaviorBase
 				_npcPersonaProfileStorage.Clear();
 				foreach (KeyValuePair<string, NpcPersonaProfile> npcPersonaProfile2 in _npcPersonaProfiles)
 				{
-					if (!string.IsNullOrEmpty(npcPersonaProfile2.Key) && npcPersonaProfile2.Value != null)
+					if (!string.IsNullOrEmpty(npcPersonaProfile2.Key) && TryPrepareNpcPersonaProfileForWrite(npcPersonaProfile2.Key, npcPersonaProfile2.Value))
 					{
 						try
 						{
@@ -16312,6 +17079,20 @@ public class MyBehavior : CampaignBehaviorBase
 				List<string> weeklyReportReadingXpClaimedEventIds = new List<string>(_weeklyReportReadingXpClaimedEventIds);
 				dataStore.SyncData("_af_weeklyReportReadingXpClaimed_v1", ref weeklyReportReadingXpClaimedEventIds);
 				_weeklyReportReadingXpClaimedEventIds = SanitizeWeeklyReportReadingXpClaimedEventIds(weeklyReportReadingXpClaimedEventIds).Where((string x) => FindWeeklyReportRecordById(x) != null).ToList();
+				NormalizeWeeklyReportReadingXpPendingBatch();
+				int weeklyReportReadingXpPendingCount = _weeklyReportReadingXpPendingCount;
+				int weeklyReportReadingXpPendingCharm = _weeklyReportReadingXpPendingCharm;
+				int weeklyReportReadingXpPendingLeadership = _weeklyReportReadingXpPendingLeadership;
+				int weeklyReportReadingXpPendingSteward = _weeklyReportReadingXpPendingSteward;
+				dataStore.SyncData("_af_weeklyReportReadingXpPendingCount_v1", ref weeklyReportReadingXpPendingCount);
+				dataStore.SyncData("_af_weeklyReportReadingXpPendingCharm_v1", ref weeklyReportReadingXpPendingCharm);
+				dataStore.SyncData("_af_weeklyReportReadingXpPendingLeadership_v1", ref weeklyReportReadingXpPendingLeadership);
+				dataStore.SyncData("_af_weeklyReportReadingXpPendingSteward_v1", ref weeklyReportReadingXpPendingSteward);
+				_weeklyReportReadingXpPendingCount = weeklyReportReadingXpPendingCount;
+				_weeklyReportReadingXpPendingCharm = weeklyReportReadingXpPendingCharm;
+				_weeklyReportReadingXpPendingLeadership = weeklyReportReadingXpPendingLeadership;
+				_weeklyReportReadingXpPendingSteward = weeklyReportReadingXpPendingSteward;
+				NormalizeWeeklyReportReadingXpPendingBatch();
 				try
 				{
 					_eventSourceMaterialJsonStorage = JsonConvert.SerializeObject(SanitizeEventSourceMaterials(_eventSourceMaterials));
@@ -16731,6 +17512,11 @@ public class MyBehavior : CampaignBehaviorBase
 			List<string> weeklyReportReadingXpClaimedEventIdsLoad = new List<string>();
 			dataStore.SyncData("_af_weeklyReportReadingXpClaimed_v1", ref weeklyReportReadingXpClaimedEventIdsLoad);
 			_weeklyReportReadingXpClaimedEventIds = SanitizeWeeklyReportReadingXpClaimedEventIds(weeklyReportReadingXpClaimedEventIdsLoad).Where((string x) => FindWeeklyReportRecordById(x) != null).ToList();
+			dataStore.SyncData("_af_weeklyReportReadingXpPendingCount_v1", ref _weeklyReportReadingXpPendingCount);
+			dataStore.SyncData("_af_weeklyReportReadingXpPendingCharm_v1", ref _weeklyReportReadingXpPendingCharm);
+			dataStore.SyncData("_af_weeklyReportReadingXpPendingLeadership_v1", ref _weeklyReportReadingXpPendingLeadership);
+			dataStore.SyncData("_af_weeklyReportReadingXpPendingSteward_v1", ref _weeklyReportReadingXpPendingSteward);
+			NormalizeWeeklyReportReadingXpPendingBatch();
 			_weeklyReportNoticeEventIdsShownThisSession.Clear();
 			_weeklyReportRegisteredMapNotificationView = null;
 			_eventSourceMaterials.Clear();
@@ -16963,11 +17749,125 @@ public class MyBehavior : CampaignBehaviorBase
 				string arg2 = MobileParty.MainParty?.CurrentSettlement?.Name?.ToString() ?? "";
 				MissionMode mode = currentMission.Mode;
 				Logger.Log("SceneInfo", $"[MyBehavior.OnMissionStarted] SceneName={arg}, Mode={mode}, Settlement={arg2}");
+				LordEncounterBehavior.LogEncounterDiagnostic("MyBehavior.OnMissionStarted", "mission_started_scene_" + arg + "_mode_" + mode);
 			}
 			catch
 			{
 			}
 		}
+	}
+
+	private void OnBattleStartedForEncounterDiag(PartyBase attackerParty, PartyBase defenderParty, object subject, bool showNotification)
+	{
+		try
+		{
+			Logger.LogImmediate("Logic", "[EncounterDiag] stage=MyBehavior.OnBattleStarted | subject=" + EncounterDiagEscape(subject?.GetType().FullName ?? "null")
+				+ " | showNotification=" + showNotification
+				+ " | attacker=" + DescribeBattleStartPartyForEncounterDiag(attackerParty)
+				+ " | defender=" + DescribeBattleStartPartyForEncounterDiag(defenderParty));
+			LordEncounterBehavior.LogEncounterDiagnostic("MyBehavior.OnBattleStarted", "battle_started_subject_" + (subject?.GetType().Name ?? "null"), null, null, defenderParty);
+		}
+		catch
+		{
+		}
+	}
+
+	private static string DescribeBattleStartPartyForEncounterDiag(PartyBase party)
+	{
+		if (party == null)
+		{
+			return "null";
+		}
+		List<string> parts = new List<string>();
+		try
+		{
+			parts.Add("index=" + party.Index);
+		}
+		catch
+		{
+		}
+		try
+		{
+			parts.Add("name=" + EncounterDiagEscape(party.Name?.ToString()));
+		}
+		catch
+		{
+		}
+		try
+		{
+			parts.Add("leader=" + EncounterDiagEscape(party.LeaderHero?.StringId ?? party.LeaderHero?.Name?.ToString()));
+		}
+		catch
+		{
+		}
+		try
+		{
+			parts.Add("mobile=" + (party.IsMobile ? "1" : "0"));
+			parts.Add("settlement=" + (party.IsSettlement ? "1" : "0"));
+		}
+		catch
+		{
+		}
+		try
+		{
+			parts.Add("healthy=" + party.NumberOfHealthyMembers);
+			parts.Add("all=" + party.NumberOfAllMembers);
+		}
+		catch
+		{
+		}
+		try
+		{
+			MobileParty mobileParty = party.MobileParty;
+			if (mobileParty != null)
+			{
+				parts.Add("mobileId=" + EncounterDiagEscape(mobileParty.StringId));
+				parts.Add("default=" + mobileParty.DefaultBehavior);
+				parts.Add("short=" + mobileParty.ShortTermBehavior);
+				parts.Add("targetSettlement=" + EncounterDiagEscape(mobileParty.TargetSettlement?.StringId ?? mobileParty.TargetSettlement?.Name?.ToString()));
+				parts.Add("currentSettlement=" + EncounterDiagEscape(mobileParty.CurrentSettlement?.StringId ?? mobileParty.CurrentSettlement?.Name?.ToString()));
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			Settlement settlement = party.Settlement;
+			if (settlement != null)
+			{
+				parts.Add("settlementId=" + EncounterDiagEscape(settlement.StringId));
+				parts.Add("isVillage=" + (settlement.IsVillage ? "1" : "0"));
+				parts.Add("isUnderRaid=" + (settlement.IsUnderRaid ? "1" : "0"));
+				parts.Add("lastAttacker=" + EncounterDiagEscape(settlement.LastAttackerParty?.StringId ?? settlement.LastAttackerParty?.Name?.ToString()));
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			MapEvent mapEvent = party.MapEvent;
+			if (mapEvent != null)
+			{
+				parts.Add("mapType=" + mapEvent.EventType);
+				parts.Add("mapRaid=" + (mapEvent.IsRaid ? "1" : "0"));
+				parts.Add("mapForceSupplies=" + (mapEvent.IsForcingSupplies ? "1" : "0"));
+				parts.Add("mapForceVolunteers=" + (mapEvent.IsForcingVolunteers ? "1" : "0"));
+				parts.Add("mapSettlement=" + EncounterDiagEscape(mapEvent.MapEventSettlement?.StringId ?? mapEvent.MapEventSettlement?.Name?.ToString()));
+				parts.Add("attTroops=" + (mapEvent.AttackerSide?.TroopCount.ToString() ?? "null"));
+				parts.Add("defTroops=" + (mapEvent.DefenderSide?.TroopCount.ToString() ?? "null"));
+			}
+		}
+		catch
+		{
+		}
+		return string.Join(",", parts);
+	}
+
+	private static string EncounterDiagEscape(string text)
+	{
+		return (text ?? "null").Replace("\r", " ").Replace("\n", " ").Replace("|", "/");
 	}
 
 	private NpcPersonaProfile GetNpcPersonaProfile(Hero npc, bool createIfMissing)
@@ -16986,6 +17886,18 @@ public class MyBehavior : CampaignBehaviorBase
 			_npcPersonaProfiles = new Dictionary<string, NpcPersonaProfile>();
 		}
 		if (_npcPersonaProfiles.TryGetValue(stringId, out var value))
+		{
+			if (IsNpcPersonaProfileIdentityMismatch(npc, value))
+			{
+				_npcPersonaProfiles.Remove(stringId);
+				value = null;
+			}
+			else
+			{
+				return value;
+			}
+		}
+		if (value != null)
 		{
 			return value;
 		}
@@ -17025,6 +17937,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			profile = new NpcPersonaProfile();
 		}
+		StampNpcPersonaProfile(stringId, profile);
 		profile.Personality = text;
 		profile.Background = text2;
 		profile.VoiceId = text3;
@@ -17040,6 +17953,10 @@ public class MyBehavior : CampaignBehaviorBase
 			string stringId = hero.StringId;
 			if (!string.IsNullOrEmpty(stringId) && _npcPersonaProfiles != null && _npcPersonaProfiles.TryGetValue(stringId, out var value) && value != null)
 			{
+				if (IsNpcPersonaProfileIdentityMismatch(hero, value))
+				{
+					return;
+				}
 				personality = value.Personality ?? "";
 				background = value.Background ?? "";
 			}
@@ -17124,6 +18041,10 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		if (_npcPersonaProfiles.TryGetValue(stringId, out var value) && value != null)
 		{
+			if (IsNpcPersonaProfileIdentityMismatch(hero, value))
+			{
+				return "";
+			}
 			return (value.VoiceId ?? "").Trim();
 		}
 		return "";
@@ -17639,15 +18560,15 @@ public class MyBehavior : CampaignBehaviorBase
 	private static string BuildPromotedNonHeroCompanionFactsForPersonaGeneration(Hero hero, string personalName, string originalFullName, string originalTroopName, string originalTroopId, string cultureName, string sceneLabel, string joinEventFact, string equipmentSummary)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
-		string name = string.IsNullOrWhiteSpace(personalName) ? (hero?.Name?.ToString() ?? "新同伴") : personalName.Trim();
+		string name = string.IsNullOrWhiteSpace(personalName) ? (hero?.Name?.ToString() ?? "新家族成员") : personalName.Trim();
 		string fullName = string.IsNullOrWhiteSpace(originalFullName) ? name : originalFullName.Trim();
 		string troopName = string.IsNullOrWhiteSpace(originalTroopName) ? "非英雄NPC" : originalTroopName.Trim();
 		string troopId = (originalTroopId ?? "").Trim();
 		string culture = string.IsNullOrWhiteSpace(cultureName) ? "未知文化" : cultureName.Trim();
 		string scene = string.IsNullOrWhiteSpace(sceneLabel) ? "当前场景" : sceneLabel.Trim();
-		string joinFact = string.IsNullOrWhiteSpace(joinEventFact) ? (name + "同意追随玩家并加入玩家队伍。") : joinEventFact.Trim();
+		string joinFact = string.IsNullOrWhiteSpace(joinEventFact) ? (name + "同意追随玩家，成为玩家家族成员并加入玩家队伍。") : joinEventFact.Trim();
 		string equipment = string.IsNullOrWhiteSpace(equipmentSummary) ? "（无装备）" : equipmentSummary.Trim();
-		stringBuilder.AppendLine("升格来源: 该角色原本是非 Hero NPC/士兵，现在因为当前加入事件才被创建为玩家同伴 Hero。");
+		stringBuilder.AppendLine("升格来源: 该角色原本是非 Hero NPC/士兵，现在因为当前加入事件才被创建为玩家家族 Hero。");
 		stringBuilder.AppendLine("出身约束: 不要把升格后加入玩家队伍、玩家家族或玩家阵营理解为其原生家族、贵族血统、出生背景或旧效忠对象；若没有对话事实支持，背景不得写成其本来就出身于玩家家族/玩家势力。");
 		stringBuilder.AppendLine("个人名: " + name);
 		stringBuilder.AppendLine("原完整称呼: " + fullName);
@@ -17989,6 +18910,7 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		QueueMissingOnnxGateCheck(TimeSpan.Zero);
 		RebuildRuntimeDerivedIndexes();
+		SyncModCreatedRebelKingdomBannersOnGameLoad();
 		if (IsDeferredDailyMaintenanceEnabled())
 		{
 			int currentDay = GetCurrentGameDayIndexSafe();
@@ -18882,36 +19804,9 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static bool GetMarriageRequireOppositeGenderSettingForPrompt()
-	{
-		try
-		{
-			return (DuelSettings.GetSettings()?.MarriageRequireOppositeGender).GetValueOrDefault(true);
-		}
-		catch
-		{
-			return true;
-		}
-	}
-
 	private static bool IsMarriageGenderCompatibleForPrompt(Hero candidate, Hero player)
 	{
-		try
-		{
-			if (candidate == null || player == null)
-			{
-				return true;
-			}
-			if (!GetMarriageRequireOppositeGenderSettingForPrompt())
-			{
-				return true;
-			}
-			return candidate.IsFemale != player.IsFemale;
-		}
-		catch
-		{
-			return true;
-		}
+		return true;
 	}
 
 	private static bool IsMarriageAgeCompatibleForPrompt(Hero candidate, Hero player)
@@ -18966,16 +19861,6 @@ public class MyBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
-		try
-		{
-			if (hero.Spouse != null)
-			{
-				return false;
-			}
-		}
-		catch
-		{
-		}
 		if (player != null && hero == player)
 		{
 			return false;
@@ -19015,16 +19900,6 @@ public class MyBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
-		try
-		{
-			if (hero.Spouse != null)
-			{
-				return false;
-			}
-		}
-		catch
-		{
-		}
 		return true;
 	}
 
@@ -19044,6 +19919,22 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static string GetNativeSpouseLabelForMarriagePrompt(Hero hero)
+	{
+		try
+		{
+			Hero spouse = hero?.Spouse;
+			if (spouse != null)
+			{
+				return " | 原版当前配偶=" + (spouse.Name?.ToString() ?? spouse.StringId ?? "未知");
+			}
+		}
+		catch
+		{
+		}
+		return "";
+	}
+
 	private static string BuildClanUnmarriedCandidatesForPrompt(Hero npcHero, Hero player, int maxEntries = 12)
 	{
 		try
@@ -19060,7 +19951,7 @@ public class MyBehavior : CampaignBehaviorBase
 				select h).Take(Math.Max(1, maxEntries)).ToList();
 			if (list.Count <= 0)
 			{
-				return "无（该家族当前没有基础适婚条件下的未婚成员）";
+				return "无（该家族当前没有基础适婚条件下的可婚配成员）";
 			}
 			StringBuilder stringBuilder = new StringBuilder();
 			for (int i = 0; i < list.Count; i++)
@@ -19078,13 +19969,13 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					text2 = "（族长）";
 				}
-				stringBuilder.AppendLine("- " + text + text2 + $" | 性别={marriageCandidateGenderLabelForPrompt} | 年龄={num} | targetHeroId={hero.StringId}");
+				stringBuilder.AppendLine("- " + text + text2 + $" | 性别={marriageCandidateGenderLabelForPrompt} | 年龄={num}" + GetNativeSpouseLabelForMarriagePrompt(hero) + $" | targetHeroId={hero.StringId}");
 			}
 			return stringBuilder.ToString().TrimEnd();
 		}
 		catch
 		{
-			return "无（生成未婚名单时发生异常）";
+			return "无（生成可婚配成员名单时发生异常）";
 		}
 	}
 
@@ -19365,8 +20256,8 @@ public class MyBehavior : CampaignBehaviorBase
 		if (includeMarriageCandidates)
 		{
 			int marriageCandidateMaxAgeSettingForPrompt = GetMarriageCandidateMaxAgeSettingForPrompt();
-			stringBuilder.AppendLine("【玩家家族可婚配未婚成员（事实清单）】");
-			stringBuilder.AppendLine($"筛选口径：仅列出玩家家族内部基础适婚池（年龄 {MarriageCandidateMinAgeForPrompt}-{marriageCandidateMaxAgeSettingForPrompt}、未婚、非囚犯）。具体能否与对方成员成婚，仍以性别限制、年龄差和运行时婚姻规则为准。");
+			stringBuilder.AppendLine("【玩家家族可婚配成员（允许已有配偶，事实清单）】");
+			stringBuilder.AppendLine($"筛选口径：列出玩家家族内部基础适婚池（年龄 {MarriageCandidateMinAgeForPrompt}-{marriageCandidateMaxAgeSettingForPrompt}、非囚犯）。多配偶已允许，已有配偶不是拒绝理由；具体能否与对方成员成婚，仍以性别限制、年龄差、非重复婚姻和运行时婚姻规则为准。");
 			stringBuilder.AppendLine(BuildPlayerClanUnmarriedCandidatesForPrompt(playerHero, targetHero, 12));
 		}
 		return stringBuilder.ToString().Trim();
@@ -19590,8 +20481,8 @@ public class MyBehavior : CampaignBehaviorBase
 		if (includeMarriageCandidates)
 		{
 			int marriageCandidateMaxAgeSettingForPrompt = GetMarriageCandidateMaxAgeSettingForPrompt();
-			stringBuilder.AppendLine("【该家族可婚配未婚成员（事实清单）】");
-			stringBuilder.AppendLine($"筛选口径：仅列出该家族内部基础适婚池（年龄 {MarriageCandidateMinAgeForPrompt}-{marriageCandidateMaxAgeSettingForPrompt}、未婚、非囚犯）。具体能否与玩家家族成员成婚，仍以性别限制、年龄差和运行时婚姻规则为准。");
+			stringBuilder.AppendLine("【该家族可婚配成员（允许已有配偶，事实清单）】");
+			stringBuilder.AppendLine($"筛选口径：列出该家族内部基础适婚池（年龄 {MarriageCandidateMinAgeForPrompt}-{marriageCandidateMaxAgeSettingForPrompt}、非囚犯）。多配偶已允许，已有配偶不是拒绝理由；具体能否与玩家家族成员成婚，仍以性别限制、年龄差、非重复婚姻和运行时婚姻规则为准。");
 			stringBuilder.AppendLine(BuildClanUnmarriedCandidatesForPrompt(npcHero, Hero.MainHero, 12));
 		}
 		if (includeTradePricing && RewardSystemBehavior.Instance != null)
@@ -20152,13 +21043,13 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		string name = string.IsNullOrWhiteSpace(personalName) ? (hero.Name?.ToString() ?? "新同伴") : personalName.Trim();
+		string name = string.IsNullOrWhiteSpace(personalName) ? (hero.Name?.ToString() ?? "新家族成员") : personalName.Trim();
 		string fullName = string.IsNullOrWhiteSpace(originalFullName) ? name : originalFullName.Trim();
 		string troopName = string.IsNullOrWhiteSpace(originalTroopName) ? "非英雄NPC" : originalTroopName.Trim();
 		string troopId = (originalTroopId ?? "").Trim();
 		string culture = string.IsNullOrWhiteSpace(cultureName) ? "未知文化" : cultureName.Trim();
 		string scene = string.IsNullOrWhiteSpace(sceneLabel) ? "当前场景" : sceneLabel.Trim();
-		string joinFact = string.IsNullOrWhiteSpace(joinEventFact) ? (name + "同意追随玩家并加入玩家队伍。") : joinEventFact.Trim();
+		string joinFact = string.IsNullOrWhiteSpace(joinEventFact) ? (name + "同意追随玩家，成为玩家家族成员并加入玩家队伍。") : joinEventFact.Trim();
 		string history = string.IsNullOrWhiteSpace(dialogueHistory) ? "（无可用加入前对话历史）" : dialogueHistory.Trim();
 		string equipment = string.IsNullOrWhiteSpace(equipmentSummary) ? "（无装备）" : equipmentSummary.Trim();
 		bool personaSaved = false;
@@ -20167,7 +21058,7 @@ public class MyBehavior : CampaignBehaviorBase
 			string sys = "你是《骑马与砍杀2：霸主》NPC的人设生成器。你只输出严格 JSON，不要输出任何额外文字。JSON 仅包含两个字段：personality 和 background。没有额外要求时，personality 和 background 各约 300 个中文字符；如果玩家自定义生成要求指定了篇幅、详略或文风，则以玩家自定义生成要求为准。每个字段都必须以完整句子结束，不要在半句话处停止。内容必须符合提供的事实，不要杜撰与事实冲突的家族关系、身份或势力。";
 			sys = AppendNpcPersonaGenerationRequirementsToSystemPrompt(sys);
 			StringBuilder userSb = new StringBuilder();
-			userSb.AppendLine("请基于以下信息生成该 NPC 升格为玩家同伴后的【个性】与【历史背景】。");
+			userSb.AppendLine("请基于信息生成该 NPC 升格为玩家家族成员后的【个性】与【历史背景】。");
 			userSb.AppendLine("写作风格沿用首次见到 Hero NPC 的人设格式：具体、可用于后续对话，不要写成系统说明。");
 			userSb.AppendLine("背景必须解释他/她为何愿意追随玩家，并吸收加入前对话中的关系、承诺、冲突、交易或共同经历；如果历史里没有相关内容，明确写成谨慎而合理的动机，不要凭空创造重大事件。");
 			userSb.AppendLine("个人名: " + name);
@@ -20176,7 +21067,7 @@ public class MyBehavior : CampaignBehaviorBase
 			userSb.AppendLine("文化: " + culture);
 			userSb.AppendLine("当前场景: " + scene);
 			userSb.AppendLine("加入事件: " + joinFact);
-			userSb.AppendLine("升格后人物事实（只使用原非 Hero NPC/士兵事实、加入事件和对话历史；不要加入升格后 Hero 的家族或势力信息）:");
+			userSb.AppendLine("升格后人物事实（只使用原非 Hero NPC/士兵事实、加入事件和对话历史；不要把玩家家族身份写成原生出身）:");
 			userSb.AppendLine(BuildPromotedNonHeroCompanionFactsForPersonaGeneration(hero, name, fullName, troopName, troopId, culture, scene, joinFact, equipment));
 			userSb.AppendLine("加入前该 NPC 与玩家的全部可用对话历史:");
 			userSb.AppendLine(history);
@@ -20244,9 +21135,9 @@ public class MyBehavior : CampaignBehaviorBase
 		try
 		{
 			GetNpcPersonaStrings(hero, out var personality, out var background);
-			string sys = "你是《骑马与砍杀2：霸主》的同伴技能生成器。你只输出严格 JSON，不要输出任何额外文字。JSON 格式为 {\"skills\":{\"OneHanded\":数值,...}}。只使用给出的技能ID，数值为 0 到 330 的整数。";
+			string sys = "你是《骑马与砍杀2：霸主》的家族成员技能生成器。只输出严格 JSON，格式为 {\"skills\":{\"OneHanded\":数值,...}}。只使用给出的技能ID，数值为 0 到 330 的整数。";
 			StringBuilder userSb = new StringBuilder();
-			userSb.AppendLine("请根据原兵种、装备、文化与人设摘要，为这个刚升格的 Hero 同伴生成合理技能。不要过强；士兵应主要强化其实际武器、骑术/跑动和少量战术/领导。");
+			userSb.AppendLine("按原兵种、装备、文化与人设，为这个刚升格的玩家家族 Hero 生成合理技能。不要过强；主要强化实际武器、骑术/跑动和少量战术/领导。");
 			userSb.AppendLine("可用技能ID: OneHanded, TwoHanded, Polearm, Bow, Crossbow, Throwing, Riding, Athletics, Crafting, Scouting, Tactics, Roguery, Charm, Leadership, Trade, Steward, Medicine, Engineering");
 			userSb.AppendLine("个人名: " + personalName);
 			userSb.AppendLine("原兵种: " + originalTroopName);
@@ -20412,7 +21303,7 @@ public class MyBehavior : CampaignBehaviorBase
 				select h).Take(Math.Max(1, maxEntries)).ToList();
 			if (list.Count <= 0)
 			{
-				return "无（玩家家族当前没有基础适婚条件下的未婚成员）";
+				return "无（玩家家族当前没有基础适婚条件下的可婚配成员）";
 			}
 			StringBuilder stringBuilder = new StringBuilder();
 			for (int i = 0; i < list.Count; i++)
@@ -20430,13 +21321,13 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					text2 = "（玩家家族族长）";
 				}
-				stringBuilder.AppendLine("- " + text + text2 + $" | 性别={marriageCandidateGenderLabelForPrompt} | 年龄={num} | playerClanHeroId={hero.StringId}");
+				stringBuilder.AppendLine("- " + text + text2 + $" | 性别={marriageCandidateGenderLabelForPrompt} | 年龄={num}" + GetNativeSpouseLabelForMarriagePrompt(hero) + $" | playerClanHeroId={hero.StringId}");
 			}
 			return stringBuilder.ToString().TrimEnd();
 		}
 		catch
 		{
-			return "无（生成玩家家族未婚名单时发生异常）";
+			return "无（生成玩家家族可婚配成员名单时发生异常）";
 		}
 	}
 
@@ -21621,13 +22512,15 @@ public class MyBehavior : CampaignBehaviorBase
 			int promptListMax = PromptListRetrievalService.GetMaxCandidateCount();
 			List<SettlementTransferPromptEntry> list2 = PromptListRetrievalService.FilterSettlementTransferEntries(list2All, mentions, promptListMax);
 			List<SettlementTransferPromptEntry> list3 = PromptListRetrievalService.FilterSettlementTransferEntries(list3All, mentions, promptListMax);
+			PromptListRetrievalService.PublishSettlementTransferSnapshot(PromptListRetrievalService.SettlementTransferNpcAssetsSnapshotScope, targetHero, targetCharacter, -1, list2);
+			PromptListRetrievalService.PublishSettlementTransferSnapshot(PromptListRetrievalService.SettlementTransferAllNpcAssetsSnapshotScope, targetHero, targetCharacter, -1, list2All);
 			StringBuilder stringBuilder = new StringBuilder();
 			string text2 = RewardSystemBehavior.Instance?.BuildSettlementTransferPromptGuidanceForAI(hero, targetCharacter);
 			if (!string.IsNullOrWhiteSpace(text2))
 			{
 				stringBuilder.AppendLine(text2.Trim());
 			}
-			stringBuilder.AppendLine("【固定资产转移规则】固定资产包括城市、城堡、工坊、商队和商船队。只认本轮清单；只有你最终明确同意现在把清单中某项资产转给玩家，才算真的转移。村庄不单独转移。");
+			stringBuilder.AppendLine("【固定资产转移规则】固定资产只认本轮清单；只有你最终明确同意现在把你的清单资产转给玩家，才算真的转移。村庄不单独转移,注意，你绝不可以同意转让【你当前可转移固定资产】中不存在的资产，那会导致转让无效！");
 			stringBuilder.AppendLine("当前与你谈判的人：" + text);
 			AppendSettlementTransferPromptSection(stringBuilder, "【你当前可转移固定资产】：", list2, showPromptIndex: true);
 			string settlementRemainder = PromptListRetrievalService.BuildRemainingSettlementTransferSummary(list2All, list2, "你");
@@ -21635,12 +22528,14 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				stringBuilder.AppendLine(settlementRemainder);
 			}
+			stringBuilder.Append("你全部可转固定资产: ").Append(list2All.Count).Append(" 项 | 一次结清指导总值: ").Append(CalculateSettlementTransferTotalValueForExternal(list2All)).AppendLine(" 第纳尔");
 			AppendSettlementTransferPromptSection(stringBuilder, "【玩家当前可手动交付固定资产（仅供手动交付参考）】：", list3, showPromptIndex: true);
 			string playerSettlementRemainder = PromptListRetrievalService.BuildRemainingSettlementTransferSummary(list3All, list3, "玩家");
 			if (!string.IsNullOrWhiteSpace(playerSettlementRemainder))
 			{
 				stringBuilder.AppendLine(playerSettlementRemainder);
 			}
+			stringBuilder.Append("玩家全部可手动交付固定资产: ").Append(list3All.Count).Append(" 项 | 一次结清指导总值: ").Append(CalculateSettlementTransferTotalValueForExternal(list3All)).AppendLine(" 第纳尔");
 			return stringBuilder.ToString().Trim();
 		}
 		catch
@@ -21698,6 +22593,35 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			sb.AppendLine(stringBuilder.ToString());
 		}
+	}
+
+	internal static long CalculateSettlementTransferTotalValueForExternal(IEnumerable<SettlementTransferPromptEntry> entries)
+	{
+		long total = 0L;
+		foreach (SettlementTransferPromptEntry entry in entries ?? Enumerable.Empty<SettlementTransferPromptEntry>())
+		{
+			if (!IsSettlementTransferEntryValidForExternal(entry))
+			{
+				continue;
+			}
+			total = TransferQuantitySpec.AddProduct(total, 1, Math.Max(0, entry.GuidePriceDenars));
+		}
+		return total;
+	}
+
+	internal static long CalculatePartyTransferTotalValueForExternal(IEnumerable<PartyTransferPromptEntry> entries, bool isPrisoner)
+	{
+		long total = 0L;
+		foreach (PartyTransferPromptEntry entry in entries ?? Enumerable.Empty<PartyTransferPromptEntry>())
+		{
+			if (entry == null || entry.Character == null || entry.Count <= 0)
+			{
+				continue;
+			}
+			int unitValue = isPrisoner ? Math.Max(1, entry.BuyPriceDenarsPerUnit) : Math.Max(1, entry.HirePriceDenarsPerUnit);
+			total = TransferQuantitySpec.AddProduct(total, entry.IsHero ? 1 : entry.Count, unitValue);
+		}
+		return total;
 	}
 
 	private static int GetPartyTransferTroopTier(PartyTransferPromptEntry entry)
@@ -21932,6 +22856,7 @@ public class MyBehavior : CampaignBehaviorBase
 			List<PartyTransferPromptEntry> list3 = list2.Where((PartyTransferPromptEntry x) => GetPartyTransferTroopTier(x) > 0 && GetPartyTransferTroopTier(x) <= partyTransferRecruitMaxTier).ToList();
 			List<PartyTransferPromptEntry> list4 = list2.Where((PartyTransferPromptEntry x) => !list3.Contains(x)).ToList();
 			List<PartyTransferPromptEntry> list5 = list.Where((PartyTransferPromptEntry x) => x != null && x.Section == PartyTransferEntrySection.NpcVolunteers).ToList();
+			List<PartyTransferPromptEntry> listAllTroops = BuildDisplayIndexedPartyTransferEntries(list2.Concat(list5));
 			List<PartyTransferPromptEntry> list6All = BuildDisplayIndexedPartyTransferEntries(list3.Concat(list5));
 			List<PartyTransferPromptEntry> list7All = BuildDisplayIndexedPartyTransferEntries(list.Where((PartyTransferPromptEntry x) => x.Section == PartyTransferEntrySection.NpcPrisoners));
 			MentionedWorldEntities mentions = AIConfigHandler.GetLatestAuxiliaryMentionedEntitiesForExternal();
@@ -21939,6 +22864,10 @@ public class MyBehavior : CampaignBehaviorBase
 			List<PartyTransferPromptEntry> list4Filtered = PromptListRetrievalService.FilterPartyTransferEntries(list4, mentions, promptListMax, isPrisoner: false);
 			List<PartyTransferPromptEntry> list6 = PromptListRetrievalService.FilterPartyTransferEntries(list6All, mentions, promptListMax, isPrisoner: false);
 			List<PartyTransferPromptEntry> list7 = PromptListRetrievalService.FilterPartyTransferEntries(list7All, mentions, promptListMax, isPrisoner: true);
+			PromptListRetrievalService.PublishPartyTransferSnapshot(PromptListRetrievalService.PartyTransferTroopsSnapshotScope, targetHero, targetCharacter, targetAgentIndex, list6);
+			PromptListRetrievalService.PublishPartyTransferSnapshot(PromptListRetrievalService.PartyTransferPrisonersSnapshotScope, targetHero, targetCharacter, targetAgentIndex, list7);
+			PromptListRetrievalService.PublishPartyTransferSnapshot(PromptListRetrievalService.PartyTransferAllTroopsSnapshotScope, targetHero, targetCharacter, targetAgentIndex, listAllTroops);
+			PromptListRetrievalService.PublishPartyTransferSnapshot(PromptListRetrievalService.PartyTransferAllPrisonersSnapshotScope, targetHero, targetCharacter, targetAgentIndex, list7All);
 			StringBuilder stringBuilder = new StringBuilder();
 			string runtimeHint = flag ? AIConfigHandler.BuildRuntimePartyTransferInstructionForExternal(targetHero, targetCharacter) : "";
 			if (!string.IsNullOrWhiteSpace(runtimeHint))
@@ -21970,8 +22899,9 @@ public class MyBehavior : CampaignBehaviorBase
 					stringBuilder.AppendLine("【原版要人募兵】你这里按原版城镇/村庄要人募兵规则实时计算；由于关系、阵营或战况等原版条件，本轮没有向" + text + "开放任何招募槽位。正文只口头拒绝或解释，不写 ATT。");
 				}
 			}
+			stringBuilder.AppendLine("若你明确同意移交全部士兵，全量转移不受本段信任阶级和展示上限限制，但所有Hero都会留下；正文仍只自然答复。");
 			stringBuilder.AppendLine("若你最终明确同意把【你当前可转移俘虏】中的俘虏交给玩家，后处理才会根据正文生成 ATP；正文只口头答应、拒绝或谈条件，不写 ATT/ATP。");
-			stringBuilder.AppendLine("后处理可用于 ATT/ATP 的序号只来自本轮仍带编号的清单。未编号或未展示的兵种/俘虏，绝不可以生成 ATT/ATP。");
+			stringBuilder.AppendLine("单项 ATT/ATP 的序号只来自本轮编号清单；只有明确同意整类全部移交时，才可覆盖未编号或未展示项。");
 			stringBuilder.AppendLine("ATT 只能用于部队序号，ATP 只能用于俘虏序号；数量不得超过当前数量。若本轮尚未明确成交，后处理就不应生成这些标签。");
 			stringBuilder.AppendLine("日薪表示每名士兵每天需要支付多少第纳尔；雇佣价与购买价表示当前谈判指导单价。");
 			stringBuilder.AppendLine("当前与你交易的人：" + text);
@@ -21988,12 +22918,14 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				AppendPartyTransferHiddenTroopSection(stringBuilder, "【由于你对" + text + "不够信任，你当前不可向" + text + "开放招募的更高阶部队】：", list4Filtered);
 			}
+			stringBuilder.Append("全部非Hero士兵: ").Append(listAllTroops.Sum((PartyTransferPromptEntry x) => Math.Max(0, x?.Count ?? 0))).Append(" 人 | 雇佣指导总值: ").Append(CalculatePartyTransferTotalValueForExternal(listAllTroops, isPrisoner: false)).AppendLine(" 第纳尔");
 			AppendPartyTransferPromptSection(stringBuilder, "【你当前可转移俘虏】：", list7, isPrisoner: true, showPromptIndex: true);
 			string prisonerRemainder = PromptListRetrievalService.BuildRemainingPartyTransferSummary(list7All, list7, isPrisoner: true, "你");
 			if (!string.IsNullOrWhiteSpace(prisonerRemainder))
 			{
 				stringBuilder.AppendLine(prisonerRemainder);
 			}
+			stringBuilder.Append("全部俘虏: ").Append(list7All.Sum((PartyTransferPromptEntry x) => Math.Max(0, x?.Count ?? 0))).Append(" 人 | 购买指导总值: ").Append(CalculatePartyTransferTotalValueForExternal(list7All, isPrisoner: true)).AppendLine(" 第纳尔");
 			return stringBuilder.ToString().Trim();
 		}
 		catch
@@ -22008,7 +22940,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return TransferPartyVolunteerEntry(entry, requestedAmount, targetParty);
 		}
-		if (entry == null || targetParty == null || entry.OwnerParty == null || entry.OwnerParty == targetParty || entry.Character == null)
+		if (entry == null || targetParty == null || entry.OwnerParty == null || entry.OwnerParty == targetParty || entry.Character == null || entry.Character.IsHero || entry.Character == CharacterObject.PlayerCharacter)
 		{
 			return 0;
 		}
@@ -22163,83 +23095,161 @@ public class MyBehavior : CampaignBehaviorBase
 		return "[AFEF NPC行为补充] " + npcName + "已将" + amount + "名" + entry.DisplayName + "俘虏交给玩家。";
 	}
 
+	private static string StripPartyTransferTags(string text)
+	{
+		string result = Regex.Replace(text ?? "", "\\[ATT:[^\\]\\r\\n]*\\]", "", RegexOptions.IgnoreCase);
+		return Regex.Replace(result, "\\[ATP:[^\\]\\r\\n]*\\]", "", RegexOptions.IgnoreCase).Trim();
+	}
+
 	public static bool TryApplyPartyTransferTagsForExternal(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, ref string content, out List<string> generatedFacts, out List<string> notifications)
 	{
 		generatedFacts = new List<string>();
 		notifications = new List<string>();
+		List<string> factResults = generatedFacts;
+		List<string> notificationResults = notifications;
 		try
 		{
 			string text = content ?? "";
 			if (!IsPartyTransferRuleEligible(targetHero, targetCharacter))
 			{
-				content = TransferTroopTagRegex.Replace(text, "").Trim();
-				content = TransferPrisonerTagRegex.Replace(content, "").Trim();
+				content = StripPartyTransferTags(text);
 				return false;
 			}
 			MatchCollection matchCollection = TransferTroopTagRegex.Matches(text);
 			MatchCollection matchCollection2 = TransferPrisonerTagRegex.Matches(text);
 			if ((matchCollection?.Count ?? 0) <= 0 && (matchCollection2?.Count ?? 0) <= 0)
 			{
+				content = StripPartyTransferTags(text);
 				return false;
 			}
-			List<PartyTransferPromptEntry> list = BuildPartyTransferPromptEntriesInternal(targetHero, targetCharacter, targetAgentIndex);
-			List<PartyTransferPromptEntry> list2 = BuildDisplayIndexedPartyTransferEntries(list.Where((PartyTransferPromptEntry x) => x != null && (x.Section == PartyTransferEntrySection.NpcTroops || x.Section == PartyTransferEntrySection.NpcVolunteers)));
-			List<PartyTransferPromptEntry> list3 = BuildDisplayIndexedPartyTransferEntries(list.Where((PartyTransferPromptEntry x) => x != null && x.Section == PartyTransferEntrySection.NpcPrisoners));
+			bool hasTroopSnapshot = PromptListRetrievalService.TryGetPartyTransferSnapshot(PromptListRetrievalService.PartyTransferTroopsSnapshotScope, targetHero, targetCharacter, targetAgentIndex, out var list2);
+			bool hasPrisonerSnapshot = PromptListRetrievalService.TryGetPartyTransferSnapshot(PromptListRetrievalService.PartyTransferPrisonersSnapshotScope, targetHero, targetCharacter, targetAgentIndex, out var list3);
+			bool hasAllTroopSnapshot = PromptListRetrievalService.TryGetPartyTransferSnapshot(PromptListRetrievalService.PartyTransferAllTroopsSnapshotScope, targetHero, targetCharacter, targetAgentIndex, out var allTroops);
+			bool hasAllPrisonerSnapshot = PromptListRetrievalService.TryGetPartyTransferSnapshot(PromptListRetrievalService.PartyTransferAllPrisonersSnapshotScope, targetHero, targetCharacter, targetAgentIndex, out var allPrisoners);
 			PartyBase party = Hero.MainHero?.PartyBelongedTo?.Party ?? MobileParty.MainParty?.Party;
 			string text2 = ResolvePartyTransferTargetDisplayName(targetHero, targetCharacter, targetAgentIndex);
 			bool flag = false;
+			int attemptedEntries = 0;
+			int successfulEntries = 0;
+			int failedOrPartialEntries = 0;
+			long actualUnits = 0L;
+			long actualValue = 0L;
 			if (party != null)
 			{
-				foreach (Match item in matchCollection)
+				void applyTroop(PartyTransferPromptEntry entry, int requested, string source)
 				{
-					if (!item.Success)
+					attemptedEntries++;
+					int applied = TransferPartyMemberEntry(entry, requested, party);
+					Logger.Log("Logic", "[PartyTransfer] ATT source=" + source + " amount=" + requested + " resolved=" + (entry?.DisplayName ?? "null") + " section=" + (entry?.Section.ToString() ?? "null") + " applied=" + applied);
+					if (applied <= 0)
 					{
-						continue;
+						failedOrPartialEntries++;
+						return;
 					}
-					int num = 0;
-					int num2 = 0;
-					int.TryParse(item.Groups[1].Value, out num);
-					int.TryParse(item.Groups[2].Value, out num2);
-					PartyTransferPromptEntry partyTransferPromptEntry = FindDisplayIndexedPartyTransferEntry(list2, num);
-					int num3 = TransferPartyMemberEntry(partyTransferPromptEntry, num2, party);
-					Logger.Log("Logic", "[PartyTransfer] ATT index=" + num + " amount=" + num2 + " resolved=" + (partyTransferPromptEntry?.DisplayName ?? "null") + " section=" + (partyTransferPromptEntry?.Section.ToString() ?? "null") + " applied=" + num3);
-					if (num3 > 0)
+					flag = true;
+					successfulEntries++;
+					if (applied < Math.Max(0, requested))
 					{
-						flag = true;
-						generatedFacts.Add(BuildNpcToPlayerTroopTransferFact(text2, partyTransferPromptEntry, num3));
-						notifications.Add((IsPartyTransferVolunteerEntry(partyTransferPromptEntry) ? "已招募 " : "已获得 ") + num3 + " 名" + partyTransferPromptEntry.DisplayName);
+						failedOrPartialEntries++;
+					}
+					actualUnits = TransferQuantitySpec.AddValue(actualUnits, applied);
+					actualValue = TransferQuantitySpec.AddProduct(actualValue, applied, Math.Max(1, entry?.HirePriceDenarsPerUnit ?? 0));
+					factResults.Add(BuildNpcToPlayerTroopTransferFact(text2, entry, applied));
+					notificationResults.Add((IsPartyTransferVolunteerEntry(entry) ? "已招募 " : "已获得 ") + applied + " 名" + entry.DisplayName);
+				}
+				void applyPrisoner(PartyTransferPromptEntry entry, int requested, string source)
+				{
+					attemptedEntries++;
+					int applied = TransferPartyPrisonerEntry(entry, requested, party);
+					Logger.Log("Logic", "[PartyTransfer] ATP source=" + source + " amount=" + requested + " resolved=" + (entry?.DisplayName ?? "null") + " applied=" + applied);
+					if (applied <= 0)
+					{
+						failedOrPartialEntries++;
+						return;
+					}
+					flag = true;
+					successfulEntries++;
+					if (applied < Math.Max(0, requested))
+					{
+						failedOrPartialEntries++;
+					}
+					actualUnits = TransferQuantitySpec.AddValue(actualUnits, applied);
+					actualValue = TransferQuantitySpec.AddProduct(actualValue, applied, Math.Max(1, entry?.BuyPriceDenarsPerUnit ?? 0));
+					factResults.Add(BuildNpcToPlayerPrisonerTransferFact(text2, entry, applied));
+					notificationResults.Add("已获得 " + (entry.IsHero ? ("俘虏" + entry.DisplayName) : (applied + " 名" + entry.DisplayName + "俘虏")));
+				}
+				bool troopAll = matchCollection.Cast<Match>().Any((Match x) => x.Success && (TransferQuantitySpec.IsAllValue(x.Groups[2].Value) || (TransferQuantitySpec.IsAllValue(x.Groups[1].Value) && int.TryParse(x.Groups[2].Value, out var amount) && amount > 0)));
+				if (troopAll)
+				{
+					if (!hasAllTroopSnapshot)
+					{
+						attemptedEntries++;
+						failedOrPartialEntries++;
+						Logger.Log("Logic", "[PartyTransfer] ATT ALL rejected: authorization snapshot missing.");
+					}
+					foreach (PartyTransferPromptEntry entry in hasAllTroopSnapshot ? allTroops : new List<PartyTransferPromptEntry>())
+					{
+						applyTroop(entry, Math.Max(0, entry?.Count ?? 0), "ALL");
 					}
 				}
-				foreach (Match item2 in matchCollection2)
+				else
 				{
-					if (!item2.Success)
+					if (!hasTroopSnapshot)
 					{
-						continue;
+						attemptedEntries += matchCollection?.Count ?? 0;
+						failedOrPartialEntries += matchCollection?.Count ?? 0;
+						Logger.Log("Logic", "[PartyTransfer] ATT rejected: authorization snapshot missing.");
 					}
-					int num4 = 0;
-					int num5 = 0;
-					int.TryParse(item2.Groups[1].Value, out num4);
-					int.TryParse(item2.Groups[2].Value, out num5);
-					PartyTransferPromptEntry partyTransferPromptEntry2 = FindDisplayIndexedPartyTransferEntry(list3, num4);
-					int num6 = TransferPartyPrisonerEntry(partyTransferPromptEntry2, num5, party);
-					Logger.Log("Logic", "[PartyTransfer] ATP index=" + num4 + " amount=" + num5 + " resolved=" + (partyTransferPromptEntry2?.DisplayName ?? "null") + " applied=" + num6);
-					if (num6 > 0)
+					foreach (Match item in hasTroopSnapshot ? matchCollection.Cast<Match>() : Enumerable.Empty<Match>())
 					{
-						flag = true;
-						generatedFacts.Add(BuildNpcToPlayerPrisonerTransferFact(text2, partyTransferPromptEntry2, num6));
-						notifications.Add("已获得 " + (partyTransferPromptEntry2.IsHero ? ("俘虏" + partyTransferPromptEntry2.DisplayName) : (num6 + " 名" + partyTransferPromptEntry2.DisplayName + "俘虏")));
+						if (item.Success && int.TryParse(item.Groups[1].Value, out var index) && int.TryParse(item.Groups[2].Value, out var amount))
+						{
+							applyTroop(FindDisplayIndexedPartyTransferEntry(list2, index), amount, "index=" + index);
+						}
 					}
 				}
+				bool prisonerAll = matchCollection2.Cast<Match>().Any((Match x) => x.Success && (TransferQuantitySpec.IsAllValue(x.Groups[2].Value) || (TransferQuantitySpec.IsAllValue(x.Groups[1].Value) && int.TryParse(x.Groups[2].Value, out var amount) && amount > 0)));
+				if (prisonerAll)
+				{
+					if (!hasAllPrisonerSnapshot)
+					{
+						attemptedEntries++;
+						failedOrPartialEntries++;
+						Logger.Log("Logic", "[PartyTransfer] ATP ALL rejected: authorization snapshot missing.");
+					}
+					foreach (PartyTransferPromptEntry entry in hasAllPrisonerSnapshot ? allPrisoners : new List<PartyTransferPromptEntry>())
+					{
+						applyPrisoner(entry, Math.Max(0, entry?.Count ?? 0), "ALL");
+					}
+				}
+				else
+				{
+					if (!hasPrisonerSnapshot)
+					{
+						attemptedEntries += matchCollection2?.Count ?? 0;
+						failedOrPartialEntries += matchCollection2?.Count ?? 0;
+						Logger.Log("Logic", "[PartyTransfer] ATP rejected: authorization snapshot missing.");
+					}
+					foreach (Match item in hasPrisonerSnapshot ? matchCollection2.Cast<Match>() : Enumerable.Empty<Match>())
+					{
+						if (item.Success && int.TryParse(item.Groups[1].Value, out var index) && int.TryParse(item.Groups[2].Value, out var amount))
+						{
+							applyPrisoner(FindDisplayIndexedPartyTransferEntry(list3, index), amount, "index=" + index);
+						}
+					}
+				}
+				string batchSummary = "部队与俘虏转移汇总：尝试项" + attemptedEntries + "，成功项" + successfulEntries + "，失败或不足项" + failedOrPartialEntries + "，实际转移" + actualUnits + "人，实际指导总值约" + actualValue + "第纳尔。";
+				factResults.Add("[AFEF NPC行为补充] " + text2 + batchSummary);
+				notificationResults.Add(batchSummary);
+				Logger.Log("Logic", "[PartyTransfer] batch_done troopAll=" + troopAll + " prisonerAll=" + prisonerAll + " attempted=" + attemptedEntries + " succeeded=" + successfulEntries + " failedOrPartial=" + failedOrPartialEntries + " actualUnits=" + actualUnits + " actualValue=" + actualValue);
 			}
-			text = TransferTroopTagRegex.Replace(text, "").Trim();
-			text = TransferPrisonerTagRegex.Replace(text, "").Trim();
+			text = StripPartyTransferTags(text);
 			content = text;
 			return flag;
 		}
 		catch
 		{
-			content = TransferTroopTagRegex.Replace(content ?? "", "").Trim();
-			content = TransferPrisonerTagRegex.Replace(content, "").Trim();
+			content = StripPartyTransferTags(content);
 			return false;
 		}
 	}
@@ -24913,6 +25923,179 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static bool HasMeaningfulDialogueHistoryForExternal(Hero hero)
+	{
+		try
+		{
+			MyBehavior behavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			return behavior != null && behavior.HasMeaningfulDialogueHistoryInternal(hero);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	public static int GetLastMeaningfulDialogueDayForExternal(Hero hero)
+	{
+		try
+		{
+			MyBehavior behavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			return behavior?.GetLastMeaningfulDialogueDayInternal(hero) ?? -1;
+		}
+		catch
+		{
+			return -1;
+		}
+	}
+
+	public static bool TryGetLatestNpcRecentActionForExternal(Hero hero, out string stableKey, out string actionText, out int day)
+	{
+		stableKey = "";
+		actionText = "";
+		day = -1;
+		try
+		{
+			MyBehavior behavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			return behavior != null && behavior.TryGetLatestNpcRecentActionInternal(hero, out stableKey, out actionText, out day);
+		}
+		catch
+		{
+			stableKey = "";
+			actionText = "";
+			day = -1;
+			return false;
+		}
+	}
+
+	public static bool TryGetLatestMeaningfulDialogueForExternal(Hero hero, out string stableKey, out string dialogueText, out int day)
+	{
+		stableKey = "";
+		dialogueText = "";
+		day = -1;
+		try
+		{
+			MyBehavior behavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			return behavior != null && behavior.TryGetLatestMeaningfulDialogueInternal(hero, out stableKey, out dialogueText, out day);
+		}
+		catch
+		{
+			stableKey = "";
+			dialogueText = "";
+			day = -1;
+			return false;
+		}
+	}
+
+	private bool HasMeaningfulDialogueHistoryInternal(Hero hero)
+	{
+		return GetLastMeaningfulDialogueDayInternal(hero) >= 0;
+	}
+
+	private int GetLastMeaningfulDialogueDayInternal(Hero hero)
+	{
+		if (hero == null)
+		{
+			return -1;
+		}
+		List<DialogueDay> history = LoadDialogueHistory(hero);
+		foreach (DialogueDay dialogueDay in (history ?? new List<DialogueDay>()).OrderByDescending(x => x?.GameDayIndex ?? -1))
+		{
+			if (dialogueDay?.Lines == null)
+			{
+				continue;
+			}
+			if (dialogueDay.Lines.Any(line => IsMeaningfulDialogueLineForProactiveLetter(line)))
+			{
+				return dialogueDay.GameDayIndex;
+			}
+		}
+		return -1;
+	}
+
+	private bool TryGetLatestMeaningfulDialogueInternal(Hero hero, out string stableKey, out string dialogueText, out int day)
+	{
+		stableKey = "";
+		dialogueText = "";
+		day = -1;
+		if (hero == null)
+		{
+			return false;
+		}
+		List<DialogueDay> history = LoadDialogueHistory(hero) ?? new List<DialogueDay>();
+		foreach (var record in history
+			.Select((value, index) => new { Value = value, Index = index })
+			.OrderByDescending(x => x.Value?.GameDayIndex ?? -1)
+			.ThenByDescending(x => x.Index))
+		{
+			DialogueDay dialogueDay = record.Value;
+			if (dialogueDay?.Lines == null)
+			{
+				continue;
+			}
+			for (int lineIndex = dialogueDay.Lines.Count - 1; lineIndex >= 0; lineIndex--)
+			{
+				string line = (dialogueDay.Lines[lineIndex] ?? "").Trim();
+				if (!IsMeaningfulDialogueLineForProactiveLetter(line))
+				{
+					continue;
+				}
+				string heroId = (hero.StringId ?? "hero").Trim();
+				stableKey = "dialogue:" + heroId + ":" + dialogueDay.GameDayIndex + ":" + record.Index + ":" + lineIndex;
+				dialogueText = line;
+				day = dialogueDay.GameDayIndex;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static bool IsMeaningfulDialogueLineForProactiveLetter(string line)
+	{
+		string text = (line ?? "").Trim();
+		return !string.IsNullOrWhiteSpace(text)
+			&& !IsActiveSceneSessionHistoryLine(text)
+			&& !IsSceneShoutObserverHistoryLine(text)
+			&& !IsLoreInjectionHistoryLine(text)
+			&& !IsSystemFactLine(text)
+			&& !IsPlayerTurnStartLine(text);
+	}
+
+	private bool TryGetLatestNpcRecentActionInternal(Hero hero, out string stableKey, out string actionText, out int day)
+	{
+		stableKey = "";
+		actionText = "";
+		day = -1;
+		if (hero == null)
+		{
+			return false;
+		}
+		string heroKey = GetNpcActionHeroKey(hero);
+		if (string.IsNullOrWhiteSpace(heroKey)
+			|| _npcRecentActions == null
+			|| !_npcRecentActions.TryGetValue(heroKey, out List<NpcActionEntry> entries)
+			|| entries == null)
+		{
+			return false;
+		}
+		NpcActionEntry latest = entries
+			.Where(x => x != null && !string.IsNullOrWhiteSpace(x.Text))
+			.OrderByDescending(x => x.Day)
+			.ThenByDescending(x => x.Order)
+			.ThenByDescending(x => x.Sequence)
+			.FirstOrDefault();
+		if (latest == null)
+		{
+			return false;
+		}
+		stableKey = string.IsNullOrWhiteSpace(latest.StableKey)
+			? ((latest.ActionKind ?? "event") + ":" + latest.Day + ":" + latest.Order + ":" + latest.Sequence)
+			: latest.StableKey.Trim();
+		actionText = latest.Text.Trim();
+		day = latest.Day;
+		return !string.IsNullOrWhiteSpace(stableKey) && !string.IsNullOrWhiteSpace(actionText);
+	}
+
 	public static void AppendExternalNpcFact(Hero hero, string factText)
 	{
 		try
@@ -25244,19 +26427,19 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void AddWorldMapCommandRuleExclusionForTarget(HashSet<string> excludedRuleIds, Hero targetHero, CharacterObject targetCharacter = null)
+	private static void AddWorldMapCommandRuleExclusionForTarget(HashSet<string> excludedRuleIds, Hero targetHero, CharacterObject targetCharacter = null, int targetAgentIndex = -1)
 	{
 		if (excludedRuleIds == null)
 		{
 			return;
 		}
-		if (ShouldExcludeWorldMapCommandRuleForTarget(targetHero, targetCharacter))
+		if (ShouldExcludeWorldMapCommandRuleForTarget(targetHero, targetCharacter, targetAgentIndex))
 		{
 			excludedRuleIds.Add("worldmap_party_command");
 		}
 	}
 
-	private static bool ShouldExcludeWorldMapCommandRuleForTarget(Hero targetHero, CharacterObject targetCharacter = null)
+	private static bool ShouldExcludeWorldMapCommandRuleForTarget(Hero targetHero, CharacterObject targetCharacter = null, int targetAgentIndex = -1)
 	{
 		try
 		{
@@ -25271,7 +26454,11 @@ public class MyBehavior : CampaignBehaviorBase
 					|| hero.Occupation == Occupation.Artisan
 					|| hero.Occupation == Occupation.Preacher;
 			}
-			return targetCharacter != null && !targetCharacter.IsHero;
+			if (targetCharacter != null && !targetCharacter.IsHero)
+			{
+				return !WorldMapPartyCommandBehavior.CanUseNonHeroPartyFallbackForExternal(targetCharacter, targetAgentIndex);
+			}
+			return false;
 		}
 		catch
 		{
@@ -25349,8 +26536,7 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		string id = (ruleId ?? "").Trim();
 		return string.Equals(id, "kingdom_service", StringComparison.OrdinalIgnoreCase)
-			|| string.Equals(id, "kingdom_vassalage", StringComparison.OrdinalIgnoreCase)
-			|| string.Equals(id, "kingdom_annexation", StringComparison.OrdinalIgnoreCase);
+			|| string.Equals(id, "kingdom_vassalage", StringComparison.OrdinalIgnoreCase);
 	}
 
 	private static bool IsRuntimeGatedPreprocessRuleId(string ruleId)
@@ -25395,14 +26581,13 @@ public class MyBehavior : CampaignBehaviorBase
 				text = runtime;
 			}
 		}
-		if (hasAnyHero && string.Equals(id, "kingdom_annexation", StringComparison.OrdinalIgnoreCase))
+		if (hasAnyHero && string.Equals(id, "diplomacy", StringComparison.OrdinalIgnoreCase))
 		{
 			string runtime = KingdomAnnexationBehavior.BuildRuntimeAnnexationInstructionForExternal(hero, targetCharacter);
-			if (string.IsNullOrWhiteSpace(runtime))
+			if (!string.IsNullOrWhiteSpace(runtime))
 			{
-				return "";
+				text = string.Join("\n", new string[2] { text, runtime }.Where((string x) => !string.IsNullOrWhiteSpace(x))).Trim();
 			}
-			text = runtime;
 		}
 		if (hasAnyHero && string.Equals(id, "marriage", StringComparison.OrdinalIgnoreCase))
 		{
@@ -25418,7 +26603,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		if (string.Equals(id, "meeting_taunt", StringComparison.OrdinalIgnoreCase))
 		{
-			string runtime = SceneTauntBehavior.BuildUnifiedTauntRuntimeInstructionForExternal(hero, targetCharacter, targetAgentIndex);
+			string runtime = LordEncounterBehavior.BuildForcedMeetingTauntRuntimeInstructionForExternal(hero, targetCharacter);
 			if (!string.IsNullOrWhiteSpace(runtime))
 			{
 				text = runtime;
@@ -25509,7 +26694,7 @@ public class MyBehavior : CampaignBehaviorBase
 		int num = AIConfigHandler.GuardrailRuleReturnCap;
 		HashSet<string> excludedRuleIdSet = BuildPromptRuleIdSet(excludedRuleIds);
 		AddPlayerCompanionOrFamilyRuleExclusionsForTarget(excludedRuleIdSet, targetHero, targetCharacter);
-		AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter);
+		AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter, targetAgentIndex);
 		AddSceneMoveRuleExclusionForCurrentMission(excludedRuleIdSet);
 		string targetKingdomId = ResolveTargetKingdomIdForRules(targetHero, targetCharacter, kingdomIdOverride);
 		AIConfigHandler.SetGuardrailRuntimeTargetKingdom(targetKingdomId);
@@ -25639,9 +26824,9 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			AddReferralTip(tips, "外交找国王");
 		}
-		else if (AnyRestrictedReferralRuleBlocked(hasAnyHero, targetHero, targetCharacter, targetAgentIndex, excludedRuleIdSet, "kingdom_vassalage", "kingdom_annexation"))
+		else if (AnyRestrictedReferralRuleBlocked(hasAnyHero, targetHero, targetCharacter, targetAgentIndex, excludedRuleIdSet, "kingdom_vassalage"))
 		{
-			AddReferralTip(tips, "臣属/吞并需双方国王");
+			AddReferralTip(tips, "臣属需双方国王");
 		}
 		if (AnyRestrictedReferralRuleBlocked(hasAnyHero, targetHero, targetCharacter, targetAgentIndex, excludedRuleIdSet, "vote_deal", "propose_agenda"))
 		{
@@ -25710,7 +26895,6 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 		case "diplomacy":
 		case "kingdom_vassalage":
-		case "kingdom_annexation":
 		case "vote_deal":
 		case "propose_agenda":
 		case "marriage":
@@ -25719,7 +26903,7 @@ public class MyBehavior : CampaignBehaviorBase
 		case "siege_intervention_aftermath":
 			return !AIConfigHandler.CanInjectRuleTopicIntoPreprocessForExternal(id, hasAnyHero);
 		case "worldmap_party_command":
-			return ShouldExcludeWorldMapCommandRuleForTarget(hero, targetCharacter);
+			return ShouldExcludeWorldMapCommandRuleForTarget(hero, targetCharacter, targetAgentIndex);
 		case "party_transfer":
 			return !IsPartyTransferRuleEligible(hero, targetCharacter);
 		case "settlement_transfer":
@@ -25995,37 +27179,16 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return AIConfigHandler.DuelNonHeroInstruction;
 		}
-		bool isBelowFullHealth = false;
-		float healthRatio = 1f;
-		if (agent != null && agent.HealthLimit > 0f)
-		{
-			healthRatio = Math.Max(0f, Math.Min(1f, agent.Health / agent.HealthLimit));
-			isBelowFullHealth = healthRatio < 0.999f;
-		}
-		if (hero != null && hero.MaxHitPoints > 0 && hero.HitPoints < hero.MaxHitPoints)
-		{
-			float heroHealthRatio = Math.Max(0f, Math.Min(1f, (float)hero.HitPoints / hero.MaxHitPoints));
-			if (!isBelowFullHealth || heroHealthRatio < healthRatio)
-			{
-				healthRatio = heroHealthRatio;
-			}
-			isBelowFullHealth = true;
-		}
-		if (!isBelowFullHealth)
-		{
-			return baseInstruction;
-		}
-		string npcName = (hero?.Name?.ToString() ?? targetCharacter?.Name?.ToString() ?? agent?.Name ?? "目标NPC").Trim();
-		return AIConfigHandler.FormatDuelHealthTemplate(AIConfigHandler.DuelHealthBlockedInstruction, npcName, healthRatio);
+		return baseInstruction;
 	}
 
-	private string BuildTriggeredRuleInstructions(string input, Hero targetHero, bool useDuelContext, bool isQualified, int playerTier, bool useRewardContext, bool isLoanContext, bool isSurroundingsContext, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, string npcLastUtterance = null, bool includeDuelStakeContext = false, bool playerWonLastDuel = false, bool worldMapPartyCommandContext = false, IEnumerable<string> excludedRuleIds = null, IEnumerable<string> preselectedRuleIds = null)
+	private string BuildTriggeredRuleInstructions(string input, Hero targetHero, bool useDuelContext, bool isQualified, int playerTier, bool useRewardContext, bool isLoanContext, bool isSurroundingsContext, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, string npcLastUtterance = null, bool includeDuelStakeContext = false, bool playerWonLastDuel = false, bool worldMapPartyCommandContext = false, IEnumerable<string> excludedRuleIds = null, IEnumerable<string> preselectedRuleIds = null, bool suppressForcedMeetingTaunt = false)
 	{
 		try
 		{
 			HashSet<string> excludedRuleIdSet = BuildPromptRuleIdSet(excludedRuleIds);
 			AddPlayerCompanionOrFamilyRuleExclusionsForTarget(excludedRuleIdSet, targetHero, targetCharacter);
-			AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter);
+			AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter, targetAgentIndex);
 			AddSceneMoveRuleExclusionForCurrentMission(excludedRuleIdSet);
 			StringBuilder stringBuilder = new StringBuilder();
 			if (useDuelContext && !IsPromptRuleExcluded(excludedRuleIdSet, "duel"))
@@ -26146,12 +27309,12 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				stringBuilder.AppendLine(text3.Trim());
 			}
-			if (!AfGcczShoutBridge.ShouldUseExclusivePreprocessRuleRouting())
+			if (!suppressForcedMeetingTaunt && stringBuilder.ToString().IndexOf("【附加规则:meeting_taunt】", StringComparison.OrdinalIgnoreCase) < 0)
 			{
-				string text4 = SceneTauntBehavior.BuildUnifiedTauntRuntimeInstructionForExternal(targetHero, targetCharacter, targetAgentIndex);
+				string text4 = LordEncounterBehavior.BuildForcedMeetingTauntRuntimeInstructionForExternal(targetHero ?? targetCharacter?.HeroObject, targetCharacter);
 				if (!string.IsNullOrWhiteSpace(text4))
 				{
-					stringBuilder.AppendLine(text4.Trim());
+					AppendRuleBlock(stringBuilder, "meeting_taunt", text4);
 				}
 			}
 			return stringBuilder.ToString().Trim();
@@ -27254,6 +28417,10 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			return myBehavior.BuildShoutPromptContextForExternalInternal(targetHero, input, extraFact, cultureIdOverride, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, suppressDynamicRuleAndLore, usePrefetchedLoreContext, prefetchedLoreContext, excludedRuleIds, preprocessExcludedRuleIds, forcedPreprocessRuleIds);
 		}
+		catch (PreprocessFormatException)
+		{
+			throw;
+		}
 		catch
 		{
 			return new ShoutPromptContext
@@ -27268,6 +28435,29 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static void LogShoutPromptContextStage(string stage, Stopwatch totalSw, Stopwatch stageSw, Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string detail = null, bool immediate = true)
+	{
+		try
+		{
+			string safeStage = string.IsNullOrWhiteSpace(stage) ? "unknown" : stage.Trim();
+			double stageMs = stageSw?.Elapsed.TotalMilliseconds ?? 0.0;
+			double totalMs = totalSw?.Elapsed.TotalMilliseconds ?? 0.0;
+			string target = targetHero?.StringId ?? targetCharacter?.StringId ?? targetCharacter?.HeroObject?.StringId ?? "unknown";
+			string suffix = string.IsNullOrWhiteSpace(detail) ? "" : " " + detail.Trim();
+			string message = "[NativePerf] prompt_context_stage stage=" + safeStage + " target=" + target + " agent=" + targetAgentIndex + " stageMs=" + Math.Round(stageMs, 2) + " totalMs=" + Math.Round(totalMs, 2) + suffix;
+			Logger.Log("Logic", message);
+			if (stageMs >= ShoutPromptContextSlowStageMs || totalMs >= ShoutPromptContextHardBudgetMs)
+			{
+				Logger.Log("Logic", "[NativePerf][WARN] prompt_context_slow_stage stage=" + safeStage + " target=" + target + " agent=" + targetAgentIndex + " stageMs=" + Math.Round(stageMs, 2) + " totalMs=" + Math.Round(totalMs, 2));
+			}
+			FreezeWatchdog.Mark("ShoutPromptContext." + safeStage, "target=" + target + " agent=" + targetAgentIndex + " stageMs=" + Math.Round(stageMs, 2) + " totalMs=" + Math.Round(totalMs, 2) + suffix, immediate: immediate);
+			stageSw?.Restart();
+		}
+		catch
+		{
+		}
+	}
+
 	public static List<string> RunCourierRulePreprocessForExternal(Hero targetHero, string input, string extraFact, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, IEnumerable<string> excludedRuleIds = null)
 	{
 		List<string> result = new List<string>();
@@ -27279,6 +28469,10 @@ public class MyBehavior : CampaignBehaviorBase
 				return result;
 			}
 			return myBehavior.RunCourierRulePreprocessInternal(targetHero, input, extraFact, targetCharacter, kingdomIdOverride, targetAgentIndex, excludedRuleIds);
+		}
+		catch (PreprocessFormatException)
+		{
+			throw;
 		}
 		catch (Exception ex)
 		{
@@ -27298,9 +28492,14 @@ public class MyBehavior : CampaignBehaviorBase
 		List<string> result = new List<string>();
 		HashSet<string> excludedRuleIdSet = BuildPromptRuleIdSet(excludedRuleIds);
 		AddPlayerCompanionOrFamilyRuleExclusionsForTarget(excludedRuleIdSet, targetHero, targetCharacter);
-		AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter);
+		AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter, targetAgentIndex);
 		AfGcczShoutBridge.AddExclusivePreprocessRuleExclusions(excludedRuleIdSet);
 		AddPreprocessOnlyResidentRuleExclusions(excludedRuleIdSet);
+		if (AfGcczShoutBridge.ShouldBypassPreprocessForActiveScene())
+		{
+			Logger.Log("CourierDelivery", "[Preprocess] skipped: active GCCZ siege aftermath scene uses unconditional postprocess routing.");
+			return result;
+		}
 		string targetKingdomId = ResolveTargetKingdomIdForRules(targetHero, targetCharacter, kingdomIdOverride);
 		AIConfigHandler.SetGuardrailRuntimeTargetKingdom(targetKingdomId);
 		AIConfigHandler.SetGuardrailRuntimeTargetHero(targetHero?.StringId ?? targetCharacter?.HeroObject?.StringId ?? "");
@@ -27432,10 +28631,14 @@ public class MyBehavior : CampaignBehaviorBase
 			return shoutPromptContext;
 		}
 		targetHero = targetHero ?? targetCharacter?.HeroObject;
+		Stopwatch promptContextTotalSw = Stopwatch.StartNew();
+		Stopwatch promptContextStageSw = Stopwatch.StartNew();
+		using FreezeWatchdog.ScopeToken promptContextScope = FreezeWatchdog.Scope("ShoutPromptContext.Build");
+		LogShoutPromptContextStage("start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "inputLen=" + ((input ?? "").Length) + " extraLen=" + ((extraFact ?? "").Length) + " suppressDynamic=" + suppressDynamicRuleAndLore + " thread=" + Thread.CurrentThread.ManagedThreadId);
 		HashSet<string> explicitExcludedRuleIdSet = BuildPromptRuleIdSet(excludedRuleIds);
 		HashSet<string> excludedRuleIdSet = new HashSet<string>(explicitExcludedRuleIdSet, StringComparer.OrdinalIgnoreCase);
 		AddPlayerCompanionOrFamilyRuleExclusionsForTarget(excludedRuleIdSet, targetHero, targetCharacter);
-		AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter);
+		AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter, targetAgentIndex);
 		AddSceneMoveRuleExclusionForCurrentMission(excludedRuleIdSet);
 		AfGcczShoutBridge.AddExclusivePreprocessRuleExclusions(excludedRuleIdSet);
 		HashSet<string> preprocessExcludedRuleIdSet = preprocessExcludedRuleIds == null ? new HashSet<string>(excludedRuleIdSet, StringComparer.OrdinalIgnoreCase) : BuildPromptRuleIdSet(preprocessExcludedRuleIds);
@@ -27464,6 +28667,7 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			string guardrailSemanticContext = suppressDynamicRuleAndLore ? "" : BuildGuardrailSemanticContext(targetHero, extraFact);
 			AIConfigHandler.SetGuardrailSemanticContext(guardrailSemanticContext);
+			LogShoutPromptContextStage("runtime_init_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "semanticContextLen=" + ((guardrailSemanticContext ?? "").Length) + " targetKingdom=" + (targetKingdomId ?? ""));
 		string text = ((!string.IsNullOrEmpty(cultureIdOverride)) ? cultureIdOverride : (targetHero?.Culture?.StringId ?? "neutral"));
 		int num = _cachedPlayerClanTier;
 		if (num <= 0)
@@ -27489,10 +28693,16 @@ public class MyBehavior : CampaignBehaviorBase
 		int num2 = DuelSettings.GetSettings()?.MinimumClanTier ?? 0;
 		bool isQualified = num >= num2;
 		string npcLastUtterance = GetLatestNpcDialogueUtterance(targetHero, targetCharacter, targetAgentIndex);
+		bool bypassRulePreprocess = AfGcczShoutBridge.ShouldBypassPreprocessForActiveScene();
+		bool allowRulePreprocess = !suppressDynamicRuleAndLore && !bypassRulePreprocess;
+		if (bypassRulePreprocess)
+		{
+			Logger.Log("Logic", "[RuleInjectionDebug] stage=single_aux_preprocess skipped=gccz_active targetHero=" + (targetHero?.StringId ?? "null") + " targetCharacter=" + (targetCharacter?.StringId ?? "null"));
+		}
 		List<string> auxiliaryRuleHitIds = null;
 		HashSet<string> auxiliaryRuleHitIdSet = null;
 		bool useAuxiliaryRuleHitSet = false;
-		if (!suppressDynamicRuleAndLore && AIConfigHandler.UseAuxiliaryRuleApiRetrieval)
+		if (allowRulePreprocess && AIConfigHandler.UseAuxiliaryRuleApiRetrieval)
 		{
 			try
 			{
@@ -27507,6 +28717,10 @@ public class MyBehavior : CampaignBehaviorBase
 				useAuxiliaryRuleHitSet = true;
 				Logger.Log("Logic", "[RuleInjectionDebug] stage=single_aux_preprocess targetHero=" + (targetHero?.StringId ?? "null") + " targetCharacter=" + (targetCharacter?.StringId ?? "null") + " hits=" + ((auxiliaryRuleHitIds.Count == 0) ? "(none)" : string.Join(",", auxiliaryRuleHitIds)));
 			}
+			catch (PreprocessFormatException)
+			{
+				throw;
+			}
 			catch (Exception ex)
 			{
 				Logger.Log("Logic", "[RuleInjectionDebug] stage=single_aux_preprocess failed=" + ex.Message);
@@ -27515,11 +28729,13 @@ public class MyBehavior : CampaignBehaviorBase
 				useAuxiliaryRuleHitSet = false;
 			}
 		}
-		List<string> forcedRuleHitIds = NormalizePreselectedPromptRuleIds(forcedPreprocessRuleIds)
-			.Where((string x) => !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, x))
-			.Where((string x) => !IsRuntimeGatedPreprocessRuleId(x)
-				|| AIConfigHandler.CanInjectRuleTopicIntoPreprocessForExternal(x, hasAnyHero))
-			.ToList();
+		List<string> forcedRuleHitIds = bypassRulePreprocess
+			? new List<string>()
+			: NormalizePreselectedPromptRuleIds(forcedPreprocessRuleIds)
+				.Where((string x) => !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, x))
+				.Where((string x) => !IsRuntimeGatedPreprocessRuleId(x)
+					|| AIConfigHandler.CanInjectRuleTopicIntoPreprocessForExternal(x, hasAnyHero))
+				.ToList();
 		if (forcedRuleHitIds.Count > 0)
 		{
 			if (auxiliaryRuleHitIds == null)
@@ -27537,11 +28753,12 @@ public class MyBehavior : CampaignBehaviorBase
 			useAuxiliaryRuleHitSet = true;
 			Logger.Log("Logic", "[RuleInjectionDebug] stage=forced_preprocess targetHero=" + (targetHero?.StringId ?? "null") + " targetCharacter=" + (targetCharacter?.StringId ?? "null") + " hits=" + string.Join(",", forcedRuleHitIds));
 		}
+		LogShoutPromptContextStage("aux_preprocess_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "auxHits=" + ((auxiliaryRuleHitIds == null) ? "(skip)" : ((auxiliaryRuleHitIds.Count == 0) ? "(none)" : string.Join(",", auxiliaryRuleHitIds))) + " forcedHits=" + ((forcedRuleHitIds == null || forcedRuleHitIds.Count == 0) ? "(none)" : string.Join(",", forcedRuleHitIds)));
 		List<string> duelTriggerKeywords = AIConfigHandler.DuelTriggerKeywords;
 		bool flag = false;
 		string matchedKeyword = "";
 		float score = 0f;
-		if (!suppressDynamicRuleAndLore && !IsPromptRuleExcluded(excludedRuleIdSet, "duel"))
+		if (allowRulePreprocess && !IsPromptRuleExcluded(excludedRuleIdSet, "duel"))
 		{
 			if (useAuxiliaryRuleHitSet)
 			{
@@ -27563,7 +28780,7 @@ public class MyBehavior : CampaignBehaviorBase
 		bool flag3 = false;
 		string matchedKeyword2 = "";
 		float score2 = 0f;
-		if (!suppressDynamicRuleAndLore && AIConfigHandler.RewardEnabled && !IsPromptRuleExcluded(excludedRuleIdSet, "reward"))
+		if (allowRulePreprocess && AIConfigHandler.RewardEnabled && !IsPromptRuleExcluded(excludedRuleIdSet, "reward"))
 		{
 			if (useAuxiliaryRuleHitSet)
 			{
@@ -27584,7 +28801,7 @@ public class MyBehavior : CampaignBehaviorBase
 		bool flag4 = false;
 		string matchedKeyword3 = "";
 		float score3 = 0f;
-		if (!suppressDynamicRuleAndLore && AIConfigHandler.LoanEnabled && !IsPromptRuleExcluded(excludedRuleIdSet, "loan"))
+		if (allowRulePreprocess && AIConfigHandler.LoanEnabled && !IsPromptRuleExcluded(excludedRuleIdSet, "loan"))
 		{
 			if (useAuxiliaryRuleHitSet)
 			{
@@ -27605,7 +28822,7 @@ public class MyBehavior : CampaignBehaviorBase
 		bool flag5 = false;
 		string matchedKeyword4 = "";
 		float score4 = 0f;
-		if (!suppressDynamicRuleAndLore && AIConfigHandler.SurroundingsEnabled && !IsPromptRuleExcluded(excludedRuleIdSet, "surroundings"))
+		if (allowRulePreprocess && AIConfigHandler.SurroundingsEnabled && !IsPromptRuleExcluded(excludedRuleIdSet, "surroundings"))
 		{
 			if (useAuxiliaryRuleHitSet)
 			{
@@ -27626,7 +28843,7 @@ public class MyBehavior : CampaignBehaviorBase
 		string matchedKeyword5 = "";
 		float score5 = 0f;
 		bool flag6 = false;
-		if (!suppressDynamicRuleAndLore && !IsPromptRuleExcluded(excludedRuleIdSet, "kingdom_service"))
+		if (allowRulePreprocess && !IsPromptRuleExcluded(excludedRuleIdSet, "kingdom_service"))
 		{
 			if (useAuxiliaryRuleHitSet)
 			{
@@ -27647,7 +28864,7 @@ public class MyBehavior : CampaignBehaviorBase
 		string matchedKeyword6 = "";
 		float score6 = 0f;
 		bool marriageHit = false;
-		if (!suppressDynamicRuleAndLore && !IsPromptRuleExcluded(excludedRuleIdSet, "marriage"))
+		if (allowRulePreprocess && !IsPromptRuleExcluded(excludedRuleIdSet, "marriage"))
 		{
 			if (useAuxiliaryRuleHitSet)
 			{
@@ -27668,7 +28885,7 @@ public class MyBehavior : CampaignBehaviorBase
 		string matchedKeyword7 = "";
 		float score7 = 0f;
 		bool partyTransferHit = false;
-		if (!suppressDynamicRuleAndLore && !IsPromptRuleExcluded(excludedRuleIdSet, "party_transfer"))
+		if (allowRulePreprocess && !IsPromptRuleExcluded(excludedRuleIdSet, "party_transfer"))
 		{
 			if (useAuxiliaryRuleHitSet)
 			{
@@ -27689,7 +28906,7 @@ public class MyBehavior : CampaignBehaviorBase
 		string matchedKeyword8 = "";
 		float score8 = 0f;
 		bool worldMapPartyCommandHit = false;
-		if (!suppressDynamicRuleAndLore && !IsPromptRuleExcluded(excludedRuleIdSet, "worldmap_party_command"))
+		if (allowRulePreprocess && !IsPromptRuleExcluded(excludedRuleIdSet, "worldmap_party_command"))
 		{
 			if (useAuxiliaryRuleHitSet)
 			{
@@ -27705,7 +28922,7 @@ public class MyBehavior : CampaignBehaviorBase
 				worldMapPartyCommandHit = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "worldmap_party_command", guardrailWorldMapInstruction, guardrailWorldMapKeywords, out matchedKeyword8, out score8, excludedRuleIdSet);
 			}
 		}
-		if (!suppressDynamicRuleAndLore && TryConsumeRuleStickyCarry(targetHero, targetCharacter, input, out var carryDuel, out var carryReward, out var carryLoan))
+		if (allowRulePreprocess && TryConsumeRuleStickyCarry(targetHero, targetCharacter, input, out var carryDuel, out var carryReward, out var carryLoan))
 		{
 			if (!flag && carryDuel && !IsPromptRuleExcluded(excludedRuleIdSet, "duel"))
 			{
@@ -27726,20 +28943,32 @@ public class MyBehavior : CampaignBehaviorBase
 				score3 = Math.Max(score3, 0.18f);
 			}
 		}
-		if (!suppressDynamicRuleAndLore)
+		if (allowRulePreprocess)
 		{
 			UpdateRuleStickyCarryFromHits(targetHero, targetCharacter, liveDuelSemanticHit, liveRewardSemanticHit, liveLoanSemanticHit);
 		}
 		flag2 = flag && HasDuelRuntimeTarget(targetHero, targetCharacter, targetAgentIndex);
 		bool flag7 = flag3;
 		bool flag8 = flag4;
+		bool persistentAdpDebtPostprocess = false;
+		if (allowRulePreprocess && AIConfigHandler.LoanEnabled && !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, "loan") && RewardSystemBehavior.Instance != null)
+		{
+			try
+			{
+				persistentAdpDebtPostprocess = RewardSystemBehavior.Instance.HasUnpaidDebtForInteraction(targetHero, targetCharacter);
+			}
+			catch
+			{
+				persistentAdpDebtPostprocess = false;
+			}
+		}
 		if (partyTransferHit && IsPartyTransferRuleEligible(targetHero, targetCharacter))
 		{
 			flag7 = flag7 || AIConfigHandler.RewardEnabled;
 			flag8 = flag8 || AIConfigHandler.LoanEnabled;
 		}
 		string value = "";
-		if (!suppressDynamicRuleAndLore && !flag2 && !flag7 && !flag8 && !flag5)
+		if (allowRulePreprocess && !flag2 && !flag7 && !flag8 && !flag5)
 		{
 			value = AIConfigHandler.BuildGuardrailClarificationHint(input, flag, score, flag3, score2, flag4, score3, flag5, score4);
 		}
@@ -27753,7 +28982,8 @@ public class MyBehavior : CampaignBehaviorBase
 		string text10 = (string.IsNullOrWhiteSpace(matchedKeyword8) ? "" : $"{matchedKeyword8}@{score8:0.00}");
 		string text7 = targetHero?.Name?.ToString() ?? "某人";
 		Logger.Log("Logic", $"[SemanticTrigger-Shout] DuelHit={flag} [{text2}] RewardHit={flag3} [{text3}] LoanHit={flag4} [{text4}] PartyTransferHit={partyTransferHit} [{text9}] WorldMapHit={worldMapPartyCommandHit} [{text10}] SurroundingsHit={flag5} [{text5}] KingdomServiceHit={flag6} [{text6}] MarriageHit={marriageHit} [{text8}] NpcRecall={(string.IsNullOrWhiteSpace(npcLastUtterance) ? "off" : "on")} Input='{input}' NPC='{text7}'");
-		Logger.Log("Logic", $"[RuleInjectionDebug] stage=semantic targetHero={(targetHero?.StringId ?? "null")} targetCharacter={(targetCharacter?.StringId ?? "null")} liveDuel={liveDuelSemanticHit} liveReward={liveRewardSemanticHit} liveLoan={liveLoanSemanticHit} auxRuleHits={(auxiliaryRuleHitIds == null ? "(skip)" : ((auxiliaryRuleHitIds.Count == 0) ? "(none)" : string.Join(",", auxiliaryRuleHitIds)))} finalDuel={flag} finalReward={flag3} finalLoan={flag4} useDuelContext={flag2} qualified={isQualified} marriageHit={marriageHit} partyTransferHit={partyTransferHit} worldMapHit={worldMapPartyCommandHit}");
+		Logger.Log("Logic", $"[RuleInjectionDebug] stage=semantic targetHero={(targetHero?.StringId ?? "null")} targetCharacter={(targetCharacter?.StringId ?? "null")} liveDuel={liveDuelSemanticHit} liveReward={liveRewardSemanticHit} liveLoan={liveLoanSemanticHit} auxRuleHits={(auxiliaryRuleHitIds == null ? "(skip)" : ((auxiliaryRuleHitIds.Count == 0) ? "(none)" : string.Join(",", auxiliaryRuleHitIds)))} finalDuel={flag} finalReward={flag3} finalLoan={flag4} persistentAdpDebtPostprocess={persistentAdpDebtPostprocess} useDuelContext={flag2} qualified={isQualified} marriageHit={marriageHit} partyTransferHit={partyTransferHit} worldMapHit={worldMapPartyCommandHit}");
+		LogShoutPromptContextStage("semantic_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "duel=" + flag + " reward=" + flag3 + " loan=" + flag4 + " worldMap=" + worldMapPartyCommandHit + " partyTransfer=" + partyTransferHit);
 		StringBuilder stringBuilder = new StringBuilder();
 		MentionedWorldEntities mentionedEntities = new MentionedWorldEntities();
 		if (!suppressDynamicRuleAndLore)
@@ -27764,8 +28994,10 @@ public class MyBehavior : CampaignBehaviorBase
 			mentionedEntities.Merge(AIConfigHandler.GetAuxiliaryMentionedEntitiesForExternal(input, extraFact, memorySceneLabelForMentions));
 			mentionedEntities.Merge(AIConfigHandler.GetLatestAuxiliaryMentionedEntitiesForExternal());
 		}
+		LogShoutPromptContextStage("mentions_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "hasMentions=" + (mentionedEntities != null && !mentionedEntities.IsEmpty));
 		string loreContext = "";
 		string loreCtxSource = "none";
+		LogShoutPromptContextStage("lore_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "prefetched=" + (usePrefetchedLoreContext && !string.IsNullOrWhiteSpace(prefetchedLoreContext)));
 		if (!suppressDynamicRuleAndLore && usePrefetchedLoreContext && !string.IsNullOrWhiteSpace(prefetchedLoreContext))
 		{
 			loreContext = prefetchedLoreContext ?? "";
@@ -27788,6 +29020,7 @@ public class MyBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
+		LogShoutPromptContextStage("lore_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "source=" + loreCtxSource + " loreLen=" + ((loreContext ?? "").Length));
 		if (RewardSystemBehavior.Instance != null && targetHero != null)
 		{
 			if (flag8)
@@ -27833,7 +29066,7 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			if (playerWon)
 			{
-				stringBuilder.AppendLine("【战斗结果】你刚刚在一场正式的决斗中输给了" + playerDisplayName + "。请在态度和言语中体现这一点，并认真考虑履行你在决斗前约定的赌注或补偿。");
+				stringBuilder.AppendLine("【战斗结果】你刚刚在一场正式的决斗中输给了" + playerDisplayName + "。无论失败来自倒地、低血量、逃跑或撤退，这都已经按决斗失败结算；你可以不甘、恼怒或嘴硬，但不能否认自己输了。请认真考虑履行你在决斗前约定的赌注或补偿。");
 				if (AIConfigHandler.RewardEnabled)
 				{
 					flag7 = true;
@@ -27869,6 +29102,7 @@ public class MyBehavior : CampaignBehaviorBase
 				stringBuilder.AppendLine(activePrisonerStatusLine);
 			}
 		}
+		LogShoutPromptContextStage("relationship_blocks_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "chars=" + stringBuilder.Length);
 		string feastContext = NobleGatheringBehavior.BuildFeastAttendanceContext(targetHero);
 		if (!string.IsNullOrWhiteSpace(feastContext))
 		{
@@ -27918,22 +29152,31 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 			}
 		}
-		string value8 = suppressDynamicRuleAndLore ? "" : BuildTriggeredRuleInstructions(input, targetHero, flag2, isQualified, num, flag7, flag8, flag5, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, npcLastUtterance, includeDuelStakeContext, playerWonLastDuelForRule, worldMapPartyCommandHit, excludedRuleIdSet, auxiliaryRuleHitIds);
+		LogShoutPromptContextStage("world_runtime_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "chars=" + stringBuilder.Length);
+		LogShoutPromptContextStage("triggered_rules_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "suppressDynamic=" + suppressDynamicRuleAndLore);
+		string value8 = allowRulePreprocess ? BuildTriggeredRuleInstructions(input, targetHero, flag2, isQualified, num, flag7, flag8, flag5, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, npcLastUtterance, includeDuelStakeContext, playerWonLastDuelForRule, worldMapPartyCommandHit, excludedRuleIdSet, auxiliaryRuleHitIds, IsPromptRuleExcluded(explicitExcludedRuleIdSet, "meeting_taunt")) : "";
+		LogShoutPromptContextStage("triggered_rules_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "ruleLen=" + ((value8 ?? "").Length));
+		LogShoutPromptContextStage("weekly_short_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "", immediate: false);
 		bool excludeNpcShortReport2 = ShouldExcludeNpcShortReportFromWeeklyShortLayer(value8, targetHero, targetCharacter, kingdomIdOverride);
+		FreezeWatchdog.Mark("ShoutPromptContext.weekly_short_exclusion_done", "excludeNpcKingdom=" + excludeNpcShortReport2 + " thread=" + Thread.CurrentThread.ManagedThreadId);
 		string value8a = BuildWeeklyShortReportsPromptBlock(targetHero, targetCharacter, kingdomIdOverride, excludeNpcShortReport2);
 		if (!string.IsNullOrWhiteSpace(value8a))
 		{
 			stringBuilder.AppendLine(value8a);
 		}
+		LogShoutPromptContextStage("weekly_short_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "shortLen=" + ((value8a ?? "").Length));
+		LogShoutPromptContextStage("policy_context_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "", immediate: false);
 		string activePolicyContext = NpcRulerPolicyBehavior.BuildActivePolicyDialogueContextForExternal(targetHero, targetCharacter, kingdomIdOverride);
 		if (!string.IsNullOrWhiteSpace(activePolicyContext))
 		{
 			stringBuilder.AppendLine(activePolicyContext);
 		}
+		LogShoutPromptContextStage("policy_context_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "policyLen=" + ((activePolicyContext ?? "").Length));
 		if (!string.IsNullOrWhiteSpace(value8))
 		{
 			stringBuilder.AppendLine(value8);
 		}
+		LogShoutPromptContextStage("weekly_full_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "", immediate: false);
 		string value8b = BuildTriggeredWeeklyFullReportsPromptBlock(value8, targetHero, targetCharacter, kingdomIdOverride);
 		if (!string.IsNullOrWhiteSpace(value8b))
 		{
@@ -27943,6 +29186,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			stringBuilder.AppendLine(loreContext);
 		}
+		LogShoutPromptContextStage("weekly_full_lore_append_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "fullLen=" + ((value8b ?? "").Length) + " chars=" + stringBuilder.Length);
 		if (!suppressDynamicRuleAndLore)
 		{
 			bool includeResidentKingdomEntities = ShouldIncludeResidentKingdomEntities(flag6, auxiliaryRuleHitIds);
@@ -27974,7 +29218,8 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				entityRetrievalRuleIds.Add("worldmap_party_command");
 			}
-			WorldEntityPromptContext entityPromptContext = WorldEntityRetrievalService.BuildPromptContext(mentionedEntities, BuildPlayerPublicDisplayNameForPrompt(entityContextHero, targetCharacter, targetAgentIndex), entityContextHero, includeResidentKingdomEntities, entityRetrievalRuleIds);
+			LogShoutPromptContextStage("entity_context_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "rules=" + string.Join(",", entityRetrievalRuleIds));
+			WorldEntityPromptContext entityPromptContext = WorldEntityRetrievalService.BuildPromptContext(mentionedEntities, BuildPlayerPublicDisplayNameForPrompt(entityContextHero, targetCharacter, targetAgentIndex), entityContextHero, includeResidentKingdomEntities, entityRetrievalRuleIds, input);
 			if (entityPromptContext != null && entityPromptContext.HasContent)
 			{
 				if (!string.IsNullOrWhiteSpace(entityPromptContext.MainPromptBlock))
@@ -27984,6 +29229,7 @@ public class MyBehavior : CampaignBehaviorBase
 				shoutPromptContext.EntityPostprocessContext = entityPromptContext.PostprocessPromptBlock ?? "";
 				Logger.Log("WorldEntityRetrieval", "entity_context matches=" + entityPromptContext.MatchCount + " residentKingdoms=" + includeResidentKingdomEntities + " mainLen=" + ((entityPromptContext.MainPromptBlock ?? "").Length) + " postLen=" + ((entityPromptContext.PostprocessPromptBlock ?? "").Length));
 			}
+			LogShoutPromptContextStage("entity_context_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "hasContent=" + (entityPromptContext != null && entityPromptContext.HasContent) + " chars=" + stringBuilder.Length);
 		}
 		bool includeTradePricing = flag7 || flag8;
 		bool includeMarriageCandidates = targetHero != null && marriageHit;
@@ -27994,6 +29240,7 @@ public class MyBehavior : CampaignBehaviorBase
 		shoutPromptContext.UseRewardContext = flag7;
 		shoutPromptContext.IsLoanContext = flag8;
 		shoutPromptContext.IsQualified = isQualified;
+		LogShoutPromptContextStage("extras_assigned", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "extrasLen=" + ((shoutPromptContext.Extras ?? "").Length) + " includeTradePricing=" + includeTradePricing + " includeMarriageCandidates=" + includeMarriageCandidates + " includeRuleGatedFields=" + includeRuleGatedFields);
 		HashSet<string> preprocessRuleIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		if (auxiliaryRuleHitIds != null)
 		{
@@ -28016,6 +29263,10 @@ public class MyBehavior : CampaignBehaviorBase
 		if (flag4 && !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, "loan"))
 		{
 			preprocessRuleIds.Add("loan");
+		}
+		if (persistentAdpDebtPostprocess && !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, "loan"))
+		{
+			preprocessRuleIds.Add(ShoutBehavior.PersistentAdpDebtPostprocessRuleId);
 		}
 		if (flag5 && !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, "surroundings"))
 		{
@@ -28042,8 +29293,12 @@ public class MyBehavior : CampaignBehaviorBase
 			preprocessRuleIds.Add("noble_gathering");
 		}
 		shoutPromptContext.PreprocessRuleIds = preprocessRuleIds.ToList();
+		LogShoutPromptContextStage("preprocess_ids_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "ids=" + ((shoutPromptContext.PreprocessRuleIds == null || shoutPromptContext.PreprocessRuleIds.Count == 0) ? "(none)" : string.Join(",", shoutPromptContext.PreprocessRuleIds)));
+		LogShoutPromptContextStage("gccz_runtime_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex);
 		AfGcczShoutBridge.AppendRuntimePromptToShoutContext(shoutPromptContext, targetHero, targetCharacter, targetAgentIndex, cultureIdOverride);
+		LogShoutPromptContextStage("gccz_runtime_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "extrasLen=" + ((shoutPromptContext.Extras ?? "").Length));
 		shoutPromptContext.Extras = AppendPlayerPartySharedResourcePrompt(shoutPromptContext.Extras, targetHero, targetCharacter);
+		LogShoutPromptContextStage("shared_resource_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "extrasLen=" + ((shoutPromptContext.Extras ?? "").Length));
 		bool extrasHasDuelRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:duel】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
 		bool extrasHasRewardRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:reward】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
 		bool extrasHasLoanRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:loan】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
@@ -28054,6 +29309,7 @@ public class MyBehavior : CampaignBehaviorBase
 		bool extrasHasVanillaIssueRuntimeBlock = (shoutPromptContext.Extras?.IndexOf("【原版任务上下文", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
 		bool extrasHasSiegeInterventionRule = AfGcczShoutBridge.HasInjectedRuleBlock(shoutPromptContext.Extras);
 		Logger.Log("Logic", $"[RuleInjectionDebug] stage=extras targetHero={(targetHero?.StringId ?? "null")} targetCharacter={(targetCharacter?.StringId ?? "null")} extrasHasDuelRule={extrasHasDuelRule} extrasHasRewardRule={extrasHasRewardRule} extrasHasLoanRule={extrasHasLoanRule} extrasHasWorldMapRule={extrasHasWorldMapRule} extrasHasVanillaIssueRule={extrasHasVanillaIssueRule} extrasHasVanillaIssueRuntimeBlock={extrasHasVanillaIssueRuntimeBlock} extrasHasSiegeInterventionRule={extrasHasSiegeInterventionRule} extrasHasNpcMajorRule={extrasHasNpcMajorRule} extrasHasNpcRecentRule={extrasHasNpcRecentRule} extrasLen={(shoutPromptContext.Extras ?? "").Length} useDuelContext={shoutPromptContext.UseDuelContext} useRewardContext={shoutPromptContext.UseRewardContext} useLoanContext={shoutPromptContext.IsLoanContext}");
+		LogShoutPromptContextStage("complete", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "extrasLen=" + ((shoutPromptContext.Extras ?? "").Length), immediate: true);
 		return shoutPromptContext;
 		}
 		finally
@@ -29712,10 +30968,10 @@ public class MyBehavior : CampaignBehaviorBase
 			Logger.Log("Logic", "[MemoryPerf] memory_preprocess_done hero=" + (debugHeroId ?? "") + " mode=direct candidates=" + list.Count + " finalCount=" + finalCount + " selected=" + selectedIds.Count + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
 			return true;
 		}
-		string system = "You are an AnimusForge preprocessing router. Select compressed memory blocks relevant to the latest player/NPC exchange. Return strict JSON only.";
+		string system = AIConfigHandler.StrictPreprocessJsonSystemPrompt;
 		StringBuilder user = new StringBuilder();
 		int mode = GetMemoryPreprocessModeFromSettings();
-		user.AppendLine(mode == 2 ? "Mode: parallel memory selector request. memory_ids is the required field for this request." : "Mode: unified preprocessing body. Include rule_codes and memory_ids even if rule_codes is empty.");
+		user.AppendLine(mode == 2 ? "Mode: parallel memory selector request. Set rule_codes to an empty array; include memory_ids and mentioned_entities." : "Mode: unified preprocessing body. Include rule_codes, memory_ids, and mentioned_entities even if rule_codes is empty.");
 		user.AppendLine("Output JSON schema: {\"rule_codes\":[],\"memory_ids\":[1,2],\"mentioned_entities\":{\"heroes\":[],\"settlements\":[],\"clans\":[],\"kingdoms\":[],\"items\":[],\"troops\":[],\"terms\":[]}}");
 		user.AppendLine("Select exactly " + Math.Max(1, finalCount) + " memory_ids from the candidate list. If uncertain, choose the closest by semantic relevance. Do not select more than " + Math.Max(1, finalCount) + ".");
 		user.AppendLine("mentioned_entities: heroes named people/titles; settlements places; clans families; kingdoms factions; items item/goods/equipment names or types; troops troop/unit/prisoner names or types; terms other useful raw phrases. Do not extract current speakers or player names just because they are speakers. If ambiguous, also add the raw phrase to terms. Order arrays by recency. Do not extract names from memory candidate titles unless also mentioned in the latest exchange.");
@@ -29783,7 +31039,6 @@ public class MyBehavior : CampaignBehaviorBase
 				ShowCompressedMemoryBlockingPopup("压缩记忆前处理失败", "记忆前处理没有成功：" + error + "\n\n请修复前处理 API 后重试。");
 				return false;
 			}
-			AIConfigHandler.PublishAuxiliaryMentionedEntitiesForExternal(currentInput, secondaryInput, ResolveCurrentMemorySceneLabel(), content);
 		}
 		else if (!AIConfigHandler.TryCallAuxiliarySimpleDialogue(messages, 800, 0f, out content, out error))
 		{
@@ -29796,17 +31051,16 @@ public class MyBehavior : CampaignBehaviorBase
 		else
 		{
 			apiSw.Stop();
-			AIConfigHandler.PublishAuxiliaryMentionedEntitiesForExternal(currentInput, secondaryInput, ResolveCurrentMemorySceneLabel(), content);
 		}
-		selectedIds = ParseMemoryPreprocessIds(content, list.Select((MemoryRecallCandidate x) => x.DisplayId), finalCount);
-		if (selectedIds.Count <= 0)
+		if (!TryParseMemoryPreprocessIds(content, list.Select((MemoryRecallCandidate x) => x.DisplayId), finalCount, out selectedIds, out var parseError))
 		{
-			error = "memory_ids 解析为空。raw=" + (content ?? "");
+			error = BuildMemoryPreprocessFormatError(parseError, content);
 			sw.Stop();
-			Logger.Log("Logic", "[MemoryPerf] memory_preprocess_failed hero=" + (debugHeroId ?? "") + " mode=" + mode + " candidates=" + list.Count + " finalCount=" + finalCount + " promptChars=" + user.Length + " apiMs=" + Math.Round(apiSw.Elapsed.TotalMilliseconds, 2) + " totalMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2) + " reason=parse_empty responseLen=" + ((content ?? "").Length));
+			Logger.Log("Logic", "[MemoryPerf] memory_preprocess_failed hero=" + (debugHeroId ?? "") + " mode=" + mode + " candidates=" + list.Count + " finalCount=" + finalCount + " promptChars=" + user.Length + " apiMs=" + Math.Round(apiSw.Elapsed.TotalMilliseconds, 2) + " totalMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2) + " reason=format_error parseError=" + (parseError ?? "") + " responseLen=" + ((content ?? "").Length));
 			ShowCompressedMemoryBlockingPopup("压缩记忆前处理失败", error + "\n\n请修复前处理提示词或 API 输出后重试。");
-			return false;
+			throw new PreprocessFormatException(error);
 		}
+		AIConfigHandler.PublishAuxiliaryMentionedEntitiesForExternal(currentInput, secondaryInput, ResolveCurrentMemorySceneLabel(), content);
 		if (selectedIds.Count < finalCount)
 		{
 			HashSet<int> selectedSet = new HashSet<int>(selectedIds);
@@ -29822,46 +31076,73 @@ public class MyBehavior : CampaignBehaviorBase
 		return true;
 	}
 
-	private static List<int> ParseMemoryPreprocessIds(string content, IEnumerable<int> allowedIds, int finalCount)
+	private static bool TryParseMemoryPreprocessIds(string content, IEnumerable<int> allowedIds, int finalCount, out List<int> selectedIds, out string error)
 	{
 		HashSet<int> allowed = new HashSet<int>(allowedIds ?? Enumerable.Empty<int>());
 		HashSet<int> seen = new HashSet<int>();
-		List<int> list = new List<int>();
-		string text = StripJsonCodeFence(content);
-		try
+		selectedIds = new List<int>();
+		error = "";
+		if (allowed.Count <= 0)
 		{
-			JObject jObject = JObject.Parse(text);
-			JArray jArray = jObject["memory_ids"] as JArray;
-			if (jArray != null)
+			error = "no_allowed_memory_ids";
+			return false;
+		}
+		if (!AIConfigHandler.TryValidateStrictPreprocessJsonEnvelope(content, requireMemoryIds: true, out var jObject, out error))
+		{
+			return false;
+		}
+		JToken token = jObject["memory_ids"];
+		if (token == null || token.Type == JTokenType.Null)
+		{
+			error = "missing_memory_ids";
+			return false;
+		}
+		if (!(token is JArray jArray))
+		{
+			error = "memory_ids_not_array";
+			return false;
+		}
+		if (jArray.Count <= 0)
+		{
+			return true;
+		}
+		foreach (JToken item in jArray)
+		{
+			if (item == null || item.Type == JTokenType.Null)
 			{
-				foreach (JToken item in jArray)
-				{
-					if (int.TryParse((item?.ToString() ?? "").Trim().TrimStart('#'), out var result) && allowed.Contains(result) && seen.Add(result))
-					{
-						list.Add(result);
-						if (list.Count >= finalCount)
-						{
-							return list;
-						}
-					}
-				}
+				continue;
+			}
+			string raw = (item?.ToString() ?? "").Trim().TrimStart('#');
+			if (!int.TryParse(raw, out var result))
+			{
+				error = "memory_id_not_integer";
+				selectedIds.Clear();
+				return false;
+			}
+			if (!allowed.Contains(result))
+			{
+				continue;
+			}
+			if (seen.Add(result))
+			{
+				selectedIds.Add(result);
 			}
 		}
-		catch
+		return true;
+	}
+
+	private static string BuildMemoryPreprocessFormatError(string reason, string content)
+	{
+		string preview = (content ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+		if (preview.Length > 700)
 		{
+			preview = preview.Substring(0, 700) + "...";
 		}
-		foreach (Match item2 in Regex.Matches(text, "\\d+"))
+		if (string.IsNullOrWhiteSpace(preview))
 		{
-			if (int.TryParse(item2.Value, out var result2) && allowed.Contains(result2) && seen.Add(result2))
-			{
-				list.Add(result2);
-				if (list.Count >= finalCount)
-				{
-					break;
-				}
-			}
+			preview = "(empty)";
 		}
-		return list;
+		return "（API响应格式错误）压缩记忆前处理返回格式错误：" + (string.IsNullOrWhiteSpace(reason) ? "unknown" : reason.Trim()) + "。必须只输出一个 JSON 对象，并包含 rule_codes、memory_ids 和完整的 mentioned_entities 数组对象。原始输出：" + preview;
 	}
 
 	private void ShowCompressedMemoryBlockingPopup(string title, string message)
@@ -29948,10 +31229,6 @@ public class MyBehavior : CampaignBehaviorBase
 					result.Add(message);
 				}
 			}
-		}
-		if (result.Count > 24)
-		{
-			result = result.Skip(result.Count - 24).ToList();
 		}
 		sw.Stop();
 		Logger.Log("Logic", "[MemoryPerf] uncompressed_memory_done hero=" + normalizedMemoryId + " drafts=" + drafts.Count + " messages=" + result.Count + " agent=" + targetAgentIndex + " includeCurrentSession=" + includeCurrentActiveSceneSession + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
@@ -31107,12 +32384,13 @@ public class MyBehavior : CampaignBehaviorBase
 		return text2.Trim();
 	}
 
-	private static string BuildRewardPostprocessItemList(List<RewardSystemBehavior.RewardItemInfo> options, int gold)
+	private static string BuildRewardPostprocessItemList(List<RewardSystemBehavior.RewardItemInfo> options, int gold, List<RewardSystemBehavior.RewardItemInfo> allOptions = null)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.Append("第纳尔: ").Append(Math.Max(0, gold)).AppendLine();
 		if (options == null || options.Count <= 0)
 		{
+			stringBuilder.Append("全部可转物品总值: ").Append(RewardSystemBehavior.CalculateRewardItemsTotalValueForExternal(allOptions)).AppendLine(" 第纳尔（不含第纳尔）");
 			return stringBuilder.ToString().TrimEnd();
 		}
 		List<RewardSystemBehavior.RewardItemInfo> list = options.Where((RewardSystemBehavior.RewardItemInfo x) => x != null && !x.IsPrivateEquipment).ToList();
@@ -31148,6 +32426,7 @@ public class MyBehavior : CampaignBehaviorBase
 					.AppendLine();
 			}
 		}
+		stringBuilder.Append("全部可转物品总值: ").Append(RewardSystemBehavior.CalculateRewardItemsTotalValueForExternal(allOptions ?? options)).AppendLine(" 第纳尔（不含第纳尔）");
 		return stringBuilder.ToString().TrimEnd();
 	}
 
@@ -31245,11 +32524,17 @@ public class MyBehavior : CampaignBehaviorBase
 			result2 = Math.Min(Math.Max(1, result2), Math.Max(1, rewardItemInfo.Count));
 			return "[ACTION:" + value + ":" + text2.Trim() + ":" + result2 + "]";
 		}, RegexOptions.IgnoreCase);
-		return Regex.Replace(text2, "\\[ACTION:(GIVE_ITEM|DEBT_ITEM):([^\\]\\r\\n:]+):(\\d+)\\]", delegate(Match m)
+		return Regex.Replace(text2, "\\[ACTION:(GIVE_ITEM|DEBT_ITEM):([^\\]\\r\\n:]+):(ALL|\\d+)\\]", delegate(Match m)
 		{
 			string value2 = m.Groups[1].Value;
 			string token = m.Groups[2].Value;
-			if (!int.TryParse(m.Groups[3].Value, out var result3) || result3 <= 0)
+			bool isAll = string.Equals(value2, "GIVE_ITEM", StringComparison.OrdinalIgnoreCase) && TransferQuantitySpec.IsAllValue(m.Groups[3].Value);
+			int result3 = 0;
+			if (TransferQuantitySpec.IsAllValue(token) && !isAll)
+			{
+				return "";
+			}
+			if (!isAll && (!int.TryParse(m.Groups[3].Value, out result3) || result3 <= 0))
 			{
 				return "";
 			}
@@ -31258,7 +32543,11 @@ public class MyBehavior : CampaignBehaviorBase
 			logRewardItemTranslation("token", token, rewardItemInfo2, text3);
 			if (string.IsNullOrWhiteSpace(text3))
 			{
-				return "[ACTION:" + value2 + ":" + token.Trim() + ":" + result3 + "]";
+				return isAll ? ("[ACTION:GIVE_ITEM:" + token.Trim() + ":ALL]") : ("[ACTION:" + value2 + ":" + token.Trim() + ":" + result3 + "]");
+			}
+			if (isAll)
+			{
+				return "[ACTION:GIVE_ITEM:" + text3.Trim() + ":ALL]";
 			}
 			result3 = Math.Min(Math.Max(1, result3), Math.Max(1, rewardItemInfo2.Count));
 			return "[ACTION:" + value2 + ":" + text3.Trim() + ":" + result3 + "]";
@@ -31306,7 +32595,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}, RegexOptions.IgnoreCase);
 	}
 
-	private static string NormalizeRewardPostprocessTags(string raw, List<RewardSystemBehavior.RewardItemInfo> options)
+	private static string NormalizeRewardPostprocessTags(string raw, List<RewardSystemBehavior.RewardItemInfo> options, List<RewardSystemBehavior.RewardItemInfo> allOptions = null)
 	{
 		List<string> list = new List<string>();
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -31330,6 +32619,22 @@ public class MyBehavior : CampaignBehaviorBase
 			if (hashSet.Add(text2))
 			{
 				list.Add(text2);
+			}
+		}
+		list.RemoveAll((string x) => Regex.IsMatch(x ?? "", "^\\[ACTION:GIVE_ITEM:ALL:\\d+\\]$", RegexOptions.IgnoreCase));
+		bool giveAll = list.Any((string x) => Regex.IsMatch(x ?? "", "^\\[ACTION:GIVE_ITEM:[^\\]\\r\\n:]+:ALL\\]$", RegexOptions.IgnoreCase));
+		if (giveAll)
+		{
+			list.RemoveAll((string x) => (x ?? "").StartsWith("[ACTION:GIVE_ITEM:", StringComparison.OrdinalIgnoreCase));
+			HashSet<string> allItemKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			foreach (RewardSystemBehavior.RewardItemInfo item in allOptions ?? Enumerable.Empty<RewardSystemBehavior.RewardItemInfo>())
+			{
+				string key = string.IsNullOrWhiteSpace(item?.PromptStringId) ? item?.StringId : item.PromptStringId;
+				if (item == null || item.Item == null || item.Count <= 0 || string.IsNullOrWhiteSpace(key) || !allItemKeys.Add(key.Trim()))
+				{
+					continue;
+				}
+				list.Add("[ACTION:GIVE_ITEM:" + key.Trim() + ":ALL]");
 			}
 		}
 		if (string.IsNullOrWhiteSpace(text))
@@ -31475,7 +32780,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
 		}
-		List<PostprocessRuleEntry> royalRules = AIConfigHandler.BuildRuntimeRoyalPostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject) ?? new List<PostprocessRuleEntry>();
+		List<PostprocessRuleEntry> royalRules = AIConfigHandler.BuildRuntimeRoyalPostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject, postprocessRuleSelected: false) ?? new List<PostprocessRuleEntry>();
 		List<PostprocessRuleEntry> actionRules = MergePostprocessRules(rules, royalRules);
 		if (actionRules == null || actionRules.Count == 0)
 		{
@@ -31497,6 +32802,7 @@ public class MyBehavior : CampaignBehaviorBase
 		string text6 = "（无）";
 		string text12 = "（无）";
 		List<RewardSystemBehavior.RewardItemInfo> list = null;
+		List<RewardSystemBehavior.RewardItemInfo> allList = null;
 		MentionedWorldEntities promptListMentions = AIConfigHandler.GetLatestAuxiliaryMentionedEntitiesForExternal();
 		int promptListMax = PromptListRetrievalService.GetMaxCandidateCount();
 		if (RewardSystemBehavior.Instance != null)
@@ -31513,17 +32819,31 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				if (targetHero != null)
 				{
-					List<RewardSystemBehavior.RewardItemInfo> allRewardOptions = RewardSystemBehavior.Instance.BuildHeroRewardPostprocessItems(targetHero);
-					list = PromptListRetrievalService.FilterRewardItems(allRewardOptions, promptListMentions, promptListMax);
-					text5 = BuildRewardPostprocessItemList(list, RewardSystemBehavior.Instance.GetRewardPostprocessGoldForHero(targetHero));
+					if (!PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsAllSnapshotScope, targetHero, targetCharacter, -1, out allList))
+					{
+						allList = RewardSystemBehavior.Instance.BuildHeroRewardPostprocessItems(targetHero);
+						PromptListRetrievalService.PublishRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsAllSnapshotScope, targetHero, targetCharacter, -1, allList);
+					}
+					if (!PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsSnapshotScope, targetHero, targetCharacter, -1, out list))
+					{
+						list = PromptListRetrievalService.FilterRewardItems(allList, promptListMentions, promptListMax);
+					}
+					text5 = BuildRewardPostprocessItemList(list, RewardSystemBehavior.Instance.GetRewardPostprocessGoldForHero(targetHero), allList);
 					text12 = NormalizePlayerNameForPostprocess(RewardSystemBehavior.Instance.BuildDebtHintForAI(targetHero), text7);
 				}
 				else if (targetCharacter != null)
 				{
-					List<RewardSystemBehavior.RewardItemInfo> allRewardOptions = RewardSystemBehavior.Instance.BuildSettlementMerchantPostprocessItems(targetCharacter);
-					list = PromptListRetrievalService.FilterRewardItems(allRewardOptions, promptListMentions, promptListMax);
+					if (!PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.SettlementMerchantItemsAllSnapshotScope, null, targetCharacter, -1, out allList))
+					{
+						allList = RewardSystemBehavior.Instance.BuildSettlementMerchantPostprocessItems(targetCharacter);
+						PromptListRetrievalService.PublishRewardItemSnapshot(PromptListRetrievalService.SettlementMerchantItemsAllSnapshotScope, null, targetCharacter, -1, allList);
+					}
+					if (!PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.SettlementMerchantItemsSnapshotScope, null, targetCharacter, -1, out list))
+					{
+						list = PromptListRetrievalService.FilterRewardItems(allList, promptListMentions, promptListMax);
+					}
 					int num = RewardSystemBehavior.Instance.GetSettlementMarketTradeGold(Settlement.CurrentSettlement);
-					text5 = BuildRewardPostprocessItemList(list, num);
+					text5 = BuildRewardPostprocessItemList(list, num, allList);
 					text12 = NormalizePlayerNameForPostprocess(RewardSystemBehavior.Instance.BuildSettlementMerchantDebtHintForAI(targetCharacter), text7);
 				}
 			}
@@ -31532,6 +32852,7 @@ public class MyBehavior : CampaignBehaviorBase
 				text5 = "（无）";
 				text12 = "（无）";
 				list = null;
+				allList = null;
 			}
 		}
 		string text8 = AIConfigHandler.BuildActionPostprocessSystemPrompt(text3, text4, text7, text5, text6, text12);
@@ -31541,7 +32862,7 @@ public class MyBehavior : CampaignBehaviorBase
 			Logger.Log("Logic", "[" + logPrefix + "] 调用失败: " + error);
 			return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
 		}
-		string rewardTags = NormalizeRewardPostprocessTags(content, list);
+		string rewardTags = NormalizeRewardPostprocessTags(content, list, allList);
 		string royalTags = royalRules.Count > 0 ? NormalizeKingdomServicePostprocessTags(content, royalRules) : "";
 		string text10 = MergeNormalizedPostprocessBlocks(rewardTags, royalTags);
 		if (string.IsNullOrWhiteSpace(text10))
@@ -31550,7 +32871,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			MarkWeeklyMemoryMaterialTriggerInternal(targetHero ?? targetCharacter?.HeroObject, "", text7, text10, -1, -1, -1, list, null, null, null);
+			MarkWeeklyMemoryMaterialTriggerInternal(targetHero ?? targetCharacter?.HeroObject, "", text7, text10, -1, -1, -1, allList ?? list, null, null, null);
 		}
 		catch (Exception ex)
 		{
@@ -31596,7 +32917,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			text2 = string.IsNullOrWhiteSpace(extraFact) ? "（无）" : NormalizePlayerNameForPostprocess(extraFact.Trim(), text9);
 		}
-		List<PostprocessRuleEntry> royalRules = AIConfigHandler.BuildRuntimeRoyalPostprocessRulesForExternal(targetHero) ?? new List<PostprocessRuleEntry>();
+		List<PostprocessRuleEntry> royalRules = AIConfigHandler.BuildRuntimeRoyalPostprocessRulesForExternal(targetHero, postprocessRuleSelected: false) ?? new List<PostprocessRuleEntry>();
 		List<PostprocessRuleEntry> list = MergePostprocessRules(AIConfigHandler.BuildRuntimeKingdomServicePostprocessRules() ?? new List<PostprocessRuleEntry>(), royalRules);
 		if (list.Count == 0)
 		{
@@ -31643,7 +32964,7 @@ public class MyBehavior : CampaignBehaviorBase
 			return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
 		}
 		string text11 = targetHero?.Name?.ToString() ?? "NPC";
-		List<PostprocessRuleEntry> royalRules = AIConfigHandler.BuildRuntimeRoyalPostprocessRulesForExternal(targetHero) ?? new List<PostprocessRuleEntry>();
+		List<PostprocessRuleEntry> royalRules = AIConfigHandler.BuildRuntimeRoyalPostprocessRulesForExternal(targetHero, postprocessRuleSelected: false) ?? new List<PostprocessRuleEntry>();
 		List<PostprocessRuleEntry> actionRules = MergePostprocessRules(AIConfigHandler.DuelPostprocessRules, royalRules);
 		string text2 = NormalizePlayerNameForPostprocess(BuildGuardrailSemanticContext(targetHero, extraFact), text11);
 		if (string.IsNullOrWhiteSpace(text2))
@@ -34492,26 +35813,26 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void OpenDevEventReportDetail(EventRecordEntry entry, int returnPage)
 	{
-		InformationManager.ShowInquiry(new InquiryData("周报正文 - " + ((entry?.Title ?? "").Trim()), string.IsNullOrWhiteSpace(entry?.Summary) ? "当前这条事件还没有正文。" : entry.Summary.Trim(), isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回事件详情", "", delegate
+		ShowDevLargeTextOrInquiry("周报正文 - " + ((entry?.Title ?? "").Trim()), "", string.IsNullOrWhiteSpace(entry?.Summary) ? "当前这条事件还没有正文。" : entry.Summary.Trim(), delegate
 		{
 			OpenDevEventRecordDetail(entry, returnPage);
-		}, null));
+		}, "返回事件详情");
 	}
 
 	private void OpenDevEventShortSummaryDetail(EventRecordEntry entry, int returnPage)
 	{
-		InformationManager.ShowInquiry(new InquiryData("短摘要 - " + ((entry?.Title ?? "").Trim()), string.IsNullOrWhiteSpace(entry?.ShortSummary) ? "当前这条事件还没有短摘要。" : entry.ShortSummary.Trim(), isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回事件详情", "", delegate
+		ShowDevLargeTextOrInquiry("短摘要 - " + ((entry?.Title ?? "").Trim()), "", string.IsNullOrWhiteSpace(entry?.ShortSummary) ? "当前这条事件还没有短摘要。" : entry.ShortSummary.Trim(), delegate
 		{
 			OpenDevEventRecordDetail(entry, returnPage);
-		}, null));
+		}, "返回事件详情");
 	}
 
 	private void OpenDevEventTagDetail(EventRecordEntry entry, int returnPage)
 	{
-		InformationManager.ShowInquiry(new InquiryData("标签层 - " + ((entry?.Title ?? "").Trim()), string.IsNullOrWhiteSpace(entry?.TagText) ? "当前这条事件还没有标签层。" : entry.TagText.Trim(), isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回事件详情", "", delegate
+		ShowDevLargeTextOrInquiry("标签层 - " + ((entry?.Title ?? "").Trim()), "", string.IsNullOrWhiteSpace(entry?.TagText) ? "当前这条事件还没有标签层。" : entry.TagText.Trim(), delegate
 		{
 			OpenDevEventRecordDetail(entry, returnPage);
-		}, null));
+		}, "返回事件详情");
 	}
 
 	private void OpenDevEventMaterialList(EventRecordEntry entry, int returnPage, int page)
@@ -34645,10 +35966,10 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void OpenDevEventPromptDetail(EventRecordEntry entry, int returnPage)
 	{
-		InformationManager.ShowInquiry(new InquiryData("请求 Prompt - " + ((entry?.Title ?? "").Trim()), string.IsNullOrWhiteSpace(entry?.PromptText) ? "当前没有保存该条周报的请求 Prompt。" : entry.PromptText.Trim(), isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回事件详情", "", delegate
+		ShowDevLargeTextOrInquiry("请求 Prompt - " + ((entry?.Title ?? "").Trim()), "", string.IsNullOrWhiteSpace(entry?.PromptText) ? "当前没有保存该条周报的请求 Prompt。" : entry.PromptText.Trim(), delegate
 		{
 			OpenDevEventRecordDetail(entry, returnPage);
-		}, null));
+		}, "返回事件详情");
 	}
 
 	private static string BuildDevEventMaterialItemLabel(EventMaterialReference material)
@@ -34674,10 +35995,10 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		string text = BuildDevEventMaterialDetailText(material);
 		string text2 = BuildDevEventMaterialItemLabel(material);
-		InformationManager.ShowInquiry(new InquiryData("素材详情 - " + text2, text, isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回事件详情", "", delegate
+		ShowDevLargeTextOrInquiry("素材详情 - " + text2, "", text, delegate
 		{
 			OpenDevEventMaterialList(entry, returnPage, returnMaterialPage);
-		}, null));
+		}, "返回素材列表");
 	}
 
 	private string BuildDevEventMaterialDetailText(EventMaterialReference material)
@@ -39752,12 +41073,19 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		try
 		{
+			FreezeWatchdog.Mark("WeeklyPrompt.FindLatest.ensure_week0_start", "kind=" + text + " kingdom=" + text2 + " entries=" + (_eventRecordEntries?.Count ?? 0) + " thread=" + Thread.CurrentThread.ManagedThreadId);
 			EnsureWeekZeroOpeningSummaryEvents();
+			FreezeWatchdog.Mark("WeeklyPrompt.FindLatest.ensure_week0_done", "kind=" + text + " kingdom=" + text2 + " entries=" + (_eventRecordEntries?.Count ?? 0) + " thread=" + Thread.CurrentThread.ManagedThreadId);
 		}
 		catch
 		{
 		}
-		return SanitizeEventRecordEntries(_eventRecordEntries).Where((EventRecordEntry x) => x != null && string.Equals((x.EventKind ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase) && string.Equals((x.ScopeKingdomId ?? "").Trim(), text2, StringComparison.OrdinalIgnoreCase)).OrderByDescending((EventRecordEntry x) => x.WeekIndex).ThenByDescending((EventRecordEntry x) => x.CreatedDay).FirstOrDefault();
+		FreezeWatchdog.Mark("WeeklyPrompt.FindLatest.sanitize_start", "kind=" + text + " kingdom=" + text2 + " entries=" + (_eventRecordEntries?.Count ?? 0));
+		List<EventRecordEntry> sanitized = SanitizeEventRecordEntries(_eventRecordEntries);
+		FreezeWatchdog.Mark("WeeklyPrompt.FindLatest.sanitize_done", "kind=" + text + " kingdom=" + text2 + " entries=" + (sanitized?.Count ?? 0));
+		EventRecordEntry result = (sanitized ?? new List<EventRecordEntry>()).Where((EventRecordEntry x) => x != null && string.Equals((x.EventKind ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase) && string.Equals((x.ScopeKingdomId ?? "").Trim(), text2, StringComparison.OrdinalIgnoreCase)).OrderByDescending((EventRecordEntry x) => x.WeekIndex).ThenByDescending((EventRecordEntry x) => x.CreatedDay).FirstOrDefault();
+		FreezeWatchdog.Mark("WeeklyPrompt.FindLatest.query_done", "kind=" + text + " kingdom=" + text2 + " found=" + (result != null));
+		return result;
 	}
 
 
@@ -40012,8 +41340,12 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private string BuildWeeklyShortReportsPromptBlock(Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride, bool excludeNpcKingdom)
 	{
+		FreezeWatchdog.Mark("WeeklyPrompt.Short.resolve_npc_kingdom_start", "thread=" + Thread.CurrentThread.ManagedThreadId);
 		string weeklyReportNpcKingdomId = ResolveWeeklyReportNpcKingdomId(targetHero, targetCharacter, kingdomIdOverride);
+		FreezeWatchdog.Mark("WeeklyPrompt.Short.resolve_npc_kingdom_done", "kingdom=" + (weeklyReportNpcKingdomId ?? "") + " thread=" + Thread.CurrentThread.ManagedThreadId);
+		FreezeWatchdog.Mark("WeeklyPrompt.Short.select_kingdoms_start", "npcKingdom=" + (weeklyReportNpcKingdomId ?? "") + " excludeNpc=" + excludeNpcKingdom);
 		List<string> list = SelectWeeklyShortReportKingdomIds(weeklyReportNpcKingdomId, excludeNpcKingdom);
+		FreezeWatchdog.Mark("WeeklyPrompt.Short.select_kingdoms_done", "count=" + (list?.Count ?? 0) + " ids=" + ((list == null || list.Count == 0) ? "(none)" : string.Join(",", list)));
 		if (list.Count == 0)
 		{
 			return "";
@@ -40022,7 +41354,9 @@ public class MyBehavior : CampaignBehaviorBase
 		int num = 0;
 		foreach (string item in list)
 		{
+			FreezeWatchdog.Mark("WeeklyPrompt.Short.record_start", "kingdom=" + (item ?? ""));
 			EventRecordEntry latestWeeklyReportRecord = FindLatestWeeklyReportRecord("kingdom", item);
+			FreezeWatchdog.Mark("WeeklyPrompt.Short.record_done", "kingdom=" + (item ?? "") + " found=" + (latestWeeklyReportRecord != null));
 			string text = BuildFallbackWeeklyReportShortSummary(latestWeeklyReportRecord?.ShortSummary ?? latestWeeklyReportRecord?.Summary);
 			if (latestWeeklyReportRecord == null || string.IsNullOrWhiteSpace(text))
 			{
@@ -40030,8 +41364,8 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			if (num == 0)
 			{
-				stringBuilder.AppendLine("【近期三个王国短周报】");
-				stringBuilder.AppendLine("以下为最近三个相关王国的短周报，只作背景事实参考；不要把其中事实错说到别的王国。");
+				stringBuilder.AppendLine("【近期三个王国发生的事】");
+				stringBuilder.AppendLine("以下为最近三个相关王国的事");
 			}
 			num++;
 			stringBuilder.Append("- ").Append(ResolveKingdomDisplay(item));
@@ -40075,26 +41409,34 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private string BuildTriggeredWeeklyFullReportsPromptBlock(string triggeredRuleInstructions, Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride = null)
 	{
+		FreezeWatchdog.Mark("WeeklyPrompt.Full.start", "thread=" + Thread.CurrentThread.ManagedThreadId);
 		bool flag = HasInjectedRuleBlock(triggeredRuleInstructions, "npc_major_actions");
 		bool flag2 = HasInjectedRuleBlock(triggeredRuleInstructions, "npc_recent_actions");
 		bool flag3 = HasInjectedRuleBlock(triggeredRuleInstructions, "surroundings");
 		if (!flag && !flag2 && !flag3)
 		{
+			FreezeWatchdog.Mark("WeeklyPrompt.Full.skip", "reason=no_triggered_weekly_rule");
 			return "";
 		}
+		FreezeWatchdog.Mark("WeeklyPrompt.Full.resolve_kingdoms_start", "major=" + flag + " recent=" + flag2 + " surroundings=" + flag3);
 		string weeklyReportNpcKingdomId = ResolveWeeklyReportNpcKingdomId(targetHero, targetCharacter, kingdomIdOverride);
 		string weeklyReportSurroundingsKingdomId = ResolveWeeklyReportSurroundingsKingdomId(targetHero, targetCharacter, kingdomIdOverride);
+		FreezeWatchdog.Mark("WeeklyPrompt.Full.resolve_kingdoms_done", "npc=" + (weeklyReportNpcKingdomId ?? "") + " surroundings=" + (weeklyReportSurroundingsKingdomId ?? ""));
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		StringBuilder stringBuilder = new StringBuilder();
 		if (flag || flag2)
 		{
+			FreezeWatchdog.Mark("WeeklyPrompt.Full.npc_record_start", "kingdom=" + (weeklyReportNpcKingdomId ?? ""));
 			EventRecordEntry latestWeeklyReportRecord = FindLatestWeeklyReportRecord("kingdom", weeklyReportNpcKingdomId);
+			FreezeWatchdog.Mark("WeeklyPrompt.Full.npc_record_done", "found=" + (latestWeeklyReportRecord != null));
 			string singleWeeklyFullReportPromptBlock = BuildSingleWeeklyFullReportPromptBlock("NPC所属王国完整周报", latestWeeklyReportRecord);
 			if (!string.IsNullOrWhiteSpace(singleWeeklyFullReportPromptBlock) && hashSet.Add("kingdom:" + (weeklyReportNpcKingdomId ?? "").Trim()))
 			{
 				stringBuilder.AppendLine(singleWeeklyFullReportPromptBlock);
 			}
+			FreezeWatchdog.Mark("WeeklyPrompt.Full.world_record_start");
 			EventRecordEntry latestWeeklyReportRecord2 = FindLatestWeeklyReportRecord("world", "");
+			FreezeWatchdog.Mark("WeeklyPrompt.Full.world_record_done", "found=" + (latestWeeklyReportRecord2 != null));
 			string singleWeeklyFullReportPromptBlock2 = BuildSingleWeeklyFullReportPromptBlock("世界完整周报", latestWeeklyReportRecord2);
 			if (!string.IsNullOrWhiteSpace(singleWeeklyFullReportPromptBlock2) && hashSet.Add("world"))
 			{
@@ -40107,7 +41449,9 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		if (flag3)
 		{
+			FreezeWatchdog.Mark("WeeklyPrompt.Full.surroundings_record_start", "kingdom=" + (weeklyReportSurroundingsKingdomId ?? ""));
 			EventRecordEntry latestWeeklyReportRecord3 = FindLatestWeeklyReportRecord("kingdom", weeklyReportSurroundingsKingdomId);
+			FreezeWatchdog.Mark("WeeklyPrompt.Full.surroundings_record_done", "found=" + (latestWeeklyReportRecord3 != null));
 			string singleWeeklyFullReportPromptBlock3 = BuildSingleWeeklyFullReportPromptBlock("周边相关王国完整周报", latestWeeklyReportRecord3);
 			if (!string.IsNullOrWhiteSpace(singleWeeklyFullReportPromptBlock3) && hashSet.Add("kingdom:" + (weeklyReportSurroundingsKingdomId ?? "").Trim()))
 			{
@@ -40118,7 +41462,9 @@ public class MyBehavior : CampaignBehaviorBase
 				stringBuilder.AppendLine(singleWeeklyFullReportPromptBlock3);
 			}
 		}
-		return stringBuilder.ToString().TrimEnd();
+		string result = stringBuilder.ToString().TrimEnd();
+		FreezeWatchdog.Mark("WeeklyPrompt.Full.done", "chars=" + result.Length);
+		return result;
 	}
 
 	private bool ShouldExcludeNpcShortReportFromWeeklyShortLayer(string triggeredRuleInstructions, Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride = null)
@@ -41702,6 +43048,12 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void UpsertWeeklyReportEventRecord(WeeklyEventMaterialPreviewGroup group, int weekIndex, string title, string shortSummary, string report, string tagText, string promptText, bool sanitizeAfter = true)
 	{
+		List<EventMaterialReference> materials = OrderWeeklyPreviewMaterials(group?.Materials).Where((EventMaterialReference x) => x != null).Select(CloneEventMaterialReference).ToList();
+		UpsertWeeklyReportEventRecord(group, weekIndex, title, shortSummary, report, tagText, promptText, materials, sanitizeAfter);
+	}
+
+	private void UpsertWeeklyReportEventRecord(WeeklyEventMaterialPreviewGroup group, int weekIndex, string title, string shortSummary, string report, string tagText, string promptText, List<EventMaterialReference> materials, bool sanitizeAfter)
+	{
 		if (_eventRecordEntries == null)
 		{
 			_eventRecordEntries = new List<EventRecordEntry>();
@@ -41732,48 +43084,7 @@ public class MyBehavior : CampaignBehaviorBase
 		eventRecordEntry.PromptText = NeutralizeWeeklyReportScenarioName(promptText);
 		eventRecordEntry.CreatedDay = GetCurrentGameDayIndexSafe();
 		eventRecordEntry.CreatedDate = GetCurrentGameDateTextSafe();
-		eventRecordEntry.Materials = OrderWeeklyPreviewMaterials(group?.Materials).Select(delegate(EventMaterialReference x)
-		{
-			if (x == null)
-			{
-				return null;
-			}
-			return new EventMaterialReference
-			{
-				MaterialType = (x.MaterialType ?? "").Trim(),
-				Label = (x.Label ?? "").Trim(),
-				SnapshotText = (x.SnapshotText ?? "").Trim(),
-				HeroId = (x.HeroId ?? "").Trim(),
-				KingdomId = (x.KingdomId ?? "").Trim(),
-				SettlementId = (x.SettlementId ?? "").Trim(),
-				RecentOnly = x.RecentOnly,
-				ActionKind = (x.ActionKind ?? "").Trim(),
-				ActorHeroId = (x.ActorHeroId ?? "").Trim(),
-				ActorClanId = (x.ActorClanId ?? "").Trim(),
-				ActorKingdomId = (x.ActorKingdomId ?? "").Trim(),
-				TargetHeroId = (x.TargetHeroId ?? "").Trim(),
-				TargetClanId = (x.TargetClanId ?? "").Trim(),
-				TargetKingdomId = (x.TargetKingdomId ?? "").Trim(),
-				SettlementOwnerHeroId = (x.SettlementOwnerHeroId ?? "").Trim(),
-				SettlementOwnerClanId = (x.SettlementOwnerClanId ?? "").Trim(),
-				SettlementOwnerKingdomId = (x.SettlementOwnerKingdomId ?? "").Trim(),
-				PreviousSettlementOwnerHeroId = (x.PreviousSettlementOwnerHeroId ?? "").Trim(),
-				PreviousSettlementOwnerClanId = (x.PreviousSettlementOwnerClanId ?? "").Trim(),
-				PreviousSettlementOwnerKingdomId = (x.PreviousSettlementOwnerKingdomId ?? "").Trim(),
-				LocationText = (x.LocationText ?? "").Trim(),
-				Won = x.Won,
-				RelatedHeroIds = new List<string>((x.RelatedHeroIds ?? new List<string>()).Where((string y) => !string.IsNullOrWhiteSpace(y)).Select((string y) => y.Trim())),
-				RelatedClanIds = new List<string>((x.RelatedClanIds ?? new List<string>()).Where((string y) => !string.IsNullOrWhiteSpace(y)).Select((string y) => y.Trim())),
-				RelatedKingdomIds = new List<string>((x.RelatedKingdomIds ?? new List<string>()).Where((string y) => !string.IsNullOrWhiteSpace(y)).Select((string y) => y.Trim())),
-				SourceStableKeys = new List<string>((x.SourceStableKeys ?? new List<string>()).Where((string y) => !string.IsNullOrWhiteSpace(y)).Select((string y) => y.Trim())),
-				SourceActionKinds = new List<string>((x.SourceActionKinds ?? new List<string>()).Where((string y) => !string.IsNullOrWhiteSpace(y)).Select((string y) => y.Trim())),
-				SourceMaterialCount = Math.Max(0, x.SourceMaterialCount),
-				ActionStableKey = (x.ActionStableKey ?? "").Trim(),
-				ActionDay = x.ActionDay,
-				ActionOrder = x.ActionOrder,
-				ActionSequence = x.ActionSequence
-			};
-		}).Where((EventMaterialReference x) => x != null).ToList();
+		eventRecordEntry.Materials = materials ?? new List<EventMaterialReference>();
 		ApplyWeeklyReportStabilityDelta(group, eventRecordEntry.EventId, eventRecordEntry.TagText);
 		if (sanitizeAfter)
 		{
@@ -42957,7 +44268,10 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			if (context.GroupMap == null)
 			{
-				context.GroupMap = BuildWeeklyReportGroupMap(context.Groups);
+				using (PerfProbe.Scope("MyBehavior.WeeklyReportCommit.BuildGroupMap"))
+				{
+					context.GroupMap = BuildWeeklyReportGroupMap(context.Groups);
+				}
 			}
 			List<WeeklyReportBatchExecutionResult> executions = context.Executions ?? new List<WeeklyReportBatchExecutionResult>();
 			while (context.ExecutionIndex < executions.Count && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
@@ -42990,16 +44304,25 @@ public class MyBehavior : CampaignBehaviorBase
 				List<WeeklyReportBatchBlockResult> blocks = batchResult.Blocks ?? new List<WeeklyReportBatchBlockResult>();
 				while (context.BlockIndex < blocks.Count && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
 				{
-					WeeklyReportBatchBlockResult block = blocks[context.BlockIndex++];
-					if (block != null && block.Parsed && !string.IsNullOrWhiteSpace(block.ReportId) && context.CurrentParsedReportIds.Add(block.ReportId) && context.GroupMap.TryGetValue(block.ReportId, out var group) && group != null)
+					WeeklyReportBatchBlockResult block = blocks[context.BlockIndex];
+					if (block != null && block.Parsed && !string.IsNullOrWhiteSpace(block.ReportId) && !context.CurrentParsedReportIds.Contains(block.ReportId) && context.GroupMap.TryGetValue(block.ReportId, out var group) && group != null)
 					{
-						using (PerfProbe.Scope("MyBehavior.WeeklyReportCommit.UpsertRecord"))
+						if (context.CurrentBlockCommit == null)
 						{
-							UpsertWeeklyReportEventRecord(group, context.WeekIndex, block.Title, block.ShortSummary, block.Report, block.TagText, batchResult.PromptPreview, sanitizeAfter: false);
+							using (PerfProbe.Scope("MyBehavior.WeeklyReportCommit.PrepareRecordMaterials"))
+							{
+								context.CurrentBlockCommit = CreatePendingWeeklyReportBlockCommit(group, block, batchResult.PromptPreview);
+							}
 						}
+						if (!ProcessPendingWeeklyReportBlockCommit(context, startTimestamp, budgetMs))
+						{
+							return false;
+						}
+						context.CurrentParsedReportIds.Add(block.ReportId);
 						TryQueueWeeklyReportMapNoticeForGeneratedReport(group, context.WeekIndex, context.PopupCandidateKingdomIds, context.WeeklyReportNoticeEventIdsQueued);
 						context.SuccessCount++;
 					}
+					context.BlockIndex++;
 					if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
 					{
 						return false;
@@ -43009,17 +44332,24 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					return false;
 				}
-				FinalizePendingWeeklyReportCommitBatch(context, batch, batchResult);
+				using (PerfProbe.Scope("MyBehavior.WeeklyReportCommit.FinalizeBatch"))
+				{
+					FinalizePendingWeeklyReportCommitBatch(context, batch, batchResult);
+				}
 				context.ExecutionIndex++;
 				context.BlockIndex = 0;
 				context.CurrentPreviewCaptured = false;
 				context.CurrentParsedReportIds = null;
+				context.CurrentBlockCommit = null;
 			}
 			if (context.ExecutionIndex < executions.Count)
 			{
 				return false;
 			}
-			FinalizePendingWeeklyReportCommitContext(context);
+			using (PerfProbe.Scope("MyBehavior.WeeklyReportCommit.FinalizeContext"))
+			{
+				FinalizePendingWeeklyReportCommitContext(context);
+			}
 			return true;
 		}
 		catch (Exception ex)
@@ -43032,6 +44362,57 @@ public class MyBehavior : CampaignBehaviorBase
 			});
 			return true;
 		}
+	}
+
+	private static PendingWeeklyReportBlockCommit CreatePendingWeeklyReportBlockCommit(WeeklyEventMaterialPreviewGroup group, WeeklyReportBatchBlockResult block, string promptText)
+	{
+		return new PendingWeeklyReportBlockCommit
+		{
+			Group = group,
+			ReportId = (block?.ReportId ?? "").Trim(),
+			Title = block?.Title ?? "",
+			ShortSummary = block?.ShortSummary ?? "",
+			Report = block?.Report ?? "",
+			TagText = block?.TagText ?? "",
+			PromptText = promptText ?? "",
+			OrderedMaterials = OrderWeeklyPreviewMaterials(group?.Materials).Where((EventMaterialReference x) => x != null).ToList(),
+			ClonedMaterials = new List<EventMaterialReference>()
+		};
+	}
+
+	private bool ProcessPendingWeeklyReportBlockCommit(PendingWeeklyReportCommitContext context, long startTimestamp, double budgetMs)
+	{
+		PendingWeeklyReportBlockCommit pending = context?.CurrentBlockCommit;
+		if (pending == null)
+		{
+			return true;
+		}
+		while (pending.MaterialIndex < pending.OrderedMaterials.Count && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+		{
+			using (PerfProbe.Scope("MyBehavior.WeeklyReportCommit.CloneMaterial"))
+			{
+				EventMaterialReference material = CloneEventMaterialReference(pending.OrderedMaterials[pending.MaterialIndex]);
+				if (material != null)
+				{
+					pending.ClonedMaterials.Add(material);
+				}
+				pending.MaterialIndex++;
+			}
+		}
+		if (pending.MaterialIndex < pending.OrderedMaterials.Count)
+		{
+			return false;
+		}
+		if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+		{
+			return false;
+		}
+		using (PerfProbe.Scope("MyBehavior.WeeklyReportCommit.WriteRecord"))
+		{
+			UpsertWeeklyReportEventRecord(pending.Group, context.WeekIndex, pending.Title, pending.ShortSummary, pending.Report, pending.TagText, pending.PromptText, pending.ClonedMaterials, sanitizeAfter: false);
+		}
+		context.CurrentBlockCommit = null;
+		return true;
 	}
 
 	private void FinalizePendingWeeklyReportCommitBatch(PendingWeeklyReportCommitContext context, WeeklyReportBatchRequest batch, WeeklyReportBatchRequestResult batchResult)
@@ -43326,6 +44707,11 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		if (!CanAwardWeeklyReportReadingXp(mainHero, out string ineligibleReason))
+		{
+			Logger.Log("EventWeeklyReport", "[ReadingXp] skipped eventId=" + text + " reason=" + ineligibleReason);
+			return;
+		}
 		EventRecordEntry eventRecordEntry = FindWeeklyReportRecordById(text);
 		if (eventRecordEntry == null)
 		{
@@ -43353,21 +44739,105 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		if (leadershipXp > 0)
-		{
-			mainHero.AddSkillXp(DefaultSkills.Leadership, leadershipXp);
-		}
-		if (charmXp > 0)
-		{
-			mainHero.AddSkillXp(DefaultSkills.Charm, charmXp);
-		}
-		if (stewardXp > 0)
-		{
-			mainHero.AddSkillXp(DefaultSkills.Steward, stewardXp);
-		}
 		_weeklyReportReadingXpClaimedEventIds.Add(text);
-		InformationManager.DisplayMessage(new InformationMessage("周报研读完成：魅力 +" + charmXp + "，统御 +" + leadershipXp + "，管理 +" + stewardXp + "。"));
-		Logger.Log("EventWeeklyReport", "[ReadingXp] eventId=" + text + " charm=" + charmXp + " leadership=" + leadershipXp + " steward=" + stewardXp + " per100=" + xpPerHundred + " cap=" + skillCap);
+		NormalizeWeeklyReportReadingXpPendingBatch();
+		_weeklyReportReadingXpPendingCount++;
+		_weeklyReportReadingXpPendingCharm += charmXp;
+		_weeklyReportReadingXpPendingLeadership += leadershipXp;
+		_weeklyReportReadingXpPendingSteward += stewardXp;
+		Logger.Log("EventWeeklyReport", "[ReadingXp] accumulated eventId=" + text + " pending_count=" + _weeklyReportReadingXpPendingCount + "/" + WeeklyReportReadingXpBatchSize + " charm+=" + charmXp + " leadership+=" + leadershipXp + " steward+=" + stewardXp + " pending_charm=" + _weeklyReportReadingXpPendingCharm + " pending_leadership=" + _weeklyReportReadingXpPendingLeadership + " pending_steward=" + _weeklyReportReadingXpPendingSteward + " per100=" + xpPerHundred + " cap=" + skillCap);
+		if (_weeklyReportReadingXpPendingCount < WeeklyReportReadingXpBatchSize)
+		{
+			return;
+		}
+		int batchCount = _weeklyReportReadingXpPendingCount;
+		int batchCharm = _weeklyReportReadingXpPendingCharm;
+		int batchLeadership = _weeklyReportReadingXpPendingLeadership;
+		int batchSteward = _weeklyReportReadingXpPendingSteward;
+		if (!TryAwardWeeklyReportReadingXpBatch(mainHero, batchLeadership, batchCharm, batchSteward, out string awardFailureReason))
+		{
+			Logger.Log("EventWeeklyReport", "[ReadingXp][WARN] batch_award_failed count=" + batchCount + " charm=" + batchCharm + " leadership=" + batchLeadership + " steward=" + batchSteward + " reason=" + awardFailureReason);
+			return;
+		}
+		_weeklyReportReadingXpPendingCount = 0;
+		_weeklyReportReadingXpPendingCharm = 0;
+		_weeklyReportReadingXpPendingLeadership = 0;
+		_weeklyReportReadingXpPendingSteward = 0;
+		InformationManager.DisplayMessage(new InformationMessage("周报研读突破：累计研读 " + batchCount + " 篇，魅力 +" + batchCharm + "，统御 +" + batchLeadership + "，管理 +" + batchSteward + "。"));
+		Logger.Log("EventWeeklyReport", "[ReadingXp] batch_awarded count=" + batchCount + " charm=" + batchCharm + " leadership=" + batchLeadership + " steward=" + batchSteward);
+	}
+
+	private static bool CanAwardWeeklyReportReadingXp(Hero hero, out string reason)
+	{
+		reason = "";
+		if (hero == null)
+		{
+			reason = "hero_null";
+			return false;
+		}
+		if (hero.HeroDeveloper == null)
+		{
+			reason = "hero_developer_null";
+			return false;
+		}
+		try
+		{
+			if (hero.IsChild)
+			{
+				reason = "main_hero_under_age age=" + Math.Round(hero.Age, 2);
+				return false;
+			}
+		}
+		catch (Exception ex)
+		{
+			reason = "age_check_failed " + ex.Message;
+			return false;
+		}
+		return true;
+	}
+
+	private static bool TryAwardWeeklyReportReadingXpBatch(Hero hero, int leadershipXp, int charmXp, int stewardXp, out string failureReason)
+	{
+		failureReason = "";
+		if (!CanAwardWeeklyReportReadingXp(hero, out failureReason))
+		{
+			return false;
+		}
+		try
+		{
+			if (leadershipXp > 0)
+			{
+				hero.AddSkillXp(DefaultSkills.Leadership, leadershipXp);
+			}
+			if (charmXp > 0)
+			{
+				hero.AddSkillXp(DefaultSkills.Charm, charmXp);
+			}
+			if (stewardXp > 0)
+			{
+				hero.AddSkillXp(DefaultSkills.Steward, stewardXp);
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			failureReason = ex.GetType().Name + ": " + ex.Message;
+			return false;
+		}
+	}
+
+	private void NormalizeWeeklyReportReadingXpPendingBatch()
+	{
+		_weeklyReportReadingXpPendingCount = Math.Max(0, _weeklyReportReadingXpPendingCount);
+		_weeklyReportReadingXpPendingCharm = Math.Max(0, _weeklyReportReadingXpPendingCharm);
+		_weeklyReportReadingXpPendingLeadership = Math.Max(0, _weeklyReportReadingXpPendingLeadership);
+		_weeklyReportReadingXpPendingSteward = Math.Max(0, _weeklyReportReadingXpPendingSteward);
+		if (_weeklyReportReadingXpPendingCount == 0)
+		{
+			_weeklyReportReadingXpPendingCharm = 0;
+			_weeklyReportReadingXpPendingLeadership = 0;
+			_weeklyReportReadingXpPendingSteward = 0;
+		}
 	}
 
 	private static int CalculateWeeklyReportReadingXp(int meaningfulUnitCount, int xpPerHundred, int skillCap)
@@ -43849,6 +45319,10 @@ public class MyBehavior : CampaignBehaviorBase
 		_lastProcessedKingdomRebellionWeek = -1;
 		_unreadWeeklyReportNoticeEventIds = new List<string>();
 		_weeklyReportReadingXpClaimedEventIds = new List<string>();
+		_weeklyReportReadingXpPendingCount = 0;
+		_weeklyReportReadingXpPendingCharm = 0;
+		_weeklyReportReadingXpPendingLeadership = 0;
+		_weeklyReportReadingXpPendingSteward = 0;
 		_weeklyReportNoticeEventIdsShownThisSession.Clear();
 		_weeklyReportRegisteredMapNotificationView = null;
 		_weeklyReportGenerationInProgress = false;
@@ -49108,6 +50582,11 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				value = new NpcPersonaProfile();
 			}
+			if (!TryPrepareNpcPersonaProfileForWrite(heroId, value))
+			{
+				value = new NpcPersonaProfile();
+				StampNpcPersonaProfile(heroId, value);
+			}
 			string path2 = Path.Combine(text2, BuildNpcDataFileName(heroId));
 			WriteJson(path2, value);
 			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
@@ -49478,6 +50957,12 @@ public class MyBehavior : CampaignBehaviorBase
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：该NPC没有对应的导出文件。"));
 				return;
 			}
+			if (!TryResolveNpcDataFileHeroIdForImport(text3, out var resolvedHeroId, out var warning) || !string.Equals((resolvedHeroId ?? "").Trim(), (heroId ?? "").Trim(), StringComparison.OrdinalIgnoreCase))
+			{
+				InformationManager.DisplayMessage(new InformationMessage("导入失败：个性/背景文件与当前NPC不匹配。"));
+				Logger.Log("NpcPersona", "[WARN] Skipped single persona import file " + Path.GetFileName(text3) + " for hero=" + heroId + ": " + (warning ?? ("resolvedHeroId=" + resolvedHeroId)));
+				return;
+			}
 			NpcPersonaProfile prof = ReadJson<NpcPersonaProfile>(text3);
 			if (_npcPersonaProfiles == null)
 			{
@@ -49501,6 +50986,7 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 				else
 				{
+					StampNpcPersonaProfile(heroId, prof);
 					_npcPersonaProfiles[heroId] = prof;
 				}
 				InformationManager.DisplayMessage(new InformationMessage("导入完成：" + importDir));
@@ -49643,7 +51129,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				foreach (KeyValuePair<string, NpcPersonaProfile> npcPersonaProfile in _npcPersonaProfiles)
 				{
-					if (!string.IsNullOrEmpty(npcPersonaProfile.Key) && npcPersonaProfile.Value != null)
+					if (!string.IsNullOrEmpty(npcPersonaProfile.Key) && TryPrepareNpcPersonaProfileForWrite(npcPersonaProfile.Key, npcPersonaProfile.Value))
 					{
 						string path2 = Path.Combine(text2, BuildNpcDataFileName(npcPersonaProfile.Key));
 						WriteJson(path2, npcPersonaProfile.Value);
@@ -49750,14 +51236,18 @@ public class MyBehavior : CampaignBehaviorBase
 				string[] array = files;
 				foreach (string text in array)
 				{
-					string text2 = TryParseHeroIdFromNpcFileName(text);
-					if (!string.IsNullOrEmpty(text2))
+					if (TryResolveNpcDataFileHeroIdForImport(text, out var text2, out var warning))
 					{
 						NpcPersonaProfile npcPersonaProfile = ReadJson<NpcPersonaProfile>(text);
 						if (npcPersonaProfile != null)
 						{
+							StampNpcPersonaProfile(text2, npcPersonaProfile);
 							pbNew[text2] = npcPersonaProfile;
 						}
+					}
+					else
+					{
+						Logger.Log("NpcPersona", "[WARN] Skipped persona import file " + Path.GetFileName(text) + ": " + warning);
 					}
 				}
 				num2 = pbNew.Count;
@@ -49963,7 +51453,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				foreach (KeyValuePair<string, NpcPersonaProfile> npcPersonaProfile in _npcPersonaProfiles)
 				{
-					if (!string.IsNullOrEmpty(npcPersonaProfile.Key) && npcPersonaProfile.Value != null)
+					if (!string.IsNullOrEmpty(npcPersonaProfile.Key) && TryPrepareNpcPersonaProfileForWrite(npcPersonaProfile.Key, npcPersonaProfile.Value))
 					{
 						string path2 = Path.Combine(text2, BuildNpcDataFileName(npcPersonaProfile.Key));
 						WriteJson(path2, npcPersonaProfile.Value);
@@ -50063,7 +51553,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				foreach (KeyValuePair<string, NpcPersonaProfile> npcPersonaProfile in _npcPersonaProfiles)
 				{
-					if (!string.IsNullOrEmpty(npcPersonaProfile.Key) && npcPersonaProfile.Value != null)
+					if (!string.IsNullOrEmpty(npcPersonaProfile.Key) && TryPrepareNpcPersonaProfileForWrite(npcPersonaProfile.Key, npcPersonaProfile.Value))
 					{
 						string path2 = Path.Combine(text2, BuildNpcDataFileName(npcPersonaProfile.Key));
 						WriteJson(path2, npcPersonaProfile.Value);
@@ -51532,14 +53022,18 @@ public class MyBehavior : CampaignBehaviorBase
 			string[] array = files;
 			foreach (string text in array)
 			{
-				string text2 = TryParseHeroIdFromNpcFileName(text);
-				if (!string.IsNullOrEmpty(text2))
+				if (TryResolveNpcDataFileHeroIdForImport(text, out var text2, out var warning))
 				{
 					NpcPersonaProfile npcPersonaProfile = ReadJson<NpcPersonaProfile>(text);
 					if (npcPersonaProfile != null)
 					{
+						StampNpcPersonaProfile(text2, npcPersonaProfile);
 						dict[text2] = npcPersonaProfile;
 					}
+				}
+				else
+				{
+					Logger.Log("NpcPersona", "[WARN] Skipped persona import file " + Path.GetFileName(text) + ": " + warning);
 				}
 			}
 			int num = 0;
@@ -52174,14 +53668,18 @@ public class MyBehavior : CampaignBehaviorBase
 				string[] array = files;
 				foreach (string text in array)
 				{
-					string text2 = TryParseHeroIdFromNpcFileName(text);
-					if (!string.IsNullOrEmpty(text2))
+					if (TryResolveNpcDataFileHeroIdForImport(text, out var text2, out var warning))
 					{
 						NpcPersonaProfile npcPersonaProfile = ReadJson<NpcPersonaProfile>(text);
 						if (npcPersonaProfile != null)
 						{
+							StampNpcPersonaProfile(text2, npcPersonaProfile);
 							pbNew[text2] = npcPersonaProfile;
 						}
+					}
+					else
+					{
+						Logger.Log("NpcPersona", "[WARN] Skipped persona import file " + Path.GetFileName(text) + ": " + warning);
 					}
 				}
 				num2 = pbNew.Count;
@@ -52965,14 +54463,24 @@ public class MyBehavior : CampaignBehaviorBase
 				return null;
 			}
 			string result = null;
+			string nameMatchedResult = null;
 			DateTime dateTime = DateTime.MinValue;
+			DateTime nameMatchedDateTime = DateTime.MinValue;
+			Hero targetHero = ResolveHeroByIdForNpcData(text);
 			string[] files = Directory.GetFiles(dir, "*.json");
 			string[] array = files;
 			foreach (string text2 in array)
 			{
-				string text3 = TryParseHeroIdFromNpcFileName(text2);
+				if (!TryParseNpcFileNameParts(text2, out var text3, out var fileDisplayName))
+				{
+					continue;
+				}
 				if (!(text3 != text))
 				{
+					if (targetHero != null && !IsNpcFileDisplayNameCompatibleWithHero(fileDisplayName, targetHero, IsAutoGeneratedNpcHeroId(text)))
+					{
+						continue;
+					}
 					DateTime lastWriteTimeUtc = File.GetLastWriteTimeUtc(text2);
 					if (lastWriteTimeUtc > dateTime)
 					{
@@ -52980,13 +54488,241 @@ public class MyBehavior : CampaignBehaviorBase
 						dateTime = lastWriteTimeUtc;
 					}
 				}
+				else if (targetHero != null && IsNpcFileDisplayNameSpecified(fileDisplayName) && IsNpcFileDisplayNameCompatibleWithHero(fileDisplayName, targetHero, strictWhenNameMissing: true))
+				{
+					DateTime lastWriteTimeUtc2 = File.GetLastWriteTimeUtc(text2);
+					if (lastWriteTimeUtc2 > nameMatchedDateTime)
+					{
+						nameMatchedResult = text2;
+						nameMatchedDateTime = lastWriteTimeUtc2;
+					}
+				}
 			}
-			return result;
+			return result ?? nameMatchedResult;
 		}
 		catch
 		{
 			return null;
 		}
+	}
+
+	private static Hero ResolveHeroByIdForNpcData(string heroId)
+	{
+		string text = (heroId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return null;
+		}
+		try
+		{
+			return Hero.Find(text) ?? Hero.FindFirst((Hero x) => x != null && string.Equals((x.StringId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase));
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static bool IsAutoGeneratedNpcHeroId(string heroId)
+	{
+		string text = (heroId ?? "").Trim();
+		return text.StartsWith("CharacterObject_", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool TryParseNpcFileNameParts(string filePath, out string heroId, out string displayName)
+	{
+		heroId = "";
+		displayName = "";
+		try
+		{
+			string text = Path.GetFileNameWithoutExtension(filePath) ?? "";
+			int num = text.IndexOf("__", StringComparison.Ordinal);
+			if (num <= 0)
+			{
+				return false;
+			}
+			heroId = (text.Substring(0, num) ?? "").Trim();
+			displayName = ((num + 2 < text.Length) ? text.Substring(num + 2) : "").Trim();
+			return !string.IsNullOrEmpty(heroId);
+		}
+		catch
+		{
+			heroId = "";
+			displayName = "";
+			return false;
+		}
+	}
+
+	private static string NormalizeNpcFileDisplayName(string value)
+	{
+		string text = (value ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		try
+		{
+			foreach (char oldChar in Path.GetInvalidFileNameChars())
+			{
+				text = text.Replace(oldChar, '_');
+			}
+		}
+		catch
+		{
+		}
+		while (text.Contains("  "))
+		{
+			text = text.Replace("  ", " ");
+		}
+		return text.Trim();
+	}
+
+	private static bool IsNpcFileDisplayNameSpecified(string displayName)
+	{
+		string text = NormalizeNpcFileDisplayName(displayName);
+		return !string.IsNullOrWhiteSpace(text)
+			&& !string.Equals(text, "NPC", StringComparison.OrdinalIgnoreCase)
+			&& !string.Equals(text, "unknown", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool IsNpcFileDisplayNameCompatibleWithHero(string fileDisplayName, Hero hero, bool strictWhenNameMissing)
+	{
+		if (hero == null)
+		{
+			return !strictWhenNameMissing;
+		}
+		if (!IsNpcFileDisplayNameSpecified(fileDisplayName))
+		{
+			return !strictWhenNameMissing;
+		}
+		string text = NormalizeNpcFileDisplayName(fileDisplayName);
+		string text2 = NormalizeNpcFileDisplayName(hero.Name?.ToString() ?? "");
+		return !string.IsNullOrWhiteSpace(text2) && string.Equals(text, text2, StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static Hero ResolveUniqueHeroByNpcFileDisplayName(string fileDisplayName)
+	{
+		if (!IsNpcFileDisplayNameSpecified(fileDisplayName))
+		{
+			return null;
+		}
+		string text = NormalizeNpcFileDisplayName(fileDisplayName);
+		try
+		{
+			List<Hero> list = ((IEnumerable<Hero>)Hero.AllAliveHeroes ?? Enumerable.Empty<Hero>())
+				.Where((Hero x) => x != null && string.Equals(NormalizeNpcFileDisplayName(x.Name?.ToString() ?? ""), text, StringComparison.OrdinalIgnoreCase))
+				.Take(2)
+				.ToList();
+			return list.Count == 1 ? list[0] : null;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static bool TryResolveNpcDataFileHeroIdForImport(string filePath, out string resolvedHeroId, out string warning)
+	{
+		resolvedHeroId = "";
+		warning = "";
+		if (!TryParseNpcFileNameParts(filePath, out var parsedHeroId, out var fileDisplayName))
+		{
+			warning = "文件名缺少 heroId__名字 格式。";
+			return false;
+		}
+		Hero currentHeroById = ResolveHeroByIdForNpcData(parsedHeroId);
+		bool autoGeneratedId = IsAutoGeneratedNpcHeroId(parsedHeroId);
+		if (currentHeroById != null && IsNpcFileDisplayNameCompatibleWithHero(fileDisplayName, currentHeroById, autoGeneratedId))
+		{
+			resolvedHeroId = (currentHeroById.StringId ?? parsedHeroId).Trim();
+			return !string.IsNullOrWhiteSpace(resolvedHeroId);
+		}
+		Hero currentHeroByName = ResolveUniqueHeroByNpcFileDisplayName(fileDisplayName);
+		if (currentHeroByName != null)
+		{
+			resolvedHeroId = (currentHeroByName.StringId ?? "").Trim();
+			if (!string.Equals(resolvedHeroId, parsedHeroId, StringComparison.OrdinalIgnoreCase))
+			{
+				Logger.Log("NpcPersona", "[INFO] Remapped NPC data file by unique name: file=" + Path.GetFileName(filePath) + " oldId=" + parsedHeroId + " newId=" + resolvedHeroId + " name=" + (currentHeroByName.Name?.ToString() ?? ""));
+			}
+			return !string.IsNullOrWhiteSpace(resolvedHeroId);
+		}
+		if (currentHeroById != null)
+		{
+			warning = "文件名人物名“" + NormalizeNpcFileDisplayName(fileDisplayName) + "”与当前同 ID 人物“" + (currentHeroById.Name?.ToString() ?? "") + "”不一致。";
+			return false;
+		}
+		if (autoGeneratedId)
+		{
+			warning = "自动编号 " + parsedHeroId + " 在当前存档中不可可靠匹配，且文件名人物名不能唯一匹配。";
+			return false;
+		}
+		resolvedHeroId = parsedHeroId;
+		return true;
+	}
+
+	private static void StampNpcPersonaProfile(string heroId, NpcPersonaProfile profile)
+	{
+		if (profile == null)
+		{
+			return;
+		}
+		string text = (heroId ?? "").Trim();
+		profile.HeroId = text;
+		try
+		{
+			profile.HeroName = ResolveHeroByIdForNpcData(text)?.Name?.ToString() ?? "";
+		}
+		catch
+		{
+			profile.HeroName = "";
+		}
+	}
+
+	private static bool TryPrepareNpcPersonaProfileForWrite(string heroId, NpcPersonaProfile profile)
+	{
+		if (string.IsNullOrWhiteSpace(heroId) || profile == null)
+		{
+			return false;
+		}
+		Hero hero = ResolveHeroByIdForNpcData(heroId);
+		if (IsNpcPersonaProfileIdentityMismatch(hero, profile))
+		{
+			Logger.Log("NpcPersona", "[WARN] Skipped mismatched persona profile for export/save: heroId=" + heroId + " heroName=" + (hero?.Name?.ToString() ?? ""));
+			return false;
+		}
+		StampNpcPersonaProfile(heroId, profile);
+		return true;
+	}
+
+	private static bool IsNpcPersonaProfileIdentityMismatch(Hero hero, NpcPersonaProfile profile)
+	{
+		if (hero == null || profile == null)
+		{
+			return false;
+		}
+		string currentId = (hero.StringId ?? "").Trim();
+		string profileId = (profile.HeroId ?? "").Trim();
+		bool currentIdIsAutoGenerated = IsAutoGeneratedNpcHeroId(currentId);
+		if (!string.IsNullOrWhiteSpace(profileId) && !string.IsNullOrWhiteSpace(currentId) && !string.Equals(profileId, currentId, StringComparison.OrdinalIgnoreCase))
+		{
+			return true;
+		}
+		if (currentIdIsAutoGenerated && string.IsNullOrWhiteSpace(profileId) && string.IsNullOrWhiteSpace(profile.HeroName)
+			&& (!string.IsNullOrWhiteSpace(profile.Personality) || !string.IsNullOrWhiteSpace(profile.Background)))
+		{
+			return true;
+		}
+		string profileName = NormalizeNpcFileDisplayName(profile.HeroName);
+		if (currentIdIsAutoGenerated && IsNpcFileDisplayNameSpecified(profileName))
+		{
+			string currentName = NormalizeNpcFileDisplayName(hero.Name?.ToString() ?? "");
+			if (!string.IsNullOrWhiteSpace(currentName) && !string.Equals(profileName, currentName, StringComparison.OrdinalIgnoreCase))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static string BuildNpcDataFileName(string heroId)
@@ -53019,22 +54755,7 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private static string TryParseHeroIdFromNpcFileName(string filePath)
 	{
-		try
-		{
-			string text = Path.GetFileNameWithoutExtension(filePath) ?? "";
-			int num = text.IndexOf("__", StringComparison.Ordinal);
-			if (num <= 0)
-			{
-				return null;
-			}
-			string text2 = text.Substring(0, num);
-			text2 = (text2 ?? "").Trim();
-			return string.IsNullOrEmpty(text2) ? null : text2;
-		}
-		catch
-		{
-			return null;
-		}
+		return TryParseNpcFileNameParts(filePath, out var heroId, out var _) ? heroId : null;
 	}
 
 	private static string GetPlayerExportsRootPath()

@@ -608,13 +608,13 @@ public static class EncyclopediaHeroPersonaPatch
 		if (!string.IsNullOrWhiteSpace(text))
 		{
 			vm.InformationText = text;
-			if (triggerGeneration && (string.IsNullOrWhiteSpace(personality) || string.IsNullOrWhiteSpace(background)))
+			if (triggerGeneration && IsEncyclopediaPersonaAutoGenerationEnabled() && (string.IsNullOrWhiteSpace(personality) || string.IsNullOrWhiteSpace(background)))
 			{
 				RequestGeneration(hero, vm);
 			}
 			return;
 		}
-		if (!triggerGeneration)
+		if (!triggerGeneration || !IsEncyclopediaPersonaAutoGenerationEnabled())
 		{
 			return;
 		}
@@ -663,6 +663,11 @@ public static class EncyclopediaHeroPersonaPatch
 	private static bool ShouldShowCourierButton(Hero hero, EncyclopediaHeroPageVM vm)
 	{
 		return CourierDeliveryBehavior.ShouldShowCourierButtonForExternal(hero, vm?.IsInformationHidden ?? true);
+	}
+
+	private static bool IsEncyclopediaPersonaAutoGenerationEnabled()
+	{
+		return DuelSettings.IsEncyclopediaHeroPersonaAutoGenerationEnabled();
 	}
 
 	private static string BuildPersonaInformationText(string personality, string background)

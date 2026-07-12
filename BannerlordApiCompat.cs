@@ -6,6 +6,7 @@ using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.Map;
+using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
@@ -65,6 +66,63 @@ internal static class BannerlordApiCompat
 			Logger.Log("BannerlordApiCompat", "IsPlayerEncounterRestartedForRaid failed: " + ex.Message);
 			return false;
 		}
+	}
+
+	internal static bool TryOverrideMapEventSettlementForRaidToFieldBattleSwitch(MapEvent mapEvent, Settlement settlement)
+	{
+		if (mapEvent == null || settlement == null)
+		{
+			return false;
+		}
+		try
+		{
+			MethodInfo method = mapEvent.GetType().GetMethod("OverrideMapEventSettlementForRaidToFieldBattleSwitch", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, new[] { typeof(Settlement) }, null);
+			if (method != null)
+			{
+				method.Invoke(mapEvent, new object[] { settlement });
+				return true;
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("BannerlordApiCompat", "OverrideMapEventSettlementForRaidToFieldBattleSwitch failed: " + ex.Message);
+		}
+		try
+		{
+			PropertyInfo property = mapEvent.GetType().GetProperty("MapEventSettlement", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+			if (property != null)
+			{
+				property.SetValue(mapEvent, settlement);
+				return true;
+			}
+		}
+		catch (Exception ex2)
+		{
+			Logger.Log("BannerlordApiCompat", "MapEventSettlement reflection set failed: " + ex2.Message);
+		}
+		return false;
+	}
+
+	internal static bool TrySetMapEventWasEverInLootingPhase(MapEvent mapEvent, bool value)
+	{
+		if (mapEvent == null)
+		{
+			return false;
+		}
+		try
+		{
+			PropertyInfo property = mapEvent.GetType().GetProperty("WasEverInLootingPhase", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+			if (property != null && property.CanWrite)
+			{
+				property.SetValue(mapEvent, value);
+				return true;
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("BannerlordApiCompat", "WasEverInLootingPhase reflection set failed: " + ex.Message);
+		}
+		return false;
 	}
 
 	internal static float GetNeededMaximumDistanceForEncounteringMobileParty(MobileParty party)

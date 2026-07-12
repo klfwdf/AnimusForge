@@ -88,6 +88,12 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 	private sealed class PartyCommandQueueState
 	{
 		public string HeroId;
+		public string ActorKey;
+		public string ActorName;
+		public string PartyStringId;
+		public int PartyIndex = -1;
+		public string NonHeroMemoryId;
+		public string NonHeroMemoryName;
 		public List<PartyCommandEntry> Commands = new List<PartyCommandEntry>();
 		public int CurrentIndex;
 		public string Stage = CommandStage.New.ToString();
@@ -170,12 +176,17 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				try
 				{
 					PartyCommandQueueState state = JsonConvert.DeserializeObject<PartyCommandQueueState>(pair.Value ?? "");
-					if (state == null || string.IsNullOrWhiteSpace(state.HeroId) || state.Commands == null || state.Commands.Count == 0)
+					if (state == null || state.Commands == null || state.Commands.Count == 0)
 					{
 						continue;
 					}
 					NormalizeState(state);
-					_queues[state.HeroId] = state;
+					string queueKey = GetQueueKey(state);
+					if (string.IsNullOrWhiteSpace(queueKey))
+					{
+						continue;
+					}
+					_queues[queueKey] = state;
 				}
 				catch (Exception ex)
 				{
@@ -241,7 +252,18 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 
 	public static List<PostprocessRuleEntry> BuildRuntimePostprocessRulesForExternal(Hero targetHero)
 	{
+		return BuildRuntimePostprocessRulesForExternal(targetHero, null, -1);
+	}
+
+	public static List<PostprocessRuleEntry> BuildRuntimePostprocessRulesForExternal(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex)
+	{
 		List<PostprocessRuleEntry> rules = AIConfigHandler.GetGuardrailRulePostprocessRules("worldmap_party_command") ?? new List<PostprocessRuleEntry>();
+		targetHero = targetHero ?? targetCharacter?.HeroObject;
+		bool nonHeroPartyFallback = targetHero == null && CanUseNonHeroPartyFallbackForExternal(targetCharacter, targetAgentIndex);
+		if (targetHero == null && !nonHeroPartyFallback)
+		{
+			return new List<PostprocessRuleEntry>();
+		}
 		bool targetInPlayerParty = CanInjectCreateCompanionPartyRule(targetHero);
 		List<PostprocessRuleEntry> filtered = new List<PostprocessRuleEntry>();
 		foreach (PostprocessRuleEntry rule in rules)
@@ -250,12 +272,16 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			{
 				continue;
 			}
-			if (IsCreateCompanionPartyPostprocessRule(rule) && !targetInPlayerParty)
+			if (IsCreateCompanionPartyPostprocessRule(rule) && (!targetInPlayerParty || nonHeroPartyFallback))
 			{
 				continue;
 			}
 			if (IsMergeToPlayerPostprocessRule(rule))
 			{
+				if (nonHeroPartyFallback)
+				{
+					continue;
+				}
 				filtered.Add(ClonePostprocessRule(rule, BuildMergeToPlayerPostprocessDescription(targetInPlayerParty)));
 				continue;
 			}
@@ -304,12 +330,17 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 	{
 		if (targetInPlayerParty)
 		{
-			return "如果玩家没有主动提到无需回归队伍，那么你必须输出此标签在最下方";
+			return "你在输出了其他ACTION:WORLDMAP时，如果玩家没有主动提到无需回归队伍，那么你必须输出此标签在最下方";
 		}
 		return "Independent companion-party variant. Output this only when the NPC already leads an independent player-clan companion party and clearly agrees to move back to the player and merge that independent party into the player main party. {days} is the approach/merge timeout; use 1 if unspecified. Do not use this for ordinary lords, enemies, non-player-clan heroes, or heroes who are already in the player's party unless the player-party temporary-create-party variant applies.";
 	}
 
 	public static bool TryApplyWorldMapOrderTagsForExternal(Hero targetHero, ref string content, out List<string> generatedFacts, out List<string> notifications)
+	{
+		return TryApplyWorldMapOrderTagsForExternal(targetHero, null, -1, ref content, out generatedFacts, out notifications);
+	}
+
+	public static bool TryApplyWorldMapOrderTagsForExternal(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, ref string content, out List<string> generatedFacts, out List<string> notifications)
 	{
 		generatedFacts = new List<string>();
 		notifications = new List<string>();
@@ -347,10 +378,45 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				notifications.Add("大地图命令系统未初始化。");
 				return false;
 			}
+			targetHero = targetHero ?? targetCharacter?.HeroObject;
 			if (targetHero == null)
 			{
-				notifications.Add("大地图命令失败：当前说话对象不是可指挥的英雄。");
-				return false;
+				if (!TryResolveNonHeroPartyActorForExternal(targetCharacter, targetAgentIndex, out MobileParty nonHeroParty))
+				{
+					notifications.Add("大地图命令失败：当前非英雄说话对象没有可接管的野外部队。");
+					return false;
+				}
+				string actorName = GetActorName(null, null, nonHeroParty);
+				if (stop)
+				{
+					behavior.StopQueueForParty(nonHeroParty, "tag_stop", out string stopFact);
+					if (!string.IsNullOrWhiteSpace(stopFact))
+					{
+						generatedFacts.Add(stopFact);
+					}
+					notifications.Add(actorName + "已停止当前大地图命令。");
+					return true;
+				}
+				List<PartyCommandEntry> nonHeroCommands = commands.Where(IsExecutableNonHeroPartyCommand).Select(CloneCommand).ToList();
+				if (nonHeroCommands.Count == 0)
+				{
+					notifications.Add("大地图命令失败：当前非英雄部队只能执行移动、巡逻、跟随、攻击等队伍级命令。");
+					return false;
+				}
+				if (!behavior.TryReplaceQueueForParty(nonHeroParty, nonHeroCommands, out string nonHeroFact, out string nonHeroMessage))
+				{
+					if (!string.IsNullOrWhiteSpace(nonHeroMessage))
+					{
+						notifications.Add(nonHeroMessage);
+					}
+					return false;
+				}
+				if (!string.IsNullOrWhiteSpace(nonHeroFact))
+				{
+					generatedFacts.Add(nonHeroFact);
+				}
+				notifications.Add(nonHeroMessage);
+				return true;
 			}
 			if (stop)
 			{
@@ -403,15 +469,32 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 
 	public static void ProcessWorldMapOrderTagsDispatch(Hero targetHero, ref string content)
 	{
-		if (!TryApplyWorldMapOrderTagsForExternal(targetHero, ref content, out List<string> facts, out List<string> notifications))
+		ProcessWorldMapOrderTagsDispatch(targetHero, null, -1, ref content);
+	}
+
+	public static void ProcessWorldMapOrderTagsDispatch(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, ref string content)
+	{
+		if (!TryApplyWorldMapOrderTagsForExternal(targetHero, targetCharacter, targetAgentIndex, ref content, out List<string> facts, out List<string> notifications))
 		{
 			return;
 		}
+		targetHero = targetHero ?? targetCharacter?.HeroObject;
 		foreach (string fact in facts ?? new List<string>())
 		{
 			if (!string.IsNullOrWhiteSpace(fact))
 			{
-				MyBehavior.AppendExternalDialogueHistory(targetHero, null, null, fact);
+				if (targetHero != null)
+				{
+					MyBehavior.AppendExternalDialogueHistory(targetHero, null, null, fact);
+				}
+				else if (TryResolveNonHeroPartyActorForExternal(targetCharacter, targetAgentIndex, out MobileParty party))
+				{
+					string memoryId = BuildPartyMemoryId(party);
+					if (!string.IsNullOrWhiteSpace(memoryId))
+					{
+						MyBehavior.AppendExternalNonHeroDialogueHistory(memoryId, GetPartyName(party), null, null, fact);
+					}
+				}
 			}
 		}
 		foreach (string notification in notifications ?? new List<string>())
@@ -534,6 +617,10 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		PartyCommandQueueState state = new PartyCommandQueueState
 		{
 			HeroId = hero.StringId,
+			ActorKey = hero.StringId,
+			ActorName = GetHeroName(hero),
+			PartyStringId = party?.StringId,
+			PartyIndex = GetPartyIndexSafe(party),
 			Commands = safeCommands,
 			CurrentIndex = 0,
 			Stage = CommandStage.New.ToString(),
@@ -548,6 +635,61 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		string conversionMessage = hostileGoToConvertedCount > 0 ? "，敌对定居点按AI攻击" : "";
 		fact = "[AFEF NPC行为补充] " + GetHeroName(hero) + "接受了玩家的大地图命令队列，共" + safeCommands.Count + "道命令" + conversionFact + "。";
 		message = GetHeroName(hero) + "已接受大地图命令队列（" + safeCommands.Count + "道" + conversionMessage + "）。";
+		return true;
+	}
+
+	private bool TryReplaceQueueForParty(MobileParty party, List<PartyCommandEntry> commands, out string fact, out string message)
+	{
+		fact = "";
+		message = "";
+		if (!IsValidNonHeroPartyFallbackParty(party))
+		{
+			message = "大地图命令失败：当前非英雄说话对象没有可接管的野外部队。";
+			return false;
+		}
+		string actorKey = BuildPartyActorKey(party, createGuid: true);
+		if (string.IsNullOrWhiteSpace(actorKey))
+		{
+			message = "大地图命令失败：无法为当前非英雄部队建立稳定队列目标。";
+			return false;
+		}
+		List<PartyCommandEntry> safeCommands = (commands ?? new List<PartyCommandEntry>()).Where(IsExecutableNonHeroPartyCommand).Select(CloneCommand).ToList();
+		if (safeCommands.Count == 0)
+		{
+			message = "大地图命令失败：当前非英雄部队没有可执行的队伍级命令。";
+			return false;
+		}
+		int hostileGoToConvertedCount = 0;
+		if (ShouldConvertHostileGoToSettlementCommands(""))
+		{
+			safeCommands = ConvertHostileGoToSettlementCommandsToAttacks(null, party, safeCommands, out hostileGoToConvertedCount);
+		}
+		LeaveArmyIfNeeded(party);
+		ReleasePartyAi(party);
+		string actorName = GetPartyName(party);
+		PartyCommandQueueState state = new PartyCommandQueueState
+		{
+			HeroId = "",
+			ActorKey = actorKey,
+			ActorName = actorName,
+			PartyStringId = party?.StringId,
+			PartyIndex = GetPartyIndexSafe(party),
+			NonHeroMemoryId = BuildPartyMemoryId(party),
+			NonHeroMemoryName = actorName,
+			Commands = safeCommands,
+			CurrentIndex = 0,
+			Stage = CommandStage.New.ToString(),
+			SourceId = ""
+		};
+		lock (_queueLock)
+		{
+			_queues[actorKey] = state;
+		}
+		StartCurrentCommand(null, party, state);
+		string conversionFact = hostileGoToConvertedCount > 0 ? ("，其中" + hostileGoToConvertedCount + "道敌对定居点前往命令已按AI攻击处理") : "";
+		string conversionMessage = hostileGoToConvertedCount > 0 ? "，敌对定居点按AI攻击" : "";
+		fact = "[AFEF NPC行为补充] " + actorName + "作为当前野外部队的代表接受了玩家的大地图命令队列，共" + safeCommands.Count + "道命令" + conversionFact + "。";
+		message = actorName + "已接受大地图命令队列（" + safeCommands.Count + "道" + conversionMessage + "）。";
 		return true;
 	}
 
@@ -577,22 +719,69 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		Log("stop hero=" + hero.StringId + " reason=" + reason);
 	}
 
+	private void StopQueueForParty(MobileParty party, string reason, out string fact)
+	{
+		fact = "";
+		if (!IsValidNonHeroPartyFallbackParty(party))
+		{
+			return;
+		}
+		string actorKey = BuildPartyActorKey(party, createGuid: false);
+		if (string.IsNullOrWhiteSpace(actorKey))
+		{
+			actorKey = BuildPartyActorKey(party, createGuid: true);
+		}
+		PartyCommandQueueState state = null;
+		lock (_queueLock)
+		{
+			if (!string.IsNullOrWhiteSpace(actorKey))
+			{
+				_queues.TryGetValue(actorKey, out state);
+			}
+		}
+		AbortCurrentCommandIfNeeded(party, state);
+		ReleasePartyAi(party);
+		lock (_queueLock)
+		{
+			if (!string.IsNullOrWhiteSpace(actorKey))
+			{
+				_queues.Remove(actorKey);
+			}
+		}
+		string actorName = GetActorName(state, null, party);
+		fact = "[AFEF NPC行为补充] " + actorName + "停止了当前大地图命令，回归原版行动状态。";
+		Log("stop party_actor=" + actorKey + " reason=" + reason);
+	}
+
 	private void OnHourlyTickParty(MobileParty party)
 	{
 		try
 		{
 			Hero hero = party?.LeaderHero;
-			if (hero == null || string.IsNullOrWhiteSpace(hero.StringId))
-			{
-				return;
-			}
 			PartyCommandQueueState state;
 			lock (_queueLock)
 			{
-				if (!_queues.TryGetValue(hero.StringId, out state) || state == null)
+				state = null;
+				if (hero != null && !string.IsNullOrWhiteSpace(hero.StringId))
+				{
+					_queues.TryGetValue(hero.StringId, out state);
+				}
+				if (state == null)
+				{
+					string partyActorKey = BuildPartyActorKey(party, createGuid: false);
+					if (!string.IsNullOrWhiteSpace(partyActorKey))
+					{
+						_queues.TryGetValue(partyActorKey, out state);
+					}
+				}
+				if (state == null)
 				{
 					return;
 				}
+			}
+			if (string.IsNullOrWhiteSpace(state.HeroId))
+			{
+				hero = null;
 			}
 			ProcessQueueTick(hero, party, state);
 		}
@@ -661,6 +850,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			string heroId = destroyedParty?.LeaderHero?.StringId;
 			string partyId = destroyedParty?.StringId;
+			string destroyedActorKey = BuildPartyActorKey(destroyedParty, createGuid: false);
 			PartyCommandQueueState actorState = null;
 			lock (_queueLock)
 			{
@@ -672,6 +862,10 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				{
 					_queues.TryGetValue(heroId, out actorState);
 				}
+				if (actorState == null && !string.IsNullOrWhiteSpace(destroyedActorKey))
+				{
+					_queues.TryGetValue(destroyedActorKey, out actorState);
+				}
 			}
 			List<PartyCommandQueueState> activeAttackStates = GetActiveAttackStatesSnapshot();
 			if (actorState == null && activeAttackStates.Count == 0)
@@ -679,7 +873,8 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				return;
 			}
 			bool handled = actorState != null;
-			if (!string.IsNullOrWhiteSpace(heroId))
+			string actorStateKey = GetQueueKey(actorState);
+			if (actorState != null)
 			{
 				if (actorState != null && IsCurrentAttackCommand(actorState))
 				{
@@ -689,13 +884,13 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				{
 					lock (_queueLock)
 					{
-						_queues.Remove(heroId);
+						_queues.Remove(actorStateKey);
 					}
 				}
 			}
 			foreach (PartyCommandQueueState state in activeAttackStates)
 			{
-				if (state == null || string.Equals(state.HeroId, heroId, StringComparison.OrdinalIgnoreCase))
+				if (state == null || string.Equals(GetQueueKey(state), actorStateKey, StringComparison.OrdinalIgnoreCase))
 				{
 					continue;
 				}
@@ -706,13 +901,13 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				}
 				if (IsKind(command, CommandKind.AttackHero) && !IsSettlementTarget(command) && !string.IsNullOrWhiteSpace(heroId) && string.Equals(command.TargetId, heroId, StringComparison.OrdinalIgnoreCase))
 				{
-					bool actorDestroyedTarget = PartyBaseMatchesHero(destroyerParty, state.HeroId);
+					bool actorDestroyedTarget = PartyBaseMatchesActor(destroyerParty, state);
 					TryCompleteCurrentAttackResult(state, actorDestroyedTarget ? CommandResultOutcome.Success : CommandResultOutcome.Incomplete, actorDestroyedTarget ? "目标部队已被击溃。" : "目标部队已经被消灭或解散。", actorDestroyedTarget ? "target_party_destroyed_by_actor" : "target_party_destroyed");
 					continue;
 				}
 				if (IsKind(command, CommandKind.AttackParty) && !string.IsNullOrWhiteSpace(partyId) && string.Equals(command.TargetId, partyId, StringComparison.OrdinalIgnoreCase))
 				{
-					bool actorDestroyedTarget = PartyBaseMatchesHero(destroyerParty, state.HeroId) || PartyBaseMatchesFaction(destroyerParty, state.ResultActorFactionId);
+					bool actorDestroyedTarget = PartyBaseMatchesActor(destroyerParty, state) || PartyBaseMatchesFaction(destroyerParty, state.ResultActorFactionId);
 					TryCompleteCurrentAttackResult(state, actorDestroyedTarget ? CommandResultOutcome.Success : CommandResultOutcome.Incomplete, actorDestroyedTarget ? "目标部队已被击溃。" : "目标部队已经被消灭或解散。", actorDestroyedTarget ? "target_mobile_party_destroyed_by_actor" : "target_mobile_party_destroyed");
 				}
 			}
@@ -746,7 +941,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
-				BattleSideEnum actorSide = GetHeroSideInMapEvent(mapEvent, state.HeroId);
+				BattleSideEnum actorSide = GetActorSideInMapEvent(mapEvent, state);
 				BattleSideEnum targetSide = IsKind(command, CommandKind.AttackParty) ? GetPartySideInMapEvent(mapEvent, command.TargetId) : GetHeroSideInMapEvent(mapEvent, command.TargetId);
 				if (actorSide == BattleSideEnum.None || targetSide == BattleSideEnum.None || actorSide == targetSide)
 				{
@@ -789,7 +984,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
-				if (string.Equals(prisonerId, state.HeroId, StringComparison.OrdinalIgnoreCase))
+				if (!string.IsNullOrWhiteSpace(state.HeroId) && string.Equals(prisonerId, state.HeroId, StringComparison.OrdinalIgnoreCase))
 				{
 					TryCompleteCurrentAttackResult(state, CommandResultOutcome.Failure, "执行者已经被俘，攻击命令失败。", "actor_prisoner_taken");
 					continue;
@@ -798,7 +993,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
-				if (PartyBaseMatchesHero(capturer, state.HeroId) || PartyBaseMatchesFaction(capturer, state.ResultActorFactionId))
+				if (PartyBaseMatchesActor(capturer, state) || PartyBaseMatchesFaction(capturer, state.ResultActorFactionId))
 				{
 					TryCompleteCurrentAttackResult(state, CommandResultOutcome.Success, GetStoredTargetName(state, command) + "已被俘，目标部队被击败。", "target_prisoner_taken");
 				}
@@ -826,7 +1021,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
-				if (!PartyMatchesHero(party, state.HeroId) && !PartyMatchesFaction(party, state.ResultActorFactionId))
+				if (!PartyMatchesActor(party, state) && !PartyMatchesFaction(party, state.ResultActorFactionId))
 				{
 					continue;
 				}
@@ -856,7 +1051,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 					continue;
 				}
 				bool actorFactionCaptured = string.Equals(SafeFactionId(newOwner?.MapFaction), state.ResultActorFactionId, StringComparison.OrdinalIgnoreCase) || string.Equals(SafeFactionId(settlement.MapFaction), state.ResultActorFactionId, StringComparison.OrdinalIgnoreCase);
-				bool actorCaptured = string.Equals(capturerHero?.StringId, state.HeroId, StringComparison.OrdinalIgnoreCase);
+				bool actorCaptured = !string.IsNullOrWhiteSpace(state.HeroId) && string.Equals(capturerHero?.StringId, state.HeroId, StringComparison.OrdinalIgnoreCase);
 				if (actorFactionCaptured || actorCaptured)
 				{
 					TryCompleteCurrentAttackResult(state, CommandResultOutcome.Success, GetSettlementName(settlement) + "已经被攻下并易主。", "settlement_owner_changed_success");
@@ -885,7 +1080,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
-				if (!MapEventSideHasHero(raidEvent.AttackerSide, state.HeroId))
+				if (!MapEventSideHasActor(raidEvent.AttackerSide, state))
 				{
 					continue;
 				}
@@ -919,7 +1114,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
-				if (!PartyMatchesHero(raiderParty, state.HeroId) && !PartyMatchesFaction(raiderParty, state.ResultActorFactionId))
+				if (!PartyMatchesActor(raiderParty, state) && !PartyMatchesFaction(raiderParty, state.ResultActorFactionId))
 				{
 					continue;
 				}
@@ -935,7 +1130,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 	private void ProcessQueueTick(Hero hero, MobileParty party, PartyCommandQueueState state)
 	{
 		NormalizeState(state);
-		if (!ValidateActor(hero, party, out string reason))
+		if (!ValidateActor(state, hero, party, out string reason))
 		{
 			if (IsCurrentAttackCommand(state))
 			{
@@ -976,7 +1171,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 					TryCompleteCurrentAttackResult(state, CommandResultOutcome.Incomplete, BuildAttackTimeoutDetail(command, state), "timeout");
 					return;
 				}
-				LogFact(state, hero, BuildCommandTimeoutFact(hero, command));
+				LogFact(state, hero, BuildCommandTimeoutFact(state, hero, command));
 				AdvanceCommand(hero, party, state, "timeout");
 				return;
 			}
@@ -1058,9 +1253,9 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			state.LastIssuedActionKey = "visit:" + settlement.StringId;
 			if (!ShouldSuppressCommandMessages(state))
 			{
-				DisplayCommandMessage(BuildGoToSettlementStartMessage(hero, settlement, command), CommandMessageTone.Progress);
+				DisplayCommandMessage(BuildGoToSettlementStartMessage(state, hero, party, settlement, command), CommandMessageTone.Progress);
 			}
-			Log("start go hero=" + hero.StringId + " settlement=" + settlement.StringId + " days=" + command.Days);
+			Log("start go actor=" + GetActorLogId(state, hero, party) + " settlement=" + settlement.StringId + " days=" + command.Days);
 			return;
 		}
 		if (IsKind(command, CommandKind.PatrolSettlement))
@@ -1076,8 +1271,8 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			SynchronizeArmyObjectiveForCommand(party, command);
 			state.Stage = CommandStage.Traveling.ToString();
 			state.LastIssuedActionKey = "patrol:" + settlement.StringId;
-			DisplayCommandMessage(GetHeroName(hero) + "开始前往" + GetSettlementName(settlement) + "附近，抵达后巡逻" + Math.Max(1, command.Days) + "天。", CommandMessageTone.Progress);
-			Log("start patrol hero=" + hero.StringId + " settlement=" + settlement.StringId + " days=" + command.Days);
+			DisplayCommandMessage(GetActorName(state, hero, party) + "开始前往" + GetSettlementName(settlement) + "附近，抵达后巡逻" + Math.Max(1, command.Days) + "天。", CommandMessageTone.Progress);
+			Log("start patrol actor=" + GetActorLogId(state, hero, party) + " settlement=" + settlement.StringId + " days=" + command.Days);
 			return;
 		}
 		if (IsKind(command, CommandKind.FollowHero))
@@ -1093,8 +1288,8 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			SetPartyAiAction.GetActionForEscortingParty(party, targetParty, MobileParty.NavigationType.Default, isFromPort: false, isTargetingPort: false);
 			state.Stage = CommandStage.Traveling.ToString();
 			state.LastIssuedActionKey = "escort:" + command.TargetId;
-			DisplayCommandMessage(GetHeroName(hero) + "开始前往并跟随" + GetHeroName(ResolveHeroById(command.TargetId)) + "，持续" + Math.Max(1, command.Days) + "天。", CommandMessageTone.Progress);
-			Log("start follow hero=" + hero.StringId + " target=" + command.TargetId + " days=" + command.Days);
+			DisplayCommandMessage(GetActorName(state, hero, party) + "开始前往并跟随" + GetHeroName(ResolveHeroById(command.TargetId)) + "，持续" + Math.Max(1, command.Days) + "天。", CommandMessageTone.Progress);
+			Log("start follow actor=" + GetActorLogId(state, hero, party) + " target=" + command.TargetId + " days=" + command.Days);
 			return;
 		}
 		if (IsKind(command, CommandKind.FollowParty))
@@ -1110,8 +1305,8 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			SetPartyAiAction.GetActionForEscortingParty(party, targetParty, MobileParty.NavigationType.Default, isFromPort: false, isTargetingPort: false);
 			state.Stage = CommandStage.Traveling.ToString();
 			state.LastIssuedActionKey = "escort_party:" + command.TargetId;
-			DisplayCommandMessage(GetHeroName(hero) + "开始前往并跟随" + GetPartyName(targetParty) + "，持续" + Math.Max(1, command.Days) + "天。", CommandMessageTone.Progress);
-			Log("start follow_party hero=" + hero.StringId + " targetParty=" + command.TargetId + " days=" + command.Days);
+			DisplayCommandMessage(GetActorName(state, hero, party) + "开始前往并跟随" + GetPartyName(targetParty) + "，持续" + Math.Max(1, command.Days) + "天。", CommandMessageTone.Progress);
+			Log("start follow_party actor=" + GetActorLogId(state, hero, party) + " targetParty=" + command.TargetId + " days=" + command.Days);
 			return;
 		}
 		if (IsKind(command, CommandKind.AttackHero))
@@ -1130,7 +1325,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				{
 					SynchronizeArmyObjectiveForCommand(party, command);
 					CommitSettlementAttack(hero, party, settlement, state, settlementAttackMode);
-					Log("start settlement_attack_vanilla hero=" + hero.StringId + " settlement=" + settlement.StringId + " mode=" + settlementAttackMode + " untilDay=" + state.TimeoutDay.ToString("0.00"));
+					Log("start settlement_attack_vanilla actor=" + GetActorLogId(state, hero, party) + " settlement=" + settlement.StringId + " mode=" + settlementAttackMode + " untilDay=" + state.TimeoutDay.ToString("0.00"));
 					return;
 				}
 				LockPartyAi(party);
@@ -1138,8 +1333,8 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				MoveTowardSettlementAttackPoint(party, settlement);
 				state.Stage = CommandStage.Tracking.ToString();
 				state.LastIssuedActionKey = "track_settlement_attack:" + settlement.StringId;
-				DisplayCommandMessage(GetHeroName(hero) + "开始向" + GetSettlementName(settlement) + "机动，准备" + (settlement.IsVillage ? "烧掠" : "围攻") + "，时限" + Math.Max(1, command.Days) + "天（" + NormalizeAttackMode(command.Mode) + "）。", CommandMessageTone.Progress);
-				Log("start settlement_attack_track hero=" + hero.StringId + " settlement=" + settlement.StringId + " mode=" + command.Mode + " untilDay=" + state.TimeoutDay.ToString("0.00"));
+				DisplayCommandMessage(GetActorName(state, hero, party) + "开始向" + GetSettlementName(settlement) + "机动，准备" + (settlement.IsVillage ? "烧掠" : "围攻") + "，时限" + Math.Max(1, command.Days) + "天（" + NormalizeAttackMode(command.Mode) + "）。", CommandMessageTone.Progress);
+				Log("start settlement_attack_track actor=" + GetActorLogId(state, hero, party) + " settlement=" + settlement.StringId + " mode=" + command.Mode + " untilDay=" + state.TimeoutDay.ToString("0.00"));
 				return;
 			}
 			MobileParty targetParty = ResolveTargetHeroParty(command.TargetId);
@@ -1151,9 +1346,9 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				{
 					state.Stage = CommandStage.Tracking.ToString();
 					state.TimeoutDay = state.CommandStartDay + Math.Max(1, command.Days);
-					DisplayCommandMessage(GetHeroName(hero) + "开始前往" + GetSettlementName(shelter) + "外侧，等待" + GetHeroName(targetHero) + "离开定居点以执行攻击命令。", CommandMessageTone.Progress);
+					DisplayCommandMessage(GetActorName(state, hero, party) + "开始前往" + GetSettlementName(shelter) + "外侧，等待" + GetHeroName(targetHero) + "离开定居点以执行攻击命令。", CommandMessageTone.Progress);
 					MaintainAttackShelterWaiting(hero, party, targetHero, shelter, state, command, "start_target_inside_settlement_without_party");
-					Log("start attack_shelter_wait hero=" + hero.StringId + " target=" + command.TargetId + " settlement=" + shelter.StringId + " mode=" + command.Mode + " untilDay=" + state.TimeoutDay.ToString("0.00"));
+					Log("start attack_shelter_wait actor=" + GetActorLogId(state, hero, party) + " target=" + command.TargetId + " settlement=" + shelter.StringId + " mode=" + command.Mode + " untilDay=" + state.TimeoutDay.ToString("0.00"));
 					return;
 				}
 				AdvanceCommand(hero, party, state, "attack_target_missing");
@@ -1164,9 +1359,9 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			{
 				state.Stage = CommandStage.Tracking.ToString();
 				state.TimeoutDay = state.CommandStartDay + Math.Max(1, command.Days);
-				DisplayCommandMessage(GetHeroName(hero) + "开始前往" + GetSettlementName(targetShelter) + "外侧，等待" + GetHeroName(ResolveHeroById(command.TargetId)) + "离开定居点以执行攻击命令。", CommandMessageTone.Progress);
+				DisplayCommandMessage(GetActorName(state, hero, party) + "开始前往" + GetSettlementName(targetShelter) + "外侧，等待" + GetHeroName(ResolveHeroById(command.TargetId)) + "离开定居点以执行攻击命令。", CommandMessageTone.Progress);
 				MaintainAttackShelterWaiting(hero, party, ResolveHeroById(command.TargetId), targetShelter, state, command, "start_target_inside_settlement");
-				Log("start attack_shelter_wait hero=" + hero.StringId + " target=" + command.TargetId + " settlement=" + targetShelter.StringId + " mode=" + command.Mode + " untilDay=" + state.TimeoutDay.ToString("0.00"));
+				Log("start attack_shelter_wait actor=" + GetActorLogId(state, hero, party) + " target=" + command.TargetId + " settlement=" + targetShelter.StringId + " mode=" + command.Mode + " untilDay=" + state.TimeoutDay.ToString("0.00"));
 				return;
 			}
 			LockPartyAi(party);
@@ -1175,8 +1370,8 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			state.Stage = CommandStage.Tracking.ToString();
 			state.TimeoutDay = state.CommandStartDay + Math.Max(1, command.Days);
 			state.LastIssuedActionKey = "track_attack:" + command.TargetId;
-			DisplayCommandMessage(GetHeroName(hero) + "开始追踪" + GetHeroName(ResolveHeroById(command.TargetId)) + "的部队，准备攻击，时限" + Math.Max(1, command.Days) + "天（" + NormalizeAttackMode(command.Mode) + "）。", CommandMessageTone.Progress);
-			Log("start attack_track hero=" + hero.StringId + " target=" + command.TargetId + " mode=" + command.Mode + " untilDay=" + state.TimeoutDay.ToString("0.00"));
+			DisplayCommandMessage(GetActorName(state, hero, party) + "开始追踪" + GetHeroName(ResolveHeroById(command.TargetId)) + "的部队，准备攻击，时限" + Math.Max(1, command.Days) + "天（" + NormalizeAttackMode(command.Mode) + "）。", CommandMessageTone.Progress);
+			Log("start attack_track actor=" + GetActorLogId(state, hero, party) + " target=" + command.TargetId + " mode=" + command.Mode + " untilDay=" + state.TimeoutDay.ToString("0.00"));
 			return;
 		}
 		if (IsKind(command, CommandKind.AttackParty))
@@ -1193,8 +1388,8 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			state.Stage = CommandStage.Tracking.ToString();
 			state.TimeoutDay = state.CommandStartDay + Math.Max(1, command.Days);
 			state.LastIssuedActionKey = "track_party_attack:" + command.TargetId;
-			DisplayCommandMessage(GetHeroName(hero) + "开始追踪" + GetPartyName(targetParty) + "，准备攻击，时限" + Math.Max(1, command.Days) + "天（" + NormalizeAttackMode(command.Mode) + "）。", CommandMessageTone.Progress);
-			Log("start party_attack_track hero=" + hero.StringId + " targetParty=" + command.TargetId + " mode=" + command.Mode + " untilDay=" + state.TimeoutDay.ToString("0.00"));
+			DisplayCommandMessage(GetActorName(state, hero, party) + "开始追踪" + GetPartyName(targetParty) + "，准备攻击，时限" + Math.Max(1, command.Days) + "天（" + NormalizeAttackMode(command.Mode) + "）。", CommandMessageTone.Progress);
+			Log("start party_attack_track actor=" + GetActorLogId(state, hero, party) + " targetParty=" + command.TargetId + " mode=" + command.Mode + " untilDay=" + state.TimeoutDay.ToString("0.00"));
 			return;
 		}
 		if (IsKind(command, CommandKind.MergeToPlayer))
@@ -1205,7 +1400,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			state.Stage = CommandStage.Traveling.ToString();
 			state.LastIssuedActionKey = "merge_to_player";
 			DisplayCommandMessage(GetHeroName(hero) + "开始返回玩家部队，准备会合并转入兵力。", CommandMessageTone.Progress);
-			Log("start merge hero=" + hero.StringId);
+			Log("start merge actor=" + GetActorLogId(state, hero, party));
 			return;
 		}
 		if (IsKind(command, CommandKind.CreateCompanionParty))
@@ -1248,7 +1443,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				SynchronizeArmyObjectiveForCommand(party, command);
 				state.Stage = CommandStage.Traveling.ToString();
 				state.LastIssuedActionKey = actionKey;
-				NotifyCommandStatus(state, actionKey + ":refresh", GetHeroName(hero) + "正在前往" + GetSettlementName(settlement) + "，若原版AI打断会自动重新下达前往命令。", CommandMessageTone.Progress);
+				NotifyCommandStatus(state, actionKey + ":refresh", GetActorName(state, hero, party) + "正在前往" + GetSettlementName(settlement) + "，若原版AI打断会自动重新下达前往命令。", CommandMessageTone.Progress);
 				Log("go_refresh hero=" + (hero?.StringId ?? "") + " settlement=" + settlement.StringId + " " + DescribePartyAi(party));
 			}
 		}
@@ -1257,16 +1452,16 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			state.ArrivalDay = NowDay();
 			state.TimeoutDay = -1.0;
 			state.Stage = CommandStage.Active.ToString();
-			LogFact(state, hero, GetHeroName(hero) + "已经抵达" + GetSettlementName(settlement) + "并开始停留。");
+			LogFact(state, hero, GetActorName(state, hero, party) + "已经抵达" + GetSettlementName(settlement) + "并开始停留。");
 		}
 		if (state.ArrivalDay >= 0.0 && holdUntilDay > 0.0 && NowDay() >= holdUntilDay)
 		{
-			LogFact(state, hero, GetHeroName(hero) + "已经完成在" + GetSettlementName(settlement) + "停留至指定期限的命令。");
+			LogFact(state, hero, GetActorName(state, hero, party) + "已经完成在" + GetSettlementName(settlement) + "停留至指定期限的命令。");
 			AdvanceCommand(hero, party, state, "go_hold_until_done");
 		}
 		else if (state.ArrivalDay >= 0.0 && holdUntilDay <= 0.0 && NowDay() - state.ArrivalDay >= Math.Max(1, command.Days))
 		{
-			LogFact(state, hero, GetHeroName(hero) + "已经完成在" + GetSettlementName(settlement) + "停留" + Math.Max(1, command.Days) + "天的命令。");
+			LogFact(state, hero, GetActorName(state, hero, party) + "已经完成在" + GetSettlementName(settlement) + "停留" + Math.Max(1, command.Days) + "天的命令。");
 			AdvanceCommand(hero, party, state, "go_done");
 		}
 	}
@@ -1316,7 +1511,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			{
 				state.LastIssuedActionKey = actionKey;
 			}
-			NotifyCommandStatus(state, actionKey + ":refresh", GetHeroName(hero) + "正在" + GetSettlementName(settlement) + "附近巡逻，若原版AI打断会自动重新下达巡逻命令。", CommandMessageTone.Progress);
+			NotifyCommandStatus(state, actionKey + ":refresh", GetActorName(state, hero, party) + "正在" + GetSettlementName(settlement) + "附近巡逻，若原版AI打断会自动重新下达巡逻命令。", CommandMessageTone.Progress);
 			Log("patrol_refresh hero=" + (hero?.StringId ?? "") + " settlement=" + settlement.StringId + " " + DescribePartyAi(party));
 		}
 		if (state.ArrivalDay < 0.0 && IsPartyNearSettlementForPatrol(party, settlement, PatrolArrivalDistance))
@@ -1326,11 +1521,11 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			state.Stage = CommandStage.Active.ToString();
 			state.LastIssuedActionKey = "patrol_active:" + settlement.StringId;
 			ReleasePartyAi(party);
-			LogFact(hero, GetHeroName(hero) + "已经抵达" + GetSettlementName(settlement) + "附近并开始巡逻。");
+			LogFact(state, hero, GetActorName(state, hero, party) + "已经抵达" + GetSettlementName(settlement) + "附近并开始巡逻。");
 		}
 		if (state.ArrivalDay >= 0.0 && !isEngaging && NowDay() - state.ArrivalDay >= Math.Max(1, command.Days))
 		{
-			LogFact(hero, GetHeroName(hero) + "已经完成在" + GetSettlementName(settlement) + "附近巡逻" + Math.Max(1, command.Days) + "天的命令。");
+			LogFact(state, hero, GetActorName(state, hero, party) + "已经完成在" + GetSettlementName(settlement) + "附近巡逻" + Math.Max(1, command.Days) + "天的命令。");
 			AdvanceCommand(hero, party, state, "patrol_done");
 		}
 	}
@@ -1354,7 +1549,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			SetPartyAiAction.GetActionForEscortingParty(party, targetParty, MobileParty.NavigationType.Default, isFromPort: false, isTargetingPort: false);
 			SynchronizeArmyObjectiveForCommand(party, command);
 			state.LastIssuedActionKey = actionKey;
-			NotifyCommandStatus(state, actionKey + ":refresh", GetHeroName(hero) + "正在跟随" + GetHeroName(ResolveHeroById(command.TargetId)) + "，若原版AI打断会自动重新下达跟随命令。", CommandMessageTone.Progress);
+			NotifyCommandStatus(state, actionKey + ":refresh", GetActorName(state, hero, party) + "正在跟随" + GetHeroName(ResolveHeroById(command.TargetId)) + "，若原版AI打断会自动重新下达跟随命令。", CommandMessageTone.Progress);
 			Log("follow_refresh hero=" + (hero?.StringId ?? "") + " target=" + command.TargetId + " " + DescribePartyAi(party));
 		}
 		if (state.ArrivalDay < 0.0 && IsPartyCloseEnoughToStartFollowing(party, targetParty))
@@ -1362,11 +1557,11 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			state.ArrivalDay = NowDay();
 			state.TimeoutDay = -1.0;
 			state.Stage = CommandStage.Active.ToString();
-			LogFact(hero, GetHeroName(hero) + "已经追上并开始跟随" + GetHeroName(ResolveHeroById(command.TargetId)) + "。");
+			LogFact(state, hero, GetActorName(state, hero, party) + "已经追上并开始跟随" + GetHeroName(ResolveHeroById(command.TargetId)) + "。");
 		}
 		if (state.ArrivalDay >= 0.0 && NowDay() - state.ArrivalDay >= Math.Max(1, command.Days))
 		{
-			LogFact(hero, GetHeroName(hero) + "已经完成跟随" + GetHeroName(ResolveHeroById(command.TargetId)) + Math.Max(1, command.Days) + "天的命令。");
+			LogFact(state, hero, GetActorName(state, hero, party) + "已经完成跟随" + GetHeroName(ResolveHeroById(command.TargetId)) + Math.Max(1, command.Days) + "天的命令。");
 			AdvanceCommand(hero, party, state, "follow_done");
 		}
 	}
@@ -1390,7 +1585,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			SetPartyAiAction.GetActionForEscortingParty(party, targetParty, MobileParty.NavigationType.Default, isFromPort: false, isTargetingPort: false);
 			SynchronizeArmyObjectiveForCommand(party, command);
 			state.LastIssuedActionKey = actionKey;
-			NotifyCommandStatus(state, actionKey + ":refresh", GetHeroName(hero) + "正在跟随" + GetPartyName(targetParty) + "，若原版AI打断会自动重新下达跟随命令。", CommandMessageTone.Progress);
+			NotifyCommandStatus(state, actionKey + ":refresh", GetActorName(state, hero, party) + "正在跟随" + GetPartyName(targetParty) + "，若原版AI打断会自动重新下达跟随命令。", CommandMessageTone.Progress);
 			Log("follow_party_refresh hero=" + (hero?.StringId ?? "") + " targetParty=" + command.TargetId + " " + DescribePartyAi(party));
 		}
 		if (state.ArrivalDay < 0.0 && IsPartyCloseEnoughToStartFollowing(party, targetParty))
@@ -1398,11 +1593,11 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			state.ArrivalDay = NowDay();
 			state.TimeoutDay = -1.0;
 			state.Stage = CommandStage.Active.ToString();
-			LogFact(hero, GetHeroName(hero) + "已经追上并开始跟随" + GetPartyName(targetParty) + "。");
+			LogFact(state, hero, GetActorName(state, hero, party) + "已经追上并开始跟随" + GetPartyName(targetParty) + "。");
 		}
 		if (state.ArrivalDay >= 0.0 && NowDay() - state.ArrivalDay >= Math.Max(1, command.Days))
 		{
-			LogFact(hero, GetHeroName(hero) + "已经完成跟随" + GetPartyName(targetParty) + Math.Max(1, command.Days) + "天的命令。");
+			LogFact(state, hero, GetActorName(state, hero, party) + "已经完成跟随" + GetPartyName(targetParty) + Math.Max(1, command.Days) + "天的命令。");
 			AdvanceCommand(hero, party, state, "follow_party_done");
 		}
 	}
@@ -1612,7 +1807,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		state.EngageCommitted = false;
 		state.Stage = CommandStage.Tracking.ToString();
 		state.LastIssuedActionKey = actionKey;
-		NotifyCommandStatus(state, actionKey + ":" + reason, BuildAttackTrackingStatusMessage(actorHero, GetSettlementName(settlement), reason), CommandMessageTone.Progress);
+		NotifyCommandStatus(state, actionKey + ":" + reason, BuildAttackTrackingStatusMessage(state, actorHero, party, GetSettlementName(settlement), reason), CommandMessageTone.Progress);
 		Log("settlement_attack_track_refresh hero=" + (actorHero?.StringId ?? "") + " settlement=" + (settlement?.StringId ?? "") + " reason=" + reason + " " + DescribePartyAi(party));
 	}
 
@@ -1660,15 +1855,15 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			SetPartyAiActionForRaidingSettlement(party, settlement);
 			state.LastIssuedActionKey = "raid:" + settlement.StringId;
-			LogFact(actorHero, GetHeroName(actorHero) + "已经开始烧掠" + GetSettlementName(settlement) + "，结果尚未分出。");
-			Log("settlement_attack_commit_raid hero=" + actorHero.StringId + " settlement=" + settlement.StringId + " mode=" + mode);
+			LogFact(state, actorHero, GetActorName(state, actorHero, party) + "已经开始烧掠" + GetSettlementName(settlement) + "，结果尚未分出。");
+			Log("settlement_attack_commit_raid actor=" + GetActorLogId(state, actorHero, party) + " settlement=" + settlement.StringId + " mode=" + mode);
 		}
 		else
 		{
 			SetPartyAiAction.GetActionForBesiegingSettlement(party, settlement, MobileParty.NavigationType.Default, isFromPort: false);
 			state.LastIssuedActionKey = "besiege:" + settlement.StringId;
-			LogFact(actorHero, GetHeroName(actorHero) + "已经开始围攻" + GetSettlementName(settlement) + "，结果尚未分出。");
-			Log("settlement_attack_commit_siege hero=" + actorHero.StringId + " settlement=" + settlement.StringId + " mode=" + mode);
+			LogFact(state, actorHero, GetActorName(state, actorHero, party) + "已经开始围攻" + GetSettlementName(settlement) + "，结果尚未分出。");
+			Log("settlement_attack_commit_siege actor=" + GetActorLogId(state, actorHero, party) + " settlement=" + settlement.StringId + " mode=" + mode);
 		}
 		LockPartyAi(party);
 		state.EngageCommitted = true;
@@ -1692,12 +1887,12 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			if (raidEvent?.AttackerSide == null || raidEvent.AttackerSide.TroopCount <= 0 || !MapEventSideHasHero(raidEvent.AttackerSide, state.HeroId))
+			if (raidEvent?.AttackerSide == null || raidEvent.AttackerSide.TroopCount <= 0 || !MapEventSideHasActor(raidEvent.AttackerSide, state))
 			{
 				return false;
 			}
 			Hero hero = ResolveHeroByIdAny(state.HeroId);
-			MobileParty party = ResolveActorParty(hero);
+			MobileParty party = ResolveActorParty(state, hero);
 			if (!IsPartyUsable(party) || !CanForceCommitSettlementAttack(party, settlement))
 			{
 				return false;
@@ -1713,13 +1908,13 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			state.EngageCommitted = false;
 			state.Stage = CommandStage.Tracking.ToString();
 			state.LastIssuedActionKey = "raid_retry:" + settlement.StringId;
-			NotifyCommandStatus(state, state.LastIssuedActionKey + ":" + reason, GetHeroName(hero) + "的烧村行动被原版事件提前中断，正在重新保持对" + GetSettlementName(settlement) + "的烧掠命令。", CommandMessageTone.Progress);
-			Log("raid_retry_after_nonfinal_end hero=" + (state.HeroId ?? "") + " settlement=" + (settlement.StringId ?? "") + " reason=" + (reason ?? "") + " hp=" + settlement.SettlementHitPoints.ToString("0.000") + " troops=" + raidEvent.AttackerSide.TroopCount + " " + DescribePartyAi(party));
+			NotifyCommandStatus(state, state.LastIssuedActionKey + ":" + reason, GetActorName(state, hero, party) + "的烧村行动被原版事件提前中断，正在重新保持对" + GetSettlementName(settlement) + "的烧掠命令。", CommandMessageTone.Progress);
+			Log("raid_retry_after_nonfinal_end actor=" + GetActorLogId(state, hero, party) + " settlement=" + (settlement.StringId ?? "") + " reason=" + (reason ?? "") + " hp=" + settlement.SettlementHitPoints.ToString("0.000") + " troops=" + raidEvent.AttackerSide.TroopCount + " " + DescribePartyAi(party));
 			return true;
 		}
 		catch (Exception ex)
 		{
-			Log("raid retry check failed hero=" + (state?.HeroId ?? "") + " settlement=" + (settlement?.StringId ?? "") + " error=" + ex.Message);
+			Log("raid retry check failed actor=" + GetActorLogId(state, null, null) + " settlement=" + (settlement?.StringId ?? "") + " error=" + ex.Message);
 			return false;
 		}
 	}
@@ -1743,7 +1938,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		state.EngageCommitted = false;
 		state.Stage = CommandStage.Tracking.ToString();
 		state.LastIssuedActionKey = actionKey;
-		NotifyCommandStatus(state, actionKey + ":" + reason, BuildAttackTrackingStatusMessage(actorHero, GetPartyName(targetParty), reason), CommandMessageTone.Progress);
+		NotifyCommandStatus(state, actionKey + ":" + reason, BuildAttackTrackingStatusMessage(state, actorHero, party, GetPartyName(targetParty), reason), CommandMessageTone.Progress);
 		Log("attack_track_refresh hero=" + (actorHero?.StringId ?? "") + " target=" + (command.TargetId ?? "") + " reason=" + reason + " " + DescribePartyAi(party));
 	}
 
@@ -1769,9 +1964,9 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		state.LastIssuedActionKey = actionKey;
 		if (actionChanged)
 		{
-			LogFact(actorHero, GetHeroName(targetHero) + "当前躲在" + GetSettlementName(shelter) + "内，" + GetHeroName(actorHero) + "正在城外等待其离开，以继续攻击命令。");
+			LogFact(state, actorHero, GetHeroName(targetHero) + "当前躲在" + GetSettlementName(shelter) + "内，" + GetActorName(state, actorHero, party) + "正在城外等待其离开，以继续攻击命令。");
 		}
-		Log("attack_shelter_wait_refresh hero=" + (actorHero?.StringId ?? "") + " target=" + targetHero.StringId + " settlement=" + shelter.StringId + " reason=" + reason + " " + DescribePartyAi(party));
+		Log("attack_shelter_wait_refresh actor=" + GetActorLogId(state, actorHero, party) + " target=" + targetHero.StringId + " settlement=" + shelter.StringId + " reason=" + reason + " " + DescribePartyAi(party));
 	}
 
 	private void MaintainPartyAttackTracking(Hero actorHero, MobileParty party, MobileParty targetParty, PartyCommandQueueState state, PartyCommandEntry command, string reason)
@@ -1793,7 +1988,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		state.EngageCommitted = false;
 		state.Stage = CommandStage.Tracking.ToString();
 		state.LastIssuedActionKey = actionKey;
-		NotifyCommandStatus(state, actionKey + ":" + reason, BuildAttackTrackingStatusMessage(actorHero, GetPartyName(targetParty), reason), CommandMessageTone.Progress);
+		NotifyCommandStatus(state, actionKey + ":" + reason, BuildAttackTrackingStatusMessage(state, actorHero, party, GetPartyName(targetParty), reason), CommandMessageTone.Progress);
 		Log("party_attack_track_refresh hero=" + (actorHero?.StringId ?? "") + " targetParty=" + (command.TargetId ?? "") + " reason=" + reason + " " + DescribePartyAi(party));
 	}
 
@@ -1819,9 +2014,9 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		state.LastIssuedActionKey = actionKey;
 		if (actionChanged)
 		{
-			LogFact(actorHero, GetPartyName(targetParty) + "当前在" + GetSettlementName(shelter) + "内，" + GetHeroName(actorHero) + "正在外侧等待其离开，以继续攻击命令。");
+			LogFact(state, actorHero, GetPartyName(targetParty) + "当前在" + GetSettlementName(shelter) + "内，" + GetActorName(state, actorHero, party) + "正在外侧等待其离开，以继续攻击命令。");
 		}
-		Log("party_attack_shelter_wait_refresh hero=" + (actorHero?.StringId ?? "") + " targetParty=" + (targetParty?.StringId ?? "") + " settlement=" + shelter.StringId + " reason=" + reason + " " + DescribePartyAi(party));
+		Log("party_attack_shelter_wait_refresh actor=" + GetActorLogId(state, actorHero, party) + " targetParty=" + (targetParty?.StringId ?? "") + " settlement=" + shelter.StringId + " reason=" + reason + " " + DescribePartyAi(party));
 	}
 
 	private void MaintainCommittedPartyAttack(Hero actorHero, MobileParty party, MobileParty targetParty, PartyCommandQueueState state, PartyCommandEntry command)
@@ -1938,8 +2133,8 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		state.EngageCommitted = true;
 		state.Stage = CommandStage.Engaging.ToString();
 		state.LastIssuedActionKey = "engage:" + targetHero.StringId;
-		LogFact(actorHero, GetHeroName(actorHero) + "已经对" + GetHeroName(targetHero) + "的部队发起攻击，结果尚未分出。");
-		Log("attack_commit hero=" + actorHero.StringId + " target=" + targetHero.StringId + " mode=" + mode);
+		LogFact(state, actorHero, GetActorName(state, actorHero, party) + "已经对" + GetHeroName(targetHero) + "的部队发起攻击，结果尚未分出。");
+		Log("attack_commit actor=" + GetActorLogId(state, actorHero, party) + " target=" + targetHero.StringId + " mode=" + mode);
 	}
 
 	private void CommitPartyAttack(Hero actorHero, MobileParty party, MobileParty targetParty, PartyCommandQueueState state, string mode)
@@ -1957,8 +2152,8 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		state.EngageCommitted = true;
 		state.Stage = CommandStage.Engaging.ToString();
 		state.LastIssuedActionKey = "engage_party:" + targetParty.StringId;
-		LogFact(actorHero, GetHeroName(actorHero) + "已经对" + GetPartyName(targetParty) + "发起攻击，结果尚未分出。");
-		Log("party_attack_commit hero=" + actorHero.StringId + " targetParty=" + targetParty.StringId + " mode=" + mode);
+		LogFact(state, actorHero, GetActorName(state, actorHero, party) + "已经对" + GetPartyName(targetParty) + "发起攻击，结果尚未分出。");
+		Log("party_attack_commit actor=" + GetActorLogId(state, actorHero, party) + " targetParty=" + targetParty.StringId + " mode=" + mode);
 	}
 
 	private bool CanAiCommitAttack(MobileParty party, MobileParty targetParty)
@@ -2526,17 +2721,14 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		PartyCommandEntry command = GetCurrentCommand(state);
 		Hero hero = ResolveHeroByIdAny(state.HeroId);
 		state.ResultLogged = true;
-		if (hero != null)
-		{
-			LogFact(hero, BuildAttackResultFact(hero, state, command, outcome, detail));
-		}
-		MobileParty activeParty = ResolveActorParty(hero);
+		LogFact(state, hero, BuildAttackResultFact(hero, state, command, outcome, detail));
+		MobileParty activeParty = ResolveActorParty(state, hero);
 		if (activeParty != null)
 		{
 			AdvanceCommand(hero, activeParty, state, reason);
 			return true;
 		}
-		MobileParty releaseParty = ResolveActorParty(hero, allowNonLeaderForRelease: true);
+		MobileParty releaseParty = ResolveActorParty(state, hero, allowNonLeaderForRelease: true);
 		FinishQueue(hero, releaseParty, state, reason, appendFact: true);
 		return true;
 	}
@@ -2625,9 +2817,9 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		return "命令时限已到，未能取得明确结果。";
 	}
 
-	private static string BuildCommandTimeoutFact(Hero hero, PartyCommandEntry command)
+	private static string BuildCommandTimeoutFact(PartyCommandQueueState state, Hero hero, PartyCommandEntry command)
 	{
-		string actorName = GetHeroName(hero);
+		string actorName = GetActorName(state, hero, null);
 		if (command == null)
 		{
 			return actorName + "的大地图命令时限已到，已跳过当前命令。";
@@ -2655,14 +2847,14 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		return actorName + "的大地图命令时限已到，已跳过当前命令。";
 	}
 
-	private static string BuildGoToSettlementStartMessage(Hero hero, Settlement settlement, PartyCommandEntry command)
+	private static string BuildGoToSettlementStartMessage(PartyCommandQueueState state, Hero hero, MobileParty party, Settlement settlement, PartyCommandEntry command)
 	{
 		double holdUntilDay = GetCommandHoldUntilDay(command);
 		if (holdUntilDay > 0.0)
 		{
-			return GetHeroName(hero) + "开始前往" + GetSettlementName(settlement) + "，抵达后停留至指定期限。";
+			return GetActorName(state, hero, party) + "开始前往" + GetSettlementName(settlement) + "，抵达后停留至指定期限。";
 		}
-		return GetHeroName(hero) + "开始前往" + GetSettlementName(settlement) + "，抵达后停留" + Math.Max(1, command?.Days ?? 1) + "天。";
+		return GetActorName(state, hero, party) + "开始前往" + GetSettlementName(settlement) + "，抵达后停留" + Math.Max(1, command?.Days ?? 1) + "天。";
 	}
 
 	private static double GetCommandHoldUntilDay(PartyCommandEntry command)
@@ -2764,7 +2956,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 
 	private static string GetStoredActorName(PartyCommandQueueState state, Hero hero = null)
 	{
-		return GetHeroName(hero ?? ResolveHeroByIdAny(state?.HeroId));
+		return GetActorName(state, hero ?? ResolveHeroByIdAny(state?.HeroId), null);
 	}
 
 	private static string GetStoredTargetName(PartyCommandQueueState state, PartyCommandEntry command)
@@ -2816,6 +3008,31 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			return BattleSideEnum.Attacker;
 		}
 		if (MapEventSideHasHero(mapEvent.DefenderSide, heroId))
+		{
+			return BattleSideEnum.Defender;
+		}
+		return BattleSideEnum.None;
+	}
+
+	private static BattleSideEnum GetActorSideInMapEvent(MapEvent mapEvent, PartyCommandQueueState state)
+	{
+		if (mapEvent == null || state == null)
+		{
+			return BattleSideEnum.None;
+		}
+		if (!string.IsNullOrWhiteSpace(state.HeroId))
+		{
+			BattleSideEnum heroSide = GetHeroSideInMapEvent(mapEvent, state.HeroId);
+			if (heroSide != BattleSideEnum.None)
+			{
+				return heroSide;
+			}
+		}
+		if (MapEventSideHasActor(mapEvent.AttackerSide, state))
+		{
+			return BattleSideEnum.Attacker;
+		}
+		if (MapEventSideHasActor(mapEvent.DefenderSide, state))
 		{
 			return BattleSideEnum.Defender;
 		}
@@ -2905,9 +3122,45 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		return !string.IsNullOrWhiteSpace(heroId) && string.Equals(party?.LeaderHero?.StringId, heroId, StringComparison.OrdinalIgnoreCase);
 	}
 
+	private static bool PartyMatchesActor(MobileParty party, PartyCommandQueueState state)
+	{
+		if (party == null || state == null)
+		{
+			return false;
+		}
+		if (!string.IsNullOrWhiteSpace(state.HeroId) && PartyMatchesHero(party, state.HeroId))
+		{
+			return true;
+		}
+		string actorKey = GetQueueKey(state);
+		string partyKey = BuildPartyActorKey(party, createGuid: false);
+		if (!string.IsNullOrWhiteSpace(actorKey) && !string.IsNullOrWhiteSpace(partyKey) && string.Equals(actorKey, partyKey, StringComparison.OrdinalIgnoreCase))
+		{
+			return true;
+		}
+		if (!string.IsNullOrWhiteSpace(state.PartyStringId) && string.Equals(party.StringId, state.PartyStringId, StringComparison.OrdinalIgnoreCase))
+		{
+			return true;
+		}
+		return state.PartyIndex >= 0 && GetPartyIndexSafe(party) == state.PartyIndex;
+	}
+
 	private static bool PartyBaseMatchesHero(PartyBase party, string heroId)
 	{
 		return !string.IsNullOrWhiteSpace(heroId) && string.Equals(party?.LeaderHero?.StringId, heroId, StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool PartyBaseMatchesActor(PartyBase party, PartyCommandQueueState state)
+	{
+		if (party == null || state == null)
+		{
+			return false;
+		}
+		if (!string.IsNullOrWhiteSpace(state.HeroId) && PartyBaseMatchesHero(party, state.HeroId))
+		{
+			return true;
+		}
+		return PartyMatchesActor(party.MobileParty, state);
 	}
 
 	private static bool PartyBaseMatchesMobileParty(PartyBase party, string partyId)
@@ -2953,7 +3206,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 
 	private void AdvanceCommand(Hero hero, MobileParty party, PartyCommandQueueState state, string reason)
 	{
-		Log("advance hero=" + (hero?.StringId ?? "") + " index=" + state.CurrentIndex + " reason=" + reason);
+		Log("advance actor=" + GetActorLogId(state, hero, party) + " index=" + state.CurrentIndex + " reason=" + reason);
 		AbortCurrentCommandIfNeeded(party, state);
 		ResetResultTracking(state);
 		state.CurrentIndex++;
@@ -2978,18 +3231,19 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			AbortCurrentCommandIfNeeded(party, state);
 			ReleasePartyAi(party);
 		}
-		if (!string.IsNullOrWhiteSpace(state?.HeroId))
+		string queueKey = GetQueueKey(state);
+		if (!string.IsNullOrWhiteSpace(queueKey))
 		{
 			lock (_queueLock)
 			{
-				_queues.Remove(state.HeroId);
+				_queues.Remove(queueKey);
 			}
 		}
-		if (appendFact && hero != null)
+		if (appendFact)
 		{
-			LogFact(state, hero, GetHeroName(hero) + "的大地图命令队列已经结束（" + GetQueueEndReasonText(reason) + "），回归原版行动状态。");
+			LogFact(state, hero, GetActorName(state, hero, party) + "的大地图命令队列已经结束（" + GetQueueEndReasonText(reason) + "），回归原版行动状态。");
 		}
-		Log("finish hero=" + (hero?.StringId ?? state?.HeroId ?? "") + " reason=" + reason);
+		Log("finish actor=" + GetActorLogId(state, hero, party) + " reason=" + reason);
 	}
 
 	private static bool TryParseTag(string tag, bool validateTargets, out PartyCommandEntry command, out bool stop)
@@ -3370,6 +3624,36 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		return false;
 	}
 
+	private static bool MapEventSideHasActor(MapEventSide side, PartyCommandQueueState state)
+	{
+		if (side?.Parties == null || state == null)
+		{
+			return false;
+		}
+		try
+		{
+			foreach (MapEventParty party in side.Parties)
+			{
+				if (PartyBaseMatchesActor(party?.Party, state))
+				{
+					return true;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private static bool IsExecutableNonHeroPartyCommand(PartyCommandEntry command)
+	{
+		return command != null
+			&& !IsKind(command, CommandKind.CreateCompanionParty)
+			&& !IsKind(command, CommandKind.MergeToPlayer)
+			&& IsExecutableCommand(command);
+	}
+
 	private static PartyCommandEntry CloneCommand(PartyCommandEntry command)
 	{
 		return new PartyCommandEntry
@@ -3431,8 +3715,8 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		state.EngageCommitted = false;
 		state.LastIssuedActionKey = "";
 		state.Stage = CommandStage.New.ToString();
-		NotifyCommandStatus(state, "go_to_hostile_settlement_converted:" + (phase ?? "") + ":" + (settlement?.StringId ?? command.TargetId ?? ""), GetHeroName(hero) + "原本要前往的" + GetSettlementName(settlement) + "已是敌对定居点，改按AI攻击命令执行。", CommandMessageTone.Progress);
-		Log("current_go_to_hostile_settlement_converted hero=" + (hero?.StringId ?? "") + " party=" + (party?.StringId ?? "") + " settlement=" + (settlement?.StringId ?? command.TargetId ?? "") + " phase=" + (phase ?? "") + " days=" + Math.Max(1, command.Days));
+		NotifyCommandStatus(state, "go_to_hostile_settlement_converted:" + (phase ?? "") + ":" + (settlement?.StringId ?? command.TargetId ?? ""), GetActorName(state, hero, party) + "原本要前往的" + GetSettlementName(settlement) + "已是敌对定居点，改按AI攻击命令执行。", CommandMessageTone.Progress);
+		Log("current_go_to_hostile_settlement_converted actor=" + GetActorLogId(state, hero, party) + " party=" + (party?.StringId ?? "") + " settlement=" + (settlement?.StringId ?? command.TargetId ?? "") + " phase=" + (phase ?? "") + " days=" + Math.Max(1, command.Days));
 		return true;
 	}
 
@@ -3534,6 +3818,33 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 		state.Commands = (state.Commands ?? new List<PartyCommandEntry>()).Where(x => x != null).ToList();
 		state.CurrentIndex = Math.Max(0, state.CurrentIndex);
+		state.HeroId = (state.HeroId ?? "").Trim();
+		state.ActorKey = (state.ActorKey ?? "").Trim();
+		state.ActorName = (state.ActorName ?? "").Trim();
+		state.PartyStringId = (state.PartyStringId ?? "").Trim();
+		state.NonHeroMemoryId = (state.NonHeroMemoryId ?? "").Trim();
+		state.NonHeroMemoryName = (state.NonHeroMemoryName ?? "").Trim();
+		if (state.PartyIndex < -1)
+		{
+			state.PartyIndex = -1;
+		}
+		if (string.IsNullOrWhiteSpace(state.ActorKey) && !string.IsNullOrWhiteSpace(state.HeroId))
+		{
+			state.ActorKey = state.HeroId;
+		}
+		if (string.IsNullOrWhiteSpace(state.ActorName))
+		{
+			Hero hero = ResolveHeroByIdAny(state.HeroId);
+			if (hero != null)
+			{
+				state.ActorName = GetHeroName(hero);
+			}
+			else
+			{
+				MobileParty party = ResolveMobilePartyByActorState(state);
+				state.ActorName = GetPartyName(party);
+			}
+		}
 		if (string.IsNullOrWhiteSpace(state.Stage))
 		{
 			state.Stage = CommandStage.New.ToString();
@@ -3681,6 +3992,244 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static bool CanUseNonHeroPartyFallbackForExternal(CharacterObject targetCharacter, int targetAgentIndex)
+	{
+		return TryResolveNonHeroPartyActorForExternal(targetCharacter, targetAgentIndex, out _);
+	}
+
+	public static bool TryResolveNonHeroPartyActorForExternal(CharacterObject targetCharacter, int targetAgentIndex, out MobileParty party)
+	{
+		party = null;
+		try
+		{
+			if (targetCharacter == null || targetCharacter.HeroObject != null || targetCharacter.IsHero)
+			{
+				return false;
+			}
+			if (Settlement.CurrentSettlement != null || MobileParty.MainParty?.CurrentSettlement != null)
+			{
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		party = ResolveNonHeroPartyFromAgent(targetAgentIndex);
+		if (!IsValidNonHeroPartyFallbackParty(party))
+		{
+			party = ResolveNonHeroPartyFromEncounter();
+		}
+		if (!IsValidNonHeroPartyFallbackParty(party))
+		{
+			party = ResolveNonHeroPartyFromConversation();
+		}
+		return IsValidNonHeroPartyFallbackParty(party);
+	}
+
+	private static MobileParty ResolveNonHeroPartyFromAgent(int targetAgentIndex)
+	{
+		try
+		{
+			Agent agent = (targetAgentIndex >= 0) ? Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex && a.IsActive()) : null;
+			PartyBase partyBase = agent?.Origin?.BattleCombatant as PartyBase;
+			if (partyBase != null && partyBase.IsMobile && partyBase.MobileParty != null)
+			{
+				return partyBase.MobileParty;
+			}
+		}
+		catch
+		{
+		}
+		return null;
+	}
+
+	private static MobileParty ResolveNonHeroPartyFromEncounter()
+	{
+		try
+		{
+			PartyBase encounteredParty = PlayerEncounterCompat.GetEncounteredPartySafe() ?? PlayerEncounter.EncounteredParty;
+			if (encounteredParty != null && encounteredParty.IsMobile && encounteredParty.MobileParty != null)
+			{
+				return encounteredParty.MobileParty;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			return PlayerEncounter.EncounteredMobileParty;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static MobileParty ResolveNonHeroPartyFromConversation()
+	{
+		try
+		{
+			return MobileParty.ConversationParty;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static bool IsValidNonHeroPartyFallbackParty(MobileParty party)
+	{
+		try
+		{
+			return party != null
+				&& party.IsActive
+				&& party.Party != null
+				&& party != MobileParty.MainParty
+				&& party.Party != PartyBase.MainParty
+				&& party.LeaderHero == null
+				&& !CourierDeliveryBehavior.IsCourierParty(party);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static string NormalizeActorKeyPart(string value)
+	{
+		string text = (value ?? "").Replace("\r", " ").Replace("\n", " ").Trim().ToLowerInvariant();
+		while (text.Contains("  "))
+		{
+			text = text.Replace("  ", " ");
+		}
+		return text;
+	}
+
+	private static string BuildPartyActorKey(MobileParty party, bool createGuid)
+	{
+		if (party == null)
+		{
+			return "";
+		}
+		string partyStringId = NormalizeActorKeyPart(party.StringId);
+		if (!string.IsNullOrWhiteSpace(partyStringId))
+		{
+			return "party_string_id:" + partyStringId;
+		}
+		string savedPartyKey = "";
+		try
+		{
+			savedPartyKey = createGuid ? MyBehavior.GetOrCreateWildernessNonHeroPartyMemoryKeyForExternal(party) : MyBehavior.GetExistingWildernessNonHeroPartyMemoryKeyForExternal(party);
+		}
+		catch
+		{
+			savedPartyKey = "";
+		}
+		savedPartyKey = NormalizeActorKeyPart(savedPartyKey);
+		if (!string.IsNullOrWhiteSpace(savedPartyKey))
+		{
+			return savedPartyKey;
+		}
+		int partyIndex = GetPartyIndexSafe(party);
+		if (partyIndex >= 0)
+		{
+			return "party_index:" + partyIndex;
+		}
+		return "";
+	}
+
+	private static string GetQueueKey(PartyCommandQueueState state)
+	{
+		if (state == null)
+		{
+			return "";
+		}
+		string actorKey = (state.ActorKey ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(actorKey))
+		{
+			return actorKey;
+		}
+		return (state.HeroId ?? "").Trim();
+	}
+
+	private static int GetPartyIndexSafe(MobileParty party)
+	{
+		try
+		{
+			return party?.Party?.Index ?? -1;
+		}
+		catch
+		{
+			return -1;
+		}
+	}
+
+	private static string BuildPartyMemoryId(MobileParty party)
+	{
+		string actorKey = BuildPartyActorKey(party, createGuid: true);
+		if (string.IsNullOrWhiteSpace(actorKey))
+		{
+			return "";
+		}
+		return MyBehavior.BuildNonHeroMemoryIdForExternal("worldmap_party_command|party:" + actorKey);
+	}
+
+	private static MobileParty ResolveMobilePartyByActorState(PartyCommandQueueState state)
+	{
+		if (state == null)
+		{
+			return null;
+		}
+		MobileParty byStringId = ResolveMobilePartyById(state.PartyStringId);
+		if (byStringId != null)
+		{
+			return byStringId;
+		}
+		string actorKey = GetQueueKey(state);
+		if (string.IsNullOrWhiteSpace(actorKey))
+		{
+			return null;
+		}
+		const string stringPrefix = "party_string_id:";
+		if (actorKey.StartsWith(stringPrefix, StringComparison.OrdinalIgnoreCase))
+		{
+			byStringId = ResolveMobilePartyById(actorKey.Substring(stringPrefix.Length));
+			if (byStringId != null)
+			{
+				return byStringId;
+			}
+		}
+		try
+		{
+			IEnumerable<MobileParty> allParties = MobileParty.All;
+			if (allParties == null)
+			{
+				return null;
+			}
+			foreach (MobileParty party in allParties)
+			{
+				if (party == null)
+				{
+					continue;
+				}
+				string candidateKey = BuildPartyActorKey(party, createGuid: false);
+				if (!string.IsNullOrWhiteSpace(candidateKey) && string.Equals(candidateKey, actorKey, StringComparison.OrdinalIgnoreCase))
+				{
+					return party;
+				}
+				if (state.PartyIndex >= 0 && GetPartyIndexSafe(party) == state.PartyIndex)
+				{
+					return party;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return null;
+	}
+
 	private static MobileParty ResolveActorParty(Hero hero, bool allowNonLeaderForRelease = false)
 	{
 		if (hero == null || hero.IsDead || hero.IsPrisoner)
@@ -3697,6 +4246,32 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			return null;
 		}
 		if (!allowNonLeaderForRelease && party.LeaderHero != hero)
+		{
+			return null;
+		}
+		return party;
+	}
+
+	private static MobileParty ResolveActorParty(PartyCommandQueueState state, Hero hero, bool allowNonLeaderForRelease = false)
+	{
+		if (hero != null)
+		{
+			return ResolveActorParty(hero, allowNonLeaderForRelease);
+		}
+		if (state == null)
+		{
+			return null;
+		}
+		MobileParty party = ResolveMobilePartyByActorState(state);
+		if (!IsPartyUsable(party))
+		{
+			return null;
+		}
+		if (CourierDeliveryBehavior.IsCourierParty(party))
+		{
+			return null;
+		}
+		if (!allowNonLeaderForRelease && party.LeaderHero != null)
 		{
 			return null;
 		}
@@ -3724,6 +4299,48 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		if (party.LeaderHero != hero)
 		{
 			reason = "not_party_leader";
+			return false;
+		}
+		return true;
+	}
+
+	private static bool ValidateActor(PartyCommandQueueState state, Hero hero, MobileParty party, out string reason)
+	{
+		if (hero != null)
+		{
+			return ValidateActor(hero, party, out reason);
+		}
+		reason = "";
+		if (state == null || string.IsNullOrWhiteSpace(GetQueueKey(state)))
+		{
+			reason = "actor_invalid";
+			return false;
+		}
+		if (!IsPartyUsable(party))
+		{
+			reason = "party_invalid";
+			return false;
+		}
+		if (CourierDeliveryBehavior.IsCourierParty(party))
+		{
+			reason = "courier_party";
+			return false;
+		}
+		if (party == MobileParty.MainParty || party.Party == PartyBase.MainParty)
+		{
+			reason = "main_party";
+			return false;
+		}
+		if (party.LeaderHero != null)
+		{
+			reason = "party_now_has_hero_leader";
+			return false;
+		}
+		string expectedKey = GetQueueKey(state);
+		string actualKey = BuildPartyActorKey(party, createGuid: false);
+		if (!string.IsNullOrWhiteSpace(expectedKey) && !string.IsNullOrWhiteSpace(actualKey) && !string.Equals(expectedKey, actualKey, StringComparison.OrdinalIgnoreCase))
+		{
+			reason = "party_key_changed";
 			return false;
 		}
 		return true;
@@ -4004,9 +4621,9 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				reason = "当前原版行动";
 			}
 			string key = "preempt:" + phase + ":" + (command.Kind ?? "") + ":" + (command.TargetType ?? "") + ":" + (command.TargetId ?? "");
-			NotifyCommandStatus(state, key, GetHeroName(hero) + "放弃" + reason + "，改为执行新的大地图命令。", CommandMessageTone.Progress);
-			LogFact(state, hero, GetHeroName(hero) + "放弃" + reason + "，改为执行新的大地图命令。");
-			Log("preempt_activity hero=" + (hero?.StringId ?? "") + " party=" + (party.StringId ?? "") + " reason=" + reason + " command=" + (command.Kind ?? "") + ":" + (command.TargetType ?? "") + ":" + (command.TargetId ?? "") + " phase=" + (phase ?? "") + " " + DescribePartyAi(party));
+			NotifyCommandStatus(state, key, GetActorName(state, hero, party) + "放弃" + reason + "，改为执行新的大地图命令。", CommandMessageTone.Progress);
+			LogFact(state, hero, GetActorName(state, hero, party) + "放弃" + reason + "，改为执行新的大地图命令。");
+			Log("preempt_activity actor=" + GetActorLogId(state, hero, party) + " party=" + (party.StringId ?? "") + " reason=" + reason + " command=" + (command.Kind ?? "") + ":" + (command.TargetType ?? "") + ":" + (command.TargetId ?? "") + " phase=" + (phase ?? "") + " " + DescribePartyAi(party));
 		}
 		catch (Exception ex)
 		{
@@ -4972,6 +5589,43 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		return (hero?.Name?.ToString() ?? hero?.StringId ?? "NPC").Trim();
 	}
 
+	private static string GetActorName(PartyCommandQueueState state, Hero hero, MobileParty party)
+	{
+		if (hero != null)
+		{
+			return GetHeroName(hero);
+		}
+		string stored = (state?.ActorName ?? state?.NonHeroMemoryName ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(stored))
+		{
+			return stored;
+		}
+		if (party == null && state != null)
+		{
+			party = ResolveMobilePartyByActorState(state);
+		}
+		return GetPartyName(party);
+	}
+
+	private static string GetActorLogId(PartyCommandQueueState state, Hero hero, MobileParty party)
+	{
+		if (!string.IsNullOrWhiteSpace(hero?.StringId))
+		{
+			return hero.StringId;
+		}
+		string key = GetQueueKey(state);
+		if (!string.IsNullOrWhiteSpace(key))
+		{
+			return key;
+		}
+		string partyKey = BuildPartyActorKey(party, createGuid: false);
+		if (!string.IsNullOrWhiteSpace(partyKey))
+		{
+			return partyKey;
+		}
+		return party?.StringId ?? "";
+	}
+
 	private static string GetSettlementName(Settlement settlement)
 	{
 		return (settlement?.Name?.ToString() ?? settlement?.StringId ?? "目标定居点").Trim();
@@ -5024,7 +5678,23 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		LogFact(hero, factText);
+		if (hero != null)
+		{
+			LogFact(hero, factText);
+			return;
+		}
+		if (string.IsNullOrWhiteSpace(factText))
+		{
+			return;
+		}
+		string cleanFact = factText.Trim();
+		string fact = "[AFEF NPC行为补充] " + cleanFact;
+		string memoryId = (state?.NonHeroMemoryId ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(memoryId))
+		{
+			MyBehavior.AppendExternalNonHeroDialogueHistory(memoryId, GetActorName(state, null, null), null, null, fact);
+		}
+		DisplayCommandMessage(cleanFact, InferCommandMessageTone(cleanFact));
 	}
 
 	private static void NotifyCommandStatus(PartyCommandQueueState state, string statusKey, string message, CommandMessageTone tone = CommandMessageTone.Progress)
@@ -5045,9 +5715,9 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			DisplayCommandMessage(message, tone);
 		}
 
-	private static string BuildAttackTrackingStatusMessage(Hero actorHero, string targetName, string reason)
+	private static string BuildAttackTrackingStatusMessage(PartyCommandQueueState state, Hero actorHero, MobileParty party, string targetName, string reason)
 	{
-		string actorName = GetHeroName(actorHero);
+		string actorName = GetActorName(state, actorHero, party);
 		string safeTargetName = string.IsNullOrWhiteSpace(targetName) ? "目标" : targetName.Trim();
 		string safeReason = (reason ?? "").Trim();
 		if (safeReason.IndexOf("ai_commit_waiting", StringComparison.OrdinalIgnoreCase) >= 0)

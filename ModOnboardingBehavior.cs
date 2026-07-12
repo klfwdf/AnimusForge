@@ -2881,6 +2881,13 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		}
 		try
 		{
+			if (IsCurrentCampaignStoryMode())
+			{
+				_welcomeInProgress = false;
+				ApplyPeaceSceneConflictOnboardingChoice(enabled: false, showMessage: false);
+				onDone();
+				return;
+			}
 			_welcomeInProgress = true;
 			string text = "是否允许玩家直接攻击触发场景冲突？\n\n开启后，玩家直接攻击城镇、领主会面等和平场景内的 NPC 可以触发本模组的场景冲突。\n\n关闭后，本模组不会再把直接攻击转成场景冲突，伤害结算完全交回原版；对话中的吵架/挑衅仍然可以触发冲突升级。\n\n这个选择会同步写入 MCM，之后可在“场景喊话”中随时修改。";
 			InformationManager.ShowInquiry(new InquiryData("AnimusForge - 场景冲突", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "开启", "关闭", delegate
@@ -2909,23 +2916,53 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void ApplyPeaceSceneConflictOnboardingChoice(bool enabled)
+	private static bool IsCurrentCampaignStoryMode()
+	{
+		try
+		{
+			Type type = Game.Current?.GameType?.GetType() ?? Campaign.Current?.GetType();
+			while (type != null)
+			{
+				if (string.Equals(type.FullName, "StoryMode.CampaignStoryMode", StringComparison.Ordinal)
+					|| string.Equals(type.Name, "CampaignStoryMode", StringComparison.Ordinal))
+				{
+					return true;
+				}
+				type = type.BaseType;
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private static void ApplyPeaceSceneConflictOnboardingChoice(bool enabled, bool showMessage = true)
 	{
 		try
 		{
 			DuelSettings settings = DuelSettings.GetSettings();
 			if (settings == null)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置，暂时不能保存和平场景冲突选项。"));
+				if (showMessage)
+				{
+					InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置，暂时不能保存和平场景冲突选项。"));
+				}
 				return;
 			}
 			settings.EnablePeaceSceneConflict = enabled;
 			TryPersistMcmSettings(settings);
-			InformationManager.DisplayMessage(new InformationMessage(enabled ? "已允许玩家直接攻击触发场景冲突。" : "已关闭直接攻击触发场景冲突；伤害结算回到原版逻辑。"));
+			if (showMessage)
+			{
+				InformationManager.DisplayMessage(new InformationMessage(enabled ? "已允许玩家直接攻击触发场景冲突。" : "已关闭直接攻击触发场景冲突；伤害结算回到原版逻辑。"));
+			}
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("保存和平场景冲突选项失败：" + ex.Message));
+			if (showMessage)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("保存和平场景冲突选项失败：" + ex.Message));
+			}
 		}
 	}
 

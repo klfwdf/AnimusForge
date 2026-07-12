@@ -15,6 +15,7 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.Election;
+using TaleWorlds.CampaignSystem.GameState;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem.MapNotificationTypes;
 using TaleWorlds.CampaignSystem.ViewModelCollection;
@@ -110,8 +111,10 @@ namespace AnimusForge
 
 		private static bool s_globalPatchesApplied;
 		private static bool s_globalPatchesInProgress;
+		internal static KingdomDecision s_pendingRequiredAgendaDecision;
 		private bool _agendaAutoVoteTickRunning;
 		private readonly HashSet<KingdomDecision> _agendaAutoVoteInProgress = new HashSet<KingdomDecision>();
+		private readonly HashSet<KingdomDecision> _agendaDeadlineReminderShown = new HashSet<KingdomDecision>();
 
 		// ── Module Initializer ─────────────────────────────────────────────
 
@@ -161,6 +164,24 @@ namespace AnimusForge
 					}
 				}
 				Logger.Log("VoteDeal", $"[Harmony] DetermineSupport: patched {patchedCount} concrete subclass(es), {errorCount} error(s).");
+
+				// DetermineSupport only returns a preference score. Vanilla can still
+				// downgrade it to neutral when the clan lacks influence, so fulfillment
+				// must also hook the method that selects the actual vote.
+				MethodInfo determineSupportOptionMethod = AccessTools.Method(
+					typeof(KingdomDecision),
+					nameof(KingdomDecision.DetermineSupportOption));
+				if (determineSupportOptionMethod != null)
+				{
+					harmony.Patch(
+						determineSupportOptionMethod,
+						prefix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_DetermineSupportOption_Prefix)));
+					Logger.Log("VoteDeal", "[Harmony] KingdomDecision.DetermineSupportOption vote-deal fulfillment hook applied.");
+				}
+				else
+				{
+					Logger.Log("VoteDeal", "[Harmony] WARNING: KingdomDecision.DetermineSupportOption was not found; vote deals can only affect preference scores.");
+				}
 
 				// ── Agenda delay: 21 days for player kingdom, 3 days for other kingdoms ──
 				try
@@ -371,6 +392,8 @@ namespace AnimusForge
 					{
 						KingdomAgendaVM._snapshots.Clear();
 					}
+					_agendaDeadlineReminderShown.Clear();
+					s_pendingRequiredAgendaDecision = null;
 				}
 				if (_activeDeals == null) _activeDeals = new List<VoteDealRecord>();
 				if (_serializedDeals == null) _serializedDeals = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -542,6 +565,7 @@ namespace AnimusForge
 			try
 			{
 				RemoveDuplicateBilateralDiplomacyAgendas();
+				NotifyPlayerKingdomAgendasNearingDeadline();
 				AutoStartExpiredAgendaVotes();
 			}
 			catch (Exception ex)
@@ -598,6 +622,12 @@ namespace AnimusForge
 					continue;
 				}
 
+				if (RequiresPlayerRulerResolution(decision))
+				{
+					TryLaunchRequiredAgendaVote(decision);
+					continue;
+				}
+
 				if (!ShouldAutoStartAgendaVote(decision)) continue;
 				StartExpiredAgendaElection(kingdom, decision);
 			}
@@ -611,6 +641,7 @@ namespace AnimusForge
 				if (decision.Kingdom == null) return false;
 				if (decision.IsEnforced) return false;
 				if (decision.TriggerTime.IsFuture) return false;
+				if (RequiresPlayerRulerResolution(decision)) return false;
 				return true;
 			}
 			catch (Exception ex)
@@ -816,6 +847,12 @@ namespace AnimusForge
 
 					if (IsDecisionTriggerFutureSafe(decision))
 					{
+						continue;
+					}
+
+					if (RequiresPlayerRulerResolution(decision))
+					{
+						TryLaunchRequiredAgendaVote(decision);
 						continue;
 					}
 
@@ -2059,6 +2096,97 @@ namespace AnimusForge
 			}
 		}
 
+		internal static bool RequiresPlayerRulerResolution(KingdomDecision decision)
+		{
+			try
+			{
+				Kingdom playerKingdom = Clan.PlayerClan?.Kingdom;
+				return decision != null
+					&& !decision.IsEnforced
+					&& decision.TriggerTime.IsPast
+					&& decision.Kingdom != null
+					&& decision.Kingdom == playerKingdom
+					&& decision.Kingdom.RulingClan == Clan.PlayerClan;
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", $"[AgendaRequiredVote] Match error: {ex.Message}");
+				return false;
+			}
+		}
+
+		private static void TryLaunchRequiredAgendaVote(KingdomDecision decision)
+		{
+			if (!RequiresPlayerRulerResolution(decision)) return;
+			if (s_pendingRequiredAgendaDecision != null) return;
+
+			try
+			{
+				GameStateManager stateManager = Game.Current?.GameStateManager;
+				if (stateManager == null || !(stateManager.ActiveState is MapState)) return;
+
+				s_pendingRequiredAgendaDecision = decision;
+				KingdomState kingdomState = stateManager.CreateState<KingdomState>();
+				stateManager.PushState(kingdomState, 0);
+				InformationManager.DisplayMessage(new InformationMessage(
+					$"议程《{GetSafeDecisionTitle(decision)}》期限已到，请作出最终裁决。",
+					Color.FromUint(0xFFD166)));
+				Logger.Log("VoteDeal", $"[AgendaRequiredVote] Opened required vote: decision={GetSafeDecisionTitle(decision)}");
+			}
+			catch (Exception ex)
+			{
+				s_pendingRequiredAgendaDecision = null;
+				Logger.Log("VoteDeal", $"[AgendaRequiredVote] Failed to open vote UI for {GetSafeDecisionTitle(decision)}: {ex.Message}");
+			}
+		}
+
+		private void NotifyPlayerKingdomAgendasNearingDeadline()
+		{
+			Kingdom kingdom = Clan.PlayerClan?.Kingdom;
+			if (kingdom?.UnresolvedDecisions == null) return;
+
+			List<KingdomDecision> pending = kingdom.UnresolvedDecisions.ToList();
+			_agendaDeadlineReminderShown.RemoveWhere(decision => decision == null || !pending.Contains(decision));
+
+			foreach (KingdomDecision decision in pending)
+			{
+				if (decision == null || decision.IsEnforced || _agendaDeadlineReminderShown.Contains(decision)) continue;
+				if (ShouldCancelDecisionSafe(decision)) continue;
+
+				float remainingHours;
+				try
+				{
+					if (!decision.TriggerTime.IsFuture) continue;
+					remainingHours = decision.TriggerTime.RemainingHoursFromNow;
+				}
+				catch (Exception ex)
+				{
+					Logger.Log("VoteDeal", $"[AgendaReminder] Failed to read deadline for {GetSafeDecisionTitle(decision)}: {ex.Message}");
+					continue;
+				}
+
+				if (remainingHours > 24f) continue;
+				_agendaDeadlineReminderShown.Add(decision);
+				string deadlineAction = kingdom.RulingClan == Clan.PlayerClan
+					? "届时你将进入最终投票并作出裁决。"
+					: "请及时查看议程并完成投票准备。";
+				InformationManager.DisplayMessage(new InformationMessage(
+					$"王国议程《{GetSafeDecisionTitle(decision)}》将在一天内结束；{deadlineAction}",
+					Color.FromUint(0xFFD700)));
+				Logger.Log("VoteDeal", $"[AgendaReminder] One-day reminder shown: kingdom={kingdom.StringId}, decision={GetSafeDecisionTitle(decision)}, remainingHours={remainingHours:F1}");
+			}
+		}
+
+		private static Supporter.SupportWeights GetForcedVoteDealSupportWeight(int supportWeightValue)
+		{
+			Supporter.SupportWeights weight = (Supporter.SupportWeights)supportWeightValue;
+			if (weight < Supporter.SupportWeights.SlightlyFavor || weight > Supporter.SupportWeights.FullyPush)
+			{
+				return Supporter.SupportWeights.SlightlyFavor;
+			}
+			return weight;
+		}
+
 		private static List<VoteDealAgendaEntry> BuildVoteDealAgendaEntries(Hero npc)
 		{
 			List<VoteDealAgendaEntry> result = new List<VoteDealAgendaEntry>();
@@ -2242,7 +2370,10 @@ namespace AnimusForge
 				}
 
 				StringBuilder sb = new StringBuilder();
-				List<VoteDealAgendaEntry> agendas = BuildVoteDealAgendaEntries(npc);
+				string npcClanId = npc?.Clan?.StringId ?? "";
+				List<VoteDealAgendaEntry> agendas = BuildVoteDealAgendaEntries(npc)
+					.Where(a => a?.Decision?.ProposerClan == null || !string.Equals(a.Decision.ProposerClan.StringId, npcClanId, StringComparison.Ordinal))
+					.ToList();
 				if (agendas.Count == 0)
 				{
 					sb.AppendLine("【投票交易后处理清单】当前没有可拉票的活跃议程。玩家可能与NPC讨论未来可能提出的提案，但因无法确定具体议程和选项，禁止输出 VOTE_DEAL。");
@@ -2252,10 +2383,8 @@ namespace AnimusForge
 				sb.AppendLine("【投票交易后处理清单】以下 A/O 编号只供后处理输出隐藏标签使用，不得让NPC正文照读。玩家可以用议程名称、城镇/国家/政策名、候选人、家族名、支持/反对等自然说法表达拉票目标；只有能唯一匹配到一个议程和一个选项时，才允许输出 [ACTION:VOTE_DEAL:议程编号:选项编号:权重:备注]。");
 				foreach (VoteDealAgendaEntry agenda in agendas)
 				{
-					bool isOwnProposal = agenda.Decision.ProposerClan?.StringId == (npc?.Clan?.StringId ?? "");
-					string proposerNote = isOwnProposal ? "【你的家族提案，不可交易】 " : "";
 					string timing = agenda.RemainingDays > 0 ? $"剩余 {agenda.RemainingDays:F1} 天" : "即将投票";
-					sb.AppendLine($"{agenda.Code}: [{agenda.TypeLabel}] {agenda.Title}（提案人:{agenda.ProposerName}，{timing}）{proposerNote}");
+					sb.AppendLine($"{agenda.Code}: [{agenda.TypeLabel}] {agenda.Title}（提案人:{agenda.ProposerName}，{timing}）");
 					foreach (VoteDealOptionEntry option in agenda.Options)
 					{
 						string sponsorText = string.IsNullOrWhiteSpace(option.SponsorName) || option.SponsorName == "未知" ? "" : $"；赞助/候选:{option.SponsorName}";
@@ -2263,7 +2392,7 @@ namespace AnimusForge
 						sb.AppendLine($"- {option.Code}: {option.Title}{sponsorText}{descriptionText}");
 					}
 				}
-				sb.AppendLine("【投票交易后处理硬约束】若玩家或NPC没有把议程与选项说清楚、多个议程或多个选项都可能匹配、NPC只是继续谈条件或拒绝，禁止输出 VOTE_DEAL。若NPC不是家族族长，禁止输出VOTE_DEAL。若NPC所属氏族是某议程的提案氏族，禁止就该议程输出VOTE_DEAL。若NPC已对同一议程有承诺，禁止改投其他选项。");
+				sb.AppendLine("【投票交易后处理硬约束】若玩家或NPC没有把议程与选项说清楚、多个议程或多个选项都可能匹配、NPC只是继续谈条件或拒绝，禁止输出 VOTE_DEAL。若NPC不是家族族长，禁止输出VOTE_DEAL。若NPC已对同一议程有承诺，禁止改投其他选项。");
 				return sb.ToString().TrimEnd();
 			}
 			catch (Exception ex)
@@ -2502,10 +2631,14 @@ namespace AnimusForge
 					.FirstOrDefault(d => DoesVoteDealMatchDecision(d, __instance));
 				if (deal != null)
 				{
-					__result = DoesVoteDealMatchOutcome(deal, possibleOutcome)
-						? GetForcedVoteDealSupportScore(deal.SupportWeightValue)
-						: 0f;
-					return false;
+					// If the promised option has disappeared from this agenda, do not
+					// force every remaining option to zero. Let vanilla handle the
+					// changed agenda instead of making the clan abstain.
+					if (DoesVoteDealMatchOutcome(deal, possibleOutcome))
+					{
+						__result = GetForcedVoteDealSupportScore(deal.SupportWeightValue);
+						return false;
+					}
 				}
 				return true;
 
@@ -2513,6 +2646,52 @@ namespace AnimusForge
 			catch (Exception ex)
 			{
 				Logger.Log("VoteDeal", $"[Patch_DetermineSupport Error] {ex.Message}");
+				return true;
+			}
+		}
+
+		private static bool Patch_DetermineSupportOption_Prefix(
+			KingdomDecision __instance,
+			Supporter supporter,
+			MBReadOnlyList<DecisionOutcome> possibleOutcomes,
+			ref Supporter.SupportWeights supportWeightOfSelectedOutcome,
+			ref DecisionOutcome __result)
+		{
+			try
+			{
+				Clan clan = supporter?.Clan;
+				if (clan == null || string.IsNullOrWhiteSpace(clan.StringId) || __instance == null) return true;
+
+				// Proposer votes participate in the decision's cancellation rules and
+				// must retain vanilla behavior, just as in the score hook above.
+				if (string.Equals(clan.StringId, __instance.ProposerClan?.StringId, StringComparison.OrdinalIgnoreCase)) return true;
+
+				VoteDealBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<VoteDealBehavior>();
+				if (behavior?._activeDeals == null || behavior._activeDeals.Count == 0 || possibleOutcomes == null) return true;
+
+				VoteDealRecord deal = behavior._activeDeals
+					.Where(d => d != null
+						&& !d.IsConsumed
+						&& string.Equals(d.NpcClanStringId, clan.StringId, StringComparison.OrdinalIgnoreCase)
+						&& !string.IsNullOrWhiteSpace(d.TargetDecisionKey))
+					.FirstOrDefault(d => DoesVoteDealMatchDecision(d, __instance));
+				if (deal == null) return true;
+
+				DecisionOutcome promisedOutcome = possibleOutcomes.FirstOrDefault(outcome => DoesVoteDealMatchOutcome(deal, outcome));
+				if (promisedOutcome == null)
+				{
+					Logger.Log("VoteDeal", $"[VoteFulfillment] Promised option unavailable; using vanilla vote. deal={deal.DealId} clan={clan.StringId} decision={GetSafeDecisionTitle(__instance)} promised={deal.TargetOptionTitle}");
+					return true;
+				}
+
+				supportWeightOfSelectedOutcome = GetForcedVoteDealSupportWeight(deal.SupportWeightValue);
+				__result = promisedOutcome;
+				Logger.Log("VoteDeal", $"[VoteFulfillment] Forced promised vote. deal={deal.DealId} clan={clan.StringId} decision={GetSafeDecisionTitle(__instance)} option={promisedOutcome.GetDecisionTitle()} weight={supportWeightOfSelectedOutcome}");
+				return false;
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", $"[Patch_DetermineSupportOption Error] {ex.Message}");
 				return true;
 			}
 		}
@@ -2634,7 +2813,7 @@ namespace AnimusForge
 			{
 				if (decision == null) return false;
 				if (decision.IsEnforced) return false;
-				if (!decision.IsPlayerParticipant) return false;
+				if (!decision.IsPlayerParticipant && !RequiresPlayerRulerResolution(decision)) return false;
 				if (decision.Kingdom == null || decision.Kingdom != Clan.PlayerClan?.Kingdom) return false;
 				if (decision.ShouldBeCancelled()) return false;
 				return true;
@@ -3757,9 +3936,21 @@ namespace AnimusForge
 
 			}
 
+			private void OpenPendingRequiredAgendaVote()
+			{
+				KingdomDecision decision = VoteDealBehavior.s_pendingRequiredAgendaDecision;
+				if (decision == null) return;
+
+				VoteDealBehavior.s_pendingRequiredAgendaDecision = null;
+				if (!VoteDealBehavior.RequiresPlayerRulerResolution(decision)
+					|| !VoteDealBehavior.IsDecisionPendingInKingdom(decision, decision.Kingdom)) return;
+				StartVoteMeeting(decision);
+			}
+
 			public override void OnRefresh()
 			{
 				Agenda?.RefreshAgendaItems();
+				OpenPendingRequiredAgendaVote();
 			}
 
 			[DataSourceMethod]
@@ -3794,7 +3985,7 @@ namespace AnimusForge
 				{
 					if (decision == null) return;
 					if (decision.Kingdom != Clan.PlayerClan?.Kingdom) return;
-					if (!decision.IsPlayerParticipant) return;
+					if (!decision.IsPlayerParticipant && !VoteDealBehavior.RequiresPlayerRulerResolution(decision)) return;
 					if (decision.ShouldBeCancelled())
 					{
 						InformationManager.DisplayMessage(new InformationMessage("该议程已经失效，无法召开投票会议", Color.FromUint(0xFFD166)));

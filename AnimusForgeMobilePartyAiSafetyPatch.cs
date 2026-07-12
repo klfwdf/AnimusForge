@@ -35,6 +35,7 @@ internal static class AnimusForgeMobilePartyAiSafetyPatch
 		try
 		{
 			PatchPartyHourlyAiTick(harmony);
+			PatchCampaignDispatcherAiHourlyTick(harmony);
 			PatchAiVisitSettlementTick(harmony);
 			PatchPartyWageModel(harmony);
 			PatchPartyUpgrader(harmony);
@@ -62,7 +63,13 @@ internal static class AnimusForgeMobilePartyAiSafetyPatch
 			}
 			if (!ShouldSkipNativeAiForUtilityParty(party, out string reason))
 			{
-				return true;
+				if (!IsUnsafeForNativeHourlyAiParty(party, out reason))
+				{
+					return true;
+				}
+				TryDelayNativeAiDecisionOneTick(party, reason);
+				LogGuard("party_hourly_ai_unsafe_skip", party, reason);
+				return false;
 			}
 			TryLockNativeAiDecisions(party, reason);
 			LogGuard("party_hourly_ai_skip", party, reason);
@@ -72,6 +79,50 @@ internal static class AnimusForgeMobilePartyAiSafetyPatch
 		{
 			return true;
 		}
+	}
+
+	public static Exception PartyHourlyAiTickFinalizer(Exception __exception, object[] __args, MethodBase __originalMethod)
+	{
+		if (__exception == null)
+		{
+			return null;
+		}
+		try
+		{
+			MobileParty party = ExtractParty(__args);
+			if (ShouldSuppressNativeHourlyAiException(party, __exception, out string reason))
+			{
+				TryDelayNativeAiDecisionOneTick(party, reason);
+				LogGuard("party_hourly_ai_exception_suppressed", party, reason, __exception, __originalMethod);
+				return null;
+			}
+		}
+		catch
+		{
+		}
+		return __exception;
+	}
+
+	public static Exception CampaignDispatcherAiHourlyTickFinalizer(Exception __exception, object[] __args, MethodBase __originalMethod)
+	{
+		if (__exception == null)
+		{
+			return null;
+		}
+		try
+		{
+			MobileParty party = ExtractParty(__args);
+			if (ShouldSuppressNativeHourlyAiException(party, __exception, out string reason))
+			{
+				TryDelayNativeAiDecisionOneTick(party, reason);
+				LogGuard("dispatcher_ai_hourly_exception_suppressed", party, reason, __exception, __originalMethod);
+				return null;
+			}
+		}
+		catch
+		{
+		}
+		return __exception;
 	}
 
 	public static bool AiVisitSettlementPrefix(object[] __args)
@@ -107,15 +158,9 @@ internal static class AnimusForgeMobilePartyAiSafetyPatch
 		try
 		{
 			MobileParty party = ExtractParty(__args);
-			if (ShouldSkipNativeAiForUtilityParty(party, out string utilityReason) || IsUnsafeForNativeAiVisitSettlement(party, out utilityReason))
+			if (ShouldSuppressNativeHourlyAiException(party, __exception, out string utilityReason))
 			{
 				LogGuard("visit_settlement_exception_suppressed", party, utilityReason, __exception, __originalMethod);
-				return null;
-			}
-			if (IsRecoverableNativeAiStateException(__exception))
-			{
-				string reason = "native_state_exception:" + __exception.GetType().Name;
-				LogGuard("visit_settlement_exception_suppressed", party, reason, __exception, __originalMethod);
 				return null;
 			}
 		}
@@ -329,8 +374,23 @@ internal static class AnimusForgeMobilePartyAiSafetyPatch
 			Logger.Log(LogSource, "AiPartyThinkBehavior.PartyHourlyAiTick not found; utility party AI guard skipped.");
 			return;
 		}
-		harmony.Patch(target, prefix: new HarmonyMethod(typeof(AnimusForgeMobilePartyAiSafetyPatch), nameof(PartyHourlyAiTickPrefix)));
+		harmony.Patch(
+			target,
+			prefix: new HarmonyMethod(typeof(AnimusForgeMobilePartyAiSafetyPatch), nameof(PartyHourlyAiTickPrefix)),
+			finalizer: new HarmonyMethod(typeof(AnimusForgeMobilePartyAiSafetyPatch), nameof(PartyHourlyAiTickFinalizer)));
 		Logger.Log(LogSource, "AiPartyThinkBehavior.PartyHourlyAiTick utility party guard applied.");
+	}
+
+	private static void PatchCampaignDispatcherAiHourlyTick(Harmony harmony)
+	{
+		MethodInfo target = AccessTools.Method(typeof(CampaignEventDispatcher), "AiHourlyTick", new[] { typeof(MobileParty), typeof(PartyThinkParams) });
+		if (target == null)
+		{
+			Logger.Log(LogSource, "CampaignEventDispatcher.AiHourlyTick not found; dispatcher AI guard skipped.");
+			return;
+		}
+		harmony.Patch(target, finalizer: new HarmonyMethod(typeof(AnimusForgeMobilePartyAiSafetyPatch), nameof(CampaignDispatcherAiHourlyTickFinalizer)));
+		Logger.Log(LogSource, "CampaignEventDispatcher.AiHourlyTick guard applied.");
 	}
 
 	private static void PatchAiVisitSettlementTick(Harmony harmony)
@@ -450,14 +510,34 @@ internal static class AnimusForgeMobilePartyAiSafetyPatch
 		{
 			return false;
 		}
-		if (CourierDeliveryBehavior.IsCourierParty(party))
+		try
 		{
-			reason = "courier";
+			if (CourierDeliveryBehavior.IsCourierParty(party))
+			{
+				reason = "courier";
+				return true;
+			}
+		}
+		catch (Exception ex)
+		{
+			reason = "courier_check_exception:" + ex.GetType().Name;
 			return true;
 		}
-		if (NobleGatheringBehavior.IsTemporaryGatheringParty(party))
+		try
 		{
-			reason = "noble_gathering_temp";
+			if (NobleGatheringBehavior.IsTemporaryGatheringParty(party))
+			{
+				reason = "noble_gathering_temp";
+				return true;
+			}
+		}
+		catch (Exception ex)
+		{
+			reason = "noble_gathering_check_exception:" + ex.GetType().Name;
+			return true;
+		}
+		if (IsAnimusForgeUtilityPartyComponent(party, out reason))
+		{
 			return true;
 		}
 		string id = party.StringId ?? "";
@@ -537,6 +617,138 @@ internal static class AnimusForgeMobilePartyAiSafetyPatch
 			reason = "wage_guard_exception:" + ex.GetType().Name;
 			return true;
 		}
+	}
+
+	private static bool IsAnimusForgeUtilityPartyComponent(MobileParty party, out string reason)
+	{
+		reason = "";
+		try
+		{
+			string componentName = party?.PartyComponent?.GetType().FullName ?? "";
+			if (string.IsNullOrWhiteSpace(componentName) || componentName.IndexOf("AnimusForge.", StringComparison.OrdinalIgnoreCase) < 0)
+			{
+				return false;
+			}
+			if (componentName.IndexOf("DummyPartyComponent", StringComparison.OrdinalIgnoreCase) >= 0
+				|| componentName.IndexOf("TemporaryPartyComponent", StringComparison.OrdinalIgnoreCase) >= 0
+				|| componentName.IndexOf("HoldingDummyPartyComponent", StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				reason = "animusforge_utility_component:" + componentName;
+				return true;
+			}
+		}
+		catch (Exception ex)
+		{
+			reason = "animusforge_component_check_exception:" + ex.GetType().Name;
+			return true;
+		}
+		return false;
+	}
+
+	private static bool IsUnsafeForNativeHourlyAiParty(MobileParty party, out string reason)
+	{
+		reason = "";
+		try
+		{
+			if (party == null)
+			{
+				reason = "hourly_ai_party_null";
+				return true;
+			}
+			if (party == MobileParty.MainParty)
+			{
+				return false;
+			}
+			if (!ValidateMobilePartyForNativeDailySystems(party, "hourly_ai_party", out reason))
+			{
+				return true;
+			}
+			if (party.Ai == null)
+			{
+				reason = "hourly_ai_ai_null";
+				return true;
+			}
+			IFaction mapFaction = party.MapFaction;
+			if (party.IsBandit)
+			{
+				return false;
+			}
+			if (WillNativeAiVisitSettlementReturnBeforeRiskyReads(party, mapFaction))
+			{
+				return false;
+			}
+			if (party.Party.Owner == null)
+			{
+				reason = "hourly_ai_party_owner_null";
+				return true;
+			}
+			if (party.Army != null && !ValidateArmyForNativeVisit(party, out reason))
+			{
+				reason = "hourly_ai_" + reason;
+				return true;
+			}
+			return false;
+		}
+		catch (Exception ex)
+		{
+			reason = "hourly_ai_guard_exception:" + ex.GetType().Name;
+			return true;
+		}
+	}
+
+	private static bool ShouldSuppressNativeHourlyAiException(MobileParty party, Exception exception, out string reason)
+	{
+		reason = "";
+		try
+		{
+			if (!IsRecoverableNativeAiStateException(exception))
+			{
+				return false;
+			}
+			if (party == MobileParty.MainParty)
+			{
+				return false;
+			}
+			if (ShouldSkipNativeAiForUtilityParty(party, out reason))
+			{
+				reason = "utility:" + reason;
+				return true;
+			}
+			if (IsUnsafeForNativeHourlyAiParty(party, out reason))
+			{
+				reason = "unsafe_hourly_ai:" + reason;
+				return true;
+			}
+			if (IsUnsafeForNativeAiVisitSettlement(party, out reason))
+			{
+				reason = "unsafe_visit_settlement:" + reason;
+				return true;
+			}
+			if (IsKnownNativeHourlyAiStateException(exception))
+			{
+				reason = "known_native_hourly_ai_state_exception:" + exception.GetType().Name;
+				return true;
+			}
+		}
+		catch (Exception ex)
+		{
+			reason = "suppress_guard_exception:" + ex.GetType().Name;
+			return true;
+		}
+		return false;
+	}
+
+	private static bool IsKnownNativeHourlyAiStateException(Exception exception)
+	{
+		string text = exception?.ToString() ?? "";
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		return text.IndexOf("AiVisitSettlementBehavior.AiHourlyTick", StringComparison.OrdinalIgnoreCase) >= 0
+			|| text.IndexOf("HeroHelper.StartRecruitingMoneyLimitForClanLeader", StringComparison.OrdinalIgnoreCase) >= 0
+			|| text.IndexOf("DefaultPartyWageModel.GetTotalWage", StringComparison.OrdinalIgnoreCase) >= 0
+			|| text.IndexOf("PartyBaseHelper.HasFeat", StringComparison.OrdinalIgnoreCase) >= 0;
 	}
 
 	private static ExplainedNumber BuildSafeWageFallback(TroopRoster roster, bool includeDescriptions, bool zeroWage)
@@ -904,16 +1116,20 @@ internal static class AnimusForgeMobilePartyAiSafetyPatch
 				reason = label + "_party_culture_null";
 				return false;
 			}
-			Hero owner = party.Party.Owner;
-			if (owner != null && owner.CharacterObject == null)
+			Settlement partySettlement = party.Party.Settlement;
+			if (partySettlement != null && partySettlement.Culture == null)
 			{
-				reason = label + "_owner_character_null";
+				reason = label + "_party_settlement_culture_null";
+				return false;
+			}
+			Hero owner = party.Party.Owner;
+			if (owner != null && !ValidateHeroForNativePartyAi(owner, label + "_owner", requireClan: false, out reason))
+			{
 				return false;
 			}
 			Hero leader = party.LeaderHero;
-			if (leader != null && leader.CharacterObject == null)
+			if (leader != null && !ValidateHeroForNativePartyAi(leader, label + "_leader", party.IsLordParty || leader.IsLord, out reason))
 			{
-				reason = label + "_leader_character_null";
 				return false;
 			}
 			return true;
@@ -921,6 +1137,103 @@ internal static class AnimusForgeMobilePartyAiSafetyPatch
 		catch (Exception ex)
 		{
 			reason = label + "_guard_exception:" + ex.GetType().Name;
+			return false;
+		}
+	}
+
+	private static bool ValidateHeroForNativePartyAi(Hero hero, string label, bool requireClan, out string reason)
+	{
+		reason = "";
+		try
+		{
+			if (hero == null)
+			{
+				reason = label + "_null";
+				return false;
+			}
+			if (hero.CharacterObject == null)
+			{
+				reason = label + "_character_null";
+				return false;
+			}
+			if (hero.Culture == null)
+			{
+				reason = label + "_culture_null";
+				return false;
+			}
+			if (hero.MapFaction == null)
+			{
+				reason = label + "_map_faction_null";
+				return false;
+			}
+			if (requireClan && hero.Clan == null)
+			{
+				reason = label + "_clan_null";
+				return false;
+			}
+			if (hero.Clan != null)
+			{
+				if (hero.Clan.Culture == null)
+				{
+					reason = label + "_clan_culture_null";
+					return false;
+				}
+				if (hero.Clan.Leader != null && hero.Clan.Leader.CharacterObject == null)
+				{
+					reason = label + "_clan_leader_character_null";
+					return false;
+				}
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			reason = label + "_guard_exception:" + ex.GetType().Name;
+			return false;
+		}
+	}
+
+	private static bool ValidateCampaignModelsForNativeVisit(out string reason)
+	{
+		reason = "";
+		try
+		{
+			Campaign campaign = Campaign.Current;
+			if (campaign == null || campaign.Models == null)
+			{
+				reason = "campaign_models_unavailable";
+				return false;
+			}
+			if (campaign.Models.CampaignTimeModel == null)
+			{
+				reason = "campaign_time_model_null";
+				return false;
+			}
+			if (campaign.Models.MobilePartyAIModel == null)
+			{
+				reason = "mobile_party_ai_model_null";
+				return false;
+			}
+			if (campaign.Models.PartyFoodBuyingModel == null)
+			{
+				reason = "party_food_buying_model_null";
+				return false;
+			}
+			if (campaign.Models.PartyWageModel == null)
+			{
+				reason = "party_wage_model_null";
+				return false;
+			}
+			if (campaign.Models.SettlementGarrisonModel == null)
+			{
+				reason = "settlement_garrison_model_null";
+				return false;
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			reason = "campaign_models_guard_exception:" + ex.GetType().Name;
 			return false;
 		}
 	}
@@ -1073,6 +1386,10 @@ internal static class AnimusForgeMobilePartyAiSafetyPatch
 				reason = "campaign_unavailable";
 				return true;
 			}
+			if (!ValidateCampaignModelsForNativeVisit(out reason))
+			{
+				return true;
+			}
 			IFaction mapFaction = party.MapFaction;
 			if (mapFaction == null)
 			{
@@ -1113,22 +1430,25 @@ internal static class AnimusForgeMobilePartyAiSafetyPatch
 				reason = "party_owner_null";
 				return true;
 			}
-			if (owner.MapFaction == null)
+			if (!ValidateHeroForNativePartyAi(owner, "party_owner", requireClan: false, out reason))
 			{
-				reason = "party_owner_faction_null";
 				return true;
 			}
 			Hero leader = party.LeaderHero;
 			if (leader != null)
 			{
-				if (leader.MapFaction == null)
+				if (!ValidateHeroForNativePartyAi(leader, "leader", party.IsLordParty || leader.IsLord, out reason))
 				{
-					reason = "leader_faction_null";
 					return true;
 				}
-				if (leader.Clan == null)
+				Hero clanLeader = leader.Clan?.Leader;
+				if (clanLeader != null && !ValidateHeroForNativePartyAi(clanLeader, "leader_clan_leader", requireClan: false, out reason))
 				{
-					reason = "leader_clan_null";
+					return true;
+				}
+				MobileParty clanLeaderParty = clanLeader?.PartyBelongedTo;
+				if (clanLeaderParty != null && !ValidateMobilePartyForNativeDailySystems(clanLeaderParty, "leader_clan_leader_party", out reason))
+				{
 					return true;
 				}
 			}
@@ -1315,6 +1635,34 @@ internal static class AnimusForgeMobilePartyAiSafetyPatch
 			for (int i = 0; i < party.ItemRoster.Count; i++)
 			{
 				ItemRosterElement element = party.ItemRoster[i];
+				if (element.EquipmentElement.Item == null)
+				{
+					reason = label + "_item_null";
+					return false;
+				}
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			reason = label + "_guard_exception:" + ex.GetType().Name;
+			return false;
+		}
+	}
+
+	private static bool ValidateSettlementItemRosterForNativeVisit(Settlement settlement, string label, out string reason)
+	{
+		reason = "";
+		try
+		{
+			if (settlement?.ItemRoster == null)
+			{
+				reason = label + "_null";
+				return false;
+			}
+			for (int i = 0; i < settlement.ItemRoster.Count; i++)
+			{
+				ItemRosterElement element = settlement.ItemRoster[i];
 				if (element.EquipmentElement.Item == null)
 				{
 					reason = label + "_item_null";
@@ -1561,6 +1909,16 @@ internal static class AnimusForgeMobilePartyAiSafetyPatch
 				reason = label + "_map_faction_null";
 				return false;
 			}
+			if (settlement.Culture == null)
+			{
+				reason = label + "_culture_null";
+				return false;
+			}
+			if (settlement.Party.Culture == null)
+			{
+				reason = label + "_party_culture_null";
+				return false;
+			}
 			if (settlement.IsVillage && settlement.Village == null)
 			{
 				reason = label + "_village_null";
@@ -1602,6 +1960,10 @@ internal static class AnimusForgeMobilePartyAiSafetyPatch
 				reason = label + "_item_roster_null";
 				return false;
 			}
+			if (!ValidateSettlementItemRosterForNativeVisit(settlement, label + "_item_roster", out reason))
+			{
+				return false;
+			}
 			if (settlement.IsVillage && settlement.Village.Bound == null)
 			{
 				reason = label + "_village_bound_null";
@@ -1616,6 +1978,14 @@ internal static class AnimusForgeMobilePartyAiSafetyPatch
 			if (!settlement.IsHideout && ownerClan.Leader == null)
 			{
 				reason = label + "_owner_clan_leader_null";
+				return false;
+			}
+			if (!settlement.IsHideout && !ValidateHeroForNativePartyAi(ownerClan.Leader, label + "_owner_clan_leader", requireClan: false, out reason))
+			{
+				return false;
+			}
+			if (settlement.IsFortification && settlement.Town?.GarrisonParty != null && !ValidateMobilePartyForNativeDailySystems(settlement.Town.GarrisonParty, label + "_garrison_party", out reason))
+			{
 				return false;
 			}
 			if (settlement.Notables == null)

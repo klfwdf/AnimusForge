@@ -1,0 +1,209 @@
+AnimusForge 动作标签实际用途表
+生成日期：2026-07-04
+编码：UTF-8
+
+范围说明：
+本表按当前 animusforge-1.3.x 工作区整理，主要依据：
+- AnimusForge/ModuleData/ActionPostprocessPrompts.json
+- AnimusForge/ModuleData/RuleBehaviorPrompts.json
+- RewardSystemBehavior.cs
+- ShoutBehavior.cs
+- LordEncounterBehavior.cs
+- SceneTauntBehavior.cs
+- VanillaIssueOfferBridge.cs
+- WorldMapPartyCommandBehavior.cs
+- DiplomacyBehavior.cs
+- NobleGatheringBehavior.cs
+- AnimusForge.SiegeAftermathIntervention/SiegeActionTagCatalog.cs
+
+重要原则：
+1. 主回复正文不应主动暴露这些标签；动作标签应由后处理链路输出。
+2. 当前推荐标签以 ModuleData 规则表为准；C# 里仍保留的旧标签在本表末尾单独列出。
+3. 情绪标签属于后处理强制标签，但不直接改变游戏机制，只影响后续情绪/状态判断。
+4. 同一轮可能输出多个标签，但某些标签有互斥或优先级，例如 WORLDMAP_ORDER:STOP 不应与其他大地图命令同轮输出。
+
+一、通用情绪与全局后处理标签
+
+| 标签 | 实际用途 | 触发条件 | 实际效果/注意 |
+| --- | --- | --- | --- |
+| [ACTION:MOOD:DELIGHTED] | 情绪：赞赏 | NPC 本轮回复明显赞赏玩家 | 后处理必须且只能输出一个情绪标签。 |
+| [ACTION:MOOD:JOY] | 情绪：喜悦友好 | NPC 本轮回复友好、开心 | 不直接改变物品/关系机制，只作为情绪状态。 |
+| [ACTION:MOOD:NEUTRAL] | 情绪：平淡 | 无明显情绪倾向 | 默认兜底标签。 |
+| [ACTION:MOOD:BORED] | 情绪：抱怨/厌烦 | NPC 对玩家有所抱怨 | 不等同敌对。 |
+| [ACTION:MOOD:ANNOYED] | 情绪：恼火/反感 | NPC 明显恼火、反感玩家 | 不自动开战；开战要用挑衅/战斗标签。 |
+| [ACTION:NPC_SURRENDER] | NPC 或其军队投降 | NPC 明确同意缴械投降；围城语境下也用于当前方投降 | 在遭遇/场景/围城会话中触发投降处理，使目标成为俘虏或触发围城投降链路。 |
+| [ACTION:KING_ABDICATE_TO_PLAYER] | 国王让位给玩家 | 当前 NPC 是国王，且明确同意把王位/统治权立即让给玩家 | 由 RewardSystemBehavior 执行王位转移；只支持 NPC 自己让位给玩家，不是封臣、领地或未来承诺。 |
+| [ACTION:INTIMACY_INTERNAL] | 已发生性行为与内射事实 | 面对面对话本轮必须明确已经发生性行为，并且明确发生内射或男方在女方体内射精；玩家单方面明确叙述这些事实已发生也算；无需具体描写插入过程，但仅有亲吻、拥抱、抚摸、调情或暧昧亲密不够，避孕描述不触发 | 只对当前成年异性 Hero NPC 生效，信使禁用；左下角提示亲密行为，再按 MCM“15. 亲密行为与怀孕”的概率判定怀孕，默认 50%。标签不代表必定怀孕。 |
+
+二、决斗标签
+
+| 标签 | 实际用途 | 触发条件 | 实际效果/注意 |
+| --- | --- | --- | --- |
+| [ACTION:DUEL] | 发起正式决斗 | 玩家与 NPC 双方明确无条件同意单挑/决斗 | 进入决斗处理；普通吵架、叫嚣、群战、还在谈赌注时不应输出。 |
+| [AD;金额;天数;备注内容] | 决斗赌注债务 | 与 [ACTION:DUEL] 同轮，玩家下注但未即时交付 | 决斗链路会把该债务延后到决斗结算后处理。 |
+| [ACTION:DUEL_LINE_WIN:吹嘘的内容] | NPC 决斗胜利台词 | 输出 [ACTION:DUEL] 时配套输出 | DuelBehavior 缓存为 NPC 赢后嘲讽/吹嘘。 |
+| [ACTION:DUEL_LINE_LOSE:吐槽的内容] | NPC 决斗失败台词 | 输出 [ACTION:DUEL] 时配套输出 | DuelBehavior 缓存为 NPC 输后吐槽。 |
+
+三、交易、赠予、债务与资产转移
+
+| 标签 | 实际用途 | 触发条件 | 实际效果/注意 |
+| --- | --- | --- | --- |
+| [ACTION:GIVE_GOLD:金额] | NPC 给玩家第纳尔 | NPC 明确把钱交给玩家 | 从 NPC/市场库存转移金币到玩家；数量不足时按实际可给数量处理。 |
+| [ACTION:GIVE_ITEM:物品名称:数量] | NPC 给玩家物品 | NPC 明确交付其库存中存在的物品 | 从 NPC/市场库存转移物品到玩家；禁止填兵种和人名。 |
+| [AD;金额;天数;N/P;备注内容] | 建立承诺/债务 | 一方承诺未来交付，或交易中一方先给、另一方未给 | 金额为承诺价值；天数为期限；N 表示 NPC 欠玩家，P 表示玩家欠 NPC。当前主要债务模型。 |
+| [ADP;债务ID] | 债务解除/付款确认 | NPC 承认收到对应债务付款、豁免或结清 | 解除指定债务；代码也兼容 [ADP:债务ID]。 |
+| [ATT:部队编号:数量] | 部队转移给玩家 | NPC 明确同意把当前编号清单中的部队交给玩家，或要人允许招募志愿兵 | 编号必须来自本轮清单，不能写兵种名；只用于士兵，不用于物品或同伴部队命令。 |
+| [ATP:俘虏编号:数量] | 俘虏转移给玩家 | NPC 明确同意交出编号清单中的俘虏 | 编号必须来自本轮清单，不能写俘虏名。 |
+| [ACTION:SETTLEMENT_TRANSFER:TO_PLAYER:固定资产ID或编号] | 固定资产转给玩家 | NPC 明确同意现在把城市、城堡、工坊、商队或商船队转给玩家 | 当前规则表只推荐 TO_PLAYER；代码层能识别 TO_NPC，但当前提示词明确不把“玩家给 NPC”走此标签。 |
+
+四、势力身份、家族归附与王国关系
+
+| 标签 | 实际用途 | 触发条件 | 实际效果/注意 |
+| --- | --- | --- | --- |
+| [ACTION:KINGDOM_SERVICE:LEAVE:current] | 玩家退出当前效力 | NPC 与玩家正式同意玩家退出当前雇佣兵/封臣身份 | 推荐格式；用于玩家本人退出，不用于 NPC 退出。 |
+| [ACTION:KINGDOM_SERVICE:MERCENARY:{targetKingdomId}] | 玩家加入目标王国当雇佣兵 | NPC 与玩家正式同意玩家以雇佣兵身份加入目标王国 | targetKingdomId 必须来自运行时事实；不用于 NPC 加入。 |
+| [ACTION:KINGDOM_SERVICE:VASSAL:{targetKingdomId}] | 玩家加入目标王国当封臣 | NPC 与玩家正式同意玩家以正式封臣身份加入目标王国 | 受家族等级、目标身份和权限约束。 |
+| [ACTION:KINGDOM_SERVICE:CLAN_JOIN_PLAYER_KINGDOM:{targetClanId}] | NPC 家族归附玩家王国 | NPC 是目标家族族长，明确带整个家族加入玩家王国 | 会改变家族王国归属；其封地应随家族进入玩家王国；不代表 NPC 本人入队。 |
+| [A:H_J_P_P] | 当前说话英雄本人加入玩家队伍 | NPC 明确同意本人立即加入玩家队伍/成为同伴 | 只代表当前说话者本人，不代表家族归附、封臣效力或大地图部队合并；俘虏/囚禁状态禁止用。 |
+| [ACTION:KING_ABDICATE_TO_PLAYER] | 国王把王位让给玩家 | 国王明确无条件立即让位给玩家 | 见通用标签；放在此处也是王权机制。 |
+| [ACTION:VASSALAGE:SUBMIT:TRIBUTARY:{kingdomId}] | 王国成为朝贡国 | NPC 国王明确同意交贡换保护但不出兵 | 保留目标王国存在；不是国家吞并。 |
+| [ACTION:VASSALAGE:SUBMIT:GARRISON:{kingdomId}] | 王国成为卫戍国 | NPC 国王明确同意军事臣属、承担出兵义务但不纳贡 | 保留目标王国存在；没有军事自主权。 |
+| [ACTION:VASSALAGE:SUBMIT:VASSAL:{kingdomId}] | 王国成为附庸/傀儡国 | NPC 国王明确同意外交军事受玩家王国控制并出钱出兵 | “附庸国”在当前规则中只对应 VASSAL。 |
+| [ACTION:KINGDOM_ANNEX:target_kingdom_id={targetKingdomId}] | 国家吞并 | NPC 国王明确同意整个王国并入玩家王国，放弃独立王权，所有家族归入玩家王国 | 不用于朝贡、卫戍、附庸、保护国、求和或普通臣属。 |
+
+五、领主大厅、遭遇放行与挑衅开战
+
+| 标签 | 实际用途 | 触发条件 | 实际效果/注意 |
+| --- | --- | --- | --- |
+| [ACTION:OPEN_LORDS_HALL] | 允许玩家进入领主大厅 | NPC 明确无条件同意让玩家进入领主大厅 | ShoutBehavior 捕获后打开/切入对应大厅访问链路。 |
+| [ACTION:LET_PLAYER_GO] | 遭遇中放玩家离开 | NPC 明确同意玩家立刻离开当前遭遇 | LordEncounterBehavior 消耗后解除或放行当前遭遇；敌对强制场景可能改为开战规则。 |
+| [ACTION:MEETING_TAUNT_WARN] | 野外会面挑衅警告旧标签 | 野外会面挑衅中输出 | 当前代码只剥离该旧警告标签，不改变会面挑衅状态；不推荐新提示词使用。 |
+| [ACTION:MEETING_TAUNT_BATTLE] | 野外会面挑衅升级战斗 | 野外会面中 NPC 因辱骂/挑衅决定立刻开战 | 结束会话并把遭遇升级为正式战斗，按玩家攻击对方处理。 |
+| [ACTION:SCENE_TAUNT_WARN] | 场景内口角警告 | 场景 NPC 被玩家辱骂、贬低或招惹，但先警告 | 记录该目标已警告；后续再激化更容易输出 FIGHT。未成年目标禁止。 |
+| [ACTION:SCENE_TAUNT_FIGHT] | 场景内口角升级冲突 | 场景 NPC 忍无可忍，或匪徒/帮派成员决定翻脸 | 短暂维持对话后退出并爆发冲突；匪徒场景直接进入原版冲突流程。 |
+
+六、婚姻、私奔与离婚
+
+| 标签 | 实际用途 | 触发条件 | 实际效果/注意 |
+| --- | --- | --- | --- |
+| [ACTION:MARRIAGE_FORMAL:playerClanHeroId:targetHeroId] | 正式婚姻 | NPC 明确同意系统事实清单中的婚配对象正式成婚 | 可在末尾追加彩礼金额；对象 ID 必须来自候选事实。 |
+| [ACTION:MARRIAGE_ELOPE:targetHeroId] | 私奔 | NPC 明确同意与玩家私奔 | 目标必须来自运行时可私奔候选。 |
+| [ACTION:DIVORCE:playerClanHeroId:targetHeroId] | 离婚 | NPC 明确同意候选对象离婚 | 只有 NPC 明确退钱给玩家时才可追加金额；玩家还钱给 NPC 不写进此标签。 |
+
+七、场景带路、传唤、跟随与会面结束
+
+| 标签 | 实际用途 | 触发条件 | 实际效果/注意 |
+| --- | --- | --- | --- |
+| [ACTION:SCENE_FOLLOW_PLAYER] | 当前 NPC 跟随玩家 | NPC 明确同意跟随玩家或跟玩家去某处 | 让当前场景 Agent 跟随玩家；短标签别名 [FOL] 也能被解析。 |
+| [ACTION:SCENE_STOP_FOLLOW] | 停止跟随玩家 | NPC 明确同意停止跟随 | 停止当前跟随；短标签别名 [STP] 也能被解析。 |
+| [END] | 传唤后的会面结束 | NPC 明确表示传唤后的会面到此结束 | 结束当前传唤会话并触发返回岗位/后续恢复。 |
+| [ACTION:SCENE_SUMMON:人物名称列表] | 传唤一个或多个 NPC | NPC 明确同意去把清单中的人物叫来 | 人物名必须来自【带路与传唤NPC清单】；短格式 [ASS:人物名称列表] 也能被解析。 |
+| [ACTION:SCENE_GUIDE:人物名称] | 带玩家去找某人/某地点代理目标 | NPC 明确同意带路去清单目标 | 标签目标应解析到 Agent/LocationCharacter，不要输出裸坐标；短格式 [GUI:人物名称] 也能被解析。 |
+
+八、原版 Issue 接取与交付
+
+| 标签 | 实际用途 | 触发条件 | 实际效果/注意 |
+| --- | --- | --- | --- |
+| [ACTION:ISSUE_ACCEPT_SELF] | 玩家本人接取当前原版 Issue | NPC 明确把任务交给玩家本人且玩家同意 | 由 VanillaIssueOfferBridge 接入原版任务链路；介绍任务或谈条件时不要输出。 |
+| [ACTION:ISSUE_ACCEPT_ALT:COMPANION=HeroId] | 点名同伴代办当前 Issue | NPC 明确同意由玩家点名的候选同伴代办 | HeroId 必须来自候选清单；普通士兵、创建同伴部队、大地图命令都不走它。 |
+| [ACTION:QUEST_TURN_IN] | 原版 Issue 交付/验收 | 系统状态可交付，NPC 明确确认任务完成并验收 | 玩家单方面说完成、NPC 仍追问、任务失败/取消时不得输出。 |
+
+九、投票交易与王国议程提案
+
+| 标签 | 实际用途 | 触发条件 | 实际效果/注意 |
+| --- | --- | --- | --- |
+| [ACTION:VOTE_DEAL:议程编号:选项编号:权重:备注] | 拉票/投票交易 | NPC 是合格家族族长，且最终明确同意按某议程某选项投票 | 权重取 SLIGHTLY_FAVOR、STRONGLY_FAVOR、FULLY_PUSH；议程/选项编号必须来自后处理清单。 |
+| [ACTION:PROPOSE:类型:目标名:方向] | 要 NPC 向王国提出议程 | NPC 是贵族/族长并明确同意发起提案 | 类型可为 WAR、PEACE、POLICY、EXPEL、ALLIANCE、TRADE、FIEF；方向只给 POLICY 用 ADOPT/ABOLISH。 |
+
+十、大地图部队命令
+
+| 标签 | 实际用途 | 触发条件 | 实际效果/注意 |
+| --- | --- | --- | --- |
+| [ACTION:WORLDMAP_ORDER:GO_TO_SETTLEMENT:settlement:{id}:{days}] | 命令 NPC 部队前往定居点并停留 | NPC 明确同意前往/守备某个候选定居点 | id 必须来自运行时候选；days 未指定通常填 3。 |
+| [ACTION:WORLDMAP_ORDER:PATROL_SETTLEMENT:settlement:{id}:{days}] | 在定居点附近巡逻/游击 | NPC 明确同意前往某定居点附近巡逻 | id 必须来自候选；days 未指定通常填 3。 |
+| [ACTION:WORLDMAP_ORDER:FOLLOW:{hero|party}:{id}:{days}] | 跟随英雄或部队 | NPC 明确同意跟随玩家、某英雄或某队伍 | 跟随玩家时目标类型用 hero，id 使用玩家固定 hero ID。 |
+| [ACTION:WORLDMAP_ORDER:ATTACK:{hero|party|settlement}:{id}:{days}:{AI|FORCE}] | 攻击英雄、队伍或定居点 | NPC 明确同意攻击目标 | settlement 代表围城或掠村；AI 为谨慎评估，FORCE 只用于玩家明确要求强攻。 |
+| [ACTION:WORLDMAP_ORDER:MERGE_TO_PLAYER:{days}] | 独立同伴部队并入玩家主队 | NPC 明确同意把自己的独立部队并入玩家队伍 | 不等同 [A:H_J_P_P]；这是大地图部队合并命令。 |
+| [ACTION:WORLDMAP_ORDER:CREATE_COMPANION_PARTY] | 为 NPC 创建同伴部队 | NPC 需要先拥有可执行大地图命令的独立队伍 | 执行其他 WORLDMAP 标签前通常先输出；非 WORLDMAP 机制禁止使用。 |
+| [ACTION:WORLDMAP_ORDER:STOP] | 停止当前大地图命令 | NPC 明确同意取消/停止/恢复自由行动 | 清空当前命令队列；不应与其他大地图命令同轮输出。 |
+
+十一、外交标签
+
+| 标签 | 实际用途 | 触发条件 | 实际效果/注意 |
+| --- | --- | --- | --- |
+| [ACTION:DIPLOMACY:DECLARE_WAR:id1:id2] | 宣战 | 玩家对对方王国宣战时强制触发；NPC 对别国宣战则需其同意 | id1/id2 为相关王国 ID。 |
+| [ACTION:DIPLOMACY:MAKE_PEACE:付贡金方ID:收贡金方ID:tributeAmount:durationDays] | 议和 | 双方国王无条件同意 | tributeAmount 可为 0/auto/数字；durationDays 为 default 或 1-252。 |
+| [ACTION:DIPLOMACY:FORM_ALLIANCE:id1:id2:durationDays] | 结盟 | 双方国王无条件同意 | 每国最多 2 个同盟；天数同上。 |
+| [ACTION:DIPLOMACY:BREAK_ALLIANCE:id1:id2] | 解盟 | 单方取消同盟时强制触发 | 不要求 NPC 同意。 |
+| [ACTION:DIPLOMACY:MAKE_TRADE:id1:id2:durationDays] | 贸易协议 | 双方国王无条件同意 | 与 PROPOSE 同时可用时，国王间外交优先 DIPLOMACY。 |
+| [ACTION:DIPLOMACY:CANCEL_TRADE:id1:id2] | 取消贸易协议 | 单方取消贸易时强制触发 | 不要求 NPC 同意。 |
+
+十二、贵族宴会
+
+| 标签 | 实际用途 | 触发条件 | 实际效果/注意 |
+| --- | --- | --- | --- |
+| [ACTION:NOBLE_GATHERING:START:settlement=settlementId;heroes=heroId1,heroId2;clans=clanId1;kingdoms=kingdomId1;cultures=cultureId1;age=18-30;gender=female] | 开始安排贵族宴会 | NPC 明确同意帮玩家举办宴会，且玩家已给出地点和邀请范围 | settlement 必须是可举办地 ID；邀请范围至少要有 heroes/clans/kingdoms/cultures/age/gender 中一类。 |
+
+十三、多人场景接力
+
+| 标签 | 实际用途 | 触发条件 | 实际效果/注意 |
+| --- | --- | --- | --- |
+| [RELAY:接力编号] | 选择下一个发言 NPC | 场景多人接力后处理判断下一个最适合发言者 | 接力编号必须来自在场人物列表；若有人表示不想聊或要走，不应输出。 |
+
+十四、攻城后入城处置 / GCCZ 融合层标签
+
+| 标签 | 实际用途 | 触发条件 | 实际效果/注意 |
+| --- | --- | --- | --- |
+| [ACTION:宽恕] / [ACTION:SIEGE_MERCY] | 宽恕战败民众 | 玩家明确宣布不杀不抢、不追究、放过民众或约束军纪 | 单方处置，不需要平民同意；已有共享物资且谈救助时优先救济。 |
+| [ACTION:救济] / [ACTION:SIEGE_RELIEF] | 救济/安置民众 | 士兵路线需已有 AF 共享物资并同意分发；平民路线可由保护、安抚、安顿承诺触发 | 触发民生救助结算；士兵没有物资时不要误用。 |
+| [ACTION:宣抚] / [ACTION:SIEGE_INSPIRE] | 宣抚安民 | NPC 接受或传达公开演讲、安定城心、争取本地合作 | 不是简单分发物资；分发物资用救济。 |
+| [ACTION:盟誓] / [ACTION:SIEGE_RALLY_OATH] | 组织盟誓/归附 | NPC 接受或传达公开盟誓、归心效忠、争取要人归附 | 属于较强正面安抚路线。 |
+| [ACTION:安兵] / [ACTION:SIEGE_APPEASE_SOLDIERS] | 安抚己方士兵 | 运行时显示士兵不满待安抚，且当前说话者是玩家己方入城士兵 | 只安抚军心，不触发民众结算。 |
+| [ACTION:召集] / [ACTION:SIEGE_GATHER_CIVILIANS] | 召集民众听令/听训 | NPC 明确接受、传达或执行召集民众 | 可推动民众聚集、听训或接受处置。 |
+| [ACTION:抢钱] / [ACTION:SIEGE_ROBBERY] | 局部抢钱/抢物资 | 当前说话者是战败平民/商人/工匠/头人/要人，且直接回应玩家索取财物 | 不触发原版 Pillage；己方士兵禁止输出，士兵应走搜掠。 |
+| [ACTION:搜掠] / [ACTION:SIEGE_PLUNDER] | 士兵组织全城搜掠 | 当前说话者是玩家己方入城士兵，直接回应玩家命令搜掠全城 | 战败平民/商人/要人禁止输出；会进入破坏性处置。 |
+| [ACTION:血洗] / [ACTION:SIEGE_MASSACRE] | 血洗/屠城 | 玩家己方士兵直接回应玩家明确下令血洗/屠城/清洗 | 触发后不能回退为搜掠/宽恕/救济，但可继续升级为殖民。 |
+| [ACTION:殖民] / [ACTION:SIEGE_CULTURAL_REPOPULATION] / [ACTION:SIEGE_PURGE_REPOPULATION] | 屠戮并迁殖/文化替换 | 玩家己方士兵直接回应玩家明确要求杀尽原住民并迁入玩家方人口 | 可开局直接触发，也可在血洗后升级；平民回复和士兵互聊禁止触发。 |
+
+十五、兼容、旧版或不推荐直接使用的标签
+
+| 标签 | 当前状态 | 实际用途/注意 |
+| --- | --- | --- |
+| [FOL] | 兼容短标签 | 等同 [ACTION:SCENE_FOLLOW_PLAYER]，当前推荐写长标签。 |
+| [STP] | 兼容短标签 | 等同 [ACTION:SCENE_STOP_FOLLOW]，当前推荐写长标签。 |
+| [ASS:人物名称列表] | 兼容短标签 | 等同 [ACTION:SCENE_SUMMON:人物名称列表]，当前推荐写长标签。 |
+| [GUI:人物名称] | 兼容短标签 | 等同 [ACTION:SCENE_GUIDE:人物名称]，当前推荐写长标签。 |
+| [ADP:债务ID] | 兼容格式 | 等同 [ADP;债务ID]，当前规则表推荐分号格式。 |
+| [ACTION:KINGDOM_SERVICE:LEAVE] | 兼容/旧格式 | C# 有兼容解析，但规则表推荐 [ACTION:KINGDOM_SERVICE:LEAVE:current]。 |
+| [ACTION:JOIN_MERCENARY:kingdomId] | 旧势力身份标签 | C# 仍有旧解析入口；新规则推荐 KINGDOM_SERVICE:MERCENARY。 |
+| [ACTION:JOIN_VASSAL:kingdomId] | 旧势力身份标签 | C# 仍有旧解析入口；新规则推荐 KINGDOM_SERVICE:VASSAL。 |
+| [ACTION:VASSALAGE:SUBMIT:MILITARY:{kingdomId}] | 旧/兼容臣属类型 | C# 解析器接受，但当前规则表使用 GARRISON。 |
+| [ACTION:VASSALAGE:SUBMIT:PROTECTORATE:{kingdomId}] | 旧/兼容臣属类型 | C# 解析器接受，但当前规则表不推荐。 |
+| [ACTION:DEBT_GOLD:金额] | 旧版债务标签 | 代码中仍有旧处理痕迹，但当前链路主要用 [AD;...] 建债，不推荐新输出。 |
+| [ACTION:DEBT_ADD:金额] | 旧版债务标签 | 兼容旧金币债；当前不推荐。 |
+| [ACTION:DEBT_ITEM:物品名称:数量] | 旧版物品债标签 | 场景链路有规范化痕迹，但当前推荐用 AD/ADP 债务模型。 |
+| [ACTION:DEBT_DAYS:天数] / [ACTION:DEBT_DUE_DAYS:天数] | 旧版债务期限标签 | 当前推荐把期限写入 [AD;金额;天数;...]。 |
+| [ACTION:DEBT_DUE_ABS_DAY:天数] | 旧版绝对到期日 | 旧债务模型辅助标签；不推荐新输出。 |
+| [ACTION:DEBT_DUE_DATE:年:季节:日] | 旧版日历到期日 | 旧债务模型辅助标签；不推荐新输出。 |
+| [ACTION:DEBT_DUE_NONE] | 旧版无限期债务 | 当前推荐在 AD 期限规则中处理，不推荐新输出。 |
+| [ACTION:DEBT_OVERDUE_PRESET:信任扣减:关系扣减] | 旧版逾期惩罚预设 | 旧债务模型辅助标签；不推荐新输出。 |
+| [ACTION:DEBT_PAY_GOLD:债务ID:金额] | 旧版金币还款 | 当前推荐用 ADP 确认债务解除，或由系统事实确认实际交付后解除。 |
+| [ACTION:DEBT_PAY_ITEM:债务ID:物品名称:数量] | 旧版物品还款 | 代码有物品还款处理痕迹，但当前规则表不推荐。 |
+| [ACTION:DEBT_PAY_ITEM_GOLD:债务ID:金额] | 旧版物品债金币赔偿 | 旧债务模型辅助标签；不推荐新输出。 |
+| [ACTION:DEBT_ITEM_UNAVAILABLE:债务ID] | 旧版物品不可归还声明 | 旧债务模型辅助标签；不推荐新输出。 |
+| [ACTION:DEBT_ITEM_PENALTY:债务ID:信任扣减:关系扣减] | 旧版物品债惩罚 | 旧债务模型辅助标签；不推荐新输出。 |
+| [ACTION:DEBT_PAY:债务ID:金额] | 旧版通用还款 | 旧格式；不推荐。 |
+| [ACTION:TRADE_TRUST:数值] | 已忽略 | 代码日志提示即时交易信任现按 NPC 实际交付价值自动累计，本标签会被忽略/清理。 |
+| [ACTION:MEETING_TAUNT_WARN] | 旧警告标签 | 当前野外会面只剥离，不改变挑衅状态；要开战用 MEETING_TAUNT_BATTLE。 |
+
+十六、常见排查要点
+
+| 现象 | 优先检查 |
+| --- | --- |
+| NPC 正文答应了但游戏没触发 | 同一话题的 PostprocessRules 是否注入到 {tag_rules}，后处理是否实际输出标签。 |
+| 后处理输出了标签但无效果 | C# 正则是否支持该格式，目标 ID/编号是否来自运行时清单。 |
+| 债务没记录 | 当前推荐用 [AD;金额;天数;N/P;备注]，并确认方向 P/N；旧 DEBT_* 不应作为新规则依赖。 |
+| 士兵/俘虏没转移 | ATT/ATP 必须使用本轮编号，不要写兵种名或俘虏名。 |
+| 场景带路/传唤失败 | SCENE_GUIDE/SCENE_SUMMON 目标必须来自【带路与传唤NPC清单】，不要输出坐标。 |
+| 攻城处置误触发 | 搜掠/血洗/殖民只能由玩家己方入城士兵直接回应玩家明确命令触发；平民侧只能局部抢钱。 |
+| 大地图命令互相覆盖 | 新 WORLDMAP_ORDER 会覆盖旧 WORLDMAP_ORDER；STOP 不要和其他大地图命令同轮输出。 |

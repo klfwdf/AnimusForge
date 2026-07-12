@@ -9,28 +9,44 @@ public sealed class PlayerNotorietyPopupVM : ViewModel
 
 	private readonly Action _onEdit;
 
+	private readonly Action _onToggleLowProfile;
+
 	private string _historyText;
 
 	private string _centuryText;
 
 	private string _editText;
 
+	private string _lowProfileToggleText;
+
 	private bool _showEditButton;
+
+	private bool _isLowProfileModeEnabled;
 
 	private float _worldFillPercent;
 
 	private MBBindingList<PlayerNotorietyCultureItemVM> _cultureItems;
 
-	public PlayerNotorietyPopupVM(PlayerNotorietyPopupData data, Action onClose, Action onEdit)
+	public PlayerNotorietyPopupVM(PlayerNotorietyPopupData data, Action onClose, Action onEdit, Action onToggleLowProfile)
 	{
 		_onClose = onClose;
 		_onEdit = onEdit;
+		_onToggleLowProfile = onToggleLowProfile;
+		ApplyData(data);
+	}
+
+	public void ApplyData(PlayerNotorietyPopupData data)
+	{
 		PlayerNotorietyPopupData source = data ?? new PlayerNotorietyPopupData();
 		HistoryText = string.IsNullOrWhiteSpace(source.HistoryText) ? "尚无可展示的公开履历。" : source.HistoryText.Trim();
 		CenturyText = string.IsNullOrWhiteSpace(source.CenturyText) ? "" : source.CenturyText.Trim();
 		WorldFillPercent = ClampPercent(source.WorldFillPercent);
 		ShowEditButton = source.ShowEditButton;
 		EditText = string.IsNullOrWhiteSpace(source.EditText) ? "编辑履历" : source.EditText.Trim();
+		IsLowProfileModeEnabled = source.IsLowProfileModeEnabled;
+		LowProfileToggleText = string.IsNullOrWhiteSpace(source.LowProfileToggleText)
+			? (source.IsLowProfileModeEnabled ? "关闭低调模式" : "开启低调模式")
+			: source.LowProfileToggleText.Trim();
 		CultureItems = new MBBindingList<PlayerNotorietyCultureItemVM>();
 		foreach (PlayerNotorietyCultureRowData row in source.CultureRows ?? Array.Empty<PlayerNotorietyCultureRowData>())
 		{
@@ -84,6 +100,20 @@ public sealed class PlayerNotorietyPopupVM : ViewModel
 	}
 
 	[DataSourceProperty]
+	public string LowProfileToggleText
+	{
+		get => _lowProfileToggleText;
+		set
+		{
+			if (value != _lowProfileToggleText)
+			{
+				_lowProfileToggleText = value;
+				OnPropertyChangedWithValue(value, nameof(LowProfileToggleText));
+			}
+		}
+	}
+
+	[DataSourceProperty]
 	public bool ShowEditButton
 	{
 		get => _showEditButton;
@@ -93,6 +123,20 @@ public sealed class PlayerNotorietyPopupVM : ViewModel
 			{
 				_showEditButton = value;
 				OnPropertyChangedWithValue(value, nameof(ShowEditButton));
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public bool IsLowProfileModeEnabled
+	{
+		get => _isLowProfileModeEnabled;
+		set
+		{
+			if (value != _isLowProfileModeEnabled)
+			{
+				_isLowProfileModeEnabled = value;
+				OnPropertyChangedWithValue(value, nameof(IsLowProfileModeEnabled));
 			}
 		}
 	}
@@ -134,6 +178,11 @@ public sealed class PlayerNotorietyPopupVM : ViewModel
 	public void ExecuteEdit()
 	{
 		_onEdit?.Invoke();
+	}
+
+	public void ExecuteToggleLowProfile()
+	{
+		_onToggleLowProfile?.Invoke();
 	}
 
 	private static float ClampPercent(float value)
@@ -245,6 +294,8 @@ public sealed class PlayerNotorietyPopupData
 	public float WorldFillPercent;
 	public bool ShowEditButton;
 	public string EditText = "";
+	public bool IsLowProfileModeEnabled;
+	public string LowProfileToggleText = "";
 	public PlayerNotorietyCultureRowData[] CultureRows = Array.Empty<PlayerNotorietyCultureRowData>();
 }
 

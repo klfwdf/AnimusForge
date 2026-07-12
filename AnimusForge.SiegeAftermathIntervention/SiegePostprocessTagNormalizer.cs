@@ -53,6 +53,7 @@ public static class SiegePostprocessTagNormalizer
             }
         }
 
+
         string mood = string.Empty;
         foreach (Match moodMatch in MoodTagRegex.Matches(text))
         {

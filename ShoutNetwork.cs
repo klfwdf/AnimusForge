@@ -544,6 +544,7 @@ public static class ShoutNetwork
 			["maxTokens"] = DefaultPrimaryMaxTokens,
 			["messages"] = msgCount
 		});
+		FreezeWatchdog.Mark("PrimaryChat.non_stream.start", "messages=" + msgCount + " maxTokens=" + maxTokens, immediate: true);
 		try
 		{
 			DuelSettings settings = DuelSettings.GetSettings();
@@ -584,7 +585,9 @@ public static class ShoutNetwork
 			{
 				LlmApiCompat.ApplyAuthenticationHeaders(request, effectiveApiUrl, settings.ApiKey);
 				request.Content = (HttpContent)new StringContent(jsonBody, Encoding.UTF8, "application/json");
+				FreezeWatchdog.Mark("PrimaryChat.non_stream.send_begin", "model=" + effectiveModelName + " maxTokens=" + actualMaxTokens, immediate: true);
 				HttpResponseMessage response = await DuelSettings.GlobalClient.SendAsync(request);
+				FreezeWatchdog.Mark("PrimaryChat.non_stream.response", "status=" + (int)response.StatusCode + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 				if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_response"))
 				{
 					response.Dispose();
@@ -608,7 +611,9 @@ public static class ShoutNetwork
 					using HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
 					LlmApiCompat.ApplyAuthenticationHeaders(httpRequestMessage, effectiveApiUrl, settings.ApiKey);
 					httpRequestMessage.Content = (HttpContent)new StringContent(jsonBody2, Encoding.UTF8, "application/json");
+					FreezeWatchdog.Mark("PrimaryChat.non_stream.retry_send_begin", "model=" + effectiveModelName, immediate: true);
 					response = await DuelSettings.GlobalClient.SendAsync(httpRequestMessage);
+					FreezeWatchdog.Mark("PrimaryChat.non_stream.retry_response", "status=" + (int)response.StatusCode + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 					if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_retry_response"))
 					{
 						response.Dispose();
@@ -666,6 +671,7 @@ public static class ShoutNetwork
 							string outputContent = BuildTokenStatsOutputContent(content, reasoning);
 							Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent), messages, outputContent, "non_stream", requestBodyForTokenStats);
 						}
+						FreezeWatchdog.Mark("PrimaryChat.non_stream.complete", "resultLen=" + content.Length + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 						if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_complete"))
 						{
 							return SaveRuntimeGuard.BuildStaleRequestErrorText();
@@ -684,6 +690,7 @@ public static class ShoutNetwork
 						});
 						Logger.Metric("network.non_stream", ok: false, sw.Elapsed.TotalMilliseconds);
 						string parseError = "（API响应格式错误）";
+						FreezeWatchdog.Mark("PrimaryChat.non_stream.parse_error", "elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 						if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", parseError))
 						{
 							return await CallApiWithMessages(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError);
@@ -702,6 +709,7 @@ public static class ShoutNetwork
 				});
 				Logger.Metric("network.non_stream", ok: false, sw.Elapsed.TotalMilliseconds);
 				string httpError = $"（API请求失败: {response.StatusCode}{BuildApiErrorDetail(str)}）";
+				FreezeWatchdog.Mark("PrimaryChat.non_stream.http_error", "status=" + (int)response.StatusCode + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 				if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", httpError))
 				{
 					return await CallApiWithMessages(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError);
@@ -725,6 +733,7 @@ public static class ShoutNetwork
 			});
 			Logger.Metric("network.non_stream", ok: false, sw.Elapsed.TotalMilliseconds);
 			string exceptionError = "（程序错误: " + ex.Message + "）";
+			FreezeWatchdog.Mark("PrimaryChat.non_stream.exception", ex.GetType().Name + ": " + ex.Message + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 			if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", exceptionError))
 			{
 				return await CallApiWithMessages(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError);
@@ -753,6 +762,7 @@ public static class ShoutNetwork
 			["maxTokens"] = DefaultPrimaryMaxTokens,
 			["messages"] = msgCount
 		});
+		FreezeWatchdog.Mark("PrimaryChat.stream.start", "messages=" + msgCount + " maxTokens=" + maxTokens, immediate: true);
 		try
 		{
 			DuelSettings settings = DuelSettings.GetSettings();
@@ -789,6 +799,13 @@ public static class ShoutNetwork
 			JObject payload = BuildPrimaryChatPayload(messages, settings, effectiveApiUrl, effectiveModelName, actualMaxTokens, stream: true, out var thinkingMode);
 			string jsonBody = LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, payload);
 			requestBodyForTokenStats = jsonBody;
+			Logger.RecordTokenStats(
+				inputTokens,
+				0,
+				messages,
+				"[PRIMARY REQUEST PENDING]\nmode=stream\nmaxTokens=" + Math.Max(16, maxTokens) + "\nactualMaxTokens=" + actualMaxTokens + "\nthinkingMode=" + (thinkingMode ?? ""),
+				"stream_pending",
+				requestBodyForTokenStats);
 			bool streamSucceeded = false;
 			Exception lastStreamException = null;
 			for (int attempt = 1; attempt <= 2; attempt++)
@@ -805,7 +822,9 @@ public static class ShoutNetwork
 						LlmApiCompat.ApplyAuthenticationHeaders(request, effectiveApiUrl, settings.ApiKey);
 						request.Headers.ConnectionClose = true;
 						request.Content = (HttpContent)new StringContent(jsonBody, Encoding.UTF8, "application/json");
+						FreezeWatchdog.Mark("PrimaryChat.stream.send_begin", "attempt=" + attempt + " model=" + effectiveModelName + " maxTokens=" + actualMaxTokens, immediate: true);
 						HttpResponseMessage response = await DuelSettings.GlobalClient.SendAsync(request, (HttpCompletionOption)1, cancellationToken);
+						FreezeWatchdog.Mark("PrimaryChat.stream.response", "attempt=" + attempt + " status=" + (int)response.StatusCode + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 						if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_response"))
 						{
 							response.Dispose();
@@ -843,6 +862,7 @@ public static class ShoutNetwork
 							});
 							Logger.Metric("network.stream", ok: false, sw.Elapsed.TotalMilliseconds);
 							string httpError = $"（API请求失败: {response.StatusCode}{BuildApiErrorDetail(errBody)}）";
+							FreezeWatchdog.Mark("PrimaryChat.stream.http_error", "attempt=" + attempt + " status=" + (int)response.StatusCode + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 							if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", httpError))
 							{
 								await CallApiWithMessagesStream(messages, maxTokens, onChunk, onComplete, onError, cancellationToken, promptRetryOnError);
@@ -851,12 +871,18 @@ public static class ShoutNetwork
 							onError?.Invoke(httpError);
 							return;
 						}
+						FreezeWatchdog.Mark("PrimaryChat.stream.content_stream_wait_begin", "attempt=" + attempt + " thread=" + Thread.CurrentThread.ManagedThreadId);
 						using Stream stream = await response.Content.ReadAsStreamAsync();
+						FreezeWatchdog.Mark("PrimaryChat.stream.content_stream_wait_end", "attempt=" + attempt + " thread=" + Thread.CurrentThread.ManagedThreadId);
 						using StreamReader reader = new StreamReader(stream, Encoding.UTF8);
+						int readSequence = 0;
 						while (true)
 						{
 							string text;
+							readSequence++;
+							FreezeWatchdog.Mark("PrimaryChat.stream.read_line_begin", "attempt=" + attempt + " read=" + readSequence + " chunks=" + chunkCount + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2) + " thread=" + Thread.CurrentThread.ManagedThreadId);
 							string line = (text = await reader.ReadLineAsync());
+							FreezeWatchdog.Mark("PrimaryChat.stream.read_line_end", "attempt=" + attempt + " read=" + readSequence + " null=" + (text == null) + " chunks=" + chunkCount + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2) + " thread=" + Thread.CurrentThread.ManagedThreadId);
 							if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_read"))
 							{
 								return;
@@ -895,6 +921,7 @@ public static class ShoutNetwork
 											["mode"] = "stream",
 											["firstChunkMs"] = Math.Round(firstChunkMs, 2)
 										});
+										FreezeWatchdog.Mark("PrimaryChat.stream.first_chunk", "attempt=" + attempt + " firstChunkMs=" + Math.Round(firstChunkMs, 2), immediate: true);
 									}
 									chunkCount++;
 									if (!string.IsNullOrEmpty(text2))
@@ -904,7 +931,9 @@ public static class ShoutNetwork
 										{
 											if (!SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_chunk"))
 											{
+												FreezeWatchdog.Mark("PrimaryChat.stream.chunk_callback_begin", "read=" + readSequence + " chunk=" + chunkCount + " deltaLen=" + text2.Length + " thread=" + Thread.CurrentThread.ManagedThreadId);
 												onChunk?.Invoke(text2);
+												FreezeWatchdog.Mark("PrimaryChat.stream.chunk_callback_end", "read=" + readSequence + " chunk=" + chunkCount + " thread=" + Thread.CurrentThread.ManagedThreadId);
 											}
 										}
 										catch
@@ -975,6 +1004,7 @@ public static class ShoutNetwork
 					});
 					Logger.Metric("network.stream", ok: true, sw.Elapsed.TotalMilliseconds);
 					Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(fallback), messages, BuildTokenStatsOutputContent(fallback), "stream_fallback", requestBodyForTokenStats);
+					FreezeWatchdog.Mark("PrimaryChat.stream.fallback_complete", "resultLen=" + fallback.Length + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 					if (!SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_fallback_complete"))
 					{
 						onComplete?.Invoke(fallback.Trim());
@@ -1003,6 +1033,7 @@ public static class ShoutNetwork
 					Logger.Metric("network.stream", ok: true, sw.Elapsed.TotalMilliseconds);
 					string outputContent3 = BuildTokenStatsOutputContent(fullText.ToString(), fullReasoning.ToString());
 					Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent3), messages, outputContent3, "stream_partial", requestBodyForTokenStats);
+					FreezeWatchdog.Mark("PrimaryChat.stream.partial_complete", "resultLen=" + fullText.Length + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 					if (!SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_partial_complete"))
 					{
 						onComplete?.Invoke(ApplyPlayerDynamicNameToMainText(fullText.ToString()).Trim());
@@ -1022,6 +1053,7 @@ public static class ShoutNetwork
 					});
 					Logger.Metric("network.stream", ok: false, sw.Elapsed.TotalMilliseconds);
 					string streamError = "（程序错误: " + lastStreamException.Message + "）";
+					FreezeWatchdog.Mark("PrimaryChat.stream.exception_no_content", lastStreamException.GetType().Name + ": " + lastStreamException.Message + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 					if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", streamError))
 					{
 						await CallApiWithMessagesStream(messages, maxTokens, onChunk, onComplete, onError, cancellationToken, promptRetryOnError);
@@ -1069,9 +1101,12 @@ public static class ShoutNetwork
 			Logger.Metric("network.stream", ok: true, sw.Elapsed.TotalMilliseconds);
 			string outputContent2 = BuildTokenStatsOutputContent(finalText, fullReasoning.ToString());
 			Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent2), messages, outputContent2, "stream", requestBodyForTokenStats);
+			FreezeWatchdog.Mark("PrimaryChat.stream.complete", "resultLen=" + finalText.Length + " chunks=" + chunkCount + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 			if (!SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_complete"))
 			{
+				FreezeWatchdog.Mark("PrimaryChat.stream.complete_callback_begin", "resultLen=" + finalText.Length + " chunks=" + chunkCount + " thread=" + Thread.CurrentThread.ManagedThreadId);
 				onComplete?.Invoke(finalText);
+				FreezeWatchdog.Mark("PrimaryChat.stream.complete_callback_end", "resultLen=" + finalText.Length + " chunks=" + chunkCount + " thread=" + Thread.CurrentThread.ManagedThreadId);
 			}
 		}
 		catch (OperationCanceledException)
@@ -1086,6 +1121,7 @@ public static class ShoutNetwork
 			Logger.Metric("network.stream", ok: true, sw.Elapsed.TotalMilliseconds);
 			string outputContent4 = BuildTokenStatsOutputContent(fullText.ToString(), fullReasoning.ToString());
 			Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent4), messages, outputContent4, "stream_cancelled", requestBodyForTokenStats);
+			FreezeWatchdog.Mark("PrimaryChat.stream.cancelled", "partialLen=" + fullText.Length + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 			onComplete?.Invoke(ApplyPlayerDynamicNameToMainText(fullText.ToString()).Trim());
 		}
 		catch (Exception ex3)
@@ -1107,6 +1143,7 @@ public static class ShoutNetwork
 				Logger.Metric("network.stream", ok: true, sw.Elapsed.TotalMilliseconds);
 				string outputContent5 = BuildTokenStatsOutputContent(partial, fullReasoning.ToString());
 				Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent5), messages, outputContent5, "stream_exception_partial", requestBodyForTokenStats);
+				FreezeWatchdog.Mark("PrimaryChat.stream.exception_partial", ex3.GetType().Name + ": " + ex3.Message + " partialLen=" + partial.Length + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 				onComplete?.Invoke(partial);
 			}
 			else
@@ -1121,6 +1158,7 @@ public static class ShoutNetwork
 				});
 				Logger.Metric("network.stream", ok: false, sw.Elapsed.TotalMilliseconds);
 				string streamError = "（程序错误: " + ex3.Message + "）";
+				FreezeWatchdog.Mark("PrimaryChat.stream.exception", ex3.GetType().Name + ": " + ex3.Message + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 				if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", streamError))
 				{
 					await CallApiWithMessagesStream(messages, maxTokens, onChunk, onComplete, onError, cancellationToken, promptRetryOnError);

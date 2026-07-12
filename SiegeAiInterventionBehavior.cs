@@ -350,10 +350,22 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static Vec3 _civilianAssemblyForward;
 	private static Clan _previousSettlementOwnerClan;
 	private static MobileParty _besiegerParty;
+	private static bool _setsSettlementEntryVictoryContext;
+	private static string _setsSettlementEntryVictorySource = "";
+	private static bool _setsSettlementEntryWallRescueSuppressionLogged;
+	private static bool _setsOwnedSettlementIncidentContext;
+	private static bool _setsOwnedSettlementIncidentKilledNotable;
+	private static Clan _setsOwnedSettlementIncidentOwnerClan;
+	private static bool _setsOwnedSettlementIncidentPenaltyApplied;
+	private static bool _setsCapturedTownRiotContext;
+	private static bool _setsCapturedTownRiotKilledNotable;
+	private static Clan _setsCapturedTownRiotOriginalOwnerClan;
+	private static bool _setsCapturedTownRiotOwnerPenaltyApplied;
 	private static Settlement _activeSettlement;
 	private static Team _interventionPlayerCommandTeam;
 	private static Team _interventionCivilianEnemyTeam;
 	private static TroopRoster _selectedInterventionRoster;
+	private static string _activeInterventionLocationId = "";
 	private static Dictionary<MobileParty, float> _partyContributions = new Dictionary<MobileParty, float>();
 	private static readonly Dictionary<int, PlunderInteraction> ActivePlunderInteractions = new Dictionary<int, PlunderInteraction>();
 	private static readonly Dictionary<int, CivilianGatherInteraction> ActiveCivilianGatherInteractions = new Dictionary<int, CivilianGatherInteraction>();
@@ -448,6 +460,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		CampaignEvents.OnMissionEndedEvent.AddNonSerializedListener(this, OnMissionEnded);
 		CampaignEvents.TickEvent.AddNonSerializedListener(this, OnCampaignTick);
 		CampaignEvents.DailyTickTownEvent.AddNonSerializedListener(this, OnDailyTickTown);
+		CampaignEvents.OnSiegeAftermathAppliedEvent.AddNonSerializedListener(this, OnSetsTownRiotAftermathApplied);
 	}
 
 	public override void SyncData(IDataStore dataStore)
@@ -514,6 +527,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			starter.AddGameMenu("AnimusForge_siege_intervention_done", "{=!}{AF_SIEGE_DONE_TEXT}", AfSiegeInterventionDoneOnInit, GameMenu.MenuOverlayType.None, GameMenu.MenuFlags.None, null);
 			starter.AddGameMenuOption("AnimusForge_siege_intervention_done", "AnimusForge_siege_intervention_done_continue", SiegeInterventionCompletionUiProfile.DoneContinueMenuOptionText, AfSiegeInterventionDoneContinueCondition, AfSiegeInterventionDoneContinueConsequence, isLeave: false, -1);
+			starter.AddGameMenu(SetsOwnedSettlementIncidentProfile.MenuId, "{=!}{AF_SETS_OWNED_TOWN_INCIDENT_TEXT}", SetsOwnedSettlementIncidentOnInit, GameMenu.MenuOverlayType.None, GameMenu.MenuFlags.None, null);
+			starter.AddGameMenuOption(SetsOwnedSettlementIncidentProfile.MenuId, SetsOwnedSettlementIncidentProfile.EntryOptionId, SetsOwnedSettlementIncidentProfile.EntryOptionText, SetsOwnedSettlementIncidentEntryCondition, SetsOwnedSettlementIncidentEntryConsequence, isLeave: false, 0);
+			starter.AddGameMenuOption(SetsOwnedSettlementIncidentProfile.MenuId, SetsOwnedSettlementIncidentProfile.LeaveOptionId, SetsOwnedSettlementIncidentProfile.LeaveOptionText, SetsOwnedSettlementIncidentLeaveCondition, SetsOwnedSettlementIncidentLeaveConsequence, isLeave: true, 1);
 			foreach (string menuId in SiegeAftermathMenuProfile.EntryMenuIds)
 			{
 				string optionId = SiegeAftermathMenuProfile.BuildEntryMenuOptionId(menuId);
@@ -551,6 +567,75 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		FinishPlayerEncounterAfterIntervention(_pendingSummaryAftermath);
 	}
 
+	private static void SetsOwnedSettlementIncidentOnInit(MenuCallbackArgs args)
+	{
+		try
+		{
+			Settlement settlement = ResolveCurrentSettlement() ?? _activeSettlement;
+			string playerName = ResolvePlayerCharacterNameForContext();
+			string settlementName = settlement?.Name?.ToString() ?? _activeSettlementName;
+			MBTextManager.SetTextVariable("AF_SETS_OWNED_TOWN_INCIDENT_TEXT", SetsOwnedSettlementIncidentProfile.BuildMenuText(playerName, settlementName), false);
+			args?.MenuContext?.SetBackgroundMeshName("encounter_win");
+		}
+		catch
+		{
+		}
+	}
+
+	private static bool SetsOwnedSettlementIncidentEntryCondition(MenuCallbackArgs args)
+	{
+		try
+		{
+			Settlement settlement = ResolveCurrentSettlement() ?? _activeSettlement;
+			bool enabled = _setsOwnedSettlementIncidentContext
+				&& settlement?.IsTown == true
+				&& ResolveInterventionLocation(settlement) != null;
+			args.IsEnabled = enabled;
+			args.optionLeaveType = GameMenuOption.LeaveType.Submenu;
+			args.Tooltip = new TextObject(enabled ? "{=!}亲自进入城镇，继续决定剩余平民的命运。" : "{=!}当前没有可进入的 SETS 自有城镇事件场景。");
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static void SetsOwnedSettlementIncidentEntryConsequence(MenuCallbackArgs args)
+	{
+		EnterIntervention(args);
+	}
+
+	private static bool SetsOwnedSettlementIncidentLeaveCondition(MenuCallbackArgs args)
+	{
+		args.IsEnabled = true;
+		args.optionLeaveType = GameMenuOption.LeaveType.Leave;
+		return true;
+	}
+
+	private static void SetsOwnedSettlementIncidentLeaveConsequence(MenuCallbackArgs args)
+	{
+		try
+		{
+			ApplySetsOwnedSettlementIncidentOwnerPenalty(SetsOwnedSettlementIncidentProfile.NotableKilledRelationPenalty, "sets_owned_town_leave_notable", onlyIfNotableKilled: true);
+			ApplySetsOwnedSettlementIncidentOwnerPenalty(SetsOwnedSettlementIncidentProfile.MinorIncidentRelationPenalty, "sets_owned_town_leave_minor", onlyIfNotableKilled: false);
+			InformationManager.DisplayMessage(new InformationMessage(SetsOwnedSettlementIncidentProfile.BuildLeaveMessage(), Color.FromUint(SetsOwnedSettlementIncidentProfile.MessageColor)));
+			ClearSetsOwnedSettlementIncidentContext("leave_menu");
+			try
+			{
+				GameMenu.ExitToLast();
+			}
+			catch
+			{
+				try { GameMenu.SwitchToMenu("town"); } catch { }
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "SETS owned/attached town leave failed: " + ex.Message);
+		}
+	}
+
 	private static bool SiegeInterventionEntryCondition(MenuCallbackArgs args)
 	{
 		try
@@ -562,11 +647,14 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				args.optionLeaveType = GameMenuOption.LeaveType.Continue;
 				return false;
 			}
-			bool baseEnabled = settlement != null && settlement.IsTown && PlayerEncounter.LocationEncounter != null && ResolveInterventionLocation(settlement) != null;
+			bool baseEnabled = settlement != null
+				&& SiegeInterventionEntryProfile.IsSupportedSettlementKind(settlement.IsTown, settlement.IsCastle)
+				&& PlayerEncounter.LocationEncounter != null
+				&& ResolveInterventionLocation(settlement) != null;
 			args.IsEnabled = baseEnabled;
 			args.optionLeaveType = GameMenuOption.LeaveType.Submenu;
 			args.Tooltip = new TextObject(baseEnabled
-				? SiegeInterventionEntryProfile.EnabledTooltip
+				? SiegeInterventionEntryProfile.BuildEnabledTooltip(settlement?.IsCastle == true)
 				: SiegeInterventionEntryProfile.MissingSceneTooltip);
 			return true;
 		}
@@ -611,43 +699,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.MissingSceneMessage, Color.FromUint(SiegeInterventionEntryProfile.MissingSceneMessageColor)));
 				return;
 			}
-			_activeMode = InterventionMode.WaitingDecision;
-			_pendingMode = InterventionMode.WaitingDecision;
-			_activeSettlementId = settlement.StringId ?? "";
-			_activeSettlementName = settlement.Name?.ToString() ?? "";
-			_activeSettlement = settlement;
-			_afAftermathResolved = false;
-			_completedSettlementId = "";
-			_completedSettlementName = "";
-			_completedAftermath = SiegeAftermathAction.SiegeAftermath.ShowMercy;
-			_completedSummaryText = "";
-			_nativeDevastateAftermathFlowActive = false;
-			_nativeDevastateSummaryContinueHandled = false;
-			_directMassacreAftermathScriptPending = false;
-			_directMassacreLootScreenOpened = false;
-			_directMassacreWaitingForLootClose = false;
-			_directMassacreScriptMessageShown = false;
-			_directMassacreScriptTicks = 0;
-			_directMassacreLastDeferKey = "";
-			_directPlunderAftermathScriptPending = false;
-			_directPlunderLootScreenOpened = false;
-			_directPlunderWaitingForLootClose = false;
-			_directPlunderScriptMessageShown = false;
-			_directPlunderScriptTicks = 0;
-			_directPlunderLastDeferKey = "";
-			ResetOutcomeMessageDedup();
-			_civilianAssemblyPointReady = false;
-			_civilianAssemblyMessageShown = false;
-			_civilianAssemblyAnchor = Vec3.Zero;
-			_civilianAssemblyForward = Vec3.Forward;
-			CaptureNativeSiegeContext(settlement);
-			ResetSessionCounters();
-			SceneTauntBehavior.ClearArmedCarryoverForExternal(SiegeInterventionEntryProfile.SceneEntryCleanupSource);
-			SceneTauntBehavior.ClearPendingLocalDungeonCaptivityForExternal(SiegeInterventionEntryProfile.SceneEntryCleanupSource);
-			SceneTauntBehavior.ClearPendingForcedPlayerExecutionForExternal(SiegeInterventionEntryProfile.SceneEntryCleanupSource);
-			SceneTauntBehavior.ClearPendingMainHeroBattleDeathForExternal(SiegeInterventionEntryProfile.SceneEntryCleanupSource);
+			PrepareInterventionEntryRuntime(settlement, SiegeInterventionEntryProfile.SceneEntryCleanupSource);
 			InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.BuildTroopSelectionInstructionMessage(AutoSummonCount), Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
-			InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.DecisionPolicyMessage, Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
+			InformationManager.DisplayMessage(new InformationMessage(_setsOwnedSettlementIncidentContext ? SetsOwnedSettlementIncidentProfile.BuildEntryInstruction() : SiegeInterventionEntryProfile.BuildDecisionPolicyMessage(false), Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
 			if (!TryOpenInterventionTroopSelection(args, location))
 			{
 				OpenInterventionMissionNow(location, SiegeInterventionEntryProfile.SelectionUnavailableMissionSource);
@@ -658,6 +712,395 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			Logger.Log("SiegeAiIntervention", "EnterIntervention failed: " + ex);
 			InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.EntryFailedMessage, Color.FromUint(SiegeInterventionEntryProfile.MissingSceneMessageColor)));
 		}
+	}
+
+	internal static bool IsInterventionMissionOpenOrPendingForExternal()
+	{
+		try
+		{
+			if (_pendingMode != InterventionMode.None)
+			{
+				return true;
+			}
+			if (_activeMode == InterventionMode.None)
+			{
+				return _pendingSummarySwitch
+					|| _pendingEncounterFinish
+					|| _hasPendingAftermath
+					|| _directMassacreAftermathScriptPending
+					|| _directPlunderAftermathScriptPending;
+			}
+			if (Mission.Current != null)
+			{
+				return IsActiveInCurrentMission();
+			}
+			return _pendingSummarySwitch
+				|| _pendingEncounterFinish
+				|| _hasPendingAftermath
+				|| _directMassacreAftermathScriptPending
+				|| _directPlunderAftermathScriptPending;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	internal static bool TryOpenSettlementEntryVictoryMenu(Settlement settlement, TroopRoster selectedRoster, string source, bool transferOwnership = true, bool setsOwnedIncident = false, bool setsTownRiotKilledNotable = false)
+	{
+		try
+		{
+			if (settlement == null || !settlement.IsTown)
+			{
+				return false;
+			}
+			if (Campaign.Current == null || MobileParty.MainParty == null)
+			{
+				return false;
+			}
+			string bridgeSource = string.IsNullOrWhiteSpace(source) ? "SETS_town_victory_menu" : source;
+			ResetAftermathRuntimeGuards("sets_victory_menu_prepare");
+			PrepareSetsSettlementEntryVictoryContext(settlement, bridgeSource);
+			int maxSelected = Math.Max(AutoSummonCount, selectedRoster?.TotalManCount ?? 0);
+			StoreSelectedInterventionRoster(selectedRoster, maxSelected);
+			if (transferOwnership)
+			{
+				PrepareSetsCapturedTownRiotContext(settlement, setsTownRiotKilledNotable, bridgeSource);
+				ApplySetsSettlementEntryCaptureIfNeeded(settlement, bridgeSource + "_capture_before_native_menu");
+			}
+			else
+			{
+				Logger.Log("SiegeAiIntervention", "Skipped SETS settlement-entry ownership transfer for already-owned/attached town. Settlement=" + (settlement.StringId ?? "N/A") + ", Source=" + bridgeSource);
+			}
+			if (setsOwnedIncident)
+			{
+				PrepareSetsOwnedSettlementIncidentContext(settlement, setsTownRiotKilledNotable, bridgeSource);
+				GameMenu.ActivateGameMenu(SetsOwnedSettlementIncidentProfile.MenuId);
+				InformationManager.DisplayMessage(new InformationMessage(SetsOwnedSettlementIncidentProfile.BuildEntryInstruction(), Color.FromUint(SetsOwnedSettlementIncidentProfile.MessageColor)));
+				Logger.Log("SiegeAiIntervention", "Opened SETS owned/attached town incident menu. Settlement=" + (settlement.StringId ?? "N/A") + ", Selected=" + (_selectedInterventionRoster?.TotalManCount ?? 0) + ", Source=" + bridgeSource + ", killedNotable=" + setsTownRiotKilledNotable);
+				return true;
+			}
+			PrepareNativeSettlementTakenMenuContextForSets(settlement, bridgeSource);
+			GameMenu.ActivateGameMenu(SiegeAftermathMenuProfile.SettlementTakenMenuId);
+			InformationManager.DisplayMessage(new InformationMessage("【SETS内部暴乱】已进入原版围城战胜利处置菜单；可选择原版处置，也可选择 GCCZ 攻城处置。", Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
+			Logger.Log("SiegeAiIntervention", "Opened native settlement-taken menu from SETS victory. Settlement=" + (settlement.StringId ?? "N/A") + ", Selected=" + (_selectedInterventionRoster?.TotalManCount ?? 0) + ", Source=" + bridgeSource + ", transferOwnership=" + transferOwnership);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			ResetAftermathRuntimeGuards("sets_victory_menu_exception");
+			Logger.Log("SiegeAiIntervention", "TryOpenSettlementEntryVictoryMenu failed: " + ex);
+			return false;
+		}
+	}
+
+	private static void PrepareSetsSettlementEntryVictoryContext(Settlement settlement, string source)
+	{
+		_setsSettlementEntryVictoryContext = true;
+		_setsSettlementEntryVictorySource = string.IsNullOrWhiteSpace(source) ? "SETS_town_victory" : source;
+		_setsSettlementEntryWallRescueSuppressionLogged = false;
+		_activeSettlement = settlement;
+		_besiegerParty = MobileParty.MainParty;
+		_previousSettlementOwnerClan = settlement?.OwnerClan;
+		_partyContributions = new Dictionary<MobileParty, float>();
+		if (_besiegerParty != null)
+		{
+			_partyContributions[_besiegerParty] = 100f;
+		}
+		Logger.Log("SiegeAiIntervention", "Prepared SETS settlement-entry capture context. Settlement=" + (settlement?.StringId ?? "N/A") + ", PreviousOwner=" + (_previousSettlementOwnerClan?.StringId ?? "null") + ", Source=" + _setsSettlementEntryVictorySource);
+	}
+
+	private static void PrepareSetsOwnedSettlementIncidentContext(Settlement settlement, bool killedNotable, string source)
+	{
+		_setsOwnedSettlementIncidentContext = true;
+		_setsOwnedSettlementIncidentKilledNotable = killedNotable;
+		_setsOwnedSettlementIncidentOwnerClan = settlement?.OwnerClan;
+		_setsOwnedSettlementIncidentPenaltyApplied = false;
+		Logger.Log("SiegeAiIntervention", "Prepared SETS owned/attached settlement incident context. Settlement=" + (settlement?.StringId ?? "N/A") + ", OwnerClan=" + (_setsOwnedSettlementIncidentOwnerClan?.StringId ?? "null") + ", killedNotable=" + killedNotable + ", Source=" + (source ?? "N/A"));
+	}
+
+	private static void ClearSetsOwnedSettlementIncidentContext(string reason)
+	{
+		_setsOwnedSettlementIncidentContext = false;
+		_setsOwnedSettlementIncidentKilledNotable = false;
+		_setsOwnedSettlementIncidentOwnerClan = null;
+		_setsOwnedSettlementIncidentPenaltyApplied = false;
+		_setsCapturedTownRiotContext = false;
+		_setsCapturedTownRiotKilledNotable = false;
+		_setsCapturedTownRiotOriginalOwnerClan = null;
+		_setsCapturedTownRiotOwnerPenaltyApplied = false;
+		_setsSettlementEntryVictoryContext = false;
+		_setsSettlementEntryVictorySource = "";
+		_setsSettlementEntryWallRescueSuppressionLogged = false;
+		_previousSettlementOwnerClan = null;
+		_besiegerParty = null;
+		_activeSettlement = null;
+		_selectedInterventionRoster = null;
+		_partyContributions = new Dictionary<MobileParty, float>();
+		Logger.Log("SiegeAiIntervention", "Cleared SETS owned/attached settlement incident context. Reason=" + (reason ?? "N/A"));
+	}
+
+	private static void PrepareSetsCapturedTownRiotContext(Settlement settlement, bool killedNotable, string source)
+	{
+		_setsCapturedTownRiotContext = true;
+		_setsCapturedTownRiotKilledNotable = killedNotable;
+		_setsCapturedTownRiotOriginalOwnerClan = settlement?.OwnerClan;
+		_setsCapturedTownRiotOwnerPenaltyApplied = false;
+		Logger.Log("SiegeAiIntervention", "Prepared SETS captured-town riot owner context. Settlement=" + (settlement?.StringId ?? "N/A") + ", OwnerClan=" + (_setsCapturedTownRiotOriginalOwnerClan?.StringId ?? "null") + ", killedNotable=" + killedNotable + ", Source=" + (source ?? "N/A"));
+	}
+
+	private static void PrepareNativeSettlementTakenMenuContextForSets(Settlement settlement, string source)
+	{
+		try
+		{
+			SiegeAftermathCampaignBehavior behavior = Campaign.Current?.GetCampaignBehavior<SiegeAftermathCampaignBehavior>();
+			if (behavior == null || settlement == null)
+			{
+				Logger.Log("SiegeAiIntervention", "Skipped native settlement-taken menu context for SETS; behavior or settlement missing. Source=" + (source ?? "N/A"));
+				return;
+			}
+			MobileParty attackerParty = MobileParty.MainParty;
+			Clan previousOwner = _previousSettlementOwnerClan ?? settlement.OwnerClan ?? Clan.PlayerClan;
+			Dictionary<MobileParty, float> contributions = BuildSafePartyContributions(attackerParty);
+			Type type = typeof(SiegeAftermathCampaignBehavior);
+			type.GetField("_besiegerParty", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(behavior, attackerParty);
+			type.GetField("_prevSettlementOwnerClan", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(behavior, previousOwner);
+			type.GetField("_siegeEventPartyContributions", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(behavior, contributions);
+			type.GetField("_wasPlayerArmyMember", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(behavior, false);
+			type.GetField("_settlementProsperityCache", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(behavior, -1f);
+			FieldInfo damagedBuildingsField = type.GetField("_playerEncounterAftermathDamagedBuildings", BindingFlags.Instance | BindingFlags.NonPublic);
+			if (damagedBuildingsField?.GetValue(behavior) is System.Collections.IDictionary damagedBuildings)
+			{
+				damagedBuildings.Clear();
+			}
+			Logger.Log("SiegeAiIntervention", "Prepared native settlement-taken menu context for SETS. Settlement=" + (settlement.StringId ?? "N/A") + ", PreviousOwner=" + (previousOwner?.StringId ?? "null") + ", Source=" + (source ?? "N/A"));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "PrepareNativeSettlementTakenMenuContextForSets failed. Settlement=" + (settlement?.StringId ?? "N/A") + ", Source=" + (source ?? "N/A") + ", Error=" + ex.Message);
+		}
+	}
+
+	private static void ApplySetsSettlementEntryCaptureIfNeeded(Settlement settlement, string reason)
+	{
+		try
+		{
+			if (!_setsSettlementEntryVictoryContext || settlement?.Town == null)
+			{
+				return;
+			}
+			Hero mainHero = Hero.MainHero;
+			Clan playerClan = Clan.PlayerClan ?? mainHero?.Clan;
+			if (mainHero == null || playerClan == null)
+			{
+				Logger.Log("SiegeAiIntervention", "Skipped SETS settlement-entry capture; player hero/clan missing. Settlement=" + (settlement.StringId ?? "N/A") + ", Reason=" + (reason ?? "N/A"));
+				return;
+			}
+			Clan ownerBefore = settlement.OwnerClan;
+			if (_previousSettlementOwnerClan == null && ownerBefore != playerClan)
+			{
+				_previousSettlementOwnerClan = ownerBefore;
+			}
+			if (ownerBefore == playerClan)
+			{
+				Logger.Log("SiegeAiIntervention", "SETS settlement-entry capture already owned by player. Settlement=" + (settlement.StringId ?? "N/A") + ", Reason=" + (reason ?? "N/A"));
+				return;
+			}
+			try
+			{
+				ChangeOwnerOfSettlementAction.ApplyBySiege(mainHero, mainHero, settlement);
+			}
+			catch (Exception siegeEx)
+			{
+				Logger.Log("SiegeAiIntervention", "SETS settlement-entry ApplyBySiege failed; trying default owner transfer. Settlement=" + (settlement.StringId ?? "N/A") + ", Error=" + siegeEx.Message);
+			}
+			if (settlement.OwnerClan != playerClan)
+			{
+				Logger.Log("SiegeAiIntervention", "SETS settlement-entry ApplyBySiege did not leave player ownership; applying direct ownership fallback. Settlement=" + (settlement.StringId ?? "N/A") + ", CurrentOwner=" + (settlement.OwnerClan?.StringId ?? "null"));
+				ChangeOwnerOfSettlementAction.ApplyByDefault(mainHero, settlement);
+			}
+			if (settlement.OwnerClan != playerClan)
+			{
+				Logger.Log("SiegeAiIntervention", "SETS settlement-entry ownership transfer failed. Settlement=" + (settlement.StringId ?? "N/A") + ", CurrentOwner=" + (settlement.OwnerClan?.StringId ?? "null") + ", Reason=" + (reason ?? "N/A"));
+				return;
+			}
+			settlement.Town.IsOwnerUnassigned = false;
+			Logger.Log("SiegeAiIntervention", "Applied SETS settlement-entry capture ownership. Settlement=" + (settlement.StringId ?? "N/A") + ", PreviousOwner=" + (ownerBefore?.StringId ?? "null") + ", NewOwner=" + (settlement.OwnerClan?.StringId ?? "null") + ", Reason=" + (reason ?? "N/A"));
+			InformationManager.DisplayMessage(new InformationMessage("【SETS内部暴乱】" + (settlement.Name?.ToString() ?? "该城镇") + " 已由你的家族接管。", Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "ApplySetsSettlementEntryCaptureIfNeeded failed. Settlement=" + (settlement?.StringId ?? "N/A") + ", Reason=" + (reason ?? "N/A") + ", Error=" + ex);
+		}
+	}
+
+	private static void ApplySetsOwnedSettlementIncidentOutcomePenalty(SiegeAftermathAction.SiegeAftermath aftermath, string reason)
+	{
+		if (!_setsOwnedSettlementIncidentContext)
+		{
+			return;
+		}
+		int desiredPenalty = SetsOwnedSettlementIncidentProfile.ResolveOwnerRelationPenalty(
+			ToStandaloneAftermathKind(aftermath),
+			_setsOwnedSettlementIncidentKilledNotable,
+			_culturalRepopulationRequested || _culturalRepopulationApplied);
+		int nativePenalty = ResolveNativeSettlementOwnerRelationPenalty(aftermath);
+		int additionalPenalty = SetsOwnedSettlementIncidentProfile.ResolveAdditionalPenaltyAfterNative(desiredPenalty, nativePenalty);
+		ApplySetsOwnedSettlementIncidentOwnerPenalty(additionalPenalty, reason ?? "sets_owned_town_outcome", onlyIfNotableKilled: false, desiredTotalPenalty: desiredPenalty);
+	}
+
+	private static void ApplySetsCapturedTownRiotOwnerPenalty(SiegeAftermathAction.SiegeAftermath aftermath, string reason)
+	{
+		try
+		{
+			if (!_setsCapturedTownRiotContext || _setsCapturedTownRiotOwnerPenaltyApplied)
+			{
+				return;
+			}
+			Clan ownerClan = _setsCapturedTownRiotOriginalOwnerClan;
+			Hero ownerLeader = ownerClan?.Leader;
+			if (ownerLeader == null || ownerLeader == Hero.MainHero)
+			{
+				_setsCapturedTownRiotContext = false;
+				_setsCapturedTownRiotOwnerPenaltyApplied = true;
+				Logger.Log("SiegeAiIntervention", "Skipped SETS captured-town original owner relation penalty because owner leader is unavailable. OwnerClan=" + (ownerClan?.StringId ?? "null") + ", Reason=" + (reason ?? "N/A"));
+				return;
+			}
+			int desiredPenalty = SetsOwnedSettlementIncidentProfile.ResolveOwnerRelationPenalty(
+				ToStandaloneAftermathKind(aftermath),
+				_setsCapturedTownRiotKilledNotable,
+				_culturalRepopulationRequested || _culturalRepopulationApplied);
+			int nativePenalty = ResolveNativeSettlementOwnerRelationPenalty(aftermath);
+			int additionalPenalty = SetsOwnedSettlementIncidentProfile.ResolveAdditionalPenaltyAfterNative(desiredPenalty, nativePenalty);
+			ChangeRelationAction.ApplyPlayerRelation(ownerLeader, additionalPenalty, true, true);
+			_setsCapturedTownRiotOwnerPenaltyApplied = true;
+			_setsCapturedTownRiotContext = false;
+			InformationManager.DisplayMessage(new InformationMessage(SetsOwnedSettlementIncidentProfile.BuildRelationPenaltyMessage(desiredPenalty), Color.FromUint(SetsOwnedSettlementIncidentProfile.WarningColor)));
+			Logger.Log("SiegeAiIntervention", "Applied SETS captured-town original owner relation penalty. OwnerClan=" + (ownerClan.StringId ?? "null") + ", DesiredTotal=" + desiredPenalty + ", Native=" + nativePenalty + ", Additional=" + additionalPenalty + ", Aftermath=" + aftermath + ", Reason=" + (reason ?? "N/A") + ", killedNotable=" + _setsCapturedTownRiotKilledNotable);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "ApplySetsCapturedTownRiotOwnerPenalty failed. Reason=" + (reason ?? "N/A") + ", Error=" + ex.Message);
+		}
+	}
+
+	private void OnSetsTownRiotAftermathApplied(MobileParty attackerParty, Settlement settlement, SiegeAftermathAction.SiegeAftermath aftermath, Clan previousSettlementOwner, Dictionary<MobileParty, float> partyContributions)
+	{
+		try
+		{
+			if (!_setsSettlementEntryVictoryContext || !_setsCapturedTownRiotContext || attackerParty != MobileParty.MainParty || settlement == null)
+			{
+				return;
+			}
+			if (_activeSettlement != null && !string.Equals(_activeSettlement.StringId, settlement.StringId, StringComparison.Ordinal))
+			{
+				return;
+			}
+			if (_setsCapturedTownRiotOriginalOwnerClan != null && previousSettlementOwner != null && previousSettlementOwner != _setsCapturedTownRiotOriginalOwnerClan)
+			{
+				Logger.Log("SiegeAiIntervention", "Skipped SETS captured-town owner penalty for mismatched previous owner. Expected=" + (_setsCapturedTownRiotOriginalOwnerClan.StringId ?? "null") + ", Actual=" + (previousSettlementOwner.StringId ?? "null") + ", Settlement=" + (settlement.StringId ?? "N/A"));
+				return;
+			}
+			ApplySetsCapturedTownRiotOwnerPenalty(aftermath, "siege_aftermath_applied_event");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "OnSetsTownRiotAftermathApplied failed: " + ex.Message);
+		}
+	}
+
+	private static int ResolveNativeSettlementOwnerRelationPenalty(SiegeAftermathAction.SiegeAftermath aftermath)
+	{
+		if (aftermath == SiegeAftermathAction.SiegeAftermath.Pillage)
+		{
+			return -15;
+		}
+		if (aftermath == SiegeAftermathAction.SiegeAftermath.Devastate)
+		{
+			return -30;
+		}
+		return 0;
+	}
+
+	private static void ApplySetsOwnedSettlementIncidentOwnerPenalty(int penalty, string reason, bool onlyIfNotableKilled, int desiredTotalPenalty = 0)
+	{
+		try
+		{
+			if (!_setsOwnedSettlementIncidentContext || _setsOwnedSettlementIncidentPenaltyApplied || penalty >= 0)
+			{
+				return;
+			}
+			if (onlyIfNotableKilled && !_setsOwnedSettlementIncidentKilledNotable)
+			{
+				return;
+			}
+			Clan ownerClan = _setsOwnedSettlementIncidentOwnerClan ?? ResolveCurrentSettlement()?.OwnerClan ?? _activeSettlement?.OwnerClan;
+			Clan playerClan = Clan.PlayerClan ?? Hero.MainHero?.Clan;
+			if (ownerClan == null || playerClan == null || ownerClan == playerClan)
+			{
+				return;
+			}
+			Kingdom playerKingdom = playerClan.Kingdom ?? Hero.MainHero?.Clan?.Kingdom;
+			bool playerIsRuler = playerKingdom != null && (playerKingdom.RulingClan == playerClan || playerKingdom.Leader == Hero.MainHero);
+			if (!playerIsRuler || ownerClan.Kingdom != playerKingdom)
+			{
+				return;
+			}
+			Hero ownerLeader = ownerClan.Leader;
+			if (ownerLeader == null || ownerLeader == Hero.MainHero)
+			{
+				return;
+			}
+			ChangeRelationAction.ApplyPlayerRelation(ownerLeader, penalty, true, true);
+			_setsOwnedSettlementIncidentPenaltyApplied = true;
+			int reportedPenalty = desiredTotalPenalty < 0 ? desiredTotalPenalty : penalty;
+			InformationManager.DisplayMessage(new InformationMessage(SetsOwnedSettlementIncidentProfile.BuildRelationPenaltyMessage(reportedPenalty), Color.FromUint(SetsOwnedSettlementIncidentProfile.WarningColor)));
+			Logger.Log("SiegeAiIntervention", "Applied SETS owned/attached settlement owner relation penalty. OwnerClan=" + (ownerClan.StringId ?? "null") + ", DesiredTotal=" + reportedPenalty + ", Additional=" + penalty + ", Reason=" + (reason ?? "N/A") + ", killedNotable=" + _setsOwnedSettlementIncidentKilledNotable);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "ApplySetsOwnedSettlementIncidentOwnerPenalty failed. Reason=" + (reason ?? "N/A") + ", Error=" + ex.Message);
+		}
+	}
+
+	private static void PrepareInterventionEntryRuntime(Settlement settlement, string cleanupSource)
+	{
+		_activeMode = InterventionMode.WaitingDecision;
+		_pendingMode = InterventionMode.WaitingDecision;
+		_activeSettlementId = settlement.StringId ?? "";
+		_activeSettlementName = settlement.Name?.ToString() ?? "";
+		_activeSettlement = settlement;
+		_afAftermathResolved = false;
+		_completedSettlementId = "";
+		_completedSettlementName = "";
+		_completedAftermath = SiegeAftermathAction.SiegeAftermath.ShowMercy;
+		_completedSummaryText = "";
+		_nativeDevastateAftermathFlowActive = false;
+		_nativeDevastateSummaryContinueHandled = false;
+		_directMassacreAftermathScriptPending = false;
+		_directMassacreLootScreenOpened = false;
+		_directMassacreWaitingForLootClose = false;
+		_directMassacreScriptMessageShown = false;
+		_directMassacreScriptTicks = 0;
+		_directMassacreLastDeferKey = "";
+		_directPlunderAftermathScriptPending = false;
+		_directPlunderLootScreenOpened = false;
+		_directPlunderWaitingForLootClose = false;
+		_directPlunderScriptMessageShown = false;
+		_directPlunderScriptTicks = 0;
+		_directPlunderLastDeferKey = "";
+		ResetOutcomeMessageDedup();
+		_civilianAssemblyPointReady = false;
+		_civilianAssemblyMessageShown = false;
+		_civilianAssemblyAnchor = Vec3.Zero;
+		_civilianAssemblyForward = Vec3.Forward;
+		CaptureNativeSiegeContext(settlement);
+		ResetSessionCounters();
+		string source = string.IsNullOrWhiteSpace(cleanupSource) ? SiegeInterventionEntryProfile.SceneEntryCleanupSource : cleanupSource;
+		SceneTauntBehavior.ClearArmedCarryoverForExternal(source);
+		SceneTauntBehavior.ClearPendingLocalDungeonCaptivityForExternal(source);
+		SceneTauntBehavior.ClearPendingForcedPlayerExecutionForExternal(source);
+		SceneTauntBehavior.ClearPendingMainHeroBattleDeathForExternal(source);
 	}
 
 	private static bool TryOpenInterventionTroopSelection(MenuCallbackArgs args, Location location)
@@ -673,8 +1116,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			TroopRoster initialSelections = BuildDefaultInterventionTroopSelection(fullRoster, AutoSummonCount);
-			_selectedInterventionRoster = null;
+			TroopRoster initialSelections = _selectedInterventionRoster != null && _selectedInterventionRoster.TotalManCount > 0
+				? _selectedInterventionRoster
+				: BuildDefaultInterventionTroopSelection(fullRoster, AutoSummonCount);
 			Action<TroopRoster> onDone = delegate(TroopRoster selectedRoster)
 			{
 				StoreSelectedInterventionRoster(selectedRoster, AutoSummonCount);
@@ -874,17 +1318,61 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		Logger.Log("SiegeAiIntervention", "Stored intervention troop selection. Count=" + (_selectedInterventionRoster?.TotalManCount ?? 0));
 	}
 
-	private static void OpenInterventionMissionNow(Location location, string source)
+	private static string GetCurrentGameMenuId()
 	{
-		PlayerEncounter.LocationEncounter.CreateAndOpenMissionController(location, null, null, null);
-		Logger.Log("SiegeAiIntervention", "Opened intervention mission through normal location controller. Source=" + (source ?? "N/A") + ", SelectedRoster=" + (_selectedInterventionRoster?.TotalManCount ?? 0));
+		try
+		{
+			return Campaign.Current?.CurrentMenuContext?.GameMenu?.StringId ?? "N/A";
+		}
+		catch
+		{
+			return "N/A";
+		}
+	}
+
+	private static string GetActiveGameStateName()
+	{
+		try
+		{
+			return Game.Current?.GameStateManager?.ActiveState?.GetType().Name ?? "N/A";
+		}
+		catch
+		{
+			return "N/A";
+		}
+	}
+
+	private static bool OpenInterventionMissionNow(Location location, string source)
+	{
+		try
+		{
+			if (!CanOpenInterventionMissionNow(location))
+			{
+				Logger.Log("SiegeAiIntervention", "OpenInterventionMissionNow skipped; location encounter unavailable. Source=" + (source ?? "N/A"));
+				return false;
+			}
+			_activeInterventionLocationId = location.StringId ?? "";
+			PlayerEncounter.LocationEncounter.CreateAndOpenMissionController(location, null, null, null);
+			Logger.Log("SiegeAiIntervention", "Opened intervention mission through normal location controller. Source=" + (source ?? "N/A") + ", SelectedRoster=" + (_selectedInterventionRoster?.TotalManCount ?? 0));
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "OpenInterventionMissionNow failed. Source=" + (source ?? "N/A") + ", Error=" + ex);
+			return false;
+		}
+	}
+
+	private static bool CanOpenInterventionMissionNow(Location location)
+	{
+		return location != null && PlayerEncounter.LocationEncounter != null;
 	}
 
 	private static Location ResolveInterventionLocation(Settlement settlement)
 	{
 		try
 		{
-			if (settlement == null || !settlement.IsTown)
+			if (settlement == null || !SiegeInterventionEntryProfile.IsSupportedSettlementKind(settlement.IsTown, settlement.IsCastle))
 			{
 				return null;
 			}
@@ -893,7 +1381,15 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return null;
 			}
-			return complex.GetLocationWithId("center") ?? complex.FindAll(x => x == "center").FirstOrDefault();
+			foreach (string locationId in SiegeInterventionEntryProfile.GetPreferredLocationIds(settlement.IsTown, settlement.IsCastle))
+			{
+				Location location = complex.GetLocationWithId(locationId) ?? complex.FindAll(x => x == locationId).FirstOrDefault();
+				if (location != null)
+				{
+					return location;
+				}
+			}
+			return null;
 		}
 		catch
 		{
@@ -979,7 +1475,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		AfGcczShoutBridge.ResetPostprocessFrequencyForMissionBoundary(SiegePostprocessFrequencyProfile.MissionStartResetSource);
 		try
 		{
-			if (mission is Mission missionPopulation && missionPopulation.GetMissionBehavior<InterventionNativeTownCivilianPopulationMissionBehavior>() == null)
+			if (ResolveCurrentSettlement()?.IsTown == true
+				&& mission is Mission missionPopulation
+				&& missionPopulation.GetMissionBehavior<InterventionNativeTownCivilianPopulationMissionBehavior>() == null)
 			{
 				missionPopulation.AddMissionBehavior(new InterventionNativeTownCivilianPopulationMissionBehavior(_activeSettlementId));
 			}
@@ -1025,6 +1523,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		TryKeepMissionExitImmediatelyAvailable(mission);
 		EnsureInterventionMissionCombatModeForPlayerDamage(mission);
 		EnsureInterventionPlayerCommandTeam(mission);
+		TryMaintainTownCivilianSceneGoldDrops(mission, dt);
 		float currentTime = mission.CurrentTime;
 		PumpPendingAmbientReactions(mission);
 		if (currentTime >= _nextControlTickTime)
@@ -1084,6 +1583,23 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 		catch
 		{
+		}
+	}
+
+	private static void TryMaintainTownCivilianSceneGoldDrops(Mission mission, float dt)
+	{
+		try
+		{
+			Settlement settlement = ResolveCurrentSettlement() ?? Settlement.CurrentSettlement;
+			if (mission == null || settlement?.IsTown != true || settlement.IsCastle)
+			{
+				return;
+			}
+			SceneTauntMissionBehavior.TryMaintainSceneGoldDropsForExternal(dt, "gccz_town_scene_gold_tick");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "Maintaining GCCZ town civilian scene gold drops failed: " + ex.Message);
 		}
 	}
 
@@ -1171,22 +1687,28 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		TryPumpPendingEncounterFinishForExternal(SiegeAftermathTransitionSourceProfile.CampaignTickPostMissionFinishSource);
+	}
+
+	internal static bool TryPumpPendingEncounterFinishForExternal(string source)
+	{
 		if ((!_pendingSummarySwitch && !_pendingEncounterFinish) || Mission.Current != null)
 		{
-			return;
+			return false;
 		}
+		string finishSource = string.IsNullOrWhiteSpace(source) ? SiegeAftermathTransitionSourceProfile.GameStateDeferredFinishPumpSource : source;
 		bool keepPending = false;
 		try
 		{
 			if (_nativeDevastateAftermathFlowActive && !_pendingLootScreenShown)
 			{
 				keepPending = true;
-				return;
+				return true;
 			}
 			if (_hasPendingAftermath)
 			{
 				keepPending = true;
-				return;
+				return true;
 			}
 			if (_pendingLootScreen && !_pendingLootScreenShown && _pendingLootRoster != null && _pendingLootRoster.Count > 0)
 			{
@@ -1199,12 +1721,12 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 						_pendingLootRoster
 					}
 				});
-				return;
+				return true;
 			}
 			if (_pendingLootScreenShown && Game.Current?.GameStateManager?.ActiveState is InventoryState)
 			{
 				keepPending = true;
-				return;
+				return true;
 			}
 			SiegeAftermathAction.SiegeAftermath aftermath = _pendingEncounterFinish ? _pendingEncounterFinishAftermath : _pendingSummaryAftermath;
 			TrySetNativePlayerEncounterAftermathForSummary(aftermath);
@@ -1214,18 +1736,20 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			if (!_pendingEncounterFinish)
 			{
-				QueueEncounterFinishAfterIntervention(aftermath, SiegeAftermathTransitionSourceProfile.CampaignTickPostMissionFinishSource, 0, forceDelay: false);
+				QueueEncounterFinishAfterIntervention(aftermath, finishSource, 0, forceDelay: false);
 			}
-			if (!TryFinishPlayerEncounterAfterInterventionNow(aftermath, SiegeAftermathTransitionSourceProfile.CampaignTickPostMissionFinishSource))
+			if (!TryFinishPlayerEncounterAfterInterventionNow(aftermath, finishSource))
 			{
 				keepPending = true;
-				return;
+				return true;
 			}
+			return true;
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("SiegeAiIntervention", "Finishing after intervention failed: " + ex.Message);
+			Logger.Log("SiegeAiIntervention", "Finishing after intervention failed. Source=" + finishSource + ", Error=" + ex.Message);
 			keepPending = true;
+			return false;
 		}
 		finally
 		{
@@ -1374,6 +1898,30 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("SiegeAiIntervention", "MaybeTriggerSoldierAppeasementNeed failed: " + ex.Message);
+		}
+	}
+
+
+	private static void ForceTriggerSoldierAppeasementNeed(string outcomeName)
+	{
+		try
+		{
+			if (_soldierAppeasementRequired || _massacreStarted || _culturalRepopulationRequested)
+			{
+				return;
+			}
+			_soldierAppeasementCheckDone = true;
+			_soldierAppeasementRequired = true;
+			_soldierAppeasementApplied = false;
+			_soldierAppeasementMoralePenaltyApplied = false;
+			SiegeSoldierAppeasementProfile soldierProfile = new SiegeSoldierAppeasementProfile();
+			RecordInterventionMemory(soldierProfile.NeedMemoryTitle, soldierProfile.BuildNeedMemoryText(outcomeName));
+			InformationManager.DisplayMessage(new InformationMessage(soldierProfile.NeedMessageText, Color.FromUint(soldierProfile.NeedMessageColor)));
+			GcczDiagnosticLog.Log("SoldierAppeasement", "forcedSoldierAppeasement outcome=" + (outcomeName ?? "N/A"));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "ForceTriggerSoldierAppeasementNeed failed: " + ex.Message);
 		}
 	}
 
@@ -1530,7 +2078,14 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			return SiegeRuntimePromptProfile.BuildPlayerCommanderContext(ResolvePlayerCharacterNameForContext(), alliedSoldier, civilian);
+			string playerName = ResolvePlayerCharacterNameForContext();
+			string context = SiegeRuntimePromptProfile.BuildPlayerCommanderContext(playerName, alliedSoldier, civilian);
+			if (_setsOwnedSettlementIncidentContext)
+			{
+				string settlementName = string.IsNullOrWhiteSpace(_activeSettlementName) ? ResolveCurrentSettlement()?.Name?.ToString() : _activeSettlementName;
+				context = AppendRuntimeContext(context, SetsOwnedSettlementIncidentProfile.BuildRuntimeContext(playerName, settlementName, alliedSoldier, civilian));
+			}
+			return context;
 		}
 		catch
 		{
@@ -1548,6 +2103,114 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		catch
 		{
 			return "玩家";
+		}
+	}
+
+	private static int CountActiveAlliedInterventionSoldiers()
+	{
+		try
+		{
+			Mission mission = Mission.Current;
+			if (mission?.Agents == null)
+			{
+				return 0;
+			}
+			int count = 0;
+			foreach (Agent agent in mission.Agents)
+			{
+				CharacterObject character = agent?.Character as CharacterObject;
+				if (agent == null || agent == Agent.Main || !agent.IsHuman || !agent.IsActive())
+				{
+					continue;
+				}
+				if (IsRuntimeAlliedSoldierAgent(agent, character, character?.HeroObject))
+				{
+					count++;
+				}
+			}
+			return count;
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static int CountMainPartyHeroPrisoners()
+	{
+		try
+		{
+			TroopRoster roster = PartyBase.MainParty?.PrisonRoster;
+			if (roster == null)
+			{
+				return 0;
+			}
+			int count = 0;
+			for (int i = 0; i < roster.Count; i++)
+			{
+				TroopRosterElement element = roster.GetElementCopyAtIndex(i);
+				CharacterObject character = element.Character;
+				if (character?.HeroObject != null)
+				{
+					count += Math.Max(1, element.Number);
+				}
+			}
+			return count;
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static int CountMainPartyRegularPrisoners()
+	{
+		try
+		{
+			return CountRegularPrisonersInRoster(PartyBase.MainParty?.PrisonRoster);
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static int CountRegularPrisonersInRoster(TroopRoster roster)
+	{
+		try
+		{
+			if (roster == null)
+			{
+				return 0;
+			}
+			int count = 0;
+			for (int i = 0; i < roster.Count; i++)
+			{
+				TroopRosterElement element = roster.GetElementCopyAtIndex(i);
+				CharacterObject character = element.Character;
+				if (character != null && character.HeroObject == null)
+				{
+					count += Math.Max(0, element.Number);
+				}
+			}
+			return count;
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static int CountSettlementGarrisonTroops(Settlement settlement)
+	{
+		try
+		{
+			TroopRoster roster = settlement?.Town?.GarrisonParty?.MemberRoster;
+			return Math.Max(0, roster?.TotalManCount ?? 0);
+		}
+		catch
+		{
+			return 0;
 		}
 	}
 
@@ -1627,7 +2290,13 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			Hero resolvedHero = hero ?? resolved?.HeroObject;
 			bool alliedSoldier = IsRuntimeAlliedSoldierAgent(agent, resolved, resolvedHero);
 			bool civilian = IsCivilianForIntervention(resolved);
-			return SiegeRuntimePromptProfile.BuildImmediateReactionIdentityOverride(ResolvePlayerCharacterNameForContext(), alliedSoldier, civilian);
+			string identity = SiegeRuntimePromptProfile.BuildImmediateReactionIdentityOverride(ResolvePlayerCharacterNameForContext(), alliedSoldier, civilian);
+			if (_setsOwnedSettlementIncidentContext)
+			{
+				string settlementName = string.IsNullOrWhiteSpace(_activeSettlementName) ? ResolveCurrentSettlement()?.Name?.ToString() : _activeSettlementName;
+				identity = AppendRuntimeContext(identity, SetsOwnedSettlementIncidentProfile.BuildRuntimeContext(ResolvePlayerCharacterNameForContext(), settlementName, alliedSoldier, civilian));
+			}
+			return identity;
 		}
 		catch
 		{
@@ -1638,6 +2307,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	internal static bool ShouldRunSiegeInterventionPostprocessForExternal()
 	{
 		return IsActiveInCurrentMission();
+	}
+
+	internal static string GetRuntimeInjectedRuleBlockMarkerForExternal()
+	{
+		return SiegePostprocessRuleCatalog.InjectedRuleBlockMarker;
 	}
 
 	internal static List<PostprocessRuleEntry> BuildRuntimePostprocessRulesForExternal()
@@ -1742,6 +2416,38 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			Logger.Log("SiegeAiIntervention", "NormalizeSiegeInterventionPostprocessTagsForExternal failed: " + ex.Message);
 			return "";
+		}
+	}
+
+	internal static bool TryProcessFixedKeywordActionForExternal(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string playerText, bool playerCommandContext, out bool actionHandled)
+	{
+		actionHandled = false;
+		if (!playerCommandContext || !IsActiveInCurrentMission())
+		{
+			return false;
+		}
+
+		try
+		{
+			if (!SiegeFixedKeywordActionProfile.TryBuildTagText(playerText, out string tagText, out SiegeFixedKeywordActionDefinition definition))
+			{
+				return false;
+			}
+
+			RecordInterventionMemory("固定词测试", SiegeFixedKeywordActionProfile.BuildMatchedMemoryText(definition, playerText));
+			GcczDiagnosticLog.Log("FixedKeywordAction", SiegeFixedKeywordActionProfile.BuildMatchedDiagnosticText(definition)
+				+ " targetAgent=" + targetAgentIndex);
+			string generatedTagText = tagText;
+			bool processed = TryProcessAiActionTags(targetHero, targetCharacter, targetAgentIndex, ref generatedTagText, out actionHandled, replyIsDirectPlayerResponse: true);
+			Logger.Log("SiegeAiIntervention", "Processed fixed keyword action. Tag=" + tagText
+				+ ", Handled=" + actionHandled
+				+ ", TargetAgent=" + targetAgentIndex);
+			return processed;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "TryProcessFixedKeywordActionForExternal failed: " + ex.Message);
+			return false;
 		}
 	}
 
@@ -1920,6 +2626,55 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			Logger.Log("SiegeAiIntervention", "TryProcessAiActionTags failed: " + ex.Message);
 			text = StripSiegeTags(text);
 			return actionHandled;
+		}
+	}
+
+	private static string FormatSigned(int value)
+	{
+		return value > 0 ? "+" + value : value.ToString();
+	}
+
+	private static Hero FindHeroByStringId(string heroId)
+	{
+		if (string.IsNullOrWhiteSpace(heroId))
+		{
+			return null;
+		}
+		try
+		{
+			return Hero.AllAliveHeroes?.FirstOrDefault(hero => string.Equals(hero?.StringId ?? "", heroId.Trim(), StringComparison.OrdinalIgnoreCase));
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static Settlement FindSettlementByStringId(string settlementId)
+	{
+		if (string.IsNullOrWhiteSpace(settlementId))
+		{
+			return null;
+		}
+		try
+		{
+			return Settlement.All?.FirstOrDefault(settlement => string.Equals(settlement?.StringId ?? "", settlementId.Trim(), StringComparison.OrdinalIgnoreCase));
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static string BuildCurrentGameDateTextForGccz()
+	{
+		try
+		{
+			return CampaignTime.Now.ToString();
+		}
+		catch
+		{
+			return "";
 		}
 	}
 
@@ -2714,7 +3469,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					PrepareCompletedInterventionSummary(aftermath);
 				}
 				QueueEncounterFinishAfterIntervention(aftermath, transitionSource, 0, forceDelay: true);
-				TryFinishPlayerEncounterAfterInterventionNow(aftermath, transitionSource);
+				Logger.Log("SiegeAiIntervention", "Queued deferred AF siege encounter finish from native menu activation. Menu=" + menuId + ", Source=" + transitionSource);
 			}
 			Logger.Log("SiegeAiIntervention", "Suppressed native siege aftermath menu during GCCZ transition. Menu=" + menuId + ", MissionActive=" + (Mission.Current != null) + ", PendingSummary=" + _pendingSummarySwitch + ", PendingFinish=" + _pendingEncounterFinish + ", PendingAftermath=" + _hasPendingAftermath + ", Resolved=" + _afAftermathResolved);
 			return true;
@@ -2767,9 +3522,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				Logger.Log("SiegeAiIntervention", "Auto-routed native siege aftermath menu to Devastate summary for AF massacre. Source=" + (source ?? "N/A"));
 				return true;
 			}
-			QueueEncounterFinishAfterIntervention(_completedAftermath, SiegeAftermathTransitionSourceProfile.BuildNativeMenuInitSource(source), 0, forceDelay: true);
-			TryFinishPlayerEncounterAfterInterventionNow(_completedAftermath, SiegeAftermathTransitionSourceProfile.BuildNativeMenuInitSource(source));
-			Logger.Log("SiegeAiIntervention", "Suppressed native siege aftermath menu init and requested encounter finish after AF resolved aftermath. Source=" + (source ?? "N/A"));
+			string deferredFinishSource = SiegeAftermathTransitionSourceProfile.BuildNativeMenuDeferredFinishSource(source);
+			QueueEncounterFinishAfterIntervention(_completedAftermath, deferredFinishSource, 0, forceDelay: true);
+			Logger.Log("SiegeAiIntervention", "Suppressed native siege aftermath menu init and queued deferred encounter finish after AF resolved aftermath. Source=" + deferredFinishSource);
 			return true;
 		}
 		catch (Exception ex)
@@ -4080,12 +4835,26 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static bool IsSetsSettlementEntryVictoryIntervention()
+	{
+		return _setsSettlementEntryVictoryContext;
+	}
+
 	private static bool ShouldUseTemporaryWallRescue(Agent agent, Mission mission, Vec3 target, string source)
 	{
 		try
 		{
 			if (agent == null || mission == null || !agent.IsActive())
 			{
+				return false;
+			}
+			if (IsSetsSettlementEntryVictoryIntervention())
+			{
+				if (!_setsSettlementEntryWallRescueSuppressionLogged)
+				{
+					_setsSettlementEntryWallRescueSuppressionLogged = true;
+					Logger.Log("SiegeAiIntervention", "Suppressed wall-pass teleport rescue during SETS-started GCCZ mission. Source=" + (source ?? "N/A"));
+				}
 				return false;
 			}
 			float distanceSq = agent.Position.DistanceSquared(target);
@@ -9181,6 +9950,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private static void OnInterventionAgentRemoved(Agent affectedAgent, Agent affectorAgent, AgentState agentState)
 	{
+		TrySpawnTownCivilianSceneGoldDrop(affectedAgent, agentState, "intervention_agent_removed");
 		if (!_massacreStarted)
 		{
 			TryHandleLocalPlayerCivilianDownForIntervention(affectedAgent, affectorAgent, agentState);
@@ -9212,6 +9982,38 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			_lastKilledCivilianUnits++;
 		}
 		TryLootCivilianAgent(affectedAgent, massacre: true, force: true);
+	}
+
+	private static void TrySpawnTownCivilianSceneGoldDrop(Agent affectedAgent, AgentState agentState, string source)
+	{
+		try
+		{
+			if (!IsActiveInCurrentMission())
+			{
+				return;
+			}
+			if (agentState != AgentState.Killed && agentState != AgentState.Unconscious)
+			{
+				return;
+			}
+			Settlement settlement = ResolveCurrentSettlement() ?? Settlement.CurrentSettlement;
+			if (settlement?.IsTown != true || settlement.IsCastle)
+			{
+				return;
+			}
+			if (!IsEligibleCivilianAgent(affectedAgent, includeHeroes: false, requireActive: false))
+			{
+				return;
+			}
+			if (SceneTauntMissionBehavior.TrySpawnSceneGoldDropForExternal(affectedAgent, agentState, source ?? "gccz_town_civilian_down"))
+			{
+				Logger.Log("SiegeAiIntervention", "Spawned GCCZ town civilian scene gold drop via AF SceneTaunt bridge. Agent=" + affectedAgent.Index + ", State=" + agentState + ", Source=" + (source ?? "N/A"));
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "Spawning GCCZ town civilian scene gold drop failed: " + ex.Message);
+		}
 	}
 
 	private static bool TryHandleLocalPlayerCivilianDownForIntervention(Agent affectedAgent, Agent affectorAgent, AgentState agentState)
@@ -9423,7 +10225,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		int count = Math.Max(1, Math.Min(requestedCount, MaxSummonPerAction));
+		int maxSummonCount = MaxSummonPerAction;
+		int count = Math.Max(1, Math.Min(requestedCount, maxSummonCount));
 		List<CharacterObject> troops = PickInterventionTroops(count);
 		if (troops.Count == 0)
 		{
@@ -10691,6 +11494,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			ApplyPendingMarketLootForFinalAftermath(aftermath);
 			TrySetNativePlayerEncounterAftermathForSummary(aftermath);
 			MyBehavior.Instance?.RecordAnimusForgeSiegeInterventionForExternal(attackerParty, settlement, aftermath, previousOwner, _pendingAftermathTrigger, _pendingAftermathDetail, Math.Min(AutoSummonCount, CountHealthyMainPartySoldiers()), _lastLootItemTotal, _lastLootStackKinds, _lastLootValue, _lastMarketGoldLoot, _lastCivilianGoldLoot, _lastCivilianTargetsLooted, _lastKilledCivilianUnits, _lastKilledNotables, _plunderStarted, _massacreStarted);
+			ApplySetsOwnedSettlementIncidentOutcomePenalty(aftermath, "sets_owned_town_final_" + aftermath);
 			_pendingSummaryAftermath = aftermath;
 			MarkAftermathResolvedForCompletion(settlement, aftermath);
 			PrepareCompletedInterventionSummary(aftermath);
@@ -11531,6 +12335,14 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			if (_setsSettlementEntryVictoryContext)
+			{
+				_besiegerParty = MobileParty.MainParty;
+				_previousSettlementOwnerClan = _previousSettlementOwnerClan ?? settlement?.OwnerClan;
+				_partyContributions = BuildSafePartyContributions(_besiegerParty);
+				Logger.Log("SiegeAiIntervention", "Using SETS settlement-entry capture context. Settlement=" + (settlement?.StringId ?? "N/A") + ", PreviousOwner=" + (_previousSettlementOwnerClan?.StringId ?? "null") + ", Source=" + (_setsSettlementEntryVictorySource ?? ""));
+				return;
+			}
 			SiegeAftermathCampaignBehavior behavior = Campaign.Current?.GetCampaignBehavior<SiegeAftermathCampaignBehavior>();
 			if (behavior == null)
 			{
@@ -12282,12 +13094,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			var agents = Mission.Current?.Agents;
-			if (agentIndex < 0 || agents == null)
+			if (agentIndex < 0 || Mission.Current?.Agents == null)
 			{
 				return null;
 			}
-			return agents.FirstOrDefault(a => a != null && a.Index == agentIndex);
+			return Mission.Current.Agents.FirstOrDefault(a => a != null && a.Index == agentIndex);
 		}
 		catch
 		{
@@ -12392,6 +13203,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_playerOrderControllerPrimed = false;
 		_civilianOrderControllerPrimed = false;
 		_selectedInterventionRoster = null;
+		_activeInterventionLocationId = "";
 		_civilianGatherStartedAt = -1f;
 		_nextCivilianGatherTickTime = 0f;
 		_civilianGatherMessengerSpeechBudget = 0;
@@ -12526,6 +13338,17 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			_activeSettlement = null;
 			_previousSettlementOwnerClan = null;
 			_besiegerParty = null;
+			_setsSettlementEntryVictoryContext = false;
+			_setsSettlementEntryVictorySource = "";
+			_setsSettlementEntryWallRescueSuppressionLogged = false;
+			_setsOwnedSettlementIncidentContext = false;
+			_setsOwnedSettlementIncidentKilledNotable = false;
+			_setsOwnedSettlementIncidentOwnerClan = null;
+			_setsOwnedSettlementIncidentPenaltyApplied = false;
+			_setsCapturedTownRiotContext = false;
+			_setsCapturedTownRiotKilledNotable = false;
+			_setsCapturedTownRiotOriginalOwnerClan = null;
+			_setsCapturedTownRiotOwnerPenaltyApplied = false;
 			_interventionPlayerCommandTeam = null;
 			_interventionCivilianEnemyTeam = null;
 			_partyContributions = new Dictionary<MobileParty, float>();
@@ -12572,6 +13395,17 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_activeSettlementName = "";
 		_previousSettlementOwnerClan = null;
 		_besiegerParty = null;
+		_setsSettlementEntryVictoryContext = false;
+		_setsSettlementEntryVictorySource = "";
+		_setsSettlementEntryWallRescueSuppressionLogged = false;
+		_setsOwnedSettlementIncidentContext = false;
+		_setsOwnedSettlementIncidentKilledNotable = false;
+		_setsOwnedSettlementIncidentOwnerClan = null;
+		_setsOwnedSettlementIncidentPenaltyApplied = false;
+		_setsCapturedTownRiotContext = false;
+		_setsCapturedTownRiotKilledNotable = false;
+		_setsCapturedTownRiotOriginalOwnerClan = null;
+		_setsCapturedTownRiotOwnerPenaltyApplied = false;
 		_activeSettlement = null;
 		_interventionPlayerCommandTeam = null;
 		_interventionCivilianEnemyTeam = null;
@@ -13029,11 +13863,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				if (!SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal())
+				Mission mission = Mission.Current;
+				if (!IsInterventionOrSetsCommandOrderSceneActive(mission))
 				{
 					return true;
 				}
-				Mission mission = Mission.Current;
 				if (mission == null || mission.IsMissionEnding || mission.Mode == MissionMode.Conversation || mission.Mode == MissionMode.Barter)
 				{
 					return true;
@@ -13102,7 +13936,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				if (!SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal())
+				if (!IsInterventionOrSetsCommandOrderSceneActive(Mission.Current))
 				{
 					return;
 				}
@@ -13118,7 +13952,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				if (!SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal())
+				if (!IsInterventionOrSetsCommandOrderSceneActive(Mission.Current))
 				{
 					return true;
 				}
@@ -13240,15 +14074,131 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			return true;
 		}
 
+		private static bool IsSetsCommandOrderSceneActive(Mission mission = null)
+		{
+			try
+			{
+				return SettlementEntryTroopSelectionBehavior.ShouldInjectSetsOrderViewsForExternal(mission ?? Mission.Current);
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
+		private static bool IsInterventionOrSetsCommandOrderSceneActive(Mission mission = null)
+		{
+			return SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal() || IsSetsCommandOrderSceneActive(mission);
+		}
+
+		private static bool EnsureCommandOrderUiReady(Mission mission, string source, bool force = false, bool preserveSelection = true)
+		{
+			mission ??= Mission.Current;
+			if (SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal())
+			{
+				return SiegeAiInterventionBehavior.EnsureInterventionCommandUiReadyForExternal(mission, source);
+			}
+			if (IsSetsCommandOrderSceneActive(mission))
+			{
+				return SettlementEntryTroopSelectionBehavior.EnsureSetsCommandUiReadyForExternal(mission, "sets_" + (source ?? "order_ui"), force, preserveSelection);
+			}
+			return false;
+		}
+
+		private static Team ResolveCommandOrderTeam(Mission mission, string source)
+		{
+			mission ??= Mission.Current;
+			if (SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal())
+			{
+				return SiegeAiInterventionBehavior.ResolveInterventionPlayerCommandTeamForExternal(mission, source);
+			}
+			if (IsSetsCommandOrderSceneActive(mission))
+			{
+				return SettlementEntryTroopSelectionBehavior.ResolveSetsPlayerCommandTeamForExternal(mission, "sets_" + (source ?? "resolve_team"));
+			}
+			return null;
+		}
+
+		private static OrderController TryResolveCommandOrderController(Mission mission)
+		{
+			mission ??= Mission.Current;
+			if (SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal())
+			{
+				return SiegeAiInterventionBehavior.TryResolveNativeOrderControllerForExternal(mission);
+			}
+			if (IsSetsCommandOrderSceneActive(mission))
+			{
+				return SettlementEntryTroopSelectionBehavior.TryResolveSetsNativeOrderControllerForExternal(mission);
+			}
+			return null;
+		}
+
+		private static bool PlayerHasCommandableAgents(Mission mission)
+		{
+			mission ??= Mission.Current;
+			if (SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal())
+			{
+				return SiegeAiInterventionBehavior.InterventionPlayerHasCommandableAgentsForExternal(mission);
+			}
+			if (IsSetsCommandOrderSceneActive(mission))
+			{
+				return SettlementEntryTroopSelectionBehavior.SetsPlayerHasCommandableAgentsForExternal(mission);
+			}
+			return false;
+		}
+
+		private static bool NativeOrderControllerHasSelectedFormations(Mission mission)
+		{
+			mission ??= Mission.Current;
+			if (SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal())
+			{
+				return SiegeAiInterventionBehavior.NativeOrderControllerHasSelectedFormationsForExternal(mission);
+			}
+			if (IsSetsCommandOrderSceneActive(mission))
+			{
+				return SettlementEntryTroopSelectionBehavior.NativeOrderControllerHasSelectedFormationsForSetsExternal(mission);
+			}
+			return false;
+		}
+
+		private static bool TryBindCommandOrderController(OrderTroopPlacer orderTroopPlacer, string source)
+		{
+			try
+			{
+				if (orderTroopPlacer == null || !IsInterventionOrSetsCommandOrderSceneActive(orderTroopPlacer.Mission ?? Mission.Current) || OrderTroopPlacerOrderControllerField == null)
+				{
+					return false;
+				}
+				OrderController orderController = TryResolveCommandOrderController(orderTroopPlacer.Mission ?? Mission.Current);
+				if (orderController == null)
+				{
+					return false;
+				}
+				object current = OrderTroopPlacerOrderControllerField.GetValue(orderTroopPlacer);
+				if (!ReferenceEquals(current, orderController))
+				{
+					OrderTroopPlacerOrderControllerField.SetValue(orderTroopPlacer, orderController);
+					Logger.Log("SiegeAiIntervention", "Bound SETS/intervention native OrderTroopPlacer order controller. Source=" + (source ?? "N/A"));
+				}
+				return true;
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("SiegeAiIntervention", "TryBindCommandOrderController failed (" + (source ?? "N/A") + "): " + ex.Message);
+				return false;
+			}
+		}
+
 		private static void PrepareOrderUiInitializePrefix()
 		{
 			try
 			{
-				if (!SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal())
+				Mission mission = Mission.Current;
+				if (!IsInterventionOrSetsCommandOrderSceneActive(mission))
 				{
 					return;
 				}
-				SiegeAiInterventionBehavior.EnsureInterventionCommandUiReadyForExternal(Mission.Current, SiegeNativeBridgeSourceProfile.OrderUiInitializeSource);
+				EnsureCommandOrderUiReady(mission, SiegeNativeBridgeSourceProfile.OrderUiInitializeSource);
 			}
 			catch
 			{
@@ -13259,11 +14209,12 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				if (!SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal())
+				Mission mission = Mission.Current;
+				if (!IsInterventionOrSetsCommandOrderSceneActive(mission))
 				{
 					return true;
 				}
-				__result = SiegeAiInterventionBehavior.ResolveInterventionPlayerCommandTeamForExternal(Mission.Current, SiegeNativeBridgeSourceProfile.MissionOrderVmTeamSource);
+				__result = ResolveCommandOrderTeam(mission, SiegeNativeBridgeSourceProfile.MissionOrderVmTeamSource);
 				return __result == null;
 			}
 			catch
@@ -13276,12 +14227,13 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				if (!SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal())
+				Mission mission = Mission.Current;
+				if (!IsInterventionOrSetsCommandOrderSceneActive(mission))
 				{
 					return true;
 				}
-				SiegeAiInterventionBehavior.EnsureInterventionCommandUiReadyForExternal(Mission.Current, SiegeNativeBridgeSourceProfile.MissionOrderVmControllerSource);
-				__result = SiegeAiInterventionBehavior.TryResolveNativeOrderControllerForExternal(Mission.Current);
+				EnsureCommandOrderUiReady(mission, SiegeNativeBridgeSourceProfile.MissionOrderVmControllerSource);
+				__result = TryResolveCommandOrderController(mission);
 				return __result == null;
 			}
 			catch
@@ -13295,12 +14247,13 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				if (!SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal())
+				Mission mission = Mission.Current;
+				if (!IsInterventionOrSetsCommandOrderSceneActive(mission))
 				{
 					return true;
 				}
-				SiegeAiInterventionBehavior.EnsureInterventionCommandUiReadyForExternal(Mission.Current, SiegeNativeBridgeSourceProfile.MissionOrderVmHasTroopsSource);
-				__result = SiegeAiInterventionBehavior.InterventionPlayerHasCommandableAgentsForExternal(Mission.Current);
+				EnsureCommandOrderUiReady(mission, SiegeNativeBridgeSourceProfile.MissionOrderVmHasTroopsSource);
+				__result = PlayerHasCommandableAgents(mission);
 				return false;
 			}
 			catch
@@ -13314,16 +14267,16 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				if (!SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal())
+				Mission mission = Mission.Current;
+				if (!IsInterventionOrSetsCommandOrderSceneActive(mission))
 				{
 					return true;
 				}
-				Mission mission = Mission.Current;
 				if (mission == null || mission.IsMissionEnding || mission.Mode == MissionMode.Conversation || mission.Mode == MissionMode.Barter)
 				{
 					return true;
 				}
-				__result = SiegeAiInterventionBehavior.EnsureInterventionCommandUiReadyForExternal(mission, SiegeNativeBridgeSourceProfile.MissionOrderVmCheckOpenSource) && SiegeAiInterventionBehavior.InterventionPlayerHasCommandableAgentsForExternal(mission);
+				__result = EnsureCommandOrderUiReady(mission, SiegeNativeBridgeSourceProfile.MissionOrderVmCheckOpenSource) && PlayerHasCommandableAgents(mission);
 				return false;
 			}
 			catch
@@ -13337,17 +14290,18 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				if (!SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal())
+				Mission mission = __instance?.Mission ?? Mission.Current;
+				if (!IsInterventionOrSetsCommandOrderSceneActive(mission))
 				{
 					return true;
 				}
-				OrderController orderController = SiegeAiInterventionBehavior.TryResolveNativeOrderControllerForExternal(__instance?.Mission ?? Mission.Current);
+				OrderController orderController = TryResolveCommandOrderController(mission);
 				if (orderController == null)
 				{
 					__result = null;
 					return false;
 				}
-				SiegeAiInterventionBehavior.TryBindNativeOrderControllerForExternal(__instance, SiegeNativeBridgeSourceProfile.OrderControllerGetterSource);
+				TryBindCommandOrderController(__instance, SiegeNativeBridgeSourceProfile.OrderControllerGetterSource);
 				__result = orderController;
 				return false;
 			}
@@ -13362,11 +14316,12 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				if (!SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal())
+				Mission mission = __instance?.Mission ?? Mission.Current;
+				if (!IsInterventionOrSetsCommandOrderSceneActive(mission))
 				{
 					return true;
 				}
-				__result = SiegeAiInterventionBehavior.NativeOrderControllerHasSelectedFormationsForExternal(__instance?.Mission ?? Mission.Current);
+				__result = NativeOrderControllerHasSelectedFormations(mission);
 				return false;
 			}
 			catch
@@ -13380,11 +14335,12 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				if (!SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal())
+				Mission mission = __instance?.Mission ?? Mission.Current;
+				if (!IsInterventionOrSetsCommandOrderSceneActive(mission))
 				{
 					return true;
 				}
-				__result = SiegeAiInterventionBehavior.NativeOrderControllerHasSelectedFormationsForExternal(__instance?.Mission ?? Mission.Current);
+				__result = NativeOrderControllerHasSelectedFormations(mission);
 				return false;
 			}
 			catch
@@ -13396,7 +14352,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 		private static void BindOrderTroopPlacerAfterStartPostfix(OrderTroopPlacer __instance)
 		{
-			SiegeAiInterventionBehavior.TryBindNativeOrderControllerForExternal(__instance, SiegeNativeBridgeSourceProfile.OrderPlacerAfterStartSource);
+			if (IsInterventionOrSetsCommandOrderSceneActive(__instance?.Mission ?? Mission.Current))
+			{
+				TryBindCommandOrderController(__instance, SiegeNativeBridgeSourceProfile.OrderPlacerAfterStartSource);
+			}
 		}
 
 
@@ -13404,12 +14363,12 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				if (!SiegeAiInterventionBehavior.ShouldInjectInterventionOrderViewsForExternal(mission))
+				if (!SiegeAiInterventionBehavior.ShouldInjectInterventionOrderViewsForExternal(mission) && !SettlementEntryTroopSelectionBehavior.ShouldInjectSetsOrderViewsForExternal(mission))
 				{
 					return;
 				}
 				int oldCount = __result?.Length ?? 0;
-				SiegeAiInterventionBehavior.EnsureInterventionCommandUiReadyForExternal(mission, SiegeNativeBridgeSourceProfile.InjectNativeOrderViewsSource);
+				EnsureCommandOrderUiReady(mission, SiegeNativeBridgeSourceProfile.InjectNativeOrderViewsSource, force: true, preserveSelection: true);
 				__result = BuildInterventionNativeOrderViews(mission, __result);
 				Logger.Log("SiegeAiIntervention", "Extended intervention mission views with native order UI while preserving settlement leave view. ViewMethod=" + (__originalMethod?.Name ?? "N/A") + ", OldViews=" + oldCount + ", NewViews=" + (__result?.Length ?? 0));
 			}

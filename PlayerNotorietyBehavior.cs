@@ -14,6 +14,7 @@ using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
+using TaleWorlds.MountAndBlade;
 
 namespace AnimusForge;
 
@@ -23,6 +24,8 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 	private const int RecentActionWindowDays = 10;
 	private const int MaxRecentActions = 96;
 	private const int MaxMajorMaterials = 180;
+	private const int SummaryBatchSize = 24;
+	private const int MaxSummarizedMaterialKeys = 512;
 	private const int MaxSummaryRetries = 3;
 	private const int PersonalKnownBonusPerLine = 3;
 	private const int CourierReplyKnownBonus = 1;
@@ -130,6 +133,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 			return "recentActions=" + recent
 				+ " majorMaterials=" + materials
 				+ " pendingMaterials=" + pending
+				+ " summarizedMaterialKeys=" + (state.SummarizedMaterialKeys?.Count ?? 0)
 				+ " npcKnowledge=" + (state.NpcKnowledge?.Count ?? 0)
 				+ " cultures=" + (state.CultureNotoriety?.Count ?? 0)
 				+ " summaryBytes=" + summaryBytes
@@ -948,7 +952,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		}
 		_state = NormalizeState(_state);
 		string key = NormalizeStableKey(material.StableKey, material.Text, material.Day);
-		if (_state.MajorMaterials.Any(x => x != null && string.Equals(x.StableKey ?? "", key, StringComparison.OrdinalIgnoreCase)))
+		if (IsKnownMajorMaterialKey(key))
 		{
 			return;
 		}
@@ -969,6 +973,20 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		TryStartSummaryProcessing();
 	}
 
+	private bool IsKnownMajorMaterialKey(string key)
+	{
+		string normalizedKey = (key ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(normalizedKey))
+		{
+			return false;
+		}
+		if (_state?.MajorMaterials?.Any(x => x != null && string.Equals(x.StableKey ?? "", normalizedKey, StringComparison.OrdinalIgnoreCase)) == true)
+		{
+			return true;
+		}
+		return _state?.SummarizedMaterialKeys?.Any(x => string.Equals(x ?? "", normalizedKey, StringComparison.OrdinalIgnoreCase)) == true;
+	}
+
 	private void OnDailyTick()
 	{
 		_state = NormalizeState(_state);
@@ -983,13 +1001,17 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		FinalizeConversation(characters);
 	}
 
-	private void TryStartSummaryProcessing()
+	private void TryStartSummaryProcessing(bool force = false)
 	{
 		if (_summaryProcessing)
 		{
 			return;
 		}
-		if (!HasSummaryWorkDue())
+		if (!force && !HasSummaryWorkDue())
+		{
+			return;
+		}
+		if (force && !HasPendingMajorMaterials() && !IsMajorSummaryOverPromptLimit())
 		{
 			return;
 		}
@@ -1004,8 +1026,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		{
 			return true;
 		}
-		bool hasPendingMaterials = _state.MajorMaterials.Any(x => x != null && !x.Summarized);
-		if (!hasPendingMaterials)
+		if (!HasPendingMajorMaterials())
 		{
 			return false;
 		}
@@ -1017,8 +1038,14 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		return GetCurrentGameDayIndex() - _state.LastSummaryDay >= interval;
 	}
 
+	private bool HasPendingMajorMaterials()
+	{
+		return _state?.MajorMaterials != null && _state.MajorMaterials.Any(x => x != null && !x.Summarized);
+	}
+
 	private async Task ProcessSummaryAsync()
 	{
+		bool continueAfterBatch = false;
 		try
 		{
 			_state = NormalizeState(_state);
@@ -1026,19 +1053,22 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 				.Where(x => x != null && !x.Summarized)
 				.OrderBy(x => x.Day)
 				.ThenBy(x => x.CreatedUtcTicks)
-				.Take(24)
+				.Take(SummaryBatchSize)
 				.ToList();
 			bool compactOnly = sourceMaterials.Count == 0 && IsMajorSummaryOverPromptLimit();
 			if (sourceMaterials.Count == 0 && !compactOnly)
 			{
 				return;
 			}
-			string sys = BuildSummarySystemPrompt();
-			string user = BuildSummaryUserPrompt(sourceMaterials);
+			string playerDisplayName = BuildSummaryPlayerDisplayName();
+			string sys = BuildSummarySystemPrompt(playerDisplayName);
+			string user = BuildSummaryUserPrompt(sourceMaterials, playerDisplayName);
 			string response = await MyBehavior.CallAuxiliaryApiTextForExternal(sys, user, "PlayerNotorietySummary");
 			if (TryParseSummaryResponse(response, out string summary, out double delta, out string error))
 			{
+				summary = RenderPlayerActionTextForPrompt(summary, playerDisplayName);
 				ApplySummarySuccess(sourceMaterials, summary, delta);
+				continueAfterBatch = HasPendingMajorMaterials();
 				return;
 			}
 			_state.SummaryRetryCount++;
@@ -1052,16 +1082,19 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 				}
 				else
 				{
-					_state.MajorSummary = BuildFallbackMajorSummary(_state.MajorSummary, sourceMaterials);
+					_state.MajorSummary = BuildFallbackMajorSummary(_state.MajorSummary, sourceMaterials, playerDisplayName);
 					foreach (PlayerHistoryMaterial material in sourceMaterials)
 					{
 						if (material != null)
 						{
 							material.Summarized = true;
+							RememberSummarizedMaterialKey(material);
 						}
 					}
+					PruneSummarizedMajorMaterials();
 				}
 				_state.SummaryRetryCount = 0;
+				continueAfterBatch = HasPendingMajorMaterials();
 			}
 		}
 		catch (Exception ex)
@@ -1072,25 +1105,50 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		finally
 		{
 			_summaryProcessing = false;
+			if (continueAfterBatch)
+			{
+				TryStartSummaryProcessing(force: true);
+			}
 		}
 	}
 
-	private static string BuildSummarySystemPrompt()
+	public static bool TryGetLatestPlayerRecentActionForExternal(Hero observer, int maxAgeDays, out string stableKey, out string actionText, out int day)
+	{
+		stableKey = "";
+		actionText = "";
+		day = -1;
+		try
+		{
+			return Instance?.TryGetLatestPlayerRecentAction(observer, maxAgeDays, out stableKey, out actionText, out day) == true;
+		}
+		catch
+		{
+			stableKey = "";
+			actionText = "";
+			day = -1;
+			return false;
+		}
+	}
+
+	private static string BuildSummarySystemPrompt(string playerDisplayName)
 	{
 		int targetChars = GetMajorPromptChars();
-		return "你是 AnimusForge 的玩家履历与知名度总结器。只输出严格 JSON：{\"summary_content\":\"新的玩家重大履历时间线摘要\",\"notoriety_delta\":0到10之间的小数}。"
+		string playerName = NormalizePlayerDisplayName(playerDisplayName);
+		return "你是 AnimusForge 的" + playerName + "履历与知名度总结器。只输出严格 JSON：{\"summary_content\":\"新的" + playerName + "重大履历时间线摘要\",\"notoriety_delta\":0到10之间的小数}。"
 			+ "把已有摘要与新增素材重新融合成约" + targetChars + "个中文字符且不超过" + targetChars + "个中文字符的时间线摘要；保留关键人物、地点、胜败、承诺和公开影响，删除重复、数字细节和次要过程。"
+			+ "提及玩家时必须一律使用“" + playerName + "”，不得写“你”或“玩家”。"
 			+ "没有新增素材时只压缩已有摘要，notoriety_delta 输出0。不要编造素材没有的事实。"
 			+ "notoriety_delta 表示这批公开素材带来的文化知名度增量，范围0-10；小事应为0到1之间的小数，重大胜利、夺城、处决、王国事件才可接近10。";
 	}
 
-	private string BuildSummaryUserPrompt(List<PlayerHistoryMaterial> materials)
+	private string BuildSummaryUserPrompt(List<PlayerHistoryMaterial> materials, string playerDisplayName)
 	{
+		string playerName = NormalizePlayerDisplayName(playerDisplayName);
 		StringBuilder sb = new StringBuilder();
-		sb.AppendLine("已有玩家履历摘要：");
-		sb.AppendLine(string.IsNullOrWhiteSpace(_state.MajorSummary) ? "（无）" : StripPlayerInternalMarkers(_state.MajorSummary.Trim()));
+		sb.AppendLine("已有" + playerName + "履历摘要：");
+		sb.AppendLine(string.IsNullOrWhiteSpace(_state.MajorSummary) ? "（无）" : RenderPlayerActionTextForPrompt(_state.MajorSummary.Trim(), playerName));
 		sb.AppendLine();
-		sb.AppendLine("新增公开素材：");
+		sb.AppendLine("新增公开素材（" + playerName + "）：");
 		List<PlayerHistoryMaterial> sourceMaterials = materials ?? new List<PlayerHistoryMaterial>();
 		if (sourceMaterials.Count == 0)
 		{
@@ -1102,7 +1160,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 			{
 				continue;
 			}
-			sb.AppendLine("- [" + (string.IsNullOrWhiteSpace(material.GameDate) ? ("第" + material.Day + "日") : material.GameDate.Trim()) + "][" + (material.SourceKind ?? "material") + "][culture:" + string.Join(",", material.CultureIds ?? new List<string>()) + "] " + StripPlayerInternalMarkers(material.Text.Trim()));
+			sb.AppendLine("- [" + (string.IsNullOrWhiteSpace(material.GameDate) ? ("第" + material.Day + "日") : material.GameDate.Trim()) + "][" + (material.SourceKind ?? "material") + "][culture:" + string.Join(",", material.CultureIds ?? new List<string>()) + "] " + RenderPlayerActionTextForPrompt(material.Text.Trim(), playerName));
 		}
 		return sb.ToString().Trim();
 	}
@@ -1167,11 +1225,13 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 			}
 			materialCount++;
 			material.Summarized = true;
+			RememberSummarizedMaterialKey(material);
 			foreach (string cultureId in NormalizeCultureList(material.CultureIds))
 			{
 				cultures.Add(cultureId);
 			}
 		}
+		PruneSummarizedMajorMaterials();
 		if (materialCount <= 0)
 		{
 			delta = 0.0;
@@ -1263,6 +1323,51 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		return sb.ToString().Trim();
 	}
 
+	private bool TryGetLatestPlayerRecentAction(Hero observer, int maxAgeDays, out string stableKey, out string actionText, out int day)
+	{
+		stableKey = "";
+		actionText = "";
+		day = -1;
+		if (!IsValidObserver(observer))
+		{
+			return false;
+		}
+		bool isCurrentPartyMember = false;
+		try
+		{
+			MobileParty mainParty = MobileParty.MainParty;
+			isCurrentPartyMember = mainParty != null
+				&& (observer.PartyBelongedTo == mainParty || (observer.CharacterObject != null && mainParty.MemberRoster.GetTroopCount(observer.CharacterObject) > 0));
+		}
+		catch
+		{
+			isCurrentPartyMember = false;
+		}
+		if (!isCurrentPartyMember && !CanObserverKnowRecentActions(observer, courier: false))
+		{
+			return false;
+		}
+		PruneRecentActions();
+		int windowDays = Math.Max(1, Math.Min(RecentActionWindowDays, maxAgeDays));
+		int minDay = GetCurrentGameDayIndex() - windowDays + 1;
+		PlayerActionEntry latest = (_state.RecentActions ?? new List<PlayerActionEntry>())
+			.Where(x => x != null && x.Day >= minDay && !string.IsNullOrWhiteSpace(x.Text))
+			.OrderByDescending(x => x.Day)
+			.ThenByDescending(x => x.Sequence)
+			.ThenByDescending(x => x.Order)
+			.FirstOrDefault();
+		if (latest == null)
+		{
+			return false;
+		}
+		stableKey = string.IsNullOrWhiteSpace(latest.StableKey)
+			? ((latest.ActionKind ?? "player_event") + ":" + latest.Day + ":" + latest.Order + ":" + latest.Sequence)
+			: latest.StableKey.Trim();
+		actionText = latest.Text.Trim();
+		day = latest.Day;
+		return !string.IsNullOrWhiteSpace(stableKey) && !string.IsNullOrWhiteSpace(actionText);
+	}
+
 	private string BuildMajorHistoryForPrompt(string playerDisplayName)
 	{
 		_state = NormalizeState(_state);
@@ -1302,7 +1407,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
+			string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal(observerKey, cultureId);
 			if (!string.IsNullOrWhiteSpace(text))
 			{
 				return NormalizePlayerDisplayName(text);
@@ -1320,6 +1425,22 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		return string.IsNullOrWhiteSpace(text) ? "玩家" : text;
 	}
 
+	private static string BuildSummaryPlayerDisplayName()
+	{
+		try
+		{
+			string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				return NormalizePlayerDisplayName(text);
+			}
+		}
+		catch
+		{
+		}
+		return "玩家";
+	}
+
 	private static string StripPlayerInternalMarkers(string text)
 	{
 		return (text ?? "").Replace("\uFF08player\uFF09", "").Replace("(player)", "");
@@ -1334,6 +1455,8 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		}
 		string name = NormalizePlayerDisplayName(playerDisplayName);
 		return text
+			.Replace("玩家的", name + "的")
+			.Replace("玩家", name)
 			.Replace("你们的", name + "一方的")
 			.Replace("你们", name + "一方")
 			.Replace("你方的", name + "一方的")
@@ -1343,9 +1466,153 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 			.Replace("你", name);
 	}
 
+	private bool IsLowProfileModeEnabled()
+	{
+		_state = NormalizeState(_state);
+		return _state.LowProfileModeEnabled;
+	}
+
+	private void SetLowProfileModeEnabled(bool enabled)
+	{
+		_state = NormalizeState(_state);
+		if (_state.LowProfileModeEnabled == enabled)
+		{
+			return;
+		}
+		_state.LowProfileModeEnabled = enabled;
+		_activeConversationStates.Clear();
+		LogDebug("low profile mode=" + enabled);
+	}
+
+	private static bool IsObserverAllowedDuringLowProfile(Hero observer)
+	{
+		return IsValidObserver(observer) && IsHeroInPlayerMainParty(observer) && IsPlayerCompanionOrFamilyObserver(observer);
+	}
+
+	private static bool IsObserverKeyAllowedDuringLowProfile(string observerKey)
+	{
+		string key = NormalizeObserverKey(observerKey);
+		if (string.IsNullOrWhiteSpace(key) || key == PlayerHeroId)
+		{
+			return false;
+		}
+		Hero observer = FindHeroById(key);
+		if (IsValidObserver(observer))
+		{
+			return IsObserverAllowedDuringLowProfile(observer);
+		}
+		if (!TryResolveAgentIndexFromObserverKey(key, out int agentIndex))
+		{
+			return false;
+		}
+		return IsAgentFromPlayerMainParty(FindMissionAgentByIndex(agentIndex));
+	}
+
+	private static bool TryResolveAgentIndexFromObserverKey(string observerKey, out int agentIndex)
+	{
+		agentIndex = -1;
+		string key = NormalizeObserverKey(observerKey);
+		if (string.IsNullOrWhiteSpace(key))
+		{
+			return false;
+		}
+		const string marker = "agent:";
+		int markerIndex = key.IndexOf(marker, StringComparison.OrdinalIgnoreCase);
+		if (markerIndex < 0)
+		{
+			return false;
+		}
+		int start = markerIndex + marker.Length;
+		int end = start;
+		while (end < key.Length && char.IsDigit(key[end]))
+		{
+			end++;
+		}
+		if (end <= start)
+		{
+			return false;
+		}
+		return int.TryParse(key.Substring(start, end - start), out agentIndex) && agentIndex >= 0;
+	}
+
+	private static Agent FindMissionAgentByIndex(int agentIndex)
+	{
+		if (agentIndex < 0)
+		{
+			return null;
+		}
+		try
+		{
+			return Mission.Current?.Agents?.FirstOrDefault(agent => agent != null && agent.Index == agentIndex);
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static bool IsAgentFromPlayerMainParty(Agent agent)
+	{
+		try
+		{
+			PartyBase party = agent?.Origin?.BattleCombatant as PartyBase;
+			return IsStrictPlayerMainPartyBase(party);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsStrictPlayerMainPartyBase(PartyBase party)
+	{
+		try
+		{
+			if (party == null)
+			{
+				return false;
+			}
+			if (party == PartyBase.MainParty)
+			{
+				return true;
+			}
+			MobileParty mobileParty = party.MobileParty;
+			return mobileParty != null && (mobileParty == MobileParty.MainParty || mobileParty.IsMainParty);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsHeroInPlayerMainParty(Hero hero)
+	{
+		try
+		{
+			if (!IsValidObserver(hero))
+			{
+				return false;
+			}
+			MobileParty mainParty = MobileParty.MainParty;
+			if (hero.PartyBelongedTo != null && (hero.PartyBelongedTo == mainParty || hero.PartyBelongedTo.IsMainParty || hero.PartyBelongedTo.Party == PartyBase.MainParty))
+			{
+				return true;
+			}
+			return mainParty?.MemberRoster != null && hero.CharacterObject != null && mainParty.MemberRoster.Contains(hero.CharacterObject);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	private bool DoesObserverKnowPlayer(Hero observer)
 	{
 		if (!IsValidObserver(observer))
+		{
+			return false;
+		}
+		if (IsLowProfileModeEnabled() && !IsObserverAllowedDuringLowProfile(observer))
 		{
 			return false;
 		}
@@ -1370,6 +1637,20 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 			return false;
 		}
 		Hero observer = FindHeroById(key);
+		if (IsLowProfileModeEnabled())
+		{
+			if (IsValidObserver(observer))
+			{
+				if (!IsObserverAllowedDuringLowProfile(observer))
+				{
+					return false;
+				}
+			}
+			else
+			{
+				return IsObserverKeyAllowedDuringLowProfile(key);
+			}
+		}
 		if (IsObserverInPlayerOwnedSettlement(observer))
 		{
 			MarkObserverKnowsPlayer(observer, "player_owned_settlement");
@@ -1394,6 +1675,10 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
+		if (IsLowProfileModeEnabled() && !IsObserverAllowedDuringLowProfile(observer))
+		{
+			return false;
+		}
 		if (IsPlayerCompanionOrFamilyObserver(observer))
 		{
 			return true;
@@ -1413,6 +1698,20 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 			return false;
 		}
 		Hero observer = FindHeroById(key);
+		if (IsLowProfileModeEnabled())
+		{
+			if (IsValidObserver(observer))
+			{
+				if (!IsObserverAllowedDuringLowProfile(observer))
+				{
+					return false;
+				}
+			}
+			else
+			{
+				return IsObserverKeyAllowedDuringLowProfile(key);
+			}
+		}
 		if (IsObserverInPlayerOwnedSettlement(observer))
 		{
 			return true;
@@ -1431,6 +1730,10 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		if (IsLowProfileModeEnabled() && !IsObserverAllowedDuringLowProfile(observer))
+		{
+			return;
+		}
 		MarkObserverKnowsPlayer(GetHeroId(observer), reason);
 	}
 
@@ -1438,6 +1741,10 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 	{
 		string key = NormalizeObserverKey(observerKey);
 		if (string.IsNullOrWhiteSpace(key) || key == PlayerHeroId)
+		{
+			return;
+		}
+		if (IsLowProfileModeEnabled() && !IsObserverKeyAllowedDuringLowProfile(key))
 		{
 			return;
 		}
@@ -1498,6 +1805,10 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
+		if (IsLowProfileModeEnabled() && !IsObserverAllowedDuringLowProfile(observer))
+		{
+			return false;
+		}
 		return CanObserverKnowRecentActions(GetHeroId(observer), observer?.Culture?.StringId, courier);
 	}
 
@@ -1507,6 +1818,25 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		if (string.IsNullOrWhiteSpace(key) || key == PlayerHeroId)
 		{
 			return false;
+		}
+		if (IsLowProfileModeEnabled())
+		{
+			Hero observer = FindHeroById(key);
+			if (IsValidObserver(observer))
+			{
+				if (!IsObserverAllowedDuringLowProfile(observer))
+				{
+					return false;
+				}
+			}
+			else if (IsObserverKeyAllowedDuringLowProfile(key))
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 		PlayerNpcKnowledgeState state = GetNpcKnowledgeState(key, create: true);
 		if (state.KnowsMajorHistory || DoesObserverKnowPlayer(key, cultureId))
@@ -1526,12 +1856,20 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		{
 			return 0;
 		}
+		if (IsLowProfileModeEnabled() && !IsObserverAllowedDuringLowProfile(observer))
+		{
+			return 0;
+		}
 		return GetEffectiveNotoriety(GetHeroId(observer), observer?.Culture?.StringId);
 	}
 
 	private int GetEffectiveNotoriety(string observerKey, string cultureId)
 	{
 		_state = NormalizeState(_state);
+		if (IsLowProfileModeEnabled() && !IsObserverKeyAllowedDuringLowProfile(observerKey))
+		{
+			return 0;
+		}
 		string normalizedCultureId = NormalizeCultureId(cultureId);
 		double culture = 0.0;
 		if (!string.IsNullOrWhiteSpace(normalizedCultureId) && _state.CultureNotoriety.TryGetValue(normalizedCultureId, out double value))
@@ -1805,6 +2143,8 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 			WorldFillPercent = effectiveWorld,
 			ShowEditButton = canEdit,
 			EditText = "编辑履历",
+			IsLowProfileModeEnabled = IsLowProfileModeEnabled(),
+			LowProfileToggleText = IsLowProfileModeEnabled() ? "关闭低调模式" : "开启低调模式",
 			CultureRows = BuildPlayerNotorietyCultureRows()
 		};
 	}
@@ -1813,6 +2153,11 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 	{
 		_state = NormalizeState(_state);
 		StringBuilder sb = new StringBuilder();
+		if (IsLowProfileModeEnabled())
+		{
+			sb.AppendLine("【低调模式】已开启。除当前主队伍内的士兵和同伴外，其他人暂时不会认出玩家；低调期间的新行为仍会进入重大履历、近期行动和周报素材。");
+			sb.AppendLine();
+		}
 		string playerName = "玩家";
 		string summary = RenderPlayerActionTextForPrompt((_state.MajorSummary ?? "").Trim(), playerName);
 		if (!string.IsNullOrWhiteSpace(summary))
@@ -2026,7 +2371,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 	private void OpenPlayerNotorietyView()
 	{
 		bool canEdit = MyBehavior.IsDevDataManagementEnabledForExternal();
-		if (PlayerNotorietyPopup.Show(BuildPlayerNotorietyPopupData(canEdit), canEdit ? OpenPlayerMajorHistoryEditor : null))
+		if (PlayerNotorietyPopup.Show(BuildPlayerNotorietyPopupData(canEdit), canEdit ? OpenPlayerMajorHistoryEditor : null, ToggleLowProfileModeFromPopup))
 		{
 			return;
 		}
@@ -2037,6 +2382,14 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 			return;
 		}
 		InformationManager.ShowInquiry(new InquiryData("玩家知名度与履历", text, true, false, "关闭", "", null, null));
+	}
+
+	private PlayerNotorietyPopupData ToggleLowProfileModeFromPopup()
+	{
+		bool enabled = !IsLowProfileModeEnabled();
+		SetLowProfileModeEnabled(enabled);
+		InformationManager.DisplayMessage(new InformationMessage(enabled ? "已开启低调模式。" : "已关闭低调模式。"));
+		return BuildPlayerNotorietyPopupData(MyBehavior.IsDevDataManagementEnabledForExternal());
 	}
 
 	private void OpenPlayerMajorHistoryEditor()
@@ -2099,17 +2452,18 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		return TrimMajorSummaryFallback(NormalizeLine(input), GetMajorPromptChars());
 	}
 
-	private static string BuildFallbackMajorSummary(string existingSummary, List<PlayerHistoryMaterial> materials)
+	private static string BuildFallbackMajorSummary(string existingSummary, List<PlayerHistoryMaterial> materials, string playerDisplayName)
 	{
+		string playerName = NormalizePlayerDisplayName(playerDisplayName);
 		StringBuilder sb = new StringBuilder();
-		string existing = NormalizeLine(existingSummary);
+		string existing = RenderPlayerActionTextForPrompt(existingSummary, playerName);
 		if (!string.IsNullOrWhiteSpace(existing))
 		{
 			sb.Append(existing);
 		}
 		foreach (PlayerHistoryMaterial material in materials ?? new List<PlayerHistoryMaterial>())
 		{
-			string text = NormalizeLine(material?.Text);
+			string text = RenderPlayerActionTextForPrompt(material?.Text, playerName);
 			if (string.IsNullOrWhiteSpace(text))
 			{
 				continue;
@@ -2119,7 +2473,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 				sb.Append(" ");
 			}
 			sb.Append(string.IsNullOrWhiteSpace(material.GameDate) ? "" : (material.GameDate.Trim() + "："));
-			sb.Append(StripPlayerInternalMarkers(text));
+			sb.Append(text);
 		}
 		return NormalizeMajorSummaryForStorage(sb.ToString());
 	}
@@ -2145,6 +2499,93 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		return text.Substring(0, maxChars - 3).TrimEnd() + "...";
 	}
 
+	private void RememberSummarizedMaterialKey(PlayerHistoryMaterial material)
+	{
+		if (material == null)
+		{
+			return;
+		}
+		RememberSummarizedMaterialKey(NormalizeStableKey(material.StableKey, material.Text, material.Day));
+	}
+
+	private void RememberSummarizedMaterialKey(string key)
+	{
+		_state = NormalizeState(_state);
+		RememberSummarizedMaterialKey(_state, key);
+	}
+
+	private static void RememberSummarizedMaterialKey(PlayerNotorietyState state, string key)
+	{
+		if (state == null)
+		{
+			return;
+		}
+		string normalizedKey = (key ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(normalizedKey))
+		{
+			return;
+		}
+		state.SummarizedMaterialKeys = NormalizeSummarizedMaterialKeys(state.SummarizedMaterialKeys);
+		state.SummarizedMaterialKeys.RemoveAll(x => string.Equals(x ?? "", normalizedKey, StringComparison.OrdinalIgnoreCase));
+		state.SummarizedMaterialKeys.Add(normalizedKey);
+		if (state.SummarizedMaterialKeys.Count > MaxSummarizedMaterialKeys)
+		{
+			state.SummarizedMaterialKeys = state.SummarizedMaterialKeys
+				.Skip(state.SummarizedMaterialKeys.Count - MaxSummarizedMaterialKeys)
+				.ToList();
+		}
+	}
+
+	private void PruneSummarizedMajorMaterials()
+	{
+		_state = PruneSummarizedMajorMaterials(NormalizeState(_state));
+	}
+
+	private static PlayerNotorietyState PruneSummarizedMajorMaterials(PlayerNotorietyState state)
+	{
+		if (state?.MajorMaterials == null)
+		{
+			return state ?? new PlayerNotorietyState();
+		}
+		foreach (PlayerHistoryMaterial material in state.MajorMaterials)
+		{
+			if (material?.Summarized == true)
+			{
+				RememberSummarizedMaterialKey(state, NormalizeStableKey(material.StableKey, material.Text, material.Day));
+			}
+		}
+		state.MajorMaterials = state.MajorMaterials
+			.Where(x => x != null && !x.Summarized && !string.IsNullOrWhiteSpace(x.Text))
+			.OrderBy(x => x.Day)
+			.ThenBy(x => x.CreatedUtcTicks)
+			.Take(MaxMajorMaterials)
+			.ToList();
+		state.SummarizedMaterialKeys = NormalizeSummarizedMaterialKeys(state.SummarizedMaterialKeys);
+		return state;
+	}
+
+	private static List<string> NormalizeSummarizedMaterialKeys(IEnumerable<string> keys)
+	{
+		List<string> normalized = new List<string>();
+		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (string rawKey in keys ?? Enumerable.Empty<string>())
+		{
+			string key = (rawKey ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(key) || !seen.Add(key))
+			{
+				continue;
+			}
+			normalized.Add(key);
+		}
+		if (normalized.Count > MaxSummarizedMaterialKeys)
+		{
+			normalized = normalized
+				.Skip(normalized.Count - MaxSummarizedMaterialKeys)
+				.ToList();
+		}
+		return normalized;
+	}
+
 	private static PlayerNotorietyState NormalizeState(PlayerNotorietyState state)
 	{
 		state ??= new PlayerNotorietyState();
@@ -2152,6 +2593,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		state.NpcKnowledge ??= new Dictionary<string, PlayerNpcKnowledgeState>(StringComparer.OrdinalIgnoreCase);
 		state.RecentActions ??= new List<PlayerActionEntry>();
 		state.MajorMaterials ??= new List<PlayerHistoryMaterial>();
+		state.SummarizedMaterialKeys = NormalizeSummarizedMaterialKeys(state.SummarizedMaterialKeys);
 		state.MajorSummary = (state.MajorSummary ?? "").Trim();
 		if (state.LastSummaryDay == 0 && state.UpdatedUtcTicks == 0 && string.IsNullOrWhiteSpace(state.MajorSummary))
 		{
@@ -2185,9 +2627,8 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 			.Select(NormalizeHistoryMaterial)
 			.OrderBy(x => x.Day)
 			.ThenBy(x => x.CreatedUtcTicks)
-			.Take(MaxMajorMaterials)
 			.ToList();
-		return state;
+		return PruneSummarizedMajorMaterials(state);
 	}
 
 	private static PlayerActionEntry NormalizeActionEntry(PlayerActionEntry entry)
@@ -3063,11 +3504,13 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 
 	private sealed class PlayerNotorietyState
 	{
+		public bool LowProfileModeEnabled;
 		public double WorldNotoriety;
 		public Dictionary<string, double> CultureNotoriety = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
 		public Dictionary<string, PlayerNpcKnowledgeState> NpcKnowledge = new Dictionary<string, PlayerNpcKnowledgeState>(StringComparer.OrdinalIgnoreCase);
 		public List<PlayerActionEntry> RecentActions = new List<PlayerActionEntry>();
 		public List<PlayerHistoryMaterial> MajorMaterials = new List<PlayerHistoryMaterial>();
+		public List<string> SummarizedMaterialKeys = new List<string>();
 		public string MajorSummary = "";
 		public int LastSummaryDay = -1;
 		public int LastSequence;

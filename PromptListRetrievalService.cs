@@ -15,7 +15,26 @@ public static class PromptListRetrievalService
 {
 	private const int DefaultCandidateMaxCount = 10;
 	private const int CandidateMaxHardCap = 30;
+	private const int CandidateSnapshotMaxCount = 80;
+	private const int CandidateSnapshotMaxAgeMinutes = 10;
 	private const float MatchThreshold = 0.66f;
+	public const string PlayerVisibleEquipmentSnapshotScope = "player_visible_equipment";
+	public const string NpcRewardItemsSnapshotScope = "npc_reward_items";
+	internal const string NpcRewardItemsAllSnapshotScope = "npc_reward_items_all";
+	internal const string PartyRewardItemsAllSnapshotScope = "party_reward_items_all";
+	public const string SettlementMerchantItemsSnapshotScope = "settlement_merchant_items";
+	internal const string SettlementMerchantItemsAllSnapshotScope = "settlement_merchant_items_all";
+	public const string PartyTransferTroopsSnapshotScope = "party_transfer_troops";
+	internal const string PartyTransferAllTroopsSnapshotScope = "party_transfer_all_troops";
+	public const string PartyTransferPrisonersSnapshotScope = "party_transfer_prisoners";
+	internal const string PartyTransferAllPrisonersSnapshotScope = "party_transfer_all_prisoners";
+	public const string SettlementTransferNpcAssetsSnapshotScope = "settlement_transfer_npc_assets";
+	internal const string SettlementTransferAllNpcAssetsSnapshotScope = "settlement_transfer_all_npc_assets";
+	[Obsolete("LLM postprocess player-to-NPC asset snapshots are no longer supported.")]
+	public const string SettlementTransferPlayerAssetsSnapshotScope = "settlement_transfer_player_assets";
+
+	private static readonly object CandidateSnapshotLock = new object();
+	private static readonly Dictionary<string, CandidateSnapshot> CandidateSnapshots = new Dictionary<string, CandidateSnapshot>(StringComparer.OrdinalIgnoreCase);
 
 	private sealed class CandidateMatch<T>
 	{
@@ -26,6 +45,17 @@ public static class PromptListRetrievalService
 		public int MentionPriority;
 
 		public float Score;
+	}
+
+	private sealed class CandidateSnapshot
+	{
+		public DateTime CreatedUtc;
+
+		public List<RewardSystemBehavior.RewardItemInfo> RewardItems;
+
+		public List<MyBehavior.PartyTransferPromptEntry> PartyTransferEntries;
+
+		public List<MyBehavior.SettlementTransferPromptEntry> SettlementTransferEntries;
 	}
 
 	public static int GetMaxCandidateCount()
@@ -47,6 +77,145 @@ public static class PromptListRetrievalService
 			value = DefaultCandidateMaxCount;
 		}
 		return Math.Max(1, Math.Min(CandidateMaxHardCap, value));
+	}
+
+	public static string BuildCandidateSnapshotKey(string scope, Hero targetHero = null, CharacterObject targetCharacter = null, int targetAgentIndex = -1, string discriminator = null)
+	{
+		string text = (scope ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = "default";
+		}
+		string heroId = (targetHero?.StringId ?? targetCharacter?.HeroObject?.StringId ?? "").Trim();
+		string characterId = (targetCharacter?.StringId ?? "").Trim();
+		string characterKey = string.IsNullOrWhiteSpace(heroId) ? characterId : "";
+		string settlementId = "";
+		try
+		{
+			settlementId = (Settlement.CurrentSettlement?.StringId ?? "").Trim();
+		}
+		catch
+		{
+			settlementId = "";
+		}
+		string entity = !string.IsNullOrWhiteSpace(heroId) ? ("hero:" + heroId) : (!string.IsNullOrWhiteSpace(characterId) ? ("character:" + characterId) : "entity:none");
+		string agent = targetAgentIndex >= 0 ? targetAgentIndex.ToString(CultureInfo.InvariantCulture) : "-1";
+		string extra = (discriminator ?? "").Trim();
+		return text + "|entity=" + entity + "|character=" + characterKey + "|agent=" + agent + "|settlement=" + settlementId + "|extra=" + extra;
+	}
+
+	public static void PublishRewardItemSnapshot(string scope, Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, IEnumerable<RewardSystemBehavior.RewardItemInfo> items, string discriminator = null)
+	{
+		List<RewardSystemBehavior.RewardItemInfo> list = (items ?? Enumerable.Empty<RewardSystemBehavior.RewardItemInfo>()).Where((RewardSystemBehavior.RewardItemInfo x) => x != null).ToList();
+		PublishSnapshot(BuildCandidateSnapshotKey(scope, targetHero, targetCharacter, targetAgentIndex, discriminator), new CandidateSnapshot
+		{
+			RewardItems = list
+		});
+	}
+
+	public static bool TryGetRewardItemSnapshot(string scope, Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, out List<RewardSystemBehavior.RewardItemInfo> items, string discriminator = null)
+	{
+		items = null;
+		if (!TryGetSnapshot(BuildCandidateSnapshotKey(scope, targetHero, targetCharacter, targetAgentIndex, discriminator), out var snapshot) || snapshot?.RewardItems == null)
+		{
+			return false;
+		}
+		items = snapshot.RewardItems.Where((RewardSystemBehavior.RewardItemInfo x) => x != null).ToList();
+		return items.Count > 0;
+	}
+
+	public static void PublishPartyTransferSnapshot(string scope, Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, IEnumerable<MyBehavior.PartyTransferPromptEntry> entries, string discriminator = null)
+	{
+		List<MyBehavior.PartyTransferPromptEntry> list = (entries ?? Enumerable.Empty<MyBehavior.PartyTransferPromptEntry>()).Where((MyBehavior.PartyTransferPromptEntry x) => x != null).ToList();
+		PublishSnapshot(BuildCandidateSnapshotKey(scope, targetHero, targetCharacter, targetAgentIndex, discriminator), new CandidateSnapshot
+		{
+			PartyTransferEntries = list
+		});
+	}
+
+	public static bool TryGetPartyTransferSnapshot(string scope, Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, out List<MyBehavior.PartyTransferPromptEntry> entries, string discriminator = null)
+	{
+		entries = null;
+		if (!TryGetSnapshot(BuildCandidateSnapshotKey(scope, targetHero, targetCharacter, targetAgentIndex, discriminator), out var snapshot) || snapshot?.PartyTransferEntries == null)
+		{
+			return false;
+		}
+		entries = snapshot.PartyTransferEntries.Where((MyBehavior.PartyTransferPromptEntry x) => x != null).ToList();
+		return entries.Count > 0;
+	}
+
+	public static void PublishSettlementTransferSnapshot(string scope, Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, IEnumerable<MyBehavior.SettlementTransferPromptEntry> entries, string discriminator = null)
+	{
+		List<MyBehavior.SettlementTransferPromptEntry> list = (entries ?? Enumerable.Empty<MyBehavior.SettlementTransferPromptEntry>()).Where(MyBehavior.IsSettlementTransferEntryValidForExternal).ToList();
+		PublishSnapshot(BuildCandidateSnapshotKey(scope, targetHero, targetCharacter, targetAgentIndex, discriminator), new CandidateSnapshot
+		{
+			SettlementTransferEntries = list
+		});
+	}
+
+	public static bool TryGetSettlementTransferSnapshot(string scope, Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, out List<MyBehavior.SettlementTransferPromptEntry> entries, string discriminator = null)
+	{
+		entries = null;
+		if (!TryGetSnapshot(BuildCandidateSnapshotKey(scope, targetHero, targetCharacter, targetAgentIndex, discriminator), out var snapshot) || snapshot?.SettlementTransferEntries == null)
+		{
+			return false;
+		}
+		entries = snapshot.SettlementTransferEntries.Where(MyBehavior.IsSettlementTransferEntryValidForExternal).ToList();
+		return entries.Count > 0;
+	}
+
+	private static void PublishSnapshot(string key, CandidateSnapshot snapshot)
+	{
+		if (string.IsNullOrWhiteSpace(key) || snapshot == null)
+		{
+			return;
+		}
+		lock (CandidateSnapshotLock)
+		{
+			snapshot.CreatedUtc = DateTime.UtcNow;
+			CandidateSnapshots[key] = snapshot;
+			TrimSnapshotsLocked();
+		}
+	}
+
+	private static bool TryGetSnapshot(string key, out CandidateSnapshot snapshot)
+	{
+		snapshot = null;
+		if (string.IsNullOrWhiteSpace(key))
+		{
+			return false;
+		}
+		lock (CandidateSnapshotLock)
+		{
+			if (!CandidateSnapshots.TryGetValue(key, out snapshot) || snapshot == null)
+			{
+				return false;
+			}
+			if (DateTime.UtcNow - snapshot.CreatedUtc > TimeSpan.FromMinutes(CandidateSnapshotMaxAgeMinutes))
+			{
+				CandidateSnapshots.Remove(key);
+				snapshot = null;
+				return false;
+			}
+			return true;
+		}
+	}
+
+	private static void TrimSnapshotsLocked()
+	{
+		DateTime cutoff = DateTime.UtcNow - TimeSpan.FromMinutes(CandidateSnapshotMaxAgeMinutes);
+		foreach (string key in CandidateSnapshots.Where((KeyValuePair<string, CandidateSnapshot> x) => x.Value == null || x.Value.CreatedUtc < cutoff).Select((KeyValuePair<string, CandidateSnapshot> x) => x.Key).ToList())
+		{
+			CandidateSnapshots.Remove(key);
+		}
+		if (CandidateSnapshots.Count <= CandidateSnapshotMaxCount)
+		{
+			return;
+		}
+		foreach (string key in CandidateSnapshots.OrderBy((KeyValuePair<string, CandidateSnapshot> x) => x.Value?.CreatedUtc ?? DateTime.MinValue).Take(Math.Max(0, CandidateSnapshots.Count - CandidateSnapshotMaxCount)).Select((KeyValuePair<string, CandidateSnapshot> x) => x.Key).ToList())
+		{
+			CandidateSnapshots.Remove(key);
+		}
 	}
 
 	public static List<string> BuildMentionTerms(MentionedWorldEntities mentions)

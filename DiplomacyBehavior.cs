@@ -574,6 +574,13 @@ namespace AnimusForge
 				if (playerKingdom != null && playerKingdom != npcKingdom && !playerKingdom.IsEliminated && !FactionManager.IsAtWarAgainstFaction(npcKingdom, playerKingdom))
 				{ sb.AppendLine(); sb.AppendLine($"【与{GetKingdomDisplayName(playerKingdom)}的和平状态】双方目前处于和平状态。"); }
 
+				string annexationInstruction = KingdomAnnexationBehavior.BuildRuntimeAnnexationInstructionForExternal(npc);
+				if (!string.IsNullOrWhiteSpace(annexationInstruction))
+				{
+					sb.AppendLine();
+					sb.AppendLine(annexationInstruction);
+				}
+
 				return sb.ToString().TrimEnd();
 			}
 			catch (Exception ex) { Logger.Log("DiplomacyBehavior", $"[BuildInstruction Error] {ex.Message}"); return ""; }
@@ -648,6 +655,13 @@ namespace AnimusForge
 				sb.AppendLine("【关键身份】");
 				sb.AppendLine($"  你的王国ID：{npcKingdom.StringId}（{GetKingdomDisplayName(npcKingdom)}）");
 				sb.AppendLine($"  玩家王国ID：{playerKingdom.StringId}（{GetKingdomDisplayName(playerKingdom)}）" + (IsPlayerKing() ? "，玩家是国王" : ""));
+				string annexationHint = KingdomAnnexationBehavior.BuildRuntimeAnnexationConstraintHintForExternal(npc);
+				if (!string.IsNullOrWhiteSpace(annexationHint))
+				{
+					sb.AppendLine();
+					sb.AppendLine("【国家吞并约束】");
+					sb.AppendLine(annexationHint);
+				}
 
 				// DECLARE_WAR
 				sb.AppendLine(); sb.AppendLine("[ACTION:DIPLOMACY:DECLARE_WAR:id1:id2]");
@@ -658,7 +672,7 @@ namespace AnimusForge
 				if (IsPlayerKing())
 				{
 					sb.AppendLine(); sb.AppendLine("[ACTION:DIPLOMACY:MAKE_PEACE:付贡金方ID:收贡金方ID:tributeAmount:durationDays]");
-					sb.AppendLine("  两个ID必须是玩家王国和你的王国。tributeAmount: 0=白和平 / auto / 具体数字。durationDays: default=100 / 1-252。双方同意后输出。");
+					sb.AppendLine("  两个ID必须是玩家王国和你的王国。tributeAmount: 0=无条件和平 / auto / 具体数字。durationDays: default=100 / 1-252。双方同意后输出。");
 				}
 
 				// FORM_ALLIANCE (king only)

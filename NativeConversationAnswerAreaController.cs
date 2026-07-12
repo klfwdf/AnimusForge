@@ -93,6 +93,7 @@ public static class NativeConversationAnswerAreaController
 			_suppressed = false;
 			snapshot = new List<RootState>(Roots);
 		}
+		List<RootState> failedRoots = null;
 		foreach (RootState root in snapshot)
 		{
 			try
@@ -102,15 +103,20 @@ public static class NativeConversationAnswerAreaController
 			catch (Exception ex)
 			{
 				Logger.Log("NativeConversationUI", "[WARN] Failed to force-restore native answer area: " + ex.Message);
+				(failedRoots ??= new List<RootState>()).Add(root);
 			}
 		}
+		RemoveFailedRoots(failedRoots);
 	}
 
 	public static void OnApplicationTick()
 	{
 		if (_suppressed)
 		{
-			ApplySuppressionToAll();
+			using (FreezeWatchdog.Scope("NativeConversationAnswerArea.ApplySuppressionToAll"))
+			{
+				ApplySuppressionToAll();
+			}
 		}
 	}
 
@@ -124,20 +130,45 @@ public static class NativeConversationAnswerAreaController
 	{
 		List<RootState> snapshot;
 		bool suppressed;
-		lock (Sync)
+		using (FreezeWatchdog.Scope("NativeConversationAnswerArea.SnapshotRoots"))
 		{
-			snapshot = new List<RootState>(Roots);
-			suppressed = _suppressed;
+			lock (Sync)
+			{
+				snapshot = new List<RootState>(Roots);
+				suppressed = _suppressed;
+			}
 		}
-		foreach (RootState root in snapshot)
+		List<RootState> failedRoots = null;
+		for (int i = 0; i < snapshot.Count; i++)
 		{
+			RootState root = snapshot[i];
 			try
 			{
-				root.Apply(suppressed);
+				using (FreezeWatchdog.Scope("NativeConversationAnswerArea.RootApply." + i))
+				{
+					root.Apply(suppressed);
+				}
 			}
 			catch (Exception ex)
 			{
 				Logger.Log("NativeConversationUI", "[WARN] Failed to update native answer area: " + ex.Message);
+				(failedRoots ??= new List<RootState>()).Add(root);
+			}
+		}
+		RemoveFailedRoots(failedRoots);
+	}
+
+	private static void RemoveFailedRoots(List<RootState> failedRoots)
+	{
+		if (failedRoots == null || failedRoots.Count == 0)
+		{
+			return;
+		}
+		lock (Sync)
+		{
+			foreach (RootState root in failedRoots)
+			{
+				Roots.Remove(root);
 			}
 		}
 	}
@@ -175,7 +206,7 @@ public static class NativeConversationAnswerAreaController
 			{
 				StoreStateIfNeeded();
 				CaptureAnswerDescendantStatesIfNeeded();
-				for (int i = 0; i < _states.Count; i++)
+				for (int i = _states.Count - 1; i >= 0; i--)
 				{
 					WidgetState state = _states[i];
 					Widget widget = state.Widget;
@@ -183,18 +214,11 @@ public static class NativeConversationAnswerAreaController
 					{
 						continue;
 					}
-					if (state.PreserveLayout)
+					if (!state.TryApplySuppressed())
 					{
-						widget.IsVisible = state.WasVisible;
-						widget.HeightSizePolicy = SizePolicy.Fixed;
-						widget.SuggestedHeight = state.LayoutHeight;
+						_states.RemoveAt(i);
+						_trackedWidgets.Remove(widget);
 					}
-					else
-					{
-						widget.IsVisible = false;
-					}
-					widget.IsEnabled = false;
-					widget.DoNotAcceptEvents = true;
 				}
 				return;
 			}
@@ -246,10 +270,18 @@ public static class NativeConversationAnswerAreaController
 			{
 				return;
 			}
-			int count = widget.ChildCount;
+			int count = GetChildCountSafe(widget);
 			for (int i = 0; i < count; i++)
 			{
-				Widget child = widget.GetChild(i);
+				Widget child;
+				try
+				{
+					child = widget.GetChild(i);
+				}
+				catch
+				{
+					continue;
+				}
 				AddState(child, preserveLayout: false);
 				AddDescendantStates(child);
 			}
@@ -259,7 +291,14 @@ public static class NativeConversationAnswerAreaController
 		{
 			if (widget != null && _trackedWidgets.Add(widget))
 			{
-				_states.Add(new WidgetState(widget, preserveLayout));
+				try
+				{
+					_states.Add(new WidgetState(widget, preserveLayout));
+				}
+				catch
+				{
+					_trackedWidgets.Remove(widget);
+				}
 			}
 		}
 
@@ -271,7 +310,7 @@ public static class NativeConversationAnswerAreaController
 			}
 			for (int i = 0; i < _states.Count; i++)
 			{
-				_states[i].Restore();
+				_states[i].TryRestore();
 			}
 			_states.Clear();
 			_trackedWidgets.Clear();
@@ -434,23 +473,58 @@ public static class NativeConversationAnswerAreaController
 
 		public bool PreserveLayout { get; }
 
-		public bool WasVisible => _isVisible;
-
 		public float LayoutHeight { get; }
 
-		public void Restore()
+		public bool TryApplySuppressed()
 		{
-			Widget widget = Widget;
-			if (widget == null)
+			try
 			{
-				return;
+				Widget widget = Widget;
+				if (widget == null)
+				{
+					return false;
+				}
+				if (PreserveLayout)
+				{
+					widget.IsVisible = _isVisible;
+					widget.HeightSizePolicy = SizePolicy.Fixed;
+					widget.SuggestedHeight = LayoutHeight;
+				}
+				else
+				{
+					widget.IsVisible = false;
+				}
+				widget.IsEnabled = false;
+				widget.DoNotAcceptEvents = true;
+				return true;
 			}
-			widget.IsVisible = _isVisible;
-			widget.IsEnabled = _isEnabled;
-			widget.DoNotAcceptEvents = _doNotAcceptEvents;
-			widget.AlphaFactor = _alphaFactor;
-			widget.HeightSizePolicy = _heightSizePolicy;
-			widget.SuggestedHeight = _suggestedHeight;
+			catch
+			{
+				return false;
+			}
+		}
+
+		public bool TryRestore()
+		{
+			try
+			{
+				Widget widget = Widget;
+				if (widget == null)
+				{
+					return false;
+				}
+				widget.IsVisible = _isVisible;
+				widget.IsEnabled = _isEnabled;
+				widget.DoNotAcceptEvents = _doNotAcceptEvents;
+				widget.AlphaFactor = _alphaFactor;
+				widget.HeightSizePolicy = _heightSizePolicy;
+				widget.SuggestedHeight = _suggestedHeight;
+				return true;
+			}
+			catch
+			{
+				return false;
+			}
 		}
 
 		private static float ResolveLayoutHeight(Widget widget)

@@ -157,6 +157,57 @@ internal static class PlayerEncounterCompat
 		return IsResolvedMapEvent(GetCurrentMapEventSafe());
 	}
 
+	internal static bool IsInPostBattleResultFlow()
+	{
+		try
+		{
+			ConversationContext context = Campaign.Current?.CurrentConversationContext ?? ConversationContext.Default;
+			if (context == ConversationContext.CapturedLord || context == ConversationContext.FreeOrCapturePrisonerHero)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		PlayerEncounter currentSafe = GetCurrentSafe();
+		if (currentSafe == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (IsPostBattleResultState(currentSafe.EncounterState))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return IsResolvedMapEvent(GetCurrentMapEventSafe());
+	}
+
+	private static bool IsPostBattleResultState(PlayerEncounterState state)
+	{
+		switch (state)
+		{
+		case PlayerEncounterState.PrepareResults:
+		case PlayerEncounterState.ApplyResults:
+		case PlayerEncounterState.PlayerVictory:
+		case PlayerEncounterState.PlayerTotalDefeat:
+		case PlayerEncounterState.CaptureHeroes:
+		case PlayerEncounterState.FreeHeroes:
+		case PlayerEncounterState.LootParty:
+		case PlayerEncounterState.LootInventory:
+		case PlayerEncounterState.LootShips:
+		case PlayerEncounterState.End:
+			return true;
+		default:
+			return false;
+		}
+	}
+
 	internal static CampaignBattleResult GetCampaignBattleResultSafe()
 	{
 		PlayerEncounter currentSafe = GetCurrentSafe();

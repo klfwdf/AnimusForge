@@ -2596,6 +2596,25 @@ internal static class ReinforcementSystemCompatibility
 {
 	private const string HarmonyId = "com.AnimusForge.spy.reinforcement_guard";
 
+	private const string MainTypeName = "Reinforcement_System.Main";
+
+	private const string FieldCoreTypeName = "Reinforcement_System.RS_Core_Field";
+
+	private const string SiegeCoreTypeName = "Reinforcement_System.RS_Core_Siege";
+
+	private static readonly string[] CoreMethodNames =
+	{
+		"AfterStart",
+		"OnMissionModeChange",
+		"OnMissionTick",
+		"OnTeamDeployed",
+		"OnAgentRemoved",
+		"OnEarlyAgentRemoved",
+		"OnAgentPanicked",
+		"OnMissionResultReady",
+		"OnEndMission"
+	};
+
 	private static readonly object PatchLock = new object();
 
 	private static Harmony _harmony;
@@ -2603,6 +2622,8 @@ internal static class ReinforcementSystemCompatibility
 	private static bool _patched;
 
 	private static bool _missingLogged;
+
+	private static int _coreSuppressedLogCount;
 
 	internal static void EnsurePatched(Harmony harmony = null)
 	{
@@ -2622,24 +2643,26 @@ internal static class ReinforcementSystemCompatibility
 			}
 			try
 			{
-				Type targetType = FindReinforcementMainType();
+				Type targetType = FindType(MainTypeName);
 				if (targetType == null)
 				{
-					LogMissingOnce("Reinforcement_System.Main not loaded");
+					LogMissingOnce(MainTypeName + " not loaded");
 					return;
 				}
 				MethodInfo target = AccessTools.Method(targetType, "OnMissionBehaviorInitialize", new Type[] { typeof(Mission) });
 				MethodInfo prefix = AccessTools.Method(typeof(ReinforcementSystemCompatibility), nameof(OnMissionBehaviorInitializePrefix));
 				if (target == null || prefix == null)
 				{
-					LogMissingOnce("Reinforcement_System.Main.OnMissionBehaviorInitialize not found");
+					LogMissingOnce(MainTypeName + ".OnMissionBehaviorInitialize not found");
 					return;
 				}
 				Harmony activeHarmony = _harmony ?? new Harmony(HarmonyId);
 				activeHarmony.Patch(target, prefix: new HarmonyMethod(prefix));
+				int corePatchCount = PatchCoreBehaviorType(activeHarmony, FieldCoreTypeName);
+				corePatchCount += PatchCoreBehaviorType(activeHarmony, SiegeCoreTypeName);
 				_harmony = activeHarmony;
 				_patched = true;
-				Log("reinforcement_system_guard_patched");
+				Log("reinforcement_system_guard_patched core_methods=" + corePatchCount);
 			}
 			catch (Exception ex)
 			{
@@ -2650,17 +2673,174 @@ internal static class ReinforcementSystemCompatibility
 
 	private static bool OnMissionBehaviorInitializePrefix(Mission mission)
 	{
-		if (!TroopInspectionBehavior.ShouldSuppressReinforcementSystem(mission))
+		if (!TryGetSuppressionReason(mission, out string reason))
 		{
 			return true;
 		}
-		Log("reinforcement_system_skipped_for_inspection mission=" + (mission != null));
+		Log("reinforcement_system_skipped mission=" + (mission != null) + " reason=" + reason);
 		return false;
 	}
 
-	private static Type FindReinforcementMainType()
+	private static bool OnCoreBehaviorPrefix(object __instance)
 	{
-		Type type = AccessTools.TypeByName("Reinforcement_System.Main");
+		Mission mission = null;
+		try
+		{
+			mission = (__instance as MissionBehavior)?.Mission ?? Mission.Current;
+		}
+		catch
+		{
+			mission = Mission.Current;
+		}
+		if (!TryGetSuppressionReason(mission, out string reason))
+		{
+			return true;
+		}
+		_coreSuppressedLogCount++;
+		if (_coreSuppressedLogCount <= 8)
+		{
+			string typeName = "null";
+			try
+			{
+				typeName = __instance?.GetType().FullName ?? "null";
+			}
+			catch
+			{
+			}
+			Log("reinforcement_system_core_skipped type=" + typeName + " reason=" + reason + " count=" + _coreSuppressedLogCount);
+		}
+		return false;
+	}
+
+	internal static int RemoveReinforcementMissionBehaviors(Mission mission, string reason)
+	{
+		if (mission?.MissionBehaviors == null)
+		{
+			return 0;
+		}
+		int removed = 0;
+		try
+		{
+			List<MissionBehavior> toRemove = new List<MissionBehavior>();
+			foreach (MissionBehavior behavior in mission.MissionBehaviors)
+			{
+				if (IsReinforcementCoreBehavior(behavior))
+				{
+					toRemove.Add(behavior);
+				}
+			}
+			foreach (MissionBehavior behavior2 in toRemove)
+			{
+				try
+				{
+					mission.RemoveMissionBehavior(behavior2);
+					removed++;
+				}
+				catch (Exception ex)
+				{
+					Log("reinforcement_system_remove_failed type=" + (behavior2?.GetType().FullName ?? "null") + " reason=" + (reason ?? "") + " error=" + ex.GetType().Name + ": " + ex.Message);
+				}
+			}
+			if (removed > 0)
+			{
+				Log("reinforcement_system_behaviors_removed count=" + removed + " reason=" + (reason ?? ""));
+			}
+		}
+		catch (Exception ex2)
+		{
+			Log("reinforcement_system_remove_scan_failed reason=" + (reason ?? "") + " error=" + ex2.GetType().Name + ": " + ex2.Message);
+		}
+		return removed;
+	}
+
+	private static int PatchCoreBehaviorType(Harmony activeHarmony, string typeName)
+	{
+		Type type = FindType(typeName);
+		if (type == null)
+		{
+			return 0;
+		}
+		MethodInfo prefix = AccessTools.Method(typeof(ReinforcementSystemCompatibility), nameof(OnCoreBehaviorPrefix));
+		if (prefix == null)
+		{
+			return 0;
+		}
+		int count = 0;
+		try
+		{
+			MethodInfo[] methods = type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+			foreach (MethodInfo method in methods)
+			{
+				if (method == null || Array.IndexOf(CoreMethodNames, method.Name) < 0)
+				{
+					continue;
+				}
+				try
+				{
+					activeHarmony.Patch(method, prefix: new HarmonyMethod(prefix));
+					count++;
+				}
+				catch (Exception ex)
+				{
+					Log("reinforcement_system_core_patch_failed type=" + typeName + " method=" + method.Name + " error=" + ex.GetType().Name + ": " + ex.Message);
+				}
+			}
+		}
+		catch (Exception ex2)
+		{
+			Log("reinforcement_system_core_patch_scan_failed type=" + typeName + " error=" + ex2.GetType().Name + ": " + ex2.Message);
+		}
+		return count;
+	}
+
+	private static bool TryGetSuppressionReason(Mission mission, out string reason)
+	{
+		reason = "";
+		try
+		{
+			if (TroopInspectionBehavior.ShouldSuppressReinforcementSystem(mission))
+			{
+				reason = "troop_inspection";
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (DuelBehavior.ShouldSuppressReinforcementSystem(mission))
+			{
+				reason = "wilderness_duel";
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private static bool IsReinforcementCoreBehavior(MissionBehavior behavior)
+	{
+		if (behavior == null)
+		{
+			return false;
+		}
+		try
+		{
+			string fullName = behavior.GetType().FullName ?? "";
+			return string.Equals(fullName, FieldCoreTypeName, StringComparison.Ordinal) || string.Equals(fullName, SiegeCoreTypeName, StringComparison.Ordinal);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static Type FindType(string typeName)
+	{
+		Type type = AccessTools.TypeByName(typeName);
 		if (type != null)
 		{
 			return type;
@@ -2669,7 +2849,7 @@ internal static class ReinforcementSystemCompatibility
 		{
 			try
 			{
-				type = assembly.GetType("Reinforcement_System.Main", throwOnError: false);
+				type = assembly.GetType(typeName, throwOnError: false);
 				if (type != null)
 				{
 					return type;

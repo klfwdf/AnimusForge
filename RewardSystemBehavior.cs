@@ -7,6 +7,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml;
+using Helpers;
 using HarmonyLib;
 using Newtonsoft.Json;
 using TaleWorlds.CampaignSystem;
@@ -16,6 +18,7 @@ using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.ComponentInterfaces;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.Election;
+using TaleWorlds.CampaignSystem.Inventory;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Party.PartyComponents;
@@ -34,6 +37,7 @@ namespace AnimusForge;
 public class RewardSystemBehavior : CampaignBehaviorBase
 {
 	private const int RewardQuickInfoDurationMs = 5000;
+	private const float JoinPartyConversationCloseDelaySeconds = 5f;
 
 	private const string NotableMarketPromptPrefix = "market@";
 	private const int NotableMarketInventoryPromptMaxItems = 40;
@@ -49,6 +53,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	private const uint GeneratedRewardReservedSubIdMask = 0x02000000u;
 	private const uint GeneratedRewardReservedSubIdBits = 0x02000000u;
 	private const string GeneratedRewardItemManifestFileName = "GeneratedRewardItems.json";
+	private const string GeneratedRewardPlayerRosterStorageKey = "_rewardGeneratedPlayerRosterItems_v1";
 	private static readonly Encoding GeneratedRewardManifestEncoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
 	private static readonly object GeneratedRewardItemRegistrationLock = new object();
 	private static readonly Dictionary<uint, ItemObject> GeneratedRewardPendingItemsByObjectId = new Dictionary<uint, ItemObject>();
@@ -61,8 +66,16 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	private static bool SuppressGeneratedRewardObjectLookup;
 	[ThreadStatic]
 	private static bool SuppressGeneratedRewardPendingLookup;
+	private static DateTime GeneratedRewardLastInventoryVmLogUtc = DateTime.MinValue;
+	private static string GeneratedRewardLastInventoryVmLogSignature = "";
 	private static readonly PropertyInfo RewardItemObjectNameProperty = typeof(ItemObject).GetProperty("Name", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 	private static readonly PropertyInfo RewardItemObjectCategoryProperty = typeof(ItemObject).GetProperty("ItemCategory", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+	private static readonly PropertyInfo RewardItemObjectComponentProperty = typeof(ItemObject).GetProperty("ItemComponent", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+	private static readonly PropertyInfo RewardItemObjectValueProperty = typeof(ItemObject).GetProperty("Value", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+	private static readonly PropertyInfo RewardItemObjectWeightProperty = typeof(ItemObject).GetProperty("Weight", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+	private static readonly PropertyInfo RewardItemObjectIsFoodProperty = typeof(ItemObject).GetProperty("IsFood", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+	private static readonly PropertyInfo RewardItemObjectNotMerchandiseProperty = typeof(ItemObject).GetProperty("NotMerchandise", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+	private static readonly PropertyInfo RewardItemObjectItemFlagsProperty = typeof(ItemObject).GetProperty("ItemFlags", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 	private static readonly MethodInfo RewardObjectManagerTryRegisterWithoutInitializationMethod = typeof(MBObjectManager).GetMethod("TryRegisterObjectWithoutInitialization", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 	private static readonly FieldInfo HeroClanBackingField = typeof(Hero).GetField("_clan", BindingFlags.Instance | BindingFlags.NonPublic);
 
@@ -95,6 +108,50 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		public EquipmentElement EquipmentElement { get; set; }
 
 		public bool IsPrivateEquipment { get; set; }
+	}
+
+	public sealed class GeneratedInventoryItemSnapshot
+	{
+		public string GeneratedStringId { get; set; }
+
+		public string DisplayName { get; set; }
+
+		public string TemplateStringId { get; set; }
+
+		public uint ObjectId { get; set; }
+	}
+
+	public sealed class GeneratedRewardRpItemComponent : ItemComponent
+	{
+		public TextObject Description { get; set; }
+
+		public string CreatedBy { get; set; }
+
+		public int CreatedDay { get; set; }
+
+		public GeneratedRewardRpItemComponent()
+		{
+			Description = new TextObject("{=!}");
+			CreatedBy = "";
+			CreatedDay = 0;
+		}
+
+		private GeneratedRewardRpItemComponent(GeneratedRewardRpItemComponent other)
+		{
+			Description = other?.Description ?? new TextObject("{=!}");
+			CreatedBy = other?.CreatedBy ?? "";
+			CreatedDay = other?.CreatedDay ?? 0;
+		}
+
+		public override ItemComponent GetCopy()
+		{
+			return new GeneratedRewardRpItemComponent(this);
+		}
+
+		public override void Deserialize(MBObjectManager objectManager, XmlNode node)
+		{
+			Initialize();
+		}
 	}
 
 	public class DuelStakeOption
@@ -174,6 +231,21 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		public uint ObjectId;
 
 		public List<uint> LegacyObjectIds;
+
+		public int LastTouchedDay;
+	}
+
+	private sealed class GeneratedRewardRosterItemRecord
+	{
+		public string GeneratedStringId;
+
+		public string DisplayName;
+
+		public string TemplateStringId;
+
+		public uint ObjectId;
+
+		public int Amount;
 
 		public int LastTouchedDay;
 	}
@@ -415,11 +487,59 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	private Dictionary<string, string> _generatedRewardItemStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
+	private Dictionary<string, GeneratedRewardRosterItemRecord> _generatedRewardPlayerRosterRecords = new Dictionary<string, GeneratedRewardRosterItemRecord>(StringComparer.OrdinalIgnoreCase);
+
+	private Dictionary<string, string> _generatedRewardPlayerRosterStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
 	private List<string> _lastGeneratedNpcFactLines = new List<string>();
 
 	private static readonly Dictionary<int, Hero> _promotedNonHeroCompanionsByAgentIndex = new Dictionary<int, Hero>();
 
 	private static Mission _promotedNonHeroCompanionMission;
+
+	private sealed class PendingWildernessNonHeroJoinConversationClose
+	{
+		public PartyBase SourcePartyBase;
+
+		public MobileParty SourceParty;
+
+		public CharacterObject TargetCharacter;
+
+		public int TargetAgentIndex;
+
+		public string SourcePartyId;
+
+		public string TargetCharacterId;
+
+		public long CreatedUtcTicks;
+	}
+
+	private sealed class PendingHeroJoinConversationClose
+	{
+		public Hero JoinedHero;
+
+		public CharacterObject TargetCharacter;
+
+		public PartyBase OriginalParty;
+
+		public MobileParty OriginalMobileParty;
+
+		public string JoinedHeroId;
+
+		public string TargetCharacterId;
+
+		public string OriginalPartyId;
+
+		public long CreatedUtcTicks;
+	}
+
+	private static readonly object WildernessNonHeroJoinConversationCloseLock = new object();
+
+	private static readonly object HeroJoinConversationCloseLock = new object();
+
+	private static PendingWildernessNonHeroJoinConversationClose _pendingWildernessNonHeroJoinConversationClose;
+
+	private static PendingHeroJoinConversationClose _pendingHeroJoinConversationClose;
 
 	public static RewardSystemBehavior Instance { get; private set; }
 
@@ -464,12 +584,15 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	public override void RegisterEvents()
 	{
+		ClearGeneratedRewardRuntimeState("register_events");
 		CampaignEvents.OnGameLoadFinishedEvent.AddNonSerializedListener(this, OnGameLoadFinished);
 		CampaignEvents.DailyTickEvent.AddNonSerializedListener(this, OnDailyTick);
+		CampaignEvents.DailyTickSettlementEvent.AddNonSerializedListener(this, OnDailyTickSettlement);
 		CampaignEvents.MapEventEnded.AddNonSerializedListener(this, OnMapEventEnded);
 		CampaignEvents.OnPlayerPartyKnockedOrKilledTroopEvent.AddNonSerializedListener(this, OnPlayerPartyKnockedOrKilledTroop);
 		CampaignEvents.OnQuestCompletedEvent.AddNonSerializedListener(this, OnQuestCompleted);
 		CampaignEvents.CompanionRemoved.AddNonSerializedListener(this, OnCompanionRemoved);
+		CampaignEvents.TickEvent.AddNonSerializedListener(this, OnCampaignTick);
 	}
 
 	public static void RegisterHarmonyPatches(Harmony harmony)
@@ -513,6 +636,127 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		catch (Exception ex3)
 		{
 			Logger.LogTrace("RewardSystem", ">>> Generated item pre-trash roster repair patch failed: " + ex3.Message);
+		}
+		try
+		{
+			Type inventoryVmType = AccessTools.TypeByName("TaleWorlds.CampaignSystem.ViewModelCollection.Inventory.SPInventoryVM");
+			MethodInfo refreshInformationValues = inventoryVmType != null ? AccessTools.Method(inventoryVmType, "RefreshInformationValues") : null;
+			MethodInfo refreshInformationValuesPostfix = AccessTools.Method(typeof(RewardSystemBehavior), nameof(SPInventoryVMRefreshInformationValuesPostfix));
+			if (refreshInformationValues != null && refreshInformationValuesPostfix != null)
+			{
+				patcher.Patch(refreshInformationValues, postfix: new HarmonyMethod(refreshInformationValuesPostfix));
+			}
+		}
+		catch (Exception ex4)
+		{
+			Logger.LogTrace("RewardSystem", ">>> Generated item inventory VM diagnostics patch failed: " + ex4.Message);
+		}
+		try
+		{
+			Type itemMenuVmType = AccessTools.TypeByName("TaleWorlds.CampaignSystem.ViewModelCollection.Inventory.ItemMenuVM");
+			MethodInfo refreshItemTooltips = itemMenuVmType != null ? AccessTools.Method(itemMenuVmType, "RefreshItemTooltips") : null;
+			MethodInfo refreshItemTooltipsPostfix = AccessTools.Method(typeof(RewardSystemBehavior), nameof(ItemMenuVMRefreshItemTooltipsPostfix));
+			if (refreshItemTooltips != null && refreshItemTooltipsPostfix != null)
+			{
+				patcher.Patch(refreshItemTooltips, postfix: new HarmonyMethod(refreshItemTooltipsPostfix));
+			}
+		}
+		catch (Exception ex5)
+		{
+			Logger.LogTrace("RewardSystem", ">>> Generated item tooltip patch failed: " + ex5.Message);
+		}
+		try
+		{
+			MethodInfo openScreenAsTrade = AccessTools.Method(typeof(InventoryScreenHelper), nameof(InventoryScreenHelper.OpenScreenAsTrade), new Type[4]
+			{
+				typeof(ItemRoster),
+				typeof(SettlementComponent),
+				typeof(InventoryScreenHelper.InventoryCategoryType),
+				typeof(Action)
+			});
+			MethodInfo openScreenAsTradePrefix = AccessTools.Method(typeof(RewardSystemBehavior), nameof(InventoryScreenHelperOpenScreenAsTradePrefix));
+			if (openScreenAsTrade != null && openScreenAsTradePrefix != null)
+			{
+				patcher.Patch(openScreenAsTrade, prefix: new HarmonyMethod(openScreenAsTradePrefix));
+			}
+		}
+		catch (Exception ex6)
+		{
+			Logger.LogTrace("RewardSystem", ">>> Generated item market trade cleanup patch failed: " + ex6.Message);
+		}
+		try
+		{
+			MethodInfo addTransferCommand = AccessTools.Method(typeof(InventoryLogic), nameof(InventoryLogic.AddTransferCommand), new Type[1] { typeof(TransferCommand) });
+			MethodInfo addTransferCommandPrefix = AccessTools.Method(typeof(RewardSystemBehavior), nameof(InventoryLogicAddTransferCommandPrefix));
+			if (addTransferCommand != null && addTransferCommandPrefix != null)
+			{
+				patcher.Patch(addTransferCommand, prefix: new HarmonyMethod(addTransferCommandPrefix));
+			}
+		}
+		catch (Exception ex7)
+		{
+			Logger.LogTrace("RewardSystem", ">>> Generated item market transfer guard patch failed: " + ex7.Message);
+		}
+		try
+		{
+			MethodInfo addTransferCommands = AccessTools.Method(typeof(InventoryLogic), nameof(InventoryLogic.AddTransferCommands), new Type[1] { typeof(IEnumerable<TransferCommand>) });
+			MethodInfo addTransferCommandsPrefix = AccessTools.Method(typeof(RewardSystemBehavior), nameof(InventoryLogicAddTransferCommandsPrefix));
+			if (addTransferCommands != null && addTransferCommandsPrefix != null)
+			{
+				patcher.Patch(addTransferCommands, prefix: new HarmonyMethod(addTransferCommandsPrefix));
+			}
+		}
+		catch (Exception ex8)
+		{
+			Logger.LogTrace("RewardSystem", ">>> Generated item market batch transfer guard patch failed: " + ex8.Message);
+		}
+		try
+		{
+			MethodInfo sellItems = AccessTools.Method(typeof(SellItemsAction), nameof(SellItemsAction.Apply), new Type[5]
+			{
+				typeof(PartyBase),
+				typeof(PartyBase),
+				typeof(ItemRosterElement),
+				typeof(int),
+				typeof(Settlement)
+			});
+			MethodInfo sellItemsPrefix = AccessTools.Method(typeof(RewardSystemBehavior), nameof(SellItemsActionApplyPrefix));
+			if (sellItems != null && sellItemsPrefix != null)
+			{
+				patcher.Patch(sellItems, prefix: new HarmonyMethod(sellItemsPrefix));
+			}
+		}
+		catch (Exception ex9)
+		{
+			Logger.LogTrace("RewardSystem", ">>> Generated item settlement sale guard patch failed: " + ex9.Message);
+		}
+		try
+		{
+			MethodInfo villagerTrade = AccessTools.Method(typeof(SellGoodsForTradeAction), nameof(SellGoodsForTradeAction.ApplyByVillagerTrade));
+			PatchGeneratedRewardMarketPartySale(patcher, villagerTrade, nameof(VillagerSellGoodsPrefix), nameof(VillagerSellGoodsFinalizer));
+		}
+		catch (Exception ex10)
+		{
+			Logger.LogTrace("RewardSystem", ">>> Generated item villager market sale guard patch failed: " + ex10.Message);
+		}
+		try
+		{
+			MethodInfo caravanSellGoods = AccessTools.Method(typeof(CaravansCampaignBehavior), "SellGoodsInternal");
+			PatchGeneratedRewardMarketPartySale(patcher, caravanSellGoods, nameof(CaravanSellGoodsPrefix), nameof(CaravanSellGoodsFinalizer));
+		}
+		catch (Exception ex11)
+		{
+			Logger.LogTrace("RewardSystem", ">>> Generated item caravan market sale guard patch failed: " + ex11.Message);
+		}
+	}
+
+	private static void PatchGeneratedRewardMarketPartySale(Harmony patcher, MethodInfo original, string prefixName, string finalizerName)
+	{
+		MethodInfo prefix = AccessTools.Method(typeof(RewardSystemBehavior), prefixName);
+		MethodInfo finalizer = AccessTools.Method(typeof(RewardSystemBehavior), finalizerName);
+		if (original != null && prefix != null && finalizer != null)
+		{
+			patcher.Patch(original, prefix: new HarmonyMethod(prefix), finalizer: new HarmonyMethod(finalizer));
 		}
 	}
 
@@ -629,6 +873,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			_generatedRewardItemStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		}
+		if (_generatedRewardPlayerRosterRecords == null)
+		{
+			_generatedRewardPlayerRosterRecords = new Dictionary<string, GeneratedRewardRosterItemRecord>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_generatedRewardPlayerRosterStorage == null)
+		{
+			_generatedRewardPlayerRosterStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		}
 		try
 		{
 			_debtStorage.Clear();
@@ -716,6 +968,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			_heroJoinOriginalClanStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			_generatedRewardItemRecords = new Dictionary<string, GeneratedRewardItemRecord>(StringComparer.OrdinalIgnoreCase);
 			_generatedRewardItemStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			_generatedRewardPlayerRosterRecords = new Dictionary<string, GeneratedRewardRosterItemRecord>(StringComparer.OrdinalIgnoreCase);
+			_generatedRewardPlayerRosterStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		}
 	}
 
@@ -781,8 +1035,24 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		EnsureGeneratedRewardItemData();
 		try
 		{
+			if (dataStore.IsLoading)
+			{
+				ClearGeneratedRewardRuntimeState("sync_data_load_begin");
+				_generatedRewardItemRecords.Clear();
+				_generatedRewardItemStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+				_generatedRewardPlayerRosterRecords.Clear();
+				_generatedRewardPlayerRosterStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+				try
+				{
+					Logger.Log("Logic", "[RewardItemResolve] generated_save_scope_cleared reason=sync_data_load_begin");
+				}
+				catch
+				{
+				}
+			}
 			if (dataStore.IsSaving)
 			{
+				CaptureGeneratedRewardPlayerRosterItems("sync_data_save");
 				_generatedRewardItemStorage.Clear();
 				foreach (KeyValuePair<string, GeneratedRewardItemRecord> item in _generatedRewardItemRecords)
 				{
@@ -806,9 +1076,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			_generatedRewardItemStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionary, "RewardSystem") ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			if (dataStore.IsSaving)
 			{
+				SyncGeneratedRewardPlayerRosterData(dataStore);
 				SyncGeneratedRewardRecordsToManifest("sync_data_save");
 				return;
 			}
+			ClearGeneratedRewardRuntimeState("sync_data_load");
 			_generatedRewardItemRecords.Clear();
 			foreach (KeyValuePair<string, string> item2 in _generatedRewardItemStorage)
 			{
@@ -829,14 +1101,105 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					Logger.Log("RewardSystem", "[GeneratedRewardItem] deserialize failed item=" + item2.Key + " error=" + ex2.Message);
 				}
 			}
+			SyncGeneratedRewardPlayerRosterData(dataStore);
 			SyncGeneratedRewardRecordsToManifest("sync_data_load");
 			RestoreGeneratedRewardItemDefinitions("sync_data_load");
+			RestoreGeneratedRewardPlayerRosterItems("sync_data_load");
 		}
 		catch (Exception ex3)
 		{
 			Logger.Log("RewardSystem", "[GeneratedRewardItem] SyncData failed: " + ex3.Message);
 			_generatedRewardItemRecords = new Dictionary<string, GeneratedRewardItemRecord>(StringComparer.OrdinalIgnoreCase);
 			_generatedRewardItemStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			_generatedRewardPlayerRosterRecords = new Dictionary<string, GeneratedRewardRosterItemRecord>(StringComparer.OrdinalIgnoreCase);
+			_generatedRewardPlayerRosterStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		}
+	}
+
+	private void SyncGeneratedRewardPlayerRosterData(IDataStore dataStore)
+	{
+		if (dataStore == null)
+		{
+			return;
+		}
+		EnsureGeneratedRewardItemData();
+		try
+		{
+			if (dataStore.IsSaving)
+			{
+				_generatedRewardPlayerRosterStorage.Clear();
+				foreach (KeyValuePair<string, GeneratedRewardRosterItemRecord> item in _generatedRewardPlayerRosterRecords.ToList())
+				{
+					GeneratedRewardRosterItemRecord record = NormalizeGeneratedRewardRosterItemRecord(item.Key, item.Value);
+					if (record == null || record.Amount <= 0)
+					{
+						continue;
+					}
+					try
+					{
+						_generatedRewardPlayerRosterStorage[record.GeneratedStringId] = JsonConvert.SerializeObject(record);
+					}
+					catch (Exception ex)
+					{
+						Logger.Log("RewardSystem", "[GeneratedRewardRoster] serialize failed item=" + item.Key + " error=" + ex.Message);
+					}
+				}
+				_generatedRewardPlayerRosterStorage = CampaignSaveChunkHelper.FlattenStringDictionary(_generatedRewardPlayerRosterStorage, GeneratedRewardPlayerRosterStorageKey, "GeneratedRewardPlayerRoster");
+				try
+				{
+					Logger.Log("Logic", "[RewardItemResolve] generated_player_roster_sync_save records=" + _generatedRewardPlayerRosterRecords.Count + " stored=" + _generatedRewardPlayerRosterStorage.Count + " key=" + GeneratedRewardPlayerRosterStorageKey);
+				}
+				catch
+				{
+				}
+			}
+			Dictionary<string, string> dictionary = dataStore.IsSaving ? _generatedRewardPlayerRosterStorage : new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			dataStore.SyncData(GeneratedRewardPlayerRosterStorageKey, ref dictionary);
+			if (!dataStore.IsLoading)
+			{
+				return;
+			}
+			_generatedRewardPlayerRosterStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionary, "GeneratedRewardPlayerRoster") ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			_generatedRewardPlayerRosterRecords.Clear();
+			foreach (KeyValuePair<string, string> item in _generatedRewardPlayerRosterStorage)
+			{
+				if (string.IsNullOrWhiteSpace(item.Key) || string.IsNullOrWhiteSpace(item.Value))
+				{
+					continue;
+				}
+				try
+				{
+					GeneratedRewardRosterItemRecord record = NormalizeGeneratedRewardRosterItemRecord(item.Key, JsonConvert.DeserializeObject<GeneratedRewardRosterItemRecord>(item.Value));
+					if (record != null && record.Amount > 0)
+					{
+						_generatedRewardPlayerRosterRecords[record.GeneratedStringId] = record;
+					}
+				}
+				catch (Exception ex2)
+				{
+					Logger.Log("RewardSystem", "[GeneratedRewardRoster] deserialize failed item=" + item.Key + " error=" + ex2.Message);
+				}
+			}
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] generated_player_roster_sync_load stored=" + _generatedRewardPlayerRosterStorage.Count + " records=" + _generatedRewardPlayerRosterRecords.Count + " key=" + GeneratedRewardPlayerRosterStorageKey);
+			}
+			catch
+			{
+			}
+		}
+		catch (Exception ex3)
+		{
+			Logger.Log("RewardSystem", "[GeneratedRewardRoster] SyncData failed: " + ex3.Message);
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] generated_player_roster_sync_failed error=" + ex3.GetType().Name + ":" + ex3.Message);
+			}
+			catch
+			{
+			}
+			_generatedRewardPlayerRosterRecords = new Dictionary<string, GeneratedRewardRosterItemRecord>(StringComparer.OrdinalIgnoreCase);
+			_generatedRewardPlayerRosterStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		}
 	}
 
@@ -844,10 +1207,25 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	{
 		ClearPromotedNonHeroCompanionCache();
 		RestoreGeneratedRewardItemDefinitions("game_load_finished");
+		RestoreGeneratedRewardPlayerRosterItems("game_load_finished");
 		RepairGeneratedRewardItemCategories("game_load_finished");
+		RemoveGeneratedRewardItemsFromMarketRosters("game_load_finished");
+		CourierDeliveryBehavior.Instance?.RestoreCourierLetterInventoryItemsAfterGeneratedRewardRestore("reward_game_load_finished");
 		CleanupPlayerCompanionLordCacheDuplicates("game_load_finished");
 		RepairInactivePromotedPlayerCompanions("game_load_finished");
 		BackfillHeroJoinOriginalClanRecordsForExistingPlayerCompanions();
+	}
+
+	public void OnEngineTick()
+	{
+		TryClosePendingWildernessNonHeroJoinConversation();
+		TryClosePendingHeroJoinConversation();
+	}
+
+	private void OnCampaignTick(float dt)
+	{
+		TryClosePendingWildernessNonHeroJoinConversation();
+		TryClosePendingHeroJoinConversation();
 	}
 
 	private static void ClearPromotedNonHeroCompanionCache()
@@ -2484,25 +2862,35 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	private int GetItemTrustValueForHeroGift(Hero hero, ItemObject item, int amount)
 	{
+		return ClampPositiveLongToInt(GetItemGuideValueForHeroGift(hero, item, amount));
+	}
+
+	private long GetItemGuideValueForHeroGift(Hero hero, ItemObject item, int amount)
+	{
 		if (item == null || amount <= 0)
 		{
-			return 0;
+			return 0L;
 		}
 		ItemGuidePriceInfo guidePriceForItemNearHero = GetGuidePriceForItemNearHero(hero ?? Hero.MainHero, item);
-		return ClampPositiveLongToInt((long)Math.Max(1, guidePriceForItemNearHero.UnitPrice) * (long)amount);
+		return TransferQuantitySpec.AddProduct(0L, amount, Math.Max(1, guidePriceForItemNearHero.UnitPrice));
 	}
 
 	private int GetItemTrustValueForMerchantGift(Settlement settlement, ItemObject item, int amount)
 	{
+		return ClampPositiveLongToInt(GetItemGuideValueForMerchantGift(settlement, item, amount));
+	}
+
+	private long GetItemGuideValueForMerchantGift(Settlement settlement, ItemObject item, int amount)
+	{
 		if (item == null || amount <= 0)
 		{
-			return 0;
+			return 0L;
 		}
 		if (settlement != null && TryGetSettlementBuyPrice(settlement, item, out var price) && price > 0)
 		{
-			return ClampPositiveLongToInt((long)price * (long)amount);
+			return TransferQuantitySpec.AddProduct(0L, amount, price);
 		}
-		return GetItemTrustValueForHeroGift(Hero.MainHero, item, amount);
+		return GetItemGuideValueForHeroGift(Hero.MainHero, item, amount);
 	}
 
 	private void ApplyAutoTrustGainFromHeroGiftValue(Hero giver, int addedValue, List<string> giverFacts, List<string> receiverFacts, string giverName)
@@ -4445,6 +4833,117 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static bool IsHeroPlayerClanLordInMainParty(Hero hero)
+	{
+		try
+		{
+			Clan playerClan = Clan.PlayerClan;
+			MobileParty mainParty = MobileParty.MainParty;
+			return hero != null
+				&& playerClan != null
+				&& mainParty != null
+				&& hero.Clan == playerClan
+				&& hero.Occupation == Occupation.Lord
+				&& hero.CompanionOf == null
+				&& (hero.PartyBelongedTo == mainParty || IsHeroInParty(hero, mainParty));
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool TryMoveHeroToPlayerClanAsLordAndMainParty(Hero hero, string reason, out string statusText)
+	{
+		statusText = "";
+		try
+		{
+			Clan playerClan = Clan.PlayerClan;
+			MobileParty mainParty = MobileParty.MainParty;
+			if (hero == null)
+			{
+				statusText = "执行失败：缺少要加入玩家家族的目标英雄。";
+				return false;
+			}
+			if (playerClan == null || mainParty == null)
+			{
+				statusText = "执行失败：玩家家族或玩家队伍不可用。";
+				return false;
+			}
+			if (hero.CompanionOf != null)
+			{
+				hero.CompanionOf = null;
+			}
+			if (hero.Occupation != Occupation.Lord)
+			{
+				hero.SetNewOccupation(Occupation.Lord);
+			}
+			bool alreadyAliveLord = false;
+			try
+			{
+				alreadyAliveLord = playerClan.AliveLords?.Contains(hero) == true;
+			}
+			catch
+			{
+				alreadyAliveLord = false;
+			}
+			if (hero.Clan != playerClan || !alreadyAliveLord)
+			{
+				if (hero.Clan == playerClan && !alreadyAliveLord)
+				{
+					hero.Clan = null;
+				}
+				hero.Clan = playerClan;
+			}
+			try
+			{
+				hero.UpdateHomeSettlement();
+			}
+			catch
+			{
+			}
+			if (hero.PartyBelongedTo != mainParty && !IsHeroInParty(hero, mainParty))
+			{
+				AddHeroToPartyAction.Apply(hero, mainParty, showNotification: true);
+			}
+			Logger.Log("RewardSystemBehavior", "[HeroJoin] moved_to_player_clan reason=" + (reason ?? "") + " hero=" + (hero.StringId ?? "") + " clan=" + (hero.Clan?.StringId ?? "") + " occupation=" + hero.Occupation + " party=" + (hero.PartyBelongedTo?.StringId ?? ""));
+			return true;
+		}
+		catch (Exception ex)
+		{
+			statusText = "执行失败（加入玩家家族异常）：" + ex.Message;
+			Logger.Log("RewardSystemBehavior", "[HeroJoin] move_to_player_clan_failed reason=" + (reason ?? "") + " hero=" + (hero?.StringId ?? "") + " error=" + ex.Message);
+			return false;
+		}
+	}
+
+	private static void RecordHeroJoinedPlayerClanForExternal(Hero hero, string reason)
+	{
+		try
+		{
+			if (hero == null || hero == Hero.MainHero)
+			{
+				return;
+			}
+			string heroKey = GetHeroRecordKey(hero);
+			if (string.IsNullOrWhiteSpace(heroKey))
+			{
+				return;
+			}
+			string heroName = hero.Name?.ToString() ?? "该英雄";
+			Settlement settlement = Settlement.CurrentSettlement ?? hero.CurrentSettlement ?? MobileParty.MainParty?.CurrentSettlement;
+			string locationText = settlement?.Name?.ToString() ?? "";
+			string stableKey = "player_clan_join:" + heroKey + ":" + GetCampaignDayIndex();
+			MyBehavior.RecordNpcActionForExternal(hero, "你加入了玩家家族，成为玩家家族成员，并随玩家队伍行动。", stableKey + ":npc", "player_clan_join", isMajor: true, isRecent: true, targetHero: Hero.MainHero, settlement: settlement, locationText: locationText, allowNonLordHero: true, won: true);
+			MyBehavior.RecordPlayerActionForExternal("你招募了" + heroName + "加入玩家家族，并随你的队伍行动。", stableKey + ":player", "player_clan_join", isMajor: true, targetHero: hero, settlement: settlement, locationText: locationText, won: true);
+			Logger.Log("RewardSystemBehavior", "[HeroJoin] action_history_recorded reason=" + (reason ?? "") + " hero=" + heroKey);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("RewardSystemBehavior", "[HeroJoin] action_history_record_failed reason=" + (reason ?? "") + " hero=" + (hero?.StringId ?? "") + " error=" + ex.Message);
+		}
+	}
+
 	public bool TryApplyHeroJoinPlayerPartyForExternal(Hero joiningHero, out string statusText)
 	{
 		statusText = "";
@@ -4452,7 +4951,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			if (joiningHero == null)
 			{
-				statusText = "执行失败：缺少要加入队伍的目标英雄。";
+				statusText = "执行失败：缺少要加入玩家家族的目标英雄。";
 				return false;
 			}
 			if (joiningHero == Hero.MainHero)
@@ -4465,18 +4964,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				statusText = "执行失败：玩家家族或玩家队伍不可用。";
 				return false;
 			}
-			if ((joiningHero.PartyBelongedTo == MobileParty.MainParty || IsHeroInParty(joiningHero, MobileParty.MainParty)) && joiningHero.IsPlayerCompanion)
+			if (IsHeroPlayerClanLordInMainParty(joiningHero))
 			{
-				statusText = $"执行跳过：{joiningHero.Name} 已经在玩家队伍中。";
+				statusText = $"执行跳过：{joiningHero.Name} 已经是玩家家族成员并在玩家队伍中。";
 				return false;
 			}
-			if (AIConfigHandler.IsHeroImprisonedForHeroJoin(joiningHero))
-			{
-				statusText = $"执行失败：{joiningHero.Name} 正处于囚禁状态，不能通过入队标签直接加入玩家队伍。";
-				return false;
-			}
+			MobileParty originalMobileParty = joiningHero.PartyBelongedTo;
+			PartyBase originalParty = originalMobileParty?.Party;
 			List<string> transitionNotes = new List<string>();
-			// Capture the original clan before AddCompanionAction changes Hero.Clan through CompanionOf.
 			Clan originalClan = GetHeroBackingClan(joiningHero) ?? joiningHero.Clan;
 			Kingdom originalKingdom = originalClan?.Kingdom;
 			bool originalClanWasRulingClan = originalKingdom != null && originalKingdom.RulingClan == originalClan;
@@ -4525,15 +5020,19 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				LeaveSettlementAction.ApplyForCharacterOnly(joiningHero);
 			}
-			AddCompanionAction.Apply(Clan.PlayerClan, joiningHero);
-			AddHeroToPartyAction.Apply(joiningHero, MobileParty.MainParty, showNotification: true);
+			if (!TryMoveHeroToPlayerClanAsLordAndMainParty(joiningHero, "hero_join_party", out statusText))
+			{
+				return false;
+			}
 			if (LocationComplex.Current != null)
 			{
 				LocationComplex.Current.RemoveCharacterIfExists(joiningHero);
 			}
 			PlayerEncounter.LocationEncounter?.RemoveAccompanyingCharacter(joiningHero);
 			string transitionSummary = BuildRecruitmentTransitionSummary(transitionNotes);
-			statusText = $"执行成功：{joiningHero.Name} 已加入玩家队伍{transitionSummary}。";
+			RecordHeroJoinedPlayerClanForExternal(joiningHero, "hero_join_party");
+			statusText = $"执行成功：{joiningHero.Name} 已成为玩家家族成员，并加入玩家队伍{transitionSummary}。";
+			ScheduleHeroJoinConversationClose(joiningHero, originalParty, originalMobileParty);
 			return true;
 		}
 		catch (Exception ex)
@@ -4568,7 +5067,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		responseText = latestReplyWithoutTag;
 		if (!string.IsNullOrWhiteSpace(statusText))
 		{
-			string text = (flag ? "【加入队伍】" : "【加入队伍失败】") + statusText;
+			bool promotedPlayerClanLord = flag && promotedHero != null && promotedHero.Clan == Clan.PlayerClan && promotedHero.Occupation == Occupation.Lord;
+			string text = (flag ? (promotedPlayerClanLord ? "【加入家族】" : "【加入队伍】") : "【加入队伍失败】") + statusText;
 			string factName = promotedHero?.Name?.ToString() ?? ResolveNonHeroFullDisplayName(joiningCharacter, promptDisplayName, promptGivenName, targetAgentIndex);
 			generatedFacts.Add("[AFEF NPC行为补充] " + (string.IsNullOrWhiteSpace(factName) ? "NPC" : factName) + ": " + statusText);
 			notifications.Add(text);
@@ -4613,7 +5113,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				promotedHero = existingPromotedHero;
 				string heroName = existingPromotedHero?.Name?.ToString() ?? ResolveNonHeroFullDisplayName(joiningCharacter, promptDisplayName, promptGivenName, targetAgentIndex);
-				statusText = $"执行跳过：{heroName} 已经由当前场景 NPC 升格为 Hero 同伴，不能重复招募生成新的 Hero。";
+				statusText = $"执行跳过：{heroName} 已经由当前场景 NPC 升格为玩家家族 Hero，不能重复招募生成新的 Hero。";
 				return false;
 			}
 			int count;
@@ -4658,8 +5158,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		int beforePrisoners = Math.Max(0, sourceParty.Party?.PrisonRoster?.TotalManCount ?? 0);
 		int movedMembers = MoveWildernessNonHeroPartyMembersToMainParty(sourceParty);
 		int movedPrisoners = MoveWildernessNonHeroPartyPrisonersToMainParty(sourceParty);
-		TryDestroyEmptyWildernessNonHeroJoinParty(sourceParty);
-		TryRequestLeaveWildernessNonHeroJoinEncounter(sourcePartyBase);
 		if (movedMembers <= 0 && movedPrisoners <= 0)
 		{
 			statusText = "执行失败：未能从野外非英雄队伍转入任何成员或俘虏。";
@@ -4675,6 +5173,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		string beforeText = beforeMembers > movedMembers || beforePrisoners > movedPrisoners ? $"（原成员 {beforeMembers}，原俘虏 {beforePrisoners}）" : "";
 		statusText = $"执行成功：{partyName} 已同意加入玩家队伍，已转入 {movedMembers} 名成员{prisonerText}{beforeText}。";
 		Logger.Log("RewardSystemBehavior", "[NonHeroJoin] wilderness_party_join source=" + (sourceParty.StringId ?? "") + " members=" + movedMembers + " prisoners=" + movedPrisoners + " target=" + (joiningCharacter?.StringId ?? "") + " agentIndex=" + targetAgentIndex);
+		ScheduleWildernessNonHeroJoinConversationClose(sourcePartyBase, sourceParty, joiningCharacter, targetAgentIndex);
 		return true;
 	}
 
@@ -4844,22 +5343,266 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void TryRequestLeaveWildernessNonHeroJoinEncounter(PartyBase joinedParty)
+	private static void ScheduleWildernessNonHeroJoinConversationClose(PartyBase sourcePartyBase, MobileParty sourceParty, CharacterObject joiningCharacter, int targetAgentIndex)
+	{
+		if (sourcePartyBase == null && sourceParty == null)
+		{
+			return;
+		}
+		PendingWildernessNonHeroJoinConversationClose pending = new PendingWildernessNonHeroJoinConversationClose
+		{
+			SourcePartyBase = sourcePartyBase,
+			SourceParty = sourceParty,
+			TargetCharacter = joiningCharacter,
+			TargetAgentIndex = targetAgentIndex,
+			SourcePartyId = sourceParty?.StringId ?? "",
+			TargetCharacterId = joiningCharacter?.StringId ?? "",
+			CreatedUtcTicks = DateTime.UtcNow.Ticks
+		};
+		lock (WildernessNonHeroJoinConversationCloseLock)
+		{
+			_pendingWildernessNonHeroJoinConversationClose = pending;
+		}
+		ConversationExceptionGuard.MarkCurrentConversationStale("wilderness_nonhero_join_party_scheduled_close");
+		Logger.Log("RewardSystemBehavior", "[NonHeroJoin] scheduled delayed conversation close source=" + pending.SourcePartyId + " target=" + pending.TargetCharacterId + " agentIndex=" + targetAgentIndex);
+	}
+
+	private static void ScheduleHeroJoinConversationClose(Hero joinedHero, PartyBase originalParty, MobileParty originalMobileParty)
+	{
+		if (joinedHero == null)
+		{
+			return;
+		}
+		PendingHeroJoinConversationClose pending = new PendingHeroJoinConversationClose
+		{
+			JoinedHero = joinedHero,
+			TargetCharacter = joinedHero.CharacterObject,
+			OriginalParty = originalParty,
+			OriginalMobileParty = originalMobileParty,
+			JoinedHeroId = joinedHero.StringId ?? "",
+			TargetCharacterId = joinedHero.CharacterObject?.StringId ?? "",
+			OriginalPartyId = originalMobileParty?.StringId ?? "",
+			CreatedUtcTicks = DateTime.UtcNow.Ticks
+		};
+		lock (HeroJoinConversationCloseLock)
+		{
+			_pendingHeroJoinConversationClose = pending;
+		}
+		ConversationExceptionGuard.MarkCurrentConversationStale("hero_join_party_scheduled_close");
+		Logger.Log("RewardSystemBehavior", "[HeroJoin] scheduled delayed conversation close hero=" + pending.JoinedHeroId + " originalParty=" + pending.OriginalPartyId);
+	}
+
+	private static void TryClosePendingWildernessNonHeroJoinConversation()
+	{
+		PendingWildernessNonHeroJoinConversationClose pending = null;
+		try
+		{
+			lock (WildernessNonHeroJoinConversationCloseLock)
+			{
+				if (_pendingWildernessNonHeroJoinConversationClose == null)
+				{
+					return;
+				}
+				long elapsedTicks = DateTime.UtcNow.Ticks - _pendingWildernessNonHeroJoinConversationClose.CreatedUtcTicks;
+				if (elapsedTicks < (long)(JoinPartyConversationCloseDelaySeconds * TimeSpan.TicksPerSecond))
+				{
+					return;
+				}
+				pending = _pendingWildernessNonHeroJoinConversationClose;
+				_pendingWildernessNonHeroJoinConversationClose = null;
+			}
+			ExecutePendingWildernessNonHeroJoinConversationClose(pending);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("RewardSystemBehavior", "[NonHeroJoin] delayed close failed: " + ex.Message);
+		}
+	}
+
+	private static void TryClosePendingHeroJoinConversation()
+	{
+		PendingHeroJoinConversationClose pending = null;
+		try
+		{
+			lock (HeroJoinConversationCloseLock)
+			{
+				if (_pendingHeroJoinConversationClose == null)
+				{
+					return;
+				}
+				long elapsedTicks = DateTime.UtcNow.Ticks - _pendingHeroJoinConversationClose.CreatedUtcTicks;
+				if (elapsedTicks < (long)(JoinPartyConversationCloseDelaySeconds * TimeSpan.TicksPerSecond))
+				{
+					return;
+				}
+				pending = _pendingHeroJoinConversationClose;
+				_pendingHeroJoinConversationClose = null;
+			}
+			ExecutePendingHeroJoinConversationClose(pending);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("RewardSystemBehavior", "[HeroJoin] delayed close failed: " + ex.Message);
+		}
+	}
+
+	private static void ExecutePendingWildernessNonHeroJoinConversationClose(PendingWildernessNonHeroJoinConversationClose pending)
+	{
+		if (pending == null)
+		{
+			return;
+		}
+		bool encounterMatches = DoesPendingWildernessNonHeroJoinEncounterMatch(pending);
+		bool conversationMatches = encounterMatches && DoesPendingWildernessNonHeroJoinConversationMatch(pending);
+		if (encounterMatches)
+		{
+			PlayerEncounter.LeaveEncounter = true;
+		}
+		if (conversationMatches)
+		{
+			TryEndCurrentConversationForJoinAction("wilderness_nonhero_join_party_delayed_close");
+		}
+		TryDestroyEmptyWildernessNonHeroJoinParty(pending.SourceParty);
+		Logger.Log("RewardSystemBehavior", "[NonHeroJoin] delayed close applied conversation=" + conversationMatches + " encounter=" + encounterMatches + " source=" + (pending.SourcePartyId ?? "") + " target=" + (pending.TargetCharacterId ?? ""));
+	}
+
+	private static void ExecutePendingHeroJoinConversationClose(PendingHeroJoinConversationClose pending)
+	{
+		if (pending == null)
+		{
+			return;
+		}
+		bool conversationMatches = DoesPendingHeroJoinConversationMatch(pending);
+		bool encounterMatches = DoesPendingHeroJoinEncounterMatch(pending);
+		if (encounterMatches)
+		{
+			PlayerEncounter.LeaveEncounter = true;
+		}
+		if (conversationMatches)
+		{
+			TryEndCurrentConversationForJoinAction("hero_join_party_delayed_close");
+		}
+		Logger.Log("RewardSystemBehavior", "[HeroJoin] delayed close applied conversation=" + conversationMatches + " encounter=" + encounterMatches + " hero=" + (pending.JoinedHeroId ?? "") + " originalParty=" + (pending.OriginalPartyId ?? ""));
+	}
+
+	private static bool DoesPendingWildernessNonHeroJoinConversationMatch(PendingWildernessNonHeroJoinConversationClose pending)
+	{
+		if (pending == null)
+		{
+			return false;
+		}
+		CharacterObject currentCharacter = Campaign.Current?.ConversationManager?.OneToOneConversationCharacter ?? CharacterObject.OneToOneConversationCharacter;
+		if (currentCharacter == null)
+		{
+			return false;
+		}
+		if (pending.TargetCharacter != null && currentCharacter == pending.TargetCharacter)
+		{
+			return true;
+		}
+		return !string.IsNullOrEmpty(pending.TargetCharacterId) && string.Equals(currentCharacter.StringId, pending.TargetCharacterId, StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool DoesPendingWildernessNonHeroJoinEncounterMatch(PendingWildernessNonHeroJoinConversationClose pending)
+	{
+		if (pending == null || PlayerEncounter.Current == null)
+		{
+			return false;
+		}
+		PartyBase encountered = PlayerEncounterCompat.GetEncounteredPartySafe() ?? PlayerEncounter.EncounteredParty;
+		if (encountered == null)
+		{
+			return false;
+		}
+		if (pending.SourcePartyBase != null && encountered == pending.SourcePartyBase)
+		{
+			return true;
+		}
+		if (pending.SourceParty != null && encountered.MobileParty == pending.SourceParty)
+		{
+			return true;
+		}
+		return !string.IsNullOrEmpty(pending.SourcePartyId) && string.Equals(encountered.MobileParty?.StringId, pending.SourcePartyId, StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool DoesPendingHeroJoinConversationMatch(PendingHeroJoinConversationClose pending)
+	{
+		if (pending == null)
+		{
+			return false;
+		}
+		CharacterObject currentCharacter = Campaign.Current?.ConversationManager?.OneToOneConversationCharacter ?? CharacterObject.OneToOneConversationCharacter;
+		if (currentCharacter == null)
+		{
+			return false;
+		}
+		Hero currentHero = currentCharacter.HeroObject;
+		if (pending.JoinedHero != null && currentHero == pending.JoinedHero)
+		{
+			return true;
+		}
+		if (!string.IsNullOrEmpty(pending.JoinedHeroId) && string.Equals(currentHero?.StringId, pending.JoinedHeroId, StringComparison.OrdinalIgnoreCase))
+		{
+			return true;
+		}
+		if (pending.TargetCharacter != null && currentCharacter == pending.TargetCharacter)
+		{
+			return true;
+		}
+		return !string.IsNullOrEmpty(pending.TargetCharacterId) && string.Equals(currentCharacter.StringId, pending.TargetCharacterId, StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool DoesPendingHeroJoinEncounterMatch(PendingHeroJoinConversationClose pending)
+	{
+		if (pending == null || PlayerEncounter.Current == null)
+		{
+			return false;
+		}
+		PartyBase encountered = PlayerEncounterCompat.GetEncounteredPartySafe() ?? PlayerEncounter.EncounteredParty;
+		if (encountered == null)
+		{
+			return false;
+		}
+		if (pending.OriginalParty != null && encountered == pending.OriginalParty)
+		{
+			return true;
+		}
+		if (pending.OriginalMobileParty != null && encountered.MobileParty == pending.OriginalMobileParty)
+		{
+			return true;
+		}
+		if (!string.IsNullOrEmpty(pending.OriginalPartyId) && string.Equals(encountered.MobileParty?.StringId, pending.OriginalPartyId, StringComparison.OrdinalIgnoreCase))
+		{
+			return true;
+		}
+		Hero leaderHero = encountered.LeaderHero;
+		if (pending.JoinedHero != null && leaderHero == pending.JoinedHero)
+		{
+			return true;
+		}
+		return !string.IsNullOrEmpty(pending.JoinedHeroId) && string.Equals(leaderHero?.StringId, pending.JoinedHeroId, StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static void TryEndCurrentConversationForJoinAction(string staleReason)
 	{
 		try
 		{
-			if (joinedParty == null || PlayerEncounter.Current == null)
+			if ((Campaign.Current?.ConversationManager?.OneToOneConversationCharacter ?? CharacterObject.OneToOneConversationCharacter) == null)
 			{
 				return;
 			}
-			PartyBase encountered = PlayerEncounterCompat.GetEncounteredPartySafe() ?? PlayerEncounter.EncounteredParty;
-			if (encountered == joinedParty)
-			{
-				PlayerEncounter.LeaveEncounter = true;
-			}
+			Campaign.Current?.ConversationManager?.EndConversation();
 		}
-		catch
+		catch (Exception ex)
 		{
+			Logger.Log("RewardSystemBehavior", "[JoinParty] delayed EndConversation failed: " + ex.Message);
+			try
+			{
+				ConversationExceptionGuard.MarkCurrentConversationStale(string.IsNullOrWhiteSpace(staleReason) ? "join_party_delayed_close" : staleReason);
+			}
+			catch
+			{
+			}
 		}
 	}
 
@@ -4940,14 +5683,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		hero.StaticBodyProperties = bodyProperties.StaticProperties;
 		hero.Weight = ClampBodyShape01(bodyProperties.DynamicProperties.Weight);
 		hero.Build = ClampBodyShape01(bodyProperties.DynamicProperties.Build);
-		hero.SetNewOccupation(Occupation.Wanderer);
 		TryActivatePromotedCompanionHero(hero, "new_nonhero_promotion");
 		ApplyTemplateSkillsToHero(hero, template);
 		ApplyPromotedCompanionRandomTraits(hero, template);
 		CopyCapturedEquipmentToHero(hero, capturedEquipment);
-		AddCompanionAction.Apply(Clan.PlayerClan, hero);
-		CleanupPlayerCompanionLordCacheDuplicates("after_nonhero_promotion");
-		AddHeroToPartyAction.Apply(hero, MobileParty.MainParty, showNotification: true);
+		if (!TryMoveHeroToPlayerClanAsLordAndMainParty(hero, "nonhero_join_party_promotion", out statusText))
+		{
+			return false;
+		}
 		LogPromotedCompanionGovernorEligibility(hero, "after_nonhero_promotion");
 		RememberPromotedNonHeroCompanion(targetAgentIndex, hero);
 		bool sceneFollowStarted = ShoutBehavior.TryForceSceneFollowPlayerForExternal(targetAgentIndex, transient: true, reason: "nonhero_join_party_promotion");
@@ -4960,13 +5703,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			dialogueHistory.Add((string.IsNullOrWhiteSpace(originalFullName) ? "NPC" : originalFullName) + ": " + cleanLatestReply);
 		}
-		string joinFact = $"{hero.Name} 原为{originalTroopName}，在 {sceneLabel} 同意追随玩家并加入玩家队伍。";
+		string joinFact = $"{hero.Name} 原为{originalTroopName}，在 {sceneLabel} 同意追随玩家，成为玩家家族成员并加入玩家队伍。";
 		MyBehavior.AppendExternalDialogueHistory(hero, null, null, "[AFEF NPC行为补充] " + joinFact);
+		RecordHeroJoinedPlayerClanForExternal(hero, "nonhero_join_party_promotion");
 		AppendPromotedHeroPriorHistory(hero, dialogueHistory);
 		string equipmentSummary = BuildEquipmentSummaryForPrompt(capturedEquipment);
 		_ = MyBehavior.GeneratePromotedNonHeroCompanionProfileForExternalAsync(hero, personalName, originalFullName, originalTroopName, template.StringId ?? "", cultureName, sceneLabel, joinFact, BuildDialogueHistoryForPrompt(dialogueHistory), equipmentSummary);
 		promotedHero = hero;
-		statusText = $"执行成功：{originalFullName} 已升格为 Hero 同伴“{hero.Name}”，并加入玩家队伍{(sceneFollowStarted ? "，当前场景中已开始跟随玩家" : "")}。";
+		statusText = $"执行成功：{originalFullName} 已升格为玩家家族 Hero“{hero.Name}”，并加入玩家队伍{(sceneFollowStarted ? "，当前场景中已开始跟随玩家" : "")}。";
 		return true;
 	}
 
@@ -5800,6 +6544,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			string kingdomName = targetKingdom.Name?.ToString() ?? targetKingdom.StringId ?? "该王国";
 			string playerClanName = GetClanDisplayNameForNotification(playerClan);
+			string playerDisplayName = MyBehavior.BuildPlayerPublicDisplayNameForExternal(giver);
+			if (string.IsNullOrWhiteSpace(playerDisplayName))
+			{
+				playerDisplayName = "玩家";
+			}
 			if (targetKingdom.RulingClan == playerClan)
 			{
 				statusText = "执行跳过：" + playerClanName + " 已经是 " + kingdomName + " 的执政家族。";
@@ -5835,7 +6584,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			ChangeRulingClanAction.Apply(targetKingdom, playerClan);
 			string transitionSummary = BuildRecruitmentTransitionSummary(transitionNotes);
-			statusText = "执行成功：" + (giver.Name?.ToString() ?? "国王") + " 已将 " + kingdomName + " 的王位让给玩家，" + playerClanName + " 成为新的执政家族" + transitionSummary + "。";
+			statusText = "执行成功：" + (giver.Name?.ToString() ?? "国王") + " 已将 " + kingdomName + " 的王位让给" + playerDisplayName + "，" + playerClanName + " 成为新的执政家族" + transitionSummary + "。";
 			return true;
 		}
 		catch (Exception ex)
@@ -6038,8 +6787,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private bool TryApplySettlementTransferAction(Hero giver, Hero receiver, string directionToken, string settlementToken, out string statusText)
+	private bool TryApplySettlementTransferAction(Hero giver, Hero receiver, string directionToken, string settlementToken, out MyBehavior.SettlementTransferPromptEntry authorizedEntry, out string statusText)
 	{
+		authorizedEntry = null;
 		statusText = "";
 		try
 		{
@@ -6049,13 +6799,32 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				return false;
 			}
 			string text = (directionToken ?? "").Trim().ToUpperInvariant();
-			MyBehavior.SettlementTransferPromptEntry entry = MyBehavior.ResolveSettlementTransferEntryForExternal(giver, null, text, settlementToken);
-			if (entry == null)
+			if (!string.Equals(text, "TO_PLAYER", StringComparison.OrdinalIgnoreCase))
+			{
+				statusText = "执行失败：后处理仅允许 NPC 向玩家转移固定资产。";
+				return false;
+			}
+			if (!PromptListRetrievalService.TryGetSettlementTransferSnapshot(PromptListRetrievalService.SettlementTransferAllNpcAssetsSnapshotScope, giver, giver?.CharacterObject, -1, out var authorizedEntries))
+			{
+				statusText = "执行失败：固定资产授权快照缺失。";
+				return false;
+			}
+			string token = (settlementToken ?? "").Trim();
+			authorizedEntry = authorizedEntries.FirstOrDefault((MyBehavior.SettlementTransferPromptEntry x) => x != null &&
+				(string.Equals(MyBehavior.GetSettlementTransferAssetIdForExternal(x), token, StringComparison.OrdinalIgnoreCase) ||
+				 string.Equals((x.AssetId ?? "").Trim(), token, StringComparison.OrdinalIgnoreCase) ||
+				 string.Equals((x.SettlementId ?? "").Trim(), token, StringComparison.OrdinalIgnoreCase) ||
+				 string.Equals((x.DisplayName ?? "").Trim(), token, StringComparison.OrdinalIgnoreCase)));
+			if (authorizedEntry == null && int.TryParse(token, out var promptIndex) && promptIndex > 0)
+			{
+				authorizedEntry = authorizedEntries.FirstOrDefault((MyBehavior.SettlementTransferPromptEntry x) => x != null && x.PromptIndex == promptIndex);
+			}
+			if (authorizedEntry == null)
 			{
 				statusText = "执行失败：未找到可转移的固定资产（" + settlementToken + "）。";
 				return false;
 			}
-			return TryApplySettlementTransferEntryAction(giver, receiver, text, entry, out statusText);
+			return TryApplySettlementTransferEntryAction(giver, receiver, text, authorizedEntry, out statusText);
 		}
 		catch (Exception ex)
 		{
@@ -6337,6 +7106,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			RemoveGeneratedRewardItemsFromMarketRosters("daily_tick");
 			if (_debts == null || _debts.Count <= 0)
 			{
 				return;
@@ -7375,6 +8145,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	private static float CalculateGeneratedRewardTemplateScore(string lookup, RewardItemInfo info, float aliasScore)
 	{
 		ItemObject item = info?.Item;
+		if (IsGeneratedRewardAutoConsumedTemplateItem(item))
+		{
+			return 0f;
+		}
 		float score = Math.Max(0f, aliasScore);
 		if (IsGeneratedRewardMiscTemplateItem(item))
 		{
@@ -7544,7 +8318,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	private static bool IsGeneratedRewardMiscTemplateItem(ItemObject item)
 	{
-		return item != null && (item.Type == ItemObject.ItemTypeEnum.Goods || item.Type == ItemObject.ItemTypeEnum.Animal || item.Type == ItemObject.ItemTypeEnum.Book);
+		return item != null && !IsGeneratedRewardAutoConsumedTemplateItem(item) && (item.Type == ItemObject.ItemTypeEnum.Goods || item.Type == ItemObject.ItemTypeEnum.Book);
 	}
 
 	private static bool IsGeneratedRewardWeaponOrArmorTemplateItem(ItemObject item)
@@ -7641,7 +8415,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				ItemRosterElement elementCopyAtIndex = itemRoster.GetElementCopyAtIndex(i);
 				EquipmentElement equipmentElement = elementCopyAtIndex.EquipmentElement;
 				ItemObject item = equipmentElement.Item;
-				if (item == null || elementCopyAtIndex.Amount <= 0)
+				if (item == null || elementCopyAtIndex.Amount <= 0 || (settlement != null && IsGeneratedRewardMarketExcludedItem(item)))
 				{
 					continue;
 				}
@@ -7884,7 +8658,19 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		resolution = null;
 		string requestedName = (lookup ?? "").Trim();
 		ItemObject templateItem = templateResolution?.Item;
-		if (string.IsNullOrWhiteSpace(requestedName) || templateItem == null)
+		if (string.IsNullOrWhiteSpace(requestedName))
+		{
+			return false;
+		}
+		if (!IsStableGeneratedRewardTemplateItem(templateItem))
+		{
+			templateItem = ResolveGeneratedInventoryTemplateItem(templateResolution?.MatchedStringId, requestedName);
+		}
+		if (!IsStableGeneratedRewardTemplateItem(templateItem))
+		{
+			templateItem = ResolveGeneratedInventoryTemplateItem(null, requestedName);
+		}
+		if (!IsStableGeneratedRewardTemplateItem(templateItem))
 		{
 			return false;
 		}
@@ -7930,17 +8716,781 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return true;
 	}
 
+	public static int GenerateNamedInventoryItemToRosterForExternal(ItemRoster targetRoster, string requestedName, int amount, out string generatedStringId, out string itemName, string logSource = null)
+	{
+		generatedStringId = null;
+		itemName = null;
+		try
+		{
+			if (targetRoster == null || string.IsNullOrWhiteSpace(requestedName) || amount <= 0)
+			{
+				return 0;
+			}
+			RewardItemResolution templateResolution = null;
+			RewardSystemBehavior instance = Instance;
+			if (instance != null)
+			{
+				try
+				{
+					List<RewardItemInfo> contextItems = instance.BuildRewardItemResolutionContextFromRoster(targetRoster);
+					instance.TryFindBestRewardItemResolution(requestedName, contextItems, includeZeroScore: true, out templateResolution, logSource ?? "external_generate_named", logMatch: false, logMiss: false);
+					if (!IsStableGeneratedRewardTemplateItem(templateResolution?.Item))
+					{
+						templateResolution = null;
+					}
+				}
+				catch
+				{
+				}
+			}
+			if (templateResolution?.Item == null)
+			{
+				ItemObject fallbackTemplate = ResolveGeneratedInventoryTemplateItem(null, requestedName);
+				if (fallbackTemplate == null)
+				{
+					return 0;
+				}
+				EquipmentElement templateEquipment = new EquipmentElement(fallbackTemplate, null, null, false);
+				templateResolution = new RewardItemResolution
+				{
+					Info = new RewardItemInfo
+					{
+						Item = fallbackTemplate,
+						StringId = fallbackTemplate.StringId ?? "",
+						PromptStringId = fallbackTemplate.StringId ?? "",
+						Name = fallbackTemplate.Name?.ToString() ?? fallbackTemplate.StringId ?? "",
+						Count = 0,
+						GuidePrice = Math.Max(1, fallbackTemplate.Value),
+						EquipmentElement = templateEquipment
+					},
+					Item = fallbackTemplate,
+					EquipmentElement = templateEquipment,
+					ActionKey = fallbackTemplate.StringId ?? "",
+					MatchedName = fallbackTemplate.Name?.ToString() ?? fallbackTemplate.StringId ?? "",
+					MatchedStringId = fallbackTemplate.StringId ?? "",
+					BestScore = 0f,
+					SecondScore = 0f,
+					IsContext = false,
+					TemplateItem = fallbackTemplate
+				};
+			}
+			if (!TryCreateGeneratedRewardItemResolution(requestedName, templateResolution, out RewardItemResolution resolution, logSource ?? "external_generate_named"))
+			{
+				return 0;
+			}
+			generatedStringId = resolution.MatchedStringId;
+			int generated = GenerateResolvedItemsToRoster(targetRoster, resolution, amount, out itemName);
+			if (generated > 0)
+			{
+				TryPrimeGeneratedInventoryItemForExternal(generatedStringId, requestedName, resolution.TemplateItem?.StringId, resolution.Item?.Id.InternalValue ?? 0u, out _, out _, out _, (logSource ?? "external_generate_named") + "_prime");
+			}
+			return generated;
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] generate_named_inventory_failed source=" + (logSource ?? "") + " error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+			return 0;
+		}
+	}
+
+	public static bool TryPrimeGeneratedInventoryItemForExternal(string generatedStringId, string displayName, string templateItemId, uint objectId, out string normalizedStringId, out string normalizedTemplateItemId, out uint normalizedObjectId, string logSource = null)
+	{
+		normalizedStringId = null;
+		normalizedTemplateItemId = null;
+		normalizedObjectId = 0u;
+		try
+		{
+			string key = (generatedStringId ?? "").Trim();
+			string name = NormalizeGeneratedInventoryDisplayName(displayName);
+			if (!IsGeneratedRewardItemStringId(key) || string.IsNullOrWhiteSpace(name))
+			{
+				return false;
+			}
+			GeneratedRewardItemRecord existingRecord = Instance?.GetGeneratedRewardItemRecord(key);
+			if (existingRecord == null)
+			{
+				EnsureGeneratedRewardManifestLoaded();
+				lock (GeneratedRewardItemRegistrationLock)
+				{
+					GeneratedRewardManifestByStringId.TryGetValue(key, out existingRecord);
+				}
+			}
+			if (existingRecord != null)
+			{
+				if (string.IsNullOrWhiteSpace(templateItemId))
+				{
+					templateItemId = existingRecord.TemplateStringId;
+				}
+				if (objectId == 0u)
+				{
+					objectId = existingRecord.ObjectId;
+				}
+				if (string.IsNullOrWhiteSpace(name))
+				{
+					name = existingRecord.DisplayName;
+				}
+			}
+			ItemObject registered = TryGetRegisteredGeneratedRewardItemByStringId(key);
+			if (registered != null && objectId == 0u)
+			{
+				objectId = registered.Id.InternalValue;
+			}
+			ItemObject templateItem = ResolveGeneratedInventoryTemplateItem(templateItemId, name);
+			if (!IsStableGeneratedRewardTemplateItem(templateItem))
+			{
+				templateItem = ResolveGeneratedInventoryTemplateItem(null, name);
+			}
+			if (!IsStableGeneratedRewardTemplateItem(templateItem))
+			{
+				return false;
+			}
+			GeneratedRewardItemRecord record = new GeneratedRewardItemRecord
+			{
+				GeneratedStringId = key,
+				DisplayName = name,
+				TemplateStringId = (templateItem.StringId ?? "").Trim(),
+				ObjectId = objectId,
+				LegacyObjectIds = existingRecord?.LegacyObjectIds != null ? existingRecord.LegacyObjectIds.ToList() : new List<uint>(),
+				LastTouchedDay = Math.Max(existingRecord?.LastTouchedDay ?? 0, GetCampaignDayIndex())
+			};
+			if (record.ObjectId == 0u && TryGetGeneratedRewardItemId(key, templateItem, 0u, out var stableObjectId, logSource ?? "external_prime"))
+			{
+				record.ObjectId = stableObjectId.InternalValue;
+			}
+			GeneratedRewardItemRecord normalizedRecord = NormalizeGeneratedRewardItemRecord(key, record);
+			if (normalizedRecord == null)
+			{
+				return false;
+			}
+			DiscardGeneratedRewardRecordObjectIdIfPolluted(normalizedRecord, templateItem, logSource ?? "external_prime");
+			RewardSystemBehavior instance = Instance;
+			if (instance != null)
+			{
+				instance.EnsureGeneratedRewardItemData();
+				instance._generatedRewardItemRecords[normalizedRecord.GeneratedStringId] = normalizedRecord;
+			}
+			RegisterGeneratedRewardManifestRecord(normalizedRecord);
+			ItemObject generatedItem = TryGetOrCreateGeneratedRewardItem(normalizedRecord.GeneratedStringId, normalizedRecord.DisplayName, templateItem, logSource ?? "external_prime");
+			if (generatedItem != null)
+			{
+				normalizedRecord.ObjectId = generatedItem.Id.InternalValue != 0u ? generatedItem.Id.InternalValue : normalizedRecord.ObjectId;
+				Instance?.RememberGeneratedRewardItemRecord(normalizedRecord.GeneratedStringId, normalizedRecord.DisplayName, templateItem, generatedItem);
+			}
+			else
+			{
+				SaveGeneratedRewardManifest(logSource ?? "external_prime");
+			}
+			GeneratedRewardItemRecord finalRecord = Instance?.GetGeneratedRewardItemRecord(normalizedRecord.GeneratedStringId) ?? normalizedRecord;
+			normalizedStringId = finalRecord.GeneratedStringId;
+			normalizedTemplateItemId = finalRecord.TemplateStringId;
+			normalizedObjectId = finalRecord.ObjectId;
+			return true;
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] generated_external_prime_failed source=" + (logSource ?? "") + " generated=" + (generatedStringId ?? "") + " error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+			return false;
+		}
+	}
+
+	public static int GenerateKnownInventoryItemToRosterForExternal(ItemRoster targetRoster, string generatedStringId, string displayName, string templateItemId, uint objectId, int amount, out string itemName, out string normalizedStringId, out string normalizedTemplateItemId, out uint normalizedObjectId, string logSource = null)
+	{
+		itemName = null;
+		normalizedStringId = null;
+		normalizedTemplateItemId = null;
+		normalizedObjectId = 0u;
+		try
+		{
+			if (targetRoster == null || amount <= 0)
+			{
+				return 0;
+			}
+			if (!TryPrepareGeneratedRewardInventoryElementForRoster(generatedStringId, displayName, templateItemId, objectId, out EquipmentElement equipmentElement, out itemName, out normalizedStringId, out normalizedTemplateItemId, out normalizedObjectId, logSource ?? "external_known_generate"))
+			{
+				return 0;
+			}
+			int generated = AddEquipmentElementToRosterAndCountDelta(targetRoster, equipmentElement, amount, logSource ?? "external_known_generate");
+			return generated;
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] generated_external_known_generate_failed source=" + (logSource ?? "") + " generated=" + (generatedStringId ?? "") + " error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+			return 0;
+		}
+	}
+
+	private static bool TryPrepareGeneratedRewardInventoryElementForRoster(string generatedStringId, string displayName, string templateItemId, uint objectId, out EquipmentElement equipmentElement, out string itemName, out string normalizedStringId, out string normalizedTemplateItemId, out uint normalizedObjectId, string logSource = null)
+	{
+		equipmentElement = default(EquipmentElement);
+		itemName = null;
+		normalizedStringId = null;
+		normalizedTemplateItemId = null;
+		normalizedObjectId = 0u;
+		try
+		{
+			string name = NormalizeGeneratedInventoryDisplayName(displayName);
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				LogGeneratedRewardInventoryGuard("empty_name", generatedStringId, "", templateItemId, null, null, logSource);
+				return false;
+			}
+			if (!TryPrimeGeneratedInventoryItemForExternal(generatedStringId, name, templateItemId, objectId, out normalizedStringId, out normalizedTemplateItemId, out normalizedObjectId, logSource ?? "prepare_generated_inventory"))
+			{
+				LogGeneratedRewardInventoryGuard("prime_failed", generatedStringId, name, templateItemId, null, null, logSource);
+				return false;
+			}
+			ItemObject templateItem = ResolveGeneratedInventoryTemplateItem(normalizedTemplateItemId, name);
+			if (!IsStableGeneratedRewardTemplateItem(templateItem))
+			{
+				LogGeneratedRewardInventoryGuard("bad_template", normalizedStringId, name, normalizedTemplateItemId, null, templateItem, logSource);
+				return false;
+			}
+			ItemObject generatedItem = TryGetOrCreateGeneratedRewardItem(normalizedStringId, name, templateItem, logSource ?? "prepare_generated_inventory");
+			if (!TryValidateGeneratedRewardInventoryItemForRoster(generatedItem, normalizedStringId, name, templateItem, logSource ?? "prepare_generated_inventory"))
+			{
+				return false;
+			}
+			normalizedObjectId = generatedItem.Id.InternalValue != 0u ? generatedItem.Id.InternalValue : normalizedObjectId;
+			Instance?.RememberGeneratedRewardItemRecord(normalizedStringId, name, templateItem, generatedItem);
+			equipmentElement = new EquipmentElement(generatedItem, null, null, false);
+			itemName = name;
+			return true;
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] generated_inventory_prepare_failed source=" + (logSource ?? "") + " generated=" + (generatedStringId ?? "") + " error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+			return false;
+		}
+	}
+
+	public static List<GeneratedInventoryItemSnapshot> ExportGeneratedInventoryItemsForExternal(string logSource = null)
+	{
+		List<GeneratedInventoryItemSnapshot> result = new List<GeneratedInventoryItemSnapshot>();
+		try
+		{
+			EnsureGeneratedRewardManifestLoaded();
+			Dictionary<string, GeneratedRewardItemRecord> records = new Dictionary<string, GeneratedRewardItemRecord>(StringComparer.OrdinalIgnoreCase);
+			if (Instance?._generatedRewardItemRecords != null)
+			{
+				foreach (KeyValuePair<string, GeneratedRewardItemRecord> pair in Instance._generatedRewardItemRecords.ToList())
+				{
+					GeneratedRewardItemRecord record = NormalizeGeneratedRewardItemRecord(pair.Key, pair.Value);
+					if (record != null)
+					{
+						records[record.GeneratedStringId] = record;
+					}
+				}
+			}
+			foreach (GeneratedRewardItemRecord record in records.Values)
+			{
+				result.Add(new GeneratedInventoryItemSnapshot
+				{
+					GeneratedStringId = record.GeneratedStringId,
+					DisplayName = record.DisplayName,
+					TemplateStringId = record.TemplateStringId,
+					ObjectId = record.ObjectId
+				});
+			}
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] export_generated_inventory_failed source=" + (logSource ?? "") + " error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+		}
+		return result;
+	}
+
+	public static bool TryCreateGeneratedInventoryItemForExternal(string displayName, string identityKey, out ItemObject generatedItem, string templateItemId = null, string logSource = null)
+	{
+		generatedItem = null;
+		try
+		{
+			string name = NormalizeGeneratedInventoryDisplayName(displayName);
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				return false;
+			}
+			ItemObject templateItem = ResolveGeneratedInventoryTemplateItem(templateItemId, name);
+			if (templateItem == null)
+			{
+				return false;
+			}
+			string identity = string.IsNullOrWhiteSpace(identityKey) ? name : identityKey.Trim();
+			string generatedStringId = BuildGeneratedRewardItemStringId(identity, templateItem.StringId ?? "");
+			generatedItem = TryGetOrCreateGeneratedRewardItem(generatedStringId, name, templateItem, logSource ?? "external_generated_inventory");
+			return generatedItem != null && TryEnsureGeneratedRewardItemCategory(generatedItem, templateItem, logSource ?? "external_generated_inventory");
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] generated_external_inventory_failed source=" + (logSource ?? "") + " error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+			return false;
+		}
+	}
+
+	private static string NormalizeGeneratedInventoryDisplayName(string displayName)
+	{
+		string name = AnimusForgeTextInputSanitizer.SanitizeMultiline(displayName ?? "", AnimusForgeTextInputSanitizer.MaxCourierLetterChars + 512).Trim();
+		if (string.IsNullOrWhiteSpace(name))
+		{
+			return "";
+		}
+		return name;
+	}
+
+	private static ItemObject ResolveGeneratedInventoryTemplateItem(string templateItemId, string displayName)
+	{
+		ItemObject explicitTemplate = ResolveItemById(templateItemId);
+		if (IsStableGeneratedRewardTemplateItem(explicitTemplate))
+		{
+			return explicitTemplate;
+		}
+		try
+		{
+			IEnumerable<ItemObject> items = Game.Current?.ObjectManager?.GetObjectTypeList<ItemObject>() ?? MBObjectManager.Instance?.GetObjectTypeList<ItemObject>();
+			List<ItemObject> list = items?.Where(IsStableGeneratedRewardTemplateItem).ToList() ?? new List<ItemObject>();
+			ItemObject documentLike = list.FirstOrDefault((ItemObject x) => x.Type == ItemObject.ItemTypeEnum.Goods && ContainsGeneratedRewardItemTextAny(x, "book", "letter", "scroll", "decree", "paper", "parchment", "ledger", "document"));
+			if (documentLike != null)
+			{
+				return documentLike;
+			}
+			ItemObject goods = list.FirstOrDefault((ItemObject x) => x.Type == ItemObject.ItemTypeEnum.Goods && x.ItemCategory != null);
+			if (goods != null)
+			{
+				return goods;
+			}
+			ItemObject book = list.FirstOrDefault((ItemObject x) => x.Type == ItemObject.ItemTypeEnum.Book);
+			if (book != null)
+			{
+				return book;
+			}
+		}
+		catch
+		{
+		}
+		return GetGeneratedRewardFallbackTemplateItem();
+	}
+
+	private static bool IsStableGeneratedRewardTemplateItem(ItemObject item)
+	{
+		if (item == null || item.Id.InternalValue == 0u)
+		{
+			return false;
+		}
+		string stringId = (item.StringId ?? "").Trim();
+		return !IsGeneratedRewardAutoConsumedTemplateItem(item) && !IsGeneratedRewardItemStringId(stringId) && !stringId.StartsWith("af_generated_reward_pending_", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool IsGeneratedRewardAutoConsumedTemplateItem(ItemObject item)
+	{
+		if (item == null)
+		{
+			return false;
+		}
+		return item.Type == ItemObject.ItemTypeEnum.Animal
+			|| item.IsFood
+			|| ItemCategoryIsAny(item, DefaultItemCategories.Meat, DefaultItemCategories.Fish, DefaultItemCategories.Grain, DefaultItemCategories.Beer, DefaultItemCategories.Wine, DefaultItemCategories.DateFruit);
+	}
+
+	private GeneratedRewardRosterItemRecord NormalizeGeneratedRewardRosterItemRecord(string fallbackKey, GeneratedRewardRosterItemRecord record)
+	{
+		if (record == null)
+		{
+			return null;
+		}
+		string generatedStringId = (record.GeneratedStringId ?? fallbackKey ?? "").Trim();
+		if (!IsGeneratedRewardItemStringId(generatedStringId))
+		{
+			return null;
+		}
+		string displayName = AnimusForgeTextInputSanitizer.SanitizeMultiline(record.DisplayName ?? "", AnimusForgeTextInputSanitizer.MaxCourierLetterChars + 512).Trim();
+		GeneratedRewardItemRecord itemRecord = GetGeneratedRewardItemRecord(generatedStringId);
+		if (string.IsNullOrWhiteSpace(displayName))
+		{
+			displayName = (itemRecord?.DisplayName ?? generatedStringId).Trim();
+		}
+		if (string.IsNullOrWhiteSpace(displayName))
+		{
+			return null;
+		}
+		string templateStringId = (record.TemplateStringId ?? itemRecord?.TemplateStringId ?? "").Trim();
+		uint objectId = record.ObjectId != 0u ? record.ObjectId : (itemRecord?.ObjectId ?? 0u);
+		record.GeneratedStringId = generatedStringId;
+		record.DisplayName = displayName;
+		record.TemplateStringId = templateStringId;
+		record.ObjectId = objectId;
+		record.Amount = Math.Max(0, Math.Min(record.Amount, 9999));
+		record.LastTouchedDay = Math.Max(0, record.LastTouchedDay);
+		return record;
+	}
+
+	private void CaptureGeneratedRewardPlayerRosterItems(string reason)
+	{
+		try
+		{
+			EnsureGeneratedRewardItemData();
+			ItemRoster roster = PartyBase.MainParty?.ItemRoster ?? MobileParty.MainParty?.ItemRoster;
+			if (roster == null)
+			{
+				try
+				{
+					Logger.Log("Logic", "[RewardItemResolve] generated_player_roster_capture_skipped reason=" + (reason ?? "") + " player_roster=null");
+				}
+				catch
+				{
+				}
+				return;
+			}
+			Dictionary<string, GeneratedRewardRosterItemRecord> captured = new Dictionary<string, GeneratedRewardRosterItemRecord>(StringComparer.OrdinalIgnoreCase);
+			List<string> sample = new List<string>();
+			for (int i = 0; i < roster.Count; i++)
+			{
+				ItemRosterElement element = roster.GetElementCopyAtIndex(i);
+				ItemObject item = element.EquipmentElement.Item;
+				if (item == null || element.Amount <= 0)
+				{
+					continue;
+				}
+				string generatedStringId = (item.StringId ?? "").Trim();
+				if (!IsGeneratedRewardItemStringId(generatedStringId))
+				{
+					continue;
+				}
+				GeneratedRewardItemRecord itemRecord = GetGeneratedRewardItemRecord(generatedStringId);
+				string displayName = element.EquipmentElement.GetModifiedItemName()?.ToString() ?? item.Name?.ToString() ?? itemRecord?.DisplayName ?? generatedStringId;
+				string templateStringId = itemRecord?.TemplateStringId ?? "";
+				uint objectId = item.Id.InternalValue != 0u ? item.Id.InternalValue : (itemRecord?.ObjectId ?? 0u);
+				if (captured.TryGetValue(generatedStringId, out GeneratedRewardRosterItemRecord existing) && existing != null)
+				{
+					existing.Amount += element.Amount;
+					existing.ObjectId = objectId != 0u ? objectId : existing.ObjectId;
+					if (string.IsNullOrWhiteSpace(existing.TemplateStringId))
+					{
+						existing.TemplateStringId = templateStringId;
+					}
+					continue;
+				}
+				GeneratedRewardRosterItemRecord record = NormalizeGeneratedRewardRosterItemRecord(generatedStringId, new GeneratedRewardRosterItemRecord
+				{
+					GeneratedStringId = generatedStringId,
+					DisplayName = displayName,
+					TemplateStringId = templateStringId,
+					ObjectId = objectId,
+					Amount = element.Amount,
+					LastTouchedDay = GetCampaignDayIndex()
+				});
+				if (record != null && record.Amount > 0)
+				{
+					captured[record.GeneratedStringId] = record;
+					if (sample.Count < 8)
+					{
+						sample.Add(record.GeneratedStringId + ":" + record.Amount.ToString(CultureInfo.InvariantCulture));
+					}
+				}
+			}
+			_generatedRewardPlayerRosterRecords = captured;
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] generated_player_roster_capture reason=" + (reason ?? "") + " rosterSlots=" + roster.Count + " records=" + captured.Count + " amount=" + captured.Values.Sum((GeneratedRewardRosterItemRecord x) => Math.Max(0, x.Amount)).ToString(CultureInfo.InvariantCulture) + " sample=" + string.Join(",", sample));
+			}
+			catch
+			{
+			}
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] generated_player_roster_capture_failed reason=" + (reason ?? "") + " error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+		}
+	}
+
+	private static int CountGeneratedRewardRosterItem(ItemRoster roster, GeneratedRewardRosterItemRecord record)
+	{
+		if (roster == null || record == null)
+		{
+			return 0;
+		}
+		string generatedStringId = (record.GeneratedStringId ?? "").Trim();
+		uint objectId = record.ObjectId;
+		if (string.IsNullOrWhiteSpace(generatedStringId) && objectId == 0u)
+		{
+			return 0;
+		}
+		int count = 0;
+		for (int i = 0; i < roster.Count; i++)
+		{
+			ItemRosterElement element = roster.GetElementCopyAtIndex(i);
+			ItemObject item = element.EquipmentElement.Item;
+			if (item == null || element.Amount <= 0)
+			{
+				continue;
+			}
+			bool stringMatches = !string.IsNullOrWhiteSpace(generatedStringId) && string.Equals((item.StringId ?? "").Trim(), generatedStringId, StringComparison.OrdinalIgnoreCase);
+			bool objectMatches = objectId != 0u && item.Id.InternalValue == objectId;
+			if (stringMatches || objectMatches)
+			{
+				count += element.Amount;
+			}
+		}
+		return count;
+	}
+
+	private void RememberGeneratedRewardPlayerRosterItem(EquipmentElement equipmentElement, int amount, string source)
+	{
+		try
+		{
+			if (amount <= 0 || equipmentElement.Item == null)
+			{
+				return;
+			}
+			EnsureGeneratedRewardItemData();
+			string generatedStringId = (equipmentElement.Item.StringId ?? "").Trim();
+			if (!IsGeneratedRewardItemStringId(generatedStringId))
+			{
+				return;
+			}
+			GeneratedRewardItemRecord itemRecord = GetGeneratedRewardItemRecord(generatedStringId);
+			string displayName = equipmentElement.GetModifiedItemName()?.ToString() ?? equipmentElement.Item.Name?.ToString() ?? itemRecord?.DisplayName ?? generatedStringId;
+			string templateStringId = itemRecord?.TemplateStringId ?? "";
+			uint objectId = equipmentElement.Item.Id.InternalValue != 0u ? equipmentElement.Item.Id.InternalValue : (itemRecord?.ObjectId ?? 0u);
+			GeneratedRewardRosterItemRecord existing = null;
+			_generatedRewardPlayerRosterRecords?.TryGetValue(generatedStringId, out existing);
+			GeneratedRewardRosterItemRecord record = NormalizeGeneratedRewardRosterItemRecord(generatedStringId, existing ?? new GeneratedRewardRosterItemRecord
+			{
+				GeneratedStringId = generatedStringId
+			});
+			record ??= new GeneratedRewardRosterItemRecord
+			{
+				GeneratedStringId = generatedStringId
+			};
+			record.DisplayName = displayName;
+			if (!string.IsNullOrWhiteSpace(templateStringId))
+			{
+				record.TemplateStringId = templateStringId;
+			}
+			record.ObjectId = objectId;
+			int rosterCount = 0;
+			ItemRoster playerRoster = GetPlayerMainItemRoster();
+			if (playerRoster != null)
+			{
+				GeneratedRewardRosterItemRecord countRecord = NormalizeGeneratedRewardRosterItemRecord(generatedStringId, new GeneratedRewardRosterItemRecord
+				{
+					GeneratedStringId = generatedStringId,
+					DisplayName = displayName,
+					TemplateStringId = record.TemplateStringId,
+					ObjectId = objectId,
+					Amount = Math.Max(1, amount),
+					LastTouchedDay = GetCampaignDayIndex()
+				});
+				rosterCount = CountGeneratedRewardRosterItem(playerRoster, countRecord);
+			}
+			record.Amount = Math.Max(rosterCount, Math.Max(0, record.Amount) + amount);
+			if (rosterCount > 0)
+			{
+				record.Amount = rosterCount;
+			}
+			record.LastTouchedDay = GetCampaignDayIndex();
+			_generatedRewardPlayerRosterRecords[record.GeneratedStringId] = record;
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] generated_player_roster_remember source=" + (source ?? "") + " generated=" + record.GeneratedStringId + " amount=" + amount.ToString(CultureInfo.InvariantCulture) + " recordAmount=" + record.Amount.ToString(CultureInfo.InvariantCulture) + " rosterCount=" + rosterCount.ToString(CultureInfo.InvariantCulture) + " template=" + (record.TemplateStringId ?? "") + " objectId=" + record.ObjectId.ToString(CultureInfo.InvariantCulture));
+			}
+			catch
+			{
+			}
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] generated_player_roster_remember_failed source=" + (source ?? "") + " error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+		}
+	}
+
+	private void RestoreGeneratedRewardPlayerRosterItems(string reason)
+	{
+		try
+		{
+			EnsureGeneratedRewardItemData();
+			if (_generatedRewardPlayerRosterRecords == null || _generatedRewardPlayerRosterRecords.Count == 0)
+			{
+				try
+				{
+					Logger.Log("Logic", "[RewardItemResolve] generated_player_roster_restore_skipped reason=" + (reason ?? "") + " records=0");
+				}
+				catch
+				{
+				}
+				return;
+			}
+			ItemRoster roster = PartyBase.MainParty?.ItemRoster ?? MobileParty.MainParty?.ItemRoster;
+			if (roster == null)
+			{
+				try
+				{
+					Logger.Log("Logic", "[RewardItemResolve] generated_player_roster_restore_skipped reason=" + (reason ?? "") + " player_roster=null records=" + _generatedRewardPlayerRosterRecords.Count);
+				}
+				catch
+				{
+				}
+				return;
+			}
+			int restored = 0;
+			int checkedRecords = 0;
+			int totalExpected = 0;
+			int totalCurrent = 0;
+			int totalMissing = 0;
+			List<string> sample = new List<string>();
+			foreach (string key in _generatedRewardPlayerRosterRecords.Keys.ToList())
+			{
+				GeneratedRewardRosterItemRecord record = NormalizeGeneratedRewardRosterItemRecord(key, _generatedRewardPlayerRosterRecords[key]);
+				if (record == null || record.Amount <= 0)
+				{
+					_generatedRewardPlayerRosterRecords.Remove(key);
+					continue;
+				}
+				checkedRecords++;
+				TryPrimeGeneratedInventoryItemForExternal(record.GeneratedStringId, record.DisplayName, record.TemplateStringId, record.ObjectId, out string normalizedStringId, out string normalizedTemplateStringId, out uint normalizedObjectId, "generated_player_roster_restore_prime_" + (reason ?? ""));
+				if (!string.IsNullOrWhiteSpace(normalizedStringId) && !string.Equals(record.GeneratedStringId, normalizedStringId, StringComparison.OrdinalIgnoreCase))
+				{
+					_generatedRewardPlayerRosterRecords.Remove(key);
+					record.GeneratedStringId = normalizedStringId;
+				}
+				if (!string.IsNullOrWhiteSpace(normalizedTemplateStringId))
+				{
+					record.TemplateStringId = normalizedTemplateStringId;
+				}
+				if (normalizedObjectId != 0u)
+				{
+					record.ObjectId = normalizedObjectId;
+				}
+				int current = CountGeneratedRewardRosterItem(roster, record);
+				int missing = Math.Max(0, record.Amount - current);
+				totalExpected += Math.Max(0, record.Amount);
+				totalCurrent += Math.Max(0, current);
+				totalMissing += missing;
+				if (missing <= 0)
+				{
+					_generatedRewardPlayerRosterRecords[record.GeneratedStringId] = record;
+					if (sample.Count < 8)
+					{
+						sample.Add(record.GeneratedStringId + ":ok:" + current.ToString(CultureInfo.InvariantCulture) + "/" + record.Amount.ToString(CultureInfo.InvariantCulture));
+					}
+					continue;
+				}
+				int generated = GenerateKnownInventoryItemToRosterForExternal(roster, record.GeneratedStringId, record.DisplayName, record.TemplateStringId, record.ObjectId, missing, out _, out string restoredStringId, out string restoredTemplateStringId, out uint restoredObjectId, "generated_player_roster_restore");
+				if (generated <= 0 || string.IsNullOrWhiteSpace(restoredStringId))
+				{
+					if (sample.Count < 8)
+					{
+						sample.Add(record.GeneratedStringId + ":failed:" + missing.ToString(CultureInfo.InvariantCulture));
+					}
+					_generatedRewardPlayerRosterRecords[record.GeneratedStringId] = record;
+					continue;
+				}
+				restored += generated;
+				if (!string.Equals(record.GeneratedStringId, restoredStringId, StringComparison.OrdinalIgnoreCase))
+				{
+					_generatedRewardPlayerRosterRecords.Remove(record.GeneratedStringId);
+					record.GeneratedStringId = restoredStringId;
+				}
+				if (!string.IsNullOrWhiteSpace(restoredTemplateStringId))
+				{
+					record.TemplateStringId = restoredTemplateStringId;
+				}
+				if (restoredObjectId != 0u)
+				{
+					record.ObjectId = restoredObjectId;
+				}
+				record.Amount = CountGeneratedRewardRosterItem(roster, record);
+				record.LastTouchedDay = GetCampaignDayIndex();
+				_generatedRewardPlayerRosterRecords[record.GeneratedStringId] = record;
+				if (sample.Count < 8)
+				{
+					sample.Add(record.GeneratedStringId + ":restored:" + generated.ToString(CultureInfo.InvariantCulture) + "/" + missing.ToString(CultureInfo.InvariantCulture));
+				}
+			}
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] generated_player_roster_restore reason=" + (reason ?? "") + " checked=" + checkedRecords + " expected=" + totalExpected + " currentBefore=" + totalCurrent + " missing=" + totalMissing + " restored=" + restored + " sample=" + string.Join(",", sample));
+			}
+			catch
+			{
+			}
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] generated_player_roster_restore_failed reason=" + (reason ?? "") + " error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+		}
+	}
+
 	private static bool TryEnsureGeneratedRewardItemCategory(ItemObject item, ItemObject templateItem = null, string logSource = null)
 	{
 		if (item == null)
 		{
 			return false;
 		}
+		ItemCategory category = templateItem?.ItemCategory;
+		if (category != null && IsGeneratedRewardItemStringId(item.StringId) && !ReferenceEquals(item.ItemCategory, category))
+		{
+			if (TrySetGeneratedRewardItemCategory(item, category))
+			{
+				return true;
+			}
+		}
 		if (item.ItemCategory != null)
 		{
 			return true;
 		}
-		ItemCategory category = templateItem?.ItemCategory;
 		if (category != null)
 		{
 			if (TrySetGeneratedRewardItemCategory(item, category))
@@ -8054,6 +9604,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		if (_generatedRewardItemStorage == null)
 		{
 			_generatedRewardItemStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_generatedRewardPlayerRosterRecords == null)
+		{
+			_generatedRewardPlayerRosterRecords = new Dictionary<string, GeneratedRewardRosterItemRecord>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_generatedRewardPlayerRosterStorage == null)
+		{
+			_generatedRewardPlayerRosterStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		}
 	}
 
@@ -8374,34 +9932,28 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				return;
 			}
 			GeneratedRewardManifestLoaded = true;
-			try
+		}
+	}
+
+	private static void ClearGeneratedRewardRuntimeState(string reason)
+	{
+		try
+		{
+			lock (GeneratedRewardItemRegistrationLock)
 			{
-				string path = GetGeneratedRewardItemManifestPath();
-				if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
-				{
-					return;
-				}
-				string json = File.ReadAllText(path, GeneratedRewardManifestEncoding);
-				Dictionary<string, GeneratedRewardItemRecord> records = JsonConvert.DeserializeObject<Dictionary<string, GeneratedRewardItemRecord>>(json) ?? new Dictionary<string, GeneratedRewardItemRecord>(StringComparer.OrdinalIgnoreCase);
-				foreach (KeyValuePair<string, GeneratedRewardItemRecord> pair in records)
-				{
-					GeneratedRewardItemRecord record = NormalizeGeneratedRewardItemRecord(pair.Key, pair.Value);
-					if (record != null)
-					{
-						RegisterGeneratedRewardManifestRecordNoLock(record);
-					}
-				}
+				GeneratedRewardPendingItemsByObjectId.Clear();
+				GeneratedRewardDetachedItemsByObjectId.Clear();
+				GeneratedRewardDetachedItemsByStringId.Clear();
+				GeneratedRewardManifestByObjectId.Clear();
+				GeneratedRewardManifestByStringId.Clear();
+				GeneratedRewardManifestLoaded = true;
 			}
-			catch (Exception ex)
-			{
-				try
-				{
-					Logger.Log("RewardSystem", "[GeneratedRewardItem] manifest load failed: " + ex.GetType().Name + ":" + ex.Message);
-				}
-				catch
-				{
-				}
-			}
+			GeneratedRewardLastInventoryVmLogSignature = "";
+			GeneratedRewardLastInventoryVmLogUtc = DateTime.MinValue;
+			Logger.Log("Logic", "[RewardItemResolve] generated_runtime_state_cleared reason=" + (reason ?? "") + " global_manifest_io=disabled");
+		}
+		catch
+		{
 		}
 	}
 
@@ -8486,38 +10038,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	private static void SaveGeneratedRewardManifest(string reason = null)
 	{
 		EnsureGeneratedRewardManifestLoaded();
-		Dictionary<string, GeneratedRewardItemRecord> snapshot = new Dictionary<string, GeneratedRewardItemRecord>(StringComparer.OrdinalIgnoreCase);
-		lock (GeneratedRewardItemRegistrationLock)
-		{
-			foreach (KeyValuePair<string, GeneratedRewardItemRecord> pair in GeneratedRewardManifestByStringId.ToList())
-			{
-				GeneratedRewardItemRecord record = NormalizeGeneratedRewardItemRecord(pair.Key, pair.Value);
-				if (record != null)
-				{
-					snapshot[record.GeneratedStringId] = record;
-				}
-			}
-		}
-		try
-		{
-			string path = GetGeneratedRewardItemManifestPath();
-			string directory = Path.GetDirectoryName(path);
-			if (!string.IsNullOrWhiteSpace(directory))
-			{
-				Directory.CreateDirectory(directory);
-			}
-			File.WriteAllText(path, JsonConvert.SerializeObject(snapshot, Formatting.Indented), GeneratedRewardManifestEncoding);
-		}
-		catch (Exception ex)
-		{
-			try
-			{
-				Logger.Log("RewardSystem", "[GeneratedRewardItem] manifest save failed reason=" + (reason ?? "") + " error=" + ex.GetType().Name + ":" + ex.Message);
-			}
-			catch
-			{
-			}
-		}
 	}
 
 	private void SyncGeneratedRewardRecordsToManifest(string reason)
@@ -8538,30 +10058,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			_generatedRewardItemRecords[record.GeneratedStringId] = record;
 			RegisterGeneratedRewardManifestRecord(record);
 		}
-		SaveGeneratedRewardManifest(reason);
 	}
 
 	private void MergeGeneratedRewardManifestIntoRecords()
 	{
 		EnsureGeneratedRewardItemData();
 		EnsureGeneratedRewardManifestLoaded();
-		List<GeneratedRewardItemRecord> records;
-		lock (GeneratedRewardItemRegistrationLock)
-		{
-			records = GeneratedRewardManifestByStringId.Values.ToList();
-		}
-		foreach (GeneratedRewardItemRecord item in records)
-		{
-			GeneratedRewardItemRecord record = NormalizeGeneratedRewardItemRecord(item?.GeneratedStringId, item);
-			if (record == null)
-			{
-				continue;
-			}
-			if (!_generatedRewardItemRecords.ContainsKey(record.GeneratedStringId))
-			{
-				_generatedRewardItemRecords[record.GeneratedStringId] = record;
-			}
-		}
 	}
 
 	private static bool IsGeneratedRewardReservedObjectId(MBGUID objectId)
@@ -8622,12 +10124,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		try
 		{
 			IEnumerable<ItemObject> items = Game.Current?.ObjectManager?.GetObjectTypeList<ItemObject>() ?? MBObjectManager.Instance?.GetObjectTypeList<ItemObject>();
-			ItemObject item = items?.FirstOrDefault((ItemObject x) => x != null && x.Type == ItemObject.ItemTypeEnum.Goods && x.ItemCategory != null);
+			ItemObject item = items?.FirstOrDefault((ItemObject x) => IsStableGeneratedRewardTemplateItem(x) && x.Type == ItemObject.ItemTypeEnum.Goods && x.ItemCategory != null);
 			if (item != null)
 			{
 				return item;
 			}
-			return items?.FirstOrDefault((ItemObject x) => x != null && x.Id.InternalValue != 0u);
+			return items?.FirstOrDefault(IsStableGeneratedRewardTemplateItem);
 		}
 		catch
 		{
@@ -8644,7 +10146,24 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		lock (GeneratedRewardItemRegistrationLock)
 		{
-			ItemObject existing = MBObjectManager.Instance?.GetObject(objectId) as ItemObject;
+			bool previousSuppressObjectLookup = SuppressGeneratedRewardObjectLookup;
+			bool previousSuppressPendingLookup = SuppressGeneratedRewardPendingLookup;
+			ItemObject existing;
+			try
+			{
+				SuppressGeneratedRewardObjectLookup = true;
+				SuppressGeneratedRewardPendingLookup = true;
+				existing = MBObjectManager.Instance?.GetObject(objectId) as ItemObject;
+			}
+			finally
+			{
+				SuppressGeneratedRewardObjectLookup = previousSuppressObjectLookup;
+				SuppressGeneratedRewardPendingLookup = previousSuppressPendingLookup;
+			}
+			if (!IsGeneratedRewardPendingItem(existing) && GeneratedRewardPendingItemsByObjectId.TryGetValue(objectId.InternalValue, out var cachedPending) && IsGeneratedRewardPendingItem(cachedPending))
+			{
+				existing = cachedPending;
+			}
 			if (!IsGeneratedRewardPendingItem(existing))
 			{
 				return false;
@@ -8686,6 +10205,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		try
 		{
 			ItemObject copy = new ItemObject(templateItem);
+			CopyGeneratedRewardItemProperty(target, copy, "ItemCategory");
 			CopyGeneratedRewardItemProperty(target, copy, "ItemComponent");
 			CopyGeneratedRewardItemProperty(target, copy, "MultiMeshName");
 			CopyGeneratedRewardItemProperty(target, copy, "HolsterMeshName");
@@ -8721,6 +10241,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 		}
 		TrySetRewardItemObjectName(target, displayName);
+		ApplyGeneratedRewardItemRpState(target, displayName);
 		TryEnsureGeneratedRewardItemCategory(target, templateItem, "template_state");
 	}
 
@@ -8749,9 +10270,340 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static void ApplyGeneratedRewardItemRpState(ItemObject target, string displayName)
+	{
+		if (target == null)
+		{
+			return;
+		}
+		try
+		{
+			string text = NormalizeGeneratedInventoryDisplayName(displayName);
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				text = target.Name?.ToString() ?? target.StringId ?? "";
+			}
+			TrySetRewardItemObjectName(target, text);
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] generated_rp_state_failed item=" + (target.StringId ?? "") + " error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+		}
+	}
+
 	private static bool IsGeneratedRewardItemStringId(string stringId)
 	{
 		return !string.IsNullOrWhiteSpace(stringId) && stringId.Trim().StartsWith("af_generated_reward_", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool IsGeneratedRewardMarketExcludedItem(ItemObject item)
+	{
+		return IsGeneratedRewardItemStringId(item?.StringId);
+	}
+
+	private static void InventoryScreenHelperOpenScreenAsTradePrefix(ItemRoster leftRoster, SettlementComponent settlementComponent, ref Action doneLogicExtrasDelegate)
+	{
+		try
+		{
+			RemoveGeneratedRewardItemsFromSettlementMarket(settlementComponent?.Settlement, "trade_open");
+			RemoveGeneratedRewardItemsFromRoster(leftRoster, BuildGeneratedRewardMarketRosterLabel(settlementComponent?.Settlement, "trade_roster"), "trade_open_roster");
+			Action originalDone = doneLogicExtrasDelegate;
+			doneLogicExtrasDelegate = delegate
+			{
+				try
+				{
+					originalDone?.Invoke();
+				}
+				finally
+				{
+					RemoveGeneratedRewardItemsFromSettlementMarket(settlementComponent?.Settlement, "trade_close");
+					RemoveGeneratedRewardItemsFromRoster(leftRoster, BuildGeneratedRewardMarketRosterLabel(settlementComponent?.Settlement, "trade_roster"), "trade_close_roster");
+				}
+			};
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardItemMarketGuard] trade_open_cleanup_failed error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+		}
+	}
+
+	private void OnDailyTickSettlement(Settlement settlement)
+	{
+		RemoveGeneratedRewardItemsFromSettlementMarket(settlement, "daily_tick_settlement");
+	}
+
+	private static bool InventoryLogicAddTransferCommandPrefix(InventoryLogic __instance, TransferCommand command)
+	{
+		return !ShouldBlockGeneratedRewardMarketTransfer(__instance, command, notify: true);
+	}
+
+	private static bool InventoryLogicAddTransferCommandsPrefix(InventoryLogic __instance, IEnumerable<TransferCommand> commands)
+	{
+		if (commands == null)
+		{
+			return true;
+		}
+		List<TransferCommand> list = commands.ToList();
+		if (!list.Any((TransferCommand command) => ShouldBlockGeneratedRewardMarketTransfer(__instance, command, notify: false)))
+		{
+			return true;
+		}
+		bool notified = false;
+		foreach (TransferCommand command in list)
+		{
+			if (ShouldBlockGeneratedRewardMarketTransfer(__instance, command, notify: !notified))
+			{
+				notified = true;
+				continue;
+			}
+			__instance?.AddTransferCommand(command);
+		}
+		return false;
+	}
+
+	private static bool SellItemsActionApplyPrefix(PartyBase receiverParty, PartyBase payerParty, ItemRosterElement subject)
+	{
+		if (!IsGeneratedRewardMarketExcludedItem(subject.EquipmentElement.Item))
+		{
+			return true;
+		}
+		bool involvesSettlementMarket = receiverParty?.IsSettlement == true || payerParty?.IsSettlement == true;
+		if (!involvesSettlementMarket)
+		{
+			return true;
+		}
+		try
+		{
+			Logger.Log("Logic", "[RewardItemMarketGuard] blocked_party_settlement_sale item=" + (subject.EquipmentElement.Item.StringId ?? "") + " seller=" + (receiverParty?.Name?.ToString() ?? "") + " buyer=" + (payerParty?.Name?.ToString() ?? ""));
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private static void VillagerSellGoodsPrefix(MobileParty villagerParty, out List<ItemRosterElement> __state)
+	{
+		__state = TakeGeneratedRewardItemsFromRoster(villagerParty?.ItemRoster);
+	}
+
+	private static Exception VillagerSellGoodsFinalizer(MobileParty villagerParty, List<ItemRosterElement> __state, Exception __exception)
+	{
+		RestoreGeneratedRewardItemsToRoster(villagerParty?.ItemRoster, __state);
+		return __exception;
+	}
+
+	private static void CaravanSellGoodsPrefix(MobileParty mobileParty, out List<ItemRosterElement> __state)
+	{
+		__state = TakeGeneratedRewardItemsFromRoster(mobileParty?.ItemRoster);
+	}
+
+	private static Exception CaravanSellGoodsFinalizer(MobileParty mobileParty, List<ItemRosterElement> __state, Exception __exception)
+	{
+		RestoreGeneratedRewardItemsToRoster(mobileParty?.ItemRoster, __state);
+		return __exception;
+	}
+
+	private static List<ItemRosterElement> TakeGeneratedRewardItemsFromRoster(ItemRoster roster)
+	{
+		List<ItemRosterElement> hidden = new List<ItemRosterElement>();
+		if (roster == null)
+		{
+			return hidden;
+		}
+		List<ItemRosterElement> candidates = new List<ItemRosterElement>();
+		try
+		{
+			for (int i = 0; i < roster.Count; i++)
+			{
+				ItemRosterElement element = roster.GetElementCopyAtIndex(i);
+				if (element.Amount > 0 && IsGeneratedRewardMarketExcludedItem(element.EquipmentElement.Item))
+				{
+					candidates.Add(element);
+				}
+			}
+			foreach (ItemRosterElement element in candidates)
+			{
+				roster.AddToCounts(element.EquipmentElement, -element.Amount);
+				hidden.Add(element);
+			}
+		}
+		catch (Exception ex)
+		{
+			RestoreGeneratedRewardItemsToRoster(roster, hidden);
+			hidden.Clear();
+			try
+			{
+				Logger.Log("Logic", "[RewardItemMarketGuard] market_party_hide_failed error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+		}
+		return hidden;
+	}
+
+	private static void RestoreGeneratedRewardItemsToRoster(ItemRoster roster, IEnumerable<ItemRosterElement> hidden)
+	{
+		if (roster == null || hidden == null)
+		{
+			return;
+		}
+		try
+		{
+			foreach (ItemRosterElement element in hidden)
+			{
+				if (element.Amount > 0)
+				{
+					roster.AddToCounts(element.EquipmentElement, element.Amount);
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardItemMarketGuard] market_party_restore_failed error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+		}
+	}
+
+	private static bool ShouldBlockGeneratedRewardMarketTransfer(InventoryLogic inventoryLogic, TransferCommand command, bool notify)
+	{
+		try
+		{
+			if (inventoryLogic == null || !inventoryLogic.IsTrading)
+			{
+				return false;
+			}
+			ItemObject item = command.ElementToTransfer.EquipmentElement.Item;
+			if (!IsGeneratedRewardMarketExcludedItem(item))
+			{
+				return false;
+			}
+			bool involvesMarketSide = command.FromSide == InventoryLogic.InventorySide.OtherInventory || command.ToSide == InventoryLogic.InventorySide.OtherInventory;
+			bool involvesPlayerSide = command.FromSide == InventoryLogic.InventorySide.PlayerInventory
+				|| command.ToSide == InventoryLogic.InventorySide.PlayerInventory
+				|| InventoryLogic.IsEquipmentSide(command.FromSide)
+				|| InventoryLogic.IsEquipmentSide(command.ToSide);
+			if (!involvesMarketSide || !involvesPlayerSide)
+			{
+				return false;
+			}
+			if (notify)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("RP生成物品不会进入市场交易。"));
+			}
+			try
+			{
+				Logger.Log("Logic", "[RewardItemMarketGuard] blocked_trade_transfer item=" + (item.StringId ?? "") + " from=" + command.FromSide + " to=" + command.ToSide + " amount=" + command.Amount.ToString(CultureInfo.InvariantCulture));
+			}
+			catch
+			{
+			}
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static string BuildGeneratedRewardMarketRosterLabel(Settlement settlement, string fallback)
+	{
+		string text = (settlement?.StringId ?? "").Trim();
+		return string.IsNullOrWhiteSpace(text) ? (fallback ?? "") : text;
+	}
+
+	private static int RemoveGeneratedRewardItemsFromRoster(ItemRoster roster, string ownerLabel, string reason)
+	{
+		if (roster == null)
+		{
+			return 0;
+		}
+		int removed = 0;
+		List<ItemRosterElement> toRemove = new List<ItemRosterElement>();
+		try
+		{
+			for (int i = 0; i < roster.Count; i++)
+			{
+				ItemRosterElement element = roster.GetElementCopyAtIndex(i);
+				if (element.Amount > 0 && IsGeneratedRewardMarketExcludedItem(element.EquipmentElement.Item))
+				{
+					toRemove.Add(element);
+				}
+			}
+			foreach (ItemRosterElement element in toRemove)
+			{
+				int amount = Math.Max(0, element.Amount);
+				if (amount <= 0)
+				{
+					continue;
+				}
+				roster.AddToCounts(element.EquipmentElement, -amount);
+				removed += amount;
+			}
+			if (removed > 0)
+			{
+				Logger.Log("Logic", "[RewardItemMarketGuard] removed_market_generated_items reason=" + (reason ?? "") + " owner=" + (ownerLabel ?? "") + " count=" + removed.ToString(CultureInfo.InvariantCulture) + " slots=" + toRemove.Count.ToString(CultureInfo.InvariantCulture));
+			}
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardItemMarketGuard] cleanup_failed reason=" + (reason ?? "") + " owner=" + (ownerLabel ?? "") + " error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+		}
+		return removed;
+	}
+
+	private static int RemoveGeneratedRewardItemsFromSettlementMarket(Settlement settlement, string reason)
+	{
+		try
+		{
+			return RemoveGeneratedRewardItemsFromRoster(settlement?.ItemRoster, BuildGeneratedRewardMarketRosterLabel(settlement, "settlement_market"), reason);
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static int RemoveGeneratedRewardItemsFromMarketRosters(string reason)
+	{
+		int removed = 0;
+		IEnumerable<Settlement> settlements = null;
+		try
+		{
+			settlements = Campaign.Current?.Settlements;
+		}
+		catch
+		{
+		}
+		foreach (Settlement settlement in settlements ?? Enumerable.Empty<Settlement>())
+		{
+			removed += RemoveGeneratedRewardItemsFromSettlementMarket(settlement, reason);
+		}
+		return removed;
 	}
 
 	private GeneratedRewardItemRecord GetGeneratedRewardItemRecord(string generatedStringId)
@@ -8810,36 +10662,34 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	private void RememberGeneratedRewardItemRecord(string generatedStringId, string displayName, ItemObject templateItem, ItemObject generatedItem)
 	{
-		if (!IsGeneratedRewardItemStringId(generatedStringId) || templateItem == null || generatedItem == null)
+		if (IsGeneratedRewardItemStringId(generatedStringId) && templateItem != null && generatedItem != null)
 		{
-			return;
+			EnsureGeneratedRewardItemData();
+			string key = generatedStringId.Trim();
+			if (!_generatedRewardItemRecords.TryGetValue(key, out var record) || record == null)
+			{
+				record = new GeneratedRewardItemRecord();
+			}
+			uint oldObjectId = record.ObjectId;
+			uint newObjectId = generatedItem.Id.InternalValue;
+			record.GeneratedStringId = key;
+			record.DisplayName = string.IsNullOrWhiteSpace(displayName) ? (generatedItem.Name?.ToString() ?? key) : displayName.Trim();
+			record.TemplateStringId = (templateItem.StringId ?? "").Trim();
+			if (record.LegacyObjectIds == null)
+			{
+				record.LegacyObjectIds = new List<uint>();
+			}
+			if (oldObjectId != 0u && newObjectId != 0u && oldObjectId != newObjectId && !record.LegacyObjectIds.Contains(oldObjectId))
+			{
+				record.LegacyObjectIds.Add(oldObjectId);
+			}
+			record.LegacyObjectIds = record.LegacyObjectIds.Where((uint x) => x != 0u && x != newObjectId).Distinct().Take(16).ToList();
+			record.ObjectId = newObjectId;
+			record.LastTouchedDay = GetCampaignDayIndex();
+			_generatedRewardItemRecords[key] = record;
+			RegisterGeneratedRewardManifestRecord(record);
+			SaveGeneratedRewardManifest("remember");
 		}
-		EnsureGeneratedRewardItemData();
-		string key = generatedStringId.Trim();
-		GeneratedRewardItemRecord record;
-		if (!_generatedRewardItemRecords.TryGetValue(key, out record) || record == null)
-		{
-			record = new GeneratedRewardItemRecord();
-		}
-		uint oldObjectId = record.ObjectId;
-		uint newObjectId = generatedItem.Id.InternalValue;
-		record.GeneratedStringId = key;
-		record.DisplayName = string.IsNullOrWhiteSpace(displayName) ? (generatedItem.Name?.ToString() ?? key) : displayName.Trim();
-		record.TemplateStringId = (templateItem.StringId ?? "").Trim();
-		if (record.LegacyObjectIds == null)
-		{
-			record.LegacyObjectIds = new List<uint>();
-		}
-		if (oldObjectId != 0u && newObjectId != 0u && oldObjectId != newObjectId && !record.LegacyObjectIds.Contains(oldObjectId))
-		{
-			record.LegacyObjectIds.Add(oldObjectId);
-		}
-		record.LegacyObjectIds = record.LegacyObjectIds.Where((uint x) => x != 0u && x != newObjectId).Distinct().Take(16).ToList();
-		record.ObjectId = newObjectId;
-		record.LastTouchedDay = GetCampaignDayIndex();
-		_generatedRewardItemRecords[key] = record;
-		RegisterGeneratedRewardManifestRecord(record);
-		SaveGeneratedRewardManifest("remember");
 	}
 
 	private void RestoreGeneratedRewardItemDefinitions(string reason)
@@ -9000,9 +10850,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				continue;
 			}
-			bool alreadyCorrect = string.Equals((currentItem.StringId ?? "").Trim(), record.GeneratedStringId.Trim(), StringComparison.OrdinalIgnoreCase) && currentItem.IsReady;
+			bool alreadyCorrect = IsGeneratedRewardRosterItemCanonical(currentItem, record);
 			if (alreadyCorrect)
 			{
+				ApplyGeneratedRewardItemRpState(currentItem, record.DisplayName);
 				TryEnsureGeneratedRewardItemCategory(currentItem, ResolveItemById(record.TemplateStringId), reason);
 				continue;
 			}
@@ -9018,8 +10869,13 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			if (ReferenceEquals(currentItem, generatedItem))
 			{
+				ApplyGeneratedRewardItemRpState(generatedItem, record.DisplayName);
 				generatedItem.IsReady = true;
 				TryEnsureGeneratedRewardItemCategory(generatedItem, templateItem, reason);
+				if (!IsGeneratedRewardRosterItemCanonical(generatedItem, record))
+				{
+					LogGeneratedRewardInventoryGuard("repair_same_reference_not_canonical", record.GeneratedStringId, record.DisplayName, record.TemplateStringId, generatedItem, templateItem, reason);
+				}
 				continue;
 			}
 			replacements.Add(Tuple.Create(element, generatedItem, record));
@@ -9046,6 +10902,67 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 		}
 		return repaired > 0;
+	}
+
+	private static bool IsGeneratedRewardRosterItemCanonical(ItemObject item, GeneratedRewardItemRecord record)
+	{
+		if (item == null || record == null || !IsGeneratedRewardItemStringId(record.GeneratedStringId))
+		{
+			return false;
+		}
+		if (!string.Equals((item.StringId ?? "").Trim(), record.GeneratedStringId.Trim(), StringComparison.OrdinalIgnoreCase))
+		{
+			return false;
+		}
+		if (!item.IsReady)
+		{
+			return false;
+		}
+		if (item.ItemComponent is GeneratedRewardRpItemComponent)
+		{
+			return false;
+		}
+		ItemObject templateItem = ResolveItemById(record.TemplateStringId);
+		if (templateItem != null && item.Type != templateItem.Type)
+		{
+			return false;
+		}
+		if (templateItem?.ItemCategory != null && !ReferenceEquals(item.ItemCategory, templateItem.ItemCategory))
+		{
+			return false;
+		}
+		return IsGeneratedRewardItemVisibleToObjectManager(item);
+	}
+
+	private static bool IsGeneratedRewardItemVisibleToObjectManager(ItemObject item)
+	{
+		if (item == null || !IsGeneratedRewardItemStringId(item.StringId))
+		{
+			return false;
+		}
+		bool previousSuppressObjectLookup = SuppressGeneratedRewardObjectLookup;
+		bool previousSuppressPendingLookup = SuppressGeneratedRewardPendingLookup;
+		try
+		{
+			SuppressGeneratedRewardObjectLookup = true;
+			SuppressGeneratedRewardPendingLookup = true;
+			ItemObject stringItem = MBObjectManager.Instance?.GetObject<ItemObject>(item.StringId);
+			if (stringItem != null && string.Equals((stringItem.StringId ?? "").Trim(), (item.StringId ?? "").Trim(), StringComparison.OrdinalIgnoreCase))
+			{
+				return true;
+			}
+			ItemObject idItem = item.Id.InternalValue != 0u ? MBObjectManager.Instance?.GetObject(item.Id) as ItemObject : null;
+			return idItem != null && string.Equals((idItem.StringId ?? "").Trim(), (item.StringId ?? "").Trim(), StringComparison.OrdinalIgnoreCase);
+		}
+		catch
+		{
+			return false;
+		}
+		finally
+		{
+			SuppressGeneratedRewardObjectLookup = previousSuppressObjectLookup;
+			SuppressGeneratedRewardPendingLookup = previousSuppressPendingLookup;
+		}
 	}
 
 	private Dictionary<uint, GeneratedRewardItemRecord> BuildGeneratedRewardItemRecordsByObjectId()
@@ -9122,19 +11039,13 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		foreach (Settlement settlement in settlements ?? Enumerable.Empty<Settlement>())
 		{
-			ItemRoster roster = null;
 			ItemRoster stash = null;
 			try
 			{
-				roster = settlement?.ItemRoster;
 				stash = settlement?.Stash;
 			}
 			catch
 			{
-			}
-			if (roster != null)
-			{
-				yield return roster;
 			}
 			if (stash != null)
 			{
@@ -9254,6 +11165,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				{
 					return stringCollision;
 				}
+				ItemObject idCollisionItem = idCollision as ItemObject;
+				if (idCollisionItem != null)
+				{
+					return idCollisionItem;
+				}
 				try
 				{
 					Logger.Log("Logic", "[RewardItemResolve] generated_stable_collision_missing_string_index source=" + (logSource ?? "") + " generated=" + (generatedItem.StringId ?? "") + " id=" + generatedItem.Id.InternalValue.ToString(CultureInfo.InvariantCulture));
@@ -9282,6 +11198,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				catch
 				{
 				}
+				return registeredById;
 			}
 			return null;
 		}
@@ -9315,17 +11232,27 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			string name = displayName.Trim();
 			if (TryResolveGeneratedRewardItemForStringId(key, out var cachedGeneratedItem, logSource ?? "generated_create_cached") && cachedGeneratedItem != null)
 			{
-				TrySetRewardItemObjectName(cachedGeneratedItem, name);
+				ApplyGeneratedRewardItemTemplateState(cachedGeneratedItem, templateItem, name);
+				ApplyGeneratedRewardItemRpState(cachedGeneratedItem, name);
 				TryEnsureGeneratedRewardItemCategory(cachedGeneratedItem, templateItem, logSource);
-				cachedGeneratedItem.Initialize();
-				cachedGeneratedItem.IsReady = true;
-				Instance?.RememberGeneratedRewardItemRecord(key, name, templateItem, cachedGeneratedItem);
-				return cachedGeneratedItem;
+				ItemObject registeredCachedItem = TryRegisterGeneratedRewardItemWithStableId(cachedGeneratedItem, logSource ?? "generated_create_cached_promote");
+				if (registeredCachedItem != null)
+				{
+					ApplyGeneratedRewardItemTemplateState(registeredCachedItem, templateItem, name);
+					ApplyGeneratedRewardItemRpState(registeredCachedItem, name);
+					TryEnsureGeneratedRewardItemCategory(registeredCachedItem, templateItem, logSource);
+					registeredCachedItem.Initialize();
+					registeredCachedItem.IsReady = true;
+					Instance?.RememberGeneratedRewardItemRecord(key, name, templateItem, registeredCachedItem);
+					return registeredCachedItem;
+				}
+				LogGeneratedRewardInventoryGuard("cached_register_failed", key, name, templateItem.StringId, cachedGeneratedItem, templateItem, logSource);
 			}
 			ItemObject existing = TryGetRegisteredGeneratedRewardItemByStringId(key);
 			if (existing != null)
 			{
-				TrySetRewardItemObjectName(existing, name);
+				ApplyGeneratedRewardItemTemplateState(existing, templateItem, name);
+				ApplyGeneratedRewardItemRpState(existing, name);
 				TryEnsureGeneratedRewardItemCategory(existing, templateItem, logSource);
 				existing.Initialize();
 				existing.IsReady = true;
@@ -9359,26 +11286,36 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				ItemObject detachedItem = TryGetOrCreateGeneratedRewardDetachedItem(record, logSource);
 				if (detachedItem != null)
 				{
-					Instance?.RememberGeneratedRewardItemRecord(key, name, templateItem, detachedItem);
-					return detachedItem;
+					ApplyGeneratedRewardItemRpState(detachedItem, name);
+					ItemObject registeredDetachedItem = TryRegisterGeneratedRewardItemWithStableId(detachedItem, logSource ?? "generated_create_detached_promote");
+					if (registeredDetachedItem != null)
+					{
+						ApplyGeneratedRewardItemRpState(registeredDetachedItem, name);
+						TryEnsureGeneratedRewardItemCategory(registeredDetachedItem, templateItem, logSource);
+						registeredDetachedItem.Initialize();
+						registeredDetachedItem.IsReady = true;
+						Instance?.RememberGeneratedRewardItemRecord(key, name, templateItem, registeredDetachedItem);
+						return registeredDetachedItem;
+					}
+					LogGeneratedRewardInventoryGuard("detached_register_failed", key, name, templateItem.StringId, detachedItem, templateItem, logSource);
 				}
 			}
 			ItemObject generatedItem = new ItemObject(templateItem)
 			{
 				StringId = key
 			};
-			if (!TrySetRewardItemObjectName(generatedItem, name))
-			{
-				return null;
-			}
+			ApplyGeneratedRewardItemTemplateState(generatedItem, templateItem, name);
 			if (!TryEnsureGeneratedRewardItemCategory(generatedItem, templateItem, logSource))
 			{
 				return null;
 			}
 			ItemObject registered = MBObjectManager.Instance?.RegisterObject<ItemObject>(generatedItem) ?? generatedItem;
+			ApplyGeneratedRewardItemRpState(registered, name);
+			TryEnsureGeneratedRewardItemCategory(registered, templateItem, logSource);
 			registered.Initialize();
 			registered.IsReady = true;
 			Instance?.RememberGeneratedRewardItemRecord(key, name, templateItem, registered);
+			LogGeneratedRewardObjectVisibility("generated_create_registered", registered, logSource);
 			return registered;
 		}
 		catch (Exception ex)
@@ -9411,6 +11348,290 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static bool IsRuntimeGeneratedRewardItemForKey(ItemObject item, string generatedStringId)
+	{
+		string key = (generatedStringId ?? "").Trim();
+		string itemStringId = (item?.StringId ?? "").Trim();
+		return item != null && IsGeneratedRewardItemStringId(key) && IsGeneratedRewardItemStringId(itemStringId) && string.Equals(itemStringId, key, StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static void DiscardGeneratedRewardRecordObjectIdIfPolluted(GeneratedRewardItemRecord record, ItemObject templateItem, string logSource = null)
+	{
+		if (record == null || record.ObjectId == 0u)
+		{
+			return;
+		}
+		uint objectId = record.ObjectId;
+		string reason = null;
+		ItemObject collisionItem = null;
+		if (templateItem != null && templateItem.Id.InternalValue != 0u && objectId == templateItem.Id.InternalValue)
+		{
+			reason = "record_object_id_is_template";
+			collisionItem = templateItem;
+		}
+		else if (MBObjectManager.Instance != null)
+		{
+			bool previousSuppressObjectLookup = SuppressGeneratedRewardObjectLookup;
+			bool previousSuppressPendingLookup = SuppressGeneratedRewardPendingLookup;
+			try
+			{
+				SuppressGeneratedRewardObjectLookup = true;
+				SuppressGeneratedRewardPendingLookup = true;
+				collisionItem = MBObjectManager.Instance.GetObject(new MBGUID(objectId)) as ItemObject;
+			}
+			catch
+			{
+				collisionItem = null;
+			}
+			finally
+			{
+				SuppressGeneratedRewardObjectLookup = previousSuppressObjectLookup;
+				SuppressGeneratedRewardPendingLookup = previousSuppressPendingLookup;
+			}
+			if (collisionItem != null && !IsGeneratedRewardPendingItem(collisionItem) && !IsRuntimeGeneratedRewardItemForKey(collisionItem, record.GeneratedStringId))
+			{
+				reason = "record_object_id_collision";
+			}
+		}
+		if (reason == null)
+		{
+			return;
+		}
+		LogGeneratedRewardInventoryGuard(reason, record.GeneratedStringId, record.DisplayName, record.TemplateStringId, collisionItem, templateItem, logSource);
+		record.ObjectId = 0u;
+		if (record.LegacyObjectIds != null)
+		{
+			record.LegacyObjectIds.RemoveAll((uint x) => x == objectId);
+		}
+		lock (GeneratedRewardItemRegistrationLock)
+		{
+			GeneratedRewardDetachedItemsByObjectId.Remove(objectId);
+			GeneratedRewardManifestByObjectId.Remove(objectId);
+		}
+	}
+
+	private static bool TryValidateGeneratedRewardInventoryItemForRoster(ItemObject generatedItem, string generatedStringId, string displayName, ItemObject templateItem, string logSource = null)
+	{
+		string key = (generatedStringId ?? "").Trim();
+		string name = NormalizeGeneratedInventoryDisplayName(displayName);
+		if (!IsGeneratedRewardItemStringId(key) || string.IsNullOrWhiteSpace(name))
+		{
+			LogGeneratedRewardInventoryGuard("invalid_expected", key, name, templateItem?.StringId, generatedItem, templateItem, logSource);
+			return false;
+		}
+		if (!IsRuntimeGeneratedRewardItemForKey(generatedItem, key))
+		{
+			LogGeneratedRewardInventoryGuard("wrong_runtime_item", key, name, templateItem?.StringId, generatedItem, templateItem, logSource);
+			return false;
+		}
+		if (templateItem != null && (ReferenceEquals(generatedItem, templateItem) || (generatedItem.Id.InternalValue != 0u && generatedItem.Id.InternalValue == templateItem.Id.InternalValue)))
+		{
+			LogGeneratedRewardInventoryGuard("template_leak", key, name, templateItem.StringId, generatedItem, templateItem, logSource);
+			return false;
+		}
+		if (!TrySetRewardItemObjectName(generatedItem, name))
+		{
+			LogGeneratedRewardInventoryGuard("name_set_failed", key, name, templateItem?.StringId, generatedItem, templateItem, logSource);
+			return false;
+		}
+		if (!TryEnsureGeneratedRewardItemCategory(generatedItem, templateItem, logSource ?? "generated_inventory_guard"))
+		{
+			LogGeneratedRewardInventoryGuard("category_failed", key, name, templateItem?.StringId, generatedItem, templateItem, logSource);
+			return false;
+		}
+		try
+		{
+			generatedItem.Initialize();
+			generatedItem.IsReady = true;
+		}
+		catch
+		{
+		}
+		return true;
+	}
+
+	private static void LogGeneratedRewardInventoryGuard(string reason, string generatedStringId, string displayName, string templateStringId, ItemObject actualItem, ItemObject templateItem, string logSource = null)
+	{
+		try
+		{
+			Logger.Log("Logic", "[RewardItemResolve] generated_inventory_guard reason=" + (reason ?? "") + " source=" + (logSource ?? "") + " expected=" + (generatedStringId ?? "") + " display=" + (displayName ?? "") + " template=" + (templateStringId ?? templateItem?.StringId ?? "") + " actualStringId=" + (actualItem?.StringId ?? "") + " actualName=" + (actualItem?.Name?.ToString() ?? "") + " actualId=" + (actualItem != null ? actualItem.Id.InternalValue.ToString(CultureInfo.InvariantCulture) : "0") + " templateName=" + (templateItem?.Name?.ToString() ?? "") + " templateId=" + (templateItem != null ? templateItem.Id.InternalValue.ToString(CultureInfo.InvariantCulture) : "0"));
+		}
+		catch
+		{
+		}
+	}
+
+	private static void LogGeneratedRewardObjectVisibility(string reason, ItemObject item, string logSource = null)
+	{
+		if (item == null || !IsGeneratedRewardItemStringId(item.StringId))
+		{
+			return;
+		}
+		try
+		{
+			bool byString = false;
+			bool byId = false;
+			bool previousSuppressObjectLookup = SuppressGeneratedRewardObjectLookup;
+			bool previousSuppressPendingLookup = SuppressGeneratedRewardPendingLookup;
+			try
+			{
+				SuppressGeneratedRewardObjectLookup = true;
+				SuppressGeneratedRewardPendingLookup = true;
+				ItemObject stringItem = MBObjectManager.Instance?.GetObject<ItemObject>(item.StringId);
+				byString = stringItem != null && string.Equals((stringItem.StringId ?? "").Trim(), (item.StringId ?? "").Trim(), StringComparison.OrdinalIgnoreCase);
+				ItemObject idItem = item.Id.InternalValue != 0u ? MBObjectManager.Instance?.GetObject(item.Id) as ItemObject : null;
+				byId = idItem != null && string.Equals((idItem.StringId ?? "").Trim(), (item.StringId ?? "").Trim(), StringComparison.OrdinalIgnoreCase);
+			}
+			finally
+			{
+				SuppressGeneratedRewardObjectLookup = previousSuppressObjectLookup;
+				SuppressGeneratedRewardPendingLookup = previousSuppressPendingLookup;
+			}
+			Logger.Log("Logic", "[RewardItemResolve] generated_object_visibility reason=" + (reason ?? "") + " source=" + (logSource ?? "") + " item=" + (item.StringId ?? "") + " name=" + (item.Name?.ToString() ?? "") + " id=" + item.Id.InternalValue.ToString(CultureInfo.InvariantCulture) + " byString=" + byString + " byId=" + byId + " ready=" + item.IsReady + " initialized=" + item.IsInitialized + " type=" + item.Type + " category=" + (item.ItemCategory?.StringId ?? "null") + " component=" + (item.ItemComponent?.GetType().Name ?? "null") + " value=" + item.Value.ToString(CultureInfo.InvariantCulture) + " weight=" + item.Weight.ToString(CultureInfo.InvariantCulture));
+		}
+		catch
+		{
+		}
+	}
+
+	private static void SPInventoryVMRefreshInformationValuesPostfix(object __instance)
+	{
+		try
+		{
+			if (__instance == null)
+			{
+				return;
+			}
+			Type type = __instance.GetType();
+			object rightList = type.GetProperty("RightItemListVM", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)?.GetValue(__instance, null);
+			if (!(rightList is System.Collections.IEnumerable enumerable))
+			{
+				return;
+			}
+			List<string> sample = new List<string>();
+			int generatedCount = 0;
+			foreach (object itemVm in enumerable)
+			{
+				if (itemVm == null)
+				{
+					continue;
+				}
+				PropertyInfo rosterElementProperty = itemVm.GetType().GetProperty("ItemRosterElement", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+				if (rosterElementProperty == null)
+				{
+					continue;
+				}
+				ItemRosterElement element = (ItemRosterElement)rosterElementProperty.GetValue(itemVm, null);
+				ItemObject item = element.EquipmentElement.Item;
+				if (item == null || !IsGeneratedRewardItemStringId(item.StringId))
+				{
+					continue;
+				}
+				generatedCount++;
+				if (sample.Count < 10)
+				{
+					bool isFiltered = false;
+					try
+					{
+						object filteredValue = itemVm.GetType().GetProperty("IsFiltered", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)?.GetValue(itemVm, null);
+						if (filteredValue is bool filtered)
+						{
+							isFiltered = filtered;
+						}
+					}
+					catch
+					{
+					}
+					int typeId = -1;
+					try
+					{
+						object typeIdValue = itemVm.GetType().GetProperty("TypeId", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)?.GetValue(itemVm, null);
+						if (typeIdValue is int id)
+						{
+							typeId = id;
+						}
+					}
+					catch
+					{
+					}
+					sample.Add((item.StringId ?? "") + ":" + element.Amount.ToString(CultureInfo.InvariantCulture) + ":filtered=" + isFiltered + ":typeId=" + typeId.ToString(CultureInfo.InvariantCulture) + ":name=" + (item.Name?.ToString() ?? ""));
+				}
+			}
+			if (generatedCount <= 0)
+			{
+				return;
+			}
+			string signature = generatedCount.ToString(CultureInfo.InvariantCulture) + "|" + string.Join(",", sample);
+			DateTime now = DateTime.UtcNow;
+			if (string.Equals(signature, GeneratedRewardLastInventoryVmLogSignature, StringComparison.Ordinal) && (now - GeneratedRewardLastInventoryVmLogUtc).TotalSeconds < 5.0)
+			{
+				return;
+			}
+			GeneratedRewardLastInventoryVmLogSignature = signature;
+			GeneratedRewardLastInventoryVmLogUtc = now;
+			Logger.Log("Logic", "[RewardItemResolve] inventory_vm_generated_items count=" + generatedCount.ToString(CultureInfo.InvariantCulture) + " sample=" + string.Join(",", sample));
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] inventory_vm_generated_items_failed error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+		}
+	}
+
+	private static void ItemMenuVMRefreshItemTooltipsPostfix(object __instance, object item)
+	{
+		try
+		{
+			if (__instance == null || item == null)
+			{
+				return;
+			}
+			PropertyInfo rosterElementProperty = item.GetType().GetProperty("ItemRosterElement", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+			if (rosterElementProperty == null)
+			{
+				return;
+			}
+			ItemRosterElement element = (ItemRosterElement)rosterElementProperty.GetValue(item, null);
+			ItemObject itemObject = element.EquipmentElement.Item;
+			if (itemObject == null || !IsGeneratedRewardItemStringId(itemObject.StringId))
+			{
+				return;
+			}
+			string text = Instance?.GetGeneratedRewardItemRecord(itemObject.StringId)?.DisplayName;
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				text = itemObject.Name?.ToString();
+			}
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				return;
+			}
+			MethodInfo createProperty = __instance.GetType().GetMethod("CreateProperty", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+			PropertyInfo targetItemPropertiesProperty = __instance.GetType().GetProperty("TargetItemProperties", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+			object targetItemProperties = targetItemPropertiesProperty?.GetValue(__instance, null);
+			if (createProperty == null || targetItemProperties == null)
+			{
+				return;
+			}
+			createProperty.Invoke(__instance, new object[5] { targetItemProperties, "", text, 0, null });
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] generated_tooltip_failed error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+		}
+	}
+
 	private static string BuildGeneratedRewardItemStringId(string requestedName, string templateStringId)
 	{
 		string text = ((requestedName ?? "").Trim() + "|" + (templateStringId ?? "").Trim()).ToLowerInvariant();
@@ -9439,9 +11660,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		EquipmentElement equipmentElement = resolution.EquipmentElement.Item != null ? resolution.EquipmentElement : new EquipmentElement(resolution.Item, null, null, false);
 		TryEnsureGeneratedRewardItemCategory(equipmentElement.Item, resolution.TemplateItem, "generate_to_roster");
-		targetRoster.AddToCounts(equipmentElement, amount);
-		itemName = equipmentElement.GetModifiedItemName()?.ToString() ?? resolution.MatchedName ?? resolution.Item.Name?.ToString() ?? resolution.MatchedStringId;
-		return amount;
+		int generated = AddEquipmentElementToRosterAndCountDelta(targetRoster, equipmentElement, amount, "generate_to_roster:" + (resolution.MatchedStringId ?? resolution.MatchedName ?? ""));
+		itemName = IsGeneratedRewardItemStringId(equipmentElement.Item?.StringId) ? (resolution.MatchedName ?? resolution.Item.Name?.ToString() ?? resolution.MatchedStringId) : (equipmentElement.GetModifiedItemName()?.ToString() ?? resolution.MatchedName ?? resolution.Item.Name?.ToString() ?? resolution.MatchedStringId);
+		return generated;
 	}
 
 	private static string GetWeaponClassTypeLabel(WeaponClass weaponClass)
@@ -9673,7 +11894,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	private static bool MatchesSettlementMerchantPromptStringId(EquipmentElement equipmentElement, string promptStringId)
 	{
-		if (equipmentElement.Item == null || string.IsNullOrWhiteSpace(promptStringId))
+		if (equipmentElement.Item == null || IsGeneratedRewardMarketExcludedItem(equipmentElement.Item) || string.IsNullOrWhiteSpace(promptStringId))
 		{
 			return false;
 		}
@@ -9986,7 +12207,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (settlement == null || string.IsNullOrWhiteSpace(itemId))
+			if (settlement == null || string.IsNullOrWhiteSpace(itemId) || IsGeneratedRewardItemStringId(itemId))
 			{
 				return 0;
 			}
@@ -10000,7 +12221,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				ItemRosterElement elementCopyAtIndex = itemRoster.GetElementCopyAtIndex(i);
 				ItemObject item = elementCopyAtIndex.EquipmentElement.Item;
-				if (item != null && elementCopyAtIndex.Amount > 0 && string.Equals(item.StringId ?? "", itemId, StringComparison.OrdinalIgnoreCase))
+				if (item != null && elementCopyAtIndex.Amount > 0 && !IsGeneratedRewardMarketExcludedItem(item) && string.Equals(item.StringId ?? "", itemId, StringComparison.OrdinalIgnoreCase))
 				{
 					num += elementCopyAtIndex.Amount;
 				}
@@ -10023,7 +12244,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			UsedNoStockFallback = false,
 			UsedBaseValueFallback = true
 		};
-		if (item == null)
+		if (item == null || IsGeneratedRewardMarketExcludedItem(item))
 		{
 			return itemGuidePriceInfo;
 		}
@@ -10189,7 +12410,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	private static bool MatchesSettlementMerchantKind(ItemObject item, SettlementMerchantKind kind)
 	{
-		if (item == null)
+		if (item == null || IsGeneratedRewardMarketExcludedItem(item))
 		{
 			return false;
 		}
@@ -10552,7 +12773,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			ItemRosterElement elementCopyAtIndex = itemRoster.GetElementCopyAtIndex(i);
 			ItemObject item = elementCopyAtIndex.EquipmentElement.Item;
-			if (item != null && elementCopyAtIndex.Amount > 0 && predicate(item))
+			if (item != null && elementCopyAtIndex.Amount > 0 && !IsGeneratedRewardMarketExcludedItem(item) && predicate(item))
 			{
 				return true;
 			}
@@ -10666,7 +12887,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	private static bool MatchesNotableMarketInventory(Hero hero, ItemObject item, Settlement settlement)
 	{
-		if (hero == null || item == null)
+		if (hero == null || item == null || IsGeneratedRewardMarketExcludedItem(item))
 		{
 			return false;
 		}
@@ -10726,10 +12947,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			value.Count += elementCopyAtIndex.Amount;
 		}
 		IEnumerable<RewardItemInfo> enumerable = dictionary.Values.OrderByDescending((RewardItemInfo x) => x.Count).ThenBy((RewardItemInfo x) => x.Name, StringComparer.Ordinal);
-		if (maxItems <= 0)
-		{
-			maxItems = NotableMarketPostprocessMaxItems;
-		}
 		if (maxItems > 0)
 		{
 			enumerable = enumerable.Take(maxItems);
@@ -10936,7 +13153,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return list;
 		}
-		EquipmentIndex[] array = new EquipmentIndex[9]
+		EquipmentIndex[] array = new EquipmentIndex[12]
 		{
 			EquipmentIndex.NumAllWeaponSlots,
 			EquipmentIndex.Body,
@@ -10946,7 +13163,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			EquipmentIndex.WeaponItemBeginSlot,
 			EquipmentIndex.Weapon1,
 			EquipmentIndex.Weapon2,
-			EquipmentIndex.Weapon3
+			EquipmentIndex.Weapon3,
+			EquipmentIndex.ExtraWeaponSlot,
+			EquipmentIndex.Horse,
+			EquipmentIndex.HorseHarness
 		};
 		EquipmentIndex[] array2 = array;
 		EquipmentIndex[] array3 = array2;
@@ -10984,7 +13204,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return list;
 		}
-		EquipmentIndex[] array = new EquipmentIndex[9]
+		EquipmentIndex[] array = new EquipmentIndex[12]
 		{
 			EquipmentIndex.NumAllWeaponSlots,
 			EquipmentIndex.Body,
@@ -10994,7 +13214,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			EquipmentIndex.WeaponItemBeginSlot,
 			EquipmentIndex.Weapon1,
 			EquipmentIndex.Weapon2,
-			EquipmentIndex.Weapon3
+			EquipmentIndex.Weapon3,
+			EquipmentIndex.ExtraWeaponSlot,
+			EquipmentIndex.Horse,
+			EquipmentIndex.HorseHarness
 		};
 		EquipmentIndex[] array2 = array;
 		foreach (EquipmentIndex index in array2)
@@ -11085,7 +13308,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		long num = 0L;
 		int num2 = 0;
-		foreach (RewardItemInfo item in heroVisibleEquipmentItemsForPrompt.OrderByDescending((RewardItemInfo x) => x.Count).ThenBy((RewardItemInfo x) => x.StringId, StringComparer.Ordinal))
+		List<RewardItemInfo> selectedItems = heroVisibleEquipmentItemsForPrompt
+			.Where((RewardItemInfo x) => x != null && x.Item != null)
+			.OrderByDescending((RewardItemInfo x) => x.Count)
+			.ThenBy((RewardItemInfo x) => x.StringId, StringComparer.Ordinal)
+			.Take(Math.Max(1, maxItems))
+			.ToList();
+		PromptListRetrievalService.PublishRewardItemSnapshot(PromptListRetrievalService.PlayerVisibleEquipmentSnapshotScope, hero, hero?.CharacterObject, -1, selectedItems);
+		foreach (RewardItemInfo item in selectedItems)
 		{
 			if (item == null || item.Item == null)
 			{
@@ -11135,7 +13365,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine("【玩家可见装备实际估值】以下为玩家当前穿戴/携行装备按库存实际价值计算（第纳尔）：");
 		int num2 = 0;
-		foreach (RewardItemInfo item in heroVisibleEquipmentItemsForPrompt.OrderByDescending((RewardItemInfo x) => x.Count).ThenBy((RewardItemInfo x) => x.StringId, StringComparer.Ordinal))
+		List<RewardItemInfo> selectedItems = heroVisibleEquipmentItemsForPrompt
+			.Where((RewardItemInfo x) => x != null && x.Item != null)
+			.OrderByDescending((RewardItemInfo x) => x.Count)
+			.ThenBy((RewardItemInfo x) => x.StringId, StringComparer.Ordinal)
+			.Take(Math.Max(1, maxItems))
+			.ToList();
+		PromptListRetrievalService.PublishRewardItemSnapshot(PromptListRetrievalService.PlayerVisibleEquipmentSnapshotScope, hero, hero?.CharacterObject, -1, selectedItems);
+		foreach (RewardItemInfo item in selectedItems)
 		{
 			if (item == null || item.Item == null)
 			{
@@ -11180,8 +13417,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		Dictionary<string, ItemGuidePriceInfo> dictionary = new Dictionary<string, ItemGuidePriceInfo>(StringComparer.OrdinalIgnoreCase);
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine("以下为玩家当前穿戴的装备和携带的武器：");
-		int num = 0;
-		foreach (RewardItemInfo item in heroVisibleEquipmentItemsForPrompt.OrderByDescending((RewardItemInfo x) => x.Count).ThenBy((RewardItemInfo x) => x.StringId, StringComparer.Ordinal))
+		List<RewardItemInfo> selectedItems = heroVisibleEquipmentItemsForPrompt
+			.Where((RewardItemInfo x) => x != null && x.Item != null)
+			.OrderByDescending((RewardItemInfo x) => x.Count)
+			.ThenBy((RewardItemInfo x) => x.StringId, StringComparer.Ordinal)
+			.Take(Math.Max(1, maxItems))
+			.ToList();
+		PromptListRetrievalService.PublishRewardItemSnapshot(PromptListRetrievalService.PlayerVisibleEquipmentSnapshotScope, hero, hero?.CharacterObject, -1, selectedItems);
+		foreach (RewardItemInfo item in selectedItems)
 		{
 			if (item == null || item.Item == null)
 			{
@@ -11202,11 +13445,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				.Append(" | guidePrice=")
 				.Append(Math.Max(1, value.UnitPrice))
 				.AppendLine();
-			num++;
-			if (num >= Math.Max(1, maxItems))
-			{
-				break;
-			}
 		}
 		return stringBuilder.ToString().Trim();
 	}
@@ -11382,9 +13620,18 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return "（无）";
 		}
+		List<RewardItemInfo> filteredItems;
+		if (!PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.PlayerVisibleEquipmentSnapshotScope, hero, hero?.CharacterObject, -1, out filteredItems))
+		{
+			filteredItems = heroVisibleEquipmentItemsForPrompt
+				.Where((RewardItemInfo x) => x != null && x.Item != null)
+				.OrderByDescending((RewardItemInfo x) => x.Count)
+				.ThenBy((RewardItemInfo x) => x.StringId, StringComparer.Ordinal)
+				.Take(Math.Max(1, maxItems))
+				.ToList();
+		}
 		StringBuilder stringBuilder = new StringBuilder();
-		int num = 0;
-		foreach (RewardItemInfo item in heroVisibleEquipmentItemsForPrompt.OrderByDescending((RewardItemInfo x) => x.Count).ThenBy((RewardItemInfo x) => x.StringId, StringComparer.Ordinal))
+		foreach (RewardItemInfo item in filteredItems)
 		{
 			if (item == null || item.Item == null)
 			{
@@ -11398,11 +13645,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				.Append(" | inventoryUnitValue=")
 				.Append(Math.Max(1, GetVisibleEquipmentActualUnitValue(item)))
 				.AppendLine();
-			num++;
-			if (num >= Math.Max(1, maxItems))
-			{
-				break;
-			}
 		}
 		return stringBuilder.Length > 0 ? stringBuilder.ToString().TrimEnd() : "（无）";
 	}
@@ -11419,7 +13661,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			return "（无）";
 		}
 		List<RewardItemInfo> orderedItems = heroVisibleEquipmentItemsForPrompt.OrderByDescending((RewardItemInfo x) => x.Count).ThenBy((RewardItemInfo x) => x.StringId, StringComparer.Ordinal).ToList();
-		List<RewardItemInfo> filteredItems = PromptListRetrievalService.FilterRewardItems(orderedItems, mentions, maxItems);
+		List<RewardItemInfo> filteredItems;
+		if (!PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.PlayerVisibleEquipmentSnapshotScope, hero, hero?.CharacterObject, -1, out filteredItems))
+		{
+			filteredItems = PromptListRetrievalService.FilterRewardItems(orderedItems, mentions, maxItems);
+		}
 		StringBuilder stringBuilder = new StringBuilder();
 		foreach (RewardItemInfo item in filteredItems)
 		{
@@ -11450,11 +13696,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			List<RewardItemInfo> allOptions = BuildHeroRewardPostprocessItems(hero)
 				.Where((RewardItemInfo x) => x != null && x.Item != null && x.Count > 0)
 				.ToList();
+			PromptListRetrievalService.PublishRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsAllSnapshotScope, hero, hero?.CharacterObject, -1, allOptions);
+			List<RewardItemInfo> displayCandidates = allOptions;
 			if (!includePrivateBattleEquipment)
 			{
-				allOptions = allOptions.Where((RewardItemInfo x) => !x.IsPrivateEquipment).ToList();
+				displayCandidates = allOptions.Where((RewardItemInfo x) => !x.IsPrivateEquipment).ToList();
 			}
-			List<RewardItemInfo> options = PromptListRetrievalService.FilterRewardItems(allOptions, mentions, maxItems);
+			List<RewardItemInfo> options = PromptListRetrievalService.FilterRewardItems(displayCandidates, mentions, maxItems);
+			PromptListRetrievalService.PublishRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsSnapshotScope, hero, hero?.CharacterObject, -1, options);
 			int gold = IsNotableMarketHero(hero, ResolveNotableMarketSettlement(hero)) ? GetRewardPostprocessGoldForHero(hero) : GetHeroGold(hero);
 			return BuildFilteredItemSummaryForAI(options, gold, includeGuidePrice, allOptions, "你");
 		}
@@ -11472,7 +13721,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			List<RewardItemInfo> allOptions = BuildSettlementMerchantPostprocessItems(character, settlement)
 				.Where((RewardItemInfo x) => x != null && x.Item != null && x.Count > 0)
 				.ToList();
+			PromptListRetrievalService.PublishRewardItemSnapshot(PromptListRetrievalService.SettlementMerchantItemsAllSnapshotScope, null, character, -1, allOptions);
 			List<RewardItemInfo> options = PromptListRetrievalService.FilterRewardItems(allOptions, mentions, maxItems);
+			PromptListRetrievalService.PublishRewardItemSnapshot(PromptListRetrievalService.SettlementMerchantItemsSnapshotScope, null, character, -1, options);
 			int gold = GetSettlementMarketTradeGold(settlement);
 			return BuildFilteredItemSummaryForAI(options, gold, includeGuidePrice, allOptions, "你");
 		}
@@ -11489,6 +13740,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		if (options == null || options.Count == 0)
 		{
 			stringBuilder.AppendLine("（本轮检索清单无可显示物品）");
+			stringBuilder.Append("全部可转物品总值: ").Append(CalculateRewardItemsTotalValueForExternal(allOptions)).AppendLine(" 第纳尔（不含第纳尔）");
 			return stringBuilder.ToString().TrimEnd();
 		}
 		List<RewardItemInfo> publicItems = options.Where((RewardItemInfo x) => x != null && !x.IsPrivateEquipment).ToList();
@@ -11500,7 +13752,22 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			stringBuilder.AppendLine(remainder);
 		}
+		stringBuilder.Append("全部可转物品总值: ").Append(CalculateRewardItemsTotalValueForExternal(allOptions ?? options)).AppendLine(" 第纳尔（不含第纳尔）");
 		return stringBuilder.ToString().TrimEnd();
+	}
+
+	internal static long CalculateRewardItemsTotalValueForExternal(IEnumerable<RewardItemInfo> items)
+	{
+		long total = 0L;
+		foreach (RewardItemInfo item in items ?? Enumerable.Empty<RewardItemInfo>())
+		{
+			if (item == null || item.Item == null || item.Count <= 0)
+			{
+				continue;
+			}
+			total = TransferQuantitySpec.AddProduct(total, item.Count, Math.Max(1, item.GuidePrice));
+		}
+		return total;
 	}
 
 	private static void AppendFilteredItemSummarySection(StringBuilder stringBuilder, string header, List<RewardItemInfo> items, bool includeGuidePrice)
@@ -12044,6 +14311,26 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	private DebtRecord GetSettlementMerchantDebtRecord(Settlement settlement, SettlementMerchantKind kind)
 	{
 		return GetDebtRecordByKey(BuildSettlementMerchantDebtKey(settlement, kind));
+	}
+
+	public bool HasUnpaidDebtForInteraction(Hero targetHero, CharacterObject targetCharacter = null, Settlement settlement = null)
+	{
+		Hero hero = targetHero ?? targetCharacter?.HeroObject;
+		if (hero != null && HasUnpaidDebt(hero))
+		{
+			return true;
+		}
+		if (targetCharacter == null || !TryGetSettlementMerchantKind(targetCharacter, out var kind))
+		{
+			return false;
+		}
+		DebtRecord settlementMerchantDebtRecord = GetSettlementMerchantDebtRecord(settlement ?? Settlement.CurrentSettlement, kind);
+		if (settlementMerchantDebtRecord == null)
+		{
+			return false;
+		}
+		NormalizeDebtRecord(settlementMerchantDebtRecord);
+		return HasDebtContent(settlementMerchantDebtRecord);
 	}
 
 	public bool HasUnpaidDebt(Hero npc)
@@ -13055,6 +15342,29 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return "";
 	}
 
+	private static string GetRewardItemTransferKey(RewardItemInfo item)
+	{
+		string key = (item?.PromptStringId ?? "").Trim();
+		return string.IsNullOrWhiteSpace(key) ? (item?.StringId ?? "").Trim() : key;
+	}
+
+	private int ResolveAllRewardItemAmount(string itemToken, IEnumerable<RewardItemInfo> contextItems)
+	{
+		string token = (itemToken ?? "").Trim();
+		List<RewardItemInfo> items = (contextItems ?? Enumerable.Empty<RewardItemInfo>()).Where((RewardItemInfo x) => x != null && x.Item != null && x.Count > 0).ToList();
+		if (string.IsNullOrWhiteSpace(token) || items.Count == 0)
+		{
+			return 0;
+		}
+		string resolvedKey = token;
+		if (!items.Any((RewardItemInfo x) => string.Equals(GetRewardItemTransferKey(x), token, StringComparison.OrdinalIgnoreCase)) && TryResolveRewardItemByNameOrId(token, items, out var resolution, "all_count"))
+		{
+			resolvedKey = GetRewardItemTransferKey(resolution?.Info);
+		}
+		long total = items.Where((RewardItemInfo x) => string.Equals(GetRewardItemTransferKey(x), resolvedKey, StringComparison.OrdinalIgnoreCase)).Sum((RewardItemInfo x) => (long)Math.Max(0, x.Count));
+		return (int)Math.Min(int.MaxValue, Math.Max(0L, total));
+	}
+
 	public void ApplyRewardTags(Hero giver, Hero receiver, ref string responseText)
 	{
 		SetLastGeneratedNpcFactLines(null);
@@ -13066,7 +15376,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		try
 		{
 			Regex regex = new Regex("\\[ACTION:GIVE_GOLD:(\\d+)\\]", RegexOptions.IgnoreCase);
-			Regex regex2 = new Regex("\\[ACTION:GIVE_ITEM:([^\\]\\r\\n:]+):(\\d+)\\]", RegexOptions.IgnoreCase);
+			Regex regex2 = new Regex("\\[ACTION:GIVE_ITEM:([^\\]\\r\\n:]+):(ALL|\\d+)\\]", RegexOptions.IgnoreCase);
 			Regex regex3 = new Regex("\\[ACTION:DEBT_GOLD:(\\d+)\\]", RegexOptions.IgnoreCase);
 			Regex regex4 = new Regex("\\[ACTION:DEBT_ADD:(\\d+)\\]", RegexOptions.IgnoreCase);
 			Regex regex5 = new Regex("\\[ACTION:DEBT_ITEM:([^\\]\\r\\n:]+):(\\d+)\\]", RegexOptions.IgnoreCase);
@@ -13086,7 +15396,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			Regex regex19 = new Regex("\\[ACTION:JOIN_VASSAL:([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase);
 			Regex regex20 = new Regex("\\[ACTION:KINGDOM_SERVICE:LEAVE\\]", RegexOptions.IgnoreCase);
 			Regex regex21 = new Regex("\\[ACTION:TRADE_TRUST:(-?\\d+)\\]", RegexOptions.IgnoreCase);
-			Regex regex22 = new Regex("\\[ACTION:SETTLEMENT_TRANSFER:(TO_PLAYER|TO_NPC):([^\\]\\r\\n:]+)\\]", RegexOptions.IgnoreCase);
+			Regex regex22 = new Regex("\\[ACTION:SETTLEMENT_TRANSFER:(TO_PLAYER):([^\\]\\r\\n:]+)\\]", RegexOptions.IgnoreCase);
+			Regex regexSettlementTransferAny = new Regex("\\[ACTION:SETTLEMENT_TRANSFER:[^\\]\\r\\n]*\\]", RegexOptions.IgnoreCase);
 			Regex regex23 = new Regex("\\[AD;(\\d+);(\\d+);(?:(N|P);)?([^\\]]*)\\]", RegexOptions.IgnoreCase);
 			Regex regex24 = new Regex("\\[ADP[:;]([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase);
 			Regex regex25 = new Regex("\\[A:H_J_P_P\\]", RegexOptions.IgnoreCase);
@@ -13231,7 +15542,17 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			bool anyVassalageApplied = false;
 			bool anyKingdomAnnexationApplied = false;
 			bool anySettlementTransferApplied = false;
+			bool anySettlementTransferToPlayerApplied = false;
 			bool anyHeroJoinPlayerPartyApplied = false;
+			int itemTransferAttempted = 0;
+			int itemTransferSucceeded = 0;
+			int itemTransferFailedOrPartial = 0;
+			long itemTransferActualQuantity = 0L;
+			long itemTransferActualValue = 0L;
+			int settlementTransferAttempted = 0;
+			int settlementTransferSucceeded = 0;
+			int settlementTransferFailed = 0;
+			long settlementTransferActualValue = 0L;
 			Settlement notableMarketSettlement = ResolveNotableMarketSettlement(giver);
 			bool giverUsesNotableMarket = IsNotableMarketHero(giver, notableMarketSettlement);
 			string notableMarketLabel = GetSettlementMarketTypeLabel(notableMarketSettlement) + "市场";
@@ -13261,9 +15582,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			responseText = regex2.Replace(responseText, delegate(Match m)
 			{
 				string value4 = m.Groups[1].Value;
-				if (int.TryParse(m.Groups[2].Value, out var result8))
+				itemTransferAttempted++;
+				if (TransferQuantitySpec.TryParse(m.Groups[2].Value, out var quantity))
 				{
-					Logger.Log("Logic", $"[Reward] GIVE_ITEM tag 捕获: giver={giver?.Name} receiver={receiver?.Name} itemId={value4} amount={result8}");
+					if (TransferQuantitySpec.IsAllValue(value4) && !quantity.IsAll)
+					{
+						itemTransferFailedOrPartial++;
+						return string.Empty;
+					}
 					string itemName;
 					string settlementPromptStringId = "";
 					bool isNotableMarketItem = giverUsesNotableMarket && TryParseNotableMarketPromptStringId(value4, out settlementPromptStringId);
@@ -13278,9 +15604,24 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					}
 					string itemIdForFacts = isNotableMarketItem ? settlementPromptStringId : value4;
 					List<RewardItemInfo> itemFactContext = isNotableMarketItem ? BuildSettlementRewardItemResolutionContext(notableMarketSettlement) : BuildHeroRewardItemResolutionContext(giver);
-					int num4 = isNotableMarketItem ? TransferItemFromSettlement(notableMarketSettlement, receiver, settlementPromptStringId, result8, giverName, out itemName, giver?.CharacterObject, forceComplete: receiver == Hero.MainHero) : TransferItemById(giver, receiver, value4, result8, out itemName, forceComplete: receiver == Hero.MainHero && giver != Hero.MainHero);
+					int result8 = quantity.Amount;
+					if (quantity.IsAll)
+					{
+						result8 = PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsAllSnapshotScope, giver, giver?.CharacterObject, -1, out var authorizedItems)
+							? ResolveAllRewardItemAmount(itemIdForFacts, authorizedItems)
+							: 0;
+					}
+					Logger.Log("Logic", $"[Reward] GIVE_ITEM tag 捕获: giver={giver?.Name} receiver={receiver?.Name} itemId={value4} amount={(quantity.IsAll ? "ALL" : result8.ToString())} resolvedAmount={result8}");
+					if (result8 <= 0)
+					{
+						itemTransferFailedOrPartial++;
+						return string.Empty;
+					}
+					int num4 = isNotableMarketItem ? TransferItemFromSettlement(notableMarketSettlement, receiver, settlementPromptStringId, result8, giverName, out itemName, giver?.CharacterObject, forceComplete: !quantity.IsAll && receiver == Hero.MainHero) : TransferItemById(giver, receiver, value4, result8, out itemName, forceComplete: !quantity.IsAll && receiver == Hero.MainHero && giver != Hero.MainHero);
 					if (num4 > 0)
 					{
+						itemTransferSucceeded++;
+						itemTransferActualQuantity = TransferQuantitySpec.AddValue(itemTransferActualQuantity, num4);
 						string text3 = (string.IsNullOrEmpty(itemName) ? value4 : itemName);
 						string text4 = text3;
 						ItemObject itemObject3 = ResolveItemById(itemIdForFacts.Split('@')[0]);
@@ -13297,6 +15638,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 						receiverFacts.Add(isNotableMarketItem ? $"你从 {giverName} 代表的{notableMarketLabel}收到了 {FormatItemAmount(num4, itemObject3, text4)}{text5}。" : $"你从 {giverName} 收到了 {FormatItemAmount(num4, itemObject3, text4)}{text5}。");
 						if (num4 < result8)
 						{
+							itemTransferFailedOrPartial++;
 							string text6 = isNotableMarketItem ? BuildSettlementItemValueFactSuffixForExternal(notableMarketSettlement, itemObject3, result8) : BuildItemValueFactSuffixForExternal(giver ?? receiver, itemObject3, result8);
 							giverFacts.Add($"你本轮原计划交付 {FormatItemAmount(result8, itemObject3, text4)}{text6}，但实际仅交付 {FormatItemAmount(num4, itemObject3, text4)}{text5}（库存不足）。");
 							receiverFacts.Add($"{giverName} 原计划交付 {FormatItemAmount(result8, itemObject3, text4)}{text6}，实际仅交付 {FormatItemAmount(num4, itemObject3, text4)}{text5}。");
@@ -13307,9 +15649,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 							int itemTrustValue = isNotableMarketItem ? GetItemTrustValueForMerchantGift(notableMarketSettlement, itemObject3, num4) : GetItemTrustValueForHeroGift(giver ?? receiver, itemObject3, num4);
 							ApplyAutoTrustGainFromHeroGiftValue(giver, itemTrustValue, giverFacts, receiverFacts, giverName);
 						}
+						long actualItemValue = isNotableMarketItem ? GetItemGuideValueForMerchantGift(notableMarketSettlement, itemObject3, num4) : GetItemGuideValueForHeroGift(giver ?? receiver, itemObject3, num4);
+						itemTransferActualValue = TransferQuantitySpec.AddValue(itemTransferActualValue, actualItemValue);
 					}
 					else
 					{
+						itemTransferFailedOrPartial++;
 						string text5 = ResolveItemById(itemIdForFacts.Split('@')[0])?.Name?.ToString();
 						string text6 = (string.IsNullOrWhiteSpace(text5) ? "该物品" : text5);
 						ItemObject itemObject2 = ResolveItemById(itemIdForFacts.Split('@')[0]);
@@ -13318,8 +15663,19 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 						receiverFacts.Add(isNotableMarketItem ? $"{giverName} 试图代表{notableMarketLabel}交付 {FormatItemAmount(result8, itemObject2, text6)}{text7}，但市场库存不足，本轮未实际交付。" : $"{giverName} 试图交付 {FormatItemAmount(result8, itemObject2, text6)}{text7}，但其库存不足，本轮未实际交付。");
 					}
 				}
+				else
+				{
+					itemTransferFailedOrPartial++;
+				}
 				return string.Empty;
 			});
+			if (itemTransferAttempted > 0)
+			{
+				string itemBatchSummary = "物品转移汇总：尝试项" + itemTransferAttempted + "，成功项" + itemTransferSucceeded + "，失败或不足项" + itemTransferFailedOrPartial + "，实际转移" + itemTransferActualQuantity + "件，实际指导总值约" + itemTransferActualValue + "第纳尔。";
+				giverFacts.Add(itemBatchSummary);
+				receiverFacts.Add(itemBatchSummary);
+				Logger.Log("Logic", "[Reward] item_batch_done attempted=" + itemTransferAttempted + " succeeded=" + itemTransferSucceeded + " failedOrPartial=" + itemTransferFailedOrPartial + " actualQuantity=" + itemTransferActualQuantity + " actualValue=" + itemTransferActualValue);
+			}
 			responseText = regex23.Replace(responseText, delegate(Match m)
 			{
 				if (!int.TryParse(m.Groups[1].Value, out var result8) || !int.TryParse(m.Groups[2].Value, out var result9))
@@ -13767,13 +16123,13 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			responseText = regex22.Replace(responseText, delegate(Match m)
 			{
+				settlementTransferAttempted++;
 				string directionToken = (m.Groups[1].Value ?? "").Trim();
 				string settlementToken = (m.Groups[2].Value ?? "").Trim();
 				if (receiver == Hero.MainHero && giver != Hero.MainHero)
 				{
 					string statusText;
-					bool flag2 = TryApplySettlementTransferAction(giver, receiver, directionToken, settlementToken, out statusText);
-					MyBehavior.SettlementTransferPromptEntry entry = MyBehavior.ResolveSettlementTransferEntryForExternal(giver, null, directionToken, settlementToken);
+					bool flag2 = TryApplySettlementTransferAction(giver, receiver, directionToken, settlementToken, out var entry, out statusText);
 					string text3 = MyBehavior.GetSettlementTransferAssetDisplayNameForExternal(entry);
 					if (string.IsNullOrWhiteSpace(text3) || text3 == "未知资产")
 					{
@@ -13781,20 +16137,16 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					}
 					if (flag2)
 					{
+						settlementTransferSucceeded++;
+						settlementTransferActualValue = TransferQuantitySpec.AddValue(settlementTransferActualValue, Math.Max(0L, entry?.GuidePriceDenars ?? 0L));
 						anySettlementTransferApplied = true;
-						if (string.Equals(directionToken, "TO_PLAYER", StringComparison.OrdinalIgnoreCase))
-						{
-							giverFacts.Add($"你已经将固定资产 {text3} 转交给玩家。");
-							receiverFacts.Add($"你已经从 {giverName} 那里取得了 {text3}。");
-						}
-						else
-						{
-							giverFacts.Add($"玩家已经将固定资产 {text3} 转交给你。");
-							receiverFacts.Add($"你已经将 {text3} 转交给了 {giverName}。");
-						}
+						anySettlementTransferToPlayerApplied = true;
+						giverFacts.Add($"你已经将固定资产 {text3} 转交给玩家。");
+						receiverFacts.Add($"你已经从 {giverName} 那里取得了固定资产 {text3}。");
 					}
 					else if (!string.IsNullOrWhiteSpace(statusText))
 					{
+						settlementTransferFailed++;
 						giverFacts.Add(statusText);
 						receiverFacts.Add(statusText);
 					}
@@ -13803,8 +16155,20 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 						InformationManager.DisplayMessage(new InformationMessage((flag2 ? "【固定资产转移】" : "【固定资产转移失败】") + statusText, flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
 					}
 				}
+				else
+				{
+					settlementTransferFailed++;
+				}
 				return string.Empty;
 			});
+			responseText = regexSettlementTransferAny.Replace(responseText, string.Empty);
+			if (settlementTransferAttempted > 0)
+			{
+				string settlementBatchSummary = "固定资产转移汇总：尝试项" + settlementTransferAttempted + "，成功项" + settlementTransferSucceeded + "，失败项" + settlementTransferFailed + "，实际转移" + settlementTransferSucceeded + "项，实际指导总值约" + settlementTransferActualValue + "第纳尔。";
+				giverFacts.Add(settlementBatchSummary);
+				receiverFacts.Add(settlementBatchSummary);
+				Logger.Log("Logic", "[Reward] settlement_batch_done attempted=" + settlementTransferAttempted + " succeeded=" + settlementTransferSucceeded + " failed=" + settlementTransferFailed + " actualValue=" + settlementTransferActualValue);
+			}
 			responseText = regex25.Replace(responseText, delegate
 			{
 				if (receiver == Hero.MainHero && giver != Hero.MainHero)
@@ -13816,15 +16180,15 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 						if (flag2)
 						{
 							anyHeroJoinPlayerPartyApplied = true;
-							giverFacts.Add($"你已经加入了 {receiverName} 的队伍。");
-							receiverFacts.Add($"{giverName} 已加入你的队伍。");
+							giverFacts.Add($"你已经加入了 {receiverName} 的家族，并随玩家队伍行动。");
+							receiverFacts.Add($"{giverName} 已加入你的家族，并随你的队伍行动。");
 						}
 						else
 						{
 							giverFacts.Add(statusText);
 							receiverFacts.Add(statusText);
 						}
-						InformationManager.DisplayMessage(new InformationMessage((flag2 ? "【加入队伍】" : "【加入队伍失败】") + statusText, flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
+						InformationManager.DisplayMessage(new InformationMessage((flag2 ? "【加入家族】" : "【加入队伍失败】") + statusText, flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
 					}
 				}
 				return string.Empty;
@@ -13871,7 +16235,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					MyBehavior.AppendExternalNpcFact(receiver, string.Join(" ", receiverFacts));
 				}
 			}
-			TryRecordRewardActionHistory(giver, receiver, giverName, receiverName, giverFacts, receiverFacts, anyActualGiveToPlayer, anyDebtRecorded, anyDebtPaymentApplied, anyRoyalAbdicationApplied, anyKingdomServiceApplied, anyVassalageApplied, anyKingdomAnnexationApplied, anySettlementTransferApplied);
+			TryRecordRewardActionHistory(giver, receiver, giverName, receiverName, giverFacts, receiverFacts, anyActualGiveToPlayer, anyDebtRecorded, anyDebtPaymentApplied, anyRoyalAbdicationApplied, anyKingdomServiceApplied, anyVassalageApplied, anyKingdomAnnexationApplied, anySettlementTransferApplied, anySettlementTransferToPlayerApplied);
 		}
 		catch (Exception ex)
 		{
@@ -13890,7 +16254,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void TryRecordRewardActionHistory(Hero giver, Hero receiver, string giverName, string receiverName, List<string> giverFacts, List<string> receiverFacts, bool anyActualGiveToPlayer, bool anyDebtRecorded, bool anyDebtPaymentApplied, bool anyRoyalAbdicationApplied, bool anyKingdomServiceApplied, bool anyVassalageApplied, bool anyKingdomAnnexationApplied, bool anySettlementTransferApplied)
+	private static void TryRecordRewardActionHistory(Hero giver, Hero receiver, string giverName, string receiverName, List<string> giverFacts, List<string> receiverFacts, bool anyActualGiveToPlayer, bool anyDebtRecorded, bool anyDebtPaymentApplied, bool anyRoyalAbdicationApplied, bool anyKingdomServiceApplied, bool anyVassalageApplied, bool anyKingdomAnnexationApplied, bool anySettlementTransferApplied, bool anySettlementTransferToPlayerApplied)
 	{
 		try
 		{
@@ -13906,7 +16270,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			string actionKind = ResolveRewardActionHistoryKind(anyActualGiveToPlayer, anyDebtRecorded, anyDebtPaymentApplied, anyRoyalAbdicationApplied, anyKingdomServiceApplied, anyVassalageApplied, anyKingdomAnnexationApplied, anySettlementTransferApplied);
+			string actionKind = ResolveRewardActionHistoryKind(anyActualGiveToPlayer, anyDebtRecorded, anyDebtPaymentApplied, anyRoyalAbdicationApplied, anyKingdomServiceApplied, anyVassalageApplied, anyKingdomAnnexationApplied, anySettlementTransferApplied, anySettlementTransferToPlayerApplied);
 			string summary = BuildRewardActionHistorySummary(giverFacts, receiverFacts);
 			if (string.IsNullOrWhiteSpace(summary))
 			{
@@ -13928,7 +16292,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static string ResolveRewardActionHistoryKind(bool anyActualGiveToPlayer, bool anyDebtRecorded, bool anyDebtPaymentApplied, bool anyRoyalAbdicationApplied, bool anyKingdomServiceApplied, bool anyVassalageApplied, bool anyKingdomAnnexationApplied, bool anySettlementTransferApplied)
+	private static string ResolveRewardActionHistoryKind(bool anyActualGiveToPlayer, bool anyDebtRecorded, bool anyDebtPaymentApplied, bool anyRoyalAbdicationApplied, bool anyKingdomServiceApplied, bool anyVassalageApplied, bool anyKingdomAnnexationApplied, bool anySettlementTransferApplied, bool anySettlementTransferToPlayerApplied)
 	{
 		if (anyKingdomAnnexationApplied)
 		{
@@ -13944,6 +16308,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		if (anySettlementTransferApplied)
 		{
+			if (anySettlementTransferToPlayerApplied)
+			{
+				return "asset_transfer_to_player";
+			}
 			return "asset_transfer";
 		}
 		if (anyDebtPaymentApplied)
@@ -13966,6 +16334,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		case "royal_abdication":
 		case "persuasion_defection":
 			prefix = "你与" + playerName + "完成了一项势力归附或政治承诺：";
+			break;
+		case "asset_transfer_to_player":
+			prefix = "你将固定资产转交给" + playerName + "：";
+			break;
+		case "asset_transfer_to_npc":
+			prefix = "玩家将固定资产转交给你或你的家族：";
 			break;
 		case "asset_transfer":
 			prefix = "你与" + playerName + "完成了一项固定资产转移：";
@@ -13992,6 +16366,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		case "royal_abdication":
 		case "persuasion_defection":
 			prefix = "你与" + npcName + "完成了一项势力归附或政治承诺：";
+			break;
+		case "asset_transfer_to_player":
+			prefix = "你从" + npcName + "那里取得了固定资产：";
+			break;
+		case "asset_transfer_to_npc":
+			prefix = "你主动将固定资产交给" + npcName + "：";
 			break;
 		case "asset_transfer":
 			prefix = "你与" + npcName + "完成了一项固定资产转移：";
@@ -14274,9 +16654,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		string text = string.IsNullOrWhiteSpace(giverName) ? "对方部队" : giverName.Trim();
 		Regex regex = new Regex("\\[ACTION:GIVE_GOLD:(\\d+)\\]", RegexOptions.IgnoreCase);
-		Regex regex2 = new Regex("\\[ACTION:GIVE_ITEM:([^\\]\\r\\n:]+):(\\d+)\\]", RegexOptions.IgnoreCase);
+		Regex regex2 = new Regex("\\[ACTION:GIVE_ITEM:([^\\]\\r\\n:]+):(ALL|\\d+)\\]", RegexOptions.IgnoreCase);
 		List<string> npcFacts = new List<string>();
 		List<string> playerFacts = new List<string>();
+		int itemTransferAttempted = 0;
+		int itemTransferSucceeded = 0;
+		int itemTransferFailedOrPartial = 0;
+		long itemTransferActualQuantity = 0L;
+		long itemTransferActualValue = 0L;
 		try
 		{
 			responseText = regex.Replace(responseText, delegate(Match m)
@@ -14299,12 +16684,32 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			responseText = regex2.Replace(responseText, delegate(Match m)
 			{
 				string value = m.Groups[1].Value;
-				if (int.TryParse(m.Groups[2].Value, out var result))
+				itemTransferAttempted++;
+				if (TransferQuantitySpec.TryParse(m.Groups[2].Value, out var quantity))
 				{
+					if (TransferQuantitySpec.IsAllValue(value) && !quantity.IsAll)
+					{
+						itemTransferFailedOrPartial++;
+						return string.Empty;
+					}
+					List<RewardItemInfo> allContext = BuildPartyRewardItemResolutionContext(giverParty);
+					int result = quantity.Amount;
+					if (quantity.IsAll)
+					{
+						CharacterObject snapshotCharacter = giverCharacter as CharacterObject;
+						result = PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.PartyRewardItemsAllSnapshotScope, null, snapshotCharacter, -1, out var authorizedItems)
+							? ResolveAllRewardItemAmount(value, authorizedItems)
+							: 0;
+					}
+					if (result <= 0)
+					{
+						itemTransferFailedOrPartial++;
+						return string.Empty;
+					}
 					string itemName;
-					int num = TransferItemFromParty(giverParty, receiver, value, result, text, out itemName, giverCharacter, forceComplete: receiver == Hero.MainHero);
+					int num = TransferItemFromParty(giverParty, receiver, value, result, text, out itemName, giverCharacter, forceComplete: !quantity.IsAll && receiver == Hero.MainHero);
 					ItemObject itemObject = ResolveItemById((value ?? "").Split('@')[0]);
-					if (itemObject == null && TryResolveRewardItemStringId(value, BuildPartyRewardItemResolutionContext(giverParty), out var _, out var resolvedPartyFactItem, "party_give_item_fact"))
+					if (itemObject == null && TryResolveRewardItemStringId(value, allContext, out var _, out var resolvedPartyFactItem, "party_give_item_fact"))
 					{
 						itemObject = resolvedPartyFactItem;
 					}
@@ -14315,23 +16720,39 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					string text2 = string.IsNullOrWhiteSpace(itemName) ? (itemObject?.Name?.ToString() ?? value) : itemName;
 					if (num > 0)
 					{
+						itemTransferSucceeded++;
+						itemTransferActualQuantity = TransferQuantitySpec.AddValue(itemTransferActualQuantity, num);
+						itemTransferActualValue = TransferQuantitySpec.AddValue(itemTransferActualValue, GetItemGuideValueForHeroGift(Hero.MainHero, itemObject, num));
 						string text3 = BuildItemValueFactSuffixForExternal(Hero.MainHero, itemObject, num);
 						npcFacts.Add($"你已经将 {FormatItemAmount(num, itemObject, text2)} 交给玩家{text3}，并从你所在部队的库存中扣除。");
 						playerFacts.Add($"你从 {text} 收到了 {FormatItemAmount(num, itemObject, text2)}{text3}。");
 						if (num < result)
 						{
+							itemTransferFailedOrPartial++;
 							npcFacts.Add($"你原本打算交付 {FormatItemAmount(result, itemObject, text2)}，但你所在部队库存不足，实际只交付了 {FormatItemAmount(num, itemObject, text2)}。");
 							playerFacts.Add($"{text} 原本打算交付 {FormatItemAmount(result, itemObject, text2)}，但实际只交付了 {FormatItemAmount(num, itemObject, text2)}。");
 						}
 					}
 					else
 					{
+						itemTransferFailedOrPartial++;
 						string text3 = BuildItemValueFactSuffixForExternal(Hero.MainHero, itemObject, result);
 						npcFacts.Add($"你试图交付 {FormatItemAmount(result, itemObject, text2)}{text3}，但你所在部队库存不足，本轮未实际交付。");
 					}
 				}
+				else
+				{
+					itemTransferFailedOrPartial++;
+				}
 				return string.Empty;
 			});
+			if (itemTransferAttempted > 0)
+			{
+				string itemBatchSummary = "物品转移汇总：尝试项" + itemTransferAttempted + "，成功项" + itemTransferSucceeded + "，失败或不足项" + itemTransferFailedOrPartial + "，实际转移" + itemTransferActualQuantity + "件，实际指导总值约" + itemTransferActualValue + "第纳尔。";
+				npcFacts.Add(itemBatchSummary);
+				playerFacts.Add(itemBatchSummary);
+				Logger.Log("Logic", "[RewardParty] item_batch_done attempted=" + itemTransferAttempted + " succeeded=" + itemTransferSucceeded + " failedOrPartial=" + itemTransferFailedOrPartial + " actualQuantity=" + itemTransferActualQuantity + " actualValue=" + itemTransferActualValue);
+			}
 			responseText = Regex.Replace(responseText ?? "", "\\[ACTION:DEBT[^\\]]*\\]", string.Empty, RegexOptions.IgnoreCase);
 			responseText = Regex.Replace(responseText, "\\[ACTION:TRADE_TRUST:[^\\]]*\\]", string.Empty, RegexOptions.IgnoreCase);
 			responseText = Regex.Replace(responseText, "\\[AD;[^\\]]+\\]", string.Empty, RegexOptions.IgnoreCase);
@@ -14370,7 +16791,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		string giverName = giverCharacter.Name?.ToString() ?? GetSettlementMerchantRoleLabel(kind);
 		Regex regex = new Regex("\\[ACTION:GIVE_GOLD:(\\d+)\\]", RegexOptions.IgnoreCase);
-		Regex regex2 = new Regex("\\[ACTION:GIVE_ITEM:([^\\]\\r\\n:]+):(\\d+)\\]", RegexOptions.IgnoreCase);
+		Regex regex2 = new Regex("\\[ACTION:GIVE_ITEM:([^\\]\\r\\n:]+):(ALL|\\d+)\\]", RegexOptions.IgnoreCase);
 		Regex regex3 = new Regex("\\[ACTION:DEBT_GOLD:(\\d+)\\]", RegexOptions.IgnoreCase);
 		Regex regex4 = new Regex("\\[ACTION:DEBT_ADD:(\\d+)\\]", RegexOptions.IgnoreCase);
 		Regex regex5 = new Regex("\\[ACTION:DEBT_ITEM:([^\\]\\r\\n:]+):(\\d+)\\]", RegexOptions.IgnoreCase);
@@ -14387,6 +16808,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		Regex regexLegacyDebtTag = new Regex("\\[ACTION:DEBT[^\\]]*\\]", RegexOptions.IgnoreCase);
 		List<string> merchantFacts = new List<string>();
 		List<string> playerFacts = new List<string>();
+		int itemTransferAttempted = 0;
+		int itemTransferSucceeded = 0;
+		int itemTransferFailedOrPartial = 0;
+		long itemTransferActualQuantity = 0L;
+		long itemTransferActualValue = 0L;
 		int? dueDaysOverride = null;
 		int? dueAbsDayOverride = null;
 		bool dueUnlimited = regex9.IsMatch(responseText);
@@ -14457,13 +16883,32 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		responseText = regex2.Replace(responseText, delegate(Match m)
 		{
 			string value = m.Groups[1].Value;
-			if (int.TryParse(m.Groups[2].Value, out var result))
+			itemTransferAttempted++;
+			if (TransferQuantitySpec.TryParse(m.Groups[2].Value, out var quantity))
 			{
+				if (TransferQuantitySpec.IsAllValue(value) && !quantity.IsAll)
+				{
+					itemTransferFailedOrPartial++;
+					return string.Empty;
+				}
+				List<RewardItemInfo> allContext = BuildSettlementRewardItemResolutionContext(currentSettlement);
+				int result = quantity.Amount;
+				if (quantity.IsAll)
+				{
+					result = PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.SettlementMerchantItemsAllSnapshotScope, null, giverCharacter, -1, out var authorizedItems)
+						? ResolveAllRewardItemAmount(value, authorizedItems)
+						: 0;
+				}
+				if (result <= 0)
+				{
+					itemTransferFailedOrPartial++;
+					return string.Empty;
+				}
 				string itemName;
-				int num = TransferItemFromSettlement(currentSettlement, receiver, value, result, giverName, out itemName, giverCharacter, forceComplete: receiver == Hero.MainHero);
+				int num = TransferItemFromSettlement(currentSettlement, receiver, value, result, giverName, out itemName, giverCharacter, forceComplete: !quantity.IsAll && receiver == Hero.MainHero);
 				string text = ((!string.IsNullOrWhiteSpace(itemName)) ? itemName : ResolveSettlementMerchantDisplayNameFromPromptStringId(value));
 				ItemObject itemObject = ResolveItemById(value.Split('@')[0]);
-				if (itemObject == null && TryResolveRewardItemStringId(value, BuildSettlementRewardItemResolutionContext(currentSettlement), out var _, out var resolvedMerchantFactItem, "merchant_give_item_fact"))
+				if (itemObject == null && TryResolveRewardItemStringId(value, allContext, out var _, out var resolvedMerchantFactItem, "merchant_give_item_fact"))
 				{
 					itemObject = resolvedMerchantFactItem;
 					if (string.IsNullOrWhiteSpace(itemName))
@@ -14481,12 +16926,16 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				}
 				if (num > 0)
 				{
+					itemTransferSucceeded++;
+					itemTransferActualQuantity = TransferQuantitySpec.AddValue(itemTransferActualQuantity, num);
+					itemTransferActualValue = TransferQuantitySpec.AddValue(itemTransferActualValue, GetItemGuideValueForMerchantGift(currentSettlement, itemObject, num));
 					string text2 = BuildSettlementItemValueFactSuffixForExternal(currentSettlement, itemObject, num);
 					merchantFacts.Add($"你已经将 {FormatItemAmount(num, itemObject, text)} 交给玩家{text2}。并进入了玩家的的库存");
 					playerFacts.Add($"你从 {giverName} 收到了 {FormatItemAmount(num, itemObject, text)}{text2}。");
 					ApplyAutoTrustGainFromMerchantGiftValue(currentSettlement, kind, GetItemTrustValueForMerchantGift(currentSettlement, itemObject, num), merchantFacts, playerFacts, giverName, giverCharacter);
 					if (num < result)
 					{
+						itemTransferFailedOrPartial++;
 						string text3 = BuildSettlementItemValueFactSuffixForExternal(currentSettlement, itemObject, result);
 						merchantFacts.Add($"你原本打算交付 {FormatItemAmount(result, itemObject, text)}{text3}，但当前商铺库存不足，实际只交付了 {FormatItemAmount(num, itemObject, text)}{text2}。");
 						playerFacts.Add($"{giverName} 原本打算交付 {FormatItemAmount(result, itemObject, text)}{text3}，但实际只交付了 {FormatItemAmount(num, itemObject, text)}{text2}。");
@@ -14494,12 +16943,24 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				}
 				else
 				{
+					itemTransferFailedOrPartial++;
 					string text4 = BuildSettlementItemValueFactSuffixForExternal(currentSettlement, itemObject, result);
 					merchantFacts.Add($"你试图交付 {FormatItemAmount(result, itemObject, text)}{text4}，但当前商铺库存不足，本轮未实际交货。");
 				}
 			}
+			else
+			{
+				itemTransferFailedOrPartial++;
+			}
 			return string.Empty;
 		});
+		if (itemTransferAttempted > 0)
+		{
+			string itemBatchSummary = "物品转移汇总：尝试项" + itemTransferAttempted + "，成功项" + itemTransferSucceeded + "，失败或不足项" + itemTransferFailedOrPartial + "，实际转移" + itemTransferActualQuantity + "件，实际指导总值约" + itemTransferActualValue + "第纳尔。";
+			merchantFacts.Add(itemBatchSummary);
+			playerFacts.Add(itemBatchSummary);
+			Logger.Log("Logic", "[RewardMerchant] item_batch_done attempted=" + itemTransferAttempted + " succeeded=" + itemTransferSucceeded + " failedOrPartial=" + itemTransferFailedOrPartial + " actualQuantity=" + itemTransferActualQuantity + " actualValue=" + itemTransferActualValue);
+		}
 		responseText = regex14.Replace(responseText, delegate(Match m)
 		{
 			if (!int.TryParse(m.Groups[1].Value, out var result8) || !int.TryParse(m.Groups[2].Value, out var result9))
@@ -14818,10 +17279,15 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				{
 					firstTransferredElement = equipmentElement;
 				}
-				sourceRoster.AddToCounts(equipmentElement, -num3);
-				targetRoster.AddToCounts(equipmentElement, num3);
-				num -= num3;
-				num2 += num3;
+				int added = AddEquipmentElementToRosterAndCountDelta(targetRoster, equipmentElement, num3, "move_matching:" + text);
+				if (added <= 0)
+				{
+					LogRewardTransferRosterAdd("move_roster_add_failed", "move_matching:" + text, targetRoster, equipmentElement, num3, 0, 0, -1);
+					return num2;
+				}
+				sourceRoster.AddToCounts(equipmentElement, -added);
+				num -= added;
+				num2 += added;
 				flag = true;
 				break;
 			}
@@ -14831,6 +17297,186 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 		}
 		return num2;
+	}
+
+	private static ItemRoster GetPlayerMainItemRoster()
+	{
+		try
+		{
+			ItemRoster roster = PartyBase.MainParty?.ItemRoster;
+			if (roster != null)
+			{
+				return roster;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			return MobileParty.MainParty?.ItemRoster;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static bool IsPlayerMainItemRoster(ItemRoster roster)
+	{
+		if (roster == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (PartyBase.MainParty?.ItemRoster != null && ReferenceEquals(roster, PartyBase.MainParty.ItemRoster))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			return MobileParty.MainParty?.ItemRoster != null && ReferenceEquals(roster, MobileParty.MainParty.ItemRoster);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static ItemRoster ResolveReceiverItemRosterForGive(Hero receiver)
+	{
+		if (receiver == null)
+		{
+			return null;
+		}
+		if (receiver == Hero.MainHero)
+		{
+			return GetPlayerMainItemRoster();
+		}
+		ItemRoster roster = receiver.PartyBelongedTo?.ItemRoster;
+		if (roster == null && receiver.Clan?.Leader?.PartyBelongedTo != null)
+		{
+			roster = receiver.Clan.Leader.PartyBelongedTo.ItemRoster;
+		}
+		return roster;
+	}
+
+	private static bool ItemObjectsMatchForRosterCount(ItemObject left, ItemObject right)
+	{
+		if (left == null || right == null)
+		{
+			return false;
+		}
+		if (ReferenceEquals(left, right))
+		{
+			return true;
+		}
+		try
+		{
+			uint leftId = left.Id.InternalValue;
+			uint rightId = right.Id.InternalValue;
+			if (leftId != 0u && leftId == rightId)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return string.Equals((left.StringId ?? "").Trim(), (right.StringId ?? "").Trim(), StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool EquipmentElementsMatchForRosterCount(EquipmentElement left, EquipmentElement right)
+	{
+		if (!ItemObjectsMatchForRosterCount(left.Item, right.Item))
+		{
+			return false;
+		}
+		string leftModifier = left.ItemModifier?.StringId ?? "";
+		string rightModifier = right.ItemModifier?.StringId ?? "";
+		return string.Equals(leftModifier.Trim(), rightModifier.Trim(), StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static int CountEquipmentElementInRoster(ItemRoster roster, EquipmentElement equipmentElement)
+	{
+		if (roster == null || equipmentElement.Item == null)
+		{
+			return 0;
+		}
+		int count = 0;
+		for (int i = 0; i < roster.Count; i++)
+		{
+			ItemRosterElement element = roster.GetElementCopyAtIndex(i);
+			if (element.Amount > 0 && EquipmentElementsMatchForRosterCount(element.EquipmentElement, equipmentElement))
+			{
+				count += element.Amount;
+			}
+		}
+		return count;
+	}
+
+	private static int AddEquipmentElementToRosterAndCountDelta(ItemRoster targetRoster, EquipmentElement equipmentElement, int amount, string logSource)
+	{
+		if (targetRoster == null || equipmentElement.Item == null || amount <= 0)
+		{
+			return 0;
+		}
+		int before = CountEquipmentElementInRoster(targetRoster, equipmentElement);
+		int index = -1;
+		try
+		{
+			index = targetRoster.AddToCounts(equipmentElement, amount);
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardTransfer] roster_add_exception source=" + (logSource ?? "") + " requested=" + amount.ToString(CultureInfo.InvariantCulture) + " item=" + (equipmentElement.Item.StringId ?? "") + " error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+			return 0;
+		}
+		int after = CountEquipmentElementInRoster(targetRoster, equipmentElement);
+		int delta = Math.Max(0, after - before);
+		if (delta <= 0 || delta < amount)
+		{
+			LogRewardTransferRosterAdd(delta <= 0 ? "roster_add_no_delta" : "roster_add_partial_delta", logSource, targetRoster, equipmentElement, amount, before, after, index);
+		}
+		if (delta > 0)
+		{
+			LogRewardTransferRosterAdd("roster_add_verified", logSource, targetRoster, equipmentElement, amount, before, after, index);
+			LogGeneratedRewardObjectVisibility("roster_add_verified", equipmentElement.Item, logSource);
+			RememberGeneratedRewardPlayerRosterItemIfNeeded(targetRoster, equipmentElement, delta, logSource);
+		}
+		return Math.Min(amount, delta);
+	}
+
+	private static void LogRewardTransferRosterAdd(string reason, string source, ItemRoster targetRoster, EquipmentElement equipmentElement, int requested, int before, int after, int index)
+	{
+		try
+		{
+			ItemObject item = equipmentElement.Item;
+			Logger.Log("Logic", "[RewardTransfer] " + (reason ?? "") + " source=" + (source ?? "") + " requested=" + requested.ToString(CultureInfo.InvariantCulture) + " before=" + before.ToString(CultureInfo.InvariantCulture) + " after=" + after.ToString(CultureInfo.InvariantCulture) + " index=" + index.ToString(CultureInfo.InvariantCulture) + " rosterSlots=" + (targetRoster?.Count ?? 0).ToString(CultureInfo.InvariantCulture) + " isPlayerRoster=" + IsPlayerMainItemRoster(targetRoster) + " item=" + (item?.StringId ?? "") + " itemName=" + (item?.Name?.ToString() ?? "") + " itemId=" + (item != null ? item.Id.InternalValue.ToString(CultureInfo.InvariantCulture) : "0") + " itemType=" + (item != null ? item.Type.ToString() : "") + " itemCategory=" + (item?.ItemCategory?.StringId ?? "null") + " component=" + (item?.ItemComponent?.GetType().Name ?? "null") + " modifier=" + (equipmentElement.ItemModifier?.StringId ?? ""));
+		}
+		catch
+		{
+		}
+	}
+
+	private static void RememberGeneratedRewardPlayerRosterItemIfNeeded(ItemRoster targetRoster, EquipmentElement equipmentElement, int amount, string source)
+	{
+		if (amount <= 0 || !IsPlayerMainItemRoster(targetRoster))
+		{
+			return;
+		}
+		Instance?.RememberGeneratedRewardPlayerRosterItem(equipmentElement, amount, source);
 	}
 
 	internal int TransferItemById(Hero giver, Hero receiver, string itemStringId, int amount, out string itemName)
@@ -14871,15 +17517,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			itemRoster = MobileParty.MainParty.ItemRoster;
 		}
-		ItemRoster itemRoster2 = ((receiver.PartyBelongedTo != null) ? receiver.PartyBelongedTo.ItemRoster : null);
-		if (itemRoster2 == null && receiver.Clan?.Leader?.PartyBelongedTo != null)
-		{
-			itemRoster2 = receiver.Clan.Leader.PartyBelongedTo.ItemRoster;
-		}
-		if (itemRoster2 == null && MobileParty.MainParty != null && receiver == Hero.MainHero)
-		{
-			itemRoster2 = MobileParty.MainParty.ItemRoster;
-		}
+		ItemRoster itemRoster2 = ResolveReceiverItemRosterForGive(receiver);
 		if (itemRoster2 == null)
 		{
 			return 0;
@@ -14900,7 +17538,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 		}
 		List<EquipmentIndex> list = new List<EquipmentIndex>();
-		EquipmentIndex[] array = new EquipmentIndex[7]
+		EquipmentIndex[] array = new EquipmentIndex[12]
 		{
 			EquipmentIndex.NumAllWeaponSlots,
 			EquipmentIndex.Body,
@@ -14908,7 +17546,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			EquipmentIndex.Gloves,
 			EquipmentIndex.Cape,
 			EquipmentIndex.WeaponItemBeginSlot,
-			EquipmentIndex.Weapon1
+			EquipmentIndex.Weapon1,
+			EquipmentIndex.Weapon2,
+			EquipmentIndex.Weapon3,
+			EquipmentIndex.ExtraWeaponSlot,
+			EquipmentIndex.Horse,
+			EquipmentIndex.HorseHarness
 		};
 		EquipmentIndex[] array2 = array;
 		EquipmentIndex[] array3 = array2;
@@ -14966,9 +17609,13 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			ItemObject item4 = equipmentElement2.Item;
 			if (item4 != null && MatchesItemLookupToken(equipmentElement2, lookup))
 			{
+				int addedFromEquipment = AddEquipmentElementToRosterAndCountDelta(itemRoster2, equipmentElement2, 1, "hero_equipment:" + lookup);
+				if (addedFromEquipment <= 0)
+				{
+					continue;
+				}
 				giver.BattleEquipment[index] = EquipmentElement.Invalid;
-				itemRoster2.AddToCounts(equipmentElement2, 1);
-				num4++;
+				num4 += addedFromEquipment;
 				if (firstTransferredElement.Item == null)
 				{
 					firstTransferredElement = equipmentElement2;
@@ -15056,7 +17703,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			return 0;
 		}
 		ItemRoster itemRoster = giverParty.ItemRoster;
-		ItemRoster itemRoster2 = ((receiver.PartyBelongedTo != null) ? receiver.PartyBelongedTo.ItemRoster : null) ?? MobileParty.MainParty?.ItemRoster;
+		ItemRoster itemRoster2 = ResolveReceiverItemRosterForGive(receiver);
 		if (itemRoster == null || itemRoster2 == null)
 		{
 			return 0;
@@ -15174,7 +17821,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			return 0;
 		}
 		ItemRoster itemRoster = settlement.ItemRoster;
-		ItemRoster itemRoster2 = ((receiver.PartyBelongedTo != null) ? receiver.PartyBelongedTo.ItemRoster : null) ?? MobileParty.MainParty?.ItemRoster;
+		ItemRoster itemRoster2 = ResolveReceiverItemRosterForGive(receiver);
 		if (itemRoster == null || itemRoster2 == null)
 		{
 			return 0;
@@ -15203,7 +17850,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				ItemRosterElement elementCopyAtIndex = itemRoster.GetElementCopyAtIndex(i);
 				EquipmentElement equipmentElement2 = elementCopyAtIndex.EquipmentElement;
 				ItemObject item = equipmentElement2.Item;
-				if (item != null && elementCopyAtIndex.Amount > 0 && string.Equals(item.StringId ?? "", requestedItemId, StringComparison.OrdinalIgnoreCase))
+				if (item != null && elementCopyAtIndex.Amount > 0 && !IsGeneratedRewardMarketExcludedItem(item) && string.Equals(item.StringId ?? "", requestedItemId, StringComparison.OrdinalIgnoreCase))
 				{
 					string text = BuildSettlementMerchantInventoryKey(equipmentElement2);
 					if (!string.IsNullOrWhiteSpace(text))
@@ -15253,9 +17900,13 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		int num2 = Math.Min(amount, Math.Max(0, num));
 		if (num2 > 0 && equipmentElement.Item != null)
 		{
-			itemRoster.AddToCounts(equipmentElement, -num2);
-			itemRoster2.AddToCounts(equipmentElement, num2);
-			itemName = BuildSettlementMerchantDisplayName(equipmentElement);
+			int movedFromSettlement = AddEquipmentElementToRosterAndCountDelta(itemRoster2, equipmentElement, num2, "settlement_transfer:" + lookup);
+			if (movedFromSettlement > 0)
+			{
+				itemRoster.AddToCounts(equipmentElement, -movedFromSettlement);
+				itemName = BuildSettlementMerchantDisplayName(equipmentElement);
+			}
+			num2 = movedFromSettlement;
 		}
 		if (allowForceComplete && num2 < amount)
 		{
@@ -15338,7 +17989,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			ItemRosterElement elementCopyAtIndex = itemRoster.GetElementCopyAtIndex(i);
 			ItemObject item = elementCopyAtIndex.EquipmentElement.Item;
-			if (item != null && MatchesItemLookupToken(elementCopyAtIndex.EquipmentElement, lookup))
+			if (item != null && !IsGeneratedRewardMarketExcludedItem(item) && MatchesItemLookupToken(elementCopyAtIndex.EquipmentElement, lookup))
 			{
 				itemObject = item;
 				num += Math.Max(0, elementCopyAtIndex.Amount);

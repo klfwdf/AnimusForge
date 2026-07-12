@@ -36,6 +36,10 @@ public static class SiegeAftermathTransitionSourceProfile
 
     public const string NativeMenuActivationTransitionSourcePrefix = "native_menu_activation_transition:";
 
+    public const string NativeMenuDeferredFinishSourcePrefix = "native_menu_deferred_finish:";
+
+    public const string GameStateDeferredFinishPumpSource = "game_state_deferred_finish_pump";
+
     public const string ResetStaleEntryGuardSourcePrefix = "reset_stale_entry_guard:";
 
     public const string UnavailableSourceSuffix = "N/A";
@@ -58,6 +62,11 @@ public static class SiegeAftermathTransitionSourceProfile
     public static string BuildNativeMenuActivationTransitionSource(string menuId)
     {
         return NativeMenuActivationTransitionSourcePrefix + NormalizeSourceSuffix(menuId);
+    }
+
+    public static string BuildNativeMenuDeferredFinishSource(string source)
+    {
+        return NativeMenuDeferredFinishSourcePrefix + NormalizeSourceSuffix(source);
     }
 
     public static string BuildResetStaleEntryGuardSource(string menuId)

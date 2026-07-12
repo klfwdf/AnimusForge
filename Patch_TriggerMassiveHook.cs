@@ -86,6 +86,16 @@ public static class Patch_TriggerMassiveHook
 		}
 		try
 		{
+			using (PerfProbe.Scope("Patch_TriggerMassiveHook.DuelBehavior.GlobalWildernessDuelEncounterMenuGuardTick"))
+			{
+				DuelBehavior.GlobalWildernessDuelEncounterMenuGuardTick();
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
 			using (PerfProbe.Scope("Patch_TriggerMassiveHook.DuelBehavior.GlobalPendingMainHeroDeathTick"))
 			{
 				DuelBehavior.GlobalPendingMainHeroDeathTick();

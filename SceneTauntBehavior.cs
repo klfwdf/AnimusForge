@@ -3164,6 +3164,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		{
 			return false;
 		}
+		if (IsSetsSelectedEntryFollower(targetAgent))
+		{
+			return false;
+		}
 		CharacterObject characterObject = targetAgent.Character as CharacterObject;
 		if (SceneTauntBehavior.IsPlayerProtectedSceneAttackTarget(characterObject?.HeroObject))
 		{
@@ -4032,6 +4036,11 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		}
 		bool attackerWeaponIsReal = IsMissionWeaponRealWeapon(attackerWeapon);
 		Logger.LogVerbose("SceneTaunt", "attack_timing_on_agent_hit:" + affectedAgent.Index, () => $"[AttackTiming] on_agent_hit time={Mission.Current?.CurrentTime:0.###} location={(CampaignMission.Current?.Location?.StringId ?? "").Trim().ToLowerInvariant()} settlement={Settlement.CurrentSettlement?.StringId} target={affectedAgent.Name} targetIndex={affectedAgent.Index} weapon={attackerWeaponIsReal} conflict={_conflictActive} armed={_armedConflict}", 1.0);
+		if (SettlementEntryTroopSelectionBehavior.IsOwnedOrAttachedTownEntryActiveForExternal(Mission.Current))
+		{
+			Logger.LogVerbose("SceneTaunt", "sets_owned_entry_suppress_hit:" + affectedAgent.Index, () => $"Suppressed SceneTaunt conflict because SETS owned/attached town entry is active. Target={affectedAgent.Name}", 1.0);
+			return;
+		}
 		if (TryPrimeOwnedSettlementPassiveAttackOnHit(affectedAgent, "player_physical_hit"))
 		{
 			return;
@@ -4074,6 +4083,11 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			return;
 		}
 		Logger.LogVerbose("SceneTaunt", "attack_timing_on_score_hit:" + affectedAgent.Index, () => $"[AttackTiming] on_score_hit time={Mission.Current?.CurrentTime:0.###} location={(CampaignMission.Current?.Location?.StringId ?? "").Trim().ToLowerInvariant()} settlement={Settlement.CurrentSettlement?.StringId} target={affectedAgent.Name} targetIndex={affectedAgent.Index} weapon={IsWeaponComponentRealWeapon(attackerWeapon)} damage={damagedHp:0.##} blocked={isBlocked} conflict={_conflictActive} armed={_armedConflict}", 1.0);
+		if (SettlementEntryTroopSelectionBehavior.IsOwnedOrAttachedTownEntryActiveForExternal(Mission.Current))
+		{
+			Logger.LogVerbose("SceneTaunt", "sets_owned_entry_suppress_score_hit:" + affectedAgent.Index, () => $"Suppressed SceneTaunt score-hit conflict because SETS owned/attached town entry is active. Target={affectedAgent.Name}", 1.0);
+			return;
+		}
 		if (TryHandleOwnedSettlementPassiveAttackDamage(affectedAgent, damagedHp, "player_physical_score_hit"))
 		{
 			return;
@@ -4277,6 +4291,47 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		catch (Exception ex)
 		{
 			Logger.Log("SceneTaunt", "Spawning scene gold drop failed: " + ex.Message);
+		}
+	}
+
+	internal static bool TrySpawnSceneGoldDropForExternal(Agent affectedAgent, AgentState agentState, string source)
+	{
+		try
+		{
+			Mission mission = affectedAgent?.Mission ?? Mission.Current;
+			SceneTauntMissionBehavior behavior = mission?.GetMissionBehavior<SceneTauntMissionBehavior>();
+			if (behavior == null)
+			{
+				LogSceneGoldDiag($"external_spawn_skip behavior_null source={source ?? "N/A"}");
+				return false;
+			}
+			int beforeCount = behavior._sceneGoldDrops.Count;
+			behavior.RegisterSceneGoldEligibleAgent(affectedAgent, "external_" + (string.IsNullOrWhiteSpace(source) ? "unknown" : source.Trim()));
+			behavior.TrySpawnSceneGoldDropForKnockdown(affectedAgent, agentState);
+			return behavior._sceneGoldDrops.Count > beforeCount;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "External scene gold drop spawn failed: " + ex.Message);
+			return false;
+		}
+	}
+
+	internal static void TryMaintainSceneGoldDropsForExternal(float dt, string source)
+	{
+		try
+		{
+			SceneTauntMissionBehavior behavior = Mission.Current?.GetMissionBehavior<SceneTauntMissionBehavior>();
+			if (behavior == null)
+			{
+				return;
+			}
+			behavior.TryMaintainSceneGoldCoinMotion(dt);
+			behavior.TryHandleSceneGoldPickupInput();
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "External scene gold drop tick failed (" + (source ?? "N/A") + "): " + ex.Message);
 		}
 	}
 
@@ -5231,6 +5286,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		{
 			return true;
 		}
+		if (IsSetsSelectedEntryFollower(agent))
+		{
+			return true;
+		}
 		Agent main = Agent.Main;
 		if (main == null || agent.Team == null || main.Team == null || agent.Team != main.Team)
 		{
@@ -5251,6 +5310,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	internal bool CanStartConflict(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex)
 	{
 		_fightHandler = _fightHandler ?? Mission.Current?.GetMissionBehavior<MissionFightHandler>();
+		if (SettlementEntryTroopSelectionBehavior.IsOwnedOrAttachedTownEntryActiveForExternal(Mission.Current))
+		{
+			return false;
+		}
 		if (_conflictActive || Mission.Current == null || _fightHandler == null || Settlement.CurrentSettlement == null)
 		{
 			return false;
@@ -5260,7 +5323,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			return false;
 		}
 		Agent agent = ResolveTargetAgent(targetHero, targetCharacter, targetAgentIndex);
-		return agent != null && agent.IsHuman && agent.IsActive();
+		return agent != null && agent.IsHuman && agent.IsActive() && !IsSetsSelectedEntryFollower(agent);
 	}
 
 	internal bool TryStartConflict(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string targetKey, bool fromVerbalTaunt = false, bool playerUsedWeaponOverride = false)
@@ -5394,6 +5457,11 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			Logger.LogVerbose("SceneTaunt", "attack_timing_try_start:" + (targetAgent?.Index ?? -1), () => $"[AttackTiming] try_start_conflict_from_physical_attack time={Mission.Current?.CurrentTime:0.###} location={(CampaignMission.Current?.Location?.StringId ?? "").Trim().ToLowerInvariant()} settlement={Settlement.CurrentSettlement?.StringId} reason={reason} target={(targetAgent?.Name?.ToString() ?? "null")} targetIndex={(targetAgent != null ? targetAgent.Index : -1)} playerUsedWeapon={playerUsedWeapon} conflict={_conflictActive} armed={_armedConflict}", 1.0);
 			if (_conflictActive || targetAgent == null || !targetAgent.IsHuman || !targetAgent.IsActive())
 			{
+				return false;
+			}
+			if (SettlementEntryTroopSelectionBehavior.IsOwnedOrAttachedTownEntryActiveForExternal(Mission.Current))
+			{
+				Logger.LogVerbose("SceneTaunt", "sets_owned_entry_suppress_physical_start:" + targetAgent.Index, () => $"Suppressed SceneTaunt physical conflict start because SETS owned/attached town entry is active. Reason={reason}", 1.0);
 				return false;
 			}
 			CharacterObject characterObject = targetAgent.Character as CharacterObject;
@@ -5925,7 +5993,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		foreach (int item in _guardAgentIndices)
 		{
 			Agent agent = Mission.Current?.Agents?.FirstOrDefault(a => a != null && a.Index == item && a.IsActive());
-			if (agent == null || !IsAgentWithinArmedBystanderReactionRadius(agent, main) || !_armedEscalationBehaviorFactRolledAgentIndices.Add(item))
+			if (agent == null || IsSetsSelectedEntryFollower(agent) || !IsAgentWithinArmedBystanderReactionRadius(agent, main) || !_armedEscalationBehaviorFactRolledAgentIndices.Add(item))
 			{
 				continue;
 			}
@@ -5938,7 +6006,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		hashSet.UnionWith(_guardAgentIndices);
 		foreach (Agent agent2 in Mission.Current?.Agents ?? Enumerable.Empty<Agent>())
 		{
-			if (agent2 == null || !agent2.IsActive() || !agent2.IsHuman || hashSet.Contains(agent2.Index))
+			if (agent2 == null || !agent2.IsActive() || !agent2.IsHuman || hashSet.Contains(agent2.Index) || IsSetsSelectedEntryFollower(agent2))
 			{
 				continue;
 			}
@@ -5989,6 +6057,11 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		Mission mission = Mission.Current;
 		if (string.IsNullOrWhiteSpace(factText) || targetAgentIndex < 0 || !_conflictActive || !_armedConflict || mission == null)
+		{
+			return false;
+		}
+		Agent targetAgent = mission.Agents?.FirstOrDefault(a => a != null && a.Index == targetAgentIndex && a.IsActive());
+		if (IsSetsSelectedEntryFollower(targetAgent))
 		{
 			return false;
 		}
@@ -6248,6 +6321,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	internal static bool ShouldBlockSceneExitExternal(Mission mission)
 	{
+		if (SettlementEntryTroopSelectionBehavior.ShouldBypassSceneTauntExitBlockForExternal(mission))
+		{
+			return false;
+		}
 		try
 		{
 			if (mission?.GetMissionBehavior<SceneTauntMissionBehavior>()?.ShouldBlockSceneExit() ?? false)
@@ -6581,6 +6658,11 @@ public class SceneTauntMissionBehavior : MissionBehavior
 						AddUniqueAgent(list, agent);
 						continue;
 					}
+					if (IsSetsSelectedEntryFollower(agent))
+					{
+						AddUniqueAgent(list, agent);
+						continue;
+					}
 					Hero hero = (agent.Character as CharacterObject)?.HeroObject;
 					if (SceneTauntBehavior.IsPlayerMainPartyHero(hero))
 					{
@@ -6675,7 +6757,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			}
 			foreach (Agent agent in agents)
 			{
-				if (agent == null || !agent.IsHuman || !agent.IsActive() || hashSet.Contains(agent.Index))
+				if (agent == null || !agent.IsHuman || !agent.IsActive() || hashSet.Contains(agent.Index) || IsSetsSelectedEntryFollower(agent))
 				{
 					continue;
 				}
@@ -6710,7 +6792,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			}
 			foreach (Agent agent in agents)
 			{
-				if (agent == null || !agent.IsHuman || !agent.IsActive() || hashSet.Contains(agent.Index))
+				if (agent == null || !agent.IsHuman || !agent.IsActive() || hashSet.Contains(agent.Index) || IsSetsSelectedEntryFollower(agent))
 				{
 					continue;
 				}
@@ -8129,6 +8211,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				return false;
 			}
+			if (IsSetsSelectedEntryFollower(agent))
+			{
+				return false;
+			}
 			if (SceneTauntBehavior.IsChildSceneProtectedTarget(agent.Character as CharacterObject))
 			{
 				return false;
@@ -8251,6 +8337,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		try
 		{
 			if (agent == null || !agent.IsHuman || !agent.IsActive() || agent.IsMainAgent || !agent.IsAIControlled)
+			{
+				return false;
+			}
+			if (IsSetsSelectedEntryFollower(agent))
 			{
 				return false;
 			}
@@ -8399,6 +8489,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				return false;
 			}
+			if (IsSetsSelectedEntryFollower(agent))
+			{
+				return false;
+			}
 			CharacterObject characterObject = agent.Character as CharacterObject;
 			if (characterObject == null || IsGuardLikeCharacter(characterObject) || SceneTauntBehavior.IsSceneLordTauntTarget(characterObject.HeroObject))
 			{
@@ -8447,7 +8541,23 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				return false;
 			}
+			if (IsSetsSelectedEntryFollower(agent))
+			{
+				return false;
+			}
 			return !ShouldForceArmedCivilianBystanderToFlee(agent);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsSetsSelectedEntryFollower(Agent agent)
+	{
+		try
+		{
+			return SettlementEntryTroopSelectionBehavior.IsSetsSelectedFollowerAgentForExternal(agent);
 		}
 		catch
 		{
@@ -8980,6 +9090,10 @@ public class SceneTauntConsequenceMissionLogic : MissionLogic
 	public override InquiryData OnEndMissionRequest(out bool canPlayerLeave)
 	{
 		canPlayerLeave = true;
+		if (SettlementEntryTroopSelectionBehavior.ShouldBypassSceneTauntExitBlockForExternal(Mission.Current))
+		{
+			return null;
+		}
 		SceneTauntMissionBehavior missionBehavior = Mission.Current?.GetMissionBehavior<SceneTauntMissionBehavior>();
 		if (missionBehavior != null && missionBehavior.ShouldBlockSceneExit())
 		{

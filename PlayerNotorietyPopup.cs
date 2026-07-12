@@ -26,21 +26,24 @@ public sealed class PlayerNotorietyPopup
 
 	private readonly Action _onEdit;
 
+	private readonly Func<PlayerNotorietyPopupData> _onToggleLowProfile;
+
 	private PendingAction _pendingAction;
 
 	private bool _isClosed;
 
 	private bool _pauseRequestRegistered;
 
-	private PlayerNotorietyPopup(ScreenBase screen, PlayerNotorietyPopupData data, Action onEdit)
+	private PlayerNotorietyPopup(ScreenBase screen, PlayerNotorietyPopupData data, Action onEdit, Func<PlayerNotorietyPopupData> onToggleLowProfile)
 	{
 		_screen = screen;
 		_onEdit = onEdit;
-		_dataSource = new PlayerNotorietyPopupVM(data, HandleCloseRequested, HandleEditRequested);
+		_onToggleLowProfile = onToggleLowProfile;
+		_dataSource = new PlayerNotorietyPopupVM(data, HandleCloseRequested, HandleEditRequested, HandleToggleLowProfileRequested);
 		_layer = new GauntletLayer("PlayerNotorietyPopup", 4000, false);
 	}
 
-	public static bool Show(PlayerNotorietyPopupData data, Action onEdit)
+	public static bool Show(PlayerNotorietyPopupData data, Action onEdit, Func<PlayerNotorietyPopupData> onToggleLowProfile = null)
 	{
 		ScreenBase topScreen = ScreenManager.TopScreen;
 		if (topScreen == null)
@@ -50,7 +53,7 @@ public sealed class PlayerNotorietyPopup
 		try
 		{
 			_activePopup?.Close(silent: true);
-			PlayerNotorietyPopup popup = new PlayerNotorietyPopup(topScreen, data, onEdit);
+			PlayerNotorietyPopup popup = new PlayerNotorietyPopup(topScreen, data, onEdit, onToggleLowProfile);
 			popup.Open();
 			_activePopup = popup;
 			return true;
@@ -130,6 +133,26 @@ public sealed class PlayerNotorietyPopup
 	private void HandleEditRequested()
 	{
 		RequestPendingAction(PendingAction.Edit);
+	}
+
+	private void HandleToggleLowProfileRequested()
+	{
+		if (_isClosed)
+		{
+			return;
+		}
+		try
+		{
+			PlayerNotorietyPopupData data = _onToggleLowProfile?.Invoke();
+			if (data != null)
+			{
+				_dataSource.ApplyData(data);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("PlayerNotorietyPopup", "[WARN] Failed to toggle low profile mode: " + ex.Message);
+		}
 	}
 
 	private void RequestPendingAction(PendingAction action)

@@ -387,10 +387,6 @@ public static class Logger
 	{
 		try
 		{
-			if (!IsModLogicEnabled)
-			{
-				return;
-			}
 			string safeFileName = System.IO.Path.GetFileName((fileName ?? "").Trim());
 			if (string.IsNullOrWhiteSpace(safeFileName))
 			{
