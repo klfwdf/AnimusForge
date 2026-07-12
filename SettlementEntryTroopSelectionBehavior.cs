@@ -2526,7 +2526,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					_enemyWallPassProbePositions[agent.Index] = rescuePosition;
 					_enemyWallPassProbeTimes[agent.Index] = now;
 					AssignEnemyAgentCombatTarget(agent, agent.Index);
-					SettlementEntryTroopSelectionLog.Log("Applied SETS enemy wall-pass rescue. settlement=" + _settlementId + ", agent=" + agent.Index + ", target=" + target.Index + ", position=" + rescuePosition);
+					SettlementEntryTroopSelectionLog.LogVerbose("Applied SETS enemy wall-pass rescue. settlement=" + _settlementId + ", agent=" + agent.Index + ", target=" + target.Index + ", position=" + rescuePosition);
 				}
 			}
 			catch (Exception ex)
@@ -3279,7 +3279,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					frame.rotation.OrthonormalizeAccordingToForwardAndKeepUpAsZAxis();
 					if (!TryResolveReachableWorkshopSpawnAnchor(mission, frame.origin, out Vec3 workshopAnchor))
 					{
-						SettlementEntryTroopSelectionLog.Log("Skipped town workshop spawn marker without a clear path to player. settlement=" + _settlementId + ", area=" + marker.AreaIndex);
+						SettlementEntryTroopSelectionLog.LogVerbose("Skipped town workshop spawn marker without a clear path to player. settlement=" + _settlementId + ", area=" + marker.AreaIndex);
 						continue;
 					}
 					frame.origin = workshopAnchor;
@@ -4002,7 +4002,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					ForceProtectedFollowerFriendlyState(agent);
 					cleared++;
 				}
-				SettlementEntryTroopSelectionLog.Log("Cleared SETS follower hostility toward player side. reason=" + reason + ", count=" + cleared);
+				SettlementEntryTroopSelectionLog.LogVerbose("Cleared SETS follower hostility toward player side. reason=" + reason + ", count=" + cleared);
 			}
 			catch (Exception ex)
 			{
@@ -4116,7 +4116,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			}
 			TryRemoveFromRoster(sourceRoster, character, 1);
 			_defenderReserveAgentSourceRosters.Remove(affectedAgent.Index);
-			SettlementEntryTroopSelectionLog.Log("Defender reserve defeat removed. troop=" + SafeCharacterId(character) + ", source=" + source);
+			SettlementEntryTroopSelectionLog.LogVerbose("Defender reserve defeat removed. troop=" + SafeCharacterId(character) + ", source=" + source);
 		}
 
 		public override InquiryData OnEndMissionRequest(out bool canPlayerLeave)

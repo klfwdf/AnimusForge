@@ -8,6 +8,8 @@ internal sealed class FeatureDiagnosticLogFile
 {
 	private const int BytesPerMegabyte = 1024 * 1024;
 
+	private const int MaxEntryBytes = 64 * 1024;
+
 	private static readonly Encoding Utf8WithoutBom = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
 
 	private readonly object _syncRoot = new object();
@@ -51,11 +53,11 @@ internal sealed class FeatureDiagnosticLogFile
 			+ "] "
 			+ (message ?? string.Empty)
 			+ Environment.NewLine;
+		line = LimitEntrySize(line, out int incomingByteCount);
 
 		lock (_syncRoot)
 		{
 			string path = GetLogPathLocked();
-			int incomingByteCount = Utf8WithoutBom.GetByteCount(line);
 			RotateIfNeededLocked(path, incomingByteCount);
 			File.AppendAllText(path, line, Utf8WithoutBom);
 			_knownLengthBytes += incomingByteCount;
@@ -210,5 +212,58 @@ internal sealed class FeatureDiagnosticLogFile
 	private string NormalizeSource(string source)
 	{
 		return string.IsNullOrWhiteSpace(source) ? _defaultSource : source.Trim();
+	}
+
+	private static string LimitEntrySize(string line, out int byteCount)
+	{
+		string safeLine = line ?? string.Empty;
+		byteCount = Utf8WithoutBom.GetByteCount(safeLine);
+		if (byteCount <= MaxEntryBytes)
+		{
+			return safeLine;
+		}
+
+		string content = safeLine.TrimEnd('\r', '\n');
+		string suffix = " ... [entry truncated at 64 KiB]" + Environment.NewLine;
+		int suffixBytes = Utf8WithoutBom.GetByteCount(suffix);
+		int low = 0;
+		int high = content.Length;
+		while (low < high)
+		{
+			int middle = low + (high - low + 1) / 2;
+			int prefixLength = AdjustTruncationBoundary(content, middle);
+			int candidateBytes = Utf8WithoutBom.GetByteCount(content.Substring(0, prefixLength)) + suffixBytes;
+			if (candidateBytes <= MaxEntryBytes)
+			{
+				low = middle;
+			}
+			else
+			{
+				high = middle - 1;
+			}
+		}
+
+		int finalLength = AdjustTruncationBoundary(content, Math.Min(low, content.Length));
+		string truncated = content.Substring(0, finalLength) + suffix;
+		byteCount = Utf8WithoutBom.GetByteCount(truncated);
+		return truncated;
+	}
+
+	private static int AdjustTruncationBoundary(string content, int length)
+	{
+		int safeLength = Math.Max(0, Math.Min(length, content?.Length ?? 0));
+		if (safeLength <= 0 || safeLength >= content.Length)
+		{
+			return safeLength;
+		}
+		if (char.IsHighSurrogate(content[safeLength - 1]))
+		{
+			safeLength--;
+		}
+		if (safeLength > 0 && safeLength < content.Length && content[safeLength - 1] == '\r' && content[safeLength] == '\n')
+		{
+			safeLength--;
+		}
+		return safeLength;
 	}
 }
