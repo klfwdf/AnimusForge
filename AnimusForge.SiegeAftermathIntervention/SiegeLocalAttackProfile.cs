@@ -25,7 +25,7 @@ public static class SiegeLocalAttackProfile
     public static string BuildPlayerHitMessage(string targetName, bool targetWillDefy)
     {
         string reaction = targetWillDefy ? "目标喝止/对峙，不攻士兵" : "目标逃跑、附近恐慌";
-        return "【局部冲突】击中" + NormalizeTargetName(targetName, "一名NPC") + "，" + reaction + "；非全城血洗。";
+        return "【局部冲突】击中" + NormalizeTargetName(targetName, "一名NPC") + "，" + reaction + "。";
     }
 
     public static string BuildPlayerHitMemoryText(string targetName, bool targetWillDefy)

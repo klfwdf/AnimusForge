@@ -102,7 +102,7 @@ public static class SiegeLocalCivilianReactionProfile
 
     public static string BuildPlayerDownMessage(string targetName)
     {
-        return "【局部冲突】打倒" + NormalizeTargetName(targetName, "一名NPC") + "，附近逃散；非全城血洗。";
+        return "【局部冲突】打倒" + NormalizeTargetName(targetName, "一名NPC") + "，附近逃散。";
     }
 
     public static string BuildPlayerDownMemoryText(string targetName)
