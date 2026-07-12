@@ -28,6 +28,8 @@ public sealed class MentionedWorldEntities
 
 	public List<string> Items = new List<string>();
 
+	public List<string> Policies = new List<string>();
+
 	public List<string> Troops = new List<string>();
 
 	public List<string> Terms = new List<string>();
@@ -36,7 +38,7 @@ public sealed class MentionedWorldEntities
 	{
 		get
 		{
-			return IsEmptyList(Heroes) && IsEmptyList(Settlements) && IsEmptyList(Clans) && IsEmptyList(Kingdoms) && IsEmptyList(Items) && IsEmptyList(Troops) && IsEmptyList(Terms);
+			return IsEmptyList(Heroes) && IsEmptyList(Settlements) && IsEmptyList(Clans) && IsEmptyList(Kingdoms) && IsEmptyList(Items) && IsEmptyList(Policies) && IsEmptyList(Troops) && IsEmptyList(Terms);
 		}
 	}
 
@@ -49,6 +51,7 @@ public sealed class MentionedWorldEntities
 			Clans = new List<string>(Clans ?? new List<string>()),
 			Kingdoms = new List<string>(Kingdoms ?? new List<string>()),
 			Items = new List<string>(Items ?? new List<string>()),
+			Policies = new List<string>(Policies ?? new List<string>()),
 			Troops = new List<string>(Troops ?? new List<string>()),
 			Terms = new List<string>(Terms ?? new List<string>())
 		};
@@ -65,6 +68,7 @@ public sealed class MentionedWorldEntities
 		MergeList(Clans, other.Clans);
 		MergeList(Kingdoms, other.Kingdoms);
 		MergeList(Items, other.Items);
+		MergeList(Policies, other.Policies);
 		MergeList(Troops, other.Troops);
 		MergeList(Terms, other.Terms);
 	}

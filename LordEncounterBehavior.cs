@@ -4585,7 +4585,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	internal static bool IsEligibleCustomLordEncounterTarget(Hero hero, PartyBase encounterParty = null)
 	{
-		if (hero == null || hero == Hero.MainHero || !hero.IsLord)
+		if (hero == null || hero == Hero.MainHero || !hero.IsLord || hero.IsPrisoner || hero.PartyBelongedToAsPrisoner != null)
 		{
 			return false;
 		}

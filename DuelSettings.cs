@@ -668,7 +668,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("5. 知识检索（返回）")]
 	public int WorldEntityInjectMaxCount { get; set; } = 6;
 
-	[SettingPropertyInteger("清单候选显示上限", 1, 30, "0", Order = 2, RequireRestart = false, HintText = "控制每类物品、装备、部队、俘虏和固定资产清单向 AI 注入多少条；候选足够时会补满到该数量，候选不足则显示全部。默认 10；不影响人物、地点、家族、王国的实体注入上限。")]
+	[SettingPropertyInteger("清单候选显示上限", 1, 30, "0", Order = 2, RequireRestart = false, HintText = "控制每类物品、装备、部队、俘虏、固定资产和政策候选向 AI 注入多少条；候选足够时会补满到该数量，候选不足则显示全部。默认 10；不影响人物、地点、家族、王国的实体注入上限。")]
 	[SettingPropertyGroup("5. 知识检索（返回）")]
 	public int PromptListCandidateMaxCount { get; set; } = 10;
 
@@ -932,7 +932,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("8. 玩家知名度")]
 	public int PlayerNotorietySummaryIntervalDays { get; set; } = 3;
 
-	[SettingPropertyInteger("玩家履历字数", 80, 1000, "0", Order = 1, RequireRestart = false, HintText = "玩家公开重大履历总结目标字数，也是NPC已知玩家重大履历时主链路注入的履历字数上限。未总结原始素材不会直接注入主链路。默认 300。")]
+	[SettingPropertyInteger("玩家履历字数", 80, 1000, "0", Order = 1, RequireRestart = false, HintText = "玩家公开重大履历总结的目标字数和硬上限，也是NPC已知玩家重大履历时主链路注入的履历字数上限。AI 会整体重写旧摘要，而不是在末尾增量追加；未总结原始素材不会直接注入主链路。默认 300。")]
 	[SettingPropertyGroup("8. 玩家知名度")]
 	public int PlayerNotorietyMajorPromptChars { get; set; } = 300;
 

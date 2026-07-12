@@ -46,6 +46,12 @@ public static class Patch_Conversation_Start_Intercept
 				Logger.LogTrace("Patch_Conversation_Start_Intercept", "Native encounter attack is pending; suppress native " + __originalMethod?.Name + ".");
 				return false;
 			}
+			Hero explicitPrisoner = EncounterConversationTargetResolver.TryResolveExplicitPrisonerFromArguments(__args);
+			if (explicitPrisoner != null)
+			{
+				Logger.LogTrace("Patch_Conversation_Start_Intercept", $"Explicit prisoner conversation detected; allow native {__originalMethod?.Name}: {explicitPrisoner.Name}");
+				return true;
+			}
 			if (ShouldAllowNativeConversationStart(__originalMethod))
 			{
 				return true;

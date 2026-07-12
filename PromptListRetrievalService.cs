@@ -224,6 +224,7 @@ public static class PromptListRetrievalService
 		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		AddTerms(result, seen, mentions?.Terms);
 		AddTerms(result, seen, mentions?.Items);
+		AddTerms(result, seen, mentions?.Policies);
 		AddTerms(result, seen, mentions?.Troops);
 		AddTerms(result, seen, mentions?.Heroes);
 		AddTerms(result, seen, mentions?.Settlements);
@@ -232,7 +233,7 @@ public static class PromptListRetrievalService
 		return result;
 	}
 
-	public static List<T> SelectCandidates<T>(IEnumerable<T> candidates, MentionedWorldEntities mentions, Func<T, IEnumerable<string>> aliasesFactory, int maxCount = 0) where T : class
+	public static List<T> SelectCandidates<T>(IEnumerable<T> candidates, MentionedWorldEntities mentions, Func<T, IEnumerable<string>> aliasesFactory, int maxCount = 0, bool fillWithFallback = true) where T : class
 	{
 		List<T> list = (candidates ?? Enumerable.Empty<T>()).Where((T x) => x != null).ToList();
 		if (list.Count == 0)
@@ -243,7 +244,7 @@ public static class PromptListRetrievalService
 		List<string> terms = BuildMentionTerms(mentions);
 		if (terms.Count == 0 || aliasesFactory == null)
 		{
-			return list.Take(limit).ToList();
+			return fillWithFallback ? list.Take(limit).ToList() : new List<T>();
 		}
 		Dictionary<string, int> mentionPriority = BuildMentionPriority(terms);
 		List<CandidateMatch<T>> matches = new List<CandidateMatch<T>>();
@@ -296,7 +297,7 @@ public static class PromptListRetrievalService
 		}
 		if (matches.Count == 0)
 		{
-			return list.Take(limit).ToList();
+			return fillWithFallback ? list.Take(limit).ToList() : new List<T>();
 		}
 		List<T> selected = matches
 			.OrderByDescending((CandidateMatch<T> x) => x.Score)
@@ -305,7 +306,7 @@ public static class PromptListRetrievalService
 			.Take(limit)
 			.Select((CandidateMatch<T> x) => x.Value)
 			.ToList();
-		if (selected.Count < limit)
+		if (fillWithFallback && selected.Count < limit)
 		{
 			HashSet<T> selectedSet = new HashSet<T>(selected);
 			foreach (T candidate in list)

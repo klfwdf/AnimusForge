@@ -1135,10 +1135,12 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		int targetChars = GetMajorPromptChars();
 		string playerName = NormalizePlayerDisplayName(playerDisplayName);
 		return "你是 AnimusForge 的" + playerName + "履历与知名度总结器。只输出严格 JSON：{\"summary_content\":\"新的" + playerName + "重大履历时间线摘要\",\"notoriety_delta\":0到10之间的小数}。"
-			+ "把已有摘要与新增素材重新融合成约" + targetChars + "个中文字符且不超过" + targetChars + "个中文字符的时间线摘要；保留关键人物、地点、胜败、承诺和公开影响，删除重复、数字细节和次要过程。"
+			+ "任务是重写，不是增量续写：已有摘要只作为待压缩素材，必须与新增素材打散、去重、合并，输出一份完整的新摘要来整体替换旧摘要。"
+			+ "summary_content 必须压缩到" + targetChars + "个中文字符以内；这是硬上限，不是建议。若事实放不下，必须主动删掉次要事件、重复信息、数字细节和长名单，不得为了保留全部内容而超长。"
+			+ "只保留最重要的关键人物、地点、胜败、承诺、身份变化和公开影响；同类战斗、任务、处决、招募必须归并概括，禁止逐条罗列。"
 			+ "提及玩家时必须一律使用“" + playerName + "”，不得写“你”或“玩家”。"
 			+ "没有新增素材时只压缩已有摘要，notoriety_delta 输出0。不要编造素材没有的事实。"
-			+ "notoriety_delta 表示这批公开素材带来的文化知名度增量，范围0-10；小事应为0到1之间的小数，重大胜利、夺城、处决、王国事件才可接近10。";
+			+ "notoriety_delta 只评估本次新增公开素材，严禁根据已有摘要重复增加；范围0-10，小事应为0到1之间的小数，重大胜利、夺城、处决、王国事件才可接近10。";
 	}
 
 	private string BuildSummaryUserPrompt(List<PlayerHistoryMaterial> materials, string playerDisplayName)
@@ -1162,6 +1164,8 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 			}
 			sb.AppendLine("- [" + (string.IsNullOrWhiteSpace(material.GameDate) ? ("第" + material.Day + "日") : material.GameDate.Trim()) + "][" + (material.SourceKind ?? "material") + "][culture:" + string.Join(",", material.CultureIds ?? new List<string>()) + "] " + RenderPlayerActionTextForPrompt(material.Text.Trim(), playerName));
 		}
+		sb.AppendLine();
+		sb.AppendLine("现在整体重写。只输出 JSON；summary_content 最多 " + GetMajorPromptChars() + " 个中文字符。若超长，继续删除低价值细节后再输出。禁止在旧摘要后追加。");
 		return sb.ToString().Trim();
 	}
 

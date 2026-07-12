@@ -386,7 +386,7 @@ public static class AIConfigHandler
 	private static bool IsPlayerPartyTradeLimitedRule(string ruleId)
 	{
 		string text = (ruleId ?? "").Trim();
-		return string.Equals(text, "loan", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "vote_deal", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "diplomacy", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "party_transfer", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "settlement_transfer", StringComparison.OrdinalIgnoreCase);
+		return string.Equals(text, "loan", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "kingdom_agenda", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "diplomacy", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "party_transfer", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "settlement_transfer", StringComparison.OrdinalIgnoreCase);
 	}
 
 	private static bool IsSettlementTransferRule(string ruleId)
@@ -2006,8 +2006,7 @@ public static class AIConfigHandler
 		{
 			return DiplomacyBehavior.CanInjectDiplomacyRuleForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
 		}
-		if (string.Equals(text, "vote_deal", StringComparison.OrdinalIgnoreCase)
-			|| string.Equals(text, "propose_agenda", StringComparison.OrdinalIgnoreCase))
+		if (string.Equals(text, "kingdom_agenda", StringComparison.OrdinalIgnoreCase))
 		{
 			return IsKingdomLordOrKingRuleTargetForPreprocess(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
 		}
@@ -2167,7 +2166,7 @@ public static class AIConfigHandler
 				"encounter_release_player" => "MEETING_RELEASE",
 				"hero_join_party" => "HERO_JOIN",
 				"noble_deference" => "NOBLE_PRESSURE",
-				"vote_deal" => "VOTE_DEAL",
+				"kingdom_agenda" => "KINGDOM_AGENDA",
 				"diplomacy" => "DIPLOMACY",
 				_ => ""
 			};
@@ -4089,7 +4088,7 @@ public static class AIConfigHandler
 		stringBuilder.AppendLine("*Latest NPC/player exchange*:");
 		stringBuilder.Append("NPC: ").AppendLine(string.IsNullOrWhiteSpace(text2) ? "(none)" : NormalizeAuxiliaryRoutingRequestText(text2));
 		stringBuilder.Append("Player: ").AppendLine(string.IsNullOrWhiteSpace(text5) ? "(none)" : NormalizeAuxiliaryRoutingRequestText(text5));
-		stringBuilder.AppendLine("Select exactly " + Math.Max(1, topN) + " closest topic codes in rule_codes. Also extract explicit third-party nouns from the latest exchange into mentioned_entities. Use heroes for named people/titles, settlements for places, clans for families, kingdoms for factions, items for item/goods/equipment names or types, troops for troop/unit/prisoner names or types, and terms for other useful raw phrases. Do not extract current speakers or player names just because they are speakers. If ambiguous, put it in the closest bucket and also terms. Order arrays by recency. Output one strict JSON object only: {\"rule_codes\":[\"CODE\"],\"mentioned_entities\":{\"heroes\":[],\"settlements\":[],\"clans\":[],\"kingdoms\":[],\"items\":[],\"troops\":[],\"terms\":[]}}.");
+		stringBuilder.AppendLine("Select exactly " + Math.Max(1, topN) + " closest topic codes in rule_codes. Also extract explicit third-party nouns from the latest exchange into mentioned_entities. Use heroes for named people/titles, settlements for places, clans for families, kingdoms for factions, items for item/goods/equipment names or types, policies for kingdom policy/law names, troops for troop/unit/prisoner names or types, and terms for other useful raw phrases. Do not extract current speakers or player names just because they are speakers. If ambiguous, put it in the closest bucket and also terms. Order arrays by recency. Output one strict JSON object only: {\"rule_codes\":[\"CODE\"],\"mentioned_entities\":{\"heroes\":[],\"settlements\":[],\"clans\":[],\"kingdoms\":[],\"items\":[],\"policies\":[],\"troops\":[],\"terms\":[]}}.");
 		return SanitizeAuxiliaryRoutingPromptDialogueSections(stringBuilder.ToString()).Trim();
 	}
 
@@ -4232,7 +4231,7 @@ public static class AIConfigHandler
 	{
 		root = null;
 		error = "";
-		string text = (content ?? "").Trim('\uFEFF', '\u200B', '\u200C', '\u200D', ' ', '\t', '\r', '\n');
+		string text = StripAuxiliaryJsonCodeFence(content);
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			error = "empty_content";
@@ -4272,7 +4271,7 @@ public static class AIConfigHandler
 			error = "mentioned_entities_not_object";
 			return false;
 		}
-		string[] buckets = new string[7] { "heroes", "settlements", "clans", "kingdoms", "items", "troops", "terms" };
+		string[] buckets = new string[8] { "heroes", "settlements", "clans", "kingdoms", "items", "policies", "troops", "terms" };
 		for (int i = 0; i < buckets.Length; i++)
 		{
 			if (!ValidateStrictPreprocessArray(mentionedEntities, buckets[i], JTokenType.String, out error, "mentioned_entities_"))
@@ -4677,9 +4676,9 @@ public static class AIConfigHandler
 	{
 		if (entities == null)
 		{
-			return "heroes=0 settlements=0 clans=0 kingdoms=0 items=0 troops=0 terms=0";
+		return "heroes=0 settlements=0 clans=0 kingdoms=0 items=0 policies=0 troops=0 terms=0";
 		}
-		return "heroes=" + (entities.Heroes?.Count ?? 0) + " settlements=" + (entities.Settlements?.Count ?? 0) + " clans=" + (entities.Clans?.Count ?? 0) + " kingdoms=" + (entities.Kingdoms?.Count ?? 0) + " items=" + (entities.Items?.Count ?? 0) + " troops=" + (entities.Troops?.Count ?? 0) + " terms=" + (entities.Terms?.Count ?? 0);
+		return "heroes=" + (entities.Heroes?.Count ?? 0) + " settlements=" + (entities.Settlements?.Count ?? 0) + " clans=" + (entities.Clans?.Count ?? 0) + " kingdoms=" + (entities.Kingdoms?.Count ?? 0) + " items=" + (entities.Items?.Count ?? 0) + " policies=" + (entities.Policies?.Count ?? 0) + " troops=" + (entities.Troops?.Count ?? 0) + " terms=" + (entities.Terms?.Count ?? 0);
 	}
 
 	private static string HashAuxiliaryMentionKey(string value)
@@ -4732,6 +4731,7 @@ public static class AIConfigHandler
 			FillMentionedEntityList(entities.Terms, GetJsonPropertyIgnoreCase(obj, "terms", "nouns", "keywords", "mentions", "mentioned_terms"));
 			JToken itemToken = GetJsonPropertyIgnoreCase(obj, "items", "item_names", "item_types", "goods", "equipment");
 			FillMentionedEntityList(entities.Items, itemToken);
+			FillMentionedEntityList(entities.Policies, GetJsonPropertyIgnoreCase(obj, "policies", "policy_names", "laws"));
 			FillMentionedEntityList(entities.Terms, itemToken);
 			JToken troopToken = GetJsonPropertyIgnoreCase(obj, "troops", "troop_names", "troop_types", "units", "soldiers");
 			FillMentionedEntityList(entities.Troops, troopToken);
@@ -5941,7 +5941,7 @@ public static class AIConfigHandler
 			{
 				set.Add("loan");
 				set.Add("diplomacy");
-				set.Add("vote_deal");
+				set.Add("kingdom_agenda");
 				set.Add("party_transfer");
 				set.Add("settlement_transfer");
 			}
@@ -8256,8 +8256,7 @@ public static class AIConfigHandler
 			}
 			case "diplomacy":
 				return DiplomacyBehavior.CanInjectDiplomacyRuleForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
-			case "vote_deal":
-			case "propose_agenda":
+			case "kingdom_agenda":
 				return IsKingdomLordOrKingRuleTargetForPreprocess(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
 			case "marriage":
 				return ResolveConversationTargetHero() != null && !string.IsNullOrWhiteSpace(RomanceSystemBehavior.Instance?.BuildMarriageRuntimeInstruction(ResolveConversationTargetHero()));

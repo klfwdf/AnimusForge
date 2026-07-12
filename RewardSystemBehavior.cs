@@ -497,7 +497,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	private static Mission _promotedNonHeroCompanionMission;
 
-	private sealed class PendingWildernessNonHeroJoinConversationClose
+	private sealed class WildernessNonHeroJoinConversationCloseContext
 	{
 		public PartyBase SourcePartyBase;
 
@@ -511,7 +511,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 		public string TargetCharacterId;
 
-		public long CreatedUtcTicks;
 	}
 
 	private sealed class PendingHeroJoinConversationClose
@@ -533,11 +532,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		public long CreatedUtcTicks;
 	}
 
-	private static readonly object WildernessNonHeroJoinConversationCloseLock = new object();
-
 	private static readonly object HeroJoinConversationCloseLock = new object();
-
-	private static PendingWildernessNonHeroJoinConversationClose _pendingWildernessNonHeroJoinConversationClose;
 
 	private static PendingHeroJoinConversationClose _pendingHeroJoinConversationClose;
 
@@ -1218,13 +1213,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	public void OnEngineTick()
 	{
-		TryClosePendingWildernessNonHeroJoinConversation();
 		TryClosePendingHeroJoinConversation();
 	}
 
 	private void OnCampaignTick(float dt)
 	{
-		TryClosePendingWildernessNonHeroJoinConversation();
 		TryClosePendingHeroJoinConversation();
 	}
 
@@ -5173,7 +5166,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		string beforeText = beforeMembers > movedMembers || beforePrisoners > movedPrisoners ? $"（原成员 {beforeMembers}，原俘虏 {beforePrisoners}）" : "";
 		statusText = $"执行成功：{partyName} 已同意加入玩家队伍，已转入 {movedMembers} 名成员{prisonerText}{beforeText}。";
 		Logger.Log("RewardSystemBehavior", "[NonHeroJoin] wilderness_party_join source=" + (sourceParty.StringId ?? "") + " members=" + movedMembers + " prisoners=" + movedPrisoners + " target=" + (joiningCharacter?.StringId ?? "") + " agentIndex=" + targetAgentIndex);
-		ScheduleWildernessNonHeroJoinConversationClose(sourcePartyBase, sourceParty, joiningCharacter, targetAgentIndex);
+		CloseWildernessNonHeroJoinConversationImmediately(sourcePartyBase, sourceParty, joiningCharacter, targetAgentIndex);
 		return true;
 	}
 
@@ -5343,28 +5336,23 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void ScheduleWildernessNonHeroJoinConversationClose(PartyBase sourcePartyBase, MobileParty sourceParty, CharacterObject joiningCharacter, int targetAgentIndex)
+	private static void CloseWildernessNonHeroJoinConversationImmediately(PartyBase sourcePartyBase, MobileParty sourceParty, CharacterObject joiningCharacter, int targetAgentIndex)
 	{
 		if (sourcePartyBase == null && sourceParty == null)
 		{
 			return;
 		}
-		PendingWildernessNonHeroJoinConversationClose pending = new PendingWildernessNonHeroJoinConversationClose
+		WildernessNonHeroJoinConversationCloseContext context = new WildernessNonHeroJoinConversationCloseContext
 		{
 			SourcePartyBase = sourcePartyBase,
 			SourceParty = sourceParty,
 			TargetCharacter = joiningCharacter,
 			TargetAgentIndex = targetAgentIndex,
 			SourcePartyId = sourceParty?.StringId ?? "",
-			TargetCharacterId = joiningCharacter?.StringId ?? "",
-			CreatedUtcTicks = DateTime.UtcNow.Ticks
+			TargetCharacterId = joiningCharacter?.StringId ?? ""
 		};
-		lock (WildernessNonHeroJoinConversationCloseLock)
-		{
-			_pendingWildernessNonHeroJoinConversationClose = pending;
-		}
-		ConversationExceptionGuard.MarkCurrentConversationStale("wilderness_nonhero_join_party_scheduled_close");
-		Logger.Log("RewardSystemBehavior", "[NonHeroJoin] scheduled delayed conversation close source=" + pending.SourcePartyId + " target=" + pending.TargetCharacterId + " agentIndex=" + targetAgentIndex);
+		ConversationExceptionGuard.MarkCurrentConversationStale("wilderness_nonhero_join_party_immediate_close");
+		ExecuteWildernessNonHeroJoinConversationClose(context);
 	}
 
 	private static void ScheduleHeroJoinConversationClose(Hero joinedHero, PartyBase originalParty, MobileParty originalMobileParty)
@@ -5390,33 +5378,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		ConversationExceptionGuard.MarkCurrentConversationStale("hero_join_party_scheduled_close");
 		Logger.Log("RewardSystemBehavior", "[HeroJoin] scheduled delayed conversation close hero=" + pending.JoinedHeroId + " originalParty=" + pending.OriginalPartyId);
-	}
-
-	private static void TryClosePendingWildernessNonHeroJoinConversation()
-	{
-		PendingWildernessNonHeroJoinConversationClose pending = null;
-		try
-		{
-			lock (WildernessNonHeroJoinConversationCloseLock)
-			{
-				if (_pendingWildernessNonHeroJoinConversationClose == null)
-				{
-					return;
-				}
-				long elapsedTicks = DateTime.UtcNow.Ticks - _pendingWildernessNonHeroJoinConversationClose.CreatedUtcTicks;
-				if (elapsedTicks < (long)(JoinPartyConversationCloseDelaySeconds * TimeSpan.TicksPerSecond))
-				{
-					return;
-				}
-				pending = _pendingWildernessNonHeroJoinConversationClose;
-				_pendingWildernessNonHeroJoinConversationClose = null;
-			}
-			ExecutePendingWildernessNonHeroJoinConversationClose(pending);
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("RewardSystemBehavior", "[NonHeroJoin] delayed close failed: " + ex.Message);
-		}
 	}
 
 	private static void TryClosePendingHeroJoinConversation()
@@ -5446,24 +5407,24 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void ExecutePendingWildernessNonHeroJoinConversationClose(PendingWildernessNonHeroJoinConversationClose pending)
+	private static void ExecuteWildernessNonHeroJoinConversationClose(WildernessNonHeroJoinConversationCloseContext context)
 	{
-		if (pending == null)
+		if (context == null)
 		{
 			return;
 		}
-		bool encounterMatches = DoesPendingWildernessNonHeroJoinEncounterMatch(pending);
-		bool conversationMatches = encounterMatches && DoesPendingWildernessNonHeroJoinConversationMatch(pending);
+		bool encounterMatches = DoesWildernessNonHeroJoinEncounterMatch(context);
+		bool conversationMatches = DoesWildernessNonHeroJoinConversationMatch(context);
 		if (encounterMatches)
 		{
 			PlayerEncounter.LeaveEncounter = true;
 		}
 		if (conversationMatches)
 		{
-			TryEndCurrentConversationForJoinAction("wilderness_nonhero_join_party_delayed_close");
+			TryEndCurrentConversationForJoinAction("wilderness_nonhero_join_party_immediate_close");
 		}
-		TryDestroyEmptyWildernessNonHeroJoinParty(pending.SourceParty);
-		Logger.Log("RewardSystemBehavior", "[NonHeroJoin] delayed close applied conversation=" + conversationMatches + " encounter=" + encounterMatches + " source=" + (pending.SourcePartyId ?? "") + " target=" + (pending.TargetCharacterId ?? ""));
+		TryDestroyEmptyWildernessNonHeroJoinParty(context.SourceParty);
+		Logger.Log("RewardSystemBehavior", "[NonHeroJoin] immediate close applied conversation=" + conversationMatches + " encounter=" + encounterMatches + " source=" + (context.SourcePartyId ?? "") + " target=" + (context.TargetCharacterId ?? ""));
 	}
 
 	private static void ExecutePendingHeroJoinConversationClose(PendingHeroJoinConversationClose pending)
@@ -5485,9 +5446,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		Logger.Log("RewardSystemBehavior", "[HeroJoin] delayed close applied conversation=" + conversationMatches + " encounter=" + encounterMatches + " hero=" + (pending.JoinedHeroId ?? "") + " originalParty=" + (pending.OriginalPartyId ?? ""));
 	}
 
-	private static bool DoesPendingWildernessNonHeroJoinConversationMatch(PendingWildernessNonHeroJoinConversationClose pending)
+	private static bool DoesWildernessNonHeroJoinConversationMatch(WildernessNonHeroJoinConversationCloseContext context)
 	{
-		if (pending == null)
+		if (context == null)
 		{
 			return false;
 		}
@@ -5496,16 +5457,16 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		if (pending.TargetCharacter != null && currentCharacter == pending.TargetCharacter)
+		if (context.TargetCharacter != null && currentCharacter == context.TargetCharacter)
 		{
 			return true;
 		}
-		return !string.IsNullOrEmpty(pending.TargetCharacterId) && string.Equals(currentCharacter.StringId, pending.TargetCharacterId, StringComparison.OrdinalIgnoreCase);
+		return !string.IsNullOrEmpty(context.TargetCharacterId) && string.Equals(currentCharacter.StringId, context.TargetCharacterId, StringComparison.OrdinalIgnoreCase);
 	}
 
-	private static bool DoesPendingWildernessNonHeroJoinEncounterMatch(PendingWildernessNonHeroJoinConversationClose pending)
+	private static bool DoesWildernessNonHeroJoinEncounterMatch(WildernessNonHeroJoinConversationCloseContext context)
 	{
-		if (pending == null || PlayerEncounter.Current == null)
+		if (context == null || PlayerEncounter.Current == null)
 		{
 			return false;
 		}
@@ -5514,15 +5475,15 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		if (pending.SourcePartyBase != null && encountered == pending.SourcePartyBase)
+		if (context.SourcePartyBase != null && encountered == context.SourcePartyBase)
 		{
 			return true;
 		}
-		if (pending.SourceParty != null && encountered.MobileParty == pending.SourceParty)
+		if (context.SourceParty != null && encountered.MobileParty == context.SourceParty)
 		{
 			return true;
 		}
-		return !string.IsNullOrEmpty(pending.SourcePartyId) && string.Equals(encountered.MobileParty?.StringId, pending.SourcePartyId, StringComparison.OrdinalIgnoreCase);
+		return !string.IsNullOrEmpty(context.SourcePartyId) && string.Equals(encountered.MobileParty?.StringId, context.SourcePartyId, StringComparison.OrdinalIgnoreCase);
 	}
 
 	private static bool DoesPendingHeroJoinConversationMatch(PendingHeroJoinConversationClose pending)
@@ -5675,43 +5636,118 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			statusText = "执行失败：无法确定升格 Hero 的个人名，已取消升格。";
 			return false;
 		}
-		Settlement bornSettlement = Settlement.CurrentSettlement ?? PlayerEncounter.EncounterSettlement ?? MobileParty.MainParty?.CurrentSettlement;
-		int age = ResolvePromotedHeroAge(bodyProperties, template);
-		Hero hero = HeroCreator.CreateSpecialHero(template, bornSettlement, null, null, age);
-		TextObject heroName = new TextObject(personalName);
-		hero.SetName(heroName, heroName);
-		hero.StaticBodyProperties = bodyProperties.StaticProperties;
-		hero.Weight = ClampBodyShape01(bodyProperties.DynamicProperties.Weight);
-		hero.Build = ClampBodyShape01(bodyProperties.DynamicProperties.Build);
-		TryActivatePromotedCompanionHero(hero, "new_nonhero_promotion");
-		ApplyTemplateSkillsToHero(hero, template);
-		ApplyPromotedCompanionRandomTraits(hero, template);
-		CopyCapturedEquipmentToHero(hero, capturedEquipment);
-		if (!TryMoveHeroToPlayerClanAsLordAndMainParty(hero, "nonhero_join_party_promotion", out statusText))
+		CharacterObject reservedPlayerTroop;
+		if (!TryReservePlayerOwnedTroopForPromotion(agent, template, out reservedPlayerTroop, out var reserveError))
 		{
+			statusText = reserveError;
 			return false;
 		}
-		LogPromotedCompanionGovernorEligibility(hero, "after_nonhero_promotion");
-		RememberPromotedNonHeroCompanion(targetAgentIndex, hero);
-		bool sceneFollowStarted = ShoutBehavior.TryForceSceneFollowPlayerForExternal(targetAgentIndex, transient: true, reason: "nonhero_join_party_promotion");
-		RemoveJoinedNonHeroLocationCharacters(template, targetAgentIndex, removeAllMatchingTavernMercenaries: false);
-		string cultureName = template.Culture?.Name?.ToString() ?? template.Culture?.StringId ?? "";
-		string sceneLabel = BuildCurrentSceneLabelForPrompt();
-		List<string> dialogueHistory = ShoutBehavior.GetAuxiliarySceneDialogueHistoryLinesForExternal(targetAgentIndex, 40) ?? new List<string>();
-		string cleanLatestReply = StripNonHeroJoinTag(latestReply);
-		if (!string.IsNullOrWhiteSpace(cleanLatestReply))
+		bool promotionCompleted = false;
+		try
 		{
-			dialogueHistory.Add((string.IsNullOrWhiteSpace(originalFullName) ? "NPC" : originalFullName) + ": " + cleanLatestReply);
+			Settlement bornSettlement = Settlement.CurrentSettlement ?? PlayerEncounter.EncounterSettlement ?? MobileParty.MainParty?.CurrentSettlement;
+			int age = ResolvePromotedHeroAge(bodyProperties, template);
+			Hero hero = HeroCreator.CreateSpecialHero(template, bornSettlement, null, null, age);
+			TextObject heroName = new TextObject(personalName);
+			hero.SetName(heroName, heroName);
+			hero.StaticBodyProperties = bodyProperties.StaticProperties;
+			hero.Weight = ClampBodyShape01(bodyProperties.DynamicProperties.Weight);
+			hero.Build = ClampBodyShape01(bodyProperties.DynamicProperties.Build);
+			TryActivatePromotedCompanionHero(hero, "new_nonhero_promotion");
+			ApplyTemplateSkillsToHero(hero, template);
+			ApplyPromotedCompanionRandomTraits(hero, template);
+			CopyCapturedEquipmentToHero(hero, capturedEquipment);
+			if (!TryMoveHeroToPlayerClanAsLordAndMainParty(hero, "nonhero_join_party_promotion", out statusText))
+			{
+				return false;
+			}
+			promotionCompleted = true;
+			promotedHero = hero;
+			RememberPromotedNonHeroCompanion(targetAgentIndex, hero);
+			LogPromotedCompanionGovernorEligibility(hero, "after_nonhero_promotion");
+			bool sceneFollowStarted = ShoutBehavior.TryForceSceneFollowPlayerForExternal(targetAgentIndex, transient: true, reason: "nonhero_join_party_promotion");
+			RemoveJoinedNonHeroLocationCharacters(template, targetAgentIndex, removeAllMatchingTavernMercenaries: false);
+			string cultureName = template.Culture?.Name?.ToString() ?? template.Culture?.StringId ?? "";
+			string sceneLabel = BuildCurrentSceneLabelForPrompt();
+			List<string> dialogueHistory = ShoutBehavior.GetAuxiliarySceneDialogueHistoryLinesForExternal(targetAgentIndex, 40) ?? new List<string>();
+			string cleanLatestReply = StripNonHeroJoinTag(latestReply);
+			if (!string.IsNullOrWhiteSpace(cleanLatestReply))
+			{
+				dialogueHistory.Add((string.IsNullOrWhiteSpace(originalFullName) ? "NPC" : originalFullName) + ": " + cleanLatestReply);
+			}
+			string joinFact = $"{hero.Name} 原为{originalTroopName}，在 {sceneLabel} 同意追随玩家，成为玩家家族成员并加入玩家队伍。";
+			MyBehavior.AppendExternalDialogueHistory(hero, null, null, "[AFEF NPC行为补充] " + joinFact);
+			RecordHeroJoinedPlayerClanForExternal(hero, "nonhero_join_party_promotion");
+			AppendPromotedHeroPriorHistory(hero, dialogueHistory);
+			string equipmentSummary = BuildEquipmentSummaryForPrompt(capturedEquipment);
+			_ = MyBehavior.GeneratePromotedNonHeroCompanionProfileForExternalAsync(hero, personalName, originalFullName, originalTroopName, template.StringId ?? "", cultureName, sceneLabel, joinFact, BuildDialogueHistoryForPrompt(dialogueHistory), equipmentSummary);
+			statusText = $"执行成功：{originalFullName} 已升格为玩家家族 Hero“{hero.Name}”，并加入玩家队伍{(sceneFollowStarted ? "，当前场景中已开始跟随玩家" : "")}。";
+			return true;
 		}
-		string joinFact = $"{hero.Name} 原为{originalTroopName}，在 {sceneLabel} 同意追随玩家，成为玩家家族成员并加入玩家队伍。";
-		MyBehavior.AppendExternalDialogueHistory(hero, null, null, "[AFEF NPC行为补充] " + joinFact);
-		RecordHeroJoinedPlayerClanForExternal(hero, "nonhero_join_party_promotion");
-		AppendPromotedHeroPriorHistory(hero, dialogueHistory);
-		string equipmentSummary = BuildEquipmentSummaryForPrompt(capturedEquipment);
-		_ = MyBehavior.GeneratePromotedNonHeroCompanionProfileForExternalAsync(hero, personalName, originalFullName, originalTroopName, template.StringId ?? "", cultureName, sceneLabel, joinFact, BuildDialogueHistoryForPrompt(dialogueHistory), equipmentSummary);
-		promotedHero = hero;
-		statusText = $"执行成功：{originalFullName} 已升格为玩家家族 Hero“{hero.Name}”，并加入玩家队伍{(sceneFollowStarted ? "，当前场景中已开始跟随玩家" : "")}。";
+		finally
+		{
+			if (!promotionCompleted && reservedPlayerTroop != null)
+			{
+				RestoreReservedPlayerOwnedTroopAfterFailedPromotion(reservedPlayerTroop);
+			}
+		}
+	}
+
+	private static bool TryReservePlayerOwnedTroopForPromotion(Agent agent, CharacterObject troop, out CharacterObject reservedTroop, out string statusText)
+	{
+		reservedTroop = null;
+		statusText = "";
+		PartyBase sourceParty = agent?.Origin?.BattleCombatant as PartyBase;
+		if (sourceParty != PartyBase.MainParty && sourceParty?.MobileParty != MobileParty.MainParty)
+		{
+			return true;
+		}
+		TroopRoster roster = MobileParty.MainParty?.MemberRoster;
+		if (troop == null || roster == null)
+		{
+			statusText = "执行失败：玩家队伍花名册不可用，无法消耗被升格的原士兵。";
+			return false;
+		}
+		int index = roster.FindIndexOfTroop(troop);
+		int total = index >= 0 ? roster.GetElementNumber(index) : 0;
+		int wounded = index >= 0 ? roster.GetElementWoundedNumber(index) : 0;
+		if (total - wounded <= 0)
+		{
+			statusText = $"执行失败：玩家队伍中没有可被升格的健康{troop.Name}，已取消生成 Hero。";
+			return false;
+		}
+		roster.AddToCounts(troop, -1, insertAtFront: false, woundedCount: 0, xpChange: 0, removeDepleted: true, index: -1);
+		int remaining = roster.GetTroopCount(troop);
+		if (remaining != total - 1)
+		{
+			if (remaining < total)
+			{
+				roster.AddToCounts(troop, total - remaining, insertAtFront: false, woundedCount: 0, xpChange: 0, removeDepleted: true, index: -1);
+			}
+			statusText = $"执行失败：未能从玩家队伍扣除被升格的{troop.Name}，已取消生成 Hero。";
+			return false;
+		}
+		reservedTroop = troop;
+		Logger.Log("RewardSystemBehavior", "[NonHeroJoin] reserved player troop for promotion troop=" + (troop.StringId ?? "") + " before=" + total + " after=" + remaining + " agentIndex=" + (agent?.Index ?? -1));
 		return true;
+	}
+
+	private static void RestoreReservedPlayerOwnedTroopAfterFailedPromotion(CharacterObject troop)
+	{
+		try
+		{
+			TroopRoster roster = MobileParty.MainParty?.MemberRoster;
+			if (troop == null || roster == null)
+			{
+				return;
+			}
+			roster.AddToCounts(troop, 1, insertAtFront: false, woundedCount: 0, xpChange: 0, removeDepleted: true, index: -1);
+			Logger.Log("RewardSystemBehavior", "[NonHeroJoin] restored player troop after failed promotion troop=" + (troop.StringId ?? ""));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("RewardSystemBehavior", "[NonHeroJoin] restore player troop after failed promotion failed troop=" + (troop?.StringId ?? "") + " error=" + ex.Message);
+		}
 	}
 
 	private static bool IsTavernMercenaryLike(CharacterObject character)

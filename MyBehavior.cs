@@ -144,6 +144,8 @@ public class MyBehavior : CampaignBehaviorBase
 
 		public PartyBase OwnerParty;
 
+		public Settlement SourceSettlement;
+
 		public Hero VolunteerOwner;
 
 		public List<int> VolunteerSlotIndices;
@@ -13816,7 +13818,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return true;
 		}
-		if (Regex.IsMatch(text, "^\\[ACTION:VOTE_DEAL:[^\\]]+\\]$", RegexOptions.IgnoreCase) || Regex.IsMatch(text, "^\\[ACTION:PROPOSE:[^\\]]+\\]$", RegexOptions.IgnoreCase))
+		if (Regex.IsMatch(text, "^\\[ACTION:AGENDA:[^\\]]+\\]$", RegexOptions.IgnoreCase))
 		{
 			return true;
 		}
@@ -13908,13 +13910,9 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return "离婚";
 		}
-		if (text.StartsWith("[ACTION:VOTE_DEAL:", StringComparison.OrdinalIgnoreCase))
+		if (text.StartsWith("[ACTION:AGENDA:", StringComparison.OrdinalIgnoreCase))
 		{
-			return "投票交易";
-		}
-		if (text.StartsWith("[ACTION:PROPOSE:", StringComparison.OrdinalIgnoreCase))
-		{
-			return "提出议程";
+			return "王国议程承诺";
 		}
 		if (IsWeeklyMemoryMaterialSiegeTag(text))
 		{
@@ -21738,6 +21736,14 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				continue;
 			}
+			if (flag && character.IsHero)
+			{
+				Hero heroObject = character.HeroObject;
+				if (heroObject == null || !heroObject.IsPrisoner || heroObject.PartyBelongedToAsPrisoner != ownerParty)
+				{
+					continue;
+				}
+			}
 			if (!flag && (character.IsHero || character == CharacterObject.PlayerCharacter))
 			{
 				continue;
@@ -21757,6 +21763,68 @@ public class MyBehavior : CampaignBehaviorBase
 				OwnerParty = ownerParty
 			};
 			entries.Add(item);
+		}
+	}
+
+	private static void AddPartyTransferDungeonHeroEntriesFromParty(List<PartyTransferPromptEntry> entries, PartyBase ownerParty, Settlement sourceSettlement, PartyTransferEntrySection section, ref int nextPromptIndex)
+	{
+		if (entries == null || ownerParty?.PrisonRoster == null || sourceSettlement == null)
+		{
+			return;
+		}
+		TroopRoster prisonRoster = ownerParty.PrisonRoster;
+		for (int i = 0; i < prisonRoster.Count; i++)
+		{
+			TroopRosterElement elementCopyAtIndex = prisonRoster.GetElementCopyAtIndex(i);
+			CharacterObject character = elementCopyAtIndex.Character;
+			Hero heroObject = character?.HeroObject;
+			if (character == null || !character.IsHero || heroObject == null || elementCopyAtIndex.Number <= 0 || !heroObject.IsPrisoner || heroObject.PartyBelongedToAsPrisoner != ownerParty)
+			{
+				continue;
+			}
+			if (entries.Any((PartyTransferPromptEntry x) => x != null && x.Section == section && x.Character == character))
+			{
+				continue;
+			}
+			entries.Add(new PartyTransferPromptEntry
+			{
+				PromptIndex = nextPromptIndex++,
+				Section = section,
+				Character = character,
+				DisplayName = GetPartyTransferEntryDisplayName(character),
+				Count = 1,
+				WoundedCount = 0,
+				WageDenarsPerDay = 0,
+				HirePriceDenarsPerUnit = 0,
+				BuyPriceDenarsPerUnit = GetPartyTransferPrisonerPrice(character),
+				IsHero = true,
+				OwnerParty = ownerParty,
+				SourceSettlement = sourceSettlement
+			});
+		}
+	}
+
+	private static void AddPartyTransferDungeonHeroEntries(List<PartyTransferPromptEntry> entries, Clan ownerClan, PartyTransferEntrySection section, ref int nextPromptIndex)
+	{
+		if (entries == null || ownerClan == null)
+		{
+			return;
+		}
+		foreach (Town fief in ownerClan.Fiefs)
+		{
+			Settlement settlement = fief?.Settlement;
+			if (settlement == null || !settlement.IsFortification || settlement.OwnerClan != ownerClan)
+			{
+				continue;
+			}
+			AddPartyTransferDungeonHeroEntriesFromParty(entries, settlement.Party, settlement, section, ref nextPromptIndex);
+			foreach (MobileParty party in settlement.Parties)
+			{
+				if (party != null && party.IsGarrison)
+				{
+					AddPartyTransferDungeonHeroEntriesFromParty(entries, party.Party, settlement, section, ref nextPromptIndex);
+				}
+			}
 		}
 	}
 
@@ -21861,10 +21929,18 @@ public class MyBehavior : CampaignBehaviorBase
 			AddPartyTransferEntriesFromRoster(list, partyBase.MemberRoster, partyBase, PartyTransferEntrySection.PlayerTroops, ref num);
 			AddPartyTransferEntriesFromRoster(list, partyBase.PrisonRoster, partyBase, PartyTransferEntrySection.PlayerPrisoners, ref num);
 		}
+		if (flag)
+		{
+			AddPartyTransferDungeonHeroEntries(list, Clan.PlayerClan, PartyTransferEntrySection.PlayerPrisoners, ref num);
+		}
 		if (flag && partyBase2 != null)
 		{
 			AddPartyTransferEntriesFromRoster(list, partyBase2.MemberRoster, partyBase2, PartyTransferEntrySection.NpcTroops, ref num);
 			AddPartyTransferEntriesFromRoster(list, partyBase2.PrisonRoster, partyBase2, PartyTransferEntrySection.NpcPrisoners, ref num);
+		}
+		if (flag)
+		{
+			AddPartyTransferDungeonHeroEntries(list, hero?.Clan, PartyTransferEntrySection.NpcPrisoners, ref num);
 		}
 		AddPartyTransferEntriesFromVolunteers(list, hero, ref num);
 		return list;
@@ -22530,6 +22606,11 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					stringBuilder.Append(" | 英雄俘虏");
 				}
+				string sourceLabel = GetPartyTransferPrisonerSourceLabelForExternal(item);
+				if (!string.IsNullOrWhiteSpace(sourceLabel))
+				{
+					stringBuilder.Append(" | 来源 ").Append(sourceLabel);
+				}
 				stringBuilder.Append(" | 购买价 ").Append(Math.Max(1, item.BuyPriceDenarsPerUnit)).Append("第纳尔/人");
 			}
 			else
@@ -22547,6 +22628,19 @@ public class MyBehavior : CampaignBehaviorBase
 				stringBuilder.Append(" | 雇佣价 ").Append(Math.Max(1, item.HirePriceDenarsPerUnit)).Append("第纳尔/人");
 			}
 			sb.AppendLine(stringBuilder.ToString());
+		}
+	}
+
+	public static string GetPartyTransferPrisonerSourceLabelForExternal(PartyTransferPromptEntry entry)
+	{
+		try
+		{
+			string settlementName = (entry?.SourceSettlement?.Name?.ToString() ?? "").Trim();
+			return string.IsNullOrWhiteSpace(settlementName) ? "" : (settlementName + "地牢");
+		}
+		catch
+		{
+			return "";
 		}
 	}
 
@@ -22737,6 +22831,7 @@ public class MyBehavior : CampaignBehaviorBase
 				BuyPriceDenarsPerUnit = entry.BuyPriceDenarsPerUnit,
 				IsHero = entry.IsHero,
 				OwnerParty = entry.OwnerParty,
+				SourceSettlement = entry.SourceSettlement,
 				VolunteerOwner = entry.VolunteerOwner,
 				VolunteerSlotIndices = entry.VolunteerSlotIndices == null ? null : new List<int>(entry.VolunteerSlotIndices)
 			});
@@ -22976,7 +23071,32 @@ public class MyBehavior : CampaignBehaviorBase
 		return num;
 	}
 
-	private static int TransferPartyPrisonerEntry(PartyTransferPromptEntry entry, int requestedAmount, PartyBase targetParty)
+	private static bool IsPartyTransferDungeonSourceValid(PartyTransferPromptEntry entry, Clan expectedOwnerClan)
+	{
+		if (entry?.SourceSettlement == null)
+		{
+			return true;
+		}
+		Settlement sourceSettlement = entry.SourceSettlement;
+		if (expectedOwnerClan == null || sourceSettlement.OwnerClan != expectedOwnerClan || !sourceSettlement.IsFortification)
+		{
+			return false;
+		}
+		if (entry.OwnerParty == sourceSettlement.Party)
+		{
+			return true;
+		}
+		try
+		{
+			return sourceSettlement.Parties.Any((MobileParty x) => x != null && x.IsGarrison && x.Party == entry.OwnerParty);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static int TransferPartyPrisonerEntry(PartyTransferPromptEntry entry, int requestedAmount, PartyBase targetParty, Clan expectedDungeonOwnerClan = null)
 	{
 		if (entry == null || targetParty == null || entry.OwnerParty == null || entry.OwnerParty == targetParty || entry.Character == null)
 		{
@@ -22984,14 +23104,20 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		if (entry.Character.IsHero)
 		{
-			if (requestedAmount <= 0)
+			Hero heroObject = entry.Character.HeroObject;
+			TroopRoster sourceRoster = entry.OwnerParty.PrisonRoster;
+			if (requestedAmount <= 0 || heroObject == null || !heroObject.IsPrisoner || heroObject.PartyBelongedToAsPrisoner != entry.OwnerParty || sourceRoster == null || sourceRoster.FindIndexOfTroop(entry.Character) < 0 || !IsPartyTransferDungeonSourceValid(entry, expectedDungeonOwnerClan))
+			{
+				return 0;
+			}
+			if (targetParty.PrisonRoster?.FindIndexOfTroop(entry.Character) >= 0)
 			{
 				return 0;
 			}
 			try
 			{
 				TransferPrisonerAction.Apply(entry.Character, entry.OwnerParty, targetParty);
-				return 1;
+				return heroObject.PartyBelongedToAsPrisoner == targetParty && (targetParty.PrisonRoster?.FindIndexOfTroop(entry.Character) ?? (-1)) >= 0 ? 1 : 0;
 			}
 			catch
 			{
@@ -23115,7 +23241,8 @@ public class MyBehavior : CampaignBehaviorBase
 				void applyPrisoner(PartyTransferPromptEntry entry, int requested, string source)
 				{
 					attemptedEntries++;
-					int applied = TransferPartyPrisonerEntry(entry, requested, party);
+					Clan expectedSourceClan = ResolvePartyTransferRuleHero(targetHero, targetCharacter)?.Clan;
+					int applied = TransferPartyPrisonerEntry(entry, requested, party, expectedSourceClan);
 					Logger.Log("Logic", "[PartyTransfer] ATP source=" + source + " amount=" + requested + " resolved=" + (entry?.DisplayName ?? "null") + " applied=" + applied);
 					if (applied <= 0)
 					{
@@ -23226,7 +23353,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		if (entry.Section == PartyTransferEntrySection.PlayerPrisoners)
 		{
-			return TransferPartyPrisonerEntry(entry, amount, partyBase);
+			return TransferPartyPrisonerEntry(entry, amount, partyBase, Clan.PlayerClan);
 		}
 		return 0;
 	}
@@ -26370,7 +26497,7 @@ public class MyBehavior : CampaignBehaviorBase
 		if (AIConfigHandler.IsPlayerPartyTradeLimitedTarget(hero))
 		{
 			excludedRuleIds.Add("loan");
-			excludedRuleIds.Add("vote_deal");
+			excludedRuleIds.Add("kingdom_agenda");
 			excludedRuleIds.Add("diplomacy");
 			excludedRuleIds.Add("party_transfer");
 			excludedRuleIds.Add("settlement_transfer");
@@ -26499,8 +26626,7 @@ public class MyBehavior : CampaignBehaviorBase
 		string id = (ruleId ?? "").Trim();
 		return string.Equals(id, "kingdom_vassalage", StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(id, "diplomacy", StringComparison.OrdinalIgnoreCase)
-			|| string.Equals(id, "vote_deal", StringComparison.OrdinalIgnoreCase)
-			|| string.Equals(id, "propose_agenda", StringComparison.OrdinalIgnoreCase);
+			|| string.Equals(id, "kingdom_agenda", StringComparison.OrdinalIgnoreCase);
 	}
 
 	private string ResolvePreselectedRuleInstructionBody(string ruleId, string body, bool hasAnyHero, Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex)
@@ -26783,7 +26909,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			AddReferralTip(tips, "臣属需双方国王");
 		}
-		if (AnyRestrictedReferralRuleBlocked(hasAnyHero, targetHero, targetCharacter, targetAgentIndex, excludedRuleIdSet, "vote_deal", "propose_agenda"))
+		if (AnyRestrictedReferralRuleBlocked(hasAnyHero, targetHero, targetCharacter, targetAgentIndex, excludedRuleIdSet, "kingdom_agenda"))
 		{
 			AddReferralTip(tips, "投票/提案找领主或国王");
 		}
@@ -26850,8 +26976,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 		case "diplomacy":
 		case "kingdom_vassalage":
-		case "vote_deal":
-		case "propose_agenda":
+		case "kingdom_agenda":
 		case "marriage":
 		case "vanilla_issue":
 		case "lords_hall_access":
@@ -29184,6 +29309,20 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 				shoutPromptContext.EntityPostprocessContext = entityPromptContext.PostprocessPromptBlock ?? "";
 				Logger.Log("WorldEntityRetrieval", "entity_context matches=" + entityPromptContext.MatchCount + " residentKingdoms=" + includeResidentKingdomEntities + " mainLen=" + ((entityPromptContext.MainPromptBlock ?? "").Length) + " postLen=" + ((entityPromptContext.PostprocessPromptBlock ?? "").Length));
+			}
+			if (entityRetrievalRuleIds.Contains("kingdom_agenda"))
+			{
+				WorldEntityPromptContext agendaPromptContext = VoteDealBehavior.BuildUnifiedAgendaPromptContextForExternal(entityContextHero, mentionedEntities);
+				if (agendaPromptContext != null && agendaPromptContext.HasContent)
+				{
+					if (!string.IsNullOrWhiteSpace(agendaPromptContext.MainPromptBlock)) stringBuilder.AppendLine(agendaPromptContext.MainPromptBlock);
+					if (!string.IsNullOrWhiteSpace(agendaPromptContext.PostprocessPromptBlock))
+					{
+						shoutPromptContext.EntityPostprocessContext = string.IsNullOrWhiteSpace(shoutPromptContext.EntityPostprocessContext)
+							? agendaPromptContext.PostprocessPromptBlock
+							: (shoutPromptContext.EntityPostprocessContext.TrimEnd() + "\n" + agendaPromptContext.PostprocessPromptBlock);
+					}
+				}
 			}
 			LogShoutPromptContextStage("entity_context_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "hasContent=" + (entityPromptContext != null && entityPromptContext.HasContent) + " chars=" + stringBuilder.Length);
 		}
