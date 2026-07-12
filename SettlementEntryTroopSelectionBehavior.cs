@@ -2155,11 +2155,11 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				ApplyOwnedSettlementIncidentConsequences(source);
 				EnsurePlayerTeam(mission, main, requireCommandTeam: true);
 				KeepPlayerEntryFollowersCommandable(refreshFormation: true);
-				EnsureSetsCommandUiReadyForExternal(mission, "owned_settlement_incident", force: true, preserveSelection: true);
-				if (mission.Mode != MissionMode.Battle && mission.Mode != MissionMode.Conversation && mission.Mode != MissionMode.Barter)
+				if (mission.Mode == MissionMode.Battle)
 				{
-					mission.SetMissionMode(MissionMode.Battle, atStart: false);
+					mission.SetMissionMode(MissionMode.StartUp, atStart: false);
 				}
+				EnsureSetsCommandUiReadyForExternal(mission, "owned_settlement_incident", force: true, preserveSelection: true);
 				MaintainOwnedSettlementIncidentPanic(force: true);
 				ClearSetsUsableProtectionState("owned_settlement_incident");
 				InformationManager.DisplayMessage(new InformationMessage("【SETS】自有/附属城镇事件已触发，平民正在逃散。可随时按 TAB 退出后进入 SETS 专用处置菜单。", Color.FromUint(WarningColor)));
@@ -2188,6 +2188,10 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				Mission mission = base.Mission;
 				Agent main = Agent.Main ?? mission?.MainAgent;
 				if (mission == null || main == null || !main.IsActive())
+				{
+					return;
+				}
+				if (mission.Mode == MissionMode.Conversation || mission.Mode == MissionMode.Barter)
 				{
 					return;
 				}

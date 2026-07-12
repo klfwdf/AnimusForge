@@ -959,9 +959,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		float range = initialRange + (maxRange - initialRange) * progress;
 		float totalAngle = ShoutInitialTotalAngleRadians + (ShoutMaxTotalAngleRadians - ShoutInitialTotalAngleRadians) * progress;
 		float halfAngle = totalAngle * 0.5f;
-		List<Agent> agents = (ShoutUtils.GetNearbyNPCAgents(range, halfAngle) ?? new List<Agent>())
-			.Where(a => a != null && !IsSetsSelectedEntryFollower(a))
-			.ToList();
+		List<Agent> agents = SelectShoutTargetAgents(ShoutUtils.GetNearbyNPCAgents(range, halfAngle));
 		Agent primary = ShoutUtils.GetMostCenteredAgent(agents) ?? agents.FirstOrDefault();
 		Dictionary<int, float> candidateDistances = new Dictionary<int, float>();
 		foreach (Agent agent in agents)
@@ -983,6 +981,18 @@ public class ShoutBehavior : CampaignBehaviorBase
 			CandidateAgentIndices = agents.Where((Agent agent) => agent != null).Select((Agent agent) => agent.Index).Distinct().ToList(),
 			CandidatePlayerDistancesMeters = candidateDistances
 		};
+	}
+
+	private static List<Agent> SelectShoutTargetAgents(List<Agent> nearbyAgents)
+	{
+		List<Agent> liveAgents = (nearbyAgents ?? new List<Agent>())
+			.Where((Agent agent) => agent != null && agent.IsHuman && agent.IsActive())
+			.ToList();
+		Agent centeredAgent = ShoutUtils.GetMostCenteredAgent(liveAgents) ?? liveAgents.FirstOrDefault();
+		bool centeredIsSetsFollower = IsSetsSelectedEntryFollower(centeredAgent);
+		return liveAgents
+			.Where((Agent agent) => !IsSetsSelectedEntryFollower(agent) || (centeredIsSetsFollower && agent.Index == centeredAgent.Index))
+			.ToList();
 	}
 
 	private static bool TryGetPlayerPlanarDistanceMeters(Agent targetAgent, out float distanceMeters)
@@ -1436,9 +1446,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 	{
 		if (targetingContext == null)
 		{
-			return (ShoutUtils.GetNearbyNPCAgents() ?? new List<Agent>())
-				.Where(a => a != null && !IsSetsSelectedEntryFollower(a))
-				.ToList();
+			return SelectShoutTargetAgents(ShoutUtils.GetNearbyNPCAgents());
 		}
 		Mission mission = Mission.Current;
 		var agents = mission?.Agents;
@@ -1450,7 +1458,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		Dictionary<int, Agent> liveAgents = new Dictionary<int, Agent>();
 		foreach (Agent agent in agents)
 		{
-			if (agent != null && wanted.Contains(agent.Index) && agent != Agent.Main && agent.IsActive() && agent.IsHuman && !IsSetsSelectedEntryFollower(agent))
+			if (agent != null && wanted.Contains(agent.Index) && agent != Agent.Main && agent.IsActive() && agent.IsHuman)
 			{
 				liveAgents[agent.Index] = agent;
 			}
@@ -2598,8 +2606,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 				&& agent.IsHuman
 				&& agent.IsActive()
 				&& agent.State == AgentState.Active
-				&& agent.Health > 0f
-				&& !IsSetsSelectedEntryFollower(agent);
+				&& agent.Health > 0f;
 		}
 		catch
 		{
@@ -9720,7 +9727,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		try
 		{
-			if (speakerAgent == null || !speakerAgent.IsActive() || IsSetsSelectedEntryFollower(speakerAgent) || string.IsNullOrWhiteSpace(content) || Mission.Current == null)
+			if (speakerAgent == null || !speakerAgent.IsActive() || string.IsNullOrWhiteSpace(content) || Mission.Current == null)
 			{
 				return;
 			}
@@ -23554,7 +23561,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return speakingCandidates;
 		}
 		HashSet<int> addedAgentIndices = new HashSet<int>();
-		if (primaryNpc != null && !IsSetsSelectedEntryFollowerNpc(primaryNpc) && addedAgentIndices.Add(primaryNpc.AgentIndex))
+		if (primaryNpc != null && addedAgentIndices.Add(primaryNpc.AgentIndex))
 		{
 			speakingCandidates.Add(primaryNpc);
 		}
@@ -23579,7 +23586,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	private static int CountPotentialGroupSpeakingCandidates(List<NpcDataPacket> allNpcData, NpcDataPacket primaryNpc)
 	{
 		HashSet<int> candidateAgentIndices = new HashSet<int>();
-		if (primaryNpc != null && !IsSetsSelectedEntryFollowerNpc(primaryNpc))
+		if (primaryNpc != null)
 		{
 			candidateAgentIndices.Add(primaryNpc.AgentIndex);
 		}
