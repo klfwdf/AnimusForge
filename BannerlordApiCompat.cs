@@ -190,9 +190,7 @@ internal static class BannerlordApiCompat
 		IAgentOriginBase origin,
 		int formationTroopCount,
 		int formationTroopIndex,
-		FormationClass formationClass,
-		Vec3? initialPosition = null,
-		Vec2? initialDirection = null)
+		FormationClass formationClass)
 	{
 		if (mission == null || origin == null)
 		{
@@ -217,8 +215,8 @@ internal static class BannerlordApiCompat
 				formationTroopCount,
 				formationTroopIndex,
 				formationClass,
-				initialPosition,
-				initialDirection)).ToArray();
+				null,
+				null)).ToArray();
 			return method.Invoke(mission, args) as Agent;
 		}
 		catch (Exception ex)

@@ -2885,6 +2885,14 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 
 	private readonly TroopRoster _inspectionPrisonerRoster;
 
+	private readonly Action<Agent, bool> _externalPrisonerSpawned;
+
+	private readonly Action<int, int, int> _externalPrisonerSpawnCompleted;
+
+	private readonly Action<string> _externalCleanup;
+
+	private readonly bool _externalControlsPrisonersAfterDeployment;
+
 	private BattleEndLogic _battleEndLogic;
 
 	private bool _battleEndDisabled;
@@ -2995,9 +3003,33 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 	}
 
 	public TroopInspectionMissionLogic(string dummyPartyStringId, TroopRoster inspectionPrisonerRoster)
+		: this(dummyPartyStringId, inspectionPrisonerRoster, null, null, null, false)
+	{
+	}
+
+	internal TroopInspectionMissionLogic(
+		TroopRoster inspectionPrisonerRoster,
+		Action<Agent, bool> externalPrisonerSpawned,
+		Action<int, int, int> externalPrisonerSpawnCompleted,
+		Action<string> externalCleanup)
+		: this(null, inspectionPrisonerRoster, externalPrisonerSpawned, externalPrisonerSpawnCompleted, externalCleanup, true)
+	{
+	}
+
+	private TroopInspectionMissionLogic(
+		string dummyPartyStringId,
+		TroopRoster inspectionPrisonerRoster,
+		Action<Agent, bool> externalPrisonerSpawned,
+		Action<int, int, int> externalPrisonerSpawnCompleted,
+		Action<string> externalCleanup,
+		bool externalControlsPrisonersAfterDeployment)
 	{
 		_dummyPartyStringId = dummyPartyStringId;
 		_inspectionPrisonerRoster = inspectionPrisonerRoster != null ? TroopInspectionBehavior.CloneRoster(inspectionPrisonerRoster) : null;
+		_externalPrisonerSpawned = externalPrisonerSpawned;
+		_externalPrisonerSpawnCompleted = externalPrisonerSpawnCompleted;
+		_externalCleanup = externalCleanup;
+		_externalControlsPrisonersAfterDeployment = externalControlsPrisonersAfterDeployment;
 	}
 
 	public override void OnBehaviorInitialize()
@@ -3063,12 +3095,17 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		}
 		DetectDeploymentEnd();
 		TryLogAgentCounts();
-		RefreshPrisonerPoses(dt);
+		if (!_externalControlsPrisonersAfterDeployment)
+		{
+			RefreshPrisonerPoses(dt);
+		}
 		ContinuousAgentRefresh(dt);
 		if (!_inspectionMessageShown && _deploymentEndDetected && base.Mission != null && base.Mission.CurrentTime > 2f)
 		{
 			_inspectionMessageShown = true;
-			AnimusForgeQuickInfo.Show("检阅模式：可自由指挥部队进行检阅。按TAB撤退结束检阅。");
+			AnimusForgeQuickInfo.Show(_externalControlsPrisonersAfterDeployment
+				? "城堡处置：可用原版指挥系统调整士兵与俘虏站位。按TAB结束处置。"
+				: "检阅模式：可自由指挥部队进行检阅。按TAB撤退结束检阅。");
 			Log("inspection_message_shown");
 		}
 	}
@@ -3104,7 +3141,10 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		ForceLordPrisonerFormationClass("direct_spawn_no_deployment");
 		EnsurePrisonerFormationsIsolated("direct_spawn_no_deployment");
 		TryRecalculateLordPrisonerFormationWidth("direct_spawn_no_deployment", onlyIfAnomalous: true);
-		FreezePrisoners();
+		if (!_externalControlsPrisonersAfterDeployment)
+		{
+			FreezePrisoners();
+		}
 		Log("deployment_bypassed_for_prisoners reason=direct_spawn_no_vanilla_deployment mode=" + (base.Mission?.Mode.ToString() ?? "null") + " current_time=" + (base.Mission?.CurrentTime.ToString("0.00") ?? "null"));
 		TryDisableBattleEndLogic("direct_spawn_no_deployment");
 	}
@@ -3208,7 +3248,10 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 			{
 				_deploymentEndDetected = true;
 				ForceLordPrisonerFormationClass("deployment_end");
-				FreezePrisoners();
+				if (!_externalControlsPrisonersAfterDeployment)
+				{
+					FreezePrisoners();
+				}
 				Log("deployment_ended detection");
 				TryDisableBattleEndLogic("deployment_ended");
 			}
@@ -3333,6 +3376,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 						agent.DisableScriptedMovement();
 						_prisonerIsLordMap[agent] = true;
 						ApplyPrisonerPose(agent, isLord: true, afterDeployment: false);
+						NotifyExternalPrisonerSpawned(agent, isLord: true);
 						Logger.LogEvent("TroopInspection", $"spawn_prisoner_hero ok troop={character.StringId} team={agent.Team?.Side.ToString() ?? "null"} formation={agent.Formation?.FormationIndex.ToString() ?? "null"} pos={agent.Position}");
 						spawnedHeroes++;
 					}
@@ -3370,6 +3414,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 						agent.DisableScriptedMovement();
 						_prisonerIsLordMap[agent] = false;
 						ApplyPrisonerPose(agent, isLord: false, afterDeployment: false);
+						NotifyExternalPrisonerSpawned(agent, isLord: false);
 						Logger.LogEvent("TroopInspection", $"spawn_prisoner_regular ok troop={character.StringId} team={agent.Team?.Side.ToString() ?? "null"} formation={agent.Formation?.FormationIndex.ToString() ?? "null"} pos={agent.Position}");
 						spawnedRegulars++;
 					}
@@ -3399,7 +3444,8 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		{
 			EnsurePrisonerFormationsIsolated("after_spawn");
 		}
-		if (spawned > 0)
+		NotifyExternalPrisonerSpawnCompleted(totalCount, spawnedRegulars, spawnedHeroes);
+		if (!_externalControlsPrisonersAfterDeployment && spawned > 0)
 		{
 			string msg = "阅兵：";
 			if (spawnedHeroes > 0)
@@ -3412,13 +3458,37 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 			}
 			AnimusForgeQuickInfo.Show(msg);
 		}
-		else if (totalErrors > 0)
+		else if (!_externalControlsPrisonersAfterDeployment && totalErrors > 0)
 		{
 			AnimusForgeQuickInfo.Show("阅兵：囚犯生成失败(" + totalErrors + "/" + totalCount + ") 错误: " + lastError);
 		}
-		else
+		else if (!_externalControlsPrisonersAfterDeployment)
 		{
 			AnimusForgeQuickInfo.Show("阅兵：囚犯生成失败(" + totalCount + "名尝试，0名成功)。");
+		}
+	}
+
+	private void NotifyExternalPrisonerSpawned(Agent agent, bool isLord)
+	{
+		try
+		{
+			_externalPrisonerSpawned?.Invoke(agent, isLord);
+		}
+		catch (Exception ex)
+		{
+			Log("external_prisoner_spawned callback failed: " + ex.GetType().Name + ": " + ex.Message);
+		}
+	}
+
+	private void NotifyExternalPrisonerSpawnCompleted(int selectedCount, int spawnedRegulars, int spawnedLords)
+	{
+		try
+		{
+			_externalPrisonerSpawnCompleted?.Invoke(selectedCount, spawnedRegulars, spawnedLords);
+		}
+		catch (Exception ex)
+		{
+			Log("external_prisoner_spawn_completed callback failed: " + ex.GetType().Name + ": " + ex.Message);
 		}
 	}
 
@@ -4450,6 +4520,14 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		if (TroopInspectionBehavior.IsCurrentInspectionRuntime(_dummyPartyStringId))
 		{
 			TroopInspectionBehavior.CleanupRuntime(reason);
+		}
+		try
+		{
+			_externalCleanup?.Invoke(reason);
+		}
+		catch (Exception ex)
+		{
+			Log("external_cleanup callback failed: " + ex.GetType().Name + ": " + ex.Message);
 		}
 		_prisonerIsLordMap.Clear();
 		_civilianPrisonerActionSetApplied.Clear();

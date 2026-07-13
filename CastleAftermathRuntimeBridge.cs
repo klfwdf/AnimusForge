@@ -4,12 +4,10 @@ using System.Linq;
 using AnimusForge.SiegeAftermathIntervention;
 using Helpers;
 using TaleWorlds.CampaignSystem;
-using TaleWorlds.CampaignSystem.AgentOrigins;
 using TaleWorlds.CampaignSystem.GameState;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.Core;
-using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
@@ -174,13 +172,26 @@ internal static class CastleAftermathRuntimeBridge
 	{
 		try
 		{
-			if (mission == null || SelectedPrisonerCount <= 0 || mission.GetMissionBehavior<CastleAftermathPrisonerMissionBehavior>() != null)
+			if (mission == null)
 			{
 				return;
 			}
 
-			mission.AddMissionBehavior(new CastleAftermathPrisonerMissionBehavior(GetSelectedPrisonerRosterSnapshot()));
-			Logger.Log("CastleAftermath", "Attached castle prisoner mission behavior. Selected=" + SelectedPrisonerCount);
+			CastleAftermathPrisonerCommandMissionBehavior commandBehavior = mission.GetMissionBehavior<CastleAftermathPrisonerCommandMissionBehavior>();
+			if (commandBehavior == null)
+			{
+				commandBehavior = new CastleAftermathPrisonerCommandMissionBehavior(SelectedPrisonerCount);
+				mission.AddMissionBehavior(commandBehavior);
+			}
+			if (mission.GetMissionBehavior<TroopInspectionMissionLogic>() == null)
+			{
+				mission.AddMissionBehavior(new TroopInspectionMissionLogic(
+					GetSelectedPrisonerRosterSnapshot(),
+					commandBehavior.RegisterPrisoner,
+					commandBehavior.CompleteSpawn,
+					commandBehavior.SharedCleanup));
+			}
+			Logger.Log("CastleAftermath", "Attached troop-inspection prisoner and castle command behaviors. Selected=" + SelectedPrisonerCount);
 		}
 		catch (Exception ex)
 		{
@@ -299,16 +310,8 @@ internal static class CastleAftermathRuntimeBridge
 	}
 }
 
-internal sealed class CastleAftermathPrisonerMissionBehavior : MissionLogic
+internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLogic
 {
-	private sealed class SpawnEntry
-	{
-		internal CharacterObject Character;
-		internal bool IsLord;
-		internal int GroupIndex;
-		internal int GroupCount;
-	}
-
 	private sealed class FormationMovementState
 	{
 		internal bool Initialized;
@@ -319,93 +322,88 @@ internal sealed class CastleAftermathPrisonerMissionBehavior : MissionLogic
 	}
 
 	private const float MoveOrderDeltaSquared = 0.64f;
-
 	private const float MoveArrivalDistanceSquared = 6.25f;
-
 	private const float MoveTimeoutSeconds = 12f;
-
 	private const float PoseRefreshSeconds = 1f;
-
 	private const float MovePollSeconds = 0.2f;
 
-	private readonly TroopRoster _selectedPrisoners;
-
-	private readonly Queue<SpawnEntry> _spawnQueue = new Queue<SpawnEntry>();
-
+	private readonly int _selectedCount;
 	private readonly Dictionary<Agent, bool> _agents = new Dictionary<Agent, bool>();
-
 	private readonly Dictionary<Formation, FormationMovementState> _movementStates = new Dictionary<Formation, FormationMovementState>();
-
 	private readonly HashSet<Agent> _civilianActionSetApplied = new HashSet<Agent>();
 
-	private bool _queueInitialized;
-
 	private bool _spawnCompleted;
-
+	private bool _movementInitialized;
+	private bool _completionLogged;
+	private bool _cleaned;
 	private float _nextPoseRefreshTime;
-
 	private float _nextMovePollTime;
-
 	private int _spawnedRegulars;
-
 	private int _spawnedLords;
 
-	private int _spawnAttempts;
-
-	internal CastleAftermathPrisonerMissionBehavior(TroopRoster selectedPrisoners)
+	internal CastleAftermathPrisonerCommandMissionBehavior(int selectedCount)
 	{
-		_selectedPrisoners = selectedPrisoners;
+		_selectedCount = Math.Max(0, selectedCount);
 	}
 
 	public override MissionBehaviorType BehaviorType => MissionBehaviorType.Other;
+
+	internal void RegisterPrisoner(Agent agent, bool isLord)
+	{
+		if (agent == null)
+		{
+			return;
+		}
+
+		_agents[agent] = isLord;
+		CastleAftermathRuntimeBridge.RegisterPrisonerAgent(agent, isLord);
+		SiegeAiInterventionBehavior.EnsureAgentPlayerCommandableForExternal(
+			agent,
+			SiegeCastleRosterSelectionProfile.PrisonerSpawnCommandSource);
+	}
+
+	internal void CompleteSpawn(int selectedCount, int spawnedRegulars, int spawnedLords)
+	{
+		_spawnedRegulars = Math.Max(0, spawnedRegulars);
+		_spawnedLords = Math.Max(0, spawnedLords);
+		_spawnCompleted = true;
+		Logger.Log("CastleAftermath", "Troop-inspection prisoner spawn callback completed. Selected="
+			+ selectedCount + ", Regular=" + _spawnedRegulars + ", Lords=" + _spawnedLords);
+	}
+
+	internal void SharedCleanup(string reason)
+	{
+		Cleanup("shared_" + (reason ?? "unknown"));
+	}
 
 	public override void OnMissionTick(float dt)
 	{
 		base.OnMissionTick(dt);
 		Mission mission = base.Mission;
-		if (mission == null || mission.IsMissionEnding)
+		if (!_spawnCompleted || mission == null || mission.IsMissionEnding || mission.Mode == MissionMode.Deployment)
 		{
 			return;
 		}
 
-		if (!_queueInitialized)
+		if (!_movementInitialized)
 		{
-			if (!TryInitializeSpawnQueue(mission))
-			{
-				return;
-			}
+			_movementInitialized = true;
+			InitializeFormationMovementStates(mission);
+			FreezeStationaryPrisoners();
 		}
 
-		if (!_spawnCompleted)
+		if (!_completionLogged)
 		{
-			SpawnNextBatch(mission);
-			if (_spawnQueue.Count == 0)
-			{
-				_spawnCompleted = true;
-				InitializeFormationMovementStates(mission);
-				int selectedCount = Math.Min(SiegeCastleRosterSelectionProfile.MaxPrisoners, _selectedPrisoners?.TotalManCount ?? 0);
-				int activeCount = _agents.Keys.Count(agent => agent != null && agent.IsHuman && agent.IsActive());
-				int formedCount = _agents.Keys.Count(agent => agent != null && agent.IsHuman && agent.IsActive() && agent.Formation != null);
-				bool commandUiReady = SiegeAiInterventionBehavior.EnsureInterventionCommandUiReadyForExternal(
-					mission,
-					SiegeCastleRosterSelectionProfile.PrisonerCommandUiRefreshSource);
-				Logger.Log("CastleAftermath", "Castle prisoner spawn completed. Selected=" + selectedCount
-					+ ", Attempts=" + _spawnAttempts + ", Created=" + (_spawnedRegulars + _spawnedLords)
-					+ ", Active=" + activeCount + ", Formed=" + formedCount
-					+ ", Regular=" + _spawnedRegulars + ", Lords=" + _spawnedLords
-					+ ", MissionAgents=" + (mission.Agents?.Count ?? 0) + ", CommandUiReady=" + commandUiReady);
-				AnimusForgeQuickInfo.Show(SiegeCastleRosterSelectionProfile.BuildPrisonerSceneReadyMessage(selectedCount, activeCount));
-			}
-			return;
+			_completionLogged = true;
+			LogCompletion(mission);
 		}
 
 		float now = mission.CurrentTime;
 		if (now >= _nextMovePollTime)
 		{
 			_nextMovePollTime = now + MovePollSeconds;
-			UpdateFormationMovement(mission, now);
+			UpdateFormationMovement(now);
 		}
-
 		if (now >= _nextPoseRefreshTime)
 		{
 			_nextPoseRefreshTime = now + PoseRefreshSeconds;
@@ -415,216 +413,14 @@ internal sealed class CastleAftermathPrisonerMissionBehavior : MissionLogic
 
 	public override void OnRemoveBehavior()
 	{
-		CastleAftermathRuntimeBridge.ClearMissionAgents("castle_prisoner_behavior_removed");
+		Cleanup("castle_prisoner_command_behavior_removed");
 		base.OnRemoveBehavior();
 	}
 
 	protected override void OnEndMission()
 	{
-		CastleAftermathRuntimeBridge.ClearMissionAgents("castle_prisoner_mission_ended");
+		Cleanup("castle_prisoner_command_mission_ended");
 		base.OnEndMission();
-	}
-
-	private bool TryInitializeSpawnQueue(Mission mission)
-	{
-		Agent main = Agent.Main ?? mission.MainAgent;
-		Team playerTeam = mission.PlayerTeam ?? main?.Team;
-		if (main == null || !main.IsActive() || playerTeam == null)
-		{
-			return false;
-		}
-
-		List<CharacterObject> regulars = new List<CharacterObject>();
-		List<CharacterObject> lords = new List<CharacterObject>();
-		foreach (TroopRosterElement element in _selectedPrisoners?.GetTroopRoster() ?? Enumerable.Empty<TroopRosterElement>())
-		{
-			CharacterObject character = element.Character;
-			if (character == null || element.Number <= 0)
-			{
-				continue;
-			}
-
-			int number = character.IsHero ? 1 : element.Number;
-			for (int i = 0; i < number; i++)
-			{
-				(character.IsHero ? lords : regulars).Add(character);
-			}
-		}
-
-		for (int i = 0; i < regulars.Count; i++)
-		{
-			_spawnQueue.Enqueue(new SpawnEntry { Character = regulars[i], IsLord = false, GroupIndex = i, GroupCount = regulars.Count });
-		}
-		for (int i = 0; i < lords.Count; i++)
-		{
-			_spawnQueue.Enqueue(new SpawnEntry { Character = lords[i], IsLord = true, GroupIndex = i, GroupCount = lords.Count });
-		}
-
-		_queueInitialized = true;
-		Logger.Log("CastleAftermath", "Initialized castle prisoner spawn queue. Regular=" + regulars.Count + ", Lords=" + lords.Count);
-		return true;
-	}
-
-	private void SpawnNextBatch(Mission mission)
-	{
-		int batch = Math.Min(SiegeCastleRosterSelectionProfile.PrisonerSpawnBatchSize, _spawnQueue.Count);
-		for (int i = 0; i < batch; i++)
-		{
-			SpawnEntry entry = _spawnQueue.Dequeue();
-			TrySpawnPrisoner(mission, entry);
-		}
-	}
-
-	private void TrySpawnPrisoner(Mission mission, SpawnEntry entry)
-	{
-		_spawnAttempts++;
-		try
-		{
-			Agent main = Agent.Main ?? mission.MainAgent;
-			Team team = mission.PlayerTeam ?? main?.Team;
-			if (main == null || team == null || entry?.Character == null)
-			{
-				return;
-			}
-
-			FormationClass formationClass = (FormationClass)(entry.IsLord
-				? SiegeCastleRosterSelectionProfile.LordPrisonerFormationIndex
-				: SiegeCastleRosterSelectionProfile.RegularPrisonerFormationIndex);
-			Formation formation = team.GetFormation(formationClass);
-			Vec3 position = BuildSpawnPosition(mission, main, entry);
-			Vec3 direction = main.Position - position;
-			direction.z = 0f;
-			if (direction.LengthSquared < 0.01f)
-			{
-				direction = main.LookDirection;
-			}
-			direction.Normalize();
-
-			PrisonerAgentOrigin origin = new PrisonerAgentOrigin(entry.Character);
-			bool previousCivilianEquipment = mission.DoesMissionRequireCivilianEquipment;
-			Agent agent;
-			try
-			{
-				mission.DoesMissionRequireCivilianEquipment = false;
-				agent = BannerlordApiCompat.SpawnPrisonerInspectionTroop(
-					mission,
-					origin,
-					Math.Max(1, entry.GroupCount),
-					entry.GroupIndex,
-					formationClass,
-					position,
-					direction.AsVec2.Normalized());
-			}
-			finally
-			{
-				mission.DoesMissionRequireCivilianEquipment = previousCivilianEquipment;
-			}
-			if (agent == null)
-			{
-				Logger.Log("CastleAftermath", "Spawn castle prisoner returned null. Character=" + entry.Character.StringId
-					+ ", Index=" + entry.GroupIndex + "/" + entry.GroupCount);
-				return;
-			}
-
-			if (formation != null && agent.Formation != formation)
-			{
-				agent.Formation = formation;
-				agent.TryAttachToFormation();
-			}
-			_agents[agent] = entry.IsLord;
-			CastleAftermathRuntimeBridge.RegisterPrisonerAgent(agent, entry.IsLord);
-			SiegeAiInterventionBehavior.EnsureAgentPlayerCommandableForExternal(
-				agent,
-				SiegeCastleRosterSelectionProfile.PrisonerSpawnCommandSource);
-			StripWeapons(agent);
-			ApplyPrisonerPose(agent);
-			if (entry.IsLord) _spawnedLords++; else _spawnedRegulars++;
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("CastleAftermath", "Spawn castle prisoner failed. Character=" + (entry?.Character?.StringId ?? "null") + ", Error=" + ex.Message);
-		}
-	}
-
-	private static Vec3 BuildSpawnPosition(Mission mission, Agent main, SpawnEntry entry)
-	{
-		Vec3 forward = main.LookDirection;
-		forward.z = 0f;
-		if (forward.LengthSquared < 0.01f)
-		{
-			forward = Vec3.Forward;
-		}
-		forward.Normalize();
-		Vec3 right = Vec3.CrossProduct(forward, Vec3.Up);
-		if (right.LengthSquared < 0.01f)
-		{
-			right = Vec3.Side;
-		}
-		right.Normalize();
-
-		int columns = entry.IsLord ? 4 : 12;
-		int row = entry.GroupIndex / columns;
-		int column = entry.GroupIndex % columns;
-		float centeredColumn = column - (Math.Min(columns, Math.Max(1, entry.GroupCount)) - 1) * 0.5f;
-		float forwardDistance = entry.IsLord ? 4.5f + row * 1.5f : 8f + row * 1.2f;
-		float sideOffset = centeredColumn * (entry.IsLord ? 1.6f : 1.15f);
-		Vec3 desired = main.Position + forward * forwardDistance + right * sideOffset;
-		if (TryProjectReachableSpawnPosition(mission, main.Position, desired, out Vec3 projected))
-		{
-			return projected;
-		}
-
-		foreach (float scale in new[] { 0.75f, 0.5f, 0.25f })
-		{
-			Vec3 closer = main.Position + (desired - main.Position) * scale;
-			if (TryProjectReachableSpawnPosition(mission, main.Position, closer, out projected))
-			{
-				return projected;
-			}
-		}
-
-		for (int i = 0; i < 8; i++)
-		{
-			Vec3 fallback = mission.GetRandomPositionAroundPoint(main.Position, 2f, 18f, true);
-			if (TryProjectReachableSpawnPosition(mission, main.Position, fallback, out projected))
-			{
-				return projected;
-			}
-		}
-
-		return main.Position;
-	}
-
-	private static bool TryProjectReachableSpawnPosition(Mission mission, Vec3 anchor, Vec3 candidate, out Vec3 projected)
-	{
-		projected = candidate;
-		try
-		{
-			Scene scene = mission?.Scene;
-			if (scene == null)
-			{
-				return false;
-			}
-
-			anchor.z = scene.GetGroundHeightAtPosition(anchor, BodyFlags.CommonCollisionExcludeFlags);
-			candidate.z = scene.GetGroundHeightAtPosition(candidate, BodyFlags.CommonCollisionExcludeFlags);
-			WorldPosition anchorWorld = new WorldPosition(scene, anchor);
-			WorldPosition candidateWorld = new WorldPosition(scene, candidate);
-			if (anchorWorld.GetNearestNavMesh() == UIntPtr.Zero
-				|| candidateWorld.GetNearestNavMesh() == UIntPtr.Zero
-				|| !scene.GetPathDistanceBetweenPositions(ref anchorWorld, ref candidateWorld, 0.45f, out float pathDistance)
-				|| pathDistance > 80f)
-			{
-				return false;
-			}
-
-			projected = candidateWorld.GetNavMeshVec3();
-			return true;
-		}
-		catch
-		{
-			return false;
-		}
 	}
 
 	private void InitializeFormationMovementStates(Mission mission)
@@ -642,7 +438,7 @@ internal sealed class CastleAftermathPrisonerMissionBehavior : MissionLogic
 		})
 		{
 			Formation formation = team.GetFormation((FormationClass)index);
-			if (formation == null || !_agents.Keys.Any(agent => agent != null && agent.Formation == formation))
+			if (formation == null || !_agents.Keys.Any(agent => agent != null && agent.IsActive() && agent.Formation == formation))
 			{
 				continue;
 			}
@@ -667,7 +463,7 @@ internal sealed class CastleAftermathPrisonerMissionBehavior : MissionLogic
 		}
 	}
 
-	private void UpdateFormationMovement(Mission mission, float now)
+	private void UpdateFormationMovement(float now)
 	{
 		foreach (KeyValuePair<Formation, FormationMovementState> pair in _movementStates.ToList())
 		{
@@ -753,6 +549,14 @@ internal sealed class CastleAftermathPrisonerMissionBehavior : MissionLogic
 		}
 	}
 
+	private void FreezeStationaryPrisoners()
+	{
+		foreach (Agent agent in _agents.Keys.ToList())
+		{
+			ApplyPrisonerPose(agent);
+		}
+	}
+
 	private void FreezeFormationPrisoners(Formation formation)
 	{
 		foreach (Agent agent in _agents.Keys.Where(agent => agent != null && agent.IsActive() && agent.Formation == formation).ToList())
@@ -763,9 +567,8 @@ internal sealed class CastleAftermathPrisonerMissionBehavior : MissionLogic
 
 	private void RefreshStationaryPrisonerPoses()
 	{
-		foreach (KeyValuePair<Agent, bool> pair in _agents.ToList())
+		foreach (Agent agent in _agents.Keys.ToList())
 		{
-			Agent agent = pair.Key;
 			if (agent == null || !agent.IsActive())
 			{
 				continue;
@@ -815,19 +618,14 @@ internal sealed class CastleAftermathPrisonerMissionBehavior : MissionLogic
 
 	private void TrySetCivilianPrisonerActionSet(Agent agent)
 	{
-		if (agent == null || _civilianActionSetApplied.Contains(agent))
-		{
-			return;
-		}
 		try
 		{
-			Monster monster = agent.Monster;
-			if (monster == null)
+			if (agent == null || !agent.IsActive() || _civilianActionSetApplied.Contains(agent) || agent.Monster == null)
 			{
 				return;
 			}
 			string actionSetCode = agent.IsFemale ? "as_human_female_villager" : "as_human_villager";
-			AnimationSystemData animationSystemData = monster.FillAnimationSystemData(MBActionSet.GetActionSet(actionSetCode), 1f, false);
+			AnimationSystemData animationSystemData = agent.Monster.FillAnimationSystemData(MBActionSet.GetActionSet(actionSetCode), 1f, false);
 			agent.SetActionSet(ref animationSystemData);
 			_civilianActionSetApplied.Add(agent);
 		}
@@ -836,25 +634,31 @@ internal sealed class CastleAftermathPrisonerMissionBehavior : MissionLogic
 		}
 	}
 
-	private static void StripWeapons(Agent agent)
+	private void LogCompletion(Mission mission)
 	{
-		if (agent == null)
+		int createdCount = _spawnedRegulars + _spawnedLords;
+		int activeCount = _agents.Keys.Count(agent => agent != null && agent.IsHuman && agent.IsActive());
+		int formedCount = _agents.Keys.Count(agent => agent != null && agent.IsHuman && agent.IsActive() && agent.Formation != null);
+		bool commandUiReady = SiegeAiInterventionBehavior.EnsureInterventionCommandUiReadyForExternal(
+			mission,
+			SiegeCastleRosterSelectionProfile.PrisonerCommandUiRefreshSource);
+		Logger.Log("CastleAftermath", "Castle prisoner spawn completed through troop-inspection pipeline. Selected=" + _selectedCount
+			+ ", Created=" + createdCount + ", Active=" + activeCount + ", Formed=" + formedCount
+			+ ", Regular=" + _spawnedRegulars + ", Lords=" + _spawnedLords
+			+ ", MissionAgents=" + (mission.Agents?.Count ?? 0) + ", CommandUiReady=" + commandUiReady);
+		AnimusForgeQuickInfo.Show(SiegeCastleRosterSelectionProfile.BuildPrisonerSceneReadyMessage(_selectedCount, activeCount));
+	}
+
+	private void Cleanup(string reason)
+	{
+		if (_cleaned)
 		{
 			return;
 		}
-		try { agent.TryToSheathWeaponInHand(Agent.HandIndex.OffHand, Agent.WeaponWieldActionType.Instant); } catch { }
-		try { agent.TryToSheathWeaponInHand(Agent.HandIndex.MainHand, Agent.WeaponWieldActionType.Instant); } catch { }
-		for (int i = (int)EquipmentIndex.WeaponItemBeginSlot; i < (int)EquipmentIndex.NumAllWeaponSlots; i++)
-		{
-			try { agent.RemoveEquippedWeapon((EquipmentIndex)i); } catch { }
-		}
-		try
-		{
-			agent.InvalidateAIWeaponSelections();
-			agent.UpdateWeapons();
-		}
-		catch
-		{
-		}
+		_cleaned = true;
+		_agents.Clear();
+		_movementStates.Clear();
+		_civilianActionSetApplied.Clear();
+		CastleAftermathRuntimeBridge.ClearMissionAgents(reason);
 	}
 }

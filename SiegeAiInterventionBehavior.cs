@@ -1492,6 +1492,26 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		Logger.Log("SiegeAiIntervention", "Stored intervention troop selection. Count=" + (_selectedInterventionRoster?.TotalManCount ?? 0));
 	}
 
+	internal static TroopRoster GetSelectedCastleInterventionRosterSnapshot()
+	{
+		TroopRoster snapshot = TroopRoster.CreateDummyTroopRoster();
+		if (_selectedInterventionRoster == null)
+		{
+			return snapshot;
+		}
+
+		foreach (TroopRosterElement element in _selectedInterventionRoster.GetTroopRoster())
+		{
+			CharacterObject character = element.Character;
+			if (!IsSelectableInterventionTroop(character) || element.Number <= 0)
+			{
+				continue;
+			}
+			snapshot.AddToCounts(character, element.Number, false, 0, 0, true, -1);
+		}
+		return snapshot;
+	}
+
 	private static string GetCurrentGameMenuId()
 	{
 		try

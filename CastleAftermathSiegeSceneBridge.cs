@@ -1,48 +1,24 @@
 using System;
+using System.Collections.Generic;
 using AnimusForge.SiegeAftermathIntervention;
-using SandBox;
+using SandBox.Missions.MissionLogics;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem.Settlements.Locations;
+using TaleWorlds.Core;
+using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 
 namespace AnimusForge;
 
 /// <summary>
-/// Opens castle GCCZ on Bannerlord's siege scene layer without starting another siege battle.
-/// The standalone profile owns scene policy; this bridge only resolves live campaign objects.
+/// Opens castle GCCZ as a non-campaign custom siege battle. This preserves the
+/// post-victory settlement encounter while giving the scene the same deployment,
+/// formation and agent capacity used by the troop-inspection battle pipeline.
 /// </summary>
 internal static class CastleAftermathSiegeSceneBridge
 {
-	private sealed class ScenePreparation
-	{
-		internal string SettlementId;
-		internal string SceneName;
-		internal string SceneLevels;
-		internal float[] WallHitPointRatios;
-		internal int BreachedWallSections;
-	}
-
-	private sealed class CastleSiegePreparationHandler : SiegeMissionPreparationHandler
-	{
-		private readonly ScenePreparation _preparation;
-
-		internal CastleSiegePreparationHandler(ScenePreparation preparation)
-			: base(false, false, preparation.WallHitPointRatios, false)
-		{
-			_preparation = preparation;
-		}
-
-		public override void OnBehaviorInitialize()
-		{
-			base.OnBehaviorInitialize();
-			GcczDiagnosticLog.Log("CastleSiegeScene", "preparation initialized settlement=" + (_preparation.SettlementId ?? "N/A")
-				+ " scene=" + (_preparation.SceneName ?? "N/A")
-				+ " levels=" + (_preparation.SceneLevels ?? "N/A")
-				+ " breached=" + _preparation.BreachedWallSections);
-		}
-	}
-
 	internal static bool TryOpenMission(Settlement settlement, Location location, string source)
 	{
 		if (settlement?.IsCastle != true
@@ -68,29 +44,85 @@ internal static class CastleAftermathSiegeSceneBridge
 				return false;
 			}
 
-			ScenePreparation preparation = new ScenePreparation
+			CharacterObject playerCharacter = CharacterObject.PlayerCharacter;
+			BasicCultureObject playerCulture = playerCharacter?.Culture ?? settlement.Culture;
+			Banner playerBanner = Clan.PlayerClan?.Banner ?? settlement.OwnerClan?.Banner;
+			if (playerCharacter == null || playerCulture == null || playerBanner == null)
 			{
-				SettlementId = settlement.StringId ?? "",
-				SceneName = sceneName,
-				SceneLevels = sceneLevels,
-				WallHitPointRatios = wallRatios,
-				BreachedWallSections = SiegeCastleWarSceneProfile.CountBreachedWallSections(wallRatios)
-			};
-
-			Mission mission = SandBoxMissions.OpenCastleCourtyardMission(sceneName, sceneLevels, location, null);
-			if (mission == null)
-			{
-				throw new InvalidOperationException("SandBoxMissions.OpenCastleCourtyardMission returned null.");
+				throw new InvalidOperationException("Castle custom siege combatant context is unavailable.");
 			}
 
-			mission.AddMissionBehavior(new CastleSiegePreparationHandler(preparation));
-			GcczDiagnosticLog.Log("CastleSiegeScene", "open requested settlement=" + (preparation.SettlementId ?? settlement.StringId ?? "N/A")
+			CustomBattleCombatant playerCombatant = new CustomBattleCombatant(
+				new TextObject("AnimusForge Castle Aftermath"),
+				playerCulture,
+				playerBanner)
+			{
+				Side = BattleSideEnum.Attacker
+			};
+			playerCombatant.AddCharacter(playerCharacter, 1);
+			playerCombatant.SetGeneral(playerCharacter);
+
+			TroopRoster selectedAllies = SiegeAiInterventionBehavior.GetSelectedCastleInterventionRosterSnapshot();
+			foreach (TroopRosterElement element in selectedAllies.GetTroopRoster())
+			{
+				CharacterObject character = element.Character;
+				if (character == null || character.IsPlayerCharacter || element.Number <= 0)
+				{
+					continue;
+				}
+				playerCombatant.AddCharacter(character, element.Number);
+			}
+
+			CustomBattleCombatant emptyDefenders = new CustomBattleCombatant(
+				new TextObject("AnimusForge Castle Aftermath Empty Defenders"),
+				settlement.Culture ?? playerCulture,
+				playerBanner)
+			{
+				Side = BattleSideEnum.Defender
+			};
+
+			Mission mission = BannerlordMissions.OpenSiegeMissionWithDeployment(
+				sceneName,
+				playerCharacter,
+				playerCombatant,
+				emptyDefenders,
+				true,
+				wallRatios,
+				false,
+				new List<MissionSiegeWeapon>(),
+				new List<MissionSiegeWeapon>(),
+				true,
+				wallLevel,
+				"",
+				false,
+				false,
+				6f);
+			if (mission == null)
+			{
+				throw new InvalidOperationException("BannerlordMissions.OpenSiegeMissionWithDeployment returned null.");
+			}
+
+			CampaignMissionComponent campaignMission = mission.GetMissionBehavior<CampaignMissionComponent>();
+			if (campaignMission == null)
+			{
+				campaignMission = new CampaignMissionComponent();
+				mission.AddMissionBehavior(campaignMission);
+			}
+			campaignMission.Location = location;
+			CastleAftermathRuntimeBridge.AttachMissionBehavior(mission);
+			int breachedSections = SiegeCastleWarSceneProfile.CountBreachedWallSections(wallRatios);
+			GcczDiagnosticLog.Log("CastleSiegeScene", "open requested host=" + SiegeCastleWarSceneProfile.RequiredMissionHostName
+				+ " settlement=" + (settlement.StringId ?? "N/A")
 				+ " scene=" + sceneName + " levels=" + sceneLevels
-				+ " wallSections=" + wallRatios.Length
-				+ " breached=" + SiegeCastleWarSceneProfile.CountBreachedWallSections(wallRatios));
-			Logger.Log("CastleAftermath", "Opened castle aftermath on vanilla siege scene layer. Scene=" + sceneName
-				+ ", Levels=" + sceneLevels + ", WallSections=" + wallRatios.Length
-				+ ", Breached=" + SiegeCastleWarSceneProfile.CountBreachedWallSections(wallRatios));
+				+ " allies=" + selectedAllies.TotalManCount
+				+ " prisoners=" + CastleAftermathRuntimeBridge.SelectedPrisonerCount
+				+ " wallSections=" + wallRatios.Length + " breached=" + breachedSections);
+			Logger.Log("CastleAftermath", "Opened castle aftermath with troop-inspection siege host. Host="
+				+ SiegeCastleWarSceneProfile.RequiredMissionHostName
+				+ ", Scene=" + sceneName + ", Levels=" + sceneLevels
+				+ ", Allies=" + selectedAllies.TotalManCount
+				+ ", Prisoners=" + CastleAftermathRuntimeBridge.SelectedPrisonerCount
+				+ ", WallSections=" + wallRatios.Length + ", Breached=" + breachedSections);
 			return true;
 		}
 		catch (Exception ex)

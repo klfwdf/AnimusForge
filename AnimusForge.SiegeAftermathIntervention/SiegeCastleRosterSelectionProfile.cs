@@ -14,8 +14,6 @@ public static class SiegeCastleRosterSelectionProfile
 
     public const int LordPrisonerFormationIndex = 7;
 
-    public const int PrisonerSpawnBatchSize = 20;
-
     public const string PrisonerSpawnCommandSource = "castle_prisoner_spawn";
 
     public const string PrisonerCommandUiRefreshSource = "castle_prisoner_spawn_complete";
