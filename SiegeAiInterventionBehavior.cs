@@ -20,6 +20,7 @@ using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.GameMenus;
 using TaleWorlds.CampaignSystem.GameState;
+using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
@@ -350,6 +351,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static Vec3 _civilianAssemblyForward;
 	private static Clan _previousSettlementOwnerClan;
 	private static MobileParty _besiegerParty;
+	private static string _lastPlayerCastleBattleSettlementId = "";
+	private static int _lastPlayerCastleBattleDay = -1;
+	private static readonly HashSet<string> LastPlayerCastleBattleDefeatedLordIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 	private static bool _setsSettlementEntryVictoryContext;
 	private static string _setsSettlementEntryVictorySource = "";
 	private static bool _setsSettlementEntryWallRescueSuppressionLogged;
@@ -458,6 +462,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		CampaignEvents.OnMissionStartedEvent.AddNonSerializedListener(this, OnMissionStarted);
 		CampaignEvents.MissionTickEvent.AddNonSerializedListener(this, OnMissionTick);
 		CampaignEvents.OnMissionEndedEvent.AddNonSerializedListener(this, OnMissionEnded);
+		CampaignEvents.OnPlayerBattleEndEvent.AddNonSerializedListener(this, OnPlayerBattleEndForCastleLordProvenance);
 		CampaignEvents.TickEvent.AddNonSerializedListener(this, OnCampaignTick);
 		CampaignEvents.DailyTickTownEvent.AddNonSerializedListener(this, OnDailyTickTown);
 		CampaignEvents.OnSiegeAftermathAppliedEvent.AddNonSerializedListener(this, OnSetsTownRiotAftermathApplied);
@@ -501,6 +506,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private void OnNewGameCreated(CampaignGameStarter starter)
 	{
+		ClearCastleLordDefeatProvenance("new_game");
 		ClearRepopulationProsperityDebuffs();
 		ClearRecruitmentSuppressionDebuffs();
 		ClearCivicPositiveBuffs();
@@ -509,12 +515,88 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private void OnGameLoaded(CampaignGameStarter starter)
 	{
+		ClearCastleLordDefeatProvenance("game_loaded");
 		ResetAftermathRuntimeGuards(SiegeAftermathTransitionSourceProfile.ResetGameLoadedSource);
 	}
 
 	private void OnGameLoadFinished()
 	{
+		ClearCastleLordDefeatProvenance("game_load_finished");
 		ResetAftermathRuntimeGuards(SiegeAftermathTransitionSourceProfile.ResetGameLoadFinishedSource);
+	}
+
+	private void OnPlayerBattleEndForCastleLordProvenance(MapEvent mapEvent)
+	{
+		ClearCastleLordDefeatProvenance("player_battle_end_refresh");
+		try
+		{
+			Settlement settlement = mapEvent?.MapEventSettlement;
+			if (mapEvent == null
+				|| !mapEvent.IsPlayerMapEvent
+				|| !mapEvent.HasWinner
+				|| mapEvent.WinningSide != mapEvent.PlayerSide
+				|| settlement?.IsCastle != true
+				|| (!mapEvent.IsSiegeAssault && !mapEvent.IsSiegeOutside && !mapEvent.IsSallyOut))
+			{
+				return;
+			}
+
+			MapEventSide defeatedSide = mapEvent.PlayerSide == BattleSideEnum.Attacker
+				? mapEvent.DefenderSide
+				: mapEvent.AttackerSide;
+			if (defeatedSide == null)
+			{
+				return;
+			}
+
+			_lastPlayerCastleBattleSettlementId = settlement.StringId ?? "";
+			_lastPlayerCastleBattleDay = GetCurrentCampaignDay();
+			foreach (MapEventParty mapEventParty in defeatedSide.Parties)
+			{
+				RecordCastleBattleDefeatedLords(mapEventParty?.Party);
+			}
+			Logger.Log("CastleAftermath", "Captured castle battle lord provenance. Settlement="
+				+ _lastPlayerCastleBattleSettlementId + ", Day=" + _lastPlayerCastleBattleDay
+				+ ", Lords=" + LastPlayerCastleBattleDefeatedLordIds.Count);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CastleAftermath", "Capture castle battle lord provenance failed: " + ex.Message);
+		}
+	}
+
+	private static void RecordCastleBattleDefeatedLords(PartyBase party)
+	{
+		if (party == null)
+		{
+			return;
+		}
+		RecordCastleBattleDefeatedLord(party.LeaderHero);
+		TroopRoster roster = party.MemberRoster;
+		if (roster == null)
+		{
+			return;
+		}
+		foreach (TroopRosterElement element in roster.GetTroopRoster())
+		{
+			RecordCastleBattleDefeatedLord(element.Character?.HeroObject);
+		}
+	}
+
+	private static void RecordCastleBattleDefeatedLord(Hero hero)
+	{
+		if (hero?.IsLord == true && !string.IsNullOrWhiteSpace(hero.StringId))
+		{
+			LastPlayerCastleBattleDefeatedLordIds.Add(hero.StringId);
+		}
+	}
+
+	private static void ClearCastleLordDefeatProvenance(string source)
+	{
+		_lastPlayerCastleBattleSettlementId = "";
+		_lastPlayerCastleBattleDay = -1;
+		LastPlayerCastleBattleDefeatedLordIds.Clear();
+		Logger.Log("CastleAftermath", "Cleared castle battle lord provenance. Source=" + (source ?? "N/A"));
 	}
 
 	private void AddGameMenus(CampaignGameStarter starter)
@@ -2345,6 +2427,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		string memoryContext = AppendRuntimeContext(
 			BuildInterventionMemoryContext(SelectInterventionMemoryAudience(alliedSoldier, civilian)),
 			BuildPlayerCommanderRuntimeContext(alliedSoldier, civilian));
+		if (ResolveCurrentSettlement()?.IsCastle == true && alliedSoldier)
+		{
+			memoryContext = AppendRuntimeContext(memoryContext, BuildCastleNpcSituationPromptForAgent(hero, character, agentIndex));
+		}
 		return SiegeRuntimePromptProfile.Build(new SiegeRuntimePromptFacts(
 			settlementName,
 			alliedSoldier,
@@ -2357,6 +2443,59 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			DescribeSharedCivilianReliefPoolForContext(),
 			_plunderStarted,
 			_massacreStarted));
+	}
+
+	internal static string BuildCastleNpcSituationPromptForAgent(Hero hero, CharacterObject character, int agentIndex)
+	{
+		try
+		{
+			Settlement settlement = ResolveCurrentSettlement();
+			if (!IsActiveInCurrentMission() || settlement?.IsCastle != true)
+			{
+				return "";
+			}
+
+			Agent agent = TryGetAgent(agentIndex);
+			character ??= agent?.Character as CharacterObject ?? hero?.CharacterObject;
+			hero ??= character?.HeroObject;
+			string castleName = settlement.Name?.ToString() ?? _activeSettlementName;
+			string playerName = ResolvePlayerCharacterNameForContext();
+			if (CastleAftermathRuntimeBridge.IsPrisonerAgent(agent))
+			{
+				bool isLord = CastleAftermathRuntimeBridge.IsLordPrisonerAgent(agent) || hero?.IsLord == true || character?.IsHero == true;
+				if (!isLord)
+				{
+					return SiegeCastleNpcSituationProfile.BuildDefeatedGarrisonPrisonerPrompt(castleName, playerName);
+				}
+				if (WasLordDefeatedInCurrentCastleBattle(hero, settlement))
+				{
+					return SiegeCastleNpcSituationProfile.BuildCurrentCastleDefeatedLordPrompt(castleName, playerName);
+				}
+				if (MyBehavior.WasHeroDefeatedByPlayerForExternal(hero))
+				{
+					return SiegeCastleNpcSituationProfile.BuildPreviouslyPlayerDefeatedLordPrompt(castleName, playerName);
+				}
+				return SiegeCastleNpcSituationProfile.BuildPreviouslyCapturedLordPrompt(castleName, playerName);
+			}
+
+			return IsRuntimeAlliedSoldierAgent(agent, character, hero)
+				? SiegeCastleNpcSituationProfile.BuildAlliedSoldierPrompt(castleName, playerName)
+				: "";
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CastleAftermath", "Build castle NPC situation prompt failed: " + ex.Message);
+			return "";
+		}
+	}
+
+	private static bool WasLordDefeatedInCurrentCastleBattle(Hero hero, Settlement settlement)
+	{
+		return hero != null
+			&& settlement != null
+			&& _lastPlayerCastleBattleDay == GetCurrentCampaignDay()
+			&& string.Equals(_lastPlayerCastleBattleSettlementId, settlement.StringId, StringComparison.OrdinalIgnoreCase)
+			&& LastPlayerCastleBattleDefeatedLordIds.Contains(hero.StringId ?? "");
 	}
 
 	internal static string BuildRuntimePromptForPromptContext(Hero hero, CharacterObject character, int agentIndex, string cultureIdOverride = null)

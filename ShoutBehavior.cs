@@ -5596,11 +5596,6 @@ public class ShoutBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string heroPrisonerStatusLine = MyBehavior.BuildHeroPrisonerStatusPromptLineForExternal(hero);
-			if (!string.IsNullOrWhiteSpace(heroPrisonerStatusLine))
-			{
-				return heroPrisonerStatusLine;
-			}
 			Agent agent = null;
 			try
 			{
@@ -5609,6 +5604,22 @@ public class ShoutBehavior : CampaignBehaviorBase
 			catch
 			{
 				agent = null;
+			}
+			if (CastleAftermathRuntimeBridge.IsPrisonerAgent(agent))
+			{
+				string castleSituation = SiegeAiInterventionBehavior.BuildCastleNpcSituationPromptForAgent(
+					hero,
+					agent?.Character as CharacterObject,
+					npc?.AgentIndex ?? -1);
+				if (!string.IsNullOrWhiteSpace(castleSituation))
+				{
+					return castleSituation;
+				}
+			}
+			string heroPrisonerStatusLine = MyBehavior.BuildHeroPrisonerStatusPromptLineForExternal(hero);
+			if (!string.IsNullOrWhiteSpace(heroPrisonerStatusLine))
+			{
+				return heroPrisonerStatusLine;
 			}
 			if (!IsInspectionPrisonerAgentForPrompt(agent))
 			{

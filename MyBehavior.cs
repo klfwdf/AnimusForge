@@ -28568,6 +28568,20 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static bool WasHeroDefeatedByPlayerForExternal(Hero hero)
+	{
+		try
+		{
+			return hero != null
+				&& !string.IsNullOrWhiteSpace(hero.StringId)
+				&& Instance?._recentlyDefeatedByPlayer?.Contains(hero.StringId) == true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	// Primary runtime chat path: scene shout / non-native conversation UI.
 	private ShoutPromptContext BuildShoutPromptContextForExternalInternal(Hero targetHero, string input, string extraFact, string cultureIdOverride, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, bool suppressDynamicRuleAndLore = false, bool usePrefetchedLoreContext = false, string prefetchedLoreContext = null, IEnumerable<string> excludedRuleIds = null, IEnumerable<string> preprocessExcludedRuleIds = null, IEnumerable<string> forcedPreprocessRuleIds = null)
 	{
