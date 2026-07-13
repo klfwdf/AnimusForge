@@ -1276,7 +1276,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					InformationManager.DisplayMessage(new InformationMessage(
 						SiegeCastleRosterSelectionProfile.BuildConfirmedMessage(alliedCount, prisonerCount),
 						Color.FromUint(SiegeInterventionEntryProfile.SelectionConfirmedMessageColor)));
-					OpenInterventionMissionNow(location, SiegeInterventionEntryProfile.TroopSelectionDoneMissionSource);
+					CastleAftermathMissionEntryBridge.Queue(location, _activeSettlementId, SiegeInterventionEntryProfile.TroopSelectionDoneMissionSource);
 				},
 				delegate
 				{
@@ -1643,6 +1643,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			ResetAftermathRuntimeGuards("pending_mission_settlement_mismatch");
 			return;
 		}
+		CastleAftermathMissionEntryBridge.Complete("intervention_mission_started");
 		_activeMode = _pendingMode;
 		_pendingMode = InterventionMode.None;
 		GcczDiagnosticLog.Log("Mission", "started settlement=" + (_activeSettlementId ?? "N/A")
@@ -1864,6 +1865,17 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private void OnCampaignTick(float dt)
 	{
+		CastleAftermathMissionEntryPumpResult castleEntryResult = CastleAftermathMissionEntryBridge.Pump(ResolveCurrentSettlement());
+		if (castleEntryResult == CastleAftermathMissionEntryPumpResult.Failed)
+		{
+			ResetAftermathRuntimeGuards("castle_deferred_mission_entry_failed");
+			InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.EntryFailedMessage, Color.FromUint(SiegeInterventionEntryProfile.MissingSceneMessageColor)));
+			return;
+		}
+		if (castleEntryResult == CastleAftermathMissionEntryPumpResult.Waiting)
+		{
+			return;
+		}
 		if (TryRunDirectMassacreAftermathScript())
 		{
 			return;
@@ -13475,6 +13487,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_civilianOrderControllerPrimed = false;
 		_selectedInterventionRoster = null;
 		CastleAftermathRuntimeBridge.Reset("reset_session_counters");
+		CastleAftermathMissionEntryBridge.Reset("reset_session_counters");
 		_activeInterventionLocationId = "";
 		_civilianGatherStartedAt = -1f;
 		_nextCivilianGatherTickTime = 0f;
