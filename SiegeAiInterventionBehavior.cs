@@ -1859,12 +1859,14 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		try
 		{
 			bool needsFallbackPolicy = !_culturalRepopulationRequested && !_massacreStarted && !_plunderStarted && !_hasPendingAftermath;
+			bool isCastle = ResolveCurrentSettlement()?.IsCastle == true;
 			SiegeMissionExitOutcomeDecision decision = SiegeMissionExitOutcomeProfile.Resolve(
 				_culturalRepopulationRequested,
 				_massacreStarted,
 				_plunderStarted,
 				_hasPendingAftermath,
-				needsFallbackPolicy);
+				needsFallbackPolicy,
+				isCastle);
 			if (!decision.HasDecision)
 			{
 				return;

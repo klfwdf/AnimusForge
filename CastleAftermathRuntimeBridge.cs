@@ -350,6 +350,8 @@ internal sealed class CastleAftermathPrisonerMissionBehavior : MissionLogic
 
 	private int _spawnedLords;
 
+	private int _spawnAttempts;
+
 	internal CastleAftermathPrisonerMissionBehavior(TroopRoster selectedPrisoners)
 	{
 		_selectedPrisoners = selectedPrisoners;
@@ -381,11 +383,18 @@ internal sealed class CastleAftermathPrisonerMissionBehavior : MissionLogic
 			{
 				_spawnCompleted = true;
 				InitializeFormationMovementStates(mission);
+				int selectedCount = Math.Min(SiegeCastleRosterSelectionProfile.MaxPrisoners, _selectedPrisoners?.TotalManCount ?? 0);
+				int activeCount = _agents.Keys.Count(agent => agent != null && agent.IsHuman && agent.IsActive());
+				int formedCount = _agents.Keys.Count(agent => agent != null && agent.IsHuman && agent.IsActive() && agent.Formation != null);
 				bool commandUiReady = SiegeAiInterventionBehavior.EnsureInterventionCommandUiReadyForExternal(
 					mission,
 					SiegeCastleRosterSelectionProfile.PrisonerCommandUiRefreshSource);
-				Logger.Log("CastleAftermath", "Castle prisoner spawn completed. Regular=" + _spawnedRegulars
-					+ ", Lords=" + _spawnedLords + ", CommandUiReady=" + commandUiReady);
+				Logger.Log("CastleAftermath", "Castle prisoner spawn completed. Selected=" + selectedCount
+					+ ", Attempts=" + _spawnAttempts + ", Created=" + (_spawnedRegulars + _spawnedLords)
+					+ ", Active=" + activeCount + ", Formed=" + formedCount
+					+ ", Regular=" + _spawnedRegulars + ", Lords=" + _spawnedLords
+					+ ", MissionAgents=" + (mission.Agents?.Count ?? 0) + ", CommandUiReady=" + commandUiReady);
+				AnimusForgeQuickInfo.Show(SiegeCastleRosterSelectionProfile.BuildPrisonerSceneReadyMessage(selectedCount, activeCount));
 			}
 			return;
 		}
@@ -468,6 +477,7 @@ internal sealed class CastleAftermathPrisonerMissionBehavior : MissionLogic
 
 	private void TrySpawnPrisoner(Mission mission, SpawnEntry entry)
 	{
+		_spawnAttempts++;
 		try
 		{
 			Agent main = Agent.Main ?? mission.MainAgent;
@@ -491,27 +501,28 @@ internal sealed class CastleAftermathPrisonerMissionBehavior : MissionLogic
 			direction.Normalize();
 
 			PrisonerAgentOrigin origin = new PrisonerAgentOrigin(entry.Character);
-			AgentBuildData buildData = new AgentBuildData(entry.Character)
-				.TroopOrigin(origin)
-				.Monster(TaleWorlds.Core.FaceGen.GetMonsterWithSuffix(entry.Character.Race, "_settlement"))
-				.Team(team)
-				.InitialPosition(in position)
-				.InitialDirection(direction.AsVec2.Normalized())
-				.Controller(AgentControllerType.AI)
-				.CivilianEquipment(civilianEquipment: false)
-				.NoHorses(noHorses: true);
-			if (formation != null)
+			bool previousCivilianEquipment = mission.DoesMissionRequireCivilianEquipment;
+			Agent agent;
+			try
 			{
-				buildData = buildData.Formation(formation)
-					.FormationTroopSpawnCount(Math.Max(1, entry.GroupCount))
-					.FormationTroopSpawnIndex(entry.GroupIndex)
-					.SpawnsIntoOwnFormation(true)
-					.SpawnsUsingOwnTroopClass(false);
+				mission.DoesMissionRequireCivilianEquipment = false;
+				agent = BannerlordApiCompat.SpawnPrisonerInspectionTroop(
+					mission,
+					origin,
+					Math.Max(1, entry.GroupCount),
+					entry.GroupIndex,
+					formationClass,
+					position,
+					direction.AsVec2.Normalized());
 			}
-
-			Agent agent = mission.SpawnAgent(buildData, false);
+			finally
+			{
+				mission.DoesMissionRequireCivilianEquipment = previousCivilianEquipment;
+			}
 			if (agent == null)
 			{
+				Logger.Log("CastleAftermath", "Spawn castle prisoner returned null. Character=" + entry.Character.StringId
+					+ ", Index=" + entry.GroupIndex + "/" + entry.GroupCount);
 				return;
 			}
 

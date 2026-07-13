@@ -59,6 +59,18 @@ public static class SiegeCastleRosterSelectionProfile
             + " 名我方士兵、" + ClampPrisonerCount(prisonerCount) + " 名俘虏。";
     }
 
+    public static string BuildPrisonerSceneReadyMessage(int selectedCount, int activeCount)
+    {
+        int selected = ClampPrisonerCount(selectedCount);
+        int active = ClampPrisonerCount(activeCount);
+        if (active >= selected)
+        {
+            return "【城堡处置】已带入 " + active + " 名俘虏，可通过 7 号俘虏编队下令。";
+        }
+
+        return "【城堡处置】俘虏实际进入场景 " + active + "/" + selected + " 名；详情已写入日志。";
+    }
+
     public static string BuildLimitMessage(int alliedTroopCount, int prisonerCount)
     {
         if (alliedTroopCount > MaxAlliedTroops)

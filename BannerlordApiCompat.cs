@@ -185,7 +185,14 @@ internal static class BannerlordApiCompat
 		}
 	}
 
-	internal static Agent SpawnPrisonerInspectionTroop(Mission mission, IAgentOriginBase origin, int formationTroopCount, int formationTroopIndex, FormationClass formationClass)
+	internal static Agent SpawnPrisonerInspectionTroop(
+		Mission mission,
+		IAgentOriginBase origin,
+		int formationTroopCount,
+		int formationTroopIndex,
+		FormationClass formationClass,
+		Vec3? initialPosition = null,
+		Vec2? initialDirection = null)
 	{
 		if (mission == null || origin == null)
 		{
@@ -204,23 +211,14 @@ internal static class BannerlordApiCompat
 			}
 
 			ParameterInfo[] parameters = method.GetParameters();
-			object[] args;
-			if (parameters.Any(x => string.Equals(x.Name, "forceDismounted", StringComparison.OrdinalIgnoreCase)) || parameters.Length >= 16)
-			{
-				args = new object[]
-				{
-					origin, true, true, false, false, formationTroopCount, formationTroopIndex, false, false, true,
-					null, null, null, null, formationClass, false
-				};
-			}
-			else
-			{
-				args = new object[]
-				{
-					origin, true, true, false, false, formationTroopCount, formationTroopIndex, false, false,
-					null, null, null, null, formationClass, false
-				};
-			}
+			object[] args = parameters.Select(parameter => BuildPrisonerSpawnTroopArgument(
+				parameter,
+				origin,
+				formationTroopCount,
+				formationTroopIndex,
+				formationClass,
+				initialPosition,
+				initialDirection)).ToArray();
 			return method.Invoke(mission, args) as Agent;
 		}
 		catch (Exception ex)
@@ -228,6 +226,51 @@ internal static class BannerlordApiCompat
 			Logger.Log("BannerlordApiCompat", "SpawnPrisonerInspectionTroop failed: " + ex.Message);
 			return null;
 		}
+	}
+
+	private static object BuildPrisonerSpawnTroopArgument(
+		ParameterInfo parameter,
+		IAgentOriginBase origin,
+		int formationTroopCount,
+		int formationTroopIndex,
+		FormationClass formationClass,
+		Vec3? initialPosition,
+		Vec2? initialDirection)
+	{
+		string name = parameter?.Name ?? string.Empty;
+		switch (name.ToLowerInvariant())
+		{
+			case "trooporigin": return origin;
+			case "isplayerside": return true;
+			case "hasformation": return true;
+			case "spawnwithhorse": return false;
+			case "isreinforcement": return false;
+			case "formationtroopcount": return formationTroopCount;
+			case "formationtroopindex": return formationTroopIndex;
+			case "isalarmed": return false;
+			case "wieldinitialweapons": return false;
+			case "forcedismounted": return true;
+			case "initialposition": return initialPosition;
+			case "initialdirection": return initialDirection;
+			case "specialactionsetsuffix": return null;
+			case "banneritem": return null;
+			case "formationindex": return formationClass;
+			case "usetroopclassforspawn": return false;
+		}
+
+		if (parameter.HasDefaultValue)
+		{
+			return parameter.DefaultValue;
+		}
+		if (parameter.ParameterType == typeof(bool))
+		{
+			return false;
+		}
+		if (parameter.ParameterType == typeof(int))
+		{
+			return 0;
+		}
+		return null;
 	}
 
 	internal static TerrainType ResolveTerrainTypeForParty(MobileParty party, TerrainType fallback = TerrainType.Plain, bool allowNavigationFaceFallback = false)

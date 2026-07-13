@@ -22,12 +22,17 @@ public static class SiegeMissionExitOutcomeProfile
 
     public const string DefaultPlunderExitTriggerDetail = "玩家进入攻城后定居点场景后未明确安抚、宽恕或升级处置便离场，按默认搜掠结算。";
 
+    public const string CastleNoDecisionExitTriggerSource = "城堡未选择处置直接离场";
+
+    public const string CastleDefaultMercyExitTriggerDetail = "城堡处置场景没有可搜掠的城镇民生目标；玩家未选择其他处置便离场时，按宽恕结算。";
+
     public static SiegeMissionExitOutcomeDecision Resolve(
         bool culturalRepopulationRequested,
         bool massacreStarted,
         bool plunderStarted,
         bool hasPendingAftermath,
-        bool destructiveAllowed)
+        bool destructiveAllowed,
+        bool isCastle = false)
     {
         if (culturalRepopulationRequested)
         {
@@ -47,6 +52,11 @@ public static class SiegeMissionExitOutcomeProfile
         if (hasPendingAftermath)
         {
             return SiegeMissionExitOutcomeDecision.None;
+        }
+
+        if (isCastle)
+        {
+            return Mark(SiegeAftermathResolutionKind.ShowMercy, CastleNoDecisionExitTriggerSource, CastleDefaultMercyExitTriggerDetail);
         }
 
         return StartPlunder(NoDecisionExitTriggerSource, DefaultPlunderExitTriggerDetail);
