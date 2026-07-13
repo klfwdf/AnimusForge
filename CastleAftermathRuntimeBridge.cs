@@ -9,6 +9,7 @@ using TaleWorlds.CampaignSystem.GameState;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.Core;
+using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
@@ -380,7 +381,11 @@ internal sealed class CastleAftermathPrisonerMissionBehavior : MissionLogic
 			{
 				_spawnCompleted = true;
 				InitializeFormationMovementStates(mission);
-				Logger.Log("CastleAftermath", "Castle prisoner spawn completed. Regular=" + _spawnedRegulars + ", Lords=" + _spawnedLords);
+				bool commandUiReady = SiegeAiInterventionBehavior.EnsureInterventionCommandUiReadyForExternal(
+					mission,
+					SiegeCastleRosterSelectionProfile.PrisonerCommandUiRefreshSource);
+				Logger.Log("CastleAftermath", "Castle prisoner spawn completed. Regular=" + _spawnedRegulars
+					+ ", Lords=" + _spawnedLords + ", CommandUiReady=" + commandUiReady);
 			}
 			return;
 		}
@@ -517,6 +522,9 @@ internal sealed class CastleAftermathPrisonerMissionBehavior : MissionLogic
 			}
 			_agents[agent] = entry.IsLord;
 			CastleAftermathRuntimeBridge.RegisterPrisonerAgent(agent, entry.IsLord);
+			SiegeAiInterventionBehavior.EnsureAgentPlayerCommandableForExternal(
+				agent,
+				SiegeCastleRosterSelectionProfile.PrisonerSpawnCommandSource);
 			StripWeapons(agent);
 			ApplyPrisonerPose(agent);
 			if (entry.IsLord) _spawnedLords++; else _spawnedRegulars++;
@@ -549,15 +557,63 @@ internal sealed class CastleAftermathPrisonerMissionBehavior : MissionLogic
 		float centeredColumn = column - (Math.Min(columns, Math.Max(1, entry.GroupCount)) - 1) * 0.5f;
 		float forwardDistance = entry.IsLord ? 4.5f + row * 1.5f : 8f + row * 1.2f;
 		float sideOffset = centeredColumn * (entry.IsLord ? 1.6f : 1.15f);
-		Vec3 position = main.Position + forward * forwardDistance + right * sideOffset;
+		Vec3 desired = main.Position + forward * forwardDistance + right * sideOffset;
+		if (TryProjectReachableSpawnPosition(mission, main.Position, desired, out Vec3 projected))
+		{
+			return projected;
+		}
+
+		foreach (float scale in new[] { 0.75f, 0.5f, 0.25f })
+		{
+			Vec3 closer = main.Position + (desired - main.Position) * scale;
+			if (TryProjectReachableSpawnPosition(mission, main.Position, closer, out projected))
+			{
+				return projected;
+			}
+		}
+
+		for (int i = 0; i < 8; i++)
+		{
+			Vec3 fallback = mission.GetRandomPositionAroundPoint(main.Position, 2f, 18f, true);
+			if (TryProjectReachableSpawnPosition(mission, main.Position, fallback, out projected))
+			{
+				return projected;
+			}
+		}
+
+		return main.Position;
+	}
+
+	private static bool TryProjectReachableSpawnPosition(Mission mission, Vec3 anchor, Vec3 candidate, out Vec3 projected)
+	{
+		projected = candidate;
 		try
 		{
-			position.z = mission.Scene.GetGroundHeightAtPosition(position);
+			Scene scene = mission?.Scene;
+			if (scene == null)
+			{
+				return false;
+			}
+
+			anchor.z = scene.GetGroundHeightAtPosition(anchor, BodyFlags.CommonCollisionExcludeFlags);
+			candidate.z = scene.GetGroundHeightAtPosition(candidate, BodyFlags.CommonCollisionExcludeFlags);
+			WorldPosition anchorWorld = new WorldPosition(scene, anchor);
+			WorldPosition candidateWorld = new WorldPosition(scene, candidate);
+			if (anchorWorld.GetNearestNavMesh() == UIntPtr.Zero
+				|| candidateWorld.GetNearestNavMesh() == UIntPtr.Zero
+				|| !scene.GetPathDistanceBetweenPositions(ref anchorWorld, ref candidateWorld, 0.45f, out float pathDistance)
+				|| pathDistance > 80f)
+			{
+				return false;
+			}
+
+			projected = candidateWorld.GetNavMeshVec3();
+			return true;
 		}
 		catch
 		{
+			return false;
 		}
-		return position;
 	}
 
 	private void InitializeFormationMovementStates(Mission mission)

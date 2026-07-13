@@ -1527,12 +1527,25 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return false;
 			}
 			_activeInterventionLocationId = location.StringId ?? "";
-			PlayerEncounter.LocationEncounter.CreateAndOpenMissionController(location, null, null, null);
+			Settlement settlement = ResolveCurrentSettlement();
+			if (settlement?.IsCastle == true)
+			{
+				if (!CastleAftermathSiegeSceneBridge.TryOpenMission(settlement, location, source))
+				{
+					return false;
+				}
+			}
+			else
+			{
+				PlayerEncounter.LocationEncounter.CreateAndOpenMissionController(location, null, null, null);
+			}
 			GcczDiagnosticLog.Log("Mission", "open requested source=" + (source ?? "N/A")
 				+ " settlement=" + (_activeSettlementId ?? "N/A")
 				+ " location=" + (_activeInterventionLocationId ?? "N/A")
 				+ " selectedRoster=" + (_selectedInterventionRoster?.TotalManCount ?? 0));
-			Logger.Log("SiegeAiIntervention", "Opened intervention mission through normal location controller. Source=" + (source ?? "N/A") + ", SelectedRoster=" + (_selectedInterventionRoster?.TotalManCount ?? 0));
+			Logger.Log("SiegeAiIntervention", "Opened intervention mission. Source=" + (source ?? "N/A")
+				+ ", ScenePath=" + (settlement?.IsCastle == true ? "castle_siege_layer" : "normal_location_controller")
+				+ ", SelectedRoster=" + (_selectedInterventionRoster?.TotalManCount ?? 0));
 			return true;
 		}
 		catch (Exception ex)
@@ -8181,6 +8194,41 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("SiegeAiIntervention", "EnsureInterventionCommandUiReadyForExternal failed (" + (source ?? "N/A") + "): " + ex.Message);
+			return false;
+		}
+	}
+
+	internal static bool EnsureAgentPlayerCommandableForExternal(Agent agent, string source)
+	{
+		try
+		{
+			Mission mission = Mission.Current ?? agent?.Mission;
+			if (!IsActiveInCurrentMission() || mission == null || mission.IsMissionEnding
+				|| agent == null || !agent.IsHuman || !agent.IsActive() || agent == Agent.Main)
+			{
+				return false;
+			}
+
+			Team playerTeam = ResolveInterventionPlayerCommandTeamForExternal(mission, source);
+			if (playerTeam == null || agent.Formation == null)
+			{
+				return false;
+			}
+
+			if (agent.Team != playerTeam)
+			{
+				agent.SetTeam(playerTeam, true);
+			}
+			EnsureAgentUnderPlayerCommand(agent);
+			MarkFormationPlayerCommandable(agent.Formation, Agent.Main ?? mission.MainAgent);
+			agent.TryAttachToFormation();
+			agent.SetShouldCatchUpWithFormation(true);
+			agent.UpdateFormationOrders();
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "EnsureAgentPlayerCommandableForExternal failed (" + (source ?? "N/A") + "): " + ex.Message);
 			return false;
 		}
 	}

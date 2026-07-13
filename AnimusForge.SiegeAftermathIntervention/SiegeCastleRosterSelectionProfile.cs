@@ -16,6 +16,10 @@ public static class SiegeCastleRosterSelectionProfile
 
     public const int PrisonerSpawnBatchSize = 20;
 
+    public const string PrisonerSpawnCommandSource = "castle_prisoner_spawn";
+
+    public const string PrisonerCommandUiRefreshSource = "castle_prisoner_spawn_complete";
+
     public const string AvailableRosterTitle = "可选随行士兵 / 战俘";
 
     public const string SelectedRosterTitle = "城堡处置队伍";
