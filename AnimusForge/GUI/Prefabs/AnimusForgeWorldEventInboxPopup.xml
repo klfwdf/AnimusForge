@@ -105,7 +105,7 @@
                                   <Children>
                                     <Widget Id="DetailClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
                                       <Children>
-                                        <AnimusForgeTopDownListPanel Id="DetailInnerPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginRight="10">
+                                        <AnimusForgeVersionedScrollableListPanel Id="DetailInnerPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginRight="10">
                                           <Children>
                                             <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="8" MarginRight="8" MarginBottom="8" Brush="Popup.Title.Text" Brush.FontSize="21" Brush.FontColor="#DDBB73FF" Text="@SelectedRecordBodySectionTitleText" />
                                             <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="16" MarginRight="16" MarginBottom="18" Brush="Popup.Description.Text" Brush.FontSize="19" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" Text="@SelectedRecordBodyText" CanBreakWords="true" />
@@ -113,7 +113,7 @@
                                             <RichTextWidget IsVisible="@HasSelectedRecordImpact" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="8" MarginRight="8" MarginBottom="8" Brush="Popup.Title.Text" Brush.FontSize="21" Brush.FontColor="#DDBB73FF" Text="@SelectedRecordImpactSectionTitleText" />
                                             <RichTextWidget IsVisible="@HasSelectedRecordImpact" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="16" MarginRight="16" MarginBottom="18" Brush="Popup.Description.Text" Brush.FontSize="18" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" Text="@SelectedRecordImpactText" CanBreakWords="true" />
                                           </Children>
-                                        </AnimusForgeTopDownListPanel>
+                                        </AnimusForgeVersionedScrollableListPanel>
                                       </Children>
                                     </Widget>
                                   </Children>

@@ -129,9 +129,7 @@ internal sealed class NpcPolicyPrompt
 {
 	public string SystemPrompt = "";
 
-	public string UserPrompt = "";
-
-	public string Preview => "System:\n" + (SystemPrompt ?? "") + "\n\nUser:\n" + (UserPrompt ?? "");
+	public string Preview => "System:\n" + (SystemPrompt ?? "");
 }
 
 internal sealed class NpcPolicyApiCallResult
@@ -289,7 +287,7 @@ internal static class NpcPolicyLlmClient
 		return TryResolveEventAndRebellionApiConfig(DuelSettings.GetSettings(), out var _, out var _, out var _, out var _, out errorMessage);
 	}
 
-	public static async Task<NpcPolicyApiCallResult> CallEventAndRebellionApiWithRetriesAsync(string systemPrompt, string userPrompt, int maxTokens, int hardTimeoutMilliseconds, string source, long runtimeGeneration, int maxAttempts = DefaultMaxAttempts)
+	public static async Task<NpcPolicyApiCallResult> CallEventAndRebellionApiWithRetriesAsync(string systemPrompt, int maxTokens, int hardTimeoutMilliseconds, string source, long runtimeGeneration, int maxAttempts = DefaultMaxAttempts)
 	{
 		NpcPolicyApiCallResult finalResult = new NpcPolicyApiCallResult();
 		int attempts = Math.Max(1, maxAttempts);
@@ -301,10 +299,10 @@ internal static class NpcPolicyLlmClient
 				finalResult.AttemptsUsed = attempt;
 				return finalResult;
 			}
-			NpcPolicyApiCallResult result = await CallEventAndRebellionApiOnceAsync(systemPrompt, userPrompt, Math.Max(1, maxTokens), Math.Max(1000, hardTimeoutMilliseconds), source, runtimeGeneration);
+			NpcPolicyApiCallResult result = await CallEventAndRebellionApiOnceAsync(systemPrompt, Math.Max(1, maxTokens), Math.Max(1000, hardTimeoutMilliseconds), source, runtimeGeneration);
 			result.AttemptsUsed = attempt;
 			finalResult = result;
-			RecordPromptExchangeSafe(source, attempt, attempts, systemPrompt, userPrompt, result);
+			RecordPromptExchangeSafe(source, attempt, attempts, systemPrompt, result);
 			if (result.Success)
 			{
 				return result;
@@ -334,7 +332,7 @@ internal static class NpcPolicyLlmClient
 		return finalResult;
 	}
 
-	private static async Task<NpcPolicyApiCallResult> CallEventAndRebellionApiOnceAsync(string systemPrompt, string userPrompt, int maxTokens, int hardTimeoutMilliseconds, string source, long runtimeGeneration)
+	private static async Task<NpcPolicyApiCallResult> CallEventAndRebellionApiOnceAsync(string systemPrompt, int maxTokens, int hardTimeoutMilliseconds, string source, long runtimeGeneration)
 	{
 		NpcPolicyApiCallResult result = new NpcPolicyApiCallResult();
 		try
@@ -346,7 +344,7 @@ internal static class NpcPolicyLlmClient
 				return result;
 			}
 			result.ResolvedRoute = resolvedRoute;
-			JArray messages = BuildMessageArray(systemPrompt, userPrompt);
+			JArray messages = BuildMessageArray(systemPrompt);
 			JObject body = BuildChatRequestBody(modelName, messages, maxTokens, ResolveTemperature(settings, resolvedRoute));
 			DuelSettings.ApplyThinkingControls(body, effectiveApiUrl, modelName, thinkingEnabled: false, DuelSettings.ReasoningEffortHigh, out var thinkingMode);
 			string jsonBody = LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, body);
@@ -625,12 +623,12 @@ internal static class NpcPolicyLlmClient
 			+ " url=" + effectiveApiUrl;
 	}
 
-	private static void RecordPromptExchangeSafe(string source, int attempt, int attempts, string systemPrompt, string userPrompt, NpcPolicyApiCallResult result)
+	private static void RecordPromptExchangeSafe(string source, int attempt, int attempts, string systemPrompt, NpcPolicyApiCallResult result)
 	{
 		try
 		{
 			string responseForLog = result.Success ? (result.Content ?? "") : ("错误: " + (result.ErrorMessage ?? "未知错误"));
-			Logger.LogEventPromptExchange((source ?? "NpcPolicy") + " [尝试 " + attempt.ToString(CultureInfo.InvariantCulture) + "/" + attempts.ToString(CultureInfo.InvariantCulture) + "]", BuildPromptPreview(systemPrompt, userPrompt), responseForLog);
+			Logger.LogEventPromptExchange((source ?? "NpcPolicy") + " [尝试 " + attempt.ToString(CultureInfo.InvariantCulture) + "/" + attempts.ToString(CultureInfo.InvariantCulture) + "]", BuildPromptPreview(systemPrompt), responseForLog);
 		}
 		catch
 		{
@@ -813,7 +811,7 @@ internal static class NpcPolicyLlmClient
 		}
 	}
 
-	private static JArray BuildMessageArray(string systemPrompt, string userPrompt)
+	private static JArray BuildMessageArray(string systemPrompt)
 	{
 		return new JArray
 		{
@@ -821,18 +819,13 @@ internal static class NpcPolicyLlmClient
 			{
 				["role"] = "system",
 				["content"] = systemPrompt ?? ""
-			},
-			new JObject
-			{
-				["role"] = "user",
-				["content"] = userPrompt ?? ""
 			}
 		};
 	}
 
-	private static string BuildPromptPreview(string systemPrompt, string userPrompt)
+	private static string BuildPromptPreview(string systemPrompt)
 	{
-		return "System:\n" + (systemPrompt ?? "") + "\n\nUser:\n" + (userPrompt ?? "");
+		return "System:\n" + (systemPrompt ?? "");
 	}
 
 	private static bool ContainsAnyIgnoreCase(string text, params string[] tokens)
@@ -1089,6 +1082,8 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 	private const int SoftContextChars = 48000;
 	private const int HardContextChars = 96000;
 	private const int EditablePolicyPromptMaxChars = 4000;
+	private const int PolicyKnowledgeTargetChars = 600;
+	private const int PolicyKnowledgeMaxChars = 800;
 	private const int PolicyMaxTokens = 8000;
 	private const int FailedGenerationBackoffHours = 6;
 	private const int PolicyApiHardTimeoutMilliseconds = 540000;
@@ -1647,18 +1642,17 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			}
 			else
 			{
-				if (string.IsNullOrWhiteSpace(job.SystemPrompt) || string.IsNullOrWhiteSpace(job.UserPrompt))
+				if (string.IsNullOrWhiteSpace(job.SystemPrompt))
 				{
 					NpcPolicyPrompt prompt = BuildPolicyPrompt(job.Context);
 					job.SystemPrompt = prompt.SystemPrompt;
-					job.UserPrompt = prompt.UserPrompt;
 					job.PromptPreview = prompt.Preview;
 				}
 				PolicyTraceLog("generation-job-built", BuildPolicyJobTracePrefix(job)
 					+ " systemPromptChars=" + (job.SystemPrompt?.Length ?? 0).ToString(CultureInfo.InvariantCulture)
-					+ " userPromptChars=" + (job.UserPrompt?.Length ?? 0).ToString(CultureInfo.InvariantCulture));
+					+ " messageCount=1");
 				PolicyTraceLog("generation-batch-call-start", BuildPolicyJobTracePrefix(job), job.PromptPreview);
-				NpcPolicyApiCallResult apiResult = await NpcPolicyLlmClient.CallEventAndRebellionApiWithRetriesAsync(job.SystemPrompt, job.UserPrompt, job.MaxTokens, job.HardTimeoutMilliseconds, "NpcRulerPolicy", job.RuntimeGeneration, 3);
+				NpcPolicyApiCallResult apiResult = await NpcPolicyLlmClient.CallEventAndRebellionApiWithRetriesAsync(job.SystemPrompt, job.MaxTokens, job.HardTimeoutMilliseconds, "NpcRulerPolicy", job.RuntimeGeneration, 3);
 				CopyApiResultToPolicyResult(result, apiResult, accumulateAttempts: false);
 				LogPolicyApiMetrics(job, apiResult);
 				PolicyTraceLog("generation-batch-api-finished", BuildPolicyApiResultTracePrefix(job, apiResult), apiResult.Success ? apiResult.Content : apiResult.ErrorMessage);
@@ -1752,7 +1746,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			}
 			NpcRulerPolicyBatchContext singleContext = BuildSingleKingdomFallbackContext(job.Context, target);
 			NpcPolicyPrompt singlePrompt = BuildPolicyPrompt(singleContext);
-			NpcPolicyApiCallResult apiResult = await NpcPolicyLlmClient.CallEventAndRebellionApiWithRetriesAsync(singlePrompt.SystemPrompt, singlePrompt.UserPrompt, job.MaxTokens, job.HardTimeoutMilliseconds, "NpcRulerPolicySingleFallback", job.RuntimeGeneration, 3);
+			NpcPolicyApiCallResult apiResult = await NpcPolicyLlmClient.CallEventAndRebellionApiWithRetriesAsync(singlePrompt.SystemPrompt, job.MaxTokens, job.HardTimeoutMilliseconds, "NpcRulerPolicySingleFallback", job.RuntimeGeneration, 3);
 			CopyApiResultToPolicyResult(result, apiResult, accumulateAttempts: true);
 			PolicyTraceLog("generation-single-fallback-finished", BuildPolicyJobTracePrefix(job) + " target=" + (target.KingdomId ?? "") + " success=" + apiResult.Success.ToString(CultureInfo.InvariantCulture) + " attempts=" + apiResult.AttemptsUsed.ToString(CultureInfo.InvariantCulture), apiResult.Success ? apiResult.Content : apiResult.ErrorMessage);
 			if (!apiResult.Success)
@@ -2235,7 +2229,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		};
 		Dictionary<string, NpcRulerPolicyRecord> lastGeneratedByKingdom = BuildLastGeneratedPolicyByKingdom();
 		List<Kingdom> npcKingdoms = GetNpcRuledKingdoms().ToList();
-		context.TodayAlreadyGenerated = CountPoliciesGeneratedOnDay(currentDay);
+		context.TodayAlreadyGenerated = CountNpcPoliciesGeneratedOnDay(currentDay);
 		context.RemainingDailySlots = Math.Max(0, context.DayLimit - context.TodayAlreadyGenerated);
 		List<NpcRulerPolicyGenerationCandidate> candidates = npcKingdoms
 			.Select(kingdom => BuildGenerationCandidate(kingdom, lastGeneratedByKingdom, currentDay, intervalDays))
@@ -2282,30 +2276,29 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		StringBuilder sb = new StringBuilder();
 		sb.AppendLine("Current date: " + context.GameDate + "; day=" + context.Day.ToString(CultureInfo.InvariantCulture) + "; hour=" + context.Hour.ToString(CultureInfo.InvariantCulture));
 		sb.AppendLine(BuildCampaignCalendarContext());
-		sb.AppendLine("Selection: eligible=" + context.EligibleCount.ToString(CultureInfo.InvariantCulture)
-			+ " excluded=" + context.ExcludedCount.ToString(CultureInfo.InvariantCulture)
-			+ " selected=" + context.Kingdoms.Count.ToString(CultureInfo.InvariantCulture)
-			+ " dayLimit=" + context.DayLimit.ToString(CultureInfo.InvariantCulture)
-			+ " batchSize=" + context.BatchSize.ToString(CultureInfo.InvariantCulture)
-			+ " alreadyToday=" + context.TodayAlreadyGenerated.ToString(CultureInfo.InvariantCulture)
-			+ " remainingDailySlots=" + context.RemainingDailySlots.ToString(CultureInfo.InvariantCulture));
-		sb.AppendLine("Targets: generate exactly 1 ruler policy for each NPC kingdom listed below in TargetKingdomSnapshot; do not generate policies for unlisted kingdoms.");
 		List<NpcRulerPolicyKingdomContext> targets = (context.Kingdoms ?? new List<NpcRulerPolicyKingdomContext>()).Where(x => x != null).ToList();
 		foreach (NpcRulerPolicyKingdomContext item in targets)
 		{
 			string targetBlock = BuildKingdomPromptContext(item, includeSupplemental: true);
 			sb.AppendLine(targetBlock);
-			Log("context-target kingdom=" + (item.KingdomId ?? "")
+			PolicySystemLog.Write("Context", "target",
+				"kingdom=" + (item.KingdomId ?? "")
 				+ " chars=" + targetBlock.Length.ToString(CultureInfo.InvariantCulture)
+				+ " identityStateChars=" + (item.RequiredContext?.Length ?? 0).ToString(CultureInfo.InvariantCulture)
+				+ " personaChars=" + (item.PersonaContext?.Length ?? 0).ToString(CultureInfo.InvariantCulture)
+				+ " knowledgeChars=" + (item.KnowledgeContext?.Length ?? 0).ToString(CultureInfo.InvariantCulture)
+				+ " ownHistoryChars=" + SumContextChars(item.PreviousPolicyContexts).ToString(CultureInfo.InvariantCulture)
+				+ " foreignPolicyChars=" + SumContextChars(item.ForeignPolicyGroupContexts).ToString(CultureInfo.InvariantCulture)
+				+ " supplementalChars=" + (item.SupplementalContext?.Length ?? 0).ToString(CultureInfo.InvariantCulture)
 				+ " ownPolicies=" + (item.PreviousPolicyContexts?.Count ?? 0).ToString(CultureInfo.InvariantCulture)
-				+ " foreignGroups=" + (item.ForeignPolicyGroupContexts?.Count ?? 0).ToString(CultureInfo.InvariantCulture));
+				+ " foreignGroups=" + (item.ForeignPolicyGroupContexts?.Count ?? 0).ToString(CultureInfo.InvariantCulture)
+				+ " policyIds=" + ExtractInjectedPolicyIds(targetBlock));
 		}
 		if (sb.Length > SoftContextChars)
 		{
 			sb.Clear();
 			sb.AppendLine("Current date: " + context.GameDate + "; day=" + context.Day.ToString(CultureInfo.InvariantCulture) + "; hour=" + context.Hour.ToString(CultureInfo.InvariantCulture));
 			sb.AppendLine(BuildCampaignCalendarContext());
-			sb.AppendLine("Targets: generate exactly 1 ruler policy for each TargetKingdomSnapshot below.");
 			foreach (NpcRulerPolicyKingdomContext item in targets)
 			{
 				sb.AppendLine(BuildKingdomPromptContext(item, includeSupplemental: false));
@@ -2317,15 +2310,26 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		}
 		int ownPolicyCount = targets.Sum(x => x?.PreviousPolicyContexts?.Count ?? 0);
 		int foreignGroupCount = targets.Sum(x => x?.ForeignPolicyGroupContexts?.Count ?? 0);
-		string injectedPolicyIds = string.Join(",", Regex.Matches(sb.ToString(), @"policyId=([^,}\r\n]+)")
-			.Cast<Match>().Select(x => x.Groups[1].Value.Trim()).Where(x => x.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase));
-		Log("context-built targets=" + targets.Count.ToString(CultureInfo.InvariantCulture)
+		string injectedPolicyIds = ExtractInjectedPolicyIds(sb.ToString());
+		PolicySystemLog.Write("Context", "batch",
+			"targets=" + targets.Count.ToString(CultureInfo.InvariantCulture)
 			+ " chars=" + sb.Length.ToString(CultureInfo.InvariantCulture)
 			+ " estimatedTokens=" + Math.Ceiling(sb.Length * 0.6d).ToString(CultureInfo.InvariantCulture)
 			+ " ownPolicies=" + ownPolicyCount.ToString(CultureInfo.InvariantCulture)
 			+ " foreignGroups=" + foreignGroupCount.ToString(CultureInfo.InvariantCulture)
 			+ " policyIds=" + injectedPolicyIds);
 		return sb.ToString().TrimEnd();
+	}
+
+	private static int SumContextChars(IEnumerable<string> blocks)
+	{
+		return (blocks ?? Enumerable.Empty<string>()).Where(x => !string.IsNullOrWhiteSpace(x)).Sum(x => x.Length);
+	}
+
+	private static string ExtractInjectedPolicyIds(string text)
+	{
+		return string.Join(",", Regex.Matches(text ?? "", @"policyId=([^,}\r\n]+)")
+			.Cast<Match>().Select(x => x.Groups[1].Value.Trim()).Where(x => x.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase));
 	}
 
 	private static Kingdom ResolveNpcPolicyKingdomById(string kingdomId)
@@ -2372,8 +2376,9 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		string policies = SafeReadVanillaPolicies(kingdom);
 		List<string> previousPolicies = BuildLinkedPreviousPolicyContexts(kingdomId);
 		List<string> foreignPolicyGroups = BuildForeignPolicyGroupContexts(kingdom);
-		string weeklyContext = InvokeWeeklyContextBridge(kingdomId);
 		MyBehavior.GetNpcPersonaForExternal(ruler, out string personality, out string background);
+		string clanContext = BuildClanSnapshot(kingdom);
+		string diplomacyContext = BuildDiplomacyNeighborSummary(kingdom);
 		string requiredContext = "- TargetKingdomSnapshot"
 			+ " | Issuer{id=" + kingdomId
 			+ ",name=" + kingdomName
@@ -2381,20 +2386,18 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			+ ",kingdomTitle=" + (kingdom.EncyclopediaTitle?.ToString() ?? "")
 			+ ",rulerTitle=" + (kingdom.EncyclopediaRulerTitle?.ToString() ?? "")
 			+ ",strength=" + FormatNumber(SafeKingdomStrength(kingdom))
-			+ ",stability=" + SafeKingdomStability(kingdom).ToString(CultureInfo.InvariantCulture) + "/100"
-			+ ",lastGenerated=" + (generation?.LastGeneratedText ?? "never") + "}"
+			+ ",stability=" + SafeKingdomStability(kingdom).ToString(CultureInfo.InvariantCulture) + "/100}"
 			+ " | AllowedEffectTargets{" + BuildAllowedEffectTargetsPrompt(allowedTargets) + "}"
 			+ " | Settlement{" + BuildSettlementSnapshot(towns, villages, prosperity) + "}";
 		string personaContext = "RulerPersona{name=" + (ruler?.Name?.ToString() ?? "未知")
 			+ ",heroId=" + (ruler?.StringId ?? "")
 			+ ",clan=" + (ruler?.Clan?.Name?.ToString() ?? "")
 			+ ",traits=" + BuildRulerTraitSummary(ruler)
-			+ ",personality=" + Compact(personality)
-			+ ",background=" + Compact(background) + "}";
-		string supplementalContext = "Clan{" + BuildClanSnapshot(kingdom) + "}"
-			+ " | WarAndDiplomacy{" + BuildDiplomacyNeighborSummary(kingdom) + "}"
-			+ " | ActivePolicies{" + policies + "}"
-			+ (string.IsNullOrWhiteSpace(weeklyContext) ? "" : " | WeeklyReports{" + Compact(weeklyContext) + "}");
+			+ ",personality=" + CompressCompleteText(personality, 180, 220)
+			+ ",background=" + CompressCompleteText(background, 220, 260) + "}";
+		string knowledgeContext = BuildNpcPolicyKnowledgeContext(kingdom, ruler, requiredContext, clanContext, diplomacyContext);
+		string supplementalContext = "Clan{" + clanContext + "}"
+			+ " | ActivePolicies{" + policies + "}";
 		return new NpcRulerPolicyKingdomContext
 		{
 			KingdomId = kingdomId,
@@ -2403,6 +2406,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			RulerName = ruler?.Name?.ToString() ?? "",
 			RequiredContext = requiredContext,
 			PersonaContext = personaContext,
+			KnowledgeContext = knowledgeContext,
 			PreviousPolicyContexts = previousPolicies,
 			ForeignPolicyGroupContexts = foreignPolicyGroups,
 			SupplementalContext = supplementalContext,
@@ -2422,6 +2426,10 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		{
 			sb.AppendLine(context.PersonaContext);
 		}
+		if (!string.IsNullOrWhiteSpace(context.KnowledgeContext))
+		{
+			sb.AppendLine("CultureKnowledge{" + context.KnowledgeContext + "}");
+		}
 		foreach (string previous in context.PreviousPolicyContexts ?? new List<string>())
 		{
 			sb.AppendLine(previous);
@@ -2435,6 +2443,207 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			sb.AppendLine(context.SupplementalContext);
 		}
 		return sb.ToString().TrimEnd();
+	}
+
+	private static string BuildNpcPolicyKnowledgeContext(Kingdom kingdom, Hero ruler, string requiredContext, string clanContext, string diplomacyContext)
+	{
+		string kingdomId = kingdom?.StringId ?? "";
+		string cultureId = kingdom?.Culture?.StringId ?? ruler?.Culture?.StringId ?? "";
+		string query = BuildNpcPolicyKnowledgeQuery(kingdom, ruler);
+		string secondaryInput = BuildNpcPolicyKnowledgeSecondaryInput(requiredContext, clanContext, diplomacyContext);
+		string raw = "";
+		string compact = "";
+		bool libraryAvailable = KnowledgeLibraryBehavior.Instance != null;
+		bool semanticEnabled = false;
+		string fallbackReason = "";
+		try
+		{
+			semanticEnabled = AIConfigHandler.KnowledgeRetrievalEnabled;
+			if (ruler == null)
+			{
+				fallbackReason = "ruler_missing";
+			}
+			else if (!libraryAvailable)
+			{
+				fallbackReason = "library_unavailable";
+			}
+			else
+			{
+				using (PerfProbe.Scope("PolicyContext.KnowledgeRetrieval"))
+				{
+					raw = AIConfigHandler.GetLoreContext(query, ruler, secondaryInput) ?? "";
+				}
+				using (PerfProbe.Scope("PolicyContext.KnowledgeCompression"))
+				{
+					compact = CompressNpcPolicyKnowledgeContext(raw);
+				}
+				if (string.IsNullOrWhiteSpace(compact))
+				{
+					fallbackReason = string.IsNullOrWhiteSpace(raw) ? "no_match" : "no_policy_knowledge_after_filter";
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			fallbackReason = "exception:" + ex.GetType().Name;
+			compact = "";
+		}
+		PolicySystemLog.Write("Context", "knowledge",
+			"kingdomId=" + kingdomId
+			+ " cultureId=" + cultureId
+			+ " queryChars=" + query.Length.ToString(CultureInfo.InvariantCulture)
+			+ " secondaryChars=" + secondaryInput.Length.ToString(CultureInfo.InvariantCulture)
+			+ " rawChars=" + raw.Length.ToString(CultureInfo.InvariantCulture)
+			+ " compactChars=" + compact.Length.ToString(CultureInfo.InvariantCulture)
+			+ " libraryAvailable=" + libraryAvailable.ToString(CultureInfo.InvariantCulture)
+			+ " semanticEnabled=" + semanticEnabled.ToString(CultureInfo.InvariantCulture)
+			+ " hit=" + (!string.IsNullOrWhiteSpace(compact)).ToString(CultureInfo.InvariantCulture)
+			+ (string.IsNullOrWhiteSpace(fallbackReason) ? "" : " fallback=" + fallbackReason));
+		return compact;
+	}
+
+	private static string BuildNpcPolicyKnowledgeQuery(Kingdom kingdom, Hero ruler)
+	{
+		string kingdomName = GetKingdomName(kingdom);
+		string cultureName = kingdom?.Culture?.Name?.ToString() ?? ruler?.Culture?.Name?.ToString() ?? "";
+		string cultureId = kingdom?.Culture?.StringId ?? ruler?.Culture?.StringId ?? "";
+		return Compact("NPC统治者政策文化检索；王国=" + kingdomName
+			+ "；王国ID=" + (kingdom?.StringId ?? "")
+			+ "；文化=" + cultureName
+			+ "；文化ID=" + cultureId
+			+ "；统治者=" + (ruler?.Name?.ToString() ?? "")
+			+ "；执政家族=" + (kingdom?.RulingClan?.Name?.ToString() ?? ruler?.Clan?.Name?.ToString() ?? "")
+			+ "；主题=能够支持独特统治决策的文化事实、权力关系、社会习俗、禁忌、象征、现实资源和历史经验");
+	}
+
+	private static string BuildNpcPolicyKnowledgeSecondaryInput(string requiredContext, string clanContext, string diplomacyContext)
+	{
+		StringBuilder sb = new StringBuilder();
+		sb.Append("当前国家事实：").Append(Compact(requiredContext));
+		sb.Append("；执政结构：").Append(Compact(clanContext));
+		sb.Append("；战争外交：").Append(Compact(diplomacyContext));
+		sb.Append("；检索重点：与当前国情相关、能够支持独特统治决策的文化事实、权力关系、习俗、禁忌、象征、现实资源和历史经验。");
+		return sb.ToString().Trim();
+	}
+
+	private static string CompressNpcPolicyKnowledgeContext(string raw)
+	{
+		string text = (raw ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		const string knowledgeHeader = "参与互动让你的脑海里浮现了这些知识";
+		int knowledgeStart = text.IndexOf(knowledgeHeader, StringComparison.Ordinal);
+		if (knowledgeStart >= 0)
+		{
+			text = text.Substring(knowledgeStart + knowledgeHeader.Length).Trim();
+		}
+		else if (text.IndexOf("【玩家外貌信息（常驻）】", StringComparison.Ordinal) >= 0)
+		{
+			return "";
+		}
+		List<string> candidates = new List<string>();
+		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (string rawLine in text.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries))
+		{
+			string line = Compact(rawLine);
+			if (string.IsNullOrWhiteSpace(line)
+				|| line.StartsWith("【以下是关于（", StringComparison.Ordinal)
+				|| line.StartsWith("【玩家外貌信息", StringComparison.Ordinal)
+				|| line.IndexOf("与玩家面对面互动时", StringComparison.Ordinal) >= 0)
+			{
+				continue;
+			}
+			foreach (string sentence in Regex.Split(line, @"(?<=[。！？!?；;])"))
+			{
+				AddKnowledgeCandidate(candidates, seen, sentence);
+			}
+		}
+		StringBuilder result = new StringBuilder();
+		foreach (string candidate in candidates)
+		{
+			int separatorChars = result.Length > 0 ? 1 : 0;
+			int nextLength = result.Length + separatorChars + candidate.Length;
+			if (nextLength <= PolicyKnowledgeTargetChars || (result.Length < PolicyKnowledgeTargetChars && nextLength <= PolicyKnowledgeMaxChars))
+			{
+				if (result.Length > 0) result.Append(' ');
+				result.Append(candidate);
+			}
+		}
+		return result.ToString().Trim();
+	}
+
+	private static void AddKnowledgeCandidate(List<string> candidates, HashSet<string> seen, string value)
+	{
+		string candidate = Compact(value);
+		if (string.IsNullOrWhiteSpace(candidate))
+		{
+			return;
+		}
+		if (candidate.Length > PolicyKnowledgeMaxChars)
+		{
+			foreach (string clause in Regex.Split(candidate, @"(?<=[，,：:])"))
+			{
+				string compactClause = Compact(clause);
+				if (!string.IsNullOrWhiteSpace(compactClause) && compactClause.Length <= PolicyKnowledgeMaxChars && seen.Add(compactClause))
+				{
+					candidates.Add(compactClause);
+				}
+			}
+			return;
+		}
+		if (seen.Add(candidate))
+		{
+			candidates.Add(candidate);
+		}
+	}
+
+	private static string CompressCompleteText(string raw, int targetChars, int maxChars)
+	{
+		string text = Compact(raw);
+		if (string.IsNullOrWhiteSpace(text) || maxChars <= 0)
+		{
+			return "";
+		}
+		if (text.Length <= maxChars)
+		{
+			return text;
+		}
+		List<string> candidates = new List<string>();
+		foreach (string sentence in Regex.Split(text, @"(?<=[。！？!?；;])"))
+		{
+			string candidate = Compact(sentence);
+			if (candidate.Length <= maxChars)
+			{
+				if (!string.IsNullOrWhiteSpace(candidate)) candidates.Add(candidate);
+				continue;
+			}
+			foreach (string clause in Regex.Split(candidate, @"(?<=[，,：:])"))
+			{
+				string compactClause = Compact(clause);
+				if (!string.IsNullOrWhiteSpace(compactClause) && compactClause.Length <= maxChars)
+				{
+					candidates.Add(compactClause);
+				}
+			}
+		}
+		StringBuilder result = new StringBuilder();
+		foreach (string candidate in candidates)
+		{
+			int nextLength = result.Length + (result.Length > 0 ? 1 : 0) + candidate.Length;
+			if (nextLength > maxChars)
+			{
+				continue;
+			}
+			if (result.Length > 0) result.Append(' ');
+			result.Append(candidate);
+			if (result.Length >= targetChars)
+			{
+				break;
+			}
+		}
+		return result.ToString().Trim();
 	}
 
 	private List<string> BuildLinkedPreviousPolicyContexts(string kingdomId)
@@ -2456,9 +2665,9 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		return "PreviousPolicy{policyId=" + Compact(record.PolicyId)
 			+ ",date=" + Compact(record.GameDate)
 			+ ",name=" + Compact(record.PolicyName)
-			+ ",policyDigest=" + Compact(FirstNonEmpty(record.PolicyDigest, record.ImpactSummary))
+			+ ",policyDigest=" + CompressCompleteText(FirstNonEmpty(record.PolicyDigest, record.ImpactSummary), 140, 180)
 			+ ",effects=" + Compact(BuildEffectSummary(record.Effects))
-			+ ",linkedPublicFeedback=" + Compact(record.FeedbackDigest) + "}";
+			+ ",derivedWorldEvent=" + CompressCompleteText(record.FeedbackDigest, 50, 70) + "}";
 	}
 
 	private List<string> BuildForeignPolicyGroupContexts(Kingdom targetKingdom)
@@ -2491,13 +2700,16 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 				.Append(",relation=").Append(atWar ? "warEnemy" : "affectsSelf").AppendLine("}");
 			foreach (NpcRulerPolicyRecord policy in selected)
 			{
+				bool directlyAffectsTarget = PolicyAffectsKingdom(policy, targetId);
+				string policyDigest = CompressCompleteText(FirstNonEmpty(policy.PolicyDigest, policy.ImpactSummary), directlyAffectsTarget ? 140 : 100, directlyAffectsTarget ? 180 : 130);
+				string derivedEventDigest = CompressCompleteText(policy.FeedbackDigest, 40, directlyAffectsTarget ? 70 : 60);
 				group.Append(" Policy{policyId=").Append(Compact(policy.PolicyId))
 					.Append(",date=").Append(Compact(policy.GameDate))
 					.Append(",name=").Append(Compact(policy.PolicyName))
-					.Append(",policyDigest=").Append(Compact(FirstNonEmpty(policy.PolicyDigest, policy.ImpactSummary)))
+					.Append(",policyDigest=").Append(policyDigest)
 					.Append(",effectsOnThisKingdom=").Append(Compact(BuildEffectSummary(policy.Effects?.Where(x => string.Equals(x?.TargetKingdomId, targetId, StringComparison.OrdinalIgnoreCase)).ToList())))
 					.Append(",otherStrategicEffects=").Append(Compact(BuildEffectSummary(policy.Effects?.Where(x => !string.Equals(x?.TargetKingdomId, targetId, StringComparison.OrdinalIgnoreCase)).ToList())))
-					.Append(",feedbackDigest=").Append(Compact(policy.FeedbackDigest)).AppendLine("}");
+					.Append(",derivedEventDigest=").Append(derivedEventDigest).AppendLine("}");
 			}
 			result.Add(group.ToString().TrimEnd());
 		}
@@ -2584,7 +2796,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 				.Append("；政策=").Append(Compact(record.PolicyName))
 				.Append("；摘要=").Append(Limit(FirstNonEmpty(record.PolicyDigest, record.ImpactSummary), 140))
 				.Append("；生效影响=").Append(BuildDialogueEffectSummary(effect))
-				.Append("；反馈=").Append(Limit(record.FeedbackDigest, 70)).AppendLine();
+				.Append("；衍生事件=").Append(Limit(record.FeedbackDigest, 70)).AppendLine();
 		}
 	}
 
@@ -2719,11 +2931,11 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		return result;
 	}
 
-	private int CountPoliciesGeneratedOnDay(int currentDay)
+	private int CountNpcPoliciesGeneratedOnDay(int currentDay)
 	{
 		return _policyRecords.Values
 			.Select(DeserializeRecord)
-			.Count(x => x != null && x.Day == currentDay);
+			.Count(x => x != null && !x.IsPlayerPolicy && x.Day == currentDay);
 	}
 
 	private static NpcRulerPolicyGenerationCandidate BuildGenerationCandidate(Kingdom kingdom, Dictionary<string, NpcRulerPolicyRecord> lastGeneratedByKingdom, int currentDay, int intervalDays)
@@ -2809,14 +3021,8 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 				.Where(x => x != null)
 				.ToList();
 			string ruling = kingdom?.RulingClan?.Name?.ToString() ?? "未知";
-			string sample = string.Join("、", clans
-				.Select(x => x.Name?.ToString())
-				.Where(x => !string.IsNullOrWhiteSpace(x))
-				.Distinct()
-				.Take(5));
 			return "ruling=" + ruling
-				+ ",clanCount=" + clans.Count.ToString(CultureInfo.InvariantCulture)
-				+ (string.IsNullOrWhiteSpace(sample) ? "" : ",sample=" + sample);
+				+ ",clanCount=" + clans.Count.ToString(CultureInfo.InvariantCulture);
 		}
 		catch
 		{
@@ -2895,38 +3101,53 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 	private static NpcPolicyPrompt BuildPolicyPrompt(NpcRulerPolicyBatchContext context)
 	{
 		string editablePromptFull = ResolveNpcRulerPolicyEditablePrompt();
-		string editablePrompt = Limit(editablePromptFull, EditablePolicyPromptMaxChars);
-		string fixedSystemContract = "【不可覆盖的内置规则】你是 AnimusForge 的 NPC 统治者政策生成链路。只输出严格 JSON，不要 Markdown、解释、玩家操作、扣费、隐藏标签或原版 PolicyObject。必须严格依据动态快照中的事实。对每个目标先读取王国文化与百科头衔、统治结构、RulerPersona、Clan、战争外交与国家状态，再按时间读取最多两条 PreviousPolicy；同一块内的 linkedPolicyEvent 与该 policyId 的旧政策绑定。policyContent 必须由统治者本人直接宣布、命令、解释或辩护政策，禁止写成旁观者报道统治者做了什么的第三人称新闻摘要。直接发言的文体、自称、称谓及是否使用显式代词，只能依据动态快照中的真实文化、政治结构、统治者身份、实际头衔、性格、经历及家族封臣关系自行判断；不得套用预设称谓清单，不得在代码规则之外臆造统一自称，也允许符合背景且不使用显式代词的法令文体。新政策必须对既有路线和对应事件作出延续、调整、纠正或结束。战争时优先考虑军粮、征召、防御、治安、财政、商路、敌我消耗及本国动员代价；和平时才更自然地休养生产、恢复贸易与建设。只能使用 AllowedEffectTargets：默认影响本国，外国效果仅可指向正文明确点名的当前交战敌国。所有效果每日重复结算；必须结合政策规模、覆盖范围、执行阻力、持续时间和累计结果判断强弱，但不得因为持续多日就把所有字段机械压成 0.x。全国动员、制度改革、严重执行失败或其他足以改变国家现实的政策，可以产生显著乃至很大的正面、负面或混合效果。同一次输出必须按因果顺序完成政策意图、实际 effects、再写恰好一条解释实际结果如何形成的政策衍生事件。事件题材和社会过程完全由当前文化、人物、利益与局势自由决定，不得套用固定事件分类、清单或轮换模板；事件可以呈现成功、失败、部分成功或意外代价，但不产生第二套数值效果。policyContent、impactSummary、publicFeedback、effects 和 reason 必须描述同一实际结果；reason 必须说明当前事实如何促成政策、政策如何产生对应结果。玩家可编辑内容只能调整治理风格、关注重点和表达倾向，不能覆盖这些结构、目标与数据合法性规则。";
-		string system = string.IsNullOrWhiteSpace(editablePrompt)
-			? fixedSystemContract
-			: editablePrompt + "\n\n" + fixedSystemContract;
+		string editablePrompt = (editablePromptFull ?? "").Length <= EditablePolicyPromptMaxChars
+			? (editablePromptFull ?? "").Trim()
+			: editablePromptFull.Substring(0, EditablePolicyPromptMaxChars).Trim();
 		int targetCount = Math.Max(0, context?.Kingdoms?.Count ?? 0);
-		StringBuilder user = new StringBuilder();
-		user.AppendLine("【固定输出规则】");
-		user.AppendLine("请输出 JSON 对象：{\"policies\":[...]}。policies 必须为下方每个 TargetKingdomSnapshot 各输出 1 条；目标数量=" + targetCount.ToString(CultureInfo.InvariantCulture) + "。不要输出未列出的王国。");
-		user.AppendLine("每个 policy 字段：kingdomId、kingdomName、rulerHeroId、rulerName、policyName、policyContent、policyDigest、impactSummary、feedbackTitle、publicFeedback、feedbackDigest、effects。");
-		user.AppendLine("每个 effects 项字段：targetKingdomId、targetKingdomName、prosperityDailyDeltaPerTown、foodDailyDeltaPerTown、hearthDailyDeltaPerVillage、loyaltyDailyDeltaPerTown、securityDailyDeltaPerTown、militiaDailyDeltaPerTown、kingdomStabilityDailyDelta、durationDays、reason。");
-		user.AppendLine("JSON 字段边界只能使用 ASCII 双引号。字符串字段内部禁止写入实际换行或其他控制字符；需要表达换行时必须使用 \\n 等 JSON 转义，优先保持字符串为单行。");
-		user.AppendLine("目标规则：每条政策默认作用于发布者本国；只有 AllowedEffectTargets 中标为 warEnemy、且政策名称或正文明确提及的当前交战敌国才可成为第二个目标。每条政策最多输出一个本国 effect 和一个敌国 effect；不得影响未列出的国家。");
-		user.AppendLine("机制规则：durationDays 必须是正整数。不影响的 daily delta 填 0，至少保留一个与政策正文一致的非 0 daily delta。所有 daily delta 都会在每个游戏日重复结算，并分别应用到目标王国的每座对应城镇、城堡或村庄；稳定度是王国整体每日变化，不按定居点数量叠加。必须考虑每日变化与持续时间共同形成的累计结果，但不要自动把长期政策压成无关痛痒的小数。繁荣、粮食、炉火和民兵具有较大的数值空间，普通措施可以产生明确的个位数或更高变化，大规模改革、动员、灾难和系统性失败可按事实达到几十、几百或其他相称量级；忠诚、治安和稳定度属于 0-100 尺度，应保持相称但仍可在重大政策中显著变化。若稳定度需要变化，kingdomStabilityDailyDelta 必须输出有意义的整数，避免小数归零。不要套用统一档位或硬上限。");
-		user.AppendLine("必须使用动态快照中的文化、王国与统治者实际头衔、统治结构、统治者资料、家族封臣关系、关联政策历史、对应政策事件、骑砍历法和当前国情作为事实依据。policyContent 是统治者本人直接发言的政策正文，不是史官或记者摘要；系统不规定任何代词、自称或头衔，必须从动态上下文判断，也可以采用不出现显式代词的直接法令文体。");
-		user.AppendLine("policyDigest 用一到两句完整短句压缩政策目的、措施、目标与代价，建议 80-140 个中文字符；feedbackDigest 用一句完整短句压缩主要支持、反对、担忧或社会反应，建议 40-70 个中文字符。新政策若回应旧政策或外国政策，必须在构思中依据对应 policyId 建立延续、封锁、动员、反制、报复、适应或缓和关系，不得混淆来源国。");
-		user.AppendLine("impactSummary 是可给周报/事件摘要用的一句话。feedbackTitle 与 publicFeedback 实际保存恰好一条政策衍生事件：标题应具体，正文约 100-180 个中文字符并以完整句子自然收尾，绝不能用省略号代替未写完的内容；必须把 effects.reason 所表达的完整执行原因转化为自然事件叙事，说明当前世界中最合理的人物、势力、利益冲突、意外或执行过程如何使政策产生实际效果。不要选择或声明固定事件类型，不要套用预设题材，不要列数值，不得再写第二条事件。effects.reason 仅作为内部因果数据，事件不追加独立效果。policyContent、impactSummary、publicFeedback、reason 与数值方向和持续时间必须一致；不要为了省 token 删除字段、改短字段名或压成差异/极简 DTO。代码不会再发起第二次事件 LLM 请求。");
-		user.AppendLine();
-		user.AppendLine("【目标王国动态快照】");
-		user.AppendLine(context?.CompactWorldContext ?? "");
+		StringBuilder contract = new StringBuilder();
+		contract.AppendLine("【不可覆盖的技术契约】");
+		contract.AppendLine("只输出严格 JSON，不要输出 Markdown、解释、隐藏标签、玩家操作、扣费或原版 PolicyObject。");
+		contract.AppendLine("输出对象结构为 {\"policies\":[...]}。policies 必须为下方每个 TargetKingdomSnapshot 各输出 1 条，目标数量=" + targetCount.ToString(CultureInfo.InvariantCulture) + "；不得为未列出的王国输出政策。");
+		contract.AppendLine("每个 policy 必须包含：kingdomId、kingdomName、rulerHeroId、rulerName、policyName、policyContent、policyDigest、impactSummary、derivedEventTitle、derivedEventContent、derivedEventDigest、effects。");
+		contract.AppendLine("每个 effects 项必须包含：targetKingdomId、targetKingdomName、prosperityDailyDeltaPerTown、foodDailyDeltaPerTown、hearthDailyDeltaPerVillage、loyaltyDailyDeltaPerTown、securityDailyDeltaPerTown、militiaDailyDeltaPerTown、kingdomStabilityDailyDelta、durationDays、reason。");
+		contract.AppendLine("JSON 字段边界只能使用 ASCII 双引号；字符串内部不得包含未转义的换行或控制字符，需要换行时使用 \\n 等 JSON 转义。");
+		contract.AppendLine("effect 目标只能来自对应快照的 AllowedEffectTargets。每条政策最多一个本国 effect 和一个 warEnemy effect；外国目标还必须在政策名称或 policyContent 中明确提及。不得把非法外国目标重定向成本国。");
+		contract.AppendLine("durationDays 必须是正整数；所有 daily delta 必须是有限数值，kingdomStabilityDailyDelta 按整数语义输出。至少一个 daily delta 非 0；不要套用代码不存在的数值或时长硬上限。");
+		contract.AppendLine("daily delta 会在每个游戏日重复结算：城镇、城堡和村庄字段分别应用到目标王国每个对应定居点，稳定度只对王国整体结算一次。先完成政策创作，再用数值、reason、持续时间和 impactSummary 评估该政策的实际后果；不要让可量化指标限制政策题材。");
+		contract.AppendLine("policyDigest 使用一到两句完整短句压缩政策决定；derivedEventDigest 使用一句完整短句记录衍生事件为世界增加的新事实。");
+		contract.AppendLine("derivedEventTitle 与 derivedEventContent 必须构成恰好一件已经发生的衍生世界事件。它可以与政策间接、偶然或意外相连，不需要展示政策执行、数值结果或社会支持与抵抗；不得产生第二套数值效果。");
+		contract.AppendLine("JSON 结构完整性优先于修辞长度。");
+		string fixedContract = contract.ToString().TrimEnd();
+		string dynamicContext = context?.CompactWorldContext ?? "";
+		StringBuilder system = new StringBuilder();
+		if (!string.IsNullOrWhiteSpace(editablePrompt))
+		{
+			system.AppendLine(editablePrompt);
+			system.AppendLine();
+		}
+		system.AppendLine(fixedContract);
+		system.AppendLine();
+		system.AppendLine("【目标王国动态快照】");
+		system.Append(dynamicContext);
 		if ((editablePromptFull?.Length ?? 0) > EditablePolicyPromptMaxChars)
 		{
 			Log("editable-prompt-injection-truncated savedChars=" + editablePromptFull.Length.ToString(CultureInfo.InvariantCulture)
 				+ " injectedChars=" + EditablePolicyPromptMaxChars.ToString(CultureInfo.InvariantCulture));
 		}
+		string systemPrompt = system.ToString().TrimEnd();
+		PolicySystemLog.Write("Context", "prompt",
+			"messageCount=1"
+			+ " systemPromptChars=" + systemPrompt.Length.ToString(CultureInfo.InvariantCulture)
+			+ " editablePromptChars=" + editablePrompt.Length.ToString(CultureInfo.InvariantCulture)
+			+ " fixedContractChars=" + fixedContract.Length.ToString(CultureInfo.InvariantCulture)
+			+ " dynamicContextChars=" + dynamicContext.Length.ToString(CultureInfo.InvariantCulture)
+			+ " targets=" + targetCount.ToString(CultureInfo.InvariantCulture));
 		return new NpcPolicyPrompt
 		{
-			SystemPrompt = system,
-			UserPrompt = user.ToString()
+			SystemPrompt = systemPrompt
 		};
 	}
-
 	private List<NpcRulerPolicyRecord> NormalizeGeneratedRecords(NpcRulerPolicyBatchContext context, List<NpcRulerPolicyRecord> records)
 	{
 		List<NpcRulerPolicyRecord> result = new List<NpcRulerPolicyRecord>();
@@ -2944,7 +3165,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			}
 			List<NpcRulerPolicyEffectDto> effects = NormalizeEffects(raw?.Effects, target, raw?.PolicyName, raw?.PolicyContent);
 			string policyId = FirstNonEmpty(raw?.PolicyId, "npc_ruler_policy:" + (context?.BatchId ?? "") + ":" + target.KingdomId);
-			string fallbackEvent = "法令传至各地后，地方执行者与受影响群体开始按各自利益回应。" + FirstNonEmpty(raw?.ImpactSummary, BuildEffectSummary(effects), "政策的真实成效仍取决于各地能否落实具体措施。") + "这场余波成为判断该政策成败的直接见证。";
+			string fallbackEvent = "政策公布后，一件起初无人重视的地方插曲迅速传开，并为此后的局势留下了一个尚未被各方看清的新事实。";
 			NpcRulerPolicyRecord record = new NpcRulerPolicyRecord
 			{
 				Version = 3,
@@ -2959,7 +3180,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 				PolicyDigest = Compact(FirstNonEmpty(raw?.PolicyDigest, raw?.ImpactSummary)),
 				PublicFeedback = Limit(FirstNonEmpty(raw?.PublicFeedback, fallbackEvent), 0),
 				FeedbackTitle = Limit(FirstNonEmpty(raw?.FeedbackTitle, "《" + FirstNonEmpty(raw?.PolicyName, target.KingdomName + "政令") + "》的余波"), MaxNameChars),
-				FeedbackDigest = Compact(FirstNonEmpty(raw?.FeedbackDigest, raw?.ImpactSummary)),
+				FeedbackDigest = Compact(FirstNonEmpty(raw?.FeedbackDigest, fallbackEvent)),
 				EventType = "",
 				ImpactSummary = Limit(FirstNonEmpty(raw?.ImpactSummary, BuildEffectSummary(effects)), MaxImpactChars),
 				Day = Math.Max(0, context?.Day ?? GetCurrentCampaignDay()),
@@ -3139,7 +3360,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		try
 		{
 			string title = FirstNonEmpty(record.PolicyName, "新政策");
-			string detail = "统治者：" + (record.RulerName ?? "未知") + "\n政策：" + (record.PolicyContent ?? "") + "\n影响：" + (record.ImpactSummary ?? "");
+			string detail = record.PolicyContent ?? "";
 			AnimusForgeWorldEventInboxEntry entry = new AnimusForgeWorldEventInboxEntry
 			{
 				EventId = "npc_ruler_policy:" + NormalizeKeyPart(record.PolicyId),
@@ -3307,25 +3528,6 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static string InvokeWeeklyContextBridge(string kingdomId)
-	{
-		try
-		{
-			MethodInfo method = typeof(MyBehavior).GetMethods(BindingFlags.Public | BindingFlags.Static)
-				.FirstOrDefault(x => string.Equals(x.Name, "BuildRecentWeeklyReportContextForKingdomExternal", StringComparison.Ordinal));
-			if (method == null)
-			{
-				return "";
-			}
-			object value = method.Invoke(null, new object[] { kingdomId, 3 });
-			return (value as string ?? "").Trim();
-		}
-		catch
-		{
-			return "";
-		}
-	}
-
 	private List<NpcRulerPolicyRecord> GetRecentPolicyRecordsInternal(string kingdomId, int maxCount)
 	{
 		string filter = (kingdomId ?? "").Trim();
@@ -3421,7 +3623,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			string policyName = Limit(FirstNonEmpty(policy.PolicyName, "未命名政策"), 70);
 			string snapshot = Limit("统治者政策。发布国：" + Limit(FirstNonEmpty(policy.KingdomName, policy.KingdomId), 50)
 				+ "。发布者：" + Limit(policy.RulerName, 50) + "。政策：《" + policyName + "》"
-				+ "。政策摘要：" + Limit(policy.PolicyDigest, 140) + "。社会反馈：" + Limit(policy.FeedbackDigest, 70)
+				+ "。政策摘要：" + Limit(policy.PolicyDigest, 140) + "。衍生事件：" + Limit(policy.FeedbackDigest, 70)
 				+ "。目标王国：" + targetName + "。每日影响：" + Limit(BuildEffectSummary(new List<NpcRulerPolicyEffectDto> { effect }), 100) + "。", 320);
 			string effectKey = FirstNonEmpty(effect.EffectId, targetId + ":" + i.ToString(CultureInfo.InvariantCulture));
 			bool foreign = !string.IsNullOrWhiteSpace(policy.KingdomId) && !string.Equals(targetId, policy.KingdomId, StringComparison.OrdinalIgnoreCase);
@@ -3438,13 +3640,14 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		exception = null;
 		try
 		{
-			if ((json ?? "").TrimStart().StartsWith("[", StringComparison.Ordinal))
+			string compatibleJson = NormalizeGeneratedPolicyEventFieldNames(json);
+			if (compatibleJson.TrimStart().StartsWith("[", StringComparison.Ordinal))
 			{
-				records = JsonConvert.DeserializeObject<List<NpcRulerPolicyRecord>>(json) ?? new List<NpcRulerPolicyRecord>();
+				records = JsonConvert.DeserializeObject<List<NpcRulerPolicyRecord>>(compatibleJson) ?? new List<NpcRulerPolicyRecord>();
 			}
 			else
 			{
-				NpcRulerPolicyResponse response = JsonConvert.DeserializeObject<NpcRulerPolicyResponse>(json);
+				NpcRulerPolicyResponse response = JsonConvert.DeserializeObject<NpcRulerPolicyResponse>(compatibleJson);
 				records = response?.Policies ?? new List<NpcRulerPolicyRecord>();
 			}
 			return true;
@@ -3455,6 +3658,15 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			records = new List<NpcRulerPolicyRecord>();
 			return false;
 		}
+	}
+
+	private static string NormalizeGeneratedPolicyEventFieldNames(string json)
+	{
+		string compatible = json ?? "";
+		compatible = Regex.Replace(compatible, @"""derivedEventTitle""(?=\s*:)", "\"feedbackTitle\"", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+		compatible = Regex.Replace(compatible, @"""derivedEventContent""(?=\s*:)", "\"publicFeedback\"", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+		compatible = Regex.Replace(compatible, @"""derivedEventDigest""(?=\s*:)", "\"feedbackDigest\"", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+		return compatible;
 	}
 
 	private static string RepairNpcPolicyJson(string json)
@@ -3482,9 +3694,10 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		foreach (string fragment in ExtractCompletePolicyObjectFragments(raw))
 		{
 			candidateCount++;
+			string compatibleFragment = NormalizeGeneratedPolicyEventFieldNames(fragment);
 			try
 			{
-				NpcRulerPolicyRecord record = JsonConvert.DeserializeObject<NpcRulerPolicyRecord>(fragment);
+				NpcRulerPolicyRecord record = JsonConvert.DeserializeObject<NpcRulerPolicyRecord>(compatibleFragment);
 				if (record != null)
 				{
 					records.Add(record);
@@ -3494,8 +3707,8 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			catch
 			{
 			}
-			string repaired = RepairNpcPolicyJson(fragment);
-			if (string.Equals(repaired, fragment, StringComparison.Ordinal))
+			string repaired = RepairNpcPolicyJson(compatibleFragment);
+			if (string.Equals(repaired, compatibleFragment, StringComparison.Ordinal))
 			{
 				continue;
 			}
@@ -3873,7 +4086,6 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		try
 		{
 			List<string> wars = new List<string>();
-			List<string> others = new List<string>();
 			foreach (Kingdom other in Kingdom.All ?? Enumerable.Empty<Kingdom>())
 			{
 				if (other == null || other == kingdom || other.IsEliminated)
@@ -3884,12 +4096,8 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 				{
 					wars.Add(GetKingdomName(other));
 				}
-				else if (others.Count < 5)
-				{
-					others.Add(GetKingdomName(other));
-				}
 			}
-			return "战争=" + (wars.Count == 0 ? "无" : string.Join("、", wars.Take(5))) + "；其他=" + (others.Count == 0 ? "无" : string.Join("、", others));
+			return "战争=" + (wars.Count == 0 ? "无" : string.Join("、", wars));
 		}
 		catch
 		{
@@ -3983,19 +4191,21 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 
 	private static string BuildEffectSummary(List<NpcRulerPolicyEffectDto> effects)
 	{
-		NpcRulerPolicyEffectDto effect = (effects ?? new List<NpcRulerPolicyEffectDto>()).FirstOrDefault();
-		if (effect == null)
+		List<NpcRulerPolicyEffectDto> validEffects = (effects ?? new List<NpcRulerPolicyEffectDto>()).Where(x => x != null).ToList();
+		if (validEffects.Count == 0)
 		{
 			return "";
 		}
-		return "每日繁荣" + FormatSigned(effect.ProsperityDailyDeltaPerTown)
+		return string.Join("；", validEffects.Select(effect =>
+			"【" + FirstNonEmpty(effect.TargetKingdomName, effect.TargetKingdomId, "目标王国") + "】"
+			+ "每日繁荣" + FormatSigned(effect.ProsperityDailyDeltaPerTown)
 			+ " 粮食" + FormatSigned(effect.FoodDailyDeltaPerTown)
 			+ " 炉户" + FormatSigned(effect.HearthDailyDeltaPerVillage)
 			+ " 忠诚" + FormatSigned(effect.LoyaltyDailyDeltaPerTown)
 			+ " 治安" + FormatSigned(effect.SecurityDailyDeltaPerTown)
 			+ " 民兵" + FormatSigned(effect.MilitiaDailyDeltaPerTown)
 			+ " 稳定度" + FormatSigned(effect.KingdomStabilityDailyDelta)
-			+ " 持续" + effect.DurationDays.ToString(CultureInfo.InvariantCulture) + "天";
+			+ "，持续" + effect.DurationDays.ToString(CultureInfo.InvariantCulture) + "天"));
 	}
 
 	private void NormalizeGenerationClock(int currentDay, int currentHour)
@@ -4183,6 +4393,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		public string RulerName;
 		public string RequiredContext;
 		public string PersonaContext;
+		public string KnowledgeContext;
 		public List<string> PreviousPolicyContexts = new List<string>();
 		public List<string> ForeignPolicyGroupContexts = new List<string>();
 		public string SupplementalContext;
@@ -4216,7 +4427,6 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		public string TriggerSource = "";
 		public NpcRulerPolicyBatchContext Context;
 		public string SystemPrompt = "";
-		public string UserPrompt = "";
 		public string PromptPreview = "";
 		public int Day;
 		public int Hour;

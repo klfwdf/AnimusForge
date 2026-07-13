@@ -193,6 +193,40 @@ public sealed class AnimusForgeTopDownListPanel : ListPanel
 	}
 }
 
+public sealed class AnimusForgeVersionedScrollableListPanel : ListPanel
+{
+#if !BANNERLORD_1_4_OR_GREATER
+	private bool _childOrderNormalized;
+#endif
+
+	public AnimusForgeVersionedScrollableListPanel(UIContext context)
+		: base(context)
+	{
+		StackLayout.LayoutMethod = LayoutMethod.VerticalTopToBottom;
+	}
+
+	protected override void OnLateUpdate(float dt)
+	{
+#if !BANNERLORD_1_4_OR_GREATER
+		if (!_childOrderNormalized && ChildCount > 0)
+		{
+			List<Widget> originalOrder = new List<Widget>();
+			for (int i = 0; i < ChildCount; i++)
+			{
+				originalOrder.Add(GetChild(i));
+			}
+			foreach (Widget child in originalOrder)
+			{
+				child.SetSiblingIndex(0);
+			}
+			SetMeasureAndLayoutDirty();
+			_childOrderNormalized = true;
+		}
+#endif
+		base.OnLateUpdate(dt);
+	}
+}
+
 public sealed class AnimusForgeWorldEventOverlay
 {
 	private const int EventInboxDisplayLimit = 160;

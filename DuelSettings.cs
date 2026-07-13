@@ -93,10 +93,23 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		+ "\n\n战争时期优先处理军粮、征召、防御、治安、财政负担、商路和敌我消耗，并体现动员对本国造成的真实代价。和平时期更适合休养生产、恢复贸易、建设领地和处理长期矛盾。"
 		+ "\n\n所有政策都应符合国家当前处境和实际执行能力，效果应由具体措施逐步产生，不能无缘无故让国家迅速强盛或衰败。每项政策伴随一件与实际效果直接相关的社会事件，让谣言、信仰、平民、领主、军营、商旅、官吏或边境局势等最合理的一方自然介入并展现政策如何落地。";
 
-	private const string DefaultNpcRulerPolicyPrompt = "让每位 NPC 统治者依据本国文化、统治结构、实际身份、个性和经历，以统治者本人直接发言的方式治理国家。政策名称、措辞、优先事项和愿意承担的代价都应有鲜明的个人色彩，不要写成旁观者新闻摘要或千篇一律的模板。"
+	private const string PreviousDefaultNpcRulerPolicyPromptWithFreeformDerivedEvent = "让每位 NPC 统治者依据本国文化、统治结构、实际身份、个性和经历，以统治者本人直接发言的方式治理国家。政策名称、措辞、优先事项和愿意承担的代价都应有鲜明的个人色彩，不要写成旁观者新闻摘要或千篇一律的模板。"
 		+ "\n\n直接发言的文体、称谓和是否使用显式代词，应从该国文化、统治者头衔、家族与封臣关系中自然形成，不套用统一自称。新政策应联系此前的治理路线和政策余波，可以延续有效措施，也可以针对失败、抱怨或意外代价作出调整、纠正或转向。"
 		+ "\n\n战争时期优先处理军粮、征召、防御、治安、财政负担、商路和敌我消耗，并体现动员对本国造成的真实代价。和平时期更适合休养生产、恢复贸易、建设领地和处理长期矛盾。"
 		+ "\n\n所有政策都应符合国家当前处境和实际执行能力，效果强弱应与政策规模、覆盖范围、执行阻力、持续时间和真实代价相称，不要把所有影响自动压成微小数值。每项政策伴随一件与实际效果直接相关的具体事件，事件内容由当前文化、人物关系、利益冲突和国家局势自由形成，不套用固定类型、题材清单或轮换模板。";
+
+	private const string PreviousDefaultNpcRulerPolicyPromptWithConciseAssociatedEvent = "根据统治者、文化、现实国情和已经存在的国内外政策，自由制定符合当前世界局势的政策。"
+		+ "\n\n既有政策只是当前世界中的现实作用力。与本次决策有关时，可以利用、规避、抵消、反制、升级、报复或缓和；无关时可以制定完全不同的新政策。不要仅更换名称后重复已有政策工具。"
+		+ "\n\npolicyContent 应完整但简洁，直接写清决定、措施、执行范围和代价，不写长篇舞台动作或演讲。reason 用一到两句说明因果；publicFeedback 只写一件完整但简洁的政策衍生事件。避免在不同字段重复解释同一内容，优先保证 JSON 结构完整。";
+
+	private const string PreviousDefaultNpcRulerPolicyPromptWithCreativeDerivedEvent = "根据统治者、文化、现实国情和已经存在的国内外政策，自由制定符合当前世界局势的政策。"
+		+ "\n\n既有政策只是当前世界中的现实作用力。与本次决策有关时，可以利用、规避、抵消、反制、升级、报复或缓和；无关时可以制定完全不同的新政策。不要仅更换名称后重复已有政策工具。"
+		+ "\n\npolicyContent 应完整但简洁，只写政策本身，直接说明决定、措施、执行范围和代价；不要重复统治者姓名、政策名称、影响摘要或添加“统治者：”“政策：”“影响：”等栏目。reason 用一到两句说明数值因果，避免在不同字段重复解释同一内容。"
+		+ "\n\npublicFeedback 应发挥想象力，写政策公布后在同一世界中自然衍生的一件有意思的事件。它可以与政策形成间接、偶然或意外联系，不必复述政策执行和数值影响，也不要默认写成支持、拒绝、抵抗或镇压；让事件拥有自己的变化与结果。优先保证 JSON 结构完整。";
+
+	private const string DefaultNpcRulerPolicyPrompt = "先根据统治者、文化和当前局势，决定此刻真正值得改变的一件现实，再创作政策，最后评估它会产生哪些数值效果。不要从繁荣、粮食、忠诚等可量化指标反推政策题材。"
+		+ "\n\n既有的本国政策、外国政策和衍生事件只是世界中已经发生的事实。有关时可以利用、规避、反制、升级或缓和，无关时可以忽略并开辟完全不同的方向；不要仅换名称重复已有政策工具。"
+		+ "\n\n政策形式和表达方式自由，正文只写统治者作出的真实决定，不重复 UI 已有的统治者、标题和影响信息。衍生世界事件应发挥想象力，为世界增加一个以后值得记住和继续发展的新事实；它可以与政策间接、偶然或意外相连，不必展示政策落实、数值结果或民众支持与抵抗。";
 
 	private const int DefaultCustomPolicyGoldCost = 50000;
 
@@ -1386,42 +1399,42 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	public bool PreserveSceneAsteriskActions { get; set; } = false;
 
 	[SettingPropertyBool("AI 判断自定义政策消耗", Order = 0, RequireRestart = false, HintText = "开启：由自定义政策主评判 AI 判断完整执行所需第纳尔和影响力，玩家资源不足时按实际投入比例折算效果。关闭：完全使用下方滑条固定扣费，效果不折算。")]
-	[SettingPropertyGroup("10. 自定义政策")]
+	[SettingPropertyGroup("10. 政策系统/1. 玩家政策")]
 	public bool UseAiEvaluatedCustomPolicyCost { get; set; } = true;
 
 	[SettingPropertyInteger("发布第纳尔消耗", 0, 500000, "0", Order = 1, RequireRestart = false, HintText = "关闭“AI 判断自定义政策消耗”后生效：自定义政策成功落地时扣除的第纳尔。默认 50000；设置为 0 表示不消耗第纳尔。")]
-	[SettingPropertyGroup("10. 自定义政策")]
+	[SettingPropertyGroup("10. 政策系统/1. 玩家政策")]
 	public int CustomPolicyGoldCost { get; set; } = DefaultCustomPolicyGoldCost;
 
 	[SettingPropertyInteger("发布影响力消耗", 0, 5000, "0", Order = 2, RequireRestart = false, HintText = "关闭“AI 判断自定义政策消耗”后生效：自定义政策成功落地时扣除的影响力。默认 500；设置为 0 表示不消耗影响力。")]
-	[SettingPropertyGroup("10. 自定义政策")]
+	[SettingPropertyGroup("10. 政策系统/1. 玩家政策")]
 	public int CustomPolicyInfluenceCost { get; set; } = DefaultCustomPolicyInfluenceCost;
 
 	[SettingPropertyInteger("民众反馈目标字数", CustomPolicyPublicFeedbackTargetMinChars, CustomPolicyPublicFeedbackTargetMaxChars, "0", Order = 3, RequireRestart = false, HintText = "控制自定义政策 publicFeedback 的目标中文字符数。读取时按 100 字步进归整；默认 900，最高 1800。")]
-	[SettingPropertyGroup("10. 自定义政策")]
+	[SettingPropertyGroup("10. 政策系统/1. 玩家政策")]
 	public int CustomPolicyPublicFeedbackTargetChars { get; set; } = DefaultCustomPolicyPublicFeedbackTargetChars;
 
 	[SettingPropertyBool("启用NPC统治者政策", Order = 0, RequireRestart = false, HintText = "开启后，NPC 王国统治者政策生成行为可以按间隔扫描并发布政策。关闭只停止新生成，不影响读取既有事件/效果。若对应行为类尚未接入，则该开关不会产生效果。")]
-	[SettingPropertyGroup("13. NPC统治者政策（开发）")]
+	[SettingPropertyGroup("10. 政策系统/2. NPC统治者政策")]
 	public bool EnableNpcRulerPolicy { get; set; } = true;
 
 	[SettingPropertyInteger("生成检查间隔（天）", NpcRulerPolicyIntervalMinDays, NpcRulerPolicyIntervalMaxDays, "0", Order = 1, RequireRestart = false, HintText = "NPC 统治者政策生成的最小检查间隔。默认 7 天；下限 1 天，上限 30 天。这不是冷却天数。")]
-	[SettingPropertyGroup("13. NPC统治者政策（开发）")]
+	[SettingPropertyGroup("10. 政策系统/2. NPC统治者政策")]
 	public int NpcRulerPolicyIntervalDays { get; set; } = DefaultNpcRulerPolicyIntervalDays;
 
 	[Obsolete("Use NpcRulerPolicyIntervalDays / GetNpcRulerPolicyIntervalDaysForExternal instead.")]
 	public int NpcRulerPolicyIntervalHours { get; set; } = DefaultNpcRulerPolicyIntervalHours;
 
-	[SettingPropertyInteger("每日最多生成数", NpcRulerPolicyDailyGenerationLimitMin, NpcRulerPolicyDailyGenerationLimitMax, "0", Order = 2, RequireRestart = false, HintText = "限制 NPC 统治者政策每天最多生成多少条。默认 2；这是 token 调度上限，不会改变检查间隔。")]
-	[SettingPropertyGroup("13. NPC统治者政策（开发）")]
+	[SettingPropertyInteger("NPC每日最多发布政策数", NpcRulerPolicyDailyGenerationLimitMin, NpcRulerPolicyDailyGenerationLimitMax, "0", Order = 2, RequireRestart = false, HintText = "限制一个游戏日内所有 NPC 国家实际成功发布的政策总数。默认 2；多次调度和多次请求共同受此限制，玩家政策不占用该配额。")]
+	[SettingPropertyGroup("10. 政策系统/2. NPC统治者政策")]
 	public int NpcRulerPolicyDailyGenerationLimit { get; set; } = DefaultNpcRulerPolicyDailyGenerationLimit;
 
 	[SettingPropertyInteger("每次请求最多国家数", NpcRulerPolicyMaxKingdomsPerRequestMin, NpcRulerPolicyMaxKingdomsPerRequestMax, "0", Order = 3, RequireRestart = false, HintText = "限制单次 NPC 统治者政策请求里最多放入多少个王国上下文。默认 2；用于探索稳定批量上限，过高可能触发 finish_reason=length；调低可减少单次 token。")]
-	[SettingPropertyGroup("13. NPC统治者政策（开发）")]
+	[SettingPropertyGroup("10. 政策系统/2. NPC统治者政策")]
 	public int NpcRulerPolicyMaxKingdomsPerRequest { get; set; } = DefaultNpcRulerPolicyMaxKingdomsPerRequest;
 
 	[SettingPropertyBool("NPC统治者政策调试日志", Order = 4, RequireRestart = false, HintText = "开启后，NPC 统治者政策生成行为可输出更多调试日志。")]
-	[SettingPropertyGroup("13. NPC统治者政策（开发）")]
+	[SettingPropertyGroup("10. 政策系统/2. NPC统治者政策")]
 	public bool NpcRulerPolicyDebugLogs { get; set; } = false;
 
 	[SettingPropertyInteger("周报篇幅档位", 1, 4, "0", Order = 0, RequireRestart = false, HintText = "1=200-400字；2=200-800字；3=200-1200字；4=200-1500字。世界周报和王国周报共用这一档位。")]
@@ -2455,7 +2468,10 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		if (string.Equals(text, PreviousDefaultNpcRulerPolicyPromptForMigration, StringComparison.Ordinal)
 			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptWithTechnicalContract, StringComparison.Ordinal)
 			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptBeforeDerivedEvent, StringComparison.Ordinal)
-			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptWithTypedEvent, StringComparison.Ordinal))
+			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptWithTypedEvent, StringComparison.Ordinal)
+			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptWithFreeformDerivedEvent, StringComparison.Ordinal)
+			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptWithConciseAssociatedEvent, StringComparison.Ordinal)
+			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptWithCreativeDerivedEvent, StringComparison.Ordinal))
 		{
 			return DefaultNpcRulerPolicyPrompt;
 		}
