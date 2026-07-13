@@ -1144,6 +1144,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				hint = $"类型: {(string.IsNullOrWhiteSpace(option.SettlementEntry.TypeLabel) ? "固定资产" : option.SettlementEntry.TypeLabel)} | 每日收益: {Math.Max(0, option.SettlementEntry.DailyIncomeDenars)} 第纳尔 | 一次结清指导价: {Math.Max(0, option.SettlementEntry.GuidePriceDenars)} 第纳尔";
 			}
 			string displayName = option.Name;
+			displayName = GetCourierLetterTransferDisplayTitleForExternal(displayName);
 			string prisonerSourceLabel = MyBehavior.GetPartyTransferPrisonerSourceLabelForExternal(option.PartyEntry);
 			if (!string.IsNullOrWhiteSpace(prisonerSourceLabel))
 			{
@@ -1239,7 +1240,8 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			return;
 		}
 		string title = flow.Mode == CourierPayloadMode.Show ? "展示数量" : (flow.Mode == CourierPayloadMode.Give ? "发送数量" : "转移数量");
-		string text = $"[{flow.PendingAmountIndex + 1}/{flow.SelectedEntries.Count}] {entry.Name} 最多可填 {max}。\n请输入 1 到 {max} 的整数：";
+		string entryDisplayName = GetCourierLetterTransferDisplayTitleForExternal(entry.Name);
+		string text = $"[{flow.PendingAmountIndex + 1}/{flow.SelectedEntries.Count}] {entryDisplayName} 最多可填 {max}。\n请输入 1 到 {max} 的整数：";
 		InformationManager.ShowTextInquiry(new TextInquiryData(title, text, true, true, "确定", "返回", input =>
 		{
 			if (!int.TryParse(input, out var amount) || amount <= 0 || amount > max)
@@ -3288,6 +3290,17 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 	private static bool IsCourierReplyInventoryDisplayName(string displayName)
 	{
 		return (displayName ?? "").Contains("\u7684\u56de\u4fe1\uff1a");
+	}
+
+	public static string GetCourierLetterTransferDisplayTitleForExternal(string displayName)
+	{
+		string text = (displayName ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text) || !LooksLikeCourierLetterInventoryDisplayName(text))
+		{
+			return text;
+		}
+		int lineBreakIndex = text.IndexOfAny(new char[2] { '\r', '\n' });
+		return lineBreakIndex > 0 ? text.Substring(0, lineBreakIndex).Trim() : text;
 	}
 
 	private static string ExtractCourierLetterInventorySenderName(string displayName)

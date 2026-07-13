@@ -17942,7 +17942,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		for (int i = 0; i < _shoutTradeOptions.Count; i++)
 		{
 			ShoutTradeResourceOption shoutTradeResourceOption = _shoutTradeOptions[i];
-			string text2 = $"{shoutTradeResourceOption.Name} (×{shoutTradeResourceOption.AvailableAmount})";
+			string transferDisplayName = CourierDeliveryBehavior.GetCourierLetterTransferDisplayTitleForExternal(shoutTradeResourceOption.Name);
+			string text2 = $"{transferDisplayName} (×{shoutTradeResourceOption.AvailableAmount})";
 			string text3 = $"可用数量: {shoutTradeResourceOption.AvailableAmount}";
 			if (shoutTradeResourceOption.PartyEntry != null)
 			{
@@ -18190,7 +18191,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return;
 		}
 		string titleText = (IsShoutTradeShowMode(_shoutTradeMode) ? "展示数量" : (IsShoutPartyTransferMode(_shoutTradeMode) ? "转移数量" : "给予数量"));
-		string text = $"[{_shoutPendingTradeItemIndex + 1}/{_shoutPendingTradeItems.Count}] {shoutPendingTradeItem.ItemName} 最多可填 {availableAmount}。\n请输入 1 到 {availableAmount} 的整数：";
+		string transferDisplayName = CourierDeliveryBehavior.GetCourierLetterTransferDisplayTitleForExternal(shoutPendingTradeItem.ItemName);
+		string text = $"[{_shoutPendingTradeItemIndex + 1}/{_shoutPendingTradeItems.Count}] {transferDisplayName} 最多可填 {availableAmount}。\n请输入 1 到 {availableAmount} 的整数：";
 		InformationManager.ShowTextInquiry(new TextInquiryData(titleText, text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "返回", delegate(string input)
 		{
 			if (!int.TryParse(input, out var result) || result <= 0 || result > availableAmount)
@@ -18240,7 +18242,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				}
 				else
 				{
-					stringBuilder.AppendLine(IsShoutTradeGiveMode(_shoutTradeMode) ? $"  · 给予 {shoutPendingTradeItem.Amount} 个 {shoutPendingTradeItem.ItemName}" : $"  · 展示 {shoutPendingTradeItem.Amount} 个 {shoutPendingTradeItem.ItemName}");
+					string transferDisplayName = CourierDeliveryBehavior.GetCourierLetterTransferDisplayTitleForExternal(shoutPendingTradeItem.ItemName);
+					stringBuilder.AppendLine(IsShoutTradeGiveMode(_shoutTradeMode) ? $"  · 给予 {shoutPendingTradeItem.Amount} 个 {transferDisplayName}" : $"  · 展示 {shoutPendingTradeItem.Amount} 个 {transferDisplayName}");
 				}
 			}
 		}
