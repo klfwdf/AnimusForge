@@ -13816,7 +13816,10 @@ public class MyBehavior : CampaignBehaviorBase
 			return true;
 		}
 		if (string.Equals(text, "[A:C_J_P_K]", StringComparison.OrdinalIgnoreCase)
-			|| Regex.IsMatch(text, "^\\[ACTION:KINGDOM_SERVICE:(?:LEAVE(?::current)?|MERCENARY:[^\\]]+|VASSAL:[^\\]]+|CLAN_JOIN_PLAYER_KINGDOM:[^\\]]+)\\]$", RegexOptions.IgnoreCase))
+			|| Regex.IsMatch(text, "^\\[A:C_J_K:[a-zA-Z0-9_.\\-]+\\]$", RegexOptions.IgnoreCase)
+			|| Regex.IsMatch(text, "^\\[A:P_J_K_[MV]\\]$", RegexOptions.IgnoreCase)
+			|| string.Equals(text, "[A:P_L_K]", StringComparison.OrdinalIgnoreCase)
+			|| Regex.IsMatch(text, "^\\[ACTION:KINGDOM_SERVICE:(?:LEAVE(?::current)?|MERCENARY:[^\\]]+|VASSAL:[^\\]]+|CLAN_JOIN_(?:PLAYER_KINGDOM|KINGDOM):[^\\]]+)\\]$", RegexOptions.IgnoreCase))
 		{
 			return true;
 		}
@@ -32485,6 +32488,7 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		string text2 = text ?? "";
 		text2 = Regex.Replace(text2, "\\[ACTION:KINGDOM_SERVICE:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[A:(?:P_J_K_[MV]|P_L_K)\\]", "", RegexOptions.IgnoreCase);
 		return text2.Trim();
 	}
 
@@ -32793,7 +32797,7 @@ public class MyBehavior : CampaignBehaviorBase
 		List<string> list = new List<string>();
 		HashSet<string> hashSet2 = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		string text = "";
-		foreach (Match item in Regex.Matches(raw ?? "", "\\[ACTION:[^\\]\\r\\n]*\\]", RegexOptions.IgnoreCase))
+		foreach (Match item in Regex.Matches(raw ?? "", "\\[(?:ACTION:[^\\]\\r\\n]*|A:(?:P_J_K_[MV]|P_L_K))\\]", RegexOptions.IgnoreCase))
 		{
 			string text3 = (item?.Value ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(text3))
@@ -32805,7 +32809,19 @@ public class MyBehavior : CampaignBehaviorBase
 				text = text3;
 				continue;
 			}
-			if (!hashSet.Contains(text3))
+			bool allowed = hashSet.Contains(text3);
+			if (!allowed)
+			{
+				Match legacyJoinMatch = Regex.Match(text3, "^\\[ACTION:KINGDOM_SERVICE:(MERCENARY|VASSAL|LEAVE):[^\\]]+\\]$", RegexOptions.IgnoreCase);
+				if (legacyJoinMatch.Success)
+				{
+					string serviceType = (legacyJoinMatch.Groups[1].Value ?? "").Trim();
+					allowed = (serviceType.Equals("MERCENARY", StringComparison.OrdinalIgnoreCase) && hashSet.Contains("[A:P_J_K_M]"))
+						|| (serviceType.Equals("VASSAL", StringComparison.OrdinalIgnoreCase) && hashSet.Contains("[A:P_J_K_V]"))
+						|| (serviceType.Equals("LEAVE", StringComparison.OrdinalIgnoreCase) && hashSet.Contains("[A:P_L_K]"));
+				}
+			}
+			if (!allowed)
 			{
 				continue;
 			}

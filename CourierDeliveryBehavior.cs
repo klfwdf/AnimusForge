@@ -8246,6 +8246,9 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		value = Regex.Replace(value, "\\[ATP[:;][^\\]]+\\]", "", RegexOptions.IgnoreCase);
 		value = Regex.Replace(value, "\\[A:H_J_P_P\\]", "", RegexOptions.IgnoreCase);
 		value = Regex.Replace(value, "\\[A:C_J_P_K\\]", "", RegexOptions.IgnoreCase);
+		value = Regex.Replace(value, "\\[A:C_J_K:[^\\]]+\\]", "", RegexOptions.IgnoreCase);
+		value = Regex.Replace(value, "\\[A:P_J_K_[MV]\\]", "", RegexOptions.IgnoreCase);
+		value = Regex.Replace(value, "\\[A:P_L_K\\]", "", RegexOptions.IgnoreCase);
 		value = Regex.Replace(value, "\\[(?:FOL|STP|END)\\]", "", RegexOptions.IgnoreCase);
 		return value.Trim();
 	}
