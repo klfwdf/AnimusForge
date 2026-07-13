@@ -1,7 +1,6 @@
 using System;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Encounters;
-using TaleWorlds.CampaignSystem.GameMenus;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem.Settlements.Locations;
 using TaleWorlds.Core;
@@ -22,9 +21,11 @@ internal enum CastleAftermathMissionEntryPumpResult
 /// </summary>
 internal static class CastleAftermathMissionEntryBridge
 {
-	private const int StateWaitTimeoutTicks = 120;
+	private static readonly TimeSpan PartyStateCloseTimeout = TimeSpan.FromSeconds(15.0);
 
-	private const int RoutedMissionTimeoutTicks = 90;
+	private static readonly TimeSpan MissionStartTimeout = TimeSpan.FromMinutes(2.0);
+
+	private static readonly TimeSpan WaitLogInterval = TimeSpan.FromSeconds(10.0);
 
 	private static Location _pendingLocation;
 
@@ -32,11 +33,15 @@ internal static class CastleAftermathMissionEntryBridge
 
 	private static string _pendingSource = "";
 
-	private static int _pendingTicks;
+	private static long _queuedAtUtcTicks;
 
-	private static bool _routedThroughCastleMenu;
+	private static long _notBeforeUtcTicks;
 
-	private static int _routedTicks;
+	private static long _openRequestedAtUtcTicks;
+
+	private static long _nextWaitLogUtcTicks;
+
+	private static bool _openRequested;
 
 	internal static bool IsPending => _pendingLocation != null;
 
@@ -47,19 +52,24 @@ internal static class CastleAftermathMissionEntryBridge
 			return;
 		}
 
+		long now = DateTime.UtcNow.Ticks;
 		_pendingLocation = location;
 		_pendingSettlementId = settlementId?.Trim() ?? "";
 		_pendingSource = string.IsNullOrWhiteSpace(source) ? "castle_roster_selection_done" : source.Trim();
-		_pendingTicks = 0;
-		_routedThroughCastleMenu = false;
-		_routedTicks = 0;
+		_queuedAtUtcTicks = now;
+		_notBeforeUtcTicks = now + TimeSpan.FromMilliseconds(350.0).Ticks;
+		_openRequestedAtUtcTicks = 0L;
+		_nextWaitLogUtcTicks = 0L;
+		_openRequested = false;
 		GcczDiagnosticLog.Log("CastleMissionEntry", "deferredOpenQueued source=" + _pendingSource
 			+ " settlement=" + (_pendingSettlementId.Length > 0 ? _pendingSettlementId : "N/A")
 			+ " activeState=" + GetActiveGameStateName());
 		Logger.Log("CastleAftermath", "Queued castle mission entry after PartyState closes. Source=" + _pendingSource);
 	}
 
-	internal static CastleAftermathMissionEntryPumpResult Pump(Settlement settlement)
+	internal static CastleAftermathMissionEntryPumpResult Pump(
+		Settlement settlement,
+		Func<Location, string, bool> openMission)
 	{
 		Location location = _pendingLocation;
 		if (location == null)
@@ -71,23 +81,19 @@ internal static class CastleAftermathMissionEntryBridge
 		{
 			if (Mission.Current != null)
 			{
-				Complete("mission_already_open");
+				Complete("mission_detected");
 				return CastleAftermathMissionEntryPumpResult.Idle;
 			}
 
-			_pendingTicks++;
+			long now = DateTime.UtcNow.Ticks;
 			string stateName = GetActiveGameStateName();
-			if (!_routedThroughCastleMenu)
+			if (!_openRequested)
 			{
 				bool mapStateReady = stateName.IndexOf("MapState", StringComparison.OrdinalIgnoreCase) >= 0;
-				if (_pendingTicks <= 1 || !mapStateReady)
+				if (now < _notBeforeUtcTicks || !mapStateReady)
 				{
-					if (_pendingTicks == 1 || _pendingTicks % 30 == 0)
-					{
-						GcczDiagnosticLog.Log("CastleMissionEntry", "deferredOpenWaiting ticks=" + _pendingTicks
-							+ " activeState=" + stateName + " currentMenu=" + GetCurrentGameMenuId());
-					}
-					if (_pendingTicks < StateWaitTimeoutTicks)
+					LogWaitingIfDue(now, "partyStateClose", stateName);
+					if (now - _queuedAtUtcTicks < PartyStateCloseTimeout.Ticks)
 					{
 						return CastleAftermathMissionEntryPumpResult.Waiting;
 					}
@@ -95,31 +101,34 @@ internal static class CastleAftermathMissionEntryBridge
 					return Fail("party_state_close_timeout activeState=" + stateName);
 				}
 
-				if (!CanRoute(settlement, location))
+				if (!CanOpen(settlement, location) || openMission == null)
 				{
-					return Fail("route_context_unavailable activeState=" + stateName + " currentMenu=" + GetCurrentGameMenuId());
+					return Fail("mission_context_unavailable activeState=" + stateName + " currentMenu=" + GetCurrentGameMenuId());
 				}
 
-				Campaign.Current.GameMenuManager.NextLocation = location;
-				Campaign.Current.GameMenuManager.PreviousLocation = null;
-				_routedThroughCastleMenu = true;
-				_routedTicks = 0;
-				GcczDiagnosticLog.Log("CastleMissionEntry", "routeThroughCastleMenu ticks=" + _pendingTicks
-					+ " activeState=" + stateName + " source=" + _pendingSource
-					+ " location=" + (location.StringId ?? "N/A"));
-				Logger.Log("CastleAftermath", "Routing deferred castle mission through vanilla castle menu. Source=" + _pendingSource);
-				GameMenu.SwitchToMenu("castle");
+				string source = _pendingSource + "_deferred_after_party_state";
+				GcczDiagnosticLog.Log("CastleMissionEntry", "directOpenAfterPartyState activeState=" + stateName
+					+ " source=" + source + " location=" + (location.StringId ?? "N/A")
+					+ " currentMenu=" + GetCurrentGameMenuId());
+				if (!openMission(location, source))
+				{
+					return Fail("direct_mission_open_rejected activeState=" + stateName);
+				}
+
+				if (!IsPending)
+				{
+					return CastleAftermathMissionEntryPumpResult.Idle;
+				}
+
+				_openRequested = true;
+				_openRequestedAtUtcTicks = now;
+				_nextWaitLogUtcTicks = now + WaitLogInterval.Ticks;
 				return CastleAftermathMissionEntryPumpResult.Waiting;
 			}
 
-			_routedTicks++;
-			if (_routedTicks < RoutedMissionTimeoutTicks)
+			LogWaitingIfDue(now, "missionStart", stateName);
+			if (now - _openRequestedAtUtcTicks < MissionStartTimeout.Ticks)
 			{
-				if (_routedTicks % 30 == 0)
-				{
-					GcczDiagnosticLog.Log("CastleMissionEntry", "deferredOpenRoutedWaiting ticks=" + _routedTicks
-						+ " activeState=" + stateName + " currentMenu=" + GetCurrentGameMenuId());
-				}
 				return CastleAftermathMissionEntryPumpResult.Waiting;
 			}
 
@@ -139,7 +148,8 @@ internal static class CastleAftermathMissionEntryBridge
 		}
 
 		GcczDiagnosticLog.Log("CastleMissionEntry", "deferredOpenCompleted source=" + (source ?? "N/A")
-			+ " ticks=" + _pendingTicks + " location=" + (_pendingLocation?.StringId ?? "N/A"));
+			+ " elapsedMs=" + ElapsedMilliseconds(_queuedAtUtcTicks)
+			+ " location=" + (_pendingLocation?.StringId ?? "N/A"));
 		ClearPending();
 	}
 
@@ -150,23 +160,32 @@ internal static class CastleAftermathMissionEntryBridge
 			return;
 		}
 
-		if (_routedThroughCastleMenu)
-		{
-			ClearMenuLocationHints();
-		}
 		GcczDiagnosticLog.Log("CastleMissionEntry", "deferredOpenReset source=" + (source ?? "N/A")
-			+ " ticks=" + _pendingTicks + " activeState=" + GetActiveGameStateName());
+			+ " elapsedMs=" + ElapsedMilliseconds(_queuedAtUtcTicks)
+			+ " activeState=" + GetActiveGameStateName());
 		ClearPending();
 	}
 
-	private static bool CanRoute(Settlement settlement, Location location)
+	private static bool CanOpen(Settlement settlement, Location location)
 	{
 		return location != null
 			&& settlement?.IsCastle == true
 			&& (string.IsNullOrWhiteSpace(_pendingSettlementId)
 				|| string.Equals(settlement.StringId, _pendingSettlementId, StringComparison.OrdinalIgnoreCase))
-			&& PlayerEncounter.LocationEncounter != null
-			&& Campaign.Current?.GameMenuManager != null;
+			&& PlayerEncounter.LocationEncounter != null;
+	}
+
+	private static void LogWaitingIfDue(long now, string phase, string stateName)
+	{
+		if (now < _nextWaitLogUtcTicks)
+		{
+			return;
+		}
+
+		_nextWaitLogUtcTicks = now + WaitLogInterval.Ticks;
+		GcczDiagnosticLog.Log("CastleMissionEntry", "deferredOpenWaiting phase=" + phase
+			+ " elapsedMs=" + ElapsedMilliseconds(_queuedAtUtcTicks)
+			+ " activeState=" + stateName + " currentMenu=" + GetCurrentGameMenuId());
 	}
 
 	private static CastleAftermathMissionEntryPumpResult Fail(string reason)
@@ -174,10 +193,6 @@ internal static class CastleAftermathMissionEntryBridge
 		string detail = reason ?? "unknown";
 		Logger.Log("CastleAftermath", "Deferred castle mission entry failed. " + detail);
 		GcczDiagnosticLog.Log("CastleMissionEntry", "deferredOpenFailed " + detail);
-		if (_routedThroughCastleMenu)
-		{
-			ClearMenuLocationHints();
-		}
 		ClearPending();
 		return CastleAftermathMissionEntryPumpResult.Failed;
 	}
@@ -187,24 +202,21 @@ internal static class CastleAftermathMissionEntryBridge
 		_pendingLocation = null;
 		_pendingSettlementId = "";
 		_pendingSource = "";
-		_pendingTicks = 0;
-		_routedThroughCastleMenu = false;
-		_routedTicks = 0;
+		_queuedAtUtcTicks = 0L;
+		_notBeforeUtcTicks = 0L;
+		_openRequestedAtUtcTicks = 0L;
+		_nextWaitLogUtcTicks = 0L;
+		_openRequested = false;
 	}
 
-	private static void ClearMenuLocationHints()
+	private static long ElapsedMilliseconds(long startedAtUtcTicks)
 	{
-		try
+		if (startedAtUtcTicks <= 0L)
 		{
-			if (Campaign.Current?.GameMenuManager != null)
-			{
-				Campaign.Current.GameMenuManager.NextLocation = null;
-				Campaign.Current.GameMenuManager.PreviousLocation = null;
-			}
+			return 0L;
 		}
-		catch
-		{
-		}
+
+		return Math.Max(0L, (DateTime.UtcNow.Ticks - startedAtUtcTicks) / TimeSpan.TicksPerMillisecond);
 	}
 
 	private static string GetActiveGameStateName()

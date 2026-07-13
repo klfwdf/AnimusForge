@@ -624,6 +624,7 @@ public class SubModule : MBSubModuleBase
 			RunWatchedTickPhase("SubModule.BannerlordExceptionSentinel.OnApplicationTick", () => BannerlordExceptionSentinel.OnApplicationTick());
 			RunWatchedTickPhase("SubModule.McmDropdownRuntimeRefresh.OnApplicationTick", () => McmDropdownRuntimeRefresh.OnApplicationTick());
 			RunWatchedTickPhase("SubModule.EncyclopediaHeroPersonaPatch.OnApplicationTick", () => EncyclopediaHeroPersonaPatch.OnApplicationTick());
+			RunWatchedTickPhase("SubModule.SiegeAiInterventionBehavior.OnEngineTick", () => SiegeAiInterventionBehavior.OnEngineTickForExternal());
 			RunWatchedTickPhase("SubModule.ModOnboardingBehavior.OnEngineTick", () => ModOnboardingBehavior.Instance?.OnEngineTick());
 			RunWatchedTickPhase("SubModule.MyBehavior.OnEngineTick", () => MyBehavior.Instance?.OnEngineTick());
 			RunWatchedTickPhase("SubModule.CourierDeliveryBehavior.OnEngineTick", () => CourierDeliveryBehavior.Instance?.OnEngineTick());

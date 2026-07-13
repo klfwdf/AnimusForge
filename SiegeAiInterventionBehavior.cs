@@ -722,6 +722,12 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			if (CastleAftermathMissionEntryBridge.IsPending)
+			{
+				args.IsEnabled = false;
+				args.optionLeaveType = GameMenuOption.LeaveType.Continue;
+				return false;
+			}
 			Settlement settlement = ResolveCurrentSettlement();
 			if (ShouldHideInterventionEntryAfterResolution(settlement))
 			{
@@ -1863,19 +1869,33 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
+	internal static void OnEngineTickForExternal()
+	{
+		if (!CastleAftermathMissionEntryBridge.IsPending)
+		{
+			return;
+		}
+
+		try
+		{
+			CastleAftermathMissionEntryPumpResult castleEntryResult = CastleAftermathMissionEntryBridge.Pump(
+				ResolveCurrentSettlement(),
+				OpenInterventionMissionNow);
+			if (castleEntryResult == CastleAftermathMissionEntryPumpResult.Failed)
+			{
+				ResetAftermathRuntimeGuards("castle_deferred_mission_entry_failed");
+				InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.EntryFailedMessage, Color.FromUint(SiegeInterventionEntryProfile.MissingSceneMessageColor)));
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CastleAftermath", "Castle mission entry engine tick failed: " + ex);
+			ResetAftermathRuntimeGuards("castle_mission_entry_engine_tick_exception");
+		}
+	}
+
 	private void OnCampaignTick(float dt)
 	{
-		CastleAftermathMissionEntryPumpResult castleEntryResult = CastleAftermathMissionEntryBridge.Pump(ResolveCurrentSettlement());
-		if (castleEntryResult == CastleAftermathMissionEntryPumpResult.Failed)
-		{
-			ResetAftermathRuntimeGuards("castle_deferred_mission_entry_failed");
-			InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.EntryFailedMessage, Color.FromUint(SiegeInterventionEntryProfile.MissingSceneMessageColor)));
-			return;
-		}
-		if (castleEntryResult == CastleAftermathMissionEntryPumpResult.Waiting)
-		{
-			return;
-		}
 		if (TryRunDirectMassacreAftermathScript())
 		{
 			return;
