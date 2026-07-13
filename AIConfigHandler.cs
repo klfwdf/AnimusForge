@@ -34,6 +34,7 @@ public static class AIConfigHandler
 	private const int ActionPostprocessRequestTimeoutMilliseconds = DuelSettings.LlmRequestTimeoutMilliseconds;
 	private const string KingAbdicateToPlayerActionTag = "[ACTION:KING_ABDICATE_TO_PLAYER]";
 	internal const string StrictPreprocessJsonSystemPrompt = "You are an AnimusForge preprocessing router. Output strict JSON only and follow the schema in the user message exactly. Include every required field. Never output CSV, bare values, prose, markdown, or code fences.";
+	internal const string StrictPreprocessMentionedEntitiesSchema = "{\"heroes\":[],\"settlements\":[],\"clans\":[],\"kingdoms\":[],\"items\":[],\"policies\":[],\"troops\":[],\"terms\":[]}";
 
 	private sealed class ActionPostprocessHistoryEntry
 	{
@@ -386,12 +387,7 @@ public static class AIConfigHandler
 	private static bool IsPlayerPartyTradeLimitedRule(string ruleId)
 	{
 		string text = (ruleId ?? "").Trim();
-		return string.Equals(text, "loan", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "kingdom_agenda", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "diplomacy", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "party_transfer", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "settlement_transfer", StringComparison.OrdinalIgnoreCase);
-	}
-
-	private static bool IsSettlementTransferRule(string ruleId)
-	{
-		return string.Equals((ruleId ?? "").Trim(), "settlement_transfer", StringComparison.OrdinalIgnoreCase);
+		return string.Equals(text, "loan", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "kingdom_agenda", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "diplomacy", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "party_transfer", StringComparison.OrdinalIgnoreCase);
 	}
 
 	private static bool ShouldExcludePlayerPartyTradeLimitedRulesForConversationTarget()
@@ -406,25 +402,9 @@ public static class AIConfigHandler
 		}
 	}
 
-	private static bool ShouldExcludePlayerCompanionOrFamilySettlementTransferForConversationTarget()
-	{
-		try
-		{
-			return IsPlayerCompanionOrFamilyTradeTarget(ResolveConversationTargetHero());
-		}
-		catch
-		{
-			return false;
-		}
-	}
-
 	private static bool ShouldExcludeRuntimeRuleForConversationTarget(string ruleId)
 	{
-		if (IsPlayerPartyTradeLimitedRule(ruleId) && ShouldExcludePlayerPartyTradeLimitedRulesForConversationTarget())
-		{
-			return true;
-		}
-		return IsSettlementTransferRule(ruleId) && ShouldExcludePlayerCompanionOrFamilySettlementTransferForConversationTarget();
+		return IsPlayerPartyTradeLimitedRule(ruleId) && ShouldExcludePlayerPartyTradeLimitedRulesForConversationTarget();
 	}
 
 	private static bool IsSceneMoveRule(string ruleId)
@@ -2159,7 +2139,6 @@ public static class AIConfigHandler
 				"marriage" => "MARRIAGE",
 				"scene_mechanism_actions" => "SCENE_MOVE",
 				"party_transfer" => "PARTY_TRANSFER",
-				"settlement_transfer" => "SETTLEMENT",
 				"vanilla_issue" => "ISSUE",
 				"npc_major_actions" => "NPC_MAJOR",
 				"npc_recent_actions" => "NPC_RECENT",
@@ -3122,6 +3101,7 @@ public static class AIConfigHandler
 	{
 		content = "";
 		error = "";
+		string rawResponse = "";
 		if (!ActionPostprocessEnabled)
 		{
 			error = "postprocess_disabled";
@@ -3161,6 +3141,7 @@ public static class AIConfigHandler
 			FreezeWatchdog.Mark("AuxActionPostprocess.response", "status=" + (int)result.StatusCode + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 			FreezeWatchdog.Mark("AuxActionPostprocess.content_read_begin", "status=" + (int)result.StatusCode + " thread=" + Thread.CurrentThread.ManagedThreadId);
 			string text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+			rawResponse = text ?? "";
 			FreezeWatchdog.Mark("AuxActionPostprocess.content_read_end", "chars=" + ((text ?? "").Length) + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2) + " thread=" + Thread.CurrentThread.ManagedThreadId);
 			if (!result.IsSuccessStatusCode && result.StatusCode == System.Net.HttpStatusCode.BadRequest && controlMode != "plain" && LooksLikeAuxiliaryThinkingControlError(text))
 			{
@@ -3177,12 +3158,13 @@ public static class AIConfigHandler
 				FreezeWatchdog.Mark("AuxActionPostprocess.retry_response", "status=" + (int)result.StatusCode + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 				FreezeWatchdog.Mark("AuxActionPostprocess.retry_content_read_begin", "status=" + (int)result.StatusCode + " thread=" + Thread.CurrentThread.ManagedThreadId);
 				text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+				rawResponse = text ?? "";
 				FreezeWatchdog.Mark("AuxActionPostprocess.retry_content_read_end", "chars=" + ((text ?? "").Length) + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2) + " thread=" + Thread.CurrentThread.ManagedThreadId);
 				controlMode += "_retry_plain";
 			}
 			if (!result.IsSuccessStatusCode)
 			{
-				error = "http_" + (int)result.StatusCode;
+				error = LlmRetryPrompt.BuildFailureDetail("http_" + (int)result.StatusCode, "", rawResponse);
 				FreezeWatchdog.Mark("AuxActionPostprocess.http_error", "status=" + (int)result.StatusCode + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 				LogAuxiliaryRouterTokenTrace("action_postprocess_http_error", array, "[ACTION POSTPROCESS HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\ncontrol_mode=" + controlMode + "\nstatus=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\nresponse_body=\n" + (text ?? ""), 0, requestBodyForTokenStats);
 				return false;
@@ -3191,9 +3173,16 @@ public static class AIConfigHandler
 			content = LlmApiCompat.ExtractAssistantText(jObject).Trim();
 			if (string.IsNullOrWhiteSpace(content))
 			{
-				error = "empty_content";
+				error = LlmRetryPrompt.BuildFailureDetail("empty_content", "", rawResponse);
 				FreezeWatchdog.Mark("AuxActionPostprocess.empty_content", "elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 				LogAuxiliaryRouterTokenTrace("action_postprocess_empty_content", array, "[ACTION POSTPROCESS HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\ncontrol_mode=" + controlMode + "\nstatus=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\nresponse_body=\n" + (text ?? ""), 0, requestBodyForTokenStats);
+				return false;
+			}
+			if (content.IndexOf("[ACTION:", StringComparison.OrdinalIgnoreCase) < 0 || content.IndexOf(']') < 0)
+			{
+				error = LlmRetryPrompt.BuildFailureDetail("（API响应格式错误）动作后处理未返回任何可解析的 [ACTION:...] 标签。", content, rawResponse);
+				FreezeWatchdog.Mark("AuxActionPostprocess.format_error", "contentLen=" + content.Length + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
+				LogAuxiliaryRouterTokenTrace("action_postprocess_format_error", array, "[ACTION POSTPROCESS PARSE]\nmodel=" + modelName + "\nreason=no_action_tag\nai_response=\n" + content + "\nraw_response=\n" + rawResponse, 0, requestBodyForTokenStats);
 				return false;
 			}
 			FreezeWatchdog.Mark("AuxActionPostprocess.complete", "contentLen=" + content.Length + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
@@ -3202,14 +3191,14 @@ public static class AIConfigHandler
 		}
 		catch (OperationCanceledException ex)
 		{
-			error = "timeout_" + ActionPostprocessRequestTimeoutMilliseconds + "ms";
+			error = LlmRetryPrompt.BuildFailureDetail("timeout_" + ActionPostprocessRequestTimeoutMilliseconds + "ms", content, rawResponse);
 			FreezeWatchdog.Mark("AuxActionPostprocess.timeout", "elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 			LogAuxiliaryRouterTokenTrace("action_postprocess_timeout", array, "[ACTION POSTPROCESS TIMEOUT]\ntimeoutMs=" + ActionPostprocessRequestTimeoutMilliseconds + "\nerror=" + BuildAuxiliaryRouterExceptionText(ex) + "\nstack=\n" + (ex?.StackTrace ?? ""), 0, requestBodyForTokenStats);
 			return false;
 		}
 		catch (Exception ex)
 		{
-			error = BuildAuxiliaryRouterExceptionText(ex);
+			error = LlmRetryPrompt.BuildFailureDetail(BuildAuxiliaryRouterExceptionText(ex), content, rawResponse);
 			FreezeWatchdog.Mark("AuxActionPostprocess.exception", ex.GetType().Name + ": " + ex.Message + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 			LogAuxiliaryRouterTokenTrace("action_postprocess_exception", array, "[ACTION POSTPROCESS EXCEPTION]\nerror=" + error + "\nstack=\n" + (ex?.StackTrace ?? ""), 0, requestBodyForTokenStats);
 			return false;
@@ -3236,6 +3225,7 @@ public static class AIConfigHandler
 	{
 		content = "";
 		error = "";
+		string rawResponse = "";
 		if (!TryGetAuxiliarySimpleDialogueConfig(out var apiUrl, out var apiKey, out var modelName))
 		{
 			error = "auxiliary_simple_dialogue_config_invalid";
@@ -3257,6 +3247,7 @@ public static class AIConfigHandler
 			HttpResponseMessage result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage).GetAwaiter().GetResult();
 			FreezeWatchdog.Mark("AuxSimpleDialogue.response", "status=" + (int)result.StatusCode + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 			string text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+			rawResponse = text ?? "";
 			if (!result.IsSuccessStatusCode && result.StatusCode == System.Net.HttpStatusCode.BadRequest && controlMode != "plain" && LooksLikeAuxiliaryThinkingControlError(text))
 			{
 				Logger.Log("AIConfig", "[AuxiliarySimpleDialogue] thinking payload rejected; retrying without thinking controls.");
@@ -3271,11 +3262,12 @@ public static class AIConfigHandler
 				result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage2).GetAwaiter().GetResult();
 				FreezeWatchdog.Mark("AuxSimpleDialogue.retry_response", "status=" + (int)result.StatusCode + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 				text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+				rawResponse = text ?? "";
 				controlMode += "_retry_plain";
 			}
 			if (!result.IsSuccessStatusCode)
 			{
-				error = "http_" + (int)result.StatusCode;
+				error = LlmRetryPrompt.BuildFailureDetail("http_" + (int)result.StatusCode, "", rawResponse);
 				FreezeWatchdog.Mark("AuxSimpleDialogue.http_error", "status=" + (int)result.StatusCode + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 				LogAuxiliaryRouterTokenTrace("auxiliary_simple_dialogue_http_error", array, "[AUXILIARY SIMPLE DIALOGUE HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\ncontrol_mode=" + controlMode + "\nstatus=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\nresponse_body=\n" + (text ?? ""), 0, requestBodyForTokenStats);
 				return false;
@@ -3284,7 +3276,7 @@ public static class AIConfigHandler
 			content = LlmApiCompat.ExtractAssistantText(jObject).Trim();
 			if (string.IsNullOrWhiteSpace(content))
 			{
-				error = "empty_content";
+				error = LlmRetryPrompt.BuildFailureDetail("empty_content", "", rawResponse);
 				FreezeWatchdog.Mark("AuxSimpleDialogue.empty_content", "elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 				LogAuxiliaryRouterTokenTrace("auxiliary_simple_dialogue_empty_content", array, "[AUXILIARY SIMPLE DIALOGUE HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\ncontrol_mode=" + controlMode + "\nstatus=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\nresponse_body=\n" + (text ?? ""), 0, requestBodyForTokenStats);
 				return false;
@@ -3295,7 +3287,7 @@ public static class AIConfigHandler
 		}
 		catch (Exception ex)
 		{
-			error = BuildAuxiliaryRouterExceptionText(ex);
+			error = LlmRetryPrompt.BuildFailureDetail(BuildAuxiliaryRouterExceptionText(ex), content, rawResponse);
 			FreezeWatchdog.Mark("AuxSimpleDialogue.exception", ex.GetType().Name + ": " + ex.Message + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 			LogAuxiliaryRouterTokenTrace("auxiliary_simple_dialogue_exception", array, "[AUXILIARY SIMPLE DIALOGUE EXCEPTION]\nerror=" + error + "\nstack=\n" + (ex?.StackTrace ?? ""), 0, requestBodyForTokenStats);
 			return false;
@@ -4088,7 +4080,7 @@ public static class AIConfigHandler
 		stringBuilder.AppendLine("*Latest NPC/player exchange*:");
 		stringBuilder.Append("NPC: ").AppendLine(string.IsNullOrWhiteSpace(text2) ? "(none)" : NormalizeAuxiliaryRoutingRequestText(text2));
 		stringBuilder.Append("Player: ").AppendLine(string.IsNullOrWhiteSpace(text5) ? "(none)" : NormalizeAuxiliaryRoutingRequestText(text5));
-		stringBuilder.AppendLine("Select exactly " + Math.Max(1, topN) + " closest topic codes in rule_codes. Also extract explicit third-party nouns from the latest exchange into mentioned_entities. Use heroes for named people/titles, settlements for places, clans for families, kingdoms for factions, items for item/goods/equipment names or types, policies for kingdom policy/law names, troops for troop/unit/prisoner names or types, and terms for other useful raw phrases. Do not extract current speakers or player names just because they are speakers. If ambiguous, put it in the closest bucket and also terms. Order arrays by recency. Output one strict JSON object only: {\"rule_codes\":[\"CODE\"],\"mentioned_entities\":{\"heroes\":[],\"settlements\":[],\"clans\":[],\"kingdoms\":[],\"items\":[],\"policies\":[],\"troops\":[],\"terms\":[]}}.");
+		stringBuilder.AppendLine("Select exactly " + Math.Max(1, topN) + " closest topic codes in rule_codes. Also extract explicit third-party nouns from the latest exchange into mentioned_entities. Use heroes for named people/titles, settlements for places, clans for families, kingdoms for factions, items for item/goods/equipment names or types, policies for kingdom policy/law names, troops for troop/unit/prisoner names or types, and terms for other useful raw phrases. Do not extract current speakers or player names just because they are speakers. If ambiguous, put it in the closest bucket and also terms. Order arrays by recency. Output one strict JSON object only: {\"rule_codes\":[\"CODE\"],\"mentioned_entities\":" + StrictPreprocessMentionedEntitiesSchema + "}.");
 		return SanitizeAuxiliaryRoutingPromptDialogueSections(stringBuilder.ToString()).Trim();
 	}
 
@@ -4156,6 +4148,7 @@ public static class AIConfigHandler
 	{
 		content = "";
 		error = "";
+		string rawResponse = "";
 		object[] array = BuildAuxiliaryRouterMessages(prompt);
 		string requestBodyForTokenStats = "";
 		try
@@ -4167,6 +4160,7 @@ public static class AIConfigHandler
 			httpRequestMessage.Content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 			HttpResponseMessage result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage).GetAwaiter().GetResult();
 			string text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+			rawResponse = text ?? "";
 			if (!result.IsSuccessStatusCode && result.StatusCode == System.Net.HttpStatusCode.BadRequest && controlMode != "plain" && LooksLikeAuxiliaryThinkingControlError(text))
 			{
 				Logger.Log("AIConfig", "[AuxiliaryRouter] thinking payload rejected; retrying without thinking controls.");
@@ -4179,11 +4173,12 @@ public static class AIConfigHandler
 				httpRequestMessage2.Content = new StringContent(content2, Encoding.UTF8, "application/json");
 				result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage2).GetAwaiter().GetResult();
 				text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+				rawResponse = text ?? "";
 				controlMode += "_retry_plain";
 			}
 			if (!result.IsSuccessStatusCode)
 			{
-				error = "http_" + (int)result.StatusCode;
+				error = LlmRetryPrompt.BuildFailureDetail("http_" + (int)result.StatusCode, "", rawResponse);
 				LogAuxiliaryRouterTokenTrace("auxiliary_router_http_error", array, "[AUXILIARY ROUTER HTTP]" + "\n" + "url=" + apiUrl + "\n" + "model=" + modelName + "\n" + "control_mode=" + controlMode + "\n" + "status=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\n" + "response_body=" + "\n" + (text ?? ""), 0, requestBodyForTokenStats);
 				return false;
 			}
@@ -4191,7 +4186,7 @@ public static class AIConfigHandler
 			content = LlmApiCompat.ExtractAssistantText(jObject).Trim();
 			if (string.IsNullOrWhiteSpace(content))
 			{
-				error = "empty_content";
+				error = LlmRetryPrompt.BuildFailureDetail("empty_content", "", rawResponse);
 				LogAuxiliaryRouterTokenTrace("auxiliary_router_empty_content", array, "[AUXILIARY ROUTER HTTP]" + "\n" + "url=" + apiUrl + "\n" + "model=" + modelName + "\n" + "control_mode=" + controlMode + "\n" + "status=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\n" + "response_body=" + "\n" + (text ?? ""), 0, requestBodyForTokenStats);
 				return false;
 			}
@@ -4200,7 +4195,7 @@ public static class AIConfigHandler
 		}
 		catch (Exception ex)
 		{
-			error = BuildAuxiliaryRouterExceptionText(ex);
+			error = LlmRetryPrompt.BuildFailureDetail(BuildAuxiliaryRouterExceptionText(ex), content, rawResponse);
 			LogAuxiliaryRouterTokenTrace("auxiliary_router_exception", array, "[AUXILIARY ROUTER EXCEPTION]" + "\n" + "url=" + apiUrl + "\n" + "model=" + modelName + "\n" + "error=" + error + "\n" + "stack=" + "\n" + (ex?.StackTrace ?? ""), 0, requestBodyForTokenStats);
 			return false;
 		}
@@ -4546,16 +4541,8 @@ public static class AIConfigHandler
 
 	private static string BuildAuxiliaryPreprocessFormatError(string reason, string content)
 	{
-		string preview = (content ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
-		if (preview.Length > 700)
-		{
-			preview = preview.Substring(0, 700) + "...";
-		}
-		if (string.IsNullOrWhiteSpace(preview))
-		{
-			preview = "(empty)";
-		}
-		return "（API响应格式错误）前处理规则选择返回格式错误：" + (string.IsNullOrWhiteSpace(reason) ? "unknown" : reason.Trim()) + "。必须只输出一个 JSON 对象，并包含 rule_codes 字符串数组和完整的 mentioned_entities 数组对象。原始输出：" + preview;
+		string detail = "（API响应格式错误）前处理规则选择返回格式错误：" + (string.IsNullOrWhiteSpace(reason) ? "unknown" : reason.Trim()) + "。必须只输出一个 JSON 对象，并包含 rule_codes 字符串数组和完整的 mentioned_entities 数组对象。";
+		return LlmRetryPrompt.BuildFailureDetail(detail, content);
 	}
 
 	public static void PublishAuxiliaryMentionedEntitiesForExternal(string userText, string secondaryText, string runtimeGuardrailContext, string content)
@@ -5943,11 +5930,6 @@ public static class AIConfigHandler
 				set.Add("diplomacy");
 				set.Add("kingdom_agenda");
 				set.Add("party_transfer");
-				set.Add("settlement_transfer");
-			}
-			if (applyRuntimeAutoExclusions && ShouldExcludePlayerCompanionOrFamilySettlementTransferForConversationTarget())
-			{
-				set.Add("settlement_transfer");
 			}
 			if (applyRuntimeAutoExclusions && ShouldExcludeSceneMoveRuleForCurrentMission())
 			{
@@ -6161,7 +6143,7 @@ public static class AIConfigHandler
 		case "duel":
 			return text.IndexOf("[ACTION:DUEL]", StringComparison.OrdinalIgnoreCase) >= 0;
 		case "reward":
-			return text.IndexOf("[ACTION:GIVE_GOLD:", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("[ACTION:GIVE_ITEM:", StringComparison.OrdinalIgnoreCase) >= 0;
+			return text.IndexOf("[ACTION:GIVE_ASSET:", StringComparison.OrdinalIgnoreCase) >= 0;
 		case "loan":
 			return text.IndexOf("[AD;", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("[ADP;", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("[ADP:", StringComparison.OrdinalIgnoreCase) >= 0;
 		case "kingdom_service":
@@ -6175,8 +6157,6 @@ public static class AIConfigHandler
 			return text.IndexOf("[ACTION:MARRIAGE_", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("[ACTION:DIVORCE:", StringComparison.OrdinalIgnoreCase) >= 0;
 		case "party_transfer":
 			return text.IndexOf("[ATT:", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("[ATP:", StringComparison.OrdinalIgnoreCase) >= 0;
-		case "settlement_transfer":
-			return text.IndexOf("[ACTION:SETTLEMENT_TRANSFER:", StringComparison.OrdinalIgnoreCase) >= 0;
 		case "lords_hall_access":
 			return text.IndexOf("[ACTION:OPEN_LORDS_HALL]", StringComparison.OrdinalIgnoreCase) >= 0;
 		default:
@@ -7139,10 +7119,10 @@ public static class AIConfigHandler
 
 	public static string BuildRuntimeRewardInstructionForExternal(Hero targetHero = null, CharacterObject targetCharacter = null)
 	{
+		Hero hero = targetHero ?? ResolveConversationTargetHero();
+		CharacterObject characterObject = targetCharacter ?? ResolveConversationTargetCharacter();
 		try
 		{
-			Hero hero = targetHero ?? ResolveConversationTargetHero();
-			CharacterObject characterObject = targetCharacter ?? ResolveConversationTargetCharacter();
 			int num = 6;
 			try
 			{
@@ -7160,17 +7140,38 @@ public static class AIConfigHandler
 				{
 					if (num <= 1)
 					{
-						return text.Trim();
+						return AppendFixedAssetRuntimeInstruction(text, hero, characterObject);
 					}
 					string text2 = BuildRewardInstructionForExternal(hero, characterObject).Trim();
-					return string.IsNullOrWhiteSpace(text2) ? text.Trim() : (text.Trim() + "\n" + text2);
+					return AppendFixedAssetRuntimeInstruction(string.IsNullOrWhiteSpace(text2) ? text.Trim() : (text.Trim() + "\n" + text2), hero, characterObject);
 				}
 			}
 		}
 		catch
 		{
 		}
-		return BuildRewardInstructionForExternal(targetHero, targetCharacter);
+		return AppendFixedAssetRuntimeInstruction(BuildRewardInstructionForExternal(hero, characterObject), hero, characterObject);
+	}
+
+	private static string AppendFixedAssetRuntimeInstruction(string current, Hero targetHero, CharacterObject targetCharacter)
+	{
+		string text = (current ?? "").Trim();
+		if (targetHero == null)
+		{
+			return text;
+		}
+		try
+		{
+			string fixedAssetInstruction = MyBehavior.BuildSettlementTransferRuntimeInstructionForExternal(targetHero, targetCharacter);
+			if (!string.IsNullOrWhiteSpace(fixedAssetInstruction))
+			{
+				return string.IsNullOrWhiteSpace(text) ? fixedAssetInstruction.Trim() : (text + "\n" + fixedAssetInstruction.Trim());
+			}
+		}
+		catch
+		{
+		}
+		return text;
 	}
 
 	private static string ResolveKingdomServiceRuntimeText(string stateKey, bool forConstraint, Dictionary<string, string> tokens)
@@ -7593,7 +7594,7 @@ public static class AIConfigHandler
 				{
 					text5 = (value1 ?? "").Trim();
 				}
-				Logger.Log("AIConfig", "[KingdomServicePostprocessRules] player_ruler state=" + text4 + " playerClan=" + (playerClan?.StringId ?? "") + " playerKingdom=" + (kingdom?.StringId ?? "") + " targetClan=" + (clan?.StringId ?? "") + " targetHero=" + (hero?.StringId ?? "") + " targetClanIdToken=" + text5 + " rules=（无，CLAN_JOIN_PLAYER_KINGDOM已迁移到NPC_JOIN）");
+				Logger.Log("AIConfig", "[KingdomServicePostprocessRules] player_ruler state=" + text4 + " playerClan=" + (playerClan?.StringId ?? "") + " playerKingdom=" + (kingdom?.StringId ?? "") + " targetClan=" + (clan?.StringId ?? "") + " targetHero=" + (hero?.StringId ?? "") + " targetClanIdToken=" + text5 + " rules=（无，C_J_P_K已迁移到NPC_JOIN）");
 				return list;
 			}
 			string text = ResolveRuntimeKingdomServiceStateKeyForPostprocess(kingdom, flag, kingdom2, flag2, num, num2, num3, num4, num5, num6);
@@ -7780,13 +7781,14 @@ public static class AIConfigHandler
 	private static bool IsPlayerRulerKingdomServicePostprocessTag(string tag)
 	{
 		string text = (tag ?? "").Trim();
-		return text.StartsWith("[ACTION:KINGDOM_SERVICE:CLAN_JOIN_PLAYER_KINGDOM:", StringComparison.OrdinalIgnoreCase);
+		return text.Equals("[A:C_J_P_K]", StringComparison.OrdinalIgnoreCase)
+			|| text.StartsWith("[ACTION:KINGDOM_SERVICE:CLAN_JOIN_PLAYER_KINGDOM:", StringComparison.OrdinalIgnoreCase);
 	}
 
 	private static bool IsPlayerJoinKingdomServicePostprocessTag(string tag)
 	{
 		string text = (tag ?? "").Trim();
-		if (text.StartsWith("[ACTION:KINGDOM_SERVICE:CLAN_JOIN_PLAYER_KINGDOM:", StringComparison.OrdinalIgnoreCase))
+		if (IsPlayerRulerKingdomServicePostprocessTag(text))
 		{
 			return false;
 		}
@@ -7904,7 +7906,7 @@ public static class AIConfigHandler
 		case "leave_only":
 			return IsKingdomServiceLeaveCurrentPostprocessTag(text) && canInjectLeaveCurrent;
 		case "player_ruler_target_ready":
-			return text.StartsWith("[ACTION:KINGDOM_SERVICE:CLAN_JOIN_PLAYER_KINGDOM:", StringComparison.OrdinalIgnoreCase);
+			return IsPlayerRulerKingdomServicePostprocessTag(text);
 		default:
 			return false;
 		}

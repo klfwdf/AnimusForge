@@ -7,14 +7,16 @@ param(
     [string]$PackageLabel,
     [switch]$UseFirstMatch,
     [switch]$NoBump,
+    [switch]$BumpMicro,
     [switch]$IncludeOnnx,
     [switch]$IncludeReranker,
     [switch]$ExcludeOnnx,
+    [switch]$ExcludeCustomPrompts,
     [switch]$DualClientPackages
 )
 
 $ErrorActionPreference = "Stop"
-$VersionPattern = "^(?<prefix>v?)(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)$"
+$VersionPattern = "^(?<prefix>v?)(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)(?:\.(?<micro>\d))?$"
 
 function Parse-Version {
     param(
@@ -23,7 +25,12 @@ function Parse-Version {
     )
 
     if ($VersionText -notmatch $VersionPattern) {
-        throw "$Label format invalid: '$VersionText'. Expected: 1.2.3 or v1.2.3"
+        throw "$Label format invalid: '$VersionText'. Expected: 1.2.3, v1.2.3, 1.2.3.4, or v1.2.3.4"
+    }
+
+    $micro = $null
+    if (-not [string]::IsNullOrWhiteSpace($Matches["micro"])) {
+        $micro = [int]$Matches["micro"]
     }
 
     return [PSCustomObject]@{
@@ -31,6 +38,7 @@ function Parse-Version {
         Major  = [int]$Matches["major"]
         Minor  = [int]$Matches["minor"]
         Patch  = [int]$Matches["patch"]
+        Micro  = $micro
     }
 }
 
@@ -52,6 +60,21 @@ function Get-NextPatchVersion {
     }
 
     return "$($parts.Prefix)$major.$minor.$patch"
+}
+
+function Get-NextMicroVersion {
+    param([string]$CurrentVersion)
+
+    $parts = Parse-Version -VersionText $CurrentVersion -Label "Current version"
+    if ($null -eq $parts.Micro) {
+        return "$($parts.Prefix)$($parts.Major).$($parts.Minor).$($parts.Patch).1"
+    }
+    if ($parts.Micro -lt 9) {
+        return "$($parts.Prefix)$($parts.Major).$($parts.Minor).$($parts.Patch).$($parts.Micro + 1)"
+    }
+
+    $nextPatchVersion = Get-NextPatchVersion -CurrentVersion $CurrentVersion
+    return "$nextPatchVersion.0"
 }
 
 function Get-SubModuleVersion {
@@ -79,6 +102,9 @@ function Resolve-PackageVersion {
     }
     if ($NoBump) {
         return $CurrentVersion
+    }
+    if ($BumpMicro) {
+        return Get-NextMicroVersion -CurrentVersion $CurrentVersion
     }
     return Get-NextPatchVersion -CurrentVersion $CurrentVersion
 }
@@ -277,6 +303,7 @@ function Write-ZipFromModule {
         $outputDirFull.Equals($moduleDirFullLocal, [System.StringComparison]::OrdinalIgnoreCase)
     $onnxDirFull = [System.IO.Path]::GetFullPath((Join-Path $moduleDirFullLocal "ONNX")).TrimEnd('\', '/')
     $rerankerDirFull = [System.IO.Path]::GetFullPath((Join-Path $moduleDirFullLocal "ONNX\reranker")).TrimEnd('\', '/')
+    $customPromptsDirFull = [System.IO.Path]::GetFullPath((Join-Path $moduleDirFullLocal "CustomPrompts")).TrimEnd('\', '/')
     $shippingBinDirFull = [System.IO.Path]::GetFullPath((Join-Path $moduleDirFullLocal "bin\Win64_Shipping_Client")).TrimEnd('\', '/')
     $excludedPackageDllNames = @("0Harmony.dll")
 
@@ -318,9 +345,12 @@ function Write-ZipFromModule {
             $isRerankerFile = $fullPath.StartsWith($rerankerDirFull + "\", [System.StringComparison]::OrdinalIgnoreCase) -or
                 $fullPath.Equals($rerankerDirFull, [System.StringComparison]::OrdinalIgnoreCase)
             $excludeOnnxFile = $isOnnxFile -and -not $effectiveIncludeOnnx -and (-not $effectiveIncludeReranker -or -not $isRerankerFile)
+            $isCustomPromptsFile = $fullPath.StartsWith($customPromptsDirFull + "\", [System.StringComparison]::OrdinalIgnoreCase) -or
+                $fullPath.Equals($customPromptsDirFull, [System.StringComparison]::OrdinalIgnoreCase)
             $isExcludedPackageDll = $fullPath.StartsWith($shippingBinDirFull + "\", [System.StringComparison]::OrdinalIgnoreCase) -and
                 ($excludedPackageDllNames -contains $_.Name)
-            -not $isLogFile -and -not $isOutputFile -and -not $excludeOnnxFile -and -not $isExcludedPackageDll
+            -not $isLogFile -and -not $isOutputFile -and -not $excludeOnnxFile -and
+                (-not $ExcludeCustomPrompts -or -not $isCustomPromptsFile) -and -not $isExcludedPackageDll
         }
 
         foreach ($file in $files) {
@@ -347,6 +377,9 @@ function Write-ZipFromModule {
     }
     Write-Host "Exclude Rule : Logs/**/* (all files under Logs)"
     Write-Host "Exclude Rule : bin/Win64_Shipping_Client/0Harmony.dll"
+    if ($ExcludeCustomPrompts) {
+        Write-Host "Exclude Rule : CustomPrompts/**/*"
+    }
     Write-Host "ONNX ZIP     : $(if ($forceExcludeOnnx) { 'Excluded by package policy' } elseif ($effectiveIncludeOnnx) { 'Included' } elseif ($effectiveIncludeReranker) { 'Only ONNX/reranker included' } else { 'Excluded by default, pass -IncludeOnnx to include it' })"
     return $zipPath
 }
@@ -366,6 +399,28 @@ function Assert-ZipDoesNotContainOnnx {
         } | Select-Object -First 1
         if ($onnxEntry) {
             throw "Package must not contain ONNX files: $zipFullPath entry=$($onnxEntry.FullName)"
+        }
+    }
+    finally {
+        $archive.Dispose()
+    }
+}
+
+function Assert-ZipDoesNotContainCustomPrompts {
+    param([Parameter(Mandatory = $true)][string]$ZipPath)
+
+    $zipFullPath = [System.IO.Path]::GetFullPath($ZipPath)
+    if (-not (Test-Path -LiteralPath $zipFullPath -PathType Leaf)) {
+        throw "Expected package ZIP was not created: $zipFullPath"
+    }
+
+    $archive = [System.IO.Compression.ZipFile]::OpenRead($zipFullPath)
+    try {
+        $customPromptsEntry = $archive.Entries | Where-Object {
+            $_.FullName -match '(^|/)CustomPrompts(/|$)'
+        } | Select-Object -First 1
+        if ($customPromptsEntry) {
+            throw "Package must not contain CustomPrompts files: $zipFullPath entry=$($customPromptsEntry.FullName)"
         }
     }
     finally {
@@ -411,6 +466,10 @@ if ($DualClientPackages) {
     $zip14 = Write-ZipFromModule -ModulePath $module14 -AutoDetected:$false -LabelSuffix "bannerlord_1.4.5" -PackageVersion $packageVersion
     Assert-ZipDoesNotContainOnnx -ZipPath $zip13
     Assert-ZipDoesNotContainOnnx -ZipPath $zip14
+    if ($ExcludeCustomPrompts) {
+        Assert-ZipDoesNotContainCustomPrompts -ZipPath $zip13
+        Assert-ZipDoesNotContainCustomPrompts -ZipPath $zip14
+    }
     Write-Host "Dual Packages:"
     Write-Host " - $zip13"
     Write-Host " - $zip14"

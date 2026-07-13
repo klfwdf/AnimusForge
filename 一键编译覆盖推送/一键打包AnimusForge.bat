@@ -90,7 +90,7 @@ if errorlevel 1 (
 
 echo.
 echo [4/4] Packaging dual client modules...
-powershell -NoProfile -ExecutionPolicy Bypass -File "%PS_SCRIPT%" -BannerlordRoot "%BANNERLORD_ROOT%" -SourceModuleDir "%PROJECT_ROOT%\AnimusForge" -DualClientPackages -ExcludeOnnx %*
+powershell -NoProfile -ExecutionPolicy Bypass -File "%PS_SCRIPT%" -BannerlordRoot "%BANNERLORD_ROOT%" -SourceModuleDir "%PROJECT_ROOT%\AnimusForge" -DualClientPackages -ExcludeOnnx -ExcludeCustomPrompts %*
 set "ERR=%ERRORLEVEL%"
 
 if not "%ERR%"=="0" (

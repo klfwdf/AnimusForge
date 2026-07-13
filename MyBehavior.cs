@@ -4566,7 +4566,7 @@ public class MyBehavior : CampaignBehaviorBase
 			_memoryOverviewQueue = SanitizeMemoryOverviewQueue((_memoryOverviewQueue ?? new List<MemoryOverviewJob>()).Where((MemoryOverviewJob job) => job != null && HasMemoryOverviewJobStillPending(job)).ToList());
 			if (failures.Count > 0)
 			{
-				ShowCompressedMemoryBlockingPopup("日结压缩总结失败", "以下日结压缩任务重试 3 次后仍失败：\n\n" + string.Join("\n", failures.Take(12)) + "\n\n请修复 API 或调低记忆总结 RPM 后重试。");
+				ShowCompressedMemoryBlockingPopup("日结压缩总结失败", "以下日结压缩任务重试 3 次后仍失败：\n\n" + string.Join("\n", failures) + "\n\n请修复 API 或调低记忆总结 RPM 后重试。");
 			}
 			else if (results.Count > 0 || majorResults.Count > 0 || overviewResults.Count > 0)
 			{
@@ -6281,6 +6281,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
+		List<string> failureDetails = new List<string>();
 		for (int i = 1; i <= 3; i++)
 		{
 			await WaitForWeekZeroShortSummaryRequestSlotAsync();
@@ -6291,6 +6292,7 @@ public class MyBehavior : CampaignBehaviorBase
 				if (string.IsNullOrWhiteSpace(text))
 				{
 					Logger.Log("EventWeeklyReport", "[Week0Short][WARN] 短周报解析为空 " + request.EventId + "，尝试 " + i + "/3");
+					failureDetails.Add("第 " + i + " 次尝试：\n" + LlmRetryPrompt.BuildFailureDetail("第0周短周报模型回复解析为空。", apiCallResult.Content, apiCallResult.ResponseBody));
 				}
 				else
 				{
@@ -6313,6 +6315,7 @@ public class MyBehavior : CampaignBehaviorBase
 			else
 			{
 				Logger.Log("EventWeeklyReport", "[Week0Short][WARN] 短周报生成失败 " + request.EventId + "，尝试 " + i + "/3 -> " + (apiCallResult.ErrorMessage ?? "未知错误"));
+				failureDetails.Add("第 " + i + " 次尝试：\n" + (apiCallResult.ErrorMessage ?? LlmRetryPrompt.BuildFailureDetail("未知错误", apiCallResult.Content, apiCallResult.ResponseBody)));
 			}
 			if (i < 3)
 			{
@@ -6328,6 +6331,7 @@ public class MyBehavior : CampaignBehaviorBase
 				await Task.Delay(num);
 			}
 		}
+		LlmRetryPrompt.ShowFailurePopup("第0周短周报生成失败", failureDetails.Count > 0 ? string.Join("\n\n", failureDetails) : LlmRetryPrompt.BuildFailureDetail("三次尝试均失败。", ""));
 		return false;
 	}
 
@@ -11400,11 +11404,11 @@ public class MyBehavior : CampaignBehaviorBase
 						AttemptsUsed = i
 					};
 				}
-				rebelKingdomNamingResult.FailureReason = "模型返回的国名为空、无效或与现有王国重名。";
+				rebelKingdomNamingResult.FailureReason = LlmRetryPrompt.BuildFailureDetail("模型返回的国名为空、无效或与现有王国重名。", apiCallResult.Content, apiCallResult.ResponseBody);
 			}
 			else
 			{
-				rebelKingdomNamingResult.FailureReason = (apiCallResult?.Success == true) ? "模型返回无法按 [NAME]/[SHORT]/[LORE] 解析。" : (apiCallResult?.ErrorMessage ?? "命名请求失败。");
+				rebelKingdomNamingResult.FailureReason = (apiCallResult?.Success == true) ? LlmRetryPrompt.BuildFailureDetail("模型返回无法按 [NAME]/[SHORT]/[LORE] 解析。", apiCallResult.Content, apiCallResult.ResponseBody) : (apiCallResult?.ErrorMessage ?? "命名请求失败。");
 			}
 			if (i < numAttempts)
 			{
@@ -13490,13 +13494,11 @@ public class MyBehavior : CampaignBehaviorBase
 		foreach (string tag in tags ?? Enumerable.Empty<string>())
 		{
 			string text = (tag ?? "").Trim();
-			if (Regex.IsMatch(text, "^\\[ACTION:GIVE_GOLD:\\d+\\]$", RegexOptions.IgnoreCase) ||
-				Regex.IsMatch(text, "^\\[ACTION:GIVE_ITEM:[^\\]\\r\\n:]+:(?:ALL|\\d+)\\]$", RegexOptions.IgnoreCase) ||
+			if (Regex.IsMatch(text, "^\\[ACTION:GIVE_ASSET:[^\\]\\r\\n:]+:(?:ALL|\\d+)\\]$", RegexOptions.IgnoreCase) ||
 				Regex.IsMatch(text, "^\\[AD;\\d+;\\d+;(?:P;[^\\]]*|(?!(?:N|P);)[^\\]]*)\\]$", RegexOptions.IgnoreCase) ||
 				Regex.IsMatch(text, "^\\[ADP[:;][^\\]\\r\\n:;]+\\]$", RegexOptions.IgnoreCase) ||
 				Regex.IsMatch(text, "^\\[ATT:(?:ALL|\\d+):(?:ALL|\\d+)\\]$", RegexOptions.IgnoreCase) ||
-				Regex.IsMatch(text, "^\\[ATP:(?:ALL|\\d+):(?:ALL|\\d+)\\]$", RegexOptions.IgnoreCase) ||
-				Regex.IsMatch(text, "^\\[ACTION:SETTLEMENT_TRANSFER:TO_PLAYER:[^\\]\\r\\n:]+\\]$", RegexOptions.IgnoreCase))
+				Regex.IsMatch(text, "^\\[ATP:(?:ALL|\\d+):(?:ALL|\\d+)\\]$", RegexOptions.IgnoreCase))
 			{
 				return true;
 			}
@@ -13600,10 +13602,28 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return 0L;
 		}
-		Match match = Regex.Match(text, "^\\[ACTION:GIVE_GOLD:(\\d+)\\]$", RegexOptions.IgnoreCase);
-		if (match.Success && TryParsePositiveLong(match.Groups[1].Value, out var gold))
+		Match match = Regex.Match(text, "^\\[ACTION:GIVE_ASSET:([^\\]\\r\\n:]+):(ALL|\\d+)\\]$", RegexOptions.IgnoreCase);
+		if (match.Success)
 		{
-			return gold;
+			string assetToken = (match.Groups[1].Value ?? "").Trim();
+			string quantityToken = (match.Groups[2].Value ?? "").Trim();
+			if (RewardSystemBehavior.IsGoldAssetTokenForExternal(assetToken) && TryParsePositiveLong(quantityToken, out var gold))
+			{
+				return gold;
+			}
+			SettlementTransferPromptEntry fixedAsset = FindSettlementTransferEntryByTokenForWeeklyMemoryMaterial(settlementTransferNpcOptions, assetToken);
+			if (fixedAsset != null && string.Equals(quantityToken, "1", StringComparison.Ordinal))
+			{
+				return Math.Max(0L, fixedAsset.GuidePriceDenars);
+			}
+			if (TransferQuantitySpec.IsAllValue(quantityToken))
+			{
+				return EstimateAllRewardItemTagValueForWeeklyMemoryMaterial(assetToken, rewardOptions);
+			}
+			if (int.TryParse(quantityToken, out var assetAmount) && assetAmount > 0)
+			{
+				return EstimateRewardItemTagValueForWeeklyMemoryMaterial(targetHero, assetToken, assetAmount, rewardOptions);
+			}
 		}
 		match = Regex.Match(text, "^\\[AD;(\\d+);\\d+;(?:P;[^\\]]*|(?!(?:N|P);)[^\\]]*)\\]$", RegexOptions.IgnoreCase);
 		if (match.Success && TryParsePositiveLong(match.Groups[1].Value, out var debtGold))
@@ -13620,15 +13640,6 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			Logger.Log("EventWeeklyReport", "[WeeklyMemoryMaterial][WARN] debt_id_value_missing debtId=" + debtId);
 			return 0L;
-		}
-		match = Regex.Match(text, "^\\[ACTION:GIVE_ITEM:([^\\]\\r\\n:]+):(ALL|\\d+)\\]$", RegexOptions.IgnoreCase);
-		if (match.Success && TransferQuantitySpec.IsAllValue(match.Groups[2].Value))
-		{
-			return EstimateAllRewardItemTagValueForWeeklyMemoryMaterial(match.Groups[1].Value, rewardOptions);
-		}
-		if (match.Success && int.TryParse(match.Groups[2].Value, out var itemAmount) && itemAmount > 0)
-		{
-			return EstimateRewardItemTagValueForWeeklyMemoryMaterial(targetHero, match.Groups[1].Value, itemAmount, rewardOptions);
 		}
 		match = Regex.Match(text, "^\\[ATT:(ALL|\\d+):(ALL|\\d+)\\]$", RegexOptions.IgnoreCase);
 		if (match.Success && (TransferQuantitySpec.IsAllValue(match.Groups[1].Value) || TransferQuantitySpec.IsAllValue(match.Groups[2].Value)))
@@ -13647,12 +13658,6 @@ public class MyBehavior : CampaignBehaviorBase
 		if (match.Success && int.TryParse(match.Groups[1].Value, out var prisonerIndex) && int.TryParse(match.Groups[2].Value, out var prisonerAmount))
 		{
 			return EstimatePartyTransferTagValueForWeeklyMemoryMaterial(partyTransferPrisonerOptions, prisonerIndex, prisonerAmount, isPrisoner: true);
-		}
-		match = Regex.Match(text, "^\\[ACTION:SETTLEMENT_TRANSFER:(TO_PLAYER):([^\\]\\r\\n:]+)\\]$", RegexOptions.IgnoreCase);
-		if (match.Success)
-		{
-			SettlementTransferPromptEntry entry = FindSettlementTransferEntryByTokenForWeeklyMemoryMaterial(settlementTransferNpcOptions, match.Groups[2].Value);
-			return Math.Max(0L, entry?.GuidePriceDenars ?? 0);
 		}
 		return 0L;
 	}
@@ -13810,7 +13815,8 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return true;
 		}
-		if (Regex.IsMatch(text, "^\\[ACTION:KINGDOM_SERVICE:(?:LEAVE(?::current)?|MERCENARY:[^\\]]+|VASSAL:[^\\]]+|CLAN_JOIN_PLAYER_KINGDOM:[^\\]]+)\\]$", RegexOptions.IgnoreCase))
+		if (string.Equals(text, "[A:C_J_P_K]", StringComparison.OrdinalIgnoreCase)
+			|| Regex.IsMatch(text, "^\\[ACTION:KINGDOM_SERVICE:(?:LEAVE(?::current)?|MERCENARY:[^\\]]+|VASSAL:[^\\]]+|CLAN_JOIN_PLAYER_KINGDOM:[^\\]]+)\\]$", RegexOptions.IgnoreCase))
 		{
 			return true;
 		}
@@ -13862,13 +13868,9 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return "决斗";
 		}
-		if (text.StartsWith("[ACTION:GIVE_GOLD:", StringComparison.OrdinalIgnoreCase))
+		if (text.StartsWith("[ACTION:GIVE_ASSET:GOLD:", StringComparison.OrdinalIgnoreCase))
 		{
 			return "给付金币";
-		}
-		if (text.StartsWith("[ACTION:GIVE_ITEM:", StringComparison.OrdinalIgnoreCase))
-		{
-			return "给付物品";
 		}
 		if (text.StartsWith("[AD;", StringComparison.OrdinalIgnoreCase))
 		{
@@ -13886,13 +13888,9 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return "俘虏转移";
 		}
-		if (text.StartsWith("[ACTION:SETTLEMENT_TRANSFER:", StringComparison.OrdinalIgnoreCase))
+		if (text.StartsWith("[ACTION:GIVE_ASSET:", StringComparison.OrdinalIgnoreCase))
 		{
-			if (text.StartsWith("[ACTION:SETTLEMENT_TRANSFER:TO_PLAYER:", StringComparison.OrdinalIgnoreCase))
-			{
-				return "取得固定资产";
-			}
-			return "固定资产转移";
+			return "给付资产";
 		}
 		if (text.StartsWith("[ACTION:KINGDOM_SERVICE:", StringComparison.OrdinalIgnoreCase))
 		{
@@ -20918,8 +20916,8 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			string resp = apiCallResult.Success ? (apiCallResult.Content ?? "") : ("错误: " + (apiCallResult.ErrorMessage ?? "未知错误"));
-			if (!string.IsNullOrWhiteSpace(resp) && !resp.StartsWith("错误") && TryParsePersonaJson(resp, out var genP, out var genB))
+			string resp = apiCallResult.Content ?? "";
+			if (apiCallResult.Success && !string.IsNullOrWhiteSpace(resp) && TryParsePersonaJson(resp, out var genP, out var genB))
 			{
 				genP = NormalizeGeneratedPersonaText(genP);
 				genB = NormalizeGeneratedPersonaText(genB);
@@ -20940,13 +20938,18 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			if (!flag)
 			{
-				Logger.Log("NpcPersona", "[WARN] AutoGen did not save profile for " + id + ": " + TrimToMaxChars(resp, 180));
+				string failureDetail = apiCallResult.Success
+					? LlmRetryPrompt.BuildFailureDetail("NPC 个性与背景模型回复解析失败，未保存人设。", resp, apiCallResult.ResponseBody)
+					: (apiCallResult.ErrorMessage ?? LlmRetryPrompt.BuildFailureDetail("NPC 个性与背景生成失败。", resp, apiCallResult.ResponseBody));
+				Logger.Log("NpcPersona", "[WARN] AutoGen did not save profile for " + id + ": " + failureDetail);
+				LlmRetryPrompt.ShowFailurePopup("NPC 个性与背景生成失败", failureDetail);
 			}
 		}
 		catch (Exception ex)
 		{
 			Exception ex2 = ex;
 			Logger.Log("NpcPersona", "[ERROR] AutoGen failed: " + ex2.Message);
+			LlmRetryPrompt.ShowFailurePopup("NPC 个性与背景生成失败", LlmRetryPrompt.BuildFailureDetail(ex2.Message, ""));
 		}
 		finally
 		{
@@ -20981,6 +20984,7 @@ public class MyBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("NpcPersona", "[WARN] Promoted companion profile generation failed: " + ex.Message);
+			LlmRetryPrompt.ShowFailurePopup("升格同伴人设生成失败", LlmRetryPrompt.BuildFailureDetail(ex.Message, ""));
 		}
 	}
 
@@ -21029,8 +21033,8 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			string resp = apiCallResult.Success ? (apiCallResult.Content ?? "") : "";
-			if (!string.IsNullOrWhiteSpace(resp) && TryParsePersonaJson(resp, out var genP, out var genB))
+			string resp = apiCallResult.Content ?? "";
+			if (apiCallResult.Success && !string.IsNullOrWhiteSpace(resp) && TryParsePersonaJson(resp, out var genP, out var genB))
 			{
 				genP = NormalizeGeneratedPersonaText(genP);
 				genB = NormalizeGeneratedPersonaText(genB);
@@ -21049,10 +21053,19 @@ public class MyBehavior : CampaignBehaviorBase
 				personaSaved = !string.IsNullOrWhiteSpace(prof.Personality) || !string.IsNullOrWhiteSpace(prof.Background);
 				Logger.Log("NpcPersona", "Promoted companion persona generated hero=" + heroId + " name=" + name);
 			}
+			if (!personaSaved)
+			{
+				string failureDetail = apiCallResult.Success
+					? LlmRetryPrompt.BuildFailureDetail("升格同伴人设模型回复解析失败，将使用本地后备人设。", resp, apiCallResult.ResponseBody)
+					: (apiCallResult.ErrorMessage ?? LlmRetryPrompt.BuildFailureDetail("升格同伴人设生成失败，将使用本地后备人设。", resp, apiCallResult.ResponseBody));
+				Logger.Log("NpcPersona", "[WARN] Promoted companion persona fallback hero=" + heroId + ": " + failureDetail);
+				LlmRetryPrompt.ShowFailurePopup("升格同伴人设生成失败", failureDetail);
+			}
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("NpcPersona", "[WARN] Promoted companion persona generation error hero=" + heroId + ": " + ex.Message);
+			LlmRetryPrompt.ShowFailurePopup("升格同伴人设生成失败", LlmRetryPrompt.BuildFailureDetail(ex.Message, ""));
 		}
 		if (SaveRuntimeGuard.IsStale(runtimeGeneration, "promoted_companion_persona_fallback"))
 		{
@@ -21103,15 +21116,20 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			string resp = apiCallResult.Success ? (apiCallResult.Content ?? "") : "";
-			if (!TryApplyPromotedHeroSkillJson(hero, resp))
+			string resp = apiCallResult.Content ?? "";
+			if (!apiCallResult.Success || !TryApplyPromotedHeroSkillJson(hero, resp))
 			{
 				Logger.Log("NpcPersona", "Promoted companion skill generation fallback hero=" + (hero.StringId ?? "") + ": keeping template skills.");
+				string failureDetail = apiCallResult.Success
+					? LlmRetryPrompt.BuildFailureDetail("升格同伴技能模型回复解析失败，将保留兵种模板技能。", resp, apiCallResult.ResponseBody)
+					: (apiCallResult.ErrorMessage ?? LlmRetryPrompt.BuildFailureDetail("升格同伴技能生成失败，将保留兵种模板技能。", resp, apiCallResult.ResponseBody));
+				LlmRetryPrompt.ShowFailurePopup("升格同伴技能生成失败", failureDetail);
 			}
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("NpcPersona", "[WARN] Promoted companion skill generation error hero=" + (hero.StringId ?? "") + ": " + ex.Message);
+			LlmRetryPrompt.ShowFailurePopup("升格同伴技能生成失败", LlmRetryPrompt.BuildFailureDetail(ex.Message, ""));
 		}
 	}
 
@@ -26500,12 +26518,7 @@ public class MyBehavior : CampaignBehaviorBase
 			excludedRuleIds.Add("kingdom_agenda");
 			excludedRuleIds.Add("diplomacy");
 			excludedRuleIds.Add("party_transfer");
-			excludedRuleIds.Add("settlement_transfer");
 			return;
-		}
-		if (AIConfigHandler.IsPlayerCompanionOrFamilyTradeTarget(hero))
-		{
-			excludedRuleIds.Add("settlement_transfer");
 		}
 	}
 
@@ -26799,14 +26812,6 @@ public class MyBehavior : CampaignBehaviorBase
 					text = ReplaceSingleRuleBlockBody(text, "party_transfer", partyTransferRuntimeInstructionForExternal);
 				}
 			}
-			if (!string.IsNullOrWhiteSpace(text) && text.IndexOf("【附加规则:settlement_transfer】", StringComparison.OrdinalIgnoreCase) >= 0)
-			{
-				string settlementTransferRuntimeInstructionForExternal = BuildSettlementTransferRuntimeInstructionForExternal(targetHero, targetCharacter);
-				if (!string.IsNullOrWhiteSpace(settlementTransferRuntimeInstructionForExternal))
-				{
-					text = ReplaceSingleRuleBlockBody(text, "settlement_transfer", settlementTransferRuntimeInstructionForExternal);
-				}
-			}
 			if (!string.IsNullOrWhiteSpace(text) && text.IndexOf("【附加规则:hero_join_party】", StringComparison.OrdinalIgnoreCase) >= 0)
 			{
 				string heroJoinPartyRuntimeInstruction = AIConfigHandler.BuildRuntimeHeroJoinPartyInstructionForExternal(targetHero ?? targetCharacter?.HeroObject);
@@ -26921,10 +26926,6 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			AddReferralTip(tips, "部队/俘虏找领主");
 		}
-		if (AnyRestrictedReferralRuleBlocked(hasAnyHero, targetHero, targetCharacter, targetAgentIndex, excludedRuleIdSet, "settlement_transfer"))
-		{
-			AddReferralTip(tips, "领地找族长或国王");
-		}
 		if (AnyRestrictedReferralRuleBlocked(hasAnyHero, targetHero, targetCharacter, targetAgentIndex, excludedRuleIdSet, "marriage"))
 		{
 			AddReferralTip(tips, "婚事找家主/当事人");
@@ -26986,8 +26987,6 @@ public class MyBehavior : CampaignBehaviorBase
 			return ShouldExcludeWorldMapCommandRuleForTarget(hero, targetCharacter, targetAgentIndex);
 		case "party_transfer":
 			return !IsPartyTransferRuleEligible(hero, targetCharacter);
-		case "settlement_transfer":
-			return !IsSettlementTransferLeaderEligibleForExternal(hero, targetCharacter);
 		default:
 			return false;
 		}
@@ -27609,8 +27608,10 @@ public class MyBehavior : CampaignBehaviorBase
 				await inst.EnsureNpcPersonaGeneratedAsync(hero, ignoreRetryCooldown);
 			}
 		}
-		catch
+		catch (Exception ex)
 		{
+			Logger.Log("NpcPersona", "[ERROR] External persona generation failed: " + ex.Message);
+			LlmRetryPrompt.ShowFailurePopup("NPC 个性与背景生成失败", LlmRetryPrompt.BuildFailureDetail(ex.Message, ""));
 		}
 	}
 
@@ -30808,12 +30809,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			detail = "未知解析错误。";
 		}
-		string sample = TrimUniversalApiRawForLog(content ?? "", 1200);
-		if (string.IsNullOrWhiteSpace(sample))
-		{
-			return prefix + "：" + detail;
-		}
-		return prefix + "：" + detail + "\n响应样本：\n" + sample;
+		return LlmRetryPrompt.BuildFailureDetail(prefix + "：" + detail, content);
 	}
 
 	private static string FormatMemoryHourRange(int startHour, int endHour)
@@ -31067,9 +31063,9 @@ public class MyBehavior : CampaignBehaviorBase
 		StringBuilder user = new StringBuilder();
 		int mode = GetMemoryPreprocessModeFromSettings();
 		user.AppendLine(mode == 2 ? "Mode: parallel memory selector request. Set rule_codes to an empty array; include memory_ids and mentioned_entities." : "Mode: unified preprocessing body. Include rule_codes, memory_ids, and mentioned_entities even if rule_codes is empty.");
-		user.AppendLine("Output JSON schema: {\"rule_codes\":[],\"memory_ids\":[1,2],\"mentioned_entities\":{\"heroes\":[],\"settlements\":[],\"clans\":[],\"kingdoms\":[],\"items\":[],\"troops\":[],\"terms\":[]}}");
+		user.AppendLine("Output JSON schema: {\"rule_codes\":[],\"memory_ids\":[1,2],\"mentioned_entities\":" + AIConfigHandler.StrictPreprocessMentionedEntitiesSchema + "}");
 		user.AppendLine("Select exactly " + Math.Max(1, finalCount) + " memory_ids from the candidate list. If uncertain, choose the closest by semantic relevance. Do not select more than " + Math.Max(1, finalCount) + ".");
-		user.AppendLine("mentioned_entities: heroes named people/titles; settlements places; clans families; kingdoms factions; items item/goods/equipment names or types; troops troop/unit/prisoner names or types; terms other useful raw phrases. Do not extract current speakers or player names just because they are speakers. If ambiguous, also add the raw phrase to terms. Order arrays by recency. Do not extract names from memory candidate titles unless also mentioned in the latest exchange.");
+		user.AppendLine("mentioned_entities: heroes named people/titles; settlements places; clans families; kingdoms factions; items item/goods/equipment names or types; policies kingdom policy/law names; troops troop/unit/prisoner names or types; terms other useful raw phrases. Do not extract current speakers or player names just because they are speakers. If ambiguous, also add the raw phrase to terms. Order arrays by recency. Do not extract names from memory candidate titles unless also mentioned in the latest exchange.");
 		user.AppendLine();
 		user.AppendLine("Latest player input:");
 		user.AppendLine(string.IsNullOrWhiteSpace(currentInput) ? "(none)" : currentInput.Trim());
@@ -31228,16 +31224,8 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private static string BuildMemoryPreprocessFormatError(string reason, string content)
 	{
-		string preview = (content ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
-		if (preview.Length > 700)
-		{
-			preview = preview.Substring(0, 700) + "...";
-		}
-		if (string.IsNullOrWhiteSpace(preview))
-		{
-			preview = "(empty)";
-		}
-		return "（API响应格式错误）压缩记忆前处理返回格式错误：" + (string.IsNullOrWhiteSpace(reason) ? "unknown" : reason.Trim()) + "。必须只输出一个 JSON 对象，并包含 rule_codes、memory_ids 和完整的 mentioned_entities 数组对象。原始输出：" + preview;
+		string detail = "（API响应格式错误）压缩记忆前处理返回格式错误：" + (string.IsNullOrWhiteSpace(reason) ? "unknown" : reason.Trim()) + "。必须只输出一个 JSON 对象，并包含 rule_codes、memory_ids 和完整的 mentioned_entities 数组对象。";
+		return LlmRetryPrompt.BuildFailureDetail(detail, content);
 	}
 
 	private void ShowCompressedMemoryBlockingPopup(string title, string message)
@@ -32137,18 +32125,21 @@ public class MyBehavior : CampaignBehaviorBase
 					if (!streamResponse)
 					{
 						string responseBody = await response.Content.ReadAsStringAsync();
+						apiCallResult.ResponseBody = responseBody ?? "";
 						if (SaveRuntimeGuard.IsStale(runtimeGeneration, "universal_api_non_stream_body:" + eventLogSource))
 						{
 							apiCallResult.ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText();
 							return apiCallResult;
 						}
 						string nonStreamRaw = "";
+						Exception responseParseException = null;
 						try
 						{
 							nonStreamRaw = ExtractUniversalNonStreamContent(JObject.Parse(responseBody));
 						}
 						catch (Exception parseEx)
 						{
+							responseParseException = parseEx;
 							apiLog("[HTTP] 非流式响应解析异常: " + parseEx + "\n原始响应=\n" + TrimUniversalApiRawForLog(responseBody));
 						}
 						apiLog("[HTTP] 非流式解析内容=\n" + nonStreamRaw);
@@ -32161,8 +32152,14 @@ public class MyBehavior : CampaignBehaviorBase
 							apiCallResult.ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText();
 							return apiCallResult;
 						}
-						apiCallResult.Success = true;
 						apiCallResult.Content = CleanAIResponse(nonStreamRaw);
+						if (responseParseException != null || string.IsNullOrWhiteSpace(apiCallResult.Content))
+						{
+							string reason = responseParseException == null ? "API响应解析失败：未解析出模型回复。" : ("API响应解析失败：" + responseParseException.Message);
+							apiCallResult.ErrorMessage = LlmRetryPrompt.BuildFailureDetail(reason, apiCallResult.Content, apiCallResult.ResponseBody);
+							return apiCallResult;
+						}
+						apiCallResult.Success = true;
 						if (!skipTokenStatsLog)
 						{
 							Logger.RecordTokenStats(Logger.EstimateTokensFromMessages(tokenStatsMessages), Logger.EstimateTokens(apiCallResult.Content), tokenStatsMessages, "[UNIVERSAL API HTTP]\nroute=" + resolvedRoute + "\nmodel=" + modelName + "\ncontrol_mode=" + thinkingMode + "\nai_response=\n" + (apiCallResult.Content ?? "") + "\nraw_response_sample=\n" + TrimUniversalApiRawForLog(responseBody), "universal_api", requestBodyForTokenStats);
@@ -32173,12 +32170,13 @@ public class MyBehavior : CampaignBehaviorBase
 					if (stream == null)
 					{
 						apiLog("[HTTP] 响应流为空。");
-						apiCallResult.ErrorMessage = "响应流为空";
+						apiCallResult.ErrorMessage = LlmRetryPrompt.BuildFailureDetail("响应流为空", "");
 						return apiCallResult;
 					}
 					using StreamReader reader = new StreamReader(stream);
 					StringBuilder fullContent = new StringBuilder();
 					StringBuilder rawStreamSample = new StringBuilder();
+					Exception streamParseException = null;
 					while (true)
 					{
 						string text;
@@ -32194,10 +32192,7 @@ public class MyBehavior : CampaignBehaviorBase
 						}
 						if (!string.IsNullOrWhiteSpace(line) && !(line == "data: [DONE]") && line.StartsWith("data: "))
 						{
-							if (rawStreamSample.Length < 3000)
-							{
-								rawStreamSample.AppendLine(line);
-							}
+							rawStreamSample.AppendLine(line);
 							try
 							{
 								string data = line.Substring(6).Trim();
@@ -32215,11 +32210,13 @@ public class MyBehavior : CampaignBehaviorBase
 							catch (Exception ex)
 							{
 								Exception parseEx = ex;
+								streamParseException = parseEx;
 								apiLog("[HTTP] 流解析异常: " + parseEx + "\n原始行=\n" + TrimUniversalApiRawForLog(line));
 							}
 						}
 					}
 					string raw = fullContent.ToString();
+					apiCallResult.ResponseBody = rawStreamSample.ToString().TrimEnd();
 					apiLog("[HTTP] 流式解析内容=\n" + raw);
 					if (string.IsNullOrWhiteSpace(raw))
 					{
@@ -32230,8 +32227,14 @@ public class MyBehavior : CampaignBehaviorBase
 						apiCallResult.ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText();
 						return apiCallResult;
 					}
-					apiCallResult.Success = true;
 					apiCallResult.Content = CleanAIResponse(raw);
+					if (string.IsNullOrWhiteSpace(apiCallResult.Content))
+					{
+						string reason = streamParseException == null ? "API流式响应解析失败：未解析出模型回复。" : ("API流式响应解析失败：" + streamParseException.Message);
+						apiCallResult.ErrorMessage = LlmRetryPrompt.BuildFailureDetail(reason, apiCallResult.Content, apiCallResult.ResponseBody);
+						return apiCallResult;
+					}
+					apiCallResult.Success = true;
 					if (!skipTokenStatsLog)
 					{
 						Logger.RecordTokenStats(Logger.EstimateTokensFromMessages(tokenStatsMessages), Logger.EstimateTokens(apiCallResult.Content), tokenStatsMessages, "[UNIVERSAL API HTTP]\nroute=" + resolvedRoute + "\nmodel=" + modelName + "\ncontrol_mode=" + thinkingMode + "\nai_response=\n" + (apiCallResult.Content ?? "") + "\nraw_response_sample=\n" + TrimUniversalApiRawForLog(rawStreamSample.ToString()), "universal_api", requestBodyForTokenStats);
@@ -32252,7 +32255,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			Exception ex2 = ex;
 			apiLog("[ERROR] CallUniversalApi 异常: " + ex2.ToString());
-			apiCallResult.ErrorMessage = ex2.Message;
+			apiCallResult.ErrorMessage = LlmRetryPrompt.BuildFailureDetail(ex2.Message, apiCallResult.Content, apiCallResult.ResponseBody);
 			return apiCallResult;
 		}
 	}
@@ -32274,14 +32277,21 @@ public class MyBehavior : CampaignBehaviorBase
 			MyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>();
 			if (behavior == null)
 			{
+				LlmRetryPrompt.ShowFailurePopup((source ?? "ExternalAuxiliary") + " 失败", LlmRetryPrompt.BuildFailureDetail("找不到 MyBehavior，无法调用辅助模型。", ""));
 				return "";
 			}
 			ApiCallResult apiCallResult = await behavior.CallUniversalApiDetailed(sys, user, logToEventLogs: false, eventLogSource: source, route: UniversalApiRoute.Auxiliary, streamResponse: false, forceThinkingDisabled: true);
-			return apiCallResult.Content ?? "";
+			if (apiCallResult.Success)
+			{
+				return apiCallResult.Content ?? "";
+			}
+			LlmRetryPrompt.ShowFailurePopup((source ?? "ExternalAuxiliary") + " 失败", apiCallResult.ErrorMessage ?? LlmRetryPrompt.BuildFailureDetail("辅助模型调用失败。", apiCallResult.Content, apiCallResult.ResponseBody));
+			return "";
 		}
 		catch (Exception ex)
 		{
 			Logger.Log(source ?? "ExternalAuxiliary", "[ERROR] CallAuxiliaryApiTextForExternal: " + ex.Message);
+			LlmRetryPrompt.ShowFailurePopup((source ?? "ExternalAuxiliary") + " 失败", LlmRetryPrompt.BuildFailureDetail(ex.Message, ""));
 			return "";
 		}
 	}
@@ -32464,8 +32474,7 @@ public class MyBehavior : CampaignBehaviorBase
 	private static string StripRewardActionTags(string text)
 	{
 		string text2 = text ?? "";
-		text2 = Regex.Replace(text2, "\\[ACTION:GIVE_GOLD:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
-		text2 = Regex.Replace(text2, "\\[ACTION:GIVE_ITEM:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[ACTION:GIVE_ASSET:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
 		text2 = Regex.Replace(text2, "\\[ACTION:DEBT[^\\]]*\\]", "", RegexOptions.IgnoreCase);
 		text2 = Regex.Replace(text2, "\\[AD;[^\\]]*\\]", "", RegexOptions.IgnoreCase);
 		text2 = Regex.Replace(text2, "\\[ADP[:;][^\\]]*\\]", "", RegexOptions.IgnoreCase);
@@ -32602,7 +32611,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 			}
 		}
-		string text2 = Regex.Replace(text, "\\[ACTION:(GIVE_ITEM|DEBT_ITEM):(\\d+):(\\d+)\\]", delegate(Match m)
+		string text2 = Regex.Replace(text, "\\[ACTION:(GIVE_ASSET|DEBT_ITEM):(\\d+):(\\d+)\\]", delegate(Match m)
 		{
 			string value = m.Groups[1].Value;
 			if (!int.TryParse(m.Groups[2].Value, out var result) || !int.TryParse(m.Groups[3].Value, out var result2) || result <= 0 || result > options.Count || result2 <= 0)
@@ -32619,11 +32628,11 @@ public class MyBehavior : CampaignBehaviorBase
 			result2 = Math.Min(Math.Max(1, result2), Math.Max(1, rewardItemInfo.Count));
 			return "[ACTION:" + value + ":" + text2.Trim() + ":" + result2 + "]";
 		}, RegexOptions.IgnoreCase);
-		return Regex.Replace(text2, "\\[ACTION:(GIVE_ITEM|DEBT_ITEM):([^\\]\\r\\n:]+):(ALL|\\d+)\\]", delegate(Match m)
+		return Regex.Replace(text2, "\\[ACTION:(GIVE_ASSET|DEBT_ITEM):([^\\]\\r\\n:]+):(ALL|\\d+)\\]", delegate(Match m)
 		{
 			string value2 = m.Groups[1].Value;
 			string token = m.Groups[2].Value;
-			bool isAll = string.Equals(value2, "GIVE_ITEM", StringComparison.OrdinalIgnoreCase) && TransferQuantitySpec.IsAllValue(m.Groups[3].Value);
+			bool isAll = string.Equals(value2, "GIVE_ASSET", StringComparison.OrdinalIgnoreCase) && TransferQuantitySpec.IsAllValue(m.Groups[3].Value);
 			int result3 = 0;
 			if (TransferQuantitySpec.IsAllValue(token) && !isAll)
 			{
@@ -32638,11 +32647,11 @@ public class MyBehavior : CampaignBehaviorBase
 			logRewardItemTranslation("token", token, rewardItemInfo2, text3);
 			if (string.IsNullOrWhiteSpace(text3))
 			{
-				return isAll ? ("[ACTION:GIVE_ITEM:" + token.Trim() + ":ALL]") : ("[ACTION:" + value2 + ":" + token.Trim() + ":" + result3 + "]");
+				return isAll ? ("[ACTION:GIVE_ASSET:" + token.Trim() + ":ALL]") : ("[ACTION:" + value2 + ":" + token.Trim() + ":" + result3 + "]");
 			}
 			if (isAll)
 			{
-				return "[ACTION:GIVE_ITEM:" + text3.Trim() + ":ALL]";
+				return "[ACTION:GIVE_ASSET:" + text3.Trim() + ":ALL]";
 			}
 			result3 = Math.Min(Math.Max(1, result3), Math.Max(1, rewardItemInfo2.Count));
 			return "[ACTION:" + value2 + ":" + text3.Trim() + ":" + result3 + "]";
@@ -32707,29 +32716,31 @@ public class MyBehavior : CampaignBehaviorBase
 				text = text2;
 				continue;
 			}
-			if (!text2.StartsWith("[ACTION:GIVE_GOLD:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ACTION:GIVE_ITEM:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ACTION:DEBT_ITEM:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ACTION:DEBT_PAY_ITEM:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[AD;", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ADP;", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ADP:", StringComparison.OrdinalIgnoreCase))
+			if (!text2.StartsWith("[ACTION:GIVE_ASSET:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ACTION:DEBT_ITEM:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ACTION:DEBT_PAY_ITEM:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[AD;", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ADP;", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ADP:", StringComparison.OrdinalIgnoreCase))
 			{
 				continue;
+			}
+			Match assetMatch = Regex.Match(text2, "^\\[ACTION:GIVE_ASSET:([^\\]\\r\\n:]+):(ALL|\\d+)\\]$", RegexOptions.IgnoreCase);
+			if (assetMatch.Success)
+			{
+				string assetToken = (assetMatch.Groups[1].Value ?? "").Trim();
+				string quantityToken = (assetMatch.Groups[2].Value ?? "").Trim();
+				if (TransferQuantitySpec.IsAllValue(assetToken))
+				{
+					continue;
+				}
+				if (RewardSystemBehavior.IsGoldAssetTokenForExternal(assetToken))
+				{
+					if (!int.TryParse(quantityToken, out var goldAmount) || goldAmount <= 0)
+					{
+						continue;
+					}
+					text2 = "[ACTION:GIVE_ASSET:GOLD:" + goldAmount + "]";
+				}
 			}
 			if (hashSet.Add(text2))
 			{
 				list.Add(text2);
-			}
-		}
-		list.RemoveAll((string x) => Regex.IsMatch(x ?? "", "^\\[ACTION:GIVE_ITEM:ALL:\\d+\\]$", RegexOptions.IgnoreCase));
-		bool giveAll = list.Any((string x) => Regex.IsMatch(x ?? "", "^\\[ACTION:GIVE_ITEM:[^\\]\\r\\n:]+:ALL\\]$", RegexOptions.IgnoreCase));
-		if (giveAll)
-		{
-			list.RemoveAll((string x) => (x ?? "").StartsWith("[ACTION:GIVE_ITEM:", StringComparison.OrdinalIgnoreCase));
-			HashSet<string> allItemKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			foreach (RewardSystemBehavior.RewardItemInfo item in allOptions ?? Enumerable.Empty<RewardSystemBehavior.RewardItemInfo>())
-			{
-				string key = string.IsNullOrWhiteSpace(item?.PromptStringId) ? item?.StringId : item.PromptStringId;
-				if (item == null || item.Item == null || item.Count <= 0 || string.IsNullOrWhiteSpace(key) || !allItemKeys.Add(key.Trim()))
-				{
-					continue;
-				}
-				list.Add("[ACTION:GIVE_ITEM:" + key.Trim() + ":ALL]");
 			}
 		}
 		if (string.IsNullOrWhiteSpace(text))
@@ -40947,7 +40958,7 @@ public class MyBehavior : CampaignBehaviorBase
 		string text = (response ?? "").Trim();
 		if (parseFailed)
 		{
-			return string.IsNullOrWhiteSpace(text) ? "模型返回为空，且无法解析。" : ("模型返回无法解析：\n" + text);
+			return LlmRetryPrompt.BuildFailureDetail(string.IsNullOrWhiteSpace(text) ? "模型返回为空，且无法解析。" : "模型返回无法解析。", text);
 		}
 		if (string.IsNullOrWhiteSpace(text))
 		{
@@ -41340,7 +41351,7 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			if (!TryParseWeeklyFullOnDemandReportResponse(apiCallResult.Content, out var title, out var shortSummary, out var report))
 			{
-				ShowWeeklyFullOnDemandFailurePopup("完整周报返回内容无法解析。");
+				ShowWeeklyFullOnDemandFailurePopup(LlmRetryPrompt.BuildFailureDetail("完整周报返回内容无法解析。", apiCallResult.Content, apiCallResult.ResponseBody));
 				return false;
 			}
 			eventRecordEntry.Title = title;
@@ -41682,11 +41693,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			stringBuilder.Append("，建议等待 ").Append(retryAfterSeconds.Value).Append(" 秒后再试");
 		}
-		if (!string.IsNullOrWhiteSpace(text2))
-		{
-			stringBuilder.Append("：").Append(text2);
-		}
-		return stringBuilder.ToString();
+		return LlmRetryPrompt.BuildFailureDetail(stringBuilder.ToString(), "", text2);
 	}
 
 	private static void TryPersistMcmSettings(DuelSettings settings)
@@ -41768,7 +41775,7 @@ public class MyBehavior : CampaignBehaviorBase
 		for (int i = 1; i <= Math.Max(1, maxAttempts); i++)
 		{
 			ApiCallResult apiCallResult = await CallUniversalApiDetailed(text, text2, logToEventLogs: true, eventLogSource: "EventWeeklyReport", route: UniversalApiRoute.EventAndRebellion);
-			string text5 = apiCallResult.Success ? (apiCallResult.Content ?? "") : ("閿欒: " + (apiCallResult.ErrorMessage ?? "鏈煡閿欒"));
+			string text5 = apiCallResult.Success ? (apiCallResult.Content ?? "") : (apiCallResult.ErrorMessage ?? "未知错误");
 			weeklyReportBatchRequestResult.RawResponse = text5;
 			Logger.LogEventPromptExchange(text4 + " [灏濊瘯 " + i + "/" + maxAttempts + "]", text3, text5);
 			weeklyReportBatchRequestResult.AttemptsUsed = i;
@@ -41786,7 +41793,7 @@ public class MyBehavior : CampaignBehaviorBase
 			else if (!TryParseWeeklyBatchResponse(apiCallResult.Content, batch, out var blocks, out var missingReportIds, out var failureReason))
 			{
 				weeklyReportBatchRequestResult.Success = false;
-				weeklyReportBatchRequestResult.FailureReason = failureReason;
+				weeklyReportBatchRequestResult.FailureReason = LlmRetryPrompt.BuildFailureDetail(failureReason, apiCallResult.Content, apiCallResult.ResponseBody);
 				weeklyReportBatchRequestResult.Blocks = blocks ?? new List<WeeklyReportBatchBlockResult>();
 				weeklyReportBatchRequestResult.MissingReportIds = missingReportIds ?? BuildWeeklyBatchExpectedReportIds(batch);
 			}
@@ -41801,7 +41808,7 @@ public class MyBehavior : CampaignBehaviorBase
 					return weeklyReportBatchRequestResult;
 				}
 				weeklyReportBatchRequestResult.Success = false;
-				weeklyReportBatchRequestResult.FailureReason = failureReason;
+				weeklyReportBatchRequestResult.FailureReason = LlmRetryPrompt.BuildFailureDetail(failureReason, apiCallResult.Content, apiCallResult.ResponseBody);
 			}
 			if (i < maxAttempts)
 			{

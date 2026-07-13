@@ -10322,6 +10322,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			List<string> list2 = ParseRagShortTextCandidates(raw, Math.Max(RagShortTextAutoGenerateCount * 2, 6));
 			if (list2.Count <= 0)
 			{
+				LlmRetryPrompt.ShowFailurePopup("RAG专用短句解析失败", LlmRetryPrompt.BuildFailureDetail("模型回复无法解析为 RAG 专用短句，系统将使用确定性兜底。", raw));
 				list2 = BuildDeterministicRagShortTextFallback(rule, RagShortTextAutoGenerateCount);
 			}
 			int num = 0;
@@ -10352,7 +10353,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		catch (Exception ex)
 		{
 			Logger.Log("Logic", "[Knowledge] 生成RAG专用短句失败: " + ex);
-			InformationManager.DisplayMessage(new InformationMessage("[知识] 生成RAG专用短句失败：" + TrimPreview(ex.Message, 120)));
+			LlmRetryPrompt.ShowFailurePopup("生成RAG专用短句失败", ex.Message);
 		}
 		onDone();
 	}
@@ -10967,12 +10968,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				string result2 = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
 				if (!result.IsSuccessStatusCode)
 				{
-					string text2 = (result2 ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
-					if (text2.Length > 180)
-					{
-						text2 = text2.Substring(0, 180);
-					}
-					throw new Exception($"API请求失败: {result.StatusCode} {text2}");
+					throw new Exception(LlmRetryPrompt.BuildFailureDetail($"API请求失败: {result.StatusCode}", "", result2));
 				}
 				try
 				{
@@ -10986,7 +10982,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				}
 				catch (Exception ex)
 				{
-					throw new Exception("API 响应解析失败: " + ex.Message);
+					throw new Exception(LlmRetryPrompt.BuildFailureDetail("API 响应解析失败: " + ex.Message, "", result2), ex);
 				}
 			}
 			finally
