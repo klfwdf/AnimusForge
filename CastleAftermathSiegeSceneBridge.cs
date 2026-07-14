@@ -26,6 +26,7 @@ internal static class CastleAftermathSiegeSceneBridge
 {
 	private static readonly HashSet<string> IncompatibleNativeMissionBehaviors = new HashSet<string>(StringComparer.Ordinal)
 	{
+		"MissionAgentSpawnLogic",
 		"DefaultBattleMissionAgentSpawnLogic",
 		"BattleReinforcementsSpawnController",
 		"CustomSiegeMissionSpawnHandler",
@@ -409,7 +410,16 @@ internal sealed class CastleAftermathPlayerRosterMissionBehavior : MissionLogic
 	public override void AfterStart()
 	{
 		base.AfterStart();
-		if (_spawned)
+		Logger.Log("CastleAftermath", "Castle player roster waiting for first mission tick before spawn. Mode="
+			+ (base.Mission?.Mode.ToString() ?? "null"));
+	}
+
+	public override void OnMissionTick(float dt)
+	{
+		base.OnMissionTick(dt);
+		Mission mission = base.Mission;
+		if (_spawned || mission == null || mission.IsMissionEnding
+			|| mission.Mode == MissionMode.Conversation || mission.Mode == MissionMode.Barter)
 		{
 			return;
 		}
@@ -508,7 +518,6 @@ internal sealed class CastleAftermathPlayerRosterMissionBehavior : MissionLogic
 			spawnedAllies++;
 		}
 
-		mission.SetMissionMode(MissionMode.Battle, atStart: true);
 		bool commandUiReady = SiegeAiInterventionBehavior.EnsureInterventionCommandUiReadyForExternal(
 			mission,
 			"castle_aftermath_manual_roster_spawn");
@@ -518,6 +527,7 @@ internal sealed class CastleAftermathPlayerRosterMissionBehavior : MissionLogic
 			+ ", Allies=" + spawnedAllies + "/" + allies.Count
 			+ ", Team=" + playerTeam.Side
 			+ ", SpawnAnchor=" + anchor
+			+ ", Mode=" + mission.Mode
 			+ ", MissionAgents=" + (mission.Agents?.Count ?? 0)
 			+ ", CommandUiReady=" + commandUiReady);
 	}

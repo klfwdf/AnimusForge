@@ -1720,6 +1720,14 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		if (CastleAftermathRuntimeBridge.IsCastleAftermathMission(mission))
+		{
+			EnsureInterventionPlayerCommandTeam(mission);
+			ApplyPlayerBattleEquipment();
+			GcczDiagnosticLog.Log("Mission", "after-start prepared castle settlement=" + (_activeSettlementId ?? "N/A")
+				+ " selectedRoster=" + (_selectedInterventionRoster?.TotalManCount ?? 0));
+			return;
+		}
 		EnsureInterventionMissionCombatModeForPlayerDamage(mission);
 		EnsureInterventionPlayerCommandTeam(mission);
 		ApplyPlayerBattleEquipment();
@@ -1746,6 +1754,18 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			return;
 		}
 		TryKeepMissionExitImmediatelyAvailable(mission);
+		if (CastleAftermathRuntimeBridge.IsCastleAftermathMission(mission))
+		{
+			EnsureInterventionPlayerCommandTeam(mission);
+			float castleCurrentTime = mission.CurrentTime;
+			if (castleCurrentTime >= _nextControlTickTime)
+			{
+				_nextControlTickTime = castleCurrentTime + 0.35f;
+				ApplyPlayerBattleEquipment();
+				TryPrimePlayerOrderController(mission, SiegeNativeBridgeSourceProfile.ControlTickOrderControllerSource, force: false);
+			}
+			return;
+		}
 		EnsureInterventionMissionCombatModeForPlayerDamage(mission);
 		EnsureInterventionPlayerCommandTeam(mission);
 		TryMaintainTownCivilianSceneGoldDrops(mission, dt);
@@ -3574,6 +3594,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		try
 		{
 			if (mission == null || mission.IsMissionEnding || mission.Mode == MissionMode.Conversation || mission.Mode == MissionMode.Barter)
+			{
+				return;
+			}
+			if (CastleAftermathRuntimeBridge.IsCastleAftermathMission(mission))
 			{
 				return;
 			}
@@ -10554,6 +10578,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static bool SummonAlliedTroops(int requestedCount, string source)
 	{
 		Mission mission = Mission.Current;
+		if (CastleAftermathRuntimeBridge.IsCastleAftermathMission(mission))
+		{
+			return false;
+		}
 		Agent main = Agent.Main ?? mission?.MainAgent;
 		Team team = mission?.PlayerTeam ?? main?.Team;
 		PartyBase party = PartyBase.MainParty;

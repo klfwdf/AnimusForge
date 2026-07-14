@@ -28,6 +28,18 @@ internal static class CastleAftermathRuntimeBridge
 
 	internal static int SelectedPrisonerCount => _selectedPrisonerRoster?.TotalManCount ?? 0;
 
+	internal static bool IsCastleAftermathMission(Mission mission)
+	{
+		try
+		{
+			return mission?.GetMissionBehavior<CastleAftermathPrisonerCommandMissionBehavior>() != null;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	internal static void Reset(string source)
 	{
 		_selectedPrisonerRoster = null;
