@@ -185,12 +185,13 @@ internal static class BannerlordApiCompat
 		}
 	}
 
-	internal static Agent SpawnPrisonerInspectionTroop(
+	internal static Agent SpawnInspectionTroop(
 		Mission mission,
 		IAgentOriginBase origin,
 		int formationTroopCount,
 		int formationTroopIndex,
-		FormationClass formationClass)
+		FormationClass formationClass,
+		bool wieldInitialWeapons)
 	{
 		if (mission == null || origin == null)
 		{
@@ -209,29 +210,31 @@ internal static class BannerlordApiCompat
 			}
 
 			ParameterInfo[] parameters = method.GetParameters();
-			object[] args = parameters.Select(parameter => BuildPrisonerSpawnTroopArgument(
+			object[] args = parameters.Select(parameter => BuildInspectionSpawnTroopArgument(
 				parameter,
 				origin,
 				formationTroopCount,
 				formationTroopIndex,
 				formationClass,
+				wieldInitialWeapons,
 				null,
 				null)).ToArray();
 			return method.Invoke(mission, args) as Agent;
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("BannerlordApiCompat", "SpawnPrisonerInspectionTroop failed: " + ex.GetBaseException());
+			Logger.Log("BannerlordApiCompat", "SpawnInspectionTroop failed: " + ex.GetBaseException());
 			return null;
 		}
 	}
 
-	private static object BuildPrisonerSpawnTroopArgument(
+	private static object BuildInspectionSpawnTroopArgument(
 		ParameterInfo parameter,
 		IAgentOriginBase origin,
 		int formationTroopCount,
 		int formationTroopIndex,
 		FormationClass formationClass,
+		bool wieldInitialWeapons,
 		Vec3? initialPosition,
 		Vec2? initialDirection)
 	{
@@ -246,7 +249,7 @@ internal static class BannerlordApiCompat
 			case "formationtroopcount": return formationTroopCount;
 			case "formationtroopindex": return formationTroopIndex;
 			case "isalarmed": return false;
-			case "wieldinitialweapons": return false;
+			case "wieldinitialweapons": return wieldInitialWeapons;
 			case "forcedismounted": return true;
 			case "initialposition": return initialPosition;
 			case "initialdirection": return initialDirection;

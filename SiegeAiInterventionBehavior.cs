@@ -330,6 +330,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static int _pendingEncounterFinishDelayTicks;
 	private static int _pendingEncounterFinishAttempts;
 	private static bool _pendingEncounterFinishMessageShown;
+	private static DateTime _pendingEncounterFinishNoNativeMenuSinceUtc = DateTime.MinValue;
+	private const double EncounterFinishMenuSettleSeconds = 0.35d;
 	private static bool _nativeDevastateAftermathFlowActive;
 	private static bool _nativeDevastateSummaryContinueHandled;
 	private static bool _directMassacreAftermathScriptPending;
@@ -10729,6 +10731,22 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		return false;
 	}
 
+	internal static int EnsureInterventionBannerBearersForExternal(Mission mission, string source)
+	{
+		try
+		{
+			mission ??= Mission.Current;
+			Agent main = Agent.Main ?? mission?.MainAgent;
+			Team team = ResolveInterventionPlayerCommandTeamForExternal(mission, source);
+			return SpawnInterventionBannerBearers(mission, main, team, PartyBase.MainParty, source);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "EnsureInterventionBannerBearersForExternal failed: " + ex.Message);
+			return 0;
+		}
+	}
+
 	private static int SpawnInterventionBannerBearers(Mission mission, Agent main, Team team, PartyBase party, string source)
 	{
 		try
@@ -12880,6 +12898,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				_pendingEncounterFinish = true;
 				_pendingEncounterFinishAttempts = 0;
 				_pendingEncounterFinishMessageShown = false;
+				_pendingEncounterFinishNoNativeMenuSinceUtc = DateTime.MinValue;
 			}
 			_pendingEncounterFinishAftermath = aftermath;
 			if (forceDelay || _pendingEncounterFinishDelayTicks <= 0)
@@ -12943,6 +12962,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				if (PlayerEncounter.Current != null)
 				{
+					_pendingEncounterFinishNoNativeMenuSinceUtc = DateTime.MinValue;
 					PlayerEncounter.Finish(true);
 					Logger.Log("SiegeAiIntervention", "Requested PlayerEncounter.Finish(true) after AF intervention. Source=" + (source ?? "N/A") + ", Attempt=" + _pendingEncounterFinishAttempts);
 				}
@@ -12953,6 +12973,35 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			if (PlayerEncounter.Current == null)
 			{
+				string currentMenuId = Campaign.Current?.CurrentMenuContext?.GameMenu?.StringId;
+				if (IsNativeSiegeAftermathMenuId(currentMenuId))
+				{
+					_pendingEncounterFinishNoNativeMenuSinceUtc = DateTime.MinValue;
+					try
+					{
+						GameMenu.ExitToLast();
+						GcczDiagnosticLog.LogVerbose("Exit", "dismissed native aftermath menu=" + currentMenuId
+							+ " source=" + (source ?? "N/A")
+							+ " attempts=" + _pendingEncounterFinishAttempts);
+					}
+					catch (Exception ex)
+					{
+						Logger.Log("SiegeAiIntervention", "Dismissing resolved native siege aftermath menu failed. Menu="
+							+ currentMenuId + ", Source=" + (source ?? "N/A") + ", Error=" + ex.Message);
+					}
+					return false;
+				}
+
+				DateTime nowUtc = DateTime.UtcNow;
+				if (_pendingEncounterFinishNoNativeMenuSinceUtc == DateTime.MinValue)
+				{
+					_pendingEncounterFinishNoNativeMenuSinceUtc = nowUtc;
+					return false;
+				}
+				if ((nowUtc - _pendingEncounterFinishNoNativeMenuSinceUtc).TotalSeconds < EncounterFinishMenuSettleSeconds)
+				{
+					return false;
+				}
 				GcczDiagnosticLog.Log("Exit", "completed source=" + (source ?? "N/A")
 					+ " aftermath=" + aftermath
 					+ " attempts=" + _pendingEncounterFinishAttempts);
@@ -13792,6 +13841,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			_pendingEncounterFinishDelayTicks = 0;
 			_pendingEncounterFinishAttempts = 0;
 			_pendingEncounterFinishMessageShown = false;
+			_pendingEncounterFinishNoNativeMenuSinceUtc = DateTime.MinValue;
 			_nativeDevastateAftermathFlowActive = false;
 			_nativeDevastateSummaryContinueHandled = false;
 			_directMassacreAftermathScriptPending = false;
@@ -13848,6 +13898,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_pendingEncounterFinishDelayTicks = 0;
 		_pendingEncounterFinishAttempts = 0;
 		_pendingEncounterFinishMessageShown = false;
+		_pendingEncounterFinishNoNativeMenuSinceUtc = DateTime.MinValue;
 		_nativeDevastateAftermathFlowActive = false;
 		_nativeDevastateSummaryContinueHandled = false;
 		_directMassacreAftermathScriptPending = false;

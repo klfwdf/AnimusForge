@@ -201,6 +201,7 @@ internal static class CastleAftermathRuntimeBridge
 			{
 				mission.AddMissionBehavior(new TroopInspectionMissionLogic(
 					TroopInspectionBehavior.CurrentInspectionDummyPartyId,
+					SiegeAiInterventionBehavior.GetSelectedCastleInterventionRosterSnapshot(),
 					GetSelectedPrisonerRosterSnapshot(),
 					commandBehavior.RegisterPrisoner,
 					commandBehavior.CompleteSpawn,

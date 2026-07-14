@@ -14,31 +14,17 @@ public static class SiegeCastleRosterSelectionProfile
 
     public const int LordPrisonerFormationIndex = 7;
 
-    public const string DefenderSpawnAnchorTag = "defender_infantry";
+    public const string AlliedSpawnCommandSource = "castle_allied_spawn";
 
-    public const float PlayerSpawnForwardOffset = 2f;
+    public const string AlliedCommandUiRefreshSource = "castle_allied_spawn_complete";
 
-    public const int AlliedSpawnGridColumns = 8;
+    public const int AlliedInitialGridColumns = 8;
 
-    public const float AlliedSpawnStartDepth = 2.5f;
+    public const float AlliedInitialStartDepth = 4f;
 
-    public const float AlliedSpawnRowSpacing = 1.6f;
+    public const float AlliedInitialRowSpacing = 1.8f;
 
-    public const float AlliedSpawnLateralSpacing = 1.5f;
-
-    public const int RegularPrisonerSpawnGridColumns = 10;
-
-    public const int LordPrisonerSpawnGridColumns = 8;
-
-    public const float PrisonerSpawnStartDepth = 14f;
-
-    public const float PrisonerSpawnRowSpacing = 1.3f;
-
-    public const float PrisonerSpawnLateralSpacing = 1.3f;
-
-    public const float RegularPrisonerSpawnLateralOffset = -7f;
-
-    public const float LordPrisonerSpawnLateralOffset = 7f;
+    public const float AlliedInitialLateralSpacing = 1.6f;
 
     public const string PrisonerSpawnCommandSource = "castle_prisoner_spawn";
 
@@ -93,6 +79,18 @@ public static class SiegeCastleRosterSelectionProfile
         }
 
         return "【城堡处置】俘虏实际进入场景 " + active + "/" + selected + " 名；详情已写入日志。";
+    }
+
+    public static string BuildAlliedSceneReadyMessage(int selectedCount, int activeCount)
+    {
+        int selected = ClampAlliedTroopCount(selectedCount);
+        int active = ClampAlliedTroopCount(activeCount);
+        if (active >= selected)
+        {
+            return "【城堡处置】已带入 " + active + " 名我方士兵，可通过原版指挥系统下令。";
+        }
+
+        return "【城堡处置】我方士兵实际进入场景 " + active + "/" + selected + " 名；详情已写入日志。";
     }
 
     public static string BuildLimitMessage(int alliedTroopCount, int prisonerCount)

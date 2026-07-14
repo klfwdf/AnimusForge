@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using AnimusForge.SiegeAftermathIntervention;
 using Helpers;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
+using TaleWorlds.CampaignSystem.AgentOrigins;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.GameState;
 using TaleWorlds.CampaignSystem.Map;
@@ -3046,6 +3049,8 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 {
 	private readonly string _dummyPartyStringId;
 
+	private readonly TroopRoster _inspectionMemberRoster;
+
 	private readonly TroopRoster _inspectionPrisonerRoster;
 
 	private readonly Action<Agent, bool> _externalPrisonerSpawned;
@@ -3054,7 +3059,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 
 	private readonly Action<string> _externalCleanup;
 
-	private readonly bool _externalControlsPrisonersAfterDeployment;
+	private readonly bool _externalCastleRuntime;
 
 	private BattleEndLogic _battleEndLogic;
 
@@ -3089,6 +3094,10 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 	private MissionMode _lastMissionMode;
 
 	private bool _prisonersSpawned;
+
+	private bool _alliesPrepared;
+
+	private float _allyPrepareTimer = 1f;
 
 	private float _prisonerSpawnTimer = 1f;
 
@@ -3166,34 +3175,37 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 	}
 
 	public TroopInspectionMissionLogic(string dummyPartyStringId, TroopRoster inspectionPrisonerRoster)
-		: this(dummyPartyStringId, inspectionPrisonerRoster, null, null, null, false)
+		: this(dummyPartyStringId, null, inspectionPrisonerRoster, null, null, null, false)
 	{
 	}
 
 	internal TroopInspectionMissionLogic(
 		string dummyPartyStringId,
+		TroopRoster inspectionMemberRoster,
 		TroopRoster inspectionPrisonerRoster,
 		Action<Agent, bool> externalPrisonerSpawned,
 		Action<int, int, int> externalPrisonerSpawnCompleted,
 		Action<string> externalCleanup)
-		: this(dummyPartyStringId, inspectionPrisonerRoster, externalPrisonerSpawned, externalPrisonerSpawnCompleted, externalCleanup, true)
+		: this(dummyPartyStringId, inspectionMemberRoster, inspectionPrisonerRoster, externalPrisonerSpawned, externalPrisonerSpawnCompleted, externalCleanup, true)
 	{
 	}
 
 	private TroopInspectionMissionLogic(
 		string dummyPartyStringId,
+		TroopRoster inspectionMemberRoster,
 		TroopRoster inspectionPrisonerRoster,
 		Action<Agent, bool> externalPrisonerSpawned,
 		Action<int, int, int> externalPrisonerSpawnCompleted,
 		Action<string> externalCleanup,
-		bool externalControlsPrisonersAfterDeployment)
+		bool externalCastleRuntime)
 	{
 		_dummyPartyStringId = dummyPartyStringId;
+		_inspectionMemberRoster = inspectionMemberRoster != null ? TroopInspectionBehavior.CloneRoster(inspectionMemberRoster) : null;
 		_inspectionPrisonerRoster = inspectionPrisonerRoster != null ? TroopInspectionBehavior.CloneRoster(inspectionPrisonerRoster) : null;
 		_externalPrisonerSpawned = externalPrisonerSpawned;
 		_externalPrisonerSpawnCompleted = externalPrisonerSpawnCompleted;
 		_externalCleanup = externalCleanup;
-		_externalControlsPrisonersAfterDeployment = externalControlsPrisonersAfterDeployment;
+		_externalCastleRuntime = externalCastleRuntime;
 	}
 
 	public override void OnBehaviorInitialize()
@@ -3224,6 +3236,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 	{
 		base.OnMissionTick(dt);
 		RetryBattleEndDisableIfNeeded();
+		TryPrepareExternalAllies(dt);
 		bool hasPrisonersToSpawn = HasPrisonersToSpawn();
 		if (!_prisonersSpawned && hasPrisonersToSpawn && !_deploymentWasActive && _prisonerSpawnWaitLogCount < PrisonerSpawnWaitDiagLimit)
 		{
@@ -3259,7 +3272,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		}
 		DetectDeploymentEnd();
 		TryLogAgentCounts();
-		if (!_externalControlsPrisonersAfterDeployment)
+		if (!_externalCastleRuntime)
 		{
 			RefreshPrisonerPoses(dt);
 		}
@@ -3267,7 +3280,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		if (!_inspectionMessageShown && _deploymentEndDetected && base.Mission != null && base.Mission.CurrentTime > 2f)
 		{
 			_inspectionMessageShown = true;
-			AnimusForgeQuickInfo.Show(_externalControlsPrisonersAfterDeployment
+			AnimusForgeQuickInfo.Show(_externalCastleRuntime
 				? "城堡处置：可用原版指挥系统调整士兵与俘虏站位。按TAB结束处置。"
 				: "检阅模式：可自由指挥部队进行检阅。按TAB撤退结束检阅。");
 			Log("inspection_message_shown");
@@ -3277,6 +3290,239 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 	private TroopRoster GetPrisonerRosterForSpawn()
 	{
 		return _inspectionPrisonerRoster ?? PartyBase.MainParty?.PrisonRoster;
+	}
+
+	private void TryPrepareExternalAllies(float dt)
+	{
+		if (_alliesPrepared || !_externalCastleRuntime || _inspectionMemberRoster == null || _inspectionMemberRoster.TotalManCount <= 0)
+		{
+			return;
+		}
+
+		_allyPrepareTimer -= dt;
+		Mission mission = base.Mission;
+		if (_allyPrepareTimer > 0f || mission?.PlayerTeam == null || Agent.Main == null || !Agent.Main.IsActive())
+		{
+			return;
+		}
+
+		_alliesPrepared = true;
+		PrepareExternalAllies();
+	}
+
+	private void PrepareExternalAllies()
+	{
+		Mission mission = base.Mission;
+		Team playerTeam = mission?.PlayerTeam;
+		Agent main = Agent.Main ?? mission?.MainAgent;
+		PartyBase mainParty = PartyBase.MainParty;
+		if (mission == null || playerTeam == null || main == null || mainParty == null)
+		{
+			Log("prepare_external_allies aborted: mission context unavailable");
+			return;
+		}
+
+		List<CharacterObject> selected = ExpandExternalAllies();
+		Dictionary<CharacterObject, Queue<Agent>> existingByCharacter = mission.Agents
+			.Where(agent => agent != null
+				&& agent.IsHuman
+				&& agent.IsActive()
+				&& agent != main
+				&& agent.Team == playerTeam
+				&& !(agent.Origin is PrisonerAgentOrigin)
+				&& agent.Character is CharacterObject)
+			.GroupBy(agent => (CharacterObject)agent.Character)
+			.ToDictionary(group => group.Key, group => new Queue<Agent>(group));
+		Dictionary<FormationClass, int> formationTotals = selected
+			.GroupBy(ResolveExternalAllyFormationClass)
+			.ToDictionary(group => group.Key, group => group.Count());
+		Dictionary<FormationClass, int> formationIndexes = new Dictionary<FormationClass, int>();
+		List<Agent> preparedAgents = new List<Agent>();
+		int reused = 0;
+		int spawned = 0;
+		int failed = 0;
+		for (int selectedIndex = 0; selectedIndex < selected.Count; selectedIndex++)
+		{
+			CharacterObject character = selected[selectedIndex];
+			FormationClass formationClass = ResolveExternalAllyFormationClass(character);
+			formationIndexes.TryGetValue(formationClass, out int formationIndex);
+			formationIndexes[formationClass] = formationIndex + 1;
+
+			Agent agent = null;
+			if (existingByCharacter.TryGetValue(character, out Queue<Agent> existing) && existing.Count > 0)
+			{
+				agent = existing.Dequeue();
+				reused++;
+			}
+			else
+			{
+				agent = BannerlordApiCompat.SpawnInspectionTroop(
+					mission,
+					new PartyAgentOrigin(mainParty, character),
+					formationTotals[formationClass],
+					formationIndex,
+					formationClass,
+					wieldInitialWeapons: true);
+				if (agent != null)
+				{
+					spawned++;
+				}
+			}
+
+			if (agent == null)
+			{
+				failed++;
+				continue;
+			}
+			PrepareExternalAllyAgent(agent, selectedIndex, main);
+			preparedAgents.Add(agent);
+		}
+
+		HoldPreparedAlliedFormations(preparedAgents);
+		int bannerBearers = SiegeAiInterventionBehavior.EnsureInterventionBannerBearersForExternal(
+			mission,
+			SiegeBannerBearerProfile.SpawnSource);
+		bool commandUiReady = SiegeAiInterventionBehavior.EnsureInterventionCommandUiReadyForExternal(
+			mission,
+			SiegeCastleRosterSelectionProfile.AlliedCommandUiRefreshSource);
+		Log("prepare_external_allies result selected=" + selected.Count
+			+ " reused=" + reused
+			+ " spawned=" + spawned
+			+ " active=" + preparedAgents.Count
+			+ " failed=" + failed
+			+ " banner_bearers=" + bannerBearers
+			+ " mission_agents=" + (mission.Agents?.Count ?? 0)
+			+ " command_ui=" + commandUiReady);
+		Logger.LogEvent("TroopInspection", "castle_allies result selected=" + selected.Count
+			+ " reused=" + reused + " spawned=" + spawned + " active=" + preparedAgents.Count + " failed=" + failed);
+		AnimusForgeQuickInfo.Show(SiegeCastleRosterSelectionProfile.BuildAlliedSceneReadyMessage(selected.Count, preparedAgents.Count));
+	}
+
+	private List<CharacterObject> ExpandExternalAllies()
+	{
+		List<CharacterObject> result = new List<CharacterObject>();
+		foreach (TroopRosterElement element in TroopInspectionBehavior.SnapshotRoster(_inspectionMemberRoster))
+		{
+			CharacterObject character = element.Character;
+			if (character == null || character.IsPlayerCharacter || element.Number <= 0)
+			{
+				continue;
+			}
+			for (int index = 0; index < element.Number && result.Count < SiegeCastleRosterSelectionProfile.MaxAlliedTroops; index++)
+			{
+				result.Add(character);
+			}
+		}
+		return result;
+	}
+
+	private static FormationClass ResolveExternalAllyFormationClass(CharacterObject character)
+	{
+		FormationClass formationClass = character?.DefaultFormationClass ?? FormationClass.Infantry;
+		switch (formationClass)
+		{
+			case FormationClass.Infantry:
+			case FormationClass.Ranged:
+			case FormationClass.Cavalry:
+			case FormationClass.HorseArcher:
+				return formationClass;
+			default:
+				return FormationClass.Infantry;
+		}
+	}
+
+	private void PrepareExternalAllyAgent(Agent agent, int selectedIndex, Agent main)
+	{
+		try
+		{
+			Vec3 position = ResolveExternalAllyAssemblyPosition(main, selectedIndex);
+			agent.TeleportToPosition(position);
+			agent.LookDirection = main.LookDirection;
+			agent.SetMortalityState(Agent.MortalityState.Immortal);
+			agent.SetIsAIPaused(isPaused: false);
+			agent.DisableScriptedMovement();
+			SiegeAiInterventionBehavior.EnsureAgentPlayerCommandableForExternal(
+				agent,
+				SiegeCastleRosterSelectionProfile.AlliedSpawnCommandSource);
+		}
+		catch (Exception ex)
+		{
+			Log("prepare_external_ally_agent failed troop=" + SafeAgentCharacterId(agent) + " error=" + ex.GetType().Name + ": " + ex.Message);
+		}
+	}
+
+	private Vec3 ResolveExternalAllyAssemblyPosition(Agent main, int index)
+	{
+		Mission mission = base.Mission;
+		Vec3 anchor = main?.Position ?? Vec3.Zero;
+		Vec3 forward = main?.LookDirection ?? Vec3.Forward;
+		forward.z = 0f;
+		if (forward.LengthSquared < 0.01f)
+		{
+			forward = Vec3.Forward;
+		}
+		forward.Normalize();
+		Vec3 right = new Vec3(-forward.y, forward.x, 0f);
+		int columns = Math.Max(1, SiegeCastleRosterSelectionProfile.AlliedInitialGridColumns);
+		int row = Math.Max(0, index) / columns;
+		int column = Math.Max(0, index) % columns;
+		float lateral = (column - (columns - 1) * 0.5f) * SiegeCastleRosterSelectionProfile.AlliedInitialLateralSpacing;
+		float depth = SiegeCastleRosterSelectionProfile.AlliedInitialStartDepth + row * SiegeCastleRosterSelectionProfile.AlliedInitialRowSpacing;
+		Vec3 candidate = anchor - forward * depth + right * lateral;
+		try
+		{
+			TaleWorlds.Engine.Scene scene = mission?.Scene;
+			if (scene != null)
+			{
+				candidate.z = scene.GetGroundHeightAtPosition(candidate);
+				TaleWorlds.Engine.WorldPosition worldPosition = new TaleWorlds.Engine.WorldPosition(scene, candidate);
+				if (worldPosition.GetNearestNavMesh() != UIntPtr.Zero)
+				{
+					return worldPosition.GetNavMeshVec3();
+				}
+				Vec3 fallback = mission.GetRandomPositionAroundPoint(anchor, 1.5f, 8f, true);
+				TaleWorlds.Engine.WorldPosition fallbackWorld = new TaleWorlds.Engine.WorldPosition(scene, fallback);
+				if (fallbackWorld.GetNearestNavMesh() != UIntPtr.Zero)
+				{
+					return fallbackWorld.GetNavMeshVec3();
+				}
+			}
+		}
+		catch
+		{
+		}
+		return anchor;
+	}
+
+	private void HoldPreparedAlliedFormations(IEnumerable<Agent> agents)
+	{
+		foreach (IGrouping<Formation, Agent> group in agents
+			.Where(agent => agent?.Formation != null && agent.IsActive())
+			.GroupBy(agent => agent.Formation))
+		{
+			try
+			{
+				Formation formation = group.Key;
+				Vec2 center = Vec2.Zero;
+				int count = 0;
+				foreach (Agent agent in group)
+				{
+					center += agent.Position.AsVec2;
+					count++;
+				}
+				if (count > 0)
+				{
+					center /= count;
+					formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLine);
+					Vec3 centerPosition = new Vec3(center.x, center.y, group.First().Position.z);
+					TaleWorlds.Engine.WorldPosition centerWorld = new TaleWorlds.Engine.WorldPosition(base.Mission.Scene, centerPosition);
+					formation.SetMovementOrder(MovementOrder.MovementOrderMove(centerWorld));
+				}
+			}
+			catch
+			{
+			}
+		}
 	}
 
 	private bool HasPrisonersToSpawn()
@@ -3305,7 +3551,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		ForceLordPrisonerFormationClass("direct_spawn_no_deployment");
 		EnsurePrisonerFormationsIsolated("direct_spawn_no_deployment");
 		TryRecalculateLordPrisonerFormationWidth("direct_spawn_no_deployment", onlyIfAnomalous: true);
-		if (!_externalControlsPrisonersAfterDeployment)
+		if (!_externalCastleRuntime)
 		{
 			FreezePrisoners();
 		}
@@ -3412,7 +3658,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 			{
 				_deploymentEndDetected = true;
 				ForceLordPrisonerFormationClass("deployment_end");
-				if (!_externalControlsPrisonersAfterDeployment)
+				if (!_externalCastleRuntime)
 				{
 					FreezePrisoners();
 				}
@@ -3609,7 +3855,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 			EnsurePrisonerFormationsIsolated("after_spawn");
 		}
 		NotifyExternalPrisonerSpawnCompleted(totalCount, spawnedRegulars, spawnedHeroes);
-		if (!_externalControlsPrisonersAfterDeployment && spawned > 0)
+		if (!_externalCastleRuntime && spawned > 0)
 		{
 			string msg = "阅兵：";
 			if (spawnedHeroes > 0)
@@ -3622,11 +3868,11 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 			}
 			AnimusForgeQuickInfo.Show(msg);
 		}
-		else if (!_externalControlsPrisonersAfterDeployment && totalErrors > 0)
+		else if (!_externalCastleRuntime && totalErrors > 0)
 		{
 			AnimusForgeQuickInfo.Show("阅兵：囚犯生成失败(" + totalErrors + "/" + totalCount + ") 错误: " + lastError);
 		}
-		else if (!_externalControlsPrisonersAfterDeployment)
+		else if (!_externalCastleRuntime)
 		{
 			AnimusForgeQuickInfo.Show("阅兵：囚犯生成失败(" + totalCount + "名尝试，0名成功)。");
 		}
@@ -3638,12 +3884,13 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		int formationTroopIndex,
 		FormationClass formationClass)
 	{
-		return BannerlordApiCompat.SpawnPrisonerInspectionTroop(
+		return BannerlordApiCompat.SpawnInspectionTroop(
 			base.Mission,
 			origin,
 			formationTroopCount,
 			formationTroopIndex,
-			formationClass);
+			formationClass,
+			wieldInitialWeapons: false);
 	}
 
 	private void NotifyExternalPrisonerSpawned(Agent agent, bool isLord)
