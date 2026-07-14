@@ -20967,7 +20967,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				string oldPersonality = NormalizePersonaPromptSourceText(personality, 500);
 				string oldBackground = NormalizePersonaPromptSourceText(background, 500);
-				user += "\n这是重 Roll：请生成一版不同但仍符合事实的人设，不要照搬旧文本。"
+				user += "\n这是重新生成人设请求：请生成一版不同但仍符合事实的人设，不要照搬旧文本。"
 					+ "\n旧个性（仅用于避重）：" + (string.IsNullOrWhiteSpace(oldPersonality) ? "无" : oldPersonality)
 					+ "\n旧背景（仅用于避重）：" + (string.IsNullOrWhiteSpace(oldBackground) ? "无" : oldBackground);
 			}
@@ -27623,6 +27623,25 @@ public class MyBehavior : CampaignBehaviorBase
 			catch
 			{
 			}
+		}
+	}
+
+	public static void OpenHeroPersonaRerollForExternal(Hero hero)
+	{
+		try
+		{
+			MyBehavior myBehavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			if (myBehavior == null || hero == null)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("当前无法为该 Hero 重新生成个性与背景。"));
+				return;
+			}
+			_ = myBehavior.RunHeroPersonaRerollAsync(hero, null);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EncyclopediaPersona", "[WARN] 打开 Hero 重生个性背景失败: " + ex.Message);
+			InformationManager.DisplayMessage(new InformationMessage("打开重生个性背景功能失败。"));
 		}
 	}
 
@@ -46796,7 +46815,7 @@ public class MyBehavior : CampaignBehaviorBase
 			List<InquiryElement> list = new List<InquiryElement>();
 			list.Add(new InquiryElement("set_personality", "设置/修改个性", null));
 			list.Add(new InquiryElement("set_background", "设置/修改历史背景", null));
-			list.Add(new InquiryElement("reroll_persona", "重 Roll 个性与背景（LLM）", null));
+			list.Add(new InquiryElement("reroll_persona", "重生个性背景（LLM）", null));
 			list.Add(new InquiryElement("set_voice", "设置/修改音色ID", null));
 			list.Add(new InquiryElement("clear_persona", "清空个性、历史背景与音色ID", null));
 			list.Add(new InquiryElement("back", "返回", null));
@@ -46870,6 +46889,18 @@ public class MyBehavior : CampaignBehaviorBase
 			return;
 		}
 		_devEditingHero = npc;
+		OpenHeroPersonaRerollConfirmation(npc, delegate
+		{
+			OpenDevPersonaMenu(npc);
+		});
+	}
+
+	private void OpenHeroPersonaRerollConfirmation(Hero npc, Action onClosed)
+	{
+		if (npc == null)
+		{
+			return;
+		}
 		GetNpcPersonaStrings(npc, out var personality, out var background);
 		string name = npc.Name?.ToString() ?? "NPC";
 		StringBuilder description = new StringBuilder();
@@ -46878,16 +46909,16 @@ public class MyBehavior : CampaignBehaviorBase
 		description.AppendLine("当前个性：" + (string.IsNullOrWhiteSpace(personality) ? "未设置" : "已设置，将被覆盖"));
 		description.AppendLine("当前历史背景：" + (string.IsNullOrWhiteSpace(background) ? "未设置" : "已设置，将被覆盖"));
 		description.AppendLine("音色 ID 不会改变。生成失败时会保留当前数据。");
-		InformationManager.ShowInquiry(new InquiryData("确认重 Roll 个性与背景 - " + name, description.ToString().TrimEnd(), isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确认生成", "取消", delegate
+		InformationManager.ShowInquiry(new InquiryData("确认重生个性背景 - " + name, description.ToString().TrimEnd(), isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确认生成", "取消", delegate
 		{
-			_ = RunDevRerollPersonaAsync(npc);
+			_ = RunHeroPersonaRerollAsync(npc, onClosed);
 		}, delegate
 		{
-			OpenDevPersonaMenu(npc);
+			InvokePersonaRerollClosed(onClosed);
 		}), pauseGameActiveState: true);
 	}
 
-	private async Task RunDevRerollPersonaAsync(Hero npc)
+	private async Task RunHeroPersonaRerollAsync(Hero npc, Action onClosed)
 	{
 		if (npc == null)
 		{
@@ -46895,7 +46926,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		string name = npc.Name?.ToString() ?? "NPC";
-		InformationManager.ShowInquiry(new InquiryData("正在重 Roll 个性与背景", "正在为 " + name + " 生成新的人设。\n\n完成前请稍候；只有生成并解析成功后才会覆盖旧数据。", isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
+		InformationManager.ShowInquiry(new InquiryData("正在重生个性背景", "正在为 " + name + " 生成新的人设。\n\n完成前请稍候；只有生成并解析成功后才会覆盖旧数据。", isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
 		Logger.Log("NpcPersona", "[REROLL] Request started for " + (npc.StringId ?? "") + ".");
 		string failureDetail;
 		try
@@ -46915,14 +46946,26 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			EncyclopediaHeroPersonaPatch.QueueRefreshForHero(npc.StringId);
 			InformationManager.DisplayMessage(new InformationMessage(name + " 的个性与历史背景已重新生成；音色 ID 保持不变。"));
-			OpenDevPersonaMenu(npc);
+			InvokePersonaRerollClosed(onClosed);
 			return;
 		}
 		Logger.Log("NpcPersona", "[REROLL][WARN] Request failed for " + (npc.StringId ?? "") + ": " + failureDetail);
-		InformationManager.ShowInquiry(new InquiryData("重 Roll 个性与背景失败", "旧个性、历史背景与音色 ID 均未改动。\n\n" + failureDetail.Trim(), isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回编辑器", "", delegate
+		InformationManager.ShowInquiry(new InquiryData("重生个性背景失败", "旧个性、历史背景与音色 ID 均未改动。\n\n" + failureDetail.Trim(), isAffirmativeOptionShown: true, isNegativeOptionShown: false, onClosed == null ? "关闭" : "返回编辑器", "", delegate
 		{
-			OpenDevPersonaMenu(npc);
+			InvokePersonaRerollClosed(onClosed);
 		}, null), pauseGameActiveState: true);
+	}
+
+	private static void InvokePersonaRerollClosed(Action onClosed)
+	{
+		try
+		{
+			onClosed?.Invoke();
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcPersona", "[REROLL][WARN] Completion callback failed: " + ex.Message);
+		}
 	}
 
 	private static string BuildDevHistoryPreview(string line, int maxLen = 56)

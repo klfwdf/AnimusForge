@@ -571,18 +571,6 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		}
 	}
 
-	public static bool IsEncyclopediaHeroPersonaAutoGenerationEnabled()
-	{
-		try
-		{
-			return GetSettings()?.EnableEncyclopediaHeroPersonaAutoGeneration ?? true;
-		}
-		catch
-		{
-			return true;
-		}
-	}
-
 	public int GetEventAndRebellionApiMaxTokens()
 	{
 		EventAndRebellionApiMaxTokens = ClampApiMaxTokens(EventAndRebellionApiMaxTokens, DefaultEventAndRebellionApiMaxTokens);
@@ -600,10 +588,6 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyBool("新成年人物自动生成个性与背景", Order = 2, RequireRestart = false, HintText = "开启后，当英雄子女成年时，自动使用前处理API为其生成个性与历史背景。已有个性或背景不会被覆盖。")]
 	[SettingPropertyGroup("4. 开发者选项")]
 	public bool EnableAdultHeroPersonaAutoGeneration { get; set; } = true;
-
-	[SettingPropertyBool("百科查看自动生成个性与背景", Order = 3, RequireRestart = false, HintText = "开启后，在 Hero/NPC 百科页查看没有完整个性或背景的人物时，会自动使用前处理API补齐。关闭后只显示已有资料，不会因打开百科而发起生成。")]
-	[SettingPropertyGroup("4. 开发者选项")]
-	public bool EnableEncyclopediaHeroPersonaAutoGeneration { get; set; } = true;
 
 	[SettingPropertyBool("【日志】写入 Mod_Logic.txt", Order = 4, RequireRestart = false, HintText = "总逻辑日志开关。关闭后不再写入 Mod_Logic.txt。")]
 	[SettingPropertyGroup("4. 开发者选项")]
