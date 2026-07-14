@@ -2313,11 +2313,11 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			{
 				continue;
 			}
-			tag = tag.Replace("{kingdomId}", kingdomId);
+			tag = tag.Replace("{kingdomId}", kingdomId).Replace("{targetKingdomId}", kingdomId);
 			result.Add(new PostprocessRuleEntry
 			{
 				Tag = tag,
-				Description = (rule.Description ?? "").Replace("{kingdomId}", kingdomId)
+				Description = (rule.Description ?? "").Replace("{kingdomId}", kingdomId).Replace("{targetKingdomId}", kingdomId)
 			});
 		}
 		VassalageDiagnosticLog.Event("postprocess.rules.build", new Dictionary<string, object>

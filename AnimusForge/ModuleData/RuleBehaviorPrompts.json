@@ -852,6 +852,10 @@
                                                      {
                                                          "Tag":  "[ACTION:VASSALAGE:SUBMIT:VASSAL:{kingdomId}]",
                                                          "Description":  "如果NPC国王明确同意让自己的王国成为附庸国/Vassal，也就是傀儡国，输出这个。若同句还同意和平、贸易、贡金或议程，也要分别输出对应标签。kingdomId必须来自运行时事实。"
+                                                     },
+                                                     {
+                                                         "Tag":  "[ACTION:KINGDOM_ANNEX:target_kingdom_id={targetKingdomId}]",
+                                                         "Description":  "如果NPC国王在\u003clatest_reply\u003e里最终明确无条件同意让自己的整个王国并入玩家王国，明确放弃独立王权，并明确所有家族归入玩家王国，就输出这个。target_kingdom_id 必须使用运行时事实中的目标王国ID。若NPC只是同意求和、结盟、停战、赔款、朝贡、卫戍、臣属、附庸/傀儡、保护国、普通归顺、保留王号或保留独立外交，都不得输出。"
                                                      }
                                                  ],
                             "RuntimeInstructionTemplates":  {

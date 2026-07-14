@@ -5191,16 +5191,18 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		int denominator = GetMemoryCompressionDenominatorFromSettings();
 		int targetChars = Math.Max(80, CountDailyMemorySummarySourceChars(draft) / Math.Max(1, denominator));
+		string playerHistoryName = PlayerNotorietyBehavior.BuildPlayerHistoryNameForExternal();
 		return "你是 AnimusForge 的日结记忆压缩器。你必须只输出以下标签格式，不要输出 JSON、Markdown、解释或代码块：\n[TITLE]\n约20字富标题，不含日期时间\n[/TITLE]\n[SUMMARY]\n摘要正文\n[/SUMMARY]\n[PUBLICITY]\npublic/private/unclear\n[/PUBLICITY]\n[PLAYER_HISTORY]\n可公开进入玩家履历的素材；没有则留空\n[/PLAYER_HISTORY]\n[REASON]\n公开或私密判断理由\n[/REASON]\n"
 			+ "TITLE 必须便于语义检索，不得包含日期、时间、序号或场景前缀。"
 			+ "SUMMARY 必须在正文中显式写出游戏日期、时间段、地点/场景；不得只依赖标题元数据、外部字段或对话行前缀。"
 			+ "如果存在多个地点或时间段，按发生顺序概括；如果地点未知，必须写“地点未知”。"
-			+ "身份记录规则：玩家在对话中说“我是X”“我叫X”“我的名字是X”“别人叫我X”等姓名、身份、头衔、阵营、来历时，只能记录为玩家自称、声称或宣称，必须保留玩家公开称呼与自称行为。"
+			+ "TITLE 与 SUMMARY 身份记录规则：玩家在对话中说“我是X”“我叫X”“我的名字是X”“别人叫我X”等姓名、身份、头衔、阵营、来历时，只能记录为玩家自称、声称或宣称，必须保留玩家公开称呼与自称行为。"
 			+ "不得把玩家自称改写成客观事实；例如不得写“佐洛斯来到大厅”，应写“这名帝国青年自称佐洛斯后来到大厅”。"
 			+ "TITLE 如涉及这类姓名或身份，也必须写“自称X/声称X/宣称X”，不能只写 X。"
 			+ "PUBLICITY 只允许写 public、private 或 unclear，用于判断玩家与NPC这段对话是否会作为公开传闻进入玩家个人履历：public=公开场合、主动宣扬、政治军事公开事件或NPC可能向外传播；private=明确私密、秘密、低声、密谋、个人情感，闲聊，或不应外传；unclear=无法判断。"
 			+ "如果对话是私密内容，且输入中提示NPC对玩家信任很低或敌意很强，可以判为 public 并在 REASON 写明“低信任泄露”；否则私密内容必须判为 private。"
 			+ "PLAYER_HISTORY 只能写公开素材，必须从玩家言行中抽取，不要写NPC自己的长期记忆；若 PUBLICITY 不是 public，则必须留空，不要写“无”。"
+			+ "PLAYER_HISTORY：主体只写实际姓名“" + playerHistoryName + "”；禁用“玩家”、“你”和文化加年龄。仅此字段例外，TITLE、SUMMARY仍按公开称呼。"
 			+ "SUMMARY 必须保留关键动机、承诺、冲突、关系变化、交易/任务/情绪走向；目标长度约 " + targetChars + " 个中文字符，最少 80 字。"
 			+ "AFEF 行只作为事实参考，不要改写进 AFEF 区；调用方会原样保存。";
 	}
@@ -5238,7 +5240,8 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			playerDisplayName = "玩家";
 		}
-		stringBuilder.AppendLine("身份记录说明：本请求中的玩家公开称呼是“" + playerDisplayName + "”，这是游戏系统给 NPC 可见的称呼；如果对话中玩家自称某人，那么一定要把“" + playerDisplayName + "”，自称某人的整个行为记录下来，例如“帝国青年自称恩佐斯”");
+		stringBuilder.AppendLine("TITLE 与 SUMMARY 身份记录说明：本请求中的玩家公开称呼是“" + playerDisplayName + "”，这是游戏系统给 NPC 可见的称呼；如果对话中玩家自称某人，那么一定要把“" + playerDisplayName + "”，自称某人的整个行为记录下来，例如“帝国青年自称恩佐斯”");
+		stringBuilder.AppendLine("PLAYER_HISTORY主体=实际姓名“" + PlayerNotorietyBehavior.BuildPlayerHistoryNameForExternal() + "”；禁用“玩家”、“你”和文化加年龄。");
 		stringBuilder.AppendLine("今日所有对话历史：");
 		foreach (DailyMemoryLine line in normalLines)
 		{
@@ -5287,6 +5290,10 @@ public class MyBehavior : CampaignBehaviorBase
 			if (IsEmptySummaryMarker(playerHistoryMaterial))
 			{
 				playerHistoryMaterial = "";
+			}
+			if (!string.IsNullOrWhiteSpace(playerHistoryMaterial))
+			{
+				playerHistoryMaterial = PlayerNotorietyBehavior.RenderPlayerHistoryMaterialForExternal(playerHistoryMaterial);
 			}
 			if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(summary))
 			{
@@ -12794,17 +12801,24 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void RecordEventSourceMaterial(string materialKind, string label, string snapshotText, string stableKey, string kingdomId, string settlementId, bool includeInWorld, bool includeInKingdom, string actorHeroId = "", string actorKingdomId = "", int dayOverride = -1, string gameDateOverride = "")
 	{
-		string text = (snapshotText ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+		string normalizedMaterialKind = (materialKind ?? "").Trim();
+		string normalizedActorHeroId = (actorHeroId ?? "").Trim();
+		bool isPlayerMaterial = IsPlayerWeeklySourceMaterial(normalizedMaterialKind, normalizedActorHeroId, stableKey);
+		string text = isPlayerMaterial
+			? PlayerNotorietyBehavior.RenderPlayerHistoryMaterialForExternal(snapshotText)
+			: PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal(snapshotText);
+		text = (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			return;
 		}
+		string normalizedLabel = PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal(label).Trim();
 		if (_eventSourceMaterials == null)
 		{
 			_eventSourceMaterials = new List<EventSourceMaterialEntry>();
 		}
 		int currentGameDayIndexSafe = dayOverride >= 0 ? dayOverride : GetCurrentGameDayIndexSafe();
-		string text2 = NormalizeNpcActionStableKey(stableKey, label + ":" + text);
+		string text2 = NormalizeNpcActionStableKey(stableKey, normalizedLabel + ":" + text);
 		if (_eventSourceMaterialIndex == null)
 		{
 			RebuildEventSourceMaterialIndex();
@@ -12821,12 +12835,12 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		if (eventSourceMaterialEntry != null)
 		{
-			eventSourceMaterialEntry.Label = (label ?? "").Trim();
+			eventSourceMaterialEntry.Label = normalizedLabel;
 			eventSourceMaterialEntry.SnapshotText = text;
-			eventSourceMaterialEntry.MaterialKind = (materialKind ?? "").Trim();
+			eventSourceMaterialEntry.MaterialKind = normalizedMaterialKind;
 			eventSourceMaterialEntry.KingdomId = (kingdomId ?? "").Trim();
 			eventSourceMaterialEntry.SettlementId = (settlementId ?? "").Trim();
-			eventSourceMaterialEntry.ActorHeroId = (actorHeroId ?? "").Trim();
+			eventSourceMaterialEntry.ActorHeroId = normalizedActorHeroId;
 			eventSourceMaterialEntry.ActorKingdomId = (actorKingdomId ?? "").Trim();
 			eventSourceMaterialEntry.IncludeInWorld = eventSourceMaterialEntry.IncludeInWorld || includeInWorld;
 			eventSourceMaterialEntry.IncludeInKingdom = eventSourceMaterialEntry.IncludeInKingdom || includeInKingdom;
@@ -12841,13 +12855,13 @@ public class MyBehavior : CampaignBehaviorBase
 			Day = currentGameDayIndexSafe,
 			Sequence = ++_npcActionGlobalOrderCounter,
 			GameDate = string.IsNullOrWhiteSpace(gameDateOverride) ? GetCurrentGameDateTextSafe() : gameDateOverride.Trim(),
-			MaterialKind = (materialKind ?? "").Trim(),
-			Label = (label ?? "").Trim(),
+			MaterialKind = normalizedMaterialKind,
+			Label = normalizedLabel,
 			SnapshotText = text,
 			StableKey = text2,
 			KingdomId = (kingdomId ?? "").Trim(),
 			SettlementId = (settlementId ?? "").Trim(),
-			ActorHeroId = (actorHeroId ?? "").Trim(),
+			ActorHeroId = normalizedActorHeroId,
 			ActorKingdomId = (actorKingdomId ?? "").Trim(),
 			IncludeInWorld = includeInWorld,
 			IncludeInKingdom = includeInKingdom
@@ -12857,6 +12871,23 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			_eventSourceMaterialIndex[indexKey] = newEntry;
 		}
+	}
+
+	private static bool IsPlayerWeeklySourceMaterial(string materialKind, string actorHeroId, string stableKey)
+	{
+		string kind = (materialKind ?? "").Trim();
+		string playerHeroId = GetHeroId(Hero.MainHero);
+		if (!string.IsNullOrWhiteSpace(playerHeroId) && string.Equals((actorHeroId ?? "").Trim(), playerHeroId, StringComparison.OrdinalIgnoreCase))
+		{
+			return true;
+		}
+		if (kind.StartsWith("player_", StringComparison.OrdinalIgnoreCase))
+		{
+			return true;
+		}
+		return string.Equals(kind, "custom_policy", StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(kind, "public_daily_memory", StringComparison.OrdinalIgnoreCase)
+			|| (stableKey ?? "").Trim().StartsWith("player_", StringComparison.OrdinalIgnoreCase);
 	}
 
 	public static void RecordNobleGatheringWeeklyMaterialForExternal(string stableKey, string label, string snapshotText, string kingdomId, string settlementId, string actorHeroId, bool includeInWorld)
@@ -42649,18 +42680,18 @@ public class MyBehavior : CampaignBehaviorBase
 		string text = (material.MaterialType ?? "").Trim().ToLowerInvariant();
 		if (text == "world_opening_summary")
 		{
-			return "世界开局概要：" + NeutralizeWeeklyReportScenarioName(material.SnapshotText);
+			return PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal("世界开局概要：" + NeutralizeWeeklyReportScenarioName(material.SnapshotText));
 		}
 		if (text == "kingdom_opening_summary")
 		{
-			return ResolveKingdomDisplay(material.KingdomId) + "的开局概要：" + NeutralizeWeeklyReportScenarioName(material.SnapshotText);
+			return PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal(ResolveKingdomDisplay(material.KingdomId) + "的开局概要：" + NeutralizeWeeklyReportScenarioName(material.SnapshotText));
 		}
-		string text2 = NeutralizeWeeklyReportScenarioName(material.SnapshotText);
+		string text2 = PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal(NeutralizeWeeklyReportScenarioName(material.SnapshotText));
 		if (!string.IsNullOrWhiteSpace(text2))
 		{
 			return text2;
 		}
-		return NeutralizeWeeklyReportScenarioName(material.Label);
+		return PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal(NeutralizeWeeklyReportScenarioName(material.Label));
 	}
 
 	private static string BuildWeeklyReportPromptPreviewText(WeeklyEventMaterialPreviewGroup group, string systemPrompt, string userPrompt)
@@ -43048,9 +43079,9 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			shortSummary = BuildFallbackWeeklyReportShortSummary(flag ? text : report);
 		}
-		title = NeutralizeWeeklyReportScenarioName(title);
-		shortSummary = BuildFallbackWeeklyReportShortSummary(shortSummary);
-		report = NeutralizeWeeklyReportScenarioName(report);
+		title = PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal(NeutralizeWeeklyReportScenarioName(title));
+		shortSummary = BuildFallbackWeeklyReportShortSummary(PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal(shortSummary));
+		report = PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal(NeutralizeWeeklyReportScenarioName(report));
 		return true;
 	}
 
@@ -43087,9 +43118,9 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			shortSummary = BuildFallbackWeeklyReportShortSummary(report);
 		}
-		title = NeutralizeWeeklyReportScenarioName(title);
-		shortSummary = BuildFallbackWeeklyReportShortSummary(shortSummary);
-		report = NeutralizeWeeklyReportScenarioName(report);
+		title = PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal(NeutralizeWeeklyReportScenarioName(title));
+		shortSummary = BuildFallbackWeeklyReportShortSummary(PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal(shortSummary));
+		report = PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal(NeutralizeWeeklyReportScenarioName(report));
 		return true;
 	}
 
@@ -43740,11 +43771,14 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		bool isPlayerMaterial = IsPlayerWeeklySourceMaterial(entry.MaterialKind, entry.ActorHeroId, entry.StableKey);
 		materials.Add(new EventMaterialReference
 		{
 			MaterialType = "raw_text",
-			Label = (entry.Label ?? "").Trim(),
-			SnapshotText = (entry.SnapshotText ?? "").Trim(),
+			Label = PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal(entry.Label).Trim(),
+			SnapshotText = (isPlayerMaterial
+				? PlayerNotorietyBehavior.RenderPlayerHistoryMaterialForExternal(entry.SnapshotText)
+				: PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal(entry.SnapshotText)).Trim(),
 			KingdomId = (entry.KingdomId ?? "").Trim(),
 			SettlementId = (entry.SettlementId ?? "").Trim(),
 			ActorHeroId = (entry.ActorHeroId ?? "").Trim(),

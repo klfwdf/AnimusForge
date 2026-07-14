@@ -260,6 +260,8 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	public const int DefaultGeneralApiMaxTokens = 12000;
 
+	private const int ConnectionTestMaxTokens = ApiMaxTokensMinimum;
+
 	public const int DefaultEventAndRebellionApiMaxTokens = 12000;
 
 	public const int LlmRequestTimeoutMilliseconds = 480000;
@@ -4318,7 +4320,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 							}
 						},
 						["stream"] = false,
-						["max_tokens"] = 32,
+						["max_tokens"] = ConnectionTestMaxTokens,
 						["temperature"] = GetActionPostprocessApiTemperature()
 					};
 					ApplyThinkingControls(requestPayload, effectiveApiUrl, effectiveModelName, ActionPostprocessApiThinkingEnabled, GetActionPostprocessApiReasoningEffort(), out var _);
@@ -4332,13 +4334,49 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 					if (response.IsSuccessStatusCode)
 					{
 						string reply = TryExtractAssistantReplyText(responseString);
+						bool recoveredFromReasoningTokenLimit = false;
+						string emptyReplyReason = "连接成功，但未解析出模型回复。";
+						if (string.IsNullOrWhiteSpace(reply) && LlmApiCompat.IsReasoningOnlyTokenLimitResponse(responseString, out int completionTokens, out int reasoningTokens))
+						{
+							string firstResponseString = responseString;
+							emptyReplyReason = "连接成功，但模型把测试输出额度全部用于思考，尚未生成最终 content。completion_tokens=" + completionTokens + "，reasoning_tokens=" + reasoningTokens + "。";
+							Logger.Log("DuelSettings", "后处理API测试首次回复仅含思考且达到token上限，关闭思考后重试: completion_tokens=" + completionTokens + " reasoning_tokens=" + reasoningTokens);
+							JObject retryPayload = (JObject)requestPayload.DeepClone();
+							ApplyThinkingControls(retryPayload, effectiveApiUrl, effectiveModelName, false, ReasoningEffortLow, out var retryControlMode);
+							using HttpRequestMessage retryRequest = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
+							LlmApiCompat.ApplyAuthenticationHeaders(retryRequest, effectiveApiUrl, ActionPostprocessApiKey);
+							retryRequest.Content = new StringContent(LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, retryPayload), Encoding.UTF8, "application/json");
+							using HttpResponseMessage retryResponse = await GlobalClient.SendAsync(retryRequest);
+							string retryResponseString = await retryResponse.Content.ReadAsStringAsync();
+							if (retryResponse.IsSuccessStatusCode)
+							{
+								string retryReply = TryExtractAssistantReplyText(retryResponseString);
+								if (!string.IsNullOrWhiteSpace(retryReply))
+								{
+									reply = retryReply;
+									recoveredFromReasoningTokenLimit = true;
+									Logger.Log("DuelSettings", "后处理API测试关闭思考重试成功: control_mode=" + retryControlMode + " reply=" + retryReply);
+								}
+								else
+								{
+									emptyReplyReason += " 关闭思考重试后 content 仍为空。";
+									responseString = "【首次响应】\n" + firstResponseString + "\n\n【关闭思考重试响应】\n" + retryResponseString;
+								}
+							}
+							else
+							{
+								emptyReplyReason += " 关闭思考重试失败，状态码：" + retryResponse.StatusCode + "。";
+								responseString = "【首次响应】\n" + firstResponseString + "\n\n【关闭思考重试响应】\n" + retryResponseString;
+							}
+						}
 						if (string.IsNullOrWhiteSpace(reply))
 						{
-							ShowLlmFailurePopup("后处理API回复解析失败", "连接成功，但未解析出模型回复。", "", responseString);
+							ShowLlmFailurePopup("后处理API回复解析失败", emptyReplyReason, "", responseString);
 						}
 						else
 						{
-							InformationManager.DisplayMessage(new InformationMessage("后处理API 连接正常：" + reply.Trim(), Color.FromUint(4278255360u)));
+							string recoveryHint = recoveredFromReasoningTokenLimit ? "（首次思考耗尽测试额度，已关闭思考重试；实际使用时请保留足够的最大输出Tokens）" : "";
+							InformationManager.DisplayMessage(new InformationMessage("后处理API 连接正常" + recoveryHint + "：" + reply.Trim(), Color.FromUint(4278255360u)));
 						}
 					}
 					else

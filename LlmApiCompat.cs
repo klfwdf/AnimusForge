@@ -219,6 +219,40 @@ public static class LlmApiCompat
 		return ExtractThinkingFromContent(json["content"]);
 	}
 
+	public static bool IsReasoningOnlyTokenLimitResponse(string responseBody, out int completionTokens, out int reasoningTokens)
+	{
+		completionTokens = 0;
+		reasoningTokens = 0;
+		string text = (responseBody ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		try
+		{
+			return IsReasoningOnlyTokenLimitResponse(JObject.Parse(text), out completionTokens, out reasoningTokens);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	public static bool IsReasoningOnlyTokenLimitResponse(JObject json, out int completionTokens, out int reasoningTokens)
+	{
+		completionTokens = ReadNonNegativeInt(json?.SelectToken("usage.completion_tokens"));
+		reasoningTokens = ReadNonNegativeInt(json?.SelectToken("usage.completion_tokens_details.reasoning_tokens"));
+		if (json == null || !string.IsNullOrWhiteSpace(ExtractAssistantText(json)))
+		{
+			return false;
+		}
+		string finishReason = (json.SelectToken("choices[0].finish_reason")?.ToString() ?? "").Trim();
+		bool hasReasoning = reasoningTokens > 0 || !string.IsNullOrWhiteSpace(ExtractReasoningText(json));
+		bool reachedLengthLimit = string.Equals(finishReason, "length", StringComparison.OrdinalIgnoreCase);
+		bool allCompletionTokensWereReasoning = completionTokens > 0 && reasoningTokens >= completionTokens;
+		return hasReasoning && (reachedLengthLimit || allCompletionTokensWereReasoning);
+	}
+
 	public static string ExtractStreamDeltaText(JObject chunk)
 	{
 		if (chunk == null)
@@ -526,6 +560,15 @@ public static class LlmApiCompat
 			return stringBuilder.ToString();
 		}
 		return ExtractContentPartText(token);
+	}
+
+	private static int ReadNonNegativeInt(JToken token)
+	{
+		if (token != null && int.TryParse(token.ToString(), out int value) && value > 0)
+		{
+			return value;
+		}
+		return 0;
 	}
 
 	private static string ExtractContentPartText(JToken item)

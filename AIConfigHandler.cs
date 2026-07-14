@@ -3174,7 +3174,12 @@ public static class AIConfigHandler
 			content = LlmApiCompat.ExtractAssistantText(jObject).Trim();
 			if (string.IsNullOrWhiteSpace(content))
 			{
-				error = LlmRetryPrompt.BuildFailureDetail("empty_content", "", rawResponse);
+				string emptyContentReason = "empty_content";
+				if (LlmApiCompat.IsReasoningOnlyTokenLimitResponse(jObject, out int completionTokens, out int reasoningTokens))
+				{
+					emptyContentReason = "empty_content_reasoning_token_limit：模型把输出额度全部用于思考，未生成最终content。请降低后处理思维链强度、关闭后处理思维链，或提高最大输出Tokens。completion_tokens=" + completionTokens + "，reasoning_tokens=" + reasoningTokens;
+				}
+				error = LlmRetryPrompt.BuildFailureDetail(emptyContentReason, "", rawResponse);
 				FreezeWatchdog.Mark("AuxActionPostprocess.empty_content", "elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 				LogAuxiliaryRouterTokenTrace("action_postprocess_empty_content", array, "[ACTION POSTPROCESS HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\ncontrol_mode=" + controlMode + "\nstatus=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\nresponse_body=\n" + (text ?? ""), 0, requestBodyForTokenStats);
 				return false;
