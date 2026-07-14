@@ -8,8 +8,6 @@ public class GuardrailConfigModel
 
 	public string GlobalGuardrail { get; set; } = "";
 
-	public string AuxiliaryRoutingGuidance { get; set; } = "";
-
 	public DuelConfig Duel { get; set; } = new DuelConfig();
 
 	public RewardConfig Reward { get; set; } = new RewardConfig();

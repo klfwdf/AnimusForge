@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -28,6 +29,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		None,
 		SetupModeChoice,
 		Welcome,
+		DeepSeekApiKeyOwnership,
 		QuickPresetApiKey,
 		AuxiliaryChoice,
 		PostprocessChoice,
@@ -96,6 +98,8 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	private const string SetupDoneKey = "_AnimusForge_setup_done_v1";
 
 	private const string DeepSeekApiBaseUrl = "https://api.deepseek.com";
+
+	private const string DeepSeekApiKeysUrl = "https://platform.deepseek.com/api_keys";
 
 	private const string DeepSeekFlashModelName = "deepseek-v4-flash";
 
@@ -685,7 +689,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
 			return;
 		}
-		if (_activeOnboardingStage != OnboardingUiStage.SetupModeChoice && _activeOnboardingStage != OnboardingUiStage.Welcome && _activeOnboardingStage != OnboardingUiStage.QuickPresetApiKey && _activeOnboardingStage != OnboardingUiStage.AuxiliaryChoice && _activeOnboardingStage != OnboardingUiStage.PostprocessChoice && _activeOnboardingStage != OnboardingUiStage.EventRebellionChoice && _activeOnboardingStage != OnboardingUiStage.BaseUrlValidation && _activeOnboardingStage != OnboardingUiStage.BaseUrlValidationFailure && _activeOnboardingStage != OnboardingUiStage.ApiValidation && _activeOnboardingStage != OnboardingUiStage.ModelFetch && _activeOnboardingStage != OnboardingUiStage.ModelSelect && _activeOnboardingStage != OnboardingUiStage.Import)
+		if (_activeOnboardingStage != OnboardingUiStage.SetupModeChoice && _activeOnboardingStage != OnboardingUiStage.Welcome && _activeOnboardingStage != OnboardingUiStage.DeepSeekApiKeyOwnership && _activeOnboardingStage != OnboardingUiStage.QuickPresetApiKey && _activeOnboardingStage != OnboardingUiStage.AuxiliaryChoice && _activeOnboardingStage != OnboardingUiStage.PostprocessChoice && _activeOnboardingStage != OnboardingUiStage.EventRebellionChoice && _activeOnboardingStage != OnboardingUiStage.BaseUrlValidation && _activeOnboardingStage != OnboardingUiStage.BaseUrlValidationFailure && _activeOnboardingStage != OnboardingUiStage.ApiValidation && _activeOnboardingStage != OnboardingUiStage.ModelFetch && _activeOnboardingStage != OnboardingUiStage.ModelSelect && _activeOnboardingStage != OnboardingUiStage.Import)
 		{
 			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
 			return;
@@ -712,6 +716,9 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 		case OnboardingUiStage.SetupModeChoice:
 			ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+			break;
+		case OnboardingUiStage.DeepSeekApiKeyOwnership:
+			ShowDeepSeekApiKeyOwnershipInquiry(_selectedQuickApiPreset);
 			break;
 		case OnboardingUiStage.QuickPresetApiKey:
 			ShowQuickPresetApiKeyInput(_selectedQuickApiPreset);
@@ -1172,11 +1179,11 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				}
 				else if (text2 == "deepseek_flash")
 				{
-					ApplyDeepSeekPresetAndOpenKeyInput(QuickApiPreset.DeepSeekFlash);
+					ShowDeepSeekApiKeyOwnershipInquiry(QuickApiPreset.DeepSeekFlash);
 				}
 				else if (text2 == "deepseek_pro")
 				{
-					ApplyDeepSeekPresetAndOpenKeyInput(QuickApiPreset.DeepSeekPro);
+					ShowDeepSeekApiKeyOwnershipInquiry(QuickApiPreset.DeepSeekPro);
 				}
 				else if (text2 == "custom")
 				{
@@ -1211,6 +1218,54 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		catch
 		{
 			_welcomeInProgress = false;
+		}
+	}
+
+	private void ShowDeepSeekApiKeyOwnershipInquiry(QuickApiPreset preset)
+	{
+		try
+		{
+			if (preset == QuickApiPreset.None)
+			{
+				ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+				return;
+			}
+			_selectedQuickApiPreset = preset;
+			_quickPresetFlowActive = false;
+			_activeOnboardingStage = OnboardingUiStage.DeepSeekApiKeyOwnership;
+			_welcomeInProgress = true;
+			InformationManager.ShowInquiry(new InquiryData("DeepSeek API Key 确认", "你是否拥有 DeepSeek 官方 API Key？\n\n如果没有，请点击“无”，前往 DeepSeek 官方开放平台创建 API Key 并充值。完成后返回游戏，再次选择推荐组合。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "有", "无", delegate
+			{
+				_welcomeInProgress = false;
+				ApplyDeepSeekPresetAndOpenKeyInput(preset);
+			}, delegate
+			{
+				_welcomeInProgress = false;
+				OpenDeepSeekApiKeysPage();
+				ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+			}), pauseGameActiveState: true);
+		}
+		catch (Exception ex)
+		{
+			_welcomeInProgress = false;
+			InformationManager.DisplayMessage(new InformationMessage("打开 DeepSeek API Key 确认框失败：" + ex.Message));
+			ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+		}
+	}
+
+	private static void OpenDeepSeekApiKeysPage()
+	{
+		try
+		{
+			Process.Start(new ProcessStartInfo(DeepSeekApiKeysUrl)
+			{
+				UseShellExecute = true
+			});
+			InformationManager.DisplayMessage(new InformationMessage("[系统] 正在打开 DeepSeek 官方 API Keys 页面。"));
+		}
+		catch (Exception ex)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("[系统] 打开 DeepSeek 官方页面失败：" + ex.Message));
 		}
 	}
 

@@ -76,6 +76,8 @@ internal static class FreezeWatchdog
 	private static long _monitorHeartbeatUtcTicks;
 	private static int _monitorStarted;
 	private static int _hangDumpEnabled = 1;
+	private static int _saveInProgress;
+	private static int _aiInteractionActive;
 	private static int _hangDumpCapturedForCurrentStall;
 	private static int _hangDumpInFlight;
 
@@ -143,6 +145,8 @@ internal static class FreezeWatchdog
 				return;
 			}
 			RefreshHangDumpEnabledOnMainThread();
+			RefreshSaveStateOnMainThread();
+			RefreshAiInteractionStateOnMainThread();
 			EnsureMonitorStarted();
 			int threadId = Thread.CurrentThread.ManagedThreadId;
 			if (_mainThreadId == 0)
@@ -360,9 +364,44 @@ internal static class FreezeWatchdog
 		}
 	}
 
+	private static void RefreshSaveStateOnMainThread()
+	{
+		try
+		{
+			bool isSaving = Campaign.Current?.SaveHandler?.IsSaving ?? false;
+			Interlocked.Exchange(ref _saveInProgress, isSaving ? 1 : 0);
+		}
+		catch
+		{
+			Interlocked.Exchange(ref _saveInProgress, 0);
+		}
+	}
+
+	private static void RefreshAiInteractionStateOnMainThread()
+	{
+		try
+		{
+			bool isAiInteractionActive = ShoutBehavior.IsNativeConversationInputOpenForExternal()
+				|| ShoutBehavior.IsSceneShoutInputActiveForExternal();
+			Interlocked.Exchange(ref _aiInteractionActive, isAiInteractionActive ? 1 : 0);
+		}
+		catch
+		{
+			Interlocked.Exchange(ref _aiInteractionActive, 0);
+		}
+	}
+
 	private static void TryCaptureHangDump(double noHeartbeatMs)
 	{
-		if (noHeartbeatMs < HangDumpCaptureMs || Volatile.Read(ref _hangDumpEnabled) == 0)
+		// Vanilla saving intentionally stops the normal frame heartbeat while it serializes
+		// campaign data. Capturing a dump from inside the same process at that point can
+		// suspend/scan the process and turn a slow save into an apparent permanent hang.
+		// Dumps are useful for AnimusForge AI interaction hangs only. Keep ordinary dialogue,
+		// menus, map play and every save path on the lightweight log-only watchdog path.
+		if (noHeartbeatMs < HangDumpCaptureMs
+			|| Volatile.Read(ref _hangDumpEnabled) == 0
+			|| Volatile.Read(ref _saveInProgress) != 0
+			|| Volatile.Read(ref _aiInteractionActive) == 0)
 		{
 			return;
 		}
@@ -408,7 +447,7 @@ internal static class FreezeWatchdog
 			dumpPath = Path.Combine(dumpDirectory, "AnimusForge_Freeze_" + DateTime.Now.ToString("yyyyMMdd_HHmmss_fff") + "_pid" + process.Id + ".dmp");
 			WriteImmediate("[FREEZE_DUMP_START] no_main_heartbeat_ms=" + noHeartbeatMs.ToString("0.00") + " path=" + dumpPath + " " + BuildStateSummary(includeRecent: false), writeSnapshot: true);
 			using FileStream stream = new FileStream(dumpPath, FileMode.Create, FileAccess.Write, FileShare.Read);
-			MiniDumpType dumpType = MiniDumpType.MiniDumpWithThreadInfo | MiniDumpType.MiniDumpWithUnloadedModules | MiniDumpType.MiniDumpWithIndirectlyReferencedMemory;
+			MiniDumpType dumpType = MiniDumpType.MiniDumpWithThreadInfo | MiniDumpType.MiniDumpWithUnloadedModules;
 			if (!MiniDumpWriteDump(process.Handle, (uint)process.Id, stream.SafeFileHandle, dumpType, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero))
 			{
 				int error = Marshal.GetLastWin32Error();
@@ -553,6 +592,8 @@ internal static class FreezeWatchdog
 		double activeMs = activeStart > 0L ? TimestampDeltaMs(activeStart, Stopwatch.GetTimestamp()) : 0.0;
 		string summary = "frame=" + Interlocked.Read(ref _frameIndex)
 			+ " mainThread=" + Interlocked.CompareExchange(ref _mainThreadId, 0, 0)
+			+ " saveInProgress=" + Volatile.Read(ref _saveInProgress)
+			+ " aiInteractionActive=" + Volatile.Read(ref _aiInteractionActive)
 			+ " active=" + (string.IsNullOrWhiteSpace(activeScope) ? "(none)" : activeScope)
 			+ " activeMs=" + activeMs.ToString("0.00")
 			+ " lastCompleted=" + (string.IsNullOrWhiteSpace(lastCompleted) ? "(none)" : Sanitize(lastCompleted, 180))

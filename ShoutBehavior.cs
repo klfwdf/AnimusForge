@@ -2349,7 +2349,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		try
 		{
 			ShoutBehavior currentInstance = CurrentInstance;
-			return currentInstance != null && currentInstance._isProcessingShout;
+			return currentInstance != null && (currentInstance._isProcessingShout || currentInstance._isWaitingForScenePostprocessGate);
 		}
 		catch
 		{

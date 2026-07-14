@@ -656,7 +656,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("4. 开发者选项")]
 	public int DailyMaintenanceFrameBudgetMs { get; set; } = 3;
 
-	[SettingPropertyBool("【诊断】卡死时生成线程 Dump", Order = 14, RequireRestart = false, HintText = "主线程连续 5 秒没有心跳时，自动在 Logs/FreezeDumps 写入紧凑线程 dump。默认开启；每次连续卡死只写一份，主线程恢复后下次卡死可再次捕获。关闭可避免生成 dump 文件。")]
+	[SettingPropertyBool("【诊断】AI聊天卡死时生成线程 Dump", Order = 14, RequireRestart = false, HintText = "仅在 AnimusForge 自由对话的 AI 模式或场景喊话正在处理时，主线程连续 5 秒无心跳才生成紧凑线程 dump。普通对话、非 AI 游玩和原版保存期间自动停用。默认开启。")]
 	[SettingPropertyGroup("4. 开发者选项")]
 	public bool EnableFreezeDumpCapture { get; set; } = true;
 
@@ -1315,7 +1315,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	[SettingPropertyBool("保留场景喊话动作/内心描写", Order = 6, RequireRestart = false, HintText = "关闭：仍使用详细动作/内心文案，但输出时过滤动作描写、心理活动。开启：保留动作描写和内心活动。")]
 	[SettingPropertyGroup("9. 提示词扩展")]
-	public bool UseDetailedSceneSpeechPrompt { get; set; } = false;
+	public bool UseDetailedSceneSpeechPrompt { get; set; } = true;
 
 	[SettingPropertyBool("保留星号动作描写", Order = 7, RequireRestart = false, HintText = "开启后，即使关闭“保留场景喊话动作/内心描写”，也不会清洗被 **...** 或 *...* 包住的动作内容。")]
 	[SettingPropertyGroup("9. 提示词扩展")]
@@ -4227,7 +4227,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 							new
 							{
 								role = "user",
-								content = "Output exactly this JSON object: {\"rule_codes\":[\"TEST\"],\"mentioned_entities\":" + AIConfigHandler.StrictPreprocessMentionedEntitiesSchema + "}"
+								content = AIConfigHandler.BuildAuxiliaryConnectionTestPromptForExternal()
 							}
 						}
 					};
@@ -4247,7 +4247,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 						if (validEnvelope)
 						{
 							JArray testCodes = testEnvelope?["rule_codes"] as JArray;
-							validEnvelope = testCodes != null && testCodes.Count == 1 && string.Equals(testCodes[0]?.ToString(), "TEST", StringComparison.Ordinal);
+								validEnvelope = testCodes != null && testCodes.Count == 1 && string.Equals(testCodes[0]?.ToString(), AIConfigHandler.PreprocessConnectionTestExpectedRuleCode, StringComparison.Ordinal);
 							if (!validEnvelope)
 							{
 								formatError = "unexpected_test_rule_codes";

@@ -20914,34 +20914,43 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private async Task EnsureNpcPersonaGeneratedAsync(Hero hero, bool ignoreRetryCooldown = false)
 	{
+		string failureDetail = await GenerateNpcPersonaAsync(hero, ignoreRetryCooldown, overwriteExisting: false);
+		if (!string.IsNullOrWhiteSpace(failureDetail))
+		{
+			LlmRetryPrompt.ShowFailurePopup("NPC 个性与背景生成失败", failureDetail);
+		}
+	}
+
+	private async Task<string> GenerateNpcPersonaAsync(Hero hero, bool ignoreRetryCooldown, bool overwriteExisting)
+	{
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		if (hero == null)
 		{
-			return;
+			return overwriteExisting ? "找不到要重新生成人设的 NPC。" : "";
 		}
 		string id = hero.StringId;
 		if (string.IsNullOrEmpty(id))
 		{
-			return;
+			return overwriteExisting ? "该 NPC 没有有效的 HeroId，无法重新生成人设。" : "";
 		}
 		GetNpcPersonaStrings(hero, out var personality, out var background);
 		bool needP = string.IsNullOrWhiteSpace(personality);
 		bool needB = string.IsNullOrWhiteSpace(background);
-		if (!needP && !needB)
+		if (!overwriteExisting && !needP && !needB)
 		{
-			return;
+			return "";
 		}
 		lock (_npcPersonaAutoGenLock)
 		{
 			if (_npcPersonaAutoGenInFlight.Contains(id))
 			{
-				return;
+				return overwriteExisting ? "该 NPC 的个性与背景正在生成，请等待当前请求完成后再试。" : "";
 			}
 			if (_npcPersonaAutoGenRetryAfterUtcTicks.TryGetValue(id, out var value))
 			{
 				if (!ignoreRetryCooldown && DateTime.UtcNow.Ticks < value)
 				{
-					return;
+					return overwriteExisting ? "该 NPC 的上次生成请求刚刚失败，请稍后再试。" : "";
 				}
 				_npcPersonaAutoGenRetryAfterUtcTicks.Remove(id);
 			}
@@ -20954,10 +20963,18 @@ public class MyBehavior : CampaignBehaviorBase
 			sys = AppendNpcPersonaGenerationRequirementsToSystemPrompt(sys);
 			string facts = BuildHeroFactsForPersonaGeneration(hero);
 			string user = "请基于以下信息生成该 NPC 的【个性】与【历史背景】。必须综合“人物百科背景”“家族背景”“所在家族百科背景”“王国百科背景”“家族族长背景”；这些素材是事实来源，不要复制成百科原文。\n" + facts;
+			if (overwriteExisting)
+			{
+				string oldPersonality = NormalizePersonaPromptSourceText(personality, 500);
+				string oldBackground = NormalizePersonaPromptSourceText(background, 500);
+				user += "\n这是重 Roll：请生成一版不同但仍符合事实的人设，不要照搬旧文本。"
+					+ "\n旧个性（仅用于避重）：" + (string.IsNullOrWhiteSpace(oldPersonality) ? "无" : oldPersonality)
+					+ "\n旧背景（仅用于避重）：" + (string.IsNullOrWhiteSpace(oldBackground) ? "无" : oldBackground);
+			}
 			ApiCallResult apiCallResult = await CallUniversalApiDetailed(sys, user, route: UniversalApiRoute.Auxiliary);
 			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "npc_persona_autogen"))
 			{
-				return;
+				return "";
 			}
 			string resp = apiCallResult.Content ?? "";
 			if (apiCallResult.Success && !string.IsNullOrWhiteSpace(resp) && TryParsePersonaJson(resp, out var genP, out var genB))
@@ -20973,11 +20990,21 @@ public class MyBehavior : CampaignBehaviorBase
 					genB = genP;
 				}
 				GetNpcPersonaStrings(hero, out var curP, out var curB);
-				NpcPersonaProfile prof = GetNpcPersonaProfile(hero, createIfMissing: true) ?? new NpcPersonaProfile();
-				prof.Personality = (string.IsNullOrWhiteSpace(curP) ? genP : curP.Trim());
-				prof.Background = (string.IsNullOrWhiteSpace(curB) ? genB : curB.Trim());
+				NpcPersonaProfile currentProfile = GetNpcPersonaProfile(hero, createIfMissing: true) ?? new NpcPersonaProfile();
+				NpcPersonaProfile prof = overwriteExisting
+					? new NpcPersonaProfile
+					{
+						VoiceId = (currentProfile.VoiceId ?? "").Trim()
+					}
+					: currentProfile;
+				prof.Personality = (overwriteExisting || string.IsNullOrWhiteSpace(curP)) ? genP : curP.Trim();
+				prof.Background = (overwriteExisting || string.IsNullOrWhiteSpace(curB)) ? genB : curB.Trim();
 				SaveNpcPersonaProfile(hero, prof);
 				flag = !string.IsNullOrWhiteSpace(prof.Personality) || !string.IsNullOrWhiteSpace(prof.Background);
+				if (flag && overwriteExisting)
+				{
+					Logger.Log("NpcPersona", "[REROLL] Replaced personality and background for " + id + "; voiceId preserved=" + !string.IsNullOrWhiteSpace(prof.VoiceId) + ".");
+				}
 			}
 			if (!flag)
 			{
@@ -20985,14 +21012,14 @@ public class MyBehavior : CampaignBehaviorBase
 					? LlmRetryPrompt.BuildFailureDetail("NPC 个性与背景模型回复解析失败，未保存人设。", resp, apiCallResult.ResponseBody)
 					: (apiCallResult.ErrorMessage ?? LlmRetryPrompt.BuildFailureDetail("NPC 个性与背景生成失败。", resp, apiCallResult.ResponseBody));
 				Logger.Log("NpcPersona", "[WARN] AutoGen did not save profile for " + id + ": " + failureDetail);
-				LlmRetryPrompt.ShowFailurePopup("NPC 个性与背景生成失败", failureDetail);
+				return failureDetail;
 			}
 		}
 		catch (Exception ex)
 		{
 			Exception ex2 = ex;
 			Logger.Log("NpcPersona", "[ERROR] AutoGen failed: " + ex2.Message);
-			LlmRetryPrompt.ShowFailurePopup("NPC 个性与背景生成失败", LlmRetryPrompt.BuildFailureDetail(ex2.Message, ""));
+			return LlmRetryPrompt.BuildFailureDetail(ex2.Message, "");
 		}
 		finally
 		{
@@ -21012,6 +21039,7 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 			}
 		}
+		return "";
 	}
 
 	public static async Task GeneratePromotedNonHeroCompanionProfileForExternalAsync(Hero hero, string personalName, string originalFullName, string originalTroopName, string originalTroopId, string cultureName, string sceneLabel, string joinEventFact, string dialogueHistory, string equipmentSummary)
@@ -31159,31 +31187,19 @@ public class MyBehavior : CampaignBehaviorBase
 			return true;
 		}
 		string system = AIConfigHandler.StrictPreprocessJsonSystemPrompt;
-		StringBuilder user = new StringBuilder();
 		int mode = GetMemoryPreprocessModeFromSettings();
-		user.AppendLine(mode == 2 ? "Mode: parallel memory selector request. Set rule_codes to an empty array; include memory_ids and mentioned_entities." : "Mode: unified preprocessing body. Include rule_codes, memory_ids, and mentioned_entities even if rule_codes is empty.");
-		user.AppendLine("Output JSON schema: {\"rule_codes\":[],\"memory_ids\":[1,2],\"mentioned_entities\":" + AIConfigHandler.StrictPreprocessMentionedEntitiesSchema + "}");
-		user.AppendLine("Select exactly " + Math.Max(1, finalCount) + " memory_ids from the candidate list. If uncertain, choose the closest by semantic relevance. Do not select more than " + Math.Max(1, finalCount) + ".");
-		user.AppendLine("mentioned_entities: heroes named people/titles; settlements places; clans families; kingdoms factions; items item/goods/equipment names or types; policies kingdom policy/law names; troops troop/unit/prisoner names or types; terms other useful raw phrases. Do not extract current speakers or player names just because they are speakers. If ambiguous, also add the raw phrase to terms. Order arrays by recency. Do not extract names from memory candidate titles unless also mentioned in the latest exchange.");
-		user.AppendLine();
-		user.AppendLine("Latest player input:");
-		user.AppendLine(string.IsNullOrWhiteSpace(currentInput) ? "(none)" : currentInput.Trim());
-		user.AppendLine("Latest NPC/context input:");
-		user.AppendLine(string.IsNullOrWhiteSpace(secondaryInput) ? "(none)" : secondaryInput.Trim());
-		user.AppendLine("Current scene:");
-		user.AppendLine(ResolveCurrentMemorySceneLabel());
-		user.AppendLine();
-		user.AppendLine("Memory candidates, numbered by date from far to near:");
+		StringBuilder memoryCandidates = new StringBuilder();
 		foreach (MemoryRecallCandidate item in list)
 		{
 			CompressedMemoryBlock block = item.Block;
 			string text = block.GameDate;
 			if (string.IsNullOrWhiteSpace(text))
 			{
-				text = "第" + block.GameDayIndex + "日";
+				text = AIConfigHandler.BuildMemoryPreprocessFallbackGameDateForExternal(block.GameDayIndex);
 			}
-			user.AppendLine(item.DisplayId + "# " + text + FormatCompressedMemoryAgeSuffix(block) + " " + FormatMemoryHourRange(block.StartHour, block.EndHour) + " | " + (block.RichTitle ?? "").Trim());
+			memoryCandidates.AppendLine(AIConfigHandler.BuildMemoryPreprocessCandidateLineForExternal(item.DisplayId, text, FormatCompressedMemoryAgeSuffix(block), FormatMemoryHourRange(block.StartHour, block.EndHour), block.RichTitle));
 		}
+		string user = AIConfigHandler.BuildMemoryPreprocessUserPromptForExternal(mode, finalCount, currentInput, secondaryInput, ResolveCurrentMemorySceneLabel(), memoryCandidates.ToString());
 		object[] messages = new object[2]
 		{
 			new
@@ -31194,7 +31210,7 @@ public class MyBehavior : CampaignBehaviorBase
 			new
 			{
 				role = "user",
-				content = user.ToString().Trim()
+				content = user
 			}
 		};
 		string content = "";
@@ -46780,6 +46796,7 @@ public class MyBehavior : CampaignBehaviorBase
 			List<InquiryElement> list = new List<InquiryElement>();
 			list.Add(new InquiryElement("set_personality", "设置/修改个性", null));
 			list.Add(new InquiryElement("set_background", "设置/修改历史背景", null));
+			list.Add(new InquiryElement("reroll_persona", "重 Roll 个性与背景（LLM）", null));
 			list.Add(new InquiryElement("set_voice", "设置/修改音色ID", null));
 			list.Add(new InquiryElement("clear_persona", "清空个性、历史背景与音色ID", null));
 			list.Add(new InquiryElement("back", "返回", null));
@@ -46829,6 +46846,9 @@ public class MyBehavior : CampaignBehaviorBase
 		case "set_background":
 			OpenDevSetBackground(devEditingHero);
 			break;
+		case "reroll_persona":
+			OpenDevRerollPersonaConfirmation(devEditingHero);
+			break;
 		case "set_voice":
 			OpenDevSetVoiceId(devEditingHero);
 			break;
@@ -46841,6 +46861,68 @@ public class MyBehavior : CampaignBehaviorBase
 			ReturnFromDevPersonaMenu(devEditingHero);
 			break;
 		}
+	}
+
+	private void OpenDevRerollPersonaConfirmation(Hero npc)
+	{
+		if (npc == null)
+		{
+			return;
+		}
+		_devEditingHero = npc;
+		GetNpcPersonaStrings(npc, out var personality, out var background);
+		string name = npc.Name?.ToString() ?? "NPC";
+		StringBuilder description = new StringBuilder();
+		description.AppendLine("将调用辅助 API，为该 Hero 重新生成一套个性与历史背景。");
+		description.AppendLine();
+		description.AppendLine("当前个性：" + (string.IsNullOrWhiteSpace(personality) ? "未设置" : "已设置，将被覆盖"));
+		description.AppendLine("当前历史背景：" + (string.IsNullOrWhiteSpace(background) ? "未设置" : "已设置，将被覆盖"));
+		description.AppendLine("音色 ID 不会改变。生成失败时会保留当前数据。");
+		InformationManager.ShowInquiry(new InquiryData("确认重 Roll 个性与背景 - " + name, description.ToString().TrimEnd(), isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确认生成", "取消", delegate
+		{
+			_ = RunDevRerollPersonaAsync(npc);
+		}, delegate
+		{
+			OpenDevPersonaMenu(npc);
+		}), pauseGameActiveState: true);
+	}
+
+	private async Task RunDevRerollPersonaAsync(Hero npc)
+	{
+		if (npc == null)
+		{
+			return;
+		}
+		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
+		string name = npc.Name?.ToString() ?? "NPC";
+		InformationManager.ShowInquiry(new InquiryData("正在重 Roll 个性与背景", "正在为 " + name + " 生成新的人设。\n\n完成前请稍候；只有生成并解析成功后才会覆盖旧数据。", isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
+		Logger.Log("NpcPersona", "[REROLL] Request started for " + (npc.StringId ?? "") + ".");
+		string failureDetail;
+		try
+		{
+			failureDetail = await GenerateNpcPersonaAsync(npc, ignoreRetryCooldown: true, overwriteExisting: true);
+		}
+		catch (Exception ex)
+		{
+			failureDetail = LlmRetryPrompt.BuildFailureDetail(ex.Message, "");
+		}
+		if (SaveRuntimeGuard.IsStale(runtimeGeneration, "npc_persona_dev_reroll_ui"))
+		{
+			return;
+		}
+		InformationManager.HideInquiry();
+		if (string.IsNullOrWhiteSpace(failureDetail))
+		{
+			EncyclopediaHeroPersonaPatch.QueueRefreshForHero(npc.StringId);
+			InformationManager.DisplayMessage(new InformationMessage(name + " 的个性与历史背景已重新生成；音色 ID 保持不变。"));
+			OpenDevPersonaMenu(npc);
+			return;
+		}
+		Logger.Log("NpcPersona", "[REROLL][WARN] Request failed for " + (npc.StringId ?? "") + ": " + failureDetail);
+		InformationManager.ShowInquiry(new InquiryData("重 Roll 个性与背景失败", "旧个性、历史背景与音色 ID 均未改动。\n\n" + failureDetail.Trim(), isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回编辑器", "", delegate
+		{
+			OpenDevPersonaMenu(npc);
+		}, null), pauseGameActiveState: true);
 	}
 
 	private static string BuildDevHistoryPreview(string line, int maxLen = 56)

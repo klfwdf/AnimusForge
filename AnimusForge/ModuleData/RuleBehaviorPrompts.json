@@ -1,5 +1,4 @@
 {
-    "AuxiliaryRoutingGuidance":  "优先看最新玩家请求；历史只补指代。话题用于规则注入，不是剧情摘要。",
     "Duel":  {
                  "IsEnabled":  true,
                  "TopicNumber":  1,

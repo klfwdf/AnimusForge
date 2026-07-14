@@ -33,9 +33,6 @@ public static class AIConfigHandler
 	private const int ActionPostprocessMaxHistoryAndLatestEntries = 8;
 	private const int ActionPostprocessRequestTimeoutMilliseconds = DuelSettings.LlmRequestTimeoutMilliseconds;
 	private const string KingAbdicateToPlayerActionTag = "[ACTION:KING_ABDICATE_TO_PLAYER]";
-	internal const string StrictPreprocessJsonSystemPrompt = "You are an AnimusForge preprocessing router. Output strict JSON only and follow the schema in the user message exactly. Include every required field. Never output CSV, bare values, prose, markdown, or code fences.";
-	internal const string StrictPreprocessMentionedEntitiesSchema = "{\"heroes\":[],\"settlements\":[],\"clans\":[],\"kingdoms\":[],\"items\":[],\"policies\":[],\"troops\":[],\"terms\":[]}";
-
 	private sealed class ActionPostprocessHistoryEntry
 	{
 		public int Index;
@@ -227,6 +224,10 @@ public static class AIConfigHandler
 
 	private static ActionPostprocessConfigModel _actionPostprocess;
 
+	private static PreprocessPromptsConfigModel _preprocessPrompts;
+
+	private static readonly Regex PreprocessTemplateVariableRegex = new Regex("\\{([a-z][a-z0-9_]*)\\}", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+
 	private static readonly object _guardrailSemanticLock = new object();
 
 	private static readonly Dictionary<string, float[]> _guardrailPhraseVecCache = new Dictionary<string, float[]>(StringComparer.Ordinal);
@@ -282,6 +283,23 @@ public static class AIConfigHandler
 	private static readonly AsyncLocal<MentionedWorldEntities> _auxiliaryMentionedEntitiesLatest = new AsyncLocal<MentionedWorldEntities>();
 
 	private const int AuxiliaryMentionedEntitiesCacheMax = 64;
+
+	internal static string StrictPreprocessJsonSystemPrompt => RequirePreprocessPromptValue(_preprocessPrompts?.StrictJson?.SystemPrompt, "StrictJson.SystemPrompt");
+
+	internal static string StrictPreprocessMentionedEntitiesSchema
+	{
+		get
+		{
+			JObject schema = _preprocessPrompts?.StrictJson?.MentionedEntitiesSchema;
+			if (schema == null || !schema.Properties().Any())
+			{
+				throw new InvalidOperationException("PreprocessPrompts.json 缺少必填项: StrictJson.MentionedEntitiesSchema");
+			}
+			return schema.ToString(Formatting.None);
+		}
+	}
+
+	internal static string PreprocessConnectionTestExpectedRuleCode => RequirePreprocessPromptValue(_preprocessPrompts?.ConnectionTest?.ExpectedRuleCode, "ConnectionTest.ExpectedRuleCode");
 
 	public static string GlobalPrompt => ApplyPlayerDisplayNameToGuardrailText(_guardrail?.GlobalPrompt ?? "");
 
@@ -2850,6 +2868,115 @@ public static class AIConfigHandler
 		return TryGetAuxiliarySimpleDialogueConfig(out var _, out var _, out var _);
 	}
 
+	private static string RequirePreprocessPromptValue(string value, string configPath)
+	{
+		string text = (value ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			throw new InvalidOperationException("PreprocessPrompts.json 缺少必填项: " + (configPath ?? "unknown"));
+		}
+		return text;
+	}
+
+	private static string RenderPreprocessPromptTemplate(string template, string configPath, IDictionary<string, string> values)
+	{
+		string text = RequirePreprocessPromptValue(template, configPath);
+		IDictionary<string, string> replacements = values ?? new Dictionary<string, string>(StringComparer.Ordinal);
+		return PreprocessTemplateVariableRegex.Replace(text, delegate(Match match)
+		{
+			string key = match.Groups[1].Value;
+			if (!replacements.TryGetValue(key, out var value))
+			{
+				throw new InvalidOperationException("PreprocessPrompts.json 模板存在未知或未提供的占位符: " + configPath + ".{" + key + "}");
+			}
+			return value ?? "";
+		}).Trim();
+	}
+
+	private static void ValidateLoadedPreprocessPrompts()
+	{
+		RequirePreprocessPromptValue(StrictPreprocessJsonSystemPrompt, "StrictJson.SystemPrompt");
+		JObject schema = _preprocessPrompts?.StrictJson?.MentionedEntitiesSchema;
+		foreach (string bucket in new string[8] { "heroes", "settlements", "clans", "kingdoms", "items", "policies", "troops", "terms" })
+		{
+			if (!(schema?[bucket] is JArray))
+			{
+				throw new InvalidOperationException("PreprocessPrompts.json schema 缺少数组: StrictJson.MentionedEntitiesSchema." + bucket);
+			}
+		}
+		RequirePreprocessPromptValue(_preprocessPrompts?.TopicRouting?.EmptyValue, "TopicRouting.EmptyValue");
+		ValidatePreprocessTemplateVariables(_preprocessPrompts?.TopicRouting?.UserPromptTemplate, "TopicRouting.UserPromptTemplate", "topic_list", "routing_guidance", "history", "latest_npc", "latest_player", "top_n", "mentioned_entities_schema");
+		RequirePreprocessPromptValue(_preprocessPrompts?.MemorySelection?.ParallelModeInstruction, "MemorySelection.ParallelModeInstruction");
+		RequirePreprocessPromptValue(_preprocessPrompts?.MemorySelection?.UnifiedModeInstruction, "MemorySelection.UnifiedModeInstruction");
+		RequirePreprocessPromptValue(_preprocessPrompts?.MemorySelection?.EmptyValue, "MemorySelection.EmptyValue");
+		ValidatePreprocessTemplateVariables(_preprocessPrompts?.MemorySelection?.UserPromptTemplate, "MemorySelection.UserPromptTemplate", "mode_instruction", "mentioned_entities_schema", "final_count", "latest_player_input", "latest_npc_input", "current_scene", "memory_candidates");
+		ValidatePreprocessTemplateVariables(_preprocessPrompts?.MemorySelection?.CandidateLineTemplate, "MemorySelection.CandidateLineTemplate", "memory_id", "game_date", "age_suffix", "hour_range", "rich_title");
+		ValidatePreprocessTemplateVariables(_preprocessPrompts?.MemorySelection?.FallbackGameDateTemplate, "MemorySelection.FallbackGameDateTemplate", "game_day");
+		RequirePreprocessPromptValue(_preprocessPrompts?.ConnectionTest?.ExpectedRuleCode, "ConnectionTest.ExpectedRuleCode");
+		ValidatePreprocessTemplateVariables(_preprocessPrompts?.ConnectionTest?.UserPromptTemplate, "ConnectionTest.UserPromptTemplate", "expected_rule_code", "mentioned_entities_schema");
+	}
+
+	private static void ValidatePreprocessTemplateVariables(string template, string configPath, params string[] requiredVariables)
+	{
+		string text = RequirePreprocessPromptValue(template, configPath);
+		HashSet<string> variables = new HashSet<string>(PreprocessTemplateVariableRegex.Matches(text).Cast<Match>().Select((Match x) => x.Groups[1].Value), StringComparer.Ordinal);
+		foreach (string requiredVariable in requiredVariables ?? new string[0])
+		{
+			if (!variables.Contains(requiredVariable))
+			{
+				throw new InvalidOperationException("PreprocessPrompts.json 模板缺少占位符: " + configPath + ".{" + requiredVariable + "}");
+			}
+		}
+	}
+
+	internal static string BuildAuxiliaryConnectionTestPromptForExternal()
+	{
+		return RenderPreprocessPromptTemplate(_preprocessPrompts?.ConnectionTest?.UserPromptTemplate, "ConnectionTest.UserPromptTemplate", new Dictionary<string, string>(StringComparer.Ordinal)
+		{
+			["expected_rule_code"] = PreprocessConnectionTestExpectedRuleCode,
+			["mentioned_entities_schema"] = StrictPreprocessMentionedEntitiesSchema
+		});
+	}
+
+	internal static string BuildMemoryPreprocessUserPromptForExternal(int mode, int finalCount, string latestPlayerInput, string latestNpcInput, string currentScene, string memoryCandidates)
+	{
+		MemorySelectionPreprocessPromptConfig config = _preprocessPrompts?.MemorySelection;
+		string emptyValue = RequirePreprocessPromptValue(config?.EmptyValue, "MemorySelection.EmptyValue");
+		string modeInstruction = mode == 2
+			? RequirePreprocessPromptValue(config?.ParallelModeInstruction, "MemorySelection.ParallelModeInstruction")
+			: RequirePreprocessPromptValue(config?.UnifiedModeInstruction, "MemorySelection.UnifiedModeInstruction");
+		return RenderPreprocessPromptTemplate(config?.UserPromptTemplate, "MemorySelection.UserPromptTemplate", new Dictionary<string, string>(StringComparer.Ordinal)
+		{
+			["mode_instruction"] = modeInstruction,
+			["mentioned_entities_schema"] = StrictPreprocessMentionedEntitiesSchema,
+			["final_count"] = Math.Max(1, finalCount).ToString(),
+			["latest_player_input"] = string.IsNullOrWhiteSpace(latestPlayerInput) ? emptyValue : latestPlayerInput.Trim(),
+			["latest_npc_input"] = string.IsNullOrWhiteSpace(latestNpcInput) ? emptyValue : latestNpcInput.Trim(),
+			["current_scene"] = string.IsNullOrWhiteSpace(currentScene) ? emptyValue : currentScene.Trim(),
+			["memory_candidates"] = string.IsNullOrWhiteSpace(memoryCandidates) ? emptyValue : memoryCandidates.Trim()
+		});
+	}
+
+	internal static string BuildMemoryPreprocessCandidateLineForExternal(int memoryId, string gameDate, string ageSuffix, string hourRange, string richTitle)
+	{
+		return RenderPreprocessPromptTemplate(_preprocessPrompts?.MemorySelection?.CandidateLineTemplate, "MemorySelection.CandidateLineTemplate", new Dictionary<string, string>(StringComparer.Ordinal)
+		{
+			["memory_id"] = memoryId.ToString(),
+			["game_date"] = (gameDate ?? "").Trim(),
+			["age_suffix"] = ageSuffix ?? "",
+			["hour_range"] = (hourRange ?? "").Trim(),
+			["rich_title"] = (richTitle ?? "").Trim()
+		});
+	}
+
+	internal static string BuildMemoryPreprocessFallbackGameDateForExternal(int gameDay)
+	{
+		return RenderPreprocessPromptTemplate(_preprocessPrompts?.MemorySelection?.FallbackGameDateTemplate, "MemorySelection.FallbackGameDateTemplate", new Dictionary<string, string>(StringComparer.Ordinal)
+		{
+			["game_day"] = gameDay.ToString()
+		});
+	}
+
 	private static object[] BuildAuxiliaryRouterMessages(string prompt)
 	{
 		return new object[2]
@@ -4060,78 +4187,30 @@ public static class AIConfigHandler
 		string routingRuntimeContext = userTextIsAfefFact ? AppendAuxiliaryAfefFactToRoutingContext(runtimeGuardrailContext, text) : runtimeGuardrailContext;
 		string routingLatestPlayerText = userTextIsAfefFact ? "" : userText;
 		string latestNpcText;
-		string historyBlock = BuildAuxiliaryGuardrailHistoryBlock(routingRuntimeContext, secondaryText, routingLatestPlayerText, out latestNpcText);
+		string historyBlock = StripAuxiliaryHistoryInnerThoughts(BuildAuxiliaryGuardrailHistoryBlock(routingRuntimeContext, secondaryText, routingLatestPlayerText, out latestNpcText));
 		string text2 = StripAuxiliaryHistoryInnerThoughtsFromLine(NormalizeSemanticText(latestNpcText));
 		string text5 = userTextIsAfefFact ? "" : NormalizeAuxiliaryPlayerRoutingLine(text);
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("You are a dialogue retrieval tool. Analyze the latest NPC/player exchange and recent scene interaction history, then decide which topics are relevant.");
+		StringBuilder topicList = new StringBuilder();
 		for (int i = 0; i < topics.Count; i++)
 		{
 			GuardrailAuxiliaryTopic guardrailAuxiliaryTopic = topics[i];
 			if (guardrailAuxiliaryTopic != null)
 			{
-				stringBuilder.AppendLine(guardrailAuxiliaryTopic.Code + ": " + guardrailAuxiliaryTopic.Label);
+				topicList.AppendLine(guardrailAuxiliaryTopic.Code + ": " + guardrailAuxiliaryTopic.Label);
 			}
 		}
-		string text6 = NormalizeAuxiliaryRoutingRequestText(_guardrail?.AuxiliaryRoutingGuidance ?? "");
-		if (!string.IsNullOrWhiteSpace(text6))
+		TopicRoutingPreprocessPromptConfig config = _preprocessPrompts?.TopicRouting;
+		string emptyValue = RequirePreprocessPromptValue(config?.EmptyValue, "TopicRouting.EmptyValue");
+		return RenderPreprocessPromptTemplate(config?.UserPromptTemplate, "TopicRouting.UserPromptTemplate", new Dictionary<string, string>(StringComparer.Ordinal)
 		{
-			stringBuilder.AppendLine("Routing hints:");
-			stringBuilder.AppendLine(text6);
-		}
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("Scene interaction history (up to the previous 3 dialogue turns):");
-		stringBuilder.AppendLine(NormalizeAuxiliaryRoutingRequestText(historyBlock));
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("*Latest NPC/player exchange*:");
-		stringBuilder.Append("NPC: ").AppendLine(string.IsNullOrWhiteSpace(text2) ? "(none)" : NormalizeAuxiliaryRoutingRequestText(text2));
-		stringBuilder.Append("Player: ").AppendLine(string.IsNullOrWhiteSpace(text5) ? "(none)" : NormalizeAuxiliaryRoutingRequestText(text5));
-		stringBuilder.AppendLine("Select exactly " + Math.Max(1, topN) + " closest topic codes in rule_codes. Also extract explicit third-party nouns from the latest exchange into mentioned_entities. Use heroes for named people/titles, settlements for places, clans for families, kingdoms for factions, items for item/goods/equipment names or types, policies for kingdom policy/law names, troops for troop/unit/prisoner names or types, and terms for other useful raw phrases. Do not extract current speakers or player names just because they are speakers. If ambiguous, put it in the closest bucket and also terms. Order arrays by recency. Output one strict JSON object only: {\"rule_codes\":[\"CODE\"],\"mentioned_entities\":" + StrictPreprocessMentionedEntitiesSchema + "}.");
-		return SanitizeAuxiliaryRoutingPromptDialogueSections(stringBuilder.ToString()).Trim();
-	}
-
-	private static string SanitizeAuxiliaryRoutingPromptDialogueSections(string prompt)
-	{
-		string text = (prompt ?? "").Replace("\r\n", "\n").Replace('\r', '\n');
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return "";
-		}
-		string[] array = text.Split('\n');
-		bool flag = false;
-		bool flag2 = false;
-		for (int i = 0; i < array.Length; i++)
-		{
-			string text2 = (array[i] ?? "").Trim();
-			if (text2.StartsWith("Scene interaction history ", StringComparison.Ordinal))
-			{
-				flag = true;
-				flag2 = false;
-				continue;
-			}
-			if (text2.Equals("*Latest NPC/player exchange*:", StringComparison.Ordinal))
-			{
-				flag = false;
-				flag2 = true;
-				continue;
-			}
-			if (text2.StartsWith("Select the most similar topics.", StringComparison.Ordinal) || text2.StartsWith("Select exactly ", StringComparison.Ordinal))
-			{
-				flag = false;
-				flag2 = false;
-				continue;
-			}
-			if ((flag || flag2) && !string.IsNullOrWhiteSpace(text2))
-			{
-				if (flag2 && IsAuxiliaryPlayerHistoryLine(text2))
-				{
-					array[i] = NormalizeAuxiliaryPlayerRoutingLine(array[i]);
-					continue;
-				}
-				array[i] = StripAuxiliaryHistoryInnerThoughtsFromLine(array[i]);
-			}
-		}
-		return string.Join("\n", array).Trim();
+			["topic_list"] = topicList.ToString().TrimEnd(),
+			["routing_guidance"] = NormalizeAuxiliaryRoutingRequestText(config?.RoutingGuidance ?? ""),
+			["history"] = string.IsNullOrWhiteSpace(historyBlock) ? emptyValue : NormalizeAuxiliaryRoutingRequestText(historyBlock),
+			["latest_npc"] = string.IsNullOrWhiteSpace(text2) ? emptyValue : NormalizeAuxiliaryRoutingRequestText(text2),
+			["latest_player"] = string.IsNullOrWhiteSpace(text5) ? emptyValue : NormalizeAuxiliaryRoutingRequestText(text5),
+			["top_n"] = Math.Max(1, topN).ToString(),
+			["mentioned_entities_schema"] = StrictPreprocessMentionedEntitiesSchema
+		});
 	}
 
 	private static bool TryCallAuxiliaryRuleRouterApi(string apiUrl, string apiKey, string modelName, string prompt, out string content, out string error)
@@ -8609,6 +8688,7 @@ public static class AIConfigHandler
 			}
 			string path2 = ResolveModuleDataFilePath("RuleBehaviorPrompts.json");
 			string path3 = ResolveModuleDataFilePath("ActionPostprocessPrompts.json");
+			string path4 = ResolveModuleDataFilePath("PreprocessPrompts.json");
 			if (!File.Exists(path2))
 			{
 				Logger.Log("AIConfig", "[错误] 找不到 RuleBehaviorPrompts.json");
@@ -8628,6 +8708,21 @@ public static class AIConfigHandler
 			{
 				string value3 = File.ReadAllText(path3);
 				_actionPostprocess = JsonConvert.DeserializeObject<ActionPostprocessConfigModel>(value3) ?? new ActionPostprocessConfigModel();
+			}
+			try
+			{
+				if (!File.Exists(path4))
+				{
+					throw new FileNotFoundException("找不到 PreprocessPrompts.json", path4);
+				}
+				string value4 = File.ReadAllText(path4, Encoding.UTF8);
+				_preprocessPrompts = JsonConvert.DeserializeObject<PreprocessPromptsConfigModel>(value4) ?? new PreprocessPromptsConfigModel();
+				ValidateLoadedPreprocessPrompts();
+			}
+			catch (Exception preprocessEx)
+			{
+				_preprocessPrompts = new PreprocessPromptsConfigModel();
+				Logger.Log("AIConfig", "[错误] 前处理提示词配置加载失败: " + preprocessEx.Message);
 			}
 			lock (_guardrailSemanticLock)
 			{
@@ -8656,7 +8751,7 @@ public static class AIConfigHandler
 			}
 			string text = (KnowledgeRetrievalFromMcm ? "MCM" : "Guardrail");
 			Logger.Log("AIConfig", string.Format("配置加载成功。触发词(决斗/奖励/借贷/地理)={0}/{1}/{2}/{3}，扩展规则={4}，启用规则总数={5}。规则返回上限={6}。知识检索({7})：{8}（语义优先={9}, returnCap={10}）。后处理模板：{11}。", valueOrDefault, valueOrDefault2, valueOrDefault3, valueOrDefault4, valueOrDefault5, num2, GetGuardrailReturnCapFromMcm(), text, KnowledgeRetrievalEnabled ? "开启" : "关闭", KnowledgeSemanticFirst, KnowledgeSemanticTopK, ActionPostprocessEnabled ? "开启" : "关闭"));
-			Logger.Log("AIConfig", "配置文件路径：AIConfig=" + path + " RuleBehavior=" + path2 + " ActionPostprocess=" + path3);
+			Logger.Log("AIConfig", "配置文件路径：AIConfig=" + path + " RuleBehavior=" + path2 + " ActionPostprocess=" + path3 + " PreprocessPrompts=" + path4);
 		}
 		catch (Exception ex)
 		{
@@ -8664,6 +8759,7 @@ public static class AIConfigHandler
 			_config = new AIConfigModel();
 			_guardrail = new GuardrailConfigModel();
 			_actionPostprocess = new ActionPostprocessConfigModel();
+			_preprocessPrompts = new PreprocessPromptsConfigModel();
 		}
 	}
 
