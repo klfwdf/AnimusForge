@@ -2891,6 +2891,8 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 
 	private readonly Action<string> _externalCleanup;
 
+	private readonly Func<Mission, IAgentOriginBase, int, int, FormationClass, Agent> _externalPrisonerSpawner;
+
 	private readonly bool _externalControlsPrisonersAfterDeployment;
 
 	private BattleEndLogic _battleEndLogic;
@@ -3003,7 +3005,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 	}
 
 	public TroopInspectionMissionLogic(string dummyPartyStringId, TroopRoster inspectionPrisonerRoster)
-		: this(dummyPartyStringId, inspectionPrisonerRoster, null, null, null, false)
+		: this(dummyPartyStringId, inspectionPrisonerRoster, null, null, null, null, false)
 	{
 	}
 
@@ -3011,8 +3013,9 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		TroopRoster inspectionPrisonerRoster,
 		Action<Agent, bool> externalPrisonerSpawned,
 		Action<int, int, int> externalPrisonerSpawnCompleted,
-		Action<string> externalCleanup)
-		: this(null, inspectionPrisonerRoster, externalPrisonerSpawned, externalPrisonerSpawnCompleted, externalCleanup, true)
+		Action<string> externalCleanup,
+		Func<Mission, IAgentOriginBase, int, int, FormationClass, Agent> externalPrisonerSpawner = null)
+		: this(null, inspectionPrisonerRoster, externalPrisonerSpawned, externalPrisonerSpawnCompleted, externalCleanup, externalPrisonerSpawner, true)
 	{
 	}
 
@@ -3022,6 +3025,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		Action<Agent, bool> externalPrisonerSpawned,
 		Action<int, int, int> externalPrisonerSpawnCompleted,
 		Action<string> externalCleanup,
+		Func<Mission, IAgentOriginBase, int, int, FormationClass, Agent> externalPrisonerSpawner,
 		bool externalControlsPrisonersAfterDeployment)
 	{
 		_dummyPartyStringId = dummyPartyStringId;
@@ -3029,6 +3033,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		_externalPrisonerSpawned = externalPrisonerSpawned;
 		_externalPrisonerSpawnCompleted = externalPrisonerSpawnCompleted;
 		_externalCleanup = externalCleanup;
+		_externalPrisonerSpawner = externalPrisonerSpawner;
 		_externalControlsPrisonersAfterDeployment = externalControlsPrisonersAfterDeployment;
 	}
 
@@ -3369,7 +3374,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 				try
 				{
 					PrisonerAgentOrigin origin = new PrisonerAgentOrigin(character);
-					Agent agent = BannerlordApiCompat.SpawnPrisonerInspectionTroop(base.Mission, origin, heroCount, heroIdx, LordPrisonerFormationClass);
+					Agent agent = SpawnPrisonerAgent(origin, heroCount, heroIdx, LordPrisonerFormationClass);
 					if (agent != null)
 					{
 						agent.SetIsAIPaused(isPaused: true);
@@ -3407,7 +3412,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 				try
 				{
 					PrisonerAgentOrigin origin = new PrisonerAgentOrigin(character);
-					Agent agent = BannerlordApiCompat.SpawnPrisonerInspectionTroop(base.Mission, origin, regularCount, regIdx, RegularPrisonerFormationClass);
+					Agent agent = SpawnPrisonerAgent(origin, regularCount, regIdx, RegularPrisonerFormationClass);
 					if (agent != null)
 					{
 						agent.SetIsAIPaused(isPaused: true);
@@ -3466,6 +3471,29 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		{
 			AnimusForgeQuickInfo.Show("阅兵：囚犯生成失败(" + totalCount + "名尝试，0名成功)。");
 		}
+	}
+
+	private Agent SpawnPrisonerAgent(
+		IAgentOriginBase origin,
+		int formationTroopCount,
+		int formationTroopIndex,
+		FormationClass formationClass)
+	{
+		if (_externalPrisonerSpawner != null)
+		{
+			return _externalPrisonerSpawner(
+				base.Mission,
+				origin,
+				formationTroopCount,
+				formationTroopIndex,
+				formationClass);
+		}
+		return BannerlordApiCompat.SpawnPrisonerInspectionTroop(
+			base.Mission,
+			origin,
+			formationTroopCount,
+			formationTroopIndex,
+			formationClass);
 	}
 
 	private void NotifyExternalPrisonerSpawned(Agent agent, bool isLord)

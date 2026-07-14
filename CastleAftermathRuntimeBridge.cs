@@ -168,7 +168,9 @@ internal static class CastleAftermathRuntimeBridge
 		}
 	}
 
-	internal static void AttachMissionBehavior(Mission mission)
+	internal static void AttachMissionBehavior(
+		Mission mission,
+		Func<Mission, IAgentOriginBase, int, int, FormationClass, Agent> prisonerSpawner = null)
 	{
 		try
 		{
@@ -189,7 +191,8 @@ internal static class CastleAftermathRuntimeBridge
 					GetSelectedPrisonerRosterSnapshot(),
 					commandBehavior.RegisterPrisoner,
 					commandBehavior.CompleteSpawn,
-					commandBehavior.SharedCleanup));
+					commandBehavior.SharedCleanup,
+					prisonerSpawner));
 			}
 			Logger.Log("CastleAftermath", "Attached troop-inspection prisoner and castle command behaviors. Selected=" + SelectedPrisonerCount);
 		}

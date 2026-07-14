@@ -14,6 +14,32 @@ public static class SiegeCastleRosterSelectionProfile
 
     public const int LordPrisonerFormationIndex = 7;
 
+    public const string DefenderSpawnAnchorTag = "defender_infantry";
+
+    public const float PlayerSpawnForwardOffset = 2f;
+
+    public const int AlliedSpawnGridColumns = 8;
+
+    public const float AlliedSpawnStartDepth = 2.5f;
+
+    public const float AlliedSpawnRowSpacing = 1.6f;
+
+    public const float AlliedSpawnLateralSpacing = 1.5f;
+
+    public const int RegularPrisonerSpawnGridColumns = 10;
+
+    public const int LordPrisonerSpawnGridColumns = 8;
+
+    public const float PrisonerSpawnStartDepth = 14f;
+
+    public const float PrisonerSpawnRowSpacing = 1.3f;
+
+    public const float PrisonerSpawnLateralSpacing = 1.3f;
+
+    public const float RegularPrisonerSpawnLateralOffset = -7f;
+
+    public const float LordPrisonerSpawnLateralOffset = 7f;
+
     public const string PrisonerSpawnCommandSource = "castle_prisoner_spawn";
 
     public const string PrisonerCommandUiRefreshSource = "castle_prisoner_spawn_complete";

@@ -10,6 +10,8 @@ using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem.Settlements.Locations;
 using TaleWorlds.Core;
+using TaleWorlds.Engine;
+using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 
@@ -42,7 +44,10 @@ internal static class CastleAftermathSiegeSceneBridge
 		"MissionOrderOfBattleUIHandler",
 		"DeploymentMissionView",
 		"MissionDeploymentBoundaryMarker",
-		"MissionEntitySelectionUIHandler"
+		"MissionEntitySelectionUIHandler",
+		"MusicBattleMissionView",
+		"MissionPreloadView",
+		"MissionCampaignBattleSpectatorView"
 	};
 
 	internal static bool TryOpenMission(Settlement settlement, Location location, string source)
@@ -137,7 +142,7 @@ internal static class CastleAftermathSiegeSceneBridge
 				mission.AddMissionBehavior(campaignMission);
 			}
 			campaignMission.Location = location;
-			CastleAftermathRuntimeBridge.AttachMissionBehavior(mission);
+			CastleAftermathRuntimeBridge.AttachMissionBehavior(mission, SpawnCastlePrisonerAgent);
 			int breachedSections = SiegeCastleWarSceneProfile.CountBreachedWallSections(wallRatios);
 			GcczDiagnosticLog.Log("CastleSiegeScene", "open requested host=" + SiegeCastleWarSceneProfile.RequiredMissionHostName
 				+ " settlement=" + (settlement.StringId ?? "N/A")
@@ -182,6 +187,211 @@ internal static class CastleAftermathSiegeSceneBridge
 			+ remove.Count + ", Types=" + string.Join(",", remove.Select(behavior => behavior.GetType().Name)));
 		return remove.Count;
 	}
+
+	internal static Agent SpawnCastlePrisonerAgent(
+		Mission mission,
+		IAgentOriginBase origin,
+		int formationTroopCount,
+		int formationTroopIndex,
+		FormationClass formationClass)
+	{
+		CharacterObject character = origin?.Troop as CharacterObject;
+		Team team = mission?.PlayerTeam;
+		if (character == null || team == null
+			|| !TryResolveCastleSpawnBasis(mission, out Vec3 anchor, out Vec3 forward, out Vec3 right))
+		{
+			return null;
+		}
+
+		bool isLord = (int)formationClass == SiegeCastleRosterSelectionProfile.LordPrisonerFormationIndex;
+		int columns = isLord
+			? SiegeCastleRosterSelectionProfile.LordPrisonerSpawnGridColumns
+			: SiegeCastleRosterSelectionProfile.RegularPrisonerSpawnGridColumns;
+		float lateralOffset = isLord
+			? SiegeCastleRosterSelectionProfile.LordPrisonerSpawnLateralOffset
+			: SiegeCastleRosterSelectionProfile.RegularPrisonerSpawnLateralOffset;
+		Vec3 position = BuildGridPosition(
+			anchor,
+			forward,
+			right,
+			formationTroopIndex,
+			columns,
+			SiegeCastleRosterSelectionProfile.PrisonerSpawnStartDepth,
+			SiegeCastleRosterSelectionProfile.PrisonerSpawnRowSpacing,
+			SiegeCastleRosterSelectionProfile.PrisonerSpawnLateralSpacing,
+			lateralOffset);
+		position = ProjectSpawnPositionToNavigationMesh(mission, position, anchor);
+		return SpawnCampaignAgent(
+			mission,
+			character,
+			origin,
+			team,
+			formationClass,
+			formationTroopCount,
+			formationTroopIndex,
+			position,
+			forward.AsVec2,
+			isPlayer: false,
+			wieldInitialWeapons: false);
+	}
+
+	internal static Agent SpawnCampaignAgent(
+		Mission mission,
+		CharacterObject character,
+		IAgentOriginBase origin,
+		Team team,
+		FormationClass formationClass,
+		int formationTroopCount,
+		int formationTroopIndex,
+		Vec3 position,
+		Vec2 direction,
+		bool isPlayer,
+		bool wieldInitialWeapons)
+	{
+		if (mission == null || character == null || origin == null || team == null)
+		{
+			return null;
+		}
+		try
+		{
+			AgentBuildData buildData = new AgentBuildData(character)
+				.TroopOrigin(origin)
+				.Monster(TaleWorlds.Core.FaceGen.GetMonsterWithSuffix(character.Race, "_settlement"))
+				.Team(team)
+				.InitialPosition(in position)
+				.InitialDirection(direction.Normalized())
+				.Controller(isPlayer ? AgentControllerType.Player : AgentControllerType.AI)
+				.CivilianEquipment(false)
+				.NoHorses(true);
+			if (!isPlayer)
+			{
+				Formation formation = team.GetFormation(formationClass);
+				if (formation != null)
+				{
+					buildData = buildData
+						.Formation(formation)
+						.FormationTroopSpawnCount(Math.Max(1, formationTroopCount))
+						.FormationTroopSpawnIndex(Math.Max(0, formationTroopIndex))
+						.SpawnsIntoOwnFormation(true)
+						.SpawnsUsingOwnTroopClass(false);
+				}
+			}
+
+			Agent agent = mission.SpawnAgent(buildData, false);
+			if (agent?.Character?.IsHero == true)
+			{
+				agent.SetAgentFlags(agent.GetAgentFlags() | AgentFlag.IsUnique);
+			}
+			if (agent != null && wieldInitialWeapons)
+			{
+				agent.WieldInitialWeapons();
+			}
+			return agent;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CastleAftermath", "Explicit castle agent spawn failed. Character="
+				+ (character.StringId ?? "N/A")
+				+ ", IsPlayer=" + isPlayer
+				+ ", Formation=" + formationClass
+				+ ", Position=" + position
+				+ ", Error=" + ex);
+			return null;
+		}
+	}
+
+	internal static bool TryResolveCastleSpawnBasis(
+		Mission mission,
+		out Vec3 anchor,
+		out Vec3 forward,
+		out Vec3 right)
+	{
+		anchor = Vec3.Zero;
+		forward = Vec3.Forward;
+		right = Vec3.Side;
+		try
+		{
+			GameEntity entity = mission?.Scene?.FindEntityWithTag(SiegeCastleRosterSelectionProfile.DefenderSpawnAnchorTag);
+			if (entity == null)
+			{
+				Logger.Log("CastleAftermath", "Castle defender spawn anchor is missing. Tag="
+					+ SiegeCastleRosterSelectionProfile.DefenderSpawnAnchorTag);
+				return false;
+			}
+
+			MatrixFrame frame = entity.GetGlobalFrame();
+			anchor = frame.origin;
+			forward = frame.rotation.f;
+			forward.z = 0f;
+			if (forward.LengthSquared < 0.01f)
+			{
+				forward = Vec3.Forward;
+			}
+			forward.Normalize();
+			right = Vec3.CrossProduct(forward, Vec3.Up);
+			if (right.LengthSquared < 0.01f)
+			{
+				right = Vec3.Side;
+			}
+			right.Normalize();
+			anchor = ProjectSpawnPositionToNavigationMesh(mission, anchor, anchor);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CastleAftermath", "Resolve castle defender spawn anchor failed: " + ex);
+			return false;
+		}
+	}
+
+	internal static Vec3 BuildGridPosition(
+		Vec3 anchor,
+		Vec3 forward,
+		Vec3 right,
+		int index,
+		int columns,
+		float startDepth,
+		float rowSpacing,
+		float lateralSpacing,
+		float lateralOffset)
+	{
+		int safeColumns = Math.Max(1, columns);
+		int safeIndex = Math.Max(0, index);
+		int row = safeIndex / safeColumns;
+		int column = safeIndex % safeColumns;
+		float lateral = (column - (safeColumns - 1) * 0.5f) * lateralSpacing + lateralOffset;
+		float depth = startDepth + row * rowSpacing;
+		return anchor - forward * depth + right * lateral;
+	}
+
+	internal static Vec3 ProjectSpawnPositionToNavigationMesh(Mission mission, Vec3 candidate, Vec3 fallback)
+	{
+		Scene scene = mission?.Scene;
+		if (scene == null)
+		{
+			return fallback;
+		}
+		try
+		{
+			candidate.z = scene.GetGroundHeightAtPosition(candidate, BodyFlags.CommonCollisionExcludeFlags);
+			WorldPosition world = new WorldPosition(scene, candidate);
+			if (world.GetNearestNavMesh() != UIntPtr.Zero)
+			{
+				return world.GetNavMeshVec3();
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			fallback.z = scene.GetGroundHeightAtPosition(fallback, BodyFlags.CommonCollisionExcludeFlags);
+		}
+		catch
+		{
+		}
+		return fallback;
+	}
 }
 
 internal sealed class CastleAftermathPlayerRosterMissionBehavior : MissionLogic
@@ -218,17 +428,33 @@ internal sealed class CastleAftermathPlayerRosterMissionBehavior : MissionLogic
 			Logger.Log("CastleAftermath", "Castle player roster spawn aborted: mission context unavailable.");
 			return;
 		}
-
-		Agent player = BannerlordApiCompat.SpawnPlayerSideTroop(
+		if (!CastleAftermathSiegeSceneBridge.TryResolveCastleSpawnBasis(
 			mission,
+			out Vec3 anchor,
+			out Vec3 forward,
+			out Vec3 right))
+		{
+			Logger.Log("CastleAftermath", "Castle player roster spawn aborted: defender spawn anchor unavailable.");
+			return;
+		}
+
+		Vec3 playerPosition = anchor + forward * SiegeCastleRosterSelectionProfile.PlayerSpawnForwardOffset;
+		playerPosition = CastleAftermathSiegeSceneBridge.ProjectSpawnPositionToNavigationMesh(
+			mission,
+			playerPosition,
+			anchor);
+		Agent player = CastleAftermathSiegeSceneBridge.SpawnCampaignAgent(
+			mission,
+			playerCharacter,
 			new PartyAgentOrigin(party, playerCharacter),
+			playerTeam,
+			FormationClass.Infantry,
 			1,
 			0,
-			FormationClass.Infantry,
-			hasFormation: false,
-			spawnWithHorse: false,
-			wieldInitialWeapons: true,
-			useTroopClassForSpawn: false);
+			playerPosition,
+			forward.AsVec2,
+			isPlayer: true,
+			wieldInitialWeapons: true);
 		if (player != null)
 		{
 			player.SetMortalityState(Agent.MortalityState.Immortal);
@@ -240,20 +466,37 @@ internal sealed class CastleAftermathPlayerRosterMissionBehavior : MissionLogic
 			.ToDictionary(group => group.Key, group => group.Count());
 		Dictionary<FormationClass, int> formationIndexes = new Dictionary<FormationClass, int>();
 		int spawnedAllies = 0;
-		foreach (CharacterObject character in allies)
+		for (int allyIndex = 0; allyIndex < allies.Count; allyIndex++)
 		{
+			CharacterObject character = allies[allyIndex];
 			FormationClass formationClass = ResolveFormationClass(character);
 			formationIndexes.TryGetValue(formationClass, out int formationIndex);
-			Agent agent = BannerlordApiCompat.SpawnPlayerSideTroop(
+			Vec3 allyPosition = CastleAftermathSiegeSceneBridge.BuildGridPosition(
+				anchor,
+				forward,
+				right,
+				allyIndex,
+				SiegeCastleRosterSelectionProfile.AlliedSpawnGridColumns,
+				SiegeCastleRosterSelectionProfile.AlliedSpawnStartDepth,
+				SiegeCastleRosterSelectionProfile.AlliedSpawnRowSpacing,
+				SiegeCastleRosterSelectionProfile.AlliedSpawnLateralSpacing,
+				0f);
+			allyPosition = CastleAftermathSiegeSceneBridge.ProjectSpawnPositionToNavigationMesh(
 				mission,
+				allyPosition,
+				anchor);
+			Agent agent = CastleAftermathSiegeSceneBridge.SpawnCampaignAgent(
+				mission,
+				character,
 				new PartyAgentOrigin(party, character),
+				playerTeam,
+				formationClass,
 				formationCounts[formationClass],
 				formationIndex,
-				formationClass,
-				hasFormation: true,
-				spawnWithHorse: false,
-				wieldInitialWeapons: true,
-				useTroopClassForSpawn: false);
+				allyPosition,
+				forward.AsVec2,
+				isPlayer: false,
+				wieldInitialWeapons: true);
 			formationIndexes[formationClass] = formationIndex + 1;
 			if (agent == null)
 			{
@@ -274,6 +517,7 @@ internal sealed class CastleAftermathPlayerRosterMissionBehavior : MissionLogic
 			+ ", MainActive=" + (player?.IsActive() == true)
 			+ ", Allies=" + spawnedAllies + "/" + allies.Count
 			+ ", Team=" + playerTeam.Side
+			+ ", SpawnAnchor=" + anchor
 			+ ", MissionAgents=" + (mission.Agents?.Count ?? 0)
 			+ ", CommandUiReady=" + commandUiReady);
 	}

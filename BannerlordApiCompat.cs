@@ -192,29 +192,6 @@ internal static class BannerlordApiCompat
 		int formationTroopIndex,
 		FormationClass formationClass)
 	{
-		return SpawnPlayerSideTroop(
-			mission,
-			origin,
-			formationTroopCount,
-			formationTroopIndex,
-			formationClass,
-			hasFormation: true,
-			spawnWithHorse: false,
-			wieldInitialWeapons: false,
-			useTroopClassForSpawn: false);
-	}
-
-	internal static Agent SpawnPlayerSideTroop(
-		Mission mission,
-		IAgentOriginBase origin,
-		int formationTroopCount,
-		int formationTroopIndex,
-		FormationClass formationClass,
-		bool hasFormation,
-		bool spawnWithHorse,
-		bool wieldInitialWeapons,
-		bool useTroopClassForSpawn)
-	{
 		if (mission == null || origin == null)
 		{
 			return null;
@@ -232,37 +209,29 @@ internal static class BannerlordApiCompat
 			}
 
 			ParameterInfo[] parameters = method.GetParameters();
-			object[] args = parameters.Select(parameter => BuildPlayerSideSpawnTroopArgument(
+			object[] args = parameters.Select(parameter => BuildPrisonerSpawnTroopArgument(
 				parameter,
 				origin,
 				formationTroopCount,
 				formationTroopIndex,
 				formationClass,
-				hasFormation,
-				spawnWithHorse,
-				wieldInitialWeapons,
-				useTroopClassForSpawn,
 				null,
 				null)).ToArray();
 			return method.Invoke(mission, args) as Agent;
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("BannerlordApiCompat", "SpawnPlayerSideTroop failed: " + ex.Message);
+			Logger.Log("BannerlordApiCompat", "SpawnPrisonerInspectionTroop failed: " + ex.GetBaseException());
 			return null;
 		}
 	}
 
-	private static object BuildPlayerSideSpawnTroopArgument(
+	private static object BuildPrisonerSpawnTroopArgument(
 		ParameterInfo parameter,
 		IAgentOriginBase origin,
 		int formationTroopCount,
 		int formationTroopIndex,
 		FormationClass formationClass,
-		bool hasFormation,
-		bool spawnWithHorse,
-		bool wieldInitialWeapons,
-		bool useTroopClassForSpawn,
 		Vec3? initialPosition,
 		Vec2? initialDirection)
 	{
@@ -271,20 +240,20 @@ internal static class BannerlordApiCompat
 		{
 			case "trooporigin": return origin;
 			case "isplayerside": return true;
-			case "hasformation": return hasFormation;
-			case "spawnwithhorse": return spawnWithHorse;
+			case "hasformation": return true;
+			case "spawnwithhorse": return false;
 			case "isreinforcement": return false;
 			case "formationtroopcount": return formationTroopCount;
 			case "formationtroopindex": return formationTroopIndex;
 			case "isalarmed": return false;
-			case "wieldinitialweapons": return wieldInitialWeapons;
-			case "forcedismounted": return !spawnWithHorse;
+			case "wieldinitialweapons": return false;
+			case "forcedismounted": return true;
 			case "initialposition": return initialPosition;
 			case "initialdirection": return initialDirection;
 			case "specialactionsetsuffix": return null;
 			case "banneritem": return null;
 			case "formationindex": return formationClass;
-			case "usetroopclassforspawn": return useTroopClassForSpawn;
+			case "usetroopclassforspawn": return false;
 		}
 
 		if (parameter.HasDefaultValue)
