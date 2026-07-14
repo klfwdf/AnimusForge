@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
+using Microsoft.Win32.SafeHandles;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
@@ -44,6 +46,7 @@ internal static class FreezeWatchdog
 	private const double BackgroundSlowScopeMs = 1000.0;
 	private const double FrameGapReportMs = 1000.0;
 	private const double MonitorHangReportMs = 2500.0;
+	private const double HangDumpCaptureMs = 5000.0;
 	private const double MonitorRepeatMs = 5000.0;
 	private const int MonitorIntervalMs = 1000;
 	private static readonly long RuntimeContextRefreshTicks = TimeSpan.FromMilliseconds(250.0).Ticks;
@@ -72,6 +75,22 @@ internal static class FreezeWatchdog
 	private static Thread _monitorThread;
 	private static long _monitorHeartbeatUtcTicks;
 	private static int _monitorStarted;
+	private static int _hangDumpEnabled = 1;
+	private static int _hangDumpCapturedForCurrentStall;
+	private static int _hangDumpInFlight;
+
+	[Flags]
+	private enum MiniDumpType : uint
+	{
+		MiniDumpNormal = 0u,
+		MiniDumpWithUnloadedModules = 0x20u,
+		MiniDumpWithIndirectlyReferencedMemory = 0x40u,
+		MiniDumpWithThreadInfo = 0x1000u
+	}
+
+	[DllImport("Dbghelp.dll", SetLastError = true)]
+	[return: MarshalAs(UnmanagedType.Bool)]
+	private static extern bool MiniDumpWriteDump(IntPtr processHandle, uint processId, SafeFileHandle fileHandle, MiniDumpType dumpType, IntPtr exceptionParam, IntPtr userStreamParam, IntPtr callbackParam);
 
 	[ThreadStatic]
 	private static ScopeState _currentScope;
@@ -123,6 +142,7 @@ internal static class FreezeWatchdog
 			{
 				return;
 			}
+			RefreshHangDumpEnabledOnMainThread();
 			EnsureMonitorStarted();
 			int threadId = Thread.CurrentThread.ManagedThreadId;
 			if (_mainThreadId == 0)
@@ -132,6 +152,7 @@ internal static class FreezeWatchdog
 			long now = Stopwatch.GetTimestamp();
 			long previous = Interlocked.Exchange(ref _lastMainHeartbeatTimestamp, now);
 			Interlocked.Exchange(ref _lastMainHeartbeatUtcTicks, DateTime.UtcNow.Ticks);
+			Interlocked.Exchange(ref _hangDumpCapturedForCurrentStall, 0);
 			long frame = Interlocked.Increment(ref _frameIndex);
 			double dtMs = Math.Max(0.0, dt * 1000.0);
 			RecordEvent("frame_begin", "SubModule.OnApplicationTick", "dtMs=" + dtMs.ToString("0.00") + " frame=" + frame, threadId);
@@ -312,6 +333,7 @@ internal static class FreezeWatchdog
 			{
 				return;
 			}
+			TryCaptureHangDump(noHeartbeatMs);
 			long lastReport = Interlocked.Read(ref _lastMonitorReportTimestamp);
 			if (lastReport > 0L && TimestampDeltaMs(lastReport, now) < MonitorRepeatMs)
 			{
@@ -322,6 +344,90 @@ internal static class FreezeWatchdog
 		}
 		catch
 		{
+		}
+	}
+
+	private static void RefreshHangDumpEnabledOnMainThread()
+	{
+		try
+		{
+			bool enabled = DuelSettings.GetSettings()?.EnableFreezeDumpCapture ?? true;
+			Interlocked.Exchange(ref _hangDumpEnabled, enabled ? 1 : 0);
+		}
+		catch
+		{
+			Interlocked.Exchange(ref _hangDumpEnabled, 1);
+		}
+	}
+
+	private static void TryCaptureHangDump(double noHeartbeatMs)
+	{
+		if (noHeartbeatMs < HangDumpCaptureMs || Volatile.Read(ref _hangDumpEnabled) == 0)
+		{
+			return;
+		}
+		if (Interlocked.CompareExchange(ref _hangDumpCapturedForCurrentStall, 1, 0) != 0 || Interlocked.CompareExchange(ref _hangDumpInFlight, 1, 0) != 0)
+		{
+			return;
+		}
+		try
+		{
+			Thread dumpThread = new Thread((ThreadStart)delegate
+			{
+				try
+				{
+					WriteHangDump(noHeartbeatMs);
+				}
+				finally
+				{
+					Interlocked.Exchange(ref _hangDumpInFlight, 0);
+				}
+			})
+			{
+				IsBackground = true,
+				Name = "AnimusForge.FreezeDump",
+				Priority = ThreadPriority.BelowNormal
+			};
+			dumpThread.Start();
+		}
+		catch
+		{
+			Interlocked.Exchange(ref _hangDumpCapturedForCurrentStall, 0);
+			Interlocked.Exchange(ref _hangDumpInFlight, 0);
+		}
+	}
+
+	private static void WriteHangDump(double noHeartbeatMs)
+	{
+		string dumpPath = "";
+		try
+		{
+			string dumpDirectory = Path.Combine(AnimusForgeModulePaths.GetLogsDirectory(), "FreezeDumps");
+			Directory.CreateDirectory(dumpDirectory);
+			using Process process = Process.GetCurrentProcess();
+			dumpPath = Path.Combine(dumpDirectory, "AnimusForge_Freeze_" + DateTime.Now.ToString("yyyyMMdd_HHmmss_fff") + "_pid" + process.Id + ".dmp");
+			WriteImmediate("[FREEZE_DUMP_START] no_main_heartbeat_ms=" + noHeartbeatMs.ToString("0.00") + " path=" + dumpPath + " " + BuildStateSummary(includeRecent: false), writeSnapshot: true);
+			using FileStream stream = new FileStream(dumpPath, FileMode.Create, FileAccess.Write, FileShare.Read);
+			MiniDumpType dumpType = MiniDumpType.MiniDumpWithThreadInfo | MiniDumpType.MiniDumpWithUnloadedModules | MiniDumpType.MiniDumpWithIndirectlyReferencedMemory;
+			if (!MiniDumpWriteDump(process.Handle, (uint)process.Id, stream.SafeFileHandle, dumpType, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero))
+			{
+				int error = Marshal.GetLastWin32Error();
+				throw new InvalidOperationException("MiniDumpWriteDump failed win32=" + error);
+			}
+			stream.Flush();
+			long bytes = 0L;
+			try
+			{
+				bytes = new FileInfo(dumpPath).Length;
+			}
+			catch
+			{
+			}
+			WriteImmediate("[FREEZE_DUMP_DONE] no_main_heartbeat_ms=" + noHeartbeatMs.ToString("0.00") + " path=" + dumpPath + " bytes=" + bytes, writeSnapshot: true);
+		}
+		catch (Exception ex)
+		{
+			WriteImmediate("[FREEZE_DUMP_FAILED] no_main_heartbeat_ms=" + noHeartbeatMs.ToString("0.00") + " path=" + dumpPath + " error=" + ex.GetType().Name + ": " + ex.Message, writeSnapshot: true);
 		}
 	}
 
@@ -456,7 +562,8 @@ internal static class FreezeWatchdog
 			+ " contextAgeMs=" + AgeMsFromUtcTicks(Interlocked.Read(ref _cachedRuntimeContextUtcTicks)).ToString("0.00")
 			+ " monitorAgeMs=" + AgeMsFromUtcTicks(Interlocked.Read(ref _monitorHeartbeatUtcTicks)).ToString("0.00")
 			+ " skippedWrites=" + Interlocked.Read(ref _skippedFileWriteCount)
-			+ " process={" + BuildProcessDiagnostics() + "}";
+			+ " process={" + BuildProcessDiagnostics() + "}"
+			+ " diagnostics={" + Logger.GetFreezeWatchdogDiagnosticSnapshot() + " " + ShoutBehavior.GetFreezeWatchdogDiagnosticSnapshot() + "}";
 		if (includeRecent)
 		{
 			summary += " recent={" + BuildRecentEventsOneLine(12) + "}";

@@ -10006,6 +10006,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	public override void RegisterEvents()
 	{
+		Volatile.Write(ref _freezeWatchdogDiagnosticInstance, this);
 		CampaignEvents.OnMissionStartedEvent.AddNonSerializedListener(this, OnMissionStarted);
 		CampaignEvents.OnMissionEndedEvent.AddNonSerializedListener(this, OnMissionEnded);
 		CampaignEvents.ConversationEnded.AddNonSerializedListener(this, OnNativeConversationEnded);
@@ -12884,6 +12885,125 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	private static readonly Dictionary<string, List<AnimusForgeDialogueHistoryEntry>> _nativeConversationSessionHistory = new Dictionary<string, List<AnimusForgeDialogueHistoryEntry>>(StringComparer.OrdinalIgnoreCase);
 
 	private static readonly Dictionary<string, string> _nativeConversationRecordedCurrentDialogByKey = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+	private static ShoutBehavior _freezeWatchdogDiagnosticInstance;
+
+	internal static string GetFreezeWatchdogDiagnosticSnapshot()
+	{
+		StringBuilder sb = new StringBuilder();
+		bool nativeLockTaken = false;
+		try
+		{
+			nativeLockTaken = Monitor.TryEnter(_nativeConversationSessionHistoryLock);
+			if (nativeLockTaken)
+			{
+				int nativeEntryCount = 0;
+				foreach (List<AnimusForgeDialogueHistoryEntry> history in _nativeConversationSessionHistory.Values)
+				{
+					nativeEntryCount += history?.Count ?? 0;
+				}
+				sb.Append("nativeHistoryKeys=").Append(_nativeConversationSessionHistory.Count)
+					.Append(" nativeHistoryEntries=").Append(nativeEntryCount)
+					.Append(" nativeDedupKeys=").Append(_nativeConversationRecordedCurrentDialogByKey.Count);
+			}
+			else
+			{
+				sb.Append("nativeHistory=busy");
+			}
+		}
+		catch
+		{
+			sb.Append("nativeHistory=unavailable");
+		}
+		finally
+		{
+			if (nativeLockTaken)
+			{
+				Monitor.Exit(_nativeConversationSessionHistoryLock);
+			}
+		}
+		try
+		{
+			ShoutBehavior instance = Volatile.Read(ref _freezeWatchdogDiagnosticInstance);
+			if (instance != null)
+			{
+				instance.AppendFreezeWatchdogDiagnosticSnapshot(sb);
+			}
+			else
+			{
+				sb.Append(" sceneHistory=instance_unavailable");
+			}
+		}
+		catch
+		{
+			sb.Append(" sceneHistory=unavailable");
+		}
+		return sb.ToString();
+	}
+
+	private void AppendFreezeWatchdogDiagnosticSnapshot(StringBuilder sb)
+	{
+		if (sb == null)
+		{
+			return;
+		}
+		bool historyLockTaken = false;
+		try
+		{
+			historyLockTaken = Monitor.TryEnter(_historyLock);
+			if (historyLockTaken)
+			{
+				int sceneNpcEntryCount = 0;
+				foreach (List<ConversationMessage> history in _npcConversationHistory.Values)
+				{
+					sceneNpcEntryCount += history?.Count ?? 0;
+				}
+				sb.Append(" scenePublicEntries=").Append(_publicConversationHistory.Count)
+					.Append(" sceneNpcBuckets=").Append(_npcConversationHistory.Count)
+					.Append(" sceneNpcEntries=").Append(sceneNpcEntryCount);
+			}
+			else
+			{
+				sb.Append(" sceneHistory=busy");
+			}
+		}
+		finally
+		{
+			if (historyLockTaken)
+			{
+				Monitor.Exit(_historyLock);
+			}
+		}
+		try
+		{
+			sb.Append(" mainThreadActions=").Append(_mainThreadActions.Count);
+		}
+		catch
+		{
+			sb.Append(" mainThreadActions=unavailable");
+		}
+		bool speechLockTaken = false;
+		try
+		{
+			speechLockTaken = Monitor.TryEnter(_speechQueueLock);
+			if (speechLockTaken)
+			{
+				sb.Append(" sceneSpeechQueue=").Append(_speechQueue.Count)
+					.Append(" sceneSpeechWorker=").Append(_speechWorkerRunning ? 1 : 0);
+			}
+			else
+			{
+				sb.Append(" sceneSpeechQueue=busy");
+			}
+		}
+		finally
+		{
+			if (speechLockTaken)
+			{
+				Monitor.Exit(_speechQueueLock);
+			}
+		}
+	}
 
 	public static bool IsNativeConversationInputOpenForExternal()
 	{

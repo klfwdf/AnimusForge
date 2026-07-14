@@ -3560,6 +3560,11 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
+			if (VoteDealBehavior.IsBilateralDiplomacyMemoryHandledDecision(decision))
+			{
+				Logger.Log("NpcAction", "Skipped generic kingdom decision memory because bilateral diplomacy state was recorded explicitly: " + (decision.GetGeneralTitle()?.ToString() ?? decision.GetType().Name));
+				return;
+			}
 			string text = BuildKingdomDecisionStableKey(decision);
 			string text2 = BuildKingdomDecisionNarrative(decision, chosenOutcome, isPlayerInvolved, forProposer: true);
 			Hero leader = decision.ProposerClan?.Leader;
@@ -16222,6 +16227,10 @@ public class MyBehavior : CampaignBehaviorBase
 			return "家族叛乱事件";
 		case "kingdom_decision_concluded":
 			return "王国决议事件";
+		case "bilateral_diplomacy_pending":
+			return "双边外交复议进展";
+		case "bilateral_diplomacy_outcome":
+			return "双边外交最终结果";
 		case "ruling_clan_changed":
 			return "执政家族变更事件";
 		case "settlement_owner_changed_gain":
@@ -38064,6 +38073,8 @@ public class MyBehavior : CampaignBehaviorBase
 		case "clan_rebellion":
 			return "strategic_shift";
 		case "kingdom_decision_concluded":
+		case "bilateral_diplomacy_pending":
+		case "bilateral_diplomacy_outcome":
 			return "decision";
 		case "siege_start_attack":
 		case "siege_start_defend":

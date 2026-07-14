@@ -98,6 +98,12 @@ namespace AnimusForge
 			public int TributeDurationDays;
 			public float CreatedDay;
 			public bool CounterpartCreated;
+			public string FirstDecisionBasicKey;
+			public string ParticipantHeroIds;
+		}
+
+		private sealed class BilateralDiplomacyMemoryMarker
+		{
 		}
 
 		private List<VoteDealRecord> _activeDeals = new List<VoteDealRecord>();
@@ -112,6 +118,7 @@ namespace AnimusForge
 
 		private static bool s_globalPatchesApplied;
 		private static bool s_globalPatchesInProgress;
+		private static readonly ConditionalWeakTable<KingdomDecision, BilateralDiplomacyMemoryMarker> BilateralDiplomacyMemoryMarkers = new ConditionalWeakTable<KingdomDecision, BilateralDiplomacyMemoryMarker>();
 		internal static KingdomDecision s_pendingRequiredAgendaDecision;
 		private bool _agendaAutoVoteTickRunning;
 		private readonly HashSet<KingdomDecision> _agendaAutoVoteInProgress = new HashSet<KingdomDecision>();
@@ -402,6 +409,7 @@ namespace AnimusForge
 			Instance = this;
 			Logger.Log("VoteDeal", "[Lifecycle] RegisterEvents called, Instance set");
 			CampaignEvents.KingdomDecisionConcluded.AddNonSerializedListener(this, OnKingdomDecisionConcluded);
+			CampaignEvents.KingdomDecisionCancelled.AddNonSerializedListener(this, OnKingdomDecisionCancelled);
 			CampaignEvents.HourlyTickEvent.AddNonSerializedListener(this, OnHourlyTick);
 		}
 
@@ -460,7 +468,9 @@ namespace AnimusForge
 							d.TributeFromFirstToSecond.ToString(),
 							d.TributeDurationDays.ToString(),
 							d.CreatedDay.ToString("F6"),
-							d.CounterpartCreated ? "1" : "0");
+							d.CounterpartCreated ? "1" : "0",
+							d.FirstDecisionBasicKey ?? "",
+							d.ParticipantHeroIds ?? "");
 					}
 				}
 
@@ -527,7 +537,9 @@ namespace AnimusForge
 								TributeFromFirstToSecond = int.TryParse(parts[4], out int tribute) ? tribute : 0,
 								TributeDurationDays = int.TryParse(parts[5], out int duration) ? duration : 0,
 								CreatedDay = float.TryParse(parts[6], out float createdDay) ? createdDay : 0f,
-								CounterpartCreated = parts.Length > 7 && parts[7] == "1"
+								CounterpartCreated = parts.Length > 7 && parts[7] == "1",
+								FirstDecisionBasicKey = parts.Length > 8 ? parts[8] ?? "" : "",
+								ParticipantHeroIds = parts.Length > 9 ? parts[9] ?? "" : ""
 							};
 							if (!string.IsNullOrWhiteSpace(record.Kind)
 								&& !string.IsNullOrWhiteSpace(record.FirstKingdomId)
@@ -1242,9 +1254,12 @@ namespace AnimusForge
 			BilateralDiplomacyRecord counterpartRecord = FindCounterpartRecordForDecision(decision);
 			if (counterpartRecord != null)
 			{
+				MergeBilateralDiplomacyParticipants(counterpartRecord, decision);
+				MarkBilateralDiplomacyMemoryHandled(decision);
 				if (approved)
 				{
 					bool applied = ApplyFinalBilateralDiplomacyEffect(counterpartRecord);
+					RecordBilateralDiplomacyMemory(counterpartRecord, decision, applied ? "effective" : "invalid");
 					_bilateralDiplomacyRecords.Remove(counterpartRecord);
 					if (applied)
 					{
@@ -1261,6 +1276,7 @@ namespace AnimusForge
 				}
 				else
 				{
+					RecordBilateralDiplomacyMemory(counterpartRecord, decision, "rejected");
 					_bilateralDiplomacyRecords.Remove(counterpartRecord);
 					DisplayBilateralDiplomacyMessage(
 						$"双向外交议程：{GetKingdomName(counterpartRecord.SecondKingdomId)}拒绝了{GetKingdomName(counterpartRecord.FirstKingdomId)}的{GetBilateralDiplomacyKindText(counterpartRecord)}提案，外交效果未生效。",
@@ -1277,6 +1293,9 @@ namespace AnimusForge
 
 			if (!CanCreateBilateralCounterpart(kind, source, target))
 			{
+				BilateralDiplomacyRecord failedRecord = CreateBilateralDiplomacyRecord(decision, kind, source, target, tribute, duration);
+				MarkBilateralDiplomacyMemoryHandled(decision);
+				RecordBilateralDiplomacyMemory(failedRecord, decision, "creation_failed");
 				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Cannot create counterpart, original effect blocked. kind={kind} source={source?.StringId} target={target?.StringId}");
 				DisplayBilateralDiplomacyMessage("双向外交议程：无法创建对等复议议程，外交效果未生效。", 0xFFD166);
 				return true;
@@ -1285,6 +1304,9 @@ namespace AnimusForge
 			BilateralDiplomacyRecord existing = FindExistingBilateralRecord(kind, source, target);
 			if (existing != null)
 			{
+				MergeBilateralDiplomacyParticipants(existing, decision);
+				MarkBilateralDiplomacyMemoryHandled(decision);
+				RecordBilateralDiplomacyMemory(existing, decision, "pending");
 				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Duplicate first-side approval blocked while pending counterpart exists. id={existing.RecordId}");
 				DisplayBilateralDiplomacyMessage(
 					$"双向外交议程：{GetKingdomName(existing.FirstKingdomId)}与{GetKingdomName(existing.SecondKingdomId)}已有等待复议的{GetBilateralDiplomacyKindText(existing)}提案。",
@@ -1292,27 +1314,21 @@ namespace AnimusForge
 				return true;
 			}
 
-			BilateralDiplomacyRecord record = new BilateralDiplomacyRecord
-			{
-				RecordId = GenerateBilateralDiplomacyId(),
-				Kind = KindToString(kind),
-				FirstKingdomId = source.StringId,
-				SecondKingdomId = target.StringId,
-				TributeFromFirstToSecond = tribute,
-				TributeDurationDays = duration,
-				CreatedDay = CampaignTime.Now.ElapsedDaysUntilNow,
-				CounterpartCreated = false
-			};
+			BilateralDiplomacyRecord record = CreateBilateralDiplomacyRecord(decision, kind, source, target, tribute, duration);
 
 			_bilateralDiplomacyRecords.Add(record);
 			if (!CreateBilateralCounterpartDecision(record, out string creationFailureReason))
 			{
+				MarkBilateralDiplomacyMemoryHandled(decision);
+				RecordBilateralDiplomacyMemory(record, decision, "creation_failed");
 				_bilateralDiplomacyRecords.Remove(record);
 				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Counterpart creation failed, original effect blocked. id={record.RecordId} reason={creationFailureReason}");
 				DisplayBilateralDiplomacyMessage("双向外交议程：对等复议议程创建失败，外交效果未生效。", 0xFFD166);
 				return true;
 			}
 
+			MarkBilateralDiplomacyMemoryHandled(decision);
+			RecordBilateralDiplomacyMemory(record, decision, "pending");
 			DisplayBilateralDiplomacyMessage(
 				$"双向外交议程：{source.Name}已批准{GetBilateralDiplomacyKindText(record)}提案，已提交给{target.Name}复议。",
 				0xFFD166);
@@ -1554,6 +1570,182 @@ namespace AnimusForge
 				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Apply final effect error: {ex.Message}");
 			}
 			return false;
+		}
+
+		private BilateralDiplomacyRecord CreateBilateralDiplomacyRecord(KingdomDecision decision, BilateralDiplomacyKind kind, Kingdom source, Kingdom target, int tribute, int duration)
+		{
+			BilateralDiplomacyRecord record = new BilateralDiplomacyRecord
+			{
+				RecordId = GenerateBilateralDiplomacyId(),
+				Kind = KindToString(kind),
+				FirstKingdomId = source?.StringId ?? "",
+				SecondKingdomId = target?.StringId ?? "",
+				TributeFromFirstToSecond = tribute,
+				TributeDurationDays = duration,
+				CreatedDay = CampaignTime.Now.ElapsedDaysUntilNow,
+				CounterpartCreated = false,
+				FirstDecisionBasicKey = BuildVoteDealDecisionKey(decision, includeProposer: false),
+				ParticipantHeroIds = ""
+			};
+			MergeBilateralDiplomacyParticipants(record, decision);
+			return record;
+		}
+
+		private void MergeBilateralDiplomacyParticipants(BilateralDiplomacyRecord record, KingdomDecision decision)
+		{
+			if (record == null) return;
+			HashSet<string> heroIds = new HashSet<string>(
+				(record.ParticipantHeroIds ?? "").Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
+					.Select(id => id.Trim()).Where(id => !string.IsNullOrWhiteSpace(id)),
+				StringComparer.OrdinalIgnoreCase);
+			try
+			{
+				if (_activeDeals != null && decision != null)
+				{
+					foreach (VoteDealRecord deal in _activeDeals.Where(deal => deal != null && DoesVoteDealMatchDecision(deal, decision)))
+					{
+						if (!string.IsNullOrWhiteSpace(deal.NpcHeroStringId)) heroIds.Add(deal.NpcHeroStringId.Trim());
+					}
+				}
+				if (_activeDeals != null && !string.IsNullOrWhiteSpace(record.FirstDecisionBasicKey))
+				{
+					foreach (VoteDealRecord deal in _activeDeals.Where(deal => deal != null && string.Equals(deal.TargetDecisionBasicKey, record.FirstDecisionBasicKey, StringComparison.Ordinal)))
+					{
+						if (!string.IsNullOrWhiteSpace(deal.NpcHeroStringId)) heroIds.Add(deal.NpcHeroStringId.Trim());
+					}
+				}
+				AddBilateralDiplomacyParticipant(heroIds, decision?.ProposerClan?.Leader);
+				AddBilateralDiplomacyParticipant(heroIds, decision?.DetermineChooser()?.Leader);
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", "[BilateralDiplomacy] Participant capture warning: " + ex.Message);
+			}
+			record.ParticipantHeroIds = string.Join(";", heroIds.OrderBy(id => id, StringComparer.OrdinalIgnoreCase));
+		}
+
+		private static void AddBilateralDiplomacyParticipant(ISet<string> heroIds, Hero hero)
+		{
+			if (heroIds == null || hero == null || string.IsNullOrWhiteSpace(hero.StringId)) return;
+			heroIds.Add(hero.StringId.Trim());
+		}
+
+		private static void MarkBilateralDiplomacyMemoryHandled(KingdomDecision decision)
+		{
+			if (decision == null) return;
+			try
+			{
+				BilateralDiplomacyMemoryMarkers.Remove(decision);
+				BilateralDiplomacyMemoryMarkers.Add(decision, new BilateralDiplomacyMemoryMarker());
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", "[BilateralDiplomacy] Memory marker warning: " + ex.Message);
+			}
+		}
+
+		private void OnKingdomDecisionCancelled(KingdomDecision decision, bool isPlayerInvolved)
+		{
+			try
+			{
+				BilateralDiplomacyRecord record = FindCounterpartRecordForDecision(decision);
+				if (record == null) return;
+				MergeBilateralDiplomacyParticipants(record, decision);
+				MarkBilateralDiplomacyMemoryHandled(decision);
+				RecordBilateralDiplomacyMemory(record, decision, "cancelled");
+				_bilateralDiplomacyRecords.Remove(record);
+				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Counterpart agenda cancelled: id={record.RecordId} decision={GetSafeDecisionTitle(decision)} playerInvolved={isPlayerInvolved}.");
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", "[BilateralDiplomacy] Cancelled agenda memory error: " + ex.Message);
+			}
+		}
+
+		internal static bool IsBilateralDiplomacyMemoryHandledDecision(KingdomDecision decision)
+		{
+			return decision != null && BilateralDiplomacyMemoryMarkers.TryGetValue(decision, out _);
+		}
+
+		private void RecordBilateralDiplomacyMemory(BilateralDiplomacyRecord record, KingdomDecision decision, string state)
+		{
+			try
+			{
+				if (record == null) return;
+				Kingdom first = ResolveKingdom(record.FirstKingdomId);
+				Kingdom second = ResolveKingdom(record.SecondKingdomId);
+				string firstName = first?.Name?.ToString() ?? record.FirstKingdomId ?? "第一方王国";
+				string secondName = second?.Name?.ToString() ?? record.SecondKingdomId ?? "第二方王国";
+				string kindText = GetBilateralDiplomacyKindText(record);
+				string narrative;
+				bool isFinal = !string.Equals(state, "pending", StringComparison.OrdinalIgnoreCase);
+				bool? won = null;
+				switch ((state ?? "").Trim().ToLowerInvariant())
+				{
+					case "effective":
+						narrative = firstName + "与" + secondName + "均已批准" + kindText + "提案，双边协议已经正式生效。";
+						won = true;
+						break;
+					case "rejected":
+						narrative = firstName + "曾在本国议程中批准" + kindText + "提案，但" + secondName + "在对等复议中拒绝；该提案未获双方同意，协议未达成、未生效。";
+						won = false;
+						break;
+					case "invalid":
+						narrative = firstName + "与" + secondName + "虽先后批准" + kindText + "提案，但生效条件已经变化；协议最终未生效。";
+						won = false;
+						break;
+					case "creation_failed":
+						narrative = firstName + "仅在本国议程中批准了" + kindText + "提案，但未能建立由" + secondName + "进行的对等复议；该提案未获双方同意，协议未达成、未生效。";
+						won = false;
+						break;
+					case "cancelled":
+						narrative = firstName + "曾在本国议程中批准" + kindText + "提案，但" + secondName + "的对等复议已经取消或失效；该提案未获双方有效同意，协议未达成、未生效。";
+						won = false;
+						break;
+					default:
+						narrative = firstName + "仅在本国议程中批准了" + kindText + "提案，并已提交" + secondName + "复议；" + secondName + "尚未批准，双边协议尚未达成、尚未生效。";
+						isFinal = false;
+						break;
+				}
+
+				HashSet<string> heroIds = new HashSet<string>(
+					(record.ParticipantHeroIds ?? "").Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
+						.Select(id => id.Trim()).Where(id => !string.IsNullOrWhiteSpace(id)),
+					StringComparer.OrdinalIgnoreCase);
+				AddBilateralDiplomacyParticipant(heroIds, first?.RulingClan?.Leader);
+				AddBilateralDiplomacyParticipant(heroIds, second?.RulingClan?.Leader);
+				AddBilateralDiplomacyParticipant(heroIds, decision?.ProposerClan?.Leader);
+				try { AddBilateralDiplomacyParticipant(heroIds, decision?.DetermineChooser()?.Leader); } catch { }
+
+				string fact = "[AFEF NPC行为补充] 双边外交状态：" + narrative;
+				string stableKey = "bilateral_diplomacy:" + (record.RecordId ?? "unknown") + ":" + (isFinal ? "outcome" : "pending");
+				string actionKind = isFinal ? "bilateral_diplomacy_outcome" : "bilateral_diplomacy_pending";
+				string locationText = firstName + "—" + secondName;
+				Hero firstRuler = first?.RulingClan?.Leader;
+				Hero secondRuler = second?.RulingClan?.Leader;
+				int recorded = 0;
+				foreach (string heroId in heroIds)
+				{
+					Hero hero = Hero.FindFirst(candidate => candidate != null && string.Equals(candidate.StringId, heroId, StringComparison.OrdinalIgnoreCase));
+					if (hero == null) continue;
+					Hero targetHero = hero.Clan?.Kingdom == first ? secondRuler : firstRuler;
+					if (hero == Hero.MainHero)
+					{
+						MyBehavior.RecordPlayerActionForExternal(narrative, stableKey + ":player", actionKind, isMajor: isFinal, targetHero: targetHero, settlement: null, locationText: locationText, won: won);
+					}
+					else
+					{
+						MyBehavior.AppendExternalDialogueHistory(hero, null, null, fact);
+						MyBehavior.RecordNpcActionForExternal(hero, narrative, stableKey, actionKind, isMajor: isFinal, isRecent: true, targetHero: targetHero, settlement: null, locationText: locationText, allowNonLordHero: false, won: won);
+					}
+					recorded++;
+				}
+				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Memory recorded id={record.RecordId} state={state} audience={recorded} text={narrative}");
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", "[BilateralDiplomacy] Memory recording failed: " + ex.Message);
+			}
 		}
 
 		private static bool TryGetBilateralDiplomacyDecisionDetails(KingdomDecision decision, out BilateralDiplomacyKind kind, out Kingdom source, out Kingdom target, out int tribute, out int duration)
@@ -1916,8 +2108,7 @@ namespace AnimusForge
 					r == null
 					|| ParseKind(r.Kind) == BilateralDiplomacyKind.None
 					|| ResolveKingdom(r.FirstKingdomId) == null
-					|| ResolveKingdom(r.SecondKingdomId) == null
-					|| !IsBilateralRecordStillPendingValid(r));
+					|| ResolveKingdom(r.SecondKingdomId) == null);
 			}
 			catch (Exception ex)
 			{

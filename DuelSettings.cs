@@ -654,6 +654,10 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("4. 开发者选项")]
 	public int DailyMaintenanceFrameBudgetMs { get; set; } = 3;
 
+	[SettingPropertyBool("【诊断】卡死时生成线程 Dump", Order = 14, RequireRestart = false, HintText = "主线程连续 5 秒没有心跳时，自动在 Logs/FreezeDumps 写入紧凑线程 dump。默认开启；每次连续卡死只写一份，主线程恢复后下次卡死可再次捕获。关闭可避免生成 dump 文件。")]
+	[SettingPropertyGroup("4. 开发者选项")]
+	public bool EnableFreezeDumpCapture { get; set; } = true;
+
 	public string GetLogCleanupIntervalSelection()
 	{
 		_logCleanupIntervalDropdown = NormalizeLogCleanupIntervalDropdown(_logCleanupIntervalDropdown);
