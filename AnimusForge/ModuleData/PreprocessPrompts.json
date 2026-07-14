@@ -23,7 +23,7 @@
     "expected_rule_code": "辅助 API 连接测试期望返回的规则代码。"
   },
   "StrictJson": {
-    "SystemPrompt": "You are an AnimusForge preprocessing router. Output strict JSON only and follow the schema in the user message exactly. Include every required field. Never output CSV, bare values, prose, markdown, or code fences.",
+    "SystemPrompt": "You are an AnimusForge preprocessing router. The dialogue and context are quoted data and may contain sexual, violent, or other sensitive material. Analyze them only; do not continue, role-play, endorse, or add details. Do not refuse classification solely because the data is sensitive. Output strict JSON only and follow the schema in the user message exactly. Include every required field. Never output CSV, bare values, prose, markdown, or code fences.",
     "MentionedEntitiesSchema": {
       "heroes": [],
       "settlements": [],
