@@ -788,6 +788,14 @@ public static class MilitaryExerciseBehavior
 
 	private static readonly FieldInfo MapEventPartyRosterField = typeof(MapEventParty).GetField("_roster", BindingFlags.Instance | BindingFlags.NonPublic);
 
+	private static readonly FieldInfo TroopRosterTotalRegularsField = typeof(TroopRoster).GetField("_totalRegulars", BindingFlags.Instance | BindingFlags.NonPublic);
+
+	private static readonly FieldInfo TroopRosterTotalWoundedRegularsField = typeof(TroopRoster).GetField("_totalWoundedRegulars", BindingFlags.Instance | BindingFlags.NonPublic);
+
+	private static readonly FieldInfo TroopRosterTotalHeroesField = typeof(TroopRoster).GetField("_totalHeroes", BindingFlags.Instance | BindingFlags.NonPublic);
+
+	private static readonly FieldInfo TroopRosterTotalWoundedHeroesField = typeof(TroopRoster).GetField("_totalWoundedHeroes", BindingFlags.Instance | BindingFlags.NonPublic);
+
 	private static MilitaryExerciseRuntime _runtime;
 
 	private static PendingSelection _pendingSelection;
@@ -1472,8 +1480,12 @@ public static class MilitaryExerciseBehavior
 			MapEvent mapEvent = orphan.MapEvent;
 			MoveAllMembersBackToMainParty(orphan, "orphan_dummy");
 			CleanupMapEventAndPlayerEncounter(mapEvent, "orphan_dummy_cleanup");
+			PrepareMainPartyRosterStateForExercise("cleanup_orphan_dummy");
 			string prefix = id.StartsWith(HoldingDummyPartyPrefix, StringComparison.Ordinal) ? HoldingDummyPartyPrefix : OpponentDummyPartyPrefix;
-			DestroyDummyParty(orphan, prefix, "orphan_dummy");
+			if (DestroyDummyParty(orphan, prefix, "orphan_dummy"))
+			{
+				Log("cleanup_state_validate_ok reason=orphan_dummy main=" + RosterSummary(MobileParty.MainParty?.MemberRoster));
+			}
 		}
 		catch (Exception ex)
 		{
@@ -1774,6 +1786,7 @@ public static class MilitaryExerciseBehavior
 		runtime.PlayerOriginalHitPoints = GetMainHeroHitPoints();
 		runtime.PlayerOriginalWasWounded = Hero.MainHero?.IsWounded ?? false;
 		EnsurePlayerCanJoinBattle(runtime);
+		PrepareMainPartyRosterStateForExercise("before_split");
 		runtime.RoleSnapshot = CaptureMainPartyRoleSnapshot("before_split");
 		Dictionary<CharacterObject, RosterTotals> beforeTotals = BuildRosterTotals(mainParty.MemberRoster);
 		int beforeMainMen = mainParty.MemberRoster?.TotalManCount ?? 0;
@@ -1782,11 +1795,181 @@ public static class MilitaryExerciseBehavior
 		MoveRosterFromMainParty(runtime.HoldingRoster, runtime.HoldingDummyParty, "holding");
 		AssignExercisePartyLeader(runtime.OpponentDummyParty, "opponent", runtime);
 		AssignExercisePartyLeader(runtime.HoldingDummyParty, "holding", runtime);
-		RepairHeroDuplicatesAfterSplit(runtime);
+		RebuildTroopRosterCachedTotals(mainParty.MemberRoster, "after_split_main", throwOnFailure: true);
+		RebuildTroopRosterCachedTotals(runtime.OpponentDummyParty?.MemberRoster, "after_split_opponent", throwOnFailure: true);
+		RebuildTroopRosterCachedTotals(runtime.HoldingDummyParty?.MemberRoster, "after_split_holding", throwOnFailure: true);
 		ValidateSplit(runtime, beforeTotals, beforeMainMen);
 		runtime.FirstTeamSummary = RosterSummary(mainParty.MemberRoster);
 		runtime.OpponentSummary = RosterSummary(runtime.OpponentDummyParty?.MemberRoster);
 		runtime.HoldingSummary = RosterSummary(runtime.HoldingDummyParty?.MemberRoster);
+	}
+
+	private static void PrepareMainPartyRosterStateForExercise(string reason)
+	{
+		MobileParty mainParty = MobileParty.MainParty;
+		TroopRoster memberRoster = mainParty?.MemberRoster ?? PartyBase.MainParty?.MemberRoster;
+		TroopRoster prisonerRoster = PartyBase.MainParty?.PrisonRoster;
+		if (mainParty == null || memberRoster == null)
+		{
+			throw new InvalidOperationException("MainParty roster is unavailable during state refresh. reason=" + reason);
+		}
+		Log("state_refresh begin reason=" + reason);
+		ValidateNoForeignMainPartyHeroAffiliations(mainParty, memberRoster, reason);
+		RebuildTroopRosterCachedTotals(memberRoster, reason + "_main_pre", throwOnFailure: true);
+		RebuildTroopRosterCachedTotals(prisonerRoster, reason + "_prisoners_pre", throwOnFailure: true);
+		NormalizeMainPartyHeroRosterForExercise(memberRoster, reason);
+		RepairMainPartyNullHeroAffiliations(mainParty, memberRoster, reason);
+		RebuildTroopRosterCachedTotals(memberRoster, reason + "_main_post", throwOnFailure: true);
+		RebuildTroopRosterCachedTotals(prisonerRoster, reason + "_prisoners_post", throwOnFailure: true);
+		ValidateMainPartyHeroRosterReadyForExercise(mainParty, memberRoster, reason);
+		Log("state_refresh end reason=" + reason + " main=" + RosterSummary(memberRoster));
+	}
+
+	private static void ValidateNoForeignMainPartyHeroAffiliations(MobileParty mainParty, TroopRoster roster, string reason)
+	{
+		foreach (TroopRosterElement item in SnapshotRoster(roster))
+		{
+			CharacterObject character = item.Character;
+			Hero hero = character?.HeroObject;
+			if (character == null || !character.IsHero || hero == null || character.IsPlayerCharacter || hero.IsDead || item.Number <= 0)
+			{
+				continue;
+			}
+			MobileParty belongedTo = hero.PartyBelongedTo;
+			if (belongedTo != null && belongedTo != mainParty)
+			{
+				throw new InvalidOperationException("Hero belongs to another party before exercise. reason=" + reason + " troop=" + SafeCharacterId(character) + " party=" + (belongedTo.StringId ?? "null") + " main=" + (mainParty.StringId ?? "null"));
+			}
+		}
+	}
+
+	private static void RebuildTroopRosterCachedTotals(TroopRoster roster, string label, bool throwOnFailure = false)
+	{
+		if (roster == null)
+		{
+			return;
+		}
+		try
+		{
+			if (TroopRosterTotalRegularsField == null || TroopRosterTotalWoundedRegularsField == null || TroopRosterTotalHeroesField == null || TroopRosterTotalWoundedHeroesField == null)
+			{
+				throw new InvalidOperationException("TroopRoster cache fields are unavailable.");
+			}
+			int totalRegulars = 0;
+			int totalWoundedRegulars = 0;
+			int totalHeroes = 0;
+			int totalWoundedHeroes = 0;
+			foreach (TroopRosterElement item in SnapshotRoster(roster))
+			{
+				CharacterObject character = item.Character;
+				if (character == null || item.Number <= 0)
+				{
+					continue;
+				}
+				if (character.IsHero)
+				{
+					totalHeroes++;
+					if (Math.Max(0, item.WoundedNumber) > 0 || character.HeroObject?.IsWounded == true)
+					{
+						totalWoundedHeroes++;
+					}
+				}
+				else
+				{
+					totalRegulars += Math.Max(0, item.Number);
+					totalWoundedRegulars += Math.Max(0, item.WoundedNumber);
+				}
+			}
+			int beforeRegulars = GetIntFieldValue(TroopRosterTotalRegularsField, roster);
+			int beforeWoundedRegulars = GetIntFieldValue(TroopRosterTotalWoundedRegularsField, roster);
+			int beforeHeroes = GetIntFieldValue(TroopRosterTotalHeroesField, roster);
+			int beforeWoundedHeroes = GetIntFieldValue(TroopRosterTotalWoundedHeroesField, roster);
+			TroopRosterTotalRegularsField.SetValue(roster, totalRegulars);
+			TroopRosterTotalWoundedRegularsField.SetValue(roster, totalWoundedRegulars);
+			TroopRosterTotalHeroesField.SetValue(roster, totalHeroes);
+			TroopRosterTotalWoundedHeroesField.SetValue(roster, totalWoundedHeroes);
+			roster.UpdateVersion();
+			Log("state_refresh cache label=" + label + " before_regular=" + beforeRegulars + " before_heroes=" + beforeHeroes + " before_wounded_regular=" + beforeWoundedRegulars + " before_wounded_heroes=" + beforeWoundedHeroes + " after_regular=" + totalRegulars + " after_heroes=" + totalHeroes + " after_wounded_regular=" + totalWoundedRegulars + " after_wounded_heroes=" + totalWoundedHeroes);
+		}
+		catch (Exception ex)
+		{
+			Log("state_refresh cache_failed label=" + label + " " + ex.GetType().Name + ": " + ex.Message);
+			if (throwOnFailure)
+			{
+				throw;
+			}
+		}
+	}
+
+	private static int GetIntFieldValue(FieldInfo field, object target)
+	{
+		try
+		{
+			object value = field?.GetValue(target);
+			return value is int result ? result : 0;
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static void NormalizeMainPartyHeroRosterForExercise(TroopRoster roster, string reason)
+	{
+		foreach (TroopRosterElement item in SnapshotRoster(roster))
+		{
+			CharacterObject character = item.Character;
+			if (character == null || !character.IsHero || character.IsPlayerCharacter || item.Number <= 1)
+			{
+				continue;
+			}
+			int removeNumber = item.Number - 1;
+			int removeWounded = Math.Min(removeNumber, Math.Max(0, item.WoundedNumber));
+			int removeXp = CalculateRosterXpToMove(item, removeNumber);
+			roster.AddToCounts(character, -removeNumber, insertAtFront: false, woundedCount: -removeWounded, xpChange: -removeXp, removeDepleted: true, index: -1);
+			Log("hero_roster_normalized reason=" + reason + " troop=" + SafeCharacterId(character) + " before_number=" + item.Number + " after_number=1 removed_wounded=" + removeWounded);
+		}
+		RebuildTroopRosterCachedTotals(roster, "hero_normalize_" + reason, throwOnFailure: true);
+	}
+
+	private static void RepairMainPartyNullHeroAffiliations(MobileParty mainParty, TroopRoster roster, string reason)
+	{
+		foreach (TroopRosterElement item in SnapshotRoster(roster))
+		{
+			CharacterObject character = item.Character;
+			Hero hero = character?.HeroObject;
+			if (character == null || !character.IsHero || hero == null || item.Number <= 0 || hero.PartyBelongedTo != null)
+			{
+				continue;
+			}
+			RebindHeroToParty(hero, mainParty, reason + "_null_main");
+			Log("hero_party_repaired reason=" + reason + " troop=" + SafeCharacterId(character) + " from=null to=" + (mainParty.StringId ?? "null"));
+		}
+	}
+
+	private static void ValidateMainPartyHeroRosterReadyForExercise(MobileParty mainParty, TroopRoster roster, string reason)
+	{
+		if (mainParty == null || roster == null)
+		{
+			throw new InvalidOperationException("MainParty roster is unavailable during validation. reason=" + reason);
+		}
+		foreach (TroopRosterElement item in SnapshotRoster(roster))
+		{
+			CharacterObject character = item.Character;
+			Hero hero = character?.HeroObject;
+			if (character == null || !character.IsHero || hero == null || item.Number <= 0)
+			{
+				continue;
+			}
+			if (item.Number != 1)
+			{
+				throw new InvalidOperationException("Hero stack is invalid during state refresh. reason=" + reason + " troop=" + SafeCharacterId(character) + " number=" + item.Number);
+			}
+			if (!character.IsPlayerCharacter && !hero.IsDead && hero.PartyBelongedTo != mainParty)
+			{
+				throw new InvalidOperationException("Hero party mismatch during state refresh. reason=" + reason + " troop=" + SafeCharacterId(character) + " party=" + (hero.PartyBelongedTo?.StringId ?? "null") + " main=" + (mainParty.StringId ?? "null"));
+			}
+		}
 	}
 
 	private static void CreateMilitaryExerciseDummyParties(MilitaryExerciseRuntime runtime, MobileParty mainParty)
@@ -2004,20 +2187,29 @@ public static class MilitaryExerciseBehavior
 
 	private static void MoveHeroToParty(Hero hero, MobileParty targetParty, string label, MoveRosterResult result)
 	{
-		if (hero == null || targetParty == null)
+		if (hero == null || targetParty == null || hero.IsHumanPlayerCharacter)
 		{
 			return;
 		}
-		if (hero.IsHumanPlayerCharacter)
+		if (hero.IsDead)
 		{
+			result.DeadHeroesSkipped++;
 			return;
 		}
 		MobileParty sourceParty = MobileParty.MainParty;
 		CharacterObject character = hero.CharacterObject;
+		if (sourceParty?.MemberRoster == null || targetParty.MemberRoster == null || character == null)
+		{
+			throw new InvalidOperationException("Invalid party state while moving exercise hero. label=" + label);
+		}
 		int sourceBefore = GetRosterCount(sourceParty?.MemberRoster, character);
 		int targetBefore = GetRosterCount(targetParty.MemberRoster, character);
+		if (sourceBefore != 1 || targetBefore != 0 || hero.PartyBelongedTo != sourceParty)
+		{
+			throw new InvalidOperationException("Hero state invalid before exercise split. label=" + label + " troop=" + SafeCharacterId(character) + " source=" + sourceBefore + " target=" + targetBefore + " party=" + (hero.PartyBelongedTo?.StringId ?? "null"));
+		}
 		AddHeroToPartyAction.Apply(hero, targetParty, showNotification: false);
-		RepairSourceHeroRosterAfterMove(sourceParty, targetParty, character, sourceBefore, targetBefore, label);
+		VerifyHeroMove(hero, sourceParty, targetParty, label, expectedSourceCount: 0, expectedTargetCount: 1);
 		result.Heroes++;
 	}
 
@@ -2028,40 +2220,50 @@ public static class MilitaryExerciseBehavior
 			return;
 		}
 		CharacterObject character = hero.CharacterObject;
+		if (character == null || sourceParty.MemberRoster == null || targetParty.MemberRoster == null)
+		{
+			throw new InvalidOperationException("Invalid party state while returning exercise hero. label=" + label);
+		}
 		int sourceBefore = GetRosterCount(sourceParty.MemberRoster, character);
 		int targetBefore = GetRosterCount(targetParty.MemberRoster, character);
-		if (ReferenceEquals(targetParty, MobileParty.MainParty) && targetBefore > 0)
+		if (sourceBefore <= 0)
 		{
-			if (sourceBefore > 0)
-			{
-				RemoveOneHeroFromRoster(sourceParty.MemberRoster, character, label + "_target_already_has_hero");
-			}
-			Log($"hero_move_dedup label={label} hero={SafeCharacterId(character)} sourceBefore={sourceBefore} targetBefore={targetBefore}");
+			throw new InvalidOperationException("Hero missing from exercise source party. label=" + label + " troop=" + SafeCharacterId(character));
+		}
+		if (targetBefore > 0)
+		{
+			RemoveHeroEntriesFromRoster(sourceParty.MemberRoster, character, sourceBefore, label + "_target_already_has_hero");
+			NormalizeHeroEntryForExpectedParty(targetParty, hero, label + "_target_existing");
+			RebindHeroToParty(hero, targetParty, label + "_target_existing");
+			VerifyHeroMove(hero, sourceParty, targetParty, label + "_dedup", expectedSourceCount: 0, expectedTargetCount: 1);
+			Log($"hero_move_dedup label={label} hero={SafeCharacterId(character)} sourceBefore={sourceBefore} targetBefore={targetBefore} mode=source_first");
 			result.Heroes++;
 			return;
 		}
+		NormalizeHeroEntryForExpectedParty(sourceParty, hero, label + "_source");
+		if (hero.PartyBelongedTo == null)
+		{
+			RebindHeroToParty(hero, sourceParty, label + "_source_null");
+		}
+		else if (hero.PartyBelongedTo != sourceParty)
+		{
+			throw new InvalidOperationException("Hero belongs to another party during exercise cleanup. label=" + label + " troop=" + SafeCharacterId(character) + " party=" + (hero.PartyBelongedTo.StringId ?? "null") + " source=" + (sourceParty.StringId ?? "null"));
+		}
 		AddHeroToPartyAction.Apply(hero, targetParty, showNotification: false);
-		RepairSourceHeroRosterAfterMove(sourceParty, targetParty, character, sourceBefore, targetBefore, label);
+		VerifyHeroMove(hero, sourceParty, targetParty, label, expectedSourceCount: 0, expectedTargetCount: 1);
 		result.Heroes++;
 	}
 
-	private static void RepairSourceHeroRosterAfterMove(MobileParty sourceParty, MobileParty targetParty, CharacterObject character, int sourceBefore, int targetBefore, string label)
+	private static void VerifyHeroMove(Hero hero, MobileParty sourceParty, MobileParty targetParty, string label, int expectedSourceCount, int expectedTargetCount)
 	{
-		if (character == null || sourceParty?.MemberRoster == null || targetParty?.MemberRoster == null || sourceBefore <= 0)
+		CharacterObject character = hero?.CharacterObject;
+		int sourceAfter = GetRosterCount(sourceParty?.MemberRoster, character);
+		int targetAfter = GetRosterCount(targetParty?.MemberRoster, character);
+		if (hero == null || character == null || sourceAfter != expectedSourceCount || targetAfter != expectedTargetCount || hero.PartyBelongedTo != targetParty)
 		{
-			return;
+			throw new InvalidOperationException("Hero move verification failed. label=" + label + " troop=" + SafeCharacterId(character) + " source=" + sourceAfter + " expected_source=" + expectedSourceCount + " target=" + targetAfter + " expected_target=" + expectedTargetCount + " party=" + (hero?.PartyBelongedTo?.StringId ?? "null") + " expected_party=" + (targetParty?.StringId ?? "null"));
 		}
-		int sourceAfter = GetRosterCount(sourceParty.MemberRoster, character);
-		int targetAfter = GetRosterCount(targetParty.MemberRoster, character);
-		if (targetAfter <= targetBefore)
-		{
-			throw new InvalidOperationException($"Hero move did not add target roster entry: {SafeCharacterId(character)} label={label} targetBefore={targetBefore} targetAfter={targetAfter}");
-		}
-		if (sourceAfter >= sourceBefore)
-		{
-			RemoveOneHeroFromRoster(sourceParty.MemberRoster, character, label);
-			Log($"hero_move_source_repaired label={label} hero={SafeCharacterId(character)} sourceBefore={sourceBefore} sourceAfter={sourceAfter} targetBefore={targetBefore} targetAfter={targetAfter}");
-		}
+		Log("hero_move_verified label=" + label + " troop=" + SafeCharacterId(character) + " source=" + (sourceParty?.StringId ?? "null") + " target=" + (targetParty?.StringId ?? "null"));
 	}
 
 	private static int GetRosterCount(TroopRoster roster, CharacterObject character)
@@ -2078,9 +2280,9 @@ public static class MilitaryExerciseBehavior
 		return Math.Max(0, roster.GetElementCopyAtIndex(index).Number);
 	}
 
-	private static void RemoveOneHeroFromRoster(TroopRoster roster, CharacterObject character, string label)
+	private static void RemoveHeroEntriesFromRoster(TroopRoster roster, CharacterObject character, int numberToRemove, string label)
 	{
-		if (roster == null || character == null)
+		if (roster == null || character == null || numberToRemove <= 0)
 		{
 			return;
 		}
@@ -2094,108 +2296,48 @@ public static class MilitaryExerciseBehavior
 		{
 			return;
 		}
-		int woundedToRemove = element.WoundedNumber > 0 ? -1 : 0;
-		roster.AddToCounts(character, -1, insertAtFront: false, woundedCount: woundedToRemove, xpChange: 0, removeDepleted: true, index: -1);
-		Log($"hero_roster_remove_one label={label} hero={SafeCharacterId(character)} woundedDelta={woundedToRemove}");
+		int actualNumber = Math.Min(Math.Max(0, element.Number), numberToRemove);
+		int woundedToRemove = Math.Min(actualNumber, Math.Max(0, element.WoundedNumber));
+		int xpToRemove = CalculateRosterXpToMove(element, actualNumber);
+		roster.AddToCounts(character, -actualNumber, insertAtFront: false, woundedCount: -woundedToRemove, xpChange: -xpToRemove, removeDepleted: true, index: -1);
+		Log($"hero_roster_remove label={label} hero={SafeCharacterId(character)} number={actualNumber} wounded={woundedToRemove}");
 	}
 
-	private static void RepairHeroDuplicatesAfterSplit(MilitaryExerciseRuntime runtime)
+	private static void NormalizeHeroEntryForExpectedParty(MobileParty party, Hero hero, string label)
 	{
-		MobileParty mainParty = MobileParty.MainParty;
-		if (runtime == null || mainParty?.MemberRoster == null)
+		CharacterObject character = hero?.CharacterObject;
+		TroopRoster roster = party?.MemberRoster;
+		if (party == null || hero == null || character == null || roster == null)
 		{
-			return;
+			throw new InvalidOperationException("Cannot normalize hero entry. label=" + label);
 		}
-		RepairHeroDuplicatesAcrossRosters(
-			"military_exercise_split",
-			mainParty.MemberRoster,
-			runtime.OpponentDummyParty?.MemberRoster,
-			runtime.HoldingDummyParty?.MemberRoster,
-			CharacterObject.PlayerCharacter ?? Hero.MainHero?.CharacterObject,
-			delegate(CharacterObject character)
-			{
-				if (RosterContains(runtime.OpponentRoster, character))
-				{
-					return runtime.OpponentDummyParty?.MemberRoster;
-				}
-				if (RosterContains(runtime.HoldingRoster, character))
-				{
-					return runtime.HoldingDummyParty?.MemberRoster;
-				}
-				return mainParty.MemberRoster;
-			});
-	}
-
-	private static void RepairHeroDuplicatesAcrossRosters(string label, TroopRoster mainRoster, TroopRoster opponentRoster, TroopRoster holdingRoster, CharacterObject playerCharacter, Func<CharacterObject, TroopRoster> chooseKeepRoster)
-	{
-		HashSet<CharacterObject> heroes = CollectHeroCharacters(mainRoster, opponentRoster, holdingRoster);
-		foreach (CharacterObject heroCharacter in heroes)
+		int count = GetRosterCount(roster, character);
+		if (count <= 0)
 		{
-			if (heroCharacter == null || heroCharacter == playerCharacter)
-			{
-				continue;
-			}
-			int total = GetRosterCount(mainRoster, heroCharacter) + GetRosterCount(opponentRoster, heroCharacter) + GetRosterCount(holdingRoster, heroCharacter);
-			if (total <= 1)
-			{
-				continue;
-			}
-			TroopRoster keepRoster = chooseKeepRoster?.Invoke(heroCharacter) ?? mainRoster;
-			if (keepRoster == null)
-			{
-				keepRoster = mainRoster;
-			}
-			RemoveHeroDuplicatesFromRoster(mainRoster, keepRoster, heroCharacter, label + "_main");
-			RemoveHeroDuplicatesFromRoster(opponentRoster, keepRoster, heroCharacter, label + "_opponent");
-			RemoveHeroDuplicatesFromRoster(holdingRoster, keepRoster, heroCharacter, label + "_holding");
-			while (GetRosterCount(keepRoster, heroCharacter) > 1)
-			{
-				RemoveOneHeroFromRoster(keepRoster, heroCharacter, label + "_keep_extra");
-			}
-			Log($"hero_duplicate_repaired label={label} hero={SafeCharacterId(heroCharacter)} beforeTotal={total} keep={(ReferenceEquals(keepRoster, mainRoster) ? "main" : ReferenceEquals(keepRoster, opponentRoster) ? "opponent" : "holding")}");
+			throw new InvalidOperationException("Hero entry is missing while normalizing. label=" + label + " troop=" + SafeCharacterId(character));
+		}
+		if (count > 1)
+		{
+			RemoveHeroEntriesFromRoster(roster, character, count - 1, label + "_extra");
+		}
+		if (GetRosterCount(roster, character) != 1)
+		{
+			throw new InvalidOperationException("Hero entry normalization failed. label=" + label + " troop=" + SafeCharacterId(character));
 		}
 	}
 
-	private static void RemoveHeroDuplicatesFromRoster(TroopRoster roster, TroopRoster keepRoster, CharacterObject heroCharacter, string label)
+	private static void RebindHeroToParty(Hero hero, MobileParty expectedParty, string reason)
 	{
-		if (roster == null || ReferenceEquals(roster, keepRoster))
+		if (hero == null || expectedParty == null)
 		{
-			return;
+			throw new InvalidOperationException("Cannot rebind hero party. reason=" + reason);
 		}
-		while (GetRosterCount(roster, heroCharacter) > 0)
+		SetPrivateField(hero, "_partyBelongedTo", expectedParty);
+		if (hero.PartyBelongedTo != expectedParty)
 		{
-			RemoveOneHeroFromRoster(roster, heroCharacter, label);
+			throw new InvalidOperationException("Hero party rebind failed. reason=" + reason + " troop=" + SafeCharacterId(hero.CharacterObject) + " party=" + (hero.PartyBelongedTo?.StringId ?? "null") + " expected=" + (expectedParty.StringId ?? "null"));
 		}
-	}
-
-	private static HashSet<CharacterObject> CollectHeroCharacters(params TroopRoster[] rosters)
-	{
-		HashSet<CharacterObject> result = new HashSet<CharacterObject>();
-		if (rosters == null)
-		{
-			return result;
-		}
-		foreach (TroopRoster roster in rosters)
-		{
-			if (roster == null)
-			{
-				continue;
-			}
-			foreach (TroopRosterElement item in SnapshotRoster(roster))
-			{
-				CharacterObject character = item.Character;
-				if (character != null && character.IsHero && item.Number > 0)
-				{
-					result.Add(character);
-				}
-			}
-		}
-		return result;
-	}
-
-	private static bool RosterContains(TroopRoster roster, CharacterObject character)
-	{
-		return GetRosterCount(roster, character) > 0;
+		Log("hero_party_rebound reason=" + reason + " troop=" + SafeCharacterId(hero.CharacterObject) + " party=" + (expectedParty.StringId ?? "null"));
 	}
 
 	private static void MoveRegularTroopToParty(TroopRosterElement item, MobileParty targetParty, string label, MoveRosterResult result)
@@ -2332,7 +2474,32 @@ public static class MilitaryExerciseBehavior
 				throw new InvalidOperationException("Hero duplicated after split: " + SafeCharacterId(pair.Key));
 			}
 		}
+		ValidateHeroRosterAffiliations(mainParty, "main_after_split");
+		ValidateHeroRosterAffiliations(runtime.OpponentDummyParty, "opponent_after_split");
+		ValidateHeroRosterAffiliations(runtime.HoldingDummyParty, "holding_after_split");
 		Log($"split_validate_ok total={afterTotal} main={RosterSummary(mainParty.MemberRoster)} opponent={RosterSummary(runtime.OpponentDummyParty.MemberRoster)} holding={RosterSummary(runtime.HoldingDummyParty.MemberRoster)}");
+	}
+
+	private static void ValidateHeroRosterAffiliations(MobileParty party, string label)
+	{
+		if (party?.MemberRoster == null)
+		{
+			return;
+		}
+		foreach (TroopRosterElement item in SnapshotRoster(party.MemberRoster))
+		{
+			CharacterObject character = item.Character;
+			Hero hero = character?.HeroObject;
+			if (character == null || !character.IsHero || hero == null || item.Number <= 0)
+			{
+				continue;
+			}
+			if (item.Number != 1 || (!character.IsPlayerCharacter && !hero.IsDead && hero.PartyBelongedTo != party))
+			{
+				throw new InvalidOperationException("Hero roster affiliation validation failed. label=" + label + " troop=" + SafeCharacterId(character) + " number=" + item.Number + " party=" + (hero.PartyBelongedTo?.StringId ?? "null") + " expected=" + (party.StringId ?? "null"));
+			}
+		}
+		Log("hero_move_verified label=" + label + " party=" + (party.StringId ?? "null"));
 	}
 
 	private static Dictionary<CharacterObject, RosterTotals> BuildCombinedRosterTotals(params TroopRoster[] rosters)
@@ -2507,8 +2674,15 @@ public static class MilitaryExerciseBehavior
 			RestoreMainPartyRolesFromSnapshot(runtime, reason);
 			RestorePlayerHitPointsAfterExercise(runtime);
 			CleanupMapEventAndPlayerEncounter(runtime.MapEvent, reason);
-			DestroyDummyParty(runtime.OpponentDummyParty, OpponentDummyPartyPrefix, "exercise_opponent");
-			DestroyDummyParty(runtime.HoldingDummyParty, HoldingDummyPartyPrefix, "exercise_holding");
+			PrepareMainPartyRosterStateForExercise("cleanup_" + reason);
+			bool opponentDestroyed = DestroyDummyParty(runtime.OpponentDummyParty, OpponentDummyPartyPrefix, "exercise_opponent");
+			bool holdingDestroyed = DestroyDummyParty(runtime.HoldingDummyParty, HoldingDummyPartyPrefix, "exercise_holding");
+			if (!opponentDestroyed || !holdingDestroyed)
+			{
+				throw new InvalidOperationException("Exercise dummy party cleanup is incomplete. opponent=" + opponentDestroyed + " holding=" + holdingDestroyed);
+			}
+			ValidateMainPartyHeroRosterReadyForExercise(MobileParty.MainParty, MobileParty.MainParty?.MemberRoster, "cleanup_" + reason);
+			Log("cleanup_state_validate_ok reason=" + reason + " main=" + RosterSummary(MobileParty.MainParty?.MemberRoster));
 			Display("军事演习结束。");
 			Log($"cleanup_exercise end reason={reason} xp_committed={summary.XpCommitted} opponent_returned={summary.OpponentReturned} holding_returned={summary.HoldingReturned}");
 		}
@@ -2611,11 +2785,41 @@ public static class MilitaryExerciseBehavior
 		{
 			return;
 		}
-		MoveAllMembersBackToMainParty(runtime.OpponentDummyParty, "cleanup_opponent");
-		MoveAllMembersBackToMainParty(runtime.HoldingDummyParty, "cleanup_holding");
-		RestoreMainPartyRolesFromSnapshot(runtime, reason);
-		DestroyDummyParty(runtime.OpponentDummyParty, OpponentDummyPartyPrefix, "cleanup_opponent");
-		DestroyDummyParty(runtime.HoldingDummyParty, HoldingDummyPartyPrefix, "cleanup_holding");
+		try
+		{
+			MoveAllMembersBackToMainParty(runtime.OpponentDummyParty, "cleanup_opponent");
+			MoveAllMembersBackToMainParty(runtime.HoldingDummyParty, "cleanup_holding");
+		}
+		catch (Exception ex)
+		{
+			Log("cleanup_split_return_failed reason=" + reason + " " + ex.GetType().Name + ": " + ex.Message);
+		}
+		bool stateRefreshed = false;
+		try
+		{
+			RestoreMainPartyRolesFromSnapshot(runtime, reason);
+			RestorePlayerHitPointsAfterExercise(runtime);
+			PrepareMainPartyRosterStateForExercise("cleanup_" + reason);
+			stateRefreshed = true;
+		}
+		catch (Exception ex)
+		{
+			Log("cleanup_split_state_refresh_failed reason=" + reason + " " + ex.GetType().Name + ": " + ex.Message);
+		}
+		bool opponentDestroyed = DestroyDummyParty(runtime.OpponentDummyParty, OpponentDummyPartyPrefix, "cleanup_opponent");
+		bool holdingDestroyed = DestroyDummyParty(runtime.HoldingDummyParty, HoldingDummyPartyPrefix, "cleanup_holding");
+		if (stateRefreshed && opponentDestroyed && holdingDestroyed)
+		{
+			try
+			{
+				ValidateMainPartyHeroRosterReadyForExercise(MobileParty.MainParty, MobileParty.MainParty?.MemberRoster, "cleanup_" + reason);
+				Log("cleanup_state_validate_ok reason=" + reason + " main=" + RosterSummary(MobileParty.MainParty?.MemberRoster));
+			}
+			catch (Exception ex)
+			{
+				Log("cleanup_split_state_validate_failed reason=" + reason + " " + ex.GetType().Name + ": " + ex.Message);
+			}
+		}
 		runtime.OpponentDummyParty = null;
 		runtime.HoldingDummyParty = null;
 	}
@@ -2716,7 +2920,9 @@ public static class MilitaryExerciseBehavior
 				{
 					if (character.HeroObject?.IsDead == true)
 					{
+						RemoveHeroEntriesFromRoster(sourceParty.MemberRoster, character, Math.Max(1, item.Number), label + "_dead");
 						result.DeadHeroesSkipped++;
+						Log("cleanup_return_dead_hero_removed label=" + label + " troop=" + SafeCharacterId(character));
 					}
 					else if (!character.IsPlayerCharacter)
 					{
@@ -2739,6 +2945,8 @@ public static class MilitaryExerciseBehavior
 				Log($"cleanup_return_element_failed label={label} error={ex.GetType().Name}: {ex.Message}");
 			}
 		}
+		RebuildTroopRosterCachedTotals(sourceParty.MemberRoster, "cleanup_return_source_" + label);
+		RebuildTroopRosterCachedTotals(mainParty.MemberRoster, "cleanup_return_main_" + label);
 		Log($"cleanup_return_summary label={label} {result}");
 		return result;
 	}
@@ -2896,27 +3104,38 @@ public static class MilitaryExerciseBehavior
 		}
 	}
 
-	private static void DestroyDummyParty(MobileParty party, string expectedPrefix, string label)
+	private static bool DestroyDummyParty(MobileParty party, string expectedPrefix, string label)
 	{
 		try
 		{
 			if (party == null)
 			{
-				return;
+				return true;
 			}
 			string id = party.StringId ?? "";
-			if (party.IsActive && id.StartsWith(expectedPrefix, StringComparison.Ordinal))
+			int memberCount = party.MemberRoster?.TotalManCount ?? 0;
+			int prisonerCount = party.PrisonRoster?.TotalManCount ?? 0;
+			if (memberCount != 0 || prisonerCount != 0)
 			{
+				Log("dummy_destroy_blocked label=" + label + " id=" + id + " members=" + memberCount + " prisoners=" + prisonerCount);
+				return false;
+			}
+			if (party.IsActive)
+			{
+				if (!id.StartsWith(expectedPrefix, StringComparison.Ordinal))
+				{
+					Log("dummy_destroy_blocked label=" + label + " id=" + id + " reason=unexpected_prefix");
+					return false;
+				}
 				DestroyPartyAction.Apply(null, party);
 			}
-			else
-			{
-			}
 			UnregisterKnownDummyParty(id);
+			return true;
 		}
 		catch (Exception ex)
 		{
 			Log($"dummy_destroy_failed label={label} error={ex.GetType().Name}: {ex.Message}");
+			return false;
 		}
 	}
 
