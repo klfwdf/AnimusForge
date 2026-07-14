@@ -22,7 +22,7 @@ namespace AnimusForge;
 /// </summary>
 internal static class CastleAftermathSiegeSceneBridge
 {
-	private static readonly HashSet<string> IncompatibleNativeBattleBehaviors = new HashSet<string>(StringComparer.Ordinal)
+	private static readonly HashSet<string> IncompatibleNativeMissionBehaviors = new HashSet<string>(StringComparer.Ordinal)
 	{
 		"DefaultBattleMissionAgentSpawnLogic",
 		"BattleReinforcementsSpawnController",
@@ -37,7 +37,12 @@ internal static class CastleAftermathSiegeSceneBridge
 		"AssignPlayerRoleInTeamMissionController",
 		"GeneralsAndCaptainsAssignmentLogic",
 		"MissionAgentPanicHandler",
-		"AgentMoraleInteractionLogic"
+		"AgentMoraleInteractionLogic",
+		"MissionGauntletOrderOfBattleUIHandler",
+		"MissionOrderOfBattleUIHandler",
+		"DeploymentMissionView",
+		"MissionDeploymentBoundaryMarker",
+		"MissionEntitySelectionUIHandler"
 	};
 
 	internal static bool TryOpenMission(Settlement settlement, Location location, string source)
@@ -123,7 +128,7 @@ internal static class CastleAftermathSiegeSceneBridge
 				throw new InvalidOperationException("BannerlordMissions.OpenSiegeMissionWithDeployment returned null.");
 			}
 
-			int removedNativeBehaviors = RemoveIncompatibleNativeBattleBehaviors(mission);
+			int removedNativeMissionBehaviors = RemoveIncompatibleNativeMissionBehaviors(mission);
 			mission.AddMissionBehavior(new CastleAftermathPlayerRosterMissionBehavior(selectedAllies));
 			CampaignMissionComponent campaignMission = mission.GetMissionBehavior<CampaignMissionComponent>();
 			if (campaignMission == null)
@@ -139,14 +144,14 @@ internal static class CastleAftermathSiegeSceneBridge
 				+ " scene=" + sceneName + " levels=" + sceneLevels
 				+ " allies=" + selectedAllies.TotalManCount
 				+ " prisoners=" + CastleAftermathRuntimeBridge.SelectedPrisonerCount
-				+ " removedNativeBehaviors=" + removedNativeBehaviors
+				+ " removedNativeMissionBehaviors=" + removedNativeMissionBehaviors
 				+ " wallSections=" + wallRatios.Length + " breached=" + breachedSections);
 			Logger.Log("CastleAftermath", "Opened castle aftermath with troop-inspection siege host. Host="
 				+ SiegeCastleWarSceneProfile.RequiredMissionHostName
 				+ ", Scene=" + sceneName + ", Levels=" + sceneLevels
 				+ ", Allies=" + selectedAllies.TotalManCount
 				+ ", Prisoners=" + CastleAftermathRuntimeBridge.SelectedPrisonerCount
-				+ ", RemovedNativeBehaviors=" + removedNativeBehaviors
+				+ ", RemovedNativeMissionBehaviors=" + removedNativeMissionBehaviors
 				+ ", WallSections=" + wallRatios.Length + ", Breached=" + breachedSections);
 			return true;
 		}
@@ -159,7 +164,7 @@ internal static class CastleAftermathSiegeSceneBridge
 		}
 	}
 
-	private static int RemoveIncompatibleNativeBattleBehaviors(Mission mission)
+	private static int RemoveIncompatibleNativeMissionBehaviors(Mission mission)
 	{
 		if (mission?.MissionBehaviors == null)
 		{
@@ -167,12 +172,14 @@ internal static class CastleAftermathSiegeSceneBridge
 		}
 
 		List<MissionBehavior> remove = mission.MissionBehaviors
-			.Where(behavior => behavior != null && IncompatibleNativeBattleBehaviors.Contains(behavior.GetType().Name))
+			.Where(behavior => behavior != null && IncompatibleNativeMissionBehaviors.Contains(behavior.GetType().Name))
 			.ToList();
 		foreach (MissionBehavior behavior in remove)
 		{
 			mission.RemoveMissionBehavior(behavior);
 		}
+		Logger.Log("CastleAftermath", "Removed incompatible native siege behaviors/views. Count="
+			+ remove.Count + ", Types=" + string.Join(",", remove.Select(behavior => behavior.GetType().Name)));
 		return remove.Count;
 	}
 }
