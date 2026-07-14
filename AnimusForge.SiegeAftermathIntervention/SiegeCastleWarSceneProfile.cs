@@ -13,7 +13,7 @@ public static class SiegeCastleWarSceneProfile
 
     public const string SiegeSceneLevelTag = "siege";
 
-    public const string RequiredMissionHostName = "CustomSiegeBattle";
+    public const string RequiredMissionHostName = "Battle";
 
     public static string BuildSceneLevels(string upgradeLevelTag)
     {

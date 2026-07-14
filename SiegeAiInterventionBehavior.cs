@@ -1273,8 +1273,26 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				availableMembers,
 				availablePrisoners,
 				initialMembers,
-				delegate(TroopRoster selectedMembers, TroopRoster selectedPrisoners)
+				delegate(
+					TroopRoster selectedMembers,
+					TroopRoster selectedPrisoners,
+					TroopRoster notSelectedMembers,
+					TroopRoster notSelectedPrisoners)
 				{
+					if (!TroopInspectionBehavior.TryPrepareExternalInspectionRuntime(
+						selectedMembers,
+						selectedPrisoners,
+						notSelectedMembers,
+						notSelectedPrisoners,
+						out string prepareError))
+					{
+						Logger.Log("CastleAftermath", "Prepare troop-inspection castle runtime failed: " + prepareError);
+						InformationManager.DisplayMessage(new InformationMessage(
+							"城堡处置准备失败，队伍状态已恢复。",
+							Colors.Red));
+						ResetAftermathRuntimeGuards("castle_inspection_runtime_prepare_failed");
+						return;
+					}
 					StoreSelectedInterventionRoster(selectedMembers, SiegeCastleRosterSelectionProfile.MaxAlliedTroops);
 					CastleAftermathRuntimeBridge.StoreSelectedPrisonerRoster(selectedPrisoners);
 					int alliedCount = _selectedInterventionRoster?.TotalManCount ?? 0;
@@ -1292,6 +1310,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
+			TroopInspectionBehavior.CancelPreparedExternalInspectionRuntime("castle_roster_selection_exception");
 			Logger.Log("SiegeAiIntervention", "Open castle aftermath roster selection failed: " + ex);
 			return false;
 		}
@@ -1675,7 +1694,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		if (!DoesLiveCurrentSettlementMatchActiveIntervention())
+		bool preparedCastleInspection = _activeSettlement?.IsCastle == true
+			&& TroopInspectionBehavior.IsPreparedExternalInspectionRuntime;
+		if (!DoesLiveCurrentSettlementMatchActiveIntervention() && !preparedCastleInspection)
 		{
 			GcczDiagnosticLog.Log("Mission", "pending start rejected settlementMismatch pendingSettlement=" + (_activeSettlementId ?? "N/A"));
 			Logger.Log("SiegeAiIntervention", "Ignored pending GCCZ mission start because live settlement did not match. PendingSettlement=" + (_activeSettlementId ?? "N/A"));
@@ -1853,6 +1874,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		if (_activeMode == InterventionMode.None && _pendingMode == InterventionMode.None)
 		{
 			return;
+		}
+		if (TroopInspectionBehavior.IsPreparedExternalInspectionRuntime)
+		{
+			TroopInspectionBehavior.CleanupRuntime("castle_gccz_mission_ended_before_aftermath");
 		}
 		AfGcczShoutBridge.ResetPostprocessFrequencyForMissionBoundary(SiegePostprocessFrequencyProfile.MissionEndResetSource);
 		GcczDiagnosticLog.Log("Mission", "ending settlement=" + (_activeSettlementId ?? "N/A")
@@ -13734,6 +13759,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			TroopInspectionBehavior.CancelPreparedExternalInspectionRuntime("gccz_reset:" + (reason ?? "N/A"));
 			_activeMode = InterventionMode.None;
 			_pendingMode = InterventionMode.None;
 			_activeSettlementId = "";

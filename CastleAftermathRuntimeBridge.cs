@@ -94,7 +94,7 @@ internal static class CastleAftermathRuntimeBridge
 		TroopRoster availableMembers,
 		TroopRoster availablePrisoners,
 		TroopRoster initialMembers,
-		Action<TroopRoster, TroopRoster> onDone,
+		Action<TroopRoster, TroopRoster, TroopRoster, TroopRoster> onDone,
 		Action onCancel)
 	{
 		try
@@ -149,7 +149,9 @@ internal static class CastleAftermathRuntimeBridge
 
 					onDone(
 						CloneRoster(rightMemberRoster, SiegeCastleRosterSelectionProfile.MaxAlliedTroops),
-						CloneRoster(rightPrisonerRoster, SiegeCastleRosterSelectionProfile.MaxPrisoners));
+						CloneRoster(rightPrisonerRoster, SiegeCastleRosterSelectionProfile.MaxPrisoners),
+						CloneRoster(leftMemberRoster, int.MaxValue),
+						CloneRoster(leftPrisonerRoster, int.MaxValue));
 				}),
 				IsDismissMode = true,
 				IsTroopUpgradesDisabled = true,
@@ -180,9 +182,7 @@ internal static class CastleAftermathRuntimeBridge
 		}
 	}
 
-	internal static void AttachMissionBehavior(
-		Mission mission,
-		Func<Mission, IAgentOriginBase, int, int, FormationClass, Agent> prisonerSpawner = null)
+	internal static void AttachMissionBehavior(Mission mission)
 	{
 		try
 		{
@@ -200,11 +200,11 @@ internal static class CastleAftermathRuntimeBridge
 			if (mission.GetMissionBehavior<TroopInspectionMissionLogic>() == null)
 			{
 				mission.AddMissionBehavior(new TroopInspectionMissionLogic(
+					TroopInspectionBehavior.CurrentInspectionDummyPartyId,
 					GetSelectedPrisonerRosterSnapshot(),
 					commandBehavior.RegisterPrisoner,
 					commandBehavior.CompleteSpawn,
-					commandBehavior.SharedCleanup,
-					prisonerSpawner));
+					commandBehavior.SharedCleanup));
 			}
 			Logger.Log("CastleAftermath", "Attached troop-inspection prisoner and castle command behaviors. Selected=" + SelectedPrisonerCount);
 		}

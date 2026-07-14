@@ -42,6 +42,12 @@ public static partial class TroopInspectionBehavior
 		public string InspectionSummary { get; set; }
 
 		public string NotSelectedSummary { get; set; }
+
+		public bool RestoreCampaignEncounterAfterInspection { get; set; }
+
+		public MapEventSide OriginalMainPartyMapEventSide { get; set; }
+
+		public PlayerEncounter OriginalPlayerEncounter { get; set; }
 	}
 
 	private sealed class MainPartyRoleSnapshot
@@ -267,6 +273,113 @@ public static partial class TroopInspectionBehavior
 		return !string.IsNullOrEmpty(dummyPartyStringId) && string.Equals(dummyPartyStringId, _dummyPartyStringId, StringComparison.Ordinal);
 	}
 
+	internal static bool IsPreparedExternalInspectionRuntime => _runtime?.RestoreCampaignEncounterAfterInspection == true;
+
+	internal static string CurrentInspectionDummyPartyId => _dummyPartyStringId;
+
+	internal static bool TryPrepareExternalInspectionRuntime(
+		TroopRoster selectedMembers,
+		TroopRoster selectedPrisoners,
+		TroopRoster notSelectedMembers,
+		TroopRoster notSelectedPrisoners,
+		out string error)
+	{
+		error = "";
+		if (Mission.Current != null || _runtime != null || _queuedOpenInspection || _isOpening)
+		{
+			error = "inspection_runtime_busy";
+			return false;
+		}
+
+		try
+		{
+			_cleanupDone = false;
+			_activeInspectionMission = null;
+			_pendingSelection = null;
+			EnsureMainHeroReadyForInspection("external_prepare");
+
+			TroopRoster inspectionMembers = BuildSelectionRosterFromUi(selectedMembers);
+			AddPlayerToInspectionRoster(inspectionMembers);
+			TroopInspectionRuntime runtime = new TroopInspectionRuntime
+			{
+				InspectionRoster = CloneRoster(inspectionMembers),
+				InspectionPrisonerRoster = BuildPrisonerSelectionRosterFromUi(selectedPrisoners),
+				NotSelectedMemberRoster = BuildSelectionRosterFromUi(notSelectedMembers),
+				NotSelectedPrisonerRoster = BuildPrisonerSelectionRosterFromUi(notSelectedPrisoners),
+				RestoreCampaignEncounterAfterInspection = true
+			};
+			runtime.InspectionSummary = RosterSummary(runtime.InspectionRoster) + ", prisoners=" + RosterSummary(runtime.InspectionPrisonerRoster);
+			runtime.NotSelectedSummary = RosterSummary(runtime.NotSelectedMemberRoster) + ", prisoners=" + RosterSummary(runtime.NotSelectedPrisonerRoster);
+			_runtime = runtime;
+			PrepareSelectionRuntimeWithMainPartySplit(runtime);
+			Log("external_runtime_prepared inspection=" + runtime.InspectionSummary
+				+ " not_selected=" + runtime.NotSelectedSummary);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			error = ex.GetType().Name + ": " + ex.Message;
+			Log("external_runtime_prepare failed: " + error);
+			CleanupRuntime("external_prepare_failed");
+			return false;
+		}
+	}
+
+	internal static bool TryOpenPreparedExternalInspectionMission(
+		MissionInitializerRecord initializer,
+		out Mission mission,
+		out string error)
+	{
+		mission = null;
+		error = "";
+		if (!IsPreparedExternalInspectionRuntime || MobileParty.MainParty == null)
+		{
+			error = "external_inspection_runtime_not_prepared";
+			return false;
+		}
+
+		try
+		{
+			_isOpening = true;
+			EnsureMainHeroReadyForInspection("external_open");
+			PrepareRuntime(MobileParty.MainParty);
+			IMission openedMission = CampaignMission.OpenBattleMission(initializer);
+			mission = openedMission as Mission;
+			if (mission == null)
+			{
+				throw new InvalidOperationException("CampaignMission.OpenBattleMission returned non-Mission.");
+			}
+			_activeInspectionMission = mission;
+			PlayerEncounter.StartAttackMission();
+			MapEvent.PlayerMapEvent?.BeginWait();
+			LogMissionSourceDiag("after_open_external_battle");
+			Log("external_mission_opened scene=" + initializer.SceneName
+				+ " levels=" + initializer.SceneLevels
+				+ " mode=" + mission.Mode);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			error = ex.GetType().Name + ": " + ex.Message;
+			Log("external_mission_open failed: " + error + "\n" + ex.StackTrace);
+			CleanupRuntime("external_open_failed");
+			mission = null;
+			return false;
+		}
+		finally
+		{
+			_isOpening = false;
+		}
+	}
+
+	internal static void CancelPreparedExternalInspectionRuntime(string reason)
+	{
+		if (IsPreparedExternalInspectionRuntime && Mission.Current == null)
+		{
+			CleanupRuntime(reason ?? "external_cancel");
+		}
+	}
+
 	internal static bool ShouldSuppressReinforcementSystem(Mission mission)
 	{
 		if (mission == null)
@@ -322,6 +435,7 @@ public static partial class TroopInspectionBehavior
 		CleanupMapEventAndPlayerEncounter(mapEvent, reason);
 		DestroyInspectionDummyParty(dummyParty, dummyId, "inspection_dummy_cleanup");
 		CleanupOrphanInspectionDummyParties(dummyParty, "inspection_dummy_orphan_cleanup");
+		RestoreExternalCampaignEncounter(runtime, reason);
 		RestoreMainHeroAfterInspection(reason);
 		Log("cleanup end reason=" + reason);
 	}
@@ -1589,6 +1703,7 @@ public static partial class TroopInspectionBehavior
 
 	private static void PrepareRuntime(MobileParty mainParty)
 	{
+		CaptureAndDetachExternalCampaignEncounter();
 		CampaignVec2 mainPosition = mainParty.Position;
 		Vec2 direction = ResolveEncounterDirection(mainParty);
 		CampaignVec2 dummyPosition = mainPosition - direction * 0.4f;
@@ -1617,6 +1732,49 @@ public static partial class TroopInspectionBehavior
 		PlayerEncounter.Current.SetupFields(PartyBase.MainParty, _dummyParty.Party);
 		SetPrivateField<MapEvent>(PlayerEncounter.Current, "_mapEvent", _mapEvent);
 		Log($"player_encounter_context battle={PlayerEncounter.Battle != null} is_mapevent={PlayerEncounter.Battle == _mapEvent} player_mapevent={MapEvent.PlayerMapEvent == _mapEvent}");
+	}
+
+	private static void CaptureAndDetachExternalCampaignEncounter()
+	{
+		TroopInspectionRuntime runtime = _runtime;
+		if (runtime?.RestoreCampaignEncounterAfterInspection != true)
+		{
+			return;
+		}
+
+		runtime.OriginalPlayerEncounter = PlayerEncounter.Current;
+		runtime.OriginalMainPartyMapEventSide = PartyBase.MainParty?.MapEventSide;
+		if (PartyBase.MainParty != null && runtime.OriginalMainPartyMapEventSide != null)
+		{
+			PartyBase.MainParty.MapEventSide = null;
+		}
+		Log("external_campaign_context_detached original_encounter=" + (runtime.OriginalPlayerEncounter != null)
+			+ " original_mapevent=" + (runtime.OriginalMainPartyMapEventSide?.MapEvent != null));
+	}
+
+	private static void RestoreExternalCampaignEncounter(TroopInspectionRuntime runtime, string reason)
+	{
+		if (runtime?.RestoreCampaignEncounterAfterInspection != true)
+		{
+			return;
+		}
+
+		try
+		{
+			if (PartyBase.MainParty != null)
+			{
+				PartyBase.MainParty.MapEventSide = runtime.OriginalMainPartyMapEventSide;
+			}
+			SetPlayerEncounterProperty(runtime.OriginalPlayerEncounter);
+			Log("external_campaign_context_restored reason=" + (reason ?? "N/A")
+				+ " encounter=" + (runtime.OriginalPlayerEncounter != null)
+				+ " mapevent=" + (runtime.OriginalMainPartyMapEventSide?.MapEvent != null));
+		}
+		catch (Exception ex)
+		{
+			Log("external_campaign_context_restore failed reason=" + (reason ?? "N/A")
+				+ " " + ex.GetType().Name + ": " + ex.Message);
+		}
 	}
 
 	private static MissionInitializerRecord BuildMissionInitializerRecord(MobileParty mainParty)
@@ -1924,11 +2082,16 @@ public static partial class TroopInspectionBehavior
 
 	private static void ClearPlayerEncounterProperty()
 	{
+		SetPlayerEncounterProperty(null);
+	}
+
+	private static void SetPlayerEncounterProperty(PlayerEncounter encounter)
+	{
 		try
 		{
 			if (Campaign.Current != null)
 			{
-				typeof(Campaign).GetProperty("PlayerEncounter", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)?.SetValue(Campaign.Current, null);
+				typeof(Campaign).GetProperty("PlayerEncounter", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)?.SetValue(Campaign.Current, encounter);
 			}
 		}
 		catch
@@ -2891,8 +3054,6 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 
 	private readonly Action<string> _externalCleanup;
 
-	private readonly Func<Mission, IAgentOriginBase, int, int, FormationClass, Agent> _externalPrisonerSpawner;
-
 	private readonly bool _externalControlsPrisonersAfterDeployment;
 
 	private BattleEndLogic _battleEndLogic;
@@ -3005,17 +3166,17 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 	}
 
 	public TroopInspectionMissionLogic(string dummyPartyStringId, TroopRoster inspectionPrisonerRoster)
-		: this(dummyPartyStringId, inspectionPrisonerRoster, null, null, null, null, false)
+		: this(dummyPartyStringId, inspectionPrisonerRoster, null, null, null, false)
 	{
 	}
 
 	internal TroopInspectionMissionLogic(
+		string dummyPartyStringId,
 		TroopRoster inspectionPrisonerRoster,
 		Action<Agent, bool> externalPrisonerSpawned,
 		Action<int, int, int> externalPrisonerSpawnCompleted,
-		Action<string> externalCleanup,
-		Func<Mission, IAgentOriginBase, int, int, FormationClass, Agent> externalPrisonerSpawner = null)
-		: this(null, inspectionPrisonerRoster, externalPrisonerSpawned, externalPrisonerSpawnCompleted, externalCleanup, externalPrisonerSpawner, true)
+		Action<string> externalCleanup)
+		: this(dummyPartyStringId, inspectionPrisonerRoster, externalPrisonerSpawned, externalPrisonerSpawnCompleted, externalCleanup, true)
 	{
 	}
 
@@ -3025,7 +3186,6 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		Action<Agent, bool> externalPrisonerSpawned,
 		Action<int, int, int> externalPrisonerSpawnCompleted,
 		Action<string> externalCleanup,
-		Func<Mission, IAgentOriginBase, int, int, FormationClass, Agent> externalPrisonerSpawner,
 		bool externalControlsPrisonersAfterDeployment)
 	{
 		_dummyPartyStringId = dummyPartyStringId;
@@ -3033,7 +3193,6 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		_externalPrisonerSpawned = externalPrisonerSpawned;
 		_externalPrisonerSpawnCompleted = externalPrisonerSpawnCompleted;
 		_externalCleanup = externalCleanup;
-		_externalPrisonerSpawner = externalPrisonerSpawner;
 		_externalControlsPrisonersAfterDeployment = externalControlsPrisonersAfterDeployment;
 	}
 
@@ -3479,15 +3638,6 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		int formationTroopIndex,
 		FormationClass formationClass)
 	{
-		if (_externalPrisonerSpawner != null)
-		{
-			return _externalPrisonerSpawner(
-				base.Mission,
-				origin,
-				formationTroopCount,
-				formationTroopIndex,
-				formationClass);
-		}
 		return BannerlordApiCompat.SpawnPrisonerInspectionTroop(
 			base.Mission,
 			origin,
