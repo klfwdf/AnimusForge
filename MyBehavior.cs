@@ -26090,6 +26090,27 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static bool TryGetLatestCompressedMemoryForExternal(Hero hero, out string stableKey, out string gameDate, out string memoryText, out int day)
+	{
+		stableKey = "";
+		gameDate = "";
+		memoryText = "";
+		day = -1;
+		try
+		{
+			MyBehavior behavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			return behavior != null && behavior.TryGetLatestCompressedMemoryInternal(hero, out stableKey, out gameDate, out memoryText, out day);
+		}
+		catch
+		{
+			stableKey = "";
+			gameDate = "";
+			memoryText = "";
+			day = -1;
+			return false;
+		}
+	}
+
 	private bool HasMeaningfulDialogueHistoryInternal(Hero hero)
 	{
 		return GetLastMeaningfulDialogueDayInternal(hero) >= 0;
@@ -26151,6 +26172,41 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 		}
 		return false;
+	}
+
+	private bool TryGetLatestCompressedMemoryInternal(Hero hero, out string stableKey, out string gameDate, out string memoryText, out int day)
+	{
+		stableKey = "";
+		gameDate = "";
+		memoryText = "";
+		day = -1;
+		if (hero == null)
+		{
+			return false;
+		}
+		CompressedMemoryBlock block = LoadCompressedMemoryBlocks(hero)
+			.Where(x => x != null && (!string.IsNullOrWhiteSpace(x.RichTitle) || !string.IsNullOrWhiteSpace(x.Summary)))
+			.OrderByDescending(x => x.GameDayIndex)
+			.ThenByDescending(x => x.EndHour)
+			.ThenByDescending(x => x.StartHour)
+			.ThenByDescending(x => x.CreatedUtcTicks)
+			.FirstOrDefault();
+		if (block == null)
+		{
+			return false;
+		}
+		string title = (block.RichTitle ?? "").Trim();
+		string summary = (block.Summary ?? "").Trim();
+		memoryText = string.IsNullOrWhiteSpace(title) ? summary : (string.IsNullOrWhiteSpace(summary) ? title : (title + "：" + summary));
+		if (string.IsNullOrWhiteSpace(memoryText))
+		{
+			return false;
+		}
+		string heroId = (hero.StringId ?? "hero").Trim();
+		stableKey = "memory:" + heroId + ":" + ((block.Id ?? BuildCompressedMemoryBlockId(heroId, block.GameDayIndex)).Trim());
+		gameDate = (block.GameDate ?? "").Trim();
+		day = block.GameDayIndex;
+		return true;
 	}
 
 	private static bool IsMeaningfulDialogueLineForProactiveLetter(string line)
@@ -32902,7 +32958,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
 		}
-		List<PostprocessRuleEntry> royalRules = AIConfigHandler.BuildRuntimeRoyalPostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject, postprocessRuleSelected: false) ?? new List<PostprocessRuleEntry>();
+		List<PostprocessRuleEntry> royalRules = AIConfigHandler.BuildRuntimeRoyalPostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject) ?? new List<PostprocessRuleEntry>();
 		List<PostprocessRuleEntry> actionRules = MergePostprocessRules(rules, royalRules);
 		if (actionRules == null || actionRules.Count == 0)
 		{
@@ -33039,7 +33095,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			text2 = string.IsNullOrWhiteSpace(extraFact) ? "（无）" : NormalizePlayerNameForPostprocess(extraFact.Trim(), text9);
 		}
-		List<PostprocessRuleEntry> royalRules = AIConfigHandler.BuildRuntimeRoyalPostprocessRulesForExternal(targetHero, postprocessRuleSelected: false) ?? new List<PostprocessRuleEntry>();
+		List<PostprocessRuleEntry> royalRules = AIConfigHandler.BuildRuntimeRoyalPostprocessRulesForExternal(targetHero) ?? new List<PostprocessRuleEntry>();
 		List<PostprocessRuleEntry> list = MergePostprocessRules(AIConfigHandler.BuildRuntimeKingdomServicePostprocessRules() ?? new List<PostprocessRuleEntry>(), royalRules);
 		if (list.Count == 0)
 		{
@@ -33086,7 +33142,7 @@ public class MyBehavior : CampaignBehaviorBase
 			return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
 		}
 		string text11 = targetHero?.Name?.ToString() ?? "NPC";
-		List<PostprocessRuleEntry> royalRules = AIConfigHandler.BuildRuntimeRoyalPostprocessRulesForExternal(targetHero, postprocessRuleSelected: false) ?? new List<PostprocessRuleEntry>();
+		List<PostprocessRuleEntry> royalRules = AIConfigHandler.BuildRuntimeRoyalPostprocessRulesForExternal(targetHero) ?? new List<PostprocessRuleEntry>();
 		List<PostprocessRuleEntry> actionRules = MergePostprocessRules(AIConfigHandler.DuelPostprocessRules, royalRules);
 		string text2 = NormalizePlayerNameForPostprocess(BuildGuardrailSemanticContext(targetHero, extraFact), text11);
 		if (string.IsNullOrWhiteSpace(text2))

@@ -709,12 +709,13 @@ public static class AIConfigHandler
 		}
 	}
 
-	public static List<PostprocessRuleEntry> BuildRuntimeRoyalPostprocessRulesForExternal(Hero targetHero, bool postprocessRuleSelected)
+	public static List<PostprocessRuleEntry> BuildRuntimeRoyalPostprocessRulesForExternal(Hero targetHero)
 	{
 		List<PostprocessRuleEntry> list = new List<PostprocessRuleEntry>();
 		try
 		{
-			if (!postprocessRuleSelected || !IsRoyalAbdicationPostprocessTargetForExternal(targetHero))
+			// 王位让渡是按身份资格常驻的后处理规则：只检查目标国王与玩家状态，禁止再绑定 diplomacy 或其他前处理话题。
+			if (!IsRoyalAbdicationPostprocessTargetForExternal(targetHero))
 			{
 				return list;
 			}
@@ -731,7 +732,7 @@ public static class AIConfigHandler
 					Description = rule?.Description ?? ""
 				});
 			}
-			Logger.Log("AIConfig", "[RoyalPostprocessRules] targetHero=" + (targetHero?.StringId ?? "") + " rules=" + ((list.Count == 0) ? "（无）" : string.Join(",", list.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
+			Logger.Log("AIConfig", "[RoyalPostprocessRules] mode=resident targetHero=" + (targetHero?.StringId ?? "") + " rules=" + ((list.Count == 0) ? "（无）" : string.Join(",", list.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
 		}
 		catch
 		{
