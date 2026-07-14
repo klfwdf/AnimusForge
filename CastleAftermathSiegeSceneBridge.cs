@@ -423,8 +423,36 @@ internal sealed class CastleAftermathPlayerRosterMissionBehavior : MissionLogic
 		{
 			return;
 		}
+		if (!TryEnterNonCombatStartupMode(mission))
+		{
+			return;
+		}
 		_spawned = true;
 		SpawnPlayerAndAllies();
+	}
+
+	private static bool TryEnterNonCombatStartupMode(Mission mission)
+	{
+		try
+		{
+			if (mission == null)
+			{
+				return false;
+			}
+			MissionMode previousMode = mission.Mode;
+			if (previousMode == MissionMode.Battle)
+			{
+				mission.SetMissionMode(MissionMode.StartUp, atStart: false);
+				Logger.Log("CastleAftermath", "Castle mission switched to non-combat startup mode before agent spawn. PreviousMode="
+					+ previousMode + ", CurrentMode=" + mission.Mode + ", Agents=" + (mission.Agents?.Count ?? 0));
+			}
+			return mission.Mode == MissionMode.StartUp;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CastleAftermath", "Castle mission startup-mode preparation failed: " + ex);
+			return false;
+		}
 	}
 
 	private void SpawnPlayerAndAllies()
