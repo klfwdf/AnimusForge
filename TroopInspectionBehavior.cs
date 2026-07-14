@@ -2385,6 +2385,10 @@ private const string HoldingDummyPartyPrefix = "animusforge_troop_inspection_hol
 		CreateInspectionHoldingDummyParty(runtime, mainParty);
 		MoveMemberRosterFromMainParty(runtime.NotSelectedMemberRoster, runtime.HoldingDummyParty, "inspection_holding");
 		MovePrisonerRosterFromMainParty(runtime.NotSelectedPrisonerRoster, runtime.HoldingDummyParty, "inspection_holding_prisoners");
+		if (runtime.RestoreCampaignEncounterAfterInspection)
+		{
+			ReconcileExternalCastlePrisonerRemainder(runtime, beforePrisoners);
+		}
 
 		RebuildTroopRosterCachedTotals(mainParty.MemberRoster, "prepare_runtime_main_after_split", throwOnFailure: true);
 		RebuildTroopRosterCachedTotals(runtime.HoldingDummyParty?.MemberRoster, "prepare_runtime_holding_after_split", throwOnFailure: true);
@@ -2557,6 +2561,71 @@ private const string HoldingDummyPartyPrefix = "animusforge_troop_inspection_hol
 			}
 		}
 		Log("move_prisoner_roster_result label=" + label + " " + result);
+	}
+
+	private static void ReconcileExternalCastlePrisonerRemainder(
+		TroopInspectionRuntime runtime,
+		Dictionary<CharacterObject, RosterTotals> originalTotals)
+	{
+		TroopRoster mainRoster = PartyBase.MainParty?.PrisonRoster;
+		TroopRoster holdingRoster = runtime?.HoldingDummyParty?.PrisonRoster;
+		if (mainRoster == null || holdingRoster == null)
+		{
+			throw new InvalidOperationException("Castle prisoner rosters are unavailable after inspection split.");
+		}
+
+		Dictionary<CharacterObject, RosterTotals> holdingTotals = BuildRosterTotals(holdingRoster);
+		int adjusted = 0;
+		foreach (KeyValuePair<CharacterObject, RosterTotals> pair in originalTotals ?? new Dictionary<CharacterObject, RosterTotals>())
+		{
+			CharacterObject character = pair.Key;
+			RosterTotals original = pair.Value;
+			holdingTotals.TryGetValue(character, out RosterTotals holding);
+			int expectedNumber = Math.Max(0, original.Number - holding.Number);
+			int index = mainRoster.FindIndexOfTroop(character);
+			int actualNumber = index >= 0 ? mainRoster.GetElementNumber(index) : 0;
+			if (actualNumber != expectedNumber)
+			{
+				throw new InvalidOperationException("Castle selected prisoner count mismatch for " + SafeCharacterId(character)
+					+ ". expected=" + expectedNumber + " actual=" + actualNumber);
+			}
+			if (index < 0)
+			{
+				continue;
+			}
+
+			TroopRosterElement current = GetFreshRosterElementCopy(mainRoster, index);
+			int expectedWounded = SiegeCastleRosterSelectionProfile.ResolveSelectedStackWounded(
+				original.Number,
+				original.Wounded,
+				holding.Number,
+				holding.Wounded);
+			int expectedXp = SiegeCastleRosterSelectionProfile.ResolveSelectedStackXp(original.Xp, holding.Xp);
+			bool changed = false;
+			if (current.WoundedNumber != expectedWounded)
+			{
+				mainRoster.SetElementWoundedNumber(index, expectedWounded);
+				changed = true;
+			}
+			if (character?.IsHero != true && current.Xp != expectedXp)
+			{
+				mainRoster.SetElementXp(index, expectedXp);
+				changed = true;
+			}
+			if (changed)
+			{
+				adjusted++;
+				Log("castle_prisoner_remainder_reconciled troop=" + SafeCharacterId(character)
+					+ " number=" + expectedNumber
+					+ " wounded=" + current.WoundedNumber + "->" + expectedWounded
+					+ " xp=" + current.Xp + "->" + expectedXp
+					+ " original=" + original
+					+ " holding=" + holding);
+			}
+		}
+		Log("castle_prisoner_remainder_reconcile_complete adjusted=" + adjusted
+			+ " main=" + RosterSummary(mainRoster)
+			+ " holding=" + RosterSummary(holdingRoster));
 	}
 
 	private static void ValidateInspectionSplit(TroopInspectionRuntime runtime, Dictionary<CharacterObject, RosterTotals> beforeMembers, Dictionary<CharacterObject, RosterTotals> beforePrisoners, int beforeMemberCount, int beforePrisonerCount)

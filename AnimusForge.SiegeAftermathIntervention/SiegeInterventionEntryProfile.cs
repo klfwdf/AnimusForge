@@ -75,13 +75,15 @@ public static class SiegeInterventionEntryProfile
     public static string BuildEnabledTooltip(bool isCastle)
     {
         return isCastle
-            ? "{=!}暂不立即处置战后事务；你将披甲带随行士兵进入城堡庭院，现场决定安抚、宽恕、搜掠或血洗。"
+            ? "{=!}暂不立即结算；你将先选择最多50名我方士兵与200名战俘，再进入城堡战争场景亲自处置。"
             : EnabledTooltip;
     }
 
     public static string BuildDecisionPolicyMessage(bool isCastle)
     {
-        return DecisionPolicyMessage;
+        return isCastle
+            ? SiegeCastleRosterSelectionProfile.BuildDecisionPolicyMessage()
+            : DecisionPolicyMessage;
     }
 
     public static string[] GetPreferredLocationIds(bool isTown, bool isCastle)

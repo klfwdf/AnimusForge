@@ -1,3 +1,5 @@
+using System;
+
 namespace AnimusForge.SiegeAftermathIntervention;
 
 /// <summary>
@@ -40,6 +42,8 @@ public static class SiegeCastleRosterSelectionProfile
 
     public const string SelectionFailedSource = "castle_roster_selection_failed";
 
+    public const string DecisionPolicyMessage = "【城堡处置】进入场景后可与守城战败士兵和被俘领主交涉，并对战俘下达收编或屠戮命令；未明确处置直接离场时默认按宽恕结算。城镇民众的搜掠、宣抚、血洗和迁殖规则不适用于城堡。";
+
     public static bool IsWithinLimits(int alliedTroopCount, int prisonerCount)
     {
         return alliedTroopCount >= 0
@@ -58,9 +62,33 @@ public static class SiegeCastleRosterSelectionProfile
         return Clamp(count, MaxPrisoners);
     }
 
+    public static int ResolveSelectedStackWounded(
+        int originalNumber,
+        int originalWounded,
+        int holdingNumber,
+        int holdingWounded)
+    {
+        int safeOriginalNumber = Math.Max(0, originalNumber);
+        int safeHoldingNumber = Math.Min(safeOriginalNumber, Math.Max(0, holdingNumber));
+        int selectedNumber = safeOriginalNumber - safeHoldingNumber;
+        int safeOriginalWounded = Math.Min(safeOriginalNumber, Math.Max(0, originalWounded));
+        int safeHoldingWounded = Math.Min(safeHoldingNumber, Math.Max(0, holdingWounded));
+        return Math.Min(selectedNumber, Math.Max(0, safeOriginalWounded - safeHoldingWounded));
+    }
+
+    public static int ResolveSelectedStackXp(int originalXp, int holdingXp)
+    {
+        return Math.Max(0, Math.Max(0, originalXp) - Math.Max(0, holdingXp));
+    }
+
     public static string BuildInstructionMessage()
     {
         return "【城堡处置】选择最多 " + MaxAlliedTroops + " 名我方士兵和 " + MaxPrisoners + " 名俘虏进入城堡；俘虏可包含被俘领主。";
+    }
+
+    public static string BuildDecisionPolicyMessage()
+    {
+        return DecisionPolicyMessage;
     }
 
     public static string BuildConfirmedMessage(int alliedTroopCount, int prisonerCount)
