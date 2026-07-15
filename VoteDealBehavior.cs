@@ -98,12 +98,19 @@ namespace AnimusForge
 			public int TributeDurationDays;
 			public float CreatedDay;
 			public bool CounterpartCreated;
+			public string FirstDecisionBasicKey;
+			public string ParticipantHeroIds;
+		}
+
+		private sealed class BilateralDiplomacyMemoryMarker
+		{
 		}
 
 		private List<VoteDealRecord> _activeDeals = new List<VoteDealRecord>();
 		private Dictionary<string, string> _serializedDeals = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		private List<BilateralDiplomacyRecord> _bilateralDiplomacyRecords = new List<BilateralDiplomacyRecord>();
 		private Dictionary<string, string> _serializedBilateralDiplomacy = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		private Dictionary<string, string> _dialogueProposalDecisionKeys = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
 		private const string DealIdPrefix = "VD";
 		private const string BilateralDiplomacyIdPrefix = "BD";
@@ -111,6 +118,7 @@ namespace AnimusForge
 
 		private static bool s_globalPatchesApplied;
 		private static bool s_globalPatchesInProgress;
+		private static readonly ConditionalWeakTable<KingdomDecision, BilateralDiplomacyMemoryMarker> BilateralDiplomacyMemoryMarkers = new ConditionalWeakTable<KingdomDecision, BilateralDiplomacyMemoryMarker>();
 		internal static KingdomDecision s_pendingRequiredAgendaDecision;
 		private bool _agendaAutoVoteTickRunning;
 		private readonly HashSet<KingdomDecision> _agendaAutoVoteInProgress = new HashSet<KingdomDecision>();
@@ -252,6 +260,28 @@ namespace AnimusForge
 					Logger.Log("VoteDeal", "[Harmony] KingdomDecision.NeedsPlayerResolution getter not found.");
 				}
 
+				try
+				{
+					MethodInfo isSingleClanDecisionMethod = AccessTools.Method(
+						typeof(KingdomDecision),
+						nameof(KingdomDecision.IsSingleClanDecision));
+					if (isSingleClanDecisionMethod != null)
+					{
+						harmony.Patch(
+							isSingleClanDecisionMethod,
+							prefix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_KingdomDecision_IsSingleClanDecision_Prefix)));
+						Logger.Log("VoteDeal", "[Harmony] Interactive single-clan bilateral agenda patch applied.");
+					}
+					else
+					{
+						Logger.Log("VoteDeal", "[Harmony] KingdomDecision.IsSingleClanDecision not found.");
+					}
+				}
+				catch (Exception singleClanPatchEx)
+				{
+					Logger.Log("VoteDeal", $"[BilateralDiplomacy] Interactive single-clan agenda patch failed: {singleClanPatchEx.Message}");
+				}
+
 				// ── Block ForceDecideDecision when TriggerTime is still future ──
 				Type kingdomMgmtVmType = typeof(KingdomManagementVM);
 				if (kingdomMgmtVmType != null)
@@ -379,6 +409,7 @@ namespace AnimusForge
 			Instance = this;
 			Logger.Log("VoteDeal", "[Lifecycle] RegisterEvents called, Instance set");
 			CampaignEvents.KingdomDecisionConcluded.AddNonSerializedListener(this, OnKingdomDecisionConcluded);
+			CampaignEvents.KingdomDecisionCancelled.AddNonSerializedListener(this, OnKingdomDecisionCancelled);
 			CampaignEvents.HourlyTickEvent.AddNonSerializedListener(this, OnHourlyTick);
 		}
 
@@ -399,6 +430,7 @@ namespace AnimusForge
 				if (_serializedDeals == null) _serializedDeals = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 				if (_bilateralDiplomacyRecords == null) _bilateralDiplomacyRecords = new List<BilateralDiplomacyRecord>();
 				if (_serializedBilateralDiplomacy == null) _serializedBilateralDiplomacy = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+				if (_dialogueProposalDecisionKeys == null) _dialogueProposalDecisionKeys = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
 				if (dataStore.IsSaving)
 				{
@@ -436,7 +468,9 @@ namespace AnimusForge
 							d.TributeFromFirstToSecond.ToString(),
 							d.TributeDurationDays.ToString(),
 							d.CreatedDay.ToString("F6"),
-							d.CounterpartCreated ? "1" : "0");
+							d.CounterpartCreated ? "1" : "0",
+							d.FirstDecisionBasicKey ?? "",
+							d.ParticipantHeroIds ?? "");
 					}
 				}
 
@@ -445,6 +479,9 @@ namespace AnimusForge
 
 				Dictionary<string, string> serializedBilateralDiplomacyForSync = dataStore.IsSaving ? CampaignSaveChunkHelper.FlattenStringDictionary(_serializedBilateralDiplomacy, "_vdBilateralDiplomacy", "VoteDeal") : _serializedBilateralDiplomacy;
 				dataStore.SyncData("_vdBilateralDiplomacy", ref serializedBilateralDiplomacyForSync);
+
+				Dictionary<string, string> dialogueProposalKeysForSync = dataStore.IsSaving ? CampaignSaveChunkHelper.FlattenStringDictionary(_dialogueProposalDecisionKeys, "_vdDialogueProposalKeys", "VoteDeal") : _dialogueProposalDecisionKeys;
+				dataStore.SyncData("_vdDialogueProposalKeys", ref dialogueProposalKeysForSync);
 
 				if (dataStore.IsLoading)
 				{
@@ -500,7 +537,9 @@ namespace AnimusForge
 								TributeFromFirstToSecond = int.TryParse(parts[4], out int tribute) ? tribute : 0,
 								TributeDurationDays = int.TryParse(parts[5], out int duration) ? duration : 0,
 								CreatedDay = float.TryParse(parts[6], out float createdDay) ? createdDay : 0f,
-								CounterpartCreated = parts.Length > 7 && parts[7] == "1"
+								CounterpartCreated = parts.Length > 7 && parts[7] == "1",
+								FirstDecisionBasicKey = parts.Length > 8 ? parts[8] ?? "" : "",
+								ParticipantHeroIds = parts.Length > 9 ? parts[9] ?? "" : ""
 							};
 							if (!string.IsNullOrWhiteSpace(record.Kind)
 								&& !string.IsNullOrWhiteSpace(record.FirstKingdomId)
@@ -511,6 +550,8 @@ namespace AnimusForge
 						}
 					}
 					CleanupBilateralDiplomacyRecords();
+					_dialogueProposalDecisionKeys = CampaignSaveChunkHelper.RestoreStringDictionary(dialogueProposalKeysForSync, "VoteDeal")
+						?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 				}
 			}
 			catch (Exception ex)
@@ -520,6 +561,7 @@ namespace AnimusForge
 				_serializedDeals = new Dictionary<string, string>();
 				_bilateralDiplomacyRecords = new List<BilateralDiplomacyRecord>();
 				_serializedBilateralDiplomacy = new Dictionary<string, string>();
+				_dialogueProposalDecisionKeys = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			}
 		}
 
@@ -529,6 +571,7 @@ namespace AnimusForge
 		{
 			try
 			{
+				UnregisterDialogueProposedDecision(decision);
 				if (_activeDeals == null || _activeDeals.Count == 0) return;
 				if (decision?.Kingdom == null) return;
 
@@ -994,11 +1037,58 @@ namespace AnimusForge
 			}
 		}
 
+		// Vanilla auto-resolves one-clan decisions and picks the outcome sponsored by
+		// the player clan. A bilateral counterpart uses that clan only as a technical
+		// proposer, so keep this one case interactive and leave every other decision vanilla.
+		private static bool Patch_KingdomDecision_IsSingleClanDecision_Prefix(
+			KingdomDecision __instance,
+			ref bool __result)
+		{
+			try
+			{
+				if (!RequiresInteractiveSingleClanBilateralVote(__instance)) return true;
+
+				__result = false;
+				Logger.Log(
+					"VoteDeal",
+					$"[BilateralDiplomacy] Single-clan counterpart kept interactive: kingdom={__instance.Kingdom?.StringId}, decision={GetSafeDecisionTitle(__instance)}");
+				return false;
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Single-clan interactive check failed: {ex.Message}");
+				return true;
+			}
+		}
+
+		private static bool RequiresInteractiveSingleClanBilateralVote(KingdomDecision decision)
+		{
+			if (decision == null || decision.IsEnforced) return false;
+
+			Kingdom playerKingdom = Clan.PlayerClan?.Kingdom;
+			if (playerKingdom == null || decision.Kingdom != playerKingdom) return false;
+			if (playerKingdom.RulingClan != Clan.PlayerClan || playerKingdom.Clans.Count != 1) return false;
+			if (!decision.IsPlayerParticipant) return false;
+			if (!IsBilateralDiplomacyCounterpartAgenda(decision)) return false;
+
+			return IsDecisionPendingInKingdom(decision, playerKingdom);
+		}
+
 		private static bool Patch_BilateralDiplomacy_ShouldBeCancelled_Prefix(KingdomDecision __instance, ref bool __result)
 		{
 			try
 			{
 				VoteDealBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<VoteDealBehavior>();
+				if (behavior?.IsDialogueProposedDecision(__instance) == true)
+				{
+					__result = !IsDialogueProposedDecisionHardValid(__instance, out string hardFailureReason);
+					if (__result)
+					{
+						behavior.UnregisterDialogueProposedDecision(__instance);
+						Logger.Log("ProposeAgenda", "Protected decision became invalid: " + hardFailureReason + " decision=" + GetSafeDecisionTitle(__instance));
+					}
+					return false;
+				}
 				if (behavior?.FindCounterpartRecordForDecision(__instance) == null) return true;
 
 				__result = !IsBilateralCounterpartDecisionStillHardValid(__instance);
@@ -1008,6 +1098,102 @@ namespace AnimusForge
 			{
 				Logger.Log("VoteDeal", $"[BilateralDiplomacy] ShouldBeCancelled guard error: {ex.Message}");
 				return true;
+			}
+		}
+
+		private void RegisterDialogueProposedDecision(KingdomDecision decision, string supportWeight)
+		{
+			if (decision == null) return;
+			string key = BuildVoteDealDecisionKey(decision, includeProposer: true);
+			if (string.IsNullOrWhiteSpace(key)) return;
+			Supporter.SupportWeights weight = ParseSupportWeight(supportWeight);
+			string outcomeKey = BuildDialogueProposalQueriedOutcomeKey(decision);
+			_dialogueProposalDecisionKeys[key] = string.Join(RecordDelimiter.ToString(),
+				CampaignTime.Now.ElapsedDaysUntilNow.ToString("F6"),
+				((int)weight).ToString(),
+				outcomeKey ?? "");
+			Logger.Log("ProposeAgenda", "Protected dialogue proposal registered: " + key + " weight=" + weight + " outcome=" + outcomeKey);
+		}
+
+		private static string BuildDialogueProposalQueriedOutcomeKey(KingdomDecision decision)
+		{
+			try
+			{
+				MBList<DecisionOutcome> initial = new MBList<DecisionOutcome>();
+				foreach (DecisionOutcome outcome in decision?.DetermineInitialCandidates() ?? Enumerable.Empty<DecisionOutcome>())
+				{
+					if (outcome != null) initial.Add(outcome);
+				}
+				if (initial.Count == 0) return "";
+				MBList<DecisionOutcome> narrowed = decision.NarrowDownCandidates(initial, 3);
+				if (narrowed == null || narrowed.Count == 0) return "";
+				decision.DetermineSponsors(narrowed);
+				DecisionOutcome queried = decision.GetQueriedDecisionOutcome(narrowed) ?? narrowed[0];
+				return BuildVoteDealOutcomeKey(queried, includeSponsor: false);
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("ProposeAgenda", "Failed to resolve queried outcome: " + ex.Message);
+				return "";
+			}
+		}
+
+		private bool TryGetDialogueProposalSupport(KingdomDecision decision, Clan clan, DecisionOutcome outcome, out int supportWeightValue, out bool isPromisedOutcome)
+		{
+			supportWeightValue = (int)Supporter.SupportWeights.FullyPush;
+			isPromisedOutcome = false;
+			if (decision == null || clan == null || outcome == null || decision.ProposerClan != clan || _dialogueProposalDecisionKeys == null) return false;
+			string decisionKey = BuildVoteDealDecisionKey(decision, includeProposer: true);
+			if (string.IsNullOrWhiteSpace(decisionKey) || !_dialogueProposalDecisionKeys.TryGetValue(decisionKey, out string serialized)) return false;
+			string[] parts = (serialized ?? "").Split(RecordDelimiter);
+			if (parts.Length > 1 && int.TryParse(parts[1], out int parsedWeight)) supportWeightValue = parsedWeight;
+			string promisedOutcomeKey = parts.Length > 2 ? parts[2] ?? "" : "";
+			string currentOutcomeKey = BuildVoteDealOutcomeKey(outcome, includeSponsor: false);
+			isPromisedOutcome = string.IsNullOrWhiteSpace(promisedOutcomeKey)
+				? string.Equals(currentOutcomeKey, BuildDialogueProposalQueriedOutcomeKey(decision), StringComparison.Ordinal)
+				: string.Equals(currentOutcomeKey, promisedOutcomeKey, StringComparison.Ordinal);
+			return true;
+		}
+
+		private bool IsDialogueProposedDecision(KingdomDecision decision)
+		{
+			if (decision == null || _dialogueProposalDecisionKeys == null) return false;
+			string key = BuildVoteDealDecisionKey(decision, includeProposer: true);
+			return !string.IsNullOrWhiteSpace(key) && _dialogueProposalDecisionKeys.ContainsKey(key);
+		}
+
+		private void UnregisterDialogueProposedDecision(KingdomDecision decision)
+		{
+			if (decision == null || _dialogueProposalDecisionKeys == null) return;
+			string key = BuildVoteDealDecisionKey(decision, includeProposer: true);
+			if (!string.IsNullOrWhiteSpace(key)) _dialogueProposalDecisionKeys.Remove(key);
+		}
+
+		private static bool IsDialogueProposedDecisionHardValid(KingdomDecision decision, out string reason)
+		{
+			reason = "";
+			try
+			{
+				if (decision == null) { reason = "decision_null"; return false; }
+				Kingdom kingdom = decision.Kingdom;
+				Clan proposer = decision.ProposerClan;
+				if (kingdom == null || kingdom.IsEliminated) { reason = "kingdom_invalid"; return false; }
+				if (proposer == null || proposer.Kingdom != kingdom) { reason = "proposer_left_kingdom"; return false; }
+				if (!decision.IsAllowed()) { reason = "decision_not_allowed"; return false; }
+
+				MethodInfo internalCheck = AccessTools.Method(decision.GetType(), "ShouldBeCancelledInternal")
+					?? AccessTools.Method(typeof(KingdomDecision), "ShouldBeCancelledInternal");
+				if (internalCheck != null && Convert.ToBoolean(internalCheck.Invoke(decision, null)))
+				{
+					reason = "target_state_changed";
+					return false;
+				}
+				return true;
+			}
+			catch (Exception ex)
+			{
+				reason = "hard_validity_exception:" + ex.Message;
+				return false;
 			}
 		}
 
@@ -1068,9 +1254,12 @@ namespace AnimusForge
 			BilateralDiplomacyRecord counterpartRecord = FindCounterpartRecordForDecision(decision);
 			if (counterpartRecord != null)
 			{
+				MergeBilateralDiplomacyParticipants(counterpartRecord, decision);
+				MarkBilateralDiplomacyMemoryHandled(decision);
 				if (approved)
 				{
 					bool applied = ApplyFinalBilateralDiplomacyEffect(counterpartRecord);
+					RecordBilateralDiplomacyMemory(counterpartRecord, decision, applied ? "effective" : "invalid");
 					_bilateralDiplomacyRecords.Remove(counterpartRecord);
 					if (applied)
 					{
@@ -1087,6 +1276,7 @@ namespace AnimusForge
 				}
 				else
 				{
+					RecordBilateralDiplomacyMemory(counterpartRecord, decision, "rejected");
 					_bilateralDiplomacyRecords.Remove(counterpartRecord);
 					DisplayBilateralDiplomacyMessage(
 						$"双向外交议程：{GetKingdomName(counterpartRecord.SecondKingdomId)}拒绝了{GetKingdomName(counterpartRecord.FirstKingdomId)}的{GetBilateralDiplomacyKindText(counterpartRecord)}提案，外交效果未生效。",
@@ -1103,6 +1293,9 @@ namespace AnimusForge
 
 			if (!CanCreateBilateralCounterpart(kind, source, target))
 			{
+				BilateralDiplomacyRecord failedRecord = CreateBilateralDiplomacyRecord(decision, kind, source, target, tribute, duration);
+				MarkBilateralDiplomacyMemoryHandled(decision);
+				RecordBilateralDiplomacyMemory(failedRecord, decision, "creation_failed");
 				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Cannot create counterpart, original effect blocked. kind={kind} source={source?.StringId} target={target?.StringId}");
 				DisplayBilateralDiplomacyMessage("双向外交议程：无法创建对等复议议程，外交效果未生效。", 0xFFD166);
 				return true;
@@ -1111,6 +1304,9 @@ namespace AnimusForge
 			BilateralDiplomacyRecord existing = FindExistingBilateralRecord(kind, source, target);
 			if (existing != null)
 			{
+				MergeBilateralDiplomacyParticipants(existing, decision);
+				MarkBilateralDiplomacyMemoryHandled(decision);
+				RecordBilateralDiplomacyMemory(existing, decision, "pending");
 				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Duplicate first-side approval blocked while pending counterpart exists. id={existing.RecordId}");
 				DisplayBilateralDiplomacyMessage(
 					$"双向外交议程：{GetKingdomName(existing.FirstKingdomId)}与{GetKingdomName(existing.SecondKingdomId)}已有等待复议的{GetBilateralDiplomacyKindText(existing)}提案。",
@@ -1118,27 +1314,21 @@ namespace AnimusForge
 				return true;
 			}
 
-			BilateralDiplomacyRecord record = new BilateralDiplomacyRecord
-			{
-				RecordId = GenerateBilateralDiplomacyId(),
-				Kind = KindToString(kind),
-				FirstKingdomId = source.StringId,
-				SecondKingdomId = target.StringId,
-				TributeFromFirstToSecond = tribute,
-				TributeDurationDays = duration,
-				CreatedDay = CampaignTime.Now.ElapsedDaysUntilNow,
-				CounterpartCreated = false
-			};
+			BilateralDiplomacyRecord record = CreateBilateralDiplomacyRecord(decision, kind, source, target, tribute, duration);
 
 			_bilateralDiplomacyRecords.Add(record);
 			if (!CreateBilateralCounterpartDecision(record, out string creationFailureReason))
 			{
+				MarkBilateralDiplomacyMemoryHandled(decision);
+				RecordBilateralDiplomacyMemory(record, decision, "creation_failed");
 				_bilateralDiplomacyRecords.Remove(record);
 				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Counterpart creation failed, original effect blocked. id={record.RecordId} reason={creationFailureReason}");
 				DisplayBilateralDiplomacyMessage("双向外交议程：对等复议议程创建失败，外交效果未生效。", 0xFFD166);
 				return true;
 			}
 
+			MarkBilateralDiplomacyMemoryHandled(decision);
+			RecordBilateralDiplomacyMemory(record, decision, "pending");
 			DisplayBilateralDiplomacyMessage(
 				$"双向外交议程：{source.Name}已批准{GetBilateralDiplomacyKindText(record)}提案，已提交给{target.Name}复议。",
 				0xFFD166);
@@ -1380,6 +1570,182 @@ namespace AnimusForge
 				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Apply final effect error: {ex.Message}");
 			}
 			return false;
+		}
+
+		private BilateralDiplomacyRecord CreateBilateralDiplomacyRecord(KingdomDecision decision, BilateralDiplomacyKind kind, Kingdom source, Kingdom target, int tribute, int duration)
+		{
+			BilateralDiplomacyRecord record = new BilateralDiplomacyRecord
+			{
+				RecordId = GenerateBilateralDiplomacyId(),
+				Kind = KindToString(kind),
+				FirstKingdomId = source?.StringId ?? "",
+				SecondKingdomId = target?.StringId ?? "",
+				TributeFromFirstToSecond = tribute,
+				TributeDurationDays = duration,
+				CreatedDay = CampaignTime.Now.ElapsedDaysUntilNow,
+				CounterpartCreated = false,
+				FirstDecisionBasicKey = BuildVoteDealDecisionKey(decision, includeProposer: false),
+				ParticipantHeroIds = ""
+			};
+			MergeBilateralDiplomacyParticipants(record, decision);
+			return record;
+		}
+
+		private void MergeBilateralDiplomacyParticipants(BilateralDiplomacyRecord record, KingdomDecision decision)
+		{
+			if (record == null) return;
+			HashSet<string> heroIds = new HashSet<string>(
+				(record.ParticipantHeroIds ?? "").Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
+					.Select(id => id.Trim()).Where(id => !string.IsNullOrWhiteSpace(id)),
+				StringComparer.OrdinalIgnoreCase);
+			try
+			{
+				if (_activeDeals != null && decision != null)
+				{
+					foreach (VoteDealRecord deal in _activeDeals.Where(deal => deal != null && DoesVoteDealMatchDecision(deal, decision)))
+					{
+						if (!string.IsNullOrWhiteSpace(deal.NpcHeroStringId)) heroIds.Add(deal.NpcHeroStringId.Trim());
+					}
+				}
+				if (_activeDeals != null && !string.IsNullOrWhiteSpace(record.FirstDecisionBasicKey))
+				{
+					foreach (VoteDealRecord deal in _activeDeals.Where(deal => deal != null && string.Equals(deal.TargetDecisionBasicKey, record.FirstDecisionBasicKey, StringComparison.Ordinal)))
+					{
+						if (!string.IsNullOrWhiteSpace(deal.NpcHeroStringId)) heroIds.Add(deal.NpcHeroStringId.Trim());
+					}
+				}
+				AddBilateralDiplomacyParticipant(heroIds, decision?.ProposerClan?.Leader);
+				AddBilateralDiplomacyParticipant(heroIds, decision?.DetermineChooser()?.Leader);
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", "[BilateralDiplomacy] Participant capture warning: " + ex.Message);
+			}
+			record.ParticipantHeroIds = string.Join(";", heroIds.OrderBy(id => id, StringComparer.OrdinalIgnoreCase));
+		}
+
+		private static void AddBilateralDiplomacyParticipant(ISet<string> heroIds, Hero hero)
+		{
+			if (heroIds == null || hero == null || string.IsNullOrWhiteSpace(hero.StringId)) return;
+			heroIds.Add(hero.StringId.Trim());
+		}
+
+		private static void MarkBilateralDiplomacyMemoryHandled(KingdomDecision decision)
+		{
+			if (decision == null) return;
+			try
+			{
+				BilateralDiplomacyMemoryMarkers.Remove(decision);
+				BilateralDiplomacyMemoryMarkers.Add(decision, new BilateralDiplomacyMemoryMarker());
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", "[BilateralDiplomacy] Memory marker warning: " + ex.Message);
+			}
+		}
+
+		private void OnKingdomDecisionCancelled(KingdomDecision decision, bool isPlayerInvolved)
+		{
+			try
+			{
+				BilateralDiplomacyRecord record = FindCounterpartRecordForDecision(decision);
+				if (record == null) return;
+				MergeBilateralDiplomacyParticipants(record, decision);
+				MarkBilateralDiplomacyMemoryHandled(decision);
+				RecordBilateralDiplomacyMemory(record, decision, "cancelled");
+				_bilateralDiplomacyRecords.Remove(record);
+				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Counterpart agenda cancelled: id={record.RecordId} decision={GetSafeDecisionTitle(decision)} playerInvolved={isPlayerInvolved}.");
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", "[BilateralDiplomacy] Cancelled agenda memory error: " + ex.Message);
+			}
+		}
+
+		internal static bool IsBilateralDiplomacyMemoryHandledDecision(KingdomDecision decision)
+		{
+			return decision != null && BilateralDiplomacyMemoryMarkers.TryGetValue(decision, out _);
+		}
+
+		private void RecordBilateralDiplomacyMemory(BilateralDiplomacyRecord record, KingdomDecision decision, string state)
+		{
+			try
+			{
+				if (record == null) return;
+				Kingdom first = ResolveKingdom(record.FirstKingdomId);
+				Kingdom second = ResolveKingdom(record.SecondKingdomId);
+				string firstName = first?.Name?.ToString() ?? record.FirstKingdomId ?? "第一方王国";
+				string secondName = second?.Name?.ToString() ?? record.SecondKingdomId ?? "第二方王国";
+				string kindText = GetBilateralDiplomacyKindText(record);
+				string narrative;
+				bool isFinal = !string.Equals(state, "pending", StringComparison.OrdinalIgnoreCase);
+				bool? won = null;
+				switch ((state ?? "").Trim().ToLowerInvariant())
+				{
+					case "effective":
+						narrative = firstName + "与" + secondName + "均已批准" + kindText + "提案，双边协议已经正式生效。";
+						won = true;
+						break;
+					case "rejected":
+						narrative = firstName + "曾在本国议程中批准" + kindText + "提案，但" + secondName + "在对等复议中拒绝；该提案未获双方同意，协议未达成、未生效。";
+						won = false;
+						break;
+					case "invalid":
+						narrative = firstName + "与" + secondName + "虽先后批准" + kindText + "提案，但生效条件已经变化；协议最终未生效。";
+						won = false;
+						break;
+					case "creation_failed":
+						narrative = firstName + "仅在本国议程中批准了" + kindText + "提案，但未能建立由" + secondName + "进行的对等复议；该提案未获双方同意，协议未达成、未生效。";
+						won = false;
+						break;
+					case "cancelled":
+						narrative = firstName + "曾在本国议程中批准" + kindText + "提案，但" + secondName + "的对等复议已经取消或失效；该提案未获双方有效同意，协议未达成、未生效。";
+						won = false;
+						break;
+					default:
+						narrative = firstName + "仅在本国议程中批准了" + kindText + "提案，并已提交" + secondName + "复议；" + secondName + "尚未批准，双边协议尚未达成、尚未生效。";
+						isFinal = false;
+						break;
+				}
+
+				HashSet<string> heroIds = new HashSet<string>(
+					(record.ParticipantHeroIds ?? "").Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
+						.Select(id => id.Trim()).Where(id => !string.IsNullOrWhiteSpace(id)),
+					StringComparer.OrdinalIgnoreCase);
+				AddBilateralDiplomacyParticipant(heroIds, first?.RulingClan?.Leader);
+				AddBilateralDiplomacyParticipant(heroIds, second?.RulingClan?.Leader);
+				AddBilateralDiplomacyParticipant(heroIds, decision?.ProposerClan?.Leader);
+				try { AddBilateralDiplomacyParticipant(heroIds, decision?.DetermineChooser()?.Leader); } catch { }
+
+				string fact = "[AFEF NPC行为补充] 双边外交状态：" + narrative;
+				string stableKey = "bilateral_diplomacy:" + (record.RecordId ?? "unknown") + ":" + (isFinal ? "outcome" : "pending");
+				string actionKind = isFinal ? "bilateral_diplomacy_outcome" : "bilateral_diplomacy_pending";
+				string locationText = firstName + "—" + secondName;
+				Hero firstRuler = first?.RulingClan?.Leader;
+				Hero secondRuler = second?.RulingClan?.Leader;
+				int recorded = 0;
+				foreach (string heroId in heroIds)
+				{
+					Hero hero = Hero.FindFirst(candidate => candidate != null && string.Equals(candidate.StringId, heroId, StringComparison.OrdinalIgnoreCase));
+					if (hero == null) continue;
+					Hero targetHero = hero.Clan?.Kingdom == first ? secondRuler : firstRuler;
+					if (hero == Hero.MainHero)
+					{
+						MyBehavior.RecordPlayerActionForExternal(narrative, stableKey + ":player", actionKind, isMajor: isFinal, targetHero: targetHero, settlement: null, locationText: locationText, won: won);
+					}
+					else
+					{
+						MyBehavior.AppendExternalDialogueHistory(hero, null, null, fact);
+						MyBehavior.RecordNpcActionForExternal(hero, narrative, stableKey, actionKind, isMajor: isFinal, isRecent: true, targetHero: targetHero, settlement: null, locationText: locationText, allowNonLordHero: false, won: won);
+					}
+					recorded++;
+				}
+				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Memory recorded id={record.RecordId} state={state} audience={recorded} text={narrative}");
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", "[BilateralDiplomacy] Memory recording failed: " + ex.Message);
+			}
 		}
 
 		private static bool TryGetBilateralDiplomacyDecisionDetails(KingdomDecision decision, out BilateralDiplomacyKind kind, out Kingdom source, out Kingdom target, out int tribute, out int duration)
@@ -1742,8 +2108,7 @@ namespace AnimusForge
 					r == null
 					|| ParseKind(r.Kind) == BilateralDiplomacyKind.None
 					|| ResolveKingdom(r.FirstKingdomId) == null
-					|| ResolveKingdom(r.SecondKingdomId) == null
-					|| !IsBilateralRecordStillPendingValid(r));
+					|| ResolveKingdom(r.SecondKingdomId) == null);
 			}
 			catch (Exception ex)
 			{
@@ -1850,61 +2215,6 @@ namespace AnimusForge
 		}
 
 		// ── Tag processing ─────────────────────────────────────────────────
-
-		private void ProcessVoteDealTagsInternal(Hero npc, ref string responseText)
-		{
-			if (npc == null || string.IsNullOrEmpty(responseText)) return;
-
-			Regex voteDealRegex = new Regex(
-				@"\[ACTION:VOTE_DEAL:[^\]\r\n]*\]",
-				RegexOptions.IgnoreCase);
-
-			int matchCount = 0;
-			responseText = voteDealRegex.Replace(responseText, match =>
-			{
-				matchCount++;
-				return ProcessSingleVoteDealTag(npc, match.Value);
-			});
-
-			if (matchCount > 0)
-			{
-				responseText = Regex.Replace(responseText,
-					@"\[ACTION:VOTE_DEAL:[^\]]*\]", "", RegexOptions.IgnoreCase);
-				responseText = responseText.Trim();
-			}
-		}
-
-		private string ProcessSingleVoteDealTag(Hero npc, string tag)
-		{
-			try
-			{
-				string payload = (tag ?? "").Trim();
-				if (payload.StartsWith("[ACTION:VOTE_DEAL:", StringComparison.OrdinalIgnoreCase))
-				{
-					payload = payload.Substring("[ACTION:VOTE_DEAL:".Length).TrimEnd(']');
-				}
-				if (string.IsNullOrWhiteSpace(payload)) return "";
-
-				string firstToken = payload.Split(':').FirstOrDefault() ?? "";
-				if (!IsVoteDealAgendaCode(firstToken))
-				{
-					Logger.Log("VoteDeal", $"Vote deal tag skipped — not an agenda code: {tag}");
-					return "";
-				}
-				string[] targetParts = payload.Split(new[] { ':' }, 4);
-				if (targetParts.Length < 4)
-				{
-					Logger.Log("VoteDeal", $"Vote deal tag skipped, bad format (need A:O:weight:notes): {tag}");
-					return "";
-				}
-				return ProcessTargetedVoteDealTag(npc, targetParts[0], targetParts[1], targetParts[2], targetParts[3]);
-			}
-			catch (Exception ex)
-			{
-				Logger.Log("VoteDeal", $"[ProcessSingleVoteDealTag Error] {ex.Message}");
-				return "";
-			}
-		}
 
 		private string ProcessTargetedVoteDealTag(Hero npc, string agendaCode, string optionCode, string weightStr, string notes)
 		{
@@ -2285,7 +2595,7 @@ namespace AnimusForge
 			return true;
 		}
 
-		public static string BuildPendingDecisionsContext(Hero npc)
+		public static string BuildPendingDecisionsContext(Hero npc, bool includeAgendaDetails = true)
 		{
 			try
 			{
@@ -2302,7 +2612,7 @@ namespace AnimusForge
 				{
 					sb.Append("【投票交易身份限制】你不是家族族长（你的族长是");
 					sb.Append(clan.Leader.Name?.ToString() ?? "未知");
-					sb.AppendLine("），你不能代表家族做出投票承诺。如果有人找你拉票，你必须告知对方去找你的族长商议。你不得输出VOTE_DEAL标签。");
+					sb.AppendLine("），你不能代表家族做出投票或提案承诺。如果有人找你商议议程，你必须告知对方去找你的族长。");
 				}
 
 				// Existing commitments block
@@ -2329,7 +2639,7 @@ namespace AnimusForge
 				}
 
 				// Kingdom agenda context
-				if (kingdom.UnresolvedDecisions != null && kingdom.UnresolvedDecisions.Count > 0)
+				if (includeAgendaDetails && kingdom.UnresolvedDecisions != null && kingdom.UnresolvedDecisions.Count > 0)
 				{
 					sb.AppendLine();
 					sb.AppendLine("【王国当前议程】（正在公示中的提案，公示期结束后将进入投票阶段。你可以按议程名称、城镇/国家/政策名、候选人或家族名理解玩家想拉票的对象；正文只自然说话，不要输出任何系统标签。）");
@@ -2356,48 +2666,6 @@ namespace AnimusForge
 			catch (Exception ex)
 			{
 				Logger.Log("VoteDeal", $"[BuildPendingDecisionsContext Error] {ex.Message}");
-				return "";
-			}
-		}
-
-		public static string BuildVoteDealPostprocessContext(Hero npc)
-		{
-			try
-			{
-				if (!CanUseVoteDealPostprocess(npc))
-				{
-					return "";
-				}
-
-				StringBuilder sb = new StringBuilder();
-				string npcClanId = npc?.Clan?.StringId ?? "";
-				List<VoteDealAgendaEntry> agendas = BuildVoteDealAgendaEntries(npc)
-					.Where(a => a?.Decision?.ProposerClan == null || !string.Equals(a.Decision.ProposerClan.StringId, npcClanId, StringComparison.Ordinal))
-					.ToList();
-				if (agendas.Count == 0)
-				{
-					sb.AppendLine("【投票交易后处理清单】当前没有可拉票的活跃议程。玩家可能与NPC讨论未来可能提出的提案，但因无法确定具体议程和选项，禁止输出 VOTE_DEAL。");
-					return sb.ToString().TrimEnd();
-				}
-
-				sb.AppendLine("【投票交易后处理清单】以下 A/O 编号只供后处理输出隐藏标签使用，不得让NPC正文照读。玩家可以用议程名称、城镇/国家/政策名、候选人、家族名、支持/反对等自然说法表达拉票目标；只有能唯一匹配到一个议程和一个选项时，才允许输出 [ACTION:VOTE_DEAL:议程编号:选项编号:权重:备注]。");
-				foreach (VoteDealAgendaEntry agenda in agendas)
-				{
-					string timing = agenda.RemainingDays > 0 ? $"剩余 {agenda.RemainingDays:F1} 天" : "即将投票";
-					sb.AppendLine($"{agenda.Code}: [{agenda.TypeLabel}] {agenda.Title}（提案人:{agenda.ProposerName}，{timing}）");
-					foreach (VoteDealOptionEntry option in agenda.Options)
-					{
-						string sponsorText = string.IsNullOrWhiteSpace(option.SponsorName) || option.SponsorName == "未知" ? "" : $"；赞助/候选:{option.SponsorName}";
-						string descriptionText = string.IsNullOrWhiteSpace(option.Description) ? "" : $"；说明:{option.Description}";
-						sb.AppendLine($"- {option.Code}: {option.Title}{sponsorText}{descriptionText}");
-					}
-				}
-				sb.AppendLine("【投票交易后处理硬约束】若玩家或NPC没有把议程与选项说清楚、多个议程或多个选项都可能匹配、NPC只是继续谈条件或拒绝，禁止输出 VOTE_DEAL。若NPC不是家族族长，禁止输出VOTE_DEAL。若NPC已对同一议程有承诺，禁止改投其他选项。");
-				return sb.ToString().TrimEnd();
-			}
-			catch (Exception ex)
-			{
-				Logger.Log("VoteDeal", $"[BuildVoteDealPostprocessContext Error] {ex.Message}");
 				return "";
 			}
 		}
@@ -2481,15 +2749,17 @@ namespace AnimusForge
 				}
 
 				var results = new List<string>();
+				string proposalGuidance = AIConfigHandler.ResolveRuleRuntimeText("kingdom_agenda", "proposal_guidance", forConstraint: false, tokens);
+				if (!string.IsNullOrWhiteSpace(proposalGuidance)) results.Add(proposalGuidance);
 
 				if (!string.IsNullOrWhiteSpace(stateKey))
 				{
-					string stateTemplate = AIConfigHandler.ResolveRuleRuntimeText("vote_deal", stateKey, forConstraint: false, tokens);
+					string stateTemplate = AIConfigHandler.ResolveRuleRuntimeText("kingdom_agenda", stateKey, forConstraint: false, tokens);
 					if (!string.IsNullOrWhiteSpace(stateTemplate))
 					{
 						results.Add(stateTemplate);
 					}
-					if (stateKey == "no_kingdom" || stateKey == "mercenary" || stateKey == "no_pending")
+					if (stateKey == "no_kingdom" || stateKey == "mercenary")
 					{
 						return string.Join("\n", results);
 					}
@@ -2508,7 +2778,7 @@ namespace AnimusForge
 						trustLevelIndex = 6;
 					}
 
-					string trustTemplate = AIConfigHandler.ResolveRuleRuntimeText("vote_deal", "level_" + trustLevelIndex, forConstraint: false, tokens);
+					string trustTemplate = AIConfigHandler.ResolveRuleRuntimeText("kingdom_agenda", "level_" + trustLevelIndex, forConstraint: false, tokens);
 					if (!string.IsNullOrWhiteSpace(trustTemplate))
 					{
 						results.Add(trustTemplate);
@@ -2516,7 +2786,7 @@ namespace AnimusForge
 
 					if (kingdom.RulingClan?.Leader == npc)
 					{
-						string kingTemplate = AIConfigHandler.ResolveRuleRuntimeText("vote_deal", "is_king", forConstraint: false, tokens);
+						string kingTemplate = AIConfigHandler.ResolveRuleRuntimeText("kingdom_agenda", "is_king", forConstraint: false, tokens);
 						if (!string.IsNullOrWhiteSpace(kingTemplate))
 						{
 							results.Add(kingTemplate);
@@ -2535,32 +2805,6 @@ namespace AnimusForge
 
 		// ── Dispatch entry point (called directly by ShoutBehavior) ─────
 
-		public static void ProcessVoteDealTagsDispatch(Hero npc, ref string text)
-		{
-			if (npc == null)
-			{
-				Logger.Log("VoteDeal", "[Dispatch] npc is null, abort");
-				return;
-			}
-			if (string.IsNullOrEmpty(text))
-			{
-				Logger.Log("VoteDeal", "[Dispatch] text is empty, abort");
-				return;
-			}
-			if (!text.Contains("VOTE_DEAL"))
-			{
-				return;
-			}
-			VoteDealBehavior behavior = Instance
-				?? Campaign.Current?.GetCampaignBehavior<VoteDealBehavior>();
-			if (behavior == null)
-			{
-				Logger.Log("VoteDeal", "[Dispatch] Instance is null, abort");
-				return;
-			}
-			behavior.ProcessVoteDealTagsInternal(npc, ref text);
-		}
-
 		// ── Patch: Inject pending decisions context ───────────────────────
 
 		private static void Patch_BuildContext_Postfix(Hero targetHero, string input, string extraFact,
@@ -2573,7 +2817,7 @@ namespace AnimusForge
 			{
 				if (__result == null) return;
 				Hero contextTarget = targetHero ?? (targetCharacter?.HeroObject);
-				bool voteDealRuleInjected = (__result.Extras ?? "").IndexOf("【附加规则:vote_deal】", StringComparison.OrdinalIgnoreCase) >= 0;
+				bool voteDealRuleInjected = (__result.Extras ?? "").IndexOf("【附加规则:kingdom_agenda】", StringComparison.OrdinalIgnoreCase) >= 0;
 				if (voteDealRuleInjected)
 				{
 					string runtimeInstruction = BuildRuntimeVoteDealInstruction(contextTarget);
@@ -2582,13 +2826,7 @@ namespace AnimusForge
 						__result.Extras = (__result.Extras ?? "") + "\n" + runtimeInstruction;
 					}
 				}
-				if ((__result.Extras ?? "").IndexOf("【附加规则:propose_agenda】", StringComparison.OrdinalIgnoreCase) >= 0)
-				{
-					string pr = BuildProposeRuntimeInstruction(contextTarget);
-					if (!string.IsNullOrWhiteSpace(pr))
-						__result.Extras = (__result.Extras ?? "") + "\n" + pr;
-				}
-				string ctx = BuildPendingDecisionsContext(contextTarget);
+				string ctx = voteDealRuleInjected ? BuildPendingDecisionsContext(contextTarget, includeAgendaDetails: false) : "";
 				if (!string.IsNullOrEmpty(ctx))
 				{
 					__result.Extras = (__result.Extras ?? "") + "\n" + ctx;
@@ -2611,6 +2849,12 @@ namespace AnimusForge
 			try
 			{
 				if (clan == null || string.IsNullOrEmpty(clan.StringId)) return true;
+				VoteDealBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<VoteDealBehavior>();
+				if (behavior != null && behavior.TryGetDialogueProposalSupport(__instance, clan, possibleOutcome, out int dialogueWeight, out bool isPromisedOutcome))
+				{
+					__result = isPromisedOutcome ? GetForcedVoteDealSupportScore(dialogueWeight) : -1000f;
+					return false;
+				}
 
 				if (IsBilateralDiplomacyCounterpartAgenda(__instance)
 					&& string.Equals(clan.StringId, __instance.ProposerClan?.StringId, StringComparison.OrdinalIgnoreCase))
@@ -2622,7 +2866,6 @@ namespace AnimusForge
 				// Safety: proposer clan vote must not be overridden — would cancel the decision
 				if (clan.StringId == __instance.ProposerClan?.StringId) return true;
 
-				VoteDealBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<VoteDealBehavior>();
 				if (behavior == null) return true;
 				if (behavior._activeDeals == null || behavior._activeDeals.Count == 0) return true;
 
@@ -2661,12 +2904,24 @@ namespace AnimusForge
 			{
 				Clan clan = supporter?.Clan;
 				if (clan == null || string.IsNullOrWhiteSpace(clan.StringId) || __instance == null) return true;
+				VoteDealBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<VoteDealBehavior>();
+				if (possibleOutcomes != null && behavior?.IsDialogueProposedDecision(__instance) == true && __instance.ProposerClan == clan)
+				{
+					DecisionOutcome dialoguePromisedOutcome = possibleOutcomes.FirstOrDefault(outcome =>
+						outcome != null && behavior.TryGetDialogueProposalSupport(__instance, clan, outcome, out _, out bool promised) && promised);
+					if (dialoguePromisedOutcome != null && behavior.TryGetDialogueProposalSupport(__instance, clan, dialoguePromisedOutcome, out int dialogueWeight, out _))
+					{
+						supportWeightOfSelectedOutcome = GetForcedVoteDealSupportWeight(dialogueWeight);
+						__result = dialoguePromisedOutcome;
+						Logger.Log("ProposeAgenda", "Forced proposer support decision=" + GetSafeDecisionTitle(__instance) + " clan=" + clan.StringId + " weight=" + supportWeightOfSelectedOutcome);
+						return false;
+					}
+				}
 
 				// Proposer votes participate in the decision's cancellation rules and
 				// must retain vanilla behavior, just as in the score hook above.
 				if (string.Equals(clan.StringId, __instance.ProposerClan?.StringId, StringComparison.OrdinalIgnoreCase)) return true;
 
-				VoteDealBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<VoteDealBehavior>();
 				if (behavior?._activeDeals == null || behavior._activeDeals.Count == 0 || possibleOutcomes == null) return true;
 
 				VoteDealRecord deal = behavior._activeDeals

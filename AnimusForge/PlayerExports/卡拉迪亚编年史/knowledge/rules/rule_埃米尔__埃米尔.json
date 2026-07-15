@@ -1,78 +1,161 @@
 ﻿{
   "Id": "rule_埃米尔",
   "Keywords": [
-    "埃米尔"
+    "埃米尔",
+    "阿米尔"
   ],
   "RagShortTexts": [
-    "“埃米尔”源于纳哈撒语“阿米尔”，本义“命令者”，原指战场指挥官。今阿塞莱人中指拥有军权与地方统治权的家族族长，苏丹亦属此列，承载沙漠部落传统。"
+    "如今埃米尔已演变为对拥有军事指挥权与地方统治权的阿塞莱部落族长的尊称，每个部落的族长都是埃米尔。"
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
+      "When": null,
+      "Content": "埃米尔是阿塞莱人对其统治者的称呼。这个词在纳哈撒语中由'阿米尔'衍生而来，本义是'命令者'——最早指的是战场上统率军队、发号施令的指挥官。如今它已经演变为对拥有军事指挥权与地方统治权的家族族长的尊称。在沙漠部落的传统中，每一位埃米尔都是自己领地和部族的绝对主人，连阿塞莱的苏丹，究其本质也是一位埃米尔——只不过他是所有埃米尔中最强大的那一个，被其他埃米尔共同推举为最高领袖。"
+    },
+    {
+      "Priority": 0,
       "When": {
         "HeroIds": null,
         "Cultures": [
-          "battania",
-          "empire",
-          "khuzait",
-          "vlandia"
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在我们沙漠里，一个人能被称为埃米尔，不是因为他出身好或有钱，而是因为他能让别人听他的命令。这个词最早就是从战场上来的——'阿米尔'，命令者。在几百年前的部落战争中，谁能站在阵前发号施令，让战士们跟着他冲，谁就是埃米尔。后来不打仗的时候，这个称呼也没丢，变成了对部落族长的尊称。每个部落的族长都是埃米尔，我们的苏丹也是埃米尔——他是所有埃米尔中最大的那个，被其他埃米尔推出来统领全局。帝国人是先有皇帝后有将军，我们是先有埃米尔后有苏丹。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
         ],
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": [
-          "lord",
-          "notable"
+          "lord"
         ],
         "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
       },
-      "Content": "埃米尔是指阿塞莱的那些部落族长，用来称呼一位拥有军事指挥权与地方统治权的贵族。"
+      "Content": "我是自己部落的埃米尔，我祖父是，我曾祖父也是。这个称呼从战场上的指挥官变成了领地上的统治者，但核心没变——你得能让你的战士在关键时刻跟你冲。苏丹也是埃米尔，他不过是被其他埃米尔推举上去的，本质上和我们一样。区别只在于，他的部落实力最强，所以他的命令在战时能传遍整个沙漠。但平时，在我的领地上，我的命令是唯一的。帝国人不懂这套——他们以为苏丹就是沙漠里的皇帝，但他们不明白，苏丹首先得是一个能打的埃米尔。"
     },
     {
       "Priority": 0,
       "When": {
         "HeroIds": null,
-        "Cultures": null,
-        "KingdomIds": [
+        "Cultures": [
           "aserai"
         ],
+        "KingdomIds": null,
         "SettlementIds": null,
         "Roles": [
-          "commoner",
-          "soldier",
           "townsfolk",
-          "villager",
-          "wanderer"
+          "villager"
         ],
         "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
       },
-      "Content": "埃米尔是指统治着我们的高贵的贵族，只有家族族长才有资格被称为埃米尔。"
+      "Content": "埃米尔大人管着我们的一切——税收、水源分配、商路安全、部落纠纷。他以前是战场上的指挥官，现在不打仗了就成了领主。一个好的埃米尔能让绿洲繁荣、商队平安；一个差的埃米尔能让整个部落喝不上干净水。至于苏丹是不是埃米尔，那是他们大人物之间的事。我们只知道，苏丹是埃米尔们推出来的头，但说到底，他也是从一个部落里打出来的命令者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们跟着埃米尔打仗。他喊冲我们就冲，他喊撤我们就撤。这个称呼最早就是在战场上叫开的——发号施令的那个人。不打仗的时候他是族长，管牧场、管水源、管族里的纠纷。但上了战场，他就是埃米尔，是命令者。苏丹也是埃米尔，我们承认他是最大的埃米尔，因为他的部落最强，他在战场上的声音最大。但我们的忠诚首先是给自己的埃米尔，然后才是给苏丹。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿塞莱人那个'埃米尔'的称呼，听起来和他们部落制一样原始。战场上发号施令的人就叫命令者，不打仗了就变成领主——这和我们帝国把军功将领晋升为行省总督的做法差不多。但他们把这种部落传统一直保留到现在，每个部族的族长都叫埃米尔，连他们的苏丹自己也是。我们帝国是先有元老院和皇帝，再派将军去统兵；他们是一个个埃米尔先各自统兵，再从中推出一个苏丹。从下往上长的权力，和从上往下压的权力，根基完全不同。在南帝国，我们通常用'执政官'这个头衔来与他们的'埃米尔'对等，但执政官是帝国官职体系的一部分，而埃米尔是部落传统自然生长的产物。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿塞莱的埃米尔和我们的波耶有点像，都是各自领地上的头。他们那个称呼是从战场上来的——'命令者'，这倒是比我们的'波耶'这个叫法更直白。不过他们的埃米尔之间还要再推一个苏丹出来，我们这边大公就是世袭的，省了这道手续。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿塞莱人的埃米尔和我们草原上的那颜差不多——部落首领，管着族人，打仗时带队冲锋。他们的埃米尔之间再选一个苏丹，我们这边那颜们被可汗统一号令。区别在于，可汗靠的是兀儿浑家族的血脉和最强部落的刀剑，他们的苏丹是从埃米尔中推出来的，理论上谁都可以当。但实际不还是看谁部落最大吗？叫什么名字不重要，谁拳头硬才是真的。"
     },
     {
       "Priority": 0,
       "When": {
         "HeroIds": null,
         "Cultures": null,
-        "KingdomIds": [
-          "aserai"
-        ],
+        "KingdomIds": null,
         "SettlementIds": null,
-        "Roles": [
-          "lord",
-          "notable"
-        ],
+        "Roles": null,
         "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
-        "SkillMin": null
+        "SkillMin": {
+          "steward": 150
+        }
       },
-      "Content": "“埃米尔”在纳哈撒语中由 “阿米尔”衍生而来，埃米尔最早指战场上统率军队的指挥官。\n本义是 “命令者”“发号施令者”。\n现在阿塞莱人称呼的埃米尔，指的是一位拥有军事指挥权与地方统治权的家族族长，就连阿塞莱的苏丹，其实也属于埃米尔。它承载着我们沙漠部落的古老传统。"
+      "Content": "埃米尔是阿塞莱政治体系中最基础也最核心的统治单位。这个词汇源自纳哈撒语中的'阿米尔'，原意为战场上的'命令者'或'发号施令者'。在阿塞莱的政治结构中，苏丹本身也是一位埃米尔——他是被其他埃米尔推举出来的最高领袖，而非独立于埃米尔体系之外的皇帝。这一制度设计意味着苏丹的权力是自下而上推举的，他必须在埃米尔们中保持威望，否则就会面临其他强大埃米尔的挑战。这与帝国的官僚体系形成鲜明对比。在帝国的官职称谓体系中，通常用'执政官'来对译'埃米尔'，但两者有本质区别：执政官是帝国官僚体系中的一个层级，其权力来源于皇帝的任命；而埃米尔的权力根植于部落传统和军事威望，先于苏丹而存在。"
     }
   ],
   "TextMappings": []

@@ -2345,7 +2345,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		try
 		{
 			ShoutBehavior currentInstance = CurrentInstance;
-			return currentInstance != null && currentInstance._isProcessingShout;
+			return currentInstance != null && (currentInstance._isProcessingShout || currentInstance._isWaitingForScenePostprocessGate);
 		}
 		catch
 		{
@@ -8616,7 +8616,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 
 	private static string StripActionTagsForSceneSpeech(string text)
 	{
-		return Regex.Replace((text ?? "").Replace("\r", ""), "\\[(?:ACTION:[^\\]]*|A:H_J_P_P|AD;[^\\]]*|ADP[:;][^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP)\\]", "", RegexOptions.IgnoreCase).Trim();
+		return Regex.Replace((text ?? "").Replace("\r", ""), "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD;[^\\]]*|ADP[:;][^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP)\\]", "", RegexOptions.IgnoreCase).Trim();
 	}
 
 	private static string ExtractDeferredSceneActionTags(string text)
@@ -8628,7 +8628,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		}
 		List<string> list = new List<string>();
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (Match item in Regex.Matches(text2, "\\[(?:ACTION:[^\\]]*|A:H_J_P_P|AD;[^\\]]*|ADP[:;][^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END)\\]", RegexOptions.IgnoreCase))
+		foreach (Match item in Regex.Matches(text2, "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD;[^\\]]*|ADP[:;][^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END)\\]", RegexOptions.IgnoreCase))
 		{
 			string text3 = (item?.Value ?? "").Trim();
 			if (!string.IsNullOrWhiteSpace(text3) && hashSet.Add(text3))
@@ -8641,7 +8641,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 
 	private static bool HasNonMoodDeferredSceneActionTag(string text)
 	{
-		foreach (Match item in Regex.Matches(text ?? "", "\\[(?:ACTION:[^\\]]*|A:H_J_P_P|AD;[^\\]]*|ADP[:;][^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END)\\]", RegexOptions.IgnoreCase))
+		foreach (Match item in Regex.Matches(text ?? "", "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD;[^\\]]*|ADP[:;][^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END)\\]", RegexOptions.IgnoreCase))
 		{
 			string text2 = (item?.Value ?? "").Trim();
 			if (!string.IsNullOrWhiteSpace(text2) && !text2.StartsWith("[ACTION:MOOD:", StringComparison.OrdinalIgnoreCase))
@@ -8656,7 +8656,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 	{
 		List<string> list = new List<string>();
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (Match item in Regex.Matches(text ?? "", "\\[(?:ACTION:[^\\]]*|A:H_J_P_P|AD;[^\\]]*|ADP[:;][^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END)\\]", RegexOptions.IgnoreCase))
+		foreach (Match item in Regex.Matches(text ?? "", "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD;[^\\]]*|ADP[:;][^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END)\\]", RegexOptions.IgnoreCase))
 		{
 			string text2 = (item?.Value ?? "").Trim();
 			if (!string.IsNullOrWhiteSpace(text2) && !text2.StartsWith("[ACTION:MOOD:", StringComparison.OrdinalIgnoreCase) && hashSet.Add(text2))
@@ -8669,7 +8669,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 
 	private static bool HasDeferredDirectGameActionTag(string text)
 	{
-		return Regex.IsMatch(text ?? "", "\\[(?:ACTION:(?:GIVE_GOLD|GIVE_ITEM|DEBT_|DEBT_PAY|SETTLEMENT_TRANSFER|KINGDOM_SERVICE|JOIN_MERCENARY|JOIN_VASSAL|TRADE_TRUST|KING_ABDICATE_TO_PLAYER|VASSALAGE|KINGDOM_ANNEX|PROPOSE|VOTE_DEAL|WORLDMAP_ORDER|DUEL|ISSUE_|QUEST_TURN_IN|NOBLE_GATHERING|INTIMACY_INTERNAL|MEETING_TAUNT_BATTLE|LET_PLAYER_GO|ENCOUNTER_RELEASE_PLAYER|NPC_SURRENDER|SIEGE_|6|召集)[^\\]]*|A:H_J_P_P|AD;[^\\]]*|ADP[:;][^\\]]*)\\]", RegexOptions.IgnoreCase);
+		return Regex.IsMatch(text ?? "", "\\[(?:ACTION:(?:GIVE_ASSET|DEBT_|DEBT_PAY|KINGDOM_SERVICE|JOIN_MERCENARY|JOIN_VASSAL|TRADE_TRUST|KING_ABDICATE_TO_PLAYER|VASSALAGE|KINGDOM_ANNEX|AGENDA|WORLDMAP_ORDER|DUEL|ISSUE_|QUEST_TURN_IN|NOBLE_GATHERING|INTIMACY_INTERNAL|MEETING_TAUNT_BATTLE|LET_PLAYER_GO|ENCOUNTER_RELEASE_PLAYER|NPC_SURRENDER|SIEGE_|6|召集)[^\\]]*|A:(?:H_J_P_P|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD;[^\\]]*|ADP[:;][^\\]]*)\\]", RegexOptions.IgnoreCase);
 	}
 
 	private bool TryApplyDeferredScenePostprocessActionTagsDirectly(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, ref string tags)
@@ -9770,10 +9770,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 							if (agent != null && agent.Character is CharacterObject { HeroObject: not null } characterObject)
 							{
 								MyBehavior.ApplyPatienceFromSceneHeroResponseExternal(characterObject.HeroObject, ref aiResponse);
-								VoteDealBehavior.ProcessVoteDealTagsDispatch(characterObject.HeroObject, ref aiResponse);
+								VoteDealBehavior.ProcessAgendaTagsDispatch(characterObject.HeroObject, ref aiResponse);
 									DiplomacyBehavior.ProcessDiplomacyTagsDispatch(characterObject.HeroObject, ref aiResponse);
-								VoteDealBehavior.ProcessProposeDispatch(characterObject.HeroObject, ref aiResponse);
-								VoteDealBehavior.ProcessProposeDispatch(characterObject.HeroObject, ref aiResponse);
 								WorldMapPartyCommandBehavior.ProcessWorldMapOrderTagsDispatch(characterObject.HeroObject, ref aiResponse);
 								DuelBehavior.TryCacheDuelAfterLinesFromText(characterObject.HeroObject, ref aiResponse);
 								DuelBehavior.TryCacheDuelStakeFromText(characterObject.HeroObject, ref aiResponse);
@@ -9990,6 +9988,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	public override void RegisterEvents()
 	{
+		Volatile.Write(ref _freezeWatchdogDiagnosticInstance, this);
 		CampaignEvents.OnMissionStartedEvent.AddNonSerializedListener(this, OnMissionStarted);
 		CampaignEvents.OnMissionEndedEvent.AddNonSerializedListener(this, OnMissionEnded);
 		CampaignEvents.ConversationEnded.AddNonSerializedListener(this, OnNativeConversationEnded);
@@ -12869,6 +12868,125 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private static readonly Dictionary<string, string> _nativeConversationRecordedCurrentDialogByKey = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
+	private static ShoutBehavior _freezeWatchdogDiagnosticInstance;
+
+	internal static string GetFreezeWatchdogDiagnosticSnapshot()
+	{
+		StringBuilder sb = new StringBuilder();
+		bool nativeLockTaken = false;
+		try
+		{
+			nativeLockTaken = Monitor.TryEnter(_nativeConversationSessionHistoryLock);
+			if (nativeLockTaken)
+			{
+				int nativeEntryCount = 0;
+				foreach (List<AnimusForgeDialogueHistoryEntry> history in _nativeConversationSessionHistory.Values)
+				{
+					nativeEntryCount += history?.Count ?? 0;
+				}
+				sb.Append("nativeHistoryKeys=").Append(_nativeConversationSessionHistory.Count)
+					.Append(" nativeHistoryEntries=").Append(nativeEntryCount)
+					.Append(" nativeDedupKeys=").Append(_nativeConversationRecordedCurrentDialogByKey.Count);
+			}
+			else
+			{
+				sb.Append("nativeHistory=busy");
+			}
+		}
+		catch
+		{
+			sb.Append("nativeHistory=unavailable");
+		}
+		finally
+		{
+			if (nativeLockTaken)
+			{
+				Monitor.Exit(_nativeConversationSessionHistoryLock);
+			}
+		}
+		try
+		{
+			ShoutBehavior instance = Volatile.Read(ref _freezeWatchdogDiagnosticInstance);
+			if (instance != null)
+			{
+				instance.AppendFreezeWatchdogDiagnosticSnapshot(sb);
+			}
+			else
+			{
+				sb.Append(" sceneHistory=instance_unavailable");
+			}
+		}
+		catch
+		{
+			sb.Append(" sceneHistory=unavailable");
+		}
+		return sb.ToString();
+	}
+
+	private void AppendFreezeWatchdogDiagnosticSnapshot(StringBuilder sb)
+	{
+		if (sb == null)
+		{
+			return;
+		}
+		bool historyLockTaken = false;
+		try
+		{
+			historyLockTaken = Monitor.TryEnter(_historyLock);
+			if (historyLockTaken)
+			{
+				int sceneNpcEntryCount = 0;
+				foreach (List<ConversationMessage> history in _npcConversationHistory.Values)
+				{
+					sceneNpcEntryCount += history?.Count ?? 0;
+				}
+				sb.Append(" scenePublicEntries=").Append(_publicConversationHistory.Count)
+					.Append(" sceneNpcBuckets=").Append(_npcConversationHistory.Count)
+					.Append(" sceneNpcEntries=").Append(sceneNpcEntryCount);
+			}
+			else
+			{
+				sb.Append(" sceneHistory=busy");
+			}
+		}
+		finally
+		{
+			if (historyLockTaken)
+			{
+				Monitor.Exit(_historyLock);
+			}
+		}
+		try
+		{
+			sb.Append(" mainThreadActions=").Append(_mainThreadActions.Count);
+		}
+		catch
+		{
+			sb.Append(" mainThreadActions=unavailable");
+		}
+		bool speechLockTaken = false;
+		try
+		{
+			speechLockTaken = Monitor.TryEnter(_speechQueueLock);
+			if (speechLockTaken)
+			{
+				sb.Append(" sceneSpeechQueue=").Append(_speechQueue.Count)
+					.Append(" sceneSpeechWorker=").Append(_speechWorkerRunning ? 1 : 0);
+			}
+			else
+			{
+				sb.Append(" sceneSpeechQueue=busy");
+			}
+		}
+		finally
+		{
+			if (speechLockTaken)
+			{
+				Monitor.Exit(_speechQueueLock);
+			}
+		}
+	}
+
 	public static bool IsNativeConversationInputOpenForExternal()
 	{
 		try
@@ -13265,7 +13383,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		try
 		{
-			return Regex.Matches(text ?? "", "\\[(?:ACTION:[^\\]]*|A:H_J_P_P|AD;[^\\]]*|ADP[:;][^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT[:;][^\\]]*|ATP[:;][^\\]]*|FOL|STP|END|RELAY:[^\\]]*|AFEF[^\\]]*|AF_SCENE_SESSION:[^\\]]*|CONTENT)\\]", RegexOptions.IgnoreCase).Count;
+			return Regex.Matches(text ?? "", "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD;[^\\]]*|ADP[:;][^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT[:;][^\\]]*|ATP[:;][^\\]]*|FOL|STP|END|RELAY:[^\\]]*|AFEF[^\\]]*|AF_SCENE_SESSION:[^\\]]*|CONTENT)\\]", RegexOptions.IgnoreCase).Count;
 		}
 		catch
 		{
@@ -15797,8 +15915,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			if (targetHero != null)
 			{
 				LogNativeActionStep("hero_dispatch_before", targetHero, targetCharacter, content);
-				VoteDealBehavior.ProcessVoteDealTagsDispatch(targetHero, ref content);
-				VoteDealBehavior.ProcessProposeDispatch(targetHero, ref content);
+				VoteDealBehavior.ProcessAgendaTagsDispatch(targetHero, ref content);
 				DiplomacyBehavior.ProcessDiplomacyTagsDispatch(targetHero, ref content);
 				WorldMapPartyCommandBehavior.ProcessWorldMapOrderTagsDispatch(targetHero, ref content);
 				DuelBehavior.TryCacheDuelAfterLinesFromText(targetHero, ref content);
@@ -16710,11 +16827,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return false;
 		}
 		Hero hero = targetHero ?? targetCharacter?.HeroObject;
-		if (AIConfigHandler.IsPlayerPartyTradeLimitedTarget(hero) && (id == "loan" || id == "vote_deal" || id == "diplomacy" || id == "party_transfer" || id == "settlement_transfer"))
-		{
-			return false;
-		}
-		if (id == "settlement_transfer" && AIConfigHandler.IsPlayerCompanionOrFamilyTradeTarget(hero))
+		if (AIConfigHandler.IsPlayerPartyTradeLimitedTarget(hero) && (id == "loan" || id == "kingdom_agenda" || id == "diplomacy" || id == "party_transfer"))
 		{
 			return false;
 		}
@@ -16730,8 +16843,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return !ShouldExcludeWorldMapCommandTopicForPreprocess(hero, targetCharacter, targetAgentIndex);
 		case "party_transfer":
 			return (MyBehavior.BuildPartyTransferPromptEntriesForExternal(hero, targetCharacter, targetAgentIndex)?.Count ?? 0) > 0;
-		case "settlement_transfer":
-			return MyBehavior.IsSettlementTransferLeaderEligibleForExternal(hero, targetCharacter);
 		case "encounter_release_player":
 			return !string.IsNullOrWhiteSpace(LordEncounterBehavior.BuildMeetingPlayerReleaseRuntimeInstructionForExternal(hero));
 		case "meeting_taunt":
@@ -16947,8 +17058,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			sceneMechanismRuleInjected = false;
 		}
 		bool partyTransferRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "party_transfer");
-		bool settlementTransferRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "settlement_transfer");
-		bool voteDealRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "vote_deal");
+		bool voteDealRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "kingdom_agenda");
 		bool diplomacyRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "diplomacy");
 		bool worldMapPartyCommandRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "worldmap_party_command");
 		bool siegeInterventionRuleInjected = AfGcczShoutBridge.ShouldRunPostprocessFromPrompt(combinedRuleInspectionBlock, postprocessPreprocessHits);
@@ -17000,6 +17110,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		if (output.StartsWith("（错误") || output.StartsWith("（程序错误") || output.StartsWith("（API请求失败") || output.StartsWith("（API响应格式错误"))
 		{
+			LlmRetryPrompt.ShowFailurePopup("自由对话正文生成失败", output.Trim());
 			return output.Trim();
 		}
 		string cleaned = StripNpcNamePrefixSafely((output ?? "").Replace("\r", "").Trim(), 30);
@@ -17048,8 +17159,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		bool heroJoinPartyPostprocessSelected = heroJoinPartyRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "hero_join_party");
 		bool sceneMechanismPostprocessSelected = (sceneMechanismRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "scene_mechanism_actions")) && !AIConfigHandler.ShouldExcludeSceneMoveRuleForCurrentMission();
 		bool partyTransferPostprocessSelected = partyTransferRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "party_transfer");
-		bool settlementTransferPostprocessSelected = settlementTransferRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "settlement_transfer");
-		bool voteDealPostprocessSelected = voteDealRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "vote_deal");
+		bool voteDealPostprocessSelected = voteDealRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "kingdom_agenda");
 		bool diplomacyPostprocessSelected = (diplomacyRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "diplomacy"))
 			&& DiplomacyBehavior.CanUseDiplomacyActionPostprocessForExternal(targetHero, targetCharacter);
 		bool worldMapPartyCommandPostprocessSelected = worldMapPartyCommandRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "worldmap_party_command");
@@ -17092,7 +17202,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(nativeTargetAgentIndex);
 		try
 		{
-			postprocessed = TryRunSceneUnifiedActionPostprocess(targetHero, targetCharacter, nativeTargetAgentIndex, GetSceneNpcHistoryNameForPrompt(npc), shouldRecordPlayerInput ? promptPlayerText : "", historyForPostprocess, cleaned, duelPostprocessSelected, rewardPostprocessSelected, loanPostprocessSelected, kingdomServicePostprocessSelected, kingdomVassalagePostprocessSelected, kingdomAnnexationPostprocessSelected, lordsHallPostprocessSelected, meetingReleasePostprocessSelected, vanillaIssuePostprocessSelected, heroJoinPartyPostprocessSelected, sceneMechanismPostprocessSelected, partyTransferPostprocessSelected, settlementTransferPostprocessSelected, voteDealPostprocessSelected, diplomacyPostprocessSelected, worldMapPartyCommandPostprocessSelected, marriagePostprocessSelected, nativeDuelStakeOptions, null, nativeSceneMechanismPostprocessRules, nativeSceneSummonTargets, nativeSceneGuideTargets, postprocessEntityContext, siegeInterventionRuleInjected: siegeInterventionPostprocessSelected, replyIsDirectPlayerResponse: shouldRecordPlayerInput, preprocessRuleHits: postprocessPreprocessHits, chainName: nativePostprocessChainName);
+			postprocessed = TryRunSceneUnifiedActionPostprocess(targetHero, targetCharacter, nativeTargetAgentIndex, GetSceneNpcHistoryNameForPrompt(npc), shouldRecordPlayerInput ? promptPlayerText : "", historyForPostprocess, cleaned, duelPostprocessSelected, rewardPostprocessSelected, loanPostprocessSelected, kingdomServicePostprocessSelected, kingdomVassalagePostprocessSelected, kingdomAnnexationPostprocessSelected, lordsHallPostprocessSelected, meetingReleasePostprocessSelected, vanillaIssuePostprocessSelected, heroJoinPartyPostprocessSelected, sceneMechanismPostprocessSelected, partyTransferPostprocessSelected, voteDealPostprocessSelected, diplomacyPostprocessSelected, worldMapPartyCommandPostprocessSelected, marriagePostprocessSelected, nativeDuelStakeOptions, null, nativeSceneMechanismPostprocessRules, nativeSceneSummonTargets, nativeSceneGuideTargets, postprocessEntityContext, siegeInterventionRuleInjected: siegeInterventionPostprocessSelected, replyIsDirectPlayerResponse: shouldRecordPlayerInput, preprocessRuleHits: postprocessPreprocessHits, chainName: nativePostprocessChainName);
 		}
 		finally
 		{
@@ -17927,7 +18037,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		for (int i = 0; i < _shoutTradeOptions.Count; i++)
 		{
 			ShoutTradeResourceOption shoutTradeResourceOption = _shoutTradeOptions[i];
-			string text2 = $"{shoutTradeResourceOption.Name} (×{shoutTradeResourceOption.AvailableAmount})";
+			string transferDisplayName = CourierDeliveryBehavior.GetCourierLetterTransferDisplayTitleForExternal(shoutTradeResourceOption.Name);
+			string text2 = $"{transferDisplayName} (×{shoutTradeResourceOption.AvailableAmount})";
 			string text3 = $"可用数量: {shoutTradeResourceOption.AvailableAmount}";
 			if (shoutTradeResourceOption.PartyEntry != null)
 			{
@@ -17938,6 +18049,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				else if (IsShoutPrisonerTransferMode(_shoutTradeMode))
 				{
 					text3 = $"可用数量: {shoutTradeResourceOption.AvailableAmount} | 购买价: {shoutTradeResourceOption.PartyEntry.BuyPriceDenarsPerUnit}第纳尔/人";
+					string sourceLabel = MyBehavior.GetPartyTransferPrisonerSourceLabelForExternal(shoutTradeResourceOption.PartyEntry);
+					if (!string.IsNullOrWhiteSpace(sourceLabel))
+					{
+						text2 += "（来源：" + sourceLabel + "）";
+						text3 += " | 来源: " + sourceLabel;
+					}
 				}
 			}
 			else if (shoutTradeResourceOption.SettlementEntry != null)
@@ -18169,7 +18286,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return;
 		}
 		string titleText = (IsShoutTradeShowMode(_shoutTradeMode) ? "展示数量" : (IsShoutPartyTransferMode(_shoutTradeMode) ? "转移数量" : "给予数量"));
-		string text = $"[{_shoutPendingTradeItemIndex + 1}/{_shoutPendingTradeItems.Count}] {shoutPendingTradeItem.ItemName} 最多可填 {availableAmount}。\n请输入 1 到 {availableAmount} 的整数：";
+		string transferDisplayName = CourierDeliveryBehavior.GetCourierLetterTransferDisplayTitleForExternal(shoutPendingTradeItem.ItemName);
+		string text = $"[{_shoutPendingTradeItemIndex + 1}/{_shoutPendingTradeItems.Count}] {transferDisplayName} 最多可填 {availableAmount}。\n请输入 1 到 {availableAmount} 的整数：";
 		InformationManager.ShowTextInquiry(new TextInquiryData(titleText, text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "返回", delegate(string input)
 		{
 			if (!int.TryParse(input, out var result) || result <= 0 || result > availableAmount)
@@ -18219,7 +18337,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				}
 				else
 				{
-					stringBuilder.AppendLine(IsShoutTradeGiveMode(_shoutTradeMode) ? $"  · 给予 {shoutPendingTradeItem.Amount} 个 {shoutPendingTradeItem.ItemName}" : $"  · 展示 {shoutPendingTradeItem.Amount} 个 {shoutPendingTradeItem.ItemName}");
+					string transferDisplayName = CourierDeliveryBehavior.GetCourierLetterTransferDisplayTitleForExternal(shoutPendingTradeItem.ItemName);
+					stringBuilder.AppendLine(IsShoutTradeGiveMode(_shoutTradeMode) ? $"  · 给予 {shoutPendingTradeItem.Amount} 个 {transferDisplayName}" : $"  · 展示 {shoutPendingTradeItem.Amount} 个 {transferDisplayName}");
 				}
 			}
 		}
@@ -19249,13 +19368,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return ruleIds.Any((string x) => string.Equals((x ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase));
 	}
 
-	private static bool IsRoyalAbdicationPostprocessTopicSelected(bool diplomacyRuleSelected, bool kingdomAnnexationRuleSelected, IEnumerable<string> preprocessRuleHits)
-	{
-		return diplomacyRuleSelected
-			|| kingdomAnnexationRuleSelected
-			|| HasPreprocessRuleHit(preprocessRuleHits, "diplomacy");
-	}
-
 	private static string ResolveCourierRuntimeTargetKingdomId(Hero targetHero, CharacterObject targetCharacter)
 	{
 		try
@@ -19278,7 +19390,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return "";
 	}
 
-	public static string RunCourierActionPostprocessForExternal(Hero targetHero, CharacterObject targetCharacter, string npcName, string playerText, string historyText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected, bool kingdomServiceRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected, bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected, bool settlementTransferRuleInjected, bool voteDealRuleInjected = false, bool diplomacyRuleInjected = false, bool worldMapPartyCommandRuleInjected = false, List<string> preprocessRuleHits = null, string entityPostprocessContext = null, int targetAgentIndex = -1, bool latestReplyHasPlayerInput = true, bool forceLooseWeeklyMemoryMaterialSession = false, bool kingdomVassalageRuleInjected = false, bool kingdomAnnexationRuleInjected = false, string chainName = null)
+	public static string RunCourierActionPostprocessForExternal(Hero targetHero, CharacterObject targetCharacter, string npcName, string playerText, string historyText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected, bool kingdomServiceRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected, bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected, bool voteDealRuleInjected = false, bool diplomacyRuleInjected = false, bool worldMapPartyCommandRuleInjected = false, List<string> preprocessRuleHits = null, string entityPostprocessContext = null, int targetAgentIndex = -1, bool latestReplyHasPlayerInput = true, bool forceLooseWeeklyMemoryMaterialSession = false, bool kingdomVassalageRuleInjected = false, bool kingdomAnnexationRuleInjected = false, string chainName = null)
 	{
 		string text = StripActionTagsForSceneSpeech(replyText ?? "");
 		string resolvedChainName = string.IsNullOrWhiteSpace(chainName) ? "courier" : chainName.Trim();
@@ -19308,16 +19420,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			heroJoinPartyRuleInjected = heroJoinPartyRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "hero_join_party");
 			sceneMechanismRuleInjected = sceneMechanismRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "scene_mechanism_actions");
 			partyTransferRuleInjected = partyTransferRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "party_transfer");
-			settlementTransferRuleInjected = settlementTransferRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "settlement_transfer");
-			voteDealRuleInjected = voteDealRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "vote_deal");
-			bool royalPostprocessTopicSelected = IsRoyalAbdicationPostprocessTopicSelected(diplomacyRuleInjected, kingdomAnnexationRuleInjected, preprocessRuleHits);
+			voteDealRuleInjected = voteDealRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "kingdom_agenda");
+			bool royalPostprocessEligible = AIConfigHandler.IsRoyalAbdicationPostprocessTargetForExternal(targetHero ?? targetCharacter?.HeroObject);
 			diplomacyRuleInjected = diplomacyRuleInjected || kingdomAnnexationRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "diplomacy");
 			kingdomAnnexationRuleInjected = false;
 			if (diplomacyRuleInjected && !DiplomacyBehavior.CanUseDiplomacyActionPostprocessForExternal(targetHero, targetCharacter))
 			{
 				diplomacyRuleInjected = false;
 			}
-			bool proposeAgendaRuleInjected = HasPreprocessRuleHit(preprocessRuleHits, "propose_agenda");
 			worldMapPartyCommandRuleInjected = worldMapPartyCommandRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "worldmap_party_command");
 			bool nobleGatheringRuleInjected = HasPreprocessRuleHit(preprocessRuleHits, "noble_gathering");
 			bool marriageRuleInjected = HasPreprocessRuleHit(preprocessRuleHits, "marriage");
@@ -19360,26 +19470,27 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
 			}
 			bool transactionPostprocessEnabled = rewardRuleInjected || loanRuleInjected || persistentAdpDebtRuleInjected;
+			bool exposeAllRewardItems = rewardRuleInjected && RequestsAllOrdinaryAssetsForPostprocess(playerText, historyText);
+			bool exposeAllFixedAssets = rewardRuleInjected && RequestsAllFixedAssetsForPostprocess(playerText, historyText);
 			List<PostprocessRuleEntry> duelRules = duelRuleInjected ? AIConfigHandler.DuelPostprocessRules : null;
 			List<PostprocessRuleEntry> persistentAdpDebtRules = persistentAdpDebtRuleInjected ? BuildPersistentAdpDebtPostprocessRules() : null;
 			List<PostprocessRuleEntry> transactionRules = transactionPostprocessEnabled ? MergePostprocessRulesForScene(rewardRuleInjected ? AIConfigHandler.RewardPostprocessRules : null, loanRuleInjected ? AIConfigHandler.LoanPostprocessRules : null, persistentAdpDebtRules) : null;
 			List<PostprocessRuleEntry> kingdomRules = kingdomServiceRuleInjected ? (AIConfigHandler.BuildRuntimeKingdomServicePostprocessRules() ?? new List<PostprocessRuleEntry>()) : null;
-			List<PostprocessRuleEntry> royalRules = AIConfigHandler.BuildRuntimeRoyalPostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject, royalPostprocessTopicSelected) ?? new List<PostprocessRuleEntry>();
+			List<PostprocessRuleEntry> royalRules = AIConfigHandler.BuildRuntimeRoyalPostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject) ?? new List<PostprocessRuleEntry>();
 			List<PostprocessRuleEntry> vassalageRules = kingdomVassalageRuleInjected ? (VassalageBehavior.BuildRuntimeVassalagePostprocessRulesForExternal(targetHero, targetCharacter) ?? new List<PostprocessRuleEntry>()) : null;
 			List<PostprocessRuleEntry> lordsHallRules = lordsHallRuleInjected ? MergePostprocessRulesForScene(AIConfigHandler.GetGuardrailRulePostprocessRules("lords_hall_access"), AIConfigHandler.BuildRuntimeLordsHallAccessPostprocessRules() ?? new List<PostprocessRuleEntry>()) : null;
 			List<PostprocessRuleEntry> meetingReleaseRules = meetingReleaseRuleInjected ? MergePostprocessRulesForScene(AIConfigHandler.GetGuardrailRulePostprocessRules("encounter_release_player"), LordEncounterBehavior.BuildMeetingPlayerReleasePostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject)) : null;
 			List<PostprocessRuleEntry> vanillaIssueRules = vanillaIssueRuleInjected ? (VanillaIssueOfferBridge.BuildRuntimePostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject) ?? new List<PostprocessRuleEntry>()) : null;
-			List<PostprocessRuleEntry> heroJoinPartyRules = heroJoinPartyRuleInjected ? (AIConfigHandler.BuildRuntimeHeroJoinPartyPostprocessRules(!ShouldSuppressHeroJoinPartyPostprocessForScene(targetHero ?? targetCharacter?.HeroObject), targetHero ?? targetCharacter?.HeroObject) ?? new List<PostprocessRuleEntry>()) : null;
+			List<PostprocessRuleEntry> heroJoinPartyRules = heroJoinPartyRuleInjected ? (AIConfigHandler.BuildRuntimeHeroJoinPartyPostprocessRules(!ShouldSuppressHeroJoinPartyPostprocessForScene(targetHero ?? targetCharacter?.HeroObject), targetHero ?? targetCharacter?.HeroObject, entityPostprocessContext) ?? new List<PostprocessRuleEntry>()) : null;
 			if (heroJoinPartyRuleInjected && (heroJoinPartyRules == null || heroJoinPartyRules.Count == 0))
 			{
 				heroJoinPartyRuleInjected = false;
 			}
 			List<PostprocessRuleEntry> mechanismRules = sceneMechanismRuleInjected ? (AIConfigHandler.GetGuardrailRulePostprocessRules("scene_mechanism_actions") ?? new List<PostprocessRuleEntry>()) : null;
 			List<PostprocessRuleEntry> partyTransferRules = partyTransferRuleInjected ? (AIConfigHandler.GetGuardrailRulePostprocessRules("party_transfer") ?? new List<PostprocessRuleEntry>()) : null;
-			List<PostprocessRuleEntry> settlementTransferRules = settlementTransferRuleInjected ? (AIConfigHandler.GetGuardrailRulePostprocessRules("settlement_transfer") ?? new List<PostprocessRuleEntry>()) : null;
-			List<PostprocessRuleEntry> voteDealRules = voteDealRuleInjected ? (AIConfigHandler.GetGuardrailRulePostprocessRules("vote_deal") ?? new List<PostprocessRuleEntry>()) : null;
-			List<PostprocessRuleEntry> diplomacyRules = diplomacyRuleInjected ? MergePostprocessRulesForScene(AIConfigHandler.GetGuardrailRulePostprocessRules("diplomacy") ?? new List<PostprocessRuleEntry>(), KingdomAnnexationBehavior.BuildRuntimeAnnexationPostprocessRulesForExternal(targetHero, targetCharacter) ?? new List<PostprocessRuleEntry>()) : null;
-			List<PostprocessRuleEntry> proposeAgendaRules = proposeAgendaRuleInjected ? (AIConfigHandler.GetGuardrailRulePostprocessRules("propose_agenda") ?? new List<PostprocessRuleEntry>()) : null;
+			List<PostprocessRuleEntry> voteDealRules = voteDealRuleInjected ? (AIConfigHandler.GetGuardrailRulePostprocessRules("kingdom_agenda") ?? new List<PostprocessRuleEntry>()) : null;
+			List<PostprocessRuleEntry> diplomacyRules = diplomacyRuleInjected ? BuildRuntimeDiplomacyPostprocessRulesForScene(targetHero, targetCharacter) : null;
+			List<PostprocessRuleEntry> proposeAgendaRules = null;
 			List<PostprocessRuleEntry> worldMapPartyCommandRules = worldMapPartyCommandRuleInjected ? (WorldMapPartyCommandBehavior.BuildRuntimePostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject, targetCharacter, targetAgentIndex) ?? new List<PostprocessRuleEntry>()) : null;
 			List<PostprocessRuleEntry> nobleGatheringRules = nobleGatheringRuleInjected ? (NobleGatheringBehavior.BuildRuntimePostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject) ?? new List<PostprocessRuleEntry>()) : null;
 			Hero marriageSpeaker = targetHero ?? targetCharacter?.HeroObject;
@@ -19389,10 +19500,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			List<PostprocessRuleEntry> intimacyRules = SexualConceptionBehavior.BuildRuntimePostprocessRules(targetHero ?? targetCharacter?.HeroObject, resolvedChainName);
 			bool npcSurrenderPostprocessEnabled = IsNpcSurrenderPostprocessContext();
 			List<PostprocessRuleEntry> npcSurrenderRules = BuildNpcSurrenderPostprocessRulesForScene(npcSurrenderPostprocessEnabled);
-			List<PostprocessRuleEntry> mergedRules = MergePostprocessRulesForScene(duelRules, transactionRules, kingdomRules, royalRules, vassalageRules, lordsHallRules, meetingReleaseRules, vanillaIssueRules, heroJoinPartyRules, mechanismRules, partyTransferRules, settlementTransferRules, voteDealRules, diplomacyRules, worldMapPartyCommandRules, nobleGatheringRules, marriageRules, proposeAgendaRules, npcSurrenderRules, siegeInterventionRules, intimacyRules);
+			List<PostprocessRuleEntry> mergedRules = MergePostprocessRulesForScene(duelRules, transactionRules, kingdomRules, royalRules, vassalageRules, lordsHallRules, meetingReleaseRules, vanillaIssueRules, heroJoinPartyRules, mechanismRules, partyTransferRules, voteDealRules, diplomacyRules, worldMapPartyCommandRules, nobleGatheringRules, marriageRules, proposeAgendaRules, npcSurrenderRules, siegeInterventionRules, intimacyRules);
 			bool royalPostprocessRuleInjected = (royalRules ?? new List<PostprocessRuleEntry>()).Any((PostprocessRuleEntry x) => string.Equals((x?.Tag ?? "").Trim(), "[ACTION:KING_ABDICATE_TO_PLAYER]", StringComparison.OrdinalIgnoreCase));
 			bool vassalagePostprocessRuleInjected = (vassalageRules ?? new List<PostprocessRuleEntry>()).Any((PostprocessRuleEntry x) => (x?.Tag ?? "").StartsWith("[ACTION:VASSALAGE:", StringComparison.OrdinalIgnoreCase));
-			int annexationRuleCount = (diplomacyRules ?? new List<PostprocessRuleEntry>()).Count((PostprocessRuleEntry x) => (x?.Tag ?? "").StartsWith("[ACTION:KINGDOM_ANNEX:", StringComparison.OrdinalIgnoreCase));
+			int annexationRuleCount = (mergedRules ?? new List<PostprocessRuleEntry>()).Count((PostprocessRuleEntry x) => (x?.Tag ?? "").StartsWith("[ACTION:KINGDOM_ANNEX:", StringComparison.OrdinalIgnoreCase));
 			bool kingdomAnnexPostprocessRuleInjected = annexationRuleCount > 0;
 			if (kingdomVassalageRuleInjected)
 			{
@@ -19404,7 +19515,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					["mergedTags"] = (mergedRules ?? new List<PostprocessRuleEntry>()).Select((PostprocessRuleEntry x) => x?.Tag ?? "").ToList()
 				});
 			}
-			Logger.Log("CourierDelivery", "[UnifiedPostprocess] requested chain=" + resolvedChainName + " duel=" + duelRuleInjected + " reward=" + rewardRuleInjected + " loan=" + loanRuleInjected + " persistentAdpDebt=" + persistentAdpDebtRuleInjected + " kingdom=" + kingdomServiceRuleInjected + " royalTopic=" + royalPostprocessTopicSelected + " royalRule=" + royalPostprocessRuleInjected + " vassalage=" + kingdomVassalageRuleInjected + " annexation=" + kingdomAnnexPostprocessRuleInjected + " VASSALAGE_rule_injected=" + vassalagePostprocessRuleInjected + " KINGDOM_ANNEX_rule_injected=" + kingdomAnnexPostprocessRuleInjected + " royalRuleCount=" + (royalRules?.Count ?? 0) + " vassalageRuleCount=" + (vassalageRules?.Count ?? 0) + " annexationRuleCount=" + annexationRuleCount + " lordsHall=" + lordsHallRuleInjected + " meetingRelease=" + meetingReleaseRuleInjected + " vanillaIssue=" + vanillaIssueRuleInjected + " heroJoin=" + heroJoinPartyRuleInjected + " sceneMechanism=" + sceneMechanismRuleInjected + " partyTransfer=" + partyTransferRuleInjected + " settlementTransfer=" + settlementTransferRuleInjected + " voteDeal=" + voteDealRuleInjected + " diplomacy=" + diplomacyRuleInjected + " worldMap=" + worldMapPartyCommandRuleInjected + " nobleGathering=" + nobleGatheringRuleInjected + " marriage=" + marriageRuleInjected + " intimacy=" + (intimacyRules?.Count > 0) + " siegeIntervention=" + siegeInterventionRuleInjected + " npcSurrender=" + npcSurrenderPostprocessEnabled + " npcSurrenderRule=" + HasNpcSurrenderPostprocessRule(npcSurrenderRules) + " mergedHasNpcSurrender=" + HasNpcSurrenderPostprocessRule(mergedRules) + " preprocessHits=" + ((preprocessRuleHits == null || preprocessRuleHits.Count == 0) ? "(none)" : string.Join(",", preprocessRuleHits)) + " mergedRules=" + ((mergedRules == null || mergedRules.Count == 0) ? "(none; mood postprocess still runs)" : string.Join(",", mergedRules.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
+			Logger.Log("CourierDelivery", "[UnifiedPostprocess] requested chain=" + resolvedChainName + " duel=" + duelRuleInjected + " reward=" + rewardRuleInjected + " loan=" + loanRuleInjected + " persistentAdpDebt=" + persistentAdpDebtRuleInjected + " kingdom=" + kingdomServiceRuleInjected + " royalEligible=" + royalPostprocessEligible + " royalRule=" + royalPostprocessRuleInjected + " vassalage=" + kingdomVassalageRuleInjected + " annexation=" + kingdomAnnexPostprocessRuleInjected + " VASSALAGE_rule_injected=" + vassalagePostprocessRuleInjected + " KINGDOM_ANNEX_rule_injected=" + kingdomAnnexPostprocessRuleInjected + " royalRuleCount=" + (royalRules?.Count ?? 0) + " vassalageRuleCount=" + (vassalageRules?.Count ?? 0) + " annexationRuleCount=" + annexationRuleCount + " lordsHall=" + lordsHallRuleInjected + " meetingRelease=" + meetingReleaseRuleInjected + " vanillaIssue=" + vanillaIssueRuleInjected + " heroJoin=" + heroJoinPartyRuleInjected + " sceneMechanism=" + sceneMechanismRuleInjected + " partyTransfer=" + partyTransferRuleInjected + " voteDeal=" + voteDealRuleInjected + " diplomacy=" + diplomacyRuleInjected + " worldMap=" + worldMapPartyCommandRuleInjected + " nobleGathering=" + nobleGatheringRuleInjected + " marriage=" + marriageRuleInjected + " intimacy=" + (intimacyRules?.Count > 0) + " siegeIntervention=" + siegeInterventionRuleInjected + " npcSurrender=" + npcSurrenderPostprocessEnabled + " npcSurrenderRule=" + HasNpcSurrenderPostprocessRule(npcSurrenderRules) + " mergedHasNpcSurrender=" + HasNpcSurrenderPostprocessRule(mergedRules) + " preprocessHits=" + ((preprocessRuleHits == null || preprocessRuleHits.Count == 0) ? "(none)" : string.Join(",", preprocessRuleHits)) + " mergedRules=" + ((mergedRules == null || mergedRules.Count == 0) ? "(none; mood postprocess still runs)" : string.Join(",", mergedRules.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
 			string displayName = string.IsNullOrWhiteSpace(npcName) ? (targetHero?.Name?.ToString() ?? targetCharacter?.Name?.ToString() ?? "NPC") : npcName.Trim();
 			string normalizedHistory = NormalizePlayerNameForScenePostprocess(string.IsNullOrWhiteSpace(historyText) ? "（无）" : historyText.Trim(), displayName);
 			string tagRules = BuildPostprocessRuleTextForScene(mergedRules);
@@ -19418,6 +19529,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			string runtimeContext = "（无）";
 			List<RewardSystemBehavior.RewardItemInfo> rewardOptions = null;
 			List<RewardSystemBehavior.RewardItemInfo> rewardAllOptions = null;
+			int rewardAvailableGold = 0;
 			List<MyBehavior.PartyTransferPromptEntry> partyTransferTroopOptions = null;
 			List<MyBehavior.PartyTransferPromptEntry> partyTransferPrisonerOptions = null;
 			List<MyBehavior.PartyTransferPromptEntry> partyTransferAllTroopOptions = null;
@@ -19449,7 +19561,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						{
 							rewardOptions = PromptListRetrievalService.FilterRewardItems(rewardAllOptions, promptListMentions, promptListMax);
 						}
-						sharedItemList = BuildRewardPostprocessItemListForScene(rewardOptions, RewardSystemBehavior.Instance.GetRewardPostprocessGoldForHero(targetHero), rewardAllOptions);
+						if (exposeAllRewardItems)
+						{
+							rewardOptions = (rewardAllOptions ?? new List<RewardSystemBehavior.RewardItemInfo>()).Where((RewardSystemBehavior.RewardItemInfo x) => x != null && x.Count > 0).ToList();
+						}
+						rewardAvailableGold = RewardSystemBehavior.Instance.GetRewardPostprocessGoldForHero(targetHero);
+						sharedItemList = BuildRewardPostprocessItemListForScene(rewardOptions, rewardAvailableGold, rewardAllOptions);
 						debtHint = NormalizePlayerNameForScenePostprocess(RewardSystemBehavior.Instance.BuildDebtHintForAI(targetHero), displayName);
 					}
 					else if (targetCharacter != null)
@@ -19459,7 +19576,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 							rewardAllOptions = RewardSystemBehavior.Instance.BuildPartyRewardPostprocessItems(party);
 							PromptListRetrievalService.PublishRewardItemSnapshot(PromptListRetrievalService.PartyRewardItemsAllSnapshotScope, null, targetCharacter, -1, rewardAllOptions);
 							rewardOptions = PromptListRetrievalService.FilterRewardItems(rewardAllOptions, promptListMentions, promptListMax);
-							sharedItemList = BuildRewardPostprocessItemListForScene(rewardOptions, RewardSystemBehavior.Instance.GetPartyTradeGoldForExternal(party), rewardAllOptions);
+							if (exposeAllRewardItems)
+							{
+								rewardOptions = (rewardAllOptions ?? new List<RewardSystemBehavior.RewardItemInfo>()).Where((RewardSystemBehavior.RewardItemInfo x) => x != null && x.Count > 0).ToList();
+							}
+							rewardAvailableGold = RewardSystemBehavior.Instance.GetPartyTradeGoldForExternal(party);
+							sharedItemList = BuildRewardPostprocessItemListForScene(rewardOptions, rewardAvailableGold, rewardAllOptions);
 							debtHint = "（非hero野外部队没有个人赊账账本；如果要归还已经实际收到的物品或第纳尔，请只从上面的部队库存与资金中输出 GIVE 标签。）";
 						}
 						else
@@ -19473,8 +19595,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 							{
 								rewardOptions = PromptListRetrievalService.FilterRewardItems(rewardAllOptions, promptListMentions, promptListMax);
 							}
-							int marketGold = RewardSystemBehavior.Instance.GetSettlementMarketTradeGold(Settlement.CurrentSettlement);
-							sharedItemList = BuildRewardPostprocessItemListForScene(rewardOptions, marketGold, rewardAllOptions);
+							if (exposeAllRewardItems)
+							{
+								rewardOptions = (rewardAllOptions ?? new List<RewardSystemBehavior.RewardItemInfo>()).Where((RewardSystemBehavior.RewardItemInfo x) => x != null && x.Count > 0).ToList();
+							}
+							rewardAvailableGold = RewardSystemBehavior.Instance.GetSettlementMarketTradeGold(Settlement.CurrentSettlement);
+							sharedItemList = BuildRewardPostprocessItemListForScene(rewardOptions, rewardAvailableGold, rewardAllOptions);
 							debtHint = NormalizePlayerNameForScenePostprocess(RewardSystemBehavior.Instance.BuildSettlementMerchantDebtHintForAI(targetCharacter), displayName);
 						}
 					}
@@ -19549,7 +19675,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					partyTransferAllPrisonerOptions = null;
 				}
 			}
-			if (settlementTransferRuleInjected)
+			if (rewardRuleInjected)
 			{
 				try
 				{
@@ -19565,6 +19691,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						settlementTransferNpcOptions = PromptListRetrievalService.FilterSettlementTransferEntries(settlementTransferNpcOptions, promptListMentions, promptListMax);
 						PromptListRetrievalService.PublishSettlementTransferSnapshot(PromptListRetrievalService.SettlementTransferNpcAssetsSnapshotScope, targetHero, targetCharacter, -1, settlementTransferNpcOptions);
 					}
+					if (exposeAllFixedAssets)
+					{
+						settlementTransferNpcOptions = settlementTransferAllNpcOptions;
+					}
 					runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, BuildSettlementTransferPostprocessListForScene(settlementTransferNpcOptions, settlementTransferAllNpcOptions));
 				}
 				catch
@@ -19579,7 +19709,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				marriageTargetCandidates = RomanceSystemBehavior.Instance.BuildMarriagePostprocessTargetCandidatesBlockForExternal(marriageSpeaker);
 				marriageFactHint = RomanceSystemBehavior.Instance.BuildMarriagePostprocessFactHintBlockForExternal(marriageSpeaker);
 			}
-			if (worldMapPartyCommandRuleInjected)
+			if (worldMapPartyCommandRuleInjected || voteDealRuleInjected || heroJoinPartyRuleInjected)
 			{
 				runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, entityPostprocessContext);
 			}
@@ -19590,10 +19720,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			if (diplomacyRuleInjected)
 			{
 				runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, DiplomacyBehavior.BuildDiplomacyPostprocessContext(targetHero ?? targetCharacter?.HeroObject));
-			}
-			if (proposeAgendaRuleInjected)
-			{
-				runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, VoteDealBehavior.BuildProposePostprocessContext(targetHero ?? targetCharacter?.HeroObject));
 			}
 			if (siegeInterventionRuleInjected)
 			{
@@ -19608,7 +19734,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
 			}
 			string duelTags = duelRuleInjected ? NormalizeDuelPostprocessTagsForScene(content, null, targetHero) : "";
-			string rewardTags = transactionPostprocessEnabled ? NormalizeRewardPostprocessTagsForScene(content, rewardOptions, rewardAllOptions) : "";
+			string rewardTags = transactionPostprocessEnabled ? NormalizeRewardPostprocessTagsForScene(content, rewardOptions, rewardAllOptions, rewardRuleInjected ? settlementTransferNpcOptions : null, rewardRuleInjected, rewardAvailableGold) : "";
 			if (persistentAdpDebtRuleInjected && !rewardRuleInjected && !loanRuleInjected)
 			{
 				rewardTags = KeepOnlyPersistentAdpDebtTags(rewardTags);
@@ -19641,16 +19767,15 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			string heroJoinTags = heroJoinPartyRuleInjected ? NormalizeHeroJoinPartyPostprocessTagsForScene(content, heroJoinPartyRules) : "";
 			string sceneMechanismTags = sceneMechanismRuleInjected ? NormalizeSceneMechanismPostprocessTagsForScene(content, mechanismRules, new List<SceneSummonPromptTarget>(), new List<SceneGuidePromptTarget>()) : "";
 			string partyTransferTags = partyTransferRuleInjected ? NormalizePartyTransferPostprocessTagsForScene(content, partyTransferTroopOptions, partyTransferPrisonerOptions, partyTransferAllTroopOptions, partyTransferAllPrisonerOptions) : "";
-			string settlementTransferTags = settlementTransferRuleInjected ? NormalizeSettlementTransferPostprocessTagsForScene(content, settlementTransferNpcOptions, settlementTransferAllNpcOptions) : "";
 			string voteDealTags = (voteDealRules != null && voteDealRules.Count > 0) ? NormalizeVoteDealPostprocessTagsForScene(content, voteDealRules) : "";
-			string proposeAgendaTags = (proposeAgendaRules != null && proposeAgendaRules.Count > 0) ? NormalizeProposeAgendaPostprocessTagsForScene(content, proposeAgendaRules) : "";
+			string proposeAgendaTags = "";
 			string worldMapPartyCommandTags = worldMapPartyCommandRuleInjected ? NormalizeWorldMapPartyCommandPostprocessTagsForScene(content) : "";
 			string nobleGatheringTags = nobleGatheringRuleInjected ? NobleGatheringBehavior.NormalizeNobleGatheringPostprocessTagsForExternal(content) : "";
 			string marriageTags = (marriageRuleInjected && RomanceSystemBehavior.Instance != null) ? RomanceSystemBehavior.Instance.NormalizeMarriagePostprocessTagsForExternal(content, marriageRules, marriageSpeaker) : "";
 			string npcSurrenderTags = NormalizeNpcSurrenderPostprocessTagsForScene(content, npcSurrenderRules, npcSurrenderPostprocessEnabled);
 			string siegeInterventionTags = siegeInterventionRuleInjected ? AfGcczShoutBridge.NormalizePostprocessTags(siegeInterventionRuleInjected, content, siegeInterventionRules) : "";
 			string intimacyTags = SexualConceptionBehavior.NormalizePostprocessTags(content, intimacyRules);
-			string merged = MergeNormalizedPostprocessBlocksForScene(duelTags, rewardTags, kingdomTags, royalTags, vassalageTags, lordsHallTags, meetingReleaseTags, vanillaIssueTags, heroJoinTags, sceneMechanismTags, partyTransferTags, settlementTransferTags, voteDealTags, diplomacyTags, worldMapPartyCommandTags, nobleGatheringTags, marriageTags, proposeAgendaTags, npcSurrenderTags, siegeInterventionTags, intimacyTags);
+			string merged = MergeNormalizedPostprocessBlocksForScene(duelTags, rewardTags, kingdomTags, royalTags, vassalageTags, lordsHallTags, meetingReleaseTags, vanillaIssueTags, heroJoinTags, sceneMechanismTags, partyTransferTags, voteDealTags, diplomacyTags, worldMapPartyCommandTags, nobleGatheringTags, marriageTags, proposeAgendaTags, npcSurrenderTags, siegeInterventionTags, intimacyTags);
 			if (string.IsNullOrWhiteSpace(merged))
 			{
 				merged = AIConfigHandler.ActionPostprocessFallbackMoodTag;
@@ -20566,8 +20691,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	private static string StripRewardActionTagsForScene(string text)
 	{
 		string text2 = text ?? "";
-		text2 = Regex.Replace(text2, "\\[ACTION:GIVE_GOLD:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
-		text2 = Regex.Replace(text2, "\\[ACTION:GIVE_ITEM:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[ACTION:GIVE_ASSET:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
 		text2 = Regex.Replace(text2, "\\[ACTION:DEBT[^\\]]*\\]", "", RegexOptions.IgnoreCase);
 		text2 = Regex.Replace(text2, "\\[AD;[^\\]]*\\]", "", RegexOptions.IgnoreCase);
 		text2 = Regex.Replace(text2, "\\[ADP[:;][^\\]]*\\]", "", RegexOptions.IgnoreCase);
@@ -20614,6 +20738,26 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		stringBuilder.Append("全部可转物品总值: ").Append(RewardSystemBehavior.CalculateRewardItemsTotalValueForExternal(allOptions ?? options)).AppendLine(" 第纳尔（不含第纳尔）");
 		return stringBuilder.ToString().TrimEnd();
+	}
+
+	private static bool RequestsAllOrdinaryAssetsForPostprocess(string playerText, string historyText)
+	{
+		string text = ((playerText ?? "") + "\n" + (historyText ?? "")).Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		return Regex.IsMatch(text, "(?:全部|所有(?:的)?|全都|一切)\\s*(?:资产|财产|物品|东西|货物|装备|库存|行囊)|(?:资产|财产|物品|东西|货物|装备|库存|行囊)\\s*(?:全部|全都|都)|\\ball\\s+(?:assets?|property|items?|goods|equipment|inventory)\\b", RegexOptions.IgnoreCase);
+	}
+
+	private static bool RequestsAllFixedAssetsForPostprocess(string playerText, string historyText)
+	{
+		string text = ((playerText ?? "") + "\n" + (historyText ?? "")).Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		return Regex.IsMatch(text, "(?:全部|所有(?:的)?|全都|一切)\\s*(?:资产|财产|固定资产|领地|城市|城堡|工坊|商队|贸易车队)|(?:固定资产|领地|城市|城堡|工坊|商队|贸易车队)\\s*(?:全部|全都|都)|\\ball\\s+(?:assets?|property|fixed\\s+assets?|fiefs?|towns?|castles?|workshops?|caravans?)\\b", RegexOptions.IgnoreCase);
 	}
 
 	private static RewardSystemBehavior.RewardItemInfo FindRewardItemByTokenForScene(List<RewardSystemBehavior.RewardItemInfo> options, string token)
@@ -20693,7 +20837,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 			}
 		}
-		string text2 = Regex.Replace(text, "\\[ACTION:(GIVE_ITEM|DEBT_ITEM):(\\d+):(\\d+)\\]", delegate(Match m)
+		string text2 = Regex.Replace(text, "\\[ACTION:(GIVE_ASSET|DEBT_ITEM):(\\d+):(\\d+)\\]", delegate(Match m)
 		{
 			string value = m.Groups[1].Value;
 			if (!int.TryParse(m.Groups[2].Value, out var result) || !int.TryParse(m.Groups[3].Value, out var result2) || result <= 0 || result > options.Count || result2 <= 0)
@@ -20710,11 +20854,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			result2 = Math.Min(Math.Max(1, result2), Math.Max(1, rewardItemInfo.Count));
 			return "[ACTION:" + value + ":" + text2.Trim() + ":" + result2 + "]";
 		}, RegexOptions.IgnoreCase);
-		return Regex.Replace(text2, "\\[ACTION:(GIVE_ITEM|DEBT_ITEM):([^\\]\\r\\n:]+):(ALL|\\d+)\\]", delegate(Match m)
+		return Regex.Replace(text2, "\\[ACTION:(GIVE_ASSET|DEBT_ITEM):([^\\]\\r\\n:]+):(ALL|\\d+)\\]", delegate(Match m)
 		{
 			string value2 = m.Groups[1].Value;
 			string token = m.Groups[2].Value;
-			bool isAll = string.Equals(value2, "GIVE_ITEM", StringComparison.OrdinalIgnoreCase) && TransferQuantitySpec.IsAllValue(m.Groups[3].Value);
+			bool isAll = string.Equals(value2, "GIVE_ASSET", StringComparison.OrdinalIgnoreCase) && TransferQuantitySpec.IsAllValue(m.Groups[3].Value);
 			int result3 = 0;
 			if (TransferQuantitySpec.IsAllValue(token) && !isAll)
 			{
@@ -20729,11 +20873,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			logRewardItemTranslation("token", token, rewardItemInfo2, text3);
 			if (string.IsNullOrWhiteSpace(text3))
 			{
-				return isAll ? ("[ACTION:GIVE_ITEM:" + token.Trim() + ":ALL]") : ("[ACTION:" + value2 + ":" + token.Trim() + ":" + result3 + "]");
+				return isAll ? ("[ACTION:GIVE_ASSET:" + token.Trim() + ":ALL]") : ("[ACTION:" + value2 + ":" + token.Trim() + ":" + result3 + "]");
 			}
 			if (isAll)
 			{
-				return "[ACTION:GIVE_ITEM:" + text3.Trim() + ":ALL]";
+				return "[ACTION:GIVE_ASSET:" + text3.Trim() + ":ALL]";
 			}
 			result3 = Math.Min(Math.Max(1, result3), Math.Max(1, rewardItemInfo2.Count));
 			return "[ACTION:" + value2 + ":" + text3.Trim() + ":" + result3 + "]";
@@ -20781,7 +20925,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}, RegexOptions.IgnoreCase);
 	}
 
-	private static string NormalizeRewardPostprocessTagsForScene(string raw, List<RewardSystemBehavior.RewardItemInfo> options, List<RewardSystemBehavior.RewardItemInfo> allOptions = null)
+	private static string NormalizeRewardPostprocessTagsForScene(string raw, List<RewardSystemBehavior.RewardItemInfo> options, List<RewardSystemBehavior.RewardItemInfo> allOptions, List<MyBehavior.SettlementTransferPromptEntry> fixedAssetOptions, bool allowAssetTransfer, int availableGold)
 	{
 		List<string> list = new List<string>();
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -20798,7 +20942,90 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				text = text2;
 				continue;
 			}
-			if (!text2.StartsWith("[ACTION:GIVE_GOLD:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ACTION:GIVE_ITEM:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ACTION:DEBT_ITEM:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ACTION:DEBT_PAY_ITEM:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[AD;", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ADP;", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ADP:", StringComparison.OrdinalIgnoreCase))
+			if (text2.StartsWith("[ACTION:GIVE_ASSET:", StringComparison.OrdinalIgnoreCase))
+			{
+				if (!allowAssetTransfer)
+				{
+					continue;
+				}
+				Match assetMatch = Regex.Match(text2, "^\\[ACTION:GIVE_ASSET:([^\\]\\r\\n:]+):(ALL|\\d+)\\]$", RegexOptions.IgnoreCase);
+				if (!assetMatch.Success)
+				{
+					continue;
+				}
+				string assetToken = (assetMatch.Groups[1].Value ?? "").Trim();
+				string quantityToken = (assetMatch.Groups[2].Value ?? "").Trim();
+				if (TransferQuantitySpec.IsAllValue(assetToken))
+				{
+					continue;
+				}
+				if (RewardSystemBehavior.IsGoldAssetTokenForExternal(assetToken))
+				{
+					if (!int.TryParse(quantityToken, out var goldAmount) || goldAmount <= 0 || availableGold <= 0)
+					{
+						continue;
+					}
+					text2 = "[ACTION:GIVE_ASSET:GOLD:" + Math.Min(goldAmount, availableGold) + "]";
+				}
+				else
+				{
+					MyBehavior.SettlementTransferPromptEntry fixedAsset = FindSettlementTransferEntryByTokenForScene(fixedAssetOptions, assetToken);
+					if (fixedAsset != null)
+					{
+						if (!string.Equals(quantityToken, "1", StringComparison.Ordinal))
+						{
+							continue;
+						}
+						string fixedAssetId = MyBehavior.GetSettlementTransferAssetIdForExternal(fixedAsset);
+						if (string.IsNullOrWhiteSpace(fixedAssetId))
+						{
+							continue;
+						}
+						text2 = "[ACTION:GIVE_ASSET:" + fixedAssetId.Trim() + ":1]";
+					}
+					else
+					{
+						RewardSystemBehavior.RewardItemInfo rewardItem = null;
+						if (int.TryParse(assetToken, out var itemIndex) && itemIndex > 0 && itemIndex <= (options?.Count ?? 0))
+						{
+							rewardItem = options[itemIndex - 1];
+						}
+						rewardItem ??= FindRewardItemByTokenForScene(options, assetToken);
+						if (rewardItem == null || rewardItem.Item == null || rewardItem.Count <= 0)
+						{
+							if (TransferQuantitySpec.IsAllValue(quantityToken)
+								|| !int.TryParse(quantityToken, out var rpItemAmount)
+								|| rpItemAmount <= 0
+								|| !RewardSystemBehavior.IsValidGeneratedRpAssetNameForExternal(assetToken))
+							{
+								continue;
+							}
+							text2 = "[ACTION:GIVE_ASSET:" + assetToken + ":" + rpItemAmount + "]";
+						}
+						else
+						{
+							string itemKey = string.IsNullOrWhiteSpace(rewardItem.PromptStringId) ? rewardItem.StringId : rewardItem.PromptStringId;
+							if (string.IsNullOrWhiteSpace(itemKey))
+							{
+								continue;
+							}
+							if (TransferQuantitySpec.IsAllValue(quantityToken))
+							{
+								text2 = "[ACTION:GIVE_ASSET:" + itemKey.Trim() + ":ALL]";
+							}
+							else if (int.TryParse(quantityToken, out var itemAmount) && itemAmount > 0)
+							{
+								text2 = "[ACTION:GIVE_ASSET:" + itemKey.Trim() + ":" + Math.Min(itemAmount, Math.Max(1, rewardItem.Count)) + "]";
+							}
+							else
+							{
+								continue;
+							}
+						}
+					}
+				}
+			}
+			else if (!text2.StartsWith("[ACTION:DEBT_ITEM:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ACTION:DEBT_PAY_ITEM:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[AD;", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ADP;", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ADP:", StringComparison.OrdinalIgnoreCase))
 			{
 				continue;
 			}
@@ -20810,22 +21037,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			text = AIConfigHandler.ActionPostprocessFallbackMoodTag;
-		}
-		list.RemoveAll((string x) => Regex.IsMatch(x ?? "", "^\\[ACTION:GIVE_ITEM:ALL:\\d+\\]$", RegexOptions.IgnoreCase));
-		bool giveAll = list.Any((string x) => Regex.IsMatch(x ?? "", "^\\[ACTION:GIVE_ITEM:[^\\]\\r\\n:]+:ALL\\]$", RegexOptions.IgnoreCase));
-		if (giveAll)
-		{
-			list.RemoveAll((string x) => (x ?? "").StartsWith("[ACTION:GIVE_ITEM:", StringComparison.OrdinalIgnoreCase));
-			HashSet<string> allItemKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			foreach (RewardSystemBehavior.RewardItemInfo item in allOptions ?? Enumerable.Empty<RewardSystemBehavior.RewardItemInfo>())
-			{
-				string key = string.IsNullOrWhiteSpace(item?.PromptStringId) ? item?.StringId : item.PromptStringId;
-				if (item == null || item.Item == null || item.Count <= 0 || string.IsNullOrWhiteSpace(key) || !allItemKeys.Add(key.Trim()))
-				{
-					continue;
-				}
-				list.Add("[ACTION:GIVE_ITEM:" + key.Trim() + ":ALL]");
-			}
 		}
 		string text3 = string.Join("\n", list.Concat(new string[1] { text }).Where((string x) => !string.IsNullOrWhiteSpace(x))).Trim();
 		text3 = TranslateRewardItemIndexesForScene(text3, options);
@@ -20898,6 +21109,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				BuyPriceDenarsPerUnit = entry.BuyPriceDenarsPerUnit,
 				IsHero = entry.IsHero,
 				OwnerParty = entry.OwnerParty,
+				SourceSettlement = entry.SourceSettlement,
 				VolunteerOwner = entry.VolunteerOwner,
 				VolunteerSlotIndices = entry.VolunteerSlotIndices == null ? null : new List<int>(entry.VolunteerSlotIndices)
 			});
@@ -20923,7 +21135,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		if (isPrisoner && entry.IsHero)
 		{
-			return entry.PromptIndex + ". " + text + "x1";
+			string sourceLabel = MyBehavior.GetPartyTransferPrisonerSourceLabelForExternal(entry);
+			return entry.PromptIndex + ". " + text + "x1" + (string.IsNullOrWhiteSpace(sourceLabel) ? "" : ("（来源：" + sourceLabel + "）"));
 		}
 		string text2 = entry.Section == MyBehavior.PartyTransferEntrySection.NpcVolunteers ? "（原版要人募兵）" : "";
 		return entry.PromptIndex + ". " + text + "x" + num + text2;
@@ -21067,6 +21280,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		if (string.IsNullOrWhiteSpace(text) || text == "（无）")
 		{
 			return text2;
+		}
+		if (string.Equals(text, text2, StringComparison.Ordinal)
+			|| text.StartsWith(text2 + "\n\n", StringComparison.Ordinal)
+			|| text.EndsWith("\n\n" + text2, StringComparison.Ordinal)
+			|| text.IndexOf("\n\n" + text2 + "\n\n", StringComparison.Ordinal) >= 0)
+		{
+			return text;
 		}
 		return text + "\n\n" + text2;
 	}
@@ -21234,92 +21454,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return string.Join("\n", list.Concat(new string[1] { text }).Where((string x) => !string.IsNullOrWhiteSpace(x))).Trim();
 	}
 
-	private static string NormalizeSettlementTransferPostprocessTagsForScene(string raw, List<MyBehavior.SettlementTransferPromptEntry> npcOptions, List<MyBehavior.SettlementTransferPromptEntry> allNpcOptions = null)
-	{
-		List<string> list = new List<string>();
-		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		string text = "";
-		bool transferAll = false;
-		foreach (Match item in Regex.Matches(raw ?? "", "\\[(?:ACTION:MOOD:[^\\]\\r\\n]*|ACTION:SETTLEMENT_TRANSFER:TO_PLAYER:[^\\]\\r\\n:]*)\\]", RegexOptions.IgnoreCase))
-		{
-			string text2 = (item?.Value ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(text2))
-			{
-				continue;
-			}
-			if (text2.StartsWith("[ACTION:MOOD:", StringComparison.OrdinalIgnoreCase))
-			{
-				text = text2;
-				continue;
-			}
-			Match match = Regex.Match(text2, "^\\[ACTION:SETTLEMENT_TRANSFER:(TO_PLAYER):([^\\]\\r\\n:]+)\\]$", RegexOptions.IgnoreCase);
-			if (!match.Success)
-			{
-				continue;
-			}
-			string text3 = (match.Groups[1].Value ?? "").Trim().ToUpperInvariant();
-			string text4 = (match.Groups[2].Value ?? "").Trim();
-			if (TransferQuantitySpec.IsAllValue(text4))
-			{
-				transferAll = true;
-				continue;
-			}
-			List<MyBehavior.SettlementTransferPromptEntry> sourceOptions = npcOptions;
-			MyBehavior.SettlementTransferPromptEntry settlementTransferPromptEntry = FindSettlementTransferEntryByTokenForScene(sourceOptions, text4);
-			string text5 = MyBehavior.GetSettlementTransferAssetIdForExternal(settlementTransferPromptEntry);
-			if (string.IsNullOrWhiteSpace(text5))
-			{
-				text5 = text4;
-			}
-			if (settlementTransferPromptEntry == null)
-			{
-				continue;
-			}
-			string item2 = "[ACTION:SETTLEMENT_TRANSFER:" + text3 + ":" + text5 + "]";
-			if (hashSet.Add(item2))
-			{
-				list.Add(item2);
-			}
-		}
-		if (transferAll)
-		{
-			list.Clear();
-			hashSet.Clear();
-			foreach (MyBehavior.SettlementTransferPromptEntry entry in (allNpcOptions ?? npcOptions ?? new List<MyBehavior.SettlementTransferPromptEntry>()).Where(MyBehavior.IsSettlementTransferEntryValidForExternal))
-			{
-				string assetId = MyBehavior.GetSettlementTransferAssetIdForExternal(entry);
-				string tag = string.IsNullOrWhiteSpace(assetId) ? "" : "[ACTION:SETTLEMENT_TRANSFER:TO_PLAYER:" + assetId.Trim() + "]";
-				if (!string.IsNullOrWhiteSpace(tag) && hashSet.Add(tag))
-				{
-					list.Add(tag);
-				}
-			}
-		}
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			text = AIConfigHandler.ActionPostprocessFallbackMoodTag;
-		}
-		return string.Join("\n", list.Concat(new string[1] { text }).Where((string x) => !string.IsNullOrWhiteSpace(x))).Trim();
-	}
-
-	private static string NormalizeProposeAgendaPostprocessTagsForScene(string raw, List<PostprocessRuleEntry> rules)
-	{
-		HashSet<string> vt = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (var r in rules ?? new List<PostprocessRuleEntry>())
-		{ string t = (r?.Tag ?? "").Trim(); if (!string.IsNullOrWhiteSpace(t)) vt.Add(t); }
-		List<string> list = new List<string>();
-		string moodTag = "", proposeTag = "";
-		foreach (Match m in Regex.Matches(raw ?? "", "\\[(?:ACTION:MOOD:[^\\]\\r\\n]*|ACTION:PROPOSE:[^\\]\\r\\n]*)\\]", RegexOptions.IgnoreCase))
-		{
-			string tag = (m?.Value ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(tag)) continue;
-			if (tag.StartsWith("[ACTION:MOOD:", StringComparison.OrdinalIgnoreCase)) { moodTag = tag; continue; }
-			if (tag.StartsWith("[ACTION:PROPOSE:", StringComparison.OrdinalIgnoreCase)) proposeTag = tag;
-		}
-		if (!string.IsNullOrWhiteSpace(proposeTag)) list.Add(proposeTag);
-		if (string.IsNullOrWhiteSpace(moodTag)) moodTag = AIConfigHandler.ActionPostprocessFallbackMoodTag;
-		return string.Join("\n", list.Concat(new string[1] { moodTag }).Where(x => !string.IsNullOrWhiteSpace(x))).Trim();
-	}
 	private static string NormalizeVoteDealPostprocessTagsForScene(string raw, List<PostprocessRuleEntry> rules)
 	{
 		HashSet<string> validTags = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -21333,7 +21467,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		List<string> list = new List<string>();
 		string moodTag = "";
-		foreach (Match item in Regex.Matches(raw ?? "", "\\[(?:ACTION:MOOD:[^\\]\\r\\n]*|ACTION:VOTE_DEAL:[^\\]\\r\\n]*)\\]", RegexOptions.IgnoreCase))
+		foreach (Match item in Regex.Matches(raw ?? "", "\\[(?:ACTION:MOOD:[^\\]\\r\\n]*|ACTION:AGENDA:[^\\]\\r\\n]*)\\]", RegexOptions.IgnoreCase))
 		{
 			string tag = (item?.Value ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(tag))
@@ -21444,17 +21578,20 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private static bool IsValidVoteDealPostprocessTag(string tag, HashSet<string> validTags)
 	{
-		if (string.IsNullOrWhiteSpace(tag) || !tag.StartsWith("[ACTION:VOTE_DEAL:", StringComparison.OrdinalIgnoreCase))
+		if (string.IsNullOrWhiteSpace(tag) || !tag.StartsWith("[ACTION:AGENDA:", StringComparison.OrdinalIgnoreCase))
 		{
 			return false;
 		}
-		string payload = tag.Substring("[ACTION:VOTE_DEAL:".Length).TrimEnd(']');
+		string payload = tag.Substring("[ACTION:AGENDA:".Length).TrimEnd(']');
 		if (string.IsNullOrWhiteSpace(payload))
 		{
 			return false;
 		}
 		string[] parts = payload.Split(':');
-		return parts.Length >= 3;
+		return parts.Length == 3
+			&& Regex.IsMatch(parts[0], "^A[1-9][0-9]*$", RegexOptions.IgnoreCase)
+			&& Regex.IsMatch(parts[1], "^O[1-9][0-9]*$", RegexOptions.IgnoreCase)
+			&& Regex.IsMatch(parts[2], "^(?:SLIGHTLY_FAVOR|STRONGLY_FAVOR|FULLY_PUSH)$", RegexOptions.IgnoreCase);
 	}
 
 	private static MyBehavior.PartyTransferPromptEntry FindPartyTransferEntryByTokenForScene(List<MyBehavior.PartyTransferPromptEntry> options, string token)
@@ -21508,10 +21645,20 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return list;
 	}
 
+	private static List<PostprocessRuleEntry> BuildRuntimeDiplomacyPostprocessRulesForScene(Hero targetHero, CharacterObject targetCharacter)
+	{
+		List<PostprocessRuleEntry> diplomacyRules = (AIConfigHandler.GetGuardrailRulePostprocessRules("diplomacy") ?? new List<PostprocessRuleEntry>())
+			.Where((PostprocessRuleEntry rule) => !(rule?.Tag ?? "").Trim().StartsWith("[ACTION:KINGDOM_ANNEX:", StringComparison.OrdinalIgnoreCase))
+			.ToList();
+		List<PostprocessRuleEntry> annexationRules = KingdomAnnexationBehavior.BuildRuntimeAnnexationPostprocessRulesForExternal(targetHero, targetCharacter) ?? new List<PostprocessRuleEntry>();
+		return MergePostprocessRulesForScene(diplomacyRules, annexationRules);
+	}
+
 	private static string StripKingdomServiceActionTagsForScene(string text)
 	{
 		string text2 = text ?? "";
 		text2 = Regex.Replace(text2, "\\[ACTION:KINGDOM_SERVICE:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[A:(?:P_J_K_[MV]|P_L_K)\\]", "", RegexOptions.IgnoreCase);
 		return text2.Trim();
 	}
 
@@ -21901,7 +22048,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		List<string> list = new List<string>();
 		HashSet<string> hashSet2 = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		string text = "";
-		foreach (Match item in Regex.Matches(raw ?? "", "\\[ACTION:[^\\]\\r\\n]*\\]", RegexOptions.IgnoreCase))
+		foreach (Match item in Regex.Matches(raw ?? "", "\\[(?:ACTION:[^\\]\\r\\n]*|A:(?:P_J_K_[MV]|P_L_K))\\]", RegexOptions.IgnoreCase))
 		{
 			string text3 = (item?.Value ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(text3))
@@ -21913,7 +22060,19 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				text = text3;
 				continue;
 			}
-			if (!hashSet.Contains(text3))
+			bool allowed = hashSet.Contains(text3);
+			if (!allowed)
+			{
+				Match legacyJoinMatch = Regex.Match(text3, "^\\[ACTION:KINGDOM_SERVICE:(MERCENARY|VASSAL|LEAVE):[^\\]]+\\]$", RegexOptions.IgnoreCase);
+				if (legacyJoinMatch.Success)
+				{
+					string serviceType = (legacyJoinMatch.Groups[1].Value ?? "").Trim();
+					allowed = (serviceType.Equals("MERCENARY", StringComparison.OrdinalIgnoreCase) && hashSet.Contains("[A:P_J_K_M]"))
+						|| (serviceType.Equals("VASSAL", StringComparison.OrdinalIgnoreCase) && hashSet.Contains("[A:P_J_K_V]"))
+						|| (serviceType.Equals("LEAVE", StringComparison.OrdinalIgnoreCase) && hashSet.Contains("[A:P_L_K]"));
+				}
+			}
+			if (!allowed)
 			{
 				continue;
 			}
@@ -22190,7 +22349,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		List<string> list = new List<string>();
 		HashSet<string> hashSet2 = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		string text = "";
-		foreach (Match item in Regex.Matches(raw ?? "", "\\[(?:ACTION:[^\\]\\r\\n]*|A:H_J_P_P)\\]", RegexOptions.IgnoreCase))
+		foreach (Match item in Regex.Matches(raw ?? "", "\\[(?:ACTION:[^\\]\\r\\n]*|A:(?:H_J_P_P|C_J_P_K|C_J_K:[^\\]\\r\\n]+))\\]", RegexOptions.IgnoreCase))
 		{
 			string text3 = (item?.Value ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(text3))
@@ -22202,7 +22361,20 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				text = text3;
 				continue;
 			}
-			if (!hashSet.Contains(text3))
+			bool allowed = hashSet.Contains(text3);
+			if (!allowed)
+			{
+				Match clanJoinMatch = Regex.Match(text3, "^\\[A:C_J_K:([a-zA-Z0-9_.\\-]+)\\]$", RegexOptions.IgnoreCase);
+				if (clanJoinMatch.Success)
+				{
+					string kingdomId = (clanJoinMatch.Groups[1].Value ?? "").Trim();
+					allowed = (rules ?? new List<PostprocessRuleEntry>()).Any((PostprocessRuleEntry rule) =>
+						string.Equals((rule?.Tag ?? "").Trim(), "[A:C_J_K:{targetKingdomId}]", StringComparison.OrdinalIgnoreCase)
+						&& rule.RuntimeAllowedParameterValues != null
+						&& rule.RuntimeAllowedParameterValues.Contains(kingdomId));
+				}
+			}
+			if (!allowed)
 			{
 				continue;
 			}
@@ -22258,16 +22430,15 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return string.Join("\n", list.Concat(new string[1] { text }).Where((string x) => !string.IsNullOrWhiteSpace(x))).Trim();
 	}
 
-	private static string TryRunSceneUnifiedActionPostprocess(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string npcName, string playerText, string historyText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected, bool kingdomServiceRuleInjected, bool kingdomVassalageRuleInjected, bool kingdomAnnexationRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected, bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected, bool settlementTransferRuleInjected, bool voteDealRuleInjected, bool diplomacyRuleInjected, bool worldMapPartyCommandRuleInjected, bool marriageRuleInjected, List<RewardSystemBehavior.DuelStakeOption> duelStakeOptions, List<PostprocessRuleEntry> kingdomServiceRules, List<PostprocessRuleEntry> sceneMechanismRules, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string entityPostprocessContext = null, bool siegeInterventionRuleInjected = false, bool replyIsDirectPlayerResponse = false, List<string> preprocessRuleHits = null, string chainName = null, bool relayRuleInjected = false, List<NpcDataPacket> relayCandidates = null)
+	private static string TryRunSceneUnifiedActionPostprocess(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string npcName, string playerText, string historyText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected, bool kingdomServiceRuleInjected, bool kingdomVassalageRuleInjected, bool kingdomAnnexationRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected, bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected, bool voteDealRuleInjected, bool diplomacyRuleInjected, bool worldMapPartyCommandRuleInjected, bool marriageRuleInjected, List<RewardSystemBehavior.DuelStakeOption> duelStakeOptions, List<PostprocessRuleEntry> kingdomServiceRules, List<PostprocessRuleEntry> sceneMechanismRules, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string entityPostprocessContext = null, bool siegeInterventionRuleInjected = false, bool replyIsDirectPlayerResponse = false, List<string> preprocessRuleHits = null, string chainName = null, bool relayRuleInjected = false, List<NpcDataPacket> relayCandidates = null)
 	{
 		string text = StripActionTagsForSceneSpeech(replyText ?? "");
 		string resolvedChainName = string.IsNullOrWhiteSpace(chainName) ? ResolveScenePostprocessChainName() : chainName.Trim();
 		bool kingdomVassalagePreprocessHit = HasPreprocessRuleHit(preprocessRuleHits, "kingdom_vassalage");
 		bool nobleGatheringRuleInjected = HasPreprocessRuleHit(preprocessRuleHits, "noble_gathering");
-		bool proposeAgendaRuleInjected = HasPreprocessRuleHit(preprocessRuleHits, "propose_agenda");
 		bool persistentAdpDebtRuleInjected = HasPreprocessRuleHit(preprocessRuleHits, PersistentAdpDebtPostprocessRuleId);
 		kingdomVassalageRuleInjected = kingdomVassalageRuleInjected || kingdomVassalagePreprocessHit;
-		bool royalPostprocessTopicSelected = IsRoyalAbdicationPostprocessTopicSelected(diplomacyRuleInjected, kingdomAnnexationRuleInjected, preprocessRuleHits);
+		bool royalPostprocessEligible = AIConfigHandler.IsRoyalAbdicationPostprocessTargetForExternal(targetHero ?? targetCharacter?.HeroObject);
 		diplomacyRuleInjected = diplomacyRuleInjected || kingdomAnnexationRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "diplomacy");
 		kingdomAnnexationRuleInjected = false;
 		if (diplomacyRuleInjected && !DiplomacyBehavior.CanUseDiplomacyActionPostprocessForExternal(targetHero, targetCharacter))
@@ -22321,6 +22492,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
 		}
 		bool transactionPostprocessEnabled = rewardRuleInjected || loanRuleInjected || persistentAdpDebtRuleInjected;
+		bool exposeAllRewardItems = rewardRuleInjected && RequestsAllOrdinaryAssetsForPostprocess(playerText, historyText);
+		bool exposeAllFixedAssets = rewardRuleInjected && RequestsAllFixedAssetsForPostprocess(playerText, historyText);
 		List<PostprocessRuleEntry> duelRules = duelRuleInjected ? AIConfigHandler.DuelPostprocessRules : null;
 		List<PostprocessRuleEntry> persistentAdpDebtRules = persistentAdpDebtRuleInjected ? BuildPersistentAdpDebtPostprocessRules() : null;
 		List<PostprocessRuleEntry> transactionRules = transactionPostprocessEnabled ? MergePostprocessRulesForScene(rewardRuleInjected ? AIConfigHandler.RewardPostprocessRules : null, loanRuleInjected ? AIConfigHandler.LoanPostprocessRules : null, persistentAdpDebtRules) : null;
@@ -22329,22 +22502,21 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			kingdomRules = MergePostprocessRulesForScene(kingdomServiceRules, AIConfigHandler.BuildRuntimeKingdomServicePostprocessRules() ?? new List<PostprocessRuleEntry>());
 		}
-		List<PostprocessRuleEntry> royalRules = AIConfigHandler.BuildRuntimeRoyalPostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject, royalPostprocessTopicSelected) ?? new List<PostprocessRuleEntry>();
+		List<PostprocessRuleEntry> royalRules = AIConfigHandler.BuildRuntimeRoyalPostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject) ?? new List<PostprocessRuleEntry>();
 		List<PostprocessRuleEntry> vassalageRules = kingdomVassalageRuleInjected ? (VassalageBehavior.BuildRuntimeVassalagePostprocessRulesForExternal(targetHero, targetCharacter) ?? new List<PostprocessRuleEntry>()) : null;
 		List<PostprocessRuleEntry> lordsHallRules = lordsHallRuleInjected ? MergePostprocessRulesForScene(AIConfigHandler.GetGuardrailRulePostprocessRules("lords_hall_access"), AIConfigHandler.BuildRuntimeLordsHallAccessPostprocessRules() ?? new List<PostprocessRuleEntry>()) : null;
 		List<PostprocessRuleEntry> meetingReleaseRules = meetingReleaseRuleInjected ? MergePostprocessRulesForScene(AIConfigHandler.GetGuardrailRulePostprocessRules("encounter_release_player"), LordEncounterBehavior.BuildMeetingPlayerReleasePostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject)) : null;
 		List<PostprocessRuleEntry> vanillaIssueRules = vanillaIssueRuleInjected ? (VanillaIssueOfferBridge.BuildRuntimePostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject) ?? new List<PostprocessRuleEntry>()) : null;
-		List<PostprocessRuleEntry> heroJoinPartyRules = heroJoinPartyRuleInjected ? (AIConfigHandler.BuildRuntimeHeroJoinPartyPostprocessRules(!ShouldSuppressHeroJoinPartyPostprocessForScene(targetHero ?? targetCharacter?.HeroObject), targetHero ?? targetCharacter?.HeroObject) ?? new List<PostprocessRuleEntry>()) : null;
+		List<PostprocessRuleEntry> heroJoinPartyRules = heroJoinPartyRuleInjected ? (AIConfigHandler.BuildRuntimeHeroJoinPartyPostprocessRules(!ShouldSuppressHeroJoinPartyPostprocessForScene(targetHero ?? targetCharacter?.HeroObject), targetHero ?? targetCharacter?.HeroObject, entityPostprocessContext) ?? new List<PostprocessRuleEntry>()) : null;
 		if (heroJoinPartyRuleInjected && (heroJoinPartyRules == null || heroJoinPartyRules.Count == 0))
 		{
 			heroJoinPartyRuleInjected = false;
 		}
 		List<PostprocessRuleEntry> mechanismRules = sceneMechanismRuleInjected ? MergePostprocessRulesForScene(AIConfigHandler.GetGuardrailRulePostprocessRules("scene_mechanism_actions"), sceneMechanismRules ?? new List<PostprocessRuleEntry>()) : null;
 		List<PostprocessRuleEntry> partyTransferRules = partyTransferRuleInjected ? (AIConfigHandler.GetGuardrailRulePostprocessRules("party_transfer") ?? new List<PostprocessRuleEntry>()) : null;
-		List<PostprocessRuleEntry> settlementTransferRules = settlementTransferRuleInjected ? (AIConfigHandler.GetGuardrailRulePostprocessRules("settlement_transfer") ?? new List<PostprocessRuleEntry>()) : null;
-		List<PostprocessRuleEntry> voteDealRules = voteDealRuleInjected ? (AIConfigHandler.GetGuardrailRulePostprocessRules("vote_deal") ?? new List<PostprocessRuleEntry>()) : null;
-		List<PostprocessRuleEntry> diplomacyRules = diplomacyRuleInjected ? MergePostprocessRulesForScene(AIConfigHandler.GetGuardrailRulePostprocessRules("diplomacy") ?? new List<PostprocessRuleEntry>(), KingdomAnnexationBehavior.BuildRuntimeAnnexationPostprocessRulesForExternal(targetHero, targetCharacter) ?? new List<PostprocessRuleEntry>()) : null;
-		List<PostprocessRuleEntry> proposeAgendaRules = proposeAgendaRuleInjected ? (AIConfigHandler.GetGuardrailRulePostprocessRules("propose_agenda") ?? new List<PostprocessRuleEntry>()) : null;
+		List<PostprocessRuleEntry> voteDealRules = voteDealRuleInjected ? (AIConfigHandler.GetGuardrailRulePostprocessRules("kingdom_agenda") ?? new List<PostprocessRuleEntry>()) : null;
+		List<PostprocessRuleEntry> diplomacyRules = diplomacyRuleInjected ? BuildRuntimeDiplomacyPostprocessRulesForScene(targetHero, targetCharacter) : null;
+		List<PostprocessRuleEntry> proposeAgendaRules = null;
 		List<PostprocessRuleEntry> worldMapPartyCommandRules = worldMapPartyCommandRuleInjected ? (WorldMapPartyCommandBehavior.BuildRuntimePostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject, targetCharacter, targetAgentIndex) ?? new List<PostprocessRuleEntry>()) : null;
 		List<PostprocessRuleEntry> nobleGatheringRules = nobleGatheringRuleInjected ? (NobleGatheringBehavior.BuildRuntimePostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject) ?? new List<PostprocessRuleEntry>()) : null;
 		Hero marriageSpeaker = targetHero ?? targetCharacter?.HeroObject;
@@ -22361,10 +22533,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		List<PostprocessRuleEntry> siegeInterventionRules = AfGcczShoutBridge.BuildPostprocessRules(siegeInterventionPostprocessEnabled);
 		List<PostprocessRuleEntry> relayRules = BuildAutoGroupRelayPostprocessRulesForScene(relayRuleInjected);
 		List<PostprocessRuleEntry> intimacyRules = SexualConceptionBehavior.BuildRuntimePostprocessRules(targetHero ?? targetCharacter?.HeroObject, resolvedChainName);
-		List<PostprocessRuleEntry> mergedRules = MergePostprocessRulesForScene(duelRules, transactionRules, kingdomRules, royalRules, vassalageRules, lordsHallRules, meetingReleaseRules, vanillaIssueRules, heroJoinPartyRules, mechanismRules, partyTransferRules, settlementTransferRules, voteDealRules, diplomacyRules, worldMapPartyCommandRules, nobleGatheringRules, marriageRules, proposeAgendaRules, siegeSurrenderRules, npcSurrenderRules, siegeInterventionRules, relayRules, intimacyRules);
+		List<PostprocessRuleEntry> mergedRules = MergePostprocessRulesForScene(duelRules, transactionRules, kingdomRules, royalRules, vassalageRules, lordsHallRules, meetingReleaseRules, vanillaIssueRules, heroJoinPartyRules, mechanismRules, partyTransferRules, voteDealRules, diplomacyRules, worldMapPartyCommandRules, nobleGatheringRules, marriageRules, proposeAgendaRules, siegeSurrenderRules, npcSurrenderRules, siegeInterventionRules, relayRules, intimacyRules);
 		bool royalPostprocessRuleInjected = (royalRules ?? new List<PostprocessRuleEntry>()).Any((PostprocessRuleEntry x) => string.Equals((x?.Tag ?? "").Trim(), "[ACTION:KING_ABDICATE_TO_PLAYER]", StringComparison.OrdinalIgnoreCase));
 		bool vassalagePostprocessRuleInjected = (vassalageRules ?? new List<PostprocessRuleEntry>()).Any((PostprocessRuleEntry x) => (x?.Tag ?? "").StartsWith("[ACTION:VASSALAGE:", StringComparison.OrdinalIgnoreCase));
-		int annexationRuleCount = (diplomacyRules ?? new List<PostprocessRuleEntry>()).Count((PostprocessRuleEntry x) => (x?.Tag ?? "").StartsWith("[ACTION:KINGDOM_ANNEX:", StringComparison.OrdinalIgnoreCase));
+		int annexationRuleCount = (mergedRules ?? new List<PostprocessRuleEntry>()).Count((PostprocessRuleEntry x) => (x?.Tag ?? "").StartsWith("[ACTION:KINGDOM_ANNEX:", StringComparison.OrdinalIgnoreCase));
 		bool kingdomAnnexPostprocessRuleInjected = annexationRuleCount > 0;
 		if (kingdomVassalageRuleInjected)
 		{
@@ -22376,7 +22548,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				["mergedTags"] = (mergedRules ?? new List<PostprocessRuleEntry>()).Select((PostprocessRuleEntry x) => x?.Tag ?? "").ToList()
 			});
 		}
-		Logger.Log("ShoutBehavior", "[UnifiedPostprocess] requested chain=" + resolvedChainName + " duel=" + duelRuleInjected + " reward=" + rewardRuleInjected + " loan=" + loanRuleInjected + " persistentAdpDebt=" + persistentAdpDebtRuleInjected + " kingdom=" + kingdomServiceRuleInjected + " royalTopic=" + royalPostprocessTopicSelected + " royalRule=" + royalPostprocessRuleInjected + " vassalage=" + kingdomVassalageRuleInjected + " annexation=" + kingdomAnnexPostprocessRuleInjected + " VASSALAGE_rule_injected=" + vassalagePostprocessRuleInjected + " KINGDOM_ANNEX_rule_injected=" + kingdomAnnexPostprocessRuleInjected + " royalRuleCount=" + (royalRules?.Count ?? 0) + " vassalageRuleCount=" + (vassalageRules?.Count ?? 0) + " annexationRuleCount=" + annexationRuleCount + " lordsHall=" + lordsHallRuleInjected + " meetingRelease=" + meetingReleaseRuleInjected + " vanillaIssue=" + vanillaIssueRuleInjected + " heroJoin=" + heroJoinPartyRuleInjected + " sceneMechanism=" + sceneMechanismRuleInjected + " partyTransfer=" + partyTransferRuleInjected + " settlementTransfer=" + settlementTransferRuleInjected + " voteDeal=" + voteDealRuleInjected + " diplomacy=" + diplomacyRuleInjected + " worldMap=" + worldMapPartyCommandRuleInjected + " nobleGathering=" + nobleGatheringRuleInjected + " marriage=" + marriageRuleInjected + " intimacy=" + (intimacyRules?.Count > 0) + " siegeSurrender=" + siegeSurrenderPostprocessEnabled + " siegeSurrenderSide=" + (siegeSurrenderSideLabel ?? "") + " siegeSurrenderSettlement=" + (siegeSurrenderSettlement?.StringId ?? "") + " npcSurrender=" + npcSurrenderPostprocessEnabled + " siegeIntervention=" + siegeInterventionPostprocessEnabled + " relay=" + relayRuleInjected + " siegeSurrenderRule=" + HasSiegeSurrenderPostprocessRule(siegeSurrenderRules) + " mergedHasSiegeSurrender=" + HasSiegeSurrenderPostprocessRule(mergedRules) + " npcSurrenderRule=" + HasNpcSurrenderPostprocessRule(npcSurrenderRules) + " mergedHasNpcSurrender=" + HasNpcSurrenderPostprocessRule(mergedRules) + " preprocessHits=" + ((preprocessRuleHits == null || preprocessRuleHits.Count == 0) ? "(none)" : string.Join(",", preprocessRuleHits)) + " mergedRules=" + ((mergedRules == null || mergedRules.Count == 0) ? "(none; mood postprocess still runs)" : string.Join(",", mergedRules.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
+		Logger.Log("ShoutBehavior", "[UnifiedPostprocess] requested chain=" + resolvedChainName + " duel=" + duelRuleInjected + " reward=" + rewardRuleInjected + " loan=" + loanRuleInjected + " persistentAdpDebt=" + persistentAdpDebtRuleInjected + " kingdom=" + kingdomServiceRuleInjected + " royalEligible=" + royalPostprocessEligible + " royalRule=" + royalPostprocessRuleInjected + " vassalage=" + kingdomVassalageRuleInjected + " annexation=" + kingdomAnnexPostprocessRuleInjected + " VASSALAGE_rule_injected=" + vassalagePostprocessRuleInjected + " KINGDOM_ANNEX_rule_injected=" + kingdomAnnexPostprocessRuleInjected + " royalRuleCount=" + (royalRules?.Count ?? 0) + " vassalageRuleCount=" + (vassalageRules?.Count ?? 0) + " annexationRuleCount=" + annexationRuleCount + " lordsHall=" + lordsHallRuleInjected + " meetingRelease=" + meetingReleaseRuleInjected + " vanillaIssue=" + vanillaIssueRuleInjected + " heroJoin=" + heroJoinPartyRuleInjected + " sceneMechanism=" + sceneMechanismRuleInjected + " partyTransfer=" + partyTransferRuleInjected + " voteDeal=" + voteDealRuleInjected + " diplomacy=" + diplomacyRuleInjected + " worldMap=" + worldMapPartyCommandRuleInjected + " nobleGathering=" + nobleGatheringRuleInjected + " marriage=" + marriageRuleInjected + " intimacy=" + (intimacyRules?.Count > 0) + " siegeSurrender=" + siegeSurrenderPostprocessEnabled + " siegeSurrenderSide=" + (siegeSurrenderSideLabel ?? "") + " siegeSurrenderSettlement=" + (siegeSurrenderSettlement?.StringId ?? "") + " npcSurrender=" + npcSurrenderPostprocessEnabled + " siegeIntervention=" + siegeInterventionPostprocessEnabled + " relay=" + relayRuleInjected + " siegeSurrenderRule=" + HasSiegeSurrenderPostprocessRule(siegeSurrenderRules) + " mergedHasSiegeSurrender=" + HasSiegeSurrenderPostprocessRule(mergedRules) + " npcSurrenderRule=" + HasNpcSurrenderPostprocessRule(npcSurrenderRules) + " mergedHasNpcSurrender=" + HasNpcSurrenderPostprocessRule(mergedRules) + " preprocessHits=" + ((preprocessRuleHits == null || preprocessRuleHits.Count == 0) ? "(none)" : string.Join(",", preprocessRuleHits)) + " mergedRules=" + ((mergedRules == null || mergedRules.Count == 0) ? "(none; mood postprocess still runs)" : string.Join(",", mergedRules.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
 		if (kingdomServiceRuleInjected)
 		{
 			Logger.Log("ShoutBehavior", "[UnifiedPostprocess] kingdom_rules=" + ((kingdomRules == null || kingdomRules.Count == 0) ? "（无）" : string.Join(",", kingdomRules.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))) + " merged_rules=" + ((mergedRules == null || mergedRules.Count == 0) ? "（无）" : string.Join(",", mergedRules.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
@@ -22394,6 +22566,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string runtimeContext = "（无）";
 		List<RewardSystemBehavior.RewardItemInfo> rewardOptions = null;
 		List<RewardSystemBehavior.RewardItemInfo> rewardAllOptions = null;
+		int rewardAvailableGold = 0;
 		List<MyBehavior.PartyTransferPromptEntry> partyTransferTroopOptions = null;
 		List<MyBehavior.PartyTransferPromptEntry> partyTransferPrisonerOptions = null;
 		List<MyBehavior.PartyTransferPromptEntry> partyTransferAllTroopOptions = null;
@@ -22423,11 +22596,16 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 							rewardAllOptions = RewardSystemBehavior.Instance.BuildHeroRewardPostprocessItems(targetHero);
 							PromptListRetrievalService.PublishRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsAllSnapshotScope, targetHero, targetCharacter, -1, rewardAllOptions);
 						}
-						if (!PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsSnapshotScope, targetHero, targetCharacter, -1, out rewardOptions))
-						{
-							rewardOptions = PromptListRetrievalService.FilterRewardItems(rewardAllOptions, promptListMentions, promptListMax);
-						}
-						text5 = BuildRewardPostprocessItemListForScene(rewardOptions, RewardSystemBehavior.Instance.GetRewardPostprocessGoldForHero(targetHero), rewardAllOptions);
+					if (!PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsSnapshotScope, targetHero, targetCharacter, -1, out rewardOptions))
+					{
+						rewardOptions = PromptListRetrievalService.FilterRewardItems(rewardAllOptions, promptListMentions, promptListMax);
+					}
+					if (exposeAllRewardItems)
+					{
+						rewardOptions = (rewardAllOptions ?? new List<RewardSystemBehavior.RewardItemInfo>()).Where((RewardSystemBehavior.RewardItemInfo x) => x != null && x.Count > 0).ToList();
+					}
+						rewardAvailableGold = RewardSystemBehavior.Instance.GetRewardPostprocessGoldForHero(targetHero);
+						text5 = BuildRewardPostprocessItemListForScene(rewardOptions, rewardAvailableGold, rewardAllOptions);
 						text7 = NormalizePlayerNameForScenePostprocess(RewardSystemBehavior.Instance.BuildDebtHintForAI(targetHero), text20);
 					}
 					else if (targetCharacter != null)
@@ -22436,8 +22614,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						{
 							rewardAllOptions = RewardSystemBehavior.Instance.BuildPartyRewardPostprocessItems(party);
 							PromptListRetrievalService.PublishRewardItemSnapshot(PromptListRetrievalService.PartyRewardItemsAllSnapshotScope, null, targetCharacter, -1, rewardAllOptions);
-							rewardOptions = PromptListRetrievalService.FilterRewardItems(rewardAllOptions, promptListMentions, promptListMax);
-							text5 = BuildRewardPostprocessItemListForScene(rewardOptions, RewardSystemBehavior.Instance.GetPartyTradeGoldForExternal(party), rewardAllOptions);
+						rewardOptions = PromptListRetrievalService.FilterRewardItems(rewardAllOptions, promptListMentions, promptListMax);
+						if (exposeAllRewardItems)
+						{
+							rewardOptions = (rewardAllOptions ?? new List<RewardSystemBehavior.RewardItemInfo>()).Where((RewardSystemBehavior.RewardItemInfo x) => x != null && x.Count > 0).ToList();
+						}
+							rewardAvailableGold = RewardSystemBehavior.Instance.GetPartyTradeGoldForExternal(party);
+							text5 = BuildRewardPostprocessItemListForScene(rewardOptions, rewardAvailableGold, rewardAllOptions);
 							text7 = "（非hero野外部队没有个人赊账账本；如果要归还已经实际收到的物品或第纳尔，请只从上面的部队库存与资金中输出 GIVE 标签。）";
 						}
 						else
@@ -22447,12 +22630,16 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 								rewardAllOptions = RewardSystemBehavior.Instance.BuildSettlementMerchantPostprocessItems(targetCharacter);
 								PromptListRetrievalService.PublishRewardItemSnapshot(PromptListRetrievalService.SettlementMerchantItemsAllSnapshotScope, null, targetCharacter, -1, rewardAllOptions);
 							}
-							if (!PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.SettlementMerchantItemsSnapshotScope, null, targetCharacter, -1, out rewardOptions))
-							{
-								rewardOptions = PromptListRetrievalService.FilterRewardItems(rewardAllOptions, promptListMentions, promptListMax);
-							}
-							int num = RewardSystemBehavior.Instance.GetSettlementMarketTradeGold(Settlement.CurrentSettlement);
-							text5 = BuildRewardPostprocessItemListForScene(rewardOptions, num, rewardAllOptions);
+						if (!PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.SettlementMerchantItemsSnapshotScope, null, targetCharacter, -1, out rewardOptions))
+						{
+							rewardOptions = PromptListRetrievalService.FilterRewardItems(rewardAllOptions, promptListMentions, promptListMax);
+						}
+						if (exposeAllRewardItems)
+						{
+							rewardOptions = (rewardAllOptions ?? new List<RewardSystemBehavior.RewardItemInfo>()).Where((RewardSystemBehavior.RewardItemInfo x) => x != null && x.Count > 0).ToList();
+						}
+							rewardAvailableGold = RewardSystemBehavior.Instance.GetSettlementMarketTradeGold(Settlement.CurrentSettlement);
+							text5 = BuildRewardPostprocessItemListForScene(rewardOptions, rewardAvailableGold, rewardAllOptions);
 							text7 = NormalizePlayerNameForScenePostprocess(RewardSystemBehavior.Instance.BuildSettlementMerchantDebtHintForAI(targetCharacter), text20);
 						}
 					}
@@ -22528,7 +22715,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				partyTransferAllPrisonerOptions = null;
 			}
 		}
-		if (settlementTransferRuleInjected)
+		if (rewardRuleInjected)
 		{
 			try
 			{
@@ -22544,6 +22731,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					settlementTransferNpcOptions = PromptListRetrievalService.FilterSettlementTransferEntries(settlementTransferNpcOptions, promptListMentions, promptListMax);
 					PromptListRetrievalService.PublishSettlementTransferSnapshot(PromptListRetrievalService.SettlementTransferNpcAssetsSnapshotScope, targetHero, targetCharacter, -1, settlementTransferNpcOptions);
 				}
+				if (exposeAllFixedAssets)
+				{
+					settlementTransferNpcOptions = settlementTransferAllNpcOptions;
+				}
 				runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, BuildSettlementTransferPostprocessListForScene(settlementTransferNpcOptions, settlementTransferAllNpcOptions));
 			}
 				catch
@@ -22556,13 +22747,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, BuildSceneMechanismTargetListForPostprocess(sceneSummonTargets, sceneGuideTargets));
 		}
-		if (voteDealRuleInjected)
+		if (voteDealRuleInjected || worldMapPartyCommandRuleInjected || heroJoinPartyRuleInjected)
 		{
-			runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, VoteDealBehavior.BuildVoteDealPostprocessContext(targetHero ?? targetCharacter?.HeroObject));
-		}
-		if (proposeAgendaRuleInjected)
-		{
-			runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, VoteDealBehavior.BuildProposePostprocessContext(targetHero ?? targetCharacter?.HeroObject));
+			runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, entityPostprocessContext);
 		}
 		if (diplomacyRuleInjected)
 		{
@@ -22573,10 +22760,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			marriagePlayerCandidates = RomanceSystemBehavior.Instance.BuildMarriagePostprocessPlayerCandidatesBlockForExternal(marriageSpeaker);
 			marriageTargetCandidates = RomanceSystemBehavior.Instance.BuildMarriagePostprocessTargetCandidatesBlockForExternal(marriageSpeaker);
 			marriageFactHint = RomanceSystemBehavior.Instance.BuildMarriagePostprocessFactHintBlockForExternal(marriageSpeaker);
-		}
-		if (worldMapPartyCommandRuleInjected)
-		{
-			runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, entityPostprocessContext);
 		}
 		if (nobleGatheringRuleInjected)
 		{
@@ -22605,7 +22788,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
 		}
 		string text10 = duelRuleInjected ? NormalizeDuelPostprocessTagsForScene(content, duelStakeOptions, targetHero) : "";
-		string text11 = transactionPostprocessEnabled ? NormalizeRewardPostprocessTagsForScene(content, rewardOptions, rewardAllOptions) : "";
+		string text11 = transactionPostprocessEnabled ? NormalizeRewardPostprocessTagsForScene(content, rewardOptions, rewardAllOptions, rewardRuleInjected ? settlementTransferNpcOptions : null, rewardRuleInjected, rewardAvailableGold) : "";
 		if (persistentAdpDebtRuleInjected && !rewardRuleInjected && !loanRuleInjected)
 		{
 			text11 = KeepOnlyPersistentAdpDebtTags(text11);
@@ -22639,9 +22822,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string text16 = heroJoinPartyRuleInjected ? NormalizeHeroJoinPartyPostprocessTagsForScene(content, heroJoinPartyRules) : "";
 		string text17 = sceneMechanismRuleInjected ? NormalizeSceneMechanismPostprocessTagsForScene(content, mechanismRules, sceneSummonTargets, sceneGuideTargets) : "";
 		string text18 = partyTransferRuleInjected ? NormalizePartyTransferPostprocessTagsForScene(content, partyTransferTroopOptions, partyTransferPrisonerOptions, partyTransferAllTroopOptions, partyTransferAllPrisonerOptions) : "";
-		string text19 = settlementTransferRuleInjected ? NormalizeSettlementTransferPostprocessTagsForScene(content, settlementTransferNpcOptions, settlementTransferAllNpcOptions) : "";
 		string voteDealTags = (voteDealRules != null && voteDealRules.Count > 0) ? NormalizeVoteDealPostprocessTagsForScene(content, voteDealRules) : "";
-		string proposeAgendaTags = (proposeAgendaRules != null && proposeAgendaRules.Count > 0) ? NormalizeProposeAgendaPostprocessTagsForScene(content, proposeAgendaRules) : "";
+		string proposeAgendaTags = "";
 		string worldMapPartyCommandTags = worldMapPartyCommandRuleInjected ? NormalizeWorldMapPartyCommandPostprocessTagsForScene(content) : "";
 		string nobleGatheringTags = nobleGatheringRuleInjected ? NobleGatheringBehavior.NormalizeNobleGatheringPostprocessTagsForExternal(content) : "";
 		string marriageTags = (marriageRuleInjected && RomanceSystemBehavior.Instance != null) ? RomanceSystemBehavior.Instance.NormalizeMarriagePostprocessTagsForExternal(content, marriageRules, marriageSpeaker) : "";
@@ -22650,7 +22832,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string siegeInterventionTags = siegeInterventionPostprocessEnabled ? AfGcczShoutBridge.NormalizePostprocessTags(siegeInterventionPostprocessEnabled, content, siegeInterventionRules) : "";
 		string relayTags = relayRuleInjected ? NormalizeAutoGroupRelayPostprocessTagsForScene(content, relayCandidates, targetAgentIndex) : "";
 		string intimacyTags = SexualConceptionBehavior.NormalizePostprocessTags(content, intimacyRules);
-		string text21 = MergeNormalizedPostprocessBlocksForScene(text10, text11, text12, royalTags, vassalageTags, text13, text14, text15, text16, text17, text18, text19, voteDealTags, diplomacyTags, worldMapPartyCommandTags, nobleGatheringTags, marriageTags, proposeAgendaTags, siegeSurrenderTags, npcSurrenderTags, siegeInterventionTags, relayTags, intimacyTags);
+		string text21 = MergeNormalizedPostprocessBlocksForScene(text10, text11, text12, royalTags, vassalageTags, text13, text14, text15, text16, text17, text18, voteDealTags, diplomacyTags, worldMapPartyCommandTags, nobleGatheringTags, marriageTags, proposeAgendaTags, siegeSurrenderTags, npcSurrenderTags, siegeInterventionTags, relayTags, intimacyTags);
 		if (string.IsNullOrWhiteSpace(text21))
 		{
 			text21 = AIConfigHandler.ActionPostprocessFallbackMoodTag;
@@ -22707,6 +22889,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string text12 = "（无）";
 		List<RewardSystemBehavior.RewardItemInfo> list = null;
 		List<RewardSystemBehavior.RewardItemInfo> allList = null;
+		int availableGold = 0;
+		bool allowAssetTransfer = string.Equals(logPrefix, "RewardPostprocess", StringComparison.OrdinalIgnoreCase);
 		MentionedWorldEntities promptListMentions = AIConfigHandler.GetLatestAuxiliaryMentionedEntitiesForExternal();
 		int promptListMax = PromptListRetrievalService.GetMaxCandidateCount();
 		if (RewardSystemBehavior.Instance != null)
@@ -22732,7 +22916,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					{
 						list = PromptListRetrievalService.FilterRewardItems(allList, promptListMentions, promptListMax);
 					}
-					text5 = BuildRewardPostprocessItemListForScene(list, RewardSystemBehavior.Instance.GetRewardPostprocessGoldForHero(targetHero), allList);
+					availableGold = RewardSystemBehavior.Instance.GetRewardPostprocessGoldForHero(targetHero);
+					text5 = BuildRewardPostprocessItemListForScene(list, availableGold, allList);
 					text12 = NormalizePlayerNameForScenePostprocess(RewardSystemBehavior.Instance.BuildDebtHintForAI(targetHero), text7);
 				}
 				else if (targetCharacter != null)
@@ -22746,8 +22931,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					{
 						list = PromptListRetrievalService.FilterRewardItems(allList, promptListMentions, promptListMax);
 					}
-					int num = RewardSystemBehavior.Instance.GetSettlementMarketTradeGold(Settlement.CurrentSettlement);
-					text5 = BuildRewardPostprocessItemListForScene(list, num, allList);
+					availableGold = RewardSystemBehavior.Instance.GetSettlementMarketTradeGold(Settlement.CurrentSettlement);
+					text5 = BuildRewardPostprocessItemListForScene(list, availableGold, allList);
 					text12 = NormalizePlayerNameForScenePostprocess(RewardSystemBehavior.Instance.BuildSettlementMerchantDebtHintForAI(targetCharacter), text7);
 				}
 			}
@@ -22766,7 +22951,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			Logger.Log("ShoutBehavior", "[" + logPrefix + "] 调用失败: " + error);
 			return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
 		}
-		string text10 = NormalizeRewardPostprocessTagsForScene(content, list, allList);
+		string text10 = NormalizeRewardPostprocessTagsForScene(content, list, allList, null, allowAssetTransfer, availableGold);
 		if (string.IsNullOrWhiteSpace(text10))
 		{
 			text10 = AIConfigHandler.ActionPostprocessFallbackMoodTag;
@@ -23220,7 +23405,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private Task<int> QueueDeferredScenePostprocessActions(NpcDataPacket currentSpeaker, List<NpcDataPacket> allNpcData, Hero speakingHero, CharacterObject npcCharacter, string privateRecentWindowSection, string scenePublicHistorySection, string playerText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected, bool kingdomServiceRuleInjected, bool kingdomVassalageRuleInjected, bool kingdomAnnexationRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected, bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected, bool settlementTransferRuleInjected, bool voteDealRuleInjected, bool diplomacyRuleInjected, bool worldMapPartyCommandRuleInjected, bool marriageRuleInjected, bool siegeInterventionRuleInjected, List<RewardSystemBehavior.DuelStakeOption> duelStakeOptions, List<PostprocessRuleEntry> kingdomServiceRules, List<PostprocessRuleEntry> sceneMechanismRules, int conversationEpoch, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string entityPostprocessContext = null, bool replyIsDirectPlayerResponse = false, List<string> preprocessRuleHits = null, bool relayRuleInjected = false, List<NpcDataPacket> relayCandidates = null)
+	private Task<int> QueueDeferredScenePostprocessActions(NpcDataPacket currentSpeaker, List<NpcDataPacket> allNpcData, Hero speakingHero, CharacterObject npcCharacter, string privateRecentWindowSection, string scenePublicHistorySection, string playerText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected, bool kingdomServiceRuleInjected, bool kingdomVassalageRuleInjected, bool kingdomAnnexationRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected, bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected, bool voteDealRuleInjected, bool diplomacyRuleInjected, bool worldMapPartyCommandRuleInjected, bool marriageRuleInjected, bool siegeInterventionRuleInjected, List<RewardSystemBehavior.DuelStakeOption> duelStakeOptions, List<PostprocessRuleEntry> kingdomServiceRules, List<PostprocessRuleEntry> sceneMechanismRules, int conversationEpoch, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string entityPostprocessContext = null, bool replyIsDirectPlayerResponse = false, List<string> preprocessRuleHits = null, bool relayRuleInjected = false, List<NpcDataPacket> relayCandidates = null)
 	{
 		if (currentSpeaker == null || string.IsNullOrWhiteSpace(replyText))
 		{
@@ -23228,11 +23413,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		bool npcSurrenderPostprocessSelected = IsNpcSurrenderPostprocessContext();
 		bool nobleGatheringRuleInjected = HasPreprocessRuleHit(preprocessRuleHits, "noble_gathering");
-		bool proposeAgendaRuleInjected = HasPreprocessRuleHit(preprocessRuleHits, "propose_agenda");
+		bool proposeAgendaRuleInjected = false;
 		bool persistentAdpDebtRuleInjected = HasPreprocessRuleHit(preprocessRuleHits, PersistentAdpDebtPostprocessRuleId);
-		bool royalPostprocessTopicSelected = IsRoyalAbdicationPostprocessTopicSelected(diplomacyRuleInjected, kingdomAnnexationRuleInjected, preprocessRuleHits);
-		bool royalPostprocessSelected = royalPostprocessTopicSelected && AIConfigHandler.IsRoyalAbdicationPostprocessTargetForExternal(speakingHero ?? npcCharacter?.HeroObject);
-		if (!duelRuleInjected && !rewardRuleInjected && !loanRuleInjected && !persistentAdpDebtRuleInjected && !kingdomServiceRuleInjected && !kingdomVassalageRuleInjected && !kingdomAnnexationRuleInjected && !lordsHallRuleInjected && !meetingReleaseRuleInjected && !vanillaIssueRuleInjected && !heroJoinPartyRuleInjected && !sceneMechanismRuleInjected && !partyTransferRuleInjected && !settlementTransferRuleInjected && !voteDealRuleInjected && !diplomacyRuleInjected && !worldMapPartyCommandRuleInjected && !nobleGatheringRuleInjected && !proposeAgendaRuleInjected && !marriageRuleInjected && !siegeInterventionRuleInjected && !relayRuleInjected && !npcSurrenderPostprocessSelected && !royalPostprocessSelected)
+		// 合格国王的每轮回复都要进入王位让渡后处理；不要用 diplomacy 话题命中限制这个常驻规则。
+		bool royalPostprocessSelected = AIConfigHandler.CanUseAuxiliaryActionPostprocess()
+			&& AIConfigHandler.IsRoyalAbdicationPostprocessTargetForExternal(speakingHero ?? npcCharacter?.HeroObject);
+		if (!duelRuleInjected && !rewardRuleInjected && !loanRuleInjected && !persistentAdpDebtRuleInjected && !kingdomServiceRuleInjected && !kingdomVassalageRuleInjected && !kingdomAnnexationRuleInjected && !lordsHallRuleInjected && !meetingReleaseRuleInjected && !vanillaIssueRuleInjected && !heroJoinPartyRuleInjected && !sceneMechanismRuleInjected && !partyTransferRuleInjected && !voteDealRuleInjected && !diplomacyRuleInjected && !worldMapPartyCommandRuleInjected && !nobleGatheringRuleInjected && !proposeAgendaRuleInjected && !marriageRuleInjected && !siegeInterventionRuleInjected && !relayRuleInjected && !npcSurrenderPostprocessSelected && !royalPostprocessSelected)
 		{
 			return Task.FromResult(-1);
 		}
@@ -23244,7 +23430,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			+ " kingdomVassalageInjected=" + kingdomVassalageRuleInjected
 			+ " kingdomAnnexationInjected=" + kingdomAnnexationRuleInjected
 			+ " proposeAgendaInjected=" + proposeAgendaRuleInjected
-			+ " royalTopic=" + royalPostprocessTopicSelected
 			+ " royalSelected=" + royalPostprocessSelected
 			+ " npcSurrenderSelected=" + npcSurrenderPostprocessSelected);
 		if (kingdomVassalageRuleInjected)
@@ -23332,7 +23517,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank(runtimeTargetUnnamedRank);
 				AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(runtimeTargetAgentIndex);
 				Stopwatch postprocessWatch = Stopwatch.StartNew();
-				string text = TryRunSceneUnifiedActionPostprocess(speakingHero, npcCharacter, runtimeTargetAgentIndex, GetSceneNpcHistoryNameForPrompt(currentSpeaker), playerText, historyForPostprocess, replySnapshot, duelRuleInjected, rewardRuleInjected, loanRuleInjected, kingdomServiceRuleInjected, kingdomVassalageRuleInjected, kingdomAnnexationRuleInjected, lordsHallRuleInjected, meetingReleaseRuleInjected, vanillaIssueRuleInjected, heroJoinPartyRuleInjected, sceneMechanismRuleInjected, partyTransferRuleInjected, settlementTransferRuleInjected, voteDealRuleInjected, diplomacyRuleInjected, worldMapPartyCommandRuleInjected, marriageRuleInjected, duelStakeOptions, kingdomServiceRules, sceneMechanismRuleSnapshot, summonSnapshot, guideSnapshot, entityPostprocessContext, siegeInterventionRuleInjected: siegeInterventionRuleInjected, replyIsDirectPlayerResponse: replyIsDirectPlayerResponse, preprocessRuleHits: preprocessRuleSnapshot, chainName: scenePostprocessChainName, relayRuleInjected: relayRuleInjected, relayCandidates: relayCandidateSnapshot);
+				string text = TryRunSceneUnifiedActionPostprocess(speakingHero, npcCharacter, runtimeTargetAgentIndex, GetSceneNpcHistoryNameForPrompt(currentSpeaker), playerText, historyForPostprocess, replySnapshot, duelRuleInjected, rewardRuleInjected, loanRuleInjected, kingdomServiceRuleInjected, kingdomVassalageRuleInjected, kingdomAnnexationRuleInjected, lordsHallRuleInjected, meetingReleaseRuleInjected, vanillaIssueRuleInjected, heroJoinPartyRuleInjected, sceneMechanismRuleInjected, partyTransferRuleInjected, voteDealRuleInjected, diplomacyRuleInjected, worldMapPartyCommandRuleInjected, marriageRuleInjected, duelStakeOptions, kingdomServiceRules, sceneMechanismRuleSnapshot, summonSnapshot, guideSnapshot, entityPostprocessContext, siegeInterventionRuleInjected: siegeInterventionRuleInjected, replyIsDirectPlayerResponse: replyIsDirectPlayerResponse, preprocessRuleHits: preprocessRuleSnapshot, chainName: scenePostprocessChainName, relayRuleInjected: relayRuleInjected, relayCandidates: relayCandidateSnapshot);
 				postprocessWatch.Stop();
 				Logger.Log("ShoutBehavior", "[DeferredPostprocess] call_done npc=" + (speakingHero?.StringId ?? currentSpeaker?.Name ?? "unknown") + " elapsedMs=" + Math.Round(postprocessWatch.Elapsed.TotalMilliseconds, 2) + " textLen=" + (text?.Length ?? 0));
 				if (queuedSceneSessionId != Volatile.Read(ref _sceneHistorySessionId))
@@ -23733,7 +23918,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					{
 						try
 						{
-							InformationManager.DisplayMessage(new InformationMessage("AnimusForge 前处理失败：" + ex.Message, new Color(1f, 0.35f, 0.25f)));
+							LlmRetryPrompt.ShowFailurePopup("AnimusForge 前处理失败", ex.Message);
 						}
 						catch
 						{
@@ -24312,7 +24497,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				bool heroJoinPartyRuleInjected = false;
 				bool sceneMechanismRuleInjected = false;
 				bool partyTransferRuleInjected = false;
-				bool settlementTransferRuleInjected = false;
 				bool voteDealRuleInjected = false;
 				bool diplomacyRuleInjected = false;
 				bool worldMapPartyCommandRuleInjected = false;
@@ -24411,8 +24595,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						sceneMechanismRuleInjected = false;
 					}
 					partyTransferRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "party_transfer");
-					settlementTransferRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "settlement_transfer");
-					voteDealRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "vote_deal");
+					voteDealRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "kingdom_agenda");
 					diplomacyRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "diplomacy");
 					worldMapPartyCommandRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "worldmap_party_command");
 					siegeInterventionRuleInjected = AfGcczShoutBridge.ShouldRunPostprocessFromPrompt(combinedRuleInspectionBlock, postprocessPreprocessHits);
@@ -24550,14 +24733,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					bool heroJoinPartyPostprocessSelected = heroJoinPartyRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "hero_join_party");
 					bool sceneMechanismPostprocessSelected = (sceneMechanismRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "scene_mechanism_actions")) && !AIConfigHandler.ShouldExcludeSceneMoveRuleForCurrentMission();
 					bool partyTransferPostprocessSelected = partyTransferRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "party_transfer");
-					bool settlementTransferPostprocessSelected = settlementTransferRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "settlement_transfer");
-					bool voteDealPostprocessSelected = voteDealRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "vote_deal");
+					bool voteDealPostprocessSelected = voteDealRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "kingdom_agenda");
 					bool diplomacyPostprocessSelected = (diplomacyRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "diplomacy"))
 						&& DiplomacyBehavior.CanUseDiplomacyActionPostprocessForExternal(speakingHero, npcCharacter);
 					bool worldMapPartyCommandPostprocessSelected = worldMapPartyCommandRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "worldmap_party_command");
 					bool nobleGatheringPostprocessSelected = HasPreprocessRuleHit(postprocessPreprocessHits, "noble_gathering");
 					bool marriagePostprocessSelected = HasPreprocessRuleHit(postprocessPreprocessHits, "marriage");
-					bool proposeAgendaPostprocessSelected = HasPreprocessRuleHit(postprocessPreprocessHits, "propose_agenda");
+					bool proposeAgendaPostprocessSelected = false;
 					bool persistentAdpDebtPostprocessSelected = HasPreprocessRuleHit(postprocessPreprocessHits, PersistentAdpDebtPostprocessRuleId);
 					bool replyIsDirectPlayerResponse = firstTurn;
 					bool siegeInterventionPostprocessSelected = AfGcczShoutBridge.ShouldContinuePostprocess(siegeInterventionRuleInjected, postprocessPreprocessHits);
@@ -24572,17 +24754,18 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						}
 					}
 					bool npcSurrenderPostprocessSelected = IsNpcSurrenderPostprocessContext();
-					bool royalPostprocessTopicSelected = IsRoyalAbdicationPostprocessTopicSelected(diplomacyRuleInjected, kingdomAnnexationRuleInjected, postprocessPreprocessHits);
-					bool royalPostprocessSelected = royalPostprocessTopicSelected && AIConfigHandler.IsRoyalAbdicationPostprocessTargetForExternal(speakingHero ?? npcCharacter?.HeroObject);
+					// 场景喊话同样按国王身份常驻排队，不依赖本轮 preprocess hits。
+					bool royalPostprocessSelected = AIConfigHandler.CanUseAuxiliaryActionPostprocess()
+						&& AIConfigHandler.IsRoyalAbdicationPostprocessTargetForExternal(speakingHero ?? npcCharacter?.HeroObject);
 					relayPostprocessSelected = multiNpcScene && !endRequested && speakableCandidates.Count > 1;
-					bool flag11 = duelPostprocessSelected || rewardPostprocessSelected || loanPostprocessSelected || persistentAdpDebtPostprocessSelected || kingdomServicePostprocessSelected || kingdomVassalagePostprocessSelected || kingdomAnnexationPostprocessSelected || lordsHallPostprocessSelected || meetingReleasePostprocessSelected || vanillaIssuePostprocessSelected || heroJoinPartyPostprocessSelected || sceneMechanismPostprocessSelected || partyTransferPostprocessSelected || settlementTransferPostprocessSelected || voteDealPostprocessSelected || diplomacyPostprocessSelected || worldMapPartyCommandPostprocessSelected || nobleGatheringPostprocessSelected || marriagePostprocessSelected || proposeAgendaPostprocessSelected || siegeInterventionPostprocessSelected || npcSurrenderPostprocessSelected || royalPostprocessSelected || relayPostprocessSelected;
-					Logger.Log("ShoutBehavior", "[RuleInjectionDebug] stage=scene_queue npc=" + GetSceneNpcHistoryNameForPrompt(currentSpeaker) + " duelInjected=" + duelRuleInjected + " rewardInjected=" + rewardRuleInjected + " loanInjected=" + loanRuleInjected + " persistentAdpDebtSelected=" + persistentAdpDebtPostprocessSelected + " kingdomServiceInjected=" + kingdomServiceRuleInjected + " kingdomVassalageInjected=" + kingdomVassalageRuleInjected + " kingdomAnnexationInjected=" + kingdomAnnexationRuleInjected + " lordsHallInjected=" + lordsHallRuleInjected + " meetingReleaseInjected=" + meetingReleaseRuleInjected + " vanillaIssueInjected=" + vanillaIssueRuleInjected + " heroJoinPartyInjected=" + heroJoinPartyRuleInjected + " sceneMechanismInjected=" + sceneMechanismRuleInjected + " partyTransferInjected=" + partyTransferRuleInjected + " settlementTransferInjected=" + settlementTransferRuleInjected + " voteDealInjected=" + voteDealRuleInjected + " diplomacyInjected=" + diplomacyRuleInjected + " worldMapInjected=" + worldMapPartyCommandRuleInjected + " nobleGatheringSelected=" + nobleGatheringPostprocessSelected + " marriageSelected=" + marriagePostprocessSelected + " proposeAgendaSelected=" + proposeAgendaPostprocessSelected + " siegeInterventionSelected=" + siegeInterventionPostprocessSelected + " npcSurrenderSelected=" + npcSurrenderPostprocessSelected + " royalTopic=" + royalPostprocessTopicSelected + " royalSelected=" + royalPostprocessSelected + " relaySelected=" + relayPostprocessSelected + " replyIsDirectPlayerResponse=" + replyIsDirectPlayerResponse + " preprocessHits=" + ((postprocessPreprocessHits == null || postprocessPreprocessHits.Count == 0) ? "(none)" : string.Join(",", postprocessPreprocessHits)) + " queueDeferred=" + flag11 + " replyLen=" + cleaned.Length);
+					bool flag11 = duelPostprocessSelected || rewardPostprocessSelected || loanPostprocessSelected || persistentAdpDebtPostprocessSelected || kingdomServicePostprocessSelected || kingdomVassalagePostprocessSelected || kingdomAnnexationPostprocessSelected || lordsHallPostprocessSelected || meetingReleasePostprocessSelected || vanillaIssuePostprocessSelected || heroJoinPartyPostprocessSelected || sceneMechanismPostprocessSelected || partyTransferPostprocessSelected || voteDealPostprocessSelected || diplomacyPostprocessSelected || worldMapPartyCommandPostprocessSelected || nobleGatheringPostprocessSelected || marriagePostprocessSelected || proposeAgendaPostprocessSelected || siegeInterventionPostprocessSelected || npcSurrenderPostprocessSelected || royalPostprocessSelected || relayPostprocessSelected;
+					Logger.Log("ShoutBehavior", "[RuleInjectionDebug] stage=scene_queue npc=" + GetSceneNpcHistoryNameForPrompt(currentSpeaker) + " duelInjected=" + duelRuleInjected + " rewardInjected=" + rewardRuleInjected + " loanInjected=" + loanRuleInjected + " persistentAdpDebtSelected=" + persistentAdpDebtPostprocessSelected + " kingdomServiceInjected=" + kingdomServiceRuleInjected + " kingdomVassalageInjected=" + kingdomVassalageRuleInjected + " kingdomAnnexationInjected=" + kingdomAnnexationRuleInjected + " lordsHallInjected=" + lordsHallRuleInjected + " meetingReleaseInjected=" + meetingReleaseRuleInjected + " vanillaIssueInjected=" + vanillaIssueRuleInjected + " heroJoinPartyInjected=" + heroJoinPartyRuleInjected + " sceneMechanismInjected=" + sceneMechanismRuleInjected + " partyTransferInjected=" + partyTransferRuleInjected + " voteDealInjected=" + voteDealRuleInjected + " diplomacyInjected=" + diplomacyRuleInjected + " worldMapInjected=" + worldMapPartyCommandRuleInjected + " nobleGatheringSelected=" + nobleGatheringPostprocessSelected + " marriageSelected=" + marriagePostprocessSelected + " proposeAgendaSelected=" + proposeAgendaPostprocessSelected + " siegeInterventionSelected=" + siegeInterventionPostprocessSelected + " npcSurrenderSelected=" + npcSurrenderPostprocessSelected + " royalSelected=" + royalPostprocessSelected + " relaySelected=" + relayPostprocessSelected + " replyIsDirectPlayerResponse=" + replyIsDirectPlayerResponse + " preprocessHits=" + ((postprocessPreprocessHits == null || postprocessPreprocessHits.Count == 0) ? "(none)" : string.Join(",", postprocessPreprocessHits)) + " queueDeferred=" + flag11 + " replyLen=" + cleaned.Length);
 					float dynamicTimeoutSeconds = ResolveDynamicSceneConversationTimeoutSeconds(playerText, roundNpcVisibleTexts, roundNpcSpeakerIndices.Count, Math.Max(1, speakableCandidates.Count));
 					EnqueueSpeechLineWithOptions(currentSpeaker, cleaned, allNpcData, commitHistory: false, suppressStare: false, allowPlayerDirectedActions: true, conversationEpoch, sceneSummonTargets, sceneGuideTargets, flag11 ? "正在处理NPC行为............" : null, null, multiNpcScene ? (-1f) : dynamicTimeoutSeconds, Math.Max(1, speakableCandidates.Count));
 					if (flag11)
 					{
 						string replyForPostprocess = string.IsNullOrWhiteSpace(historyText) ? cleaned : historyText;
-						Task<int> postprocessTask = QueueDeferredScenePostprocessActions(currentSpeaker, allNpcData, speakingHero, npcCharacter, scenePrivateRecentWindowSection, scenePublicHistorySection, playerText, replyForPostprocess, duelPostprocessSelected, rewardPostprocessSelected, loanPostprocessSelected, kingdomServicePostprocessSelected, kingdomVassalagePostprocessSelected, kingdomAnnexationPostprocessSelected, lordsHallPostprocessSelected, meetingReleasePostprocessSelected, vanillaIssuePostprocessSelected, heroJoinPartyPostprocessSelected, sceneMechanismPostprocessSelected, partyTransferPostprocessSelected, settlementTransferPostprocessSelected, voteDealPostprocessSelected, diplomacyPostprocessSelected, worldMapPartyCommandPostprocessSelected, marriagePostprocessSelected, siegeInterventionPostprocessSelected, duelStakeOptions, kingdomServicePostprocessRules, sceneMechanismPostprocessRules, conversationEpoch, sceneSummonTargets, sceneGuideTargets, postprocessEntityContext, replyIsDirectPlayerResponse, preprocessRuleHits: postprocessPreprocessHits, relayRuleInjected: relayPostprocessSelected, relayCandidates: speakableCandidates);
+						Task<int> postprocessTask = QueueDeferredScenePostprocessActions(currentSpeaker, allNpcData, speakingHero, npcCharacter, scenePrivateRecentWindowSection, scenePublicHistorySection, playerText, replyForPostprocess, duelPostprocessSelected, rewardPostprocessSelected, loanPostprocessSelected, kingdomServicePostprocessSelected, kingdomVassalagePostprocessSelected, kingdomAnnexationPostprocessSelected, lordsHallPostprocessSelected, meetingReleasePostprocessSelected, vanillaIssuePostprocessSelected, heroJoinPartyPostprocessSelected, sceneMechanismPostprocessSelected, partyTransferPostprocessSelected, voteDealPostprocessSelected, diplomacyPostprocessSelected, worldMapPartyCommandPostprocessSelected, marriagePostprocessSelected, siegeInterventionPostprocessSelected, duelStakeOptions, kingdomServicePostprocessRules, sceneMechanismPostprocessRules, conversationEpoch, sceneSummonTargets, sceneGuideTargets, postprocessEntityContext, replyIsDirectPlayerResponse, preprocessRuleHits: postprocessPreprocessHits, relayRuleInjected: relayPostprocessSelected, relayCandidates: speakableCandidates);
 						if (relayPostprocessSelected)
 						{
 							relayTargetAgentIndex = await postprocessTask;
@@ -24862,10 +25045,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 								MyBehavior.ApplyPatienceFromSceneHeroResponseExternal(characterObject.HeroObject, ref content);
 								if (allowPlayerDirectedActions)
 								{
-									VoteDealBehavior.ProcessVoteDealTagsDispatch(characterObject.HeroObject, ref content);
-									VoteDealBehavior.ProcessProposeDispatch(characterObject.HeroObject, ref content);
+									VoteDealBehavior.ProcessAgendaTagsDispatch(characterObject.HeroObject, ref content);
 									DiplomacyBehavior.ProcessDiplomacyTagsDispatch(characterObject.HeroObject, ref content);
-									VoteDealBehavior.ProcessProposeDispatch(characterObject.HeroObject, ref content);
 									WorldMapPartyCommandBehavior.ProcessWorldMapOrderTagsDispatch(characterObject.HeroObject, ref content);
 									DuelBehavior.TryCacheDuelAfterLinesFromText(characterObject.HeroObject, ref content);
 									DuelBehavior.TryCacheDuelStakeFromText(characterObject.HeroObject, ref content);

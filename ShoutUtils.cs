@@ -941,16 +941,18 @@ public static class ShoutUtils
 			string rawResp = ((await ShoutNetwork.CallApiWithMessages(messages, 5000)) ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(rawResp))
 			{
+				LlmRetryPrompt.ShowFailurePopup("无名NPC人设生成失败", LlmRetryPrompt.BuildFailureDetail("模型回复为空，无法生成人设。", ""));
 				return;
 			}
 			if (rawResp.Contains("错误：未配置 API Key") || rawResp.Contains("API请求失败") || rawResp.Contains("程序错误") || rawResp.Contains("API响应格式错误"))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("无名NPC人设生成失败：" + rawResp));
+				LlmRetryPrompt.ShowFailurePopup("无名NPC人设生成失败", rawResp);
 				return;
 			}
 			if (!TryParsePersonaJson(rawResp, out var genP, out var genB))
 			{
 				Logger.Log("UnnamedPersona", "auto_gen_parse_fail key=" + k + " resp=" + rawResp);
+				LlmRetryPrompt.ShowFailurePopup("无名NPC人设解析失败", LlmRetryPrompt.BuildFailureDetail("模型回复无法解析为人设 JSON。", rawResp));
 				return;
 			}
 			string profileText = "";

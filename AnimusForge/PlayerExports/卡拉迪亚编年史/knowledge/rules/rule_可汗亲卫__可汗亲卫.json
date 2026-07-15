@@ -1,11 +1,10 @@
 ﻿{
   "Id": "rule_可汗亲卫",
   "Keywords": [
-    "可汗亲卫",
-    "可汗卫士"
+    "可汗亲卫"
   ],
   "RagShortTexts": [
-    "可汗亲卫是库赛特可汗的直属亲兵，战力顶尖"
+    "可汗亲卫是库赛特汗国最顶尖的精锐骑射手，担任可汗护卫，擅长在全速奔驰中精准射击。"
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -22,7 +21,147 @@
         "IsClanLeader": null,
         "SkillMin": null
       },
-      "Content": "可汗亲卫？这些人是库赛特可汗A的亲兵，战斗力极强"
+      "Content": "可汗亲卫是库赛特汗国最顶尖的战士，也是整个卡拉迪亚唯一一支以骑射为核心的精锐骑兵。他们不是普通的草原骑手，而是可汗本人的护卫，是从各部落中万里挑一的猛士。他们的弓能在全速奔驰中精准命中目标，他们的刀能在错身而过的瞬间收割敌人的首级。在库赛特，每一个年轻战士的梦想都是成为可汗亲卫——但那需要十年以上的弓马功夫和不止一次在战场上证明自己的勇气。他们是草原上的鹰，来去如风，箭无虚发，敌人往往还没看清他们的脸，就已经倒在了箭雨之下。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "可汗亲卫是我们库赛特的骄傲，是草原上最锋利的刀。他们每一个都是从各部族里挑出来的顶尖射手——能在全速奔驰的马背上射中三百步外的草靶，能在马镫上转身射箭，能在暴风雪里辨别方向。可汗走到哪里，他们就跟着到哪里，既是护卫，也是先锋，更是传令。他们的弓是草原上最好的弓，用牛角和马鬃制成，拉满一张需要普通战士两倍的臂力。他们的刀是弯的，抽出来的时候像一道银月。草原上的人都知道，见到可汗亲卫的旗帜，要么下马行礼，要么赶紧逃命。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "可汗亲卫不是一般的兵，他们是被选中的人。我手下最顶尖的骑射手，练了十几年才有资格去参加可汗亲卫的选拔，选拔的时候要在马背上射完一整壶箭，箭箭都要中靶，还要在马刀对决中胜过不止一个对手。选上之后，他们就不再属于部落了，只属于可汗。他们的弓马比我们最好的骑射手还要快三分，准五分。在草原上打仗，我们那颜们在前面指挥，可汗亲卫就是可汗手里的鞭子，抽到哪，哪就倒下。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我这辈子最大的念想，就是有朝一日能被选进可汗亲卫。他们的弓比我们的长，他们的箭比我们的轻，他们的马比我们的快。同样的距离，我放三箭，他们能放五箭，还箭箭咬肉。但我也知道，就算练一辈子，大多数人还是选不上。他们不光要射得准，还要能在马上用刀近战——骑射手最怕被追上来贴身，可汗亲卫不怕，他们近战的刀法比有些步兵还狠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们在东线和库赛特人打了这么多年，最让我们头疼的不是他们的骑射手，而是可汗亲卫。普通的库赛特骑射手你还能用盾墙和弩手逼退，可汗亲卫根本不给你这个机会。他们的箭太准了，能在我们弩手装填的间隙里射出两轮。而且他们不像普通骑射手那样一味地绕着圈放风筝，他们敢于贴近到让人胆寒的距离，用精准的射击打乱阵型，然后在步兵冲上来之前像风一样消散。更可怕的是，他们近战也不弱——我们用骑兵追过他们一次，他们跑着跑着忽然回头拔刀，把我们的骑兵削了个干净。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "可汗亲卫是我们在草原上最不想遇到的敌人。我们的方旗骑士在平地上能碾碎任何骑兵，但前提是能追上他们。可汗亲卫根本不跟你正面冲，他们在你面前像烟雾一样散开，一边跑一边回头射箭，我们的骑士追不上，弩手的射速也没他们快。但我们发现，他们的弓在雨天和潮湿天气里会受影响，弓弦松了之后准头就差一些。这是我们目前找到的唯一破绽。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "可汗亲卫在森林里施展不开。他们的骑射需要开阔地，林子里马跑不起来，弓的射程优势也被树木遮挡。但我们不会因此小看他们——只要巴旦尼亚的战士踏出森林一步，那些草原上的鹰就会从地平线上扑过来。我们有林子保护，他们有什么？有整个草原。在草原上，他们就是神。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "可汗亲卫的骑射术和我们某些沙漠部落的骑兵有相似的渊源，毕竟草原和沙漠有时候会共用同一种马背上的语言。但他们的弓比我们的长，射程更远；他们的纪律比我们的部落骑兵更好，毕竟是可汗亲选的人。我们在纳哈撒沙漠里不怕他们——他们的马在沙地里跑不久，但在草原上，他们是最危险的对手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "可汗亲卫的箭射不穿我们的盾墙，但能在盾墙上打出窟窿——一个兄弟倒下，旁边的兄弟就得补位，补位的瞬间就是破绽。他们就是靠这种办法慢慢咬，一层一层地剥。我们诺德人更喜欢冲上去用斧头说话，但他们不给你冲的机会。在草原上遇到可汗亲卫，唯一的活路就是别在草原上遇到他们。"
     },
     {
       "Priority": 0,
@@ -36,30 +175,10 @@
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": {
-          "leadership": 80
+          "steward": 150
         }
       },
-      "Content": "库赛特可汗卫士，是专为可汗服务的亲兵，他们头戴面具尖刺盔，脚踩弯靴，身着铜扎甲衬链甲，肩披扎甲披肩，手带夹板皮护臂，手持一把偃月大刀，身背草原反曲弓，腰挂两袋草原箭，一共四十八支箭。胯下一匹喀拉罕马，披挂半身链甲马铠，装备精良，弓马娴熟，远则射箭骚扰，近则挥刀猛砍，可谓是极其勇猛，不可多得"
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "HeroIds": null,
-        "Cultures": [
-          "khuzait"
-        ],
-        "KingdomIds": null,
-        "SettlementIds": null,
-        "Roles": [
-          "lord",
-          "soldier"
-        ],
-        "IdentityIds": null,
-        "IsFemale": null,
-        "IsClanLeader": null,
-        "SkillMin": null
-      },
-      "Content": "库赛特可汗卫士，是专为可汗服务的亲兵，他们头戴面具尖刺盔，脚踩弯靴，身着铜扎甲衬链甲，肩披扎甲披肩，手带夹板皮护臂，手持一把偃月大刀，身背草原反曲弓，腰挂两袋草原箭，一共四十八支箭。胯下一匹喀拉罕马，披挂半身链甲马铠，装备精良，弓马娴熟，远则射箭骚扰，近则挥刀猛砍，可谓是极其勇猛，不可多得"
+      "Content": "可汗亲卫是库赛特汗国军事力量的巅峰，也是卡拉迪亚唯一一支以骑射为专精的顶级精锐骑兵。他们的选拔制度高度精英化，从各部落中筛选技艺最精湛的骑射手，再经过严格的考核——包括移动靶射击、马背刀术和耐力测试——才能成为可汗的直属护卫。在战术层面，可汗亲卫代表了草原游牧军事传统的最高成就：全速奔驰中的精准射击、与步兵和轻骑兵的协同袭扰、利用速度和射程优势进行“打带跑”的消耗战术，以及必要时用弯刀进行近身收割的决断力。他们的弓制作工艺极为复杂，使用牛角、马鬃和木材复合制成，拉满所需的臂力是普通弓的两倍，射程和穿透力远超一般的骑射弓。在卡拉迪亚的兵种体系中，可汗亲卫的定位是独一无二的：他们既是远程输出，也是机动突击力量，更是可汗权威在战场上的直接象征"
     }
   ],
   "TextMappings": []

@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using HarmonyLib;
 using SandBox.GauntletUI.Encyclopedia;
 using TaleWorlds.CampaignSystem;
@@ -24,11 +23,11 @@ public static class EncyclopediaHeroPersonaPatch
 {
 	private const string EditButtonId = "AnimusForgeHeroPersonaEditButton";
 	private const string CourierButtonId = "AnimusForgeHeroCourierButton";
+	private const string RerollButtonId = "AnimusForgeHeroPersonaRerollButton";
 	private const string PlayerNotorietyMarker = "【玩家知名度】";
 	private const int UpdateBrushesContainerIndex = 5;
 
 	private static readonly object SyncRoot = new object();
-	private static readonly HashSet<string> GenerationRequests = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 	private static readonly Queue<PendingRefresh> PendingRefreshes = new Queue<PendingRefresh>();
 	private static readonly List<WeakReference> LiveGeneratedRoots = new List<WeakReference>();
 	private static readonly ConditionalWeakTable<object, EncyclopediaHeroPageVM> RootDataSources = new ConditionalWeakTable<object, EncyclopediaHeroPageVM>();
@@ -42,7 +41,6 @@ public static class EncyclopediaHeroPersonaPatch
 
 	private sealed class PendingRefresh
 	{
-		public WeakReference ViewModel;
 		public string HeroId;
 	}
 
@@ -123,7 +121,6 @@ public static class EncyclopediaHeroPersonaPatch
 		{
 			PendingRefreshes.Enqueue(new PendingRefresh
 			{
-				ViewModel = null,
 				HeroId = text
 			});
 		}
@@ -140,7 +137,7 @@ public static class EncyclopediaHeroPersonaPatch
 		try
 		{
 			Hero hero = ResolveHero(__instance);
-			ApplyPersonaText(__instance, hero, triggerGeneration: true);
+			ApplyPersonaText(__instance, hero);
 		}
 		catch (Exception ex)
 		{
@@ -226,16 +223,6 @@ public static class EncyclopediaHeroPersonaPatch
 			try
 			{
 				string heroId = (pendingRefresh?.HeroId ?? "").Trim();
-				EncyclopediaHeroPageVM vm = pendingRefresh?.ViewModel?.Target as EncyclopediaHeroPageVM;
-				if (vm != null)
-				{
-					Hero hero = ResolveHero(vm);
-					if (string.IsNullOrEmpty(heroId) || string.Equals(hero?.StringId ?? "", heroId, StringComparison.OrdinalIgnoreCase))
-					{
-						ApplyPersonaText(vm, hero, triggerGeneration: false);
-					}
-					continue;
-				}
 				RefreshLiveGeneratedRootsForHero(heroId);
 			}
 			catch (Exception ex)
@@ -359,7 +346,7 @@ public static class EncyclopediaHeroPersonaPatch
 		Hero hero = ResolveHero(vm);
 		if (updateText)
 		{
-			ApplyPersonaText(vm, hero, triggerGeneration: false);
+			ApplyPersonaText(vm, hero);
 		}
 		ButtonWidget button = GetEditButton(root);
 		bool stateWriteSucceeded = true;
@@ -375,6 +362,14 @@ public static class EncyclopediaHeroPersonaPatch
 			bool shouldShowCourier = ShouldShowCourierButton(hero, vm);
 			stateWriteSucceeded &= SetWidgetVisibleIfChanged(courierButton, shouldShowCourier);
 			stateWriteSucceeded &= SetWidgetEnabledIfChanged(courierButton, shouldShowCourier && !CourierDeliveryBehavior.HasActiveCourierForHeroForExternal(hero));
+		}
+		ButtonWidget rerollButton = GetRerollButton(root);
+		if (rerollButton != null)
+		{
+			bool shouldShowReroll = ShouldShowRerollButton(hero, vm);
+			bool generationActive = MyBehavior.TryGetNpcPersonaGenerationRuntimeStateForExternal(hero, out var active, out var _) && active;
+			stateWriteSucceeded &= SetWidgetVisibleIfChanged(rerollButton, shouldShowReroll);
+			stateWriteSucceeded &= SetWidgetEnabledIfChanged(rerollButton, shouldShowReroll && !generationActive);
 		}
 		return stateWriteSucceeded;
 	}
@@ -592,7 +587,7 @@ public static class EncyclopediaHeroPersonaPatch
 		return AccessTools.Field(typeof(EncyclopediaHeroPageVM), "_hero")?.GetValue(vm) as Hero;
 	}
 
-	private static void ApplyPersonaText(EncyclopediaHeroPageVM vm, Hero hero, bool triggerGeneration)
+	private static void ApplyPersonaText(EncyclopediaHeroPageVM vm, Hero hero)
 	{
 		if (hero == Hero.MainHero && vm != null)
 		{
@@ -608,18 +603,7 @@ public static class EncyclopediaHeroPersonaPatch
 		if (!string.IsNullOrWhiteSpace(text))
 		{
 			vm.InformationText = text;
-			if (triggerGeneration && IsEncyclopediaPersonaAutoGenerationEnabled() && (string.IsNullOrWhiteSpace(personality) || string.IsNullOrWhiteSpace(background)))
-			{
-				RequestGeneration(hero, vm);
-			}
-			return;
 		}
-		if (!triggerGeneration || !IsEncyclopediaPersonaAutoGenerationEnabled())
-		{
-			return;
-		}
-		vm.InformationText = MyBehavior.BuildNpcPersonaGenerationHintForExternal(hero);
-		RequestGeneration(hero, vm);
 	}
 
 	private static void ApplyPlayerNotorietyText(EncyclopediaHeroPageVM vm)
@@ -665,9 +649,9 @@ public static class EncyclopediaHeroPersonaPatch
 		return CourierDeliveryBehavior.ShouldShowCourierButtonForExternal(hero, vm?.IsInformationHidden ?? true);
 	}
 
-	private static bool IsEncyclopediaPersonaAutoGenerationEnabled()
+	private static bool ShouldShowRerollButton(Hero hero, EncyclopediaHeroPageVM vm)
 	{
-		return DuelSettings.IsEncyclopediaHeroPersonaAutoGenerationEnabled();
+		return ShouldOverride(hero, vm);
 	}
 
 	private static string BuildPersonaInformationText(string personality, string background)
@@ -688,58 +672,6 @@ public static class EncyclopediaHeroPersonaPatch
 			parts.Add("【历史背景】\n" + text2);
 		}
 		return string.Join("\n\n", parts).Trim();
-	}
-
-	private static void RequestGeneration(Hero hero, EncyclopediaHeroPageVM vm)
-	{
-		if (hero == null || vm == null)
-		{
-			return;
-		}
-		string heroId = (hero.StringId ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(heroId))
-		{
-			return;
-		}
-		if (MyBehavior.TryGetNpcPersonaGenerationStatusForExternal(hero, out var needsGeneration, out var inFlight) && (!needsGeneration || inFlight))
-		{
-			return;
-		}
-		lock (SyncRoot)
-		{
-			if (!GenerationRequests.Add(heroId))
-			{
-				return;
-			}
-		}
-		_ = GenerateAndQueueRefreshAsync(hero, heroId, vm);
-	}
-
-	private static async Task GenerateAndQueueRefreshAsync(Hero hero, string heroId, EncyclopediaHeroPageVM vm)
-	{
-		try
-		{
-			await MyBehavior.EnsureNpcPersonaGeneratedForExternalAsync(hero);
-			lock (SyncRoot)
-			{
-				PendingRefreshes.Enqueue(new PendingRefresh
-				{
-					ViewModel = new WeakReference(vm),
-					HeroId = heroId
-				});
-			}
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("EncyclopediaPersona", "[WARN] Failed to trigger hero encyclopedia persona generation: " + ex.Message);
-		}
-		finally
-		{
-			lock (SyncRoot)
-			{
-				GenerationRequests.Remove(heroId);
-			}
-		}
 	}
 
 	private static void EnsureEditButton(object root)
@@ -805,6 +737,65 @@ public static class EncyclopediaHeroPersonaPatch
 	{
 		EnsureEditButton(root);
 		EnsureCourierButton(root);
+		EnsureRerollButton(root);
+	}
+
+	private static void EnsureRerollButton(object root)
+	{
+		Widget parent = GetEditButtonParent(root);
+		if (parent == null || GetRerollButton(root) != null)
+		{
+			return;
+		}
+		ButtonWidget button = new ButtonWidget(parent.Context)
+		{
+			Id = RerollButtonId,
+			WidthSizePolicy = SizePolicy.Fixed,
+			HeightSizePolicy = SizePolicy.Fixed,
+			SuggestedWidth = 220f,
+			SuggestedHeight = 38f,
+			HorizontalAlignment = HorizontalAlignment.Right,
+			VerticalAlignment = VerticalAlignment.Top,
+			MarginTop = 8f,
+			MarginRight = 44f,
+			MarginBottom = 8f,
+			Brush = parent.Context.GetBrush("Popup.Done.Button.NineGrid") ?? parent.Context.GetBrush("ButtonBrush2"),
+			IsEnabled = true,
+			DoNotAcceptEvents = false,
+			DoNotPassEventsToChildren = true,
+			IsVisible = false
+		};
+		button.ClickEventHandlers.Add(delegate
+		{
+			Hero hero = ResolveHero(GetDataSource(root));
+			if (hero != null)
+			{
+				MyBehavior.OpenHeroPersonaRerollForExternal(hero);
+			}
+		});
+		TextWidget textWidget = new TextWidget(parent.Context)
+		{
+			WidthSizePolicy = SizePolicy.StretchToParent,
+			HeightSizePolicy = SizePolicy.StretchToParent,
+			Text = "重生个性背景",
+			Brush = parent.Context.GetBrush("Popup.Button.Text") ?? parent.Context.GetBrush("Encyclopedia.SubPage.Info.Text"),
+			DoNotAcceptEvents = true
+		};
+		if (textWidget.Brush != null)
+		{
+			textWidget.Brush.FontSize = 16;
+			textWidget.Brush.TextHorizontalAlignment = TextHorizontalAlignment.Center;
+			textWidget.Brush.TextVerticalAlignment = TextVerticalAlignment.Center;
+		}
+		button.AddChild(textWidget);
+		if (ReferenceEquals(parent, GetRightSideContentList(root)))
+		{
+			parent.AddChildAtIndex(button, 0);
+		}
+		else
+		{
+			parent.AddChild(button);
+		}
 	}
 
 	private static void EnsureCourierButton(object root)
@@ -894,6 +885,12 @@ public static class EncyclopediaHeroPersonaPatch
 	{
 		Widget widget = root as Widget;
 		return widget?.FindChild(CourierButtonId, includeAllChildren: true) as ButtonWidget;
+	}
+
+	private static ButtonWidget GetRerollButton(object root)
+	{
+		Widget widget = root as Widget;
+		return widget?.FindChild(RerollButtonId, includeAllChildren: true) as ButtonWidget;
 	}
 
 	private static Widget GetEditButtonParent(object root)

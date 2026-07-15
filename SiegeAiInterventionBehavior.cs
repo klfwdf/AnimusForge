@@ -2538,13 +2538,22 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		bool guard = IsGuardOrSoldier(character);
 		bool civilian = IsCivilianForIntervention(character);
 		string gatherContext = BuildCivilianGatherRuntimeContext(Mission.Current);
-		string memoryContext = AppendRuntimeContext(
-			BuildInterventionMemoryContext(SelectInterventionMemoryAudience(alliedSoldier, civilian)),
-			BuildPlayerCommanderRuntimeContext(alliedSoldier, civilian));
-		if (ResolveCurrentSettlement()?.IsCastle == true && alliedSoldier)
+		string memoryContext = BuildInterventionMemoryContext(SelectInterventionMemoryAudience(alliedSoldier, civilian));
+		Settlement activeSettlement = ResolveCurrentSettlement();
+		if (activeSettlement?.IsCastle == true)
 		{
-			memoryContext = AppendRuntimeContext(memoryContext, BuildCastleNpcSituationPromptForAgent(hero, character, agentIndex));
+			bool prisoner = CastleAftermathRuntimeBridge.IsPrisonerAgent(agent);
+			bool lord = prisoner && (CastleAftermathRuntimeBridge.IsLordPrisonerAgent(agent) || hero?.IsLord == true || character?.IsHero == true);
+			return SiegeCastleRuntimePromptProfile.Build(new SiegeCastleRuntimePromptFacts(
+				settlementName,
+				ResolvePlayerCharacterNameForContext(),
+				alliedSoldier,
+				prisoner,
+				lord,
+				BuildCastleNpcSituationPromptForAgent(hero, character, agentIndex),
+				memoryContext));
 		}
+		memoryContext = AppendRuntimeContext(memoryContext, BuildPlayerCommanderRuntimeContext(alliedSoldier, civilian));
 		return SiegeRuntimePromptProfile.Build(new SiegeRuntimePromptFacts(
 			settlementName,
 			alliedSoldier,
@@ -2654,6 +2663,18 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			Hero resolvedHero = hero ?? resolved?.HeroObject;
 			bool alliedSoldier = IsRuntimeAlliedSoldierAgent(agent, resolved, resolvedHero);
 			bool civilian = IsCivilianForIntervention(resolved);
+			Settlement settlement = ResolveCurrentSettlement();
+			if (settlement?.IsCastle == true)
+			{
+				bool prisoner = CastleAftermathRuntimeBridge.IsPrisonerAgent(agent);
+				bool lord = prisoner && (CastleAftermathRuntimeBridge.IsLordPrisonerAgent(agent) || resolvedHero?.IsLord == true || resolved?.IsHero == true);
+				return SiegeCastleRuntimePromptProfile.BuildImmediateReactionIdentityOverride(
+					settlement.Name?.ToString() ?? _activeSettlementName,
+					ResolvePlayerCharacterNameForContext(),
+					alliedSoldier,
+					prisoner,
+					lord);
+			}
 			string identity = SiegeRuntimePromptProfile.BuildImmediateReactionIdentityOverride(ResolvePlayerCharacterNameForContext(), alliedSoldier, civilian);
 			if (_setsOwnedSettlementIncidentContext)
 			{
@@ -2682,6 +2703,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			if (!SiegeCastleRuntimePromptProfile.ShouldExposeTownAftermathRules(ResolveCurrentSettlement()?.IsCastle == true))
+			{
+				return new List<PostprocessRuleEntry>();
+			}
 			List<PostprocessRuleEntry> configured = AIConfigHandler.GetGuardrailRulePostprocessRules(SiegePostprocessRuleCatalog.RuleId) ?? new List<PostprocessRuleEntry>();
 			List<PostprocessRuleEntry> rules = configured.Count > 0 ? configured : BuildFallbackSiegeInterventionPostprocessRules();
 			bool destructiveAllowed = IsDestructiveInterventionAllowed();
@@ -2786,7 +2811,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	internal static bool TryProcessFixedKeywordActionForExternal(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string playerText, bool playerCommandContext, out bool actionHandled)
 	{
 		actionHandled = false;
-		if (!playerCommandContext || !IsActiveInCurrentMission())
+		if (!playerCommandContext || !IsActiveInCurrentMission()
+			|| !SiegeCastleRuntimePromptProfile.ShouldExposeTownAftermathRules(ResolveCurrentSettlement()?.IsCastle == true))
 		{
 			return false;
 		}
@@ -2825,6 +2851,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		try
 		{
 			if (!IsActiveInCurrentMission())
+			{
+				text = StripSiegeTags(text);
+				return true;
+			}
+			if (!SiegeCastleRuntimePromptProfile.ShouldExposeTownAftermathRules(ResolveCurrentSettlement()?.IsCastle == true))
 			{
 				text = StripSiegeTags(text);
 				return true;

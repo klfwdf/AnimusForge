@@ -496,6 +496,16 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 		return result;
 	}
 
+	private static string BuildPolicyFailurePopupText(string reason, PolicyGenerationResult result)
+	{
+		string detail = string.IsNullOrWhiteSpace(reason) ? "政策评议失败。" : reason.Trim();
+		if (detail.IndexOf("【模型回复（完整）】", StringComparison.Ordinal) >= 0)
+		{
+			return detail;
+		}
+		return LlmRetryPrompt.BuildFailureDetail(detail, result?.MainRaw);
+	}
+
 	private void CompletePolicyGeneration(PolicyDraftRequest request, PolicyGenerationResult result)
 	{
 		try
@@ -529,7 +539,7 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 				PolicyDetailedLog("policy-complete", BuildPolicyRequestLogPrefix(request)
 					+ " parsedEffects=" + CountParsedPolicyEffects(result).ToString(CultureInfo.InvariantCulture)
 					+ " appliedEffects=0 costDeducted=false status=generation_failed");
-				InformationManager.ShowInquiry(new InquiryData("政策评议失败", result.Error + "\n\n未扣除费用。", true, false, "知道了", "", null, null), pauseGameActiveState: true);
+				InformationManager.ShowInquiry(new InquiryData("政策评议失败", BuildPolicyFailurePopupText(result.Error, result) + "\n\n未扣除费用。", true, false, "知道了", "", null, null), pauseGameActiveState: true);
 				return;
 			}
 			if (!TryPreparePolicyCostForApplication(request, result.MainAssessment, out string costError))
@@ -542,7 +552,7 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 					+ " useAiEvaluatedCost=" + request.UseAiEvaluatedCost.ToString(CultureInfo.InvariantCulture)
 					+ " error=" + (costError ?? ""),
 					BuildPolicyGenerationDetailedTrace(result));
-				InformationManager.ShowInquiry(new InquiryData("政策评议失败", (costError ?? "政策消耗评估无效。") + "\n\n未扣除费用，也未应用效果。", true, false, "知道了", "", null, null), pauseGameActiveState: true);
+				InformationManager.ShowInquiry(new InquiryData("政策评议失败", BuildPolicyFailurePopupText(costError ?? "政策消耗评估无效。", result) + "\n\n未扣除费用，也未应用效果。", true, false, "知道了", "", null, null), pauseGameActiveState: true);
 				return;
 			}
 			result.Postprocess = BuildPostprocessResultFromMainAssessment(request, result.MainAssessment);
@@ -566,7 +576,7 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 					+ " parsedEffects=" + CountParsedPolicyEffects(result).ToString(CultureInfo.InvariantCulture)
 					+ " appliedEffects=0 costDeducted=false status=eligibility_changed reason=" + (eligibility.Reason ?? ""),
 					BuildPolicyGenerationDetailedTrace(result));
-				InformationManager.ShowInquiry(new InquiryData("政策无法发布", eligibility.Reason + "\n\n政策评议已经完成，但发布条件已变化，因此未扣除费用，也未应用效果。", true, false, "知道了", "", null, null), pauseGameActiveState: true);
+				InformationManager.ShowInquiry(new InquiryData("政策无法发布", BuildPolicyFailurePopupText(eligibility.Reason, result) + "\n\n政策评议已经完成，但发布条件已变化，因此未扣除费用，也未应用效果。", true, false, "知道了", "", null, null), pauseGameActiveState: true);
 				return;
 			}
 			PolicyApplicationResult application = ApplyPolicyEffects(request, result.Postprocess);
@@ -590,7 +600,7 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 					+ " parsedEffects=" + CountParsedPolicyEffects(result).ToString(CultureInfo.InvariantCulture)
 					+ " appliedEffects=" + application.AppliedEffectCount.ToString(CultureInfo.InvariantCulture)
 					+ " costDeducted=false status=no_actual_effect");
-				InformationManager.ShowInquiry(new InquiryData("政策未能落地", noEffectText, true, false, "知道了", "", null, null), pauseGameActiveState: true);
+				InformationManager.ShowInquiry(new InquiryData("政策未能落地", BuildPolicyFailurePopupText(noEffectText, result), true, false, "知道了", "", null, null), pauseGameActiveState: true);
 				return;
 			}
 			DeductPublishCost(request);
@@ -635,7 +645,7 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 			PolicyDetailedLog("complete-exception", BuildPolicyRequestLogPrefix(request), ex.ToString());
 			PolicyDetailedLog("policy-complete", BuildPolicyRequestLogPrefix(request) + " parsedEffects=0 appliedEffects=0 costDeducted=false status=exception");
 			Log("complete policy failed: " + ex);
-			InformationManager.ShowInquiry(new InquiryData("政策发布失败", "政策评议完成后的落地处理失败：\n" + ex.Message + "\n\n未确认成功时不应重复点击；请查看日志。", true, false, "知道了", "", null, null), pauseGameActiveState: true);
+			InformationManager.ShowInquiry(new InquiryData("政策发布失败", BuildPolicyFailurePopupText("政策评议完成后的落地处理失败：\n" + ex.Message, result) + "\n\n未确认成功时不应重复点击；请查看日志。", true, false, "知道了", "", null, null), pauseGameActiveState: true);
 		}
 	}
 
@@ -2433,7 +2443,7 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		text = Regex.Replace(text, "\\[(AFEF|ACTION|REWARD|DUEL|VASSALAGE|KINGDOM|WORLD_MAP|PARTY_TRANSFER|SETTLEMENT_TRANSFER|DIPLOMACY|VOTE_DEAL)[^\\]]*\\]", "", RegexOptions.IgnoreCase);
+		text = Regex.Replace(text, "\\[(AFEF|ACTION|REWARD|DUEL|VASSALAGE|KINGDOM|WORLD_MAP|PARTY_TRANSFER|DIPLOMACY|VOTE_DEAL)[^\\]]*\\]", "", RegexOptions.IgnoreCase);
 		for (int i = 0; i < 3; i++)
 		{
 			string cleaned = Regex.Replace(text, "^\\s*(民众反馈|反馈|publicFeedback)\\s*[：:]\\s*", "", RegexOptions.IgnoreCase).Trim();

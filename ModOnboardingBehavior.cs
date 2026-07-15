@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -28,6 +29,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		None,
 		SetupModeChoice,
 		Welcome,
+		DeepSeekApiKeyOwnership,
 		QuickPresetApiKey,
 		AuxiliaryChoice,
 		PostprocessChoice,
@@ -96,6 +98,8 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	private const string SetupDoneKey = "_AnimusForge_setup_done_v1";
 
 	private const string DeepSeekApiBaseUrl = "https://api.deepseek.com";
+
+	private const string DeepSeekApiKeysUrl = "https://platform.deepseek.com/api_keys";
 
 	private const string DeepSeekFlashModelName = "deepseek-v4-flash";
 
@@ -685,7 +689,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
 			return;
 		}
-		if (_activeOnboardingStage != OnboardingUiStage.SetupModeChoice && _activeOnboardingStage != OnboardingUiStage.Welcome && _activeOnboardingStage != OnboardingUiStage.QuickPresetApiKey && _activeOnboardingStage != OnboardingUiStage.AuxiliaryChoice && _activeOnboardingStage != OnboardingUiStage.PostprocessChoice && _activeOnboardingStage != OnboardingUiStage.EventRebellionChoice && _activeOnboardingStage != OnboardingUiStage.BaseUrlValidation && _activeOnboardingStage != OnboardingUiStage.BaseUrlValidationFailure && _activeOnboardingStage != OnboardingUiStage.ApiValidation && _activeOnboardingStage != OnboardingUiStage.ModelFetch && _activeOnboardingStage != OnboardingUiStage.ModelSelect && _activeOnboardingStage != OnboardingUiStage.Import)
+		if (_activeOnboardingStage != OnboardingUiStage.SetupModeChoice && _activeOnboardingStage != OnboardingUiStage.Welcome && _activeOnboardingStage != OnboardingUiStage.DeepSeekApiKeyOwnership && _activeOnboardingStage != OnboardingUiStage.QuickPresetApiKey && _activeOnboardingStage != OnboardingUiStage.AuxiliaryChoice && _activeOnboardingStage != OnboardingUiStage.PostprocessChoice && _activeOnboardingStage != OnboardingUiStage.EventRebellionChoice && _activeOnboardingStage != OnboardingUiStage.BaseUrlValidation && _activeOnboardingStage != OnboardingUiStage.BaseUrlValidationFailure && _activeOnboardingStage != OnboardingUiStage.ApiValidation && _activeOnboardingStage != OnboardingUiStage.ModelFetch && _activeOnboardingStage != OnboardingUiStage.ModelSelect && _activeOnboardingStage != OnboardingUiStage.Import)
 		{
 			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
 			return;
@@ -712,6 +716,9 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 		case OnboardingUiStage.SetupModeChoice:
 			ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+			break;
+		case OnboardingUiStage.DeepSeekApiKeyOwnership:
+			ShowDeepSeekApiKeyOwnershipInquiry(_selectedQuickApiPreset);
 			break;
 		case OnboardingUiStage.QuickPresetApiKey:
 			ShowQuickPresetApiKeyInput(_selectedQuickApiPreset);
@@ -917,38 +924,39 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		}
 		else if (_apiRepairFlowActive || !_setupDone || _apiOnlySetupFlowActive)
 		{
+			string fullFailureText = pendingApiValidationMessage;
+			if (!string.IsNullOrWhiteSpace(pendingApiValidationFailureHint))
+			{
+				fullFailureText = (fullFailureText + "\n\n排查建议：" + pendingApiValidationFailureHint).Trim();
+			}
 			if (setupMenuValidation)
 			{
 				_quickPresetFlowActive = false;
 				_selectedQuickApiPreset = QuickApiPreset.None;
 				_showApiValidationFailedHint = true;
 				_showModelSelectionValidationFailedHint = false;
-				_lastApiValidationFailureHint = pendingApiValidationFailureHint;
-				if (!string.IsNullOrWhiteSpace(pendingApiValidationMessage))
-				{
-					InformationManager.DisplayMessage(new InformationMessage(pendingApiValidationMessage));
-				}
+				_lastApiValidationFailureHint = fullFailureText;
 				ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
 			}
 			else if (quickPresetPrimaryValidation)
 			{
 				_showApiValidationFailedHint = true;
 				_showModelSelectionValidationFailedHint = false;
-				_lastApiValidationFailureHint = pendingApiValidationFailureHint;
+				_lastApiValidationFailureHint = fullFailureText;
 				ShowQuickPresetApiKeyInput(_selectedQuickApiPreset);
 			}
 			else if (apiValidationReturnToModelSelection)
 			{
 				_showApiValidationFailedHint = false;
 				_showModelSelectionValidationFailedHint = true;
-				_lastApiValidationFailureHint = pendingApiValidationFailureHint;
+				_lastApiValidationFailureHint = fullFailureText;
 				ShowModelSelectionPopup();
 			}
 			else
 			{
 				_showApiValidationFailedHint = true;
 				_showModelSelectionValidationFailedHint = false;
-				_lastApiValidationFailureHint = pendingApiValidationFailureHint;
+				_lastApiValidationFailureHint = fullFailureText;
 				ReopenCurrentApiEntry(ignoreSuppress: true);
 			}
 		}
@@ -1145,6 +1153,10 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			string text = _apiOnlySetupFlowActive
 				? "你正在从 AnimusForge 终端重新配置 API。\n\n本流程只会写入并测试主API、前处理API、后处理API、周报和叛乱API配置；测试通过后会直接返回游戏，不会进入数据库导入或首次使用流程。"
 				: "请选择首次使用的 API 配置方式。\n\n推荐组合会自动写入主API、前处理API、后处理API、周报和叛乱API的 Base URL、模型、思维链和温度；你只需要填写一次 API Key。";
+			if (_showApiValidationFailedHint && !string.IsNullOrWhiteSpace(_lastApiValidationFailureHint))
+			{
+				text += "\n\n【上次 API 测试失败详情】\n" + _lastApiValidationFailureHint;
+			}
 			MultiSelectionInquiryData data = new MultiSelectionInquiryData("AnimusForge - API 快捷配置", text, list, isExitShown: false, 0, 1, "确定", "关闭", delegate(List<InquiryElement> selected)
 			{
 				_welcomeInProgress = false;
@@ -1167,11 +1179,11 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				}
 				else if (text2 == "deepseek_flash")
 				{
-					ApplyDeepSeekPresetAndOpenKeyInput(QuickApiPreset.DeepSeekFlash);
+					ShowDeepSeekApiKeyOwnershipInquiry(QuickApiPreset.DeepSeekFlash);
 				}
 				else if (text2 == "deepseek_pro")
 				{
-					ApplyDeepSeekPresetAndOpenKeyInput(QuickApiPreset.DeepSeekPro);
+					ShowDeepSeekApiKeyOwnershipInquiry(QuickApiPreset.DeepSeekPro);
 				}
 				else if (text2 == "custom")
 				{
@@ -1206,6 +1218,54 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		catch
 		{
 			_welcomeInProgress = false;
+		}
+	}
+
+	private void ShowDeepSeekApiKeyOwnershipInquiry(QuickApiPreset preset)
+	{
+		try
+		{
+			if (preset == QuickApiPreset.None)
+			{
+				ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+				return;
+			}
+			_selectedQuickApiPreset = preset;
+			_quickPresetFlowActive = false;
+			_activeOnboardingStage = OnboardingUiStage.DeepSeekApiKeyOwnership;
+			_welcomeInProgress = true;
+			InformationManager.ShowInquiry(new InquiryData("DeepSeek API Key 确认", "你是否拥有 DeepSeek 官方 API Key？\n\n如果没有，请点击“无”，前往 DeepSeek 官方开放平台创建 API Key 并充值。完成后返回游戏，再次选择推荐组合。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "有", "无", delegate
+			{
+				_welcomeInProgress = false;
+				ApplyDeepSeekPresetAndOpenKeyInput(preset);
+			}, delegate
+			{
+				_welcomeInProgress = false;
+				OpenDeepSeekApiKeysPage();
+				ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+			}), pauseGameActiveState: true);
+		}
+		catch (Exception ex)
+		{
+			_welcomeInProgress = false;
+			InformationManager.DisplayMessage(new InformationMessage("打开 DeepSeek API Key 确认框失败：" + ex.Message));
+			ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+		}
+	}
+
+	private static void OpenDeepSeekApiKeysPage()
+	{
+		try
+		{
+			Process.Start(new ProcessStartInfo(DeepSeekApiKeysUrl)
+			{
+				UseShellExecute = true
+			});
+			InformationManager.DisplayMessage(new InformationMessage("[系统] 正在打开 DeepSeek 官方 API Keys 页面。"));
+		}
+		catch (Exception ex)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("[系统] 打开 DeepSeek 官方页面失败：" + ex.Message));
 		}
 	}
 
@@ -1418,16 +1478,16 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				cancellationTokenSource = new CancellationTokenSource();
 				_apiValidationCancellation = cancellationTokenSource;
 				ApiValidationTargetResult[] array = await Task.WhenAll(targets.Select((ApiValidationTargetInfo target) => ValidateApiTargetAsync(target, cancellationTokenSource.Token)));
-				ApiValidationTargetResult apiValidationTargetResult = array.FirstOrDefault((ApiValidationTargetResult x) => x == null || !x.Success);
-				if (apiValidationTargetResult == null)
+				List<ApiValidationTargetResult> failedResults = array.Where((ApiValidationTargetResult x) => x == null || !x.Success).ToList();
+				if (failedResults.Count == 0)
 				{
 					flag = true;
 					text = BuildApiConfigSetValidationSuccessMessage(flow, array, eventSkipped);
 				}
 				else
 				{
-					failureHint = apiValidationTargetResult.FailureHint ?? "";
-					text = apiValidationTargetResult.Message ?? "API 组合连接测试失败。";
+					failureHint = string.Join("\n", failedResults.Select((ApiValidationTargetResult x) => x?.FailureHint).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct());
+					text = string.Join("\n\n", failedResults.Select((ApiValidationTargetResult x) => x?.Message ?? "API 组合连接测试失败。"));
 				}
 			}
 			catch (OperationCanceledException)
@@ -1530,9 +1590,25 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			string responseBody = await response.Content.ReadAsStringAsync();
 			if (response.IsSuccessStatusCode)
 			{
-				result.Success = true;
-				result.Message = target.DisplayName + "连接测试成功。";
-				return result;
+				try
+				{
+					string assistantReply = LlmApiCompat.ExtractAssistantText(JObject.Parse(responseBody));
+					if (string.IsNullOrWhiteSpace(assistantReply))
+					{
+						result.FailureHint = "接口返回了 HTTP 成功状态，但响应结构中没有可用的模型回复。";
+						result.Message = LlmRetryPrompt.BuildFailureDetail(target.DisplayName + "回复解析失败。", "", responseBody);
+						return result;
+					}
+					result.Success = true;
+					result.Message = target.DisplayName + "连接测试成功。";
+					return result;
+				}
+				catch (Exception ex)
+				{
+					result.FailureHint = "接口返回了 HTTP 成功状态，但响应不是可解析的聊天补全格式。";
+					result.Message = LlmRetryPrompt.BuildFailureDetail(target.DisplayName + "回复解析失败：" + ex.Message, "", responseBody);
+					return result;
+				}
 			}
 			result.FailureHint = BuildApiValidationFailureHint(response.StatusCode, responseBody);
 			result.Message = target.DisplayName + "连接测试失败。\n" + BuildApiValidationFailureMessage(effectiveApiUrl, target.ModelName, response.StatusCode, responseBody);
@@ -2177,7 +2253,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 					}
 					else
 					{
-						text = "接口已返回响应，但没有识别出可用模型列表。你也可以手动输入模型名称。";
+						text = LlmRetryPrompt.BuildFailureDetail("接口已返回响应，但没有识别出可用模型列表。你也可以手动输入模型名称。", "", text2);
 					}
 				}
 				else
@@ -2482,16 +2558,25 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				string text2 = await httpResponseMessage.Content.ReadAsStringAsync();
 				if (httpResponseMessage.IsSuccessStatusCode)
 				{
-					flag = true;
 					try
 					{
 						JObject jObject = JObject.Parse(text2);
 						string text3 = LlmApiCompat.ExtractAssistantText(jObject);
-						text = string.IsNullOrWhiteSpace(text3) ? ("MCM 中的" + CurrentApiDisplayName() + "连接测试成功，可以进入下一步。") : ("MCM 中的" + CurrentApiDisplayName() + "连接测试成功：" + text3.Trim());
+						if (string.IsNullOrWhiteSpace(text3))
+						{
+							failureHint = "接口返回了 HTTP 成功状态，但响应结构中没有可用的模型回复。";
+							text = LlmRetryPrompt.BuildFailureDetail("MCM 中的" + CurrentApiDisplayName() + "回复解析失败。", "", text2);
+						}
+						else
+						{
+							flag = true;
+							text = "MCM 中的" + CurrentApiDisplayName() + "连接测试成功：" + text3.Trim();
+						}
 					}
-					catch
+					catch (Exception ex)
 					{
-						text = "MCM 中的" + CurrentApiDisplayName() + "连接测试成功，可以进入下一步。";
+						failureHint = "接口返回了 HTTP 成功状态，但响应不是可解析的聊天补全格式。";
+						text = LlmRetryPrompt.BuildFailureDetail("MCM 中的" + CurrentApiDisplayName() + "回复解析失败：" + ex.Message, "", text2);
 					}
 				}
 				else
@@ -3006,7 +3091,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			text = text + "\n模型：" + modelName;
 		}
 		text = text + "\n状态码：" + statusCode;
-		string text2 = (responseBody ?? "").Trim();
+		string text2 = responseBody ?? "";
 		if ((int)statusCode == 404)
 		{
 			text += "\n排查建议：请检查 Base URL 尾缀和模型名称是否正确。";
@@ -3019,15 +3104,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			text += "\n排查建议：网关已收到请求，但上游源站不可达。";
 		}
-		if (!string.IsNullOrWhiteSpace(text2))
-		{
-			if (text2.Length > 220)
-			{
-				text2 = text2.Substring(0, 220).Trim();
-			}
-			text = text + "\n返回：" + text2;
-		}
-		return text;
+		return LlmRetryPrompt.BuildFailureDetail(text, "", text2);
 	}
 
 	private static string BuildApiValidationFailureHint(HttpStatusCode statusCode, string responseBody)
@@ -3100,16 +3177,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			text += " 请检查 Base URL 是否填写正确。";
 			break;
 		}
-		string text2 = (responseBody ?? "").Trim();
-		if (!string.IsNullOrWhiteSpace(text2))
-		{
-			if (text2.Length > 120)
-			{
-				text2 = text2.Substring(0, 120).Trim();
-			}
-			text = text + " 返回摘要：" + text2;
-		}
-		return text;
+		return LlmRetryPrompt.BuildFailureDetail(text, "", responseBody);
 	}
 
 	private static List<string> ExtractModelNamesFromResponse(string responseBody)
@@ -3174,16 +3242,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			text += " 你可以手动输入模型名称继续。";
 			break;
 		}
-		string text2 = (responseBody ?? "").Trim();
-		if (!string.IsNullOrWhiteSpace(text2))
-		{
-			if (text2.Length > 120)
-			{
-				text2 = text2.Substring(0, 120).Trim();
-			}
-			text = text + " 返回摘要：" + text2;
-		}
-		return text;
+		return LlmRetryPrompt.BuildFailureDetail(text, "", responseBody);
 	}
 
 	private void OpenImportFolderPicker(Action onReturn)

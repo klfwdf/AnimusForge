@@ -636,19 +636,20 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 			});
 		}
 
-		if (MyBehavior.TryGetLatestMeaningfulDialogueForExternal(hero, out string dialogueKey, out string dialogueText, out int dialogueDay)
-			&& dialogueDay >= 0
-			&& currentDay - dialogueDay <= 120)
+		if (MyBehavior.TryGetLatestCompressedMemoryForExternal(hero, out string memoryKey, out string memoryDate, out string memoryText, out int memoryDay)
+			&& memoryDay >= 0
+			&& currentDay - memoryDay <= 120)
 		{
-			int age = Math.Max(0, currentDay - dialogueDay);
+			int age = Math.Max(0, currentDay - memoryDay);
+			string memoryDateSuffix = string.IsNullOrWhiteSpace(memoryDate) ? "" : ("（" + memoryDate + "）");
 			motives.Add(new CompanionChatMotive
 			{
 				Type = MotiveFollowUp,
-				StableKey = "followup:" + dialogueKey,
+				StableKey = "followup:" + memoryKey,
 				IsEvent = true,
 				Urgency = ClampFloat(55f - age * 0.25f, 35f, 55f),
-				FactText = "你与玩家最近一次真实谈话中的一条记录（第" + dialogueDay + "日）：" + LimitText(dialogueText, 320),
-				IntentText = "你决定自然延续这次真实谈话；不要假定记录外的承诺、结果或未解决事项。"
+				FactText = "你想起此前与玩家的一段互动" + memoryDateSuffix + "：" + LimitText(memoryText, 320),
+				IntentText = "你决定从这段互动引出的感受、想法或关切开口；不要把它当作未结束的对话续写，也不要虚构互动外的事实。"
 			});
 		}
 

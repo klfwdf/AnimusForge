@@ -1,6 +1,6 @@
 @echo off
 setlocal
-set "SCRIPT=G:\AFMOD\new-0.9.4\install_gccz_test_artifacts.ps1"
+set "SCRIPT=%~dp0install_gccz_test_artifacts.ps1"
 if not exist "%SCRIPT%" (
   echo Missing install script: %SCRIPT%
   pause

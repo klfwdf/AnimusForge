@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using TaleWorlds.Core;
@@ -8,8 +9,6 @@ namespace AnimusForge;
 
 public static class LlmRetryPrompt
 {
-	private const int MaxErrorPreviewChars = 900;
-
 	private static SynchronizationContext _mainThreadContext;
 	private static int _mainThreadId;
 
@@ -34,14 +33,18 @@ public static class LlmRetryPrompt
 		if (text.StartsWith("（API请求失败", StringComparison.Ordinal)
 			|| text.StartsWith("（程序错误", StringComparison.Ordinal)
 			|| text.StartsWith("（API响应格式错误", StringComparison.Ordinal)
+			|| text.StartsWith("（错误", StringComparison.Ordinal)
 			|| text.StartsWith("timeout_", StringComparison.OrdinalIgnoreCase)
 			|| text.StartsWith("http_", StringComparison.OrdinalIgnoreCase)
+			|| text.EndsWith("_config_invalid", StringComparison.OrdinalIgnoreCase)
 			|| text.Equals("empty_content", StringComparison.OrdinalIgnoreCase))
 		{
 			return true;
 		}
 		return text.IndexOf("TaskCanceledException", StringComparison.OrdinalIgnoreCase) >= 0
 			|| text.IndexOf("HttpRequestException", StringComparison.OrdinalIgnoreCase) >= 0
+			|| text.IndexOf("JsonReaderException", StringComparison.OrdinalIgnoreCase) >= 0
+			|| text.IndexOf("JsonSerializationException", StringComparison.OrdinalIgnoreCase) >= 0
 			|| text.IndexOf("operation was canceled", StringComparison.OrdinalIgnoreCase) >= 0
 			|| text.IndexOf("A task was canceled", StringComparison.OrdinalIgnoreCase) >= 0;
 	}
@@ -49,12 +52,54 @@ public static class LlmRetryPrompt
 	public static string BuildRetryDescription(string stageName, string error)
 	{
 		string stage = string.IsNullOrWhiteSpace(stageName) ? "LLM请求" : stageName.Trim();
-		string detail = (error ?? "未知错误").Replace("\r", " ").Replace("\n", " ").Trim();
-		if (detail.Length > MaxErrorPreviewChars)
-		{
-			detail = detail.Substring(0, MaxErrorPreviewChars) + "...";
-		}
+		string detail = NormalizeFullText(error, "未知错误");
 		return stage + "失败：\n\n" + detail + "\n\n是否立即重试？";
+	}
+
+	public static string BuildFailureDetail(string reason, string modelReply, string rawResponse = null)
+	{
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.Append(NormalizeFullText(reason, "未知错误"));
+		string fullModelReply = NormalizeFullText(modelReply, "");
+		string fullRawResponse = NormalizeFullText(rawResponse, "");
+		stringBuilder.AppendLine();
+		stringBuilder.AppendLine();
+		stringBuilder.AppendLine("【模型回复（完整）】");
+		stringBuilder.Append(string.IsNullOrWhiteSpace(fullModelReply) ? "（未收到或未能解析出模型回复）" : fullModelReply);
+		if (!string.IsNullOrWhiteSpace(fullRawResponse) && !string.Equals(fullRawResponse, fullModelReply, StringComparison.Ordinal))
+		{
+			stringBuilder.AppendLine();
+			stringBuilder.AppendLine();
+			stringBuilder.AppendLine("【API原始响应（完整）】");
+			stringBuilder.Append(fullRawResponse);
+		}
+		return stringBuilder.ToString().TrimEnd();
+	}
+
+	public static void ShowFailurePopup(string title, string message)
+	{
+		void Show()
+		{
+			try
+			{
+				InformationManager.ShowInquiry(new InquiryData(
+					string.IsNullOrWhiteSpace(title) ? "AnimusForge 请求失败" : title.Trim(),
+					NormalizeFullText(message, "未知错误"),
+					isAffirmativeOptionShown: true,
+					isNegativeOptionShown: false,
+					"知道了",
+					"",
+					null,
+					null),
+					pauseGameActiveState: true,
+					prioritize: true);
+			}
+			catch
+			{
+			}
+		}
+
+		PostToMainThread(Show);
 	}
 
 	public static Task<bool> PromptRetryAsync(string stageName, string error)
@@ -76,6 +121,7 @@ public static class LlmRetryPrompt
 		}
 		if (_mainThreadId != 0 && Thread.CurrentThread.ManagedThreadId == _mainThreadId)
 		{
+			ShowFailurePopup("AnimusForge 请求失败", (string.IsNullOrWhiteSpace(stageName) ? "LLM请求" : stageName.Trim()) + "失败：\n\n" + NormalizeFullText(error, "未知错误"));
 			return false;
 		}
 		using ManualResetEventSlim waitHandle = new ManualResetEventSlim(false);
@@ -128,18 +174,33 @@ public static class LlmRetryPrompt
 			}
 		}
 
+		PostToMainThread(Show);
+	}
+
+	private static string NormalizeFullText(string value, string fallback)
+	{
+		string text = (value ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+		return string.IsNullOrWhiteSpace(text) ? (fallback ?? "") : text;
+	}
+
+	private static void PostToMainThread(Action action)
+	{
+		if (action == null)
+		{
+			return;
+		}
 		SynchronizationContext context = _mainThreadContext;
 		if (context != null && (_mainThreadId == 0 || Thread.CurrentThread.ManagedThreadId != _mainThreadId))
 		{
 			try
 			{
-				context.Post(_ => Show(), null);
+				context.Post(_ => action(), null);
 				return;
 			}
 			catch
 			{
 			}
 		}
-		Show();
+		action();
 	}
 }

@@ -293,8 +293,7 @@ internal static class AnimusForgeWeeklyReportUiSprites
 
 	private static string GetSpriteFilePath(string category, string fileName)
 	{
-		string assemblyDir = Path.GetDirectoryName(typeof(SubModule).Assembly.Location) ?? "";
-		string moduleRoot = Path.GetFullPath(Path.Combine(assemblyDir, "..", ".."));
+		string moduleRoot = AnimusForgeModulePaths.GetCurrentModuleRoot();
 		return Path.Combine(moduleRoot, "GUI", "SpriteParts", category, fileName);
 	}
 

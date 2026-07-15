@@ -141,6 +141,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		public int Amount;
 		public int GuidePriceDenars;
 		public bool IsHero;
+		public string SourceSettlementId;
 		public bool Delivered;
 	}
 
@@ -1132,12 +1133,24 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				hint = option.PartyEntry.Section == MyBehavior.PartyTransferEntrySection.PlayerTroops
 					? $"可用数量: {option.AvailableAmount} | 日薪: {option.PartyEntry.WageDenarsPerDay}第纳尔/天 | 雇佣价: {option.PartyEntry.HirePriceDenarsPerUnit}第纳尔/人"
 					: $"可用数量: {option.AvailableAmount} | 购买价: {option.PartyEntry.BuyPriceDenarsPerUnit}第纳尔/人";
+				string sourceLabel = MyBehavior.GetPartyTransferPrisonerSourceLabelForExternal(option.PartyEntry);
+				if (!string.IsNullOrWhiteSpace(sourceLabel))
+				{
+					hint += " | 来源: " + sourceLabel;
+				}
 			}
 			else if (option.SettlementEntry != null)
 			{
 				hint = $"类型: {(string.IsNullOrWhiteSpace(option.SettlementEntry.TypeLabel) ? "固定资产" : option.SettlementEntry.TypeLabel)} | 每日收益: {Math.Max(0, option.SettlementEntry.DailyIncomeDenars)} 第纳尔 | 一次结清指导价: {Math.Max(0, option.SettlementEntry.GuidePriceDenars)} 第纳尔";
 			}
-			list.Add(new InquiryElement(i, option.Name + " (×" + Math.Max(1, option.AvailableAmount) + ")", null, true, hint));
+			string displayName = option.Name;
+			displayName = GetCourierLetterTransferDisplayTitleForExternal(displayName);
+			string prisonerSourceLabel = MyBehavior.GetPartyTransferPrisonerSourceLabelForExternal(option.PartyEntry);
+			if (!string.IsNullOrWhiteSpace(prisonerSourceLabel))
+			{
+				displayName += "（来源：" + prisonerSourceLabel + "）";
+			}
+			list.Add(new InquiryElement(i, displayName + " (×" + Math.Max(1, option.AvailableAmount) + ")", null, true, hint));
 		}
 		string targetName = flow.Recipient.Name?.ToString() ?? "收件人";
 		MBInformationManager.ShowMultiSelectionInquiry(new MultiSelectionInquiryData(
@@ -1187,7 +1200,8 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				Name = option.Name,
 				Amount = option.SettlementEntry != null ? 1 : 0,
 				GuidePriceDenars = Math.Max(0, option.GuidePriceDenars),
-				IsHero = option.PartyEntry?.IsHero ?? false
+				IsHero = option.PartyEntry?.IsHero ?? false,
+				SourceSettlementId = (option.PartyEntry?.SourceSettlement?.StringId ?? "").Trim()
 			});
 		}
 		if (flow.SelectedEntries.Count == 0)
@@ -1226,7 +1240,8 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			return;
 		}
 		string title = flow.Mode == CourierPayloadMode.Show ? "展示数量" : (flow.Mode == CourierPayloadMode.Give ? "发送数量" : "转移数量");
-		string text = $"[{flow.PendingAmountIndex + 1}/{flow.SelectedEntries.Count}] {entry.Name} 最多可填 {max}。\n请输入 1 到 {max} 的整数：";
+		string entryDisplayName = GetCourierLetterTransferDisplayTitleForExternal(entry.Name);
+		string text = $"[{flow.PendingAmountIndex + 1}/{flow.SelectedEntries.Count}] {entryDisplayName} 最多可填 {max}。\n请输入 1 到 {max} 的整数：";
 		InformationManager.ShowTextInquiry(new TextInquiryData(title, text, true, true, "确定", "返回", input =>
 		{
 			if (!int.TryParse(input, out var amount) || amount <= 0 || amount > max)
@@ -1404,8 +1419,9 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			}
 			else if (string.Equals(entry.Kind, "prisoner", StringComparison.OrdinalIgnoreCase))
 			{
-				MoveCharacterFromMainPrisonersToParty(entry.Id, entry.Amount, courier, entry.IsHero);
-				Log("escrow prisoner session=" + session.Id + " troop=" + entry.Id + " amount=" + entry.Amount);
+				int moved = MoveCharacterFromPlayerPrisonerSourceToParty(entry.Id, entry.Amount, courier, entry.IsHero, entry.SourceSettlementId);
+				entry.Amount = moved;
+				Log("escrow prisoner session=" + session.Id + " troop=" + entry.Id + " moved=" + moved + " sourceSettlement=" + (entry.SourceSettlementId ?? ""));
 			}
 		}
 	}
@@ -3276,6 +3292,17 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		return (displayName ?? "").Contains("\u7684\u56de\u4fe1\uff1a");
 	}
 
+	public static string GetCourierLetterTransferDisplayTitleForExternal(string displayName)
+	{
+		string text = (displayName ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text) || !LooksLikeCourierLetterInventoryDisplayName(text))
+		{
+			return text;
+		}
+		int lineBreakIndex = text.IndexOfAny(new char[2] { '\r', '\n' });
+		return lineBreakIndex > 0 ? text.Substring(0, lineBreakIndex).Trim() : text;
+	}
+
 	private static string ExtractCourierLetterInventorySenderName(string displayName)
 	{
 		string text = (displayName ?? "").Trim();
@@ -3476,7 +3503,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			{
 				try
 				{
-					InformationManager.DisplayMessage(new InformationMessage("信使回信前处理失败：" + ex.Message, Colors.Red));
+					LlmRetryPrompt.ShowFailurePopup("信使回信前处理失败", ex.Message);
 				}
 				catch
 				{
@@ -3601,8 +3628,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			bool heroJoinPartyInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "hero_join_party");
 			bool sceneMechanismInjected = false;
 			bool partyTransferInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "party_transfer");
-			bool settlementTransferInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "settlement_transfer");
-			bool voteDealInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "vote_deal");
+			bool voteDealInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "kingdom_agenda");
 			bool diplomacyInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "diplomacy");
 			bool diplomacySelected = HasPreprocessRuleHit(selectedRuleHits, "diplomacy");
 			diplomacyInjected = diplomacyInjected || diplomacySelected;
@@ -3623,7 +3649,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			string postprocessed = null;
 			try
 			{
-				postprocessed = ShoutBehavior.RunCourierActionPostprocessForExternal(recipient, recipient.CharacterObject, recipient.Name?.ToString() ?? request.RecipientName ?? "NPC", request.LetterText, request.HistoryText, reply, duelInjected, rewardInjected, loanInjected, kingdomServiceInjected, lordsHallInjected, meetingReleaseInjected, vanillaIssueInjected, heroJoinPartyInjected, sceneMechanismInjected, partyTransferInjected, settlementTransferInjected, voteDealInjected, diplomacyInjected, worldMapPartyCommandInjected, preprocessRuleHits: selectedRuleHits, entityPostprocessContext: request.EntityPostprocessContext, forceLooseWeeklyMemoryMaterialSession: true, kingdomVassalageRuleInjected: kingdomVassalageInjected, kingdomAnnexationRuleInjected: kingdomAnnexationInjected, chainName: "courier");
+				postprocessed = ShoutBehavior.RunCourierActionPostprocessForExternal(recipient, recipient.CharacterObject, recipient.Name?.ToString() ?? request.RecipientName ?? "NPC", request.LetterText, request.HistoryText, reply, duelInjected, rewardInjected, loanInjected, kingdomServiceInjected, lordsHallInjected, meetingReleaseInjected, vanillaIssueInjected, heroJoinPartyInjected, sceneMechanismInjected, partyTransferInjected, voteDealInjected, diplomacyInjected, worldMapPartyCommandInjected, preprocessRuleHits: selectedRuleHits, entityPostprocessContext: request.EntityPostprocessContext, forceLooseWeeklyMemoryMaterialSession: true, kingdomVassalageRuleInjected: kingdomVassalageInjected, kingdomAnnexationRuleInjected: kingdomAnnexationInjected, chainName: "courier");
 			}
 			catch (Exception ex)
 			{
@@ -3638,7 +3664,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			session.ReplyPostprocessedText = replyPostprocessed;
 			session.ReplyGenerated = true;
 			session.ReplyGenerationStarted = false;
-			Log("llm main done session=" + session.Id + " replyLen=" + reply.Length + " postLen=" + (session.ReplyPostprocessedText ?? "").Length + " preprocessHits=" + ((selectedRuleHits == null || selectedRuleHits.Count == 0) ? "(none)" : string.Join(",", selectedRuleHits)) + " duel=" + duelInjected + " reward=" + rewardInjected + " loan=" + loanInjected + " kingdom=" + kingdomServiceInjected + " kingdomVassalage=" + kingdomVassalageInjected + " kingdomAnnexation=" + kingdomAnnexationInjected + " lordsHall=" + lordsHallInjected + " meetingRelease=" + meetingReleaseInjected + " vanillaIssue=" + vanillaIssueInjected + " heroJoin=" + heroJoinPartyInjected + " sceneMechanism=" + sceneMechanismInjected + " partyTransfer=" + partyTransferInjected + " settlementTransfer=" + settlementTransferInjected + " voteDeal=" + voteDealInjected + " diplomacy=" + diplomacyInjected + " worldMap=" + worldMapPartyCommandInjected);
+			Log("llm main done session=" + session.Id + " replyLen=" + reply.Length + " postLen=" + (session.ReplyPostprocessedText ?? "").Length + " preprocessHits=" + ((selectedRuleHits == null || selectedRuleHits.Count == 0) ? "(none)" : string.Join(",", selectedRuleHits)) + " duel=" + duelInjected + " reward=" + rewardInjected + " loan=" + loanInjected + " kingdom=" + kingdomServiceInjected + " kingdomVassalage=" + kingdomVassalageInjected + " kingdomAnnexation=" + kingdomAnnexationInjected + " lordsHall=" + lordsHallInjected + " meetingRelease=" + meetingReleaseInjected + " vanillaIssue=" + vanillaIssueInjected + " heroJoin=" + heroJoinPartyInjected + " sceneMechanism=" + sceneMechanismInjected + " partyTransfer=" + partyTransferInjected + " voteDeal=" + voteDealInjected + " diplomacy=" + diplomacyInjected + " worldMap=" + worldMapPartyCommandInjected);
 			ProcessSessionById(request.SessionId, "reply_generated");
 		}
 		catch (Exception ex)
@@ -3779,7 +3805,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			{
 				try
 				{
-					InformationManager.DisplayMessage(new InformationMessage("信使来信前处理失败：" + ex.Message, Colors.Red));
+					LlmRetryPrompt.ShowFailurePopup("信使来信前处理失败", ex.Message);
 				}
 				catch
 				{
@@ -4008,7 +4034,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			VoteDealBehavior.ProcessVoteDealTagsDispatch(recipient, ref text);
+			VoteDealBehavior.ProcessAgendaTagsDispatch(recipient, ref text);
 			DiplomacyBehavior.ProcessDiplomacyTagsDispatch(recipient, ref text);
 		}
 		catch (Exception ex)
@@ -4260,7 +4286,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			string text = session.ReplyPostprocessedText;
 			try
 			{
-				VoteDealBehavior.ProcessVoteDealTagsDispatch(recipient, ref text);
+				VoteDealBehavior.ProcessAgendaTagsDispatch(recipient, ref text);
 			DiplomacyBehavior.ProcessDiplomacyTagsDispatch(recipient, ref text);
 			}
 			catch (Exception ex)
@@ -6786,25 +6812,49 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		MoveRegularMember(MobileParty.MainParty?.Party, targetParty.Party, character, amount, -1, -1);
 	}
 
-	private static void MoveCharacterFromMainPrisonersToParty(string characterId, int amount, MobileParty targetParty, bool isHero)
+	private static bool IsCourierDungeonPrisonerSource(PartyBase sourceParty, Settlement sourceSettlement)
+	{
+		if (sourceParty == null || sourceSettlement == null || sourceSettlement.OwnerClan != Clan.PlayerClan || !sourceSettlement.IsFortification)
+		{
+			return false;
+		}
+		if (sourceParty == sourceSettlement.Party)
+		{
+			return true;
+		}
+		try
+		{
+			return sourceSettlement.Parties.Any((MobileParty x) => x != null && x.IsGarrison && x.Party == sourceParty);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static int MoveCharacterFromPlayerPrisonerSourceToParty(string characterId, int amount, MobileParty targetParty, bool isHero, string sourceSettlementId)
 	{
 		CharacterObject character = ResolveCharacter(characterId);
 		if (character == null || targetParty == null || amount <= 0)
 		{
-			return;
+			return 0;
 		}
-		if (isHero || character.IsHero)
+		PartyBase sourceParty = MobileParty.MainParty?.Party;
+		string settlementId = (sourceSettlementId ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(settlementId))
 		{
-			try
+			if (!isHero && !character.IsHero)
 			{
-				TransferPrisonerAction.Apply(character, MobileParty.MainParty?.Party, targetParty.Party);
+				return 0;
 			}
-			catch
+			Settlement sourceSettlement = Settlement.Find(settlementId);
+			sourceParty = character.HeroObject?.PartyBelongedToAsPrisoner;
+			if (!IsCourierDungeonPrisonerSource(sourceParty, sourceSettlement))
 			{
+				return 0;
 			}
-			return;
 		}
-		MoveRegularPrisoner(MobileParty.MainParty?.Party, targetParty.Party, character, amount);
+		return MoveCharacterBetweenPrisonRosters(sourceParty, targetParty.Party, characterId, amount, isHero);
 	}
 
 	private static int MoveCharacterBetweenMemberRosters(PartyBase source, PartyBase target, string characterId, int amount, bool isHero)
@@ -6838,10 +6888,15 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 		if (isHero || character.IsHero)
 		{
+			Hero heroObject = character.HeroObject;
+			if (heroObject == null || !heroObject.IsPrisoner || heroObject.PartyBelongedToAsPrisoner != source || (source.PrisonRoster?.FindIndexOfTroop(character) ?? (-1)) < 0 || (target.PrisonRoster?.FindIndexOfTroop(character) ?? (-1)) >= 0)
+			{
+				return 0;
+			}
 			try
 			{
 				TransferPrisonerAction.Apply(character, source, target);
-				return 1;
+				return heroObject.PartyBelongedToAsPrisoner == target && (target.PrisonRoster?.FindIndexOfTroop(character) ?? (-1)) >= 0 ? 1 : 0;
 			}
 			catch
 			{
@@ -7819,6 +7874,10 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		session.LastProgressRouteKey = session.LastProgressRouteKey ?? "";
 		session.Entries = session.Entries ?? new List<CourierCargoEntry>();
 		session.CrewEntries = session.CrewEntries ?? new List<CourierCargoEntry>();
+		foreach (CourierCargoEntry entry in session.Entries.Concat(session.CrewEntries).Where((CourierCargoEntry x) => x != null))
+		{
+			entry.SourceSettlementId = (entry.SourceSettlementId ?? "").Trim();
+		}
 	}
 
 	private static string NormalizeCourierDirection(string direction)
@@ -7939,6 +7998,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			Amount = x.Amount,
 			GuidePriceDenars = x.GuidePriceDenars,
 			IsHero = x.IsHero,
+			SourceSettlementId = x.SourceSettlementId,
 			Delivered = x.Delivered
 		}).ToList();
 	}
@@ -8185,6 +8245,10 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		value = Regex.Replace(value, "\\[ATT[:;][^\\]]+\\]", "", RegexOptions.IgnoreCase);
 		value = Regex.Replace(value, "\\[ATP[:;][^\\]]+\\]", "", RegexOptions.IgnoreCase);
 		value = Regex.Replace(value, "\\[A:H_J_P_P\\]", "", RegexOptions.IgnoreCase);
+		value = Regex.Replace(value, "\\[A:C_J_P_K\\]", "", RegexOptions.IgnoreCase);
+		value = Regex.Replace(value, "\\[A:C_J_K:[^\\]]+\\]", "", RegexOptions.IgnoreCase);
+		value = Regex.Replace(value, "\\[A:P_J_K_[MV]\\]", "", RegexOptions.IgnoreCase);
+		value = Regex.Replace(value, "\\[A:P_L_K\\]", "", RegexOptions.IgnoreCase);
 		value = Regex.Replace(value, "\\[(?:FOL|STP|END)\\]", "", RegexOptions.IgnoreCase);
 		return value.Trim();
 	}

@@ -1,7 +1,7 @@
-﻿<Module>
+<Module>
     <Name value="AnimusForge" />
     <Id value="AnimusForge" />
-    <Version value="v1.1.5" />
+    <Version value="v1.2.0.6" />
     <SingleplayerModule value="true" />
     <MultiplayerModule value="false" />
     <DependedModules>
@@ -18,8 +18,8 @@
     <SubModules>
         <SubModule>
             <Name value="AnimusForge" />
-            <DLLName value="AnimusForge.dll" />
-            <SubModuleClassType value="AnimusForge.SubModule" />
+            <DLLName value="AnimusForge.Bootstrap.dll" />
+            <SubModuleClassType value="AnimusForge.Bootstrap.BootstrapSubModule" />
             <Tags>
                 <Tag key="DedicatedServerType" value="none" />
                 <Tag key="IsNoRenderModeElement" value="false" />
@@ -38,6 +38,6 @@
         </XmlNode>
     </Xmls>
     <Assemblies>
-        <Assembly value="AnimusForge.dll" />
+        <Assembly value="AnimusForge.Bootstrap.dll" />
     </Assemblies>
 </Module>

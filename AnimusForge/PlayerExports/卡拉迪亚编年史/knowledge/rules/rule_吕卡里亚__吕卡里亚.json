@@ -6,7 +6,7 @@
     "吕卡隆平原"
   ],
   "RagShortTexts": [
-    "吕卡隆平原是帝国重要马场与粮食产区"
+    "吕卡里亚平原由塞堤斯河冲积形成，是帝国粮产与坎特里翁军马繁育地"
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -23,7 +23,130 @@
         "IsClanLeader": null,
         "SkillMin": null
       },
-      "Content": "吕卡里亚平原是帝国东南部的一个大平原，是优良的马场和粮仓，坎忒里翁军马便是这里的特产，一部分帕尔马廷马也在这里长大"
+      "Content": "吕卡里亚平原是吕卡隆山脚下的一片沃土，由塞堤斯河的流水冲刷而成。这条河从山间发源，由南向北穿过平原，最终汇入珀拉斯海。这里雨水异常充沛，一年中大部分时间都能听到雨点敲打草叶的声音。水草长得比别处都要肥美，既能种出养活军团的粮食，也能放养成群的战马。帝国最著名的坎特里翁军马就出自这片平原，它们在这里奔跑长大，啃食吕卡里亚的茂草，饮着塞堤斯河的水，长成之后便驮着帝国的骑兵走向战场。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "吕卡里亚平原是老天爷赏给吕卡隆的一块好地。塞堤斯河从山脚下淌出来，由南往北把整片平原切出一条水路，一直流进珀拉斯海。这里每年雨季能连着下好几十天的雨，长出来的草又高又密，战马撒进去能啃得膘肥体壮。坎特里翁军马就是在这片草地上养出来的——耐力好，负重强，披上全套马铠还能稳稳地冲锋。吕卡隆城墙上站岗的兵，每天往山下看，看到的就是这片绿油油的平原和远处塞堤斯河的反光。只要吕卡里亚还在，帝国就不缺马，不缺粮，不缺兵。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "坎特里翁军马的祖宗，就是在塞堤斯河边喝着水、啃着这片草长大的。这种马蹄子硬，不怕石头地；肺活量大，跑长路不喘。帝国具装骑兵选坐骑，从来只选吕卡里亚养出来的坎特里翁马。别处的马一披上重甲就走不动，这里的马披着全套马铠还能在平原上冲锋，这就是吕卡里亚的雨和草养出来的本事。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "吕卡里亚那片地，比我们北方最肥的河谷还肥。他们的马在那里啃草啃得膘肥体壮，我们的马在北方的冻土上刨草根。帝国人占了南方最好的地，最好的马，最好的河，结果呢？还不是自己人打自己人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "吕卡里亚的草确实长得好，但那是用塞堤斯河的淤泥堆出来的。那条河从山上冲下来，把山上的土一层一层剥下来，铺在平原上。土地是这么来的，肥也是这么来的。帝国人以为这是老天赏的，其实就是条河当了千万年的搬运工。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "吕卡里亚平原是帝国军事经济体系的核心组件之一。它由塞堤斯河长年冲积形成，南北走向汇入珀拉斯海，年降水量丰沛，形成了卡拉迪亚大陆中东部最为肥沃的草场。这里不仅是帝国重要的粮食产区，更是帝国具装骑兵坐骑坎特里翁军马的繁育基地。塞堤斯河为平原提供了稳定的灌溉和运输通道，连接着吕卡隆城与珀拉斯海之间的水路交通。在帝国军事地理中，吕卡里亚平原是吕卡隆防御体系不可分割的一部分——它既是守城方的粮食和战马补给线，也是攻城方必须首先控制的战略要地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "吕卡里亚平原的草是不错，我们库赛特人看了也得点头。但那地方太湿了，雨下个不停，我们的草原马习惯了干爽的风，到了那边容易生病。坎特里翁马确实能驮重甲，爆发力强，但跑长途不行。我们的马能在草原上连续跑几天几夜，吃的是稀疏的野草，喝的是早晨的露水。吕卡里亚的马在平原上冲起来确实吓人，但你把它们拉到草原上来试试——三天之后，马肚子就瘪了，蹄子也裂了。各有各的地盘，各有各的马。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "吕卡里亚平原那个地方，我们阿塞莱商人路过的时候总觉得太浪费了。那么多雨水，那么肥的草，全拿来养帝国人的战马了。在纳哈撒沙漠里，一块能长草的地比黄金还珍贵，我们得从几十里外引水灌溉才能种出几排椰枣。帝国人倒好，老天爷给他们灌了满地的水，他们拿来喂马。不过说实话，坎特里翁军马确实值钱，我们有些埃米尔专门派人去吕卡里亚偷偷买种马回来配种，可惜沙漠太干了，那些马的后代到第二代就跑不动了。"
     }
   ],
   "TextMappings": []

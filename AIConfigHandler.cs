@@ -33,8 +33,6 @@ public static class AIConfigHandler
 	private const int ActionPostprocessMaxHistoryAndLatestEntries = 8;
 	private const int ActionPostprocessRequestTimeoutMilliseconds = DuelSettings.LlmRequestTimeoutMilliseconds;
 	private const string KingAbdicateToPlayerActionTag = "[ACTION:KING_ABDICATE_TO_PLAYER]";
-	internal const string StrictPreprocessJsonSystemPrompt = "You are an AnimusForge preprocessing router. Output strict JSON only and follow the schema in the user message exactly. Include every required field. Never output CSV, bare values, prose, markdown, or code fences.";
-
 	private sealed class ActionPostprocessHistoryEntry
 	{
 		public int Index;
@@ -226,6 +224,10 @@ public static class AIConfigHandler
 
 	private static ActionPostprocessConfigModel _actionPostprocess;
 
+	private static PreprocessPromptsConfigModel _preprocessPrompts;
+
+	private static readonly Regex PreprocessTemplateVariableRegex = new Regex("\\{([a-z][a-z0-9_]*)\\}", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+
 	private static readonly object _guardrailSemanticLock = new object();
 
 	private static readonly Dictionary<string, float[]> _guardrailPhraseVecCache = new Dictionary<string, float[]>(StringComparer.Ordinal);
@@ -281,6 +283,23 @@ public static class AIConfigHandler
 	private static readonly AsyncLocal<MentionedWorldEntities> _auxiliaryMentionedEntitiesLatest = new AsyncLocal<MentionedWorldEntities>();
 
 	private const int AuxiliaryMentionedEntitiesCacheMax = 64;
+
+	internal static string StrictPreprocessJsonSystemPrompt => RequirePreprocessPromptValue(_preprocessPrompts?.StrictJson?.SystemPrompt, "StrictJson.SystemPrompt");
+
+	internal static string StrictPreprocessMentionedEntitiesSchema
+	{
+		get
+		{
+			JObject schema = _preprocessPrompts?.StrictJson?.MentionedEntitiesSchema;
+			if (schema == null || !schema.Properties().Any())
+			{
+				throw new InvalidOperationException("PreprocessPrompts.json 缺少必填项: StrictJson.MentionedEntitiesSchema");
+			}
+			return schema.ToString(Formatting.None);
+		}
+	}
+
+	internal static string PreprocessConnectionTestExpectedRuleCode => RequirePreprocessPromptValue(_preprocessPrompts?.ConnectionTest?.ExpectedRuleCode, "ConnectionTest.ExpectedRuleCode");
 
 	public static string GlobalPrompt => ApplyPlayerDisplayNameToGuardrailText(_guardrail?.GlobalPrompt ?? "");
 
@@ -386,12 +405,7 @@ public static class AIConfigHandler
 	private static bool IsPlayerPartyTradeLimitedRule(string ruleId)
 	{
 		string text = (ruleId ?? "").Trim();
-		return string.Equals(text, "loan", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "vote_deal", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "diplomacy", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "party_transfer", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "settlement_transfer", StringComparison.OrdinalIgnoreCase);
-	}
-
-	private static bool IsSettlementTransferRule(string ruleId)
-	{
-		return string.Equals((ruleId ?? "").Trim(), "settlement_transfer", StringComparison.OrdinalIgnoreCase);
+		return string.Equals(text, "loan", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "kingdom_agenda", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "diplomacy", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "party_transfer", StringComparison.OrdinalIgnoreCase);
 	}
 
 	private static bool ShouldExcludePlayerPartyTradeLimitedRulesForConversationTarget()
@@ -406,25 +420,9 @@ public static class AIConfigHandler
 		}
 	}
 
-	private static bool ShouldExcludePlayerCompanionOrFamilySettlementTransferForConversationTarget()
-	{
-		try
-		{
-			return IsPlayerCompanionOrFamilyTradeTarget(ResolveConversationTargetHero());
-		}
-		catch
-		{
-			return false;
-		}
-	}
-
 	private static bool ShouldExcludeRuntimeRuleForConversationTarget(string ruleId)
 	{
-		if (IsPlayerPartyTradeLimitedRule(ruleId) && ShouldExcludePlayerPartyTradeLimitedRulesForConversationTarget())
-		{
-			return true;
-		}
-		return IsSettlementTransferRule(ruleId) && ShouldExcludePlayerCompanionOrFamilySettlementTransferForConversationTarget();
+		return IsPlayerPartyTradeLimitedRule(ruleId) && ShouldExcludePlayerPartyTradeLimitedRulesForConversationTarget();
 	}
 
 	private static bool IsSceneMoveRule(string ruleId)
@@ -737,12 +735,13 @@ public static class AIConfigHandler
 		}
 	}
 
-	public static List<PostprocessRuleEntry> BuildRuntimeRoyalPostprocessRulesForExternal(Hero targetHero, bool postprocessRuleSelected)
+	public static List<PostprocessRuleEntry> BuildRuntimeRoyalPostprocessRulesForExternal(Hero targetHero)
 	{
 		List<PostprocessRuleEntry> list = new List<PostprocessRuleEntry>();
 		try
 		{
-			if (!postprocessRuleSelected || !IsRoyalAbdicationPostprocessTargetForExternal(targetHero))
+			// 王位让渡是按身份资格常驻的后处理规则：只检查目标国王与玩家状态，禁止再绑定 diplomacy 或其他前处理话题。
+			if (!IsRoyalAbdicationPostprocessTargetForExternal(targetHero))
 			{
 				return list;
 			}
@@ -759,7 +758,7 @@ public static class AIConfigHandler
 					Description = rule?.Description ?? ""
 				});
 			}
-			Logger.Log("AIConfig", "[RoyalPostprocessRules] targetHero=" + (targetHero?.StringId ?? "") + " rules=" + ((list.Count == 0) ? "（无）" : string.Join(",", list.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
+			Logger.Log("AIConfig", "[RoyalPostprocessRules] mode=resident targetHero=" + (targetHero?.StringId ?? "") + " rules=" + ((list.Count == 0) ? "（无）" : string.Join(",", list.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
 		}
 		catch
 		{
@@ -2014,8 +2013,7 @@ public static class AIConfigHandler
 		{
 			return DiplomacyBehavior.CanInjectDiplomacyRuleForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
 		}
-		if (string.Equals(text, "vote_deal", StringComparison.OrdinalIgnoreCase)
-			|| string.Equals(text, "propose_agenda", StringComparison.OrdinalIgnoreCase))
+		if (string.Equals(text, "kingdom_agenda", StringComparison.OrdinalIgnoreCase))
 		{
 			return IsKingdomLordOrKingRuleTargetForPreprocess(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
 		}
@@ -2168,14 +2166,13 @@ public static class AIConfigHandler
 				"marriage" => "MARRIAGE",
 				"scene_mechanism_actions" => "SCENE_MOVE",
 				"party_transfer" => "PARTY_TRANSFER",
-				"settlement_transfer" => "SETTLEMENT",
 				"vanilla_issue" => "ISSUE",
 				"npc_major_actions" => "NPC_MAJOR",
 				"npc_recent_actions" => "NPC_RECENT",
 				"encounter_release_player" => "MEETING_RELEASE",
 				"hero_join_party" => "HERO_JOIN",
 				"noble_deference" => "NOBLE_PRESSURE",
-				"vote_deal" => "VOTE_DEAL",
+				"kingdom_agenda" => "KINGDOM_AGENDA",
 				"diplomacy" => "DIPLOMACY",
 				_ => ""
 			};
@@ -2879,6 +2876,112 @@ public static class AIConfigHandler
 		return TryGetAuxiliarySimpleDialogueConfig(out var _, out var _, out var _);
 	}
 
+	private static string RequirePreprocessPromptValue(string value, string configPath)
+	{
+		string text = (value ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			throw new InvalidOperationException("PreprocessPrompts.json 缺少必填项: " + (configPath ?? "unknown"));
+		}
+		return text;
+	}
+
+	private static string RenderPreprocessPromptTemplate(string template, string configPath, IDictionary<string, string> values)
+	{
+		string text = RequirePreprocessPromptValue(template, configPath);
+		IDictionary<string, string> replacements = values ?? new Dictionary<string, string>(StringComparer.Ordinal);
+		return PreprocessTemplateVariableRegex.Replace(text, delegate(Match match)
+		{
+			string key = match.Groups[1].Value;
+			if (!replacements.TryGetValue(key, out var value))
+			{
+				throw new InvalidOperationException("PreprocessPrompts.json 模板存在未知或未提供的占位符: " + configPath + ".{" + key + "}");
+			}
+			return value ?? "";
+		}).Trim();
+	}
+
+	private static void ValidateLoadedPreprocessPrompts()
+	{
+		RequirePreprocessPromptValue(StrictPreprocessJsonSystemPrompt, "StrictJson.SystemPrompt");
+		JObject schema = _preprocessPrompts?.StrictJson?.MentionedEntitiesSchema;
+		if (!(schema?["entities"] is JArray))
+		{
+			throw new InvalidOperationException("PreprocessPrompts.json schema 缺少数组: StrictJson.MentionedEntitiesSchema.entities");
+		}
+		RequirePreprocessPromptValue(_preprocessPrompts?.TopicRouting?.EmptyValue, "TopicRouting.EmptyValue");
+		ValidatePreprocessTemplateVariables(_preprocessPrompts?.TopicRouting?.UserPromptTemplate, "TopicRouting.UserPromptTemplate", "topic_list", "routing_guidance", "history", "latest_npc", "latest_player", "top_n", "mentioned_entities_schema");
+		RequirePreprocessPromptValue(_preprocessPrompts?.MemorySelection?.ParallelModeInstruction, "MemorySelection.ParallelModeInstruction");
+		RequirePreprocessPromptValue(_preprocessPrompts?.MemorySelection?.UnifiedModeInstruction, "MemorySelection.UnifiedModeInstruction");
+		RequirePreprocessPromptValue(_preprocessPrompts?.MemorySelection?.EmptyValue, "MemorySelection.EmptyValue");
+		ValidatePreprocessTemplateVariables(_preprocessPrompts?.MemorySelection?.UserPromptTemplate, "MemorySelection.UserPromptTemplate", "mode_instruction", "mentioned_entities_schema", "final_count", "latest_player_input", "latest_npc_input", "current_scene", "memory_candidates");
+		ValidatePreprocessTemplateVariables(_preprocessPrompts?.MemorySelection?.CandidateLineTemplate, "MemorySelection.CandidateLineTemplate", "memory_id", "game_date", "age_suffix", "hour_range", "rich_title");
+		ValidatePreprocessTemplateVariables(_preprocessPrompts?.MemorySelection?.FallbackGameDateTemplate, "MemorySelection.FallbackGameDateTemplate", "game_day");
+		RequirePreprocessPromptValue(_preprocessPrompts?.ConnectionTest?.ExpectedRuleCode, "ConnectionTest.ExpectedRuleCode");
+		ValidatePreprocessTemplateVariables(_preprocessPrompts?.ConnectionTest?.UserPromptTemplate, "ConnectionTest.UserPromptTemplate", "expected_rule_code", "mentioned_entities_schema");
+	}
+
+	private static void ValidatePreprocessTemplateVariables(string template, string configPath, params string[] requiredVariables)
+	{
+		string text = RequirePreprocessPromptValue(template, configPath);
+		HashSet<string> variables = new HashSet<string>(PreprocessTemplateVariableRegex.Matches(text).Cast<Match>().Select((Match x) => x.Groups[1].Value), StringComparer.Ordinal);
+		foreach (string requiredVariable in requiredVariables ?? new string[0])
+		{
+			if (!variables.Contains(requiredVariable))
+			{
+				throw new InvalidOperationException("PreprocessPrompts.json 模板缺少占位符: " + configPath + ".{" + requiredVariable + "}");
+			}
+		}
+	}
+
+	internal static string BuildAuxiliaryConnectionTestPromptForExternal()
+	{
+		return RenderPreprocessPromptTemplate(_preprocessPrompts?.ConnectionTest?.UserPromptTemplate, "ConnectionTest.UserPromptTemplate", new Dictionary<string, string>(StringComparer.Ordinal)
+		{
+			["expected_rule_code"] = PreprocessConnectionTestExpectedRuleCode,
+			["mentioned_entities_schema"] = StrictPreprocessMentionedEntitiesSchema
+		});
+	}
+
+	internal static string BuildMemoryPreprocessUserPromptForExternal(int mode, int finalCount, string latestPlayerInput, string latestNpcInput, string currentScene, string memoryCandidates)
+	{
+		MemorySelectionPreprocessPromptConfig config = _preprocessPrompts?.MemorySelection;
+		string emptyValue = RequirePreprocessPromptValue(config?.EmptyValue, "MemorySelection.EmptyValue");
+		string modeInstruction = mode == 2
+			? RequirePreprocessPromptValue(config?.ParallelModeInstruction, "MemorySelection.ParallelModeInstruction")
+			: RequirePreprocessPromptValue(config?.UnifiedModeInstruction, "MemorySelection.UnifiedModeInstruction");
+		return RenderPreprocessPromptTemplate(config?.UserPromptTemplate, "MemorySelection.UserPromptTemplate", new Dictionary<string, string>(StringComparer.Ordinal)
+		{
+			["mode_instruction"] = modeInstruction,
+			["mentioned_entities_schema"] = StrictPreprocessMentionedEntitiesSchema,
+			["final_count"] = Math.Max(1, finalCount).ToString(),
+			["latest_player_input"] = string.IsNullOrWhiteSpace(latestPlayerInput) ? emptyValue : latestPlayerInput.Trim(),
+			["latest_npc_input"] = string.IsNullOrWhiteSpace(latestNpcInput) ? emptyValue : latestNpcInput.Trim(),
+			["current_scene"] = string.IsNullOrWhiteSpace(currentScene) ? emptyValue : currentScene.Trim(),
+			["memory_candidates"] = string.IsNullOrWhiteSpace(memoryCandidates) ? emptyValue : memoryCandidates.Trim()
+		});
+	}
+
+	internal static string BuildMemoryPreprocessCandidateLineForExternal(int memoryId, string gameDate, string ageSuffix, string hourRange, string richTitle)
+	{
+		return RenderPreprocessPromptTemplate(_preprocessPrompts?.MemorySelection?.CandidateLineTemplate, "MemorySelection.CandidateLineTemplate", new Dictionary<string, string>(StringComparer.Ordinal)
+		{
+			["memory_id"] = memoryId.ToString(),
+			["game_date"] = (gameDate ?? "").Trim(),
+			["age_suffix"] = ageSuffix ?? "",
+			["hour_range"] = (hourRange ?? "").Trim(),
+			["rich_title"] = (richTitle ?? "").Trim()
+		});
+	}
+
+	internal static string BuildMemoryPreprocessFallbackGameDateForExternal(int gameDay)
+	{
+		return RenderPreprocessPromptTemplate(_preprocessPrompts?.MemorySelection?.FallbackGameDateTemplate, "MemorySelection.FallbackGameDateTemplate", new Dictionary<string, string>(StringComparer.Ordinal)
+		{
+			["game_day"] = gameDay.ToString()
+		});
+	}
+
 	private static object[] BuildAuxiliaryRouterMessages(string prompt)
 	{
 		return new object[2]
@@ -3131,6 +3234,7 @@ public static class AIConfigHandler
 	{
 		content = "";
 		error = "";
+		string rawResponse = "";
 		if (!ActionPostprocessEnabled)
 		{
 			error = "postprocess_disabled";
@@ -3170,6 +3274,7 @@ public static class AIConfigHandler
 			FreezeWatchdog.Mark("AuxActionPostprocess.response", "status=" + (int)result.StatusCode + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 			FreezeWatchdog.Mark("AuxActionPostprocess.content_read_begin", "status=" + (int)result.StatusCode + " thread=" + Thread.CurrentThread.ManagedThreadId);
 			string text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+			rawResponse = text ?? "";
 			FreezeWatchdog.Mark("AuxActionPostprocess.content_read_end", "chars=" + ((text ?? "").Length) + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2) + " thread=" + Thread.CurrentThread.ManagedThreadId);
 			if (!result.IsSuccessStatusCode && result.StatusCode == System.Net.HttpStatusCode.BadRequest && controlMode != "plain" && LooksLikeAuxiliaryThinkingControlError(text))
 			{
@@ -3186,12 +3291,13 @@ public static class AIConfigHandler
 				FreezeWatchdog.Mark("AuxActionPostprocess.retry_response", "status=" + (int)result.StatusCode + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 				FreezeWatchdog.Mark("AuxActionPostprocess.retry_content_read_begin", "status=" + (int)result.StatusCode + " thread=" + Thread.CurrentThread.ManagedThreadId);
 				text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+				rawResponse = text ?? "";
 				FreezeWatchdog.Mark("AuxActionPostprocess.retry_content_read_end", "chars=" + ((text ?? "").Length) + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2) + " thread=" + Thread.CurrentThread.ManagedThreadId);
 				controlMode += "_retry_plain";
 			}
 			if (!result.IsSuccessStatusCode)
 			{
-				error = "http_" + (int)result.StatusCode;
+				error = LlmRetryPrompt.BuildFailureDetail("http_" + (int)result.StatusCode, "", rawResponse);
 				FreezeWatchdog.Mark("AuxActionPostprocess.http_error", "status=" + (int)result.StatusCode + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 				LogAuxiliaryRouterTokenTrace("action_postprocess_http_error", array, "[ACTION POSTPROCESS HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\ncontrol_mode=" + controlMode + "\nstatus=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\nresponse_body=\n" + (text ?? ""), 0, requestBodyForTokenStats);
 				return false;
@@ -3200,9 +3306,21 @@ public static class AIConfigHandler
 			content = LlmApiCompat.ExtractAssistantText(jObject).Trim();
 			if (string.IsNullOrWhiteSpace(content))
 			{
-				error = "empty_content";
+				string emptyContentReason = "empty_content";
+				if (LlmApiCompat.IsReasoningOnlyTokenLimitResponse(jObject, out int completionTokens, out int reasoningTokens))
+				{
+					emptyContentReason = "empty_content_reasoning_token_limit：模型把输出额度全部用于思考，未生成最终content。请降低后处理思维链强度、关闭后处理思维链，或提高最大输出Tokens。completion_tokens=" + completionTokens + "，reasoning_tokens=" + reasoningTokens;
+				}
+				error = LlmRetryPrompt.BuildFailureDetail(emptyContentReason, "", rawResponse);
 				FreezeWatchdog.Mark("AuxActionPostprocess.empty_content", "elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 				LogAuxiliaryRouterTokenTrace("action_postprocess_empty_content", array, "[ACTION POSTPROCESS HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\ncontrol_mode=" + controlMode + "\nstatus=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\nresponse_body=\n" + (text ?? ""), 0, requestBodyForTokenStats);
+				return false;
+			}
+			if (content.IndexOf("[ACTION:", StringComparison.OrdinalIgnoreCase) < 0 || content.IndexOf(']') < 0)
+			{
+				error = LlmRetryPrompt.BuildFailureDetail("（API响应格式错误）动作后处理未返回任何可解析的 [ACTION:...] 标签。", content, rawResponse);
+				FreezeWatchdog.Mark("AuxActionPostprocess.format_error", "contentLen=" + content.Length + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
+				LogAuxiliaryRouterTokenTrace("action_postprocess_format_error", array, "[ACTION POSTPROCESS PARSE]\nmodel=" + modelName + "\nreason=no_action_tag\nai_response=\n" + content + "\nraw_response=\n" + rawResponse, 0, requestBodyForTokenStats);
 				return false;
 			}
 			FreezeWatchdog.Mark("AuxActionPostprocess.complete", "contentLen=" + content.Length + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
@@ -3211,14 +3329,14 @@ public static class AIConfigHandler
 		}
 		catch (OperationCanceledException ex)
 		{
-			error = "timeout_" + ActionPostprocessRequestTimeoutMilliseconds + "ms";
+			error = LlmRetryPrompt.BuildFailureDetail("timeout_" + ActionPostprocessRequestTimeoutMilliseconds + "ms", content, rawResponse);
 			FreezeWatchdog.Mark("AuxActionPostprocess.timeout", "elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 			LogAuxiliaryRouterTokenTrace("action_postprocess_timeout", array, "[ACTION POSTPROCESS TIMEOUT]\ntimeoutMs=" + ActionPostprocessRequestTimeoutMilliseconds + "\nerror=" + BuildAuxiliaryRouterExceptionText(ex) + "\nstack=\n" + (ex?.StackTrace ?? ""), 0, requestBodyForTokenStats);
 			return false;
 		}
 		catch (Exception ex)
 		{
-			error = BuildAuxiliaryRouterExceptionText(ex);
+			error = LlmRetryPrompt.BuildFailureDetail(BuildAuxiliaryRouterExceptionText(ex), content, rawResponse);
 			FreezeWatchdog.Mark("AuxActionPostprocess.exception", ex.GetType().Name + ": " + ex.Message + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 			LogAuxiliaryRouterTokenTrace("action_postprocess_exception", array, "[ACTION POSTPROCESS EXCEPTION]\nerror=" + error + "\nstack=\n" + (ex?.StackTrace ?? ""), 0, requestBodyForTokenStats);
 			return false;
@@ -3245,6 +3363,7 @@ public static class AIConfigHandler
 	{
 		content = "";
 		error = "";
+		string rawResponse = "";
 		if (!TryGetAuxiliarySimpleDialogueConfig(out var apiUrl, out var apiKey, out var modelName))
 		{
 			error = "auxiliary_simple_dialogue_config_invalid";
@@ -3266,6 +3385,7 @@ public static class AIConfigHandler
 			HttpResponseMessage result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage).GetAwaiter().GetResult();
 			FreezeWatchdog.Mark("AuxSimpleDialogue.response", "status=" + (int)result.StatusCode + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 			string text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+			rawResponse = text ?? "";
 			if (!result.IsSuccessStatusCode && result.StatusCode == System.Net.HttpStatusCode.BadRequest && controlMode != "plain" && LooksLikeAuxiliaryThinkingControlError(text))
 			{
 				Logger.Log("AIConfig", "[AuxiliarySimpleDialogue] thinking payload rejected; retrying without thinking controls.");
@@ -3280,11 +3400,12 @@ public static class AIConfigHandler
 				result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage2).GetAwaiter().GetResult();
 				FreezeWatchdog.Mark("AuxSimpleDialogue.retry_response", "status=" + (int)result.StatusCode + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 				text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+				rawResponse = text ?? "";
 				controlMode += "_retry_plain";
 			}
 			if (!result.IsSuccessStatusCode)
 			{
-				error = "http_" + (int)result.StatusCode;
+				error = LlmRetryPrompt.BuildFailureDetail("http_" + (int)result.StatusCode, "", rawResponse);
 				FreezeWatchdog.Mark("AuxSimpleDialogue.http_error", "status=" + (int)result.StatusCode + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 				LogAuxiliaryRouterTokenTrace("auxiliary_simple_dialogue_http_error", array, "[AUXILIARY SIMPLE DIALOGUE HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\ncontrol_mode=" + controlMode + "\nstatus=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\nresponse_body=\n" + (text ?? ""), 0, requestBodyForTokenStats);
 				return false;
@@ -3293,7 +3414,7 @@ public static class AIConfigHandler
 			content = LlmApiCompat.ExtractAssistantText(jObject).Trim();
 			if (string.IsNullOrWhiteSpace(content))
 			{
-				error = "empty_content";
+				error = LlmRetryPrompt.BuildFailureDetail("empty_content", "", rawResponse);
 				FreezeWatchdog.Mark("AuxSimpleDialogue.empty_content", "elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 				LogAuxiliaryRouterTokenTrace("auxiliary_simple_dialogue_empty_content", array, "[AUXILIARY SIMPLE DIALOGUE HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\ncontrol_mode=" + controlMode + "\nstatus=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\nresponse_body=\n" + (text ?? ""), 0, requestBodyForTokenStats);
 				return false;
@@ -3304,7 +3425,7 @@ public static class AIConfigHandler
 		}
 		catch (Exception ex)
 		{
-			error = BuildAuxiliaryRouterExceptionText(ex);
+			error = LlmRetryPrompt.BuildFailureDetail(BuildAuxiliaryRouterExceptionText(ex), content, rawResponse);
 			FreezeWatchdog.Mark("AuxSimpleDialogue.exception", ex.GetType().Name + ": " + ex.Message + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 			LogAuxiliaryRouterTokenTrace("auxiliary_simple_dialogue_exception", array, "[AUXILIARY SIMPLE DIALOGUE EXCEPTION]\nerror=" + error + "\nstack=\n" + (ex?.StackTrace ?? ""), 0, requestBodyForTokenStats);
 			return false;
@@ -4071,78 +4192,30 @@ public static class AIConfigHandler
 		string routingRuntimeContext = userTextIsAfefFact ? AppendAuxiliaryAfefFactToRoutingContext(runtimeGuardrailContext, text) : runtimeGuardrailContext;
 		string routingLatestPlayerText = userTextIsAfefFact ? "" : userText;
 		string latestNpcText;
-		string historyBlock = BuildAuxiliaryGuardrailHistoryBlock(routingRuntimeContext, secondaryText, routingLatestPlayerText, out latestNpcText);
+		string historyBlock = StripAuxiliaryHistoryInnerThoughts(BuildAuxiliaryGuardrailHistoryBlock(routingRuntimeContext, secondaryText, routingLatestPlayerText, out latestNpcText));
 		string text2 = StripAuxiliaryHistoryInnerThoughtsFromLine(NormalizeSemanticText(latestNpcText));
 		string text5 = userTextIsAfefFact ? "" : NormalizeAuxiliaryPlayerRoutingLine(text);
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("You are a dialogue retrieval tool. Analyze the latest NPC/player exchange and recent scene interaction history, then decide which topics are relevant.");
+		StringBuilder topicList = new StringBuilder();
 		for (int i = 0; i < topics.Count; i++)
 		{
 			GuardrailAuxiliaryTopic guardrailAuxiliaryTopic = topics[i];
 			if (guardrailAuxiliaryTopic != null)
 			{
-				stringBuilder.AppendLine(guardrailAuxiliaryTopic.Code + ": " + guardrailAuxiliaryTopic.Label);
+				topicList.AppendLine(guardrailAuxiliaryTopic.Code + ": " + guardrailAuxiliaryTopic.Label);
 			}
 		}
-		string text6 = NormalizeAuxiliaryRoutingRequestText(_guardrail?.AuxiliaryRoutingGuidance ?? "");
-		if (!string.IsNullOrWhiteSpace(text6))
+		TopicRoutingPreprocessPromptConfig config = _preprocessPrompts?.TopicRouting;
+		string emptyValue = RequirePreprocessPromptValue(config?.EmptyValue, "TopicRouting.EmptyValue");
+		return RenderPreprocessPromptTemplate(config?.UserPromptTemplate, "TopicRouting.UserPromptTemplate", new Dictionary<string, string>(StringComparer.Ordinal)
 		{
-			stringBuilder.AppendLine("Routing hints:");
-			stringBuilder.AppendLine(text6);
-		}
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("Scene interaction history (up to the previous 3 dialogue turns):");
-		stringBuilder.AppendLine(NormalizeAuxiliaryRoutingRequestText(historyBlock));
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("*Latest NPC/player exchange*:");
-		stringBuilder.Append("NPC: ").AppendLine(string.IsNullOrWhiteSpace(text2) ? "(none)" : NormalizeAuxiliaryRoutingRequestText(text2));
-		stringBuilder.Append("Player: ").AppendLine(string.IsNullOrWhiteSpace(text5) ? "(none)" : NormalizeAuxiliaryRoutingRequestText(text5));
-		stringBuilder.AppendLine("Select exactly " + Math.Max(1, topN) + " closest topic codes in rule_codes. Also extract explicit third-party nouns from the latest exchange into mentioned_entities. Use heroes for named people/titles, settlements for places, clans for families, kingdoms for factions, items for item/goods/equipment names or types, troops for troop/unit/prisoner names or types, and terms for other useful raw phrases. Do not extract current speakers or player names just because they are speakers. If ambiguous, put it in the closest bucket and also terms. Order arrays by recency. Output one strict JSON object only: {\"rule_codes\":[\"CODE\"],\"mentioned_entities\":{\"heroes\":[],\"settlements\":[],\"clans\":[],\"kingdoms\":[],\"items\":[],\"troops\":[],\"terms\":[]}}.");
-		return SanitizeAuxiliaryRoutingPromptDialogueSections(stringBuilder.ToString()).Trim();
-	}
-
-	private static string SanitizeAuxiliaryRoutingPromptDialogueSections(string prompt)
-	{
-		string text = (prompt ?? "").Replace("\r\n", "\n").Replace('\r', '\n');
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return "";
-		}
-		string[] array = text.Split('\n');
-		bool flag = false;
-		bool flag2 = false;
-		for (int i = 0; i < array.Length; i++)
-		{
-			string text2 = (array[i] ?? "").Trim();
-			if (text2.StartsWith("Scene interaction history ", StringComparison.Ordinal))
-			{
-				flag = true;
-				flag2 = false;
-				continue;
-			}
-			if (text2.Equals("*Latest NPC/player exchange*:", StringComparison.Ordinal))
-			{
-				flag = false;
-				flag2 = true;
-				continue;
-			}
-			if (text2.StartsWith("Select the most similar topics.", StringComparison.Ordinal) || text2.StartsWith("Select exactly ", StringComparison.Ordinal))
-			{
-				flag = false;
-				flag2 = false;
-				continue;
-			}
-			if ((flag || flag2) && !string.IsNullOrWhiteSpace(text2))
-			{
-				if (flag2 && IsAuxiliaryPlayerHistoryLine(text2))
-				{
-					array[i] = NormalizeAuxiliaryPlayerRoutingLine(array[i]);
-					continue;
-				}
-				array[i] = StripAuxiliaryHistoryInnerThoughtsFromLine(array[i]);
-			}
-		}
-		return string.Join("\n", array).Trim();
+			["topic_list"] = topicList.ToString().TrimEnd(),
+			["routing_guidance"] = NormalizeAuxiliaryRoutingRequestText(config?.RoutingGuidance ?? ""),
+			["history"] = string.IsNullOrWhiteSpace(historyBlock) ? emptyValue : NormalizeAuxiliaryRoutingRequestText(historyBlock),
+			["latest_npc"] = string.IsNullOrWhiteSpace(text2) ? emptyValue : NormalizeAuxiliaryRoutingRequestText(text2),
+			["latest_player"] = string.IsNullOrWhiteSpace(text5) ? emptyValue : NormalizeAuxiliaryRoutingRequestText(text5),
+			["top_n"] = Math.Max(1, topN).ToString(),
+			["mentioned_entities_schema"] = StrictPreprocessMentionedEntitiesSchema
+		});
 	}
 
 	private static bool TryCallAuxiliaryRuleRouterApi(string apiUrl, string apiKey, string modelName, string prompt, out string content, out string error)
@@ -4165,6 +4238,7 @@ public static class AIConfigHandler
 	{
 		content = "";
 		error = "";
+		string rawResponse = "";
 		object[] array = BuildAuxiliaryRouterMessages(prompt);
 		string requestBodyForTokenStats = "";
 		try
@@ -4176,6 +4250,7 @@ public static class AIConfigHandler
 			httpRequestMessage.Content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 			HttpResponseMessage result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage).GetAwaiter().GetResult();
 			string text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+			rawResponse = text ?? "";
 			if (!result.IsSuccessStatusCode && result.StatusCode == System.Net.HttpStatusCode.BadRequest && controlMode != "plain" && LooksLikeAuxiliaryThinkingControlError(text))
 			{
 				Logger.Log("AIConfig", "[AuxiliaryRouter] thinking payload rejected; retrying without thinking controls.");
@@ -4188,11 +4263,12 @@ public static class AIConfigHandler
 				httpRequestMessage2.Content = new StringContent(content2, Encoding.UTF8, "application/json");
 				result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage2).GetAwaiter().GetResult();
 				text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+				rawResponse = text ?? "";
 				controlMode += "_retry_plain";
 			}
 			if (!result.IsSuccessStatusCode)
 			{
-				error = "http_" + (int)result.StatusCode;
+				error = LlmRetryPrompt.BuildFailureDetail("http_" + (int)result.StatusCode, "", rawResponse);
 				LogAuxiliaryRouterTokenTrace("auxiliary_router_http_error", array, "[AUXILIARY ROUTER HTTP]" + "\n" + "url=" + apiUrl + "\n" + "model=" + modelName + "\n" + "control_mode=" + controlMode + "\n" + "status=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\n" + "response_body=" + "\n" + (text ?? ""), 0, requestBodyForTokenStats);
 				return false;
 			}
@@ -4200,7 +4276,7 @@ public static class AIConfigHandler
 			content = LlmApiCompat.ExtractAssistantText(jObject).Trim();
 			if (string.IsNullOrWhiteSpace(content))
 			{
-				error = "empty_content";
+				error = LlmRetryPrompt.BuildFailureDetail("empty_content", "", rawResponse);
 				LogAuxiliaryRouterTokenTrace("auxiliary_router_empty_content", array, "[AUXILIARY ROUTER HTTP]" + "\n" + "url=" + apiUrl + "\n" + "model=" + modelName + "\n" + "control_mode=" + controlMode + "\n" + "status=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\n" + "response_body=" + "\n" + (text ?? ""), 0, requestBodyForTokenStats);
 				return false;
 			}
@@ -4209,7 +4285,7 @@ public static class AIConfigHandler
 		}
 		catch (Exception ex)
 		{
-			error = BuildAuxiliaryRouterExceptionText(ex);
+			error = LlmRetryPrompt.BuildFailureDetail(BuildAuxiliaryRouterExceptionText(ex), content, rawResponse);
 			LogAuxiliaryRouterTokenTrace("auxiliary_router_exception", array, "[AUXILIARY ROUTER EXCEPTION]" + "\n" + "url=" + apiUrl + "\n" + "model=" + modelName + "\n" + "error=" + error + "\n" + "stack=" + "\n" + (ex?.StackTrace ?? ""), 0, requestBodyForTokenStats);
 			return false;
 		}
@@ -4240,7 +4316,7 @@ public static class AIConfigHandler
 	{
 		root = null;
 		error = "";
-		string text = (content ?? "").Trim('\uFEFF', '\u200B', '\u200C', '\u200D', ' ', '\t', '\r', '\n');
+		string text = StripAuxiliaryJsonCodeFence(content);
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			error = "empty_content";
@@ -4280,15 +4356,13 @@ public static class AIConfigHandler
 			error = "mentioned_entities_not_object";
 			return false;
 		}
-		string[] buckets = new string[7] { "heroes", "settlements", "clans", "kingdoms", "items", "troops", "terms" };
-		for (int i = 0; i < buckets.Length; i++)
+		JProperty unexpectedProperty = mentionedEntities.Properties().FirstOrDefault((JProperty x) => !string.Equals(x.Name, "entities", StringComparison.Ordinal));
+		if (unexpectedProperty != null)
 		{
-			if (!ValidateStrictPreprocessArray(mentionedEntities, buckets[i], JTokenType.String, out error, "mentioned_entities_"))
-			{
-				return false;
-			}
+			error = "mentioned_entities_unexpected_field_" + unexpectedProperty.Name;
+			return false;
 		}
-		return true;
+		return ValidateStrictPreprocessArray(mentionedEntities, "entities", JTokenType.String, out error, "mentioned_entities_");
 	}
 
 	private static bool ValidateStrictPreprocessArray(JObject obj, string fieldName, JTokenType itemType, out string error, string errorPrefix = "")
@@ -4555,16 +4629,8 @@ public static class AIConfigHandler
 
 	private static string BuildAuxiliaryPreprocessFormatError(string reason, string content)
 	{
-		string preview = (content ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
-		if (preview.Length > 700)
-		{
-			preview = preview.Substring(0, 700) + "...";
-		}
-		if (string.IsNullOrWhiteSpace(preview))
-		{
-			preview = "(empty)";
-		}
-		return "（API响应格式错误）前处理规则选择返回格式错误：" + (string.IsNullOrWhiteSpace(reason) ? "unknown" : reason.Trim()) + "。必须只输出一个 JSON 对象，并包含 rule_codes 字符串数组和完整的 mentioned_entities 数组对象。原始输出：" + preview;
+		string detail = "（API响应格式错误）前处理规则选择返回格式错误：" + (string.IsNullOrWhiteSpace(reason) ? "unknown" : reason.Trim()) + "。必须只输出一个 JSON 对象，并包含 rule_codes 字符串数组和 mentioned_entities.entities 字符串数组。";
+		return LlmRetryPrompt.BuildFailureDetail(detail, content);
 	}
 
 	public static void PublishAuxiliaryMentionedEntitiesForExternal(string userText, string secondaryText, string runtimeGuardrailContext, string content)
@@ -4685,9 +4751,9 @@ public static class AIConfigHandler
 	{
 		if (entities == null)
 		{
-			return "heroes=0 settlements=0 clans=0 kingdoms=0 items=0 troops=0 terms=0";
+			return "entities=0";
 		}
-		return "heroes=" + (entities.Heroes?.Count ?? 0) + " settlements=" + (entities.Settlements?.Count ?? 0) + " clans=" + (entities.Clans?.Count ?? 0) + " kingdoms=" + (entities.Kingdoms?.Count ?? 0) + " items=" + (entities.Items?.Count ?? 0) + " troops=" + (entities.Troops?.Count ?? 0) + " terms=" + (entities.Terms?.Count ?? 0);
+		return "entities=" + (entities.Entities?.Count ?? 0);
 	}
 
 	private static string HashAuxiliaryMentionKey(string value)
@@ -4727,27 +4793,26 @@ public static class AIConfigHandler
 			{
 				return false;
 			}
+			if (token is JArray directArray)
+			{
+				FillMentionedEntityList(entities.Entities, directArray);
+				return !entities.IsEmpty;
+			}
 			JObject obj = token as JObject;
 			if (obj == null)
 			{
 				error = "mentioned_entities_not_object";
 				return false;
 			}
-			FillMentionedEntityList(entities.Heroes, GetJsonPropertyIgnoreCase(obj, "heroes", "persons", "people", "characters", "npcs"));
-			FillMentionedEntityList(entities.Settlements, GetJsonPropertyIgnoreCase(obj, "settlements", "places", "locations", "towns", "castles", "villages"));
-			FillMentionedEntityList(entities.Clans, GetJsonPropertyIgnoreCase(obj, "clans", "families", "houses"));
-			FillMentionedEntityList(entities.Kingdoms, GetJsonPropertyIgnoreCase(obj, "kingdoms", "countries", "nations", "realms", "factions"));
-			FillMentionedEntityList(entities.Terms, GetJsonPropertyIgnoreCase(obj, "terms", "nouns", "keywords", "mentions", "mentioned_terms"));
-			JToken itemToken = GetJsonPropertyIgnoreCase(obj, "items", "item_names", "item_types", "goods", "equipment");
-			FillMentionedEntityList(entities.Items, itemToken);
-			FillMentionedEntityList(entities.Terms, itemToken);
-			JToken troopToken = GetJsonPropertyIgnoreCase(obj, "troops", "troop_names", "troop_types", "units", "soldiers");
-			FillMentionedEntityList(entities.Troops, troopToken);
-			FillMentionedEntityList(entities.Terms, troopToken);
-			JToken prisonerToken = GetJsonPropertyIgnoreCase(obj, "prisoners", "prisoner_names", "prisoner_types", "captives");
-			FillMentionedEntityList(entities.Troops, prisonerToken);
-			FillMentionedEntityList(entities.Terms, prisonerToken);
-			FillMentionedEntityList(entities.Terms, GetJsonPropertyIgnoreCase(obj, "asset_names", "asset_types", "fiefs", "workshops", "caravans"));
+			FillMentionedEntityList(entities.Entities, GetJsonPropertyIgnoreCase(obj, "entities", "nouns", "keywords", "mentions", "mentioned_terms"));
+			if (entities.IsEmpty)
+			{
+				string[] legacyBuckets = new string[8] { "heroes", "settlements", "clans", "kingdoms", "items", "policies", "troops", "terms" };
+				foreach (string legacyBucket in legacyBuckets)
+				{
+					FillMentionedEntityList(entities.Entities, GetJsonPropertyIgnoreCase(obj, legacyBucket));
+				}
+			}
 			return !entities.IsEmpty;
 		}
 		catch (Exception ex)
@@ -5949,13 +6014,8 @@ public static class AIConfigHandler
 			{
 				set.Add("loan");
 				set.Add("diplomacy");
-				set.Add("vote_deal");
+				set.Add("kingdom_agenda");
 				set.Add("party_transfer");
-				set.Add("settlement_transfer");
-			}
-			if (applyRuntimeAutoExclusions && ShouldExcludePlayerCompanionOrFamilySettlementTransferForConversationTarget())
-			{
-				set.Add("settlement_transfer");
 			}
 			if (applyRuntimeAutoExclusions && ShouldExcludeSceneMoveRuleForCurrentMission())
 			{
@@ -6169,7 +6229,7 @@ public static class AIConfigHandler
 		case "duel":
 			return text.IndexOf("[ACTION:DUEL]", StringComparison.OrdinalIgnoreCase) >= 0;
 		case "reward":
-			return text.IndexOf("[ACTION:GIVE_GOLD:", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("[ACTION:GIVE_ITEM:", StringComparison.OrdinalIgnoreCase) >= 0;
+			return text.IndexOf("[ACTION:GIVE_ASSET:", StringComparison.OrdinalIgnoreCase) >= 0;
 		case "loan":
 			return text.IndexOf("[AD;", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("[ADP;", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("[ADP:", StringComparison.OrdinalIgnoreCase) >= 0;
 		case "kingdom_service":
@@ -6183,8 +6243,6 @@ public static class AIConfigHandler
 			return text.IndexOf("[ACTION:MARRIAGE_", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("[ACTION:DIVORCE:", StringComparison.OrdinalIgnoreCase) >= 0;
 		case "party_transfer":
 			return text.IndexOf("[ATT:", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("[ATP:", StringComparison.OrdinalIgnoreCase) >= 0;
-		case "settlement_transfer":
-			return text.IndexOf("[ACTION:SETTLEMENT_TRANSFER:", StringComparison.OrdinalIgnoreCase) >= 0;
 		case "lords_hall_access":
 			return text.IndexOf("[ACTION:OPEN_LORDS_HALL]", StringComparison.OrdinalIgnoreCase) >= 0;
 		default:
@@ -7027,6 +7085,11 @@ public static class AIConfigHandler
 		try
 		{
 			List<string> list = new List<string>();
+			string baseInstruction = GetGuardrailRuleInstruction("hero_join_party");
+			if (!string.IsNullOrWhiteSpace(baseInstruction))
+			{
+				list.Add(baseInstruction.Trim());
+			}
 			Hero hero = targetHero ?? ResolveConversationTargetHero();
 			string text = ResolveHeroJoinPartyRuntimeStateKey(hero);
 			if (!string.IsNullOrWhiteSpace(text))
@@ -7037,34 +7100,7 @@ public static class AIConfigHandler
 					list.Add(text2.Trim());
 				}
 			}
-			string playerRulerRecruitmentText = BuildRuntimePlayerKingdomRecruitmentInstruction();
-			if (!string.IsNullOrWhiteSpace(playerRulerRecruitmentText))
-			{
-				list.Add(playerRulerRecruitmentText.Trim());
-			}
 			return string.Join("\n", list.Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase)).Trim();
-		}
-		catch
-		{
-			return "";
-		}
-	}
-
-	private static string BuildRuntimePlayerKingdomRecruitmentInstruction()
-	{
-		try
-		{
-			Dictionary<string, string> dictionary = BuildKingdomServiceRuntimeTokens(out var playerClan, out var kingdom, out var _, out var _, out var _, out var _, out var _, out var _, out var _, out var _, out var _);
-			if (playerClan == null || !IsPlayerKingdomRecruitmentModeActive(playerClan, kingdom))
-			{
-				return "";
-			}
-			string text = ResolvePlayerKingdomRecruitmentStateKey(playerClan, kingdom, ResolveConversationTargetClan(), ResolveConversationTargetHero());
-			if (string.IsNullOrWhiteSpace(text))
-			{
-				return "";
-			}
-			return ResolveKingdomServiceRuntimeText(text, forConstraint: false, dictionary);
 		}
 		catch
 		{
@@ -7147,10 +7183,10 @@ public static class AIConfigHandler
 
 	public static string BuildRuntimeRewardInstructionForExternal(Hero targetHero = null, CharacterObject targetCharacter = null)
 	{
+		Hero hero = targetHero ?? ResolveConversationTargetHero();
+		CharacterObject characterObject = targetCharacter ?? ResolveConversationTargetCharacter();
 		try
 		{
-			Hero hero = targetHero ?? ResolveConversationTargetHero();
-			CharacterObject characterObject = targetCharacter ?? ResolveConversationTargetCharacter();
 			int num = 6;
 			try
 			{
@@ -7168,17 +7204,38 @@ public static class AIConfigHandler
 				{
 					if (num <= 1)
 					{
-						return text.Trim();
+						return AppendFixedAssetRuntimeInstruction(text, hero, characterObject);
 					}
 					string text2 = BuildRewardInstructionForExternal(hero, characterObject).Trim();
-					return string.IsNullOrWhiteSpace(text2) ? text.Trim() : (text.Trim() + "\n" + text2);
+					return AppendFixedAssetRuntimeInstruction(string.IsNullOrWhiteSpace(text2) ? text.Trim() : (text.Trim() + "\n" + text2), hero, characterObject);
 				}
 			}
 		}
 		catch
 		{
 		}
-		return BuildRewardInstructionForExternal(targetHero, targetCharacter);
+		return AppendFixedAssetRuntimeInstruction(BuildRewardInstructionForExternal(hero, characterObject), hero, characterObject);
+	}
+
+	private static string AppendFixedAssetRuntimeInstruction(string current, Hero targetHero, CharacterObject targetCharacter)
+	{
+		string text = (current ?? "").Trim();
+		if (targetHero == null)
+		{
+			return text;
+		}
+		try
+		{
+			string fixedAssetInstruction = MyBehavior.BuildSettlementTransferRuntimeInstructionForExternal(targetHero, targetCharacter);
+			if (!string.IsNullOrWhiteSpace(fixedAssetInstruction))
+			{
+				return string.IsNullOrWhiteSpace(text) ? fixedAssetInstruction.Trim() : (text + "\n" + fixedAssetInstruction.Trim());
+			}
+		}
+		catch
+		{
+		}
+		return text;
 	}
 
 	private static string ResolveKingdomServiceRuntimeText(string stateKey, bool forConstraint, Dictionary<string, string> tokens)
@@ -7601,7 +7658,7 @@ public static class AIConfigHandler
 				{
 					text5 = (value1 ?? "").Trim();
 				}
-				Logger.Log("AIConfig", "[KingdomServicePostprocessRules] player_ruler state=" + text4 + " playerClan=" + (playerClan?.StringId ?? "") + " playerKingdom=" + (kingdom?.StringId ?? "") + " targetClan=" + (clan?.StringId ?? "") + " targetHero=" + (hero?.StringId ?? "") + " targetClanIdToken=" + text5 + " rules=（无，CLAN_JOIN_PLAYER_KINGDOM已迁移到NPC_JOIN）");
+				Logger.Log("AIConfig", "[KingdomServicePostprocessRules] player_ruler state=" + text4 + " playerClan=" + (playerClan?.StringId ?? "") + " playerKingdom=" + (kingdom?.StringId ?? "") + " targetClan=" + (clan?.StringId ?? "") + " targetHero=" + (hero?.StringId ?? "") + " targetClanIdToken=" + text5 + " rules=（无，C_J_K已迁移到NPC_JOIN）");
 				return list;
 			}
 			string text = ResolveRuntimeKingdomServiceStateKeyForPostprocess(kingdom, flag, kingdom2, flag2, num, num2, num3, num4, num5, num6);
@@ -7656,7 +7713,7 @@ public static class AIConfigHandler
 		return list;
 	}
 
-	public static List<PostprocessRuleEntry> BuildRuntimeHeroJoinPartyPostprocessRules(bool includePersonalJoinRule = true, Hero targetHero = null)
+	public static List<PostprocessRuleEntry> BuildRuntimeHeroJoinPartyPostprocessRules(bool includePersonalJoinRule = true, Hero targetHero = null, string entityPostprocessContext = null)
 	{
 		List<PostprocessRuleEntry> list = new List<PostprocessRuleEntry>();
 		try
@@ -7670,7 +7727,7 @@ public static class AIConfigHandler
 			foreach (PostprocessRuleEntry guardrailRulePostprocessRule in GetGuardrailRulePostprocessRules("hero_join_party"))
 			{
 				string text = (guardrailRulePostprocessRule?.Tag ?? "").Trim();
-				if (string.IsNullOrWhiteSpace(text) || IsPlayerRulerKingdomServicePostprocessTag(text))
+				if (string.IsNullOrWhiteSpace(text) || IsClanJoinKingdomServicePostprocessTag(text))
 				{
 					continue;
 				}
@@ -7688,7 +7745,7 @@ public static class AIConfigHandler
 					Description = guardrailRulePostprocessRule?.Description ?? ""
 				});
 			}
-			foreach (PostprocessRuleEntry runtimeClanJoinRule in BuildRuntimePlayerRulerClanJoinPostprocessRules("hero_join_party", "HeroJoinPartyPostprocessRules", hero))
+			foreach (PostprocessRuleEntry runtimeClanJoinRule in BuildRuntimeClanJoinKingdomPostprocessRules("hero_join_party", "HeroJoinPartyPostprocessRules", hero, entityPostprocessContext))
 			{
 				string text2 = (runtimeClanJoinRule?.Tag ?? "").Trim();
 				if (string.IsNullOrWhiteSpace(text2))
@@ -7709,7 +7766,7 @@ public static class AIConfigHandler
 		return list;
 	}
 
-	private static List<PostprocessRuleEntry> BuildRuntimePlayerRulerClanJoinPostprocessRules(string sourceRuleId, string logPrefix, Hero targetHero = null)
+	private static List<PostprocessRuleEntry> BuildRuntimeClanJoinKingdomPostprocessRules(string sourceRuleId, string logPrefix, Hero targetHero, string entityPostprocessContext)
 	{
 		List<PostprocessRuleEntry> list = new List<PostprocessRuleEntry>();
 		try
@@ -7717,67 +7774,50 @@ public static class AIConfigHandler
 			Hero hero = targetHero ?? ResolveConversationTargetHero();
 			if (IsPlayerPartyTradeLimitedTarget(hero))
 			{
-				Logger.Log("AIConfig", "[" + logPrefix + "] player_ruler skipped_player_party_target targetHero=" + (hero?.StringId ?? ""));
-				return list;
-			}
-			Dictionary<string, string> dictionary = BuildKingdomServiceRuntimeTokens(out var playerClan, out var kingdom, out var flag, out var kingdom2, out var flag2, out var num, out var num2, out var num3, out var num4, out var num5, out var num6);
-			if (playerClan == null)
-			{
-				Logger.Log("AIConfig", "[" + logPrefix + "] playerClan=null targetKingdomId=" + ((dictionary != null && dictionary.TryGetValue("targetKingdomId", out var value0)) ? (value0 ?? "") : "") + " playerTier=" + num + " mercTier=" + num2 + " vassalTier=" + num3 + " trustCurrent=" + num6 + " trustMerc=" + num4 + " trustVassal=" + num5);
-				return list;
-			}
-			if (!IsPlayerKingdomRecruitmentModeActive(playerClan, kingdom))
-			{
+				Logger.Log("AIConfig", "[" + logPrefix + "] clan_join skipped_player_party_target targetHero=" + (hero?.StringId ?? ""));
 				return list;
 			}
 			Clan clan = hero?.Clan ?? ResolveConversationTargetClan();
-			string text = ResolvePlayerKingdomRecruitmentStateKey(playerClan, kingdom, clan, hero);
-			if (string.IsNullOrWhiteSpace(text))
+			string state = ResolveClanJoinKingdomStateKey(clan, hero);
+			if (!string.Equals(state, "clan_join_target_ready", StringComparison.OrdinalIgnoreCase))
 			{
-				Logger.Log("AIConfig", "[" + logPrefix + "] player_ruler empty_state playerClan=" + (playerClan?.StringId ?? "") + " playerKingdom=" + (kingdom?.StringId ?? "") + " targetClan=" + (clan?.StringId ?? "") + " targetHero=" + (hero?.StringId ?? ""));
+				Logger.Log("AIConfig", "[" + logPrefix + "] clan_join blocked_state=" + state + " targetClan=" + (clan?.StringId ?? "") + " targetHero=" + (hero?.StringId ?? "") + " rules=（无）");
 				return list;
 			}
-			if (!string.Equals(text, "player_ruler_target_ready", StringComparison.OrdinalIgnoreCase))
+			List<Kingdom> retrievedKingdoms = ResolveRetrievedKingdomsForClanJoin(entityPostprocessContext);
+			List<Kingdom> eligibleKingdoms = retrievedKingdoms
+				.Where((Kingdom x) => x != null && x != clan?.Kingdom && !string.IsNullOrWhiteSpace((x.StringId ?? "").Trim()))
+				.ToList();
+			if (eligibleKingdoms.Count == 0)
 			{
-				Logger.Log("AIConfig", "[" + logPrefix + "] player_ruler blocked_state=" + text + " playerClan=" + (playerClan?.StringId ?? "") + " playerKingdom=" + (kingdom?.StringId ?? "") + " targetClan=" + (clan?.StringId ?? "") + " targetHero=" + (hero?.StringId ?? "") + " rules=（无）");
+				Logger.Log("AIConfig", "[" + logPrefix + "] clan_join no_retrieved_kingdom targetClan=" + (clan?.StringId ?? "") + " targetHero=" + (hero?.StringId ?? "") + " rules=（无）");
 				return list;
 			}
-			string text2 = (clan?.StringId ?? "").Trim();
-			if (dictionary != null && dictionary.TryGetValue("targetClanId", out var value1))
-			{
-				if (string.IsNullOrWhiteSpace(text2))
-				{
-					text2 = (value1 ?? "").Trim();
-				}
-			}
+			HashSet<string> allowedKingdomIds = new HashSet<string>(eligibleKingdoms.Select((Kingdom x) => (x.StringId ?? "").Trim()), StringComparer.OrdinalIgnoreCase);
 			foreach (PostprocessRuleEntry guardrailRulePostprocessRule in GetGuardrailRulePostprocessRules(sourceRuleId))
 			{
-				string text3 = (guardrailRulePostprocessRule?.Tag ?? "").Trim();
-				string description = guardrailRulePostprocessRule?.Description ?? "";
-				if (string.IsNullOrWhiteSpace(text3))
+				string tagTemplate = (guardrailRulePostprocessRule?.Tag ?? "").Trim();
+				string descriptionTemplate = guardrailRulePostprocessRule?.Description ?? "";
+				if (string.IsNullOrWhiteSpace(tagTemplate) || !IsClanJoinKingdomServicePostprocessTag(tagTemplate))
 				{
 					continue;
 				}
-				if (!IsPlayerRulerKingdomServicePostprocessTag(text3))
+				if (tagTemplate.IndexOf("{targetKingdomId}", StringComparison.OrdinalIgnoreCase) < 0)
 				{
 					continue;
 				}
-				if (text3.IndexOf("{targetClanId}", StringComparison.OrdinalIgnoreCase) >= 0)
+				if (list.Any((PostprocessRuleEntry x) => string.Equals((x?.Tag ?? "").Trim(), tagTemplate, StringComparison.OrdinalIgnoreCase)))
 				{
-					if (string.IsNullOrWhiteSpace(text2))
-					{
-						continue;
-					}
-					text3 = text3.Replace("{targetClanId}", text2);
-					description = description.Replace("{targetClanId}", text2);
+					continue;
 				}
 				list.Add(new PostprocessRuleEntry
 				{
-					Tag = text3,
-					Description = description
+					Tag = tagTemplate,
+					Description = descriptionTemplate,
+					RuntimeAllowedParameterValues = new HashSet<string>(allowedKingdomIds, StringComparer.OrdinalIgnoreCase)
 				});
 			}
-			Logger.Log("AIConfig", "[" + logPrefix + "] player_ruler state=" + text + " playerClan=" + (playerClan?.StringId ?? "") + " playerKingdom=" + (kingdom?.StringId ?? "") + " targetClan=" + (clan?.StringId ?? "") + " targetHero=" + (hero?.StringId ?? "") + " targetClanIdToken=" + text2 + " rules=" + ((list.Count == 0) ? "（无）" : string.Join(",", list.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
+			Logger.Log("AIConfig", "[" + logPrefix + "] clan_join state=" + state + " targetClan=" + (clan?.StringId ?? "") + " targetHero=" + (hero?.StringId ?? "") + " allowedKingdoms=" + string.Join(",", allowedKingdomIds) + " rules=" + ((list.Count == 0) ? "（无）" : string.Join(",", list.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
 		}
 		catch
 		{
@@ -7785,27 +7825,99 @@ public static class AIConfigHandler
 		return list;
 	}
 
-	private static bool IsPlayerRulerKingdomServicePostprocessTag(string tag)
+	private static string ResolveClanJoinKingdomStateKey(Clan targetClan, Hero targetHero)
+	{
+		if (targetClan == null)
+		{
+			return "clan_join_target_unknown";
+		}
+		if (targetClan == Clan.PlayerClan)
+		{
+			return "clan_join_target_player_clan";
+		}
+		try
+		{
+			if (targetClan.IsEliminated)
+			{
+				return "clan_join_target_eliminated";
+			}
+		}
+		catch
+		{
+			return "clan_join_target_invalid";
+		}
+		if (targetHero == null || targetHero.Clan != targetClan || targetClan.Leader != targetHero)
+		{
+			return "clan_join_target_not_leader";
+		}
+		return "clan_join_target_ready";
+	}
+
+	private static List<Kingdom> ResolveRetrievedKingdomsForClanJoin(string entityPostprocessContext)
+	{
+		List<Kingdom> list = new List<Kingdom>();
+		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		try
+		{
+			foreach (Match match in Regex.Matches(entityPostprocessContext ?? "", "(?<![A-Za-z0-9_.\\-])kingdom:([A-Za-z0-9_.\\-]+)", RegexOptions.IgnoreCase))
+			{
+				string kingdomId = (match?.Groups[1].Value ?? "").Trim();
+				if (string.IsNullOrWhiteSpace(kingdomId) || !seen.Add(kingdomId))
+				{
+					continue;
+				}
+				Kingdom kingdom = Kingdom.All?.FirstOrDefault((Kingdom x) => x != null && string.Equals((x.StringId ?? "").Trim(), kingdomId, StringComparison.OrdinalIgnoreCase));
+				if (kingdom != null && !kingdom.IsEliminated)
+				{
+					list.Add(kingdom);
+				}
+			}
+		}
+		catch
+		{
+		}
+		return list;
+	}
+
+	private static bool IsClanJoinKingdomServicePostprocessTag(string tag)
 	{
 		string text = (tag ?? "").Trim();
-		return text.StartsWith("[ACTION:KINGDOM_SERVICE:CLAN_JOIN_PLAYER_KINGDOM:", StringComparison.OrdinalIgnoreCase);
+		return text.StartsWith("[A:C_J_K:", StringComparison.OrdinalIgnoreCase)
+			|| text.Equals("[A:C_J_P_K]", StringComparison.OrdinalIgnoreCase)
+			|| text.StartsWith("[ACTION:KINGDOM_SERVICE:CLAN_JOIN_PLAYER_KINGDOM:", StringComparison.OrdinalIgnoreCase);
 	}
 
 	private static bool IsPlayerJoinKingdomServicePostprocessTag(string tag)
 	{
 		string text = (tag ?? "").Trim();
-		if (text.StartsWith("[ACTION:KINGDOM_SERVICE:CLAN_JOIN_PLAYER_KINGDOM:", StringComparison.OrdinalIgnoreCase))
+		if (IsClanJoinKingdomServicePostprocessTag(text))
 		{
 			return false;
 		}
-		return text.StartsWith("[ACTION:KINGDOM_SERVICE:MERCENARY:", StringComparison.OrdinalIgnoreCase)
-			|| text.StartsWith("[ACTION:KINGDOM_SERVICE:VASSAL:", StringComparison.OrdinalIgnoreCase)
-			|| text.Equals("[ACTION:KINGDOM_SERVICE:LEAVE:current]", StringComparison.OrdinalIgnoreCase);
+		return IsKingdomServiceMercenaryPostprocessTag(text)
+			|| IsKingdomServiceVassalPostprocessTag(text)
+			|| IsKingdomServiceLeaveCurrentPostprocessTag(text);
+	}
+
+	private static bool IsKingdomServiceMercenaryPostprocessTag(string tag)
+	{
+		string text = (tag ?? "").Trim();
+		return text.Equals("[A:P_J_K_M]", StringComparison.OrdinalIgnoreCase)
+			|| text.StartsWith("[ACTION:KINGDOM_SERVICE:MERCENARY:", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool IsKingdomServiceVassalPostprocessTag(string tag)
+	{
+		string text = (tag ?? "").Trim();
+		return text.Equals("[A:P_J_K_V]", StringComparison.OrdinalIgnoreCase)
+			|| text.StartsWith("[ACTION:KINGDOM_SERVICE:VASSAL:", StringComparison.OrdinalIgnoreCase);
 	}
 
 	private static bool IsKingdomServiceLeaveCurrentPostprocessTag(string tag)
 	{
-		return string.Equals((tag ?? "").Trim(), "[ACTION:KINGDOM_SERVICE:LEAVE:current]", StringComparison.OrdinalIgnoreCase);
+		string text = (tag ?? "").Trim();
+		return text.Equals("[A:P_L_K]", StringComparison.OrdinalIgnoreCase)
+			|| text.Equals("[ACTION:KINGDOM_SERVICE:LEAVE:current]", StringComparison.OrdinalIgnoreCase);
 	}
 
 	private static bool CanInjectKingdomServiceLeaveCurrentPostprocessTag(Kingdom playerKingdom, bool isMercenaryService, Kingdom targetKingdom, Hero targetHero)
@@ -7904,15 +8016,15 @@ public static class AIConfigHandler
 		switch ((stateKey ?? "").Trim().ToLowerInvariant())
 		{
 		case "merc_only":
-			return text.StartsWith("[ACTION:KINGDOM_SERVICE:MERCENARY:", StringComparison.OrdinalIgnoreCase);
+			return IsKingdomServiceMercenaryPostprocessTag(text);
 		case "merc_or_vassal":
-			return text.StartsWith("[ACTION:KINGDOM_SERVICE:MERCENARY:", StringComparison.OrdinalIgnoreCase) || text.StartsWith("[ACTION:KINGDOM_SERVICE:VASSAL:", StringComparison.OrdinalIgnoreCase);
+			return IsKingdomServiceMercenaryPostprocessTag(text) || IsKingdomServiceVassalPostprocessTag(text);
 		case "leave_or_vassal":
-			return (IsKingdomServiceLeaveCurrentPostprocessTag(text) && canInjectLeaveCurrent) || text.StartsWith("[ACTION:KINGDOM_SERVICE:VASSAL:", StringComparison.OrdinalIgnoreCase);
+			return (IsKingdomServiceLeaveCurrentPostprocessTag(text) && canInjectLeaveCurrent) || IsKingdomServiceVassalPostprocessTag(text);
 		case "leave_only":
 			return IsKingdomServiceLeaveCurrentPostprocessTag(text) && canInjectLeaveCurrent;
 		case "player_ruler_target_ready":
-			return text.StartsWith("[ACTION:KINGDOM_SERVICE:CLAN_JOIN_PLAYER_KINGDOM:", StringComparison.OrdinalIgnoreCase);
+			return IsClanJoinKingdomServicePostprocessTag(text);
 		default:
 			return false;
 		}
@@ -8264,8 +8376,7 @@ public static class AIConfigHandler
 			}
 			case "diplomacy":
 				return DiplomacyBehavior.CanInjectDiplomacyRuleForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
-			case "vote_deal":
-			case "propose_agenda":
+			case "kingdom_agenda":
 				return IsKingdomLordOrKingRuleTargetForPreprocess(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
 			case "marriage":
 				return ResolveConversationTargetHero() != null && !string.IsNullOrWhiteSpace(RomanceSystemBehavior.Instance?.BuildMarriageRuntimeInstruction(ResolveConversationTargetHero()));
@@ -8578,6 +8689,7 @@ public static class AIConfigHandler
 			}
 			string path2 = ResolveModuleDataFilePath("RuleBehaviorPrompts.json");
 			string path3 = ResolveModuleDataFilePath("ActionPostprocessPrompts.json");
+			string path4 = ResolveModuleDataFilePath("PreprocessPrompts.json");
 			if (!File.Exists(path2))
 			{
 				Logger.Log("AIConfig", "[错误] 找不到 RuleBehaviorPrompts.json");
@@ -8597,6 +8709,21 @@ public static class AIConfigHandler
 			{
 				string value3 = File.ReadAllText(path3);
 				_actionPostprocess = JsonConvert.DeserializeObject<ActionPostprocessConfigModel>(value3) ?? new ActionPostprocessConfigModel();
+			}
+			try
+			{
+				if (!File.Exists(path4))
+				{
+					throw new FileNotFoundException("找不到 PreprocessPrompts.json", path4);
+				}
+				string value4 = File.ReadAllText(path4, Encoding.UTF8);
+				_preprocessPrompts = JsonConvert.DeserializeObject<PreprocessPromptsConfigModel>(value4) ?? new PreprocessPromptsConfigModel();
+				ValidateLoadedPreprocessPrompts();
+			}
+			catch (Exception preprocessEx)
+			{
+				_preprocessPrompts = new PreprocessPromptsConfigModel();
+				Logger.Log("AIConfig", "[错误] 前处理提示词配置加载失败: " + preprocessEx.Message);
 			}
 			lock (_guardrailSemanticLock)
 			{
@@ -8625,7 +8752,7 @@ public static class AIConfigHandler
 			}
 			string text = (KnowledgeRetrievalFromMcm ? "MCM" : "Guardrail");
 			Logger.Log("AIConfig", string.Format("配置加载成功。触发词(决斗/奖励/借贷/地理)={0}/{1}/{2}/{3}，扩展规则={4}，启用规则总数={5}。规则返回上限={6}。知识检索({7})：{8}（语义优先={9}, returnCap={10}）。后处理模板：{11}。", valueOrDefault, valueOrDefault2, valueOrDefault3, valueOrDefault4, valueOrDefault5, num2, GetGuardrailReturnCapFromMcm(), text, KnowledgeRetrievalEnabled ? "开启" : "关闭", KnowledgeSemanticFirst, KnowledgeSemanticTopK, ActionPostprocessEnabled ? "开启" : "关闭"));
-			Logger.Log("AIConfig", "配置文件路径：AIConfig=" + path + " RuleBehavior=" + path2 + " ActionPostprocess=" + path3);
+			Logger.Log("AIConfig", "配置文件路径：AIConfig=" + path + " RuleBehavior=" + path2 + " ActionPostprocess=" + path3 + " PreprocessPrompts=" + path4);
 		}
 		catch (Exception ex)
 		{
@@ -8633,6 +8760,7 @@ public static class AIConfigHandler
 			_config = new AIConfigModel();
 			_guardrail = new GuardrailConfigModel();
 			_actionPostprocess = new ActionPostprocessConfigModel();
+			_preprocessPrompts = new PreprocessPromptsConfigModel();
 		}
 	}
 

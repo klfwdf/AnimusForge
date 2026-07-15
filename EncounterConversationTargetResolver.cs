@@ -9,6 +9,23 @@ namespace AnimusForge;
 
 internal static class EncounterConversationTargetResolver
 {
+	internal static Hero TryResolveExplicitPrisonerFromArguments(object[] args)
+	{
+		if (args == null)
+		{
+			return null;
+		}
+		foreach (object arg in args)
+		{
+			Hero hero = TryResolveExplicitConversationHero(arg);
+			if (hero != null && (hero.IsPrisoner || hero.PartyBelongedToAsPrisoner != null))
+			{
+				return hero;
+			}
+		}
+		return null;
+	}
+
 	internal static Hero TryResolveLordFromArgumentsThenEncounterLeader(object instance, object[] args)
 	{
 		Hero hero = TryResolveLordFromArguments(args);
@@ -40,6 +57,28 @@ internal static class EncounterConversationTargetResolver
 			}
 		}
 		return null;
+	}
+
+	private static Hero TryResolveExplicitConversationHero(object value)
+	{
+		if (value == null)
+		{
+			return null;
+		}
+		if (value is Hero hero)
+		{
+			return hero;
+		}
+		if (value is CharacterObject characterObject)
+		{
+			return characterObject.HeroObject;
+		}
+		if (value is ConversationCharacterData conversationCharacterData)
+		{
+			return conversationCharacterData.Character?.HeroObject;
+		}
+		object character = TryGetPropertyValue(value, value.GetType(), "Character");
+		return (character as CharacterObject)?.HeroObject;
 	}
 
 	internal static Hero TryResolveHeroFromObject(object value)

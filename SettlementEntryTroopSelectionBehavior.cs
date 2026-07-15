@@ -1007,7 +1007,8 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 
 	private static bool CastleCreateAndOpenMissionControllerPrefix(CastleEncounter __instance, Location nextLocation, Location previousLocation, CharacterObject talkToChar, string playerSpecialSpawnTag)
 	{
-		// SETS castle entry/conflict is intentionally blocked until the castle aftermath bridge is fixed.
+		// SETS never opens a separate castle-entry conflict. If an internal revolt captures a castle,
+		// the native siege-victory menu remains the only route into the GCCZ castle aftermath stage.
 		return true;
 	}
 
