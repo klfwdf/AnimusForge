@@ -570,7 +570,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		return true;
 	}
 
-	private static void CompletePolicySuccessResultSequence(string policyObjectId)
+	private static void CompletePolicySuccessResultSequence(string policyObjectId, bool releaseDeferredResults = true)
 	{
 		string id = (policyObjectId ?? "").Trim();
 		if (!_policySuccessResultVisible || !string.Equals(_policySuccessResultPolicyObjectId, id, StringComparison.OrdinalIgnoreCase))
@@ -581,11 +581,14 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		DeferredOriginalPolicyResults.Clear();
 		_policySuccessResultVisible = false;
 		_policySuccessResultPolicyObjectId = "";
-		foreach (Action action in deferred)
+		if (releaseDeferredResults)
 		{
-			MainThreadActions.Enqueue(action);
+			foreach (Action action in deferred)
+			{
+				MainThreadActions.Enqueue(action);
+			}
 		}
-		PolicySystemLog.Write("Agenda", "original-result-popup-released", "policy=" + id
+		PolicySystemLog.Write("Agenda", releaseDeferredResults ? "original-result-popup-released" : "original-result-popup-suppressed", "policy=" + id
 			+ " deferred=" + deferred.Count.ToString(CultureInfo.InvariantCulture));
 	}
 
@@ -789,10 +792,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 			{
 				if (active)
 				{
-					data.Status = DynamicPolicyStatusActive;
-					data.NaturalExpiryAgendaRejected = true;
-					StoreDynamicPolicy(data);
-					NpcRulerPolicyBehavior.UpdatePolicyAgendaStatusForExternal(data.RecordId, DynamicPolicyStatusActive);
+					CompleteNaturalExpiryRenewal(data, policy, "读档核对：AF 政策续期通过");
 				}
 				else
 				{
@@ -804,6 +804,10 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 				if (!active)
 				{
 					CompleteDynamicPolicyAbolition(data, policy, "读档核对：AF 政策已不在有效政策中");
+				}
+				else if (data.NaturalExpiryAgendaRejected)
+				{
+					CompleteNaturalExpiryRenewal(data, policy, "兼容旧存档：补结算 AF 政策续期");
 				}
 				else if (string.Equals(data.Source, "npc", StringComparison.OrdinalIgnoreCase))
 				{
@@ -842,10 +846,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 			}
 			else if (string.Equals(data.Status, DynamicPolicyStatusExpiryVotePending, StringComparison.OrdinalIgnoreCase))
 			{
-				data.Status = DynamicPolicyStatusActive;
-				data.NaturalExpiryAgendaRejected = true;
-				StoreDynamicPolicy(data);
-				NpcRulerPolicyBehavior.UpdatePolicyAgendaStatusForExternal(data.RecordId, DynamicPolicyStatusActive);
+				CompleteNaturalExpiryRenewal(data, policy, "AF 政策续期通过");
 				PolicySystemLog.Write("Agenda", "expiry-abolition-rejected", "recordId=" + data.RecordId + " policy=" + data.PolicyObjectId);
 			}
 		}
@@ -884,10 +885,8 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 			}
 			else if (string.Equals(data.Status, DynamicPolicyStatusExpiryVotePending, StringComparison.OrdinalIgnoreCase))
 			{
-				data.Status = DynamicPolicyStatusActive;
-				data.NaturalExpiryAgendaRejected = true;
-				StoreDynamicPolicy(data);
-				NpcRulerPolicyBehavior.UpdatePolicyAgendaStatusForExternal(data.RecordId, DynamicPolicyStatusActive);
+				PolicySystemLog.Write("Agenda", "renewal-agenda-cancelled", "recordId=" + data.RecordId + " policy=" + data.PolicyObjectId);
+				ExpireDynamicPolicyWithoutRenewal(data, policy, "AF 政策续期议程取消，政策到期终止");
 			}
 		}
 		catch (Exception ex)
@@ -956,6 +955,46 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		PolicySystemLog.Write("Agenda", "adopted", "recordId=" + data.RecordId + " policy=" + data.PolicyObjectId);
 	}
 
+	private void CompleteNaturalExpiryRenewal(DynamicPolicySaveData data, PolicyObject policy, string reason)
+	{
+		if (data == null)
+		{
+			return;
+		}
+		bool renewalStarted = true;
+		if (string.Equals(data.Source, "npc", StringComparison.OrdinalIgnoreCase))
+		{
+			NpcRulerPolicyBehavior.UpdatePolicyAgendaStatusForExternal(data.RecordId, DynamicPolicyStatusExpiryVotePending);
+			NpcRulerPolicyBehavior.OnPolicyAgendaApprovedForExternal(data.RecordId);
+		}
+		else
+		{
+			renewalStarted = CompleteApprovedPlayerPolicy(data, isRenewal: true);
+		}
+		if (!renewalStarted)
+		{
+			ExpireDynamicPolicyWithoutRenewal(data, policy, "AF 政策续期结算失败，政策到期终止");
+			return;
+		}
+		data.Status = DynamicPolicyStatusActive;
+		data.NaturalExpiryAgendaRejected = false;
+		StoreDynamicPolicy(data);
+		PolicySystemLog.Write("Agenda", "renewal-committed", "recordId=" + data.RecordId
+			+ " policy=" + data.PolicyObjectId
+			+ " source=" + (data.Source ?? "")
+			+ " reason=" + (reason ?? ""));
+	}
+
+	private void ExpireDynamicPolicyWithoutRenewal(DynamicPolicySaveData data, PolicyObject policy, string reason)
+	{
+		Kingdom owner = ResolveKingdomByIdOrName(data?.OwnerKingdomId, "");
+		if (owner != null && policy != null && owner.ActivePolicies.Contains(policy))
+		{
+			owner.RemovePolicy(policy);
+		}
+		CompleteDynamicPolicyAbolition(data, policy, reason);
+	}
+
 	private void RejectDynamicPolicyAdoption(DynamicPolicySaveData data, PolicyObject policy, string reason)
 	{
 		data.Status = DynamicPolicyStatusRejected;
@@ -968,7 +1007,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		PolicySystemLog.Write("Agenda", "adoption-rejected", "recordId=" + data.RecordId + " policy=" + data.PolicyObjectId + " reason=" + (reason ?? ""));
 	}
 
-	private void CompleteApprovedPlayerPolicy(DynamicPolicySaveData data)
+	private bool CompleteApprovedPlayerPolicy(DynamicPolicySaveData data, bool isRenewal = false)
 	{
 		try
 		{
@@ -978,6 +1017,11 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 			if (request == null || assessment == null)
 			{
 				throw new InvalidOperationException("玩家政策待审数据缺失");
+			}
+			if (isRenewal)
+			{
+				request.SubmittedDay = GetCurrentCampaignDay();
+				request.DateText = FormatCurrentCampaignDate();
 			}
 			PrepareApprovedPlayerPolicyCost(request, assessment);
 			PolicyPostprocessResult postprocess = BuildPostprocessResultFromMainAssessment(request, assessment);
@@ -1009,17 +1053,26 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 			{
 				RecordPolicyPublishAsPlayerAction(request, result, application, data.RecordId);
 			}
-			string impactText = BuildImpactPopupText(request, feedback, application, costDeducted: hasActualEffect);
-			ShowPolicySuccessResultPopup(data.PolicyObjectId, impactText);
+			if (isRenewal)
+			{
+				ShowPolicyRenewalResultPopup(data.PolicyObjectId, request, application);
+			}
+			else
+			{
+				string impactText = BuildImpactPopupText(request, feedback, application, costDeducted: hasActualEffect);
+				ShowPolicySuccessResultPopup(data.PolicyObjectId, impactText);
+			}
 			if (!hasTimedEffect)
 			{
 				TryQueueNaturalExpiryAbolition(data.RecordId, "");
 			}
+			return true;
 		}
 		catch (Exception ex)
 		{
 			PolicySystemLog.Write("Agenda", "player-adoption-commit-failed", "recordId=" + (data?.RecordId ?? "") + " " + ex);
 			TryQueueNaturalExpiryAbolition(data?.RecordId, "");
+			return false;
 		}
 	}
 
@@ -4572,6 +4625,34 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		{
 			InformationManager.ShowInquiry(new InquiryData(data.TitleText ?? "政策记录", BuildPolicyHistoryFallbackText(data), true, false, "返回", "", onClose, null), pauseGameActiveState: true, prioritize: false);
 		}
+	}
+
+	private static void ShowPolicyRenewalResultPopup(string policyObjectId, PolicyDraftRequest request, PolicyApplicationResult application)
+	{
+		string sequencePolicyObjectId = (policyObjectId ?? "").Trim();
+		string policyName = string.IsNullOrWhiteSpace(request?.PolicyName) ? "未命名政策" : request.PolicyName.Trim();
+		int actualGoldCost = Math.Max(0, request?.GoldCost ?? 0);
+		int durationDays = application?.KingdomEffects?.Where(effect => effect != null)
+			.Select(effect => Math.Max(0, effect.DurationDays))
+			.DefaultIfEmpty(0)
+			.Max() ?? 0;
+		StringBuilder body = new StringBuilder();
+		body.Append("《").Append(policyName).Append("》已续期");
+		if (durationDays > 0)
+		{
+			body.Append(' ').Append(durationDays.ToString(CultureInfo.InvariantCulture)).Append(" 天");
+		}
+		body.AppendLine("。");
+		body.Append("本次续期消耗：").Append(actualGoldCost.ToString(CultureInfo.InvariantCulture)).Append(" 第纳尔。");
+		if (request != null && request.GoldEffectScale < 0.9999f)
+		{
+			body.AppendLine().Append("本期效果按 ").Append(FormatPercent(request.GoldEffectScale)).Append(" 生效。");
+		}
+		BeginPolicySuccessResultSequence(sequencePolicyObjectId);
+		InformationManager.ShowInquiry(new InquiryData("政策已续期", body.ToString(), true, false, "知道了", "", delegate
+		{
+			CompletePolicySuccessResultSequence(sequencePolicyObjectId, releaseDeferredResults: false);
+		}, null), pauseGameActiveState: true);
 	}
 
 	private static void ShowPolicySuccessResultPopup(string policyObjectId, string impactText)
