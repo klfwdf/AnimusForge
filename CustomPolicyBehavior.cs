@@ -56,6 +56,12 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 
 	private const int PolicyPublicFeedbackTargetDefaultChars = 900;
 
+	private const int PolicyKnowledgeTargetChars = 580;
+
+	private const int PolicyKnowledgeMinChars = 380;
+
+	private const int PolicyKnowledgeMaxChars = 650;
+
 	private const int AiPolicyGoldReserve = 1000;
 
 	private const float AiPolicyInfluenceReserve = 100f;
@@ -407,6 +413,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 			return;
 		}
 		Kingdom playerKingdom = GetPlayerKingdom();
+		MentionedWorldEntities knowledgeMentionedEntities = BuildPolicyKnowledgeMentionedEntitiesSnapshot(policyName, policyContent, playerKingdom);
 		PolicyDraftRequest request = new PolicyDraftRequest
 		{
 			RequestId = Guid.NewGuid().ToString("N"),
@@ -422,8 +429,10 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 			EvaluatorPrompt = options.EvaluatorPrompt,
 			EvaluatorPromptIsDefault = options.EvaluatorPromptIsDefault,
 			PublicFeedbackTargetChars = NormalizePolicyPublicFeedbackTargetChars(options.PublicFeedbackTargetChars),
-			PromptContext = BuildPolicyPromptContextBundle(playerKingdom, options)
+			PromptContext = BuildPolicyPromptContextBundle(playerKingdom, options),
+			KnowledgeMentionedEntities = knowledgeMentionedEntities
 		};
+		request.KnowledgeContext = BuildPolicyKnowledgeContextForMainOnly(request);
 		PolicyDebugLog("request-built", BuildPolicyRequestLogPrefix(request)
 			+ " kingdomId=" + request.PlayerKingdomId
 			+ " kingdomName=" + request.PlayerKingdomName
@@ -473,7 +482,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		try
 		{
 			PolicyDetailedLog("generate-start", BuildPolicyRequestLogPrefix(request), BuildPolicyRequestDetailedTrace(request));
-			result.KnowledgeContext = BuildPolicyKnowledgeContextForMainOnly(request);
+			result.KnowledgeContext = (request?.KnowledgeContext ?? "").Trim();
 			PolicyDebugLog("policy-knowledge-context", BuildPolicyRequestLogPrefix(request)
 				+ " source=AIConfigHandler.GetLoreContext/main_only"
 				+ " length=" + (result.KnowledgeContext ?? "").Length.ToString(CultureInfo.InvariantCulture),
@@ -1773,9 +1782,13 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 				+ " queryLength=" + query.Length.ToString(CultureInfo.InvariantCulture)
 				+ " secondaryLength=" + secondaryInput.Length.ToString(CultureInfo.InvariantCulture),
 				"knowledgeQuery:\n" + query + "\n\nknowledgeSecondaryInput:\n" + secondaryInput);
-			string context = AIConfigHandler.GetLoreContext(query, Hero.MainHero, secondaryInput);
+			MentionedWorldEntities mentionedEntities = request?.KnowledgeMentionedEntities;
+			string rawContext = AIConfigHandler.GetLoreContext(query, Hero.MainHero, secondaryInput, mentionedEntities);
+			string context = CompressPolicyKnowledgeContext(rawContext);
 			PolicyDetailedLog("policy-knowledge-context-built", BuildPolicyRequestLogPrefix(request)
 				+ " mode=main_only"
+				+ " mentionCount=" + CountPolicyKnowledgeMentions(mentionedEntities).ToString(CultureInfo.InvariantCulture)
+				+ " rawLength=" + (rawContext ?? "").Length.ToString(CultureInfo.InvariantCulture)
 				+ " contextLength=" + (context ?? "").Length.ToString(CultureInfo.InvariantCulture),
 				"knowledgeContext:\n" + (context ?? ""));
 			return (context ?? "").Trim();
@@ -1832,23 +1845,28 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 
 	private static string BuildPolicyExplicitEntityHintText(PolicyDraftRequest request)
 	{
-		string haystack = ((request?.PolicyName ?? "") + "\n" + (request?.PolicyContent ?? "")).Trim();
-		if (string.IsNullOrWhiteSpace(haystack))
+		MentionedWorldEntities entities = request?.KnowledgeMentionedEntities;
+		if (entities == null || entities.IsEmpty)
 		{
 			return "";
 		}
 		List<string> parts = new List<string>();
-		List<string> kingdoms = FindPolicyMentionedKingdoms(haystack).Take(8).ToList();
+		List<string> kingdoms = (entities.Kingdoms ?? new List<string>()).Where(x => !string.IsNullOrWhiteSpace(x)).Take(8).ToList();
 		if (kingdoms.Count > 0)
 		{
-			parts.Add("显式提及王国：" + string.Join("、", kingdoms));
+			parts.Add("相关王国：" + string.Join("、", kingdoms));
 		}
-		List<string> settlements = FindPolicyMentionedSettlements(haystack).Take(8).ToList();
+		List<string> settlements = (entities.Settlements ?? new List<string>()).Where(x => !string.IsNullOrWhiteSpace(x)).Take(8).ToList();
 		if (settlements.Count > 0)
 		{
 			parts.Add("显式提及定居点：" + string.Join("、", settlements));
 		}
-		List<string> actors = FindPolicyMentionedActors(haystack).Take(8).ToList();
+		List<string> actors = (entities.Heroes ?? new List<string>())
+			.Concat(entities.Clans ?? new List<string>())
+			.Where(x => !string.IsNullOrWhiteSpace(x))
+			.Distinct(StringComparer.OrdinalIgnoreCase)
+			.Take(8)
+			.ToList();
 		if (actors.Count > 0)
 		{
 			parts.Add("显式提及人物或家族：" + string.Join("、", actors));
@@ -1856,72 +1874,49 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		return LimitDisplayChars(CompactPolicyContextText(string.Join("；", parts)), 500);
 	}
 
-	private static List<string> FindPolicyMentionedKingdoms(string haystack)
+	private static MentionedWorldEntities BuildPolicyKnowledgeMentionedEntitiesSnapshot(string policyName, string policyContent, Kingdom playerKingdom)
 	{
-		List<string> result = new List<string>();
+		MentionedWorldEntities entities = new MentionedWorldEntities();
+		string haystack = ((policyName ?? "") + "\n" + (policyContent ?? "")).Trim();
+		AddPolicyKnowledgeEntity(entities.Kingdoms, GetKingdomName(playerKingdom), playerKingdom?.StringId);
+		AddPolicyKnowledgeEntity(entities.Terms, playerKingdom?.Culture?.Name?.ToString(), null);
+		if (string.IsNullOrWhiteSpace(haystack))
+		{
+			return entities;
+		}
 		try
 		{
 			foreach (Kingdom kingdom in Kingdom.All ?? Enumerable.Empty<Kingdom>())
 			{
-				if (kingdom == null)
+				if (kingdom != null && PolicyTextMentionsKingdom(haystack, kingdom))
 				{
-					continue;
-				}
-				string id = kingdom.StringId ?? "";
-				string name = GetKingdomName(kingdom);
-				if (PolicyTextMentionsKingdom(haystack, kingdom))
-				{
-					result.Add(name + (string.IsNullOrWhiteSpace(id) ? "" : " [" + id + "]"));
+					AddPolicyKnowledgeEntity(entities.Kingdoms, GetKingdomName(kingdom), kingdom.StringId);
 				}
 			}
 		}
 		catch
 		{
 		}
-		return result.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-	}
-
-	private static List<string> FindPolicyMentionedSettlements(string haystack)
-	{
-		List<string> result = new List<string>();
 		try
 		{
 			foreach (Settlement settlement in Settlement.All ?? Enumerable.Empty<Settlement>())
 			{
-				if (settlement == null)
+				if (settlement != null && PolicyTextMentions(haystack, settlement.StringId ?? "", settlement.Name?.ToString() ?? ""))
 				{
-					continue;
-				}
-				string id = settlement.StringId ?? "";
-				string name = settlement.Name?.ToString() ?? "";
-				if (PolicyTextMentions(haystack, id, name))
-				{
-					result.Add((string.IsNullOrWhiteSpace(name) ? id : name) + (string.IsNullOrWhiteSpace(id) ? "" : " [" + id + "]"));
+					AddPolicyKnowledgeEntity(entities.Settlements, settlement.Name?.ToString(), settlement.StringId);
 				}
 			}
 		}
 		catch
 		{
 		}
-		return result.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-	}
-
-	private static List<string> FindPolicyMentionedActors(string haystack)
-	{
-		List<string> result = new List<string>();
 		try
 		{
 			foreach (Hero hero in Hero.AllAliveHeroes ?? Enumerable.Empty<Hero>())
 			{
-				if (hero == null)
+				if (hero != null && PolicyTextMentions(haystack, hero.StringId ?? "", hero.Name?.ToString() ?? ""))
 				{
-					continue;
-				}
-				string id = hero.StringId ?? "";
-				string name = hero.Name?.ToString() ?? "";
-				if (PolicyTextMentions(haystack, id, name))
-				{
-					result.Add((string.IsNullOrWhiteSpace(name) ? id : name) + (string.IsNullOrWhiteSpace(id) ? "" : " [" + id + "]"));
+					AddPolicyKnowledgeEntity(entities.Heroes, hero.Name?.ToString(), hero.StringId);
 				}
 			}
 		}
@@ -1932,22 +1927,92 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		{
 			foreach (Clan clan in Clan.All ?? Enumerable.Empty<Clan>())
 			{
-				if (clan == null)
+				if (clan != null && PolicyTextMentions(haystack, clan.StringId ?? "", clan.Name?.ToString() ?? ""))
 				{
-					continue;
-				}
-				string id = clan.StringId ?? "";
-				string name = clan.Name?.ToString() ?? "";
-				if (PolicyTextMentions(haystack, id, name))
-				{
-					result.Add((string.IsNullOrWhiteSpace(name) ? id : name) + (string.IsNullOrWhiteSpace(id) ? "" : " [" + id + "]"));
+					AddPolicyKnowledgeEntity(entities.Clans, clan.Name?.ToString(), clan.StringId);
 				}
 			}
 		}
 		catch
 		{
 		}
-		return result.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+		return entities;
+	}
+
+	private static void AddPolicyKnowledgeEntity(List<string> target, string displayName, string fallbackId)
+	{
+		string value = string.IsNullOrWhiteSpace(displayName) ? (fallbackId ?? "").Trim() : displayName.Trim();
+		if (!string.IsNullOrWhiteSpace(value) && target != null && target.Count < 8 && !target.Contains(value, StringComparer.OrdinalIgnoreCase))
+		{
+			target.Add(value);
+		}
+	}
+
+	private static int CountPolicyKnowledgeMentions(MentionedWorldEntities entities)
+	{
+		if (entities == null)
+		{
+			return 0;
+		}
+		return (entities.Heroes?.Count ?? 0)
+			+ (entities.Settlements?.Count ?? 0)
+			+ (entities.Clans?.Count ?? 0)
+			+ (entities.Kingdoms?.Count ?? 0)
+			+ (entities.Terms?.Count ?? 0);
+	}
+
+	private static string CompressPolicyKnowledgeContext(string raw)
+	{
+		string text = (raw ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		const string knowledgeHeader = "参与互动让你的脑海里浮现了这些知识";
+		int knowledgeStart = text.IndexOf(knowledgeHeader, StringComparison.Ordinal);
+		if (knowledgeStart >= 0)
+		{
+			text = text.Substring(knowledgeStart + knowledgeHeader.Length).Trim();
+		}
+		else if (text.IndexOf("【玩家外貌信息（常驻）】", StringComparison.Ordinal) >= 0)
+		{
+			return "";
+		}
+		List<string> candidates = new List<string>();
+		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (string rawLine in text.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries))
+		{
+			string line = CompactPolicyContextText(rawLine);
+			if (string.IsNullOrWhiteSpace(line)
+				|| line.StartsWith("【以下是关于（", StringComparison.Ordinal)
+				|| line.StartsWith("【玩家外貌信息", StringComparison.Ordinal)
+				|| line.IndexOf("与玩家面对面互动时", StringComparison.Ordinal) >= 0)
+			{
+				continue;
+			}
+			foreach (string sentence in Regex.Split(line, @"(?<=[。！？!?；;])"))
+			{
+				string candidate = CompactPolicyContextText(sentence);
+				if (!string.IsNullOrWhiteSpace(candidate) && candidate.Length <= PolicyKnowledgeMaxChars && seen.Add(candidate))
+				{
+					candidates.Add(candidate);
+				}
+			}
+		}
+		StringBuilder result = new StringBuilder();
+		foreach (string candidate in candidates)
+		{
+			int nextLength = result.Length + (result.Length > 0 ? 1 : 0) + candidate.Length;
+			if (nextLength <= PolicyKnowledgeTargetChars || (result.Length < PolicyKnowledgeMinChars && nextLength <= PolicyKnowledgeMaxChars))
+			{
+				if (result.Length > 0)
+				{
+					result.Append(' ');
+				}
+				result.Append(candidate);
+			}
+		}
+		return result.ToString().Trim();
 	}
 
 	private static bool PolicyTextMentions(string haystack, params string[] candidates)
@@ -2317,7 +2382,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		}
 		if (villages.Count > 0)
 		{
-			sb.AppendLine("村庄均值：户数/炉户=" + FormatNumber(villages.Average(s => s.Village.Hearth)));
+			sb.AppendLine("村庄均值：户数=" + FormatNumber(villages.Average(s => s.Village.Hearth)));
 			if (includeAnomalies)
 			{
 				AppendVillageExtremes(sb, villages);
@@ -3957,6 +4022,10 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		public int PublicFeedbackTargetChars;
 
 		public PolicyPromptContextBundle PromptContext;
+
+		public MentionedWorldEntities KnowledgeMentionedEntities;
+
+		public string KnowledgeContext;
 	}
 
 	private sealed class PolicyPromptContextBundle

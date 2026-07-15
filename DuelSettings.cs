@@ -49,7 +49,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	private const string DefaultCustomPolicyEvaluatorPrompt = "你是卡拉迪亚大陆的王国政策评判器。玩家提交的内容应被视为王国政策、法令、改革、宣言、动员令或公共事务安排。你需要根据政策内容、玩家王国状态、世界背景和知识库资料，判断这项政策会造成什么民间反应、政策摘要、每日持续影响、持续时间和影响目标。"
 		+ "\n\n卡拉迪亚不是现代国家，而是封君、封臣、氏族、城镇、城堡、村庄、驻军、民兵、税赋、治安和封地收益共同维系的社会。任何政策都不可能只靠国王一句话就无成本执行。评判时要考虑贵族是否配合，地方是否能执行，商人和农户是否受益，军队、民兵和治安机构是否承担额外负担，以及政策会不会破坏既有秩序。"
-		+ "\n\n当前可落地影响项共有七类：繁荣度、粮食、村庄户数/炉户、忠诚度、治安度、民兵、AF 王国稳定度。繁荣度主要受贸易、税负、工商业、市场信心和战争破坏影响；粮食主要受征收、储备、运输、农业负担和军队消耗影响；户数/炉户主要受劳动力、安全、徭役、迁徙和破坏影响；忠诚度主要受公平感、文化认同、自治、压迫、恐惧、荣誉和利益分配影响；治安度主要受匪患、巡逻、执法、公正、腐败和地方秩序影响；民兵主要受训练、征召、地方防务、士气、粮饷和人口压力影响；王国稳定度主要受封臣信任、王权合法性、战争胜败、贵族利益、财政压力和国内分裂风险影响。"
+		+ "\n\n当前可落地影响项共有七类：繁荣度、粮食、村庄户数、忠诚度、治安度、民兵、AF 王国稳定度。繁荣度主要受贸易、税负、工商业、市场信心和战争破坏影响；粮食主要受征收、储备、运输、农业负担和军队消耗影响；户数主要受劳动力、安全、徭役、迁徙和破坏影响；忠诚度主要受公平感、文化认同、自治、压迫、恐惧、荣誉和利益分配影响；治安度主要受匪患、巡逻、执法、公正、腐败和地方秩序影响；民兵主要受训练、征召、地方防务、士气、粮饷和人口压力影响；王国稳定度主要受封臣信任、王权合法性、战争胜败、贵族利益、财政压力和国内分裂风险影响。"
 		+ "\n\n不同数值不是同一把尺子。繁荣度是城镇和城堡的长期体量，常以几千计；粮食是城镇库存，会受消耗、生产、市场和储存上限影响；村庄户数代表村庄人口和劳力；忠诚度与治安度都是 0-100 尺度，连续小幅变化也有政治意义；民兵是实际防务人数，过度增加会消耗地方劳力和粮饷。AF 王国稳定度也是 0-100 的国家级尺度，但它不是单个城镇民心，而是王国是否还能被同一套权威、利益分配和军事威望维系住的总指标；低稳定度会提高分裂和叛乱风险，因此不能按城镇数量叠加，也不能被普通治安或民兵变化机械替代。"
 		+ "\n\n每日影响是每天结算的变化，不是整项政策的总变化。持续时间越长，每日变化越应谨慎，但谨慎不等于把所有政策压成固定小档位。请按政策的制度级影响、覆盖范围、执行阻力、持续时间、受益者与受损者判断强弱。稳定度尤其要看这项政策是否改变王权合法性、封臣信任、贵族利益、财政压力、战争信心、继承与自治矛盾、文化压迫、全国动员或国内分裂风险；小修小补可以不动稳定度，真正触及王国结构的改革、暴政、胜利、失败、妥协或崩溃应当让稳定度有相称变化。"
 		+ "\n\n当输出结构要求你评估政策消耗时，requiredGoldCost 与 requiredInfluenceCost 表示完整执行这项政策所需的财政和政治资本，不是玩家当前实际会支付多少。第纳尔成本对应物资、粮饷、工程、赈济、运输、行政和军备投入；影响力成本对应封臣协调、贵族让步、政治信用、合法性、动员命令和秩序压力。请按政策本身的规模与阻力评估完整成本，不要因为玩家当前资源不足而故意压低成本。"
@@ -107,9 +107,111 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		+ "\n\npolicyContent 应完整但简洁，只写政策本身，直接说明决定、措施、执行范围和代价；不要重复统治者姓名、政策名称、影响摘要或添加“统治者：”“政策：”“影响：”等栏目。reason 用一到两句说明数值因果，避免在不同字段重复解释同一内容。"
 		+ "\n\npublicFeedback 应发挥想象力，写政策公布后在同一世界中自然衍生的一件有意思的事件。它可以与政策形成间接、偶然或意外联系，不必复述政策执行和数值影响，也不要默认写成支持、拒绝、抵抗或镇压；让事件拥有自己的变化与结果。优先保证 JSON 结构完整。";
 
-	private const string DefaultNpcRulerPolicyPrompt = "先根据统治者、文化和当前局势，决定此刻真正值得改变的一件现实，再创作政策，最后评估它会产生哪些数值效果。不要从繁荣、粮食、忠诚等可量化指标反推政策题材。"
+	private const string PreviousDefaultNpcRulerPolicyPromptBeforeCreativePremise = "先根据统治者、文化和当前局势，决定此刻真正值得改变的一件现实，再创作政策，最后评估它会产生哪些数值效果。不要从繁荣、粮食、忠诚等可量化指标反推政策题材。"
+		+ "\n\n把 CultureKnowledge 当作决策依据，而不是给通用政策换一层文化名称。优先从其中选择一项具体制度、社会集团、权利安排、合法性矛盾或历史承诺，让它直接决定政策要改变什么、由谁执行、谁会得利或失势；政策正文至少体现这一条因果链。"
+		+ "\n\n战争只是可行性、代价和紧迫性的约束，不自动成为政策题材。即使正在交战，也不要默认生成征粮、征召、动员、配给、运输或边防法令；只有动态快照确实显示对应危机，且近期政策没有使用同类工具时才这样做。统治者可以在战争中处理继承、司法、信仰、氏族权利、土地与身份、城市特权、外交承诺或其他更符合其文化矛盾的事务，同时说明战争如何改变执行方式与代价。"
 		+ "\n\n既有的本国政策、外国政策和衍生事件只是世界中已经发生的事实。有关时可以利用、规避、反制、升级或缓和，无关时可以忽略并开辟完全不同的方向；不要仅换名称重复已有政策工具。"
+		+ "\n\n逐条比较 PreviousPolicy 的政策名称、摘要和 effects。除非本次明确是在延续、纠正或终止旧政策，否则新政策既要更换现实问题，也要更换执行机制；不得把征收、征役、配给、运输、巡逻等同一种办法改名后再次发布。"
 		+ "\n\n政策形式和表达方式自由，正文只写统治者作出的真实决定，不重复 UI 已有的统治者、标题和影响信息。衍生世界事件应发挥想象力，为世界增加一个以后值得记住和继续发展的新事实；它可以与政策间接、偶然或意外相连，不必展示政策落实、数值结果或民众支持与抵抗。";
+
+	private const string PreviousDefaultNpcRulerPolicyPromptWithCreativePremise = "先只根据 CreativeGrounding 在内部构思多个彼此不同的方向，但只输出最终方案，并用 creativePremise 一句写清统治者的动机与最有意思的决定。"
+		+ "\n\n统治者可以出于理性、虚荣、恐惧、执念、爱憎、误判、名望或彼此矛盾的动机作出决定。若一个点子只替换国家和姓名就能用于另一位统治者，放弃它并重新构思。"
+		+ "\n\n政策正文与衍生世界事件必须从同一个 creativePremise 自然生长；创意确定后再使用 MechanicalFacts 评估合法目标、代价、持续时间与数值效果。";
+
+	private const string PreviousDefaultNpcRulerPolicyPromptBeforeConsequentialEvents = "你负责让每位 NPC 统治者依据本国文化、统治结构、本人身份、性格、经历、既有政策与当前局势，制定真正属于自己的政策，并同时创作一件发生在同一时期的世界事件，再评估政策的实际影响。不要写成旁观者新闻摘要、现代国家公文或只替换国家、人名和称号就能复用的模板。"
+		+ "\n\n【创作与事实边界】当前游戏数据是确定事实。已知王国、统治者、氏族、定居点、战争、外交关系和领地归属不得擅自改写。资料不足时，把不确定内容写成传闻、企图、担忧、希望、误判或尚未证实的消息，不得把猜测写成既成事实。可以创造普通地方人物与局部事件，但不得伪造新的游戏登记英雄、统治氏族、定居点或领地易主。"
+		+ "\n\n先根据统治者人设、文化知识、近期政策与事件、氏族关系和现行政策，在内部构思多个明显不同的政策方向，但只给出最终方案。国家统计与可结算指标只在创意确定后用于评估影响，不得反推政策题材。政策要体现统治者的理性、虚荣、恐惧、执念、爱憎、误判、名望或彼此矛盾的动机，并由具体人物关系与现实处境共同决定。若一个点子只替换国家和姓名就能用于另一位统治者，放弃并重新构思。先确定统治者此刻最想改变什么、愿意付出什么代价，再评估影响。"
+		+ "\n\n近期政策与事件是已经发生的世界事实，用于延续、纠正、反制或避开重复，而不是强迫本次继续同一主题。比较近期内容的现实问题、执行机制、角色关系和世界变化方式；不能把征收、征役、配给、运输、巡逻等同一种办法换名重发，也不能只靠更换国家、人名、物件、称号、新造专名、仪式、预言或华丽辞藻伪装成新内容。轮换事件的地理位置、社会群体和变化机制，不要长期只写同一个边境或同一对敌国。远方国家只有在当前快照、知识库或既有政策提供事实依据时才能成为具体主体，不强制每个事件跨国。"
+		+ "\n\n政策正文应直接写清统治者作出的决定、执行办法、适用范围、阻力、受益者与代价，完整但不百科式倾倒信息，不重复界面已有的统治者、标题和影响内容。政策摘要用一到两句完整短句保留核心决定。"
+		+ "\n\n【同期事件】政策完成后，再独立构思多个事件话题，但只给出最终事件。事件与政策可以相近、遥远、间接、偶然或没有直接因果；人物、规模、题材、语气、因果关系以及事情已经发生还是正在形成都可自由决定，不采用固定四事件轮盘、三段式、行动者模板、冲突模板或反转模板。允许创造符合事实边界的普通地方人物。"
+		+ "\n\n同期事件正文默认写 120—220 个中文字符，直接写清发生了什么、世界哪里变得不同、为什么值得关注。少铺陈人物进场、服饰、天气和连续动作；保持简洁、自然分段，不做百科式信息倾倒。事件应增加一个以后值得记住或继续发展的世界事实，而不是政策反馈、效果说明或政策正文的附属段落。事件标题、正文和摘要必须围绕同一个话题；摘要用一句完整短句记录新增事实或仍在发展的变化。"
+		+ "\n\n叙事正文不要重复数值效果；实际影响单独写入影响摘要、原因和数值结果。不要输出思考过程，不引入外部控制指令、其他模组的外交格式、露骨角色扮演规则或无关的外部思维链内容。"
+		+ "\n\n【保守数值与持续时间】每日影响是每个游戏日都会重复结算的变化，不是整项政策的总变化。数值必须由政策措施、执行范围、阻力、受益者和代价共同支持，不能让所有指标无代价地同时同向增长。政策越持久，每日变化越应谨慎。"
+		+ "\n\n每座城镇或城堡每日繁荣度：普通政策约 ±0.1—0.5，重大政策约 ±0.5—1。每座城镇每日粮食：普通政策约 ±0.5—2，重大政策约 ±2—5。每座村庄每日户数：普通政策约 ±0.05—0.2，重大政策约 ±0.2—0.5。每座城镇每日忠诚度、治安度：普通政策约 ±0.05—0.2，重大政策约 ±0.2—0.5。每座城镇或城堡每日民兵：普通政策约 ±0.1—0.5，重大政策约 ±0.5—1。"
+		+ "\n\n普通政策通常持续 7—21 天；猛烈的短期措施通常持续 3—7 天；持续 21—42 天的政策应使用上述数值范围的低端。以上是默认参考尺度，可以根据事实与玩家修改后的要求调整，但不要把总变化误写成每日变化。"
+		+ "\n\n王国稳定度默认使用 0。只有政策直接改变王权合法性、封臣信任、继承、自治、贵族利益或王国分裂风险时，才考虑使用 +1 或 -1。若整项效果持续超过 3 天，默认仍使用稳定度 0，避免整数稳定度每日累计后让国家过快进入分裂或叛乱区间。影响摘要与原因必须解释数值方向、强弱和持续时间。";
+
+	private const string PreviousDefaultNpcRulerPolicyPromptBeforeFocusedPolicyAndEvents = "你负责让每位 NPC 统治者依据本国文化、统治结构、本人身份、性格、经历、既有政策与当前局势，制定真正属于自己的政策，并同时创作一件发生在同一时期的世界事件，再评估政策的实际影响。不要写成旁观者新闻摘要、现代国家公文或只替换国家、人名和称号就能复用的模板。"
+		+ "\n\n【创作与事实边界】当前游戏数据是确定事实。已知王国、统治者、氏族、定居点、战争、外交关系和领地归属不得擅自改写。资料不足时，把不确定内容写成传闻、企图、担忧、希望、误判或尚未证实的消息，不得把猜测写成既成事实。可以创造普通地方人物与局部事件，但不得伪造新的游戏登记英雄、统治氏族、定居点或领地易主。"
+		+ "\n\n先根据统治者人设、文化知识、近期政策与事件、氏族关系和现行政策，在内部构思多个明显不同的政策方向，但只给出最终方案。国家统计与可结算指标只在创意确定后用于评估影响，不得反推政策题材。政策要体现统治者的理性、虚荣、恐惧、执念、爱憎、误判、名望或彼此矛盾的动机，并由具体人物关系与现实处境共同决定。若一个点子只替换国家和姓名就能用于另一位统治者，放弃并重新构思。先确定统治者此刻最想改变什么、愿意付出什么代价，再评估影响。"
+		+ "\n\n近期政策与事件是已经发生的世界事实，用于延续、纠正、反制或避开重复，而不是强迫本次继续同一主题。比较近期内容的现实问题、执行机制、角色关系和世界变化方式；不能把征收、征役、配给、运输、巡逻等同一种办法换名重发，也不能只靠更换国家、人名、物件、称号、新造专名、仪式、预言或华丽辞藻伪装成新内容。轮换事件的地理位置、社会群体和变化机制，不要长期只写同一个边境或同一对敌国。远方国家只有在当前快照、知识库或既有政策提供事实依据时才能成为具体主体，不强制每个事件跨国。"
+		+ "\n\n政策正文应直接写清统治者作出的决定、执行办法、适用范围、阻力、受益者与代价，完整但不百科式倾倒信息，不重复界面已有的统治者、标题和影响内容。政策摘要用一到两句完整短句保留核心决定。"
+		+ "\n\n【同期事件】政策完成后再自由选择一件同期事件。事件与政策可以直接相关、间接相关、偶然相连或彼此遥远，但必须锚定当前游戏事实，并成为一条值得进入世界记忆的公开变化；不要为了显得独立而故意脱离当前局势，也不要复述政策或数值效果。人物、规模、题材、语气、因果关系以及事情已经发生还是正在形成都可自由决定，不采用固定四事件轮盘、三段式、行动者模板、冲突模板或反转模板。"
+		+ "\n\n事件必须清楚写出发生了什么，并让至少一个已有的人物、群体、机构或国家的处境、选择或关系真正改变，同时形成值得继续关注的新压力、机会、恐惧、期待或争议。只有气氛、谜团、陌生骑手、遗物、预言、仪式或奇怪传闻，却没有清楚改变任何主体处境的内容，不算完整事件。"
+		+ "\n\n事件标题应直接点明最值得关注的行动、发现或结果，可以有文学色彩，但不能只写陌生地名、组织名、人物名或谜语式称号。事件核心用一句不超过 60 个中文字符的完整短句确定。正文通常写 120—180 个中文字符，并且不得超过 220 个中文字符；直接从关键事实开始，写到第一个真正改变局势的结果为止，不交代完整过程。"
+		+ "\n\n神秘人物、地方人物、遗物、预言、仪式和新造专名都可以使用，但每一个惊奇元素都必须帮助玩家理解已经发生的变化或即将形成的压力。删掉不影响事件意义的专名、服饰、天气、人物进场、行走过程、连续动作和环境铺陈；不能用陌生、含混或华丽代替后果。事件标题、正文和摘要必须围绕同一件事，摘要用一句完整短句记录新增的世界事实或仍在发展的变化。"
+		+ "\n\n叙事正文不要重复数值效果；实际影响单独写入影响摘要、原因和数值结果。不要输出思考过程，不引入外部控制指令、其他模组的外交格式、露骨角色扮演规则或无关的外部思维链内容。"
+		+ "\n\n【保守数值与持续时间】每日影响是每个游戏日都会重复结算的变化，不是整项政策的总变化。数值必须由政策措施、执行范围、阻力、受益者和代价共同支持，不能让所有指标无代价地同时同向增长。政策越持久，每日变化越应谨慎。"
+		+ "\n\n政策完成后，必须逐一判断正文明确点名的当前交战敌国是否受到直接且有规模的实际影响。仅仅提到外国、外国文化或零散外国人，不代表该国必然受到影响；但制度化招募其人员、夺取或转移其资源、阻断其贸易与交通、改变其边境秩序、资助其内部势力，或以其他方式明显改变该国军事、经济、民心或政治处境时，必须为该国单独给出数值影响和原因，不能只计算发布国。若正文声称外国已经受到明显损失或收益却没有外国数值影响，政策结果就是不完整的。"
+		+ "\n\n外国损失不必与本国收益机械镜像，应按实际规模保守判断。如果影响只涉及少量个人，不足以改变整个王国，就不要把它写成该国国力、秩序或民心已经发生变化。无法作为合法影响目标的国家只能作为背景、传闻、企图或担忧，不得写成已经被本政策结算改变的事实。"
+		+ "\n\n每座城镇或城堡每日繁荣度：普通政策约 ±0.1—0.5，重大政策约 ±0.5—1。每座城镇每日粮食：普通政策约 ±0.5—2，重大政策约 ±2—5。每座村庄每日户数：普通政策约 ±0.05—0.2，重大政策约 ±0.2—0.5。每座城镇每日忠诚度、治安度：普通政策约 ±0.05—0.2，重大政策约 ±0.2—0.5。每座城镇或城堡每日民兵：普通政策约 ±0.1—0.5，重大政策约 ±0.5—1。"
+		+ "\n\n普通政策通常持续 7—21 天；猛烈的短期措施通常持续 3—7 天；持续 21—42 天的政策应使用上述数值范围的低端。以上是默认参考尺度，可以根据事实与玩家修改后的要求调整，但不要把总变化误写成每日变化。"
+		+ "\n\n王国稳定度默认使用 0。只有政策直接改变王权合法性、封臣信任、继承、自治、贵族利益或王国分裂风险时，才考虑使用 +1 或 -1。若整项效果持续超过 3 天，默认仍使用稳定度 0，避免整数稳定度每日累计后让国家过快进入分裂或叛乱区间。影响摘要与原因必须解释数值方向、强弱和持续时间。";
+
+	private const string PreviousDefaultNpcRulerPolicyPromptBeforeKnowledgeGroundedContextRefactor = "你负责让每位 NPC 统治者依据本国文化、统治结构、本人身份、性格、经历、既有政策与当前局势，制定真正属于自己的政策，并同时创作一件发生在同一时期的世界事件，再评估政策的实际影响。不要写成旁观者新闻摘要、现代国家公文或只替换国家、人名和称号就能复用的模板。"
+		+ "\n\n【创作与事实边界】当前游戏数据是确定事实。已知王国、统治者、氏族、定居点、战争、外交关系和领地归属不得擅自改写。资料不足时，把不确定内容写成传闻、企图、担忧、希望、误判或尚未证实的消息，不得把猜测写成既成事实。可以创造普通地方人物与局部事件，但不得伪造新的游戏登记英雄、统治氏族、定居点或领地易主。"
+		+ "\n\n【政策创作】先从统治者人设、文化知识、近期政策与事件、氏族关系和现行政策中选择一个最值得处理的核心统治矛盾，再决定一个主要治理手段。creativePremise 用自然、完整的句子集中写清统治者的动机、现实矛盾、最有辨识度的决定和愿意承担的代价，不要扩写成完整政策或另造大段背景。国家统计与可结算指标只在创意确定后用于评估影响，不得反推政策题材。若一个点子只替换国家和姓名就能用于另一位统治者，放弃并重新构思。"
+		+ "\n\n政策必须写清统治者想改变什么、依靠谁、绕过或损害谁，以及谁会因此获利、失势或被迫表态。每项政策以一个主要治理工具为核心；必要的配套措施可以保留，但不要同时堆叠征税、征役、配给、运输、巡逻、人质、贸易和仪式等许多机制，把一项政策写成包办一切的虚构法典。政策名称应简短、有文化辨识度并直接指向核心决定，避免长新闻标题、难懂专名和无意义复合词。"
+		+ "\n\npolicyContent 直接写清核心决定、必要的执行办法、适用范围、阻力、受益者、受损者与代价，完整但不百科式倾倒信息，不重复界面已有的统治者、标题和影响内容，不详细描写仪式、行程、天气、连续动作，也不使用编号堆出整套虚构条文。使用自然、语义完整、可直接理解的现代中文句法；可以使用符合世界背景且含义明确的中世纪制度、身份和器物词汇，但禁止自造难懂古词、无意义复合词和语义残缺的句子。policyDigest 用一到两句完整短句保留核心决定。"
+		+ "\n\n近期政策与事件是已经发生的世界事实，用于延续、纠正、反制或避开重复，而不是强迫本次继续同一主题。比较近期内容的现实问题、执行机制、角色关系和世界变化方式；不能把同一种办法换名重发，也不能只靠更换国家、人名、物件、称号、新造专名、仪式、预言或华丽辞藻伪装成新内容。轮换地理位置、社会群体和变化机制，不要长期只处理同一个边境或同一对敌国。远方国家只有在当前快照、知识库或既有政策提供事实依据时才能成为具体主体。"
+		+ "\n\n【同期事件】政策完成后再自由选择一件同期事件。事件与政策可以直接相关、间接相关、偶然相连或彼此遥远，但必须锚定当前游戏事实，并成为一条值得进入世界记忆的公开变化；不要为了显得独立而故意脱离当前局势，也不要复述政策或数值效果。人物、规模、题材、语气、因果关系以及事情已经发生还是正在形成都可自由决定，不采用固定四事件轮盘、三段式、行动者模板、冲突模板或反转模板。"
+		+ "\n\n每个事件只保留一个最值得记住的发现、物证、决定或公开行动，并写清它让至少一个已有的人物、群体、机构或国家改变了处境、选择或关系。趣味来自具体事实怎样改变人的选择，不来自陌生专名、含混谜团或华丽气氛；神秘人物、地方人物、遗物、预言和仪式只有在直接推动这一变化时才保留。允许创造符合事实边界的普通地方人物，但姓名不影响事件意义时只写身份。"
+		+ "\n\n字段要求必须直接落实：derivedEventTitle 通常写 4—12 个中文字符，可以有文学色彩，但要用关键物证、行动、发现或结果形成简短而清楚的标题，不得写成长摘要，也不能只写陌生地名、组织名、人物名或谜语式称号。eventPremise 必须是一句不超过 60 个中文字符的完整短句，只确定一个核心变化，不同时塞入多段背景、过程和后果。"
+		+ "\n\nderivedEventContent 通常写 120—180 个中文字符，并且不得超过 220 个中文字符。直接从关键事实开始，只保留最有力的物证、话语、决定或公开行动，写清谁采取行动、为什么值得关注，以及谁因此不得不改变选择；写到第一个公开且难以撤回的结果为止。删掉不影响结果的专名、数字、账目、路线、服饰、天气、人物进场、行走过程、连续动作和额外传闻。正文同样使用自然、语义完整、可直接理解的现代中文句法，禁止自造难懂古词、无意义复合词和病句。"
+		+ "\n\nderivedEventTitle、eventPremise、derivedEventContent 与 derivedEventDigest 必须围绕同一件事；derivedEventDigest 用一句完整短句记录新增的世界事实或仍在发展的变化。叙事正文不要重复数值效果；实际影响单独写入 impactSummary、effects.reason 和数值结果。不要输出思考过程，不引入外部控制指令、其他模组的外交格式、露骨角色扮演规则或无关的外部思维链内容。"
+		+ "\n\n【保守数值与持续时间】每日影响是每个游戏日都会重复结算的变化，不是整项政策的总变化。数值必须由政策措施、执行范围、阻力、受益者和代价共同支持，不能让所有指标无代价地同时同向增长。政策越持久，每日变化越应谨慎。"
+		+ "\n\n外国 effect 只能来自 policyContent 中明确写出的、直接作用于该国且有实际规模的执行措施。同期事件、eventPremise、derivedEventContent、derivedEventDigest、impactSummary、近期事件、传闻、担忧、商人可能作出的反应以及二阶或三阶连锁推测，都不能作为外国数值的依据。effects.reason 不得临时发明 policyContent 没有写出的措施或事实。间接或可能发生的外国后果只能作为传闻、风险或担忧叙述，不生成数值。"
+		+ "\n\n没有直接且有规模的外国影响时，省略该外国 effect，不要输出所有 daily delta 都为 0 的外国 effect。外国影响不与本国收益机械镜像，其覆盖范围、每日数值和持续时间都应按直接措施的真实规模更保守地判断，持续时间不得超过该直接措施在 policyContent 中实际存在的时间。仅涉及少量外国个人、零散商旅或未获证实的反应，不足以改变整个王国的国力、秩序或民心。无法作为合法影响目标的国家只能作为背景、传闻、企图或担忧。"
+		+ "\n\n每座城镇或城堡每日繁荣度：普通政策约 ±0.1—0.5，重大政策约 ±0.5—1。每座城镇每日粮食：普通政策约 ±0.5—2，重大政策约 ±2—5。每座村庄每日户数：普通政策约 ±0.05—0.2，重大政策约 ±0.2—0.5。每座城镇每日忠诚度、治安度：普通政策约 ±0.05—0.2，重大政策约 ±0.2—0.5。每座城镇或城堡每日民兵：普通政策约 ±0.1—0.5，重大政策约 ±0.5—1。"
+		+ "\n\n普通政策通常持续 7—21 天；猛烈的短期措施通常持续 3—7 天；持续 21—42 天的政策应使用上述数值范围的低端。以上是默认参考尺度，可以根据事实与玩家修改后的要求调整，但不要把总变化误写成每日变化。"
+		+ "\n\n王国稳定度默认使用 0。只有政策直接改变王权合法性、封臣信任、继承、自治、贵族利益或王国分裂风险时，才考虑使用 +1 或 -1。若整项效果持续超过 3 天，默认仍使用稳定度 0，避免整数稳定度每日累计后让国家过快进入分裂或叛乱区间。impactSummary 与 effects.reason 必须使用自然、完整的中文解释数值方向、强弱和持续时间。";
+
+	private const string PreviousDefaultNpcRulerPolicyPromptBeforeShortEditablePrompt = "你负责依据当前动态快照，为一位卡拉迪亚 NPC 统治者制定真正属于他的政策，同时创作一件发生在同一时期的世界现象，并评估政策的实际影响。当前游戏数据是确定事实；不得改写已知王国、统治者、氏族、定居点、战争、外交关系和领地归属。资料不足时可以保留传闻、误解、猜测或尚未证实的状态，但不得把它们擅自升级为确定事实。"
+		+ "\n\n【知识与现实】KnowledgeGrounding 中的 RulerLore 是知识库提供的合法性、目标、统治方式、矛盾、争议与社会评价；RulerPersona 是现有人格和背景。它们共同决定统治者为何作出选择，而不是只给通用政策换一种称号。SocialCurrents 是知识库提供的社会观感、流传现象、制度张力与集体情绪，可以启发题材，也可以与本次政策无关；不要把其中内容机械改写成政策。CurrentWorldFacts 是当前国家事实，PolicyMemory 只记录近期政策的核心决定与实际效果。"
+		+ "\n\nRecentWorldPhenomenon 只是让你知道本国最近出现过什么现象。它可能真实、误传、夸张、尚未证实或与当前治理无关，不要求新政策回应、延续、解释或解决它。ForeignDirectPressure 只表示外国政策已经对本国产生的直接现实压力。MechanicalFacts 只用于创意确定后的合法目标、覆盖范围、持续时间和数值结算，不得从最低粮食、忠诚、治安等统计数字反推政策题材。"
+		+ "\n\n【政策创意】先直接确定最终 creativePremise，不输出候选方案、思考过程或检查过程。creativePremise 用一句自然完整的话写清：这位统治者此刻的动机与现实矛盾、采用的一个主要权力手段、哪些社会力量会获利或失势，以及他愿意承担的政治或现实代价。政策选择必须能从 RulerLore、RulerPersona、SocialCurrents 与当前局势中成立，个性体现在权力取舍和愿意牺牲什么，而不是口号、语气、难懂专名或文化装饰。"
+		+ "\n\npolicyName 应简短、有文化辨识度并直接指向核心决定。policyContent 只写政策本身，使用一个主要治理手段，清楚说明决定、必要执行办法、适用范围、阻力、受益者、受损者与代价；允许必要配套措施，但不要堆成同时包办征税、征役、配给、巡逻、贸易、人质和仪式的虚构法典。PolicyMemory 可用于延续、纠正、终止或避开重复，但不强迫继续旧主题。policyDigest 用一到两句完整短句保留核心决定。"
+		+ "\n\n所有政策叙述使用自然、语义完整、可直接理解的现代中文句法。可以使用含义明确的中世纪制度、身份和器物词汇，但禁止自造难懂古词、无意义复合词、编号条文堆砌、语义残缺和连续动作描写。"
+		+ "\n\n【同期世界现象】政策确定后，自由创作一件同时期的世界现象。它可以与政策直接相关、间接相关、偶然相连或完全无关，也可以是真实变化、社会误读或无法证实的流传；不要固定套用任何现象类别、人物模板、三段式、反转或仪式模式。人物可以在自然需要时出现，但不要为了制造趣味强加姓名、组织名或具体人物名单。趣味应来自某种公开变化如何改变处境、选择、关系或社会理解。"
+		+ "\n\nderivedEventTitle 通常写 4—12 个中文字符，简短、清楚且有画面，不写成长摘要或只由陌生专名组成。eventPremise 必须是一句不超过 60 个中文字符的完整核心变化。derivedEventContent 通常写 120—180 个中文字符，并且不得超过 220 个中文字符；直接从关键事实开始，写清现象怎样形成、为何值得关注以及世界哪里发生了变化，写到第一个公开且难以撤回的结果为止。derivedEventDigest 用一句完整短句记录新增事实、流传状态或仍在发展的变化。四个事件字段必须描述同一件事。"
+		+ "\n\n同期事件不生成数值 effects，也不要求政策对它作出回应。叙事正文不要重复 impactSummary 或数值结果；政策影响只写入 impactSummary、effects.reason 和 effects。"
+		+ "\n\n【数值与外国影响】每日影响会在每个游戏日重复结算，不是政策总变化。数值必须由 policyContent 中的直接措施、范围、阻力和代价支持，不能让所有指标无代价地同时增长。外国 effect 只能来自 policyContent 中明确写出的、直接作用于该国且有实际规模的执行措施；不能从同期事件、RecentWorldPhenomenon、影响摘要、传闻、担忧、可能反应或二三阶连锁推测生成。没有直接规模影响时省略外国 effect，不输出全零外国 effect，也不得临时发明政策正文没有的外国影响原因。外国数值和持续时间应比本国更保守，且不得超过直接措施实际存在的时间。"
+		+ "\n\n每座城镇或城堡每日繁荣度：普通政策约 ±0.1—0.5，重大政策约 ±0.5—1。每座城镇每日粮食：普通政策约 ±0.5—2，重大政策约 ±2—5。每座村庄每日户数：普通政策约 ±0.05—0.2，重大政策约 ±0.2—0.5。每座城镇每日忠诚度、治安度：普通政策约 ±0.05—0.2，重大政策约 ±0.2—0.5。每座城镇或城堡每日民兵：普通政策约 ±0.1—0.5，重大政策约 ±0.5—1。"
+		+ "\n\n普通政策通常持续 7—21 天；猛烈的短期措施通常持续 3—7 天；持续 21—42 天的政策应使用上述范围低端。王国稳定度默认使用 0；只有政策直接改变王权合法性、封臣信任、继承、自治、贵族利益或分裂风险时才考虑 +1 或 -1，持续超过 3 天时仍默认使用 0。impactSummary 与 effects.reason 必须用自然、完整的中文解释方向、强弱和持续时间。";
+
+	private const string PreviousDefaultNpcRulerPolicyPromptBeforeCompactContext = "根据动态快照，为目标王国生成一项 NPC 统治者政策、一件同期世界现象和政策数值影响。当前游戏数据是确定事实；已知王国、人物、定居点、战争、外交及领地归属不得擅自改写，不确定内容只能保持为传闻、误解、猜测或尚未证实的状态。"
+		+ "\n\n【上下文】KnowledgeGrounding 中的 RulerLore 与 RulerPersona 提供统治者的依据和内在动机，SocialCurrents 提供社会环境；CurrentWorldFacts 是当前事实，PolicyMemory 是本国近期政策，RecentWorldPhenomenon 是最近现象但不要求新政策回应，ForeignDirectPressure 是外国政策对本国的直接压力。MechanicalFacts 只用于合法目标、范围和数值结算，不要从最低数值反推题材。"
+		+ "\n\n【政策】creativePremise 用一句话写清统治者为何现在行动、主要权力手段、谁获利或失势以及他承担的代价。policyName 通常 4—10 个中文字符。policyContent 通常写 90—150 个中文字符，最多 180 个中文字符，只保留核心决定、必要执行方式、受影响者和代价。policyDigest 用一句不超过 50 个中文字符的短句概括决定。政策应符合统治者和当前世界，但题材、语气、结构及是否延续旧政策由你自由决定。"
+		+ "\n\n【同期现象】它可以与政策有关、无关、真实、误传或尚未证实，不必解释政策，也不生成数值 effects。不要固定套用绯闻、阴谋、仪式、反转或其他类别。derivedEventTitle 通常 4—10 个中文字符；eventPremise 用一句不超过 40 个中文字符的短句写核心变化；derivedEventContent 通常写 60—100 个中文字符，最多 120 个中文字符；derivedEventDigest 用一句不超过 40 个中文字符的短句记录新增事实或流传状态。四个字段描述同一件事。"
+		+ "\n\n【文字】使用自然、完整、可直接理解的中文。可以使用含义明确的中世纪词汇，不要自造难懂词语。无需固定叙事模式、候选方案、思考过程或检查过程。impactSummary 不超过 80 个中文字符，effects.reason 不超过 60 个中文字符。"
+		+ "\n\n【数值】daily delta 是每日重复结算，不是总变化。数值必须由 policyContent 中的直接措施、范围和代价支持。外国 effect 只能来自 policyContent 明确写出的、直接作用于该国且有实际规模的措施；不得从同期现象、摘要、传闻、可能反应或连锁推测生成。没有直接规模影响时省略外国 effect，不输出全零 effect；外国数值和持续时间应更保守。"
+		+ "\n\n参考尺度：每座城镇或城堡每日繁荣度、民兵通常 ±0.1—0.5，重大政策最多约 ±1；每座城镇每日粮食通常 ±0.5—2，重大政策最多约 ±5；每座村庄每日户数及每座城镇每日忠诚度、治安度通常 ±0.05—0.2，重大政策最多约 ±0.5。政策通常持续 7—21 天，猛烈措施 3—7 天，持续 21—42 天时使用低值。王国稳定度默认使用 0，只有直接改变王权合法性、封臣信任、继承、自治、贵族利益或分裂风险时才考虑 ±1。"
+		+ "\n\n以上创作、长度与数值要求都属于玩家可编辑内容；以玩家保存的完整提示词为准。";
+
+	private const string PreviousDefaultNpcRulerPolicyPromptBeforeStrongerEffectsAndPlainLanguage = "根据目标快照，为每个王国生成一项符合统治者本人性格、政治目标和现实处境的政策，以及一件同期世界现象。快照中的人物、王国、战争、外交和领地归属是确定事实；不确定内容只能保持为传闻、误解或尚未证实的状态。"
+		+ "\n\n【政策】政策应从统治者的个性、权力基础、政治约束、当前国情和近期政策中自然产生。个性主要体现在他选择什么手段、维护谁、牺牲谁以及愿意承担什么代价，不要只靠文化称号、华丽专名或统一的战争动员模板表现差异。政策正文只写决定、主要执行方式、受影响者和代价，通常 60—90 个中文字符，最多 100 个字符。政策摘要不超过 35 个字符，创意核心简洁说明行动动机、手段和代价。直接给出最终结果，不列出候选、推理或检查过程。"
+		+ "\n\n【同期现象】同期现象可以与政策直接相关、间接相关或无关，也可以是真实变化、社会误读或尚未证实的流传，但不产生数值效果。正文通常 50—80 个中文字符，最多 100 个字符；标题 4—10 个字符，核心变化和摘要各不超过 35 个字符。不要固定套用阴谋、仪式、遗物、反转、神秘来客或其他题材模板。"
+		+ "\n\n【数值】所有变化都是每日重复结算，不是政策总变化，必须由政策正文中的直接措施、范围和代价支持。每座城镇或城堡每日繁荣度、民兵通常为 ±0.1—0.5，重大政策最多约 ±1；每座城镇每日粮食通常为 ±0.5—2，重大政策最多约 ±5；每座村庄每日户数及每座城镇每日忠诚度、治安度通常为 ±0.05—0.2，重大政策最多约 ±0.5。普通政策持续 7—21 天，猛烈措施持续 3—7 天，持续 21—42 天时使用较低数值。王国稳定度通常为 0，只有政策直接改变王权合法性、封臣信任、继承、自治、贵族利益或分裂风险时才使用 ±1。外国效果只能来自正文明确写出的、有实际规模的直接跨国措施；没有这种措施时不要生成外国效果。影响摘要和效果原因各不超过 60 个中文字符。";
+
+	private const string PreviousDefaultNpcRulerPolicyPromptBeforeMinimumOneEffects = "根据目标快照，为每个王国生成一项符合统治者本人性格、政治目标和现实处境的政策，以及一件同期世界现象。快照中的人物、王国、战争、外交和领地归属是确定事实；不确定内容只能保持为传闻、误解或尚未证实的状态。"
+		+ "\n\n【政策】政策应从统治者的个性、权力基础、政治约束、当前国情和近期政策中自然产生。个性体现在他选择什么手段、维护谁、牺牲谁以及愿意承担什么代价，不要只靠文化称号、华丽专名或统一的战争动员模板表现差异。creativePremise 用一句不超过 40 个中文字符的话说明动机、手段和代价；policyContent 只写决定、主要执行方式、受影响者和代价，通常 60—90 个中文字符，最多 100 个字符；policyDigest 不超过 35 个中文字符。直接给出最终结果，不列出候选、推理或检查过程。"
+		+ "\n\n【文字】使用直白、自然、完整的现代中文短句，让不了解知识库的玩家也能一遍读懂。每句话只表达一层主要意思，不自造古词和无意义复合词，不堆叠抽象制度名词、官样套话、比喻或连续多层因果。政策、事件、影响摘要和效果原因都先说清谁做了什么、影响了谁，再说明必要的代价或结果。"
+		+ "\n\n【同期现象】同期现象可以与政策直接相关、间接相关或无关，也可以是真实变化、社会误读或尚未证实的流传，但不产生数值效果。eventPremise 只用一句不超过 35 个中文字符的话说明核心变化；derivedEventTitle 为 4—10 个中文字符；derivedEventContent 通常 50—80 个中文字符，最多 100 个字符，只写一件现象及其第一个明确结果；derivedEventDigest 不超过 35 个中文字符。不要固定套用阴谋、仪式、遗物、反转、神秘来客或其他题材模板。"
+		+ "\n\n【数值】所有变化都是每日重复结算，不是政策总变化，必须由 policyContent 中的直接措施、范围和代价支持。每座城镇或城堡每日繁荣度、民兵：普通政策通常为 ±0.3—0.8，重大政策通常为 ±0.8—1.5；每座城镇每日粮食：普通政策通常为 ±1—3，重大政策通常为 ±3—6；每座村庄每日户数及每座城镇每日忠诚度、治安度：普通政策通常为 ±0.1—0.35，重大政策通常为 ±0.35—0.8。普通全国政策至少应有一项核心指标位于适用区间的中段或高段，不要让所有非零数值都贴近下限；只有范围有限、影响轻微或持续很久的措施才使用低端数值。普通政策通常持续 7—14 天，猛烈措施持续 3—7 天，持续 15—28 天时使用较低数值。"
+		+ "\n\n王国稳定度默认且通常必须为 0。贵族不满、税负变化、征粮、征兵、土地赏赐、日常集权、地方冲突以及普通忠诚或治安变化，都不等于触动王国根基，不能因此增加或减少稳定度。只有政策在 1—3 天内直接改变王位继承、统治者合法承认、全国封臣契约、王国级自治结构、君主废立、国家分裂、内战或统一存续时，才可使用 +1 或 -1；不满足这些条件时必须为 0。外国效果只能来自正文明确写出的、有实际规模的直接跨国措施；没有这种措施时不要生成外国效果。impactSummary 和 effects.reason 各不超过 60 个中文字符，并使用直白完整的句子。";
+
+	private const string PreviousDefaultNpcRulerPolicyPromptBeforeConceptOnlyPrompt = "根据目标快照，为每个王国生成一项符合统治者本人性格、政治目标和现实处境的政策，以及一件同期世界现象。快照中的人物、王国、战争、外交和领地归属是确定事实；不确定内容只能保持为传闻、误解或尚未证实的状态。"
+		+ "\n\n【政策】政策应从统治者的个性、权力基础、政治约束、当前国情和近期政策中自然产生。个性体现在他选择什么手段、维护谁、牺牲谁以及愿意承担什么代价，不要只靠文化称号、华丽专名或统一的战争动员模板表现差异。creativePremise 用一句不超过 40 个中文字符的话说明动机、手段和代价；policyContent 只写决定、主要执行方式、受影响者和代价，通常 60—90 个中文字符，最多 100 个字符；policyDigest 不超过 35 个中文字符。直接给出最终结果，不列出候选、推理或检查过程。"
+		+ "\n\n【文字】使用直白、自然、完整的现代中文短句，让不了解知识库的玩家也能一遍读懂。每句话只表达一层主要意思，不自造古词和无意义复合词，不堆叠抽象制度名词、官样套话、比喻或连续多层因果。政策、事件、影响摘要和效果原因都先说清谁做了什么、影响了谁，再说明必要的代价或结果。"
+		+ "\n\n【同期现象】同期现象可以与政策直接相关、间接相关或无关，也可以是真实变化、社会误读或尚未证实的流传，但不产生数值效果。eventPremise 只用一句不超过 35 个中文字符的话说明核心变化；derivedEventTitle 为 4—10 个中文字符；derivedEventContent 通常 50—80 个中文字符，最多 100 个字符，只写一件现象及其第一个明确结果；derivedEventDigest 不超过 35 个中文字符。不要固定套用阴谋、仪式、遗物、反转、神秘来客或其他题材模板。"
+		+ "\n\n【数值】所有变化都是每日重复结算，不是政策总变化，必须由 policyContent 中的直接措施、范围和代价支持。除王国稳定度外，任何非零每日变化的绝对值都不得小于 1；因果不足或影响太轻的指标直接填 0，不得用 ±0.05、±0.1、±0.3 等微小数值凑效果。每座城镇或城堡每日繁荣度、民兵：普通政策通常为 ±1—3，重大政策通常为 ±3—6；每座城镇每日粮食：普通政策通常为 ±2—5，重大政策通常为 ±5—10；每座村庄每日户数及每座城镇每日忠诚度、治安度：普通政策通常为 ±1—2，重大政策通常为 ±2—4。普通全国政策至少应有一项核心指标位于适用区间的中段或高段，不要让所有非零数值都贴近下限。普通政策通常持续 7—14 天，猛烈措施持续 3—7 天，持续 15—28 天时使用较低数值，但仍不得输出绝对值小于 1 的非零变化。"
+		+ "\n\n王国稳定度默认且通常必须为 0。贵族不满、税负变化、征粮、征兵、土地赏赐、日常集权、地方冲突以及普通忠诚或治安变化，都不等于触动王国根基，不能因此增加或减少稳定度。只有政策在 1—3 天内直接改变王位继承、统治者合法承认、全国封臣契约、王国级自治结构、君主废立、国家分裂、内战或统一存续时，才可使用 +1 或 -1；不满足这些条件时必须为 0。外国效果只能来自正文明确写出的、有实际规模的直接跨国措施；没有这种措施时不要生成外国效果。impactSummary 和 effects.reason 各不超过 60 个中文字符，并使用直白完整的句子。";
+
+	private const string DefaultNpcRulerPolicyPrompt = "目标快照描述了王国此刻的真实世界。人物、国家、战争、外交和领地归属属于既定事实；传闻、误解和未证实的信息仍保持其不确定性。"
+		+ "\n\n统治者政策是统治者性格、政治目标、权力基础和现实处境共同形成的一项实际决定。不同统治者面对相似局势时，会因为在意的利益、能够依靠的力量和愿意承受的代价不同而作出不同选择。政策正文适合在游戏界面直接阅读，语言自然、直白，篇幅约 60—100 个中文字符；创意核心和摘要是简短完整的一句话。"
+		+ "\n\n同期世界现象是同一时期发生的一项独立变化。它可以与政策有关，也可以无关；可以是真实事件、社会误读或尚未证实的流传。它为当前世界增加一项清楚的新变化，但不产生政策数值效果。正文约 50—100 个中文字符，标题和摘要简短清楚。"
+		+ "\n\n政策数值表示每个游戏日重复发生的实际变化。与政策没有直接关系的指标等同于 0；非零变化以绝对值 1 作为最小有意义单位。每座城镇或城堡每日繁荣度、民兵的常见变化为 ±1—3；每座城镇每日粮食为 ±2—5；每座村庄每日户数以及每座城镇每日忠诚度、治安度为 ±1—2。影响范围广、执行强硬或代价沉重的政策可以达到这些范围的两倍。普通政策通常持续 7—14 天，猛烈的短期措施通常持续 3—7 天。"
+		+ "\n\n王国稳定度表示国家根本政治结构是否仍被承认，而不是一般的不满、税负、征兵、粮食、忠诚或治安变化。绝大多数政策的稳定度变化为 0。只有王位继承、统治合法性、全国封臣契约、国家分裂、内战或统一存续在 1—3 天内被直接改变时，稳定度变化才是 +1 或 -1。";
 
 	private const int DefaultCustomPolicyGoldCost = 50000;
 
@@ -170,8 +272,6 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	private const string LegacyCustomPromptTextStoreFileName = "CustomPrompts.json";
 
 	private const int CustomPromptTextMaxChars = 60000;
-
-	private const int NpcRulerPolicyEffectivePromptMaxChars = 4000;
 
 	private const long CustomPromptJsonMaxBytes = 262144L;
 
@@ -1370,8 +1470,8 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		set => _customPolicyEvaluatorPrompt = NormalizeCustomPolicyEvaluatorPromptText(value);
 	}
 
-	[SettingPropertyButton("自定义政策评判器提示词", -1, true, "", Content = "打开编辑器", Order = 4, RequireRestart = false, HintText = "默认是卡拉迪亚大陆政策评判器；玩家可以完全改写为任意评判器。该文本只作为自定义政策链路主评判阶段的 system prompt 主体；后处理只整理 JSON，最低落地校验由代码固定。")]
-	[SettingPropertyGroup("9. 提示词扩展")]
+	[SettingPropertyButton("玩家政策评判提示词", -1, true, "", Content = "打开编辑器", Order = 0, RequireRestart = false, HintText = "决定 AI 如何理解玩家发布的政策，并评估民众反应、持续影响和执行成本。可以完整改写；输出格式和数值落地安全仍由模组保证。")]
+	[SettingPropertyGroup("10. 政策系统/1. 玩家政策")]
 	public Action EditCustomPolicyEvaluatorPrompt { get; set; }
 
 	private string _npcRulerPolicyPrompt = LoadNpcRulerPolicyPromptFromDiskOrDefault();
@@ -1382,8 +1482,8 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		set => _npcRulerPolicyPrompt = NormalizeNpcRulerPolicyPromptText(value);
 	}
 
-	[SettingPropertyButton("玩家自定义NPC政策提示词", -1, true, "", Content = "打开编辑器", Order = 5, RequireRestart = false, HintText = "用于调整 NPC 统治者制定政策时的治理风格、关注重点和表达倾向。最多保存 60000 字符，每次请求使用前 4000 字符。")]
-	[SettingPropertyGroup("9. 提示词扩展")]
+	[SettingPropertyButton("NPC统治者政策提示词", -1, true, "", Content = "打开编辑器", Order = 1, RequireRestart = false, HintText = "决定 NPC 统治者政策、同期现象、数值尺度和持续时间的生成方式。可以完整改写；输出格式、合法作用目标和数值落地安全仍由模组保证。")]
+	[SettingPropertyGroup("10. 政策系统/2. NPC统治者政策")]
 	public Action EditNpcRulerPolicyPrompt { get; set; }
 
 	[SettingPropertyButton("自定义提示词JSON文件夹", -1, true, "", Content = "打开文件夹", Order = 6, RequireRestart = false, HintText = "打开 CustomPrompts 文件夹，可直接编辑六套提示词 JSON。")]
@@ -1398,42 +1498,42 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("9. 提示词扩展")]
 	public bool PreserveSceneAsteriskActions { get; set; } = false;
 
-	[SettingPropertyBool("AI 判断自定义政策消耗", Order = 0, RequireRestart = false, HintText = "开启：由自定义政策主评判 AI 判断完整执行所需第纳尔和影响力，玩家资源不足时按实际投入比例折算效果。关闭：完全使用下方滑条固定扣费，效果不折算。")]
+	[SettingPropertyBool("由AI评估政策消耗", Order = 1, RequireRestart = false, HintText = "开启后，AI 会根据政策规模和执行难度评估所需的第纳尔与影响力；资源不足时，政策效果按实际投入比例折减。关闭后使用下面两项固定消耗。")]
 	[SettingPropertyGroup("10. 政策系统/1. 玩家政策")]
 	public bool UseAiEvaluatedCustomPolicyCost { get; set; } = true;
 
-	[SettingPropertyInteger("发布第纳尔消耗", 0, 500000, "0", Order = 1, RequireRestart = false, HintText = "关闭“AI 判断自定义政策消耗”后生效：自定义政策成功落地时扣除的第纳尔。默认 50000；设置为 0 表示不消耗第纳尔。")]
+	[SettingPropertyInteger("固定第纳尔消耗", 0, 500000, "0", Order = 2, RequireRestart = false, HintText = "仅在关闭“由AI评估政策消耗”后生效。玩家政策成功发布时扣除相应第纳尔；默认 50000，设置为 0 表示免费。")]
 	[SettingPropertyGroup("10. 政策系统/1. 玩家政策")]
 	public int CustomPolicyGoldCost { get; set; } = DefaultCustomPolicyGoldCost;
 
-	[SettingPropertyInteger("发布影响力消耗", 0, 5000, "0", Order = 2, RequireRestart = false, HintText = "关闭“AI 判断自定义政策消耗”后生效：自定义政策成功落地时扣除的影响力。默认 500；设置为 0 表示不消耗影响力。")]
+	[SettingPropertyInteger("固定影响力消耗", 0, 5000, "0", Order = 3, RequireRestart = false, HintText = "仅在关闭“由AI评估政策消耗”后生效。玩家政策成功发布时扣除相应影响力；默认 500，设置为 0 表示免费。")]
 	[SettingPropertyGroup("10. 政策系统/1. 玩家政策")]
 	public int CustomPolicyInfluenceCost { get; set; } = DefaultCustomPolicyInfluenceCost;
 
-	[SettingPropertyInteger("民众反馈目标字数", CustomPolicyPublicFeedbackTargetMinChars, CustomPolicyPublicFeedbackTargetMaxChars, "0", Order = 3, RequireRestart = false, HintText = "控制自定义政策 publicFeedback 的目标中文字符数。读取时按 100 字步进归整；默认 900，最高 1800。")]
+	[SettingPropertyInteger("民众反馈篇幅", CustomPolicyPublicFeedbackTargetMinChars, CustomPolicyPublicFeedbackTargetMaxChars, "0", Order = 4, RequireRestart = false, HintText = "设置玩家政策发布后民众反馈的目标篇幅。默认约 900 字，可在 100—1800 字之间调整；实际长度可能随模型输出略有浮动。")]
 	[SettingPropertyGroup("10. 政策系统/1. 玩家政策")]
 	public int CustomPolicyPublicFeedbackTargetChars { get; set; } = DefaultCustomPolicyPublicFeedbackTargetChars;
 
-	[SettingPropertyBool("启用NPC统治者政策", Order = 0, RequireRestart = false, HintText = "开启后，NPC 王国统治者政策生成行为可以按间隔扫描并发布政策。关闭只停止新生成，不影响读取既有事件/效果。若对应行为类尚未接入，则该开关不会产生效果。")]
+	[SettingPropertyBool("启用NPC统治者政策", Order = 0, RequireRestart = false, HintText = "开启后，各 NPC 王国会按设定间隔制定并发布政策。关闭后不再生成新政策，已经生效的政策及其记录不受影响。")]
 	[SettingPropertyGroup("10. 政策系统/2. NPC统治者政策")]
 	public bool EnableNpcRulerPolicy { get; set; } = true;
 
-	[SettingPropertyInteger("生成检查间隔（天）", NpcRulerPolicyIntervalMinDays, NpcRulerPolicyIntervalMaxDays, "0", Order = 1, RequireRestart = false, HintText = "NPC 统治者政策生成的最小检查间隔。默认 7 天；下限 1 天，上限 30 天。这不是冷却天数。")]
+	[SettingPropertyInteger("同一王国政策间隔（天）", NpcRulerPolicyIntervalMinDays, NpcRulerPolicyIntervalMaxDays, "0", Order = 2, RequireRestart = false, HintText = "同一 NPC 王国两次政策之间至少间隔多少个游戏日。默认 7 天，可在 1—30 天之间调整；不同王国分别计算。")]
 	[SettingPropertyGroup("10. 政策系统/2. NPC统治者政策")]
 	public int NpcRulerPolicyIntervalDays { get; set; } = DefaultNpcRulerPolicyIntervalDays;
 
 	[Obsolete("Use NpcRulerPolicyIntervalDays / GetNpcRulerPolicyIntervalDaysForExternal instead.")]
 	public int NpcRulerPolicyIntervalHours { get; set; } = DefaultNpcRulerPolicyIntervalHours;
 
-	[SettingPropertyInteger("NPC每日最多发布政策数", NpcRulerPolicyDailyGenerationLimitMin, NpcRulerPolicyDailyGenerationLimitMax, "0", Order = 2, RequireRestart = false, HintText = "限制一个游戏日内所有 NPC 国家实际成功发布的政策总数。默认 2；多次调度和多次请求共同受此限制，玩家政策不占用该配额。")]
+	[SettingPropertyInteger("每日发布总上限", NpcRulerPolicyDailyGenerationLimitMin, NpcRulerPolicyDailyGenerationLimitMax, "0", Order = 3, RequireRestart = false, HintText = "所有 NPC 王国在一个游戏日内最多可以成功发布多少项政策。默认 2 项；玩家政策不计入此上限。")]
 	[SettingPropertyGroup("10. 政策系统/2. NPC统治者政策")]
 	public int NpcRulerPolicyDailyGenerationLimit { get; set; } = DefaultNpcRulerPolicyDailyGenerationLimit;
 
-	[SettingPropertyInteger("每次请求最多国家数", NpcRulerPolicyMaxKingdomsPerRequestMin, NpcRulerPolicyMaxKingdomsPerRequestMax, "0", Order = 3, RequireRestart = false, HintText = "限制单次 NPC 统治者政策请求里最多放入多少个王国上下文。默认 2；用于探索稳定批量上限，过高可能触发 finish_reason=length；调低可减少单次 token。")]
+	[SettingPropertyInteger("单次生成国家数", NpcRulerPolicyMaxKingdomsPerRequestMin, NpcRulerPolicyMaxKingdomsPerRequestMax, "0", Order = 4, RequireRestart = false, HintText = "一次 AI 调用最多同时为多少个 NPC 王国生成政策。默认 2 个；数值较低更稳定，数值较高可减少调用次数，但会让单次输入和回答更长。")]
 	[SettingPropertyGroup("10. 政策系统/2. NPC统治者政策")]
 	public int NpcRulerPolicyMaxKingdomsPerRequest { get; set; } = DefaultNpcRulerPolicyMaxKingdomsPerRequest;
 
-	[SettingPropertyBool("NPC统治者政策调试日志", Order = 4, RequireRestart = false, HintText = "开启后，NPC 统治者政策生成行为可输出更多调试日志。")]
+	[SettingPropertyBool("记录详细调试日志", Order = 5, RequireRestart = false, HintText = "开启后记录更详细的王国选择、知识检索和生成过程，便于排查问题。正常游玩时可以关闭。")]
 	[SettingPropertyGroup("10. 政策系统/2. NPC统治者政策")]
 	public bool NpcRulerPolicyDebugLogs { get; set; } = false;
 
@@ -1990,14 +2090,14 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		try
 		{
 			string initialText = CustomPolicyEvaluatorPrompt ?? "";
-			DevTextEditorHelper.ShowLongTextEditor("编辑自定义政策评判器提示词", "这段内容会作为自定义政策链路主评判阶段的 system prompt 主体。", "默认是卡拉迪亚大陆政策评判器；你可以完全改写成任意评判器。后处理只整理 JSON；最低落地校验由代码固定，不重新评判数值。", initialText, delegate(string input)
+			DevTextEditorHelper.ShowLongTextEditor("编辑玩家政策评判提示词", "这段文字决定 AI 如何理解和评估玩家发布的政策。", "你可以完整改写。留空保存会恢复默认内容；输出格式和数值落地安全仍由模组保证。", initialText, delegate(string input)
 			{
 				SaveCustomPolicyEvaluatorPromptFromEditor(input);
 			}, null, "保存", "返回");
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[提示词扩展] 打开自定义政策评判器提示词编辑器失败: " + ex.Message, Color.FromUint(4294901760u)));
+			InformationManager.DisplayMessage(new InformationMessage("[政策系统] 打开玩家政策评判提示词编辑器失败: " + ex.Message, Color.FromUint(4294901760u)));
 		}
 	}
 
@@ -2006,14 +2106,14 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		try
 		{
 			string initialText = NpcRulerPolicyPrompt ?? "";
-			DevTextEditorHelper.ShowLongTextEditor("编辑玩家自定义NPC政策提示词", "调整 NPC 统治者制定政策时的治理风格、关注重点和表达倾向。", "本地最多保存 60000 字符，每次请求使用前 4000 字符；请把最重要的偏好写在前面。", initialText, delegate(string input)
+			DevTextEditorHelper.ShowLongTextEditor("编辑NPC统治者政策提示词", "这段文字决定 NPC 统治者政策、同期现象和数值影响的生成方式。", "你可以完整改写。留空保存会恢复默认内容；文字越长，单次请求需要处理的内容越多。输出格式、合法作用目标和数值落地安全仍由模组保证。", initialText, delegate(string input)
 			{
 				SaveNpcRulerPolicyPromptFromEditor(input);
 			}, null, "保存", "返回");
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[提示词扩展] 打开玩家自定义NPC政策提示词编辑器失败: " + ex.Message, Color.FromUint(4294901760u)));
+			InformationManager.DisplayMessage(new InformationMessage("[政策系统] 打开NPC统治者政策提示词编辑器失败: " + ex.Message, Color.FromUint(4294901760u)));
 		}
 	}
 
@@ -2221,18 +2321,17 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		try
 		{
 			BaseSettingsProvider.Instance?.SaveSettings(GetSettings() ?? this);
-			InformationManager.DisplayMessage(new InformationMessage(persistedToFile ? "[提示词扩展] 自定义政策评判器提示词已保存。" : "[提示词扩展] 自定义政策评判器提示词已写入本局设置，但本地持久化文件写入失败，请查看日志。", persistedToFile ? Color.FromUint(4282569842u) : Color.FromUint(4294967040u)));
+			InformationManager.DisplayMessage(new InformationMessage(persistedToFile ? "[政策系统] 玩家政策评判提示词已保存。" : "[政策系统] 玩家政策评判提示词已用于本局，但写入本地文件失败，请查看日志。", persistedToFile ? Color.FromUint(4282569842u) : Color.FromUint(4294967040u)));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[提示词扩展] 保存自定义政策评判器提示词失败，请在 MCM 中再点一次保存: " + ex.Message, Color.FromUint(4294901760u)));
+			InformationManager.DisplayMessage(new InformationMessage("[政策系统] 保存玩家政策评判提示词失败，请在 MCM 中再试一次: " + ex.Message, Color.FromUint(4294901760u)));
 		}
 	}
 
 	private void SaveNpcRulerPolicyPromptFromEditor(string input)
 	{
 		string text = NormalizeNpcRulerPolicyPromptText(input);
-		bool hasNonInjectedTail = text.Length > NpcRulerPolicyEffectivePromptMaxChars;
 		NpcRulerPolicyPrompt = text;
 		bool persistedToFile = TryPersistNpcRulerPolicyPromptFile(text);
 		try
@@ -2249,16 +2348,12 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		try
 		{
 			BaseSettingsProvider.Instance?.SaveSettings(GetSettings() ?? this);
-			string message = persistedToFile ? "[提示词扩展] 玩家自定义NPC政策提示词已保存。" : "[提示词扩展] 玩家自定义NPC政策提示词已写入本局设置，但本地持久化文件写入失败，请查看日志。";
-			if (hasNonInjectedTail)
-			{
-				message += " 已完整保存 " + text.Length.ToString(CultureInfo.InvariantCulture) + " 字符；NPC 政策请求使用前 " + NpcRulerPolicyEffectivePromptMaxChars.ToString(CultureInfo.InvariantCulture) + " 字符。";
-			}
+			string message = persistedToFile ? "[政策系统] NPC统治者政策提示词已保存。" : "[政策系统] NPC统治者政策提示词已用于本局，但写入本地文件失败，请查看日志。";
 			InformationManager.DisplayMessage(new InformationMessage(message, persistedToFile ? Color.FromUint(4282569842u) : Color.FromUint(4294967040u)));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[提示词扩展] 保存玩家自定义NPC政策提示词失败，请在 MCM 中再点一次保存: " + ex.Message, Color.FromUint(4294901760u)));
+			InformationManager.DisplayMessage(new InformationMessage("[政策系统] 保存NPC统治者政策提示词失败，请在 MCM 中再试一次: " + ex.Message, Color.FromUint(4294901760u)));
 		}
 	}
 
@@ -2336,9 +2431,13 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		{
 			return;
 		}
-		if (TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store) && !string.Equals(settings.NpcRulerPolicyPrompt ?? "", store.NpcRulerPolicyPrompt ?? "", StringComparison.Ordinal))
+		if (TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store))
 		{
-			settings.NpcRulerPolicyPrompt = store.NpcRulerPolicyPrompt ?? "";
+			string prompt = NormalizeNpcRulerPolicyPromptText(store.NpcRulerPolicyPrompt ?? "");
+			if (!string.Equals(settings.NpcRulerPolicyPrompt ?? "", prompt, StringComparison.Ordinal))
+			{
+				settings.NpcRulerPolicyPrompt = prompt;
+			}
 		}
 	}
 
@@ -2374,7 +2473,9 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	private static string LoadNpcRulerPolicyPromptFromDiskOrDefault()
 	{
-		return TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store) ? (store.NpcRulerPolicyPrompt ?? "") : DefaultNpcRulerPolicyPrompt;
+		return TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store)
+			? NormalizeNpcRulerPolicyPromptText(store.NpcRulerPolicyPrompt ?? "")
+			: DefaultNpcRulerPolicyPrompt;
 	}
 
 	private static string NormalizePlayerCustomPromptRuleText(string input)
@@ -2465,13 +2566,24 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	private static string NormalizeNpcRulerPolicyPromptText(string input)
 	{
 		string text = LimitCustomPromptText(NormalizePromptLineEndings(input), NpcRulerPolicyPromptJsonFileName);
-		if (string.Equals(text, PreviousDefaultNpcRulerPolicyPromptForMigration, StringComparison.Ordinal)
+		if (string.IsNullOrWhiteSpace(text)
+			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptForMigration, StringComparison.Ordinal)
 			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptWithTechnicalContract, StringComparison.Ordinal)
 			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptBeforeDerivedEvent, StringComparison.Ordinal)
 			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptWithTypedEvent, StringComparison.Ordinal)
 			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptWithFreeformDerivedEvent, StringComparison.Ordinal)
 			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptWithConciseAssociatedEvent, StringComparison.Ordinal)
-			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptWithCreativeDerivedEvent, StringComparison.Ordinal))
+			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptWithCreativeDerivedEvent, StringComparison.Ordinal)
+			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptBeforeCreativePremise, StringComparison.Ordinal)
+			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptWithCreativePremise, StringComparison.Ordinal)
+			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptBeforeConsequentialEvents, StringComparison.Ordinal)
+			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptBeforeFocusedPolicyAndEvents, StringComparison.Ordinal)
+			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptBeforeKnowledgeGroundedContextRefactor, StringComparison.Ordinal)
+			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptBeforeShortEditablePrompt, StringComparison.Ordinal)
+			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptBeforeCompactContext, StringComparison.Ordinal)
+			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptBeforeStrongerEffectsAndPlainLanguage, StringComparison.Ordinal)
+			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptBeforeMinimumOneEffects, StringComparison.Ordinal)
+			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptBeforeConceptOnlyPrompt, StringComparison.Ordinal))
 		{
 			return DefaultNpcRulerPolicyPrompt;
 		}
@@ -2531,9 +2643,17 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	private static bool IsBuiltInCustomPolicyEvaluatorPromptText(string input)
 	{
 		string text = NormalizeCustomPolicyEvaluatorPromptText(input);
-		return string.Equals(text, NormalizeCustomPolicyEvaluatorPromptText(DefaultCustomPolicyEvaluatorPrompt), StringComparison.Ordinal)
+		string currentWording = NormalizePolicyHearthWordingForBuiltInComparison(text);
+		return string.Equals(currentWording, NormalizePolicyHearthWordingForBuiltInComparison(NormalizeCustomPolicyEvaluatorPromptText(DefaultCustomPolicyEvaluatorPrompt)), StringComparison.Ordinal)
 			|| string.Equals(text, NormalizeCustomPolicyEvaluatorPromptText(PreviousDefaultCustomPolicyEvaluatorPromptBeforeExpandedStats), StringComparison.Ordinal)
 			|| string.Equals(text, NormalizeCustomPolicyEvaluatorPromptText(PreviousDefaultCustomPolicyEvaluatorPromptForMigration), StringComparison.Ordinal);
+	}
+
+	private static string NormalizePolicyHearthWordingForBuiltInComparison(string input)
+	{
+		return (input ?? "")
+			.Replace("村庄户数/炉户", "村庄户数")
+			.Replace("户数/炉户", "户数");
 	}
 
 	private static bool TryReadPlayerCustomPromptRuleFile(out string text)
