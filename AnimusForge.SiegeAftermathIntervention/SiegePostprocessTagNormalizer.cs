@@ -53,6 +53,23 @@ public static class SiegePostprocessTagNormalizer
             }
         }
 
+        var extractedCastleKinds = new HashSet<SiegeCastleActionKind>(SiegeCastleActionTagCatalog.ExtractKinds(text));
+        foreach (SiegeCastleActionKind kind in SiegeCastleActionTagCatalog.GetCanonicalOrder())
+        {
+            if (!extractedCastleKinds.Contains(kind))
+            {
+                continue;
+            }
+
+            IReadOnlyList<string> aliases = SiegeCastleActionTagCatalog.GetAliases(kind);
+            if (aliases.Count > 0
+                && AllowsAny(allowed, aliases)
+                && SiegeCastleActionTagCatalog.TryGetCanonicalTag(kind, out string canonicalTag))
+            {
+                Add(canonicalTag);
+            }
+        }
+
 
         string mood = string.Empty;
         foreach (Match moodMatch in MoodTagRegex.Matches(text))

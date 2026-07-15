@@ -28,6 +28,8 @@ internal static class CastleAftermathRuntimeBridge
 
 	internal static int SelectedPrisonerCount => _selectedPrisonerRoster?.TotalManCount ?? 0;
 
+	internal static int SelectedRegularPrisonerCount => CountRegularPrisoners(_selectedPrisonerRoster);
+
 	internal static bool IsCastleAftermathMission(Mission mission)
 	{
 		try
@@ -78,6 +80,17 @@ internal static class CastleAftermathRuntimeBridge
 		}
 	}
 
+	internal static void UnregisterPrisonerAgent(Agent agent)
+	{
+		if (agent == null)
+		{
+			return;
+		}
+
+		PrisonerAgentIndexes.Remove(agent.Index);
+		LordPrisonerAgentIndexes.Remove(agent.Index);
+	}
+
 	internal static TroopRoster GetSelectedPrisonerRosterSnapshot()
 	{
 		return CloneRoster(_selectedPrisonerRoster, SiegeCastleRosterSelectionProfile.MaxPrisoners);
@@ -88,6 +101,61 @@ internal static class CastleAftermathRuntimeBridge
 		TroopRoster selected = CloneRoster(sourceRoster, SiegeCastleRosterSelectionProfile.MaxPrisoners);
 		_selectedPrisonerRoster = selected.TotalManCount > 0 ? selected : null;
 		Logger.Log("CastleAftermath", "Stored castle prisoner selection. Count=" + SelectedPrisonerCount);
+	}
+
+	internal static void RemoveResolvedRegularPrisoners(TroopRoster resolvedRoster, string source)
+	{
+		if (_selectedPrisonerRoster == null || resolvedRoster == null)
+		{
+			return;
+		}
+
+		foreach (TroopRosterElement element in resolvedRoster.GetTroopRoster().ToList())
+		{
+			CharacterObject character = element.Character;
+			if (character == null || character.IsHero || element.Number <= 0)
+			{
+				continue;
+			}
+
+			int selectedCount = CountTroop(_selectedPrisonerRoster, character);
+			int removeCount = Math.Min(selectedCount, Math.Max(0, element.Number));
+			if (removeCount <= 0)
+			{
+				continue;
+			}
+
+			int selectedIndex = _selectedPrisonerRoster.FindIndexOfTroop(character);
+			TroopRosterElement selectedElement = selectedIndex >= 0
+				? _selectedPrisonerRoster.GetElementCopyAtIndex(selectedIndex)
+				: default(TroopRosterElement);
+			int wounded = SiegeCastlePrisonerDispositionProfile.ResolveTransferredWounded(
+				selectedElement.Number,
+				selectedElement.WoundedNumber,
+				removeCount);
+			int xp = SiegeCastlePrisonerDispositionProfile.ResolveTransferredXp(
+				selectedElement.Number,
+				selectedElement.Xp,
+				removeCount);
+			_selectedPrisonerRoster.AddToCounts(character, -removeCount, false, -wounded, -xp, true, -1);
+		}
+
+		if (_selectedPrisonerRoster.TotalManCount <= 0)
+		{
+			_selectedPrisonerRoster = null;
+		}
+
+		try
+		{
+			Mission.Current?.GetMissionBehavior<CastleAftermathPrisonerCommandMissionBehavior>()
+				?.ResolveRegularPrisoners(resolvedRoster, source);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CastleAftermath", "Resolve regular prisoner scene agents failed. Source=" + (source ?? "N/A") + ", Error=" + ex.Message);
+		}
+		Logger.Log("CastleAftermath", "Removed resolved regular prisoners from castle selection. Remaining="
+			+ SelectedRegularPrisonerCount + ", Source=" + (source ?? "N/A"));
 	}
 
 	internal static bool TryOpenRosterSelection(
@@ -300,6 +368,24 @@ internal static class CastleAftermathRuntimeBridge
 		return 0;
 	}
 
+	private static int CountRegularPrisoners(TroopRoster roster)
+	{
+		if (roster == null)
+		{
+			return 0;
+		}
+
+		int count = 0;
+		foreach (TroopRosterElement element in roster.GetTroopRoster())
+		{
+			if (element.Character != null && !element.Character.IsHero)
+			{
+				count += Math.Max(0, element.Number);
+			}
+		}
+		return count;
+	}
+
 	private static TroopRoster CloneRoster(TroopRoster source, int maxCount)
 	{
 		TroopRoster result = TroopRoster.CreateDummyTroopRoster();
@@ -385,6 +471,46 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 		_spawnCompleted = true;
 		Logger.Log("CastleAftermath", "Troop-inspection prisoner spawn callback completed. Selected="
 			+ selectedCount + ", Regular=" + _spawnedRegulars + ", Lords=" + _spawnedLords);
+	}
+
+	internal void ResolveRegularPrisoners(TroopRoster resolvedRoster, string source)
+	{
+		if (resolvedRoster == null)
+		{
+			return;
+		}
+
+		Dictionary<CharacterObject, int> remainingByCharacter = resolvedRoster.GetTroopRoster()
+			.Where(element => element.Character != null && !element.Character.IsHero && element.Number > 0)
+			.GroupBy(element => element.Character)
+			.ToDictionary(group => group.Key, group => group.Sum(element => Math.Max(0, element.Number)));
+		int resolvedAgents = 0;
+		foreach (KeyValuePair<Agent, bool> pair in _agents.ToList())
+		{
+			Agent agent = pair.Key;
+			if (pair.Value || agent == null || !(agent.Character is CharacterObject character)
+				|| !remainingByCharacter.TryGetValue(character, out int remaining) || remaining <= 0)
+			{
+				continue;
+			}
+
+			remainingByCharacter[character] = remaining - 1;
+			_agents.Remove(agent);
+			_civilianActionSetApplied.Remove(agent);
+			CastleAftermathRuntimeBridge.UnregisterPrisonerAgent(agent);
+			try
+			{
+				agent.Formation = null;
+				agent.FadeOut(hideInstantly: false, hideMount: true);
+			}
+			catch
+			{
+			}
+			resolvedAgents++;
+		}
+
+		Logger.Log("CastleAftermath", "Resolved regular prisoner scene agents. Count=" + resolvedAgents
+			+ ", Source=" + (source ?? "N/A"));
 	}
 
 	internal void SharedCleanup(string reason)

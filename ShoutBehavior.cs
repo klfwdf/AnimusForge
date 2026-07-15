@@ -19500,7 +19500,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			List<PostprocessRuleEntry> intimacyRules = SexualConceptionBehavior.BuildRuntimePostprocessRules(targetHero ?? targetCharacter?.HeroObject, resolvedChainName);
 			bool npcSurrenderPostprocessEnabled = IsNpcSurrenderPostprocessContext();
 			List<PostprocessRuleEntry> npcSurrenderRules = BuildNpcSurrenderPostprocessRulesForScene(npcSurrenderPostprocessEnabled);
-			List<PostprocessRuleEntry> mergedRules = MergePostprocessRulesForScene(duelRules, transactionRules, kingdomRules, royalRules, vassalageRules, lordsHallRules, meetingReleaseRules, vanillaIssueRules, heroJoinPartyRules, mechanismRules, partyTransferRules, voteDealRules, diplomacyRules, worldMapPartyCommandRules, nobleGatheringRules, marriageRules, proposeAgendaRules, npcSurrenderRules, siegeInterventionRules, intimacyRules);
+			bool siegeInterventionExclusive = siegeInterventionRuleInjected && AfGcczShoutBridge.ShouldUseExclusivePostprocessRuleRouting();
+			List<PostprocessRuleEntry> mergedRules = siegeInterventionExclusive
+				? MergePostprocessRulesForScene(siegeInterventionRules)
+				: MergePostprocessRulesForScene(duelRules, transactionRules, kingdomRules, royalRules, vassalageRules, lordsHallRules, meetingReleaseRules, vanillaIssueRules, heroJoinPartyRules, mechanismRules, partyTransferRules, voteDealRules, diplomacyRules, worldMapPartyCommandRules, nobleGatheringRules, marriageRules, proposeAgendaRules, npcSurrenderRules, siegeInterventionRules, intimacyRules);
 			bool royalPostprocessRuleInjected = (royalRules ?? new List<PostprocessRuleEntry>()).Any((PostprocessRuleEntry x) => string.Equals((x?.Tag ?? "").Trim(), "[ACTION:KING_ABDICATE_TO_PLAYER]", StringComparison.OrdinalIgnoreCase));
 			bool vassalagePostprocessRuleInjected = (vassalageRules ?? new List<PostprocessRuleEntry>()).Any((PostprocessRuleEntry x) => (x?.Tag ?? "").StartsWith("[ACTION:VASSALAGE:", StringComparison.OrdinalIgnoreCase));
 			int annexationRuleCount = (mergedRules ?? new List<PostprocessRuleEntry>()).Count((PostprocessRuleEntry x) => (x?.Tag ?? "").StartsWith("[ACTION:KINGDOM_ANNEX:", StringComparison.OrdinalIgnoreCase));
@@ -19775,7 +19778,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			string npcSurrenderTags = NormalizeNpcSurrenderPostprocessTagsForScene(content, npcSurrenderRules, npcSurrenderPostprocessEnabled);
 			string siegeInterventionTags = siegeInterventionRuleInjected ? AfGcczShoutBridge.NormalizePostprocessTags(siegeInterventionRuleInjected, content, siegeInterventionRules) : "";
 			string intimacyTags = SexualConceptionBehavior.NormalizePostprocessTags(content, intimacyRules);
-			string merged = MergeNormalizedPostprocessBlocksForScene(duelTags, rewardTags, kingdomTags, royalTags, vassalageTags, lordsHallTags, meetingReleaseTags, vanillaIssueTags, heroJoinTags, sceneMechanismTags, partyTransferTags, voteDealTags, diplomacyTags, worldMapPartyCommandTags, nobleGatheringTags, marriageTags, proposeAgendaTags, npcSurrenderTags, siegeInterventionTags, intimacyTags);
+			string merged = siegeInterventionExclusive
+				? MergeNormalizedPostprocessBlocksForScene(siegeInterventionTags)
+				: MergeNormalizedPostprocessBlocksForScene(duelTags, rewardTags, kingdomTags, royalTags, vassalageTags, lordsHallTags, meetingReleaseTags, vanillaIssueTags, heroJoinTags, sceneMechanismTags, partyTransferTags, voteDealTags, diplomacyTags, worldMapPartyCommandTags, nobleGatheringTags, marriageTags, proposeAgendaTags, npcSurrenderTags, siegeInterventionTags, intimacyTags);
 			if (string.IsNullOrWhiteSpace(merged))
 			{
 				merged = AIConfigHandler.ActionPostprocessFallbackMoodTag;
@@ -22533,7 +22538,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		List<PostprocessRuleEntry> siegeInterventionRules = AfGcczShoutBridge.BuildPostprocessRules(siegeInterventionPostprocessEnabled);
 		List<PostprocessRuleEntry> relayRules = BuildAutoGroupRelayPostprocessRulesForScene(relayRuleInjected);
 		List<PostprocessRuleEntry> intimacyRules = SexualConceptionBehavior.BuildRuntimePostprocessRules(targetHero ?? targetCharacter?.HeroObject, resolvedChainName);
-		List<PostprocessRuleEntry> mergedRules = MergePostprocessRulesForScene(duelRules, transactionRules, kingdomRules, royalRules, vassalageRules, lordsHallRules, meetingReleaseRules, vanillaIssueRules, heroJoinPartyRules, mechanismRules, partyTransferRules, voteDealRules, diplomacyRules, worldMapPartyCommandRules, nobleGatheringRules, marriageRules, proposeAgendaRules, siegeSurrenderRules, npcSurrenderRules, siegeInterventionRules, relayRules, intimacyRules);
+		bool siegeInterventionExclusive = siegeInterventionPostprocessEnabled && AfGcczShoutBridge.ShouldUseExclusivePostprocessRuleRouting();
+		List<PostprocessRuleEntry> mergedRules = siegeInterventionExclusive
+			? MergePostprocessRulesForScene(siegeInterventionRules)
+			: MergePostprocessRulesForScene(duelRules, transactionRules, kingdomRules, royalRules, vassalageRules, lordsHallRules, meetingReleaseRules, vanillaIssueRules, heroJoinPartyRules, mechanismRules, partyTransferRules, voteDealRules, diplomacyRules, worldMapPartyCommandRules, nobleGatheringRules, marriageRules, proposeAgendaRules, siegeSurrenderRules, npcSurrenderRules, siegeInterventionRules, relayRules, intimacyRules);
 		bool royalPostprocessRuleInjected = (royalRules ?? new List<PostprocessRuleEntry>()).Any((PostprocessRuleEntry x) => string.Equals((x?.Tag ?? "").Trim(), "[ACTION:KING_ABDICATE_TO_PLAYER]", StringComparison.OrdinalIgnoreCase));
 		bool vassalagePostprocessRuleInjected = (vassalageRules ?? new List<PostprocessRuleEntry>()).Any((PostprocessRuleEntry x) => (x?.Tag ?? "").StartsWith("[ACTION:VASSALAGE:", StringComparison.OrdinalIgnoreCase));
 		int annexationRuleCount = (mergedRules ?? new List<PostprocessRuleEntry>()).Count((PostprocessRuleEntry x) => (x?.Tag ?? "").StartsWith("[ACTION:KINGDOM_ANNEX:", StringComparison.OrdinalIgnoreCase));
@@ -22832,7 +22840,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string siegeInterventionTags = siegeInterventionPostprocessEnabled ? AfGcczShoutBridge.NormalizePostprocessTags(siegeInterventionPostprocessEnabled, content, siegeInterventionRules) : "";
 		string relayTags = relayRuleInjected ? NormalizeAutoGroupRelayPostprocessTagsForScene(content, relayCandidates, targetAgentIndex) : "";
 		string intimacyTags = SexualConceptionBehavior.NormalizePostprocessTags(content, intimacyRules);
-		string text21 = MergeNormalizedPostprocessBlocksForScene(text10, text11, text12, royalTags, vassalageTags, text13, text14, text15, text16, text17, text18, voteDealTags, diplomacyTags, worldMapPartyCommandTags, nobleGatheringTags, marriageTags, proposeAgendaTags, siegeSurrenderTags, npcSurrenderTags, siegeInterventionTags, relayTags, intimacyTags);
+		string text21 = siegeInterventionExclusive
+			? MergeNormalizedPostprocessBlocksForScene(siegeInterventionTags)
+			: MergeNormalizedPostprocessBlocksForScene(text10, text11, text12, royalTags, vassalageTags, text13, text14, text15, text16, text17, text18, voteDealTags, diplomacyTags, worldMapPartyCommandTags, nobleGatheringTags, marriageTags, proposeAgendaTags, siegeSurrenderTags, npcSurrenderTags, siegeInterventionTags, relayTags, intimacyTags);
 		if (string.IsNullOrWhiteSpace(text21))
 		{
 			text21 = AIConfigHandler.ActionPostprocessFallbackMoodTag;

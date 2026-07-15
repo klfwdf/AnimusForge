@@ -39,6 +39,11 @@ internal static class AfGcczShoutBridge
 		return IsActive();
 	}
 
+	internal static bool ShouldUseExclusivePostprocessRuleRouting()
+	{
+		return IsActive();
+	}
+
 	internal static bool ShouldBypassPreprocessForActiveScene()
 	{
 		return IsActive();
