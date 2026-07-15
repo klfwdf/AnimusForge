@@ -2577,58 +2577,73 @@ private const string HoldingDummyPartyPrefix = "animusforge_troop_inspection_hol
 			throw new InvalidOperationException("Castle prisoner rosters are unavailable after inspection split.");
 		}
 
+		Dictionary<CharacterObject, RosterTotals> mainTotals = BuildRosterTotals(mainRoster);
 		Dictionary<CharacterObject, RosterTotals> holdingTotals = BuildRosterTotals(holdingRoster);
-		int adjusted = 0;
+		int adjustedStacks = 0;
 		foreach (KeyValuePair<CharacterObject, RosterTotals> pair in originalTotals ?? new Dictionary<CharacterObject, RosterTotals>())
 		{
 			CharacterObject character = pair.Key;
 			RosterTotals original = pair.Value;
+			mainTotals.TryGetValue(character, out RosterTotals main);
 			holdingTotals.TryGetValue(character, out RosterTotals holding);
-			int expectedNumber = Math.Max(0, original.Number - holding.Number);
-			int index = mainRoster.FindIndexOfTroop(character);
-			int actualNumber = index >= 0 ? mainRoster.GetElementNumber(index) : 0;
-			if (actualNumber != expectedNumber)
+			if (main.Number + holding.Number != original.Number)
 			{
-				throw new InvalidOperationException("Castle selected prisoner count mismatch for " + SafeCharacterId(character)
-					+ ". expected=" + expectedNumber + " actual=" + actualNumber);
-			}
-			if (index < 0)
-			{
-				continue;
+				throw new InvalidOperationException("Castle prisoner partition count mismatch for " + SafeCharacterId(character)
+					+ ". original=" + original.Number + " main=" + main.Number + " holding=" + holding.Number);
 			}
 
-			TroopRosterElement current = GetFreshRosterElementCopy(mainRoster, index);
-			int expectedWounded = SiegeCastleRosterSelectionProfile.ResolveSelectedStackWounded(
+			int targetMainWounded = SiegeCastleRosterSelectionProfile.ResolveMainStackWounded(
 				original.Number,
 				original.Wounded,
-				holding.Number,
-				holding.Wounded);
-			int expectedXp = SiegeCastleRosterSelectionProfile.ResolveSelectedStackXp(original.Xp, holding.Xp);
-			int woundedDelta = expectedWounded - current.WoundedNumber;
-			int xpDelta = character?.IsHero == true ? 0 : expectedXp - current.Xp;
-			bool changed = woundedDelta != 0 || xpDelta != 0;
-			if (changed)
+				main.Number,
+				main.Wounded);
+			int targetHoldingWounded = Math.Max(0, original.Wounded - targetMainWounded);
+			int targetMainXp = character?.IsHero == true
+				? main.Xp
+				: (main.Number <= 0 ? 0 : SiegeCastleRosterSelectionProfile.ResolveMainStackXp(original.Xp, holding.Xp));
+			int targetHoldingXp = character?.IsHero == true
+				? holding.Xp
+				: Math.Max(0, original.Xp - targetMainXp);
+
+			int mainIndex = mainRoster.FindIndexOfTroop(character);
+			int holdingIndex = holdingRoster.FindIndexOfTroop(character);
+			int mainWoundedDelta = targetMainWounded - main.Wounded;
+			int mainXpDelta = character?.IsHero == true ? 0 : targetMainXp - main.Xp;
+			int holdingWoundedDelta = targetHoldingWounded - holding.Wounded;
+			int holdingXpDelta = character?.IsHero == true ? 0 : targetHoldingXp - holding.Xp;
+			if ((mainWoundedDelta != 0 || mainXpDelta != 0) && mainIndex < 0)
 			{
-				mainRoster.AddToCountsAtIndex(index, 0, woundedDelta, xpDelta, removeDepleted: true);
-				TroopRosterElement reconciled = GetFreshRosterElementCopy(mainRoster, index);
-				if (reconciled.WoundedNumber != expectedWounded || (character?.IsHero != true && reconciled.Xp != expectedXp))
-				{
-					throw new InvalidOperationException("Castle selected prisoner state reconciliation failed for "
-						+ SafeCharacterId(character) + ". expected=number=" + expectedNumber
-						+ ",wounded=" + expectedWounded + ",xp=" + expectedXp
-						+ " actual=number=" + reconciled.Number + ",wounded=" + reconciled.WoundedNumber
-						+ ",xp=" + reconciled.Xp);
-				}
-				adjusted++;
+				throw new InvalidOperationException("Castle main prisoner stack missing during reconciliation for " + SafeCharacterId(character));
+			}
+			if ((holdingWoundedDelta != 0 || holdingXpDelta != 0) && holdingIndex < 0)
+			{
+				throw new InvalidOperationException("Castle holding prisoner stack missing during reconciliation for " + SafeCharacterId(character));
+			}
+
+			if (mainWoundedDelta != 0 || mainXpDelta != 0)
+			{
+				mainRoster.AddToCountsAtIndex(mainIndex, 0, mainWoundedDelta, mainXpDelta, removeDepleted: true);
+				adjustedStacks++;
+			}
+			if (holdingWoundedDelta != 0 || holdingXpDelta != 0)
+			{
+				holdingRoster.AddToCountsAtIndex(holdingIndex, 0, holdingWoundedDelta, holdingXpDelta, removeDepleted: true);
+				adjustedStacks++;
+			}
+			if (mainWoundedDelta != 0 || mainXpDelta != 0 || holdingWoundedDelta != 0 || holdingXpDelta != 0)
+			{
 				Log("split_validate_reconcile troop=" + SafeCharacterId(character)
-					+ " number=" + expectedNumber
-					+ " wounded=" + current.WoundedNumber + "->" + expectedWounded
-					+ " xp=" + current.Xp + "->" + expectedXp
+					+ " main=" + main + "->number=" + main.Number + ",wounded=" + targetMainWounded + ",xp=" + targetMainXp
+					+ " holding=" + holding + "->number=" + holding.Number + ",wounded=" + targetHoldingWounded + ",xp=" + targetHoldingXp
 					+ " original=" + original
-					+ " holding=" + holding);
+					+ " adjusted_stacks=" + adjustedStacks);
 			}
 		}
-		Log("split_validate_reconcile_complete adjusted=" + adjusted
+		ValidateRosterTotals(
+			"castle_reconciled_prisoners",
+			originalTotals,
+			BuildCombinedRosterTotals(mainRoster, holdingRoster));
+		Log("split_validate_reconcile_complete adjusted_stacks=" + adjustedStacks
 			+ " main=" + RosterSummary(mainRoster)
 			+ " holding=" + RosterSummary(holdingRoster));
 	}

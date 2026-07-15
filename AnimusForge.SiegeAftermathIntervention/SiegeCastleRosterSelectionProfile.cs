@@ -62,21 +62,22 @@ public static class SiegeCastleRosterSelectionProfile
         return Clamp(count, MaxPrisoners);
     }
 
-    public static int ResolveSelectedStackWounded(
+    public static int ResolveMainStackWounded(
         int originalNumber,
         int originalWounded,
-        int holdingNumber,
-        int holdingWounded)
+        int mainNumber,
+        int currentMainWounded)
     {
         int safeOriginalNumber = Math.Max(0, originalNumber);
-        int safeHoldingNumber = Math.Min(safeOriginalNumber, Math.Max(0, holdingNumber));
-        int selectedNumber = safeOriginalNumber - safeHoldingNumber;
+        int safeMainNumber = Math.Min(safeOriginalNumber, Math.Max(0, mainNumber));
+        int safeHoldingNumber = safeOriginalNumber - safeMainNumber;
         int safeOriginalWounded = Math.Min(safeOriginalNumber, Math.Max(0, originalWounded));
-        int safeHoldingWounded = Math.Min(safeHoldingNumber, Math.Max(0, holdingWounded));
-        return Math.Min(selectedNumber, Math.Max(0, safeOriginalWounded - safeHoldingWounded));
+        int minimumMainWounded = Math.Max(0, safeOriginalWounded - safeHoldingNumber);
+        int maximumMainWounded = Math.Min(safeMainNumber, safeOriginalWounded);
+        return Math.Min(maximumMainWounded, Math.Max(minimumMainWounded, currentMainWounded));
     }
 
-    public static int ResolveSelectedStackXp(int originalXp, int holdingXp)
+    public static int ResolveMainStackXp(int originalXp, int holdingXp)
     {
         return Math.Max(0, Math.Max(0, originalXp) - Math.Max(0, holdingXp));
     }
