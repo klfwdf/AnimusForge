@@ -8,13 +8,21 @@ namespace AnimusForge.SiegeAftermathIntervention;
 /// </summary>
 public static class SiegeCastlePostprocessRuleCatalog
 {
+    private static readonly SiegePostprocessRuleDefinition ProposeRecruitRule = new SiegePostprocessRuleDefinition(
+        SiegeCastleActionTagCatalog.ProposeRecruitPrisonersTag,
+        "城堡提议收编：仅当己方士兵明确建议玩家收编普通战俘，或普通战俘士兵明确请求归顺，而玩家本轮尚未明确同意收编时输出。此标签只登记待玩家确认的提议，不得改变名册；被俘领主、旁听转述或已经得到玩家授权时禁止输出。");
+
+    private static readonly SiegePostprocessRuleDefinition ProposeSlaughterRule = new SiegePostprocessRuleDefinition(
+        SiegeCastleActionTagCatalog.ProposeSlaughterPrisonersTag,
+        "城堡提议屠戮：仅当己方士兵明确建议玩家屠戮普通战俘，而玩家本轮尚未明确同意屠戮时输出。此标签只登记待玩家确认的提议，不得伤害或移除任何人；普通战俘、被俘领主、旁听转述或已经得到玩家授权时禁止输出。");
+
     private static readonly SiegePostprocessRuleDefinition RecruitRule = new SiegePostprocessRuleDefinition(
         SiegeCastleActionTagCatalog.RecruitPrisonersTag,
-        "城堡收编战俘：仅当普通战俘士兵直接回应玩家本轮明确提出的收编、归顺或编入部队命令，并明确接受服从时输出。被俘领主、己方士兵、旁听闲聊、主动提议、求饶但未接受收编均禁止输出。");
+        "城堡收编战俘：仅当普通战俘或己方士兵直接回应玩家本轮对收编的明确命令/同意，并确认将执行时输出。若本轮只是士兵主动提议、玩家尚未授权、泛泛讨论、旁听转述或求饶，则禁止输出；被俘领主禁止输出。");
 
     private static readonly SiegePostprocessRuleDefinition SlaughterRule = new SiegePostprocessRuleDefinition(
         SiegeCastleActionTagCatalog.SlaughterPrisonersTag,
-        "城堡屠戮战俘：仅当普通战俘士兵直接回应玩家本轮明确下达的杀死、处决或屠戮普通战俘命令，并明确理解该命令将执行时输出。被俘领主、己方士兵、恐惧闲聊、旁听传闻、主动请示均禁止输出；此标签不得用于领主处决。");
+        "城堡屠戮战俘：仅当普通战俘或己方士兵直接回应玩家本轮对屠戮普通战俘的明确命令/同意，并确认将执行时输出。若本轮只是士兵主动提议、玩家尚未授权、恐惧闲聊、旁听传闻或主动请示，则禁止输出；此标签不得用于领主处决。");
 
     private static readonly SiegePostprocessRuleDefinition AppeaseRule = new SiegePostprocessRuleDefinition(
         SiegeCastleActionTagCatalog.AppeaseSoldiersTag,
@@ -25,9 +33,11 @@ public static class SiegeCastlePostprocessRuleCatalog
         bool soldierAppeasementRequired,
         bool soldierAppeasementApplied)
     {
-        var rules = new List<SiegePostprocessRuleDefinition>(3);
+        var rules = new List<SiegePostprocessRuleDefinition>(5);
         if (remainingRegularPrisoners > 0)
         {
+            rules.Add(ProposeRecruitRule);
+            rules.Add(ProposeSlaughterRule);
             rules.Add(RecruitRule);
             rules.Add(SlaughterRule);
         }

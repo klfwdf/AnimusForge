@@ -7,6 +7,9 @@ public static class SiegeCastlePostprocessContextProfile
     public static string Build(SiegeCastlePostprocessContextFacts facts)
     {
         facts ??= SiegeCastlePostprocessContextFacts.Empty;
+        SiegeCastlePlayerAuthorizationDecision authorization = SiegeCastlePlayerAuthorizationPolicy.Evaluate(
+            facts.PlayerText,
+            facts.PendingProposalForSpeaker);
         StringBuilder sb = new StringBuilder();
         sb.Append("【城堡处置后处理事实】定居点=")
             .Append(string.IsNullOrWhiteSpace(facts.CastleName) ? SiegeCastleRuntimePromptProfile.DefaultCastleName : facts.CastleName.Trim())
@@ -24,7 +27,13 @@ public static class SiegeCastlePostprocessContextProfile
             .Append(facts.SoldierAppeasementRequired ? "是" : "否")
             .Append("；安抚已完成=")
             .Append(facts.SoldierAppeasementApplied ? "是" : "否")
-            .Append("。只有可用规则指定的对应角色直接回应玩家本轮明确命令时才输出标签；闲聊、旁听、转述、主动建议或领主回复不得触发普通战俘处置。一次回复最多输出一个城堡处置标签。");
+            .Append("；本说话者待确认提议=")
+            .Append(SiegeCastlePrisonerDispositionKindProfile.Describe(facts.PendingProposalForSpeaker))
+            .Append("；玩家本轮授权判定=")
+            .Append(authorization.IsAuthorized
+                ? SiegeCastlePrisonerDispositionKindProfile.Describe(authorization.Disposition)
+                : "未授权（" + authorization.ReasonCode + "）")
+            .Append("。士兵主动提出收编或屠戮时只能输出对应提议标签，提议标签只记录待确认状态，绝不能直接结算。只有玩家本轮明确命令，或明确同意本说话者此前同类提议后，才可输出收编/屠戮结算标签。闲聊、旁听、转述或领主回复不得触发普通战俘处置。一次回复最多输出一个城堡处置标签。");
 
         if (facts.SpeakerCultureMatchesCastle)
         {
@@ -46,7 +55,9 @@ public sealed class SiegeCastlePostprocessContextFacts
         int slaughteredRegularPrisoners,
         bool soldierAppeasementRequired,
         bool soldierAppeasementApplied,
-        bool speakerCultureMatchesCastle)
+        bool speakerCultureMatchesCastle,
+        string playerText = null,
+        SiegeCastlePrisonerDispositionKind pendingProposalForSpeaker = SiegeCastlePrisonerDispositionKind.None)
     {
         CastleName = castleName ?? string.Empty;
         SpeakerRole = speakerRole;
@@ -57,6 +68,8 @@ public sealed class SiegeCastlePostprocessContextFacts
         SoldierAppeasementRequired = soldierAppeasementRequired;
         SoldierAppeasementApplied = soldierAppeasementApplied;
         SpeakerCultureMatchesCastle = speakerCultureMatchesCastle;
+        PlayerText = playerText ?? string.Empty;
+        PendingProposalForSpeaker = pendingProposalForSpeaker;
     }
 
     public static SiegeCastlePostprocessContextFacts Empty => new SiegeCastlePostprocessContextFacts(
@@ -68,7 +81,9 @@ public sealed class SiegeCastlePostprocessContextFacts
         slaughteredRegularPrisoners: 0,
         soldierAppeasementRequired: false,
         soldierAppeasementApplied: false,
-        speakerCultureMatchesCastle: false);
+        speakerCultureMatchesCastle: false,
+        playerText: string.Empty,
+        pendingProposalForSpeaker: SiegeCastlePrisonerDispositionKind.None);
 
     public string CastleName { get; }
 
@@ -87,6 +102,10 @@ public sealed class SiegeCastlePostprocessContextFacts
     public bool SoldierAppeasementApplied { get; }
 
     public bool SpeakerCultureMatchesCastle { get; }
+
+    public string PlayerText { get; }
+
+    public SiegeCastlePrisonerDispositionKind PendingProposalForSpeaker { get; }
 
     private static int ClampCount(int value)
     {

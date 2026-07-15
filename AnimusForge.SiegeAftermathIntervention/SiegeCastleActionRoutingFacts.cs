@@ -8,7 +8,9 @@ public sealed class SiegeCastleActionRoutingFacts
         bool replyIsDirectPlayerResponse,
         int remainingRegularPrisoners,
         bool soldierAppeasementRequired,
-        bool soldierAppeasementApplied)
+        bool soldierAppeasementApplied,
+        string playerText = null,
+        SiegeCastlePrisonerDispositionKind pendingProposalForSpeaker = SiegeCastlePrisonerDispositionKind.None)
     {
         RawActionText = rawActionText ?? string.Empty;
         SpeakerRole = speakerRole;
@@ -16,6 +18,8 @@ public sealed class SiegeCastleActionRoutingFacts
         RemainingRegularPrisoners = remainingRegularPrisoners < 0 ? 0 : remainingRegularPrisoners;
         SoldierAppeasementRequired = soldierAppeasementRequired;
         SoldierAppeasementApplied = soldierAppeasementApplied;
+        PlayerText = playerText ?? string.Empty;
+        PendingProposalForSpeaker = pendingProposalForSpeaker;
     }
 
     public string RawActionText { get; }
@@ -29,4 +33,8 @@ public sealed class SiegeCastleActionRoutingFacts
     public bool SoldierAppeasementRequired { get; }
 
     public bool SoldierAppeasementApplied { get; }
+
+    public string PlayerText { get; }
+
+    public SiegeCastlePrisonerDispositionKind PendingProposalForSpeaker { get; }
 }

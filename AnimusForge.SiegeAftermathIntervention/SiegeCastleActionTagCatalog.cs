@@ -9,11 +9,19 @@ namespace AnimusForge.SiegeAftermathIntervention;
 /// </summary>
 public static class SiegeCastleActionTagCatalog
 {
+    public const string ProposeRecruitPrisonersTag = "[ACTION:CASTLE_PROPOSE_RECRUIT_PRISONERS]";
+
+    public const string ProposeSlaughterPrisonersTag = "[ACTION:CASTLE_PROPOSE_SLAUGHTER_PRISONERS]";
+
     public const string RecruitPrisonersTag = "[ACTION:CASTLE_RECRUIT_PRISONERS]";
 
     public const string SlaughterPrisonersTag = "[ACTION:CASTLE_SLAUGHTER_PRISONERS]";
 
     public const string AppeaseSoldiersTag = "[ACTION:CASTLE_APPEASE_SOLDIERS]";
+
+    public const string ProposeRecruitPrisonersTagPattern = @"\[ACTION:(?:CASTLE_PROPOSE_RECRUIT_PRISONERS|SIEGE_CASTLE_PROPOSE_RECRUIT_PRISONERS|城堡提议收编战俘)\]";
+
+    public const string ProposeSlaughterPrisonersTagPattern = @"\[ACTION:(?:CASTLE_PROPOSE_SLAUGHTER_PRISONERS|SIEGE_CASTLE_PROPOSE_SLAUGHTER_PRISONERS|城堡提议屠戮战俘)\]";
 
     public const string RecruitPrisonersTagPattern = @"\[ACTION:(?:CASTLE_RECRUIT_PRISONERS|SIEGE_CASTLE_RECRUIT_PRISONERS|城堡收编战俘)\]";
 
@@ -21,15 +29,21 @@ public static class SiegeCastleActionTagCatalog
 
     public const string AppeaseSoldiersTagPattern = @"\[ACTION:(?:CASTLE_APPEASE_SOLDIERS|SIEGE_CASTLE_APPEASE_SOLDIERS|城堡安兵)\]";
 
-    public const string AnyActionTagPattern = @"\[ACTION:(?:CASTLE_(?:RECRUIT_PRISONERS|SLAUGHTER_PRISONERS|APPEASE_SOLDIERS)|SIEGE_CASTLE_(?:RECRUIT_PRISONERS|SLAUGHTER_PRISONERS|APPEASE_SOLDIERS)|城堡收编战俘|城堡屠戮战俘|城堡安兵)\]";
+    public const string AnyActionTagPattern = @"\[ACTION:(?:CASTLE_(?:PROPOSE_(?:RECRUIT|SLAUGHTER)_PRISONERS|RECRUIT_PRISONERS|SLAUGHTER_PRISONERS|APPEASE_SOLDIERS)|SIEGE_CASTLE_(?:PROPOSE_(?:RECRUIT|SLAUGHTER)_PRISONERS|RECRUIT_PRISONERS|SLAUGHTER_PRISONERS|APPEASE_SOLDIERS)|城堡提议收编战俘|城堡提议屠戮战俘|城堡收编战俘|城堡屠戮战俘|城堡安兵)\]";
 
     private static readonly Regex ActionTagRegex = new Regex(
-        @"\[ACTION:(?<name>CASTLE_(?:RECRUIT_PRISONERS|SLAUGHTER_PRISONERS|APPEASE_SOLDIERS)|SIEGE_CASTLE_(?:RECRUIT_PRISONERS|SLAUGHTER_PRISONERS|APPEASE_SOLDIERS)|城堡收编战俘|城堡屠戮战俘|城堡安兵)\]",
+        @"\[ACTION:(?<name>CASTLE_(?:PROPOSE_(?:RECRUIT|SLAUGHTER)_PRISONERS|RECRUIT_PRISONERS|SLAUGHTER_PRISONERS|APPEASE_SOLDIERS)|SIEGE_CASTLE_(?:PROPOSE_(?:RECRUIT|SLAUGHTER)_PRISONERS|RECRUIT_PRISONERS|SLAUGHTER_PRISONERS|APPEASE_SOLDIERS)|城堡提议收编战俘|城堡提议屠戮战俘|城堡收编战俘|城堡屠戮战俘|城堡安兵)\]",
         RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
     private static readonly IReadOnlyDictionary<string, SiegeCastleActionKind> NameToKind =
         new Dictionary<string, SiegeCastleActionKind>(StringComparer.OrdinalIgnoreCase)
         {
+            ["CASTLE_PROPOSE_RECRUIT_PRISONERS"] = SiegeCastleActionKind.ProposeRecruitPrisoners,
+            ["SIEGE_CASTLE_PROPOSE_RECRUIT_PRISONERS"] = SiegeCastleActionKind.ProposeRecruitPrisoners,
+            ["城堡提议收编战俘"] = SiegeCastleActionKind.ProposeRecruitPrisoners,
+            ["CASTLE_PROPOSE_SLAUGHTER_PRISONERS"] = SiegeCastleActionKind.ProposeSlaughterPrisoners,
+            ["SIEGE_CASTLE_PROPOSE_SLAUGHTER_PRISONERS"] = SiegeCastleActionKind.ProposeSlaughterPrisoners,
+            ["城堡提议屠戮战俘"] = SiegeCastleActionKind.ProposeSlaughterPrisoners,
             ["CASTLE_RECRUIT_PRISONERS"] = SiegeCastleActionKind.RecruitPrisoners,
             ["SIEGE_CASTLE_RECRUIT_PRISONERS"] = SiegeCastleActionKind.RecruitPrisoners,
             ["城堡收编战俘"] = SiegeCastleActionKind.RecruitPrisoners,
@@ -43,6 +57,8 @@ public static class SiegeCastleActionTagCatalog
 
     private static readonly SiegeCastleActionKind[] CanonicalOrder =
     {
+        SiegeCastleActionKind.ProposeRecruitPrisoners,
+        SiegeCastleActionKind.ProposeSlaughterPrisoners,
         SiegeCastleActionKind.RecruitPrisoners,
         SiegeCastleActionKind.SlaughterPrisoners,
         SiegeCastleActionKind.AppeaseSoldiers
@@ -51,6 +67,8 @@ public static class SiegeCastleActionTagCatalog
     private static readonly IReadOnlyDictionary<SiegeCastleActionKind, string> KindToCanonicalTag =
         new Dictionary<SiegeCastleActionKind, string>
         {
+            [SiegeCastleActionKind.ProposeRecruitPrisoners] = ProposeRecruitPrisonersTag,
+            [SiegeCastleActionKind.ProposeSlaughterPrisoners] = ProposeSlaughterPrisonersTag,
             [SiegeCastleActionKind.RecruitPrisoners] = RecruitPrisonersTag,
             [SiegeCastleActionKind.SlaughterPrisoners] = SlaughterPrisonersTag,
             [SiegeCastleActionKind.AppeaseSoldiers] = AppeaseSoldiersTag
@@ -59,6 +77,8 @@ public static class SiegeCastleActionTagCatalog
     private static readonly IReadOnlyDictionary<SiegeCastleActionKind, string[]> KindToAliases =
         new Dictionary<SiegeCastleActionKind, string[]>
         {
+            [SiegeCastleActionKind.ProposeRecruitPrisoners] = new[] { ProposeRecruitPrisonersTag, "[ACTION:SIEGE_CASTLE_PROPOSE_RECRUIT_PRISONERS]", "[ACTION:城堡提议收编战俘]" },
+            [SiegeCastleActionKind.ProposeSlaughterPrisoners] = new[] { ProposeSlaughterPrisonersTag, "[ACTION:SIEGE_CASTLE_PROPOSE_SLAUGHTER_PRISONERS]", "[ACTION:城堡提议屠戮战俘]" },
             [SiegeCastleActionKind.RecruitPrisoners] = new[] { RecruitPrisonersTag, "[ACTION:SIEGE_CASTLE_RECRUIT_PRISONERS]", "[ACTION:城堡收编战俘]" },
             [SiegeCastleActionKind.SlaughterPrisoners] = new[] { SlaughterPrisonersTag, "[ACTION:SIEGE_CASTLE_SLAUGHTER_PRISONERS]", "[ACTION:城堡屠戮战俘]" },
             [SiegeCastleActionKind.AppeaseSoldiers] = new[] { AppeaseSoldiersTag, "[ACTION:SIEGE_CASTLE_APPEASE_SOLDIERS]", "[ACTION:城堡安兵]" }

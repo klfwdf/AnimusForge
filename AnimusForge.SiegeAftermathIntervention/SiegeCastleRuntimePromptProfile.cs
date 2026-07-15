@@ -32,7 +32,11 @@ public static class SiegeCastleRuntimePromptProfile
 
         if (facts.IsAlliedSoldier)
         {
-            sb.Append("【己方士兵】你服从玩家的现场军令，可以表达疑虑、不满或担忧，但不能抗命、完全反驳玩家或自行处置俘虏。城堡阶段属于你的专用反应只应围绕玩家收编战俘后的军心不满与玩家安抚；没有明确发生收编时，不要凭空声称士气已经受损。");
+            sb.Append("【己方士兵】你服从玩家的现场军令，可以表达疑虑、不满或担忧，但不能抗命、完全反驳玩家或自行处置俘虏。你可以建议收编或屠戮普通战俘，但建议本身绝不代表执行，必须等待玩家明确同意；在玩家授权前不得声称名册已经改变或战俘已经被杀。城堡阶段属于你的实际军心结算仍只围绕玩家收编战俘后的军心不满与安抚；没有明确发生收编时，不要凭空声称士气已经受损。");
+            if (facts.PendingProposalForSpeaker != SiegeCastlePrisonerDispositionKind.None)
+            {
+                sb.Append(SiegeCastleSoldierProposalProfile.BuildPendingContext(facts.PendingProposalForSpeaker));
+            }
             if (facts.SoldierAppeasementRequired && !facts.SoldierAppeasementApplied)
             {
                 sb.Append("当前玩家已经收编了").Append(facts.RecruitedRegularPrisoners)
@@ -55,11 +59,15 @@ public static class SiegeCastleRuntimePromptProfile
         {
             sb.Append(facts.IsLord
                 ? "【被俘领主】你可以愤怒、不甘、傲慢、求饶或谈判，但必须承认自己已被控制。处决目前只保留接口；不要擅自宣布自己已获释、加入玩家或已经被处决。"
-                : "【战俘士兵】你按守城战败、缴械并等待处置的普通守军理解。你可以恐惧、求生、屈服或谈条件，但不能把可指挥编队误认为已经收编，也不能自行宣布屠戮或收编已经执行。只有你直接回应玩家本轮明确提出的收编或屠戮命令时，后处理才可结算普通战俘处置；求饶闲聊、旁听和主动提议不能结算。");
+                : "【战俘士兵】你按守城战败、缴械并等待处置的普通守军理解。你可以恐惧、求生、屈服、请求被收编或谈条件，但请求与提议本身绝不代表玩家同意；不能把可指挥编队误认为已经收编，也不能自行宣布屠戮或收编已经执行。只有你直接回应玩家本轮明确授权收编或屠戮时，后处理才可结算普通战俘处置；求饶闲聊、旁听和未获玩家同意的主动提议不能结算。");
+            if (facts.PendingProposalForSpeaker != SiegeCastlePrisonerDispositionKind.None)
+            {
+                sb.Append(SiegeCastleSoldierProposalProfile.BuildPendingContext(facts.PendingProposalForSpeaker));
+            }
         }
 
         sb.Append("【城堡与城镇规则隔离】城镇民众、搜掠、抢钱、救济、宣抚、盟誓、召集民众、血洗城镇和迁殖规则不适用于本城堡阶段。不要输出或暗示任何城镇 GCCZ 处置标签。城堡专用的战俘收编、屠戮、士兵安抚和领主处置由独立接口处理，不能借用城镇标签代替。")
-            .Append("【结算门槛】只有对应角色直接回应玩家本轮明确命令或谈判时，城堡专用接口才可进入结算候选；NPC闲聊、旁听、互相请示、主动提议或环境短句只能表达态度，不能直接结算高风险处置。一次回复最多结算一个城堡动作。正文自然说话，不要直接打印动作标签、解释内部机制或伪造已经发生的副作用；动作标签只由独立后处理器生成。");
+            .Append("【结算门槛】只有对应角色直接回应玩家本轮明确命令或明确同意时，城堡专用接口才可进入结算候选；NPC主动提出收编/屠戮只能登记待确认提议，NPC闲聊、旁听、互相请示或环境短句只能表达态度，不能直接结算高风险处置。一次回复最多结算一个城堡动作。正文自然说话，不要直接打印动作标签、解释内部机制或伪造已经发生的副作用；动作标签只由独立后处理器生成。");
 
         return sb.ToString();
     }
@@ -118,7 +126,8 @@ public sealed class SiegeCastleRuntimePromptFacts
         int slaughteredRegularPrisoners = 0,
         bool soldierAppeasementRequired = false,
         bool soldierAppeasementApplied = false,
-        bool speakerCultureMatchesCastle = false)
+        bool speakerCultureMatchesCastle = false,
+        SiegeCastlePrisonerDispositionKind pendingProposalForSpeaker = SiegeCastlePrisonerDispositionKind.None)
     {
         CastleName = castleName ?? string.Empty;
         PlayerName = playerName ?? string.Empty;
@@ -133,6 +142,7 @@ public sealed class SiegeCastleRuntimePromptFacts
         SoldierAppeasementRequired = soldierAppeasementRequired;
         SoldierAppeasementApplied = soldierAppeasementApplied;
         SpeakerCultureMatchesCastle = speakerCultureMatchesCastle;
+        PendingProposalForSpeaker = pendingProposalForSpeaker;
     }
 
     public static SiegeCastleRuntimePromptFacts Empty => new SiegeCastleRuntimePromptFacts(
@@ -148,7 +158,8 @@ public sealed class SiegeCastleRuntimePromptFacts
         slaughteredRegularPrisoners: 0,
         soldierAppeasementRequired: false,
         soldierAppeasementApplied: false,
-        speakerCultureMatchesCastle: false);
+        speakerCultureMatchesCastle: false,
+        pendingProposalForSpeaker: SiegeCastlePrisonerDispositionKind.None);
 
     public string CastleName { get; }
 
@@ -175,4 +186,6 @@ public sealed class SiegeCastleRuntimePromptFacts
     public bool SoldierAppeasementApplied { get; }
 
     public bool SpeakerCultureMatchesCastle { get; }
+
+    public SiegeCastlePrisonerDispositionKind PendingProposalForSpeaker { get; }
 }

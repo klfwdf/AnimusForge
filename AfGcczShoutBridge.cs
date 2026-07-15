@@ -210,10 +210,14 @@ internal static class AfGcczShoutBridge
 		return SiegeAiInterventionBehavior.BuildRuntimePostprocessRulesForExternal() ?? new List<PostprocessRuleEntry>();
 	}
 
-	internal static string BuildPostprocessContext(bool selected, int targetAgentIndex, bool replyIsDirectPlayerResponse)
+	internal static string BuildPostprocessContext(
+		bool selected,
+		int targetAgentIndex,
+		bool replyIsDirectPlayerResponse,
+		string playerText = null)
 	{
 		return selected
-			? SiegeAiInterventionBehavior.BuildRuntimePostprocessContextForExternal(targetAgentIndex, replyIsDirectPlayerResponse)
+			? SiegeAiInterventionBehavior.BuildRuntimePostprocessContextForExternal(targetAgentIndex, replyIsDirectPlayerResponse, playerText)
 			: string.Empty;
 	}
 
@@ -229,9 +233,23 @@ internal static class AfGcczShoutBridge
 		return selected ? SiegeAiInterventionBehavior.NormalizeSiegeInterventionPostprocessTagsForExternal(raw, rules) : string.Empty;
 	}
 
-	internal static bool TryProcessActionTags(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, ref string text, out bool actionHandled, bool replyIsDirectPlayerResponse = false)
+	internal static bool TryProcessActionTags(
+		Hero targetHero,
+		CharacterObject targetCharacter,
+		int targetAgentIndex,
+		ref string text,
+		out bool actionHandled,
+		bool replyIsDirectPlayerResponse = false,
+		string playerText = null)
 	{
-		return SiegeAiInterventionBehavior.TryProcessAiActionTags(targetHero, targetCharacter, targetAgentIndex, ref text, out actionHandled, replyIsDirectPlayerResponse);
+		return SiegeAiInterventionBehavior.TryProcessAiActionTags(
+			targetHero,
+			targetCharacter,
+			targetAgentIndex,
+			ref text,
+			out actionHandled,
+			replyIsDirectPlayerResponse,
+			playerText);
 	}
 
 	internal static bool TryProcessFixedKeywordAction(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string playerText, bool replyIsDirectPlayerResponse, out bool actionHandled)

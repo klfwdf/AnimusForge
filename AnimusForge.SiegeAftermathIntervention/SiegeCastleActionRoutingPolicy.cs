@@ -34,16 +34,48 @@ public static class SiegeCastleActionRoutingPolicy
             return Block(hasRecognizedAction: true, action, "direct_player_response_required");
         }
 
+        SiegeCastlePrisonerDispositionKind disposition = SiegeCastlePrisonerDispositionKindProfile.FromAction(action);
+        SiegeCastlePlayerAuthorizationDecision authorization = SiegeCastlePlayerAuthorizationPolicy.Evaluate(
+            facts.PlayerText,
+            facts.PendingProposalForSpeaker);
+
+        if (action == SiegeCastleActionKind.ProposeRecruitPrisoners
+            || action == SiegeCastleActionKind.ProposeSlaughterPrisoners)
+        {
+            if (facts.RemainingRegularPrisoners <= 0)
+            {
+                return Block(hasRecognizedAction: true, action, "no_regular_prisoners_remaining");
+            }
+
+            bool validProposer = facts.SpeakerRole == SiegeCastleActionSpeakerRole.AlliedSoldier
+                || (action == SiegeCastleActionKind.ProposeRecruitPrisoners
+                    && facts.SpeakerRole == SiegeCastleActionSpeakerRole.RegularPrisoner);
+            if (!validProposer)
+            {
+                return Block(hasRecognizedAction: true, action, "soldier_proposal_role_required");
+            }
+
+            return authorization.IsAuthorized && authorization.Disposition == disposition
+                ? Block(hasRecognizedAction: true, action, "player_already_authorized_disposition")
+                : Allow(action, "soldier_proposal_record_only");
+        }
+
         if (action == SiegeCastleActionKind.RecruitPrisoners
             || action == SiegeCastleActionKind.SlaughterPrisoners)
         {
-            if (facts.SpeakerRole != SiegeCastleActionSpeakerRole.RegularPrisoner)
+            if (facts.SpeakerRole != SiegeCastleActionSpeakerRole.RegularPrisoner
+                && facts.SpeakerRole != SiegeCastleActionSpeakerRole.AlliedSoldier)
             {
-                return Block(hasRecognizedAction: true, action, "regular_prisoner_response_required");
+                return Block(hasRecognizedAction: true, action, "soldier_response_required");
+            }
+
+            if (!authorization.IsAuthorized || authorization.Disposition != disposition)
+            {
+                return Block(hasRecognizedAction: true, action, "player_authorization_required");
             }
 
             return facts.RemainingRegularPrisoners > 0
-                ? Allow(action, "regular_prisoner_disposition_allowed")
+                ? Allow(action, authorization.ReasonCode)
                 : Block(hasRecognizedAction: true, action, "no_regular_prisoners_remaining");
         }
 

@@ -9,5 +9,7 @@ public enum SiegeCastleActionKind
     Unknown = 0,
     RecruitPrisoners = 1,
     SlaughterPrisoners = 2,
-    AppeaseSoldiers = 3
+    AppeaseSoldiers = 3,
+    ProposeRecruitPrisoners = 4,
+    ProposeSlaughterPrisoners = 5
 }

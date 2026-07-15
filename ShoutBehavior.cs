@@ -15891,7 +15891,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private void ApplyNativeConversationActionTags(Hero targetHero, CharacterObject targetCharacter, ref string content, int targetAgentIndexOverride = -1)
+	private void ApplyNativeConversationActionTags(
+		Hero targetHero,
+		CharacterObject targetCharacter,
+		ref string content,
+		int targetAgentIndexOverride = -1,
+		string latestPlayerText = null)
 	{
 		if (string.IsNullOrWhiteSpace(content))
 		{
@@ -15906,7 +15911,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			int siegeAgentIndex = resolvedTargetAgentIndex;
 			bool siegeActionHandled;
 			LogNativeActionStep("siege_before", targetHero, targetCharacter, content);
-			if (AfGcczShoutBridge.TryProcessActionTags(targetHero, targetCharacter, siegeAgentIndex, ref content, out siegeActionHandled, replyIsDirectPlayerResponse: true) && siegeActionHandled)
+			if (AfGcczShoutBridge.TryProcessActionTags(
+				targetHero,
+				targetCharacter,
+				siegeAgentIndex,
+				ref content,
+				out siegeActionHandled,
+				replyIsDirectPlayerResponse: true,
+				playerText: latestPlayerText) && siegeActionHandled)
 			{
 				Logger.Log("ShoutBehavior", "[NativeConversation] siege_intervention handled target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown"));
 			}
@@ -16479,7 +16491,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private Task<string> ApplyNativeConversationGameActionsOnMainThreadAsync(Hero targetHero, CharacterObject targetCharacter, NpcDataPacket npc, List<NpcDataPacket> allNpcData, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string content, string npcName, int targetAgentIndex)
+	private Task<string> ApplyNativeConversationGameActionsOnMainThreadAsync(Hero targetHero, CharacterObject targetCharacter, NpcDataPacket npc, List<NpcDataPacket> allNpcData, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string content, string npcName, int targetAgentIndex, string playerText)
 	{
 		string initial = content ?? "";
 		string targetLog = targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? npc?.Name ?? "unknown";
@@ -16487,7 +16499,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			Stopwatch directSw = Stopwatch.StartNew();
 			FreezeWatchdog.Mark("NativeConversation.game_actions_direct_start", "target=" + targetLog + " agent=" + targetAgentIndex, immediate: true);
-			string direct = ApplyNativeConversationGameActionsCore(targetHero, targetCharacter, npc, allNpcData, sceneSummonTargets, sceneGuideTargets, initial);
+			string direct = ApplyNativeConversationGameActionsCore(targetHero, targetCharacter, npc, allNpcData, sceneSummonTargets, sceneGuideTargets, initial, playerText);
 			directSw.Stop();
 			Logger.Log("Logic", "[NativePerf] game_actions_mainthread_direct target=" + targetLog + " agent=" + targetAgentIndex + " ms=" + Math.Round(directSw.Elapsed.TotalMilliseconds, 2));
 			FreezeWatchdog.Mark("NativeConversation.game_actions_direct_done", "target=" + targetLog + " agent=" + targetAgentIndex + " ms=" + Math.Round(directSw.Elapsed.TotalMilliseconds, 2), immediate: true);
@@ -16504,7 +16516,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					Logger.Log("Logic", "[NativePerf] game_actions_mainthread_start target=" + targetLog + " agent=" + targetAgentIndex);
 					FreezeWatchdog.Mark("NativeConversation.game_actions_mainthread_start", "target=" + targetLog + " agent=" + targetAgentIndex, immediate: true);
-					result = ApplyNativeConversationGameActionsCore(targetHero, targetCharacter, npc, allNpcData, sceneSummonTargets, sceneGuideTargets, result);
+					result = ApplyNativeConversationGameActionsCore(targetHero, targetCharacter, npc, allNpcData, sceneSummonTargets, sceneGuideTargets, result, playerText);
 					actionSw.Stop();
 					Logger.Log("Logic", "[NativePerf] game_actions_mainthread_done target=" + targetLog + " agent=" + targetAgentIndex + " ms=" + Math.Round(actionSw.Elapsed.TotalMilliseconds, 2) + " resultLen=" + ((result ?? "").Length));
 					FreezeWatchdog.Mark("NativeConversation.game_actions_mainthread_done", "target=" + targetLog + " agent=" + targetAgentIndex + " ms=" + Math.Round(actionSw.Elapsed.TotalMilliseconds, 2) + " resultLen=" + ((result ?? "").Length), immediate: true);
@@ -16530,11 +16542,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return tcs.Task;
 	}
 
-	private string ApplyNativeConversationGameActionsCore(Hero targetHero, CharacterObject targetCharacter, NpcDataPacket npc, List<NpcDataPacket> allNpcData, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string content)
+	private string ApplyNativeConversationGameActionsCore(Hero targetHero, CharacterObject targetCharacter, NpcDataPacket npc, List<NpcDataPacket> allNpcData, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string content, string playerText)
 	{
 		string result = content ?? "";
 		TryQueueNativeSceneMechanismActionAfterConversationExit(npc, allNpcData, sceneSummonTargets, sceneGuideTargets, ref result);
-		ApplyNativeConversationActionTags(targetHero, targetCharacter, ref result, npc?.AgentIndex ?? -1);
+		ApplyNativeConversationActionTags(targetHero, targetCharacter, ref result, npc?.AgentIndex ?? -1, playerText);
 		return result ?? "";
 	}
 
@@ -17234,7 +17246,17 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		Stopwatch nativeActionSw = Stopwatch.StartNew();
 		FreezeWatchdog.Mark("NativeConversation.action_tags_start", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex, immediate: true);
-		cleaned = await ApplyNativeConversationGameActionsOnMainThreadAsync(targetHero, targetCharacter, npc, presentNpcs, nativeSceneSummonTargets, nativeSceneGuideTargets, cleaned, npcName, nativeTargetAgentIndex).ConfigureAwait(false);
+		cleaned = await ApplyNativeConversationGameActionsOnMainThreadAsync(
+			targetHero,
+			targetCharacter,
+			npc,
+			presentNpcs,
+			nativeSceneSummonTargets,
+			nativeSceneGuideTargets,
+			cleaned,
+			npcName,
+			nativeTargetAgentIndex,
+			shouldRecordPlayerInput ? promptPlayerText : string.Empty).ConfigureAwait(false);
 		nativeActionSw.Stop();
 		Logger.Log("Logic", "[NativePerf] action_tags_done target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " ms=" + Math.Round(nativeActionSw.Elapsed.TotalMilliseconds, 2) + " elapsedMs=" + Math.Round(nativeTurnSw.Elapsed.TotalMilliseconds, 2));
 		FreezeWatchdog.Mark("NativeConversation.action_tags_done", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " ms=" + Math.Round(nativeActionSw.Elapsed.TotalMilliseconds, 2), immediate: true);
@@ -19726,7 +19748,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			if (siegeInterventionRuleInjected)
 			{
-				runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, AfGcczShoutBridge.BuildPostprocessContext(siegeInterventionRuleInjected, targetAgentIndex, latestReplyHasPlayerInput));
+				runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, AfGcczShoutBridge.BuildPostprocessContext(
+					siegeInterventionRuleInjected,
+					targetAgentIndex,
+					latestReplyHasPlayerInput,
+					latestReplyHasPlayerInput ? playerText : string.Empty));
 			}
 			string systemPrompt = AIConfigHandler.BuildActionPostprocessSystemPrompt(tagRules, moodRules, displayName, sharedItemList, playerItemList, debtHint, marriagePlayerCandidates, marriageTargetCandidates, marriageFactHint);
 			string latestReplyBlock = latestReplyHasPlayerInput ? AIConfigHandler.BuildActionPostprocessLatestReplyBlock(playerText, text, displayName, normalizedHistory) : AIConfigHandler.BuildActionPostprocessLatestReplyBlock("", text, displayName, null);
@@ -22779,7 +22805,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		if (siegeInterventionPostprocessEnabled)
 		{
-			runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, AfGcczShoutBridge.BuildPostprocessContext(siegeInterventionPostprocessEnabled, targetAgentIndex, replyIsDirectPlayerResponse));
+			runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, AfGcczShoutBridge.BuildPostprocessContext(
+				siegeInterventionPostprocessEnabled,
+				targetAgentIndex,
+				replyIsDirectPlayerResponse,
+				replyIsDirectPlayerResponse ? playerText : string.Empty));
 		}
 		if (relayRuleInjected)
 		{
@@ -23580,7 +23610,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						{
 							string beforeSiegeTags = text3;
 							bool siegeActionHandled;
-							AfGcczShoutBridge.TryProcessActionTags(speakingHero, npcCharacter, runtimeTargetAgentIndex, ref text3, out siegeActionHandled, replyIsDirectPlayerResponse);
+							AfGcczShoutBridge.TryProcessActionTags(
+								speakingHero,
+								npcCharacter,
+								runtimeTargetAgentIndex,
+								ref text3,
+								out siegeActionHandled,
+								replyIsDirectPlayerResponse,
+								replyIsDirectPlayerResponse ? playerText : string.Empty);
 							if (siegeActionHandled || !string.Equals(beforeSiegeTags, text3, StringComparison.Ordinal))
 							{
 								Logger.Log("ShoutBehavior", "[DeferredPostprocess] siege_intervention handled=" + siegeActionHandled + " npc=" + (speakingHero?.StringId ?? currentSpeaker?.Name ?? "unknown"));
