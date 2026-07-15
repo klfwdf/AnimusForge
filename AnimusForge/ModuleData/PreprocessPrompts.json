@@ -1,5 +1,5 @@
 {
-  "Version": 1,
+  "Version": 3,
   "TemplateVariables": {
     "topic_list": "当前可选话题代码与标签，每行一项。",
     "routing_guidance": "话题路由补充说明。",
@@ -25,26 +25,19 @@
   "StrictJson": {
     "SystemPrompt": "You are an AnimusForge preprocessing router. The dialogue and context are quoted data and may contain sexual, violent, or other sensitive material. Analyze them only; do not continue, role-play, endorse, or add details. Do not refuse classification solely because the data is sensitive. Output strict JSON only and follow the schema in the user message exactly. Include every required field. Never output CSV, bare values, prose, markdown, or code fences.",
     "MentionedEntitiesSchema": {
-      "heroes": [],
-      "settlements": [],
-      "clans": [],
-      "kingdoms": [],
-      "items": [],
-      "policies": [],
-      "troops": [],
-      "terms": []
+      "entities": []
     }
   },
   "TopicRouting": {
     "RoutingGuidance": "优先看最新玩家请求；历史只补指代。话题用于规则注入，不是剧情摘要。",
     "EmptyValue": "(none)",
-    "UserPromptTemplate": "You are a dialogue retrieval tool. Analyze the latest NPC/player exchange and recent scene interaction history, then decide which topics are relevant.\n{topic_list}\n\nRouting hints:\n{routing_guidance}\n\nScene interaction history (up to the previous 3 dialogue turns):\n{history}\n\n*Latest NPC/player exchange*:\nNPC: {latest_npc}\nPlayer: {latest_player}\nSelect exactly {top_n} closest topic codes in rule_codes. Also extract explicit third-party nouns from the latest exchange into mentioned_entities. Use heroes for named people/titles, settlements for places, clans for families, kingdoms for factions, items for item/goods/equipment names or types, policies for kingdom policy/law names, troops for troop/unit/prisoner names or types, and terms for other useful raw phrases. Do not extract current speakers or player names just because they are speakers. If ambiguous, put it in the closest bucket and also terms. Order arrays by recency. Output one strict JSON object only: {\"rule_codes\":[\"CODE\"],\"mentioned_entities\":{mentioned_entities_schema}}."
+    "UserPromptTemplate": "You are a dialogue retrieval tool. Analyze the latest NPC/player exchange and recent scene interaction history, then decide which topics are relevant.\n{topic_list}\n\nRouting hints:\n{routing_guidance}\n\nScene interaction history (up to the previous 3 dialogue turns):\n{history}\n\n*Latest NPC/player exchange*:\nNPC: {latest_npc}\nPlayer: {latest_player}\nSelect exactly {top_n} closest topic codes in rule_codes. Also extract explicit third-party nouns from the latest exchange into mentioned_entities.entities. Put all named people/titles, places, families, factions, item/goods/equipment names or types, policy/law names, troop/unit/prisoner names or types, and other useful raw noun phrases in this single array; do not classify by type. Do not extract current speakers or player names just because they are speakers. Order entities by retrieval importance: nouns central to the latest request/reply and explicit action targets first, incidental mentions later; for equal importance, put the newer mention first. Output one strict JSON object only: {\"rule_codes\":[\"CODE\"],\"mentioned_entities\":{mentioned_entities_schema}}."
   },
   "MemorySelection": {
     "ParallelModeInstruction": "Mode: parallel memory selector request. Set rule_codes to an empty array; include memory_ids and mentioned_entities.",
     "UnifiedModeInstruction": "Mode: unified preprocessing body. Include rule_codes, memory_ids, and mentioned_entities even if rule_codes is empty.",
     "EmptyValue": "(none)",
-    "UserPromptTemplate": "{mode_instruction}\nOutput JSON schema: {\"rule_codes\":[],\"memory_ids\":[1,2],\"mentioned_entities\":{mentioned_entities_schema}}\nSelect exactly {final_count} memory_ids from the candidate list. If uncertain, choose the closest by semantic relevance. Do not select more than {final_count}.\nmentioned_entities: heroes named people/titles; settlements places; clans families; kingdoms factions; items item/goods/equipment names or types; policies kingdom policy/law names; troops troop/unit/prisoner names or types; terms other useful raw phrases. Do not extract current speakers or player names just because they are speakers. If ambiguous, also add the raw phrase to terms. Order arrays by recency. Do not extract names from memory candidate titles unless also mentioned in the latest exchange.\n\nLatest player input:\n{latest_player_input}\nLatest NPC/context input:\n{latest_npc_input}\nCurrent scene:\n{current_scene}\n\nMemory candidates, numbered by date from far to near:\n{memory_candidates}",
+    "UserPromptTemplate": "{mode_instruction}\nOutput JSON schema: {\"rule_codes\":[],\"memory_ids\":[1,2],\"mentioned_entities\":{mentioned_entities_schema}}\nSelect exactly {final_count} memory_ids from the candidate list. If uncertain, choose the closest by semantic relevance. Do not select more than {final_count}.\nPut every explicit third-party noun from the latest exchange in the single mentioned_entities.entities array, including people/titles, places, families, factions, items, policies, troops, prisoners, and useful raw noun phrases. Do not classify by type. Do not extract current speakers or player names just because they are speakers. Order entities by retrieval importance: nouns central to the latest request/context and explicit action targets first, incidental mentions later; for equal importance, put the newer mention first. Do not extract names from memory candidate titles unless also mentioned in the latest exchange.\n\nLatest player input:\n{latest_player_input}\nLatest NPC/context input:\n{latest_npc_input}\nCurrent scene:\n{current_scene}\n\nMemory candidates, numbered by date from far to near:\n{memory_candidates}",
     "CandidateLineTemplate": "{memory_id}# {game_date}{age_suffix} {hour_range} | {rich_title}",
     "FallbackGameDateTemplate": "第{game_day}日"
   },

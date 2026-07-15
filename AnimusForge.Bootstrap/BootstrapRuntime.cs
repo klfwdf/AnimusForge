@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -23,15 +24,30 @@ namespace AnimusForge.Bootstrap
     internal sealed class BootstrapRuntime : IDisposable
     {
         private const string ImplementationAssemblyName = "AnimusForge";
+        private const string ImplementationAssemblyFileName = "AnimusForge.dll";
         private const string ImplementationTypeName = "AnimusForge.SubModule";
+        private const string UnifiedModuleId = "AnimusForge";
+        private const string BootstrapAssemblyFileName = "AnimusForge.Bootstrap.dll";
+        private const string BootstrapSubModuleTypeName = "AnimusForge.Bootstrap.BootstrapSubModule";
+        private const string ModuleHelperTypeName = "TaleWorlds.ModuleManager.ModuleHelper, TaleWorlds.ModuleManager";
+        private const string OnnxRuntimeAssemblyName = "Microsoft.ML.OnnxRuntime";
         private const string ApiMetadataKey = "AnimusForge.BannerlordApi";
 
-        private static readonly HashSet<string> PrivateDependencyAssemblyNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        private static readonly string[] PrivateManagedDependencyLoadOrder =
         {
-            "Microsoft.ML.OnnxRuntime",
+            "System.Runtime.CompilerServices.Unsafe",
             "System.Buffers",
             "System.Memory",
-            "System.Runtime.CompilerServices.Unsafe"
+            "Microsoft.ML.OnnxRuntime"
+        };
+
+        private static readonly HashSet<string> PrivateDependencyAssemblyNames =
+            new HashSet<string>(PrivateManagedDependencyLoadOrder, StringComparer.OrdinalIgnoreCase);
+
+        private static readonly string[] PrivateNativeDependencyFileNames =
+        {
+            "onnxruntime.dll",
+            "onnxruntime_providers_shared.dll"
         };
 
         private static int _fatalMessageShown;
@@ -45,6 +61,8 @@ namespace AnimusForge.Bootstrap
         private string _binDirectory;
         private Assembly _implementationAssembly;
         private MBSubModuleBase _implementation;
+        private IList _activeAssemblyRegistrationList;
+        private bool _activeAssemblyRegistrationAdded;
 
         internal string RuntimeVersionText { get; private set; } = "unknown";
 
@@ -67,13 +85,14 @@ namespace AnimusForge.Bootstrap
             string versionFolder = apiLine == BannerlordApiLine.V13 ? "1.3" : "1.4";
 
             _selectedImplementationDirectory = Path.GetFullPath(Path.Combine(_binDirectory, "versions", versionFolder));
-            _selectedImplementationPath = Path.GetFullPath(Path.Combine(_selectedImplementationDirectory, "AnimusForge.dll"));
+            _selectedImplementationPath = Path.GetFullPath(Path.Combine(_selectedImplementationDirectory, ImplementationAssemblyFileName));
 
             BootstrapLog.Info($"Game version={RuntimeVersionText}; selected API={SelectedApiText}; implementation={_selectedImplementationPath}");
 
             ValidateImplementationFile(_selectedImplementationPath);
             RejectConflictingLoadedImplementation(_selectedImplementationPath);
             InstallAssemblyResolver();
+            PreloadPrivateManagedDependencies();
 
             Assembly assembly = FindAlreadyLoadedAssemblyAtPath(_selectedImplementationPath)
                 ?? Assembly.LoadFrom(_selectedImplementationPath);
@@ -95,6 +114,8 @@ namespace AnimusForge.Bootstrap
                     $"Type '{ImplementationTypeName}' in '{_selectedImplementationPath}' is not a concrete {typeof(MBSubModuleBase).FullName}.");
             }
 
+            _implementationAssembly = assembly;
+            RegisterImplementationAsActiveGameAssembly();
             RegisterImplementationManagedTypes(assembly);
 
             object instance = Activator.CreateInstance(implementationType);
@@ -104,7 +125,6 @@ namespace AnimusForge.Bootstrap
                 throw new InvalidCastException($"Could not instantiate '{ImplementationTypeName}' as {typeof(MBSubModuleBase).FullName}.");
             }
 
-            _implementationAssembly = assembly;
             CacheLifecycleMethods(implementationType);
 
             BootstrapLog.Info(
@@ -174,13 +194,18 @@ namespace AnimusForge.Bootstrap
 
         public void Dispose()
         {
-            if (_assemblyResolveHandler == null)
+            if (_activeAssemblyRegistrationAdded && _activeAssemblyRegistrationList != null)
             {
-                return;
+                _activeAssemblyRegistrationList.Remove(ImplementationAssemblyFileName);
+                _activeAssemblyRegistrationAdded = false;
+                _activeAssemblyRegistrationList = null;
             }
 
-            AppDomain.CurrentDomain.AssemblyResolve -= _assemblyResolveHandler;
-            _assemblyResolveHandler = null;
+            if (_assemblyResolveHandler != null)
+            {
+                AppDomain.CurrentDomain.AssemblyResolve -= _assemblyResolveHandler;
+                _assemblyResolveHandler = null;
+            }
         }
 
         private BannerlordApiLine DetectRuntimeApiLine()
@@ -513,6 +538,340 @@ namespace AnimusForge.Bootstrap
             return null;
         }
 
+        private void PreloadPrivateManagedDependencies()
+        {
+            foreach (string simpleName in PrivateManagedDependencyLoadOrder)
+            {
+                string expectedPath = Path.GetFullPath(Path.Combine(_binDirectory, simpleName + ".dll"));
+                if (!File.Exists(expectedPath))
+                {
+                    throw new FileNotFoundException(
+                        $"Required AnimusForge private runtime dependency '{simpleName}' is missing from the unified module bin.",
+                        expectedPath);
+                }
+
+                AssemblyName expectedIdentity;
+                try
+                {
+                    expectedIdentity = AssemblyName.GetAssemblyName(expectedPath);
+                }
+                catch (Exception exception)
+                {
+                    throw new BadImageFormatException(
+                        $"Private runtime dependency '{expectedPath}' is not a readable managed DLL.", exception);
+                }
+
+                if (!string.Equals(expectedIdentity.Name, simpleName, StringComparison.Ordinal))
+                {
+                    throw new BadImageFormatException(
+                        $"Private runtime dependency identity mismatch. Expected '{simpleName}', " +
+                        $"found '{expectedIdentity.Name}' in '{expectedPath}'.");
+                }
+
+                Assembly alreadyLoaded = FindLoadedAssemblyByIdentity(expectedIdentity);
+                if (alreadyLoaded != null)
+                {
+                    string loadedLocation = GetAssemblyLocation(alreadyLoaded);
+                    if (PathsEqual(loadedLocation, expectedPath))
+                    {
+                        AddResolverOwnedAssemblyPath(loadedLocation);
+                        BootstrapLog.Info(
+                            $"Reusing private dependency '{alreadyLoaded.FullName}' already loaded from '{loadedLocation}'.");
+                    }
+                    else
+                    {
+                        if (string.Equals(simpleName, OnnxRuntimeAssemblyName, StringComparison.OrdinalIgnoreCase))
+                        {
+                            throw new InvalidOperationException(
+                                $"A conflicting '{OnnxRuntimeAssemblyName}' assembly is already loaded from '{loadedLocation}'. " +
+                                $"AnimusForge requires the managed/native ONNX pair shipped in '{_binDirectory}'.");
+                        }
+
+                        BootstrapLog.Warning(
+                            $"Reusing exact private dependency identity '{alreadyLoaded.FullName}' already loaded outside " +
+                            $"the AnimusForge module bin from '{loadedLocation}'.");
+                    }
+                    continue;
+                }
+
+                AddResolverOwnedAssemblyPath(expectedPath);
+                try
+                {
+                    Assembly loaded = Assembly.LoadFrom(expectedPath);
+                    AssemblyName actualIdentity = loaded.GetName();
+                    string actualLocation = GetAssemblyLocation(loaded);
+                    if (!AssemblyIdentityMatches(expectedIdentity, actualIdentity))
+                    {
+                        throw new FileLoadException(
+                            $"CLR returned the wrong identity for private dependency '{simpleName}'. " +
+                            $"Expected '{expectedIdentity.FullName}', actual '{actualIdentity.FullName}'.",
+                            expectedPath);
+                    }
+
+                    if (!PathsEqual(actualLocation, expectedPath))
+                    {
+                        throw new FileLoadException(
+                            $"CLR returned private dependency '{simpleName}' from an unexpected path. " +
+                            $"Expected '{expectedPath}', actual '{actualLocation}'.",
+                            expectedPath);
+                    }
+
+                    BootstrapLog.Info(
+                        $"Preloaded private dependency '{loaded.FullName}' from '{actualLocation}'.");
+                }
+                catch (Exception exception)
+                {
+                    RemoveResolverOwnedAssemblyPath(expectedPath);
+                    throw new InvalidOperationException(
+                        $"Failed to preload required AnimusForge private dependency '{simpleName}' from '{expectedPath}'.",
+                        exception);
+                }
+            }
+
+            foreach (string fileName in PrivateNativeDependencyFileNames)
+            {
+                string expectedPath = Path.GetFullPath(Path.Combine(_binDirectory, fileName));
+                if (!File.Exists(expectedPath))
+                {
+                    throw new FileNotFoundException(
+                        $"Required AnimusForge native runtime dependency '{fileName}' is missing from the unified module bin.",
+                        expectedPath);
+                }
+            }
+
+            BootstrapLog.Info(
+                $"Private dependency check completed: preloaded/reused " +
+                $"{PrivateManagedDependencyLoadOrder.Length} managed assemblies and verified " +
+                $"{PrivateNativeDependencyFileNames.Length} native files.");
+        }
+
+        private void RegisterImplementationAsActiveGameAssembly()
+        {
+            if (_implementationAssembly == null)
+            {
+                throw new InvalidOperationException(
+                    "Cannot register the selected implementation as active before its assembly has loaded.");
+            }
+
+            Type moduleHelperType = Type.GetType(ModuleHelperTypeName, throwOnError: false);
+            if (moduleHelperType == null)
+            {
+                throw new TypeLoadException($"Required runtime type '{ModuleHelperTypeName}' is unavailable.");
+            }
+
+            MethodInfo getModuleInfo = moduleHelperType.GetMethod(
+                "GetModuleInfo",
+                BindingFlags.Public | BindingFlags.Static,
+                binder: null,
+                types: new[] { typeof(string) },
+                modifiers: null);
+            if (getModuleInfo == null)
+            {
+                throw new MissingMethodException(moduleHelperType.FullName, "GetModuleInfo(string)");
+            }
+
+            object moduleInfo = InvokeRequiredStaticMethod(getModuleInfo, UnifiedModuleId);
+            if (moduleInfo == null)
+            {
+                throw new InvalidOperationException(
+                    $"The active module registry does not contain the unified module id '{UnifiedModuleId}'.");
+            }
+
+            object isActiveValue = GetRequiredPublicMemberValue(moduleInfo, "IsActive");
+            if (!(isActiveValue is bool isActive) || !isActive)
+            {
+                throw new InvalidOperationException(
+                    $"The unified module '{UnifiedModuleId}' is not active while its Bootstrap is loading.");
+            }
+
+            IEnumerable subModules = GetRequiredPublicMemberValue(moduleInfo, "SubModules") as IEnumerable;
+            if (subModules == null)
+            {
+                throw new InvalidOperationException(
+                    $"Module '{UnifiedModuleId}' did not expose an enumerable SubModules collection.");
+            }
+
+            object bootstrapSubModuleInfo = null;
+            foreach (object subModuleInfo in subModules)
+            {
+                if (subModuleInfo == null)
+                {
+                    continue;
+                }
+
+                string dllName = GetRequiredPublicMemberValue(subModuleInfo, "DLLName") as string;
+                string classTypeName = GetRequiredPublicMemberValue(subModuleInfo, "SubModuleClassTypeName") as string;
+                if (string.Equals(dllName, BootstrapAssemblyFileName, StringComparison.Ordinal) &&
+                    string.Equals(classTypeName, BootstrapSubModuleTypeName, StringComparison.Ordinal))
+                {
+                    bootstrapSubModuleInfo = subModuleInfo;
+                    break;
+                }
+            }
+
+            if (bootstrapSubModuleInfo == null)
+            {
+                throw new InvalidOperationException(
+                    $"Could not find the '{BootstrapSubModuleTypeName}' entry in module '{UnifiedModuleId}'.");
+            }
+
+            IList assemblies = GetRequiredPublicMemberValue(bootstrapSubModuleInfo, "Assemblies") as IList;
+            if (assemblies == null || assemblies.IsReadOnly || assemblies.IsFixedSize)
+            {
+                throw new InvalidOperationException(
+                    "The Bootstrap SubModuleInfo.Assemblies collection is unavailable or cannot be updated in memory.");
+            }
+
+            bool added = false;
+            try
+            {
+                if (!assemblies.Contains(ImplementationAssemblyFileName))
+                {
+                    assemblies.Add(ImplementationAssemblyFileName);
+                    added = true;
+                    _activeAssemblyRegistrationList = assemblies;
+                    _activeAssemblyRegistrationAdded = true;
+                }
+
+                MethodInfo getActiveGameAssemblies = moduleHelperType.GetMethod(
+                    "GetActiveGameAssemblies",
+                    BindingFlags.Public | BindingFlags.Static,
+                    binder: null,
+                    types: Type.EmptyTypes,
+                    modifiers: null);
+                if (getActiveGameAssemblies == null)
+                {
+                    throw new MissingMethodException(moduleHelperType.FullName, "GetActiveGameAssemblies()");
+                }
+
+                IEnumerable activeAssemblies = InvokeRequiredStaticMethod(getActiveGameAssemblies) as IEnumerable;
+                if (activeAssemblies == null)
+                {
+                    throw new InvalidOperationException("ModuleHelper.GetActiveGameAssemblies returned no enumerable result.");
+                }
+
+                bool implementationIsActive = false;
+                foreach (object item in activeAssemblies)
+                {
+                    if (item is Assembly activeAssembly &&
+                        (ReferenceEquals(activeAssembly, _implementationAssembly) ||
+                         PathsEqual(GetAssemblyLocation(activeAssembly), _selectedImplementationPath)))
+                    {
+                        implementationIsActive = true;
+                        break;
+                    }
+                }
+
+                if (!implementationIsActive)
+                {
+                    throw new InvalidOperationException(
+                        "The selected AnimusForge implementation was not returned by ModuleHelper.GetActiveGameAssemblies " +
+                        "after its in-memory registration.");
+                }
+
+                BootstrapLog.Info(
+                    "Registered the selected implementation in the in-memory active-game assembly list; " +
+                    "SubModule.xml remains Bootstrap-only.");
+            }
+            catch
+            {
+                if (added)
+                {
+                    assemblies.Remove(ImplementationAssemblyFileName);
+                    _activeAssemblyRegistrationList = null;
+                    _activeAssemblyRegistrationAdded = false;
+                }
+
+                throw;
+            }
+        }
+
+        private static Assembly FindLoadedAssemblyByIdentity(AssemblyName expectedIdentity)
+        {
+            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                try
+                {
+                    if (AssemblyIdentityMatches(expectedIdentity, assembly.GetName()))
+                    {
+                        return assembly;
+                    }
+                }
+                catch
+                {
+                    // Continue past dynamic or partially initialized assemblies.
+                }
+            }
+
+            return null;
+        }
+
+        private void AddResolverOwnedAssemblyPath(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path) || path.StartsWith("<", StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            lock (_resolverOwnedPathsLock)
+            {
+                _resolverOwnedAssemblyPaths.Add(Path.GetFullPath(path));
+            }
+        }
+
+        private void RemoveResolverOwnedAssemblyPath(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path) || path.StartsWith("<", StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            lock (_resolverOwnedPathsLock)
+            {
+                _resolverOwnedAssemblyPaths.Remove(Path.GetFullPath(path));
+            }
+        }
+
+        private static object GetRequiredPublicMemberValue(object instance, string memberName)
+        {
+            if (instance == null)
+            {
+                throw new ArgumentNullException(nameof(instance));
+            }
+
+            PropertyInfo property = instance.GetType().GetProperty(
+                memberName,
+                BindingFlags.Instance | BindingFlags.Public);
+            if (property != null && property.CanRead)
+            {
+                return property.GetValue(instance, null);
+            }
+
+            FieldInfo field = instance.GetType().GetField(
+                memberName,
+                BindingFlags.Instance | BindingFlags.Public);
+            if (field != null)
+            {
+                return field.GetValue(instance);
+            }
+
+            throw new MissingMemberException(instance.GetType().FullName, memberName);
+        }
+
+        private static object InvokeRequiredStaticMethod(MethodInfo method, params object[] arguments)
+        {
+            try
+            {
+                return method.Invoke(null, arguments);
+            }
+            catch (TargetInvocationException exception) when (exception.InnerException != null)
+            {
+                throw new InvalidOperationException(
+                    $"Runtime method '{method.DeclaringType?.FullName}.{method.Name}' failed.",
+                    exception.InnerException);
+            }
+        }
+
         private void InstallAssemblyResolver()
         {
             if (_assemblyResolveHandler != null)
@@ -605,10 +964,7 @@ namespace AnimusForge.Bootstrap
                     string resolvedLocation = GetAssemblyLocation(resolved);
                     if (PathsEqual(resolvedLocation, candidate))
                     {
-                        lock (_resolverOwnedPathsLock)
-                        {
-                            _resolverOwnedAssemblyPaths.Add(Path.GetFullPath(resolvedLocation));
-                        }
+                        AddResolverOwnedAssemblyPath(resolvedLocation);
                     }
                     return resolved;
                 }
@@ -683,9 +1039,7 @@ namespace AnimusForge.Bootstrap
             // These assemblies are private AnimusForge runtime dependencies kept beside Bootstrap.
             // They intentionally override the broad System.* guard below so an implementation
             // loaded from versions/1.3 or versions/1.4 can still resolve them from the module bin.
-            if (simpleName.Equals("System.Buffers", StringComparison.OrdinalIgnoreCase) ||
-                simpleName.Equals("System.Memory", StringComparison.OrdinalIgnoreCase) ||
-                simpleName.Equals("System.Runtime.CompilerServices.Unsafe", StringComparison.OrdinalIgnoreCase))
+            if (PrivateDependencyAssemblyNames.Contains(simpleName))
             {
                 return false;
             }

@@ -8,8 +8,36 @@ namespace AnimusForge.Bootstrap
     public sealed class BootstrapSubModule : MBSubModuleBase
     {
         private BootstrapRuntime _runtime;
+        private bool _implementationPreloaded;
         private bool _loadCompleted;
         private Exception _loadFailure;
+
+        public BootstrapSubModule()
+        {
+            _runtime = new BootstrapRuntime();
+            try
+            {
+                // Bannerlord constructs every declared submodule before it calls any
+                // OnSubModuleLoad callback.  Preload the selected implementation here so
+                // Gauntlet's first WidgetInfo.Refresh can discover AnimusForge's custom
+                // Widget types.  The implementation lifecycle is still forwarded only
+                // from the matching Bootstrap lifecycle callback below.
+                _runtime.LoadImplementation();
+                _implementationPreloaded = true;
+                BootstrapLog.Info(
+                    "AnimusForge implementation preloaded during Bootstrap construction for engine type discovery.");
+            }
+            catch (Exception exception)
+            {
+                _loadFailure = exception;
+                _runtime.ReportFatal("Bootstrap construction / implementation preload", exception);
+                _runtime.Dispose();
+                throw new InvalidOperationException(
+                    "AnimusForge Bootstrap failed closed while preloading the selected implementation. " +
+                    "See the Bootstrap UTF-8 log for details.",
+                    exception);
+            }
+        }
 
         protected override void OnSubModuleLoad()
         {
@@ -24,10 +52,14 @@ namespace AnimusForge.Bootstrap
                 throw new InvalidOperationException("AnimusForge Bootstrap previously failed and will not retry in this process.", _loadFailure);
             }
 
-            _runtime = new BootstrapRuntime();
             try
             {
-                _runtime.LoadImplementation();
+                if (!_implementationPreloaded || _runtime == null)
+                {
+                    throw new InvalidOperationException(
+                        "AnimusForge implementation was not preloaded during Bootstrap construction.");
+                }
+
                 _runtime.InvokeLifecycle(nameof(OnSubModuleLoad));
                 _loadCompleted = true;
                 BootstrapLog.Info("AnimusForge implementation OnSubModuleLoad completed.");
@@ -55,6 +87,7 @@ namespace AnimusForge.Bootstrap
             finally
             {
                 _runtime?.Dispose();
+                _implementationPreloaded = false;
                 _loadCompleted = false;
             }
         }

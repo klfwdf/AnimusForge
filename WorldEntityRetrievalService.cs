@@ -18,27 +18,13 @@ namespace AnimusForge;
 
 public sealed class MentionedWorldEntities
 {
-	public List<string> Heroes = new List<string>();
-
-	public List<string> Settlements = new List<string>();
-
-	public List<string> Clans = new List<string>();
-
-	public List<string> Kingdoms = new List<string>();
-
-	public List<string> Items = new List<string>();
-
-	public List<string> Policies = new List<string>();
-
-	public List<string> Troops = new List<string>();
-
-	public List<string> Terms = new List<string>();
+	public List<string> Entities = new List<string>();
 
 	public bool IsEmpty
 	{
 		get
 		{
-			return IsEmptyList(Heroes) && IsEmptyList(Settlements) && IsEmptyList(Clans) && IsEmptyList(Kingdoms) && IsEmptyList(Items) && IsEmptyList(Policies) && IsEmptyList(Troops) && IsEmptyList(Terms);
+			return IsEmptyList(Entities);
 		}
 	}
 
@@ -46,14 +32,7 @@ public sealed class MentionedWorldEntities
 	{
 		return new MentionedWorldEntities
 		{
-			Heroes = new List<string>(Heroes ?? new List<string>()),
-			Settlements = new List<string>(Settlements ?? new List<string>()),
-			Clans = new List<string>(Clans ?? new List<string>()),
-			Kingdoms = new List<string>(Kingdoms ?? new List<string>()),
-			Items = new List<string>(Items ?? new List<string>()),
-			Policies = new List<string>(Policies ?? new List<string>()),
-			Troops = new List<string>(Troops ?? new List<string>()),
-			Terms = new List<string>(Terms ?? new List<string>())
+			Entities = new List<string>(Entities ?? new List<string>())
 		};
 	}
 
@@ -63,14 +42,7 @@ public sealed class MentionedWorldEntities
 		{
 			return;
 		}
-		MergeList(Heroes, other.Heroes);
-		MergeList(Settlements, other.Settlements);
-		MergeList(Clans, other.Clans);
-		MergeList(Kingdoms, other.Kingdoms);
-		MergeList(Items, other.Items);
-		MergeList(Policies, other.Policies);
-		MergeList(Troops, other.Troops);
-		MergeList(Terms, other.Terms);
+		MergeList(Entities, other.Entities);
 	}
 
 	private static bool IsEmptyList(List<string> values)
@@ -316,21 +288,19 @@ public static class WorldEntityRetrievalService
 				return result;
 			}
 			List<VisiblePartyCandidate> visibleParties = BuildVisiblePartyCandidates(contextHero);
-			List<string> allMentions = BuildMergedMentionList(mentions);
+			List<string> allMentions = BuildUnifiedMentionList(mentions);
 			HashSet<string> activeRuleIdSet = BuildActiveRuleIdSet(activeRuleIds);
-			bool searchItemsFromTerms = ShouldSearchItemEntitiesFromTerms(activeRuleIdSet);
-			List<string> itemMentions = BuildTypedMentionList(mentions?.Items, searchItemsFromTerms ? mentions?.Terms : null);
 			string rawInput = (latestInput ?? "").Trim();
 			bool hasRawInput = !string.IsNullOrWhiteSpace(rawInput);
-			string startDetail = "mentions=" + allMentions.Count + " itemMentions=" + itemMentions.Count + " rawInputLen=" + rawInput.Length + " visibleParties=" + visibleParties.Count + " contextHero=" + (contextHero?.StringId ?? "");
+			string startDetail = "entities=" + allMentions.Count + " rawInputLen=" + rawInput.Length + " visibleParties=" + visibleParties.Count + " contextHero=" + (contextHero?.StringId ?? "");
 			FreezeWatchdog.Mark("WorldEntityRetrieval.start", startDetail, immediate: true);
-			Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] start mentions=" + allMentions.Count + " heroes=" + CountList(mentions?.Heroes) + " settlements=" + CountList(mentions?.Settlements) + " clans=" + CountList(mentions?.Clans) + " kingdoms=" + CountList(mentions?.Kingdoms) + " items=" + CountList(mentions?.Items) + " terms=" + CountList(mentions?.Terms) + " itemMentions=" + itemMentions.Count + " rawInputLen=" + rawInput.Length + " visibleParties=" + visibleParties.Count + " contextHero=" + (contextHero?.StringId ?? "") + " includeResidentKingdoms=" + includeResidentKingdoms + " activeRules=" + FormatMentionsForLog(activeRuleIdSet) + " " + FormatBudgetForLog(budget));
+			Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] start entities=" + CountList(mentions?.Entities) + " rawInputLen=" + rawInput.Length + " visibleParties=" + visibleParties.Count + " contextHero=" + (contextHero?.StringId ?? "") + " includeResidentKingdoms=" + includeResidentKingdoms + " activeRules=" + FormatMentionsForLog(activeRuleIdSet) + " " + FormatBudgetForLog(budget));
 			List<EntityMatch<Hero>> heroes = new List<EntityMatch<Hero>>();
 			List<EntityMatch<Settlement>> settlements = new List<EntityMatch<Settlement>>();
 			List<EntityMatch<Clan>> clans = new List<EntityMatch<Clan>>();
 			List<EntityMatch<Kingdom>> kingdoms = new List<EntityMatch<Kingdom>>();
 			List<EntityMatch<ItemObject>> items = new List<EntityMatch<ItemObject>>();
-			if (allMentions.Count > 0 || itemMentions.Count > 0 || hasRawInput)
+			if (allMentions.Count > 0 || hasRawInput)
 			{
 				Stopwatch stageSw = Stopwatch.StartNew();
 				int maxInjectedEntities = GetMaxInjectedEntitiesFromSettings();
@@ -349,11 +319,11 @@ public static class WorldEntityRetrievalService
 				{
 					kingdomCandidates = GetKingdomCandidates().ToList();
 				}
-				if (itemMentions.Count > 0)
+				if (allMentions.Count > 0)
 				{
 					itemCandidates = GetItemCandidates().ToList();
 				}
-				Logger.Log("WorldEntityRetrieval", "mentions total=" + allMentions.Count + " maxInject=" + maxInjectedEntities + " heroes=" + CountList(mentions?.Heroes) + " settlements=" + CountList(mentions?.Settlements) + " clans=" + CountList(mentions?.Clans) + " kingdoms=" + CountList(mentions?.Kingdoms) + " items=" + CountList(mentions?.Items) + " terms=" + CountList(mentions?.Terms) + " itemMentions=" + itemMentions.Count + " rawInputLen=" + rawInput.Length + " visibleParties=" + visibleParties.Count + " candidates hero=" + heroCandidates.Count + " settlement=" + settlementCandidates.Count + " clan=" + clanCandidates.Count + " kingdom=" + kingdomCandidates.Count + " item=" + itemCandidates.Count + " names=" + FormatMentionsForLog(allMentions) + " itemNames=" + FormatMentionsForLog(itemMentions));
+				Logger.Log("WorldEntityRetrieval", "entities total=" + allMentions.Count + " maxInject=" + maxInjectedEntities + " rawInputLen=" + rawInput.Length + " visibleParties=" + visibleParties.Count + " candidates hero=" + heroCandidates.Count + " settlement=" + settlementCandidates.Count + " clan=" + clanCandidates.Count + " kingdom=" + kingdomCandidates.Count + " item=" + itemCandidates.Count + " names=" + FormatMentionsForLog(allMentions));
 				Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] candidates_ready ms=" + Math.Round(stageSw.Elapsed.TotalMilliseconds, 2));
 				Dictionary<string, int> mentionPriority = BuildMentionPriority(allMentions);
 				List<EntityMatch<Hero>> rulerTitleMatches = allMentions.Count > 0 ? FindRulerTitleMatches(allMentions, mentionPriority, kingdomCandidates, "preprocess", budget) : new List<EntityMatch<Hero>>();
@@ -387,12 +357,11 @@ public static class WorldEntityRetrievalService
 						kingdoms = FindMatches("kingdom", allMentions, mentionPriority, kingdomCandidates, GetKingdomAliases, (Kingdom x) => "kingdom:" + SafeStringId(x?.StringId), (Kingdom x) => SafeName(x?.Name, x?.StringId ?? "Kingdom"), budget);
 					}
 				}
-				if (itemMentions.Count > 0)
+				if (allMentions.Count > 0)
 				{
-					Dictionary<string, int> itemMentionPriority = BuildMentionPriority(itemMentions);
 					if (CanContinueWorldEntityMatch("item", budget))
 					{
-						items = FindMatches("item", itemMentions, itemMentionPriority, itemCandidates, GetItemAliases, (ItemObject x) => "item:" + SafeStringId(x?.StringId), (ItemObject x) => SafeName(x?.Name, x?.StringId ?? "Item"), budget);
+						items = FindMatches("item", allMentions, mentionPriority, itemCandidates, GetItemAliases, (ItemObject x) => "item:" + SafeStringId(x?.StringId), (ItemObject x) => SafeName(x?.Name, x?.StringId ?? "Item"), budget);
 					}
 				}
 				Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] all_match_done heroMatches=" + heroes.Count + " settlementMatches=" + settlements.Count + " clanMatches=" + clans.Count + " kingdomMatches=" + kingdoms.Count + " itemMatches=" + items.Count + " ms=" + Math.Round(stageSw.Elapsed.TotalMilliseconds, 2) + " hardBudgetExceeded=" + budget.IsHardExceeded);
@@ -442,24 +411,11 @@ public static class WorldEntityRetrievalService
 		}
 	}
 
-	private static List<string> BuildMergedMentionList(MentionedWorldEntities mentions)
+	private static List<string> BuildUnifiedMentionList(MentionedWorldEntities mentions)
 	{
 		List<string> result = new List<string>();
 		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		AddMentionList(result, seen, mentions?.Heroes);
-		AddMentionList(result, seen, mentions?.Settlements);
-		AddMentionList(result, seen, mentions?.Clans);
-		AddMentionList(result, seen, mentions?.Kingdoms);
-		AddMentionList(result, seen, mentions?.Terms);
-		return result;
-	}
-
-	private static List<string> BuildTypedMentionList(IEnumerable<string> primaryValues, IEnumerable<string> ruleGatedTerms)
-	{
-		List<string> result = new List<string>();
-		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		AddMentionList(result, seen, primaryValues);
-		AddMentionList(result, seen, ruleGatedTerms);
+		AddMentionList(result, seen, mentions?.Entities);
 		return result;
 	}
 
@@ -477,35 +433,6 @@ public static class WorldEntityRetrievalService
 		return result;
 	}
 
-	private static bool ShouldSearchItemEntitiesFromTerms(HashSet<string> activeRuleIds)
-	{
-		return ActiveRuleLooksLike(activeRuleIds, "reward", "loan", "debt", "barter", "trade", "exchange", "gift", "item", "goods", "equipment", "asset", "courier", "delivery");
-	}
-
-	private static bool ActiveRuleLooksLike(HashSet<string> activeRuleIds, params string[] fragments)
-	{
-		if (activeRuleIds == null || activeRuleIds.Count == 0 || fragments == null || fragments.Length == 0)
-		{
-			return false;
-		}
-		foreach (string ruleId in activeRuleIds)
-		{
-			string text = (ruleId ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(text))
-			{
-				continue;
-			}
-			foreach (string fragment in fragments)
-			{
-				string needle = (fragment ?? "").Trim();
-				if (!string.IsNullOrWhiteSpace(needle) && text.IndexOf(needle, StringComparison.OrdinalIgnoreCase) >= 0)
-				{
-					return true;
-				}
-			}
-		}
-		return false;
-	}
 
 	private static void AddMentionList(List<string> result, HashSet<string> seen, IEnumerable<string> values)
 	{

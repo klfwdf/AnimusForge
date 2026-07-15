@@ -2897,12 +2897,9 @@ public static class AIConfigHandler
 	{
 		RequirePreprocessPromptValue(StrictPreprocessJsonSystemPrompt, "StrictJson.SystemPrompt");
 		JObject schema = _preprocessPrompts?.StrictJson?.MentionedEntitiesSchema;
-		foreach (string bucket in new string[8] { "heroes", "settlements", "clans", "kingdoms", "items", "policies", "troops", "terms" })
+		if (!(schema?["entities"] is JArray))
 		{
-			if (!(schema?[bucket] is JArray))
-			{
-				throw new InvalidOperationException("PreprocessPrompts.json schema 缺少数组: StrictJson.MentionedEntitiesSchema." + bucket);
-			}
+			throw new InvalidOperationException("PreprocessPrompts.json schema 缺少数组: StrictJson.MentionedEntitiesSchema.entities");
 		}
 		RequirePreprocessPromptValue(_preprocessPrompts?.TopicRouting?.EmptyValue, "TopicRouting.EmptyValue");
 		ValidatePreprocessTemplateVariables(_preprocessPrompts?.TopicRouting?.UserPromptTemplate, "TopicRouting.UserPromptTemplate", "topic_list", "routing_guidance", "history", "latest_npc", "latest_player", "top_n", "mentioned_entities_schema");
@@ -4351,15 +4348,13 @@ public static class AIConfigHandler
 			error = "mentioned_entities_not_object";
 			return false;
 		}
-		string[] buckets = new string[8] { "heroes", "settlements", "clans", "kingdoms", "items", "policies", "troops", "terms" };
-		for (int i = 0; i < buckets.Length; i++)
+		JProperty unexpectedProperty = mentionedEntities.Properties().FirstOrDefault((JProperty x) => !string.Equals(x.Name, "entities", StringComparison.Ordinal));
+		if (unexpectedProperty != null)
 		{
-			if (!ValidateStrictPreprocessArray(mentionedEntities, buckets[i], JTokenType.String, out error, "mentioned_entities_"))
-			{
-				return false;
-			}
+			error = "mentioned_entities_unexpected_field_" + unexpectedProperty.Name;
+			return false;
 		}
-		return true;
+		return ValidateStrictPreprocessArray(mentionedEntities, "entities", JTokenType.String, out error, "mentioned_entities_");
 	}
 
 	private static bool ValidateStrictPreprocessArray(JObject obj, string fieldName, JTokenType itemType, out string error, string errorPrefix = "")
@@ -4626,7 +4621,7 @@ public static class AIConfigHandler
 
 	private static string BuildAuxiliaryPreprocessFormatError(string reason, string content)
 	{
-		string detail = "（API响应格式错误）前处理规则选择返回格式错误：" + (string.IsNullOrWhiteSpace(reason) ? "unknown" : reason.Trim()) + "。必须只输出一个 JSON 对象，并包含 rule_codes 字符串数组和完整的 mentioned_entities 数组对象。";
+		string detail = "（API响应格式错误）前处理规则选择返回格式错误：" + (string.IsNullOrWhiteSpace(reason) ? "unknown" : reason.Trim()) + "。必须只输出一个 JSON 对象，并包含 rule_codes 字符串数组和 mentioned_entities.entities 字符串数组。";
 		return LlmRetryPrompt.BuildFailureDetail(detail, content);
 	}
 
@@ -4748,9 +4743,9 @@ public static class AIConfigHandler
 	{
 		if (entities == null)
 		{
-		return "heroes=0 settlements=0 clans=0 kingdoms=0 items=0 policies=0 troops=0 terms=0";
+			return "entities=0";
 		}
-		return "heroes=" + (entities.Heroes?.Count ?? 0) + " settlements=" + (entities.Settlements?.Count ?? 0) + " clans=" + (entities.Clans?.Count ?? 0) + " kingdoms=" + (entities.Kingdoms?.Count ?? 0) + " items=" + (entities.Items?.Count ?? 0) + " policies=" + (entities.Policies?.Count ?? 0) + " troops=" + (entities.Troops?.Count ?? 0) + " terms=" + (entities.Terms?.Count ?? 0);
+		return "entities=" + (entities.Entities?.Count ?? 0);
 	}
 
 	private static string HashAuxiliaryMentionKey(string value)
@@ -4790,28 +4785,26 @@ public static class AIConfigHandler
 			{
 				return false;
 			}
+			if (token is JArray directArray)
+			{
+				FillMentionedEntityList(entities.Entities, directArray);
+				return !entities.IsEmpty;
+			}
 			JObject obj = token as JObject;
 			if (obj == null)
 			{
 				error = "mentioned_entities_not_object";
 				return false;
 			}
-			FillMentionedEntityList(entities.Heroes, GetJsonPropertyIgnoreCase(obj, "heroes", "persons", "people", "characters", "npcs"));
-			FillMentionedEntityList(entities.Settlements, GetJsonPropertyIgnoreCase(obj, "settlements", "places", "locations", "towns", "castles", "villages"));
-			FillMentionedEntityList(entities.Clans, GetJsonPropertyIgnoreCase(obj, "clans", "families", "houses"));
-			FillMentionedEntityList(entities.Kingdoms, GetJsonPropertyIgnoreCase(obj, "kingdoms", "countries", "nations", "realms", "factions"));
-			FillMentionedEntityList(entities.Terms, GetJsonPropertyIgnoreCase(obj, "terms", "nouns", "keywords", "mentions", "mentioned_terms"));
-			JToken itemToken = GetJsonPropertyIgnoreCase(obj, "items", "item_names", "item_types", "goods", "equipment");
-			FillMentionedEntityList(entities.Items, itemToken);
-			FillMentionedEntityList(entities.Policies, GetJsonPropertyIgnoreCase(obj, "policies", "policy_names", "laws"));
-			FillMentionedEntityList(entities.Terms, itemToken);
-			JToken troopToken = GetJsonPropertyIgnoreCase(obj, "troops", "troop_names", "troop_types", "units", "soldiers");
-			FillMentionedEntityList(entities.Troops, troopToken);
-			FillMentionedEntityList(entities.Terms, troopToken);
-			JToken prisonerToken = GetJsonPropertyIgnoreCase(obj, "prisoners", "prisoner_names", "prisoner_types", "captives");
-			FillMentionedEntityList(entities.Troops, prisonerToken);
-			FillMentionedEntityList(entities.Terms, prisonerToken);
-			FillMentionedEntityList(entities.Terms, GetJsonPropertyIgnoreCase(obj, "asset_names", "asset_types", "fiefs", "workshops", "caravans"));
+			FillMentionedEntityList(entities.Entities, GetJsonPropertyIgnoreCase(obj, "entities", "nouns", "keywords", "mentions", "mentioned_terms"));
+			if (entities.IsEmpty)
+			{
+				string[] legacyBuckets = new string[8] { "heroes", "settlements", "clans", "kingdoms", "items", "policies", "troops", "terms" };
+				foreach (string legacyBucket in legacyBuckets)
+				{
+					FillMentionedEntityList(entities.Entities, GetJsonPropertyIgnoreCase(obj, legacyBucket));
+				}
+			}
 			return !entities.IsEmpty;
 		}
 		catch (Exception ex)

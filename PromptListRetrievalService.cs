@@ -222,14 +222,7 @@ public static class PromptListRetrievalService
 	{
 		List<string> result = new List<string>();
 		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		AddTerms(result, seen, mentions?.Terms);
-		AddTerms(result, seen, mentions?.Items);
-		AddTerms(result, seen, mentions?.Policies);
-		AddTerms(result, seen, mentions?.Troops);
-		AddTerms(result, seen, mentions?.Heroes);
-		AddTerms(result, seen, mentions?.Settlements);
-		AddTerms(result, seen, mentions?.Clans);
-		AddTerms(result, seen, mentions?.Kingdoms);
+		AddTerms(result, seen, mentions?.Entities);
 		return result;
 	}
 

@@ -92,22 +92,11 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 
 		public int InjectLimit = 2;
 
-		public int RecallPerIntent;
+		public int RecallPerEntity;
 
-		public int RerankPerIntent;
+		public int RerankPerEntity;
 
-		public int IntentCount = 1;
-	}
-
-	private struct RuleAggregate
-	{
-		public LoreRule Rule;
-
-		public float Score;
-
-		public int BestRank;
-
-		public int HitCount;
+		public int EntityQueryCount = 1;
 	}
 
 	private sealed class WeightedKnowledgeInput
@@ -117,11 +106,9 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		public float Weight = 1f;
 	}
 
-	private const int KnowledgeMentionQueryMaxCount = IntentQueryOptimizer.MaxCombinedIntentCount;
+	private const int KnowledgeMentionTermHardCap = 32;
 
-	private const int KnowledgeMentionTermsPerQuery = 6;
-
-	private const int KnowledgeMentionQueryMaxChars = 220;
+	private const int KnowledgeMentionQueryMaxChars = 80;
 
 	public class RuleIndexItem
 	{
@@ -1522,9 +1509,9 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		return num;
 	}
 
-	private static int GetKnowledgePerIntentRerank(int rerankBudget, int intentCount)
+	private static int GetKnowledgePerEntityRerank(int rerankBudget, int entityCount)
 	{
-		int num = ((intentCount > 0) ? intentCount : 1);
+		int num = ((entityCount > 0) ? entityCount : 1);
 		int num2 = (int)Math.Round((double)rerankBudget / (double)num, MidpointRounding.AwayFromZero);
 		if (num2 < 4)
 		{
@@ -1537,9 +1524,9 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		return num2;
 	}
 
-	private static int GetKnowledgePerIntentRecall(int rerankPerIntent)
+	private static int GetKnowledgePerEntityRecall(int rerankPerEntity)
 	{
-		int num = (int)Math.Round((double)rerankPerIntent * 2.5, MidpointRounding.AwayFromZero);
+		int num = (int)Math.Round((double)rerankPerEntity * 2.5, MidpointRounding.AwayFromZero);
 		if (num < 10)
 		{
 			num = 10;
@@ -1959,128 +1946,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		return list2;
 	}
 
-	private List<LoreRule> FindOnnxCandidateRules(string input, int topK)
-	{
-		return FindOnnxCandidateScores(input, topK).Where((RuleScore x) => x?.Rule != null).Select((RuleScore x) => x.Rule).ToList();
-	}
-
-	private List<LoreRule> FindSparseCandidateRules(string input, int topK)
-	{
-		return FindSparseCandidateScores(input, topK).Where((RuleScore x) => x?.Rule != null).Select((RuleScore x) => x.Rule).ToList();
-	}
-
-	private List<LoreRule> FindVectorCandidateRules(string input, int topK)
-	{
-		return FindVectorCandidateScores(input, topK).Where((RuleScore x) => x?.Rule != null).Select((RuleScore x) => x.Rule).ToList();
-	}
-
-	private static List<string> SplitKnowledgeIntents(string input, int maxParts = IntentQueryOptimizer.MaxCombinedIntentCount)
-	{
-		List<string> list = new List<string>();
-		try
-		{
-			string text = (input ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
-			if (string.IsNullOrWhiteSpace(text))
-			{
-				return list;
-			}
-			List<string> list2 = new List<string>();
-			StringBuilder stringBuilder = new StringBuilder();
-			foreach (char c in text)
-			{
-				if (c == '。' || c == '！' || c == '!' || c == '？' || c == '?' || c == '；' || c == ';' || c == '，' || c == ',' || c == '、')
-				{
-					string text2 = stringBuilder.ToString().Trim();
-					if (!string.IsNullOrWhiteSpace(text2))
-					{
-						list2.Add(text2);
-					}
-					stringBuilder.Clear();
-				}
-				else
-				{
-					stringBuilder.Append(c);
-				}
-			}
-			string text3 = stringBuilder.ToString().Trim();
-			if (!string.IsNullOrWhiteSpace(text3))
-			{
-				list2.Add(text3);
-			}
-			if (list2.Count <= 0)
-			{
-				list2.Add(text);
-			}
-			List<string> list3 = new List<string>();
-			string[] array = new string[13]
-			{
-				"然后", "顺便", "另外", "再说", "并且", "而且", "以及", "同时", "还有", "再加上",
-				"顺带", "并且还", "以及还"
-			};
-			for (int j = 0; j < list2.Count; j++)
-			{
-				string text4 = (list2[j] ?? "").Trim();
-				if (string.IsNullOrWhiteSpace(text4))
-				{
-					continue;
-				}
-				bool flag = false;
-				foreach (string text5 in array)
-				{
-					int num = text4.IndexOf(text5, StringComparison.Ordinal);
-					if (num > 1 && num < text4.Length - text5.Length - 1)
-					{
-						string text6 = text4.Substring(0, num).Trim();
-						string text7 = text4.Substring(num + text5.Length).Trim();
-						if (text6.Length >= 2)
-						{
-							list3.Add(text6);
-						}
-						if (text7.Length >= 2)
-						{
-							list3.Add(text7);
-						}
-						flag = true;
-						break;
-					}
-				}
-				if (!flag)
-				{
-					list3.Add(text4);
-				}
-			}
-			HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			list.Add(text);
-			hashSet.Add(text);
-			for (int l = 0; l < list3.Count; l++)
-			{
-				if (list.Count >= Math.Max(1, maxParts))
-				{
-					break;
-				}
-				string text8 = (list3[l] ?? "").Trim();
-				if (!string.IsNullOrWhiteSpace(text8) && text8.Length >= 2 && hashSet.Add(text8))
-				{
-					list.Add(text8);
-				}
-			}
-		}
-		catch
-		{
-		}
-		list = IntentQueryOptimizer.OptimizeSplitIntents(list, Math.Max(1, maxParts));
-		if (list.Count <= 0)
-		{
-			string text9 = (input ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(text9))
-			{
-				list = IntentQueryOptimizer.OptimizeSplitIntents(new List<string> { text9 }, 1);
-			}
-		}
-		return list;
-	}
-
-	private static List<WeightedKnowledgeInput> BuildKnowledgeQueryInputsFromMentions(MentionedWorldEntities mentionedEntities, out int mentionTermCount)
+	private static List<WeightedKnowledgeInput> BuildKnowledgeQueryInputsFromMentions(MentionedWorldEntities mentionedEntities, int maxQueryCount, out int mentionTermCount)
 	{
 		List<WeightedKnowledgeInput> list = new List<WeightedKnowledgeInput>();
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -2093,11 +1959,10 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			{
 				return list;
 			}
-			List<string> chunk = new List<string>();
-			int chunkChars = 0;
+			int queryLimit = Math.Max(1, Math.Min(12, maxQueryCount));
 			for (int i = 0; i < terms.Count; i++)
 			{
-				if (list.Count >= KnowledgeMentionQueryMaxCount)
+				if (list.Count >= queryLimit)
 				{
 					break;
 				}
@@ -2110,38 +1975,13 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				{
 					term = term.Substring(0, KnowledgeMentionQueryMaxChars).Trim();
 				}
-				int nextChars = chunkChars + ((chunk.Count > 0) ? 1 : 0) + term.Length;
-				if (chunk.Count > 0 && (chunk.Count >= KnowledgeMentionTermsPerQuery || nextChars > KnowledgeMentionQueryMaxChars))
+				if (string.IsNullOrWhiteSpace(term) || !hashSet.Add(term))
 				{
-					appendCurrentChunk();
-					if (list.Count >= KnowledgeMentionQueryMaxCount)
-					{
-						break;
-					}
-				}
-				chunk.Add(term);
-				chunkChars += ((chunk.Count > 1) ? 1 : 0) + term.Length;
-			}
-			appendCurrentChunk();
-
-			void appendCurrentChunk()
-			{
-				if (chunk.Count <= 0 || list.Count >= KnowledgeMentionQueryMaxCount)
-				{
-					chunk.Clear();
-					chunkChars = 0;
-					return;
-				}
-				string query = string.Join(" ", chunk.Where((string x) => !string.IsNullOrWhiteSpace(x))).Trim();
-				chunk.Clear();
-				chunkChars = 0;
-				if (string.IsNullOrWhiteSpace(query) || !hashSet.Add(query))
-				{
-					return;
+					continue;
 				}
 				list.Add(new WeightedKnowledgeInput
 				{
-					Text = query,
+					Text = term,
 					Weight = 1f
 				});
 			}
@@ -2158,14 +1998,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		try
 		{
-			append(mentionedEntities?.Heroes);
-			append(mentionedEntities?.Settlements);
-			append(mentionedEntities?.Clans);
-			append(mentionedEntities?.Kingdoms);
-			append(mentionedEntities?.Items);
-			append(mentionedEntities?.Policies);
-			append(mentionedEntities?.Troops);
-			append(mentionedEntities?.Terms);
+			append(mentionedEntities?.Entities);
 		}
 		catch
 		{
@@ -2180,7 +2013,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			}
 			foreach (string value in values)
 			{
-				if (result.Count >= KnowledgeMentionQueryMaxCount * KnowledgeMentionTermsPerQuery)
+				if (result.Count >= KnowledgeMentionTermHardCap)
 				{
 					return;
 				}
@@ -2215,8 +2048,9 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			{
 				return "mentions=empty";
 			}
+			int returnCap = GetLoreInjectLimit(GetKnowledgeReturnCap());
 			string joined = string.Join("|", terms.Select((string x) => (x ?? "").Trim().ToLowerInvariant()));
-			return "mentions=" + Hash8(joined) + ":" + terms.Count;
+			return "mentions=" + Hash8(joined) + ":" + terms.Count + ":cap" + returnCap;
 		}
 		catch
 		{
@@ -2228,9 +2062,9 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 	{
 		if (mentionedEntities == null)
 		{
-			return "heroes=0 settlements=0 clans=0 kingdoms=0 items=0 policies=0 troops=0 terms=0";
+			return "entities=0";
 		}
-		return "heroes=" + (mentionedEntities.Heroes?.Count ?? 0) + " settlements=" + (mentionedEntities.Settlements?.Count ?? 0) + " clans=" + (mentionedEntities.Clans?.Count ?? 0) + " kingdoms=" + (mentionedEntities.Kingdoms?.Count ?? 0) + " items=" + (mentionedEntities.Items?.Count ?? 0) + " policies=" + (mentionedEntities.Policies?.Count ?? 0) + " troops=" + (mentionedEntities.Troops?.Count ?? 0) + " terms=" + (mentionedEntities.Terms?.Count ?? 0);
+		return "entities=" + (mentionedEntities.Entities?.Count ?? 0);
 	}
 
 	private static string BuildKnowledgeHitRateDetail(string detail, string secondaryInput)
@@ -2320,13 +2154,13 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		return list;
 	}
 
-	private List<LoreRule> MergeVectorRulesAcrossIntents(List<WeightedKnowledgeInput> intentInputs, int recallTopK, int rerankTopK, int injectLimit, out string matchMode)
+	private List<LoreRule> SelectVectorRulesPerEntity(List<WeightedKnowledgeInput> entityInputs, int totalEntityCount, int recallTopK, int rerankTopK, int injectLimit, out string matchMode)
 	{
 		List<LoreRule> result = new List<LoreRule>();
 		matchMode = "none";
 		try
 		{
-			List<WeightedKnowledgeInput> list = (intentInputs ?? new List<WeightedKnowledgeInput>()).Where((WeightedKnowledgeInput x) => x != null && !string.IsNullOrWhiteSpace(x.Text) && x.Weight > 0f).ToList();
+			List<WeightedKnowledgeInput> list = (entityInputs ?? new List<WeightedKnowledgeInput>()).Where((WeightedKnowledgeInput x) => x != null && !string.IsNullOrWhiteSpace(x.Text) && x.Weight > 0f).ToList();
 			if (list.Count <= 0)
 			{
 				return result;
@@ -2340,73 +2174,119 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			{
 				flag = false;
 			}
-			matchMode = (flag ? ((list.Count > 1) ? "rerank_multi" : "rerank") : ((list.Count > 1) ? "semantic_multi" : "semantic"));
-			Dictionary<LoreRule, RuleAggregate> dictionary = new Dictionary<LoreRule, RuleAggregate>();
+			matchMode = flag ? "rerank_per_entity" : "semantic_per_entity";
+			List<List<RuleScore>> rankedCandidates = new List<List<RuleScore>>(list.Count);
 			for (int num = 0; num < list.Count; num++)
 			{
 				WeightedKnowledgeInput weightedKnowledgeInput = list[num];
 				List<RuleScore> list2 = FindVectorCandidateScores(weightedKnowledgeInput.Text, recallTopK);
 				if (list2 == null || list2.Count <= 0)
 				{
+					rankedCandidates.Add(new List<RuleScore>());
+					Logger.Log("LoreMatch", $"entity_query priority={num + 1} noun={JsonConvert.ToString(weightedKnowledgeInput.Text)} candidates=0");
 					continue;
 				}
 				List<RuleScore> list3 = RerankCandidateScores(weightedKnowledgeInput.Text, list2, rerankTopK, weightedKnowledgeInput.Weight);
 				if (list3 == null || list3.Count <= 0)
 				{
+					rankedCandidates.Add(new List<RuleScore>());
+					Logger.Log("LoreMatch", $"entity_query priority={num + 1} noun={JsonConvert.ToString(weightedKnowledgeInput.Text)} candidates=0 after_rerank=true");
 					continue;
 				}
-				for (int num2 = 0; num2 < list3.Count; num2++)
+				rankedCandidates.Add(list3.Where((RuleScore x) => x?.Rule != null).ToList());
+				RuleScore best = rankedCandidates[num].FirstOrDefault();
+				Logger.Log("LoreMatch", $"entity_query priority={num + 1} noun={JsonConvert.ToString(weightedKnowledgeInput.Text)} candidates={rankedCandidates[num].Count} best={(best?.Rule?.Id ?? "(none)")} score={(best?.RawScore ?? 0f):0.000}");
+			}
+			int limit = GetLoreInjectLimit(injectLimit);
+			HashSet<LoreRule> selectedRules = new HashSet<LoreRule>();
+			HashSet<string> selectedRuleIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			int primarySelected = 0;
+			int primaryCollisionFallbacks = 0;
+			List<string> allocationDetails = new List<string>(rankedCandidates.Count);
+			for (int entityIndex = 0; entityIndex < rankedCandidates.Count && result.Count < limit; entityIndex++)
+			{
+				if (TryAddFirstUniqueRankedEntityCandidate(result, selectedRules, selectedRuleIds, rankedCandidates[entityIndex], out var selectedRank))
 				{
-					RuleScore ruleScore2 = list3[num2];
-					if (ruleScore2?.Rule == null)
+					primarySelected++;
+					if (selectedRank > 0)
 					{
-						continue;
+						primaryCollisionFallbacks++;
 					}
-					float num3 = ruleScore2.RawScore;
-					if (!dictionary.TryGetValue(ruleScore2.Rule, out var value))
-					{
-						dictionary[ruleScore2.Rule] = new RuleAggregate
-						{
-							Rule = ruleScore2.Rule,
-							Score = num3,
-							BestRank = num2 + 1,
-							HitCount = 1
-						};
-						continue;
-					}
-					value.Score += num3;
-					value.HitCount++;
-					if (num2 + 1 < value.BestRank)
-					{
-						value.BestRank = num2 + 1;
-					}
-					dictionary[ruleScore2.Rule] = value;
+					string selectedRuleId = result.LastOrDefault()?.Id ?? "(none)";
+					allocationDetails.Add($"{entityIndex + 1}:{list[entityIndex].Text}->{selectedRuleId}@{selectedRank + 1}");
+				}
+				else
+				{
+					allocationDetails.Add($"{entityIndex + 1}:{list[entityIndex].Text}->(none)");
 				}
 			}
-			if (dictionary.Count <= 0)
+			bool allowLowerRanks = limit > Math.Max(0, totalEntityCount);
+			int secondarySelected = 0;
+			if (allowLowerRanks && result.Count < limit)
 			{
-				return result;
+				int maxRankCount = rankedCandidates.Count <= 0 ? 0 : rankedCandidates.Max((List<RuleScore> x) => x?.Count ?? 0);
+				for (int rank = 1; rank < maxRankCount && result.Count < limit; rank++)
+				{
+					for (int entityIndex = 0; entityIndex < rankedCandidates.Count && result.Count < limit; entityIndex++)
+					{
+						if (TryAddRankedEntityCandidate(result, selectedRules, selectedRuleIds, rankedCandidates[entityIndex], rank))
+						{
+							secondarySelected++;
+						}
+					}
+				}
 			}
-			int num4 = Math.Max(injectLimit * 2, rerankTopK * Math.Min(list.Count, 3));
-			if (num4 < injectLimit)
-			{
-				num4 = injectLimit;
-			}
-			if (num4 > 24)
-			{
-				num4 = 24;
-			}
-			result = (from x in (from x in dictionary.Values
-					orderby x.Score + (float)(x.HitCount - 1) * 0.08f descending, x.BestRank
-					select x).ThenBy((RuleAggregate x) => x.Rule?.Id ?? "", StringComparer.OrdinalIgnoreCase)
-				select x.Rule into x
-				where x != null
-				select x).Take(num4).ToList();
+			string allocationSummary = $"entity_allocation nounsTotal={totalEntityCount} nounsQueried={rankedCandidates.Count} injectLimit={limit} primary={primarySelected} collisionFallbacks={primaryCollisionFallbacks} secondary={secondarySelected} allowLowerRanks={allowLowerRanks} selected={result.Count} assignments={string.Join("|", allocationDetails)}";
+			Logger.Log("LoreMatch", allocationSummary);
+			Logger.Log("KnowledgeRetrieval", allocationSummary);
 		}
 		catch
 		{
 		}
 		return result;
+	}
+
+	private static bool TryAddFirstUniqueRankedEntityCandidate(List<LoreRule> result, HashSet<LoreRule> selectedRules, HashSet<string> selectedRuleIds, List<RuleScore> candidates, out int selectedRank)
+	{
+		selectedRank = -1;
+		if (candidates == null)
+		{
+			return false;
+		}
+		for (int rank = 0; rank < candidates.Count; rank++)
+		{
+			if (TryAddRankedEntityCandidate(result, selectedRules, selectedRuleIds, candidates, rank))
+			{
+				selectedRank = rank;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static bool TryAddRankedEntityCandidate(List<LoreRule> result, HashSet<LoreRule> selectedRules, HashSet<string> selectedRuleIds, List<RuleScore> candidates, int rank)
+	{
+		if (result == null || selectedRules == null || selectedRuleIds == null || candidates == null || rank < 0 || rank >= candidates.Count)
+		{
+			return false;
+		}
+		LoreRule rule = candidates[rank]?.Rule;
+		if (rule == null || selectedRules.Contains(rule))
+		{
+			return false;
+		}
+		string ruleId = (rule.Id ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(ruleId) && selectedRuleIds.Contains(ruleId))
+		{
+			return false;
+		}
+		selectedRules.Add(rule);
+		if (!string.IsNullOrWhiteSpace(ruleId))
+		{
+			selectedRuleIds.Add(ruleId);
+		}
+		result.Add(rule);
+		return true;
 	}
 
 	private CandidateRules CollectCandidateRules(MentionedWorldEntities mentionedEntities)
@@ -2426,8 +2306,10 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			{
 				return result;
 			}
-			List<WeightedKnowledgeInput> intentInputs = BuildKnowledgeQueryInputsFromMentions(mentionedEntities, out var mentionTermCount);
-			if (intentInputs.Count <= 0)
+			int knowledgeReturnCap = GetKnowledgeReturnCap();
+			int loreInjectLimit = GetLoreInjectLimit(knowledgeReturnCap);
+			List<WeightedKnowledgeInput> entityQueries = BuildKnowledgeQueryInputsFromMentions(mentionedEntities, loreInjectLimit, out var mentionTermCount);
+			if (entityQueries.Count <= 0)
 			{
 				try
 				{
@@ -2440,29 +2322,27 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			}
 			try
 			{
-				Logger.Log("LoreMatch", $"knowledge_mentions terms={mentionTermCount} queries={intentInputs.Count} {FormatKnowledgeMentionCounts(mentionedEntities)} signature={BuildKnowledgeMentionSignature(mentionedEntities)}");
+				Logger.Log("LoreMatch", $"knowledge_mentions terms={mentionTermCount} entityQueries={entityQueries.Count} returnCap={loreInjectLimit} {FormatKnowledgeMentionCounts(mentionedEntities)} signature={BuildKnowledgeMentionSignature(mentionedEntities)}");
 			}
 			catch
 			{
 			}
-			int knowledgeReturnCap = GetKnowledgeReturnCap();
 			int rerankBudget = GetKnowledgeRerankBudget(knowledgeReturnCap);
-			int num = Math.Max(1, intentInputs.Count);
-			int knowledgePerIntentRerank = GetKnowledgePerIntentRerank(rerankBudget, num);
-			int knowledgePerIntentRecall = GetKnowledgePerIntentRecall(knowledgePerIntentRerank);
-			int loreInjectLimit = GetLoreInjectLimit(knowledgeReturnCap);
-			result.IntentCount = num;
-			result.RerankPerIntent = knowledgePerIntentRerank;
-			result.RecallPerIntent = knowledgePerIntentRecall;
+			int num = Math.Max(1, entityQueries.Count);
+			int knowledgePerEntityRerank = GetKnowledgePerEntityRerank(rerankBudget, num);
+			int knowledgePerEntityRecall = GetKnowledgePerEntityRecall(knowledgePerEntityRerank);
+			result.EntityQueryCount = num;
+			result.RerankPerEntity = knowledgePerEntityRerank;
+			result.RecallPerEntity = knowledgePerEntityRecall;
 			result.InjectLimit = loreInjectLimit;
-			List<LoreRule> list4 = MergeVectorRulesAcrossIntents(intentInputs, knowledgePerIntentRecall, knowledgePerIntentRerank, loreInjectLimit, out var matchMode);
+			List<LoreRule> list4 = SelectVectorRulesPerEntity(entityQueries, mentionTermCount, knowledgePerEntityRecall, knowledgePerEntityRerank, loreInjectLimit, out var matchMode);
 			if (list4 != null && list4.Count > 0)
 			{
 				result.MatchMode = "mentions_" + matchMode;
 				result.OrderedRules = list4.Where((LoreRule x) => x != null).ToList();
 				try
 				{
-					Logger.Log("LoreMatch", $"candidate_pool mode={result.MatchMode} returnCap={loreInjectLimit} rerankBudget={rerankBudget} rerankPerIntent={knowledgePerIntentRerank} recallPerIntent={knowledgePerIntentRecall} mentionTerms={mentionTermCount} queries={num} got={result.OrderedRules.Count}");
+					Logger.Log("LoreMatch", $"candidate_pool mode={result.MatchMode} returnCap={loreInjectLimit} rerankBudget={rerankBudget} rerankPerEntity={knowledgePerEntityRerank} recallPerEntity={knowledgePerEntityRecall} mentionTerms={mentionTermCount} entityQueries={num} got={result.OrderedRules.Count}");
 				}
 				catch
 				{
@@ -7974,8 +7854,8 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		{
 		}
 		string text = (AIConfigHandler.KnowledgeRetrievalFromMcm ? "MCM（当前生效）" : "RuleBehaviorPrompts.json（当前生效）");
-		string text2 = "自动召回 + 本地精排";
-		string descriptionText = "当前配置来源：" + text + "\n当前模式：" + text2 + "\n语义检索：" + (AIConfigHandler.KnowledgeRetrievalEnabled ? "开启" : "关闭") + "\n语义优先：" + (AIConfigHandler.KnowledgeSemanticFirst ? "是" : "否（关键词优先）") + "\n知识返回上限：" + AIConfigHandler.KnowledgeSemanticTopK + "\n说明：系统会自动按意图拆分后分配召回和精排预算，但最终最多只注入这么多条知识。";
+		string text2 = "逐名词召回 + 本地精排";
+		string descriptionText = "当前配置来源：" + text + "\n当前模式：" + text2 + "\n语义检索：" + (AIConfigHandler.KnowledgeRetrievalEnabled ? "开启" : "关闭") + "\n语义优先：" + (AIConfigHandler.KnowledgeSemanticFirst ? "是" : "否（关键词优先）") + "\n知识返回上限：" + AIConfigHandler.KnowledgeSemanticTopK + "\n说明：按重要性顺序逐个名词独立检索，每个名词占一个知识槽；最高分知识若已被前面的名词占用，就顺延到第一条未占用知识。仅当上限大于名词数时，才额外补充后续名次。";
 		List<InquiryElement> list = new List<InquiryElement>();
 		list.Add(new InquiryElement("source", "配置来源：" + (settings.UseMcmKnowledgeRetrieval ? "切到 RuleBehaviorPrompts.json" : "切到 MCM"), null));
 		list.Add(new InquiryElement("enabled", "语义检索：" + (settings.KnowledgeRetrievalEnabled ? "关闭" : "开启"), null));
