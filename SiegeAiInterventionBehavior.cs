@@ -8271,7 +8271,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	internal static bool EnsureAgentPlayerCommandableForExternal(Agent agent, string source)
+	internal static bool EnsureAgentPlayerCommandableForExternal(Agent agent, string source, FormationClass? desiredFormationClass = null)
 	{
 		try
 		{
@@ -8283,7 +8283,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 
 			Team playerTeam = ResolveInterventionPlayerCommandTeamForExternal(mission, source);
-			if (playerTeam == null || agent.Formation == null)
+			if (playerTeam == null)
 			{
 				return false;
 			}
@@ -8291,6 +8291,23 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			if (agent.Team != playerTeam)
 			{
 				agent.SetTeam(playerTeam, true);
+			}
+			if (desiredFormationClass.HasValue)
+			{
+				FormationClass requestedClass = desiredFormationClass.Value;
+				if (requestedClass < FormationClass.Infantry || requestedClass >= FormationClass.NumberOfRegularFormations)
+				{
+					requestedClass = FormationClass.Infantry;
+				}
+				Formation requestedFormation = playerTeam.GetFormation(requestedClass);
+				if (requestedFormation != null && agent.Formation != requestedFormation)
+				{
+					agent.Formation = requestedFormation;
+				}
+			}
+			if (agent.Formation == null)
+			{
+				return false;
 			}
 			EnsureAgentUnderPlayerCommand(agent);
 			MarkFormationPlayerCommandable(agent.Formation, Agent.Main ?? mission.MainAgent);

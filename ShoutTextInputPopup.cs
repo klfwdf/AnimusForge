@@ -567,6 +567,8 @@ public sealed class ShoutTextInputPopup
 		ScreenManager.TrySetFocus(_layer);
 		RegisterPauseRequest();
 		PauseCurrentMission();
+		Logger.Log("ShoutTextInputPopup", "opened mission=" + (Mission.Current != null)
+			+ " screen=" + (_screen?.GetType().Name ?? "null"));
 	}
 
 	private void HandleSubmitRequested(string inputText)
@@ -607,6 +609,8 @@ public sealed class ShoutTextInputPopup
 		}
 		_pendingCloseAction = closeAction;
 		_pendingSubmitText = submitText;
+		Logger.Log("ShoutTextInputPopup", "close_requested action=" + closeAction
+			+ " input_length=" + (submitText?.Length ?? 0));
 	}
 
 	private void ProcessPendingCloseAction()
@@ -620,6 +624,8 @@ public sealed class ShoutTextInputPopup
 		_pendingCloseAction = PendingCloseAction.None;
 		_pendingSubmitText = null;
 		Close(silent: true);
+		Logger.Log("ShoutTextInputPopup", "close_dispatched action=" + closeAction
+			+ " input_length=" + submitText.Length);
 		if (closeAction == PendingCloseAction.Submit)
 		{
 			_onSubmit?.Invoke(submitText);

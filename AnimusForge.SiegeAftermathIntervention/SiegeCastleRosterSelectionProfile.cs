@@ -12,6 +12,13 @@ public static class SiegeCastleRosterSelectionProfile
 
     public const int MaxPrisoners = 200;
 
+    /// <summary>
+    /// Native FormationClass.Infantry, displayed as the first command group.
+    /// All player-selected castle escort troops share this formation regardless
+    /// of their normal troop class.
+    /// </summary>
+    public const int AlliedFormationClassIndex = 0;
+
     public const int RegularPrisonerFormationIndex = 6;
 
     public const int LordPrisonerFormationIndex = 7;

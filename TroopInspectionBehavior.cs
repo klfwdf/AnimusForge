@@ -3422,10 +3422,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 				&& agent.Character is CharacterObject)
 			.GroupBy(agent => (CharacterObject)agent.Character)
 			.ToDictionary(group => group.Key, group => new Queue<Agent>(group));
-		Dictionary<FormationClass, int> formationTotals = selected
-			.GroupBy(ResolveExternalAllyFormationClass)
-			.ToDictionary(group => group.Key, group => group.Count());
-		Dictionary<FormationClass, int> formationIndexes = new Dictionary<FormationClass, int>();
+		FormationClass alliedFormationClass = ResolveExternalAllyFormationClass();
 		List<Agent> preparedAgents = new List<Agent>();
 		int reused = 0;
 		int spawned = 0;
@@ -3433,9 +3430,6 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		for (int selectedIndex = 0; selectedIndex < selected.Count; selectedIndex++)
 		{
 			CharacterObject character = selected[selectedIndex];
-			FormationClass formationClass = ResolveExternalAllyFormationClass(character);
-			formationIndexes.TryGetValue(formationClass, out int formationIndex);
-			formationIndexes[formationClass] = formationIndex + 1;
 
 			Agent agent = null;
 			if (existingByCharacter.TryGetValue(character, out Queue<Agent> existing) && existing.Count > 0)
@@ -3448,9 +3442,9 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 				agent = BannerlordApiCompat.SpawnInspectionTroop(
 					mission,
 					new PartyAgentOrigin(mainParty, character),
-					formationTotals[formationClass],
-					formationIndex,
-					formationClass,
+					selected.Count,
+					selectedIndex,
+					alliedFormationClass,
 					wieldInitialWeapons: true);
 				if (agent != null)
 				{
@@ -3463,7 +3457,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 				failed++;
 				continue;
 			}
-			PrepareExternalAllyAgent(agent, selectedIndex, main);
+			PrepareExternalAllyAgent(agent, selectedIndex, main, alliedFormationClass);
 			preparedAgents.Add(agent);
 		}
 
@@ -3479,6 +3473,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 			+ " spawned=" + spawned
 			+ " active=" + preparedAgents.Count
 			+ " failed=" + failed
+			+ " allied_formation=" + (int)alliedFormationClass
 			+ " banner_bearers=" + bannerBearers
 			+ " mission_agents=" + (mission.Agents?.Count ?? 0)
 			+ " command_ui=" + commandUiReady);
@@ -3505,22 +3500,15 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		return result;
 	}
 
-	private static FormationClass ResolveExternalAllyFormationClass(CharacterObject character)
+	private static FormationClass ResolveExternalAllyFormationClass()
 	{
-		FormationClass formationClass = character?.DefaultFormationClass ?? FormationClass.Infantry;
-		switch (formationClass)
-		{
-			case FormationClass.Infantry:
-			case FormationClass.Ranged:
-			case FormationClass.Cavalry:
-			case FormationClass.HorseArcher:
-				return formationClass;
-			default:
-				return FormationClass.Infantry;
-		}
+		FormationClass formationClass = (FormationClass)SiegeCastleRosterSelectionProfile.AlliedFormationClassIndex;
+		return formationClass >= FormationClass.Infantry && formationClass < FormationClass.NumberOfRegularFormations
+			? formationClass
+			: FormationClass.Infantry;
 	}
 
-	private void PrepareExternalAllyAgent(Agent agent, int selectedIndex, Agent main)
+	private void PrepareExternalAllyAgent(Agent agent, int selectedIndex, Agent main, FormationClass formationClass)
 	{
 		try
 		{
@@ -3532,7 +3520,8 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 			agent.DisableScriptedMovement();
 			SiegeAiInterventionBehavior.EnsureAgentPlayerCommandableForExternal(
 				agent,
-				SiegeCastleRosterSelectionProfile.AlliedSpawnCommandSource);
+				SiegeCastleRosterSelectionProfile.AlliedSpawnCommandSource,
+				formationClass);
 		}
 		catch (Exception ex)
 		{
