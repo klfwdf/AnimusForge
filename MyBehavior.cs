@@ -29452,7 +29452,9 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		LogShoutPromptContextStage("weekly_short_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "shortLen=" + ((value8a ?? "").Length));
 		LogShoutPromptContextStage("policy_context_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "", immediate: false);
-		string activePolicyContext = NpcRulerPolicyBehavior.BuildActivePolicyDialogueContextForExternal(targetHero, targetCharacter, kingdomIdOverride);
+		string activePolicyContext = AfGcczShoutBridge.IsActive()
+			? string.Empty
+			: NpcRulerPolicyBehavior.BuildActivePolicyDialogueContextForExternal(targetHero, targetCharacter, kingdomIdOverride);
 		if (!string.IsNullOrWhiteSpace(activePolicyContext))
 		{
 			stringBuilder.AppendLine(activePolicyContext);
