@@ -314,7 +314,7 @@ public static partial class TroopInspectionBehavior
 			runtime.InspectionSummary = RosterSummary(runtime.InspectionRoster) + ", prisoners=" + RosterSummary(runtime.InspectionPrisonerRoster);
 			runtime.NotSelectedSummary = RosterSummary(runtime.NotSelectedMemberRoster) + ", prisoners=" + RosterSummary(runtime.NotSelectedPrisonerRoster);
 			_runtime = runtime;
-			PrepareSelectionRuntimeWithMainPartySplit(runtime);
+			PrepareSelectionRuntimeWithMainPartySplit(runtime, reconcileExternalCastlePrisoners: true);
 			Log("external_runtime_prepared inspection=" + runtime.InspectionSummary
 				+ " not_selected=" + runtime.NotSelectedSummary);
 			return true;
@@ -853,7 +853,7 @@ public static partial class TroopInspectionBehavior
 			Log("selection_done inspection=" + _runtime.InspectionSummary + " not_selected=" + _runtime.NotSelectedSummary + " ui_left_members=" + RosterSummary(leftMemberRoster) + " ui_right_members=" + RosterSummary(rightMemberRoster) + " ui_left_prisoners=" + RosterSummary(leftPrisonRoster) + " ui_right_prisoners=" + RosterSummary(rightPrisonRoster));
 			try
 			{
-				PrepareSelectionRuntimeWithMainPartySplit(_runtime);
+				PrepareSelectionRuntimeWithMainPartySplit(_runtime, reconcileExternalCastlePrisoners: false);
 			}
 			catch (Exception ex)
 			{
@@ -2175,6 +2175,7 @@ public static partial class TroopInspectionBehavior
 			message.StartsWith("selection_done", StringComparison.Ordinal) ||
 			message.StartsWith("split_validate_ok", StringComparison.Ordinal) ||
 			message.StartsWith("split_validate_fail", StringComparison.Ordinal) ||
+			message.StartsWith("split_validate_reconcile", StringComparison.Ordinal) ||
 			message.StartsWith("runtime_ready", StringComparison.Ordinal) ||
 			message.StartsWith("mapevent_create", StringComparison.Ordinal) ||
 			message.StartsWith("mission_behaviors", StringComparison.Ordinal) ||
@@ -2362,7 +2363,9 @@ private const string HoldingDummyPartyPrefix = "animusforge_troop_inspection_hol
 		}
 	}
 
-	private static void PrepareSelectionRuntimeWithMainPartySplit(TroopInspectionRuntime runtime)
+	private static void PrepareSelectionRuntimeWithMainPartySplit(
+		TroopInspectionRuntime runtime,
+		bool reconcileExternalCastlePrisoners)
 	{
 		if (runtime == null)
 		{
@@ -2385,7 +2388,7 @@ private const string HoldingDummyPartyPrefix = "animusforge_troop_inspection_hol
 		CreateInspectionHoldingDummyParty(runtime, mainParty);
 		MoveMemberRosterFromMainParty(runtime.NotSelectedMemberRoster, runtime.HoldingDummyParty, "inspection_holding");
 		MovePrisonerRosterFromMainParty(runtime.NotSelectedPrisonerRoster, runtime.HoldingDummyParty, "inspection_holding_prisoners");
-		if (runtime.RestoreCampaignEncounterAfterInspection)
+		if (reconcileExternalCastlePrisoners)
 		{
 			ReconcileExternalCastlePrisonerRemainder(runtime, beforePrisoners);
 		}
@@ -2601,21 +2604,23 @@ private const string HoldingDummyPartyPrefix = "animusforge_troop_inspection_hol
 				holding.Number,
 				holding.Wounded);
 			int expectedXp = SiegeCastleRosterSelectionProfile.ResolveSelectedStackXp(original.Xp, holding.Xp);
-			bool changed = false;
-			if (current.WoundedNumber != expectedWounded)
-			{
-				mainRoster.SetElementWoundedNumber(index, expectedWounded);
-				changed = true;
-			}
-			if (character?.IsHero != true && current.Xp != expectedXp)
-			{
-				mainRoster.SetElementXp(index, expectedXp);
-				changed = true;
-			}
+			int woundedDelta = expectedWounded - current.WoundedNumber;
+			int xpDelta = character?.IsHero == true ? 0 : expectedXp - current.Xp;
+			bool changed = woundedDelta != 0 || xpDelta != 0;
 			if (changed)
 			{
+				mainRoster.AddToCountsAtIndex(index, 0, woundedDelta, xpDelta, removeDepleted: true);
+				TroopRosterElement reconciled = GetFreshRosterElementCopy(mainRoster, index);
+				if (reconciled.WoundedNumber != expectedWounded || (character?.IsHero != true && reconciled.Xp != expectedXp))
+				{
+					throw new InvalidOperationException("Castle selected prisoner state reconciliation failed for "
+						+ SafeCharacterId(character) + ". expected=number=" + expectedNumber
+						+ ",wounded=" + expectedWounded + ",xp=" + expectedXp
+						+ " actual=number=" + reconciled.Number + ",wounded=" + reconciled.WoundedNumber
+						+ ",xp=" + reconciled.Xp);
+				}
 				adjusted++;
-				Log("castle_prisoner_remainder_reconciled troop=" + SafeCharacterId(character)
+				Log("split_validate_reconcile troop=" + SafeCharacterId(character)
 					+ " number=" + expectedNumber
 					+ " wounded=" + current.WoundedNumber + "->" + expectedWounded
 					+ " xp=" + current.Xp + "->" + expectedXp
@@ -2623,7 +2628,7 @@ private const string HoldingDummyPartyPrefix = "animusforge_troop_inspection_hol
 					+ " holding=" + holding);
 			}
 		}
-		Log("castle_prisoner_remainder_reconcile_complete adjusted=" + adjusted
+		Log("split_validate_reconcile_complete adjusted=" + adjusted
 			+ " main=" + RosterSummary(mainRoster)
 			+ " holding=" + RosterSummary(holdingRoster));
 	}
