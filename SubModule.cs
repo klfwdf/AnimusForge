@@ -531,6 +531,8 @@ public class SubModule : MBSubModuleBase
 			campaignGameStarter.AddBehavior(new PlayerNotorietyBehavior());
 			campaignGameStarter.AddBehavior(new AnimusForgeTerminalBehavior());
 			campaignGameStarter.AddBehavior(new CustomPolicyBehavior());
+			campaignGameStarter.AddBehavior(new NpcRulerPolicyBehavior());
+			campaignGameStarter.AddBehavior(new AnimusForgeWorldEventBehavior());
 			campaignGameStarter.AddBehavior(new RomanceSystemBehavior());
 			campaignGameStarter.AddBehavior(new KnowledgeLibraryBehavior());
 			campaignGameStarter.AddBehavior(new LordEncounterBehavior());
@@ -608,6 +610,7 @@ public class SubModule : MBSubModuleBase
 		FreezeWatchdog.BeginFrame(dt);
 		try
 		{
+
 			RunWatchedTickPhase("SubModule.ShoutTextInputPopup.ProcessDeferredCloseIfNeeded", () => ShoutTextInputPopup.ProcessDeferredCloseIfNeeded());
 			RunWatchedTickPhase("SubModule.ShoutTextInputPopup.CloseForSystemInterruptionIfNeeded", () => ShoutTextInputPopup.CloseForSystemInterruptionIfNeeded());
 			RunWatchedTickPhase("SubModule.ShoutTextInputPopup.KeepMissionPausedIfOpen", () => ShoutTextInputPopup.KeepMissionPausedIfOpen());
@@ -633,6 +636,8 @@ public class SubModule : MBSubModuleBase
 			RunWatchedTickPhase("SubModule.LordEncounterBehavior.OnEngineTick", () => LordEncounterBehavior.OnEngineTick());
 			RunWatchedTickPhase("SubModule.AnimusForgeTerminalBehavior.OnEngineTick", () => AnimusForgeTerminalBehavior.Instance?.OnEngineTick());
 			RunWatchedTickPhase("SubModule.CustomPolicyBehavior.OnEngineTick", () => CustomPolicyBehavior.Instance?.OnEngineTick());
+			RunWatchedTickPhase("SubModule.NpcRulerPolicyBehavior.OnEngineTick", () => NpcRulerPolicyBehavior.Instance?.OnEngineTick());
+			RunWatchedTickPhase("SubModule.PolicySystemUi.OnApplicationTick", () => PolicySystemUi.OnApplicationTick());
 			RunWatchedTickPhase("SubModule.NobleGatheringBehavior.OnEngineTick", () => NobleGatheringBehavior.Instance?.OnEngineTick());
 			RunWatchedTickPhase("SubModule.VassalageBehavior.OnEngineTick", () => VassalageBehavior.Instance?.OnEngineTick());
 		}
@@ -640,6 +645,7 @@ public class SubModule : MBSubModuleBase
 		{
 			FreezeWatchdog.Mark("SubModule.OnApplicationTick.exception", ex.GetType().Name + ": " + ex.Message, immediate: true);
 			throw;
+
 		}
 		finally
 		{

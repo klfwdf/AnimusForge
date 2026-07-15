@@ -1,33 +1,59 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
+using HarmonyLib;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
+using TaleWorlds.CampaignSystem.Election;
 using TaleWorlds.CampaignSystem.Settlements;
+using TaleWorlds.CampaignSystem.ViewModelCollection.KingdomManagement.Decisions.ItemTypes;
+using TaleWorlds.CampaignSystem.ViewModelCollection.KingdomManagement.Policies;
 using TaleWorlds.Core;
 using TaleWorlds.Engine.GauntletUI;
 using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
+using TaleWorlds.ObjectSystem;
 using TaleWorlds.ScreenSystem;
 
 namespace AnimusForge;
 
-public sealed class CustomPolicyBehavior : CampaignBehaviorBase
+public sealed class PolicyActiveEffectRegistration
+{
+	public string EffectId { get; set; }
+	public string RecordId { get; set; }
+	public string PolicyName { get; set; }
+	public string DateText { get; set; }
+	public int SubmittedDay { get; set; }
+	public string TargetKingdomId { get; set; }
+	public string TargetKingdomName { get; set; }
+	public float ProsperityDailyDeltaPerTown { get; set; }
+	public float FoodDailyDeltaPerTown { get; set; }
+	public float HearthDailyDeltaPerVillage { get; set; }
+	public float LoyaltyDailyDeltaPerTown { get; set; }
+	public float SecurityDailyDeltaPerTown { get; set; }
+	public float MilitiaDailyDeltaPerTown { get; set; }
+	public int KingdomStabilityDailyDelta { get; set; }
+	public int DurationDays { get; set; }
+	public string Reason { get; set; }
+}
+
+public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 {
 	private const int MaxPolicyNameChars = 100;
 
 	private const int MaxPolicyContentChars = 6000;
-
-	private const int PolicyContentDigestMaxChars = 200;
 
 	private const int PolicyPublicFeedbackTargetMinChars = 100;
 
@@ -37,11 +63,15 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 
 	private const int PolicyPublicFeedbackTargetDefaultChars = 900;
 
+	private const int PlayerPolicyEvaluationTimeoutMilliseconds = 180000;
+
+	private const int PolicyKnowledgeTargetChars = 580;
+
+	private const int PolicyKnowledgeMinChars = 380;
+
+	private const int PolicyKnowledgeMaxChars = 650;
+
 	private const int AiPolicyGoldReserve = 1000;
-
-	private const float AiPolicyInfluenceReserve = 100f;
-
-	private const int CustomPolicyDebugLogMaxFieldChars = 200000;
 
 	private const int CustomPolicyDebugPreviewChars = 1200;
 
@@ -55,12 +85,6 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 
 	private const string SaveKeyPolicyRecordHistory = "_afCustomPolicyRecordHistory_v1";
 
-	private const int MaxPolicyNpcContextItems = 3;
-
-	private const int MaxPolicyNpcContextLineChars = 160;
-
-	private const int MaxPolicyNpcContextChars = 560;
-
 	private const int MaxPolicyRecentActionChars = 160;
 
 	private const int MaxPolicyMajorHistoryChars = 180;
@@ -73,17 +97,39 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 
 	private const string SaveKeyActivePolicyEffects = "_afCustomPolicyActiveEffects_v1";
 
+	private const string SaveKeyDynamicPolicyRegistry = "_afDynamicPolicyRegistry_v1";
+
+	private const string DynamicPolicyIdPrefix = "af_policy:";
+
+	private const string DynamicPolicyStatusPending = "pending";
+
+	private const string DynamicPolicyStatusActive = "active";
+
+	private const string DynamicPolicyStatusExpiryVotePending = "expiry_vote_pending";
+
+	private const string DynamicPolicyStatusAbolished = "abolished";
+
+	private const string DynamicPolicyStatusRejected = "rejected";
+
+	private const double ActivePolicyMaintenanceDefaultFrameBudgetMs = 3.0;
+
 	private static readonly ConcurrentQueue<Action> MainThreadActions = new ConcurrentQueue<Action>();
-
-	private static readonly object CustomPolicyDebugLogLock = new object();
-
-	private static readonly object CustomPolicyEffectLedgerLogLock = new object();
-
-	private static readonly bool CustomPolicyVerboseSettlementDebugLog = false;
 
 	private readonly Dictionary<string, string> _policyRecordHistory = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
 	private readonly Dictionary<string, string> _activePolicyEffects = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+	private readonly Dictionary<string, ActivePolicyEffectSaveData> _activePolicyEffectModelCache = new Dictionary<string, ActivePolicyEffectSaveData>(StringComparer.Ordinal);
+
+	private readonly Dictionary<string, string> _dynamicPolicyRegistry = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+	private readonly Queue<PendingActivePolicyEffectWork> _pendingActivePolicyEffectWork = new Queue<PendingActivePolicyEffectWork>();
+
+	private readonly HashSet<string> _queuedActivePolicyEffectIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+	private int _activePolicyRuntimeGeneration;
+
+	private int _lastActivePolicyScheduledDay = -1;
 
 	private bool _generationInProgress;
 
@@ -95,6 +141,16 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 
 	private bool _policyWaitPopupShown;
 
+	private static bool _dynamicPolicyPatchesApplied;
+
+	private static bool _policySettlementModelPatchesApplied;
+
+	private static bool _policySuccessResultVisible;
+
+	private static string _policySuccessResultPolicyObjectId = "";
+
+	private static readonly Dictionary<string, Action> DeferredOriginalPolicyResults = new Dictionary<string, Action>(StringComparer.OrdinalIgnoreCase);
+
 	public static CustomPolicyBehavior Instance { get; private set; }
 
 	public CustomPolicyBehavior()
@@ -102,43 +158,1149 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 		Instance = this;
 	}
 
-	public static string BuildRecentPolicyContextForNpcExternal(Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride = null)
+	public static bool TryRegisterPolicyActiveEffectForExternal(PolicyActiveEffectRegistration registration, out string effectId, out string failureReason)
 	{
+		effectId = "";
+		failureReason = "";
 		try
 		{
-			return Instance?.BuildRecentPolicyContextForNpcInternal(targetHero, targetCharacter, kingdomIdOverride) ?? "";
+			CustomPolicyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<CustomPolicyBehavior>();
+			if (behavior == null)
+			{
+				failureReason = "CustomPolicyBehavior 未注册";
+				return false;
+			}
+			return behavior.TryRegisterPolicyActiveEffectInternal(registration, out effectId, out failureReason);
 		}
 		catch (Exception ex)
 		{
-			PolicyDebugLog("npc-policy-context-failed", ex.Message);
-			return "";
+			failureReason = ex.Message;
+			PolicySystemLog.Write("Effect", "register-exception", ex.ToString());
+			return false;
 		}
 	}
 
-	public static void LogNpcPolicyContextInjectionForExternal(Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride, string contextText)
+	private bool TryRegisterPolicyActiveEffectInternal(PolicyActiveEffectRegistration registration, out string effectId, out string failureReason)
 	{
-		try
+		effectId = "";
+		failureReason = "";
+		if (registration == null || registration.DurationDays <= 0 || string.IsNullOrWhiteSpace(registration.TargetKingdomId))
 		{
-			if (string.IsNullOrWhiteSpace(contextText))
-			{
-				return;
-			}
-			int lineCount = contextText.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries).Length;
-			PolicyDebugLog("npc-policy-context-injected",
-				BuildNpcPolicyContextLogTarget(targetHero, targetCharacter, kingdomIdOverride)
-				+ " contextLength=" + contextText.Length.ToString(CultureInfo.InvariantCulture)
-				+ " lineCount=" + lineCount.ToString(CultureInfo.InvariantCulture),
-				LimitDisplayChars(contextText, 2000));
+			failureReason = "active effect 注册数据无效";
+			return false;
 		}
-		catch (Exception ex)
+		effectId = string.IsNullOrWhiteSpace(registration.EffectId) ? Guid.NewGuid().ToString("N") : registration.EffectId.Trim();
+		if (_activePolicyEffects.ContainsKey(effectId))
 		{
-			PolicyDebugLog("npc-policy-context-injection-log-failed", ex.Message);
+			failureReason = "重复政策效果: " + effectId;
+			return false;
 		}
+		ActivePolicyEffectSaveData activeEffect = new ActivePolicyEffectSaveData
+		{
+			EffectId = effectId,
+			RecordId = registration.RecordId ?? "",
+			PolicyName = registration.PolicyName ?? "",
+			DateText = registration.DateText ?? "",
+			SubmittedDay = Math.Max(0, registration.SubmittedDay),
+			CreatedUtcTicks = DateTime.UtcNow.Ticks,
+			TargetKingdomId = registration.TargetKingdomId ?? "",
+			TargetKingdomName = registration.TargetKingdomName ?? "",
+			ProsperityDailyDeltaPerTown = registration.ProsperityDailyDeltaPerTown,
+			FoodDailyDeltaPerTown = registration.FoodDailyDeltaPerTown,
+			HearthDailyDeltaPerVillage = registration.HearthDailyDeltaPerVillage,
+			LoyaltyDailyDeltaPerTown = registration.LoyaltyDailyDeltaPerTown,
+			SecurityDailyDeltaPerTown = registration.SecurityDailyDeltaPerTown,
+			MilitiaDailyDeltaPerTown = registration.MilitiaDailyDeltaPerTown,
+			KingdomStabilityDailyDelta = registration.KingdomStabilityDailyDelta,
+			TotalDurationDays = registration.DurationDays,
+			RemainingDays = registration.DurationDays,
+			LastAppliedDay = GetCurrentCampaignDay(),
+			Reason = registration.Reason ?? "",
+			Ended = false,
+			EndReason = ""
+		};
+		_activePolicyEffects[effectId] = JsonConvert.SerializeObject(activeEffect);
+		PolicySystemLog.Write("Effect", "active-created", "recordId=" + activeEffect.RecordId + " effectId=" + effectId + " target=" + activeEffect.TargetKingdomId + " duration=" + activeEffect.TotalDurationDays.ToString(CultureInfo.InvariantCulture));
+		return true;
 	}
 
 	public override void RegisterEvents()
 	{
+		ApplyDynamicPolicyPatchesOnce();
 		CampaignEvents.DailyTickEvent.AddNonSerializedListener(this, OnDailyTick);
+		CampaignEvents.OnGameLoadedEvent.AddNonSerializedListener(this, OnGameLoaded);
+		CampaignEvents.OnSessionLaunchedEvent.AddNonSerializedListener(this, OnSessionLaunched);
+		CampaignEvents.KingdomDecisionConcluded.AddNonSerializedListener(this, OnKingdomDecisionConcluded);
+		CampaignEvents.KingdomDecisionCancelled.AddNonSerializedListener(this, OnKingdomDecisionCancelled);
+	}
+
+	public static bool TrySubmitNpcPolicyAgendaForExternal(NpcRulerPolicyRecord record, out string failureReason)
+	{
+		failureReason = "";
+		try
+		{
+			CustomPolicyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<CustomPolicyBehavior>();
+			if (behavior == null)
+			{
+				failureReason = "CustomPolicyBehavior 未注册";
+				return false;
+			}
+			if (record == null || string.IsNullOrWhiteSpace(record.PolicyId))
+			{
+				failureReason = "NPC 政策记录无效";
+				return false;
+			}
+			if (!TryReadPoliticalWeights(record.AuthoritarianWeight, record.OligarchicWeight, record.EgalitarianWeight, out float authoritarian, out float oligarchic, out float egalitarian))
+			{
+				failureReason = "NPC 政策政治权重缺失或无效";
+				return false;
+			}
+			DynamicPolicySaveData data = new DynamicPolicySaveData
+			{
+				PolicyObjectId = FirstNonEmpty(record.PolicyObjectId, DynamicPolicyIdPrefix + NormalizeDynamicPolicyIdPart(record.PolicyId)),
+				RecordId = record.PolicyId ?? "",
+				Source = "npc",
+				OwnerKingdomId = record.KingdomId ?? "",
+				ProposerClanId = ResolveKingdomStatic(record.KingdomId)?.RulingClan?.StringId ?? "",
+				PolicyName = record.PolicyName ?? "",
+				PolicyContent = record.PolicyContent ?? "",
+				LogEntryDescription = FirstNonEmpty(record.PolicyDigest, record.PolicyContent),
+				SecondaryEffects = record.ImpactSummary ?? "",
+				AuthoritarianWeight = authoritarian,
+				OligarchicWeight = oligarchic,
+				EgalitarianWeight = egalitarian,
+				Status = DynamicPolicyStatusPending,
+				CreatedUtcTicks = record.CreatedUtcTicks > 0L ? record.CreatedUtcTicks : DateTime.UtcNow.Ticks
+			};
+			record.PolicyObjectId = data.PolicyObjectId;
+			return behavior.TrySubmitDynamicPolicyAgenda(data, out failureReason);
+		}
+		catch (Exception ex)
+		{
+			failureReason = ex.Message;
+			PolicySystemLog.Write("Agenda", "npc-submit-exception", ex.ToString());
+			return false;
+		}
+	}
+
+	public static void TryQueuePolicyExpiryAgendaForExternal(string recordId)
+	{
+		try
+		{
+			(CustomPolicyBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<CustomPolicyBehavior>())
+				?.TryQueueNaturalExpiryAbolition(recordId, "");
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Write("Agenda", "expiry-submit-bridge-failed", "recordId=" + (recordId ?? "") + " " + ex);
+		}
+	}
+
+	private static void ApplyDynamicPolicyPatchesOnce()
+	{
+		if (_dynamicPolicyPatchesApplied)
+		{
+			return;
+		}
+		_dynamicPolicyPatchesApplied = true;
+		try
+		{
+			Harmony harmony = new Harmony("com.AnimusForge.custompolicy.agenda");
+			harmony.Patch(AccessTools.Method(typeof(KingdomPolicyDecision), nameof(KingdomPolicyDecision.IsAllowed)),
+				postfix: new HarmonyMethod(typeof(CustomPolicyBehavior), nameof(Patch_KingdomPolicyDecision_IsAllowed_Postfix)));
+			System.Reflection.MethodInfo shouldBeCancelled = AccessTools.Method(typeof(KingdomDecision), nameof(KingdomDecision.ShouldBeCancelled));
+			if (shouldBeCancelled != null)
+			{
+				harmony.Patch(shouldBeCancelled,
+					prefix: new HarmonyMethod(typeof(CustomPolicyBehavior), nameof(Patch_KingdomDecision_ShouldBeCancelled_Prefix)));
+			}
+			System.Reflection.MethodInfo determineSupportOption = AccessTools.Method(typeof(KingdomDecision), nameof(KingdomDecision.DetermineSupportOption));
+			if (determineSupportOption != null)
+			{
+				harmony.Patch(determineSupportOption,
+					prefix: new HarmonyMethod(typeof(CustomPolicyBehavior), nameof(Patch_KingdomDecision_DetermineSupportOption_Prefix)));
+			}
+			harmony.Patch(AccessTools.Method(typeof(KingdomPoliciesVM), nameof(KingdomPoliciesVM.RefreshPolicyList)),
+				postfix: new HarmonyMethod(typeof(CustomPolicyBehavior), nameof(Patch_KingdomPoliciesVM_RefreshPolicyList_Postfix)));
+			System.Reflection.MethodInfo appendPotentialPolicies = AccessTools.Method(typeof(VoteDealBehavior), "AppendPotentialPolicyEntries");
+			if (appendPotentialPolicies != null)
+			{
+				harmony.Patch(appendPotentialPolicies,
+					prefix: new HarmonyMethod(typeof(CustomPolicyBehavior), nameof(Patch_AppendPotentialPolicyEntries_Prefix)));
+			}
+			System.Reflection.MethodInfo executeDecisionDone = AccessTools.Method(typeof(DecisionItemBaseVM), "ExecuteDone");
+			if (executeDecisionDone != null)
+			{
+				harmony.Patch(executeDecisionDone,
+					prefix: new HarmonyMethod(typeof(CustomPolicyBehavior), nameof(Patch_DecisionItemBaseVM_ExecuteDone_Prefix)));
+			}
+			System.Reflection.MethodInfo getAiChoice = AccessTools.Method(typeof(KingdomElection), "GetAiChoice");
+			if (getAiChoice != null)
+			{
+				harmony.Patch(getAiChoice,
+					postfix: new HarmonyMethod(typeof(CustomPolicyBehavior), nameof(Patch_KingdomElection_GetAiChoice_Postfix)));
+			}
+			System.Reflection.MethodInfo buildShoutPromptContext = AccessTools.Method(typeof(MyBehavior), nameof(MyBehavior.BuildShoutPromptContextForExternal));
+			if (buildShoutPromptContext != null)
+			{
+				harmony.Patch(buildShoutPromptContext,
+					postfix: new HarmonyMethod(typeof(CustomPolicyBehavior), nameof(Patch_MyBehavior_BuildShoutPromptContextForExternal_Postfix)));
+			}
+			PolicySystemLog.Write("Agenda", "patches-applied", "dynamic policy ownership, NPC proposer support/cancellation guard, policy list filters, ordered AF result popups, NPC ruler adoption, and agenda-gated policy context applied");
+		}
+		catch (Exception ex)
+		{
+			_dynamicPolicyPatchesApplied = false;
+			PolicySystemLog.Write("Agenda", "patches-failed", ex.ToString());
+		}
+	}
+
+	private static void Patch_MyBehavior_BuildShoutPromptContextForExternal_Postfix(
+		Hero targetHero,
+		CharacterObject targetCharacter,
+		string kingdomIdOverride,
+		ref MyBehavior.ShoutPromptContext __result)
+	{
+		try
+		{
+			const string agendaMarker = "【附加规则:kingdom_agenda】";
+			const string policyContextMarker = "【议程相关政策与事件】";
+			string extras = __result?.Extras ?? "";
+			int agendaMarkerIndex = extras.IndexOf(agendaMarker, StringComparison.OrdinalIgnoreCase);
+			if (agendaMarkerIndex < 0 || extras.IndexOf(policyContextMarker, StringComparison.Ordinal) >= 0)
+			{
+				return;
+			}
+			string policyContext = NpcRulerPolicyBehavior.BuildKingdomAgendaPolicyContextForExternal(targetHero, targetCharacter, kingdomIdOverride);
+			if (string.IsNullOrWhiteSpace(policyContext))
+			{
+				return;
+			}
+			int insertAt = agendaMarkerIndex + agendaMarker.Length;
+			string before = extras.Substring(0, insertAt).TrimEnd();
+			string after = extras.Substring(insertAt).TrimStart();
+			__result.Extras = before + Environment.NewLine + policyContext.Trim()
+				+ (string.IsNullOrWhiteSpace(after) ? "" : Environment.NewLine + after);
+			PolicySystemLog.Write("Agenda", "policy-context-injected", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "")
+				+ " kingdom=" + (kingdomIdOverride ?? targetHero?.Clan?.Kingdom?.StringId ?? targetCharacter?.HeroObject?.Clan?.Kingdom?.StringId ?? "")
+				+ " chars=" + policyContext.Length.ToString(CultureInfo.InvariantCulture));
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Write("Agenda", "policy-context-inject-failed", ex.ToString());
+		}
+	}
+
+	private static void Patch_KingdomPolicyDecision_IsAllowed_Postfix(KingdomPolicyDecision __instance, ref bool __result)
+	{
+		if (!__result || __instance?.Policy == null || !IsDynamicPolicyId(__instance.Policy.StringId))
+		{
+			return;
+		}
+		if (!TryGetDynamicPolicyDataStatic(__instance.Policy.StringId, out DynamicPolicySaveData data))
+		{
+			__result = false;
+			return;
+		}
+		__result = string.Equals(data.OwnerKingdomId ?? "", __instance.Kingdom?.StringId ?? "", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool Patch_KingdomDecision_ShouldBeCancelled_Prefix(KingdomDecision __instance, ref bool __result)
+	{
+		KingdomPolicyDecision decision = __instance as KingdomPolicyDecision;
+		if (!IsPendingNpcRulerPolicyAdoption(decision))
+		{
+			return true;
+		}
+		__result = false;
+		return false;
+	}
+
+	private static bool Patch_KingdomDecision_DetermineSupportOption_Prefix(
+		KingdomDecision __instance,
+		Supporter supporter,
+		MBReadOnlyList<DecisionOutcome> possibleOutcomes,
+		ref Supporter.SupportWeights supportWeightOfSelectedOutcome,
+		ref DecisionOutcome __result)
+	{
+		KingdomPolicyDecision decision = __instance as KingdomPolicyDecision;
+		if (!IsPendingNpcRulerPolicyAdoption(decision)
+			|| supporter?.Clan != decision.ProposerClan
+			|| possibleOutcomes == null)
+		{
+			return true;
+		}
+		KingdomPolicyDecision.PolicyDecisionOutcome adoption = possibleOutcomes
+			.OfType<KingdomPolicyDecision.PolicyDecisionOutcome>()
+			.FirstOrDefault(outcome => outcome.ShouldDecisionBeEnforced);
+		if (adoption == null)
+		{
+			return true;
+		}
+		supportWeightOfSelectedOutcome = Supporter.SupportWeights.SlightlyFavor;
+		__result = adoption;
+		return false;
+	}
+
+	private static bool IsPendingNpcRulerPolicyAdoption(KingdomPolicyDecision decision)
+	{
+		PolicyObject policy = decision?.Policy;
+		Kingdom kingdom = decision?.Kingdom;
+		if (policy == null
+			|| kingdom == null
+			|| kingdom.IsEliminated
+			|| !IsDynamicPolicyId(policy.StringId)
+			|| !TryGetDynamicPolicyDataStatic(policy.StringId, out DynamicPolicySaveData data))
+		{
+			return false;
+		}
+		return string.Equals(data.Source, "npc", StringComparison.OrdinalIgnoreCase)
+			&& string.Equals(data.Status, DynamicPolicyStatusPending, StringComparison.OrdinalIgnoreCase)
+			&& string.Equals(data.OwnerKingdomId ?? "", kingdom.StringId ?? "", StringComparison.OrdinalIgnoreCase)
+			&& decision.ProposerClan != null
+			&& decision.ProposerClan == kingdom.RulingClan
+			&& decision.ProposerClan.Kingdom == kingdom
+			&& kingdom.ActivePolicies?.Contains(policy) != true;
+	}
+
+	private static void Patch_AppendPotentialPolicyEntries_Prefix(Kingdom kingdom, ref IEnumerable<PolicyObject> policies)
+	{
+		if (kingdom == null || policies == null)
+		{
+			return;
+		}
+		policies = policies.Where(policy => policy == null
+			|| !IsDynamicPolicyId(policy.StringId)
+			|| (TryGetDynamicPolicyDataStatic(policy.StringId, out DynamicPolicySaveData data)
+				&& string.Equals(data.OwnerKingdomId ?? "", kingdom.StringId ?? "", StringComparison.OrdinalIgnoreCase)));
+	}
+
+	private static bool Patch_DecisionItemBaseVM_ExecuteDone_Prefix(DecisionItemBaseVM __instance)
+	{
+		try
+		{
+			KingdomPolicyDecision decision = Traverse.Create(__instance).Field("_decision").GetValue<KingdomDecision>() as KingdomPolicyDecision;
+			if (decision?.Policy == null || !IsDynamicPolicyId(decision.Policy.StringId))
+			{
+				return true;
+			}
+			string policyObjectId = decision.Policy.StringId ?? "";
+			System.Reflection.MethodInfo executeDone = AccessTools.Method(typeof(DecisionItemBaseVM), "ExecuteDone");
+			if (executeDone == null || !TryDeferOriginalPolicyResult(policyObjectId, delegate
+			{
+				executeDone.Invoke(__instance, null);
+			}))
+			{
+				return true;
+			}
+			PolicySystemLog.Write("Agenda", "original-result-popup-deferred", "policy=" + policyObjectId);
+			return false;
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Write("Agenda", "original-result-popup-defer-failed", ex.ToString());
+			return true;
+		}
+	}
+
+	private static void Patch_KingdomElection_GetAiChoice_Postfix(KingdomElection __instance, ref DecisionOutcome __result)
+	{
+		try
+		{
+			KingdomPolicyDecision decision = Traverse.Create(__instance).Field("_decision").GetValue<KingdomDecision>() as KingdomPolicyDecision;
+			PolicyObject policy = decision?.Policy;
+			if (policy == null || !IsDynamicPolicyId(policy.StringId) || !TryGetDynamicPolicyDataStatic(policy.StringId, out DynamicPolicySaveData data))
+			{
+				return;
+			}
+			Kingdom kingdom = decision.Kingdom;
+			if (!string.Equals(data.Source, "npc", StringComparison.OrdinalIgnoreCase)
+				|| !string.Equals(data.Status, DynamicPolicyStatusPending, StringComparison.OrdinalIgnoreCase)
+				|| kingdom == null
+				|| decision.ProposerClan == null
+				|| decision.ProposerClan != kingdom.RulingClan
+				|| !string.Equals(data.OwnerKingdomId ?? "", kingdom.StringId ?? "", StringComparison.OrdinalIgnoreCase)
+				|| kingdom.ActivePolicies?.Contains(policy) == true)
+			{
+				return;
+			}
+			KingdomPolicyDecision.PolicyDecisionOutcome adoption = __instance?.PossibleOutcomes?
+				.OfType<KingdomPolicyDecision.PolicyDecisionOutcome>()
+				.FirstOrDefault(outcome => outcome.ShouldDecisionBeEnforced);
+			if (adoption == null || ReferenceEquals(__result, adoption))
+			{
+				return;
+			}
+			__result = adoption;
+			PolicySystemLog.Write("Agenda", "npc-ruler-adoption-forced", "recordId=" + (data.RecordId ?? "")
+				+ " policy=" + (data.PolicyObjectId ?? "")
+				+ " kingdom=" + (data.OwnerKingdomId ?? ""));
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Write("Agenda", "npc-ruler-adoption-force-failed", ex.ToString());
+		}
+	}
+
+	private static void BeginPolicySuccessResultSequence(string policyObjectId)
+	{
+		string id = (policyObjectId ?? "").Trim();
+		if (!string.Equals(_policySuccessResultPolicyObjectId, id, StringComparison.OrdinalIgnoreCase))
+		{
+			DeferredOriginalPolicyResults.Clear();
+		}
+		_policySuccessResultPolicyObjectId = id;
+		_policySuccessResultVisible = !string.IsNullOrWhiteSpace(id);
+	}
+
+	private static bool TryDeferOriginalPolicyResult(string policyObjectId, Action action)
+	{
+		string id = (policyObjectId ?? "").Trim();
+		if (!_policySuccessResultVisible
+			|| string.IsNullOrWhiteSpace(id)
+			|| !string.Equals(_policySuccessResultPolicyObjectId, id, StringComparison.OrdinalIgnoreCase)
+			|| action == null)
+		{
+			return false;
+		}
+		if (!DeferredOriginalPolicyResults.ContainsKey(id))
+		{
+			DeferredOriginalPolicyResults[id] = action;
+		}
+		return true;
+	}
+
+	private static void CompletePolicySuccessResultSequence(string policyObjectId)
+	{
+		string id = (policyObjectId ?? "").Trim();
+		if (!_policySuccessResultVisible || !string.Equals(_policySuccessResultPolicyObjectId, id, StringComparison.OrdinalIgnoreCase))
+		{
+			return;
+		}
+		List<Action> deferred = DeferredOriginalPolicyResults.Values.Where(action => action != null).ToList();
+		DeferredOriginalPolicyResults.Clear();
+		_policySuccessResultVisible = false;
+		_policySuccessResultPolicyObjectId = "";
+		foreach (Action action in deferred)
+		{
+			MainThreadActions.Enqueue(action);
+		}
+		PolicySystemLog.Write("Agenda", "original-result-popup-released", "policy=" + id
+			+ " deferred=" + deferred.Count.ToString(CultureInfo.InvariantCulture));
+	}
+
+	private static void Patch_KingdomPoliciesVM_RefreshPolicyList_Postfix(KingdomPoliciesVM __instance)
+	{
+		try
+		{
+			if (__instance?.OtherPolicies == null)
+			{
+				return;
+			}
+			bool selectedRemoved = false;
+			for (int i = __instance.OtherPolicies.Count - 1; i >= 0; i--)
+			{
+				KingdomPolicyItemVM item = __instance.OtherPolicies[i];
+				if (item?.Policy == null || !IsDynamicPolicyId(item.Policy.StringId))
+				{
+					continue;
+				}
+				selectedRemoved |= __instance.CurrentSelectedPolicy == item;
+				__instance.OtherPolicies.RemoveAt(i);
+			}
+			GameTexts.SetVariable("STR", __instance.OtherPolicies.Count);
+			__instance.NumOfOtherPoliciesText = GameTexts.FindText("str_STR_in_parentheses").ToString();
+			if (selectedRemoved)
+			{
+				PolicyObject replacement = __instance.OtherPolicies.FirstOrDefault()?.Policy ?? __instance.ActivePolicies?.FirstOrDefault()?.Policy;
+				if (replacement != null)
+				{
+					__instance.SelectPolicy(replacement);
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Write("Agenda", "original-policy-filter-failed", ex.Message);
+		}
+	}
+
+	private void OnGameLoaded(CampaignGameStarter starter)
+	{
+		ApplyPolicySettlementModelPatchesOnce();
+		EnsureDynamicPoliciesRegistered(reconcilePending: false);
+	}
+
+	private void OnSessionLaunched(CampaignGameStarter starter)
+	{
+		ApplyPolicySettlementModelPatchesOnce();
+		EnsureDynamicPoliciesRegistered(reconcilePending: true);
+	}
+
+	private static void ApplyPolicySettlementModelPatchesOnce()
+	{
+		if (_policySettlementModelPatchesApplied || Campaign.Current?.Models == null)
+		{
+			return;
+		}
+		try
+		{
+			Harmony harmony = new Harmony("com.AnimusForge.custompolicy.settlementmodels");
+			PatchPolicySettlementModelMethod(harmony, Campaign.Current.Models.SettlementProsperityModel, "CalculateProsperityChange", new Type[2] { typeof(Town), typeof(bool) }, nameof(Patch_PolicyProsperityChange_Postfix));
+			PatchPolicySettlementModelMethod(harmony, Campaign.Current.Models.SettlementProsperityModel, "CalculateHearthChange", new Type[2] { typeof(Village), typeof(bool) }, nameof(Patch_PolicyHearthChange_Postfix));
+			PatchPolicySettlementModelMethod(harmony, Campaign.Current.Models.SettlementFoodModel, "CalculateTownFoodStocksChange", new Type[3] { typeof(Town), typeof(bool), typeof(bool) }, nameof(Patch_PolicyFoodChange_Postfix));
+			PatchPolicySettlementModelMethod(harmony, Campaign.Current.Models.SettlementLoyaltyModel, "CalculateLoyaltyChange", new Type[2] { typeof(Town), typeof(bool) }, nameof(Patch_PolicyLoyaltyChange_Postfix));
+			PatchPolicySettlementModelMethod(harmony, Campaign.Current.Models.SettlementSecurityModel, "CalculateSecurityChange", new Type[2] { typeof(Town), typeof(bool) }, nameof(Patch_PolicySecurityChange_Postfix));
+			PatchPolicySettlementModelMethod(harmony, Campaign.Current.Models.SettlementMilitiaModel, "CalculateMilitiaChange", new Type[2] { typeof(Settlement), typeof(bool) }, nameof(Patch_PolicyMilitiaChange_Postfix));
+			_policySettlementModelPatchesApplied = true;
+			PolicySystemLog.Write("Effect", "settlement-model-patches-applied", "AF policy effects now participate in vanilla settlement change calculations and tooltips");
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Write("Effect", "settlement-model-patches-failed", ex.ToString());
+		}
+	}
+
+	private static void PatchPolicySettlementModelMethod(Harmony harmony, object model, string methodName, Type[] argumentTypes, string postfixName)
+	{
+		System.Reflection.MethodInfo target = model == null ? null : AccessTools.Method(model.GetType(), methodName, argumentTypes);
+		if (target == null)
+		{
+			throw new MissingMethodException(model?.GetType().FullName ?? "(null)", methodName);
+		}
+		harmony.Patch(target, postfix: new HarmonyMethod(typeof(CustomPolicyBehavior), postfixName));
+	}
+
+	private static void Patch_PolicyProsperityChange_Postfix(Town fortification, ref ExplainedNumber __result)
+	{
+		AddActivePolicySettlementEffects(fortification?.Settlement, effect => effect.ProsperityDailyDeltaPerTown, ref __result);
+	}
+
+	private static void Patch_PolicyHearthChange_Postfix(Village village, ref ExplainedNumber __result)
+	{
+		AddActivePolicySettlementEffects(village?.Settlement, effect => effect.HearthDailyDeltaPerVillage, ref __result);
+	}
+
+	private static void Patch_PolicyFoodChange_Postfix(Town town, ref ExplainedNumber __result)
+	{
+		AddActivePolicySettlementEffects(town?.Settlement, effect => effect.FoodDailyDeltaPerTown, ref __result);
+	}
+
+	private static void Patch_PolicyLoyaltyChange_Postfix(Town town, ref ExplainedNumber __result)
+	{
+		AddActivePolicySettlementEffects(town?.Settlement, effect => effect.LoyaltyDailyDeltaPerTown, ref __result);
+	}
+
+	private static void Patch_PolicySecurityChange_Postfix(Town town, ref ExplainedNumber __result)
+	{
+		AddActivePolicySettlementEffects(town?.Settlement, effect => effect.SecurityDailyDeltaPerTown, ref __result);
+	}
+
+	private static void Patch_PolicyMilitiaChange_Postfix(Settlement settlement, ref ExplainedNumber __result)
+	{
+		if (settlement?.Town != null)
+		{
+			AddActivePolicySettlementEffects(settlement, effect => effect.MilitiaDailyDeltaPerTown, ref __result);
+		}
+	}
+
+	private static void AddActivePolicySettlementEffects(Settlement settlement, Func<ActivePolicyEffectSaveData, float> valueSelector, ref ExplainedNumber result)
+	{
+		CustomPolicyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<CustomPolicyBehavior>();
+		Kingdom kingdom = settlement?.OwnerClan?.Kingdom
+			?? settlement?.Village?.Bound?.OwnerClan?.Kingdom
+			?? settlement?.MapFaction as Kingdom;
+		if (behavior == null || kingdom == null || valueSelector == null)
+		{
+			return;
+		}
+		if (behavior._activePolicyEffectModelCache.Count > Math.Max(32, behavior._activePolicyEffects.Count * 4))
+		{
+			behavior._activePolicyEffectModelCache.Clear();
+		}
+		foreach (string raw in behavior._activePolicyEffects.Values.ToList())
+		{
+			try
+			{
+				string cacheKey = raw ?? "";
+				if (!behavior._activePolicyEffectModelCache.TryGetValue(cacheKey, out ActivePolicyEffectSaveData effect))
+				{
+					effect = JsonConvert.DeserializeObject<ActivePolicyEffectSaveData>(cacheKey);
+					behavior._activePolicyEffectModelCache[cacheKey] = effect;
+				}
+				if (effect == null
+					|| effect.Ended
+					|| effect.RemainingDays <= 0
+					|| !string.Equals(effect.TargetKingdomId ?? "", kingdom.StringId ?? "", StringComparison.OrdinalIgnoreCase))
+				{
+					continue;
+				}
+				float value = valueSelector(effect);
+				if (float.IsNaN(value) || float.IsInfinity(value) || Math.Abs(value) <= 0.0001f)
+				{
+					continue;
+				}
+				result.Add(value, BuildPolicySettlementEffectExplanation(effect));
+			}
+			catch
+			{
+			}
+		}
+	}
+
+	private static TextObject BuildPolicySettlementEffectExplanation(ActivePolicyEffectSaveData effect)
+	{
+		string policyName = (effect?.PolicyName ?? "").Replace("{", "").Replace("}", "").Trim();
+		if (policyName.Length > 48)
+		{
+			policyName = policyName.Substring(0, 47).TrimEnd() + "…";
+		}
+		return new TextObject("《" + (string.IsNullOrWhiteSpace(policyName) ? "未命名政策" : policyName) + "》");
+	}
+
+	private void EnsureDynamicPoliciesRegistered(bool reconcilePending)
+	{
+		foreach (DynamicPolicySaveData data in LoadDynamicPolicies().Where(x => x != null && ShouldKeepDynamicPolicyRegistered(x.Status)))
+		{
+			PolicyObject policy = EnsureDynamicPolicyObject(data);
+			if (!reconcilePending || policy == null)
+			{
+				continue;
+			}
+			Kingdom owner = ResolveKingdomByIdOrName(data.OwnerKingdomId, "");
+			bool unresolved = owner?.UnresolvedDecisions?.OfType<KingdomPolicyDecision>().Any(x => x?.Policy != null && string.Equals(x.Policy.StringId, data.PolicyObjectId, StringComparison.OrdinalIgnoreCase)) == true;
+			bool active = owner?.ActivePolicies?.Contains(policy) == true;
+			if (unresolved)
+			{
+				continue;
+			}
+			if (string.Equals(data.Status, DynamicPolicyStatusPending, StringComparison.OrdinalIgnoreCase))
+			{
+				if (active)
+				{
+					CompleteDynamicPolicyAdoption(data, policy);
+				}
+				else
+				{
+					RejectDynamicPolicyAdoption(data, policy, "读档后未找到待处理采用议程");
+				}
+			}
+			else if (string.Equals(data.Status, DynamicPolicyStatusExpiryVotePending, StringComparison.OrdinalIgnoreCase))
+			{
+				if (active)
+				{
+					data.Status = DynamicPolicyStatusActive;
+					data.NaturalExpiryAgendaRejected = true;
+					StoreDynamicPolicy(data);
+					NpcRulerPolicyBehavior.UpdatePolicyAgendaStatusForExternal(data.RecordId, DynamicPolicyStatusActive);
+				}
+				else
+				{
+					CompleteDynamicPolicyAbolition(data, policy, "读档核对：AF 政策已废除");
+				}
+			}
+			else if (string.Equals(data.Status, DynamicPolicyStatusActive, StringComparison.OrdinalIgnoreCase))
+			{
+				if (!active)
+				{
+					CompleteDynamicPolicyAbolition(data, policy, "读档核对：AF 政策已不在有效政策中");
+				}
+				else if (string.Equals(data.Source, "npc", StringComparison.OrdinalIgnoreCase))
+				{
+					NpcRulerPolicyBehavior.OnPolicyAgendaApprovedForExternal(data.RecordId);
+				}
+			}
+		}
+	}
+
+	private void OnKingdomDecisionConcluded(KingdomDecision decision, DecisionOutcome chosenOutcome, bool isPlayerInvolved)
+	{
+		try
+		{
+			KingdomPolicyDecision policyDecision = decision as KingdomPolicyDecision;
+			PolicyObject policy = policyDecision?.Policy;
+			if (policy == null || !IsDynamicPolicyId(policy.StringId) || !TryGetDynamicPolicyData(policy.StringId, out DynamicPolicySaveData data))
+			{
+				return;
+			}
+			bool active = decision.Kingdom?.ActivePolicies?.Contains(policy) == true;
+			if (string.Equals(data.Status, DynamicPolicyStatusPending, StringComparison.OrdinalIgnoreCase))
+			{
+				if (active)
+				{
+					CompleteDynamicPolicyAdoption(data, policy);
+				}
+				else
+				{
+					RejectDynamicPolicyAdoption(data, policy, "AF 议程否决");
+				}
+				return;
+			}
+			if (!active)
+			{
+				CompleteDynamicPolicyAbolition(data, policy, "AF 议程废除通过");
+			}
+			else if (string.Equals(data.Status, DynamicPolicyStatusExpiryVotePending, StringComparison.OrdinalIgnoreCase))
+			{
+				data.Status = DynamicPolicyStatusActive;
+				data.NaturalExpiryAgendaRejected = true;
+				StoreDynamicPolicy(data);
+				NpcRulerPolicyBehavior.UpdatePolicyAgendaStatusForExternal(data.RecordId, DynamicPolicyStatusActive);
+				PolicySystemLog.Write("Agenda", "expiry-abolition-rejected", "recordId=" + data.RecordId + " policy=" + data.PolicyObjectId);
+			}
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Write("Agenda", "decision-concluded-failed", ex.ToString());
+		}
+	}
+
+	private void CompleteDynamicPolicyAbolition(DynamicPolicySaveData data, PolicyObject policy, string reason)
+	{
+		if (data == null)
+		{
+			return;
+		}
+		data.Status = DynamicPolicyStatusAbolished;
+		StoreDynamicPolicy(data);
+		EndPolicyEffectsForAgendaAbolition(data.RecordId, reason);
+		NpcRulerPolicyBehavior.UpdatePolicyAgendaStatusForExternal(data.RecordId, DynamicPolicyStatusAbolished);
+		TryUnregisterDynamicPolicyObject(data, policy);
+		PolicySystemLog.Write("Agenda", "abolished", "recordId=" + data.RecordId + " policy=" + data.PolicyObjectId + " reason=" + (reason ?? ""));
+	}
+
+	private void OnKingdomDecisionCancelled(KingdomDecision decision, bool isPlayerInvolved)
+	{
+		try
+		{
+			PolicyObject policy = (decision as KingdomPolicyDecision)?.Policy;
+			if (policy == null || !TryGetDynamicPolicyData(policy.StringId, out DynamicPolicySaveData data))
+			{
+				return;
+			}
+			if (string.Equals(data.Status, DynamicPolicyStatusPending, StringComparison.OrdinalIgnoreCase))
+			{
+				RejectDynamicPolicyAdoption(data, policy, "AF 议程取消");
+			}
+			else if (string.Equals(data.Status, DynamicPolicyStatusExpiryVotePending, StringComparison.OrdinalIgnoreCase))
+			{
+				data.Status = DynamicPolicyStatusActive;
+				data.NaturalExpiryAgendaRejected = true;
+				StoreDynamicPolicy(data);
+				NpcRulerPolicyBehavior.UpdatePolicyAgendaStatusForExternal(data.RecordId, DynamicPolicyStatusActive);
+			}
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Write("Agenda", "decision-cancelled-failed", ex.ToString());
+		}
+	}
+
+	private bool TrySubmitDynamicPolicyAgenda(DynamicPolicySaveData data, out string failureReason)
+	{
+		failureReason = "";
+		Kingdom owner = ResolveKingdomByIdOrName(data?.OwnerKingdomId, "");
+		Clan proposer = ResolveClanById(data?.ProposerClanId) ?? owner?.RulingClan;
+		if (data == null || owner == null || owner.IsEliminated || proposer == null || proposer.Kingdom != owner)
+		{
+			failureReason = "政策所属王国或提案氏族无效";
+			return false;
+		}
+		PolicyObject policy = EnsureDynamicPolicyObject(data);
+		if (policy == null)
+		{
+			failureReason = "动态 PolicyObject 注册失败";
+			return false;
+		}
+		if (owner.ActivePolicies.Contains(policy) || owner.UnresolvedDecisions.OfType<KingdomPolicyDecision>().Any(x => x?.Policy == policy && !x.ShouldBeCancelled()))
+		{
+			failureReason = "同一政策已经生效或正在议程中";
+			return false;
+		}
+		data.Status = DynamicPolicyStatusPending;
+		StoreDynamicPolicy(data);
+		KingdomPolicyDecision decision = new KingdomPolicyDecision(proposer, policy, isInvertedDecision: false);
+		if (!decision.IsAllowed())
+		{
+			failureReason = "王国规则不允许提交该政策议程";
+			data.Status = DynamicPolicyStatusRejected;
+			StoreDynamicPolicy(data);
+			TryUnregisterDynamicPolicyObject(data, policy);
+			return false;
+		}
+		owner.AddDecision(decision, ignoreInfluenceCost: true);
+		if (owner.UnresolvedDecisions == null || !owner.UnresolvedDecisions.Contains(decision))
+		{
+			failureReason = "AF 议程未保留政策决定";
+			data.Status = DynamicPolicyStatusRejected;
+			StoreDynamicPolicy(data);
+			TryUnregisterDynamicPolicyObject(data, policy);
+			return false;
+		}
+		PolicySystemLog.Write("Agenda", "submitted", "recordId=" + data.RecordId + " policy=" + data.PolicyObjectId + " kingdom=" + data.OwnerKingdomId);
+		return true;
+	}
+
+	private void CompleteDynamicPolicyAdoption(DynamicPolicySaveData data, PolicyObject policy)
+	{
+		data.Status = DynamicPolicyStatusActive;
+		StoreDynamicPolicy(data);
+		if (string.Equals(data.Source, "npc", StringComparison.OrdinalIgnoreCase))
+		{
+			NpcRulerPolicyBehavior.OnPolicyAgendaApprovedForExternal(data.RecordId);
+		}
+		else
+		{
+			CompleteApprovedPlayerPolicy(data);
+		}
+		PolicySystemLog.Write("Agenda", "adopted", "recordId=" + data.RecordId + " policy=" + data.PolicyObjectId);
+	}
+
+	private void RejectDynamicPolicyAdoption(DynamicPolicySaveData data, PolicyObject policy, string reason)
+	{
+		data.Status = DynamicPolicyStatusRejected;
+		StoreDynamicPolicy(data);
+		if (string.Equals(data.Source, "npc", StringComparison.OrdinalIgnoreCase))
+		{
+			NpcRulerPolicyBehavior.OnPolicyAgendaRejectedForExternal(data.RecordId, reason);
+		}
+		TryUnregisterDynamicPolicyObject(data, policy);
+		PolicySystemLog.Write("Agenda", "adoption-rejected", "recordId=" + data.RecordId + " policy=" + data.PolicyObjectId + " reason=" + (reason ?? ""));
+	}
+
+	private void CompleteApprovedPlayerPolicy(DynamicPolicySaveData data)
+	{
+		try
+		{
+			PendingPlayerPolicyAgendaSaveData pending = JsonConvert.DeserializeObject<PendingPlayerPolicyAgendaSaveData>(data.PlayerPayloadJson ?? "");
+			PolicyDraftRequest request = pending?.Request;
+			PolicyMainAssessmentResult assessment = pending?.Assessment;
+			if (request == null || assessment == null)
+			{
+				throw new InvalidOperationException("玩家政策待审数据缺失");
+			}
+			PrepareApprovedPlayerPolicyCost(request, assessment);
+			PolicyPostprocessResult postprocess = BuildPostprocessResultFromMainAssessment(request, assessment);
+			PolicyApplicationResult application = ApplyPolicyEffects(request, postprocess);
+			PolicyGenerationResult result = new PolicyGenerationResult
+			{
+				MainAssessment = assessment,
+				Postprocess = postprocess,
+				PostprocessRaw = SafeSerializeForDebug(postprocess)
+			};
+			string feedback = FirstNonEmpty(pending.Feedback, ResolveFeedbackText(result, request));
+			bool hasActualEffect = HasAnyActualAppliedEffect(application);
+			bool hasTimedEffect = HasAnyTimedPolicyEffect(application);
+			if (hasActualEffect)
+			{
+				DeductPublishCost(request);
+			}
+			else
+			{
+				request.GoldCost = 0;
+				request.InfluenceCost = 0f;
+			}
+			bool recordWritten = RecordSuccessfulPolicy(request, result, feedback, application, data.RecordId);
+			if (hasTimedEffect)
+			{
+				ActivatePolicyEffects(request, application, data.RecordId);
+			}
+			if (recordWritten)
+			{
+				RecordPolicyPublishAsPlayerAction(request, result, application, data.RecordId);
+			}
+			string impactText = BuildImpactPopupText(request, feedback, application, costDeducted: hasActualEffect);
+			ShowPolicySuccessResultPopup(data.PolicyObjectId, impactText);
+			if (!hasTimedEffect)
+			{
+				TryQueueNaturalExpiryAbolition(data.RecordId, "");
+			}
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Write("Agenda", "player-adoption-commit-failed", "recordId=" + (data?.RecordId ?? "") + " " + ex);
+			TryQueueNaturalExpiryAbolition(data?.RecordId, "");
+		}
+	}
+
+	private static void PrepareApprovedPlayerPolicyCost(PolicyDraftRequest request, PolicyMainAssessmentResult assessment)
+	{
+		if (request.UseAiEvaluatedCost)
+		{
+			if (!TryPreparePolicyCostForApplication(request, assessment, out string error))
+			{
+				throw new InvalidOperationException(error);
+			}
+			return;
+		}
+		int requiredGold = Math.Max(0, request.GoldCost);
+		int actualGold = Math.Min(requiredGold, Math.Max(0, Hero.MainHero?.Gold ?? 0));
+		request.RequiredGoldCost = requiredGold;
+		request.RequiredInfluenceCost = 0f;
+		request.GoldCost = actualGold;
+		request.InfluenceCost = 0f;
+		request.GoldEffectScale = CalculatePolicyCostScale(requiredGold, actualGold);
+		request.InfluenceEffectScale = request.GoldEffectScale;
+	}
+
+	private void EndPolicyEffectsForAgendaAbolition(string recordId, string reason)
+	{
+		string id = (recordId ?? "").Trim();
+		foreach (KeyValuePair<string, string> item in _activePolicyEffects.ToList())
+		{
+			ActivePolicyEffectSaveData effect;
+			try
+			{
+				effect = JsonConvert.DeserializeObject<ActivePolicyEffectSaveData>(item.Value ?? "");
+			}
+			catch
+			{
+				continue;
+			}
+			if (effect == null || !string.Equals(effect.RecordId ?? "", id, StringComparison.OrdinalIgnoreCase))
+			{
+				continue;
+			}
+			MarkPolicyRecordEffectEnded(effect, reason, queueNaturalExpiry: false);
+			_activePolicyEffects.Remove(item.Key);
+		}
+	}
+
+	private void TryQueueNaturalExpiryAbolition(string recordId, string endingEffectId)
+	{
+		string id = (recordId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(id))
+		{
+			return;
+		}
+		bool hasOtherActiveEffect = _activePolicyEffects.Values.Any(raw =>
+		{
+			try
+			{
+				ActivePolicyEffectSaveData effect = JsonConvert.DeserializeObject<ActivePolicyEffectSaveData>(raw ?? "");
+				return effect != null
+					&& !string.Equals(effect.EffectId ?? "", endingEffectId ?? "", StringComparison.OrdinalIgnoreCase)
+					&& string.Equals(effect.RecordId ?? "", id, StringComparison.OrdinalIgnoreCase)
+					&& !effect.Ended
+					&& effect.RemainingDays > 0;
+			}
+			catch
+			{
+				return false;
+			}
+		});
+		if (hasOtherActiveEffect)
+		{
+			return;
+		}
+		DynamicPolicySaveData data = LoadDynamicPolicies().FirstOrDefault(x => x != null && string.Equals(x.RecordId ?? "", id, StringComparison.OrdinalIgnoreCase));
+		if (data == null || !string.Equals(data.Status, DynamicPolicyStatusActive, StringComparison.OrdinalIgnoreCase) || data.NaturalExpiryAgendaRejected)
+		{
+			return;
+		}
+		Kingdom owner = ResolveKingdomByIdOrName(data.OwnerKingdomId, "");
+		PolicyObject policy = EnsureDynamicPolicyObject(data);
+		if (owner == null || policy == null || !owner.ActivePolicies.Contains(policy))
+		{
+			return;
+		}
+		if (owner.UnresolvedDecisions.OfType<KingdomPolicyDecision>().Any(x => x?.Policy == policy && !x.ShouldBeCancelled()))
+		{
+			return;
+		}
+		Clan proposer = owner.RulingClan;
+		if (proposer == null)
+		{
+			return;
+		}
+		data.Status = DynamicPolicyStatusExpiryVotePending;
+		StoreDynamicPolicy(data);
+		NpcRulerPolicyBehavior.UpdatePolicyAgendaStatusForExternal(data.RecordId, DynamicPolicyStatusExpiryVotePending);
+		KingdomPolicyDecision decision = new KingdomPolicyDecision(proposer, policy, isInvertedDecision: true);
+		owner.AddDecision(decision, ignoreInfluenceCost: true);
+		if (owner.UnresolvedDecisions == null || !owner.UnresolvedDecisions.Contains(decision))
+		{
+			data.Status = DynamicPolicyStatusActive;
+			StoreDynamicPolicy(data);
+			NpcRulerPolicyBehavior.UpdatePolicyAgendaStatusForExternal(data.RecordId, DynamicPolicyStatusActive);
+			return;
+		}
+		PolicySystemLog.Write("Agenda", "expiry-abolition-submitted", "recordId=" + data.RecordId + " policy=" + data.PolicyObjectId);
+	}
+
+	private PolicyObject EnsureDynamicPolicyObject(DynamicPolicySaveData data)
+	{
+		if (data == null || !IsDynamicPolicyId(data.PolicyObjectId))
+		{
+			return null;
+		}
+		try
+		{
+			PolicyObject policy = MBObjectManager.Instance?.GetObject<PolicyObject>(data.PolicyObjectId);
+			if (policy == null)
+			{
+				policy = MBObjectManager.Instance?.RegisterPresumedObject(new PolicyObject(data.PolicyObjectId));
+			}
+			string displaySummary = BuildDynamicPolicyDisplaySummary(data);
+			policy?.Initialize(
+				new TextObject(data.PolicyName ?? ""),
+				new TextObject(displaySummary),
+				new TextObject(FirstNonEmpty(data.LogEntryDescription, data.PolicyContent)),
+				new TextObject(data.SecondaryEffects ?? ""),
+				data.AuthoritarianWeight,
+				data.OligarchicWeight,
+				data.EgalitarianWeight);
+			return policy;
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Write("Agenda", "policy-object-register-failed", "policy=" + data.PolicyObjectId + " " + ex);
+			return null;
+		}
+	}
+
+	private static string BuildDynamicPolicyDisplaySummary(DynamicPolicySaveData data)
+	{
+		string summary = CompactPolicyContextText(CleanPolicyDisplayText(FirstNonEmpty(
+			data?.LogEntryDescription,
+			data?.SecondaryEffects,
+			data?.PolicyContent,
+			data?.PolicyName)));
+		if (string.IsNullOrWhiteSpace(summary))
+		{
+			return "该政策尚无可用摘要。";
+		}
+		int sentenceEnd = summary.IndexOfAny(new[] { '。', '！', '？', '!', '?' });
+		if (sentenceEnd >= 0)
+		{
+			summary = summary.Substring(0, sentenceEnd + 1).Trim();
+		}
+		return LimitDisplayChars(summary, 96);
+	}
+
+	private void TryUnregisterDynamicPolicyObject(DynamicPolicySaveData data, PolicyObject policy)
+	{
+		try
+		{
+			if (data == null || policy == null)
+			{
+				return;
+			}
+			bool referenced = Kingdom.All.Any(kingdom => kingdom != null
+				&& ((kingdom.ActivePolicies?.Contains(policy) == true)
+					|| (kingdom.UnresolvedDecisions?.OfType<KingdomPolicyDecision>().Any(x => x?.Policy == policy) == true)));
+			if (!referenced)
+			{
+				MBObjectManager.Instance?.UnregisterObject(policy);
+			}
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Write("Agenda", "policy-object-unregister-failed", "policy=" + (data?.PolicyObjectId ?? "") + " " + ex.Message);
+		}
+	}
+
+	private static bool IsDynamicPolicyId(string policyId)
+	{
+		return !string.IsNullOrWhiteSpace(policyId) && policyId.StartsWith(DynamicPolicyIdPrefix, StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static string NormalizeDynamicPolicyIdPart(string value)
+	{
+		string text = Regex.Replace((value ?? "").Trim(), "[^A-Za-z0-9_.-]+", "_");
+		return string.IsNullOrWhiteSpace(text) ? Guid.NewGuid().ToString("N") : text;
+	}
+
+	private static string FirstNonEmpty(params string[] values)
+	{
+		return (values ?? Array.Empty<string>()).FirstOrDefault(x => !string.IsNullOrWhiteSpace(x)) ?? "";
+	}
+
+	private static bool TryReadPoliticalWeights(float? authoritarian, float? oligarchic, float? egalitarian, out float authoritarianValue, out float oligarchicValue, out float egalitarianValue)
+	{
+		authoritarianValue = 0f;
+		oligarchicValue = 0f;
+		egalitarianValue = 0f;
+		if (!authoritarian.HasValue || !oligarchic.HasValue || !egalitarian.HasValue
+			|| float.IsNaN(authoritarian.Value) || float.IsInfinity(authoritarian.Value)
+			|| float.IsNaN(oligarchic.Value) || float.IsInfinity(oligarchic.Value)
+			|| float.IsNaN(egalitarian.Value) || float.IsInfinity(egalitarian.Value))
+		{
+			return false;
+		}
+		authoritarianValue = Math.Max(-1f, Math.Min(1f, authoritarian.Value));
+		oligarchicValue = Math.Max(-1f, Math.Min(1f, oligarchic.Value));
+		egalitarianValue = Math.Max(-1f, Math.Min(1f, egalitarian.Value));
+		return Math.Abs(authoritarianValue) > 0.0001f || Math.Abs(oligarchicValue) > 0.0001f || Math.Abs(egalitarianValue) > 0.0001f;
+	}
+
+	private static bool ShouldKeepDynamicPolicyRegistered(string status)
+	{
+		return string.Equals(status, DynamicPolicyStatusPending, StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(status, DynamicPolicyStatusActive, StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(status, DynamicPolicyStatusExpiryVotePending, StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static Kingdom ResolveKingdomStatic(string kingdomId)
+	{
+		string id = (kingdomId ?? "").Trim();
+		return Kingdom.All?.FirstOrDefault(x => x != null && string.Equals(x.StringId ?? "", id, StringComparison.OrdinalIgnoreCase));
+	}
+
+	private static Clan ResolveClanById(string clanId)
+	{
+		string id = (clanId ?? "").Trim();
+		return Clan.All?.FirstOrDefault(x => x != null && string.Equals(x.StringId ?? "", id, StringComparison.OrdinalIgnoreCase));
+	}
+
+	private static bool TryGetDynamicPolicyDataStatic(string policyObjectId, out DynamicPolicySaveData data)
+	{
+		data = null;
+		CustomPolicyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<CustomPolicyBehavior>();
+		return behavior != null && behavior.TryGetDynamicPolicyData(policyObjectId, out data);
+	}
+
+	private bool TryGetDynamicPolicyData(string policyObjectId, out DynamicPolicySaveData data)
+	{
+		data = null;
+		string id = (policyObjectId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(id) || !_dynamicPolicyRegistry.TryGetValue(id, out string raw))
+		{
+			return false;
+		}
+		try
+		{
+			data = JsonConvert.DeserializeObject<DynamicPolicySaveData>(raw ?? "");
+			return data != null;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private List<DynamicPolicySaveData> LoadDynamicPolicies()
+	{
+		return _dynamicPolicyRegistry.Values.Select(raw =>
+		{
+			try
+			{
+				return JsonConvert.DeserializeObject<DynamicPolicySaveData>(raw ?? "");
+			}
+			catch
+			{
+				return null;
+			}
+		}).Where(x => x != null).ToList();
+	}
+
+	private void StoreDynamicPolicy(DynamicPolicySaveData data)
+	{
+		if (data == null || !IsDynamicPolicyId(data.PolicyObjectId))
+		{
+			return;
+		}
+		_dynamicPolicyRegistry[data.PolicyObjectId] = JsonConvert.SerializeObject(data);
 	}
 
 	public override void SyncData(IDataStore dataStore)
@@ -155,15 +1317,14 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 			TrimActivePolicyEffects();
 			Dictionary<string, string> activeEffectsStore = CampaignSaveChunkHelper.FlattenStringDictionary(_activePolicyEffects, SaveKeyActivePolicyEffects, "CustomPolicyActiveEffects");
 			dataStore.SyncData(SaveKeyActivePolicyEffects, ref activeEffectsStore);
-			PolicyDebugLog("save-write", "policyRecordHistoryCount=" + _policyRecordHistory.Count.ToString(CultureInfo.InvariantCulture)
-				+ " storedEntries=" + historyStore.Count.ToString(CultureInfo.InvariantCulture)
-				+ " activeEffects=" + _activePolicyEffects.Count.ToString(CultureInfo.InvariantCulture)
-				+ " activeStoredEntries=" + activeEffectsStore.Count.ToString(CultureInfo.InvariantCulture));
+			Dictionary<string, string> dynamicPolicyStore = CampaignSaveChunkHelper.FlattenStringDictionary(_dynamicPolicyRegistry, SaveKeyDynamicPolicyRegistry, "DynamicPolicyRegistry");
+			dataStore.SyncData(SaveKeyDynamicPolicyRegistry, ref dynamicPolicyStore);
 			return;
 		}
 		ResetTransientPolicyGenerationStateAfterLoad();
 		_policyRecordHistory.Clear();
 		_activePolicyEffects.Clear();
+		_dynamicPolicyRegistry.Clear();
 		Dictionary<string, string> storedHistory = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		dataStore.SyncData(SaveKeyPolicyRecordHistory, ref storedHistory);
 		foreach (KeyValuePair<string, string> item in CampaignSaveChunkHelper.RestoreStringDictionary(storedHistory, "CustomPolicyHistory"))
@@ -212,8 +1373,29 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 			}
 		}
 		TrimActivePolicyEffects();
-		PolicyDebugLog("save-read", "policyRecordHistoryCount=" + _policyRecordHistory.Count.ToString(CultureInfo.InvariantCulture)
-			+ " activeEffects=" + _activePolicyEffects.Count.ToString(CultureInfo.InvariantCulture));
+		Dictionary<string, string> storedDynamicPolicies = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		dataStore.SyncData(SaveKeyDynamicPolicyRegistry, ref storedDynamicPolicies);
+		foreach (KeyValuePair<string, string> item in CampaignSaveChunkHelper.RestoreStringDictionary(storedDynamicPolicies, "DynamicPolicyRegistry"))
+		{
+			string key = (item.Key ?? "").Trim();
+			string value = (item.Value ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(key) || string.IsNullOrWhiteSpace(value))
+			{
+				continue;
+			}
+			try
+			{
+				DynamicPolicySaveData policy = JsonConvert.DeserializeObject<DynamicPolicySaveData>(value);
+				if (policy != null && IsDynamicPolicyId(policy.PolicyObjectId))
+				{
+					_dynamicPolicyRegistry[policy.PolicyObjectId] = JsonConvert.SerializeObject(policy);
+				}
+			}
+			catch (Exception ex)
+			{
+				PolicyDebugLog("dynamic-policy-load-skip", "key=" + key + " error=" + ex.Message);
+			}
+		}
 	}
 
 	private void ResetTransientPolicyGenerationStateAfterLoad()
@@ -228,9 +1410,16 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 		_waitTimeLocked = false;
 		_previousTimeControlMode = CampaignTimeControlMode.Stop;
 		_previousTimeControlLock = false;
+		_activePolicyRuntimeGeneration++;
+		_pendingActivePolicyEffectWork.Clear();
+		_queuedActivePolicyEffectIds.Clear();
+		_activePolicyEffectModelCache.Clear();
+		_lastActivePolicyScheduledDay = -1;
+		_policySuccessResultVisible = false;
+		_policySuccessResultPolicyObjectId = "";
+		DeferredOriginalPolicyResults.Clear();
 		if (hadTransientState)
 		{
-			PolicyDebugLog("load-transient-reset", "transient generation state reset after load");
 		}
 	}
 
@@ -246,6 +1435,14 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 			catch (Exception ex)
 			{
 				Log("main thread action failed: " + ex);
+			}
+		}
+		EnsureActivePolicyEffectWorkScheduled(GetCurrentCampaignDay());
+		if (_pendingActivePolicyEffectWork.Count > 0)
+		{
+			using (PerfProbe.Scope("CustomPolicy.ProcessActivePolicyEffects"))
+			{
+				ProcessActivePolicyEffects(GetCurrentCampaignDay());
 			}
 		}
 	}
@@ -274,7 +1471,6 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 
 	private void OpenComposePopup()
 	{
-		PolicyDebugLog("open", "open compose popup requested");
 		if (_generationInProgress)
 		{
 			PolicyDebugLog("open-blocked", "generation already in progress");
@@ -285,13 +1481,6 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 		PolicyEligibility eligibility = EvaluateEligibility(options);
 		string dateText = FormatCurrentCampaignDate();
 		string statusText = eligibility.CanPublish ? BuildReadyStatus(options) : eligibility.Reason;
-		PolicyDebugLog("open-eligibility", "canPublish=" + eligibility.CanPublish
-			+ " reason=" + (eligibility.Reason ?? "")
-			+ " date=" + dateText
-			+ " useAiEvaluatedCost=" + options.UseAiEvaluatedCost.ToString(CultureInfo.InvariantCulture)
-			+ " goldCost=" + options.GoldCost.ToString(CultureInfo.InvariantCulture)
-			+ " influenceCost=" + FormatNumber(options.InfluenceCost)
-			+ " evaluatorPromptSource=" + (options.EvaluatorPromptIsDefault ? "default" : "custom"));
 		bool shown = CustomPolicyComposePopup.Show(
 			"撰写政策",
 			"政策名",
@@ -344,6 +1533,7 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 			return;
 		}
 		Kingdom playerKingdom = GetPlayerKingdom();
+		MentionedWorldEntities knowledgeMentionedEntities = BuildPolicyKnowledgeMentionedEntitiesSnapshot(policyName, policyContent, playerKingdom);
 		PolicyDraftRequest request = new PolicyDraftRequest
 		{
 			RequestId = Guid.NewGuid().ToString("N"),
@@ -355,43 +1545,14 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 			PlayerKingdomName = GetKingdomName(playerKingdom),
 			UseAiEvaluatedCost = options.UseAiEvaluatedCost,
 			GoldCost = options.UseAiEvaluatedCost ? 0 : options.GoldCost,
-			InfluenceCost = options.UseAiEvaluatedCost ? 0f : options.InfluenceCost,
+			InfluenceCost = 0f,
 			EvaluatorPrompt = options.EvaluatorPrompt,
 			EvaluatorPromptIsDefault = options.EvaluatorPromptIsDefault,
 			PublicFeedbackTargetChars = NormalizePolicyPublicFeedbackTargetChars(options.PublicFeedbackTargetChars),
-			PromptContext = BuildPolicyPromptContextBundle(playerKingdom, options)
+			PromptContext = BuildPolicyPromptContextBundle(playerKingdom, options),
+			KnowledgeMentionedEntities = knowledgeMentionedEntities
 		};
-		PolicyDebugLog("request-built", BuildPolicyRequestLogPrefix(request)
-			+ " kingdomId=" + request.PlayerKingdomId
-			+ " kingdomName=" + request.PlayerKingdomName
-			+ " submittedDay=" + request.SubmittedDay.ToString(CultureInfo.InvariantCulture)
-			+ " useAiEvaluatedCost=" + request.UseAiEvaluatedCost.ToString(CultureInfo.InvariantCulture)
-			+ " goldCost=" + request.GoldCost.ToString(CultureInfo.InvariantCulture)
-			+ " influenceCost=" + FormatNumber(request.InfluenceCost)
-			+ " publicFeedbackTargetChars=" + request.PublicFeedbackTargetChars.ToString(CultureInfo.InvariantCulture)
-			+ " evaluatorPromptSource=" + (request.EvaluatorPromptIsDefault ? "default" : "custom")
-			+ " ruleSource=custom_policy_only"
-			+ " policyRuleContextLength=" + (request.PromptContext?.PolicyRuleContext ?? "").Length.ToString(CultureInfo.InvariantCulture)
-			+ " worldContextCompactLength=" + (request.PromptContext?.WorldContextCompact ?? "").Length.ToString(CultureInfo.InvariantCulture)
-			+ " worldContextFullLength=" + (request.PromptContext?.WorldContextFull ?? "").Length.ToString(CultureInfo.InvariantCulture)
-			+ " extensionContextLength=" + (request.PromptContext?.ExtensionContext ?? "").Length.ToString(CultureInfo.InvariantCulture),
-			BuildPolicyRequestContextDebugDetail(request));
-		PolicyDetailedLog("request-built", BuildPolicyRequestLogPrefix(request)
-			+ " kingdomId=" + request.PlayerKingdomId
-			+ " kingdomName=" + request.PlayerKingdomName
-			+ " submittedDay=" + request.SubmittedDay.ToString(CultureInfo.InvariantCulture)
-			+ " useAiEvaluatedCost=" + request.UseAiEvaluatedCost.ToString(CultureInfo.InvariantCulture)
-			+ " goldCost=" + request.GoldCost.ToString(CultureInfo.InvariantCulture)
-			+ " influenceCost=" + FormatNumber(request.InfluenceCost)
-			+ " publicFeedbackTargetChars=" + request.PublicFeedbackTargetChars.ToString(CultureInfo.InvariantCulture)
-			+ " evaluatorPromptSource=" + (request.EvaluatorPromptIsDefault ? "default" : "custom"),
-			BuildPolicyRequestDetailedTrace(request));
-		PolicyDebugLog("policy-chain-setup", BuildPolicyRequestLogPrefix(request)
-			+ " targetKingdom=" + request.PlayerKingdomId
-			+ " useAiEvaluatedCost=" + request.UseAiEvaluatedCost.ToString(CultureInfo.InvariantCulture)
-			+ " costSnapshot=" + (request.UseAiEvaluatedCost ? "AI evaluated after main assessment" : FormatCostText(request))
-			+ " evaluatorPromptSource=" + (request.EvaluatorPromptIsDefault ? "default" : "custom")
-			+ " ruleSource=custom_policy_only");
+		request.KnowledgeContext = BuildPolicyKnowledgeContextForMainOnly(request);
 		_generationInProgress = true;
 		ShowPolicyWaitPopupAndPause(request);
 		Task.Run(async delegate
@@ -407,91 +1568,62 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 	private async Task<PolicyGenerationResult> GeneratePolicyResultAsync(PolicyDraftRequest request)
 	{
 		PolicyGenerationResult result = new PolicyGenerationResult();
+		CancellationTokenSource evaluationTimeout = new CancellationTokenSource(PlayerPolicyEvaluationTimeoutMilliseconds);
 		try
 		{
-			PolicyDetailedLog("generate-start", BuildPolicyRequestLogPrefix(request), BuildPolicyRequestDetailedTrace(request));
-			result.KnowledgeContext = BuildPolicyKnowledgeContextForMainOnly(request);
-			PolicyDebugLog("policy-knowledge-context", BuildPolicyRequestLogPrefix(request)
-				+ " source=AIConfigHandler.GetLoreContext/main_only"
-				+ " length=" + (result.KnowledgeContext ?? "").Length.ToString(CultureInfo.InvariantCulture),
-				PreviewForPolicyDebugLog(result.KnowledgeContext));
-			PolicyDetailedLog("policy-knowledge-context", BuildPolicyRequestLogPrefix(request)
-				+ " source=AIConfigHandler.GetLoreContext/main_only"
-				+ " length=" + (result.KnowledgeContext ?? "").Length.ToString(CultureInfo.InvariantCulture),
-				"KnowledgeContext:\n" + (result.KnowledgeContext ?? ""));
+			result.KnowledgeContext = (request?.KnowledgeContext ?? "").Trim();
 			int mainMaxTokens = ResolvePolicyMainMaxTokens(request?.PublicFeedbackTargetChars ?? PolicyPublicFeedbackTargetDefaultChars);
-			PolicyDebugLog("llm-main-start", BuildPolicyRequestLogPrefix(request)
-				+ " calling main stage"
-				+ " publicFeedbackTargetChars=" + NormalizePolicyPublicFeedbackTargetChars(request?.PublicFeedbackTargetChars ?? PolicyPublicFeedbackTargetDefaultChars).ToString(CultureInfo.InvariantCulture)
-				+ " mainMaxTokens=" + mainMaxTokens.ToString(CultureInfo.InvariantCulture));
 			List<object> mainMessages = BuildMainMessages(request, result.KnowledgeContext);
-			string mainPromptDebug = SafeSerializeForDebug(mainMessages);
-			PolicyDebugLog("llm-main-prompt", BuildPolicyRequestLogPrefix(request)
-				+ " messages=" + mainMessages.Count.ToString(CultureInfo.InvariantCulture)
-				+ " serializedLength=" + mainPromptDebug.Length.ToString(CultureInfo.InvariantCulture),
-				PreviewForPolicyDebugLog(mainPromptDebug));
-			PolicyDetailedLog("llm-main-prompt", BuildPolicyRequestLogPrefix(request)
-				+ " messages=" + mainMessages.Count.ToString(CultureInfo.InvariantCulture)
-				+ " serializedLength=" + mainPromptDebug.Length.ToString(CultureInfo.InvariantCulture)
-				+ " publicFeedbackTargetChars=" + NormalizePolicyPublicFeedbackTargetChars(request?.PublicFeedbackTargetChars ?? PolicyPublicFeedbackTargetDefaultChars).ToString(CultureInfo.InvariantCulture)
-				+ " mainMaxTokens=" + mainMaxTokens.ToString(CultureInfo.InvariantCulture),
-				"MainMessagesJson:\n" + mainPromptDebug);
-			DateTime llmStartedUtc = DateTime.UtcNow;
-			PolicyDetailedLog("llm-main-call-start", BuildPolicyRequestLogPrefix(request)
-				+ " mainMaxTokens=" + mainMaxTokens.ToString(CultureInfo.InvariantCulture)
-				+ " startedUtc=" + llmStartedUtc.ToString("O", CultureInfo.InvariantCulture));
-			string mainOutput = await ShoutNetwork.CallApiWithMessages(mainMessages, mainMaxTokens, overrideMaxTokens: mainMaxTokens, forceDisableThinking: true);
-			double llmElapsedMs = Math.Round((DateTime.UtcNow - llmStartedUtc).TotalMilliseconds, 2);
+			string mainOutput = await ShoutNetwork.CallApiWithMessages(mainMessages, mainMaxTokens, overrideMaxTokens: mainMaxTokens, forceDisableThinking: true, cancellationToken: evaluationTimeout.Token);
 			result.MainRaw = CleanLlmText(mainOutput);
-			PolicyDebugLog("llm-main-output", BuildPolicyRequestLogPrefix(request) + " length=" + (result.MainRaw ?? "").Length.ToString(CultureInfo.InvariantCulture), result.MainRaw);
-			PolicyDetailedLog("llm-main-output", BuildPolicyRequestLogPrefix(request)
-				+ " elapsedMs=" + llmElapsedMs.ToString("0.##", CultureInfo.InvariantCulture)
-				+ " rawLength=" + (mainOutput ?? "").Length.ToString(CultureInfo.InvariantCulture)
-				+ " cleanedLength=" + (result.MainRaw ?? "").Length.ToString(CultureInfo.InvariantCulture),
-				"RawOutput:\n" + (mainOutput ?? "") + "\n\nCleanedOutput:\n" + (result.MainRaw ?? ""));
 			result.MainAssessment = ParseMainAssessmentResult(result.MainRaw);
 			if (result.MainAssessment == null)
 			{
-				PolicyDebugLog("llm-main-parse-failed", BuildPolicyRequestLogPrefix(request) + " main assessment JSON parse failed; no fallback numeric effects will be guessed", result.MainRaw);
-				PolicyDetailedLog("llm-main-parse-failed", BuildPolicyRequestLogPrefix(request)
-					+ " main assessment JSON parse failed; no fallback numeric effects will be guessed",
-					"CleanedMainRaw:\n" + (result.MainRaw ?? ""));
-				result.Error = "政策主评判未返回可解析的结构化数值结果。";
-				return result;
+				List<object> retryMessages = BuildMainJsonRetryMessages(mainMessages, result.MainRaw);
+				string retryOutput = await ShoutNetwork.CallApiWithMessages(retryMessages, mainMaxTokens, overrideMaxTokens: mainMaxTokens, forceDisableThinking: true, cancellationToken: evaluationTimeout.Token);
+				string cleanedRetryOutput = CleanLlmText(retryOutput);
+				result.MainRaw = cleanedRetryOutput;
+				result.MainAssessment = ParseMainAssessmentResult(result.MainRaw);
+				if (result.MainAssessment == null)
+				{
+					PolicyDebugLog("llm-main-parse-failed", BuildPolicyRequestLogPrefix(request) + " main assessment JSON parse failed after one compact retry; no fallback numeric effects will be guessed", result.MainRaw);
+					result.Error = "政策主评判未返回可解析的结构化数值结果。";
+					return result;
+				}
 			}
 			result.MainAssessment = NormalizeMainAssessmentResult(request, result.MainAssessment, result.MainRaw);
-			PolicyDebugLog("llm-main-parsed", BuildPolicyRequestLogPrefix(request)
-				+ " mainEffects=" + ((result.MainAssessment?.Effects?.Count) ?? 0).ToString(CultureInfo.InvariantCulture)
-				+ " publicFeedbackLength=" + (result.MainAssessment?.PublicFeedback?.Length ?? 0).ToString(CultureInfo.InvariantCulture),
-				BuildMainAssessmentDebugSummary(result.MainAssessment));
-			PolicyDetailedLog("llm-main-parsed", BuildPolicyRequestLogPrefix(request)
-				+ " mainEffects=" + ((result.MainAssessment?.Effects?.Count) ?? 0).ToString(CultureInfo.InvariantCulture)
-				+ " publicFeedbackLength=" + (result.MainAssessment?.PublicFeedback?.Length ?? 0).ToString(CultureInfo.InvariantCulture),
-				SafeSerializeForDebug(result.MainAssessment));
+			if (!TryReadPoliticalWeights(result.MainAssessment.AuthoritarianWeight, result.MainAssessment.OligarchicWeight, result.MainAssessment.EgalitarianWeight,
+				out float normalizedAuthoritarian, out float normalizedOligarchic, out float normalizedEgalitarian))
+			{
+				result.Error = "政策主评判必须返回有效的 authoritarianWeight、oligarchicWeight 和 egalitarianWeight，范围为 -1 到 1，且不能全部为 0。";
+				return result;
+			}
+			result.MainAssessment.AuthoritarianWeight = normalizedAuthoritarian;
+			result.MainAssessment.OligarchicWeight = normalizedOligarchic;
+			result.MainAssessment.EgalitarianWeight = normalizedEgalitarian;
 			if (!HasMainAssessmentEffects(result.MainAssessment))
 			{
-				PolicyDebugLog("llm-main-effects-missing", BuildPolicyRequestLogPrefix(request) + " main assessment did not include any numeric daily effect", SafeSerializeForDebug(result.MainAssessment));
-				PolicyDetailedLog("llm-main-effects-missing", BuildPolicyRequestLogPrefix(request)
-					+ " main assessment did not include any numeric daily effect",
-					SafeSerializeForDebug(result.MainAssessment));
-				result.Error = "政策主评判未返回每日数值影响。";
+				PolicyDebugLog("llm-main-effects-missing", BuildPolicyRequestLogPrefix(request) + " main assessment did not include any valid-duration effect entry", SafeSerializeForDebug(result.MainAssessment));
+				result.Error = "政策主评判未返回有效期限的政策效果条目。";
 				return result;
 			}
 			result.Postprocess = BuildPostprocessResultFromMainAssessment(request, result.MainAssessment);
 			result.PostprocessRaw = SafeSerializeForDebug(result.Postprocess);
-			PolicyDebugLog("local-postprocess-built", BuildPolicyRequestLogPrefix(request)
-				+ " effects=" + ((result.Postprocess?.Effects?.Count) ?? 0).ToString(CultureInfo.InvariantCulture),
-				BuildPostprocessDebugSummary(result.Postprocess));
-			PolicyDetailedLog("local-postprocess-built", BuildPolicyRequestLogPrefix(request)
-				+ " effects=" + ((result.Postprocess?.Effects?.Count) ?? 0).ToString(CultureInfo.InvariantCulture),
-				result.PostprocessRaw);
+		}
+		catch (OperationCanceledException) when (evaluationTimeout.IsCancellationRequested)
+		{
+			result.Error = "政策评议超过 3 分钟，网络请求已取消。请检查网络或 API 状态后重试。";
+			PolicySystemLog.Failure("Player", "evaluation-timeout", BuildPolicyRequestLogPrefix(request), result.Error);
 		}
 		catch (Exception ex)
 		{
 			result.Error = ex.Message;
 			PolicyDebugLog("llm-exception", BuildPolicyRequestLogPrefix(request), ex.ToString());
-			PolicyDetailedLog("llm-exception", BuildPolicyRequestLogPrefix(request), ex.ToString());
 			Log("generate policy failed " + BuildPolicyRequestLogPrefix(request) + " error=" + ex);
+		}
+		finally
+		{
+			evaluationTimeout.Dispose();
 		}
 		return result;
 	}
@@ -510,20 +1642,11 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			PolicyDebugLog("complete-start", BuildPolicyRequestLogPrefix(request)
-				+ " resultNull=" + (result == null).ToString(CultureInfo.InvariantCulture)
-				+ " error=" + (result?.Error ?? "")
-				+ " name=\"" + (request?.PolicyName ?? "") + "\"");
-			PolicyDetailedLog("complete-start", BuildPolicyRequestLogPrefix(request)
-				+ " resultNull=" + (result == null).ToString(CultureInfo.InvariantCulture)
-				+ " error=" + (result?.Error ?? ""),
-				BuildPolicyGenerationDetailedTrace(result));
 			EndPolicyWaitPause("completed", request);
 			_generationInProgress = false;
 			if (result == null)
 			{
 				PolicyDebugLog("policy-complete", BuildPolicyRequestLogPrefix(request) + " parsedEffects=0 appliedEffects=0 costDeducted=false status=null_result");
-				PolicyDetailedLog("policy-complete", BuildPolicyRequestLogPrefix(request) + " parsedEffects=0 appliedEffects=0 costDeducted=false status=null_result");
 				InformationManager.ShowInquiry(new InquiryData("政策评议失败", "政策评议没有返回结果，未扣除费用。", true, false, "知道了", "", null, null), pauseGameActiveState: true);
 				return;
 			}
@@ -531,12 +1654,7 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 			{
 				PolicyDebugLog("complete-failed", BuildPolicyRequestLogPrefix(request) + " generation error: " + result.Error,
 					"MainRaw:\n" + result.MainRaw + "\n\nPostprocessRaw:\n" + result.PostprocessRaw);
-				PolicyDetailedLog("complete-failed", BuildPolicyRequestLogPrefix(request) + " generation error: " + result.Error,
-					BuildPolicyGenerationDetailedTrace(result));
 				PolicyDebugLog("policy-complete", BuildPolicyRequestLogPrefix(request)
-					+ " parsedEffects=" + CountParsedPolicyEffects(result).ToString(CultureInfo.InvariantCulture)
-					+ " appliedEffects=0 costDeducted=false status=generation_failed");
-				PolicyDetailedLog("policy-complete", BuildPolicyRequestLogPrefix(request)
 					+ " parsedEffects=" + CountParsedPolicyEffects(result).ToString(CultureInfo.InvariantCulture)
 					+ " appliedEffects=0 costDeducted=false status=generation_failed");
 				InformationManager.ShowInquiry(new InquiryData("政策评议失败", BuildPolicyFailurePopupText(result.Error, result) + "\n\n未扣除费用。", true, false, "知道了", "", null, null), pauseGameActiveState: true);
@@ -548,93 +1666,70 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 					+ " useAiEvaluatedCost=" + request.UseAiEvaluatedCost.ToString(CultureInfo.InvariantCulture)
 					+ " error=" + (costError ?? ""),
 					SafeSerializeForDebug(result.MainAssessment));
-				PolicyDetailedLog("policy-cost-invalid", BuildPolicyRequestLogPrefix(request)
-					+ " useAiEvaluatedCost=" + request.UseAiEvaluatedCost.ToString(CultureInfo.InvariantCulture)
-					+ " error=" + (costError ?? ""),
-					BuildPolicyGenerationDetailedTrace(result));
 				InformationManager.ShowInquiry(new InquiryData("政策评议失败", BuildPolicyFailurePopupText(costError ?? "政策消耗评估无效。", result) + "\n\n未扣除费用，也未应用效果。", true, false, "知道了", "", null, null), pauseGameActiveState: true);
 				return;
 			}
 			result.Postprocess = BuildPostprocessResultFromMainAssessment(request, result.MainAssessment);
 			result.PostprocessRaw = SafeSerializeForDebug(result.Postprocess);
-			PolicyDebugLog("policy-cost-resolved", BuildPolicyRequestLogPrefix(request)
-				+ " useAiEvaluatedCost=" + request.UseAiEvaluatedCost.ToString(CultureInfo.InvariantCulture)
-				+ " requiredGold=" + request.RequiredGoldCost.ToString(CultureInfo.InvariantCulture)
-				+ " requiredInfluence=" + FormatNumber(request.RequiredInfluenceCost)
-				+ " actualGold=" + request.GoldCost.ToString(CultureInfo.InvariantCulture)
-				+ " actualInfluence=" + FormatNumber(request.InfluenceCost)
-				+ " goldScale=" + FormatPercent(request.GoldEffectScale)
-				+ " influenceScale=" + FormatPercent(request.InfluenceEffectScale),
-				BuildPostprocessDebugSummary(result.Postprocess));
 			PolicyEligibility eligibility = EvaluateEligibility(request);
 			if (!eligibility.CanPublish)
 			{
 				PolicyDebugLog("policy-complete", BuildPolicyRequestLogPrefix(request)
 					+ " parsedEffects=" + CountParsedPolicyEffects(result).ToString(CultureInfo.InvariantCulture)
 					+ " appliedEffects=0 costDeducted=false status=eligibility_changed reason=" + (eligibility.Reason ?? ""));
-				PolicyDetailedLog("policy-complete", BuildPolicyRequestLogPrefix(request)
-					+ " parsedEffects=" + CountParsedPolicyEffects(result).ToString(CultureInfo.InvariantCulture)
-					+ " appliedEffects=0 costDeducted=false status=eligibility_changed reason=" + (eligibility.Reason ?? ""),
-					BuildPolicyGenerationDetailedTrace(result));
 				InformationManager.ShowInquiry(new InquiryData("政策无法发布", BuildPolicyFailurePopupText(eligibility.Reason, result) + "\n\n政策评议已经完成，但发布条件已变化，因此未扣除费用，也未应用效果。", true, false, "知道了", "", null, null), pauseGameActiveState: true);
 				return;
 			}
 			PolicyApplicationResult application = ApplyPolicyEffects(request, result.Postprocess);
-			PolicyDebugLog("apply-result", BuildPolicyRequestLogPrefix(request) + " appliedEffectCount=" + application.AppliedEffectCount.ToString(CultureInfo.InvariantCulture), BuildPolicyApplicationDebugSummary(application));
-			PolicyDetailedLog("apply-result", BuildPolicyRequestLogPrefix(request)
-				+ " appliedEffectCount=" + application.AppliedEffectCount.ToString(CultureInfo.InvariantCulture),
-				BuildPolicyApplicationDetailedTrace(application));
 			if (!HasAnyActualAppliedEffect(application))
 			{
 				string noEffectFeedback = ResolveFeedbackText(result, request);
 				string noEffectText = BuildImpactPopupText(request, noEffectFeedback, application, costDeducted: false);
-				PolicyDebugLog("complete-no-actual-effect", BuildPolicyRequestLogPrefix(request) + " parsed but no valid daily delta/duration; no cost; no cooldown", noEffectText);
-				PolicyDetailedLog("complete-no-actual-effect", BuildPolicyRequestLogPrefix(request)
-					+ " parsed but no valid daily delta/duration; no cost; no cooldown",
-					"Feedback:\n" + noEffectFeedback + "\n\nImpactText:\n" + noEffectText);
-				PolicyDebugLog("policy-complete", BuildPolicyRequestLogPrefix(request)
-					+ " parsedEffects=" + CountParsedPolicyEffects(result).ToString(CultureInfo.InvariantCulture)
-					+ " appliedEffects=" + application.AppliedEffectCount.ToString(CultureInfo.InvariantCulture)
-					+ " costDeducted=false status=no_actual_effect");
-				PolicyDetailedLog("policy-complete", BuildPolicyRequestLogPrefix(request)
-					+ " parsedEffects=" + CountParsedPolicyEffects(result).ToString(CultureInfo.InvariantCulture)
-					+ " appliedEffects=" + application.AppliedEffectCount.ToString(CultureInfo.InvariantCulture)
-					+ " costDeducted=false status=no_actual_effect");
-				InformationManager.ShowInquiry(new InquiryData("政策未能落地", BuildPolicyFailurePopupText(noEffectText, result), true, false, "知道了", "", null, null), pauseGameActiveState: true);
-				return;
 			}
-			DeductPublishCost(request);
 			string feedback = ResolveFeedbackText(result, request);
 			string recordId = Guid.NewGuid().ToString("N");
-			bool policyRecordWritten = RecordSuccessfulPolicy(request, result, feedback, application, recordId);
-			ActivatePolicyEffects(request, application, recordId);
-			if (policyRecordWritten)
+			if (!TryReadPoliticalWeights(result.MainAssessment?.AuthoritarianWeight, result.MainAssessment?.OligarchicWeight, result.MainAssessment?.EgalitarianWeight,
+				out float authoritarianWeight, out float oligarchicWeight, out float egalitarianWeight))
 			{
-				RecordPolicyPublishAsPlayerAction(request, result, application, recordId);
-				RecordPolicyPublishAsWeeklyMaterial(request, result, feedback, application, recordId);
+				throw new InvalidOperationException("政策政治权重缺失或无效");
 			}
-			string impactText = BuildImpactPopupText(request, feedback, application, costDeducted: true);
-			PolicyDebugLog("complete-success", BuildPolicyRecordLogPrefix(request, recordId)
-				+ " cost deducted gold=" + request.GoldCost.ToString(CultureInfo.InvariantCulture)
-				+ " influence=" + FormatNumber(request.InfluenceCost)
-				+ " noCooldown=true", impactText);
-			PolicyDetailedLog("complete-success", BuildPolicyRecordLogPrefix(request, recordId)
-				+ " cost deducted gold=" + request.GoldCost.ToString(CultureInfo.InvariantCulture)
-				+ " influence=" + FormatNumber(request.InfluenceCost)
-				+ " noCooldown=true"
-				+ " feedbackLength=" + (feedback ?? "").Length.ToString(CultureInfo.InvariantCulture)
-				+ " impactTextLength=" + (impactText ?? "").Length.ToString(CultureInfo.InvariantCulture),
-				"Feedback:\n" + feedback + "\n\nImpactText:\n" + impactText + "\n\nApplication:\n" + BuildPolicyApplicationDetailedTrace(application));
+			PendingPlayerPolicyAgendaSaveData pending = new PendingPlayerPolicyAgendaSaveData
+			{
+				Request = request,
+				Assessment = result.MainAssessment,
+				Feedback = feedback
+			};
+			DynamicPolicySaveData dynamicPolicy = new DynamicPolicySaveData
+			{
+				PolicyObjectId = DynamicPolicyIdPrefix + recordId,
+				RecordId = recordId,
+				Source = "player",
+				OwnerKingdomId = request.PlayerKingdomId ?? "",
+				ProposerClanId = Clan.PlayerClan?.StringId ?? "",
+				PolicyName = request.PolicyName ?? "",
+				PolicyContent = request.PolicyContent ?? "",
+				LogEntryDescription = FirstNonEmpty(result.MainAssessment?.PolicyContentDigest, request.PolicyContent),
+				SecondaryEffects = BuildPolicyEffectSummary(application),
+				AuthoritarianWeight = authoritarianWeight,
+				OligarchicWeight = oligarchicWeight,
+				EgalitarianWeight = egalitarianWeight,
+				Status = DynamicPolicyStatusPending,
+				CreatedUtcTicks = DateTime.UtcNow.Ticks,
+				PlayerPayloadJson = JsonConvert.SerializeObject(pending)
+			};
+			if (!TrySubmitDynamicPolicyAgenda(dynamicPolicy, out string agendaError))
+			{
+				throw new InvalidOperationException("政策提交 AF 议程失败：" + agendaError);
+			}
+			string impactText = "政策《" + (request.PolicyName ?? "") + "》已提交 AF 王国议程。议程通过前不会扣除政策成本，也不会产生数值效果。";
+			PolicyDebugLog("complete-agenda-submitted", BuildPolicyRecordLogPrefix(request, recordId)
+				+ " costDeducted=false status=pending", impactText);
 			PolicyDebugLog("policy-complete", BuildPolicyRecordLogPrefix(request, recordId)
 				+ " parsedEffects=" + CountParsedPolicyEffects(result).ToString(CultureInfo.InvariantCulture)
 				+ " appliedEffects=" + application.AppliedEffectCount.ToString(CultureInfo.InvariantCulture)
-				+ " costDeducted=true status=success");
-			PolicyDetailedLog("policy-complete", BuildPolicyRecordLogPrefix(request, recordId)
-				+ " parsedEffects=" + CountParsedPolicyEffects(result).ToString(CultureInfo.InvariantCulture)
-				+ " appliedEffects=" + application.AppliedEffectCount.ToString(CultureInfo.InvariantCulture)
-				+ " costDeducted=true status=success");
-			ShowPolicySuccessResultPopup(impactText);
-			Log("policy queued " + BuildPolicyRecordLogPrefix(request, recordId) + " effects=" + application.AppliedEffectCount.ToString(CultureInfo.InvariantCulture));
+				+ " costDeducted=false status=agenda_pending");
+			InformationManager.ShowInquiry(new InquiryData("政策已提交议程", impactText, true, false, "知道了", "", null, null), pauseGameActiveState: true);
+			Log("policy agenda submitted " + BuildPolicyRecordLogPrefix(request, recordId) + " effects=" + application.AppliedEffectCount.ToString(CultureInfo.InvariantCulture));
 		}
 		catch (Exception ex)
 		{
@@ -642,8 +1737,6 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 			EndPolicyWaitPause("exception", request);
 			PolicyDebugLog("complete-exception", BuildPolicyRequestLogPrefix(request), ex.ToString());
 			PolicyDebugLog("policy-complete", BuildPolicyRequestLogPrefix(request) + " parsedEffects=0 appliedEffects=0 costDeducted=false status=exception");
-			PolicyDetailedLog("complete-exception", BuildPolicyRequestLogPrefix(request), ex.ToString());
-			PolicyDetailedLog("policy-complete", BuildPolicyRequestLogPrefix(request) + " parsedEffects=0 appliedEffects=0 costDeducted=false status=exception");
 			Log("complete policy failed: " + ex);
 			InformationManager.ShowInquiry(new InquiryData("政策发布失败", BuildPolicyFailurePopupText("政策评议完成后的落地处理失败：\n" + ex.Message, result) + "\n\n未确认成功时不应重复点击；请查看日志。", true, false, "知道了", "", null, null), pauseGameActiveState: true);
 		}
@@ -653,11 +1746,9 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			PolicyDebugLog("wait-start", BuildPolicyRequestLogPrefix(request) + " show wait popup and pause");
 			BeginPolicyWaitPause();
 			if (_policyWaitPopupShown)
 			{
-				PolicyDebugLog("wait-skip-duplicate", BuildPolicyRequestLogPrefix(request) + " wait popup already shown");
 				return;
 			}
 			InformationManager.ShowInquiry(new InquiryData(
@@ -754,7 +1845,6 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 		return new PolicyRuntimeOptions
 		{
 			GoldCost = Math.Max(0, DuelSettings.GetCustomPolicyGoldCostForExternal()),
-			InfluenceCost = Math.Max(0f, DuelSettings.GetCustomPolicyInfluenceCostForExternal()),
 			UseAiEvaluatedCost = DuelSettings.IsAiEvaluatedCustomPolicyCostEnabledForExternal(),
 			EvaluatorPrompt = string.IsNullOrWhiteSpace(evaluatorPrompt) ? "" : evaluatorPrompt.Trim(),
 			EvaluatorPromptIsDefault = isDefault,
@@ -771,7 +1861,6 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 		return new PolicyRuntimeOptions
 		{
 			GoldCost = Math.Max(0, request.GoldCost),
-			InfluenceCost = Math.Max(0f, request.InfluenceCost),
 			UseAiEvaluatedCost = request.UseAiEvaluatedCost,
 			EvaluatorPrompt = request.EvaluatorPrompt ?? "",
 			EvaluatorPromptIsDefault = request.EvaluatorPromptIsDefault,
@@ -783,7 +1872,7 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 	{
 		if (options?.UseAiEvaluatedCost == true)
 		{
-			return "填写政策名和政策内容后即可发布。AI 会评估完整执行所需第纳尔和影响力；若资源不足，将为你保留 " + AiPolicyGoldReserve.ToString(CultureInfo.InvariantCulture) + " 第纳尔和 " + FormatNumber(AiPolicyInfluenceReserve) + " 影响力，并按实际投入比例折算效果。";
+			return "填写政策名和政策内容后即可发布。AI 会评估完整执行所需第纳尔；若第纳尔不足，将为你保留 " + AiPolicyGoldReserve.ToString(CultureInfo.InvariantCulture) + " 第纳尔，并按实际投入比例折算全部效果。";
 		}
 		return "填写政策名和政策内容后即可发布。LLM 完成评议且成功落地时扣除：" + FormatCostText(options) + "。无冷却限制，可连续发布。";
 	}
@@ -794,7 +1883,7 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 		{
 			options = BuildPolicyRuntimeOptions();
 		}
-		return FormatCostText(options.GoldCost, options.InfluenceCost);
+		return FormatGoldCostText(options.GoldCost);
 	}
 
 	private static string FormatCostText(PolicyDraftRequest request)
@@ -803,7 +1892,14 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 		{
 			return FormatCostText(BuildPolicyRuntimeOptions());
 		}
-		return FormatCostText(request.GoldCost, request.InfluenceCost);
+		return FormatGoldCostText(request.GoldCost);
+	}
+
+	private static string FormatGoldCostText(int goldCost)
+	{
+		return goldCost > 0
+			? goldCost.ToString(CultureInfo.InvariantCulture) + " 第纳尔"
+			: "不消耗第纳尔";
 	}
 
 	private static string FormatCostText(int goldCost, float influenceCost)
@@ -849,10 +1945,9 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 		if (options.UseAiEvaluatedCost)
 		{
 			int currentGold = Math.Max(0, Hero.MainHero?.Gold ?? 0);
-			float currentInfluence = Math.Max(0f, Clan.PlayerClan?.Influence ?? 0f);
-			if (currentGold <= AiPolicyGoldReserve && currentInfluence <= AiPolicyInfluenceReserve)
+			if (currentGold <= AiPolicyGoldReserve)
 			{
-				return PolicyEligibility.Blocked("资源不足：AI 消耗模式会至少为你保留 " + AiPolicyGoldReserve.ToString(CultureInfo.InvariantCulture) + " 第纳尔和 " + FormatNumber(AiPolicyInfluenceReserve) + " 影响力。当前没有可投入的第纳尔或影响力，无法发布政策。");
+				return PolicyEligibility.Blocked("第纳尔不足：AI 消耗模式会至少为你保留 " + AiPolicyGoldReserve.ToString(CultureInfo.InvariantCulture) + " 第纳尔。当前没有可投入的第纳尔，无法发布政策。");
 			}
 			return PolicyEligibility.Allowed();
 		}
@@ -860,20 +1955,14 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 		{
 			return PolicyEligibility.Blocked("发布政策需要 " + options.GoldCost.ToString(CultureInfo.InvariantCulture) + " 第纳尔。");
 		}
-		if ((Clan.PlayerClan?.Influence ?? 0f) < options.InfluenceCost)
-		{
-			return PolicyEligibility.Blocked("发布政策需要 " + FormatNumber(options.InfluenceCost) + " 影响力。");
-		}
 		return PolicyEligibility.Allowed();
 	}
 
 	private void DeductPublishCost(PolicyDraftRequest request)
 	{
 		int goldCost = Math.Max(0, request?.GoldCost ?? 0);
-		float influenceCost = Math.Max(0f, request?.InfluenceCost ?? 0f);
 		PolicyDebugLog("deduct-cost", BuildPolicyRequestLogPrefix(request)
-			+ " goldCost=" + goldCost.ToString(CultureInfo.InvariantCulture)
-			+ " influenceCost=" + FormatNumber(influenceCost));
+			+ " goldCost=" + goldCost.ToString(CultureInfo.InvariantCulture));
 		try
 		{
 			if (goldCost > 0)
@@ -884,18 +1973,6 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Log("deduct gold failed " + BuildPolicyRequestLogPrefix(request) + " error=" + ex.Message);
-			throw;
-		}
-		try
-		{
-			if (influenceCost > 0.0001f)
-			{
-				ChangeClanInfluenceAction.Apply(Clan.PlayerClan, -influenceCost);
-			}
-		}
-		catch (Exception ex)
-		{
-			Log("deduct influence failed " + BuildPolicyRequestLogPrefix(request) + " error=" + ex.Message);
 			throw;
 		}
 	}
@@ -911,49 +1988,44 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 		if (!request.UseAiEvaluatedCost)
 		{
 			request.RequiredGoldCost = Math.Max(0, request.GoldCost);
-			request.RequiredInfluenceCost = Math.Max(0f, request.InfluenceCost);
+			request.RequiredInfluenceCost = 0f;
+			request.InfluenceCost = 0f;
 			request.GoldEffectScale = 1f;
-			request.InfluenceEffectScale = 1f;
+			request.InfluenceEffectScale = request.GoldEffectScale;
 			return true;
 		}
-		if (!TryReadAiPolicyRequiredCosts(assessment, out int requiredGoldCost, out float requiredInfluenceCost, out error))
+		if (!TryReadAiPolicyRequiredGoldCost(assessment, out int requiredGoldCost, out error))
 		{
 			return false;
 		}
 		int currentGold = Math.Max(0, Hero.MainHero?.Gold ?? 0);
-		float currentInfluence = Math.Max(0f, Clan.PlayerClan?.Influence ?? 0f);
 		int availableGold = Math.Max(0, currentGold - AiPolicyGoldReserve);
-		float availableInfluence = Math.Max(0f, currentInfluence - AiPolicyInfluenceReserve);
 		int actualGoldCost = Math.Min(requiredGoldCost, availableGold);
-		float actualInfluenceCost = Math.Min(requiredInfluenceCost, availableInfluence);
 		request.RequiredGoldCost = requiredGoldCost;
-		request.RequiredInfluenceCost = requiredInfluenceCost;
+		request.RequiredInfluenceCost = 0f;
 		request.GoldCost = actualGoldCost;
-		request.InfluenceCost = actualInfluenceCost;
+		request.InfluenceCost = 0f;
 		request.GoldEffectScale = CalculatePolicyCostScale(requiredGoldCost, actualGoldCost);
-		request.InfluenceEffectScale = CalculatePolicyCostScale(requiredInfluenceCost, actualInfluenceCost);
+		request.InfluenceEffectScale = request.GoldEffectScale;
 		return true;
 	}
 
-	private static bool TryReadAiPolicyRequiredCosts(PolicyMainAssessmentResult assessment, out int requiredGoldCost, out float requiredInfluenceCost, out string error)
+	private static bool TryReadAiPolicyRequiredGoldCost(PolicyMainAssessmentResult assessment, out int requiredGoldCost, out string error)
 	{
 		requiredGoldCost = 0;
-		requiredInfluenceCost = 0f;
 		error = "";
-		if (assessment?.RequiredGoldCost == null || assessment.RequiredInfluenceCost == null)
+		if (assessment?.RequiredGoldCost == null)
 		{
-			error = "AI 消耗模式要求主评判同时返回 requiredGoldCost 和 requiredInfluenceCost。";
+			error = "AI 消耗模式要求主评判返回 requiredGoldCost。";
 			return false;
 		}
 		float rawGold = assessment.RequiredGoldCost.Value;
-		float rawInfluence = assessment.RequiredInfluenceCost.Value;
-		if (float.IsNaN(rawGold) || float.IsInfinity(rawGold) || rawGold < 0f || float.IsNaN(rawInfluence) || float.IsInfinity(rawInfluence) || rawInfluence < 0f)
+		if (float.IsNaN(rawGold) || float.IsInfinity(rawGold) || rawGold < 0f)
 		{
-			error = "AI 返回的政策消耗不合法：requiredGoldCost 和 requiredInfluenceCost 必须是非负数字。";
+			error = "AI 返回的政策消耗不合法：requiredGoldCost 必须是非负数字。";
 			return false;
 		}
 		requiredGoldCost = rawGold <= 0f ? 0 : (int)Math.Min(int.MaxValue, Math.Ceiling(rawGold));
-		requiredInfluenceCost = rawInfluence <= 0f ? 0f : rawInfluence;
 		return true;
 	}
 
@@ -1003,8 +2075,7 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 			}
 			if (!HasAnyDailyDelta(applied))
 			{
-				result.NoticeLines.Add("跳过没有每日数值变化的效果：" + GetKingdomName(targetKingdom));
-				continue;
+				result.NoticeLines.Add(GetKingdomName(targetKingdom) + "没有每日数值变化，但政策有效期仍保留 " + applied.DurationDays.ToString(CultureInfo.InvariantCulture) + " 天。");
 			}
 			result.AppliedEffectCount++;
 			result.KingdomEffects.Add(applied);
@@ -1042,19 +2113,29 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 
 	private void OnDailyTick()
 	{
-		ProcessActivePolicyEffects(GetCurrentCampaignDay());
+		EnsureActivePolicyEffectWorkScheduled(GetCurrentCampaignDay());
 	}
 
 	private void ProcessActivePolicyEffects(int currentDay)
 	{
-		if (_activePolicyEffects.Count <= 0)
+		if (_pendingActivePolicyEffectWork.Count <= 0)
 		{
 			return;
 		}
-		foreach (string key in _activePolicyEffects.Keys.ToList())
+		long startTimestamp = Stopwatch.GetTimestamp();
+		double budgetMs = GetActivePolicyMaintenanceFrameBudgetMs();
+		while (_pendingActivePolicyEffectWork.Count > 0 && !IsActivePolicyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
 		{
+			PendingActivePolicyEffectWork work = _pendingActivePolicyEffectWork.Peek();
+			if (work == null || work.RuntimeGeneration != _activePolicyRuntimeGeneration)
+			{
+				CompleteActivePolicyEffectWork(work, currentDay, requeueIfStillDue: false);
+				continue;
+			}
+			string key = (work.EffectId ?? "").Trim();
 			if (!_activePolicyEffects.TryGetValue(key, out string raw) || string.IsNullOrWhiteSpace(raw))
 			{
+				CompleteActivePolicyEffectWork(work, currentDay, requeueIfStillDue: false);
 				continue;
 			}
 			ActivePolicyEffectSaveData activeEffect = null;
@@ -1066,25 +2147,30 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 			{
 				PolicyDebugLog("daily-load-skip", "active effect parse failed key=" + key + " error=" + ex.Message);
 				_activePolicyEffects.Remove(key);
+				CompleteActivePolicyEffectWork(work, currentDay, requeueIfStillDue: false);
 				continue;
 			}
 			if (activeEffect == null || string.IsNullOrWhiteSpace(activeEffect.EffectId))
 			{
 				_activePolicyEffects.Remove(key);
+				CompleteActivePolicyEffectWork(work, currentDay, requeueIfStillDue: false);
 				continue;
 			}
 			if (activeEffect.RemainingDays <= 0)
 			{
 				MarkPolicyRecordEffectEnded(activeEffect, "持续时间已结束");
 				_activePolicyEffects.Remove(key);
+				CompleteActivePolicyEffectWork(work, currentDay, requeueIfStillDue: false);
 				continue;
 			}
-			if (currentDay <= activeEffect.SubmittedDay || activeEffect.LastAppliedDay >= currentDay)
+			PendingActivePolicyApplicationSaveData pending = activeEffect.PendingApplication;
+			if (pending == null && (currentDay <= activeEffect.SubmittedDay || activeEffect.LastAppliedDay >= currentDay))
 			{
+				CompleteActivePolicyEffectWork(work, currentDay, requeueIfStillDue: false);
 				continue;
 			}
 			Kingdom targetKingdom = ResolveKingdomByIdOrName(activeEffect.TargetKingdomId, activeEffect.TargetKingdomName);
-			if (targetKingdom == null)
+			if (targetKingdom == null || targetKingdom.IsEliminated)
 			{
 				activeEffect.RemainingDays = 0;
 				activeEffect.Ended = true;
@@ -1094,47 +2180,181 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 				PolicyDebugLog("daily-ended-missing-target", "effectId=" + activeEffect.EffectId
 					+ " recordId=" + (activeEffect.RecordId ?? "")
 					+ " target=" + (activeEffect.TargetKingdomName ?? activeEffect.TargetKingdomId ?? ""));
+				CompleteActivePolicyEffectWork(work, currentDay, requeueIfStillDue: false);
 				continue;
 			}
-			AppliedKingdomEffect actual = ApplyActiveEffectToKingdom(targetKingdom, activeEffect, currentDay);
-			activeEffect.LastAppliedDay = currentDay;
+			if (pending == null)
+			{
+				activeEffect.PendingApplication = CreatePendingActivePolicyApplication(targetKingdom, activeEffect, currentDay);
+				_activePolicyEffects[key] = JsonConvert.SerializeObject(activeEffect);
+				return;
+			}
+			if (pending.Day <= activeEffect.LastAppliedDay)
+			{
+				activeEffect.PendingApplication = null;
+				_activePolicyEffects[key] = JsonConvert.SerializeObject(activeEffect);
+				CompleteActivePolicyEffectWork(work, currentDay, requeueIfStillDue: true, activeEffect: activeEffect);
+				continue;
+			}
+			pending.SettlementIds = pending.SettlementIds ?? new List<string>();
+			pending.AppliedEffect = pending.AppliedEffect ?? CreateAppliedKingdomEffect(targetKingdom, activeEffect);
+			pending.AppliedEffect.DetailLines = pending.AppliedEffect.DetailLines ?? new List<string>();
+			if (pending.NextSettlementIndex < pending.SettlementIds.Count)
+			{
+				string settlementId = pending.SettlementIds[pending.NextSettlementIndex];
+				Settlement settlement = ResolveSettlementById(settlementId);
+				long applyTimestamp = Stopwatch.GetTimestamp();
+				using (PerfProbe.Scope("CustomPolicy.ApplyActiveEffectToKingdom"))
+				{
+					ApplyActiveEffectToSettlement(settlement, activeEffect, pending.AppliedEffect, pending.Day);
+				}
+				LogActivePolicyStageIfOverBudget("CustomPolicy.ApplyActiveEffectToKingdom", applyTimestamp, budgetMs, activeEffect.EffectId, settlementId);
+				pending.NextSettlementIndex++;
+				activeEffect.PendingApplication = pending;
+				_activePolicyEffects[key] = JsonConvert.SerializeObject(activeEffect);
+				return;
+			}
+			AppliedKingdomEffect actual = pending.AppliedEffect;
+			long finalizeApplyTimestamp = Stopwatch.GetTimestamp();
+			using (PerfProbe.Scope("CustomPolicy.ApplyActiveEffectToKingdom"))
+			{
+				ApplyKingdomStabilityDailyDelta(targetKingdom, activeEffect, actual);
+			}
+			LogActivePolicyStageIfOverBudget("CustomPolicy.ApplyActiveEffectToKingdom", finalizeApplyTimestamp, budgetMs, activeEffect.EffectId, "stability/finalize");
+			activeEffect.LastAppliedDay = pending.Day;
 			activeEffect.RemainingDays = Math.Max(0, activeEffect.RemainingDays - 1);
 			bool ended = activeEffect.RemainingDays <= 0;
 			activeEffect.Ended = ended;
 			activeEffect.EndReason = ended ? "持续时间结束" : "";
+			activeEffect.PendingApplication = null;
 			UpdatePolicyRecordEffectProgress(activeEffect);
 			if (ended)
 			{
 				_activePolicyEffects.Remove(key);
+				TryQueueNaturalExpiryAbolition(activeEffect.RecordId, activeEffect.EffectId);
+				PolicyEffectLedgerLog("effect-ended", "recordId=" + (activeEffect.RecordId ?? "")
+					+ " effectId=" + (activeEffect.EffectId ?? "")
+					+ " reason=" + (activeEffect.EndReason ?? ""));
 			}
 			else
 			{
 				_activePolicyEffects[key] = JsonConvert.SerializeObject(activeEffect);
 			}
-			PolicyDebugLog("daily-apply", "effectId=" + activeEffect.EffectId
-				+ " recordId=" + (activeEffect.RecordId ?? "")
-				+ " day=" + currentDay.ToString(CultureInfo.InvariantCulture)
-				+ " remaining=" + activeEffect.RemainingDays.ToString(CultureInfo.InvariantCulture)
-				+ " target=" + actual.KingdomName
-				+ " townCount=" + actual.TownCount.ToString(CultureInfo.InvariantCulture)
-				+ " villageCount=" + actual.VillageCount.ToString(CultureInfo.InvariantCulture)
-				+ " prosperityDailyDeltaPerTown=" + FormatNumber(actual.ProsperityDailyDeltaPerTown)
-				+ " prosperityActualDelta=" + FormatNumber(actual.ProsperityActualDelta)
-				+ " foodActualDelta=" + FormatNumber(actual.FoodActualDelta)
-				+ " hearthActualDelta=" + FormatNumber(actual.HearthActualDelta)
-				+ " loyaltyActualDelta=" + FormatNumber(actual.LoyaltyActualDelta)
-				+ " securityActualDelta=" + FormatNumber(actual.SecurityActualDelta)
-				+ " militiaActualDelta=" + FormatNumber(actual.MilitiaActualDelta)
-				+ " stabilityActualDelta=" + actual.KingdomStabilityActualDelta.ToString(CultureInfo.InvariantCulture)
-				+ " detailLines=" + actual.DetailLines.Count.ToString(CultureInfo.InvariantCulture),
-				BuildAppliedEffectDebugSummary(actual));
-			PolicyEffectLedgerLog("daily-apply", BuildPolicyEffectLedgerLine(activeEffect.RecordId, activeEffect.EffectId, actual, currentDay, activeEffect.RemainingDays));
+			PolicyEffectLedgerLog("daily-apply", BuildPolicyEffectLedgerLine(activeEffect.RecordId, activeEffect.EffectId, actual, pending.Day, activeEffect.RemainingDays));
+			CompleteActivePolicyEffectWork(work, currentDay, requeueIfStillDue: !ended, activeEffect: activeEffect);
 		}
 	}
 
-	private AppliedKingdomEffect ApplyActiveEffectToKingdom(Kingdom kingdom, ActivePolicyEffectSaveData activeEffect, int currentDay)
+	private void EnsureActivePolicyEffectWorkScheduled(int currentDay)
 	{
-		AppliedKingdomEffect applied = new AppliedKingdomEffect
+		if (_lastActivePolicyScheduledDay == currentDay)
+		{
+			return;
+		}
+		_lastActivePolicyScheduledDay = currentDay;
+		foreach (KeyValuePair<string, string> item in _activePolicyEffects.ToList())
+		{
+			ActivePolicyEffectSaveData activeEffect;
+			try
+			{
+				activeEffect = JsonConvert.DeserializeObject<ActivePolicyEffectSaveData>(item.Value ?? "");
+			}
+			catch
+			{
+				continue;
+			}
+			if (activeEffect == null || string.IsNullOrWhiteSpace(activeEffect.EffectId) || activeEffect.RemainingDays <= 0)
+			{
+				continue;
+			}
+			bool pending = activeEffect.PendingApplication != null && activeEffect.PendingApplication.Day > activeEffect.LastAppliedDay;
+			bool dueToday = currentDay > activeEffect.SubmittedDay && activeEffect.LastAppliedDay < currentDay;
+			if (pending || dueToday)
+			{
+				EnqueueActivePolicyEffectWork(activeEffect.EffectId);
+			}
+		}
+	}
+
+	private void EnqueueActivePolicyEffectWork(string effectId)
+	{
+		string key = (effectId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(key) || !_queuedActivePolicyEffectIds.Add(key))
+		{
+			return;
+		}
+		_pendingActivePolicyEffectWork.Enqueue(new PendingActivePolicyEffectWork
+		{
+			EffectId = key,
+			RuntimeGeneration = _activePolicyRuntimeGeneration
+		});
+	}
+
+	private void CompleteActivePolicyEffectWork(PendingActivePolicyEffectWork work, int currentDay, bool requeueIfStillDue, ActivePolicyEffectSaveData activeEffect = null)
+	{
+		if (_pendingActivePolicyEffectWork.Count > 0 && object.ReferenceEquals(_pendingActivePolicyEffectWork.Peek(), work))
+		{
+			_pendingActivePolicyEffectWork.Dequeue();
+		}
+		string effectId = (work?.EffectId ?? activeEffect?.EffectId ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(effectId))
+		{
+			_queuedActivePolicyEffectIds.Remove(effectId);
+		}
+		if (requeueIfStillDue && activeEffect != null && activeEffect.RemainingDays > 0 && currentDay > activeEffect.SubmittedDay && activeEffect.LastAppliedDay < currentDay)
+		{
+			EnqueueActivePolicyEffectWork(activeEffect.EffectId);
+		}
+	}
+
+	private static PendingActivePolicyApplicationSaveData CreatePendingActivePolicyApplication(Kingdom kingdom, ActivePolicyEffectSaveData activeEffect, int currentDay)
+	{
+		return new PendingActivePolicyApplicationSaveData
+		{
+			Day = currentDay,
+			SettlementIds = GetKingdomSettlements(kingdom)
+				.Select(x => (x?.StringId ?? "").Trim())
+				.Where(x => !string.IsNullOrWhiteSpace(x))
+				.Distinct(StringComparer.OrdinalIgnoreCase)
+				.ToList(),
+			NextSettlementIndex = 0,
+			AppliedEffect = CreateAppliedKingdomEffect(kingdom, activeEffect)
+		};
+	}
+
+	private static double GetActivePolicyMaintenanceFrameBudgetMs()
+	{
+		try
+		{
+			return Math.Max(1.0, Math.Min(10.0, (DuelSettings.GetSettings()?.DailyMaintenanceFrameBudgetMs).GetValueOrDefault((int)ActivePolicyMaintenanceDefaultFrameBudgetMs)));
+		}
+		catch
+		{
+			return ActivePolicyMaintenanceDefaultFrameBudgetMs;
+		}
+	}
+
+	private static bool IsActivePolicyMaintenanceBudgetExceeded(long startTimestamp, double budgetMs)
+	{
+		return budgetMs > 0.0 && (Stopwatch.GetTimestamp() - startTimestamp) * 1000.0 / Stopwatch.Frequency >= budgetMs;
+	}
+
+	private static void LogActivePolicyStageIfOverBudget(string stageName, long startTimestamp, double budgetMs, string effectId, string target)
+	{
+		double elapsedMs = (Stopwatch.GetTimestamp() - startTimestamp) * 1000.0 / Stopwatch.Frequency;
+		if (budgetMs > 0.0 && elapsedMs >= budgetMs)
+		{
+			PolicySystemLog.WriteRuntime("Effect", "active-effect-stage-over-budget stage=" + (stageName ?? "")
+				+ " elapsedMs=" + elapsedMs.ToString("0.000", CultureInfo.InvariantCulture)
+				+ " budgetMs=" + budgetMs.ToString("0.000", CultureInfo.InvariantCulture)
+				+ " effectId=" + (effectId ?? "")
+				+ " target=" + (target ?? ""));
+		}
+	}
+
+	private static AppliedKingdomEffect CreateAppliedKingdomEffect(Kingdom kingdom, ActivePolicyEffectSaveData activeEffect)
+	{
+		return new AppliedKingdomEffect
 		{
 			EffectId = activeEffect?.EffectId ?? "",
 			KingdomId = kingdom?.StringId ?? activeEffect?.TargetKingdomId ?? "",
@@ -1150,156 +2370,22 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 			RemainingDays = activeEffect?.RemainingDays ?? 0,
 			Reason = activeEffect?.Reason ?? ""
 		};
-		List<Settlement> settlements = GetKingdomSettlements(kingdom);
-		foreach (Settlement settlement in settlements)
+	}
+
+	private void ApplyActiveEffectToSettlement(Settlement settlement, ActivePolicyEffectSaveData activeEffect, AppliedKingdomEffect applied, int currentDay)
+	{
+		if (settlement == null || applied == null)
 		{
-			Town town = settlement?.Town;
-			if (town != null)
-			{
-				applied.TownCount++;
-				string settlementName = settlement.Name?.ToString() ?? settlement.StringId ?? "未知定居点";
-				float prosperityBefore = town.Prosperity;
-				float foodBefore = town.FoodStocks;
-				float loyaltyBefore = town.Loyalty;
-				float securityBefore = town.Security;
-				float militiaBefore = settlement.Militia;
-				bool townTouched = Math.Abs(applied.ProsperityDailyDeltaPerTown) > 0.0001f
-					|| Math.Abs(applied.FoodDailyDeltaPerTown) > 0.0001f
-					|| Math.Abs(applied.LoyaltyDailyDeltaPerTown) > 0.0001f
-					|| Math.Abs(applied.SecurityDailyDeltaPerTown) > 0.0001f
-					|| Math.Abs(applied.MilitiaDailyDeltaPerTown) > 0.0001f;
-				if (Math.Abs(applied.ProsperityDailyDeltaPerTown) > 0.0001f)
-				{
-					float before = town.Prosperity;
-					town.Prosperity = Math.Max(0f, before + applied.ProsperityDailyDeltaPerTown);
-					applied.ProsperityActualDelta += town.Prosperity - before;
-				}
-				if (Math.Abs(applied.FoodDailyDeltaPerTown) > 0.0001f)
-				{
-					float before = town.FoodStocks;
-					float after = Math.Max(0f, before + applied.FoodDailyDeltaPerTown);
-					try
-					{
-						float upper = Math.Max(0f, town.FoodStocksUpperLimit());
-						if (upper > 0f)
-						{
-							after = Math.Min(upper, after);
-						}
-					}
-					catch
-					{
-					}
-					town.FoodStocks = after;
-					applied.FoodActualDelta += town.FoodStocks - before;
-				}
-				if (Math.Abs(applied.LoyaltyDailyDeltaPerTown) > 0.0001f)
-				{
-					float before = town.Loyalty;
-					town.Loyalty = MBMath.ClampFloat(before + applied.LoyaltyDailyDeltaPerTown, 0f, 100f);
-					applied.LoyaltyActualDelta += town.Loyalty - before;
-				}
-				if (Math.Abs(applied.SecurityDailyDeltaPerTown) > 0.0001f)
-				{
-					float before = town.Security;
-					town.Security = MBMath.ClampFloat(before + applied.SecurityDailyDeltaPerTown, 0f, 100f);
-					applied.SecurityActualDelta += town.Security - before;
-				}
-				if (Math.Abs(applied.MilitiaDailyDeltaPerTown) > 0.0001f)
-				{
-					float before = settlement.Militia;
-					settlement.Militia = Math.Max(0f, before + applied.MilitiaDailyDeltaPerTown);
-					applied.MilitiaActualDelta += settlement.Militia - before;
-				}
-				if (townTouched)
-				{
-					applied.DetailLines.Add(settlementName
-						+ " | 繁荣 " + FormatNumber(prosperityBefore) + " -> " + FormatNumber(town.Prosperity)
-						+ " | 粮食 " + FormatNumber(foodBefore) + " -> " + FormatNumber(town.FoodStocks)
-						+ " | 忠诚 " + FormatNumber(loyaltyBefore) + " -> " + FormatNumber(town.Loyalty)
-						+ " | 治安 " + FormatNumber(securityBefore) + " -> " + FormatNumber(town.Security)
-						+ " | 民兵 " + FormatNumber(militiaBefore) + " -> " + FormatNumber(settlement.Militia));
-					if (CustomPolicyVerboseSettlementDebugLog)
-					{
-						PolicyDebugLog("daily-apply-settlement",
-							"effectId=" + (activeEffect?.EffectId ?? "")
-							+ " recordId=" + (activeEffect?.RecordId ?? "")
-							+ " day=" + currentDay.ToString(CultureInfo.InvariantCulture)
-							+ " settlementType=town"
-							+ " settlementId=" + (settlement.StringId ?? "")
-							+ " settlementName=" + settlementName
-							+ " kingdomId=" + applied.KingdomId
-							+ " kingdomName=" + applied.KingdomName
-							+ " prosperityDailyDeltaPerTown=" + FormatNumber(applied.ProsperityDailyDeltaPerTown)
-							+ " prosperityBefore=" + FormatNumber(prosperityBefore)
-							+ " prosperityAfter=" + FormatNumber(town.Prosperity)
-							+ " prosperityAppliedDelta=" + FormatNumber(town.Prosperity - prosperityBefore)
-							+ " foodDailyDeltaPerTown=" + FormatNumber(applied.FoodDailyDeltaPerTown)
-							+ " foodBefore=" + FormatNumber(foodBefore)
-							+ " foodAfter=" + FormatNumber(town.FoodStocks)
-							+ " foodAppliedDelta=" + FormatNumber(town.FoodStocks - foodBefore)
-							+ " loyaltyDailyDeltaPerTown=" + FormatNumber(applied.LoyaltyDailyDeltaPerTown)
-							+ " loyaltyBefore=" + FormatNumber(loyaltyBefore)
-							+ " loyaltyAfter=" + FormatNumber(town.Loyalty)
-							+ " loyaltyAppliedDelta=" + FormatNumber(town.Loyalty - loyaltyBefore)
-							+ " securityDailyDeltaPerTown=" + FormatNumber(applied.SecurityDailyDeltaPerTown)
-							+ " securityBefore=" + FormatNumber(securityBefore)
-							+ " securityAfter=" + FormatNumber(town.Security)
-							+ " securityAppliedDelta=" + FormatNumber(town.Security - securityBefore)
-							+ " militiaDailyDeltaPerTown=" + FormatNumber(applied.MilitiaDailyDeltaPerTown)
-							+ " militiaBefore=" + FormatNumber(militiaBefore)
-							+ " militiaAfter=" + FormatNumber(settlement.Militia)
-							+ " militiaAppliedDelta=" + FormatNumber(settlement.Militia - militiaBefore));
-					}
-				}
-			}
-			Village village = settlement?.Village;
-			if (village != null && Math.Abs(applied.HearthDailyDeltaPerVillage) > 0.0001f)
-			{
-				applied.VillageCount++;
-				int oldLevel = 0;
-				try
-				{
-					oldLevel = village.GetHearthLevel();
-				}
-				catch
-				{
-				}
-				float before = village.Hearth;
-				village.Hearth = Math.Max(0f, before + applied.HearthDailyDeltaPerVillage);
-				applied.HearthActualDelta += village.Hearth - before;
-				string villageName = settlement.Name?.ToString() ?? settlement.StringId ?? "未知村庄";
-				applied.DetailLines.Add(villageName
-					+ " | 户数 " + FormatNumber(before) + " -> " + FormatNumber(village.Hearth));
-				if (CustomPolicyVerboseSettlementDebugLog)
-				{
-					PolicyDebugLog("daily-apply-settlement",
-						"effectId=" + (activeEffect?.EffectId ?? "")
-						+ " recordId=" + (activeEffect?.RecordId ?? "")
-						+ " day=" + currentDay.ToString(CultureInfo.InvariantCulture)
-						+ " settlementType=village"
-						+ " settlementId=" + (settlement.StringId ?? "")
-						+ " settlementName=" + villageName
-						+ " kingdomId=" + applied.KingdomId
-						+ " kingdomName=" + applied.KingdomName
-						+ " hearthDailyDeltaPerVillage=" + FormatNumber(applied.HearthDailyDeltaPerVillage)
-						+ " hearthBefore=" + FormatNumber(before)
-						+ " hearthAfter=" + FormatNumber(village.Hearth)
-						+ " hearthAppliedDelta=" + FormatNumber(village.Hearth - before));
-				}
-				try
-				{
-					if (oldLevel != village.GetHearthLevel())
-					{
-						settlement.Party?.SetLevelMaskIsDirty();
-					}
-				}
-				catch
-				{
-				}
-			}
+			return;
 		}
-		ApplyKingdomStabilityDailyDelta(kingdom, activeEffect, applied);
-		return applied;
+		if (settlement.Town != null)
+		{
+			applied.TownCount++;
+		}
+		if (settlement.Village != null && Math.Abs(applied.HearthDailyDeltaPerVillage) > 0.0001f)
+		{
+			applied.VillageCount++;
+		}
 	}
 
 	private static void ApplyKingdomStabilityDailyDelta(Kingdom kingdom, ActivePolicyEffectSaveData activeEffect, AppliedKingdomEffect applied)
@@ -1340,16 +2426,15 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		foreach (AppliedKingdomEffect effect in application.KingdomEffects.Where(x => x != null && HasAnyDailyDelta(x) && x.DurationDays > 0))
+		foreach (AppliedKingdomEffect effect in application.KingdomEffects.Where(x => x != null && x.DurationDays > 0))
 		{
-			ActivePolicyEffectSaveData activeEffect = new ActivePolicyEffectSaveData
+			PolicyActiveEffectRegistration registration = new PolicyActiveEffectRegistration
 			{
 				EffectId = string.IsNullOrWhiteSpace(effect.EffectId) ? Guid.NewGuid().ToString("N") : effect.EffectId,
 				RecordId = recordId ?? "",
 				PolicyName = request?.PolicyName ?? "",
 				DateText = request?.DateText ?? "",
 				SubmittedDay = Math.Max(0, request?.SubmittedDay ?? GetCurrentCampaignDay()),
-				CreatedUtcTicks = DateTime.UtcNow.Ticks,
 				TargetKingdomId = effect.KingdomId ?? "",
 				TargetKingdomName = effect.KingdomName ?? "",
 				ProsperityDailyDeltaPerTown = effect.ProsperityDailyDeltaPerTown,
@@ -1359,17 +2444,22 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 				SecurityDailyDeltaPerTown = effect.SecurityDailyDeltaPerTown,
 				MilitiaDailyDeltaPerTown = effect.MilitiaDailyDeltaPerTown,
 				KingdomStabilityDailyDelta = effect.KingdomStabilityDailyDelta,
-				TotalDurationDays = effect.DurationDays,
-				RemainingDays = effect.DurationDays,
-				LastAppliedDay = Math.Max(0, request?.SubmittedDay ?? GetCurrentCampaignDay()),
+				DurationDays = effect.DurationDays,
 				Reason = effect.Reason ?? ""
 			};
-			_activePolicyEffects[activeEffect.EffectId] = JsonConvert.SerializeObject(activeEffect);
-			PolicyEffectLedgerLog("active-created", BuildPolicyEffectLedgerLine(recordId, activeEffect.EffectId, effect, activeEffect.SubmittedDay, activeEffect.RemainingDays));
+			if (TryRegisterPolicyActiveEffectInternal(registration, out string activeEffectId, out string failureReason))
+			{
+				effect.EffectId = activeEffectId;
+				NpcRulerPolicyBehavior.UpdatePolicyEffectStateForExternal(recordId, activeEffectId, registration.TargetKingdomId, registration.DurationDays, isEnded: false);
+				PolicyEffectLedgerLog("active-created", BuildPolicyEffectLedgerLine(recordId, activeEffectId, effect, registration.SubmittedDay, registration.DurationDays));
+			}
+			else
+			{
+				PolicySystemLog.Write("Effect", "player-active-rejected", "recordId=" + (recordId ?? "") + " target=" + registration.TargetKingdomId + " reason=" + failureReason);
+			}
 		}
 		PolicyDebugLog("active-effects-created", BuildPolicyRecordLogPrefix(request, recordId)
-			+ " activeEffects=" + _activePolicyEffects.Count.ToString(CultureInfo.InvariantCulture),
-			BuildPolicyApplicationDebugSummary(application));
+			+ " activeEffects=" + _activePolicyEffects.Count.ToString(CultureInfo.InvariantCulture));
 	}
 
 	private void TrimActivePolicyEffects()
@@ -1397,6 +2487,7 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		NpcRulerPolicyBehavior.UpdatePolicyEffectStateForExternal(activeEffect.RecordId, activeEffect.EffectId, activeEffect.TargetKingdomId, activeEffect.RemainingDays, activeEffect.Ended);
 		try
 		{
 			if (!_policyRecordHistory.TryGetValue(activeEffect.RecordId, out string raw) || string.IsNullOrWhiteSpace(raw))
@@ -1426,7 +2517,7 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void MarkPolicyRecordEffectEnded(ActivePolicyEffectSaveData activeEffect, string reason)
+	private void MarkPolicyRecordEffectEnded(ActivePolicyEffectSaveData activeEffect, string reason, bool queueNaturalExpiry = true)
 	{
 		if (activeEffect == null)
 		{
@@ -1436,6 +2527,13 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 		activeEffect.Ended = true;
 		activeEffect.EndReason = string.IsNullOrWhiteSpace(reason) ? "已结束" : reason.Trim();
 		UpdatePolicyRecordEffectProgress(activeEffect);
+		PolicyEffectLedgerLog("effect-ended", "recordId=" + (activeEffect.RecordId ?? "")
+			+ " effectId=" + (activeEffect.EffectId ?? "")
+			+ " reason=" + activeEffect.EndReason);
+		if (queueNaturalExpiry)
+		{
+			TryQueueNaturalExpiryAbolition(activeEffect.RecordId, activeEffect.EffectId);
+		}
 	}
 
 	private Kingdom ResolveKingdomByIdOrName(string id, string name)
@@ -1536,32 +2634,16 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 			string secondaryInput = BuildPolicyKnowledgeSecondaryInputForMainOnly(request);
 			if (string.IsNullOrWhiteSpace(query))
 			{
-				PolicyDebugLog("policy-knowledge-query-skip", BuildPolicyRequestLogPrefix(request) + " reason=empty_main_only_query");
-				PolicyDetailedLog("policy-knowledge-query-skip", BuildPolicyRequestLogPrefix(request) + " reason=empty_main_only_query");
 				return "";
 			}
-			PolicyDebugLog("policy-knowledge-query", BuildPolicyRequestLogPrefix(request)
-				+ " mode=main_only"
-				+ " queryLength=" + query.Length.ToString(CultureInfo.InvariantCulture)
-				+ " secondaryLength=" + secondaryInput.Length.ToString(CultureInfo.InvariantCulture),
-				"knowledgeQuery:\n" + PreviewForPolicyDebugLog(query, 700)
-				+ "\n\nknowledgeSecondaryInputPreview:\n" + PreviewForPolicyDebugLog(secondaryInput, 900));
-			PolicyDetailedLog("policy-knowledge-query", BuildPolicyRequestLogPrefix(request)
-				+ " mode=main_only"
-				+ " queryLength=" + query.Length.ToString(CultureInfo.InvariantCulture)
-				+ " secondaryLength=" + secondaryInput.Length.ToString(CultureInfo.InvariantCulture),
-				"knowledgeQuery:\n" + query + "\n\nknowledgeSecondaryInput:\n" + secondaryInput);
-			string context = AIConfigHandler.GetLoreContext(query, Hero.MainHero, secondaryInput);
-			PolicyDetailedLog("policy-knowledge-context-built", BuildPolicyRequestLogPrefix(request)
-				+ " mode=main_only"
-				+ " contextLength=" + (context ?? "").Length.ToString(CultureInfo.InvariantCulture),
-				"knowledgeContext:\n" + (context ?? ""));
+			MentionedWorldEntities mentionedEntities = request?.KnowledgeMentionedEntities;
+			string rawContext = AIConfigHandler.GetLoreContext(query, Hero.MainHero, secondaryInput, mentionedEntities);
+			string context = CompressPolicyKnowledgeContext(rawContext);
 			return (context ?? "").Trim();
 		}
 		catch (Exception ex)
 		{
 			PolicyDebugLog("policy-knowledge-failed", BuildPolicyRequestLogPrefix(request), ex.ToString());
-			PolicyDetailedLog("policy-knowledge-failed", BuildPolicyRequestLogPrefix(request), ex.ToString());
 			return "";
 		}
 	}
@@ -1610,96 +2692,62 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 
 	private static string BuildPolicyExplicitEntityHintText(PolicyDraftRequest request)
 	{
-		string haystack = ((request?.PolicyName ?? "") + "\n" + (request?.PolicyContent ?? "")).Trim();
-		if (string.IsNullOrWhiteSpace(haystack))
+		MentionedWorldEntities entities = request?.KnowledgeMentionedEntities;
+		if (entities == null || entities.IsEmpty)
 		{
 			return "";
 		}
-		List<string> parts = new List<string>();
-		List<string> kingdoms = FindPolicyMentionedKingdoms(haystack).Take(8).ToList();
-		if (kingdoms.Count > 0)
-		{
-			parts.Add("显式提及王国：" + string.Join("、", kingdoms));
-		}
-		List<string> settlements = FindPolicyMentionedSettlements(haystack).Take(8).ToList();
-		if (settlements.Count > 0)
-		{
-			parts.Add("显式提及定居点：" + string.Join("、", settlements));
-		}
-		List<string> actors = FindPolicyMentionedActors(haystack).Take(8).ToList();
-		if (actors.Count > 0)
-		{
-			parts.Add("显式提及人物或家族：" + string.Join("、", actors));
-		}
-		return LimitDisplayChars(CompactPolicyContextText(string.Join("；", parts)), 500);
+		List<string> values = (entities.Entities ?? new List<string>())
+			.Where(x => !string.IsNullOrWhiteSpace(x))
+			.Distinct(StringComparer.OrdinalIgnoreCase)
+			.Take(16)
+			.ToList();
+		return values.Count == 0 ? "" : LimitDisplayChars(CompactPolicyContextText("相关实体：" + string.Join("、", values)), 500);
 	}
 
-	private static List<string> FindPolicyMentionedKingdoms(string haystack)
+	private static MentionedWorldEntities BuildPolicyKnowledgeMentionedEntitiesSnapshot(string policyName, string policyContent, Kingdom playerKingdom)
 	{
-		List<string> result = new List<string>();
+		MentionedWorldEntities entities = new MentionedWorldEntities();
+		string haystack = ((policyName ?? "") + "\n" + (policyContent ?? "")).Trim();
+		AddPolicyKnowledgeEntity(entities.Entities, GetKingdomName(playerKingdom), playerKingdom?.StringId);
+		AddPolicyKnowledgeEntity(entities.Entities, playerKingdom?.Culture?.Name?.ToString(), null);
+		if (string.IsNullOrWhiteSpace(haystack))
+		{
+			return entities;
+		}
 		try
 		{
 			foreach (Kingdom kingdom in Kingdom.All ?? Enumerable.Empty<Kingdom>())
 			{
-				if (kingdom == null)
+				if (kingdom != null && PolicyTextMentionsKingdom(haystack, kingdom))
 				{
-					continue;
-				}
-				string id = kingdom.StringId ?? "";
-				string name = GetKingdomName(kingdom);
-				if (PolicyTextMentionsKingdom(haystack, kingdom))
-				{
-					result.Add(name + (string.IsNullOrWhiteSpace(id) ? "" : " [" + id + "]"));
+					AddPolicyKnowledgeEntity(entities.Entities, GetKingdomName(kingdom), kingdom.StringId);
 				}
 			}
 		}
 		catch
 		{
 		}
-		return result.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-	}
-
-	private static List<string> FindPolicyMentionedSettlements(string haystack)
-	{
-		List<string> result = new List<string>();
 		try
 		{
 			foreach (Settlement settlement in Settlement.All ?? Enumerable.Empty<Settlement>())
 			{
-				if (settlement == null)
+				if (settlement != null && PolicyTextMentions(haystack, settlement.StringId ?? "", settlement.Name?.ToString() ?? ""))
 				{
-					continue;
-				}
-				string id = settlement.StringId ?? "";
-				string name = settlement.Name?.ToString() ?? "";
-				if (PolicyTextMentions(haystack, id, name))
-				{
-					result.Add((string.IsNullOrWhiteSpace(name) ? id : name) + (string.IsNullOrWhiteSpace(id) ? "" : " [" + id + "]"));
+					AddPolicyKnowledgeEntity(entities.Entities, settlement.Name?.ToString(), settlement.StringId);
 				}
 			}
 		}
 		catch
 		{
 		}
-		return result.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-	}
-
-	private static List<string> FindPolicyMentionedActors(string haystack)
-	{
-		List<string> result = new List<string>();
 		try
 		{
 			foreach (Hero hero in Hero.AllAliveHeroes ?? Enumerable.Empty<Hero>())
 			{
-				if (hero == null)
+				if (hero != null && PolicyTextMentions(haystack, hero.StringId ?? "", hero.Name?.ToString() ?? ""))
 				{
-					continue;
-				}
-				string id = hero.StringId ?? "";
-				string name = hero.Name?.ToString() ?? "";
-				if (PolicyTextMentions(haystack, id, name))
-				{
-					result.Add((string.IsNullOrWhiteSpace(name) ? id : name) + (string.IsNullOrWhiteSpace(id) ? "" : " [" + id + "]"));
+					AddPolicyKnowledgeEntity(entities.Entities, hero.Name?.ToString(), hero.StringId);
 				}
 			}
 		}
@@ -1710,22 +2758,88 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 		{
 			foreach (Clan clan in Clan.All ?? Enumerable.Empty<Clan>())
 			{
-				if (clan == null)
+				if (clan != null && PolicyTextMentions(haystack, clan.StringId ?? "", clan.Name?.ToString() ?? ""))
 				{
-					continue;
-				}
-				string id = clan.StringId ?? "";
-				string name = clan.Name?.ToString() ?? "";
-				if (PolicyTextMentions(haystack, id, name))
-				{
-					result.Add((string.IsNullOrWhiteSpace(name) ? id : name) + (string.IsNullOrWhiteSpace(id) ? "" : " [" + id + "]"));
+					AddPolicyKnowledgeEntity(entities.Entities, clan.Name?.ToString(), clan.StringId);
 				}
 			}
 		}
 		catch
 		{
 		}
-		return result.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+		return entities;
+	}
+
+	private static void AddPolicyKnowledgeEntity(List<string> target, string displayName, string fallbackId)
+	{
+		string value = string.IsNullOrWhiteSpace(displayName) ? (fallbackId ?? "").Trim() : displayName.Trim();
+		if (!string.IsNullOrWhiteSpace(value) && target != null && target.Count < 8 && !target.Contains(value, StringComparer.OrdinalIgnoreCase))
+		{
+			target.Add(value);
+		}
+	}
+
+	private static int CountPolicyKnowledgeMentions(MentionedWorldEntities entities)
+	{
+		if (entities == null)
+		{
+			return 0;
+		}
+		return entities.Entities?.Count ?? 0;
+	}
+
+	private static string CompressPolicyKnowledgeContext(string raw)
+	{
+		string text = (raw ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		const string knowledgeHeader = "参与互动让你的脑海里浮现了这些知识";
+		int knowledgeStart = text.IndexOf(knowledgeHeader, StringComparison.Ordinal);
+		if (knowledgeStart >= 0)
+		{
+			text = text.Substring(knowledgeStart + knowledgeHeader.Length).Trim();
+		}
+		else if (text.IndexOf("【玩家外貌信息（常驻）】", StringComparison.Ordinal) >= 0)
+		{
+			return "";
+		}
+		List<string> candidates = new List<string>();
+		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (string rawLine in text.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries))
+		{
+			string line = CompactPolicyContextText(rawLine);
+			if (string.IsNullOrWhiteSpace(line)
+				|| line.StartsWith("【以下是关于（", StringComparison.Ordinal)
+				|| line.StartsWith("【玩家外貌信息", StringComparison.Ordinal)
+				|| line.IndexOf("与玩家面对面互动时", StringComparison.Ordinal) >= 0)
+			{
+				continue;
+			}
+			foreach (string sentence in Regex.Split(line, @"(?<=[。！？!?；;])"))
+			{
+				string candidate = CompactPolicyContextText(sentence);
+				if (!string.IsNullOrWhiteSpace(candidate) && candidate.Length <= PolicyKnowledgeMaxChars && seen.Add(candidate))
+				{
+					candidates.Add(candidate);
+				}
+			}
+		}
+		StringBuilder result = new StringBuilder();
+		foreach (string candidate in candidates)
+		{
+			int nextLength = result.Length + (result.Length > 0 ? 1 : 0) + candidate.Length;
+			if (nextLength <= PolicyKnowledgeTargetChars || (result.Length < PolicyKnowledgeMinChars && nextLength <= PolicyKnowledgeMaxChars))
+			{
+				if (result.Length > 0)
+				{
+					result.Append(' ');
+				}
+				result.Append(candidate);
+			}
+		}
+		return result.ToString().Trim();
 	}
 
 	private static bool PolicyTextMentions(string haystack, params string[] candidates)
@@ -1892,11 +3006,11 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 		string publicFeedbackTargetText = publicFeedbackTargetChars.ToString(CultureInfo.InvariantCulture);
 		bool useAiEvaluatedCost = request?.UseAiEvaluatedCost == true;
 		string costSchemaText = useAiEvaluatedCost
-			? "- requiredGoldCost:number，完整执行这项政策需要投入的第纳尔；必须按政策本身的规模、执行难度和覆盖范围评估，不要为了迎合玩家当前钱包而压低。\n- requiredInfluenceCost:number，完整执行这项政策需要投入的影响力；必须按封臣配合、政治动员、合法性消耗和秩序压力评估，不要为了迎合玩家当前影响力而压低。\n"
+			? "- requiredGoldCost:number，完整执行这项政策需要投入的第纳尔；必须综合政策规模、覆盖范围、物资行政投入、封臣协调、政治动员和秩序压力评估，不要为了迎合玩家当前钱包而压低。\n"
 			: "";
 		string costModeText = useAiEvaluatedCost
-			? "当前启用 AI 判断自定义政策消耗。你必须输出 requiredGoldCost 和 requiredInfluenceCost；它们代表完整执行成本，不代表玩家实际支付。代码会为玩家保留底线资源，若资源不足会按实际投入比例折算数值效果。"
-			: "当前关闭 AI 判断自定义政策消耗。代码会使用 MCM 固定滑条扣费并完整应用数值效果；你不需要输出 requiredGoldCost 或 requiredInfluenceCost，即使输出也会被忽略。";
+			? "当前启用 AI 判断自定义政策消耗。你必须输出 requiredGoldCost；它代表完整执行成本，不代表玩家实际支付。代码会为玩家保留底线第纳尔，若第纳尔不足会按实际投入比例折算全部数值效果。"
+			: "当前关闭 AI 判断自定义政策消耗。代码会使用 MCM 固定第纳尔消耗并完整应用数值效果；你不需要输出 requiredGoldCost，即使输出也会被忽略。";
 		string system = JoinPolicyPromptSections(
 			request?.EvaluatorPrompt,
 			"【自定义政策链路规则】\n" + policyRuleContext,
@@ -1907,10 +3021,14 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 			+ "\n\n【政策】\n名称：" + request.PolicyName
 			+ "\n日期：" + request.DateText
 			+ "\n内容：\n" + request.PolicyContent
-			+ "\n\n请只输出 JSON 对象。下面是字段说明，不是示例值：\n"
+			+ "\n\n请只输出 JSON 对象。所有 JSON 键和字符串边界必须使用 ASCII 双引号 \"，不能用中文弯引号。下面是字段说明，不是示例值：\n"
 			+ "- publicFeedback:string，玩家可见第三人称民众反馈，约 " + publicFeedbackTargetText + " 个中文字符，可写街市、村庄、贵族、军营、流言等反应。\n"
 			+ "- impactSummary:string，简短概述会影响哪些数值与方向。\n"
-			+ "- policyContentDigest:string，压缩政策正文，不超过 200 字，保留影响数值所需事实。\n"
+			+ "- policyContentDigest:string，用一句完整短句概括政策目的、主要措施和目标，建议 40-80 个中文字符，不要复述或堆叠政策原文。\n"
+			+ "- feedbackDigest:string，用一句完整短句压缩民众反馈，建议 40-70 个中文字符，保留主要支持、反对、担忧或社会反应。\n"
+			+ "- authoritarianWeight:number, policy authoritarian orientation weight in range [-1,1].\n"
+			+ "- oligarchicWeight:number, policy oligarchic orientation weight in range [-1,1].\n"
+			+ "- egalitarianWeight:number, policy egalitarian orientation weight in range [-1,1]; all three weights must not be zero.\n"
 			+ costSchemaText
 			+ "- effects:array，你直接决定的最终每日持续效果；默认且首选只输出 1 条玩家王国 effect。如果政策名和政策正文没有明确提到他国，effects 必须只包含玩家王国。只有政策名或政策正文明确提到其他王国 ID、王国名称、该国领袖/氏族/定居点且足以指向该王国时，才允许输出其他王国 effect 或多条 effect；世界上下文、王国索引、知识库上下文中出现的他国不算明确提及；否则不得把未提及的他国作为目标。\n"
 			+ "每个 effect 必须包含：targetKingdomId:string；targetKingdomName:string；prosperityDailyDeltaPerTown:number；foodDailyDeltaPerTown:number；hearthDailyDeltaPerVillage:number；loyaltyDailyDeltaPerTown:number；securityDailyDeltaPerTown:number；militiaDailyDeltaPerTown:number；kingdomStabilityDailyDelta:number；durationDays:positive integer；reason:string。\n"
@@ -2006,9 +3124,9 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 	{
 		if (options?.UseAiEvaluatedCost == true)
 		{
-			return "AI 判断自定义政策消耗已开启。主处理需要评估完整执行政策所需 requiredGoldCost 与 requiredInfluenceCost；代码会至少为玩家保留 " + AiPolicyGoldReserve.ToString(CultureInfo.InvariantCulture) + " 第纳尔和 " + FormatNumber(AiPolicyInfluenceReserve) + " 影响力，资源不足时按实际投入比例折算效果。";
+			return "AI 判断自定义政策消耗已开启。主处理需要评估完整执行政策所需 requiredGoldCost；代码会至少为玩家保留 " + AiPolicyGoldReserve.ToString(CultureInfo.InvariantCulture) + " 第纳尔，第纳尔不足时按实际投入比例折算全部效果。";
 		}
-		return "AI 判断自定义政策消耗已关闭。代码完全按 MCM 固定滑条扣费（" + FormatCostText(options) + "），效果不按资源比例折算；主处理不需要评估执行成本。";
+		return "AI 判断自定义政策消耗已关闭。代码完全按 MCM 固定第纳尔消耗（" + FormatCostText(options) + "）扣费，效果不按资源比例折算；主处理不需要评估执行成本。";
 	}
 
 	private void AppendOtherKingdomIndex(StringBuilder sb, Kingdom playerKingdom)
@@ -2094,7 +3212,7 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 		}
 		if (villages.Count > 0)
 		{
-			sb.AppendLine("村庄均值：户数/炉户=" + FormatNumber(villages.Average(s => s.Village.Hearth)));
+			sb.AppendLine("村庄均值：户数=" + FormatNumber(villages.Average(s => s.Village.Hearth)));
 			if (includeAnomalies)
 			{
 				AppendVillageExtremes(sb, villages);
@@ -2166,8 +3284,7 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 		{
 			return null;
 		}
-		float goldScale = request?.UseAiEvaluatedCost == true ? request.GoldEffectScale : 1f;
-		float influenceScale = request?.UseAiEvaluatedCost == true ? request.InfluenceEffectScale : 1f;
+		float goldScale = request?.GoldEffectScale ?? 1f;
 		return new PolicyEffectDto
 		{
 			TargetKingdomId = effect.TargetKingdomId,
@@ -2175,10 +3292,10 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 			ProsperityDailyDeltaPerTown = ScalePolicyDailyDelta(effect.ProsperityDailyDeltaPerTown, goldScale),
 			FoodDailyDeltaPerTown = ScalePolicyDailyDelta(effect.FoodDailyDeltaPerTown, goldScale),
 			HearthDailyDeltaPerVillage = ScalePolicyDailyDelta(effect.HearthDailyDeltaPerVillage, goldScale),
-			LoyaltyDailyDeltaPerTown = ScalePolicyDailyDelta(effect.LoyaltyDailyDeltaPerTown, influenceScale),
-			SecurityDailyDeltaPerTown = ScalePolicyDailyDelta(effect.SecurityDailyDeltaPerTown, influenceScale),
+			LoyaltyDailyDeltaPerTown = ScalePolicyDailyDelta(effect.LoyaltyDailyDeltaPerTown, goldScale),
+			SecurityDailyDeltaPerTown = ScalePolicyDailyDelta(effect.SecurityDailyDeltaPerTown, goldScale),
 			MilitiaDailyDeltaPerTown = ScalePolicyDailyDelta(effect.MilitiaDailyDeltaPerTown, goldScale),
-			KingdomStabilityDailyDelta = ScalePolicyDailyDelta(effect.KingdomStabilityDailyDelta, influenceScale),
+			KingdomStabilityDailyDelta = ScalePolicyDailyDelta(effect.KingdomStabilityDailyDelta, goldScale),
 			DurationDays = effect.DurationDays,
 			Reason = effect.Reason
 		};
@@ -2206,12 +3323,98 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 			{
 				return null;
 			}
-			return JsonConvert.DeserializeObject<PolicyMainAssessmentResult>(json);
+			try
+			{
+				return JsonConvert.DeserializeObject<PolicyMainAssessmentResult>(json);
+			}
+			catch
+			{
+				string repairedJson = RepairJsonBoundaryQuotes(json);
+				if (string.Equals(repairedJson, json, StringComparison.Ordinal))
+				{
+					return null;
+				}
+				return JsonConvert.DeserializeObject<PolicyMainAssessmentResult>(repairedJson);
+			}
 		}
 		catch
 		{
 			return null;
 		}
+	}
+
+	private static string RepairJsonBoundaryQuotes(string json)
+	{
+		if (string.IsNullOrEmpty(json) || (json.IndexOf('\u201c') < 0 && json.IndexOf('\u201d') < 0))
+		{
+			return json ?? "";
+		}
+		StringBuilder repaired = new StringBuilder(json.Length);
+		bool inString = false;
+		bool escaped = false;
+		for (int index = 0; index < json.Length; index++)
+		{
+			char current = json[index];
+			if (inString && escaped)
+			{
+				repaired.Append(current);
+				escaped = false;
+				continue;
+			}
+			if (inString && current == '\\')
+			{
+				repaired.Append(current);
+				escaped = true;
+				continue;
+			}
+			if (current == '"')
+			{
+				repaired.Append(current);
+				inString = !inString;
+				continue;
+			}
+			if (current == '\u201c' || current == '\u201d')
+			{
+				char previous = PreviousNonWhitespace(json, index - 1);
+				char next = NextNonWhitespace(json, index + 1);
+				bool opensBoundary = !inString && (previous == '\0' || previous == '{' || previous == '[' || previous == ',' || previous == ':');
+				bool closesBoundary = inString && (next == ':' || next == ',' || next == '}' || next == ']');
+				if (opensBoundary || closesBoundary)
+				{
+					repaired.Append('"');
+					inString = !inString;
+					continue;
+				}
+			}
+			repaired.Append(current);
+		}
+		return repaired.ToString();
+	}
+
+	private static char PreviousNonWhitespace(string text, int index)
+	{
+		while (index >= 0)
+		{
+			if (!char.IsWhiteSpace(text[index]))
+			{
+				return text[index];
+			}
+			index--;
+		}
+		return '\0';
+	}
+
+	private static char NextNonWhitespace(string text, int index)
+	{
+		while (index < (text?.Length ?? 0))
+		{
+			if (!char.IsWhiteSpace(text[index]))
+			{
+				return text[index];
+			}
+			index++;
+		}
+		return '\0';
 	}
 
 	private static PolicyMainAssessmentResult NormalizeMainAssessmentResult(PolicyDraftRequest request, PolicyMainAssessmentResult assessment, string fallbackMainRaw)
@@ -2239,10 +3442,15 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 		assessment.ExecutionReach = CleanPolicyDisplayText(assessment.ExecutionReach ?? "");
 		assessment.DurationLogic = CleanPolicyDisplayText(assessment.DurationLogic ?? "");
 		assessment.NumericIntent = CleanPolicyDisplayText(assessment.NumericIntent ?? "");
-		assessment.PolicyContentDigest = LimitDisplayChars(CleanPolicyDisplayText(assessment.PolicyContentDigest ?? ""), PolicyContentDigestMaxChars);
+		assessment.PolicyContentDigest = CleanPolicyDisplayText(assessment.PolicyContentDigest ?? "");
 		if (string.IsNullOrWhiteSpace(assessment.PolicyContentDigest))
 		{
-			assessment.PolicyContentDigest = BuildPolicyContentDigest(request);
+			assessment.PolicyContentDigest = assessment.ImpactSummary;
+		}
+		assessment.FeedbackDigest = CleanPolicyDisplayText(assessment.FeedbackDigest ?? "");
+		if (string.IsNullOrWhiteSpace(assessment.FeedbackDigest))
+		{
+			assessment.FeedbackDigest = assessment.ImpactSummary;
 		}
 		assessment.Effects = NormalizeMainAssessmentEffects(request, assessment.Effects);
 		return assessment;
@@ -2279,21 +3487,19 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		return assessment.Effects.Any(effect => effect != null
-			&& effect.DurationDays > 0
-			&& (Math.Abs(effect.ProsperityDailyDeltaPerTown) > 0.0001f
-				|| Math.Abs(effect.FoodDailyDeltaPerTown) > 0.0001f
-				|| Math.Abs(effect.HearthDailyDeltaPerVillage) > 0.0001f
-				|| Math.Abs(effect.LoyaltyDailyDeltaPerTown) > 0.0001f
-				|| Math.Abs(effect.SecurityDailyDeltaPerTown) > 0.0001f
-				|| Math.Abs(effect.MilitiaDailyDeltaPerTown) > 0.0001f
-				|| GetKingdomStabilityDailyDelta(effect) != 0));
+		return assessment.Effects.Any(effect => effect != null && effect.DurationDays > 0);
 	}
 
-	private static string BuildPolicyContentDigest(PolicyDraftRequest request)
+	private static List<object> BuildMainJsonRetryMessages(List<object> originalMessages, string invalidOutput)
 	{
-		string text = CompactPolicyContextText(request?.PolicyContent ?? "");
-		return LimitDisplayChars(CleanPolicyDisplayText(text), PolicyContentDigestMaxChars);
+		List<object> messages = originalMessages == null ? new List<object>() : new List<object>(originalMessages);
+		messages.Add(new { role = "assistant", content = invalidOutput ?? "" });
+		messages.Add(new
+		{
+			role = "user",
+			content = "上一次返回不是可解析的完整 JSON。请重新输出一个完整 JSON 对象，不要解释、不要 Markdown。必须保留原评判结论并补齐全部必填字段；所有 JSON 键和字符串边界必须使用 ASCII 双引号 \"，不能用中文弯引号。为避免再次截断，publicFeedback 请压缩到 300-500 个中文字符，其他摘要保持简短，effects 仍须包含全部数值字段。"
+		});
+		return messages;
 	}
 
 	private static string NormalizePolicyChoice(string value, string fallback, params string[] allowed)
@@ -2335,28 +3541,13 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 		string structuredFeedback = CleanPolicyDisplayText(structuredRaw);
 		if (!string.IsNullOrWhiteSpace(structuredFeedback))
 		{
-			PolicyDetailedLog("feedback-resolved", BuildPolicyRequestLogPrefix(request)
-				+ " source=mainAssessment.publicFeedback"
-				+ " rawLength=" + structuredRaw.Length.ToString(CultureInfo.InvariantCulture)
-				+ " cleanedLength=" + structuredFeedback.Length.ToString(CultureInfo.InvariantCulture),
-				"RawStructuredFeedback:\n" + structuredRaw + "\n\nCleanedFeedback:\n" + structuredFeedback);
 			return structuredFeedback;
 		}
 		string mainFeedback = ExtractMainFeedbackForPopup(result?.MainRaw);
 		if (!string.IsNullOrWhiteSpace(mainFeedback))
 		{
-			PolicyDetailedLog("feedback-resolved", BuildPolicyRequestLogPrefix(request)
-				+ " source=mainRaw.extract"
-				+ " mainRawLength=" + (result?.MainRaw ?? "").Length.ToString(CultureInfo.InvariantCulture)
-				+ " extractedLength=" + mainFeedback.Length.ToString(CultureInfo.InvariantCulture),
-				"MainRaw:\n" + (result?.MainRaw ?? "") + "\n\nExtractedFeedback:\n" + mainFeedback);
 			return mainFeedback;
 		}
-		PolicyDetailedLog("feedback-resolved", BuildPolicyRequestLogPrefix(request)
-			+ " source=fallback"
-			+ " structuredRawLength=" + structuredRaw.Length.ToString(CultureInfo.InvariantCulture)
-			+ " mainRawLength=" + (result?.MainRaw ?? "").Length.ToString(CultureInfo.InvariantCulture),
-			"StructuredRaw:\n" + structuredRaw + "\n\nMainRaw:\n" + (result?.MainRaw ?? ""));
 		return "各地民众已经听闻这项新政策，但反馈尚不明朗。";
 	}
 
@@ -2507,12 +3698,6 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 			sb.AppendLine("本次未扣除费用。");
 		}
 		string popupText = sb.ToString().TrimEnd();
-		PolicyDetailedLog("impact-popup-text-built", BuildPolicyRequestLogPrefix(request)
-			+ " costDeducted=" + costDeducted.ToString(CultureInfo.InvariantCulture)
-			+ " feedbackLength=" + (feedback ?? "").Length.ToString(CultureInfo.InvariantCulture)
-			+ " popupTextLength=" + popupText.Length.ToString(CultureInfo.InvariantCulture)
-			+ " appliedEffectCount=" + ((application?.AppliedEffectCount) ?? 0).ToString(CultureInfo.InvariantCulture),
-			"FeedbackAfterClean:\n" + (feedback ?? "") + "\n\nPopupText:\n" + popupText + "\n\nApplication:\n" + BuildPolicyApplicationDetailedTrace(application));
 		return popupText;
 	}
 
@@ -2522,19 +3707,17 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		return "AI 评估完整执行需要：" + FormatCostText(request.RequiredGoldCost, request.RequiredInfluenceCost)
-			+ "；本次实际投入：" + FormatCostText(request.GoldCost, request.InfluenceCost)
-			+ "（已为你保留 " + AiPolicyGoldReserve.ToString(CultureInfo.InvariantCulture) + " 第纳尔和 " + FormatNumber(AiPolicyInfluenceReserve) + " 影响力）。"
-			+ "繁荣、粮食、户数和民兵按 " + FormatPercent(request.GoldEffectScale)
-			+ " 生效；忠诚、治安和稳定度按 " + FormatPercent(request.InfluenceEffectScale)
-			+ " 生效。";
+		return "AI 评估完整执行需要：" + FormatGoldCostText(request.RequiredGoldCost)
+			+ "；本次实际投入：" + FormatGoldCostText(request.GoldCost)
+			+ "（已为你保留 " + AiPolicyGoldReserve.ToString(CultureInfo.InvariantCulture) + " 第纳尔）。"
+			+ "全部政策效果按 " + FormatPercent(request.GoldEffectScale) + " 生效。";
 	}
 
 	private bool RecordSuccessfulPolicy(PolicyDraftRequest request, PolicyGenerationResult generationResult, string feedback, PolicyApplicationResult application, string recordId)
 	{
 		try
 		{
-			if (request == null || !HasAnyActualAppliedEffect(application))
+			if (request == null || !HasAnyTimedPolicyEffect(application))
 			{
 				return false;
 			}
@@ -2553,11 +3736,11 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 				PlayerKingdomName = request.PlayerKingdomName ?? "",
 				UseAiEvaluatedCost = request.UseAiEvaluatedCost,
 				RequiredGoldCost = Math.Max(0, request.RequiredGoldCost),
-				RequiredInfluenceCost = Math.Max(0f, request.RequiredInfluenceCost),
-				GoldEffectScale = request.UseAiEvaluatedCost ? request.GoldEffectScale : 1f,
-				InfluenceEffectScale = request.UseAiEvaluatedCost ? request.InfluenceEffectScale : 1f,
+				RequiredInfluenceCost = 0f,
+				GoldEffectScale = request.GoldEffectScale,
+				InfluenceEffectScale = request.GoldEffectScale,
 				GoldCost = Math.Max(0, request.GoldCost),
-				InfluenceCost = Math.Max(0f, request.InfluenceCost),
+				InfluenceCost = 0f,
 				EvaluatorPromptIsDefault = request.EvaluatorPromptIsDefault
 			};
 			if (application?.KingdomEffects != null)
@@ -2589,9 +3772,7 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 			record.ImpactEffectsSummary = LimitDisplayChars(BuildPolicyRecordEffectSummary(record), MaxPolicyRecordImpactChars);
 			_policyRecordHistory[record.RecordId] = JsonConvert.SerializeObject(record);
 			TrimPolicyRecordHistory();
-			PolicyDebugLog("history-recorded", BuildPolicyRecordLogPrefix(request, record.RecordId)
-				+ " historyCount=" + _policyRecordHistory.Count.ToString(CultureInfo.InvariantCulture),
-				BuildPolicyRecordDebugSummary(record));
+			RegisterUnifiedPlayerPolicy(request, generationResult, feedback, application, record.RecordId, record.CreatedUtcTicks);
 			return true;
 		}
 		catch (Exception ex)
@@ -2605,7 +3786,7 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (request == null || !HasAnyActualAppliedEffect(application) || string.IsNullOrWhiteSpace(recordId))
+			if (request == null || !HasAnyTimedPolicyEffect(application) || string.IsNullOrWhiteSpace(recordId))
 			{
 				return;
 			}
@@ -2645,74 +3826,10 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 				Hero.MainHero?.Culture?.StringId ?? "",
 				targetCultureId,
 				"");
-			PolicyDebugLog("player-action-recorded", BuildPolicyRecordLogPrefix(request, recordId) + " stableKey=" + stableKey, recentActionText);
-			PolicyDebugLog("player-history-recorded", BuildPolicyRecordLogPrefix(request, recordId), majorHistoryText);
 		}
 		catch (Exception ex)
 		{
 			PolicyDebugLog("player-action-record-failed", BuildPolicyRecordLogPrefix(request, recordId), ex.ToString());
-		}
-	}
-
-	private void RecordPolicyPublishAsWeeklyMaterial(PolicyDraftRequest request, PolicyGenerationResult generationResult, string feedback, PolicyApplicationResult application, string recordId)
-	{
-		try
-		{
-			if (request == null || !HasAnyActualAppliedEffect(application) || string.IsNullOrWhiteSpace(recordId))
-			{
-				return;
-			}
-			List<AppliedKingdomEffect> effects = (application?.KingdomEffects ?? new List<AppliedKingdomEffect>())
-				.Where(effect => effect != null && effect.DurationDays > 0 && HasAnyDailyDelta(effect))
-				.ToList();
-			if (effects.Count == 0)
-			{
-				return;
-			}
-			string policySummary = LimitDisplayChars(CompactPolicyContextText(ResolvePolicySummaryForPlayerAction(request, generationResult)), MaxPolicyWeeklyMaterialSummaryChars);
-			string feedbackSummary = LimitDisplayChars(CompactPolicyContextText(CleanPolicyDisplayText(feedback ?? "")), MaxPolicyWeeklyMaterialFeedbackChars);
-			string playerKingdomId = (request.PlayerKingdomId ?? "").Trim();
-			string playerKingdomName = string.IsNullOrWhiteSpace(request.PlayerKingdomName) ? "玩家王国" : request.PlayerKingdomName.Trim();
-			bool hasMultipleTargetKingdoms = effects.Select(effect => (effect.KingdomId ?? "").Trim()).Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(StringComparer.OrdinalIgnoreCase).Count() > 1;
-			foreach (AppliedKingdomEffect effect in effects)
-			{
-				string targetKingdomId = (effect.KingdomId ?? "").Trim();
-				string targetKingdomName = string.IsNullOrWhiteSpace(effect.KingdomName) ? "目标王国" : effect.KingdomName.Trim();
-				bool isForeignTarget = !string.IsNullOrWhiteSpace(targetKingdomId)
-					&& !string.IsNullOrWhiteSpace(playerKingdomId)
-					&& !string.Equals(targetKingdomId, playerKingdomId, StringComparison.OrdinalIgnoreCase);
-				bool includeInWorld = hasMultipleTargetKingdoms || isForeignTarget;
-				string effectSummary = LimitDisplayChars(BuildPolicyWeeklyMaterialEffectSummary(effect), MaxPolicyWeeklyMaterialEffectChars);
-				MyBehavior.RecordCustomPolicyWeeklyMaterialForExternal(
-					recordId,
-					request.PolicyName ?? "未命名政策",
-					request.DateText ?? "",
-					policySummary,
-					feedbackSummary,
-					effectSummary,
-					playerKingdomId,
-					playerKingdomName,
-					targetKingdomId,
-					targetKingdomName,
-					effect.EffectId ?? "",
-					Math.Max(0, request.SubmittedDay),
-					request.DateText ?? "",
-					includeInWorld);
-				PolicyDebugLog("weekly-material-recorded",
-					BuildPolicyRecordLogPrefix(request, recordId)
-					+ " targetKingdomId=" + targetKingdomId
-					+ " targetKingdomName=" + targetKingdomName
-					+ " includeInWorld=" + includeInWorld
-					+ " includeInKingdom=true"
-					+ " summaryLength=" + policySummary.Length.ToString(CultureInfo.InvariantCulture)
-					+ " feedbackLength=" + feedbackSummary.Length.ToString(CultureInfo.InvariantCulture)
-					+ " effectLength=" + effectSummary.Length.ToString(CultureInfo.InvariantCulture),
-					"policySummary=" + policySummary + "\nfeedbackSummary=" + feedbackSummary + "\neffectSummary=" + effectSummary);
-			}
-		}
-		catch (Exception ex)
-		{
-			PolicyDebugLog("weekly-material-record-failed", BuildPolicyRecordLogPrefix(request, recordId), ex.ToString());
 		}
 	}
 
@@ -2867,12 +3984,22 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 	{
 		if (record?.UseAiEvaluatedCost == true)
 		{
+			if (record.RequiredInfluenceCost <= 0.0001f && record.InfluenceCost <= 0.0001f)
+			{
+				return "AI 消耗：完整需 " + FormatGoldCostText(record.RequiredGoldCost)
+					+ "；已支付 " + FormatGoldCostText(record.GoldCost)
+					+ "；全部效果 " + FormatPercent(record.GoldEffectScale <= 0f && record.RequiredGoldCost <= 0 ? 1f : record.GoldEffectScale);
+			}
 			return "AI 消耗：完整需 " + FormatCostText(record.RequiredGoldCost, record.RequiredInfluenceCost)
 				+ "；已支付 " + FormatCostText(record.GoldCost, record.InfluenceCost)
 				+ "；经济/民生 " + FormatPercent(record.GoldEffectScale <= 0f && record.RequiredGoldCost <= 0 ? 1f : record.GoldEffectScale)
 				+ "，政治/秩序 " + FormatPercent(record.InfluenceEffectScale <= 0f && record.RequiredInfluenceCost <= 0f ? 1f : record.InfluenceEffectScale);
 		}
-		return "已支付：" + FormatCostText(record?.GoldCost ?? 0, record?.InfluenceCost ?? 0f);
+		if ((record?.InfluenceCost ?? 0f) > 0.0001f)
+		{
+			return "已支付：" + FormatCostText(record?.GoldCost ?? 0, record?.InfluenceCost ?? 0f);
+		}
+		return "已支付：" + FormatGoldCostText(record?.GoldCost ?? 0);
 	}
 
 	private void TrimPolicyRecordHistory()
@@ -3023,300 +4150,6 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 			+ "；持续 " + Math.Max(0, durationDays).ToString(CultureInfo.InvariantCulture) + " 天。";
 	}
 
-	private string BuildRecentPolicyContextForNpcInternal(Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride = null)
-	{
-		try
-		{
-			string targetKingdomId = ResolvePolicyNpcKingdomId(targetHero, targetCharacter, kingdomIdOverride);
-			string playerKingdomId = (GetPlayerKingdom()?.StringId ?? "").Trim();
-			HashSet<string> relevantKingdomIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			if (!string.IsNullOrWhiteSpace(targetKingdomId))
-			{
-				relevantKingdomIds.Add(targetKingdomId.Trim());
-			}
-			if (!string.IsNullOrWhiteSpace(playerKingdomId))
-			{
-				relevantKingdomIds.Add(playerKingdomId.Trim());
-			}
-			if (relevantKingdomIds.Count == 0)
-			{
-				return "";
-			}
-			string targetKingdomName = BuildPolicyContextKingdomNames(relevantKingdomIds);
-			List<PolicyRecordSaveData> recentRecords = LoadPolicyRecordHistory()
-				.Where((PolicyRecordSaveData record) => relevantKingdomIds.Any((string kingdomId) => RecordTouchesKingdom(record, kingdomId)))
-				.Take(3)
-				.ToList();
-			List<ActivePolicyEffectSaveData> activeEffects = LoadActivePolicyEffectSnapshot()
-				.Where((ActivePolicyEffectSaveData effect) => relevantKingdomIds.Any((string kingdomId) => ActiveEffectTouchesKingdom(effect, kingdomId)))
-				.ToList();
-			HashSet<string> coveredRecordIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			HashSet<string> coveredEffectIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			foreach (PolicyRecordSaveData record in recentRecords.Where((PolicyRecordSaveData x) => x != null))
-			{
-				if (!string.IsNullOrWhiteSpace(record.RecordId))
-				{
-					coveredRecordIds.Add(record.RecordId.Trim());
-				}
-				if (record.Effects != null)
-				{
-					foreach (PolicyRecordEffectSaveData effect in record.Effects.Where((PolicyRecordEffectSaveData x) => x != null))
-					{
-						if (!string.IsNullOrWhiteSpace(effect.EffectId))
-						{
-							coveredEffectIds.Add(effect.EffectId.Trim());
-						}
-					}
-				}
-			}
-			List<ActivePolicyEffectSaveData> recentActiveEffects = activeEffects
-				.Where((ActivePolicyEffectSaveData effect) => effect != null
-					&& !string.IsNullOrWhiteSpace(effect.EffectId)
-					&& !coveredEffectIds.Contains(effect.EffectId.Trim())
-					&& (string.IsNullOrWhiteSpace(effect.RecordId) || !coveredRecordIds.Contains(effect.RecordId.Trim())))
-				.Take(MaxPolicyNpcContextItems)
-				.ToList();
-			if (recentRecords.Count == 0 && recentActiveEffects.Count == 0)
-			{
-				return "";
-			}
-			List<string> contextLines = new List<string>();
-			foreach (PolicyRecordSaveData record in recentRecords)
-			{
-				if (contextLines.Count >= MaxPolicyNpcContextItems)
-				{
-					break;
-				}
-				string line = BuildRecentPolicyRecordContextLine(record);
-				if (!string.IsNullOrWhiteSpace(line))
-				{
-					contextLines.Add(line);
-				}
-			}
-			foreach (ActivePolicyEffectSaveData activeEffect in recentActiveEffects)
-			{
-				if (contextLines.Count >= MaxPolicyNpcContextItems)
-				{
-					break;
-				}
-				string line = BuildRecentActivePolicyEffectContextLine(activeEffect);
-				if (!string.IsNullOrWhiteSpace(line))
-				{
-					contextLines.Add(line);
-				}
-			}
-			if (contextLines.Count == 0)
-			{
-				return "";
-			}
-			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.AppendLine("【近期王国政策背景】");
-			stringBuilder.AppendLine(targetKingdomName + "最近自定义政策事实，最多三条；只作背景参考，不当成规则。");
-			foreach (string line in contextLines)
-			{
-				stringBuilder.AppendLine(line);
-			}
-			string contextText = LimitDisplayChars(stringBuilder.ToString().TrimEnd(), MaxPolicyNpcContextChars);
-			PolicyDebugLog("npc-policy-context-built",
-				BuildNpcPolicyContextLogTarget(targetHero, targetCharacter, kingdomIdOverride)
-				+ " targetKingdomId=" + targetKingdomId
-				+ " playerKingdomId=" + playerKingdomId
-				+ " relevantKingdomIds=" + string.Join(",", relevantKingdomIds)
-				+ " recentRecords=" + recentRecords.Count.ToString(CultureInfo.InvariantCulture)
-				+ " activeEffects=" + activeEffects.Count.ToString(CultureInfo.InvariantCulture)
-				+ " extraActiveEffects=" + recentActiveEffects.Count.ToString(CultureInfo.InvariantCulture)
-				+ " contextLines=" + contextLines.Count.ToString(CultureInfo.InvariantCulture)
-				+ " contextLength=" + contextText.Length.ToString(CultureInfo.InvariantCulture),
-				LimitDisplayChars(contextText, 2000));
-			return contextText;
-		}
-		catch (Exception ex)
-		{
-			PolicyDebugLog("npc-policy-context-build-failed", ex.Message);
-			return "";
-		}
-	}
-
-	private static string BuildNpcPolicyContextLogTarget(Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride)
-	{
-		string heroName = targetHero?.Name?.ToString() ?? "";
-		string heroId = targetHero?.StringId ?? "";
-		string characterName = targetCharacter?.Name?.ToString() ?? "";
-		string characterId = targetCharacter?.StringId ?? "";
-		return "targetHero=" + heroName
-			+ " heroId=" + heroId
-			+ " targetCharacter=" + characterName
-			+ " characterId=" + characterId
-			+ " kingdomIdOverride=" + ((kingdomIdOverride ?? "").Trim());
-	}
-
-	private static string BuildRecentPolicyRecordContextLine(PolicyRecordSaveData record)
-	{
-		if (record == null)
-		{
-			return "";
-		}
-		string dateText = string.IsNullOrWhiteSpace(record.DateText) ? "未知日期" : record.DateText.Trim();
-		string policyName = string.IsNullOrWhiteSpace(record.PolicyName) ? "未命名政策" : record.PolicyName.Trim();
-		string contentSummary = CompactPolicyContextText(record.PolicyContentSummary ?? "");
-		contentSummary = LimitDisplayChars(contentSummary, 70);
-		string impactSummary = CompactPolicyContextText(record.ImpactEffectsSummary ?? record.ImpactSummary ?? "");
-		if (string.IsNullOrWhiteSpace(impactSummary))
-		{
-			impactSummary = CompactPolicyContextText(BuildPolicyRecordEffectSummary(record));
-		}
-		impactSummary = LimitDisplayChars(impactSummary, 70);
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.Append("- ").Append(dateText).Append("《").Append(policyName).Append("》");
-		if (!string.IsNullOrWhiteSpace(contentSummary))
-		{
-			stringBuilder.Append("：").Append(contentSummary);
-		}
-		if (!string.IsNullOrWhiteSpace(impactSummary))
-		{
-			stringBuilder.Append("；效果：").Append(impactSummary);
-		}
-		return LimitDisplayChars(stringBuilder.ToString().TrimEnd(), MaxPolicyNpcContextLineChars);
-	}
-
-	private static string BuildRecentActivePolicyEffectContextLine(ActivePolicyEffectSaveData effect)
-	{
-		if (effect == null)
-		{
-			return "";
-		}
-		string policyName = string.IsNullOrWhiteSpace(effect.PolicyName) ? "未命名政策" : effect.PolicyName.Trim();
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.Append("- 《").Append(policyName).Append("》仍在生效：");
-		string status = effect.Ended || effect.RemainingDays <= 0
-			? "已结束"
-			: "剩余 " + effect.RemainingDays.ToString(CultureInfo.InvariantCulture) + "/" + effect.TotalDurationDays.ToString(CultureInfo.InvariantCulture) + " 天";
-		stringBuilder.Append("每日繁荣度 ").Append(FormatSigned(effect.ProsperityDailyDeltaPerTown));
-		stringBuilder.Append("；粮食 ").Append(FormatSigned(effect.FoodDailyDeltaPerTown));
-		stringBuilder.Append("；户数 ").Append(FormatSigned(effect.HearthDailyDeltaPerVillage));
-		stringBuilder.Append("；忠诚度 ").Append(FormatSigned(effect.LoyaltyDailyDeltaPerTown));
-		stringBuilder.Append("；治安 ").Append(FormatSigned(effect.SecurityDailyDeltaPerTown));
-		stringBuilder.Append("；民兵 ").Append(FormatSigned(effect.MilitiaDailyDeltaPerTown));
-		stringBuilder.Append("；稳定度 ").Append(FormatSigned(effect.KingdomStabilityDailyDelta));
-		stringBuilder.Append("，").Append(status);
-		if (!string.IsNullOrWhiteSpace(effect.Reason))
-		{
-			stringBuilder.Append("；").Append(LimitDisplayChars(CompactPolicyContextText(effect.Reason), 40));
-		}
-		return LimitDisplayChars(stringBuilder.ToString().TrimEnd(), MaxPolicyNpcContextLineChars);
-	}
-
-	private List<ActivePolicyEffectSaveData> LoadActivePolicyEffectSnapshot()
-	{
-		List<ActivePolicyEffectSaveData> list = new List<ActivePolicyEffectSaveData>();
-		foreach (KeyValuePair<string, string> item in _activePolicyEffects)
-		{
-			if (string.IsNullOrWhiteSpace(item.Value))
-			{
-				continue;
-			}
-			try
-			{
-				ActivePolicyEffectSaveData activeEffect = JsonConvert.DeserializeObject<ActivePolicyEffectSaveData>(item.Value);
-				if (activeEffect != null && !string.IsNullOrWhiteSpace(activeEffect.EffectId) && !activeEffect.Ended && activeEffect.RemainingDays > 0)
-				{
-					list.Add(activeEffect);
-				}
-			}
-			catch
-			{
-			}
-		}
-		return list.OrderByDescending((ActivePolicyEffectSaveData x) => x.SubmittedDay).ThenByDescending((ActivePolicyEffectSaveData x) => x.CreatedUtcTicks).ToList();
-	}
-
-	private static string ResolvePolicyNpcKingdomId(Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride = null)
-	{
-		string text = (kingdomIdOverride ?? "").Trim();
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			return text;
-		}
-		text = GetFactionId(targetHero?.Clan?.Kingdom);
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			return text;
-		}
-		text = GetFactionId(targetHero?.MapFaction);
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			return text;
-		}
-		Hero heroObject = targetCharacter?.HeroObject;
-		text = GetFactionId(heroObject?.Clan?.Kingdom);
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			return text;
-		}
-		text = GetFactionId(heroObject?.MapFaction);
-		return (text ?? "").Trim();
-	}
-
-	private static string GetFactionId(IFaction faction)
-	{
-		return (faction?.StringId ?? "").Trim();
-	}
-
-	private string BuildPolicyContextKingdomNames(IEnumerable<string> kingdomIds)
-	{
-		List<string> names = new List<string>();
-		foreach (string kingdomId in kingdomIds ?? Enumerable.Empty<string>())
-		{
-			string id = (kingdomId ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(id))
-			{
-				continue;
-			}
-			Kingdom kingdom = ResolveKingdomByIdOrName(id, null);
-			string name = GetKingdomName(kingdom);
-			if (string.IsNullOrWhiteSpace(name) || string.Equals(name, "未知王国", StringComparison.OrdinalIgnoreCase))
-			{
-				name = id;
-			}
-			if (!names.Any((string x) => string.Equals(x, name, StringComparison.OrdinalIgnoreCase)))
-			{
-				names.Add(name);
-			}
-		}
-		return names.Count > 0 ? string.Join("、", names) : "相关王国";
-	}
-
-	private static bool RecordTouchesKingdom(PolicyRecordSaveData record, string kingdomId)
-	{
-		string text = (kingdomId ?? "").Trim();
-		if (record == null || string.IsNullOrWhiteSpace(text))
-		{
-			return false;
-		}
-		if (string.Equals((record.PlayerKingdomId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase))
-		{
-			return true;
-		}
-		if (record.Effects == null)
-		{
-			return false;
-		}
-		foreach (PolicyRecordEffectSaveData effect in record.Effects.Where((PolicyRecordEffectSaveData x) => x != null))
-		{
-			if (string.Equals((effect.KingdomId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private static bool ActiveEffectTouchesKingdom(ActivePolicyEffectSaveData effect, string kingdomId)
-	{
-		string text = (kingdomId ?? "").Trim();
-		return effect != null && !string.IsNullOrWhiteSpace(text) && string.Equals((effect.TargetKingdomId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase);
-	}
-
 	private static string CompactPolicyContextText(string text)
 	{
 		text = (text ?? "").Replace("\r\n", " ").Replace('\r', ' ').Replace('\n', ' ').Trim();
@@ -3391,6 +4224,75 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 		catch
 		{
 			return new List<Settlement>();
+		}
+	}
+
+	private static void RegisterUnifiedPlayerPolicy(PolicyDraftRequest request, PolicyGenerationResult generationResult, string feedback, PolicyApplicationResult application, string recordId, long createdUtcTicks)
+	{
+		if (request == null || string.IsNullOrWhiteSpace(recordId))
+		{
+			return;
+		}
+		NpcRulerPolicyRecord unified = new NpcRulerPolicyRecord
+		{
+			Version = 3,
+			PolicyId = recordId,
+			PolicyObjectId = DynamicPolicyIdPrefix + recordId,
+			AgendaStatus = DynamicPolicyStatusActive,
+			BatchId = "player",
+			KingdomId = request.PlayerKingdomId ?? "",
+			KingdomName = request.PlayerKingdomName ?? "",
+			RulerHeroId = Hero.MainHero?.StringId ?? "",
+			RulerName = Hero.MainHero?.Name?.ToString() ?? "",
+			PolicyName = request.PolicyName ?? "未命名政策",
+			PolicyContent = request.PolicyContent ?? "",
+			PolicyDigest = generationResult?.MainAssessment?.PolicyContentDigest ?? "",
+			PublicFeedback = CleanPolicyDisplayText(feedback ?? ""),
+			FeedbackTitle = "《" + (request.PolicyName ?? "未命名政策") + "》的民间回响",
+			FeedbackDigest = generationResult?.MainAssessment?.FeedbackDigest ?? "",
+			ImpactSummary = CleanPolicyDisplayText(generationResult?.Postprocess?.ImpactSummary ?? ""),
+			AuthoritarianWeight = generationResult?.MainAssessment?.AuthoritarianWeight,
+			OligarchicWeight = generationResult?.MainAssessment?.OligarchicWeight,
+			EgalitarianWeight = generationResult?.MainAssessment?.EgalitarianWeight,
+			Day = Math.Max(0, request.SubmittedDay),
+			GameDate = request.DateText ?? "",
+			CreatedUtcTicks = createdUtcTicks,
+			IsPlayerPolicy = true,
+			Effects = (application?.KingdomEffects ?? new List<AppliedKingdomEffect>()).Where(x => x != null).Select(x => new NpcRulerPolicyEffectDto
+			{
+				TargetKingdomId = x.KingdomId ?? "",
+				TargetKingdomName = x.KingdomName ?? "",
+				ProsperityDailyDeltaPerTown = x.ProsperityDailyDeltaPerTown,
+				FoodDailyDeltaPerTown = x.FoodDailyDeltaPerTown,
+				HearthDailyDeltaPerVillage = x.HearthDailyDeltaPerVillage,
+				LoyaltyDailyDeltaPerTown = x.LoyaltyDailyDeltaPerTown,
+				SecurityDailyDeltaPerTown = x.SecurityDailyDeltaPerTown,
+				MilitiaDailyDeltaPerTown = x.MilitiaDailyDeltaPerTown,
+				KingdomStabilityDailyDelta = x.KingdomStabilityDailyDelta,
+				DurationDays = x.DurationDays,
+				EffectId = x.EffectId ?? "",
+				RemainingDays = Math.Max(0, x.RemainingDays > 0 ? x.RemainingDays : x.DurationDays),
+				IsEnded = x.RemainingDays <= 0 && x.DurationDays <= 0,
+				Reason = x.Reason ?? ""
+			}).ToList()
+		};
+		NpcRulerPolicyBehavior.RegisterPlayerPolicyForExternal(unified);
+	}
+
+	private static Settlement ResolveSettlementById(string settlementId)
+	{
+		string id = (settlementId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(id))
+		{
+			return null;
+		}
+		try
+		{
+			return Settlement.All.FirstOrDefault(x => x != null && string.Equals(x.StringId, id, StringComparison.OrdinalIgnoreCase));
+		}
+		catch
+		{
+			return null;
 		}
 	}
 
@@ -3555,255 +4457,6 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 		return LimitDisplayChars(text ?? "", maxChars);
 	}
 
-	private static string BuildPolicyRequestDetailedTrace(PolicyDraftRequest request)
-	{
-		StringBuilder builder = new StringBuilder();
-		PolicyPromptContextBundle context = request?.PromptContext ?? new PolicyPromptContextBundle();
-		builder.AppendLine("requestId=" + ((request?.RequestId ?? "").Trim()));
-		builder.AppendLine("policyNameLength=" + (request?.PolicyName ?? "").Length.ToString(CultureInfo.InvariantCulture));
-		builder.AppendLine("policyContentLength=" + (request?.PolicyContent ?? "").Length.ToString(CultureInfo.InvariantCulture));
-		builder.AppendLine("dateText=" + (request?.DateText ?? ""));
-		builder.AppendLine("submittedDay=" + ((request?.SubmittedDay) ?? 0).ToString(CultureInfo.InvariantCulture));
-		builder.AppendLine("playerKingdomId=" + (request?.PlayerKingdomId ?? ""));
-		builder.AppendLine("playerKingdomName=" + (request?.PlayerKingdomName ?? ""));
-		builder.AppendLine("useAiEvaluatedCost=" + ((request?.UseAiEvaluatedCost) ?? false).ToString(CultureInfo.InvariantCulture));
-		builder.AppendLine("requiredGoldCost=" + ((request?.RequiredGoldCost) ?? 0).ToString(CultureInfo.InvariantCulture));
-		builder.AppendLine("requiredInfluenceCost=" + FormatNumber((request?.RequiredInfluenceCost) ?? 0f));
-		builder.AppendLine("goldEffectScale=" + FormatPercent((request?.GoldEffectScale) ?? 1f));
-		builder.AppendLine("influenceEffectScale=" + FormatPercent((request?.InfluenceEffectScale) ?? 1f));
-		builder.AppendLine("goldCost=" + ((request?.GoldCost) ?? 0).ToString(CultureInfo.InvariantCulture));
-		builder.AppendLine("influenceCost=" + FormatNumber((request?.InfluenceCost) ?? 0f));
-		builder.AppendLine("publicFeedbackTargetChars=" + NormalizePolicyPublicFeedbackTargetChars((request?.PublicFeedbackTargetChars) ?? PolicyPublicFeedbackTargetDefaultChars).ToString(CultureInfo.InvariantCulture));
-		builder.AppendLine("evaluatorPromptSource=" + (((request?.EvaluatorPromptIsDefault) ?? false) ? "default" : "custom"));
-		builder.AppendLine("policyRuleContextLength=" + (context.PolicyRuleContext ?? "").Length.ToString(CultureInfo.InvariantCulture));
-		builder.AppendLine("worldContextCompactLength=" + (context.WorldContextCompact ?? "").Length.ToString(CultureInfo.InvariantCulture));
-		builder.AppendLine("worldContextFullLength=" + (context.WorldContextFull ?? "").Length.ToString(CultureInfo.InvariantCulture));
-		builder.AppendLine("extensionContextLength=" + (context.ExtensionContext ?? "").Length.ToString(CultureInfo.InvariantCulture));
-		AppendPolicyDetailedTraceField(builder, "PolicyName", request?.PolicyName);
-		AppendPolicyDetailedTraceField(builder, "PolicyContent", request?.PolicyContent);
-		AppendPolicyDetailedTraceField(builder, "EvaluatorPrompt", request?.EvaluatorPrompt);
-		AppendPolicyDetailedTraceField(builder, "PromptContext.PolicyRuleContext", context.PolicyRuleContext);
-		AppendPolicyDetailedTraceField(builder, "PromptContext.WorldContextCompact", context.WorldContextCompact);
-		AppendPolicyDetailedTraceField(builder, "PromptContext.WorldContextFull", context.WorldContextFull);
-		AppendPolicyDetailedTraceField(builder, "PromptContext.ExtensionContext", context.ExtensionContext);
-		return builder.ToString().TrimEnd();
-	}
-
-	private static string BuildPolicyGenerationDetailedTrace(PolicyGenerationResult result)
-	{
-		if (result == null)
-		{
-			return "";
-		}
-		StringBuilder builder = new StringBuilder();
-		builder.AppendLine("error=" + (result.Error ?? ""));
-		builder.AppendLine("knowledgeContextLength=" + (result.KnowledgeContext ?? "").Length.ToString(CultureInfo.InvariantCulture));
-		builder.AppendLine("mainRawLength=" + (result.MainRaw ?? "").Length.ToString(CultureInfo.InvariantCulture));
-		builder.AppendLine("mainAssessmentNull=" + (result.MainAssessment == null).ToString(CultureInfo.InvariantCulture));
-		builder.AppendLine("mainEffects=" + ((result.MainAssessment?.Effects?.Count) ?? 0).ToString(CultureInfo.InvariantCulture));
-		builder.AppendLine("publicFeedbackLength=" + (result.MainAssessment?.PublicFeedback ?? "").Length.ToString(CultureInfo.InvariantCulture));
-		builder.AppendLine("postprocessNull=" + (result.Postprocess == null).ToString(CultureInfo.InvariantCulture));
-		builder.AppendLine("postprocessEffects=" + ((result.Postprocess?.Effects?.Count) ?? 0).ToString(CultureInfo.InvariantCulture));
-		AppendPolicyDetailedTraceField(builder, "KnowledgeContext", result.KnowledgeContext);
-		AppendPolicyDetailedTraceField(builder, "MainRaw", result.MainRaw);
-		AppendPolicyDetailedTraceField(builder, "MainAssessmentJson", SafeSerializeForDebug(result.MainAssessment));
-		AppendPolicyDetailedTraceField(builder, "PostprocessRaw", result.PostprocessRaw);
-		AppendPolicyDetailedTraceField(builder, "PostprocessJson", SafeSerializeForDebug(result.Postprocess));
-		return builder.ToString().TrimEnd();
-	}
-
-	private static string BuildPolicyApplicationDetailedTrace(PolicyApplicationResult application)
-	{
-		if (application == null)
-		{
-			return "";
-		}
-		StringBuilder builder = new StringBuilder();
-		builder.AppendLine("appliedEffectCount=" + application.AppliedEffectCount.ToString(CultureInfo.InvariantCulture));
-		builder.AppendLine("kingdomEffects=" + ((application.KingdomEffects?.Count) ?? 0).ToString(CultureInfo.InvariantCulture));
-		builder.AppendLine("noticeLines=" + ((application.NoticeLines?.Count) ?? 0).ToString(CultureInfo.InvariantCulture));
-		if (application.KingdomEffects != null)
-		{
-			int index = 0;
-			foreach (AppliedKingdomEffect effect in application.KingdomEffects.Where(x => x != null))
-			{
-				index++;
-				builder.AppendLine();
-				builder.AppendLine("### KingdomEffect[" + index.ToString(CultureInfo.InvariantCulture) + "]");
-				builder.AppendLine(BuildAppliedEffectDebugSummary(effect));
-			}
-		}
-		if (application.NoticeLines != null && application.NoticeLines.Count > 0)
-		{
-			AppendPolicyDetailedTraceField(builder, "NoticeLines", string.Join("\n", application.NoticeLines.Where(x => !string.IsNullOrWhiteSpace(x))));
-		}
-		return builder.ToString().TrimEnd();
-	}
-
-	private static void AppendPolicyDetailedTraceField(StringBuilder builder, string title, string text)
-	{
-		builder.AppendLine();
-		builder.AppendLine("### " + (title ?? "Field") + " length=" + (text ?? "").Length.ToString(CultureInfo.InvariantCulture));
-		builder.AppendLine(text ?? "");
-	}
-
-	private static string BuildPolicyRequestContextDebugDetail(PolicyDraftRequest request)
-	{
-		PolicyPromptContextBundle context = request?.PromptContext ?? new PolicyPromptContextBundle();
-		return "EvaluatorPromptPreview:\n" + PreviewForPolicyDebugLog(request?.EvaluatorPrompt ?? "", 800)
-			+ "\n\nPolicyRuleContextPreview:\n" + PreviewForPolicyDebugLog(context.PolicyRuleContext ?? "", 500)
-			+ "\n\nWorldContextCompactPreview:\n" + PreviewForPolicyDebugLog(context.WorldContextCompact ?? "", 900)
-			+ "\n\nWorldContextFullLength=" + (context.WorldContextFull ?? "").Length.ToString(CultureInfo.InvariantCulture)
-			+ "\nExtensionContextLength=" + (context.ExtensionContext ?? "").Length.ToString(CultureInfo.InvariantCulture);
-	}
-
-	private static string BuildMainAssessmentDebugSummary(PolicyMainAssessmentResult assessment)
-	{
-		if (assessment == null)
-		{
-			return "";
-		}
-		StringBuilder builder = new StringBuilder();
-		builder.AppendLine("publicFeedback=" + PreviewForPolicyDebugLog(assessment.PublicFeedback ?? "", 180));
-		builder.AppendLine("impactSummary=" + PreviewForPolicyDebugLog(assessment.ImpactSummary ?? "", 180));
-		builder.AppendLine("requiredGoldCost=" + (assessment.RequiredGoldCost.HasValue ? FormatNumber(assessment.RequiredGoldCost.Value) : "(missing)"));
-		builder.AppendLine("requiredInfluenceCost=" + (assessment.RequiredInfluenceCost.HasValue ? FormatNumber(assessment.RequiredInfluenceCost.Value) : "(missing)"));
-		builder.AppendLine("policyContentDigest=" + PreviewForPolicyDebugLog(assessment.PolicyContentDigest ?? "", 220));
-		builder.AppendLine("effects=" + ((assessment.Effects?.Count) ?? 0).ToString(CultureInfo.InvariantCulture));
-		AppendPolicyEffectDtoDebugLines(builder, assessment.Effects);
-		return builder.ToString().TrimEnd();
-	}
-
-	private static string BuildPostprocessDebugSummary(PolicyPostprocessResult postprocess)
-	{
-		if (postprocess == null)
-		{
-			return "";
-		}
-		StringBuilder builder = new StringBuilder();
-		builder.AppendLine("impactSummary=" + PreviewForPolicyDebugLog(postprocess.ImpactSummary ?? "", 180));
-		builder.AppendLine("effects=" + ((postprocess.Effects?.Count) ?? 0).ToString(CultureInfo.InvariantCulture));
-		AppendPolicyEffectDtoDebugLines(builder, postprocess.Effects);
-		return builder.ToString().TrimEnd();
-	}
-
-	private static void AppendPolicyEffectDtoDebugLines(StringBuilder builder, List<PolicyEffectDto> effects)
-	{
-		int count = effects?.Count ?? 0;
-		foreach (PolicyEffectDto effect in (effects ?? new List<PolicyEffectDto>()).Where(x => x != null).Take(6))
-		{
-			builder.AppendLine("- " + (effect.TargetKingdomName ?? effect.TargetKingdomId ?? "未指定")
-				+ " id=" + (effect.TargetKingdomId ?? "")
-				+ " prosperity=" + FormatNumber(effect.ProsperityDailyDeltaPerTown)
-				+ " food=" + FormatNumber(effect.FoodDailyDeltaPerTown)
-				+ " hearth=" + FormatNumber(effect.HearthDailyDeltaPerVillage)
-				+ " loyalty=" + FormatNumber(effect.LoyaltyDailyDeltaPerTown)
-				+ " security=" + FormatNumber(effect.SecurityDailyDeltaPerTown)
-				+ " militia=" + FormatNumber(effect.MilitiaDailyDeltaPerTown)
-				+ " stability=" + GetKingdomStabilityDailyDelta(effect).ToString(CultureInfo.InvariantCulture)
-				+ " duration=" + effect.DurationDays.ToString(CultureInfo.InvariantCulture)
-				+ " reason=" + PreviewForPolicyDebugLog(effect.Reason ?? "", 120));
-		}
-		if (count > 6)
-		{
-			builder.AppendLine("... " + (count - 6).ToString(CultureInfo.InvariantCulture) + " more effects");
-		}
-	}
-
-	private static string BuildPolicyApplicationDebugSummary(PolicyApplicationResult application)
-	{
-		if (application == null)
-		{
-			return "";
-		}
-		StringBuilder builder = new StringBuilder();
-		builder.AppendLine("appliedEffectCount=" + application.AppliedEffectCount.ToString(CultureInfo.InvariantCulture));
-		builder.AppendLine("kingdomEffects=" + ((application.KingdomEffects?.Count) ?? 0).ToString(CultureInfo.InvariantCulture));
-		foreach (AppliedKingdomEffect effect in (application.KingdomEffects ?? new List<AppliedKingdomEffect>()).Where(x => x != null).Take(6))
-		{
-			builder.AppendLine(BuildAppliedEffectDebugLine(effect));
-		}
-		if (application.NoticeLines != null && application.NoticeLines.Count > 0)
-		{
-			builder.AppendLine("notices=" + string.Join(" | ", application.NoticeLines.Select(x => PreviewForPolicyDebugLog(x ?? "", 120))));
-		}
-		return builder.ToString().TrimEnd();
-	}
-
-	private static string BuildAppliedEffectDebugSummary(AppliedKingdomEffect effect)
-	{
-		if (effect == null)
-		{
-			return "";
-		}
-		return BuildAppliedEffectDebugLine(effect)
-			+ "\ndetailLines=" + ((effect.DetailLines?.Count) ?? 0).ToString(CultureInfo.InvariantCulture)
-			+ "\ndetailPreview=" + PreviewForPolicyDebugLog(string.Join(" | ", (effect.DetailLines ?? new List<string>()).Take(6)), 700);
-	}
-
-	private static string BuildAppliedEffectDebugLine(AppliedKingdomEffect effect)
-	{
-		if (effect == null)
-		{
-			return "";
-		}
-		return "- " + (effect.KingdomName ?? effect.KingdomId ?? "未指定")
-			+ " id=" + (effect.KingdomId ?? "")
-			+ " towns=" + effect.TownCount.ToString(CultureInfo.InvariantCulture)
-			+ " villages=" + effect.VillageCount.ToString(CultureInfo.InvariantCulture)
-			+ " daily(prosperity=" + FormatNumber(effect.ProsperityDailyDeltaPerTown)
-			+ ", food=" + FormatNumber(effect.FoodDailyDeltaPerTown)
-			+ ", hearth=" + FormatNumber(effect.HearthDailyDeltaPerVillage)
-			+ ", loyalty=" + FormatNumber(effect.LoyaltyDailyDeltaPerTown)
-			+ ", security=" + FormatNumber(effect.SecurityDailyDeltaPerTown)
-			+ ", militia=" + FormatNumber(effect.MilitiaDailyDeltaPerTown)
-			+ ", stability=" + effect.KingdomStabilityDailyDelta.ToString(CultureInfo.InvariantCulture)
-			+ ") actual(prosperity=" + FormatNumber(effect.ProsperityActualDelta)
-			+ ", food=" + FormatNumber(effect.FoodActualDelta)
-			+ ", hearth=" + FormatNumber(effect.HearthActualDelta)
-			+ ", loyalty=" + FormatNumber(effect.LoyaltyActualDelta)
-			+ ", security=" + FormatNumber(effect.SecurityActualDelta)
-			+ ", militia=" + FormatNumber(effect.MilitiaActualDelta)
-			+ ", stability=" + effect.KingdomStabilityActualDelta.ToString(CultureInfo.InvariantCulture)
-			+ ") duration=" + effect.DurationDays.ToString(CultureInfo.InvariantCulture)
-			+ " remaining=" + effect.RemainingDays.ToString(CultureInfo.InvariantCulture)
-			+ " stabilityBefore=" + effect.KingdomStabilityBefore.ToString(CultureInfo.InvariantCulture)
-			+ " stabilityAfter=" + effect.KingdomStabilityAfter.ToString(CultureInfo.InvariantCulture)
-			+ " stabilityApplied=" + (effect.KingdomStabilityApplied ? "true" : "false")
-			+ " stabilityNote=" + PreviewForPolicyDebugLog(effect.KingdomStabilityApplyNote ?? "", 80)
-			+ " reason=" + PreviewForPolicyDebugLog(effect.Reason ?? "", 120);
-	}
-
-	private static string BuildPolicyRecordDebugSummary(PolicyRecordSaveData record)
-	{
-		if (record == null)
-		{
-			return "";
-		}
-		StringBuilder builder = new StringBuilder();
-		builder.AppendLine("recordId=" + (record.RecordId ?? ""));
-		builder.AppendLine("date=" + (record.DateText ?? "") + " policy=" + (record.PolicyName ?? ""));
-		builder.AppendLine("contentSummary=" + PreviewForPolicyDebugLog(record.PolicyContentSummary ?? "", 220));
-		builder.AppendLine("feedbackSummary=" + PreviewForPolicyDebugLog(record.PublicFeedbackSummary ?? "", 220));
-		builder.AppendLine("impactSummary=" + PreviewForPolicyDebugLog(record.ImpactSummary ?? "", 220));
-		builder.AppendLine("effects=" + ((record.Effects?.Count) ?? 0).ToString(CultureInfo.InvariantCulture));
-		foreach (PolicyRecordEffectSaveData effect in (record.Effects ?? new List<PolicyRecordEffectSaveData>()).Where(x => x != null).Take(6))
-		{
-			builder.AppendLine("- " + (effect.KingdomName ?? effect.KingdomId ?? "未指定")
-				+ " id=" + (effect.KingdomId ?? "")
-				+ " prosperity=" + FormatNumber(effect.ProsperityDailyDeltaPerTown)
-				+ " food=" + FormatNumber(effect.FoodDailyDeltaPerTown)
-				+ " hearth=" + FormatNumber(effect.HearthDailyDeltaPerVillage)
-				+ " loyalty=" + FormatNumber(effect.LoyaltyDailyDeltaPerTown)
-				+ " security=" + FormatNumber(effect.SecurityDailyDeltaPerTown)
-				+ " militia=" + FormatNumber(effect.MilitiaDailyDeltaPerTown)
-				+ " stability=" + effect.KingdomStabilityDailyDelta.ToString(CultureInfo.InvariantCulture)
-				+ " remaining=" + effect.RemainingDays.ToString(CultureInfo.InvariantCulture)
-				+ "/" + effect.TotalDurationDays.ToString(CultureInfo.InvariantCulture));
-		}
-		return builder.ToString().TrimEnd();
-	}
-
 	private static void PolicyDebugLog(string stage, string message)
 	{
 		PolicyDebugLog(stage, message, null);
@@ -3831,14 +4484,9 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 			+ ", security=" + FormatNumber(effect.SecurityDailyDeltaPerTown)
 			+ ", militia=" + FormatNumber(effect.MilitiaDailyDeltaPerTown)
 			+ ", stability=" + effect.KingdomStabilityDailyDelta.ToString(CultureInfo.InvariantCulture)
-			+ ") actual(prosperity=" + FormatNumber(effect.ProsperityActualDelta)
-			+ ", food=" + FormatNumber(effect.FoodActualDelta)
-			+ ", hearth=" + FormatNumber(effect.HearthActualDelta)
-			+ ", loyalty=" + FormatNumber(effect.LoyaltyActualDelta)
-			+ ", security=" + FormatNumber(effect.SecurityActualDelta)
-			+ ", militia=" + FormatNumber(effect.MilitiaActualDelta)
-			+ ", stability=" + effect.KingdomStabilityActualDelta.ToString(CultureInfo.InvariantCulture)
-			+ ") stabilityBefore=" + effect.KingdomStabilityBefore.ToString(CultureInfo.InvariantCulture)
+			+ ") settlementDeltas=model-managed"
+			+ " stabilityActual=" + effect.KingdomStabilityActualDelta.ToString(CultureInfo.InvariantCulture)
+			+ " stabilityBefore=" + effect.KingdomStabilityBefore.ToString(CultureInfo.InvariantCulture)
 			+ " stabilityAfter=" + effect.KingdomStabilityAfter.ToString(CultureInfo.InvariantCulture)
 			+ " stabilityApplied=" + (effect.KingdomStabilityApplied ? "true" : "false")
 			+ " stabilityNote=" + PreviewForPolicyDebugLog(effect.KingdomStabilityApplyNote ?? "", 120);
@@ -3846,86 +4494,12 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 
 	private static void PolicyEffectLedgerLog(string stage, string message)
 	{
-		try
-		{
-			string logDir = AnimusForgeModulePaths.GetLogsDirectory();
-			if (!string.IsNullOrWhiteSpace(logDir))
-			{
-				Directory.CreateDirectory(logDir);
-			}
-			string logPath = Path.Combine(logDir, "CustomPolicy_Effects.txt");
-			StringBuilder builder = new StringBuilder();
-			builder.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture));
-			builder.Append(" [");
-			builder.Append(string.IsNullOrWhiteSpace(stage) ? "log" : stage.Trim());
-			builder.Append("] ");
-			builder.AppendLine(message ?? "");
-			lock (CustomPolicyEffectLedgerLogLock)
-			{
-				File.AppendAllText(logPath, builder.ToString(), Encoding.UTF8);
-			}
-		}
-		catch
-		{
-		}
+		PolicySystemLog.Write("Effect", stage, message);
 	}
 
 	private static void PolicyDebugLog(string stage, string message, string detail)
 	{
-		try
-		{
-			string logDir = AnimusForgeModulePaths.GetLogsDirectory();
-			if (!string.IsNullOrWhiteSpace(logDir))
-			{
-				Directory.CreateDirectory(logDir);
-			}
-			string logPath = Path.Combine(logDir, "CustomPolicy_Debug.txt");
-			StringBuilder builder = new StringBuilder();
-			builder.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture));
-			builder.Append(" [");
-			builder.Append(string.IsNullOrWhiteSpace(stage) ? "log" : stage.Trim());
-			builder.Append("] ");
-			builder.AppendLine(message ?? "");
-			if (!string.IsNullOrEmpty(detail))
-			{
-				builder.AppendLine("--- detail begin ---");
-				builder.AppendLine(ClipForPolicyDebugLog(detail));
-				builder.AppendLine("--- detail end ---");
-			}
-			lock (CustomPolicyDebugLogLock)
-			{
-				File.AppendAllText(logPath, builder.ToString(), Encoding.UTF8);
-			}
-		}
-		catch
-		{
-		}
-	}
-
-	private static void PolicyDetailedLog(string stage, string message)
-	{
-		PolicyDetailedLog(stage, message, null);
-	}
-
-	private static void PolicyDetailedLog(string stage, string message, string detail)
-	{
-		CustomPolicyDetailedTraceLog.Write(stage, message, detail);
-	}
-
-	private static string ClipForPolicyDebugLog(string text)
-	{
-		if (text == null)
-		{
-			return "";
-		}
-		if (text.Length <= CustomPolicyDebugLogMaxFieldChars)
-		{
-			return text;
-		}
-		return text.Substring(0, CustomPolicyDebugLogMaxFieldChars)
-			+ "\n...[truncated "
-			+ (text.Length - CustomPolicyDebugLogMaxFieldChars).ToString(CultureInfo.InvariantCulture)
-			+ " chars]";
+		PolicySystemLog.Write("Player", stage, message, detail);
 	}
 
 	private static string SafeSerializeForDebug(object value)
@@ -3971,14 +4545,7 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 
 	private static void Log(string message)
 	{
-		PolicyDebugLog("log", message ?? "");
-		try
-		{
-			Logger.Log("CustomPolicy", message ?? "");
-		}
-		catch
-		{
-		}
+		PolicySystemLog.WriteRuntime("Player", message);
 	}
 
 	private sealed class PolicyEligibility
@@ -4007,26 +4574,40 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void ShowPolicySuccessResultPopup(string impactText)
+	private static void ShowPolicySuccessResultPopup(string policyObjectId, string impactText)
 	{
+		string sequencePolicyObjectId = (policyObjectId ?? "").Trim();
 		string bodyText = impactText ?? "";
-		PolicyDetailedLog("result-popup-show-start", "title=政策已经发布 bodyLength=" + bodyText.Length.ToString(CultureInfo.InvariantCulture), bodyText);
-		bool shown = CustomPolicyResultPopup.Show("政策已经发布", bodyText, "知道了");
-		PolicyDetailedLog("result-popup-show-finished", "shown=" + shown.ToString(CultureInfo.InvariantCulture)
-			+ " fallbackInquiry=" + (!shown).ToString(CultureInfo.InvariantCulture)
-			+ " bodyLength=" + bodyText.Length.ToString(CultureInfo.InvariantCulture));
+		bool shown = CustomPolicyResultPopup.Show("政策已经发布", bodyText, "知道了", delegate
+		{
+			CompletePolicySuccessResultSequence(sequencePolicyObjectId);
+		});
+		BeginPolicySuccessResultSequence(sequencePolicyObjectId);
 		if (!shown)
 		{
-			PolicyDetailedLog("result-popup-fallback-inquiry", "title=政策已经发布 bodyLength=" + bodyText.Length.ToString(CultureInfo.InvariantCulture), bodyText);
-			InformationManager.ShowInquiry(new InquiryData("政策已经发布", bodyText, true, false, "知道了", "", null, null), pauseGameActiveState: true);
+			InformationManager.ShowInquiry(new InquiryData("政策已经发布", bodyText, true, false, "知道了", "", delegate
+			{
+				CompletePolicySuccessResultSequence(sequencePolicyObjectId);
+			}, null), pauseGameActiveState: true);
+		}
+	}
+
+	private static bool HasAnyTimedPolicyEffect(PolicyApplicationResult application)
+	{
+		try
+		{
+			return application?.KingdomEffects != null
+				&& application.KingdomEffects.Any(effect => effect != null && effect.DurationDays > 0);
+		}
+		catch
+		{
+			return false;
 		}
 	}
 
 	private sealed class PolicyRuntimeOptions
 	{
 		public int GoldCost;
-
-		public float InfluenceCost;
 
 		public bool UseAiEvaluatedCost;
 
@@ -4035,6 +4616,52 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 		public bool EvaluatorPromptIsDefault;
 
 		public int PublicFeedbackTargetChars;
+	}
+
+	private sealed class DynamicPolicySaveData
+	{
+		public int Version { get; set; } = 1;
+
+		public string PolicyObjectId { get; set; }
+
+		public string RecordId { get; set; }
+
+		public string Source { get; set; }
+
+		public string OwnerKingdomId { get; set; }
+
+		public string ProposerClanId { get; set; }
+
+		public string PolicyName { get; set; }
+
+		public string PolicyContent { get; set; }
+
+		public string LogEntryDescription { get; set; }
+
+		public string SecondaryEffects { get; set; }
+
+		public float AuthoritarianWeight { get; set; }
+
+		public float OligarchicWeight { get; set; }
+
+		public float EgalitarianWeight { get; set; }
+
+		public string Status { get; set; }
+
+		public bool NaturalExpiryAgendaRejected { get; set; }
+
+		public long CreatedUtcTicks { get; set; }
+
+		public string PlayerPayloadJson { get; set; }
+	}
+
+	private sealed class PendingPlayerPolicyAgendaSaveData
+	{
+		public PolicyDraftRequest Request { get; set; }
+
+		public PolicyMainAssessmentResult Assessment { get; set; }
+
+		public string Feedback { get; set; }
 	}
 
 	private sealed class PolicyDraftRequest
@@ -4074,6 +4701,10 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 		public int PublicFeedbackTargetChars;
 
 		public PolicyPromptContextBundle PromptContext;
+
+		public MentionedWorldEntities KnowledgeMentionedEntities;
+
+		public string KnowledgeContext;
 	}
 
 	private sealed class PolicyPromptContextBundle
@@ -4130,6 +4761,18 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 
 		[JsonProperty("policyContentDigest")]
 		public string PolicyContentDigest { get; set; }
+
+		[JsonProperty("feedbackDigest")]
+		public string FeedbackDigest { get; set; }
+
+		[JsonProperty("authoritarianWeight")]
+		public float? AuthoritarianWeight { get; set; }
+
+		[JsonProperty("oligarchicWeight")]
+		public float? OligarchicWeight { get; set; }
+
+		[JsonProperty("egalitarianWeight")]
+		public float? EgalitarianWeight { get; set; }
 
 		[JsonProperty("effects")]
 		public List<PolicyEffectDto> Effects { get; set; }
@@ -4219,18 +4862,6 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 
 		public int RemainingDays;
 
-		public float ProsperityActualDelta;
-
-		public float FoodActualDelta;
-
-		public float HearthActualDelta;
-
-		public float LoyaltyActualDelta;
-
-		public float SecurityActualDelta;
-
-		public float MilitiaActualDelta;
-
 		public int KingdomStabilityActualDelta;
 
 		public int KingdomStabilityBefore;
@@ -4248,7 +4879,7 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 
 	private sealed class ActivePolicyEffectSaveData
 	{
-		public int Version { get; set; } = 1;
+		public int Version { get; set; } = 2;
 
 		public string EffectId { get; set; }
 
@@ -4291,6 +4922,26 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 		public bool Ended { get; set; }
 
 		public string EndReason { get; set; }
+
+		public PendingActivePolicyApplicationSaveData PendingApplication { get; set; }
+	}
+
+	private sealed class PendingActivePolicyApplicationSaveData
+	{
+		public int Day { get; set; }
+
+		public List<string> SettlementIds { get; set; } = new List<string>();
+
+		public int NextSettlementIndex { get; set; }
+
+		public AppliedKingdomEffect AppliedEffect { get; set; }
+	}
+
+	private sealed class PendingActivePolicyEffectWork
+	{
+		public string EffectId;
+
+		public int RuntimeGeneration;
 	}
 
 	private sealed class PolicyRecordSaveData
@@ -4375,1124 +5026,5 @@ public sealed class CustomPolicyBehavior : CampaignBehaviorBase
 		public string EndReason { get; set; }
 
 		public string Reason { get; set; }
-	}
-}
-
-public sealed class CustomPolicyComposePopup
-{
-	private static CustomPolicyComposePopup _activePopup;
-
-	private readonly ScreenBase _screen;
-
-	private readonly GauntletLayer _layer;
-
-	private readonly CustomPolicyComposePopupVM _dataSource;
-
-	private readonly Action<string, string, string> _onPublish;
-
-	private readonly Action _onCancel;
-
-	private bool _isClosed;
-
-	private PendingCloseAction _pendingCloseAction = PendingCloseAction.None;
-
-	private string _pendingPolicyName;
-
-	private string _pendingPolicyContent;
-
-	private string _pendingDateText;
-
-	private enum PendingCloseAction
-	{
-		None,
-		Publish,
-		Cancel
-	}
-
-	public static bool IsOpen => _activePopup != null && !_activePopup._isClosed;
-
-	public static void ProcessDeferredCloseAction()
-	{
-		try
-		{
-			_activePopup?.ProcessPendingCloseAction();
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("CustomPolicy", "[WARN] Failed to process deferred compose popup close: " + ex.Message);
-		}
-	}
-
-	private CustomPolicyComposePopup(ScreenBase screen, string titleText, string nameLabelText, string contentLabelText, string dateText, bool canPublish, string blockReason, Action<string, string, string> onPublish, Action onCancel)
-	{
-		_screen = screen;
-		_onPublish = onPublish;
-		_onCancel = onCancel;
-		_dataSource = new CustomPolicyComposePopupVM(titleText, nameLabelText, contentLabelText, dateText, canPublish, blockReason, HandlePublishRequested, HandleCancelRequested);
-		_layer = new GauntletLayer("CustomPolicyComposePopup", 4000, false);
-	}
-
-	public static bool Show(string titleText, string nameLabelText, string contentLabelText, string dateText, bool canPublish, string blockReason, Action<string, string, string> onPublish, Action onCancel)
-	{
-		ScreenBase topScreen = ScreenManager.TopScreen;
-		if (topScreen == null)
-		{
-			return false;
-		}
-		try
-		{
-			_activePopup?.Close(silent: true);
-			CustomPolicyComposePopup popup = new CustomPolicyComposePopup(topScreen, titleText, nameLabelText, contentLabelText, dateText, canPublish, blockReason, onPublish, onCancel);
-			popup.Open();
-			_activePopup = popup;
-			return true;
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("CustomPolicy", "[ERROR] Failed to open compose popup: " + ex);
-			_activePopup?.Close(silent: true);
-			_activePopup = null;
-			return false;
-		}
-	}
-
-	private void Open()
-	{
-		_layer.LoadMovie("CustomPolicyComposePopup", _dataSource);
-		_layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.All);
-		try
-		{
-			_layer.Input.RegisterHotKeyCategory(HotKeyManager.GetCategory("GenericPanelGameKeyCategory"));
-		}
-		catch
-		{
-		}
-		_screen.AddLayer(_layer);
-		_layer.IsFocusLayer = true;
-		ScreenManager.TrySetFocus(_layer);
-	}
-
-	private void HandlePublishRequested(string policyName, string policyContent, string dateText)
-	{
-		RequestDeferredClose(PendingCloseAction.Publish, policyName ?? "", policyContent ?? "", dateText ?? "");
-	}
-
-	private void HandleCancelRequested()
-	{
-		RequestDeferredClose(PendingCloseAction.Cancel, null, null, null);
-	}
-
-	private void RequestDeferredClose(PendingCloseAction action, string policyName, string policyContent, string dateText)
-	{
-		if (_isClosed || _pendingCloseAction != PendingCloseAction.None)
-		{
-			return;
-		}
-		_pendingCloseAction = action;
-		_pendingPolicyName = policyName;
-		_pendingPolicyContent = policyContent;
-		_pendingDateText = dateText;
-	}
-
-	private void ProcessPendingCloseAction()
-	{
-		if (_isClosed || _pendingCloseAction == PendingCloseAction.None)
-		{
-			return;
-		}
-		PendingCloseAction action = _pendingCloseAction;
-		string policyName = _pendingPolicyName ?? "";
-		string policyContent = _pendingPolicyContent ?? "";
-		string dateText = _pendingDateText ?? "";
-		_pendingCloseAction = PendingCloseAction.None;
-		_pendingPolicyName = null;
-		_pendingPolicyContent = null;
-		_pendingDateText = null;
-		Close(silent: true);
-		if (action == PendingCloseAction.Publish)
-		{
-			_onPublish?.Invoke(policyName, policyContent, dateText);
-		}
-		else if (action == PendingCloseAction.Cancel)
-		{
-			_onCancel?.Invoke();
-		}
-	}
-
-	private void Close(bool silent)
-	{
-		if (_isClosed)
-		{
-			return;
-		}
-		_isClosed = true;
-		try
-		{
-			_layer.IsFocusLayer = false;
-			ScreenManager.TryLoseFocus(_layer);
-		}
-		catch
-		{
-		}
-		try
-		{
-			_screen.RemoveLayer(_layer);
-		}
-		catch (Exception ex)
-		{
-			if (!silent)
-			{
-				Logger.Log("CustomPolicy", "[WARN] Failed to remove compose popup layer: " + ex.Message);
-			}
-		}
-		_dataSource?.OnFinalize();
-		if (ReferenceEquals(_activePopup, this))
-		{
-			_activePopup = null;
-		}
-	}
-}
-
-public sealed class CustomPolicyComposePopupVM : ViewModel
-{
-	private readonly Action<string, string, string> _onPublish;
-
-	private readonly Action _onCancel;
-
-	private bool _externalCanPublish;
-
-	private string _titleText;
-
-	private string _nameLabelText;
-
-	private string _contentLabelText;
-
-	private string _dateText;
-
-	private string _policyName;
-
-	private string _policyContent;
-
-	private string _publishText;
-
-	private string _cancelText;
-
-	private string _statusText;
-
-	private string _readyStatusText;
-
-	private bool _canPublish;
-
-	public CustomPolicyComposePopupVM(string titleText, string nameLabelText, string contentLabelText, string dateText, bool canPublish, string blockReason, Action<string, string, string> onPublish, Action onCancel)
-	{
-		_onPublish = onPublish;
-		_onCancel = onCancel;
-		_externalCanPublish = canPublish;
-		TitleText = string.IsNullOrWhiteSpace(titleText) ? "撰写政策" : titleText;
-		NameLabelText = string.IsNullOrWhiteSpace(nameLabelText) ? "政策名" : nameLabelText;
-		ContentLabelText = string.IsNullOrWhiteSpace(contentLabelText) ? "政策内容" : contentLabelText;
-		DateText = string.IsNullOrWhiteSpace(dateText) ? "未知日期" : dateText;
-		PolicyName = "";
-		PolicyContent = "";
-		PublishText = "发布政策";
-		CancelText = "取消";
-		_readyStatusText = string.IsNullOrWhiteSpace(blockReason) ? "填写政策名和政策内容后即可发布。" : blockReason;
-		StatusText = canPublish ? _readyStatusText : (string.IsNullOrWhiteSpace(blockReason) ? "当前不能发布政策。" : blockReason);
-		RefreshCanPublish();
-	}
-
-	[DataSourceProperty]
-	public string TitleText
-	{
-		get => _titleText;
-		set
-		{
-			if (value != _titleText)
-			{
-				_titleText = value;
-				OnPropertyChangedWithValue(value, nameof(TitleText));
-			}
-		}
-	}
-
-	[DataSourceProperty]
-	public string NameLabelText
-	{
-		get => _nameLabelText;
-		set
-		{
-			if (value != _nameLabelText)
-			{
-				_nameLabelText = value;
-				OnPropertyChangedWithValue(value, nameof(NameLabelText));
-			}
-		}
-	}
-
-	[DataSourceProperty]
-	public string ContentLabelText
-	{
-		get => _contentLabelText;
-		set
-		{
-			if (value != _contentLabelText)
-			{
-				_contentLabelText = value;
-				OnPropertyChangedWithValue(value, nameof(ContentLabelText));
-			}
-		}
-	}
-
-	[DataSourceProperty]
-	public string DateText
-	{
-		get => _dateText;
-		set
-		{
-			if (value != _dateText)
-			{
-				_dateText = value;
-				OnPropertyChangedWithValue(value, nameof(DateText));
-			}
-		}
-	}
-
-	[DataSourceProperty]
-	public string PolicyName
-	{
-		get => _policyName;
-		set
-		{
-			string text = AnimusForgeTextInputSanitizer.SanitizeSingleLine(value, AnimusForgeTextInputSanitizer.MaxPolicyNameChars);
-			if (text != _policyName)
-			{
-				_policyName = text;
-				OnPropertyChangedWithValue(_policyName, nameof(PolicyName));
-				RefreshCanPublish();
-			}
-		}
-	}
-
-	[DataSourceProperty]
-	public string PolicyContent
-	{
-		get => _policyContent;
-		set
-		{
-			string text = AnimusForgeTextInputSanitizer.SanitizeMultiline(value, AnimusForgeTextInputSanitizer.MaxPolicyContentChars);
-			if (text != _policyContent)
-			{
-				_policyContent = text;
-				OnPropertyChangedWithValue(_policyContent, nameof(PolicyContent));
-				RefreshCanPublish();
-			}
-		}
-	}
-
-	[DataSourceProperty]
-	public string PublishText
-	{
-		get => _publishText;
-		set
-		{
-			if (value != _publishText)
-			{
-				_publishText = value;
-				OnPropertyChangedWithValue(value, nameof(PublishText));
-			}
-		}
-	}
-
-	[DataSourceProperty]
-	public string CancelText
-	{
-		get => _cancelText;
-		set
-		{
-			if (value != _cancelText)
-			{
-				_cancelText = value;
-				OnPropertyChangedWithValue(value, nameof(CancelText));
-			}
-		}
-	}
-
-	[DataSourceProperty]
-	public string StatusText
-	{
-		get => _statusText;
-		set
-		{
-			if (value != _statusText)
-			{
-				_statusText = value;
-				OnPropertyChangedWithValue(value, nameof(StatusText));
-			}
-		}
-	}
-
-	[DataSourceProperty]
-	public bool CanPublish
-	{
-		get => _canPublish;
-		set
-		{
-			if (value != _canPublish)
-			{
-				_canPublish = value;
-				OnPropertyChangedWithValue(value, nameof(CanPublish));
-			}
-		}
-	}
-
-	public void ExecutePublish()
-	{
-		RefreshCanPublish();
-		if (!CanPublish)
-		{
-			if (string.IsNullOrWhiteSpace(StatusText))
-			{
-				StatusText = "当前不能发布政策。";
-			}
-			return;
-		}
-		_onPublish?.Invoke(PolicyName ?? "", PolicyContent ?? "", DateText ?? "");
-	}
-
-	public void ExecuteCancel()
-	{
-		_onCancel?.Invoke();
-	}
-
-	public void StartTyping()
-	{
-	}
-
-	public void StopTyping()
-	{
-	}
-
-	private void RefreshCanPublish()
-	{
-		bool hasName = !string.IsNullOrWhiteSpace(PolicyName);
-		bool hasContent = !string.IsNullOrWhiteSpace(PolicyContent);
-		CanPublish = _externalCanPublish && hasName && hasContent;
-		if (_externalCanPublish)
-		{
-			if (!hasName)
-			{
-				StatusText = "请先填写政策名。";
-			}
-			else if (!hasContent)
-			{
-				StatusText = "请先填写政策内容。";
-			}
-			else
-			{
-				StatusText = string.IsNullOrWhiteSpace(_readyStatusText) ? "点击发布后将等待 LLM 评议；成功落地时扣除已配置成本。" : _readyStatusText;
-			}
-		}
-	}
-}
-
-public sealed class PolicyHistoryData
-{
-	public string TitleText { get; set; } = "政策记录";
-
-	public string SubtitleText { get; set; } = "";
-
-	public string EmptyStateText { get; set; } = "尚无成功落地的政策记录。";
-
-	public string CloseText { get; set; } = "返回政策管理";
-
-	public List<PolicyHistoryRecordData> Records { get; set; } = new List<PolicyHistoryRecordData>();
-}
-
-public sealed class PolicyHistoryRecordData
-{
-	public string DateText { get; set; }
-
-	public string PolicyNameText { get; set; }
-
-	public string CostText { get; set; }
-
-	public string ContentSectionTitleText { get; set; }
-
-	public string ContentSummaryText { get; set; }
-
-	public string FeedbackSectionTitleText { get; set; }
-
-	public string FeedbackSummaryText { get; set; }
-
-	public string ImpactSectionTitleText { get; set; }
-
-	public string ImpactSummaryText { get; set; }
-}
-
-
-internal static class CustomPolicyDetailedTraceLog
-{
-	private const int MaxFieldChars = 1000000;
-
-	private const string FileName = "CustomPolicy_DetailedTrace.txt";
-
-	private static readonly object SyncRoot = new object();
-
-	internal static void Write(string stage, string message)
-	{
-		Write(stage, message, null);
-	}
-
-	internal static void Write(string stage, string message, string detail)
-	{
-		try
-		{
-			string logDir = AnimusForgeModulePaths.GetLogsDirectory();
-			if (!string.IsNullOrWhiteSpace(logDir))
-			{
-				Directory.CreateDirectory(logDir);
-			}
-			string logPath = Path.Combine(logDir, FileName);
-			StringBuilder builder = new StringBuilder();
-			builder.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture));
-			builder.Append(" [");
-			builder.Append(string.IsNullOrWhiteSpace(stage) ? "log" : stage.Trim());
-			builder.Append("] ");
-			builder.AppendLine(message ?? "");
-			if (!string.IsNullOrEmpty(detail))
-			{
-				builder.AppendLine("--- detail begin ---");
-				builder.AppendLine(Clip(detail));
-				builder.AppendLine("--- detail end ---");
-			}
-			lock (SyncRoot)
-			{
-				File.AppendAllText(logPath, builder.ToString(), Encoding.UTF8);
-			}
-		}
-		catch
-		{
-		}
-	}
-
-	internal static string Clip(string text)
-	{
-		if (text == null)
-		{
-			return "";
-		}
-		if (text.Length <= MaxFieldChars)
-		{
-			return text;
-		}
-		return text.Substring(0, MaxFieldChars)
-			+ "\n...[truncated "
-			+ (text.Length - MaxFieldChars).ToString(CultureInfo.InvariantCulture)
-			+ " chars]";
-	}
-}
-
-
-public sealed class CustomPolicyResultPopup
-{
-	private static CustomPolicyResultPopup _activePopup;
-
-	private readonly ScreenBase _screen;
-
-	private readonly GauntletLayer _layer;
-
-	private readonly CustomPolicyResultPopupVM _dataSource;
-
-	private bool _isClosed;
-
-	private CustomPolicyResultPopup(ScreenBase screen, string titleText, string bodyText, string closeText)
-	{
-		_screen = screen;
-		_dataSource = new CustomPolicyResultPopupVM(titleText, bodyText, closeText, HandleCloseRequested);
-		_layer = new GauntletLayer("CustomPolicyResultPopup", 4150, false);
-	}
-
-	public static bool Show(string titleText, string bodyText, string closeText)
-	{
-		ScreenBase topScreen = ScreenManager.TopScreen;
-		CustomPolicyDetailedTraceLog.Write("result-popup-show-enter", "topScreen=" + (topScreen?.GetType().FullName ?? "(null)")
-			+ " titleLength=" + (titleText ?? "").Length.ToString(CultureInfo.InvariantCulture)
-			+ " bodyLength=" + (bodyText ?? "").Length.ToString(CultureInfo.InvariantCulture)
-			+ " closeTextLength=" + (closeText ?? "").Length.ToString(CultureInfo.InvariantCulture));
-		if (topScreen == null)
-		{
-			CustomPolicyDetailedTraceLog.Write("result-popup-show-blocked", "reason=topScreen_null bodyLength=" + (bodyText ?? "").Length.ToString(CultureInfo.InvariantCulture));
-			return false;
-		}
-		try
-		{
-			if (_activePopup != null)
-			{
-				CustomPolicyDetailedTraceLog.Write("result-popup-close-existing", "closing existing active popup before opening new one");
-			}
-			_activePopup?.Close(silent: true);
-			CustomPolicyResultPopup popup = new CustomPolicyResultPopup(topScreen, titleText, bodyText, closeText);
-			CustomPolicyDetailedTraceLog.Write("result-popup-open-call", "screen=" + topScreen.GetType().FullName
-				+ " layerName=CustomPolicyResultPopup"
-				+ " bodyLength=" + (bodyText ?? "").Length.ToString(CultureInfo.InvariantCulture));
-			popup.Open();
-			_activePopup = popup;
-			CustomPolicyDetailedTraceLog.Write("result-popup-show-success", "screen=" + topScreen.GetType().FullName
-				+ " bodyLength=" + (bodyText ?? "").Length.ToString(CultureInfo.InvariantCulture));
-			return true;
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("CustomPolicy", "[ERROR] Failed to open policy result popup: " + ex);
-			CustomPolicyDetailedTraceLog.Write("result-popup-show-exception", "bodyLength=" + (bodyText ?? "").Length.ToString(CultureInfo.InvariantCulture), ex.ToString());
-			_activePopup?.Close(silent: true);
-			_activePopup = null;
-			return false;
-		}
-	}
-
-	private void Open()
-	{
-		CustomPolicyDetailedTraceLog.Write("result-popup-load-movie-start", "movie=CustomPolicyResultPopup bodyLength=" + (_dataSource?.BodyText ?? "").Length.ToString(CultureInfo.InvariantCulture));
-		_layer.LoadMovie("CustomPolicyResultPopup", _dataSource);
-		CustomPolicyDetailedTraceLog.Write("result-popup-load-movie-done", "movie=CustomPolicyResultPopup");
-		_layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.All);
-		try
-		{
-			_layer.Input.RegisterHotKeyCategory(HotKeyManager.GetCategory("GenericPanelGameKeyCategory"));
-			CustomPolicyDetailedTraceLog.Write("result-popup-hotkey-registered", "category=GenericPanelGameKeyCategory");
-		}
-		catch (Exception ex)
-		{
-			CustomPolicyDetailedTraceLog.Write("result-popup-hotkey-register-failed", ex.Message);
-		}
-		CustomPolicyDetailedTraceLog.Write("result-popup-add-layer-start", "screen=" + (_screen?.GetType().FullName ?? "(null)"));
-		_screen.AddLayer(_layer);
-		_layer.IsFocusLayer = true;
-		ScreenManager.TrySetFocus(_layer);
-		CustomPolicyDetailedTraceLog.Write("result-popup-add-layer-done", "focusSet=true");
-	}
-
-	private void HandleCloseRequested()
-	{
-		Close(silent: true);
-	}
-
-	private void Close(bool silent)
-	{
-		CustomPolicyDetailedTraceLog.Write("result-popup-close-start", "silent=" + silent.ToString(CultureInfo.InvariantCulture)
-			+ " isClosed=" + _isClosed.ToString(CultureInfo.InvariantCulture));
-		if (_isClosed)
-		{
-			return;
-		}
-		_isClosed = true;
-		try
-		{
-			_layer.InputRestrictions.ResetInputRestrictions();
-			_layer.IsFocusLayer = false;
-			ScreenManager.TryLoseFocus(_layer);
-		}
-		catch (Exception ex)
-		{
-			CustomPolicyDetailedTraceLog.Write("result-popup-focus-reset-failed", ex.Message);
-		}
-		try
-		{
-			_screen.RemoveLayer(_layer);
-			CustomPolicyDetailedTraceLog.Write("result-popup-remove-layer-done", "screen=" + (_screen?.GetType().FullName ?? "(null)"));
-		}
-		catch (Exception ex)
-		{
-			if (!silent)
-			{
-				Logger.Log("CustomPolicy", "[WARN] Failed to remove policy result popup layer: " + ex.Message);
-			}
-			CustomPolicyDetailedTraceLog.Write("result-popup-remove-layer-failed", "silent=" + silent.ToString(CultureInfo.InvariantCulture), ex.ToString());
-		}
-		_dataSource?.OnFinalize();
-		if (ReferenceEquals(_activePopup, this))
-		{
-			_activePopup = null;
-		}
-		CustomPolicyDetailedTraceLog.Write("result-popup-close-done", "activeCleared=" + ReferenceEquals(_activePopup, null).ToString(CultureInfo.InvariantCulture));
-	}
-}
-
-public sealed class CustomPolicyResultPopupVM : ViewModel
-{
-	private readonly Action _onClose;
-
-	private string _titleText;
-
-	private string _bodyText;
-
-	private string _closeText;
-
-	[DataSourceProperty]
-	public string TitleText
-	{
-		get => _titleText;
-		set
-		{
-			if (value != _titleText)
-			{
-				_titleText = value;
-				OnPropertyChangedWithValue(value, nameof(TitleText));
-			}
-		}
-	}
-
-	[DataSourceProperty]
-	public string BodyText
-	{
-		get => _bodyText;
-		set
-		{
-			if (value != _bodyText)
-			{
-				_bodyText = value;
-				OnPropertyChangedWithValue(value, nameof(BodyText));
-			}
-		}
-	}
-
-	[DataSourceProperty]
-	public string CloseText
-	{
-		get => _closeText;
-		set
-		{
-			if (value != _closeText)
-			{
-				_closeText = value;
-				OnPropertyChangedWithValue(value, nameof(CloseText));
-			}
-		}
-	}
-
-	public CustomPolicyResultPopupVM(string titleText, string bodyText, string closeText, Action onClose)
-	{
-		_onClose = onClose;
-		TitleText = string.IsNullOrWhiteSpace(titleText) ? "政策已经发布" : titleText.Trim();
-		BodyText = (bodyText ?? "").Trim();
-		CloseText = string.IsNullOrWhiteSpace(closeText) ? "知道了" : closeText.Trim();
-		CustomPolicyDetailedTraceLog.Write("result-popup-vm-created", "titleLength=" + TitleText.Length.ToString(CultureInfo.InvariantCulture)
-			+ " bodyLength=" + BodyText.Length.ToString(CultureInfo.InvariantCulture)
-			+ " closeTextLength=" + CloseText.Length.ToString(CultureInfo.InvariantCulture));
-	}
-
-	public void ExecuteClose()
-	{
-		CustomPolicyDetailedTraceLog.Write("result-popup-close-clicked", "bodyLength=" + (BodyText ?? "").Length.ToString(CultureInfo.InvariantCulture));
-		_onClose?.Invoke();
-	}
-}
-
-public sealed class CustomPolicyHistoryPopup
-{
-	private static CustomPolicyHistoryPopup _activePopup;
-
-	private readonly ScreenBase _screen;
-
-	private readonly GauntletLayer _layer;
-
-	private readonly CustomPolicyHistoryPopupVM _dataSource;
-
-	private readonly Action _onClose;
-
-	private bool _isClosed;
-
-	private CustomPolicyHistoryPopup(ScreenBase screen, PolicyHistoryData data, Action onClose)
-	{
-		_screen = screen;
-		_onClose = onClose;
-		_dataSource = new CustomPolicyHistoryPopupVM(data, HandleCloseRequested);
-		_layer = new GauntletLayer("CustomPolicyHistoryPopup", 4100, false);
-	}
-
-	public static bool Show(PolicyHistoryData data, Action onClose = null)
-	{
-		ScreenBase topScreen = ScreenManager.TopScreen;
-		if (topScreen == null)
-		{
-			return false;
-		}
-		try
-		{
-			_activePopup?.Close(silent: true);
-			CustomPolicyHistoryPopup popup = new CustomPolicyHistoryPopup(topScreen, data ?? new PolicyHistoryData(), onClose);
-			popup.Open();
-			_activePopup = popup;
-			return true;
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("CustomPolicy", "[ERROR] Failed to open policy history popup: " + ex);
-			_activePopup?.Close(silent: true);
-			_activePopup = null;
-			return false;
-		}
-	}
-
-	private void Open()
-	{
-		_layer.LoadMovie("CustomPolicyHistoryPopup", _dataSource);
-		_layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.All);
-		try
-		{
-			_layer.Input.RegisterHotKeyCategory(HotKeyManager.GetCategory("GenericPanelGameKeyCategory"));
-		}
-		catch
-		{
-		}
-		_screen.AddLayer(_layer);
-		_layer.IsFocusLayer = true;
-		ScreenManager.TrySetFocus(_layer);
-	}
-
-	private void HandleCloseRequested()
-	{
-		Close(silent: true);
-		_onClose?.Invoke();
-	}
-
-	private void Close(bool silent)
-	{
-		if (_isClosed)
-		{
-			return;
-		}
-		_isClosed = true;
-		try
-		{
-			_layer.InputRestrictions.ResetInputRestrictions();
-			_layer.IsFocusLayer = false;
-			ScreenManager.TryLoseFocus(_layer);
-		}
-		catch
-		{
-		}
-		try
-		{
-			_screen.RemoveLayer(_layer);
-		}
-		catch (Exception ex)
-		{
-			if (!silent)
-			{
-				Logger.Log("CustomPolicy", "[WARN] Failed to remove policy history popup layer: " + ex.Message);
-			}
-		}
-		_dataSource?.OnFinalize();
-		if (ReferenceEquals(_activePopup, this))
-		{
-			_activePopup = null;
-		}
-	}
-}
-
-public sealed class CustomPolicyHistoryPopupVM : ViewModel
-{
-	private readonly Action _onClose;
-
-	private string _titleText;
-
-	private string _subtitleText;
-
-	private string _emptyStateText;
-
-	private string _closeText;
-
-	private bool _hasRecords;
-
-	private bool _showEmptyState;
-
-	private MBBindingList<CustomPolicyHistoryRecordItemVM> _recordItems;
-
-	[DataSourceProperty]
-	public string TitleText
-	{
-		get => _titleText;
-		set
-		{
-			if (value != _titleText)
-			{
-				_titleText = value;
-				OnPropertyChangedWithValue(value, nameof(TitleText));
-			}
-		}
-	}
-
-	[DataSourceProperty]
-	public string SubtitleText
-	{
-		get => _subtitleText;
-		set
-		{
-			if (value != _subtitleText)
-			{
-				_subtitleText = value;
-				OnPropertyChangedWithValue(value, nameof(SubtitleText));
-			}
-		}
-	}
-
-	[DataSourceProperty]
-	public string EmptyStateText
-	{
-		get => _emptyStateText;
-		set
-		{
-			if (value != _emptyStateText)
-			{
-				_emptyStateText = value;
-				OnPropertyChangedWithValue(value, nameof(EmptyStateText));
-			}
-		}
-	}
-
-	[DataSourceProperty]
-	public string CloseText
-	{
-		get => _closeText;
-		set
-		{
-			if (value != _closeText)
-			{
-				_closeText = value;
-				OnPropertyChangedWithValue(value, nameof(CloseText));
-			}
-		}
-	}
-
-	[DataSourceProperty]
-	public bool HasRecords
-	{
-		get => _hasRecords;
-		set
-		{
-			if (value != _hasRecords)
-			{
-				_hasRecords = value;
-				OnPropertyChangedWithValue(value, nameof(HasRecords));
-			}
-		}
-	}
-
-	[DataSourceProperty]
-	public bool ShowEmptyState
-	{
-		get => _showEmptyState;
-		set
-		{
-			if (value != _showEmptyState)
-			{
-				_showEmptyState = value;
-				OnPropertyChangedWithValue(value, nameof(ShowEmptyState));
-			}
-		}
-	}
-
-	[DataSourceProperty]
-	public MBBindingList<CustomPolicyHistoryRecordItemVM> RecordItems
-	{
-		get => _recordItems;
-		set
-		{
-			if (value != _recordItems)
-			{
-				_recordItems = value;
-				OnPropertyChangedWithValue(value, nameof(RecordItems));
-			}
-		}
-	}
-
-	public CustomPolicyHistoryPopupVM(PolicyHistoryData data, Action onClose)
-	{
-		_onClose = onClose;
-		PolicyHistoryData source = data ?? new PolicyHistoryData();
-		TitleText = string.IsNullOrWhiteSpace(source.TitleText) ? "政策记录" : source.TitleText.Trim();
-		SubtitleText = (source.SubtitleText ?? "").Trim();
-		EmptyStateText = string.IsNullOrWhiteSpace(source.EmptyStateText) ? "尚无成功落地的政策记录。" : source.EmptyStateText.Trim();
-		CloseText = string.IsNullOrWhiteSpace(source.CloseText) ? "返回政策管理" : source.CloseText.Trim();
-		RecordItems = new MBBindingList<CustomPolicyHistoryRecordItemVM>();
-		if (source.Records != null)
-		{
-			foreach (PolicyHistoryRecordData record in source.Records)
-			{
-				if (record != null)
-				{
-					RecordItems.Add(new CustomPolicyHistoryRecordItemVM(record));
-				}
-			}
-		}
-		HasRecords = RecordItems.Count > 0;
-		ShowEmptyState = !HasRecords;
-	}
-
-	public void ExecuteClose()
-	{
-		_onClose?.Invoke();
-	}
-}
-
-public sealed class CustomPolicyHistoryRecordItemVM : ViewModel
-{
-	private string _dateText;
-
-	private string _policyNameText;
-
-	private string _costText;
-
-	private string _contentSectionTitleText;
-
-	private string _contentSummaryText;
-
-	private string _feedbackSectionTitleText;
-
-	private string _feedbackSummaryText;
-
-	private string _impactSectionTitleText;
-
-	private string _impactSummaryText;
-
-	[DataSourceProperty]
-	public string DateText
-	{
-		get => _dateText;
-		set
-		{
-			if (value != _dateText)
-			{
-				_dateText = value;
-				OnPropertyChangedWithValue(value, nameof(DateText));
-			}
-		}
-	}
-
-	[DataSourceProperty]
-	public string PolicyNameText
-	{
-		get => _policyNameText;
-		set
-		{
-			if (value != _policyNameText)
-			{
-				_policyNameText = value;
-				OnPropertyChangedWithValue(value, nameof(PolicyNameText));
-			}
-		}
-	}
-
-	[DataSourceProperty]
-	public string CostText
-	{
-		get => _costText;
-		set
-		{
-			if (value != _costText)
-			{
-				_costText = value;
-				OnPropertyChangedWithValue(value, nameof(CostText));
-			}
-		}
-	}
-
-	[DataSourceProperty]
-	public string ContentSectionTitleText
-	{
-		get => _contentSectionTitleText;
-		set
-		{
-			if (value != _contentSectionTitleText)
-			{
-				_contentSectionTitleText = value;
-				OnPropertyChangedWithValue(value, nameof(ContentSectionTitleText));
-			}
-		}
-	}
-
-	[DataSourceProperty]
-	public string ContentSummaryText
-	{
-		get => _contentSummaryText;
-		set
-		{
-			if (value != _contentSummaryText)
-			{
-				_contentSummaryText = value;
-				OnPropertyChangedWithValue(value, nameof(ContentSummaryText));
-			}
-		}
-	}
-
-	[DataSourceProperty]
-	public string FeedbackSectionTitleText
-	{
-		get => _feedbackSectionTitleText;
-		set
-		{
-			if (value != _feedbackSectionTitleText)
-			{
-				_feedbackSectionTitleText = value;
-				OnPropertyChangedWithValue(value, nameof(FeedbackSectionTitleText));
-			}
-		}
-	}
-
-	[DataSourceProperty]
-	public string FeedbackSummaryText
-	{
-		get => _feedbackSummaryText;
-		set
-		{
-			if (value != _feedbackSummaryText)
-			{
-				_feedbackSummaryText = value;
-				OnPropertyChangedWithValue(value, nameof(FeedbackSummaryText));
-			}
-		}
-	}
-
-	[DataSourceProperty]
-	public string ImpactSectionTitleText
-	{
-		get => _impactSectionTitleText;
-		set
-		{
-			if (value != _impactSectionTitleText)
-			{
-				_impactSectionTitleText = value;
-				OnPropertyChangedWithValue(value, nameof(ImpactSectionTitleText));
-			}
-		}
-	}
-
-	[DataSourceProperty]
-	public string ImpactSummaryText
-	{
-		get => _impactSummaryText;
-		set
-		{
-			if (value != _impactSummaryText)
-			{
-				_impactSummaryText = value;
-				OnPropertyChangedWithValue(value, nameof(ImpactSummaryText));
-			}
-		}
-	}
-
-	public CustomPolicyHistoryRecordItemVM(PolicyHistoryRecordData record)
-	{
-		DateText = (record?.DateText ?? "未知日期").Trim();
-		PolicyNameText = (record?.PolicyNameText ?? "未命名政策").Trim();
-		CostText = (record?.CostText ?? "").Trim();
-		ContentSectionTitleText = string.IsNullOrWhiteSpace(record?.ContentSectionTitleText) ? "【政策内容】" : record.ContentSectionTitleText.Trim();
-		ContentSummaryText = (record?.ContentSummaryText ?? "").Trim();
-		FeedbackSectionTitleText = string.IsNullOrWhiteSpace(record?.FeedbackSectionTitleText) ? "【民众反馈】" : record.FeedbackSectionTitleText.Trim();
-		FeedbackSummaryText = (record?.FeedbackSummaryText ?? "").Trim();
-		ImpactSectionTitleText = string.IsNullOrWhiteSpace(record?.ImpactSectionTitleText) ? "【每日影响】" : record.ImpactSectionTitleText.Trim();
-		ImpactSummaryText = (record?.ImpactSummaryText ?? "").Trim();
 	}
 }
