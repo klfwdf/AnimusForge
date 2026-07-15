@@ -5942,13 +5942,19 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 	private static void TryApplyImmediateAttackConsequencesForEncounter(Hero target, string reason)
 	{
 		SuppressCustomEncounterMenuUntilBackOnMap("immediate_attack_" + (reason ?? "unknown"));
+		bool flag = false;
 		try
 		{
-			MeetingBattleRuntime.RequestCombatEscalation(reason);
-			MeetingBattleRuntime.UnlockDiplomaticSideEffects(reason);
+			flag = MeetingBattleRuntime.IsMeetingActive;
+			if (flag)
+			{
+				MeetingBattleRuntime.RequestCombatEscalation(reason);
+				MeetingBattleRuntime.UnlockDiplomaticSideEffects(reason);
+			}
 		}
 		catch
 		{
+			flag = false;
 		}
 		PartyBase partyBase = null;
 		try
@@ -5970,7 +5976,15 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				partyBase = null;
 			}
 		}
-		TryApplyImmediateEscalationConsequences(partyBase, target, reason ?? "menu_attack_option");
+		string text = reason ?? "menu_attack_option";
+		if (flag)
+		{
+			TryApplyImmediateEscalationConsequences(partyBase, target, text);
+		}
+		else
+		{
+			ApplyHostileEscalationDiplomaticConsequences(partyBase, target, text, "LordEncounter");
+		}
 	}
 
 	private static bool IsMeetingPseudoBattleTauntApplicable(Hero hero)
