@@ -1754,9 +1754,14 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		if (CastleAftermathRuntimeBridge.IsCastleAftermathMission(mission))
 		{
 			EnsureInterventionPlayerCommandTeam(mission);
+			// AF troop inspection opens a battle-compatible host. Keep an empty
+			// defender team available so the native battle-music view can inspect
+			// PlayerEnemyTeam after deployment without interrupting AF input ticks.
+			Team supportEnemyTeam = EnsureInterventionCivilianEnemyTeam(mission);
 			ApplyPlayerBattleEquipment();
 			GcczDiagnosticLog.Log("Mission", "after-start prepared castle settlement=" + (_activeSettlementId ?? "N/A")
-				+ " selectedRoster=" + (_selectedInterventionRoster?.TotalManCount ?? 0));
+				+ " selectedRoster=" + (_selectedInterventionRoster?.TotalManCount ?? 0)
+				+ " supportEnemyTeam=" + (supportEnemyTeam?.Side.ToString() ?? "null"));
 			return;
 		}
 		EnsureInterventionMissionCombatModeForPlayerDamage(mission);
@@ -1788,6 +1793,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		if (CastleAftermathRuntimeBridge.IsCastleAftermathMission(mission))
 		{
 			EnsureInterventionPlayerCommandTeam(mission);
+			EnsureInterventionCivilianEnemyTeam(mission);
 			float castleCurrentTime = mission.CurrentTime;
 			if (castleCurrentTime >= _nextControlTickTime)
 			{

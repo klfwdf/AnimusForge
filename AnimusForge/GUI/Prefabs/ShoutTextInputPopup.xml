@@ -2,7 +2,7 @@
   <Window>
     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotPassEventsToChildren="false">
       <Children>
-        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="980" SuggestedHeight="530" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="24" DoNotPassEventsToChildren="false">
+        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="980" SuggestedHeight="460" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="24" DoNotPassEventsToChildren="false">
           <Children>
             <ButtonWidget IsVisible="@IsTitleLinkEnabled" DoNotPassEventsToChildren="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="42" VerticalAlignment="Top" MarginTop="158" MarginLeft="20" MarginRight="20" Command.Click="ExecuteOpenTitleLink" UpdateChildrenStates="true" HoveredCursorState="RightClickLink">
               <Children>
@@ -66,20 +66,6 @@
                 <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="6" SuggestedHeight="6" HorizontalAlignment="Right" VerticalAlignment="Top" Sprite="BlankWhiteCircle" Color="#FFD700FF" AlphaFactor="1" DoNotAcceptEvents="true" />
                 <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="6" SuggestedHeight="6" HorizontalAlignment="Left" VerticalAlignment="Bottom" Sprite="BlankWhiteCircle" Color="#FFD700FF" AlphaFactor="1" DoNotAcceptEvents="true" />
                 <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="6" SuggestedHeight="6" HorizontalAlignment="Right" VerticalAlignment="Bottom" Sprite="BlankWhiteCircle" Color="#FFD700FF" AlphaFactor="1" DoNotAcceptEvents="true" />
-              </Children>
-            </Widget>
-            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="430" SuggestedHeight="56" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="8" DoNotPassEventsToChildren="false">
-              <Children>
-                <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="200" SuggestedHeight="56" HorizontalAlignment="Left" VerticalAlignment="Center" Brush="Popup.Cancel.Button" Command.Click="ExecuteCancel" UpdateChildrenStates="true">
-                  <Children>
-                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="28" VerticalAlignment="Center" MarginLeft="20" MarginRight="20" Brush="AFCourierLetter.Button.Text" Text="取消" DoNotAcceptEvents="true" />
-                  </Children>
-                </ButtonWidget>
-                <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="200" SuggestedHeight="56" HorizontalAlignment="Right" VerticalAlignment="Center" Brush="Popup.Done.Button" Command.Click="ExecuteSubmit" UpdateChildrenStates="true">
-                  <Children>
-                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="28" VerticalAlignment="Center" MarginLeft="20" MarginRight="20" Brush="AFCourierLetter.Button.Text" Text="发送" DoNotAcceptEvents="true" />
-                  </Children>
-                </ButtonWidget>
               </Children>
             </Widget>
           </Children>
