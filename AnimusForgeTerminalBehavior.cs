@@ -374,7 +374,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			else if (string.Equals(text, "world_policies", StringComparison.Ordinal))
 			{
 				CloseTerminal();
-				if (!AnimusForgeWorldEventOverlay.ShowWorldPolicies())
+				if (!PolicySystemUi.ShowWorldPolicies())
 				{
 					InformationManager.DisplayMessage(new InformationMessage("打开世界政策界面失败。"));
 				}

@@ -227,7 +227,7 @@ public sealed class AnimusForgeVersionedScrollableListPanel : ListPanel
 	}
 }
 
-public sealed class AnimusForgeWorldEventOverlay
+public static class PolicySystemUi
 {
 	private const int EventInboxDisplayLimit = 160;
 	private const int DetailBodyCharacterLimit = 1200;
@@ -246,7 +246,7 @@ public sealed class AnimusForgeWorldEventOverlay
 		}
 		catch (Exception ex)
 		{
-			Logger.LogTrace("WorldPolicyInbox", "OnApplicationTick failed: " + ex.Message);
+			PolicySystemLog.Failure("UI", "world-policy-tick-failed", ex.Message, ex.ToString());
 		}
 	}
 
@@ -262,12 +262,12 @@ public sealed class AnimusForgeWorldEventOverlay
 		}
 		catch (Exception ex)
 		{
-			Logger.LogTrace("WorldPolicyInbox", "Failed to open world policy inbox: " + ex.Message);
+			PolicySystemLog.Failure("UI", "world-policy-open-failed", ex.Message, ex.ToString());
 			return false;
 		}
 	}
 
-	public static void CloseActive()
+	public static void CloseWorldPolicies()
 	{
 		AnimusForgeWorldEventInboxPopup.CloseActive(silent: true);
 	}
@@ -542,7 +542,7 @@ public sealed class AnimusForgeWorldEventInboxPopup
 		}
 		catch (Exception ex)
 		{
-			Logger.LogTrace("WorldEventOverlay", "Failed to open world event inbox popup: " + ex.Message);
+			PolicySystemLog.Failure("UI", "world-policy-popup-open-failed", ex.Message, ex.ToString());
 			_activePopup?.Close(silent: true);
 			_activePopup = null;
 			return false;
@@ -632,7 +632,7 @@ public sealed class AnimusForgeWorldEventInboxPopup
 		{
 			if (!silent)
 			{
-				Logger.LogTrace("WorldEventOverlay", "Failed to remove world event inbox popup layer: " + ex.Message);
+				PolicySystemLog.Failure("UI", "world-policy-popup-close-failed", ex.Message, ex.ToString());
 			}
 		}
 		_dataSource?.OnFinalize();
@@ -1095,4 +1095,1044 @@ public sealed class WorldEventRecordData
 	public bool IsUnread;
 	public bool HasPolicyName;
 	public bool HasImpact;
+}
+
+public sealed class CustomPolicyComposePopup
+{
+	private static CustomPolicyComposePopup _activePopup;
+
+	private readonly ScreenBase _screen;
+
+	private readonly GauntletLayer _layer;
+
+	private readonly CustomPolicyComposePopupVM _dataSource;
+
+	private readonly Action<string, string, string> _onPublish;
+
+	private readonly Action _onCancel;
+
+	private bool _isClosed;
+
+	private PendingCloseAction _pendingCloseAction = PendingCloseAction.None;
+
+	private string _pendingPolicyName;
+
+	private string _pendingPolicyContent;
+
+	private string _pendingDateText;
+
+	private enum PendingCloseAction
+	{
+		None,
+		Publish,
+		Cancel
+	}
+
+	public static bool IsOpen => _activePopup != null && !_activePopup._isClosed;
+
+	public static void ProcessDeferredCloseAction()
+	{
+		try
+		{
+			_activePopup?.ProcessPendingCloseAction();
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Failure("UI", "compose-popup-deferred-close-failed", ex.Message, ex.ToString());
+		}
+	}
+
+	private CustomPolicyComposePopup(ScreenBase screen, string titleText, string nameLabelText, string contentLabelText, string dateText, bool canPublish, string blockReason, Action<string, string, string> onPublish, Action onCancel)
+	{
+		_screen = screen;
+		_onPublish = onPublish;
+		_onCancel = onCancel;
+		_dataSource = new CustomPolicyComposePopupVM(titleText, nameLabelText, contentLabelText, dateText, canPublish, blockReason, HandlePublishRequested, HandleCancelRequested);
+		_layer = new GauntletLayer("CustomPolicyComposePopup", 4000, false);
+	}
+
+	public static bool Show(string titleText, string nameLabelText, string contentLabelText, string dateText, bool canPublish, string blockReason, Action<string, string, string> onPublish, Action onCancel)
+	{
+		ScreenBase topScreen = ScreenManager.TopScreen;
+		if (topScreen == null)
+		{
+			return false;
+		}
+		try
+		{
+			_activePopup?.Close(silent: true);
+			CustomPolicyComposePopup popup = new CustomPolicyComposePopup(topScreen, titleText, nameLabelText, contentLabelText, dateText, canPublish, blockReason, onPublish, onCancel);
+			popup.Open();
+			_activePopup = popup;
+			return true;
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Failure("UI", "compose-popup-open-failed", ex.Message, ex.ToString());
+			_activePopup?.Close(silent: true);
+			_activePopup = null;
+			return false;
+		}
+	}
+
+	private void Open()
+	{
+		_layer.LoadMovie("CustomPolicyComposePopup", _dataSource);
+		_layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.All);
+		try
+		{
+			_layer.Input.RegisterHotKeyCategory(HotKeyManager.GetCategory("GenericPanelGameKeyCategory"));
+		}
+		catch
+		{
+		}
+		_screen.AddLayer(_layer);
+		_layer.IsFocusLayer = true;
+		ScreenManager.TrySetFocus(_layer);
+	}
+
+	private void HandlePublishRequested(string policyName, string policyContent, string dateText)
+	{
+		RequestDeferredClose(PendingCloseAction.Publish, policyName ?? "", policyContent ?? "", dateText ?? "");
+	}
+
+	private void HandleCancelRequested()
+	{
+		RequestDeferredClose(PendingCloseAction.Cancel, null, null, null);
+	}
+
+	private void RequestDeferredClose(PendingCloseAction action, string policyName, string policyContent, string dateText)
+	{
+		if (_isClosed || _pendingCloseAction != PendingCloseAction.None)
+		{
+			return;
+		}
+		_pendingCloseAction = action;
+		_pendingPolicyName = policyName;
+		_pendingPolicyContent = policyContent;
+		_pendingDateText = dateText;
+	}
+
+	private void ProcessPendingCloseAction()
+	{
+		if (_isClosed || _pendingCloseAction == PendingCloseAction.None)
+		{
+			return;
+		}
+		PendingCloseAction action = _pendingCloseAction;
+		string policyName = _pendingPolicyName ?? "";
+		string policyContent = _pendingPolicyContent ?? "";
+		string dateText = _pendingDateText ?? "";
+		_pendingCloseAction = PendingCloseAction.None;
+		_pendingPolicyName = null;
+		_pendingPolicyContent = null;
+		_pendingDateText = null;
+		Close(silent: true);
+		if (action == PendingCloseAction.Publish)
+		{
+			_onPublish?.Invoke(policyName, policyContent, dateText);
+		}
+		else if (action == PendingCloseAction.Cancel)
+		{
+			_onCancel?.Invoke();
+		}
+	}
+
+	private void Close(bool silent)
+	{
+		if (_isClosed)
+		{
+			return;
+		}
+		_isClosed = true;
+		try
+		{
+			_layer.IsFocusLayer = false;
+			ScreenManager.TryLoseFocus(_layer);
+		}
+		catch
+		{
+		}
+		try
+		{
+			_screen.RemoveLayer(_layer);
+		}
+		catch (Exception ex)
+		{
+			if (!silent)
+			{
+				PolicySystemLog.Failure("UI", "compose-popup-close-failed", ex.Message, ex.ToString());
+			}
+		}
+		_dataSource?.OnFinalize();
+		if (ReferenceEquals(_activePopup, this))
+		{
+			_activePopup = null;
+		}
+	}
+}
+
+public sealed class CustomPolicyComposePopupVM : ViewModel
+{
+	private readonly Action<string, string, string> _onPublish;
+
+	private readonly Action _onCancel;
+
+	private bool _externalCanPublish;
+
+	private string _titleText;
+
+	private string _nameLabelText;
+
+	private string _contentLabelText;
+
+	private string _dateText;
+
+	private string _policyName;
+
+	private string _policyContent;
+
+	private string _publishText;
+
+	private string _cancelText;
+
+	private string _statusText;
+
+	private string _readyStatusText;
+
+	private bool _canPublish;
+
+	public CustomPolicyComposePopupVM(string titleText, string nameLabelText, string contentLabelText, string dateText, bool canPublish, string blockReason, Action<string, string, string> onPublish, Action onCancel)
+	{
+		_onPublish = onPublish;
+		_onCancel = onCancel;
+		_externalCanPublish = canPublish;
+		TitleText = string.IsNullOrWhiteSpace(titleText) ? "撰写政策" : titleText;
+		NameLabelText = string.IsNullOrWhiteSpace(nameLabelText) ? "政策名" : nameLabelText;
+		ContentLabelText = string.IsNullOrWhiteSpace(contentLabelText) ? "政策内容" : contentLabelText;
+		DateText = string.IsNullOrWhiteSpace(dateText) ? "未知日期" : dateText;
+		PolicyName = "";
+		PolicyContent = "";
+		PublishText = "发布政策";
+		CancelText = "取消";
+		_readyStatusText = string.IsNullOrWhiteSpace(blockReason) ? "填写政策名和政策内容后即可发布。" : blockReason;
+		StatusText = canPublish ? _readyStatusText : (string.IsNullOrWhiteSpace(blockReason) ? "当前不能发布政策。" : blockReason);
+		RefreshCanPublish();
+	}
+
+	[DataSourceProperty]
+	public string TitleText
+	{
+		get => _titleText;
+		set
+		{
+			if (value != _titleText)
+			{
+				_titleText = value;
+				OnPropertyChangedWithValue(value, nameof(TitleText));
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public string NameLabelText
+	{
+		get => _nameLabelText;
+		set
+		{
+			if (value != _nameLabelText)
+			{
+				_nameLabelText = value;
+				OnPropertyChangedWithValue(value, nameof(NameLabelText));
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public string ContentLabelText
+	{
+		get => _contentLabelText;
+		set
+		{
+			if (value != _contentLabelText)
+			{
+				_contentLabelText = value;
+				OnPropertyChangedWithValue(value, nameof(ContentLabelText));
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public string DateText
+	{
+		get => _dateText;
+		set
+		{
+			if (value != _dateText)
+			{
+				_dateText = value;
+				OnPropertyChangedWithValue(value, nameof(DateText));
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public string PolicyName
+	{
+		get => _policyName;
+		set
+		{
+			string text = AnimusForgeTextInputSanitizer.SanitizeSingleLine(value, AnimusForgeTextInputSanitizer.MaxPolicyNameChars);
+			if (text != _policyName)
+			{
+				_policyName = text;
+				OnPropertyChangedWithValue(_policyName, nameof(PolicyName));
+				RefreshCanPublish();
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public string PolicyContent
+	{
+		get => _policyContent;
+		set
+		{
+			string text = AnimusForgeTextInputSanitizer.SanitizeMultiline(value, AnimusForgeTextInputSanitizer.MaxPolicyContentChars);
+			if (text != _policyContent)
+			{
+				_policyContent = text;
+				OnPropertyChangedWithValue(_policyContent, nameof(PolicyContent));
+				RefreshCanPublish();
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public string PublishText
+	{
+		get => _publishText;
+		set
+		{
+			if (value != _publishText)
+			{
+				_publishText = value;
+				OnPropertyChangedWithValue(value, nameof(PublishText));
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public string CancelText
+	{
+		get => _cancelText;
+		set
+		{
+			if (value != _cancelText)
+			{
+				_cancelText = value;
+				OnPropertyChangedWithValue(value, nameof(CancelText));
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public string StatusText
+	{
+		get => _statusText;
+		set
+		{
+			if (value != _statusText)
+			{
+				_statusText = value;
+				OnPropertyChangedWithValue(value, nameof(StatusText));
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public bool CanPublish
+	{
+		get => _canPublish;
+		set
+		{
+			if (value != _canPublish)
+			{
+				_canPublish = value;
+				OnPropertyChangedWithValue(value, nameof(CanPublish));
+			}
+		}
+	}
+
+	public void ExecutePublish()
+	{
+		RefreshCanPublish();
+		if (!CanPublish)
+		{
+			if (string.IsNullOrWhiteSpace(StatusText))
+			{
+				StatusText = "当前不能发布政策。";
+			}
+			return;
+		}
+		_onPublish?.Invoke(PolicyName ?? "", PolicyContent ?? "", DateText ?? "");
+	}
+
+	public void ExecuteCancel()
+	{
+		_onCancel?.Invoke();
+	}
+
+	public void StartTyping()
+	{
+	}
+
+	public void StopTyping()
+	{
+	}
+
+	private void RefreshCanPublish()
+	{
+		bool hasName = !string.IsNullOrWhiteSpace(PolicyName);
+		bool hasContent = !string.IsNullOrWhiteSpace(PolicyContent);
+		CanPublish = _externalCanPublish && hasName && hasContent;
+		if (_externalCanPublish)
+		{
+			if (!hasName)
+			{
+				StatusText = "请先填写政策名。";
+			}
+			else if (!hasContent)
+			{
+				StatusText = "请先填写政策内容。";
+			}
+			else
+			{
+				StatusText = string.IsNullOrWhiteSpace(_readyStatusText) ? "点击发布后将等待 LLM 评议；成功落地时扣除已配置成本。" : _readyStatusText;
+			}
+		}
+	}
+}
+
+public sealed class PolicyHistoryData
+{
+	public string TitleText { get; set; } = "政策记录";
+
+	public string SubtitleText { get; set; } = "";
+
+	public string EmptyStateText { get; set; } = "尚无成功落地的政策记录。";
+
+	public string CloseText { get; set; } = "返回政策管理";
+
+	public List<PolicyHistoryRecordData> Records { get; set; } = new List<PolicyHistoryRecordData>();
+}
+
+public sealed class PolicyHistoryRecordData
+{
+	public string DateText { get; set; }
+
+	public string PolicyNameText { get; set; }
+
+	public string CostText { get; set; }
+
+	public string ContentSectionTitleText { get; set; }
+
+	public string ContentSummaryText { get; set; }
+
+	public string FeedbackSectionTitleText { get; set; }
+
+	public string FeedbackSummaryText { get; set; }
+
+	public string ImpactSectionTitleText { get; set; }
+
+	public string ImpactSummaryText { get; set; }
+}
+
+public sealed class CustomPolicyResultPopup
+{
+	private static CustomPolicyResultPopup _activePopup;
+
+	private readonly ScreenBase _screen;
+
+	private readonly GauntletLayer _layer;
+
+	private readonly CustomPolicyResultPopupVM _dataSource;
+
+	private readonly Action _onClose;
+
+	private bool _isClosed;
+
+	private CustomPolicyResultPopup(ScreenBase screen, string titleText, string bodyText, string closeText, Action onClose)
+	{
+		_screen = screen;
+		_onClose = onClose;
+		_dataSource = new CustomPolicyResultPopupVM(titleText, bodyText, closeText, HandleCloseRequested);
+		_layer = new GauntletLayer("CustomPolicyResultPopup", 4150, false);
+	}
+
+	public static bool Show(string titleText, string bodyText, string closeText, Action onClose = null)
+	{
+		ScreenBase topScreen = ScreenManager.TopScreen;
+		if (topScreen == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (_activePopup != null)
+			{
+			}
+			_activePopup?.Close(silent: true);
+			CustomPolicyResultPopup popup = new CustomPolicyResultPopup(topScreen, titleText, bodyText, closeText, onClose);
+			popup.Open();
+			_activePopup = popup;
+			return true;
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Failure("UI", "result-popup-open-failed", ex.Message, ex.ToString());
+			_activePopup?.Close(silent: true);
+			_activePopup = null;
+			return false;
+		}
+	}
+
+	private void Open()
+	{
+		_layer.LoadMovie("CustomPolicyResultPopup", _dataSource);
+		_layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.All);
+		try
+		{
+			_layer.Input.RegisterHotKeyCategory(HotKeyManager.GetCategory("GenericPanelGameKeyCategory"));
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Failure("UI", "result-popup-hotkey-register-failed", ex.Message, ex.ToString());
+		}
+		_screen.AddLayer(_layer);
+		_layer.IsFocusLayer = true;
+		ScreenManager.TrySetFocus(_layer);
+	}
+
+	private void HandleCloseRequested()
+	{
+		Close(silent: true);
+	}
+
+	private void Close(bool silent)
+	{
+		if (_isClosed)
+		{
+			return;
+		}
+		_isClosed = true;
+		try
+		{
+			_layer.InputRestrictions.ResetInputRestrictions();
+			_layer.IsFocusLayer = false;
+			ScreenManager.TryLoseFocus(_layer);
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Failure("UI", "result-popup-focus-reset-failed", ex.Message, ex.ToString());
+		}
+		try
+		{
+			_screen.RemoveLayer(_layer);
+		}
+		catch (Exception ex)
+		{
+			if (!silent)
+			{
+				PolicySystemLog.Failure("UI", "result-popup-close-failed", ex.Message, ex.ToString());
+			}
+		}
+		_dataSource?.OnFinalize();
+		if (ReferenceEquals(_activePopup, this))
+		{
+			_activePopup = null;
+		}
+		try
+		{
+			_onClose?.Invoke();
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Failure("UI", "result-popup-after-close-failed", ex.Message, ex.ToString());
+		}
+	}
+}
+
+public sealed class CustomPolicyResultPopupVM : ViewModel
+{
+	private readonly Action _onClose;
+
+	private string _titleText;
+
+	private string _bodyText;
+
+	private string _closeText;
+
+	[DataSourceProperty]
+	public string TitleText
+	{
+		get => _titleText;
+		set
+		{
+			if (value != _titleText)
+			{
+				_titleText = value;
+				OnPropertyChangedWithValue(value, nameof(TitleText));
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public string BodyText
+	{
+		get => _bodyText;
+		set
+		{
+			if (value != _bodyText)
+			{
+				_bodyText = value;
+				OnPropertyChangedWithValue(value, nameof(BodyText));
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public string CloseText
+	{
+		get => _closeText;
+		set
+		{
+			if (value != _closeText)
+			{
+				_closeText = value;
+				OnPropertyChangedWithValue(value, nameof(CloseText));
+			}
+		}
+	}
+
+	public CustomPolicyResultPopupVM(string titleText, string bodyText, string closeText, Action onClose)
+	{
+		_onClose = onClose;
+		TitleText = string.IsNullOrWhiteSpace(titleText) ? "政策已经发布" : titleText.Trim();
+		BodyText = (bodyText ?? "").Trim();
+		CloseText = string.IsNullOrWhiteSpace(closeText) ? "知道了" : closeText.Trim();
+	}
+
+	public void ExecuteClose()
+	{
+		_onClose?.Invoke();
+	}
+}
+
+public sealed class CustomPolicyHistoryPopup
+{
+	private static CustomPolicyHistoryPopup _activePopup;
+
+	private readonly ScreenBase _screen;
+
+	private readonly GauntletLayer _layer;
+
+	private readonly CustomPolicyHistoryPopupVM _dataSource;
+
+	private readonly Action _onClose;
+
+	private bool _isClosed;
+
+	private CustomPolicyHistoryPopup(ScreenBase screen, PolicyHistoryData data, Action onClose)
+	{
+		_screen = screen;
+		_onClose = onClose;
+		_dataSource = new CustomPolicyHistoryPopupVM(data, HandleCloseRequested);
+		_layer = new GauntletLayer("CustomPolicyHistoryPopup", 4100, false);
+	}
+
+	public static bool Show(PolicyHistoryData data, Action onClose = null)
+	{
+		ScreenBase topScreen = ScreenManager.TopScreen;
+		if (topScreen == null)
+		{
+			return false;
+		}
+		try
+		{
+			_activePopup?.Close(silent: true);
+			CustomPolicyHistoryPopup popup = new CustomPolicyHistoryPopup(topScreen, data ?? new PolicyHistoryData(), onClose);
+			popup.Open();
+			_activePopup = popup;
+			return true;
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Failure("UI", "history-popup-open-failed", ex.Message, ex.ToString());
+			_activePopup?.Close(silent: true);
+			_activePopup = null;
+			return false;
+		}
+	}
+
+	private void Open()
+	{
+		_layer.LoadMovie("CustomPolicyHistoryPopup", _dataSource);
+		_layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.All);
+		try
+		{
+			_layer.Input.RegisterHotKeyCategory(HotKeyManager.GetCategory("GenericPanelGameKeyCategory"));
+		}
+		catch
+		{
+		}
+		_screen.AddLayer(_layer);
+		_layer.IsFocusLayer = true;
+		ScreenManager.TrySetFocus(_layer);
+	}
+
+	private void HandleCloseRequested()
+	{
+		Close(silent: true);
+		_onClose?.Invoke();
+	}
+
+	private void Close(bool silent)
+	{
+		if (_isClosed)
+		{
+			return;
+		}
+		_isClosed = true;
+		try
+		{
+			_layer.InputRestrictions.ResetInputRestrictions();
+			_layer.IsFocusLayer = false;
+			ScreenManager.TryLoseFocus(_layer);
+		}
+		catch
+		{
+		}
+		try
+		{
+			_screen.RemoveLayer(_layer);
+		}
+		catch (Exception ex)
+		{
+			if (!silent)
+			{
+				PolicySystemLog.Failure("UI", "history-popup-close-failed", ex.Message, ex.ToString());
+			}
+		}
+		_dataSource?.OnFinalize();
+		if (ReferenceEquals(_activePopup, this))
+		{
+			_activePopup = null;
+		}
+	}
+}
+
+public sealed class CustomPolicyHistoryPopupVM : ViewModel
+{
+	private readonly Action _onClose;
+
+	private string _titleText;
+
+	private string _subtitleText;
+
+	private string _emptyStateText;
+
+	private string _closeText;
+
+	private bool _hasRecords;
+
+	private bool _showEmptyState;
+
+	private MBBindingList<CustomPolicyHistoryRecordItemVM> _recordItems;
+
+	[DataSourceProperty]
+	public string TitleText
+	{
+		get => _titleText;
+		set
+		{
+			if (value != _titleText)
+			{
+				_titleText = value;
+				OnPropertyChangedWithValue(value, nameof(TitleText));
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public string SubtitleText
+	{
+		get => _subtitleText;
+		set
+		{
+			if (value != _subtitleText)
+			{
+				_subtitleText = value;
+				OnPropertyChangedWithValue(value, nameof(SubtitleText));
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public string EmptyStateText
+	{
+		get => _emptyStateText;
+		set
+		{
+			if (value != _emptyStateText)
+			{
+				_emptyStateText = value;
+				OnPropertyChangedWithValue(value, nameof(EmptyStateText));
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public string CloseText
+	{
+		get => _closeText;
+		set
+		{
+			if (value != _closeText)
+			{
+				_closeText = value;
+				OnPropertyChangedWithValue(value, nameof(CloseText));
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public bool HasRecords
+	{
+		get => _hasRecords;
+		set
+		{
+			if (value != _hasRecords)
+			{
+				_hasRecords = value;
+				OnPropertyChangedWithValue(value, nameof(HasRecords));
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public bool ShowEmptyState
+	{
+		get => _showEmptyState;
+		set
+		{
+			if (value != _showEmptyState)
+			{
+				_showEmptyState = value;
+				OnPropertyChangedWithValue(value, nameof(ShowEmptyState));
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public MBBindingList<CustomPolicyHistoryRecordItemVM> RecordItems
+	{
+		get => _recordItems;
+		set
+		{
+			if (value != _recordItems)
+			{
+				_recordItems = value;
+				OnPropertyChangedWithValue(value, nameof(RecordItems));
+			}
+		}
+	}
+
+	public CustomPolicyHistoryPopupVM(PolicyHistoryData data, Action onClose)
+	{
+		_onClose = onClose;
+		PolicyHistoryData source = data ?? new PolicyHistoryData();
+		TitleText = string.IsNullOrWhiteSpace(source.TitleText) ? "政策记录" : source.TitleText.Trim();
+		SubtitleText = (source.SubtitleText ?? "").Trim();
+		EmptyStateText = string.IsNullOrWhiteSpace(source.EmptyStateText) ? "尚无成功落地的政策记录。" : source.EmptyStateText.Trim();
+		CloseText = string.IsNullOrWhiteSpace(source.CloseText) ? "返回政策管理" : source.CloseText.Trim();
+		RecordItems = new MBBindingList<CustomPolicyHistoryRecordItemVM>();
+		if (source.Records != null)
+		{
+			foreach (PolicyHistoryRecordData record in source.Records)
+			{
+				if (record != null)
+				{
+					RecordItems.Add(new CustomPolicyHistoryRecordItemVM(record));
+				}
+			}
+		}
+		HasRecords = RecordItems.Count > 0;
+		ShowEmptyState = !HasRecords;
+	}
+
+	public void ExecuteClose()
+	{
+		_onClose?.Invoke();
+	}
+}
+
+public sealed class CustomPolicyHistoryRecordItemVM : ViewModel
+{
+	private string _dateText;
+
+	private string _policyNameText;
+
+	private string _costText;
+
+	private string _contentSectionTitleText;
+
+	private string _contentSummaryText;
+
+	private string _feedbackSectionTitleText;
+
+	private string _feedbackSummaryText;
+
+	private string _impactSectionTitleText;
+
+	private string _impactSummaryText;
+
+	[DataSourceProperty]
+	public string DateText
+	{
+		get => _dateText;
+		set
+		{
+			if (value != _dateText)
+			{
+				_dateText = value;
+				OnPropertyChangedWithValue(value, nameof(DateText));
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public string PolicyNameText
+	{
+		get => _policyNameText;
+		set
+		{
+			if (value != _policyNameText)
+			{
+				_policyNameText = value;
+				OnPropertyChangedWithValue(value, nameof(PolicyNameText));
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public string CostText
+	{
+		get => _costText;
+		set
+		{
+			if (value != _costText)
+			{
+				_costText = value;
+				OnPropertyChangedWithValue(value, nameof(CostText));
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public string ContentSectionTitleText
+	{
+		get => _contentSectionTitleText;
+		set
+		{
+			if (value != _contentSectionTitleText)
+			{
+				_contentSectionTitleText = value;
+				OnPropertyChangedWithValue(value, nameof(ContentSectionTitleText));
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public string ContentSummaryText
+	{
+		get => _contentSummaryText;
+		set
+		{
+			if (value != _contentSummaryText)
+			{
+				_contentSummaryText = value;
+				OnPropertyChangedWithValue(value, nameof(ContentSummaryText));
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public string FeedbackSectionTitleText
+	{
+		get => _feedbackSectionTitleText;
+		set
+		{
+			if (value != _feedbackSectionTitleText)
+			{
+				_feedbackSectionTitleText = value;
+				OnPropertyChangedWithValue(value, nameof(FeedbackSectionTitleText));
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public string FeedbackSummaryText
+	{
+		get => _feedbackSummaryText;
+		set
+		{
+			if (value != _feedbackSummaryText)
+			{
+				_feedbackSummaryText = value;
+				OnPropertyChangedWithValue(value, nameof(FeedbackSummaryText));
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public string ImpactSectionTitleText
+	{
+		get => _impactSectionTitleText;
+		set
+		{
+			if (value != _impactSectionTitleText)
+			{
+				_impactSectionTitleText = value;
+				OnPropertyChangedWithValue(value, nameof(ImpactSectionTitleText));
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public string ImpactSummaryText
+	{
+		get => _impactSummaryText;
+		set
+		{
+			if (value != _impactSummaryText)
+			{
+				_impactSummaryText = value;
+				OnPropertyChangedWithValue(value, nameof(ImpactSummaryText));
+			}
+		}
+	}
+
+	public CustomPolicyHistoryRecordItemVM(PolicyHistoryRecordData record)
+	{
+		DateText = (record?.DateText ?? "未知日期").Trim();
+		PolicyNameText = (record?.PolicyNameText ?? "未命名政策").Trim();
+		CostText = (record?.CostText ?? "").Trim();
+		ContentSectionTitleText = string.IsNullOrWhiteSpace(record?.ContentSectionTitleText) ? "【政策内容】" : record.ContentSectionTitleText.Trim();
+		ContentSummaryText = (record?.ContentSummaryText ?? "").Trim();
+		FeedbackSectionTitleText = string.IsNullOrWhiteSpace(record?.FeedbackSectionTitleText) ? "【民众反馈】" : record.FeedbackSectionTitleText.Trim();
+		FeedbackSummaryText = (record?.FeedbackSummaryText ?? "").Trim();
+		ImpactSectionTitleText = string.IsNullOrWhiteSpace(record?.ImpactSectionTitleText) ? "【每日影响】" : record.ImpactSectionTitleText.Trim();
+		ImpactSummaryText = (record?.ImpactSummaryText ?? "").Trim();
+	}
 }

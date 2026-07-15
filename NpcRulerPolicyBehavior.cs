@@ -323,7 +323,6 @@ internal static class NpcPolicyLlmClient
 			NpcPolicyApiCallResult result = await CallEventAndRebellionApiOnceAsync(systemPrompt, Math.Max(1, maxTokens), Math.Max(1000, hardTimeoutMilliseconds), source, runtimeGeneration);
 			result.AttemptsUsed = attempt;
 			finalResult = result;
-			RecordPromptExchangeSafe(source, attempt, attempts, systemPrompt, result);
 			if (result.Success)
 			{
 				return result;
@@ -644,18 +643,6 @@ internal static class NpcPolicyLlmClient
 			+ " url=" + effectiveApiUrl;
 	}
 
-	private static void RecordPromptExchangeSafe(string source, int attempt, int attempts, string systemPrompt, NpcPolicyApiCallResult result)
-	{
-		try
-		{
-			string responseForLog = result.Success ? (result.Content ?? "") : ("错误: " + (result.ErrorMessage ?? "未知错误"));
-			Logger.LogEventPromptExchange((source ?? "NpcPolicy") + " [尝试 " + attempt.ToString(CultureInfo.InvariantCulture) + "/" + attempts.ToString(CultureInfo.InvariantCulture) + "]", BuildPromptPreview(systemPrompt), responseForLog);
-		}
-		catch
-		{
-		}
-	}
-
 	private static void RecordHttpErrorTokenStatsSafe(JArray messages, string resolvedRoute, string modelName, HttpResponseMessage response, string responseBody, NpcPolicyApiCallResult result, bool thinkingRetriedPlain, string requestBodyForTokenStats)
 	{
 		try
@@ -844,11 +831,6 @@ internal static class NpcPolicyLlmClient
 		};
 	}
 
-	private static string BuildPromptPreview(string systemPrompt)
-	{
-		return "System:\n" + (systemPrompt ?? "");
-	}
-
 	private static bool ContainsAnyIgnoreCase(string text, params string[] tokens)
 	{
 		string source = text ?? "";
@@ -1029,13 +1011,7 @@ internal static class NpcPolicyLlmClient
 
 	private static void Log(string source, string message)
 	{
-		try
-		{
-			Logger.Log(source ?? "NpcPolicyLlm", message ?? "");
-		}
-		catch
-		{
-		}
+		PolicySystemLog.WriteRuntime("Npc", (source ?? "NpcPolicyLlm") + " " + (message ?? ""));
 	}
 }
 
@@ -1045,7 +1021,6 @@ internal static class NpcPolicyStructuredParseLogger
 
 	internal static void LogFailure(string logSource, string kind, string batchId, string route, int attempts, string reason, string raw, string extracted)
 	{
-		string source = string.IsNullOrWhiteSpace(logSource) ? "NpcPolicyParse" : logSource.Trim();
 		string message = kind + "-parse-failed"
 			+ " batchId=" + CleanField(batchId)
 			+ " route=" + CleanField(route)
@@ -1053,14 +1028,8 @@ internal static class NpcPolicyStructuredParseLogger
 			+ " reason=" + CleanField(reason)
 			+ " raw_sample=" + OneLine(Clip(raw))
 			+ " extracted_sample=" + OneLine(Clip(extracted));
-		try
-		{
-			Logger.Log(source, message);
-		}
-		catch
-		{
-		}
-		PolicySystemLog.Write("NpcParse", kind + "-parse-failed", message, "raw_sample:\n" + Clip(raw) + "\n\nextracted_sample:\n" + Clip(extracted));
+		PolicySystemLog.Failure("Npc", kind + "-parse-failed", message,
+			"raw_sample:\n" + Clip(raw) + "\n\nextracted_sample:\n" + Clip(extracted));
 	}
 
 	private static string CleanField(string text)
@@ -2221,7 +2190,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		double elapsedMs = (Stopwatch.GetTimestamp() - startTimestamp) * 1000.0 / Stopwatch.Frequency;
 		if (budgetMs > 0.0 && elapsedMs >= budgetMs)
 		{
-			Logger.Log("NpcRulerPolicy", "commit-stage-over-budget stage=" + (stageName ?? "")
+			PolicySystemLog.WriteRuntime("Npc", "commit-stage-over-budget stage=" + (stageName ?? "")
 				+ " elapsedMs=" + elapsedMs.ToString("0.000", CultureInfo.InvariantCulture)
 				+ " budgetMs=" + budgetMs.ToString("0.000", CultureInfo.InvariantCulture));
 		}
@@ -2363,7 +2332,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 
 	private static void PolicyTraceLog(string stage, string message, string detail = null)
 	{
-		PolicySystemLog.Write("NpcDetail", stage, message, detail);
+		PolicySystemLog.Write("Npc", stage, message, detail);
 	}
 
 	private static string BuildPolicyJobTracePrefix(NpcPolicyGenerationJob job)
@@ -2526,21 +2495,6 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		{
 			string targetBlock = BuildKingdomPromptContext(item);
 			sb.AppendLine(targetBlock);
-			PolicySystemLog.Write("Context", "target",
-				"kingdom=" + (item.KingdomId ?? "")
-				+ " chars=" + targetBlock.Length.ToString(CultureInfo.InvariantCulture)
-				+ " knowledgeGroundingChars=" + (item.KnowledgeGrounding?.Length ?? 0).ToString(CultureInfo.InvariantCulture)
-				+ " policyGroundingChars=" + item.PolicyGroundingChars.ToString(CultureInfo.InvariantCulture)
-				+ " personalityChars=" + item.PersonalityChars.ToString(CultureInfo.InvariantCulture)
-				+ " backgroundChars=" + item.BackgroundChars.ToString(CultureInfo.InvariantCulture)
-				+ " currentWorldFactsChars=" + (item.CurrentWorldFacts?.Length ?? 0).ToString(CultureInfo.InvariantCulture)
-				+ " policyMemoryChars=" + (item.PolicyMemory?.Length ?? 0).ToString(CultureInfo.InvariantCulture)
-				+ " recentPhenomenonChars=" + (item.RecentWorldPhenomenon?.Length ?? 0).ToString(CultureInfo.InvariantCulture)
-				+ " foreignDirectPressureChars=" + (item.ForeignDirectPressure?.Length ?? 0).ToString(CultureInfo.InvariantCulture)
-				+ " mechanicalFactsChars=" + (item.MechanicalFacts?.Length ?? 0).ToString(CultureInfo.InvariantCulture)
-				+ " ownPolicies=" + item.PolicyMemoryCount.ToString(CultureInfo.InvariantCulture)
-				+ " recentPhenomena=" + item.RecentWorldPhenomenonCount.ToString(CultureInfo.InvariantCulture)
-				+ " foreignDirectPressures=" + item.ForeignDirectPressureCount.ToString(CultureInfo.InvariantCulture));
 		}
 		if (sb.Length > HardContextChars)
 		{
@@ -2549,13 +2503,6 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		int ownPolicyCount = targets.Sum(x => x?.PolicyMemoryCount ?? 0);
 		int recentPhenomenonCount = targets.Sum(x => x?.RecentWorldPhenomenonCount ?? 0);
 		int foreignDirectPressureCount = targets.Sum(x => x?.ForeignDirectPressureCount ?? 0);
-		PolicySystemLog.Write("Context", "batch",
-			"targets=" + targets.Count.ToString(CultureInfo.InvariantCulture)
-			+ " chars=" + sb.Length.ToString(CultureInfo.InvariantCulture)
-			+ " estimatedTokens=" + Math.Ceiling(sb.Length * 0.6d).ToString(CultureInfo.InvariantCulture)
-			+ " ownPolicies=" + ownPolicyCount.ToString(CultureInfo.InvariantCulture)
-			+ " recentPhenomena=" + recentPhenomenonCount.ToString(CultureInfo.InvariantCulture)
-			+ " foreignDirectPressures=" + foreignDirectPressureCount.ToString(CultureInfo.InvariantCulture));
 		return sb.ToString().TrimEnd();
 	}
 
@@ -2729,22 +2676,6 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			fallbackReason = "exception:" + ex.GetType().Name;
 			compact = "";
 		}
-		PolicySystemLog.Write("Context", logCategory,
-			"kingdomId=" + kingdomId
-			+ " cultureId=" + cultureId
-			+ " queryChars=" + query.Length.ToString(CultureInfo.InvariantCulture)
-			+ " secondaryChars=" + secondaryInput.Length.ToString(CultureInfo.InvariantCulture)
-			+ " ragMode=target_plus_governance"
-			+ " ragFocus=" + PolicyKnowledgeRagFocus
-			+ " mentionCount=" + CountNpcPolicyKnowledgeMentions(mentionedEntities).ToString(CultureInfo.InvariantCulture)
-			+ " rawChars=" + raw.Length.ToString(CultureInfo.InvariantCulture)
-			+ " compactChars=" + compact.Length.ToString(CultureInfo.InvariantCulture)
-			+ " keptSentences=" + keptSentenceCount.ToString(CultureInfo.InvariantCulture)
-			+ " droppedSentences=" + droppedSentenceCount.ToString(CultureInfo.InvariantCulture)
-			+ " libraryAvailable=" + libraryAvailable.ToString(CultureInfo.InvariantCulture)
-			+ " semanticEnabled=" + semanticEnabled.ToString(CultureInfo.InvariantCulture)
-			+ " hit=" + (!string.IsNullOrWhiteSpace(compact)).ToString(CultureInfo.InvariantCulture)
-			+ (string.IsNullOrWhiteSpace(fallbackReason) ? "" : " fallback=" + fallbackReason));
 		return compact;
 	}
 
@@ -3413,13 +3344,6 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		system.AppendLine("【目标王国动态快照】");
 		system.Append(dynamicContext);
 		string systemPrompt = system.ToString().TrimEnd();
-		PolicySystemLog.Write("Context", "prompt",
-			"messageCount=1"
-			+ " systemPromptChars=" + systemPrompt.Length.ToString(CultureInfo.InvariantCulture)
-			+ " editablePromptChars=" + editablePrompt.Length.ToString(CultureInfo.InvariantCulture)
-			+ " fixedContractChars=" + fixedContract.Length.ToString(CultureInfo.InvariantCulture)
-			+ " dynamicContextChars=" + dynamicContext.Length.ToString(CultureInfo.InvariantCulture)
-			+ " targets=" + targetCount.ToString(CultureInfo.InvariantCulture));
 		return new NpcPolicyPrompt
 		{
 			SystemPrompt = systemPrompt
@@ -4721,13 +4645,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 
 	private static void Log(string message)
 	{
-		try
-		{
-			Logger.Log("NpcRulerPolicy", message ?? "");
-		}
-		catch
-		{
-		}
+		PolicySystemLog.WriteRuntime("Npc", message);
 	}
 
 	private sealed class NpcRulerPolicyBatchContext
