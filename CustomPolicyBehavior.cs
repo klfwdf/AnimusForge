@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyLib;
 using Newtonsoft.Json;
@@ -62,6 +63,8 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 
 	private const int PolicyPublicFeedbackTargetDefaultChars = 900;
 
+	private const int PlayerPolicyEvaluationTimeoutMilliseconds = 180000;
+
 	private const int PolicyKnowledgeTargetChars = 580;
 
 	private const int PolicyKnowledgeMinChars = 380;
@@ -69,8 +72,6 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 	private const int PolicyKnowledgeMaxChars = 650;
 
 	private const int AiPolicyGoldReserve = 1000;
-
-	private const float AiPolicyInfluenceReserve = 100f;
 
 	private const int CustomPolicyDebugPreviewChars = 1200;
 
@@ -114,11 +115,11 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 
 	private static readonly ConcurrentQueue<Action> MainThreadActions = new ConcurrentQueue<Action>();
 
-	private static readonly bool CustomPolicyVerboseSettlementDebugLog = false;
-
 	private readonly Dictionary<string, string> _policyRecordHistory = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
 	private readonly Dictionary<string, string> _activePolicyEffects = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+	private readonly Dictionary<string, ActivePolicyEffectSaveData> _activePolicyEffectModelCache = new Dictionary<string, ActivePolicyEffectSaveData>(StringComparer.Ordinal);
 
 	private readonly Dictionary<string, string> _dynamicPolicyRegistry = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
@@ -141,6 +142,8 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 	private bool _policyWaitPopupShown;
 
 	private static bool _dynamicPolicyPatchesApplied;
+
+	private static bool _policySettlementModelPatchesApplied;
 
 	private static bool _policySuccessResultVisible;
 
@@ -211,7 +214,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 			KingdomStabilityDailyDelta = registration.KingdomStabilityDailyDelta,
 			TotalDurationDays = registration.DurationDays,
 			RemainingDays = registration.DurationDays,
-			LastAppliedDay = Math.Max(0, registration.SubmittedDay),
+			LastAppliedDay = GetCurrentCampaignDay(),
 			Reason = registration.Reason ?? "",
 			Ended = false,
 			EndReason = ""
@@ -624,12 +627,135 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 
 	private void OnGameLoaded(CampaignGameStarter starter)
 	{
+		ApplyPolicySettlementModelPatchesOnce();
 		EnsureDynamicPoliciesRegistered(reconcilePending: false);
 	}
 
 	private void OnSessionLaunched(CampaignGameStarter starter)
 	{
+		ApplyPolicySettlementModelPatchesOnce();
 		EnsureDynamicPoliciesRegistered(reconcilePending: true);
+	}
+
+	private static void ApplyPolicySettlementModelPatchesOnce()
+	{
+		if (_policySettlementModelPatchesApplied || Campaign.Current?.Models == null)
+		{
+			return;
+		}
+		try
+		{
+			Harmony harmony = new Harmony("com.AnimusForge.custompolicy.settlementmodels");
+			PatchPolicySettlementModelMethod(harmony, Campaign.Current.Models.SettlementProsperityModel, "CalculateProsperityChange", new Type[2] { typeof(Town), typeof(bool) }, nameof(Patch_PolicyProsperityChange_Postfix));
+			PatchPolicySettlementModelMethod(harmony, Campaign.Current.Models.SettlementProsperityModel, "CalculateHearthChange", new Type[2] { typeof(Village), typeof(bool) }, nameof(Patch_PolicyHearthChange_Postfix));
+			PatchPolicySettlementModelMethod(harmony, Campaign.Current.Models.SettlementFoodModel, "CalculateTownFoodStocksChange", new Type[3] { typeof(Town), typeof(bool), typeof(bool) }, nameof(Patch_PolicyFoodChange_Postfix));
+			PatchPolicySettlementModelMethod(harmony, Campaign.Current.Models.SettlementLoyaltyModel, "CalculateLoyaltyChange", new Type[2] { typeof(Town), typeof(bool) }, nameof(Patch_PolicyLoyaltyChange_Postfix));
+			PatchPolicySettlementModelMethod(harmony, Campaign.Current.Models.SettlementSecurityModel, "CalculateSecurityChange", new Type[2] { typeof(Town), typeof(bool) }, nameof(Patch_PolicySecurityChange_Postfix));
+			PatchPolicySettlementModelMethod(harmony, Campaign.Current.Models.SettlementMilitiaModel, "CalculateMilitiaChange", new Type[2] { typeof(Settlement), typeof(bool) }, nameof(Patch_PolicyMilitiaChange_Postfix));
+			_policySettlementModelPatchesApplied = true;
+			PolicySystemLog.Write("Effect", "settlement-model-patches-applied", "AF policy effects now participate in vanilla settlement change calculations and tooltips");
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Write("Effect", "settlement-model-patches-failed", ex.ToString());
+		}
+	}
+
+	private static void PatchPolicySettlementModelMethod(Harmony harmony, object model, string methodName, Type[] argumentTypes, string postfixName)
+	{
+		System.Reflection.MethodInfo target = model == null ? null : AccessTools.Method(model.GetType(), methodName, argumentTypes);
+		if (target == null)
+		{
+			throw new MissingMethodException(model?.GetType().FullName ?? "(null)", methodName);
+		}
+		harmony.Patch(target, postfix: new HarmonyMethod(typeof(CustomPolicyBehavior), postfixName));
+	}
+
+	private static void Patch_PolicyProsperityChange_Postfix(Town fortification, ref ExplainedNumber __result)
+	{
+		AddActivePolicySettlementEffects(fortification?.Settlement, effect => effect.ProsperityDailyDeltaPerTown, ref __result);
+	}
+
+	private static void Patch_PolicyHearthChange_Postfix(Village village, ref ExplainedNumber __result)
+	{
+		AddActivePolicySettlementEffects(village?.Settlement, effect => effect.HearthDailyDeltaPerVillage, ref __result);
+	}
+
+	private static void Patch_PolicyFoodChange_Postfix(Town town, ref ExplainedNumber __result)
+	{
+		AddActivePolicySettlementEffects(town?.Settlement, effect => effect.FoodDailyDeltaPerTown, ref __result);
+	}
+
+	private static void Patch_PolicyLoyaltyChange_Postfix(Town town, ref ExplainedNumber __result)
+	{
+		AddActivePolicySettlementEffects(town?.Settlement, effect => effect.LoyaltyDailyDeltaPerTown, ref __result);
+	}
+
+	private static void Patch_PolicySecurityChange_Postfix(Town town, ref ExplainedNumber __result)
+	{
+		AddActivePolicySettlementEffects(town?.Settlement, effect => effect.SecurityDailyDeltaPerTown, ref __result);
+	}
+
+	private static void Patch_PolicyMilitiaChange_Postfix(Settlement settlement, ref ExplainedNumber __result)
+	{
+		if (settlement?.Town != null)
+		{
+			AddActivePolicySettlementEffects(settlement, effect => effect.MilitiaDailyDeltaPerTown, ref __result);
+		}
+	}
+
+	private static void AddActivePolicySettlementEffects(Settlement settlement, Func<ActivePolicyEffectSaveData, float> valueSelector, ref ExplainedNumber result)
+	{
+		CustomPolicyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<CustomPolicyBehavior>();
+		Kingdom kingdom = settlement?.OwnerClan?.Kingdom
+			?? settlement?.Village?.Bound?.OwnerClan?.Kingdom
+			?? settlement?.MapFaction as Kingdom;
+		if (behavior == null || kingdom == null || valueSelector == null)
+		{
+			return;
+		}
+		if (behavior._activePolicyEffectModelCache.Count > Math.Max(32, behavior._activePolicyEffects.Count * 4))
+		{
+			behavior._activePolicyEffectModelCache.Clear();
+		}
+		foreach (string raw in behavior._activePolicyEffects.Values.ToList())
+		{
+			try
+			{
+				string cacheKey = raw ?? "";
+				if (!behavior._activePolicyEffectModelCache.TryGetValue(cacheKey, out ActivePolicyEffectSaveData effect))
+				{
+					effect = JsonConvert.DeserializeObject<ActivePolicyEffectSaveData>(cacheKey);
+					behavior._activePolicyEffectModelCache[cacheKey] = effect;
+				}
+				if (effect == null
+					|| effect.Ended
+					|| effect.RemainingDays <= 0
+					|| !string.Equals(effect.TargetKingdomId ?? "", kingdom.StringId ?? "", StringComparison.OrdinalIgnoreCase))
+				{
+					continue;
+				}
+				float value = valueSelector(effect);
+				if (float.IsNaN(value) || float.IsInfinity(value) || Math.Abs(value) <= 0.0001f)
+				{
+					continue;
+				}
+				result.Add(value, BuildPolicySettlementEffectExplanation(effect));
+			}
+			catch
+			{
+			}
+		}
+	}
+
+	private static TextObject BuildPolicySettlementEffectExplanation(ActivePolicyEffectSaveData effect)
+	{
+		string policyName = (effect?.PolicyName ?? "").Replace("{", "").Replace("}", "").Trim();
+		if (policyName.Length > 48)
+		{
+			policyName = policyName.Substring(0, 47).TrimEnd() + "…";
+		}
+		return new TextObject("《" + (string.IsNullOrWhiteSpace(policyName) ? "未命名政策" : policyName) + "》");
 	}
 
 	private void EnsureDynamicPoliciesRegistered(bool reconcilePending)
@@ -908,15 +1034,13 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 			return;
 		}
 		int requiredGold = Math.Max(0, request.GoldCost);
-		float requiredInfluence = Math.Max(0f, request.InfluenceCost);
 		int actualGold = Math.Min(requiredGold, Math.Max(0, Hero.MainHero?.Gold ?? 0));
-		float actualInfluence = Math.Min(requiredInfluence, Math.Max(0f, Clan.PlayerClan?.Influence ?? 0f));
 		request.RequiredGoldCost = requiredGold;
-		request.RequiredInfluenceCost = requiredInfluence;
+		request.RequiredInfluenceCost = 0f;
 		request.GoldCost = actualGold;
-		request.InfluenceCost = actualInfluence;
+		request.InfluenceCost = 0f;
 		request.GoldEffectScale = CalculatePolicyCostScale(requiredGold, actualGold);
-		request.InfluenceEffectScale = CalculatePolicyCostScale(requiredInfluence, actualInfluence);
+		request.InfluenceEffectScale = request.GoldEffectScale;
 	}
 
 	private void EndPolicyEffectsForAgendaAbolition(string recordId, string reason)
@@ -1289,6 +1413,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		_activePolicyRuntimeGeneration++;
 		_pendingActivePolicyEffectWork.Clear();
 		_queuedActivePolicyEffectIds.Clear();
+		_activePolicyEffectModelCache.Clear();
 		_lastActivePolicyScheduledDay = -1;
 		_policySuccessResultVisible = false;
 		_policySuccessResultPolicyObjectId = "";
@@ -1420,7 +1545,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 			PlayerKingdomName = GetKingdomName(playerKingdom),
 			UseAiEvaluatedCost = options.UseAiEvaluatedCost,
 			GoldCost = options.UseAiEvaluatedCost ? 0 : options.GoldCost,
-			InfluenceCost = options.UseAiEvaluatedCost ? 0f : options.InfluenceCost,
+			InfluenceCost = 0f,
 			EvaluatorPrompt = options.EvaluatorPrompt,
 			EvaluatorPromptIsDefault = options.EvaluatorPromptIsDefault,
 			PublicFeedbackTargetChars = NormalizePolicyPublicFeedbackTargetChars(options.PublicFeedbackTargetChars),
@@ -1443,18 +1568,19 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 	private async Task<PolicyGenerationResult> GeneratePolicyResultAsync(PolicyDraftRequest request)
 	{
 		PolicyGenerationResult result = new PolicyGenerationResult();
+		CancellationTokenSource evaluationTimeout = new CancellationTokenSource(PlayerPolicyEvaluationTimeoutMilliseconds);
 		try
 		{
 			result.KnowledgeContext = (request?.KnowledgeContext ?? "").Trim();
 			int mainMaxTokens = ResolvePolicyMainMaxTokens(request?.PublicFeedbackTargetChars ?? PolicyPublicFeedbackTargetDefaultChars);
 			List<object> mainMessages = BuildMainMessages(request, result.KnowledgeContext);
-			string mainOutput = await ShoutNetwork.CallApiWithMessages(mainMessages, mainMaxTokens, overrideMaxTokens: mainMaxTokens, forceDisableThinking: true);
+			string mainOutput = await ShoutNetwork.CallApiWithMessages(mainMessages, mainMaxTokens, overrideMaxTokens: mainMaxTokens, forceDisableThinking: true, cancellationToken: evaluationTimeout.Token);
 			result.MainRaw = CleanLlmText(mainOutput);
 			result.MainAssessment = ParseMainAssessmentResult(result.MainRaw);
 			if (result.MainAssessment == null)
 			{
 				List<object> retryMessages = BuildMainJsonRetryMessages(mainMessages, result.MainRaw);
-				string retryOutput = await ShoutNetwork.CallApiWithMessages(retryMessages, mainMaxTokens, overrideMaxTokens: mainMaxTokens, forceDisableThinking: true);
+				string retryOutput = await ShoutNetwork.CallApiWithMessages(retryMessages, mainMaxTokens, overrideMaxTokens: mainMaxTokens, forceDisableThinking: true, cancellationToken: evaluationTimeout.Token);
 				string cleanedRetryOutput = CleanLlmText(retryOutput);
 				result.MainRaw = cleanedRetryOutput;
 				result.MainAssessment = ParseMainAssessmentResult(result.MainRaw);
@@ -1484,11 +1610,20 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 			result.Postprocess = BuildPostprocessResultFromMainAssessment(request, result.MainAssessment);
 			result.PostprocessRaw = SafeSerializeForDebug(result.Postprocess);
 		}
+		catch (OperationCanceledException) when (evaluationTimeout.IsCancellationRequested)
+		{
+			result.Error = "政策评议超过 3 分钟，网络请求已取消。请检查网络或 API 状态后重试。";
+			PolicySystemLog.Failure("Player", "evaluation-timeout", BuildPolicyRequestLogPrefix(request), result.Error);
+		}
 		catch (Exception ex)
 		{
 			result.Error = ex.Message;
 			PolicyDebugLog("llm-exception", BuildPolicyRequestLogPrefix(request), ex.ToString());
 			Log("generate policy failed " + BuildPolicyRequestLogPrefix(request) + " error=" + ex);
+		}
+		finally
+		{
+			evaluationTimeout.Dispose();
 		}
 		return result;
 	}
@@ -1710,7 +1845,6 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		return new PolicyRuntimeOptions
 		{
 			GoldCost = Math.Max(0, DuelSettings.GetCustomPolicyGoldCostForExternal()),
-			InfluenceCost = Math.Max(0f, DuelSettings.GetCustomPolicyInfluenceCostForExternal()),
 			UseAiEvaluatedCost = DuelSettings.IsAiEvaluatedCustomPolicyCostEnabledForExternal(),
 			EvaluatorPrompt = string.IsNullOrWhiteSpace(evaluatorPrompt) ? "" : evaluatorPrompt.Trim(),
 			EvaluatorPromptIsDefault = isDefault,
@@ -1727,7 +1861,6 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		return new PolicyRuntimeOptions
 		{
 			GoldCost = Math.Max(0, request.GoldCost),
-			InfluenceCost = Math.Max(0f, request.InfluenceCost),
 			UseAiEvaluatedCost = request.UseAiEvaluatedCost,
 			EvaluatorPrompt = request.EvaluatorPrompt ?? "",
 			EvaluatorPromptIsDefault = request.EvaluatorPromptIsDefault,
@@ -1739,7 +1872,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 	{
 		if (options?.UseAiEvaluatedCost == true)
 		{
-			return "填写政策名和政策内容后即可发布。AI 会评估完整执行所需第纳尔和影响力；若资源不足，将为你保留 " + AiPolicyGoldReserve.ToString(CultureInfo.InvariantCulture) + " 第纳尔和 " + FormatNumber(AiPolicyInfluenceReserve) + " 影响力，并按实际投入比例折算效果。";
+			return "填写政策名和政策内容后即可发布。AI 会评估完整执行所需第纳尔；若第纳尔不足，将为你保留 " + AiPolicyGoldReserve.ToString(CultureInfo.InvariantCulture) + " 第纳尔，并按实际投入比例折算全部效果。";
 		}
 		return "填写政策名和政策内容后即可发布。LLM 完成评议且成功落地时扣除：" + FormatCostText(options) + "。无冷却限制，可连续发布。";
 	}
@@ -1750,7 +1883,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		{
 			options = BuildPolicyRuntimeOptions();
 		}
-		return FormatCostText(options.GoldCost, options.InfluenceCost);
+		return FormatGoldCostText(options.GoldCost);
 	}
 
 	private static string FormatCostText(PolicyDraftRequest request)
@@ -1759,7 +1892,14 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		{
 			return FormatCostText(BuildPolicyRuntimeOptions());
 		}
-		return FormatCostText(request.GoldCost, request.InfluenceCost);
+		return FormatGoldCostText(request.GoldCost);
+	}
+
+	private static string FormatGoldCostText(int goldCost)
+	{
+		return goldCost > 0
+			? goldCost.ToString(CultureInfo.InvariantCulture) + " 第纳尔"
+			: "不消耗第纳尔";
 	}
 
 	private static string FormatCostText(int goldCost, float influenceCost)
@@ -1805,10 +1945,9 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		if (options.UseAiEvaluatedCost)
 		{
 			int currentGold = Math.Max(0, Hero.MainHero?.Gold ?? 0);
-			float currentInfluence = Math.Max(0f, Clan.PlayerClan?.Influence ?? 0f);
-			if (currentGold <= AiPolicyGoldReserve && currentInfluence <= AiPolicyInfluenceReserve)
+			if (currentGold <= AiPolicyGoldReserve)
 			{
-				return PolicyEligibility.Blocked("资源不足：AI 消耗模式会至少为你保留 " + AiPolicyGoldReserve.ToString(CultureInfo.InvariantCulture) + " 第纳尔和 " + FormatNumber(AiPolicyInfluenceReserve) + " 影响力。当前没有可投入的第纳尔或影响力，无法发布政策。");
+				return PolicyEligibility.Blocked("第纳尔不足：AI 消耗模式会至少为你保留 " + AiPolicyGoldReserve.ToString(CultureInfo.InvariantCulture) + " 第纳尔。当前没有可投入的第纳尔，无法发布政策。");
 			}
 			return PolicyEligibility.Allowed();
 		}
@@ -1816,20 +1955,14 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		{
 			return PolicyEligibility.Blocked("发布政策需要 " + options.GoldCost.ToString(CultureInfo.InvariantCulture) + " 第纳尔。");
 		}
-		if ((Clan.PlayerClan?.Influence ?? 0f) < options.InfluenceCost)
-		{
-			return PolicyEligibility.Blocked("发布政策需要 " + FormatNumber(options.InfluenceCost) + " 影响力。");
-		}
 		return PolicyEligibility.Allowed();
 	}
 
 	private void DeductPublishCost(PolicyDraftRequest request)
 	{
 		int goldCost = Math.Max(0, request?.GoldCost ?? 0);
-		float influenceCost = Math.Max(0f, request?.InfluenceCost ?? 0f);
 		PolicyDebugLog("deduct-cost", BuildPolicyRequestLogPrefix(request)
-			+ " goldCost=" + goldCost.ToString(CultureInfo.InvariantCulture)
-			+ " influenceCost=" + FormatNumber(influenceCost));
+			+ " goldCost=" + goldCost.ToString(CultureInfo.InvariantCulture));
 		try
 		{
 			if (goldCost > 0)
@@ -1840,18 +1973,6 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Log("deduct gold failed " + BuildPolicyRequestLogPrefix(request) + " error=" + ex.Message);
-			throw;
-		}
-		try
-		{
-			if (influenceCost > 0.0001f)
-			{
-				ChangeClanInfluenceAction.Apply(Clan.PlayerClan, -influenceCost);
-			}
-		}
-		catch (Exception ex)
-		{
-			Log("deduct influence failed " + BuildPolicyRequestLogPrefix(request) + " error=" + ex.Message);
 			throw;
 		}
 	}
@@ -1867,49 +1988,44 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		if (!request.UseAiEvaluatedCost)
 		{
 			request.RequiredGoldCost = Math.Max(0, request.GoldCost);
-			request.RequiredInfluenceCost = Math.Max(0f, request.InfluenceCost);
+			request.RequiredInfluenceCost = 0f;
+			request.InfluenceCost = 0f;
 			request.GoldEffectScale = 1f;
-			request.InfluenceEffectScale = 1f;
+			request.InfluenceEffectScale = request.GoldEffectScale;
 			return true;
 		}
-		if (!TryReadAiPolicyRequiredCosts(assessment, out int requiredGoldCost, out float requiredInfluenceCost, out error))
+		if (!TryReadAiPolicyRequiredGoldCost(assessment, out int requiredGoldCost, out error))
 		{
 			return false;
 		}
 		int currentGold = Math.Max(0, Hero.MainHero?.Gold ?? 0);
-		float currentInfluence = Math.Max(0f, Clan.PlayerClan?.Influence ?? 0f);
 		int availableGold = Math.Max(0, currentGold - AiPolicyGoldReserve);
-		float availableInfluence = Math.Max(0f, currentInfluence - AiPolicyInfluenceReserve);
 		int actualGoldCost = Math.Min(requiredGoldCost, availableGold);
-		float actualInfluenceCost = Math.Min(requiredInfluenceCost, availableInfluence);
 		request.RequiredGoldCost = requiredGoldCost;
-		request.RequiredInfluenceCost = requiredInfluenceCost;
+		request.RequiredInfluenceCost = 0f;
 		request.GoldCost = actualGoldCost;
-		request.InfluenceCost = actualInfluenceCost;
+		request.InfluenceCost = 0f;
 		request.GoldEffectScale = CalculatePolicyCostScale(requiredGoldCost, actualGoldCost);
-		request.InfluenceEffectScale = CalculatePolicyCostScale(requiredInfluenceCost, actualInfluenceCost);
+		request.InfluenceEffectScale = request.GoldEffectScale;
 		return true;
 	}
 
-	private static bool TryReadAiPolicyRequiredCosts(PolicyMainAssessmentResult assessment, out int requiredGoldCost, out float requiredInfluenceCost, out string error)
+	private static bool TryReadAiPolicyRequiredGoldCost(PolicyMainAssessmentResult assessment, out int requiredGoldCost, out string error)
 	{
 		requiredGoldCost = 0;
-		requiredInfluenceCost = 0f;
 		error = "";
-		if (assessment?.RequiredGoldCost == null || assessment.RequiredInfluenceCost == null)
+		if (assessment?.RequiredGoldCost == null)
 		{
-			error = "AI 消耗模式要求主评判同时返回 requiredGoldCost 和 requiredInfluenceCost。";
+			error = "AI 消耗模式要求主评判返回 requiredGoldCost。";
 			return false;
 		}
 		float rawGold = assessment.RequiredGoldCost.Value;
-		float rawInfluence = assessment.RequiredInfluenceCost.Value;
-		if (float.IsNaN(rawGold) || float.IsInfinity(rawGold) || rawGold < 0f || float.IsNaN(rawInfluence) || float.IsInfinity(rawInfluence) || rawInfluence < 0f)
+		if (float.IsNaN(rawGold) || float.IsInfinity(rawGold) || rawGold < 0f)
 		{
-			error = "AI 返回的政策消耗不合法：requiredGoldCost 和 requiredInfluenceCost 必须是非负数字。";
+			error = "AI 返回的政策消耗不合法：requiredGoldCost 必须是非负数字。";
 			return false;
 		}
 		requiredGoldCost = rawGold <= 0f ? 0 : (int)Math.Min(int.MaxValue, Math.Ceiling(rawGold));
-		requiredInfluenceCost = rawInfluence <= 0f ? 0f : rawInfluence;
 		return true;
 	}
 
@@ -2262,108 +2378,14 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-			Town town = settlement?.Town;
-			if (town != null)
-			{
-				applied.TownCount++;
-				string settlementName = settlement.Name?.ToString() ?? settlement.StringId ?? "未知定居点";
-				float prosperityBefore = town.Prosperity;
-				float foodBefore = town.FoodStocks;
-				float loyaltyBefore = town.Loyalty;
-				float securityBefore = town.Security;
-				float militiaBefore = settlement.Militia;
-				bool townTouched = Math.Abs(applied.ProsperityDailyDeltaPerTown) > 0.0001f
-					|| Math.Abs(applied.FoodDailyDeltaPerTown) > 0.0001f
-					|| Math.Abs(applied.LoyaltyDailyDeltaPerTown) > 0.0001f
-					|| Math.Abs(applied.SecurityDailyDeltaPerTown) > 0.0001f
-					|| Math.Abs(applied.MilitiaDailyDeltaPerTown) > 0.0001f;
-				if (Math.Abs(applied.ProsperityDailyDeltaPerTown) > 0.0001f)
-				{
-					float before = town.Prosperity;
-					town.Prosperity = Math.Max(0f, before + applied.ProsperityDailyDeltaPerTown);
-					applied.ProsperityActualDelta += town.Prosperity - before;
-				}
-				if (Math.Abs(applied.FoodDailyDeltaPerTown) > 0.0001f)
-				{
-					float before = town.FoodStocks;
-					float after = Math.Max(0f, before + applied.FoodDailyDeltaPerTown);
-					try
-					{
-						float upper = Math.Max(0f, town.FoodStocksUpperLimit());
-						if (upper > 0f)
-						{
-							after = Math.Min(upper, after);
-						}
-					}
-					catch
-					{
-					}
-					town.FoodStocks = after;
-					applied.FoodActualDelta += town.FoodStocks - before;
-				}
-				if (Math.Abs(applied.LoyaltyDailyDeltaPerTown) > 0.0001f)
-				{
-					float before = town.Loyalty;
-					town.Loyalty = MBMath.ClampFloat(before + applied.LoyaltyDailyDeltaPerTown, 0f, 100f);
-					applied.LoyaltyActualDelta += town.Loyalty - before;
-				}
-				if (Math.Abs(applied.SecurityDailyDeltaPerTown) > 0.0001f)
-				{
-					float before = town.Security;
-					town.Security = MBMath.ClampFloat(before + applied.SecurityDailyDeltaPerTown, 0f, 100f);
-					applied.SecurityActualDelta += town.Security - before;
-				}
-				if (Math.Abs(applied.MilitiaDailyDeltaPerTown) > 0.0001f)
-				{
-					float before = settlement.Militia;
-					settlement.Militia = Math.Max(0f, before + applied.MilitiaDailyDeltaPerTown);
-					applied.MilitiaActualDelta += settlement.Militia - before;
-				}
-				if (townTouched)
-				{
-					applied.DetailLines.Add(settlementName
-						+ " | 繁荣 " + FormatNumber(prosperityBefore) + " -> " + FormatNumber(town.Prosperity)
-						+ " | 粮食 " + FormatNumber(foodBefore) + " -> " + FormatNumber(town.FoodStocks)
-						+ " | 忠诚 " + FormatNumber(loyaltyBefore) + " -> " + FormatNumber(town.Loyalty)
-						+ " | 治安 " + FormatNumber(securityBefore) + " -> " + FormatNumber(town.Security)
-						+ " | 民兵 " + FormatNumber(militiaBefore) + " -> " + FormatNumber(settlement.Militia));
-					if (CustomPolicyVerboseSettlementDebugLog)
-					{
-					}
-				}
-			}
-			Village village = settlement?.Village;
-			if (village != null && Math.Abs(applied.HearthDailyDeltaPerVillage) > 0.0001f)
-			{
-				applied.VillageCount++;
-				int oldLevel = 0;
-				try
-				{
-					oldLevel = village.GetHearthLevel();
-				}
-				catch
-				{
-				}
-				float before = village.Hearth;
-				village.Hearth = Math.Max(0f, before + applied.HearthDailyDeltaPerVillage);
-				applied.HearthActualDelta += village.Hearth - before;
-				string villageName = settlement.Name?.ToString() ?? settlement.StringId ?? "未知村庄";
-				applied.DetailLines.Add(villageName
-					+ " | 户数 " + FormatNumber(before) + " -> " + FormatNumber(village.Hearth));
-				if (CustomPolicyVerboseSettlementDebugLog)
-				{
-				}
-				try
-				{
-					if (oldLevel != village.GetHearthLevel())
-					{
-						settlement.Party?.SetLevelMaskIsDirty();
-					}
-				}
-				catch
-				{
-				}
-			}
+		if (settlement.Town != null)
+		{
+			applied.TownCount++;
+		}
+		if (settlement.Village != null && Math.Abs(applied.HearthDailyDeltaPerVillage) > 0.0001f)
+		{
+			applied.VillageCount++;
+		}
 	}
 
 	private static void ApplyKingdomStabilityDailyDelta(Kingdom kingdom, ActivePolicyEffectSaveData activeEffect, AppliedKingdomEffect applied)
@@ -2984,11 +3006,11 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		string publicFeedbackTargetText = publicFeedbackTargetChars.ToString(CultureInfo.InvariantCulture);
 		bool useAiEvaluatedCost = request?.UseAiEvaluatedCost == true;
 		string costSchemaText = useAiEvaluatedCost
-			? "- requiredGoldCost:number，完整执行这项政策需要投入的第纳尔；必须按政策本身的规模、执行难度和覆盖范围评估，不要为了迎合玩家当前钱包而压低。\n- requiredInfluenceCost:number，完整执行这项政策需要投入的影响力；必须按封臣配合、政治动员、合法性消耗和秩序压力评估，不要为了迎合玩家当前影响力而压低。\n"
+			? "- requiredGoldCost:number，完整执行这项政策需要投入的第纳尔；必须综合政策规模、覆盖范围、物资行政投入、封臣协调、政治动员和秩序压力评估，不要为了迎合玩家当前钱包而压低。\n"
 			: "";
 		string costModeText = useAiEvaluatedCost
-			? "当前启用 AI 判断自定义政策消耗。你必须输出 requiredGoldCost 和 requiredInfluenceCost；它们代表完整执行成本，不代表玩家实际支付。代码会为玩家保留底线资源，若资源不足会按实际投入比例折算数值效果。"
-			: "当前关闭 AI 判断自定义政策消耗。代码会使用 MCM 固定滑条扣费并完整应用数值效果；你不需要输出 requiredGoldCost 或 requiredInfluenceCost，即使输出也会被忽略。";
+			? "当前启用 AI 判断自定义政策消耗。你必须输出 requiredGoldCost；它代表完整执行成本，不代表玩家实际支付。代码会为玩家保留底线第纳尔，若第纳尔不足会按实际投入比例折算全部数值效果。"
+			: "当前关闭 AI 判断自定义政策消耗。代码会使用 MCM 固定第纳尔消耗并完整应用数值效果；你不需要输出 requiredGoldCost，即使输出也会被忽略。";
 		string system = JoinPolicyPromptSections(
 			request?.EvaluatorPrompt,
 			"【自定义政策链路规则】\n" + policyRuleContext,
@@ -3102,9 +3124,9 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 	{
 		if (options?.UseAiEvaluatedCost == true)
 		{
-			return "AI 判断自定义政策消耗已开启。主处理需要评估完整执行政策所需 requiredGoldCost 与 requiredInfluenceCost；代码会至少为玩家保留 " + AiPolicyGoldReserve.ToString(CultureInfo.InvariantCulture) + " 第纳尔和 " + FormatNumber(AiPolicyInfluenceReserve) + " 影响力，资源不足时按实际投入比例折算效果。";
+			return "AI 判断自定义政策消耗已开启。主处理需要评估完整执行政策所需 requiredGoldCost；代码会至少为玩家保留 " + AiPolicyGoldReserve.ToString(CultureInfo.InvariantCulture) + " 第纳尔，第纳尔不足时按实际投入比例折算全部效果。";
 		}
-		return "AI 判断自定义政策消耗已关闭。代码完全按 MCM 固定滑条扣费（" + FormatCostText(options) + "），效果不按资源比例折算；主处理不需要评估执行成本。";
+		return "AI 判断自定义政策消耗已关闭。代码完全按 MCM 固定第纳尔消耗（" + FormatCostText(options) + "）扣费，效果不按资源比例折算；主处理不需要评估执行成本。";
 	}
 
 	private void AppendOtherKingdomIndex(StringBuilder sb, Kingdom playerKingdom)
@@ -3263,7 +3285,6 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 			return null;
 		}
 		float goldScale = request?.GoldEffectScale ?? 1f;
-		float influenceScale = request?.InfluenceEffectScale ?? 1f;
 		return new PolicyEffectDto
 		{
 			TargetKingdomId = effect.TargetKingdomId,
@@ -3271,10 +3292,10 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 			ProsperityDailyDeltaPerTown = ScalePolicyDailyDelta(effect.ProsperityDailyDeltaPerTown, goldScale),
 			FoodDailyDeltaPerTown = ScalePolicyDailyDelta(effect.FoodDailyDeltaPerTown, goldScale),
 			HearthDailyDeltaPerVillage = ScalePolicyDailyDelta(effect.HearthDailyDeltaPerVillage, goldScale),
-			LoyaltyDailyDeltaPerTown = ScalePolicyDailyDelta(effect.LoyaltyDailyDeltaPerTown, influenceScale),
-			SecurityDailyDeltaPerTown = ScalePolicyDailyDelta(effect.SecurityDailyDeltaPerTown, influenceScale),
+			LoyaltyDailyDeltaPerTown = ScalePolicyDailyDelta(effect.LoyaltyDailyDeltaPerTown, goldScale),
+			SecurityDailyDeltaPerTown = ScalePolicyDailyDelta(effect.SecurityDailyDeltaPerTown, goldScale),
 			MilitiaDailyDeltaPerTown = ScalePolicyDailyDelta(effect.MilitiaDailyDeltaPerTown, goldScale),
-			KingdomStabilityDailyDelta = ScalePolicyDailyDelta(effect.KingdomStabilityDailyDelta, influenceScale),
+			KingdomStabilityDailyDelta = ScalePolicyDailyDelta(effect.KingdomStabilityDailyDelta, goldScale),
 			DurationDays = effect.DurationDays,
 			Reason = effect.Reason
 		};
@@ -3686,12 +3707,10 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		return "AI 评估完整执行需要：" + FormatCostText(request.RequiredGoldCost, request.RequiredInfluenceCost)
-			+ "；本次实际投入：" + FormatCostText(request.GoldCost, request.InfluenceCost)
-			+ "（已为你保留 " + AiPolicyGoldReserve.ToString(CultureInfo.InvariantCulture) + " 第纳尔和 " + FormatNumber(AiPolicyInfluenceReserve) + " 影响力）。"
-			+ "繁荣、粮食、户数和民兵按 " + FormatPercent(request.GoldEffectScale)
-			+ " 生效；忠诚、治安和稳定度按 " + FormatPercent(request.InfluenceEffectScale)
-			+ " 生效。";
+		return "AI 评估完整执行需要：" + FormatGoldCostText(request.RequiredGoldCost)
+			+ "；本次实际投入：" + FormatGoldCostText(request.GoldCost)
+			+ "（已为你保留 " + AiPolicyGoldReserve.ToString(CultureInfo.InvariantCulture) + " 第纳尔）。"
+			+ "全部政策效果按 " + FormatPercent(request.GoldEffectScale) + " 生效。";
 	}
 
 	private bool RecordSuccessfulPolicy(PolicyDraftRequest request, PolicyGenerationResult generationResult, string feedback, PolicyApplicationResult application, string recordId)
@@ -3717,11 +3736,11 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 				PlayerKingdomName = request.PlayerKingdomName ?? "",
 				UseAiEvaluatedCost = request.UseAiEvaluatedCost,
 				RequiredGoldCost = Math.Max(0, request.RequiredGoldCost),
-				RequiredInfluenceCost = Math.Max(0f, request.RequiredInfluenceCost),
+				RequiredInfluenceCost = 0f,
 				GoldEffectScale = request.GoldEffectScale,
-				InfluenceEffectScale = request.InfluenceEffectScale,
+				InfluenceEffectScale = request.GoldEffectScale,
 				GoldCost = Math.Max(0, request.GoldCost),
-				InfluenceCost = Math.Max(0f, request.InfluenceCost),
+				InfluenceCost = 0f,
 				EvaluatorPromptIsDefault = request.EvaluatorPromptIsDefault
 			};
 			if (application?.KingdomEffects != null)
@@ -3965,12 +3984,22 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 	{
 		if (record?.UseAiEvaluatedCost == true)
 		{
+			if (record.RequiredInfluenceCost <= 0.0001f && record.InfluenceCost <= 0.0001f)
+			{
+				return "AI 消耗：完整需 " + FormatGoldCostText(record.RequiredGoldCost)
+					+ "；已支付 " + FormatGoldCostText(record.GoldCost)
+					+ "；全部效果 " + FormatPercent(record.GoldEffectScale <= 0f && record.RequiredGoldCost <= 0 ? 1f : record.GoldEffectScale);
+			}
 			return "AI 消耗：完整需 " + FormatCostText(record.RequiredGoldCost, record.RequiredInfluenceCost)
 				+ "；已支付 " + FormatCostText(record.GoldCost, record.InfluenceCost)
 				+ "；经济/民生 " + FormatPercent(record.GoldEffectScale <= 0f && record.RequiredGoldCost <= 0 ? 1f : record.GoldEffectScale)
 				+ "，政治/秩序 " + FormatPercent(record.InfluenceEffectScale <= 0f && record.RequiredInfluenceCost <= 0f ? 1f : record.InfluenceEffectScale);
 		}
-		return "已支付：" + FormatCostText(record?.GoldCost ?? 0, record?.InfluenceCost ?? 0f);
+		if ((record?.InfluenceCost ?? 0f) > 0.0001f)
+		{
+			return "已支付：" + FormatCostText(record?.GoldCost ?? 0, record?.InfluenceCost ?? 0f);
+		}
+		return "已支付：" + FormatGoldCostText(record?.GoldCost ?? 0);
 	}
 
 	private void TrimPolicyRecordHistory()
@@ -4455,14 +4484,9 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 			+ ", security=" + FormatNumber(effect.SecurityDailyDeltaPerTown)
 			+ ", militia=" + FormatNumber(effect.MilitiaDailyDeltaPerTown)
 			+ ", stability=" + effect.KingdomStabilityDailyDelta.ToString(CultureInfo.InvariantCulture)
-			+ ") actual(prosperity=" + FormatNumber(effect.ProsperityActualDelta)
-			+ ", food=" + FormatNumber(effect.FoodActualDelta)
-			+ ", hearth=" + FormatNumber(effect.HearthActualDelta)
-			+ ", loyalty=" + FormatNumber(effect.LoyaltyActualDelta)
-			+ ", security=" + FormatNumber(effect.SecurityActualDelta)
-			+ ", militia=" + FormatNumber(effect.MilitiaActualDelta)
-			+ ", stability=" + effect.KingdomStabilityActualDelta.ToString(CultureInfo.InvariantCulture)
-			+ ") stabilityBefore=" + effect.KingdomStabilityBefore.ToString(CultureInfo.InvariantCulture)
+			+ ") settlementDeltas=model-managed"
+			+ " stabilityActual=" + effect.KingdomStabilityActualDelta.ToString(CultureInfo.InvariantCulture)
+			+ " stabilityBefore=" + effect.KingdomStabilityBefore.ToString(CultureInfo.InvariantCulture)
 			+ " stabilityAfter=" + effect.KingdomStabilityAfter.ToString(CultureInfo.InvariantCulture)
 			+ " stabilityApplied=" + (effect.KingdomStabilityApplied ? "true" : "false")
 			+ " stabilityNote=" + PreviewForPolicyDebugLog(effect.KingdomStabilityApplyNote ?? "", 120);
@@ -4584,8 +4608,6 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 	private sealed class PolicyRuntimeOptions
 	{
 		public int GoldCost;
-
-		public float InfluenceCost;
 
 		public bool UseAiEvaluatedCost;
 
@@ -4839,18 +4861,6 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		public int DurationDays;
 
 		public int RemainingDays;
-
-		public float ProsperityActualDelta;
-
-		public float FoodActualDelta;
-
-		public float HearthActualDelta;
-
-		public float LoyaltyActualDelta;
-
-		public float SecurityActualDelta;
-
-		public float MilitiaActualDelta;
 
 		public int KingdomStabilityActualDelta;
 

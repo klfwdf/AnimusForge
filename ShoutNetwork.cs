@@ -516,7 +516,7 @@ public static class ShoutNetwork
 		}
 	}
 
-	public static async Task<string> CallApiWithMessages(List<object> messages, int maxTokens, bool recordTokenStats = true, int? overrideMaxTokens = null, bool forceDisableThinking = false, bool promptRetryOnError = false)
+	public static async Task<string> CallApiWithMessages(List<object> messages, int maxTokens, bool recordTokenStats = true, int? overrideMaxTokens = null, bool forceDisableThinking = false, bool promptRetryOnError = false, CancellationToken cancellationToken = default(CancellationToken))
 	{
 		LlmRetryPrompt.CaptureMainThreadContext();
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
@@ -547,7 +547,7 @@ public static class ShoutNetwork
 				string configError = LlmRetryPrompt.BuildFailureDetail("（错误：未配置 API Key）", "");
 				if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", configError))
 				{
-					return await CallApiWithMessages(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError);
+					return await CallApiWithMessages(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError, cancellationToken);
 				}
 				return configError;
 			}
@@ -566,7 +566,7 @@ public static class ShoutNetwork
 				string configError = LlmRetryPrompt.BuildFailureDetail("（错误：未配置模型名称）", "");
 				if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", configError))
 				{
-					return await CallApiWithMessages(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError);
+					return await CallApiWithMessages(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError, cancellationToken);
 				}
 				return configError;
 			}
@@ -582,7 +582,7 @@ public static class ShoutNetwork
 				LlmApiCompat.ApplyAuthenticationHeaders(request, effectiveApiUrl, settings.ApiKey);
 				request.Content = (HttpContent)new StringContent(jsonBody, Encoding.UTF8, "application/json");
 				FreezeWatchdog.Mark("PrimaryChat.non_stream.send_begin", "model=" + effectiveModelName + " maxTokens=" + actualMaxTokens, immediate: true);
-				HttpResponseMessage response = await DuelSettings.GlobalClient.SendAsync(request);
+				HttpResponseMessage response = await DuelSettings.GlobalClient.SendAsync(request, cancellationToken);
 				FreezeWatchdog.Mark("PrimaryChat.non_stream.response", "status=" + (int)response.StatusCode + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 				if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_response"))
 				{
@@ -608,7 +608,7 @@ public static class ShoutNetwork
 					LlmApiCompat.ApplyAuthenticationHeaders(httpRequestMessage, effectiveApiUrl, settings.ApiKey);
 					httpRequestMessage.Content = (HttpContent)new StringContent(jsonBody2, Encoding.UTF8, "application/json");
 					FreezeWatchdog.Mark("PrimaryChat.non_stream.retry_send_begin", "model=" + effectiveModelName, immediate: true);
-					response = await DuelSettings.GlobalClient.SendAsync(httpRequestMessage);
+					response = await DuelSettings.GlobalClient.SendAsync(httpRequestMessage, cancellationToken);
 					FreezeWatchdog.Mark("PrimaryChat.non_stream.retry_response", "status=" + (int)response.StatusCode + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 					if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_retry_response"))
 					{
@@ -641,7 +641,7 @@ public static class ShoutNetwork
 								{
 									return SaveRuntimeGuard.BuildStaleRequestErrorText();
 								}
-								string retryContent = await CallApiWithMessages(BuildEmptyResponseRetryMessages(messages), maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError);
+								string retryContent = await CallApiWithMessages(BuildEmptyResponseRetryMessages(messages), maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError, cancellationToken);
 								if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_empty_retry_complete"))
 								{
 									return SaveRuntimeGuard.BuildStaleRequestErrorText();
@@ -651,7 +651,7 @@ public static class ShoutNetwork
 							string emptyError = LlmRetryPrompt.BuildFailureDetail("（API响应格式错误: 模型回复为空）", "", str);
 							if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", emptyError))
 							{
-								return await CallApiWithMessages(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError);
+								return await CallApiWithMessages(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError, cancellationToken);
 							}
 							return emptyError;
 						}
@@ -694,7 +694,7 @@ public static class ShoutNetwork
 						FreezeWatchdog.Mark("PrimaryChat.non_stream.parse_error", "elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 						if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", parseError))
 						{
-							return await CallApiWithMessages(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError);
+							return await CallApiWithMessages(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError, cancellationToken);
 						}
 						return parseError;
 					}
@@ -713,7 +713,7 @@ public static class ShoutNetwork
 				FreezeWatchdog.Mark("PrimaryChat.non_stream.http_error", "status=" + (int)response.StatusCode + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 				if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", httpError))
 				{
-					return await CallApiWithMessages(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError);
+					return await CallApiWithMessages(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError, cancellationToken);
 				}
 				return httpError;
 			}
@@ -721,6 +721,10 @@ public static class ShoutNetwork
 			{
 				((IDisposable)request)?.Dispose();
 			}
+		}
+		catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+		{
+			throw;
 		}
 		catch (Exception ex)
 		{
@@ -737,7 +741,7 @@ public static class ShoutNetwork
 			FreezeWatchdog.Mark("PrimaryChat.non_stream.exception", ex.GetType().Name + ": " + ex.Message + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 			if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", exceptionError))
 			{
-				return await CallApiWithMessages(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError);
+				return await CallApiWithMessages(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError, cancellationToken);
 			}
 			return exceptionError;
 		}
