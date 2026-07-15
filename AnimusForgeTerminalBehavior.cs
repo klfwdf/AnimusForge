@@ -275,7 +275,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		{
 			new InquiryElement("trust_query", "信任度查询", null, isEnabled: true, ""),
 			new InquiryElement("weekly_reports", "查看周报", null, isEnabled: true, ""),
-			new InquiryElement("custom_policy_management", "政策管理", null, isEnabled: true, "撰写自定义政策，或查看已经成功落地的政策记录。"),
+			new InquiryElement("custom_policy_management", "政策系统", null, isEnabled: true, "撰写政策，或查看各国已经发布的世界政策。"),
 			new InquiryElement("vassalage_management", "臣属国管理", null, isEnabled: true, "只查看已有臣属国；解约、改约、吞并请通过 LLM 对话推进。"),
 			new InquiryElement("player_persona", "修改玩家外貌与背景", null, isEnabled: true, ""),
 			new InquiryElement("settlement_entry_troops", "进城随行配置", null, isEnabled: true, "配置 SETS 进城/城堡/村庄自动带入的同伴和士兵。"),
@@ -356,9 +356,9 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		List<InquiryElement> list = new List<InquiryElement>
 		{
 			new InquiryElement("compose", "撰写政策", null, isEnabled: true, "填写政策名与政策内容，提交给 LLM 评议后落地数值效果。"),
-			new InquiryElement("history", "政策记录", null, isEnabled: true, "查看最近成功落地的自定义政策摘要与影响效果。")
+			new InquiryElement("world_policies", "查看世界政策", null, isEnabled: true, "只读查看各国已经发布的玩家与 NPC 统治者政策及政策衍生事件。")
 		};
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("政策管理", "请选择政策功能：", list, isExitShown: true, 1, 1, "确定", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData("政策系统", "请选择政策功能：", list, isExitShown: true, 1, 1, "确定", "返回", delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -371,9 +371,13 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 				CloseTerminal();
 				CustomPolicyBehavior.OpenFromTerminal();
 			}
-			else if (string.Equals(text, "history", StringComparison.Ordinal))
+			else if (string.Equals(text, "world_policies", StringComparison.Ordinal))
 			{
-				CustomPolicyBehavior.OpenRecordHistoryFromTerminal(OpenCustomPolicyManagementView);
+				CloseTerminal();
+				if (!AnimusForgeWorldEventOverlay.ShowWorldPolicies())
+				{
+					InformationManager.DisplayMessage(new InformationMessage("打开世界政策界面失败。"));
+				}
 			}
 			else
 			{

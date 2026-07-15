@@ -28,6 +28,12 @@ public sealed class NpcRulerPolicyRecord
 	[JsonProperty("policyId")]
 	public string PolicyId { get; set; }
 
+	[JsonProperty("policyObjectId")]
+	public string PolicyObjectId { get; set; }
+
+	[JsonProperty("agendaStatus")]
+	public string AgendaStatus { get; set; }
+
 	[JsonProperty("batchId")]
 	public string BatchId { get; set; }
 
@@ -75,6 +81,15 @@ public sealed class NpcRulerPolicyRecord
 
 	[JsonProperty("impactSummary")]
 	public string ImpactSummary { get; set; }
+
+	[JsonProperty("authoritarianWeight")]
+	public float? AuthoritarianWeight { get; set; }
+
+	[JsonProperty("oligarchicWeight")]
+	public float? OligarchicWeight { get; set; }
+
+	[JsonProperty("egalitarianWeight")]
+	public float? EgalitarianWeight { get; set; }
 
 	public int Day { get; set; }
 
@@ -1074,10 +1089,15 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 	private const string SaveKeyPolicyRecords = "_afNpcRulerPolicyRecords_v1";
 	private const string SaveKeyLastGeneratedDay = "_afNpcRulerPolicyLastGeneratedDay_v1";
 	private const string SaveKeyLastGeneratedHour = "_afNpcRulerPolicyLastGeneratedHour_v1";
+	private const string SaveKeyLastPolicyCheckDay = "_afNpcRulerPolicyLastCheckDay_v1";
+	private const string AgendaStatusPending = "pending";
+	private const string AgendaStatusApprovedPendingCommit = "approved_pending_commit";
+	private const string AgendaStatusActive = "active";
+	private const string AgendaStatusExpiryVotePending = "expiry_vote_pending";
+	private const string AgendaStatusAbolished = "abolished";
+	private const string AgendaStatusRejected = "rejected";
 	private const float InitialGenerationCheckDelaySeconds = 8f;
-	private const int DefaultGenerationIntervalDays = 7;
-	private const int DefaultNpcRulerPolicyDailyLimit = 3;
-	private const int DefaultNpcRulerPolicyBatchSize = 3;
+	private const int DefaultNpcRulerPolicyBatchSize = 1;
 	private const int MaxPoliciesPerBatch = 12;
 	private const int MaxPolicyRecordCount = 180;
 	private const int MaxNameChars = 90;
@@ -1116,6 +1136,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 	private string _policyActiveInFlightKey = "";
 	private int _lastGeneratedDay = -1;
 	private int _lastGeneratedHour = -1;
+	private int _lastPolicyCheckDay = -1;
 	private int _lastGenerationAttemptHour = -1;
 	private int _lastGenerationFailureHour = -1;
 	private int _lastGenerationRetryCount;
@@ -1153,10 +1174,12 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			Dictionary<string, string> records = CampaignSaveChunkHelper.FlattenStringDictionary(_policyRecords, SaveKeyPolicyRecords, "NpcRulerPolicyRecords");
 			int lastGeneratedDay = _lastGeneratedDay;
 			int lastGeneratedHour = _lastGeneratedHour;
+			int lastPolicyCheckDay = _lastPolicyCheckDay;
 			dataStore.SyncData(SaveKeyPolicyRecords, ref records);
 			dataStore.SyncData(SaveKeyLastGeneratedDay, ref lastGeneratedDay);
 			dataStore.SyncData(SaveKeyLastGeneratedHour, ref lastGeneratedHour);
-			Log("save-write records=" + _policyRecords.Count.ToString(CultureInfo.InvariantCulture) + " lastGeneratedDay=" + lastGeneratedDay.ToString(CultureInfo.InvariantCulture) + " lastGeneratedHour=" + lastGeneratedHour.ToString(CultureInfo.InvariantCulture));
+			dataStore.SyncData(SaveKeyLastPolicyCheckDay, ref lastPolicyCheckDay);
+			Log("save-write records=" + _policyRecords.Count.ToString(CultureInfo.InvariantCulture) + " lastGeneratedDay=" + lastGeneratedDay.ToString(CultureInfo.InvariantCulture) + " lastGeneratedHour=" + lastGeneratedHour.ToString(CultureInfo.InvariantCulture) + " lastPolicyCheckDay=" + lastPolicyCheckDay.ToString(CultureInfo.InvariantCulture));
 			return;
 		}
 		ClearPolicyTransientRuntimeForLoadedSave("sync-load", incrementVersion: true);
@@ -1183,12 +1206,15 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		int lastHour = -1;
 		dataStore.SyncData(SaveKeyLastGeneratedHour, ref lastHour);
 		_lastGeneratedHour = lastHour;
+		int loadedLastPolicyCheckDay = -1;
+		dataStore.SyncData(SaveKeyLastPolicyCheckDay, ref loadedLastPolicyCheckDay);
+		_lastPolicyCheckDay = loadedLastPolicyCheckDay;
 		if (_lastGeneratedHour < 0 && _lastGeneratedDay >= 0)
 		{
 			_lastGeneratedHour = _lastGeneratedDay * 24;
 		}
 		TrimPolicyRecords();
-		Log("save-read records=" + _policyRecords.Count.ToString(CultureInfo.InvariantCulture) + " lastGeneratedDay=" + _lastGeneratedDay.ToString(CultureInfo.InvariantCulture) + " lastGeneratedHour=" + _lastGeneratedHour.ToString(CultureInfo.InvariantCulture));
+		Log("save-read records=" + _policyRecords.Count.ToString(CultureInfo.InvariantCulture) + " lastGeneratedDay=" + _lastGeneratedDay.ToString(CultureInfo.InvariantCulture) + " lastGeneratedHour=" + _lastGeneratedHour.ToString(CultureInfo.InvariantCulture) + " lastPolicyCheckDay=" + _lastPolicyCheckDay.ToString(CultureInfo.InvariantCulture));
 	}
 
 	public static List<NpcRulerPolicyRecord> GetRecentPolicyRecordsForExternal(string kingdomId = null, int maxCount = 20)
@@ -1239,7 +1265,139 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static void OnPolicyAgendaApprovedForExternal(string policyId)
+	{
+		try
+		{
+			(Instance ?? Campaign.Current?.GetCampaignBehavior<NpcRulerPolicyBehavior>())?.OnPolicyAgendaApprovedInternal(policyId);
+		}
+		catch (Exception ex)
+		{
+			Log("policy-agenda-approved-failed policy=" + (policyId ?? "") + " error=" + ex.Message);
+		}
+	}
+
+	public static void OnPolicyAgendaRejectedForExternal(string policyId, string reason)
+	{
+		try
+		{
+			(Instance ?? Campaign.Current?.GetCampaignBehavior<NpcRulerPolicyBehavior>())?.OnPolicyAgendaRejectedInternal(policyId, reason);
+		}
+		catch (Exception ex)
+		{
+			Log("policy-agenda-rejected-failed policy=" + (policyId ?? "") + " error=" + ex.Message);
+		}
+	}
+
+	public static void UpdatePolicyAgendaStatusForExternal(string policyId, string status)
+	{
+		try
+		{
+			(Instance ?? Campaign.Current?.GetCampaignBehavior<NpcRulerPolicyBehavior>())?.UpdatePolicyAgendaStatusInternal(policyId, status);
+		}
+		catch (Exception ex)
+		{
+			Log("policy-agenda-status-failed policy=" + (policyId ?? "") + " error=" + ex.Message);
+		}
+	}
+
+	private void OnPolicyAgendaApprovedInternal(string policyId)
+	{
+		string id = (policyId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(id) || !_policyRecords.TryGetValue(id, out string raw))
+		{
+			return;
+		}
+		NpcRulerPolicyRecord record = DeserializeRecord(raw);
+		if (record == null || string.Equals(record.AgendaStatus, AgendaStatusActive, StringComparison.OrdinalIgnoreCase))
+		{
+			return;
+		}
+		record.AgendaStatus = AgendaStatusApprovedPendingCommit;
+		_policyRecords[id] = JsonConvert.SerializeObject(record);
+		EnqueueApprovedAgendaCommit(record);
+		Log("policy-agenda-approved policy=" + id + " kingdom=" + (record.KingdomId ?? ""));
+	}
+
+	private void OnPolicyAgendaRejectedInternal(string policyId, string reason)
+	{
+		string id = (policyId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(id) || !_policyRecords.TryGetValue(id, out string raw))
+		{
+			return;
+		}
+		NpcRulerPolicyRecord record = DeserializeRecord(raw);
+		if (record == null)
+		{
+			return;
+		}
+		record.AgendaStatus = AgendaStatusRejected;
+		foreach (NpcRulerPolicyEffectDto effect in record.Effects ?? new List<NpcRulerPolicyEffectDto>())
+		{
+			effect.RemainingDays = 0;
+			effect.IsEnded = true;
+		}
+		_policyRecords[id] = JsonConvert.SerializeObject(record);
+		Log("policy-agenda-rejected policy=" + id + " reason=" + (reason ?? ""));
+	}
+
+	private void UpdatePolicyAgendaStatusInternal(string policyId, string status)
+	{
+		string id = (policyId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(id) || !_policyRecords.TryGetValue(id, out string raw))
+		{
+			return;
+		}
+		NpcRulerPolicyRecord record = DeserializeRecord(raw);
+		if (record == null)
+		{
+			return;
+		}
+		record.AgendaStatus = string.IsNullOrWhiteSpace(status) ? record.AgendaStatus : status.Trim();
+		_policyRecords[id] = JsonConvert.SerializeObject(record);
+	}
+
+	private void EnqueueApprovedAgendaCommit(NpcRulerPolicyRecord record)
+	{
+		if (record == null || string.IsNullOrWhiteSpace(record.PolicyId))
+		{
+			return;
+		}
+		if (_pendingPolicyCommits.Any(context => context?.IsAgendaApprovalCommit == true
+			&& context.GenerationResult?.Records?.Any(x => x != null && string.Equals(x.PolicyId, record.PolicyId, StringComparison.OrdinalIgnoreCase)) == true))
+		{
+			return;
+		}
+		NpcPolicyGenerationJob job = new NpcPolicyGenerationJob
+		{
+			JobId = "agenda-approval:" + record.PolicyId,
+			BatchId = record.BatchId ?? "",
+			TriggerSource = "agenda-approval",
+			Day = Math.Max(0, record.Day),
+			Hour = GetCurrentCampaignHour(),
+			Version = _generationVersion,
+			RuntimeGeneration = SaveRuntimeGuard.CurrentGeneration
+		};
+		_pendingPolicyCommits.Enqueue(new PendingNpcPolicyCommitContext
+		{
+			GenerationResult = new NpcPolicyGenerationResult
+			{
+				Job = job,
+				Success = true,
+				Records = new List<NpcRulerPolicyRecord> { record },
+				ParsedCount = 1
+			},
+			Stage = PendingNpcPolicyCommitStage.UpsertPolicyEvent,
+			IsAgendaApprovalCommit = true
+		});
+	}
+
 	public static string BuildActivePolicyDialogueContextForExternal(Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride = null)
+	{
+		return "";
+	}
+
+	public static string BuildKingdomAgendaPolicyContextForExternal(Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride = null)
 	{
 		try
 		{
@@ -1260,6 +1418,8 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		}
 		record.Version = 3;
 		record.IsPlayerPolicy = true;
+		record.AgendaStatus = AgendaStatusActive;
+		record.PolicyObjectId = string.IsNullOrWhiteSpace(record.PolicyObjectId) ? "af_policy:" + NormalizeKeyPart(record.PolicyId) : record.PolicyObjectId;
 		record.CreatedUtcTicks = record.CreatedUtcTicks > 0L ? record.CreatedUtcTicks : DateTime.UtcNow.Ticks;
 		_policyRecords[record.PolicyId] = JsonConvert.SerializeObject(record);
 		TrimPolicyRecords();
@@ -1310,9 +1470,14 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 
 	private void OnSessionLaunched(CampaignGameStarter starter)
 	{
+		foreach (NpcRulerPolicyRecord record in _policyRecords.Values.Select(DeserializeRecord)
+			.Where(x => x != null && string.Equals(x.AgendaStatus, AgendaStatusApprovedPendingCommit, StringComparison.OrdinalIgnoreCase)))
+		{
+			EnqueueApprovedAgendaCommit(record);
+		}
 		_initialGenerationCheckPending = true;
 		_initialGenerationCheckElapsed = 0f;
-		Log("session-launched pending-initial-check day=" + GetCurrentCampaignDay().ToString(CultureInfo.InvariantCulture) + " hour=" + GetCurrentCampaignHour().ToString(CultureInfo.InvariantCulture) + " lastGeneratedHour=" + _lastGeneratedHour.ToString(CultureInfo.InvariantCulture));
+		Log("session-launched pending-initial-check day=" + GetCurrentCampaignDay().ToString(CultureInfo.InvariantCulture) + " hour=" + GetCurrentCampaignHour().ToString(CultureInfo.InvariantCulture) + " lastGeneratedHour=" + _lastGeneratedHour.ToString(CultureInfo.InvariantCulture) + " lastPolicyCheckDay=" + _lastPolicyCheckDay.ToString(CultureInfo.InvariantCulture));
 	}
 
 	private void OnNewGameCreated(CampaignGameStarter starter)
@@ -1525,7 +1690,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 
 	private void TryStartPolicyGeneration(string source, bool logSkips)
 	{
-		bool shouldLogSkips = logSkips || DuelSettings.IsNpcRulerPolicyDebugLogEnabledForExternal();
+		bool shouldLogSkips = logSkips;
 		if (IsPolicyGenerationBusy(out string activeInFlightKey))
 		{
 			if (shouldLogSkips)
@@ -1560,13 +1725,22 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		}
 		int currentDay = GetCurrentCampaignDay();
 		int currentHour = GetCurrentCampaignHour();
-		int intervalDays = Math.Max(1, DuelSettings.GetNpcRulerPolicyIntervalDaysForExternal());
+		int checkIntervalDays = Math.Max(1, DuelSettings.GetNpcRulerPolicyCheckIntervalDaysForExternal());
+		int cooldownDays = Math.Max(1, DuelSettings.GetNpcRulerPolicyIntervalDaysForExternal());
 		NormalizeGenerationClock(currentDay, currentHour);
 		if (_lastGenerationFailureHour >= 0 && currentHour - _lastGenerationFailureHour < FailedGenerationBackoffHours)
 		{
 			if (shouldLogSkips)
 			{
 				Log("generation-skip source=" + (source ?? "") + " reason=failed-backoff currentHour=" + currentHour.ToString(CultureInfo.InvariantCulture) + " lastFailureHour=" + _lastGenerationFailureHour.ToString(CultureInfo.InvariantCulture) + " backoffHours=" + FailedGenerationBackoffHours.ToString(CultureInfo.InvariantCulture));
+			}
+			return;
+		}
+		if (_lastPolicyCheckDay >= 0 && currentDay - _lastPolicyCheckDay < checkIntervalDays)
+		{
+			if (shouldLogSkips)
+			{
+				Log("generation-skip source=" + (source ?? "") + " reason=check-interval currentDay=" + currentDay.ToString(CultureInfo.InvariantCulture) + " lastPolicyCheckDay=" + _lastPolicyCheckDay.ToString(CultureInfo.InvariantCulture) + " checkIntervalDays=" + checkIntervalDays.ToString(CultureInfo.InvariantCulture));
 			}
 			return;
 		}
@@ -1582,13 +1756,14 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			}
 			return;
 		}
-		NpcRulerPolicyBatchContext context = BuildBatchContext(currentDay, currentHour, intervalDays, includeHeavySnapshots: false);
+		NpcRulerPolicyBatchContext context = BuildBatchContext(currentDay, currentHour, cooldownDays, includeHeavySnapshots: false);
 		if (shouldLogSkips || context.PendingTargets.Count > 0)
 		{
 			Log("generation-selection source=" + (source ?? "") + " " + (context.SelectionDiagnostics ?? ""));
 		}
 		if (context.PendingTargets.Count == 0)
 		{
+			_lastPolicyCheckDay = currentDay;
 			if (shouldLogSkips)
 			{
 				Log("generation-skip source=" + (source ?? "") + " reason=no-eligible-npc-kingdoms " + (context.SelectionDiagnostics ?? ""));
@@ -1624,9 +1799,10 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			};
 			_lastGenerationAttemptHour = currentHour;
 			_lastPolicyRetryContext = null;
-			Log("generation-start source=" + (source ?? "") + " batch=" + context.BatchId + " kingdoms=" + context.PendingTargets.Count.ToString(CultureInfo.InvariantCulture) + " day=" + currentDay.ToString(CultureInfo.InvariantCulture) + " hour=" + currentHour.ToString(CultureInfo.InvariantCulture) + " intervalDays=" + intervalDays.ToString(CultureInfo.InvariantCulture));
+			Log("generation-start source=" + (source ?? "") + " batch=" + context.BatchId + " kingdoms=" + context.PendingTargets.Count.ToString(CultureInfo.InvariantCulture) + " day=" + currentDay.ToString(CultureInfo.InvariantCulture) + " hour=" + currentHour.ToString(CultureInfo.InvariantCulture) + " checkIntervalDays=" + checkIntervalDays.ToString(CultureInfo.InvariantCulture) + " cooldownDays=" + cooldownDays.ToString(CultureInfo.InvariantCulture));
 			PolicyTraceLog("generation-job-selected", BuildPolicyJobTracePrefix(job), context.SelectionDiagnostics ?? "");
 			_pendingPolicySnapshotJobs.Enqueue(job);
+			_lastPolicyCheckDay = currentDay;
 		}
 		catch (Exception ex)
 		{
@@ -1828,33 +2004,43 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 				Log("generation-commit-discard reason=missing-job");
 				return true;
 			}
-			if (job.Version != _generationVersion)
+			if (context.IsAgendaApprovalCommit)
 			{
-				Log("generation-stale version=" + job.Version.ToString(CultureInfo.InvariantCulture) + " currentVersion=" + _generationVersion.ToString(CultureInfo.InvariantCulture) + " key=" + (job.InFlightKey ?? "") + " action=discard-without-release");
-				return true;
+				if (!IsCampaignSessionReady())
+				{
+					return false;
+				}
 			}
-			if (SaveRuntimeGuard.IsStale(job.RuntimeGeneration, "npc_policy_generation_commit"))
+			else
 			{
-				ReleasePolicyGenerationLifecycle(job.InFlightKey, completeGeneration: true);
-				Log("generation-discard reason=stale-runtime batch=" + (job.BatchId ?? ""));
-				return true;
-			}
-			if (!IsCampaignSessionReady())
-			{
-				ReleasePolicyGenerationLifecycle(job.InFlightKey, completeGeneration: true);
-				Log("generation-discard batch=" + (job.BatchId ?? "") + " reason=campaign-not-ready");
-				return true;
-			}
-			if (!DuelSettings.IsNpcRulerPolicyEnabledForExternal())
-			{
-				ReleasePolicyGenerationLifecycle(job.InFlightKey, completeGeneration: true);
-				Log("generation-discard batch=" + (job.BatchId ?? "") + " reason=disabled-before-complete");
-				return true;
-			}
-			if (result == null || !result.Success)
-			{
-				FinalizePolicyGenerationFailure(result, result?.Error ?? "unknown policy generation error");
-				return true;
+				if (job.Version != _generationVersion)
+				{
+					Log("generation-stale version=" + job.Version.ToString(CultureInfo.InvariantCulture) + " currentVersion=" + _generationVersion.ToString(CultureInfo.InvariantCulture) + " key=" + (job.InFlightKey ?? "") + " action=discard-without-release");
+					return true;
+				}
+				if (SaveRuntimeGuard.IsStale(job.RuntimeGeneration, "npc_policy_generation_commit"))
+				{
+					ReleasePolicyGenerationLifecycle(job.InFlightKey, completeGeneration: true);
+					Log("generation-discard reason=stale-runtime batch=" + (job.BatchId ?? ""));
+					return true;
+				}
+				if (!IsCampaignSessionReady())
+				{
+					ReleasePolicyGenerationLifecycle(job.InFlightKey, completeGeneration: true);
+					Log("generation-discard batch=" + (job.BatchId ?? "") + " reason=campaign-not-ready");
+					return true;
+				}
+				if (!DuelSettings.IsNpcRulerPolicyEnabledForExternal())
+				{
+					ReleasePolicyGenerationLifecycle(job.InFlightKey, completeGeneration: true);
+					Log("generation-discard batch=" + (job.BatchId ?? "") + " reason=disabled-before-complete");
+					return true;
+				}
+				if (result == null || !result.Success)
+				{
+					FinalizePolicyGenerationFailure(result, result?.Error ?? "unknown policy generation error");
+					return true;
+				}
 			}
 			List<NpcRulerPolicyRecord> records = result.Records ?? new List<NpcRulerPolicyRecord>();
 			if (context.RecordIndex < records.Count)
@@ -1867,6 +2053,21 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 				}
 				ProcessPendingPolicyCommitStage(context, record);
 				return false;
+			}
+			if (context.IsAgendaApprovalCommit)
+			{
+				NpcRulerPolicyRecord approved = records.FirstOrDefault(x => x != null && !string.IsNullOrWhiteSpace(x.PolicyId));
+				if (approved != null && _policyRecords.TryGetValue(approved.PolicyId, out string approvedRaw))
+				{
+					NpcRulerPolicyRecord storedApproved = DeserializeRecord(approvedRaw) ?? approved;
+					storedApproved.AgendaStatus = AgendaStatusActive;
+					_policyRecords[storedApproved.PolicyId] = JsonConvert.SerializeObject(storedApproved);
+				}
+				TrimPolicyRecords();
+				CustomPolicyBehavior.TryQueuePolicyExpiryAgendaForExternal(approved?.PolicyId);
+				Log("policy-agenda-commit-complete policy=" + (approved?.PolicyId ?? "")
+					+ " activeEffects=" + context.ActiveEffectsCreatedCount.ToString(CultureInfo.InvariantCulture));
+				return true;
 			}
 			long finalizeTimestamp = Stopwatch.GetTimestamp();
 			using (PerfProbe.Scope("PolicyCommit.Finalize"))
@@ -1916,6 +2117,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 				stageName = "PolicyCommit.SerializeRecord";
 				using (PerfProbe.Scope(stageName))
 				{
+					record.AgendaStatus = AgendaStatusPending;
 					context.SerializedRecord = JsonConvert.SerializeObject(record);
 					context.Stage = PendingNpcPolicyCommitStage.StoreRecord;
 				}
@@ -1925,8 +2127,32 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 				using (PerfProbe.Scope(stageName))
 				{
 					_policyRecords[record.PolicyId] = context.SerializedRecord ?? JsonConvert.SerializeObject(record);
-					context.SavedCount++;
-					context.Stage = PendingNpcPolicyCommitStage.UpsertPolicyEvent;
+					context.Stage = PendingNpcPolicyCommitStage.SubmitAgenda;
+				}
+				break;
+			case PendingNpcPolicyCommitStage.SubmitAgenda:
+				stageName = "PolicyCommit.SubmitAgenda";
+				using (PerfProbe.Scope(stageName))
+				{
+					if (CustomPolicyBehavior.TrySubmitNpcPolicyAgendaForExternal(record, out string agendaFailure))
+					{
+						record.AgendaStatus = AgendaStatusPending;
+						context.SavedCount++;
+						PolicySystemLog.Write("Npc", "agenda-submitted", "policyId=" + (record.PolicyId ?? "") + " kingdom=" + (record.KingdomId ?? ""));
+					}
+					else
+					{
+						record.AgendaStatus = AgendaStatusRejected;
+						foreach (NpcRulerPolicyEffectDto effect in record.Effects ?? new List<NpcRulerPolicyEffectDto>())
+						{
+							effect.RemainingDays = 0;
+							effect.IsEnded = true;
+						}
+						context.SavedCount++;
+						PolicySystemLog.Write("Npc", "agenda-submit-rejected", "policyId=" + (record.PolicyId ?? "") + " reason=" + (agendaFailure ?? ""));
+					}
+					_policyRecords[record.PolicyId] = JsonConvert.SerializeObject(record);
+					AdvancePendingPolicyRecord(context);
 				}
 				break;
 			case PendingNpcPolicyCommitStage.UpsertPolicyEvent:
@@ -2009,6 +2235,10 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			return;
 		}
 		ReleasePolicyGenerationLifecycle(job.InFlightKey, completeGeneration: true);
+		if (_lastPolicyCheckDay == job.Day)
+		{
+			_lastPolicyCheckDay = -1;
+		}
 		_lastGenerationFailureHour = Math.Max(0, job.Hour);
 		_lastGenerationRetryCount = Math.Max(0, result?.AttemptsUsed ?? 0);
 		_lastGenerationError = Limit(error ?? "未知错误", 800);
@@ -2234,7 +2464,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		return builder.ToString().TrimEnd();
 	}
 
-	private NpcRulerPolicyBatchContext BuildBatchContext(int currentDay, int currentHour, int intervalDays, bool includeHeavySnapshots)
+	private NpcRulerPolicyBatchContext BuildBatchContext(int currentDay, int currentHour, int cooldownDays, bool includeHeavySnapshots)
 	{
 		NpcRulerPolicyBatchContext context = new NpcRulerPolicyBatchContext
 		{
@@ -2242,15 +2472,12 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			Day = currentDay,
 			Hour = currentHour,
 			GameDate = FormatCurrentCampaignDate(),
-			DayLimit = ResolveNpcRulerPolicyDailyLimit(),
 			BatchSize = ResolveNpcRulerPolicyBatchSize()
 		};
 		Dictionary<string, NpcRulerPolicyRecord> lastGeneratedByKingdom = BuildLastGeneratedPolicyByKingdom();
 		List<Kingdom> npcKingdoms = GetNpcRuledKingdoms().ToList();
-		context.TodayAlreadyGenerated = CountNpcPoliciesGeneratedOnDay(currentDay);
-		context.RemainingDailySlots = Math.Max(0, context.DayLimit - context.TodayAlreadyGenerated);
 		List<NpcRulerPolicyGenerationCandidate> candidates = npcKingdoms
-			.Select(kingdom => BuildGenerationCandidate(kingdom, lastGeneratedByKingdom, currentDay, intervalDays))
+			.Select(kingdom => BuildGenerationCandidate(kingdom, lastGeneratedByKingdom, currentDay, cooldownDays))
 			.Where(x => x != null)
 			.ToList();
 		List<NpcRulerPolicyGenerationCandidate> eligible = candidates
@@ -2261,7 +2488,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			.ToList();
 		context.EligibleCount = eligible.Count;
 		context.ExcludedCount = Math.Max(0, candidates.Count - eligible.Count);
-		int takeCount = Math.Max(0, Math.Min(context.BatchSize, context.RemainingDailySlots));
+		int takeCount = Math.Max(0, context.BatchSize);
 		List<NpcRulerPolicyGenerationCandidate> selected = eligible.Take(takeCount).ToList();
 		foreach (NpcRulerPolicyGenerationCandidate candidate in selected)
 		{
@@ -2281,7 +2508,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 				}
 			}
 		}
-		context.SelectionDiagnostics = BuildPolicySelectionDiagnostics(context, candidates, selected, npcKingdoms.Count, intervalDays);
+		context.SelectionDiagnostics = BuildPolicySelectionDiagnostics(context, candidates, selected, npcKingdoms.Count, cooldownDays);
 		if (includeHeavySnapshots)
 		{
 			context.CompactWorldContext = BuildCompactWorldContext(context);
@@ -2776,6 +3003,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		return _policyRecords.Values
 			.Select(DeserializeRecord)
 			.Where(record => record != null
+				&& IsPublishedPolicyAgendaStatus(record.AgendaStatus)
 				&& !string.IsNullOrWhiteSpace(record.KingdomId)
 				&& !string.Equals((record.KingdomId ?? "").Trim(), targetId, StringComparison.OrdinalIgnoreCase))
 			.Select(record => new
@@ -2828,7 +3056,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		string context = "【当前仍在生效的统治者政策】\n" + sb.ToString().TrimEnd();
+		string context = "【议程相关政策与事件】\n" + sb.ToString().TrimEnd();
 		Log("dialogue-policy-context targetKingdom=" + targetKingdomId
 			+ " own=" + own.Count.ToString(CultureInfo.InvariantCulture)
 			+ " player=" + player.Count.ToString(CultureInfo.InvariantCulture)
@@ -2878,7 +3106,9 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 
 	private static bool HasActivePolicyEffect(NpcRulerPolicyRecord record)
 	{
-		return record?.Effects?.Any(IsActivePolicyEffect) == true;
+		return record != null
+			&& IsPublishedPolicyAgendaStatus(record.AgendaStatus)
+			&& record.Effects?.Any(IsActivePolicyEffect) == true;
 	}
 
 	private static bool HasActiveEffectOnKingdom(NpcRulerPolicyRecord record, string kingdomId)
@@ -3006,14 +3236,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		return result;
 	}
 
-	private int CountNpcPoliciesGeneratedOnDay(int currentDay)
-	{
-		return _policyRecords.Values
-			.Select(DeserializeRecord)
-			.Count(x => x != null && !x.IsPlayerPolicy && x.Day == currentDay);
-	}
-
-	private static NpcRulerPolicyGenerationCandidate BuildGenerationCandidate(Kingdom kingdom, Dictionary<string, NpcRulerPolicyRecord> lastGeneratedByKingdom, int currentDay, int intervalDays)
+	private static NpcRulerPolicyGenerationCandidate BuildGenerationCandidate(Kingdom kingdom, Dictionary<string, NpcRulerPolicyRecord> lastGeneratedByKingdom, int currentDay, int cooldownDays)
 	{
 		if (kingdom == null)
 		{
@@ -3027,7 +3250,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			lastGeneratedByKingdom?.TryGetValue(kingdomId, out lastRecord);
 		}
 		int lastDay = lastRecord == null ? -1 : Math.Max(0, lastRecord.Day);
-		int safeIntervalDays = Math.Max(1, intervalDays);
+		int safeCooldownDays = Math.Max(1, cooldownDays);
 		int daysSince = lastDay < 0 ? int.MaxValue : currentDay - lastDay;
 		string exclusionReason = "";
 		if (lastDay > currentDay)
@@ -3038,9 +3261,9 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		{
 			exclusionReason = "already-generated-today";
 		}
-		else if (lastDay >= 0 && daysSince < safeIntervalDays)
+		else if (lastDay >= 0 && daysSince < safeCooldownDays)
 		{
-			exclusionReason = "not-due-remainingDays=" + Math.Max(0, safeIntervalDays - daysSince).ToString(CultureInfo.InvariantCulture);
+			exclusionReason = "cooldown-remainingDays=" + Math.Max(0, safeCooldownDays - daysSince).ToString(CultureInfo.InvariantCulture);
 		}
 		string lastGeneratedText = lastRecord == null
 			? "never"
@@ -3057,7 +3280,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		};
 	}
 
-	private static string BuildPolicySelectionDiagnostics(NpcRulerPolicyBatchContext context, List<NpcRulerPolicyGenerationCandidate> candidates, List<NpcRulerPolicyGenerationCandidate> selected, int npcKingdomCount, int intervalDays)
+	private static string BuildPolicySelectionDiagnostics(NpcRulerPolicyBatchContext context, List<NpcRulerPolicyGenerationCandidate> candidates, List<NpcRulerPolicyGenerationCandidate> selected, int npcKingdomCount, int cooldownDays)
 	{
 		List<NpcRulerPolicyGenerationCandidate> safeCandidates = candidates ?? new List<NpcRulerPolicyGenerationCandidate>();
 		List<NpcRulerPolicyGenerationCandidate> safeSelected = selected ?? new List<NpcRulerPolicyGenerationCandidate>();
@@ -3078,11 +3301,8 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			+ " eligible=" + Math.Max(0, context?.EligibleCount ?? 0).ToString(CultureInfo.InvariantCulture)
 			+ " excluded=" + Math.Max(0, context?.ExcludedCount ?? 0).ToString(CultureInfo.InvariantCulture)
 			+ " selected=" + safeSelected.Count.ToString(CultureInfo.InvariantCulture)
-			+ " dayLimit=" + Math.Max(0, context?.DayLimit ?? 0).ToString(CultureInfo.InvariantCulture)
 			+ " batchSize=" + Math.Max(0, context?.BatchSize ?? 0).ToString(CultureInfo.InvariantCulture)
-			+ " alreadyToday=" + Math.Max(0, context?.TodayAlreadyGenerated ?? 0).ToString(CultureInfo.InvariantCulture)
-			+ " remainingDailySlots=" + Math.Max(0, context?.RemainingDailySlots ?? 0).ToString(CultureInfo.InvariantCulture)
-			+ " intervalDays=" + Math.Max(1, intervalDays).ToString(CultureInfo.InvariantCulture)
+			+ " cooldownDays=" + Math.Max(1, cooldownDays).ToString(CultureInfo.InvariantCulture)
 			+ " selectedIds=" + selectedIds
 			+ " lastGenerated=[" + Limit(lastGenerated, 650) + "]"
 			+ " excludedSample=[" + Limit(excluded, 650) + "]";
@@ -3119,11 +3339,6 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		{
 			return "读取失败";
 		}
-	}
-
-	private static int ResolveNpcRulerPolicyDailyLimit()
-	{
-		return Clamp(ReadDuelSettingsInt("GetNpcRulerPolicyDailyGenerationLimitForExternal", DefaultNpcRulerPolicyDailyLimit), 1, MaxPoliciesPerBatch);
 	}
 
 	private static int ResolveNpcRulerPolicyBatchSize()
@@ -3179,7 +3394,8 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		StringBuilder contract = new StringBuilder();
 		contract.AppendLine("【不可覆盖的技术契约】");
 		contract.AppendLine("只输出严格 JSON，不输出 Markdown、解释、隐藏标签、玩家操作、扣费或原版 PolicyObject。根对象只能是 {\"policies\":[...]}；目标数量=" + targetCount.ToString(CultureInfo.InvariantCulture) + "，必须为下方每个 Target 各输出 1 条，不得遗漏、重复或增加王国。");
-		contract.AppendLine("每条 policy 必须按下列顺序和形状包含全部字段，不得增删或改名：{\"kingdomId\":\"...\",\"kingdomName\":\"...\",\"rulerHeroId\":\"...\",\"rulerName\":\"...\",\"creativePremise\":\"...\",\"policyName\":\"...\",\"policyContent\":\"...\",\"policyDigest\":\"...\",\"eventPremise\":\"...\",\"derivedEventTitle\":\"...\",\"derivedEventContent\":\"...\",\"derivedEventDigest\":\"...\",\"impactSummary\":\"...\",\"effects\":[{\"targetKingdomId\":\"...\",\"targetKingdomName\":\"...\",\"prosperityDailyDeltaPerTown\":0,\"foodDailyDeltaPerTown\":0,\"hearthDailyDeltaPerVillage\":0,\"loyaltyDailyDeltaPerTown\":0,\"securityDailyDeltaPerTown\":0,\"militiaDailyDeltaPerTown\":0,\"kingdomStabilityDailyDelta\":0,\"durationDays\":1,\"reason\":\"...\"}]}。");
+		contract.AppendLine("每条 policy 必须按下列顺序和形状包含全部字段，不得增删或改名：{\"kingdomId\":\"...\",\"kingdomName\":\"...\",\"rulerHeroId\":\"...\",\"rulerName\":\"...\",\"creativePremise\":\"...\",\"policyName\":\"...\",\"policyContent\":\"...\",\"policyDigest\":\"...\",\"eventPremise\":\"...\",\"derivedEventTitle\":\"...\",\"derivedEventContent\":\"...\",\"derivedEventDigest\":\"...\",\"impactSummary\":\"...\",\"authoritarianWeight\":0,\"oligarchicWeight\":0,\"egalitarianWeight\":0,\"effects\":[{\"targetKingdomId\":\"...\",\"targetKingdomName\":\"...\",\"prosperityDailyDeltaPerTown\":0,\"foodDailyDeltaPerTown\":0,\"hearthDailyDeltaPerVillage\":0,\"loyaltyDailyDeltaPerTown\":0,\"securityDailyDeltaPerTown\":0,\"militiaDailyDeltaPerTown\":0,\"kingdomStabilityDailyDelta\":0,\"durationDays\":1,\"reason\":\"...\"}]}。");
+		contract.AppendLine("authoritarianWeight、oligarchicWeight、egalitarianWeight 分别表示政策对君主集权、贵族议政、平民与地方广泛参与的原版政治取向，范围均为 -1 到 1，必须依据政策内容评估，三项不得全部为 0。");
 		contract.AppendLine("身份字段必须复制对应 Target。effects 必须是数组并留在同一 policy 内；示例中的 0 仅表示数值类型，整条政策至少有一项 daily delta 非 0。durationDays 必须是正整数；daily delta 必须是有限数值；kingdomStabilityDailyDelta 按整数语义输出。");
 		contract.AppendLine("effect 目标只能来自该 Target 的 AllowedEffectTargets，每条政策最多一个 self 和一个 warEnemy。外国目标必须在 policyName 或 policyContent 中点名，且数值只能来自 policyContent 明确写出的直接跨国措施；不得重定向非法目标或从同期现象、摘要、传闻及连锁推测生成外国 effect。");
 		contract.AppendLine("prosperityDailyDeltaPerTown 与 militiaDailyDeltaPerTown 按每座城镇和城堡结算；foodDailyDeltaPerTown、loyaltyDailyDeltaPerTown、securityDailyDeltaPerTown 按每座城镇结算；hearthDailyDeltaPerVillage 按每座村庄结算；kingdomStabilityDailyDelta 对王国整体结算一次。");
@@ -3224,6 +3440,17 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			{
 				continue;
 			}
+			if (!TryNormalizePoliticalWeights(raw?.AuthoritarianWeight, raw?.OligarchicWeight, raw?.EgalitarianWeight,
+				out float authoritarianWeight, out float oligarchicWeight, out float egalitarianWeight))
+			{
+				string rejection = "policy-normalize-rejected batch=" + (context?.BatchId ?? "")
+					+ " kingdom=" + (target.KingdomId ?? "")
+					+ " policy=" + Limit(raw?.PolicyName ?? "", MaxNameChars)
+					+ " reason=invalid-political-weights";
+				Log(rejection);
+				PolicyTraceLog("policy-normalize-rejected", rejection, "authoritarianWeight、oligarchicWeight、egalitarianWeight 必须存在、位于 -1 到 1，且不能全部为 0。");
+				continue;
+			}
 			List<NpcRulerPolicyEffectDto> effects = NormalizeEffects(raw?.Effects, target, raw?.PolicyName, raw?.PolicyContent);
 			if (effects.Count == 0)
 			{
@@ -3258,6 +3485,10 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 				FeedbackDigest = Compact(FirstNonEmpty(raw?.FeedbackDigest, fallbackEvent)),
 				EventType = "",
 				ImpactSummary = Limit(FirstNonEmpty(raw?.ImpactSummary, BuildEffectSummary(effects)), MaxImpactChars),
+				AuthoritarianWeight = authoritarianWeight,
+				OligarchicWeight = oligarchicWeight,
+				EgalitarianWeight = egalitarianWeight,
+				AgendaStatus = AgendaStatusPending,
 				Day = Math.Max(0, context?.Day ?? GetCurrentCampaignDay()),
 				GameDate = FirstNonEmpty(context?.GameDate, FormatCurrentCampaignDate()),
 				CreatedUtcTicks = DateTime.UtcNow.Ticks,
@@ -3365,6 +3596,25 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			}
 		}
 		return result;
+	}
+
+	private static bool TryNormalizePoliticalWeights(float? authoritarian, float? oligarchic, float? egalitarian,
+		out float authoritarianValue, out float oligarchicValue, out float egalitarianValue)
+	{
+		authoritarianValue = 0f;
+		oligarchicValue = 0f;
+		egalitarianValue = 0f;
+		if (!authoritarian.HasValue || !oligarchic.HasValue || !egalitarian.HasValue
+			|| float.IsNaN(authoritarian.Value) || float.IsInfinity(authoritarian.Value)
+			|| float.IsNaN(oligarchic.Value) || float.IsInfinity(oligarchic.Value)
+			|| float.IsNaN(egalitarian.Value) || float.IsInfinity(egalitarian.Value))
+		{
+			return false;
+		}
+		authoritarianValue = Math.Max(-1f, Math.Min(1f, authoritarian.Value));
+		oligarchicValue = Math.Max(-1f, Math.Min(1f, oligarchic.Value));
+		egalitarianValue = Math.Max(-1f, Math.Min(1f, egalitarian.Value));
+		return Math.Abs(authoritarianValue) > 0.0001f || Math.Abs(oligarchicValue) > 0.0001f || Math.Abs(egalitarianValue) > 0.0001f;
 	}
 
 	private static NpcRulerPolicyAllowedEffectTarget ResolveAllowedEffectTarget(NpcRulerPolicyEffectDto effect, NpcRulerPolicyKingdomContext issuer)
@@ -3609,11 +3859,21 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		int limit = Math.Max(1, Math.Min(200, maxCount <= 0 ? 20 : maxCount));
 		return _policyRecords.Values
 			.Select(DeserializeRecord)
-			.Where(x => x != null && (string.IsNullOrWhiteSpace(filter) || string.Equals((x.KingdomId ?? "").Trim(), filter, StringComparison.OrdinalIgnoreCase)))
+			.Where(x => x != null
+				&& IsPublishedPolicyAgendaStatus(x.AgendaStatus)
+				&& (string.IsNullOrWhiteSpace(filter) || string.Equals((x.KingdomId ?? "").Trim(), filter, StringComparison.OrdinalIgnoreCase)))
 			.OrderByDescending(x => x.Day)
 			.ThenByDescending(x => x.CreatedUtcTicks)
 			.Take(limit)
 			.ToList();
+	}
+
+	private static bool IsPublishedPolicyAgendaStatus(string status)
+	{
+		return string.IsNullOrWhiteSpace(status)
+			|| string.Equals(status, AgendaStatusActive, StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(status, AgendaStatusExpiryVotePending, StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(status, AgendaStatusAbolished, StringComparison.OrdinalIgnoreCase);
 	}
 
 	private static List<NpcRulerPolicyRecord> ParsePolicyRecords(string raw)
@@ -3688,24 +3948,54 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			return;
 		}
 		List<NpcRulerPolicyEffectDto> effects = (policy.Effects ?? new List<NpcRulerPolicyEffectDto>()).Where(x => x != null && !x.IsEnded && x.RemainingDays > 0 && x.DurationDays > 0).ToList();
-		bool multipleTargets = effects.Select(x => (x.TargetKingdomId ?? "").Trim()).Where(x => x.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase).Count() > 1;
-		for (int i = 0; i < effects.Count; i++)
+		Dictionary<string, List<NpcRulerPolicyEffectDto>> recipients = new Dictionary<string, List<NpcRulerPolicyEffectDto>>(StringComparer.OrdinalIgnoreCase);
+		string issuerId = (policy.KingdomId ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(issuerId))
 		{
-			NpcRulerPolicyEffectDto effect = effects[i];
-			string targetId = FirstNonEmpty(effect.TargetKingdomId, policy.KingdomId);
-			if (string.IsNullOrWhiteSpace(targetId)) continue;
-			string targetName = Limit(FirstNonEmpty(effect.TargetKingdomName, policy.KingdomName, targetId), 50);
+			recipients[issuerId] = new List<NpcRulerPolicyEffectDto>();
+		}
+		foreach (NpcRulerPolicyEffectDto effect in effects)
+		{
+			string targetId = FirstNonEmpty(effect.TargetKingdomId, issuerId).Trim();
+			if (string.IsNullOrWhiteSpace(targetId))
+			{
+				continue;
+			}
+			if (!recipients.TryGetValue(targetId, out List<NpcRulerPolicyEffectDto> targetEffects))
+			{
+				targetEffects = new List<NpcRulerPolicyEffectDto>();
+				recipients[targetId] = targetEffects;
+			}
+			targetEffects.Add(effect);
+		}
+		foreach (KeyValuePair<string, List<NpcRulerPolicyEffectDto>> recipient in recipients)
+		{
+			string targetId = recipient.Key;
+			bool isIssuer = !string.IsNullOrWhiteSpace(issuerId) && string.Equals(targetId, issuerId, StringComparison.OrdinalIgnoreCase);
+			List<NpcRulerPolicyEffectDto> relevantEffects = isIssuer ? effects : recipient.Value;
+			NpcRulerPolicyEffectDto targetEffect = recipient.Value.FirstOrDefault();
+			string targetName = Limit(isIssuer
+				? FirstNonEmpty(policy.KingdomName, issuerId)
+				: FirstNonEmpty(targetEffect?.TargetKingdomName, targetId), 50);
 			string policyName = Limit(FirstNonEmpty(policy.PolicyName, "未命名政策"), 70);
+			string effectSummary = Limit(BuildEffectSummary(relevantEffects), 120);
+			if (string.IsNullOrWhiteSpace(effectSummary))
+			{
+				effectSummary = "无持续数值变化";
+			}
 			string snapshot = Limit("统治者政策。发布国：" + Limit(FirstNonEmpty(policy.KingdomName, policy.KingdomId), 50)
 				+ "。发布者：" + Limit(policy.RulerName, 50) + "。政策：《" + policyName + "》"
 				+ "。政策摘要：" + Limit(policy.PolicyDigest, 140) + "。衍生事件：" + Limit(policy.FeedbackDigest, 70)
-				+ "。目标王国：" + targetName + "。每日影响：" + Limit(BuildEffectSummary(new List<NpcRulerPolicyEffectDto> { effect }), 100) + "。", 320);
-			string effectKey = FirstNonEmpty(effect.EffectId, targetId + ":" + i.ToString(CultureInfo.InvariantCulture));
-			bool foreign = !string.IsNullOrWhiteSpace(policy.KingdomId) && !string.Equals(targetId, policy.KingdomId, StringComparison.OrdinalIgnoreCase);
+				+ "。周报归属国：" + targetName + "。相关每日影响：" + effectSummary + "。", 360);
 			MyBehavior.RecordPolicySystemWeeklyMaterialForExternal("ruler_policy", "统治者政策 - " + targetName + " / " + policyName, snapshot,
-				"unified_policy:" + policy.PolicyId + ":" + effectKey, targetId, multipleTargets || foreign,
+				"unified_policy:" + policy.PolicyId + ":weekly:" + NormalizeKeyPart(targetId), targetId, recipients.Count > 1 || !isIssuer,
 				policy.RulerHeroId ?? "", policy.KingdomId ?? "", Math.Max(0, policy.Day), policy.GameDate ?? "");
-			PolicySystemLog.Write("Weekly", "material-recorded", "policyId=" + policy.PolicyId + " target=" + targetId + " chars=" + snapshot.Length.ToString(CultureInfo.InvariantCulture));
+			PolicySystemLog.Write("Weekly", "material-recorded", "policyId=" + policy.PolicyId
+				+ " issuer=" + issuerId
+				+ " target=" + targetId
+				+ " route=" + (isIssuer ? "issuer" : "affected")
+				+ " effects=" + relevantEffects.Count.ToString(CultureInfo.InvariantCulture)
+				+ " chars=" + snapshot.Length.ToString(CultureInfo.InvariantCulture));
 		}
 	}
 
@@ -4286,6 +4576,11 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 
 	private void NormalizeGenerationClock(int currentDay, int currentHour)
 	{
+		if (_lastPolicyCheckDay > currentDay)
+		{
+			Log("generation-clock-reset reason=last-policy-check-in-future currentDay=" + currentDay.ToString(CultureInfo.InvariantCulture) + " lastPolicyCheckDay=" + _lastPolicyCheckDay.ToString(CultureInfo.InvariantCulture));
+			_lastPolicyCheckDay = -1;
+		}
 		if (_lastGeneratedHour < 0 && _lastGeneratedDay >= 0)
 		{
 			_lastGeneratedHour = _lastGeneratedDay * 24;
@@ -4443,10 +4738,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		public string GameDate;
 		public string CompactWorldContext;
 		public string SelectionDiagnostics;
-		public int DayLimit;
 		public int BatchSize;
-		public int TodayAlreadyGenerated;
-		public int RemainingDailySlots;
 		public int EligibleCount;
 		public int ExcludedCount;
 		public List<NpcRulerPolicyKingdomContext> Kingdoms = new List<NpcRulerPolicyKingdomContext>();
@@ -4565,6 +4857,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 	private sealed class PendingNpcPolicyCommitContext
 	{
 		public NpcPolicyGenerationResult GenerationResult;
+		public bool IsAgendaApprovalCommit;
 		public int RecordIndex;
 		public int SavedCount;
 		public int PublicFeedbackSavedCount;
@@ -4579,6 +4872,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 	{
 		SerializeRecord,
 		StoreRecord,
+		SubmitAgenda,
 		UpsertPolicyEvent,
 		RecordPolicyWeeklyMaterial,
 		CommitPublicFeedback,

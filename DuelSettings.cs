@@ -56,6 +56,8 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		+ "\n\n如果玩家在政策正文或自定义评判器提示词里写了参考数值、倍率、强弱或持续时间，应尊重其意图，并按各项数值本身的尺度折算。强政策可以有强效果，荒唐政策也可以反噬；不要把总影响误当成每日影响，也不要用内置建议压低玩家明确要求。忠诚、治安和稳定度仍要理解为 0-100 体系中的变化：它们影响很重，但不代表永远只能输出同一组固定数值。"
 		+ "\n\n民众反馈要像真实的卡拉迪亚社会反应，而不是公告摘要。可以写街市、村庄、酒馆、军营、贵族厅堂、商队、工匠、农户、民兵、巡逻队、总督或祭司等不同人群的看法。让他们有具体的支持、担忧、抱怨、观望或流言，比如粮价、税吏、征役、治安、士兵口粮、村庄劳力、民兵训练、商路消息、封臣脸色和王国分裂传闻等。语气应像政策发布后在各地传开的议论和余波，不要写成系统说明，也不要编造上下文没有支持的具体人物、定居点或他国事实。";
 
+	private const string LeakedCustomPolicyPoliticalWeightsPromptSuffix = "同时根据政策内容评估原版政策投票使用的三项政治取向：authoritarianWeight 表示君主集权取向，oligarchicWeight 表示大氏族和贵族议政取向，egalitarianWeight 表示平民、地方自治和广泛参与取向。三项范围均为 -1 到 1，不得全部为 0。";
+
 	private const string PreviousDefaultCustomPolicyEvaluatorPromptBeforeExpandedStats = "你是卡拉迪亚大陆的王国政策评判器。玩家提交的内容应被视为王国政策、法令、改革、宣言、动员令或公共事务安排。你需要根据政策内容、玩家王国状态、世界背景和知识库资料，判断这项政策会造成什么民间反应、政策摘要、每日影响、持续时间和影响目标。"
 		+ "\n\n卡拉迪亚不是现代国家，而是封君、封臣、氏族、城镇、城堡、村庄、驻军、税赋和封地收益共同维系的社会。任何政策都不可能只靠国王一句话就无成本执行。评判时要考虑贵族是否配合，地方是否能执行，商人和农户是否受益，军队是否承担额外负担，以及政策会不会破坏既有秩序。"
 		+ "\n\n数值要有因果关系。繁荣度主要受贸易、税负、治安、工商业、战争破坏和市场信心影响；粮食主要受征收、储备、运输、农业负担和军队消耗影响；村庄户数主要受劳动力、安全、徭役、迁徙和破坏影响；忠诚度主要受公平感、文化认同、自治、压迫、恐惧、荣誉和利益分配影响。"
@@ -213,6 +215,8 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		+ "\n\n政策数值表示每个游戏日重复发生的实际变化。与政策没有直接关系的指标等同于 0；非零变化以绝对值 1 作为最小有意义单位。每座城镇或城堡每日繁荣度、民兵的常见变化为 ±1—3；每座城镇每日粮食为 ±2—5；每座村庄每日户数以及每座城镇每日忠诚度、治安度为 ±1—2。影响范围广、执行强硬或代价沉重的政策可以达到这些范围的两倍。普通政策通常持续 7—14 天，猛烈的短期措施通常持续 3—7 天。"
 		+ "\n\n王国稳定度表示国家根本政治结构是否仍被承认，而不是一般的不满、税负、征兵、粮食、忠诚或治安变化。绝大多数政策的稳定度变化为 0。只有王位继承、统治合法性、全国封臣契约、国家分裂、内战或统一存续在 1—3 天内被直接改变时，稳定度变化才是 +1 或 -1。";
 
+	private const string LeakedNpcPolicyPoliticalWeightsPromptSuffix = "每项政策还必须根据正文评估原版政策投票使用的 authoritarianWeight、oligarchicWeight、egalitarianWeight，分别表示君主集权、大氏族贵族议政、平民与地方广泛参与取向。三项范围均为 -1 到 1，不得全部为 0。";
+
 	private const int DefaultCustomPolicyGoldCost = 50000;
 
 	private const int DefaultCustomPolicyInfluenceCost = 500;
@@ -224,6 +228,12 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	private const int CustomPolicyPublicFeedbackTargetStepChars = 100;
 
 	private const int DefaultCustomPolicyPublicFeedbackTargetChars = 900;
+
+	private const int NpcRulerPolicyCheckIntervalMinDays = 1;
+
+	private const int NpcRulerPolicyCheckIntervalMaxDays = 30;
+
+	private const int DefaultNpcRulerPolicyCheckIntervalDays = 7;
 
 	private const int NpcRulerPolicyIntervalMinDays = 1;
 
@@ -237,17 +247,11 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	private const int DefaultNpcRulerPolicyIntervalHours = DefaultNpcRulerPolicyIntervalDays * 24;
 
-	private const int NpcRulerPolicyDailyGenerationLimitMin = 1;
-
-	private const int NpcRulerPolicyDailyGenerationLimitMax = 20;
-
-	private const int DefaultNpcRulerPolicyDailyGenerationLimit = 2;
-
 	private const int NpcRulerPolicyMaxKingdomsPerRequestMin = 1;
 
 	private const int NpcRulerPolicyMaxKingdomsPerRequestMax = 6;
 
-	private const int DefaultNpcRulerPolicyMaxKingdomsPerRequest = 2;
+	private const int DefaultNpcRulerPolicyMaxKingdomsPerRequest = 1;
 
 	public const int DefaultShoutMinTokens = 40;
 
@@ -1508,24 +1512,20 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("10. 政策系统/2. NPC统治者政策")]
 	public bool EnableNpcRulerPolicy { get; set; } = true;
 
-	[SettingPropertyInteger("同一王国政策间隔（天）", NpcRulerPolicyIntervalMinDays, NpcRulerPolicyIntervalMaxDays, "0", Order = 2, RequireRestart = false, HintText = "同一 NPC 王国两次政策之间至少间隔多少个游戏日。默认 7 天，可在 1—30 天之间调整；不同王国分别计算。")]
+	[SettingPropertyInteger("政策检查间隔（天）", NpcRulerPolicyCheckIntervalMinDays, NpcRulerPolicyCheckIntervalMaxDays, "0", Order = 2, RequireRestart = false, HintText = "每隔多少个游戏日检查一次是否需要生成新的 NPC 政策。默认 7 天，可在 1—30 天之间调整；没有符合条件的王国时，本轮不会生成政策。")]
+	[SettingPropertyGroup("10. 政策系统/2. NPC统治者政策")]
+	public int NpcRulerPolicyCheckIntervalDays { get; set; } = DefaultNpcRulerPolicyCheckIntervalDays;
+
+	[SettingPropertyInteger("单次生成政策数", NpcRulerPolicyMaxKingdomsPerRequestMin, NpcRulerPolicyMaxKingdomsPerRequestMax, "0", Order = 3, RequireRestart = false, HintText = "每次检查最多为多少个符合条件的 NPC 王国各生成 1 项政策。默认 1 项，可在 1—6 项之间调整；每项政策仍会附带自己的同期事件。")]
+	[SettingPropertyGroup("10. 政策系统/2. NPC统治者政策")]
+	public int NpcRulerPolicyMaxKingdomsPerRequest { get; set; } = DefaultNpcRulerPolicyMaxKingdomsPerRequest;
+
+	[SettingPropertyInteger("同一王国政策冷却（天）", NpcRulerPolicyIntervalMinDays, NpcRulerPolicyIntervalMaxDays, "0", Order = 4, RequireRestart = false, HintText = "同一 NPC 王国两次政策草案之间至少间隔多少个游戏日。默认 7 天，可在 1—30 天之间调整；待审、通过和否决的正常草案均参与冷却，玩家政策不参与。")]
 	[SettingPropertyGroup("10. 政策系统/2. NPC统治者政策")]
 	public int NpcRulerPolicyIntervalDays { get; set; } = DefaultNpcRulerPolicyIntervalDays;
 
 	[Obsolete("Use NpcRulerPolicyIntervalDays / GetNpcRulerPolicyIntervalDaysForExternal instead.")]
 	public int NpcRulerPolicyIntervalHours { get; set; } = DefaultNpcRulerPolicyIntervalHours;
-
-	[SettingPropertyInteger("每日发布总上限", NpcRulerPolicyDailyGenerationLimitMin, NpcRulerPolicyDailyGenerationLimitMax, "0", Order = 3, RequireRestart = false, HintText = "所有 NPC 王国在一个游戏日内最多可以成功发布多少项政策。默认 2 项；玩家政策不计入此上限。")]
-	[SettingPropertyGroup("10. 政策系统/2. NPC统治者政策")]
-	public int NpcRulerPolicyDailyGenerationLimit { get; set; } = DefaultNpcRulerPolicyDailyGenerationLimit;
-
-	[SettingPropertyInteger("单次生成国家数", NpcRulerPolicyMaxKingdomsPerRequestMin, NpcRulerPolicyMaxKingdomsPerRequestMax, "0", Order = 4, RequireRestart = false, HintText = "一次 AI 调用最多同时为多少个 NPC 王国生成政策。默认 2 个；数值较低更稳定，数值较高可减少调用次数，但会让单次输入和回答更长。")]
-	[SettingPropertyGroup("10. 政策系统/2. NPC统治者政策")]
-	public int NpcRulerPolicyMaxKingdomsPerRequest { get; set; } = DefaultNpcRulerPolicyMaxKingdomsPerRequest;
-
-	[SettingPropertyBool("记录详细调试日志", Order = 5, RequireRestart = false, HintText = "开启后记录更详细的王国选择、知识检索和生成过程，便于排查问题。正常游玩时可以关闭。")]
-	[SettingPropertyGroup("10. 政策系统/2. NPC统治者政策")]
-	public bool NpcRulerPolicyDebugLogs { get; set; } = false;
 
 	[SettingPropertyInteger("周报篇幅档位", 1, 4, "0", Order = 0, RequireRestart = false, HintText = "1=200-400字；2=200-800字；3=200-1200字；4=200-1500字。世界周报和王国周报共用这一档位。")]
 	[SettingPropertyGroup("12. 事件系统（开发）")]
@@ -1797,6 +1797,18 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		}
 	}
 
+	public static int GetNpcRulerPolicyCheckIntervalDaysForExternal()
+	{
+		try
+		{
+			return ClampNpcRulerPolicyCheckIntervalDays(GetSettings()?.NpcRulerPolicyCheckIntervalDays ?? DefaultNpcRulerPolicyCheckIntervalDays);
+		}
+		catch
+		{
+			return DefaultNpcRulerPolicyCheckIntervalDays;
+		}
+	}
+
 	public static int GetNpcRulerPolicyIntervalDaysForExternal()
 	{
 		try
@@ -1831,18 +1843,6 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		return GetNpcRulerPolicyIntervalDaysForExternal() * 24;
 	}
 
-	public static int GetNpcRulerPolicyDailyGenerationLimitForExternal()
-	{
-		try
-		{
-			return ClampNpcRulerPolicyDailyGenerationLimit(GetSettings()?.NpcRulerPolicyDailyGenerationLimit ?? DefaultNpcRulerPolicyDailyGenerationLimit);
-		}
-		catch
-		{
-			return DefaultNpcRulerPolicyDailyGenerationLimit;
-		}
-	}
-
 	public static int GetNpcRulerPolicyMaxKingdomsPerRequestForExternal()
 	{
 		try
@@ -1868,16 +1868,10 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		}
 	}
 
+	[Obsolete("Detailed NPC ruler policy logging is no longer configurable.")]
 	public static bool IsNpcRulerPolicyDebugLogEnabledForExternal()
 	{
-		try
-		{
-			return GetSettings()?.NpcRulerPolicyDebugLogs ?? false;
-		}
-		catch
-		{
-			return false;
-		}
+		return false;
 	}
 
 	private static int ClampCustomPolicyGoldCost(int value)
@@ -1901,6 +1895,15 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		return Math.Max(CustomPolicyPublicFeedbackTargetMinChars, Math.Min(CustomPolicyPublicFeedbackTargetMaxChars, rounded));
 	}
 
+	private static int ClampNpcRulerPolicyCheckIntervalDays(int value)
+	{
+		if (value <= 0)
+		{
+			value = DefaultNpcRulerPolicyCheckIntervalDays;
+		}
+		return Math.Max(NpcRulerPolicyCheckIntervalMinDays, Math.Min(NpcRulerPolicyCheckIntervalMaxDays, value));
+	}
+
 	private static int ClampNpcRulerPolicyIntervalDays(int value)
 	{
 		if (value <= 0)
@@ -1917,15 +1920,6 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 			value = DefaultNpcRulerPolicyIntervalHours;
 		}
 		return Math.Max(NpcRulerPolicyIntervalMinHours, Math.Min(NpcRulerPolicyIntervalMaxHours, value));
-	}
-
-	private static int ClampNpcRulerPolicyDailyGenerationLimit(int value)
-	{
-		if (value <= 0)
-		{
-			value = DefaultNpcRulerPolicyDailyGenerationLimit;
-		}
-		return Math.Max(NpcRulerPolicyDailyGenerationLimitMin, Math.Min(NpcRulerPolicyDailyGenerationLimitMax, value));
 	}
 
 	private static int ClampNpcRulerPolicyMaxKingdomsPerRequest(int value)
@@ -2550,12 +2544,14 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	private static string NormalizeCustomPolicyEvaluatorPromptText(string input)
 	{
 		string text = NormalizePromptLineEndings(input);
+		text = RemoveBuiltInPoliticalWeightsPromptLeak(text, DefaultCustomPolicyEvaluatorPrompt, LeakedCustomPolicyPoliticalWeightsPromptSuffix);
 		return LimitCustomPromptText(MigrateLegacyCustomPolicyEvaluatorPromptPrefix(text).Trim(), CustomPolicyEvaluatorPromptJsonFileName);
 	}
 
 	private static string NormalizeNpcRulerPolicyPromptText(string input)
 	{
 		string text = LimitCustomPromptText(NormalizePromptLineEndings(input), NpcRulerPolicyPromptJsonFileName);
+		text = RemoveBuiltInPoliticalWeightsPromptLeak(text, DefaultNpcRulerPolicyPrompt, LeakedNpcPolicyPoliticalWeightsPromptSuffix);
 		if (string.IsNullOrWhiteSpace(text)
 			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptForMigration, StringComparison.Ordinal)
 			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptWithTechnicalContract, StringComparison.Ordinal)
@@ -2578,6 +2574,15 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 			return DefaultNpcRulerPolicyPrompt;
 		}
 		return text;
+	}
+
+	private static string RemoveBuiltInPoliticalWeightsPromptLeak(string text, string cleanBuiltInPrompt, string leakedSuffix)
+	{
+		string normalized = NormalizePromptLineEndings(text);
+		string leakedBuiltIn = NormalizePromptLineEndings((cleanBuiltInPrompt ?? "").Trim() + "\n\n" + (leakedSuffix ?? "").Trim());
+		return string.Equals(normalized, leakedBuiltIn, StringComparison.Ordinal)
+			? NormalizePromptLineEndings(cleanBuiltInPrompt)
+			: normalized;
 	}
 
 	private static string NormalizePromptLineEndings(string input)

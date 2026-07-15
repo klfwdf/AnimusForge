@@ -232,25 +232,6 @@ public sealed class AnimusForgeWorldEventOverlay
 	private const int EventInboxDisplayLimit = 160;
 	private const int DetailBodyCharacterLimit = 1200;
 	private const int DetailBodyLineLimit = 40;
-	private const float ToggleButtonLeft = 616f;
-	private const float ToggleButtonBottom = 18f;
-	private const float ToggleButtonWidth = 120f;
-	private const float ToggleButtonHeight = 38f;
-
-	private static AnimusForgeWorldEventOverlay _active;
-	private readonly ScreenBase _screen;
-	private readonly GauntletLayer _layer;
-	private readonly AnimusForgeWorldEventOverlayVM _dataSource;
-	private GauntletMovieIdentifier _movie;
-	private bool _closed;
-	private long _lastInboxVersion = -1;
-
-	private AnimusForgeWorldEventOverlay(ScreenBase screen)
-	{
-		_screen = screen;
-		_dataSource = new AnimusForgeWorldEventOverlayVM(HandleOpenInboxPopup);
-		_layer = new GauntletLayer("AnimusForgeWorldEventOverlay", 260, false);
-	}
 
 	public static void OnApplicationTick()
 	{
@@ -260,167 +241,35 @@ public sealed class AnimusForgeWorldEventOverlay
 			ScreenBase top = ScreenManager.TopScreen;
 			if (Campaign.Current == null || !(top is MapScreen))
 			{
-				CloseActive();
 				AnimusForgeWorldEventInboxPopup.CloseActive(silent: true);
-				return;
 			}
-			if (_active == null || _active._closed)
-			{
-				_active = new AnimusForgeWorldEventOverlay(top);
-				_active.Open();
-			}
-			if (!ReferenceEquals(_active._screen, top))
-			{
-				CloseActive();
-				_active = new AnimusForgeWorldEventOverlay(top);
-				_active.Open();
-			}
-			_active.Tick();
 		}
 		catch (Exception ex)
 		{
-			Logger.LogTrace("WorldEventOverlay", "OnApplicationTick failed: " + ex.Message);
+			Logger.LogTrace("WorldPolicyInbox", "OnApplicationTick failed: " + ex.Message);
+		}
+	}
+
+	public static bool ShowWorldPolicies(Action onClose = null)
+	{
+		try
+		{
+			if (Campaign.Current == null || !(ScreenManager.TopScreen is MapScreen))
+			{
+				return false;
+			}
+			return AnimusForgeWorldEventInboxPopup.Show(BuildInboxPopupData(), onClose);
+		}
+		catch (Exception ex)
+		{
+			Logger.LogTrace("WorldPolicyInbox", "Failed to open world policy inbox: " + ex.Message);
+			return false;
 		}
 	}
 
 	public static void CloseActive()
 	{
-		_active?.Close();
-	}
-
-	private void Open()
-	{
-		_movie = _layer.LoadMovie("AnimusForgeWorldEventOverlay", _dataSource);
-		_layer.IsFocusLayer = false;
-		_screen.AddLayer(_layer);
-		Refresh(force: true);
-		UpdateOverlayAreaInputRestrictions();
-	}
-
-	private void Tick()
-	{
-		if (_closed)
-		{
-			return;
-		}
-		long version = AnimusForgeWorldEventBehavior.GetInboxVersionForExternal();
-		if (version != _lastInboxVersion)
-		{
-			Refresh(force: true);
-		}
-		UpdateOverlayAreaInputRestrictions();
-	}
-
-	private void Refresh(bool force)
-	{
-		try
-		{
-			_lastInboxVersion = AnimusForgeWorldEventBehavior.GetInboxVersionForExternal();
-			int unread = AnimusForgeWorldEventBehavior.GetUnreadCountForExternal();
-			_dataSource.UnreadText = unread > 0 ? "事件(" + unread.ToString(CultureInfo.InvariantCulture) + ")" : "事件";
-		}
-		catch (Exception ex)
-		{
-			Logger.LogTrace("WorldEventOverlay", "Refresh failed: " + ex.Message);
-		}
-	}
-
-	private void HandleOpenInboxPopup()
-	{
-		try
-		{
-			Refresh(force: true);
-			WorldEventInboxPopupData data = BuildInboxPopupData();
-			if (!AnimusForgeWorldEventInboxPopup.Show(data))
-			{
-				Logger.LogTrace("WorldEventOverlay", "failed to open world event inbox popup");
-			}
-		}
-		catch (Exception ex)
-		{
-			Logger.LogTrace("WorldEventOverlay", "OpenInboxPopup failed: " + ex.Message);
-		}
-	}
-
-	private void Close()
-	{
-		if (_closed)
-		{
-			return;
-		}
-		_closed = true;
-		try
-		{
-			_layer.InputRestrictions.ResetInputRestrictions();
-			_layer.IsFocusLayer = false;
-			ScreenManager.TryLoseFocus(_layer);
-			_screen.RemoveLayer(_layer);
-		}
-		catch
-		{
-		}
-		try
-		{
-			_movie = null;
-			_dataSource.OnFinalize();
-		}
-		catch
-		{
-		}
-		if (ReferenceEquals(_active, this))
-		{
-			_active = null;
-		}
-	}
-
-	private void UpdateOverlayAreaInputRestrictions()
-	{
-		try
-		{
-			if (AnimusForgeWorldEventInboxPopup.IsOpen)
-			{
-				_layer.InputRestrictions.ResetInputRestrictions();
-				_layer.IsFocusLayer = false;
-				ScreenManager.TryLoseFocus(_layer);
-				return;
-			}
-			if (IsMouseOverToggleButton())
-			{
-				_layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.MouseButtons);
-			}
-			else
-			{
-				_layer.InputRestrictions.ResetInputRestrictions();
-			}
-			_layer.IsFocusLayer = false;
-			ScreenManager.TryLoseFocus(_layer);
-		}
-		catch
-		{
-		}
-	}
-
-	private bool IsMouseOverToggleButton()
-	{
-		try
-		{
-			Vec2 mouse = Input.MousePositionPixel;
-			float height = TaleWorlds.Engine.Screen.RealScreenResolutionHeight;
-			if (height <= 0f)
-			{
-				return false;
-			}
-			return IsMouseInside(mouse, ToggleButtonLeft, height - ToggleButtonBottom - ToggleButtonHeight, ToggleButtonWidth, ToggleButtonHeight);
-		}
-		catch
-		{
-			return false;
-		}
-	}
-
-	private static bool IsMouseInside(Vec2 mouse, float left, float top, float width, float height)
-	{
-		return mouse.x >= left && mouse.x <= left + width && mouse.y >= top && mouse.y <= top + height;
+		AnimusForgeWorldEventInboxPopup.CloseActive(silent: true);
 	}
 
 	private static WorldEventInboxPopupData BuildInboxPopupData()
@@ -429,8 +278,8 @@ public sealed class AnimusForgeWorldEventOverlay
 		List<WorldEventCountryGroup> countries = BuildCountryGroups(events);
 		WorldEventInboxPopupData data = new WorldEventInboxPopupData
 		{
-			TitleText = "世界事件",
-			SubtitleText = "只读查看玩家与 NPC 统治者政策、政策衍生事件和世界事件。",
+			TitleText = "世界政策",
+			SubtitleText = "只读查看各国已经发布的玩家与 NPC 统治者政策及政策衍生事件。",
 			EmptyStateText = "暂无世界事件。统治者政策与政策衍生事件会出现在这里。",
 			CloseText = "关闭"
 		};
@@ -654,33 +503,6 @@ public sealed class AnimusForgeWorldEventOverlay
 		public string KingdomName = "";
 		public List<AnimusForgeWorldEventInboxEntry> Events = new List<AnimusForgeWorldEventInboxEntry>();
 	}
-}
-
-public sealed class AnimusForgeWorldEventOverlayVM : ViewModel
-{
-	private readonly Action _openInbox;
-	private string _unreadText = "事件";
-
-	public AnimusForgeWorldEventOverlayVM(Action openInbox)
-	{
-		_openInbox = openInbox;
-	}
-
-	[DataSourceProperty]
-	public string UnreadText
-	{
-		get => _unreadText;
-		set
-		{
-			if (value != _unreadText)
-			{
-				_unreadText = value;
-				OnPropertyChangedWithValue(value, nameof(UnreadText));
-			}
-		}
-	}
-
-	public void TogglePanel() => _openInbox?.Invoke();
 }
 
 public sealed class AnimusForgeWorldEventInboxPopup
