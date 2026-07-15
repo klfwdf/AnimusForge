@@ -671,8 +671,7 @@ internal static class AnimusForgeVassalageUiSprites
 
 	private static string GetSpriteFilePath(string fileName)
 	{
-		string assemblyDir = Path.GetDirectoryName(typeof(SubModule).Assembly.Location) ?? "";
-		string moduleRoot = Path.GetFullPath(Path.Combine(assemblyDir, "..", ".."));
+		string moduleRoot = AnimusForgeModulePaths.GetCurrentModuleRoot();
 		return Path.Combine(moduleRoot, "GUI", "SpriteParts", Category, fileName);
 	}
 

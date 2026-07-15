@@ -5636,7 +5636,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			statusText = "执行失败：无法确定升格 Hero 的个人名，已取消升格。";
 			return false;
 		}
-		CharacterObject reservedPlayerTroop;
+		PlayerOwnedTroopPromotionReservation reservedPlayerTroop;
 		if (!TryReservePlayerOwnedTroopForPromotion(agent, template, out reservedPlayerTroop, out var reserveError))
 		{
 			statusText = reserveError;
@@ -5693,60 +5693,94 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static bool TryReservePlayerOwnedTroopForPromotion(Agent agent, CharacterObject troop, out CharacterObject reservedTroop, out string statusText)
+	private sealed class PlayerOwnedTroopPromotionReservation
+	{
+		public CharacterObject Troop;
+
+		public bool IsPrisoner;
+
+		public bool WasWounded;
+	}
+
+	private static bool TryReservePlayerOwnedTroopForPromotion(Agent agent, CharacterObject troop, out PlayerOwnedTroopPromotionReservation reservedTroop, out string statusText)
 	{
 		reservedTroop = null;
 		statusText = "";
+		bool isPrisoner = agent?.Origin is PrisonerAgentOrigin;
 		PartyBase sourceParty = agent?.Origin?.BattleCombatant as PartyBase;
-		if (sourceParty != PartyBase.MainParty && sourceParty?.MobileParty != MobileParty.MainParty)
+		if (!isPrisoner && sourceParty != PartyBase.MainParty && sourceParty?.MobileParty != MobileParty.MainParty)
 		{
 			return true;
 		}
-		TroopRoster roster = MobileParty.MainParty?.MemberRoster;
+		TroopRoster roster = isPrisoner ? PartyBase.MainParty?.PrisonRoster : MobileParty.MainParty?.MemberRoster;
 		if (troop == null || roster == null)
 		{
-			statusText = "执行失败：玩家队伍花名册不可用，无法消耗被升格的原士兵。";
+			statusText = isPrisoner
+				? "执行失败：玩家队伍俘虏名册不可用，无法消耗被升格的原俘虏。"
+				: "执行失败：玩家队伍花名册不可用，无法消耗被升格的原士兵。";
 			return false;
 		}
 		int index = roster.FindIndexOfTroop(troop);
 		int total = index >= 0 ? roster.GetElementNumber(index) : 0;
 		int wounded = index >= 0 ? roster.GetElementWoundedNumber(index) : 0;
-		if (total - wounded <= 0)
+		int healthy = Math.Max(0, total - wounded);
+		if (total <= 0)
+		{
+			statusText = isPrisoner
+				? $"执行失败：玩家队伍俘虏名册中不存在可被升格的{troop.Name}，已取消生成 Hero。"
+				: $"执行失败：玩家队伍中不存在可被升格的{troop.Name}，已取消生成 Hero。";
+			return false;
+		}
+		if (!isPrisoner && healthy <= 0)
 		{
 			statusText = $"执行失败：玩家队伍中没有可被升格的健康{troop.Name}，已取消生成 Hero。";
 			return false;
 		}
-		roster.AddToCounts(troop, -1, insertAtFront: false, woundedCount: 0, xpChange: 0, removeDepleted: true, index: -1);
+		bool consumeWounded = isPrisoner && healthy <= 0 && wounded > 0;
+		roster.AddToCounts(troop, -1, insertAtFront: false, woundedCount: consumeWounded ? -1 : 0, xpChange: 0, removeDepleted: true, index: -1);
 		int remaining = roster.GetTroopCount(troop);
-		if (remaining != total - 1)
+		int remainingIndex = roster.FindIndexOfTroop(troop);
+		int remainingWounded = remainingIndex >= 0 ? roster.GetElementWoundedNumber(remainingIndex) : 0;
+		int expectedWounded = wounded - (consumeWounded ? 1 : 0);
+		if (remaining != total - 1 || remainingWounded != expectedWounded)
 		{
-			if (remaining < total)
+			int countDelta = total - remaining;
+			int woundedDelta = wounded - remainingWounded;
+			if (countDelta != 0 || woundedDelta != 0)
 			{
-				roster.AddToCounts(troop, total - remaining, insertAtFront: false, woundedCount: 0, xpChange: 0, removeDepleted: true, index: -1);
+				roster.AddToCounts(troop, countDelta, insertAtFront: false, woundedCount: woundedDelta, xpChange: 0, removeDepleted: true, index: -1);
 			}
-			statusText = $"执行失败：未能从玩家队伍扣除被升格的{troop.Name}，已取消生成 Hero。";
+			statusText = isPrisoner
+				? $"执行失败：未能从玩家队伍俘虏名册扣除被升格的{troop.Name}，已取消生成 Hero。"
+				: $"执行失败：未能从玩家队伍扣除被升格的{troop.Name}，已取消生成 Hero。";
 			return false;
 		}
-		reservedTroop = troop;
-		Logger.Log("RewardSystemBehavior", "[NonHeroJoin] reserved player troop for promotion troop=" + (troop.StringId ?? "") + " before=" + total + " after=" + remaining + " agentIndex=" + (agent?.Index ?? -1));
+		reservedTroop = new PlayerOwnedTroopPromotionReservation
+		{
+			Troop = troop,
+			IsPrisoner = isPrisoner,
+			WasWounded = consumeWounded
+		};
+		Logger.Log("RewardSystemBehavior", "[NonHeroJoin] reserved player troop for promotion troop=" + (troop.StringId ?? "") + " roster=" + (isPrisoner ? "prisoner" : "member") + " before=" + total + " woundedBefore=" + wounded + " consumedWounded=" + consumeWounded + " after=" + remaining + " woundedAfter=" + remainingWounded + " agentIndex=" + (agent?.Index ?? -1));
 		return true;
 	}
 
-	private static void RestoreReservedPlayerOwnedTroopAfterFailedPromotion(CharacterObject troop)
+	private static void RestoreReservedPlayerOwnedTroopAfterFailedPromotion(PlayerOwnedTroopPromotionReservation reservation)
 	{
 		try
 		{
-			TroopRoster roster = MobileParty.MainParty?.MemberRoster;
+			CharacterObject troop = reservation?.Troop;
+			TroopRoster roster = reservation?.IsPrisoner == true ? PartyBase.MainParty?.PrisonRoster : MobileParty.MainParty?.MemberRoster;
 			if (troop == null || roster == null)
 			{
 				return;
 			}
-			roster.AddToCounts(troop, 1, insertAtFront: false, woundedCount: 0, xpChange: 0, removeDepleted: true, index: -1);
-			Logger.Log("RewardSystemBehavior", "[NonHeroJoin] restored player troop after failed promotion troop=" + (troop.StringId ?? ""));
+			roster.AddToCounts(troop, 1, insertAtFront: false, woundedCount: reservation.WasWounded ? 1 : 0, xpChange: 0, removeDepleted: true, index: -1);
+			Logger.Log("RewardSystemBehavior", "[NonHeroJoin] restored player troop after failed promotion troop=" + (troop.StringId ?? "") + " roster=" + (reservation.IsPrisoner ? "prisoner" : "member") + " wounded=" + reservation.WasWounded);
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("RewardSystemBehavior", "[NonHeroJoin] restore player troop after failed promotion failed troop=" + (troop?.StringId ?? "") + " error=" + ex.Message);
+			Logger.Log("RewardSystemBehavior", "[NonHeroJoin] restore player troop after failed promotion failed troop=" + (reservation?.Troop?.StringId ?? "") + " error=" + ex.Message);
 		}
 	}
 

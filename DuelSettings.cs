@@ -1365,7 +1365,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("14. GCCZ攻城后处置")]
 	public int GcczNpcResponseLimit { get; set; } = SiegeNpcResponseLimitProfile.DefaultResponseLimit;
 
-	[SettingPropertyButton("导出GCCZ_Debug.log", -1, true, "", Content = "导出到桌面", Order = 2, RequireRestart = false, HintText = "将当前模块 Logs 文件夹里的 GCCZ_Debug.log 复制到桌面，文件名会带时间戳。原始日志通常在 Bannerlord/Modules/AnimusForge_对应版本/Logs/GCCZ_Debug.log。")]
+	[SettingPropertyButton("导出GCCZ_Debug.log", -1, true, "", Content = "导出到桌面", Order = 2, RequireRestart = false, HintText = "将当前模块 Logs 文件夹里的 GCCZ_Debug.log 复制到桌面，文件名会带时间戳。原始日志通常在 Bannerlord/Modules/AnimusForge/Logs/GCCZ_Debug.log。")]
 	[SettingPropertyGroup("14. GCCZ攻城后处置")]
 	public Action ExportGcczDebugLog { get; set; }
 

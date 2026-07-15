@@ -9,6 +9,7 @@
     <LangVersion>10.0</LangVersion>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <NoWarn>$(NoWarn);MSB3277</NoWarn>
+    <DefaultItemExcludes>$(DefaultItemExcludes);$(MSBuildProjectDirectory)\bin\**;$(MSBuildProjectDirectory)\obj\**</DefaultItemExcludes>
     <BannerlordApi Condition="'$(BannerlordApi)' == ''">1.3</BannerlordApi>
     <BannerlordApiCompatibility Condition="'$(BannerlordApiCompatibility)' == ''">$(BannerlordApi)</BannerlordApiCompatibility>
     <AssemblySearchPaths>{HintPathFromItem};{CandidateAssemblyFiles};{TargetFrameworkDirectory};{RawFileName}</AssemblySearchPaths>
@@ -22,9 +23,12 @@
     <VersionedDepsDir Condition="'$(VersionedDepsDir)' == '' and ! $([System.String]::Copy('$(BannerlordApi)').StartsWith('1.4')) and Exists('$(DepsDir)\TaleWorlds.CampaignSystem.dll')">$(DepsDir)</VersionedDepsDir>
     <BannerlordRoot Condition="'$(BannerlordRoot)' == '' and '$(BANNERLORD_ROOT)' != ''">$(BANNERLORD_ROOT)</BannerlordRoot>
     <BannerlordRoot Condition="'$(BannerlordRoot)' == ''">F:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord</BannerlordRoot>
-    <AnimusForgeModuleId Condition="'$(AnimusForgeModuleId)' == '' and $([System.String]::Copy('$(BannerlordApi)').StartsWith('1.4'))">AnimusForge_1_4_5</AnimusForgeModuleId>
-    <AnimusForgeModuleId Condition="'$(AnimusForgeModuleId)' == ''">AnimusForge_1_3_x</AnimusForgeModuleId>
-    <AnimusForgeBinDir Condition="'$(AnimusForgeBinDir)' == ''">$(BannerlordRoot)\Modules\$(AnimusForgeModuleId)\bin\Win64_Shipping_Client</AnimusForgeBinDir>
+    <AnimusForgeModuleId Condition="'$(AnimusForgeModuleId)' == ''">AnimusForge</AnimusForgeModuleId>
+    <AnimusForgeSourceBinDir Condition="'$(AnimusForgeSourceBinDir)' == ''">$(MSBuildProjectDirectory)\AnimusForge\bin\Win64_Shipping_Client</AnimusForgeSourceBinDir>
+    <AnimusForgeUnifiedBinDir Condition="'$(AnimusForgeUnifiedBinDir)' == ''">$(BannerlordRoot)\Modules\AnimusForge\bin\Win64_Shipping_Client</AnimusForgeUnifiedBinDir>
+    <AnimusForgeBinDir Condition="'$(AnimusForgeBinDir)' == '' and Exists('$(AnimusForgeUnifiedBinDir)\0Harmony.dll')">$(AnimusForgeUnifiedBinDir)</AnimusForgeBinDir>
+    <AnimusForgeBinDir Condition="'$(AnimusForgeBinDir)' == '' and Exists('$(AnimusForgeSourceBinDir)\0Harmony.dll')">$(AnimusForgeSourceBinDir)</AnimusForgeBinDir>
+    <AnimusForgeBinDir Condition="'$(AnimusForgeBinDir)' == ''">$(AnimusForgeSourceBinDir)</AnimusForgeBinDir>
     <BannerlordBinDir Condition="'$(BannerlordBinDir)' == ''">$(BannerlordRoot)\bin\Win64_Shipping_Client</BannerlordBinDir>
     <NativeBinDir Condition="'$(NativeBinDir)' == ''">$(BannerlordRoot)\Modules\Native\bin\Win64_Shipping_Client</NativeBinDir>
     <SandBoxBinDir Condition="'$(SandBoxBinDir)' == ''">$(BannerlordRoot)\Modules\SandBox\bin\Win64_Shipping_Client</SandBoxBinDir>
@@ -71,6 +75,7 @@
     <Compile Remove="tools\**\*.cs" />
     <Compile Remove="AnimusForge.SiegeAftermathIntervention\bin\**\*.cs" />
     <Compile Remove="AnimusForge.SiegeAftermathIntervention\obj\**\*.cs" />
+    <Compile Remove="AnimusForge.Bootstrap\**\*.cs" />
     <Compile Remove="FUYONG\**\*.cs" />
     <Compile Remove="_codex_tmp\**\*.cs" />
     <EmbeddedResource Remove="原版游戏本体代码\**\*" />
@@ -80,6 +85,7 @@
     <EmbeddedResource Remove="tools\**\*" />
     <EmbeddedResource Remove="AnimusForge.SiegeAftermathIntervention\bin\**\*" />
     <EmbeddedResource Remove="AnimusForge.SiegeAftermathIntervention\obj\**\*" />
+    <EmbeddedResource Remove="AnimusForge.Bootstrap\**\*" />
     <EmbeddedResource Remove="FUYONG\**\*" />
     <EmbeddedResource Remove="_codex_tmp\**\*" />
     <None Remove="原版游戏本体代码\**\*" />
@@ -89,6 +95,7 @@
     <None Remove="tools\**\*" />
     <None Remove="AnimusForge.SiegeAftermathIntervention\bin\**\*" />
     <None Remove="AnimusForge.SiegeAftermathIntervention\obj\**\*" />
+    <None Remove="AnimusForge.Bootstrap\**\*" />
     <None Remove="FUYONG\**\*" />
     <None Remove="_codex_tmp\**\*" />
   </ItemGroup>
@@ -320,6 +327,84 @@
       <HintPath>$(BannerlordBinDir)\TaleWorlds.TwoDimension.Standalone.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup Condition="'$(VersionedDepsDir)' != '' and ! $([System.String]::Copy('$(BannerlordApi)').StartsWith('1.4'))">
+    <!-- Route every available pinned 1.3 reference through the versioned baseline.
+         Without these updates, explicit HintPath entries below silently mix the current 1.4 install into a nominal 1.3 build. -->
+    <Reference Update="Newtonsoft.Json" Condition="Exists('$(VersionedDepsDir)\Newtonsoft.Json.dll')">
+      <HintPath>$(VersionedDepsDir)\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Update="SandBox.View" Condition="Exists('$(VersionedDepsDir)\SandBox.View.dll')">
+      <HintPath>$(VersionedDepsDir)\SandBox.View.dll</HintPath>
+    </Reference>
+    <Reference Update="SandBox.ViewModelCollection" Condition="Exists('$(VersionedDepsDir)\SandBox.ViewModelCollection.dll')">
+      <HintPath>$(VersionedDepsDir)\SandBox.ViewModelCollection.dll</HintPath>
+    </Reference>
+    <Reference Update="TaleWorlds.CampaignSystem" Condition="Exists('$(VersionedDepsDir)\TaleWorlds.CampaignSystem.dll')">
+      <HintPath>$(VersionedDepsDir)\TaleWorlds.CampaignSystem.dll</HintPath>
+    </Reference>
+    <Reference Update="TaleWorlds.CampaignSystem.ViewModelCollection" Condition="Exists('$(VersionedDepsDir)\TaleWorlds.CampaignSystem.ViewModelCollection.dll')">
+      <HintPath>$(VersionedDepsDir)\TaleWorlds.CampaignSystem.ViewModelCollection.dll</HintPath>
+    </Reference>
+    <Reference Update="TaleWorlds.Core" Condition="Exists('$(VersionedDepsDir)\TaleWorlds.Core.dll')">
+      <HintPath>$(VersionedDepsDir)\TaleWorlds.Core.dll</HintPath>
+    </Reference>
+    <Reference Update="TaleWorlds.DotNet" Condition="Exists('$(VersionedDepsDir)\TaleWorlds.DotNet.dll')">
+      <HintPath>$(VersionedDepsDir)\TaleWorlds.DotNet.dll</HintPath>
+    </Reference>
+    <Reference Update="TaleWorlds.Engine" Condition="Exists('$(VersionedDepsDir)\TaleWorlds.Engine.dll')">
+      <HintPath>$(VersionedDepsDir)\TaleWorlds.Engine.dll</HintPath>
+    </Reference>
+    <Reference Update="TaleWorlds.Engine.GauntletUI" Condition="Exists('$(VersionedDepsDir)\TaleWorlds.Engine.GauntletUI.dll')">
+      <HintPath>$(VersionedDepsDir)\TaleWorlds.Engine.GauntletUI.dll</HintPath>
+    </Reference>
+    <Reference Update="TaleWorlds.GauntletUI" Condition="Exists('$(VersionedDepsDir)\TaleWorlds.GauntletUI.dll')">
+      <HintPath>$(VersionedDepsDir)\TaleWorlds.GauntletUI.dll</HintPath>
+    </Reference>
+    <Reference Update="TaleWorlds.InputSystem" Condition="Exists('$(VersionedDepsDir)\TaleWorlds.InputSystem.dll')">
+      <HintPath>$(VersionedDepsDir)\TaleWorlds.InputSystem.dll</HintPath>
+    </Reference>
+    <Reference Update="TaleWorlds.Library" Condition="Exists('$(VersionedDepsDir)\TaleWorlds.Library.dll')">
+      <HintPath>$(VersionedDepsDir)\TaleWorlds.Library.dll</HintPath>
+    </Reference>
+    <Reference Update="TaleWorlds.Localization" Condition="Exists('$(VersionedDepsDir)\TaleWorlds.Localization.dll')">
+      <HintPath>$(VersionedDepsDir)\TaleWorlds.Localization.dll</HintPath>
+    </Reference>
+    <Reference Update="TaleWorlds.MountAndBlade" Condition="Exists('$(VersionedDepsDir)\TaleWorlds.MountAndBlade.dll')">
+      <HintPath>$(VersionedDepsDir)\TaleWorlds.MountAndBlade.dll</HintPath>
+    </Reference>
+    <Reference Update="TaleWorlds.MountAndBlade.View" Condition="Exists('$(VersionedDepsDir)\TaleWorlds.MountAndBlade.View.dll')">
+      <HintPath>$(VersionedDepsDir)\TaleWorlds.MountAndBlade.View.dll</HintPath>
+    </Reference>
+    <Reference Update="TaleWorlds.MountAndBlade.ViewModelCollection" Condition="Exists('$(VersionedDepsDir)\TaleWorlds.MountAndBlade.ViewModelCollection.dll')">
+      <HintPath>$(VersionedDepsDir)\TaleWorlds.MountAndBlade.ViewModelCollection.dll</HintPath>
+    </Reference>
+    <Reference Update="TaleWorlds.ObjectSystem" Condition="Exists('$(VersionedDepsDir)\TaleWorlds.ObjectSystem.dll')">
+      <HintPath>$(VersionedDepsDir)\TaleWorlds.ObjectSystem.dll</HintPath>
+    </Reference>
+    <Reference Update="TaleWorlds.ScreenSystem" Condition="Exists('$(VersionedDepsDir)\TaleWorlds.ScreenSystem.dll')">
+      <HintPath>$(VersionedDepsDir)\TaleWorlds.ScreenSystem.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup Condition="! $([System.String]::Copy('$(BannerlordApi)').StartsWith('1.4'))">
+    <_RequiredPinned13Ref Include="$(VersionedDepsDir)\Newtonsoft.Json.dll" />
+    <_RequiredPinned13Ref Include="$(VersionedDepsDir)\SandBox.View.dll" />
+    <_RequiredPinned13Ref Include="$(VersionedDepsDir)\SandBox.ViewModelCollection.dll" />
+    <_RequiredPinned13Ref Include="$(VersionedDepsDir)\TaleWorlds.CampaignSystem.dll" />
+    <_RequiredPinned13Ref Include="$(VersionedDepsDir)\TaleWorlds.CampaignSystem.ViewModelCollection.dll" />
+    <_RequiredPinned13Ref Include="$(VersionedDepsDir)\TaleWorlds.Core.dll" />
+    <_RequiredPinned13Ref Include="$(VersionedDepsDir)\TaleWorlds.DotNet.dll" />
+    <_RequiredPinned13Ref Include="$(VersionedDepsDir)\TaleWorlds.Engine.dll" />
+    <_RequiredPinned13Ref Include="$(VersionedDepsDir)\TaleWorlds.Engine.GauntletUI.dll" />
+    <_RequiredPinned13Ref Include="$(VersionedDepsDir)\TaleWorlds.GauntletUI.dll" />
+    <_RequiredPinned13Ref Include="$(VersionedDepsDir)\TaleWorlds.InputSystem.dll" />
+    <_RequiredPinned13Ref Include="$(VersionedDepsDir)\TaleWorlds.Library.dll" />
+    <_RequiredPinned13Ref Include="$(VersionedDepsDir)\TaleWorlds.Localization.dll" />
+    <_RequiredPinned13Ref Include="$(VersionedDepsDir)\TaleWorlds.MountAndBlade.dll" />
+    <_RequiredPinned13Ref Include="$(VersionedDepsDir)\TaleWorlds.MountAndBlade.View.dll" />
+    <_RequiredPinned13Ref Include="$(VersionedDepsDir)\TaleWorlds.MountAndBlade.ViewModelCollection.dll" />
+    <_RequiredPinned13Ref Include="$(VersionedDepsDir)\TaleWorlds.ObjectSystem.dll" />
+    <_RequiredPinned13Ref Include="$(VersionedDepsDir)\TaleWorlds.ScreenSystem.dll" />
+  </ItemGroup>
   <ItemGroup>
     <_RequiredRef Include="$(BannerlordBinDir)\TaleWorlds.CampaignSystem.dll" />
     <_RequiredRef Include="$(BannerlordBinDir)\TaleWorlds.MountAndBlade.dll" />
@@ -394,9 +479,12 @@
     <_RequiredRef Include="$(BannerlordBinDir)\TaleWorlds.TwoDimension.Standalone.dll" />
   </ItemGroup>
   <Target Name="ValidateExternalReferences" BeforeTargets="ResolveReferences">
+    <Error Condition="! $([System.String]::Copy('$(BannerlordApi)').StartsWith('1.4')) and '$(Bannerlord13ReferencesVerified)' != 'true'" Text="BannerlordApi=1.3 is fail-closed. Use build_single_module.ps1, which verifies the pinned 1.3 BuildInfo before setting Bannerlord13ReferencesVerified." />
+    <Error Condition="! $([System.String]::Copy('$(BannerlordApi)').StartsWith('1.4')) and '$(VersionedDepsDir)' == ''" Text="BannerlordApi=1.3 requires a pinned VersionedDepsDir." />
+    <Error Condition="! $([System.String]::Copy('$(BannerlordApi)').StartsWith('1.4')) and !Exists('%(_RequiredPinned13Ref.Identity)')" Text="Missing required pinned Bannerlord 1.3 dependency: %(_RequiredPinned13Ref.Identity)" />
     <Error Condition="!Exists('%(_RequiredRef.Identity)')" Text="Missing required dependency: %(_RequiredRef.Identity)" />
   </Target>
   <Target Name="CopyModuleXmlsToBannerlordModule" AfterTargets="Build" Condition="'$(CopyLegacyAnimusForgeModuleData)' == 'true'">
-    <Error Text="CopyLegacyAnimusForgeModuleData is disabled because unversioned Modules\AnimusForge output is not allowed. Use the dual-version deploy scripts instead." />
+    <Error Text="Direct MSBuild deployment is disabled. Use the repository single-module deploy script so Bootstrap and both version implementations stay synchronized." />
   </Target>
 </Project>

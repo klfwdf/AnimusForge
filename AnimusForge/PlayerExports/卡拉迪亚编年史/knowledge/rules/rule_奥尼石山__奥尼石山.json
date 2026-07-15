@@ -1,14 +1,18 @@
 ﻿{
   "Id": "rule_奥尼石山",
   "Keywords": [
-    "奥尼石山",
-    "奥尼山"
+    "奥尼石山"
   ],
   "RagShortTexts": [
-    "奥尼石山是南帝国境内吕卡里亚谷中央耸立的一块巨岩，其西侧坐落着塞斯塔代姆和塞斯塔代姆堡。其西侧坐落着南帝国重镇吕卡隆。石山得名于成群聚集于此啄食死尸的秃鹫，那些死者生前多在当地的盐矿场劳作。"
+    "奥尼石山位于吕卡隆背后，拥有卡拉迪亚最丰富的银矿脉，是帝国国库和军饷的重要来源。"
   ],
   "SemanticPrototypes": [],
   "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "奥尼石山就在吕卡隆背后，或者说，吕卡隆就是从它身上长出来的。这座山全是石头，灰白色的岩壁陡得连山羊都站不稳，但石头底下埋着银矿脉——整个卡拉迪亚最丰富的银矿。几百年来，这些银矿喂饱了帝国的国库、军团的粮饷、皇室的挥霍，也引来了无数围城者和野心家。石山顶上常年盘旋着秃鹫，它们和吕卡隆的银矿一样古老，早就看惯了山脚下的厮杀。"
+    },
     {
       "Priority": 0,
       "When": {
@@ -24,7 +28,97 @@
         "IsClanLeader": null,
         "SkillMin": null
       },
-      "Content": "奥尼石山是南帝国境内吕卡里亚谷中央耸立的一块巨岩，其西侧坐落着塞斯塔代姆和塞斯塔代姆堡。其西侧坐落着南帝国重镇吕卡隆。石山得名于成群聚集于此啄食死尸的秃鹫，那些死者生前多在当地的盐矿场劳作。"
+      "Content": "奥尼石山就是吕卡隆的钱袋子。没有那座山的银矿，帝国的军团发不出军饷，元老院的大理石宫殿也铺不起来。以前阿雷尼科斯皇帝在位的时候，奥尼石山的银矿归皇室管，挖出来的银子直接进国库。现在吕卡隆归了拉盖娅，银矿也归了南帝国。北边和西边的人眼红得很，但石头山不挪窝，谁占了吕卡隆谁就占了银子。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "奥尼石山是我们南帝国的底气。加里俄斯有老兵，卢孔有元老院，我们有银矿。银矿能养兵，能买粮，能雇人修城墙。只要奥尼石山还在我们背后，吕卡隆就饿不死，南帝国就垮不了。那些秃鹫在天上看着呢——以前它们看着先皇的鹰旗在这座城上飘，现在看着拉盖娅女皇的旗，以后还会继续看下去。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_es4"
+        ],
+        "Roles": [
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我在奥尼石山的矿坑里干了半辈子。石头硬得很，凿一天下来胳膊都抬不起来，但凿出来的银子是真的亮。以前先皇管矿的时候，矿工还能留一点碎银补贴家用。现在女皇管得严了，挖出来的银子全部要上缴，说是要打仗用。反正谁当皇帝都一样——我们挖银子，他们花银子，秃鹫在天上看。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "奥尼石山的银子再多，也架不住帝国人自己糟蹋。听说那座山的银矿养了几百年的帝国军团，现在养着三个互相砍的皇帝。我们斯特吉亚人虽然穷，但我们的波耶不会为了银子捅自己人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "奥尼石山的银矿是卡拉迪亚最大的宝藏之一。我们瓦兰迪亚人不是没打过那座山的主意，但吕卡隆的城墙太硬，石山本身的悬崖比城墙还难爬。帝国人把银矿守得死死的，哪怕自己人打自己人也不让外人染指。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "奥尼石山的银矿脉是卡拉迪亚储量最丰富的贵金属矿藏，其开采历史可以追溯到帝国扩张之前，帕拉部落就已经在此开采地表浅层的银矿石。帝国征服后，吕卡隆城依山而建，银矿从此被纳入皇室直管，成为帝国中央财政的重要支柱。阿雷尼科斯遇刺后，奥尼石山的银矿归属南帝国，为拉盖娅女皇的政权提供了持续的经济基础。可以毫不夸张地说，吕卡隆之所以成为皇都，并不是因为它的城墙——而是因为背后的奥尼石山。"
     }
   ],
   "TextMappings": []

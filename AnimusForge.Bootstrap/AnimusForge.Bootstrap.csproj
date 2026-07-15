@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+    <AssemblyName>AnimusForge.Bootstrap</AssemblyName>
+    <RootNamespace>AnimusForge.Bootstrap</RootNamespace>
+    <LangVersion>10.0</LangVersion>
+    <Nullable>disable</Nullable>
+    <Deterministic>true</Deterministic>
+    <DefaultItemExcludes>$(DefaultItemExcludes);$(MSBuildProjectDirectory)\bin\**;$(MSBuildProjectDirectory)\obj\**</DefaultItemExcludes>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <BannerlordRoot Condition="'$(BannerlordRoot)' == '' and '$(BANNERLORD_ROOT)' != ''">$(BANNERLORD_ROOT)</BannerlordRoot>
+    <BannerlordRoot Condition="'$(BannerlordRoot)' == ''">F:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord</BannerlordRoot>
+    <BannerlordBinDir Condition="'$(BannerlordBinDir)' == ''">$(BannerlordRoot)\bin\Win64_Shipping_Client</BannerlordBinDir>
+    <BootstrapReferenceDir Condition="'$(BootstrapReferenceDir)' == '' and Exists('$(MSBuildProjectDirectory)\..\_deps_auto\TaleWorlds.MountAndBlade.dll')">$(MSBuildProjectDirectory)\..\_deps_auto</BootstrapReferenceDir>
+    <BootstrapReferenceDir Condition="'$(BootstrapReferenceDir)' == ''">$(BannerlordBinDir)</BootstrapReferenceDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="TaleWorlds.MountAndBlade">
+      <HintPath>$(BootstrapReferenceDir)\TaleWorlds.MountAndBlade.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.Core">
+      <HintPath>$(BootstrapReferenceDir)\TaleWorlds.Core.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.Library">
+      <HintPath>$(BootstrapReferenceDir)\TaleWorlds.Library.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.DotNet">
+      <HintPath>$(BootstrapReferenceDir)\TaleWorlds.DotNet.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <_BootstrapRequiredReference Include="$(BootstrapReferenceDir)\TaleWorlds.MountAndBlade.dll" />
+    <_BootstrapRequiredReference Include="$(BootstrapReferenceDir)\TaleWorlds.Core.dll" />
+    <_BootstrapRequiredReference Include="$(BootstrapReferenceDir)\TaleWorlds.Library.dll" />
+    <_BootstrapRequiredReference Include="$(BootstrapReferenceDir)\TaleWorlds.DotNet.dll" />
+  </ItemGroup>
+
+  <Target Name="ValidateBootstrapReferences" BeforeTargets="ResolveReferences">
+    <Error Condition="!Exists('%(_BootstrapRequiredReference.Identity)')" Text="Missing Bootstrap dependency: %(_BootstrapRequiredReference.Identity)" />
+  </Target>
+</Project>

@@ -1,6 +1,6 @@
-# Bannerlord 1.3.x / 1.4.5 Compatibility Diff
+# Bannerlord 1.3.x / 1.4.x Compatibility Diff
 
-This document is the maintenance map for keeping AnimusForge compatible with both Bannerlord 1.3.x and 1.4.5.
+This document is the maintenance map for keeping AnimusForge compatible with Bannerlord 1.3.x and the 1.4.x API line. The checked-in decompiled 1.4 source baseline is 1.4.5; an actual build may use a newer verified 1.4.x game root, and its exact version is recorded in build metadata.
 
 It is not a full decompiled-source diff. Use it as the first checklist before editing gameplay, mission, encounter, party, UI, campaign behavior, model, or packaging code.
 
@@ -10,41 +10,45 @@ It is not a full decompiled-source diff. Use it as the first checklist before ed
 - Local vanilla 1.4 source reference: the generated 1.4.5 vanilla source folder in this repo.
 - Project build selector: `AnimusForge.csproj` property `BannerlordApi`.
 - 1.4 compile symbol: `BANNERLORD_1_4_OR_GREATER`.
-- Dual output rules: `docs/bannerlord_dual_module_output.md`.
+- Unified module / dual implementation output rules: `docs/bannerlord_dual_module_output.md`.
 
 When a future change touches TaleWorlds APIs, first check whether the member exists in both local vanilla source folders or in both referenced DLL sets. Do not assume a 1.4 member exists in 1.3.
 
 ## Build Matrix
 
-Always keep both commands passing:
+Always keep the verified unified build passing for both implementations plus Bootstrap:
 
-```bat
-dotnet build AnimusForge.csproj -c Debug /p:BannerlordApi=1.3
-dotnet build AnimusForge.csproj -c Debug /p:BannerlordApi=1.4
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\一键编译覆盖推送\build_single_module.ps1 `
+  -ProjectRoot . `
+  -BannerlordRoot "<Bannerlord root>" `
+  -Configuration Debug `
+  -Stage
 ```
 
-Packaging must also remain dual-client. Use the repository one-click package batch, or invoke `package_mod.ps1 -DualClientPackages` after the dual module output step.
+Direct `BannerlordApi=1.3` project builds intentionally fail unless the unified script has first verified the pinned 1.3 reference line. A compile symbol must never be treated as reference provenance.
 
-The package step must produce two ZIP roots:
+Packaging must produce one client ZIP with one `AnimusForge/...` root. The unified module contains a minimal `AnimusForge.Bootstrap.dll` plus both implementation DLLs:
 
-- `AnimusForge_1_3_x/...`
-- `AnimusForge_1_4_5/...`
+- `AnimusForge/bin/Win64_Shipping_Client/AnimusForge.Bootstrap.dll`
+- `AnimusForge/bin/Win64_Shipping_Client/versions/1.3/AnimusForge.dll`
+- `AnimusForge/bin/Win64_Shipping_Client/versions/1.4/AnimusForge.dll`
 
-Both DLL files inside packages must still be named `AnimusForge.dll`.
+`SubModule.xml` declares only the Bootstrap. The Bootstrap selects and loads exactly one implementation at runtime. Both implementation files remain named `AnimusForge.dll` and use the assembly simple name `AnimusForge` to preserve code and save-type identity.
 
 ## Build And Reference Differences
 
-| Area | 1.3.x | 1.4.5 | AnimusForge Rule |
+| Area | 1.3.x | 1.4.x | AnimusForge Rule |
 |---|---|---|---|
 | MSBuild selector | `/p:BannerlordApi=1.3` | `/p:BannerlordApi=1.4` | Never test only the default build. |
 | Compile symbol | No `BANNERLORD_1_4_OR_GREATER` | Defines `BANNERLORD_1_4_OR_GREATER` | Use this symbol only for real API/signature differences. |
-| TaleWorlds references | Prefer `VersionedDepsDir` / `_deps_auto` when available | Prefer current game install binaries | Keep 1.3 references available; otherwise 1.3 build can silently compile against 1.4 APIs. |
+| TaleWorlds references | Unified build requires a verified 1.3 `_deps_auto` / `Bannerlord13ReferenceDir` overlay and routes every DLL present there through `VersionedDepsDir` | Unified build verifies the selected game root is a 1.4.x line | Never mark an implementation until its reference line has been verified; build metadata records the exact reference version. |
 | MCM dependency | May resolve `Bannerlord.MBOptionScreen.v1.3.6.dll` | May resolve `v1.4.0` / `v1.4.1` | Do not hardcode a single MCM DLL filename in C# or scripts. |
-| Module output | `Modules/AnimusForge_1_3_x` | `Modules/AnimusForge_1_4_5` | Never mix both versions into `Modules/AnimusForge`. |
+| Implementation output | `Modules/AnimusForge/bin/Win64_Shipping_Client/versions/1.3/AnimusForge.dll` | `Modules/AnimusForge/bin/Win64_Shipping_Client/versions/1.4/AnimusForge.dll` | Build both, publish one module, and let the Bootstrap load exactly one implementation. |
 
 ## Known API Differences Already Hit
 
-| Area | 1.3.x | 1.4.5 | Current Fix Pattern |
+| Area | 1.3.x | 1.4.5 source baseline | Current Fix Pattern |
 |---|---|---|---|
 | `MobilePartyAIModel` | No `FortificationPortPatrolDistanceAsDays`; no `GetSettlementNearbyThreatAndAllyCheckRadius(Settlement,bool)` override in the same shape | Adds port patrol / settlement threat radius members | `CourierMobilePartyAIModel.cs` wraps these members in `#if BANNERLORD_1_4_OR_GREATER`. |
 | `PlayerEncounter.GetBattleRewards` Harmony prefix | Uses `float` reward outputs plus `goldChange`, `playerEarnedLootPercentage`, and `ExplainedNumber` refs | Uses `ExplainedNumber` reward outputs and `playerEarnedLootRate`; no old gold/ref shape | `MilitaryExerciseBattleRewardsZeroPatch` has separate prefix signatures per version. |
@@ -71,7 +75,8 @@ Both DLL files inside packages must still be named `AnimusForge.dll`.
 
 Review these files before changing related systems:
 
-- `AnimusForge.csproj`: build selector, references, version symbols.
+- `AnimusForge.csproj`: implementation build selector, references, version symbols, and isolated version artifact capture.
+- Bootstrap project/source: minimal shared-API entry point, runtime version selection, implementation loading, and lifecycle forwarding.
 - `PlayerEncounterCompat.cs`: safe encounter and map event access.
 - `Patch_PlayerEncounter_Start.cs`: encounter redirect guards.
 - `Patch_GameMenu_ActivateGameMenu.cs`: menu redirect guards.
@@ -85,8 +90,9 @@ Review these files before changing related systems:
 - `CourierMobilePartyAIModel.cs`: 1.4-only mobile party model overrides.
 - `DevMultilineEditableTextWidget.cs`: Gauntlet mouse release/input differences.
 - `ShoutBehavior.cs`: party role detection and scene agent navigation.
-- `deploy_module.ps1` in the one-click script folder: dual module output.
-- `package_mod.ps1` in the one-click script folder: dual client packaging.
+- `AnimusForgeModulePaths.cs`: active module root must resolve only to `Modules/AnimusForge`; legacy versioned folders are read-only migration inputs at most.
+- `deploy_module.ps1` in the one-click script folder: unified module assembly and deployment.
+- `package_mod.ps1` in the one-click script folder: single unified-client ZIP packaging.
 
 ## Compatibility Patterns
 
@@ -108,9 +114,11 @@ Prefer these patterns, in order:
 
    Keep reflection helpers narrow and null-safe. Log once if an important field is missing.
 
-5. Avoid version checks based on the installed game folder at runtime.
+5. Keep runtime version selection inside the Bootstrap only.
 
-   The build already produces two DLLs. Runtime version guessing is less reliable than compile-time separation.
+   Implementation code must continue to rely on compile-time separation. The Bootstrap should inspect loaded TaleWorlds assembly/API identity, use an explicit supported-version mapping, and fail closed when the runtime is unsupported or ambiguous. Do not infer the version from the install folder name or module path.
+
+The current pinned 1.3 overlay contains 18 high-use 1.3 assemblies and the project explicitly routes all of them into the 1.3 build. Some directly referenced assemblies are not yet present in that overlay (notably SandBox core/Gauntlet, Core ViewModel, Gauntlet Data/Prefab, SaveSystem, and TwoDimension), so new code touching those APIs still requires comparison against the local 1.3 source and ideally a future complete 1.3 reference snapshot. Do not treat a successful compile against an unpinned fallback assembly as proof of API compatibility.
 
 ## New Feature Checklist
 
@@ -133,11 +141,10 @@ During implementation:
 After implementation:
 
 - Build both `BannerlordApi=1.3` and `BannerlordApi=1.4`.
-- Run one-click build/output if the change affects deployment.
-- Run one-click packaging if the change affects release packaging.
-- In-game test must enable only one AnimusForge module at a time:
-  - Bannerlord 1.3.x: enable `AnimusForge_1_3_x`.
-  - Bannerlord 1.4.5: enable `AnimusForge_1_4_5`.
+- Run one-click unified build/output if the change affects deployment.
+- Run one-click packaging if the change affects release packaging; it must produce one ZIP containing both implementation variants.
+- In-game, enable the single `AnimusForge` launcher module. The Bootstrap must report that it selected `bin/Win64_Shipping_Client/versions/1.3/AnimusForge.dll` on 1.3.x or `bin/Win64_Shipping_Client/versions/1.4/AnimusForge.dll` on 1.4.x.
+- Do not enable retired `AnimusForge_1_3_x` or `AnimusForge_1_4_5` modules alongside the unified module.
 
 ## How To Update This Document
 

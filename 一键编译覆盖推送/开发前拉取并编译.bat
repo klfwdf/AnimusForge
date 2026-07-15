@@ -1,7 +1,7 @@
 @echo off
 setlocal EnableExtensions EnableDelayedExpansion
 
-chcp 936 >nul
+chcp 65001 >nul
 set "LANG=en_US.UTF-8"
 set "LC_ALL=C"
 
@@ -10,6 +10,7 @@ for %%I in ("%SCRIPT_DIR%..") do set "PROJECT_ROOT=%%~fI"
 cd /d "%PROJECT_ROOT%"
 
 set "PATH_SCRIPT=%SCRIPT_DIR%resolve_bannerlord_paths.ps1"
+set "BUILD_SCRIPT=%SCRIPT_DIR%build_single_module.ps1"
 set "CONFIG=Debug"
 set "DRY_RUN=0"
 set "BANNERLORD_ROOT="
@@ -61,6 +62,13 @@ if errorlevel 1 (
     exit /b 1
 )
 
+if not exist "%BUILD_SCRIPT%" (
+    echo [ERROR] Unified build script not found:
+    echo "%BUILD_SCRIPT%"
+    pause
+    exit /b 1
+)
+
 git rev-parse --is-inside-work-tree >nul 2>nul
 if errorlevel 1 (
     echo [ERROR] Current directory is not a git repository:
@@ -76,7 +84,7 @@ if not defined BRANCH (
     exit /b 1
 )
 if /I not "%BRANCH%"=="main" (
-    echo [ERROR] This 1.3.x toolchain only allows pulls on branch "main".
+    echo [ERROR] This unified-module toolchain only allows pulls on branch "main".
     echo Current branch: "%BRANCH%"
     pause
     exit /b 1
@@ -108,11 +116,8 @@ if "%DRY_RUN%"=="1" (
     echo   git ls-remote --exit-code origin "refs/heads/%BRANCH%"
     echo   git fetch origin "%BRANCH%"
     echo   if origin/%BRANCH% has new commit^(s^): git rebase --autostash "origin/%BRANCH%"
-    if defined WORKSHOP_CONTENT_DIR (
-        echo   dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:WorkshopContentDir="%WORKSHOP_CONTENT_DIR%"
-    ) else (
-        echo   dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordRoot="%BANNERLORD_ROOT%"
-    )
+    echo   sequential isolated builds: implementation 1.3, implementation 1.4, Bootstrap
+    echo   powershell -File "%BUILD_SCRIPT%" -ProjectRoot "%PROJECT_ROOT%" -BannerlordRoot "%BANNERLORD_ROOT%" -Configuration "%CONFIG%" -Stage
     echo.
     echo [SUCCESS] Dry-run completed. No build, deploy, commit, or push was run.
     pause
@@ -161,11 +166,11 @@ if not "%BEHIND_COUNT%"=="0" (
 )
 
 echo.
-echo [2/2] Building project...
+echo [2/2] Building both implementations and Bootstrap...
 if defined WORKSHOP_CONTENT_DIR (
-    dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:WorkshopContentDir="%WORKSHOP_CONTENT_DIR%"
+    powershell -NoProfile -ExecutionPolicy Bypass -File "%BUILD_SCRIPT%" -ProjectRoot "%PROJECT_ROOT%" -BannerlordRoot "%BANNERLORD_ROOT%" -WorkshopContentDir "%WORKSHOP_CONTENT_DIR%" -Configuration "%CONFIG%" -Stage
 ) else (
-    dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordRoot="%BANNERLORD_ROOT%"
+    powershell -NoProfile -ExecutionPolicy Bypass -File "%BUILD_SCRIPT%" -ProjectRoot "%PROJECT_ROOT%" -BannerlordRoot "%BANNERLORD_ROOT%" -Configuration "%CONFIG%" -Stage
 )
 set "ERR=%ERRORLEVEL%"
 if not "%ERR%"=="0" (
@@ -177,6 +182,6 @@ if not "%ERR%"=="0" (
     exit /b 0
 )
 
-echo [SUCCESS] Pre-work Pull + Build completed. No deploy, commit, or push was run.
+echo [SUCCESS] Pre-work Pull + unified Build completed. No deploy, commit, or push was run.
 pause
 exit /b 0

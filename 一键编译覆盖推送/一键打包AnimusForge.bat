@@ -1,17 +1,17 @@
 @echo off
-setlocal EnableExtensions EnableDelayedExpansion
-chcp 936 >nul
+setlocal EnableExtensions
+chcp 65001 >nul
 
 set "SCRIPT_DIR=%~dp0"
 for %%I in ("%SCRIPT_DIR%..") do set "PROJECT_ROOT=%%~fI"
-cd /d "%SCRIPT_DIR%"
-
-set "CONFIG=Debug"
-set "PS_SCRIPT=%SCRIPT_DIR%package_mod.ps1"
 set "PATH_SCRIPT=%SCRIPT_DIR%resolve_bannerlord_paths.ps1"
-set "DEPLOY_SCRIPT=%SCRIPT_DIR%deploy_module.ps1"
+set "BUILD_SCRIPT=%SCRIPT_DIR%build_single_module.ps1"
+set "PACKAGE_SCRIPT=%SCRIPT_DIR%package_mod.ps1"
+set "CONFIG=Debug"
+set "STAGE_MODULE=%PROJECT_ROOT%\bin\%CONFIG%\single_module_stage\AnimusForge"
 set "BANNERLORD_ROOT="
 set "WORKSHOP_CONTENT_DIR="
+
 if exist "%LOCALAPPDATA%\Microsoft\dotnet\sdk" (
     set "DOTNET_ROOT=%LOCALAPPDATA%\Microsoft\dotnet"
     set "PATH=%LOCALAPPDATA%\Microsoft\dotnet;%PATH%"
@@ -22,77 +22,51 @@ for /f "usebackq tokens=1,* delims==" %%A in (`powershell -NoProfile -ExecutionP
     if /I "%%A"=="WORKSHOP_CONTENT_DIR" set "WORKSHOP_CONTENT_DIR=%%B"
 )
 
-set "BUILD_OUTPUT=%PROJECT_ROOT%\bin\%CONFIG%\net472"
-set "ARTIFACT_DIR=%PROJECT_ROOT%\bin\%CONFIG%\dual_client_artifacts"
-set "ARTIFACT_13=%ARTIFACT_DIR%\1.3.x\AnimusForge.dll"
-set "ARTIFACT_14=%ARTIFACT_DIR%\1.4.5\AnimusForge.dll"
-
-if not exist "%PS_SCRIPT%" (
-    echo [ERROR] Package script not found:
-    echo "%PS_SCRIPT%"
-    pause
-    exit /b 1
-)
-
-if not exist "%DEPLOY_SCRIPT%" (
-    echo [ERROR] Deploy script not found:
-    echo "%DEPLOY_SCRIPT%"
-    pause
-    exit /b 1
-)
-
 if not defined BANNERLORD_ROOT (
-    echo [ERROR] Bannerlord root could not be auto-detected.
-    echo Set BANNERLORD_ROOT to your "Mount & Blade II Bannerlord" folder and retry.
+    echo [ERROR] Bannerlord root could not be detected.
+    pause
+    exit /b 1
+)
+if not exist "%BANNERLORD_ROOT%\Modules" (
+    echo [ERROR] Bannerlord Modules directory not found:
+    echo   "%BANNERLORD_ROOT%\Modules"
     pause
     exit /b 1
 )
 
-if not exist "%BANNERLORD_ROOT%" (
-    echo [ERROR] Bannerlord root not found:
-    echo "%BANNERLORD_ROOT%"
-    pause
-    exit /b 1
+for %%F in ("%BUILD_SCRIPT%" "%PACKAGE_SCRIPT%") do (
+    if not exist "%%~fF" (
+        echo [ERROR] Required script not found:
+        echo   "%%~fF"
+        pause
+        exit /b 1
+    )
 )
 
-where dotnet >nul 2>nul
-if errorlevel 1 (
-    echo [ERROR] dotnet SDK not found in PATH.
-    pause
-    exit /b 1
-)
-
-echo [AnimusForge] Dual-version packaging started...
-echo Script Dir : "%SCRIPT_DIR%"
-echo Project Dir: "%PROJECT_ROOT%"
-echo Bannerlord : "%BANNERLORD_ROOT%"
+echo [AnimusForge] Unified module packaging started...
+echo Project   : "%PROJECT_ROOT%"
+echo Bannerlord: "%BANNERLORD_ROOT%"
 if defined WORKSHOP_CONTENT_DIR echo Workshop  : "%WORKSHOP_CONTENT_DIR%"
-echo Config     : "%CONFIG%"
+echo Config    : "%CONFIG%"
 echo.
 
-echo [1/4] Building AnimusForge for Bannerlord 1.3.x...
-call :BuildVersion 1.3 "%ARTIFACT_13%"
-if errorlevel 1 exit /b %ERRORLEVEL%
-
-echo.
-echo [2/4] Building AnimusForge for Bannerlord 1.4.5...
-call :BuildVersion 1.4 "%ARTIFACT_14%"
-if errorlevel 1 exit /b %ERRORLEVEL%
-
-echo.
-echo [3/4] Writing dual modules to Bannerlord Modules...
-powershell -NoProfile -ExecutionPolicy Bypass -File "%DEPLOY_SCRIPT%" -ProjectRoot "%PROJECT_ROOT%" -BannerlordRoot "%BANNERLORD_ROOT%" -DualClientOutput -BuildDll13 "%ARTIFACT_13%" -BuildDll14 "%ARTIFACT_14%"
-if errorlevel 1 (
-    echo [ERROR] Dual module output failed.
+echo [1/2] Building and assembling a project-local unified module...
+if defined WORKSHOP_CONTENT_DIR (
+    powershell -NoProfile -ExecutionPolicy Bypass -File "%BUILD_SCRIPT%" -ProjectRoot "%PROJECT_ROOT%" -BannerlordRoot "%BANNERLORD_ROOT%" -WorkshopContentDir "%WORKSHOP_CONTENT_DIR%" -Configuration "%CONFIG%" -Stage
+) else (
+    powershell -NoProfile -ExecutionPolicy Bypass -File "%BUILD_SCRIPT%" -ProjectRoot "%PROJECT_ROOT%" -BannerlordRoot "%BANNERLORD_ROOT%" -Configuration "%CONFIG%" -Stage
+)
+set "ERR=%ERRORLEVEL%"
+if not "%ERR%"=="0" (
+    echo [FAILED] Unified module build/output failed. ExitCode=%ERR%
     pause
-    exit /b 1
+    exit /b %ERR%
 )
 
 echo.
-echo [4/4] Packaging dual client modules...
-powershell -NoProfile -ExecutionPolicy Bypass -File "%PS_SCRIPT%" -BannerlordRoot "%BANNERLORD_ROOT%" -SourceModuleDir "%PROJECT_ROOT%\AnimusForge" -DualClientPackages -ExcludeOnnx -ExcludeCustomPrompts %*
+echo [2/2] Creating one AnimusForge ZIP...
+powershell -NoProfile -ExecutionPolicy Bypass -File "%PACKAGE_SCRIPT%" -ModuleDir "%STAGE_MODULE%" -SourceModuleDir "%PROJECT_ROOT%\AnimusForge" -ExcludeOnnx -ExcludeCustomPrompts %*
 set "ERR=%ERRORLEVEL%"
-
 if not "%ERR%"=="0" (
     echo [FAILED] Packaging failed. ExitCode=%ERR%
     pause
@@ -100,48 +74,7 @@ if not "%ERR%"=="0" (
 )
 
 echo.
-echo [SUCCESS] Dual-version packages generated.
+echo [SUCCESS] One unified AnimusForge package was generated.
+echo The game Modules directory was not modified.
 pause
-exit /b 0
-
-:BuildVersion
-set "API_VERSION=%~1"
-set "TARGET_DLL=%~2"
-set "TARGET_DIR=%~dp2"
-
-if defined WORKSHOP_CONTENT_DIR (
-    dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=%API_VERSION% /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:WorkshopContentDir="%WORKSHOP_CONTENT_DIR%"
-) else (
-    dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=%API_VERSION% /p:BannerlordRoot="%BANNERLORD_ROOT%"
-)
-set "ERR=%ERRORLEVEL%"
-if not "%ERR%"=="0" (
-    echo.
-    echo [FAILED] Build failed for BannerlordApi=%API_VERSION%. ExitCode=%ERR%
-    pause
-    exit /b %ERR%
-)
-
-if not exist "%BUILD_OUTPUT%\AnimusForge.dll" (
-    echo [ERROR] Built DLL not found:
-    echo   "%BUILD_OUTPUT%\AnimusForge.dll"
-    pause
-    exit /b 1
-)
-
-if not exist "%TARGET_DIR%" mkdir "%TARGET_DIR%"
-copy /Y "%BUILD_OUTPUT%\AnimusForge.dll" "%TARGET_DLL%" >nul
-if errorlevel 1 (
-    echo [ERROR] Failed to copy build artifact:
-    echo   "%TARGET_DLL%"
-    pause
-    exit /b 1
-)
-
-if exist "%BUILD_OUTPUT%\AnimusForge.pdb" (
-    copy /Y "%BUILD_OUTPUT%\AnimusForge.pdb" "%TARGET_DIR%AnimusForge.pdb" >nul
-)
-
-echo [OK] Captured BannerlordApi=%API_VERSION% artifact:
-echo      "%TARGET_DLL%"
 exit /b 0
