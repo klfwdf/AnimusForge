@@ -7,21 +7,22 @@
 - 不要擅自修改项目的一键编译/覆盖流程；本项目已经有自己的构建和覆盖方式。
 - 不要回滚用户已有改动。
 
-## 双版本输出案例
+## 单模块双实现输出案例
 
 当任务涉及以下内容时，先阅读并套用 `docs/bannerlord_dual_module_output.md`：
 
 - 修改 `一键编译覆盖推送` 下的一键编译、覆盖、推送或打包脚本。
-- 修改 1.3.x / 1.4.5 双版本构建流程。
+- 修改 1.3.x / 1.4.x 双实现构建流程（当前源码差异基线为 1.4.5）。
 - 调整输出到 Bannerlord `Modules` 目录的模块文件夹。
 - 修改 `SubModule.xml` 的模块 `Id`、`Name` 或 DLL 加载方式。
 
 该案例的核心经验：
 
-- 本项目使用一套源码，同时输出 `AnimusForge_1_3_x` 和 `AnimusForge_1_4_5` 两个完整 mod 文件夹。
-- 两个输出模块的 `SubModule.xml` 必须使用不同 `Id`，但 DLL 文件名都保持 `AnimusForge.dll`。
-- 不要把 1.3.x 和 1.4.5 混放进同一个 `Modules/AnimusForge` 文件夹。
-- 不要覆盖游戏或 TaleWorlds 原版 DLL。
+- 本项目使用一套源码，分别编译 1.3.x / 1.4.x 实现，但只发布一个 `Modules/AnimusForge` 模块。
+- `SubModule.xml` 只加载 `AnimusForge.Bootstrap.dll`，Bootstrap 根据游戏版本只加载一个实现。
+- 两个实现保持程序集名 `AnimusForge`，分别存放在 `versions/1.3/AnimusForge.dll` 和 `versions/1.4/AnimusForge.dll`，严禁同时加载。
+- 模块 `Id`、`Name` 和输出文件夹统一为 `AnimusForge`，打包只生成一个 ZIP。
+- 不要恢复 `AnimusForge_1_3_x` / `AnimusForge_1_4_5` 双模块输出，也不要覆盖游戏或 TaleWorlds 原版 DLL。
 
 ## 百科按钮注入案例
 
@@ -138,9 +139,9 @@
 
 如果用户说“对齐三渠道”“信使/自由对话/场景喊话要一致”“按三渠道对齐规则检查”，默认就是指 `docs/free_conversation_scene_shout_alignment.md`。
 
-## Bannerlord 1.3 / 1.4.5 compatibility diff
+## Bannerlord 1.3 / 1.4.x compatibility diff
 
-When a task touches Bannerlord API usage, campaign behaviors, mission behaviors, encounter flow, party/roster logic, settlement models, Gauntlet UI, Harmony patches, dual-version build scripts, deployment, or packaging, first read and apply:
+When a task touches Bannerlord API usage, campaign behaviors, mission behaviors, encounter flow, party/roster logic, settlement models, Gauntlet UI, Harmony patches, dual-implementation build scripts, deployment, or packaging, first read and apply:
 
 - `docs/bannerlord_1_3_to_1_4_5_compatibility_diff.md`
 
@@ -157,4 +158,4 @@ Core rules:
 - Keep reusable GCCZ rules and profiles in `AnimusForge.SiegeAftermathIntervention`; AF host files should remain thin guarded adapters.
 - Mirror reusable GCCZ source/rule changes back to `G:\AFMOD\GCCZ` when they are not already represented there.
 - Do not edit `G:\AFMOD\YM0.8.7` directly; it is the requested AF 0.8.7 source staging path but was empty when this workspace was created.
-- Before covering Bannerlord modules, build both `BannerlordApi=1.3` and `BannerlordApi=1.4` or use the repository one-click dual-version scripts.
+- Before covering the unified Bannerlord module, build both `BannerlordApi=1.3` and `BannerlordApi=1.4` plus Bootstrap, or use the repository one-click single-module scripts.

@@ -1,0 +1,205 @@
+﻿{
+  "Id": "rule_斯特吉亚的文化",
+  "Keywords": [
+    "斯特吉亚的文化"
+  ],
+  "RagShortTexts": [
+    "斯特吉亚建筑以厚实原木和陡峭屋顶为主，饮食包含黑面包、腌鱼、炖肉与烈酒。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚人是一个坚韧而务实的北方民族，他们的文化围绕着冰雪、森林和海洋展开。他们的建筑以厚实的原木搭建，屋顶陡峭以防积雪压塌。他们穿着厚重的皮草和羊毛织品，饮食以黑面包、腌鱼、炖肉和烈酒为主。在信仰方面，他们敬畏自然之灵，也尊重从南方传来的各种神明。斯特吉亚人重视誓言和荣誉，但也以狡猾的谈判技巧闻名——他们能在酒桌上和你称兄道弟，同时在不经意间占走你的便宜。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "扛过一整个冬天的暴风雪。我们的衣服是毛皮和羊毛缝的，一件好皮袄能传三代人。我们吃的是黑面包、腌鱼、炖肉，喝的是烈酒——冬天不喝酒，血都会冻住。我们说话直，不绕弯子，答应了的事就一定会做到。但要是有人骗了我们，那最好祈祷别再碰见我们。我们尊重强者，鄙视懦夫，对朋友可以掏出最后一碗酒，对敌人只会掏出斧头。外人说我们粗鲁，我们不在乎。粗鲁的人在北方能活下来，精致的人在雪地里会冻死。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们斯特吉亚的规矩和帝国人不一样。帝国人讲究排场，穿着丝绸在铺着石板的宫殿里高谈阔论。我们穿着皮袄坐在原木大厅里，用大碗喝酒，用斧头说话。一个波耶的价值不在他有多能说，而在于他能不能带兵、能不能守住领地、能不能在议事会上让别人服他。不过这不代表我们没脑子——斯特吉亚的波耶要是不会算账、不会谈判，早就被周围那帮人吃干净了。我们看起来粗，骨子里精着呢。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们斯特吉亚人做生意讲信用，但也讲价钱。帝国商人说我们难缠，那是因为他们习惯了那边一套一套的规矩。我们这儿不一样——口头承诺就是契约，握手就是签字。你骗了人，下次全城的波耶都不会跟你做生意。我们喝格瓦斯和烈酒，过节的时候唱歌跳舞，冬天围着炉子讲故事。日子虽然苦，但能活下来的都是硬骨头。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚的战士从小摸斧头。冬天雪地里的训练最狠——站在齐膝深的雪里列盾墙，手冻僵了也不能放。我们的战吼不像帝国人那样整齐划一，我们是每个人吼自己的，吼的是自己家族的名字。上了战场，波耶和我们站在同一个盾墙里，他不会躲在后面，因为如果他怕了，我们就散了。我们打仗不是为了什么帝国荣耀，是为了身后的村子、女人和孩子。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚的女人不好惹。男人出去打仗的时候，女人守家、养孩子、管账，有时候还得拿起斧头保卫村子。我们这儿女人能继承财产，能做生意，能在长老会议上说话。帝国那些贵妇人裹着丝绸躲在宫女后面的时候，我们斯特吉亚的女人正在磨刀。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚人的文化在我们帝国人看来就是半开化的蛮族。他们住木头房子，穿兽皮，喝烈酒喝到烂醉，说话粗声大气，吃饭用手抓。但他们也有自己的长处——守信，勇敢，对朋友忠心耿耿。他们的建筑虽然简陋但实用，一场暴风雪过后，帝国的石头房子冷得像冰窖，斯特吉亚的原木屋里却暖烘烘的。他们的女人也比帝国的女人有地位，能管账能做主。也许这就是北方人能在那种鬼地方活下来的原因。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚人的文化和我们瓦兰迪亚人有几分相似。但他们更野，更粗，更不懂得什么叫骑士精神。他们不搞马上比武，不写抒情诗，他们的娱乐就是喝酒、摔跤和比赛扔斧头。不过他们有一点让我们佩服——不管多冷的冬天，他们都能扛过去。我们的骑士在北方雪地里打仗，冻得握不住长枪，斯特吉亚人却跟没事人一样。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚人抢了我们西部的土地，但他们的文化和我们的完全不同。他们砍树盖房子，我们住在森林里。他们信他们的大公和波耶，我们信我们的氏族和森林之灵。他们的战士穿重甲列盾墙，我们的战士在树林里射箭。他们讲究服从和纪律，我们讲究自由和灵活。虽然他们占了我们的地，但他们永远也成不了森林的主人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚人和我们库赛特人在东边的蒂亚尔打交道最多。他们和帝国人不一样——帝国人看不起草原民族，斯特吉亚人至少愿意和你坐下来喝酒谈生意。他们的冬天和我们的冬天一样冷，所以他们不像南方人那么娇气。他们的斧头比帝国的剑更狠，他们的酒比我们的马奶酒更烈。但他们的马不如我们的好，他们的骑兵永远追不上我们的骑射手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "斯特吉亚的文化是典型的北方森?海洋文明形态，其核心特征包括：以原木建筑为主的定居模式、以皮毛和羊毛为主的服饰体系、以黑面包和腌制品为主的饮食结构、以及以烈酒消费为代表的社交传统。在政治文化方面，斯特吉亚的维切会议传统——即自由民在长老主持下公开讨论公共事务的集会——在其社会底层仍有遗存，这使得斯特吉亚平民对波耶的权力形成了非正式的监督。在宗教层面，斯特吉亚人保留了浓厚的自然崇拜传统，同时包容从南方传入的各种信仰。审美方面，斯特吉亚人偏爱朴素、厚重、实用的风格，这在他们的建筑、服饰和武器装饰上都有体现。"
+    }
+  ],
+  "TextMappings": []
+}

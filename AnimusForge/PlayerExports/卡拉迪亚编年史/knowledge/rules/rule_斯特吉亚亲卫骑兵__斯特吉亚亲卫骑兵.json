@@ -1,0 +1,150 @@
+﻿{
+  "Id": "rule_斯特吉亚亲卫骑兵",
+  "Keywords": [
+    "斯特吉亚亲卫骑兵"
+  ],
+  "RagShortTexts": [
+    "斯特吉亚亲卫骑兵是瓦良格步兵晋升的顶点，是波耶最倚重的精锐力量"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "斯特吉亚亲卫骑兵是波耶麾下最精锐的战士，也是瓦良格之路的顶点。一个战士从普通的瓦良格起步，在战场上历经无数厮杀，最终才有资格骑上战马。他们骑着北方特有的矮脚马，手持长矛和盾牌，腰佩单手斧，依旧保留着掷飞斧的传统。他们是波耶最倚重的力量，也是大公能调动的最强精锐。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "亲卫骑兵是我们斯特吉亚战士的巅峰。能从瓦良格熬上来的，百里挑一。他们骑的不是南方那种高头大马，是我们北方自己的矮脚马——跑得不快，但耐力好，雪地和烂泥里稳得很。最重要的是，他们是从步兵升上来的，下了马照样能打，不像那些南方骑士，一落马就成了被盔甲压住的废物。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我手下的亲卫骑兵，每一个都是从我的瓦良格里一步步升上来的。从步兵到骑兵的跨越不只是身份上的，也是本事上的。我亲手把缰绳交给他们，因为他们在战场上证明了自己。他们的装备是我出钱置办的，战马是我马场里最好的。在战场上，他们就是我最硬的拳头。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": [
+          "sturgia"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:druzhinnik",
+          "char:druzhinnik_champion",
+          "char:varyag",
+          "char:varyag_veteran"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我从瓦良格做起，当了几年步兵，又在资深瓦良格的位置上磨了几年，才有资格骑上这匹马。上马那天，波耶亲手把缰绳交到我手里。我们骑马不是为了好看，是为了更快地冲到需要我们的地方。但骨子里我们还是步兵——下了马，架起盾，照样能打。这是我们和南方骑士最大的区别。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "亲卫骑兵大人从街上走过，我们都会让到路边。他们是从瓦良格一路打上来的，不是靠出身，是靠战功。听说他们下了马还能列盾墙，跟步兵一样硬。他们骑的马虽然不高大，但在北方的雪地里稳得很。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚的亲卫骑兵比他们的重步兵灵活，能在侧翼制造麻烦。不过他们的马矮小，冲锋没有那种碾碎一切的气势。但有一点值得警惕：这些骑兵是从瓦良格升上来的，下马之后照样能打。我们的重骑兵要是落了马，基本就完了；斯特吉亚的亲卫骑兵落了马，捡起斧头还是战士。在北方那种地形里，这种素质很要命。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚的亲卫骑兵骑的那种矮脚马，我们的方旗骑士看了就想笑。在平原上，一个冲锋就能把他们撞飞。但在北方的雪地和林地里，我们的竞技马跑不动，他们的矮脚马却灵活得很。而且他们下了马还能打，我们落马的骑士可没那个本事。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚的亲卫骑兵马太慢了，我们的骑射手能绕他们放箭放到天黑。但他们从步兵打上来的底子厚，不像帝国骑兵一落马就废了。而且他们手里还有飞斧，靠太近了冷不防挨一下可就不好玩了。"
+    }
+  ],
+  "TextMappings": []
+}

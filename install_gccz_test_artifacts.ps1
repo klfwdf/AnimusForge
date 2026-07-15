@@ -28,16 +28,53 @@ if ([string]::IsNullOrWhiteSpace($BackupRoot)) {
 $DeployTimestamp = Get-Date -Format 'yyyyMMdd-HHmmss'
 $DeployBackupRoot = Join-Path $BackupRoot $DeployTimestamp
 
-$Packages = @(
+$ModuleName = 'AnimusForge'
+$ArtifactRoot = Join-Path $ScriptRoot 'bin\Debug\single_module_artifacts'
+$Artifacts = @(
     [pscustomobject]@{
-        Label = '1.3.x'
-        ModuleName = 'AnimusForge_1_3_x'
-        ArtifactDir = Join-Path $ScriptRoot 'bin\Debug\dual_client_artifacts\1.3.x'
+        Label = 'Bootstrap DLL'
+        SourceRelativePath = 'bootstrap\AnimusForge.Bootstrap.dll'
+        TargetRelativePath = 'AnimusForge.Bootstrap.dll'
     },
     [pscustomobject]@{
-        Label = '1.4.5'
-        ModuleName = 'AnimusForge_1_4_5'
-        ArtifactDir = Join-Path $ScriptRoot 'bin\Debug\dual_client_artifacts\1.4.5'
+        Label = 'Bootstrap PDB'
+        SourceRelativePath = 'bootstrap\AnimusForge.Bootstrap.pdb'
+        TargetRelativePath = 'AnimusForge.Bootstrap.pdb'
+    },
+    [pscustomobject]@{
+        Label = 'Bootstrap build metadata'
+        SourceRelativePath = 'bootstrap\AnimusForge.Bootstrap.build.json'
+        TargetRelativePath = 'AnimusForge.Bootstrap.build.json'
+    },
+    [pscustomobject]@{
+        Label = '1.3 implementation DLL'
+        SourceRelativePath = 'versions\1.3\AnimusForge.dll'
+        TargetRelativePath = 'versions\1.3\AnimusForge.dll'
+    },
+    [pscustomobject]@{
+        Label = '1.3 implementation PDB'
+        SourceRelativePath = 'versions\1.3\AnimusForge.pdb'
+        TargetRelativePath = 'versions\1.3\AnimusForge.pdb'
+    },
+    [pscustomobject]@{
+        Label = '1.3 implementation build metadata'
+        SourceRelativePath = 'versions\1.3\AnimusForge.build.json'
+        TargetRelativePath = 'versions\1.3\AnimusForge.build.json'
+    },
+    [pscustomobject]@{
+        Label = '1.4 implementation DLL'
+        SourceRelativePath = 'versions\1.4\AnimusForge.dll'
+        TargetRelativePath = 'versions\1.4\AnimusForge.dll'
+    },
+    [pscustomobject]@{
+        Label = '1.4 implementation PDB'
+        SourceRelativePath = 'versions\1.4\AnimusForge.pdb'
+        TargetRelativePath = 'versions\1.4\AnimusForge.pdb'
+    },
+    [pscustomobject]@{
+        Label = '1.4 implementation build metadata'
+        SourceRelativePath = 'versions\1.4\AnimusForge.build.json'
+        TargetRelativePath = 'versions\1.4\AnimusForge.build.json'
     }
 )
 
@@ -264,29 +301,25 @@ Write-Host "Game root: $GameRoot"
 Write-Host "Backup root for this install: $DeployBackupRoot"
 Write-Host "WhatIf mode: $WhatIfPreference"
 
-foreach ($Package in $Packages) {
-    $ModuleRoot = Join-Path (Join-Path $GameRoot 'Modules') $Package.ModuleName
-    $TargetBin = Join-Path $ModuleRoot 'bin\Win64_Shipping_Client'
+$ModuleRoot = Join-Path (Join-Path $GameRoot 'Modules') $ModuleName
+$TargetBin = Join-Path $ModuleRoot 'bin\Win64_Shipping_Client'
+Assert-DirectoryExists -Path $ModuleRoot -Description "$ModuleName module root"
+Assert-DirectoryExists -Path $TargetBin -Description "$ModuleName Win64_Shipping_Client"
+Assert-DirectoryExists -Path $ArtifactRoot -Description 'single-module artifact root'
 
-    Assert-DirectoryExists -Path $ModuleRoot -Description "$($Package.ModuleName) module root"
-    Assert-DirectoryExists -Path $TargetBin -Description "$($Package.ModuleName) Win64_Shipping_Client"
+foreach ($Artifact in $Artifacts) {
+    $SourcePath = Join-Path $ArtifactRoot $Artifact.SourceRelativePath
+    $TargetPath = Join-Path $TargetBin $Artifact.TargetRelativePath
+    $TargetDirectory = Split-Path -Parent $TargetPath
+    $BackupDirectory = Join-Path $DeployBackupRoot (Split-Path -Parent $Artifact.TargetRelativePath)
 
-    $SourceDll = Join-Path $Package.ArtifactDir 'AnimusForge.dll'
-    $SourcePdb = Join-Path $Package.ArtifactDir 'AnimusForge.pdb'
-    $TargetDll = Join-Path $TargetBin 'AnimusForge.dll'
-    $TargetPdb = Join-Path $TargetBin 'AnimusForge.pdb'
-    $PackageBackupDir = Join-Path $DeployBackupRoot $Package.ModuleName
-
-    Assert-FileExists -Path $SourceDll -Description "$($Package.Label) artifact DLL"
-    Assert-FileExists -Path $SourcePdb -Description "$($Package.Label) artifact PDB"
-    Assert-TargetWritable -Path $TargetDll -Description "$($Package.ModuleName) target DLL"
-    Assert-TargetWritable -Path $TargetPdb -Description "$($Package.ModuleName) target PDB"
+    Assert-FileExists -Path $SourcePath -Description $Artifact.Label
+    New-DirectoryIfMissing -Path $TargetDirectory
+    Assert-TargetWritable -Path $TargetPath -Description $Artifact.Label
 
     Write-Host ''
-    Write-Host "Installing $($Package.ModuleName) from $($Package.ArtifactDir)"
-
-    Copy-ArtifactFile -SourcePath $SourceDll -DestinationPath $TargetDll -BackupDirectory $PackageBackupDir -Label "$($Package.ModuleName) DLL"
-    Copy-ArtifactFile -SourcePath $SourcePdb -DestinationPath $TargetPdb -BackupDirectory $PackageBackupDir -Label "$($Package.ModuleName) PDB"
+    Write-Host "Installing $($Artifact.Label)"
+    Copy-ArtifactFile -SourcePath $SourcePath -DestinationPath $TargetPath -BackupDirectory $BackupDirectory -Label $Artifact.Label
 }
 
 Write-Host ''

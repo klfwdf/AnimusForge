@@ -1,0 +1,66 @@
+﻿{
+  "Id": "rule_阿塞莱阶级与奴隶制",
+  "Keywords": [
+    "占有",
+    "占有权",
+    "奴隶制度",
+    "奴隶主",
+    "蓄奴制"
+  ],
+  "RagShortTexts": [
+    "阿塞莱只有两种人：主人和奴隶。苏丹是所有主人的主人。男人的尺寸代表地位，女人身上的黑桃纹身代表归属。后宫中既有正妻也有来自异族的黑桃母猪，这是沙漠男人的身份象征。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在阿塞莱，阶级的最底层就是奴隶——这不是什么秘密。我们的苏丹和埃米尔们拥有成百上千的奴隶，其中一半是在战场上俘虏的，一半是从沙漠南边的部落买来的。奴隶不分男女，但女奴的价格比男奴高出十倍——因为一个漂亮的女奴可以进后宫，可以为她的主人生育后代。后宫的规矩很简单：正妻是明媒正娶的，生下的孩子有继承权；女奴是被占有的，生下的孩子是主人的财产。一个女奴如果为主人生下了儿子，她有可能被提升为妾室，但永远不可能成为正妻。这就是阿塞莱的阶级，从出生的那一刻就写好了。A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "沙漠里跑商的都知道，在阿塞莱，有钱就有女人。一个苏丹可以养三十个后宫佳丽，一个穷骆驼夫可能一辈子只碰过他的骆驼。在贾瓦勒部族那边更直接——他们不叫后宫，叫母狗圈，女人身上烙着主人的标记。我从侯森·富勒格运货到萨纳拉，沿途见过不少被转卖的女奴。有些是战俘，有些是被父母卖掉的，有些是还不起债被抵账的。最可怜的是那些曾经是贵妇的女人——仗打输了，一夜之间从天上的星星变成了地上的泥。A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿塞莱的奴隶制度是整个卡拉迪亚历史最悠久、体系最完善的人身依附制度。它不仅包括战俘奴役，还包括债务奴隶、世袭奴隶和宫廷奴隶等多个层级。在性政治的维度上，阿塞莱的后宫制度是一套精密的社会管理工具——苏丹通过控制后宫来稳固统治：正妻来自强大的部落联盟以确保政治联姻，妾室和女奴来自被征服的地区以彰显权威。后宫中的女性有严格的等级划分，每个等级的权利和义务都有不成文的规定。值得注意的是，阿塞莱的奴隶并非完全没有上升通道——一个女奴如果为主人生育了优秀的后代，她本人及其家族都可能获得解放和提升。A"
+    }
+  ],
+  "TextMappings": []
+}

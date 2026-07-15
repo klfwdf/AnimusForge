@@ -95,6 +95,12 @@ public static class Patch_ConversationManager_SetupAndStartMapConversation
 			{
 				return true;
 			}
+			Hero explicitPrisoner = EncounterConversationTargetResolver.TryResolveExplicitPrisonerFromArguments(__args);
+			if (explicitPrisoner != null)
+			{
+				Logger.LogTrace("Conversation_Intercept", $"Explicit prisoner conversation detected; allow native SetupAndStartMapConversation: {explicitPrisoner.Name}");
+				return true;
+			}
 			PlayerEncounterState encounterState = PlayerEncounter.Current.EncounterState;
 			if (encounterState != PlayerEncounterState.Begin && encounterState != PlayerEncounterState.Wait)
 			{

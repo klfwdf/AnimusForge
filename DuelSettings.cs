@@ -431,6 +431,8 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	public const int DefaultGeneralApiMaxTokens = 12000;
 
+	private const int ConnectionTestMaxTokens = ApiMaxTokensMinimum;
+
 	public const int DefaultEventAndRebellionApiMaxTokens = 12000;
 
 	public const int LlmRequestTimeoutMilliseconds = 480000;
@@ -740,18 +742,6 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		}
 	}
 
-	public static bool IsEncyclopediaHeroPersonaAutoGenerationEnabled()
-	{
-		try
-		{
-			return GetSettings()?.EnableEncyclopediaHeroPersonaAutoGeneration ?? true;
-		}
-		catch
-		{
-			return true;
-		}
-	}
-
 	public int GetEventAndRebellionApiMaxTokens()
 	{
 		EventAndRebellionApiMaxTokens = ClampApiMaxTokens(EventAndRebellionApiMaxTokens, DefaultEventAndRebellionApiMaxTokens);
@@ -769,10 +759,6 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyBool("新成年人物自动生成个性与背景", Order = 2, RequireRestart = false, HintText = "开启后，当英雄子女成年时，自动使用前处理API为其生成个性与历史背景。已有个性或背景不会被覆盖。")]
 	[SettingPropertyGroup("4. 开发者选项")]
 	public bool EnableAdultHeroPersonaAutoGeneration { get; set; } = true;
-
-	[SettingPropertyBool("百科查看自动生成个性与背景", Order = 3, RequireRestart = false, HintText = "开启后，在 Hero/NPC 百科页查看没有完整个性或背景的人物时，会自动使用前处理API补齐。关闭后只显示已有资料，不会因打开百科而发起生成。")]
-	[SettingPropertyGroup("4. 开发者选项")]
-	public bool EnableEncyclopediaHeroPersonaAutoGeneration { get; set; } = true;
 
 	[SettingPropertyBool("【日志】写入 Mod_Logic.txt", Order = 4, RequireRestart = false, HintText = "总逻辑日志开关。关闭后不再写入 Mod_Logic.txt。")]
 	[SettingPropertyGroup("4. 开发者选项")]
@@ -825,13 +811,17 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("4. 开发者选项")]
 	public int DailyMaintenanceFrameBudgetMs { get; set; } = 3;
 
+	[SettingPropertyBool("【诊断】AI聊天卡死时生成线程 Dump", Order = 14, RequireRestart = false, HintText = "仅在 AnimusForge 自由对话的 AI 模式或场景喊话正在处理时，主线程连续 5 秒无心跳才生成紧凑线程 dump。普通对话、非 AI 游玩和原版保存期间自动停用。默认开启。")]
+	[SettingPropertyGroup("4. 开发者选项")]
+	public bool EnableFreezeDumpCapture { get; set; } = true;
+
 	public string GetLogCleanupIntervalSelection()
 	{
 		_logCleanupIntervalDropdown = NormalizeLogCleanupIntervalDropdown(_logCleanupIntervalDropdown);
 		return ReadLogCleanupIntervalSelection(_logCleanupIntervalDropdown);
 	}
 
-	[SettingPropertyInteger("知识返回上限", 1, 12, "0", Order = 0, RequireRestart = false, HintText = "控制每次对话最多向 AI 提供多少条相关知识。系统会自动推导召回和精排数量；若实际高相关知识不足，不会为了凑数硬塞。默认 4。")]
+	[SettingPropertyInteger("知识返回上限", 1, 12, "0", Order = 0, RequireRestart = false, HintText = "控制每次对话最多向 AI 提供多少条相关知识。系统按重要性顺序取最靠前的同等数量名词，每个名词独立占一个知识槽；若最高分知识已被前面的名词占用，则顺延到第一条未占用知识。只有上限大于名词数时，才额外补充各名词的后续结果。默认 4。")]
 	[SettingPropertyGroup("5. 知识检索（返回）")]
 	public int KnowledgeDirectTopN { get; set; } = 4;
 
@@ -839,7 +829,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("5. 知识检索（返回）")]
 	public int WorldEntityInjectMaxCount { get; set; } = 6;
 
-	[SettingPropertyInteger("清单候选显示上限", 1, 30, "0", Order = 2, RequireRestart = false, HintText = "控制每类物品、装备、部队、俘虏和固定资产清单向 AI 注入多少条；候选足够时会补满到该数量，候选不足则显示全部。默认 10；不影响人物、地点、家族、王国的实体注入上限。")]
+	[SettingPropertyInteger("清单候选显示上限", 1, 30, "0", Order = 2, RequireRestart = false, HintText = "控制每类物品、装备、部队、俘虏、固定资产和政策候选向 AI 注入多少条；候选足够时会补满到该数量，候选不足则显示全部。默认 10；不影响人物、地点、家族、王国的实体注入上限。")]
 	[SettingPropertyGroup("5. 知识检索（返回）")]
 	public int PromptListCandidateMaxCount { get; set; } = 10;
 
@@ -1103,7 +1093,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("8. 玩家知名度")]
 	public int PlayerNotorietySummaryIntervalDays { get; set; } = 3;
 
-	[SettingPropertyInteger("玩家履历字数", 80, 1000, "0", Order = 1, RequireRestart = false, HintText = "玩家公开重大履历总结目标字数，也是NPC已知玩家重大履历时主链路注入的履历字数上限。未总结原始素材不会直接注入主链路。默认 300。")]
+	[SettingPropertyInteger("玩家履历字数", 80, 1000, "0", Order = 1, RequireRestart = false, HintText = "玩家公开重大履历总结的目标字数和硬上限，也是NPC已知玩家重大履历时主链路注入的履历字数上限。AI 会整体重写旧摘要，而不是在末尾增量追加；未总结原始素材不会直接注入主链路。默认 300。")]
 	[SettingPropertyGroup("8. 玩家知名度")]
 	public int PlayerNotorietyMajorPromptChars { get; set; } = 300;
 
@@ -1492,7 +1482,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	[SettingPropertyBool("保留场景喊话动作/内心描写", Order = 7, RequireRestart = false, HintText = "关闭：仍使用详细动作/内心文案，但输出时过滤动作描写、心理活动。开启：保留动作描写和内心活动。")]
 	[SettingPropertyGroup("9. 提示词扩展")]
-	public bool UseDetailedSceneSpeechPrompt { get; set; } = false;
+	public bool UseDetailedSceneSpeechPrompt { get; set; } = true;
 
 	[SettingPropertyBool("保留星号动作描写", Order = 8, RequireRestart = false, HintText = "开启后，即使关闭“保留场景喊话动作/内心描写”，也不会清洗被 **...** 或 *...* 包住的动作内容。")]
 	[SettingPropertyGroup("9. 提示词扩展")]
@@ -1581,7 +1571,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("14. GCCZ攻城后处置")]
 	public int GcczNpcResponseLimit { get; set; } = SiegeNpcResponseLimitProfile.DefaultResponseLimit;
 
-	[SettingPropertyButton("导出GCCZ_Debug.log", -1, true, "", Content = "导出到桌面", Order = 2, RequireRestart = false, HintText = "将当前模块 Logs 文件夹里的 GCCZ_Debug.log 复制到桌面，文件名会带时间戳。原始日志通常在 Bannerlord/Modules/AnimusForge_对应版本/Logs/GCCZ_Debug.log。")]
+	[SettingPropertyButton("导出GCCZ_Debug.log", -1, true, "", Content = "导出到桌面", Order = 2, RequireRestart = false, HintText = "将当前模块 Logs 文件夹里的 GCCZ_Debug.log 复制到桌面，文件名会带时间戳。原始日志通常在 Bannerlord/Modules/AnimusForge/Logs/GCCZ_Debug.log。")]
 	[SettingPropertyGroup("14. GCCZ攻城后处置")]
 	public Action ExportGcczDebugLog { get; set; }
 
@@ -4327,6 +4317,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	private void StartFetchModelList(string channelName, string rawApiUrl, string apiKey, Action<List<string>> applyModels)
 	{
+		LlmRetryPrompt.CaptureMainThreadContext();
 		Task.Run(async delegate
 		{
 			try
@@ -4336,12 +4327,12 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 				string text3 = (apiKey ?? "").Trim();
 				if (string.IsNullOrWhiteSpace(text2))
 				{
-					InformationManager.DisplayMessage(new InformationMessage("[系统] " + text + "：API 地址未填写，无法拉取模型列表。", Color.FromUint(4294901760u)));
+					ShowLlmFailurePopup(text + "模型列表拉取失败", "API 地址未填写，无法拉取模型列表。");
 					return;
 				}
 				if (string.IsNullOrWhiteSpace(text3))
 				{
-					InformationManager.DisplayMessage(new InformationMessage("[系统] " + text + "：API Key 未填写，无法拉取模型列表。", Color.FromUint(4294901760u)));
+					ShowLlmFailurePopup(text + "模型列表拉取失败", "API Key 未填写，无法拉取模型列表。");
 					return;
 				}
 				InformationManager.DisplayMessage(new InformationMessage("[系统] " + text + "：正在拉取模型列表...", Color.FromUint(4294967040u)));
@@ -4357,7 +4348,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 							text4 = text4 + "；" + text5;
 						}
 					}
-					InformationManager.DisplayMessage(new InformationMessage("[系统] " + text + "：拉取模型列表失败 - " + text4, Color.FromUint(4294901760u)));
+					ShowLlmFailurePopup(text + "模型列表拉取失败", text4, "", modelListFetchResult.ResponseBody);
 					Logger.Log("DuelSettings", "[" + text + "] 拉取模型列表失败: " + text4 + " | url=" + (modelListFetchResult.RequestUrl ?? ""));
 					return;
 				}
@@ -4406,7 +4397,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 			}
 			catch (Exception ex)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("[系统] 拉取模型列表异常: " + ex.Message, Color.FromUint(4294901760u)));
+				ShowLlmFailurePopup("模型列表拉取异常", ex.Message);
 				Logger.Log("DuelSettings", "[拉取模型列表异常] " + ex);
 			}
 		});
@@ -4469,6 +4460,11 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 			return "404 NotFound 通常表示接口路径或模型名不存在，请检查 API 地址、自动补全后的聊天路径以及模型名称是否正确。";
 		}
 		return "404 NotFound 通常表示接口路径或模型名不存在，请检查 API 地址尾缀和模型名称。";
+	}
+
+	private static void ShowLlmFailurePopup(string title, string reason, string modelReply = null, string rawResponse = null)
+	{
+		LlmRetryPrompt.ShowFailurePopup(title, LlmRetryPrompt.BuildFailureDetail(reason, modelReply, rawResponse));
 	}
 
 	public DuelSettings()
@@ -4580,6 +4576,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		};
 		TestConnection = delegate
 		{
+			LlmRetryPrompt.CaptureMainThreadContext();
 			Task.Run(async delegate
 			{
 				try
@@ -4588,11 +4585,11 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 					string effectiveModelName = GetEffectiveMainModelName();
 					if (string.IsNullOrWhiteSpace(ApiKey))
 					{
-						InformationManager.DisplayMessage(new InformationMessage("[系统] 错误：API 密钥未填写！", Color.FromUint(4294901760u)));
+						ShowLlmFailurePopup("主API连接测试失败", "API 密钥未填写。");
 					}
 					else if (string.IsNullOrWhiteSpace(effectiveModelName))
 					{
-						InformationManager.DisplayMessage(new InformationMessage("[系统] 错误：模型名称未填写！若下拉选择了“*手动填写*”，请在上方文本框填写模型名。", Color.FromUint(4294901760u)));
+						ShowLlmFailurePopup("主API连接测试失败", "模型名称未填写。若下拉选择了“*手动填写*”，请在上方文本框填写模型名。");
 					}
 					else
 					{
@@ -4633,18 +4630,14 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 							}
 							else
 							{
-								InformationManager.DisplayMessage(new InformationMessage("链接正常！可正常游玩！", Color.FromUint(4278255360u)));
-								InformationManager.DisplayMessage(new InformationMessage("[系统] 警告：连接成功但回复为空。", Color.FromUint(4294936576u)));
+								ShowLlmFailurePopup("主API回复解析失败", "连接成功，但未解析出模型回复。", "", responseString);
 							}
 						}
 						else
 						{
-							InformationManager.DisplayMessage(new InformationMessage($"[系统] 连接失败！状态码: {response.StatusCode}", Color.FromUint(4294901760u)));
 							string text = BuildApiErrorHint(effectiveApiUrl, effectiveModelName, response.StatusCode, responseString);
-							if (!string.IsNullOrWhiteSpace(text))
-							{
-								InformationManager.DisplayMessage(new InformationMessage("[系统] 排查建议：" + text, Color.FromUint(4294936576u)));
-							}
+							string reason = "连接失败，状态码：" + response.StatusCode + (string.IsNullOrWhiteSpace(text) ? "" : ("\n排查建议：" + text));
+							ShowLlmFailurePopup("主API连接测试失败", reason, "", responseString);
 							Logger.Log("DuelSettings", $"测试失败! 状态码: {response.StatusCode} | 错误信息: {responseString}");
 						}
 					}
@@ -4652,13 +4645,14 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 				catch (Exception ex)
 				{
 					Exception ex2 = ex;
-					InformationManager.DisplayMessage(new InformationMessage("[系统] 异常: " + ex2.Message, Color.FromUint(4294901760u)));
+					ShowLlmFailurePopup("主API连接测试异常", ex2.Message);
 					Logger.Log("DuelSettings", "测试崩溃: " + ex2.Message);
 				}
 			});
 		};
 		TestAuxiliaryConnection = delegate
 		{
+			LlmRetryPrompt.CaptureMainThreadContext();
 			Task.Run(async delegate
 			{
 				try
@@ -4667,12 +4661,12 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 					string effectiveModelName = GetEffectiveAuxiliaryModelName();
 					if (string.IsNullOrWhiteSpace(AuxiliaryApiKey))
 					{
-						InformationManager.DisplayMessage(new InformationMessage("[系统] 错误：辅助API 密钥未填写！", Color.FromUint(4294901760u)));
+						ShowLlmFailurePopup("前处理API连接测试失败", "辅助API 密钥未填写。");
 						return;
 					}
 					if (string.IsNullOrWhiteSpace(effectiveModelName))
 					{
-						InformationManager.DisplayMessage(new InformationMessage("[系统] 错误：辅助模型名称未填写！若下拉选择了“*手动填写*”，请在上方文本框填写模型名。", Color.FromUint(4294901760u)));
+						ShowLlmFailurePopup("前处理API连接测试失败", "辅助模型名称未填写。若下拉选择了“*手动填写*”，请在上方文本框填写模型名。");
 						return;
 					}
 					InformationManager.DisplayMessage(new InformationMessage("[系统] 正在测试辅助API连接...", Color.FromUint(4294967040u)));
@@ -4689,7 +4683,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 							new
 							{
 								role = "user",
-								content = "Output exactly this JSON object: {\"rule_codes\":[\"TEST\"],\"mentioned_entities\":{\"heroes\":[],\"settlements\":[],\"clans\":[],\"kingdoms\":[],\"items\":[],\"troops\":[],\"terms\":[]}}"
+								content = AIConfigHandler.BuildAuxiliaryConnectionTestPromptForExternal()
 							}
 						}
 					};
@@ -4709,7 +4703,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 						if (validEnvelope)
 						{
 							JArray testCodes = testEnvelope?["rule_codes"] as JArray;
-							validEnvelope = testCodes != null && testCodes.Count == 1 && string.Equals(testCodes[0]?.ToString(), "TEST", StringComparison.Ordinal);
+								validEnvelope = testCodes != null && testCodes.Count == 1 && string.Equals(testCodes[0]?.ToString(), AIConfigHandler.PreprocessConnectionTestExpectedRuleCode, StringComparison.Ordinal);
 							if (!validEnvelope)
 							{
 								formatError = "unexpected_test_rule_codes";
@@ -4717,7 +4711,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 						}
 						if (!validEnvelope)
 						{
-							InformationManager.DisplayMessage(new InformationMessage("[系统] 辅助API可连接" + text + "，但前处理JSON格式不合格：" + formatError, Color.FromUint(4294936576u)));
+							ShowLlmFailurePopup("前处理API回复解析失败", "辅助API可连接" + text + "，但前处理JSON格式不合格：" + formatError, reply, responseString);
 							Logger.Log("DuelSettings", "辅助API连接成功但前处理格式错误: " + formatError + " | reply=" + (reply ?? ""));
 						}
 						else
@@ -4727,24 +4721,22 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 					}
 					else
 					{
-						InformationManager.DisplayMessage(new InformationMessage($"[系统] 辅助API连接失败！状态码: {response.StatusCode}", Color.FromUint(4294901760u)));
 						string hint = BuildApiErrorHint(effectiveApiUrl, effectiveModelName, response.StatusCode, responseString);
-						if (!string.IsNullOrWhiteSpace(hint))
-						{
-							InformationManager.DisplayMessage(new InformationMessage("[系统] 排查建议：" + hint, Color.FromUint(4294936576u)));
-						}
+						string reason = "前处理API连接失败，状态码：" + response.StatusCode + (string.IsNullOrWhiteSpace(hint) ? "" : ("\n排查建议：" + hint));
+						ShowLlmFailurePopup("前处理API连接测试失败", reason, "", responseString);
 						Logger.Log("DuelSettings", $"辅助API测试失败! 状态码: {response.StatusCode} | 错误信息: {responseString}");
 					}
 				}
 				catch (Exception ex)
 				{
-					InformationManager.DisplayMessage(new InformationMessage("[系统] 辅助API异常: " + ex.Message, Color.FromUint(4294901760u)));
+					ShowLlmFailurePopup("前处理API连接测试异常", ex.Message);
 					Logger.Log("DuelSettings", "辅助API测试崩溃: " + ex.Message);
 				}
 			});
 		};
 		TestActionPostprocessConnection = delegate
 		{
+			LlmRetryPrompt.CaptureMainThreadContext();
 			Task.Run(async delegate
 			{
 				try
@@ -4753,12 +4745,12 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 					string effectiveModelName = GetEffectiveActionPostprocessModelName();
 					if (string.IsNullOrWhiteSpace(ActionPostprocessApiKey))
 					{
-						InformationManager.DisplayMessage(new InformationMessage("[系统] 错误：后处理API 密钥未填写！", Color.FromUint(4294901760u)));
+						ShowLlmFailurePopup("后处理API连接测试失败", "后处理API 密钥未填写。");
 						return;
 					}
 					if (string.IsNullOrWhiteSpace(effectiveModelName))
 					{
-						InformationManager.DisplayMessage(new InformationMessage("[系统] 错误：后处理模型名称未填写！若下拉选择了“*手动填写*”，请在上方文本框填写模型名。", Color.FromUint(4294901760u)));
+						ShowLlmFailurePopup("后处理API连接测试失败", "后处理模型名称未填写。若下拉选择了“*手动填写*”，请在上方文本框填写模型名。");
 						return;
 					}
 					InformationManager.DisplayMessage(new InformationMessage("[系统] 正在测试后处理API连接...", Color.FromUint(4294967040u)));
@@ -4784,7 +4776,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 							}
 						},
 						["stream"] = false,
-						["max_tokens"] = 32,
+						["max_tokens"] = ConnectionTestMaxTokens,
 						["temperature"] = GetActionPostprocessApiTemperature()
 					};
 					ApplyThinkingControls(requestPayload, effectiveApiUrl, effectiveModelName, ActionPostprocessApiThinkingEnabled, GetActionPostprocessApiReasoningEffort(), out var _);
@@ -4798,28 +4790,69 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 					if (response.IsSuccessStatusCode)
 					{
 						string reply = TryExtractAssistantReplyText(responseString);
-						InformationManager.DisplayMessage(new InformationMessage("后处理API 连接正常：" + (string.IsNullOrWhiteSpace(reply) ? "（返回为空）" : reply.Trim()), Color.FromUint(4278255360u)));
+						bool recoveredFromReasoningTokenLimit = false;
+						string emptyReplyReason = "连接成功，但未解析出模型回复。";
+						if (string.IsNullOrWhiteSpace(reply) && LlmApiCompat.IsReasoningOnlyTokenLimitResponse(responseString, out int completionTokens, out int reasoningTokens))
+						{
+							string firstResponseString = responseString;
+							emptyReplyReason = "连接成功，但模型把测试输出额度全部用于思考，尚未生成最终 content。completion_tokens=" + completionTokens + "，reasoning_tokens=" + reasoningTokens + "。";
+							Logger.Log("DuelSettings", "后处理API测试首次回复仅含思考且达到token上限，关闭思考后重试: completion_tokens=" + completionTokens + " reasoning_tokens=" + reasoningTokens);
+							JObject retryPayload = (JObject)requestPayload.DeepClone();
+							ApplyThinkingControls(retryPayload, effectiveApiUrl, effectiveModelName, false, ReasoningEffortLow, out var retryControlMode);
+							using HttpRequestMessage retryRequest = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
+							LlmApiCompat.ApplyAuthenticationHeaders(retryRequest, effectiveApiUrl, ActionPostprocessApiKey);
+							retryRequest.Content = new StringContent(LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, retryPayload), Encoding.UTF8, "application/json");
+							using HttpResponseMessage retryResponse = await GlobalClient.SendAsync(retryRequest);
+							string retryResponseString = await retryResponse.Content.ReadAsStringAsync();
+							if (retryResponse.IsSuccessStatusCode)
+							{
+								string retryReply = TryExtractAssistantReplyText(retryResponseString);
+								if (!string.IsNullOrWhiteSpace(retryReply))
+								{
+									reply = retryReply;
+									recoveredFromReasoningTokenLimit = true;
+									Logger.Log("DuelSettings", "后处理API测试关闭思考重试成功: control_mode=" + retryControlMode + " reply=" + retryReply);
+								}
+								else
+								{
+									emptyReplyReason += " 关闭思考重试后 content 仍为空。";
+									responseString = "【首次响应】\n" + firstResponseString + "\n\n【关闭思考重试响应】\n" + retryResponseString;
+								}
+							}
+							else
+							{
+								emptyReplyReason += " 关闭思考重试失败，状态码：" + retryResponse.StatusCode + "。";
+								responseString = "【首次响应】\n" + firstResponseString + "\n\n【关闭思考重试响应】\n" + retryResponseString;
+							}
+						}
+						if (string.IsNullOrWhiteSpace(reply))
+						{
+							ShowLlmFailurePopup("后处理API回复解析失败", emptyReplyReason, "", responseString);
+						}
+						else
+						{
+							string recoveryHint = recoveredFromReasoningTokenLimit ? "（首次思考耗尽测试额度，已关闭思考重试；实际使用时请保留足够的最大输出Tokens）" : "";
+							InformationManager.DisplayMessage(new InformationMessage("后处理API 连接正常" + recoveryHint + "：" + reply.Trim(), Color.FromUint(4278255360u)));
+						}
 					}
 					else
 					{
-						InformationManager.DisplayMessage(new InformationMessage($"[系统] 后处理API连接失败！状态码: {response.StatusCode}", Color.FromUint(4294901760u)));
 						string hint = BuildApiErrorHint(effectiveApiUrl, effectiveModelName, response.StatusCode, responseString);
-						if (!string.IsNullOrWhiteSpace(hint))
-						{
-							InformationManager.DisplayMessage(new InformationMessage("[系统] 排查建议：" + hint, Color.FromUint(4294936576u)));
-						}
+						string reason = "后处理API连接失败，状态码：" + response.StatusCode + (string.IsNullOrWhiteSpace(hint) ? "" : ("\n排查建议：" + hint));
+						ShowLlmFailurePopup("后处理API连接测试失败", reason, "", responseString);
 						Logger.Log("DuelSettings", $"后处理API测试失败! 状态码: {response.StatusCode} | 错误信息: {responseString}");
 					}
 				}
 				catch (Exception ex)
 				{
-					InformationManager.DisplayMessage(new InformationMessage("[系统] 后处理API异常: " + ex.Message, Color.FromUint(4294901760u)));
+					ShowLlmFailurePopup("后处理API连接测试异常", ex.Message);
 					Logger.Log("DuelSettings", "后处理API测试崩溃: " + ex.Message);
 				}
 			});
 		};
 		TestEventAndRebellionConnection = delegate
 		{
+			LlmRetryPrompt.CaptureMainThreadContext();
 			Task.Run(async delegate
 			{
 				try
@@ -4828,17 +4861,17 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 					string effectiveModelName = GetEffectiveEventAndRebellionModelName();
 					if (string.IsNullOrWhiteSpace(EventAndRebellionApiUrl))
 					{
-						InformationManager.DisplayMessage(new InformationMessage("[系统] 错误：事件/叛乱API 地址未填写！", Color.FromUint(4294901760u)));
+						ShowLlmFailurePopup("事件/叛乱API连接测试失败", "事件/叛乱API 地址未填写。");
 						return;
 					}
 					if (string.IsNullOrWhiteSpace(EventAndRebellionApiKey))
 					{
-						InformationManager.DisplayMessage(new InformationMessage("[系统] 错误：事件/叛乱API 密钥未填写！", Color.FromUint(4294901760u)));
+						ShowLlmFailurePopup("事件/叛乱API连接测试失败", "事件/叛乱API 密钥未填写。");
 						return;
 					}
 					if (string.IsNullOrWhiteSpace(effectiveModelName))
 					{
-						InformationManager.DisplayMessage(new InformationMessage("[系统] 错误：事件/叛乱模型名称未填写！若下拉选择了“*手动填写*”，请在上方文本框填写模型名。", Color.FromUint(4294901760u)));
+						ShowLlmFailurePopup("事件/叛乱API连接测试失败", "事件/叛乱模型名称未填写。若下拉选择了“*手动填写*”，请在上方文本框填写模型名。");
 						return;
 					}
 					InformationManager.DisplayMessage(new InformationMessage("[系统] 正在测试事件/叛乱专用API连接...", Color.FromUint(4294967040u)));
@@ -4874,22 +4907,26 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 					if (response.IsSuccessStatusCode)
 					{
 						string reply = TryExtractAssistantReplyText(responseString);
-						InformationManager.DisplayMessage(new InformationMessage("事件/叛乱API 连接正常：" + (string.IsNullOrWhiteSpace(reply) ? "（返回为空）" : reply.Trim()), Color.FromUint(4278255360u)));
+						if (string.IsNullOrWhiteSpace(reply))
+						{
+							ShowLlmFailurePopup("事件/叛乱API回复解析失败", "连接成功，但未解析出模型回复。", "", responseString);
+						}
+						else
+						{
+							InformationManager.DisplayMessage(new InformationMessage("事件/叛乱API 连接正常：" + reply.Trim(), Color.FromUint(4278255360u)));
+						}
 					}
 					else
 					{
-						InformationManager.DisplayMessage(new InformationMessage($"[系统] 事件/叛乱API连接失败！状态码: {response.StatusCode}", Color.FromUint(4294901760u)));
 						string hint = BuildApiErrorHint(effectiveApiUrl, effectiveModelName, response.StatusCode, responseString);
-						if (!string.IsNullOrWhiteSpace(hint))
-						{
-							InformationManager.DisplayMessage(new InformationMessage("[系统] 排查建议：" + hint, Color.FromUint(4294936576u)));
-						}
+						string reason = "事件/叛乱API连接失败，状态码：" + response.StatusCode + (string.IsNullOrWhiteSpace(hint) ? "" : ("\n排查建议：" + hint));
+						ShowLlmFailurePopup("事件/叛乱API连接测试失败", reason, "", responseString);
 						Logger.Log("DuelSettings", $"事件/叛乱API测试失败! 状态码: {response.StatusCode} | 错误信息: {responseString}");
 					}
 				}
 				catch (Exception ex)
 				{
-					InformationManager.DisplayMessage(new InformationMessage("[系统] 事件/叛乱API异常: " + ex.Message, Color.FromUint(4294901760u)));
+					ShowLlmFailurePopup("事件/叛乱API连接测试异常", ex.Message);
 					Logger.Log("DuelSettings", "事件/叛乱API测试崩溃: " + ex.Message);
 				}
 			});

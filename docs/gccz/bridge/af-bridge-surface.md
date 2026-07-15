@@ -265,9 +265,9 @@ Follow-up isolation: native flee/order bridge, commandable-agent probing, contro
 
 Follow-up isolation: GCCZ aftermath menu IDs and contextual-summary source marker now use `SiegeAftermathMenuProfile`; AF keeps Bannerlord menu registration, switching, and live menu side effects while GCCZ core owns the menu identifier strings, source marker, and matching helpers.
 
-Handoff/tooling note: fused `G:\AFMOD\new-\一键编译覆盖推送` scripts now default to Bannerlord 1.3.x for build/overwrite/package/push workflows and require explicit `--dual` for 1.4.5 output; this keeps the GCCZ+AF test path aligned with the current 1.3.x game install and prevents optional 1.4.5 dependency gaps from blocking 1.3.x handoff work.
+Current tooling note: `一键编译覆盖推送` always builds both Bannerlord implementations plus Bootstrap and assembles one unified `AnimusForge` client module. Build/package entries use a project-local stage; only explicit overwrite entries replace `Modules\AnimusForge`. The old 1.3-default/`--dual` workflow is retired.
 
-Handoff/tooling note: fused deploy now restores module-local runtime dependencies (`0Harmony.dll`, `Microsoft.ML.OnnxRuntime.dll`, `System.Memory.dll`, `System.Buffers.dll`, and `System.Runtime.CompilerServices.Unsafe.dll`) from the local build output after module mirroring, and build scripts pass `AnimusForgeBinDir` to the local output folder so Steam target cleanup cannot break the next 1.3.x build.
+Handoff/tooling note: unified deployment restores only allowlisted private runtime dependencies (`Microsoft.ML.OnnxRuntime.dll`, native ONNX runtime DLLs, `System.Memory.dll`, `System.Buffers.dll`, and `System.Runtime.CompilerServices.Unsafe.dll`) from the source module bin after module assembly. Harmony and game-owned DLLs are never bundled.
 
 Handoff/tooling note: AF v0.8.3 zip fusion completed from `F:\YLQxz\Mount-Blade-Bannerlord-AnimusForge-mod-main (2).zip` into fused `G:\AFMOD\new-` and deployed to the Bannerlord 1.3.x module. The 0.8.3 upstream added `WorldMapPartyCommandBehavior`; the fused tree now carries that file and registers it in `SubModule.cs`, while GCCZ remains isolated under `AnimusForge.SiegeAftermathIntervention` with AF-side hooks limited to guarded prompt injection, shared relief capture, and postprocess tag dispatch. Build/deploy verification used 1.3.x Debug output with DLL SHA256 `3F2D7A33919341A307718D2AE2BD1104462A97D8A6302325F7A5288655671751`.
 
@@ -326,11 +326,11 @@ Follow-up outcome tuning: finalized GCCZ destructive settlement effects now use 
 - `MyBehavior.RecordAnimusForgeSiegeInterventionForExternal(...)` is now present in the fused tree. It records the finalized GCCZ aftermath into AF's NPC action memory for relevant lords/owners while GCCZ still owns the settlement outcome logic and summary facts.
 - These are AF adapter/host compile fixes only; they do not move GCCZ outcome rules into `MyBehavior` or `SceneTauntBehavior`.
 
-## 2026-06-14 dual deploy runtime dependency restore
+## 2026-06-14 runtime dependency restore (updated for unified module)
 
-- `G:\AFMOD\new-086\一键编译覆盖推送\deploy_module.ps1` now restores module-local runtime dependencies after the `/MIR` module copy and DLL/PDB update.
-- The deployed `AnimusForge_1_3_x` and `AnimusForge_1_4_5` bins receive `0Harmony.dll`, `Microsoft.ML.OnnxRuntime.dll`, `System.Memory.dll`, `System.Buffers.dll`, and `System.Runtime.CompilerServices.Unsafe.dll` from the current build output or source module bin.
-- This prevents the dual overwrite script from deleting runtime dependencies while mirroring the source module into Bannerlord `Modules`.
+- `一键编译覆盖推送\deploy_module.ps1` restores only allowlisted module-local runtime dependencies after mirroring the source module and installing Bootstrap plus both implementation DLLs.
+- The single deployed `AnimusForge` bin receives `Microsoft.ML.OnnxRuntime.dll`, native ONNX runtime DLLs, `System.Memory.dll`, `System.Buffers.dll`, and `System.Runtime.CompilerServices.Unsafe.dll` from the source module bin. It does not receive `0Harmony.dll` or game-owned DLLs.
+- This prevents the single-module overwrite script from deleting runtime dependencies while mirroring the source module into Bannerlord `Modules`.
 - The same deploy script now uses a local SHA-256 helper with a `.NET` fallback when the host PowerShell does not expose `Get-FileHash`, so post-copy verification works on the older shell launched by the batch file.
 
 ## 2026-06-14 dual native siege aftermath entry menus

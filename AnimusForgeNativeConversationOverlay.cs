@@ -979,7 +979,7 @@ public sealed class AnimusForgeNativeConversationOverlay
 				Logger.Log("NativeConversationOverlay", "[ERROR] NPC initiated opening failed: " + ex);
 				try
 				{
-					InformationManager.DisplayMessage(new InformationMessage("AnimusForge NPC主动开口失败：" + ex.Message, new Color(1f, 0.35f, 0.25f)));
+					LlmRetryPrompt.ShowFailurePopup("AnimusForge NPC主动开口失败", ex.Message);
 				}
 				catch
 				{
@@ -1109,7 +1109,7 @@ public sealed class AnimusForgeNativeConversationOverlay
 				Logger.Log("NativeConversationOverlay", "[ERROR] Submit failed: " + ex);
 				try
 				{
-					InformationManager.DisplayMessage(new InformationMessage("AnimusForge 自由对话提交失败：" + ex.Message, new Color(1f, 0.35f, 0.25f)));
+					LlmRetryPrompt.ShowFailurePopup("AnimusForge 自由对话提交失败", ex.Message);
 				}
 				catch
 				{

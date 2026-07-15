@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.Election;
 using TaleWorlds.CampaignSystem.Settlements;
 
@@ -10,65 +8,7 @@ namespace AnimusForge
 {
 	public partial class VoteDealBehavior
 	{
-		private static readonly Regex ProposeTagRx = new Regex(
-			@"\[ACTION:PROPOSE:[^\]\r\n]*\]",
-			RegexOptions.IgnoreCase | RegexOptions.Compiled);
-
-		private static readonly string[] ProposeTypes =
-			{ "WAR", "PEACE", "POLICY", "EXPEL", "ALLIANCE", "TRADE", "FIEF" };
-
-		public static void ProcessProposeDispatch(Hero npc, ref string text)
-		{
-			if (npc == null || string.IsNullOrEmpty(text) || !text.Contains("PROPOSE"))
-				return;
-
-			var b = Instance ?? Campaign.Current?.GetCampaignBehavior<VoteDealBehavior>();
-			if (b == null) return;
-
-			int mc = 0;
-			text = ProposeTagRx.Replace(text, m =>
-			{
-				var t = m.Value;
-				var r = ProcessProposeTag(npc, t);
-				mc++;
-				return r;
-			});
-
-			if (mc > 0)
-			{
-				text = ProposeTagRx.Replace(text, "", 1);
-				text = text.Trim();
-			}
-		}
-
-		private static string ProcessProposeTag(Hero npc, string tag)
-		{
-			try
-			{
-				var p = (tag ?? "").Trim();
-				if (p.StartsWith("[ACTION:PROPOSE:", StringComparison.OrdinalIgnoreCase))
-					p = p.Substring("[ACTION:PROPOSE:".Length).TrimEnd(']');
-				if (string.IsNullOrWhiteSpace(p)) return "";
-
-				var ps = p.Split(new[] { ':' }, 3);
-				if (ps.Length < 2) return "";
-
-				var tp = (ps[0] ?? "").Trim().ToUpperInvariant();
-				var tn = (ps[1] ?? "").Trim();
-				var dr = ps.Length >= 3 ? (ps[2] ?? "").Trim().ToUpperInvariant() : "";
-
-				if (!((IList<string>)ProposeTypes).Contains(tp)) return "";
-
-				return ExecutePropose(npc, tp, tn, dr);
-			}
-			catch (Exception ex)
-			{
-				Logger.Log("ProposeAgenda", "Tag: " + ex.Message);
-				return "";
-			}
-		}
-
-		private static string ExecutePropose(Hero npc, string type, string tgt, string dir)
+		private static string ExecutePropose(Hero npc, string type, string tgt, string dir, string supportWeight)
 		{
 			try
 			{
@@ -128,6 +68,8 @@ namespace AnimusForge
 						var tg = FindFactionByName(tgt);
 						if (tg == null || !tg.IsKingdomFaction) return "";
 						if (!FactionManager.IsNeutralWithFaction(kd, tg)) return "";
+						IAllianceCampaignBehavior allianceBehavior = Campaign.Current.GetCampaignBehavior<IAllianceCampaignBehavior>();
+						if (allianceBehavior?.IsAllyWithKingdom(kd, (Kingdom)tg) == true) return "";
 						d = new StartAllianceDecision(cl, (Kingdom)tg);
 						if (cl.Influence < d.GetInfluenceCost(cl)) return "";
 						break;
@@ -137,6 +79,8 @@ namespace AnimusForge
 						var tg = FindFactionByName(tgt);
 						if (tg == null || !tg.IsKingdomFaction) return "";
 						if (FactionManager.IsAtWarAgainstFaction(kd, tg)) return "";
+						ITradeAgreementsCampaignBehavior tradeBehavior = Campaign.Current.GetCampaignBehavior<ITradeAgreementsCampaignBehavior>();
+						if (BannerlordApiCompat.HasTradeAgreement(tradeBehavior, kd, (Kingdom)tg)) return "";
 						d = new TradeAgreementDecision(cl, (Kingdom)tg);
 						if (cl.Influence < d.GetInfluenceCost(cl)) return "";
 						break;
@@ -152,16 +96,48 @@ namespace AnimusForge
 					}
 				}
 
-				if (d == null) return "";
-			string newTitle = d.GetGeneralTitle()?.ToString();
-			bool isDuplicate = false;
-			foreach (KingdomDecision existing in kd.UnresolvedDecisions)
-			{
-				if (existing != null && existing.GetType() == d.GetType() && existing.GetGeneralTitle()?.ToString() == newTitle)
-				{ isDuplicate = true; break; }
-			}
-			if (isDuplicate) { Logger.Log("ProposeAgenda", "Duplicate: " + type + " " + tgt); return ""; }
-			kd.AddDecision(d, false);
+				if (d == null)
+				{
+					Logger.Log("ProposeAgenda", "Rejected: decision_build_failed type=" + type + " target=" + tgt + " npc=" + (npc?.StringId ?? ""));
+					return "";
+				}
+				// Do not call ShouldBeCancelled() here. For a non-player proposer it also
+				// re-evaluates whether the NPC clan would support its own proposal using
+				// vanilla political weights, which would override the explicit agreement
+				// reached in dialogue. Player proposal rights and player influence are not
+				// relevant: this decision is proposed by the NPC clan.
+				if (!d.IsAllowed())
+				{
+					Logger.Log("ProposeAgenda", "Rejected: decision_not_allowed type=" + type + " target=" + tgt + " npc=" + (npc?.StringId ?? ""));
+					AnimusForgeQuickInfo.ShowForDuration("议程提交失败：当前王国规则不允许该议程", 6000, npc?.CharacterObject);
+					return "";
+				}
+				string newTitle = d.GetGeneralTitle()?.ToString();
+				bool isDuplicate = false;
+				foreach (KingdomDecision existing in kd.UnresolvedDecisions)
+				{
+					if (existing != null && existing.GetType() == d.GetType() && existing.GetGeneralTitle()?.ToString() == newTitle)
+					{ isDuplicate = true; break; }
+				}
+				if (isDuplicate) { Logger.Log("ProposeAgenda", "Duplicate: " + type + " " + tgt); return ""; }
+				VoteDealBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<VoteDealBehavior>();
+				behavior?.RegisterDialogueProposedDecision(d, supportWeight);
+				try
+				{
+					kd.AddDecision(d, false);
+				}
+				catch
+				{
+					behavior?.UnregisterDialogueProposedDecision(d);
+					throw;
+				}
+				if (kd.UnresolvedDecisions == null || !kd.UnresolvedDecisions.Contains(d))
+				{
+					behavior?.UnregisterDialogueProposedDecision(d);
+					Logger.Log("ProposeAgenda", "Rejected: AddDecision did not retain decision type=" + type + " target=" + tgt);
+					AnimusForgeQuickInfo.ShowForDuration("议程提交失败：王国未保留该议程", 6000, npc?.CharacterObject);
+					return "";
+				}
 				string cn = cl.Name?.ToString() ?? "?";
 				AnimusForgeQuickInfo.ShowForDuration(cn + "家族 提出新议程", 6000, npc.CharacterObject);
 				Logger.Log("ProposeAgenda", "OK: " + type + " " + tgt);
@@ -242,75 +218,5 @@ namespace AnimusForge
 			return null;
 		}
 
-		public static string BuildProposePostprocessContext(Hero npc)
-		{
-			try
-			{
-				if (!CanPropose(npc)) return "";
-				var sb = new StringBuilder();
-				sb.AppendLine("【议程提议后处理】同意后输出[ACTION:PROPOSE:类型:目标名:方向]。类型=WAR/PEACE/POLICY/EXPEL/ALLIANCE/TRADE/FIEF。方向仅POLICY用ADOPT/ABOLISH。");
-				return sb.ToString().TrimEnd();
-			}
-			catch { return ""; }
-		}
-
-		public static bool CanPropose(Hero npc)
-		{
-			try
-			{
-				var cl = npc?.Clan;
-				return cl != null && cl.Kingdom != null && !cl.IsUnderMercenaryService && npc == cl.Leader;
-			}
-			catch { return false; }
-		}
-
-		public static string BuildProposeRuntimeInstruction(Hero npc)
-		{
-			try
-			{
-				Clan cl = npc?.Clan;
-				Kingdom kd = cl?.Kingdom;
-				string pn = MyBehavior.BuildPlayerPublicDisplayNameForExternal() ?? "玩家";
-				var tk = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { ["playerName"] = pn };
-
-				string sk = kd == null ? "no_kingdom"
-					: cl.IsUnderMercenaryService ? "mercenary"
-					: npc != cl.Leader ? "not_clan_leader" : "";
-
-				var rl = new List<string>();
-
-				if (!string.IsNullOrWhiteSpace(sk))
-				{
-					var st = AIConfigHandler.ResolveRuleRuntimeText(
-						"propose_agenda", sk, forConstraint: false, tokens: tk);
-					if (!string.IsNullOrWhiteSpace(st)) rl.Add(st);
-					return string.Join("\n", rl);
-				}
-
-				if (kd != null && !cl.IsUnderMercenaryService && npc == cl.Leader)
-				{
-					int ti = 6;
-					try { ti = RewardSystemBehavior.GetTrustLevelIndex(RewardSystemBehavior.Instance?.GetEffectiveTrust(npc) ?? 0); } catch { }
-
-					var tt = AIConfigHandler.ResolveRuleRuntimeText(
-						"propose_agenda", "level_" + ti, forConstraint: false, tokens: tk);
-					if (!string.IsNullOrWhiteSpace(tt)) rl.Add(tt);
-
-					if (kd.RulingClan?.Leader == npc)
-					{
-						var kt = AIConfigHandler.ResolveRuleRuntimeText(
-							"propose_agenda", "is_king", forConstraint: false, tokens: tk);
-						if (!string.IsNullOrWhiteSpace(kt)) rl.Add(kt);
-					}
-				}
-
-				return string.Join("\n", rl);
-			}
-			catch (Exception ex)
-			{
-				Logger.Log("ProposeAgenda", "RT: " + ex.Message);
-				return "";
-			}
-		}
 	}
 }

@@ -6,6 +6,9 @@ namespace AnimusForge;
 
 public static class AnimusForgeModulePaths
 {
+	private const string CurrentModuleFolderName = "AnimusForge";
+	private static readonly string[] LegacyModuleFolderNames = new string[2] { "AnimusForge_1_3_x", "AnimusForge_1_4_5" };
+
 	public static string GetCurrentModuleRoot()
 	{
 		try
@@ -59,6 +62,31 @@ public static class AnimusForgeModulePaths
 		return Path.Combine(GetLogsDirectory(), safeFileName);
 	}
 
+	/// <summary>
+	/// Returns existing legacy module roots for one-time, read-only data migration.
+	/// These paths must never be used as the active module root or as an output target.
+	/// </summary>
+	public static IReadOnlyList<string> GetLegacyModuleRootsForReadOnlyMigration()
+	{
+		List<string> roots = new List<string>();
+		try
+		{
+			string modulesDir = Path.Combine(TaleWorlds.Engine.Utilities.GetBasePath(), "Modules");
+			for (int i = 0; i < LegacyModuleFolderNames.Length; i++)
+			{
+				string candidate = Path.Combine(modulesDir, LegacyModuleFolderNames[i]);
+				if (Directory.Exists(candidate))
+				{
+					roots.Add(candidate);
+				}
+			}
+		}
+		catch
+		{
+		}
+		return roots;
+	}
+
 	private static string ResolveModuleRootFromAssemblyDir(string assemblyDir)
 	{
 		try
@@ -66,7 +94,7 @@ public static class AnimusForgeModulePaths
 			string text = assemblyDir;
 			for (int i = 0; i < 6 && !string.IsNullOrWhiteSpace(text); i++)
 			{
-				if (File.Exists(Path.Combine(text, "SubModule.xml")) && Directory.Exists(Path.Combine(text, "ModuleData")))
+				if (IsCurrentModuleRoot(text))
 				{
 					return text;
 				}
@@ -80,33 +108,29 @@ public static class AnimusForgeModulePaths
 		return "";
 	}
 
+	private static bool IsCurrentModuleRoot(string path)
+	{
+		if (string.IsNullOrWhiteSpace(path))
+		{
+			return false;
+		}
+		string folderName = Path.GetFileName(path.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+		return string.Equals(folderName, CurrentModuleFolderName, StringComparison.OrdinalIgnoreCase)
+			&& File.Exists(Path.Combine(path, "SubModule.xml"))
+			&& Directory.Exists(Path.Combine(path, "ModuleData"));
+	}
+
 	private static string GetFallbackModuleRoot()
 	{
-		List<string> candidates = new List<string>();
 		try
 		{
 			string basePath = TaleWorlds.Engine.Utilities.GetBasePath();
 			string modulesDir = Path.Combine(basePath, "Modules");
-#if BANNERLORD_1_4_OR_GREATER
-			candidates.Add(Path.Combine(modulesDir, "AnimusForge_1_4_5"));
-			candidates.Add(Path.Combine(modulesDir, "AnimusForge_1_3_x"));
-#else
-			candidates.Add(Path.Combine(modulesDir, "AnimusForge_1_3_x"));
-			candidates.Add(Path.Combine(modulesDir, "AnimusForge_1_4_5"));
-#endif
-			candidates.Add(Path.Combine(modulesDir, "AnimusForge"));
+			return Path.Combine(modulesDir, CurrentModuleFolderName);
 		}
 		catch
 		{
 		}
-		for (int i = 0; i < candidates.Count; i++)
-		{
-			string candidate = candidates[i];
-			if (!string.IsNullOrWhiteSpace(candidate) && Directory.Exists(candidate))
-			{
-				return candidate;
-			}
-		}
-		return candidates.Count > 0 ? candidates[0] : "";
+		return "";
 	}
 }

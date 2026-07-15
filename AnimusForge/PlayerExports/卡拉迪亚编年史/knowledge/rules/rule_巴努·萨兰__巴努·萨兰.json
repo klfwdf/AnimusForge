@@ -4,9 +4,7 @@
     "巴努·萨兰"
   ],
   "RagShortTexts": [
-    "巴努·萨兰家族与吉勒德部族的仇恨原因",
-    "尼姆尔潘德拉克战役经历及在胡比亚城被处决",
-    "萨兰家族尼姆尔潘德拉克战役中击退巴旦尼亚射手"
+    "巴努·萨兰曾被逐入沙漠百年，归来后占据原属胡勒延的东部边境"
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -45,12 +43,124 @@
         "SkillMin": null
       },
       "Content": "家族统治的定居点是a\n萨兰家族是阿塞莱的部族之一。潘德拉克战役中，该家族一名叫尼姆尔的战士带领一批阿塞莱人参战，其中既有萨兰家族的人，也有吉勒德家族的人。据传战场上先击退了巴旦尼亚射手，后遭遇瓦兰迪亚骑兵冲击，而帝国的援军没有赶到。\n战后尼姆尔返回家乡，被称为英雄。后来他在吉勒德家族所在的胡比亚城，因与吉勒德家族一名女子往来，被该家族擒获处决，尸体悬挂于集市铁笼中。自那以后，两个家族结仇，外界对此事多有传闻。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "巴努·萨兰是阿塞莱苏丹国中最古老也最受争议的家族之一。他们自称是阿塞拉的直系子孙——阿塞拉是阿塞莱人传说中的祖先，所有阿塞莱部族都尊崇他的名字。巴努·萨兰的祖先萨兰，是阿塞拉的孙子，这让他们在阿塞莱的谱系中拥有无可争议的高贵血统。但一百年前，他们被赶出了自己的土地，驱入了沙漠深处，直到最近才得以归来。他们现在的领土在阿塞莱的最东边，紧挨着南帝国的边境——那片地原本属于巴努·胡勒延家族，如今却插着巴努·萨兰的旗帜。他们的族长阿德拉姆是个谨慎的人，懂得维持和平，但家族的屈辱史像一根绷紧的弦，经不起太多的拨弄。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "clan_aserai_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们是萨兰的后代，萨兰是阿塞拉的亲孙子。我们的血统和阿塞莱任何部族一样古老——不亚于吉勒德家，也不亚于胡勒延家。但一百年前，我们被赶进了沙漠，在那里熬了整整一个世纪，而其他部族在绿洲里养尊处优。现在我们回来了，拿回了属于我们的土地——虽然那块地以前是巴努·胡勒延家的，但谁让他们守不住呢？阿德拉姆族长是个聪明人，他让我们低调行事，不要跟其他部族正面冲突。你可以骂我们一次，我们忍。你可以骂我们两次，我们也忍。但如果你以为可以一直骂下去，甚至以为可以对我们动手，那你就错了。我们忍了一百年，不差这几天。但我们有自尊，也有剑。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "巴努·萨兰那帮人，血统确实没得挑——萨兰是阿塞拉的孙子，这一点在谱系上写得明明白白。但他们被赶进沙漠一百年，回来的时候已经变了味了。在沙漠里跟那些野人部落混得太久，习俗都和正经的绿洲部族不一样了。他们的地盘在最东边，挨着帝国人的边境，那地方本来是胡勒延家的——不知道怎么就被他们拿去了。阿德拉姆那个族长看着挺会做人的，满口都是和平啊团结啊，但他底下那些年轻人可不怎么安分。你惹他们一次，他们低着头；惹他们两次，他们还低着头；等你放松警惕了，他们可能就要跟你算总账了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "clan_aserai_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "巴努·萨兰现在住的那片地，是我们祖上传下来的。他们从沙漠里出来的时候，苏丹把东边那块边境地划给了他们，说是安置也好，说是奖赏也好，反正我们家的地就这么成了他们家的。阿德拉姆口口声声说他们尊重我们，但每次在长老会上提起这件事，他就开始绕弯子。我们不是记仇的人，但我们的地就是我们的地，写在族谱里的。萨兰的血脉也许很高贵，但高贵的血脉不能当契约用。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "巴努·萨兰是阿塞莱最东边的家族，和南帝国直接接壤。他们的族长温基德是个稳重的人，和我们边境指挥官打过几次交道，谈的都是停火和贸易的事。从帝国的角度来说，跟这种人做邻居比跟那些动不动就发动袭扰的部族要好得多。不过这个家族有点意思——他们在一百年前被阿塞莱其他部族联手赶进了沙漠，现在居然又回来了，还占了胡勒延家的地。一个被自己人排挤过的家族，现在守在阿塞莱和帝国之间最敏感的那条线上。阿德拉姆在维持和平，但一个被欺负过一百年的家族，骨子里到底是怎么想的，只有他们自己知道。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "巴努·萨兰是阿塞莱苏丹国中最具传奇色彩的家族之一。其祖先萨兰据传是阿塞拉的亲孙子，这一谱系地位在阿塞莱的部落传统中具有极高的含金量。约一个世纪前，巴努·萨兰在一场部落冲突中被敌对部族联盟驱逐，被迫退入沙漠深处。与其他被击溃后逐渐消亡的部族不同，巴努·萨兰在沙漠中保持了完整的部族结构和家族谱系，并在最近数十年间重新崛起，最终回到了阿塞莱的政治核心。他们现在的领土位于阿塞莱最东端，与南帝国接壤，这片土地原本属于巴努·胡勒延家族，转手的具体原因在阿塞莱内部仍存争议。现任族长阿德拉姆以谨慎和务实著称，在外交上维持与南帝国的边境稳定，在内部则克制着家族中年轻一代对历史宿怨的复仇情绪。巴努·萨兰的处境，是典型的“归来者”困境：他们重新拥有了土地和地位，但在阿塞莱的部落权力格局中尚未获得与血统相匹配的尊重。阿德拉姆的和平路线能走多远，将决定这个古老家族是真正复兴，还是再次跌入深渊。\n\n"
     }
   ],
   "TextMappings": [
     {
       "SourceText": "a",
       "Kind": "clan_all_settlements",
+      "TargetId": "clan_aserai_2",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "阿德拉姆",
+      "Kind": "clan_leader_name",
       "TargetId": "clan_aserai_2",
       "AgeMin": null,
       "AgeMax": null,

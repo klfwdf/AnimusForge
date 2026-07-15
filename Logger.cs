@@ -211,6 +211,23 @@ public static class Logger
 
 	public static bool IsModLogicEnabled => IsPathEnabled(_modLogPath);
 
+	internal static string GetFreezeWatchdogDiagnosticSnapshot()
+	{
+		try
+		{
+			return "logQueue=" + Volatile.Read(ref _logWriteQueueCount)
+				+ " tokenQueue=" + _tokenStatsWriteQueue.Count
+				+ " logWriter=" + Volatile.Read(ref _logWriterRunning)
+				+ " tokenWriter=" + Volatile.Read(ref _tokenStatsWorkerRunning)
+				+ " droppedVerbose=" + Interlocked.Read(ref _droppedVerboseLogCount)
+				+ " droppedNormal=" + Interlocked.Read(ref _droppedNormalLogCount);
+		}
+		catch
+		{
+			return "logger=unavailable";
+		}
+	}
+
 	public static bool IsVerboseModLogicEnabled
 	{
 		get

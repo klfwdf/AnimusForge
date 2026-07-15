@@ -5,15 +5,24 @@
     "行在"
   ],
   "RagShortTexts": [
-    "吕卡隆是南帝国都城，背靠奥尼石山。"
+    "吕卡隆是奥尼石山上的石头要塞，以银矿和多次围城闻名",
+    "阿雷尼科斯皇帝在吕卡隆遇刺，导致帝国分裂为三",
+    "吕卡隆曾是帝国旧都，现为南帝国拉盖娅女皇的据点"
   ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
+      "When": null,
+      "Content": "吕卡隆坐落在巍峨的奥尼石山向外突出的一处缓坡之上，是一座天然的石头要塞。它的城墙和高塔从山体上长出来，俯瞰着脚下广袤的帝国腹地。这座城市最出名的是两样东西：银矿，以及围城。周边山体中蕴藏着丰富的银矿脉，任何想在内战中攥取权力的野心家都会盯上这里。有人说，住在石山顶上的秃鹫，已经享用过卡拉迪亚大陆上每一个民族的尸体——这话不算太夸张，因为吕卡隆被围过的次数，比帝国任何一座城市都多。它也是阿雷尼科斯皇帝生前的皇都，帝国最后一个统一时期的权力心脏。皇帝在这里遇刺，帝国在这里分裂."
+    },
+    {
+      "Priority": 0,
       "When": {
         "HeroIds": null,
-        "Cultures": null,
+        "Cultures": [
+          "empire"
+        ],
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
@@ -22,7 +31,162 @@
         "IsClanLeader": null,
         "SkillMin": null
       },
-      "Content": "吕卡隆是阿雷尼科斯皇帝时期的帝都，也是现在南帝国的都城。这里背靠奥尼石山，易守难攻，城市建设也金碧辉煌。它现在被A统治。B"
+      "Content": "吕卡隆，帝国的旧都，也是帝国分裂的起点。阿雷尼科斯皇帝在世时，吕卡隆是整个卡拉迪亚的权力顶峰。它的城墙是奥尼石山的石头砌的，坚固得像是从山体里直接长出来的。它的银矿养活了帝国最精锐的军团。但一切都在皇帝遇刺那天改变了。紫袍染血，元老院被赶出城门，拉盖娅女皇从皇宫中走出来，举着那件血衣。从那以后，吕卡隆就不再是整个帝国的首都了，只是南帝国的。石山上的秃鹫还在盘旋，它们已经看惯了我们帝国人互相残杀。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "吕卡隆是帝国正统的最后堡垒。先皇在这里统治了二十年，他的血洒在皇宫的石板上，他的遗孀还在守护着这座城。那些元老院的叛徒被市民赶出去的时候，吕卡隆证明了自己不是那些只会耍嘴皮子的老家伙们能染指的。北边的卢孔在元老院里称帝，西边的加里俄斯在军营里称帝，但真正的帝国血脉还在吕卡隆。只要我们守住这座城，守住它的银矿和它的城墙，帝国就不算亡。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "吕卡隆是先皇的城，这一点没人否认。但先皇死了，帝国应该由元老院来指定继承人——这是帝国千年的规矩。那天在吕卡隆，元老院已经推举了卢孔为新皇帝，可拉盖娅带着一群被煽动的暴民冲散了元老院，把合法选出的皇帝赶出了都城。从那以后，吕卡隆就变成了珀特洛斯家族的私产，不再是帝国公器。它的银矿现在只喂饱南帝国的军队，它的城墙只保护拉盖娅一个人的皇冠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "吕卡隆是什么？是先皇遇刺的地方。维基亚卫队就在皇宫外面，皇帝在他们的眼皮底下被杀了。然后呢？没有调查，没有审判，只有拉盖娅举着一件血衣把水搅浑，把元老院赶出城去，自己坐上了皇位。加里俄斯将军说得好——吕卡隆已经不是一个首都了，它是一个家族的战利品。帝国的军队在外面打仗，吕卡隆的银矿在宫里数第纳尔。这就是为什么我们西帝国的老兵们都跟着加里俄斯：他至少不躲在石头墙后面让女人替他出头。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_es4"
+        ],
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我在吕卡隆当了二十年兵，亲眼见过阿雷尼科斯皇帝在城墙上阅兵。那天的吕卡隆，鹰旗在石山顶上飘着，所有人都觉得帝国天下无敌。然后皇帝死了，死在皇宫里，就在我们这些当兵的眼皮底下。维基亚卫队本来该保护他的，结果他们要么死了，要么跑了，要么变成了暴徒。现在吕卡隆还是那个吕卡隆——城墙没变，银矿没变，石山上的秃鹫也没变。但鹰旗已经裂成了三块，而我们这些当兵的不知道该往哪面旗下站。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "吕卡隆是帝国人的心脏，但那颗心脏已经被人捅穿了。我们北方人不太关心帝国人的皇位争来争去谁对谁错，我们只知道，阿雷尼科斯死了之后，帝国的军团就再也没能像以前那样北上找我们的麻烦。他们的银矿还在挖，但挖出来的银子全花在内战上了。石山上的秃鹫还在飞，等着下一批在吕卡隆城下送死的帝国人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "吕卡隆的银矿在整个卡拉迪亚都有名。我们阿塞莱的商人去过一次，说那座城根本不是建在山上的，是从石头里长出来的。帝国人说石山上的秃鹫吃过每一个民族的尸体，这话我们信——吕卡隆被围了那么多次，城下的土早就被血浸透了。现在它是南帝国的都城，拉盖娅女皇守着一座被银子和血喂大的城市。我们跟她做过生意，她出的价钱比卢孔和加里俄斯都大方。银矿在她手里，至少没有浪费。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "吕卡隆的城墙是帝国工程学的杰作，我们的攻城器械在别处能砸开一道口子，在吕卡隆面前就像小孩的玩具砸石头。但再坚固的城墙也挡不住内乱。阿雷尼科斯死在他自己的皇宫里，他的卫队没有保护他，他的妻子和元老院互相指责，然后帝国裂成了三块。我们瓦兰迪亚人从这件事里学到了一样东西：不要在你的都城里被人捅死。德泰尔国王把帕拉汶德的守备加了三倍，可不是没有原因的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "吕卡隆离我们草原很远，但它的名声传得很远。帝国人说他们的皇帝在皇宫里被人刺死了，然后他的女人拿着他的血衣把元老院赶出了城。在我们草原上，汗位是打出来的，谁强谁上。帝国人倒好，用一件血衣和一群暴民来决定谁是皇帝。不过他们的银矿是好东西，听说挖出来的银子够养整个南帝国的军队。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "吕卡隆在我们巴旦尼亚人眼中就是帝国傲慢的墓碑。他们觉得石头城墙能挡住一切，结果呢？城墙还在，帝国没了。阿雷尼科斯死了之后，吕卡隆变成了三个皇帝争来争去的骨头。他们的银矿还在挖，但挖出来的银子杀死的帝国人比我们巴旦尼亚的箭还多。石山上的秃鹫在天上转，等着下一批被自己人害死的帝国人倒在城墙下。"
     },
     {
       "Priority": 0,
@@ -36,30 +200,10 @@
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": {
-          "steward": 100
+          "steward": 150
         }
       },
-      "Content": "吕卡隆这座天然要塞位于巍峨的奥尼石山向外突出的一处缓坡之上。在帝国征服的最后几年，帕拉部落同帝国协商，进行了和平的合邦，结果他们的家园又被叛军首领革图夺走。接踵而至的围城战仅仅是吕卡隆在接下来的几个世纪中屡遭围攻的第一次，因为该城周边有着丰富的银矿脉，任何想在内战中攫取权力的皇位觊觎者都会盯上这里。甚至有人传言，居住在石山顶上的秃鹫已经享用过卡拉迪亚大陆上的每一种民族。吕卡隆现在由A统治，是南帝国皇都。B"
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "HeroIds": null,
-        "Cultures": null,
-        "KingdomIds": [
-          "empire",
-          "empire_w"
-        ],
-        "SettlementIds": null,
-        "Roles": [
-          "lord"
-        ],
-        "IdentityIds": null,
-        "IsFemale": null,
-        "IsClanLeader": null,
-        "SkillMin": null
-      },
-      "Content": "吕卡隆是伪皇帝C统治的南帝国的都城，我们完全不承认这个都城的地位，我们迟早会收复吕卡隆，将伪皇帝和伪执政官们都推翻掉，打倒这个披着帝国外衣的世袭君主国！"
+      "Content": "吕卡隆是卡拉迪亚大陆上最具象征意义的帝国城市之一。其地理位置——奥尼石山向外突出的缓坡——赋予它天然的防御优势，而周边丰富的银矿脉则为帝国的扩张提供了持续的经济基础。在帕拉部落与帝国和平合邦后，吕卡隆成为帝国西部的重要据点，历经多次围城，见证了帝国与被征服民族之间的反复拉锯。阿雷尼科斯皇帝将吕卡隆定为皇都，使其成为帝国最后一个统一时期的政治心脏。皇帝在此遇刺后，帝国旋即分裂，吕卡隆从统一帝国的首都变为南帝国的都城。拉盖娅女皇利用市民情绪驱逐元老院、独占吕卡隆的过程，既是帝国分裂的标志性事件，也是珀特洛斯家族从皇族转型为地方统治者的关键节点。如今，吕卡隆的银矿仍然是南帝国的经济支柱，而它那被围困了无数次的城墙，依然俯瞰着一个支离破碎的帝国。"
     }
   ],
   "TextMappings": [
