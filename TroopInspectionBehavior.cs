@@ -154,6 +154,7 @@ public static partial class TroopInspectionBehavior
 		TryPatchClass(harmony, typeof(TroopInspectionMeleeDamagePatch));
 		TryPatchClass(harmony, typeof(TroopInspectionFormationIsolationPatch));
 		TryPatchClass(harmony, typeof(TroopInspectionOrderOfBattlePatch));
+		TryPatchClass(harmony, typeof(CastleAftermathBattleMusicUpdatePatch));
 		ReinforcementSystemCompatibility.EnsurePatched(harmony);
 	}
 
