@@ -2524,11 +2524,11 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 	private static MentionedWorldEntities BuildNpcPolicyRulerKnowledgeMentionedEntities(Kingdom kingdom, Hero ruler)
 	{
 		MentionedWorldEntities entities = new MentionedWorldEntities();
-		AddNpcPolicyKnowledgeEntity(entities.Heroes, ruler?.Name?.ToString(), ruler?.StringId);
+		AddNpcPolicyKnowledgeEntity(entities.Entities, ruler?.Name?.ToString(), ruler?.StringId);
 		Clan rulingClan = kingdom?.RulingClan ?? ruler?.Clan;
-		AddNpcPolicyKnowledgeEntity(entities.Clans, rulingClan?.Name?.ToString(), rulingClan?.StringId);
-		AddNpcPolicyKnowledgeEntity(entities.Kingdoms, GetKingdomName(kingdom), kingdom?.StringId);
-		AddNpcPolicyKnowledgeEntity(entities.Terms, PolicyKnowledgeRagFocus, null);
+		AddNpcPolicyKnowledgeEntity(entities.Entities, rulingClan?.Name?.ToString(), rulingClan?.StringId);
+		AddNpcPolicyKnowledgeEntity(entities.Entities, GetKingdomName(kingdom), kingdom?.StringId);
+		AddNpcPolicyKnowledgeEntity(entities.Entities, PolicyKnowledgeRagFocus, null);
 		return entities;
 	}
 
@@ -2547,11 +2547,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		{
 			return 0;
 		}
-		return (entities.Heroes?.Count ?? 0)
-			+ (entities.Settlements?.Count ?? 0)
-			+ (entities.Clans?.Count ?? 0)
-			+ (entities.Kingdoms?.Count ?? 0)
-			+ (entities.Terms?.Count ?? 0);
+		return entities.Entities?.Count ?? 0;
 	}
 
 	private static IEnumerable<string> SplitKnowledgeSentences(string raw)

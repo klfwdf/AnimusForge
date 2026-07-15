@@ -1860,36 +1860,20 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		List<string> parts = new List<string>();
-		List<string> kingdoms = (entities.Kingdoms ?? new List<string>()).Where(x => !string.IsNullOrWhiteSpace(x)).Take(8).ToList();
-		if (kingdoms.Count > 0)
-		{
-			parts.Add("相关王国：" + string.Join("、", kingdoms));
-		}
-		List<string> settlements = (entities.Settlements ?? new List<string>()).Where(x => !string.IsNullOrWhiteSpace(x)).Take(8).ToList();
-		if (settlements.Count > 0)
-		{
-			parts.Add("显式提及定居点：" + string.Join("、", settlements));
-		}
-		List<string> actors = (entities.Heroes ?? new List<string>())
-			.Concat(entities.Clans ?? new List<string>())
+		List<string> values = (entities.Entities ?? new List<string>())
 			.Where(x => !string.IsNullOrWhiteSpace(x))
 			.Distinct(StringComparer.OrdinalIgnoreCase)
-			.Take(8)
+			.Take(16)
 			.ToList();
-		if (actors.Count > 0)
-		{
-			parts.Add("显式提及人物或家族：" + string.Join("、", actors));
-		}
-		return LimitDisplayChars(CompactPolicyContextText(string.Join("；", parts)), 500);
+		return values.Count == 0 ? "" : LimitDisplayChars(CompactPolicyContextText("相关实体：" + string.Join("、", values)), 500);
 	}
 
 	private static MentionedWorldEntities BuildPolicyKnowledgeMentionedEntitiesSnapshot(string policyName, string policyContent, Kingdom playerKingdom)
 	{
 		MentionedWorldEntities entities = new MentionedWorldEntities();
 		string haystack = ((policyName ?? "") + "\n" + (policyContent ?? "")).Trim();
-		AddPolicyKnowledgeEntity(entities.Kingdoms, GetKingdomName(playerKingdom), playerKingdom?.StringId);
-		AddPolicyKnowledgeEntity(entities.Terms, playerKingdom?.Culture?.Name?.ToString(), null);
+		AddPolicyKnowledgeEntity(entities.Entities, GetKingdomName(playerKingdom), playerKingdom?.StringId);
+		AddPolicyKnowledgeEntity(entities.Entities, playerKingdom?.Culture?.Name?.ToString(), null);
 		if (string.IsNullOrWhiteSpace(haystack))
 		{
 			return entities;
@@ -1900,7 +1884,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 			{
 				if (kingdom != null && PolicyTextMentionsKingdom(haystack, kingdom))
 				{
-					AddPolicyKnowledgeEntity(entities.Kingdoms, GetKingdomName(kingdom), kingdom.StringId);
+					AddPolicyKnowledgeEntity(entities.Entities, GetKingdomName(kingdom), kingdom.StringId);
 				}
 			}
 		}
@@ -1913,7 +1897,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 			{
 				if (settlement != null && PolicyTextMentions(haystack, settlement.StringId ?? "", settlement.Name?.ToString() ?? ""))
 				{
-					AddPolicyKnowledgeEntity(entities.Settlements, settlement.Name?.ToString(), settlement.StringId);
+					AddPolicyKnowledgeEntity(entities.Entities, settlement.Name?.ToString(), settlement.StringId);
 				}
 			}
 		}
@@ -1926,7 +1910,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 			{
 				if (hero != null && PolicyTextMentions(haystack, hero.StringId ?? "", hero.Name?.ToString() ?? ""))
 				{
-					AddPolicyKnowledgeEntity(entities.Heroes, hero.Name?.ToString(), hero.StringId);
+					AddPolicyKnowledgeEntity(entities.Entities, hero.Name?.ToString(), hero.StringId);
 				}
 			}
 		}
@@ -1939,7 +1923,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 			{
 				if (clan != null && PolicyTextMentions(haystack, clan.StringId ?? "", clan.Name?.ToString() ?? ""))
 				{
-					AddPolicyKnowledgeEntity(entities.Clans, clan.Name?.ToString(), clan.StringId);
+					AddPolicyKnowledgeEntity(entities.Entities, clan.Name?.ToString(), clan.StringId);
 				}
 			}
 		}
@@ -1964,11 +1948,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		{
 			return 0;
 		}
-		return (entities.Heroes?.Count ?? 0)
-			+ (entities.Settlements?.Count ?? 0)
-			+ (entities.Clans?.Count ?? 0)
-			+ (entities.Kingdoms?.Count ?? 0)
-			+ (entities.Terms?.Count ?? 0);
+		return entities.Entities?.Count ?? 0;
 	}
 
 	private static string CompressPolicyKnowledgeContext(string raw)
