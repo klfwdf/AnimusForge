@@ -1107,7 +1107,7 @@ public sealed class CustomPolicyComposePopup
 
 	private readonly CustomPolicyComposePopupVM _dataSource;
 
-	private readonly Action<string, string, string> _onPublish;
+	private readonly Action<string, string, string, string> _onPublish;
 
 	private readonly Action _onCancel;
 
@@ -1118,6 +1118,8 @@ public sealed class CustomPolicyComposePopup
 	private string _pendingPolicyName;
 
 	private string _pendingPolicyContent;
+
+	private string _pendingDurationText;
 
 	private string _pendingDateText;
 
@@ -1142,7 +1144,7 @@ public sealed class CustomPolicyComposePopup
 		}
 	}
 
-	private CustomPolicyComposePopup(ScreenBase screen, string titleText, string nameLabelText, string contentLabelText, string dateText, bool canPublish, string blockReason, Action<string, string, string> onPublish, Action onCancel)
+	private CustomPolicyComposePopup(ScreenBase screen, string titleText, string nameLabelText, string contentLabelText, string dateText, bool canPublish, string blockReason, Action<string, string, string, string> onPublish, Action onCancel)
 	{
 		_screen = screen;
 		_onPublish = onPublish;
@@ -1151,7 +1153,7 @@ public sealed class CustomPolicyComposePopup
 		_layer = new GauntletLayer("CustomPolicyComposePopup", 4000, false);
 	}
 
-	public static bool Show(string titleText, string nameLabelText, string contentLabelText, string dateText, bool canPublish, string blockReason, Action<string, string, string> onPublish, Action onCancel)
+	public static bool Show(string titleText, string nameLabelText, string contentLabelText, string dateText, bool canPublish, string blockReason, Action<string, string, string, string> onPublish, Action onCancel)
 	{
 		ScreenBase topScreen = ScreenManager.TopScreen;
 		if (topScreen == null)
@@ -1191,17 +1193,17 @@ public sealed class CustomPolicyComposePopup
 		ScreenManager.TrySetFocus(_layer);
 	}
 
-	private void HandlePublishRequested(string policyName, string policyContent, string dateText)
+	private void HandlePublishRequested(string policyName, string policyContent, string durationText, string dateText)
 	{
-		RequestDeferredClose(PendingCloseAction.Publish, policyName ?? "", policyContent ?? "", dateText ?? "");
+		RequestDeferredClose(PendingCloseAction.Publish, policyName ?? "", policyContent ?? "", durationText ?? "", dateText ?? "");
 	}
 
 	private void HandleCancelRequested()
 	{
-		RequestDeferredClose(PendingCloseAction.Cancel, null, null, null);
+		RequestDeferredClose(PendingCloseAction.Cancel, null, null, null, null);
 	}
 
-	private void RequestDeferredClose(PendingCloseAction action, string policyName, string policyContent, string dateText)
+	private void RequestDeferredClose(PendingCloseAction action, string policyName, string policyContent, string durationText, string dateText)
 	{
 		if (_isClosed || _pendingCloseAction != PendingCloseAction.None)
 		{
@@ -1210,6 +1212,7 @@ public sealed class CustomPolicyComposePopup
 		_pendingCloseAction = action;
 		_pendingPolicyName = policyName;
 		_pendingPolicyContent = policyContent;
+		_pendingDurationText = durationText;
 		_pendingDateText = dateText;
 	}
 
@@ -1222,15 +1225,17 @@ public sealed class CustomPolicyComposePopup
 		PendingCloseAction action = _pendingCloseAction;
 		string policyName = _pendingPolicyName ?? "";
 		string policyContent = _pendingPolicyContent ?? "";
+		string durationText = _pendingDurationText ?? "";
 		string dateText = _pendingDateText ?? "";
 		_pendingCloseAction = PendingCloseAction.None;
 		_pendingPolicyName = null;
 		_pendingPolicyContent = null;
+		_pendingDurationText = null;
 		_pendingDateText = null;
 		Close(silent: true);
 		if (action == PendingCloseAction.Publish)
 		{
-			_onPublish?.Invoke(policyName, policyContent, dateText);
+			_onPublish?.Invoke(policyName, policyContent, durationText, dateText);
 		}
 		else if (action == PendingCloseAction.Cancel)
 		{
@@ -1274,7 +1279,7 @@ public sealed class CustomPolicyComposePopup
 
 public sealed class CustomPolicyComposePopupVM : ViewModel
 {
-	private readonly Action<string, string, string> _onPublish;
+	private readonly Action<string, string, string, string> _onPublish;
 
 	private readonly Action _onCancel;
 
@@ -1292,6 +1297,10 @@ public sealed class CustomPolicyComposePopupVM : ViewModel
 
 	private string _policyContent;
 
+	private string _durationLabelText;
+
+	private string _durationText;
+
 	private string _publishText;
 
 	private string _cancelText;
@@ -1302,18 +1311,20 @@ public sealed class CustomPolicyComposePopupVM : ViewModel
 
 	private bool _canPublish;
 
-	public CustomPolicyComposePopupVM(string titleText, string nameLabelText, string contentLabelText, string dateText, bool canPublish, string blockReason, Action<string, string, string> onPublish, Action onCancel)
+	public CustomPolicyComposePopupVM(string titleText, string nameLabelText, string contentLabelText, string dateText, bool canPublish, string blockReason, Action<string, string, string, string> onPublish, Action onCancel)
 	{
 		_onPublish = onPublish;
 		_onCancel = onCancel;
 		_externalCanPublish = canPublish;
-		TitleText = string.IsNullOrWhiteSpace(titleText) ? "撰写政策" : titleText;
+		TitleText = string.IsNullOrWhiteSpace(titleText) ? "发布王国政策" : titleText;
 		NameLabelText = string.IsNullOrWhiteSpace(nameLabelText) ? "政策名" : nameLabelText;
 		ContentLabelText = string.IsNullOrWhiteSpace(contentLabelText) ? "政策内容" : contentLabelText;
+		DurationLabelText = "持续天数（留空由 AI 决定）";
 		DateText = string.IsNullOrWhiteSpace(dateText) ? "未知日期" : dateText;
 		PolicyName = "";
 		PolicyContent = "";
-		PublishText = "发布政策";
+		DurationText = "";
+		PublishText = "发布王国政策";
 		CancelText = "取消";
 		_readyStatusText = string.IsNullOrWhiteSpace(blockReason) ? "填写政策名和政策内容后即可发布。" : blockReason;
 		StatusText = canPublish ? _readyStatusText : (string.IsNullOrWhiteSpace(blockReason) ? "当前不能发布政策。" : blockReason);
@@ -1409,6 +1420,36 @@ public sealed class CustomPolicyComposePopupVM : ViewModel
 	}
 
 	[DataSourceProperty]
+	public string DurationText
+	{
+		get => _durationText;
+		set
+		{
+			string text = AnimusForgeTextInputSanitizer.SanitizeSingleLine(value, 16);
+			if (text != _durationText)
+			{
+				_durationText = text;
+				OnPropertyChangedWithValue(_durationText, nameof(DurationText));
+				RefreshCanPublish();
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public string DurationLabelText
+	{
+		get => _durationLabelText;
+		set
+		{
+			if (value != _durationLabelText)
+			{
+				_durationLabelText = value;
+				OnPropertyChangedWithValue(value, nameof(DurationLabelText));
+			}
+		}
+	}
+
+	[DataSourceProperty]
 	public string PublishText
 	{
 		get => _publishText;
@@ -1475,7 +1516,7 @@ public sealed class CustomPolicyComposePopupVM : ViewModel
 			}
 			return;
 		}
-		_onPublish?.Invoke(PolicyName ?? "", PolicyContent ?? "", DateText ?? "");
+		_onPublish?.Invoke(PolicyName ?? "", PolicyContent ?? "", DurationText ?? "", DateText ?? "");
 	}
 
 	public void ExecuteCancel()
@@ -1495,7 +1536,9 @@ public sealed class CustomPolicyComposePopupVM : ViewModel
 	{
 		bool hasName = !string.IsNullOrWhiteSpace(PolicyName);
 		bool hasContent = !string.IsNullOrWhiteSpace(PolicyContent);
-		CanPublish = _externalCanPublish && hasName && hasContent;
+		bool durationValid = string.IsNullOrWhiteSpace(DurationText)
+			|| (int.TryParse(DurationText.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int durationDays) && durationDays > 0);
+		CanPublish = _externalCanPublish && hasName && hasContent && durationValid;
 		if (_externalCanPublish)
 		{
 			if (!hasName)
@@ -1505,6 +1548,10 @@ public sealed class CustomPolicyComposePopupVM : ViewModel
 			else if (!hasContent)
 			{
 				StatusText = "请先填写政策内容。";
+			}
+			else if (!durationValid)
+			{
+				StatusText = "持续天数必须留空或填写正整数。";
 			}
 			else
 			{
