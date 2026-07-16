@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Threading;
 using Helpers;
 using Newtonsoft.Json;
 using TaleWorlds.CampaignSystem;
@@ -48,6 +49,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 	private readonly Dictionary<string, PendingCreateCompanionPartyRequest> _pendingCreatePartyRequests = new Dictionary<string, PendingCreateCompanionPartyRequest>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, PlayerDetachedPartyRecord> _playerDetachedParties = new Dictionary<string, PlayerDetachedPartyRecord>(StringComparer.OrdinalIgnoreCase);
 	private readonly object _queueLock = new object();
+	private int _hasPendingCreateCompanionPartyRequests;
 	private bool _isOpeningCreateCompanionPartyScreen;
 	private double _nextDetachedPartyPruneDay;
 
@@ -418,7 +420,8 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			return new List<PostprocessRuleEntry>();
 		}
-		bool canExposeMerge = targetHero != null && CanExposeMergeToPlayerRule(targetHero);
+		bool useCompanionMergePrompt = false;
+		bool canExposeMerge = targetHero != null && TryResolveMergeToPlayerPostprocessVariant(targetHero, out useCompanionMergePrompt);
 		List<PostprocessRuleEntry> filtered = new List<PostprocessRuleEntry>();
 		foreach (PostprocessRuleEntry rule in rules)
 		{
@@ -432,7 +435,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
-				filtered.Add(ClonePostprocessRule(rule, BuildMergeToPlayerPostprocessDescription()));
+				filtered.Add(ClonePostprocessRule(rule, BuildMergeToPlayerPostprocessDescription(useCompanionMergePrompt)));
 				continue;
 			}
 			filtered.Add(ClonePostprocessRule(rule));
@@ -440,19 +443,30 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		return filtered;
 	}
 
-	private static bool CanExposeMergeToPlayerRule(Hero targetHero)
+	private static bool TryResolveMergeToPlayerPostprocessVariant(Hero targetHero, out bool useCompanionMergePrompt)
 	{
+		useCompanionMergePrompt = false;
 		if (targetHero == null || targetHero == Hero.MainHero)
 		{
 			return false;
 		}
-		MobileParty party = ResolveActorParty(targetHero);
-		if (targetHero.Clan == Clan.PlayerClan && party != null && party != MobileParty.MainParty && party.LeaderHero == targetHero)
+		if (IsHeroActuallyInPlayerMainPartyRoster(targetHero))
 		{
+			useCompanionMergePrompt = true;
 			return true;
 		}
+		MobileParty party = ResolveActorParty(targetHero);
+		if (party == null || party == MobileParty.MainParty || party.LeaderHero != targetHero)
+		{
+			return false;
+		}
 		WorldMapPartyCommandBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<WorldMapPartyCommandBehavior>();
-		return behavior != null && party != null && behavior.IsRegisteredPlayerDetachment(targetHero, party);
+		if (behavior != null && behavior.IsRegisteredPlayerDetachment(targetHero, party))
+		{
+			useCompanionMergePrompt = true;
+			return true;
+		}
+		return targetHero.Clan == Clan.PlayerClan;
 	}
 
 	private static bool IsMergeToPlayerPostprocessRule(PostprocessRuleEntry rule)
@@ -470,9 +484,13 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		};
 	}
 
-	private static string BuildMergeToPlayerPostprocessDescription()
+	private static string BuildMergeToPlayerPostprocessDescription(bool useCompanionMergePrompt)
 	{
-		return "仅当玩家明确要求NPC归队，且NPC是玩家家族独立部队或已登记的玩家主队拆出任务队伍时输出。{days}是接近并归队的时限，未说明用1。普通外国独立领主不能归队。不要因新增其它任务而自动输出。";
+		if (useCompanionMergePrompt)
+		{
+			return "你在输出了其他ACTION:WORLDMAP时，如果玩家没有主动提到无需回归队伍，那么你必须输出此标签在最下方";
+		}
+		return "Independent companion-party variant. Output this only when the NPC already leads an independent player-clan companion party and clearly agrees to move back to the player and merge that independent party into the player main party. {days} is the approach/merge timeout; use 1 if unspecified. Do not use this for ordinary lords, enemies, non-player-clan heroes, or heroes who are already in the player's party unless the player-party temporary-create-party variant applies.";
 	}
 
 	public static bool TryApplyWorldMapOrderTagsForExternal(Hero targetHero, ref string content, out List<string> generatedFacts, out List<string> notifications)
@@ -960,6 +978,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			_queues.TryGetValue(hero.StringId, out state);
 			removedPendingCreate = _pendingCreatePartyRequests.Remove(hero.StringId);
+			Volatile.Write(ref _hasPendingCreateCompanionPartyRequests, _pendingCreatePartyRequests.Count > 0 ? 1 : 0);
 		}
 		MobileParty party = state == null ? null : ResolveActorParty(state, hero, allowNonLeaderForRelease: true);
 		if (party != null && party != MobileParty.MainParty)
@@ -1073,6 +1092,10 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 
 	private void ProcessPendingCreateCompanionPartyRequests()
 	{
+		if (Volatile.Read(ref _hasPendingCreateCompanionPartyRequests) == 0)
+		{
+			return;
+		}
 		lock (_queueLock)
 		{
 			if (_pendingCreatePartyRequests.Count == 0)
@@ -1096,6 +1119,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			{
 				_pendingCreatePartyRequests.Remove(request.HeroId ?? "");
 			}
+			Volatile.Write(ref _hasPendingCreateCompanionPartyRequests, _pendingCreatePartyRequests.Count > 0 ? 1 : 0);
 		}
 		if (request == null || string.IsNullOrWhiteSpace(request.HeroId))
 		{
@@ -5666,6 +5690,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 					FollowUpCommands = commands
 				};
 			}
+			Volatile.Write(ref _hasPendingCreateCompanionPartyRequests, _pendingCreatePartyRequests.Count > 0 ? 1 : 0);
 		}
 		Log("queued create companion party hero=" + hero.StringId + " followUp=" + (followUpCommands?.Count ?? 0));
 	}

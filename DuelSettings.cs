@@ -893,9 +893,9 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		}
 	}
 
-	[SettingPropertyBool("【性能】启用性能监控", Order = 11, RequireRestart = false, HintText = "开启后采集 FPS、慢帧和各 Tick/Scope 耗时，每30秒向 Mod_Logic.txt 写入一次聚合结果，并把当前窗口附加到冻结检查点。关闭后立即停止采样与周期输出。默认开启。")]
+	[SettingPropertyBool("【性能】启用性能监控", Order = 11, RequireRestart = false, HintText = "开启后每30秒向 Mod_Logic.txt 写入 FPS、慢帧和帧总耗时。只有同时开启详细调试日志时才采集各 Tick/Scope 耗时；普通游玩不承担逐 Scope 统计成本。默认关闭。")]
 	[SettingPropertyGroup("4. 开发者选项")]
-	public bool EnablePerformanceMonitor { get; set; } = true;
+	public bool EnablePerformanceMonitor { get; set; } = false;
 
 	[SettingPropertyBool("【性能】延后日结维护", Order = 12, RequireRestart = false, HintText = "开启后，每日结算只登记 AnimusForge 维护任务，记忆总览、王国维护和周报准备会在后续大地图中按预算分批执行，最多每250毫秒运行一次；玩家队伍实际行军时自动暂停，停止后从原进度继续。默认开启。")]
 	[SettingPropertyGroup("4. 开发者选项")]

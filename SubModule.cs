@@ -608,9 +608,69 @@ public class SubModule : MBSubModuleBase
 	{
 		long perfFrame = PerfProbe.BeginFrame(dt);
 		FreezeWatchdog.BeginFrame(dt);
+		CampaignTickDiagnosticsPatch.RefreshCheckpointWriteBudget();
 		try
 		{
+			if (!FreezeWatchdog.IsScopeRecordingActive() && !PerfProbe.IsDetailedScopeRecordingActive())
+			{
+				RunFastApplicationTickPhases();
+			}
+			else
+			{
+				RunWatchedApplicationTickPhases();
+			}
+		}
+		catch (Exception ex)
+		{
+			FreezeWatchdog.Mark("SubModule.OnApplicationTick.exception", ex.GetType().Name + ": " + ex.Message, immediate: true);
+			throw;
 
+		}
+		finally
+		{
+			using (FreezeWatchdog.Scope("SubModule.PerfProbe.EndFrame"))
+			{
+				PerfProbe.EndFrame(perfFrame, "SubModule.OnApplicationTick.total");
+			}
+			FreezeWatchdog.EndFrame();
+		}
+	}
+
+	private void RunFastApplicationTickPhases()
+	{
+		ShoutTextInputPopup.ProcessDeferredCloseIfNeeded();
+		ShoutTextInputPopup.CloseForSystemInterruptionIfNeeded();
+		ShoutTextInputPopup.KeepMissionPausedIfOpen();
+		DevWeeklyReportPopup.ProcessDeferredCloseIfNeeded();
+		PlayerNotorietyPopup.ProcessDeferredCloseIfNeeded();
+		AnimusForgeConversationHistoryLogPopup.OnApplicationTick();
+		AnimusForgeNativeConversationOverlay.OnApplicationTick();
+		ShoutBehavior.OnApplicationTickForMainThreadActionsExternal();
+		NativeConversationAnswerAreaController.OnApplicationTick();
+		ShoutBehavior.OnApplicationTickForNativeConversationTtsExternal();
+		ConversationHelper.Tick();
+		ProcessPendingInitialApiGuideNotice();
+		Logger.OnApplicationTick();
+		BannerlordExceptionSentinel.OnApplicationTick();
+		McmDropdownRuntimeRefresh.OnApplicationTick();
+		EncyclopediaHeroPersonaPatch.OnApplicationTick();
+		SiegeAiInterventionBehavior.OnEngineTickForExternal();
+		ModOnboardingBehavior.Instance?.OnEngineTick();
+		MyBehavior.Instance?.OnEngineTick();
+		CourierDeliveryBehavior.Instance?.OnEngineTick();
+		DuelBehavior.Instance?.OnEngineTick();
+		RewardSystemBehavior.Instance?.OnEngineTick();
+		LordEncounterBehavior.OnEngineTick();
+		AnimusForgeTerminalBehavior.Instance?.OnEngineTick();
+		CustomPolicyBehavior.Instance?.OnEngineTick();
+		NpcRulerPolicyBehavior.Instance?.OnEngineTick();
+		PolicySystemUi.OnApplicationTick();
+		NobleGatheringBehavior.Instance?.OnEngineTick();
+		VassalageBehavior.Instance?.OnEngineTick();
+	}
+
+	private void RunWatchedApplicationTickPhases()
+	{
 			RunWatchedTickPhase("SubModule.ShoutTextInputPopup.ProcessDeferredCloseIfNeeded", () => ShoutTextInputPopup.ProcessDeferredCloseIfNeeded());
 			RunWatchedTickPhase("SubModule.ShoutTextInputPopup.CloseForSystemInterruptionIfNeeded", () => ShoutTextInputPopup.CloseForSystemInterruptionIfNeeded());
 			RunWatchedTickPhase("SubModule.ShoutTextInputPopup.KeepMissionPausedIfOpen", () => ShoutTextInputPopup.KeepMissionPausedIfOpen());
@@ -640,25 +700,15 @@ public class SubModule : MBSubModuleBase
 			RunWatchedTickPhase("SubModule.PolicySystemUi.OnApplicationTick", () => PolicySystemUi.OnApplicationTick());
 			RunWatchedTickPhase("SubModule.NobleGatheringBehavior.OnEngineTick", () => NobleGatheringBehavior.Instance?.OnEngineTick());
 			RunWatchedTickPhase("SubModule.VassalageBehavior.OnEngineTick", () => VassalageBehavior.Instance?.OnEngineTick());
-		}
-		catch (Exception ex)
-		{
-			FreezeWatchdog.Mark("SubModule.OnApplicationTick.exception", ex.GetType().Name + ": " + ex.Message, immediate: true);
-			throw;
-
-		}
-		finally
-		{
-			using (FreezeWatchdog.Scope("SubModule.PerfProbe.EndFrame"))
-			{
-				PerfProbe.EndFrame(perfFrame, "SubModule.OnApplicationTick.total");
-			}
-			FreezeWatchdog.EndFrame();
-		}
 	}
 
 	private static void RunWatchedTickPhase(string name, Action action)
 	{
+		if (!FreezeWatchdog.IsScopeRecordingActive() && !PerfProbe.IsDetailedScopeRecordingActive())
+		{
+			action?.Invoke();
+			return;
+		}
 		using (FreezeWatchdog.Scope(name))
 		using (PerfProbe.Scope(name))
 		{

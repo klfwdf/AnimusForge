@@ -2116,7 +2116,7 @@ public static class WorldEntityRetrievalService
 			for (int i = 0; i < postprocessHeroes.Count; i++)
 			{
 				Hero hero = postprocessHeroes[i].Value;
-				sb.AppendLine((i + 1) + ". 名称：" + SafeName(hero?.Name, postprocessHeroes[i].Name) + "；位置：" + FormatHeroLocation(hero) + "；编号：" + postprocessHeroes[i].Id + FormatPostprocessMentionHint(postprocessHeroes[i]));
+				sb.AppendLine((i + 1) + ". 名称：" + SafeName(hero?.Name, postprocessHeroes[i].Name) + "；位置：" + FormatHeroLocation(hero) + "；ID：" + FormatPostprocessEntityId(postprocessHeroes[i].Id) + FormatPostprocessMentionHint(postprocessHeroes[i]));
 			}
 		}
 		if (settlements != null && settlements.Count > 0)
@@ -2125,7 +2125,7 @@ public static class WorldEntityRetrievalService
 			for (int i = 0; i < settlements.Count; i++)
 			{
 				Settlement settlement = settlements[i].Value;
-				sb.AppendLine((i + 1) + ". 名称：" + SafeName(settlement?.Name, settlements[i].Name) + "；编号：" + settlements[i].Id + FormatPostprocessMentionHint(settlements[i]));
+				sb.AppendLine((i + 1) + ". 名称：" + SafeName(settlement?.Name, settlements[i].Name) + "；ID：" + FormatPostprocessEntityId(settlements[i].Id) + FormatPostprocessMentionHint(settlements[i]));
 			}
 		}
 		if (postprocessClans.Count > 0)
@@ -2134,7 +2134,7 @@ public static class WorldEntityRetrievalService
 			for (int i = 0; i < postprocessClans.Count; i++)
 			{
 				Clan clan = postprocessClans[i].Value;
-				sb.AppendLine((i + 1) + ". 名称：" + SafeName(clan?.Name, postprocessClans[i].Name) + "；编号：" + postprocessClans[i].Id + FormatPostprocessMentionHint(postprocessClans[i]));
+				sb.AppendLine((i + 1) + ". 名称：" + SafeName(clan?.Name, postprocessClans[i].Name) + "；ID：" + FormatPostprocessEntityId(postprocessClans[i].Id) + FormatPostprocessMentionHint(postprocessClans[i]));
 			}
 		}
 		if (postprocessKingdoms.Count > 0)
@@ -2143,7 +2143,7 @@ public static class WorldEntityRetrievalService
 			for (int i = 0; i < postprocessKingdoms.Count; i++)
 			{
 				Kingdom kingdom = postprocessKingdoms[i].Value;
-				sb.AppendLine((i + 1) + ". 名称：" + SafeName(kingdom?.Name, postprocessKingdoms[i].Name) + "；编号：" + postprocessKingdoms[i].Id + FormatPostprocessMentionHint(postprocessKingdoms[i]));
+				sb.AppendLine((i + 1) + ". 名称：" + SafeName(kingdom?.Name, postprocessKingdoms[i].Name) + "；ID：" + FormatPostprocessEntityId(postprocessKingdoms[i].Id) + FormatPostprocessMentionHint(postprocessKingdoms[i]));
 			}
 		}
 		if (items != null && items.Count > 0)
@@ -2152,7 +2152,7 @@ public static class WorldEntityRetrievalService
 			for (int i = 0; i < items.Count; i++)
 			{
 				ItemObject item = items[i].Value;
-				sb.AppendLine((i + 1) + ". 名称：" + SafeName(item?.Name, items[i].Name) + "；类型：" + FormatItemTypeLabel(item) + "；编号：" + items[i].Id + FormatPostprocessMentionHint(items[i]));
+				sb.AppendLine((i + 1) + ". 名称：" + SafeName(item?.Name, items[i].Name) + "；类型：" + FormatItemTypeLabel(item) + "；ID：" + FormatPostprocessEntityId(items[i].Id) + FormatPostprocessMentionHint(items[i]));
 			}
 		}
 		if (visibleParties != null && visibleParties.Count > 0)
@@ -2164,6 +2164,30 @@ public static class WorldEntityRetrievalService
 			}
 		}
 		return sb.ToString().Trim();
+	}
+
+	private static string FormatPostprocessEntityId(string id)
+	{
+		string text = (id ?? "").Trim();
+		int separatorIndex = text.IndexOf(':');
+		if (separatorIndex <= 0)
+		{
+			return text;
+		}
+		switch (text.Substring(0, separatorIndex).ToLowerInvariant())
+		{
+		case "hero":
+		case "settlement":
+		case "clan":
+		case "kingdom":
+		case "item":
+		case "troop":
+		case "party":
+		case "mobile_party":
+			return text.Substring(separatorIndex + 1).Trim();
+		default:
+			return text;
+		}
 	}
 
 	private static string FormatPostprocessMentionHint<T>(EntityMatch<T> match) where T : class
@@ -2226,7 +2250,7 @@ public static class WorldEntityRetrievalService
 				return;
 			}
 			sb.AppendLine("【玩家本人】");
-			sb.AppendLine("1. 名称：" + SafeName(player.Name, "玩家") + "；固定ID：hero:" + id + "；用于FOLLOW玩家时目标类型写hero，id填写" + id + "。");
+			sb.AppendLine("1. 名称：" + SafeName(player.Name, "玩家") + "；固定ID：" + id + "；用于FOLLOW玩家时目标类型写hero，id填写" + id + "。");
 		}
 		catch
 		{

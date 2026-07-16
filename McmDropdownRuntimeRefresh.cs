@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using HarmonyLib;
 
 namespace AnimusForge;
@@ -74,29 +75,33 @@ public static class McmDropdownRuntimeRefresh
 
 	public static void RequestRefresh()
 	{
-		lock (SyncRoot)
+		while (true)
 		{
-			if (_refreshPendingTicks < 3)
+			int pendingTicks = Volatile.Read(ref _refreshPendingTicks);
+			if (pendingTicks >= 3)
 			{
-				_refreshPendingTicks = 3;
+				return;
+			}
+			if (Interlocked.CompareExchange(ref _refreshPendingTicks, 3, pendingTicks) == pendingTicks)
+			{
+				return;
 			}
 		}
 	}
 
 	public static void OnApplicationTick()
 	{
-		bool shouldRefresh;
-		lock (SyncRoot)
+		while (true)
 		{
-			shouldRefresh = _refreshPendingTicks > 0;
-			if (_refreshPendingTicks > 0)
+			int pendingTicks = Volatile.Read(ref _refreshPendingTicks);
+			if (pendingTicks <= 0)
 			{
-				_refreshPendingTicks--;
+				return;
 			}
-		}
-		if (!shouldRefresh)
-		{
-			return;
+			if (Interlocked.CompareExchange(ref _refreshPendingTicks, pendingTicks - 1, pendingTicks) == pendingTicks)
+			{
+				break;
+			}
 		}
 		try
 		{

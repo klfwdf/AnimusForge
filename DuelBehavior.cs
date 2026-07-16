@@ -4848,11 +4848,26 @@ public class DuelBehavior : CampaignBehaviorBase
 
 	public void OnEngineTick()
 	{
-		GlobalDuelStarterTick();
-		GlobalSourceMissionLeaveTick();
-		GlobalArenaLeaveTick();
-		GlobalTownMenuTick();
-		GlobalWildernessDuelEncounterMenuGuardTick();
+		if (_queuedArenaDuelTarget != null || _queuedDuelTargetCharacter != null)
+		{
+			GlobalDuelStarterTick();
+		}
+		if (_leaveSourceMissionRequested)
+		{
+			GlobalSourceMissionLeaveTick();
+		}
+		if (_arenaMissionActive)
+		{
+			GlobalArenaLeaveTick();
+		}
+		if (_openTownMenuRequested)
+		{
+			GlobalTownMenuTick();
+		}
+		if (_wildernessDuelEncounterMenuGuardUntilUtcTicks > 0L || _wildernessDuelEncounterMenuExitRequested)
+		{
+			GlobalWildernessDuelEncounterMenuGuardTick();
+		}
 		Mission mission = Mission.Current;
 		if (mission == null)
 		{

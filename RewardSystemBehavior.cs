@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Xml;
 using Helpers;
 using HarmonyLib;
@@ -535,6 +536,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	private static readonly object HeroJoinConversationCloseLock = new object();
 
 	private static PendingHeroJoinConversationClose _pendingHeroJoinConversationClose;
+
+	private static int _hasPendingHeroJoinConversationClose;
 
 	public static RewardSystemBehavior Instance { get; private set; }
 
@@ -5375,6 +5378,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		lock (HeroJoinConversationCloseLock)
 		{
 			_pendingHeroJoinConversationClose = pending;
+			Volatile.Write(ref _hasPendingHeroJoinConversationClose, 1);
 		}
 		ConversationExceptionGuard.MarkCurrentConversationStale("hero_join_party_scheduled_close");
 		Logger.Log("RewardSystemBehavior", "[HeroJoin] scheduled delayed conversation close hero=" + pending.JoinedHeroId + " originalParty=" + pending.OriginalPartyId);
@@ -5382,6 +5386,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	private static void TryClosePendingHeroJoinConversation()
 	{
+		if (Volatile.Read(ref _hasPendingHeroJoinConversationClose) == 0)
+		{
+			return;
+		}
 		PendingHeroJoinConversationClose pending = null;
 		try
 		{
@@ -5398,6 +5406,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				}
 				pending = _pendingHeroJoinConversationClose;
 				_pendingHeroJoinConversationClose = null;
+				Volatile.Write(ref _hasPendingHeroJoinConversationClose, 0);
 			}
 			ExecutePendingHeroJoinConversationClose(pending);
 		}
