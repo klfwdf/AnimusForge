@@ -70,6 +70,7 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 	private const string MotiveBurden = "BurdenPressure";
 	private const string MotiveDuty = "PartyRoleDuty";
 	private const string MotiveEmotion = "RelationshipEmotion";
+	private const string MotiveRomanticInteraction = "RomanticInteraction";
 	private const string MotiveFamily = "Family";
 	private const string MotiveFollowUp = "ConversationFollowUp";
 	private const string MotiveCasual = "CasualChat";
@@ -484,7 +485,7 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 				StableKey = "hero_event:" + HeroId(hero) + ":" + heroEventKey,
 				IsEvent = true,
 				Urgency = ClampFloat(100f - age * 4f, 60f, 100f),
-				FactText = heroName + "近期真实经历（第" + heroEventDay + "日）：" + LimitText(heroEventText, 320),
+				FactText = heroName + "近期有一段真实经历：" + LimitText(heroEventText, 320),
 				IntentText = "你决定主动谈起这件近期真实经历；不要改写结果或虚构后续。"
 			});
 		}
@@ -500,7 +501,7 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 				StableKey = "player_event:" + playerEventKey,
 				IsEvent = true,
 				Urgency = ClampFloat(95f - age * 3.5f, 60f, 95f),
-				FactText = "玩家近期真实行动（第" + playerEventDay + "日）：" + LimitText(playerEventText, 320),
+				FactText = "玩家近期有一段真实经历：" + LimitText(playerEventText, 320),
 				IntentText = "你与玩家同队，决定主动谈谈这件近期真实行动；不要虚构未提供的细节。"
 			});
 		}
@@ -529,7 +530,7 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 					Type = MotivePartyMorale,
 					StableKey = "morale:" + currentDay,
 					Urgency = ClampFloat(60f + (40f - party.Morale), 60f, 100f),
-					FactText = "玩家主队当前士气约为" + party.Morale.ToString("0") + "/100。",
+					FactText = "队中士气低落，气氛沉闷。",
 					IntentText = "你决定主动反馈队伍士气低落，但不要谈挨饿、欠饷、逃跑或劫村抱怨。"
 				});
 			}
@@ -540,7 +541,7 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 					Type = MotivePartyWounded,
 					StableKey = "party_wounded:" + currentDay,
 					Urgency = ClampFloat(60f + (party.WoundedRatio - 0.25f) * 53.34f, 60f, 100f),
-					FactText = "玩家主队有" + party.WoundedCount + "/" + party.MemberCount + "人受伤。",
+					FactText = "队中伤兵不少，众人都在担心恢复。",
 					IntentText = "你决定主动谈谈伤兵、恢复或队伍健康压力。"
 				});
 			}
@@ -551,7 +552,7 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 					Type = MotivePrisoners,
 					StableKey = "prisoners:" + currentDay,
 					Urgency = ClampFloat(60f + (party.PrisonerRatio - 0.75f) * 80f, 60f, 100f),
-					FactText = "玩家主队当前押送俘虏" + party.PrisonerCount + "/" + party.PrisonerLimit + "人。",
+					FactText = "队伍带着太多俘虏，照看起来很费心。",
 					IntentText = "你决定主动反馈俘虏管理、赎买或转运压力；不要假定任何交易已经成立。"
 				});
 			}
@@ -562,7 +563,7 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 					Type = MotiveBurden,
 					StableKey = "burden:" + currentDay,
 					Urgency = ClampFloat(60f + (party.BurdenRatio - 0.9f) * 100f, 60f, 100f),
-					FactText = "玩家主队当前负重约为容量的" + (party.BurdenRatio * 100f).ToString("0") + "%（" + party.TotalWeight.ToString("0") + "/" + party.InventoryCapacity + "）。",
+					FactText = "队伍辎重过多，行军颇受拖累。",
 					IntentText = "你决定主动反馈负重、运输或物资整理压力。"
 				});
 			}
@@ -575,12 +576,12 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 				if (string.Equals(role, "医师", StringComparison.Ordinal) && party.WoundedRatio >= 0.15f)
 				{
 					roleUrgency = ClampFloat(45f + party.WoundedRatio * 35f, 45f, 70f);
-					roleFact += " 队内伤兵为" + party.WoundedCount + "/" + party.MemberCount + "人。";
+					roleFact += " 队中伤兵不少，正需要留心照料。";
 				}
 				else if (string.Equals(role, "军需官", StringComparison.Ordinal) && party.BurdenRatio >= 0.75f)
 				{
 					roleUrgency = ClampFloat(45f + party.BurdenRatio * 25f, 45f, 70f);
-					roleFact += " 当前负重约为容量的" + (party.BurdenRatio * 100f).ToString("0") + "%。";
+					roleFact += " 队伍辎重过多，行军颇受拖累。";
 				}
 				motives.Add(new CompanionChatMotive
 				{
@@ -602,7 +603,7 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 					Type = MotiveFamily,
 					StableKey = "family:" + HeroId(hero) + ":" + currentDay,
 					Urgency = ClampFloat(40f + Math.Max(0, personalTrust) * 0.2f, 40f, 60f),
-					FactText = heroName + "未满18岁，并且属于玩家家族。个人信任=" + personalTrust + "。",
+					FactText = heroName + "尚未成年，也是玩家的家人，对玩家十分亲近。",
 					IntentText = "你决定以未成年家族成员的身份主动谈谈家庭、关心或自己的近况；禁止恋爱化和成人职责表达。"
 				});
 			}
@@ -613,27 +614,44 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 					Type = MotiveCare,
 					StableKey = "minor_care:" + HeroId(hero) + ":" + currentDay,
 					Urgency = ClampFloat(40f + personalTrust * 0.25f, 40f, 65f),
-					FactText = heroName + "未满18岁，对玩家的个人信任=" + personalTrust + "。",
+					FactText = heroName + "尚未成年，与玩家同行已久，也愿意说些心里话。",
 					IntentText = "你决定以未成年队内成员的身份表达信任或关心；禁止恋爱化和成人职责表达。"
 				});
 			}
 		}
-		else if (privateRelation >= 35 || personalTrust >= 35 || privateRelation <= -25 || personalTrust <= -25)
+		else
 		{
-			bool strained = privateRelation <= -25 || personalTrust <= -25;
-			float emotionUrgency = strained
-				? ClampFloat(55f + Math.Max(-privateRelation, -personalTrust) * 0.35f, 55f, 90f)
-				: ClampFloat(40f + Math.Max(privateRelation, personalTrust) * 0.3f, 40f, 70f);
-			motives.Add(new CompanionChatMotive
+			if (ProactiveNpcRequestBehavior.IsRomanticInteractionEligibleForExternal(hero)
+				&& !ProactiveNpcRequestBehavior.IsRomanticInteractionUnavailableForExternal())
 			{
-				Type = MotiveEmotion,
-				StableKey = "emotion:" + HeroId(hero) + ":" + currentDay,
-				Urgency = emotionUrgency,
-				FactText = heroName + "与玩家的私人关系=" + privateRelation + "，个人信任=" + personalTrust + "。",
-				IntentText = strained
-					? "你决定主动表达与当前低关系或低信任相符的不满、疑虑或冲突；不要虚构具体过错。"
-					: "你决定主动表达与当前私人关系和信任程度相符的关心或感受；不要夸大感情或虚构承诺。"
-			});
+				motives.Add(new CompanionChatMotive
+				{
+					Type = MotiveRomanticInteraction,
+					StableKey = "romantic_interaction:" + HeroId(hero),
+					Urgency = ClampFloat(60f + Math.Max(0, privateRelation - 30) * 0.4f, 60f, 88f),
+					FactText = heroName + "与玩家相识已久，心中有些牵挂。",
+					IntentText = AIConfigHandler.GetProactiveNpcRequestCompanionIntent(MotiveRomanticInteraction)
+				});
+			}
+			if (privateRelation >= 35 || personalTrust >= 35 || privateRelation <= -25 || personalTrust <= -25)
+			{
+				bool strained = privateRelation <= -25 || personalTrust <= -25;
+				float emotionUrgency = strained
+					? ClampFloat(55f + Math.Max(-privateRelation, -personalTrust) * 0.35f, 55f, 90f)
+					: ClampFloat(40f + Math.Max(privateRelation, personalTrust) * 0.3f, 40f, 70f);
+				motives.Add(new CompanionChatMotive
+				{
+					Type = MotiveEmotion,
+					StableKey = "emotion:" + HeroId(hero) + ":" + currentDay,
+					Urgency = emotionUrgency,
+					FactText = strained
+						? heroName + "与玩家之间仍有未解开的芥蒂。"
+						: heroName + "与玩家颇为亲近，也信得过对方。",
+					IntentText = strained
+						? "你决定主动表达与当前低关系或低信任相符的不满、疑虑或冲突；不要虚构具体过错。"
+						: "你决定主动表达关心或感受；克制，不夸大感情，也不虚构承诺。"
+				});
+			}
 		}
 
 		if (MyBehavior.TryGetLatestCompressedMemoryForExternal(hero, out string memoryKey, out string memoryDate, out string memoryText, out int memoryDay)
@@ -658,7 +676,7 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 			Type = MotiveCasual,
 			StableKey = "casual:" + HeroId(hero) + ":" + currentDay,
 			Urgency = 20f,
-			FactText = heroName + "当前与玩家同在玩家主队中，没有必须虚构的特殊事件。",
+			FactText = heroName + "正与玩家同行，只想聊几句日常。",
 			IntentText = minor
 				? "你决定以未成年队内成员的身份主动闲聊；只谈日常、家庭或可确认的当下，不得恋爱化。"
 				: "你决定主动进行一次普通闲聊；只谈日常或可确认的当下，不要虚构事件、困难或请求。"
@@ -671,14 +689,13 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 		Hero hero = selected.Hero;
 		CompanionChatMotive motive = selected.Motive;
 		string heroName = HeroName(hero);
-		string fact = "[AFEF NPC行为补充] " + heroName + "当前是玩家主队中的 Hero，并由" + heroName + "主动发起此次交谈。"
-			+ " 本次唯一动机：" + motive.FactText;
+		string fact = "[AFEF NPC行为补充] " + heroName + "正与玩家同行，此次由" + heroName + "主动开口。"
+			+ motive.FactText;
 		if (IsMinor(hero))
 		{
-			fact += " " + heroName + "未满18岁；本轮只能使用家庭、近期事件、关心、谈话后续或普通闲聊表达，禁止恋爱化和成人职责文案。";
+			fact += " " + heroName + "尚未成年；谈话只限家庭、关心、近况和日常。";
 		}
-		string prompt = "【本次 NPC 主动交谈意图】" + motive.IntentText
-			+ " 请你先开口，只围绕这一个动机，不要虚构未提供的事件或事实。只输出你作为NPC说出的话。";
+		string prompt = motive.IntentText + "先开口，只谈这件事，只输出台词。";
 		int noticeDays = ClampInt(settings.CompanionProactiveChatNoticeLifetimeDays, 1, 30);
 		_storage.PendingSession = new CompanionChatSession
 		{
@@ -704,6 +721,10 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 		int heroDays = settings.CompanionProactiveChatTestMode ? 0 : ClampInt(settings.CompanionProactiveChatHeroCooldownDays, 0, 240);
 		_storage.GlobalCooldownUntilDays = nowDays + globalDays;
 		_storage.HeroCooldownUntilDays[HeroId(hero)] = nowDays + heroDays;
+		if (string.Equals(motive.Type, MotiveRomanticInteraction, StringComparison.OrdinalIgnoreCase))
+		{
+			ProactiveNpcRequestBehavior.RecordRomanticInteractionForExternal("companion_notification_created");
+		}
 		int fatigueDays = settings.CompanionProactiveChatTestMode ? 0 : ClampInt(settings.CompanionProactiveChatMotiveFatigueDays, 0, 120);
 		if (fatigueDays > 0)
 		{

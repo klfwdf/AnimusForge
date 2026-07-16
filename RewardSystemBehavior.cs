@@ -8797,7 +8797,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return TryCreateGeneratedRewardItemResolution(lookup, templateResolution, out resolution, logSource);
 	}
 
-	private static bool TryCreateGeneratedRewardItemResolution(string lookup, RewardItemResolution templateResolution, out RewardItemResolution resolution, string logSource = null)
+	private static bool TryCreateGeneratedRewardItemResolution(string lookup, RewardItemResolution templateResolution, out RewardItemResolution resolution, string logSource = null, string identityKey = null)
 	{
 		resolution = null;
 		string requestedName = (lookup ?? "").Trim();
@@ -8819,7 +8819,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			return false;
 		}
 		string templateStringId = templateItem.StringId ?? templateResolution.MatchedStringId ?? "";
-		string generatedStringId = BuildGeneratedRewardItemStringId(requestedName, templateStringId);
+		string generatedStringId = BuildGeneratedRewardItemStringId(string.IsNullOrWhiteSpace(identityKey) ? requestedName : identityKey, templateStringId);
 		ItemObject generatedItem = TryGetOrCreateGeneratedRewardItem(generatedStringId, requestedName, templateItem, logSource);
 		if (generatedItem == null || !TryEnsureGeneratedRewardItemCategory(generatedItem, templateItem, logSource))
 		{
@@ -8860,7 +8860,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return true;
 	}
 
-	public static int GenerateNamedInventoryItemToRosterForExternal(ItemRoster targetRoster, string requestedName, int amount, out string generatedStringId, out string itemName, string logSource = null)
+	public static int GenerateNamedInventoryItemToRosterForExternal(ItemRoster targetRoster, string requestedName, int amount, out string generatedStringId, out string itemName, string logSource = null, string identityKey = null)
 	{
 		generatedStringId = null;
 		itemName = null;
@@ -8918,7 +8918,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					TemplateItem = fallbackTemplate
 				};
 			}
-			if (!TryCreateGeneratedRewardItemResolution(requestedName, templateResolution, out RewardItemResolution resolution, logSource ?? "external_generate_named"))
+			if (!TryCreateGeneratedRewardItemResolution(requestedName, templateResolution, out RewardItemResolution resolution, logSource ?? "external_generate_named", identityKey))
 			{
 				return 0;
 			}
@@ -11746,7 +11746,17 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			string text = Instance?.GetGeneratedRewardItemRecord(itemObject.StringId)?.DisplayName;
+			string definition = "";
+			string text;
+			if (CourierDeliveryBehavior.TryGetCourierLetterInventoryDetailForExternal(itemObject.StringId, itemObject.Id.InternalValue, out string letterBody))
+			{
+				definition = "信件正文";
+				text = letterBody;
+			}
+			else
+			{
+				text = Instance?.GetGeneratedRewardItemRecord(itemObject.StringId)?.DisplayName;
+			}
 			if (string.IsNullOrWhiteSpace(text))
 			{
 				text = itemObject.Name?.ToString();
@@ -11762,7 +11772,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			createProperty.Invoke(__instance, new object[5] { targetItemProperties, "", text, 0, null });
+			createProperty.Invoke(__instance, new object[5] { targetItemProperties, definition, text, 0, null });
 		}
 		catch (Exception ex)
 		{

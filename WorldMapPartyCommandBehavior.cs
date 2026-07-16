@@ -15,6 +15,7 @@ using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 
 namespace AnimusForge;
@@ -23,6 +24,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 {
 	private const string LogSource = "WorldMapCommand";
 	private const string StorageKey = "_af_worldmap_party_command_queues_v1";
+	private const string DetachedPartyStorageKey = "_af_worldmap_player_detachments_v1";
 	private const float SettlementArrivalDistance = 3.0f;
 	private const float PatrolArrivalDistance = 8.0f;
 	private const float PatrolLeashDistance = 24.0f;
@@ -44,8 +46,10 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 
 	private readonly Dictionary<string, PartyCommandQueueState> _queues = new Dictionary<string, PartyCommandQueueState>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, PendingCreateCompanionPartyRequest> _pendingCreatePartyRequests = new Dictionary<string, PendingCreateCompanionPartyRequest>(StringComparer.OrdinalIgnoreCase);
+	private readonly Dictionary<string, PlayerDetachedPartyRecord> _playerDetachedParties = new Dictionary<string, PlayerDetachedPartyRecord>(StringComparer.OrdinalIgnoreCase);
 	private readonly object _queueLock = new object();
 	private bool _isOpeningCreateCompanionPartyScreen;
+	private double _nextDetachedPartyPruneDay;
 
 	public static WorldMapPartyCommandBehavior Instance { get; private set; }
 
@@ -57,8 +61,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		FollowParty,
 		AttackHero,
 		AttackParty,
-		MergeToPlayer,
-		CreateCompanionParty
+		MergeToPlayer
 	}
 
 	private enum CommandStage
@@ -131,6 +134,23 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		public List<PartyCommandEntry> FollowUpCommands = new List<PartyCommandEntry>();
 	}
 
+	private sealed class PlayerDetachedPartyRecord
+	{
+		public string HeroId;
+		public string PartyStringId;
+		public int PartyIndex = -1;
+	}
+
+	public sealed class WorldMapOrderApplyResult
+	{
+		public bool HadTag { get; internal set; }
+		public bool Handled { get; internal set; }
+		public bool StopApplied { get; internal set; }
+		public int AddedCommandCount { get; internal set; }
+		public bool CompanionPartyCreationQueued { get; internal set; }
+		public bool NeedsChannelExit => CompanionPartyCreationQueued;
+	}
+
 	public override void RegisterEvents()
 	{
 		Instance = this;
@@ -148,6 +168,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 	public override void SyncData(IDataStore dataStore)
 	{
 		Dictionary<string, string> storage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		Dictionary<string, string> detachedStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		if (dataStore.IsSaving)
 		{
 			lock (_queueLock)
@@ -159,10 +180,19 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 						storage[pair.Key] = JsonConvert.SerializeObject(pair.Value);
 					}
 				}
+				foreach (KeyValuePair<string, PlayerDetachedPartyRecord> pair in _playerDetachedParties)
+				{
+					if (pair.Value != null && !string.IsNullOrWhiteSpace(pair.Key))
+					{
+						detachedStorage[pair.Key] = JsonConvert.SerializeObject(pair.Value);
+					}
+				}
 			}
 			storage = CampaignSaveChunkHelper.FlattenStringDictionary(storage, StorageKey, "WorldMapPartyCommand");
+			detachedStorage = CampaignSaveChunkHelper.FlattenStringDictionary(detachedStorage, DetachedPartyStorageKey, "WorldMapPlayerDetachment");
 		}
 		dataStore.SyncData(StorageKey, ref storage);
+		dataStore.SyncData(DetachedPartyStorageKey, ref detachedStorage);
 		if (!dataStore.IsLoading)
 		{
 			return;
@@ -181,6 +211,10 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 						continue;
 					}
 					NormalizeState(state);
+					if (state.Commands == null || state.Commands.Count == 0 || state.CurrentIndex >= state.Commands.Count)
+					{
+						continue;
+					}
 					string queueKey = GetQueueKey(state);
 					if (string.IsNullOrWhiteSpace(queueKey))
 					{
@@ -191,6 +225,22 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				catch (Exception ex)
 				{
 					Log("load failed key=" + pair.Key + " error=" + ex.Message);
+				}
+			}
+			_playerDetachedParties.Clear();
+			foreach (KeyValuePair<string, string> pair in CampaignSaveChunkHelper.RestoreStringDictionary(detachedStorage, "WorldMapPlayerDetachment") ?? new Dictionary<string, string>())
+			{
+				try
+				{
+					PlayerDetachedPartyRecord record = JsonConvert.DeserializeObject<PlayerDetachedPartyRecord>(pair.Value ?? "");
+					if (TryValidateDetachedPartyRecord(record, out Hero _, out MobileParty _))
+					{
+						_playerDetachedParties[record.HeroId] = record;
+					}
+				}
+				catch (Exception ex)
+				{
+					Log("load detached party failed key=" + pair.Key + " error=" + ex.Message);
 				}
 			}
 		}
@@ -255,6 +305,110 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		return BuildRuntimePostprocessRulesForExternal(targetHero, null, -1);
 	}
 
+	public static string BuildCurrentNpcCommandTasksPromptForExternal(Hero targetHero, CharacterObject targetCharacter = null, int targetAgentIndex = -1)
+	{
+		const string header = "【当前NPC命令任务】";
+		try
+		{
+			WorldMapPartyCommandBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<WorldMapPartyCommandBehavior>();
+			if (behavior == null)
+			{
+				return header + "无";
+			}
+			targetHero = targetHero ?? targetCharacter?.HeroObject;
+			List<PartyCommandEntry> snapshot = new List<PartyCommandEntry>();
+			lock (behavior._queueLock)
+			{
+				if (targetHero != null && !string.IsNullOrWhiteSpace(targetHero.StringId))
+				{
+					if (behavior._queues.TryGetValue(targetHero.StringId, out PartyCommandQueueState state) && state?.Commands != null)
+					{
+						snapshot = state.Commands.Skip(Math.Max(0, state.CurrentIndex)).Where(IsExecutableCommand).Select(CloneCommand).ToList();
+					}
+					else if (behavior._pendingCreatePartyRequests.TryGetValue(targetHero.StringId, out PendingCreateCompanionPartyRequest pending))
+					{
+						snapshot = (pending?.FollowUpCommands ?? new List<PartyCommandEntry>()).Where(IsExecutableCommand).Select(CloneCommand).ToList();
+					}
+				}
+				else if (TryResolveNonHeroPartyActorForExternal(targetCharacter, targetAgentIndex, out MobileParty party))
+				{
+					string actorKey = BuildPartyActorKey(party, createGuid: false);
+					if (!string.IsNullOrWhiteSpace(actorKey) && behavior._queues.TryGetValue(actorKey, out PartyCommandQueueState state) && state?.Commands != null)
+					{
+						snapshot = state.Commands.Skip(Math.Max(0, state.CurrentIndex)).Where(IsExecutableNonHeroPartyCommand).Select(CloneCommand).ToList();
+					}
+				}
+			}
+			if (snapshot.Count == 0)
+			{
+				return header + "无";
+			}
+			int shownCount = Math.Min(5, snapshot.Count);
+			List<string> phrases = new List<string>();
+			for (int i = 0; i < shownCount; i++)
+			{
+				phrases.Add((i == 0 ? "进行:" : "随后:") + BuildNaturalCommandSummary(snapshot[i]));
+			}
+			if (snapshot.Count > shownCount)
+			{
+				phrases.Add("另" + (snapshot.Count - shownCount) + "项");
+			}
+			return header + string.Join(" → ", phrases);
+		}
+		catch (Exception ex)
+		{
+			Log("build command task prompt failed: " + ex.Message);
+			return header + "无";
+		}
+	}
+
+	private static string BuildNaturalCommandSummary(PartyCommandEntry command)
+	{
+		int days = Math.Max(1, command?.Days ?? 1);
+		if (IsKind(command, CommandKind.MergeToPlayer))
+		{
+			return "归队" + days + "天";
+		}
+		string targetName = ResolveNaturalCommandTargetName(command);
+		if (IsKind(command, CommandKind.GoToSettlement))
+		{
+			return "前往" + targetName + days + "天";
+		}
+		if (IsKind(command, CommandKind.PatrolSettlement))
+		{
+			return "巡逻" + targetName + days + "天";
+		}
+		if (IsKind(command, CommandKind.FollowHero) || IsKind(command, CommandKind.FollowParty))
+		{
+			return "跟随" + targetName + days + "天";
+		}
+		if (IsKind(command, CommandKind.AttackHero) || IsKind(command, CommandKind.AttackParty))
+		{
+			return (IsForceAttackMode(command?.Mode) ? "强攻" : "攻击") + targetName + days + "天";
+		}
+		return "未知任务" + days + "天";
+	}
+
+	private static string ResolveNaturalCommandTargetName(PartyCommandEntry command)
+	{
+		if (command == null)
+		{
+			return "未知目标";
+		}
+		if (IsKind(command, CommandKind.GoToSettlement) || IsKind(command, CommandKind.PatrolSettlement) || IsSettlementTarget(command))
+		{
+			Settlement settlement = ResolveSettlementById(command.TargetId);
+			return settlement == null ? "未知地点" : GetSettlementName(settlement);
+		}
+		if (IsKind(command, CommandKind.FollowParty) || IsKind(command, CommandKind.AttackParty))
+		{
+			MobileParty party = ResolveMobilePartyById(command.TargetId);
+			return party == null ? "未知部队" : GetPartyName(party);
+		}
+		Hero hero = ResolveHeroByIdAny(command.TargetId);
+		return hero == null ? "未知人物" : GetHeroName(hero);
+	}
+
 	public static List<PostprocessRuleEntry> BuildRuntimePostprocessRulesForExternal(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex)
 	{
 		List<PostprocessRuleEntry> rules = AIConfigHandler.GetGuardrailRulePostprocessRules("worldmap_party_command") ?? new List<PostprocessRuleEntry>();
@@ -264,7 +418,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			return new List<PostprocessRuleEntry>();
 		}
-		bool targetInPlayerParty = CanInjectCreateCompanionPartyRule(targetHero);
+		bool canExposeMerge = targetHero != null && CanExposeMergeToPlayerRule(targetHero);
 		List<PostprocessRuleEntry> filtered = new List<PostprocessRuleEntry>();
 		foreach (PostprocessRuleEntry rule in rules)
 		{
@@ -272,17 +426,13 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			{
 				continue;
 			}
-			if (IsCreateCompanionPartyPostprocessRule(rule) && (!targetInPlayerParty || nonHeroPartyFallback))
-			{
-				continue;
-			}
 			if (IsMergeToPlayerPostprocessRule(rule))
 			{
-				if (nonHeroPartyFallback)
+				if (nonHeroPartyFallback || !canExposeMerge)
 				{
 					continue;
 				}
-				filtered.Add(ClonePostprocessRule(rule, BuildMergeToPlayerPostprocessDescription(targetInPlayerParty)));
+				filtered.Add(ClonePostprocessRule(rule, BuildMergeToPlayerPostprocessDescription()));
 				continue;
 			}
 			filtered.Add(ClonePostprocessRule(rule));
@@ -290,25 +440,19 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		return filtered;
 	}
 
-	private static bool CanInjectCreateCompanionPartyRule(Hero targetHero)
+	private static bool CanExposeMergeToPlayerRule(Hero targetHero)
 	{
-		try
-		{
-			return targetHero != null
-				&& targetHero != Hero.MainHero
-				&& targetHero.Clan == Clan.PlayerClan
-				&& targetHero.PartyBelongedTo == MobileParty.MainParty;
-		}
-		catch
+		if (targetHero == null || targetHero == Hero.MainHero)
 		{
 			return false;
 		}
-	}
-
-	private static bool IsCreateCompanionPartyPostprocessRule(PostprocessRuleEntry rule)
-	{
-		string tag = (rule?.Tag ?? "").Trim();
-		return tag.IndexOf("WORLDMAP_ORDER:CREATE_COMPANION_PARTY", StringComparison.OrdinalIgnoreCase) >= 0;
+		MobileParty party = ResolveActorParty(targetHero);
+		if (targetHero.Clan == Clan.PlayerClan && party != null && party != MobileParty.MainParty && party.LeaderHero == targetHero)
+		{
+			return true;
+		}
+		WorldMapPartyCommandBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<WorldMapPartyCommandBehavior>();
+		return behavior != null && party != null && behavior.IsRegisteredPlayerDetachment(targetHero, party);
 	}
 
 	private static bool IsMergeToPlayerPostprocessRule(PostprocessRuleEntry rule)
@@ -326,30 +470,33 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		};
 	}
 
-	private static string BuildMergeToPlayerPostprocessDescription(bool targetInPlayerParty)
+	private static string BuildMergeToPlayerPostprocessDescription()
 	{
-		if (targetInPlayerParty)
-		{
-			return "你在输出了其他ACTION:WORLDMAP时，如果玩家没有主动提到无需回归队伍，那么你必须输出此标签在最下方";
-		}
-		return "Independent companion-party variant. Output this only when the NPC already leads an independent player-clan companion party and clearly agrees to move back to the player and merge that independent party into the player main party. {days} is the approach/merge timeout; use 1 if unspecified. Do not use this for ordinary lords, enemies, non-player-clan heroes, or heroes who are already in the player's party unless the player-party temporary-create-party variant applies.";
+		return "仅当玩家明确要求NPC归队，且NPC是玩家家族独立部队或已登记的玩家主队拆出任务队伍时输出。{days}是接近并归队的时限，未说明用1。普通外国独立领主不能归队。不要因新增其它任务而自动输出。";
 	}
 
 	public static bool TryApplyWorldMapOrderTagsForExternal(Hero targetHero, ref string content, out List<string> generatedFacts, out List<string> notifications)
 	{
-		return TryApplyWorldMapOrderTagsForExternal(targetHero, null, -1, ref content, out generatedFacts, out notifications);
+		return TryApplyWorldMapOrderTagsForExternal(targetHero, null, -1, ref content, out generatedFacts, out notifications, out _);
 	}
 
 	public static bool TryApplyWorldMapOrderTagsForExternal(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, ref string content, out List<string> generatedFacts, out List<string> notifications)
 	{
+		return TryApplyWorldMapOrderTagsForExternal(targetHero, targetCharacter, targetAgentIndex, ref content, out generatedFacts, out notifications, out _);
+	}
+
+	public static bool TryApplyWorldMapOrderTagsForExternal(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, ref string content, out List<string> generatedFacts, out List<string> notifications, out WorldMapOrderApplyResult result)
+	{
 		generatedFacts = new List<string>();
 		notifications = new List<string>();
+		result = new WorldMapOrderApplyResult();
 		string original = content ?? "";
 		try
 		{
 			List<PartyCommandEntry> commands = new List<PartyCommandEntry>();
 			bool hasAnyWorldMapTag = false;
-			bool stop = false;
+			bool hasParsedTag = false;
+			bool leadingStop = false;
 			foreach (Match match in WorldMapOrderTagRegex.Matches(original))
 			{
 				hasAnyWorldMapTag = true;
@@ -357,10 +504,20 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
+				if (!hasParsedTag)
+				{
+					hasParsedTag = true;
+					leadingStop = isStop;
+					if (isStop)
+					{
+						continue;
+					}
+				}
 				if (isStop)
 				{
-					stop = true;
-					break;
+					notifications.Add("大地图命令顺序错误：STOP 只能位于本轮首个有效世界地图标签，已忽略该 STOP。");
+					Log("ignored non-leading STOP tag");
+					continue;
 				}
 				if (command != null)
 				{
@@ -368,6 +525,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				}
 			}
 			content = StripWorldMapOrderTags(original);
+			result.HadTag = hasAnyWorldMapTag;
 			if (!hasAnyWorldMapTag)
 			{
 				return false;
@@ -387,23 +545,28 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 					return false;
 				}
 				string actorName = GetActorName(null, null, nonHeroParty);
-				if (stop)
+				if (leadingStop)
 				{
 					behavior.StopQueueForParty(nonHeroParty, "tag_stop", out string stopFact);
+					result.StopApplied = true;
 					if (!string.IsNullOrWhiteSpace(stopFact))
 					{
 						generatedFacts.Add(stopFact);
 					}
-					notifications.Add(actorName + "已停止当前大地图命令。");
-					return true;
+					notifications.Add(actorName + "已清空旧的大地图命令清单。");
 				}
 				List<PartyCommandEntry> nonHeroCommands = commands.Where(IsExecutableNonHeroPartyCommand).Select(CloneCommand).ToList();
 				if (nonHeroCommands.Count == 0)
 				{
+					if (leadingStop)
+					{
+						result.Handled = true;
+						return true;
+					}
 					notifications.Add("大地图命令失败：当前非英雄部队只能执行移动、巡逻、跟随、攻击等队伍级命令。");
 					return false;
 				}
-				if (!behavior.TryReplaceQueueForParty(nonHeroParty, nonHeroCommands, out string nonHeroFact, out string nonHeroMessage))
+				if (!behavior.TryAppendQueueForParty(nonHeroParty, nonHeroCommands, out string nonHeroFact, out string nonHeroMessage))
 				{
 					if (!string.IsNullOrWhiteSpace(nonHeroMessage))
 					{
@@ -416,34 +579,52 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 					generatedFacts.Add(nonHeroFact);
 				}
 				notifications.Add(nonHeroMessage);
+				result.Handled = true;
+				result.AddedCommandCount = nonHeroCommands.Count;
 				return true;
 			}
-			if (stop)
+			if (leadingStop)
 			{
 				behavior.StopQueue(targetHero, "tag_stop", out string stopFact);
+				result.StopApplied = true;
 				if (!string.IsNullOrWhiteSpace(stopFact))
 				{
 					generatedFacts.Add(stopFact);
 				}
-				notifications.Add(GetHeroName(targetHero) + "已停止当前大地图命令。");
-				return true;
+				notifications.Add(GetHeroName(targetHero) + "已清空旧的大地图命令清单。");
 			}
 			if (commands.Count == 0)
 			{
+				if (leadingStop)
+				{
+					result.Handled = true;
+					return true;
+				}
 				notifications.Add("大地图命令失败：没有可执行的有效目标 ID。");
 				return false;
 			}
-			if (commands.Count > 0 && IsKind(commands[0], CommandKind.CreateCompanionParty))
+			if (IsHeroActuallyInPlayerMainPartyRoster(targetHero))
 			{
-				List<PartyCommandEntry> followUpCommands = commands.Skip(1).ToList();
-				bool opened = behavior.TryOpenCreateCompanionParty(targetHero, followUpCommands, out string createMessage);
-				notifications.Add(createMessage);
-				generatedFacts.Add("[AFEF NPC行为补充] " + GetHeroName(targetHero) + (opened
-					? (followUpCommands.Count > 0 ? "接受创建一支同伴部队，建队完成后将继续执行后续大地图命令。" : "同意按原版流程创建一支同伴部队。")
-					: "无法创建同伴部队：" + createMessage));
-				return opened;
+				int firstTaskIndex = commands.FindIndex(IsTaskCommandForImplicitPartyCreation);
+				if (firstTaskIndex >= 0)
+				{
+					List<PartyCommandEntry> createCommands = commands.Skip(firstTaskIndex).Select(CloneCommand).ToList();
+					if (firstTaskIndex > 0)
+					{
+						notifications.Add("大地图命令顺序错误：建队前的归队命令无法执行，已从首个有效任务命令开始处理。");
+					}
+					bool opened = behavior.TryOpenCreateCompanionParty(targetHero, createCommands, out string createMessage);
+					notifications.Add(createMessage);
+					generatedFacts.Add("[AFEF NPC行为补充] " + GetHeroName(targetHero) + (opened
+						? "接受了新的大地图任务；将先从玩家主队分兵，随后按输出顺序执行命令。"
+						: "无法创建同伴部队：" + createMessage));
+					result.Handled = opened;
+					result.CompanionPartyCreationQueued = opened;
+					result.AddedCommandCount = opened ? createCommands.Count : 0;
+					return opened;
+				}
 			}
-			if (!behavior.TryReplaceQueue(targetHero, commands, out string fact, out string message))
+			if (!behavior.TryAppendQueue(targetHero, commands, out string fact, out string message))
 			{
 				if (!string.IsNullOrWhiteSpace(message))
 				{
@@ -456,6 +637,8 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				generatedFacts.Add(fact);
 			}
 			notifications.Add(message);
+			result.Handled = true;
+			result.AddedCommandCount = commands.Count;
 			return true;
 		}
 		catch (Exception ex)
@@ -467,32 +650,32 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 	}
 
-	public static void ProcessWorldMapOrderTagsDispatch(Hero targetHero, ref string content)
+	public static WorldMapOrderApplyResult ProcessWorldMapOrderTagsDispatch(Hero targetHero, ref string content)
 	{
-		ProcessWorldMapOrderTagsDispatch(targetHero, null, -1, ref content);
+		return ProcessWorldMapOrderTagsDispatch(targetHero, null, -1, ref content);
 	}
 
-	public static void ProcessWorldMapOrderTagsDispatch(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, ref string content)
+	public static WorldMapOrderApplyResult ProcessWorldMapOrderTagsDispatch(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, ref string content)
 	{
-		if (!TryApplyWorldMapOrderTagsForExternal(targetHero, targetCharacter, targetAgentIndex, ref content, out List<string> facts, out List<string> notifications))
-		{
-			return;
-		}
+		TryApplyWorldMapOrderTagsForExternal(targetHero, targetCharacter, targetAgentIndex, ref content, out List<string> facts, out List<string> notifications, out WorldMapOrderApplyResult result);
 		targetHero = targetHero ?? targetCharacter?.HeroObject;
-		foreach (string fact in facts ?? new List<string>())
+		if (result.Handled)
 		{
-			if (!string.IsNullOrWhiteSpace(fact))
+			foreach (string fact in facts ?? new List<string>())
 			{
-				if (targetHero != null)
+				if (!string.IsNullOrWhiteSpace(fact))
 				{
-					MyBehavior.AppendExternalDialogueHistory(targetHero, null, null, fact);
-				}
-				else if (TryResolveNonHeroPartyActorForExternal(targetCharacter, targetAgentIndex, out MobileParty party))
-				{
-					string memoryId = BuildPartyMemoryId(party);
-					if (!string.IsNullOrWhiteSpace(memoryId))
+					if (targetHero != null)
 					{
-						MyBehavior.AppendExternalNonHeroDialogueHistory(memoryId, GetPartyName(party), null, null, fact);
+						MyBehavior.AppendExternalDialogueHistory(targetHero, null, null, fact);
+					}
+					else if (TryResolveNonHeroPartyActorForExternal(targetCharacter, targetAgentIndex, out MobileParty party))
+					{
+						string memoryId = BuildPartyMemoryId(party);
+						if (!string.IsNullOrWhiteSpace(memoryId))
+						{
+							MyBehavior.AppendExternalNonHeroDialogueHistory(memoryId, GetPartyName(party), null, null, fact);
+						}
 					}
 				}
 			}
@@ -504,6 +687,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				InformationManager.DisplayMessage(new InformationMessage(notification, notification.IndexOf("失败", StringComparison.OrdinalIgnoreCase) >= 0 ? new Color(1f, 0.45f, 0.25f) : new Color(0.4f, 1f, 0.4f)));
 			}
 		}
+		return result;
 	}
 
 	public bool TryIssueGoToSettlementForExternal(Hero hero, Settlement settlement, int holdDays, string sourceId, out string message)
@@ -580,9 +764,134 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		return true;
 	}
 
-	private bool TryReplaceQueue(Hero hero, List<PartyCommandEntry> commands, out string fact, out string message)
+	private bool TryAppendQueue(Hero hero, List<PartyCommandEntry> commands, out string fact, out string message)
 	{
-		return TryReplaceQueue(hero, commands, "", out fact, out message);
+		fact = "";
+		message = "";
+		if (hero == null || hero == Hero.MainHero || string.IsNullOrWhiteSpace(hero.StringId))
+		{
+			message = "大地图命令失败：不能这样指挥玩家本人的部队。";
+			return false;
+		}
+		MobileParty party = ResolveActorParty(hero);
+		if (party == null)
+		{
+			message = "大地图命令失败：" + GetHeroName(hero) + "当前没有独立可控制部队。";
+			return false;
+		}
+		List<PartyCommandEntry> safeCommands = (commands ?? new List<PartyCommandEntry>()).Where(IsExecutableCommand).Select(CloneCommand).ToList();
+		if (safeCommands.Count == 0)
+		{
+			message = "大地图命令失败：没有通过 ID 校验的命令。";
+			return false;
+		}
+		safeCommands = ConvertHostileGoToSettlementCommandsToAttacks(hero, party, safeCommands, out int convertedCount);
+		PartyCommandQueueState state;
+		bool startNew = false;
+		lock (_queueLock)
+		{
+			_queues.TryGetValue(hero.StringId, out state);
+			if (state != null && !string.IsNullOrWhiteSpace(NormalizeExternalSourceId(state.SourceId)))
+			{
+				message = GetHeroName(hero) + "当前执行的是隔离来源命令，聊天命令未改动该清单。";
+				return false;
+			}
+			if (state == null || state.Commands == null || state.Commands.Count == 0 || state.CurrentIndex >= state.Commands.Count)
+			{
+				state = new PartyCommandQueueState
+				{
+					HeroId = hero.StringId,
+					ActorKey = hero.StringId,
+					ActorName = GetHeroName(hero),
+					PartyStringId = party.StringId,
+					PartyIndex = GetPartyIndexSafe(party),
+					Commands = safeCommands,
+					CurrentIndex = 0,
+					Stage = CommandStage.New.ToString(),
+					SourceId = ""
+				};
+				_queues[hero.StringId] = state;
+				startNew = true;
+			}
+			else
+			{
+				state.Commands.AddRange(safeCommands);
+			}
+		}
+		if (startNew)
+		{
+			LeaveArmyIfNeeded(party);
+			ReleasePartyAi(party);
+			StartCurrentCommand(hero, party, state);
+		}
+		string convertedText = convertedCount > 0 ? "，其中" + convertedCount + "道敌对定居点前往命令已按AI攻击处理" : "";
+		fact = "[AFEF NPC行为补充] " + GetHeroName(hero) + (startNew ? "建立了" : "向现有清单末尾追加了") + safeCommands.Count + "道大地图命令" + convertedText + "。";
+		message = GetHeroName(hero) + (startNew ? "已开始执行" : "已追加") + safeCommands.Count + "道大地图命令。";
+		return true;
+	}
+
+	private bool TryAppendQueueForParty(MobileParty party, List<PartyCommandEntry> commands, out string fact, out string message)
+	{
+		fact = "";
+		message = "";
+		if (!IsValidNonHeroPartyFallbackParty(party))
+		{
+			message = "大地图命令失败：当前非英雄说话对象没有可接管的野外部队。";
+			return false;
+		}
+		string actorKey = BuildPartyActorKey(party, createGuid: true);
+		List<PartyCommandEntry> safeCommands = (commands ?? new List<PartyCommandEntry>()).Where(IsExecutableNonHeroPartyCommand).Select(CloneCommand).ToList();
+		if (string.IsNullOrWhiteSpace(actorKey) || safeCommands.Count == 0)
+		{
+			message = "大地图命令失败：无法建立稳定的非英雄部队命令清单。";
+			return false;
+		}
+		safeCommands = ConvertHostileGoToSettlementCommandsToAttacks(null, party, safeCommands, out int convertedCount);
+		PartyCommandQueueState state;
+		bool startNew = false;
+		string actorName = GetPartyName(party);
+		lock (_queueLock)
+		{
+			_queues.TryGetValue(actorKey, out state);
+			if (state != null && !string.IsNullOrWhiteSpace(NormalizeExternalSourceId(state.SourceId)))
+			{
+				message = actorName + "当前执行的是隔离来源命令，聊天命令未改动该清单。";
+				return false;
+			}
+			if (state == null || state.Commands == null || state.Commands.Count == 0 || state.CurrentIndex >= state.Commands.Count)
+			{
+				state = new PartyCommandQueueState
+				{
+					HeroId = "",
+					ActorKey = actorKey,
+					ActorName = actorName,
+					PartyStringId = party.StringId,
+					PartyIndex = GetPartyIndexSafe(party),
+					NonHeroMemoryId = BuildPartyMemoryId(party),
+					NonHeroMemoryName = actorName,
+					Commands = safeCommands,
+					CurrentIndex = 0,
+					Stage = CommandStage.New.ToString(),
+					SourceId = ""
+				};
+				_queues[actorKey] = state;
+				startNew = true;
+			}
+			else
+			{
+				state.Commands.AddRange(safeCommands);
+			}
+		}
+		if (startNew)
+		{
+			LeaveArmyIfNeeded(party);
+			ReleasePartyAi(party);
+			StartCurrentCommand(null, party, state);
+		}
+		string convertedText = convertedCount > 0 ? "，其中" + convertedCount + "道敌对定居点前往命令已按AI攻击处理" : "";
+		fact = "[AFEF NPC行为补充] " + actorName + (startNew ? "建立了" : "向现有清单末尾追加了") + safeCommands.Count + "道大地图命令" + convertedText + "。";
+		message = actorName + (startNew ? "已开始执行" : "已追加") + safeCommands.Count + "道大地图命令。";
+		return true;
 	}
 
 	private bool TryReplaceQueue(Hero hero, List<PartyCommandEntry> commands, string sourceId, out string fact, out string message)
@@ -638,61 +947,6 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		return true;
 	}
 
-	private bool TryReplaceQueueForParty(MobileParty party, List<PartyCommandEntry> commands, out string fact, out string message)
-	{
-		fact = "";
-		message = "";
-		if (!IsValidNonHeroPartyFallbackParty(party))
-		{
-			message = "大地图命令失败：当前非英雄说话对象没有可接管的野外部队。";
-			return false;
-		}
-		string actorKey = BuildPartyActorKey(party, createGuid: true);
-		if (string.IsNullOrWhiteSpace(actorKey))
-		{
-			message = "大地图命令失败：无法为当前非英雄部队建立稳定队列目标。";
-			return false;
-		}
-		List<PartyCommandEntry> safeCommands = (commands ?? new List<PartyCommandEntry>()).Where(IsExecutableNonHeroPartyCommand).Select(CloneCommand).ToList();
-		if (safeCommands.Count == 0)
-		{
-			message = "大地图命令失败：当前非英雄部队没有可执行的队伍级命令。";
-			return false;
-		}
-		int hostileGoToConvertedCount = 0;
-		if (ShouldConvertHostileGoToSettlementCommands(""))
-		{
-			safeCommands = ConvertHostileGoToSettlementCommandsToAttacks(null, party, safeCommands, out hostileGoToConvertedCount);
-		}
-		LeaveArmyIfNeeded(party);
-		ReleasePartyAi(party);
-		string actorName = GetPartyName(party);
-		PartyCommandQueueState state = new PartyCommandQueueState
-		{
-			HeroId = "",
-			ActorKey = actorKey,
-			ActorName = actorName,
-			PartyStringId = party?.StringId,
-			PartyIndex = GetPartyIndexSafe(party),
-			NonHeroMemoryId = BuildPartyMemoryId(party),
-			NonHeroMemoryName = actorName,
-			Commands = safeCommands,
-			CurrentIndex = 0,
-			Stage = CommandStage.New.ToString(),
-			SourceId = ""
-		};
-		lock (_queueLock)
-		{
-			_queues[actorKey] = state;
-		}
-		StartCurrentCommand(null, party, state);
-		string conversionFact = hostileGoToConvertedCount > 0 ? ("，其中" + hostileGoToConvertedCount + "道敌对定居点前往命令已按AI攻击处理") : "";
-		string conversionMessage = hostileGoToConvertedCount > 0 ? "，敌对定居点按AI攻击" : "";
-		fact = "[AFEF NPC行为补充] " + actorName + "作为当前野外部队的代表接受了玩家的大地图命令队列，共" + safeCommands.Count + "道命令" + conversionFact + "。";
-		message = actorName + "已接受大地图命令队列（" + safeCommands.Count + "道" + conversionMessage + "）。";
-		return true;
-	}
-
 	private void StopQueue(Hero hero, string reason, out string fact)
 	{
 		fact = "";
@@ -700,14 +954,16 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		MobileParty party = ResolveActorParty(hero, allowNonLeaderForRelease: true);
-		if (party != null)
+		PartyCommandQueueState state;
+		bool removedPendingCreate;
+		lock (_queueLock)
 		{
-			PartyCommandQueueState state;
-			lock (_queueLock)
-			{
-				_queues.TryGetValue(hero.StringId, out state);
-			}
+			_queues.TryGetValue(hero.StringId, out state);
+			removedPendingCreate = _pendingCreatePartyRequests.Remove(hero.StringId);
+		}
+		MobileParty party = state == null ? null : ResolveActorParty(state, hero, allowNonLeaderForRelease: true);
+		if (party != null && party != MobileParty.MainParty)
+		{
 			AbortCurrentCommandIfNeeded(party, state);
 			ReleasePartyAi(party);
 		}
@@ -716,7 +972,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			_queues.Remove(hero.StringId);
 		}
 		fact = "[AFEF NPC行为补充] " + GetHeroName(hero) + "停止了当前大地图命令，回归原版行动状态。";
-		Log("stop hero=" + hero.StringId + " reason=" + reason);
+		Log("stop hero=" + hero.StringId + " reason=" + reason + " removedPendingCreate=" + removedPendingCreate);
 	}
 
 	private void StopQueueForParty(MobileParty party, string reason, out string fact)
@@ -739,8 +995,11 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				_queues.TryGetValue(actorKey, out state);
 			}
 		}
-		AbortCurrentCommandIfNeeded(party, state);
-		ReleasePartyAi(party);
+		if (state != null)
+		{
+			AbortCurrentCommandIfNeeded(party, state);
+			ReleasePartyAi(party);
+		}
 		lock (_queueLock)
 		{
 			if (!string.IsNullOrWhiteSpace(actorKey))
@@ -798,6 +1057,12 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		try
 		{
 			ProcessPendingCreateCompanionPartyRequests();
+			double nowDay = NowDay();
+			if (nowDay >= _nextDetachedPartyPruneDay)
+			{
+				_nextDetachedPartyPruneDay = nowDay + 1.0 / 24.0;
+				PruneInvalidPlayerDetachedParties();
+			}
 		}
 		catch (Exception ex)
 		{
@@ -808,6 +1073,13 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 
 	private void ProcessPendingCreateCompanionPartyRequests()
 	{
+		lock (_queueLock)
+		{
+			if (_pendingCreatePartyRequests.Count == 0)
+			{
+				return;
+			}
+		}
 		if (_isOpeningCreateCompanionPartyScreen || !CanOpenCreateCompanionPartyScreenNow(out _))
 		{
 			return;
@@ -849,6 +1121,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		try
 		{
 			string heroId = destroyedParty?.LeaderHero?.StringId;
+			RemovePlayerDetachedParty(destroyedParty?.LeaderHero, destroyedParty, "party_destroyed");
 			string partyId = destroyedParty?.StringId;
 			string destroyedActorKey = BuildPartyActorKey(destroyedParty, createGuid: false);
 			PartyCommandQueueState actorState = null;
@@ -1211,11 +1484,6 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			TickMergeToPlayer(hero, party, state, command);
 			return;
 		}
-		if (IsKind(command, CommandKind.CreateCompanionParty))
-		{
-			TryOpenCreateCompanionParty(hero, out _);
-			AdvanceCommand(hero, party, state, "create_party_done");
-		}
 	}
 
 	private void StartCurrentCommand(Hero hero, MobileParty party, PartyCommandQueueState state)
@@ -1402,11 +1670,6 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			DisplayCommandMessage(GetHeroName(hero) + "开始返回玩家部队，准备会合并转入兵力。", CommandMessageTone.Progress);
 			Log("start merge actor=" + GetActorLogId(state, hero, party));
 			return;
-		}
-		if (IsKind(command, CommandKind.CreateCompanionParty))
-		{
-			TryOpenCreateCompanionParty(hero, out _);
-			AdvanceCommand(hero, party, state, "create_party_done");
 		}
 	}
 
@@ -2114,6 +2377,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		int movedMembers = MoveAllMembersToMainParty(party);
 		int movedPrisoners = MoveAllPrisonersToMainParty(party);
 		LogFact(hero, GetHeroName(hero) + "已经与玩家部队会合，并转入" + movedMembers + "名成员、" + movedPrisoners + "名俘虏。");
+		RemovePlayerDetachedParty(hero, party, "merge_done");
 		TryDestroyEmptyParty(party);
 		AdvanceCommand(hero, party, state, "merge_done");
 	}
@@ -3268,15 +3532,6 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			stop = true;
 			return true;
 		}
-		if (kind == "CREATE_COMPANION_PARTY")
-		{
-			command = new PartyCommandEntry
-			{
-				Kind = CommandKind.CreateCompanionParty.ToString(),
-				Days = 1
-			};
-			return true;
-		}
 		if (kind == "MERGE_TO_PLAYER")
 		{
 			command = new PartyCommandEntry
@@ -3544,10 +3799,6 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			return "[ACTION:WORLDMAP_ORDER:MERGE_TO_PLAYER:" + Math.Max(1, command.Days) + "]";
 		}
-		if (IsKind(command, CommandKind.CreateCompanionParty))
-		{
-			return "[ACTION:WORLDMAP_ORDER:CREATE_COMPANION_PARTY]";
-		}
 		return "";
 	}
 
@@ -3593,7 +3844,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 		command.Days = Math.Max(1, command.Days);
 		command.Mode = NormalizeAttackMode(command.Mode);
-		if (IsKind(command, CommandKind.CreateCompanionParty) || IsKind(command, CommandKind.MergeToPlayer))
+		if (IsKind(command, CommandKind.MergeToPlayer))
 		{
 			return true;
 		}
@@ -3649,7 +3900,6 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 	private static bool IsExecutableNonHeroPartyCommand(PartyCommandEntry command)
 	{
 		return command != null
-			&& !IsKind(command, CommandKind.CreateCompanionParty)
 			&& !IsKind(command, CommandKind.MergeToPlayer)
 			&& IsExecutableCommand(command);
 	}
@@ -3816,8 +4066,41 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		state.Commands = (state.Commands ?? new List<PartyCommandEntry>()).Where(x => x != null).ToList();
-		state.CurrentIndex = Math.Max(0, state.CurrentIndex);
+		List<PartyCommandEntry> originalCommands = state.Commands ?? new List<PartyCommandEntry>();
+		int originalIndex = Math.Max(0, state.CurrentIndex);
+		List<PartyCommandEntry> validCommands = new List<PartyCommandEntry>();
+		int rebasedIndex = 0;
+		bool currentCommandKept = false;
+		for (int i = 0; i < originalCommands.Count; i++)
+		{
+			PartyCommandEntry command = originalCommands[i];
+			if (!IsExecutableCommand(command))
+			{
+				continue;
+			}
+			if (i < originalIndex)
+			{
+				rebasedIndex++;
+			}
+			else if (i == originalIndex)
+			{
+				currentCommandKept = true;
+			}
+			validCommands.Add(command);
+		}
+		state.Commands = validCommands;
+		state.CurrentIndex = Math.Max(0, rebasedIndex);
+		if (!currentCommandKept && originalIndex < originalCommands.Count)
+		{
+			state.Stage = CommandStage.New.ToString();
+			state.CommandStartDay = 0.0;
+			state.ArrivalDay = -1.0;
+			state.TimeoutDay = -1.0;
+			state.EngageCommitted = false;
+			state.LastIssuedActionKey = "";
+			state.LastStatusMessageKey = "";
+			ResetResultTracking(state);
+		}
 		state.HeroId = (state.HeroId ?? "").Trim();
 		state.ActorKey = (state.ActorKey ?? "").Trim();
 		state.ActorName = (state.ActorName ?? "").Trim();
@@ -3989,6 +4272,146 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		catch
 		{
 			return null;
+		}
+	}
+
+	private static bool IsHeroActuallyInPlayerMainPartyRoster(Hero hero)
+	{
+		try
+		{
+			if (hero == null || hero == Hero.MainHero || hero.CharacterObject == null || MobileParty.MainParty?.MemberRoster == null)
+			{
+				return false;
+			}
+			return MobileParty.MainParty.MemberRoster.GetTroopRoster().Any(element => element.Character == hero.CharacterObject && element.Number > 0);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsTaskCommandForImplicitPartyCreation(PartyCommandEntry command)
+	{
+		return command != null
+			&& (IsKind(command, CommandKind.GoToSettlement)
+				|| IsKind(command, CommandKind.PatrolSettlement)
+				|| IsKind(command, CommandKind.FollowHero)
+				|| IsKind(command, CommandKind.FollowParty)
+				|| IsKind(command, CommandKind.AttackHero)
+				|| IsKind(command, CommandKind.AttackParty));
+	}
+
+	private static bool TryValidateDetachedPartyRecord(PlayerDetachedPartyRecord record, out Hero hero, out MobileParty party)
+	{
+		hero = ResolveHeroByIdAny(record?.HeroId);
+		party = ResolveMobilePartyById(record?.PartyStringId);
+		if (party == null && record != null && record.PartyIndex >= 0)
+		{
+			try
+			{
+				party = MobileParty.All?.FirstOrDefault(candidate => candidate != null && GetPartyIndexSafe(candidate) == record.PartyIndex);
+			}
+			catch
+			{
+				party = null;
+			}
+		}
+		return hero != null
+			&& hero != Hero.MainHero
+			&& !IsHeroActuallyInPlayerMainPartyRoster(hero)
+			&& IsPartyUsable(party)
+			&& party != MobileParty.MainParty
+			&& party.LeaderHero == hero
+			&& hero.PartyBelongedTo == party;
+	}
+
+	private void RegisterPlayerDetachedParty(Hero hero, MobileParty party)
+	{
+		if (hero == null || string.IsNullOrWhiteSpace(hero.StringId) || !IsPartyUsable(party) || party.LeaderHero != hero)
+		{
+			return;
+		}
+		lock (_queueLock)
+		{
+			_playerDetachedParties[hero.StringId] = new PlayerDetachedPartyRecord
+			{
+				HeroId = hero.StringId,
+				PartyStringId = party.StringId,
+				PartyIndex = GetPartyIndexSafe(party)
+			};
+		}
+		Log("registered player detachment hero=" + hero.StringId + " party=" + (party.StringId ?? ""));
+	}
+
+	private void RemovePlayerDetachedParty(Hero hero, MobileParty party, string reason)
+	{
+		string heroId = hero?.StringId ?? party?.LeaderHero?.StringId ?? "";
+		List<string> removedIds = new List<string>();
+		lock (_queueLock)
+		{
+			if (!string.IsNullOrWhiteSpace(heroId) && _playerDetachedParties.Remove(heroId))
+			{
+				removedIds.Add(heroId);
+			}
+			if (party != null)
+			{
+				string partyId = party.StringId ?? "";
+				int partyIndex = GetPartyIndexSafe(party);
+				foreach (KeyValuePair<string, PlayerDetachedPartyRecord> pair in _playerDetachedParties.ToList())
+				{
+					PlayerDetachedPartyRecord record = pair.Value;
+					if ((!string.IsNullOrWhiteSpace(partyId) && string.Equals(record?.PartyStringId ?? "", partyId, StringComparison.OrdinalIgnoreCase))
+						|| (partyIndex >= 0 && record?.PartyIndex == partyIndex))
+					{
+						_playerDetachedParties.Remove(pair.Key);
+						removedIds.Add(pair.Key);
+					}
+				}
+			}
+		}
+		foreach (string removedId in removedIds.Distinct(StringComparer.OrdinalIgnoreCase))
+		{
+			Log("removed player detachment hero=" + removedId + " reason=" + reason);
+		}
+	}
+
+	private bool IsRegisteredPlayerDetachment(Hero hero, MobileParty party)
+	{
+		if (hero == null || party == null || string.IsNullOrWhiteSpace(hero.StringId))
+		{
+			return false;
+		}
+		PlayerDetachedPartyRecord record;
+		lock (_queueLock)
+		{
+			_playerDetachedParties.TryGetValue(hero.StringId, out record);
+		}
+		return TryValidateDetachedPartyRecord(record, out Hero validHero, out MobileParty validParty)
+			&& validHero == hero
+			&& validParty == party;
+	}
+
+	private void PruneInvalidPlayerDetachedParties()
+	{
+		List<string> invalidHeroIds = new List<string>();
+		lock (_queueLock)
+		{
+			foreach (KeyValuePair<string, PlayerDetachedPartyRecord> pair in _playerDetachedParties)
+			{
+				if (!TryValidateDetachedPartyRecord(pair.Value, out Hero _, out MobileParty _))
+				{
+					invalidHeroIds.Add(pair.Key);
+				}
+			}
+			foreach (string heroId in invalidHeroIds)
+			{
+				_playerDetachedParties.Remove(heroId);
+			}
+		}
+		foreach (string heroId in invalidHeroIds)
+		{
+			Log("pruned invalid player detachment hero=" + heroId);
 		}
 	}
 
@@ -4554,7 +4977,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (!IsPartyUsable(party) || command == null || IsKind(command, CommandKind.CreateCompanionParty))
+			if (!IsPartyUsable(party) || command == null)
 			{
 				return;
 			}
@@ -5186,25 +5609,15 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private bool TryOpenCreateCompanionParty(Hero hero, out string message)
-	{
-		return TryOpenCreateCompanionParty(hero, null, out message);
-	}
-
 	private bool TryOpenCreateCompanionParty(Hero hero, List<PartyCommandEntry> followUpCommands, out string message)
 	{
 		message = "";
 		try
 		{
-			List<PartyCommandEntry> safeFollowUpCommands = SanitizeFollowUpCommands(followUpCommands, appendReturnToPlayer: true);
-			if (hero == null || hero == Hero.MainHero || hero.Clan != Clan.PlayerClan)
+			List<PartyCommandEntry> safeFollowUpCommands = SanitizeFollowUpCommands(followUpCommands);
+			if (!IsHeroActuallyInPlayerMainPartyRoster(hero))
 			{
-				message = "只有玩家家族的同伴可以创建部队。";
-				return false;
-			}
-			if (hero.PartyBelongedTo != MobileParty.MainParty)
-			{
-				message = GetHeroName(hero) + "必须先在玩家队伍中，才能打开原版创建同伴部队界面。";
+				message = "只有玩家主队成员名册中确实存在的非玩家 Hero 才能隐式创建任务队伍。";
 				return false;
 			}
 			if (!CanOpenCreateCompanionPartyScreenNow(out string blockedReason))
@@ -5223,21 +5636,12 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static List<PartyCommandEntry> SanitizeFollowUpCommands(List<PartyCommandEntry> followUpCommands, bool appendReturnToPlayer = false)
+	private static List<PartyCommandEntry> SanitizeFollowUpCommands(List<PartyCommandEntry> followUpCommands)
 	{
-		List<PartyCommandEntry> sanitized = (followUpCommands ?? new List<PartyCommandEntry>())
-			.Where(command => command != null && !IsKind(command, CommandKind.CreateCompanionParty) && IsExecutableCommand(command))
+		return (followUpCommands ?? new List<PartyCommandEntry>())
+			.Where(command => command != null && IsExecutableCommand(command))
 			.Select(CloneCommand)
 			.ToList();
-		if (appendReturnToPlayer && sanitized.Count > 0 && !sanitized.Any(command => IsKind(command, CommandKind.MergeToPlayer)))
-		{
-			sanitized.Add(new PartyCommandEntry
-			{
-				Kind = CommandKind.MergeToPlayer.ToString(),
-				Days = 1
-			});
-		}
-		return sanitized;
 	}
 
 	private void QueuePendingCreateCompanionParty(Hero hero, List<PartyCommandEntry> followUpCommands)
@@ -5248,11 +5652,20 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 		lock (_queueLock)
 		{
-			_pendingCreatePartyRequests[hero.StringId] = new PendingCreateCompanionPartyRequest
+			List<PartyCommandEntry> commands = SanitizeFollowUpCommands(followUpCommands);
+			if (_pendingCreatePartyRequests.TryGetValue(hero.StringId, out PendingCreateCompanionPartyRequest existing) && existing != null)
 			{
-				HeroId = hero.StringId,
-				FollowUpCommands = SanitizeFollowUpCommands(followUpCommands)
-			};
+				existing.FollowUpCommands = existing.FollowUpCommands ?? new List<PartyCommandEntry>();
+				existing.FollowUpCommands.AddRange(commands);
+			}
+			else
+			{
+				_pendingCreatePartyRequests[hero.StringId] = new PendingCreateCompanionPartyRequest
+				{
+					HeroId = hero.StringId,
+					FollowUpCommands = commands
+				};
+			}
 		}
 		Log("queued create companion party hero=" + hero.StringId + " followUp=" + (followUpCommands?.Count ?? 0));
 	}
@@ -5263,6 +5676,11 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		if (Mission.Current != null)
 		{
 			blockedReason = "当前仍在场景或阅兵中";
+			return false;
+		}
+		if (Campaign.Current?.ConversationManager?.IsConversationInProgress == true)
+		{
+			blockedReason = "当前对话尚未退出";
 			return false;
 		}
 		if (IsPartyScreenStillActive())
@@ -5303,14 +5721,20 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			List<PartyCommandEntry> safeFollowUpCommands = SanitizeFollowUpCommands(followUpCommands);
 			_isOpeningCreateCompanionPartyScreen = true;
-			PartyScreenHelper.OpenScreenAsCreateClanPartyForHero(
-				hero,
-				(leftOwnerParty, leftMemberRoster, leftPrisonRoster, rightOwnerParty, rightMemberRoster, rightPrisonRoster, fromCancel) =>
-				{
-					_isOpeningCreateCompanionPartyScreen = false;
-					OnCreateCompanionPartyScreenClosed(hero.StringId, safeFollowUpCommands, leftMemberRoster, leftPrisonRoster, rightOwnerParty, fromCancel);
-				});
-			message = "已打开" + GetHeroName(hero) + "的原版创建同伴部队界面。";
+			PartyScreenClosedDelegate onClosed = (leftOwnerParty, leftMemberRoster, leftPrisonRoster, rightOwnerParty, rightMemberRoster, rightPrisonRoster, fromCancel) =>
+			{
+				_isOpeningCreateCompanionPartyScreen = false;
+				OnCreateCompanionPartyScreenClosed(hero.StringId, safeFollowUpCommands, leftMemberRoster, leftPrisonRoster, rightOwnerParty, fromCancel);
+			};
+			if (hero.Clan != null)
+			{
+				PartyScreenHelper.OpenScreenAsCreateClanPartyForHero(hero, onClosed);
+			}
+			else
+			{
+				OpenClanlessHeroCreatePartyScreen(hero, onClosed);
+			}
+			message = "已打开" + GetHeroName(hero) + "的分兵界面。";
 			return true;
 		}
 		catch (Exception ex)
@@ -5322,9 +5746,54 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static void OpenClanlessHeroCreatePartyScreen(Hero hero, PartyScreenClosedDelegate onClosed)
+	{
+		TroopRoster leftMembers = TroopRoster.CreateDummyTroopRoster();
+		TroopRoster leftPrisoners = TroopRoster.CreateDummyTroopRoster();
+		TroopRoster rightMembers = MobileParty.MainParty.MemberRoster.CloneRosterData();
+		TroopRoster rightPrisoners = MobileParty.MainParty.PrisonRoster.CloneRosterData();
+		leftMembers.AddToCounts(hero.CharacterObject, 1, false, 0, 0, true, -1);
+		if (rightMembers.Contains(hero.CharacterObject))
+		{
+			rightMembers.AddToCounts(hero.CharacterObject, -1, false, 0, 0, true, -1);
+		}
+		TextObject partyName = new TextObject("{HERO}的队伍");
+		partyName.SetTextVariable("HERO", hero.Name);
+		int partyLimit = Math.Max(1, MobileParty.MainParty?.Party?.PartySizeLimit ?? 1);
+		try
+		{
+			Clan capacityClan = Clan.PlayerClan;
+			if (capacityClan != null)
+			{
+				partyLimit = Math.Max(1, Campaign.Current.Models.PartySizeLimitModel.GetAssumedPartySizeForLordParty(hero, capacityClan.MapFaction, capacityClan));
+			}
+		}
+		catch
+		{
+		}
+		PartyScreenHelper.OpenScreenWithDummyRoster(
+			leftMembers,
+			leftPrisoners,
+			rightMembers,
+			rightPrisoners,
+			partyName,
+			MobileParty.MainParty.Name,
+			partyLimit,
+			MobileParty.MainParty.Party.PartySizeLimit,
+			null,
+			onClosed,
+			new IsTroopTransferableDelegate(CreatePartyTroopTransferable));
+	}
+
+	private static bool CreatePartyTroopTransferable(CharacterObject character, PartyScreenLogic.TroopType type, PartyScreenLogic.PartyRosterSide side, PartyBase leftOwnerParty)
+	{
+		return character?.IsHero != true;
+	}
+
 	private void OnCreateCompanionPartyScreenClosed(string heroId, List<PartyCommandEntry> followUpCommands, TroopRoster leftMemberRoster, TroopRoster leftPrisonRoster, PartyBase rightOwnerParty, bool fromCancel)
 	{
 		Hero hero = ResolveHeroByIdAny(heroId);
+		MobileParty createdParty = null;
 		try
 		{
 			if (hero == null)
@@ -5343,13 +5812,18 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			{
 				GiveGoldAction.ApplyBetweenCharacters(Hero.MainHero, partyHero, partyGoldLowerThreshold - partyHero.Gold, false);
 			}
-			MobileParty createdParty = MobilePartyHelper.CreateNewClanMobileParty(partyHero, partyHero.Clan);
+			createdParty = MobilePartyHelper.CreateNewClanMobileParty(partyHero, partyHero.Clan);
+			if (!IsPartyUsable(createdParty) || createdParty.LeaderHero != partyHero)
+			{
+				throw new InvalidOperationException("新任务队伍未能正确建立。");
+			}
+			RegisterPlayerDetachedParty(partyHero, createdParty);
 			int movedMembers = MoveSelectedTroopsToCreatedParty(createdParty, partyHero, leftMemberRoster, rightOwnerParty);
 			int movedPrisoners = MoveSelectedPrisonersToCreatedParty(createdParty, leftPrisonRoster, rightOwnerParty);
 			LogFact(partyHero, GetHeroName(partyHero) + "已经创建同伴部队，并接收了" + movedMembers + "名士兵" + (movedPrisoners > 0 ? ("、" + movedPrisoners + "名俘虏") : "") + "。");
 			if (followUpCommands != null && followUpCommands.Count > 0)
 			{
-				if (TryReplaceQueue(partyHero, followUpCommands, out string fact, out string queueMessage))
+				if (TryAppendQueue(partyHero, followUpCommands, out string fact, out string queueMessage))
 				{
 					if (!string.IsNullOrWhiteSpace(fact))
 					{
@@ -5368,6 +5842,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			Log("create companion party close failed hero=" + (heroId ?? "") + " error=" + ex);
 			if (hero != null)
 			{
+				EnsureHeroRemainsAvailableAfterCreateFailure(hero, createdParty);
 				LogFact(hero, GetHeroName(hero) + "创建同伴部队失败：" + ex.Message);
 			}
 		}
@@ -5387,6 +5862,34 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			}
 		}
 		return null;
+	}
+
+	private void EnsureHeroRemainsAvailableAfterCreateFailure(Hero hero, MobileParty createdParty)
+	{
+		if (hero == null || hero == Hero.MainHero || IsPartyUsable(createdParty))
+		{
+			return;
+		}
+		RemovePlayerDetachedParty(hero, createdParty, "create_failed");
+		if (IsHeroActuallyInPlayerMainPartyRoster(hero))
+		{
+			return;
+		}
+		try
+		{
+			AddHeroToPartyAction.Apply(hero, MobileParty.MainParty, showNotification: false);
+		}
+		catch (Exception ex)
+		{
+			Log("restore hero after create failure failed hero=" + (hero.StringId ?? "") + " error=" + ex.Message);
+			try
+			{
+				MobileParty.MainParty?.MemberRoster?.AddToCounts(hero.CharacterObject, 1, false, 0, 0, true, -1);
+			}
+			catch
+			{
+			}
+		}
 	}
 
 	private static int MoveSelectedTroopsToCreatedParty(MobileParty createdParty, Hero partyHero, TroopRoster leftMemberRoster, PartyBase rightOwnerParty)
@@ -5429,17 +5932,22 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		return moved;
 	}
 
-	private static bool CanMergeToPlayer(Hero hero, MobileParty party, out string reason)
+	private bool CanMergeToPlayer(Hero hero, MobileParty party, out string reason)
 	{
 		reason = "";
-		if (hero == null || hero == Hero.MainHero || hero.Clan != Clan.PlayerClan)
+		if (hero == null || hero == Hero.MainHero)
 		{
-			reason = "not_player_companion";
+			reason = "invalid_hero";
 			return false;
 		}
 		if (!IsPartyUsable(party) || party == MobileParty.MainParty || party.LeaderHero != hero)
 		{
 			reason = "not_independent_companion_party";
+			return false;
+		}
+		if (hero.Clan != Clan.PlayerClan && !IsRegisteredPlayerDetachment(hero, party))
+		{
+			reason = "not_player_party_or_registered_detachment";
 			return false;
 		}
 		if (!IsPartyUsable(MobileParty.MainParty))

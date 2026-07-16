@@ -429,6 +429,18 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static int GetCultureNotorietyForExternal(string cultureId)
+	{
+		try
+		{
+			return Instance?.GetCultureNotoriety(cultureId) ?? 0;
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
 	private void RecordPlayerAction(string text, string stableKey, string actionKind, bool isMajor, int day, string gameDate, int sequence, string settlementId, string settlementName, string locationText, string actorCultureId, string targetCultureId, string settlementCultureId, bool? won)
 	{
 		_state = NormalizeState(_state);
@@ -1979,6 +1991,18 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		PlayerNpcKnowledgeState npcState = GetNpcKnowledgeState(NormalizeObserverKey(observerKey), create: true);
 		double total = culture + _state.WorldNotoriety + GetPlayerClanTierBonus() + (npcState?.PersonalKnownBonus ?? 0);
 		return ClampPercent(total);
+	}
+
+	private int GetCultureNotoriety(string cultureId)
+	{
+		_state = NormalizeState(_state);
+		string normalizedCultureId = NormalizeCultureId(cultureId);
+		if (string.IsNullOrWhiteSpace(normalizedCultureId)
+			|| !_state.CultureNotoriety.TryGetValue(normalizedCultureId, out double value))
+		{
+			return 0;
+		}
+		return ClampPercent(value);
 	}
 
 	private PlayerNpcKnowledgeState GetNpcKnowledgeState(Hero observer, bool create)

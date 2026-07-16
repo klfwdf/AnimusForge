@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Resources;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -32,7 +33,11 @@ public static class AIConfigHandler
 {
 	private const int ActionPostprocessMaxHistoryAndLatestEntries = 8;
 	private const int ActionPostprocessRequestTimeoutMilliseconds = DuelSettings.LlmRequestTimeoutMilliseconds;
+	private const string EmbeddedPreprocessPromptsResourceName = "AnimusForge.Defaults.PreprocessPrompts.json";
 	private const string KingAbdicateToPlayerActionTag = "[ACTION:KING_ABDICATE_TO_PLAYER]";
+	private static readonly Lazy<JObject> EmbeddedPreprocessPromptsDefaults = new Lazy<JObject>(LoadEmbeddedDefaultPreprocessPrompts, LazyThreadSafetyMode.ExecutionAndPublication);
+	private static readonly Encoding StrictUtf8Encoding = new UTF8Encoding(false, true);
+	private static volatile string _preprocessPromptsLoadError = "";
 	private sealed class ActionPostprocessHistoryEntry
 	{
 		public int Index;
@@ -226,6 +231,8 @@ public static class AIConfigHandler
 
 	private static PreprocessPromptsConfigModel _preprocessPrompts;
 
+	private static ProactiveNpcRequestPromptsConfigModel _proactiveNpcRequestPrompts;
+
 	private static readonly Regex PreprocessTemplateVariableRegex = new Regex("\\{([a-z][a-z0-9_]*)\\}", RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
 	private static readonly object _guardrailSemanticLock = new object();
@@ -284,12 +291,20 @@ public static class AIConfigHandler
 
 	private const int AuxiliaryMentionedEntitiesCacheMax = 64;
 
-	internal static string StrictPreprocessJsonSystemPrompt => RequirePreprocessPromptValue(_preprocessPrompts?.StrictJson?.SystemPrompt, "StrictJson.SystemPrompt");
+	internal static string StrictPreprocessJsonSystemPrompt
+	{
+		get
+		{
+			EnsurePreprocessPromptsAvailable();
+			return RequirePreprocessPromptValue(_preprocessPrompts?.StrictJson?.SystemPrompt, "StrictJson.SystemPrompt");
+		}
+	}
 
 	internal static string StrictPreprocessMentionedEntitiesSchema
 	{
 		get
 		{
+			EnsurePreprocessPromptsAvailable();
 			JObject schema = _preprocessPrompts?.StrictJson?.MentionedEntitiesSchema;
 			if (schema == null || !schema.Properties().Any())
 			{
@@ -299,7 +314,14 @@ public static class AIConfigHandler
 		}
 	}
 
-	internal static string PreprocessConnectionTestExpectedRuleCode => RequirePreprocessPromptValue(_preprocessPrompts?.ConnectionTest?.ExpectedRuleCode, "ConnectionTest.ExpectedRuleCode");
+	internal static string PreprocessConnectionTestExpectedRuleCode
+	{
+		get
+		{
+			EnsurePreprocessPromptsAvailable();
+			return RequirePreprocessPromptValue(_preprocessPrompts?.ConnectionTest?.ExpectedRuleCode, "ConnectionTest.ExpectedRuleCode");
+		}
+	}
 
 	public static string GlobalPrompt => ApplyPlayerDisplayNameToGuardrailText(_guardrail?.GlobalPrompt ?? "");
 
@@ -670,6 +692,48 @@ public static class AIConfigHandler
 	public static string ActionPostprocessUserPromptTemplate => (_actionPostprocess?.UserPromptTemplate ?? "").Trim();
 
 	public static string ActionPostprocessFallbackMoodTag => (_actionPostprocess?.FallbackMoodTag ?? "[ACTION:MOOD:NEUTRAL]").Trim();
+
+	public static string GetProactiveNpcRequestOpeningPrompt(string needType)
+	{
+		return AppendProactiveNpcRequestNaturalExpressionGuide(GetProactiveNpcRequestPromptEntry(needType)?.OpeningPrompt);
+	}
+
+	public static string GetProactiveNpcRequestLetterIntent(string needType)
+	{
+		return AppendProactiveNpcRequestNaturalExpressionGuide(GetProactiveNpcRequestPromptEntry(needType)?.LetterIntent);
+	}
+
+	public static string GetProactiveNpcRequestCompanionIntent(string needType)
+	{
+		return AppendProactiveNpcRequestNaturalExpressionGuide(GetProactiveNpcRequestPromptEntry(needType)?.CompanionIntent);
+	}
+
+	private static string AppendProactiveNpcRequestNaturalExpressionGuide(string prompt)
+	{
+		string normalizedPrompt = prompt?.Trim() ?? "";
+		string guide = _proactiveNpcRequestPrompts?.Default?.NaturalExpressionGuide?.Trim() ?? "";
+		if (string.IsNullOrWhiteSpace(guide))
+		{
+			return normalizedPrompt;
+		}
+		return string.IsNullOrWhiteSpace(normalizedPrompt) ? guide : normalizedPrompt + "\n" + guide;
+	}
+
+	private static ProactiveNpcRequestPromptEntry GetProactiveNpcRequestPromptEntry(string needType)
+	{
+		ProactiveNpcRequestPromptsConfigModel config = _proactiveNpcRequestPrompts;
+		if (config?.Requests != null && !string.IsNullOrWhiteSpace(needType))
+		{
+			foreach (KeyValuePair<string, ProactiveNpcRequestPromptEntry> entry in config.Requests)
+			{
+				if (string.Equals(entry.Key?.Trim(), needType.Trim(), StringComparison.OrdinalIgnoreCase) && entry.Value != null)
+				{
+					return entry.Value;
+				}
+			}
+		}
+		return config?.Default;
+	}
 
 	public static List<PostprocessRuleEntry> WildernessPostprocessRules => _actionPostprocess?.WildernessPostprocessRules ?? new List<PostprocessRuleEntry>();
 
@@ -2884,6 +2948,45 @@ public static class AIConfigHandler
 			throw new InvalidOperationException("PreprocessPrompts.json 缺少必填项: " + (configPath ?? "unknown"));
 		}
 		return text;
+	}
+
+	private static void EnsurePreprocessPromptsAvailable()
+	{
+		string loadError = _preprocessPromptsLoadError;
+		if (!string.IsNullOrWhiteSpace(loadError))
+		{
+			throw new InvalidOperationException("PreprocessPrompts.json 加载失败: " + loadError + "。实际路径: " + ResolveModuleDataFilePath("PreprocessPrompts.json"));
+		}
+	}
+
+	private static PreprocessPromptsConfigModel LoadPreprocessPromptsConfig(string filePath, out bool usedEmbeddedDefaults, out int sourceVersion, out int defaultVersion)
+	{
+		string sourceJson = File.ReadAllText(filePath, StrictUtf8Encoding);
+		JObject sourceObject = JObject.Parse(sourceJson);
+		JObject defaultObject = (JObject)EmbeddedPreprocessPromptsDefaults.Value.DeepClone();
+		defaultVersion = defaultObject.Value<int?>("Version").GetValueOrDefault();
+		if (defaultVersion <= 0)
+		{
+			throw new InvalidDataException("程序集内置 PreprocessPrompts.json 的 Version 无效");
+		}
+		sourceVersion = sourceObject.Value<int?>("Version").GetValueOrDefault();
+		usedEmbeddedDefaults = sourceVersion < defaultVersion;
+		if (usedEmbeddedDefaults)
+		{
+			sourceObject = defaultObject;
+		}
+		return sourceObject.ToObject<PreprocessPromptsConfigModel>() ?? new PreprocessPromptsConfigModel();
+	}
+
+	private static JObject LoadEmbeddedDefaultPreprocessPrompts()
+	{
+		using Stream stream = typeof(AIConfigHandler).Assembly.GetManifestResourceStream(EmbeddedPreprocessPromptsResourceName);
+		if (stream == null)
+		{
+			throw new MissingManifestResourceException("找不到程序集内置前处理提示词资源: " + EmbeddedPreprocessPromptsResourceName);
+		}
+		using StreamReader reader = new StreamReader(stream, StrictUtf8Encoding, detectEncodingFromByteOrderMarks: true);
+		return JObject.Parse(reader.ReadToEnd());
 	}
 
 	private static string RenderPreprocessPromptTemplate(string template, string configPath, IDictionary<string, string> values)
@@ -8676,6 +8779,7 @@ public static class AIConfigHandler
 	{
 		try
 		{
+			_preprocessPromptsLoadError = "";
 			string path = ResolveModuleDataFilePath("AIConfig.json");
 			if (!File.Exists(path))
 			{
@@ -8690,6 +8794,7 @@ public static class AIConfigHandler
 			string path2 = ResolveModuleDataFilePath("RuleBehaviorPrompts.json");
 			string path3 = ResolveModuleDataFilePath("ActionPostprocessPrompts.json");
 			string path4 = ResolveModuleDataFilePath("PreprocessPrompts.json");
+			string path5 = ResolveModuleDataFilePath("ProactiveNpcRequestPrompts.json");
 			if (!File.Exists(path2))
 			{
 				Logger.Log("AIConfig", "[错误] 找不到 RuleBehaviorPrompts.json");
@@ -8716,14 +8821,32 @@ public static class AIConfigHandler
 				{
 					throw new FileNotFoundException("找不到 PreprocessPrompts.json", path4);
 				}
-				string value4 = File.ReadAllText(path4, Encoding.UTF8);
-				_preprocessPrompts = JsonConvert.DeserializeObject<PreprocessPromptsConfigModel>(value4) ?? new PreprocessPromptsConfigModel();
+				_preprocessPrompts = LoadPreprocessPromptsConfig(path4, out var usedEmbeddedDefaults, out var sourceVersion, out var defaultVersion);
 				ValidateLoadedPreprocessPrompts();
+				if (usedEmbeddedDefaults)
+				{
+					Logger.Log("AIConfig", string.Format("[兼容] 检测到旧版 PreprocessPrompts.json (v{0})，其输出 schema 与 v{1} 不兼容；本次运行已采用程序集内置 v{1} 默认提示词，磁盘文件未改写。", sourceVersion, defaultVersion));
+				}
 			}
 			catch (Exception preprocessEx)
 			{
 				_preprocessPrompts = new PreprocessPromptsConfigModel();
+				_preprocessPromptsLoadError = preprocessEx.Message;
 				Logger.Log("AIConfig", "[错误] 前处理提示词配置加载失败: " + preprocessEx.Message);
+			}
+			try
+			{
+				if (!File.Exists(path5))
+				{
+					throw new FileNotFoundException("找不到 ProactiveNpcRequestPrompts.json", path5);
+				}
+				string value5 = File.ReadAllText(path5, Encoding.UTF8);
+				_proactiveNpcRequestPrompts = JsonConvert.DeserializeObject<ProactiveNpcRequestPromptsConfigModel>(value5) ?? new ProactiveNpcRequestPromptsConfigModel();
+			}
+			catch (Exception proactivePromptEx)
+			{
+				Logger.Log("AIConfig", "[错误] 载入 ProactiveNpcRequestPrompts.json 失败: " + proactivePromptEx.Message);
+				_proactiveNpcRequestPrompts = new ProactiveNpcRequestPromptsConfigModel();
 			}
 			lock (_guardrailSemanticLock)
 			{
@@ -8761,6 +8884,8 @@ public static class AIConfigHandler
 			_guardrail = new GuardrailConfigModel();
 			_actionPostprocess = new ActionPostprocessConfigModel();
 			_preprocessPrompts = new PreprocessPromptsConfigModel();
+			_preprocessPromptsLoadError = ex.Message;
+			_proactiveNpcRequestPrompts = new ProactiveNpcRequestPromptsConfigModel();
 		}
 	}
 

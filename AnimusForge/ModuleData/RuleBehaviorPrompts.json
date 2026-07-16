@@ -660,11 +660,11 @@
                             "TopicLabel":  "Move and attack",
                             "Code":  "Commands and Requests",
                             "NonHeroInstruction":  "只有当你正代表野外当前非英雄MobileParty交涉时，才可作为兜底接受该当前部队的移动、巡逻、跟随或攻击命令；不能创建同伴部队，不能并入玩家队伍，不能指挥无关远方部队或使用英雄/领主专属权力。",
-                            "Instruction":  "【大地图指令规则】玩家可能要求你执行任何命令或者请求，你可以根据你和玩家的关系，选择接受与否，或者向玩家索要利益来换取你的行动，如果玩家是你的上司那么你最好听话,你最好询问玩家每一道命令要执行多久，但是严禁你有其他疑问，因为你绝对知道目标位置在哪，以及你当然是准备充足的",
+                            "Instruction":  "【大地图指令规则】你可按关系接受、拒绝或索要利益。默认把玩家的新命令理解为追加到【当前NPC命令任务】末尾；只有玩家明确要求取消、停止或改派时，才表达停止旧任务。可询问执行多久，但不要追问目标位置或准备情况。",
                             "PostprocessRules":  [
                                                      {
                                                          "Tag":  "[ACTION:WORLDMAP_ORDER:GO_TO_SETTLEMENT:settlement:{id}:{days}]",
-                                                         "Description":  "玩家要求NPC去、走到、赶往、守备、驻扎、支援某定居点，且NPC同意/从命/出发/会去/可以走一趟时输出。{id}必须来自运行时定居点候选原始ID；玩家说附近/最近时可用【玩家当前地点ID】里的最近定居点ID；未指定天数填3。若同时创建同伴队伍或合兵条件成立，同轮也输出CREATE_COMPANION_PARTY/MERGE_TO_PLAYER。 玩家说在这里、此地、本城、当前地点多待几天、看看这座城，且NPC同意带玩家在本城行动时，id使用【玩家当前地点ID】的当前定居点ID，天数默认3；这不是FOLLOW。 格式必须是[ACTION:WORLDMAP_ORDER:GO_TO_SETTLEMENT:settlement:town_X:3]或castle_X/village_X；若运行时写settlement:town_X，去掉前缀settlement:后再填入{id}。"
+                                                         "Description":  "玩家要求NPC去、走到、赶往、守备、驻扎、支援某定居点，且NPC明确同意时输出。{id}必须来自运行时定居点候选原始ID；玩家说附近/最近时可用【玩家当前地点ID】里的最近定居点ID；未指定天数填3。玩家说在这里、此地、本城、当前地点多待几天，id使用当前定居点ID；这不是FOLLOW。若NPC在玩家主队成员名册中，首个有效任务命令会由代码隐式分兵，无需额外建队标签。"
                                                      },
                                                      {
                                                          "Tag":  "[ACTION:WORLDMAP_ORDER:PATROL_SETTLEMENT:settlement:{id}:{days}]",
@@ -672,7 +672,7 @@
                                                      },
                                                      {
                                                          "Tag":  "[ACTION:WORLDMAP_ORDER:FOLLOW:{hero|party}:{id}:{days}]",
-                                                         "Description":  "当NPC明确同意自己的队伍跟随玩家、跟随指定英雄或跟随指定部队时输出。玩家说跟我走、一起出发、加入我的部队、随军同行，NPC同意时目标用hero:main_hero，天数默认3。 加入我的部队、随军同行、一起出发若NPC同意，且表内同时有CREATE_COMPANION_PARTY、FOLLOW、MERGE_TO_PLAYER，应同轮全部输出，不要只输出FOLLOW。 只有跟我走、一起回去、路上告诉我、跟随玩家这类随玩家移动才输出FOLLOW；单纯去某地、守某地、留在本城几天不要额外输出FOLLOW。 若标签表含SCENE_FOLLOW_PLAYER且语境是场景内NPC本人跟随玩家，输出SCENE_FOLLOW_PLAYER，不要用本标签替代。去守某地/驻扎某地也不要输出本标签。 去守/驻扎/支援/赶往某城堡或城镇是GO_TO_SETTLEMENT，不是FOLLOW；这种场景即使NPC说“陪你走一趟/走吧”也不要输出FOLLOW，除非明确跟随玩家本人或玩家部队。"
+                                                         "Description":  "当NPC明确同意自己的队伍跟随玩家、指定英雄或指定部队时输出。跟随玩家用hero:main_hero，天数默认3。单纯去某地、守某地、留在本城不要额外输出FOLLOW。若语境是场景内NPC本人跟随玩家且标签表含SCENE_FOLLOW_PLAYER，使用场景标签。若NPC在玩家主队成员名册中，首个有效任务命令会由代码隐式分兵。"
                                                      },
                                                      {
                                                          "Tag":  "[ACTION:WORLDMAP_ORDER:ATTACK:{hero|party|settlement}:{id}:{days}:{AI|FORCE}]",
@@ -680,15 +680,11 @@
                                                      },
                                                      {
                                                          "Tag":  "[ACTION:WORLDMAP_ORDER:MERGE_TO_PLAYER:{days}]",
-                                                         "Description":  "仅当NPC明确无条件同意带队并入玩家队伍、向玩家靠拢合兵、加入玩家军队行动时输出。若本轮已成立FOLLOW或GO_TO_SETTLEMENT，且NPC是与玩家合同行动、一起出发、随军同行、在当前城多待几天或陪同执行命令，标签表含MERGE_TO_PLAYER时同轮输出，天数未明说用3。只是讨论、建议、报价、条件句或等待玩家确认时禁止输出。"
-                                                     },
-                                                     {
-                                                         "Tag":  "[ACTION:WORLDMAP_ORDER:CREATE_COMPANION_PARTY]",
-                                                         "Description":  "仅当NPC本人明确无条件同意建立或带领一支新队伍执行世界地图命令时输出。若本轮已成立FOLLOW、GO_TO_SETTLEMENT或MERGE_TO_PLAYER，且标签表含CREATE_COMPANION_PARTY、语境是NPC随玩家行动/在当前城停留/去指定定居点执行，则必须同轮输出CREATE。只是讨论、建议、报价、条件句或等待玩家确认时禁止输出。"
+                                                         "Description":  "仅当玩家明确要求NPC归队，且NPC明确同意全队并入玩家主队时输出。不得因新增其它任务自动输出；普通外国独立领主不能归队。"
                                                      },
                                                      {
                                                          "Tag":  "[ACTION:WORLDMAP_ORDER:STOP]",
-                                                         "Description":  "玩家要求停止、取消、别再跟随/巡逻/追击、自由行动、你走吧、放你离开、回到自己的安排，且NPC接受、道谢、遵命、准备离开或恢复自主行动时输出。STOP清空当前大地图命令，不与其他WORLDMAP_ORDER同轮输出。"
+                                                         "Description":  "仅当玩家明确要求取消、停止或改派且NPC同意时输出，并必须是本轮首个WORLDMAP_ORDER标签；改派时先STOP，再按新执行顺序输出任务标签。默认新增任务只追加，不输出STOP。"
                                                      }
                                                  ],
                             "TriggerKeywords":  [
@@ -707,11 +703,6 @@
                                                     "Follow the caravan northeast of us.",
                                                     "Strike the villagers north of your party.",
                                                     "Chase that nearby raider group for one day.",
-                                                    "Form a companion party here; I will give you the troops.",
-                                                    "Create your own party and wait while I split soldiers to you.",
-                                                    "You only need to lead the detachment; I will provide the men.",
-                                                    "Do not go recruit elsewhere; form the party here and take my soldiers.",
-                                                    "Build a companion party first, then attack the nearby looters.",
                                                     "Take the troops I give you and hunt the visible bandit parties.",
                                                     "去萨哥特等我一天。",
                                                     "带你的部队去某个城镇。",
@@ -726,7 +717,6 @@
                                                     "率领部队前来与我会合。",
                                                     "并入我的主队。",
                                                     "把你的人都带来和我会合。",
-                                                    "你去组建一支同伴部队。",
                                                     "停止当前大地图命令。",
                                                     "取消我之前给你的大地图命令。",
                                                     "解除你当前的行动命令。",
