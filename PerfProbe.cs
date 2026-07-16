@@ -48,6 +48,7 @@ internal static class PerfProbe
 	private const double SlowFrameThresholdMs = 50.0;
 	private const double CriticalFrameThresholdMs = 100.0;
 	private const int TopBucketCount = 8;
+	private static readonly long EnabledStateRefreshIntervalTicks = TimeSpan.FromMilliseconds(250.0).Ticks;
 
 	private static readonly object SyncRoot = new object();
 	private static readonly Dictionary<string, Bucket> Buckets = new Dictionary<string, Bucket>(StringComparer.Ordinal);
@@ -59,13 +60,15 @@ internal static class PerfProbe
 	private static long _criticalFrameCount;
 	private static double _sumFrameDtMs;
 	private static double _maxFrameDtMs;
-	private static int _enabled = 1;
+	private static int _enabled;
+	private static int _detailedScopesEnabled;
+	private static long _nextEnabledStateRefreshUtcTicks;
 
 	public static ScopeToken Scope(string name)
 	{
 		try
 		{
-			if (!IsEnabled() || string.IsNullOrWhiteSpace(name))
+			if (!AreDetailedScopesEnabled() || string.IsNullOrWhiteSpace(name))
 			{
 				return default;
 			}
@@ -81,7 +84,7 @@ internal static class PerfProbe
 	{
 		try
 		{
-			RefreshEnabledState();
+			RefreshEnabledStateIfDue(DateTime.UtcNow.Ticks);
 			if (!IsEnabled())
 			{
 				return 0L;
@@ -139,18 +142,36 @@ internal static class PerfProbe
 		return Volatile.Read(ref _enabled) != 0;
 	}
 
-	private static void RefreshEnabledState()
+	internal static bool IsDetailedScopeRecordingActive()
+	{
+		return AreDetailedScopesEnabled();
+	}
+
+	private static bool AreDetailedScopesEnabled()
+	{
+		return Volatile.Read(ref _detailedScopesEnabled) != 0;
+	}
+
+	private static void RefreshEnabledStateIfDue(long nowUtcTicks)
 	{
 		try
 		{
-			bool enabled = Logger.IsModLogicEnabled && (DuelSettings.GetSettings()?.EnablePerformanceMonitor ?? true);
+			long nextAllowedTicks = Interlocked.Read(ref _nextEnabledStateRefreshUtcTicks);
+			if (nowUtcTicks < nextAllowedTicks)
+			{
+				return;
+			}
+			Interlocked.Exchange(ref _nextEnabledStateRefreshUtcTicks, nowUtcTicks + EnabledStateRefreshIntervalTicks);
+			bool enabled = Logger.IsModLogicEnabled && (DuelSettings.GetSettings()?.EnablePerformanceMonitor ?? false);
+			bool detailedScopesEnabled = enabled && Logger.IsVerboseModLogicEnabled;
 			int next = enabled ? 1 : 0;
+			Interlocked.Exchange(ref _detailedScopesEnabled, detailedScopesEnabled ? 1 : 0);
 			int previous = Interlocked.Exchange(ref _enabled, next);
 			if (previous == next)
 			{
 				return;
 			}
-			ResetWindow(DateTime.UtcNow.Ticks);
+			ResetWindow(nowUtcTicks);
 			if (enabled)
 			{
 				Logger.Log("PerfProbe", "monitor_state enabled=true intervalSec=" + FlushIntervalSeconds + " topBuckets=" + TopBucketCount);

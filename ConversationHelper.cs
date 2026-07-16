@@ -363,6 +363,12 @@ public static class ConversationHelper
 
 	public static void Tick()
 	{
+		if (_currentVM == null
+			&& !Volatile.Read(ref _hasPending)
+			&& !Volatile.Read(ref _typewriterActive))
+		{
+			return;
+		}
 		string text = null;
 		using (EnterPendingLock("Tick"))
 		{

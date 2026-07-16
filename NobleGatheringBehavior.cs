@@ -225,6 +225,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 	private static readonly Regex NobleGatheringActionTagRegex = new Regex("\\[ACTION:NOBLE_GATHERING:(?:START|CANCEL):[^\\]\\r\\n]*\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 	private static readonly object PendingTemporaryPartyDestroyLock = new object();
 	private static readonly Dictionary<string, PendingTemporaryPartyDestroyRecord> PendingTemporaryPartyDestroys = new Dictionary<string, PendingTemporaryPartyDestroyRecord>(StringComparer.OrdinalIgnoreCase);
+	private static int _hasPendingTemporaryPartyDestroys;
 	private static readonly string[] FeastMainSeatTags = new string[]
 	{
 		"sp_throne",
@@ -438,6 +439,14 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 	public void OnEngineTick()
 	{
 		ProcessPendingTemporaryPartyDestroysOnEngineTick();
+		if (Mission.Current == null)
+		{
+			if (_feastMusicEvent != null || _feastMusicPlayList.Count > 0 || _feastMusicianPerformances.Count > 0)
+			{
+				StopFeastHallMusic();
+			}
+			return;
+		}
 		UpdateFeastHallMusic();
 		UpdateFeastMusicianPerformances();
 		UpdateFeastMusicianLayout();
@@ -3808,6 +3817,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 				}
 				record.Reason = (reason ?? "").Trim();
 				record.MarkedUtcTicks = DateTime.UtcNow.Ticks;
+				System.Threading.Volatile.Write(ref _hasPendingTemporaryPartyDestroys, 1);
 			}
 			Logger.LogImmediate(LogSource, "temporary party delayed destroy marked party=" + partyId + " reason=" + (reason ?? "") + " leader=" + (party.LeaderHero?.StringId ?? "null") + " settlement=" + (party.CurrentSettlement?.StringId ?? "null") + " target=" + (party.TargetSettlement?.StringId ?? "null"));
 		}
@@ -3819,14 +3829,24 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 
 	private static void ProcessPendingTemporaryPartyDestroysOnEngineTick()
 	{
+		if (System.Threading.Volatile.Read(ref _hasPendingTemporaryPartyDestroys) == 0)
+		{
+			return;
+		}
 		try
 		{
-			List<PendingTemporaryPartyDestroyRecord> due = new List<PendingTemporaryPartyDestroyRecord>();
-			long nowTicks = DateTime.UtcNow.Ticks;
-			long delayTicks = TimeSpan.FromMilliseconds(PendingTemporaryPartyDestroyDelayMs).Ticks;
+			List<PendingTemporaryPartyDestroyRecord> due;
 			lock (PendingTemporaryPartyDestroyLock)
 			{
-				foreach (PendingTemporaryPartyDestroyRecord record in PendingTemporaryPartyDestroys.Values.ToList())
+				if (PendingTemporaryPartyDestroys.Count == 0)
+				{
+					System.Threading.Volatile.Write(ref _hasPendingTemporaryPartyDestroys, 0);
+					return;
+				}
+				long nowTicks = DateTime.UtcNow.Ticks;
+				long delayTicks = TimeSpan.FromMilliseconds(PendingTemporaryPartyDestroyDelayMs).Ticks;
+				due = new List<PendingTemporaryPartyDestroyRecord>();
+				foreach (PendingTemporaryPartyDestroyRecord record in PendingTemporaryPartyDestroys.Values)
 				{
 					if (record == null || string.IsNullOrWhiteSpace(record.PartyId))
 					{
@@ -3836,8 +3856,15 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 					{
 						continue;
 					}
-					PendingTemporaryPartyDestroys.Remove(record.PartyId);
 					due.Add(record);
+				}
+				foreach (PendingTemporaryPartyDestroyRecord record in due)
+				{
+					PendingTemporaryPartyDestroys.Remove(record.PartyId);
+				}
+				if (PendingTemporaryPartyDestroys.Count == 0)
+				{
+					System.Threading.Volatile.Write(ref _hasPendingTemporaryPartyDestroys, 0);
 				}
 			}
 			foreach (PendingTemporaryPartyDestroyRecord record in due)
@@ -3891,6 +3918,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			lock (PendingTemporaryPartyDestroyLock)
 			{
 				PendingTemporaryPartyDestroys[record.PartyId] = record;
+				System.Threading.Volatile.Write(ref _hasPendingTemporaryPartyDestroys, 1);
 			}
 		}
 	}

@@ -2371,6 +2371,10 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 
 	private void OnCampaignTick(float dt)
 	{
+		if (!HasPendingNoticeForMap() && _pendingDiplomacySyncs.Count == 0)
+		{
+			return;
+		}
 		ProcessPendingDiplomacySyncs();
 		TryPublishPendingNotices();
 	}

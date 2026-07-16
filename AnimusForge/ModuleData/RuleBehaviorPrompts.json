@@ -552,7 +552,7 @@
                                                      },
                                                      {
                                                          "Tag":  "[A:C_J_K:{targetKingdomId}]",
-                                                         "Description":  "当前NPC是族长，且明确决定全族加入指定王国时输出。targetKingdomId只复制运行时【王国】编号并去掉kingdom:；可为玩家王国或第三方，不能填当前所属王国。未明确目标、非族长、仅本人入队时禁止。"
+                                                         "Description":  "当前NPC是族长，且明确决定全族加入指定王国时输出。targetKingdomId只复制运行时【王国】里的原始ID；可为玩家王国或第三方，不能填当前所属王国。未明确目标、非族长、仅本人入队时禁止。"
                                                      }
                                                  ],
                             "RuntimeInstructionTemplates":  {
@@ -672,7 +672,7 @@
                                                      },
                                                      {
                                                          "Tag":  "[ACTION:WORLDMAP_ORDER:FOLLOW:{hero|party}:{id}:{days}]",
-                                                         "Description":  "当NPC明确同意自己的队伍跟随玩家、指定英雄或指定部队时输出。跟随玩家用hero:main_hero，天数默认3。单纯去某地、守某地、留在本城不要额外输出FOLLOW。若语境是场景内NPC本人跟随玩家且标签表含SCENE_FOLLOW_PLAYER，使用场景标签。若NPC在玩家主队成员名册中，首个有效任务命令会由代码隐式分兵。"
+                                                         "Description":  "当NPC明确同意自己的队伍跟随玩家、指定英雄或指定部队时输出。跟随玩家时目标类型写hero，id填写main_hero，天数默认3。单纯去某地、守某地、留在本城不要额外输出FOLLOW。若语境是场景内NPC本人跟随玩家且标签表含SCENE_FOLLOW_PLAYER，使用场景标签。若NPC在玩家主队成员名册中，首个有效任务命令会由代码隐式分兵。"
                                                      },
                                                      {
                                                          "Tag":  "[ACTION:WORLDMAP_ORDER:ATTACK:{hero|party|settlement}:{id}:{days}:{AI|FORCE}]",
@@ -680,11 +680,11 @@
                                                      },
                                                      {
                                                          "Tag":  "[ACTION:WORLDMAP_ORDER:MERGE_TO_PLAYER:{days}]",
-                                                         "Description":  "仅当玩家明确要求NPC归队，且NPC明确同意全队并入玩家主队时输出。不得因新增其它任务自动输出；普通外国独立领主不能归队。"
+                                                         "Description":  "此标签用于NPC自己的部队与玩家部队合并，条件是NPC和玩家都明确无条件同意了NPC的部队并入玩家部队，那么就输出"
                                                      },
                                                      {
                                                          "Tag":  "[ACTION:WORLDMAP_ORDER:STOP]",
-                                                         "Description":  "仅当玩家明确要求取消、停止或改派且NPC同意时输出，并必须是本轮首个WORLDMAP_ORDER标签；改派时先STOP，再按新执行顺序输出任务标签。默认新增任务只追加，不输出STOP。"
+                                                         "Description":  "此标签用于清空【当前NPC命令任务】，如果玩家和NPC都明确无条件同意放弃当前任务，或者双方无条件同意立刻执行新的命令时输出，如果是在原有命令基础上增加新的命令，那么不得输出。"
                                                      }
                                                  ],
                             "TriggerKeywords":  [

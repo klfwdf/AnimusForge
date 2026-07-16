@@ -1604,6 +1604,11 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private Dictionary<MobileParty, string> _wildernessNonHeroPartyMemoryIds = new Dictionary<MobileParty, string>();
 
+	// Both destruction callbacks are raised for the same party. The second pass would only rescan empty memory containers.
+	private const int DestroyedPartyMemoryCleanupDedupLimit = 4096;
+
+	private readonly HashSet<PartyBase> _destroyedPartyMemoryCleanupDedup = new HashSet<PartyBase>();
+
 	private Dictionary<string, MemoryOverviewState> _memoryOverviewStates = new Dictionary<string, MemoryOverviewState>(StringComparer.OrdinalIgnoreCase);
 
 	private Dictionary<string, string> _memoryOverviewStateStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -2207,6 +2212,7 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			_dailyMaintenanceQueue.Clear();
 			_dailyMaintenanceJobKeys.Clear();
+			_destroyedPartyMemoryCleanupDedup.Clear();
 			_dirtyMemoryOverviewIds.Clear();
 			_pendingMemoryOverviewCandidateScanIds.Clear();
 			_pendingMemoryOverviewCandidateScanIdSet.Clear();
@@ -16737,14 +16743,6 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 		try
 		{
-			using (PerfProbe.Scope("MyBehavior.OnCampaignTick.ProcessPendingWeeklyReportManualRetryResult"))
-			{
-				ProcessPendingWeeklyReportManualRetryResult();
-			}
-			using (PerfProbe.Scope("MyBehavior.OnCampaignTick.ProcessWeeklyReportUiResume"))
-			{
-				ProcessWeeklyReportUiResume();
-			}
 			bool pauseDeferredMaintenanceForMapTravel = ShouldPauseDeferredMaintenanceForMapTravel();
 			bool deferredMaintenanceWindowOpen;
 			using (PerfProbe.Scope("MyBehavior.OnCampaignTick.DeferredMaintenanceScheduler"))
@@ -16759,15 +16757,11 @@ public class MyBehavior : CampaignBehaviorBase
 					processedWeeklyReportCommits = ProcessPendingWeeklyReportCommits();
 				}
 			}
-			using (PerfProbe.Scope("MyBehavior.OnCampaignTick.TryPublishUnreadWeeklyReportMapNotifications"))
-			{
-				TryPublishUnreadWeeklyReportMapNotifications();
-			}
 			if (!pauseDeferredMaintenanceForMapTravel)
 			{
 				using (PerfProbe.Scope("MyBehavior.OnCampaignTick.TryRunCampaignMemoryMaintenance"))
 				{
-					TryRunCampaignMemoryMaintenance();
+					TryRunCampaignMemoryMaintenance(pauseDeferredMaintenanceForMapTravel);
 				}
 			}
 			if (deferredMaintenanceWindowOpen && !processedWeeklyReportCommits)
@@ -16807,14 +16801,18 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void TryRunCampaignMemoryMaintenance()
+	private void TryRunCampaignMemoryMaintenance(bool pauseDeferredMaintenanceForMapTravel)
 	{
-		if (ShouldPauseDeferredMaintenanceForMapTravel() || _memorySummaryProcessing || IsDialogueOrLetterChainBusyForMemorySummary())
+		if (pauseDeferredMaintenanceForMapTravel || _memorySummaryProcessing)
 		{
 			return;
 		}
 		long now = DateTime.UtcNow.Ticks;
 		if (now - _lastMemoryMaintenanceCampaignTickUtcTicks < TimeSpan.FromSeconds(MemoryMaintenanceCampaignTickThrottleSeconds).Ticks)
+		{
+			return;
+		}
+		if (IsDialogueOrLetterChainBusyForMemorySummary())
 		{
 			return;
 		}
@@ -18011,6 +18009,10 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void OnBattleStartedForEncounterDiag(PartyBase attackerParty, PartyBase defenderParty, object subject, bool showNotification)
 	{
+		if (!ShouldWriteBattleStartEncounterDiagnostic(attackerParty, defenderParty))
+		{
+			return;
+		}
 		try
 		{
 			Logger.LogImmediate("Logic", "[EncounterDiag] stage=MyBehavior.OnBattleStarted | subject=" + EncounterDiagEscape(subject?.GetType().FullName ?? "null")
@@ -18021,6 +18023,27 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		catch
 		{
+		}
+	}
+
+	private static bool ShouldWriteBattleStartEncounterDiagnostic(PartyBase attackerParty, PartyBase defenderParty)
+	{
+		try
+		{
+			if (!Logger.IsModLogicEnabled)
+			{
+				return false;
+			}
+			if (Logger.IsVerboseModLogicEnabled)
+			{
+				return true;
+			}
+			PartyBase mainParty = PartyBase.MainParty;
+			return mainParty != null && (ReferenceEquals(attackerParty, mainParty) || ReferenceEquals(defenderParty, mainParty));
+		}
+		catch
+		{
+			return false;
 		}
 	}
 
@@ -23840,7 +23863,24 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			Logger.Log("Logic", "[NonHeroMemoryTrace] " + (message ?? ""));
+			if (Logger.IsVerboseModLogicEnabled)
+			{
+				Logger.Log("Logic", "[NonHeroMemoryTrace] " + (message ?? ""));
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private static void LogNonHeroMemoryTrace(Func<string> messageFactory)
+	{
+		try
+		{
+			if (Logger.IsVerboseModLogicEnabled)
+			{
+				Logger.Log("Logic", "[NonHeroMemoryTrace] " + (messageFactory?.Invoke() ?? ""));
+			}
 		}
 		catch
 		{
@@ -24069,6 +24109,10 @@ public class MyBehavior : CampaignBehaviorBase
 		try
 		{
 			MobileParty resolvedParty = party ?? partyBase?.MobileParty;
+			if (!TryReserveDestroyedPartyMemoryCleanup(partyBase, resolvedParty))
+			{
+				return;
+			}
 			string guid = "";
 			if (resolvedParty != null && _wildernessNonHeroPartyMemoryIds != null)
 			{
@@ -24087,6 +24131,27 @@ public class MyBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("DialogueHistory", "[WARN] remove wilderness non-hero party memory failed: " + ex.Message);
+		}
+	}
+
+	private bool TryReserveDestroyedPartyMemoryCleanup(PartyBase partyBase, MobileParty party)
+	{
+		try
+		{
+			PartyBase identity = partyBase ?? party?.Party;
+			if (identity == null)
+			{
+				return true;
+			}
+			if (_destroyedPartyMemoryCleanupDedup.Count >= DestroyedPartyMemoryCleanupDedupLimit)
+			{
+				_destroyedPartyMemoryCleanupDedup.Clear();
+			}
+			return _destroyedPartyMemoryCleanupDedup.Add(identity);
+		}
+		catch
+		{
+			return true;
 		}
 	}
 
@@ -24814,7 +24879,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				RemoveMemoryEntityDataById(id);
 			}
-			LogNonHeroMemoryTrace("stage=cleanup_removed_party reason=" + (reason ?? "") + " party=" + (party?.StringId ?? party?.Name?.ToString() ?? "") + " partyIndex=" + (partyBase?.Index ?? party?.Party?.Index ?? -1) + " needles=" + string.Join(",", needles) + " removed=" + ids.Count);
+			LogNonHeroMemoryTrace(() => "stage=cleanup_removed_party reason=" + (reason ?? "") + " party=" + (party?.StringId ?? party?.Name?.ToString() ?? "") + " partyIndex=" + (partyBase?.Index ?? party?.Party?.Index ?? -1) + " needles=" + string.Join(",", needles) + " removed=" + ids.Count);
 			if (ids.Count > 0)
 			{
 				Logger.Log("DialogueHistory", "cleaned destroyed non-hero party memory count=" + ids.Count + " partyIndex=" + (partyBase?.Index ?? party?.Party?.Index ?? -1) + " party=" + (party?.StringId ?? party?.Name?.ToString() ?? "") + " reason=" + (reason ?? ""));
@@ -26368,7 +26433,7 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			MyBehavior behavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			MyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>();
 			return behavior != null && behavior.HasMeaningfulDialogueHistoryInternal(hero);
 		}
 		catch
@@ -26381,7 +26446,7 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			MyBehavior behavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			MyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>();
 			return behavior?.GetLastMeaningfulDialogueDayInternal(hero) ?? -1;
 		}
 		catch
@@ -26461,18 +26526,28 @@ public class MyBehavior : CampaignBehaviorBase
 			return -1;
 		}
 		List<DialogueDay> history = LoadDialogueHistory(hero);
-		foreach (DialogueDay dialogueDay in (history ?? new List<DialogueDay>()).OrderByDescending(x => x?.GameDayIndex ?? -1))
+		int latestMeaningfulDay = -1;
+		if (history == null)
 		{
-			if (dialogueDay?.Lines == null)
+			return latestMeaningfulDay;
+		}
+		for (int dayIndex = 0; dayIndex < history.Count; dayIndex++)
+		{
+			DialogueDay dialogueDay = history[dayIndex];
+			if (dialogueDay?.Lines == null || dialogueDay.GameDayIndex < latestMeaningfulDay)
 			{
 				continue;
 			}
-			if (dialogueDay.Lines.Any(line => IsMeaningfulDialogueLineForProactiveLetter(line)))
+			for (int lineIndex = 0; lineIndex < dialogueDay.Lines.Count; lineIndex++)
 			{
-				return dialogueDay.GameDayIndex;
+				if (IsMeaningfulDialogueLineForProactiveLetter(dialogueDay.Lines[lineIndex]))
+				{
+					latestMeaningfulDay = dialogueDay.GameDayIndex;
+					break;
+				}
 			}
 		}
-		return -1;
+		return latestMeaningfulDay;
 	}
 
 	private bool TryGetLatestMeaningfulDialogueInternal(Hero hero, out string stableKey, out string dialogueText, out int day)
@@ -28412,6 +28487,16 @@ public class MyBehavior : CampaignBehaviorBase
 
 	public static string BuildPlayerCourierSenderIdentityForExternal(Hero observer)
 	{
+		return BuildPlayerCourierIdentityForExternal(observer, "来信者", "正式回信");
+	}
+
+	public static string BuildPlayerCourierRecipientIdentityForExternal(Hero observer)
+	{
+		return BuildPlayerCourierIdentityForExternal(observer, "收信者", "正式信件中");
+	}
+
+	private static string BuildPlayerCourierIdentityForExternal(Hero observer, string participantLabel, string formalAddressContext)
+	{
 		try
 		{
 			Hero playerHero = Hero.MainHero;
@@ -28461,14 +28546,14 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			string ageText = BuildAgeBracketLabel(playerHero.Age);
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.AppendLine("【来信者公开身份】");
-			stringBuilder.AppendLine("来信者公开称呼：" + playerDisplayName);
-			stringBuilder.AppendLine("来信者文化与年纪：" + cultureText + "，" + ageText);
+			stringBuilder.AppendLine("【" + participantLabel + "公开身份】");
+			stringBuilder.AppendLine(participantLabel + "公开称呼：" + playerDisplayName);
+			stringBuilder.AppendLine(participantLabel + "文化与年纪：" + cultureText + "，" + ageText);
 			if (includeFullIdentity)
 			{
-				stringBuilder.AppendLine(BuildFactionLineForPrompt("来信者势力：", factionName, liegeName));
-				stringBuilder.AppendLine("来信者身份：" + identityTitle);
-				stringBuilder.AppendLine("来信者家族：" + clanName + $"（{Math.Max(0, clanTier)} level，{clanRole}）");
+				stringBuilder.AppendLine(BuildFactionLineForPrompt(participantLabel + "势力：", factionName, liegeName));
+				stringBuilder.AppendLine(participantLabel + "身份：" + identityTitle);
+				stringBuilder.AppendLine(participantLabel + "家族：" + clanName + $"（{Math.Max(0, clanTier)} level，{clanRole}）");
 				try
 				{
 					Kingdom kingdom = playerHero.Clan?.Kingdom;
@@ -28479,7 +28564,7 @@ public class MyBehavior : CampaignBehaviorBase
 					{
 						string sovereignTitle = playerHero.IsFemale ? "女王/统治者" : "国王/统治者";
 						string scope = string.IsNullOrWhiteSpace(kingdomName) ? "" : (kingdomName + "的");
-						stringBuilder.AppendLine("称呼要求：来信者是" + scope + sovereignTitle + "，正式回信应称其为“" + playerDisplayName + "陛下”或使用君主/统治者级称呼；不要把此人降格称为“勋爵”“领主”或普通贵族。");
+						stringBuilder.AppendLine("称呼要求：" + participantLabel + "是" + scope + sovereignTitle + "，" + formalAddressContext + "应称其为“" + playerDisplayName + "陛下”或使用君主/统治者级称呼；不要把此人降格称为“勋爵”“领主”或普通贵族。");
 					}
 				}
 				catch
@@ -28488,7 +28573,7 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			else
 			{
-				stringBuilder.AppendLine("来信者详细身份：你尚未确认其真实姓名、家族、势力或头衔，只能依据公开称呼、信件内容和你已知的公开传闻判断。");
+				stringBuilder.AppendLine(participantLabel + "详细身份：你尚未确认其真实姓名、家族、势力或头衔，只能依据公开称呼、信件内容和你已知的公开传闻判断。");
 			}
 			string vassalageRelationLine = BuildPlayerVassalageRelationPromptLineForExternal(observer, counterpartKingdomLabel: "玩家所在王国");
 			if (!string.IsNullOrWhiteSpace(vassalageRelationLine))

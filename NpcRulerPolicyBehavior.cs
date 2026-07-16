@@ -1590,6 +1590,10 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 
 	private void ProcessPendingPolicySnapshotJobs()
 	{
+		if (_pendingPolicySnapshotJobs.IsEmpty)
+		{
+			return;
+		}
 		long startTimestamp = Stopwatch.GetTimestamp();
 		double budgetMs = PolicyCommitFrameBudgetMs;
 		while (!IsPolicyCommitBudgetExceeded(startTimestamp, budgetMs) && _pendingPolicySnapshotJobs.TryPeek(out NpcPolicyGenerationJob job))

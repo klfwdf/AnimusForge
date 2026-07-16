@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
@@ -28,6 +29,7 @@ internal static class CampaignTickDiagnosticsPatch
 	private static bool _patched;
 	private static long _sequence;
 	private static long _nextCheckpointWriteUtcTicks;
+	private static int _checkpointWriteDue;
 	private static string _lastContext = "";
 
 	public static void EnsurePatched(Harmony harmony)
@@ -81,51 +83,116 @@ internal static class CampaignTickDiagnosticsPatch
 		}
 	}
 
-	public static void Enter(MethodBase __originalMethod, object[] __args)
+	public static void Enter(MethodBase __originalMethod)
 	{
-		try
-		{
-			if (!ShouldCaptureCheckpoint(forceWrite: false))
-			{
-				return;
-			}
-			string context = BuildContext("ENTER", __originalMethod, __args);
-			StoreCheckpoint(context, forceWrite: false);
-		}
-		catch
-		{
-		}
+		CaptureRegularCheckpoint("ENTER", __originalMethod);
 	}
 
-	public static void Exit(MethodBase __originalMethod, object[] __args)
+	public static void Enter(MethodBase __originalMethod, float __0)
 	{
-		try
-		{
-			if (!ShouldCaptureCheckpoint(forceWrite: false))
-			{
-				return;
-			}
-			string context = BuildContext("EXIT", __originalMethod, __args);
-			StoreCheckpoint(context, forceWrite: false);
-		}
-		catch
-		{
-		}
+		CaptureRegularCheckpoint("ENTER", __originalMethod, __0);
 	}
 
-	private static bool ShouldCaptureCheckpoint(bool forceWrite)
+	public static void Enter(MethodBase __originalMethod, MobileParty __0)
 	{
-		if (forceWrite)
-		{
-			return true;
-		}
+		CaptureRegularCheckpoint("ENTER", __originalMethod, __0);
+	}
+
+	public static void Enter(MethodBase __originalMethod, MobileParty __0, PartyThinkParams __1)
+	{
+		CaptureRegularCheckpoint("ENTER", __originalMethod, __0, __1);
+	}
+
+	public static void Enter(MethodBase __originalMethod, Settlement __0)
+	{
+		CaptureRegularCheckpoint("ENTER", __originalMethod, __0);
+	}
+
+	public static void Enter(MethodBase __originalMethod, Clan __0)
+	{
+		CaptureRegularCheckpoint("ENTER", __originalMethod, __0);
+	}
+
+	public static void Enter(MethodBase __originalMethod, Hero __0)
+	{
+		CaptureRegularCheckpoint("ENTER", __originalMethod, __0);
+	}
+
+	public static void Enter(MethodBase __originalMethod, Town __0)
+	{
+		CaptureRegularCheckpoint("ENTER", __originalMethod, __0);
+	}
+
+	public static void Exit(MethodBase __originalMethod)
+	{
+		CaptureRegularCheckpoint("EXIT", __originalMethod);
+	}
+
+	public static void Exit(MethodBase __originalMethod, float __0)
+	{
+		CaptureRegularCheckpoint("EXIT", __originalMethod, __0);
+	}
+
+	public static void Exit(MethodBase __originalMethod, MobileParty __0)
+	{
+		CaptureRegularCheckpoint("EXIT", __originalMethod, __0);
+	}
+
+	public static void Exit(MethodBase __originalMethod, MobileParty __0, PartyThinkParams __1)
+	{
+		CaptureRegularCheckpoint("EXIT", __originalMethod, __0, __1);
+	}
+
+	public static void Exit(MethodBase __originalMethod, Settlement __0)
+	{
+		CaptureRegularCheckpoint("EXIT", __originalMethod, __0);
+	}
+
+	public static void Exit(MethodBase __originalMethod, Clan __0)
+	{
+		CaptureRegularCheckpoint("EXIT", __originalMethod, __0);
+	}
+
+	public static void Exit(MethodBase __originalMethod, Hero __0)
+	{
+		CaptureRegularCheckpoint("EXIT", __originalMethod, __0);
+	}
+
+	public static void Exit(MethodBase __originalMethod, Town __0)
+	{
+		CaptureRegularCheckpoint("EXIT", __originalMethod, __0);
+	}
+
+	public static void RefreshCheckpointWriteBudget()
+	{
 		try
 		{
 			long nowTicks = DateTime.UtcNow.Ticks;
-			lock (StateLock)
+			long nextTicks = Interlocked.Read(ref _nextCheckpointWriteUtcTicks);
+			if (nowTicks < nextTicks)
 			{
-				return nowTicks >= _nextCheckpointWriteUtcTicks;
+				return;
 			}
+			long nextAllowedTicks = nowTicks + TimeSpan.FromMilliseconds(CheckpointWriteIntervalMs).Ticks;
+			if (Interlocked.CompareExchange(ref _nextCheckpointWriteUtcTicks, nextAllowedTicks, nextTicks) == nextTicks)
+			{
+				Volatile.Write(ref _checkpointWriteDue, 1);
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private static bool TryReserveCheckpointWrite()
+	{
+		try
+		{
+			if (Volatile.Read(ref _checkpointWriteDue) == 0)
+			{
+				return false;
+			}
+			return Interlocked.CompareExchange(ref _checkpointWriteDue, 0, 1) == 1;
 		}
 		catch
 		{
@@ -133,22 +200,133 @@ internal static class CampaignTickDiagnosticsPatch
 		}
 	}
 
-	public static Exception Finalizer(Exception __exception, MethodBase __originalMethod, object[] __args)
+	public static Exception Finalizer(Exception __exception, MethodBase __originalMethod)
 	{
-		if (__exception == null)
+		return CaptureExceptionCheckpoint(__exception, __originalMethod);
+	}
+
+	public static Exception Finalizer(Exception __exception, MethodBase __originalMethod, float __0)
+	{
+		return CaptureExceptionCheckpoint(__exception, __originalMethod, __0);
+	}
+
+	public static Exception Finalizer(Exception __exception, MethodBase __originalMethod, MobileParty __0)
+	{
+		return CaptureExceptionCheckpoint(__exception, __originalMethod, __0);
+	}
+
+	public static Exception Finalizer(Exception __exception, MethodBase __originalMethod, MobileParty __0, PartyThinkParams __1)
+	{
+		return CaptureExceptionCheckpoint(__exception, __originalMethod, __0, __1);
+	}
+
+	public static Exception Finalizer(Exception __exception, MethodBase __originalMethod, Settlement __0)
+	{
+		return CaptureExceptionCheckpoint(__exception, __originalMethod, __0);
+	}
+
+	public static Exception Finalizer(Exception __exception, MethodBase __originalMethod, Clan __0)
+	{
+		return CaptureExceptionCheckpoint(__exception, __originalMethod, __0);
+	}
+
+	public static Exception Finalizer(Exception __exception, MethodBase __originalMethod, Hero __0)
+	{
+		return CaptureExceptionCheckpoint(__exception, __originalMethod, __0);
+	}
+
+	public static Exception Finalizer(Exception __exception, MethodBase __originalMethod, Town __0)
+	{
+		return CaptureExceptionCheckpoint(__exception, __originalMethod, __0);
+	}
+
+	private static void CaptureRegularCheckpoint(string phase, MethodBase method)
+	{
+		try
+		{
+			if (!TryReserveCheckpointWrite())
+			{
+				return;
+			}
+			StoreCheckpoint(BuildContext(phase, method, null), forceWrite: false, checkpointReserved: true);
+		}
+		catch
+		{
+			Volatile.Write(ref _checkpointWriteDue, 1);
+		}
+	}
+
+	private static void CaptureRegularCheckpoint<TArgument>(string phase, MethodBase method, TArgument argument)
+	{
+		try
+		{
+			if (!TryReserveCheckpointWrite())
+			{
+				return;
+			}
+			StoreCheckpoint(BuildContext(phase, method, new object[] { argument }), forceWrite: false, checkpointReserved: true);
+		}
+		catch
+		{
+			Volatile.Write(ref _checkpointWriteDue, 1);
+		}
+	}
+
+	private static void CaptureRegularCheckpoint<TFirst, TSecond>(string phase, MethodBase method, TFirst first, TSecond second)
+	{
+		try
+		{
+			if (!TryReserveCheckpointWrite())
+			{
+				return;
+			}
+			StoreCheckpoint(BuildContext(phase, method, new object[] { first, second }), forceWrite: false, checkpointReserved: true);
+		}
+		catch
+		{
+			Volatile.Write(ref _checkpointWriteDue, 1);
+		}
+	}
+
+	private static Exception CaptureExceptionCheckpoint(Exception exception, MethodBase method)
+	{
+		if (exception == null)
 		{
 			return null;
 		}
+		return StoreExceptionCheckpoint(exception, method, null);
+	}
+
+	private static Exception CaptureExceptionCheckpoint<TArgument>(Exception exception, MethodBase method, TArgument argument)
+	{
+		if (exception == null)
+		{
+			return null;
+		}
+		return StoreExceptionCheckpoint(exception, method, new object[] { argument });
+	}
+
+	private static Exception CaptureExceptionCheckpoint<TFirst, TSecond>(Exception exception, MethodBase method, TFirst first, TSecond second)
+	{
+		if (exception == null)
+		{
+			return null;
+		}
+		return StoreExceptionCheckpoint(exception, method, new object[] { first, second });
+	}
+
+	private static Exception StoreExceptionCheckpoint(Exception exception, MethodBase method, object[] args)
+	{
 		try
 		{
-			string context = BuildContext("EXCEPTION", __originalMethod, __args);
-			StoreCheckpoint(context, forceWrite: true);
-			Logger.LogImmediate(LogSource, "[tick-exception] " + context + "\n" + __exception);
+			string context = BuildContext("EXCEPTION", method, args);
+			StoreCheckpoint(context, forceWrite: true, checkpointReserved: false);
+			Logger.LogImmediate(LogSource, "[tick-exception] " + context + "\n" + exception);
 		}
 		catch
 		{
 		}
-		return __exception;
+		return exception;
 	}
 
 	public static string GetLastContextSummary()
@@ -210,12 +388,35 @@ internal static class CampaignTickDiagnosticsPatch
 			Logger.Log(LogSource, type.FullName + "." + methodName + " not found; diagnostics skipped.");
 			return;
 		}
-		harmony.Patch(
-			target,
-			prefix: new HarmonyMethod(typeof(CampaignTickDiagnosticsPatch), nameof(Enter)),
-			postfix: new HarmonyMethod(typeof(CampaignTickDiagnosticsPatch), nameof(Exit)),
-			finalizer: new HarmonyMethod(typeof(CampaignTickDiagnosticsPatch), nameof(Finalizer)));
+		HarmonyMethod prefix = CreateHookMethod(nameof(Enter), parameterTypes, isFinalizer: false);
+		HarmonyMethod postfix = CreateHookMethod(nameof(Exit), parameterTypes, isFinalizer: false);
+		HarmonyMethod finalizer = CreateHookMethod(nameof(Finalizer), parameterTypes, isFinalizer: true);
+		if (prefix == null || postfix == null || finalizer == null)
+		{
+			Logger.Log(LogSource, type.FullName + "." + methodName + " diagnostics hook signature unavailable; skipped.");
+			return;
+		}
+		harmony.Patch(target, prefix: prefix, postfix: postfix, finalizer: finalizer);
 		patched++;
+	}
+
+	private static HarmonyMethod CreateHookMethod(string hookName, Type[] targetParameterTypes, bool isFinalizer)
+	{
+		int prefixLength = isFinalizer ? 2 : 1;
+		int targetLength = targetParameterTypes?.Length ?? 0;
+		Type[] hookParameterTypes = new Type[prefixLength + targetLength];
+		int index = 0;
+		if (isFinalizer)
+		{
+			hookParameterTypes[index++] = typeof(Exception);
+		}
+		hookParameterTypes[index++] = typeof(MethodBase);
+		for (int i = 0; i < targetLength; i++)
+		{
+			hookParameterTypes[index + i] = targetParameterTypes[i];
+		}
+		MethodInfo method = AccessTools.Method(typeof(CampaignTickDiagnosticsPatch), hookName, hookParameterTypes);
+		return method == null ? null : new HarmonyMethod(method);
 	}
 
 	private static void LoadPriorCrashSuspectFromCheckpoint()
@@ -261,7 +462,7 @@ internal static class CampaignTickDiagnosticsPatch
 		}
 	}
 
-	private static void StoreCheckpoint(string context, bool forceWrite)
+	private static void StoreCheckpoint(string context, bool forceWrite, bool checkpointReserved)
 	{
 		string snapshot = "";
 		try
@@ -275,11 +476,15 @@ internal static class CampaignTickDiagnosticsPatch
 				{
 					LastCheckpointLines.RemoveAt(0);
 				}
-				if (!forceWrite && nowTicks < _nextCheckpointWriteUtcTicks)
+				if (!checkpointReserved)
 				{
-					return;
+					if (!forceWrite && nowTicks < Interlocked.Read(ref _nextCheckpointWriteUtcTicks))
+					{
+						return;
+					}
+					Interlocked.Exchange(ref _nextCheckpointWriteUtcTicks, nowTicks + TimeSpan.FromMilliseconds(CheckpointWriteIntervalMs).Ticks);
+					Volatile.Write(ref _checkpointWriteDue, 0);
 				}
-				_nextCheckpointWriteUtcTicks = nowTicks + TimeSpan.FromMilliseconds(CheckpointWriteIntervalMs).Ticks;
 				StringBuilder sb = new StringBuilder();
 				sb.AppendLine("Campaign tick last checkpoint");
 				sb.AppendLine("updated=" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));

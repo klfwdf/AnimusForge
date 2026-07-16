@@ -14801,7 +14801,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		try
 		{
-			Logger.Log("Logic", "[NonHeroMemoryTrace] " + (message ?? ""));
+			if (Logger.IsVerboseModLogicEnabled)
+			{
+				Logger.Log("Logic", "[NonHeroMemoryTrace] " + (message ?? ""));
+			}
 		}
 		catch
 		{
@@ -17291,7 +17294,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			nativeTargetAgentIndex,
 			shouldRecordPlayerInput ? promptPlayerText : string.Empty).ConfigureAwait(false);
 		cleaned = nativeActionResult?.Content ?? cleaned;
-		bool closeNativeConversationForImplicitPartyCreation = nativeActionResult?.WorldMapResult?.NeedsChannelExit == true;
 		nativeActionSw.Stop();
 		Logger.Log("Logic", "[NativePerf] action_tags_done target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " ms=" + Math.Round(nativeActionSw.Elapsed.TotalMilliseconds, 2) + " elapsedMs=" + Math.Round(nativeTurnSw.Elapsed.TotalMilliseconds, 2));
 		FreezeWatchdog.Mark("NativeConversation.action_tags_done", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " ms=" + Math.Round(nativeActionSw.Elapsed.TotalMilliseconds, 2), immediate: true);
@@ -17334,10 +17336,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		nativeTurnSw.Stop();
 		Logger.Log("Logic", "[NativePerf] submit_done target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " visibleLen=" + ((finalVisible ?? "").Length) + " elapsedMs=" + Math.Round(nativeTurnSw.Elapsed.TotalMilliseconds, 2));
 		FreezeWatchdog.Mark("NativeConversation.submit_done", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " visibleLen=" + ((finalVisible ?? "").Length) + " elapsedMs=" + Math.Round(nativeTurnSw.Elapsed.TotalMilliseconds, 2), immediate: true);
-		if (closeNativeConversationForImplicitPartyCreation)
-		{
-			_mainThreadActions.Enqueue(() => CloseNativeConversationForSceneMechanism("worldmap_implicit_party_creation"));
-		}
 		return finalVisible;
 	}
 

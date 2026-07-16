@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyLib;
 using Helpers;
@@ -184,6 +185,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		public int BatchSize;
 		public int NextIndex;
 		public long StartedAtUtcTicks;
+		public HashSet<string> ActiveInboundSenderIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 	}
 
 	private sealed class NpcInitiatedLetterMotive
@@ -288,6 +290,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 	private static MapNotificationView _courierReplyRegisteredMapNotificationView;
 	private static readonly Dictionary<string, long> LastTrackerEventPulseTicks = new Dictionary<string, long>(StringComparer.OrdinalIgnoreCase);
 	private static readonly Dictionary<string, long> LastCourierLogicPulseTicks = new Dictionary<string, long>(StringComparer.OrdinalIgnoreCase);
+	private static int _hasPotentialActiveCourierPartiesForAi;
 	private sealed class CourierMapEventMarker { }
 	private static readonly ConditionalWeakTable<MapEvent, CourierMapEventMarker> CourierMapEventMarkers = new ConditionalWeakTable<MapEvent, CourierMapEventMarker>();
 	private static readonly FieldInfo MapEventFinishCalledField = AccessTools.Field(typeof(MapEvent), "_isFinishCalled");
@@ -297,6 +300,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 	private readonly Dictionary<string, CourierSession> _sessions = new Dictionary<string, CourierSession>(StringComparer.OrdinalIgnoreCase);
 	private readonly object _sessionLock = new object();
 	private volatile HashSet<string> _activeCourierPartyIdsSnapshot = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+	private volatile bool _courierRuntimeIndexesReady = true;
 	private readonly Dictionary<string, MobileParty> _courierPartyCache = new Dictionary<string, MobileParty>(StringComparer.OrdinalIgnoreCase);
 	private Dictionary<string, float> _npcDiplomacyLetterSenderCooldownUntilDays = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
 	private Dictionary<string, float> _npcLetterMotiveFatigueUntilDays = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
@@ -319,6 +323,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 	public override void RegisterEvents()
 	{
 		Instance = this;
+		UpdateAiCourierPresenceFlag(_activeCourierPartyIdsSnapshot, _courierRuntimeIndexesReady);
 		CampaignEvents.TickEvent.AddNonSerializedListener(this, OnCampaignTick);
 		CampaignEvents.HourlyTickEvent.AddNonSerializedListener(this, OnHourlyTick);
 		CampaignEvents.MobilePartyDestroyed.AddNonSerializedListener(this, OnMobilePartyDestroyed);
@@ -542,6 +547,8 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			_nextCourierLetterInventoryRestoreRetryUtcTicks = 0L;
 			_courierPartyCache.Clear();
 			_activeCourierPartyIdsSnapshot = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			_courierRuntimeIndexesReady = false;
+			UpdateAiCourierPresenceFlag(_activeCourierPartyIdsSnapshot, _courierRuntimeIndexesReady);
 		}
 		catch (Exception ex)
 		{
@@ -603,31 +610,38 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			string partyId = (party.StringId ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(partyId))
+			string partyId = NormalizeCourierPartyIdForLookup(party.StringId);
+			if (partyId.Length == 0)
 			{
 				return false;
 			}
-			if (IsCourierPartyId(partyId))
+			if (IsCourierPartyIdNormalized(partyId))
 			{
 				return true;
 			}
-			if (Instance == null)
+			CourierDeliveryBehavior instance = Instance;
+			if (instance == null)
 			{
 				return false;
 			}
-			HashSet<string> snapshot = Instance._activeCourierPartyIdsSnapshot;
+			HashSet<string> snapshot = instance._activeCourierPartyIdsSnapshot;
+			if (snapshot != null && snapshot.Count == 0 && instance._courierRuntimeIndexesReady)
+			{
+				return false;
+			}
 			if (snapshot != null && snapshot.Contains(partyId))
 			{
 				return true;
 			}
-			if (snapshot != null && snapshot.Count > 0)
+			// The immutable snapshot is maintained whenever a courier is created, removed,
+			// or restored from a save. Do not lock and scan every session for ordinary parties.
+			if (instance._courierRuntimeIndexesReady)
 			{
 				return false;
 			}
-			lock (Instance._sessionLock)
+			lock (instance._sessionLock)
 			{
-				return Instance._sessions.Values.Any(x => x != null && string.Equals((x.CourierPartyId ?? "").Trim(), partyId, StringComparison.OrdinalIgnoreCase) && !IsTerminalStage(x));
+				return instance._sessions.Values.Any(x => x != null && string.Equals((x.CourierPartyId ?? "").Trim(), partyId, StringComparison.OrdinalIgnoreCase) && !IsTerminalStage(x));
 			}
 		}
 		catch
@@ -655,8 +669,40 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 
 	private static bool IsCourierPartyId(string partyId)
 	{
-		return !string.IsNullOrWhiteSpace(partyId)
-			&& partyId.Trim().StartsWith(CourierPartyPrefix, StringComparison.OrdinalIgnoreCase);
+		return IsCourierPartyIdNormalized(NormalizeCourierPartyIdForLookup(partyId));
+	}
+
+	public static bool HasPotentialActiveCourierPartiesForAi()
+	{
+		return Volatile.Read(ref _hasPotentialActiveCourierPartiesForAi) != 0;
+	}
+
+	public static bool HasCourierPartyIdPrefix(MobileParty party)
+	{
+		return IsCourierPartyId(party?.StringId);
+	}
+
+	private static bool IsCourierPartyIdNormalized(string partyId)
+	{
+		return !string.IsNullOrEmpty(partyId)
+			&& partyId.StartsWith(CourierPartyPrefix, StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static string NormalizeCourierPartyIdForLookup(string partyId)
+	{
+		if (string.IsNullOrEmpty(partyId))
+		{
+			return "";
+		}
+		int lastIndex = partyId.Length - 1;
+		return char.IsWhiteSpace(partyId[0]) || char.IsWhiteSpace(partyId[lastIndex])
+			? partyId.Trim()
+			: partyId;
+	}
+
+	private static void UpdateAiCourierPresenceFlag(HashSet<string> snapshot, bool indexesReady)
+	{
+		Volatile.Write(ref _hasPotentialActiveCourierPartiesForAi, !indexesReady || (snapshot?.Count ?? 0) > 0 ? 1 : 0);
 	}
 
 	public static bool IsBanditOrOutlawParty(MobileParty party)
@@ -867,6 +913,8 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				}
 			}
 			_activeCourierPartyIdsSnapshot = partyIds;
+			_courierRuntimeIndexesReady = true;
+			UpdateAiCourierPresenceFlag(partyIds, _courierRuntimeIndexesReady);
 		}
 		catch (Exception ex)
 		{
@@ -888,6 +936,8 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				partyId
 			};
 			_activeCourierPartyIdsSnapshot = partyIds;
+			_courierRuntimeIndexesReady = true;
+			UpdateAiCourierPresenceFlag(partyIds, _courierRuntimeIndexesReady);
 			if (courier != null)
 			{
 				lock (_sessionLock)
@@ -913,6 +963,8 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			HashSet<string> partyIds = new HashSet<string>(_activeCourierPartyIdsSnapshot ?? new HashSet<string>(StringComparer.OrdinalIgnoreCase), StringComparer.OrdinalIgnoreCase);
 			partyIds.Remove(partyId);
 			_activeCourierPartyIdsSnapshot = partyIds;
+			_courierRuntimeIndexesReady = true;
+			UpdateAiCourierPresenceFlag(partyIds, _courierRuntimeIndexesReady);
 			lock (_sessionLock)
 			{
 				_courierPartyCache.Remove(partyId);
@@ -1455,6 +1507,12 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		{
 		try
 		{
+			long now = DateTime.UtcNow.Ticks;
+			if (now - _lastCampaignTickUtcTicks < TimeSpan.FromSeconds(CampaignTickThrottleSeconds).Ticks)
+			{
+				return;
+			}
+			_lastCampaignTickUtcTicks = now;
 			if (_npcInitiatedLetterScan != null)
 			{
 				using (PerfProbe.Scope("CourierDelivery.OnCampaignTick.ProcessNpcInitiatedLetterScan"))
@@ -1462,12 +1520,6 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 					ProcessNpcInitiatedLetterScan();
 				}
 			}
-			long now = DateTime.UtcNow.Ticks;
-			if (now - _lastCampaignTickUtcTicks < TimeSpan.FromSeconds(CampaignTickThrottleSeconds).Ticks)
-			{
-				return;
-			}
-			_lastCampaignTickUtcTicks = now;
 			if (!_partyNameplatePatchApplied && !_partyNameplatePatchFailed)
 			{
 				using (PerfProbe.Scope("CourierDelivery.OnCampaignTick.PatchPartyNameplate"))
@@ -1564,7 +1616,8 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			QuietDays = settings.NpcInitiatedLetterTestMode ? 0 : ClampInt(settings.NpcInitiatedLetterQuietDays, 0, 30),
 			PublicTrustCap = ClampInt(settings.NpcInitiatedLetterPublicTrustCap, 0, 100),
 			BatchSize = batchSize,
-			StartedAtUtcTicks = DateTime.UtcNow.Ticks
+			StartedAtUtcTicks = DateTime.UtcNow.Ticks,
+			ActiveInboundSenderIds = BuildActiveInboundCourierSenderIdSnapshot()
 		};
 		LogNpcInitiatedLetterDebug(settings, "incremental scan started heroes=" + heroes.Count + " batchSize=" + batchSize + " targetTicks=" + NpcInitiatedLetterScanTargetTicks);
 	}
@@ -1636,11 +1689,16 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			? 100f
 			: ClampFloat(selected.BondScore * ClampFloat(settings.NpcInitiatedLetterChanceMultiplier, 0f, 2f), 0f, 100f);
 		float roll = MBRandom.RandomFloat * 100f;
-		LogNpcInitiatedLetterDebug(settings, "candidate selected hero=" + SafeHeroId(selected.Sender) + " bond=" + selected.BondScore + " love=" + selected.PrivateLove + " personalTrust=" + selected.PersonalTrust + " publicTrust=" + selected.PublicTrust + " letterTrust=" + selected.LetterTrust + " silenceDays=" + selected.DaysSinceInteraction + " chance=" + chance.ToString("0.##") + " roll=" + roll.ToString("0.##") + " motives=" + string.Join("|", selected.Motives.Select(x => x.MotiveType)));
 		if (chance <= 0f || roll >= chance)
 		{
 			return;
 		}
+		// Full need evaluation is expensive; only the one candidate that passed the send roll needs it.
+		using (PerfProbe.Scope("CourierDelivery.BuildSelectedNpcInitiatedLetterMotives"))
+		{
+			BuildNpcInitiatedLetterMotives(selected, settings, scan.NowDays);
+		}
+		LogNpcInitiatedLetterDebug(settings, "candidate selected hero=" + SafeHeroId(selected.Sender) + " bond=" + selected.BondScore + " love=" + selected.PrivateLove + " personalTrust=" + selected.PersonalTrust + " publicTrust=" + selected.PublicTrust + " letterTrust=" + selected.LetterTrust + " silenceDays=" + selected.DaysSinceInteraction + " chance=" + chance.ToString("0.##") + " roll=" + roll.ToString("0.##") + " motives=" + string.Join("|", selected.Motives.Select(x => x.MotiveType)));
 		NpcInitiatedLetterMotive motive = PickWeightedNpcLetterMotive(selected.Motives);
 		if (motive == null)
 		{
@@ -1681,12 +1739,19 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		{
 			return null;
 		}
-		if (!IsNpcInitiatedLetterSenderEligible(hero, scan.QuietDays, scan.NowDays, out int lastInteractionDay, out string skipReason))
+		string senderId = SafeHeroId(hero);
+		if (!IsNpcInitiatedLetterSenderEligible(
+			hero,
+			senderId,
+			scan,
+			out int lastInteractionDay,
+			out bool romanticEligibilityResolved,
+			out bool romanticInteractionEligible,
+			out string skipReason))
 		{
-			LogNpcInitiatedLetterDebug(scan.Settings, "candidate skipped hero=" + SafeHeroId(hero) + " reason=" + skipReason);
+			LogNpcInitiatedLetterDebug(scan.Settings, "candidate skipped hero=" + senderId + " reason=" + skipReason);
 			return null;
 		}
-		string senderId = SafeHeroId(hero);
 		if (!scan.Settings.NpcInitiatedLetterTestMode
 			&& _npcDiplomacyLetterSenderCooldownUntilDays.TryGetValue(senderId, out float untilDays)
 			&& untilDays > scan.NowDays)
@@ -1698,7 +1763,11 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		int publicTrust = ClampInt(RewardSystemBehavior.Instance?.GetPublicTrust(hero) ?? 0, -100, 100);
 		int letterTrust = ClampInt(personalTrust + ClampInt(publicTrust, -scan.PublicTrustCap, scan.PublicTrustCap), -100, 100);
 		int bondScore = ClampInt((int)Math.Round((privateLove + letterTrust) / 2f), 0, 100);
-		if (ProactiveNpcRequestBehavior.IsRomanticInteractionEligibleForExternal(hero))
+		if (!romanticEligibilityResolved)
+		{
+			romanticInteractionEligible = ProactiveNpcRequestBehavior.IsRomanticInteractionEligibleForExternal(hero);
+		}
+		if (romanticInteractionEligible)
 		{
 			bondScore = Math.Max(bondScore, privateLove);
 		}
@@ -1717,14 +1786,24 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			DaysSinceInteraction = lastInteractionDay < 0 ? 999 : Math.Max(0, (int)Math.Floor(scan.NowDays) - lastInteractionDay)
 		};
 		candidate.SelectionWeight = Math.Max(1f, bondScore - scan.MinimumBond + 1f) * ClampFloat(candidate.DaysSinceInteraction / 30f, 0.5f, 2f);
-		BuildNpcInitiatedLetterMotives(candidate, scan.Settings, scan.NowDays);
-		return candidate.Motives.Count > 0 ? candidate : null;
+		return candidate;
 	}
 
-	private bool IsNpcInitiatedLetterSenderEligible(Hero hero, int quietDays, float nowDays, out int lastInteractionDay, out string reason)
+	private bool IsNpcInitiatedLetterSenderEligible(
+		Hero hero,
+		string senderId,
+		NpcInitiatedLetterScanState scan,
+		out int lastInteractionDay,
+		out bool romanticEligibilityResolved,
+		out bool romanticInteractionEligible,
+		out string reason)
 	{
 		lastInteractionDay = -1;
+		romanticEligibilityResolved = false;
+		romanticInteractionEligible = false;
 		reason = "";
+		int quietDays = scan?.QuietDays ?? 0;
+		float nowDays = scan?.NowDays ?? 0f;
 		if (hero == null || hero == Hero.MainHero || hero.IsDead || hero.Age < 18f)
 		{
 			reason = "invalid_or_underage";
@@ -1768,20 +1847,25 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			{
 			}
 		}
-		if (HasActiveInboundCourierFromSender(hero) || ProactiveNpcRequestBehavior.IsActiveRequestHero(hero))
+		if (scan?.ActiveInboundSenderIds?.Contains(senderId ?? "") == true || ProactiveNpcRequestBehavior.IsActiveRequestHero(hero))
 		{
 			reason = "active_contact";
 			return false;
 		}
-		bool familiar = MyBehavior.HasMeaningfulDialogueHistoryForExternal(hero)
-			|| PlayerNotorietyBehavior.HasObserverUnlockedPlayerMajorForExternal(hero)
-			|| ProactiveNpcRequestBehavior.IsRomanticInteractionEligibleForExternal(hero);
+		lastInteractionDay = MyBehavior.GetLastMeaningfulDialogueDayForExternal(hero);
+		bool familiar = lastInteractionDay >= 0
+			|| PlayerNotorietyBehavior.HasObserverUnlockedPlayerMajorForExternal(hero);
+		if (!familiar)
+		{
+			romanticEligibilityResolved = true;
+			romanticInteractionEligible = ProactiveNpcRequestBehavior.IsRomanticInteractionEligibleForExternal(hero);
+			familiar = romanticInteractionEligible;
+		}
 		if (!familiar)
 		{
 			reason = "not_familiar";
 			return false;
 		}
-		lastInteractionDay = MyBehavior.GetLastMeaningfulDialogueDayForExternal(hero);
 		if (lastInteractionDay >= 0 && nowDays - lastInteractionDay < quietDays)
 		{
 			reason = "quiet_period";
@@ -2516,6 +2600,27 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				&& !IsTerminalStage(x)
 				&& string.Equals((x.SenderHeroId ?? "").Trim(), senderId, StringComparison.OrdinalIgnoreCase));
 		}
+	}
+
+	private HashSet<string> BuildActiveInboundCourierSenderIdSnapshot()
+	{
+		HashSet<string> senderIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		lock (_sessionLock)
+		{
+			foreach (CourierSession session in _sessions.Values)
+			{
+				if (session == null || !IsInboundToPlayer(session) || IsTerminalStage(session))
+				{
+					continue;
+				}
+				string senderId = (session.SenderHeroId ?? "").Trim();
+				if (!string.IsNullOrWhiteSpace(senderId))
+				{
+					senderIds.Add(senderId);
+				}
+			}
+		}
+		return senderIds;
 	}
 
 	private static bool TryGetNpcCourierStart(Hero sender, out CampaignVec2 position, out Settlement settlement)
@@ -6196,7 +6301,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		string recentFacts = string.Equals(session?.InboundMotiveType, LetterMotiveStatus, StringComparison.OrdinalIgnoreCase)
 			? MyBehavior.BuildRecentNpcFactContextForExternal(sender, 6)
 			: "";
-		string playerIdentity = MyBehavior.BuildPlayerCourierSenderIdentityForExternal(sender);
+		string playerIdentity = MyBehavior.BuildPlayerCourierRecipientIdentityForExternal(sender);
 		string playerRelationship = MyBehavior.BuildNpcPlayerKinshipPromptLineForExternal(sender);
 		string currentLocationLine = BuildCourierCurrentLocationLine(sender);
 		int targetChars = ClampInt(DuelSettings.GetSettings()?.NpcInitiatedLetterTargetChars ?? 220, 80, 1000);

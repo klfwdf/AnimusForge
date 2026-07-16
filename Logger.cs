@@ -622,6 +622,11 @@ public static class Logger
 	{
 		try
 		{
+			// HitRate is developer telemetry only. Avoid its locks, allocations and JSON work when its MCM log is disabled.
+			if (!IsPathEnabled(_hitRatePath))
+			{
+				return;
+			}
 			string text = (domain ?? "").Trim().ToLowerInvariant();
 			if (string.IsNullOrWhiteSpace(text))
 			{

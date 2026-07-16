@@ -147,6 +147,8 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 
 	private const double ActivePolicyMaintenanceDefaultFrameBudgetMs = 3.0;
 
+	private const double ActivePolicyMaintenanceTickIntervalSeconds = 0.25;
+
 	private static readonly ConcurrentQueue<Action> MainThreadActions = new ConcurrentQueue<Action>();
 
 	private readonly Dictionary<string, string> _policyRecordHistory = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -157,6 +159,8 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 
 	private readonly Dictionary<string, ActivePolicyEffectSaveData> _activePolicyEffectModelCache = new Dictionary<string, ActivePolicyEffectSaveData>(StringComparer.Ordinal);
 
+	private readonly Dictionary<string, ActivePolicyEffectRuntimeEntry> _activePolicyEffectRuntimeCache = new Dictionary<string, ActivePolicyEffectRuntimeEntry>(StringComparer.OrdinalIgnoreCase);
+
 	private readonly Dictionary<string, string> _dynamicPolicyRegistry = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
 	private readonly Queue<PendingActivePolicyEffectWork> _pendingActivePolicyEffectWork = new Queue<PendingActivePolicyEffectWork>();
@@ -166,6 +170,8 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 	private int _activePolicyRuntimeGeneration;
 
 	private int _lastActivePolicyScheduledDay = -1;
+
+	private long _nextActivePolicyMaintenanceUtcTicks;
 
 	private bool _generationInProgress;
 
@@ -186,6 +192,13 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 	private static string _policySuccessResultPolicyObjectId = "";
 
 	private static readonly Dictionary<string, Action> DeferredOriginalPolicyResults = new Dictionary<string, Action>(StringComparer.OrdinalIgnoreCase);
+
+	private sealed class ActivePolicyEffectRuntimeEntry
+	{
+		public string Raw;
+
+		public ActivePolicyEffectSaveData Effect;
+	}
 
 	public static CustomPolicyBehavior Instance { get; private set; }
 
@@ -255,7 +268,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 			Ended = false,
 			EndReason = ""
 		};
-		_activePolicyEffects[effectId] = JsonConvert.SerializeObject(activeEffect);
+		PersistActivePolicyEffect(effectId, activeEffect);
 		PolicySystemLog.Write("Effect", "active-created", "recordId=" + activeEffect.RecordId + " effectId=" + effectId + " target=" + activeEffect.TargetKingdomId + " duration=" + activeEffect.TotalDurationDays.ToString(CultureInfo.InvariantCulture));
 		return true;
 	}
@@ -1376,7 +1389,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 				continue;
 			}
 			MarkPolicyRecordEffectEnded(effect, reason, queueNaturalExpiry: false);
-			_activePolicyEffects.Remove(item.Key);
+			RemoveActivePolicyEffect(item.Key);
 		}
 	}
 
@@ -1642,6 +1655,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		_policyRecordHistory.Clear();
 		_localPolicyRecords.Clear();
 		_activePolicyEffects.Clear();
+		_activePolicyEffectRuntimeCache.Clear();
 		_dynamicPolicyRegistry.Clear();
 		Dictionary<string, string> storedHistory = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		dataStore.SyncData(SaveKeyPolicyRecordHistory, ref storedHistory);
@@ -1756,7 +1770,9 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		_pendingActivePolicyEffectWork.Clear();
 		_queuedActivePolicyEffectIds.Clear();
 		_activePolicyEffectModelCache.Clear();
+		_activePolicyEffectRuntimeCache.Clear();
 		_lastActivePolicyScheduledDay = -1;
+		_nextActivePolicyMaintenanceUtcTicks = 0L;
 		_policySuccessResultVisible = false;
 		_policySuccessResultPolicyObjectId = "";
 		DeferredOriginalPolicyResults.Clear();
@@ -1780,12 +1796,17 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 				Log("main thread action failed: " + ex);
 			}
 		}
-		EnsureActivePolicyEffectWorkScheduled(GetCurrentCampaignDay());
-		if (_pendingActivePolicyEffectWork.Count > 0)
+		if (_activePolicyEffects.Count == 0 && _pendingActivePolicyEffectWork.Count == 0)
+		{
+			return;
+		}
+		int currentDay = GetCurrentCampaignDay();
+		EnsureActivePolicyEffectWorkScheduled(currentDay);
+		if (_pendingActivePolicyEffectWork.Count > 0 && IsActivePolicyEffectMaintenanceDue())
 		{
 			using (PerfProbe.Scope("CustomPolicy.ProcessActivePolicyEffects"))
 			{
-				ProcessActivePolicyEffects(GetCurrentCampaignDay());
+				ProcessActivePolicyEffects(currentDay);
 			}
 		}
 	}
@@ -2719,6 +2740,59 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		EnsureActivePolicyEffectWorkScheduled(GetCurrentCampaignDay());
 	}
 
+	private bool IsActivePolicyEffectMaintenanceDue()
+	{
+		long now = DateTime.UtcNow.Ticks;
+		if (now < _nextActivePolicyMaintenanceUtcTicks)
+		{
+			return false;
+		}
+		_nextActivePolicyMaintenanceUtcTicks = now + TimeSpan.FromSeconds(ActivePolicyMaintenanceTickIntervalSeconds).Ticks;
+		return true;
+	}
+
+	private ActivePolicyEffectSaveData GetActivePolicyEffectForWork(string effectId, string raw)
+	{
+		if (_activePolicyEffectRuntimeCache.TryGetValue(effectId, out ActivePolicyEffectRuntimeEntry entry)
+			&& entry?.Effect != null
+			&& string.Equals(entry.Raw, raw, StringComparison.Ordinal))
+		{
+			return entry.Effect;
+		}
+		ActivePolicyEffectSaveData effect = JsonConvert.DeserializeObject<ActivePolicyEffectSaveData>(raw);
+		_activePolicyEffectRuntimeCache[effectId] = new ActivePolicyEffectRuntimeEntry
+		{
+			Raw = raw,
+			Effect = effect
+		};
+		return effect;
+	}
+
+	private void PersistActivePolicyEffect(string effectId, ActivePolicyEffectSaveData effect)
+	{
+		if (string.IsNullOrWhiteSpace(effectId) || effect == null)
+		{
+			return;
+		}
+		string raw = JsonConvert.SerializeObject(effect);
+		_activePolicyEffects[effectId] = raw;
+		_activePolicyEffectRuntimeCache[effectId] = new ActivePolicyEffectRuntimeEntry
+		{
+			Raw = raw,
+			Effect = effect
+		};
+	}
+
+	private void RemoveActivePolicyEffect(string effectId)
+	{
+		if (string.IsNullOrWhiteSpace(effectId))
+		{
+			return;
+		}
+		_activePolicyEffects.Remove(effectId);
+		_activePolicyEffectRuntimeCache.Remove(effectId);
+	}
+
 	private void ProcessActivePolicyEffects(int currentDay)
 	{
 		if (_pendingActivePolicyEffectWork.Count <= 0)
@@ -2744,18 +2818,18 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 			ActivePolicyEffectSaveData activeEffect = null;
 			try
 			{
-				activeEffect = JsonConvert.DeserializeObject<ActivePolicyEffectSaveData>(raw);
+				activeEffect = GetActivePolicyEffectForWork(key, raw);
 			}
 			catch (Exception ex)
 			{
 				PolicyDebugLog("daily-load-skip", "active effect parse failed key=" + key + " error=" + ex.Message);
-				_activePolicyEffects.Remove(key);
+				RemoveActivePolicyEffect(key);
 				CompleteActivePolicyEffectWork(work, currentDay, requeueIfStillDue: false);
 				continue;
 			}
 			if (activeEffect == null || string.IsNullOrWhiteSpace(activeEffect.EffectId))
 			{
-				_activePolicyEffects.Remove(key);
+				RemoveActivePolicyEffect(key);
 				CompleteActivePolicyEffectWork(work, currentDay, requeueIfStillDue: false);
 				continue;
 			}
@@ -2769,7 +2843,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 				{
 					MarkPolicyRecordEffectEnded(activeEffect, "持续时间已结束");
 				}
-				_activePolicyEffects.Remove(key);
+				RemoveActivePolicyEffect(key);
 				CompleteActivePolicyEffectWork(work, currentDay, requeueIfStillDue: false);
 				continue;
 			}
@@ -2796,7 +2870,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 				{
 					activeEffect.EndReason = "全部目标封地已经失去";
 					MarkLocalPolicyEnded(activeEffect, LocalPolicyStatusTargetsLost, activeEffect.EndReason);
-					_activePolicyEffects.Remove(key);
+					RemoveActivePolicyEffect(key);
 					CompleteActivePolicyEffectWork(work, currentDay, requeueIfStillDue: false);
 					continue;
 				}
@@ -2812,7 +2886,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 				activeEffect.Ended = true;
 				activeEffect.EndReason = "目标王国不存在或已经消亡";
 				MarkPolicyRecordEffectEnded(activeEffect, activeEffect.EndReason);
-				_activePolicyEffects.Remove(key);
+				RemoveActivePolicyEffect(key);
 				PolicyDebugLog("daily-ended-missing-target", "effectId=" + activeEffect.EffectId
 					+ " recordId=" + (activeEffect.RecordId ?? "")
 					+ " target=" + (activeEffect.TargetKingdomName ?? activeEffect.TargetKingdomId ?? ""));
@@ -2824,13 +2898,13 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 				activeEffect.PendingApplication = isLocalEffect
 					? CreatePendingLocalPolicyApplication(activeEffect, currentDay)
 					: CreatePendingActivePolicyApplication(targetKingdom, activeEffect, currentDay);
-				_activePolicyEffects[key] = JsonConvert.SerializeObject(activeEffect);
+				PersistActivePolicyEffect(key, activeEffect);
 				return;
 			}
 			if (pending.Day <= activeEffect.LastAppliedDay)
 			{
 				activeEffect.PendingApplication = null;
-				_activePolicyEffects[key] = JsonConvert.SerializeObject(activeEffect);
+				PersistActivePolicyEffect(key, activeEffect);
 				CompleteActivePolicyEffectWork(work, currentDay, requeueIfStillDue: true, activeEffect: activeEffect);
 				continue;
 			}
@@ -2849,7 +2923,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 				LogActivePolicyStageIfOverBudget("CustomPolicy.ApplyActiveEffectToKingdom", applyTimestamp, budgetMs, activeEffect.EffectId, settlementId);
 				pending.NextSettlementIndex++;
 				activeEffect.PendingApplication = pending;
-				_activePolicyEffects[key] = JsonConvert.SerializeObject(activeEffect);
+				PersistActivePolicyEffect(key, activeEffect);
 				return;
 			}
 			AppliedKingdomEffect actual = pending.AppliedEffect;
@@ -2871,7 +2945,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 			UpdatePolicyRecordEffectProgress(activeEffect);
 			if (ended)
 			{
-				_activePolicyEffects.Remove(key);
+				RemoveActivePolicyEffect(key);
 				if (isLocalEffect)
 				{
 					MarkLocalPolicyEnded(activeEffect, LocalPolicyStatusExpired, "自然到期");
@@ -2887,7 +2961,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 			}
 			else
 			{
-				_activePolicyEffects[key] = JsonConvert.SerializeObject(activeEffect);
+				PersistActivePolicyEffect(key, activeEffect);
 			}
 			PolicyEffectLedgerLog("daily-apply", BuildPolicyEffectLedgerLine(activeEffect.RecordId, activeEffect.EffectId, actual, pending.Day, activeEffect.RemainingDays));
 			CompleteActivePolicyEffectWork(work, currentDay, requeueIfStillDue: !ended, activeEffect: activeEffect);
@@ -3162,7 +3236,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 			Ended = false,
 			EndReason = ""
 		};
-		_activePolicyEffects[effectId] = JsonConvert.SerializeObject(active);
+		PersistActivePolicyEffect(effectId, active);
 		_activePolicyEffectModelCache.Clear();
 	}
 
@@ -3210,12 +3284,12 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 				ActivePolicyEffectSaveData activeEffect = JsonConvert.DeserializeObject<ActivePolicyEffectSaveData>(_activePolicyEffects[key] ?? "");
 				if (activeEffect == null || string.IsNullOrWhiteSpace(activeEffect.EffectId) || activeEffect.RemainingDays <= 0 || activeEffect.Ended)
 				{
-					_activePolicyEffects.Remove(key);
+					RemoveActivePolicyEffect(key);
 				}
 			}
 			catch
 			{
-				_activePolicyEffects.Remove(key);
+				RemoveActivePolicyEffect(key);
 			}
 		}
 	}
@@ -5804,7 +5878,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 				active.Ended = false;
 				active.EndReason = "";
 				active.PendingApplication = null;
-				_activePolicyEffects[active.EffectId] = JsonConvert.SerializeObject(active);
+				PersistActivePolicyEffect(active.EffectId, active);
 			}
 			record.Status = LocalPolicyStatusActive;
 			record.EndReason = "";
@@ -5843,7 +5917,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 	{
 		LocalPolicyRecordSaveData record = LoadLocalPolicyRecords().FirstOrDefault(x => string.Equals(x.RecordId, recordId, StringComparison.OrdinalIgnoreCase));
 		if (record == null) { OpenLocalPolicyHistoryPopup(onClose); return; }
-		if (!string.IsNullOrWhiteSpace(record.ActiveEffectId)) _activePolicyEffects.Remove(record.ActiveEffectId);
+		if (!string.IsNullOrWhiteSpace(record.ActiveEffectId)) RemoveActivePolicyEffect(record.ActiveEffectId);
 		record.ActiveEffectId = "";
 		record.Status = LocalPolicyStatusAbolished;
 		record.EndReason = "玩家主动废除";
@@ -5900,7 +5974,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 			Ended = false,
 			EndReason = ""
 		};
-		_activePolicyEffects[effectId] = JsonConvert.SerializeObject(active);
+		PersistActivePolicyEffect(effectId, active);
 		return active;
 	}
 

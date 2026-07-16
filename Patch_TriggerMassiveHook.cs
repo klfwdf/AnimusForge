@@ -13,6 +13,8 @@ public static class Patch_TriggerMassiveHook
 
 	private static float _lastF10Time;
 
+	private static long _nextPatchGroupEnsureUtcTicks;
+
 	public static void Postfix(float dt)
 	{
 		using (PerfProbe.Scope("Patch_TriggerMassiveHook.Postfix"))
@@ -33,6 +35,65 @@ public static class Patch_TriggerMassiveHook
 				Logger.LogTrace("System", "拦截器异常: " + ex.Message);
 			}
 		}
+		EnsurePatchGroupIfDue();
+		if (DuelBehavior.Instance == null)
+		{
+			// Before the campaign behavior is available, retain the original patch-side safety net.
+			try
+			{
+				DuelBehavior.GlobalArenaLeaveTick();
+			}
+			catch
+			{
+			}
+			try
+			{
+				DuelBehavior.GlobalSourceMissionLeaveTick();
+			}
+			catch
+			{
+			}
+			try
+			{
+				DuelBehavior.GlobalDuelStarterTick();
+			}
+			catch
+			{
+			}
+			try
+			{
+				DuelBehavior.GlobalWildernessDuelEncounterMenuGuardTick();
+			}
+			catch
+			{
+			}
+		}
+		try
+		{
+			using (PerfProbe.Scope("Patch_TriggerMassiveHook.DuelBehavior.GlobalPendingMainHeroDeathTick"))
+			{
+				DuelBehavior.GlobalPendingMainHeroDeathTick();
+			}
+		}
+		catch
+		{
+		}
+		if (TraceHelper.IsEnabled && Input.IsKeyPressed(InputKey.F10) && Time.ApplicationTime - _lastF10Time > 0.5f)
+		{
+			_lastF10Time = Time.ApplicationTime;
+			ForceDumpAllAgents();
+		}
+		}
+	}
+
+	private static void EnsurePatchGroupIfDue()
+	{
+		long nowTicks = DateTime.UtcNow.Ticks;
+		if (nowTicks < _nextPatchGroupEnsureUtcTicks)
+		{
+			return;
+		}
+		_nextPatchGroupEnsureUtcTicks = nowTicks + TimeSpan.TicksPerSecond;
 		using (PerfProbe.Scope("Patch_TriggerMassiveHook.EnsurePatchedGroup"))
 		{
 			NameMarkerSafePatch.EnsurePatched();
@@ -53,62 +114,6 @@ public static class Patch_TriggerMassiveHook
 			MeetingDuelBattleAgentLogicSafePatch.EnsurePatched();
 			AgentVictoryRetreatNullTeamSafePatch.EnsurePatched();
 			LipSyncFacialAnimSuppressPatch.EnsurePatched();
-		}
-		try
-		{
-			using (PerfProbe.Scope("Patch_TriggerMassiveHook.DuelBehavior.GlobalArenaLeaveTick"))
-			{
-				DuelBehavior.GlobalArenaLeaveTick();
-			}
-		}
-		catch
-		{
-		}
-		try
-		{
-			using (PerfProbe.Scope("Patch_TriggerMassiveHook.DuelBehavior.GlobalSourceMissionLeaveTick"))
-			{
-				DuelBehavior.GlobalSourceMissionLeaveTick();
-			}
-		}
-		catch
-		{
-		}
-		try
-		{
-			using (PerfProbe.Scope("Patch_TriggerMassiveHook.DuelBehavior.GlobalDuelStarterTick"))
-			{
-				DuelBehavior.GlobalDuelStarterTick();
-			}
-		}
-		catch
-		{
-		}
-		try
-		{
-			using (PerfProbe.Scope("Patch_TriggerMassiveHook.DuelBehavior.GlobalWildernessDuelEncounterMenuGuardTick"))
-			{
-				DuelBehavior.GlobalWildernessDuelEncounterMenuGuardTick();
-			}
-		}
-		catch
-		{
-		}
-		try
-		{
-			using (PerfProbe.Scope("Patch_TriggerMassiveHook.DuelBehavior.GlobalPendingMainHeroDeathTick"))
-			{
-				DuelBehavior.GlobalPendingMainHeroDeathTick();
-			}
-		}
-		catch
-		{
-		}
-		if (TraceHelper.IsEnabled && Input.IsKeyPressed(InputKey.F10) && Time.ApplicationTime - _lastF10Time > 0.5f)
-		{
-			_lastF10Time = Time.ApplicationTime;
-			ForceDumpAllAgents();
-		}
 		}
 	}
 
