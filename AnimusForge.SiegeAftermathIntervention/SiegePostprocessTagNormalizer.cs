@@ -50,6 +50,10 @@ public static class SiegePostprocessTagNormalizer
                 && SiegeActionTagCatalog.TryGetCanonicalTag(kind, out string canonicalTag))
             {
                 Add(canonicalTag);
+                // Town GCCZ numeric actions are mutually exclusive. Canonical order is the
+                // conservative numeric priority (1 before 2 ... before 10), so a malformed
+                // multi-tag reply cannot stack rewards or escalate into a harsher outcome.
+                break;
             }
         }
 

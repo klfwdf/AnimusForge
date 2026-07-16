@@ -7,6 +7,18 @@ namespace AnimusForge.SiegeAftermathIntervention;
 /// </summary>
 public static class SiegeCastlePrisonerDispositionProfile
 {
+    public const string RosterUnavailableReason = "castle_roster_unavailable";
+
+    public const string PartyCapacityFullReason = "party_capacity_full";
+
+    public const string NoMatchingRegularPrisonersReason = "no_matching_regular_prisoners";
+
+    public const string RecruitedReason = "recruited";
+
+    public const string SlaughteredReason = "slaughtered";
+
+    public const string ExceptionReasonPrefix = "exception:";
+
     public const uint SuccessMessageColor = 0xFFB6F7A8u;
 
     public const uint WarningMessageColor = 0xFFFFD27Fu;
@@ -32,16 +44,55 @@ public static class SiegeCastlePrisonerDispositionProfile
         return count == 0 ? 0 : Math.Min(xp, (int)Math.Floor((double)xp * transferred / count));
     }
 
-    public static string BuildRecruitMessage(int recruited, int remaining)
+    public static string BuildRecruitMessage(int recruited, int remaining, string reasonCode)
     {
-        return recruited > 0
-            ? "【城堡处置】已收编 " + recruited + " 名普通战俘；仍有 " + Math.Max(0, remaining) + " 名普通战俘待处置。"
-            : "【城堡处置】队伍没有空余编制，未能收编普通战俘。";
+        int recruitedCount = Math.Max(0, recruited);
+        int remainingCount = Math.Max(0, remaining);
+        if (recruitedCount > 0)
+        {
+            string message = "【城堡处置】已将 " + recruitedCount
+                + " 名普通战俘从俘虏名册转入主队；仍有 " + remainingCount + " 名带入的普通战俘待处置。";
+            return IsExceptionReason(reasonCode)
+                ? message + " 本次仅部分执行成功，异常详情已写入日志。"
+                : message;
+        }
+
+        switch ((reasonCode ?? string.Empty).Trim())
+        {
+            case PartyCapacityFullReason:
+                return "【城堡处置】主队没有空余编制，未能收编普通战俘。";
+            case NoMatchingRegularPrisonersReason:
+                return "【城堡处置】本次带入名册中没有仍可收编的普通战俘；被俘领主不会由收编标签处理。";
+            case RosterUnavailableReason:
+                return "【城堡处置】俘虏或部队名册当前不可用，收编未执行；异常详情已写入日志。";
+            default:
+                return "【城堡处置】未能收编普通战俘；异常详情已写入日志。";
+        }
     }
 
-    public static string BuildSlaughterMessage(int slaughtered)
+    public static string BuildSlaughterMessage(int slaughtered, int remaining, string reasonCode)
     {
-        return "【城堡处置】已下令处决 " + Math.Max(0, slaughtered) + " 名普通战俘；被俘领主未包含在内。";
+        int slaughteredCount = Math.Max(0, slaughtered);
+        int remainingCount = Math.Max(0, remaining);
+        if (slaughteredCount > 0)
+        {
+            string message = "【城堡处置】已执行屠戮命令，处决 " + slaughteredCount
+                + " 名普通战俘并从俘虏名册移除；仍有 " + remainingCount
+                + " 名带入的普通战俘待处置。被俘领主未包含在内。";
+            return IsExceptionReason(reasonCode)
+                ? message + " 本次仅部分执行成功，异常详情已写入日志。"
+                : message;
+        }
+
+        switch ((reasonCode ?? string.Empty).Trim())
+        {
+            case NoMatchingRegularPrisonersReason:
+                return "【城堡处置】本次带入名册中没有仍可处决的普通战俘；被俘领主未包含在内。";
+            case RosterUnavailableReason:
+                return "【城堡处置】俘虏名册当前不可用，屠戮未执行；异常详情已写入日志。";
+            default:
+                return "【城堡处置】未能处决普通战俘；被俘领主未包含在内，异常详情已写入日志。";
+        }
     }
 
     public static string BuildRecruitMemoryText(int recruited, int remaining)
@@ -50,9 +101,15 @@ public static class SiegeCastlePrisonerDispositionProfile
             + " 名普通守军战俘，尚余 " + Math.Max(0, remaining) + " 名普通战俘待处置。";
     }
 
-    public static string BuildSlaughterMemoryText(int slaughtered)
+    public static string BuildSlaughterMemoryText(int slaughtered, int remaining)
     {
         return "玩家在攻占城堡后的处置现场下令处决了 " + Math.Max(0, slaughtered)
-            + " 名普通守军战俘；该命令不包含被俘领主。";
+            + " 名普通守军战俘，尚余 " + Math.Max(0, remaining)
+            + " 名带入的普通战俘待处置；该命令不包含被俘领主。";
+    }
+
+    private static bool IsExceptionReason(string reasonCode)
+    {
+        return (reasonCode ?? string.Empty).StartsWith(ExceptionReasonPrefix, StringComparison.OrdinalIgnoreCase);
     }
 }

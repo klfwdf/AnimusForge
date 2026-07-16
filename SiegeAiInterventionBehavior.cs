@@ -3263,7 +3263,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			? SiegeCastlePrisonerDispositionProfile.SuccessMessageColor
 			: SiegeCastlePrisonerDispositionProfile.WarningMessageColor;
 		InformationManager.DisplayMessage(new InformationMessage(
-			SiegeCastlePrisonerDispositionProfile.BuildRecruitMessage(result.AffectedCount, result.RemainingRegularPrisoners),
+			SiegeCastlePrisonerDispositionProfile.BuildRecruitMessage(
+				result.AffectedCount,
+				result.RemainingRegularPrisoners,
+				result.ReasonCode),
 			Color.FromUint(color)));
 
 		if (result.AffectedCount > 0)
@@ -3287,11 +3290,13 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 		}
 
-		Logger.Log("CastleAftermath", "Applied recruit prisoner tag. Succeeded=" + result.Succeeded
+		string recruitOutcomeLog = "recruit succeeded=" + result.Succeeded
 			+ ", Recruited=" + result.AffectedCount
 			+ ", Remaining=" + result.RemainingRegularPrisoners
 			+ ", TotalRecruited=" + _castleRecruitedRegularPrisoners
-			+ ", Reason=" + result.ReasonCode);
+			+ ", Reason=" + result.ReasonCode;
+		Logger.Log("CastleAftermath", "Applied recruit prisoner tag. " + recruitOutcomeLog);
+		GcczDiagnosticLog.Log("CastleOutcome", recruitOutcomeLog);
 		return result.Succeeded;
 	}
 
@@ -3302,20 +3307,27 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			? SiegeCastlePrisonerDispositionProfile.SuccessMessageColor
 			: SiegeCastlePrisonerDispositionProfile.WarningMessageColor;
 		InformationManager.DisplayMessage(new InformationMessage(
-			SiegeCastlePrisonerDispositionProfile.BuildSlaughterMessage(result.AffectedCount),
+			SiegeCastlePrisonerDispositionProfile.BuildSlaughterMessage(
+				result.AffectedCount,
+				result.RemainingRegularPrisoners,
+				result.ReasonCode),
 			Color.FromUint(color)));
 		if (result.AffectedCount > 0)
 		{
 			_castleSlaughteredRegularPrisoners += result.AffectedCount;
 			RecordInterventionMemory(
 				"城堡屠戮战俘",
-				SiegeCastlePrisonerDispositionProfile.BuildSlaughterMemoryText(result.AffectedCount));
+				SiegeCastlePrisonerDispositionProfile.BuildSlaughterMemoryText(
+					result.AffectedCount,
+					result.RemainingRegularPrisoners));
 		}
-		Logger.Log("CastleAftermath", "Applied slaughter prisoner tag. Succeeded=" + result.Succeeded
+		string slaughterOutcomeLog = "slaughter succeeded=" + result.Succeeded
 			+ ", Slaughtered=" + result.AffectedCount
 			+ ", Remaining=" + result.RemainingRegularPrisoners
 			+ ", TotalSlaughtered=" + _castleSlaughteredRegularPrisoners
-			+ ", Reason=" + result.ReasonCode);
+			+ ", Reason=" + result.ReasonCode;
+		Logger.Log("CastleAftermath", "Applied slaughter prisoner tag. " + slaughterOutcomeLog);
+		GcczDiagnosticLog.Log("CastleOutcome", slaughterOutcomeLog);
 		return result.Succeeded;
 	}
 
@@ -3339,6 +3351,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			Color.FromUint(SiegeCastleSoldierReactionProfile.AppeasedMessageColor)));
 		Logger.Log("CastleAftermath", "Applied castle soldier appeasement tag. TargetAgent=" + targetAgentIndex
 			+ ", Recruited=" + _castleRecruitedRegularPrisoners);
+		GcczDiagnosticLog.Log("CastleOutcome", "appeasement applied targetAgent=" + targetAgentIndex
+			+ " recruited=" + _castleRecruitedRegularPrisoners);
 		return true;
 	}
 
@@ -3363,6 +3377,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			Logger.Log("CastleAftermath", "Applied unappeased castle recruitment morale penalty -"
 				+ SiegeCastleSoldierReactionProfile.UnappeasedMoralePenalty
 				+ ". MoraleNow=" + MobileParty.MainParty.Morale);
+			GcczDiagnosticLog.Log("CastleOutcome", "appeasement missed moralePenalty=-"
+				+ SiegeCastleSoldierReactionProfile.UnappeasedMoralePenalty
+				+ " moraleNow=" + MobileParty.MainParty.Morale);
 		}
 		catch (Exception ex)
 		{
@@ -13244,10 +13261,37 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			Settlement settlement = ResolveCurrentSettlement();
 			string settlementName = string.IsNullOrWhiteSpace(_completedSettlementName) ? _activeSettlementName : _completedSettlementName;
 			if (string.IsNullOrWhiteSpace(settlementName))
 			{
-				settlementName = ResolveCurrentSettlement()?.Name?.ToString() ?? "这座定居点";
+				settlementName = settlement?.Name?.ToString() ?? "这座定居点";
+			}
+			if (settlement?.IsCastle == true || _activeSettlement?.IsCastle == true)
+			{
+				int remainingRegularPrisoners = CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount;
+				int retainedLordPrisoners = Math.Max(
+					0,
+					CastleAftermathRuntimeBridge.SelectedPrisonerCount - remainingRegularPrisoners);
+				_completedSummaryText = SiegeCastleCompletedInterventionSummaryBuilder.Build(
+					new SiegeCastleCompletedInterventionSummaryFacts(
+						settlementName,
+						_castleRecruitedRegularPrisoners,
+						_castleSlaughteredRegularPrisoners,
+						remainingRegularPrisoners,
+						retainedLordPrisoners,
+						_castleSoldierAppeasementRequired,
+						_castleSoldierAppeasementApplied,
+						_castleSoldierAppeasementMoralePenaltyApplied));
+				GcczDiagnosticLog.Log("CastleOutcome", "summary settlement=" + (settlement?.StringId ?? _completedSettlementId ?? "N/A")
+					+ " recruited=" + _castleRecruitedRegularPrisoners
+					+ " slaughtered=" + _castleSlaughteredRegularPrisoners
+					+ " remainingRegular=" + remainingRegularPrisoners
+					+ " retainedLords=" + retainedLordPrisoners
+					+ " appeasementRequired=" + _castleSoldierAppeasementRequired
+					+ " appeasementApplied=" + _castleSoldierAppeasementApplied
+					+ " moralePenaltyApplied=" + _castleSoldierAppeasementMoralePenaltyApplied);
+				return;
 			}
 			bool culturalRepopulationApplied = _culturalRepopulationRequested || _culturalRepopulationApplied;
 			string targetCultureText = "";

@@ -19,18 +19,32 @@ internal static class CastleAftermathActionRuntimeBridge
 		TroopRoster selected = CastleAftermathRuntimeBridge.GetSelectedPrisonerRosterSnapshot();
 		TroopRoster mainPrisoners = PartyBase.MainParty?.PrisonRoster;
 		TroopRoster mainMembers = MobileParty.MainParty?.MemberRoster;
-		if (selected == null || mainPrisoners == null || mainMembers == null || PartyBase.MainParty == null)
+		if (mainPrisoners == null || mainMembers == null || PartyBase.MainParty == null)
 		{
-			return CastleAftermathActionApplyResult.Failed("castle_roster_unavailable", CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount);
+			return CastleAftermathActionApplyResult.Failed(
+				SiegeCastlePrisonerDispositionProfile.RosterUnavailableReason,
+				CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount);
+		}
+
+		int availableRegularPrisoners = CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount;
+		if (selected == null || availableRegularPrisoners <= 0)
+		{
+			return CastleAftermathActionApplyResult.Completed(
+				0,
+				0,
+				SiegeCastlePrisonerDispositionProfile.NoMatchingRegularPrisonersReason);
 		}
 
 		int freeSlots = Math.Max(0, PartyBase.MainParty.PartySizeLimit - PartyBase.MainParty.NumberOfAllMembers);
 		int requested = SiegeCastlePrisonerDispositionProfile.ResolveRecruitCount(
-			CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount,
+			availableRegularPrisoners,
 			freeSlots);
 		if (requested <= 0)
 		{
-			return CastleAftermathActionApplyResult.Completed(0, CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount, "party_capacity_full");
+			return CastleAftermathActionApplyResult.Completed(
+				0,
+				CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount,
+				SiegeCastlePrisonerDispositionProfile.PartyCapacityFullReason);
 		}
 
 		TroopRoster resolved = TroopRoster.CreateDummyTroopRoster();
@@ -91,7 +105,9 @@ internal static class CastleAftermathActionRuntimeBridge
 			return CastleAftermathActionApplyResult.Completed(
 				affected,
 				CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount,
-				affected > 0 ? "recruited" : "no_matching_regular_prisoners");
+				affected > 0
+					? SiegeCastlePrisonerDispositionProfile.RecruitedReason
+					: SiegeCastlePrisonerDispositionProfile.NoMatchingRegularPrisonersReason);
 		}
 		catch (Exception ex)
 		{
@@ -104,7 +120,7 @@ internal static class CastleAftermathActionRuntimeBridge
 				succeeded: affected > 0,
 				affected,
 				CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount,
-				"exception:" + ex.GetType().Name);
+				SiegeCastlePrisonerDispositionProfile.ExceptionReasonPrefix + ex.GetType().Name);
 		}
 	}
 
@@ -112,9 +128,18 @@ internal static class CastleAftermathActionRuntimeBridge
 	{
 		TroopRoster selected = CastleAftermathRuntimeBridge.GetSelectedPrisonerRosterSnapshot();
 		TroopRoster mainPrisoners = PartyBase.MainParty?.PrisonRoster;
-		if (selected == null || mainPrisoners == null)
+		if (mainPrisoners == null)
 		{
-			return CastleAftermathActionApplyResult.Failed("castle_roster_unavailable", CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount);
+			return CastleAftermathActionApplyResult.Failed(
+				SiegeCastlePrisonerDispositionProfile.RosterUnavailableReason,
+				CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount);
+		}
+		if (selected == null || CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount <= 0)
+		{
+			return CastleAftermathActionApplyResult.Completed(
+				0,
+				0,
+				SiegeCastlePrisonerDispositionProfile.NoMatchingRegularPrisonersReason);
 		}
 
 		TroopRoster resolved = TroopRoster.CreateDummyTroopRoster();
@@ -166,7 +191,9 @@ internal static class CastleAftermathActionRuntimeBridge
 			return CastleAftermathActionApplyResult.Completed(
 				affected,
 				CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount,
-				affected > 0 ? "slaughtered" : "no_matching_regular_prisoners");
+				affected > 0
+					? SiegeCastlePrisonerDispositionProfile.SlaughteredReason
+					: SiegeCastlePrisonerDispositionProfile.NoMatchingRegularPrisonersReason);
 		}
 		catch (Exception ex)
 		{
@@ -179,7 +206,7 @@ internal static class CastleAftermathActionRuntimeBridge
 				succeeded: affected > 0,
 				affected,
 				CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount,
-				"exception:" + ex.GetType().Name);
+				SiegeCastlePrisonerDispositionProfile.ExceptionReasonPrefix + ex.GetType().Name);
 		}
 	}
 }
