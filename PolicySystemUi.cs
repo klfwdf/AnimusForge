@@ -1527,6 +1527,483 @@ public sealed class PolicyHistoryData
 	public List<PolicyHistoryRecordData> Records { get; set; } = new List<PolicyHistoryRecordData>();
 }
 
+internal sealed class LocalPolicyFiefData
+{
+	public string FiefId { get; set; }
+
+	public string NameText { get; set; }
+
+	public string TypeText { get; set; }
+}
+
+internal sealed class LocalPolicyComposeData
+{
+	public string DateText { get; set; }
+
+	public bool CanPublish { get; set; }
+
+	public string BlockReason { get; set; }
+
+	public List<LocalPolicyFiefData> Fiefs { get; set; } = new List<LocalPolicyFiefData>();
+}
+
+internal sealed class LocalPolicyComposePopup
+{
+	private static LocalPolicyComposePopup _activePopup;
+	private readonly ScreenBase _screen;
+	private readonly GauntletLayer _layer;
+	private readonly LocalPolicyComposePopupVM _dataSource;
+	private readonly Action<string, string, string, string, List<string>> _onPublish;
+	private readonly Action _onCancel;
+	private bool _isClosed;
+	private bool _publishPending;
+	private bool _cancelPending;
+	private string _pendingName;
+	private string _pendingContent;
+	private string _pendingDuration;
+	private string _pendingDate;
+	private List<string> _pendingFiefIds;
+
+	public static bool IsOpen => _activePopup != null && !_activePopup._isClosed;
+
+	private LocalPolicyComposePopup(ScreenBase screen, LocalPolicyComposeData data, Action<string, string, string, string, List<string>> onPublish, Action onCancel)
+	{
+		_screen = screen;
+		_onPublish = onPublish;
+		_onCancel = onCancel;
+		_dataSource = new LocalPolicyComposePopupVM(data, HandlePublishRequested, HandleCancelRequested);
+		_layer = new GauntletLayer("LocalPolicyComposePopup", 4005, false);
+	}
+
+	public static bool Show(LocalPolicyComposeData data, Action<string, string, string, string, List<string>> onPublish, Action onCancel)
+	{
+		ScreenBase topScreen = ScreenManager.TopScreen;
+		if (topScreen == null)
+		{
+			return false;
+		}
+		try
+		{
+			_activePopup?.Close(silent: true);
+			LocalPolicyComposePopup popup = new LocalPolicyComposePopup(topScreen, data ?? new LocalPolicyComposeData(), onPublish, onCancel);
+			popup.Open();
+			_activePopup = popup;
+			return true;
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Failure("UI", "local-compose-open-failed", ex.Message, ex.ToString());
+			_activePopup?.Close(silent: true);
+			_activePopup = null;
+			return false;
+		}
+	}
+
+	public static void ProcessDeferredCloseAction()
+	{
+		_activePopup?.ProcessPendingCloseAction();
+	}
+
+	private void Open()
+	{
+		_layer.LoadMovie("LocalPolicyComposePopup", _dataSource);
+		_layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.All);
+		try { _layer.Input.RegisterHotKeyCategory(HotKeyManager.GetCategory("GenericPanelGameKeyCategory")); } catch { }
+		_screen.AddLayer(_layer);
+		_layer.IsFocusLayer = true;
+		ScreenManager.TrySetFocus(_layer);
+	}
+
+	private void HandlePublishRequested(string name, string content, string duration, string date, List<string> fiefIds)
+	{
+		if (_isClosed || _publishPending || _cancelPending) return;
+		_publishPending = true;
+		_pendingName = name ?? "";
+		_pendingContent = content ?? "";
+		_pendingDuration = duration ?? "";
+		_pendingDate = date ?? "";
+		_pendingFiefIds = fiefIds?.ToList() ?? new List<string>();
+	}
+
+	private void HandleCancelRequested()
+	{
+		if (_isClosed || _publishPending || _cancelPending) return;
+		_cancelPending = true;
+	}
+
+	private void ProcessPendingCloseAction()
+	{
+		if (_isClosed || (!_publishPending && !_cancelPending)) return;
+		bool publish = _publishPending;
+		string name = _pendingName ?? "";
+		string content = _pendingContent ?? "";
+		string duration = _pendingDuration ?? "";
+		string date = _pendingDate ?? "";
+		List<string> fiefIds = _pendingFiefIds?.ToList() ?? new List<string>();
+		_publishPending = false;
+		_cancelPending = false;
+		Close(silent: true);
+		if (publish) _onPublish?.Invoke(name, content, duration, date, fiefIds);
+		else _onCancel?.Invoke();
+	}
+
+	private void Close(bool silent)
+	{
+		if (_isClosed) return;
+		_isClosed = true;
+		try
+		{
+			_layer.InputRestrictions.ResetInputRestrictions();
+			_layer.IsFocusLayer = false;
+			ScreenManager.TryLoseFocus(_layer);
+		}
+		catch { }
+		try { _screen.RemoveLayer(_layer); }
+		catch (Exception ex) { if (!silent) PolicySystemLog.Failure("UI", "local-compose-close-failed", ex.Message, ex.ToString()); }
+		_dataSource?.OnFinalize();
+		if (ReferenceEquals(_activePopup, this)) _activePopup = null;
+	}
+}
+
+internal sealed class LocalPolicyComposePopupVM : ViewModel
+{
+	private readonly Action<string, string, string, string, List<string>> _onPublish;
+	private readonly Action _onCancel;
+	private readonly bool _externalCanPublish;
+	private readonly string _externalBlockReason;
+	private string _policyName;
+	private string _policyContent;
+	private string _durationText;
+	private string _statusText;
+	private bool _canPublish;
+	private int _selectedCount;
+
+	public LocalPolicyComposePopupVM(LocalPolicyComposeData data, Action<string, string, string, string, List<string>> onPublish, Action onCancel)
+	{
+		data ??= new LocalPolicyComposeData();
+		_onPublish = onPublish;
+		_onCancel = onCancel;
+		_externalCanPublish = data.CanPublish;
+		_externalBlockReason = data.BlockReason ?? "";
+		TitleText = "发布地方政策";
+		ScopeTitleText = "选择作用封地";
+		SelectAllText = "全选";
+		ClearText = "清空";
+		NameLabelText = "政策名";
+		ContentLabelText = "政策内容";
+		DurationLabelText = "持续天数（留空由 AI 决定）";
+		DateText = string.IsNullOrWhiteSpace(data.DateText) ? "未知日期" : data.DateText;
+		PublishText = "发布地方政策";
+		CancelText = "取消";
+		FiefItems = new MBBindingList<LocalPolicyFiefItemVM>();
+		foreach (LocalPolicyFiefData fief in data.Fiefs ?? new List<LocalPolicyFiefData>())
+		{
+			if (fief != null) FiefItems.Add(new LocalPolicyFiefItemVM(fief, RefreshCanPublish));
+		}
+		PolicyName = "";
+		PolicyContent = "";
+		DurationText = "";
+		RefreshCanPublish();
+	}
+
+	[DataSourceProperty] public string TitleText { get; set; }
+	[DataSourceProperty] public string ScopeTitleText { get; set; }
+	[DataSourceProperty] public string SelectAllText { get; set; }
+	[DataSourceProperty] public string ClearText { get; set; }
+	[DataSourceProperty] public string NameLabelText { get; set; }
+	[DataSourceProperty] public string ContentLabelText { get; set; }
+	[DataSourceProperty] public string DurationLabelText { get; set; }
+	[DataSourceProperty] public string DateText { get; set; }
+	[DataSourceProperty] public string PublishText { get; set; }
+	[DataSourceProperty] public string CancelText { get; set; }
+	[DataSourceProperty] public MBBindingList<LocalPolicyFiefItemVM> FiefItems { get; set; }
+
+	[DataSourceProperty]
+	public string PolicyName
+	{
+		get => _policyName;
+		set
+		{
+			string text = AnimusForgeTextInputSanitizer.SanitizeSingleLine(value, AnimusForgeTextInputSanitizer.MaxPolicyNameChars);
+			if (text == _policyName) return;
+			_policyName = text;
+			OnPropertyChangedWithValue(text, nameof(PolicyName));
+			RefreshCanPublish();
+		}
+	}
+
+	[DataSourceProperty]
+	public string PolicyContent
+	{
+		get => _policyContent;
+		set
+		{
+			string text = AnimusForgeTextInputSanitizer.SanitizeMultiline(value, AnimusForgeTextInputSanitizer.MaxPolicyContentChars);
+			if (text == _policyContent) return;
+			_policyContent = text;
+			OnPropertyChangedWithValue(text, nameof(PolicyContent));
+			RefreshCanPublish();
+		}
+	}
+
+	[DataSourceProperty]
+	public string DurationText
+	{
+		get => _durationText;
+		set
+		{
+			string text = AnimusForgeTextInputSanitizer.SanitizeSingleLine(value, 16);
+			if (text == _durationText) return;
+			_durationText = text;
+			OnPropertyChangedWithValue(text, nameof(DurationText));
+			RefreshCanPublish();
+		}
+	}
+
+	[DataSourceProperty]
+	public string StatusText
+	{
+		get => _statusText;
+		set { if (value != _statusText) { _statusText = value; OnPropertyChangedWithValue(value, nameof(StatusText)); } }
+	}
+
+	[DataSourceProperty]
+	public bool CanPublish
+	{
+		get => _canPublish;
+		set { if (value != _canPublish) { _canPublish = value; OnPropertyChangedWithValue(value, nameof(CanPublish)); } }
+	}
+
+	[DataSourceProperty]
+	public int SelectedCount
+	{
+		get => _selectedCount;
+		set { if (value != _selectedCount) { _selectedCount = value; OnPropertyChangedWithValue(value, nameof(SelectedCount)); } }
+	}
+
+	public void ExecuteSelectAll() { foreach (LocalPolicyFiefItemVM item in FiefItems) item.SetSelected(true); RefreshCanPublish(); }
+	public void ExecuteClear() { foreach (LocalPolicyFiefItemVM item in FiefItems) item.SetSelected(false); RefreshCanPublish(); }
+	public void ExecuteCancel() => _onCancel?.Invoke();
+	public void StartTyping() { }
+	public void StopTyping() { }
+
+	public void ExecutePublish()
+	{
+		RefreshCanPublish();
+		if (!CanPublish) return;
+		_onPublish?.Invoke(PolicyName ?? "", PolicyContent ?? "", DurationText ?? "", DateText ?? "", FiefItems.Where(x => x.IsSelected).Select(x => x.FiefId).ToList());
+	}
+
+	private void RefreshCanPublish()
+	{
+		SelectedCount = FiefItems?.Count(x => x.IsSelected) ?? 0;
+		bool durationValid = string.IsNullOrWhiteSpace(DurationText) || (int.TryParse(DurationText.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int days) && days > 0);
+		CanPublish = _externalCanPublish && SelectedCount > 0 && !string.IsNullOrWhiteSpace(PolicyName) && !string.IsNullOrWhiteSpace(PolicyContent) && durationValid;
+		if (!_externalCanPublish) StatusText = string.IsNullOrWhiteSpace(_externalBlockReason) ? "当前不能发布地方政策。" : _externalBlockReason;
+		else if (SelectedCount <= 0) StatusText = "请至少选择一个玩家家族拥有的城镇或城堡。";
+		else if (string.IsNullOrWhiteSpace(PolicyName)) StatusText = "请填写政策名。";
+		else if (string.IsNullOrWhiteSpace(PolicyContent)) StatusText = "请填写政策内容。";
+		else if (!durationValid) StatusText = "持续天数必须留空或填写正 Int32。";
+		else StatusText = "已选择 " + SelectedCount.ToString(CultureInfo.InvariantCulture) + " 个封地；作用范围由所选封地自动确定。";
+	}
+}
+
+internal sealed class LocalPolicyFiefItemVM : ViewModel
+{
+	private readonly Action _onChanged;
+	private bool _isSelected;
+	public LocalPolicyFiefItemVM(LocalPolicyFiefData data, Action onChanged)
+	{
+		_onChanged = onChanged;
+		FiefId = data?.FiefId ?? "";
+		NameText = data?.NameText ?? "未知封地";
+		TypeText = data?.TypeText ?? "封地";
+	}
+	[DataSourceProperty] public string FiefId { get; set; }
+	[DataSourceProperty] public string NameText { get; set; }
+	[DataSourceProperty] public string TypeText { get; set; }
+	[DataSourceProperty]
+	public bool IsSelected
+	{
+		get => _isSelected;
+		set { if (value != _isSelected) { _isSelected = value; OnPropertyChangedWithValue(value, nameof(IsSelected)); _onChanged?.Invoke(); } }
+	}
+	public void ExecuteToggle() => IsSelected = !IsSelected;
+	public void SetSelected(bool value) => IsSelected = value;
+}
+
+internal sealed class LocalPolicyHistoryData
+{
+	public List<LocalPolicyHistoryRecordData> Records { get; set; } = new List<LocalPolicyHistoryRecordData>();
+}
+
+internal sealed class LocalPolicyHistoryRecordData
+{
+	public string RecordId { get; set; }
+	public string DateText { get; set; }
+	public string PolicyNameText { get; set; }
+	public string StatusText { get; set; }
+	public string TargetText { get; set; }
+	public string RemainingText { get; set; }
+	public string ContentText { get; set; }
+	public string FeedbackText { get; set; }
+	public string EffectText { get; set; }
+	public string CostText { get; set; }
+	public string CycleText { get; set; }
+	public string RenewalText { get; set; }
+	public bool CanRenew { get; set; }
+	public bool CanAbolish { get; set; }
+}
+
+internal sealed class LocalPolicyHistoryPopup
+{
+	private static LocalPolicyHistoryPopup _activePopup;
+	private readonly ScreenBase _screen;
+	private readonly GauntletLayer _layer;
+	private readonly LocalPolicyHistoryPopupVM _dataSource;
+	private readonly Action _onClose;
+	private bool _isClosed;
+	private LocalPolicyHistoryPopup(ScreenBase screen, LocalPolicyHistoryData data, Action<string> onRenew, Action<string> onAbolish, Action onClose)
+	{
+		_screen = screen;
+		_onClose = onClose;
+		_dataSource = new LocalPolicyHistoryPopupVM(data, id => { Close(true); onRenew?.Invoke(id); }, id => { Close(true); onAbolish?.Invoke(id); }, HandleClose);
+		_layer = new GauntletLayer("LocalPolicyHistoryPopup", 4110, false);
+	}
+	public static bool Show(LocalPolicyHistoryData data, Action<string> onRenew, Action<string> onAbolish, Action onClose)
+	{
+		ScreenBase screen = ScreenManager.TopScreen;
+		if (screen == null) return false;
+		try
+		{
+			_activePopup?.Close(true);
+			LocalPolicyHistoryPopup popup = new LocalPolicyHistoryPopup(screen, data ?? new LocalPolicyHistoryData(), onRenew, onAbolish, onClose);
+			popup.Open();
+			_activePopup = popup;
+			return true;
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Failure("UI", "local-history-open-failed", ex.Message, ex.ToString());
+			_activePopup?.Close(true);
+			_activePopup = null;
+			return false;
+		}
+	}
+	private void Open()
+	{
+		_layer.LoadMovie("LocalPolicyHistoryPopup", _dataSource);
+		_layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.All);
+		_screen.AddLayer(_layer);
+		_layer.IsFocusLayer = true;
+		ScreenManager.TrySetFocus(_layer);
+	}
+	private void HandleClose() { Close(true); _onClose?.Invoke(); }
+	private void Close(bool silent)
+	{
+		if (_isClosed) return;
+		_isClosed = true;
+		try { _layer.InputRestrictions.ResetInputRestrictions(); _layer.IsFocusLayer = false; ScreenManager.TryLoseFocus(_layer); } catch { }
+		try { _screen.RemoveLayer(_layer); } catch (Exception ex) { if (!silent) PolicySystemLog.Failure("UI", "local-history-close-failed", ex.Message, ex.ToString()); }
+		_dataSource?.OnFinalize();
+		if (ReferenceEquals(_activePopup, this)) _activePopup = null;
+	}
+}
+
+internal sealed class LocalPolicyHistoryPopupVM : ViewModel
+{
+	private readonly Action<string> _onRenew;
+	private readonly Action<string> _onAbolish;
+	private readonly Action _onClose;
+	private LocalPolicyHistoryRecordItemVM _selected;
+	private bool _hasRecords;
+	private bool _showEmptyState;
+	private bool _canRenew;
+	private bool _canAbolish;
+	private string _policyNameText = "";
+	private string _statusText = "";
+	private string _targetText = "";
+	private string _remainingText = "";
+	private string _contentText = "";
+	private string _feedbackText = "";
+	private string _effectText = "";
+	private string _costText = "";
+	private string _cycleText = "";
+	private string _renewalText = "";
+	public LocalPolicyHistoryPopupVM(LocalPolicyHistoryData data, Action<string> onRenew, Action<string> onAbolish, Action onClose)
+	{
+		_onRenew = onRenew; _onAbolish = onAbolish; _onClose = onClose;
+		TitleText = "地方政策记录"; SubtitleText = "有效记录全部保留；已结束记录只保留最近 100 条。"; EmptyStateText = "尚无地方政策记录。";
+		RenewText = "续约"; AbolishText = "废除"; CloseText = "返回地方政策";
+		RecordItems = new MBBindingList<LocalPolicyHistoryRecordItemVM>();
+		foreach (LocalPolicyHistoryRecordData record in data?.Records ?? new List<LocalPolicyHistoryRecordData>()) RecordItems.Add(new LocalPolicyHistoryRecordItemVM(record, Select));
+		HasRecords = RecordItems.Count > 0; ShowEmptyState = !HasRecords;
+		if (HasRecords) Select(RecordItems[0]);
+	}
+	[DataSourceProperty] public string TitleText { get; set; }
+	[DataSourceProperty] public string SubtitleText { get; set; }
+	[DataSourceProperty] public string EmptyStateText { get; set; }
+	[DataSourceProperty] public string RenewText { get; set; }
+	[DataSourceProperty] public string AbolishText { get; set; }
+	[DataSourceProperty] public string CloseText { get; set; }
+	[DataSourceProperty] public MBBindingList<LocalPolicyHistoryRecordItemVM> RecordItems { get; set; }
+	[DataSourceProperty] public bool HasRecords { get => _hasRecords; set { if (value != _hasRecords) { _hasRecords = value; OnPropertyChangedWithValue(value, nameof(HasRecords)); } } }
+	[DataSourceProperty] public bool ShowEmptyState { get => _showEmptyState; set { if (value != _showEmptyState) { _showEmptyState = value; OnPropertyChangedWithValue(value, nameof(ShowEmptyState)); } } }
+	[DataSourceProperty] public bool CanRenew { get => _canRenew; set { if (value != _canRenew) { _canRenew = value; OnPropertyChangedWithValue(value, nameof(CanRenew)); } } }
+	[DataSourceProperty] public bool CanAbolish { get => _canAbolish; set { if (value != _canAbolish) { _canAbolish = value; OnPropertyChangedWithValue(value, nameof(CanAbolish)); } } }
+	[DataSourceProperty] public string PolicyNameText { get => _policyNameText; set { _policyNameText = value; OnPropertyChangedWithValue(value, nameof(PolicyNameText)); } }
+	[DataSourceProperty] public string StatusText { get => _statusText; set { _statusText = value; OnPropertyChangedWithValue(value, nameof(StatusText)); } }
+	[DataSourceProperty] public string TargetText { get => _targetText; set { _targetText = value; OnPropertyChangedWithValue(value, nameof(TargetText)); } }
+	[DataSourceProperty] public string RemainingText { get => _remainingText; set { _remainingText = value; OnPropertyChangedWithValue(value, nameof(RemainingText)); } }
+	[DataSourceProperty] public string ContentText { get => _contentText; set { _contentText = value; OnPropertyChangedWithValue(value, nameof(ContentText)); } }
+	[DataSourceProperty] public string FeedbackText { get => _feedbackText; set { _feedbackText = value; OnPropertyChangedWithValue(value, nameof(FeedbackText)); } }
+	[DataSourceProperty] public string EffectText { get => _effectText; set { _effectText = value; OnPropertyChangedWithValue(value, nameof(EffectText)); } }
+	[DataSourceProperty] public string CostText { get => _costText; set { _costText = value; OnPropertyChangedWithValue(value, nameof(CostText)); } }
+	[DataSourceProperty] public string CycleText { get => _cycleText; set { _cycleText = value; OnPropertyChangedWithValue(value, nameof(CycleText)); } }
+	[DataSourceProperty] public string RenewalText { get => _renewalText; set { _renewalText = value; OnPropertyChangedWithValue(value, nameof(RenewalText)); } }
+	private void Select(LocalPolicyHistoryRecordItemVM item)
+	{
+		if (_selected != null) _selected.IsSelected = false;
+		_selected = item;
+		if (item == null) return;
+		item.IsSelected = true;
+		PolicyNameText = item.PolicyNameText; StatusText = item.StatusText; TargetText = item.TargetText; RemainingText = item.RemainingText;
+		ContentText = item.ContentText; FeedbackText = item.FeedbackText; EffectText = item.EffectText; CostText = item.CostText; CycleText = item.CycleText; RenewalText = item.RenewalText;
+		CanRenew = item.CanRenew; CanAbolish = item.CanAbolish;
+	}
+	public void ExecuteRenew() { if (CanRenew && _selected != null) _onRenew?.Invoke(_selected.RecordId); }
+	public void ExecuteAbolish() { if (CanAbolish && _selected != null) _onAbolish?.Invoke(_selected.RecordId); }
+	public void ExecuteClose() => _onClose?.Invoke();
+}
+
+internal sealed class LocalPolicyHistoryRecordItemVM : ViewModel
+{
+	private readonly Action<LocalPolicyHistoryRecordItemVM> _onSelect;
+	private bool _isSelected;
+	public LocalPolicyHistoryRecordItemVM(LocalPolicyHistoryRecordData data, Action<LocalPolicyHistoryRecordItemVM> onSelect)
+	{
+		_onSelect = onSelect; RecordId = data?.RecordId ?? ""; DateText = data?.DateText ?? ""; PolicyNameText = data?.PolicyNameText ?? ""; StatusText = data?.StatusText ?? "";
+		TargetText = data?.TargetText ?? ""; RemainingText = data?.RemainingText ?? ""; ContentText = data?.ContentText ?? ""; FeedbackText = data?.FeedbackText ?? "";
+		EffectText = data?.EffectText ?? ""; CostText = data?.CostText ?? ""; CycleText = data?.CycleText ?? ""; RenewalText = data?.RenewalText ?? ""; CanRenew = data?.CanRenew == true; CanAbolish = data?.CanAbolish == true;
+	}
+	[DataSourceProperty] public string RecordId { get; set; }
+	[DataSourceProperty] public string DateText { get; set; }
+	[DataSourceProperty] public string PolicyNameText { get; set; }
+	[DataSourceProperty] public string StatusText { get; set; }
+	[DataSourceProperty] public string TargetText { get; set; }
+	[DataSourceProperty] public string RemainingText { get; set; }
+	[DataSourceProperty] public string ContentText { get; set; }
+	[DataSourceProperty] public string FeedbackText { get; set; }
+	[DataSourceProperty] public string EffectText { get; set; }
+	[DataSourceProperty] public string CostText { get; set; }
+	[DataSourceProperty] public string CycleText { get; set; }
+	[DataSourceProperty] public string RenewalText { get; set; }
+	[DataSourceProperty] public bool CanRenew { get; set; }
+	[DataSourceProperty] public bool CanAbolish { get; set; }
+	[DataSourceProperty] public bool IsSelected { get => _isSelected; set { if (value != _isSelected) { _isSelected = value; OnPropertyChangedWithValue(value, nameof(IsSelected)); } } }
+	public void ExecuteSelect() => _onSelect?.Invoke(this);
+}
+
 public sealed class PolicyHistoryRecordData
 {
 	public string DateText { get; set; }

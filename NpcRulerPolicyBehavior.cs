@@ -1078,6 +1078,11 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 	private const int PolicyKnowledgeTargetChars = 380;
 	private const int PolicyKnowledgeMinChars = 220;
 	private const int PolicyKnowledgeMaxChars = 450;
+	private const int AgendaDialoguePolicyNameChars = 40;
+	private const int AgendaDialoguePolicySummaryChars = 80;
+	private const int AgendaDialoguePolicyFeedbackChars = 40;
+	private const int AgendaDialoguePolicyEffectChars = 90;
+	private const int AgendaDialoguePolicyLineChars = 300;
 	private const string PolicyKnowledgeRagFocus = "统治合法性 权力基础 政治目标 制度约束 支持者反对者 社会矛盾";
 	private const int PolicyMaxTokens = 8000;
 	private const int FailedGenerationBackoffHours = 6;
@@ -2981,8 +2986,8 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			: SelectActiveDialoguePolicies(active, playerKingdomId, targetKingdomId, 3);
 		HashSet<string> used = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		StringBuilder sb = new StringBuilder();
-		AppendActivePolicyDialogueGroup(sb, "本国仍在生效的政策", own, targetKingdomId, used);
-		AppendActivePolicyDialogueGroup(sb, "玩家王国仍在生效的政策", player, targetKingdomId, used);
+		AppendActivePolicyDialogueGroup(sb, "本国生效中的全国政策", own, targetKingdomId, used);
+		AppendActivePolicyDialogueGroup(sb, "玩家王国生效中的全国政策", player, targetKingdomId, used);
 		if (sb.Length == 0)
 		{
 			return "";
@@ -3026,12 +3031,16 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 				.OrderByDescending(x => string.Equals((x.TargetKingdomId ?? "").Trim(), (targetKingdomId ?? "").Trim(), StringComparison.OrdinalIgnoreCase))
 				.ThenByDescending(x => x.RemainingDays)
 				.FirstOrDefault();
-			sb.Append("- policyId=").Append(Compact(record.PolicyId))
-				.Append("；发布国=").Append(Compact(record.KingdomName))
-				.Append("；政策=").Append(Compact(record.PolicyName))
-				.Append("；摘要=").Append(Limit(FirstNonEmpty(record.PolicyDigest, record.ImpactSummary), 140))
-				.Append("；生效影响=").Append(BuildDialogueEffectSummary(effect))
-				.Append("；衍生事件=").Append(Limit(record.FeedbackDigest, 70)).AppendLine();
+			string summary = CompressCompleteText(FirstNonEmpty(record.PolicyDigest, record.ImpactSummary), 60, AgendaDialoguePolicySummaryChars);
+			if (string.IsNullOrWhiteSpace(summary)) summary = Limit(FirstNonEmpty(record.PolicyDigest, record.ImpactSummary, "无摘要"), AgendaDialoguePolicySummaryChars);
+			string feedback = CompressCompleteText(record.FeedbackDigest, 30, AgendaDialoguePolicyFeedbackChars);
+			if (string.IsNullOrWhiteSpace(feedback)) feedback = Limit(FirstNonEmpty(record.FeedbackDigest, "反馈未明"), AgendaDialoguePolicyFeedbackChars);
+			string line = "- 《" + Limit(FirstNonEmpty(record.PolicyName, "未命名政策"), AgendaDialoguePolicyNameChars) + "》"
+				+ "｜摘要：" + summary
+				+ "｜作用：" + BuildDialogueEffectSummary(effect)
+				+ "｜余" + Math.Max(0, effect?.RemainingDays ?? 0).ToString(CultureInfo.InvariantCulture) + "天"
+				+ "｜反馈：" + feedback;
+			sb.AppendLine(Limit(line, AgendaDialoguePolicyLineChars));
 		}
 	}
 
@@ -3071,8 +3080,9 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		if (Math.Abs(effect.SecurityDailyDeltaPerTown) > 0.0001f) values.Add("治安" + FormatSigned(effect.SecurityDailyDeltaPerTown));
 		if (Math.Abs(effect.MilitiaDailyDeltaPerTown) > 0.0001f) values.Add("民兵" + FormatSigned(effect.MilitiaDailyDeltaPerTown));
 		if (Math.Abs(effect.KingdomStabilityDailyDelta) > 0.0001f) values.Add("稳定" + FormatSigned(effect.KingdomStabilityDailyDelta));
-		return Compact(FirstNonEmpty(effect.TargetKingdomName, effect.TargetKingdomId, "目标王国"))
-			+ "[" + string.Join("/", values) + ";剩余" + effect.RemainingDays.ToString(CultureInfo.InvariantCulture) + "天]";
+		string effectText = values.Count <= 0 ? "无持续数值变化" : string.Join("/", values);
+		return Limit(Limit(FirstNonEmpty(effect.TargetKingdomName, effect.TargetKingdomId, "目标王国"), 30)
+			+ "[" + effectText + "]", AgendaDialoguePolicyEffectChars);
 	}
 
 	private static List<NpcRulerPolicyAllowedEffectTarget> BuildAllowedEffectTargets(Kingdom issuer)

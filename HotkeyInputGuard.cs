@@ -21,6 +21,10 @@ internal static class HotkeyInputGuard
 		{
 			return true;
 		}
+		if (LocalPolicyComposePopup.IsOpen)
+		{
+			return true;
+		}
 		try
 		{
 			if (InformationManager.IsAnyInquiryActive())

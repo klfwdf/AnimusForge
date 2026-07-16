@@ -57,7 +57,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	private const string PreviousDefaultCustomPolicyDualCostPromptParagraph = "当输出结构要求你评估政策消耗时，requiredGoldCost 与 requiredInfluenceCost 表示完整执行这项政策所需的财政和政治资本，不是玩家当前实际会支付多少。第纳尔成本对应物资、粮饷、工程、赈济、运输、行政和军备投入；影响力成本对应封臣协调、贵族让步、政治信用、合法性、动员命令和秩序压力。请按政策本身的规模与阻力评估完整成本，不要因为玩家当前资源不足而故意压低成本。";
 
-	private const string DefaultCustomPolicyEvaluatorPrompt = "你是卡拉迪亚大陆的王国政策评判器。玩家提交的内容应被视为王国政策、法令、改革、宣言、动员令或公共事务安排。你需要根据政策内容、玩家王国状态、世界背景和知识库资料，判断这项政策会造成什么民间反应、政策摘要、每日持续影响、持续时间和影响目标。"
+	private const string PreviousDefaultCustomPolicyEvaluatorPromptWithVisibleBuiltIns = "你是卡拉迪亚大陆的王国政策评判器。玩家提交的内容应被视为王国政策、法令、改革、宣言、动员令或公共事务安排。你需要根据政策内容、玩家王国状态、世界背景和知识库资料，判断这项政策会造成什么民间反应、政策摘要、每日持续影响、持续时间和影响目标。"
 		+ "\n\n卡拉迪亚不是现代国家，而是封君、封臣、氏族、城镇、城堡、村庄、驻军、民兵、税赋、治安和封地收益共同维系的社会。任何政策都不可能只靠国王一句话就无成本执行。评判时要考虑贵族是否配合，地方是否能执行，商人和农户是否受益，军队、民兵和治安机构是否承担额外负担，以及政策会不会破坏既有秩序。"
 		+ "\n\n当前可落地影响项共有七类：繁荣度、粮食、村庄户数、忠诚度、治安度、民兵、AF 王国稳定度。繁荣度主要受贸易、税负、工商业、市场信心和战争破坏影响；粮食主要受征收、储备、运输、农业负担和军队消耗影响；户数主要受劳动力、安全、徭役、迁徙和破坏影响；忠诚度主要受公平感、文化认同、自治、压迫、恐惧、荣誉和利益分配影响；治安度主要受匪患、巡逻、执法、公正、腐败和地方秩序影响；民兵主要受训练、征召、地方防务、士气、粮饷和人口压力影响；王国稳定度主要受封臣信任、王权合法性、战争胜败、贵族利益、财政压力和国内分裂风险影响。"
 		+ "\n\n不同数值不是同一把尺子。繁荣度是城镇和城堡的长期体量，常以几千计；粮食是城镇库存，会受消耗、生产、市场和储存上限影响；村庄户数代表村庄人口和劳力；忠诚度与治安度都是 0-100 尺度，连续小幅变化也有政治意义；民兵是实际防务人数，过度增加会消耗地方劳力和粮饷。AF 王国稳定度也是 0-100 的国家级尺度，但它不是单个城镇民心，而是王国是否还能被同一套权威、利益分配和军事威望维系住的总指标；低稳定度会提高分裂和叛乱风险，因此不能按城镇数量叠加，也不能被普通治安或民兵变化机械替代。"
@@ -65,6 +65,11 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		+ "\n\n" + DefaultCustomPolicyGoldCostPromptParagraph
 		+ "\n\n如果玩家在政策正文或自定义评判器提示词里写了参考数值、倍率、强弱或持续时间，应尊重其意图，并按各项数值本身的尺度折算。强政策可以有强效果，荒唐政策也可以反噬；不要把总影响误当成每日影响，也不要用内置建议压低玩家明确要求。忠诚、治安和稳定度仍要理解为 0-100 体系中的变化：它们影响很重，但不代表永远只能输出同一组固定数值。"
 		+ "\n\n民众反馈要像真实的卡拉迪亚社会反应，而不是公告摘要。可以写街市、村庄、酒馆、军营、贵族厅堂、商队、工匠、农户、民兵、巡逻队、总督或祭司等不同人群的看法。让他们有具体的支持、担忧、抱怨、观望或流言，比如粮价、税吏、征役、治安、士兵口粮、村庄劳力、民兵训练、商路消息、封臣脸色和王国分裂传闻等。语气应像政策发布后在各地传开的议论和余波，不要写成系统说明，也不要编造上下文没有支持的具体人物、定居点或他国事实。";
+
+	private const string DefaultCustomPolicyEvaluatorPrompt = "你是卡拉迪亚大陆的王国政策评判器。玩家提交的内容应被视为王国政策、法令、改革、宣言、动员令或公共事务安排。请根据政策内容、玩家王国状态、世界背景和知识库资料，判断它会引发怎样的社会反应与实际后果。"
+		+ "\n\n卡拉迪亚不是现代国家，而是由封君、封臣、氏族、城镇、城堡、村庄、驻军、民兵、税赋和封地收益共同维系的社会。评判时应考虑贵族是否配合、地方能否执行、商人和农户如何得失、军队与治安机构承担什么压力，以及政策是否冲击既有秩序。"
+		+ "\n\n评判重点放在政策目的、受益者、受损者、执行阻力、短期震荡与长期后果。明确有力的政策可以产生显著影响，荒唐、空泛或超出执行能力的政策也可以无效或反噬；不要把所有政策自动压成同一强度，也不要编造上下文没有支持的具体事实。"
+		+ "\n\n民众反馈要像政策发布后在街市、村庄、酒馆、军营、贵族厅堂和商路中自然传播的议论与余波，而不是公告摘要或系统说明。让不同人群表达具体的支持、担忧、抱怨、观望或流言。";
 
 	private const string LeakedCustomPolicyPoliticalWeightsPromptSuffix = "同时根据政策内容评估原版政策投票使用的三项政治取向：authoritarianWeight 表示君主集权取向，oligarchicWeight 表示大氏族和贵族议政取向，egalitarianWeight 表示平民、地方自治和广泛参与取向。三项范围均为 -1 到 1，不得全部为 0。";
 
@@ -1549,7 +1554,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		set => _customPolicyEvaluatorPrompt = NormalizeCustomPolicyEvaluatorPromptText(value);
 	}
 
-	[SettingPropertyButton("玩家政策评判提示词", -1, true, "", Content = "打开编辑器", Order = 0, RequireRestart = false, HintText = "决定 AI 如何理解玩家发布的政策，并评估民众反应、持续影响和执行成本。可以完整改写；输出格式和数值落地安全仍由模组保证。")]
+	[SettingPropertyButton("玩家政策评判提示词（全国/地方共用）", -1, true, "", Content = "打开编辑器", Order = 0, RequireRestart = false, HintText = "全国政策与地方政策共用这一份提示词。决定 AI 如何理解玩家发布的政策，并评估民众反应、持续影响和执行成本；地方作用域、所选封地实时数值及稳定度为 0 等强制规则会由代码动态追加。")]
 	[SettingPropertyGroup("16. 政策系统", GroupOrder = 0)]
 	public Action EditCustomPolicyEvaluatorPrompt { get; set; }
 
@@ -2183,7 +2188,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		try
 		{
 			string initialText = CustomPolicyEvaluatorPrompt ?? "";
-			DevTextEditorHelper.ShowLongTextEditor("编辑玩家政策评判提示词", "这段文字决定 AI 如何理解和评估玩家发布的政策。", "你可以完整改写。留空保存会恢复默认内容；输出格式和数值落地安全仍由模组保证。", initialText, delegate(string input)
+			DevTextEditorHelper.ShowLongTextEditor("编辑玩家政策评判提示词", "这段文字只定制 AI 的评判侧重点、社会视角和反馈文风。", "可落地指标、数值尺度、每日结算、持续天数、成本、目标边界和 JSON 格式均由模组内置，不在这里显示。留空保存会恢复默认内容。", initialText, delegate(string input)
 			{
 				SaveCustomPolicyEvaluatorPromptFromEditor(input);
 			}, null, "保存", "返回");
@@ -2803,6 +2808,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		string text = NormalizeCustomPolicyEvaluatorPromptText(input);
 		string currentWording = NormalizePolicyHearthWordingForBuiltInComparison(text);
 		return string.Equals(currentWording, NormalizePolicyHearthWordingForBuiltInComparison(NormalizeCustomPolicyEvaluatorPromptText(DefaultCustomPolicyEvaluatorPrompt)), StringComparison.Ordinal)
+			|| string.Equals(currentWording, NormalizePolicyHearthWordingForBuiltInComparison(NormalizeCustomPolicyEvaluatorPromptText(PreviousDefaultCustomPolicyEvaluatorPromptWithVisibleBuiltIns)), StringComparison.Ordinal)
 			|| string.Equals(text, NormalizeCustomPolicyEvaluatorPromptText(PreviousDefaultCustomPolicyEvaluatorPromptBeforeExpandedStats), StringComparison.Ordinal)
 			|| string.Equals(text, NormalizeCustomPolicyEvaluatorPromptText(PreviousDefaultCustomPolicyEvaluatorPromptForMigration), StringComparison.Ordinal);
 	}

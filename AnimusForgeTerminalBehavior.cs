@@ -356,6 +356,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		List<InquiryElement> list = new List<InquiryElement>
 		{
 			new InquiryElement("compose", "撰写政策", null, isEnabled: true, "填写政策名与政策内容，提交给 LLM 评议后落地数值效果。"),
+			new InquiryElement("local_policies", "地方政策", null, isEnabled: true, CustomPolicyBehavior.HasPlayerOwnedLocalPolicyFiefForExternal() ? "发布只影响玩家家族封地及其附属村庄的地方政策，或查看地方政策记录。" : "当前没有玩家家族拥有的城镇或城堡；仍可进入查看地方政策记录。"),
 			new InquiryElement("world_policies", "查看世界政策", null, isEnabled: true, "只读查看各国已经发布的玩家与 NPC 统治者政策及政策衍生事件。")
 		};
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData("政策系统", "请选择政策功能：", list, isExitShown: true, 1, 1, "确定", "返回", delegate(List<InquiryElement> selected)
@@ -370,6 +371,10 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			{
 				CloseTerminal();
 				CustomPolicyBehavior.OpenFromTerminal();
+			}
+			else if (string.Equals(text, "local_policies", StringComparison.Ordinal))
+			{
+				OpenLocalPolicyManagementView();
 			}
 			else if (string.Equals(text, "world_policies", StringComparison.Ordinal))
 			{
@@ -386,6 +391,44 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		}, delegate
 		{
 			OpenRootMenu();
+		}, "", isSeachAvailable: true);
+		MBInformationManager.ShowMultiSelectionInquiry(data, pauseGameActiveState: true);
+	}
+
+	private void OpenLocalPolicyManagementView()
+	{
+		_terminalUiActive = true;
+		bool hasFief = CustomPolicyBehavior.HasPlayerOwnedLocalPolicyFiefForExternal();
+		List<InquiryElement> list = new List<InquiryElement>
+		{
+			new InquiryElement("publish_local", "发布地方政策", null, isEnabled: hasFief, hasFief ? "选择玩家家族拥有的城镇/城堡，附属村庄会自动包含。" : "玩家家族当前没有城镇或城堡，无法发布。"),
+			new InquiryElement("local_records", "地方政策记录", null, isEnabled: true, "查看地方政策状态、目标、剩余天数、效果、费用、续约历史，并可续约或废除。")
+		};
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData("地方政策", "地方政策不进入 AF/王国议程；LLM 评议成功后立即结算并生效。", list, isExitShown: true, 1, 1, "确定", "返回", delegate(List<InquiryElement> selected)
+		{
+			if (selected == null || selected.Count == 0)
+			{
+				OpenCustomPolicyManagementView();
+				return;
+			}
+			string id = selected[0].Identifier as string;
+			if (string.Equals(id, "publish_local", StringComparison.Ordinal))
+			{
+				CloseTerminal();
+				CustomPolicyBehavior.OpenLocalPolicyFromTerminal(OpenLocalPolicyManagementView);
+			}
+			else if (string.Equals(id, "local_records", StringComparison.Ordinal))
+			{
+				CloseTerminal();
+				CustomPolicyBehavior.OpenLocalPolicyRecordsFromTerminal(OpenLocalPolicyManagementView);
+			}
+			else
+			{
+				OpenCustomPolicyManagementView();
+			}
+		}, delegate
+		{
+			OpenCustomPolicyManagementView();
 		}, "", isSeachAvailable: true);
 		MBInformationManager.ShowMultiSelectionInquiry(data, pauseGameActiveState: true);
 	}
