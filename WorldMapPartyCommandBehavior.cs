@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
 using Helpers;
@@ -14,6 +13,7 @@ using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
+using TaleWorlds.CampaignSystem.Siege;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
@@ -42,6 +42,9 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 	private const string AttackModeAi = "AI";
 	private const string AttackModeForce = "FORCE";
 	private const string LegacyAttackModeRebellionForce = "REBELLION_FORCE";
+	private const string PendingSafeExitResumeFollow = "resume_follow";
+	private const string PendingSafeExitAdvance = "advance";
+	private const string PendingSafeExitStop = "stop";
 
 	private static readonly Regex WorldMapOrderTagRegex = new Regex("\\[ACTION:WORLDMAP_ORDER:[^\\]\\r\\n]*\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
@@ -50,6 +53,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 	private readonly Dictionary<string, PlayerDetachedPartyRecord> _playerDetachedParties = new Dictionary<string, PlayerDetachedPartyRecord>(StringComparer.OrdinalIgnoreCase);
 	private readonly object _queueLock = new object();
 	private int _hasPendingCreateCompanionPartyRequests;
+	private int _hasPendingFollowSiegeRefresh;
 	private bool _isOpeningCreateCompanionPartyScreen;
 	private double _nextDetachedPartyPruneDay;
 
@@ -118,6 +122,10 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		public double ResultDeadlineDay = -1.0;
 		public bool ResultLogged;
 		public string SourceId;
+		public string FollowSiegeSettlementId;
+		public bool FollowSiegeJoinedByCommand;
+		public string PendingSafeExitAction;
+		public string PendingSafeExitReason;
 	}
 
 	private sealed class PartyCommandEntry
@@ -165,6 +173,10 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		CampaignEvents.OnSettlementOwnerChangedEvent.AddNonSerializedListener(this, OnSettlementOwnerChanged);
 		CampaignEvents.RaidCompletedEvent.AddNonSerializedListener(this, OnRaidCompleted);
 		CampaignEvents.VillageStateChanged.AddNonSerializedListener(this, OnVillageStateChanged);
+		CampaignEvents.OnSiegeEventStartedEvent.AddNonSerializedListener(this, OnFollowSiegeEventChanged);
+		CampaignEvents.OnSiegeEventEndedEvent.AddNonSerializedListener(this, OnFollowSiegeEventChanged);
+		CampaignEvents.OnMobilePartyJoinedToSiegeEventEvent.AddNonSerializedListener(this, OnFollowSiegePartyChanged);
+		CampaignEvents.OnMobilePartyLeftSiegeEventEvent.AddNonSerializedListener(this, OnFollowSiegePartyChanged);
 	}
 
 	public override void SyncData(IDataStore dataStore)
@@ -246,6 +258,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				}
 			}
 		}
+		Volatile.Write(ref _hasPendingFollowSiegeRefresh, 1);
 	}
 
 	public static bool HasWorldMapOrderTag(string text)
@@ -323,7 +336,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			{
 				if (targetHero != null && !string.IsNullOrWhiteSpace(targetHero.StringId))
 				{
-					if (behavior._queues.TryGetValue(targetHero.StringId, out PartyCommandQueueState state) && state?.Commands != null)
+					if (behavior._queues.TryGetValue(targetHero.StringId, out PartyCommandQueueState state) && state?.Commands != null && !IsStopPending(state))
 					{
 						snapshot = state.Commands.Skip(Math.Max(0, state.CurrentIndex)).Where(IsExecutableCommand).Select(CloneCommand).ToList();
 					}
@@ -335,7 +348,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				else if (TryResolveNonHeroPartyActorForExternal(targetCharacter, targetAgentIndex, out MobileParty party))
 				{
 					string actorKey = BuildPartyActorKey(party, createGuid: false);
-					if (!string.IsNullOrWhiteSpace(actorKey) && behavior._queues.TryGetValue(actorKey, out PartyCommandQueueState state) && state?.Commands != null)
+					if (!string.IsNullOrWhiteSpace(actorKey) && behavior._queues.TryGetValue(actorKey, out PartyCommandQueueState state) && state?.Commands != null && !IsStopPending(state))
 					{
 						snapshot = state.Commands.Skip(Math.Max(0, state.CurrentIndex)).Where(IsExecutableNonHeroPartyCommand).Select(CloneCommand).ToList();
 					}
@@ -809,6 +822,11 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		lock (_queueLock)
 		{
 			_queues.TryGetValue(hero.StringId, out state);
+			if (IsStopPending(state))
+			{
+				message = GetHeroName(hero) + "正在等待当前战斗安全结算，暂不能追加新的大地图命令。";
+				return false;
+			}
 			if (state != null && !string.IsNullOrWhiteSpace(NormalizeExternalSourceId(state.SourceId)))
 			{
 				message = GetHeroName(hero) + "当前执行的是隔离来源命令，聊天命令未改动该清单。";
@@ -871,6 +889,11 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		lock (_queueLock)
 		{
 			_queues.TryGetValue(actorKey, out state);
+			if (IsStopPending(state))
+			{
+				message = actorName + "正在等待当前战斗安全结算，暂不能追加新的大地图命令。";
+				return false;
+			}
 			if (state != null && !string.IsNullOrWhiteSpace(NormalizeExternalSourceId(state.SourceId)))
 			{
 				message = actorName + "当前执行的是隔离来源命令，聊天命令未改动该清单。";
@@ -934,6 +957,21 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			message = "大地图命令失败：" + GetHeroName(hero) + "当前没有独立可控制部队。";
 			return false;
 		}
+		PartyCommandQueueState existingState = null;
+		lock (_queueLock)
+		{
+			_queues.TryGetValue(hero.StringId ?? "", out existingState);
+		}
+		if (IsStopPending(existingState))
+		{
+			message = GetHeroName(hero) + "正在等待当前战斗安全结算，暂不能替换大地图命令。";
+			return false;
+		}
+		if (HasFollowSiegeState(existingState) && !TryExitFollowSiegeControl(party, existingState, detachPreexistingParticipation: false, "replace_queue"))
+		{
+			message = GetHeroName(hero) + "正在参与原版战斗，结算前不能替换当前大地图命令。";
+			return false;
+		}
 		int hostileGoToConvertedCount = 0;
 		if (ShouldConvertHostileGoToSettlementCommands(normalizedSource))
 		{
@@ -980,7 +1018,16 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			removedPendingCreate = _pendingCreatePartyRequests.Remove(hero.StringId);
 			Volatile.Write(ref _hasPendingCreateCompanionPartyRequests, _pendingCreatePartyRequests.Count > 0 ? 1 : 0);
 		}
-		MobileParty party = state == null ? null : ResolveActorParty(state, hero, allowNonLeaderForRelease: true);
+		MobileParty party = ResolvePartyForSafeExit(state, hero);
+		bool alreadyPendingStop = IsStopPending(state);
+		if (state != null && HasFollowSiegeState(state) && !TryExitFollowSiegeControl(party, state, detachPreexistingParticipation: false, "stop:" + reason))
+		{
+			SetPendingSafeExit(state, PendingSafeExitStop, reason);
+			RequestFollowSiegeRefresh();
+			fact = alreadyPendingStop ? "" : "[AFEF NPC行为补充] " + GetHeroName(hero) + "停止了当前大地图命令；正在进行的原版战斗结算后将安全退出攻城并回归原版行动状态。";
+			Log("stop deferred for active follow siege hero=" + hero.StringId + " reason=" + reason + " removedPendingCreate=" + removedPendingCreate);
+			return;
+		}
 		if (party != null && party != MobileParty.MainParty)
 		{
 			AbortCurrentCommandIfNeeded(party, state);
@@ -1016,6 +1063,16 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 		if (state != null)
 		{
+			bool alreadyPendingStop = IsStopPending(state);
+			if (HasFollowSiegeState(state) && !TryExitFollowSiegeControl(party, state, detachPreexistingParticipation: false, "stop:" + reason))
+			{
+				SetPendingSafeExit(state, PendingSafeExitStop, reason);
+				RequestFollowSiegeRefresh();
+				string pendingActorName = GetActorName(state, null, party);
+				fact = alreadyPendingStop ? "" : "[AFEF NPC行为补充] " + pendingActorName + "停止了当前大地图命令；正在进行的原版战斗结算后将安全退出攻城并回归原版行动状态。";
+				Log("stop deferred for active follow siege party_actor=" + actorKey + " reason=" + reason);
+				return;
+			}
 			AbortCurrentCommandIfNeeded(party, state);
 			ReleasePartyAi(party);
 		}
@@ -1075,6 +1132,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 		try
 		{
+			ProcessPendingFollowSiegeRefresh();
 			ProcessPendingCreateCompanionPartyRequests();
 			double nowDay = NowDay();
 			if (nowDay >= _nextDetachedPartyPruneDay)
@@ -1087,6 +1145,66 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			Log("pending create party tick failed: " + ex);
 		}
+		}
+	}
+
+	private void OnFollowSiegeEventChanged(SiegeEvent siegeEvent)
+	{
+		RequestFollowSiegeRefresh();
+	}
+
+	private void OnFollowSiegePartyChanged(MobileParty party)
+	{
+		RequestFollowSiegeRefresh();
+	}
+
+	private void RequestFollowSiegeRefresh()
+	{
+		Volatile.Write(ref _hasPendingFollowSiegeRefresh, 1);
+	}
+
+	private void ProcessPendingFollowSiegeRefresh()
+	{
+		if (Interlocked.Exchange(ref _hasPendingFollowSiegeRefresh, 0) == 0)
+		{
+			return;
+		}
+		List<PartyCommandQueueState> snapshot;
+		lock (_queueLock)
+		{
+			snapshot = _queues.Values
+				.Where(x => x != null && (IsCurrentFollowCommand(x) || HasPendingSafeExit(x)))
+				.ToList();
+		}
+		foreach (PartyCommandQueueState state in snapshot)
+		{
+			try
+			{
+				if (!IsStateStillQueued(state))
+				{
+					continue;
+				}
+				Hero hero = ResolveHeroByIdAny(state.HeroId);
+				MobileParty party = HasPendingSafeExit(state) ? ResolvePartyForSafeExit(state, hero) : ResolveActorParty(state, hero);
+				ProcessQueueTick(string.IsNullOrWhiteSpace(state.HeroId) ? null : hero, party, state);
+			}
+			catch (Exception ex)
+			{
+				Log("follow siege refresh failed actor=" + GetActorLogId(state, null, null) + " error=" + ex.Message);
+			}
+		}
+	}
+
+	private bool IsStateStillQueued(PartyCommandQueueState state)
+	{
+		string queueKey = GetQueueKey(state);
+		if (string.IsNullOrWhiteSpace(queueKey))
+		{
+			return false;
+		}
+		lock (_queueLock)
+		{
+			return _queues.TryGetValue(queueKey, out PartyCommandQueueState current) && ReferenceEquals(current, state);
 		}
 	}
 
@@ -1225,6 +1343,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		using (PerfProbe.Scope("WorldMapCommand.OnMapEventEnded"))
 		{
 		PerfProbe.MarkEvent("WorldMapCommand.MapEventEnded");
+		RequestFollowSiegeRefresh();
 		try
 		{
 			if (mapEvent == null)
@@ -1427,6 +1546,10 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 	private void ProcessQueueTick(Hero hero, MobileParty party, PartyCommandQueueState state)
 	{
 		NormalizeState(state);
+		if (ProcessPendingSafeExit(hero, party, state))
+		{
+			return;
+		}
 		if (!ValidateActor(state, hero, party, out string reason))
 		{
 			if (IsCurrentAttackCommand(state))
@@ -1455,6 +1578,12 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			return;
 		}
 		double now = NowDay();
+		if (IsFollowCommand(command) && HasFollowDurationElapsed(state, command, now))
+		{
+			LogFact(state, hero, BuildFollowCompletedFact(state, hero, party, command));
+			AdvanceCommand(hero, party, state, IsKind(command, CommandKind.FollowParty) ? "follow_party_done" : "follow_done");
+			return;
+		}
 		if (state.TimeoutDay > 0.0 && now > state.TimeoutDay)
 		{
 			if (TryKeepCommandAliveAfterTimeout(hero, party, state, command, now))
@@ -1529,7 +1658,11 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		state.LastIssuedActionKey = "";
 		state.LastStatusMessageKey = "";
 		state.TimeoutDay = ComputeTimeoutDay(party, command);
-		PreemptBlockingWorldActivityForCommand(hero, party, command, state, "start");
+		bool isFollowCommand = IsFollowCommand(command);
+		if (!isFollowCommand && !PreemptBlockingWorldActivityForCommand(hero, party, command, state, "start"))
+		{
+			return;
+		}
 		if (IsKind(command, CommandKind.GoToSettlement))
 		{
 			Settlement settlement = ResolveSettlementById(command.TargetId);
@@ -1569,36 +1702,14 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 		if (IsKind(command, CommandKind.FollowHero))
 		{
-			MobileParty targetParty = ResolveTargetHeroParty(command.TargetId);
-			if (targetParty == null)
-			{
-				AdvanceCommand(hero, party, state, "follow_target_missing");
-				return;
-			}
-			LockPartyAi(party);
-			SynchronizeArmyObjectiveForCommand(party, command);
-			SetPartyAiAction.GetActionForEscortingParty(party, targetParty, MobileParty.NavigationType.Default, isFromPort: false, isTargetingPort: false);
 			state.Stage = CommandStage.Traveling.ToString();
-			state.LastIssuedActionKey = "escort:" + command.TargetId;
-			DisplayCommandMessage(GetActorName(state, hero, party) + "开始前往并跟随" + GetHeroName(ResolveHeroById(command.TargetId)) + "，持续" + Math.Max(1, command.Days) + "天。", CommandMessageTone.Progress);
-			Log("start follow actor=" + GetActorLogId(state, hero, party) + " target=" + command.TargetId + " days=" + command.Days);
+			TickFollowHero(hero, party, state, command, isStarting: true);
 			return;
 		}
 		if (IsKind(command, CommandKind.FollowParty))
 		{
-			MobileParty targetParty = ResolveMobilePartyById(command.TargetId);
-			if (!IsPartyUsable(targetParty) || targetParty == party)
-			{
-				AdvanceCommand(hero, party, state, "follow_party_target_missing");
-				return;
-			}
-			LockPartyAi(party);
-			SynchronizeArmyObjectiveForCommand(party, command);
-			SetPartyAiAction.GetActionForEscortingParty(party, targetParty, MobileParty.NavigationType.Default, isFromPort: false, isTargetingPort: false);
 			state.Stage = CommandStage.Traveling.ToString();
-			state.LastIssuedActionKey = "escort_party:" + command.TargetId;
-			DisplayCommandMessage(GetActorName(state, hero, party) + "开始前往并跟随" + GetPartyName(targetParty) + "，持续" + Math.Max(1, command.Days) + "天。", CommandMessageTone.Progress);
-			Log("start follow_party actor=" + GetActorLogId(state, hero, party) + " targetParty=" + command.TargetId + " days=" + command.Days);
+			TickFollowParty(hero, party, state, command, isStarting: true);
 			return;
 		}
 		if (IsKind(command, CommandKind.AttackHero))
@@ -1724,7 +1835,10 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				|| !IsAiDecisionLockActive(party);
 			if (shouldRefresh)
 			{
-				PreemptBlockingWorldActivityForCommand(hero, party, command, state, "tick_go");
+				if (!PreemptBlockingWorldActivityForCommand(hero, party, command, state, "tick_go"))
+				{
+					return;
+				}
 				LockPartyAi(party);
 				SetPartyAiAction.GetActionForVisitingSettlement(party, settlement, MobileParty.NavigationType.Default, isFromPort: false, isTargetingPort: false);
 				SynchronizeArmyObjectiveForCommand(party, command);
@@ -1778,7 +1892,10 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		bool shouldRefreshActive = hasArrived && insideLeash && !isEngaging && !IsPartyPatrollingSettlement(party, settlement);
 		if (shouldRefreshTravel || shouldRefreshActive)
 		{
-			PreemptBlockingWorldActivityForCommand(hero, party, command, state, "tick_patrol");
+			if (!PreemptBlockingWorldActivityForCommand(hero, party, command, state, "tick_patrol"))
+			{
+				return;
+			}
 			if (shouldRefreshTravel)
 			{
 				LockPartyAi(party);
@@ -1817,7 +1934,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void TickFollowHero(Hero hero, MobileParty party, PartyCommandQueueState state, PartyCommandEntry command)
+	private void TickFollowHero(Hero hero, MobileParty party, PartyCommandQueueState state, PartyCommandEntry command, bool isStarting = false)
 	{
 		MobileParty targetParty = ResolveTargetHeroParty(command.TargetId);
 		if (targetParty == null)
@@ -1825,35 +1942,10 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			AdvanceCommand(hero, party, state, "follow_target_missing");
 			return;
 		}
-		string actionKey = "escort:" + command.TargetId;
-		bool shouldRefresh = !string.Equals(state.LastIssuedActionKey, actionKey, StringComparison.OrdinalIgnoreCase)
-			|| !IsPartyEscortingTarget(party, targetParty)
-			|| !IsAiDecisionLockActive(party);
-		if (shouldRefresh)
-		{
-			PreemptBlockingWorldActivityForCommand(hero, party, command, state, "tick_follow");
-			LockPartyAi(party);
-			SetPartyAiAction.GetActionForEscortingParty(party, targetParty, MobileParty.NavigationType.Default, isFromPort: false, isTargetingPort: false);
-			SynchronizeArmyObjectiveForCommand(party, command);
-			state.LastIssuedActionKey = actionKey;
-			NotifyCommandStatus(state, actionKey + ":refresh", GetActorName(state, hero, party) + "正在跟随" + GetHeroName(ResolveHeroById(command.TargetId)) + "，若原版AI打断会自动重新下达跟随命令。", CommandMessageTone.Progress);
-			Log("follow_refresh hero=" + (hero?.StringId ?? "") + " target=" + command.TargetId + " " + DescribePartyAi(party));
-		}
-		if (state.ArrivalDay < 0.0 && IsPartyCloseEnoughToStartFollowing(party, targetParty))
-		{
-			state.ArrivalDay = NowDay();
-			state.TimeoutDay = -1.0;
-			state.Stage = CommandStage.Active.ToString();
-			LogFact(state, hero, GetActorName(state, hero, party) + "已经追上并开始跟随" + GetHeroName(ResolveHeroById(command.TargetId)) + "。");
-		}
-		if (state.ArrivalDay >= 0.0 && NowDay() - state.ArrivalDay >= Math.Max(1, command.Days))
-		{
-			LogFact(state, hero, GetActorName(state, hero, party) + "已经完成跟随" + GetHeroName(ResolveHeroById(command.TargetId)) + Math.Max(1, command.Days) + "天的命令。");
-			AdvanceCommand(hero, party, state, "follow_done");
-		}
+		TickFollowCommand(hero, party, state, command, targetParty, GetHeroName(ResolveHeroById(command.TargetId)), "escort:" + command.TargetId, "tick_follow", isStarting);
 	}
 
-	private void TickFollowParty(Hero hero, MobileParty party, PartyCommandQueueState state, PartyCommandEntry command)
+	private void TickFollowParty(Hero hero, MobileParty party, PartyCommandQueueState state, PartyCommandEntry command, bool isStarting = false)
 	{
 		MobileParty targetParty = ResolveMobilePartyById(command.TargetId);
 		if (!IsPartyUsable(targetParty) || targetParty == party)
@@ -1861,31 +1953,403 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			AdvanceCommand(hero, party, state, "follow_party_target_missing");
 			return;
 		}
-		string actionKey = "escort_party:" + command.TargetId;
-		bool shouldRefresh = !string.Equals(state.LastIssuedActionKey, actionKey, StringComparison.OrdinalIgnoreCase)
+		TickFollowCommand(hero, party, state, command, targetParty, GetPartyName(targetParty), "escort_party:" + command.TargetId, "tick_follow_party", isStarting);
+	}
+
+	private void TickFollowCommand(Hero hero, MobileParty party, PartyCommandQueueState state, PartyCommandEntry command, MobileParty targetParty, string targetName, string escortActionKey, string phase, bool isStarting)
+	{
+		if (TryResolvePlayerFollowSiege(party, targetParty, out SiegeEvent siegeEvent, out Settlement settlement))
+		{
+			MaintainFollowSiege(hero, party, state, command, targetParty, targetName, siegeEvent, settlement);
+			return;
+		}
+		if (HasFollowSiegeState(state))
+		{
+			if (!TryExitFollowSiegeControl(party, state, detachPreexistingParticipation: true, "resume_follow:" + phase))
+			{
+				SetPendingSafeExit(state, PendingSafeExitResumeFollow, "resume_follow:" + phase);
+				NotifyCommandStatus(state, "follow_siege_wait_exit:" + (state.FollowSiegeSettlementId ?? ""), GetActorName(state, hero, party) + "正在完成当前战斗，结算后将退出攻城并恢复跟随。", CommandMessageTone.Progress);
+				return;
+			}
+		}
+		bool shouldRefresh = !string.Equals(state.LastIssuedActionKey, escortActionKey, StringComparison.OrdinalIgnoreCase)
 			|| !IsPartyEscortingTarget(party, targetParty)
 			|| !IsAiDecisionLockActive(party);
 		if (shouldRefresh)
 		{
-			PreemptBlockingWorldActivityForCommand(hero, party, command, state, "tick_follow_party");
+			if (!PreemptBlockingWorldActivityForCommand(hero, party, command, state, phase))
+			{
+				return;
+			}
 			LockPartyAi(party);
 			SetPartyAiAction.GetActionForEscortingParty(party, targetParty, MobileParty.NavigationType.Default, isFromPort: false, isTargetingPort: false);
 			SynchronizeArmyObjectiveForCommand(party, command);
-			state.LastIssuedActionKey = actionKey;
-			NotifyCommandStatus(state, actionKey + ":refresh", GetActorName(state, hero, party) + "正在跟随" + GetPartyName(targetParty) + "，若原版AI打断会自动重新下达跟随命令。", CommandMessageTone.Progress);
-			Log("follow_party_refresh hero=" + (hero?.StringId ?? "") + " targetParty=" + command.TargetId + " " + DescribePartyAi(party));
+			state.Stage = state.ArrivalDay >= 0.0 ? CommandStage.Active.ToString() : CommandStage.Traveling.ToString();
+			state.LastIssuedActionKey = escortActionKey;
+			if (isStarting)
+			{
+				DisplayCommandMessage(GetActorName(state, hero, party) + "开始前往并跟随" + targetName + "，持续" + Math.Max(1, command.Days) + "天。", CommandMessageTone.Progress);
+			}
+			else
+			{
+				NotifyCommandStatus(state, escortActionKey + ":refresh", GetActorName(state, hero, party) + "正在跟随" + targetName + "，若原版AI打断会自动重新下达跟随命令。", CommandMessageTone.Progress);
+			}
+			Log("follow_refresh actor=" + GetActorLogId(state, hero, party) + " target=" + (targetParty?.StringId ?? command.TargetId ?? "") + " " + DescribePartyAi(party));
 		}
 		if (state.ArrivalDay < 0.0 && IsPartyCloseEnoughToStartFollowing(party, targetParty))
 		{
 			state.ArrivalDay = NowDay();
 			state.TimeoutDay = -1.0;
 			state.Stage = CommandStage.Active.ToString();
-			LogFact(state, hero, GetActorName(state, hero, party) + "已经追上并开始跟随" + GetPartyName(targetParty) + "。");
+			LogFact(state, hero, GetActorName(state, hero, party) + "已经追上并开始跟随" + targetName + "。");
 		}
-		if (state.ArrivalDay >= 0.0 && NowDay() - state.ArrivalDay >= Math.Max(1, command.Days))
+	}
+
+	private void MaintainFollowSiege(Hero hero, MobileParty party, PartyCommandQueueState state, PartyCommandEntry command, MobileParty targetParty, string targetName, SiegeEvent siegeEvent, Settlement settlement)
+	{
+		string settlementId = settlement?.StringId ?? "";
+		if (string.IsNullOrWhiteSpace(settlementId) || siegeEvent?.BesiegerCamp == null)
 		{
-			LogFact(state, hero, GetActorName(state, hero, party) + "已经完成跟随" + GetPartyName(targetParty) + Math.Max(1, command.Days) + "天的命令。");
-			AdvanceCommand(hero, party, state, "follow_party_done");
+			return;
+		}
+		if (HasFollowSiegeState(state) && !string.Equals(state.FollowSiegeSettlementId, settlementId, StringComparison.OrdinalIgnoreCase))
+		{
+			if (!TryExitFollowSiegeControl(party, state, detachPreexistingParticipation: true, "switch_follow_siege"))
+			{
+				SetPendingSafeExit(state, PendingSafeExitResumeFollow, "switch_follow_siege");
+				return;
+			}
+		}
+		bool alreadyInCamp = party?.BesiegerCamp == siegeEvent.BesiegerCamp;
+		bool wasTrackingThisSiege = string.Equals(state.FollowSiegeSettlementId, settlementId, StringComparison.OrdinalIgnoreCase);
+		if (!alreadyInCamp)
+		{
+			if (!PreemptBlockingWorldActivityForCommand(hero, party, command, state, "follow_siege:" + settlementId))
+			{
+				return;
+			}
+			if (!wasTrackingThisSiege)
+			{
+				state.FollowSiegeSettlementId = settlementId;
+				state.FollowSiegeJoinedByCommand = true;
+			}
+			string actionKey = "follow_siege_travel:" + settlementId;
+			bool shouldRefresh = !string.Equals(state.LastIssuedActionKey, actionKey, StringComparison.OrdinalIgnoreCase)
+				|| party.DefaultBehavior != AiBehavior.BesiegeSettlement
+				|| party.TargetSettlement != settlement
+				|| !IsAiDecisionLockActive(party);
+			if (shouldRefresh)
+			{
+				LockPartyAi(party);
+				SynchronizeArmyObjectiveForFollowSiege(party, settlement);
+				SetPartyAiAction.GetActionForBesiegingSettlement(party, settlement, MobileParty.NavigationType.Default, isFromPort: false);
+				state.Stage = CommandStage.Traveling.ToString();
+				state.LastIssuedActionKey = actionKey;
+				NotifyCommandStatus(state, actionKey, GetActorName(state, hero, party) + "正在跟随" + targetName + "加入玩家对" + GetSettlementName(settlement) + "的围攻。", CommandMessageTone.Progress);
+				Log("follow_siege_travel actor=" + GetActorLogId(state, hero, party) + " target=" + (targetParty?.StringId ?? "") + " settlement=" + settlementId + " " + DescribePartyAi(party));
+			}
+			return;
+		}
+		if (!wasTrackingThisSiege)
+		{
+			state.FollowSiegeSettlementId = settlementId;
+			state.FollowSiegeJoinedByCommand = false;
+		}
+		string activeActionKey = "follow_siege_active:" + settlementId;
+		bool becameActive = !string.Equals(state.LastIssuedActionKey, activeActionKey, StringComparison.OrdinalIgnoreCase);
+		LockPartyAi(party);
+		if (state.FollowSiegeJoinedByCommand)
+		{
+			SynchronizeArmyObjectiveForFollowSiege(party, settlement);
+		}
+		state.Stage = CommandStage.Active.ToString();
+		state.LastIssuedActionKey = activeActionKey;
+		if (state.ArrivalDay < 0.0)
+		{
+			state.ArrivalDay = NowDay();
+		}
+		state.TimeoutDay = -1.0;
+		if (becameActive)
+		{
+			LogFact(state, hero, GetActorName(state, hero, party) + "已经随" + targetName + "加入对" + GetSettlementName(settlement) + "的围攻。");
+			NotifyCommandStatus(state, activeActionKey, GetActorName(state, hero, party) + "已经加入对" + GetSettlementName(settlement) + "的围攻。", CommandMessageTone.Success);
+			Log("follow_siege_active actor=" + GetActorLogId(state, hero, party) + " settlement=" + settlementId + " owned=" + state.FollowSiegeJoinedByCommand);
+		}
+	}
+
+	private static bool TryResolvePlayerFollowSiege(MobileParty actorParty, MobileParty targetParty, out SiegeEvent siegeEvent, out Settlement settlement)
+	{
+		siegeEvent = null;
+		settlement = null;
+		try
+		{
+			MobileParty mainParty = MobileParty.MainParty;
+			if (!IsPartyUsable(actorParty) || !IsPartyUsable(targetParty) || !IsPartyUsable(mainParty) || actorParty == mainParty || actorParty == targetParty)
+			{
+				return false;
+			}
+			BesiegerCamp playerCamp = mainParty.BesiegerCamp;
+			siegeEvent = playerCamp?.SiegeEvent;
+			settlement = siegeEvent?.BesiegedSettlement;
+			if (playerCamp == null || siegeEvent == null || settlement == null || settlement.IsVillage || settlement.SiegeEvent != siegeEvent || siegeEvent.BesiegerCamp != playerCamp)
+			{
+				return false;
+			}
+			if (targetParty.BesiegerCamp != playerCamp)
+			{
+				return false;
+			}
+			IFaction actorFaction = actorParty.MapFaction;
+			IFaction siegeFaction = playerCamp.MapFaction;
+			if (actorFaction == null || siegeFaction == null || actorFaction != siegeFaction || actorParty.CurrentSettlement == settlement)
+			{
+				return false;
+			}
+			if (HasActiveMapEvent(actorParty) && actorParty.BesiegerCamp != playerCamp)
+			{
+				return false;
+			}
+			return siegeEvent.CanPartyJoinSide(actorParty.Party, BattleSideEnum.Attacker);
+		}
+		catch
+		{
+			siegeEvent = null;
+			settlement = null;
+			return false;
+		}
+	}
+
+	private bool ProcessPendingSafeExit(Hero hero, MobileParty party, PartyCommandQueueState state)
+	{
+		if (!HasPendingSafeExit(state))
+		{
+			return false;
+		}
+		string action = state.PendingSafeExitAction;
+		string reason = state.PendingSafeExitReason;
+		bool detachPreexisting = string.Equals(action, PendingSafeExitResumeFollow, StringComparison.OrdinalIgnoreCase);
+		if (!TryExitFollowSiegeControl(party, state, detachPreexisting, "pending:" + reason))
+		{
+			return true;
+		}
+		ClearPendingSafeExit(state);
+		if (string.Equals(action, PendingSafeExitResumeFollow, StringComparison.OrdinalIgnoreCase))
+		{
+			return false;
+		}
+		if (string.Equals(action, PendingSafeExitAdvance, StringComparison.OrdinalIgnoreCase))
+		{
+			if (party == null)
+			{
+				FinishQueue(hero, null, state, "actor_invalid_after_follow_siege", appendFact: true);
+				return true;
+			}
+			AdvanceCommand(hero, party, state, string.IsNullOrWhiteSpace(reason) ? "follow_siege_safe_exit" : reason);
+			return true;
+		}
+		if (string.Equals(action, PendingSafeExitStop, StringComparison.OrdinalIgnoreCase))
+		{
+			if (party != null && party != MobileParty.MainParty)
+			{
+				AbortCurrentCommandIfNeeded(party, state);
+				ReleasePartyAi(party);
+			}
+			string queueKey = GetQueueKey(state);
+			if (!string.IsNullOrWhiteSpace(queueKey))
+			{
+				lock (_queueLock)
+				{
+					_queues.Remove(queueKey);
+				}
+			}
+			Log("stop_after_follow_siege_safe_exit actor=" + GetActorLogId(state, hero, party) + " reason=" + reason);
+			return true;
+		}
+		return false;
+	}
+
+	private static bool TryExitFollowSiegeControl(MobileParty party, PartyCommandQueueState state, bool detachPreexistingParticipation, string reason)
+	{
+		if (!HasFollowSiegeState(state))
+		{
+			return true;
+		}
+		try
+		{
+			Settlement trackedSettlement = ResolveSettlementById(state.FollowSiegeSettlementId);
+			if (HasActiveSiegeMapEvent(party, trackedSettlement))
+			{
+				return false;
+			}
+			BesiegerCamp currentCamp = party?.BesiegerCamp;
+			Settlement currentSiegeSettlement = currentCamp?.SiegeEvent?.BesiegedSettlement;
+			bool controlsParticipation = detachPreexistingParticipation || state.FollowSiegeJoinedByCommand;
+			bool isTrackedCamp = currentSiegeSettlement != null && string.Equals(currentSiegeSettlement.StringId, state.FollowSiegeSettlementId, StringComparison.OrdinalIgnoreCase);
+			if (controlsParticipation && isTrackedCamp)
+			{
+				party.BesiegerCamp = null;
+			}
+			if (controlsParticipation && party != null && trackedSettlement != null && party.DefaultBehavior == AiBehavior.BesiegeSettlement && party.TargetSettlement == trackedSettlement)
+			{
+				party.SetMoveModeHold();
+			}
+			if (controlsParticipation)
+			{
+				RestoreArmyObjectiveAfterFollowSiege(party, trackedSettlement);
+			}
+			Log("follow_siege_exit party=" + (party?.StringId ?? "") + " settlement=" + (state.FollowSiegeSettlementId ?? "") + " detach=" + controlsParticipation + " reason=" + (reason ?? ""));
+			ClearFollowSiegeState(state);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Log("follow siege exit failed party=" + (party?.StringId ?? "") + " settlement=" + (state?.FollowSiegeSettlementId ?? "") + " error=" + ex.Message);
+			return false;
+		}
+	}
+
+	private static bool HasActiveMapEvent(MobileParty party)
+	{
+		try
+		{
+			return party?.MapEvent != null && !party.MapEvent.IsFinalized;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool HasActiveSiegeMapEvent(MobileParty party, Settlement settlement)
+	{
+		try
+		{
+			if (HasActiveMapEvent(party))
+			{
+				return true;
+			}
+			BesiegerCamp camp = party?.BesiegerCamp;
+			MapEvent leaderEvent = camp?.LeaderParty?.MapEvent;
+			if (leaderEvent != null && !leaderEvent.IsFinalized)
+			{
+				return true;
+			}
+			Settlement siegeSettlement = settlement ?? camp?.SiegeEvent?.BesiegedSettlement;
+			MapEvent settlementEvent = siegeSettlement?.Party?.MapEvent;
+			return settlementEvent != null && !settlementEvent.IsFinalized;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsFollowCommand(PartyCommandEntry command)
+	{
+		return command != null && (IsKind(command, CommandKind.FollowHero) || IsKind(command, CommandKind.FollowParty));
+	}
+
+	private static bool IsCurrentFollowCommand(PartyCommandQueueState state)
+	{
+		return IsFollowCommand(GetCurrentCommand(state));
+	}
+
+	private static bool HasFollowSiegeState(PartyCommandQueueState state)
+	{
+		return state != null && !string.IsNullOrWhiteSpace(state.FollowSiegeSettlementId);
+	}
+
+	private static bool HasPendingSafeExit(PartyCommandQueueState state)
+	{
+		return state != null && !string.IsNullOrWhiteSpace(state.PendingSafeExitAction);
+	}
+
+	private static bool IsStopPending(PartyCommandQueueState state)
+	{
+		return state != null && string.Equals(state.PendingSafeExitAction, PendingSafeExitStop, StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static void SetPendingSafeExit(PartyCommandQueueState state, string action, string reason)
+	{
+		if (state == null)
+		{
+			return;
+		}
+		state.PendingSafeExitAction = action ?? "";
+		state.PendingSafeExitReason = reason ?? "";
+	}
+
+	private static void ClearPendingSafeExit(PartyCommandQueueState state)
+	{
+		if (state == null)
+		{
+			return;
+		}
+		state.PendingSafeExitAction = "";
+		state.PendingSafeExitReason = "";
+	}
+
+	private static void ClearFollowSiegeState(PartyCommandQueueState state)
+	{
+		if (state == null)
+		{
+			return;
+		}
+		state.FollowSiegeSettlementId = "";
+		state.FollowSiegeJoinedByCommand = false;
+		if (!string.IsNullOrWhiteSpace(state.LastIssuedActionKey) && state.LastIssuedActionKey.StartsWith("follow_siege_", StringComparison.OrdinalIgnoreCase))
+		{
+			state.LastIssuedActionKey = "";
+		}
+	}
+
+	private static bool HasFollowDurationElapsed(PartyCommandQueueState state, PartyCommandEntry command, double nowDay)
+	{
+		return state != null && IsFollowCommand(command) && nowDay - state.CommandStartDay >= Math.Max(1, command.Days);
+	}
+
+	private static string BuildFollowCompletedFact(PartyCommandQueueState state, Hero hero, MobileParty party, PartyCommandEntry command)
+	{
+		string targetName = IsKind(command, CommandKind.FollowParty)
+			? GetPartyName(ResolveMobilePartyById(command.TargetId))
+			: GetHeroName(ResolveHeroById(command.TargetId));
+		return GetActorName(state, hero, party) + "已经完成跟随" + targetName + Math.Max(1, command.Days) + "天的命令。";
+	}
+
+	private static void SynchronizeArmyObjectiveForFollowSiege(MobileParty party, Settlement settlement)
+	{
+		try
+		{
+			if (party?.Army == null || party.Army.LeaderParty != party || settlement == null)
+			{
+				return;
+			}
+			party.Army.ArmyType = Army.ArmyTypes.Besieger;
+			party.Army.AiBehaviorObject = settlement;
+		}
+		catch (Exception ex)
+		{
+			Log("follow siege army objective sync failed party=" + (party?.StringId ?? "") + " error=" + ex.Message);
+		}
+	}
+
+	private static void RestoreArmyObjectiveAfterFollowSiege(MobileParty party, Settlement trackedSettlement)
+	{
+		try
+		{
+			if (party?.Army == null || party.Army.LeaderParty != party)
+			{
+				return;
+			}
+			if (trackedSettlement == null || party.Army.AiBehaviorObject == trackedSettlement)
+			{
+				party.Army.ArmyType = Army.ArmyTypes.Patrolling;
+				party.Army.AiBehaviorObject = null;
+			}
+		}
+		catch (Exception ex)
+		{
+			Log("follow siege army objective restore failed party=" + (party?.StringId ?? "") + " error=" + ex.Message);
 		}
 	}
 
@@ -2088,7 +2552,10 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		PreemptBlockingWorldActivityForCommand(actorHero, party, command, state, "settlement_attack_track");
+		if (!PreemptBlockingWorldActivityForCommand(actorHero, party, command, state, "settlement_attack_track"))
+		{
+			return;
+		}
 		LockPartyAi(party);
 		MoveTowardSettlementAttackPoint(party, settlement);
 		state.EngageCommitted = false;
@@ -2219,7 +2686,10 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		PreemptBlockingWorldActivityForCommand(actorHero, party, command, state, "attack_track");
+		if (!PreemptBlockingWorldActivityForCommand(actorHero, party, command, state, "attack_track"))
+		{
+			return;
+		}
 		LockPartyAi(party);
 		SetPartyAiAction.GetActionForGoingAroundParty(party, targetParty, MobileParty.NavigationType.Default, isFromPort: false);
 		state.EngageCommitted = false;
@@ -2242,7 +2712,10 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		PreemptBlockingWorldActivityForCommand(actorHero, party, command, state, "attack_shelter_wait");
+		if (!PreemptBlockingWorldActivityForCommand(actorHero, party, command, state, "attack_shelter_wait"))
+		{
+			return;
+		}
 		LeaveTargetSettlementIfInside(party, shelter);
 		LockPartyAi(party);
 		MoveTowardSettlementAttackPoint(party, shelter);
@@ -2269,7 +2742,10 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		PreemptBlockingWorldActivityForCommand(actorHero, party, command, state, "party_attack_track");
+		if (!PreemptBlockingWorldActivityForCommand(actorHero, party, command, state, "party_attack_track"))
+		{
+			return;
+		}
 		LockPartyAi(party);
 		SetPartyAiAction.GetActionForGoingAroundParty(party, targetParty, MobileParty.NavigationType.Default, isFromPort: false);
 		state.EngageCommitted = false;
@@ -2292,7 +2768,10 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		PreemptBlockingWorldActivityForCommand(actorHero, party, command, state, "party_attack_shelter_wait");
+		if (!PreemptBlockingWorldActivityForCommand(actorHero, party, command, state, "party_attack_shelter_wait"))
+		{
+			return;
+		}
 		LeaveTargetSettlementIfInside(party, shelter);
 		LockPartyAi(party);
 		MoveTowardSettlementAttackPoint(party, shelter);
@@ -2389,7 +2868,10 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				|| !IsAiDecisionLockActive(party);
 			if (shouldRefresh)
 			{
-				PreemptBlockingWorldActivityForCommand(hero, party, command, state, "merge_to_player");
+				if (!PreemptBlockingWorldActivityForCommand(hero, party, command, state, "merge_to_player"))
+				{
+					return;
+				}
 				LockPartyAi(party);
 				SetPartyAiAction.GetActionForEscortingParty(party, MobileParty.MainParty, MobileParty.NavigationType.Default, isFromPort: false, isTargetingPort: false);
 				state.LastIssuedActionKey = "merge_to_player";
@@ -3495,6 +3977,13 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 	private void AdvanceCommand(Hero hero, MobileParty party, PartyCommandQueueState state, string reason)
 	{
 		Log("advance actor=" + GetActorLogId(state, hero, party) + " index=" + state.CurrentIndex + " reason=" + reason);
+		if (HasFollowSiegeState(state) && !TryExitFollowSiegeControl(party, state, detachPreexistingParticipation: false, "advance:" + reason))
+		{
+			SetPendingSafeExit(state, PendingSafeExitAdvance, reason);
+			RequestFollowSiegeRefresh();
+			return;
+		}
+		ClearPendingSafeExit(state);
 		AbortCurrentCommandIfNeeded(party, state);
 		ResetResultTracking(state);
 		state.CurrentIndex++;
@@ -3514,6 +4003,16 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 
 	private void FinishQueue(Hero hero, MobileParty party, PartyCommandQueueState state, string reason, bool appendFact)
 	{
+		if (HasFollowSiegeState(state) && !TryExitFollowSiegeControl(party, state, detachPreexistingParticipation: false, "finish:" + reason))
+		{
+			SetPendingSafeExit(state, PendingSafeExitStop, reason);
+			RequestFollowSiegeRefresh();
+			if (appendFact)
+			{
+				LogFact(state, hero, GetActorName(state, hero, party) + "的大地图命令队列已经结束；当前原版战斗结算后将安全退出攻城并回归原版行动状态。");
+			}
+			return;
+		}
 		if (party != null)
 		{
 			AbortCurrentCommandIfNeeded(party, state);
@@ -4123,6 +4622,8 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			state.EngageCommitted = false;
 			state.LastIssuedActionKey = "";
 			state.LastStatusMessageKey = "";
+			ClearFollowSiegeState(state);
+			ClearPendingSafeExit(state);
 			ResetResultTracking(state);
 		}
 		state.HeroId = (state.HeroId ?? "").Trim();
@@ -4131,6 +4632,25 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		state.PartyStringId = (state.PartyStringId ?? "").Trim();
 		state.NonHeroMemoryId = (state.NonHeroMemoryId ?? "").Trim();
 		state.NonHeroMemoryName = (state.NonHeroMemoryName ?? "").Trim();
+		state.FollowSiegeSettlementId = (state.FollowSiegeSettlementId ?? "").Trim();
+		state.PendingSafeExitAction = (state.PendingSafeExitAction ?? "").Trim();
+		state.PendingSafeExitReason = (state.PendingSafeExitReason ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(state.FollowSiegeSettlementId))
+		{
+			state.FollowSiegeJoinedByCommand = false;
+			ClearPendingSafeExit(state);
+		}
+		if (!string.Equals(state.PendingSafeExitAction, PendingSafeExitResumeFollow, StringComparison.OrdinalIgnoreCase)
+			&& !string.Equals(state.PendingSafeExitAction, PendingSafeExitAdvance, StringComparison.OrdinalIgnoreCase)
+			&& !string.Equals(state.PendingSafeExitAction, PendingSafeExitStop, StringComparison.OrdinalIgnoreCase))
+		{
+			ClearPendingSafeExit(state);
+		}
+		if (!IsCurrentFollowCommand(state))
+		{
+			ClearFollowSiegeState(state);
+			ClearPendingSafeExit(state);
+		}
 		if (state.PartyIndex < -1)
 		{
 			state.PartyIndex = -1;
@@ -4725,6 +5245,20 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		return party;
 	}
 
+	private static MobileParty ResolvePartyForSafeExit(PartyCommandQueueState state, Hero hero)
+	{
+		MobileParty party = ResolveActorParty(state, hero, allowNonLeaderForRelease: true);
+		if (party == null && state != null)
+		{
+			party = ResolveMobilePartyByActorState(state);
+		}
+		if (!IsPartyUsable(party) || party == MobileParty.MainParty || CourierDeliveryBehavior.IsCourierParty(party))
+		{
+			return null;
+		}
+		return party;
+	}
+
 	private static bool ValidateActor(Hero hero, MobileParty party, out string reason)
 	{
 		reason = "";
@@ -4997,13 +5531,13 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void PreemptBlockingWorldActivityForCommand(Hero hero, MobileParty party, PartyCommandEntry command, PartyCommandQueueState state, string phase)
+	private static bool PreemptBlockingWorldActivityForCommand(Hero hero, MobileParty party, PartyCommandEntry command, PartyCommandQueueState state, string phase)
 	{
 		try
 		{
 			if (!IsPartyUsable(party) || command == null)
 			{
-				return;
+				return false;
 			}
 			bool changed = false;
 			List<string> reasons = new List<string>();
@@ -5016,32 +5550,32 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			{
 				mapEvent = null;
 			}
-			if (IsPreemptableSettlementMapEventForParty(party, mapEvent) && !IsCommandContinuingCurrentSettlementAttack(party, command, mapEvent?.MapEventSettlement, mapEvent))
+			if (mapEvent != null && !mapEvent.IsFinalized && !IsCommandContinuingCurrentSettlementAttack(party, command, mapEvent.MapEventSettlement, mapEvent))
 			{
-				try
-				{
-					TryFinishPlayerEncounterForMapEvent(mapEvent);
-					mapEvent.FinalizeEvent();
-					changed = true;
-					reasons.Add(GetMapEventPreemptReason(mapEvent));
-				}
-				catch (Exception ex)
-				{
-					Log("preempt map event failed party=" + (party.StringId ?? "") + " event=" + GetMapEventPreemptReason(mapEvent) + " error=" + ex.Message);
-				}
+				string waitKey = "preempt_wait_map_event:" + (phase ?? "") + ":" + (command.Kind ?? "") + ":" + (command.TargetId ?? "");
+				NotifyCommandStatus(state, waitKey, GetActorName(state, hero, party) + "正在参与" + GetMapEventPreemptReason(mapEvent) + "，将在原版战斗结算后执行新的大地图命令。", CommandMessageTone.Progress);
+				Log("preempt_deferred actor=" + GetActorLogId(state, hero, party) + " party=" + (party.StringId ?? "") + " event=" + GetMapEventPreemptReason(mapEvent) + " phase=" + (phase ?? ""));
+				return false;
 			}
 			Settlement siegeSettlement = GetPartySiegeSettlementSafe(party);
-			if (party.SiegeEvent != null && !IsCommandContinuingCurrentSettlementAttack(party, command, siegeSettlement, null))
+			if (party.BesiegerCamp != null && !IsCommandContinuingCurrentSettlementAttack(party, command, siegeSettlement, null))
 			{
+				if (HasActiveSiegeMapEvent(party, siegeSettlement))
+				{
+					string waitKey = "preempt_wait_siege_event:" + (phase ?? "") + ":" + (command.Kind ?? "") + ":" + (command.TargetId ?? "");
+					NotifyCommandStatus(state, waitKey, GetActorName(state, hero, party) + "正在参与当前攻城事件，结算后再退出围城执行新命令。", CommandMessageTone.Progress);
+					return false;
+				}
 				try
 				{
-					party.SiegeEvent.FinalizeSiegeEvent();
+					party.BesiegerCamp = null;
 					changed = true;
 					reasons.Add("当前围城");
 				}
 				catch (Exception ex)
 				{
-					Log("preempt siege event failed party=" + (party.StringId ?? "") + " error=" + ex.Message);
+					Log("preempt siege participation failed party=" + (party.StringId ?? "") + " error=" + ex.Message);
+					return false;
 				}
 			}
 			Settlement behaviorSettlement = GetBlockingSettlementBehaviorTarget(party);
@@ -5060,7 +5594,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			}
 			if (!changed)
 			{
-				return;
+				return true;
 			}
 			string reason = string.Join("、", reasons.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase));
 			if (string.IsNullOrWhiteSpace(reason))
@@ -5071,25 +5605,11 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			NotifyCommandStatus(state, key, GetActorName(state, hero, party) + "放弃" + reason + "，改为执行新的大地图命令。", CommandMessageTone.Progress);
 			LogFact(state, hero, GetActorName(state, hero, party) + "放弃" + reason + "，改为执行新的大地图命令。");
 			Log("preempt_activity actor=" + GetActorLogId(state, hero, party) + " party=" + (party.StringId ?? "") + " reason=" + reason + " command=" + (command.Kind ?? "") + ":" + (command.TargetType ?? "") + ":" + (command.TargetId ?? "") + " phase=" + (phase ?? "") + " " + DescribePartyAi(party));
+			return true;
 		}
 		catch (Exception ex)
 		{
 			Log("preempt blocking activity failed hero=" + (hero?.StringId ?? "") + " party=" + (party?.StringId ?? "") + " error=" + ex.Message);
-		}
-	}
-
-	private static bool IsPreemptableSettlementMapEventForParty(MobileParty party, MapEvent mapEvent)
-	{
-		try
-		{
-			return IsPartyUsable(party)
-				&& mapEvent != null
-				&& !mapEvent.IsFinalized
-				&& (mapEvent.IsRaid || mapEvent.IsSiegeAssault || mapEvent.IsForcingSupplies || mapEvent.IsForcingVolunteers)
-				&& MapEventSideHasMobileParty(mapEvent.AttackerSide, party.StringId);
-		}
-		catch
-		{
 			return false;
 		}
 	}
@@ -5189,35 +5709,6 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		return "当前原版事件";
 	}
 
-	private static void TryFinishPlayerEncounterForMapEvent(MapEvent mapEvent)
-	{
-		try
-		{
-			if (mapEvent == null || PlayerEncounterCompat.GetCurrentMapEventSafe() != mapEvent)
-			{
-				return;
-			}
-			foreach (MethodInfo method in typeof(PlayerEncounter).GetMethods(BindingFlags.Public | BindingFlags.Static).Where(x => string.Equals(x.Name, "Finish", StringComparison.Ordinal)))
-			{
-				ParameterInfo[] parameters = method.GetParameters();
-				if (parameters.Length == 0)
-				{
-					method.Invoke(null, null);
-					return;
-				}
-				if (parameters.Length == 1 && parameters[0].ParameterType == typeof(bool))
-				{
-					method.Invoke(null, new object[] { true });
-					return;
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			Log("finish player encounter before preempt failed error=" + ex.Message);
-		}
-	}
-
 	private static void LeaveArmyIfNeeded(MobileParty party)
 	{
 		try
@@ -5261,6 +5752,11 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 					army.ArmyType = settlement.IsVillage ? Army.ArmyTypes.Raider : Army.ArmyTypes.Besieger;
 					army.AiBehaviorObject = settlement;
 				}
+			}
+			else if (IsFollowCommand(command))
+			{
+				army.ArmyType = Army.ArmyTypes.Patrolling;
+				army.AiBehaviorObject = null;
 			}
 			else
 			{

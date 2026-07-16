@@ -940,11 +940,11 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("4. 开发者选项")]
 	public bool EnablePerformanceMonitor { get; set; } = false;
 
-	[SettingPropertyBool("【性能】延后日结维护", Order = 12, RequireRestart = false, HintText = "开启后，每日结算只登记 AnimusForge 维护任务，记忆总览、王国维护和周报准备会在后续大地图中按预算分批执行，最多每250毫秒运行一次；玩家队伍实际行军时自动暂停，停止后从原进度继续。默认开启。")]
+	[SettingPropertyBool("【性能】延后日结维护", Order = 12, RequireRestart = false, HintText = "开启后，每日结算只登记 AnimusForge 维护任务，记忆总览、王国维护和周报准备会在后续大地图中按单帧预算分批执行。维护会在每个大地图 Tick 推进，不因行军暂停。默认开启。")]
 	[SettingPropertyGroup("4. 开发者选项")]
 	public bool EnableDeferredDailyMaintenance { get; set; } = true;
 
-	[SettingPropertyInteger("【性能】日结维护每帧预算(ms)", 1, 10, "0", Order = 13, RequireRestart = false, HintText = "延后日结维护开启时，每个维护窗口最多用于后台维护的毫秒数；窗口最多每250毫秒运行一次。默认 3；调高会更快完成后台任务但更可能产生帧尖峰。")]
+	[SettingPropertyInteger("【性能】日结维护每帧预算(ms)", 1, 10, "0", Order = 13, RequireRestart = false, HintText = "延后日结维护开启时，只有存在待办才按每帧预算推进；不会因玩家行军暂停。默认 3；调高会更快完成后台任务但更可能产生帧尖峰。")]
 	[SettingPropertyGroup("4. 开发者选项")]
 	public int DailyMaintenanceFrameBudgetMs { get; set; } = 3;
 

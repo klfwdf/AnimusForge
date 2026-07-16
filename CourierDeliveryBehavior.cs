@@ -1507,12 +1507,6 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		{
 		try
 		{
-			long now = DateTime.UtcNow.Ticks;
-			if (now - _lastCampaignTickUtcTicks < TimeSpan.FromSeconds(CampaignTickThrottleSeconds).Ticks)
-			{
-				return;
-			}
-			_lastCampaignTickUtcTicks = now;
 			if (_npcInitiatedLetterScan != null)
 			{
 				using (PerfProbe.Scope("CourierDelivery.OnCampaignTick.ProcessNpcInitiatedLetterScan"))
@@ -1520,6 +1514,12 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 					ProcessNpcInitiatedLetterScan();
 				}
 			}
+			long now = DateTime.UtcNow.Ticks;
+			if (now - _lastCampaignTickUtcTicks < TimeSpan.FromSeconds(CampaignTickThrottleSeconds).Ticks)
+			{
+				return;
+			}
+			_lastCampaignTickUtcTicks = now;
 			if (!_partyNameplatePatchApplied && !_partyNameplatePatchFailed)
 			{
 				using (PerfProbe.Scope("CourierDelivery.OnCampaignTick.PatchPartyNameplate"))

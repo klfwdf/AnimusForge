@@ -5165,6 +5165,14 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			TryForcePendingReturnToEncounterMenuAfterUnauthorizedMeetingExitIfReady();
 		}
+		try
+		{
+			// This also clears a completed encounter suppression after returning to the map.
+			IsCustomEncounterMenuDisabledForCurrentEncounter();
+		}
+		catch
+		{
+		}
 		if (_pendingPostMissionCleanup)
 		{
 			_pendingPostMissionCleanupDelay -= dt;

@@ -445,11 +445,13 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			{
 				StopFeastHallMusic();
 			}
-			return;
 		}
-		UpdateFeastHallMusic();
-		UpdateFeastMusicianPerformances();
-		UpdateFeastMusicianLayout();
+		else
+		{
+			UpdateFeastHallMusic();
+			UpdateFeastMusicianPerformances();
+			UpdateFeastMusicianLayout();
+		}
 		if (_pendingOpenPlayerGatheringFlow)
 		{
 			Hero governor = _pendingGovernorHero;
