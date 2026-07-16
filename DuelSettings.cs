@@ -1574,7 +1574,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		set => _customPolicyEvaluatorPrompt = NormalizeCustomPolicyEvaluatorPromptText(value);
 	}
 
-	[SettingPropertyButton("玩家政策评判提示词（全国/地方共用）", -1, true, "", Content = "打开编辑器", Order = 0, RequireRestart = false, HintText = "全国政策与地方政策共用这一份提示词。决定 AI 如何理解玩家发布的政策，并评估民众反应、持续影响和执行成本；地方作用域、所选封地实时数值及稳定度为 0 等强制规则会由代码动态追加。")]
+	[SettingPropertyButton("玩家政策评判提示词（全国/地方共用）", -1, true, "", Content = "打开编辑器", Order = 0, RequireRestart = false, HintText = "全国政策与地方政策共用这一份可编辑文案，只定制评判侧重点、社会视角和反馈文风。可落地指标、数值尺度、每日结算、持续天数、成本、作用目标和输出格式均由模组内置。")]
 	[SettingPropertyGroup("16. 政策系统", GroupOrder = 0)]
 	public Action EditCustomPolicyEvaluatorPrompt { get; set; }
 

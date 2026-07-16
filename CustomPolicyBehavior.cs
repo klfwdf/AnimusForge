@@ -1812,31 +1812,50 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		behavior.OpenRecordHistoryPopup(onClose);
 	}
 
-	internal static void OpenLocalPolicyFromTerminal(Action onCancel = null)
+	internal static void OpenLocalPolicyManagementFromTerminal(Action onClose = null)
 	{
 		CustomPolicyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<CustomPolicyBehavior>();
 		if (behavior == null)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("地方政策功能尚未初始化。", Colors.Red));
+			InformationManager.ShowInquiry(new InquiryData("地方政策", "地方政策功能尚未初始化。", true, false, "返回", "", onClose, null), pauseGameActiveState: true);
 			return;
 		}
-		behavior.OpenLocalPolicyComposePopup(onCancel);
+		behavior.OpenLocalPolicyManagementPopup(onClose);
 	}
 
-	internal static void OpenLocalPolicyRecordsFromTerminal(Action onClose = null)
+	private void OpenLocalPolicyManagementPopup(Action onClose)
 	{
-		CustomPolicyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<CustomPolicyBehavior>();
-		if (behavior == null)
+		bool hasFief = GetPlayerOwnedLocalPolicyFiefs().Count > 0;
+		List<InquiryElement> items = new List<InquiryElement>
 		{
-			InformationManager.ShowInquiry(new InquiryData("地方政策记录", "地方政策功能尚未初始化。", true, false, "返回", "", onClose, null), pauseGameActiveState: true);
-			return;
-		}
-		behavior.OpenLocalPolicyHistoryPopup(onClose);
-	}
-
-	internal static bool HasPlayerOwnedLocalPolicyFiefForExternal()
-	{
-		return GetPlayerOwnedLocalPolicyFiefs().Count > 0;
+			new InquiryElement("publish_local", "发布地方政策", null, isEnabled: hasFief, hasFief ? "选择玩家家族拥有的城镇或城堡作为作用封地。" : "玩家家族当前没有城镇或城堡，无法发布。"),
+			new InquiryElement("local_records", "地方政策记录", null, isEnabled: true, "查看政策状态、目标、剩余天数、效果、费用和续约历史，并可续约或废除。")
+		};
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData("地方政策", "地方政策由 LLM 独立评议，成功后立即结算并在所选封地范围生效。", items, isExitShown: true, 1, 1, "确定", "返回", delegate(List<InquiryElement> selected)
+		{
+			if (selected == null || selected.Count == 0)
+			{
+				onClose?.Invoke();
+				return;
+			}
+			string id = selected[0].Identifier as string;
+			if (string.Equals(id, "publish_local", StringComparison.Ordinal))
+			{
+				OpenLocalPolicyComposePopup(() => OpenLocalPolicyManagementPopup(onClose));
+			}
+			else if (string.Equals(id, "local_records", StringComparison.Ordinal))
+			{
+				OpenLocalPolicyHistoryPopup(() => OpenLocalPolicyManagementPopup(onClose));
+			}
+			else
+			{
+				onClose?.Invoke();
+			}
+		}, delegate(List<InquiryElement> _)
+		{
+			onClose?.Invoke();
+		}, "", isSeachAvailable: true);
+		MBInformationManager.ShowMultiSelectionInquiry(data, pauseGameActiveState: true);
 	}
 
 	private void OpenLocalPolicyComposePopup(Action onCancel)
