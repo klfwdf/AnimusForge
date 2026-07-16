@@ -71,6 +71,10 @@ public static class SiegePostprocessTagNormalizer
                 && SiegeCastleActionTagCatalog.TryGetCanonicalTag(kind, out string canonicalTag))
             {
                 Add(canonicalTag);
+                // Castle actions are also single-choice per reply. Runtime role gates normally
+                // expose only compatible tags, but malformed model output must never stack a
+                // process/terminal action or rely on the live router to reject the whole reply.
+                break;
             }
         }
 

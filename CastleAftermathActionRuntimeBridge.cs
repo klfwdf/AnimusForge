@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using AnimusForge.SiegeAftermathIntervention;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.Core;
@@ -124,26 +125,126 @@ internal static class CastleAftermathActionRuntimeBridge
 		}
 	}
 
-	internal static CastleAftermathActionApplyResult SlaughterSelectedRegularPrisoners()
+	internal static CastleAftermathActionApplyResult BeginSlaughterOfSelectedRegularPrisoners()
+	{
+		int selected = CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount;
+		if (selected <= 0)
+		{
+			return CastleAftermathActionApplyResult.Completed(0, 0, SiegeCastlePrisonerDispositionProfile.NoMatchingRegularPrisonersReason);
+		}
+		try
+		{
+			int started = CastleAftermathRuntimeBridge.BeginRegularPrisonerSlaughter();
+			return started > 0
+				? CastleAftermathActionApplyResult.Completed(started, selected, "slaughter_started")
+				: CastleAftermathActionApplyResult.Failed("slaughter_scene_agents_unavailable", selected);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CastleAftermath", "Begin real prisoner slaughter failed: " + ex);
+			return CastleAftermathActionApplyResult.Failed(
+				SiegeCastlePrisonerDispositionProfile.ExceptionReasonPrefix + ex.GetType().Name,
+				selected);
+		}
+	}
+
+	internal static CastleAftermathActionApplyResult ReleaseSelectedRegularPrisoners()
+	{
+		return RemoveSelectedRegularPrisoners("castle_release_prisoners", grantRansomGold: false);
+	}
+
+	internal static CastleAftermathActionApplyResult SellSelectedRegularPrisoners()
+	{
+		return RemoveSelectedRegularPrisoners("castle_sell_prisoners", grantRansomGold: true);
+	}
+
+	internal static CastleAftermathActionApplyResult AssignSelectedRegularPrisonersToService(string source)
+	{
+		return RemoveSelectedRegularPrisoners(source ?? "castle_prisoner_service", grantRansomGold: false);
+	}
+
+	internal static CastleAftermathActionApplyResult ProvideCareToSelectedRegularPrisoners()
+	{
+		TroopRoster selected = CastleAftermathRuntimeBridge.GetSelectedPrisonerRosterSnapshot();
+		ItemRoster items = PartyBase.MainParty?.ItemRoster;
+		int affected = CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount;
+		if (selected == null || items == null || affected <= 0)
+		{
+			return CastleAftermathActionApplyResult.Failed("care_roster_unavailable", affected);
+		}
+
+		int burden = selected.GetTroopRoster()
+			.Where(element => element.Character != null && !element.Character.IsHero && element.Number > 0)
+			.Sum(element => Math.Max(1, element.Character.Tier + 1) * element.Number);
+		int requiredFood = Math.Max(1, (int)Math.Ceiling(burden / 12d));
+		int availableFood = 0;
+		for (int i = 0; i < items.Count; i++)
+		{
+			ItemRosterElement element = items.GetElementCopyAtIndex(i);
+			if (element.EquipmentElement.Item?.IsFood == true)
+			{
+				availableFood += Math.Max(0, element.Amount);
+			}
+		}
+		if (availableFood < requiredFood)
+		{
+			return CastleAftermathActionApplyResult.Failed("care_supplies_insufficient", affected);
+		}
+
+		int remaining = requiredFood;
+		foreach (ItemRosterElement element in items.ToList())
+		{
+			if (remaining <= 0)
+			{
+				break;
+			}
+			if (element.EquipmentElement.Item?.IsFood != true || element.Amount <= 0)
+			{
+				continue;
+			}
+			int consume = Math.Min(remaining, element.Amount);
+			items.AddToCounts(element.EquipmentElement, -consume);
+			remaining -= consume;
+		}
+		Logger.Log("CastleAftermath", "Provided care supplies to selected regular prisoners. Affected="
+			+ affected + ", Food=" + requiredFood);
+		return CastleAftermathActionApplyResult.Completed(affected, affected, "care_supplies_applied");
+	}
+
+	internal static CastleAftermathActionApplyResult ProvideCareToCapturedLord()
+	{
+		ItemRoster items = PartyBase.MainParty?.ItemRoster;
+		if (items == null)
+		{
+			return CastleAftermathActionApplyResult.Failed("care_roster_unavailable", 0);
+		}
+		for (int i = 0; i < items.Count; i++)
+		{
+			ItemRosterElement element = items.GetElementCopyAtIndex(i);
+			if (element.Amount <= 0 || element.EquipmentElement.Item?.IsFood != true)
+			{
+				continue;
+			}
+			items.AddToCounts(element.EquipmentElement, -1);
+			return CastleAftermathActionApplyResult.Completed(1, 0, "care_supplies_applied");
+		}
+		return CastleAftermathActionApplyResult.Failed("care_supplies_insufficient", 0);
+	}
+
+	private static CastleAftermathActionApplyResult RemoveSelectedRegularPrisoners(string source, bool grantRansomGold)
 	{
 		TroopRoster selected = CastleAftermathRuntimeBridge.GetSelectedPrisonerRosterSnapshot();
 		TroopRoster mainPrisoners = PartyBase.MainParty?.PrisonRoster;
-		if (mainPrisoners == null)
+		if (selected == null || mainPrisoners == null)
 		{
 			return CastleAftermathActionApplyResult.Failed(
 				SiegeCastlePrisonerDispositionProfile.RosterUnavailableReason,
 				CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount);
 		}
-		if (selected == null || CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount <= 0)
-		{
-			return CastleAftermathActionApplyResult.Completed(
-				0,
-				0,
-				SiegeCastlePrisonerDispositionProfile.NoMatchingRegularPrisonersReason);
-		}
 
 		TroopRoster resolved = TroopRoster.CreateDummyTroopRoster();
 		int affected = 0;
+		int gold = 0;
 		try
 		{
 			foreach (TroopRosterElement selectedElement in selected.GetTroopRoster().ToList())
@@ -153,7 +254,6 @@ internal static class CastleAftermathActionRuntimeBridge
 				{
 					continue;
 				}
-
 				int sourceIndex = mainPrisoners.FindIndexOfTroop(character);
 				if (sourceIndex < 0)
 				{
@@ -165,45 +265,37 @@ internal static class CastleAftermathActionRuntimeBridge
 				{
 					continue;
 				}
-
-				int wounded = SiegeCastlePrisonerDispositionProfile.ResolveTransferredWounded(
-					sourceElement.Number,
-					sourceElement.WoundedNumber,
-					number);
-				int xp = SiegeCastlePrisonerDispositionProfile.ResolveTransferredXp(
-					sourceElement.Number,
-					sourceElement.Xp,
-					number);
+				int wounded = SiegeCastlePrisonerDispositionProfile.ResolveTransferredWounded(sourceElement.Number, sourceElement.WoundedNumber, number);
+				int xp = SiegeCastlePrisonerDispositionProfile.ResolveTransferredXp(sourceElement.Number, sourceElement.Xp, number);
 				resolved.AddToCounts(character, number, false, wounded, xp, true, -1);
-				try
+				mainPrisoners.AddToCounts(character, -number, false, -wounded, -xp, true, -1);
+				if (grantRansomGold && Campaign.Current?.Models?.RansomValueCalculationModel != null)
 				{
-					mainPrisoners.AddToCounts(character, -number, false, -wounded, -xp, true, -1);
-				}
-				catch
-				{
-					resolved.AddToCounts(character, -number, false, -wounded, -xp, true, -1);
-					throw;
+					gold += Math.Max(0, Campaign.Current.Models.RansomValueCalculationModel.PrisonerRansomValue(character, Hero.MainHero)) * number;
 				}
 				affected += number;
 			}
-
-			CastleAftermathRuntimeBridge.RemoveResolvedRegularPrisoners(resolved, "castle_slaughter_prisoners");
+			if (gold > 0 && Hero.MainHero != null)
+			{
+				GiveGoldAction.ApplyBetweenCharacters(null, Hero.MainHero, gold, disableNotification: true);
+			}
+			CastleAftermathRuntimeBridge.RemoveResolvedRegularPrisoners(resolved, source);
 			return CastleAftermathActionApplyResult.Completed(
 				affected,
 				CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount,
-				affected > 0
-					? SiegeCastlePrisonerDispositionProfile.SlaughteredReason
-					: SiegeCastlePrisonerDispositionProfile.NoMatchingRegularPrisonersReason);
+				grantRansomGold ? "sold" : "removed_for_" + source,
+				gold);
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("CastleAftermath", "Slaughter selected regular prisoners failed after affected=" + affected + ": " + ex);
+			Logger.Log("CastleAftermath", "Resolve selected regular prisoners failed. Source=" + source
+				+ ", Affected=" + affected + ", Error=" + ex);
 			if (affected > 0)
 			{
-				CastleAftermathRuntimeBridge.RemoveResolvedRegularPrisoners(resolved, "castle_slaughter_prisoners_partial_error");
+				CastleAftermathRuntimeBridge.RemoveResolvedRegularPrisoners(resolved, source + "_partial_error");
 			}
 			return new CastleAftermathActionApplyResult(
-				succeeded: affected > 0,
+				affected > 0,
 				affected,
 				CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount,
 				SiegeCastlePrisonerDispositionProfile.ExceptionReasonPrefix + ex.GetType().Name);
@@ -213,12 +305,13 @@ internal static class CastleAftermathActionRuntimeBridge
 
 internal sealed class CastleAftermathActionApplyResult
 {
-	internal CastleAftermathActionApplyResult(bool succeeded, int affectedCount, int remainingRegularPrisoners, string reasonCode)
+	internal CastleAftermathActionApplyResult(bool succeeded, int affectedCount, int remainingRegularPrisoners, string reasonCode, int gold = 0)
 	{
 		Succeeded = succeeded;
 		AffectedCount = Math.Max(0, affectedCount);
 		RemainingRegularPrisoners = Math.Max(0, remainingRegularPrisoners);
 		ReasonCode = reasonCode ?? string.Empty;
+		Gold = Math.Max(0, gold);
 	}
 
 	internal bool Succeeded { get; }
@@ -229,9 +322,11 @@ internal sealed class CastleAftermathActionApplyResult
 
 	internal string ReasonCode { get; }
 
-	internal static CastleAftermathActionApplyResult Completed(int affectedCount, int remainingRegularPrisoners, string reasonCode)
+	internal int Gold { get; }
+
+	internal static CastleAftermathActionApplyResult Completed(int affectedCount, int remainingRegularPrisoners, string reasonCode, int gold = 0)
 	{
-		return new CastleAftermathActionApplyResult(true, affectedCount, remainingRegularPrisoners, reasonCode);
+		return new CastleAftermathActionApplyResult(true, affectedCount, remainingRegularPrisoners, reasonCode, gold);
 	}
 
 	internal static CastleAftermathActionApplyResult Failed(string reasonCode, int remainingRegularPrisoners)

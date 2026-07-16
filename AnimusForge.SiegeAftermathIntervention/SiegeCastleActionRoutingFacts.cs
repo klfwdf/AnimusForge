@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace AnimusForge.SiegeAftermathIntervention;
 
 public sealed class SiegeCastleActionRoutingFacts
@@ -10,7 +13,13 @@ public sealed class SiegeCastleActionRoutingFacts
         bool soldierAppeasementRequired,
         bool soldierAppeasementApplied,
         string playerText = null,
-        SiegeCastlePrisonerDispositionKind pendingProposalForSpeaker = SiegeCastlePrisonerDispositionKind.None)
+        SiegeCastlePrisonerDispositionKind pendingProposalForSpeaker = SiegeCastlePrisonerDispositionKind.None,
+        int speakerTrust = SiegeCastlePrisonerTrustProfile.DefaultDefeatedGarrisonTrust,
+        IReadOnlyCollection<SiegeCastleActionKind> appliedActionsForTarget = null,
+        SiegeCastleActionKind terminalActionForTarget = SiegeCastleActionKind.Unknown,
+        bool speakerIsClanLeader = false,
+        bool playerHasKingdom = false,
+        bool playerRulesKingdom = false)
     {
         RawActionText = rawActionText ?? string.Empty;
         SpeakerRole = speakerRole;
@@ -20,6 +29,12 @@ public sealed class SiegeCastleActionRoutingFacts
         SoldierAppeasementApplied = soldierAppeasementApplied;
         PlayerText = playerText ?? string.Empty;
         PendingProposalForSpeaker = pendingProposalForSpeaker;
+        SpeakerTrust = SiegeCastlePrisonerTrustProfile.Clamp(speakerTrust);
+        AppliedActionsForTarget = appliedActionsForTarget ?? Array.Empty<SiegeCastleActionKind>();
+        TerminalActionForTarget = terminalActionForTarget;
+        SpeakerIsClanLeader = speakerIsClanLeader;
+        PlayerHasKingdom = playerHasKingdom;
+        PlayerRulesKingdom = playerRulesKingdom;
     }
 
     public string RawActionText { get; }
@@ -37,4 +52,28 @@ public sealed class SiegeCastleActionRoutingFacts
     public string PlayerText { get; }
 
     public SiegeCastlePrisonerDispositionKind PendingProposalForSpeaker { get; }
+
+    public int SpeakerTrust { get; }
+
+    public IReadOnlyCollection<SiegeCastleActionKind> AppliedActionsForTarget { get; }
+
+    public SiegeCastleActionKind TerminalActionForTarget { get; }
+
+    public bool SpeakerIsClanLeader { get; }
+
+    public bool PlayerHasKingdom { get; }
+
+    public bool PlayerRulesKingdom { get; }
+
+    public bool IsActionAlreadyApplied(SiegeCastleActionKind action)
+    {
+        foreach (SiegeCastleActionKind applied in AppliedActionsForTarget)
+        {
+            if (applied == action)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }

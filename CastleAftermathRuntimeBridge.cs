@@ -103,6 +103,49 @@ internal static class CastleAftermathRuntimeBridge
 		Logger.Log("CastleAftermath", "Stored castle prisoner selection. Count=" + SelectedPrisonerCount);
 	}
 
+	internal static bool ContainsSelectedLord(Hero hero)
+	{
+		return hero?.CharacterObject != null
+			&& _selectedPrisonerRoster?.FindIndexOfTroop(hero.CharacterObject) >= 0;
+	}
+
+	internal static bool ResolveLordPrisoner(Hero hero, string source)
+	{
+		if (hero?.CharacterObject == null)
+		{
+			return false;
+		}
+		bool removedFromSelection = false;
+		if (_selectedPrisonerRoster != null)
+		{
+			int index = _selectedPrisonerRoster.FindIndexOfTroop(hero.CharacterObject);
+			if (index >= 0)
+			{
+				_selectedPrisonerRoster.AddToCounts(hero.CharacterObject, -1, false, 0, 0, true, -1);
+				removedFromSelection = true;
+				if (_selectedPrisonerRoster.TotalManCount <= 0)
+				{
+					_selectedPrisonerRoster = null;
+				}
+			}
+		}
+		int removedAgents = 0;
+		try
+		{
+			removedAgents = Mission.Current?.GetMissionBehavior<CastleAftermathPrisonerCommandMissionBehavior>()
+				?.ResolveLordPrisoner(hero, source) ?? 0;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CastleAftermath", "Resolve lord prisoner scene agent failed. Hero="
+				+ (hero.StringId ?? "N/A") + ", Error=" + ex.Message);
+		}
+		Logger.Log("CastleAftermath", "Resolved castle lord prisoner. Hero=" + (hero.StringId ?? "N/A")
+			+ ", SelectionRemoved=" + removedFromSelection + ", SceneAgentsRemoved=" + removedAgents
+			+ ", Source=" + (source ?? "N/A"));
+		return removedFromSelection || removedAgents > 0;
+	}
+
 	internal static void RemoveResolvedRegularPrisoners(TroopRoster resolvedRoster, string source)
 	{
 		if (_selectedPrisonerRoster == null || resolvedRoster == null)
@@ -156,6 +199,47 @@ internal static class CastleAftermathRuntimeBridge
 		}
 		Logger.Log("CastleAftermath", "Removed resolved regular prisoners from castle selection. Remaining="
 			+ SelectedRegularPrisonerCount + ", Source=" + (source ?? "N/A"));
+	}
+
+	internal static int BeginRegularPrisonerSlaughter()
+	{
+		try
+		{
+			return Mission.Current?.GetMissionBehavior<CastleAftermathPrisonerCommandMissionBehavior>()
+				?.BeginRegularPrisonerSlaughter() ?? 0;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CastleAftermath", "Begin regular prisoner slaughter bridge failed: " + ex);
+			return 0;
+		}
+	}
+
+	internal static bool RemoveKilledRegularPrisonerFromSelection(CharacterObject character, string source)
+	{
+		if (_selectedPrisonerRoster == null || character == null || character.IsHero)
+		{
+			return false;
+		}
+		int index = _selectedPrisonerRoster.FindIndexOfTroop(character);
+		if (index < 0)
+		{
+			return false;
+		}
+		TroopRosterElement element = _selectedPrisonerRoster.GetElementCopyAtIndex(index);
+		if (element.Number <= 0)
+		{
+			return false;
+		}
+		_selectedPrisonerRoster.AddToCounts(character, -1, false, 0, 0, true, -1);
+		if (_selectedPrisonerRoster.TotalManCount <= 0)
+		{
+			_selectedPrisonerRoster = null;
+		}
+		Logger.Log("CastleAftermath", "Removed actually killed regular prisoner from castle selection. Troop="
+			+ (character.StringId ?? "N/A") + ", Remaining=" + SelectedRegularPrisonerCount
+			+ ", Source=" + (source ?? "N/A"));
+		return true;
 	}
 
 	internal static bool TryOpenRosterSelection(
@@ -433,6 +517,7 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 	private readonly Dictionary<Agent, bool> _agents = new Dictionary<Agent, bool>();
 	private readonly Dictionary<Formation, FormationMovementState> _movementStates = new Dictionary<Formation, FormationMovementState>();
 	private readonly HashSet<Agent> _civilianActionSetApplied = new HashSet<Agent>();
+	private readonly HashSet<Agent> _slaughterTargets = new HashSet<Agent>();
 
 	private bool _spawnCompleted;
 	private bool _movementInitialized;
@@ -442,6 +527,8 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 	private float _nextMovePollTime;
 	private int _spawnedRegulars;
 	private int _spawnedLords;
+	private bool _slaughterActive;
+	private Team _slaughterEnemyTeam;
 
 	internal CastleAftermathPrisonerCommandMissionBehavior(int selectedCount)
 	{
@@ -471,6 +558,70 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 		_spawnCompleted = true;
 		Logger.Log("CastleAftermath", "Troop-inspection prisoner spawn callback completed. Selected="
 			+ selectedCount + ", Regular=" + _spawnedRegulars + ", Lords=" + _spawnedLords);
+	}
+
+	internal int BeginRegularPrisonerSlaughter()
+	{
+		Mission mission = base.Mission;
+		Team playerTeam = mission?.PlayerTeam ?? Agent.Main?.Team;
+		if (_slaughterActive || mission == null || playerTeam == null)
+		{
+			return 0;
+		}
+		_slaughterEnemyTeam = EnsureSlaughterEnemyTeam(mission, playerTeam);
+		if (_slaughterEnemyTeam == null || _slaughterEnemyTeam == playerTeam)
+		{
+			return 0;
+		}
+
+		Formation enemyFormation = _slaughterEnemyTeam.GetFormation(FormationClass.Infantry);
+		foreach (KeyValuePair<Agent, bool> pair in _agents.ToList())
+		{
+			Agent agent = pair.Key;
+			if (pair.Value || agent == null || !agent.IsActive())
+			{
+				continue;
+			}
+			try
+			{
+				agent.SetActionChannel(0, ActionIndexCache.act_none, true, (AnimFlags)0UL, 0f, 1f, -0.2f, 0.4f, 0f, false, -0.2f, 0, true);
+				agent.SetMortalityState(Agent.MortalityState.Mortal);
+				agent.SetMaximumSpeedLimit(10f, false);
+				agent.SetIsAIPaused(isPaused: false);
+				agent.DisableScriptedMovement();
+				agent.Controller = AgentControllerType.AI;
+				agent.SetTeam(_slaughterEnemyTeam, sync: true);
+				agent.Formation = enemyFormation;
+				agent.SetWatchState(Agent.WatchState.Alarmed);
+				agent.SetShouldCatchUpWithFormation(true);
+				agent.UpdateFormationOrders();
+				_slaughterTargets.Add(agent);
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("CastleAftermath", "Prepare slaughter target failed. Agent=" + agent.Index + ", Error=" + ex.Message);
+			}
+		}
+
+		if (_slaughterTargets.Count <= 0)
+		{
+			return 0;
+		}
+		_slaughterActive = true;
+		try
+		{
+			enemyFormation?.SetMovementOrder(MovementOrder.MovementOrderCharge);
+			Formation alliedFormation = playerTeam.GetFormation((FormationClass)SiegeCastleRosterSelectionProfile.AlliedFormationClassIndex);
+			alliedFormation?.SetMovementOrder(MovementOrder.MovementOrderCharge);
+			alliedFormation?.SetFiringOrder(FiringOrder.FiringOrderFireAtWill);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CastleAftermath", "Issue castle slaughter charge order failed: " + ex.Message);
+		}
+		Logger.Log("CastleAftermath", "Started real castle prisoner slaughter. Targets=" + _slaughterTargets.Count
+			+ ", AlliedFormation=" + SiegeCastleRosterSelectionProfile.AlliedFormationClassIndex);
+		return _slaughterTargets.Count;
 	}
 
 	internal void ResolveRegularPrisoners(TroopRoster resolvedRoster, string source)
@@ -513,6 +664,38 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 			+ ", Source=" + (source ?? "N/A"));
 	}
 
+	internal int ResolveLordPrisoner(Hero hero, string source)
+	{
+		if (hero == null)
+		{
+			return 0;
+		}
+		int resolved = 0;
+		foreach (KeyValuePair<Agent, bool> pair in _agents.ToList())
+		{
+			Agent agent = pair.Key;
+			Hero agentHero = (agent?.Character as CharacterObject)?.HeroObject;
+			if (!pair.Value || agent == null || agentHero != hero)
+			{
+				continue;
+			}
+			_agents.Remove(agent);
+			_civilianActionSetApplied.Remove(agent);
+			_slaughterTargets.Remove(agent);
+			CastleAftermathRuntimeBridge.UnregisterPrisonerAgent(agent);
+			try
+			{
+				agent.Formation = null;
+				agent.FadeOut(hideInstantly: false, hideMount: true);
+			}
+			catch { }
+			resolved++;
+		}
+		Logger.Log("CastleAftermath", "Resolved castle lord scene agents. Hero=" + (hero.StringId ?? "N/A")
+			+ ", Count=" + resolved + ", Source=" + (source ?? "N/A"));
+		return resolved;
+	}
+
 	internal void SharedCleanup(string reason)
 	{
 		Cleanup("shared_" + (reason ?? "unknown"));
@@ -551,6 +734,29 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 			_nextPoseRefreshTime = now + PoseRefreshSeconds;
 			RefreshStationaryPrisonerPoses();
 		}
+	}
+
+	public override void OnAgentRemoved(Agent affectedAgent, Agent affectorAgent, AgentState agentState, KillingBlow killingBlow)
+	{
+		base.OnAgentRemoved(affectedAgent, affectorAgent, agentState, killingBlow);
+		if (affectedAgent == null || !_slaughterTargets.Remove(affectedAgent))
+		{
+			return;
+		}
+		_agents.Remove(affectedAgent);
+		_civilianActionSetApplied.Remove(affectedAgent);
+		CastleAftermathRuntimeBridge.UnregisterPrisonerAgent(affectedAgent);
+		CharacterObject character = (affectedAgent.Origin as PrisonerAgentOrigin)?.Troop as CharacterObject
+			?? affectedAgent.Character as CharacterObject;
+		bool actuallyKilled = agentState == AgentState.Killed
+			&& CastleAftermathRuntimeBridge.RemoveKilledRegularPrisonerFromSelection(character, "castle_slaughter_real_kill");
+		if (actuallyKilled)
+		{
+			SiegeAiInterventionBehavior.NotifyCastleRegularPrisonerKilledForExternal(character, affectorAgent);
+		}
+		Logger.Log("CastleAftermath", "Castle slaughter target removed. Agent=" + affectedAgent.Index
+			+ ", State=" + agentState + ", CountedKill=" + actuallyKilled
+			+ ", RemainingTargets=" + _slaughterTargets.Count);
 	}
 
 	public override void OnRemoveBehavior()
@@ -711,7 +917,7 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 	{
 		foreach (Agent agent in _agents.Keys.ToList())
 		{
-			if (agent == null || !agent.IsActive())
+			if (agent == null || !agent.IsActive() || _slaughterTargets.Contains(agent))
 			{
 				continue;
 			}
@@ -727,7 +933,7 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 
 	private void ApplyPrisonerPose(Agent agent)
 	{
-		if (agent == null || !agent.IsActive())
+		if (agent == null || !agent.IsActive() || _slaughterTargets.Contains(agent))
 		{
 			return;
 		}
@@ -801,6 +1007,36 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 		_agents.Clear();
 		_movementStates.Clear();
 		_civilianActionSetApplied.Clear();
+		_slaughterTargets.Clear();
+		_slaughterEnemyTeam = null;
+		_slaughterActive = false;
 		CastleAftermathRuntimeBridge.ClearMissionAgents(reason);
+	}
+
+	private static Team EnsureSlaughterEnemyTeam(Mission mission, Team playerTeam)
+	{
+		try
+		{
+			Team enemy = mission.PlayerEnemyTeam;
+			if (enemy != null && enemy != playerTeam)
+			{
+				return enemy;
+			}
+			BattleSideEnum side = playerTeam.Side == BattleSideEnum.Defender
+				? BattleSideEnum.Attacker
+				: BattleSideEnum.Defender;
+			return mission.Teams.Add(
+				side,
+				0xFF7A2020u,
+				0xFF2A0808u,
+				null,
+				isPlayerGeneral: false,
+				isPlayerSergeant: false);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CastleAftermath", "Create castle slaughter enemy team failed: " + ex.Message);
+			return null;
+		}
 	}
 }

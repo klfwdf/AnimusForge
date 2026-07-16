@@ -16,7 +16,13 @@ public sealed class SiegeCastleCompletedInterventionSummaryFacts
         int retainedLordPrisoners,
         bool soldierAppeasementRequired,
         bool soldierAppeasementApplied,
-        bool soldierMoralePenaltyApplied)
+        bool soldierMoralePenaltyApplied,
+        SiegeCastleActionKind regularTerminalAction = SiegeCastleActionKind.Unknown,
+        int terminalAffectedRegularPrisoners = 0,
+        int terminalGold = 0,
+        bool treatedRegularPrisoners = false,
+        bool receivedRegularArmaments = false,
+        string lordOutcomeSummary = null)
     {
         SettlementName = settlementName;
         RecruitedRegularPrisoners = Math.Max(0, recruitedRegularPrisoners);
@@ -26,6 +32,12 @@ public sealed class SiegeCastleCompletedInterventionSummaryFacts
         SoldierAppeasementRequired = soldierAppeasementRequired;
         SoldierAppeasementApplied = soldierAppeasementApplied;
         SoldierMoralePenaltyApplied = soldierMoralePenaltyApplied;
+        RegularTerminalAction = regularTerminalAction;
+        TerminalAffectedRegularPrisoners = Math.Max(0, terminalAffectedRegularPrisoners);
+        TerminalGold = Math.Max(0, terminalGold);
+        TreatedRegularPrisoners = treatedRegularPrisoners;
+        ReceivedRegularArmaments = receivedRegularArmaments;
+        LordOutcomeSummary = lordOutcomeSummary ?? string.Empty;
     }
 
     public string SettlementName { get; }
@@ -43,4 +55,16 @@ public sealed class SiegeCastleCompletedInterventionSummaryFacts
     public bool SoldierAppeasementApplied { get; }
 
     public bool SoldierMoralePenaltyApplied { get; }
+
+    public SiegeCastleActionKind RegularTerminalAction { get; }
+
+    public int TerminalAffectedRegularPrisoners { get; }
+
+    public int TerminalGold { get; }
+
+    public bool TreatedRegularPrisoners { get; }
+
+    public bool ReceivedRegularArmaments { get; }
+
+    public string LordOutcomeSummary { get; }
 }

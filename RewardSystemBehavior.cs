@@ -6718,6 +6718,41 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
+	/// <summary>
+	/// Thin external bridge used by castle GCCZ after its independent policy has selected
+	/// the clan-leader branch. Normal AF recruitment rules and callers are unchanged.
+	/// </summary>
+	public bool TryApplyClanLeaderJoinPlayerKingdomForExternal(Hero joiningLeader, out string statusText)
+	{
+		statusText = "";
+		try
+		{
+			Clan playerClan = Clan.PlayerClan;
+			Kingdom playerKingdom = playerClan?.Kingdom;
+			if (joiningLeader == null || joiningLeader.Clan?.Leader != joiningLeader)
+			{
+				statusText = "执行失败：只有被招揽家族的现任族长才能代表全族归附。";
+				return false;
+			}
+			if (playerKingdom == null || playerKingdom.IsEliminated)
+			{
+				statusText = "执行失败：玩家当前没有可接纳该家族的有效王国。";
+				return false;
+			}
+			if (playerKingdom.Leader != Hero.MainHero && playerKingdom.RulingClan != playerClan)
+			{
+				statusText = "执行失败：玩家不是所属王国的统治者，不能在城堡现场直接批准全族归附。";
+				return false;
+			}
+			return TryApplyClanJoinKingdomAction(joiningLeader, joiningLeader.Clan, playerKingdom, out statusText);
+		}
+		catch (Exception ex)
+		{
+			statusText = "执行失败（族长归附异常）：" + ex.Message;
+			return false;
+		}
+	}
+
 	private static bool TryApplyClanJoinKingdomAction(Hero giver, Clan targetClan, Kingdom targetKingdom, out string statusText)
 	{
 		statusText = "";

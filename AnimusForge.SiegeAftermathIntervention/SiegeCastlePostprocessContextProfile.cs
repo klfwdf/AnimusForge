@@ -31,6 +31,10 @@ public static class SiegeCastlePostprocessContextProfile
             .Append(facts.SoldierAppeasementApplied ? "是" : "否")
             .Append("；本说话者待确认提议=")
             .Append(SiegeCastlePrisonerDispositionKindProfile.Describe(facts.PendingProposalForSpeaker))
+            .Append("；本说话者俘虏信任=")
+            .Append(facts.SpeakerTrust)
+            .Append("；目标最终处置=")
+            .Append(facts.TerminalActionForTarget == SiegeCastleActionKind.Unknown ? "未结算" : facts.TerminalActionForTarget.ToString())
             .Append("；玩家本轮授权判定=")
             .Append(authorization.IsAuthorized
                 ? SiegeCastlePrisonerDispositionKindProfile.Describe(authorization.Disposition)
@@ -40,6 +44,23 @@ public static class SiegeCastlePostprocessContextProfile
                 ? "已明确安抚"
                 : "未满足（" + appeasementAuthorization.ReasonCode + "）")
             .Append("。士兵主动提出收编或屠戮时只能输出对应提议标签，提议标签只记录待确认状态，绝不能直接结算。只有玩家本轮明确命令，或明确同意本说话者此前同类提议后，才可输出收编/屠戮结算标签。安兵也必须有玩家本轮明确安抚意图，不能只凭士兵表示服从结算。闲聊、旁听、转述或领主回复不得触发普通战俘处置。一次回复最多输出一个城堡处置标签。");
+
+        if (facts.SpeakerRole == SiegeCastleActionSpeakerRole.CapturedLord)
+        {
+            SiegeCastleLordRecruitmentBranch branch = SiegeCastleLordRecruitmentBranchProfile.Resolve(
+                facts.SpeakerIsClanLeader,
+                facts.PlayerHasKingdom,
+                facts.PlayerRulesKingdom,
+                facts.PlayerText);
+            sb.Append("【领主收编分支】是否族长=").Append(facts.SpeakerIsClanLeader ? "是" : "否")
+                .Append("；玩家已有王国=").Append(facts.PlayerHasKingdom ? "是" : "否")
+                .Append("；玩家为统治者=").Append(facts.PlayerRulesKingdom ? "是" : "否")
+                .Append("；本轮可执行分支=").Append(SiegeCastleLordRecruitmentBranchProfile.Describe(branch)).Append("。");
+            if (branch == SiegeCastleLordRecruitmentBranch.Unknown)
+            {
+                sb.Append("非族长的引见族长与成为玩家同伴尚未明确二选一，禁止输出领主收编标签。");
+            }
+        }
 
         if (facts.SpeakerCultureMatchesCastle)
         {
@@ -63,7 +84,12 @@ public sealed class SiegeCastlePostprocessContextFacts
         bool soldierAppeasementApplied,
         bool speakerCultureMatchesCastle,
         string playerText = null,
-        SiegeCastlePrisonerDispositionKind pendingProposalForSpeaker = SiegeCastlePrisonerDispositionKind.None)
+        SiegeCastlePrisonerDispositionKind pendingProposalForSpeaker = SiegeCastlePrisonerDispositionKind.None,
+        int speakerTrust = SiegeCastlePrisonerTrustProfile.DefaultDefeatedGarrisonTrust,
+        SiegeCastleActionKind terminalActionForTarget = SiegeCastleActionKind.Unknown,
+        bool speakerIsClanLeader = false,
+        bool playerHasKingdom = false,
+        bool playerRulesKingdom = false)
     {
         CastleName = castleName ?? string.Empty;
         SpeakerRole = speakerRole;
@@ -76,6 +102,11 @@ public sealed class SiegeCastlePostprocessContextFacts
         SpeakerCultureMatchesCastle = speakerCultureMatchesCastle;
         PlayerText = playerText ?? string.Empty;
         PendingProposalForSpeaker = pendingProposalForSpeaker;
+        SpeakerTrust = SiegeCastlePrisonerTrustProfile.Clamp(speakerTrust);
+        TerminalActionForTarget = terminalActionForTarget;
+        SpeakerIsClanLeader = speakerIsClanLeader;
+        PlayerHasKingdom = playerHasKingdom;
+        PlayerRulesKingdom = playerRulesKingdom;
     }
 
     public static SiegeCastlePostprocessContextFacts Empty => new SiegeCastlePostprocessContextFacts(
@@ -112,6 +143,16 @@ public sealed class SiegeCastlePostprocessContextFacts
     public string PlayerText { get; }
 
     public SiegeCastlePrisonerDispositionKind PendingProposalForSpeaker { get; }
+
+    public int SpeakerTrust { get; }
+
+    public SiegeCastleActionKind TerminalActionForTarget { get; }
+
+    public bool SpeakerIsClanLeader { get; }
+
+    public bool PlayerHasKingdom { get; }
+
+    public bool PlayerRulesKingdom { get; }
 
     private static int ClampCount(int value)
     {

@@ -76,8 +76,8 @@ public static class SiegeCastlePrisonerDispositionProfile
         int remainingCount = Math.Max(0, remaining);
         if (slaughteredCount > 0)
         {
-            string message = "【城堡处置】已执行屠戮命令，处决 " + slaughteredCount
-                + " 名普通战俘并从俘虏名册移除；仍有 " + remainingCount
+            string message = "【城堡处置】屠戮命令已造成 " + slaughteredCount
+                + " 名普通战俘在场景内实际死亡，死亡后才从俘虏名册扣除；仍有 " + remainingCount
                 + " 名带入的普通战俘待处置。被俘领主未包含在内。";
             return IsExceptionReason(reasonCode)
                 ? message + " 本次仅部分执行成功，异常详情已写入日志。"
@@ -103,8 +103,8 @@ public static class SiegeCastlePrisonerDispositionProfile
 
     public static string BuildSlaughterMemoryText(int slaughtered, int remaining)
     {
-        return "玩家在攻占城堡后的处置现场下令处决了 " + Math.Max(0, slaughtered)
-            + " 名普通守军战俘，尚余 " + Math.Max(0, remaining)
+        return "玩家在攻占城堡后的处置现场下令屠戮；已有 " + Math.Max(0, slaughtered)
+            + " 名普通守军战俘在场景内实际死亡，尚余 " + Math.Max(0, remaining)
             + " 名带入的普通战俘待处置；该命令不包含被俘领主。";
     }
 

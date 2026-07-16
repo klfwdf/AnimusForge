@@ -1,7 +1,7 @@
 namespace AnimusForge.SiegeAftermathIntervention;
 
 /// <summary>
-/// The two ordinary-prisoner outcomes that may be proposed and later authorized.
+/// The two high-risk ordinary-prisoner outcomes that allied soldiers may propose.
 /// </summary>
 public enum SiegeCastlePrisonerDispositionKind
 {
@@ -17,7 +17,8 @@ public static class SiegeCastlePrisonerDispositionKindProfile
         return action switch
         {
             SiegeCastleActionKind.ProposeRecruitPrisoners => SiegeCastlePrisonerDispositionKind.Recruit,
-            SiegeCastleActionKind.RecruitPrisoners => SiegeCastlePrisonerDispositionKind.Recruit,
+            SiegeCastleActionKind.RecruitPrisonersVoluntary => SiegeCastlePrisonerDispositionKind.Recruit,
+            SiegeCastleActionKind.RecruitPrisonersForced => SiegeCastlePrisonerDispositionKind.Recruit,
             SiegeCastleActionKind.ProposeSlaughterPrisoners => SiegeCastlePrisonerDispositionKind.Slaughter,
             SiegeCastleActionKind.SlaughterPrisoners => SiegeCastlePrisonerDispositionKind.Slaughter,
             _ => SiegeCastlePrisonerDispositionKind.None

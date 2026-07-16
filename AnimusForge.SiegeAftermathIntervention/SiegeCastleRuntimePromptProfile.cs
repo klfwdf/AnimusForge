@@ -32,23 +32,26 @@ public static class SiegeCastleRuntimePromptProfile
 
         if (facts.IsAlliedSoldier)
         {
-            sb.Append("【己方士兵】你服从玩家的现场军令，可以表达疑虑、不满或担忧，但不能抗命、完全反驳玩家或自行处置俘虏。你可以建议收编或屠戮普通战俘，但建议本身绝不代表执行，必须等待玩家明确同意；在玩家授权前不得声称名册已经改变或战俘已经被杀。城堡阶段属于你的实际军心结算仍只围绕玩家收编战俘后的军心不满与安抚；没有明确发生收编时，不要凭空声称士气已经受损。");
+            sb.Append("【己方士兵】你服从玩家的现场军令，可以表达疑虑、不满或担忧，但不能抗命、完全反驳玩家或自行处置俘虏。你可以建议收编或屠戮普通战俘，但建议本身绝不代表执行，必须等待玩家明确同意；在玩家授权前不得声称名册已经改变或战俘已经被杀。己方士兵只有一个正式结算标签：安抚随军士兵。是否产生不满由玩家的具体处置、双方文化、强制程度、善待或虐待情况综合判断；同文化屠戮、强制收编等可能触发，累计离场士气惩罚最多仍为-30，不叠加多个标签。");
             if (facts.PendingProposalForSpeaker != SiegeCastlePrisonerDispositionKind.None)
             {
                 sb.Append(SiegeCastleSoldierProposalProfile.BuildPendingContext(facts.PendingProposalForSpeaker));
             }
             if (facts.SoldierAppeasementRequired && !facts.SoldierAppeasementApplied)
             {
-                sb.Append("当前玩家已经收编了").Append(facts.RecruitedRegularPrisoners)
-                    .Append("名普通战俘，军心确实处于待安抚状态；你可以表达不满、疑虑并要求解释，但最终仍须服从。只有玩家本轮实际给出安抚、补偿、军纪解释或战利安排，并由你直接回应且明确接受时，后处理才可结算城堡安兵；单纯要求继续站岗或服从不算安抚。");
+                sb.Append("当前玩家对普通战俘的处置已经引发军心不满，确实处于待安抚状态；其中已收编普通战俘=")
+                    .Append(facts.RecruitedRegularPrisoners)
+                    .Append("，当前普通战俘最终处置=")
+                    .Append(facts.TerminalActionForTarget == SiegeCastleActionKind.Unknown ? "尚未结算" : facts.TerminalActionForTarget.ToString())
+                    .Append("。你可以表达不满、疑虑并要求解释，但最终仍须服从。只有玩家本轮实际给出安抚、补偿、军纪解释或战利安排，并由你直接回应且明确接受时，后处理才可结算城堡安兵；单纯要求继续站岗或服从不算安抚。");
             }
             else if (facts.SoldierAppeasementApplied)
             {
-                sb.Append("本次收编引发的军心不满已经被玩家在现场安抚，不要再次声称仍待安抚或重复结算。");
+                sb.Append("本次战俘处置引发的军心不满已经被玩家在现场安抚，不要再次声称仍待安抚或重复结算。");
             }
             else
             {
-                sb.Append("当前没有待处理的城堡收编军心事件，不得凭空触发安兵结算。");
+                sb.Append("当前没有待处理的城堡战俘处置军心事件，不得凭空触发安兵结算。");
             }
             if (facts.SpeakerCultureMatchesCastle)
             {
@@ -58,8 +61,48 @@ public static class SiegeCastleRuntimePromptProfile
         else if (facts.IsPrisoner)
         {
             sb.Append(facts.IsLord
-                ? "【被俘领主】你可以愤怒、不甘、傲慢、求饶或谈判，但必须承认自己已被控制。处决目前只保留接口；不要擅自宣布自己已获释、加入玩家或已经被处决。"
-                : "【战俘士兵】你按守城战败、缴械并等待处置的普通守军理解。你可以恐惧、求生、屈服、请求被收编或谈条件，但请求与提议本身绝不代表玩家同意；不能把可指挥编队误认为已经收编，也不能自行宣布屠戮或收编已经执行。只有你直接回应玩家本轮明确授权收编或屠戮时，后处理才可结算普通战俘处置；求饶闲聊、旁听和未获玩家同意的主动提议不能结算。");
+                ? "【被俘领主】你可以愤怒、不甘、傲慢、求饶或谈判，但必须承认自己已被控制。善待与接收军械只针对你本人；收编与处决也只针对你本人，不能代表普通战俘。非族长面对收编谈判时要区分写信引见族长与背叛家族成为同伴；不要擅自宣布已经加入玩家或已经被处决。"
+                : "【战俘士兵】你按守城战败、缴械并等待处置的普通守军理解。你可以恐惧、求生、屈服、请求被收编或谈条件，但请求与提议本身绝不代表玩家同意；不能把可指挥编队误认为已经收编。普通士兵标签按本次带入群体结算：善待和接收军械是可重复对话但单次结算的流程，释放、贩卖、屠戮、自愿/强制收编、30天劳役服刑、自愿/强制担任教官属于互斥最终处置。自愿结算必须由你明确心甘情愿并满足信任门槛；否则只能是强制分支。求饶闲聊、旁听和未获玩家同意的主动提议不能结算。");
+            if (facts.IsLord)
+            {
+                sb.Append("【当前领主政治事实】个人信任=").Append(facts.SpeakerTrust)
+                    .Append("；是否族长=").Append(facts.SpeakerIsClanLeader ? "是" : "否")
+                    .Append("；玩家是否已有王国=").Append(facts.PlayerHasKingdom ? "是" : "否")
+                    .Append("；玩家是否为该王国统治者=").Append(facts.PlayerRulesKingdom ? "是" : "否").Append("。");
+                if (facts.SpeakerIsClanLeader)
+                {
+                    sb.Append(facts.PlayerHasKingdom
+                        ? (facts.PlayerRulesKingdom
+                            ? "若玩家明确招揽，你可以代表家族归附玩家统治的王国；不得把全族归附说成加入玩家家族当同伴。"
+                            : "若玩家明确招揽，你只能请求玩家带你面见其统治者；玩家本人无权在这里直接让全族完成归附。")
+                        : "玩家尚未加入任何王国；若玩家明确招揽，你可以表达支持或拥立玩家为王的政治意向，但不得凭空创建王国或立即转移家族归属。");
+                }
+                else
+                {
+                    sb.Append("你不是族长，不能代表全族归附。玩家必须明确选择：一是由你写信并在1至2天后向族长引见玩家；二是你背叛原家族、成为玩家同伴。未明确二选一时不得输出领主收编标签。");
+                }
+            }
+            else
+            {
+                sb.Append("【当前俘虏信任】数值=").Append(facts.SpeakerTrust)
+                    .Append("；自愿收编门槛=").Append(SiegeCastlePrisonerTrustProfile.VoluntaryRecruitThreshold)
+                    .Append("，自愿劳役门槛=").Append(SiegeCastlePrisonerTrustProfile.VoluntaryLaborThreshold)
+                    .Append("，自愿教官门槛=").Append(SiegeCastlePrisonerTrustProfile.VoluntaryInstructorThreshold)
+                    .Append("。善待会提高信任，接收军械会降低信任；不要把信任不足写成心甘情愿。");
+            }
+            if (facts.TreatedForTarget)
+            {
+                sb.Append("该目标本场已经结算善待，不得重复触发。");
+            }
+            if (facts.ArmamentsReceivedForTarget)
+            {
+                sb.Append("该目标本场已经结算接收军械，不得重复触发。");
+            }
+            if (facts.TerminalActionForTarget != SiegeCastleActionKind.Unknown)
+            {
+                sb.Append("该目标已经进入最终处置：").Append(facts.TerminalActionForTarget)
+                    .Append("；不得再触发其他流程或互斥最终标签。");
+            }
             if (facts.PendingProposalForSpeaker != SiegeCastlePrisonerDispositionKind.None)
             {
                 sb.Append(SiegeCastleSoldierProposalProfile.BuildPendingContext(facts.PendingProposalForSpeaker));
@@ -127,7 +170,14 @@ public sealed class SiegeCastleRuntimePromptFacts
         bool soldierAppeasementRequired = false,
         bool soldierAppeasementApplied = false,
         bool speakerCultureMatchesCastle = false,
-        SiegeCastlePrisonerDispositionKind pendingProposalForSpeaker = SiegeCastlePrisonerDispositionKind.None)
+        SiegeCastlePrisonerDispositionKind pendingProposalForSpeaker = SiegeCastlePrisonerDispositionKind.None,
+        int speakerTrust = SiegeCastlePrisonerTrustProfile.DefaultDefeatedGarrisonTrust,
+        bool treatedForTarget = false,
+        bool armamentsReceivedForTarget = false,
+        SiegeCastleActionKind terminalActionForTarget = SiegeCastleActionKind.Unknown,
+        bool speakerIsClanLeader = false,
+        bool playerHasKingdom = false,
+        bool playerRulesKingdom = false)
     {
         CastleName = castleName ?? string.Empty;
         PlayerName = playerName ?? string.Empty;
@@ -143,6 +193,13 @@ public sealed class SiegeCastleRuntimePromptFacts
         SoldierAppeasementApplied = soldierAppeasementApplied;
         SpeakerCultureMatchesCastle = speakerCultureMatchesCastle;
         PendingProposalForSpeaker = pendingProposalForSpeaker;
+        SpeakerTrust = SiegeCastlePrisonerTrustProfile.Clamp(speakerTrust);
+        TreatedForTarget = treatedForTarget;
+        ArmamentsReceivedForTarget = armamentsReceivedForTarget;
+        TerminalActionForTarget = terminalActionForTarget;
+        SpeakerIsClanLeader = speakerIsClanLeader;
+        PlayerHasKingdom = playerHasKingdom;
+        PlayerRulesKingdom = playerRulesKingdom;
     }
 
     public static SiegeCastleRuntimePromptFacts Empty => new SiegeCastleRuntimePromptFacts(
@@ -188,4 +245,18 @@ public sealed class SiegeCastleRuntimePromptFacts
     public bool SpeakerCultureMatchesCastle { get; }
 
     public SiegeCastlePrisonerDispositionKind PendingProposalForSpeaker { get; }
+
+    public int SpeakerTrust { get; }
+
+    public bool TreatedForTarget { get; }
+
+    public bool ArmamentsReceivedForTarget { get; }
+
+    public SiegeCastleActionKind TerminalActionForTarget { get; }
+
+    public bool SpeakerIsClanLeader { get; }
+
+    public bool PlayerHasKingdom { get; }
+
+    public bool PlayerRulesKingdom { get; }
 }

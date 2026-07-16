@@ -20,18 +20,35 @@ public static class SiegeCastleCompletedInterventionSummaryBuilder
         var sb = new StringBuilder();
         sb.AppendLine(settlementName + " 的攻城后城堡处置已经完成。");
         sb.AppendLine();
-        sb.AppendLine("普通战俘：已收编 " + facts.RecruitedRegularPrisoners
-            + " 人，已处决 " + facts.SlaughteredRegularPrisoners
-            + " 人，带入者中仍有 " + facts.RemainingRegularPrisoners + " 人保持俘虏身份。");
-
-        if (facts.RecruitedRegularPrisoners > 0 || facts.SlaughteredRegularPrisoners > 0)
+        if (facts.TreatedRegularPrisoners || facts.ReceivedRegularArmaments)
         {
-            sb.AppendLine("名册：收编者已转入主队成员名册，处决者已从主队俘虏名册移除；未处置者继续作为俘虏。");
+            sb.Append("普通战俘流程：");
+            if (facts.TreatedRegularPrisoners)
+            {
+                sb.Append("已善待并约束随军士兵不得虐待");
+            }
+            if (facts.TreatedRegularPrisoners && facts.ReceivedRegularArmaments)
+            {
+                sb.Append("；");
+            }
+            if (facts.ReceivedRegularArmaments)
+            {
+                sb.Append("已接收军械且物品直接入包");
+            }
+            sb.AppendLine("。流程标签保留为信任记忆，但不会替代最终处置。");
         }
 
-        sb.AppendLine(facts.RetainedLordPrisoners > 0
-            ? "被俘领主：" + facts.RetainedLordPrisoners + " 人保持俘虏身份；普通战俘的收编与屠戮标签不会结算领主。"
-            : "被俘领主：本次没有带入；领主处置接口仍保持独立且未启用处决结算。");
+        sb.AppendLine(BuildRegularTerminalLine(facts));
+        if (!string.IsNullOrWhiteSpace(facts.LordOutcomeSummary))
+        {
+            sb.AppendLine("被俘领主：" + facts.LordOutcomeSummary.Trim());
+        }
+        else
+        {
+            sb.AppendLine(facts.RetainedLordPrisoners > 0
+                ? "被俘领主：" + facts.RetainedLordPrisoners + " 人保持俘虏身份；普通战俘群体标签不会结算领主。"
+                : "被俘领主：本次没有仍待处置的带入领主；领主处决接口仍按设计延后。 ");
+        }
         sb.AppendLine(BuildMoraleLine(facts));
         sb.AppendLine();
         sb.AppendLine("城堡本身已按默认宽恕完成原版围城结算；该结算不覆盖上述战俘名册与军心后果。");
@@ -39,26 +56,48 @@ public static class SiegeCastleCompletedInterventionSummaryBuilder
         return sb.ToString();
     }
 
+    private static string BuildRegularTerminalLine(SiegeCastleCompletedInterventionSummaryFacts facts)
+    {
+        int affected = facts.TerminalAffectedRegularPrisoners;
+        string outcome = facts.RegularTerminalAction switch
+        {
+            SiegeCastleActionKind.ReleasePrisoners => "已释放 " + affected + " 人",
+            SiegeCastleActionKind.SellPrisoners => "已贩卖 " + affected + " 人并获得 " + facts.TerminalGold + " 金币",
+            SiegeCastleActionKind.RecruitPrisonersVoluntary => "已自愿收编 " + facts.RecruitedRegularPrisoners + " 人",
+            SiegeCastleActionKind.RecruitPrisonersForced => "已强制收编 " + facts.RecruitedRegularPrisoners + " 人",
+            SiegeCastleActionKind.LaborPrisonersVoluntary => "已安排 " + affected + " 人自愿服30天劳役",
+            SiegeCastleActionKind.LaborPrisonersForced => "已强迫 " + affected + " 人服30天劳役",
+            SiegeCastleActionKind.InstructorPrisonersVoluntary => "已安排 " + affected + " 人自愿担任30天教官",
+            SiegeCastleActionKind.InstructorPrisonersForced => "已强迫 " + affected + " 人担任30天教官",
+            SiegeCastleActionKind.SlaughterPrisoners => "场景内实际杀死 " + facts.SlaughteredRegularPrisoners + " 人；未实际死亡者不计入屠戮",
+            _ => facts.RecruitedRegularPrisoners > 0
+                ? "已收编 " + facts.RecruitedRegularPrisoners + " 人"
+                : (facts.SlaughteredRegularPrisoners > 0
+                    ? "场景内实际杀死 " + facts.SlaughteredRegularPrisoners + " 人"
+                    : "没有完成互斥最终处置")
+        };
+        return "普通战俘最终处置：" + outcome + "；带入者中仍有 "
+            + facts.RemainingRegularPrisoners + " 人保持俘虏身份。";
+    }
+
     private static string BuildMoraleLine(SiegeCastleCompletedInterventionSummaryFacts facts)
     {
         if (facts.SoldierMoralePenaltyApplied)
         {
-            return "军心：收编战俘后未在场景内完成安抚，主队士气已降低 "
+            return "军心：战俘处置引发不满且未在场景内完成安抚，主队士气已降低 "
                 + SiegeCastleSoldierReactionProfile.UnappeasedMoralePenalty + "。";
         }
 
         if (facts.SoldierAppeasementRequired && facts.SoldierAppeasementApplied)
         {
-            return "军心：随行士兵已经在场景内接受安抚，本次收编未扣除士气。";
+            return "军心：随行士兵已在场景内接受安抚，本次处置不扣除额外士气。";
         }
 
         if (facts.SoldierAppeasementRequired)
         {
-            return "军心：收编引发的不满尚未完成离场结算。";
+            return "军心：战俘处置引发的不满尚未完成离场结算。";
         }
 
-        return facts.RecruitedRegularPrisoners > 0
-            ? "军心：本次收编时没有可安抚的随行士兵在场，不触发士气扣除。"
-            : "军心：本次未收编普通战俘，不触发安兵与士气扣除。";
+        return "军心：本次处置未形成待安抚事件，不触发额外士气扣除。";
     }
 }
