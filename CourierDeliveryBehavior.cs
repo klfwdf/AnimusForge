@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -65,6 +66,9 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 	private const float NpcDiplomacyLetterGlobalCooldownDays = 5f;
 	private const float NpcDiplomacyLetterSenderCooldownDays = 21f;
 	private const float NpcDiplomacyLetterSendChance = 0.25f;
+	private const int NpcInitiatedLetterScanTargetTicks = 45;
+	private const int NpcInitiatedLetterScanMaxHeroesPerTick = 16;
+	private const double NpcInitiatedLetterScanFrameBudgetMilliseconds = 1.0;
 	private static readonly string[] CourierExcludedRuleIds = new[] { "duel", "meeting_taunt", "lords_hall_access", "scene_mechanism_actions", "encounter_release_player", "noble_deference" };
 
 	private enum CourierStage
@@ -167,6 +171,21 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		public List<NpcInitiatedLetterMotive> Motives = new List<NpcInitiatedLetterMotive>();
 	}
 
+	// Runtime-only: spreads the full Hero roster scan across campaign ticks.
+	private sealed class NpcInitiatedLetterScanState
+	{
+		public DuelSettings Settings;
+		public List<Hero> Heroes = new List<Hero>();
+		public List<NpcInitiatedLetterCandidate> Candidates = new List<NpcInitiatedLetterCandidate>();
+		public float NowDays;
+		public int MinimumBond;
+		public int QuietDays;
+		public int PublicTrustCap;
+		public int BatchSize;
+		public int NextIndex;
+		public long StartedAtUtcTicks;
+	}
+
 	private sealed class NpcInitiatedLetterMotive
 	{
 		public string MotiveType;
@@ -184,6 +203,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		public string Key;
 		public string ItemStringId;
 		public string DisplayName;
+		public string LetterBody;
 		public string TemplateStringId;
 		public uint ObjectId;
 		public string SenderHeroId;
@@ -288,6 +308,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 	private long _nextCourierLetterInventoryRestoreRetryUtcTicks;
 	private float _npcDiplomacyLetterGlobalCooldownUntilDays;
 	private float _nextNpcDiplomacyLetterScanHour;
+	private NpcInitiatedLetterScanState _npcInitiatedLetterScan;
 	private bool _courierReplyWaitTimeLocked;
 	private CampaignTimeControlMode _courierReplyWaitPreviousMode = CampaignTimeControlMode.Stop;
 	private bool _courierReplyWaitPreviousLock;
@@ -364,7 +385,8 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				MotiveFatigueUntilDays = _npcLetterMotiveFatigueUntilDays,
 				LastDeliveredEventKeyBySender = _npcLetterLastDeliveredEventKeyBySender,
 				GlobalCooldownUntilDays = _npcDiplomacyLetterGlobalCooldownUntilDays,
-				NextScanHour = _nextNpcDiplomacyLetterScanHour
+				// The in-progress roster scan is runtime-only; a loaded save retries it cleanly.
+				NextScanHour = _npcInitiatedLetterScan == null ? _nextNpcDiplomacyLetterScanHour : 0f
 			});
 		}
 		dataStore.SyncData(NpcDiplomacyLetterStorageKey, ref npcLetterStorageJson);
@@ -511,6 +533,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		try
 		{
 			_pendingFlow = null;
+			_npcInitiatedLetterScan = null;
 			_lastCampaignTickUtcTicks = 0L;
 			_courierReplyWaitTimeLocked = false;
 			_courierReplyWaitPreviousMode = CampaignTimeControlMode.Stop;
@@ -1432,6 +1455,13 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		{
 		try
 		{
+			if (_npcInitiatedLetterScan != null)
+			{
+				using (PerfProbe.Scope("CourierDelivery.OnCampaignTick.ProcessNpcInitiatedLetterScan"))
+				{
+					ProcessNpcInitiatedLetterScan();
+				}
+			}
 			long now = DateTime.UtcNow.Ticks;
 			if (now - _lastCampaignTickUtcTicks < TimeSpan.FromSeconds(CampaignTickThrottleSeconds).Ticks)
 			{
@@ -1490,6 +1520,10 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 
 	private void TryStartNpcInitiatedLetterScan()
 	{
+		if (_npcInitiatedLetterScan != null)
+		{
+			return;
+		}
 		DuelSettings settings = DuelSettings.GetSettings();
 		if (settings == null || !settings.EnableNpcInitiatedLetters)
 		{
@@ -1518,8 +1552,81 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			LogNpcInitiatedLetterDebug(settings, "scan skipped activeInbound=true");
 			return;
 		}
-		List<NpcInitiatedLetterCandidate> candidates = BuildNpcInitiatedLetterCandidates(settings, nowDays);
-		NpcInitiatedLetterCandidate selected = PickWeightedNpcLetterCandidate(candidates);
+		List<Hero> heroes = (Hero.AllAliveHeroes ?? new List<Hero>()).Where(hero => hero != null).ToList();
+		int batchSize = Math.Max(1, (int)Math.Ceiling(heroes.Count / (double)NpcInitiatedLetterScanTargetTicks));
+		batchSize = Math.Min(NpcInitiatedLetterScanMaxHeroesPerTick, batchSize);
+		_npcInitiatedLetterScan = new NpcInitiatedLetterScanState
+		{
+			Settings = settings,
+			Heroes = heroes,
+			NowDays = nowDays,
+			MinimumBond = settings.NpcInitiatedLetterTestMode ? 0 : ClampInt(settings.NpcInitiatedLetterMinBondScore, 0, 100),
+			QuietDays = settings.NpcInitiatedLetterTestMode ? 0 : ClampInt(settings.NpcInitiatedLetterQuietDays, 0, 30),
+			PublicTrustCap = ClampInt(settings.NpcInitiatedLetterPublicTrustCap, 0, 100),
+			BatchSize = batchSize,
+			StartedAtUtcTicks = DateTime.UtcNow.Ticks
+		};
+		LogNpcInitiatedLetterDebug(settings, "incremental scan started heroes=" + heroes.Count + " batchSize=" + batchSize + " targetTicks=" + NpcInitiatedLetterScanTargetTicks);
+	}
+
+	private void ProcessNpcInitiatedLetterScan()
+	{
+		NpcInitiatedLetterScanState scan = _npcInitiatedLetterScan;
+		if (scan == null)
+		{
+			return;
+		}
+		DuelSettings currentSettings = DuelSettings.GetSettings();
+		if (currentSettings == null || !currentSettings.EnableNpcInitiatedLetters)
+		{
+			_npcInitiatedLetterScan = null;
+			return;
+		}
+		if (HasAnyActiveNpcInitiatedInboundCourier())
+		{
+			LogNpcInitiatedLetterDebug(scan.Settings, "incremental scan cancelled activeInbound=true");
+			_npcInitiatedLetterScan = null;
+			return;
+		}
+		Stopwatch stopwatch = Stopwatch.StartNew();
+		int processed = 0;
+		while (scan.NextIndex < scan.Heroes.Count && processed < scan.BatchSize)
+		{
+			Hero hero = scan.Heroes[scan.NextIndex++];
+			NpcInitiatedLetterCandidate candidate = BuildNpcInitiatedLetterCandidate(hero, scan);
+			if (candidate != null)
+			{
+				scan.Candidates.Add(candidate);
+			}
+			processed++;
+			if (stopwatch.Elapsed.TotalMilliseconds >= NpcInitiatedLetterScanFrameBudgetMilliseconds)
+			{
+				break;
+			}
+		}
+		if (scan.NextIndex >= scan.Heroes.Count)
+		{
+			CompleteNpcInitiatedLetterScan(scan);
+		}
+	}
+
+	private void CompleteNpcInitiatedLetterScan(NpcInitiatedLetterScanState scan)
+	{
+		if (!ReferenceEquals(_npcInitiatedLetterScan, scan))
+		{
+			return;
+		}
+		_npcInitiatedLetterScan = null;
+		DuelSettings settings = scan.Settings;
+		if (settings == null || !settings.EnableNpcInitiatedLetters || HasAnyActiveNpcInitiatedInboundCourier())
+		{
+			return;
+		}
+		if (!settings.NpcInitiatedLetterTestMode && _npcDiplomacyLetterGlobalCooldownUntilDays > scan.NowDays)
+		{
+			return;
+		}
+		NpcInitiatedLetterCandidate selected = PickWeightedNpcLetterCandidate(scan.Candidates);
 		if (selected == null)
 		{
 			LogNpcInitiatedLetterDebug(settings, "scan no eligible candidate");
@@ -1548,14 +1655,14 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		string senderId = SafeHeroId(selected.Sender);
 		if (!string.IsNullOrWhiteSpace(senderId))
 		{
-			_npcDiplomacyLetterSenderCooldownUntilDays[senderId] = nowDays + senderCooldownDays;
+			_npcDiplomacyLetterSenderCooldownUntilDays[senderId] = scan.NowDays + senderCooldownDays;
 			if (!string.IsNullOrWhiteSpace(motive.MotiveType))
 			{
 				int fatigueDays = settings.NpcInitiatedLetterTestMode ? 0 : ClampInt(settings.NpcInitiatedLetterMotiveFatigueDays, 0, 120);
 				string fatigueKey = BuildNpcLetterMotiveFatigueKey(senderId, motive.MotiveType);
 				if (fatigueDays > 0)
 				{
-					_npcLetterMotiveFatigueUntilDays[fatigueKey] = nowDays + fatigueDays;
+					_npcLetterMotiveFatigueUntilDays[fatigueKey] = scan.NowDays + fatigueDays;
 				}
 				else
 				{
@@ -1564,57 +1671,54 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			}
 		}
 		int globalCooldownDays = settings.NpcInitiatedLetterTestMode ? 0 : ClampInt(settings.NpcInitiatedLetterGlobalCooldownDays, 0, 60);
-		_npcDiplomacyLetterGlobalCooldownUntilDays = nowDays + globalCooldownDays;
+		_npcDiplomacyLetterGlobalCooldownUntilDays = scan.NowDays + globalCooldownDays;
 		Log("npc initiated letter started hero=" + senderId + " motive=" + (motive.MotiveType ?? "") + " kind=" + (motive.LetterKind ?? "") + " need=" + (motive.NeedType ?? "") + " bond=" + selected.BondScore + " senderCooldownDays=" + senderCooldownDays + " globalCooldownDays=" + globalCooldownDays);
 	}
 
-	private List<NpcInitiatedLetterCandidate> BuildNpcInitiatedLetterCandidates(DuelSettings settings, float nowDays)
+	private NpcInitiatedLetterCandidate BuildNpcInitiatedLetterCandidate(Hero hero, NpcInitiatedLetterScanState scan)
 	{
-		List<NpcInitiatedLetterCandidate> result = new List<NpcInitiatedLetterCandidate>();
-		int minBond = settings.NpcInitiatedLetterTestMode ? 0 : ClampInt(settings.NpcInitiatedLetterMinBondScore, 0, 100);
-		int quietDays = settings.NpcInitiatedLetterTestMode ? 0 : ClampInt(settings.NpcInitiatedLetterQuietDays, 0, 30);
-		int publicCap = ClampInt(settings.NpcInitiatedLetterPublicTrustCap, 0, 100);
-		foreach (Hero hero in (IEnumerable<Hero>)(Hero.AllAliveHeroes ?? new List<Hero>()))
+		if (scan == null)
 		{
-			if (!IsNpcInitiatedLetterSenderEligible(hero, quietDays, nowDays, out int lastInteractionDay, out string skipReason))
-			{
-				LogNpcInitiatedLetterDebug(settings, "candidate skipped hero=" + SafeHeroId(hero) + " reason=" + skipReason);
-				continue;
-			}
-			string senderId = SafeHeroId(hero);
-			if (!settings.NpcInitiatedLetterTestMode
-				&& _npcDiplomacyLetterSenderCooldownUntilDays.TryGetValue(senderId, out float untilDays)
-				&& untilDays > nowDays)
-			{
-				continue;
-			}
-			int privateLove = ClampInt(RomanceSystemBehavior.Instance?.GetPrivateLove(hero) ?? 0, -100, 100);
-			int personalTrust = ClampInt(RewardSystemBehavior.Instance?.GetNpcTrust(hero) ?? 0, -100, 100);
-			int publicTrust = ClampInt(RewardSystemBehavior.Instance?.GetPublicTrust(hero) ?? 0, -100, 100);
-			int letterTrust = ClampInt(personalTrust + ClampInt(publicTrust, -publicCap, publicCap), -100, 100);
-			int bondScore = ClampInt((int)Math.Round((privateLove + letterTrust) / 2f), 0, 100);
-			if (bondScore < minBond)
-			{
-				continue;
-			}
-			NpcInitiatedLetterCandidate candidate = new NpcInitiatedLetterCandidate
-			{
-				Sender = hero,
-				BondScore = bondScore,
-				PrivateLove = privateLove,
-				PersonalTrust = personalTrust,
-				PublicTrust = publicTrust,
-				LetterTrust = letterTrust,
-				DaysSinceInteraction = lastInteractionDay < 0 ? 999 : Math.Max(0, (int)Math.Floor(nowDays) - lastInteractionDay)
-			};
-			candidate.SelectionWeight = Math.Max(1f, bondScore - minBond + 1f) * ClampFloat(candidate.DaysSinceInteraction / 30f, 0.5f, 2f);
-			BuildNpcInitiatedLetterMotives(candidate, settings, nowDays);
-			if (candidate.Motives.Count > 0)
-			{
-				result.Add(candidate);
-			}
+			return null;
 		}
-		return result;
+		if (!IsNpcInitiatedLetterSenderEligible(hero, scan.QuietDays, scan.NowDays, out int lastInteractionDay, out string skipReason))
+		{
+			LogNpcInitiatedLetterDebug(scan.Settings, "candidate skipped hero=" + SafeHeroId(hero) + " reason=" + skipReason);
+			return null;
+		}
+		string senderId = SafeHeroId(hero);
+		if (!scan.Settings.NpcInitiatedLetterTestMode
+			&& _npcDiplomacyLetterSenderCooldownUntilDays.TryGetValue(senderId, out float untilDays)
+			&& untilDays > scan.NowDays)
+		{
+			return null;
+		}
+		int privateLove = ClampInt(RomanceSystemBehavior.Instance?.GetPrivateLove(hero) ?? 0, -100, 100);
+		int personalTrust = ClampInt(RewardSystemBehavior.Instance?.GetNpcTrust(hero) ?? 0, -100, 100);
+		int publicTrust = ClampInt(RewardSystemBehavior.Instance?.GetPublicTrust(hero) ?? 0, -100, 100);
+		int letterTrust = ClampInt(personalTrust + ClampInt(publicTrust, -scan.PublicTrustCap, scan.PublicTrustCap), -100, 100);
+		int bondScore = ClampInt((int)Math.Round((privateLove + letterTrust) / 2f), 0, 100);
+		if (ProactiveNpcRequestBehavior.IsRomanticInteractionEligibleForExternal(hero))
+		{
+			bondScore = Math.Max(bondScore, privateLove);
+		}
+		if (bondScore < scan.MinimumBond)
+		{
+			return null;
+		}
+		NpcInitiatedLetterCandidate candidate = new NpcInitiatedLetterCandidate
+		{
+			Sender = hero,
+			BondScore = bondScore,
+			PrivateLove = privateLove,
+			PersonalTrust = personalTrust,
+			PublicTrust = publicTrust,
+			LetterTrust = letterTrust,
+			DaysSinceInteraction = lastInteractionDay < 0 ? 999 : Math.Max(0, (int)Math.Floor(scan.NowDays) - lastInteractionDay)
+		};
+		candidate.SelectionWeight = Math.Max(1f, bondScore - scan.MinimumBond + 1f) * ClampFloat(candidate.DaysSinceInteraction / 30f, 0.5f, 2f);
+		BuildNpcInitiatedLetterMotives(candidate, scan.Settings, scan.NowDays);
+		return candidate.Motives.Count > 0 ? candidate : null;
 	}
 
 	private bool IsNpcInitiatedLetterSenderEligible(Hero hero, int quietDays, float nowDays, out int lastInteractionDay, out string reason)
@@ -1670,7 +1774,8 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			return false;
 		}
 		bool familiar = MyBehavior.HasMeaningfulDialogueHistoryForExternal(hero)
-			|| PlayerNotorietyBehavior.HasObserverUnlockedPlayerMajorForExternal(hero);
+			|| PlayerNotorietyBehavior.HasObserverUnlockedPlayerMajorForExternal(hero)
+			|| ProactiveNpcRequestBehavior.IsRomanticInteractionEligibleForExternal(hero);
 		if (!familiar)
 		{
 			reason = "not_familiar";
@@ -1714,15 +1819,19 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		Hero sender = candidate.Sender;
 		string npcName = sender.Name?.ToString() ?? "NPC";
 		string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal(sender) ?? Hero.MainHero?.Name?.ToString() ?? "玩家";
-		string bondFact = "[AFEF NPC行为补充] " + npcName + "与" + playerName + "已有私人交往。当前私人关系=" + candidate.PrivateLove + "，个人信任=" + candidate.PersonalTrust + "，公共信任=" + candidate.PublicTrust + "，亲密综合分=" + candidate.BondScore + "/100。";
-		AddNpcLetterMotive(candidate, settings, nowDays, new NpcInitiatedLetterMotive
+		string bondFact = "[AFEF NPC行为补充] " + npcName + "与" + playerName + "已有私人交往。" + DescribeNpcInitiatedLetterBond(candidate);
+		if (candidate.PrivateLove > 20 && !ProactiveNpcRequestBehavior.IsGreetingUnavailableForExternal())
 		{
-			MotiveType = LetterMotiveGreeting,
-			LetterKind = InboundLetterKindPersonal,
-			IntentText = "你决定主动写一封问候信，关心玩家近况。不要虚构任何事件或请求。",
-			FactText = bondFact + " " + npcName + "决定主动写信问候" + playerName + "。",
-			FallbackLetter = playerName + "，许久未曾好好问候。愿你近来一切安好；得空时，也请回信告诉我你的近况。"
-		});
+			AddNpcLetterMotive(candidate, settings, nowDays, new NpcInitiatedLetterMotive
+			{
+				MotiveType = LetterMotiveGreeting,
+				LetterKind = InboundLetterKindPersonal,
+				NeedType = "Greeting",
+				IntentText = "你决定主动写一封问候信，关心玩家近况。不要虚构任何事件或请求。",
+				FactText = bondFact + " " + npcName + "决定主动写信问候" + playerName + "。",
+				FallbackLetter = playerName + "，许久未曾好好问候。愿你近来一切安好；得空时，也请回信告诉我你的近况。"
+			});
+		}
 		AddNpcLetterMotive(candidate, settings, nowDays, new NpcInitiatedLetterMotive
 		{
 			MotiveType = LetterMotiveStatus,
@@ -1735,7 +1844,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		{
 			MotiveType = LetterMotiveEmotion,
 			LetterKind = InboundLetterKindPersonal,
-			IntentText = "你决定根据真实私人关系和信任程度表达关切或感受；不要夸大感情，也不要虚构承诺。",
+			IntentText = "按两人的真实交情表达关切或感受；克制，不夸大感情，也不虚构承诺。",
 			FactText = bondFact + " " + npcName + "决定主动写信表达与当前关系程度相符的关切或感受。",
 			FallbackLetter = playerName + "，想到我们过去的交往，我觉得有些话还是写下来更合适。愿你平安，也愿我们的信任不被辜负。"
 		});
@@ -1750,7 +1859,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				LetterKind = InboundLetterKindPersonal,
 				EventKey = eventKey,
 				IntentText = "你决定把这件近期真实经历写给玩家。只能围绕该事件，不要改写结果或虚构后续。",
-				FactText = bondFact + " [AFEF NPC行为补充] " + npcName + "近期真实经历（第" + eventDay + "日）：" + eventText,
+				FactText = bondFact + " [AFEF NPC行为补充] " + npcName + "近期有一段真实经历：" + eventText,
 				FallbackLetter = playerName + "，近来发生了一件我想让你知道的事：" + eventText
 			});
 		}
@@ -1786,6 +1895,27 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static string DescribeNpcInitiatedLetterBond(NpcInitiatedLetterCandidate candidate)
+	{
+		if (candidate == null)
+		{
+			return "两人之间仍有旧日往来。";
+		}
+		if (candidate.PrivateLove < -20 || candidate.PersonalTrust < -20)
+		{
+			return "两人虽有往来，心里仍有芥蒂。";
+		}
+		if (candidate.BondScore >= 70)
+		{
+			return "彼此十分亲近，也敢把心里话说出来。";
+		}
+		if (candidate.BondScore >= 40)
+		{
+			return "彼此颇为亲近，足以相互信赖。";
+		}
+		return "彼此熟识，但说话仍留着分寸。";
+	}
+
 	private void AddNpcLetterMotive(NpcInitiatedLetterCandidate candidate, DuelSettings settings, float nowDays, NpcInitiatedLetterMotive motive)
 	{
 		if (candidate == null || motive == null || string.IsNullOrWhiteSpace(motive.MotiveType))
@@ -1802,9 +1932,9 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 	private static ProactiveNpcRequestBehavior.LetterNeedSnapshot PickWeightedLetterNeed(List<ProactiveNpcRequestBehavior.LetterNeedSnapshot> needs)
 	{
 		List<ProactiveNpcRequestBehavior.LetterNeedSnapshot> valid = (needs ?? new List<ProactiveNpcRequestBehavior.LetterNeedSnapshot>())
-			.Where(x => x != null && !string.IsNullOrWhiteSpace(x.NeedType) && x.Urgency > 0f && x.Urgency * x.TypeFatigueMultiplier > 0f)
+			.Where(x => x != null && !string.IsNullOrWhiteSpace(x.NeedType) && x.Urgency > 0f && x.Urgency * x.TypeFatigueMultiplier * x.TypeWeightMultiplier > 0f)
 			.ToList();
-		float total = valid.Sum(x => x.Urgency * x.TypeFatigueMultiplier);
+		float total = valid.Sum(x => x.Urgency * x.TypeFatigueMultiplier * x.TypeWeightMultiplier);
 		if (total <= 0f)
 		{
 			return null;
@@ -1812,7 +1942,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		float roll = MBRandom.RandomFloat * total;
 		foreach (ProactiveNpcRequestBehavior.LetterNeedSnapshot need in valid)
 		{
-			roll -= need.Urgency * need.TypeFatigueMultiplier;
+			roll -= need.Urgency * need.TypeFatigueMultiplier * need.TypeWeightMultiplier;
 			if (roll <= 0f)
 			{
 				return need;
@@ -2731,9 +2861,19 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		{
 			return null;
 		}
+		string letterBody = AnimusForgeTextInputSanitizer.SanitizeMultiline(record.LetterBody ?? "", AnimusForgeTextInputSanitizer.MaxCourierLetterChars).Trim();
+		if (TrySplitCourierLetterInventoryDisplayName(displayName, out string title, out string legacyBody))
+		{
+			displayName = title;
+			if (string.IsNullOrWhiteSpace(letterBody))
+			{
+				letterBody = legacyBody;
+			}
+		}
 		record.ItemStringId = itemStringId;
 		record.Key = itemStringId;
 		record.DisplayName = displayName;
+		record.LetterBody = letterBody;
 		record.TemplateStringId = (record.TemplateStringId ?? "").Trim();
 		record.SenderHeroId = (record.SenderHeroId ?? "").Trim();
 		record.SenderName = (record.SenderName ?? "").Trim();
@@ -2742,7 +2882,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		return record;
 	}
 
-	private void RememberCourierLetterInventoryRecord(string itemStringId, string displayName, string templateStringId, uint objectId, Hero sender, string senderName, bool isReply, int amount)
+	private void RememberCourierLetterInventoryRecord(string itemStringId, string displayName, string letterBody, string templateStringId, uint objectId, Hero sender, string senderName, bool isReply, int amount)
 	{
 		try
 		{
@@ -2764,6 +2904,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			{
 				ItemStringId = itemStringId,
 				DisplayName = displayName,
+				LetterBody = letterBody,
 				TemplateStringId = templateStringId,
 				ObjectId = objectId,
 				SenderHeroId = SafeHeroId(sender),
@@ -2851,6 +2992,10 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 					if (string.IsNullOrWhiteSpace(record.SenderName))
 					{
 						record.SenderName = existing.SenderName;
+					}
+					if (string.IsNullOrWhiteSpace(record.LetterBody))
+					{
+						record.LetterBody = existing.LetterBody;
 					}
 				}
 				_courierLetterInventoryRecords[record.Key] = record;
@@ -3120,10 +3265,11 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				return;
 			}
 			string name = string.IsNullOrWhiteSpace(senderName) ? (sender?.Name?.ToString() ?? "NPC") : senderName.Trim();
-			string displayName = BuildCourierLetterInventoryDisplayName(name, body, isReply);
+			string displayName = BuildCourierLetterInventoryTitle(name, isReply);
+			string identityKey = "courier_letter|" + (session?.Id ?? "") + "|" + displayName + "|" + body;
 			string itemName = null;
 			string itemStringId = "";
-			int generated = RewardSystemBehavior.GenerateNamedInventoryItemToRosterForExternal(roster, displayName, 1, out itemStringId, out itemName, "courier_letter_inventory");
+			int generated = RewardSystemBehavior.GenerateNamedInventoryItemToRosterForExternal(roster, displayName, 1, out itemStringId, out itemName, "courier_letter_inventory", identityKey);
 			if (generated <= 0 || string.IsNullOrWhiteSpace(itemStringId))
 			{
 				Log("courier letter inventory item create failed session=" + (session?.Id ?? "") + " reply=" + isReply);
@@ -3131,13 +3277,8 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				return;
 			}
 			uint objectId = 0u;
-			int after = generated;
-			if (TryFindCourierLetterGeneratedItemInRoster(roster, displayName, out string foundItemStringId, out uint foundObjectId, out int foundAfter))
-			{
-				itemStringId = foundItemStringId;
-				objectId = foundObjectId;
-				after = foundAfter;
-			}
+			int after = CountItemInRoster(roster, itemStringId, out ItemObject generatedItem);
+			objectId = generatedItem?.Id.InternalValue ?? 0u;
 			if (after <= 0)
 			{
 				Log("courier letter inventory item add not observed session=" + (session?.Id ?? "") + " item=" + itemStringId + " generated=" + generated + " after=" + after + " reply=" + isReply);
@@ -3153,7 +3294,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			{
 				objectId = normalizedObjectId;
 			}
-			Instance?.RememberCourierLetterInventoryRecord(itemStringId, displayName, templateStringId, objectId, sender, name, isReply, after);
+			Instance?.RememberCourierLetterInventoryRecord(itemStringId, displayName, body, templateStringId, objectId, sender, name, isReply, after);
 			InformationManager.DisplayMessage(new InformationMessage("信件已放入玩家库存。", Colors.Green));
 			Log("courier letter inventory item added session=" + (session?.Id ?? "") + " item=" + itemStringId + " generated=" + generated + " after=" + after + " reply=" + isReply + " nameLen=" + displayName.Length + " itemName=" + (itemName ?? ""));
 		}
@@ -3284,12 +3425,15 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		return IsCourierReplyInventoryDisplayName(text) || (text.StartsWith("\u6765\u81ea", StringComparison.Ordinal) && text.Contains("\u7684\u4fe1\uff1a"));
+		return IsCourierReplyInventoryDisplayName(text)
+			|| (text.StartsWith("\u6765\u81ea", StringComparison.Ordinal)
+				&& (text.Contains("\u7684\u4fe1\uff1a") || GetCourierLetterInventoryFirstLine(text).EndsWith("\u7684\u4fe1", StringComparison.Ordinal)));
 	}
 
 	private static bool IsCourierReplyInventoryDisplayName(string displayName)
 	{
-		return (displayName ?? "").Contains("\u7684\u56de\u4fe1\uff1a");
+		string text = (displayName ?? "").Trim();
+		return text.Contains("\u7684\u56de\u4fe1\uff1a") || GetCourierLetterInventoryFirstLine(text).EndsWith("\u7684\u56de\u4fe1", StringComparison.Ordinal);
 	}
 
 	public static string GetCourierLetterTransferDisplayTitleForExternal(string displayName)
@@ -3299,8 +3443,43 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		{
 			return text;
 		}
-		int lineBreakIndex = text.IndexOfAny(new char[2] { '\r', '\n' });
-		return lineBreakIndex > 0 ? text.Substring(0, lineBreakIndex).Trim() : text;
+		return TrySplitCourierLetterInventoryDisplayName(text, out string title, out _) ? title : GetCourierLetterInventoryFirstLine(text);
+	}
+
+	public static bool TryGetCourierLetterInventoryDetailForExternal(string itemStringId, uint objectId, out string letterBody)
+	{
+		letterBody = "";
+		try
+		{
+			CourierDeliveryBehavior instance = Instance;
+			if (instance == null)
+			{
+				return false;
+			}
+			instance.EnsureCourierLetterInventoryData();
+			CourierLetterInventoryRecord record = null;
+			string key = (itemStringId ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(key))
+			{
+				instance._courierLetterInventoryRecords.TryGetValue(key, out record);
+			}
+			if (record == null && objectId != 0u)
+			{
+				record = instance._courierLetterInventoryRecords.Values.FirstOrDefault(x => x != null && x.ObjectId == objectId);
+			}
+			record = instance.NormalizeCourierLetterInventoryRecord(key, record);
+			if (record == null || string.IsNullOrWhiteSpace(record.LetterBody))
+			{
+				return false;
+			}
+			letterBody = record.LetterBody;
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Log("resolve courier letter inventory detail failed item=" + (itemStringId ?? "") + " error=" + ex.Message);
+			return false;
+		}
 	}
 
 	private static string ExtractCourierLetterInventorySenderName(string displayName)
@@ -3323,6 +3502,16 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			{
 				return text.Substring(senderStart, senderEnd - senderStart).Trim();
 			}
+			string firstLine = GetCourierLetterInventoryFirstLine(text);
+			if (firstLine.EndsWith("\u7684\u4fe1", StringComparison.Ordinal) && firstLine.Length > senderStart + "\u7684\u4fe1".Length)
+			{
+				return firstLine.Substring(senderStart, firstLine.Length - senderStart - "\u7684\u4fe1".Length).Trim();
+			}
+		}
+		string replyTitle = GetCourierLetterInventoryFirstLine(text);
+		if (replyTitle.EndsWith("\u7684\u56de\u4fe1", StringComparison.Ordinal))
+		{
+			return replyTitle.Substring(0, replyTitle.Length - "\u7684\u56de\u4fe1".Length).Trim();
 		}
 		return "";
 	}
@@ -3332,11 +3521,36 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		return Math.Max(0, (int)Math.Floor(NowDays()));
 	}
 
-	private static string BuildCourierLetterInventoryDisplayName(string senderName, string body, bool isReply)
+	private static string BuildCourierLetterInventoryTitle(string senderName, bool isReply)
 	{
 		string name = string.IsNullOrWhiteSpace(senderName) ? "NPC" : senderName.Trim();
-		string text = string.IsNullOrWhiteSpace(body) ? (isReply ? "（无回信正文）" : "（无来信正文）") : body.Trim();
-		return (isReply ? name + "的回信：" : "来自" + name + "的信：") + "\n" + text;
+		return isReply ? name + "的回信" : "来自" + name + "的信";
+	}
+
+	private static bool TrySplitCourierLetterInventoryDisplayName(string displayName, out string title, out string body)
+	{
+		title = "";
+		body = "";
+		string text = AnimusForgeTextInputSanitizer.SanitizeMultiline(displayName ?? "", AnimusForgeTextInputSanitizer.MaxCourierLetterChars + 512).Trim();
+		if (string.IsNullOrWhiteSpace(text) || !LooksLikeCourierLetterInventoryDisplayName(text))
+		{
+			return false;
+		}
+		int lineBreakIndex = text.IndexOfAny(new char[2] { '\r', '\n' });
+		string firstLine = lineBreakIndex >= 0 ? text.Substring(0, lineBreakIndex).Trim() : text;
+		if (lineBreakIndex >= 0)
+		{
+			body = text.Substring(lineBreakIndex).Trim();
+		}
+		title = firstLine.TrimEnd(':', '\uff1a').Trim();
+		return !string.IsNullOrWhiteSpace(title);
+	}
+
+	private static string GetCourierLetterInventoryFirstLine(string displayName)
+	{
+		string text = (displayName ?? "").Trim();
+		int lineBreakIndex = text.IndexOfAny(new char[2] { '\r', '\n' });
+		return lineBreakIndex >= 0 ? text.Substring(0, lineBreakIndex).Trim().TrimEnd(':', '\uff1a').Trim() : text.TrimEnd(':', '\uff1a').Trim();
 	}
 
 	private void DeliverToRecipient(CourierSession session, MobileParty courier, Hero recipient)
@@ -3533,6 +3747,11 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		selectedRuleHits = ExcludeCourierSelectedRuleIds(selectedRuleHits, CourierExcludedRuleIds) ?? new List<string>();
 		string extras = FilterCourierInjectedRuleBlocks(ctx?.Extras ?? "", selectedRuleHits, CourierExcludedRuleIds);
 		extras = AppendCourierPlayerRecentActionsIfSelected(extras, recipient, selectedRuleHits);
+		if (HasPreprocessRuleHit(selectedRuleHits, "worldmap_party_command") || ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "worldmap_party_command"))
+		{
+			string commandTasks = WorldMapPartyCommandBehavior.BuildCurrentNpcCommandTasksPromptForExternal(recipient, recipient.CharacterObject, -1);
+			extras = string.IsNullOrWhiteSpace(extras) ? commandTasks : (extras.TrimEnd() + "\n" + commandTasks);
+		}
 		List<ConversationMessage> persistentMemoryRoleMessages = MyBehavior.BuildUncompressedMemoryRoleMessagesForExternal(recipient, -1, includeCurrentActiveSceneSession: false);
 		List<object> messages = BuildCourierReplyMessages(recipient, session, extras, extraFact, historyText, persistentMemoryRoleMessages);
 		return new CourierReplyGenerationRequest
@@ -3839,6 +4058,11 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		selectedRuleHits = ExcludeCourierSelectedRuleIds(selectedRuleHits, CourierExcludedRuleIds) ?? new List<string>();
 		string extras = FilterCourierInjectedRuleBlocks(ctx?.Extras ?? "", selectedRuleHits, CourierExcludedRuleIds);
 		extras = AppendCourierPlayerRecentActionsIfSelected(extras, sender, selectedRuleHits);
+		if (HasPreprocessRuleHit(selectedRuleHits, "worldmap_party_command") || ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "worldmap_party_command"))
+		{
+			string commandTasks = WorldMapPartyCommandBehavior.BuildCurrentNpcCommandTasksPromptForExternal(sender, sender.CharacterObject, -1);
+			extras = string.IsNullOrWhiteSpace(extras) ? commandTasks : (extras.TrimEnd() + "\n" + commandTasks);
+		}
 		List<ConversationMessage> persistentMemoryRoleMessages = MyBehavior.BuildUncompressedMemoryRoleMessagesForExternal(sender, -1, includeCurrentActiveSceneSession: false);
 		List<object> messages = BuildInboundNpcLetterMessages(sender, session, seed, extras, extraFact, historyText, persistentMemoryRoleMessages);
 		return new InboundLetterGenerationRequest

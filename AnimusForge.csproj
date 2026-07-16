@@ -68,6 +68,11 @@
   </PropertyGroup>
   <ItemGroup />
   <ItemGroup>
+    <EmbeddedResource Include="AnimusForge\ModuleData\PreprocessPrompts.json">
+      <LogicalName>AnimusForge.Defaults.PreprocessPrompts.json</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Remove="原版游戏本体代码\**\*.cs" />
     <Compile Remove="原版游戏本体代码*\**\*.cs" />
     <Compile Remove="阅兵\**\*.cs" />

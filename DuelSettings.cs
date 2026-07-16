@@ -892,7 +892,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("4. 开发者选项")]
 	public bool EnablePerformanceMonitor { get; set; } = true;
 
-	[SettingPropertyBool("【性能】延后日结维护", Order = 12, RequireRestart = false, HintText = "开启后，每日结算只登记 AnimusForge 维护任务，记忆总览、王国维护和周报准备会在后续大地图中按预算分批执行，最多每250毫秒运行一次。默认开启。")]
+	[SettingPropertyBool("【性能】延后日结维护", Order = 12, RequireRestart = false, HintText = "开启后，每日结算只登记 AnimusForge 维护任务，记忆总览、王国维护和周报准备会在后续大地图中按预算分批执行，最多每250毫秒运行一次；玩家队伍实际行军时自动暂停，停止后从原进度继续。默认开启。")]
 	[SettingPropertyGroup("4. 开发者选项")]
 	public bool EnableDeferredDailyMaintenance { get; set; } = true;
 
@@ -1073,6 +1073,26 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyFloatingInteger("疲劳类型概率倍率", 0f, 1f, "0.00", Order = 28, RequireRestart = false, HintText = "处于类型疲劳期的请求，其需求驱动和知名度驱动概率乘以该倍率，同时降低该需求在候选中的优先级。默认 0.20。")]
 	[SettingPropertyGroup("7. NPC主动接触")]
 	public float ProactiveNpcRequestTypeFatigueMultiplier { get; set; } = 0.2f;
+
+	[SettingPropertyFloatingInteger("缺马请求权重", 0f, 1f, "0.00", Order = 29, RequireRestart = false, HintText = "缺马/买马请求在地图主动接触和主动来信中的候选权重与触发概率倍率。默认 0.35；0 表示保留需求判定但不主动发起。测试模式下地图追踪仍按 1.00 计算。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public float ProactiveNpcRequestMountShortageWeight { get; set; } = 0.35f;
+
+	[SettingPropertyInteger("亲密互动全局冷却(天)", 1, 120, "0", Order = 30, RequireRestart = false, HintText = "异性且私人关系大于 30 的亲密互动，在地图追赶、主动来信和队内同伴聊天之间共享的硬冷却。默认 21 天。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public int ProactiveNpcRequestRomanticInteractionGlobalCooldownDays { get; set; } = 21;
+
+	[SettingPropertyInteger("主动问候全局冷却(天)", 1, 120, "0", Order = 31, RequireRestart = false, HintText = "私人关系大于 20 的 NPC 主动追上玩家或主动来信问候后，共享的硬冷却。默认 42 天。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public int ProactiveNpcRequestGreetingGlobalCooldownDays { get; set; } = 42;
+
+	[SettingPropertyFloatingInteger("领地盘问范围倍率", 0.5f, 10f, "0.0", Order = 32, RequireRestart = false, HintText = "玩家距某王国定居点不超过玩家视野乘该倍率时，该王国的异文化且未了解玩家履历的领主可主动盘问来历和目的。默认 3.0。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public float ProactiveNpcRequestTerritorialInterrogationSettlementRangeMultiplier { get; set; } = 3f;
+
+	[SettingPropertyInteger("领地盘问全局冷却(天)", 1, 180, "0", Order = 33, RequireRestart = false, HintText = "领地盘问成功发起后共享的硬冷却。默认 42 天。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public int ProactiveNpcRequestTerritorialInterrogationGlobalCooldownDays { get; set; } = 42;
 
 	[SettingPropertyBool("启用 NPC 主动来信", Order = 0, RequireRestart = false, HintText = "允许已经认识玩家且具备足够亲密综合分的 NPC 主动派出真实信使。")]
 	[SettingPropertyGroup("7. NPC主动接触/NPC主动来信")]

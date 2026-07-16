@@ -737,6 +737,8 @@ try {
 
     $sourceRules = Join-Path $sourceModuleDir "ModuleData\RuleBehaviorPrompts.json"
     Assert-SameHash -SourcePath $sourceRules -TargetPath (Join-Path $stagingModuleDir "ModuleData\RuleBehaviorPrompts.json")
+    $sourcePreprocessPrompts = Join-Path $sourceModuleDir "ModuleData\PreprocessPrompts.json"
+    Assert-SameHash -SourcePath $sourcePreprocessPrompts -TargetPath (Join-Path $stagingModuleDir "ModuleData\PreprocessPrompts.json")
     Assert-SameHash -SourcePath $bootstrapFull -TargetPath (Join-Path $stagingBinDir "AnimusForge.Bootstrap.dll")
     Assert-SameHash -SourcePath $dll13Full -TargetPath (Join-Path $stagingBinDir "versions\1.3\AnimusForge.dll")
     Assert-SameHash -SourcePath $dll14Full -TargetPath (Join-Path $stagingBinDir "versions\1.4\AnimusForge.dll")

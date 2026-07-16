@@ -1222,9 +1222,27 @@ public class MyBehavior : CampaignBehaviorBase
 
 		public int EndDay;
 
-		public bool WorldBuilt;
+		public bool PreviewGroupsInitialized;
 
-		public int KingdomIndex;
+		public bool PreviewGroupsComplete;
+
+		public int PreviewSourceMaterialIndex;
+
+		public List<KeyValuePair<string, List<NpcActionEntry>>> RecentActionOwners = new List<KeyValuePair<string, List<NpcActionEntry>>>();
+
+		public int RecentActionOwnerIndex;
+
+		public int RecentActionIndex;
+
+		public Hero CurrentRecentActionHero;
+
+		public List<KeyValuePair<string, List<NpcActionEntry>>> MajorActionOwners = new List<KeyValuePair<string, List<NpcActionEntry>>>();
+
+		public int MajorActionOwnerIndex;
+
+		public int MajorActionIndex;
+
+		public Hero CurrentMajorActionHero;
 
 		public int AggregationIndex;
 
@@ -1702,6 +1720,12 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private int _lastProcessedKingdomRebellionWeek = -1;
 
+	private int _pendingKingdomRebellionMaintenanceWeek = -1;
+
+	private List<Kingdom> _pendingKingdomRebellionMaintenanceKingdoms = new List<Kingdom>();
+
+	private int _pendingKingdomRebellionMaintenanceIndex;
+
 	private const int WeeklyReportReadingXpBatchSize = 20;
 
 	private List<string> _unreadWeeklyReportNoticeEventIds = new List<string>();
@@ -2176,6 +2200,7 @@ public class MyBehavior : CampaignBehaviorBase
 			_activeNativeConversationMemorySessionId = -1;
 			_pendingWeeklyMemoryMaterialTriggers.Clear();
 			_pendingAutoWeeklyReportBuild = null;
+			ResetPendingWeeklyKingdomRebellionMaintenance();
 			lock (_pendingWeeklyReportCommitLock)
 			{
 				_pendingWeeklyReportCommits.Clear();
@@ -5554,9 +5579,22 @@ public class MyBehavior : CampaignBehaviorBase
 		return true;
 	}
 
+	private static bool ShouldPauseDeferredMaintenanceForMapTravel()
+	{
+		try
+		{
+			MobileParty mainParty = MobileParty.MainParty;
+			return mainParty != null && mainParty.IsMoving && mainParty.Position.Distance(mainParty.MoveTargetPoint) > 0.01f;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	private void ProcessDeferredDailyMaintenance()
 	{
-		if (!IsDeferredDailyMaintenanceEnabled())
+		if (!IsDeferredDailyMaintenanceEnabled() || ShouldPauseDeferredMaintenanceForMapTravel())
 		{
 			return;
 		}
@@ -5655,8 +5693,7 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 				break;
 			case DailyMaintenanceTaskKind.ProcessWeeklyKingdomRebellions:
-				TryProcessWeeklyKingdomRebellions(job.WeekIndex);
-				break;
+				return ProcessWeeklyKingdomRebellionsSlice(job.WeekIndex);
 			case DailyMaintenanceTaskKind.PrepareAutoWeeklyReports:
 				TryInitializePendingAutoWeeklyReportBuild(job);
 				break;
@@ -5689,7 +5726,7 @@ public class MyBehavior : CampaignBehaviorBase
 			_kingdomStabilityMaintenanceCursor = 0;
 		}
 		int processed = 0;
-		while (_kingdomStabilityMaintenanceCursor < kingdoms.Count && processed < 2)
+		while (_kingdomStabilityMaintenanceCursor < kingdoms.Count && processed < 1)
 		{
 			ApplyKingdomStabilityRelationAdjustmentsForKingdom(kingdoms[_kingdomStabilityMaintenanceCursor]);
 			_kingdomStabilityMaintenanceCursor++;
@@ -5748,21 +5785,14 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			if (!context.WorldBuilt && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+			if (!context.PreviewGroupsComplete && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
 			{
-				context.Groups.Add(BuildWeeklyEventMaterialPreviewGroupWithSnapshot(() => BuildWorldWeeklyEventMaterialPreviewGroup(context.StartDay, context.EndDay), context.EventSourceMaterialSnapshot));
-				context.WorldBuilt = true;
-			}
-			while (context.KingdomIndex < context.Kingdoms.Count && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
-			{
-				Kingdom kingdom = context.Kingdoms[context.KingdomIndex++];
-				if (IsKingdomEligibleForWeeklyReport(kingdom))
+				using (PerfProbe.Scope("MyBehavior.AutoWeeklyReport.BuildPreviewGroupsSlice"))
 				{
-					context.Groups.Add(BuildWeeklyEventMaterialPreviewGroupWithSnapshot(() => BuildKingdomWeeklyEventMaterialPreviewGroup(kingdom, context.StartDay, context.EndDay), context.EventSourceMaterialSnapshot));
+					context.PreviewGroupsComplete = ProcessPendingAutoWeeklyReportPreviewGroupsBudget(context, startTimestamp, budgetMs);
 				}
-				break;
 			}
-			if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs) || !context.WorldBuilt || context.KingdomIndex < context.Kingdoms.Count)
+			if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs) || !context.PreviewGroupsComplete)
 			{
 				return;
 			}
@@ -5800,6 +5830,149 @@ public class MyBehavior : CampaignBehaviorBase
 			_pendingAutoWeeklyReportBuild = null;
 			_weeklyReportGenerationInProgress = false;
 			Logger.Log("EventWeeklyReport", "[ERROR] deferred auto weekly report build failed: " + ex);
+		}
+	}
+
+	private bool ProcessPendingAutoWeeklyReportPreviewGroupsBudget(PendingAutoWeeklyReportBuild context, long startTimestamp, double budgetMs)
+	{
+		if (context == null)
+		{
+			return true;
+		}
+		if (!context.PreviewGroupsInitialized)
+		{
+			context.Groups = new List<WeeklyEventMaterialPreviewGroup>
+			{
+				CreateWorldWeeklyEventMaterialPreviewGroup()
+			};
+			foreach (Kingdom kingdom in context.Kingdoms ?? new List<Kingdom>())
+			{
+				context.Groups.Add(CreateKingdomWeeklyEventMaterialPreviewGroup(kingdom));
+			}
+			context.RecentActionOwners = (_npcRecentActions ?? new Dictionary<string, List<NpcActionEntry>>()).ToList();
+			context.MajorActionOwners = (_npcMajorActions ?? new Dictionary<string, List<NpcActionEntry>>()).ToList();
+			context.PreviewGroupsInitialized = true;
+			return false;
+		}
+		while (context.PreviewSourceMaterialIndex < (context.EventSourceMaterialSnapshot?.Count ?? 0) && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+		{
+			EventSourceMaterialEntry item = context.EventSourceMaterialSnapshot[context.PreviewSourceMaterialIndex++];
+			ProcessPendingAutoWeeklyReportSourceMaterial(context, item);
+		}
+		if (context.PreviewSourceMaterialIndex < (context.EventSourceMaterialSnapshot?.Count ?? 0))
+		{
+			return false;
+		}
+		while (!IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs) && !ProcessPendingAutoWeeklyReportActionSlice(context, recentOnly: true))
+		{
+		}
+		if (context.RecentActionOwnerIndex < (context.RecentActionOwners?.Count ?? 0))
+		{
+			return false;
+		}
+		while (!IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs) && !ProcessPendingAutoWeeklyReportActionSlice(context, recentOnly: false))
+		{
+		}
+		return context.MajorActionOwnerIndex >= (context.MajorActionOwners?.Count ?? 0);
+	}
+
+	private void ProcessPendingAutoWeeklyReportSourceMaterial(PendingAutoWeeklyReportBuild context, EventSourceMaterialEntry item)
+	{
+		if (context == null || item == null || item.Day < context.StartDay || item.Day > context.EndDay || context.Groups == null || context.Groups.Count == 0)
+		{
+			return;
+		}
+		if (item.IncludeInWorld)
+		{
+			TryAddPreviewSourceMaterial(context.Groups[0].Materials, item);
+		}
+		for (int i = 0; i < context.Kingdoms.Count && i + 1 < context.Groups.Count; i++)
+		{
+			Kingdom kingdom = context.Kingdoms[i];
+			if (item.IncludeInKingdom && IsKingdomEligibleForWeeklyReport(kingdom) && DoesEventSourceMaterialRelateToKingdom(item, kingdom))
+			{
+				TryAddPreviewSourceMaterial(context.Groups[i + 1].Materials, item);
+			}
+		}
+	}
+
+	private bool ProcessPendingAutoWeeklyReportActionSlice(PendingAutoWeeklyReportBuild context, bool recentOnly)
+	{
+		if (context == null)
+		{
+			return true;
+		}
+		List<KeyValuePair<string, List<NpcActionEntry>>> owners = recentOnly ? context.RecentActionOwners : context.MajorActionOwners;
+		int ownerIndex = recentOnly ? context.RecentActionOwnerIndex : context.MajorActionOwnerIndex;
+		int actionIndex = recentOnly ? context.RecentActionIndex : context.MajorActionIndex;
+		Hero currentHero = recentOnly ? context.CurrentRecentActionHero : context.CurrentMajorActionHero;
+		while (ownerIndex < (owners?.Count ?? 0))
+		{
+			KeyValuePair<string, List<NpcActionEntry>> owner = owners[ownerIndex];
+			List<NpcActionEntry> actions = owner.Value;
+			if (actionIndex == 0)
+			{
+				currentHero = FindHeroById(owner.Key);
+			}
+			if (currentHero == null || actions == null || actionIndex >= actions.Count)
+			{
+				ownerIndex++;
+				actionIndex = 0;
+				currentHero = null;
+				continue;
+			}
+			NpcActionEntry action = actions[actionIndex++];
+			ProcessPendingAutoWeeklyReportNpcAction(context, currentHero, action, recentOnly);
+			if (recentOnly)
+			{
+				context.RecentActionOwnerIndex = ownerIndex;
+				context.RecentActionIndex = actionIndex;
+				context.CurrentRecentActionHero = currentHero;
+			}
+			else
+			{
+				context.MajorActionOwnerIndex = ownerIndex;
+				context.MajorActionIndex = actionIndex;
+				context.CurrentMajorActionHero = currentHero;
+			}
+			return false;
+		}
+		if (recentOnly)
+		{
+			context.RecentActionOwnerIndex = ownerIndex;
+			context.RecentActionIndex = 0;
+			context.CurrentRecentActionHero = null;
+		}
+		else
+		{
+			context.MajorActionOwnerIndex = ownerIndex;
+			context.MajorActionIndex = 0;
+			context.CurrentMajorActionHero = null;
+		}
+		return true;
+	}
+
+	private void ProcessPendingAutoWeeklyReportNpcAction(PendingAutoWeeklyReportBuild context, Hero hero, NpcActionEntry action, bool recentOnly)
+	{
+		if (context == null || hero == null || action == null || action.Day < context.StartDay || action.Day > context.EndDay || context.Groups == null || context.Groups.Count == 0)
+		{
+			return;
+		}
+		if (ShouldIncludeWorldPreviewAction(hero, action))
+		{
+			TryAddPreviewActionMaterial(context.Groups[0].Materials, hero, action, recentOnly);
+		}
+		for (int i = 0; i < context.Kingdoms.Count && i + 1 < context.Groups.Count; i++)
+		{
+			Kingdom kingdom = context.Kingdoms[i];
+			if (!IsKingdomEligibleForWeeklyReport(kingdom) || !DoesNpcActionRelateToKingdom(action, kingdom))
+			{
+				continue;
+			}
+			if (!recentOnly || ShouldIncludeKingdomPreviewAction(hero, action, kingdom))
+			{
+				TryAddPreviewActionMaterial(context.Groups[i + 1].Materials, hero, action, recentOnly);
+			}
 		}
 	}
 
@@ -12277,51 +12450,87 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void TryProcessWeeklyKingdomRebellions(int weekIndex)
 	{
+		while (!ProcessWeeklyKingdomRebellionsSlice(weekIndex))
+		{
+		}
+	}
+
+	private bool ProcessWeeklyKingdomRebellionsSlice(int weekIndex)
+	{
 		if (weekIndex <= 0 || _lastProcessedKingdomRebellionWeek >= weekIndex)
 		{
-			return;
+			ResetPendingWeeklyKingdomRebellionMaintenance();
+			return true;
 		}
 		if (!DuelSettings.IsKingdomStabilityAndRebellionEnabled())
 		{
 			CancelPendingAutomaticKingdomRebellions("disabled_by_mcm");
+			ResetPendingWeeklyKingdomRebellionMaintenance();
 			_lastProcessedKingdomRebellionWeek = Math.Max(_lastProcessedKingdomRebellionWeek, weekIndex);
 			Logger.Log("KingdomRebellion", "[SKIP] 王国稳定度与叛乱功能已在 MCM 中关闭，跳过 week=" + weekIndex + " 的自动叛乱判定。");
-			return;
+			return true;
 		}
 		try
 		{
-			foreach (Kingdom devEditableKingdom in GetDevEditableKingdoms())
+			if (_pendingKingdomRebellionMaintenanceWeek != weekIndex)
 			{
+				_pendingKingdomRebellionMaintenanceWeek = weekIndex;
+				_pendingKingdomRebellionMaintenanceKingdoms = GetDevEditableKingdoms();
+				_pendingKingdomRebellionMaintenanceIndex = 0;
+			}
+			if (_pendingKingdomRebellionMaintenanceIndex < _pendingKingdomRebellionMaintenanceKingdoms.Count)
+			{
+				Kingdom devEditableKingdom = _pendingKingdomRebellionMaintenanceKingdoms[_pendingKingdomRebellionMaintenanceIndex++];
 				try
 				{
-					int kingdomStabilityValue = GetKingdomStabilityValue(devEditableKingdom);
-					int kingdomStabilityWeeklyBalancingDelta = GetKingdomStabilityWeeklyBalancingDelta(kingdomStabilityValue);
-					if (kingdomStabilityWeeklyBalancingDelta != 0)
+					using (PerfProbe.Scope("MyBehavior.WeeklyKingdomRebellions.ResolveKingdom"))
 					{
-						SetKingdomStabilityValue(devEditableKingdom, kingdomStabilityValue + kingdomStabilityWeeklyBalancingDelta);
-					}
-					KingdomRebellionResolutionResult kingdomRebellionResolutionResult = ResolveKingdomRebellion(devEditableKingdom, weekIndex, executeAction: false, forceTrigger: false);
-					if (kingdomRebellionResolutionResult != null && kingdomRebellionResolutionResult.PassedChanceGate && kingdomRebellionResolutionResult.SelectedClan != null)
-					{
-						QueueAutomaticKingdomRebellion(kingdomRebellionResolutionResult);
+						int kingdomStabilityValue = GetKingdomStabilityValue(devEditableKingdom);
+						int kingdomStabilityWeeklyBalancingDelta = GetKingdomStabilityWeeklyBalancingDelta(kingdomStabilityValue);
+						if (kingdomStabilityWeeklyBalancingDelta != 0)
+						{
+							SetKingdomStabilityValue(devEditableKingdom, kingdomStabilityValue + kingdomStabilityWeeklyBalancingDelta);
+						}
+						KingdomRebellionResolutionResult kingdomRebellionResolutionResult = ResolveKingdomRebellion(devEditableKingdom, weekIndex, executeAction: false, forceTrigger: false);
+						if (kingdomRebellionResolutionResult != null && kingdomRebellionResolutionResult.PassedChanceGate && kingdomRebellionResolutionResult.SelectedClan != null)
+						{
+							QueueAutomaticKingdomRebellion(kingdomRebellionResolutionResult);
+						}
 					}
 				}
 				catch (Exception ex)
 				{
 					Logger.Log("KingdomRebellion", "[ERROR] Weekly resolution failed for kingdom " + GetKingdomId(devEditableKingdom) + ": " + ex.Message);
 				}
+				return _pendingKingdomRebellionMaintenanceIndex >= _pendingKingdomRebellionMaintenanceKingdoms.Count && CompleteWeeklyKingdomRebellionMaintenance(weekIndex);
 			}
-			_lastProcessedKingdomRebellionWeek = Math.Max(_lastProcessedKingdomRebellionWeek, weekIndex);
-			if (_queuedAutomaticKingdomRebellions.Count > 0)
-			{
-				_automaticKingdomRebellionFlowActive = true;
-				TryStartNextAutomaticKingdomRebellionAsync();
-			}
+			return CompleteWeeklyKingdomRebellionMaintenance(weekIndex);
 		}
 		catch (Exception ex2)
 		{
-			Logger.Log("KingdomRebellion", "[ERROR] TryProcessWeeklyKingdomRebellions failed: " + ex2);
+			Logger.Log("KingdomRebellion", "[ERROR] ProcessWeeklyKingdomRebellionsSlice failed: " + ex2);
+			ResetPendingWeeklyKingdomRebellionMaintenance();
+			return true;
 		}
+	}
+
+	private bool CompleteWeeklyKingdomRebellionMaintenance(int weekIndex)
+	{
+		_lastProcessedKingdomRebellionWeek = Math.Max(_lastProcessedKingdomRebellionWeek, weekIndex);
+		ResetPendingWeeklyKingdomRebellionMaintenance();
+		if (_queuedAutomaticKingdomRebellions.Count > 0)
+		{
+			_automaticKingdomRebellionFlowActive = true;
+			TryStartNextAutomaticKingdomRebellionAsync();
+		}
+		return true;
+	}
+
+	private void ResetPendingWeeklyKingdomRebellionMaintenance()
+	{
+		_pendingKingdomRebellionMaintenanceWeek = -1;
+		_pendingKingdomRebellionMaintenanceKingdoms = new List<Kingdom>();
+		_pendingKingdomRebellionMaintenanceIndex = 0;
 	}
 
 	private void QueueAutomaticKingdomRebellion(KingdomRebellionResolutionResult result)
@@ -16536,10 +16745,11 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				ProcessWeeklyReportUiResume();
 			}
+			bool pauseDeferredMaintenanceForMapTravel = ShouldPauseDeferredMaintenanceForMapTravel();
 			bool deferredMaintenanceWindowOpen;
 			using (PerfProbe.Scope("MyBehavior.OnCampaignTick.DeferredMaintenanceScheduler"))
 			{
-				deferredMaintenanceWindowOpen = TryClaimDeferredMaintenanceRunWindow();
+				deferredMaintenanceWindowOpen = !pauseDeferredMaintenanceForMapTravel && TryClaimDeferredMaintenanceRunWindow();
 			}
 			bool processedWeeklyReportCommits = false;
 			if (deferredMaintenanceWindowOpen)
@@ -16553,9 +16763,12 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				TryPublishUnreadWeeklyReportMapNotifications();
 			}
-			using (PerfProbe.Scope("MyBehavior.OnCampaignTick.TryRunCampaignMemoryMaintenance"))
+			if (!pauseDeferredMaintenanceForMapTravel)
 			{
-				TryRunCampaignMemoryMaintenance();
+				using (PerfProbe.Scope("MyBehavior.OnCampaignTick.TryRunCampaignMemoryMaintenance"))
+				{
+					TryRunCampaignMemoryMaintenance();
+				}
 			}
 			if (deferredMaintenanceWindowOpen && !processedWeeklyReportCommits)
 			{
@@ -16596,7 +16809,7 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void TryRunCampaignMemoryMaintenance()
 	{
-		if (_memorySummaryProcessing || IsDialogueOrLetterChainBusyForMemorySummary())
+		if (ShouldPauseDeferredMaintenanceForMapTravel() || _memorySummaryProcessing || IsDialogueOrLetterChainBusyForMemorySummary())
 		{
 			return;
 		}
@@ -18364,6 +18577,8 @@ public class MyBehavior : CampaignBehaviorBase
 		return string.Join("；", list);
 	}
 
+	private const string NpcSkillLevelReference = "技能水平参考: 0-49平庸，50-99一般，100-149良好，150-199极佳，200-274大师，275以上传奇。";
+
 	private string BuildHeroFactsForPersonaGeneration(Hero hero)
 	{
 		if (hero == null)
@@ -18487,6 +18702,7 @@ public class MyBehavior : CampaignBehaviorBase
 			if (list.Count > 0)
 			{
 				stringBuilder.AppendLine("技能(最高8项): " + string.Join(", ", list.Select(x => $"{x.Skill.StringId}={x.Value}")));
+				stringBuilder.AppendLine(NpcSkillLevelReference);
 			}
 		}
 		catch
@@ -18663,6 +18879,7 @@ public class MyBehavior : CampaignBehaviorBase
 				if (list.Count > 0)
 				{
 					stringBuilder.AppendLine("技能(最高8项): " + string.Join(", ", list.Select(x => $"{x.Skill.StringId}={x.Value}")));
+					stringBuilder.AppendLine(NpcSkillLevelReference);
 				}
 			}
 		}
@@ -20908,37 +21125,45 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		string text2 = text.Trim();
-		if (text2.StartsWith("```", StringComparison.Ordinal))
+		string text2 = StripJsonResponseEnvelope(text);
+		List<string> candidates = ExtractJsonObjectPayloads(text2);
+		if (candidates.Count == 0)
 		{
-			int num3 = text2.IndexOf('\n');
-			if (num3 >= 0)
+			candidates.Add(text2);
+		}
+		foreach (string candidate in candidates)
+		{
+			try
 			{
-				text2 = text2.Substring(num3 + 1).Trim();
+				JObject jObject = JObject.Parse(candidate);
+				string parsedPersonality = GetJsonStringIgnoreCase(jObject, "personality", "profile", "description");
+				string parsedBackground = GetJsonStringIgnoreCase(jObject, "background");
+				if (!string.IsNullOrWhiteSpace(parsedPersonality) || !string.IsNullOrWhiteSpace(parsedBackground))
+				{
+					personality = parsedPersonality;
+					background = parsedBackground;
+					return true;
+				}
 			}
-			int num4 = text2.LastIndexOf("```", StringComparison.Ordinal);
-			if (num4 >= 0)
+			catch
 			{
-				text2 = text2.Substring(0, num4).Trim();
 			}
 		}
-		int num = text2.IndexOf('{');
-		int num2 = text2.LastIndexOf('}');
-		if (num >= 0 && num2 > num)
+		personality = ExtractLoosePersonaJsonField(text2, "personality", "profile", "description");
+		background = ExtractLoosePersonaJsonField(text2, "background");
+		return !string.IsNullOrWhiteSpace(personality) || !string.IsNullOrWhiteSpace(background);
+	}
+
+	private static string ExtractLoosePersonaJsonField(string text, params string[] fieldNames)
+	{
+		foreach (string fieldName in fieldNames ?? new string[0])
 		{
-			text2 = text2.Substring(num, num2 - num + 1);
+			if (TryExtractLooseJsonStringProperty(text, fieldName, out var value) && !string.IsNullOrWhiteSpace(value))
+			{
+				return value.Trim();
+			}
 		}
-		try
-		{
-			JObject jObject = JObject.Parse(text2);
-			personality = (jObject["personality"] ?? jObject["Personality"] ?? jObject["profile"] ?? jObject["Profile"] ?? jObject["description"] ?? jObject["Description"])?.ToString() ?? "";
-			background = (jObject["background"] ?? jObject["Background"])?.ToString() ?? "";
-			return true;
-		}
-		catch
-		{
-			return false;
-		}
+		return "";
 	}
 
 	private static string AppendNpcPersonaGenerationRequirementsToSystemPrompt(string systemPrompt)
@@ -33798,26 +34023,51 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static string BuildCompactStateLine(PatienceSnapshot snap)
+	private static bool ShouldOmitClanRelationFromPrompt(Hero targetHero)
+	{
+		try
+		{
+			Hero mainHero = Hero.MainHero;
+			Clan playerClan = Clan.PlayerClan ?? mainHero?.Clan;
+			return targetHero != null
+				&& targetHero != mainHero
+				&& (targetHero.IsPlayerCompanion
+					|| (playerClan != null && (targetHero.CompanionOf == playerClan || targetHero.Clan == playerClan)));
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static string BuildCompactStateLine(PatienceSnapshot snap, bool includeClanRelation = true)
 	{
 		int num = (int)Math.Round(snap.Current);
+		if (!includeClanRelation)
+		{
+			return $"P(耐心)={num}/{snap.Max}({snap.PatienceLevel}) | T(综合信任)={snap.Trust}({snap.TrustLevel}) | L(私人关系)={snap.PrivateLove}({snap.PrivateLoveLevel})";
+		}
 		return $"P(耐心)={num}/{snap.Max}({snap.PatienceLevel}) | R(家族关系)={snap.Relation}({snap.RelationLevel}) | T(综合信任)={snap.Trust}({snap.TrustLevel}) | L(私人关系)={snap.PrivateLove}({snap.PrivateLoveLevel})";
 	}
 
-	private static string BuildSceneInlineStateLine(PatienceSnapshot snap)
+	private static string BuildSceneInlineStateLine(PatienceSnapshot snap, bool includeClanRelation = true)
 	{
 		string targetPronoun = (Hero.MainHero?.IsFemale ?? false) ? "她" : "他";
 		int currentPatience = (int)Math.Round(snap.Current);
 		string privateLoveLevel = string.IsNullOrWhiteSpace(snap.PrivateLoveLevel) ? RomanceSystemBehavior.GetPrivateLoveLevelText(snap.PrivateLove) : snap.PrivateLoveLevel;
-		string relationLevel = string.IsNullOrWhiteSpace(snap.RelationLevel) ? GetRelationLevelText(snap.Relation) : snap.RelationLevel;
 		string trustLevel = string.IsNullOrWhiteSpace(snap.TrustLevel) ? RewardSystemBehavior.GetTrustLevelText(snap.Trust) : snap.TrustLevel;
 		string patienceLevel = string.IsNullOrWhiteSpace(snap.PatienceLevel) ? GetPatienceLevelText(snap.Current, snap.Max) : snap.PatienceLevel;
+		if (!includeClanRelation)
+		{
+			return $"你对{targetPronoun}的私人关系是{privateLoveLevel}（私人关系评级）{snap.PrivateLove}，信任度是{trustLevel}（信任度评级）{snap.Trust}，你现在对{targetPronoun}的耐心是{currentPatience}/{snap.Max}（{patienceLevel}）。";
+		}
+		string relationLevel = string.IsNullOrWhiteSpace(snap.RelationLevel) ? GetRelationLevelText(snap.Relation) : snap.RelationLevel;
 		return $"你对{targetPronoun}的私人关系是{privateLoveLevel}（私人关系评级）{snap.PrivateLove}，信任度是{trustLevel}（信任度评级）{snap.Trust}，你的家族对{targetPronoun}的关系是{relationLevel}（家族关系评级）{snap.Relation}，你现在对{targetPronoun}的耐心是{currentPatience}/{snap.Max}（{patienceLevel}）。";
 	}
 
-	private static string BuildSceneInlineStateText(PatienceSnapshot snap, bool includeRelationPenalty)
+	private static string BuildSceneInlineStateText(PatienceSnapshot snap, bool includeRelationPenalty, bool includeClanRelation = true)
 	{
-		string text = BuildSceneInlineStateLine(snap);
+		string text = BuildSceneInlineStateLine(snap, includeClanRelation);
 		if (snap.Current <= 0.01f)
 		{
 			text += BuildExhaustedPatienceInstruction(includeRelationPenalty);
@@ -34304,11 +34554,11 @@ public class MyBehavior : CampaignBehaviorBase
 		return "耐心已归零：本轮优先用军务在身、行程紧、需要离开、精神疲惫或另有要事等理由，给出委婉的回避式回复，尽量收束或回避当前话题；若" + text + "继续追问，仍可继续回应，但语气应明显更谨慎或更不耐烦，系统会额外降低你与" + text + "的关系，不要直说系统规则或数值。";
 	}
 
-	private static string BuildPatiencePromptText(PatienceSnapshot snap)
+	private static string BuildPatiencePromptText(PatienceSnapshot snap, bool includeClanRelation = true)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("【4.四值状态】");
-		stringBuilder.AppendLine(BuildCompactStateLine(snap));
+		stringBuilder.AppendLine(includeClanRelation ? "【4.四值状态】" : "【4.三值状态】");
+		stringBuilder.AppendLine(BuildCompactStateLine(snap, includeClanRelation));
 		stringBuilder.AppendLine("【NPC耐心状态】");
 		if (snap.Current <= 0.01f)
 		{
@@ -34330,11 +34580,12 @@ public class MyBehavior : CampaignBehaviorBase
 			return "";
 		}
 		PatienceSnapshot heroPatienceSnapshot = GetHeroPatienceSnapshot(targetHero);
+		bool includeClanRelation = !ShouldOmitClanRelationFromPrompt(targetHero);
 		if (heroPatienceSnapshot.Current <= 0.01f)
 		{
-			return BuildPatiencePromptText(heroPatienceSnapshot);
+			return BuildPatiencePromptText(heroPatienceSnapshot, includeClanRelation);
 		}
-		return BuildPatiencePromptText(heroPatienceSnapshot);
+		return BuildPatiencePromptText(heroPatienceSnapshot, includeClanRelation);
 	}
 
 	private void ApplyPatienceFromHeroResponse(Hero targetHero, ref string aiResponse, bool directConversation)
@@ -34611,7 +34862,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		PatienceSnapshot heroPatienceSnapshot = GetHeroPatienceSnapshot(hero);
 		int num = (int)Math.Round(heroPatienceSnapshot.Current);
-		statusLine = "- " + heroPatienceSnapshot.DisplayName + ": " + BuildCompactStateLine(heroPatienceSnapshot);
+		statusLine = "- " + heroPatienceSnapshot.DisplayName + ": " + BuildCompactStateLine(heroPatienceSnapshot, !ShouldOmitClanRelationFromPrompt(hero));
 		if (num <= 0)
 		{
 			statusLine += "，耐心已归零";
@@ -34629,7 +34880,7 @@ public class MyBehavior : CampaignBehaviorBase
 			return false;
 		}
 		PatienceSnapshot heroPatienceSnapshot = GetHeroPatienceSnapshot(hero);
-		stateText = BuildSceneInlineStateText(heroPatienceSnapshot, includeRelationPenalty: true);
+		stateText = BuildSceneInlineStateText(heroPatienceSnapshot, includeRelationPenalty: true, includeClanRelation: !ShouldOmitClanRelationFromPrompt(hero));
 		return true;
 	}
 
@@ -43408,7 +43659,7 @@ public class MyBehavior : CampaignBehaviorBase
 		return _weeklyEventSourceMaterialBuildSnapshot ?? SanitizeEventSourceMaterials(_eventSourceMaterials);
 	}
 
-	private WeeklyEventMaterialPreviewGroup BuildWorldWeeklyEventMaterialPreviewGroup(int startDay, int endDay)
+	private WeeklyEventMaterialPreviewGroup CreateWorldWeeklyEventMaterialPreviewGroup()
 	{
 		WeeklyEventMaterialPreviewGroup weeklyEventMaterialPreviewGroup = new WeeklyEventMaterialPreviewGroup
 		{
@@ -43426,6 +43677,12 @@ public class MyBehavior : CampaignBehaviorBase
 				SnapshotText = (_eventWorldOpeningSummary ?? "").Trim()
 			});
 		}
+		return weeklyEventMaterialPreviewGroup;
+	}
+
+	private WeeklyEventMaterialPreviewGroup BuildWorldWeeklyEventMaterialPreviewGroup(int startDay, int endDay)
+	{
+		WeeklyEventMaterialPreviewGroup weeklyEventMaterialPreviewGroup = CreateWorldWeeklyEventMaterialPreviewGroup();
 		foreach (EventSourceMaterialEntry item in GetWeeklyEventSourceMaterialsForBuild())
 		{
 			if (item != null && item.IncludeInWorld && item.Day >= startDay && item.Day <= endDay)
@@ -43467,7 +43724,7 @@ public class MyBehavior : CampaignBehaviorBase
 		return weeklyEventMaterialPreviewGroup;
 	}
 
-	private WeeklyEventMaterialPreviewGroup BuildKingdomWeeklyEventMaterialPreviewGroup(Kingdom kingdom, int startDay, int endDay)
+	private WeeklyEventMaterialPreviewGroup CreateKingdomWeeklyEventMaterialPreviewGroup(Kingdom kingdom)
 	{
 		string text = kingdom?.Name?.ToString() ?? (kingdom?.StringId ?? "王国");
 		WeeklyEventMaterialPreviewGroup weeklyEventMaterialPreviewGroup = new WeeklyEventMaterialPreviewGroup
@@ -43490,6 +43747,12 @@ public class MyBehavior : CampaignBehaviorBase
 			});
 		}
 		TryAddKingdomCurrentRulerMaterial(weeklyEventMaterialPreviewGroup.Materials, kingdom);
+		return weeklyEventMaterialPreviewGroup;
+	}
+
+	private WeeklyEventMaterialPreviewGroup BuildKingdomWeeklyEventMaterialPreviewGroup(Kingdom kingdom, int startDay, int endDay)
+	{
+		WeeklyEventMaterialPreviewGroup weeklyEventMaterialPreviewGroup = CreateKingdomWeeklyEventMaterialPreviewGroup(kingdom);
 		foreach (EventSourceMaterialEntry item in GetWeeklyEventSourceMaterialsForBuild())
 		{
 			if (item != null && item.IncludeInKingdom && item.Day >= startDay && item.Day <= endDay && DoesEventSourceMaterialRelateToKingdom(item, kingdom))
@@ -45691,6 +45954,7 @@ public class MyBehavior : CampaignBehaviorBase
 		_pendingMemoryOverviewCandidateScanIdSet.Clear();
 		_pendingAutoWeeklyReportBuild = null;
 		_kingdomStabilityMaintenanceCursor = 0;
+		ResetPendingWeeklyKingdomRebellionMaintenance();
 		RebuildRuntimeDerivedIndexes();
 		RewardSystemBehavior.Instance?.ImportDebtEntries(new Dictionary<string, RewardSystemBehavior.DebtExportEntry>());
 		ClearKnowledgeDataForCurrentSave();
