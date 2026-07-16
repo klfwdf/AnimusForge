@@ -65,10 +65,10 @@ public static class SiegeCastleCompletedInterventionSummaryBuilder
             SiegeCastleActionKind.SellPrisoners => "已贩卖 " + affected + " 人并获得 " + facts.TerminalGold + " 金币",
             SiegeCastleActionKind.RecruitPrisonersVoluntary => "已自愿收编 " + facts.RecruitedRegularPrisoners + " 人",
             SiegeCastleActionKind.RecruitPrisonersForced => "已强制收编 " + facts.RecruitedRegularPrisoners + " 人",
-            SiegeCastleActionKind.LaborPrisonersVoluntary => "已安排 " + affected + " 人自愿服30天劳役",
-            SiegeCastleActionKind.LaborPrisonersForced => "已强迫 " + affected + " 人服30天劳役",
-            SiegeCastleActionKind.InstructorPrisonersVoluntary => "已安排 " + affected + " 人自愿担任30天教官",
-            SiegeCastleActionKind.InstructorPrisonersForced => "已强迫 " + affected + " 人担任30天教官",
+            SiegeCastleActionKind.LaborPrisonersVoluntary => "已按自愿劳役处置 " + affected + " 人",
+            SiegeCastleActionKind.LaborPrisonersForced => "已按强制劳役处置 " + affected + " 人",
+            SiegeCastleActionKind.InstructorPrisonersVoluntary => "已按自愿教官方案处置 " + affected + " 人",
+            SiegeCastleActionKind.InstructorPrisonersForced => "已按强制教官方案处置 " + affected + " 人",
             SiegeCastleActionKind.SlaughterPrisoners => "场景内实际杀死 " + facts.SlaughteredRegularPrisoners + " 人；未实际死亡者不计入屠戮",
             _ => facts.RecruitedRegularPrisoners > 0
                 ? "已收编 " + facts.RecruitedRegularPrisoners + " 人"

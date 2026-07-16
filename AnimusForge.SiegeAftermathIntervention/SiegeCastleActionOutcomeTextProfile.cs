@@ -29,10 +29,10 @@ public static class SiegeCastleActionOutcomeTextProfile
             SiegeCastleActionKind.SellPrisoners => "贩卖了 " + Count(affected) + " 名普通战俘，获得 " + Count(gold) + " 金币",
             SiegeCastleActionKind.RecruitPrisonersVoluntary => "自愿收编了 " + Count(affected) + " 名普通战俘",
             SiegeCastleActionKind.RecruitPrisonersForced => "强制收编了 " + Count(affected) + " 名普通战俘",
-            SiegeCastleActionKind.LaborPrisonersVoluntary => "安排 " + Count(affected) + " 名普通战俘自愿服30天劳役",
-            SiegeCastleActionKind.LaborPrisonersForced => "强迫 " + Count(affected) + " 名普通战俘服30天劳役",
-            SiegeCastleActionKind.InstructorPrisonersVoluntary => "安排 " + Count(affected) + " 名普通战俘自愿担任30天新兵教官",
-            SiegeCastleActionKind.InstructorPrisonersForced => "强迫 " + Count(affected) + " 名普通战俘担任30天新兵教官",
+            SiegeCastleActionKind.LaborPrisonersVoluntary => "按自愿劳役方案处置 " + Count(affected) + " 名普通战俘，地方效果将在离场时直接结算",
+            SiegeCastleActionKind.LaborPrisonersForced => "按强制劳役方案处置 " + Count(affected) + " 名普通战俘，地方效果将在离场时直接结算",
+            SiegeCastleActionKind.InstructorPrisonersVoluntary => "按自愿教官方案处置 " + Count(affected) + " 名普通战俘，训练效果将在离场时直接结算",
+            SiegeCastleActionKind.InstructorPrisonersForced => "按强制教官方案处置 " + Count(affected) + " 名普通战俘，训练效果将在离场时直接结算",
             _ => "处理了 " + Count(affected) + " 名普通战俘"
         };
         return "【城堡处置】已" + detail + "；本次带入者中仍有 " + Count(remaining)

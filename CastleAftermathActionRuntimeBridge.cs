@@ -158,9 +158,9 @@ internal static class CastleAftermathActionRuntimeBridge
 		return RemoveSelectedRegularPrisoners("castle_sell_prisoners", grantRansomGold: true);
 	}
 
-	internal static CastleAftermathActionApplyResult AssignSelectedRegularPrisonersToService(string source)
+	internal static CastleAftermathActionApplyResult ResolveSelectedRegularPrisonersForSettlementEffect(string source)
 	{
-		return RemoveSelectedRegularPrisoners(source ?? "castle_prisoner_service", grantRansomGold: false);
+		return RemoveSelectedRegularPrisoners(source ?? "castle_prisoner_settlement_effect", grantRansomGold: false);
 	}
 
 	internal static CastleAftermathActionApplyResult ProvideCareToSelectedRegularPrisoners()

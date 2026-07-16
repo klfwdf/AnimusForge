@@ -41,19 +41,19 @@ public static class SiegeCastlePostprocessRuleCatalog
 
     private static readonly SiegePostprocessRuleDefinition VoluntaryLaborRule = Rule(
         SiegeCastleActionTagCatalog.LaborPrisonersVoluntaryTag,
-        "【普通战俘群体最终标签·自愿】战俘明确同意以30天农奴、修路或修缮劳役服刑且信任达到门槛时输出。服务期30天，地方正负效果持续游戏一年；不转入玩家部队。与其他最终标签互斥。");
+        "【普通战俘群体最终标签·自愿】战俘明确同意接受农奴、修路或修缮等劳役处置且信任达到门槛时输出。标签处理本次带入的全部普通战俘；离开场景后直接施加持续游戏一年的地方效果，不创建服役单位或期限，也不转入玩家部队。与其他最终标签互斥。");
 
     private static readonly SiegePostprocessRuleDefinition ForcedLaborRule = Rule(
         SiegeCastleActionTagCatalog.LaborPrisonersForcedTag,
-        "【普通战俘群体最终标签·强制】玩家强迫本次普通战俘服30天劳役时输出。正面提升仅为自愿的50%，负面后果约为自愿的1.5倍，持续游戏一年；不转入玩家部队。与其他最终标签互斥。");
+        "【普通战俘群体最终标签·强制】玩家强迫本次带入的全部普通战俘接受劳役处置时输出。离开场景后直接施加持续游戏一年的地方效果，不创建服役单位或期限；正面提升仅为自愿的50%，负面后果约为自愿的1.5倍，也不转入玩家部队。与其他最终标签互斥。");
 
     private static readonly SiegePostprocessRuleDefinition VoluntaryInstructorRule = Rule(
         SiegeCastleActionTagCatalog.InstructorPrisonersVoluntaryTag,
-        "【普通战俘群体最终标签·自愿】有训练能力的战俘明确自愿担任30天教官且信任达到门槛时输出。提高附近志愿兵补充速度与新兵精锐度，效果持续游戏一年，上限为城镇同类效果一半。与其他最终标签互斥。");
+        "【普通战俘群体最终标签·自愿】有训练能力的战俘明确自愿接受教官处置且信任达到门槛时输出。标签处理本次带入的全部普通战俘；离开场景后直接提高附近志愿兵补充速度与新兵精锐度一年，不创建教官单位或期限，上限为城镇同类效果一半。与其他最终标签互斥。");
 
     private static readonly SiegePostprocessRuleDefinition ForcedInstructorRule = Rule(
         SiegeCastleActionTagCatalog.InstructorPrisonersForcedTag,
-        "【普通战俘群体最终标签·强制】玩家强迫战俘担任30天教官时输出。补充速度与精锐度提升仅为自愿的50%，负面后果约为自愿的1.5倍，持续游戏一年。与其他最终标签互斥。");
+        "【普通战俘群体最终标签·强制】玩家强迫本次带入的全部普通战俘接受教官处置时输出。离开场景后直接施加一年效果，不创建教官单位或期限；补充速度与精锐度提升仅为自愿的50%，负面后果约为自愿的1.5倍。与其他最终标签互斥。");
 
     private static readonly SiegePostprocessRuleDefinition SlaughterRule = Rule(
         SiegeCastleActionTagCatalog.SlaughterPrisonersTag,

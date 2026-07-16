@@ -3464,10 +3464,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			SiegeCastleActionKind.SellPrisoners => CastleAftermathActionRuntimeBridge.SellSelectedRegularPrisoners(),
 			SiegeCastleActionKind.RecruitPrisonersVoluntary => CastleAftermathActionRuntimeBridge.RecruitSelectedRegularPrisoners(),
 			SiegeCastleActionKind.RecruitPrisonersForced => CastleAftermathActionRuntimeBridge.RecruitSelectedRegularPrisoners(),
-			SiegeCastleActionKind.LaborPrisonersVoluntary => CastleAftermathActionRuntimeBridge.AssignSelectedRegularPrisonersToService("castle_labor_voluntary"),
-			SiegeCastleActionKind.LaborPrisonersForced => CastleAftermathActionRuntimeBridge.AssignSelectedRegularPrisonersToService("castle_labor_forced"),
-			SiegeCastleActionKind.InstructorPrisonersVoluntary => CastleAftermathActionRuntimeBridge.AssignSelectedRegularPrisonersToService("castle_instructor_voluntary"),
-			SiegeCastleActionKind.InstructorPrisonersForced => CastleAftermathActionRuntimeBridge.AssignSelectedRegularPrisonersToService("castle_instructor_forced"),
+			SiegeCastleActionKind.LaborPrisonersVoluntary => CastleAftermathActionRuntimeBridge.ResolveSelectedRegularPrisonersForSettlementEffect("castle_labor_voluntary"),
+			SiegeCastleActionKind.LaborPrisonersForced => CastleAftermathActionRuntimeBridge.ResolveSelectedRegularPrisonersForSettlementEffect("castle_labor_forced"),
+			SiegeCastleActionKind.InstructorPrisonersVoluntary => CastleAftermathActionRuntimeBridge.ResolveSelectedRegularPrisonersForSettlementEffect("castle_instructor_voluntary"),
+			SiegeCastleActionKind.InstructorPrisonersForced => CastleAftermathActionRuntimeBridge.ResolveSelectedRegularPrisonersForSettlementEffect("castle_instructor_forced"),
 			_ => CastleAftermathActionApplyResult.Failed("unsupported_terminal_action", CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount)
 		};
 		if (!result.Succeeded || result.AffectedCount <= 0)
@@ -3604,9 +3604,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			SiegeCastleActionKind.RecruitPrisonersVoluntary => 5,
 			SiegeCastleActionKind.LaborPrisonersVoluntary => 3,
 			SiegeCastleActionKind.InstructorPrisonersVoluntary => 3,
-			SiegeCastleActionKind.RecruitPrisonersForced => SiegeCastlePrisonerTrustProfile.ForcedServiceTrustDelta,
-			SiegeCastleActionKind.LaborPrisonersForced => SiegeCastlePrisonerTrustProfile.ForcedServiceTrustDelta,
-			SiegeCastleActionKind.InstructorPrisonersForced => SiegeCastlePrisonerTrustProfile.ForcedServiceTrustDelta,
+			SiegeCastleActionKind.RecruitPrisonersForced => SiegeCastlePrisonerTrustProfile.ForcedDispositionTrustDelta,
+			SiegeCastleActionKind.LaborPrisonersForced => SiegeCastlePrisonerTrustProfile.ForcedDispositionTrustDelta,
+			SiegeCastleActionKind.InstructorPrisonersForced => SiegeCastlePrisonerTrustProfile.ForcedDispositionTrustDelta,
 			_ => 0
 		};
 	}

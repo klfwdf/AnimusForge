@@ -21,7 +21,6 @@ internal static class CastleAftermathSettlementRuntimeBridge
 	private static Dictionary<string, float> _lastObservedProsperity = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
 	private static Dictionary<string, float> _recruitmentSpeedMultiplier = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
 	private static Dictionary<string, float> _recruitQualityMultiplier = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
-	private static Dictionary<string, int> _serviceUntilDay = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
 	private static readonly List<string> PendingKeys = new List<string>();
 	private static float _pendingLoyalty;
@@ -34,7 +33,6 @@ internal static class CastleAftermathSettlementRuntimeBridge
 	private static float _pendingProsperityMultiplier = 1f;
 	private static float _pendingRecruitmentMultiplier = 1f;
 	private static float _pendingRecruitQualityMultiplier = 1f;
-	private static int _pendingServiceDays;
 	private static bool _pendingDevastateEquivalent;
 
 	internal static void SyncData(IDataStore dataStore)
@@ -44,13 +42,11 @@ internal static class CastleAftermathSettlementRuntimeBridge
 		dataStore?.SyncData("_gcczCastleLastObservedProsperity_v1", ref _lastObservedProsperity);
 		dataStore?.SyncData("_gcczCastleRecruitmentSpeedMultiplier_v1", ref _recruitmentSpeedMultiplier);
 		dataStore?.SyncData("_gcczCastleRecruitQualityMultiplier_v1", ref _recruitQualityMultiplier);
-		dataStore?.SyncData("_gcczCastleServiceUntilDay_v1", ref _serviceUntilDay);
 		_annualEffectUntilDay ??= new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 		_prosperityGrowthMultiplier ??= new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
 		_lastObservedProsperity ??= new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
 		_recruitmentSpeedMultiplier ??= new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
 		_recruitQualityMultiplier ??= new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
-		_serviceUntilDay ??= new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 	}
 
 	internal static void ClearForNewGame()
@@ -60,7 +56,6 @@ internal static class CastleAftermathSettlementRuntimeBridge
 		_lastObservedProsperity.Clear();
 		_recruitmentSpeedMultiplier.Clear();
 		_recruitQualityMultiplier.Clear();
-		_serviceUntilDay.Clear();
 		ResetSession("new_game");
 	}
 
@@ -77,7 +72,6 @@ internal static class CastleAftermathSettlementRuntimeBridge
 		_pendingProsperityMultiplier = 1f;
 		_pendingRecruitmentMultiplier = 1f;
 		_pendingRecruitQualityMultiplier = 1f;
-		_pendingServiceDays = 0;
 		_pendingDevastateEquivalent = false;
 		Logger.Log("CastleAftermath", "Reset castle settlement effect ledger. Source=" + (source ?? "N/A"));
 	}
@@ -107,7 +101,6 @@ internal static class CastleAftermathSettlementRuntimeBridge
 		_pendingRecruitQualityMultiplier = SiegeCastleSettlementEffectMath.CombineMultiplier(
 			_pendingRecruitQualityMultiplier,
 			1f + (profile.RecruitQualityMultiplier - 1f) * scale);
-		_pendingServiceDays = Math.Max(_pendingServiceDays, profile.ServiceDays);
 		_pendingDevastateEquivalent |= profile.ReachesNativeDevastateIntensity;
 		Logger.Log("CastleAftermath", "Queued castle settlement effect. Action=" + action
 			+ ", Key=" + profile.Key + ", Lord=" + singleLordTarget);
@@ -196,10 +189,6 @@ internal static class CastleAftermathSettlementRuntimeBridge
 			_recruitmentSpeedMultiplier[key] = Math.Max(0f, Math.Min(SiegeCastleSettlementEffectProfile.MaximumRecruitmentMultiplier, _pendingRecruitmentMultiplier));
 			_recruitQualityMultiplier[key] = Math.Max(0f, Math.Min(SiegeCastleSettlementEffectProfile.MaximumRecruitQualityMultiplier, _pendingRecruitQualityMultiplier));
 			_lastObservedProsperity[key] = settlement.Town.Prosperity;
-		}
-		if (_pendingServiceDays > 0)
-		{
-			_serviceUntilDay[key] = GetCurrentDay() + _pendingServiceDays;
 		}
 	}
 
@@ -359,10 +348,6 @@ internal static class CastleAftermathSettlementRuntimeBridge
 		_lastObservedProsperity.Remove(key);
 		_recruitmentSpeedMultiplier.Remove(key);
 		_recruitQualityMultiplier.Remove(key);
-		if (_serviceUntilDay.TryGetValue(key, out int serviceUntil) && GetCurrentDay() > serviceUntil)
-		{
-			_serviceUntilDay.Remove(key);
-		}
 	}
 
 	private static int ScaleInt(int value, float scale)
