@@ -15,6 +15,22 @@ public static class SiegeCastlePostprocessRuleCatalog
         SiegeCastleActionTagCatalog.ProposeSlaughterPrisonersTag,
         "【提议，不结算】仅在己方士兵建议屠戮，而玩家尚未明确同意时输出。只登记待确认；不得伤害任何人。必须由玩家后续明确同意。");
 
+    private static readonly SiegePostprocessRuleDefinition ProposeReleaseRule = Rule(
+        SiegeCastleActionTagCatalog.ProposeReleasePrisonersTag,
+        "【提议，不结算】仅在己方士兵建议释放，或普通战俘请求释放，而玩家尚未明确同意时输出。只登记待确认；不得改变名册。必须由玩家后续明确同意。");
+
+    private static readonly SiegePostprocessRuleDefinition ProposeSellRule = Rule(
+        SiegeCastleActionTagCatalog.ProposeSellPrisonersTag,
+        "【提议，不结算】仅在己方士兵建议贩卖普通战俘，而玩家尚未明确同意时输出。只登记待确认；不得改变名册或金币。必须由玩家后续明确同意。");
+
+    private static readonly SiegePostprocessRuleDefinition ProposeLaborRule = Rule(
+        SiegeCastleActionTagCatalog.ProposeLaborPrisonersTag,
+        "【提议，不结算】仅在己方士兵建议劳役安置，或普通战俘请求以劳役赎罪，而玩家尚未明确同意时输出。只登记待确认；不得提前施加地方效果。");
+
+    private static readonly SiegePostprocessRuleDefinition ProposeInstructorRule = Rule(
+        SiegeCastleActionTagCatalog.ProposeInstructorPrisonersTag,
+        "【提议，不结算】仅在己方士兵建议让战俘充当教官，或普通战俘主动提出训练新兵，而玩家尚未明确同意时输出。只登记待确认；不得提前施加训练效果。");
+
     private static readonly SiegePostprocessRuleDefinition TreatRule = Rule(
         SiegeCastleActionTagCatalog.TreatPrisonersTag,
         "【流程标签】善待俘虏。普通战俘回应时对本次带入的普通战俘群体生效；被俘领主回应时只对该领主生效。必须确有玩家给予食物、药品或物资并约束随军士兵不得虐待。按人数与兵种等级扣除物资，提高俘虏信任；同一目标本场只结算一次，不是最终处置。");
@@ -90,24 +106,40 @@ public static class SiegeCastlePostprocessRuleCatalog
                 return rules;
             }
 
-            SiegeCastlePlayerAuthorizationDecision disposition = SiegeCastlePlayerAuthorizationPolicy.Evaluate(
-                facts.PlayerText,
-                facts.PendingProposalForSpeaker);
-            if (facts.RemainingRegularPrisoners > 0
-                && facts.TerminalActionForTarget == SiegeCastleActionKind.Unknown
-                && disposition.IsAuthorized)
+            if (facts.RemainingRegularPrisoners <= 0
+                || facts.TerminalActionForTarget != SiegeCastleActionKind.Unknown)
             {
-                rules.Add(disposition.Disposition == SiegeCastlePrisonerDispositionKind.Slaughter
-                    ? SlaughterRule
-                    : ForcedRecruitRule);
                 return rules;
             }
 
-            if (facts.RemainingRegularPrisoners > 0
-                && disposition.ReasonCode != "player_rejected_or_cancelled")
+            SiegeCastlePlayerAuthorizationDecision disposition = SiegeCastlePlayerAuthorizationPolicy.Evaluate(
+                facts.PlayerText,
+                facts.PendingProposalForSpeaker);
+            if (disposition.IsAuthorized
+                && TryAddAlliedAuthorizedDispositionRule(rules, facts, disposition.Disposition))
             {
-                rules.Add(ProposeRecruitRule);
-                rules.Add(ProposeSlaughterRule);
+                return rules;
+            }
+
+            if (TryAddDirectRule(rules, facts, SiegeCastleActionKind.TreatPrisoners, TreatRule)
+                || TryAddDirectRule(rules, facts, SiegeCastleActionKind.ReceiveArmaments, ArmamentsRule))
+            {
+                return rules;
+            }
+
+            if (disposition.ReasonCode == "player_rejected_or_cancelled")
+            {
+                return rules;
+            }
+
+            SiegeCastlePrisonerDispositionKind intent = SiegeCastlePlayerAuthorizationPolicy.DetectIntent(facts.PlayerText);
+            if (intent != SiegeCastlePrisonerDispositionKind.None)
+            {
+                AddProposalRule(rules, intent, allowAlliedOnlyProposal: true);
+            }
+            else if (SiegeCastlePlayerAuthorizationPolicy.IsGeneralDispositionAdviceRequest(facts.PlayerText))
+            {
+                AddAlliedProposalRules(rules);
             }
             return rules;
         }
@@ -120,32 +152,15 @@ public static class SiegeCastlePostprocessRuleCatalog
                 return rules;
             }
 
-            TryAddDirectRule(rules, facts, SiegeCastleActionKind.TreatPrisoners, TreatRule);
-            TryAddDirectRule(rules, facts, SiegeCastleActionKind.ReceiveArmaments, ArmamentsRule);
-            TryAddDirectRule(rules, facts, SiegeCastleActionKind.ReleasePrisoners, ReleaseRule);
-            TryAddDirectRule(rules, facts, SiegeCastleActionKind.SellPrisoners, SellRule);
-            if (SiegeCastlePrisonerTrustProfile.MeetsVoluntaryThreshold(
-                    SiegeCastleActionKind.RecruitPrisonersVoluntary,
-                    facts.SpeakerTrust))
+            if (TryAddDirectRule(rules, facts, SiegeCastleActionKind.TreatPrisoners, TreatRule)
+                || TryAddDirectRule(rules, facts, SiegeCastleActionKind.ReceiveArmaments, ArmamentsRule))
             {
-                TryAddDirectRule(rules, facts, SiegeCastleActionKind.RecruitPrisonersVoluntary, VoluntaryRecruitRule);
+                return rules;
             }
-            TryAddDirectRule(rules, facts, SiegeCastleActionKind.RecruitPrisonersForced, ForcedRecruitRule);
-            if (SiegeCastlePrisonerTrustProfile.MeetsVoluntaryThreshold(
-                    SiegeCastleActionKind.LaborPrisonersVoluntary,
-                    facts.SpeakerTrust))
+            if (TryAddRegularPrisonerDispositionRule(rules, facts))
             {
-                TryAddDirectRule(rules, facts, SiegeCastleActionKind.LaborPrisonersVoluntary, VoluntaryLaborRule);
+                return rules;
             }
-            TryAddDirectRule(rules, facts, SiegeCastleActionKind.LaborPrisonersForced, ForcedLaborRule);
-            if (SiegeCastlePrisonerTrustProfile.MeetsVoluntaryThreshold(
-                    SiegeCastleActionKind.InstructorPrisonersVoluntary,
-                    facts.SpeakerTrust))
-            {
-                TryAddDirectRule(rules, facts, SiegeCastleActionKind.InstructorPrisonersVoluntary, VoluntaryInstructorRule);
-            }
-            TryAddDirectRule(rules, facts, SiegeCastleActionKind.InstructorPrisonersForced, ForcedInstructorRule);
-            TryAddDirectRule(rules, facts, SiegeCastleActionKind.SlaughterPrisoners, SlaughterRule);
 
             if (rules.Count == 0)
             {
@@ -154,7 +169,15 @@ public static class SiegeCastlePostprocessRuleCatalog
                     facts.PendingProposalForSpeaker);
                 if (disposition.ReasonCode != "player_rejected_or_cancelled")
                 {
-                    rules.Add(ProposeRecruitRule);
+                    SiegeCastlePrisonerDispositionKind intent = SiegeCastlePlayerAuthorizationPolicy.DetectIntent(facts.PlayerText);
+                    if (intent != SiegeCastlePrisonerDispositionKind.None)
+                    {
+                        AddProposalRule(rules, intent, allowAlliedOnlyProposal: false);
+                    }
+                    else if (SiegeCastlePlayerAuthorizationPolicy.IsGeneralDispositionAdviceRequest(facts.PlayerText))
+                    {
+                        AddRegularPrisonerProposalRules(rules);
+                    }
                 }
             }
             return rules;
@@ -163,8 +186,11 @@ public static class SiegeCastlePostprocessRuleCatalog
         if (facts.SpeakerRole == SiegeCastleActionSpeakerRole.CapturedLord
             && facts.TerminalActionForTarget == SiegeCastleActionKind.Unknown)
         {
-            TryAddDirectRule(rules, facts, SiegeCastleActionKind.TreatPrisoners, TreatRule);
-            TryAddDirectRule(rules, facts, SiegeCastleActionKind.ReceiveArmaments, ArmamentsRule);
+            if (TryAddDirectRule(rules, facts, SiegeCastleActionKind.TreatPrisoners, TreatRule)
+                || TryAddDirectRule(rules, facts, SiegeCastleActionKind.ReceiveArmaments, ArmamentsRule))
+            {
+                return rules;
+            }
             SiegeCastleLordRecruitmentBranch branch = SiegeCastleLordRecruitmentBranchProfile.Resolve(
                 facts.SpeakerIsClanLeader,
                 facts.PlayerHasKingdom,
@@ -172,14 +198,17 @@ public static class SiegeCastlePostprocessRuleCatalog
                 facts.PlayerText);
             if (branch != SiegeCastleLordRecruitmentBranch.Unknown)
             {
-                TryAddDirectRule(rules, facts, SiegeCastleActionKind.RecruitLord, RecruitLordRule);
+                if (TryAddDirectRule(rules, facts, SiegeCastleActionKind.RecruitLord, RecruitLordRule))
+                {
+                    return rules;
+                }
             }
             TryAddDirectRule(rules, facts, SiegeCastleActionKind.ExecuteLord, ExecuteLordRule);
         }
         return rules;
     }
 
-    private static void TryAddDirectRule(
+    private static bool TryAddDirectRule(
         ICollection<SiegePostprocessRuleDefinition> rules,
         SiegeCastlePostprocessRuleFacts facts,
         SiegeCastleActionKind action,
@@ -187,13 +216,153 @@ public static class SiegeCastlePostprocessRuleCatalog
     {
         if (facts.IsActionAlreadyApplied(action))
         {
-            return;
+            return false;
         }
         SiegeCastleDirectActionAuthorizationDecision authorization =
             SiegeCastleDirectActionAuthorizationPolicy.Evaluate(action, facts.PlayerText, facts.PendingProposalForSpeaker);
         if (authorization.IsAuthorized)
         {
             rules.Add(rule);
+            return true;
+        }
+        return false;
+    }
+
+    private static bool TryAddAlliedAuthorizedDispositionRule(
+        ICollection<SiegePostprocessRuleDefinition> rules,
+        SiegeCastlePostprocessRuleFacts facts,
+        SiegeCastlePrisonerDispositionKind disposition)
+    {
+        return disposition switch
+        {
+            SiegeCastlePrisonerDispositionKind.Recruit => TryAddDirectRule(rules, facts, SiegeCastleActionKind.RecruitPrisonersForced, ForcedRecruitRule),
+            SiegeCastlePrisonerDispositionKind.Slaughter => TryAddDirectRule(rules, facts, SiegeCastleActionKind.SlaughterPrisoners, SlaughterRule),
+            SiegeCastlePrisonerDispositionKind.Release => TryAddDirectRule(rules, facts, SiegeCastleActionKind.ReleasePrisoners, ReleaseRule),
+            SiegeCastlePrisonerDispositionKind.Sell => TryAddDirectRule(rules, facts, SiegeCastleActionKind.SellPrisoners, SellRule),
+            SiegeCastlePrisonerDispositionKind.Labor => TryAddDirectRule(rules, facts, SiegeCastleActionKind.LaborPrisonersForced, ForcedLaborRule),
+            SiegeCastlePrisonerDispositionKind.Instructor => TryAddDirectRule(rules, facts, SiegeCastleActionKind.InstructorPrisonersForced, ForcedInstructorRule),
+            _ => false
+        };
+    }
+
+    private static bool TryAddRegularPrisonerDispositionRule(
+        ICollection<SiegePostprocessRuleDefinition> rules,
+        SiegeCastlePostprocessRuleFacts facts)
+    {
+        SiegeCastlePlayerAuthorizationDecision authorization = SiegeCastlePlayerAuthorizationPolicy.Evaluate(
+            facts.PlayerText,
+            facts.PendingProposalForSpeaker);
+        SiegeCastlePrisonerDispositionKind intent = authorization.IsAuthorized
+            ? authorization.Disposition
+            : SiegeCastlePlayerAuthorizationPolicy.DetectIntent(facts.PlayerText);
+        bool voluntaryContext = authorization.UsedPendingProposal
+            || SiegeCastlePlayerAuthorizationPolicy.IsDiscussionText(facts.PlayerText);
+
+        switch (intent)
+        {
+            case SiegeCastlePrisonerDispositionKind.Release when authorization.IsAuthorized:
+                return TryAddDirectRule(rules, facts, SiegeCastleActionKind.ReleasePrisoners, ReleaseRule);
+            case SiegeCastlePrisonerDispositionKind.Sell when authorization.IsAuthorized:
+                return TryAddDirectRule(rules, facts, SiegeCastleActionKind.SellPrisoners, SellRule);
+            case SiegeCastlePrisonerDispositionKind.Slaughter when authorization.IsAuthorized:
+                return TryAddDirectRule(rules, facts, SiegeCastleActionKind.SlaughterPrisoners, SlaughterRule);
+            case SiegeCastlePrisonerDispositionKind.Recruit:
+                return TryAddConsentSensitiveRule(
+                    rules,
+                    facts,
+                    authorization,
+                    voluntaryContext,
+                    SiegeCastleActionKind.RecruitPrisonersVoluntary,
+                    VoluntaryRecruitRule,
+                    SiegeCastleActionKind.RecruitPrisonersForced,
+                    ForcedRecruitRule);
+            case SiegeCastlePrisonerDispositionKind.Labor:
+                return TryAddConsentSensitiveRule(
+                    rules,
+                    facts,
+                    authorization,
+                    voluntaryContext,
+                    SiegeCastleActionKind.LaborPrisonersVoluntary,
+                    VoluntaryLaborRule,
+                    SiegeCastleActionKind.LaborPrisonersForced,
+                    ForcedLaborRule);
+            case SiegeCastlePrisonerDispositionKind.Instructor:
+                return TryAddConsentSensitiveRule(
+                    rules,
+                    facts,
+                    authorization,
+                    voluntaryContext,
+                    SiegeCastleActionKind.InstructorPrisonersVoluntary,
+                    VoluntaryInstructorRule,
+                    SiegeCastleActionKind.InstructorPrisonersForced,
+                    ForcedInstructorRule);
+            default:
+                return false;
+        }
+    }
+
+    private static bool TryAddConsentSensitiveRule(
+        ICollection<SiegePostprocessRuleDefinition> rules,
+        SiegeCastlePostprocessRuleFacts facts,
+        SiegeCastlePlayerAuthorizationDecision authorization,
+        bool voluntaryContext,
+        SiegeCastleActionKind voluntaryAction,
+        SiegePostprocessRuleDefinition voluntaryRule,
+        SiegeCastleActionKind forcedAction,
+        SiegePostprocessRuleDefinition forcedRule)
+    {
+        if (voluntaryContext)
+        {
+            return SiegeCastlePrisonerTrustProfile.MeetsVoluntaryThreshold(voluntaryAction, facts.SpeakerTrust)
+                && TryAddDirectRule(rules, facts, voluntaryAction, voluntaryRule);
+        }
+        return authorization.IsAuthorized
+            && TryAddDirectRule(rules, facts, forcedAction, forcedRule);
+    }
+
+    private static void AddAlliedProposalRules(ICollection<SiegePostprocessRuleDefinition> rules)
+    {
+        rules.Add(ProposeRecruitRule);
+        rules.Add(ProposeSlaughterRule);
+        rules.Add(ProposeReleaseRule);
+        rules.Add(ProposeSellRule);
+        rules.Add(ProposeLaborRule);
+        rules.Add(ProposeInstructorRule);
+    }
+
+    private static void AddRegularPrisonerProposalRules(ICollection<SiegePostprocessRuleDefinition> rules)
+    {
+        rules.Add(ProposeReleaseRule);
+        rules.Add(ProposeRecruitRule);
+        rules.Add(ProposeLaborRule);
+        rules.Add(ProposeInstructorRule);
+    }
+
+    private static void AddProposalRule(
+        ICollection<SiegePostprocessRuleDefinition> rules,
+        SiegeCastlePrisonerDispositionKind disposition,
+        bool allowAlliedOnlyProposal)
+    {
+        switch (disposition)
+        {
+            case SiegeCastlePrisonerDispositionKind.Recruit:
+                rules.Add(ProposeRecruitRule);
+                break;
+            case SiegeCastlePrisonerDispositionKind.Slaughter when allowAlliedOnlyProposal:
+                rules.Add(ProposeSlaughterRule);
+                break;
+            case SiegeCastlePrisonerDispositionKind.Release:
+                rules.Add(ProposeReleaseRule);
+                break;
+            case SiegeCastlePrisonerDispositionKind.Sell when allowAlliedOnlyProposal:
+                rules.Add(ProposeSellRule);
+                break;
+            case SiegeCastlePrisonerDispositionKind.Labor:
+                rules.Add(ProposeLaborRule);
+                break;
+            case SiegeCastlePrisonerDispositionKind.Instructor:
+                rules.Add(ProposeInstructorRule);
+                break;
         }
     }
 

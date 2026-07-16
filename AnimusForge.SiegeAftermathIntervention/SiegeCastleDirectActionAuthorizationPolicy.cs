@@ -16,44 +16,14 @@ public static class SiegeCastleDirectActionAuthorizationPolicy
 
     private static readonly string[] TreatTerms =
     {
-        "善待", "优待", "给俘虏", "给予物资", "发放物资", "给他们食物", "给你们食物", "给水", "医治", "照料", "不许虐待", "不要虐待", "别虐待",
+        "善待", "优待", "给俘虏", "给予物资", "发放物资", "分发物资", "给他们食物", "给你们食物", "分发口粮", "发放口粮", "给水", "发药", "包扎", "医治", "照料", "不许虐待", "不要虐待", "别虐待",
         "treat well", "give supplies", "give food", "care for"
     };
 
     private static readonly string[] ArmamentTerms =
     {
-        "接收军械", "收缴军械", "收缴装备", "交出装备", "交出武器", "交出盔甲", "卸下武器", "缴械", "搜身", "搜缴", "钱财",
+        "接收军械", "收缴军械", "收缴装备", "收缴武器", "收缴盔甲", "收缴甲胄", "收缴他们的武器", "收缴他们的盔甲", "收缴他们的甲胄", "交出装备", "交出武器", "交出盔甲", "交出甲胄", "卸下武器", "卸甲", "剥去甲胄", "收走盔甲", "收走他们的甲胄", "缴械", "搜身", "搜缴", "搜刮装备", "搜掠装备", "钱财",
         "confiscate", "hand over your weapons", "seize equipment", "disarm"
-    };
-
-    private static readonly string[] ReleaseTerms =
-    {
-        "释放", "放了他们", "放你们走", "放走", "恢复自由", "准许离开", "饶你们一命",
-        "release", "set free", "let them go", "let you go"
-    };
-
-    private static readonly string[] SellTerms =
-    {
-        "贩卖", "卖掉", "卖给", "送去赎卖", "换取赎金", "押去奴隶市场",
-        "sell the prisoners", "ransom them", "slave market"
-    };
-
-    private static readonly string[] RecruitTerms =
-    {
-        "收编", "招降", "纳降", "编入", "归顺", "加入我军", "加入我的部队", "加入我们", "为我效力",
-        "recruit", "enlist", "join my army", "join us"
-    };
-
-    private static readonly string[] LaborTerms =
-    {
-        "劳役", "服刑", "农奴", "修缮道路", "修路", "修复道路", "修缮城堡", "劳动赎罪", "做苦工",
-        "forced labor", "work sentence", "repair the roads", "labor service"
-    };
-
-    private static readonly string[] InstructorTerms =
-    {
-        "充当教官", "担任教官", "训练新兵", "操练新兵", "教授军务", "教导新兵", "训练志愿兵",
-        "serve as instructors", "train recruits", "drill recruits"
     };
 
     private static readonly string[] LordRecruitTerms =
@@ -79,26 +49,29 @@ public static class SiegeCastleDirectActionAuthorizationPolicy
             return SiegeCastleDirectActionAuthorizationDecision.Denied("player_text_missing");
         }
 
-        if (action == SiegeCastleActionKind.SlaughterPrisoners
-            || SiegeCastleActionKindProfile.IsRecruitment(action))
+        if (SiegeCastleActionKindProfile.IsRegularPrisonerTerminal(action))
         {
             SiegeCastlePlayerAuthorizationDecision disposition = SiegeCastlePlayerAuthorizationPolicy.Evaluate(
                 text,
                 pendingProposalForSpeaker);
-            SiegeCastlePrisonerDispositionKind required = action == SiegeCastleActionKind.SlaughterPrisoners
-                ? SiegeCastlePrisonerDispositionKind.Slaughter
-                : SiegeCastlePrisonerDispositionKind.Recruit;
+            SiegeCastlePrisonerDispositionKind required = SiegeCastlePrisonerDispositionKindProfile.FromAction(action);
             if (disposition.IsAuthorized && disposition.Disposition == required)
             {
                 return SiegeCastleDirectActionAuthorizationDecision.Authorized(disposition.ReasonCode);
             }
 
-            // A direct offer/question to the prisoners may resolve as voluntary recruitment.
-            if (action == SiegeCastleActionKind.RecruitPrisonersVoluntary
-                && ContainsAny(text, RecruitTerms)
-                && !ContainsAny(text, new[] { "不收编", "别加入", "不要加入", "don't join", "do not join" }))
+            // A direct offer/question may resolve only through a willing prisoner's reply.
+            if (SiegeCastleActionKindProfile.IsVoluntary(action)
+                && SiegeCastlePlayerAuthorizationPolicy.HasPositiveIntent(text, required))
             {
-                return SiegeCastleDirectActionAuthorizationDecision.Authorized("player_voluntary_recruit_negotiation");
+                string reason = required switch
+                {
+                    SiegeCastlePrisonerDispositionKind.Recruit => "player_voluntary_recruit_negotiation",
+                    SiegeCastlePrisonerDispositionKind.Labor => "player_voluntary_labor_negotiation",
+                    SiegeCastlePrisonerDispositionKind.Instructor => "player_voluntary_instructor_negotiation",
+                    _ => "player_voluntary_castle_negotiation"
+                };
+                return SiegeCastleDirectActionAuthorizationDecision.Authorized(reason);
             }
             return SiegeCastleDirectActionAuthorizationDecision.Denied("player_disposition_authorization_required");
         }
@@ -112,12 +85,6 @@ public static class SiegeCastleDirectActionAuthorizationPolicy
         {
             SiegeCastleActionKind.TreatPrisoners => ContainsAny(text, TreatTerms),
             SiegeCastleActionKind.ReceiveArmaments => ContainsAny(text, ArmamentTerms),
-            SiegeCastleActionKind.ReleasePrisoners => ContainsAny(text, ReleaseTerms),
-            SiegeCastleActionKind.SellPrisoners => ContainsAny(text, SellTerms),
-            SiegeCastleActionKind.LaborPrisonersVoluntary => ContainsAny(text, LaborTerms),
-            SiegeCastleActionKind.LaborPrisonersForced => ContainsAny(text, LaborTerms),
-            SiegeCastleActionKind.InstructorPrisonersVoluntary => ContainsAny(text, InstructorTerms),
-            SiegeCastleActionKind.InstructorPrisonersForced => ContainsAny(text, InstructorTerms),
             SiegeCastleActionKind.RecruitLord => ContainsAny(text, LordRecruitTerms),
             SiegeCastleActionKind.ExecuteLord => ContainsAny(text, LordExecuteTerms),
             _ => false

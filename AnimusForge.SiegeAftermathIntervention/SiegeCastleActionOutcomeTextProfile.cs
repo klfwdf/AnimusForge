@@ -8,6 +8,7 @@ public static class SiegeCastleActionOutcomeTextProfile
     public const uint SuccessColor = 0xFFB6F7A8u;
     public const uint WarningColor = 0xFFFFD27Fu;
     public const uint DangerColor = 0xFFFF7A7Au;
+    public const uint SettlementColor = 0xFFAEDCFFu;
 
     public static string BuildCareMessage(int affected, int trustDelta)
         => "【城堡处置】已按兵种等级向 " + Count(affected)
@@ -47,6 +48,16 @@ public static class SiegeCastleActionOutcomeTextProfile
         => "【城堡处置】普通战俘实际死亡累计 " + Count(killedTotal)
             + " 人；仍有 " + Count(remaining) + " 人待实际击杀。";
 
+    public static string BuildSettlementEffectMessage(
+        float loyaltyDelta,
+        float securityDelta,
+        float prosperityDelta,
+        bool devastateEquivalent)
+        => "【城堡处置】原版宽恕已且仅结算一次；城堡附加结算：忠诚 "
+            + Signed(loyaltyDelta) + "，治安 " + Signed(securityDelta)
+            + "，繁荣 " + Signed(prosperityDelta)
+            + (devastateEquivalent ? "（已补齐至原版毁坏强度）" : string.Empty) + "。";
+
     public static string BuildLordProcessMessage(SiegeCastleActionKind action, string lordName, int items = 0)
         => action == SiegeCastleActionKind.ReceiveArmaments
             ? "【城堡处置】已收缴 " + Name(lordName) + " 的武器与盔甲，共 " + Count(items) + " 件，直接送入背包。"
@@ -84,6 +95,7 @@ public static class SiegeCastleActionOutcomeTextProfile
                 : "；原版角色死亡、关系与家族后果已结算。");
 
     private static string Signed(int value) => value > 0 ? "+" + value : value.ToString();
+    private static string Signed(float value) => value > 0f ? "+" + value.ToString("0.##") : value.ToString("0.##");
     private static int Count(int value) => Math.Max(0, value);
     private static string Name(string value) => string.IsNullOrWhiteSpace(value) ? "该被俘领主" : value.Trim();
 }

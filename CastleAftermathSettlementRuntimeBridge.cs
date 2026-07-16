@@ -117,6 +117,7 @@ internal static class CastleAftermathSettlementRuntimeBridge
 		{
 			float prosperityTopUp = 0f;
 			float loyaltyDelta = SiegeCastleSettlementEffectMath.ClampLoyalty(_pendingLoyalty);
+			float securityDelta = SiegeCastleSettlementEffectMath.ClampSecurity(_pendingSecurity);
 			float prosperityDelta = SiegeCastleSettlementEffectMath.ClampProsperity(_pendingProsperity);
 			if (_pendingDevastateEquivalent)
 			{
@@ -128,7 +129,7 @@ internal static class CastleAftermathSettlementRuntimeBridge
 			}
 
 			settlement.Town.Loyalty += loyaltyDelta;
-			settlement.Town.Security += SiegeCastleSettlementEffectMath.ClampSecurity(_pendingSecurity);
+			settlement.Town.Security += securityDelta;
 			settlement.Town.Prosperity = MathF.Max(0f, settlement.Town.Prosperity + prosperityDelta + prosperityTopUp);
 			AdjustSettlementTrust(settlement, ClampTrustDelta(_pendingSettlementTrust), "gccz_castle_settlement");
 			AdjustBoundVillageTrust(settlement, ClampTrustDelta(_pendingVillageTrust), "gccz_castle_bound_village");
@@ -139,9 +140,19 @@ internal static class CastleAftermathSettlementRuntimeBridge
 				+ (settlement.StringId ?? "N/A")
 				+ ", Actions=" + string.Join(",", PendingKeys)
 				+ ", Loyalty=" + loyaltyDelta.ToString("0.##")
-				+ ", Security=" + SiegeCastleSettlementEffectMath.ClampSecurity(_pendingSecurity).ToString("0.##")
+				+ ", Security=" + securityDelta.ToString("0.##")
 				+ ", Prosperity=" + (prosperityDelta + prosperityTopUp).ToString("0.##")
 				+ ", DevastateEquivalent=" + _pendingDevastateEquivalent);
+			if (PendingKeys.Count > 0)
+			{
+				InformationManager.DisplayMessage(new InformationMessage(
+					SiegeCastleActionOutcomeTextProfile.BuildSettlementEffectMessage(
+						loyaltyDelta,
+						securityDelta,
+						prosperityDelta + prosperityTopUp,
+						_pendingDevastateEquivalent),
+					Color.FromUint(SiegeCastleActionOutcomeTextProfile.SettlementColor)));
+			}
 		}
 		catch (Exception ex)
 		{

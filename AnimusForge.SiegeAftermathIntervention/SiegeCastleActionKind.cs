@@ -22,7 +22,11 @@ public enum SiegeCastleActionKind
     InstructorPrisonersVoluntary = 13,
     InstructorPrisonersForced = 14,
     RecruitLord = 15,
-    ExecuteLord = 16
+    ExecuteLord = 16,
+    ProposeReleasePrisoners = 17,
+    ProposeSellPrisoners = 18,
+    ProposeLaborPrisoners = 19,
+    ProposeInstructorPrisoners = 20
 }
 
 /// <summary>
@@ -33,7 +37,11 @@ public static class SiegeCastleActionKindProfile
     public static bool IsProposal(SiegeCastleActionKind action)
     {
         return action == SiegeCastleActionKind.ProposeRecruitPrisoners
-            || action == SiegeCastleActionKind.ProposeSlaughterPrisoners;
+            || action == SiegeCastleActionKind.ProposeSlaughterPrisoners
+            || action == SiegeCastleActionKind.ProposeReleasePrisoners
+            || action == SiegeCastleActionKind.ProposeSellPrisoners
+            || action == SiegeCastleActionKind.ProposeLaborPrisoners
+            || action == SiegeCastleActionKind.ProposeInstructorPrisoners;
     }
 
     public static bool IsProcess(SiegeCastleActionKind action)
@@ -91,5 +99,19 @@ public static class SiegeCastleActionKindProfile
     public static bool IsSettlement(SiegeCastleActionKind action)
     {
         return action != SiegeCastleActionKind.Unknown && !IsProposal(action);
+    }
+
+    public static bool CanRegularPrisonerPropose(SiegeCastleActionKind action)
+    {
+        return action == SiegeCastleActionKind.ProposeRecruitPrisoners
+            || action == SiegeCastleActionKind.ProposeReleasePrisoners
+            || action == SiegeCastleActionKind.ProposeLaborPrisoners
+            || action == SiegeCastleActionKind.ProposeInstructorPrisoners;
+    }
+
+    public static bool CanAlliedSoldierExecute(SiegeCastleActionKind action)
+    {
+        return IsProcess(action)
+            || (IsRegularPrisonerTerminal(action) && !IsVoluntary(action));
     }
 }

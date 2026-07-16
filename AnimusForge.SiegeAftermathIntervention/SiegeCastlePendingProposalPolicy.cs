@@ -1,7 +1,7 @@
 namespace AnimusForge.SiegeAftermathIntervention;
 
 /// <summary>
-/// Decides when a pending soldier proposal must be discarded before the next postprocess pass.
+/// Decides when a pending allied-soldier or regular-prisoner proposal must be discarded before the next postprocess pass.
 /// </summary>
 public static class SiegeCastlePendingProposalPolicy
 {

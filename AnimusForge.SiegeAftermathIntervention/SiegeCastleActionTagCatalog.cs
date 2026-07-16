@@ -12,6 +12,10 @@ public static class SiegeCastleActionTagCatalog
 {
     public const string ProposeRecruitPrisonersTag = "[ACTION:CASTLE_PROPOSE_RECRUIT_PRISONERS]";
     public const string ProposeSlaughterPrisonersTag = "[ACTION:CASTLE_PROPOSE_SLAUGHTER_PRISONERS]";
+    public const string ProposeReleasePrisonersTag = "[ACTION:CASTLE_PROPOSE_RELEASE_PRISONERS]";
+    public const string ProposeSellPrisonersTag = "[ACTION:CASTLE_PROPOSE_SELL_PRISONERS]";
+    public const string ProposeLaborPrisonersTag = "[ACTION:CASTLE_PROPOSE_LABOR_PRISONERS]";
+    public const string ProposeInstructorPrisonersTag = "[ACTION:CASTLE_PROPOSE_INSTRUCTOR_PRISONERS]";
     public const string TreatPrisonersTag = "[ACTION:CASTLE_TREAT_PRISONERS]";
     public const string ReceiveArmamentsTag = "[ACTION:CASTLE_RECEIVE_ARMAMENTS]";
     public const string SlaughterPrisonersTag = "[ACTION:CASTLE_SLAUGHTER_PRISONERS]";
@@ -43,6 +47,18 @@ public static class SiegeCastleActionTagCatalog
             ["CASTLE_PROPOSE_SLAUGHTER_PRISONERS"] = SiegeCastleActionKind.ProposeSlaughterPrisoners,
             ["SIEGE_CASTLE_PROPOSE_SLAUGHTER_PRISONERS"] = SiegeCastleActionKind.ProposeSlaughterPrisoners,
             ["城堡提议屠戮战俘"] = SiegeCastleActionKind.ProposeSlaughterPrisoners,
+            ["CASTLE_PROPOSE_RELEASE_PRISONERS"] = SiegeCastleActionKind.ProposeReleasePrisoners,
+            ["SIEGE_CASTLE_PROPOSE_RELEASE_PRISONERS"] = SiegeCastleActionKind.ProposeReleasePrisoners,
+            ["城堡提议释放战俘"] = SiegeCastleActionKind.ProposeReleasePrisoners,
+            ["CASTLE_PROPOSE_SELL_PRISONERS"] = SiegeCastleActionKind.ProposeSellPrisoners,
+            ["SIEGE_CASTLE_PROPOSE_SELL_PRISONERS"] = SiegeCastleActionKind.ProposeSellPrisoners,
+            ["城堡提议贩卖战俘"] = SiegeCastleActionKind.ProposeSellPrisoners,
+            ["CASTLE_PROPOSE_LABOR_PRISONERS"] = SiegeCastleActionKind.ProposeLaborPrisoners,
+            ["SIEGE_CASTLE_PROPOSE_LABOR_PRISONERS"] = SiegeCastleActionKind.ProposeLaborPrisoners,
+            ["城堡提议劳役战俘"] = SiegeCastleActionKind.ProposeLaborPrisoners,
+            ["CASTLE_PROPOSE_INSTRUCTOR_PRISONERS"] = SiegeCastleActionKind.ProposeInstructorPrisoners,
+            ["SIEGE_CASTLE_PROPOSE_INSTRUCTOR_PRISONERS"] = SiegeCastleActionKind.ProposeInstructorPrisoners,
+            ["城堡提议战俘充当教官"] = SiegeCastleActionKind.ProposeInstructorPrisoners,
             ["CASTLE_TREAT_PRISONERS"] = SiegeCastleActionKind.TreatPrisoners,
             ["SIEGE_CASTLE_TREAT_PRISONERS"] = SiegeCastleActionKind.TreatPrisoners,
             ["城堡善待俘虏"] = SiegeCastleActionKind.TreatPrisoners,
@@ -100,6 +116,10 @@ public static class SiegeCastleActionTagCatalog
     {
         SiegeCastleActionKind.ProposeRecruitPrisoners,
         SiegeCastleActionKind.ProposeSlaughterPrisoners,
+        SiegeCastleActionKind.ProposeReleasePrisoners,
+        SiegeCastleActionKind.ProposeSellPrisoners,
+        SiegeCastleActionKind.ProposeLaborPrisoners,
+        SiegeCastleActionKind.ProposeInstructorPrisoners,
         SiegeCastleActionKind.TreatPrisoners,
         SiegeCastleActionKind.ReceiveArmaments,
         SiegeCastleActionKind.ReleasePrisoners,
@@ -121,6 +141,10 @@ public static class SiegeCastleActionTagCatalog
         {
             [SiegeCastleActionKind.ProposeRecruitPrisoners] = ProposeRecruitPrisonersTag,
             [SiegeCastleActionKind.ProposeSlaughterPrisoners] = ProposeSlaughterPrisonersTag,
+            [SiegeCastleActionKind.ProposeReleasePrisoners] = ProposeReleasePrisonersTag,
+            [SiegeCastleActionKind.ProposeSellPrisoners] = ProposeSellPrisonersTag,
+            [SiegeCastleActionKind.ProposeLaborPrisoners] = ProposeLaborPrisonersTag,
+            [SiegeCastleActionKind.ProposeInstructorPrisoners] = ProposeInstructorPrisonersTag,
             [SiegeCastleActionKind.TreatPrisoners] = TreatPrisonersTag,
             [SiegeCastleActionKind.ReceiveArmaments] = ReceiveArmamentsTag,
             [SiegeCastleActionKind.SlaughterPrisoners] = SlaughterPrisonersTag,

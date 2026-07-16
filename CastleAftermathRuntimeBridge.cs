@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using AnimusForge.SiegeAftermathIntervention;
 using Helpers;
+using SandBox;
+using SandBox.Missions.AgentBehaviors;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.GameState;
 using TaleWorlds.CampaignSystem.Party;
@@ -35,6 +37,18 @@ internal static class CastleAftermathRuntimeBridge
 		try
 		{
 			return mission?.GetMissionBehavior<CastleAftermathPrisonerCommandMissionBehavior>() != null;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	internal static bool IsRegularPrisonerSlaughterActive(Mission mission)
+	{
+		try
+		{
+			return mission?.GetMissionBehavior<CastleAftermathPrisonerCommandMissionBehavior>()?.IsSlaughterActive == true;
 		}
 		catch
 		{
@@ -542,12 +556,14 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 	private const float MoveTimeoutSeconds = 12f;
 	private const float PoseRefreshSeconds = 1f;
 	private const float MovePollSeconds = 0.2f;
+	private const float SlaughterCombatRefreshSeconds = 0.5f;
 
 	private readonly int _selectedCount;
 	private readonly Dictionary<Agent, bool> _agents = new Dictionary<Agent, bool>();
 	private readonly Dictionary<Formation, FormationMovementState> _movementStates = new Dictionary<Formation, FormationMovementState>();
 	private readonly HashSet<Agent> _civilianActionSetApplied = new HashSet<Agent>();
 	private readonly HashSet<Agent> _slaughterTargets = new HashSet<Agent>();
+	private readonly HashSet<int> _slaughterReadyAlliedAgentIndexes = new HashSet<int>();
 
 	private bool _spawnCompleted;
 	private bool _movementInitialized;
@@ -559,6 +575,7 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 	private int _spawnedLords;
 	private bool _slaughterActive;
 	private Team _slaughterEnemyTeam;
+	private float _nextSlaughterCombatRefreshTime;
 
 	internal CastleAftermathPrisonerCommandMissionBehavior(int selectedCount)
 	{
@@ -566,6 +583,8 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 	}
 
 	public override MissionBehaviorType BehaviorType => MissionBehaviorType.Other;
+
+	internal bool IsSlaughterActive => _slaughterActive;
 
 	internal void RegisterPrisoner(Agent agent, bool isLord)
 	{
@@ -603,6 +622,7 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 		{
 			return 0;
 		}
+		SetSlaughterTeamHostility(playerTeam);
 
 		Formation enemyFormation = _slaughterEnemyTeam.GetFormation(FormationClass.Infantry);
 		foreach (KeyValuePair<Agent, bool> pair in _agents.ToList())
@@ -620,10 +640,12 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 				agent.SetIsAIPaused(isPaused: false);
 				agent.DisableScriptedMovement();
 				agent.Controller = AgentControllerType.AI;
+				agent.SetAgentFlags(agent.GetAgentFlags() | AgentFlag.CanGetAlarmed);
 				agent.SetTeam(_slaughterEnemyTeam, sync: true);
 				agent.Formation = enemyFormation;
+				agent.TryAttachToFormation();
 				agent.SetWatchState(Agent.WatchState.Alarmed);
-				agent.SetShouldCatchUpWithFormation(true);
+				agent.SetShouldCatchUpWithFormation(false);
 				agent.UpdateFormationOrders();
 				_slaughterTargets.Add(agent);
 			}
@@ -638,20 +660,180 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 			return 0;
 		}
 		_slaughterActive = true;
+		_nextSlaughterCombatRefreshTime = 0f;
+		IssueSlaughterCombatOrders(mission, logDetails: true);
+		return _slaughterTargets.Count;
+	}
+
+	private void IssueSlaughterCombatOrders(Mission mission, bool logDetails)
+	{
+		if (!_slaughterActive || mission == null || mission.IsMissionEnding)
+		{
+			return;
+		}
+		Team playerTeam = mission.PlayerTeam ?? Agent.Main?.Team;
+		if (playerTeam == null || _slaughterEnemyTeam == null)
+		{
+			return;
+		}
+
+		List<Agent> activeTargets = _slaughterTargets
+			.Where(agent => agent != null && agent.IsHuman && agent.IsActive())
+			.ToList();
+		if (activeTargets.Count == 0)
+		{
+			_slaughterActive = false;
+			Logger.Log("CastleAftermath", "Castle slaughter combat ended because no active scene targets remain.");
+			return;
+		}
+
+		SetSlaughterTeamHostility(playerTeam);
+		Formation enemyFormation = _slaughterEnemyTeam.GetFormation(FormationClass.Infantry)
+			?? activeTargets.Select(agent => agent.Formation).FirstOrDefault(formation => formation != null);
+		Formation alliedFormation = playerTeam.GetFormation(
+			(FormationClass)SiegeCastleRosterSelectionProfile.AlliedFormationClassIndex);
+		if (enemyFormation == null || alliedFormation == null)
+		{
+			if (logDetails)
+			{
+				Logger.Log("CastleAftermath", "Castle slaughter combat order missing formation. Allied="
+					+ (alliedFormation?.FormationIndex.ToString() ?? "null") + ", Enemy="
+					+ (enemyFormation?.FormationIndex.ToString() ?? "null"));
+			}
+			return;
+		}
+
 		try
 		{
-			enemyFormation?.SetMovementOrder(MovementOrder.MovementOrderCharge);
-			Formation alliedFormation = playerTeam.GetFormation((FormationClass)SiegeCastleRosterSelectionProfile.AlliedFormationClassIndex);
-			alliedFormation?.SetMovementOrder(MovementOrder.MovementOrderCharge);
-			alliedFormation?.SetFiringOrder(FiringOrder.FiringOrderFireAtWill);
+			enemyFormation.SetMovementOrder(MovementOrder.MovementOrderStop);
+			alliedFormation.SetMovementOrder(MovementOrder.MovementOrderChargeToTarget(enemyFormation));
+			alliedFormation.SetFiringOrder(FiringOrder.FiringOrderFireAtWill);
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("CastleAftermath", "Issue castle slaughter charge order failed: " + ex.Message);
+			Logger.Log("CastleAftermath", "Issue targeted castle slaughter formation order failed: " + ex.Message);
 		}
-		Logger.Log("CastleAftermath", "Started real castle prisoner slaughter. Targets=" + _slaughterTargets.Count
-			+ ", AlliedFormation=" + SiegeCastleRosterSelectionProfile.AlliedFormationClassIndex);
-		return _slaughterTargets.Count;
+
+		List<Agent> alliedSoldiers = mission.Agents
+			.Where(agent => agent != null
+				&& agent.IsHuman
+				&& agent.IsActive()
+				&& !agent.IsMainAgent
+				&& agent.Team == playerTeam
+				&& agent.Formation == alliedFormation
+				&& !(agent.Origin is PrisonerAgentOrigin)
+				&& !CastleAftermathRuntimeBridge.IsPrisonerAgent(agent))
+			.ToList();
+		foreach (Agent allied in alliedSoldiers)
+		{
+			PrepareAlliedForSlaughterCombat(allied, FindNearestTarget(allied, activeTargets));
+		}
+
+		if (logDetails)
+		{
+			Logger.Log("CastleAftermath", "Started targeted castle prisoner slaughter. Targets=" + activeTargets.Count
+				+ ", AlliedAttackers=" + alliedSoldiers.Count
+				+ ", AlliedFormation=" + alliedFormation.FormationIndex
+				+ ", EnemyFormation=" + enemyFormation.FormationIndex
+				+ ", MutualHostility=" + playerTeam.IsEnemyOf(_slaughterEnemyTeam));
+		}
+	}
+
+	private void PrepareAlliedForSlaughterCombat(Agent allied, Agent target)
+	{
+		try
+		{
+			allied.Controller = AgentControllerType.AI;
+			allied.SetIsAIPaused(isPaused: false);
+			allied.DisableScriptedMovement();
+			allied.SetMaximumSpeedLimit(-1f, false);
+			allied.SetAgentFlags(allied.GetAgentFlags() | AgentFlag.CanGetAlarmed | AgentFlag.CanWieldWeapon);
+			allied.SetWatchState(Agent.WatchState.Alarmed);
+			allied.SetShouldCatchUpWithFormation(true);
+			allied.TryAttachToFormation();
+			allied.UpdateFormationOrders();
+			if (_slaughterReadyAlliedAgentIndexes.Add(allied.Index))
+			{
+				allied.ResetEnemyCaches();
+				allied.InvalidateTargetAgent();
+				allied.WieldInitialWeapons(
+					Agent.WeaponWieldActionType.InstantAfterPickUp,
+					Equipment.InitialWeaponEquipPreference.Any);
+			}
+			ForceAlliedSlaughterFight(allied);
+			if (target != null)
+			{
+				allied.SetLookAgent(target);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CastleAftermath", "Prepare allied castle slaughter combat failed. Agent="
+				+ (allied?.Index.ToString() ?? "null") + ", Error=" + ex.Message);
+		}
+	}
+
+	private static void ForceAlliedSlaughterFight(Agent allied)
+	{
+		try
+		{
+			CampaignAgentComponent component = allied?.GetComponent<CampaignAgentComponent>();
+			AgentNavigator navigator = component?.AgentNavigator ?? component?.CreateAgentNavigator();
+			AlarmedBehaviorGroup behaviorGroup = navigator?.GetBehaviorGroup<AlarmedBehaviorGroup>()
+				?? navigator?.AddBehaviorGroup<AlarmedBehaviorGroup>();
+			if (behaviorGroup == null)
+			{
+				return;
+			}
+			behaviorGroup.DisableCalmDown = true;
+			behaviorGroup.AddBehavior<FightBehavior>();
+			behaviorGroup.SetScriptedBehavior<FightBehavior>();
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CastleAftermath", "Force allied castle slaughter fight failed: " + ex.Message);
+		}
+	}
+
+	private static Agent FindNearestTarget(Agent source, IReadOnlyList<Agent> targets)
+	{
+		Agent nearest = null;
+		float nearestDistance = float.MaxValue;
+		if (source == null || targets == null)
+		{
+			return null;
+		}
+		foreach (Agent target in targets)
+		{
+			if (target == null || !target.IsActive())
+			{
+				continue;
+			}
+			float distance = source.Position.DistanceSquared(target.Position);
+			if (distance < nearestDistance)
+			{
+				nearest = target;
+				nearestDistance = distance;
+			}
+		}
+		return nearest;
+	}
+
+	private void SetSlaughterTeamHostility(Team playerTeam)
+	{
+		try
+		{
+			if (playerTeam == null || _slaughterEnemyTeam == null || playerTeam == _slaughterEnemyTeam)
+			{
+				return;
+			}
+			_slaughterEnemyTeam.SetIsEnemyOf(playerTeam, isEnemyOf: true);
+			playerTeam.SetIsEnemyOf(_slaughterEnemyTeam, isEnemyOf: true);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CastleAftermath", "Set castle slaughter mutual hostility failed: " + ex.Message);
+		}
 	}
 
 	internal void ResolveRegularPrisoners(TroopRoster resolvedRoster, string source)
@@ -768,6 +950,11 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 		}
 
 		float now = mission.CurrentTime;
+		if (_slaughterActive && now >= _nextSlaughterCombatRefreshTime)
+		{
+			_nextSlaughterCombatRefreshTime = now + SlaughterCombatRefreshSeconds;
+			IssueSlaughterCombatOrders(mission, logDetails: false);
+		}
 		if (now >= _nextMovePollTime)
 		{
 			_nextMovePollTime = now + MovePollSeconds;
@@ -801,6 +988,11 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 		Logger.Log("CastleAftermath", "Castle slaughter target removed. Agent=" + affectedAgent.Index
 			+ ", State=" + agentState + ", CountedKill=" + actuallyKilled
 			+ ", RemainingTargets=" + _slaughterTargets.Count);
+		if (_slaughterTargets.Count == 0)
+		{
+			_slaughterActive = false;
+			Logger.Log("CastleAftermath", "Castle slaughter combat completed; no scene targets remain.");
+		}
 	}
 
 	public override void OnRemoveBehavior()
@@ -1053,8 +1245,10 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 		_movementStates.Clear();
 		_civilianActionSetApplied.Clear();
 		_slaughterTargets.Clear();
+		_slaughterReadyAlliedAgentIndexes.Clear();
 		_slaughterEnemyTeam = null;
 		_slaughterActive = false;
+		_nextSlaughterCombatRefreshTime = 0f;
 		CastleAftermathRuntimeBridge.ClearMissionAgents(reason);
 	}
 

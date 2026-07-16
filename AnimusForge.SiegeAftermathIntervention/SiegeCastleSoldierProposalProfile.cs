@@ -1,7 +1,7 @@
 namespace AnimusForge.SiegeAftermathIntervention;
 
 /// <summary>
-/// Player-facing wording for a non-decisive soldier proposal awaiting player approval.
+/// Player-facing wording for a non-decisive soldier or prisoner proposal awaiting player approval.
 /// </summary>
 public static class SiegeCastleSoldierProposalProfile
 {
@@ -9,7 +9,7 @@ public static class SiegeCastleSoldierProposalProfile
 
     public static string BuildPendingMessage(SiegeCastlePrisonerDispositionKind disposition)
     {
-        return "【城堡处置】士兵提出“"
+        return "【城堡处置】当前说话者提出“"
             + SiegeCastlePrisonerDispositionKindProfile.Describe(disposition)
             + "”，尚未执行；需要玩家明确同意。";
     }

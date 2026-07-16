@@ -38,6 +38,55 @@ public static class SiegeCastlePlayerAuthorizationPolicy
         "留他们一命", "饶了他们", "spare them", "don't kill", "do not kill", "not kill"
     };
 
+    private static readonly string[] ReleaseTerms =
+    {
+        "释放", "释放战俘", "放了他们", "放你们走", "放走", "恢复自由", "准许离开", "饶你们一命",
+        "release", "set free", "let them go", "let you go"
+    };
+
+    private static readonly string[] ReleaseNegationTerms =
+    {
+        "不释放", "不要释放", "别释放", "不能释放", "不放他们", "不要放走", "别放走", "不准离开",
+        "don't release", "do not release", "not release"
+    };
+
+    private static readonly string[] SellTerms =
+    {
+        "贩卖", "卖掉", "卖给", "发卖", "发卖为奴", "送去赎卖", "换取赎金", "押去奴隶市场",
+        "sell the prisoners", "ransom them", "slave market"
+    };
+
+    private static readonly string[] SellNegationTerms =
+    {
+        "不贩卖", "不要贩卖", "别贩卖", "不卖", "不要卖", "别卖", "不发卖",
+        "don't sell", "do not sell", "not sell"
+    };
+
+    private static readonly string[] LaborTerms =
+    {
+        "劳役", "服刑", "农奴", "发配为农奴", "发配农奴", "发放农奴", "送去当农奴", "充作农奴", "编为农奴",
+        "修缮道路", "修路", "修复道路", "修缮城堡", "劳动赎罪", "做苦工",
+        "forced labor", "work sentence", "repair the roads", "labor service"
+    };
+
+    private static readonly string[] LaborNegationTerms =
+    {
+        "不劳役", "不要劳役", "免除劳役", "不服刑", "不当农奴", "不要当农奴", "不做苦工",
+        "no forced labor", "do not use forced labor"
+    };
+
+    private static readonly string[] InstructorTerms =
+    {
+        "充当教官", "担任教官", "做教官", "当教官", "训练新兵", "操练新兵", "教授军务", "教导新兵", "训练志愿兵",
+        "serve as instructors", "train recruits", "drill recruits"
+    };
+
+    private static readonly string[] InstructorNegationTerms =
+    {
+        "不当教官", "不要当教官", "别当教官", "不做教官", "不训练新兵", "不要训练新兵",
+        "do not serve as instructors", "don't train recruits"
+    };
+
     private static readonly string[] GenericApprovalTerms =
     {
         "同意", "批准", "准了", "照办", "就这么办", "按你说的办", "按你的建议办", "依你所言", "如你所愿", "执行吧", "动手吧",
@@ -60,6 +109,12 @@ public static class SiegeCastlePlayerAuthorizationPolicy
         "should we", "what do you think", "do you think", "shall we", "would you", "could we"
     };
 
+    private static readonly string[] GeneralDispositionAdviceTerms =
+    {
+        "怎么处置", "如何处置", "怎么处理这些俘虏", "如何处理这些俘虏", "该怎么处理", "有什么建议", "你的建议", "你的意见", "有什么请求", "你们有什么请求",
+        "what should we do with", "how should we handle", "what do you suggest"
+    };
+
     public static SiegeCastlePlayerAuthorizationDecision Evaluate(
         string playerText,
         SiegeCastlePrisonerDispositionKind pendingProposalForSpeaker)
@@ -70,26 +125,19 @@ public static class SiegeCastlePlayerAuthorizationPolicy
             return SiegeCastlePlayerAuthorizationDecision.Denied("player_text_missing");
         }
 
-        bool discussion = ContainsAny(text, QuestionOrDiscussionTerms);
-        bool recruit = !discussion && ContainsAny(text, RecruitTerms) && !ContainsAny(text, RecruitNegationTerms);
-        bool slaughter = !discussion && ContainsAny(text, SlaughterTerms) && !ContainsAny(text, SlaughterNegationTerms);
-        if (recruit && slaughter)
+        int intentCount = CountDispositionIntents(text);
+        if (intentCount > 1)
         {
             return SiegeCastlePlayerAuthorizationDecision.Denied("player_authorization_ambiguous");
         }
-        if (recruit)
+
+        SiegeCastlePrisonerDispositionKind intent = DetectIntent(text);
+        if (intent != SiegeCastlePrisonerDispositionKind.None && !IsDiscussionText(text))
         {
             return SiegeCastlePlayerAuthorizationDecision.Authorized(
-                SiegeCastlePrisonerDispositionKind.Recruit,
+                intent,
                 usedPendingProposal: false,
-                "player_explicit_recruit_authorization");
-        }
-        if (slaughter)
-        {
-            return SiegeCastlePlayerAuthorizationDecision.Authorized(
-                SiegeCastlePrisonerDispositionKind.Slaughter,
-                usedPendingProposal: false,
-                "player_explicit_slaughter_authorization");
+                GetExplicitReasonCode(intent));
         }
 
         if (ContainsAny(text, GlobalRejectionTerms) || EqualsAny(text, ShortRejectionTerms))
@@ -97,7 +145,7 @@ public static class SiegeCastlePlayerAuthorizationPolicy
             return SiegeCastlePlayerAuthorizationDecision.Denied("player_rejected_or_cancelled");
         }
 
-        if (discussion)
+        if (IsDiscussionText(text))
         {
             return SiegeCastlePlayerAuthorizationDecision.Denied("player_discussion_not_authorization");
         }
@@ -113,6 +161,87 @@ public static class SiegeCastlePlayerAuthorizationPolicy
         }
 
         return SiegeCastlePlayerAuthorizationDecision.Denied("player_authorization_not_found");
+    }
+
+    public static SiegeCastlePrisonerDispositionKind DetectIntent(string playerText)
+    {
+        string text = (playerText ?? string.Empty).Trim();
+        if (CountDispositionIntents(text) != 1)
+        {
+            return SiegeCastlePrisonerDispositionKind.None;
+        }
+        foreach (SiegeCastlePrisonerDispositionKind disposition in new[]
+        {
+            SiegeCastlePrisonerDispositionKind.Recruit,
+            SiegeCastlePrisonerDispositionKind.Slaughter,
+            SiegeCastlePrisonerDispositionKind.Release,
+            SiegeCastlePrisonerDispositionKind.Sell,
+            SiegeCastlePrisonerDispositionKind.Labor,
+            SiegeCastlePrisonerDispositionKind.Instructor
+        })
+        {
+            if (HasPositiveIntent(text, disposition))
+            {
+                return disposition;
+            }
+        }
+        return SiegeCastlePrisonerDispositionKind.None;
+    }
+
+    public static bool HasPositiveIntent(string playerText, SiegeCastlePrisonerDispositionKind disposition)
+    {
+        string text = playerText ?? string.Empty;
+        return disposition switch
+        {
+            SiegeCastlePrisonerDispositionKind.Recruit => ContainsAny(text, RecruitTerms) && !ContainsAny(text, RecruitNegationTerms),
+            SiegeCastlePrisonerDispositionKind.Slaughter => ContainsAny(text, SlaughterTerms) && !ContainsAny(text, SlaughterNegationTerms),
+            SiegeCastlePrisonerDispositionKind.Release => ContainsAny(text, ReleaseTerms) && !ContainsAny(text, ReleaseNegationTerms),
+            SiegeCastlePrisonerDispositionKind.Sell => ContainsAny(text, SellTerms) && !ContainsAny(text, SellNegationTerms),
+            SiegeCastlePrisonerDispositionKind.Labor => ContainsAny(text, LaborTerms) && !ContainsAny(text, LaborNegationTerms),
+            SiegeCastlePrisonerDispositionKind.Instructor => ContainsAny(text, InstructorTerms) && !ContainsAny(text, InstructorNegationTerms),
+            _ => false
+        };
+    }
+
+    public static bool IsDiscussionText(string playerText)
+        => ContainsAny(playerText ?? string.Empty, QuestionOrDiscussionTerms);
+
+    public static bool IsGeneralDispositionAdviceRequest(string playerText)
+        => ContainsAny(playerText ?? string.Empty, GeneralDispositionAdviceTerms);
+
+    private static int CountDispositionIntents(string text)
+    {
+        int count = 0;
+        foreach (SiegeCastlePrisonerDispositionKind disposition in new[]
+        {
+            SiegeCastlePrisonerDispositionKind.Recruit,
+            SiegeCastlePrisonerDispositionKind.Slaughter,
+            SiegeCastlePrisonerDispositionKind.Release,
+            SiegeCastlePrisonerDispositionKind.Sell,
+            SiegeCastlePrisonerDispositionKind.Labor,
+            SiegeCastlePrisonerDispositionKind.Instructor
+        })
+        {
+            if (HasPositiveIntent(text, disposition))
+            {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    private static string GetExplicitReasonCode(SiegeCastlePrisonerDispositionKind disposition)
+    {
+        return disposition switch
+        {
+            SiegeCastlePrisonerDispositionKind.Recruit => "player_explicit_recruit_authorization",
+            SiegeCastlePrisonerDispositionKind.Slaughter => "player_explicit_slaughter_authorization",
+            SiegeCastlePrisonerDispositionKind.Release => "player_explicit_release_authorization",
+            SiegeCastlePrisonerDispositionKind.Sell => "player_explicit_sell_authorization",
+            SiegeCastlePrisonerDispositionKind.Labor => "player_explicit_labor_authorization",
+            SiegeCastlePrisonerDispositionKind.Instructor => "player_explicit_instructor_authorization",
+            _ => "player_explicit_castle_disposition_authorization"
+        };
     }
 
     private static bool ContainsAny(string text, string[] terms)

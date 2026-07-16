@@ -3200,9 +3200,13 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				switch (decision.Action)
 				{
-					case SiegeCastleActionKind.ProposeRecruitPrisoners:
-					case SiegeCastleActionKind.ProposeSlaughterPrisoners:
-						actionHandled = RecordPendingCastleDispositionProposal(
+				case SiegeCastleActionKind.ProposeRecruitPrisoners:
+				case SiegeCastleActionKind.ProposeSlaughterPrisoners:
+				case SiegeCastleActionKind.ProposeReleasePrisoners:
+				case SiegeCastleActionKind.ProposeSellPrisoners:
+				case SiegeCastleActionKind.ProposeLaborPrisoners:
+				case SiegeCastleActionKind.ProposeInstructorPrisoners:
+					actionHandled = RecordPendingCastleDispositionProposal(
 							SiegeCastlePrisonerDispositionKindProfile.FromAction(decision.Action),
 							targetAgentIndex,
 							role);
@@ -3308,7 +3312,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		InformationManager.DisplayMessage(new InformationMessage(
 			SiegeCastleSoldierProposalProfile.BuildPendingMessage(disposition),
 			Color.FromUint(SiegeCastleSoldierProposalProfile.PendingMessageColor)));
-		Logger.Log("CastleAftermath", "Recorded pending soldier proposal. Disposition=" + disposition
+		Logger.Log("CastleAftermath", "Recorded pending castle disposition proposal. Disposition=" + disposition
 			+ ", Role=" + role
 			+ ", Agent=" + targetAgentIndex);
 		return true;
@@ -3318,7 +3322,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		if (_castlePendingDispositionProposal != SiegeCastlePrisonerDispositionKind.None)
 		{
-			Logger.Log("CastleAftermath", "Cleared pending soldier proposal. Disposition="
+			Logger.Log("CastleAftermath", "Cleared pending castle disposition proposal. Disposition="
 				+ _castlePendingDispositionProposal
 				+ ", Agent=" + _castlePendingDispositionProposalAgentIndex
 				+ ", Reason=" + (reason ?? "N/A"));
@@ -3448,7 +3452,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			_castleRegularTerminalAction = action;
 			_castleRegularTerminalAffected = result.AffectedCount;
 			_castleRegularTerminalGold = 0;
-			RecordInterventionMemory("城堡屠戮命令", "玩家命令编队1的随军士兵在场景内实际杀死 "
+			RecordInterventionMemory("城堡屠戮命令", "玩家命令编队1的随军士兵开始攻击 "
 				+ result.AffectedCount + " 名普通战俘；"
 				+ (autoArmamentsApplied
 					? "军械已自动收缴 " + loot.ItemCount + " 件。"
@@ -3769,7 +3773,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			InformationManager.DisplayMessage(new InformationMessage(
 				SiegeCastleSoldierReactionProfile.BuildPenaltyMessage(),
 				Color.FromUint(SiegeCastleSoldierReactionProfile.PenaltyMessageColor)));
-			Logger.Log("CastleAftermath", "Applied unappeased castle recruitment morale penalty -"
+		Logger.Log("CastleAftermath", "Applied unappeased castle prisoner-disposition morale penalty -"
 				+ SiegeCastleSoldierReactionProfile.UnappeasedMoralePenalty
 				+ ". MoraleNow=" + MobileParty.MainParty.Morale);
 			GcczDiagnosticLog.Log("CastleOutcome", "appeasement missed moralePenalty=-"
@@ -13707,6 +13711,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				{
 					lordOutcomeSummary += "；另有 " + retainedLordPrisoners + " 人仍保持俘虏身份";
 				}
+				int terminalAffected = _castleRegularTerminalAction == SiegeCastleActionKind.SlaughterPrisoners
+					? _castleSlaughteredRegularPrisoners
+					: _castleRegularTerminalAffected;
 				_completedSummaryText = SiegeCastleCompletedInterventionSummaryBuilder.Build(
 					new SiegeCastleCompletedInterventionSummaryFacts(
 						settlementName,
@@ -13718,7 +13725,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 						_castleSoldierAppeasementApplied,
 						_castleSoldierAppeasementMoralePenaltyApplied,
 						_castleRegularTerminalAction,
-						_castleRegularTerminalAffected,
+						terminalAffected,
 						_castleRegularTerminalGold,
 						regularActions.Contains(SiegeCastleActionKind.TreatPrisoners),
 						regularActions.Contains(SiegeCastleActionKind.ReceiveArmaments),
@@ -13727,7 +13734,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					+ " recruited=" + _castleRecruitedRegularPrisoners
 					+ " slaughtered=" + _castleSlaughteredRegularPrisoners
 					+ " terminal=" + _castleRegularTerminalAction
-					+ " terminalAffected=" + _castleRegularTerminalAffected
+					+ " terminalAffected=" + terminalAffected
 					+ " terminalGold=" + _castleRegularTerminalGold
 					+ " remainingRegular=" + remainingRegularPrisoners
 					+ " retainedLords=" + retainedLordPrisoners

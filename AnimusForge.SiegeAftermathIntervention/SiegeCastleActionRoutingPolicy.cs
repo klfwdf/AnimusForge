@@ -47,8 +47,8 @@ public static class SiegeCastleActionRoutingPolicy
             }
 
             bool validProposer = facts.SpeakerRole == SiegeCastleActionSpeakerRole.AlliedSoldier
-                || (action == SiegeCastleActionKind.ProposeRecruitPrisoners
-                    && facts.SpeakerRole == SiegeCastleActionSpeakerRole.RegularPrisoner);
+                || (facts.SpeakerRole == SiegeCastleActionSpeakerRole.RegularPrisoner
+                    && SiegeCastleActionKindProfile.CanRegularPrisonerPropose(action));
             if (!validProposer)
             {
                 return Block(hasRecognizedAction: true, action, "soldier_proposal_role_required");
@@ -95,7 +95,8 @@ public static class SiegeCastleActionRoutingPolicy
 
         if (SiegeCastleActionKindProfile.IsProcess(action))
         {
-            if (facts.SpeakerRole != SiegeCastleActionSpeakerRole.RegularPrisoner
+            if (facts.SpeakerRole != SiegeCastleActionSpeakerRole.AlliedSoldier
+                && facts.SpeakerRole != SiegeCastleActionSpeakerRole.RegularPrisoner
                 && facts.SpeakerRole != SiegeCastleActionSpeakerRole.CapturedLord)
             {
                 return Block(hasRecognizedAction: true, action, "prisoner_response_required");
@@ -122,10 +123,9 @@ public static class SiegeCastleActionRoutingPolicy
 
         if (SiegeCastleActionKindProfile.IsRegularPrisonerTerminal(action))
         {
-            bool alliedMayConfirm = facts.SpeakerRole == SiegeCastleActionSpeakerRole.AlliedSoldier
-                && (action == SiegeCastleActionKind.SlaughterPrisoners
-                    || action == SiegeCastleActionKind.RecruitPrisonersForced);
-            if (facts.SpeakerRole != SiegeCastleActionSpeakerRole.RegularPrisoner && !alliedMayConfirm)
+            bool alliedMayExecute = facts.SpeakerRole == SiegeCastleActionSpeakerRole.AlliedSoldier
+                && SiegeCastleActionKindProfile.CanAlliedSoldierExecute(action);
+            if (facts.SpeakerRole != SiegeCastleActionSpeakerRole.RegularPrisoner && !alliedMayExecute)
             {
                 return Block(hasRecognizedAction: true, action, "regular_prisoner_response_required");
             }
