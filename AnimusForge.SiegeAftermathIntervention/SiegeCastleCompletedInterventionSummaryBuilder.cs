@@ -47,7 +47,7 @@ public static class SiegeCastleCompletedInterventionSummaryBuilder
         {
             sb.AppendLine(facts.RetainedLordPrisoners > 0
                 ? "被俘领主：" + facts.RetainedLordPrisoners + " 人保持俘虏身份；普通战俘群体标签不会结算领主。"
-                : "被俘领主：本次没有仍待处置的带入领主；领主处决接口仍按设计延后。 ");
+                : "被俘领主：本次没有带入或仍待处置的领主。 ");
         }
         sb.AppendLine(BuildMoraleLine(facts));
         sb.AppendLine();

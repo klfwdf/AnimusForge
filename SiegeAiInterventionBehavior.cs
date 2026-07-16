@@ -3517,13 +3517,28 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		if (action == SiegeCastleActionKind.ExecuteLord)
 		{
+			if (role != SiegeCastleActionSpeakerRole.CapturedLord
+				|| targetAgent == null
+				|| targetHero == null
+				|| !CastleAftermathDispositionSessionBridge.TryMarkApplied(action, role, targetAgent, targetHero))
+			{
+				return false;
+			}
+			if (!CastleAftermathLordExecutionRuntimeBridge.TryQueue(targetHero, targetAgent, out string reasonCode))
+			{
+				CastleAftermathDispositionSessionBridge.UnmarkApplied(action, role, targetAgent, targetHero);
+				InformationManager.DisplayMessage(new InformationMessage(
+					SiegeCastleActionOutcomeTextProfile.BuildLordExecutionFailedMessage(targetHero.Name?.ToString()),
+					Color.FromUint(SiegeCastleActionOutcomeTextProfile.WarningColor)));
+				Logger.Log("CastleAftermath", "Queue castle lord execution failed. Role=" + role
+					+ ", Agent=" + targetAgent.Index + ", Hero=" + (targetHero.StringId ?? "N/A")
+					+ ", Reason=" + (reasonCode ?? "N/A"));
+				return false;
+			}
 			InformationManager.DisplayMessage(new InformationMessage(
-				SiegeCastleActionOutcomeTextProfile.BuildDeferredLordExecutionMessage(targetHero?.Name?.ToString()),
-				Color.FromUint(SiegeCastleActionOutcomeTextProfile.WarningColor)));
-			Logger.Log("CastleAftermath", "Deferred castle lord execution interface. Role=" + role
-				+ ", Agent=" + (targetAgent?.Index ?? -1)
-				+ ", Hero=" + (targetHero?.StringId ?? "N/A"));
-			return false;
+				SiegeCastleActionOutcomeTextProfile.BuildLordExecutionQueuedMessage(targetHero.Name?.ToString()),
+				Color.FromUint(SiegeCastleActionOutcomeTextProfile.DangerColor)));
+			return true;
 		}
 
 		if (action != SiegeCastleActionKind.RecruitLord
@@ -3593,6 +3608,33 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				+ ", Error=" + ex);
 			return recruitmentApplied;
 		}
+	}
+
+	internal static void NotifyCastleLordExecutedForExternal(
+		Hero targetHero,
+		bool deferredByMapEvent,
+		bool sceneDeathApplied)
+	{
+		string lordName = targetHero?.Name?.ToString() ?? "该被俘领主";
+		string conciseOutcome = lordName + "：已由玩家确认处决";
+		CastleAftermathDispositionSessionBridge.RecordLordOutcome(conciseOutcome);
+		string sceneResult = sceneDeathApplied
+			? "；场景内已经倒地"
+			: "；场景倒地表现未成功，但原版死亡结算已经登记";
+		RecordInterventionMemory(
+			"城堡处决领主",
+			conciseOutcome + sceneResult + (deferredByMapEvent
+				? "，原版战后处决将在攻城遭遇结束时完成角色状态结算。"
+				: "；原版角色死亡、关系与家族后果已经结算。"));
+		InformationManager.DisplayMessage(new InformationMessage(
+			SiegeCastleActionOutcomeTextProfile.BuildLordExecutionCompletedMessage(
+				lordName,
+				deferredByMapEvent,
+				sceneDeathApplied),
+			Color.FromUint(SiegeCastleActionOutcomeTextProfile.DangerColor)));
+		Logger.Log("CastleAftermath", "Recorded castle lord execution outcome. Hero="
+			+ (targetHero?.StringId ?? "N/A") + ", DeferredByMapEvent=" + deferredByMapEvent
+			+ ", SceneDeath=" + sceneDeathApplied);
 	}
 
 	private static int ResolveCastleRegularTerminalTrustDelta(SiegeCastleActionKind action)
@@ -14525,6 +14567,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_playerOrderControllerPrimed = false;
 		_civilianOrderControllerPrimed = false;
 		_selectedInterventionRoster = null;
+		CastleAftermathLordExecutionRuntimeBridge.Reset("reset_session_counters");
 		CastleAftermathRuntimeBridge.Reset("reset_session_counters");
 		CastleAftermathMissionEntryBridge.Reset("reset_session_counters");
 		CastleAftermathDispositionSessionBridge.Reset("reset_session_counters");

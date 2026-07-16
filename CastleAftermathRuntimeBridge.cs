@@ -115,20 +115,7 @@ internal static class CastleAftermathRuntimeBridge
 		{
 			return false;
 		}
-		bool removedFromSelection = false;
-		if (_selectedPrisonerRoster != null)
-		{
-			int index = _selectedPrisonerRoster.FindIndexOfTroop(hero.CharacterObject);
-			if (index >= 0)
-			{
-				_selectedPrisonerRoster.AddToCounts(hero.CharacterObject, -1, false, 0, 0, true, -1);
-				removedFromSelection = true;
-				if (_selectedPrisonerRoster.TotalManCount <= 0)
-				{
-					_selectedPrisonerRoster = null;
-				}
-			}
-		}
+		bool removedFromSelection = RemoveSelectedLord(hero);
 		int removedAgents = 0;
 		try
 		{
@@ -144,6 +131,49 @@ internal static class CastleAftermathRuntimeBridge
 			+ ", SelectionRemoved=" + removedFromSelection + ", SceneAgentsRemoved=" + removedAgents
 			+ ", Source=" + (source ?? "N/A"));
 		return removedFromSelection || removedAgents > 0;
+	}
+
+	internal static bool ResolveExecutedLordPrisoner(Hero hero, string source)
+	{
+		if (hero?.CharacterObject == null)
+		{
+			return false;
+		}
+		bool removedFromSelection = RemoveSelectedLord(hero);
+		int detachedAgents = 0;
+		try
+		{
+			detachedAgents = Mission.Current?.GetMissionBehavior<CastleAftermathPrisonerCommandMissionBehavior>()
+				?.DetachExecutedLordPrisoner(hero, source) ?? 0;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CastleAftermath", "Detach executed lord scene agent failed. Hero="
+				+ (hero.StringId ?? "N/A") + ", Error=" + ex.Message);
+		}
+		Logger.Log("CastleAftermath", "Resolved executed castle lord prisoner. Hero=" + (hero.StringId ?? "N/A")
+			+ ", SelectionRemoved=" + removedFromSelection + ", SceneAgentsDetached=" + detachedAgents
+			+ ", Source=" + (source ?? "N/A"));
+		return removedFromSelection || detachedAgents > 0;
+	}
+
+	private static bool RemoveSelectedLord(Hero hero)
+	{
+		if (hero?.CharacterObject == null || _selectedPrisonerRoster == null)
+		{
+			return false;
+		}
+		int index = _selectedPrisonerRoster.FindIndexOfTroop(hero.CharacterObject);
+		if (index < 0)
+		{
+			return false;
+		}
+		_selectedPrisonerRoster.AddToCounts(hero.CharacterObject, -1, false, 0, 0, true, -1);
+		if (_selectedPrisonerRoster.TotalManCount <= 0)
+		{
+			_selectedPrisonerRoster = null;
+		}
+		return true;
 	}
 
 	internal static void RemoveResolvedRegularPrisoners(TroopRoster resolvedRoster, string source)
@@ -666,6 +696,16 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 
 	internal int ResolveLordPrisoner(Hero hero, string source)
 	{
+		return ResolveLordPrisonerAgents(hero, source, fadeOut: true);
+	}
+
+	internal int DetachExecutedLordPrisoner(Hero hero, string source)
+	{
+		return ResolveLordPrisonerAgents(hero, source, fadeOut: false);
+	}
+
+	private int ResolveLordPrisonerAgents(Hero hero, string source, bool fadeOut)
+	{
 		if (hero == null)
 		{
 			return 0;
@@ -686,13 +726,16 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 			try
 			{
 				agent.Formation = null;
-				agent.FadeOut(hideInstantly: false, hideMount: true);
+				if (fadeOut)
+				{
+					agent.FadeOut(hideInstantly: false, hideMount: true);
+				}
 			}
 			catch { }
 			resolved++;
 		}
 		Logger.Log("CastleAftermath", "Resolved castle lord scene agents. Hero=" + (hero.StringId ?? "N/A")
-			+ ", Count=" + resolved + ", Source=" + (source ?? "N/A"));
+			+ ", Count=" + resolved + ", FadeOut=" + fadeOut + ", Source=" + (source ?? "N/A"));
 		return resolved;
 	}
 
@@ -705,6 +748,7 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 	{
 		base.OnMissionTick(dt);
 		Mission mission = base.Mission;
+		CastleAftermathLordExecutionRuntimeBridge.Tick(mission, dt);
 		if (!_spawnCompleted || mission == null || mission.IsMissionEnding || mission.Mode == MissionMode.Deployment)
 		{
 			return;
@@ -1004,6 +1048,7 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 			return;
 		}
 		_cleaned = true;
+		CastleAftermathLordExecutionRuntimeBridge.CancelForMission(base.Mission, reason);
 		_agents.Clear();
 		_movementStates.Clear();
 		_civilianActionSetApplied.Clear();

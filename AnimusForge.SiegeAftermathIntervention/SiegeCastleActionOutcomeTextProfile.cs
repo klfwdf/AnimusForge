@@ -60,9 +60,28 @@ public static class SiegeCastleActionOutcomeTextProfile
             + SiegeCastleLordRecruitmentBranchProfile.Describe(branch)
             + (string.IsNullOrWhiteSpace(statusText) ? "。" : "；" + statusText.Trim());
 
-    public static string BuildDeferredLordExecutionMessage(string lordName)
+    public static string BuildLordExecutionQueuedMessage(string lordName)
+        => "【城堡处置】已对 " + Name(lordName)
+            + " 下达处刑命令，正在打开原版处刑确认；取消不会改变其生死或俘虏状态。";
+
+    public static string BuildLordExecutionCancelledMessage(string lordName)
+        => "【城堡处置】已取消对 " + Name(lordName)
+            + " 的处刑；该领主仍存活并保持俘虏身份，可重新交涉。";
+
+    public static string BuildLordExecutionFailedMessage(string lordName)
+        => "【城堡处置】未能打开 " + Name(lordName)
+            + " 的原版处刑确认，未结算死亡；可稍后重试，详情已写入日志。";
+
+    public static string BuildLordExecutionCompletedMessage(
+        string lordName,
+        bool deferredByMapEvent,
+        bool sceneDeathApplied)
         => "【城堡处置】" + Name(lordName)
-            + " 的处决动画与死亡结算接口按设计暂未启用，本次未改变其生死或俘虏状态。";
+            + " 已由玩家确认处刑"
+            + (sceneDeathApplied ? "，并在城堡场景内当场倒地" : "；场景倒地表现未成功，死亡结算仍已登记")
+            + (deferredByMapEvent
+                ? "；原版战后处决将在当前攻城遭遇结束时完成角色状态结算。"
+                : "；原版角色死亡、关系与家族后果已结算。");
 
     private static string Signed(int value) => value > 0 ? "+" + value : value.ToString();
     private static int Count(int value) => Math.Max(0, value);

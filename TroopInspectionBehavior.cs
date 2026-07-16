@@ -5144,6 +5144,18 @@ public class PrisonerAgentOrigin : IAgentOriginBase
 		LogOriginCasualty("set_killed_end", BuildOriginTroopState(_troop));
 	}
 
+	internal void MarkCampaignCasualtyHandledExternally(string source)
+	{
+		if (_isRemoved)
+		{
+			return;
+		}
+		_isRemoved = true;
+		LogOriginCasualty(
+			"external_campaign_casualty_handled",
+			"source=" + (source ?? "N/A") + " " + BuildOriginTroopState(_troop));
+	}
+
 	public void SetRouted(bool isOrderRetreat)
 	{
 	}
