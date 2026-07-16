@@ -2714,22 +2714,47 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		return SiegePostprocessRuleCatalog.InjectedRuleBlockMarker;
 	}
 
-	internal static List<PostprocessRuleEntry> BuildRuntimePostprocessRulesForExternal()
+	internal static List<PostprocessRuleEntry> BuildRuntimePostprocessRulesForExternal(
+		int targetAgentIndex,
+		bool replyIsDirectPlayerResponse,
+		string playerText)
 	{
 		try
 		{
 			if (ResolveCurrentSettlement()?.IsCastle == true)
 			{
-				return SiegeCastlePostprocessRuleCatalog.GetAvailableRules(
-					CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount,
-					_castleSoldierAppeasementRequired,
-					_castleSoldierAppeasementApplied)
+				Agent agent = TryGetAgent(targetAgentIndex);
+				CharacterObject character = agent?.Character as CharacterObject;
+				bool alliedSoldier = IsRuntimeAlliedSoldierAgent(agent, character, character?.HeroObject);
+				bool prisoner = CastleAftermathRuntimeBridge.IsPrisonerAgent(agent);
+				bool lord = prisoner && (CastleAftermathRuntimeBridge.IsLordPrisonerAgent(agent) || character?.IsHero == true);
+				SiegeCastleActionSpeakerRole role = SiegeCastleActionSpeakerRoleProfile.Resolve(alliedSoldier, prisoner, lord);
+				SynchronizePendingCastleDispositionProposalForPlayerReply(
+					targetAgentIndex,
+					replyIsDirectPlayerResponse,
+					playerText);
+				SiegeCastlePrisonerDispositionKind pendingProposal = GetPendingCastleDispositionProposalForSpeaker(targetAgentIndex);
+				List<PostprocessRuleEntry> castleRules = SiegeCastlePostprocessRuleCatalog.GetAvailableRules(
+					new SiegeCastlePostprocessRuleFacts(
+						role,
+						replyIsDirectPlayerResponse,
+						CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount,
+						_castleSoldierAppeasementRequired,
+						_castleSoldierAppeasementApplied,
+						playerText,
+						pendingProposal))
 					.Select(rule => new PostprocessRuleEntry
 					{
 						Tag = rule.Tag,
 						Description = rule.Description
 					})
 					.ToList();
+				GcczDiagnosticLog.LogVerbose("CastleActionRules", "role=" + role
+					+ " direct=" + replyIsDirectPlayerResponse
+					+ " pending=" + pendingProposal
+					+ " count=" + castleRules.Count
+					+ " tags=" + string.Join(",", castleRules.Select(rule => rule?.Tag ?? string.Empty)));
+				return castleRules;
 			}
 			List<PostprocessRuleEntry> configured = AIConfigHandler.GetGuardrailRulePostprocessRules(SiegePostprocessRuleCatalog.RuleId) ?? new List<PostprocessRuleEntry>();
 			List<PostprocessRuleEntry> rules = configured.Count > 0 ? configured : BuildFallbackSiegeInterventionPostprocessRules();
@@ -2783,6 +2808,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				bool prisoner = CastleAftermathRuntimeBridge.IsPrisonerAgent(agent);
 				bool lord = prisoner && (CastleAftermathRuntimeBridge.IsLordPrisonerAgent(agent) || character?.IsHero == true);
 				SiegeCastleActionSpeakerRole role = SiegeCastleActionSpeakerRoleProfile.Resolve(alliedSoldier, prisoner, lord);
+				SynchronizePendingCastleDispositionProposalForPlayerReply(
+					targetAgentIndex,
+					replyIsDirectPlayerResponse,
+					playerText);
 				return SiegeCastlePostprocessContextProfile.Build(new SiegeCastlePostprocessContextFacts(
 					_activeSettlementName,
 					role,
@@ -3177,6 +3206,22 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			: SiegeCastlePrisonerDispositionKind.None;
 	}
 
+	private static void SynchronizePendingCastleDispositionProposalForPlayerReply(
+		int targetAgentIndex,
+		bool replyIsDirectPlayerResponse,
+		string playerText)
+	{
+		SiegeCastlePrisonerDispositionKind pendingProposal = GetPendingCastleDispositionProposalForSpeaker(targetAgentIndex);
+		SiegeCastlePendingProposalDecision decision = SiegeCastlePendingProposalPolicy.Evaluate(
+			pendingProposal,
+			replyIsDirectPlayerResponse,
+			playerText);
+		if (decision.ShouldClear)
+		{
+			ClearPendingCastleDispositionProposal(decision.ReasonCode);
+		}
+	}
+
 	private static bool RecordPendingCastleDispositionProposal(
 		SiegeCastlePrisonerDispositionKind disposition,
 		int targetAgentIndex,
@@ -3276,8 +3321,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private static bool ApplyCastleSoldierAppeasement(int targetAgentIndex)
 	{
+		Agent targetAgent = TryGetAgent(targetAgentIndex);
+		CharacterObject targetCharacter = targetAgent?.Character as CharacterObject;
 		if (!_castleSoldierAppeasementRequired || _castleSoldierAppeasementApplied
-			|| targetAgentIndex < 0 || !AlliedAgentIndexes.Contains(targetAgentIndex))
+			|| targetAgentIndex < 0
+			|| !IsRuntimeAlliedSoldierAgent(targetAgent, targetCharacter, targetCharacter?.HeroObject))
 		{
 			return false;
 		}

@@ -10,6 +10,8 @@ public static class SiegeCastlePostprocessContextProfile
         SiegeCastlePlayerAuthorizationDecision authorization = SiegeCastlePlayerAuthorizationPolicy.Evaluate(
             facts.PlayerText,
             facts.PendingProposalForSpeaker);
+        SiegeCastleSoldierAppeasementAuthorizationDecision appeasementAuthorization =
+            SiegeCastleSoldierAppeasementAuthorizationPolicy.Evaluate(facts.PlayerText);
         StringBuilder sb = new StringBuilder();
         sb.Append("【城堡处置后处理事实】定居点=")
             .Append(string.IsNullOrWhiteSpace(facts.CastleName) ? SiegeCastleRuntimePromptProfile.DefaultCastleName : facts.CastleName.Trim())
@@ -33,7 +35,11 @@ public static class SiegeCastlePostprocessContextProfile
             .Append(authorization.IsAuthorized
                 ? SiegeCastlePrisonerDispositionKindProfile.Describe(authorization.Disposition)
                 : "未授权（" + authorization.ReasonCode + "）")
-            .Append("。士兵主动提出收编或屠戮时只能输出对应提议标签，提议标签只记录待确认状态，绝不能直接结算。只有玩家本轮明确命令，或明确同意本说话者此前同类提议后，才可输出收编/屠戮结算标签。闲聊、旁听、转述或领主回复不得触发普通战俘处置。一次回复最多输出一个城堡处置标签。");
+            .Append("；玩家本轮安兵判定=")
+            .Append(appeasementAuthorization.IsAuthorized
+                ? "已明确安抚"
+                : "未满足（" + appeasementAuthorization.ReasonCode + "）")
+            .Append("。士兵主动提出收编或屠戮时只能输出对应提议标签，提议标签只记录待确认状态，绝不能直接结算。只有玩家本轮明确命令，或明确同意本说话者此前同类提议后，才可输出收编/屠戮结算标签。安兵也必须有玩家本轮明确安抚意图，不能只凭士兵表示服从结算。闲聊、旁听、转述或领主回复不得触发普通战俘处置。一次回复最多输出一个城堡处置标签。");
 
         if (facts.SpeakerCultureMatchesCastle)
         {

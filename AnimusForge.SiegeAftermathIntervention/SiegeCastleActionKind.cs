@@ -13,3 +13,27 @@ public enum SiegeCastleActionKind
     ProposeRecruitPrisoners = 4,
     ProposeSlaughterPrisoners = 5
 }
+
+/// <summary>
+/// Stable semantics for separating non-mutating proposals from settlement actions.
+/// </summary>
+public static class SiegeCastleActionKindProfile
+{
+    public static bool IsProposal(SiegeCastleActionKind action)
+    {
+        return action == SiegeCastleActionKind.ProposeRecruitPrisoners
+            || action == SiegeCastleActionKind.ProposeSlaughterPrisoners;
+    }
+
+    public static bool IsPrisonerDispositionSettlement(SiegeCastleActionKind action)
+    {
+        return action == SiegeCastleActionKind.RecruitPrisoners
+            || action == SiegeCastleActionKind.SlaughterPrisoners;
+    }
+
+    public static bool IsSettlement(SiegeCastleActionKind action)
+    {
+        return IsPrisonerDispositionSettlement(action)
+            || action == SiegeCastleActionKind.AppeaseSoldiers;
+    }
+}

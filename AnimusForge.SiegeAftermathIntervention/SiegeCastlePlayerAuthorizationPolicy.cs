@@ -10,8 +10,8 @@ public static class SiegeCastlePlayerAuthorizationPolicy
 {
     private static readonly string[] GlobalRejectionTerms =
     {
-        "不同意", "拒绝", "取消", "算了", "否决", "不准", "驳回",
-        "disagree", "reject", "cancel", "denied"
+        "不同意", "拒绝", "取消", "算了", "否决", "不准", "驳回", "不可以", "不能这么做", "不行",
+        "disagree", "reject", "cancel", "denied", "not approved"
     };
 
     private static readonly string[] RecruitTerms =
@@ -40,13 +40,18 @@ public static class SiegeCastlePlayerAuthorizationPolicy
 
     private static readonly string[] GenericApprovalTerms =
     {
-        "同意", "批准", "准了", "照办", "就这么办", "按你说的办", "按你的建议办", "依你", "依你所言", "如你所愿", "执行吧", "动手吧", "可以",
-        "agreed", "approved", "do it", "proceed", "go ahead", "yes"
+        "同意", "批准", "准了", "照办", "就这么办", "按你说的办", "按你的建议办", "依你所言", "如你所愿", "执行吧", "动手吧",
+        "agreed", "approved", "do it", "proceed", "go ahead"
     };
 
     private static readonly string[] ShortApprovalTerms =
     {
-        "好", "行", "准", "是", "ok", "okay"
+        "好", "行", "准", "是", "可以", "依你", "ok", "okay", "yes"
+    };
+
+    private static readonly string[] ShortRejectionTerms =
+    {
+        "不", "否", "不行", "不可以", "no", "nope"
     };
 
     private static readonly string[] QuestionOrDiscussionTerms =
@@ -87,7 +92,7 @@ public static class SiegeCastlePlayerAuthorizationPolicy
                 "player_explicit_slaughter_authorization");
         }
 
-        if (ContainsAny(text, GlobalRejectionTerms))
+        if (ContainsAny(text, GlobalRejectionTerms) || EqualsAny(text, ShortRejectionTerms))
         {
             return SiegeCastlePlayerAuthorizationDecision.Denied("player_rejected_or_cancelled");
         }
@@ -97,7 +102,7 @@ public static class SiegeCastlePlayerAuthorizationPolicy
             return SiegeCastlePlayerAuthorizationDecision.Denied("player_discussion_not_authorization");
         }
 
-        if (ContainsAny(text, GenericApprovalTerms) || EqualsAnyShortApproval(text))
+        if (ContainsAny(text, GenericApprovalTerms) || EqualsAny(text, ShortApprovalTerms))
         {
             return pendingProposalForSpeaker == SiegeCastlePrisonerDispositionKind.None
                 ? SiegeCastlePlayerAuthorizationDecision.Denied("generic_approval_requires_matching_proposal")
@@ -123,10 +128,10 @@ public static class SiegeCastlePlayerAuthorizationPolicy
         return false;
     }
 
-    private static bool EqualsAnyShortApproval(string text)
+    private static bool EqualsAny(string text, string[] terms)
     {
         string normalized = (text ?? string.Empty).Trim().Trim('。', '！', '!', '？', '?', '，', ',', '.', '；', ';', '…').Trim();
-        foreach (string term in ShortApprovalTerms)
+        foreach (string term in terms)
         {
             if (string.Equals(normalized, term, StringComparison.OrdinalIgnoreCase))
             {

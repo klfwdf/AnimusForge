@@ -4,47 +4,78 @@ namespace AnimusForge.SiegeAftermathIntervention;
 
 /// <summary>
 /// Dynamic castle rules injected only while the castle aftermath stage is active.
-/// They are intentionally absent from the passive town ModuleData rule.
+/// It exposes proposal tags separately from settlement tags and filters them by the
+/// current speaker, direct-response state, player intent, and unresolved runtime state.
 /// </summary>
 public static class SiegeCastlePostprocessRuleCatalog
 {
     private static readonly SiegePostprocessRuleDefinition ProposeRecruitRule = new SiegePostprocessRuleDefinition(
         SiegeCastleActionTagCatalog.ProposeRecruitPrisonersTag,
-        "城堡提议收编：仅当己方士兵明确建议玩家收编普通战俘，或普通战俘士兵明确请求归顺，而玩家本轮尚未明确同意收编时输出。此标签只登记待玩家确认的提议，不得改变名册；被俘领主、旁听转述或已经得到玩家授权时禁止输出。");
+        "【提议标签，不结算】城堡提议收编：仅当己方士兵明确建议玩家收编普通战俘，或普通战俘士兵明确请求归顺，而玩家本轮尚未明确同意收编时输出。只登记待玩家确认状态，绝不改变名册；被俘领主、旁听转述、玩家拒绝或已经授权其他处置时禁止输出。");
 
     private static readonly SiegePostprocessRuleDefinition ProposeSlaughterRule = new SiegePostprocessRuleDefinition(
         SiegeCastleActionTagCatalog.ProposeSlaughterPrisonersTag,
-        "城堡提议屠戮：仅当己方士兵明确建议玩家屠戮普通战俘，而玩家本轮尚未明确同意屠戮时输出。此标签只登记待玩家确认的提议，不得伤害或移除任何人；普通战俘、被俘领主、旁听转述或已经得到玩家授权时禁止输出。");
+        "【提议标签，不结算】城堡提议屠戮：仅当己方士兵明确建议玩家屠戮普通战俘，而玩家本轮尚未明确同意屠戮时输出。只登记待玩家确认状态，绝不伤害或移除任何人；普通战俘、被俘领主、旁听转述、玩家拒绝或已经授权其他处置时禁止输出。");
 
     private static readonly SiegePostprocessRuleDefinition RecruitRule = new SiegePostprocessRuleDefinition(
         SiegeCastleActionTagCatalog.RecruitPrisonersTag,
-        "城堡收编战俘：仅当普通战俘或己方士兵直接回应玩家本轮对收编的明确命令/同意，并确认将执行时输出。若本轮只是士兵主动提议、玩家尚未授权、泛泛讨论、旁听转述或求饶，则禁止输出；被俘领主禁止输出。");
+        "【结算标签】城堡收编战俘：当前规则只有在玩家本轮已明确命令收编，或明确同意本说话者此前的收编提议时才会提供。普通战俘或己方士兵直接回应并确认执行时输出；不得降级成提议，不得用于求饶、讨论、旁听或被俘领主回复。");
 
     private static readonly SiegePostprocessRuleDefinition SlaughterRule = new SiegePostprocessRuleDefinition(
         SiegeCastleActionTagCatalog.SlaughterPrisonersTag,
-        "城堡屠戮战俘：仅当普通战俘或己方士兵直接回应玩家本轮对屠戮普通战俘的明确命令/同意，并确认将执行时输出。若本轮只是士兵主动提议、玩家尚未授权、恐惧闲聊、旁听传闻或主动请示，则禁止输出；此标签不得用于领主处决。");
+        "【结算标签】城堡屠戮战俘：当前规则只有在玩家本轮已明确命令屠戮，或明确同意本说话者此前的屠戮提议时才会提供。普通战俘或己方士兵直接回应并确认执行时输出；不得降级成提议，不得用于恐惧闲聊、旁听、主动请示或领主处决。");
 
     private static readonly SiegePostprocessRuleDefinition AppeaseRule = new SiegePostprocessRuleDefinition(
         SiegeCastleActionTagCatalog.AppeaseSoldiersTag,
-        "城堡安兵：仅在玩家已经收编至少一名普通战俘且军心待安抚时，由玩家带入城堡的己方士兵直接回应玩家本轮安抚、军纪解释、补偿或服从要求，并明确接受继续服从时输出。战俘、领主、旁听闲聊或完全抗命的回复禁止输出。");
+        "【结算标签】城堡安兵：仅在收编已引发军心待安抚、且玩家本轮确实给出安抚、补偿、军纪解释或战利安排时提供。玩家带入城堡的己方士兵直接接受并明确继续服从时输出；单纯要求服从、泛泛闲聊、疑问、战俘或领主回复均禁止输出。");
 
-    public static IReadOnlyList<SiegePostprocessRuleDefinition> GetAvailableRules(
-        int remainingRegularPrisoners,
-        bool soldierAppeasementRequired,
-        bool soldierAppeasementApplied)
+    public static IReadOnlyList<SiegePostprocessRuleDefinition> GetAvailableRules(SiegeCastlePostprocessRuleFacts facts)
     {
-        var rules = new List<SiegePostprocessRuleDefinition>(5);
-        if (remainingRegularPrisoners > 0)
+        facts ??= SiegeCastlePostprocessRuleFacts.Empty;
+        var rules = new List<SiegePostprocessRuleDefinition>(2);
+        if (!facts.ReplyIsDirectPlayerResponse)
+        {
+            return rules;
+        }
+
+        bool canAnswerDisposition = facts.SpeakerRole == SiegeCastleActionSpeakerRole.AlliedSoldier
+            || facts.SpeakerRole == SiegeCastleActionSpeakerRole.RegularPrisoner;
+        SiegeCastlePlayerAuthorizationDecision dispositionAuthorization = SiegeCastlePlayerAuthorizationPolicy.Evaluate(
+            facts.PlayerText,
+            facts.PendingProposalForSpeaker);
+        if (facts.RemainingRegularPrisoners > 0 && canAnswerDisposition && dispositionAuthorization.IsAuthorized)
+        {
+            rules.Add(dispositionAuthorization.Disposition == SiegeCastlePrisonerDispositionKind.Recruit
+                ? RecruitRule
+                : SlaughterRule);
+            return rules;
+        }
+
+        SiegeCastleSoldierAppeasementAuthorizationDecision appeasementAuthorization =
+            SiegeCastleSoldierAppeasementAuthorizationPolicy.Evaluate(facts.PlayerText);
+        if (facts.SpeakerRole == SiegeCastleActionSpeakerRole.AlliedSoldier
+            && facts.SoldierAppeasementRequired
+            && !facts.SoldierAppeasementApplied
+            && appeasementAuthorization.IsAuthorized)
+        {
+            rules.Add(AppeaseRule);
+            return rules;
+        }
+
+        if (facts.RemainingRegularPrisoners <= 0
+            || dispositionAuthorization.ReasonCode == "player_rejected_or_cancelled")
+        {
+            return rules;
+        }
+
+        if (facts.SpeakerRole == SiegeCastleActionSpeakerRole.AlliedSoldier)
         {
             rules.Add(ProposeRecruitRule);
             rules.Add(ProposeSlaughterRule);
-            rules.Add(RecruitRule);
-            rules.Add(SlaughterRule);
         }
-
-        if (soldierAppeasementRequired && !soldierAppeasementApplied)
+        else if (facts.SpeakerRole == SiegeCastleActionSpeakerRole.RegularPrisoner)
         {
-            rules.Add(AppeaseRule);
+            rules.Add(ProposeRecruitRule);
         }
 
         return rules;

@@ -39,8 +39,7 @@ public static class SiegeCastleActionRoutingPolicy
             facts.PlayerText,
             facts.PendingProposalForSpeaker);
 
-        if (action == SiegeCastleActionKind.ProposeRecruitPrisoners
-            || action == SiegeCastleActionKind.ProposeSlaughterPrisoners)
+        if (SiegeCastleActionKindProfile.IsProposal(action))
         {
             if (facts.RemainingRegularPrisoners <= 0)
             {
@@ -55,13 +54,22 @@ public static class SiegeCastleActionRoutingPolicy
                 return Block(hasRecognizedAction: true, action, "soldier_proposal_role_required");
             }
 
-            return authorization.IsAuthorized && authorization.Disposition == disposition
-                ? Block(hasRecognizedAction: true, action, "player_already_authorized_disposition")
+            if (authorization.IsAuthorized)
+            {
+                return Block(
+                    hasRecognizedAction: true,
+                    action,
+                    authorization.Disposition == disposition
+                        ? "player_already_authorized_disposition"
+                        : "player_authorized_different_disposition");
+            }
+
+            return authorization.ReasonCode == "player_rejected_or_cancelled"
+                ? Block(hasRecognizedAction: true, action, "player_rejected_proposal")
                 : Allow(action, "soldier_proposal_record_only");
         }
 
-        if (action == SiegeCastleActionKind.RecruitPrisoners
-            || action == SiegeCastleActionKind.SlaughterPrisoners)
+        if (SiegeCastleActionKindProfile.IsPrisonerDispositionSettlement(action))
         {
             if (facts.SpeakerRole != SiegeCastleActionSpeakerRole.RegularPrisoner
                 && facts.SpeakerRole != SiegeCastleActionSpeakerRole.AlliedSoldier)
@@ -91,8 +99,15 @@ public static class SiegeCastleActionRoutingPolicy
                 return Block(hasRecognizedAction: true, action, "soldier_appeasement_not_required");
             }
 
+            SiegeCastleSoldierAppeasementAuthorizationDecision appeasementAuthorization =
+                SiegeCastleSoldierAppeasementAuthorizationPolicy.Evaluate(facts.PlayerText);
+            if (!appeasementAuthorization.IsAuthorized)
+            {
+                return Block(hasRecognizedAction: true, action, appeasementAuthorization.ReasonCode);
+            }
+
             return !facts.SoldierAppeasementApplied
-                ? Allow(action, "soldier_appeasement_allowed")
+                ? Allow(action, appeasementAuthorization.ReasonCode)
                 : Block(hasRecognizedAction: true, action, "soldier_appeasement_already_applied");
         }
 

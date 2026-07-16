@@ -201,13 +201,20 @@ internal static class AfGcczShoutBridge
 		}
 	}
 
-	internal static List<PostprocessRuleEntry> BuildPostprocessRules(bool selected)
+	internal static List<PostprocessRuleEntry> BuildPostprocessRules(
+		bool selected,
+		int targetAgentIndex,
+		bool replyIsDirectPlayerResponse,
+		string playerText)
 	{
 		if (!selected)
 		{
 			return null;
 		}
-		return SiegeAiInterventionBehavior.BuildRuntimePostprocessRulesForExternal() ?? new List<PostprocessRuleEntry>();
+		return SiegeAiInterventionBehavior.BuildRuntimePostprocessRulesForExternal(
+			targetAgentIndex,
+			replyIsDirectPlayerResponse,
+			playerText) ?? new List<PostprocessRuleEntry>();
 	}
 
 	internal static string BuildPostprocessContext(
