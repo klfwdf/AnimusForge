@@ -1604,6 +1604,11 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private Dictionary<MobileParty, string> _wildernessNonHeroPartyMemoryIds = new Dictionary<MobileParty, string>();
 
+	// Both destruction callbacks are raised for the same party. The second pass would only rescan empty memory containers.
+	private const int DestroyedPartyMemoryCleanupDedupLimit = 4096;
+
+	private readonly HashSet<PartyBase> _destroyedPartyMemoryCleanupDedup = new HashSet<PartyBase>();
+
 	private Dictionary<string, MemoryOverviewState> _memoryOverviewStates = new Dictionary<string, MemoryOverviewState>(StringComparer.OrdinalIgnoreCase);
 
 	private Dictionary<string, string> _memoryOverviewStateStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -1624,8 +1629,6 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private const int DailyMaintenanceMaxJobsPerTick = 8;
 
-	private const double DeferredMaintenanceRunIntervalMilliseconds = 250.0;
-
 	private readonly Queue<DailyMaintenanceJob> _dailyMaintenanceQueue = new Queue<DailyMaintenanceJob>();
 
 	private readonly HashSet<string> _dailyMaintenanceJobKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -1642,9 +1645,10 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private readonly Queue<PendingWeeklyReportCommitContext> _pendingWeeklyReportCommits = new Queue<PendingWeeklyReportCommitContext>();
 
-	private int _kingdomStabilityMaintenanceCursor;
+	// Weekly report commits can be enqueued by async request completions. Keep the no-work path lock-free.
+	private int _hasPendingWeeklyReportCommits;
 
-	private long _nextDeferredMaintenanceRunTimestamp;
+	private int _kingdomStabilityMaintenanceCursor;
 
 	private bool _weekZeroOpeningSummaryMaintenanceWorldProcessed;
 
@@ -1660,11 +1664,9 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private List<EventSourceMaterialEntry> _weeklyEventSourceMaterialBuildSnapshot;
 
-	private const double MemoryMaintenanceCampaignTickThrottleSeconds = 2.0;
-
 	private const double MemoryOverviewCandidateScanThrottleSeconds = 10.0;
 
-	private long _lastMemoryMaintenanceCampaignTickUtcTicks;
+	private int _lastMemoryMaintenanceObservedGameDay = -1;
 
 	private long _lastMemoryOverviewCandidateScanUtcTicks;
 
@@ -2196,6 +2198,7 @@ public class MyBehavior : CampaignBehaviorBase
 			_playerDefeatedHeroBattleFactKeys.Clear();
 			_memorySummaryProcessing = false;
 			_memorySummaryFailurePopupActive = false;
+			_lastMemoryMaintenanceObservedGameDay = -1;
 			_nativeConversationMemorySessionCounter = 0;
 			_activeNativeConversationMemorySessionId = -1;
 			_pendingWeeklyMemoryMaterialTriggers.Clear();
@@ -2204,9 +2207,11 @@ public class MyBehavior : CampaignBehaviorBase
 			lock (_pendingWeeklyReportCommitLock)
 			{
 				_pendingWeeklyReportCommits.Clear();
+				Volatile.Write(ref _hasPendingWeeklyReportCommits, 0);
 			}
 			_dailyMaintenanceQueue.Clear();
 			_dailyMaintenanceJobKeys.Clear();
+			_destroyedPartyMemoryCleanupDedup.Clear();
 			_dirtyMemoryOverviewIds.Clear();
 			_pendingMemoryOverviewCandidateScanIds.Clear();
 			_pendingMemoryOverviewCandidateScanIdSet.Clear();
@@ -3413,24 +3418,28 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			string text = BuildRecentPartyBehaviorText(party);
+			string locationText = GetNearestSettlementNameForParty(party);
+			string armyDisplayName = party.Army != null ? GetArmyDisplayName(party.Army) : "";
+			string stableKey = BuildRecentPartyBehaviorStableKey(party, locationText, armyDisplayName);
+			int currentDay = GetCurrentGameDayIndexSafe();
+			if (string.IsNullOrWhiteSpace(stableKey) || HasRecentNpcActionStableKeyWithinWindow(leaderHero, stableKey, currentDay))
+			{
+				return;
+			}
+			string text = BuildRecentPartyBehaviorText(party, locationText, armyDisplayName);
 			if (string.IsNullOrWhiteSpace(text))
 			{
 				return;
 			}
-			string text2 = BuildRecentPartyBehaviorStableKey(party);
-			if (!string.IsNullOrWhiteSpace(text2))
+			NpcActionFacts npcActionFacts = CreateNpcActionFacts("daily_behavior", leaderHero);
+			MobileParty mobileParty = party.Army?.LeaderParty ?? party;
+			Settlement settlement = mobileParty?.BesiegedSettlement ?? ResolveSiegeSettlement(mobileParty?.SiegeEvent) ?? mobileParty?.TargetSettlement ?? party.TargetSettlement ?? party.CurrentSettlement ?? party.LastVisitedSettlement;
+			ApplySettlementFacts(npcActionFacts, settlement, locationText: locationText);
+			if (mobileParty?.TargetParty?.LeaderHero != null)
 			{
-				NpcActionFacts npcActionFacts = CreateNpcActionFacts("daily_behavior", leaderHero);
-				MobileParty mobileParty = party.Army?.LeaderParty ?? party;
-				Settlement settlement = mobileParty?.BesiegedSettlement ?? ResolveSiegeSettlement(mobileParty?.SiegeEvent) ?? mobileParty?.TargetSettlement ?? party.TargetSettlement ?? party.CurrentSettlement ?? party.LastVisitedSettlement;
-				ApplySettlementFacts(npcActionFacts, settlement, locationText: GetNearestSettlementNameForParty(party));
-				if (mobileParty?.TargetParty?.LeaderHero != null)
-				{
-					ApplyTargetFacts(npcActionFacts, mobileParty.TargetParty.LeaderHero);
-				}
-				RecordNpcRecentAction(leaderHero, text, text2, dedupeAcrossWindow: true, facts: npcActionFacts);
+				ApplyTargetFacts(npcActionFacts, mobileParty.TargetParty.LeaderHero);
 			}
+			RecordNpcRecentAction(leaderHero, text, stableKey, dedupeAcrossWindow: true, facts: npcActionFacts);
 		}
 		catch (Exception ex)
 		{
@@ -5567,34 +5576,14 @@ public class MyBehavior : CampaignBehaviorBase
 		return elapsedMs >= budgetMs;
 	}
 
-	private bool TryClaimDeferredMaintenanceRunWindow()
+	private bool HasPendingDeferredDailyMaintenanceWork()
 	{
-		long now = Stopwatch.GetTimestamp();
-		if (_nextDeferredMaintenanceRunTimestamp > now)
-		{
-			return false;
-		}
-		long interval = Math.Max(1L, (long)(Stopwatch.Frequency * DeferredMaintenanceRunIntervalMilliseconds / 1000.0));
-		_nextDeferredMaintenanceRunTimestamp = now + interval;
-		return true;
-	}
-
-	private static bool ShouldPauseDeferredMaintenanceForMapTravel()
-	{
-		try
-		{
-			MobileParty mainParty = MobileParty.MainParty;
-			return mainParty != null && mainParty.IsMoving && mainParty.Position.Distance(mainParty.MoveTargetPoint) > 0.01f;
-		}
-		catch
-		{
-			return false;
-		}
+		return _dailyMaintenanceQueue.Count > 0 || _pendingMemoryOverviewCandidateScanIds.Count > 0 || _pendingAutoWeeklyReportBuild != null;
 	}
 
 	private void ProcessDeferredDailyMaintenance()
 	{
-		if (!IsDeferredDailyMaintenanceEnabled() || ShouldPauseDeferredMaintenanceForMapTravel())
+		if (!IsDeferredDailyMaintenanceEnabled() || !HasPendingDeferredDailyMaintenanceWork())
 		{
 			return;
 		}
@@ -10632,6 +10621,7 @@ public class MyBehavior : CampaignBehaviorBase
 			return;
 		}
 		Dictionary<string, int> dictionary = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		Dictionary<string, Hero> dictionary2 = new Dictionary<string, Hero>(StringComparer.OrdinalIgnoreCase);
 		Hero hero = kingdom?.Leader ?? kingdom?.RulingClan?.Leader;
 		int kingdomStabilityRelationTargetOffset = GetKingdomStabilityRelationTargetOffset(GetKingdomStabilityValue(kingdom));
 		if (kingdom != null && !kingdom.IsEliminated && hero != null && kingdomStabilityRelationTargetOffset != 0 && kingdom.Clans != null)
@@ -10648,6 +10638,7 @@ public class MyBehavior : CampaignBehaviorBase
 					if (!string.IsNullOrWhiteSpace(text))
 					{
 						dictionary[text] = kingdomStabilityRelationTargetOffset;
+						dictionary2[text] = item;
 					}
 				}
 			}
@@ -10658,7 +10649,10 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			int desiredOffset = 0;
 			dictionary.TryGetValue(item2, out desiredOffset);
-			if (!TryResolveKingdomStabilityRelationOffsetKey(item2, out var _, out var sourceHero, out var targetHero))
+			Hero sourceHero = hero;
+			Hero targetHero = null;
+			bool hasCurrentPair = dictionary2.TryGetValue(item2, out targetHero) && sourceHero != null;
+			if (!hasCurrentPair && !TryResolveKingdomStabilityRelationOffsetKey(item2, out var _, out sourceHero, out targetHero))
 			{
 				_kingdomStabilityRelationAppliedOffsets.Remove(item2);
 				continue;
@@ -10679,9 +10673,13 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				continue;
 			}
-			if (!TryResolveKingdomStabilityRelationOffsetKey(item3.Key, out var _, out var sourceHero2, out var targetHero2))
+			Hero sourceHero2 = hero;
+			if (!dictionary2.TryGetValue(item3.Key, out Hero targetHero2) || sourceHero2 == null)
 			{
-				continue;
+				if (!TryResolveKingdomStabilityRelationOffsetKey(item3.Key, out var _, out sourceHero2, out targetHero2))
+				{
+					continue;
+				}
 			}
 			int num2 = ApplyKingdomStabilityRelationOffsetToPair(item3.Key, sourceHero2, targetHero2, item3.Value);
 			if (num2 != 0)
@@ -14785,36 +14783,34 @@ public class MyBehavior : CampaignBehaviorBase
 				value = new List<NpcActionEntry>();
 				storage[npcActionHeroKey] = value;
 			}
-			if (keepOnlyRecentWindow)
+			bool entriesChanged = RemoveInvalidNpcActionEntries(value, keepOnlyRecentWindow ? currentGameDayIndexSafe - RecentNpcActionWindowDays + 1 : int.MinValue, keepOnlyRecentWindow);
+			if (keepOnlyRecentWindow && entriesChanged)
 			{
-				int num = currentGameDayIndexSafe - RecentNpcActionWindowDays + 1;
-				value.RemoveAll((NpcActionEntry x) => x == null || x.Day < num || string.IsNullOrWhiteSpace(x.Text));
 				RefreshNpcRecentActionStableKeyIndexForHero(npcActionHeroKey, value);
-			}
-			else
-			{
-				value.RemoveAll((NpcActionEntry x) => x == null || string.IsNullOrWhiteSpace(x.Text));
 			}
 			if (dedupeAcrossWindow)
 			{
-				if ((keepOnlyRecentWindow && IsNpcRecentActionStableKeyKnown(npcActionHeroKey, text3)) || value.Any((NpcActionEntry x) => x != null && string.Equals(x.StableKey ?? "", text3, StringComparison.OrdinalIgnoreCase)))
+				if ((keepOnlyRecentWindow && IsNpcRecentActionStableKeyKnown(npcActionHeroKey, text3)) || ContainsNpcActionStableKey(value, text3))
 				{
 					return;
 				}
 			}
-			else if (value.Any((NpcActionEntry x) => x != null && x.Day == currentGameDayIndexSafe && (string.Equals(x.StableKey ?? "", text3, StringComparison.OrdinalIgnoreCase) || string.Equals((x.Text ?? "").Trim(), text2, StringComparison.Ordinal))))
+			else if (ContainsNpcActionForDay(value, currentGameDayIndexSafe, text3, text2))
 			{
 				return;
 			}
-			int order = (value.Count > 0) ? (value.Max((NpcActionEntry x) => (x != null && x.Day == currentGameDayIndexSafe) ? x.Order : 0) + 1) : 1;
+			int order = GetNextNpcActionOrder(value, currentGameDayIndexSafe);
 			int sequence = ++_npcActionGlobalOrderCounter;
-			value.Add(CreateNpcActionEntry(hero, text2, text3, currentGameDayIndexSafe, order, sequence, facts, isMajor));
-			value = value.OrderBy((NpcActionEntry x) => x.Day).ThenBy((NpcActionEntry x) => (x.Sequence > 0) ? x.Sequence : int.MaxValue).ThenBy((NpcActionEntry x) => x.Order).ThenBy((NpcActionEntry x) => x.GameDate ?? "", StringComparer.Ordinal).ToList();
+			NpcActionEntry npcActionEntry = CreateNpcActionEntry(hero, text2, text3, currentGameDayIndexSafe, order, sequence, facts, isMajor);
+			value.Add(npcActionEntry);
+			if (value.Count > 1 && CompareNpcActionTimeline(value[value.Count - 2], npcActionEntry) > 0)
+			{
+				value.Sort(CompareNpcActionTimeline);
+			}
 			if (maxEntries > 0 && value.Count > maxEntries)
 			{
-				value = value.Skip(value.Count - maxEntries).ToList();
+				value.RemoveRange(0, value.Count - maxEntries);
 			}
-			storage[npcActionHeroKey] = value;
 			if (keepOnlyRecentWindow)
 			{
 				RefreshNpcRecentActionStableKeyIndexForHero(npcActionHeroKey, value);
@@ -14824,6 +14820,133 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			Logger.Log("NpcAction", "[ERROR] RecordNpcActionInternal: " + ex.Message);
 		}
+	}
+
+	private bool HasRecentNpcActionStableKeyWithinWindow(Hero hero, string stableKey, int currentDay)
+	{
+		string heroKey = GetNpcActionHeroKey(hero);
+		string normalizedStableKey = NormalizeNpcActionStableKey(stableKey, "");
+		if (string.IsNullOrWhiteSpace(heroKey)
+			|| string.IsNullOrWhiteSpace(normalizedStableKey)
+			|| _npcRecentActions == null
+			|| !_npcRecentActions.TryGetValue(heroKey, out List<NpcActionEntry> entries)
+			|| entries == null)
+		{
+			return false;
+		}
+		int minimumDay = currentDay - RecentNpcActionWindowDays + 1;
+		for (int index = entries.Count - 1; index >= 0; index--)
+		{
+			NpcActionEntry entry = entries[index];
+			if (entry != null
+				&& entry.Day >= minimumDay
+				&& !string.IsNullOrWhiteSpace(entry.Text)
+				&& string.Equals(entry.StableKey ?? "", normalizedStableKey, StringComparison.OrdinalIgnoreCase))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static bool RemoveInvalidNpcActionEntries(List<NpcActionEntry> entries, int minimumDay, bool keepOnlyRecentWindow)
+	{
+		if (entries == null || entries.Count == 0)
+		{
+			return false;
+		}
+		bool removedAny = false;
+		for (int index = entries.Count - 1; index >= 0; index--)
+		{
+			NpcActionEntry entry = entries[index];
+			if (entry == null || string.IsNullOrWhiteSpace(entry.Text) || (keepOnlyRecentWindow && entry.Day < minimumDay))
+			{
+				entries.RemoveAt(index);
+				removedAny = true;
+			}
+		}
+		return removedAny;
+	}
+
+	private static bool ContainsNpcActionStableKey(List<NpcActionEntry> entries, string stableKey)
+	{
+		if (entries == null)
+		{
+			return false;
+		}
+		for (int index = 0; index < entries.Count; index++)
+		{
+			NpcActionEntry entry = entries[index];
+			if (entry != null && string.Equals(entry.StableKey ?? "", stableKey, StringComparison.OrdinalIgnoreCase))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static bool ContainsNpcActionForDay(List<NpcActionEntry> entries, int day, string stableKey, string text)
+	{
+		if (entries == null)
+		{
+			return false;
+		}
+		for (int index = 0; index < entries.Count; index++)
+		{
+			NpcActionEntry entry = entries[index];
+			if (entry != null
+				&& entry.Day == day
+				&& (string.Equals(entry.StableKey ?? "", stableKey, StringComparison.OrdinalIgnoreCase) || string.Equals((entry.Text ?? "").Trim(), text, StringComparison.Ordinal)))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static int GetNextNpcActionOrder(List<NpcActionEntry> entries, int day)
+	{
+		int highestOrder = 0;
+		if (entries != null)
+		{
+			for (int index = 0; index < entries.Count; index++)
+			{
+				NpcActionEntry entry = entries[index];
+				if (entry != null && entry.Day == day && entry.Order > highestOrder)
+				{
+					highestOrder = entry.Order;
+				}
+			}
+		}
+		return highestOrder + 1;
+	}
+
+	private static int CompareNpcActionTimeline(NpcActionEntry left, NpcActionEntry right)
+	{
+		if (ReferenceEquals(left, right))
+		{
+			return 0;
+		}
+		if (left == null)
+		{
+			return -1;
+		}
+		if (right == null)
+		{
+			return 1;
+		}
+		int result = left.Day.CompareTo(right.Day);
+		if (result != 0)
+		{
+			return result;
+		}
+		result = (left.Sequence > 0 ? left.Sequence : int.MaxValue).CompareTo(right.Sequence > 0 ? right.Sequence : int.MaxValue);
+		if (result != 0)
+		{
+			return result;
+		}
+		result = left.Order.CompareTo(right.Order);
+		return result != 0 ? result : string.Compare(left.GameDate ?? "", right.GameDate ?? "", StringComparison.Ordinal);
 	}
 
 	private static string GetArmyDisplayName(Army army)
@@ -16210,12 +16333,23 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
+		string locationText = GetNearestSettlementNameForParty(party);
+		string armyDisplayName = party.Army != null ? GetArmyDisplayName(party.Army) : "";
+		return BuildRecentPartyBehaviorText(party, locationText, armyDisplayName);
+	}
+
+	private static string BuildRecentPartyBehaviorText(MobileParty party, string locationText, string armyDisplayName)
+	{
+		if (party == null)
+		{
+			return "";
+		}
 		MobileParty mobileParty = party.Army?.LeaderParty ?? party;
-		string text = GetNearestSettlementNameForParty(party);
+		string text = string.IsNullOrWhiteSpace(locationText) ? "附近一带" : locationText.Trim();
 		if (party.Army != null)
 		{
 			string text2 = (party.Army.LeaderParty == party) ? "你最近正率领" : "你最近正随";
-			string text3 = GetArmyDisplayName(party.Army);
+			string text3 = string.IsNullOrWhiteSpace(armyDisplayName) ? GetArmyDisplayName(party.Army) : armyDisplayName;
 			switch (mobileParty?.DefaultBehavior)
 			{
 			case TaleWorlds.CampaignSystem.Party.AiBehavior.BesiegeSettlement:
@@ -16272,10 +16406,21 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
+		string locationText = GetNearestSettlementNameForParty(party);
+		string armyDisplayName = party.Army != null ? GetArmyDisplayName(party.Army) : "";
+		return BuildRecentPartyBehaviorStableKey(party, locationText, armyDisplayName);
+	}
+
+	private static string BuildRecentPartyBehaviorStableKey(MobileParty party, string locationText, string armyDisplayName)
+	{
+		if (party == null)
+		{
+			return "";
+		}
 		MobileParty mobileParty = party.Army?.LeaderParty ?? party;
-		string text = GetNearestSettlementNameForParty(party);
+		string text = string.IsNullOrWhiteSpace(locationText) ? "附近一带" : locationText.Trim();
 		string text2 = mobileParty?.TargetParty?.StringId ?? mobileParty?.TargetParty?.Name?.ToString() ?? "";
-		string text3 = (party.Army != null) ? GetArmyDisplayName(party.Army) : "";
+		string text3 = (party.Army != null) ? (string.IsNullOrWhiteSpace(armyDisplayName) ? GetArmyDisplayName(party.Army) : armyDisplayName) : "";
 		if (party.Army != null)
 		{
 			return "daily_behavior:army:" + (mobileParty?.DefaultBehavior).GetValueOrDefault() + ":" + text + ":" + text2 + ":" + text3;
@@ -16737,40 +16882,19 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 		try
 		{
-			using (PerfProbe.Scope("MyBehavior.OnCampaignTick.ProcessPendingWeeklyReportManualRetryResult"))
-			{
-				ProcessPendingWeeklyReportManualRetryResult();
-			}
-			using (PerfProbe.Scope("MyBehavior.OnCampaignTick.ProcessWeeklyReportUiResume"))
-			{
-				ProcessWeeklyReportUiResume();
-			}
-			bool pauseDeferredMaintenanceForMapTravel = ShouldPauseDeferredMaintenanceForMapTravel();
-			bool deferredMaintenanceWindowOpen;
-			using (PerfProbe.Scope("MyBehavior.OnCampaignTick.DeferredMaintenanceScheduler"))
-			{
-				deferredMaintenanceWindowOpen = !pauseDeferredMaintenanceForMapTravel && TryClaimDeferredMaintenanceRunWindow();
-			}
 			bool processedWeeklyReportCommits = false;
-			if (deferredMaintenanceWindowOpen)
+			if (Volatile.Read(ref _hasPendingWeeklyReportCommits) != 0)
 			{
 				using (PerfProbe.Scope("MyBehavior.OnCampaignTick.ProcessPendingWeeklyReportCommits"))
 				{
 					processedWeeklyReportCommits = ProcessPendingWeeklyReportCommits();
 				}
 			}
-			using (PerfProbe.Scope("MyBehavior.OnCampaignTick.TryPublishUnreadWeeklyReportMapNotifications"))
+			using (PerfProbe.Scope("MyBehavior.OnCampaignTick.TryRunCampaignMemoryMaintenance"))
 			{
-				TryPublishUnreadWeeklyReportMapNotifications();
+				TryRunCampaignMemoryMaintenance();
 			}
-			if (!pauseDeferredMaintenanceForMapTravel)
-			{
-				using (PerfProbe.Scope("MyBehavior.OnCampaignTick.TryRunCampaignMemoryMaintenance"))
-				{
-					TryRunCampaignMemoryMaintenance();
-				}
-			}
-			if (deferredMaintenanceWindowOpen && !processedWeeklyReportCommits)
+			if (!processedWeeklyReportCommits && HasPendingDeferredDailyMaintenanceWork())
 			{
 				using (PerfProbe.Scope("MyBehavior.OnCampaignTick.ProcessDeferredDailyMaintenance"))
 				{
@@ -16809,16 +16933,10 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void TryRunCampaignMemoryMaintenance()
 	{
-		if (ShouldPauseDeferredMaintenanceForMapTravel() || _memorySummaryProcessing || IsDialogueOrLetterChainBusyForMemorySummary())
+		if (_memorySummaryProcessing)
 		{
 			return;
 		}
-		long now = DateTime.UtcNow.Ticks;
-		if (now - _lastMemoryMaintenanceCampaignTickUtcTicks < TimeSpan.FromSeconds(MemoryMaintenanceCampaignTickThrottleSeconds).Ticks)
-		{
-			return;
-		}
-		_lastMemoryMaintenanceCampaignTickUtcTicks = now;
 		int currentDay = 0;
 		try
 		{
@@ -16828,8 +16946,17 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			currentDay = 0;
 		}
-		bool hasPastDrafts = HasPastDailyMemoryDrafts(currentDay);
 		bool hasQueuedWork = (_memorySummaryQueue != null && _memorySummaryQueue.Count > 0) || (_npcMajorActionSummaryQueue != null && _npcMajorActionSummaryQueue.Count > 0) || (_memoryOverviewQueue != null && _memoryOverviewQueue.Count > 0);
+		if (!hasQueuedWork && currentDay == _lastMemoryMaintenanceObservedGameDay)
+		{
+			return;
+		}
+		if (IsDialogueOrLetterChainBusyForMemorySummary())
+		{
+			return;
+		}
+		_lastMemoryMaintenanceObservedGameDay = currentDay;
+		bool hasPastDrafts = HasPastDailyMemoryDrafts(currentDay);
 		if (!hasPastDrafts && !hasQueuedWork)
 		{
 			return;
@@ -18011,6 +18138,10 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void OnBattleStartedForEncounterDiag(PartyBase attackerParty, PartyBase defenderParty, object subject, bool showNotification)
 	{
+		if (!ShouldWriteBattleStartEncounterDiagnostic(attackerParty, defenderParty))
+		{
+			return;
+		}
 		try
 		{
 			Logger.LogImmediate("Logic", "[EncounterDiag] stage=MyBehavior.OnBattleStarted | subject=" + EncounterDiagEscape(subject?.GetType().FullName ?? "null")
@@ -18021,6 +18152,27 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		catch
 		{
+		}
+	}
+
+	private static bool ShouldWriteBattleStartEncounterDiagnostic(PartyBase attackerParty, PartyBase defenderParty)
+	{
+		try
+		{
+			if (!Logger.IsModLogicEnabled)
+			{
+				return false;
+			}
+			if (Logger.IsVerboseModLogicEnabled)
+			{
+				return true;
+			}
+			PartyBase mainParty = PartyBase.MainParty;
+			return mainParty != null && (ReferenceEquals(attackerParty, mainParty) || ReferenceEquals(defenderParty, mainParty));
+		}
+		catch
+		{
+			return false;
 		}
 	}
 
@@ -19226,7 +19378,25 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		HashSet<string> stableKeys = new HashSet<string>((entries ?? new List<NpcActionEntry>()).Where((NpcActionEntry x) => x != null).Select((NpcActionEntry x) => (x.StableKey ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)), StringComparer.OrdinalIgnoreCase);
+		if (!_npcRecentActionStableKeyIndex.TryGetValue(text, out HashSet<string> stableKeys) || stableKeys == null)
+		{
+			stableKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		}
+		else
+		{
+			stableKeys.Clear();
+		}
+		if (entries != null)
+		{
+			for (int index = 0; index < entries.Count; index++)
+			{
+				string stableKey = (entries[index]?.StableKey ?? "").Trim();
+				if (!string.IsNullOrWhiteSpace(stableKey))
+				{
+					stableKeys.Add(stableKey);
+				}
+			}
+		}
 		if (stableKeys.Count > 0)
 		{
 			_npcRecentActionStableKeyIndex[text] = stableKeys;
@@ -23840,7 +24010,24 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			Logger.Log("Logic", "[NonHeroMemoryTrace] " + (message ?? ""));
+			if (Logger.IsVerboseModLogicEnabled)
+			{
+				Logger.Log("Logic", "[NonHeroMemoryTrace] " + (message ?? ""));
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private static void LogNonHeroMemoryTrace(Func<string> messageFactory)
+	{
+		try
+		{
+			if (Logger.IsVerboseModLogicEnabled)
+			{
+				Logger.Log("Logic", "[NonHeroMemoryTrace] " + (messageFactory?.Invoke() ?? ""));
+			}
 		}
 		catch
 		{
@@ -24069,6 +24256,10 @@ public class MyBehavior : CampaignBehaviorBase
 		try
 		{
 			MobileParty resolvedParty = party ?? partyBase?.MobileParty;
+			if (!TryReserveDestroyedPartyMemoryCleanup(partyBase, resolvedParty))
+			{
+				return;
+			}
 			string guid = "";
 			if (resolvedParty != null && _wildernessNonHeroPartyMemoryIds != null)
 			{
@@ -24087,6 +24278,27 @@ public class MyBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("DialogueHistory", "[WARN] remove wilderness non-hero party memory failed: " + ex.Message);
+		}
+	}
+
+	private bool TryReserveDestroyedPartyMemoryCleanup(PartyBase partyBase, MobileParty party)
+	{
+		try
+		{
+			PartyBase identity = partyBase ?? party?.Party;
+			if (identity == null)
+			{
+				return true;
+			}
+			if (_destroyedPartyMemoryCleanupDedup.Count >= DestroyedPartyMemoryCleanupDedupLimit)
+			{
+				_destroyedPartyMemoryCleanupDedup.Clear();
+			}
+			return _destroyedPartyMemoryCleanupDedup.Add(identity);
+		}
+		catch
+		{
+			return true;
 		}
 	}
 
@@ -24814,7 +25026,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				RemoveMemoryEntityDataById(id);
 			}
-			LogNonHeroMemoryTrace("stage=cleanup_removed_party reason=" + (reason ?? "") + " party=" + (party?.StringId ?? party?.Name?.ToString() ?? "") + " partyIndex=" + (partyBase?.Index ?? party?.Party?.Index ?? -1) + " needles=" + string.Join(",", needles) + " removed=" + ids.Count);
+			LogNonHeroMemoryTrace(() => "stage=cleanup_removed_party reason=" + (reason ?? "") + " party=" + (party?.StringId ?? party?.Name?.ToString() ?? "") + " partyIndex=" + (partyBase?.Index ?? party?.Party?.Index ?? -1) + " needles=" + string.Join(",", needles) + " removed=" + ids.Count);
 			if (ids.Count > 0)
 			{
 				Logger.Log("DialogueHistory", "cleaned destroyed non-hero party memory count=" + ids.Count + " partyIndex=" + (partyBase?.Index ?? party?.Party?.Index ?? -1) + " party=" + (party?.StringId ?? party?.Name?.ToString() ?? "") + " reason=" + (reason ?? ""));
@@ -26368,7 +26580,7 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			MyBehavior behavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			MyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>();
 			return behavior != null && behavior.HasMeaningfulDialogueHistoryInternal(hero);
 		}
 		catch
@@ -26381,7 +26593,7 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			MyBehavior behavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			MyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>();
 			return behavior?.GetLastMeaningfulDialogueDayInternal(hero) ?? -1;
 		}
 		catch
@@ -26461,18 +26673,28 @@ public class MyBehavior : CampaignBehaviorBase
 			return -1;
 		}
 		List<DialogueDay> history = LoadDialogueHistory(hero);
-		foreach (DialogueDay dialogueDay in (history ?? new List<DialogueDay>()).OrderByDescending(x => x?.GameDayIndex ?? -1))
+		int latestMeaningfulDay = -1;
+		if (history == null)
 		{
-			if (dialogueDay?.Lines == null)
+			return latestMeaningfulDay;
+		}
+		for (int dayIndex = 0; dayIndex < history.Count; dayIndex++)
+		{
+			DialogueDay dialogueDay = history[dayIndex];
+			if (dialogueDay?.Lines == null || dialogueDay.GameDayIndex < latestMeaningfulDay)
 			{
 				continue;
 			}
-			if (dialogueDay.Lines.Any(line => IsMeaningfulDialogueLineForProactiveLetter(line)))
+			for (int lineIndex = 0; lineIndex < dialogueDay.Lines.Count; lineIndex++)
 			{
-				return dialogueDay.GameDayIndex;
+				if (IsMeaningfulDialogueLineForProactiveLetter(dialogueDay.Lines[lineIndex]))
+				{
+					latestMeaningfulDay = dialogueDay.GameDayIndex;
+					break;
+				}
 			}
 		}
-		return -1;
+		return latestMeaningfulDay;
 	}
 
 	private bool TryGetLatestMeaningfulDialogueInternal(Hero hero, out string stableKey, out string dialogueText, out int day)
@@ -28412,6 +28634,16 @@ public class MyBehavior : CampaignBehaviorBase
 
 	public static string BuildPlayerCourierSenderIdentityForExternal(Hero observer)
 	{
+		return BuildPlayerCourierIdentityForExternal(observer, "来信者", "正式回信");
+	}
+
+	public static string BuildPlayerCourierRecipientIdentityForExternal(Hero observer)
+	{
+		return BuildPlayerCourierIdentityForExternal(observer, "收信者", "正式信件中");
+	}
+
+	private static string BuildPlayerCourierIdentityForExternal(Hero observer, string participantLabel, string formalAddressContext)
+	{
 		try
 		{
 			Hero playerHero = Hero.MainHero;
@@ -28461,14 +28693,14 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			string ageText = BuildAgeBracketLabel(playerHero.Age);
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.AppendLine("【来信者公开身份】");
-			stringBuilder.AppendLine("来信者公开称呼：" + playerDisplayName);
-			stringBuilder.AppendLine("来信者文化与年纪：" + cultureText + "，" + ageText);
+			stringBuilder.AppendLine("【" + participantLabel + "公开身份】");
+			stringBuilder.AppendLine(participantLabel + "公开称呼：" + playerDisplayName);
+			stringBuilder.AppendLine(participantLabel + "文化与年纪：" + cultureText + "，" + ageText);
 			if (includeFullIdentity)
 			{
-				stringBuilder.AppendLine(BuildFactionLineForPrompt("来信者势力：", factionName, liegeName));
-				stringBuilder.AppendLine("来信者身份：" + identityTitle);
-				stringBuilder.AppendLine("来信者家族：" + clanName + $"（{Math.Max(0, clanTier)} level，{clanRole}）");
+				stringBuilder.AppendLine(BuildFactionLineForPrompt(participantLabel + "势力：", factionName, liegeName));
+				stringBuilder.AppendLine(participantLabel + "身份：" + identityTitle);
+				stringBuilder.AppendLine(participantLabel + "家族：" + clanName + $"（{Math.Max(0, clanTier)} level，{clanRole}）");
 				try
 				{
 					Kingdom kingdom = playerHero.Clan?.Kingdom;
@@ -28479,7 +28711,7 @@ public class MyBehavior : CampaignBehaviorBase
 					{
 						string sovereignTitle = playerHero.IsFemale ? "女王/统治者" : "国王/统治者";
 						string scope = string.IsNullOrWhiteSpace(kingdomName) ? "" : (kingdomName + "的");
-						stringBuilder.AppendLine("称呼要求：来信者是" + scope + sovereignTitle + "，正式回信应称其为“" + playerDisplayName + "陛下”或使用君主/统治者级称呼；不要把此人降格称为“勋爵”“领主”或普通贵族。");
+						stringBuilder.AppendLine("称呼要求：" + participantLabel + "是" + scope + sovereignTitle + "，" + formalAddressContext + "应称其为“" + playerDisplayName + "陛下”或使用君主/统治者级称呼；不要把此人降格称为“勋爵”“领主”或普通贵族。");
 					}
 				}
 				catch
@@ -28488,7 +28720,7 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			else
 			{
-				stringBuilder.AppendLine("来信者详细身份：你尚未确认其真实姓名、家族、势力或头衔，只能依据公开称呼、信件内容和你已知的公开传闻判断。");
+				stringBuilder.AppendLine(participantLabel + "详细身份：你尚未确认其真实姓名、家族、势力或头衔，只能依据公开称呼、信件内容和你已知的公开传闻判断。");
 			}
 			string vassalageRelationLine = BuildPlayerVassalageRelationPromptLineForExternal(observer, counterpartKingdomLabel: "玩家所在王国");
 			if (!string.IsNullOrWhiteSpace(vassalageRelationLine))
@@ -31732,11 +31964,50 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 			}
 		}
+		int rawMessageCount = result.Count;
+		int historyLineLimit = DuelSettings.GetDailyConversationHistoryLineLimitForExternal();
+		result = KeepUncompressedFactsAndRecentConversationMessages(result, historyLineLimit);
 		sw.Stop();
-		Logger.Log("Logic", "[MemoryPerf] uncompressed_memory_done hero=" + normalizedMemoryId + " drafts=" + drafts.Count + " messages=" + result.Count + " agent=" + targetAgentIndex + " includeCurrentSession=" + includeCurrentActiveSceneSession + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
+		Logger.Log("Logic", "[MemoryPerf] uncompressed_memory_done hero=" + normalizedMemoryId + " drafts=" + drafts.Count + " rawMessages=" + rawMessageCount + " messages=" + result.Count + " historyLineLimit=" + historyLineLimit + " agent=" + targetAgentIndex + " includeCurrentSession=" + includeCurrentActiveSceneSession + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
 		if (IsNonHeroMemoryId(normalizedMemoryId))
 		{
-			LogNonHeroMemoryTrace("stage=uncompressed_build_done memoryId=" + normalizedMemoryId + " drafts=" + drafts.Count + " draftLines=" + CountDailyMemoryDraftLines(drafts) + " messages=" + result.Count + " agent=" + targetAgentIndex + " includeCurrentSession=" + includeCurrentActiveSceneSession + " currentDay=" + currentDay + " suppressedSceneSession=" + currentSceneSessionId + " suppressedDialogueSession=" + currentDialogueSessionId + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
+			LogNonHeroMemoryTrace("stage=uncompressed_build_done memoryId=" + normalizedMemoryId + " drafts=" + drafts.Count + " draftLines=" + CountDailyMemoryDraftLines(drafts) + " rawMessages=" + rawMessageCount + " messages=" + result.Count + " historyLineLimit=" + historyLineLimit + " agent=" + targetAgentIndex + " includeCurrentSession=" + includeCurrentActiveSceneSession + " currentDay=" + currentDay + " suppressedSceneSession=" + currentSceneSessionId + " suppressedDialogueSession=" + currentDialogueSessionId + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
+		}
+		return result;
+	}
+
+	private static List<ConversationMessage> KeepUncompressedFactsAndRecentConversationMessages(List<ConversationMessage> messages, int maxConversationMessages)
+	{
+		if (messages == null || messages.Count == 0)
+		{
+			return messages ?? new List<ConversationMessage>();
+		}
+		int limit = Math.Max(DuelSettings.DailyConversationHistoryLineLimitMin, Math.Min(DuelSettings.DailyConversationHistoryLineLimitMax, maxConversationMessages));
+		int conversationCount = 0;
+		for (int i = 0; i < messages.Count; i++)
+		{
+			ConversationMessage message = messages[i];
+			if (message != null && !string.Equals((message.Role ?? "").Trim(), "system", StringComparison.OrdinalIgnoreCase))
+			{
+				conversationCount++;
+			}
+		}
+		int removeCount = conversationCount - limit;
+		if (removeCount <= 0)
+		{
+			return messages;
+		}
+		List<ConversationMessage> result = new List<ConversationMessage>(messages.Count - removeCount);
+		for (int i = 0; i < messages.Count; i++)
+		{
+			ConversationMessage message = messages[i];
+			bool isFact = message != null && string.Equals((message.Role ?? "").Trim(), "system", StringComparison.OrdinalIgnoreCase);
+			if (!isFact && removeCount > 0)
+			{
+				removeCount--;
+				continue;
+			}
+			result.Add(message);
 		}
 		return result;
 	}
@@ -36948,14 +37219,15 @@ public class MyBehavior : CampaignBehaviorBase
 	private List<WeeklyEventMaterialPreviewGroup> BuildWeeklyEventMaterialPreviewGroups(int startDay, int endDay)
 	{
 		List<WeeklyEventMaterialPreviewGroup> list = new List<WeeklyEventMaterialPreviewGroup>();
-		list.Add(BuildWorldWeeklyEventMaterialPreviewGroup(startDay, endDay));
+		Dictionary<string, Hero> actionHeroLookup = BuildWeeklyNpcActionHeroLookup();
+		list.Add(BuildWorldWeeklyEventMaterialPreviewGroup(startDay, endDay, actionHeroLookup));
 		foreach (Kingdom devEditableKingdom in GetDevEditableKingdoms())
 		{
 			if (!IsKingdomEligibleForWeeklyReport(devEditableKingdom))
 			{
 				continue;
 			}
-			WeeklyEventMaterialPreviewGroup item = BuildKingdomWeeklyEventMaterialPreviewGroup(devEditableKingdom, startDay, endDay);
+			WeeklyEventMaterialPreviewGroup item = BuildKingdomWeeklyEventMaterialPreviewGroup(devEditableKingdom, startDay, endDay, actionHeroLookup);
 			list.Add(item);
 		}
 		foreach (WeeklyEventMaterialPreviewGroup item2 in list)
@@ -43680,7 +43952,56 @@ public class MyBehavior : CampaignBehaviorBase
 		return weeklyEventMaterialPreviewGroup;
 	}
 
-	private WeeklyEventMaterialPreviewGroup BuildWorldWeeklyEventMaterialPreviewGroup(int startDay, int endDay)
+	private Dictionary<string, Hero> BuildWeeklyNpcActionHeroLookup()
+	{
+		HashSet<string> actionHeroIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (KeyValuePair<string, List<NpcActionEntry>> entry in _npcRecentActions ?? new Dictionary<string, List<NpcActionEntry>>())
+		{
+			if (!string.IsNullOrWhiteSpace(entry.Key) && entry.Value != null && entry.Value.Count > 0)
+			{
+				actionHeroIds.Add(entry.Key.Trim());
+			}
+		}
+		foreach (KeyValuePair<string, List<NpcActionEntry>> entry2 in _npcMajorActions ?? new Dictionary<string, List<NpcActionEntry>>())
+		{
+			if (!string.IsNullOrWhiteSpace(entry2.Key) && entry2.Value != null && entry2.Value.Count > 0)
+			{
+				actionHeroIds.Add(entry2.Key.Trim());
+			}
+		}
+		Dictionary<string, Hero> lookup = new Dictionary<string, Hero>(actionHeroIds.Count, StringComparer.OrdinalIgnoreCase);
+		if (actionHeroIds.Count == 0)
+		{
+			return lookup;
+		}
+		try
+		{
+			foreach (Hero hero in Hero.AllAliveHeroes)
+			{
+				string heroId = (hero?.StringId ?? "").Trim();
+				if (!string.IsNullOrWhiteSpace(heroId) && actionHeroIds.Contains(heroId))
+				{
+					lookup[heroId] = hero;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return lookup;
+	}
+
+	private static Hero ResolveWeeklyNpcActionHero(Dictionary<string, Hero> actionHeroLookup, string heroId)
+	{
+		string normalizedHeroId = (heroId ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(normalizedHeroId) && actionHeroLookup != null && actionHeroLookup.TryGetValue(normalizedHeroId, out Hero hero))
+		{
+			return hero;
+		}
+		return FindHeroById(normalizedHeroId);
+	}
+
+	private WeeklyEventMaterialPreviewGroup BuildWorldWeeklyEventMaterialPreviewGroup(int startDay, int endDay, Dictionary<string, Hero> actionHeroLookup)
 	{
 		WeeklyEventMaterialPreviewGroup weeklyEventMaterialPreviewGroup = CreateWorldWeeklyEventMaterialPreviewGroup();
 		foreach (EventSourceMaterialEntry item in GetWeeklyEventSourceMaterialsForBuild())
@@ -43692,7 +44013,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		foreach (KeyValuePair<string, List<NpcActionEntry>> npcRecentAction in _npcRecentActions ?? new Dictionary<string, List<NpcActionEntry>>())
 		{
-			Hero hero = FindHeroById(npcRecentAction.Key);
+			Hero hero = ResolveWeeklyNpcActionHero(actionHeroLookup, npcRecentAction.Key);
 			if (hero == null || npcRecentAction.Value == null)
 			{
 				continue;
@@ -43707,7 +44028,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		foreach (KeyValuePair<string, List<NpcActionEntry>> npcMajorAction in _npcMajorActions ?? new Dictionary<string, List<NpcActionEntry>>())
 		{
-			Hero hero = FindHeroById(npcMajorAction.Key);
+			Hero hero = ResolveWeeklyNpcActionHero(actionHeroLookup, npcMajorAction.Key);
 			if (hero == null || npcMajorAction.Value == null)
 			{
 				continue;
@@ -43750,7 +44071,7 @@ public class MyBehavior : CampaignBehaviorBase
 		return weeklyEventMaterialPreviewGroup;
 	}
 
-	private WeeklyEventMaterialPreviewGroup BuildKingdomWeeklyEventMaterialPreviewGroup(Kingdom kingdom, int startDay, int endDay)
+	private WeeklyEventMaterialPreviewGroup BuildKingdomWeeklyEventMaterialPreviewGroup(Kingdom kingdom, int startDay, int endDay, Dictionary<string, Hero> actionHeroLookup)
 	{
 		WeeklyEventMaterialPreviewGroup weeklyEventMaterialPreviewGroup = CreateKingdomWeeklyEventMaterialPreviewGroup(kingdom);
 		foreach (EventSourceMaterialEntry item in GetWeeklyEventSourceMaterialsForBuild())
@@ -43762,7 +44083,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		foreach (KeyValuePair<string, List<NpcActionEntry>> npcRecentAction in _npcRecentActions ?? new Dictionary<string, List<NpcActionEntry>>())
 		{
-			Hero hero = FindHeroById(npcRecentAction.Key);
+			Hero hero = ResolveWeeklyNpcActionHero(actionHeroLookup, npcRecentAction.Key);
 			if (hero == null || npcRecentAction.Value == null)
 			{
 				continue;
@@ -43777,7 +44098,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		foreach (KeyValuePair<string, List<NpcActionEntry>> npcMajorAction in _npcMajorActions ?? new Dictionary<string, List<NpcActionEntry>>())
 		{
-			Hero hero = FindHeroById(npcMajorAction.Key);
+			Hero hero = ResolveWeeklyNpcActionHero(actionHeroLookup, npcMajorAction.Key);
 			if (hero == null || npcMajorAction.Value == null)
 			{
 				continue;
@@ -44796,12 +45117,17 @@ public class MyBehavior : CampaignBehaviorBase
 		lock (_pendingWeeklyReportCommitLock)
 		{
 			_pendingWeeklyReportCommits.Enqueue(context);
+			Volatile.Write(ref _hasPendingWeeklyReportCommits, 1);
 		}
 		return completionSource.Task;
 	}
 
 	private bool ProcessPendingWeeklyReportCommits()
 	{
+		if (Volatile.Read(ref _hasPendingWeeklyReportCommits) == 0)
+		{
+			return false;
+		}
 		bool hadWork = false;
 		double budgetMs = GetDailyMaintenanceFrameBudgetMs();
 		long startTimestamp = Stopwatch.GetTimestamp();
@@ -44813,6 +45139,10 @@ public class MyBehavior : CampaignBehaviorBase
 				if (_pendingWeeklyReportCommits.Count > 0)
 				{
 					context = _pendingWeeklyReportCommits.Peek();
+				}
+				else
+				{
+					Volatile.Write(ref _hasPendingWeeklyReportCommits, 0);
 				}
 			}
 			if (context == null)
@@ -44829,6 +45159,10 @@ public class MyBehavior : CampaignBehaviorBase
 				if (_pendingWeeklyReportCommits.Count > 0 && ReferenceEquals(_pendingWeeklyReportCommits.Peek(), context))
 				{
 					_pendingWeeklyReportCommits.Dequeue();
+				}
+				if (_pendingWeeklyReportCommits.Count == 0)
+				{
+					Volatile.Write(ref _hasPendingWeeklyReportCommits, 0);
 				}
 			}
 		}

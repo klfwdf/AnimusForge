@@ -1844,8 +1844,6 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private int _sceneConversationEpoch = 0;
 
-	private const int MAX_HISTORY_TURNS = 20;
-
 	private const int AUTO_GROUP_CHAT_MAX_LINES = 8;
 
 	private Agent _currentStareTarget = null;
@@ -8882,7 +8880,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		return false;
 	}
 
-private static string BuildScenePublicHistorySection(List<string> sceneHistoryLines)
+	private static string BuildScenePublicHistorySection(List<string> sceneHistoryLines)
 	{
 		List<string> lines = new List<string>();
 		if (sceneHistoryLines != null)
@@ -8896,7 +8894,42 @@ private static string BuildScenePublicHistorySection(List<string> sceneHistoryLi
 				}
 			}
 		}
+		lines = KeepAfefFactsAndRecentHistoryLines(lines, DuelSettings.GetDailyConversationHistoryLineLimitForExternal());
 		return (lines.Count == 0) ? "【当前场景公共对话与互动】\n无" : ("【当前场景公共对话与互动】\n" + string.Join("\n", lines));
+	}
+
+	private static List<string> KeepAfefFactsAndRecentHistoryLines(List<string> lines, int maxConversationLines)
+	{
+		if (lines == null || lines.Count == 0)
+		{
+			return lines ?? new List<string>();
+		}
+		int limit = Math.Max(DuelSettings.DailyConversationHistoryLineLimitMin, Math.Min(DuelSettings.DailyConversationHistoryLineLimitMax, maxConversationLines));
+		int conversationCount = 0;
+		for (int i = 0; i < lines.Count; i++)
+		{
+			if (!TryNormalizeAfefFactLineForPrompt(lines[i], out var _))
+			{
+				conversationCount++;
+			}
+		}
+		int removeCount = conversationCount - limit;
+		if (removeCount <= 0)
+		{
+			return lines;
+		}
+		List<string> result = new List<string>(lines.Count - removeCount);
+		for (int i = 0; i < lines.Count; i++)
+		{
+			string line = lines[i];
+			if (removeCount > 0 && !TryNormalizeAfefFactLineForPrompt(line, out var _))
+			{
+				removeCount--;
+				continue;
+			}
+			result.Add(line);
+		}
+		return result;
 	}
 
 private static bool IsSceneWeeklyFullReportHeader(string line)
@@ -14146,10 +14179,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					Text = text,
 					Kind = kind ?? ""
 				});
-				if (value.Count > 260)
-				{
-					value.RemoveRange(0, value.Count - 260);
-				}
+				TrimNativeConversationSessionHistory(value);
 			}
 			if (bridgeToSceneHistory)
 			{
@@ -14158,6 +14188,43 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		catch
 		{
+		}
+	}
+
+	private static void TrimNativeConversationSessionHistory(List<AnimusForgeDialogueHistoryEntry> entries)
+	{
+		if (entries == null || entries.Count <= DuelSettings.DailyConversationHistoryLineLimitMax)
+		{
+			return;
+		}
+		int conversationCount = 0;
+		for (int i = 0; i < entries.Count; i++)
+		{
+			if (!string.Equals((entries[i]?.Kind ?? "").Trim(), "fact", StringComparison.OrdinalIgnoreCase))
+			{
+				conversationCount++;
+			}
+		}
+		int removeCount = conversationCount - DuelSettings.DailyConversationHistoryLineLimitMax;
+		if (removeCount <= 0)
+		{
+			return;
+		}
+		int writeIndex = 0;
+		for (int readIndex = 0; readIndex < entries.Count; readIndex++)
+		{
+			AnimusForgeDialogueHistoryEntry entry = entries[readIndex];
+			bool isFact = string.Equals((entry?.Kind ?? "").Trim(), "fact", StringComparison.OrdinalIgnoreCase);
+			if (!isFact && removeCount > 0)
+			{
+				removeCount--;
+				continue;
+			}
+			entries[writeIndex++] = entry;
+		}
+		if (writeIndex < entries.Count)
+		{
+			entries.RemoveRange(writeIndex, entries.Count - writeIndex);
 		}
 	}
 
@@ -14211,6 +14278,15 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	private static string NormalizeNativeConversationVisibleTextKey(string text)
 	{
 		return SanitizeSceneSpeechText(StripNpcNamePrefixSafely((text ?? "").Replace("\r", "").Trim(), 30)).Trim();
+	}
+
+	private static int ResolveDailyConversationHistoryLineLimit(int requestedMaxLines = 0)
+	{
+		if (requestedMaxLines > 0)
+		{
+			return Math.Max(1, Math.Min(DuelSettings.DailyConversationHistoryLineLimitMax, requestedMaxLines));
+		}
+		return DuelSettings.GetDailyConversationHistoryLineLimitForExternal();
 	}
 
 	private static void TryRecordNativeConversationCurrentDialogLine(Hero targetHero, CharacterObject targetCharacter, string npcName, string npcDisplayName, string currentNativeDialogText)
@@ -14288,7 +14364,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return "";
 	}
 
-	private static List<AnimusForgeDialogueHistoryEntry> GetNativeConversationSessionHistorySnapshot(Hero targetHero, CharacterObject targetCharacter, string npcName, int targetAgentIndex = -1, int maxLines = 24, NpcDataPacket npc = null)
+	private static List<AnimusForgeDialogueHistoryEntry> GetNativeConversationSessionHistorySnapshot(Hero targetHero, CharacterObject targetCharacter, string npcName, int targetAgentIndex = -1, int maxLines = 0, NpcDataPacket npc = null)
 	{
 		try
 		{
@@ -14303,7 +14379,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					return new List<AnimusForgeDialogueHistoryEntry>();
 				}
-				int normalBudget = Math.Max(1, maxLines);
+				int normalBudget = ResolveDailyConversationHistoryLineLimit(maxLines);
 				int normalCount = 0;
 				HashSet<int> keepIndexes = new HashSet<int>();
 				for (int i = value.Count - 1; i >= 0; i--)
@@ -14357,7 +14433,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private static List<ConversationMessage> BuildNativeConversationSessionHistoryMessages(Hero targetHero, CharacterObject targetCharacter, string npcName, int targetAgentIndex, int maxLines = 24, NpcDataPacket npc = null)
+	private static List<ConversationMessage> BuildNativeConversationSessionHistoryMessages(Hero targetHero, CharacterObject targetCharacter, string npcName, int targetAgentIndex, int maxLines = 0, NpcDataPacket npc = null)
 	{
 		List<ConversationMessage> list = new List<ConversationMessage>();
 		try
@@ -14435,7 +14511,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return list;
 	}
 
-	private static List<ConversationMessage> BuildNativeConversationSessionHistoryMessagesForAgent(int targetAgentIndex, int maxLines = 24)
+	private static List<ConversationMessage> BuildNativeConversationSessionHistoryMessagesForAgent(int targetAgentIndex, int maxLines = 0)
 	{
 		try
 		{
@@ -14533,13 +14609,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private static List<string> BuildNativeConversationSceneHistoryLinesForPrompt(Hero targetHero, CharacterObject targetCharacter, string npcName, int targetAgentIndex, int maxLines = 24)
+	private static List<string> BuildNativeConversationSceneHistoryLinesForPrompt(Hero targetHero, CharacterObject targetCharacter, string npcName, int targetAgentIndex, int maxLines = 0)
 	{
 		List<string> lines = new List<string>();
 		try
 		{
 			string targetName = (npcName ?? "").Trim();
-			List<ConversationMessage> messages = BuildNativeConversationSessionHistoryMessages(targetHero, targetCharacter, targetName, targetAgentIndex, maxLines);
+			int historyLineLimit = ResolveDailyConversationHistoryLineLimit(maxLines);
+			List<ConversationMessage> messages = BuildNativeConversationSessionHistoryMessages(targetHero, targetCharacter, targetName, targetAgentIndex, historyLineLimit);
 			for (int i = 0; i < messages.Count; i++)
 			{
 				if (TryRenderSceneHistoryLine(messages[i], null, out var rendered, targetAgentIndex, targetName, useNpcNameAddress: false, useSceneDistanceSpeechLabels: false))
@@ -14558,21 +14635,29 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return lines;
 	}
 
-	private static List<string> BuildNativeConversationUnifiedSceneHistoryLinesForPrompt(Hero targetHero, CharacterObject targetCharacter, string npcName, int targetAgentIndex, int maxLines = 24)
+	private static List<string> BuildNativeConversationUnifiedSceneHistoryLinesForPrompt(Hero targetHero, CharacterObject targetCharacter, string npcName, int targetAgentIndex, int maxLines = 0)
 	{
 		List<string> lines = new List<string>();
 		try
 		{
+			int historyLineLimit = ResolveDailyConversationHistoryLineLimit(maxLines);
 			List<ConversationMessage> messages = new List<ConversationMessage>();
 			if (targetAgentIndex >= 0 && CurrentInstance != null)
 			{
 				AppendConversationMessages(messages, CurrentInstance.GetNpcConversationHistorySnapshot(targetAgentIndex));
 			}
-			AppendConversationMessages(messages, BuildNativeConversationSessionHistoryMessages(targetHero, targetCharacter, npcName, targetAgentIndex, Math.Max(1, maxLines)));
+			AppendConversationMessages(messages, BuildNativeConversationSessionHistoryMessages(targetHero, targetCharacter, npcName, targetAgentIndex, historyLineLimit));
+			messages = SortConversationMessagesByEventSequence(messages);
 			string targetName = (npcName ?? "").Trim();
+			HashSet<long> renderedEventSequences = new HashSet<long>();
 			for (int i = 0; i < messages.Count; i++)
 			{
-				if (TryRenderSceneHistoryLine(messages[i], null, out var rendered, targetAgentIndex, targetName, useNpcNameAddress: false, useSceneDistanceSpeechLabels: false))
+				ConversationMessage message = messages[i];
+				if (message.EventSequence > 0L && !renderedEventSequences.Add(message.EventSequence))
+				{
+					continue;
+				}
+				if (TryRenderSceneHistoryLine(message, null, out var rendered, targetAgentIndex, targetName, useNpcNameAddress: false, useSceneDistanceSpeechLabels: false))
 				{
 					string text = (rendered ?? "").Trim();
 					if (!string.IsNullOrWhiteSpace(text))
@@ -14581,10 +14666,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					}
 				}
 			}
-			if (maxLines > 0 && lines.Count > maxLines)
-			{
-				lines = lines.Skip(lines.Count - maxLines).ToList();
-			}
+			lines = KeepAfefFactsAndRecentHistoryLines(lines, historyLineLimit);
 		}
 		catch
 		{
@@ -14801,7 +14883,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		try
 		{
-			Logger.Log("Logic", "[NonHeroMemoryTrace] " + (message ?? ""));
+			if (Logger.IsVerboseModLogicEnabled)
+			{
+				Logger.Log("Logic", "[NonHeroMemoryTrace] " + (message ?? ""));
+			}
 		}
 		catch
 		{
@@ -15917,7 +16002,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		CharacterObject targetCharacter,
 		ref string content,
 		int targetAgentIndexOverride = -1,
-		string latestPlayerText = null)
+		string latestPlayerText = null,
+		ConversationManager expectedConversationManager = null,
+		int expectedConversationToken = int.MinValue)
 	{
 		WorldMapPartyCommandBehavior.WorldMapOrderApplyResult worldMapResult = new WorldMapPartyCommandBehavior.WorldMapOrderApplyResult();
 		if (string.IsNullOrWhiteSpace(content))
@@ -16077,7 +16164,18 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					nonHeroNpc = BuildNativeConversationNpcData(targetHero, targetCharacter);
 					nonHeroNpc.AgentIndex = agentIndex;
 					LogNativeActionStep("nonhero_join_before", targetHero, targetCharacter, content);
-					if (rewardSystem.TryApplyNonHeroJoinPlayerPartyTagForExternal(targetCharacter, agentIndex, nonHeroNpc.PromptGivenName, nonHeroNpc.PromptDisplayName, ref content, out var joinFacts, out var joinNotifications))
+					List<string> joinFacts;
+					List<string> joinNotifications;
+					bool nonHeroJoinHandled;
+					if (expectedConversationToken != int.MinValue)
+					{
+						nonHeroJoinHandled = rewardSystem.TryApplyNonHeroJoinPlayerPartyTagForNativeConversationExternal(targetCharacter, agentIndex, nonHeroNpc.PromptGivenName, nonHeroNpc.PromptDisplayName, expectedConversationManager, expectedConversationToken, ref content, out joinFacts, out joinNotifications);
+					}
+					else
+					{
+						nonHeroJoinHandled = rewardSystem.TryApplyNonHeroJoinPlayerPartyTagForExternal(targetCharacter, agentIndex, nonHeroNpc.PromptGivenName, nonHeroNpc.PromptDisplayName, ref content, out joinFacts, out joinNotifications);
+					}
+					if (nonHeroJoinHandled)
 					{
 						nonHeroJoinTagHandled = true;
 						RecordGeneratedNpcAfefFactsForNativeConversation(targetHero, targetCharacter, joinFacts);
@@ -16520,7 +16618,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		public WorldMapPartyCommandBehavior.WorldMapOrderApplyResult WorldMapResult;
 	}
 
-	private Task<NativeConversationGameActionResult> ApplyNativeConversationGameActionsOnMainThreadAsync(Hero targetHero, CharacterObject targetCharacter, NpcDataPacket npc, List<NpcDataPacket> allNpcData, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string content, string npcName, int targetAgentIndex, string playerText)
+	private Task<NativeConversationGameActionResult> ApplyNativeConversationGameActionsOnMainThreadAsync(Hero targetHero, CharacterObject targetCharacter, NpcDataPacket npc, List<NpcDataPacket> allNpcData, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string content, string npcName, int targetAgentIndex, string playerText, ConversationManager expectedConversationManager, int expectedConversationToken)
 	{
 		string initial = content ?? "";
 		string targetLog = targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? npc?.Name ?? "unknown";
@@ -16528,7 +16626,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			Stopwatch directSw = Stopwatch.StartNew();
 			FreezeWatchdog.Mark("NativeConversation.game_actions_direct_start", "target=" + targetLog + " agent=" + targetAgentIndex, immediate: true);
-			NativeConversationGameActionResult direct = ApplyNativeConversationGameActionsCore(targetHero, targetCharacter, npc, allNpcData, sceneSummonTargets, sceneGuideTargets, initial, playerText);
+			NativeConversationGameActionResult direct = ApplyNativeConversationGameActionsCore(targetHero, targetCharacter, npc, allNpcData, sceneSummonTargets, sceneGuideTargets, initial, playerText, expectedConversationManager, expectedConversationToken);
 			directSw.Stop();
 			Logger.Log("Logic", "[NativePerf] game_actions_mainthread_direct target=" + targetLog + " agent=" + targetAgentIndex + " ms=" + Math.Round(directSw.Elapsed.TotalMilliseconds, 2));
 			FreezeWatchdog.Mark("NativeConversation.game_actions_direct_done", "target=" + targetLog + " agent=" + targetAgentIndex + " ms=" + Math.Round(directSw.Elapsed.TotalMilliseconds, 2), immediate: true);
@@ -16545,7 +16643,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					Logger.Log("Logic", "[NativePerf] game_actions_mainthread_start target=" + targetLog + " agent=" + targetAgentIndex);
 					FreezeWatchdog.Mark("NativeConversation.game_actions_mainthread_start", "target=" + targetLog + " agent=" + targetAgentIndex, immediate: true);
-					result = ApplyNativeConversationGameActionsCore(targetHero, targetCharacter, npc, allNpcData, sceneSummonTargets, sceneGuideTargets, result.Content, playerText);
+					result = ApplyNativeConversationGameActionsCore(targetHero, targetCharacter, npc, allNpcData, sceneSummonTargets, sceneGuideTargets, result.Content, playerText, expectedConversationManager, expectedConversationToken);
 					actionSw.Stop();
 					Logger.Log("Logic", "[NativePerf] game_actions_mainthread_done target=" + targetLog + " agent=" + targetAgentIndex + " ms=" + Math.Round(actionSw.Elapsed.TotalMilliseconds, 2) + " resultLen=" + ((result?.Content ?? "").Length));
 					FreezeWatchdog.Mark("NativeConversation.game_actions_mainthread_done", "target=" + targetLog + " agent=" + targetAgentIndex + " ms=" + Math.Round(actionSw.Elapsed.TotalMilliseconds, 2) + " resultLen=" + ((result?.Content ?? "").Length), immediate: true);
@@ -16571,11 +16669,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return tcs.Task;
 	}
 
-	private NativeConversationGameActionResult ApplyNativeConversationGameActionsCore(Hero targetHero, CharacterObject targetCharacter, NpcDataPacket npc, List<NpcDataPacket> allNpcData, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string content, string playerText)
+	private NativeConversationGameActionResult ApplyNativeConversationGameActionsCore(Hero targetHero, CharacterObject targetCharacter, NpcDataPacket npc, List<NpcDataPacket> allNpcData, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string content, string playerText, ConversationManager expectedConversationManager, int expectedConversationToken)
 	{
 		string result = content ?? "";
 		TryQueueNativeSceneMechanismActionAfterConversationExit(npc, allNpcData, sceneSummonTargets, sceneGuideTargets, ref result);
-		WorldMapPartyCommandBehavior.WorldMapOrderApplyResult worldMapResult = ApplyNativeConversationActionTags(targetHero, targetCharacter, ref result, npc?.AgentIndex ?? -1, playerText);
+		WorldMapPartyCommandBehavior.WorldMapOrderApplyResult worldMapResult = ApplyNativeConversationActionTags(targetHero, targetCharacter, ref result, npc?.AgentIndex ?? -1, playerText, expectedConversationManager, expectedConversationToken);
 		return new NativeConversationGameActionResult { Content = result ?? "", WorldMapResult = worldMapResult };
 	}
 
@@ -16970,6 +17068,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return "当前没有可接入的对话对象。";
 		}
+		ConversationManager nativeRequestConversationManager = Campaign.Current?.ConversationManager;
+		int nativeRequestConversationToken = nativeRequestConversationManager?.ActiveToken ?? int.MinValue;
 		Logger.Log("Logic", "[NativePerf] submit_start target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " npcInitiated=" + npcInitiatedOpening + " inputLen=" + playerText.Length);
 		FreezeWatchdog.Mark("NativeConversation.submit_start", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " npcInitiated=" + npcInitiatedOpening + " inputLen=" + playerText.Length, immediate: true);
 		string npcOpeningExtraFact = "";
@@ -17183,7 +17283,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			Logger.Log("ShoutBehavior", "[NativeConversation] postprocess-start callback failed: " + ex.Message);
 		}
-		List<string> nativePostprocessHistoryLines = BuildNativeConversationUnifiedSceneHistoryLinesForPrompt(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, 24);
+		List<string> nativePostprocessHistoryLines = BuildNativeConversationUnifiedSceneHistoryLinesForPrompt(targetHero, targetCharacter, npcName, nativeTargetAgentIndex);
 		string scenePublicHistorySection = BuildScenePublicHistorySection(nativePostprocessHistoryLines);
 		string privateRecentWindowForPostprocess = TrimPrivateRecentWindowForActionPostprocess(privateRecentWindowSection, 5);
 		privateRecentWindowForPostprocess = FilterHistorySectionAgainstScenePublicHistory(privateRecentWindowForPostprocess, scenePublicHistorySection);
@@ -17289,7 +17389,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			cleaned,
 			npcName,
 			nativeTargetAgentIndex,
-			shouldRecordPlayerInput ? promptPlayerText : string.Empty).ConfigureAwait(false);
+			shouldRecordPlayerInput ? promptPlayerText : string.Empty,
+			nativeRequestConversationManager,
+			nativeRequestConversationToken).ConfigureAwait(false);
 		cleaned = nativeActionResult?.Content ?? cleaned;
 		bool closeNativeConversationForImplicitPartyCreation = nativeActionResult?.WorldMapResult?.NeedsChannelExit == true;
 		nativeActionSw.Stop();
@@ -30749,19 +30851,29 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return false;
 	}
 
-private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessage> history, int viewerAgentIndex, string targetNpcName = "", bool useNpcNameAddress = false)
+	private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessage> history, int viewerAgentIndex, string targetNpcName = "", bool useNpcNameAddress = false)
 	{
 		if (history == null || history.Count == 0)
 		{
 			return null;
 		}
+		int historyLineLimit = DuelSettings.GetDailyConversationHistoryLineLimitForExternal();
+		int conversationCount = 0;
 		List<string> list = new List<string>();
-		for (int num = history.Count - 1; num >= 0 && list.Count < MAX_HISTORY_TURNS; num--)
+		for (int num = history.Count - 1; num >= 0; num--)
 		{
 			ConversationMessage msg = history[num];
 			if (IsSceneHistoryVisibleToAgent(msg, viewerAgentIndex) && TryRenderSceneHistoryLine(msg, null, out var line, viewerAgentIndex, targetNpcName, useNpcNameAddress))
 			{
-				list.Add(line);
+				bool isFact = TryNormalizeAfefFactLineForPrompt(line, out var _);
+				if (isFact || conversationCount < historyLineLimit)
+				{
+					list.Add(line);
+					if (!isFact)
+					{
+						conversationCount++;
+					}
+				}
 			}
 		}
 		if (list.Count == 0)
@@ -31332,6 +31444,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 
 	private List<object> BuildStrictSceneMessagesForNpc(int npcAgentIndex, string systemPrompt, IEnumerable<string> prefixUserSections, IEnumerable<string> suffixUserSections = null, bool currentInputAlreadyRecorded = true, string currentPlayerInput = null, int maxHistoryMessages = 0, bool suppressReplyFormatInstruction = false, IEnumerable<ConversationMessage> injectedHistoryMessages = null, bool includeSceneHistory = true, IEnumerable<ConversationMessage> persistentHistoryMessages = null, IEnumerable<ConversationMessage> pendingCurrentAfefFactMessages = null, bool useSceneDistanceSpeechLabels = true)
 	{
+		int historyLineLimit = ResolveDailyConversationHistoryLineLimit(maxHistoryMessages);
 		List<object> list = new List<object>
 		{
 			CreateChatMessage("system", BuildStrictSceneMessagesSystemPrompt(systemPrompt, suppressReplyFormatInstruction))
@@ -31353,25 +31466,19 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		npcConversationHistorySnapshot = SortConversationMessagesByEventSequence(npcConversationHistorySnapshot);
 		List<ConversationMessage> persistentConversationHistorySnapshot = new List<ConversationMessage>();
 		AppendConversationMessages(persistentConversationHistorySnapshot, persistentHistoryMessages);
-		List<object> persistentChatMessages = new List<object>();
-		for (int i = 0; i < persistentConversationHistorySnapshot.Count; i++)
+		List<ConversationMessage> combinedHistorySnapshot = new List<ConversationMessage>(persistentConversationHistorySnapshot.Count + npcConversationHistorySnapshot.Count);
+		AppendConversationMessages(combinedHistorySnapshot, persistentConversationHistorySnapshot);
+		AppendConversationMessages(combinedHistorySnapshot, npcConversationHistorySnapshot);
+		combinedHistorySnapshot = KeepAfefFactsAndRecentConversationMessages(combinedHistorySnapshot, historyLineLimit);
+		List<object> historyChatMessages = new List<object>(combinedHistorySnapshot.Count);
+		for (int i = 0; i < combinedHistorySnapshot.Count; i++)
 		{
-			if (TryConvertSceneMessageToStrictChatMessage(persistentConversationHistorySnapshot[i], npcAgentIndex, out var persistentChatMessage, pendingCurrentAfefFactKeys, useSceneDistanceSpeechLabels))
+			if (TryConvertSceneMessageToStrictChatMessage(combinedHistorySnapshot[i], npcAgentIndex, out var historyChatMessage, pendingCurrentAfefFactKeys, useSceneDistanceSpeechLabels))
 			{
-				persistentChatMessages.Add(persistentChatMessage);
+				historyChatMessages.Add(historyChatMessage);
 			}
 		}
-		list.AddRange(persistentChatMessages);
-		npcConversationHistorySnapshot = KeepAfefFactsAndRecentConversationMessages(npcConversationHistorySnapshot, maxHistoryMessages);
-		List<object> list2 = new List<object>();
-		for (int i = 0; i < npcConversationHistorySnapshot.Count; i++)
-		{
-			if (TryConvertSceneMessageToStrictChatMessage(npcConversationHistorySnapshot[i], npcAgentIndex, out var chatMessage, pendingCurrentAfefFactKeys, useSceneDistanceSpeechLabels))
-			{
-				list2.Add(chatMessage);
-			}
-		}
-		list.AddRange(list2);
+		list.AddRange(historyChatMessages);
 		AppendStrictSceneUserSections(list, suffixUserSections);
 		if (!currentInputAlreadyRecorded)
 		{
@@ -31393,7 +31500,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 				}
 			}
 		}
-		Logger.LogVerbose("ShoutStrict", "strict_messages:" + npcAgentIndex, () => "npc=" + npcAgentIndex + " messages=" + list.Count + " persistentHistory=" + persistentChatMessages.Count + " historyCap=" + ((maxHistoryMessages <= 0) ? "unlimited" : maxHistoryMessages.ToString()), 2.0);
+		Logger.LogVerbose("ShoutStrict", "strict_messages:" + npcAgentIndex, () => "npc=" + npcAgentIndex + " messages=" + list.Count + " historyMessages=" + historyChatMessages.Count + " persistentHistoryRaw=" + persistentConversationHistorySnapshot.Count + " sceneHistoryRaw=" + npcConversationHistorySnapshot.Count + " historyCap=" + historyLineLimit, 2.0);
 		return list;
 	}
 

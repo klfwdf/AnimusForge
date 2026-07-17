@@ -356,6 +356,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		List<InquiryElement> list = new List<InquiryElement>
 		{
 			new InquiryElement("compose", "撰写政策", null, isEnabled: true, "填写政策名与政策内容，提交给 LLM 评议后落地数值效果。"),
+			new InquiryElement("local_policies", "地方政策", null, isEnabled: true, "发布只影响玩家家族封地范围的地方政策，或查看地方政策记录。"),
 			new InquiryElement("world_policies", "查看世界政策", null, isEnabled: true, "只读查看各国已经发布的玩家与 NPC 统治者政策及政策衍生事件。")
 		};
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData("政策系统", "请选择政策功能：", list, isExitShown: true, 1, 1, "确定", "返回", delegate(List<InquiryElement> selected)
@@ -370,6 +371,11 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			{
 				CloseTerminal();
 				CustomPolicyBehavior.OpenFromTerminal();
+			}
+			else if (string.Equals(text, "local_policies", StringComparison.Ordinal))
+			{
+				CloseTerminal();
+				CustomPolicyBehavior.OpenLocalPolicyManagementFromTerminal(OpenCustomPolicyManagementView);
 			}
 			else if (string.Equals(text, "world_policies", StringComparison.Ordinal))
 			{

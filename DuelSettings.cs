@@ -57,7 +57,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	private const string PreviousDefaultCustomPolicyDualCostPromptParagraph = "当输出结构要求你评估政策消耗时，requiredGoldCost 与 requiredInfluenceCost 表示完整执行这项政策所需的财政和政治资本，不是玩家当前实际会支付多少。第纳尔成本对应物资、粮饷、工程、赈济、运输、行政和军备投入；影响力成本对应封臣协调、贵族让步、政治信用、合法性、动员命令和秩序压力。请按政策本身的规模与阻力评估完整成本，不要因为玩家当前资源不足而故意压低成本。";
 
-	private const string DefaultCustomPolicyEvaluatorPrompt = "你是卡拉迪亚大陆的王国政策评判器。玩家提交的内容应被视为王国政策、法令、改革、宣言、动员令或公共事务安排。你需要根据政策内容、玩家王国状态、世界背景和知识库资料，判断这项政策会造成什么民间反应、政策摘要、每日持续影响、持续时间和影响目标。"
+	private const string PreviousDefaultCustomPolicyEvaluatorPromptWithVisibleBuiltIns = "你是卡拉迪亚大陆的王国政策评判器。玩家提交的内容应被视为王国政策、法令、改革、宣言、动员令或公共事务安排。你需要根据政策内容、玩家王国状态、世界背景和知识库资料，判断这项政策会造成什么民间反应、政策摘要、每日持续影响、持续时间和影响目标。"
 		+ "\n\n卡拉迪亚不是现代国家，而是封君、封臣、氏族、城镇、城堡、村庄、驻军、民兵、税赋、治安和封地收益共同维系的社会。任何政策都不可能只靠国王一句话就无成本执行。评判时要考虑贵族是否配合，地方是否能执行，商人和农户是否受益，军队、民兵和治安机构是否承担额外负担，以及政策会不会破坏既有秩序。"
 		+ "\n\n当前可落地影响项共有七类：繁荣度、粮食、村庄户数、忠诚度、治安度、民兵、AF 王国稳定度。繁荣度主要受贸易、税负、工商业、市场信心和战争破坏影响；粮食主要受征收、储备、运输、农业负担和军队消耗影响；户数主要受劳动力、安全、徭役、迁徙和破坏影响；忠诚度主要受公平感、文化认同、自治、压迫、恐惧、荣誉和利益分配影响；治安度主要受匪患、巡逻、执法、公正、腐败和地方秩序影响；民兵主要受训练、征召、地方防务、士气、粮饷和人口压力影响；王国稳定度主要受封臣信任、王权合法性、战争胜败、贵族利益、财政压力和国内分裂风险影响。"
 		+ "\n\n不同数值不是同一把尺子。繁荣度是城镇和城堡的长期体量，常以几千计；粮食是城镇库存，会受消耗、生产、市场和储存上限影响；村庄户数代表村庄人口和劳力；忠诚度与治安度都是 0-100 尺度，连续小幅变化也有政治意义；民兵是实际防务人数，过度增加会消耗地方劳力和粮饷。AF 王国稳定度也是 0-100 的国家级尺度，但它不是单个城镇民心，而是王国是否还能被同一套权威、利益分配和军事威望维系住的总指标；低稳定度会提高分裂和叛乱风险，因此不能按城镇数量叠加，也不能被普通治安或民兵变化机械替代。"
@@ -65,6 +65,54 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		+ "\n\n" + DefaultCustomPolicyGoldCostPromptParagraph
 		+ "\n\n如果玩家在政策正文或自定义评判器提示词里写了参考数值、倍率、强弱或持续时间，应尊重其意图，并按各项数值本身的尺度折算。强政策可以有强效果，荒唐政策也可以反噬；不要把总影响误当成每日影响，也不要用内置建议压低玩家明确要求。忠诚、治安和稳定度仍要理解为 0-100 体系中的变化：它们影响很重，但不代表永远只能输出同一组固定数值。"
 		+ "\n\n民众反馈要像真实的卡拉迪亚社会反应，而不是公告摘要。可以写街市、村庄、酒馆、军营、贵族厅堂、商队、工匠、农户、民兵、巡逻队、总督或祭司等不同人群的看法。让他们有具体的支持、担忧、抱怨、观望或流言，比如粮价、税吏、征役、治安、士兵口粮、村庄劳力、民兵训练、商路消息、封臣脸色和王国分裂传闻等。语气应像政策发布后在各地传开的议论和余波，不要写成系统说明，也不要编造上下文没有支持的具体人物、定居点或他国事实。";
+
+	private const string PreviousDefaultCustomPolicyEvaluatorPromptWithSeparatedBuiltIns = "你是卡拉迪亚大陆的王国政策评判器。玩家提交的内容应被视为王国政策、法令、改革、宣言、动员令或公共事务安排。请根据政策内容、玩家王国状态、世界背景和知识库资料，判断它会引发怎样的社会反应与实际后果。"
+		+ "\n\n卡拉迪亚不是现代国家，而是由封君、封臣、氏族、城镇、城堡、村庄、驻军、民兵、税赋和封地收益共同维系的社会。评判时应考虑贵族是否配合、地方能否执行、商人和农户如何得失、军队与治安机构承担什么压力，以及政策是否冲击既有秩序。"
+		+ "\n\n评判重点放在政策目的、受益者、受损者、执行阻力、短期震荡与长期后果。明确有力的政策可以产生显著影响，荒唐、空泛或超出执行能力的政策也可以无效或反噬；不要把所有政策自动压成同一强度，也不要编造上下文没有支持的具体事实。"
+		+ "\n\n民众反馈要像政策发布后在街市、村庄、酒馆、军营、贵族厅堂和商路中自然传播的议论与余波，而不是公告摘要或系统说明。让不同人群表达具体的支持、担忧、抱怨、观望或流言。";
+
+	private const string DefaultCustomPolicyEvaluatorPrompt = @"你是卡拉迪亚大陆的王国政策评判器。玩家提交的内容应被视为王国政策、法令、改革、宣言、动员令或公共事务安排。你需要根据政策内容、玩家王国状态、世界背景和知识库资料，判断这项政策会造成什么民间反应、政策摘要、每日持续影响、持续时间、影响目标和执行消耗。
+
+最高原则：政策必须落地。不要因为政策幼稚、激进、荒唐、理想化、财政紧张、执行阻力大或现实上不完美，就判定它没有效果。好政策应产生收益与代价；坏政策应产生混乱、反噬、贵族不满、民众嘲笑、行政空转、治安恶化、忠诚下降或稳定度下降。即使政策只是象征性口号，也会造成至少一种轻微社会反应。每次都必须给玩家王国生成可每日结算的效果，且至少有一个每日数值不是 0。不相关的指标可以填 0，不要为了凑数让所有指标都变化。
+
+卡拉迪亚不是现代国家，而是封君、封臣、氏族、城镇、城堡、村庄、驻军、民兵、税赋、治安和封地收益共同维系的中世纪社会。政策消耗不应按现代国家预算估算，也不要把“全国政策”自动理解成从零购买整个王国所有物资。很多政策实际依靠命令、协调、征发、税制调整、宣传、巡逻、监督、地方摊派、贵族配合或短期补贴来执行。
+
+当前可落地影响项共有七类：繁荣度、粮食、村庄户数/炉户、忠诚度、治安度、民兵、AF 王国稳定度。繁荣度主要受贸易、税负、工商业、市场信心和战争破坏影响；粮食主要受征收、储备、运输、农业负担和军队消耗影响；户数/炉户主要受劳动力、安全、徭役、迁徙和破坏影响；忠诚度主要受公平感、文化认同、自治、压迫、恐惧、荣誉和利益分配影响；治安度主要受匪患、巡逻、执法、公正、腐败和地方秩序影响；民兵主要受训练、征召、地方防务、士气、粮饷和人口压力影响；王国稳定度主要受封臣信任、王权合法性、战争胜败、贵族利益、财政压力和国内分裂风险影响。
+
+每日影响是每天结算的变化，不是整项政策的总变化。持续时间越长，每日变化越应谨慎。普通政策通常持续 15 到 30 天；短期公告、巡查、临时补贴通常 7 到 15 天；较大改革、军事整顿、税制调整通常 30 到 60 天；全国级长期改革通常 60 到 120 天；超过 120 天只用于长期国策、制度改革、迁徙、战争总动员或灾难级后果。
+
+数值推荐尺度如下：
+
+繁荣度是城镇和城堡的长期体量，常以几千计。轻微影响每天 ±0.2 到 ±1；普通政策每天 ±1 到 ±3；明显经济政策、贸易刺激、税负打击或战时破坏每天 ±3 到 ±8；强烈繁荣/萧条政策每天 ±8 到 ±15；超过 ±15 只用于极端繁荣工程、严重劫掠、封锁、饥荒或国家级经济灾难。
+
+粮食是城镇库存，会受生产、运输、征收、储备和军队消耗影响。轻微影响每天 ±1 到 ±3；普通粮政、运输、征收、仓储调整每天 ±3 到 ±8；大规模赈济、强征、军粮调拨每天 ±8 到 ±20；饥荒、封锁、全面征粮或大规模补给每天 ±20 到 ±40；超过 ±40 只用于极端灾害或全国级粮食行动。
+
+村庄户数/炉户代表村庄人口和劳力。轻微影响每天 ±0.1 到 ±0.5；普通徭役、安置、劳力恢复或迁徙每天 ±0.5 到 ±2；强力移民、战乱逃亡、重税压迫或大规模劳役每天 ±2 到 ±5；屠掠、灾荒、强制迁徙等严重后果每天 ±5 到 ±10；超过 ±10 只用于极端人口灾难。
+
+忠诚度是 0 到 100 的民心尺度。轻微影响每天 ±0.1 到 ±0.3；普通安抚、税负、公平感变化每天 ±0.3 到 ±1；强烈压迫、文化冲突、赈济、自治让步或荣誉政策每天 ±1 到 ±2；接近叛乱级刺激每天 ±2 到 ±4；超过 ±4 只用于极端暴政、屠掠、严重背叛或重大救民政策。
+
+治安度是 0 到 100 的地方秩序尺度。轻微影响每天 ±0.1 到 ±0.3；普通巡逻、执法、腐败整顿或匪患变化每天 ±0.3 到 ±1；强力治安运动、军管、边境混乱或匪患爆发每天 ±1 到 ±2；严重失序或高压镇压每天 ±2 到 ±4；超过 ±4 只用于极端内乱、血腥镇压或大规模匪患。
+
+民兵是城镇/城堡实际防务人数。轻微影响每天 ±0.2 到 ±1；普通训练、征召、士气变化每天 ±1 到 ±3；强力民兵动员、地方防务改革每天 ±3 到 ±6；大规模军事化或民兵溃散每天 ±6 到 ±12；超过 ±12 只用于全国战争动员或严重军事崩溃。增加民兵通常会带来粮食、户数、繁荣或忠诚方面的代价。
+
+AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。它不是单个城镇民心，而是王国是否还能被同一套权威、利益分配和军事威望维系住。稳定度每日变化应使用整数。普通小政策通常为 0；轻微政治影响为 ±1；明显影响封臣信任、财政压力、王权合法性或战争信心为 ±2；严重改革、暴政、失败、妥协、贵族对抗或全国动员为 ±3；接近内战、崩溃、重大胜利、重大背叛或王国根基动摇时才用 ±4 到 ±5。
+
+第纳尔购买力必须按骑砍世界理解：
+- 1 到 3000 第纳尔：小规模公告、监察、宴赏、短期巡查、地方宣传、象征性补贴。
+- 3000 到 15000 第纳尔：一座城镇或数个村庄可见的治理行动，例如增派巡逻、修补仓储、短期赈济、临时运输、雇佣书记员。
+- 15000 到 50000 第纳尔：普通王国级政策的常见完整执行成本，可覆盖多地行政协调、数周补贴、粮食调运、民兵训练或治安整顿。
+- 50000 到 150000 第纳尔：较大规模全国改革、战争时期动员、持续粮饷、多个定居点工程或强力治安行动。
+- 150000 到 500000 第纳尔：非常重大的国家工程、长期军事化、全面赈济、大规模迁徙、要塞级建设或灾难级处置。
+- 超过 500000 第纳尔只用于玩家明确要求超大规模长期工程、全国军备重建、长期供养大军、全国人口迁移等极端政策。
+- 超过 1000000 第纳尔几乎永远不要输出，除非政策正文明确要求接近国家生死级的长期巨型工程。
+
+评估第纳尔消耗时，要按政策本身的规模、执行阻力、覆盖范围和持续时间估算，但不要因为“这是王国政策”就自动给出天价。普通政策应优先落在几千到五万之间；重大政策再进入十几万；百万级只能是极端例外。
+
+影响力消耗表示政治资本。普通政策通常是 10 到 80；明显触动贵族利益、地方自治、征召、税负或封臣配合时是 80 到 250；强硬改革、全国动员、严重损害贵族利益或挑战王权结构时是 250 到 600；超过 600 只用于继承、封地重分配、内战边缘、极端暴政或王国根基动摇。
+
+如果玩家在政策正文或自定义评判器提示词里写了参考数值、倍率、强弱或持续时间，应尊重其意图，并按各项数值本身的尺度折算。强政策可以有强效果，荒唐政策也可以反噬；不要把总影响误当成每日影响，也不要用内置建议压低玩家明确要求。强力正面政策通常也应有对应代价，例如粮食消耗、财政成本、户数压力、贵族不满或稳定度风险。
+
+民众反馈要像真实的卡拉迪亚社会反应，而不是公告摘要。可以写街市、村庄、酒馆、军营、贵族厅堂、商队、工匠、农户、民兵、巡逻队、总督或祭司等不同人群的看法。让他们有具体的支持、担忧、抱怨、观望、嘲笑、恐惧或流言，比如粮价、税吏、征役、治安、士兵口粮、村庄劳力、民兵训练、商路消息、封臣脸色和王国分裂传闻等。语气应像政策发布后在各地传开的议论和余波，不要写成系统说明，也不要编造上下文没有支持的具体人物、定居点或他国事实。";
 
 	private const string LeakedCustomPolicyPoliticalWeightsPromptSuffix = "同时根据政策内容评估原版政策投票使用的三项政治取向：authoritarianWeight 表示君主集权取向，oligarchicWeight 表示大氏族和贵族议政取向，egalitarianWeight 表示平民、地方自治和广泛参与取向。三项范围均为 -1 到 1，不得全部为 0。";
 
@@ -264,6 +312,12 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	public const int DefaultShoutMinTokens = 40;
 
 	public const int DefaultShoutMaxTokens = 200;
+
+	public const int DailyConversationHistoryLineLimitMin = 10;
+
+	public const int DailyConversationHistoryLineLimitMax = 500;
+
+	public const int DefaultDailyConversationHistoryLineLimit = 100;
 
 	private const string NpcPersonaGenerationRequirementsFileName = "NpcPersonaGenerationRequirements.txt";
 
@@ -888,15 +942,15 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		}
 	}
 
-	[SettingPropertyBool("【性能】启用性能监控", Order = 11, RequireRestart = false, HintText = "开启后采集 FPS、慢帧和各 Tick/Scope 耗时，每30秒向 Mod_Logic.txt 写入一次聚合结果，并把当前窗口附加到冻结检查点。关闭后立即停止采样与周期输出。默认开启。")]
+	[SettingPropertyBool("【性能】启用性能监控", Order = 11, RequireRestart = false, HintText = "开启后每30秒向 Mod_Logic.txt 写入 FPS、慢帧和帧总耗时。只有同时开启详细调试日志时才采集各 Tick/Scope 耗时；普通游玩不承担逐 Scope 统计成本。默认关闭。")]
 	[SettingPropertyGroup("4. 开发者选项")]
-	public bool EnablePerformanceMonitor { get; set; } = true;
+	public bool EnablePerformanceMonitor { get; set; } = false;
 
-	[SettingPropertyBool("【性能】延后日结维护", Order = 12, RequireRestart = false, HintText = "开启后，每日结算只登记 AnimusForge 维护任务，记忆总览、王国维护和周报准备会在后续大地图中按预算分批执行，最多每250毫秒运行一次；玩家队伍实际行军时自动暂停，停止后从原进度继续。默认开启。")]
+	[SettingPropertyBool("【性能】延后日结维护", Order = 12, RequireRestart = false, HintText = "开启后，每日结算只登记 AnimusForge 维护任务，记忆总览、王国维护和周报准备会在后续大地图中按单帧预算分批执行。维护会在每个大地图 Tick 推进，不因行军暂停。默认开启。")]
 	[SettingPropertyGroup("4. 开发者选项")]
 	public bool EnableDeferredDailyMaintenance { get; set; } = true;
 
-	[SettingPropertyInteger("【性能】日结维护每帧预算(ms)", 1, 10, "0", Order = 13, RequireRestart = false, HintText = "延后日结维护开启时，每个维护窗口最多用于后台维护的毫秒数；窗口最多每250毫秒运行一次。默认 3；调高会更快完成后台任务但更可能产生帧尖峰。")]
+	[SettingPropertyInteger("【性能】日结维护每帧预算(ms)", 1, 10, "0", Order = 13, RequireRestart = false, HintText = "延后日结维护开启时，只有存在待办才按每帧预算推进；不会因玩家行军暂停。默认 3；调高会更快完成后台任务但更可能产生帧尖峰。")]
 	[SettingPropertyGroup("4. 开发者选项")]
 	public int DailyMaintenanceFrameBudgetMs { get; set; } = 3;
 
@@ -914,7 +968,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("5. 知识检索（返回）")]
 	public int KnowledgeDirectTopN { get; set; } = 4;
 
-	[SettingPropertyInteger("实体注入上限", 1, 20, "0", Order = 1, RequireRestart = false, HintText = "控制每次对话最多向 AI 注入多少个人物、地点、家族、王国检索结果。默认 6；前处理提示词会要求越新的对话提及越靠前，运行时按该顺序优先裁剪。")]
+	[SettingPropertyInteger("实体注入上限", 1, 20, "0", Order = 1, RequireRestart = false, HintText = "控制每次对话最多向 AI 注入多少个人物、地点、家族、王国和物品检索结果。系统按前处理的重要性顺序让每个名词先占一个最高分实体槽；重名人物会优先采用其他名词明确限定的家族、其次采用王国，再按其与当前聊天 NPC 的实际大地图距离获得最高 0.15 的微量加分，最终分允许超过 1.00；范围或位置不可用时回退原始得分。若最高分实体已被前面的名词占用，则顺延到第一条未占用实体。只有上限大于名词数时才补次要结果：先为最靠前名词补最多 3 条，再依次处理后续名词。默认 6。")]
 	[SettingPropertyGroup("5. 知识检索（返回）")]
 	public int WorldEntityInjectMaxCount { get; set; } = 6;
 
@@ -925,6 +979,10 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	public int RecentDialogueTurns { get; set; } = 20;
 
 	public int HistoryRecallTopN { get; set; } = 4;
+
+	[SettingPropertyInteger("日内聊天上下文条数", DailyConversationHistoryLineLimitMin, DailyConversationHistoryLineLimitMax, "0", Order = 0, RequireRestart = false, HintText = "控制信使、自由对话和场景喊话每次请求最多直接携带多少条尚未日结压缩的普通聊天历史。AFEF 事实不占此额度；不会限制玩家继续聊天，也不会删除每日原始记忆。数值越高，单次请求 token 与等待时间通常越高。默认 100，最低 10，最高 500。")]
+	[SettingPropertyGroup("5. 压缩记忆")]
+	public int DailyConversationHistoryLineLimit { get; set; } = DefaultDailyConversationHistoryLineLimit;
 
 	[SettingPropertyInteger("记忆压缩比例分母", 3, 10, "0", Order = 1, RequireRestart = false, HintText = "日结摘要目标字数为当天有效对话总字数的 1/N，默认 5。AFEF 行不计入总字数且不会被压缩；摘要最少 80 字。")]
 	[SettingPropertyGroup("5. 压缩记忆")]
@@ -1569,7 +1627,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		set => _customPolicyEvaluatorPrompt = NormalizeCustomPolicyEvaluatorPromptText(value);
 	}
 
-	[SettingPropertyButton("玩家政策评判提示词", -1, true, "", Content = "打开编辑器", Order = 0, RequireRestart = false, HintText = "决定 AI 如何理解玩家发布的政策，并评估民众反应、持续影响和执行成本。可以完整改写；输出格式和数值落地安全仍由模组保证。")]
+	[SettingPropertyButton("玩家政策评判提示词（全国/地方共用）", -1, true, "", Content = "打开编辑器", Order = 0, RequireRestart = false, HintText = "全国政策与地方政策共用这一份完整基础评判提示词。地方政策会在此基础上动态追加所选封地、地方作用域和王国稳定度为 0 等强制规则。")]
 	[SettingPropertyGroup("16. 政策系统", GroupOrder = 0)]
 	public Action EditCustomPolicyEvaluatorPrompt { get; set; }
 
@@ -1861,6 +1919,27 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		{
 			return DefaultCustomPolicyGoldCost;
 		}
+	}
+
+	public static int GetDailyConversationHistoryLineLimitForExternal()
+	{
+		try
+		{
+			return ClampDailyConversationHistoryLineLimit(GetSettings()?.DailyConversationHistoryLineLimit ?? DefaultDailyConversationHistoryLineLimit);
+		}
+		catch
+		{
+			return DefaultDailyConversationHistoryLineLimit;
+		}
+	}
+
+	private static int ClampDailyConversationHistoryLineLimit(int value)
+	{
+		if (value <= 0)
+		{
+			return DefaultDailyConversationHistoryLineLimit;
+		}
+		return Math.Max(DailyConversationHistoryLineLimitMin, Math.Min(DailyConversationHistoryLineLimitMax, value));
 	}
 
 	[Obsolete("Player policy influence cost is no longer used.")]
@@ -2203,7 +2282,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		try
 		{
 			string initialText = CustomPolicyEvaluatorPrompt ?? "";
-			DevTextEditorHelper.ShowLongTextEditor("编辑玩家政策评判提示词", "这段文字决定 AI 如何理解和评估玩家发布的政策。", "你可以完整改写。留空保存会恢复默认内容；输出格式和数值落地安全仍由模组保证。", initialText, delegate(string input)
+			DevTextEditorHelper.ShowLongTextEditor("编辑玩家政策评判提示词", "这是全国政策与地方政策共用的完整基础评判提示词。", "地方政策会在这段内容之后动态追加所选封地、实时数值、地方作用域和稳定度为 0 等强制规则；输出 JSON 契约仍由模组保证。留空保存会恢复默认内容。", initialText, delegate(string input)
 			{
 				SaveCustomPolicyEvaluatorPromptFromEditor(input);
 			}, null, "保存", "返回");
@@ -2823,6 +2902,8 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		string text = NormalizeCustomPolicyEvaluatorPromptText(input);
 		string currentWording = NormalizePolicyHearthWordingForBuiltInComparison(text);
 		return string.Equals(currentWording, NormalizePolicyHearthWordingForBuiltInComparison(NormalizeCustomPolicyEvaluatorPromptText(DefaultCustomPolicyEvaluatorPrompt)), StringComparison.Ordinal)
+			|| string.Equals(currentWording, NormalizePolicyHearthWordingForBuiltInComparison(NormalizeCustomPolicyEvaluatorPromptText(PreviousDefaultCustomPolicyEvaluatorPromptWithSeparatedBuiltIns)), StringComparison.Ordinal)
+			|| string.Equals(currentWording, NormalizePolicyHearthWordingForBuiltInComparison(NormalizeCustomPolicyEvaluatorPromptText(PreviousDefaultCustomPolicyEvaluatorPromptWithVisibleBuiltIns)), StringComparison.Ordinal)
 			|| string.Equals(text, NormalizeCustomPolicyEvaluatorPromptText(PreviousDefaultCustomPolicyEvaluatorPromptBeforeExpandedStats), StringComparison.Ordinal)
 			|| string.Equals(text, NormalizeCustomPolicyEvaluatorPromptText(PreviousDefaultCustomPolicyEvaluatorPromptForMigration), StringComparison.Ordinal);
 	}

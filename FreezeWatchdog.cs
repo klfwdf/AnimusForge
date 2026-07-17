@@ -50,6 +50,7 @@ internal static class FreezeWatchdog
 	private const double MonitorRepeatMs = 5000.0;
 	private const int MonitorIntervalMs = 1000;
 	private static readonly long RuntimeContextRefreshTicks = TimeSpan.FromMilliseconds(250.0).Ticks;
+	private static readonly long RuntimeActivationRefreshTicks = TimeSpan.FromMilliseconds(250.0).Ticks;
 
 	private static readonly object SyncRoot = new object();
 	private static readonly object FileWriteRoot = new object();
@@ -69,6 +70,7 @@ internal static class FreezeWatchdog
 	private static string _cachedRuntimeContext = "state=unknown mission=False conversation=False menu=";
 	private static long _cachedRuntimeContextUtcTicks;
 	private static long _nextRuntimeContextRefreshUtcTicks;
+	private static long _nextActivationRefreshUtcTicks;
 	private static long _skippedFileWriteCount;
 	private static long _fileWriteSequence;
 	private static long _lastSnapshotWrittenSequence;
@@ -140,13 +142,12 @@ internal static class FreezeWatchdog
 	{
 		try
 		{
+			long nowUtcTicks = DateTime.UtcNow.Ticks;
+			RefreshActivationStateOnMainThread(nowUtcTicks);
 			if (!IsEnabled())
 			{
 				return;
 			}
-			RefreshHangDumpEnabledOnMainThread();
-			RefreshSaveStateOnMainThread();
-			RefreshAiInteractionStateOnMainThread();
 			EnsureMonitorStarted();
 			int threadId = Thread.CurrentThread.ManagedThreadId;
 			if (_mainThreadId == 0)
@@ -160,7 +161,7 @@ internal static class FreezeWatchdog
 			long frame = Interlocked.Increment(ref _frameIndex);
 			double dtMs = Math.Max(0.0, dt * 1000.0);
 			RecordEvent("frame_begin", "SubModule.OnApplicationTick", "dtMs=" + dtMs.ToString("0.00") + " frame=" + frame, threadId);
-			if (DateTime.UtcNow.Ticks >= Interlocked.Read(ref _nextRuntimeContextRefreshUtcTicks))
+			if (nowUtcTicks >= Interlocked.Read(ref _nextRuntimeContextRefreshUtcTicks))
 			{
 				using (Scope("FreezeWatchdog.CaptureRuntimeContext"))
 				{
@@ -361,6 +362,32 @@ internal static class FreezeWatchdog
 		catch
 		{
 			Interlocked.Exchange(ref _hangDumpEnabled, 1);
+		}
+	}
+
+	internal static bool IsScopeRecordingActive()
+	{
+		return IsEnabled();
+	}
+
+	// The watchdog exists for stalled AnimusForge AI interactions. Outside that narrow state,
+	// recording every frame/scope only adds allocation and locking pressure to map simulation.
+	private static void RefreshActivationStateOnMainThread(long nowUtcTicks)
+	{
+		try
+		{
+			long nextAllowedTicks = Interlocked.Read(ref _nextActivationRefreshUtcTicks);
+			if (nowUtcTicks < nextAllowedTicks)
+			{
+				return;
+			}
+			Interlocked.Exchange(ref _nextActivationRefreshUtcTicks, nowUtcTicks + RuntimeActivationRefreshTicks);
+			RefreshHangDumpEnabledOnMainThread();
+			RefreshSaveStateOnMainThread();
+			RefreshAiInteractionStateOnMainThread();
+		}
+		catch
+		{
 		}
 	}
 
@@ -792,7 +819,9 @@ internal static class FreezeWatchdog
 
 	private static bool IsEnabled()
 	{
-		return true;
+		return Volatile.Read(ref _hangDumpEnabled) != 0
+			&& Volatile.Read(ref _saveInProgress) == 0
+			&& Volatile.Read(ref _aiInteractionActive) != 0;
 	}
 
 	private static double TimestampDeltaMs(long startTimestamp, long endTimestamp)

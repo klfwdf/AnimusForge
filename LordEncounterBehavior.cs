@@ -3357,21 +3357,27 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	internal static void OnEngineTick()
 	{
-		try
+		if (_pendingForceNativeEncounterAttack)
 		{
-			TryForcePendingNativeEncounterAttackIfReady();
+			try
+			{
+				TryForcePendingNativeEncounterAttackIfReady();
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("MeetingTaunt", "Engine tick pending native encounter attack failed: " + ex.Message);
+			}
 		}
-		catch (Exception ex)
+		if (_pendingNativeConversationMeetingRelease)
 		{
-			Logger.Log("MeetingTaunt", "Engine tick pending native encounter attack failed: " + ex.Message);
-		}
-		try
-		{
-			TryForcePendingNativeConversationMeetingReleaseIfReady();
-		}
-		catch (Exception ex2)
-		{
-			Logger.Log("MeetingRelease", "Engine tick pending native conversation release failed: " + ex2.Message);
+			try
+			{
+				TryForcePendingNativeConversationMeetingReleaseIfReady();
+			}
+			catch (Exception ex2)
+			{
+				Logger.Log("MeetingRelease", "Engine tick pending native conversation release failed: " + ex2.Message);
+			}
 		}
 	}
 
@@ -5127,16 +5133,41 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 	{
 		using (PerfProbe.Scope("LordEncounter.OnCampaignTick"))
 		{
-		TryClearEncounterRedirectSuspensionWhenBackOnMap();
-		TryForcePendingMeetingBattleNativeResultIfReady("campaign_tick");
-		TryForcePendingDefeatCaptivityMenuIfReady();
-		TryForcePendingNativeEncounterAttackIfReady();
-		TryForcePendingNativeConversationMeetingReleaseIfReady();
-		TryForcePendingNativeConversationNpcSurrenderIfReady();
-		TryForcePendingEncounterBattleMenuIfReady();
-		TryForcePendingReturnToEncounterMenuAfterUnauthorizedMeetingExitIfReady();
+		if (_suspendEncounterRedirectDuringResultResolution)
+		{
+			TryClearEncounterRedirectSuspensionWhenBackOnMap();
+		}
+		if (_pendingMeetingBattleNativeResult)
+		{
+			TryForcePendingMeetingBattleNativeResultIfReady("campaign_tick");
+		}
+		if (_pendingForceNativeDefeatCaptivityMenu)
+		{
+			TryForcePendingDefeatCaptivityMenuIfReady();
+		}
+		if (_pendingForceNativeEncounterAttack)
+		{
+			TryForcePendingNativeEncounterAttackIfReady();
+		}
+		if (_pendingNativeConversationMeetingRelease)
+		{
+			TryForcePendingNativeConversationMeetingReleaseIfReady();
+		}
+		if (_pendingNativeConversationNpcSurrender)
+		{
+			TryForcePendingNativeConversationNpcSurrenderIfReady();
+		}
+		if (_pendingForceNativeEncounterBattleMenu)
+		{
+			TryForcePendingEncounterBattleMenuIfReady();
+		}
+		if (_pendingReturnToEncounterMenuAfterUnauthorizedMeetingExit)
+		{
+			TryForcePendingReturnToEncounterMenuAfterUnauthorizedMeetingExitIfReady();
+		}
 		try
 		{
+			// This also clears a completed encounter suppression after returning to the map.
 			IsCustomEncounterMenuDisabledForCurrentEncounter();
 		}
 		catch

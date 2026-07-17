@@ -71,6 +71,7 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 	private const string MotiveDuty = "PartyRoleDuty";
 	private const string MotiveEmotion = "RelationshipEmotion";
 	private const string MotiveRomanticInteraction = "RomanticInteraction";
+	private const string MotivePolicyDiscussion = "PolicyDiscussion";
 	private const string MotiveFamily = "Family";
 	private const string MotiveFollowUp = "ConversationFollowUp";
 	private const string MotiveCasual = "CasualChat";
@@ -654,6 +655,18 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 			}
 		}
 
+		if (ProactiveNpcRequestBehavior.TryBuildPolicyDiscussionCompanionMotiveForExternal(hero, out string policyFact, out string policyIntent, out float policyUrgency))
+		{
+			motives.Add(new CompanionChatMotive
+			{
+				Type = MotivePolicyDiscussion,
+				StableKey = "policy_discussion:" + HeroId(hero),
+				Urgency = policyUrgency,
+				FactText = policyFact,
+				IntentText = policyIntent
+			});
+		}
+
 		if (MyBehavior.TryGetLatestCompressedMemoryForExternal(hero, out string memoryKey, out string memoryDate, out string memoryText, out int memoryDay)
 			&& memoryDay >= 0
 			&& currentDay - memoryDay <= 120)
@@ -724,6 +737,10 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 		if (string.Equals(motive.Type, MotiveRomanticInteraction, StringComparison.OrdinalIgnoreCase))
 		{
 			ProactiveNpcRequestBehavior.RecordRomanticInteractionForExternal("companion_notification_created");
+		}
+		else if (string.Equals(motive.Type, MotivePolicyDiscussion, StringComparison.OrdinalIgnoreCase))
+		{
+			ProactiveNpcRequestBehavior.RecordPolicyDiscussionForExternal("companion_notification_created");
 		}
 		int fatigueDays = settings.CompanionProactiveChatTestMode ? 0 : ClampInt(settings.CompanionProactiveChatMotiveFatigueDays, 0, 120);
 		if (fatigueDays > 0)

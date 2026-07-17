@@ -40,6 +40,15 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		public string Value;
 	}
 
+	private struct RankedVectorCandidateCacheItem
+	{
+		public long Version;
+
+		public long Ticks;
+
+		public List<RuleScore> Scores;
+	}
+
 	private class VectorDoc
 	{
 		public LoreRule Rule;
@@ -561,6 +570,12 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 
 	private const int LoreContextCacheMax = 256;
 
+	private static readonly object _rankedVectorCandidateCacheLock = new object();
+
+	private static Dictionary<string, RankedVectorCandidateCacheItem> _rankedVectorCandidateCache = new Dictionary<string, RankedVectorCandidateCacheItem>();
+
+	private const int RankedVectorCandidateCacheMax = 512;
+
 		private const int RuleListPageSize = 60;
 
 	private long _ruleIndexCacheVersion = -1L;
@@ -662,6 +677,16 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			lock (_loreContextCacheLock)
 			{
 				_loreContextCache.Clear();
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			lock (_rankedVectorCandidateCacheLock)
+			{
+				_rankedVectorCandidateCache.Clear();
 			}
 		}
 		catch
@@ -1946,6 +1971,54 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		return list2;
 	}
 
+	private List<RuleScore> FindRankedVectorCandidateScores(string input, int recallTopK, int rerankTopK, float scoreWeight)
+	{
+		string normalizedInput = (input ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(normalizedInput))
+		{
+			return new List<RuleScore>();
+		}
+		long version = _ruleDataVersion;
+		bool embeddingAvailable = false;
+		bool rerankerAvailable = false;
+		try
+		{
+			embeddingAvailable = OnnxEmbeddingEngine.Instance?.IsAvailable == true;
+		}
+		catch
+		{
+		}
+		try
+		{
+			rerankerAvailable = OnnxCrossEncoderReranker.Instance?.IsAvailable == true;
+		}
+		catch
+		{
+		}
+		string key = Hash8(version.ToString(CultureInfo.InvariantCulture)
+			+ "|input=" + normalizedInput
+			+ "|recall=" + Math.Max(0, recallTopK).ToString(CultureInfo.InvariantCulture)
+			+ "|rerank=" + Math.Max(0, rerankTopK).ToString(CultureInfo.InvariantCulture)
+			+ "|weight=" + scoreWeight.ToString("R", CultureInfo.InvariantCulture)
+			+ "|embedding=" + (embeddingAvailable ? "1" : "0")
+			+ "|reranker=" + (rerankerAvailable ? "1" : "0"));
+		if (TryGetRankedVectorCandidateCache(key, version, out List<RuleScore> cached))
+		{
+			return cached;
+		}
+		List<RuleScore> recalled = FindVectorCandidateScores(normalizedInput, recallTopK);
+		if (recalled == null || recalled.Count == 0)
+		{
+			return new List<RuleScore>();
+		}
+		List<RuleScore> ranked = RerankCandidateScores(normalizedInput, recalled, rerankTopK, scoreWeight);
+		if (ranked != null && ranked.Count > 0 && version == _ruleDataVersion)
+		{
+			PutRankedVectorCandidateCache(key, version, ranked);
+		}
+		return ranked ?? new List<RuleScore>();
+	}
+
 	private static List<WeightedKnowledgeInput> BuildKnowledgeQueryInputsFromMentions(MentionedWorldEntities mentionedEntities, int maxQueryCount, out int mentionTermCount)
 	{
 		List<WeightedKnowledgeInput> list = new List<WeightedKnowledgeInput>();
@@ -2179,18 +2252,11 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			for (int num = 0; num < list.Count; num++)
 			{
 				WeightedKnowledgeInput weightedKnowledgeInput = list[num];
-				List<RuleScore> list2 = FindVectorCandidateScores(weightedKnowledgeInput.Text, recallTopK);
-				if (list2 == null || list2.Count <= 0)
-				{
-					rankedCandidates.Add(new List<RuleScore>());
-					Logger.Log("LoreMatch", $"entity_query priority={num + 1} noun={JsonConvert.ToString(weightedKnowledgeInput.Text)} candidates=0");
-					continue;
-				}
-				List<RuleScore> list3 = RerankCandidateScores(weightedKnowledgeInput.Text, list2, rerankTopK, weightedKnowledgeInput.Weight);
+				List<RuleScore> list3 = FindRankedVectorCandidateScores(weightedKnowledgeInput.Text, recallTopK, rerankTopK, weightedKnowledgeInput.Weight);
 				if (list3 == null || list3.Count <= 0)
 				{
 					rankedCandidates.Add(new List<RuleScore>());
-					Logger.Log("LoreMatch", $"entity_query priority={num + 1} noun={JsonConvert.ToString(weightedKnowledgeInput.Text)} candidates=0 after_rerank=true");
+					Logger.Log("LoreMatch", $"entity_query priority={num + 1} noun={JsonConvert.ToString(weightedKnowledgeInput.Text)} candidates=0");
 					continue;
 				}
 				rankedCandidates.Add(list3.Where((RuleScore x) => x?.Rule != null).ToList());
@@ -2244,6 +2310,84 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		{
 		}
 		return result;
+	}
+
+	private static List<RuleScore> CloneRuleScores(IEnumerable<RuleScore> scores)
+	{
+		List<RuleScore> result = new List<RuleScore>();
+		foreach (RuleScore score in scores ?? Enumerable.Empty<RuleScore>())
+		{
+			if (score?.Rule == null)
+			{
+				continue;
+			}
+			result.Add(new RuleScore
+			{
+				Rule = score.Rule,
+				RawScore = score.RawScore,
+				EvidenceScore = score.EvidenceScore,
+				RerankScore = score.RerankScore
+			});
+		}
+		return result;
+	}
+
+	private static bool TryGetRankedVectorCandidateCache(string key, long version, out List<RuleScore> scores)
+	{
+		scores = null;
+		try
+		{
+			lock (_rankedVectorCandidateCacheLock)
+			{
+				if (_rankedVectorCandidateCache != null
+					&& _rankedVectorCandidateCache.TryGetValue(key, out RankedVectorCandidateCacheItem item)
+					&& item.Version == version
+					&& item.Scores != null
+					&& item.Scores.Count > 0)
+				{
+					item.Ticks = DateTime.UtcNow.Ticks;
+					_rankedVectorCandidateCache[key] = item;
+					scores = CloneRuleScores(item.Scores);
+					return true;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private static void PutRankedVectorCandidateCache(string key, long version, IEnumerable<RuleScore> scores)
+	{
+		List<RuleScore> copy = CloneRuleScores(scores);
+		if (copy.Count == 0)
+		{
+			return;
+		}
+		try
+		{
+			lock (_rankedVectorCandidateCacheLock)
+			{
+				if (_rankedVectorCandidateCache == null)
+				{
+					_rankedVectorCandidateCache = new Dictionary<string, RankedVectorCandidateCacheItem>();
+				}
+				if (_rankedVectorCandidateCache.Count >= RankedVectorCandidateCacheMax)
+				{
+					_rankedVectorCandidateCache.Clear();
+				}
+				_rankedVectorCandidateCache[key] = new RankedVectorCandidateCacheItem
+				{
+					Version = version,
+					Ticks = DateTime.UtcNow.Ticks,
+					Scores = copy
+				};
+			}
+		}
+		catch
+		{
+		}
 	}
 
 	private static bool TryAddFirstUniqueRankedEntityCandidate(List<LoreRule> result, HashSet<LoreRule> selectedRules, HashSet<string> selectedRuleIds, List<RuleScore> candidates, out int selectedRank)

@@ -931,7 +931,7 @@ public static class AIConfigHandler
 		}
 		if (!string.IsNullOrWhiteSpace(playerId) && !ContainsExactRuntimeEntityId(text, "hero", playerId))
 		{
-			facts.Add("【固定实体ID】玩家本人固定ID：hero:" + playerId + "。当后处理标签需要指向玩家本人或玩家主队所属英雄时，只能使用此ID；WORLDMAP_ORDER跟随玩家时，目标类型用hero，id填写" + playerId + "；不要猜测玩家ID。");
+			facts.Add("【固定实体ID】玩家本人固定ID：" + playerId + "。当后处理标签需要指向玩家本人或玩家主队所属英雄时，只能使用此ID；WORLDMAP_ORDER跟随玩家时，目标类型用hero，id填写" + playerId + "；不要猜测玩家ID。");
 		}
 		string locationFact = BuildActionPostprocessPlayerCurrentLocationFact();
 		if (!string.IsNullOrWhiteSpace(locationFact) && text.IndexOf("【玩家当前地点ID】", StringComparison.OrdinalIgnoreCase) < 0)
@@ -957,7 +957,12 @@ public static class AIConfigHandler
 			return false;
 		}
 		string pattern = @"(?<![A-Za-z0-9_.-])" + Regex.Escape(type.Trim() + ":" + id.Trim()) + @"(?![A-Za-z0-9_.-])";
-		return Regex.IsMatch(text, pattern, RegexOptions.IgnoreCase);
+		if (Regex.IsMatch(text, pattern, RegexOptions.IgnoreCase))
+		{
+			return true;
+		}
+		string structuredPattern = @"(?:固定ID|ID|编号)[:：]\s*(?:" + Regex.Escape(type.Trim()) + @":)?" + Regex.Escape(id.Trim()) + @"(?![A-Za-z0-9_.-])";
+		return Regex.IsMatch(text, structuredPattern, RegexOptions.IgnoreCase);
 	}
 
 	private static string BuildActionPostprocessPlayerCurrentLocationFact()
@@ -1018,12 +1023,12 @@ public static class AIConfigHandler
 					return "";
 				}
 				StringBuilder sb = new StringBuilder();
-				sb.Append("【玩家当前地点ID】当前定居点：settlement:" + settlementId + "；名称：" + settlementName + "；类型：" + type);
+				sb.Append("【玩家当前地点ID】当前定居点ID：" + settlementId + "；名称：" + settlementName + "；类型：" + type);
 				if (!string.IsNullOrWhiteSpace(source))
 				{
 					sb.Append("；来源：" + source);
 				}
-				sb.Append("。若玩家在<latest_reply>语境中说“这里”“此地”“本城”“当前地点”“我们所在的地方”，且动作标签需要 settlement 目标，优先使用此 settlement ID。");
+				sb.Append("。若玩家在<latest_reply>语境中说“这里”“此地”“本城”“当前地点”“我们所在的地方”，且动作标签需要定居点目标，目标类型写settlement，id填写上述原始ID。");
 				return sb.ToString();
 			}
 			Settlement nearest = ResolveNearestSettlementToMainPartyForPostprocess(out float distance);
@@ -1033,7 +1038,7 @@ public static class AIConfigHandler
 				string settlementName = (nearest.Name?.ToString() ?? settlementId).Trim();
 				if (!string.IsNullOrWhiteSpace(settlementId))
 				{
-					return "【玩家当前地点ID】当前未处于定居点内；最近定居点：settlement:" + settlementId + "；名称：" + settlementName + "；距离：" + distance.ToString("0.0") + "。只有当玩家明确说“附近”“最近的定居点”等语义时才使用最近定居点；不要把它误当作玩家脚下当前地点。";
+					return "【玩家当前地点ID】当前未处于定居点内；最近定居点ID：" + settlementId + "；名称：" + settlementName + "；距离：" + distance.ToString("0.0") + "。只有当玩家明确说“附近”“最近的定居点”等语义时才使用最近定居点；目标类型写settlement，id填写上述原始ID；不要把它误当作玩家脚下当前地点。";
 				}
 			}
 		}
@@ -7962,10 +7967,31 @@ public static class AIConfigHandler
 		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		try
 		{
-			foreach (Match match in Regex.Matches(entityPostprocessContext ?? "", "(?<![A-Za-z0-9_.\\-])kingdom:([A-Za-z0-9_.\\-]+)", RegexOptions.IgnoreCase))
+			string context = entityPostprocessContext ?? "";
+			List<string> kingdomIds = new List<string>();
+			foreach (Match match in Regex.Matches(context, "(?<![A-Za-z0-9_.\\-])kingdom:([A-Za-z0-9_.\\-]+)", RegexOptions.IgnoreCase))
 			{
 				string kingdomId = (match?.Groups[1].Value ?? "").Trim();
-				if (string.IsNullOrWhiteSpace(kingdomId) || !seen.Add(kingdomId))
+				if (!string.IsNullOrWhiteSpace(kingdomId))
+				{
+					kingdomIds.Add(kingdomId);
+				}
+			}
+			foreach (Match sectionMatch in Regex.Matches(context, "【王国】(?<body>[\\s\\S]*?)(?=\\r?\\n【|\\z)", RegexOptions.IgnoreCase))
+			{
+				string body = sectionMatch?.Groups["body"].Value ?? "";
+				foreach (Match idMatch in Regex.Matches(body, "(?:ID|编号)[:：]\\s*(?:kingdom:)?([A-Za-z0-9_.\\-]+)", RegexOptions.IgnoreCase))
+				{
+					string kingdomId = (idMatch?.Groups[1].Value ?? "").Trim();
+					if (!string.IsNullOrWhiteSpace(kingdomId))
+					{
+						kingdomIds.Add(kingdomId);
+					}
+				}
+			}
+			foreach (string kingdomId in kingdomIds)
+			{
+				if (!seen.Add(kingdomId))
 				{
 					continue;
 				}
