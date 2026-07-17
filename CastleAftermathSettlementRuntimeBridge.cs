@@ -34,6 +34,7 @@ internal static class CastleAftermathSettlementRuntimeBridge
 	private static float _pendingRecruitmentMultiplier = 1f;
 	private static float _pendingRecruitQualityMultiplier = 1f;
 	private static bool _pendingDevastateEquivalent;
+	private static CastleAftermathSettlementApplyResult _lastAppliedResult = CastleAftermathSettlementApplyResult.Empty;
 
 	internal static void SyncData(IDataStore dataStore)
 	{
@@ -61,6 +62,12 @@ internal static class CastleAftermathSettlementRuntimeBridge
 
 	internal static void ResetSession(string source)
 	{
+		_lastAppliedResult = CastleAftermathSettlementApplyResult.Empty;
+		ResetPending(source);
+	}
+
+	private static void ResetPending(string source)
+	{
 		PendingKeys.Clear();
 		_pendingLoyalty = 0f;
 		_pendingSecurity = 0f;
@@ -76,14 +83,22 @@ internal static class CastleAftermathSettlementRuntimeBridge
 		Logger.Log("CastleAftermath", "Reset castle settlement effect ledger. Source=" + (source ?? "N/A"));
 	}
 
-	internal static void QueueAction(SiegeCastleActionKind action, bool singleLordTarget)
+	internal static void QueueAction(
+		SiegeCastleActionKind action,
+		bool singleLordTarget,
+		int affectedRegularPrisoners = 0,
+		int initialRegularPrisoners = 0)
 	{
 		SiegeCastleSettlementEffectProfile profile = SiegeCastleSettlementEffectProfile.Build(action);
 		if (profile.Key == "none")
 		{
 			return;
 		}
-		float scale = singleLordTarget ? 0.15f : 1f;
+		float scale = singleLordTarget
+			? 0.15f
+			: (affectedRegularPrisoners > 0 && initialRegularPrisoners > 0
+				? MathF.Min(1f, MathF.Max(0f, affectedRegularPrisoners / (float)initialRegularPrisoners))
+				: 1f);
 		PendingKeys.Add(profile.Key + (singleLordTarget ? ":lord" : ":group"));
 		_pendingLoyalty += profile.LoyaltyDelta * scale;
 		_pendingSecurity += profile.SecurityDelta * scale;
@@ -103,14 +118,23 @@ internal static class CastleAftermathSettlementRuntimeBridge
 			1f + (profile.RecruitQualityMultiplier - 1f) * scale);
 		_pendingDevastateEquivalent |= profile.ReachesNativeDevastateIntensity;
 		Logger.Log("CastleAftermath", "Queued castle settlement effect. Action=" + action
-			+ ", Key=" + profile.Key + ", Lord=" + singleLordTarget);
+			+ ", Key=" + profile.Key + ", Lord=" + singleLordTarget
+			+ ", Affected=" + affectedRegularPrisoners + ", Initial=" + initialRegularPrisoners
+			+ ", Scale=" + scale.ToString("0.###"));
 	}
 
-	internal static void ApplyAfterNativeMercy(Settlement settlement, float prosperityBeforeMercy)
+	internal static CastleAftermathSettlementApplyResult GetLastAppliedResult() => _lastAppliedResult;
+
+	internal static void ApplyAfterNativeMercy(
+		Settlement settlement,
+		float prosperityBeforeMercy,
+		float loyaltyBeforeMercy,
+		float securityBeforeMercy)
 	{
 		if (settlement?.IsCastle != true || settlement.Town == null)
 		{
-			ResetSession("invalid_castle_finalize");
+			_lastAppliedResult = CastleAftermathSettlementApplyResult.Empty;
+			ResetPending("invalid_castle_finalize");
 			return;
 		}
 		try
@@ -131,10 +155,23 @@ internal static class CastleAftermathSettlementRuntimeBridge
 			settlement.Town.Loyalty += loyaltyDelta;
 			settlement.Town.Security += securityDelta;
 			settlement.Town.Prosperity = MathF.Max(0f, settlement.Town.Prosperity + prosperityDelta + prosperityTopUp);
-			AdjustSettlementTrust(settlement, ClampTrustDelta(_pendingSettlementTrust), "gccz_castle_settlement");
-			AdjustBoundVillageTrust(settlement, ClampTrustDelta(_pendingVillageTrust), "gccz_castle_bound_village");
-			AdjustNotables(settlement, ClampNotableDelta(_pendingNotableRelation), ClampNotableDelta(_pendingNotableTrust));
+			int settlementTrustDelta = ClampTrustDelta(_pendingSettlementTrust);
+			int villageTrustDelta = ClampTrustDelta(_pendingVillageTrust);
+			int notableRelationDelta = ClampNotableDelta(_pendingNotableRelation);
+			int notableTrustDelta = ClampNotableDelta(_pendingNotableTrust);
+			AdjustSettlementTrust(settlement, settlementTrustDelta, "gccz_castle_settlement");
+			AdjustBoundVillageTrust(settlement, villageTrustDelta, "gccz_castle_bound_village");
+			AdjustNotables(settlement, notableRelationDelta, notableTrustDelta);
 			BeginAnnualEffects(settlement);
+			_lastAppliedResult = new CastleAftermathSettlementApplyResult(
+				settlement.Town.Loyalty - loyaltyBeforeMercy,
+				settlement.Town.Security - securityBeforeMercy,
+				settlement.Town.Prosperity - prosperityBeforeMercy,
+				settlementTrustDelta,
+				villageTrustDelta,
+				notableRelationDelta,
+				notableTrustDelta,
+				_pendingDevastateEquivalent);
 
 			Logger.Log("CastleAftermath", "Applied independent castle settlement effects. Settlement="
 				+ (settlement.StringId ?? "N/A")
@@ -143,16 +180,6 @@ internal static class CastleAftermathSettlementRuntimeBridge
 				+ ", Security=" + securityDelta.ToString("0.##")
 				+ ", Prosperity=" + (prosperityDelta + prosperityTopUp).ToString("0.##")
 				+ ", DevastateEquivalent=" + _pendingDevastateEquivalent);
-			if (PendingKeys.Count > 0)
-			{
-				InformationManager.DisplayMessage(new InformationMessage(
-					SiegeCastleActionOutcomeTextProfile.BuildSettlementEffectMessage(
-						loyaltyDelta,
-						securityDelta,
-						prosperityDelta + prosperityTopUp,
-						_pendingDevastateEquivalent),
-					Color.FromUint(SiegeCastleActionOutcomeTextProfile.SettlementColor)));
-			}
 		}
 		catch (Exception ex)
 		{
@@ -160,7 +187,7 @@ internal static class CastleAftermathSettlementRuntimeBridge
 		}
 		finally
 		{
-			ResetSession("native_mercy_finalized");
+			ResetPending("native_mercy_finalized");
 		}
 	}
 
@@ -379,4 +406,39 @@ internal static class CastleAftermathSettlementRuntimeBridge
 			return 0;
 		}
 	}
+}
+
+internal sealed class CastleAftermathSettlementApplyResult
+{
+	internal static readonly CastleAftermathSettlementApplyResult Empty = new CastleAftermathSettlementApplyResult(
+		0f, 0f, 0f, 0, 0, 0, 0, false);
+
+	internal CastleAftermathSettlementApplyResult(
+		float loyaltyDelta,
+		float securityDelta,
+		float prosperityDelta,
+		int settlementTrustDelta,
+		int villageTrustDelta,
+		int notableRelationDelta,
+		int notableTrustDelta,
+		bool devastateEquivalent)
+	{
+		LoyaltyDelta = loyaltyDelta;
+		SecurityDelta = securityDelta;
+		ProsperityDelta = prosperityDelta;
+		SettlementTrustDelta = settlementTrustDelta;
+		VillageTrustDelta = villageTrustDelta;
+		NotableRelationDelta = notableRelationDelta;
+		NotableTrustDelta = notableTrustDelta;
+		DevastateEquivalent = devastateEquivalent;
+	}
+
+	internal float LoyaltyDelta { get; }
+	internal float SecurityDelta { get; }
+	internal float ProsperityDelta { get; }
+	internal int SettlementTrustDelta { get; }
+	internal int VillageTrustDelta { get; }
+	internal int NotableRelationDelta { get; }
+	internal int NotableTrustDelta { get; }
+	internal bool DevastateEquivalent { get; }
 }

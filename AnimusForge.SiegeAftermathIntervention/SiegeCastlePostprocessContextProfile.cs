@@ -13,6 +13,13 @@ public static class SiegeCastlePostprocessContextProfile
         SiegeCastleSoldierAppeasementAuthorizationDecision appeasementAuthorization =
             SiegeCastleSoldierAppeasementAuthorizationPolicy.Evaluate(facts.PlayerText);
         StringBuilder sb = new StringBuilder();
+        if (facts.IsWitnessReaction)
+        {
+            return sb.Append("【城堡处置即时见证后处理】本轮是己方士兵对刚发生的“")
+                .Append(SiegeCastleSoldierReactionProfile.DescribeConcernAction(facts.ReactionToAction))
+                .Append("”作出的自由发言，不是直接回应玩家的新命令。只有发言正文明确表达反感、忧虑、同情、军纪疑虑、文化冲突或对统帅做法的不满时，才可输出城堡随军士兵不满标签；赞同、中立复述、普通询问或建议不得输出。该标签只登记待安抚军心，不得结算或提议任何新的战俘去向，也不得触发下一轮见证反应。")
+                .ToString();
+        }
         sb.Append("【城堡处置后处理事实】定居点=")
             .Append(string.IsNullOrWhiteSpace(facts.CastleName) ? SiegeCastleRuntimePromptProfile.DefaultCastleName : facts.CastleName.Trim())
             .Append("；本轮说话者身份=")
@@ -45,7 +52,7 @@ public static class SiegeCastlePostprocessContextProfile
             .Append(appeasementAuthorization.IsAuthorized
                 ? "已明确安抚"
                 : "未满足（" + appeasementAuthorization.ReasonCode + "）")
-            .Append("。己方士兵或普通战俘主动提出释放、贩卖、收编、屠戮、劳役或教官方案时，只能输出与建议语义完全一致的提议标签；提议只记录待确认状态，绝不能直接结算。只有玩家本轮明确命令，或明确同意本说话者此前同类提议后，才可输出对应处置标签。普通战俘处置标签在场景内只更新当前暂定命令，最新有效命令覆盖旧命令；除现场屠戮的真实死亡外，不得声称战俘已经消失、转队、获释、售出或完成地方效果。己方士兵可以代玩家执行群体命令，但不能把劳役、释放、贩卖或教官命令改写成收编。自愿分支只能由普通战俘本人直接回应并达到信任门槛。安兵也必须有玩家本轮明确安抚意图，不能只凭士兵表示服从结算。闲聊、旁听、转述或领主回复不得触发普通战俘处置。一次回复最多输出一个城堡处置标签。");
+            .Append("。己方士兵或普通战俘主动提出释放、贩卖、收编、屠戮、劳役或教官方案时，只能输出与建议语义完全一致的提议标签；提议只记录待确认状态，绝不能直接结算。只有玩家本轮明确命令，或明确同意本说话者此前同类提议后，才可输出对应处置标签。每个普通战俘处置标签只登记玩家本轮指定的数量与兵种，多个分组可以累计；玩家未说明数量或兵种时由运行时随机选择。只有玩家明确说反悔、改判或全部重来时才清空幸存者旧计划。除现场屠戮的真实死亡外，不得声称战俘已经消失、转队、获释、售出或完成地方效果。己方士兵可以代玩家执行群体命令，但不能把劳役、释放、贩卖或教官命令改写成收编。自愿分支只能由普通战俘本人直接回应并达到信任门槛。安兵也必须有玩家本轮明确安抚意图，不能只凭士兵表示服从结算。闲聊、旁听、转述或领主回复不得触发普通战俘处置。一次回复最多输出一个城堡处置标签。");
 
         if (facts.SpeakerRole == SiegeCastleActionSpeakerRole.CapturedLord)
         {
@@ -92,7 +99,9 @@ public sealed class SiegeCastlePostprocessContextFacts
         SiegeCastleActionKind terminalActionForTarget = SiegeCastleActionKind.Unknown,
         bool speakerIsClanLeader = false,
         bool playerHasKingdom = false,
-        bool playerRulesKingdom = false)
+        bool playerRulesKingdom = false,
+        bool isWitnessReaction = false,
+        SiegeCastleActionKind reactionToAction = SiegeCastleActionKind.Unknown)
     {
         CastleName = castleName ?? string.Empty;
         SpeakerRole = speakerRole;
@@ -110,6 +119,8 @@ public sealed class SiegeCastlePostprocessContextFacts
         SpeakerIsClanLeader = speakerIsClanLeader;
         PlayerHasKingdom = playerHasKingdom;
         PlayerRulesKingdom = playerRulesKingdom;
+        IsWitnessReaction = isWitnessReaction;
+        ReactionToAction = reactionToAction;
     }
 
     public static SiegeCastlePostprocessContextFacts Empty => new SiegeCastlePostprocessContextFacts(
@@ -156,6 +167,10 @@ public sealed class SiegeCastlePostprocessContextFacts
     public bool PlayerHasKingdom { get; }
 
     public bool PlayerRulesKingdom { get; }
+
+    public bool IsWitnessReaction { get; }
+
+    public SiegeCastleActionKind ReactionToAction { get; }
 
     private static int ClampCount(int value)
     {

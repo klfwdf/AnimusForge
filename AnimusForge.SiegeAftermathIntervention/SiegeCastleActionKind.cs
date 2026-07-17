@@ -27,7 +27,8 @@ public enum SiegeCastleActionKind
     ProposeSellPrisoners = 18,
     ProposeLaborPrisoners = 19,
     ProposeInstructorPrisoners = 20,
-    SellLord = 21
+    SellLord = 21,
+    SoldierDiscontent = 22
 }
 
 /// <summary>
@@ -100,7 +101,9 @@ public static class SiegeCastleActionKindProfile
 
     public static bool IsSettlement(SiegeCastleActionKind action)
     {
-        return action != SiegeCastleActionKind.Unknown && !IsProposal(action);
+        return action != SiegeCastleActionKind.Unknown
+            && action != SiegeCastleActionKind.SoldierDiscontent
+            && !IsProposal(action);
     }
 
     public static bool CanRegularPrisonerPropose(SiegeCastleActionKind action)

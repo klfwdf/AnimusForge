@@ -16,9 +16,9 @@ namespace AnimusForge;
 /// </summary>
 internal static class CastleAftermathActionRuntimeBridge
 {
-	internal static CastleAftermathActionApplyResult RecruitSelectedRegularPrisoners()
+	internal static CastleAftermathActionApplyResult RecruitRegularPrisoners(TroopRoster requestedRoster)
 	{
-		TroopRoster selected = CastleAftermathRuntimeBridge.GetSelectedPrisonerRosterSnapshot();
+		TroopRoster selected = requestedRoster;
 		TroopRoster mainPrisoners = PartyBase.MainParty?.PrisonRoster;
 		TroopRoster mainMembers = MobileParty.MainParty?.MemberRoster;
 		if (mainPrisoners == null || mainMembers == null || PartyBase.MainParty == null)
@@ -28,7 +28,7 @@ internal static class CastleAftermathActionRuntimeBridge
 				CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount);
 		}
 
-		int availableRegularPrisoners = CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount;
+		int availableRegularPrisoners = CountRegular(selected);
 		if (selected == null || availableRegularPrisoners <= 0)
 		{
 			return CastleAftermathActionApplyResult.Completed(
@@ -126,16 +126,16 @@ internal static class CastleAftermathActionRuntimeBridge
 		}
 	}
 
-	internal static CastleAftermathActionApplyResult BeginSlaughterOfSelectedRegularPrisoners()
+	internal static CastleAftermathActionApplyResult BeginSlaughterOfRegularPrisoners(TroopRoster requestedRoster)
 	{
-		int selected = CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount;
+		int selected = CountRegular(requestedRoster);
 		if (selected <= 0)
 		{
 			return CastleAftermathActionApplyResult.Completed(0, 0, SiegeCastlePrisonerDispositionProfile.NoMatchingRegularPrisonersReason);
 		}
 		try
 		{
-			int started = CastleAftermathRuntimeBridge.BeginRegularPrisonerSlaughter();
+			int started = CastleAftermathRuntimeBridge.BeginRegularPrisonerSlaughter(requestedRoster);
 			return started > 0
 				? CastleAftermathActionApplyResult.Completed(started, selected, "slaughter_started")
 				: CastleAftermathActionApplyResult.Failed("slaughter_scene_agents_unavailable", selected);
@@ -149,14 +149,14 @@ internal static class CastleAftermathActionRuntimeBridge
 		}
 	}
 
-	internal static CastleAftermathActionApplyResult ReleaseSelectedRegularPrisoners()
+	internal static CastleAftermathActionApplyResult ReleaseRegularPrisoners(TroopRoster requestedRoster)
 	{
-		return RemoveSelectedRegularPrisoners("castle_release_prisoners");
+		return RemoveRegularPrisoners(requestedRoster, "castle_release_prisoners");
 	}
 
-	internal static CastleAftermathActionApplyResult SellSelectedRegularPrisoners()
+	internal static CastleAftermathActionApplyResult SellRegularPrisoners(TroopRoster requestedRoster)
 	{
-		TroopRoster selected = CastleAftermathRuntimeBridge.GetSelectedPrisonerRosterSnapshot();
+		TroopRoster selected = requestedRoster;
 		TroopRoster mainPrisoners = PartyBase.MainParty?.PrisonRoster;
 		if (selected == null || mainPrisoners == null || PartyBase.MainParty == null || Hero.MainHero == null)
 		{
@@ -252,9 +252,9 @@ internal static class CastleAftermathActionRuntimeBridge
 		}
 	}
 
-	internal static CastleAftermathActionApplyResult ResolveSelectedRegularPrisonersForSettlementEffect(string source)
+	internal static CastleAftermathActionApplyResult ResolveRegularPrisonersForSettlementEffect(TroopRoster requestedRoster, string source)
 	{
-		return RemoveSelectedRegularPrisoners(source ?? "castle_prisoner_settlement_effect");
+		return RemoveRegularPrisoners(requestedRoster, source ?? "castle_prisoner_settlement_effect");
 	}
 
 	internal static CastleAftermathActionApplyResult ProvideCareToSelectedRegularPrisoners()
@@ -325,9 +325,9 @@ internal static class CastleAftermathActionRuntimeBridge
 		return CastleAftermathActionApplyResult.Failed("care_supplies_insufficient", 0);
 	}
 
-	private static CastleAftermathActionApplyResult RemoveSelectedRegularPrisoners(string source)
+	private static CastleAftermathActionApplyResult RemoveRegularPrisoners(TroopRoster requestedRoster, string source)
 	{
-		TroopRoster selected = CastleAftermathRuntimeBridge.GetSelectedPrisonerRosterSnapshot();
+		TroopRoster selected = requestedRoster;
 		TroopRoster mainPrisoners = PartyBase.MainParty?.PrisonRoster;
 		if (selected == null || mainPrisoners == null)
 		{
@@ -413,6 +413,13 @@ internal static class CastleAftermathActionRuntimeBridge
 			}
 		}
 		return removed;
+	}
+
+	private static int CountRegular(TroopRoster roster)
+	{
+		return roster?.GetTroopRoster()
+			.Where(element => element.Character != null && !element.Character.IsHero && element.Number > 0)
+			.Sum(element => element.Number) ?? 0;
 	}
 }
 

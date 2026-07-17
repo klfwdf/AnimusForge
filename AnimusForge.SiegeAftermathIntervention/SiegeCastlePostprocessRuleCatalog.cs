@@ -7,7 +7,11 @@ namespace AnimusForge.SiegeAftermathIntervention;
 /// </summary>
 public static class SiegeCastlePostprocessRuleCatalog
 {
-    private const string RevisableStageContract = "标签触发后只更新本场暂定命令，尚存战俘不会立即从场景或俘虏名册消失；玩家离场时才按最后一条有效命令执行名册、金币与地方副作用。离场前另一种有效普通战俘处置可以覆盖本命令，NPC必须记住前后改判。";
+    private const string RevisableStageContract = "标签触发后只为本轮选中的数量与兵种登记暂定去向，尚存战俘不会立即从场景或俘虏名册消失；玩家离场时才逐组执行名册、金币与地方副作用。玩家未说明数量时由运行时随机选取，未说明兵种时随机选兵；说‘其余/剩下/全部’时使用当前未分配者。明确说反悔、改判或全部重来时才清空幸存者旧计划，NPC必须记住前后变化。";
+
+    private static readonly SiegePostprocessRuleDefinition SoldierDiscontentRule = Rule(
+        SiegeCastleActionTagCatalog.SoldierDiscontentTag,
+        "【即时见证反应专用】仅当当前己方士兵正在自由评论刚发生的城堡战俘处置，而且其实际发言明确表达反感、忧虑、同情、军纪疑虑、文化冲突或对统帅做法的不满时输出。赞同、欢呼、中立复述、恐惧但服从、单纯询问或普通建议不得输出。该标签只创建一次待安抚军心事件，不得改变战俘处置，也不得再次触发见证反应。");
 
     private static readonly SiegePostprocessRuleDefinition ProposeRecruitRule = Rule(
         SiegeCastleActionTagCatalog.ProposeRecruitPrisonersTag,
@@ -97,6 +101,15 @@ public static class SiegeCastlePostprocessRuleCatalog
     {
         facts ??= SiegeCastlePostprocessRuleFacts.Empty;
         var rules = new List<SiegePostprocessRuleDefinition>();
+        if (facts.IsWitnessReaction)
+        {
+            if (facts.SpeakerRole == SiegeCastleActionSpeakerRole.AlliedSoldier
+                && SiegeCastleSoldierReactionProfile.CanReactTo(facts.ReactionToAction))
+            {
+                rules.Add(SoldierDiscontentRule);
+            }
+            return rules;
+        }
         if (!facts.ReplyIsDirectPlayerResponse)
         {
             return rules;
@@ -222,7 +235,8 @@ public static class SiegeCastlePostprocessRuleCatalog
         SiegeCastleActionKind action,
         SiegePostprocessRuleDefinition rule)
     {
-        if (facts.IsActionAlreadyApplied(action))
+        if (facts.IsActionAlreadyApplied(action)
+            && !SiegeCastleActionKindProfile.IsRegularPrisonerTerminal(action))
         {
             return false;
         }

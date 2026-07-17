@@ -21,7 +21,9 @@ public sealed class SiegeCastlePostprocessRuleFacts
         SiegeCastleActionKind terminalActionForTarget = SiegeCastleActionKind.Unknown,
         bool speakerIsClanLeader = false,
         bool playerHasKingdom = false,
-        bool playerRulesKingdom = false)
+        bool playerRulesKingdom = false,
+        bool isWitnessReaction = false,
+        SiegeCastleActionKind reactionToAction = SiegeCastleActionKind.Unknown)
     {
         SpeakerRole = speakerRole;
         ReplyIsDirectPlayerResponse = replyIsDirectPlayerResponse;
@@ -36,6 +38,8 @@ public sealed class SiegeCastlePostprocessRuleFacts
         SpeakerIsClanLeader = speakerIsClanLeader;
         PlayerHasKingdom = playerHasKingdom;
         PlayerRulesKingdom = playerRulesKingdom;
+        IsWitnessReaction = isWitnessReaction;
+        ReactionToAction = reactionToAction;
     }
 
     public static SiegeCastlePostprocessRuleFacts Empty => new SiegeCastlePostprocessRuleFacts(
@@ -72,6 +76,10 @@ public sealed class SiegeCastlePostprocessRuleFacts
     public bool PlayerHasKingdom { get; }
 
     public bool PlayerRulesKingdom { get; }
+
+    public bool IsWitnessReaction { get; }
+
+    public SiegeCastleActionKind ReactionToAction { get; }
 
     public bool IsActionAlreadyApplied(SiegeCastleActionKind action)
     {

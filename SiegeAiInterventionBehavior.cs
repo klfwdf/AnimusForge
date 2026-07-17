@@ -281,19 +281,23 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static bool _soldierAppeasementMoralePenaltyApplied;
 	private static int _castleRecruitedRegularPrisoners;
 	private static int _castleSlaughteredRegularPrisoners;
-	private static SiegeCastleActionKind _castleRegularTerminalAction = SiegeCastleActionKind.Unknown;
-	private static int _castleRegularTerminalAffected;
-	private static int _castleRegularTerminalGold;
-	private static int _castleRegularDispositionRevisionCount;
 	private static bool _castleRegularDispositionFinalized;
 	private static bool _castleSoldierAppeasementRequired;
 	private static bool _castleSoldierAppeasementApplied;
 	private static bool _castleSoldierAppeasementMoralePenaltyApplied;
+	private static int _castleSoldierPendingMoralePenalty;
+	private static int _castleSoldierAppliedMoralePenalty;
+	private static SiegeCastleActionKind _castleSoldierConcernAction = SiegeCastleActionKind.Unknown;
 	private static bool _castleSlaughterConsequencesQueued;
 	private static bool _castleNativeMercyApplied;
 	private static float _castleProsperityBeforeNativeMercy = -1f;
+	private static float _castleLoyaltyBeforeNativeMercy = -1f;
+	private static float _castleSecurityBeforeNativeMercy = -1f;
 	private static SiegeCastlePrisonerDispositionKind _castlePendingDispositionProposal;
 	private static int _castlePendingDispositionProposalAgentIndex = -1;
+	private static readonly object CastleSoldierReactionLock = new object();
+	private static readonly Dictionary<int, SiegeCastleActionKind> PendingCastleSoldierReactionActions = new Dictionary<int, SiegeCastleActionKind>();
+	private static readonly Dictionary<int, int> PendingCastleSoldierReactionAffectedCounts = new Dictionary<int, int>();
 	private static float _lastMassacreRealKillMissionTime = -100f;
 	private static float _lastDestructiveInquiryMissionTime = -100f;
 	private static int _lastDestructiveInquirySourceAgentIndex = -1;
@@ -2595,7 +2599,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				politicalFacts.SpeakerIsClanLeader,
 				politicalFacts.PlayerHasKingdom,
 				politicalFacts.PlayerRulesKingdom,
-				_castleRegularDispositionRevisionCount));
+				CastleAftermathDispositionSessionBridge.RevisionCount,
+				CastleAftermathDispositionSessionBridge.BuildRegularPlanSummary()));
 		}
 		memoryContext = AppendRuntimeContext(memoryContext, BuildPlayerCommanderRuntimeContext(alliedSoldier, civilian));
 		return SiegeRuntimePromptProfile.Build(new SiegeRuntimePromptFacts(
@@ -2743,6 +2748,58 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		return SiegePostprocessRuleCatalog.InjectedRuleBlockMarker;
 	}
 
+	private static bool TryGetPendingCastleSoldierReactionAction(
+		int targetAgentIndex,
+		out SiegeCastleActionKind action)
+	{
+		lock (CastleSoldierReactionLock)
+		{
+			return PendingCastleSoldierReactionActions.TryGetValue(targetAgentIndex, out action);
+		}
+	}
+
+	private static int ResolveCastleActionableRegularPrisonerCount(string playerText)
+	{
+		int selected = Math.Max(0, CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount);
+		if (selected <= 0 || SiegeCastlePrisonerAllocationProfile.IsPlanResetRequested(playerText))
+		{
+			return selected;
+		}
+		try
+		{
+			return Math.Max(0, CastleAftermathDispositionSessionBridge
+				.GetUnassignedRegularRoster(CastleAftermathRuntimeBridge.GetSelectedPrisonerRosterSnapshot())
+				.TotalManCount);
+		}
+		catch
+		{
+			return selected;
+		}
+	}
+
+	private static int GetPendingCastleSoldierReactionAffectedCount(int targetAgentIndex)
+	{
+		lock (CastleSoldierReactionLock)
+		{
+			return PendingCastleSoldierReactionAffectedCounts.TryGetValue(targetAgentIndex, out int affected)
+				? Math.Max(0, affected)
+				: 0;
+		}
+	}
+
+	internal static void CompleteCastleSoldierReactionForExternal(int targetAgentIndex, string source)
+	{
+		lock (CastleSoldierReactionLock)
+		{
+			if (PendingCastleSoldierReactionActions.Remove(targetAgentIndex))
+			{
+				PendingCastleSoldierReactionAffectedCounts.Remove(targetAgentIndex);
+				GcczDiagnosticLog.LogVerbose("CastleReaction", "completed agent=" + targetAgentIndex
+					+ " source=" + (source ?? "N/A"));
+			}
+		}
+	}
+
 	internal static List<PostprocessRuleEntry> BuildRuntimePostprocessRulesForExternal(
 		int targetAgentIndex,
 		bool replyIsDirectPlayerResponse,
@@ -2759,17 +2816,21 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				bool lord = prisoner && (CastleAftermathRuntimeBridge.IsLordPrisonerAgent(agent) || character?.IsHero == true);
 				SiegeCastleActionSpeakerRole role = SiegeCastleActionSpeakerRoleProfile.Resolve(alliedSoldier, prisoner, lord);
 				Hero targetHero = character?.HeroObject;
+				bool witnessReaction = TryGetPendingCastleSoldierReactionAction(targetAgentIndex, out SiegeCastleActionKind reactionToAction);
 				CastleAftermathLordPoliticalFacts politicalFacts = CastleAftermathLordRecruitmentRuntimeBridge.GetPoliticalFacts(targetHero);
-				SynchronizePendingCastleDispositionProposalForPlayerReply(
-					targetAgentIndex,
-					replyIsDirectPlayerResponse,
-					playerText);
+				if (!witnessReaction)
+				{
+					SynchronizePendingCastleDispositionProposalForPlayerReply(
+						targetAgentIndex,
+						replyIsDirectPlayerResponse,
+						playerText);
+				}
 				SiegeCastlePrisonerDispositionKind pendingProposal = GetPendingCastleDispositionProposalForSpeaker(targetAgentIndex);
 				List<PostprocessRuleEntry> castleRules = SiegeCastlePostprocessRuleCatalog.GetAvailableRules(
 					new SiegeCastlePostprocessRuleFacts(
 						role,
 						replyIsDirectPlayerResponse,
-						CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount,
+						ResolveCastleActionableRegularPrisonerCount(playerText),
 						_castleSoldierAppeasementRequired,
 						_castleSoldierAppeasementApplied,
 						playerText,
@@ -2779,7 +2840,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 						CastleAftermathDispositionSessionBridge.GetTerminalAction(role, agent, targetHero),
 						politicalFacts.SpeakerIsClanLeader,
 						politicalFacts.PlayerHasKingdom,
-						politicalFacts.PlayerRulesKingdom))
+						politicalFacts.PlayerRulesKingdom,
+						witnessReaction,
+						reactionToAction))
 					.Select(rule => new PostprocessRuleEntry
 					{
 						Tag = rule.Tag,
@@ -2845,17 +2908,21 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				bool prisoner = CastleAftermathRuntimeBridge.IsPrisonerAgent(agent);
 				bool lord = prisoner && (CastleAftermathRuntimeBridge.IsLordPrisonerAgent(agent) || character?.IsHero == true);
 				SiegeCastleActionSpeakerRole role = SiegeCastleActionSpeakerRoleProfile.Resolve(alliedSoldier, prisoner, lord);
+				bool witnessReaction = TryGetPendingCastleSoldierReactionAction(targetAgentIndex, out SiegeCastleActionKind reactionToAction);
 				Hero targetHero = character?.HeroObject;
 				CastleAftermathLordPoliticalFacts politicalFacts = CastleAftermathLordRecruitmentRuntimeBridge.GetPoliticalFacts(targetHero);
-				SynchronizePendingCastleDispositionProposalForPlayerReply(
-					targetAgentIndex,
-					replyIsDirectPlayerResponse,
-					playerText);
+				if (!witnessReaction)
+				{
+					SynchronizePendingCastleDispositionProposalForPlayerReply(
+						targetAgentIndex,
+						replyIsDirectPlayerResponse,
+						playerText);
+				}
 				return SiegeCastlePostprocessContextProfile.Build(new SiegeCastlePostprocessContextFacts(
 					_activeSettlementName,
 					role,
 					replyIsDirectPlayerResponse,
-					CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount,
+					ResolveCastleActionableRegularPrisonerCount(playerText),
 					_castleRecruitedRegularPrisoners,
 					_castleSlaughteredRegularPrisoners,
 					_castleSoldierAppeasementRequired,
@@ -2867,7 +2934,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					CastleAftermathDispositionSessionBridge.GetTerminalAction(role, agent, targetHero),
 					politicalFacts.SpeakerIsClanLeader,
 					politicalFacts.PlayerHasKingdom,
-					politicalFacts.PlayerRulesKingdom));
+					politicalFacts.PlayerRulesKingdom,
+					witnessReaction,
+					reactionToAction));
 			}
 			bool civilian = IsCivilianForIntervention(character);
 			bool destructiveAllowed = IsDestructiveInterventionAllowed();
@@ -3182,12 +3251,13 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			bool prisoner = CastleAftermathRuntimeBridge.IsPrisonerAgent(targetAgent);
 			bool lord = prisoner && (CastleAftermathRuntimeBridge.IsLordPrisonerAgent(targetAgent) || resolvedHero?.IsLord == true || resolvedCharacter?.IsHero == true);
 			SiegeCastleActionSpeakerRole role = SiegeCastleActionSpeakerRoleProfile.Resolve(alliedSoldier, prisoner, lord);
+			bool witnessReaction = TryGetPendingCastleSoldierReactionAction(targetAgentIndex, out SiegeCastleActionKind reactionToAction);
 			CastleAftermathLordPoliticalFacts politicalFacts = CastleAftermathLordRecruitmentRuntimeBridge.GetPoliticalFacts(resolvedHero);
 			SiegeCastleActionRoutingDecision decision = SiegeCastleActionRoutingPolicy.Evaluate(new SiegeCastleActionRoutingFacts(
 				text,
 				role,
 				replyIsDirectPlayerResponse,
-				CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount,
+				ResolveCastleActionableRegularPrisonerCount(playerText),
 				_castleSoldierAppeasementRequired,
 				_castleSoldierAppeasementApplied,
 				playerText,
@@ -3197,7 +3267,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				CastleAftermathDispositionSessionBridge.GetTerminalAction(role, targetAgent, resolvedHero),
 				politicalFacts.SpeakerIsClanLeader,
 				politicalFacts.PlayerHasKingdom,
-				politicalFacts.PlayerRulesKingdom));
+				politicalFacts.PlayerRulesKingdom,
+				witnessReaction,
+				reactionToAction));
 
 			if (decision.IsAllowed)
 			{
@@ -3235,7 +3307,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 							decision.Action,
 							role,
 							targetAgent,
-							resolvedHero);
+							resolvedHero,
+							playerText);
 						if (actionHandled)
 						{
 							ClearPendingCastleDispositionProposal("regular_prisoner_terminal_resolved");
@@ -3254,6 +3327,13 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 						break;
 					case SiegeCastleActionKind.AppeaseSoldiers:
 						actionHandled = ApplyCastleSoldierAppeasement(targetAgentIndex);
+						break;
+					case SiegeCastleActionKind.SoldierDiscontent:
+						actionHandled = RegisterCastleSoldierConcern(
+							reactionToAction,
+							affectedRegularPrisoners: GetPendingCastleSoldierReactionAffectedCount(targetAgentIndex),
+							witnessExpressedDiscontent: true,
+							targetAgentIndex: targetAgentIndex);
 						break;
 				}
 			}
@@ -3379,12 +3459,16 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				RecordInterventionMemory("城堡善待俘虏", lord
 					? "玩家在城堡处置现场向被俘领主 " + (targetHero?.Name?.ToString() ?? "未知领主") + " 提供了物资并禁止虐待。"
 					: "玩家按守军等级向本次带入的普通战俘提供物资，并要求随军士兵不得虐待。 ");
+				TriggerCastleActionWitnessReactions(action, care.AffectedCount, targetAgent?.Index ?? -1);
 				return true;
 			}
 
+			int reactionAffected = lord ? 1 : CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount;
 			CastleAftermathArmamentResult loot = lord
 				? CastleAftermathArmamentRuntimeBridge.ReceiveLordArmaments(targetHero, "castle_receive_lord_armaments")
-				: CastleAftermathArmamentRuntimeBridge.ReceiveSelectedRegularArmaments("castle_receive_regular_armaments");
+				: CastleAftermathArmamentRuntimeBridge.ReceiveRegularArmaments(
+					CastleAftermathRuntimeBridge.GetSelectedPrisonerRosterSnapshot(),
+					"castle_receive_regular_armaments");
 			if (lord)
 			{
 				CastleAftermathPrisonerTrustRuntimeBridge.AdjustLordTrust(targetHero, SiegeCastlePrisonerTrustProfile.ReceiveArmamentsTrustDelta, "receive_lord_armaments");
@@ -3404,6 +3488,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			RecordInterventionMemory("城堡接收军械", lord
 				? "玩家收缴了被俘领主 " + (targetHero?.Name?.ToString() ?? "未知领主") + " 的武器与盔甲。"
 				: "玩家收缴了本次带入普通战俘的军械与随身财物，物品直接进入背包。 ");
+			TriggerCastleActionWitnessReactions(action, reactionAffected, targetAgent?.Index ?? -1);
 			return true;
 		}
 		catch (Exception ex)
@@ -3418,35 +3503,49 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		SiegeCastleActionKind action,
 		SiegeCastleActionSpeakerRole role,
 		Agent targetAgent,
-		Hero targetHero)
+		Hero targetHero,
+		string playerText)
 	{
 		if (!SiegeCastleRegularDispositionStagingProfile.IsStagedAction(action)
 			|| CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount <= 0
-			|| !CastleAftermathDispositionSessionBridge.TryStageRegularTerminalAction(
-				action,
-				role,
-				out SiegeCastleActionKind previousAction))
+			|| (role != SiegeCastleActionSpeakerRole.RegularPrisoner
+				&& role != SiegeCastleActionSpeakerRole.AlliedSoldier))
 		{
 			return false;
 		}
 
-		bool revised = previousAction != SiegeCastleActionKind.Unknown;
-		if (revised)
+		TroopRoster selectedSnapshot = CastleAftermathRuntimeBridge.GetSelectedPrisonerRosterSnapshot();
+		CastleAftermathDispositionSessionBridge.EnsureInitialRegularPrisonerCount(selectedSnapshot);
+		bool resetPlan = SiegeCastlePrisonerAllocationProfile.IsPlanResetRequested(playerText);
+		if (resetPlan)
 		{
-			_castleRegularDispositionRevisionCount++;
+			CastleAftermathRuntimeBridge.CancelRegularPrisonerSlaughter("castle_player_reset_disposition_plan");
+			CastleAftermathDispositionSessionBridge.ResetRegularPlan("player_explicit_revision");
 		}
+
+		TroopRoster available = CastleAftermathDispositionSessionBridge.GetUnassignedRegularRoster(selectedSnapshot);
+		CastleAftermathPrisonerAllocationResult allocation = CastleAftermathPrisonerAllocationRuntimeBridge.Select(
+			available,
+			playerText);
+		if (allocation.Count <= 0)
+		{
+			InformationManager.DisplayMessage(new InformationMessage(
+				"【城堡处置】当前没有未分配的普通战俘；若要推翻旧安排，请明确说反悔、改判或全部重来。",
+				Color.FromUint(SiegeCastleActionOutcomeTextProfile.WarningColor)));
+			return false;
+		}
+
 		_castleRegularDispositionFinalized = false;
-		TroopRoster trustSnapshot = CastleAftermathRuntimeBridge.GetSelectedPrisonerRosterSnapshot();
 		if (!SiegeCastleRegularDispositionStagingProfile.IsDeferredRosterAction(action))
 		{
-			CastleAftermathActionApplyResult result = CastleAftermathActionRuntimeBridge.BeginSlaughterOfSelectedRegularPrisoners();
+			if (!CastleAftermathDispositionSessionBridge.TryStageSlaughterTargets(allocation.Roster, out int stagedTargets))
+			{
+				return false;
+			}
+			CastleAftermathActionApplyResult result = CastleAftermathActionRuntimeBridge.BeginSlaughterOfRegularPrisoners(allocation.Roster);
 			if (!result.Succeeded || result.AffectedCount <= 0)
 			{
-				CastleAftermathDispositionSessionBridge.RestoreRegularTerminalAction(action, previousAction);
-				if (revised)
-				{
-					_castleRegularDispositionRevisionCount = Math.Max(0, _castleRegularDispositionRevisionCount - 1);
-				}
+				CastleAftermathDispositionSessionBridge.RollbackSlaughterTargets(allocation.Roster);
 				return false;
 			}
 			bool autoArmamentsApplied = CastleAftermathDispositionSessionBridge.TryMarkApplied(
@@ -3455,72 +3554,68 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				targetAgent,
 				targetHero);
 			CastleAftermathArmamentResult loot = autoArmamentsApplied
-				? CastleAftermathArmamentRuntimeBridge.ReceiveSelectedRegularArmaments("castle_slaughter_auto_armaments")
+				? CastleAftermathArmamentRuntimeBridge.ReceiveRegularArmaments(allocation.Roster, "castle_slaughter_auto_armaments")
 				: new CastleAftermathArmamentResult(0, 0, 0);
 			if (autoArmamentsApplied)
 			{
 				CastleAftermathPrisonerTrustRuntimeBridge.AdjustRegularTrustForRoster(
-					trustSnapshot,
+					allocation.Roster,
 					SiegeCastlePrisonerTrustProfile.ReceiveArmamentsTrustDelta,
 					"slaughter_auto_armaments");
-				CastleAftermathSettlementRuntimeBridge.QueueAction(SiegeCastleActionKind.ReceiveArmaments, singleLordTarget: false);
+				CastleAftermathSettlementRuntimeBridge.QueueAction(
+					SiegeCastleActionKind.ReceiveArmaments,
+					singleLordTarget: false,
+					result.AffectedCount,
+					CastleAftermathDispositionSessionBridge.InitialRegularPrisonerCount);
 			}
 			InformationManager.DisplayMessage(new InformationMessage(
-				SiegeCastleActionOutcomeTextProfile.BuildSlaughterStartedMessage(result.AffectedCount, previousAction),
+				"【城堡处置】编队1已开始实际攻击指定的 " + result.AffectedCount
+					+ " 名战俘；只有现场死亡者才会从名册扣除。",
 				Color.FromUint(SiegeCastleActionOutcomeTextProfile.DangerColor)));
-			_castleRegularTerminalAction = action;
-			_castleRegularTerminalAffected = 0;
-			_castleRegularTerminalGold = 0;
 			RecordInterventionMemory("城堡普通战俘处置命令",
-				SiegeCastleRegularDispositionStagingProfile.BuildMemoryText(
-					action,
-					previousAction,
-					CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount,
-					_castleSlaughteredRegularPrisoners,
-					_castleRegularDispositionRevisionCount)
-				+ "编队1的随军士兵已经开始攻击 " + result.AffectedCount + " 名尚存普通战俘；"
+				"玩家指定现场屠戮 " + result.AffectedCount + " 名普通战俘（"
+				+ CastleAftermathPrisonerAllocationRuntimeBridge.DescribeRoster(allocation.Roster) + "）；"
+				+ "编队1的随军士兵已经开始真实攻击；"
 				+ (autoArmamentsApplied
 					? "军械已自动收缴 " + loot.ItemCount + " 件。"
 					: "此前已经完成军械收缴，本次没有重复发放战利品。")
 				+ "尚未死亡者不会从名册扣除。");
-			CreateCastleSoldierConcernIfNeeded(action, result.AffectedCount, trustSnapshot);
-			Logger.Log("CastleAftermath", "Staged live castle prisoner slaughter. Previous=" + previousAction
-				+ ", Targets=" + result.AffectedCount + ", Revisions=" + _castleRegularDispositionRevisionCount);
+			TriggerCastleActionWitnessReactions(action, result.AffectedCount, targetAgent?.Index ?? -1);
+			Logger.Log("CastleAftermath", "Staged live castle prisoner slaughter. Targets=" + result.AffectedCount
+				+ ", Requested=" + stagedTargets + ", SelectionMode=" + allocation.SelectionMode
+				+ ", Revision=" + CastleAftermathDispositionSessionBridge.RevisionCount);
 			return true;
 		}
 
-		if (previousAction == SiegeCastleActionKind.SlaughterPrisoners)
+		if (!CastleAftermathDispositionSessionBridge.TryStageDeferredAllocation(action, allocation.Roster, out int stagedCount))
 		{
-			int restored = CastleAftermathRuntimeBridge.CancelRegularPrisonerSlaughter(
-				"castle_disposition_revised_to_" + action);
-			Logger.Log("CastleAftermath", "Stopped live prisoner slaughter after player revision. NewAction="
-				+ action + ", RestoredSceneSurvivors=" + restored
-				+ ", RosterSurvivors=" + CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount);
+			return false;
 		}
-
-		_castleRegularTerminalAction = action;
-		_castleRegularTerminalAffected = 0;
-		_castleRegularTerminalGold = 0;
-		int survivors = CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount;
+		int unassigned = CastleAftermathDispositionSessionBridge
+			.GetUnassignedRegularRoster(selectedSnapshot)
+			.TotalManCount;
 		RecordInterventionMemory(
 			"城堡普通战俘处置命令",
-			SiegeCastleRegularDispositionStagingProfile.BuildMemoryText(
-				action,
-				previousAction,
-				survivors,
-				_castleSlaughteredRegularPrisoners,
-				_castleRegularDispositionRevisionCount));
+			"玩家暂定将 " + stagedCount + " 名普通战俘（"
+			+ CastleAftermathPrisonerAllocationRuntimeBridge.DescribeRoster(allocation.Roster) + "）安排为“"
+			+ SiegeCastleRegularDispositionStagingProfile.Describe(action) + "”；当前分组计划："
+			+ CastleAftermathDispositionSessionBridge.BuildRegularPlanSummary() + "。尚有 " + unassigned
+			+ " 人未分配，所有暂定组在离场前仍留在场景和俘虏名册。"
+			+ (resetPlan ? "玩家本轮明确推翻了先前对幸存者的安排。" : string.Empty));
 		InformationManager.DisplayMessage(new InformationMessage(
-			SiegeCastleRegularDispositionStagingProfile.BuildStagedMessage(
-				action,
-				previousAction,
-				survivors,
-				_castleRegularDispositionRevisionCount,
-				_castleSlaughteredRegularPrisoners),
+			"【城堡处置】已暂定“" + SiegeCastleRegularDispositionStagingProfile.Describe(action)
+				+ "” " + stagedCount + " 人；未分配 " + unassigned + " 人。离场时才执行。",
 			Color.FromUint(SiegeCastleActionOutcomeTextProfile.SuccessColor)));
-		CreateCastleSoldierConcernIfNeeded(action, survivors, trustSnapshot);
-		string outcome = "action=" + action + ", previous=" + previousAction
-			+ ", survivors=" + survivors + ", revisions=" + _castleRegularDispositionRevisionCount
+		RegisterCastleSoldierConcern(
+			action,
+			stagedCount,
+			witnessExpressedDiscontent: false,
+			targetAgentIndex: targetAgent?.Index ?? -1);
+		TriggerCastleActionWitnessReactions(action, stagedCount, targetAgent?.Index ?? -1);
+		string outcome = "action=" + action + ", staged=" + stagedCount
+			+ ", unassigned=" + unassigned + ", selectionMode=" + allocation.SelectionMode
+			+ ", quantityReason=" + (allocation.Quantity?.ReasonCode ?? "N/A")
+			+ ", revisions=" + CastleAftermathDispositionSessionBridge.RevisionCount
 			+ ", rosterMutation=deferred_until_exit";
 		Logger.Log("CastleAftermath", "Staged castle regular prisoner disposition. " + outcome);
 		GcczDiagnosticLog.Log("CastleOutcome", outcome);
@@ -3535,93 +3630,72 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 		// Mark first so a retry after native aftermath cannot duplicate roster, gold or yearly effects.
 		_castleRegularDispositionFinalized = true;
-		SiegeCastleActionKind action = CastleAftermathDispositionSessionBridge.GetTerminalAction(
-			SiegeCastleActionSpeakerRole.RegularPrisoner,
-			null,
-			null);
-		if (!SiegeCastleRegularDispositionStagingProfile.IsStagedAction(action))
+		IReadOnlyList<CastleAftermathRegularDispositionAllocation> allocations =
+			CastleAftermathDispositionSessionBridge.GetDeferredAllocations();
+		if (_castleSlaughteredRegularPrisoners > 0)
 		{
-			Logger.Log("CastleAftermath", "No staged regular-prisoner disposition to finalize. Source="
-				+ (source ?? "N/A"));
+			CastleAftermathDispositionSessionBridge.RecordFinalizedRegularOutcome(
+				SiegeCastleActionKind.SlaughterPrisoners,
+				_castleSlaughteredRegularPrisoners,
+				0);
+		}
+		if (allocations.Count == 0)
+		{
+			Logger.Log("CastleAftermath", "No deferred regular-prisoner groups to finalize. ActualSlaughtered="
+				+ _castleSlaughteredRegularPrisoners + ", Source=" + (source ?? "N/A"));
 			return;
 		}
 
-		_castleRegularTerminalAction = action;
-		_castleRegularTerminalGold = 0;
-		if (!SiegeCastleRegularDispositionStagingProfile.IsDeferredRosterAction(action))
+		foreach (CastleAftermathRegularDispositionAllocation allocation in allocations)
 		{
-			_castleRegularTerminalAffected = _castleSlaughteredRegularPrisoners;
-			RecordInterventionMemory(
-				"城堡普通战俘离场结算",
-				"最终命令为现场屠戮；只结算已经实际死亡的 " + _castleSlaughteredRegularPrisoners
-				+ " 人，尚存 " + CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount
-				+ " 人继续保持主队俘虏身份，不会因离场被自动刷没。 ");
-			Logger.Log("CastleAftermath", "Finalized live slaughter by actual deaths only. Killed="
-				+ _castleSlaughteredRegularPrisoners + ", Remaining="
-				+ CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount + ", Source=" + (source ?? "N/A"));
-			return;
-		}
+			SiegeCastleActionKind action = allocation.Action;
+			CastleAftermathActionApplyResult result = action switch
+			{
+				SiegeCastleActionKind.ReleasePrisoners => CastleAftermathActionRuntimeBridge.ReleaseRegularPrisoners(allocation.Roster),
+				SiegeCastleActionKind.SellPrisoners => CastleAftermathActionRuntimeBridge.SellRegularPrisoners(allocation.Roster),
+				SiegeCastleActionKind.RecruitPrisonersVoluntary => CastleAftermathActionRuntimeBridge.RecruitRegularPrisoners(allocation.Roster),
+				SiegeCastleActionKind.RecruitPrisonersForced => CastleAftermathActionRuntimeBridge.RecruitRegularPrisoners(allocation.Roster),
+				SiegeCastleActionKind.LaborPrisonersVoluntary => CastleAftermathActionRuntimeBridge.ResolveRegularPrisonersForSettlementEffect(allocation.Roster, "castle_labor_voluntary_exit"),
+				SiegeCastleActionKind.LaborPrisonersForced => CastleAftermathActionRuntimeBridge.ResolveRegularPrisonersForSettlementEffect(allocation.Roster, "castle_labor_forced_exit"),
+				SiegeCastleActionKind.InstructorPrisonersVoluntary => CastleAftermathActionRuntimeBridge.ResolveRegularPrisonersForSettlementEffect(allocation.Roster, "castle_instructor_voluntary_exit"),
+				SiegeCastleActionKind.InstructorPrisonersForced => CastleAftermathActionRuntimeBridge.ResolveRegularPrisonersForSettlementEffect(allocation.Roster, "castle_instructor_forced_exit"),
+				_ => CastleAftermathActionApplyResult.Failed("unsupported_deferred_terminal_action", CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount)
+			};
 
-		TroopRoster trustSnapshot = CastleAftermathRuntimeBridge.GetSelectedPrisonerRosterSnapshot();
-		CastleAftermathActionApplyResult result = action switch
-		{
-			SiegeCastleActionKind.ReleasePrisoners => CastleAftermathActionRuntimeBridge.ReleaseSelectedRegularPrisoners(),
-			SiegeCastleActionKind.SellPrisoners => CastleAftermathActionRuntimeBridge.SellSelectedRegularPrisoners(),
-			SiegeCastleActionKind.RecruitPrisonersVoluntary => CastleAftermathActionRuntimeBridge.RecruitSelectedRegularPrisoners(),
-			SiegeCastleActionKind.RecruitPrisonersForced => CastleAftermathActionRuntimeBridge.RecruitSelectedRegularPrisoners(),
-			SiegeCastleActionKind.LaborPrisonersVoluntary => CastleAftermathActionRuntimeBridge.ResolveSelectedRegularPrisonersForSettlementEffect("castle_labor_voluntary_exit"),
-			SiegeCastleActionKind.LaborPrisonersForced => CastleAftermathActionRuntimeBridge.ResolveSelectedRegularPrisonersForSettlementEffect("castle_labor_forced_exit"),
-			SiegeCastleActionKind.InstructorPrisonersVoluntary => CastleAftermathActionRuntimeBridge.ResolveSelectedRegularPrisonersForSettlementEffect("castle_instructor_voluntary_exit"),
-			SiegeCastleActionKind.InstructorPrisonersForced => CastleAftermathActionRuntimeBridge.ResolveSelectedRegularPrisonersForSettlementEffect("castle_instructor_forced_exit"),
-			_ => CastleAftermathActionApplyResult.Failed(
-				"unsupported_deferred_terminal_action",
-				CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount)
-		};
+			if (!result.Succeeded || result.AffectedCount <= 0)
+			{
+				Logger.Log("CastleAftermath", "Deferred castle group affected nobody. Action=" + action
+					+ ", Requested=" + allocation.Roster.TotalManCount + ", Reason=" + result.ReasonCode);
+				continue;
+			}
 
-		_castleRegularTerminalAffected = result.AffectedCount;
-		_castleRegularTerminalGold = result.Gold;
-		if (result.Succeeded && result.AffectedCount > 0)
-		{
 			int trustDelta = ResolveCastleRegularTerminalTrustDelta(action);
 			CastleAftermathPrisonerTrustRuntimeBridge.AdjustRegularTrustForRoster(
-				trustSnapshot,
+				allocation.Roster,
 				trustDelta,
 				"terminal_exit_" + action);
-			CastleAftermathSettlementRuntimeBridge.QueueAction(action, singleLordTarget: false);
+			CastleAftermathSettlementRuntimeBridge.QueueAction(
+				action,
+				singleLordTarget: false,
+				result.AffectedCount,
+				CastleAftermathDispositionSessionBridge.InitialRegularPrisonerCount);
+			CastleAftermathDispositionSessionBridge.RecordFinalizedRegularOutcome(action, result.AffectedCount, result.Gold);
 			if (SiegeCastleActionKindProfile.IsRecruitment(action))
 			{
 				_castleRecruitedRegularPrisoners += result.AffectedCount;
 			}
 			RecordInterventionMemory(
 				"城堡普通战俘离场结算",
-				"离场按最后有效命令“" + SiegeCastleRegularDispositionStagingProfile.Describe(action)
-				+ "”处理了 " + result.AffectedCount + " 名尚存普通战俘；剩余 "
+				"离场按分组计划“" + SiegeCastleRegularDispositionStagingProfile.Describe(action)
+				+ "”处理了 " + result.AffectedCount + " 名普通战俘；剩余 "
 				+ result.RemainingRegularPrisoners + " 名继续保持俘虏身份。 ");
-			InformationManager.DisplayMessage(new InformationMessage(
-				SiegeCastleActionOutcomeTextProfile.BuildTerminalMessage(
-					action,
-					result.AffectedCount,
-					result.RemainingRegularPrisoners,
-					result.Gold),
-				Color.FromUint(SiegeCastleActionOutcomeTextProfile.SuccessColor)));
 			string outcome = "action=" + action + ", affected=" + result.AffectedCount
 				+ ", remaining=" + result.RemainingRegularPrisoners + ", gold=" + result.Gold
-				+ ", trustDelta=" + trustDelta + ", revisions=" + _castleRegularDispositionRevisionCount
+				+ ", trustDelta=" + trustDelta + ", revisions=" + CastleAftermathDispositionSessionBridge.RevisionCount
 				+ ", reason=" + result.ReasonCode;
-			Logger.Log("CastleAftermath", "Finalized staged castle regular-prisoner disposition. " + outcome);
+			Logger.Log("CastleAftermath", "Finalized staged castle regular-prisoner group. " + outcome);
 			GcczDiagnosticLog.Log("CastleOutcome", "deferredFinal " + outcome);
-			return;
 		}
-
-		InformationManager.DisplayMessage(new InformationMessage(
-			SiegeCastleActionOutcomeTextProfile.BuildDeferredTerminalFailureMessage(
-				action,
-				result.RemainingRegularPrisoners,
-				result.ReasonCode),
-			Color.FromUint(SiegeCastleActionOutcomeTextProfile.WarningColor)));
-		Logger.Log("CastleAftermath", "Deferred castle regular-prisoner disposition affected nobody. Action="
-			+ action + ", Remaining=" + result.RemainingRegularPrisoners + ", Reason=" + result.ReasonCode
-			+ ", Source=" + (source ?? "N/A"));
 	}
 
 	private static bool ApplyCastleLordTerminalInterface(
@@ -3673,6 +3747,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				+ ", sceneResolved=" + result.SceneResolved;
 			Logger.Log("CastleAftermath", "Applied castle captured-lord sale. " + outcome);
 			GcczDiagnosticLog.Log("CastleLordOutcome", "sale, " + outcome);
+			TriggerCastleActionWitnessReactions(action, 1, targetAgent?.Index ?? -1);
 			return true;
 		}
 
@@ -3699,6 +3774,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			InformationManager.DisplayMessage(new InformationMessage(
 				SiegeCastleActionOutcomeTextProfile.BuildLordExecutionQueuedMessage(targetHero.Name?.ToString()),
 				Color.FromUint(SiegeCastleActionOutcomeTextProfile.DangerColor)));
+			TriggerCastleActionWitnessReactions(action, 1, targetAgent.Index);
 			return true;
 		}
 
@@ -3756,6 +3832,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				+ ", status=" + result.StatusText;
 			Logger.Log("CastleAftermath", "Applied castle lord recruitment. " + outcome);
 			GcczDiagnosticLog.Log("CastleLordOutcome", outcome);
+			TriggerCastleActionWitnessReactions(action, 1, targetAgent?.Index ?? -1);
 			return true;
 		}
 		catch (Exception ex)
@@ -3814,38 +3891,146 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		};
 	}
 
-	private static void CreateCastleSoldierConcernIfNeeded(
+	private static bool RegisterCastleSoldierConcern(
 		SiegeCastleActionKind action,
-		int affected,
-		TroopRoster prisonerSnapshot)
+		int affectedRegularPrisoners,
+		bool witnessExpressedDiscontent,
+		int targetAgentIndex)
 	{
-		int alliedSoldiers = CountActiveAlliedInterventionSoldiers();
-		IEnumerable<string> prisonerCultures = prisonerSnapshot?.GetTroopRoster()
-			.Where(element => element.Character != null && !element.Character.IsHero
-				&& element.Number > 0 && !string.IsNullOrWhiteSpace(element.Character.Culture?.StringId))
-			.Select(element => element.Character.Culture.StringId)
-			?? Enumerable.Empty<string>();
-		var prisonerCultureIds = new HashSet<string>(prisonerCultures, StringComparer.OrdinalIgnoreCase);
-		bool sameCulture = prisonerCultureIds.Count > 0
-			&& Mission.Current?.Agents?.Any(agent => agent != null
-				&& agent.IsActive()
-				&& AlliedAgentIndexes.Contains(agent.Index)
-				&& agent.Character is CharacterObject alliedCharacter
-				&& !string.IsNullOrWhiteSpace(alliedCharacter.Culture?.StringId)
-				&& prisonerCultureIds.Contains(alliedCharacter.Culture.StringId)) == true;
-		if (!SiegeCastleSoldierReactionProfile.ShouldRequireAppeasement(action, affected, alliedSoldiers, sameCulture))
+		int penalty = SiegeCastleSoldierReactionProfile.ResolvePendingMoralePenalty(
+			action,
+			witnessExpressedDiscontent);
+		if (penalty <= 0 || CountActiveAlliedInterventionSoldiers() <= 0)
 		{
-			return;
+			return false;
 		}
+
+		bool stronger = penalty > _castleSoldierPendingMoralePenalty;
+		_castleSoldierPendingMoralePenalty = Math.Max(_castleSoldierPendingMoralePenalty, penalty);
 		_castleSoldierAppeasementRequired = true;
 		_castleSoldierAppeasementApplied = false;
 		_castleSoldierAppeasementMoralePenaltyApplied = false;
-		RecordInterventionMemory(
-			SiegeCastleSoldierReactionProfile.NeedMemoryTitle,
-			SiegeCastleSoldierReactionProfile.BuildNeedMemoryText(action, affected));
-		InformationManager.DisplayMessage(new InformationMessage(
-			SiegeCastleSoldierReactionProfile.BuildNeedMessage(action, affected),
-			Color.FromUint(SiegeCastleSoldierReactionProfile.NeedMessageColor)));
+		if (stronger || _castleSoldierConcernAction == SiegeCastleActionKind.Unknown)
+		{
+			_castleSoldierConcernAction = action;
+			RecordInterventionMemory(
+				SiegeCastleSoldierReactionProfile.NeedMemoryTitle,
+				SiegeCastleSoldierReactionProfile.BuildNeedMemoryText(
+					action,
+					affectedRegularPrisoners,
+					_castleSoldierPendingMoralePenalty));
+			InformationManager.DisplayMessage(new InformationMessage(
+				SiegeCastleSoldierReactionProfile.BuildNeedMessage(
+					action,
+					affectedRegularPrisoners,
+					_castleSoldierPendingMoralePenalty),
+				Color.FromUint(SiegeCastleSoldierReactionProfile.NeedMessageColor)));
+		}
+		Logger.Log("CastleAftermath", "Registered castle soldier concern. Action=" + action
+			+ ", Affected=" + affectedRegularPrisoners + ", WitnessDiscontent=" + witnessExpressedDiscontent
+			+ ", PendingPenalty=" + _castleSoldierPendingMoralePenalty + ", Agent=" + targetAgentIndex);
+		return true;
+	}
+
+	private static void TriggerCastleActionWitnessReactions(
+		SiegeCastleActionKind action,
+		int affectedRegularPrisoners,
+		int sourceAgentIndex)
+	{
+		if (!SiegeCastleSoldierReactionProfile.CanReactTo(action)
+			|| !IsActiveInCurrentMission()
+			|| ResolveCurrentSettlement()?.IsCastle != true)
+		{
+			return;
+		}
+		try
+		{
+			List<Agent> active = Mission.Current?.Agents?
+				.Where(agent => agent != null && agent.IsActive())
+				.ToList() ?? new List<Agent>();
+			Agent prisoner = SelectCastleReactionAgent(
+				active.Where(agent => CastleAftermathRuntimeBridge.IsPrisonerAgent(agent)
+					&& !CastleAftermathRuntimeBridge.IsLordPrisonerAgent(agent)
+					&& (agent.Character as CharacterObject)?.IsHero != true),
+				sourceAgentIndex);
+			Agent allied = SelectCastleReactionAgent(
+				active.Where(agent =>
+				{
+					CharacterObject character = agent.Character as CharacterObject;
+					return IsRuntimeAlliedSoldierAgent(agent, character, character?.HeroObject);
+				}),
+				sourceAgentIndex);
+			string playerName = ResolvePlayerCharacterNameForContext();
+			string actionText = SiegeCastleSoldierReactionProfile.DescribeConcernAction(action);
+			if (prisoner != null)
+			{
+				string prisonerFact = "【城堡处置见证反应】" + playerName + "刚决定对 "
+					+ Math.Max(0, affectedRegularPrisoners) + " 名战俘执行“" + actionText
+					+ "”。你是仍在现场的普通守军俘虏，请只按自身处境和性格自由说一句，可以恐惧、庆幸、愤怒、求生或沉默服从；不得把发言变成新的处置提议或结算。";
+				ShoutBehavior.TriggerImmediateSceneBehaviorReactionForExternal(
+					prisonerFact,
+					prisoner.Index,
+					persistHeroPrivateHistory: true,
+					suppressStare: true,
+					postSpeechLeaveSeconds: -1f);
+			}
+
+			if (allied != null)
+			{
+				bool sameCulture = DoesAlliedAgentCultureMatchAnySelectedPrisoner(allied);
+				string soldierFact = SiegeCastleSoldierReactionProfile.BuildWitnessFact(
+					playerName,
+					action,
+					affectedRegularPrisoners,
+					sameCulture);
+				lock (CastleSoldierReactionLock)
+				{
+					PendingCastleSoldierReactionActions[allied.Index] = action;
+					PendingCastleSoldierReactionAffectedCounts[allied.Index] = Math.Max(0, affectedRegularPrisoners);
+				}
+				if (!ShoutBehavior.TriggerImmediateSceneBehaviorReactionForExternal(
+					soldierFact,
+					allied.Index,
+					persistHeroPrivateHistory: true,
+					suppressStare: true,
+					postSpeechLeaveSeconds: -1f,
+					runSiegeReactionPostprocess: true))
+				{
+					CompleteCastleSoldierReactionForExternal(allied.Index, "trigger_failed");
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CastleAftermath", "Trigger castle action witness reactions failed: " + ex);
+		}
+	}
+
+	private static Agent SelectCastleReactionAgent(IEnumerable<Agent> source, int excludedAgentIndex)
+	{
+		List<Agent> candidates = source?.Where(agent => agent != null && agent.IsActive()).ToList()
+			?? new List<Agent>();
+		if (candidates.Count == 0)
+		{
+			return null;
+		}
+		List<Agent> preferred = candidates.Where(agent => agent.Index != excludedAgentIndex).ToList();
+		List<Agent> pool = preferred.Count > 0 ? preferred : candidates;
+		return pool[MBRandom.RandomInt(pool.Count)];
+	}
+
+	private static bool DoesAlliedAgentCultureMatchAnySelectedPrisoner(Agent allied)
+	{
+		string cultureId = (allied?.Character as CharacterObject)?.Culture?.StringId;
+		if (string.IsNullOrWhiteSpace(cultureId))
+		{
+			return false;
+		}
+		TroopRoster selected = CastleAftermathRuntimeBridge.GetSelectedPrisonerRosterSnapshot();
+		return selected?.GetTroopRoster().Any(element => element.Character != null
+			&& !element.Character.IsHero
+			&& element.Number > 0
+			&& string.Equals(element.Character.Culture?.StringId, cultureId, StringComparison.OrdinalIgnoreCase)) == true;
 	}
 
 	internal static void NotifyCastleRegularPrisonerKilledForExternal(CharacterObject character, Agent affectorAgent)
@@ -3857,6 +4042,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return;
 			}
 			_castleSlaughteredRegularPrisoners++;
+			CastleAftermathDispositionSessionBridge.RecordSlaughterDeath(character);
 			if (!_castleSlaughterConsequencesQueued)
 			{
 				_castleSlaughterConsequencesQueued = true;
@@ -3901,9 +4087,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_castleSoldierAppeasementApplied = true;
 		RecordInterventionMemory(
 			SiegeCastleSoldierReactionProfile.AppeasementMemoryTitle,
-			SiegeCastleSoldierReactionProfile.BuildAppeasementMemoryText());
+			SiegeCastleSoldierReactionProfile.BuildAppeasementMemoryText(_castleSoldierPendingMoralePenalty));
 		InformationManager.DisplayMessage(new InformationMessage(
-			SiegeCastleSoldierReactionProfile.BuildAppeasementMessage(),
+			SiegeCastleSoldierReactionProfile.BuildAppeasementMessage(_castleSoldierPendingMoralePenalty),
 			Color.FromUint(SiegeCastleSoldierReactionProfile.AppeasedMessageColor)));
 		Logger.Log("CastleAftermath", "Applied castle soldier appeasement tag. TargetAgent=" + targetAgentIndex
 			+ ", Recruited=" + _castleRecruitedRegularPrisoners);
@@ -3923,18 +4109,16 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 
 			_castleSoldierAppeasementMoralePenaltyApplied = true;
-			MobileParty.MainParty.RecentEventsMorale -= SiegeCastleSoldierReactionProfile.UnappeasedMoralePenalty;
+			_castleSoldierAppliedMoralePenalty = Math.Max(0, _castleSoldierPendingMoralePenalty);
+			MobileParty.MainParty.RecentEventsMorale -= _castleSoldierAppliedMoralePenalty;
 			RecordInterventionMemory(
 				SiegeCastleSoldierReactionProfile.PenaltyMemoryTitle,
-				SiegeCastleSoldierReactionProfile.BuildPenaltyMemoryText());
-			InformationManager.DisplayMessage(new InformationMessage(
-				SiegeCastleSoldierReactionProfile.BuildPenaltyMessage(),
-				Color.FromUint(SiegeCastleSoldierReactionProfile.PenaltyMessageColor)));
+				SiegeCastleSoldierReactionProfile.BuildPenaltyMemoryText(_castleSoldierAppliedMoralePenalty));
 		Logger.Log("CastleAftermath", "Applied unappeased castle prisoner-disposition morale penalty -"
-				+ SiegeCastleSoldierReactionProfile.UnappeasedMoralePenalty
+				+ _castleSoldierAppliedMoralePenalty
 				+ ". MoraleNow=" + MobileParty.MainParty.Morale);
 			GcczDiagnosticLog.Log("CastleOutcome", "appeasement missed moralePenalty=-"
-				+ SiegeCastleSoldierReactionProfile.UnappeasedMoralePenalty
+				+ _castleSoldierAppliedMoralePenalty
 				+ " moraleNow=" + MobileParty.MainParty.Morale);
 		}
 		catch (Exception ex)
@@ -12874,6 +13058,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				if (!_castleNativeMercyApplied)
 				{
 					_castleProsperityBeforeNativeMercy = prosperityBefore;
+					_castleLoyaltyBeforeNativeMercy = settlement.Town.Loyalty;
+					_castleSecurityBeforeNativeMercy = settlement.Town.Security;
 					// Set before entering native code. If a downstream event throws after native
 					// state changed, a retry must finish our bridge without charging mercy twice.
 					_castleNativeMercyApplied = true;
@@ -12886,7 +13072,17 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				float nativeMercyProsperityBefore = _castleProsperityBeforeNativeMercy >= 0f
 					? _castleProsperityBeforeNativeMercy
 					: prosperityBefore;
-				CastleAftermathSettlementRuntimeBridge.ApplyAfterNativeMercy(settlement, nativeMercyProsperityBefore);
+				float nativeMercyLoyaltyBefore = _castleLoyaltyBeforeNativeMercy >= 0f
+					? _castleLoyaltyBeforeNativeMercy
+					: settlement.Town.Loyalty;
+				float nativeMercySecurityBefore = _castleSecurityBeforeNativeMercy >= 0f
+					? _castleSecurityBeforeNativeMercy
+					: settlement.Town.Security;
+				CastleAftermathSettlementRuntimeBridge.ApplyAfterNativeMercy(
+					settlement,
+					nativeMercyProsperityBefore,
+					nativeMercyLoyaltyBefore,
+					nativeMercySecurityBefore);
 				ApplyCastleSoldierAppeasementMoralePenaltyIfNeeded();
 			}
 			else
@@ -13875,40 +14071,41 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 						null,
 						null);
 				string lordOutcomeSummary = CastleAftermathDispositionSessionBridge.GetLordOutcomeSummary();
-				if (!string.IsNullOrWhiteSpace(lordOutcomeSummary) && retainedLordPrisoners > 0)
-				{
-					lordOutcomeSummary += "；另有 " + retainedLordPrisoners + " 人仍保持俘虏身份";
-				}
-				int terminalAffected = _castleRegularTerminalAction == SiegeCastleActionKind.SlaughterPrisoners
-					? _castleSlaughteredRegularPrisoners
-					: _castleRegularTerminalAffected;
+				CastleAftermathSettlementApplyResult settlementResult =
+					CastleAftermathSettlementRuntimeBridge.GetLastAppliedResult();
+				IReadOnlyList<SiegeCastleDispositionSummaryEntry> regularOutcomes =
+					CastleAftermathDispositionSessionBridge.GetFinalizedRegularOutcomes();
 				_completedSummaryText = SiegeCastleCompletedInterventionSummaryBuilder.Build(
 					new SiegeCastleCompletedInterventionSummaryFacts(
 						settlementName,
-						_castleRecruitedRegularPrisoners,
-						_castleSlaughteredRegularPrisoners,
+						ResolvePlayerCharacterNameForContext(),
+						regularOutcomes,
 						remainingRegularPrisoners,
 						retainedLordPrisoners,
+						settlementResult.LoyaltyDelta,
+						settlementResult.SecurityDelta,
+						settlementResult.ProsperityDelta,
+						settlementResult.SettlementTrustDelta,
+						settlementResult.VillageTrustDelta,
+						settlementResult.NotableRelationDelta,
+						settlementResult.NotableTrustDelta,
 						_castleSoldierAppeasementRequired,
 						_castleSoldierAppeasementApplied,
-						_castleSoldierAppeasementMoralePenaltyApplied,
-						_castleRegularTerminalAction,
-						terminalAffected,
-						_castleRegularTerminalGold,
+						_castleSoldierAppliedMoralePenalty,
+						_castleSoldierConcernAction,
 						regularActions.Contains(SiegeCastleActionKind.TreatPrisoners),
 						regularActions.Contains(SiegeCastleActionKind.ReceiveArmaments),
 						lordOutcomeSummary));
 				GcczDiagnosticLog.Log("CastleOutcome", "summary settlement=" + (settlement?.StringId ?? _completedSettlementId ?? "N/A")
-					+ " recruited=" + _castleRecruitedRegularPrisoners
-					+ " slaughtered=" + _castleSlaughteredRegularPrisoners
-					+ " terminal=" + _castleRegularTerminalAction
-					+ " terminalAffected=" + terminalAffected
-					+ " terminalGold=" + _castleRegularTerminalGold
+					+ " outcomes=" + string.Join(",", regularOutcomes.Select(entry => entry.Action + ":" + entry.AffectedCount))
 					+ " remainingRegular=" + remainingRegularPrisoners
 					+ " retainedLords=" + retainedLordPrisoners
+					+ " loyaltyDelta=" + settlementResult.LoyaltyDelta
+					+ " securityDelta=" + settlementResult.SecurityDelta
+					+ " prosperityDelta=" + settlementResult.ProsperityDelta
 					+ " appeasementRequired=" + _castleSoldierAppeasementRequired
 					+ " appeasementApplied=" + _castleSoldierAppeasementApplied
-					+ " moralePenaltyApplied=" + _castleSoldierAppeasementMoralePenaltyApplied);
+					+ " moralePenaltyApplied=" + _castleSoldierAppliedMoralePenalty);
 				return;
 			}
 			bool culturalRepopulationApplied = _culturalRepopulationRequested || _culturalRepopulationApplied;
@@ -14765,19 +14962,25 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_soldierAppeasementMoralePenaltyApplied = false;
 		_castleRecruitedRegularPrisoners = 0;
 		_castleSlaughteredRegularPrisoners = 0;
-		_castleRegularTerminalAction = SiegeCastleActionKind.Unknown;
-		_castleRegularTerminalAffected = 0;
-		_castleRegularTerminalGold = 0;
-		_castleRegularDispositionRevisionCount = 0;
 		_castleRegularDispositionFinalized = false;
 		_castleSoldierAppeasementRequired = false;
 		_castleSoldierAppeasementApplied = false;
 		_castleSoldierAppeasementMoralePenaltyApplied = false;
+		_castleSoldierPendingMoralePenalty = 0;
+		_castleSoldierAppliedMoralePenalty = 0;
+		_castleSoldierConcernAction = SiegeCastleActionKind.Unknown;
 		_castleSlaughterConsequencesQueued = false;
 		_castleNativeMercyApplied = false;
 		_castleProsperityBeforeNativeMercy = -1f;
+		_castleLoyaltyBeforeNativeMercy = -1f;
+		_castleSecurityBeforeNativeMercy = -1f;
 		_castlePendingDispositionProposal = SiegeCastlePrisonerDispositionKind.None;
 		_castlePendingDispositionProposalAgentIndex = -1;
+		lock (CastleSoldierReactionLock)
+		{
+			PendingCastleSoldierReactionActions.Clear();
+			PendingCastleSoldierReactionAffectedCounts.Clear();
+		}
 		_pendingPositiveNotableRelationDelta = 0;
 		_pendingPositiveNotableRelationIncludesBoundVillages = false;
 		_pendingPositiveNotableRelationReason = "";

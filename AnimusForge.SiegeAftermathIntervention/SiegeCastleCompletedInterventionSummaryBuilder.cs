@@ -1,9 +1,12 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace AnimusForge.SiegeAftermathIntervention;
 
 /// <summary>
-/// Castle-only completion wording. Town civilian, market and cultural outcomes must not enter this summary.
+/// One concise castle completion ledger; it replaces separate native, GCCZ and morale notices.
 /// </summary>
 public static class SiegeCastleCompletedInterventionSummaryBuilder
 {
@@ -11,93 +14,127 @@ public static class SiegeCastleCompletedInterventionSummaryBuilder
     {
         if (facts == null)
         {
-            return "攻城后的城堡处置已经完成，正在结束本次攻城遭遇。";
+            return "【城堡处置结算】原版宽恕与城堡处置已经结算完成。";
         }
 
-        string settlementName = string.IsNullOrWhiteSpace(facts.SettlementName)
-            ? "这座城堡"
-            : facts.SettlementName.Trim();
+        string settlement = Normalize(facts.SettlementName, "这座城堡");
+        string player = Normalize(facts.PlayerName, "玩家");
         var sb = new StringBuilder();
-        sb.AppendLine(settlementName + " 的攻城后城堡处置已经完成。");
-        sb.AppendLine();
-        if (facts.TreatedRegularPrisoners || facts.ReceivedRegularArmaments)
-        {
-            sb.Append("普通战俘流程：");
-            if (facts.TreatedRegularPrisoners)
-            {
-                sb.Append("已善待并约束随军士兵不得虐待");
-            }
-            if (facts.TreatedRegularPrisoners && facts.ReceivedRegularArmaments)
-            {
-                sb.Append("；");
-            }
-            if (facts.ReceivedRegularArmaments)
-            {
-                sb.Append("已接收军械且物品直接入包");
-            }
-            sb.AppendLine("。流程标签保留为信任记忆，但不会替代最终处置。");
-        }
+        sb.Append('【').Append(settlement).Append("·城堡处置结算】").AppendLine();
+        sb.Append("领地：忠诚 ").Append(Signed(facts.LoyaltyDelta))
+            .Append("｜治安 ").Append(Signed(facts.SecurityDelta))
+            .Append("｜繁荣 ").Append(Signed(facts.ProsperityDelta)).AppendLine();
+        sb.Append("战俘：").Append(BuildPrisonerLine(facts)).AppendLine();
+        sb.Append("军心：").Append(BuildMoraleLine(facts, player)).AppendLine();
+        sb.Append("民意：").Append(SiegeCastlePublicOpinionProfile.Build(
+            player,
+            facts.SettlementPublicTrustDelta,
+            facts.BoundVillagePublicTrustDelta,
+            facts.NotableRelationDelta,
+            facts.NotableTrustDelta));
 
-        sb.AppendLine(BuildRegularTerminalLine(facts));
-        if (!string.IsNullOrWhiteSpace(facts.LordOutcomeSummary))
+        if (!string.IsNullOrWhiteSpace(facts.LordOutcomeSummary) || facts.RetainedLordPrisoners > 0)
         {
-            sb.AppendLine("被俘领主：" + facts.LordOutcomeSummary.Trim());
+            sb.AppendLine();
+            sb.Append("领主：");
+            if (!string.IsNullOrWhiteSpace(facts.LordOutcomeSummary))
+            {
+                sb.Append(facts.LordOutcomeSummary.Trim());
+                if (facts.RetainedLordPrisoners > 0)
+                {
+                    sb.Append("；");
+                }
+            }
+            if (facts.RetainedLordPrisoners > 0)
+            {
+                sb.Append(facts.RetainedLordPrisoners).Append(" 人仍为俘虏");
+            }
+            sb.Append('。');
         }
-        else
-        {
-            sb.AppendLine(facts.RetainedLordPrisoners > 0
-                ? "被俘领主：" + facts.RetainedLordPrisoners + " 人保持俘虏身份；普通战俘群体标签不会结算领主。"
-                : "被俘领主：本次没有带入或仍待处置的领主。 ");
-        }
-        sb.AppendLine(BuildMoraleLine(facts));
-        sb.AppendLine();
-        sb.AppendLine("城堡本身已按默认宽恕完成原版围城结算；该结算不覆盖上述战俘名册与军心后果。");
-        sb.AppendLine("正在结束本次攻城遭遇，并进入后续结算。");
         return sb.ToString();
     }
 
-    private static string BuildRegularTerminalLine(SiegeCastleCompletedInterventionSummaryFacts facts)
+    private static string BuildPrisonerLine(SiegeCastleCompletedInterventionSummaryFacts facts)
     {
-        int affected = facts.TerminalAffectedRegularPrisoners;
-        string outcome = facts.RegularTerminalAction switch
+        List<string> parts = facts.RegularPrisonerOutcomes
+            .Where(entry => entry != null && entry.AffectedCount > 0)
+            .Select(DescribeOutcome)
+            .ToList();
+        if (facts.TreatedRegularPrisoners)
         {
-            SiegeCastleActionKind.ReleasePrisoners => "已释放 " + affected + " 人",
-            SiegeCastleActionKind.SellPrisoners => "已贩卖 " + affected + " 人并获得 " + facts.TerminalGold + " 金币",
-            SiegeCastleActionKind.RecruitPrisonersVoluntary => "已自愿收编 " + facts.RecruitedRegularPrisoners + " 人",
-            SiegeCastleActionKind.RecruitPrisonersForced => "已强制收编 " + facts.RecruitedRegularPrisoners + " 人",
-            SiegeCastleActionKind.LaborPrisonersVoluntary => "已按自愿劳役处置 " + affected + " 人",
-            SiegeCastleActionKind.LaborPrisonersForced => "已按强制劳役处置 " + affected + " 人",
-            SiegeCastleActionKind.InstructorPrisonersVoluntary => "已按自愿教官方案处置 " + affected + " 人",
-            SiegeCastleActionKind.InstructorPrisonersForced => "已按强制教官方案处置 " + affected + " 人",
-            SiegeCastleActionKind.SlaughterPrisoners => "场景内实际杀死 " + facts.SlaughteredRegularPrisoners + " 人；未实际死亡者不计入屠戮",
-            _ => facts.RecruitedRegularPrisoners > 0
-                ? "已收编 " + facts.RecruitedRegularPrisoners + " 人"
-                : (facts.SlaughteredRegularPrisoners > 0
-                    ? "场景内实际杀死 " + facts.SlaughteredRegularPrisoners + " 人"
-                    : "没有完成互斥最终处置")
-        };
-        return "普通战俘最终处置：" + outcome + "；带入者中仍有 "
-            + facts.RemainingRegularPrisoners + " 人保持俘虏身份。";
+            parts.Add("已给予物资并禁止虐待");
+        }
+        if (facts.ReceivedRegularArmaments)
+        {
+            parts.Add("已收缴军械入包");
+        }
+        if (facts.RemainingRegularPrisoners > 0)
+        {
+            parts.Add(facts.RemainingRegularPrisoners + " 人仍被关押");
+        }
+        if (parts.Count == 0)
+        {
+            parts.Add("未另作处置，带入者仍保持俘虏身份");
+        }
+        return string.Join("；", parts) + "。";
     }
 
-    private static string BuildMoraleLine(SiegeCastleCompletedInterventionSummaryFacts facts)
+    private static string DescribeOutcome(SiegeCastleDispositionSummaryEntry entry)
     {
-        if (facts.SoldierMoralePenaltyApplied)
+        string count = entry.AffectedCount + " 人";
+        return entry.Action switch
         {
-            return "军心：战俘处置引发不满且未在场景内完成安抚，主队士气已降低 "
-                + SiegeCastleSoldierReactionProfile.UnappeasedMoralePenalty + "。";
-        }
+            SiegeCastleActionKind.ReleasePrisoners => count + "获释",
+            SiegeCastleActionKind.SellPrisoners => count + "被贩卖" + (entry.Gold > 0 ? "（+" + entry.Gold + " 第纳尔）" : string.Empty),
+            SiegeCastleActionKind.RecruitPrisonersVoluntary => count + "自愿加入部队",
+            SiegeCastleActionKind.RecruitPrisonersForced => count + "被强制收编",
+            SiegeCastleActionKind.LaborPrisonersVoluntary => count + "自愿接受劳役安置",
+            SiegeCastleActionKind.LaborPrisonersForced => count + "被送去强制劳役",
+            SiegeCastleActionKind.InstructorPrisonersVoluntary => count + "自愿训练新兵",
+            SiegeCastleActionKind.InstructorPrisonersForced => count + "被强迫训练新兵",
+            SiegeCastleActionKind.SlaughterPrisoners => count + "在现场被杀",
+            _ => count + "完成处置"
+        };
+    }
 
+    private static string BuildMoraleLine(SiegeCastleCompletedInterventionSummaryFacts facts, string player)
+    {
+        string action = SiegeCastleSoldierReactionProfile.DescribeConcernAction(facts.SoldierConcernAction);
+        if (facts.SoldierMoralePenaltyApplied > 0)
+        {
+            return "因 " + player + " 对俘虏执行“" + action
+                + "”，随军士兵表达不满且未获安抚，士气 -" + facts.SoldierMoralePenaltyApplied
+                + BuildRecruitmentMoraleBreakdown(facts.SoldierConcernAction, facts.SoldierMoralePenaltyApplied)
+                + "。";
+        }
         if (facts.SoldierAppeasementRequired && facts.SoldierAppeasementApplied)
         {
-            return "军心：随行士兵已在场景内接受安抚，本次处置不扣除额外士气。";
+            return "随军士兵曾对“" + action + "”表达不满，但已接受 " + player + " 的安抚，本次不扣士气。";
         }
-
-        if (facts.SoldierAppeasementRequired)
-        {
-            return "军心：战俘处置引发的不满尚未完成离场结算。";
-        }
-
-        return "军心：本次处置未形成待安抚事件，不触发额外士气扣除。";
+        return "随军士兵没有形成需要安抚的公开不满，本次不扣额外士气。";
     }
+
+    private static string BuildRecruitmentMoraleBreakdown(SiegeCastleActionKind action, int penalty)
+    {
+        if (action == SiegeCastleActionKind.RecruitPrisonersVoluntary
+            && penalty == SiegeCastleSoldierReactionProfile.VoluntaryRecruitmentTotalPenalty)
+        {
+            return "（收编战俘不满 -30 + 自愿收编处置 -30）";
+        }
+        if (action == SiegeCastleActionKind.RecruitPrisonersForced
+            && penalty == SiegeCastleSoldierReactionProfile.ForcedRecruitmentTotalPenalty)
+        {
+            return "（收编战俘不满 -30 + 强制收编惩罚 -60）";
+        }
+        return string.Empty;
+    }
+
+    private static string Signed(float value)
+    {
+        float normalized = Math.Abs(value) < 0.005f ? 0f : value;
+        return normalized > 0f ? "+" + normalized.ToString("0.##") : normalized.ToString("0.##");
+    }
+
+    private static string Normalize(string value, string fallback)
+        => string.IsNullOrWhiteSpace(value) ? fallback : value.Trim();
 }

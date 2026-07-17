@@ -245,12 +245,12 @@ internal static class CastleAftermathRuntimeBridge
 			+ SelectedRegularPrisonerCount + ", Source=" + (source ?? "N/A"));
 	}
 
-	internal static int BeginRegularPrisonerSlaughter()
+	internal static int BeginRegularPrisonerSlaughter(TroopRoster requestedRoster)
 	{
 		try
 		{
 			return Mission.Current?.GetMissionBehavior<CastleAftermathPrisonerCommandMissionBehavior>()
-				?.BeginRegularPrisonerSlaughter() ?? 0;
+				?.BeginRegularPrisonerSlaughter(requestedRoster) ?? 0;
 		}
 		catch (Exception ex)
 		{
@@ -624,11 +624,18 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 			+ selectedCount + ", Regular=" + _spawnedRegulars + ", Lords=" + _spawnedLords);
 	}
 
-	internal int BeginRegularPrisonerSlaughter()
+	internal int BeginRegularPrisonerSlaughter(TroopRoster requestedRoster)
 	{
 		Mission mission = base.Mission;
 		Team playerTeam = mission?.PlayerTeam ?? Agent.Main?.Team;
-		if (_slaughterActive || mission == null || playerTeam == null)
+		if (_slaughterActive || mission == null || playerTeam == null || requestedRoster == null)
+		{
+			return 0;
+		}
+		var requestedCounts = requestedRoster.GetTroopRoster()
+			.Where(element => element.Character != null && !element.Character.IsHero && element.Number > 0)
+			.ToDictionary(element => element.Character, element => element.Number);
+		if (requestedCounts.Count == 0)
 		{
 			return 0;
 		}
@@ -643,7 +650,11 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 		foreach (KeyValuePair<Agent, bool> pair in _agents.ToList())
 		{
 			Agent agent = pair.Key;
-			if (pair.Value || agent == null || !agent.IsActive())
+			CharacterObject character = (agent?.Origin as PrisonerAgentOrigin)?.Troop as CharacterObject
+				?? agent?.Character as CharacterObject;
+			if (pair.Value || agent == null || !agent.IsActive() || character == null
+				|| !requestedCounts.TryGetValue(character, out int remainingForTroop)
+				|| remainingForTroop <= 0)
 			{
 				continue;
 			}
@@ -663,6 +674,7 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 				agent.SetShouldCatchUpWithFormation(false);
 				agent.UpdateFormationOrders();
 				_slaughterTargets.Add(agent);
+				requestedCounts[character] = remainingForTroop - 1;
 			}
 			catch (Exception ex)
 			{

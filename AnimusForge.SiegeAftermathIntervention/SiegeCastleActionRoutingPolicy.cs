@@ -29,6 +29,14 @@ public static class SiegeCastleActionRoutingPolicy
         }
 
         SiegeCastleActionKind action = actions[0];
+        if (action == SiegeCastleActionKind.SoldierDiscontent)
+        {
+            return facts.IsWitnessReaction
+                && facts.SpeakerRole == SiegeCastleActionSpeakerRole.AlliedSoldier
+                && SiegeCastleSoldierReactionProfile.CanReactTo(facts.ReactionToAction)
+                ? Allow(action, "allied_witness_expressed_discontent")
+                : Block(hasRecognizedAction: true, action, "castle_soldier_witness_reaction_required");
+        }
         if (!facts.ReplyIsDirectPlayerResponse)
         {
             return Block(hasRecognizedAction: true, action, "direct_player_response_required");
@@ -133,10 +141,6 @@ public static class SiegeCastleActionRoutingPolicy
             if (facts.RemainingRegularPrisoners <= 0)
             {
                 return Block(hasRecognizedAction: true, action, "no_regular_prisoners_remaining");
-            }
-            if (facts.IsActionAlreadyApplied(action))
-            {
-                return Block(hasRecognizedAction: true, action, "regular_prisoner_disposition_already_pending");
             }
             if (SiegeCastleActionKindProfile.IsVoluntary(action)
                 && (facts.SpeakerRole != SiegeCastleActionSpeakerRole.RegularPrisoner

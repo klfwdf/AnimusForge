@@ -31,6 +31,7 @@ public static class SiegeCastleActionTagCatalog
     public const string RecruitLordTag = "[ACTION:CASTLE_RECRUIT_LORD]";
     public const string SellLordTag = "[ACTION:CASTLE_SELL_LORD]";
     public const string ExecuteLordTag = "[ACTION:CASTLE_EXECUTE_LORD]";
+    public const string SoldierDiscontentTag = "[ACTION:CASTLE_SOLDIER_DISCONTENT]";
 
     // Broad enough to strip stale castle-prefixed output, but TryParseName remains authoritative.
     public const string AnyActionTagPattern = @"\[ACTION:(?:(?:SIEGE_)?CASTLE_[A-Z_]+|城堡[^\]\r\n]+|善待俘虏|接收军械|收编领主|贩卖领主|处决领主)\]";
@@ -114,7 +115,10 @@ public static class SiegeCastleActionTagCatalog
             ["CASTLE_EXECUTE_LORD"] = SiegeCastleActionKind.ExecuteLord,
             ["SIEGE_CASTLE_EXECUTE_LORD"] = SiegeCastleActionKind.ExecuteLord,
             ["城堡处决领主"] = SiegeCastleActionKind.ExecuteLord,
-            ["处决领主"] = SiegeCastleActionKind.ExecuteLord
+            ["处决领主"] = SiegeCastleActionKind.ExecuteLord,
+            ["CASTLE_SOLDIER_DISCONTENT"] = SiegeCastleActionKind.SoldierDiscontent,
+            ["SIEGE_CASTLE_SOLDIER_DISCONTENT"] = SiegeCastleActionKind.SoldierDiscontent,
+            ["城堡随军士兵不满"] = SiegeCastleActionKind.SoldierDiscontent
         };
 
     private static readonly SiegeCastleActionKind[] CanonicalOrder =
@@ -139,7 +143,8 @@ public static class SiegeCastleActionTagCatalog
         SiegeCastleActionKind.AppeaseSoldiers,
         SiegeCastleActionKind.RecruitLord,
         SiegeCastleActionKind.SellLord,
-        SiegeCastleActionKind.ExecuteLord
+        SiegeCastleActionKind.ExecuteLord,
+        SiegeCastleActionKind.SoldierDiscontent
     };
 
     private static readonly IReadOnlyDictionary<SiegeCastleActionKind, string> KindToCanonicalTag =
@@ -165,7 +170,8 @@ public static class SiegeCastleActionTagCatalog
             [SiegeCastleActionKind.AppeaseSoldiers] = AppeaseSoldiersTag,
             [SiegeCastleActionKind.RecruitLord] = RecruitLordTag,
             [SiegeCastleActionKind.SellLord] = SellLordTag,
-            [SiegeCastleActionKind.ExecuteLord] = ExecuteLordTag
+            [SiegeCastleActionKind.ExecuteLord] = ExecuteLordTag,
+            [SiegeCastleActionKind.SoldierDiscontent] = SoldierDiscontentTag
         };
 
     public static bool TryParseName(string tagName, out SiegeCastleActionKind kind)

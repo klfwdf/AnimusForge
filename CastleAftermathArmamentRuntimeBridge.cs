@@ -16,9 +16,8 @@ namespace AnimusForge;
 /// </summary>
 internal static class CastleAftermathArmamentRuntimeBridge
 {
-	internal static CastleAftermathArmamentResult ReceiveSelectedRegularArmaments(string source)
+	internal static CastleAftermathArmamentResult ReceiveRegularArmaments(TroopRoster selected, string source)
 	{
-		TroopRoster selected = CastleAftermathRuntimeBridge.GetSelectedPrisonerRosterSnapshot();
 		ItemRoster target = PartyBase.MainParty?.ItemRoster;
 		if (selected == null || target == null)
 		{

@@ -32,7 +32,7 @@ public static class SiegeCastleRuntimePromptProfile
 
         if (facts.IsAlliedSoldier)
         {
-            sb.Append("【己方士兵】你服从玩家的现场军令，可以表达疑虑、不满或担忧，但不能抗命、完全反驳玩家或自行处置俘虏。玩家明确下令时，你可以代为执行本次普通战俘群体的善待、接收军械、释放、贩卖、强制收编、强制劳役、强制教官或屠戮；必须严格对应玩家原意，绝不能把农奴、劳役、释放、贩卖、教官或缴械命令改写成收编。没有玩家命令时，你可以建议释放、贩卖、收编、屠戮、劳役或教官方案，但建议只能登记为待确认提议，必须等待玩家明确同意；在授权前不得声称名册、金币、地方效果或战俘生死已经改变。自愿分支只能由战俘本人直接答复。安抚随军士兵是你唯一针对己方军心状态的结算标签。是否产生不满由具体处置、双方文化、强制程度、善待或虐待情况综合判断；同文化屠戮、强制收编等可能触发，累计离场士气惩罚最多仍为-30，不叠加多个标签。");
+            sb.Append("【己方士兵】你服从玩家的现场军令，可以表达疑虑、不满或担忧，但不能抗命、完全反驳玩家或自行处置俘虏。玩家明确下令时，你可以代为执行本次普通战俘群体的善待、接收军械、释放、贩卖、强制收编、强制劳役、强制教官或屠戮；必须严格对应玩家原意，绝不能把农奴、劳役、释放、贩卖、教官或缴械命令改写成收编。没有玩家命令时，你可以建议释放、贩卖、收编、屠戮、劳役或教官方案，但建议只能登记为待确认提议，必须等待玩家明确同意；在授权前不得声称名册、金币、地方效果或战俘生死已经改变。自愿分支只能由战俘本人直接答复。每次有效处置后会随机选择一名普通战俘和一名己方士兵自由评论；只有己方士兵确实表达不满才创建普通待安抚事件，不能因为任何标签都自动不满。收编例外：自愿收编固定形成60点待安抚士气压力，强制收编固定形成90点，场景内安抚可全部免除。多次事件取本场最高值，不按次数无限累加。");
             if (facts.PendingProposalForSpeaker != SiegeCastlePrisonerDispositionKind.None)
             {
                 sb.Append(SiegeCastleSoldierProposalProfile.BuildPendingContext(facts.PendingProposalForSpeaker));
@@ -62,7 +62,7 @@ public static class SiegeCastleRuntimePromptProfile
         {
             sb.Append(facts.IsLord
                 ? "【被俘领主】你可以愤怒、不甘、傲慢、求饶或谈判，但必须承认自己已被控制。善待与接收军械只针对你本人；收编、交给赎金经纪人贩卖与处决也只针对你本人，不能代表普通战俘。玩家明确命令把你交给赎金经纪人时，你只能以当前单体领主身份直接回应；该结算采用原版酒馆实时赎卖价。非族长面对收编谈判时要区分写信引见族长与背叛家族成为同伴；不要擅自宣布已经加入玩家、已经被贩卖或已经被处决。"
-                : "【战俘士兵】你按守城战败、缴械并等待处置的普通守军理解。你可以恐惧、求生、屈服，或请求释放、归顺、劳役赎罪、充当教官，但请求与提议本身绝不代表玩家同意；提议语义必须准确，不能把农奴、缴械、释放或教官说成收编，也不能把可指挥编队误认为已经收编。普通士兵标签按本次带入群体处理：善待和接收军械是可重复对话但单次结算的流程；释放、贩卖、自愿/强制收编、劳役服刑、自愿/强制担任教官在场景内只是可改判的暂定处置，尚存战俘不会立刻消失，玩家离场时才按最后有效命令执行。屠戮会立即开始真实攻击，但只有实际死亡者才扣名册，之后改判只作用于幸存者。劳役与教官离场时直接结算地方年度效果，不代表生成或追踪实际服役单位。自愿结算必须由你明确心甘情愿并满足信任门槛；否则只能是强制分支。求饶闲聊、旁听和未获玩家同意的主动提议不能结算。");
+                : "【战俘士兵】你按守城战败、缴械并等待处置的普通守军理解。你可以恐惧、求生、屈服，或请求释放、归顺、劳役赎罪、充当教官，但请求与提议本身绝不代表玩家同意；提议语义必须准确，不能把农奴、缴械、释放或教官说成收编，也不能把可指挥编队误认为已经收编。善待和接收军械是流程标签；释放、贩卖、自愿/强制收编、劳役服刑、自愿/强制担任教官会按本轮指定数量和兵种登记暂定去向，尚存战俘不会立刻消失，玩家离场时才逐组执行。玩家不说数量时随机挑选，不说兵种时随机选兵；说其余、剩下或全部时作用于当前未分配者。明确反悔或改判才重置幸存者旧计划。屠戮会立即攻击所选目标，只有实际死亡者才扣名册。劳役与教官离场时直接结算地方年度效果，不代表生成或追踪实际服役单位。自愿结算必须由你明确心甘情愿并满足信任门槛；否则只能是强制分支。求饶闲聊、旁听和未获玩家同意的主动提议不能结算。");
             if (facts.IsLord)
             {
                 sb.Append("【当前领主政治事实】个人信任=").Append(facts.SpeakerTrust)
@@ -109,14 +109,22 @@ public static class SiegeCastleRuntimePromptProfile
             }
         }
 
-        if (!facts.IsLord && facts.TerminalActionForTarget != SiegeCastleActionKind.Unknown)
+        if (!facts.IsLord && !string.IsNullOrWhiteSpace(facts.RegularDispositionPlan))
         {
-            sb.Append(SiegeCastleRegularDispositionStagingProfile.BuildPromptState(
-                facts.TerminalActionForTarget,
-                facts.RegularDispositionRevisionCount,
-                facts.SlaughteredRegularPrisoners));
+            sb.Append("【普通战俘当前分组计划】").Append(facts.RegularDispositionPlan.Trim())
+                .Append("。该计划尚未执行名册副作用；所有在场NPC都应记住已分配数量和玩家的改判。未分配战俘仍保持俘虏身份。");
+            if (facts.RegularDispositionRevisionCount > 0)
+            {
+                sb.Append("玩家本场已明确推翻并重置幸存者计划 ")
+                    .Append(facts.RegularDispositionRevisionCount)
+                    .Append(" 次。");
+            }
+            if (facts.SlaughteredRegularPrisoners > 0)
+            {
+                sb.Append("已有 ").Append(facts.SlaughteredRegularPrisoners)
+                    .Append(" 名普通战俘在现场实际死亡且不可复活；后续分组只作用于幸存者。");
+            }
         }
-
         sb.Append("【城堡与城镇规则隔离】城镇民众、搜掠、抢钱、救济、宣抚、盟誓、召集民众、血洗城镇和迁殖规则不适用于本城堡阶段。不要输出或暗示任何城镇 GCCZ 处置标签。城堡专用的战俘收编、屠戮、士兵安抚和领主处置由独立接口处理，不能借用城镇标签代替。")
             .Append("【结算门槛】只有对应角色直接回应玩家本轮明确命令或明确同意时，城堡专用接口才可进入结算候选；运行时只向后处理器提供与当前角色、玩家本轮精确意图和未结状态匹配的标签。NPC主动提出释放、贩卖、收编、屠戮、劳役或教官方案只能登记语义一致的待确认提议，绝不能默认兜底成收编。NPC闲聊、旁听、互相请示或环境短句只能表达态度，不能直接结算处置。一次回复最多结算一个城堡动作。正文自然说话，不要直接打印动作标签、解释内部机制或伪造已经发生的副作用；动作标签只由独立后处理器生成。");
 
@@ -186,7 +194,8 @@ public sealed class SiegeCastleRuntimePromptFacts
         bool speakerIsClanLeader = false,
         bool playerHasKingdom = false,
         bool playerRulesKingdom = false,
-        int regularDispositionRevisionCount = 0)
+        int regularDispositionRevisionCount = 0,
+        string regularDispositionPlan = null)
     {
         CastleName = castleName ?? string.Empty;
         PlayerName = playerName ?? string.Empty;
@@ -210,6 +219,7 @@ public sealed class SiegeCastleRuntimePromptFacts
         PlayerHasKingdom = playerHasKingdom;
         PlayerRulesKingdom = playerRulesKingdom;
         RegularDispositionRevisionCount = regularDispositionRevisionCount < 0 ? 0 : regularDispositionRevisionCount;
+        RegularDispositionPlan = regularDispositionPlan ?? string.Empty;
     }
 
     public static SiegeCastleRuntimePromptFacts Empty => new SiegeCastleRuntimePromptFacts(
@@ -271,4 +281,6 @@ public sealed class SiegeCastleRuntimePromptFacts
     public bool PlayerRulesKingdom { get; }
 
     public int RegularDispositionRevisionCount { get; }
+
+    public string RegularDispositionPlan { get; }
 }

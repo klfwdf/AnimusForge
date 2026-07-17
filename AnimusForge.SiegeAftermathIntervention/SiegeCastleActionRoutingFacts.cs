@@ -19,7 +19,9 @@ public sealed class SiegeCastleActionRoutingFacts
         SiegeCastleActionKind terminalActionForTarget = SiegeCastleActionKind.Unknown,
         bool speakerIsClanLeader = false,
         bool playerHasKingdom = false,
-        bool playerRulesKingdom = false)
+        bool playerRulesKingdom = false,
+        bool isWitnessReaction = false,
+        SiegeCastleActionKind reactionToAction = SiegeCastleActionKind.Unknown)
     {
         RawActionText = rawActionText ?? string.Empty;
         SpeakerRole = speakerRole;
@@ -35,6 +37,8 @@ public sealed class SiegeCastleActionRoutingFacts
         SpeakerIsClanLeader = speakerIsClanLeader;
         PlayerHasKingdom = playerHasKingdom;
         PlayerRulesKingdom = playerRulesKingdom;
+        IsWitnessReaction = isWitnessReaction;
+        ReactionToAction = reactionToAction;
     }
 
     public string RawActionText { get; }
@@ -64,6 +68,10 @@ public sealed class SiegeCastleActionRoutingFacts
     public bool PlayerHasKingdom { get; }
 
     public bool PlayerRulesKingdom { get; }
+
+    public bool IsWitnessReaction { get; }
+
+    public SiegeCastleActionKind ReactionToAction { get; }
 
     public bool IsActionAlreadyApplied(SiegeCastleActionKind action)
     {

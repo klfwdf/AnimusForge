@@ -31645,11 +31645,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	public static bool TriggerImmediateSceneBehaviorReactionForExternal(string factText, int targetAgentIndex, bool persistHeroPrivateHistory = true, bool suppressStare = false, float postSpeechLeaveSeconds = -1f)
+	public static bool TriggerImmediateSceneBehaviorReactionForExternal(string factText, int targetAgentIndex, bool persistHeroPrivateHistory = true, bool suppressStare = false, float postSpeechLeaveSeconds = -1f, bool runSiegeReactionPostprocess = false)
 	{
 		try
 		{
-			return CurrentInstance?.TriggerImmediateSceneBehaviorReaction(factText, targetAgentIndex, persistHeroPrivateHistory, suppressStare, postSpeechLeaveSeconds) ?? false;
+			return CurrentInstance?.TriggerImmediateSceneBehaviorReaction(factText, targetAgentIndex, persistHeroPrivateHistory, suppressStare, postSpeechLeaveSeconds, runSiegeReactionPostprocess: runSiegeReactionPostprocess) ?? false;
 		}
 		catch
 		{
@@ -31814,7 +31814,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		});
 	}
 
-	private bool TriggerImmediateSceneBehaviorReaction(string factText, int targetAgentIndex, bool persistHeroPrivateHistory, bool suppressStare, float postSpeechLeaveSeconds = -1f, bool skipSceneFactRecord = false, bool returnSceneSummonOnTimeout = false, Action onNoSpeech = null)
+	private bool TriggerImmediateSceneBehaviorReaction(string factText, int targetAgentIndex, bool persistHeroPrivateHistory, bool suppressStare, float postSpeechLeaveSeconds = -1f, bool skipSceneFactRecord = false, bool returnSceneSummonOnTimeout = false, Action onNoSpeech = null, bool runSiegeReactionPostprocess = false)
 	{
 		Mission mission = Mission.Current;
 		var agents = mission?.Agents;
@@ -31893,7 +31893,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				bool generated = false;
 				try
 				{
-					generated = await GenerateImmediateSceneBehaviorReactionAsync(npcDataPacket, list, dictionary, suppressStare);
+					generated = await GenerateImmediateSceneBehaviorReactionAsync(npcDataPacket, list, dictionary, suppressStare, factText, runSiegeReactionPostprocess);
 				}
 				catch (Exception ex2)
 				{
@@ -31902,6 +31902,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				finally
 				{
 					FinishImmediateSceneReactionGeneration(npcDataPacket.AgentIndex);
+					if (runSiegeReactionPostprocess)
+					{
+						SiegeAiInterventionBehavior.CompleteCastleSoldierReactionForExternal(
+							npcDataPacket.AgentIndex,
+							generated ? "generated" : "generation_failed");
+					}
 					if (!generated)
 					{
 						QueueImmediateSceneReactionNoSpeechFallback(onNoSpeech);
@@ -34637,7 +34643,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		_stopStaringTime = Math.Max(_stopStaringTime, mission.CurrentTime + PLAYER_DRIVEN_MULTI_SCENE_STARE_HOLD_SECONDS);
 	}
 
-	private async Task<bool> GenerateImmediateSceneBehaviorReactionAsync(NpcDataPacket targetNpc, List<NpcDataPacket> allNpcData, Dictionary<int, Hero> resolvedHeroes, bool suppressStare)
+	private async Task<bool> GenerateImmediateSceneBehaviorReactionAsync(NpcDataPacket targetNpc, List<NpcDataPacket> allNpcData, Dictionary<int, Hero> resolvedHeroes, bool suppressStare, string factText, bool runSiegeReactionPostprocess)
 	{
 		if (targetNpc == null || allNpcData == null || allNpcData.Count == 0)
 		{
@@ -34716,6 +34722,56 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return false;
 		}
 		string text3 = (text2 ?? "").Replace("\r", "").Trim();
+		if (runSiegeReactionPostprocess)
+		{
+			try
+			{
+				text3 = TryRunSceneUnifiedActionPostprocess(
+					contextHero,
+					npcCharacter,
+					targetNpc.AgentIndex,
+					targetNpc.Name,
+					factText ?? string.Empty,
+					factText ?? string.Empty,
+					text3,
+					duelRuleInjected: false,
+					rewardRuleInjected: false,
+					loanRuleInjected: false,
+					kingdomServiceRuleInjected: false,
+					kingdomVassalageRuleInjected: false,
+					kingdomAnnexationRuleInjected: false,
+					lordsHallRuleInjected: false,
+					meetingReleaseRuleInjected: false,
+					vanillaIssueRuleInjected: false,
+					heroJoinPartyRuleInjected: false,
+					sceneMechanismRuleInjected: false,
+					partyTransferRuleInjected: false,
+					voteDealRuleInjected: false,
+					diplomacyRuleInjected: false,
+					worldMapPartyCommandRuleInjected: false,
+					marriageRuleInjected: false,
+					duelStakeOptions: null,
+					kingdomServiceRules: null,
+					sceneMechanismRules: null,
+					sceneSummonTargets: null,
+					sceneGuideTargets: null,
+					siegeInterventionRuleInjected: true,
+					replyIsDirectPlayerResponse: false,
+					chainName: "castle_soldier_witness_reaction");
+				AfGcczShoutBridge.TryProcessActionTags(
+					contextHero,
+					npcCharacter,
+					targetNpc.AgentIndex,
+					ref text3,
+					out _,
+					replyIsDirectPlayerResponse: false,
+					playerText: factText);
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("ShoutBehavior", "[CastleSoldierWitnessPostprocess] failed: " + ex.Message);
+			}
+		}
 		text3 = Regex.Replace(text3, "\\[(?:ACTION:[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|FOL|STP)\\]", "", RegexOptions.IgnoreCase).Trim();
 		text3 = StripNpcNamePrefixSafely(text3, 30);
 		text3 = StripLeakedPromptContentForShout(text3);
