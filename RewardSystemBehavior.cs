@@ -81,6 +81,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	private static readonly PropertyInfo RewardItemObjectItemFlagsProperty = typeof(ItemObject).GetProperty("ItemFlags", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 	private static readonly MethodInfo RewardObjectManagerTryRegisterWithoutInitializationMethod = typeof(MBObjectManager).GetMethod("TryRegisterObjectWithoutInitialization", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 	private static readonly FieldInfo HeroClanBackingField = typeof(Hero).GetField("_clan", BindingFlags.Instance | BindingFlags.NonPublic);
+	private static readonly Regex HeroJoinPlayerPartyTagRegex = new Regex("\\[A:H_J_P_P_([CL])\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
 	public enum SettlementMerchantKind
 	{
@@ -4872,6 +4873,25 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static bool IsHeroPlayerCompanionInMainParty(Hero hero)
+	{
+		try
+		{
+			Clan playerClan = Clan.PlayerClan;
+			MobileParty mainParty = MobileParty.MainParty;
+			return hero != null
+				&& playerClan != null
+				&& mainParty != null
+				&& hero.CompanionOf == playerClan
+				&& hero.Occupation == Occupation.Wanderer
+				&& (hero.PartyBelongedTo == mainParty || IsHeroInParty(hero, mainParty));
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	private static bool TryMoveHeroToPlayerClanAsLordAndMainParty(Hero hero, string reason, out string statusText)
 	{
 		statusText = "";
@@ -4936,7 +4956,60 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void RecordHeroJoinedPlayerClanForExternal(Hero hero, string reason)
+	private static bool TryMoveHeroToPlayerClanAsCompanionAndMainParty(Hero hero, string reason, out string statusText)
+	{
+		statusText = "";
+		try
+		{
+			Clan playerClan = Clan.PlayerClan;
+			MobileParty mainParty = MobileParty.MainParty;
+			if (hero == null)
+			{
+				statusText = "执行失败：缺少要成为玩家同伴的目标英雄。";
+				return false;
+			}
+			if (playerClan == null || mainParty == null)
+			{
+				statusText = "执行失败：玩家家族或玩家队伍不可用。";
+				return false;
+			}
+			if (hero.Clan != null)
+			{
+				hero.Clan = null;
+			}
+			if (hero.Occupation != Occupation.Wanderer)
+			{
+				hero.SetNewOccupation(Occupation.Wanderer);
+			}
+			if (hero.CompanionOf != playerClan)
+			{
+				AddCompanionAction.Apply(playerClan, hero);
+			}
+			if (!hero.IsActive && !hero.IsDead)
+			{
+				TryActivatePromotedCompanionHero(hero, reason);
+			}
+			if (hero.PartyBelongedTo != mainParty && !IsHeroInParty(hero, mainParty))
+			{
+				AddHeroToPartyAction.Apply(hero, mainParty, showNotification: true);
+			}
+			if (!IsHeroPlayerCompanionInMainParty(hero))
+			{
+				statusText = "执行失败：目标英雄未能完成同伴身份或玩家主队归属更新。";
+				return false;
+			}
+			Logger.Log("RewardSystemBehavior", "[HeroJoin] moved_to_player_companion reason=" + (reason ?? "") + " hero=" + (hero.StringId ?? "") + " companionOf=" + (hero.CompanionOf?.StringId ?? "") + " occupation=" + hero.Occupation + " party=" + (hero.PartyBelongedTo?.StringId ?? ""));
+			return true;
+		}
+		catch (Exception ex)
+		{
+			statusText = "执行失败（成为玩家同伴异常）：" + ex.Message;
+			Logger.Log("RewardSystemBehavior", "[HeroJoin] move_to_player_companion_failed reason=" + (reason ?? "") + " hero=" + (hero?.StringId ?? "") + " error=" + ex.Message);
+			return false;
+		}
+	}
+
+	private static void RecordHeroJoinedPlayerClanForExternal(Hero hero, string reason, bool asCompanion = false)
 	{
 		try
 		{
@@ -4952,9 +5025,16 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			string heroName = hero.Name?.ToString() ?? "该英雄";
 			Settlement settlement = Settlement.CurrentSettlement ?? hero.CurrentSettlement ?? MobileParty.MainParty?.CurrentSettlement;
 			string locationText = settlement?.Name?.ToString() ?? "";
-			string stableKey = "player_clan_join:" + heroKey + ":" + GetCampaignDayIndex();
-			MyBehavior.RecordNpcActionForExternal(hero, "你加入了玩家家族，成为玩家家族成员，并随玩家队伍行动。", stableKey + ":npc", "player_clan_join", isMajor: true, isRecent: true, targetHero: Hero.MainHero, settlement: settlement, locationText: locationText, allowNonLordHero: true, won: true);
-			MyBehavior.RecordPlayerActionForExternal("你招募了" + heroName + "加入玩家家族，并随你的队伍行动。", stableKey + ":player", "player_clan_join", isMajor: true, targetHero: hero, settlement: settlement, locationText: locationText, won: true);
+			string actionType = asCompanion ? "player_companion_join" : "player_clan_join";
+			string stableKey = actionType + ":" + heroKey + ":" + GetCampaignDayIndex();
+			string npcFact = asCompanion
+				? "你成为了玩家的同伴，并随玩家队伍行动。"
+				: "你加入了玩家家族，成为玩家家族成员，并随玩家队伍行动。";
+			string playerFact = asCompanion
+				? "你招募了" + heroName + "成为同伴，并随你的队伍行动。"
+				: "你招募了" + heroName + "加入玩家家族，并随你的队伍行动。";
+			MyBehavior.RecordNpcActionForExternal(hero, npcFact, stableKey + ":npc", actionType, isMajor: true, isRecent: true, targetHero: Hero.MainHero, settlement: settlement, locationText: locationText, allowNonLordHero: true, won: true);
+			MyBehavior.RecordPlayerActionForExternal(playerFact, stableKey + ":player", actionType, isMajor: true, targetHero: hero, settlement: settlement, locationText: locationText, won: true);
 			Logger.Log("RewardSystemBehavior", "[HeroJoin] action_history_recorded reason=" + (reason ?? "") + " hero=" + heroKey);
 		}
 		catch (Exception ex)
@@ -4964,6 +5044,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	}
 
 	public bool TryApplyHeroJoinPlayerPartyForExternal(Hero joiningHero, out string statusText)
+	{
+		return TryApplyHeroJoinPlayerPartyForExternal(joiningHero, false, out statusText);
+	}
+
+	public bool TryApplyHeroJoinPlayerPartyForExternal(Hero joiningHero, bool asCompanion, out string statusText)
 	{
 		statusText = "";
 		try
@@ -4983,9 +5068,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				statusText = "执行失败：玩家家族或玩家队伍不可用。";
 				return false;
 			}
-			if (IsHeroPlayerClanLordInMainParty(joiningHero))
+			if (asCompanion ? IsHeroPlayerCompanionInMainParty(joiningHero) : IsHeroPlayerClanLordInMainParty(joiningHero))
 			{
-				statusText = $"执行跳过：{joiningHero.Name} 已经是玩家家族成员并在玩家队伍中。";
+				statusText = asCompanion
+					? $"执行跳过：{joiningHero.Name} 已经是玩家同伴并在玩家队伍中。"
+					: $"执行跳过：{joiningHero.Name} 已经是玩家家族成员并在玩家队伍中。";
 				return false;
 			}
 			MobileParty originalMobileParty = joiningHero.PartyBelongedTo;
@@ -5039,7 +5126,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				LeaveSettlementAction.ApplyForCharacterOnly(joiningHero);
 			}
-			if (!TryMoveHeroToPlayerClanAsLordAndMainParty(joiningHero, "hero_join_party", out statusText))
+			bool moved = asCompanion
+				? TryMoveHeroToPlayerClanAsCompanionAndMainParty(joiningHero, "hero_join_party_companion", out statusText)
+				: TryMoveHeroToPlayerClanAsLordAndMainParty(joiningHero, "hero_join_party_lord", out statusText);
+			if (!moved)
 			{
 				return false;
 			}
@@ -5049,8 +5139,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			PlayerEncounter.LocationEncounter?.RemoveAccompanyingCharacter(joiningHero);
 			string transitionSummary = BuildRecruitmentTransitionSummary(transitionNotes);
-			RecordHeroJoinedPlayerClanForExternal(joiningHero, "hero_join_party");
-			statusText = $"执行成功：{joiningHero.Name} 已成为玩家家族成员，并加入玩家队伍{transitionSummary}。";
+			RecordHeroJoinedPlayerClanForExternal(joiningHero, asCompanion ? "hero_join_party_companion" : "hero_join_party_lord", asCompanion);
+			statusText = asCompanion
+				? $"执行成功：{joiningHero.Name} 已成为玩家同伴，并加入玩家队伍{transitionSummary}。"
+				: $"执行成功：{joiningHero.Name} 已成为玩家家族成员，并加入玩家队伍{transitionSummary}。";
 			ScheduleHeroJoinConversationClose(joiningHero, originalParty, originalMobileParty);
 			return true;
 		}
@@ -5084,12 +5176,13 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		Regex regex = new Regex("\\[A:H_J_P_P\\]", RegexOptions.IgnoreCase);
-		if (!regex.IsMatch(responseText))
+		Match joinTagMatch = HeroJoinPlayerPartyTagRegex.Match(responseText);
+		if (!joinTagMatch.Success)
 		{
 			return false;
 		}
-		string latestReplyWithoutTag = regex.Replace(responseText, string.Empty).Trim();
+		bool asCompanion = string.Equals(joinTagMatch.Groups[1].Value, "C", StringComparison.OrdinalIgnoreCase);
+		string latestReplyWithoutTag = HeroJoinPlayerPartyTagRegex.Replace(responseText, string.Empty).Trim();
 		if (requireCurrentConversationRequest && !DoesNativeConversationRequestStillMatch(joiningCharacter, targetAgentIndex, expectedConversationManager, expectedConversationToken, out string staleReason))
 		{
 			responseText = latestReplyWithoutTag;
@@ -5099,13 +5192,15 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		string statusText;
 		Hero promotedHero;
-		bool flag = TryApplyNonHeroJoinPlayerPartyForExternal(joiningCharacter, targetAgentIndex, promptGivenName, promptDisplayName, latestReplyWithoutTag, out statusText, out promotedHero);
+		bool flag = TryApplyNonHeroJoinPlayerPartyForExternal(joiningCharacter, targetAgentIndex, promptGivenName, promptDisplayName, latestReplyWithoutTag, asCompanion, out statusText, out promotedHero);
 		responseText = latestReplyWithoutTag;
 		if (!string.IsNullOrWhiteSpace(statusText))
 		{
 			bool intercepted = !flag && statusText.StartsWith("执行拦截", StringComparison.Ordinal);
+			bool promotedPlayerCompanion = flag && promotedHero != null && promotedHero.CompanionOf == Clan.PlayerClan && promotedHero.Occupation == Occupation.Wanderer;
 			bool promotedPlayerClanLord = flag && promotedHero != null && promotedHero.Clan == Clan.PlayerClan && promotedHero.Occupation == Occupation.Lord;
-			string text = (intercepted ? "【加入队伍】" : (flag ? (promotedPlayerClanLord ? "【加入家族】" : "【加入队伍】") : "【加入队伍失败】")) + statusText;
+			string successPrefix = promotedPlayerCompanion ? "【成为同伴】" : (promotedPlayerClanLord ? "【加入家族】" : "【加入队伍】");
+			string text = (intercepted ? "【加入队伍】" : (flag ? successPrefix : "【加入队伍失败】")) + statusText;
 			string factName = promotedHero?.Name?.ToString() ?? ResolveNonHeroFullDisplayName(joiningCharacter, promptDisplayName, promptGivenName, targetAgentIndex);
 			if (!intercepted)
 			{
@@ -5123,6 +5218,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	}
 
 	public bool TryApplyNonHeroJoinPlayerPartyForExternal(CharacterObject joiningCharacter, int targetAgentIndex, string promptGivenName, string promptDisplayName, string latestReply, out string statusText, out Hero promotedHero)
+	{
+		return TryApplyNonHeroJoinPlayerPartyForExternal(joiningCharacter, targetAgentIndex, promptGivenName, promptDisplayName, latestReply, false, out statusText, out promotedHero);
+	}
+
+	private bool TryApplyNonHeroJoinPlayerPartyForExternal(CharacterObject joiningCharacter, int targetAgentIndex, string promptGivenName, string promptDisplayName, string latestReply, bool asCompanion, out string statusText, out Hero promotedHero)
 	{
 		statusText = "";
 		promotedHero = null;
@@ -5176,7 +5276,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				statusText = $"执行成功：酒馆中 {count} 名{name} 已全部作为普通士兵加入玩家队伍。";
 				return true;
 			}
-			return TryPromoteNonHeroToCompanion(joiningCharacter, targetAgentIndex, promptGivenName, promptDisplayName, latestReply, out statusText, out promotedHero);
+			return TryPromoteNonHeroToCompanion(joiningCharacter, targetAgentIndex, promptGivenName, promptDisplayName, latestReply, asCompanion, out statusText, out promotedHero);
 		}
 		catch (Exception ex)
 		{
@@ -5723,7 +5823,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static bool TryPromoteNonHeroToCompanion(CharacterObject joiningCharacter, int targetAgentIndex, string promptGivenName, string promptDisplayName, string latestReply, out string statusText, out Hero promotedHero)
+	private static bool TryPromoteNonHeroToCompanion(CharacterObject joiningCharacter, int targetAgentIndex, string promptGivenName, string promptDisplayName, string latestReply, bool asCompanion, out string statusText, out Hero promotedHero)
 	{
 		statusText = "";
 		promotedHero = null;
@@ -5782,7 +5882,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			ApplyTemplateSkillsToHero(hero, template);
 			ApplyPromotedCompanionRandomTraits(hero, template);
 			CopyCapturedEquipmentToHero(hero, capturedEquipment);
-			if (!TryMoveHeroToPlayerClanAsLordAndMainParty(hero, "nonhero_join_party_promotion", out statusText))
+			bool moved = asCompanion
+				? TryMoveHeroToPlayerClanAsCompanionAndMainParty(hero, "nonhero_join_party_companion_promotion", out statusText)
+				: TryMoveHeroToPlayerClanAsLordAndMainParty(hero, "nonhero_join_party_lord_promotion", out statusText);
+			if (!moved)
 			{
 				return false;
 			}
@@ -5800,13 +5903,17 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				dialogueHistory.Add((string.IsNullOrWhiteSpace(originalFullName) ? "NPC" : originalFullName) + ": " + cleanLatestReply);
 			}
-			string joinFact = $"{hero.Name} 原为{originalTroopName}，在 {sceneLabel} 同意追随玩家，成为玩家家族成员并加入玩家队伍。";
+			string joinFact = asCompanion
+				? $"{hero.Name} 原为{originalTroopName}，在 {sceneLabel} 同意追随玩家，成为玩家同伴并加入玩家队伍。"
+				: $"{hero.Name} 原为{originalTroopName}，在 {sceneLabel} 同意追随玩家，成为玩家家族成员并加入玩家队伍。";
 			MyBehavior.AppendExternalDialogueHistory(hero, null, null, "[AFEF NPC行为补充] " + joinFact);
-			RecordHeroJoinedPlayerClanForExternal(hero, "nonhero_join_party_promotion");
+			RecordHeroJoinedPlayerClanForExternal(hero, asCompanion ? "nonhero_join_party_companion_promotion" : "nonhero_join_party_lord_promotion", asCompanion);
 			AppendPromotedHeroPriorHistory(hero, dialogueHistory);
 			string equipmentSummary = BuildEquipmentSummaryForPrompt(capturedEquipment);
 			_ = MyBehavior.GeneratePromotedNonHeroCompanionProfileForExternalAsync(hero, personalName, originalFullName, originalTroopName, template.StringId ?? "", cultureName, sceneLabel, joinFact, BuildDialogueHistoryForPrompt(dialogueHistory), equipmentSummary);
-			statusText = $"执行成功：{originalFullName} 已升格为玩家家族 Hero“{hero.Name}”，并加入玩家队伍{(sceneFollowStarted ? "，当前场景中已开始跟随玩家" : "")}。";
+			statusText = asCompanion
+				? $"执行成功：{originalFullName} 已升格为玩家同伴“{hero.Name}”，并加入玩家队伍{(sceneFollowStarted ? "，当前场景中已开始跟随玩家" : "")}。"
+				: $"执行成功：{originalFullName} 已升格为玩家家族 Hero“{hero.Name}”，并加入玩家队伍{(sceneFollowStarted ? "，当前场景中已开始跟随玩家" : "")}。";
 			return true;
 		}
 		finally
@@ -6312,7 +6419,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	private static string StripNonHeroJoinTag(string text)
 	{
-		return Regex.Replace((text ?? "").Replace("\r", ""), "\\[A:H_J_P_P\\]", "", RegexOptions.IgnoreCase).Trim();
+		return HeroJoinPlayerPartyTagRegex.Replace((text ?? "").Replace("\r", ""), "").Trim();
 	}
 
 	private static string BuildCurrentSceneLabelForPrompt()
@@ -15898,7 +16005,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			Regex regexAssetTransferAny = new Regex("\\[ACTION:GIVE_ASSET:[^\\]\\r\\n]*\\]", RegexOptions.IgnoreCase);
 			Regex regex23 = new Regex("\\[AD;(\\d+);(\\d+);(?:(N|P);)?([^\\]]*)\\]", RegexOptions.IgnoreCase);
 			Regex regex24 = new Regex("\\[ADP[:;]([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase);
-			Regex regex25 = new Regex("\\[A:H_J_P_P\\]", RegexOptions.IgnoreCase);
+			Regex regex25 = HeroJoinPlayerPartyTagRegex;
 			Regex regexClanJoinPlayerKingdom = new Regex("\\[A:C_J_P_K\\]", RegexOptions.IgnoreCase);
 			Regex regexClanJoinKingdom = new Regex("\\[A:C_J_K:([a-zA-Z0-9_.\\-]+)\\]", RegexOptions.IgnoreCase);
 			Regex regexPlayerJoinKingdomMercenary = new Regex("\\[A:P_J_K_M\\]", RegexOptions.IgnoreCase);
@@ -15915,7 +16022,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			try
 			{
 				num = Regex.Matches(responseText ?? "", "\\[ACTION:[^\\]]+\\]", RegexOptions.IgnoreCase).Count
-					+ Regex.Matches(responseText ?? "", "\\[A:(?:H_J_P_P|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)\\]", RegexOptions.IgnoreCase).Count;
+					+ Regex.Matches(responseText ?? "", "\\[A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)\\]", RegexOptions.IgnoreCase).Count;
 			}
 			catch
 			{
@@ -16740,26 +16847,32 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				receiverFacts.Add(settlementBatchSummary);
 				Logger.Log("Logic", "[Reward] settlement_batch_done attempted=" + settlementTransferAttempted + " succeeded=" + settlementTransferSucceeded + " failed=" + settlementTransferFailed + " actualValue=" + settlementTransferActualValue);
 			}
-			responseText = regex25.Replace(responseText, delegate
+			responseText = regex25.Replace(responseText, delegate(Match joinMatch)
 			{
 				if (receiver == Hero.MainHero && giver != Hero.MainHero)
 				{
+					bool asCompanion = string.Equals(joinMatch.Groups[1].Value, "C", StringComparison.OrdinalIgnoreCase);
 					string statusText;
-					bool flag2 = TryApplyHeroJoinPlayerPartyForExternal(giver, out statusText);
+					bool flag2 = TryApplyHeroJoinPlayerPartyForExternal(giver, asCompanion, out statusText);
 					if (!string.IsNullOrWhiteSpace(statusText))
 					{
 						if (flag2)
 						{
 							anyHeroJoinPlayerPartyApplied = true;
-							giverFacts.Add($"你已经加入了 {receiverName} 的家族，并随玩家队伍行动。");
-							receiverFacts.Add($"{giverName} 已加入你的家族，并随你的队伍行动。");
+							giverFacts.Add(asCompanion
+								? $"你已经成为 {receiverName} 的同伴，并随玩家队伍行动。"
+								: $"你已经加入了 {receiverName} 的家族，并随玩家队伍行动。");
+							receiverFacts.Add(asCompanion
+								? $"{giverName} 已成为你的同伴，并随你的队伍行动。"
+								: $"{giverName} 已加入你的家族，并随你的队伍行动。");
 						}
 						else
 						{
 							giverFacts.Add(statusText);
 							receiverFacts.Add(statusText);
 						}
-						InformationManager.DisplayMessage(new InformationMessage((flag2 ? "【加入家族】" : "【加入队伍失败】") + statusText, flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
+						string notificationPrefix = flag2 ? (asCompanion ? "【成为同伴】" : "【加入家族】") : "【加入队伍失败】";
+						InformationManager.DisplayMessage(new InformationMessage(notificationPrefix + statusText, flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
 					}
 				}
 				return string.Empty;

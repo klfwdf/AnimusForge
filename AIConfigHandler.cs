@@ -7839,7 +7839,11 @@ public static class AIConfigHandler
 				{
 					continue;
 				}
-				if (!includePersonalJoinRule && string.Equals(text, "[A:H_J_P_P]", StringComparison.OrdinalIgnoreCase))
+				if (!includePersonalJoinRule
+					&& (string.Equals(text, "[A:H_J_P_P_C/L]", StringComparison.OrdinalIgnoreCase)
+						|| string.Equals(text, "[A:H_J_P_P_C&L]", StringComparison.OrdinalIgnoreCase)
+						|| string.Equals(text, "[A:H_J_P_P_C]", StringComparison.OrdinalIgnoreCase)
+						|| string.Equals(text, "[A:H_J_P_P_L]", StringComparison.OrdinalIgnoreCase)))
 				{
 					continue;
 				}

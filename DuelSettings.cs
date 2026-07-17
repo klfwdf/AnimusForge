@@ -618,6 +618,22 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("2. 决斗规则")]
 	public float HealthThreshold { get; set; } = 0.35f;
 
+	[SettingPropertyBool("启用败者家族声望惩罚", Order = 2, RequireRestart = false, HintText = "正式决斗结算后，败者所属家族扣减声望；玩家获胜时扣对手家族，玩家战败时扣玩家家族。不会让声望低于 0，也不会强制降低已经获得的家族等级。")]
+	[SettingPropertyGroup("2. 决斗规则")]
+	public bool EnableDuelLoserClanRenownPenalty { get; set; } = true;
+
+	[SettingPropertyInteger("声望最低扣减", 0, 1000, "0", Order = 3, RequireRestart = false, HintText = "败者家族每次至少扣减的声望。默认 100；若家族剩余声望不足，则最多扣到 0。")]
+	[SettingPropertyGroup("2. 决斗规则")]
+	public int DuelLoserClanRenownPenaltyMinimum { get; set; } = 100;
+
+	[SettingPropertyInteger("按当前声望扣减（%）", 0, 50, "0", Order = 4, RequireRestart = false, HintText = "按败者家族结算前的当前声望计算比例扣减，并与最低扣减取较大值。默认 15%。")]
+	[SettingPropertyGroup("2. 决斗规则")]
+	public int DuelLoserClanRenownPenaltyPercent { get; set; } = 15;
+
+	[SettingPropertyInteger("声望最高扣减", 0, 5000, "0", Order = 5, RequireRestart = false, HintText = "单场决斗最多扣减的家族声望。默认 1000；设为 0 表示不设上限。")]
+	[SettingPropertyGroup("2. 决斗规则")]
+	public int DuelLoserClanRenownPenaltyMaximum { get; set; } = 1000;
+
 	[SettingPropertyText("喊话按键 (仅限单个大写字母)", -1, true, "", Order = 0, RequireRestart = false, HintText = "场景中按住此键预览并扩大喊话范围，松开后打开说话输入框。默认 T。")]
 	[SettingPropertyGroup("3. 场景喊话")]
 	public string ShoutKey { get; set; } = "T";
@@ -2211,6 +2227,33 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			num = 0.95f;
 		}
 		return num;
+	}
+
+	public static bool TryGetDuelRenownPenaltySettings(out int minimum, out int percent, out int maximum)
+	{
+		minimum = 100;
+		percent = 15;
+		maximum = 1000;
+		try
+		{
+			DuelSettings settings = GetSettings();
+			if (settings == null || !settings.EnableDuelLoserClanRenownPenalty)
+			{
+				return false;
+			}
+			minimum = Math.Max(0, Math.Min(1000, settings.DuelLoserClanRenownPenaltyMinimum));
+			percent = Math.Max(0, Math.Min(50, settings.DuelLoserClanRenownPenaltyPercent));
+			maximum = Math.Max(0, Math.Min(5000, settings.DuelLoserClanRenownPenaltyMaximum));
+			if (maximum > 0 && maximum < minimum)
+			{
+				maximum = minimum;
+			}
+			return minimum > 0 || percent > 0;
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	private void OpenPlayerCustomPromptRuleEditor()

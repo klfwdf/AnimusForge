@@ -184,7 +184,14 @@ namespace AnimusForge.Bootstrap
 
             try
             {
-                TaleWorlds.Library.Debug.ShowMessageBox(message, "AnimusForge Bootstrap Error", 16u);
+                // Some Bannerlord builds pass this native dialog through a legacy
+                // code page and turn Chinese UTF-8 text into mojibake.  Keep the
+                // authoritative file/crash log bilingual, but make the emergency
+                // dialog ASCII-only and include the innermost actionable error.
+                TaleWorlds.Library.Debug.ShowMessageBox(
+                    BuildFatalDialogMessage(stage, exception),
+                    "AnimusForge Bootstrap Error",
+                    4u);
             }
             catch
             {
@@ -587,6 +594,13 @@ namespace AnimusForge.Bootstrap
                                 $"AnimusForge requires the managed/native ONNX pair shipped in '{_binDirectory}'.");
                         }
 
+                        // Strong-named framework compatibility assemblies can be unified by
+                        // the CLR to an exact-identity copy in the GAC or another load context.
+                        // FindLoadedAssemblyByIdentity already verified name, version, culture,
+                        // and public-key token, so rejecting that copy only because its path is
+                        // different breaks otherwise compatible player machines.  ONNX remains
+                        // path-strict above because its managed/native binaries must stay paired.
+                        AddResolverOwnedAssemblyPath(loadedLocation);
                         BootstrapLog.Warning(
                             $"Reusing exact private dependency identity '{alreadyLoaded.FullName}' already loaded outside " +
                             $"the AnimusForge module bin from '{loadedLocation}'.");
@@ -610,14 +624,28 @@ namespace AnimusForge.Bootstrap
 
                     if (!PathsEqual(actualLocation, expectedPath))
                     {
-                        throw new FileLoadException(
-                            $"CLR returned private dependency '{simpleName}' from an unexpected path. " +
-                            $"Expected '{expectedPath}', actual '{actualLocation}'.",
-                            expectedPath);
-                    }
+                        if (string.Equals(simpleName, OnnxRuntimeAssemblyName, StringComparison.OrdinalIgnoreCase))
+                        {
+                            throw new FileLoadException(
+                                $"CLR returned private dependency '{simpleName}' from an unexpected path. " +
+                                $"Expected '{expectedPath}', actual '{actualLocation}'.",
+                                expectedPath);
+                        }
 
-                    BootstrapLog.Info(
-                        $"Preloaded private dependency '{loaded.FullName}' from '{actualLocation}'.");
+                        // AssemblyIdentityMatches above is intentionally strict.  When the CLR
+                        // unifies an exact strong-name identity to the GAC, use that compatible
+                        // assembly and register its real path for dependency resolution.
+                        RemoveResolverOwnedAssemblyPath(expectedPath);
+                        AddResolverOwnedAssemblyPath(actualLocation);
+                        BootstrapLog.Warning(
+                            $"CLR unified exact private dependency identity '{loaded.FullName}' from packaged path " +
+                            $"'{expectedPath}' to compatible runtime path '{actualLocation}'.");
+                    }
+                    else
+                    {
+                        BootstrapLog.Info(
+                            $"Preloaded private dependency '{loaded.FullName}' from '{actualLocation}'.");
+                    }
                 }
                 catch (Exception exception)
                 {
@@ -1110,6 +1138,34 @@ namespace AnimusForge.Bootstrap
             builder.AppendLine($"错误 / Error: {exception.GetType().Name}: {exception.Message}");
             builder.Append($"UTF-8 日志 / Log: {BootstrapLog.LogPath}");
             return builder.ToString();
+        }
+
+        private string BuildFatalDialogMessage(string stage, Exception exception)
+        {
+            Exception rootCause = GetInnermostException(exception);
+            StringBuilder builder = new StringBuilder();
+            builder.AppendLine("AnimusForge could not start. Bootstrap stopped loading and will not try the other game-version DLL.");
+            builder.AppendLine($"Stage: {stage}");
+            builder.AppendLine($"Game: {RuntimeVersionText}");
+            builder.AppendLine($"API: {SelectedApiText}");
+            builder.AppendLine($"DLL: {SelectedImplementationPath}");
+            builder.AppendLine($"Error: {exception.GetType().Name}: {exception.Message}");
+            if (!ReferenceEquals(rootCause, exception))
+            {
+                builder.AppendLine($"Root cause: {rootCause.GetType().Name}: {rootCause.Message}");
+            }
+            builder.Append($"UTF-8 log: {BootstrapLog.LogPath}");
+            return builder.ToString();
+        }
+
+        private static Exception GetInnermostException(Exception exception)
+        {
+            Exception current = exception ?? new InvalidOperationException("Unknown Bootstrap error.");
+            for (int depth = 0; depth < 16 && current.InnerException != null; depth++)
+            {
+                current = current.InnerException;
+            }
+            return current;
         }
 
         private static string GetAssemblyLocation(Assembly assembly)

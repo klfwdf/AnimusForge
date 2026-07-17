@@ -42,7 +42,7 @@ internal static class AnimusForgeTagCatalog
 
 	private static readonly object CacheLock = new object();
 
-	private static readonly Regex BracketTagRegex = new Regex("\\[(?:ACTION:[^\\]\\r\\n]{1,180}|A:(?:H_J_P_P|C_J_P_K|C_J_K:[^\\]\\r\\n]{1,120}|P_J_K_[MV]|P_L_K)|AD;[^\\]\\r\\n]{1,180}|ADP[:;][^\\]\\r\\n]{1,120}|ASS:[^\\]\\r\\n]{1,180}|GUI:[^\\]\\r\\n]{1,180}|ATT[:;][^\\]\\r\\n]{1,120}|ATP[:;][^\\]\\r\\n]{1,120}|FOL|STP|END|RELAY:[^\\]\\r\\n]{1,120}|AFEF[^\\]\\r\\n]{1,140}|AF_SCENE_SESSION:[^\\]\\r\\n]{1,80}|CONTENT)\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+	private static readonly Regex BracketTagRegex = new Regex("\\[(?:ACTION:[^\\]\\r\\n]{1,180}|A:(?:H_J_P_P_(?:[CL]|C[/&]L)|C_J_P_K|C_J_K:[^\\]\\r\\n]{1,120}|P_J_K_[MV]|P_L_K)|AD;[^\\]\\r\\n]{1,180}|ADP[:;][^\\]\\r\\n]{1,120}|ASS:[^\\]\\r\\n]{1,180}|GUI:[^\\]\\r\\n]{1,180}|ATT[:;][^\\]\\r\\n]{1,120}|ATP[:;][^\\]\\r\\n]{1,120}|FOL|STP|END|RELAY:[^\\]\\r\\n]{1,120}|AFEF[^\\]\\r\\n]{1,140}|AF_SCENE_SESSION:[^\\]\\r\\n]{1,80}|CONTENT)\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
 	private static AnimusForgeTagCatalogSnapshot _cachedSnapshot;
 
@@ -530,7 +530,10 @@ internal static class AnimusForgeTagCatalog
 			return false;
 		}
 		return text.StartsWith("[ACTION:", StringComparison.OrdinalIgnoreCase)
-			|| text.Equals("[A:H_J_P_P]", StringComparison.OrdinalIgnoreCase)
+			|| text.Equals("[A:H_J_P_P_C/L]", StringComparison.OrdinalIgnoreCase)
+			|| text.Equals("[A:H_J_P_P_C&L]", StringComparison.OrdinalIgnoreCase)
+			|| text.Equals("[A:H_J_P_P_C]", StringComparison.OrdinalIgnoreCase)
+			|| text.Equals("[A:H_J_P_P_L]", StringComparison.OrdinalIgnoreCase)
 			|| text.Equals("[A:C_J_P_K]", StringComparison.OrdinalIgnoreCase)
 			|| text.StartsWith("[A:C_J_K:", StringComparison.OrdinalIgnoreCase)
 			|| text.Equals("[A:P_J_K_M]", StringComparison.OrdinalIgnoreCase)
@@ -574,7 +577,10 @@ internal static class AnimusForgeTagCatalog
 			return "后处理/GCCZ";
 		}
 		if (text.StartsWith("[ACTION:", StringComparison.OrdinalIgnoreCase)
-			|| text.Equals("[A:H_J_P_P]", StringComparison.OrdinalIgnoreCase)
+			|| text.Equals("[A:H_J_P_P_C/L]", StringComparison.OrdinalIgnoreCase)
+			|| text.Equals("[A:H_J_P_P_C&L]", StringComparison.OrdinalIgnoreCase)
+			|| text.Equals("[A:H_J_P_P_C]", StringComparison.OrdinalIgnoreCase)
+			|| text.Equals("[A:H_J_P_P_L]", StringComparison.OrdinalIgnoreCase)
 			|| text.Equals("[A:C_J_P_K]", StringComparison.OrdinalIgnoreCase)
 			|| text.StartsWith("[A:C_J_K:", StringComparison.OrdinalIgnoreCase)
 			|| text.Equals("[A:P_J_K_M]", StringComparison.OrdinalIgnoreCase)
