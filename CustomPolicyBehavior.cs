@@ -4414,11 +4414,11 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		}
 		foreach (PolicyEffectDto effect in effects.Where(x => x != null))
 		{
-			if (string.IsNullOrWhiteSpace(effect.TargetKingdomId))
+			if (IsLocalPolicyRequest(request) || string.IsNullOrWhiteSpace(effect.TargetKingdomId))
 			{
 				effect.TargetKingdomId = request?.PlayerKingdomId ?? "";
 			}
-			if (string.IsNullOrWhiteSpace(effect.TargetKingdomName))
+			if (IsLocalPolicyRequest(request) || string.IsNullOrWhiteSpace(effect.TargetKingdomName))
 			{
 				effect.TargetKingdomName = request?.PlayerKingdomName ?? "";
 			}
