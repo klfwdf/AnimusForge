@@ -38,6 +38,9 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 	private const string SessionStorageKey = "_af_courier_sessions_v1";
 	private const string NpcDiplomacyLetterStorageKey = "_af_courier_npc_diplomacy_letters_v1";
 	private const string CourierLetterInventoryStorageKey = "_af_courier_letter_inventory_v1";
+	private const int CourierLetterVelvetClanTier = 5;
+	private const string CourierLetterLinenTemplateItemId = "linen";
+	private const string CourierLetterVelvetTemplateItemId = "velvet";
 	private const float MobilePartyArrivalDistance = 3.5f;
 	private const float SenderArrivalDistanceSquared = 9f;
 	private const float SettlementArrivalDistanceSquared = 1.44f;
@@ -1507,12 +1510,6 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		{
 		try
 		{
-			long now = DateTime.UtcNow.Ticks;
-			if (now - _lastCampaignTickUtcTicks < TimeSpan.FromSeconds(CampaignTickThrottleSeconds).Ticks)
-			{
-				return;
-			}
-			_lastCampaignTickUtcTicks = now;
 			if (_npcInitiatedLetterScan != null)
 			{
 				using (PerfProbe.Scope("CourierDelivery.OnCampaignTick.ProcessNpcInitiatedLetterScan"))
@@ -1520,6 +1517,12 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 					ProcessNpcInitiatedLetterScan();
 				}
 			}
+			long now = DateTime.UtcNow.Ticks;
+			if (now - _lastCampaignTickUtcTicks < TimeSpan.FromSeconds(CampaignTickThrottleSeconds).Ticks)
+			{
+				return;
+			}
+			_lastCampaignTickUtcTicks = now;
 			if (!_partyNameplatePatchApplied && !_partyNameplatePatchFailed)
 			{
 				using (PerfProbe.Scope("CourierDelivery.OnCampaignTick.PatchPartyNameplate"))
@@ -3372,9 +3375,11 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			string name = string.IsNullOrWhiteSpace(senderName) ? (sender?.Name?.ToString() ?? "NPC") : senderName.Trim();
 			string displayName = BuildCourierLetterInventoryTitle(name, isReply);
 			string identityKey = "courier_letter|" + (session?.Id ?? "") + "|" + displayName + "|" + body;
+			int senderClanTier = Math.Max(0, sender?.Clan?.Tier ?? 0);
+			string templateItemId = senderClanTier >= CourierLetterVelvetClanTier ? CourierLetterVelvetTemplateItemId : CourierLetterLinenTemplateItemId;
 			string itemName = null;
 			string itemStringId = "";
-			int generated = RewardSystemBehavior.GenerateNamedInventoryItemToRosterForExternal(roster, displayName, 1, out itemStringId, out itemName, "courier_letter_inventory", identityKey);
+			int generated = RewardSystemBehavior.GenerateNamedInventoryItemToRosterForExternal(roster, displayName, 1, out itemStringId, out itemName, "courier_letter_inventory", identityKey, templateItemId);
 			if (generated <= 0 || string.IsNullOrWhiteSpace(itemStringId))
 			{
 				Log("courier letter inventory item create failed session=" + (session?.Id ?? "") + " reply=" + isReply);
@@ -3390,7 +3395,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				InformationManager.DisplayMessage(new InformationMessage("信件物品生成了，但未能写入玩家库存。", Colors.Red));
 				return;
 			}
-			RewardSystemBehavior.TryPrimeGeneratedInventoryItemForExternal(itemStringId, displayName, null, objectId, out string normalizedItemStringId, out string templateStringId, out uint normalizedObjectId, "courier_letter_added_prime");
+			RewardSystemBehavior.TryPrimeGeneratedInventoryItemForExternal(itemStringId, displayName, templateItemId, objectId, out string normalizedItemStringId, out string templateStringId, out uint normalizedObjectId, "courier_letter_added_prime");
 			if (!string.IsNullOrWhiteSpace(normalizedItemStringId))
 			{
 				itemStringId = normalizedItemStringId;
@@ -3401,7 +3406,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			}
 			Instance?.RememberCourierLetterInventoryRecord(itemStringId, displayName, body, templateStringId, objectId, sender, name, isReply, after);
 			InformationManager.DisplayMessage(new InformationMessage("信件已放入玩家库存。", Colors.Green));
-			Log("courier letter inventory item added session=" + (session?.Id ?? "") + " item=" + itemStringId + " generated=" + generated + " after=" + after + " reply=" + isReply + " nameLen=" + displayName.Length + " itemName=" + (itemName ?? ""));
+			Log("courier letter inventory item added session=" + (session?.Id ?? "") + " item=" + itemStringId + " generated=" + generated + " after=" + after + " reply=" + isReply + " clanTier=" + senderClanTier + " template=" + templateItemId + " nameLen=" + displayName.Length + " itemName=" + (itemName ?? ""));
 		}
 		catch (Exception ex)
 		{
@@ -3843,7 +3848,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		string extraFact = BuildDeliveryFactText(session, delivered: true, recipient);
 		Log("[MemoryPerf] history_start reason=courier_reply session=" + session.Id + " hero=" + SafeHeroId(recipient) + " mode=background_prepare");
 		System.Diagnostics.Stopwatch historySw = System.Diagnostics.Stopwatch.StartNew();
-		string historyText = (MyBehavior.BuildHistoryContextForExternal(recipient, 24, session.LetterText, extraFact) ?? "").Trim();
+		string historyText = (MyBehavior.BuildHistoryContextForExternal(recipient, DuelSettings.GetDailyConversationHistoryLineLimitForExternal(), session.LetterText, extraFact) ?? "").Trim();
 		historySw.Stop();
 		Log("[MemoryPerf] history_done reason=courier_reply session=" + session.Id + " hero=" + SafeHeroId(recipient) + " chars=" + historyText.Length + " hasValue=" + !string.IsNullOrWhiteSpace(historyText) + " ms=" + Math.Round(historySw.Elapsed.TotalMilliseconds, 2));
 		List<string> preprocessRuleHits = MyBehavior.RunCourierRulePreprocessForExternal(recipient, session.LetterText, extraFact, recipient.CharacterObject, targetAgentIndex: -1, excludedRuleIds: CourierExcludedRuleIds);
@@ -4154,7 +4159,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		string extraFact = BuildInboundDeliveryFactText(session, delivered: false, sender);
 		Log("[MemoryPerf] history_start reason=courier_inbound session=" + session.Id + " hero=" + SafeHeroId(sender) + " mode=background_prepare");
 		System.Diagnostics.Stopwatch historySw = System.Diagnostics.Stopwatch.StartNew();
-		string historyText = (MyBehavior.BuildHistoryContextForExternal(sender, 24, null, extraFact) ?? "").Trim();
+		string historyText = (MyBehavior.BuildHistoryContextForExternal(sender, DuelSettings.GetDailyConversationHistoryLineLimitForExternal(), null, extraFact) ?? "").Trim();
 		historySw.Stop();
 		Log("[MemoryPerf] history_done reason=courier_inbound session=" + session.Id + " hero=" + SafeHeroId(sender) + " chars=" + historyText.Length + " hasValue=" + !string.IsNullOrWhiteSpace(historyText) + " ms=" + Math.Round(historySw.Elapsed.TotalMilliseconds, 2));
 		List<string> preprocessRuleHits = MyBehavior.RunCourierRulePreprocessForExternal(sender, routingInput, extraFact, sender.CharacterObject, targetAgentIndex: -1, excludedRuleIds: CourierExcludedRuleIds);
@@ -6225,7 +6230,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			playerName = Hero.MainHero?.Name?.ToString() ?? "玩家";
 		}
 		string deliveryFact = string.IsNullOrWhiteSpace(deliveryFactForPrompt) ? (session?.DeliveryFactText ?? "") : deliveryFactForPrompt;
-		string history = prebuiltHistory ?? MyBehavior.BuildHistoryContextForExternal(recipient, 24, session.LetterText, deliveryFact);
+		string history = prebuiltHistory ?? MyBehavior.BuildHistoryContextForExternal(recipient, DuelSettings.GetDailyConversationHistoryLineLimitForExternal(), session.LetterText, deliveryFact);
 		string recentFacts = MyBehavior.BuildRecentNpcFactContextForExternal(recipient, 6);
 		string senderIdentity = MyBehavior.BuildPlayerCourierSenderIdentityForExternal(recipient);
 		string senderRelationship = MyBehavior.BuildNpcPlayerKinshipPromptLineForExternal(recipient);
@@ -6297,7 +6302,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			playerName = Hero.MainHero?.Name?.ToString() ?? "玩家";
 		}
 		string fact = string.IsNullOrWhiteSpace(factForPrompt) ? (session?.DeliveryFactText ?? "") : factForPrompt;
-		string history = prebuiltHistory ?? MyBehavior.BuildHistoryContextForExternal(sender, 24, null, fact);
+		string history = prebuiltHistory ?? MyBehavior.BuildHistoryContextForExternal(sender, DuelSettings.GetDailyConversationHistoryLineLimitForExternal(), null, fact);
 		string recentFacts = string.Equals(session?.InboundMotiveType, LetterMotiveStatus, StringComparison.OrdinalIgnoreCase)
 			? MyBehavior.BuildRecentNpcFactContextForExternal(sender, 6)
 			: "";

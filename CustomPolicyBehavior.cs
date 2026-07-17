@@ -147,7 +147,8 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 
 	private const double ActivePolicyMaintenanceDefaultFrameBudgetMs = 3.0;
 
-	private const double ActivePolicyMaintenanceTickIntervalSeconds = 0.25;
+	// Settlement application only updates the active-effect progress ledger. Batch it to avoid serializing the full effect after every settlement.
+	private const int ActivePolicySettlementBatchSize = 12;
 
 	private static readonly ConcurrentQueue<Action> MainThreadActions = new ConcurrentQueue<Action>();
 
@@ -161,6 +162,10 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 
 	private readonly Dictionary<string, ActivePolicyEffectRuntimeEntry> _activePolicyEffectRuntimeCache = new Dictionary<string, ActivePolicyEffectRuntimeEntry>(StringComparer.OrdinalIgnoreCase);
 
+	private readonly Dictionary<string, Settlement> _settlementByIdRuntimeCache = new Dictionary<string, Settlement>(StringComparer.OrdinalIgnoreCase);
+
+	private Campaign _settlementByIdRuntimeCacheCampaign;
+
 	private readonly Dictionary<string, string> _dynamicPolicyRegistry = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
 	private readonly Queue<PendingActivePolicyEffectWork> _pendingActivePolicyEffectWork = new Queue<PendingActivePolicyEffectWork>();
@@ -170,8 +175,6 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 	private int _activePolicyRuntimeGeneration;
 
 	private int _lastActivePolicyScheduledDay = -1;
-
-	private long _nextActivePolicyMaintenanceUtcTicks;
 
 	private bool _generationInProgress;
 
@@ -1771,8 +1774,9 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		_queuedActivePolicyEffectIds.Clear();
 		_activePolicyEffectModelCache.Clear();
 		_activePolicyEffectRuntimeCache.Clear();
+		_settlementByIdRuntimeCache.Clear();
+		_settlementByIdRuntimeCacheCampaign = null;
 		_lastActivePolicyScheduledDay = -1;
-		_nextActivePolicyMaintenanceUtcTicks = 0L;
 		_policySuccessResultVisible = false;
 		_policySuccessResultPolicyObjectId = "";
 		DeferredOriginalPolicyResults.Clear();
@@ -1802,7 +1806,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		}
 		int currentDay = GetCurrentCampaignDay();
 		EnsureActivePolicyEffectWorkScheduled(currentDay);
-		if (_pendingActivePolicyEffectWork.Count > 0 && IsActivePolicyEffectMaintenanceDue())
+		if (_pendingActivePolicyEffectWork.Count > 0)
 		{
 			using (PerfProbe.Scope("CustomPolicy.ProcessActivePolicyEffects"))
 			{
@@ -2751,17 +2755,6 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		EnsureActivePolicyEffectWorkScheduled(GetCurrentCampaignDay());
 	}
 
-	private bool IsActivePolicyEffectMaintenanceDue()
-	{
-		long now = DateTime.UtcNow.Ticks;
-		if (now < _nextActivePolicyMaintenanceUtcTicks)
-		{
-			return false;
-		}
-		_nextActivePolicyMaintenanceUtcTicks = now + TimeSpan.FromSeconds(ActivePolicyMaintenanceTickIntervalSeconds).Ticks;
-		return true;
-	}
-
 	private ActivePolicyEffectSaveData GetActivePolicyEffectForWork(string effectId, string raw)
 	{
 		if (_activePolicyEffectRuntimeCache.TryGetValue(effectId, out ActivePolicyEffectRuntimeEntry entry)
@@ -2924,18 +2917,29 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 			pending.AppliedEffect.DetailLines = pending.AppliedEffect.DetailLines ?? new List<string>();
 			if (pending.NextSettlementIndex < pending.SettlementIds.Count)
 			{
-				string settlementId = pending.SettlementIds[pending.NextSettlementIndex];
-				Settlement settlement = ResolveSettlementById(settlementId);
 				long applyTimestamp = Stopwatch.GetTimestamp();
+				int processedSettlementCount = 0;
+				string lastSettlementId = "";
 				using (PerfProbe.Scope("CustomPolicy.ApplyActiveEffectToKingdom"))
 				{
-					ApplyActiveEffectToSettlement(settlement, activeEffect, pending.AppliedEffect, pending.Day);
+					while (pending.NextSettlementIndex < pending.SettlementIds.Count
+						&& processedSettlementCount < ActivePolicySettlementBatchSize
+						&& (processedSettlementCount == 0 || !IsActivePolicyMaintenanceBudgetExceeded(startTimestamp, budgetMs)))
+					{
+						lastSettlementId = pending.SettlementIds[pending.NextSettlementIndex];
+						Settlement settlement = ResolveSettlementById(lastSettlementId);
+						ApplyActiveEffectToSettlement(settlement, activeEffect, pending.AppliedEffect, pending.Day);
+						pending.NextSettlementIndex++;
+						processedSettlementCount++;
+					}
 				}
-				LogActivePolicyStageIfOverBudget("CustomPolicy.ApplyActiveEffectToKingdom", applyTimestamp, budgetMs, activeEffect.EffectId, settlementId);
-				pending.NextSettlementIndex++;
-				activeEffect.PendingApplication = pending;
-				PersistActivePolicyEffect(key, activeEffect);
-				return;
+				if (processedSettlementCount > 0)
+				{
+					activeEffect.PendingApplication = pending;
+					PersistActivePolicyEffect(key, activeEffect);
+					LogActivePolicyStageIfOverBudget("CustomPolicy.ApplyActiveEffectToKingdom", applyTimestamp, budgetMs, activeEffect.EffectId, lastSettlementId);
+					return;
+				}
 			}
 			AppliedKingdomEffect actual = pending.AppliedEffect;
 			long finalizeApplyTimestamp = Stopwatch.GetTimestamp();
@@ -5516,7 +5520,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		NpcRulerPolicyBehavior.RegisterPlayerPolicyForExternal(unified);
 	}
 
-	private static Settlement ResolveSettlementById(string settlementId)
+	private Settlement ResolveSettlementById(string settlementId)
 	{
 		string id = (settlementId ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(id))
@@ -5525,7 +5529,26 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			return Settlement.All.FirstOrDefault(x => x != null && string.Equals(x.StringId, id, StringComparison.OrdinalIgnoreCase));
+			Campaign campaign = Campaign.Current;
+			if (!ReferenceEquals(_settlementByIdRuntimeCacheCampaign, campaign))
+			{
+				_settlementByIdRuntimeCache.Clear();
+				_settlementByIdRuntimeCacheCampaign = campaign;
+				foreach (Settlement settlement in Settlement.All)
+				{
+					if (!string.IsNullOrWhiteSpace(settlement?.StringId))
+					{
+						_settlementByIdRuntimeCache[settlement.StringId] = settlement;
+					}
+				}
+			}
+			if (_settlementByIdRuntimeCache.TryGetValue(id, out Settlement cachedSettlement))
+			{
+				return cachedSettlement;
+			}
+			Settlement resolvedSettlement = Settlement.All.FirstOrDefault(x => x != null && string.Equals(x.StringId, id, StringComparison.OrdinalIgnoreCase));
+			_settlementByIdRuntimeCache[id] = resolvedSettlement;
+			return resolvedSettlement;
 		}
 		catch
 		{

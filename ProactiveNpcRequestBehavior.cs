@@ -40,6 +40,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 	private const string NeedKingdomVassalInvite = "KingdomVassalInvite";
 	private const string NeedPoliticalAgenda = "PoliticalAgenda";
 	private const string NeedPolicySupport = "PolicySupport";
+	private const string NeedPolicyDiscussion = "PolicyDiscussion";
 	private const string NeedDiplomacy = "Diplomacy";
 	private const string NeedClanCaptive = "ClanCaptive";
 	private const string NeedLowMorale = "LowMorale";
@@ -89,6 +90,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 	private readonly Dictionary<string, BanditSuppressionSnapshotCacheEntry> _banditSuppressionSnapshotsByClan = new Dictionary<string, BanditSuppressionSnapshotCacheEntry>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, SettlementSaleSnapshotCacheEntry> _settlementSaleSnapshotsByClan = new Dictionary<string, SettlementSaleSnapshotCacheEntry>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, PolicySupportSnapshotCacheEntry> _policySupportSnapshotsByClan = new Dictionary<string, PolicySupportSnapshotCacheEntry>(StringComparer.OrdinalIgnoreCase);
+	private PolicyDiscussionSnapshotCacheEntry _policyDiscussionSnapshotCache;
 	private readonly Dictionary<string, ClanCaptiveSnapshotCacheEntry> _clanCaptiveSnapshotsByClan = new Dictionary<string, ClanCaptiveSnapshotCacheEntry>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, FiefGovernanceSnapshotCacheEntry> _fiefGovernanceSnapshotsByClan = new Dictionary<string, FiefGovernanceSnapshotCacheEntry>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, AllySupportSnapshotCacheEntry> _allySupportSnapshotsByClan = new Dictionary<string, AllySupportSnapshotCacheEntry>(StringComparer.OrdinalIgnoreCase);
@@ -141,6 +143,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			_pendingSceneOpening = null;
 			ClearActivePartyCache();
 			_candidateScan = null;
+			_policyDiscussionSnapshotCache = null;
 		}
 		catch (Exception ex)
 		{
@@ -149,6 +152,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			_needTypeFatigueUntilDays = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
 			ClearActivePartyCache();
 			_candidateScan = null;
+			_policyDiscussionSnapshotCache = null;
 			Logger.Log("ProactiveNpcRequest", "load failed: " + ex.Message);
 		}
 	}
@@ -549,7 +553,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		ProactiveCandidate candidate = scan.BestCandidate;
 		if (candidate == null || candidate.Party == null || !candidate.Party.IsActive)
 		{
-			Logger.Log("ProactiveNpcRequest", "scan no candidate: " + scan.Stats.ToLogString());
+			Logger.LogVerbose("ProactiveNpcRequest", "scan_no_candidate", () => "scan no candidate: " + scan.Stats.ToLogString(), 10.0);
 			return;
 		}
 		Logger.Log("ProactiveNpcRequest", "scan selected: triggerSource=" + (candidate.TriggerSource ?? "") + " knownMajorBefore=" + candidate.KnownMajorBeforeRequest + " effectiveNotoriety=" + candidate.EffectiveNotorietyAtRequest + " needChance=" + candidate.NeedDrivenChance.ToString("0.##") + " notorietyChance=" + candidate.NotorietyDrivenChance.ToString("0.##") + " selectedUrgency=" + candidate.SelectedNeedUrgency.ToString("0.##") + " typeWeight=" + candidate.NeedTypeWeightMultiplier.ToString("0.##") + " need=" + (candidate.NeedType ?? "") + " hero=" + (candidate.Hero?.StringId ?? "") + " party=" + (candidate.Party?.StringId ?? "") + " distance=" + candidate.Distance.ToString("0.0") + " scanMs=" + TimeSpan.FromTicks(DateTime.UtcNow.Ticks - scan.StartedAtUtcTicks).TotalMilliseconds.ToString("0") + " stats=" + scan.Stats.ToLogString());
@@ -585,7 +589,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		}
 		float distanceMultiplier = Clamp(settings.ProactiveNpcRequestDistanceMultiplier, 0.5f, 5f);
 		float maxDistance = Math.Max(1f, mainParty.SeeingRange * distanceMultiplier);
-		List<ProactiveCandidate> candidates = new List<ProactiveCandidate>();
+		ProactiveCandidate bestCandidate = null;
 		foreach (MobileParty party in sourceParties ?? MobileParty.AllLordParties ?? Enumerable.Empty<MobileParty>())
 		{
 			stats.TotalLordParties++;
@@ -668,6 +672,11 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 				{
 					stats.Greeting++;
 					needCandidates.Add(greetingCandidate);
+				}
+				if (TryBuildPolicyDiscussionCandidate(candidate, settings, out ProactiveCandidate policyDiscussionCandidate))
+				{
+					stats.PolicyDiscussion++;
+					needCandidates.Add(policyDiscussionCandidate);
 				}
 				if (TryBuildFriendshipCandidate(candidate, settings, out ProactiveCandidate friendshipCandidate))
 				{
@@ -756,16 +765,14 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 				stats.NeedCandidates++;
 				if (TryEvaluateCandidateTrigger(combinedCandidate, settings, stats))
 				{
-					candidates.Add(combinedCandidate);
+					if (IsCandidateBetter(combinedCandidate, bestCandidate))
+					{
+						bestCandidate = combinedCandidate;
+					}
 				}
 			}
 		}
-		return candidates
-			.OrderByDescending(GetCandidateWeightedUrgency)
-			.ThenByDescending(c => c.NeedUrgency)
-			.ThenByDescending(c => c.EffectiveNotorietyAtRequest)
-			.ThenBy(c => c.Distance)
-			.FirstOrDefault();
+		return bestCandidate;
 	}
 
 	private bool TryEvaluateCandidateTrigger(ProactiveCandidate candidate, DuelSettings settings, CandidateScanStats stats)
@@ -866,6 +873,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		AddLetterNeedCandidate(candidates, TryBuildClanFinanceStrainCandidate, source, settings);
 		AddLetterNeedCandidate(candidates, TryBuildClanServiceCandidate, source, settings);
 		AddLetterNeedCandidate(candidates, TryBuildRomanticInteractionCandidate, source, settings);
+		AddLetterNeedCandidate(candidates, TryBuildPolicyDiscussionCandidate, source, settings);
 		AddLetterNeedCandidate(candidates, TryBuildFriendshipCandidate, source, settings);
 		AddLetterNeedCandidate(candidates, TryBuildCourtshipCandidate, source, settings);
 		AddLetterNeedCandidate(candidates, TryBuildArmyJoinRequestCandidate, source, settings);
@@ -1040,6 +1048,19 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		string npcName = candidate?.Hero?.Name?.ToString() ?? "NPC";
 		string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal(candidate?.Hero) ?? Hero.MainHero?.Name?.ToString() ?? "玩家";
 		string needType = NormalizeNeedType(candidate?.NeedType);
+		if (string.Equals(needType, NeedPolicyDiscussion, StringComparison.OrdinalIgnoreCase))
+		{
+			return "[AFEF NPC行为补充] " + npcName + "决定主动写信给" + playerName + "。"
+				+ BuildPolicyDiscussionSituation(new PolicyDiscussionSnapshot
+				{
+					PolicyId = candidate?.PolicyDiscussionPolicyId,
+					PolicyName = candidate?.PolicyDiscussionPolicyName,
+					PolicyContent = candidate?.PolicyDiscussionPolicyContent,
+					KingdomName = candidate?.PolicyDiscussionKingdomName,
+					PublishedDay = candidate?.PolicyDiscussionPublishedDay ?? 0
+				}, npcName, playerName)
+				+ "这是你自己的来意；" + playerName + "尚未答应任何事。";
+		}
 		string evidence = BuildLetterNeedEvidence(candidate, needType);
 		return "[AFEF NPC行为补充] " + npcName + "决定主动写信给" + playerName + "。" + evidence + "这封信只谈这一件眼前事；" + playerName + "尚未答应任何安排。";
 	}
@@ -1084,6 +1105,50 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("ProactiveNpcRequest", "record romantic interaction cooldown failed source=" + (source ?? "") + " error=" + ex.Message);
+		}
+	}
+
+	public static bool TryBuildPolicyDiscussionCompanionMotiveForExternal(Hero hero, out string factText, out string intentText, out float urgency)
+	{
+		factText = "";
+		intentText = "";
+		urgency = 0f;
+		try
+		{
+			return Instance?.TryBuildPolicyDiscussionCompanionMotive(hero, out factText, out intentText, out urgency) == true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ProactiveNpcRequest", "policy discussion companion motive failed hero=" + GetHeroKey(hero) + " error=" + ex.Message);
+			return false;
+		}
+	}
+
+	public static bool IsPolicyDiscussionUnavailableForExternal()
+	{
+		try
+		{
+			ProactiveNpcRequestBehavior instance = Instance;
+			return instance != null
+				&& (instance.GetNeedTypeFatigueRemainingDays(NeedPolicyDiscussion, NowDays()) > 0f
+					|| IsNeedTypeActiveForExternal(NeedPolicyDiscussion)
+					|| CourierDeliveryBehavior.IsInboundNeedTypeReservedForExternal(NeedPolicyDiscussion));
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	public static void RecordPolicyDiscussionForExternal(string source)
+	{
+		try
+		{
+			Instance?.RecordNeedTypeFatigue(NeedPolicyDiscussion, source ?? "policy_discussion");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ProactiveNpcRequest", "record policy discussion cooldown failed source=" + (source ?? "") + " error=" + ex.Message);
 		}
 	}
 
@@ -1146,6 +1211,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		if (string.Equals(needType, NeedClanService, StringComparison.OrdinalIgnoreCase)) return "家族请求效力";
 		if (string.Equals(needType, NeedRomanticInteraction, StringComparison.OrdinalIgnoreCase)) return "亲密互动";
 		if (string.Equals(needType, NeedGreeting, StringComparison.OrdinalIgnoreCase)) return "主动问候";
+		if (string.Equals(needType, NeedPolicyDiscussion, StringComparison.OrdinalIgnoreCase)) return "讨论近来政策";
 		if (string.Equals(needType, NeedFriendship, StringComparison.OrdinalIgnoreCase)) return "主动交友";
 		if (string.Equals(needType, NeedCourtship, StringComparison.OrdinalIgnoreCase)) return "主动求爱";
 		if (string.Equals(needType, NeedArmyJoinRequest, StringComparison.OrdinalIgnoreCase)) return "请求加入军团";
@@ -1393,6 +1459,11 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			PolicySupportEffects = source.PolicySupportEffects,
 			PolicySupportScore = source.PolicySupportScore,
 			PolicySupportHasPendingDecision = source.PolicySupportHasPendingDecision,
+			PolicyDiscussionPolicyId = source.PolicyDiscussionPolicyId,
+			PolicyDiscussionPolicyName = source.PolicyDiscussionPolicyName,
+			PolicyDiscussionPolicyContent = source.PolicyDiscussionPolicyContent,
+			PolicyDiscussionKingdomName = source.PolicyDiscussionKingdomName,
+			PolicyDiscussionPublishedDay = source.PolicyDiscussionPublishedDay,
 			SettlementPurchaseKingdomName = source.SettlementPurchaseKingdomName,
 			SettlementPurchasePlayerTownCount = source.SettlementPurchasePlayerTownCount,
 			SettlementPurchasePlayerCastleCount = source.SettlementPurchasePlayerCastleCount,
@@ -2226,6 +2297,104 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		}
 		candidate.GreetingPrivateRelation = privateRelation;
 		return true;
+	}
+
+	private bool TryBuildPolicyDiscussionCandidate(ProactiveCandidate source, DuelSettings settings, out ProactiveCandidate candidate)
+	{
+		candidate = null;
+		if (source == null
+			|| IsPolicyDiscussionUnavailableForExternal()
+			|| !IsGreetingEligible(source.Hero, out int privateRelation)
+			|| !TryGetRecentPolicyDiscussionSnapshot(out PolicyDiscussionSnapshot snapshot))
+		{
+			return false;
+		}
+		float urgency = Clamp(60f + Math.Max(0, privateRelation - 20) * 0.25f, 0f, 82.5f);
+		candidate = TryBuildNeedCandidate(source, settings, NeedPolicyDiscussion, urgency);
+		if (candidate == null)
+		{
+			return false;
+		}
+		candidate.GreetingPrivateRelation = privateRelation;
+		candidate.PolicyDiscussionPolicyId = snapshot.PolicyId;
+		candidate.PolicyDiscussionPolicyName = snapshot.PolicyName;
+		candidate.PolicyDiscussionPolicyContent = snapshot.PolicyContent;
+		candidate.PolicyDiscussionKingdomName = snapshot.KingdomName;
+		candidate.PolicyDiscussionPublishedDay = snapshot.PublishedDay;
+		return true;
+	}
+
+	private bool TryBuildPolicyDiscussionCompanionMotive(Hero hero, out string factText, out string intentText, out float urgency)
+	{
+		factText = "";
+		intentText = "";
+		urgency = 0f;
+		if (IsPolicyDiscussionUnavailableForExternal()
+			|| !IsGreetingEligible(hero, out int privateRelation)
+			|| !TryGetRecentPolicyDiscussionSnapshot(out PolicyDiscussionSnapshot snapshot))
+		{
+			return false;
+		}
+		urgency = Clamp(60f + Math.Max(0, privateRelation - 20) * 0.25f, 0f, 82.5f);
+		factText = BuildPolicyDiscussionSituation(snapshot, GetHeroDisplayName(hero), MyBehavior.BuildPlayerPublicDisplayNameForExternal(hero));
+		intentText = AIConfigHandler.GetProactiveNpcRequestCompanionIntent(NeedPolicyDiscussion);
+		return !string.IsNullOrWhiteSpace(factText) && !string.IsNullOrWhiteSpace(intentText);
+	}
+
+	private bool TryGetRecentPolicyDiscussionSnapshot(out PolicyDiscussionSnapshot snapshot)
+	{
+		snapshot = null;
+		float cacheHour = (float)Math.Floor(NowHours());
+		if (_policyDiscussionSnapshotCache != null
+			&& Math.Abs(_policyDiscussionSnapshotCache.SampledAtHour - cacheHour) < 0.01f)
+		{
+			snapshot = _policyDiscussionSnapshotCache.Snapshot;
+			return snapshot != null;
+		}
+		try
+		{
+			NpcRulerPolicyRecord record = NpcRulerPolicyBehavior.GetRecentPolicyRecordsForExternal(maxCount: 1).FirstOrDefault();
+			string policyName = (record?.PolicyName ?? "").Trim();
+			string policyContent = (record?.PolicyContent ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(policyName) && !string.IsNullOrWhiteSpace(policyContent))
+			{
+				snapshot = new PolicyDiscussionSnapshot
+				{
+					PolicyId = (record.PolicyId ?? "").Trim(),
+					PolicyName = policyName,
+					PolicyContent = policyContent,
+					KingdomName = (record.KingdomName ?? "").Trim(),
+					PublishedDay = Math.Max(0, record.Day)
+				};
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ProactiveNpcRequest", "recent custom policy snapshot failed: " + ex.Message);
+		}
+		_policyDiscussionSnapshotCache = new PolicyDiscussionSnapshotCacheEntry
+		{
+			SampledAtHour = cacheHour,
+			Snapshot = snapshot
+		};
+		return snapshot != null;
+	}
+
+	private static string BuildPolicyDiscussionSituation(PolicyDiscussionSnapshot snapshot, string npcName, string playerName)
+	{
+		if (snapshot == null)
+		{
+			return "";
+		}
+		string policyName = (snapshot.PolicyName ?? "").Trim();
+		string policyContent = (snapshot.PolicyContent ?? "").Trim();
+		string targetName = string.IsNullOrWhiteSpace(playerName) ? "玩家" : playerName.Trim();
+		if (string.IsNullOrWhiteSpace(policyName) || string.IsNullOrWhiteSpace(policyContent))
+		{
+			return "";
+		}
+		return "近来公布了一项政策《" + policyName + "》。政策全文如下：\n" + policyContent
+			+ "\n你想与" + targetName + "谈谈自己对这项政策的看法。";
 	}
 
 	private bool TryBuildFriendshipCandidate(ProactiveCandidate source, DuelSettings settings, out ProactiveCandidate candidate)
@@ -4185,6 +4354,11 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			LastKnownPolicySupportEffects = candidate.PolicySupportEffects,
 			LastKnownPolicySupportScore = candidate.PolicySupportScore,
 			LastKnownPolicySupportHasPendingDecision = candidate.PolicySupportHasPendingDecision,
+			LastKnownPolicyDiscussionPolicyId = candidate.PolicyDiscussionPolicyId,
+			LastKnownPolicyDiscussionPolicyName = candidate.PolicyDiscussionPolicyName,
+			LastKnownPolicyDiscussionPolicyContent = candidate.PolicyDiscussionPolicyContent,
+			LastKnownPolicyDiscussionKingdomName = candidate.PolicyDiscussionKingdomName,
+			LastKnownPolicyDiscussionPublishedDay = candidate.PolicyDiscussionPublishedDay,
 			LastKnownSettlementPurchaseKingdomName = candidate.SettlementPurchaseKingdomName,
 			LastKnownSettlementPurchasePlayerTownCount = candidate.SettlementPurchasePlayerTownCount,
 			LastKnownSettlementPurchasePlayerCastleCount = candidate.SettlementPurchasePlayerCastleCount,
@@ -4779,6 +4953,10 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		{
 			return NeedPolicySupport;
 		}
+		if (string.Equals(text, NeedPolicyDiscussion, StringComparison.OrdinalIgnoreCase))
+		{
+			return NeedPolicyDiscussion;
+		}
 		if (string.Equals(text, NeedDiplomacy, StringComparison.OrdinalIgnoreCase))
 		{
 			return NeedDiplomacy;
@@ -4823,6 +5001,10 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		if (string.Equals(needType, NeedPolicySupport, StringComparison.OrdinalIgnoreCase))
 		{
 			return 89;
+		}
+		if (string.Equals(needType, NeedPolicyDiscussion, StringComparison.OrdinalIgnoreCase))
+		{
+			return 70;
 		}
 		if (string.Equals(needType, NeedFoodShortage, StringComparison.OrdinalIgnoreCase))
 		{
@@ -5058,6 +5240,10 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		{
 			return BuildPolicySupportOpeningFact(playerName, npcName);
 		}
+		if (string.Equals(needType, NeedPolicyDiscussion, StringComparison.OrdinalIgnoreCase))
+		{
+			return BuildPolicyDiscussionOpeningFact(playerName, npcName);
+		}
 		if (string.Equals(needType, NeedKingdomVassalInvite, StringComparison.OrdinalIgnoreCase))
 		{
 			return BuildKingdomVassalInviteOpeningFact(hero, playerName, npcName);
@@ -5283,6 +5469,18 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		bool hasPendingDecision = _activeSession?.LastKnownPolicySupportHasPendingDecision == true;
 		string decisionState = hasPendingDecision ? "王国内正有人议论此事。" : "你想先为此事争取支持。";
 		return BuildNpcInitiatedRequestFact(npcName, playerName, "你与" + playerName + "同属" + kingdomName + "，两家向来交好。你一直主张《" + policyName + "》。此事关乎：" + description + "。若能施行，可能会带来：" + effects + "。" + decisionState);
+	}
+
+	private string BuildPolicyDiscussionOpeningFact(string playerName, string npcName)
+	{
+		return BuildNpcInitiatedRequestFact(npcName, playerName, BuildPolicyDiscussionSituation(new PolicyDiscussionSnapshot
+		{
+			PolicyId = _activeSession?.LastKnownPolicyDiscussionPolicyId,
+			PolicyName = _activeSession?.LastKnownPolicyDiscussionPolicyName,
+			PolicyContent = _activeSession?.LastKnownPolicyDiscussionPolicyContent,
+			KingdomName = _activeSession?.LastKnownPolicyDiscussionKingdomName,
+			PublishedDay = _activeSession?.LastKnownPolicyDiscussionPublishedDay ?? 0
+		}, npcName, playerName));
 	}
 
 	private static string BuildDiplomacyOpeningSummary(Hero hero, string playerName, string npcName)
@@ -7187,6 +7385,10 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		{
 			return Clamp(settings?.ProactiveNpcRequestGreetingGlobalCooldownDays ?? 42, 1, 120);
 		}
+		if (string.Equals(needType, NeedPolicyDiscussion, StringComparison.OrdinalIgnoreCase))
+		{
+			return 42;
+		}
 		if (string.Equals(needType, NeedFriendship, StringComparison.OrdinalIgnoreCase))
 		{
 			return 42;
@@ -7358,6 +7560,11 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		public string LastKnownPolicySupportEffects { get; set; }
 		public float LastKnownPolicySupportScore { get; set; }
 		public bool LastKnownPolicySupportHasPendingDecision { get; set; }
+		public string LastKnownPolicyDiscussionPolicyId { get; set; }
+		public string LastKnownPolicyDiscussionPolicyName { get; set; }
+		public string LastKnownPolicyDiscussionPolicyContent { get; set; }
+		public string LastKnownPolicyDiscussionKingdomName { get; set; }
+		public int LastKnownPolicyDiscussionPublishedDay { get; set; }
 		public string LastKnownSettlementPurchaseKingdomName { get; set; }
 		public int LastKnownSettlementPurchasePlayerTownCount { get; set; }
 		public int LastKnownSettlementPurchasePlayerCastleCount { get; set; }
@@ -7482,6 +7689,11 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		public string PolicySupportEffects { get; set; }
 		public float PolicySupportScore { get; set; }
 		public bool PolicySupportHasPendingDecision { get; set; }
+		public string PolicyDiscussionPolicyId { get; set; }
+		public string PolicyDiscussionPolicyName { get; set; }
+		public string PolicyDiscussionPolicyContent { get; set; }
+		public string PolicyDiscussionKingdomName { get; set; }
+		public int PolicyDiscussionPublishedDay { get; set; }
 		public string SettlementPurchaseKingdomName { get; set; }
 		public int SettlementPurchasePlayerTownCount { get; set; }
 		public int SettlementPurchasePlayerCastleCount { get; set; }
@@ -7725,6 +7937,21 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		public PolicySupportSnapshot Snapshot { get; set; }
 	}
 
+	private sealed class PolicyDiscussionSnapshot
+	{
+		public string PolicyId { get; set; }
+		public string PolicyName { get; set; }
+		public string PolicyContent { get; set; }
+		public string KingdomName { get; set; }
+		public int PublishedDay { get; set; }
+	}
+
+	private sealed class PolicyDiscussionSnapshotCacheEntry
+	{
+		public float SampledAtHour { get; set; }
+		public PolicyDiscussionSnapshot Snapshot { get; set; }
+	}
+
 	private sealed class SettlementPurchaseSnapshot
 	{
 		public string KingdomName { get; set; }
@@ -7804,6 +8031,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		public int ClanService { get; set; }
 		public int RomanticInteraction { get; set; }
 		public int Greeting { get; set; }
+		public int PolicyDiscussion { get; set; }
 		public int Friendship { get; set; }
 		public int Courtship { get; set; }
 		public int BanditSuppression { get; set; }
@@ -7860,6 +8088,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			ClanService += other.ClanService;
 			RomanticInteraction += other.RomanticInteraction;
 			Greeting += other.Greeting;
+			PolicyDiscussion += other.PolicyDiscussion;
 			Friendship += other.Friendship;
 			Courtship += other.Courtship;
 			BanditSuppression += other.BanditSuppression;
@@ -7919,6 +8148,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 				+ " clanService=" + ClanService
 				+ " romanticInteraction=" + RomanticInteraction
 				+ " greeting=" + Greeting
+				+ " policyDiscussion=" + PolicyDiscussion
 				+ " friendship=" + Friendship
 				+ " courtship=" + Courtship
 				+ " banditSuppression=" + BanditSuppression

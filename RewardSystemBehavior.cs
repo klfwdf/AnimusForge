@@ -28,6 +28,7 @@ using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem.Settlements.Locations;
 using TaleWorlds.CampaignSystem.Settlements.Workshops;
 using TaleWorlds.Core;
+using TaleWorlds.Core.ViewModelCollection;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
@@ -662,6 +663,20 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		catch (Exception ex5)
 		{
 			Logger.LogTrace("RewardSystem", ">>> Generated item tooltip patch failed: " + ex5.Message);
+		}
+		try
+		{
+			Type inventoryVmType = AccessTools.TypeByName("TaleWorlds.CampaignSystem.ViewModelCollection.Inventory.SPInventoryVM");
+			MethodInfo processPreviewItem = inventoryVmType != null ? AccessTools.Method(inventoryVmType, "ProcessPreviewItem", new Type[1] { typeof(ItemVM) }) : null;
+			MethodInfo processPreviewItemPrefix = AccessTools.Method(typeof(RewardSystemBehavior), nameof(SPInventoryVMProcessPreviewItemPrefix));
+			if (processPreviewItem != null && processPreviewItemPrefix != null)
+			{
+				patcher.Patch(processPreviewItem, prefix: new HarmonyMethod(processPreviewItemPrefix));
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.LogTrace("RewardSystem", ">>> Courier letter inventory preview patch failed: " + ex.Message);
 		}
 		try
 		{
@@ -8869,7 +8884,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return true;
 	}
 
-	public static int GenerateNamedInventoryItemToRosterForExternal(ItemRoster targetRoster, string requestedName, int amount, out string generatedStringId, out string itemName, string logSource = null, string identityKey = null)
+	public static int GenerateNamedInventoryItemToRosterForExternal(ItemRoster targetRoster, string requestedName, int amount, out string generatedStringId, out string itemName, string logSource = null, string identityKey = null, string preferredTemplateItemId = null)
 	{
 		generatedStringId = null;
 		itemName = null;
@@ -8880,8 +8895,40 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				return 0;
 			}
 			RewardItemResolution templateResolution = null;
+			ItemObject preferredTemplate = ResolveItemById(preferredTemplateItemId);
+			if (IsStableGeneratedRewardTemplateItem(preferredTemplate))
+			{
+				EquipmentElement preferredTemplateEquipment = new EquipmentElement(preferredTemplate, null, null, false);
+				templateResolution = new RewardItemResolution
+				{
+					Info = new RewardItemInfo
+					{
+						Item = preferredTemplate,
+						StringId = preferredTemplate.StringId ?? "",
+						PromptStringId = preferredTemplate.StringId ?? "",
+						Name = preferredTemplate.Name?.ToString() ?? preferredTemplate.StringId ?? "",
+						Count = 0,
+						GuidePrice = Math.Max(1, preferredTemplate.Value),
+						EquipmentElement = preferredTemplateEquipment
+					},
+					Item = preferredTemplate,
+					EquipmentElement = preferredTemplateEquipment,
+					ActionKey = preferredTemplate.StringId ?? "",
+					MatchedName = preferredTemplate.Name?.ToString() ?? preferredTemplate.StringId ?? "",
+					MatchedStringId = preferredTemplate.StringId ?? "",
+					BestScore = 1f,
+					SecondScore = 0f,
+					IsContext = false,
+					TemplateItem = preferredTemplate
+				};
+			}
+			else if (!string.IsNullOrWhiteSpace(preferredTemplateItemId))
+			{
+				Logger.Log("Logic", "[RewardItemResolve] preferred_template_missing source=" + (logSource ?? "") + " template=" + preferredTemplateItemId.Trim() + " lookup=" + requestedName);
+				return 0;
+			}
 			RewardSystemBehavior instance = Instance;
-			if (instance != null)
+			if (templateResolution == null && instance != null)
 			{
 				try
 				{
@@ -11755,17 +11802,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			string definition = "";
-			string text;
-			if (CourierDeliveryBehavior.TryGetCourierLetterInventoryDetailForExternal(itemObject.StringId, itemObject.Id.InternalValue, out string letterBody))
-			{
-				definition = "信件正文";
-				text = letterBody;
-			}
-			else
-			{
-				text = Instance?.GetGeneratedRewardItemRecord(itemObject.StringId)?.DisplayName;
-			}
+			string text = Instance?.GetGeneratedRewardItemRecord(itemObject.StringId)?.DisplayName;
 			if (string.IsNullOrWhiteSpace(text))
 			{
 				text = itemObject.Name?.ToString();
@@ -11781,7 +11818,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			createProperty.Invoke(__instance, new object[5] { targetItemProperties, definition, text, 0, null });
+			createProperty.Invoke(__instance, new object[5] { targetItemProperties, "", text, 0, null });
 		}
 		catch (Exception ex)
 		{
@@ -11793,6 +11830,32 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 			}
 		}
+	}
+
+	private static bool SPInventoryVMProcessPreviewItemPrefix(ItemVM item)
+	{
+		try
+		{
+			ItemObject itemObject = item?.ItemRosterElement.EquipmentElement.Item;
+			if (itemObject == null || !CourierDeliveryBehavior.TryGetCourierLetterInventoryDetailForExternal(itemObject.StringId, itemObject.Id.InternalValue, out string letterBody))
+			{
+				return true;
+			}
+			string title = itemObject.Name?.ToString();
+			if (string.IsNullOrWhiteSpace(title))
+			{
+				title = "信件";
+			}
+			if (CourierLetterReplyPopup.Show("查看信件", title.Trim(), letterBody, null, "关闭"))
+			{
+				return false;
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.LogTrace("RewardSystem", ">>> Courier letter inventory preview failed: " + ex.Message);
+		}
+		return true;
 	}
 
 	private static string BuildGeneratedRewardItemStringId(string requestedName, string templateStringId)
