@@ -16002,7 +16002,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		CharacterObject targetCharacter,
 		ref string content,
 		int targetAgentIndexOverride = -1,
-		string latestPlayerText = null)
+		string latestPlayerText = null,
+		ConversationManager expectedConversationManager = null,
+		int expectedConversationToken = int.MinValue)
 	{
 		WorldMapPartyCommandBehavior.WorldMapOrderApplyResult worldMapResult = new WorldMapPartyCommandBehavior.WorldMapOrderApplyResult();
 		if (string.IsNullOrWhiteSpace(content))
@@ -16162,7 +16164,18 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					nonHeroNpc = BuildNativeConversationNpcData(targetHero, targetCharacter);
 					nonHeroNpc.AgentIndex = agentIndex;
 					LogNativeActionStep("nonhero_join_before", targetHero, targetCharacter, content);
-					if (rewardSystem.TryApplyNonHeroJoinPlayerPartyTagForExternal(targetCharacter, agentIndex, nonHeroNpc.PromptGivenName, nonHeroNpc.PromptDisplayName, ref content, out var joinFacts, out var joinNotifications))
+					List<string> joinFacts;
+					List<string> joinNotifications;
+					bool nonHeroJoinHandled;
+					if (expectedConversationToken != int.MinValue)
+					{
+						nonHeroJoinHandled = rewardSystem.TryApplyNonHeroJoinPlayerPartyTagForNativeConversationExternal(targetCharacter, agentIndex, nonHeroNpc.PromptGivenName, nonHeroNpc.PromptDisplayName, expectedConversationManager, expectedConversationToken, ref content, out joinFacts, out joinNotifications);
+					}
+					else
+					{
+						nonHeroJoinHandled = rewardSystem.TryApplyNonHeroJoinPlayerPartyTagForExternal(targetCharacter, agentIndex, nonHeroNpc.PromptGivenName, nonHeroNpc.PromptDisplayName, ref content, out joinFacts, out joinNotifications);
+					}
+					if (nonHeroJoinHandled)
 					{
 						nonHeroJoinTagHandled = true;
 						RecordGeneratedNpcAfefFactsForNativeConversation(targetHero, targetCharacter, joinFacts);
@@ -16605,7 +16618,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		public WorldMapPartyCommandBehavior.WorldMapOrderApplyResult WorldMapResult;
 	}
 
-	private Task<NativeConversationGameActionResult> ApplyNativeConversationGameActionsOnMainThreadAsync(Hero targetHero, CharacterObject targetCharacter, NpcDataPacket npc, List<NpcDataPacket> allNpcData, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string content, string npcName, int targetAgentIndex, string playerText)
+	private Task<NativeConversationGameActionResult> ApplyNativeConversationGameActionsOnMainThreadAsync(Hero targetHero, CharacterObject targetCharacter, NpcDataPacket npc, List<NpcDataPacket> allNpcData, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string content, string npcName, int targetAgentIndex, string playerText, ConversationManager expectedConversationManager, int expectedConversationToken)
 	{
 		string initial = content ?? "";
 		string targetLog = targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? npc?.Name ?? "unknown";
@@ -16613,7 +16626,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			Stopwatch directSw = Stopwatch.StartNew();
 			FreezeWatchdog.Mark("NativeConversation.game_actions_direct_start", "target=" + targetLog + " agent=" + targetAgentIndex, immediate: true);
-			NativeConversationGameActionResult direct = ApplyNativeConversationGameActionsCore(targetHero, targetCharacter, npc, allNpcData, sceneSummonTargets, sceneGuideTargets, initial, playerText);
+			NativeConversationGameActionResult direct = ApplyNativeConversationGameActionsCore(targetHero, targetCharacter, npc, allNpcData, sceneSummonTargets, sceneGuideTargets, initial, playerText, expectedConversationManager, expectedConversationToken);
 			directSw.Stop();
 			Logger.Log("Logic", "[NativePerf] game_actions_mainthread_direct target=" + targetLog + " agent=" + targetAgentIndex + " ms=" + Math.Round(directSw.Elapsed.TotalMilliseconds, 2));
 			FreezeWatchdog.Mark("NativeConversation.game_actions_direct_done", "target=" + targetLog + " agent=" + targetAgentIndex + " ms=" + Math.Round(directSw.Elapsed.TotalMilliseconds, 2), immediate: true);
@@ -16630,7 +16643,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					Logger.Log("Logic", "[NativePerf] game_actions_mainthread_start target=" + targetLog + " agent=" + targetAgentIndex);
 					FreezeWatchdog.Mark("NativeConversation.game_actions_mainthread_start", "target=" + targetLog + " agent=" + targetAgentIndex, immediate: true);
-					result = ApplyNativeConversationGameActionsCore(targetHero, targetCharacter, npc, allNpcData, sceneSummonTargets, sceneGuideTargets, result.Content, playerText);
+					result = ApplyNativeConversationGameActionsCore(targetHero, targetCharacter, npc, allNpcData, sceneSummonTargets, sceneGuideTargets, result.Content, playerText, expectedConversationManager, expectedConversationToken);
 					actionSw.Stop();
 					Logger.Log("Logic", "[NativePerf] game_actions_mainthread_done target=" + targetLog + " agent=" + targetAgentIndex + " ms=" + Math.Round(actionSw.Elapsed.TotalMilliseconds, 2) + " resultLen=" + ((result?.Content ?? "").Length));
 					FreezeWatchdog.Mark("NativeConversation.game_actions_mainthread_done", "target=" + targetLog + " agent=" + targetAgentIndex + " ms=" + Math.Round(actionSw.Elapsed.TotalMilliseconds, 2) + " resultLen=" + ((result?.Content ?? "").Length), immediate: true);
@@ -16656,11 +16669,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return tcs.Task;
 	}
 
-	private NativeConversationGameActionResult ApplyNativeConversationGameActionsCore(Hero targetHero, CharacterObject targetCharacter, NpcDataPacket npc, List<NpcDataPacket> allNpcData, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string content, string playerText)
+	private NativeConversationGameActionResult ApplyNativeConversationGameActionsCore(Hero targetHero, CharacterObject targetCharacter, NpcDataPacket npc, List<NpcDataPacket> allNpcData, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string content, string playerText, ConversationManager expectedConversationManager, int expectedConversationToken)
 	{
 		string result = content ?? "";
 		TryQueueNativeSceneMechanismActionAfterConversationExit(npc, allNpcData, sceneSummonTargets, sceneGuideTargets, ref result);
-		WorldMapPartyCommandBehavior.WorldMapOrderApplyResult worldMapResult = ApplyNativeConversationActionTags(targetHero, targetCharacter, ref result, npc?.AgentIndex ?? -1, playerText);
+		WorldMapPartyCommandBehavior.WorldMapOrderApplyResult worldMapResult = ApplyNativeConversationActionTags(targetHero, targetCharacter, ref result, npc?.AgentIndex ?? -1, playerText, expectedConversationManager, expectedConversationToken);
 		return new NativeConversationGameActionResult { Content = result ?? "", WorldMapResult = worldMapResult };
 	}
 
@@ -17055,6 +17068,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return "当前没有可接入的对话对象。";
 		}
+		ConversationManager nativeRequestConversationManager = Campaign.Current?.ConversationManager;
+		int nativeRequestConversationToken = nativeRequestConversationManager?.ActiveToken ?? int.MinValue;
 		Logger.Log("Logic", "[NativePerf] submit_start target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " npcInitiated=" + npcInitiatedOpening + " inputLen=" + playerText.Length);
 		FreezeWatchdog.Mark("NativeConversation.submit_start", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " npcInitiated=" + npcInitiatedOpening + " inputLen=" + playerText.Length, immediate: true);
 		string npcOpeningExtraFact = "";
@@ -17374,7 +17389,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			cleaned,
 			npcName,
 			nativeTargetAgentIndex,
-			shouldRecordPlayerInput ? promptPlayerText : string.Empty).ConfigureAwait(false);
+			shouldRecordPlayerInput ? promptPlayerText : string.Empty,
+			nativeRequestConversationManager,
+			nativeRequestConversationToken).ConfigureAwait(false);
 		cleaned = nativeActionResult?.Content ?? cleaned;
 		bool closeNativeConversationForImplicitPartyCreation = nativeActionResult?.WorldMapResult?.NeedsChannelExit == true;
 		nativeActionSw.Stop();

@@ -4,6 +4,13 @@ chcp 65001 >nul
 
 set "SCRIPT_DIR=%~dp0"
 for %%I in ("%SCRIPT_DIR%..") do set "PROJECT_ROOT=%%~fI"
+pushd "%PROJECT_ROOT%" >nul 2>&1
+if errorlevel 1 (
+    echo [ERROR] Could not set the safe project working directory:
+    echo   "%PROJECT_ROOT%"
+    pause
+    exit /b 1
+)
 set "PATH_SCRIPT=%SCRIPT_DIR%resolve_bannerlord_paths.ps1"
 set "BUILD_SCRIPT=%SCRIPT_DIR%build_single_module.ps1"
 set "CONFIG=Debug"
