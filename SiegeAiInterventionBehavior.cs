@@ -3239,6 +3239,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 						}
 						break;
 					case SiegeCastleActionKind.RecruitLord:
+					case SiegeCastleActionKind.SellLord:
 					case SiegeCastleActionKind.ExecuteLord:
 						actionHandled = ApplyCastleLordTerminalInterface(
 							decision.Action,
@@ -3519,6 +3520,50 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		string playerText,
 		string aiResponseText)
 	{
+		if (action == SiegeCastleActionKind.SellLord)
+		{
+			if (role != SiegeCastleActionSpeakerRole.CapturedLord
+				|| targetHero == null
+				|| !CastleAftermathDispositionSessionBridge.TryMarkApplied(action, role, targetAgent, targetHero))
+			{
+				return false;
+			}
+
+			CastleAftermathLordSaleApplyResult result = CastleAftermathLordSaleRuntimeBridge.Apply(targetHero);
+			if (!result.Succeeded)
+			{
+				CastleAftermathDispositionSessionBridge.UnmarkApplied(action, role, targetAgent, targetHero);
+				InformationManager.DisplayMessage(new InformationMessage(
+					SiegeCastleActionOutcomeTextProfile.BuildLordSaleFailedMessage(
+						targetHero.Name?.ToString(),
+						result.ReasonCode),
+					Color.FromUint(SiegeCastleActionOutcomeTextProfile.WarningColor)));
+				Logger.Log("CastleAftermath", "Castle captured-lord sale was not applied. Hero="
+					+ (targetHero.StringId ?? "N/A") + ", Reason=" + result.ReasonCode);
+				return false;
+			}
+
+			CastleAftermathPrisonerTrustRuntimeBridge.AdjustLordTrust(
+				targetHero,
+				SiegeCastlePrisonerTrustProfile.LordSaleTrustDelta,
+				"lord_sold_via_ransom_broker");
+			string lordName = targetHero.Name?.ToString() ?? "该被俘领主";
+			string conciseOutcome = lordName + "：已按原版酒馆赎卖价贩卖，获得 " + result.Gold + " 金币";
+			CastleAftermathDispositionSessionBridge.RecordLordOutcome(conciseOutcome);
+			RecordInterventionMemory(
+				"城堡贩卖领主",
+				conciseOutcome + "；该领主已经通过原版赎卖链解除俘虏并离开现场。");
+			InformationManager.DisplayMessage(new InformationMessage(
+				SiegeCastleActionOutcomeTextProfile.BuildLordSaleMessage(lordName, result.Gold),
+				Color.FromUint(SiegeCastleActionOutcomeTextProfile.SuccessColor)));
+			string outcome = "hero=" + (targetHero.StringId ?? "N/A")
+				+ ", gold=" + result.Gold + ", expectedGold=" + result.ExpectedGold
+				+ ", sceneResolved=" + result.SceneResolved;
+			Logger.Log("CastleAftermath", "Applied castle captured-lord sale. " + outcome);
+			GcczDiagnosticLog.Log("CastleLordOutcome", "sale, " + outcome);
+			return true;
+		}
+
 		if (action == SiegeCastleActionKind.ExecuteLord)
 		{
 			if (role != SiegeCastleActionSpeakerRole.CapturedLord

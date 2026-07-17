@@ -38,6 +38,13 @@ public static class SiegeCastleDirectActionAuthorizationPolicy
         "execute you", "behead you"
     };
 
+    private static readonly string[] LordSellTerms =
+    {
+        "把你卖给赎金经纪人", "将你卖给赎金经纪人", "把你交给赎金经纪人", "将你交给赎金经纪人",
+        "把你卖到酒馆", "将你卖到酒馆", "把你卖了", "将你卖了", "卖掉你", "卖了你", "赎卖你", "拿你换赎金", "卖你换赎金",
+        "sell you to the ransom broker", "ransom you through the tavern", "sell you at the tavern"
+    };
+
     public static SiegeCastleDirectActionAuthorizationDecision Evaluate(
         SiegeCastleActionKind action,
         string playerText,
@@ -81,11 +88,18 @@ public static class SiegeCastleDirectActionAuthorizationPolicy
             return SiegeCastleDirectActionAuthorizationDecision.Denied("player_rejected_or_cancelled");
         }
 
+        if (action == SiegeCastleActionKind.SellLord
+            && SiegeCastlePlayerAuthorizationPolicy.IsDiscussionText(text))
+        {
+            return SiegeCastleDirectActionAuthorizationDecision.Denied("player_discussion_not_authorization");
+        }
+
         bool matched = action switch
         {
             SiegeCastleActionKind.TreatPrisoners => ContainsAny(text, TreatTerms),
             SiegeCastleActionKind.ReceiveArmaments => ContainsAny(text, ArmamentTerms),
             SiegeCastleActionKind.RecruitLord => ContainsAny(text, LordRecruitTerms),
+            SiegeCastleActionKind.SellLord => ContainsAny(text, LordSellTerms),
             SiegeCastleActionKind.ExecuteLord => ContainsAny(text, LordExecuteTerms),
             _ => false
         };

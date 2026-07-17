@@ -17,6 +17,7 @@ public static class SiegeCastlePrisonerTrustProfile
     public const int SellTrustDelta = -12;
     public const int ForcedDispositionTrustDelta = -15;
     public const int LordRecruitmentAgreementTrustDelta = 5;
+    public const int LordSaleTrustDelta = -12;
     public const int VoluntaryRecruitThreshold = 10;
     public const int VoluntaryLaborThreshold = 5;
     public const int VoluntaryInstructorThreshold = 8;

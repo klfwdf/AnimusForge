@@ -71,6 +71,15 @@ public static class SiegeCastleActionOutcomeTextProfile
             + SiegeCastleLordRecruitmentBranchProfile.Describe(branch)
             + (string.IsNullOrWhiteSpace(statusText) ? "。" : "；" + statusText.Trim());
 
+    public static string BuildLordSaleMessage(string lordName, int gold)
+        => "【城堡处置】已将 " + Name(lordName)
+            + " 交给赎金经纪人，严格按原版酒馆实时赎卖价获得 " + Count(gold)
+            + " 金币；该领主已解除俘虏并离开现场。";
+
+    public static string BuildLordSaleFailedMessage(string lordName, string reasonCode)
+        => "【城堡处置】未能贩卖 " + Name(lordName)
+            + "；未结算金币或最终处置。" + DescribeLordSaleFailure(reasonCode);
+
     public static string BuildLordExecutionQueuedMessage(string lordName)
         => "【城堡处置】已对 " + Name(lordName)
             + " 下达处刑命令，正在打开原版处刑确认；取消不会改变其生死或俘虏状态。";
@@ -98,4 +107,19 @@ public static class SiegeCastleActionOutcomeTextProfile
     private static string Signed(float value) => value > 0f ? "+" + value.ToString("0.##") : value.ToString("0.##");
     private static int Count(int value) => Math.Max(0, value);
     private static string Name(string value) => string.IsNullOrWhiteSpace(value) ? "该被俘领主" : value.Trim();
+
+    private static string DescribeLordSaleFailure(string reasonCode)
+    {
+        return (reasonCode ?? string.Empty).Trim() switch
+        {
+            "lord_sale_roster_unavailable" => "主队俘虏名册当前不可用。",
+            "lord_sale_target_invalid" => "目标已死亡或不具备可赎卖身份。",
+            "lord_not_selected_main_party_prisoner" => "目标不再是本次带入且由玩家主队扣押的领主。",
+            "lord_prisoner_locked_from_ransom" => "该领主被原版任务或名册锁定，酒馆同样不能赎卖。",
+            "ransom_value_model_unavailable" => "原版赎金计价模型当前不可用。",
+            "vanilla_lord_sale_did_not_release_target" => "原版赎卖动作未能解除该领主的俘虏状态。",
+            "" => "目标当前不可赎卖。",
+            _ => "原版赎卖动作失败，详情已写入日志。"
+        };
+    }
 }

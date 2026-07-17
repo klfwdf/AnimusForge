@@ -45,7 +45,7 @@ public static class SiegeCastlePostprocessRuleCatalog
 
     private static readonly SiegePostprocessRuleDefinition SellRule = Rule(
         SiegeCastleActionTagCatalog.SellPrisonersTag,
-        "【普通战俘群体最终标签】按原版俘虏赎金价值贩卖本次带入的普通战俘，金币直接入账并移出俘虏名册；领主不包含。造成地方、村庄、要人和俘虏信任负面效果。与其他普通战俘最终标签互斥。");
+        "【普通战俘群体最终标签】严格复用原版酒馆赎卖动作，按每名本次带入普通战俘在酒馆出售时的实时价格结算金币、技能经验和原版事件，并移出俘虏名册；领主不包含。造成地方、村庄、要人和俘虏信任负面效果。与其他普通战俘最终标签互斥。");
 
     private static readonly SiegePostprocessRuleDefinition VoluntaryRecruitRule = Rule(
         SiegeCastleActionTagCatalog.RecruitPrisonersVoluntaryTag,
@@ -82,6 +82,10 @@ public static class SiegeCastlePostprocessRuleCatalog
     private static readonly SiegePostprocessRuleDefinition RecruitLordRule = Rule(
         SiegeCastleActionTagCatalog.RecruitLordTag,
         "【被俘领主单体最终标签】只针对当前直接回应的被俘领主。族长按玩家政治身份走投效国家、请求引见统治者或拥立玩家分支；非族长必须由对话明确选择写信引见族长，或背叛家族成为同伴。触发条件严格，不得由普通战俘、己方士兵或旁听者输出。");
+
+    private static readonly SiegePostprocessRuleDefinition SellLordRule = Rule(
+        SiegeCastleActionTagCatalog.SellLordTag,
+        "【被俘领主单体最终标签】只针对当前直接回应的被俘领主，且玩家必须明确命令将该领主交给赎金经纪人。严格复用原版酒馆赎卖的计价、金币、技能与事件链，按该领主在酒馆出售时的实时价格结算并解除俘虏、清理场景实体。与领主收编、处决互斥，不得由普通战俘、己方士兵或旁听者输出。");
 
     private static readonly SiegePostprocessRuleDefinition ExecuteLordRule = Rule(
         SiegeCastleActionTagCatalog.ExecuteLordTag,
@@ -202,6 +206,10 @@ public static class SiegeCastlePostprocessRuleCatalog
                 {
                     return rules;
                 }
+            }
+            if (TryAddDirectRule(rules, facts, SiegeCastleActionKind.SellLord, SellLordRule))
+            {
+                return rules;
             }
             TryAddDirectRule(rules, facts, SiegeCastleActionKind.ExecuteLord, ExecuteLordRule);
         }

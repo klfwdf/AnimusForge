@@ -60,6 +60,7 @@ public static class SiegeCastlePostprocessContextProfile
             {
                 sb.Append("非族长的引见族长与成为玩家同伴尚未明确二选一，禁止输出领主收编标签。");
             }
+            sb.Append("领主贩卖是当前被俘领主的独立单体最终处置：只有玩家本轮明确命令将该领主交给赎金经纪人时才可输出，价格与副作用必须走原版酒馆赎卖链，不能借用普通战俘群体贩卖标签。");
         }
 
         if (facts.SpeakerCultureMatchesCastle)

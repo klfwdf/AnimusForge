@@ -29,13 +29,14 @@ public static class SiegeCastleActionTagCatalog
     public const string InstructorPrisonersForcedTag = "[ACTION:CASTLE_INSTRUCTOR_PRISONERS_FORCED]";
     public const string AppeaseSoldiersTag = "[ACTION:CASTLE_APPEASE_SOLDIERS]";
     public const string RecruitLordTag = "[ACTION:CASTLE_RECRUIT_LORD]";
+    public const string SellLordTag = "[ACTION:CASTLE_SELL_LORD]";
     public const string ExecuteLordTag = "[ACTION:CASTLE_EXECUTE_LORD]";
 
     // Broad enough to strip stale castle-prefixed output, but TryParseName remains authoritative.
-    public const string AnyActionTagPattern = @"\[ACTION:(?:(?:SIEGE_)?CASTLE_[A-Z_]+|城堡[^\]\r\n]+|善待俘虏|接收军械|收编领主|处决领主)\]";
+    public const string AnyActionTagPattern = @"\[ACTION:(?:(?:SIEGE_)?CASTLE_[A-Z_]+|城堡[^\]\r\n]+|善待俘虏|接收军械|收编领主|贩卖领主|处决领主)\]";
 
     private static readonly Regex ActionTagRegex = new Regex(
-        @"\[ACTION:(?<name>(?:SIEGE_)?CASTLE_[A-Z_]+|城堡[^\]\r\n]+|善待俘虏|接收军械|收编领主|处决领主)\]",
+        @"\[ACTION:(?<name>(?:SIEGE_)?CASTLE_[A-Z_]+|城堡[^\]\r\n]+|善待俘虏|接收军械|收编领主|贩卖领主|处决领主)\]",
         RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
     private static readonly IReadOnlyDictionary<string, SiegeCastleActionKind> NameToKind =
@@ -106,6 +107,10 @@ public static class SiegeCastleActionTagCatalog
             ["SIEGE_CASTLE_RECRUIT_LORD"] = SiegeCastleActionKind.RecruitLord,
             ["城堡收编领主"] = SiegeCastleActionKind.RecruitLord,
             ["收编领主"] = SiegeCastleActionKind.RecruitLord,
+            ["CASTLE_SELL_LORD"] = SiegeCastleActionKind.SellLord,
+            ["SIEGE_CASTLE_SELL_LORD"] = SiegeCastleActionKind.SellLord,
+            ["城堡贩卖领主"] = SiegeCastleActionKind.SellLord,
+            ["贩卖领主"] = SiegeCastleActionKind.SellLord,
             ["CASTLE_EXECUTE_LORD"] = SiegeCastleActionKind.ExecuteLord,
             ["SIEGE_CASTLE_EXECUTE_LORD"] = SiegeCastleActionKind.ExecuteLord,
             ["城堡处决领主"] = SiegeCastleActionKind.ExecuteLord,
@@ -133,6 +138,7 @@ public static class SiegeCastleActionTagCatalog
         SiegeCastleActionKind.SlaughterPrisoners,
         SiegeCastleActionKind.AppeaseSoldiers,
         SiegeCastleActionKind.RecruitLord,
+        SiegeCastleActionKind.SellLord,
         SiegeCastleActionKind.ExecuteLord
     };
 
@@ -158,6 +164,7 @@ public static class SiegeCastleActionTagCatalog
             [SiegeCastleActionKind.InstructorPrisonersForced] = InstructorPrisonersForcedTag,
             [SiegeCastleActionKind.AppeaseSoldiers] = AppeaseSoldiersTag,
             [SiegeCastleActionKind.RecruitLord] = RecruitLordTag,
+            [SiegeCastleActionKind.SellLord] = SellLordTag,
             [SiegeCastleActionKind.ExecuteLord] = ExecuteLordTag
         };
 
