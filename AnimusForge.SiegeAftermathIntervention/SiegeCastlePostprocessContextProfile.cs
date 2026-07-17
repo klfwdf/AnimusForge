@@ -70,6 +70,12 @@ public static class SiegeCastlePostprocessContextProfile
                 sb.Append("非族长的引见族长与成为玩家同伴尚未明确二选一，禁止输出领主收编标签。");
             }
             sb.Append("领主贩卖是当前被俘领主的独立单体最终处置：只有玩家本轮明确命令将该领主交给赎金经纪人时才可输出，价格与副作用必须走原版酒馆赎卖链，不能借用普通战俘群体贩卖标签。");
+            sb.Append("【领主决斗事实】")
+                .Append(SiegeCastleLordDuelProfile.BuildEquipmentFact(
+                    facts.PlayerIsMounted,
+                    facts.PlayerCarriesRangedWeapon,
+                    facts.PlayerWieldsRangedWeapon))
+                .Append("领主可因玩家骑马、携弓或认为规则不公而拒绝，或要求玩家先下马、收弓；有条件答复仍不是同意。只有该领主本轮明确、无条件同意立即决斗，才可输出领主决斗标签。玩家单方面说要决斗绝不能触发。");
         }
 
         if (facts.SpeakerCultureMatchesCastle)
@@ -101,7 +107,10 @@ public sealed class SiegeCastlePostprocessContextFacts
         bool playerHasKingdom = false,
         bool playerRulesKingdom = false,
         bool isWitnessReaction = false,
-        SiegeCastleActionKind reactionToAction = SiegeCastleActionKind.Unknown)
+        SiegeCastleActionKind reactionToAction = SiegeCastleActionKind.Unknown,
+        bool playerIsMounted = false,
+        bool playerCarriesRangedWeapon = false,
+        bool playerWieldsRangedWeapon = false)
     {
         CastleName = castleName ?? string.Empty;
         SpeakerRole = speakerRole;
@@ -121,6 +130,9 @@ public sealed class SiegeCastlePostprocessContextFacts
         PlayerRulesKingdom = playerRulesKingdom;
         IsWitnessReaction = isWitnessReaction;
         ReactionToAction = reactionToAction;
+        PlayerIsMounted = playerIsMounted;
+        PlayerCarriesRangedWeapon = playerCarriesRangedWeapon;
+        PlayerWieldsRangedWeapon = playerWieldsRangedWeapon;
     }
 
     public static SiegeCastlePostprocessContextFacts Empty => new SiegeCastlePostprocessContextFacts(
@@ -171,6 +183,12 @@ public sealed class SiegeCastlePostprocessContextFacts
     public bool IsWitnessReaction { get; }
 
     public SiegeCastleActionKind ReactionToAction { get; }
+
+    public bool PlayerIsMounted { get; }
+
+    public bool PlayerCarriesRangedWeapon { get; }
+
+    public bool PlayerWieldsRangedWeapon { get; }
 
     private static int ClampCount(int value)
     {

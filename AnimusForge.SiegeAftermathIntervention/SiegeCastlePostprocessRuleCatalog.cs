@@ -97,6 +97,10 @@ public static class SiegeCastlePostprocessRuleCatalog
         SiegeCastleActionTagCatalog.ExecuteLordTag,
         "【被俘领主单体高风险结算】只针对当前直接回应的被俘领主，且玩家必须明确下达处决该领主的命令。普通战俘屠戮不能代替。标签只打开原版处刑确认；玩家确认并退出动画后才结算，取消不得处死。该流程与普通战俘群体结算完全隔离。");
 
+    private static readonly SiegePostprocessRuleDefinition DuelLordRule = Rule(
+        SiegeCastleActionTagCatalog.DuelLordTag,
+        "【被俘领主单体流程标签·必须本人明确同意】仅当玩家本轮向当前被俘领主提出决斗，而且该领主在本次直接回复中无条件明确答应立刻开战时输出。玩家单方面宣告、领主拒绝、尚在考虑，或仅提出‘先下马/先放下弓/改用公平武器后才答应’等附带条件时一律不得输出；条件满足后必须再由领主明确答应一次。标签只启动当前场景内的不致死决斗，不自动释放或最终处置领主。同一领主本场只触发一次。");
+
     public static IReadOnlyList<SiegePostprocessRuleDefinition> GetAvailableRules(SiegeCastlePostprocessRuleFacts facts)
     {
         facts ??= SiegeCastlePostprocessRuleFacts.Empty;
@@ -205,6 +209,10 @@ public static class SiegeCastlePostprocessRuleCatalog
         {
             if (TryAddDirectRule(rules, facts, SiegeCastleActionKind.TreatPrisoners, TreatRule)
                 || TryAddDirectRule(rules, facts, SiegeCastleActionKind.ReceiveArmaments, ArmamentsRule))
+            {
+                return rules;
+            }
+            if (TryAddDirectRule(rules, facts, SiegeCastleActionKind.DuelLord, DuelLordRule))
             {
                 return rules;
             }

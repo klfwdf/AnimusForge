@@ -2600,7 +2600,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				politicalFacts.PlayerHasKingdom,
 				politicalFacts.PlayerRulesKingdom,
 				CastleAftermathDispositionSessionBridge.RevisionCount,
-				CastleAftermathDispositionSessionBridge.BuildRegularPlanSummary()));
+				CastleAftermathDispositionSessionBridge.BuildRegularPlanSummary(),
+				CastleAftermathLordDuelRuntimeBridge.IsPlayerMounted(),
+				CastleAftermathLordDuelRuntimeBridge.PlayerCarriesRangedWeapon(),
+				CastleAftermathLordDuelRuntimeBridge.PlayerWieldsRangedWeapon()));
 		}
 		memoryContext = AppendRuntimeContext(memoryContext, BuildPlayerCommanderRuntimeContext(alliedSoldier, civilian));
 		return SiegeRuntimePromptProfile.Build(new SiegeRuntimePromptFacts(
@@ -2936,7 +2939,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					politicalFacts.PlayerHasKingdom,
 					politicalFacts.PlayerRulesKingdom,
 					witnessReaction,
-					reactionToAction));
+					reactionToAction,
+					CastleAftermathLordDuelRuntimeBridge.IsPlayerMounted(),
+					CastleAftermathLordDuelRuntimeBridge.PlayerCarriesRangedWeapon(),
+					CastleAftermathLordDuelRuntimeBridge.PlayerWieldsRangedWeapon()));
 			}
 			bool civilian = IsCivilianForIntervention(character);
 			bool destructiveAllowed = IsDestructiveInterventionAllowed();
@@ -3324,6 +3330,12 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 							resolvedHero,
 							playerText,
 							text);
+						break;
+					case SiegeCastleActionKind.DuelLord:
+						actionHandled = ApplyCastleLordDuelInterface(
+							role,
+							targetAgent,
+							resolvedHero);
 						break;
 					case SiegeCastleActionKind.AppeaseSoldiers:
 						actionHandled = ApplyCastleSoldierAppeasement(targetAgentIndex);
@@ -3846,6 +3858,41 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				+ ", Error=" + ex);
 			return recruitmentApplied;
 		}
+	}
+
+	private static bool ApplyCastleLordDuelInterface(
+		SiegeCastleActionSpeakerRole role,
+		Agent targetAgent,
+		Hero targetHero)
+	{
+		const SiegeCastleActionKind action = SiegeCastleActionKind.DuelLord;
+		if (role != SiegeCastleActionSpeakerRole.CapturedLord
+			|| targetAgent == null
+			|| targetHero == null
+			|| !CastleAftermathDispositionSessionBridge.TryMarkApplied(action, role, targetAgent, targetHero))
+		{
+			return false;
+		}
+
+		if (!CastleAftermathLordDuelRuntimeBridge.TryBegin(targetHero, targetAgent, out string reasonCode))
+		{
+			CastleAftermathDispositionSessionBridge.UnmarkApplied(action, role, targetAgent, targetHero);
+			InformationManager.DisplayMessage(new InformationMessage(
+				"【城堡决斗】未能布置同场决斗，俘虏处置状态未改变。",
+				Color.FromUint(SiegeCastleActionOutcomeTextProfile.WarningColor)));
+			Logger.Log("CastleAftermath", "Start castle captive-lord duel failed. Hero="
+				+ (targetHero.StringId ?? "N/A") + ", Agent=" + targetAgent.Index
+				+ ", Reason=" + (reasonCode ?? "N/A"));
+			GcczDiagnosticLog.Log("CastleLordDuel", "startFailed hero="
+				+ (targetHero.StringId ?? "N/A") + " reason=" + (reasonCode ?? "N/A"));
+			return false;
+		}
+
+		RecordInterventionMemory(
+			"城堡俘虏领主决斗",
+			(targetHero.Name?.ToString() ?? "该被俘领主")
+			+ "在战后处置现场明确接受了玩家的决斗挑战；决斗本身不解除俘虏身份，也不自动兑现释放或其他最终处置。");
+		return true;
 	}
 
 	internal static void NotifyCastleLordExecutedForExternal(
@@ -10017,6 +10064,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		foreach (Agent agent in mission.Agents.ToList())
 		{
 			if (agent == null || !agent.IsActive() || !AlliedAgentIndexes.Contains(agent.Index))
+			{
+				continue;
+			}
+			if (CastleAftermathLordDuelRuntimeBridge.ControlsAgent(agent))
 			{
 				continue;
 			}

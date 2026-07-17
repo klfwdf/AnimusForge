@@ -28,7 +28,8 @@ public enum SiegeCastleActionKind
     ProposeLaborPrisoners = 19,
     ProposeInstructorPrisoners = 20,
     SellLord = 21,
-    SoldierDiscontent = 22
+    SoldierDiscontent = 22,
+    DuelLord = 23
 }
 
 /// <summary>
@@ -70,6 +71,11 @@ public static class SiegeCastleActionKindProfile
         return action == SiegeCastleActionKind.RecruitLord
             || action == SiegeCastleActionKind.ExecuteLord
             || action == SiegeCastleActionKind.SellLord;
+    }
+
+    public static bool IsLordProcess(SiegeCastleActionKind action)
+    {
+        return action == SiegeCastleActionKind.DuelLord;
     }
 
     public static bool IsVoluntary(SiegeCastleActionKind action)

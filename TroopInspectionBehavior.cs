@@ -3763,7 +3763,8 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 			}
 			foreach (Agent agent in base.Mission.Agents)
 			{
-				if (agent == null || !agent.IsActive() || !(agent.Origin is PrisonerAgentOrigin))
+				if (agent == null || !agent.IsActive() || !(agent.Origin is PrisonerAgentOrigin)
+					|| CastleAftermathLordDuelRuntimeBridge.ControlsAgent(agent))
 				{
 					continue;
 				}
@@ -4663,7 +4664,8 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 
 	private void RefreshSingleAgent(Agent agent)
 	{
-		if (agent == null || !agent.IsActive())
+		if (agent == null || !agent.IsActive()
+			|| CastleAftermathLordDuelRuntimeBridge.ControlsAgent(agent))
 		{
 			return;
 		}
@@ -4727,7 +4729,8 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 			}
 			foreach (Agent agent in base.Mission.Agents)
 			{
-				if (agent == null || !agent.IsActive() || !(agent.Origin is PrisonerAgentOrigin))
+				if (agent == null || !agent.IsActive() || !(agent.Origin is PrisonerAgentOrigin)
+					|| CastleAftermathLordDuelRuntimeBridge.ControlsAgent(agent))
 				{
 					continue;
 				}
@@ -4780,7 +4783,8 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 
 	private void ApplyPrisonerPose(Agent agent, bool isLord, bool afterDeployment)
 	{
-		if (agent == null || !agent.IsActive())
+		if (agent == null || !agent.IsActive()
+			|| CastleAftermathLordDuelRuntimeBridge.ControlsAgent(agent))
 		{
 			return;
 		}
@@ -4835,6 +4839,18 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		}
 		TrySetCivilianPrisonerActionSet(agent);
 		TrySetPrisonerAction(agent, isLord);
+	}
+
+	internal void RestoreCastlePrisonerAfterExternalControl(Agent agent)
+	{
+		if (agent == null || !agent.IsActive() || !TryGetPrisonerIsLord(agent, out bool isLord))
+		{
+			return;
+		}
+		_prisonerPoseApplied.Remove(agent);
+		_civilianPrisonerActionSetApplied.Remove(agent);
+		_prisonerPoseSuppressedUntil.Remove(agent);
+		ApplyPrisonerPose(agent, isLord, _deploymentEndDetected);
 	}
 
 	private static void StripPrisonerWeapons(Agent agent)
@@ -4977,7 +4993,8 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		base.OnAgentHit(affectedAgent, affectorAgent, in attackerWeapon, in blow, in attackCollisionData);
 		try
 		{
-			if (affectedAgent == null || base.Mission == null || !(affectedAgent.Origin is PrisonerAgentOrigin))
+			if (affectedAgent == null || base.Mission == null || !(affectedAgent.Origin is PrisonerAgentOrigin)
+				|| CastleAftermathLordDuelRuntimeBridge.ControlsAgent(affectedAgent))
 			{
 				return;
 			}

@@ -135,5 +135,6 @@ internal static class CastleAftermathSiegeSceneBridge
 				hasAnySiegeTower: false));
 		}
 		CastleAftermathRuntimeBridge.AttachMissionBehavior(mission);
+		CastleAftermathDefensiveDeviceRuntimeBridge.AttachMissionBehavior(mission);
 	}
 }

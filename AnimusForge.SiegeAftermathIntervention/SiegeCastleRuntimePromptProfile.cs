@@ -61,7 +61,7 @@ public static class SiegeCastleRuntimePromptProfile
         else if (facts.IsPrisoner)
         {
             sb.Append(facts.IsLord
-                ? "【被俘领主】你可以愤怒、不甘、傲慢、求饶或谈判，但必须承认自己已被控制。善待与接收军械只针对你本人；收编、交给赎金经纪人贩卖与处决也只针对你本人，不能代表普通战俘。玩家明确命令把你交给赎金经纪人时，你只能以当前单体领主身份直接回应；该结算采用原版酒馆实时赎卖价。非族长面对收编谈判时要区分写信引见族长与背叛家族成为同伴；不要擅自宣布已经加入玩家、已经被贩卖或已经被处决。"
+                ? "【被俘领主】你可以愤怒、不甘、傲慢、求饶或谈判，但必须承认自己已被控制。善待与接收军械只针对你本人；收编、交给赎金经纪人贩卖与处决也只针对你本人，不能代表普通战俘。玩家明确命令把你交给赎金经纪人时，你只能以当前单体领主身份直接回应；该结算采用原版酒馆实时赎卖价。非族长面对收编谈判时要区分写信引见族长与背叛家族成为同伴；不要擅自宣布已经加入玩家、已经被贩卖或已经被处决。玩家在普通场景中直接攻击无法伤害或杀死你，只有独立处决确认可使你死亡。"
                 : "【战俘士兵】你按守城战败、缴械并等待处置的普通守军理解。你可以恐惧、求生、屈服，或请求释放、归顺、劳役赎罪、充当教官，但请求与提议本身绝不代表玩家同意；提议语义必须准确，不能把农奴、缴械、释放或教官说成收编，也不能把可指挥编队误认为已经收编。善待和接收军械是流程标签；释放、贩卖、自愿/强制收编、劳役服刑、自愿/强制担任教官会按本轮指定数量和兵种登记暂定去向，尚存战俘不会立刻消失，玩家离场时才逐组执行。玩家不说数量时随机挑选，不说兵种时随机选兵；说其余、剩下或全部时作用于当前未分配者。明确反悔或改判才重置幸存者旧计划。屠戮会立即攻击所选目标，只有实际死亡者才扣名册。劳役与教官离场时直接结算地方年度效果，不代表生成或追踪实际服役单位。自愿结算必须由你明确心甘情愿并满足信任门槛；否则只能是强制分支。求饶闲聊、旁听和未获玩家同意的主动提议不能结算。");
             if (facts.IsLord)
             {
@@ -69,6 +69,12 @@ public static class SiegeCastleRuntimePromptProfile
                     .Append("；是否族长=").Append(facts.SpeakerIsClanLeader ? "是" : "否")
                     .Append("；玩家是否已有王国=").Append(facts.PlayerHasKingdom ? "是" : "否")
                     .Append("；玩家是否为该王国统治者=").Append(facts.PlayerRulesKingdom ? "是" : "否").Append("。");
+                sb.Append("【当前决斗装备事实】")
+                    .Append(SiegeCastleLordDuelProfile.BuildEquipmentFact(
+                        facts.PlayerIsMounted,
+                        facts.PlayerCarriesRangedWeapon,
+                        facts.PlayerWieldsRangedWeapon))
+                    .Append("若玩家提出决斗，你必须按性格、此前谈判和公平条件自行决定是否接受。你可以因玩家骑马、携带或手持弓弩而拒绝，或要求其先下马、收弓；这种附带条件的回答不是接受，不能触发标签。只有你在本轮直接回复中明确、无条件答应立即决斗，后处理才可启动同一场景内的不致死决斗。决斗结果不会自动释放你，也不会自动兑现玩家承诺。");
                 if (facts.SpeakerIsClanLeader)
                 {
                     sb.Append(facts.PlayerHasKingdom
@@ -195,7 +201,10 @@ public sealed class SiegeCastleRuntimePromptFacts
         bool playerHasKingdom = false,
         bool playerRulesKingdom = false,
         int regularDispositionRevisionCount = 0,
-        string regularDispositionPlan = null)
+        string regularDispositionPlan = null,
+        bool playerIsMounted = false,
+        bool playerCarriesRangedWeapon = false,
+        bool playerWieldsRangedWeapon = false)
     {
         CastleName = castleName ?? string.Empty;
         PlayerName = playerName ?? string.Empty;
@@ -220,6 +229,9 @@ public sealed class SiegeCastleRuntimePromptFacts
         PlayerRulesKingdom = playerRulesKingdom;
         RegularDispositionRevisionCount = regularDispositionRevisionCount < 0 ? 0 : regularDispositionRevisionCount;
         RegularDispositionPlan = regularDispositionPlan ?? string.Empty;
+        PlayerIsMounted = playerIsMounted;
+        PlayerCarriesRangedWeapon = playerCarriesRangedWeapon;
+        PlayerWieldsRangedWeapon = playerWieldsRangedWeapon;
     }
 
     public static SiegeCastleRuntimePromptFacts Empty => new SiegeCastleRuntimePromptFacts(
@@ -283,4 +295,10 @@ public sealed class SiegeCastleRuntimePromptFacts
     public int RegularDispositionRevisionCount { get; }
 
     public string RegularDispositionPlan { get; }
+
+    public bool PlayerIsMounted { get; }
+
+    public bool PlayerCarriesRangedWeapon { get; }
+
+    public bool PlayerWieldsRangedWeapon { get; }
 }

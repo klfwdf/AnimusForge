@@ -101,6 +101,33 @@ public static class SiegeCastleActionRoutingPolicy
                 : Block(hasRecognizedAction: true, action, "soldier_appeasement_already_applied");
         }
 
+        if (SiegeCastleActionKindProfile.IsLordProcess(action))
+        {
+            if (facts.SpeakerRole != SiegeCastleActionSpeakerRole.CapturedLord)
+            {
+                return Block(hasRecognizedAction: true, action, "captured_lord_response_required");
+            }
+            if (facts.TerminalActionForTarget != SiegeCastleActionKind.Unknown)
+            {
+                return Block(hasRecognizedAction: true, action, "captured_lord_already_resolved");
+            }
+            if (facts.IsActionAlreadyApplied(action))
+            {
+                return Block(hasRecognizedAction: true, action, "castle_lord_process_already_applied");
+            }
+            SiegeCastleLordDuelConsentDecision consent =
+                SiegeCastleLordDuelConsentPolicy.Evaluate(facts.RawActionText);
+            if (!consent.IsAccepted)
+            {
+                return Block(hasRecognizedAction: true, action, consent.ReasonCode);
+            }
+            SiegeCastleDirectActionAuthorizationDecision lordProcessAuthorization =
+                SiegeCastleDirectActionAuthorizationPolicy.Evaluate(action, facts.PlayerText, facts.PendingProposalForSpeaker);
+            return lordProcessAuthorization.IsAuthorized
+                ? Allow(action, lordProcessAuthorization.ReasonCode)
+                : Block(hasRecognizedAction: true, action, lordProcessAuthorization.ReasonCode);
+        }
+
         if (SiegeCastleActionKindProfile.IsProcess(action))
         {
             if (facts.SpeakerRole != SiegeCastleActionSpeakerRole.AlliedSoldier

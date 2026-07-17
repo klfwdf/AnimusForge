@@ -91,6 +91,28 @@ internal static class CastleAftermathRuntimeBridge
 		if (isLord)
 		{
 			LordPrisonerAgentIndexes.Add(agent.Index);
+			CastleAftermathLordDuelRuntimeBridge.ProtectCapturedLord(agent);
+		}
+	}
+
+	internal static void RestorePrisonerAfterExternalControl(Agent agent)
+	{
+		if (agent == null || !agent.IsActive() || !IsPrisonerAgent(agent))
+		{
+			return;
+		}
+		try
+		{
+			Mission mission = agent.Mission ?? Mission.Current;
+			mission?.GetMissionBehavior<CastleAftermathPrisonerCommandMissionBehavior>()
+				?.RestorePrisonerAfterExternalControl(agent);
+			mission?.GetMissionBehavior<TroopInspectionMissionLogic>()
+				?.RestoreCastlePrisonerAfterExternalControl(agent);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CastleAftermath", "Restore prisoner after external control failed. Agent="
+				+ agent.Index + ", Error=" + ex.Message);
 		}
 	}
 
@@ -418,6 +440,7 @@ internal static class CastleAftermathRuntimeBridge
 					commandBehavior.CompleteSpawn,
 					commandBehavior.SharedCleanup));
 			}
+			CastleAftermathLordDuelRuntimeBridge.AttachMissionBehavior(mission);
 			Logger.Log("CastleAftermath", "Attached troop-inspection prisoner and castle command behaviors. Selected=" + SelectedPrisonerCount);
 		}
 		catch (Exception ex)
@@ -622,6 +645,16 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 		_spawnCompleted = true;
 		Logger.Log("CastleAftermath", "Troop-inspection prisoner spawn callback completed. Selected="
 			+ selectedCount + ", Regular=" + _spawnedRegulars + ", Lords=" + _spawnedLords);
+	}
+
+	internal void RestorePrisonerAfterExternalControl(Agent agent)
+	{
+		if (agent == null || !agent.IsActive() || !_agents.ContainsKey(agent))
+		{
+			return;
+		}
+		_civilianActionSetApplied.Remove(agent);
+		ApplyPrisonerPose(agent);
 	}
 
 	internal int BeginRegularPrisonerSlaughter(TroopRoster requestedRoster)
@@ -1243,6 +1276,10 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 	{
 		foreach (Agent agent in _agents.Keys.Where(agent => agent != null && agent.IsActive() && agent.Formation == formation).ToList())
 		{
+			if (CastleAftermathLordDuelRuntimeBridge.ControlsAgent(agent))
+			{
+				continue;
+			}
 			try
 			{
 				agent.SetActionChannel(0, ActionIndexCache.act_none, true, (AnimFlags)0UL, 0f, 1f, -0.2f, 0.4f, 0f, false, -0.2f, 0, true);
@@ -1262,6 +1299,10 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 	{
 		foreach (Agent agent in _agents.Keys.ToList())
 		{
+			if (CastleAftermathLordDuelRuntimeBridge.ControlsAgent(agent))
+			{
+				continue;
+			}
 			ApplyPrisonerPose(agent);
 		}
 	}
@@ -1270,6 +1311,10 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 	{
 		foreach (Agent agent in _agents.Keys.Where(agent => agent != null && agent.IsActive() && agent.Formation == formation).ToList())
 		{
+			if (CastleAftermathLordDuelRuntimeBridge.ControlsAgent(agent))
+			{
+				continue;
+			}
 			ApplyPrisonerPose(agent);
 		}
 	}
@@ -1278,7 +1323,8 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 	{
 		foreach (Agent agent in _agents.Keys.ToList())
 		{
-			if (agent == null || !agent.IsActive() || _slaughterTargets.Contains(agent))
+			if (agent == null || !agent.IsActive() || _slaughterTargets.Contains(agent)
+				|| CastleAftermathLordDuelRuntimeBridge.ControlsAgent(agent))
 			{
 				continue;
 			}
@@ -1294,7 +1340,8 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 
 	private void ApplyPrisonerPose(Agent agent)
 	{
-		if (agent == null || !agent.IsActive() || _slaughterTargets.Contains(agent))
+		if (agent == null || !agent.IsActive() || _slaughterTargets.Contains(agent)
+			|| CastleAftermathLordDuelRuntimeBridge.ControlsAgent(agent))
 		{
 			return;
 		}
@@ -1366,6 +1413,7 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 		}
 		_cleaned = true;
 		CastleAftermathLordExecutionRuntimeBridge.CancelForMission(base.Mission, reason);
+		CastleAftermathLordDuelRuntimeBridge.CancelForMission(base.Mission, reason);
 		_agents.Clear();
 		_movementStates.Clear();
 		_civilianActionSetApplied.Clear();

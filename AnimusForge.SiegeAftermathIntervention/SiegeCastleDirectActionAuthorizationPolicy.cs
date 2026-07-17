@@ -38,6 +38,12 @@ public static class SiegeCastleDirectActionAuthorizationPolicy
         "execute you", "behead you"
     };
 
+    private static readonly string[] LordDuelTerms =
+    {
+        "和你决斗", "与你决斗", "跟你决斗", "同你决斗", "向你挑战", "和我决斗", "与我决斗", "跟我决斗",
+        "单挑", "决斗", "赢了我就放", "打赢我就放", "胜过我就放", "fight me", "duel", "single combat"
+    };
+
     private static readonly string[] LordSellTerms =
     {
         "把你卖给赎金经纪人", "将你卖给赎金经纪人", "把你交给赎金经纪人", "将你交给赎金经纪人",
@@ -100,6 +106,7 @@ public static class SiegeCastleDirectActionAuthorizationPolicy
             SiegeCastleActionKind.ReceiveArmaments => ContainsAny(text, ArmamentTerms),
             SiegeCastleActionKind.RecruitLord => ContainsAny(text, LordRecruitTerms),
             SiegeCastleActionKind.SellLord => ContainsAny(text, LordSellTerms),
+            SiegeCastleActionKind.DuelLord => ContainsAny(text, LordDuelTerms),
             SiegeCastleActionKind.ExecuteLord => ContainsAny(text, LordExecuteTerms),
             _ => false
         };
