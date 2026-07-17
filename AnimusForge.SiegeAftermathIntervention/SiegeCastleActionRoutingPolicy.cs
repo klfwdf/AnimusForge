@@ -106,7 +106,8 @@ public static class SiegeCastleActionRoutingPolicy
             {
                 return Block(hasRecognizedAction: true, action, "no_regular_prisoners_remaining");
             }
-            if (facts.TerminalActionForTarget != SiegeCastleActionKind.Unknown)
+            if (facts.SpeakerRole == SiegeCastleActionSpeakerRole.CapturedLord
+                && facts.TerminalActionForTarget != SiegeCastleActionKind.Unknown)
             {
                 return Block(hasRecognizedAction: true, action, "target_already_terminally_resolved");
             }
@@ -133,9 +134,9 @@ public static class SiegeCastleActionRoutingPolicy
             {
                 return Block(hasRecognizedAction: true, action, "no_regular_prisoners_remaining");
             }
-            if (facts.TerminalActionForTarget != SiegeCastleActionKind.Unknown)
+            if (facts.IsActionAlreadyApplied(action))
             {
-                return Block(hasRecognizedAction: true, action, "regular_prisoners_already_resolved");
+                return Block(hasRecognizedAction: true, action, "regular_prisoner_disposition_already_pending");
             }
             if (SiegeCastleActionKindProfile.IsVoluntary(action)
                 && (facts.SpeakerRole != SiegeCastleActionSpeakerRole.RegularPrisoner

@@ -124,20 +124,53 @@ internal static class CastleAftermathDispositionSessionBridge
 		{
 			return false;
 		}
-		if (SiegeCastleActionKindProfile.IsRegularPrisonerTerminal(action)
-			&& _regularTerminalAction != SiegeCastleActionKind.Unknown)
+		if (SiegeCastleActionKindProfile.IsRegularPrisonerTerminal(action))
 		{
-			return false;
+			return TryStageRegularTerminalAction(action, role, out _);
 		}
 		if (!RegularAppliedActions.Add(action))
 		{
 			return false;
 		}
-		if (SiegeCastleActionKindProfile.IsRegularPrisonerTerminal(action))
-		{
-			_regularTerminalAction = action;
-		}
 		return true;
+	}
+
+	internal static bool TryStageRegularTerminalAction(
+		SiegeCastleActionKind action,
+		SiegeCastleActionSpeakerRole role,
+		out SiegeCastleActionKind previousAction)
+	{
+		previousAction = _regularTerminalAction;
+		if (!SiegeCastleActionKindProfile.IsRegularPrisonerTerminal(action)
+			|| (role != SiegeCastleActionSpeakerRole.RegularPrisoner
+				&& role != SiegeCastleActionSpeakerRole.AlliedSoldier)
+			|| previousAction == action)
+		{
+			return false;
+		}
+
+		if (previousAction != SiegeCastleActionKind.Unknown)
+		{
+			RegularAppliedActions.Remove(previousAction);
+		}
+		RegularAppliedActions.Add(action);
+		_regularTerminalAction = action;
+		return true;
+	}
+
+	internal static void RestoreRegularTerminalAction(
+		SiegeCastleActionKind failedAction,
+		SiegeCastleActionKind previousAction)
+	{
+		if (_regularTerminalAction == failedAction)
+		{
+			RegularAppliedActions.Remove(failedAction);
+		}
+		_regularTerminalAction = previousAction;
+		if (previousAction != SiegeCastleActionKind.Unknown)
+		{
+			RegularAppliedActions.Add(previousAction);
+		}
 	}
 
 	internal static void UnmarkApplied(

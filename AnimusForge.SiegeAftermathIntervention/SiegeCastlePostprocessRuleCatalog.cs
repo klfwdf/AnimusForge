@@ -7,6 +7,8 @@ namespace AnimusForge.SiegeAftermathIntervention;
 /// </summary>
 public static class SiegeCastlePostprocessRuleCatalog
 {
+    private const string RevisableStageContract = "标签触发后只更新本场暂定命令，尚存战俘不会立即从场景或俘虏名册消失；玩家离场时才按最后一条有效命令执行名册、金币与地方副作用。离场前另一种有效普通战俘处置可以覆盖本命令，NPC必须记住前后改判。";
+
     private static readonly SiegePostprocessRuleDefinition ProposeRecruitRule = Rule(
         SiegeCastleActionTagCatalog.ProposeRecruitPrisonersTag,
         "【提议，不结算】仅在己方士兵建议收编，或普通战俘请求归顺，而玩家尚未明确同意时输出。只登记待确认；不得改变名册。士兵提出后必须由玩家后续明确同意。");
@@ -41,39 +43,39 @@ public static class SiegeCastlePostprocessRuleCatalog
 
     private static readonly SiegePostprocessRuleDefinition ReleaseRule = Rule(
         SiegeCastleActionTagCatalog.ReleasePrisonersTag,
-        "【普通战俘群体最终标签】释放本次带入且尚在主队俘虏名册的普通战俘；领主不包含。提高地方与俘虏信任，但围城退出仍且只走一次原版宽恕，繁荣仍受原版宽恕损失。与其他普通战俘最终标签互斥。");
+        "【普通战俘群体暂定标签】暂定释放本次带入且尚存的普通战俘；领主不包含。最终执行后提高地方与俘虏信任，但围城退出仍且只走一次原版宽恕，繁荣仍受原版宽恕损失。" + RevisableStageContract);
 
     private static readonly SiegePostprocessRuleDefinition SellRule = Rule(
         SiegeCastleActionTagCatalog.SellPrisonersTag,
-        "【普通战俘群体最终标签】严格复用原版酒馆赎卖动作，按每名本次带入普通战俘在酒馆出售时的实时价格结算金币、技能经验和原版事件，并移出俘虏名册；领主不包含。造成地方、村庄、要人和俘虏信任负面效果。与其他普通战俘最终标签互斥。");
+        "【普通战俘群体暂定标签】暂定严格复用原版酒馆赎卖动作处理本次带入且尚存的普通战俘；离场最终执行时才按实时价格结算金币、技能经验和原版事件并移出名册；领主不包含。造成地方、村庄、要人和俘虏信任负面效果。" + RevisableStageContract);
 
     private static readonly SiegePostprocessRuleDefinition VoluntaryRecruitRule = Rule(
         SiegeCastleActionTagCatalog.RecruitPrisonersVoluntaryTag,
-        "【普通战俘群体最终标签·自愿】仅当战俘明确心甘情愿归顺且当前信任达到门槛时输出。按主队空余编制转入成员名册，实际人数不减半；自愿年度增益按城镇同类效果最多一半。与其他最终标签互斥，并可能引发随军士兵不满等待安抚。");
+        "【普通战俘群体暂定标签·自愿】仅当战俘明确心甘情愿归顺且当前信任达到门槛时输出。离场最终执行时按主队空余编制转入成员名册，实际人数不减半；自愿年度增益按城镇同类效果最多一半，并可能引发随军士兵不满等待安抚。" + RevisableStageContract);
 
     private static readonly SiegePostprocessRuleDefinition ForcedRecruitRule = Rule(
         SiegeCastleActionTagCatalog.RecruitPrisonersForcedTag,
-        "【普通战俘群体最终标签·强制】玩家明确命令收编，但战俘未自愿或信任不足时输出。按主队空余编制转入成员名册，实际人数不减半；长期正面增益仅为自愿的50%，负面后果按约1.5倍。与其他最终标签互斥，并可能引发随军士兵不满等待安抚。");
+        "【普通战俘群体暂定标签·强制】玩家明确命令收编，但战俘未自愿或信任不足时输出。离场最终执行时按主队空余编制转入成员名册，实际人数不减半；长期正面增益仅为自愿的50%，负面后果按约1.5倍，并可能引发随军士兵不满等待安抚。" + RevisableStageContract);
 
     private static readonly SiegePostprocessRuleDefinition VoluntaryLaborRule = Rule(
         SiegeCastleActionTagCatalog.LaborPrisonersVoluntaryTag,
-        "【普通战俘群体最终标签·自愿】战俘明确同意接受农奴、修路或修缮等劳役处置且信任达到门槛时输出。标签处理本次带入的全部普通战俘；离开场景后直接施加持续游戏一年的地方效果，不创建服役单位或期限，也不转入玩家部队。与其他最终标签互斥。");
+        "【普通战俘群体暂定标签·自愿】战俘明确同意接受农奴、修路或修缮等劳役处置且信任达到门槛时输出。离场最终执行时对尚存战俘直接施加持续游戏一年的地方效果，不创建服役单位或期限，也不转入玩家部队。" + RevisableStageContract);
 
     private static readonly SiegePostprocessRuleDefinition ForcedLaborRule = Rule(
         SiegeCastleActionTagCatalog.LaborPrisonersForcedTag,
-        "【普通战俘群体最终标签·强制】玩家强迫本次带入的全部普通战俘接受劳役处置时输出。离开场景后直接施加持续游戏一年的地方效果，不创建服役单位或期限；正面提升仅为自愿的50%，负面后果约为自愿的1.5倍，也不转入玩家部队。与其他最终标签互斥。");
+        "【普通战俘群体暂定标签·强制】玩家强迫本次带入且尚存的普通战俘接受劳役处置时输出。离场最终执行时直接施加持续游戏一年的地方效果，不创建服役单位或期限；正面提升仅为自愿的50%，负面后果约为自愿的1.5倍，也不转入玩家部队。" + RevisableStageContract);
 
     private static readonly SiegePostprocessRuleDefinition VoluntaryInstructorRule = Rule(
         SiegeCastleActionTagCatalog.InstructorPrisonersVoluntaryTag,
-        "【普通战俘群体最终标签·自愿】有训练能力的战俘明确自愿接受教官处置且信任达到门槛时输出。标签处理本次带入的全部普通战俘；离开场景后直接提高附近志愿兵补充速度与新兵精锐度一年，不创建教官单位或期限，上限为城镇同类效果一半。与其他最终标签互斥。");
+        "【普通战俘群体暂定标签·自愿】有训练能力的战俘明确自愿接受教官处置且信任达到门槛时输出。离场最终执行时对尚存战俘直接提高附近志愿兵补充速度与新兵精锐度一年，不创建教官单位或期限，上限为城镇同类效果一半。" + RevisableStageContract);
 
     private static readonly SiegePostprocessRuleDefinition ForcedInstructorRule = Rule(
         SiegeCastleActionTagCatalog.InstructorPrisonersForcedTag,
-        "【普通战俘群体最终标签·强制】玩家强迫本次带入的全部普通战俘接受教官处置时输出。离开场景后直接施加一年效果，不创建教官单位或期限；补充速度与精锐度提升仅为自愿的50%，负面后果约为自愿的1.5倍。与其他最终标签互斥。");
+        "【普通战俘群体暂定标签·强制】玩家强迫本次带入且尚存的普通战俘接受教官处置时输出。离场最终执行时直接施加一年效果，不创建教官单位或期限；补充速度与精锐度提升仅为自愿的50%，负面后果约为自愿的1.5倍。" + RevisableStageContract);
 
     private static readonly SiegePostprocessRuleDefinition SlaughterRule = Rule(
         SiegeCastleActionTagCatalog.SlaughterPrisonersTag,
-        "【普通战俘群体最终标签·高风险】只有玩家明确命令或明确同意本说话者此前提议时输出。命令会把普通战俘转为敌对目标，由编队1的己方士兵在场景内实际攻击并杀死；死亡后才从名册扣除，绝不直接刷没。自动包含一次接收军械。退出仍只调用一次原版宽恕，再补齐城堡繁荣与忠诚至原版毁坏强度；领主不包含。");
+        "【普通战俘群体现行命令·高风险】只有玩家明确命令或明确同意本说话者此前提议时输出。命令会覆盖先前暂定处置，把尚存普通战俘转为敌对目标，由编队1的己方士兵在场景内实际攻击并杀死；死亡后才从名册扣除，绝不直接刷没。若玩家随后改判，停止攻击幸存者；已实际死亡者不可复活，新处置仅作用于幸存者。自动包含一次接收军械。退出仍只调用一次原版宽恕，再补齐城堡繁荣与忠诚至原版毁坏强度；领主不包含。");
 
     private static readonly SiegePostprocessRuleDefinition AppeaseRule = Rule(
         SiegeCastleActionTagCatalog.AppeaseSoldiersTag,
@@ -110,8 +112,7 @@ public static class SiegeCastlePostprocessRuleCatalog
                 return rules;
             }
 
-            if (facts.RemainingRegularPrisoners <= 0
-                || facts.TerminalActionForTarget != SiegeCastleActionKind.Unknown)
+            if (facts.RemainingRegularPrisoners <= 0)
             {
                 return rules;
             }
@@ -150,8 +151,7 @@ public static class SiegeCastlePostprocessRuleCatalog
 
         if (facts.SpeakerRole == SiegeCastleActionSpeakerRole.RegularPrisoner)
         {
-            if (facts.RemainingRegularPrisoners <= 0
-                || facts.TerminalActionForTarget != SiegeCastleActionKind.Unknown)
+            if (facts.RemainingRegularPrisoners <= 0)
             {
                 return rules;
             }

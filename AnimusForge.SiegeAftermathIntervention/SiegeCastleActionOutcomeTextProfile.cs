@@ -40,9 +40,24 @@ public static class SiegeCastleActionOutcomeTextProfile
             + " 名普通战俘保持俘虏身份。退出时仍且只走一次原版宽恕。";
     }
 
-    public static string BuildSlaughterStartedMessage(int targets)
-        => "【城堡处置】屠戮命令已下达：编队1的己方士兵必须在场景内实际杀死 "
+    public static string BuildSlaughterStartedMessage(
+        int targets,
+        SiegeCastleActionKind previousAction = SiegeCastleActionKind.Unknown)
+        => "【城堡处置】"
+            + (previousAction == SiegeCastleActionKind.Unknown
+                ? "屠戮命令已下达"
+                : "已推翻“" + SiegeCastleRegularDispositionStagingProfile.Describe(previousAction) + "”并改判为现场屠戮")
+            + "：编队1的己方士兵必须在场景内实际杀死 "
             + Count(targets) + " 名普通战俘；尚未死亡者不会从名册扣除。军械已自动收缴一次。";
+
+    public static string BuildDeferredTerminalFailureMessage(
+        SiegeCastleActionKind action,
+        int remaining,
+        string reasonCode)
+        => "【城堡处置】离场时未能执行暂定的“"
+            + SiegeCastleRegularDispositionStagingProfile.Describe(action)
+            + "”；仍有 " + Count(remaining) + " 名普通战俘保持俘虏身份。原因="
+            + (string.IsNullOrWhiteSpace(reasonCode) ? "unknown" : reasonCode.Trim()) + "。";
 
     public static string BuildSlaughterKillMessage(int killedTotal, int remaining)
         => "【城堡处置】普通战俘实际死亡累计 " + Count(killedTotal)

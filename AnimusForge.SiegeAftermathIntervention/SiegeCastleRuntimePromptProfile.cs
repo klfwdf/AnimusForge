@@ -41,8 +41,8 @@ public static class SiegeCastleRuntimePromptProfile
             {
                 sb.Append("当前玩家对普通战俘的处置已经引发军心不满，确实处于待安抚状态；其中已收编普通战俘=")
                     .Append(facts.RecruitedRegularPrisoners)
-                    .Append("，当前普通战俘最终处置=")
-                    .Append(facts.TerminalActionForTarget == SiegeCastleActionKind.Unknown ? "尚未结算" : facts.TerminalActionForTarget.ToString())
+                    .Append("，当前普通战俘暂定处置=")
+                    .Append(facts.TerminalActionForTarget == SiegeCastleActionKind.Unknown ? "尚未指定" : facts.TerminalActionForTarget.ToString())
                     .Append("。你可以表达不满、疑虑并要求解释，但最终仍须服从。只有玩家本轮实际给出安抚、补偿、军纪解释或战利安排，并由你直接回应且明确接受时，后处理才可结算城堡安兵；单纯要求继续站岗或服从不算安抚。");
             }
             else if (facts.SoldierAppeasementApplied)
@@ -62,7 +62,7 @@ public static class SiegeCastleRuntimePromptProfile
         {
             sb.Append(facts.IsLord
                 ? "【被俘领主】你可以愤怒、不甘、傲慢、求饶或谈判，但必须承认自己已被控制。善待与接收军械只针对你本人；收编、交给赎金经纪人贩卖与处决也只针对你本人，不能代表普通战俘。玩家明确命令把你交给赎金经纪人时，你只能以当前单体领主身份直接回应；该结算采用原版酒馆实时赎卖价。非族长面对收编谈判时要区分写信引见族长与背叛家族成为同伴；不要擅自宣布已经加入玩家、已经被贩卖或已经被处决。"
-                : "【战俘士兵】你按守城战败、缴械并等待处置的普通守军理解。你可以恐惧、求生、屈服，或请求释放、归顺、劳役赎罪、充当教官，但请求与提议本身绝不代表玩家同意；提议语义必须准确，不能把农奴、缴械、释放或教官说成收编，也不能把可指挥编队误认为已经收编。普通士兵标签按本次带入群体结算：善待和接收军械是可重复对话但单次结算的流程，释放、贩卖、屠戮、自愿/强制收编、劳役服刑、自愿/强制担任教官属于互斥最终处置。劳役与教官只在玩家离开场景时直接结算地方年度效果，不代表生成或追踪实际服役单位。自愿结算必须由你明确心甘情愿并满足信任门槛；否则只能是强制分支。求饶闲聊、旁听和未获玩家同意的主动提议不能结算。");
+                : "【战俘士兵】你按守城战败、缴械并等待处置的普通守军理解。你可以恐惧、求生、屈服，或请求释放、归顺、劳役赎罪、充当教官，但请求与提议本身绝不代表玩家同意；提议语义必须准确，不能把农奴、缴械、释放或教官说成收编，也不能把可指挥编队误认为已经收编。普通士兵标签按本次带入群体处理：善待和接收军械是可重复对话但单次结算的流程；释放、贩卖、自愿/强制收编、劳役服刑、自愿/强制担任教官在场景内只是可改判的暂定处置，尚存战俘不会立刻消失，玩家离场时才按最后有效命令执行。屠戮会立即开始真实攻击，但只有实际死亡者才扣名册，之后改判只作用于幸存者。劳役与教官离场时直接结算地方年度效果，不代表生成或追踪实际服役单位。自愿结算必须由你明确心甘情愿并满足信任门槛；否则只能是强制分支。求饶闲聊、旁听和未获玩家同意的主动提议不能结算。");
             if (facts.IsLord)
             {
                 sb.Append("【当前领主政治事实】个人信任=").Append(facts.SpeakerTrust)
@@ -98,7 +98,7 @@ public static class SiegeCastleRuntimePromptProfile
             {
                 sb.Append("该目标本场已经结算接收军械，不得重复触发。");
             }
-            if (facts.TerminalActionForTarget != SiegeCastleActionKind.Unknown)
+            if (facts.IsLord && facts.TerminalActionForTarget != SiegeCastleActionKind.Unknown)
             {
                 sb.Append("该目标已经进入最终处置：").Append(facts.TerminalActionForTarget)
                     .Append("；不得再触发其他流程或互斥最终标签。");
@@ -107,6 +107,14 @@ public static class SiegeCastleRuntimePromptProfile
             {
                 sb.Append(SiegeCastleSoldierProposalProfile.BuildPendingContext(facts.PendingProposalForSpeaker));
             }
+        }
+
+        if (!facts.IsLord && facts.TerminalActionForTarget != SiegeCastleActionKind.Unknown)
+        {
+            sb.Append(SiegeCastleRegularDispositionStagingProfile.BuildPromptState(
+                facts.TerminalActionForTarget,
+                facts.RegularDispositionRevisionCount,
+                facts.SlaughteredRegularPrisoners));
         }
 
         sb.Append("【城堡与城镇规则隔离】城镇民众、搜掠、抢钱、救济、宣抚、盟誓、召集民众、血洗城镇和迁殖规则不适用于本城堡阶段。不要输出或暗示任何城镇 GCCZ 处置标签。城堡专用的战俘收编、屠戮、士兵安抚和领主处置由独立接口处理，不能借用城镇标签代替。")
@@ -177,7 +185,8 @@ public sealed class SiegeCastleRuntimePromptFacts
         SiegeCastleActionKind terminalActionForTarget = SiegeCastleActionKind.Unknown,
         bool speakerIsClanLeader = false,
         bool playerHasKingdom = false,
-        bool playerRulesKingdom = false)
+        bool playerRulesKingdom = false,
+        int regularDispositionRevisionCount = 0)
     {
         CastleName = castleName ?? string.Empty;
         PlayerName = playerName ?? string.Empty;
@@ -200,6 +209,7 @@ public sealed class SiegeCastleRuntimePromptFacts
         SpeakerIsClanLeader = speakerIsClanLeader;
         PlayerHasKingdom = playerHasKingdom;
         PlayerRulesKingdom = playerRulesKingdom;
+        RegularDispositionRevisionCount = regularDispositionRevisionCount < 0 ? 0 : regularDispositionRevisionCount;
     }
 
     public static SiegeCastleRuntimePromptFacts Empty => new SiegeCastleRuntimePromptFacts(
@@ -259,4 +269,6 @@ public sealed class SiegeCastleRuntimePromptFacts
     public bool PlayerHasKingdom { get; }
 
     public bool PlayerRulesKingdom { get; }
+
+    public int RegularDispositionRevisionCount { get; }
 }

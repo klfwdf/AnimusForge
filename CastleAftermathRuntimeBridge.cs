@@ -259,6 +259,21 @@ internal static class CastleAftermathRuntimeBridge
 		}
 	}
 
+	internal static int CancelRegularPrisonerSlaughter(string source)
+	{
+		try
+		{
+			return Mission.Current?.GetMissionBehavior<CastleAftermathPrisonerCommandMissionBehavior>()
+				?.CancelRegularPrisonerSlaughter(source) ?? 0;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CastleAftermath", "Cancel regular prisoner slaughter bridge failed. Source="
+				+ (source ?? "N/A") + ", Error=" + ex);
+			return 0;
+		}
+	}
+
 	internal static bool RemoveKilledRegularPrisonerFromSelection(CharacterObject character, string source)
 	{
 		if (_selectedPrisonerRoster == null || character == null || character.IsHero)
@@ -663,6 +678,104 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 		_nextSlaughterCombatRefreshTime = 0f;
 		IssueSlaughterCombatOrders(mission, logDetails: true);
 		return _slaughterTargets.Count;
+	}
+
+	internal int CancelRegularPrisonerSlaughter(string source)
+	{
+		Mission mission = base.Mission;
+		Team playerTeam = mission?.PlayerTeam ?? Agent.Main?.Team;
+		if (mission == null || playerTeam == null || (!_slaughterActive && _slaughterTargets.Count == 0))
+		{
+			return 0;
+		}
+
+		_slaughterActive = false;
+		_nextSlaughterCombatRefreshTime = 0f;
+		List<Agent> survivors = _slaughterTargets
+			.Where(agent => agent != null && agent.IsHuman && agent.IsActive())
+			.ToList();
+		_slaughterTargets.Clear();
+
+		try
+		{
+			if (_slaughterEnemyTeam != null && _slaughterEnemyTeam != playerTeam)
+			{
+				_slaughterEnemyTeam.SetIsEnemyOf(playerTeam, isEnemyOf: false);
+				playerTeam.SetIsEnemyOf(_slaughterEnemyTeam, isEnemyOf: false);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CastleAftermath", "Clear castle slaughter hostility failed: " + ex.Message);
+		}
+
+		Formation prisonerFormation = playerTeam.GetFormation(
+			(FormationClass)SiegeCastleRosterSelectionProfile.RegularPrisonerFormationIndex);
+		foreach (Agent prisoner in survivors)
+		{
+			try
+			{
+				prisoner.InvalidateTargetAgent();
+				prisoner.ResetEnemyCaches();
+				prisoner.SetTeam(playerTeam, sync: true);
+				prisoner.Formation = prisonerFormation;
+				prisoner.TryAttachToFormation();
+				prisoner.SetMortalityState(Agent.MortalityState.Immortal);
+				prisoner.SetWatchState(Agent.WatchState.Patrolling);
+				prisoner.SetShouldCatchUpWithFormation(false);
+				prisoner.UpdateFormationOrders();
+				ApplyPrisonerPose(prisoner);
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("CastleAftermath", "Restore prisoner after slaughter cancellation failed. Agent="
+					+ prisoner.Index + ", Error=" + ex.Message);
+			}
+		}
+
+		Formation alliedFormation = playerTeam.GetFormation(
+			(FormationClass)SiegeCastleRosterSelectionProfile.AlliedFormationClassIndex);
+		try
+		{
+			alliedFormation?.SetMovementOrder(MovementOrder.MovementOrderStop);
+		}
+		catch { }
+		foreach (int agentIndex in _slaughterReadyAlliedAgentIndexes.ToList())
+		{
+			Agent allied = mission.Agents?.FirstOrDefault(agent => agent != null && agent.Index == agentIndex);
+			if (allied == null || !allied.IsActive())
+			{
+				continue;
+			}
+			try
+			{
+				AgentNavigator navigator = allied.GetComponent<CampaignAgentComponent>()?.AgentNavigator;
+				AlarmedBehaviorGroup alarmedGroup = navigator?.GetBehaviorGroup<AlarmedBehaviorGroup>();
+				if (alarmedGroup != null)
+				{
+					alarmedGroup.DisableCalmDown = false;
+					alarmedGroup.DisableScriptedBehavior();
+					alarmedGroup.RemoveBehavior<FightBehavior>();
+				}
+				navigator?.ClearTarget();
+				allied.InvalidateTargetAgent();
+				allied.ResetEnemyCaches();
+				allied.SetWatchState(Agent.WatchState.Patrolling);
+				SiegeAiInterventionBehavior.EnsureAgentPlayerCommandableForExternal(
+					allied,
+					"castle_slaughter_cancelled",
+					(FormationClass)SiegeCastleRosterSelectionProfile.AlliedFormationClassIndex);
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("CastleAftermath", "Restore allied soldier after slaughter cancellation failed. Agent="
+					+ allied.Index + ", Error=" + ex.Message);
+			}
+		}
+		_slaughterReadyAlliedAgentIndexes.Clear();
+		Logger.Log("CastleAftermath", "Cancelled castle prisoner slaughter and restored surviving prisoners. Survivors="
+			+ survivors.Count + ", Source=" + (source ?? "N/A"));
+		return survivors.Count;
 	}
 
 	private void IssueSlaughterCombatOrders(Mission mission, bool logDetails)

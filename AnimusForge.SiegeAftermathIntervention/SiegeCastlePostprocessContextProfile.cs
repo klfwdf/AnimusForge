@@ -33,8 +33,10 @@ public static class SiegeCastlePostprocessContextProfile
             .Append(SiegeCastlePrisonerDispositionKindProfile.Describe(facts.PendingProposalForSpeaker))
             .Append("；本说话者俘虏信任=")
             .Append(facts.SpeakerTrust)
-            .Append("；目标最终处置=")
-            .Append(facts.TerminalActionForTarget == SiegeCastleActionKind.Unknown ? "未结算" : facts.TerminalActionForTarget.ToString())
+            .Append(facts.SpeakerRole == SiegeCastleActionSpeakerRole.CapturedLord
+                ? "；目标最终处置="
+                : "；普通战俘当前暂定处置=")
+            .Append(facts.TerminalActionForTarget == SiegeCastleActionKind.Unknown ? "未指定" : facts.TerminalActionForTarget.ToString())
             .Append("；玩家本轮授权判定=")
             .Append(authorization.IsAuthorized
                 ? SiegeCastlePrisonerDispositionKindProfile.Describe(authorization.Disposition)
@@ -43,7 +45,7 @@ public static class SiegeCastlePostprocessContextProfile
             .Append(appeasementAuthorization.IsAuthorized
                 ? "已明确安抚"
                 : "未满足（" + appeasementAuthorization.ReasonCode + "）")
-            .Append("。己方士兵或普通战俘主动提出释放、贩卖、收编、屠戮、劳役或教官方案时，只能输出与建议语义完全一致的提议标签；提议只记录待确认状态，绝不能直接结算。只有玩家本轮明确命令，或明确同意本说话者此前同类提议后，才可输出对应结算标签。己方士兵可以代玩家执行群体命令，但不能把劳役、释放、贩卖或教官命令改写成收编。自愿分支只能由普通战俘本人直接回应并达到信任门槛。安兵也必须有玩家本轮明确安抚意图，不能只凭士兵表示服从结算。闲聊、旁听、转述或领主回复不得触发普通战俘处置。一次回复最多输出一个城堡处置标签。");
+            .Append("。己方士兵或普通战俘主动提出释放、贩卖、收编、屠戮、劳役或教官方案时，只能输出与建议语义完全一致的提议标签；提议只记录待确认状态，绝不能直接结算。只有玩家本轮明确命令，或明确同意本说话者此前同类提议后，才可输出对应处置标签。普通战俘处置标签在场景内只更新当前暂定命令，最新有效命令覆盖旧命令；除现场屠戮的真实死亡外，不得声称战俘已经消失、转队、获释、售出或完成地方效果。己方士兵可以代玩家执行群体命令，但不能把劳役、释放、贩卖或教官命令改写成收编。自愿分支只能由普通战俘本人直接回应并达到信任门槛。安兵也必须有玩家本轮明确安抚意图，不能只凭士兵表示服从结算。闲聊、旁听、转述或领主回复不得触发普通战俘处置。一次回复最多输出一个城堡处置标签。");
 
         if (facts.SpeakerRole == SiegeCastleActionSpeakerRole.CapturedLord)
         {
