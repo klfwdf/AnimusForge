@@ -3848,7 +3848,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		string extraFact = BuildDeliveryFactText(session, delivered: true, recipient);
 		Log("[MemoryPerf] history_start reason=courier_reply session=" + session.Id + " hero=" + SafeHeroId(recipient) + " mode=background_prepare");
 		System.Diagnostics.Stopwatch historySw = System.Diagnostics.Stopwatch.StartNew();
-		string historyText = (MyBehavior.BuildHistoryContextForExternal(recipient, 24, session.LetterText, extraFact) ?? "").Trim();
+		string historyText = (MyBehavior.BuildHistoryContextForExternal(recipient, DuelSettings.GetDailyConversationHistoryLineLimitForExternal(), session.LetterText, extraFact) ?? "").Trim();
 		historySw.Stop();
 		Log("[MemoryPerf] history_done reason=courier_reply session=" + session.Id + " hero=" + SafeHeroId(recipient) + " chars=" + historyText.Length + " hasValue=" + !string.IsNullOrWhiteSpace(historyText) + " ms=" + Math.Round(historySw.Elapsed.TotalMilliseconds, 2));
 		List<string> preprocessRuleHits = MyBehavior.RunCourierRulePreprocessForExternal(recipient, session.LetterText, extraFact, recipient.CharacterObject, targetAgentIndex: -1, excludedRuleIds: CourierExcludedRuleIds);
@@ -4159,7 +4159,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		string extraFact = BuildInboundDeliveryFactText(session, delivered: false, sender);
 		Log("[MemoryPerf] history_start reason=courier_inbound session=" + session.Id + " hero=" + SafeHeroId(sender) + " mode=background_prepare");
 		System.Diagnostics.Stopwatch historySw = System.Diagnostics.Stopwatch.StartNew();
-		string historyText = (MyBehavior.BuildHistoryContextForExternal(sender, 24, null, extraFact) ?? "").Trim();
+		string historyText = (MyBehavior.BuildHistoryContextForExternal(sender, DuelSettings.GetDailyConversationHistoryLineLimitForExternal(), null, extraFact) ?? "").Trim();
 		historySw.Stop();
 		Log("[MemoryPerf] history_done reason=courier_inbound session=" + session.Id + " hero=" + SafeHeroId(sender) + " chars=" + historyText.Length + " hasValue=" + !string.IsNullOrWhiteSpace(historyText) + " ms=" + Math.Round(historySw.Elapsed.TotalMilliseconds, 2));
 		List<string> preprocessRuleHits = MyBehavior.RunCourierRulePreprocessForExternal(sender, routingInput, extraFact, sender.CharacterObject, targetAgentIndex: -1, excludedRuleIds: CourierExcludedRuleIds);
@@ -6230,7 +6230,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			playerName = Hero.MainHero?.Name?.ToString() ?? "玩家";
 		}
 		string deliveryFact = string.IsNullOrWhiteSpace(deliveryFactForPrompt) ? (session?.DeliveryFactText ?? "") : deliveryFactForPrompt;
-		string history = prebuiltHistory ?? MyBehavior.BuildHistoryContextForExternal(recipient, 24, session.LetterText, deliveryFact);
+		string history = prebuiltHistory ?? MyBehavior.BuildHistoryContextForExternal(recipient, DuelSettings.GetDailyConversationHistoryLineLimitForExternal(), session.LetterText, deliveryFact);
 		string recentFacts = MyBehavior.BuildRecentNpcFactContextForExternal(recipient, 6);
 		string senderIdentity = MyBehavior.BuildPlayerCourierSenderIdentityForExternal(recipient);
 		string senderRelationship = MyBehavior.BuildNpcPlayerKinshipPromptLineForExternal(recipient);
@@ -6302,7 +6302,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			playerName = Hero.MainHero?.Name?.ToString() ?? "玩家";
 		}
 		string fact = string.IsNullOrWhiteSpace(factForPrompt) ? (session?.DeliveryFactText ?? "") : factForPrompt;
-		string history = prebuiltHistory ?? MyBehavior.BuildHistoryContextForExternal(sender, 24, null, fact);
+		string history = prebuiltHistory ?? MyBehavior.BuildHistoryContextForExternal(sender, DuelSettings.GetDailyConversationHistoryLineLimitForExternal(), null, fact);
 		string recentFacts = string.Equals(session?.InboundMotiveType, LetterMotiveStatus, StringComparison.OrdinalIgnoreCase)
 			? MyBehavior.BuildRecentNpcFactContextForExternal(sender, 6)
 			: "";

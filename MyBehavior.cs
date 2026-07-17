@@ -31964,11 +31964,50 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 			}
 		}
+		int rawMessageCount = result.Count;
+		int historyLineLimit = DuelSettings.GetDailyConversationHistoryLineLimitForExternal();
+		result = KeepUncompressedFactsAndRecentConversationMessages(result, historyLineLimit);
 		sw.Stop();
-		Logger.Log("Logic", "[MemoryPerf] uncompressed_memory_done hero=" + normalizedMemoryId + " drafts=" + drafts.Count + " messages=" + result.Count + " agent=" + targetAgentIndex + " includeCurrentSession=" + includeCurrentActiveSceneSession + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
+		Logger.Log("Logic", "[MemoryPerf] uncompressed_memory_done hero=" + normalizedMemoryId + " drafts=" + drafts.Count + " rawMessages=" + rawMessageCount + " messages=" + result.Count + " historyLineLimit=" + historyLineLimit + " agent=" + targetAgentIndex + " includeCurrentSession=" + includeCurrentActiveSceneSession + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
 		if (IsNonHeroMemoryId(normalizedMemoryId))
 		{
-			LogNonHeroMemoryTrace("stage=uncompressed_build_done memoryId=" + normalizedMemoryId + " drafts=" + drafts.Count + " draftLines=" + CountDailyMemoryDraftLines(drafts) + " messages=" + result.Count + " agent=" + targetAgentIndex + " includeCurrentSession=" + includeCurrentActiveSceneSession + " currentDay=" + currentDay + " suppressedSceneSession=" + currentSceneSessionId + " suppressedDialogueSession=" + currentDialogueSessionId + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
+			LogNonHeroMemoryTrace("stage=uncompressed_build_done memoryId=" + normalizedMemoryId + " drafts=" + drafts.Count + " draftLines=" + CountDailyMemoryDraftLines(drafts) + " rawMessages=" + rawMessageCount + " messages=" + result.Count + " historyLineLimit=" + historyLineLimit + " agent=" + targetAgentIndex + " includeCurrentSession=" + includeCurrentActiveSceneSession + " currentDay=" + currentDay + " suppressedSceneSession=" + currentSceneSessionId + " suppressedDialogueSession=" + currentDialogueSessionId + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
+		}
+		return result;
+	}
+
+	private static List<ConversationMessage> KeepUncompressedFactsAndRecentConversationMessages(List<ConversationMessage> messages, int maxConversationMessages)
+	{
+		if (messages == null || messages.Count == 0)
+		{
+			return messages ?? new List<ConversationMessage>();
+		}
+		int limit = Math.Max(DuelSettings.DailyConversationHistoryLineLimitMin, Math.Min(DuelSettings.DailyConversationHistoryLineLimitMax, maxConversationMessages));
+		int conversationCount = 0;
+		for (int i = 0; i < messages.Count; i++)
+		{
+			ConversationMessage message = messages[i];
+			if (message != null && !string.Equals((message.Role ?? "").Trim(), "system", StringComparison.OrdinalIgnoreCase))
+			{
+				conversationCount++;
+			}
+		}
+		int removeCount = conversationCount - limit;
+		if (removeCount <= 0)
+		{
+			return messages;
+		}
+		List<ConversationMessage> result = new List<ConversationMessage>(messages.Count - removeCount);
+		for (int i = 0; i < messages.Count; i++)
+		{
+			ConversationMessage message = messages[i];
+			bool isFact = message != null && string.Equals((message.Role ?? "").Trim(), "system", StringComparison.OrdinalIgnoreCase);
+			if (!isFact && removeCount > 0)
+			{
+				removeCount--;
+				continue;
+			}
+			result.Add(message);
 		}
 		return result;
 	}

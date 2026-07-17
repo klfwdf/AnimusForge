@@ -313,6 +313,12 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	public const int DefaultShoutMaxTokens = 200;
 
+	public const int DailyConversationHistoryLineLimitMin = 10;
+
+	public const int DailyConversationHistoryLineLimitMax = 500;
+
+	public const int DefaultDailyConversationHistoryLineLimit = 100;
+
 	private const string NpcPersonaGenerationRequirementsFileName = "NpcPersonaGenerationRequirements.txt";
 
 	private const string CustomPromptTextStoreFolderName = "CustomPrompts";
@@ -962,7 +968,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("5. 知识检索（返回）")]
 	public int KnowledgeDirectTopN { get; set; } = 4;
 
-	[SettingPropertyInteger("实体注入上限", 1, 20, "0", Order = 1, RequireRestart = false, HintText = "控制每次对话最多向 AI 注入多少个人物、地点、家族、王国检索结果。默认 6；前处理提示词会要求越新的对话提及越靠前，运行时按该顺序优先裁剪。")]
+	[SettingPropertyInteger("实体注入上限", 1, 20, "0", Order = 1, RequireRestart = false, HintText = "控制每次对话最多向 AI 注入多少个人物、地点、家族、王国和物品检索结果。系统按前处理的重要性顺序让每个名词先占一个最高分实体槽；重名人物会优先采用其他名词明确限定的家族、其次采用王国，再按其与当前聊天 NPC 的实际大地图距离获得最高 0.15 的微量加分，最终分允许超过 1.00；范围或位置不可用时回退原始得分。若最高分实体已被前面的名词占用，则顺延到第一条未占用实体。只有上限大于名词数时才补次要结果：先为最靠前名词补最多 3 条，再依次处理后续名词。默认 6。")]
 	[SettingPropertyGroup("5. 知识检索（返回）")]
 	public int WorldEntityInjectMaxCount { get; set; } = 6;
 
@@ -973,6 +979,10 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	public int RecentDialogueTurns { get; set; } = 20;
 
 	public int HistoryRecallTopN { get; set; } = 4;
+
+	[SettingPropertyInteger("日内聊天上下文条数", DailyConversationHistoryLineLimitMin, DailyConversationHistoryLineLimitMax, "0", Order = 0, RequireRestart = false, HintText = "控制信使、自由对话和场景喊话每次请求最多直接携带多少条尚未日结压缩的普通聊天历史。AFEF 事实不占此额度；不会限制玩家继续聊天，也不会删除每日原始记忆。数值越高，单次请求 token 与等待时间通常越高。默认 100，最低 10，最高 500。")]
+	[SettingPropertyGroup("5. 压缩记忆")]
+	public int DailyConversationHistoryLineLimit { get; set; } = DefaultDailyConversationHistoryLineLimit;
 
 	[SettingPropertyInteger("记忆压缩比例分母", 3, 10, "0", Order = 1, RequireRestart = false, HintText = "日结摘要目标字数为当天有效对话总字数的 1/N，默认 5。AFEF 行不计入总字数且不会被压缩；摘要最少 80 字。")]
 	[SettingPropertyGroup("5. 压缩记忆")]
@@ -1909,6 +1919,27 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		{
 			return DefaultCustomPolicyGoldCost;
 		}
+	}
+
+	public static int GetDailyConversationHistoryLineLimitForExternal()
+	{
+		try
+		{
+			return ClampDailyConversationHistoryLineLimit(GetSettings()?.DailyConversationHistoryLineLimit ?? DefaultDailyConversationHistoryLineLimit);
+		}
+		catch
+		{
+			return DefaultDailyConversationHistoryLineLimit;
+		}
+	}
+
+	private static int ClampDailyConversationHistoryLineLimit(int value)
+	{
+		if (value <= 0)
+		{
+			return DefaultDailyConversationHistoryLineLimit;
+		}
+		return Math.Max(DailyConversationHistoryLineLimitMin, Math.Min(DailyConversationHistoryLineLimitMax, value));
 	}
 
 	[Obsolete("Player policy influence cost is no longer used.")]

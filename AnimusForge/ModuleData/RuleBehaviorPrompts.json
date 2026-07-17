@@ -350,7 +350,7 @@
                             "Group":  "trade",
                             "Priority":  84,
                             "TopicNumber":  8,
-                            "TopicLabel":  "Transfer NPC-owned troops or prisoners to player; notable volunteer recruitment",
+                            "TopicLabel":  "People only: move NPC troops, recruits, or prisoners to player, including unfinished handovers",
                             "Code":  "PARTY_TRANSFER",
                             "NonHeroInstruction":  "【雇佣士兵与俘虏处置规则】你不是领主，无权把部队或俘虏正式转给玩家。若玩家坚持，请让他去找能做主的领主",
                             "Instruction":  "【雇佣士兵、要人募兵与俘虏处置规则】谈士兵时，应把他们视作人手、兵力和效忠对象，而不是货物；谈俘虏时，才可用赎取、买卖、移交之类说法。你只能依据系统在本轮给出的清单与编号作答，不得编造清单外的士兵",
