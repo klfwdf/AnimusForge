@@ -17,6 +17,7 @@ using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.ComponentInterfaces;
+using TaleWorlds.CampaignSystem.Conversation;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.Election;
 using TaleWorlds.CampaignSystem.Inventory;
@@ -532,6 +533,13 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		public string OriginalPartyId;
 
 		public long CreatedUtcTicks;
+	}
+
+	private enum TavernMercenaryPoolJoinResolution
+	{
+		NotPoolTarget,
+		Ready,
+		Stale
 	}
 
 	private static readonly object HeroJoinConversationCloseLock = new object();
@@ -5055,10 +5063,20 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	public bool TryApplyNonHeroJoinPlayerPartyTagForExternal(CharacterObject joiningCharacter, int targetAgentIndex, ref string responseText, out List<string> generatedFacts, out List<string> notifications)
 	{
-		return TryApplyNonHeroJoinPlayerPartyTagForExternal(joiningCharacter, targetAgentIndex, "", "", ref responseText, out generatedFacts, out notifications);
+		return TryApplyNonHeroJoinPlayerPartyTagCore(joiningCharacter, targetAgentIndex, "", "", false, null, int.MinValue, ref responseText, out generatedFacts, out notifications);
 	}
 
 	public bool TryApplyNonHeroJoinPlayerPartyTagForExternal(CharacterObject joiningCharacter, int targetAgentIndex, string promptGivenName, string promptDisplayName, ref string responseText, out List<string> generatedFacts, out List<string> notifications)
+	{
+		return TryApplyNonHeroJoinPlayerPartyTagCore(joiningCharacter, targetAgentIndex, promptGivenName, promptDisplayName, false, null, int.MinValue, ref responseText, out generatedFacts, out notifications);
+	}
+
+	public bool TryApplyNonHeroJoinPlayerPartyTagForNativeConversationExternal(CharacterObject joiningCharacter, int targetAgentIndex, string promptGivenName, string promptDisplayName, ConversationManager expectedConversationManager, int expectedConversationToken, ref string responseText, out List<string> generatedFacts, out List<string> notifications)
+	{
+		return TryApplyNonHeroJoinPlayerPartyTagCore(joiningCharacter, targetAgentIndex, promptGivenName, promptDisplayName, true, expectedConversationManager, expectedConversationToken, ref responseText, out generatedFacts, out notifications);
+	}
+
+	private bool TryApplyNonHeroJoinPlayerPartyTagCore(CharacterObject joiningCharacter, int targetAgentIndex, string promptGivenName, string promptDisplayName, bool requireCurrentConversationRequest, ConversationManager expectedConversationManager, int expectedConversationToken, ref string responseText, out List<string> generatedFacts, out List<string> notifications)
 	{
 		generatedFacts = new List<string>();
 		notifications = new List<string>();
@@ -5072,16 +5090,27 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			return false;
 		}
 		string latestReplyWithoutTag = regex.Replace(responseText, string.Empty).Trim();
+		if (requireCurrentConversationRequest && !DoesNativeConversationRequestStillMatch(joiningCharacter, targetAgentIndex, expectedConversationManager, expectedConversationToken, out string staleReason))
+		{
+			responseText = latestReplyWithoutTag;
+			notifications.Add("【加入队伍】已拦截过期动作：原版对话已先处理。");
+			Logger.Log("RewardSystemBehavior", "[NonHeroJoin] stale native join tag intercepted reason=" + staleReason + " target=" + (joiningCharacter.StringId ?? "") + " agentIndex=" + targetAgentIndex + " expectedToken=" + expectedConversationToken);
+			return true;
+		}
 		string statusText;
 		Hero promotedHero;
 		bool flag = TryApplyNonHeroJoinPlayerPartyForExternal(joiningCharacter, targetAgentIndex, promptGivenName, promptDisplayName, latestReplyWithoutTag, out statusText, out promotedHero);
 		responseText = latestReplyWithoutTag;
 		if (!string.IsNullOrWhiteSpace(statusText))
 		{
+			bool intercepted = !flag && statusText.StartsWith("执行拦截", StringComparison.Ordinal);
 			bool promotedPlayerClanLord = flag && promotedHero != null && promotedHero.Clan == Clan.PlayerClan && promotedHero.Occupation == Occupation.Lord;
-			string text = (flag ? (promotedPlayerClanLord ? "【加入家族】" : "【加入队伍】") : "【加入队伍失败】") + statusText;
+			string text = (intercepted ? "【加入队伍】" : (flag ? (promotedPlayerClanLord ? "【加入家族】" : "【加入队伍】") : "【加入队伍失败】")) + statusText;
 			string factName = promotedHero?.Name?.ToString() ?? ResolveNonHeroFullDisplayName(joiningCharacter, promptDisplayName, promptGivenName, targetAgentIndex);
-			generatedFacts.Add("[AFEF NPC行为补充] " + (string.IsNullOrWhiteSpace(factName) ? "NPC" : factName) + ": " + statusText);
+			if (!intercepted)
+			{
+				generatedFacts.Add("[AFEF NPC行为补充] " + (string.IsNullOrWhiteSpace(factName) ? "NPC" : factName) + ": " + statusText);
+			}
 			notifications.Add(text);
 		}
 		return true;
@@ -5127,11 +5156,18 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				statusText = $"执行跳过：{heroName} 已经由当前场景 NPC 升格为玩家家族 Hero，不能重复招募生成新的 Hero。";
 				return false;
 			}
-			int count;
-			bool fromTavernMercenaryPool;
-			if (TryResolveTavernMercenaryPoolJoinCount(joiningCharacter, targetAgentIndex, out count, out fromTavernMercenaryPool) && fromTavernMercenaryPool)
+			TavernMercenaryPoolJoinResolution tavernPoolResolution = ResolveTavernMercenaryPoolJoin(joiningCharacter, targetAgentIndex, out var mercenaryData, out int count);
+			if (tavernPoolResolution == TavernMercenaryPoolJoinResolution.Stale)
+			{
+				statusText = "执行拦截：酒馆雇佣兵池已被原版选项或其他流程处理，未重复执行入队。";
+				Logger.Log("RewardSystemBehavior", "[NonHeroJoin] stale tavern pool join intercepted target=" + (joiningCharacter.StringId ?? "") + " agentIndex=" + targetAgentIndex);
+				return false;
+			}
+			if (tavernPoolResolution == TavernMercenaryPoolJoinResolution.Ready)
 			{
 				count = Math.Max(1, count);
+				CloseTavernMercenaryJoinConversationImmediately(joiningCharacter);
+				mercenaryData.ChangeMercenaryCount(-count);
 				MobileParty.MainParty.MemberRoster.AddToCounts(joiningCharacter, count, false, 0, 0, true, -1);
 				CampaignEventDispatcher.Instance.OnUnitRecruited(joiningCharacter, count);
 				RemoveJoinedNonHeroLocationCharacters(joiningCharacter, targetAgentIndex, removeAllMatchingTavernMercenaries: true);
@@ -5373,6 +5409,17 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		ExecuteWildernessNonHeroJoinConversationClose(context);
 	}
 
+	private static void CloseTavernMercenaryJoinConversationImmediately(CharacterObject joiningCharacter)
+	{
+		if (!DoesCurrentConversationTargetMatch(joiningCharacter))
+		{
+			return;
+		}
+		ConversationExceptionGuard.MarkCurrentConversationStale("tavern_mercenary_join_party_immediate_close");
+		TryEndCurrentConversationForJoinAction("tavern_mercenary_join_party_immediate_close");
+		Logger.Log("RewardSystemBehavior", "[NonHeroJoin] tavern mercenary conversation closed before pool mutation target=" + (joiningCharacter?.StringId ?? ""));
+	}
+
 	private static void ScheduleHeroJoinConversationClose(Hero joinedHero, PartyBase originalParty, MobileParty originalMobileParty)
 	{
 		if (joinedHero == null)
@@ -5488,6 +5535,58 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return !string.IsNullOrEmpty(context.TargetCharacterId) && string.Equals(currentCharacter.StringId, context.TargetCharacterId, StringComparison.OrdinalIgnoreCase);
 	}
 
+	private static bool DoesCurrentConversationTargetMatch(CharacterObject targetCharacter)
+	{
+		if (targetCharacter == null)
+		{
+			return false;
+		}
+		CharacterObject currentCharacter = Campaign.Current?.ConversationManager?.OneToOneConversationCharacter ?? CharacterObject.OneToOneConversationCharacter;
+		return currentCharacter == targetCharacter
+			|| (!string.IsNullOrEmpty(targetCharacter.StringId) && string.Equals(currentCharacter?.StringId, targetCharacter.StringId, StringComparison.OrdinalIgnoreCase));
+	}
+
+	private static bool DoesNativeConversationRequestStillMatch(CharacterObject targetCharacter, int targetAgentIndex, ConversationManager expectedConversationManager, int expectedConversationToken, out string reason)
+	{
+		reason = "";
+		try
+		{
+			ConversationManager currentManager = Campaign.Current?.ConversationManager;
+			if (expectedConversationManager == null || currentManager == null || !ReferenceEquals(currentManager, expectedConversationManager))
+			{
+				reason = "conversation_manager_changed";
+				return false;
+			}
+			if (!currentManager.IsConversationInProgress)
+			{
+				reason = "conversation_ended";
+				return false;
+			}
+			if (expectedConversationToken != int.MinValue && currentManager.ActiveToken != expectedConversationToken)
+			{
+				reason = "conversation_token_changed:" + currentManager.ActiveToken;
+				return false;
+			}
+			if (!DoesCurrentConversationTargetMatch(targetCharacter))
+			{
+				reason = "conversation_target_changed";
+				return false;
+			}
+			Agent currentConversationAgent = currentManager.OneToOneConversationAgent as Agent;
+			if (targetAgentIndex >= 0 && currentConversationAgent != null && currentConversationAgent.Index != targetAgentIndex)
+			{
+				reason = "conversation_agent_changed:" + currentConversationAgent.Index;
+				return false;
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			reason = "validation_exception:" + ex.GetType().Name;
+			return false;
+		}
+	}
+
 	private static bool DoesWildernessNonHeroJoinEncounterMatch(WildernessNonHeroJoinConversationCloseContext context)
 	{
 		if (context == null || PlayerEncounter.Current == null)
@@ -5580,7 +5679,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("RewardSystemBehavior", "[JoinParty] delayed EndConversation failed: " + ex.Message);
+			Logger.Log("RewardSystemBehavior", "[JoinParty] EndConversation failed: " + ex.Message);
 			try
 			{
 				ConversationExceptionGuard.MarkCurrentConversationStale(string.IsNullOrWhiteSpace(staleReason) ? "join_party_delayed_close" : staleReason);
@@ -5591,35 +5690,37 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static bool TryResolveTavernMercenaryPoolJoinCount(CharacterObject joiningCharacter, int targetAgentIndex, out int count, out bool fromTavernMercenaryPool)
+	private static TavernMercenaryPoolJoinResolution ResolveTavernMercenaryPoolJoin(CharacterObject joiningCharacter, int targetAgentIndex, out RecruitmentCampaignBehavior.TownMercenaryData mercenaryData, out int count)
 	{
-		count = 1;
-		fromTavernMercenaryPool = false;
+		mercenaryData = null;
+		count = 0;
 		if (joiningCharacter == null || !IsTavernMercenaryLike(joiningCharacter) || !IsCurrentJoinTargetInTavern(joiningCharacter, targetAgentIndex))
 		{
-			return false;
+			return TavernMercenaryPoolJoinResolution.NotPoolTarget;
 		}
 		Settlement settlement = Settlement.CurrentSettlement ?? PlayerEncounter.EncounterSettlement ?? MobileParty.MainParty?.CurrentSettlement;
 		if (settlement == null || !settlement.IsTown)
 		{
-			return false;
+			return TavernMercenaryPoolJoinResolution.NotPoolTarget;
 		}
 		try
 		{
 			RecruitmentCampaignBehavior recruitmentCampaignBehavior = Campaign.Current?.GetCampaignBehavior<RecruitmentCampaignBehavior>();
-			RecruitmentCampaignBehavior.TownMercenaryData mercenaryData = recruitmentCampaignBehavior?.GetMercenaryData(settlement.Town);
-			if (mercenaryData != null && mercenaryData.TroopType == joiningCharacter && mercenaryData.Number > 0)
+			mercenaryData = recruitmentCampaignBehavior?.GetMercenaryData(settlement.Town);
+			if (mercenaryData == null || mercenaryData.TroopType != joiningCharacter)
 			{
-				count = mercenaryData.Number;
-				mercenaryData.ChangeMercenaryCount(-count);
-				fromTavernMercenaryPool = true;
-				return true;
+				mercenaryData = null;
+				return TavernMercenaryPoolJoinResolution.NotPoolTarget;
 			}
+			count = mercenaryData.Number;
+			return count > 0 ? TavernMercenaryPoolJoinResolution.Ready : TavernMercenaryPoolJoinResolution.Stale;
 		}
 		catch
 		{
+			mercenaryData = null;
+			count = 0;
+			return TavernMercenaryPoolJoinResolution.Stale;
 		}
-		return false;
 	}
 
 	private static bool TryPromoteNonHeroToCompanion(CharacterObject joiningCharacter, int targetAgentIndex, string promptGivenName, string promptDisplayName, string latestReply, out string statusText, out Hero promotedHero)

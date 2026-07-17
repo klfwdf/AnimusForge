@@ -143,7 +143,53 @@ function Move-SafeModuleWorkingDirectory {
     if ((Get-FullPathSafe -Path $Source).Equals((Get-FullPathSafe -Path $Destination), [System.StringComparison]::OrdinalIgnoreCase)) {
         throw "Module move source and destination are the same: $Source"
     }
-    Move-Item -LiteralPath $Source -Destination $Destination
+
+    # Whole-directory replacement is intentionally atomic, but Windows can
+    # transiently deny a rename while Defender/indexers finish scanning files
+    # that were just read or written.  Retry only I/O/access failures; logical
+    # path validation errors still fail immediately.  This is a deployment-only
+    # cold path, so the bounded backoff has no in-game performance cost.
+    $maxAttempts = 15
+    for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
+        try {
+            Move-Item -LiteralPath $Source -Destination $Destination -ErrorAction Stop
+            if ($attempt -gt 1) {
+                Write-Host "Move retry   : succeeded on attempt $attempt/$maxAttempts"
+            }
+            return
+        }
+        catch {
+            $moveException = $_.Exception
+            $isRetryable = $moveException -is [System.IO.IOException] -or
+                $moveException -is [System.UnauthorizedAccessException]
+            if (-not $isRetryable) {
+                throw
+            }
+
+            $sourceStillExists = Test-Path -LiteralPath $Source -PathType Container
+            $destinationExists = Test-Path -LiteralPath $Destination -PathType Container
+            if (-not $sourceStillExists -and $destinationExists) {
+                Write-Host "Move retry   : move completed despite a transient provider error"
+                return
+            }
+            if (-not $sourceStillExists) {
+                throw "Module move source disappeared after a failed move: $Source`nLast error: $($moveException.Message)"
+            }
+            if ($destinationExists) {
+                throw "Module move destination appeared after a failed move: $Destination`nLast error: $($moveException.Message)"
+            }
+            if ($attempt -ge $maxAttempts) {
+                $currentDirectory = [System.Environment]::CurrentDirectory
+                throw "Module directory remained locked after $maxAttempts attempts.`nSource: $Source`nDestination: $Destination`nProcess working directory: $currentDirectory`nLast error: $($moveException.Message)"
+            }
+
+            if ($attempt -eq 1) {
+                Write-Host "Move retry   : directory is temporarily busy; waiting for Windows file scanners to release it"
+            }
+            $delayMilliseconds = [Math]::Min(1500, 200 * $attempt)
+            Start-Sleep -Milliseconds $delayMilliseconds
+        }
+    }
 }
 
 function Invoke-Robocopy {
@@ -638,6 +684,14 @@ if ((Get-FileSha256 -LiteralPath $dll13Full) -eq (Get-FileSha256 -LiteralPath $d
     throw "The 1.3 and 1.4 implementation DLL hashes are identical."
 }
 
+# A caller may launch the BAT/PowerShell script with its current directory
+# inside Modules\AnimusForge.  Windows then refuses to rename that directory
+# even when the game has never started.  Resolve every input first, then move
+# both PowerShell's provider location and the native process CWD to the project.
+Set-Location -LiteralPath $projectRootFull
+[System.Environment]::CurrentDirectory = $projectRootFull
+Write-Host "Deploy CWD   : $projectRootFull"
+
 if (-not [string]::IsNullOrWhiteSpace($StageOnlyOutputDir)) {
     $projectStageDir = Reset-ProjectStageDirectory -Path $StageOnlyOutputDir -ProjectRoot $projectRootFull -ConfigurationName $Configuration
     try {
@@ -700,6 +754,7 @@ foreach ($workingPath in @($stagingModuleDir, $backupModuleDir)) {
 
 $deploymentSucceeded = $false
 $backupCreated = $false
+$previousModuleWasBackedUp = $false
 try {
     New-SafeModuleWorkingDirectory -Path $stagingModuleDir -ModulesDir $modulesDir
 
@@ -753,6 +808,7 @@ try {
         if ($hadExistingTarget) {
             Move-SafeModuleWorkingDirectory -Source $targetModuleDir -Destination $backupModuleDir -ModulesDir $modulesDir
             $backupCreated = $true
+            $previousModuleWasBackedUp = $true
         }
 
         Move-SafeModuleWorkingDirectory -Source $stagingModuleDir -Destination $targetModuleDir -ModulesDir $modulesDir
@@ -766,6 +822,7 @@ try {
         $rollbackErrors = @()
         if (-not $backupCreated -and $hadExistingTarget -and (Test-Path -LiteralPath $backupModuleDir -PathType Container)) {
             $backupCreated = $true
+            $previousModuleWasBackedUp = $true
         }
 
         if ($backupCreated) {
@@ -806,7 +863,10 @@ try {
             throw "Unified module replacement failed: $replacementFailure`nRollback also failed: $($rollbackErrors -join '; ')`nRecovery backup (if present): $backupModuleDir"
         }
         if ($hadExistingTarget) {
-            throw "Unified module replacement failed and the previous module was restored: $replacementFailure"
+            if ($previousModuleWasBackedUp) {
+                throw "Unified module replacement failed and the previous module was restored: $replacementFailure"
+            }
+            throw "Unified module replacement could not begin; the previous module was left untouched: $replacementFailure"
         }
         throw "Unified module replacement failed; no previous unified module existed: $replacementFailure"
     }
