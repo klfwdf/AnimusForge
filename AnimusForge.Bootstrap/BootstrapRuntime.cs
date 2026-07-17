@@ -600,7 +600,6 @@ namespace AnimusForge.Bootstrap
                         // and public-key token, so rejecting that copy only because its path is
                         // different breaks otherwise compatible player machines.  ONNX remains
                         // path-strict above because its managed/native binaries must stay paired.
-                        AddResolverOwnedAssemblyPath(loadedLocation);
                         BootstrapLog.Warning(
                             $"Reusing exact private dependency identity '{alreadyLoaded.FullName}' already loaded outside " +
                             $"the AnimusForge module bin from '{loadedLocation}'.");
@@ -634,9 +633,10 @@ namespace AnimusForge.Bootstrap
 
                         // AssemblyIdentityMatches above is intentionally strict.  When the CLR
                         // unifies an exact strong-name identity to the GAC, use that compatible
-                        // assembly and register its real path for dependency resolution.
+                        // assembly.  Do not mark the shared GAC/runtime path as resolver-owned;
+                        // implementation requests can still reuse it by exact AppDomain identity
+                        // without widening AnimusForge's private resolution scope.
                         RemoveResolverOwnedAssemblyPath(expectedPath);
-                        AddResolverOwnedAssemblyPath(actualLocation);
                         BootstrapLog.Warning(
                             $"CLR unified exact private dependency identity '{loaded.FullName}' from packaged path " +
                             $"'{expectedPath}' to compatible runtime path '{actualLocation}'.");

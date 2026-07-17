@@ -22518,12 +22518,18 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	private static string NormalizeHeroJoinPartyPostprocessTagsForScene(string raw, List<PostprocessRuleEntry> rules)
 	{
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		bool allowsPersonalJoinVariants = false;
 		foreach (PostprocessRuleEntry rule in rules ?? new List<PostprocessRuleEntry>())
 		{
 			string text2 = (rule?.Tag ?? "").Trim();
 			if (!string.IsNullOrWhiteSpace(text2))
 			{
 				hashSet.Add(text2);
+				if (string.Equals(text2, "[A:H_J_P_P_C/L]", StringComparison.OrdinalIgnoreCase)
+					|| string.Equals(text2, "[A:H_J_P_P_C&L]", StringComparison.OrdinalIgnoreCase))
+				{
+					allowsPersonalJoinVariants = true;
+				}
 			}
 		}
 		List<string> list = new List<string>();
@@ -22542,6 +22548,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				continue;
 			}
 			bool allowed = hashSet.Contains(text3);
+			if (!allowed)
+			{
+				allowed = allowsPersonalJoinVariants
+					&& (string.Equals(text3, "[A:H_J_P_P_C]", StringComparison.OrdinalIgnoreCase)
+						|| string.Equals(text3, "[A:H_J_P_P_L]", StringComparison.OrdinalIgnoreCase));
+			}
 			if (!allowed)
 			{
 				Match clanJoinMatch = Regex.Match(text3, "^\\[A:C_J_K:([a-zA-Z0-9_.\\-]+)\\]$", RegexOptions.IgnoreCase);
