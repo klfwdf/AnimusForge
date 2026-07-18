@@ -2441,19 +2441,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 
 	private Agent SafeGetTargetAgent(Agent agent)
 	{
-		if (agent == null)
-		{
-			return null;
-		}
-		try
-		{
-			MethodInfo method = agent.GetType().GetMethod("GetTargetAgent", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, Type.EmptyTypes, null);
-			return method?.Invoke(agent, null) as Agent;
-		}
-		catch
-		{
-			return null;
-		}
+		return BannerlordApiCompat.GetAgentCombatTarget(agent);
 	}
 
 	private bool TrySetCombatTargetAgent(Agent agent, Agent target)
@@ -2462,22 +2450,13 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		{
 			return false;
 		}
-		try
+		if (BannerlordApiCompat.TrySetAgentCombatTarget(agent, target))
 		{
-			MethodInfo method = agent.GetType().GetMethod("SetTargetAgent", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, new Type[1] { typeof(Agent) }, null);
-			if (method == null)
-			{
-				LogDuelIsolation("[WARN] Agent.SetTargetAgent(Agent) not found; target attack lock cannot force target agent directly.");
-				return false;
-			}
-			method.Invoke(agent, new object[1] { target });
 			return true;
 		}
-		catch (Exception ex)
-		{
-			LogDuelIsolation("[WARN] Agent.SetTargetAgent failed. agent=" + FormatAgent(agent) + ", target=" + FormatAgent(target) + ", error=" + ex.Message);
-			return false;
-		}
+		LogDuelIsolation("[WARN] Agent.SetTargetAgent failed or is unavailable. agent=" + FormatAgent(agent)
+			+ ", target=" + FormatAgent(target));
+		return false;
 	}
 
 	private bool TrySetAutomaticTargetSelection(Agent agent, bool enabled)
@@ -2486,21 +2465,13 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		{
 			return false;
 		}
-		try
+		if (BannerlordApiCompat.TrySetAgentAutomaticTargetSelection(agent, enabled))
 		{
-			MethodInfo method = agent.GetType().GetMethod("SetAutomaticTargetSelection", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, new Type[1] { typeof(bool) }, null);
-			if (method == null)
-			{
-				return false;
-			}
-			method.Invoke(agent, new object[1] { enabled });
 			return true;
 		}
-		catch (Exception ex)
-		{
-			LogDuelIsolation("[WARN] Agent.SetAutomaticTargetSelection(" + enabled + ") failed. agent=" + FormatAgent(agent) + ", error=" + ex.Message);
-			return false;
-		}
+		LogDuelIsolation("[WARN] Agent.SetAutomaticTargetSelection(" + enabled
+			+ ") failed or is unavailable. agent=" + FormatAgent(agent));
+		return false;
 	}
 
 	private Team SafeAgentTeam(Agent agent)

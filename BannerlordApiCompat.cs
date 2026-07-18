@@ -22,6 +22,29 @@ namespace AnimusForge;
 /// </summary>
 internal static class BannerlordApiCompat
 {
+	private const BindingFlags AgentMethodFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+
+	private static readonly MethodInfo AgentGetTargetAgentMethod = typeof(Agent).GetMethod(
+		"GetTargetAgent",
+		AgentMethodFlags,
+		null,
+		Type.EmptyTypes,
+		null);
+
+	private static readonly MethodInfo AgentSetTargetAgentMethod = typeof(Agent).GetMethod(
+		"SetTargetAgent",
+		AgentMethodFlags,
+		null,
+		new[] { typeof(Agent) },
+		null);
+
+	private static readonly MethodInfo AgentSetAutomaticTargetSelectionMethod = typeof(Agent).GetMethod(
+		"SetAutomaticTargetSelection",
+		AgentMethodFlags,
+		null,
+		new[] { typeof(bool) },
+		null);
+
 	internal static bool HasTradeAgreement(ITradeAgreementsCampaignBehavior tradeBehavior, Kingdom kingdom, Kingdom other)
 	{
 		if (tradeBehavior == null || kingdom == null || other == null)
@@ -225,6 +248,56 @@ internal static class BannerlordApiCompat
 		{
 			Logger.Log("BannerlordApiCompat", "SpawnInspectionTroop failed: " + ex.GetBaseException());
 			return null;
+		}
+	}
+
+	internal static Agent GetAgentCombatTarget(Agent agent)
+	{
+		if (agent == null || AgentGetTargetAgentMethod == null)
+		{
+			return null;
+		}
+		try
+		{
+			return AgentGetTargetAgentMethod.Invoke(agent, null) as Agent;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	internal static bool TrySetAgentCombatTarget(Agent agent, Agent target)
+	{
+		if (agent == null || AgentSetTargetAgentMethod == null)
+		{
+			return false;
+		}
+		try
+		{
+			AgentSetTargetAgentMethod.Invoke(agent, new object[] { target });
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	internal static bool TrySetAgentAutomaticTargetSelection(Agent agent, bool enabled)
+	{
+		if (agent == null || AgentSetAutomaticTargetSelectionMethod == null)
+		{
+			return false;
+		}
+		try
+		{
+			AgentSetAutomaticTargetSelectionMethod.Invoke(agent, new object[] { enabled });
+			return true;
+		}
+		catch
+		{
+			return false;
 		}
 	}
 

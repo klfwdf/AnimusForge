@@ -4785,6 +4785,26 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
+	internal static bool IsCastleSlaughterAttackerForExternal(Agent agent)
+	{
+		try
+		{
+			if (agent == null || !agent.IsHuman || agent == Agent.Main || !agent.IsActive()
+				|| agent.State == AgentState.Killed || agent.State == AgentState.Unconscious
+				|| IsInterventionBannerBearer(agent))
+			{
+				return false;
+			}
+			CharacterObject character = agent.Character as CharacterObject;
+			return character != null && !character.IsHero
+				&& IsRuntimeAlliedSoldierAgent(agent, character, character.HeroObject);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	private static bool IsInterventionBannerBearer(Agent agent)
 	{
 		try
