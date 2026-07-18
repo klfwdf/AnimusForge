@@ -299,6 +299,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 		public float InteractionTimeoutSeconds = -1f;
 
 		public int InteractionParticipantCount = 1;
+
+		public Func<bool> CanStillPublish;
 	}
 
 	private sealed class SceneSummonPromptTarget
@@ -25150,12 +25152,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		ShoutUtils.EnsureScenePromptNames(allNpcData);
 	}
 
-	private void EnqueueSpeechLine(NpcDataPacket npc, string content, List<NpcDataPacket> allNpcData, bool skipHistory = false, bool suppressStare = false, List<SceneSummonPromptTarget> sceneSummonTargets = null, List<SceneGuidePromptTarget> sceneGuideTargets = null)
+	private void EnqueueSpeechLine(NpcDataPacket npc, string content, List<NpcDataPacket> allNpcData, bool skipHistory = false, bool suppressStare = false, List<SceneSummonPromptTarget> sceneSummonTargets = null, List<SceneGuidePromptTarget> sceneGuideTargets = null, Func<bool> canStillPublish = null)
 	{
-		EnqueueSpeechLineWithOptions(npc, content, allNpcData, !skipHistory, suppressStare, allowPlayerDirectedActions: true, requiredConversationEpoch: 0, sceneSummonTargets, sceneGuideTargets, null);
+		EnqueueSpeechLineWithOptions(npc, content, allNpcData, !skipHistory, suppressStare, allowPlayerDirectedActions: true, requiredConversationEpoch: 0, sceneSummonTargets, sceneGuideTargets, null, canStillPublish: canStillPublish);
 	}
 
-	private void EnqueueSpeechLineWithOptions(NpcDataPacket npc, string content, List<NpcDataPacket> allNpcData, bool commitHistory, bool suppressStare, bool allowPlayerDirectedActions, int requiredConversationEpoch, List<SceneSummonPromptTarget> sceneSummonTargets = null, List<SceneGuidePromptTarget> sceneGuideTargets = null, string afterSpeechInfoMessage = null, TaskCompletionSource<bool> completionSource = null, float interactionTimeoutSeconds = -1f, int interactionParticipantCount = 1)
+	private void EnqueueSpeechLineWithOptions(NpcDataPacket npc, string content, List<NpcDataPacket> allNpcData, bool commitHistory, bool suppressStare, bool allowPlayerDirectedActions, int requiredConversationEpoch, List<SceneSummonPromptTarget> sceneSummonTargets = null, List<SceneGuidePromptTarget> sceneGuideTargets = null, string afterSpeechInfoMessage = null, TaskCompletionSource<bool> completionSource = null, float interactionTimeoutSeconds = -1f, int interactionParticipantCount = 1, Func<bool> canStillPublish = null)
 	{
 		if (npc == null || string.IsNullOrWhiteSpace(content))
 		{
@@ -25194,7 +25196,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				AfterSpeechInfoMessage = afterSpeechInfoMessage,
 				CompletionSource = completionSource,
 				InteractionTimeoutSeconds = interactionTimeoutSeconds,
-				InteractionParticipantCount = Math.Max(1, interactionParticipantCount)
+				InteractionParticipantCount = Math.Max(1, interactionParticipantCount),
+				CanStillPublish = canStillPublish
 			});
 			if (_speechWorkerRunning)
 			{
@@ -25242,10 +25245,16 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				TaskCompletionSource<bool> completionSource = item.CompletionSource;
 				float interactionTimeoutSeconds = item.InteractionTimeoutSeconds;
 				int interactionParticipantCount = Math.Max(1, item.InteractionParticipantCount);
+				Func<bool> canStillPublish = item.CanStillPublish;
 				_mainThreadActions.Enqueue(delegate
 				{
 					try
 					{
+						if (!CanPublishImmediateSceneReaction(canStillPublish))
+						{
+							Logger.Log("ShoutBehavior", $"[ImmediateSceneReaction] discarded stale queued speech targetAgentIndex={matchedNpc?.AgentIndex ?? (-1)}");
+							return;
+						}
 						bool hasDeferredIssueActionTag = allowPlayerDirectedActions && !string.IsNullOrWhiteSpace(content) && (content.IndexOf("[ACTION:ISSUE_ACCEPT_SELF]", StringComparison.OrdinalIgnoreCase) >= 0 || content.IndexOf("[ACTION:ISSUE_ACCEPT_ALT:", StringComparison.OrdinalIgnoreCase) >= 0 || content.IndexOf("[ACTION:QUEST_TURN_IN]", StringComparison.OrdinalIgnoreCase) >= 0);
 						if (hasDeferredIssueActionTag)
 						{
@@ -31736,11 +31745,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	public static bool TriggerImmediateSceneBehaviorReactionForExternal(string factText, int targetAgentIndex, bool persistHeroPrivateHistory = true, bool suppressStare = false, float postSpeechLeaveSeconds = -1f)
+	public static bool TriggerImmediateSceneBehaviorReactionForExternal(string factText, int targetAgentIndex, bool persistHeroPrivateHistory = true, bool suppressStare = false, float postSpeechLeaveSeconds = -1f, Func<bool> canStillPublish = null, Action<bool> onCompleted = null)
 	{
 		try
 		{
-			return CurrentInstance?.TriggerImmediateSceneBehaviorReaction(factText, targetAgentIndex, persistHeroPrivateHistory, suppressStare, postSpeechLeaveSeconds) ?? false;
+			return CurrentInstance?.TriggerImmediateSceneBehaviorReaction(factText, targetAgentIndex, persistHeroPrivateHistory, suppressStare, postSpeechLeaveSeconds, canStillPublish: canStillPublish, onCompleted: onCompleted) ?? false;
 		}
 		catch
 		{
@@ -31905,7 +31914,42 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		});
 	}
 
-	private bool TriggerImmediateSceneBehaviorReaction(string factText, int targetAgentIndex, bool persistHeroPrivateHistory, bool suppressStare, float postSpeechLeaveSeconds = -1f, bool skipSceneFactRecord = false, bool returnSceneSummonOnTimeout = false, Action onNoSpeech = null)
+	private void QueueImmediateSceneReactionCompletion(Action<bool> onCompleted, bool generated)
+	{
+		if (onCompleted == null)
+		{
+			return;
+		}
+		_mainThreadActions.Enqueue(delegate
+		{
+			try
+			{
+				onCompleted(generated);
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("ShoutBehavior", "[WARN] Immediate reaction completion callback failed: " + ex.Message);
+			}
+		});
+	}
+
+	private static bool CanPublishImmediateSceneReaction(Func<bool> canStillPublish)
+	{
+		if (canStillPublish == null)
+		{
+			return true;
+		}
+		try
+		{
+			return canStillPublish();
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private bool TriggerImmediateSceneBehaviorReaction(string factText, int targetAgentIndex, bool persistHeroPrivateHistory, bool suppressStare, float postSpeechLeaveSeconds = -1f, bool skipSceneFactRecord = false, bool returnSceneSummonOnTimeout = false, Action onNoSpeech = null, Func<bool> canStillPublish = null, Action<bool> onCompleted = null)
 	{
 		Mission mission = Mission.Current;
 		var agents = mission?.Agents;
@@ -31984,7 +32028,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				bool generated = false;
 				try
 				{
-					generated = await GenerateImmediateSceneBehaviorReactionAsync(npcDataPacket, list, dictionary, suppressStare);
+					generated = await GenerateImmediateSceneBehaviorReactionAsync(npcDataPacket, list, dictionary, suppressStare, canStillPublish);
 				}
 				catch (Exception ex2)
 				{
@@ -31997,6 +32041,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					{
 						QueueImmediateSceneReactionNoSpeechFallback(onNoSpeech);
 					}
+					QueueImmediateSceneReactionCompletion(onCompleted, generated);
 				}
 			});
 			immediateSceneReactionGateEntered = false;
@@ -33861,6 +33906,26 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
+	public static bool HasAnyImmediateSceneReactionInFlightForExternal()
+	{
+		try
+		{
+			ShoutBehavior instance = CurrentInstance;
+			if (instance == null)
+			{
+				return false;
+			}
+			lock (instance._immediateSceneReactionGateLock)
+			{
+				return instance._immediateSceneReactionInFlightAgentIndices.Count > 0;
+			}
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	private static float EstimateBubbleTypingDurationSeconds(string content)
 	{
 		int num = Math.Max(0, (content ?? "").Length);
@@ -34732,9 +34797,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		_stopStaringTime = Math.Max(_stopStaringTime, mission.CurrentTime + PLAYER_DRIVEN_MULTI_SCENE_STARE_HOLD_SECONDS);
 	}
 
-	private async Task<bool> GenerateImmediateSceneBehaviorReactionAsync(NpcDataPacket targetNpc, List<NpcDataPacket> allNpcData, Dictionary<int, Hero> resolvedHeroes, bool suppressStare)
+	private async Task<bool> GenerateImmediateSceneBehaviorReactionAsync(NpcDataPacket targetNpc, List<NpcDataPacket> allNpcData, Dictionary<int, Hero> resolvedHeroes, bool suppressStare, Func<bool> canStillPublish = null)
 	{
 		if (targetNpc == null || allNpcData == null || allNpcData.Count == 0)
+		{
+			return false;
+		}
+		if (!CanPublishImmediateSceneReaction(canStillPublish))
 		{
 			return false;
 		}
@@ -34810,6 +34879,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return false;
 		}
+		if (!CanPublishImmediateSceneReaction(canStillPublish))
+		{
+			Logger.Log("ShoutBehavior", $"[ImmediateSceneReaction] discarded stale response targetAgentIndex={targetNpc.AgentIndex}");
+			return false;
+		}
 		string text3 = (text2 ?? "").Replace("\r", "").Trim();
 		text3 = Regex.Replace(text3, "\\[(?:ACTION:[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|FOL|STP)\\]", "", RegexOptions.IgnoreCase).Trim();
 		text3 = StripNpcNamePrefixSafely(text3, 30);
@@ -34820,12 +34894,17 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return false;
 		}
+		if (!CanPublishImmediateSceneReaction(canStillPublish))
+		{
+			Logger.Log("ShoutBehavior", $"[ImmediateSceneReaction] discarded stale processed response targetAgentIndex={targetNpc.AgentIndex}");
+			return false;
+		}
 		if (!string.IsNullOrWhiteSpace(fullHistoryText))
 		{
 			RecordResponseForAllNearbySafe(allNpcData, targetNpc.AgentIndex, targetNpc.Name, fullHistoryText);
 			PersistNpcSpeechToNamedHeroes(targetNpc.AgentIndex, targetNpc.Name, fullHistoryText, allNpcData);
 		}
-		EnqueueSpeechLine(targetNpc, text3, allNpcData, skipHistory: true, suppressStare: suppressStare);
+		EnqueueSpeechLine(targetNpc, text3, allNpcData, skipHistory: true, suppressStare: suppressStare, canStillPublish: canStillPublish);
 		return true;
 	}
 

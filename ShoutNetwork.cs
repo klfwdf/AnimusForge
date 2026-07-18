@@ -23,6 +23,8 @@ public static class ShoutNetwork
 	{
 		private string _pending = "";
 
+		private readonly string _lowProfileActualPlayerName = ResolveLowProfileActualPlayerNameForRedaction();
+
 		public string Push(string text)
 		{
 			string text2 = (_pending ?? "") + (text ?? "");
@@ -31,10 +33,11 @@ public static class ShoutNetwork
 			{
 				return "";
 			}
-			if (text2.EndsWith("玩", StringComparison.Ordinal))
+			int pendingLength = GetTrailingPlayerReferencePrefixLength(text2, _lowProfileActualPlayerName);
+			if (pendingLength > 0)
 			{
-				_pending = "玩";
-				text2 = text2.Substring(0, text2.Length - 1);
+				_pending = text2.Substring(text2.Length - pendingLength);
+				text2 = text2.Substring(0, text2.Length - pendingLength);
 			}
 			return ApplyPlayerDynamicNameToMainText(text2);
 		}
@@ -44,6 +47,33 @@ public static class ShoutNetwork
 			string text = _pending ?? "";
 			_pending = "";
 			return ApplyPlayerDynamicNameToMainText(text);
+		}
+
+		private static int GetTrailingPlayerReferencePrefixLength(string text, string actualPlayerName)
+		{
+			int result = GetTrailingProperPrefixLength(text, "玩家");
+			if (!string.IsNullOrWhiteSpace(actualPlayerName))
+			{
+				result = Math.Max(result, GetTrailingProperPrefixLength(text, actualPlayerName));
+			}
+			return result;
+		}
+
+		private static int GetTrailingProperPrefixLength(string text, string token)
+		{
+			if (string.IsNullOrEmpty(text) || string.IsNullOrEmpty(token) || token.Length <= 1)
+			{
+				return 0;
+			}
+			int maxLength = Math.Min(text.Length, token.Length - 1);
+			for (int length = maxLength; length > 0; length--)
+			{
+				if (text.EndsWith(token.Substring(0, length), StringComparison.Ordinal))
+				{
+					return length;
+				}
+			}
+			return 0;
 		}
 	}
 
@@ -431,6 +461,66 @@ public static class ShoutNetwork
 		}
 	}
 
+	private static string BuildPlayerPersonaRawNamePlaceholder(int index)
+	{
+		return "\uE104AFPN" + index + "\uE105";
+	}
+
+	internal static string ProtectPlayerPersonaRawNameReferencesForExternal(string text, out List<string> rawNames)
+	{
+		rawNames = null;
+		string source = text ?? "";
+		if (source.IndexOf('\uE100') < 0)
+		{
+			return source;
+		}
+		string beginMarker = KnowledgeLibraryBehavior.PlayerPersonaRawNameBeginMarker;
+		string endMarker = KnowledgeLibraryBehavior.PlayerPersonaRawNameEndMarker;
+		int start = source.IndexOf(beginMarker, StringComparison.Ordinal);
+		if (start < 0)
+		{
+			return source.IndexOf(endMarker, StringComparison.Ordinal) < 0 ? source : source.Replace(endMarker, "");
+		}
+		StringBuilder result = new StringBuilder(source.Length);
+		int cursor = 0;
+		while (start >= 0)
+		{
+			result.Append(source, cursor, start - cursor);
+			int valueStart = start + beginMarker.Length;
+			int end = source.IndexOf(endMarker, valueStart, StringComparison.Ordinal);
+			if (end < 0)
+			{
+				result.Append(source, valueStart, source.Length - valueStart);
+				cursor = source.Length;
+				break;
+			}
+			rawNames ??= new List<string>();
+			rawNames.Add(source.Substring(valueStart, end - valueStart));
+			result.Append(BuildPlayerPersonaRawNamePlaceholder(rawNames.Count - 1));
+			cursor = end + endMarker.Length;
+			start = source.IndexOf(beginMarker, cursor, StringComparison.Ordinal);
+		}
+		if (cursor < source.Length)
+		{
+			result.Append(source, cursor, source.Length - cursor);
+		}
+		return KnowledgeLibraryBehavior.StripPlayerPersonaRawNameMarkersForExternal(result.ToString());
+	}
+
+	internal static string RestorePlayerPersonaRawNameReferencesForExternal(string text, List<string> rawNames)
+	{
+		string result = text ?? "";
+		if (rawNames == null || rawNames.Count == 0)
+		{
+			return result;
+		}
+		for (int i = 0; i < rawNames.Count; i++)
+		{
+			result = result.Replace(BuildPlayerPersonaRawNamePlaceholder(i), rawNames[i] ?? "");
+		}
+		return KnowledgeLibraryBehavior.StripPlayerPersonaRawNameMarkersForExternal(result);
+	}
+
 	private static string ApplyPlayerDynamicNameToMainText(string text)
 	{
 		try
@@ -440,6 +530,7 @@ public static class ShoutNetwork
 			{
 				return text2;
 			}
+			text2 = ProtectPlayerPersonaRawNameReferencesForExternal(text2, out var rawPlayerPersonaNames);
 			string text3 = ResolvePlayerDynamicNameForOutgoingText();
 			if (string.IsNullOrWhiteSpace(text3))
 			{
@@ -454,6 +545,11 @@ public static class ShoutNetwork
 			}
 			text2 = text2.Replace("[AFEF玩家行为补充]", text4);
 			text2 = text2.Replace("【玩家家族可婚配未婚成员（事实清单）】", text5);
+			string actualPlayerName = ResolveLowProfileActualPlayerNameForRedaction();
+			if (!string.IsNullOrWhiteSpace(actualPlayerName) && !string.Equals(actualPlayerName, text3, StringComparison.Ordinal))
+			{
+				text2 = text2.Replace(actualPlayerName, text3);
+			}
 			text2 = NormalizeLegacyDuelStakeText(text2, "玩家");
 			if (!string.Equals(text3, "玩家", StringComparison.Ordinal))
 			{
@@ -462,11 +558,11 @@ public static class ShoutNetwork
 			text2 = NormalizeLegacyDuelStakeText(text2, text3);
 			text2 = text2.Replace(text4, "[AFEF玩家行为补充]");
 			text2 = text2.Replace(text5, "【玩家家族可婚配未婚成员（事实清单）】");
-			return text2;
+			return RestorePlayerPersonaRawNameReferencesForExternal(text2, rawPlayerPersonaNames);
 		}
 		catch
 		{
-			return text ?? "";
+			return KnowledgeLibraryBehavior.StripPlayerPersonaRawNameMarkersForExternal(text ?? "");
 		}
 	}
 
@@ -495,6 +591,20 @@ public static class ShoutNetwork
 
 	private static string ResolvePlayerDynamicNameForOutgoingText()
 	{
+		if (PlayerNotorietyBehavior.IsLowProfileModeEnabledForExternal())
+		{
+			try
+			{
+				string lowProfileName = (MyBehavior.BuildPlayerPublicDisplayNameForExternal((Hero)null) ?? "").Trim();
+				if (!string.IsNullOrWhiteSpace(lowProfileName))
+				{
+					return lowProfileName;
+				}
+			}
+			catch
+			{
+			}
+		}
 		try
 		{
 			string text = (MyBehavior.BuildPlayerPublicDisplayNameForExternal() ?? "").Trim();
@@ -505,6 +615,22 @@ public static class ShoutNetwork
 		}
 		catch
 		{
+		}
+		try
+		{
+			return (Hero.MainHero?.Name?.ToString() ?? "").Trim();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string ResolveLowProfileActualPlayerNameForRedaction()
+	{
+		if (!PlayerNotorietyBehavior.IsLowProfileModeEnabledForExternal())
+		{
+			return "";
 		}
 		try
 		{

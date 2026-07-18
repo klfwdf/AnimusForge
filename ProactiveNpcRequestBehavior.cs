@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.CampaignBehaviors;
+using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.Election;
 using TaleWorlds.CampaignSystem.MapEvents;
@@ -909,7 +910,8 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 				DisplayName = GetNeedDisplayName(needType),
 				Urgency = Clamp(candidate.NeedUrgency, 0f, 100f),
 				TypeFatigueMultiplier = fatigueMultiplier,
-				TypeWeightMultiplier = GetEffectiveNeedTypeWeightMultiplier(needType, settings, allowTestModeOverride: false),
+				TypeWeightMultiplier = Clamp(GetEffectiveNeedTypeWeightMultiplier(needType, settings, allowTestModeOverride: false)
+					* Clamp(candidate.IntrinsicNeedTypeWeightMultiplier, 0f, 1f), 0f, 1f),
 				FactText = BuildLetterNeedFact(candidate),
 				IntentText = BuildLetterNeedIntent(candidate)
 			});
@@ -1566,7 +1568,8 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			candidate.NeedTypeFatigueMultiplier = candidate.NeedTypeFatigueRemainingDays > 0f
 				? GetEffectiveNeedTypeFatigueMultiplier(settings)
 				: 1f;
-			candidate.NeedTypeWeightMultiplier = GetEffectiveNeedTypeWeightMultiplier(candidate.NeedType, settings);
+			candidate.NeedTypeWeightMultiplier = Clamp(GetEffectiveNeedTypeWeightMultiplier(candidate.NeedType, settings)
+				* Clamp(candidate.IntrinsicNeedTypeWeightMultiplier, 0f, 1f), 0f, 1f);
 		}
 		List<ProactiveCandidate> ordered = needCandidates
 			.Where(c => c != null && !string.IsNullOrWhiteSpace(c.NeedType) && IsPlayerEligibleForProactiveNeed(c, c.NeedType, out _))
@@ -2421,9 +2424,14 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		float notorietyStrength = Clamp((snapshot.CultureNotoriety - 10) / 90f, 0f, 1f);
 		float playerTierStrength = Clamp((snapshot.PlayerClanTier - 1) / 5f, 0f, 1f);
 		float relativeClanTierAdjustment = Clamp((snapshot.PlayerClanTier - snapshot.NpcClanTier) * 5f, -25f, 30f);
-		float urgency = Clamp(75f + notorietyStrength * 15f + playerTierStrength * 10f + relativeClanTierAdjustment, 50f, 100f);
+		float urgency = Clamp(60f + notorietyStrength * 15f + playerTierStrength * 10f + relativeClanTierAdjustment, 50f, 90f);
 		candidate = TryBuildNeedCandidate(source, settings, NeedCourtship, urgency);
-		return candidate != null;
+		if (candidate == null)
+		{
+			return false;
+		}
+		candidate.IntrinsicNeedTypeWeightMultiplier = snapshot.TriggerWeightMultiplier;
+		return true;
 	}
 
 	private bool TryBuildArmyJoinRequestCandidate(ProactiveCandidate source, DuelSettings settings, out ProactiveCandidate candidate)
@@ -3833,13 +3841,44 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
+			int honor = hero.GetTraitLevel(DefaultTraits.Honor);
+			int calculating = hero.GetTraitLevel(DefaultTraits.Calculating);
+			bool married = IsMarriedToLivingSpouse(hero);
+			float triggerWeightMultiplier = 1f;
+			if (married)
+			{
+				// An honourable spouse does not initiate an affair. Other married heroes need a matching disposition and remain rare.
+				if (honor > 0 || (honor >= 0 && calculating <= 0))
+				{
+					return false;
+				}
+				triggerWeightMultiplier = honor < 0 ? 0.20f : 0.15f;
+				if (calculating > 0)
+				{
+					triggerWeightMultiplier += Math.Min(calculating, 2) * 0.10f;
+				}
+			}
 			snapshot = new CourtshipNeedSnapshot
 			{
 				CultureNotoriety = friendship.CultureNotoriety,
 				PlayerClanTier = friendship.PlayerClanTier,
-				NpcClanTier = Clamp(hero.Clan?.Tier ?? 0, 0, 6)
+				NpcClanTier = Clamp(hero.Clan?.Tier ?? 0, 0, 6),
+				TriggerWeightMultiplier = Clamp(triggerWeightMultiplier, 0f, 1f)
 			};
 			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsMarriedToLivingSpouse(Hero hero)
+	{
+		try
+		{
+			Hero spouse = hero?.Spouse;
+			return spouse != null && spouse.IsAlive && !spouse.IsDead;
 		}
 		catch
 		{
@@ -4984,6 +5023,10 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		if (string.Equals(needType, NeedMountShortage, StringComparison.OrdinalIgnoreCase))
 		{
 			return Clamp(settings?.ProactiveNpcRequestMountShortageWeight ?? 0.35f, 0f, 1f);
+		}
+		if (string.Equals(needType, NeedCourtship, StringComparison.OrdinalIgnoreCase))
+		{
+			return 0.35f;
 		}
 		return 1f;
 	}
@@ -7768,6 +7811,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		public float SelectedNeedUrgency { get; set; }
 		public float NeedTypeFatigueMultiplier { get; set; } = 1f;
 		public float NeedTypeWeightMultiplier { get; set; } = 1f;
+		public float IntrinsicNeedTypeWeightMultiplier { get; set; } = 1f;
 		public float NeedTypeFatigueRemainingDays { get; set; }
 		public bool IsTestFallback { get; set; }
 	}
@@ -7885,6 +7929,8 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		public int CultureNotoriety { get; set; }
 		public int PlayerClanTier { get; set; }
 		public int NpcClanTier { get; set; }
+
+		public float TriggerWeightMultiplier { get; set; } = 1f;
 	}
 
 	private sealed class ArmyJoinRequestSnapshot

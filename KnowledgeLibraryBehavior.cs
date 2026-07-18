@@ -230,6 +230,10 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 
 	private const string PlayerPersonaRuleId = "rule_animus_player_persona";
 
+	internal const string PlayerPersonaRawNameBeginMarker = "\uE100AF_PLAYER_PERSONA_NAME_BEGIN\uE101";
+
+	internal const string PlayerPersonaRawNameEndMarker = "\uE100AF_PLAYER_PERSONA_NAME_END\uE101";
+
 	// 下面这组常量定义了词汇映射支持的全部取值类型。
 	// 编辑器里看到的“你想取谁的什么”最终都会落到这些 kind 上。
 	private const string TextMappingKindKingdomName = "kingdom_name";
@@ -2669,15 +2673,86 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static bool IsPlayerPersonaRule(LoreRule rule)
+	{
+		return rule != null && string.Equals((rule.Id ?? "").Trim(), PlayerPersonaRuleId, StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool CanObserverReceivePlayerPersona(Hero npcHero, CharacterObject npcCharacter)
+	{
+		try
+		{
+			Hero observerHero = npcHero ?? npcCharacter?.HeroObject;
+			if (observerHero != null)
+			{
+				if (observerHero == Hero.MainHero)
+				{
+					return true;
+				}
+				return PlayerNotorietyBehavior.DoesObserverKnowPlayerForExternal(observerHero);
+			}
+			if (npcCharacter == null)
+			{
+				return false;
+			}
+			string observerKey = MyBehavior.BuildRuleTargetKeyForExternal(null, npcCharacter);
+			string cultureId = (npcCharacter.Culture?.StringId ?? "").Trim();
+			return PlayerNotorietyBehavior.DoesObserverKnowPlayerForExternal(observerKey, cultureId);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool CanInjectKnowledgeRule(LoreRule rule, bool includePlayerPersona)
+	{
+		return includePlayerPersona || !IsPlayerPersonaRule(rule);
+	}
+
+	private static string ProtectPlayerPersonaRawNameReferences(string text)
+	{
+		string result = text ?? "";
+		if (string.IsNullOrEmpty(result))
+		{
+			return result;
+		}
+		string actualPlayerName = "";
+		try
+		{
+			actualPlayerName = (Hero.MainHero?.Name?.ToString() ?? "").Trim();
+		}
+		catch
+		{
+			actualPlayerName = "";
+		}
+		const string actualNamePlaceholder = "\uE102AF_PLAYER_PERSONA_ACTUAL_NAME\uE103";
+		if (!string.IsNullOrWhiteSpace(actualPlayerName) && !string.Equals(actualPlayerName, "玩家", StringComparison.Ordinal))
+		{
+			result = result.Replace(actualPlayerName, actualNamePlaceholder);
+		}
+		result = result.Replace("玩家", PlayerPersonaRawNameBeginMarker + "玩家" + PlayerPersonaRawNameEndMarker);
+		if (!string.IsNullOrWhiteSpace(actualPlayerName) && !string.Equals(actualPlayerName, "玩家", StringComparison.Ordinal))
+		{
+			result = result.Replace(actualNamePlaceholder, PlayerPersonaRawNameBeginMarker + actualPlayerName + PlayerPersonaRawNameEndMarker);
+		}
+		return result;
+	}
+
+	internal static string StripPlayerPersonaRawNameMarkersForExternal(string text)
+	{
+		return (text ?? "").Replace(PlayerPersonaRawNameBeginMarker, "").Replace(PlayerPersonaRawNameEndMarker, "");
+	}
+
 	private static string BuildExactKeywordSlotCacheSignature()
 	{
 		string text = NormalizeKeywordForCompare(GetPlayerKeywordSlotKeyword());
 		return string.IsNullOrEmpty(text) ? "player_slot=off" : ("player_slot=" + text);
 	}
 
-	private bool TryAppendExactKeywordSlotLore(StringBuilder stringBuilder, ref bool wroteHeader, LoreRule rule, string matchMode, Hero npcHero, CharacterObject npcCharacter, string heroId, string cultureId, string kingdomId, string settlementId, string role, bool isFemale, bool isClanLeader, string npcDisplayName, string inputText, string secondaryInput, HashSet<string> injectedRuleIds)
+	private bool TryAppendExactKeywordSlotLore(StringBuilder stringBuilder, ref bool wroteHeader, LoreRule rule, bool includePlayerPersona, string matchMode, Hero npcHero, CharacterObject npcCharacter, string heroId, string cultureId, string kingdomId, string settlementId, string role, bool isFemale, bool isClanLeader, string npcDisplayName, string inputText, string secondaryInput, HashSet<string> injectedRuleIds)
 	{
-		if (rule == null)
+		if (rule == null || !CanInjectKnowledgeRule(rule, includePlayerPersona))
 		{
 			return false;
 		}
@@ -2761,7 +2836,13 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			wroteHeader = true;
 		}
 		string text4 = string.IsNullOrWhiteSpace(text2) ? (text ?? "相关语义") : text2;
-		stringBuilder.AppendLine("【以下是关于（" + text4 + "）的背景知识，" + npcDisplayName + "可酌情参考作为聊天素材】");
+		string knowledgeHeader = "【以下是关于（" + text4 + "）的背景知识，" + npcDisplayName + "可酌情参考作为聊天素材】";
+		if (IsPlayerPersonaRule(rule))
+		{
+			knowledgeHeader = ProtectPlayerPersonaRawNameReferences(knowledgeHeader);
+			text3 = ProtectPlayerPersonaRawNameReferences(text3);
+		}
+		stringBuilder.AppendLine(knowledgeHeader);
 		stringBuilder.AppendLine(text3);
 		if (!string.IsNullOrEmpty(text) && injectedRuleIds != null)
 		{
@@ -5596,6 +5677,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			}
 			return "";
 		}
+		bool includePlayerPersona = CanObserverReceivePlayerPersona(npcHero, null);
 		string text2 = (npcHero?.StringId ?? "").Trim();
 		string text3 = (npcHero?.Culture?.StringId ?? "neutral").Trim().ToLower();
 		string text4 = "";
@@ -5662,7 +5744,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		long ruleDataVersion = _ruleDataVersion;
 		bool allowLoreContextCache = !HasAnyTextMappings();
 		string mentionSignature = BuildKnowledgeMentionSignature(loreMentionedEntities);
-		string key = Hash8($"{ruleDataVersion}|H|{text2}|{text8}|{text3}|{text4}|{text6}|{text5}|{(flag ? 1 : 0)}|{(flag2 ? 1 : 0)}|{BuildExactKeywordSlotCacheSignature()}|{mentionSignature}|{text}");
+		string key = Hash8($"{ruleDataVersion}|H|{text2}|{text8}|{text3}|{text4}|{text6}|{text5}|{(flag ? 1 : 0)}|{(flag2 ? 1 : 0)}|player_persona={(includePlayerPersona ? 1 : 0)}|{BuildExactKeywordSlotCacheSignature()}|{mentionSignature}|{text}");
 		if (allowLoreContextCache && TryGetLoreContextCache(key, ruleDataVersion, out var value))
 		{
 			return value;
@@ -5712,7 +5794,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				{
 					break;
 				}
-				if (TryAppendExactKeywordSlotLore(stringBuilder, ref flag3, item, matchMode, npcHero, null, text2, text3, text4, text6, text5, flag, flag2, text7, text, secondaryInput, hashSet))
+				if (TryAppendExactKeywordSlotLore(stringBuilder, ref flag3, item, includePlayerPersona, matchMode, npcHero, null, text2, text3, text4, text6, text5, flag, flag2, text7, text, secondaryInput, hashSet))
 				{
 					num3++;
 					num2++;
@@ -5720,11 +5802,11 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			}
 		}
 		string text9 = GetPlayerKeywordSlotKeyword();
-		if (!string.IsNullOrWhiteSpace(text9) && TryFindRuleByExactKeyword(text9, hashSet, out var matchedRule) && TryAppendExactKeywordSlotLore(stringBuilder, ref flag3, matchedRule, "keyword_slot_player", npcHero, null, text2, text3, text4, text6, text5, flag, flag2, text7, text, secondaryInput, hashSet))
+		if (!string.IsNullOrWhiteSpace(text9) && TryFindRuleByExactKeyword(text9, hashSet, out var matchedRule) && TryAppendExactKeywordSlotLore(stringBuilder, ref flag3, matchedRule, includePlayerPersona, "keyword_slot_player", npcHero, null, text2, text3, text4, text6, text5, flag, flag2, text7, text, secondaryInput, hashSet))
 		{
 			num2++;
 		}
-		if (!string.IsNullOrWhiteSpace(text7Keyword) && TryFindRuleByExactKeyword(text7Keyword, hashSet, out var matchedNpcRule) && TryAppendExactKeywordSlotLore(stringBuilder, ref flag3, matchedNpcRule, "keyword_slot_npc", npcHero, null, text2, text3, text4, text6, text5, flag, flag2, text7, text, secondaryInput, hashSet))
+		if (!string.IsNullOrWhiteSpace(text7Keyword) && TryFindRuleByExactKeyword(text7Keyword, hashSet, out var matchedNpcRule) && TryAppendExactKeywordSlotLore(stringBuilder, ref flag3, matchedNpcRule, includePlayerPersona, "keyword_slot_npc", npcHero, null, text2, text3, text4, text6, text5, flag, flag2, text7, text, secondaryInput, hashSet))
 		{
 			num2++;
 		}
@@ -5964,6 +6046,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			}
 			return "";
 		}
+		bool includePlayerPersona = CanObserverReceivePlayerPersona(hero, npcCharacter);
 		string text3 = (hero?.Culture?.StringId ?? npcCharacter?.Culture?.StringId ?? "neutral").Trim().ToLower();
 		string text4 = (kingdomIdOverride ?? "").Trim().ToLower();
 		if (string.IsNullOrEmpty(text4))
@@ -6069,7 +6152,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		long ruleDataVersion = _ruleDataVersion;
 		bool allowLoreContextCache = !HasAnyTextMappings();
 		string mentionSignature = BuildKnowledgeMentionSignature(loreMentionedEntities);
-		string key = Hash8($"{ruleDataVersion}|C|{text2}|{text8}|{text3}|{text4}|{text6}|{text5}|{(flag ? 1 : 0)}|{(flag2 ? 1 : 0)}|{BuildExactKeywordSlotCacheSignature()}|{mentionSignature}|{text}");
+		string key = Hash8($"{ruleDataVersion}|C|{text2}|{text8}|{text3}|{text4}|{text6}|{text5}|{(flag ? 1 : 0)}|{(flag2 ? 1 : 0)}|player_persona={(includePlayerPersona ? 1 : 0)}|{BuildExactKeywordSlotCacheSignature()}|{mentionSignature}|{text}");
 		if (allowLoreContextCache && TryGetLoreContextCache(key, ruleDataVersion, out var value))
 		{
 			return value;
@@ -6119,7 +6202,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				{
 					break;
 				}
-				if (TryAppendExactKeywordSlotLore(stringBuilder, ref flag3, item, matchMode, hero, npcCharacter, text2, text3, text4, text6, text5, flag, flag2, text7, text, secondaryInput, hashSet))
+				if (TryAppendExactKeywordSlotLore(stringBuilder, ref flag3, item, includePlayerPersona, matchMode, hero, npcCharacter, text2, text3, text4, text6, text5, flag, flag2, text7, text, secondaryInput, hashSet))
 				{
 					num3++;
 					num2++;
@@ -6127,11 +6210,11 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			}
 		}
 		string text9 = GetPlayerKeywordSlotKeyword();
-		if (!string.IsNullOrWhiteSpace(text9) && TryFindRuleByExactKeyword(text9, hashSet, out var matchedRule) && TryAppendExactKeywordSlotLore(stringBuilder, ref flag3, matchedRule, "keyword_slot_player", hero, npcCharacter, text2, text3, text4, text6, text5, flag, flag2, text7, text, secondaryInput, hashSet))
+		if (!string.IsNullOrWhiteSpace(text9) && TryFindRuleByExactKeyword(text9, hashSet, out var matchedRule) && TryAppendExactKeywordSlotLore(stringBuilder, ref flag3, matchedRule, includePlayerPersona, "keyword_slot_player", hero, npcCharacter, text2, text3, text4, text6, text5, flag, flag2, text7, text, secondaryInput, hashSet))
 		{
 			num2++;
 		}
-		if (!string.IsNullOrWhiteSpace(text7Keyword) && TryFindRuleByExactKeyword(text7Keyword, hashSet, out var matchedNpcRule) && TryAppendExactKeywordSlotLore(stringBuilder, ref flag3, matchedNpcRule, "keyword_slot_npc", hero, npcCharacter, text2, text3, text4, text6, text5, flag, flag2, text7, text, secondaryInput, hashSet))
+		if (!string.IsNullOrWhiteSpace(text7Keyword) && TryFindRuleByExactKeyword(text7Keyword, hashSet, out var matchedNpcRule) && TryAppendExactKeywordSlotLore(stringBuilder, ref flag3, matchedNpcRule, includePlayerPersona, "keyword_slot_npc", hero, npcCharacter, text2, text3, text4, text6, text5, flag, flag2, text7, text, secondaryInput, hashSet))
 		{
 			num2++;
 		}

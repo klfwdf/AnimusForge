@@ -4469,6 +4469,11 @@ public class DuelBehavior : CampaignBehaviorBase
 				Logger.Log("DuelBehavior", "[DuelRenownPenalty] skipped: loser has no clan. playerWon=" + playerWon);
 				return "";
 			}
+			if (winnerHero?.Clan == loserClan)
+			{
+				Logger.Log("DuelBehavior", "[DuelRenownPenalty] skipped: both duelists belong to the same clan. clan=" + (loserClan.StringId ?? "") + " playerWon=" + playerWon);
+				return "";
+			}
 			float before = loserClan.Renown;
 			if (float.IsNaN(before) || float.IsInfinity(before) || before <= 0f)
 			{

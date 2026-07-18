@@ -174,6 +174,18 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		return BuildPlayerHistoryDisplayName();
 	}
 
+	public static bool IsLowProfileModeEnabledForExternal()
+	{
+		try
+		{
+			return Instance?._state?.LowProfileModeEnabled == true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	public static string RenderPlayerHistoryMaterialForExternal(string text)
 	{
 		return RenderPlayerHistoryTextForPrompt(text, BuildPlayerHistoryDisplayName());

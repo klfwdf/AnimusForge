@@ -626,7 +626,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("2. 决斗规则")]
 	public float HealthThreshold { get; set; } = 0.35f;
 
-	[SettingPropertyBool("启用败者家族声望惩罚", Order = 2, RequireRestart = false, HintText = "正式决斗结算后，败者所属家族扣减声望；玩家获胜时扣对手家族，玩家战败时扣玩家家族。不会让声望低于 0，也不会强制降低已经获得的家族等级。")]
+	[SettingPropertyBool("启用败者家族声望惩罚", Order = 2, RequireRestart = false, HintText = "正式决斗结算后，败者所属家族扣减声望；玩家获胜时扣对手家族，玩家战败时扣玩家家族。同一家族成员之间决斗不扣声望。不会让声望低于 0，也不会强制降低已经获得的家族等级。")]
 	[SettingPropertyGroup("2. 决斗规则")]
 	public bool EnableDuelLoserClanRenownPenalty { get; set; } = true;
 
@@ -992,7 +992,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("5. 知识检索（返回）")]
 	public int KnowledgeDirectTopN { get; set; } = 4;
 
-	[SettingPropertyInteger("实体注入上限", 1, 20, "0", Order = 1, RequireRestart = false, HintText = "控制每次对话最多向 AI 注入多少个人物、地点、家族、王国和物品检索结果。系统按前处理的重要性顺序让每个名词先占一个最高分实体槽；重名人物会优先采用其他名词明确限定的家族、其次采用王国，再按其与当前聊天 NPC 的实际大地图距离获得最高 0.15 的微量加分，最终分允许超过 1.00；范围或位置不可用时回退原始得分。若最高分实体已被前面的名词占用，则顺延到第一条未占用实体。只有上限大于名词数时才补次要结果：先为最靠前名词补最多 3 条，再依次处理后续名词。默认 6。")]
+	[SettingPropertyInteger("实体注入上限", 1, 20, "0", Order = 1, RequireRestart = false, HintText = "控制每次对话最多向 AI 注入多少个人物、地点、家族和王国检索结果。系统按前处理的重要性顺序让每个名词先占一个最高分实体槽；重名人物会优先采用其他名词明确限定的家族、其次采用王国，再按其与当前聊天 NPC 的实际大地图距离获得最高 0.15 的微量加分，最终分允许超过 1.00；范围或位置不可用时回退原始得分。若最高分实体已被前面的名词占用，则顺延到第一条未占用实体。只有上限大于名词数时才补次要结果：先为最靠前名词补最多 3 条，再依次处理后续名词。默认 6。")]
 	[SettingPropertyGroup("5. 知识检索（返回）")]
 	public int WorldEntityInjectMaxCount { get; set; } = 6;
 

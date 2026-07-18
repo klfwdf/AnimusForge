@@ -83,6 +83,7 @@
     <Compile Remove="AnimusForge.Bootstrap\**\*.cs" />
     <Compile Remove="FUYONG\**\*.cs" />
     <Compile Remove="_codex_tmp\**\*.cs" />
+    <Compile Remove="tmp\**\*.cs" />
     <EmbeddedResource Remove="原版游戏本体代码\**\*" />
     <EmbeddedResource Remove="原版游戏本体代码*\**\*" />
     <EmbeddedResource Remove="阅兵\**\*" />
@@ -93,6 +94,7 @@
     <EmbeddedResource Remove="AnimusForge.Bootstrap\**\*" />
     <EmbeddedResource Remove="FUYONG\**\*" />
     <EmbeddedResource Remove="_codex_tmp\**\*" />
+    <EmbeddedResource Remove="tmp\**\*" />
     <None Remove="原版游戏本体代码\**\*" />
     <None Remove="原版游戏本体代码*\**\*" />
     <None Remove="阅兵\**\*" />
@@ -103,6 +105,7 @@
     <None Remove="AnimusForge.Bootstrap\**\*" />
     <None Remove="FUYONG\**\*" />
     <None Remove="_codex_tmp\**\*" />
+    <None Remove="tmp\**\*" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Core" />
