@@ -14,11 +14,7 @@ public static class SiegeCastleLordDuelProfile
 
     public const float WeaponForwardDistance = 20f;
 
-    public const float WeaponArrivalDistance = 1.75f;
-
     public const float LoadoutItemSpacing = 0.75f;
-
-    public const float WeaponWalkTimeoutSeconds = 12f;
 
     public const float AudienceBaseRadius = 12.5f;
 
