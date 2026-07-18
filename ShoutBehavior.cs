@@ -299,6 +299,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 		public float InteractionTimeoutSeconds = -1f;
 
 		public int InteractionParticipantCount = 1;
+
+		public Func<bool> CanStillPublish;
 	}
 
 	private sealed class SceneSummonPromptTarget
@@ -551,6 +553,12 @@ public class ShoutBehavior : CampaignBehaviorBase
 	{
 		private ShoutBehavior _parent;
 
+		private float _nextHotkeySettingsRefreshApplicationTime;
+
+		private InputKey _shoutKey = InputKey.T;
+
+		private InputKey _specialMenuKey = InputKey.Y;
+
 		public override MissionBehaviorType BehaviorType => MissionBehaviorType.Other;
 
 		public ShoutMissionBehavior(ShoutBehavior parent)
@@ -560,6 +568,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 		public override void OnMissionTick(float dt)
 		{
+			using PerfProbe.ScopeToken perfScope = PerfProbe.Scope("Mission.ShoutMissionBehavior.OnMissionTick.total");
 			using FreezeWatchdog.ScopeToken missionTickScope = FreezeWatchdog.Scope("ShoutMissionBehavior.OnMissionTick.total");
 			using (FreezeWatchdog.Scope("ShoutMissionBehavior.OnMissionTick"))
 			{
@@ -652,17 +661,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 			{
 				_parent._tickTimer = 0f;
 			}
-			DuelSettings settings = DuelSettings.GetSettings();
-			InputKey shoutKey = InputKey.T;
-			InputKey specialMenuKey = InputKey.Y;
-			if (!string.IsNullOrEmpty(settings?.ShoutKey) && Enum.TryParse<InputKey>(settings.ShoutKey.Trim().ToUpperInvariant(), out var result2))
-			{
-				shoutKey = result2;
-			}
-			if (!string.IsNullOrEmpty(settings?.ShoutSpecialMenuKey) && Enum.TryParse<InputKey>(settings.ShoutSpecialMenuKey.Trim().ToUpperInvariant(), out var result3))
-			{
-				specialMenuKey = result3;
-			}
+			RefreshHotkeySettingsIfDue();
 			bool flag2 = true;
 			try
 			{
@@ -718,7 +717,28 @@ public class ShoutBehavior : CampaignBehaviorBase
 			}
 			else
 			{
-				_parent.UpdateShoutHotkeyCharge(shoutKey, specialMenuKey);
+				_parent.UpdateShoutHotkeyCharge(_shoutKey, _specialMenuKey);
+			}
+		}
+
+		private void RefreshHotkeySettingsIfDue()
+		{
+			float applicationTime = GetApplicationTimeSafe();
+			if (applicationTime < _nextHotkeySettingsRefreshApplicationTime)
+			{
+				return;
+			}
+			_nextHotkeySettingsRefreshApplicationTime = applicationTime + 1f;
+			DuelSettings settings = DuelSettings.GetSettings();
+			_shoutKey = InputKey.T;
+			_specialMenuKey = InputKey.Y;
+			if (!string.IsNullOrWhiteSpace(settings?.ShoutKey) && Enum.TryParse(settings.ShoutKey.Trim(), ignoreCase: true, out InputKey parsedShoutKey))
+			{
+				_shoutKey = parsedShoutKey;
+			}
+			if (!string.IsNullOrWhiteSpace(settings?.ShoutSpecialMenuKey) && Enum.TryParse(settings.ShoutSpecialMenuKey.Trim(), ignoreCase: true, out InputKey parsedSpecialMenuKey))
+			{
+				_specialMenuKey = parsedSpecialMenuKey;
 			}
 		}
 
@@ -1885,6 +1905,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private const float SCENE_FOLLOW_MAX_IDLE_DISTANCE = 0f;
 
+	private const float SCENE_COMMAND_FOLLOWER_CACHE_REFRESH_SECONDS = 0.2f;
+
 	private const float SCENE_SUMMON_ESCORT_REPOSITION_DISTANCE_SQ = 25f;
 
 	private const float SCENE_GUIDE_PLAYER_REQUIRED_DISTANCE_SQ = 100f;
@@ -2099,6 +2121,12 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private readonly HashSet<int> _transientSceneFollowAgentIndices = new HashSet<int>();
 
+	private readonly List<Agent> _sceneCommandFollowerCache = new List<Agent>();
+
+	private Mission _sceneCommandFollowerCacheMission;
+
+	private float _nextSceneCommandFollowerCacheRefreshApplicationTime;
+
 	private readonly Dictionary<int, SceneGhostWalkState> _sceneGhostWalkStates = new Dictionary<int, SceneGhostWalkState>();
 
 	private int _nextSceneSummonBatchId = 1;
@@ -2296,6 +2324,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 			_pendingInteractionTimeoutArms.Clear();
 			_pendingWorldMapMissionExitsAfterSpeech.Clear();
 			_transientSceneFollowAgentIndices.Clear();
+			InvalidateSceneCommandFollowerCache();
 			lock (_speechQueueLock)
 			{
 				_speechQueue.Clear();
@@ -8625,7 +8654,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 
 	private static string StripActionTagsForSceneSpeech(string text)
 	{
-		return Regex.Replace((text ?? "").Replace("\r", ""), "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD;[^\\]]*|ADP[:;][^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP)\\]", "", RegexOptions.IgnoreCase).Trim();
+		return Regex.Replace((text ?? "").Replace("\r", ""), "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD;[^\\]]*|ADP[:;][^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP)\\]", "", RegexOptions.IgnoreCase).Trim();
 	}
 
 	private static string ExtractDeferredSceneActionTags(string text)
@@ -8637,7 +8666,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		}
 		List<string> list = new List<string>();
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (Match item in Regex.Matches(text2, "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD;[^\\]]*|ADP[:;][^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END)\\]", RegexOptions.IgnoreCase))
+		foreach (Match item in Regex.Matches(text2, "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD;[^\\]]*|ADP[:;][^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END)\\]", RegexOptions.IgnoreCase))
 		{
 			string text3 = (item?.Value ?? "").Trim();
 			if (!string.IsNullOrWhiteSpace(text3) && hashSet.Add(text3))
@@ -8650,7 +8679,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 
 	private static bool HasNonMoodDeferredSceneActionTag(string text)
 	{
-		foreach (Match item in Regex.Matches(text ?? "", "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD;[^\\]]*|ADP[:;][^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END)\\]", RegexOptions.IgnoreCase))
+		foreach (Match item in Regex.Matches(text ?? "", "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD;[^\\]]*|ADP[:;][^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END)\\]", RegexOptions.IgnoreCase))
 		{
 			string text2 = (item?.Value ?? "").Trim();
 			if (!string.IsNullOrWhiteSpace(text2) && !text2.StartsWith("[ACTION:MOOD:", StringComparison.OrdinalIgnoreCase))
@@ -8665,7 +8694,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 	{
 		List<string> list = new List<string>();
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (Match item in Regex.Matches(text ?? "", "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD;[^\\]]*|ADP[:;][^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END)\\]", RegexOptions.IgnoreCase))
+		foreach (Match item in Regex.Matches(text ?? "", "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD;[^\\]]*|ADP[:;][^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END)\\]", RegexOptions.IgnoreCase))
 		{
 			string text2 = (item?.Value ?? "").Trim();
 			if (!string.IsNullOrWhiteSpace(text2) && !text2.StartsWith("[ACTION:MOOD:", StringComparison.OrdinalIgnoreCase) && hashSet.Add(text2))
@@ -8678,7 +8707,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 
 	private static bool HasDeferredDirectGameActionTag(string text)
 	{
-		return Regex.IsMatch(text ?? "", "\\[(?:ACTION:(?:GIVE_ASSET|DEBT_|DEBT_PAY|KINGDOM_SERVICE|JOIN_MERCENARY|JOIN_VASSAL|TRADE_TRUST|KING_ABDICATE_TO_PLAYER|VASSALAGE|KINGDOM_ANNEX|AGENDA|WORLDMAP_ORDER|DUEL|ISSUE_|QUEST_TURN_IN|NOBLE_GATHERING|INTIMACY_INTERNAL|MEETING_TAUNT_BATTLE|LET_PLAYER_GO|ENCOUNTER_RELEASE_PLAYER|NPC_SURRENDER|SIEGE_|6|召集)[^\\]]*|A:(?:H_J_P_P|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD;[^\\]]*|ADP[:;][^\\]]*)\\]", RegexOptions.IgnoreCase);
+		return Regex.IsMatch(text ?? "", "\\[(?:ACTION:(?:GIVE_ASSET|DEBT_|DEBT_PAY|KINGDOM_SERVICE|JOIN_MERCENARY|JOIN_VASSAL|TRADE_TRUST|KING_ABDICATE_TO_PLAYER|VASSALAGE|KINGDOM_ANNEX|AGENDA|WORLDMAP_ORDER|DUEL|ISSUE_|QUEST_TURN_IN|NOBLE_GATHERING|INTIMACY_INTERNAL|MEETING_TAUNT_BATTLE|LET_PLAYER_GO|ENCOUNTER_RELEASE_PLAYER|NPC_SURRENDER|SIEGE_|6|召集)[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD;[^\\]]*|ADP[:;][^\\]]*)\\]", RegexOptions.IgnoreCase);
 	}
 
 	private bool TryApplyDeferredScenePostprocessActionTagsDirectly(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, ref string tags)
@@ -10217,6 +10246,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		_activeInteractionSessions.Clear();
 		_pendingInteractionTimeoutArms.Clear();
 		_transientSceneFollowAgentIndices.Clear();
+		InvalidateSceneCommandFollowerCache();
 		lock (_immediateSceneReactionGateLock)
 		{
 			_immediateSceneReactionLastStartedMissionTime.Clear();
@@ -10295,6 +10325,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			_activeInteractionSessions.Clear();
 			_pendingInteractionTimeoutArms.Clear();
 			_transientSceneFollowAgentIndices.Clear();
+			InvalidateSceneCommandFollowerCache();
 			lock (_immediateSceneReactionGateLock)
 			{
 				_immediateSceneReactionLastStartedMissionTime.Clear();
@@ -13437,7 +13468,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		try
 		{
-			return Regex.Matches(text ?? "", "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD;[^\\]]*|ADP[:;][^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT[:;][^\\]]*|ATP[:;][^\\]]*|FOL|STP|END|RELAY:[^\\]]*|AFEF[^\\]]*|AF_SCENE_SESSION:[^\\]]*|CONTENT)\\]", RegexOptions.IgnoreCase).Count;
+			return Regex.Matches(text ?? "", "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD;[^\\]]*|ADP[:;][^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT[:;][^\\]]*|ATP[:;][^\\]]*|FOL|STP|END|RELAY:[^\\]]*|AFEF[^\\]]*|AF_SCENE_SESSION:[^\\]]*|CONTENT)\\]", RegexOptions.IgnoreCase).Count;
 		}
 		catch
 		{
@@ -19322,6 +19353,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				}
 				else
 				{
+					string itemFactName = CourierDeliveryBehavior.GetCourierLetterTransferFactDescriptionForExternal(
+						shoutPendingTradeItem.ItemId ?? shoutPendingTradeItem.Item?.StringId,
+						shoutPendingTradeItem.Item?.Id.InternalValue ?? 0u,
+						shoutPendingTradeItem.ItemName);
 					string text3;
 					if (isGive)
 					{
@@ -19346,13 +19381,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 							text4 = RewardSystemBehavior.Instance?.BuildItemValueFactSuffixForExternal(Hero.MainHero, text3, shoutPendingTradeItem.Amount) ?? "";
 							num += RewardSystemBehavior.Instance?.EstimateItemValueForExternal(Hero.MainHero, text3, shoutPendingTradeItem.Amount) ?? 0L;
 						}
-						list.Add($"{shoutPendingTradeItem.Amount} 个 {shoutPendingTradeItem.ItemName}{text4}");
+						list.Add($"{shoutPendingTradeItem.Amount} 个 {itemFactName}{text4}");
 					}
 					else
 					{
 						string text5 = RewardSystemBehavior.Instance?.BuildInventoryActualItemValueFactSuffixForExternal(shoutPendingTradeItem.Item, shoutPendingTradeItem.Amount, shoutPendingTradeItem.InventoryUnitValue) ?? "";
 						num += RewardSystemBehavior.Instance?.EstimateInventoryActualItemValueForExternal(shoutPendingTradeItem.Item, shoutPendingTradeItem.Amount, shoutPendingTradeItem.InventoryUnitValue) ?? 0L;
-						list.Add($"{shoutPendingTradeItem.Amount} 个 {shoutPendingTradeItem.ItemName}{text5}");
+						list.Add($"{shoutPendingTradeItem.Amount} 个 {itemFactName}{text5}");
 					}
 				}
 			}
@@ -22522,18 +22557,24 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	private static string NormalizeHeroJoinPartyPostprocessTagsForScene(string raw, List<PostprocessRuleEntry> rules)
 	{
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		bool allowsPersonalJoinVariants = false;
 		foreach (PostprocessRuleEntry rule in rules ?? new List<PostprocessRuleEntry>())
 		{
 			string text2 = (rule?.Tag ?? "").Trim();
 			if (!string.IsNullOrWhiteSpace(text2))
 			{
 				hashSet.Add(text2);
+				if (string.Equals(text2, "[A:H_J_P_P_C/L]", StringComparison.OrdinalIgnoreCase)
+					|| string.Equals(text2, "[A:H_J_P_P_C&L]", StringComparison.OrdinalIgnoreCase))
+				{
+					allowsPersonalJoinVariants = true;
+				}
 			}
 		}
 		List<string> list = new List<string>();
 		HashSet<string> hashSet2 = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		string text = "";
-		foreach (Match item in Regex.Matches(raw ?? "", "\\[(?:ACTION:[^\\]\\r\\n]*|A:(?:H_J_P_P|C_J_P_K|C_J_K:[^\\]\\r\\n]+))\\]", RegexOptions.IgnoreCase))
+		foreach (Match item in Regex.Matches(raw ?? "", "\\[(?:ACTION:[^\\]\\r\\n]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]\\r\\n]+))\\]", RegexOptions.IgnoreCase))
 		{
 			string text3 = (item?.Value ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(text3))
@@ -22546,6 +22587,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				continue;
 			}
 			bool allowed = hashSet.Contains(text3);
+			if (!allowed)
+			{
+				allowed = allowsPersonalJoinVariants
+					&& (string.Equals(text3, "[A:H_J_P_P_C]", StringComparison.OrdinalIgnoreCase)
+						|| string.Equals(text3, "[A:H_J_P_P_L]", StringComparison.OrdinalIgnoreCase));
+			}
 			if (!allowed)
 			{
 				Match clanJoinMatch = Regex.Match(text3, "^\\[A:C_J_K:([a-zA-Z0-9_.\\-]+)\\]$", RegexOptions.IgnoreCase);
@@ -25114,12 +25161,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		ShoutUtils.EnsureScenePromptNames(allNpcData);
 	}
 
-	private void EnqueueSpeechLine(NpcDataPacket npc, string content, List<NpcDataPacket> allNpcData, bool skipHistory = false, bool suppressStare = false, List<SceneSummonPromptTarget> sceneSummonTargets = null, List<SceneGuidePromptTarget> sceneGuideTargets = null)
+	private void EnqueueSpeechLine(NpcDataPacket npc, string content, List<NpcDataPacket> allNpcData, bool skipHistory = false, bool suppressStare = false, List<SceneSummonPromptTarget> sceneSummonTargets = null, List<SceneGuidePromptTarget> sceneGuideTargets = null, Func<bool> canStillPublish = null)
 	{
-		EnqueueSpeechLineWithOptions(npc, content, allNpcData, !skipHistory, suppressStare, allowPlayerDirectedActions: true, requiredConversationEpoch: 0, sceneSummonTargets, sceneGuideTargets, null);
+		EnqueueSpeechLineWithOptions(npc, content, allNpcData, !skipHistory, suppressStare, allowPlayerDirectedActions: true, requiredConversationEpoch: 0, sceneSummonTargets, sceneGuideTargets, null, canStillPublish: canStillPublish);
 	}
 
-	private void EnqueueSpeechLineWithOptions(NpcDataPacket npc, string content, List<NpcDataPacket> allNpcData, bool commitHistory, bool suppressStare, bool allowPlayerDirectedActions, int requiredConversationEpoch, List<SceneSummonPromptTarget> sceneSummonTargets = null, List<SceneGuidePromptTarget> sceneGuideTargets = null, string afterSpeechInfoMessage = null, TaskCompletionSource<bool> completionSource = null, float interactionTimeoutSeconds = -1f, int interactionParticipantCount = 1)
+	private void EnqueueSpeechLineWithOptions(NpcDataPacket npc, string content, List<NpcDataPacket> allNpcData, bool commitHistory, bool suppressStare, bool allowPlayerDirectedActions, int requiredConversationEpoch, List<SceneSummonPromptTarget> sceneSummonTargets = null, List<SceneGuidePromptTarget> sceneGuideTargets = null, string afterSpeechInfoMessage = null, TaskCompletionSource<bool> completionSource = null, float interactionTimeoutSeconds = -1f, int interactionParticipantCount = 1, Func<bool> canStillPublish = null)
 	{
 		if (npc == null || string.IsNullOrWhiteSpace(content))
 		{
@@ -25158,7 +25205,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				AfterSpeechInfoMessage = afterSpeechInfoMessage,
 				CompletionSource = completionSource,
 				InteractionTimeoutSeconds = interactionTimeoutSeconds,
-				InteractionParticipantCount = Math.Max(1, interactionParticipantCount)
+				InteractionParticipantCount = Math.Max(1, interactionParticipantCount),
+				CanStillPublish = canStillPublish
 			});
 			if (_speechWorkerRunning)
 			{
@@ -25206,10 +25254,16 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				TaskCompletionSource<bool> completionSource = item.CompletionSource;
 				float interactionTimeoutSeconds = item.InteractionTimeoutSeconds;
 				int interactionParticipantCount = Math.Max(1, item.InteractionParticipantCount);
+				Func<bool> canStillPublish = item.CanStillPublish;
 				_mainThreadActions.Enqueue(delegate
 				{
 					try
 					{
+						if (!CanPublishImmediateSceneReaction(canStillPublish))
+						{
+							Logger.Log("ShoutBehavior", $"[ImmediateSceneReaction] discarded stale queued speech targetAgentIndex={matchedNpc?.AgentIndex ?? (-1)}");
+							return;
+						}
 						bool hasDeferredIssueActionTag = allowPlayerDirectedActions && !string.IsNullOrWhiteSpace(content) && (content.IndexOf("[ACTION:ISSUE_ACCEPT_SELF]", StringComparison.OrdinalIgnoreCase) >= 0 || content.IndexOf("[ACTION:ISSUE_ACCEPT_ALT:", StringComparison.OrdinalIgnoreCase) >= 0 || content.IndexOf("[ACTION:QUEST_TURN_IN]", StringComparison.OrdinalIgnoreCase) >= 0);
 						if (hasDeferredIssueActionTag)
 						{
@@ -28013,7 +28067,17 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			_sceneGhostWalkStates.Clear();
 			return;
 		}
-		Dictionary<int, Vec3> targets = BuildSceneGhostMovementTargets();
+		List<Agent> sceneCommandFollowers = GetSceneCommandFollowerSnapshot(mission);
+		if (sceneCommandFollowers.Count == 0
+			&& _activeSceneGuideRequests.Count == 0
+			&& _activeSceneSummonRequests.Count == 0
+			&& _activeSceneSummonConversationSessions.Count == 0
+			&& _activeSceneReturnJobs.Count == 0)
+		{
+			_sceneGhostWalkStates.Clear();
+			return;
+		}
+		Dictionary<int, Vec3> targets = BuildSceneGhostMovementTargets(sceneCommandFollowers);
 		if (targets.Count == 0)
 		{
 			_sceneGhostWalkStates.Clear();
@@ -28032,7 +28096,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private Dictionary<int, Vec3> BuildSceneGhostMovementTargets()
+	private Dictionary<int, Vec3> BuildSceneGhostMovementTargets(List<Agent> sceneCommandFollowers)
 	{
 		Dictionary<int, Vec3> targets = new Dictionary<int, Vec3>();
 		Mission mission = Mission.Current;
@@ -28041,9 +28105,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return targets;
 		}
-		foreach (Agent agent in mission.Agents ?? Enumerable.Empty<Agent>())
+		foreach (Agent agent in sceneCommandFollowers ?? Enumerable.Empty<Agent>())
 		{
-			if (CanAgentUseSceneGhostMovement(agent) && IsAgentFollowingPlayerBySceneCommand(agent))
+			if (CanAgentUseSceneGhostMovement(agent))
 			{
 				TryAddSceneGhostMovementTarget(targets, agent, main.Position);
 			}
@@ -30384,6 +30448,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		if (IsPrisonBreakRescueMissionActive())
 		{
 			TryApplyPrisonBreakSceneFollowCommand(agent, startFollow: true, "scene_follow_start");
+			InvalidateSceneCommandFollowerCache();
 			return;
 		}
 		try
@@ -30412,6 +30477,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			_activeInteractionSessions.Remove(agent.Index);
 			_pendingInteractionTimeoutArms.Remove(agent.Index);
 			bool behaviorEnabled = TryEnableVanillaSceneFollowBehavior(agent, Agent.Main);
+			InvalidateSceneCommandFollowerCache();
 			Logger.Log("SceneFollow", "start agent=" + agent.Index + " name=" + (agent.Name ?? "") + " transient=" + transient + " persisted=" + persisted + " behaviorEnabled=" + behaviorEnabled);
 		}
 		catch
@@ -30419,7 +30485,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private void StopSceneSummonFollowPlayer(Agent agent, bool restoreDailyBehaviors = true)
+	private void StopSceneSummonFollowPlayer(Agent agent, bool restoreDailyBehaviors = true, bool invalidateFollowerCache = true)
 	{
 		if (agent == null || !agent.IsActive())
 		{
@@ -30428,6 +30494,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		if (IsPrisonBreakRescueMissionActive())
 		{
 			TryApplyPrisonBreakSceneFollowCommand(agent, startFollow: false, "scene_follow_stop");
+			if (invalidateFollowerCache)
+			{
+				InvalidateSceneCommandFollowerCache();
+			}
 			return;
 		}
 		try
@@ -30439,6 +30509,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			bool persisted = TrySetSceneFollowPersistence(agent, isFollowing: false);
 			TryDisableVanillaSceneFollowBehavior(agent, restoreDailyBehaviors);
+			if (invalidateFollowerCache)
+			{
+				InvalidateSceneCommandFollowerCache();
+			}
 			Logger.Log("SceneFollow", "stop agent=" + agent.Index + " name=" + (agent.Name ?? "") + " transient=" + wasTransient + " persisted=" + persisted + " restoreDaily=" + restoreDailyBehaviors);
 		}
 		catch
@@ -30652,6 +30726,40 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return false;
 		}
+	}
+
+	private List<Agent> GetSceneCommandFollowerSnapshot(Mission mission)
+	{
+		float applicationTime = GetApplicationTimeSafe();
+		if (ReferenceEquals(_sceneCommandFollowerCacheMission, mission)
+			&& applicationTime < _nextSceneCommandFollowerCacheRefreshApplicationTime)
+		{
+			return _sceneCommandFollowerCache;
+		}
+		using PerfProbe.ScopeToken perfScope = PerfProbe.Scope("Mission.Shout.RefreshSceneCommandFollowerCache");
+		_sceneCommandFollowerCacheMission = mission;
+		_nextSceneCommandFollowerCacheRefreshApplicationTime = applicationTime + SCENE_COMMAND_FOLLOWER_CACHE_REFRESH_SECONDS;
+		_sceneCommandFollowerCache.Clear();
+		var agents = mission?.Agents;
+		if (agents == null)
+		{
+			return _sceneCommandFollowerCache;
+		}
+		foreach (Agent agent in agents)
+		{
+			if (IsAgentFollowingPlayerBySceneCommand(agent))
+			{
+				_sceneCommandFollowerCache.Add(agent);
+			}
+		}
+		return _sceneCommandFollowerCache;
+	}
+
+	private void InvalidateSceneCommandFollowerCache()
+	{
+		_sceneCommandFollowerCache.Clear();
+		_sceneCommandFollowerCacheMission = null;
+		_nextSceneCommandFollowerCacheRefreshApplicationTime = 0f;
 	}
 
 	private bool IsAgentFollowingPlayerBySceneCommand(Agent agent)
@@ -31646,11 +31754,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	public static bool TriggerImmediateSceneBehaviorReactionForExternal(string factText, int targetAgentIndex, bool persistHeroPrivateHistory = true, bool suppressStare = false, float postSpeechLeaveSeconds = -1f, bool runSiegeReactionPostprocess = false)
+	public static bool TriggerImmediateSceneBehaviorReactionForExternal(string factText, int targetAgentIndex, bool persistHeroPrivateHistory = true, bool suppressStare = false, float postSpeechLeaveSeconds = -1f, bool runSiegeReactionPostprocess = false, Func<bool> canStillPublish = null, Action<bool> onCompleted = null)
 	{
 		try
 		{
-			return CurrentInstance?.TriggerImmediateSceneBehaviorReaction(factText, targetAgentIndex, persistHeroPrivateHistory, suppressStare, postSpeechLeaveSeconds, runSiegeReactionPostprocess: runSiegeReactionPostprocess) ?? false;
+			return CurrentInstance?.TriggerImmediateSceneBehaviorReaction(factText, targetAgentIndex, persistHeroPrivateHistory, suppressStare, postSpeechLeaveSeconds, runSiegeReactionPostprocess: runSiegeReactionPostprocess, canStillPublish: canStillPublish, onCompleted: onCompleted) ?? false;
 		}
 		catch
 		{
@@ -31815,7 +31923,42 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		});
 	}
 
-	private bool TriggerImmediateSceneBehaviorReaction(string factText, int targetAgentIndex, bool persistHeroPrivateHistory, bool suppressStare, float postSpeechLeaveSeconds = -1f, bool skipSceneFactRecord = false, bool returnSceneSummonOnTimeout = false, Action onNoSpeech = null, bool runSiegeReactionPostprocess = false)
+	private void QueueImmediateSceneReactionCompletion(Action<bool> onCompleted, bool generated)
+	{
+		if (onCompleted == null)
+		{
+			return;
+		}
+		_mainThreadActions.Enqueue(delegate
+		{
+			try
+			{
+				onCompleted(generated);
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("ShoutBehavior", "[WARN] Immediate reaction completion callback failed: " + ex.Message);
+			}
+		});
+	}
+
+	private static bool CanPublishImmediateSceneReaction(Func<bool> canStillPublish)
+	{
+		if (canStillPublish == null)
+		{
+			return true;
+		}
+		try
+		{
+			return canStillPublish();
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private bool TriggerImmediateSceneBehaviorReaction(string factText, int targetAgentIndex, bool persistHeroPrivateHistory, bool suppressStare, float postSpeechLeaveSeconds = -1f, bool skipSceneFactRecord = false, bool returnSceneSummonOnTimeout = false, Action onNoSpeech = null, bool runSiegeReactionPostprocess = false, Func<bool> canStillPublish = null, Action<bool> onCompleted = null)
 	{
 		Mission mission = Mission.Current;
 		var agents = mission?.Agents;
@@ -31894,7 +32037,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				bool generated = false;
 				try
 				{
-					generated = await GenerateImmediateSceneBehaviorReactionAsync(npcDataPacket, list, dictionary, suppressStare, factText, runSiegeReactionPostprocess);
+					generated = await GenerateImmediateSceneBehaviorReactionAsync(npcDataPacket, list, dictionary, suppressStare, factText, runSiegeReactionPostprocess, canStillPublish);
 				}
 				catch (Exception ex2)
 				{
@@ -31913,6 +32056,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					{
 						QueueImmediateSceneReactionNoSpeechFallback(onNoSpeech);
 					}
+					QueueImmediateSceneReactionCompletion(onCompleted, generated);
 				}
 			});
 			immediateSceneReactionGateEntered = false;
@@ -33719,14 +33863,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	private void UpdateSceneFollowSpacing()
 	{
 		Mission mission = Mission.Current;
-		var agents = mission?.Agents;
-		if (agents == null || Agent.Main == null || !Agent.Main.IsActive() || FollowAgentBehaviorIdleDistanceField == null)
+		if (mission?.Agents == null || Agent.Main == null || !Agent.Main.IsActive() || FollowAgentBehaviorIdleDistanceField == null)
 		{
 			return;
 		}
-		foreach (Agent agent in agents)
+		foreach (Agent agent in GetSceneCommandFollowerSnapshot(mission))
 		{
-			if (!IsAgentFollowingPlayerBySceneCommand(agent))
+			if (agent == null || !agent.IsActive())
 			{
 				continue;
 			}
@@ -33747,14 +33890,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	private void UpdateSceneFollowHostilityState()
 	{
 		Mission mission = Mission.Current;
-		var agents = mission?.Agents;
-		if (agents == null)
+		if (mission?.Agents == null)
 		{
 			return;
 		}
-		foreach (Agent agent in agents)
+		bool cacheInvalidated = false;
+		foreach (Agent agent in GetSceneCommandFollowerSnapshot(mission))
 		{
-			if (!IsAgentFollowingPlayerBySceneCommand(agent) || !IsAgentHostileToMainAgent(agent))
+			if (!IsAgentHostileToMainAgent(agent))
 			{
 				continue;
 			}
@@ -33764,12 +33907,37 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				_pendingInteractionTimeoutArms.Remove(agent.Index);
 				_activeInteractionSessions.Remove(agent.Index);
 				_sceneFollowReturnStates.Remove(agent.Index);
-				StopSceneSummonFollowPlayer(agent);
+				StopSceneSummonFollowPlayer(agent, invalidateFollowerCache: false);
+				cacheInvalidated = true;
 				RefreshHostileCombatAgentAutonomy(agent);
 			}
 			catch
 			{
 			}
+		}
+		if (cacheInvalidated)
+		{
+			InvalidateSceneCommandFollowerCache();
+		}
+	}
+
+	public static bool HasAnyImmediateSceneReactionInFlightForExternal()
+	{
+		try
+		{
+			ShoutBehavior instance = CurrentInstance;
+			if (instance == null)
+			{
+				return false;
+			}
+			lock (instance._immediateSceneReactionGateLock)
+			{
+				return instance._immediateSceneReactionInFlightAgentIndices.Count > 0;
+			}
+		}
+		catch
+		{
+			return false;
 		}
 	}
 
@@ -34644,9 +34812,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		_stopStaringTime = Math.Max(_stopStaringTime, mission.CurrentTime + PLAYER_DRIVEN_MULTI_SCENE_STARE_HOLD_SECONDS);
 	}
 
-	private async Task<bool> GenerateImmediateSceneBehaviorReactionAsync(NpcDataPacket targetNpc, List<NpcDataPacket> allNpcData, Dictionary<int, Hero> resolvedHeroes, bool suppressStare, string factText, bool runSiegeReactionPostprocess)
+	private async Task<bool> GenerateImmediateSceneBehaviorReactionAsync(NpcDataPacket targetNpc, List<NpcDataPacket> allNpcData, Dictionary<int, Hero> resolvedHeroes, bool suppressStare, string factText, bool runSiegeReactionPostprocess, Func<bool> canStillPublish = null)
 	{
 		if (targetNpc == null || allNpcData == null || allNpcData.Count == 0)
+		{
+			return false;
+		}
+		if (!CanPublishImmediateSceneReaction(canStillPublish))
 		{
 			return false;
 		}
@@ -34722,6 +34894,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return false;
 		}
+		if (!CanPublishImmediateSceneReaction(canStillPublish))
+		{
+			Logger.Log("ShoutBehavior", $"[ImmediateSceneReaction] discarded stale response targetAgentIndex={targetNpc.AgentIndex}");
+			return false;
+		}
 		string text3 = (text2 ?? "").Replace("\r", "").Trim();
 		if (runSiegeReactionPostprocess)
 		{
@@ -34782,12 +34959,17 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return false;
 		}
+		if (!CanPublishImmediateSceneReaction(canStillPublish))
+		{
+			Logger.Log("ShoutBehavior", $"[ImmediateSceneReaction] discarded stale processed response targetAgentIndex={targetNpc.AgentIndex}");
+			return false;
+		}
 		if (!string.IsNullOrWhiteSpace(fullHistoryText))
 		{
 			RecordResponseForAllNearbySafe(allNpcData, targetNpc.AgentIndex, targetNpc.Name, fullHistoryText);
 			PersistNpcSpeechToNamedHeroes(targetNpc.AgentIndex, targetNpc.Name, fullHistoryText, allNpcData);
 		}
-		EnqueueSpeechLine(targetNpc, text3, allNpcData, skipHistory: true, suppressStare: suppressStare);
+		EnqueueSpeechLine(targetNpc, text3, allNpcData, skipHistory: true, suppressStare: suppressStare, canStillPublish: canStillPublish);
 		return true;
 	}
 

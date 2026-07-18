@@ -219,6 +219,7 @@ public class FloatingTextMissionView : MissionView
 
 	public override void OnMissionTick(float dt)
 	{
+		using PerfProbe.ScopeToken perfScope = PerfProbe.Scope("Mission.FloatingTextMissionView.OnMissionTick.total");
 		base.OnMissionTick(dt);
 		if (!_isInitialized)
 		{
@@ -232,6 +233,10 @@ public class FloatingTextMissionView : MissionView
 			}
 		}
 		if (_layer == null)
+		{
+			return;
+		}
+		if (_agentStates.Count == 0)
 		{
 			return;
 		}

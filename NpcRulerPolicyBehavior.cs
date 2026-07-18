@@ -2668,7 +2668,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			{
 				using (PerfProbe.Scope("PolicyContext.KnowledgeRetrieval"))
 				{
-					raw = AIConfigHandler.GetLoreContext(query, ruler, secondaryInput, mentionedEntities) ?? "";
+					raw = KnowledgeLibraryBehavior.StripPlayerPersonaRawNameMarkersForExternal(AIConfigHandler.GetLoreContext(query, ruler, secondaryInput, mentionedEntities) ?? "");
 				}
 				using (PerfProbe.Scope("PolicyContext.KnowledgeCompression"))
 				{

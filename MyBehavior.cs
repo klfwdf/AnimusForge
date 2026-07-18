@@ -20268,6 +20268,17 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		try
 		{
+			if (!hero.IsAlive || hero.IsDead)
+			{
+				return false;
+			}
+		}
+		catch
+		{
+			return false;
+		}
+		try
+		{
 			if (!IsMarriageAgeCompatibleForPrompt(hero, player))
 			{
 				return false;
@@ -20301,6 +20312,17 @@ public class MyBehavior : CampaignBehaviorBase
 	private static bool IsMarriagePoolCandidateForPrompt(Hero hero)
 	{
 		if (hero == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (!hero.IsAlive || hero.IsDead)
+			{
+				return false;
+			}
+		}
+		catch
 		{
 			return false;
 		}
@@ -23687,22 +23709,17 @@ public class MyBehavior : CampaignBehaviorBase
 		return num2;
 	}
 
-	private static string BuildNpcToPlayerTroopTransferFact(string npcName, PartyTransferPromptEntry entry, int amount)
+	private static void AppendPartyTransferFactItem(StringBuilder builder, PartyTransferPromptEntry entry, int amount)
 	{
-		if (IsPartyTransferVolunteerEntry(entry))
+		if (builder == null || entry == null || amount <= 0)
 		{
-			return "[AFEF NPC行为补充] " + npcName + "已允许玩家从自己的原版待招募士兵中招募" + amount + "名" + entry.DisplayName + "。";
+			return;
 		}
-		return "[AFEF NPC行为补充] " + npcName + "已将" + amount + "名" + entry.DisplayName + "转入玩家麾下。";
-	}
-
-	private static string BuildNpcToPlayerPrisonerTransferFact(string npcName, PartyTransferPromptEntry entry, int amount)
-	{
-		if (entry?.IsHero ?? false)
+		if (builder.Length > 0)
 		{
-			return "[AFEF NPC行为补充] " + npcName + "已将俘虏" + entry.DisplayName + "交给玩家。";
+			builder.Append('、');
 		}
-		return "[AFEF NPC行为补充] " + npcName + "已将" + amount + "名" + entry.DisplayName + "俘虏交给玩家。";
+		builder.Append(entry.DisplayName).Append('x').Append(amount);
 	}
 
 	private static string StripPartyTransferTags(string text)
@@ -23746,6 +23763,9 @@ public class MyBehavior : CampaignBehaviorBase
 			long actualValue = 0L;
 			if (party != null)
 			{
+				StringBuilder transferredTroopFacts = new StringBuilder();
+				StringBuilder recruitedVolunteerFacts = new StringBuilder();
+				StringBuilder transferredPrisonerFacts = new StringBuilder();
 				void applyTroop(PartyTransferPromptEntry entry, int requested, string source)
 				{
 					attemptedEntries++;
@@ -23764,8 +23784,9 @@ public class MyBehavior : CampaignBehaviorBase
 					}
 					actualUnits = TransferQuantitySpec.AddValue(actualUnits, applied);
 					actualValue = TransferQuantitySpec.AddProduct(actualValue, applied, Math.Max(1, entry?.HirePriceDenarsPerUnit ?? 0));
-					factResults.Add(BuildNpcToPlayerTroopTransferFact(text2, entry, applied));
-					notificationResults.Add((IsPartyTransferVolunteerEntry(entry) ? "已招募 " : "已获得 ") + applied + " 名" + entry.DisplayName);
+					bool isVolunteer = IsPartyTransferVolunteerEntry(entry);
+					AppendPartyTransferFactItem(isVolunteer ? recruitedVolunteerFacts : transferredTroopFacts, entry, applied);
+					notificationResults.Add((isVolunteer ? "已招募 " : "已获得 ") + applied + " 名" + entry.DisplayName);
 				}
 				void applyPrisoner(PartyTransferPromptEntry entry, int requested, string source)
 				{
@@ -23786,7 +23807,7 @@ public class MyBehavior : CampaignBehaviorBase
 					}
 					actualUnits = TransferQuantitySpec.AddValue(actualUnits, applied);
 					actualValue = TransferQuantitySpec.AddProduct(actualValue, applied, Math.Max(1, entry?.BuyPriceDenarsPerUnit ?? 0));
-					factResults.Add(BuildNpcToPlayerPrisonerTransferFact(text2, entry, applied));
+					AppendPartyTransferFactItem(transferredPrisonerFacts, entry, applied);
 					notificationResults.Add("已获得 " + (entry.IsHero ? ("俘虏" + entry.DisplayName) : (applied + " 名" + entry.DisplayName + "俘虏")));
 				}
 				bool troopAll = matchCollection.Cast<Match>().Any((Match x) => x.Success && (TransferQuantitySpec.IsAllValue(x.Groups[2].Value) || (TransferQuantitySpec.IsAllValue(x.Groups[1].Value) && int.TryParse(x.Groups[2].Value, out var amount) && amount > 0)));
@@ -23850,7 +23871,22 @@ public class MyBehavior : CampaignBehaviorBase
 					}
 				}
 				string batchSummary = "部队与俘虏转移汇总：尝试项" + attemptedEntries + "，成功项" + successfulEntries + "，失败或不足项" + failedOrPartialEntries + "，实际转移" + actualUnits + "人，实际指导总值约" + actualValue + "第纳尔。";
-				factResults.Add("[AFEF NPC行为补充] " + text2 + batchSummary);
+				StringBuilder combinedFact = new StringBuilder(256);
+				combinedFact.Append("[AFEF NPC行为补充] ").Append(text2).Append("已完成一次部队与俘虏转移。");
+				if (transferredTroopFacts.Length > 0)
+				{
+					combinedFact.Append("转入玩家麾下：").Append(transferredTroopFacts).Append('。');
+				}
+				if (recruitedVolunteerFacts.Length > 0)
+				{
+					combinedFact.Append("允许玩家从原版待招募士兵中招募：").Append(recruitedVolunteerFacts).Append('。');
+				}
+				if (transferredPrisonerFacts.Length > 0)
+				{
+					combinedFact.Append("交给玩家的俘虏：").Append(transferredPrisonerFacts).Append('。');
+				}
+				combinedFact.Append(batchSummary);
+				factResults.Add(combinedFact.ToString());
 				notificationResults.Add(batchSummary);
 				Logger.Log("Logic", "[PartyTransfer] batch_done troopAll=" + troopAll + " prisonerAll=" + prisonerAll + " attempted=" + attemptedEntries + " succeeded=" + successfulEntries + " failedOrPartial=" + failedOrPartialEntries + " actualUnits=" + actualUnits + " actualValue=" + actualValue);
 			}
@@ -29936,6 +29972,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			bool includeResidentKingdomEntities = ShouldIncludeResidentKingdomEntities(flag6, auxiliaryRuleHitIds);
 			Hero entityContextHero = targetHero ?? targetCharacter?.HeroObject;
+			bool includeResidentPlayerEntities = DoesPlayerNotorietyObserverKnowPlayer(targetHero, targetCharacter, targetAgentIndex);
 			HashSet<string> entityRetrievalRuleIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			if (auxiliaryRuleHitIds != null)
 			{
@@ -29964,7 +30001,7 @@ public class MyBehavior : CampaignBehaviorBase
 				entityRetrievalRuleIds.Add("worldmap_party_command");
 			}
 			LogShoutPromptContextStage("entity_context_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "rules=" + string.Join(",", entityRetrievalRuleIds));
-			WorldEntityPromptContext entityPromptContext = WorldEntityRetrievalService.BuildPromptContext(mentionedEntities, BuildPlayerPublicDisplayNameForPrompt(entityContextHero, targetCharacter, targetAgentIndex), entityContextHero, includeResidentKingdomEntities, entityRetrievalRuleIds, input);
+			WorldEntityPromptContext entityPromptContext = WorldEntityRetrievalService.BuildPromptContext(mentionedEntities, BuildPlayerPublicDisplayNameForPrompt(entityContextHero, targetCharacter, targetAgentIndex), entityContextHero, includeResidentKingdomEntities, entityRetrievalRuleIds, input, includeResidentPlayerEntities);
 			if (entityPromptContext != null && entityPromptContext.HasContent)
 			{
 				if (!string.IsNullOrWhiteSpace(entityPromptContext.MainPromptBlock))
@@ -29972,7 +30009,7 @@ public class MyBehavior : CampaignBehaviorBase
 					stringBuilder.AppendLine(entityPromptContext.MainPromptBlock);
 				}
 				shoutPromptContext.EntityPostprocessContext = entityPromptContext.PostprocessPromptBlock ?? "";
-				Logger.Log("WorldEntityRetrieval", "entity_context matches=" + entityPromptContext.MatchCount + " residentKingdoms=" + includeResidentKingdomEntities + " mainLen=" + ((entityPromptContext.MainPromptBlock ?? "").Length) + " postLen=" + ((entityPromptContext.PostprocessPromptBlock ?? "").Length));
+				Logger.Log("WorldEntityRetrieval", "entity_context matches=" + entityPromptContext.MatchCount + " residentKingdoms=" + includeResidentKingdomEntities + " residentPlayerEntities=" + includeResidentPlayerEntities + " mainLen=" + ((entityPromptContext.MainPromptBlock ?? "").Length) + " postLen=" + ((entityPromptContext.PostprocessPromptBlock ?? "").Length));
 			}
 			if (entityRetrievalRuleIds.Contains("kingdom_agenda"))
 			{
@@ -31937,7 +31974,9 @@ public class MyBehavior : CampaignBehaviorBase
 		int currentDay = GetCurrentGameDayIndexSafe();
 		int currentSceneSessionId = includeCurrentActiveSceneSession ? -1 : GetCurrentSceneSessionIdForDailyMemorySuppression();
 		int currentDialogueSessionId = GetCurrentNativeConversationMemorySessionIdForSuppression();
-		string currentMemorySessionKey = includeCurrentActiveSceneSession ? "" : BuildCurrentMemorySessionKey(currentSceneSessionId, currentDialogueSessionId);
+		string currentMemorySessionKey = !includeCurrentActiveSceneSession && (currentSceneSessionId >= 0 || currentDialogueSessionId >= 0)
+			? BuildCurrentMemorySessionKey(currentSceneSessionId, currentDialogueSessionId)
+			: "";
 		string targetName = string.IsNullOrWhiteSpace(memoryName) ? "NPC" : memoryName.Trim();
 		foreach (DailyMemoryDraft draft in drafts.Where((DailyMemoryDraft x) => x != null).OrderBy((DailyMemoryDraft x) => x.GameDayIndex))
 		{

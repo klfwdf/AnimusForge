@@ -136,6 +136,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		public int Days = 1;
 		public double HoldUntilDay = -1.0;
 		public string Mode;
+		public bool RequiresExistingWar;
 	}
 
 	private sealed class PendingCreateCompanionPartyRequest
@@ -816,7 +817,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			message = "大地图命令失败：没有通过 ID 校验的命令。";
 			return false;
 		}
-		safeCommands = ConvertHostileGoToSettlementCommandsToAttacks(hero, party, safeCommands, out int convertedCount);
+		safeCommands = ConvertGoToSettlementCommandsToAttacks(hero, party, safeCommands, out int hostileSettlementConvertedCount, out int besiegedSettlementConvertedCount);
 		PartyCommandQueueState state;
 		bool startNew = false;
 		lock (_queueLock)
@@ -860,7 +861,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			ReleasePartyAi(party);
 			StartCurrentCommand(hero, party, state);
 		}
-		string convertedText = convertedCount > 0 ? "，其中" + convertedCount + "道敌对定居点前往命令已按AI攻击处理" : "";
+		string convertedText = BuildGoToSettlementConversionSummary(hostileSettlementConvertedCount, besiegedSettlementConvertedCount);
 		fact = "[AFEF NPC行为补充] " + GetHeroName(hero) + (startNew ? "建立了" : "向现有清单末尾追加了") + safeCommands.Count + "道大地图命令" + convertedText + "。";
 		message = GetHeroName(hero) + (startNew ? "已开始执行" : "已追加") + safeCommands.Count + "道大地图命令。";
 		return true;
@@ -882,7 +883,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			message = "大地图命令失败：无法建立稳定的非英雄部队命令清单。";
 			return false;
 		}
-		safeCommands = ConvertHostileGoToSettlementCommandsToAttacks(null, party, safeCommands, out int convertedCount);
+		safeCommands = ConvertGoToSettlementCommandsToAttacks(null, party, safeCommands, out int hostileSettlementConvertedCount, out int besiegedSettlementConvertedCount);
 		PartyCommandQueueState state;
 		bool startNew = false;
 		string actorName = GetPartyName(party);
@@ -929,7 +930,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			ReleasePartyAi(party);
 			StartCurrentCommand(null, party, state);
 		}
-		string convertedText = convertedCount > 0 ? "，其中" + convertedCount + "道敌对定居点前往命令已按AI攻击处理" : "";
+		string convertedText = BuildGoToSettlementConversionSummary(hostileSettlementConvertedCount, besiegedSettlementConvertedCount);
 		fact = "[AFEF NPC行为补充] " + actorName + (startNew ? "建立了" : "向现有清单末尾追加了") + safeCommands.Count + "道大地图命令" + convertedText + "。";
 		message = actorName + (startNew ? "已开始执行" : "已追加") + safeCommands.Count + "道大地图命令。";
 		return true;
@@ -973,9 +974,10 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			return false;
 		}
 		int hostileGoToConvertedCount = 0;
-		if (ShouldConvertHostileGoToSettlementCommands(normalizedSource))
+		int besiegedGoToConvertedCount = 0;
+		if (ShouldConvertGoToSettlementCommands(normalizedSource))
 		{
-			safeCommands = ConvertHostileGoToSettlementCommandsToAttacks(hero, party, safeCommands, out hostileGoToConvertedCount);
+			safeCommands = ConvertGoToSettlementCommandsToAttacks(hero, party, safeCommands, out hostileGoToConvertedCount, out besiegedGoToConvertedCount);
 		}
 		LeaveArmyIfNeeded(party);
 		ReleasePartyAi(party);
@@ -996,8 +998,8 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			_queues[hero.StringId] = state;
 		}
 		StartCurrentCommand(hero, party, state);
-		string conversionFact = hostileGoToConvertedCount > 0 ? ("，其中" + hostileGoToConvertedCount + "道敌对定居点前往命令已按AI攻击处理") : "";
-		string conversionMessage = hostileGoToConvertedCount > 0 ? "，敌对定居点按AI攻击" : "";
+		string conversionFact = BuildGoToSettlementConversionSummary(hostileGoToConvertedCount, besiegedGoToConvertedCount);
+		string conversionMessage = BuildGoToSettlementConversionMessage(hostileGoToConvertedCount, besiegedGoToConvertedCount);
 		fact = "[AFEF NPC行为补充] " + GetHeroName(hero) + "接受了玩家的大地图命令队列，共" + safeCommands.Count + "道命令" + conversionFact + "。";
 		message = GetHeroName(hero) + "已接受大地图命令队列（" + safeCommands.Count + "道" + conversionMessage + "）。";
 		return true;
@@ -1647,7 +1649,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			return;
 		}
 		PartyCommandEntry command = state.Commands[state.CurrentIndex];
-		if (TryConvertCurrentHostileGoToSettlementCommand(hero, party, state, command, "start"))
+		if (TryConvertCurrentGoToSettlementCommand(hero, party, state, command, "start"))
 		{
 			command = state.Commands[state.CurrentIndex];
 		}
@@ -1816,7 +1818,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			AdvanceCommand(hero, party, state, "settlement_missing");
 			return;
 		}
-		if (TryConvertCurrentHostileGoToSettlementCommand(hero, party, state, command, "tick_go"))
+		if (TryConvertCurrentGoToSettlementCommand(hero, party, state, command, "tick_go"))
 		{
 			StartCurrentCommand(hero, party, state);
 			return;
@@ -2436,6 +2438,11 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		if (targetParty == party)
 		{
 			TryCompleteCurrentAttackResult(state, CommandResultOutcome.Incomplete, "目标部队和执行者是同一支部队，无法发起攻击。", "attack_party_same_party");
+			return;
+		}
+		if (command.RequiresExistingWar && !ArePartiesAtWar(party, targetParty))
+		{
+			TryCompleteCurrentAttackResult(state, CommandResultOutcome.Incomplete, "围城部队已经不再与执行者敌对，未继续攻击，也未重新宣战。", "siege_defense_no_longer_at_war");
 			return;
 		}
 		if (state.EngageCommitted)
@@ -4436,18 +4443,20 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			TargetId = command.TargetId,
 			Days = Math.Max(1, command.Days),
 			HoldUntilDay = command.HoldUntilDay > 0.0 ? command.HoldUntilDay : -1.0,
-			Mode = NormalizeAttackMode(command.Mode)
+			Mode = NormalizeAttackMode(command.Mode),
+			RequiresExistingWar = command.RequiresExistingWar
 		};
 	}
 
-	private static bool ShouldConvertHostileGoToSettlementCommands(string sourceId)
+	private static bool ShouldConvertGoToSettlementCommands(string sourceId)
 	{
 		return string.IsNullOrWhiteSpace(NormalizeExternalSourceId(sourceId));
 	}
 
-	private static List<PartyCommandEntry> ConvertHostileGoToSettlementCommandsToAttacks(Hero hero, MobileParty party, List<PartyCommandEntry> commands, out int convertedCount)
+	private static List<PartyCommandEntry> ConvertGoToSettlementCommandsToAttacks(Hero hero, MobileParty party, List<PartyCommandEntry> commands, out int hostileSettlementConvertedCount, out int besiegedSettlementConvertedCount)
 	{
-		convertedCount = 0;
+		hostileSettlementConvertedCount = 0;
+		besiegedSettlementConvertedCount = 0;
 		if (commands == null || commands.Count == 0 || !IsPartyUsable(party))
 		{
 			return commands ?? new List<PartyCommandEntry>();
@@ -4455,11 +4464,19 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		List<PartyCommandEntry> result = new List<PartyCommandEntry>(commands.Count);
 		foreach (PartyCommandEntry command in commands)
 		{
-			if (TryBuildHostileGoToSettlementAttackCommand(party, command, out PartyCommandEntry attackCommand, out Settlement settlement))
+			if (TryBuildGoToSettlementAttackCommand(party, command, out PartyCommandEntry attackCommand, out Settlement settlement, out MobileParty besiegerParty))
 			{
 				result.Add(attackCommand);
-				convertedCount++;
-				Log("go_to_hostile_settlement_converted hero=" + (hero?.StringId ?? "") + " party=" + (party.StringId ?? "") + " settlement=" + (settlement?.StringId ?? command?.TargetId ?? "") + " days=" + Math.Max(1, command?.Days ?? 1));
+				if (besiegerParty != null)
+				{
+					besiegedSettlementConvertedCount++;
+					Log("go_to_besieged_settlement_converted hero=" + (hero?.StringId ?? "") + " party=" + (party.StringId ?? "") + " settlement=" + (settlement?.StringId ?? command?.TargetId ?? "") + " besieger=" + (besiegerParty.StringId ?? "") + " days=" + Math.Max(1, command?.Days ?? 1));
+				}
+				else
+				{
+					hostileSettlementConvertedCount++;
+					Log("go_to_hostile_settlement_converted hero=" + (hero?.StringId ?? "") + " party=" + (party.StringId ?? "") + " settlement=" + (settlement?.StringId ?? command?.TargetId ?? "") + " days=" + Math.Max(1, command?.Days ?? 1));
+				}
 				continue;
 			}
 			result.Add(command);
@@ -4467,13 +4484,13 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		return result;
 	}
 
-	private static bool TryConvertCurrentHostileGoToSettlementCommand(Hero hero, MobileParty party, PartyCommandQueueState state, PartyCommandEntry command, string phase)
+	private static bool TryConvertCurrentGoToSettlementCommand(Hero hero, MobileParty party, PartyCommandQueueState state, PartyCommandEntry command, string phase)
 	{
-		if (state == null || !ShouldConvertHostileGoToSettlementCommands(state.SourceId))
+		if (state == null || !ShouldConvertGoToSettlementCommands(state.SourceId))
 		{
 			return false;
 		}
-		if (!TryBuildHostileGoToSettlementAttackCommand(party, command, out PartyCommandEntry attackCommand, out Settlement settlement))
+		if (!TryBuildGoToSettlementAttackCommand(party, command, out PartyCommandEntry attackCommand, out Settlement settlement, out MobileParty besiegerParty))
 		{
 			return false;
 		}
@@ -4483,25 +4500,49 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		command.Days = attackCommand.Days;
 		command.HoldUntilDay = attackCommand.HoldUntilDay;
 		command.Mode = attackCommand.Mode;
+		command.RequiresExistingWar = attackCommand.RequiresExistingWar;
 		state.ArrivalDay = -1.0;
 		state.TimeoutDay = -1.0;
 		state.EngageCommitted = false;
 		state.LastIssuedActionKey = "";
 		state.Stage = CommandStage.New.ToString();
-		NotifyCommandStatus(state, "go_to_hostile_settlement_converted:" + (phase ?? "") + ":" + (settlement?.StringId ?? command.TargetId ?? ""), GetActorName(state, hero, party) + "原本要前往的" + GetSettlementName(settlement) + "已是敌对定居点，改按AI攻击命令执行。", CommandMessageTone.Progress);
-		Log("current_go_to_hostile_settlement_converted actor=" + GetActorLogId(state, hero, party) + " party=" + (party?.StringId ?? "") + " settlement=" + (settlement?.StringId ?? command.TargetId ?? "") + " phase=" + (phase ?? "") + " days=" + Math.Max(1, command.Days));
+		if (besiegerParty != null)
+		{
+			NotifyCommandStatus(state, "go_to_besieged_settlement_converted:" + (phase ?? "") + ":" + (settlement?.StringId ?? "") + ":" + (besiegerParty.StringId ?? ""), GetActorName(state, hero, party) + "原本要前往的" + GetSettlementName(settlement) + "正在被敌对的" + GetPartyName(besiegerParty) + "围攻，改为攻击围城部队。", CommandMessageTone.Progress);
+			Log("current_go_to_besieged_settlement_converted actor=" + GetActorLogId(state, hero, party) + " party=" + (party?.StringId ?? "") + " settlement=" + (settlement?.StringId ?? "") + " besieger=" + (besiegerParty.StringId ?? "") + " phase=" + (phase ?? "") + " days=" + Math.Max(1, command.Days));
+		}
+		else
+		{
+			NotifyCommandStatus(state, "go_to_hostile_settlement_converted:" + (phase ?? "") + ":" + (settlement?.StringId ?? command.TargetId ?? ""), GetActorName(state, hero, party) + "原本要前往的" + GetSettlementName(settlement) + "已是敌对定居点，改按AI攻击命令执行。", CommandMessageTone.Progress);
+			Log("current_go_to_hostile_settlement_converted actor=" + GetActorLogId(state, hero, party) + " party=" + (party?.StringId ?? "") + " settlement=" + (settlement?.StringId ?? command.TargetId ?? "") + " phase=" + (phase ?? "") + " days=" + Math.Max(1, command.Days));
+		}
 		return true;
 	}
 
-	private static bool TryBuildHostileGoToSettlementAttackCommand(MobileParty party, PartyCommandEntry command, out PartyCommandEntry attackCommand, out Settlement settlement)
+	private static bool TryBuildGoToSettlementAttackCommand(MobileParty party, PartyCommandEntry command, out PartyCommandEntry attackCommand, out Settlement settlement, out MobileParty besiegerParty)
 	{
 		attackCommand = null;
 		settlement = null;
+		besiegerParty = null;
 		if (!IsKind(command, CommandKind.GoToSettlement) || !IsPartyUsable(party))
 		{
 			return false;
 		}
 		settlement = ResolveSettlementById(command.TargetId);
+		if (TryResolveHostileBesiegerParty(party, settlement, out besiegerParty))
+		{
+			attackCommand = new PartyCommandEntry
+			{
+				Kind = CommandKind.AttackParty.ToString(),
+				TargetType = "party",
+				TargetId = besiegerParty.StringId,
+				Days = Math.Max(1, command.Days),
+				HoldUntilDay = -1.0,
+				Mode = AttackModeForce,
+				RequiresExistingWar = true
+			};
+			return true;
+		}
 		if (!IsSupportedAttackSettlement(settlement) || !IsPartyAtWarWithSettlement(party, settlement))
 		{
 			return false;
@@ -4516,6 +4557,60 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			Mode = AttackModeAi
 		};
 		return true;
+	}
+
+	private static bool TryResolveHostileBesiegerParty(MobileParty party, Settlement settlement, out MobileParty besiegerParty)
+	{
+		besiegerParty = null;
+		try
+		{
+			SiegeEvent siegeEvent = settlement?.SiegeEvent;
+			BesiegerCamp besiegerCamp = siegeEvent?.BesiegerCamp;
+			MobileParty leaderParty = besiegerCamp?.LeaderParty;
+			if (siegeEvent == null
+				|| siegeEvent.BesiegedSettlement != settlement
+				|| !settlement.IsUnderSiege
+				|| !IsPartyUsable(leaderParty)
+				|| leaderParty == party
+				|| string.IsNullOrWhiteSpace(leaderParty.StringId)
+				|| !ArePartiesAtWar(party, leaderParty))
+			{
+				return false;
+			}
+			besiegerParty = leaderParty;
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static string BuildGoToSettlementConversionSummary(int hostileSettlementConvertedCount, int besiegedSettlementConvertedCount)
+	{
+		List<string> parts = new List<string>(2);
+		if (besiegedSettlementConvertedCount > 0)
+		{
+			parts.Add(besiegedSettlementConvertedCount + "道被围攻定居点前往命令已改为攻击敌对围城部队");
+		}
+		if (hostileSettlementConvertedCount > 0)
+		{
+			parts.Add(hostileSettlementConvertedCount + "道敌对定居点前往命令已按AI攻击处理");
+		}
+		return parts.Count > 0 ? "，其中" + string.Join("，", parts) : "";
+	}
+
+	private static string BuildGoToSettlementConversionMessage(int hostileSettlementConvertedCount, int besiegedSettlementConvertedCount)
+	{
+		if (hostileSettlementConvertedCount <= 0 && besiegedSettlementConvertedCount <= 0)
+		{
+			return "";
+		}
+		if (hostileSettlementConvertedCount > 0 && besiegedSettlementConvertedCount > 0)
+		{
+			return "，敌对定居点按AI攻击、被围攻定居点改攻敌对围城部队";
+		}
+		return besiegedSettlementConvertedCount > 0 ? "，被围攻定居点改攻敌对围城部队" : "，敌对定居点按AI攻击";
 	}
 
 	private static string NormalizeTargetType(PartyCommandEntry command)

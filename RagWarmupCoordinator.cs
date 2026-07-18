@@ -54,13 +54,6 @@ internal static class RagWarmupCoordinator
 		{
 			try
 			{
-				KnowledgeLibraryBehavior.TryStartBackgroundIndexWarmup("rag_warmup_complete");
-			}
-			catch
-			{
-			}
-			try
-			{
 				AIConfigHandler.TryStartBackgroundSemanticWarmup("rag_warmup_complete");
 			}
 			catch

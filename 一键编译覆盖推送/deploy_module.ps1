@@ -124,87 +124,21 @@ function Remove-SafeModuleWorkingDirectory {
     }
 }
 
-function Move-SafeModuleWorkingDirectory {
-    param(
-        [Parameter(Mandatory = $true)][string]$Source,
-        [Parameter(Mandatory = $true)][string]$Destination,
-        [Parameter(Mandatory = $true)][string]$ModulesDir
-    )
-
-    Assert-SafeModuleWorkingPath -Path $Source -ModulesDir $ModulesDir
-    Assert-SafeModuleWorkingPath -Path $Destination -ModulesDir $ModulesDir
-    if (-not (Test-Path -LiteralPath $Source -PathType Container)) {
-        throw "Module move source does not exist: $Source"
-    }
-    if (Test-Path -LiteralPath $Destination) {
-        throw "Module move destination already exists: $Destination"
-    }
-    Assert-NotReparsePoint -Path $Source
-    if ((Get-FullPathSafe -Path $Source).Equals((Get-FullPathSafe -Path $Destination), [System.StringComparison]::OrdinalIgnoreCase)) {
-        throw "Module move source and destination are the same: $Source"
-    }
-
-    # Whole-directory replacement is intentionally atomic, but Windows can
-    # transiently deny a rename while Defender/indexers finish scanning files
-    # that were just read or written.  Retry only I/O/access failures; logical
-    # path validation errors still fail immediately.  This is a deployment-only
-    # cold path, so the bounded backoff has no in-game performance cost.
-    $maxAttempts = 15
-    for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
-        try {
-            Move-Item -LiteralPath $Source -Destination $Destination -ErrorAction Stop
-            if ($attempt -gt 1) {
-                Write-Host "Move retry   : succeeded on attempt $attempt/$maxAttempts"
-            }
-            return
-        }
-        catch {
-            $moveException = $_.Exception
-            $isRetryable = $moveException -is [System.IO.IOException] -or
-                $moveException -is [System.UnauthorizedAccessException]
-            if (-not $isRetryable) {
-                throw
-            }
-
-            $sourceStillExists = Test-Path -LiteralPath $Source -PathType Container
-            $destinationExists = Test-Path -LiteralPath $Destination -PathType Container
-            if (-not $sourceStillExists -and $destinationExists) {
-                Write-Host "Move retry   : move completed despite a transient provider error"
-                return
-            }
-            if (-not $sourceStillExists) {
-                throw "Module move source disappeared after a failed move: $Source`nLast error: $($moveException.Message)"
-            }
-            if ($destinationExists) {
-                throw "Module move destination appeared after a failed move: $Destination`nLast error: $($moveException.Message)"
-            }
-            if ($attempt -ge $maxAttempts) {
-                $currentDirectory = [System.Environment]::CurrentDirectory
-                throw "Module directory remained locked after $maxAttempts attempts.`nSource: $Source`nDestination: $Destination`nProcess working directory: $currentDirectory`nLast error: $($moveException.Message)"
-            }
-
-            if ($attempt -eq 1) {
-                Write-Host "Move retry   : directory is temporarily busy; waiting for Windows file scanners to release it"
-            }
-            $delayMilliseconds = [Math]::Min(1500, 200 * $attempt)
-            Start-Sleep -Milliseconds $delayMilliseconds
-        }
-    }
-}
-
 function Invoke-Robocopy {
     param(
         [Parameter(Mandatory = $true)][string]$SourceDir,
         [Parameter(Mandatory = $true)][string]$TargetDir,
-        [Parameter(Mandatory = $true)][string[]]$ExtraArguments
+        [Parameter(Mandatory = $true)][string[]]$ExtraArguments,
+        [ValidateRange(0, 60)][int]$RetryCount = 1,
+        [ValidateRange(0, 60)][int]$WaitSeconds = 1
     )
 
     New-Item -ItemType Directory -Path $TargetDir -Force | Out-Null
     $arguments = @(
         $SourceDir,
         $TargetDir,
-        "/R:1",
-        "/W:1",
+        "/R:$RetryCount",
+        "/W:$WaitSeconds",
         "/XJ",
         "/NP",
         "/NFL",
@@ -213,10 +147,12 @@ function Invoke-Robocopy {
         "/NJS"
     ) + $ExtraArguments
 
-    & robocopy @arguments | Out-Null
+    $robocopyOutput = @(& robocopy @arguments 2>&1)
     $exitCode = $LASTEXITCODE
     if ($exitCode -ge 8) {
-        throw "robocopy failed for '$SourceDir' -> '$TargetDir' with exit code $exitCode."
+        $details = @($robocopyOutput | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Select-Object -Last 12)
+        $detailText = if ($details.Count -gt 0) { "`n$($details -join "`n")" } else { "" }
+        throw "robocopy failed for '$SourceDir' -> '$TargetDir' with exit code $exitCode.$detailText"
     }
 }
 
@@ -754,7 +690,7 @@ foreach ($workingPath in @($stagingModuleDir, $backupModuleDir)) {
 
 $deploymentSucceeded = $false
 $backupCreated = $false
-$previousModuleWasBackedUp = $false
+$targetMutationStarted = $false
 try {
     New-SafeModuleWorkingDirectory -Path $stagingModuleDir -ModulesDir $modulesDir
 
@@ -806,12 +742,31 @@ try {
     $hadExistingTarget = Test-Path -LiteralPath $targetModuleDir -PathType Container
     try {
         if ($hadExistingTarget) {
-            Move-SafeModuleWorkingDirectory -Source $targetModuleDir -Destination $backupModuleDir -ModulesDir $modulesDir
+            # A process can keep the module root as its working directory without
+            # locking any file inside it.  Windows then rejects a directory rename
+            # even while every DLL/data file is replaceable.  Build a complete
+            # copy backup and commit with a mirror operation so that this harmless
+            # directory handle no longer blocks deployment.  This remains a cold
+            # deployment path and has no in-game performance impact.
+            New-SafeModuleWorkingDirectory -Path $backupModuleDir -ModulesDir $modulesDir
+            Invoke-Robocopy -SourceDir $targetModuleDir -TargetDir $backupModuleDir -ExtraArguments @(
+                "/MIR",
+                "/COPY:DAT",
+                "/DCOPY:DAT"
+            ) -RetryCount 3 -WaitSeconds 1
             $backupCreated = $true
-            $previousModuleWasBackedUp = $true
+            Write-Host "Backup Module: $backupModuleDir"
         }
 
-        Move-SafeModuleWorkingDirectory -Source $stagingModuleDir -Destination $targetModuleDir -ModulesDir $modulesDir
+        # Robocopy may update some files before reporting a later failure, so set
+        # this flag before it starts.  Any exception after this point must restore
+        # the complete pre-deploy backup rather than merely reporting a copy error.
+        $targetMutationStarted = $true
+        Invoke-Robocopy -SourceDir $stagingModuleDir -TargetDir $targetModuleDir -ExtraArguments @(
+            "/MIR",
+            "/COPY:DAT",
+            "/DCOPY:DAT"
+        ) -RetryCount 15 -WaitSeconds 1
         Assert-SingleModuleLayout -ModuleDir $targetModuleDir
         Assert-SameHash -SourcePath $bootstrapFull -TargetPath (Join-Path $targetModuleDir "bin\Win64_Shipping_Client\AnimusForge.Bootstrap.dll")
         Assert-SameHash -SourcePath $dll13Full -TargetPath (Join-Path $targetModuleDir "bin\Win64_Shipping_Client\versions\1.3\AnimusForge.dll")
@@ -820,34 +775,56 @@ try {
     catch {
         $replacementFailure = $_.Exception.Message
         $rollbackErrors = @()
-        if (-not $backupCreated -and $hadExistingTarget -and (Test-Path -LiteralPath $backupModuleDir -PathType Container)) {
-            $backupCreated = $true
-            $previousModuleWasBackedUp = $true
-        }
 
-        if ($backupCreated) {
-            if (Test-Path -LiteralPath $targetModuleDir) {
+        if ($hadExistingTarget -and -not $targetMutationStarted) {
+            # Backup creation failed before the target was touched.  Never use a
+            # partial backup for rollback; remove it if possible and leave the
+            # existing module exactly where it is.
+            if (Test-Path -LiteralPath $backupModuleDir) {
                 try {
-                    Remove-SafeModuleWorkingDirectory -Path $targetModuleDir -ModulesDir $modulesDir
+                    Remove-SafeModuleWorkingDirectory -Path $backupModuleDir -ModulesDir $modulesDir
                 }
                 catch {
-                    $rollbackErrors += "could not remove failed replacement: $($_.Exception.Message)"
+                    $rollbackErrors += "could not remove incomplete backup: $($_.Exception.Message)"
                 }
             }
-            if (-not (Test-Path -LiteralPath $targetModuleDir) -and (Test-Path -LiteralPath $backupModuleDir -PathType Container)) {
+
+            if ($rollbackErrors.Count -gt 0) {
+                throw "Unified module replacement could not begin; the previous module was left untouched: $replacementFailure`nCleanup also failed: $($rollbackErrors -join '; ')`nIncomplete backup (if present): $backupModuleDir"
+            }
+            throw "Unified module replacement could not begin; the previous module was left untouched: $replacementFailure"
+        }
+
+        if ($hadExistingTarget) {
+            $rollbackCompleted = $false
+            if ($backupCreated -and (Test-Path -LiteralPath $backupModuleDir -PathType Container)) {
                 try {
-                    Move-SafeModuleWorkingDirectory -Source $backupModuleDir -Destination $targetModuleDir -ModulesDir $modulesDir
-                    $backupCreated = $false
+                    Invoke-Robocopy -SourceDir $backupModuleDir -TargetDir $targetModuleDir -ExtraArguments @(
+                        "/MIR",
+                        "/COPY:DAT",
+                        "/DCOPY:DAT"
+                    ) -RetryCount 15 -WaitSeconds 1
+                    $rollbackCompleted = $true
                 }
                 catch {
                     $rollbackErrors += "could not restore backup: $($_.Exception.Message)"
                 }
             }
-            elseif (-not (Test-Path -LiteralPath $backupModuleDir -PathType Container)) {
-                $rollbackErrors += "backup directory is missing: $backupModuleDir"
+            else {
+                $rollbackErrors += "complete backup directory is missing: $backupModuleDir"
             }
-            if ($backupCreated) {
+
+            if (-not $rollbackCompleted) {
                 $rollbackErrors += "the previous unified module was not confirmed restored; preserve this backup: $backupModuleDir"
+            }
+            elseif (Test-Path -LiteralPath $backupModuleDir) {
+                try {
+                    Remove-SafeModuleWorkingDirectory -Path $backupModuleDir -ModulesDir $modulesDir
+                    $backupCreated = $false
+                }
+                catch {
+                    Write-Warning "The previous module was restored, but its recovery backup could not be cleaned: $backupModuleDir ($($_.Exception.Message))"
+                }
             }
         }
         elseif (-not $hadExistingTarget -and (Test-Path -LiteralPath $targetModuleDir)) {
@@ -863,10 +840,7 @@ try {
             throw "Unified module replacement failed: $replacementFailure`nRollback also failed: $($rollbackErrors -join '; ')`nRecovery backup (if present): $backupModuleDir"
         }
         if ($hadExistingTarget) {
-            if ($previousModuleWasBackedUp) {
-                throw "Unified module replacement failed and the previous module was restored: $replacementFailure"
-            }
-            throw "Unified module replacement could not begin; the previous module was left untouched: $replacementFailure"
+            throw "Unified module replacement failed and the previous module was restored from its complete backup: $replacementFailure"
         }
         throw "Unified module replacement failed; no previous unified module existed: $replacementFailure"
     }

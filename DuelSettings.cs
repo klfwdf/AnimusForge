@@ -347,11 +347,19 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	private static readonly object CustomPromptTextStoreFileLock = new object();
 
+	private static readonly long CustomPromptTextStoreRefreshIntervalTicks = Stopwatch.Frequency;
+
 	private static bool _customPromptTextStoreFolderHydrated;
 
 	private static long _customPromptTextStoreFolderFingerprint;
 
 	private static CustomPromptTextStoreJson _customPromptTextStoreCached;
+
+	private static long _customPromptTextStoreRevision;
+
+	private static long _customPromptTextStoreNextRefreshTimestamp;
+
+	private long _appliedCustomPromptTextStoreRevision = -1L;
 
 	private sealed class CustomPromptTextStoreJson
 	{
@@ -617,6 +625,22 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyFloatingInteger("战败血量阈值", 0.1f, 0.5f, "#0%", Order = 1, RequireRestart = false)]
 	[SettingPropertyGroup("2. 决斗规则")]
 	public float HealthThreshold { get; set; } = 0.35f;
+
+	[SettingPropertyBool("启用败者家族声望惩罚", Order = 2, RequireRestart = false, HintText = "正式决斗结算后，败者所属家族扣减声望；玩家获胜时扣对手家族，玩家战败时扣玩家家族。同一家族成员之间决斗不扣声望。不会让声望低于 0，也不会强制降低已经获得的家族等级。")]
+	[SettingPropertyGroup("2. 决斗规则")]
+	public bool EnableDuelLoserClanRenownPenalty { get; set; } = true;
+
+	[SettingPropertyInteger("声望最低扣减", 0, 1000, "0", Order = 3, RequireRestart = false, HintText = "败者家族每次至少扣减的声望。默认 100；若家族剩余声望不足，则最多扣到 0。")]
+	[SettingPropertyGroup("2. 决斗规则")]
+	public int DuelLoserClanRenownPenaltyMinimum { get; set; } = 100;
+
+	[SettingPropertyInteger("按当前声望扣减（%）", 0, 50, "0", Order = 4, RequireRestart = false, HintText = "按败者家族结算前的当前声望计算比例扣减，并与最低扣减取较大值。默认 15%。")]
+	[SettingPropertyGroup("2. 决斗规则")]
+	public int DuelLoserClanRenownPenaltyPercent { get; set; } = 15;
+
+	[SettingPropertyInteger("声望最高扣减", 0, 5000, "0", Order = 5, RequireRestart = false, HintText = "单场决斗最多扣减的家族声望。默认 1000；设为 0 表示不设上限。")]
+	[SettingPropertyGroup("2. 决斗规则")]
+	public int DuelLoserClanRenownPenaltyMaximum { get; set; } = 1000;
 
 	[SettingPropertyText("喊话按键 (仅限单个大写字母)", -1, true, "", Order = 0, RequireRestart = false, HintText = "场景中按住此键预览并扩大喊话范围，松开后打开说话输入框。默认 T。")]
 	[SettingPropertyGroup("3. 场景喊话")]
@@ -968,7 +992,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("5. 知识检索（返回）")]
 	public int KnowledgeDirectTopN { get; set; } = 4;
 
-	[SettingPropertyInteger("实体注入上限", 1, 20, "0", Order = 1, RequireRestart = false, HintText = "控制每次对话最多向 AI 注入多少个人物、地点、家族、王国和物品检索结果。系统按前处理的重要性顺序让每个名词先占一个最高分实体槽；重名人物会优先采用其他名词明确限定的家族、其次采用王国，再按其与当前聊天 NPC 的实际大地图距离获得最高 0.15 的微量加分，最终分允许超过 1.00；范围或位置不可用时回退原始得分。若最高分实体已被前面的名词占用，则顺延到第一条未占用实体。只有上限大于名词数时才补次要结果：先为最靠前名词补最多 3 条，再依次处理后续名词。默认 6。")]
+	[SettingPropertyInteger("实体注入上限", 1, 20, "0", Order = 1, RequireRestart = false, HintText = "控制每次对话最多向 AI 注入多少个人物、地点、家族和王国检索结果。系统按前处理的重要性顺序让每个名词先占一个最高分实体槽；重名人物会优先采用其他名词明确限定的家族、其次采用王国，再按其与当前聊天 NPC 的实际大地图距离获得最高 0.15 的微量加分，最终分允许超过 1.00；范围或位置不可用时回退原始得分。若最高分实体已被前面的名词占用，则顺延到第一条未占用实体。只有上限大于名词数时才补次要结果：先为最靠前名词补最多 3 条，再依次处理后续名词。默认 6。")]
 	[SettingPropertyGroup("5. 知识检索（返回）")]
 	public int WorldEntityInjectMaxCount { get; set; } = 6;
 
@@ -1795,12 +1819,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		if (GlobalSettings<DuelSettings>.Instance != null)
 		{
 			DuelSettings settings = GlobalSettings<DuelSettings>.Instance;
-			EnsurePlayerCustomPromptRuleLoaded(settings);
-			EnsureKingdomRebellionSystemPromptLoaded(settings);
-			EnsureWeeklyReportWritingRequirementsLoaded(settings);
-			EnsureNpcPersonaGenerationRequirementsLoaded(settings);
-			EnsureCustomPolicyEvaluatorPromptLoaded(settings);
-			EnsureNpcRulerPolicyPromptLoaded(settings);
+			EnsureCustomPromptTextSettingsLoaded(settings);
 			EnsureLogCleanupDefaultMigration(settings);
 			return settings;
 		}
@@ -1808,12 +1827,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		{
 			if (BaseSettingsProvider.Instance?.GetSettings("AnimusForge_global_settings") is DuelSettings result)
 			{
-				EnsurePlayerCustomPromptRuleLoaded(result);
-				EnsureKingdomRebellionSystemPromptLoaded(result);
-				EnsureWeeklyReportWritingRequirementsLoaded(result);
-				EnsureNpcPersonaGenerationRequirementsLoaded(result);
-				EnsureCustomPolicyEvaluatorPromptLoaded(result);
-				EnsureNpcRulerPolicyPromptLoaded(result);
+				EnsureCustomPromptTextSettingsLoaded(result);
 				EnsureLogCleanupDefaultMigration(result);
 				return result;
 			}
@@ -1832,12 +1846,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		{
 			_fallbackSettings = new DuelSettings();
 		}
-		EnsurePlayerCustomPromptRuleLoaded(_fallbackSettings);
-		EnsureKingdomRebellionSystemPromptLoaded(_fallbackSettings);
-		EnsureWeeklyReportWritingRequirementsLoaded(_fallbackSettings);
-		EnsureNpcPersonaGenerationRequirementsLoaded(_fallbackSettings);
-		EnsureCustomPolicyEvaluatorPromptLoaded(_fallbackSettings);
-		EnsureNpcRulerPolicyPromptLoaded(_fallbackSettings);
+		EnsureCustomPromptTextSettingsLoaded(_fallbackSettings);
 		if (!_settingsFallbackWarned)
 		{
 			_settingsFallbackWarned = true;
@@ -2211,6 +2220,33 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			num = 0.95f;
 		}
 		return num;
+	}
+
+	public static bool TryGetDuelRenownPenaltySettings(out int minimum, out int percent, out int maximum)
+	{
+		minimum = 100;
+		percent = 15;
+		maximum = 1000;
+		try
+		{
+			DuelSettings settings = GetSettings();
+			if (settings == null || !settings.EnableDuelLoserClanRenownPenalty)
+			{
+				return false;
+			}
+			minimum = Math.Max(0, Math.Min(1000, settings.DuelLoserClanRenownPenaltyMinimum));
+			percent = Math.Max(0, Math.Min(50, settings.DuelLoserClanRenownPenaltyPercent));
+			maximum = Math.Max(0, Math.Min(5000, settings.DuelLoserClanRenownPenaltyMaximum));
+			if (maximum > 0 && maximum < minimum)
+			{
+				maximum = minimum;
+			}
+			return minimum > 0 || percent > 0;
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	private void OpenPlayerCustomPromptRuleEditor()
@@ -2603,88 +2639,40 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		}
 	}
 
-	private static void EnsurePlayerCustomPromptRuleLoaded(DuelSettings settings)
+	private static void EnsureCustomPromptTextSettingsLoaded(DuelSettings settings)
 	{
-		if (settings == null)
+		if (settings == null
+			|| !TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store, out long revision, cloneResult: false)
+			|| store == null
+			|| settings._appliedCustomPromptTextStoreRevision == revision)
 		{
 			return;
 		}
-		if (TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store) && !string.Equals(settings.PlayerCustomPromptRule ?? "", store.PlayerCustomPromptRule ?? "", StringComparison.Ordinal))
+		if (!string.Equals(settings.PlayerCustomPromptRule ?? "", store.PlayerCustomPromptRule ?? "", StringComparison.Ordinal))
 		{
 			settings.PlayerCustomPromptRule = store.PlayerCustomPromptRule ?? "";
 		}
-	}
-
-	private static void EnsureKingdomRebellionSystemPromptLoaded(DuelSettings settings)
-	{
-		if (settings == null)
-		{
-			return;
-		}
-		if (TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store) && !string.Equals(settings.KingdomRebellionSystemPrompt ?? "", store.KingdomRebellionSystemPrompt ?? "", StringComparison.Ordinal))
+		if (!string.Equals(settings.KingdomRebellionSystemPrompt ?? "", store.KingdomRebellionSystemPrompt ?? "", StringComparison.Ordinal))
 		{
 			settings.KingdomRebellionSystemPrompt = store.KingdomRebellionSystemPrompt ?? "";
 		}
-	}
-
-	private static void EnsureWeeklyReportWritingRequirementsLoaded(DuelSettings settings)
-	{
-		if (settings == null)
-		{
-			return;
-		}
-		if (TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store) && !string.Equals(settings.WeeklyReportWritingRequirements ?? "", store.WeeklyReportWritingRequirements ?? "", StringComparison.Ordinal))
+		if (!string.Equals(settings.WeeklyReportWritingRequirements ?? "", store.WeeklyReportWritingRequirements ?? "", StringComparison.Ordinal))
 		{
 			settings.WeeklyReportWritingRequirements = store.WeeklyReportWritingRequirements ?? "";
 		}
-	}
-
-	private static void EnsureNpcPersonaGenerationRequirementsLoaded(DuelSettings settings)
-	{
-		if (settings == null)
-		{
-			return;
-		}
-		if (TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store) && !string.Equals(settings.NpcPersonaGenerationRequirements ?? "", store.NpcPersonaGenerationRequirements ?? "", StringComparison.Ordinal))
+		if (!string.Equals(settings.NpcPersonaGenerationRequirements ?? "", store.NpcPersonaGenerationRequirements ?? "", StringComparison.Ordinal))
 		{
 			settings.NpcPersonaGenerationRequirements = store.NpcPersonaGenerationRequirements ?? "";
 		}
-	}
-
-	private static void EnsureCustomPolicyEvaluatorPromptLoaded(DuelSettings settings)
-	{
-		if (settings == null)
+		if (!string.Equals(settings.CustomPolicyEvaluatorPrompt ?? "", store.CustomPolicyEvaluatorPrompt ?? "", StringComparison.Ordinal))
 		{
-			return;
+			settings.CustomPolicyEvaluatorPrompt = store.CustomPolicyEvaluatorPrompt ?? "";
 		}
-		if (TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store))
+		if (!string.Equals(settings.NpcRulerPolicyPrompt ?? "", store.NpcRulerPolicyPrompt ?? "", StringComparison.Ordinal))
 		{
-			string prompt = NormalizeCustomPolicyEvaluatorPromptText(store.CustomPolicyEvaluatorPrompt ?? "");
-			if (IsBuiltInCustomPolicyEvaluatorPromptText(prompt))
-			{
-				prompt = NormalizeCustomPolicyEvaluatorPromptText(DefaultCustomPolicyEvaluatorPrompt);
-			}
-			if (!string.Equals(settings.CustomPolicyEvaluatorPrompt ?? "", prompt, StringComparison.Ordinal))
-			{
-				settings.CustomPolicyEvaluatorPrompt = prompt;
-			}
+			settings.NpcRulerPolicyPrompt = store.NpcRulerPolicyPrompt ?? "";
 		}
-	}
-
-	private static void EnsureNpcRulerPolicyPromptLoaded(DuelSettings settings)
-	{
-		if (settings == null)
-		{
-			return;
-		}
-		if (TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store))
-		{
-			string prompt = NormalizeNpcRulerPolicyPromptText(store.NpcRulerPolicyPrompt ?? "");
-			if (!string.Equals(settings.NpcRulerPolicyPrompt ?? "", prompt, StringComparison.Ordinal))
-			{
-				settings.NpcRulerPolicyPrompt = prompt;
-			}
-		}
+		settings._appliedCustomPromptTextStoreRevision = revision;
 	}
 
 	private static string LoadPlayerCustomPromptRuleFromDiskOrDefault()
@@ -3083,20 +3071,39 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	private static bool TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store)
 	{
+		return TryReadCustomPromptTextStore(out store, out _, cloneResult: true);
+	}
+
+	private static bool TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store, out long revision, bool cloneResult)
+	{
 		store = null;
+		revision = 0L;
 		try
 		{
-			string directory = GetCustomPromptTextStoreDirectory();
-			if (string.IsNullOrWhiteSpace(directory))
-			{
-				return false;
-			}
 			lock (CustomPromptTextStoreFileLock)
 			{
+				long now = Stopwatch.GetTimestamp();
+				if (now < _customPromptTextStoreNextRefreshTimestamp)
+				{
+					if (_customPromptTextStoreCached == null)
+					{
+						return false;
+					}
+					store = cloneResult ? CloneCustomPromptTextStore(_customPromptTextStoreCached) : _customPromptTextStoreCached;
+					revision = _customPromptTextStoreRevision;
+					return true;
+				}
+				_customPromptTextStoreNextRefreshTimestamp = now + CustomPromptTextStoreRefreshIntervalTicks;
+				string directory = GetCustomPromptTextStoreDirectory();
+				if (string.IsNullOrWhiteSpace(directory))
+				{
+					return false;
+				}
 				long fingerprint = ComputeCustomPromptTextStoreFingerprint(directory);
 				if (_customPromptTextStoreFolderHydrated && _customPromptTextStoreFolderFingerprint == fingerprint && _customPromptTextStoreCached != null)
 				{
-					store = CloneCustomPromptTextStore(_customPromptTextStoreCached);
+					store = cloneResult ? CloneCustomPromptTextStore(_customPromptTextStoreCached) : _customPromptTextStoreCached;
+					revision = _customPromptTextStoreRevision;
 					return true;
 				}
 				if (!Directory.Exists(directory))
@@ -3133,6 +3140,9 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 				_customPromptTextStoreFolderHydrated = true;
 				_customPromptTextStoreFolderFingerprint = ComputeCustomPromptTextStoreFingerprint(directory);
 				_customPromptTextStoreCached = CloneCustomPromptTextStore(store);
+				_customPromptTextStoreRevision++;
+				revision = _customPromptTextStoreRevision;
+				store = cloneResult ? CloneCustomPromptTextStore(_customPromptTextStoreCached) : _customPromptTextStoreCached;
 				return true;
 			}
 		}
@@ -3159,6 +3169,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 				_customPromptTextStoreFolderHydrated = false;
 				_customPromptTextStoreFolderFingerprint = 0L;
 				_customPromptTextStoreCached = null;
+				_customPromptTextStoreNextRefreshTimestamp = 0L;
 			}
 			return true;
 		}
@@ -3189,6 +3200,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 				_customPromptTextStoreFolderHydrated = false;
 				_customPromptTextStoreFolderFingerprint = 0L;
 				_customPromptTextStoreCached = null;
+				_customPromptTextStoreNextRefreshTimestamp = 0L;
 			}
 			return true;
 		}

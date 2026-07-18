@@ -3187,6 +3187,7 @@ public static class AIConfigHandler
 			{
 				return text2;
 			}
+			text2 = ShoutNetwork.ProtectPlayerPersonaRawNameReferencesForExternal(text2, out var rawPlayerPersonaNames);
 			HashSet<string> hashSet = new HashSet<string>(StringComparer.Ordinal);
 			try
 			{
@@ -3215,11 +3216,11 @@ public static class AIConfigHandler
 				text2 = text2.Replace(item, "玩家");
 			}
 			text2 = text2.Replace("玩家（玩家）", "玩家").Replace("玩家(玩家)", "玩家");
-			return text2;
+			return ShoutNetwork.RestorePlayerPersonaRawNameReferencesForExternal(text2, rawPlayerPersonaNames);
 		}
 		catch
 		{
-			return text ?? "";
+			return KnowledgeLibraryBehavior.StripPlayerPersonaRawNameMarkersForExternal(text ?? "");
 		}
 	}
 
@@ -7839,7 +7840,11 @@ public static class AIConfigHandler
 				{
 					continue;
 				}
-				if (!includePersonalJoinRule && string.Equals(text, "[A:H_J_P_P]", StringComparison.OrdinalIgnoreCase))
+				if (!includePersonalJoinRule
+					&& (string.Equals(text, "[A:H_J_P_P_C/L]", StringComparison.OrdinalIgnoreCase)
+						|| string.Equals(text, "[A:H_J_P_P_C&L]", StringComparison.OrdinalIgnoreCase)
+						|| string.Equals(text, "[A:H_J_P_P_C]", StringComparison.OrdinalIgnoreCase)
+						|| string.Equals(text, "[A:H_J_P_P_L]", StringComparison.OrdinalIgnoreCase)))
 				{
 					continue;
 				}

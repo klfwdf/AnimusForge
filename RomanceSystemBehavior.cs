@@ -979,6 +979,17 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		}
 		try
 		{
+			if (!hero.IsAlive || hero.IsDead)
+			{
+				return false;
+			}
+		}
+		catch
+		{
+			return false;
+		}
+		try
+		{
 			if (hero.IsPrisoner)
 			{
 				return false;

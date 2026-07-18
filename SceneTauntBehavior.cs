@@ -2123,15 +2123,27 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private const float ArmedBystanderReactionRadiusMeters = 20f;
 
-	private const int ArmedConflictReactionMaxCount = 4;
+	private const int ArmedConflictReactionMaxCount = 8;
 
-	private const int ArmedConflictOpeningReactionMaxCount = 2;
+	private const float ArmedConflictSecondReactionMinDelaySeconds = 6f;
 
-	private const float ArmedConflictReactionIntervalSeconds = 12f;
+	private const float ArmedConflictSecondReactionMaxDelaySeconds = 8f;
 
-	private const float ArmedConflictGuardReactionChance = 0.15f;
+	private const float ArmedConflictSustainedReactionMinDelaySeconds = 13f;
 
-	private const float ArmedConflictBystanderReactionChance = 0.12f;
+	private const float ArmedConflictSustainedReactionMaxDelaySeconds = 16f;
+
+	private const float ArmedConflictProtractedThresholdSeconds = 60f;
+
+	private const float ArmedConflictProtractedReactionMinDelaySeconds = 20f;
+
+	private const float ArmedConflictProtractedReactionMaxDelaySeconds = 24f;
+
+	private const float ArmedConflictReactionRetryDelaySeconds = 1.5f;
+
+	private const float ArmedConflictReactionCandidateRefreshIntervalSeconds = 0.75f;
+
+	private const float ArmedConflictReactionPerAgentCooldownSeconds = 30f;
 
 	private const double SceneTauntPerfStageThresholdMs = 4.0;
 
@@ -2305,11 +2317,25 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private readonly HashSet<int> _armedBystanderWatcherIndices = new HashSet<int>();
 
-	private readonly HashSet<int> _armedEscalationBehaviorFactRolledAgentIndices = new HashSet<int>();
+	private readonly List<Agent> _armedConflictReactionCandidates = new List<Agent>();
+
+	private readonly Dictionary<int, float> _armedConflictReactionLastStartedByAgentIndex = new Dictionary<int, float>();
 
 	private int _armedConflictReactionCount;
 
 	private float _lastArmedConflictReactionMissionTime = -1f;
+
+	private float _armedConflictReactionStartedAtMissionTime = -1f;
+
+	private float _nextArmedConflictReactionMissionTime = -1f;
+
+	private float _lastArmedConflictReactionCandidateRefreshAtMissionTime = -1f;
+
+	private bool _armedConflictReactionRequestPending;
+
+	private int _armedConflictReactionPendingAgentIndex = -1;
+
+	private float _armedConflictReactionPendingStartedAtMissionTime = -1f;
 
 	private readonly HashSet<int> _penalizedArmedKnockdownAgentIndices = new HashSet<int>();
 
@@ -2606,6 +2632,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	public override void OnMissionTick(float dt)
 	{
+		using PerfProbe.ScopeToken perfScope = PerfProbe.Scope("Mission.SceneTauntMissionBehavior.OnMissionTick.total");
 		long tickStart = StartPerfTimer();
 		long sectionStart = StartPerfTimer();
 		TryActivateSettlementArmedCarryover();
@@ -3773,16 +3800,21 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		try
 		{
+			if (!IsOwnedSettlementPassiveAttackActive())
+			{
+				return;
+			}
 			if (!SceneTauntBehavior.IsPeaceSceneConflictEnabled())
 			{
-				if (IsOwnedSettlementPassiveAttackActive())
-				{
-					ClearOwnedSettlementPassiveAttackState("peace_scene_conflict_disabled");
-				}
+				ClearOwnedSettlementPassiveAttackState("peace_scene_conflict_disabled");
+				return;
+			}
+			if (_ownedSettlementPassiveVictimAgentIndices.Count == 0)
+			{
 				return;
 			}
 			var agents = Mission.Current?.Agents;
-			if (_ownedSettlementPassiveVictimAgentIndices.Count == 0 || agents == null)
+			if (agents == null)
 			{
 				return;
 			}
@@ -5871,26 +5903,27 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		}
 	}
 
-	private void TryAppendPlayerBehaviorFactForArmedEscalation(string reason)
+	private bool TryAppendPlayerBehaviorFactForArmedEscalation(string reason)
 	{
 		try
 		{
 			if (_activeTargetAgentIndex < 0)
 			{
-				return;
+				return false;
 			}
 			if (_openedFromVerbalTaunt || string.Equals(reason, "taunted_lord_scene", StringComparison.Ordinal) || string.Equals(reason, "taunted_soldier", StringComparison.Ordinal))
 			{
 				TryAppendNpcBehaviorFactForVerbalArmedEscalation();
-				return;
+				return false;
 			}
 			Agent agent = Mission.Current?.Agents?.FirstOrDefault(a => a != null && a.Index == _activeTargetAgentIndex);
 			string factText = BuildDirectArmedImmediateReactionFactText(agent);
-			ShoutBehavior.TriggerImmediateSceneBehaviorReactionForExternal(factText, _activeTargetAgentIndex, persistHeroPrivateHistory: true, suppressStare: true);
+			return TryTriggerBudgetedArmedConflictReaction(factText, _activeTargetAgentIndex);
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("SceneTaunt", "Appending player behavior fact for armed escalation failed: " + ex.Message);
+			return false;
 		}
 	}
 
@@ -5936,14 +5969,9 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		try
 		{
 			Agent main = Agent.Main;
-			if (main == null || !main.IsActive() || _guardAgentIndices.Count == 0)
+			if (main == null || !main.IsActive())
 			{
 				return;
-			}
-			string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
-			if (string.IsNullOrWhiteSpace(text))
-			{
-				text = "玩家";
 			}
 			string factText = BuildGuardReactionFactText();
 			TryRollArmedEscalationBehaviorFacts(main, factText);
@@ -5983,50 +6011,33 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private void TryRollArmedEscalationBehaviorFacts(Agent main, string factText)
 	{
-		if (main == null || string.IsNullOrWhiteSpace(factText))
+		Mission mission = Mission.Current;
+		if (main == null || string.IsNullOrWhiteSpace(factText) || mission == null || !CanTryArmedConflictReactionNow())
 		{
 			return;
 		}
-		if (!CanTryArmedConflictReactionNow())
+		if (ShoutBehavior.HasAnyImmediateSceneReactionInFlightForExternal())
 		{
+			ScheduleArmedConflictReactionRetry(mission.CurrentTime, "global_immediate_reaction_in_flight");
 			return;
 		}
-		foreach (int item in _guardAgentIndices)
+		EnsureArmedConflictReactionCandidateCache(mission, main);
+		Agent targetAgent = SelectArmedConflictReactionCandidate(main, mission.CurrentTime);
+		if (targetAgent == null)
 		{
-			Agent agent = Mission.Current?.Agents?.FirstOrDefault(a => a != null && a.Index == item && a.IsActive());
-			if (agent == null || IsSetsSelectedEntryFollower(agent) || !IsAgentWithinArmedBystanderReactionRadius(agent, main) || !_armedEscalationBehaviorFactRolledAgentIndices.Add(item))
-			{
-				continue;
-			}
-			if (MBRandom.RandomFloat <= ArmedConflictGuardReactionChance && TryTriggerBudgetedArmedConflictReaction(factText, item))
-			{
-				return;
-			}
+			ScheduleArmedConflictReactionRetry(mission.CurrentTime, "no_eligible_speaker");
+			return;
 		}
-		HashSet<int> hashSet = new HashSet<int>(_playerAgentIndices);
-		hashSet.UnionWith(_guardAgentIndices);
-		foreach (Agent agent2 in Mission.Current?.Agents ?? Enumerable.Empty<Agent>())
+		if (!TryTriggerBudgetedArmedConflictReaction(factText, targetAgent.Index))
 		{
-			if (agent2 == null || !agent2.IsActive() || !agent2.IsHuman || hashSet.Contains(agent2.Index) || IsSetsSelectedEntryFollower(agent2))
+			for (int i = _armedConflictReactionCandidates.Count - 1; i >= 0; i--)
 			{
-				continue;
+				if (_armedConflictReactionCandidates[i]?.Index == targetAgent.Index)
+				{
+					_armedConflictReactionCandidates.RemoveAt(i);
+				}
 			}
-			if (!IsAgentWithinArmedBystanderReactionRadius(agent2, main) || !IsAgentCarryingRealWeapon(agent2))
-			{
-				continue;
-			}
-			if (SceneTauntBehavior.IsChildSceneProtectedTarget(agent2.Character as CharacterObject))
-			{
-				continue;
-			}
-			if (!_armedEscalationBehaviorFactRolledAgentIndices.Add(agent2.Index))
-			{
-				continue;
-			}
-			if (MBRandom.RandomFloat <= ArmedConflictBystanderReactionChance && TryTriggerBudgetedArmedConflictReaction(factText, agent2.Index))
-			{
-				return;
-			}
+			ScheduleArmedConflictReactionRetry(mission.CurrentTime, "speaker_request_rejected");
 		}
 	}
 
@@ -6034,12 +6045,28 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		_armedConflictReactionCount = 0;
 		_lastArmedConflictReactionMissionTime = -1f;
+		_armedConflictReactionStartedAtMissionTime = -1f;
+		_nextArmedConflictReactionMissionTime = -1f;
+		_lastArmedConflictReactionCandidateRefreshAtMissionTime = -1f;
+		_armedConflictReactionRequestPending = false;
+		_armedConflictReactionPendingAgentIndex = -1;
+		_armedConflictReactionPendingStartedAtMissionTime = -1f;
+		_armedConflictReactionCandidates.Clear();
+		_armedConflictReactionLastStartedByAgentIndex.Clear();
+	}
+
+	private void InitializeArmedConflictReactionSchedule()
+	{
+		ResetArmedConflictReactionBudget();
+		float currentTime = Mission.Current?.CurrentTime ?? 0f;
+		_armedConflictReactionStartedAtMissionTime = currentTime;
+		_nextArmedConflictReactionMissionTime = currentTime;
 	}
 
 	private bool CanTryArmedConflictReactionNow()
 	{
 		Mission mission = Mission.Current;
-		if (!_conflictActive || !_armedConflict || mission == null)
+		if (!_conflictActive || !_armedConflict || mission == null || _armedConflictReactionRequestPending)
 		{
 			return false;
 		}
@@ -6047,40 +6074,229 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		{
 			return false;
 		}
-		if (_armedConflictReactionCount < ArmedConflictOpeningReactionMaxCount)
-		{
-			return true;
-		}
-		return _lastArmedConflictReactionMissionTime < 0f || mission.CurrentTime - _lastArmedConflictReactionMissionTime >= ArmedConflictReactionIntervalSeconds;
+		return _nextArmedConflictReactionMissionTime < 0f || mission.CurrentTime >= _nextArmedConflictReactionMissionTime;
 	}
 
 	private bool TryTriggerBudgetedArmedConflictReaction(string factText, int targetAgentIndex)
 	{
 		Mission mission = Mission.Current;
-		if (string.IsNullOrWhiteSpace(factText) || targetAgentIndex < 0 || !_conflictActive || !_armedConflict || mission == null)
+		if (string.IsNullOrWhiteSpace(factText) || targetAgentIndex < 0 || !_conflictActive || !_armedConflict || mission == null || _armedConflictReactionRequestPending)
 		{
 			return false;
 		}
 		Agent targetAgent = mission.Agents?.FirstOrDefault(a => a != null && a.Index == targetAgentIndex && a.IsActive());
-		if (IsSetsSelectedEntryFollower(targetAgent))
+		if (!IsEligibleArmedConflictReactionSpeaker(targetAgent, Agent.Main, mission.CurrentTime, allowPreviouslyUsed: true))
 		{
 			return false;
 		}
-		float currentTime = mission.CurrentTime;
 		if (_armedConflictReactionCount >= ArmedConflictReactionMaxCount)
 		{
 			return false;
 		}
-		bool openingBudgetAvailable = _armedConflictReactionCount < ArmedConflictOpeningReactionMaxCount;
-		if (!openingBudgetAvailable && _lastArmedConflictReactionMissionTime >= 0f && currentTime - _lastArmedConflictReactionMissionTime < ArmedConflictReactionIntervalSeconds)
+		if (ShoutBehavior.HasAnyImmediateSceneReactionInFlightForExternal())
 		{
 			return false;
 		}
-		ShoutBehavior.TriggerImmediateSceneBehaviorReactionForExternal(factText, targetAgentIndex, persistHeroPrivateHistory: true, suppressStare: true);
-		_armedConflictReactionCount++;
-		_lastArmedConflictReactionMissionTime = currentTime;
-		Logger.Log("SceneTaunt", $"Armed conflict reaction triggered. AgentIndex={targetAgentIndex}, Count={_armedConflictReactionCount}/{ArmedConflictReactionMaxCount}, Opening={openingBudgetAvailable}");
+		float requestStartedAtMissionTime = mission.CurrentTime;
+		Mission requestMission = mission;
+		bool accepted = ShoutBehavior.TriggerImmediateSceneBehaviorReactionForExternal(factText, targetAgentIndex, persistHeroPrivateHistory: true, suppressStare: true, canStillPublish: () => _conflictActive && _armedConflict && Mission.Current == requestMission, onCompleted: generated => OnArmedConflictReactionGenerationCompleted(targetAgentIndex, requestStartedAtMissionTime, generated));
+		if (!accepted)
+		{
+			return false;
+		}
+		_armedConflictReactionRequestPending = true;
+		_armedConflictReactionPendingAgentIndex = targetAgentIndex;
+		_armedConflictReactionPendingStartedAtMissionTime = requestStartedAtMissionTime;
+		Logger.Log("SceneTaunt", $"Armed conflict reaction request started. AgentIndex={targetAgentIndex}, Completed={_armedConflictReactionCount}/{ArmedConflictReactionMaxCount}, MissionTime={requestStartedAtMissionTime:0.###}");
 		return true;
+	}
+
+	private void OnArmedConflictReactionGenerationCompleted(int targetAgentIndex, float requestStartedAtMissionTime, bool generated)
+	{
+		if (!_armedConflictReactionRequestPending || _armedConflictReactionPendingAgentIndex != targetAgentIndex || Math.Abs(_armedConflictReactionPendingStartedAtMissionTime - requestStartedAtMissionTime) > 0.01f)
+		{
+			return;
+		}
+		_armedConflictReactionRequestPending = false;
+		_armedConflictReactionPendingAgentIndex = -1;
+		_armedConflictReactionPendingStartedAtMissionTime = -1f;
+		Mission mission = Mission.Current;
+		if (!_conflictActive || !_armedConflict || mission == null)
+		{
+			return;
+		}
+		if (!generated)
+		{
+			ScheduleArmedConflictReactionRetry(mission.CurrentTime, "generation_failed_or_stale");
+			return;
+		}
+		_armedConflictReactionCount++;
+		_lastArmedConflictReactionMissionTime = requestStartedAtMissionTime;
+		_armedConflictReactionLastStartedByAgentIndex[targetAgentIndex] = requestStartedAtMissionTime;
+		ScheduleNextArmedConflictReaction(requestStartedAtMissionTime);
+		Logger.Log("SceneTaunt", $"Armed conflict reaction triggered. AgentIndex={targetAgentIndex}, Count={_armedConflictReactionCount}/{ArmedConflictReactionMaxCount}, StartedAt={requestStartedAtMissionTime:0.###}, NextAt={_nextArmedConflictReactionMissionTime:0.###}");
+	}
+
+	private void ScheduleNextArmedConflictReaction(float requestStartedAtMissionTime)
+	{
+		if (_armedConflictReactionCount >= ArmedConflictReactionMaxCount)
+		{
+			_nextArmedConflictReactionMissionTime = float.MaxValue;
+			return;
+		}
+		float minDelay;
+		float maxDelay;
+		if (_armedConflictReactionCount == 1)
+		{
+			minDelay = ArmedConflictSecondReactionMinDelaySeconds;
+			maxDelay = ArmedConflictSecondReactionMaxDelaySeconds;
+		}
+		else
+		{
+			float elapsed = Math.Max(0f, requestStartedAtMissionTime - _armedConflictReactionStartedAtMissionTime);
+			if (elapsed < ArmedConflictProtractedThresholdSeconds)
+			{
+				minDelay = ArmedConflictSustainedReactionMinDelaySeconds;
+				maxDelay = ArmedConflictSustainedReactionMaxDelaySeconds;
+			}
+			else
+			{
+				minDelay = ArmedConflictProtractedReactionMinDelaySeconds;
+				maxDelay = ArmedConflictProtractedReactionMaxDelaySeconds;
+			}
+		}
+		float delay = minDelay + (maxDelay - minDelay) * MBRandom.RandomFloat;
+		_nextArmedConflictReactionMissionTime = requestStartedAtMissionTime + delay;
+	}
+
+	private void ScheduleArmedConflictReactionRetry(float currentTime, string reason)
+	{
+		if (!_conflictActive || !_armedConflict)
+		{
+			return;
+		}
+		_nextArmedConflictReactionMissionTime = currentTime + ArmedConflictReactionRetryDelaySeconds;
+		Logger.LogVerbose("SceneTaunt", "armed_reaction_retry:" + (reason ?? "unknown"), () => $"Armed conflict reaction retry scheduled. Reason={reason}, Current={currentTime:0.###}, Next={_nextArmedConflictReactionMissionTime:0.###}, Completed={_armedConflictReactionCount}/{ArmedConflictReactionMaxCount}", 3.0);
+	}
+
+	private void EnsureArmedConflictReactionCandidateCache(Mission mission, Agent main)
+	{
+		if (mission == null || main == null)
+		{
+			return;
+		}
+		float currentTime = mission.CurrentTime;
+		if (_lastArmedConflictReactionCandidateRefreshAtMissionTime >= 0f && currentTime - _lastArmedConflictReactionCandidateRefreshAtMissionTime < ArmedConflictReactionCandidateRefreshIntervalSeconds)
+		{
+			return;
+		}
+		RefreshArmedConflictReactionCandidateCache(mission, main, currentTime);
+	}
+
+	private void RefreshArmedConflictReactionCandidateCache(Mission mission, Agent main, float currentTime)
+	{
+		_armedConflictReactionCandidates.Clear();
+		var agents = mission?.Agents;
+		if (agents != null)
+		{
+			foreach (Agent agent in agents)
+			{
+				TryCacheArmedConflictReactionCandidate(agent, main, currentTime);
+			}
+		}
+		_lastArmedConflictReactionCandidateRefreshAtMissionTime = currentTime;
+	}
+
+	private void TryCacheArmedConflictReactionCandidate(Agent agent, Agent main, float currentTime)
+	{
+		if (IsEligibleArmedConflictReactionSpeaker(agent, main, currentTime, allowPreviouslyUsed: true))
+		{
+			_armedConflictReactionCandidates.Add(agent);
+		}
+	}
+
+	private bool IsEligibleArmedConflictReactionSpeaker(Agent agent, Agent main, float currentTime, bool allowPreviouslyUsed)
+	{
+		if (agent == null || !agent.IsHuman || !agent.IsActive() || agent.IsMainAgent || !agent.IsAIControlled || _playerAgentIndices.Contains(agent.Index))
+		{
+			return false;
+		}
+		if (IsSetsSelectedEntryFollower(agent) || SceneTauntBehavior.IsChildSceneProtectedTarget(agent.Character as CharacterObject) || !IsAgentWithinArmedBystanderReactionRadius(agent, main))
+		{
+			return false;
+		}
+		if (!_opponentAgentIndices.Contains(agent.Index) && !_guardAgentIndices.Contains(agent.Index) && !IsAgentCarryingRealWeapon(agent))
+		{
+			return false;
+		}
+		if (!_armedConflictReactionLastStartedByAgentIndex.TryGetValue(agent.Index, out var lastStarted))
+		{
+			return true;
+		}
+		return allowPreviouslyUsed && currentTime - lastStarted >= ArmedConflictReactionPerAgentCooldownSeconds;
+	}
+
+	private Agent SelectArmedConflictReactionCandidate(Agent main, float currentTime)
+	{
+		try
+		{
+			bool requireUnused = false;
+			foreach (Agent candidate in _armedConflictReactionCandidates)
+			{
+				if (IsEligibleArmedConflictReactionSpeaker(candidate, main, currentTime, allowPreviouslyUsed: false))
+				{
+					requireUnused = true;
+					break;
+				}
+			}
+			int totalWeight = 0;
+			foreach (Agent candidate2 in _armedConflictReactionCandidates)
+			{
+				if (!IsEligibleArmedConflictReactionSpeaker(candidate2, main, currentTime, allowPreviouslyUsed: !requireUnused))
+				{
+					continue;
+				}
+				totalWeight += GetArmedConflictReactionSpeakerWeight(candidate2);
+			}
+			if (totalWeight <= 0)
+			{
+				return null;
+			}
+			float roll = MBRandom.RandomFloat * totalWeight;
+			int accumulatedWeight = 0;
+			Agent lastEligible = null;
+			foreach (Agent candidate3 in _armedConflictReactionCandidates)
+			{
+				if (!IsEligibleArmedConflictReactionSpeaker(candidate3, main, currentTime, allowPreviouslyUsed: !requireUnused))
+				{
+					continue;
+				}
+				lastEligible = candidate3;
+				accumulatedWeight += GetArmedConflictReactionSpeakerWeight(candidate3);
+				if (roll < accumulatedWeight)
+				{
+					return candidate3;
+				}
+			}
+			return lastEligible;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private int GetArmedConflictReactionSpeakerWeight(Agent agent)
+	{
+		if (agent != null && _guardAgentIndices.Contains(agent.Index))
+		{
+			return 6;
+		}
+		if (agent != null && _opponentAgentIndices.Contains(agent.Index))
+		{
+			return 5;
+		}
+		return 1;
 	}
 
 	internal bool ShouldBlockAgentWeaponWield(Agent agent)
@@ -6924,7 +7140,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			_armedConflict = true;
 			_armedConflictOccurredThisConflict = true;
 			_armedDefeatOutcomeHandled = false;
-			ResetArmedConflictReactionBudget();
+			InitializeArmedConflictReactionSchedule();
 			_baseConsequencesApplied = true;
 			_appliedCrimeRatingAmount = SceneTauntInitialArmedCrimeAmount;
 			_activeTargetKey = "armed_settlement_carryover";
@@ -7554,6 +7770,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		_armedConflict = true;
 		_armedConflictOccurredThisConflict = true;
 		_lastArmedEscalationAtMissionTime = Mission.Current?.CurrentTime ?? -1f;
+		InitializeArmedConflictReactionSchedule();
 		_armedCarryoverHandledInThisMission = true;
 		SceneTauntBehavior.MarkArmedCarryoverForCurrentSettlement(reason);
 		_blockedAiWeaponAgentIndices.Clear();
@@ -7599,7 +7816,11 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		AlarmNearbyBystanders();
 		LogPerfElapsed("escalate.alarmNearbyBystanders", sectionStart, null, SceneTauntPerfHeavyStageThresholdMs);
 		sectionStart = StartPerfTimer();
-		TryAppendPlayerBehaviorFactForArmedEscalation(reason);
+		bool openingReactionStarted = TryAppendPlayerBehaviorFactForArmedEscalation(reason);
+		if (!openingReactionStarted)
+		{
+			_nextArmedConflictReactionMissionTime = Mission.Current?.CurrentTime ?? 0f;
+		}
 		TryAppendGuardBehaviorFactsForArmedEscalation();
 		LogPerfElapsed("escalate.appendBehaviorFacts", sectionStart);
 		_openedAsUnarmedBrawl = false;
@@ -8155,6 +8376,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			}
 			long startTimestamp = StartPerfTimer();
 			_lastArmedBystanderReactionRefreshAtMissionTime = currentTime;
+			_armedConflictReactionCandidates.Clear();
+			_lastArmedConflictReactionCandidateRefreshAtMissionTime = currentTime;
 			HashSet<int> hashSet = new HashSet<int>(_playerAgentIndices);
 			hashSet.UnionWith(_opponentAgentIndices);
 			hashSet.UnionWith(_guardAgentIndices);
@@ -8166,6 +8389,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			foreach (Agent agent in agents)
 			{
 				scanned++;
+				TryCacheArmedConflictReactionCandidate(agent, main, currentTime);
 				if (agent == null || !agent.IsHuman || !agent.IsActive() || hashSet.Contains(agent.Index) || !IsAgentWithinArmedBystanderReactionRadius(agent, main))
 				{
 					continue;
@@ -8925,7 +9149,6 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	private void ClearRuntimeState(bool preserveArmedDefeatState = false)
 	{
 		ReleaseAllArmedBystanderWatchers();
-		_armedEscalationBehaviorFactRolledAgentIndices.Clear();
 		ResetArmedConflictReactionBudget();
 		RestoreAllCachedWeapons();
 		_conflictActive = false;

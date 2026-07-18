@@ -1049,7 +1049,23 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 			}
 			Kingdom owner = ResolveKingdomByIdOrName(data.OwnerKingdomId, "");
 			bool unresolved = owner?.UnresolvedDecisions?.OfType<KingdomPolicyDecision>().Any(x => x?.Policy != null && string.Equals(x.Policy.StringId, data.PolicyObjectId, StringComparison.OrdinalIgnoreCase)) == true;
-			bool active = owner?.ActivePolicies?.Contains(policy) == true;
+			PolicyObject activePolicy = owner?.ActivePolicies?.FirstOrDefault(x => x != null && string.Equals(x.StringId, data.PolicyObjectId, StringComparison.OrdinalIgnoreCase));
+			bool active = activePolicy != null;
+			if (activePolicy != null)
+			{
+				policy = activePolicy;
+			}
+			bool shouldRestoreActiveMembership = string.Equals(data.Status, DynamicPolicyStatusActive, StringComparison.OrdinalIgnoreCase)
+				|| string.Equals(data.Status, DynamicPolicyStatusExpiryVotePending, StringComparison.OrdinalIgnoreCase);
+			if (!active && shouldRestoreActiveMembership && owner != null && !owner.IsEliminated)
+			{
+				owner.AddPolicy(policy);
+				active = owner.ActivePolicies?.Contains(policy) == true;
+				if (active)
+				{
+					PolicySystemLog.Write("Agenda", "active-membership-restored-after-load", "recordId=" + data.RecordId + " policy=" + data.PolicyObjectId + " kingdom=" + data.OwnerKingdomId);
+				}
+			}
 			if (unresolved)
 			{
 				continue;

@@ -1452,6 +1452,7 @@ public class DuelBehavior : CampaignBehaviorBase
 					SetDuelDebtTagGateState(_targetHero, playerDefeated ? -1 : 1);
 					MyBehavior.RecordDuelResultForExternal(_targetHero, flag, _isWildernessDuel ? "wilderness" : "arena");
 				}
+				string renownText = ApplyDuelRenownPenaltyAndBuildResultText(_targetHero, flag);
 				_localPostDuelFreezeActive = true;
 				float currentTime = base.Mission.CurrentTime;
 				_localPostDuelExitTimer = currentTime + 10f;
@@ -1470,7 +1471,7 @@ public class DuelBehavior : CampaignBehaviorBase
 				string text2 = (flag ? "【决斗结果】你赢了！" : "【决斗结果】你输了！");
 				Color color = (flag ? Color.FromUint(4281257073u) : Color.FromUint(4293348412u));
 				string text3 = _isWildernessDuel ? " 10秒后返回大地图..." : " 10秒后退出竞技场...";
-				AnimusForgeQuickInfo.Show(text2 + text + text3, _targetCharacter);
+				AnimusForgeQuickInfo.Show(text2 + renownText + text + text3, _targetCharacter);
 			}
 		}
 	}
@@ -3594,10 +3595,11 @@ public class DuelBehavior : CampaignBehaviorBase
 			{
 				RecordWildernessNonHeroDuelResult(runtime, playerWon);
 			}
+			string renownText = ApplyDuelRenownPenaltyAndBuildResultText(targetHero, playerWon);
 			TryPostDuelAiShout(targetHero, null, playerWon);
 			string text = (targetHero != null) ? ApplyDuelStakeSettlementAndBuildResultText(targetHero, playerWon) : "";
 			string resultText = playerWon ? "[Duel Result] You won." : "[Duel Result] You lost.";
-			AnimusForgeQuickInfo.Show(resultText + text + " Returning to campaign map...", targetCharacter);
+			AnimusForgeQuickInfo.Show(resultText + renownText + text + " Returning to campaign map...", targetCharacter);
 			LogWildernessDuelDiagnostic("vanilla_behavior.settled source=" + source + " playerWon=" + playerWon, runtime.DiagnosticId, targetHero);
 		}
 		catch (Exception ex)
@@ -4448,6 +4450,73 @@ public class DuelBehavior : CampaignBehaviorBase
 			}
 		}
 		return (list.Count > 0) ? string.Join("，", list) : "（无）";
+	}
+
+	private static string ApplyDuelRenownPenaltyAndBuildResultText(Hero targetHero, bool playerWon)
+	{
+		try
+		{
+			if (!DuelSettings.TryGetDuelRenownPenaltySettings(out var minimum, out var percent, out var maximum))
+			{
+				return "";
+			}
+			Hero mainHero = Hero.MainHero;
+			Hero loserHero = playerWon ? targetHero : mainHero;
+			Hero winnerHero = playerWon ? mainHero : targetHero;
+			Clan loserClan = loserHero?.Clan;
+			if (loserClan == null)
+			{
+				Logger.Log("DuelBehavior", "[DuelRenownPenalty] skipped: loser has no clan. playerWon=" + playerWon);
+				return "";
+			}
+			if (winnerHero?.Clan == loserClan)
+			{
+				Logger.Log("DuelBehavior", "[DuelRenownPenalty] skipped: both duelists belong to the same clan. clan=" + (loserClan.StringId ?? "") + " playerWon=" + playerWon);
+				return "";
+			}
+			float before = loserClan.Renown;
+			if (float.IsNaN(before) || float.IsInfinity(before) || before <= 0f)
+			{
+				Logger.Log("DuelBehavior", "[DuelRenownPenalty] skipped: clan has no valid renown. clan=" + (loserClan.StringId ?? "") + " before=" + before);
+				return "";
+			}
+			float scaledPenalty = (float)Math.Ceiling(before * percent / 100f);
+			float requestedPenalty = Math.Max(minimum, scaledPenalty);
+			if (maximum > 0)
+			{
+				requestedPenalty = Math.Min(requestedPenalty, maximum);
+			}
+			float appliedPenalty = Math.Min(before, requestedPenalty);
+			if (appliedPenalty <= 0f)
+			{
+				return "";
+			}
+			float after = Math.Max(0f, before - appliedPenalty);
+			loserClan.Renown = after;
+			string loserName = (loserHero?.Name?.ToString() ?? "败者").Trim();
+			string winnerName = (winnerHero?.Name?.ToString() ?? "对手").Trim();
+			string clanName = (loserClan.Name?.ToString() ?? "败者家族").Trim();
+			string clanLabel = clanName.EndsWith("家族", StringComparison.Ordinal) ? clanName : (clanName + "家族");
+			string penaltyText = appliedPenalty.ToString("0.##");
+			string afterText = after.ToString("0.##");
+			string factPrefix = loserHero == mainHero ? "[AFEF玩家行为补充] " : "[AFEF NPC行为补充] ";
+			string fact = factPrefix + loserName + "在与" + winnerName + "的正式决斗中落败，" + clanLabel + "声望因此减少" + penaltyText + "，现为" + afterText + "。";
+			if (targetHero != null)
+			{
+				MyBehavior.AppendExternalDialogueHistory(targetHero, null, null, fact);
+			}
+			if (mainHero != null && mainHero != targetHero)
+			{
+				MyBehavior.AppendExternalDialogueHistory(mainHero, null, null, fact);
+			}
+			Logger.Log("DuelBehavior", "[DuelRenownPenalty] applied playerWon=" + playerWon + " loser=" + (loserHero?.StringId ?? "") + " clan=" + (loserClan.StringId ?? "") + " before=" + before.ToString("0.##") + " penalty=" + penaltyText + " after=" + afterText + " minimum=" + minimum + " percent=" + percent + " maximum=" + maximum + " tierPreserved=" + loserClan.Tier);
+			return " " + clanLabel + "声望减少" + penaltyText + "（剩余" + afterText + "）。";
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("DuelBehavior", "[DuelRenownPenalty][ERROR] " + ex);
+			return "";
+		}
 	}
 
 	private static string ApplyDuelStakeSettlementAndBuildResultText(Hero targetHero, bool playerWon)
@@ -5976,6 +6045,7 @@ public class DuelBehavior : CampaignBehaviorBase
 			SetDuelDebtTagGateState(_targetHero, playerDefeated ? -1 : 1);
 			MyBehavior.RecordDuelResultForExternal(_targetHero, flag, _currentDuelIsArena ? "arena" : "meeting");
 		}
+		string renownText = ApplyDuelRenownPenaltyAndBuildResultText(_targetHero, flag);
 		Agent agent = GetTargetAgent();
 		TryPostDuelAiShout(_targetHero, agent, flag);
 		if (!_currentDuelIsArena)
@@ -6007,7 +6077,7 @@ public class DuelBehavior : CampaignBehaviorBase
 		string text2 = (flag ? "【决斗结果】你赢了！" : "【决斗结果】你输了！");
 		Color color = (flag ? Color.FromUint(4281257073u) : Color.FromUint(4293348412u));
 		string text3 = (_currentDuelIsArena ? " 10秒后退出竞技场..." : "");
-		AnimusForgeQuickInfo.Show(text2 + text + text3, _targetCharacter);
+		AnimusForgeQuickInfo.Show(text2 + renownText + text + text3, _targetCharacter);
 	}
 
 	private void RestoreState()
