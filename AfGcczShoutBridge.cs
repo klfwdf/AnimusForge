@@ -247,7 +247,8 @@ internal static class AfGcczShoutBridge
 		ref string text,
 		out bool actionHandled,
 		bool replyIsDirectPlayerResponse = false,
-		string playerText = null)
+		string playerText = null,
+		string speakerReplyText = null)
 	{
 		return SiegeAiInterventionBehavior.TryProcessAiActionTags(
 			targetHero,
@@ -256,7 +257,8 @@ internal static class AfGcczShoutBridge
 			ref text,
 			out actionHandled,
 			replyIsDirectPlayerResponse,
-			playerText);
+			playerText,
+			speakerReplyText);
 	}
 
 	internal static bool TryProcessFixedKeywordAction(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string playerText, bool replyIsDirectPlayerResponse, out bool actionHandled)

@@ -23778,7 +23778,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 								ref text3,
 								out siegeActionHandled,
 								replyIsDirectPlayerResponse,
-								replyIsDirectPlayerResponse ? playerText : string.Empty);
+								replyIsDirectPlayerResponse ? playerText : string.Empty,
+								replySnapshot);
 							if (siegeActionHandled || !string.Equals(beforeSiegeTags, text3, StringComparison.Ordinal))
 							{
 								Logger.Log("ShoutBehavior", "[DeferredPostprocess] siege_intervention handled=" + siegeActionHandled + " npc=" + (speakingHero?.StringId ?? currentSpeaker?.Name ?? "unknown"));

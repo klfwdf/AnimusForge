@@ -12,11 +12,11 @@ public static class SiegeCastleLordDuelProfile
 
     public const int MaximumWeaponTier = 6;
 
-    public const string FallbackWeaponItemId = "iron_spatha_sword_t2";
-
     public const float WeaponForwardDistance = 20f;
 
     public const float WeaponArrivalDistance = 1.75f;
+
+    public const float LoadoutItemSpacing = 0.75f;
 
     public const float WeaponWalkTimeoutSeconds = 12f;
 
@@ -41,6 +41,14 @@ public static class SiegeCastleLordDuelProfile
             && tier <= MaximumWeaponTier
             && (isOneHanded || isTwoHanded)
             && isMeleeWeapon
+            && isMerchandise;
+    }
+
+    public static bool IsEligibleShield(int tier, bool isShield, bool isMerchandise)
+    {
+        return tier >= MinimumWeaponTier
+            && tier <= MaximumWeaponTier
+            && isShield
             && isMerchandise;
     }
 

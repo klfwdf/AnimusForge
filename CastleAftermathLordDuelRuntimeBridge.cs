@@ -176,6 +176,13 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		Finishing
 	}
 
+	private enum DuelLoadoutKind
+	{
+		None,
+		OneHandedAndShield,
+		TwoHanded
+	}
+
 	private sealed class AgentSnapshot
 	{
 		internal Agent Agent;
@@ -199,9 +206,13 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 	private Team _lordDuelTeam;
 	private Team _playerMountTeam;
 	private Vec3 _weaponPosition;
+	private Vec3 _shieldPosition;
 	private Vec3 _arenaCenter;
 	private SpawnedItemEntity _weaponVisual;
+	private SpawnedItemEntity _shieldVisual;
 	private ItemObject _duelWeaponItem;
+	private ItemObject _duelShieldItem;
+	private DuelLoadoutKind _duelLoadoutKind;
 	private float _approachStartedAt;
 	private float _nextCombatRefreshAt;
 	private float _playerVirtualHealth;
@@ -267,14 +278,21 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 			return false;
 		}
 
-		_duelWeaponItem = ResolveRandomDuelWeapon(out int weaponCandidateCount, out bool usedFallbackWeapon);
-		if (_duelWeaponItem == null)
+		if (!TryResolveRandomDuelLoadout(
+			out int oneHandedCandidateCount,
+			out int twoHandedCandidateCount,
+			out int shieldCandidateCount))
 		{
-			reasonCode = "castle_duel_weapon_missing";
+			reasonCode = "castle_duel_loadout_missing";
 			return false;
 		}
 		int selectedWeaponTier = GetDisplayTier(_duelWeaponItem);
 		string selectedWeaponName = _duelWeaponItem.Name?.ToString() ?? _duelWeaponItem.StringId ?? "N/A";
+		int selectedShieldTier = GetDisplayTier(_duelShieldItem);
+		string selectedShieldName = _duelShieldItem?.Name?.ToString() ?? _duelShieldItem?.StringId ?? string.Empty;
+		string loadoutDescription = _duelLoadoutKind == DuelLoadoutKind.OneHandedAndShield
+			? selectedWeaponName + "（" + selectedWeaponTier + "级）和" + selectedShieldName + "（" + selectedShieldTier + "级）"
+			: selectedWeaponName + "（" + selectedWeaponTier + "级）";
 
 		_lordHero = hero;
 		_lordAgent = agent;
@@ -291,10 +309,10 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		_lordVirtualHealth = Math.Max(SiegeCastleLordDuelProfile.DuelHealthFloor, agent.Health);
 		ResolveArenaPoints(mission, player);
 
-		if (!TrySpawnWeaponVisual(mission))
+		if (!TrySpawnLoadoutVisuals(mission))
 		{
 			ResetFields();
-			reasonCode = "castle_duel_weapon_spawn_failed";
+			reasonCode = "castle_duel_loadout_spawn_failed";
 			return false;
 		}
 
@@ -321,62 +339,109 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		Logger.Log("CastleAftermath", "Started captive-lord duel approach. Hero=" + (hero.StringId ?? "N/A")
 			+ ", Agent=" + agent.Index + ", WeaponDistance=" + SiegeCastleLordDuelProfile.WeaponForwardDistance
 			+ ", Weapon=" + (_duelWeaponItem.StringId ?? "N/A") + ", WeaponTier=" + selectedWeaponTier
-			+ ", WeaponPool=" + weaponCandidateCount + ", WeaponFallback=" + usedFallbackWeapon
+			+ ", Shield=" + (_duelShieldItem?.StringId ?? "N/A") + ", ShieldTier=" + selectedShieldTier
+			+ ", Loadout=" + _duelLoadoutKind + ", OneHandedPool=" + oneHandedCandidateCount
+			+ ", TwoHandedPool=" + twoHandedCandidateCount + ", ShieldPool=" + shieldCandidateCount
 			+ ", Audience=" + _audienceSnapshots.Count + ", Mounted=" + _playerWasMountedWhenAccepted
 			+ ", CarriesRanged=" + _playerCarriedRangedWeaponWhenAccepted);
 		GcczDiagnosticLog.Log("CastleLordDuel", "started hero=" + (hero.StringId ?? "N/A")
 			+ " agent=" + agent.Index + " audience=" + _audienceSnapshots.Count
 			+ " weapon=" + (_duelWeaponItem.StringId ?? "N/A") + " tier=" + selectedWeaponTier
-			+ " pool=" + weaponCandidateCount + " fallback=" + usedFallbackWeapon
+			+ " shield=" + (_duelShieldItem?.StringId ?? "N/A") + " shieldTier=" + selectedShieldTier
+			+ " loadout=" + _duelLoadoutKind + " oneHandedPool=" + oneHandedCandidateCount
+			+ " twoHandedPool=" + twoHandedCandidateCount + " shieldPool=" + shieldCandidateCount
 			+ " mounted=" + _playerWasMountedWhenAccepted + " ranged=" + _playerCarriedRangedWeaponWhenAccepted);
 		AnimusForgeQuickInfo.Show("【城堡决斗】众人正在散开，俘虏领主正走向前方的"
-			+ selectedWeaponName + "（" + selectedWeaponTier + "级）。双方在其拿起武器前均不会受伤。", agent.Character as CharacterObject);
+			+ loadoutDescription + "。双方在其拿起装备前均不会受伤。", agent.Character as CharacterObject);
 		return true;
 	}
 
-	private static ItemObject ResolveRandomDuelWeapon(out int candidateCount, out bool usedFallback)
+	private bool TryResolveRandomDuelLoadout(
+		out int oneHandedCandidateCount,
+		out int twoHandedCandidateCount,
+		out int shieldCandidateCount)
 	{
-		candidateCount = 0;
-		usedFallback = false;
+		oneHandedCandidateCount = 0;
+		twoHandedCandidateCount = 0;
+		shieldCandidateCount = 0;
+		_duelWeaponItem = null;
+		_duelShieldItem = null;
+		_duelLoadoutKind = DuelLoadoutKind.None;
 		try
 		{
-			IEnumerable<ItemObject> items = Game.Current?.ObjectManager?.GetObjectTypeList<ItemObject>();
-			List<ItemObject> candidates = items?
-				.Where(IsEligibleDuelWeapon)
+			List<ItemObject> items = Game.Current?.ObjectManager?.GetObjectTypeList<ItemObject>()?.ToList()
+				?? new List<ItemObject>();
+			List<ItemObject> oneHandedWeapons = items
+				.Where(item => IsEligibleDuelWeapon(item, ItemObject.ItemTypeEnum.OneHandedWeapon))
 				.OrderBy(item => item.StringId ?? string.Empty, StringComparer.Ordinal)
-				.ToList() ?? new List<ItemObject>();
-			candidateCount = candidates.Count;
-			if (candidateCount > 0)
+				.ToList();
+			List<ItemObject> twoHandedWeapons = items
+				.Where(item => IsEligibleDuelWeapon(item, ItemObject.ItemTypeEnum.TwoHandedWeapon))
+				.OrderBy(item => item.StringId ?? string.Empty, StringComparer.Ordinal)
+				.ToList();
+			List<ItemObject> shields = items
+				.Where(IsEligibleDuelShield)
+				.OrderBy(item => item.StringId ?? string.Empty, StringComparer.Ordinal)
+				.ToList();
+			oneHandedCandidateCount = oneHandedWeapons.Count;
+			twoHandedCandidateCount = twoHandedWeapons.Count;
+			shieldCandidateCount = shields.Count;
+
+			bool oneHandedLoadoutAvailable = oneHandedCandidateCount > 0 && shieldCandidateCount > 0;
+			bool twoHandedLoadoutAvailable = twoHandedCandidateCount > 0;
+			if (!oneHandedLoadoutAvailable && !twoHandedLoadoutAvailable)
 			{
-				return candidates[MBRandom.RandomInt(candidateCount)];
+				Logger.Log("CastleAftermath", "No eligible tier 4-6 captive-lord duel loadout was available."
+					+ " OneHandedPool=" + oneHandedCandidateCount
+					+ ", TwoHandedPool=" + twoHandedCandidateCount
+					+ ", ShieldPool=" + shieldCandidateCount);
+				return false;
 			}
+
+			bool useOneHandedLoadout = oneHandedLoadoutAvailable
+				&& (!twoHandedLoadoutAvailable || MBRandom.RandomInt(2) == 0);
+			if (useOneHandedLoadout)
+			{
+				_duelWeaponItem = oneHandedWeapons[MBRandom.RandomInt(oneHandedCandidateCount)];
+				_duelShieldItem = shields[MBRandom.RandomInt(shieldCandidateCount)];
+				_duelLoadoutKind = DuelLoadoutKind.OneHandedAndShield;
+			}
+			else
+			{
+				_duelWeaponItem = twoHandedWeapons[MBRandom.RandomInt(twoHandedCandidateCount)];
+				_duelLoadoutKind = DuelLoadoutKind.TwoHanded;
+			}
+			return true;
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("CastleAftermath", "Build captive-lord duel weapon pool failed: " + ex.Message);
+			Logger.Log("CastleAftermath", "Build captive-lord duel loadout pools failed: " + ex.Message);
+			return false;
 		}
-
-		usedFallback = true;
-		ItemObject fallback = Game.Current?.ObjectManager?.GetObject<ItemObject>(SiegeCastleLordDuelProfile.FallbackWeaponItemId);
-		Logger.Log("CastleAftermath", "No eligible tier 4-6 duel weapon was available; fallback="
-			+ (fallback?.StringId ?? "N/A"));
-		return fallback;
 	}
 
-	private static bool IsEligibleDuelWeapon(ItemObject item)
+	private static bool IsEligibleDuelWeapon(ItemObject item, ItemObject.ItemTypeEnum requiredType)
 	{
-		if (item == null || item.PrimaryWeapon == null)
+		if (item == null || item.PrimaryWeapon == null || item.ItemType != requiredType)
 		{
 			return false;
 		}
-		bool isOneHanded = item.ItemType == ItemObject.ItemTypeEnum.OneHandedWeapon;
-		bool isTwoHanded = item.ItemType == ItemObject.ItemTypeEnum.TwoHandedWeapon;
 		return SiegeCastleLordDuelProfile.IsEligibleWeapon(
 			GetDisplayTier(item),
-			isOneHanded,
-			isTwoHanded,
+			requiredType == ItemObject.ItemTypeEnum.OneHandedWeapon,
+			requiredType == ItemObject.ItemTypeEnum.TwoHandedWeapon,
 			item.PrimaryWeapon.IsMeleeWeapon,
 			isMerchandise: !item.NotMerchandise);
+	}
+
+	private static bool IsEligibleDuelShield(ItemObject item)
+	{
+		return item != null
+			&& item.PrimaryWeapon != null
+			&& SiegeCastleLordDuelProfile.IsEligibleShield(
+				GetDisplayTier(item),
+				item.ItemType == ItemObject.ItemTypeEnum.Shield && item.PrimaryWeapon.IsShield,
+				isMerchandise: !item.NotMerchandise);
 	}
 
 	private static int GetDisplayTier(ItemObject item)
@@ -545,9 +610,9 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 			{
 			}
 		}
-		if (!TryEquipDuelWeapon(_lordAgent))
+		if (!TryEquipDuelLoadout(_lordAgent))
 		{
-			Cancel("castle_duel_equip_failed", showMessage: true);
+			Cancel("castle_duel_loadout_equip_failed", showMessage: true);
 			return;
 		}
 		_stage = RuntimeStage.Fighting;
@@ -615,8 +680,8 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 	{
 		Agent player = Agent.Main;
 		Agent lord = _lordAgent;
-		TryDeleteWeaponVisual();
-		TryDropAndStripLordWeapon(lord);
+		TryDeleteLoadoutVisuals();
+		TryDropAndStripLordLoadout(lord);
 		NeutralizeDuelTeams(base.Mission);
 		RestoreTeam(player, _playerSnapshot?.Team);
 		RestoreTeam(_playerMountSnapshot?.Agent, _playerMountTeam);
@@ -845,6 +910,14 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 			-1f);
 		_weaponPosition = ProjectToNearestNavMesh(mission, _weaponPosition);
 		_weaponPosition.z += 0.05f;
+		Vec2 right = new Vec2(forward.y, -forward.x);
+		_shieldPosition = _weaponPosition + new Vec3(
+			right.x * SiegeCastleLordDuelProfile.LoadoutItemSpacing,
+			right.y * SiegeCastleLordDuelProfile.LoadoutItemSpacing,
+			0f,
+			-1f);
+		_shieldPosition = ProjectToNearestNavMesh(mission, _shieldPosition);
+		_shieldPosition.z += 0.05f;
 		_arenaCenter = player.Position + new Vec3(
 			forward.x * SiegeCastleLordDuelProfile.WeaponForwardDistance * 0.5f,
 			forward.y * SiegeCastleLordDuelProfile.WeaponForwardDistance * 0.5f,
@@ -874,25 +947,49 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		return position;
 	}
 
-	private bool TrySpawnWeaponVisual(Mission mission)
+	private bool TrySpawnLoadoutVisuals(Mission mission)
 	{
 		try
 		{
-			MissionWeapon weapon = new MissionWeapon(_duelWeaponItem, null, null, 1);
-			MatrixFrame frame = MatrixFrame.Identity;
-			frame.origin = _weaponPosition;
-			GameEntity entity = mission.SpawnWeaponWithNewEntity(
-				ref weapon,
-				Mission.WeaponSpawnFlags.WithStaticPhysics | Mission.WeaponSpawnFlags.CannotBePickedUp,
-				frame);
-			_weaponVisual = entity?.GetFirstScriptOfType<SpawnedItemEntity>();
-			return _weaponVisual != null;
+			TryDeleteLoadoutVisuals();
+			_weaponVisual = SpawnLoadoutItemVisual(mission, _duelWeaponItem, _weaponPosition);
+			if (_weaponVisual == null)
+			{
+				return false;
+			}
+			if (_duelShieldItem != null)
+			{
+				_shieldVisual = SpawnLoadoutItemVisual(mission, _duelShieldItem, _shieldPosition);
+				if (_shieldVisual == null)
+				{
+					TryDeleteLoadoutVisuals();
+					return false;
+				}
+			}
+			return true;
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("CastleAftermath", "Spawn captive-lord duel weapon failed: " + ex.Message);
+			TryDeleteLoadoutVisuals();
+			Logger.Log("CastleAftermath", "Spawn captive-lord duel loadout failed: " + ex.Message);
 			return false;
 		}
+	}
+
+	private static SpawnedItemEntity SpawnLoadoutItemVisual(Mission mission, ItemObject item, Vec3 position)
+	{
+		if (mission == null || item == null)
+		{
+			return null;
+		}
+		MissionWeapon missionWeapon = new MissionWeapon(item, null, null, 1);
+		MatrixFrame frame = MatrixFrame.Identity;
+		frame.origin = position;
+		GameEntity entity = mission.SpawnWeaponWithNewEntity(
+			ref missionWeapon,
+			Mission.WeaponSpawnFlags.WithStaticPhysics | Mission.WeaponSpawnFlags.CannotBePickedUp,
+			frame);
+		return entity?.GetFirstScriptOfType<SpawnedItemEntity>();
 	}
 
 	private void PrepareLordForWeaponApproach(Mission mission, Agent lord)
@@ -918,23 +1015,29 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		}
 	}
 
-	private bool TryEquipDuelWeapon(Agent lord)
+	private bool TryEquipDuelLoadout(Agent lord)
 	{
 		try
 		{
-			TryDeleteWeaponVisual();
+			TryDeleteLoadoutVisuals();
 			MissionWeapon weapon = new MissionWeapon(_duelWeaponItem, null, null, 1);
 			lord.DisableScriptedMovement();
 			lord.SetMaximumSpeedLimit(-1f, false);
 			lord.EquipWeaponWithNewEntity(EquipmentIndex.Weapon0, ref weapon);
+			if (_duelShieldItem != null)
+			{
+				MissionWeapon shield = new MissionWeapon(_duelShieldItem, null, null, 1);
+				lord.EquipWeaponWithNewEntity(EquipmentIndex.Weapon1, ref shield);
+			}
 			lord.WieldInitialWeapons(
 				Agent.WeaponWieldActionType.InstantAfterPickUp,
 				Equipment.InitialWeaponEquipPreference.MeleeForMainHand);
-			return !lord.Equipment[EquipmentIndex.Weapon0].IsEmpty;
+			return !lord.Equipment[EquipmentIndex.Weapon0].IsEmpty
+				&& (_duelShieldItem == null || !lord.Equipment[EquipmentIndex.Weapon1].IsEmpty);
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("CastleAftermath", "Equip captive-lord duel weapon failed: " + ex.Message);
+			Logger.Log("CastleAftermath", "Equip captive-lord duel loadout failed: " + ex.Message);
 			return false;
 		}
 	}
@@ -1145,7 +1248,7 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		}
 	}
 
-	private static void TryDropAndStripLordWeapon(Agent lord)
+	private static void TryDropAndStripLordLoadout(Agent lord)
 	{
 		if (lord == null || !lord.IsActive())
 		{
@@ -1153,14 +1256,12 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		}
 		try
 		{
-			EquipmentIndex slot = lord.GetPrimaryWieldedItemIndex();
-			if (slot == EquipmentIndex.None || lord.Equipment[slot].IsEmpty)
+			EquipmentIndex primarySlot = lord.GetPrimaryWieldedItemIndex();
+			EquipmentIndex offhandSlot = lord.GetOffhandWieldedItemIndex();
+			TryDropEquippedItem(lord, primarySlot == EquipmentIndex.None ? EquipmentIndex.Weapon0 : primarySlot);
+			if (offhandSlot != primarySlot)
 			{
-				slot = EquipmentIndex.Weapon0;
-			}
-			if (!lord.Equipment[slot].IsEmpty)
-			{
-				lord.DropItem(slot);
+				TryDropEquippedItem(lord, offhandSlot == EquipmentIndex.None ? EquipmentIndex.Weapon1 : offhandSlot);
 			}
 		}
 		catch
@@ -1169,16 +1270,26 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		StripWeapons(lord);
 	}
 
-	private void TryDeleteWeaponVisual()
+	private static void TryDropEquippedItem(Agent agent, EquipmentIndex slot)
+	{
+		if (slot != EquipmentIndex.None && !agent.Equipment[slot].IsEmpty)
+		{
+			agent.DropItem(slot);
+		}
+	}
+
+	private void TryDeleteLoadoutVisuals()
 	{
 		try
 		{
 			_weaponVisual?.RequestDeletionOnNextTick();
+			_shieldVisual?.RequestDeletionOnNextTick();
 		}
 		catch
 		{
 		}
 		_weaponVisual = null;
+		_shieldVisual = null;
 	}
 
 	private static void EndCurrentConversation()
@@ -1203,7 +1314,10 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		_originalMissionPlayerTeam = null;
 		_playerMountTeam = null;
 		_duelWeaponItem = null;
+		_duelShieldItem = null;
+		_duelLoadoutKind = DuelLoadoutKind.None;
 		_weaponVisual = null;
+		_shieldVisual = null;
 		_audienceSnapshots.Clear();
 		_controlledAgentIndexes.Clear();
 		_approachStartedAt = 0f;

@@ -116,7 +116,7 @@ public static class SiegeCastleActionRoutingPolicy
                 return Block(hasRecognizedAction: true, action, "castle_lord_process_already_applied");
             }
             SiegeCastleLordDuelConsentDecision consent =
-                SiegeCastleLordDuelConsentPolicy.Evaluate(facts.RawActionText);
+                SiegeCastleLordDuelConsentPolicy.Evaluate(facts.DuelConsentText);
             if (!consent.IsAccepted)
             {
                 return Block(hasRecognizedAction: true, action, consent.ReasonCode);

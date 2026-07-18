@@ -21,7 +21,8 @@ public sealed class SiegeCastleActionRoutingFacts
         bool playerHasKingdom = false,
         bool playerRulesKingdom = false,
         bool isWitnessReaction = false,
-        SiegeCastleActionKind reactionToAction = SiegeCastleActionKind.Unknown)
+        SiegeCastleActionKind reactionToAction = SiegeCastleActionKind.Unknown,
+        string speakerReplyText = null)
     {
         RawActionText = rawActionText ?? string.Empty;
         SpeakerRole = speakerRole;
@@ -39,6 +40,7 @@ public sealed class SiegeCastleActionRoutingFacts
         PlayerRulesKingdom = playerRulesKingdom;
         IsWitnessReaction = isWitnessReaction;
         ReactionToAction = reactionToAction;
+        SpeakerReplyText = speakerReplyText ?? string.Empty;
     }
 
     public string RawActionText { get; }
@@ -72,6 +74,12 @@ public sealed class SiegeCastleActionRoutingFacts
     public bool IsWitnessReaction { get; }
 
     public SiegeCastleActionKind ReactionToAction { get; }
+
+    public string SpeakerReplyText { get; }
+
+    public string DuelConsentText => string.IsNullOrWhiteSpace(SpeakerReplyText)
+        ? RawActionText
+        : SpeakerReplyText;
 
     public bool IsActionAlreadyApplied(SiegeCastleActionKind action)
     {

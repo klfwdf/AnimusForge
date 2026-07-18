@@ -41,7 +41,11 @@ public static class SiegeCastleDirectActionAuthorizationPolicy
     private static readonly string[] LordDuelTerms =
     {
         "和你决斗", "与你决斗", "跟你决斗", "同你决斗", "向你挑战", "和我决斗", "与我决斗", "跟我决斗",
-        "单挑", "决斗", "赢了我就放", "打赢我就放", "胜过我就放", "fight me", "duel", "single combat"
+        "单挑", "决斗", "赢了我就放", "打赢我就放", "胜过我就放",
+        "我已下马", "我已经下马", "我下马了", "我已收弓", "我已经收弓", "我已收起弓", "我已经收起弓", "我收起弓了",
+        "我不用弓", "不使用弓", "按你的条件", "答应你的条件", "来吧，我答应你", "来吧我答应你", "公平对决", "公平决斗", "可以开始决斗",
+        "fight me", "duel", "single combat", "i have dismounted", "i'm on foot", "i put away my bow",
+        "i will not use a bow", "i accept your terms", "your terms are met", "begin the duel"
     };
 
     private static readonly string[] LordSellTerms =

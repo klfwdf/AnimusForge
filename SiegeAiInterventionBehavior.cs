@@ -3041,7 +3041,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		ref string text,
 		out bool actionHandled,
 		bool replyIsDirectPlayerResponse = false,
-		string playerText = null)
+		string playerText = null,
+		string speakerReplyText = null)
 	{
 		actionHandled = false;
 		bool hasTownTag = !string.IsNullOrWhiteSpace(text) && AnySiegeTagRegex.IsMatch(text);
@@ -3066,7 +3067,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					ref text,
 					out actionHandled,
 					replyIsDirectPlayerResponse,
-					playerText);
+					playerText,
+					speakerReplyText);
 			}
 			if (hasCastleTag)
 			{
@@ -3245,7 +3247,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		ref string text,
 		out bool actionHandled,
 		bool replyIsDirectPlayerResponse,
-		string playerText)
+		string playerText,
+		string speakerReplyText)
 	{
 		actionHandled = false;
 		try
@@ -3275,7 +3278,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				politicalFacts.PlayerHasKingdom,
 				politicalFacts.PlayerRulesKingdom,
 				witnessReaction,
-				reactionToAction));
+				reactionToAction,
+				speakerReplyText));
 
 			if (decision.IsAllowed)
 			{
@@ -3356,6 +3360,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				+ " allowed=" + decision.IsAllowed
 				+ " handled=" + actionHandled
 				+ " reason=" + decision.ReasonCode
+				+ " replyContext=" + (!string.IsNullOrWhiteSpace(speakerReplyText))
 				+ " targetAgent=" + targetAgentIndex);
 			text = StripSiegeTags(text);
 			return true;
