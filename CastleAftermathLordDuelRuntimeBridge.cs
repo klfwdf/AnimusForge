@@ -267,12 +267,14 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 			return false;
 		}
 
-		_duelWeaponItem = Game.Current?.ObjectManager?.GetObject<ItemObject>(SiegeCastleLordDuelProfile.DefaultWeaponItemId);
+		_duelWeaponItem = ResolveRandomDuelWeapon(out int weaponCandidateCount, out bool usedFallbackWeapon);
 		if (_duelWeaponItem == null)
 		{
 			reasonCode = "castle_duel_weapon_missing";
 			return false;
 		}
+		int selectedWeaponTier = GetDisplayTier(_duelWeaponItem);
+		string selectedWeaponName = _duelWeaponItem.Name?.ToString() ?? _duelWeaponItem.StringId ?? "N/A";
 
 		_lordHero = hero;
 		_lordAgent = agent;
@@ -318,13 +320,68 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		_approachStartedAt = mission.CurrentTime;
 		Logger.Log("CastleAftermath", "Started captive-lord duel approach. Hero=" + (hero.StringId ?? "N/A")
 			+ ", Agent=" + agent.Index + ", WeaponDistance=" + SiegeCastleLordDuelProfile.WeaponForwardDistance
+			+ ", Weapon=" + (_duelWeaponItem.StringId ?? "N/A") + ", WeaponTier=" + selectedWeaponTier
+			+ ", WeaponPool=" + weaponCandidateCount + ", WeaponFallback=" + usedFallbackWeapon
 			+ ", Audience=" + _audienceSnapshots.Count + ", Mounted=" + _playerWasMountedWhenAccepted
 			+ ", CarriesRanged=" + _playerCarriedRangedWeaponWhenAccepted);
 		GcczDiagnosticLog.Log("CastleLordDuel", "started hero=" + (hero.StringId ?? "N/A")
 			+ " agent=" + agent.Index + " audience=" + _audienceSnapshots.Count
+			+ " weapon=" + (_duelWeaponItem.StringId ?? "N/A") + " tier=" + selectedWeaponTier
+			+ " pool=" + weaponCandidateCount + " fallback=" + usedFallbackWeapon
 			+ " mounted=" + _playerWasMountedWhenAccepted + " ranged=" + _playerCarriedRangedWeaponWhenAccepted);
-		AnimusForgeQuickInfo.Show("【城堡决斗】众人正在散开，俘虏领主正走向前方的武器。双方在其拿起武器前均不会受伤。", agent.Character as CharacterObject);
+		AnimusForgeQuickInfo.Show("【城堡决斗】众人正在散开，俘虏领主正走向前方的"
+			+ selectedWeaponName + "（" + selectedWeaponTier + "级）。双方在其拿起武器前均不会受伤。", agent.Character as CharacterObject);
 		return true;
+	}
+
+	private static ItemObject ResolveRandomDuelWeapon(out int candidateCount, out bool usedFallback)
+	{
+		candidateCount = 0;
+		usedFallback = false;
+		try
+		{
+			IEnumerable<ItemObject> items = Game.Current?.ObjectManager?.GetObjectTypeList<ItemObject>();
+			List<ItemObject> candidates = items?
+				.Where(IsEligibleDuelWeapon)
+				.OrderBy(item => item.StringId ?? string.Empty, StringComparer.Ordinal)
+				.ToList() ?? new List<ItemObject>();
+			candidateCount = candidates.Count;
+			if (candidateCount > 0)
+			{
+				return candidates[MBRandom.RandomInt(candidateCount)];
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CastleAftermath", "Build captive-lord duel weapon pool failed: " + ex.Message);
+		}
+
+		usedFallback = true;
+		ItemObject fallback = Game.Current?.ObjectManager?.GetObject<ItemObject>(SiegeCastleLordDuelProfile.FallbackWeaponItemId);
+		Logger.Log("CastleAftermath", "No eligible tier 4-6 duel weapon was available; fallback="
+			+ (fallback?.StringId ?? "N/A"));
+		return fallback;
+	}
+
+	private static bool IsEligibleDuelWeapon(ItemObject item)
+	{
+		if (item == null || item.PrimaryWeapon == null)
+		{
+			return false;
+		}
+		bool isOneHanded = item.ItemType == ItemObject.ItemTypeEnum.OneHandedWeapon;
+		bool isTwoHanded = item.ItemType == ItemObject.ItemTypeEnum.TwoHandedWeapon;
+		return SiegeCastleLordDuelProfile.IsEligibleWeapon(
+			GetDisplayTier(item),
+			isOneHanded,
+			isTwoHanded,
+			item.PrimaryWeapon.IsMeleeWeapon,
+			isMerchandise: !item.NotMerchandise);
+	}
+
+	private static int GetDisplayTier(ItemObject item)
+	{
+		return item == null ? 0 : (int)item.Tier + 1;
 	}
 
 	public override void OnMissionTick(float dt)

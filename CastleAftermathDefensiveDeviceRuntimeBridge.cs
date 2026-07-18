@@ -113,7 +113,7 @@ internal sealed class CastleAftermathDefensiveDeviceMissionBehavior : MissionLog
 		{
 			ItemObject impactItem = Game.Current?.ObjectManager?.GetObject<ItemObject>("boulder")
 				?? Game.Current?.ObjectManager?.GetObject<ItemObject>("ballista_projectile")
-				?? Game.Current?.ObjectManager?.GetObject<ItemObject>(SiegeCastleLordDuelProfile.DefaultWeaponItemId);
+				?? Game.Current?.ObjectManager?.GetObject<ItemObject>(SiegeCastleLordDuelProfile.FallbackWeaponItemId);
 			if (impactItem == null)
 			{
 				return false;

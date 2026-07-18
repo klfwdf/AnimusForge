@@ -8,7 +8,11 @@ namespace AnimusForge.SiegeAftermathIntervention;
 /// </summary>
 public static class SiegeCastleLordDuelProfile
 {
-    public const string DefaultWeaponItemId = "iron_spatha_sword_t2";
+    public const int MinimumWeaponTier = 4;
+
+    public const int MaximumWeaponTier = 6;
+
+    public const string FallbackWeaponItemId = "iron_spatha_sword_t2";
 
     public const float WeaponForwardDistance = 20f;
 
@@ -25,6 +29,20 @@ public static class SiegeCastleLordDuelProfile
     public const float DuelHealthFloor = 1f;
 
     public const string RuntimeSource = "castle_captive_lord_duel";
+
+    public static bool IsEligibleWeapon(
+        int tier,
+        bool isOneHanded,
+        bool isTwoHanded,
+        bool isMeleeWeapon,
+        bool isMerchandise)
+    {
+        return tier >= MinimumWeaponTier
+            && tier <= MaximumWeaponTier
+            && (isOneHanded || isTwoHanded)
+            && isMeleeWeapon
+            && isMerchandise;
+    }
 
     public static string BuildEquipmentFact(
         bool playerIsMounted,
