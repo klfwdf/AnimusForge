@@ -2606,6 +2606,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	public override void OnMissionTick(float dt)
 	{
+		using PerfProbe.ScopeToken perfScope = PerfProbe.Scope("Mission.SceneTauntMissionBehavior.OnMissionTick.total");
 		long tickStart = StartPerfTimer();
 		long sectionStart = StartPerfTimer();
 		TryActivateSettlementArmedCarryover();
@@ -3773,16 +3774,21 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		try
 		{
+			if (!IsOwnedSettlementPassiveAttackActive())
+			{
+				return;
+			}
 			if (!SceneTauntBehavior.IsPeaceSceneConflictEnabled())
 			{
-				if (IsOwnedSettlementPassiveAttackActive())
-				{
-					ClearOwnedSettlementPassiveAttackState("peace_scene_conflict_disabled");
-				}
+				ClearOwnedSettlementPassiveAttackState("peace_scene_conflict_disabled");
+				return;
+			}
+			if (_ownedSettlementPassiveVictimAgentIndices.Count == 0)
+			{
 				return;
 			}
 			var agents = Mission.Current?.Agents;
-			if (_ownedSettlementPassiveVictimAgentIndices.Count == 0 || agents == null)
+			if (agents == null)
 			{
 				return;
 			}

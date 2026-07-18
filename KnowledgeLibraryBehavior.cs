@@ -9,7 +9,6 @@ using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TaleWorlds.CampaignSystem;
@@ -17,7 +16,6 @@ using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
-using TaleWorlds.MountAndBlade;
 
 namespace AnimusForge;
 
@@ -560,10 +558,6 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 
 	private static long _onnxIndexVersion = -1L;
 
-	private static int _indexWarmupState;
-
-	private static long _indexWarmupVersion = -1L;
-
 	private static readonly object _loreContextCacheLock = new object();
 
 	private static Dictionary<string, LoreContextCacheItem> _loreContextCache = new Dictionary<string, LoreContextCacheItem>();
@@ -581,6 +575,8 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 	private long _ruleIndexCacheVersion = -1L;
 
 	private List<RuleIndexItem> _ruleIndexCache;
+
+	private bool _loadedSaveIndexBuildAttempted;
 
 	public static KnowledgeLibraryBehavior Instance { get; private set; }
 
@@ -715,8 +711,6 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
-		Interlocked.Exchange(ref _indexWarmupState, 0);
-		Interlocked.Exchange(ref _indexWarmupVersion, -1L);
 	}
 
 	private static bool SafeSyncData<T>(IDataStore dataStore, string key, ref T data)
@@ -1802,8 +1796,9 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		List<RuleScore> result = new List<RuleScore>();
 		try
 		{
-			EnsureOnnxIndex();
-			if (_onnxRuleEntries == null || _onnxRuleEntries.Count <= 0)
+			long version = _ruleDataVersion;
+			List<OnnxRuleEntry> entries = _onnxRuleEntries;
+			if (entries == null || entries.Count <= 0 || _onnxIndexVersion != version)
 			{
 				return result;
 			}
@@ -1817,9 +1812,9 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				return result;
 			}
 			List<RuleScore> list = new List<RuleScore>();
-			for (int i = 0; i < _onnxRuleEntries.Count; i++)
+			for (int i = 0; i < entries.Count; i++)
 			{
-				OnnxRuleEntry onnxRuleEntry = _onnxRuleEntries[i];
+				OnnxRuleEntry onnxRuleEntry = entries[i];
 				if (onnxRuleEntry != null && onnxRuleEntry.Rule != null && onnxRuleEntry.Vector != null && onnxRuleEntry.Vector.Length != 0)
 				{
 					float num = DotProduct(vector, onnxRuleEntry.Vector);
@@ -1866,8 +1861,10 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		List<RuleScore> result = new List<RuleScore>();
 		try
 		{
-			EnsureVectorIndex();
-			if (_vectorRuleEntries == null || _vectorRuleEntries.Count <= 0)
+			long version = _ruleDataVersion;
+			List<VectorRuleEntry> entries = _vectorRuleEntries;
+			Dictionary<string, float> idf = _vectorIdf;
+			if (entries == null || entries.Count <= 0 || idf == null || _vectorIndexVersion != version)
 			{
 				return result;
 			}
@@ -1882,15 +1879,15 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				return result;
 			}
 			float norm;
-			Dictionary<string, float> dictionary2 = BuildVectorWeights(dictionary, _vectorIdf, out norm);
+			Dictionary<string, float> dictionary2 = BuildVectorWeights(dictionary, idf, out norm);
 			if (dictionary2.Count <= 0 || norm <= 0f)
 			{
 				return result;
 			}
 			List<RuleScore> list2 = new List<RuleScore>();
-			for (int i = 0; i < _vectorRuleEntries.Count; i++)
+			for (int i = 0; i < entries.Count; i++)
 			{
-				VectorRuleEntry vectorRuleEntry = _vectorRuleEntries[i];
+				VectorRuleEntry vectorRuleEntry = entries[i];
 				if (vectorRuleEntry == null || vectorRuleEntry.Rule == null || vectorRuleEntry.Weights == null || vectorRuleEntry.Weights.Count <= 0 || vectorRuleEntry.Norm <= 0f)
 				{
 					continue;
@@ -3022,64 +3019,37 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 	public KnowledgeLibraryBehavior()
 	{
 		Instance = this;
+		TouchRuleData();
 	}
 
 	public override void RegisterEvents()
 	{
-		CampaignEvents.OnSessionLaunchedEvent.AddNonSerializedListener(this, OnSessionLaunched);
-		CampaignEvents.OnMissionStartedEvent.AddNonSerializedListener(this, OnMissionStarted);
 	}
 
-	private void OnSessionLaunched(CampaignGameStarter starter)
+	private void BuildIndexesForLoadedSave()
 	{
-		TryStartBackgroundIndexWarmup("session_launch");
-	}
-
-	private void OnMissionStarted(IMission mission)
-	{
-		if (mission == null || Mission.Current == null)
+		if (_loadedSaveIndexBuildAttempted)
 		{
 			return;
 		}
-		TryStartBackgroundIndexWarmup("mission_start");
-	}
-
-	internal static void TryStartBackgroundIndexWarmup(string source)
-	{
+		_loadedSaveIndexBuildAttempted = true;
 		try
 		{
-			KnowledgeLibraryBehavior instance = Instance;
-			if (instance == null)
+			long version = _ruleDataVersion;
+			if (version <= 0)
 			{
-				return;
+				version = 1L;
 			}
-			long num = _ruleDataVersion;
-			if (num <= 0)
-			{
-				num = 1L;
-			}
-			if (Volatile.Read(ref _indexWarmupState) == 2 && Volatile.Read(ref _indexWarmupVersion) == num)
-			{
-				return;
-			}
-			if (Interlocked.CompareExchange(ref _indexWarmupState, 1, 0) != 0)
-			{
-				return;
-			}
-			Interlocked.Exchange(ref _indexWarmupVersion, num);
-			string warmupSource = string.IsNullOrWhiteSpace(source) ? "unknown" : source.Trim();
-			Logger.Log("KnowledgeIndexWarmup", $"start source={warmupSource} version={num}");
-			Task.Run(delegate
-			{
-				instance.RunIndexWarmup(warmupSource, num);
-			});
+			Logger.Log("KnowledgeIndexWarmup", $"start source=save_load version={version}");
+			RunIndexBuildForLoadedSave(version);
 		}
-		catch
+		catch (Exception ex)
 		{
+			Logger.Log("KnowledgeIndexWarmup", "complete source=save_load failed=" + (ex.Message ?? "index build exception"));
 		}
 	}
 
-	private void RunIndexWarmup(string source, long version)
+	private void RunIndexBuildForLoadedSave(long version)
 	{
 		Stopwatch stopwatch = Stopwatch.StartNew();
 		bool flag = false;
@@ -3111,21 +3081,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 		stopwatch.Stop();
 		bool flag3 = _ruleDataVersion != version;
-		bool flag4 = !flag3 && (!flag2 || num2 <= 0) && string.IsNullOrWhiteSpace(text2);
-		if (flag3)
-		{
-			Interlocked.Exchange(ref _indexWarmupState, 0);
-			Interlocked.Exchange(ref _indexWarmupVersion, -1L);
-		}
-		else if (flag4)
-		{
-			Interlocked.Exchange(ref _indexWarmupState, 0);
-		}
-		else
-		{
-			Interlocked.Exchange(ref _indexWarmupState, 2);
-		}
-		Logger.Log("KnowledgeIndexWarmup", $"complete source={source} version={version} stale={flag3} retryPending={flag4} ms={Math.Round(stopwatch.Elapsed.TotalMilliseconds, 2)} sparseOk={flag} sparseEntries={num} onnxOk={flag2} onnxEntries={num2} sparseError={text} onnxError={text2}");
+		Logger.Log("KnowledgeIndexWarmup", $"complete source=save_load version={version} stale={flag3} retryPending=False ms={Math.Round(stopwatch.Elapsed.TotalMilliseconds, 2)} sparseOk={flag} sparseEntries={num} onnxOk={flag2} onnxEntries={num2} sparseError={text} onnxError={text2}");
 	}
 
 	public override void SyncData(IDataStore dataStore)
@@ -3165,7 +3121,11 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			_file.Rules = new List<LoreRule>();
 		}
 		StripSemanticPrototypes();
-		TouchRuleData();
+		if (dataStore != null && dataStore.IsLoading)
+		{
+			TouchRuleData();
+			BuildIndexesForLoadedSave();
+		}
 	}
 
 	private void StripSemanticPrototypes()

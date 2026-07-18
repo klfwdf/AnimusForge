@@ -3556,6 +3556,29 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		return TrySplitCourierLetterInventoryDisplayName(text, out string title, out _) ? title : GetCourierLetterInventoryFirstLine(text);
 	}
 
+	public static string GetCourierLetterTransferFactDescriptionForExternal(string itemStringId, uint objectId, string displayName)
+	{
+		string original = (displayName ?? "").Trim();
+		string title = GetCourierLetterTransferDisplayTitleForExternal(original);
+		string letterBody = "";
+		if (!TryGetCourierLetterInventoryDetailForExternal(itemStringId, objectId, out letterBody)
+			&& TrySplitCourierLetterInventoryDisplayName(original, out string legacyTitle, out string legacyBody))
+		{
+			title = legacyTitle;
+			letterBody = legacyBody;
+		}
+		if (string.IsNullOrWhiteSpace(letterBody))
+		{
+			return original;
+		}
+		if (string.IsNullOrWhiteSpace(title))
+		{
+			title = "信件";
+		}
+		string factBody = Regex.Replace(letterBody.Trim(), "\\s+", " ");
+		return title.Trim() + "（信件正文：" + factBody + "）";
+	}
+
 	public static bool TryGetCourierLetterInventoryDetailForExternal(string itemStringId, uint objectId, out string letterBody)
 	{
 		letterBody = "";
@@ -6635,13 +6658,16 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				continue;
 			}
 			string verb = delivered ? "通过信使" : "准备通过信使";
+			string factEntryName = (entry.Kind == "item" || entry.Kind == "show_item")
+				? GetCourierLetterTransferFactDescriptionForExternal(entry.Id, 0u, entry.Name)
+				: entry.Name;
 			if (entry.Kind == "gold")
 			{
 				sb.Append("\n[AFEF玩家行为补充] ").Append(playerName).Append(verb).Append("转移了 ").Append(entry.Amount).Append(" 第纳尔").Append(delivered ? BuildCourierCargoValueSuffix(entry) : "").Append("。");
 			}
 			else if (entry.Kind == "item")
 			{
-				sb.Append("\n[AFEF玩家行为补充] ").Append(playerName).Append(verb).Append("转移了 ").Append(entry.Amount).Append(" 个 ").Append(entry.Name).Append(delivered ? BuildCourierCargoValueSuffix(entry) : "").Append("。");
+				sb.Append("\n[AFEF玩家行为补充] ").Append(playerName).Append(verb).Append("转移了 ").Append(entry.Amount).Append(" 个 ").Append(factEntryName).Append(delivered ? BuildCourierCargoValueSuffix(entry) : "").Append("。");
 			}
 			else if (entry.Kind == "show_gold")
 			{
@@ -6649,7 +6675,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			}
 			else if (entry.Kind == "show_item")
 			{
-				sb.Append("\n[AFEF玩家行为补充] ").Append(playerName).Append(verb).Append("展示了 ").Append(entry.Amount).Append(" 个 ").Append(entry.Name).Append("，但没有转移所有权。");
+				sb.Append("\n[AFEF玩家行为补充] ").Append(playerName).Append(verb).Append("展示了 ").Append(entry.Amount).Append(" 个 ").Append(factEntryName).Append("，但没有转移所有权。");
 			}
 			else if (entry.Kind == "troop")
 			{

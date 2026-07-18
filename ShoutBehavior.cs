@@ -551,6 +551,12 @@ public class ShoutBehavior : CampaignBehaviorBase
 	{
 		private ShoutBehavior _parent;
 
+		private float _nextHotkeySettingsRefreshApplicationTime;
+
+		private InputKey _shoutKey = InputKey.T;
+
+		private InputKey _specialMenuKey = InputKey.Y;
+
 		public override MissionBehaviorType BehaviorType => MissionBehaviorType.Other;
 
 		public ShoutMissionBehavior(ShoutBehavior parent)
@@ -560,6 +566,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 		public override void OnMissionTick(float dt)
 		{
+			using PerfProbe.ScopeToken perfScope = PerfProbe.Scope("Mission.ShoutMissionBehavior.OnMissionTick.total");
 			using FreezeWatchdog.ScopeToken missionTickScope = FreezeWatchdog.Scope("ShoutMissionBehavior.OnMissionTick.total");
 			using (FreezeWatchdog.Scope("ShoutMissionBehavior.OnMissionTick"))
 			{
@@ -652,17 +659,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 			{
 				_parent._tickTimer = 0f;
 			}
-			DuelSettings settings = DuelSettings.GetSettings();
-			InputKey shoutKey = InputKey.T;
-			InputKey specialMenuKey = InputKey.Y;
-			if (!string.IsNullOrEmpty(settings?.ShoutKey) && Enum.TryParse<InputKey>(settings.ShoutKey.Trim().ToUpperInvariant(), out var result2))
-			{
-				shoutKey = result2;
-			}
-			if (!string.IsNullOrEmpty(settings?.ShoutSpecialMenuKey) && Enum.TryParse<InputKey>(settings.ShoutSpecialMenuKey.Trim().ToUpperInvariant(), out var result3))
-			{
-				specialMenuKey = result3;
-			}
+			RefreshHotkeySettingsIfDue();
 			bool flag2 = true;
 			try
 			{
@@ -718,7 +715,28 @@ public class ShoutBehavior : CampaignBehaviorBase
 			}
 			else
 			{
-				_parent.UpdateShoutHotkeyCharge(shoutKey, specialMenuKey);
+				_parent.UpdateShoutHotkeyCharge(_shoutKey, _specialMenuKey);
+			}
+		}
+
+		private void RefreshHotkeySettingsIfDue()
+		{
+			float applicationTime = GetApplicationTimeSafe();
+			if (applicationTime < _nextHotkeySettingsRefreshApplicationTime)
+			{
+				return;
+			}
+			_nextHotkeySettingsRefreshApplicationTime = applicationTime + 1f;
+			DuelSettings settings = DuelSettings.GetSettings();
+			_shoutKey = InputKey.T;
+			_specialMenuKey = InputKey.Y;
+			if (!string.IsNullOrWhiteSpace(settings?.ShoutKey) && Enum.TryParse(settings.ShoutKey.Trim(), ignoreCase: true, out InputKey parsedShoutKey))
+			{
+				_shoutKey = parsedShoutKey;
+			}
+			if (!string.IsNullOrWhiteSpace(settings?.ShoutSpecialMenuKey) && Enum.TryParse(settings.ShoutSpecialMenuKey.Trim(), ignoreCase: true, out InputKey parsedSpecialMenuKey))
+			{
+				_specialMenuKey = parsedSpecialMenuKey;
 			}
 		}
 
@@ -1885,6 +1903,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private const float SCENE_FOLLOW_MAX_IDLE_DISTANCE = 0f;
 
+	private const float SCENE_COMMAND_FOLLOWER_CACHE_REFRESH_SECONDS = 0.2f;
+
 	private const float SCENE_SUMMON_ESCORT_REPOSITION_DISTANCE_SQ = 25f;
 
 	private const float SCENE_GUIDE_PLAYER_REQUIRED_DISTANCE_SQ = 100f;
@@ -2099,6 +2119,12 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private readonly HashSet<int> _transientSceneFollowAgentIndices = new HashSet<int>();
 
+	private readonly List<Agent> _sceneCommandFollowerCache = new List<Agent>();
+
+	private Mission _sceneCommandFollowerCacheMission;
+
+	private float _nextSceneCommandFollowerCacheRefreshApplicationTime;
+
 	private readonly Dictionary<int, SceneGhostWalkState> _sceneGhostWalkStates = new Dictionary<int, SceneGhostWalkState>();
 
 	private int _nextSceneSummonBatchId = 1;
@@ -2296,6 +2322,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 			_pendingInteractionTimeoutArms.Clear();
 			_pendingWorldMapMissionExitsAfterSpeech.Clear();
 			_transientSceneFollowAgentIndices.Clear();
+			InvalidateSceneCommandFollowerCache();
 			lock (_speechQueueLock)
 			{
 				_speechQueue.Clear();
@@ -10217,6 +10244,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		_activeInteractionSessions.Clear();
 		_pendingInteractionTimeoutArms.Clear();
 		_transientSceneFollowAgentIndices.Clear();
+		InvalidateSceneCommandFollowerCache();
 		lock (_immediateSceneReactionGateLock)
 		{
 			_immediateSceneReactionLastStartedMissionTime.Clear();
@@ -10295,6 +10323,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			_activeInteractionSessions.Clear();
 			_pendingInteractionTimeoutArms.Clear();
 			_transientSceneFollowAgentIndices.Clear();
+			InvalidateSceneCommandFollowerCache();
 			lock (_immediateSceneReactionGateLock)
 			{
 				_immediateSceneReactionLastStartedMissionTime.Clear();
@@ -19322,6 +19351,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				}
 				else
 				{
+					string itemFactName = CourierDeliveryBehavior.GetCourierLetterTransferFactDescriptionForExternal(
+						shoutPendingTradeItem.ItemId ?? shoutPendingTradeItem.Item?.StringId,
+						shoutPendingTradeItem.Item?.Id.InternalValue ?? 0u,
+						shoutPendingTradeItem.ItemName);
 					string text3;
 					if (isGive)
 					{
@@ -19346,13 +19379,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 							text4 = RewardSystemBehavior.Instance?.BuildItemValueFactSuffixForExternal(Hero.MainHero, text3, shoutPendingTradeItem.Amount) ?? "";
 							num += RewardSystemBehavior.Instance?.EstimateItemValueForExternal(Hero.MainHero, text3, shoutPendingTradeItem.Amount) ?? 0L;
 						}
-						list.Add($"{shoutPendingTradeItem.Amount} 个 {shoutPendingTradeItem.ItemName}{text4}");
+						list.Add($"{shoutPendingTradeItem.Amount} 个 {itemFactName}{text4}");
 					}
 					else
 					{
 						string text5 = RewardSystemBehavior.Instance?.BuildInventoryActualItemValueFactSuffixForExternal(shoutPendingTradeItem.Item, shoutPendingTradeItem.Amount, shoutPendingTradeItem.InventoryUnitValue) ?? "";
 						num += RewardSystemBehavior.Instance?.EstimateInventoryActualItemValueForExternal(shoutPendingTradeItem.Item, shoutPendingTradeItem.Amount, shoutPendingTradeItem.InventoryUnitValue) ?? 0L;
-						list.Add($"{shoutPendingTradeItem.Amount} 个 {shoutPendingTradeItem.ItemName}{text5}");
+						list.Add($"{shoutPendingTradeItem.Amount} 个 {itemFactName}{text5}");
 					}
 				}
 			}
@@ -28016,7 +28049,17 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			_sceneGhostWalkStates.Clear();
 			return;
 		}
-		Dictionary<int, Vec3> targets = BuildSceneGhostMovementTargets();
+		List<Agent> sceneCommandFollowers = GetSceneCommandFollowerSnapshot(mission);
+		if (sceneCommandFollowers.Count == 0
+			&& _activeSceneGuideRequests.Count == 0
+			&& _activeSceneSummonRequests.Count == 0
+			&& _activeSceneSummonConversationSessions.Count == 0
+			&& _activeSceneReturnJobs.Count == 0)
+		{
+			_sceneGhostWalkStates.Clear();
+			return;
+		}
+		Dictionary<int, Vec3> targets = BuildSceneGhostMovementTargets(sceneCommandFollowers);
 		if (targets.Count == 0)
 		{
 			_sceneGhostWalkStates.Clear();
@@ -28035,7 +28078,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private Dictionary<int, Vec3> BuildSceneGhostMovementTargets()
+	private Dictionary<int, Vec3> BuildSceneGhostMovementTargets(List<Agent> sceneCommandFollowers)
 	{
 		Dictionary<int, Vec3> targets = new Dictionary<int, Vec3>();
 		Mission mission = Mission.Current;
@@ -28044,9 +28087,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return targets;
 		}
-		foreach (Agent agent in mission.Agents ?? Enumerable.Empty<Agent>())
+		foreach (Agent agent in sceneCommandFollowers ?? Enumerable.Empty<Agent>())
 		{
-			if (CanAgentUseSceneGhostMovement(agent) && IsAgentFollowingPlayerBySceneCommand(agent))
+			if (CanAgentUseSceneGhostMovement(agent))
 			{
 				TryAddSceneGhostMovementTarget(targets, agent, main.Position);
 			}
@@ -30387,6 +30430,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		if (IsPrisonBreakRescueMissionActive())
 		{
 			TryApplyPrisonBreakSceneFollowCommand(agent, startFollow: true, "scene_follow_start");
+			InvalidateSceneCommandFollowerCache();
 			return;
 		}
 		try
@@ -30415,6 +30459,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			_activeInteractionSessions.Remove(agent.Index);
 			_pendingInteractionTimeoutArms.Remove(agent.Index);
 			bool behaviorEnabled = TryEnableVanillaSceneFollowBehavior(agent, Agent.Main);
+			InvalidateSceneCommandFollowerCache();
 			Logger.Log("SceneFollow", "start agent=" + agent.Index + " name=" + (agent.Name ?? "") + " transient=" + transient + " persisted=" + persisted + " behaviorEnabled=" + behaviorEnabled);
 		}
 		catch
@@ -30422,7 +30467,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private void StopSceneSummonFollowPlayer(Agent agent, bool restoreDailyBehaviors = true)
+	private void StopSceneSummonFollowPlayer(Agent agent, bool restoreDailyBehaviors = true, bool invalidateFollowerCache = true)
 	{
 		if (agent == null || !agent.IsActive())
 		{
@@ -30431,6 +30476,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		if (IsPrisonBreakRescueMissionActive())
 		{
 			TryApplyPrisonBreakSceneFollowCommand(agent, startFollow: false, "scene_follow_stop");
+			if (invalidateFollowerCache)
+			{
+				InvalidateSceneCommandFollowerCache();
+			}
 			return;
 		}
 		try
@@ -30442,6 +30491,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			bool persisted = TrySetSceneFollowPersistence(agent, isFollowing: false);
 			TryDisableVanillaSceneFollowBehavior(agent, restoreDailyBehaviors);
+			if (invalidateFollowerCache)
+			{
+				InvalidateSceneCommandFollowerCache();
+			}
 			Logger.Log("SceneFollow", "stop agent=" + agent.Index + " name=" + (agent.Name ?? "") + " transient=" + wasTransient + " persisted=" + persisted + " restoreDaily=" + restoreDailyBehaviors);
 		}
 		catch
@@ -30655,6 +30708,40 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return false;
 		}
+	}
+
+	private List<Agent> GetSceneCommandFollowerSnapshot(Mission mission)
+	{
+		float applicationTime = GetApplicationTimeSafe();
+		if (ReferenceEquals(_sceneCommandFollowerCacheMission, mission)
+			&& applicationTime < _nextSceneCommandFollowerCacheRefreshApplicationTime)
+		{
+			return _sceneCommandFollowerCache;
+		}
+		using PerfProbe.ScopeToken perfScope = PerfProbe.Scope("Mission.Shout.RefreshSceneCommandFollowerCache");
+		_sceneCommandFollowerCacheMission = mission;
+		_nextSceneCommandFollowerCacheRefreshApplicationTime = applicationTime + SCENE_COMMAND_FOLLOWER_CACHE_REFRESH_SECONDS;
+		_sceneCommandFollowerCache.Clear();
+		var agents = mission?.Agents;
+		if (agents == null)
+		{
+			return _sceneCommandFollowerCache;
+		}
+		foreach (Agent agent in agents)
+		{
+			if (IsAgentFollowingPlayerBySceneCommand(agent))
+			{
+				_sceneCommandFollowerCache.Add(agent);
+			}
+		}
+		return _sceneCommandFollowerCache;
+	}
+
+	private void InvalidateSceneCommandFollowerCache()
+	{
+		_sceneCommandFollowerCache.Clear();
+		_sceneCommandFollowerCacheMission = null;
+		_nextSceneCommandFollowerCacheRefreshApplicationTime = 0f;
 	}
 
 	private bool IsAgentFollowingPlayerBySceneCommand(Agent agent)
@@ -33716,14 +33803,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	private void UpdateSceneFollowSpacing()
 	{
 		Mission mission = Mission.Current;
-		var agents = mission?.Agents;
-		if (agents == null || Agent.Main == null || !Agent.Main.IsActive() || FollowAgentBehaviorIdleDistanceField == null)
+		if (mission?.Agents == null || Agent.Main == null || !Agent.Main.IsActive() || FollowAgentBehaviorIdleDistanceField == null)
 		{
 			return;
 		}
-		foreach (Agent agent in agents)
+		foreach (Agent agent in GetSceneCommandFollowerSnapshot(mission))
 		{
-			if (!IsAgentFollowingPlayerBySceneCommand(agent))
+			if (agent == null || !agent.IsActive())
 			{
 				continue;
 			}
@@ -33744,14 +33830,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	private void UpdateSceneFollowHostilityState()
 	{
 		Mission mission = Mission.Current;
-		var agents = mission?.Agents;
-		if (agents == null)
+		if (mission?.Agents == null)
 		{
 			return;
 		}
-		foreach (Agent agent in agents)
+		bool cacheInvalidated = false;
+		foreach (Agent agent in GetSceneCommandFollowerSnapshot(mission))
 		{
-			if (!IsAgentFollowingPlayerBySceneCommand(agent) || !IsAgentHostileToMainAgent(agent))
+			if (!IsAgentHostileToMainAgent(agent))
 			{
 				continue;
 			}
@@ -33761,12 +33847,17 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				_pendingInteractionTimeoutArms.Remove(agent.Index);
 				_activeInteractionSessions.Remove(agent.Index);
 				_sceneFollowReturnStates.Remove(agent.Index);
-				StopSceneSummonFollowPlayer(agent);
+				StopSceneSummonFollowPlayer(agent, invalidateFollowerCache: false);
+				cacheInvalidated = true;
 				RefreshHostileCombatAgentAutonomy(agent);
 			}
 			catch
 			{
 			}
+		}
+		if (cacheInvalidated)
+		{
+			InvalidateSceneCommandFollowerCache();
 		}
 	}
 
