@@ -1,15 +1,14 @@
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using AnimusForge.SiegeAftermathIntervention;
-using TaleWorlds.Core;
-using TaleWorlds.Library;
+using TaleWorlds.Engine;
 using TaleWorlds.MountAndBlade;
 
 namespace AnimusForge;
 
 /// <summary>
 /// Castle-GCCZ-only adapter that leaves campaign wall sections untouched while
-/// destroying initialized gates and siege machines through native hit handling.
+/// removing initialized gates and siege machines from the aftermath scene.
 /// </summary>
 internal static class CastleAftermathDefensiveDeviceRuntimeBridge
 {
@@ -55,26 +54,31 @@ internal sealed class CastleAftermathDefensiveDeviceMissionBehavior : MissionLog
 		}
 
 		_completed = true;
-		DestroyDefensiveDevices(mission);
+		RemoveDefensiveDevices(mission);
 	}
 
-	private static void DestroyDefensiveDevices(Mission mission)
+	private static void RemoveDefensiveDevices(Mission mission)
 	{
-		int gatesDestroyed = 0;
-		int siegeWeaponsDestroyed = 0;
-		int failures = 0;
-		var processed = new HashSet<DestructableComponent>();
+		// Deactivating a mission object mutates ActiveMissionObjects. Snapshot every
+		// target before touching one, otherwise the first removed gate aborts enumeration.
+		CastleGate[] gates = mission.ActiveMissionObjects
+			.FindAllWithType<CastleGate>()
+			.Where(gate => gate != null)
+			.ToArray();
+		SiegeWeapon[] siegeWeapons = mission.ActiveMissionObjects
+			.FindAllWithType<SiegeWeapon>()
+			.Where(siegeWeapon => siegeWeapon != null)
+			.ToArray();
 
-		foreach (CastleGate gate in mission.ActiveMissionObjects.FindAllWithType<CastleGate>())
+		int gatesRemoved = 0;
+		int siegeWeaponsRemoved = 0;
+		int failures = 0;
+
+		foreach (CastleGate gate in gates)
 		{
-			DestructableComponent component = gate?.DestructionComponent;
-			if (component == null || !processed.Add(component) || component.IsDestroyed)
+			if (TryRemoveGate(mission, gate))
 			{
-				continue;
-			}
-			if (TryDestroy(component))
-			{
-				gatesDestroyed++;
+				gatesRemoved++;
 			}
 			else
 			{
@@ -82,16 +86,11 @@ internal sealed class CastleAftermathDefensiveDeviceMissionBehavior : MissionLog
 			}
 		}
 
-		foreach (SiegeWeapon siegeWeapon in mission.ActiveMissionObjects.FindAllWithType<SiegeWeapon>())
+		foreach (SiegeWeapon siegeWeapon in siegeWeapons)
 		{
-			DestructableComponent component = siegeWeapon?.DestructionComponent;
-			if (component == null || !processed.Add(component) || component.IsDestroyed)
+			if (TryRemoveSiegeWeapon(siegeWeapon))
 			{
-				continue;
-			}
-			if (TryDestroy(component))
-			{
-				siegeWeaponsDestroyed++;
+				siegeWeaponsRemoved++;
 			}
 			else
 			{
@@ -100,55 +99,69 @@ internal sealed class CastleAftermathDefensiveDeviceMissionBehavior : MissionLog
 		}
 
 		string summary = SiegeCastleDefensiveDeviceCleanupProfile.BuildSummary(
-			gatesDestroyed,
-			siegeWeaponsDestroyed,
+			gatesRemoved,
+			siegeWeaponsRemoved,
 			failures);
 		Logger.Log("CastleAftermath", summary);
 		GcczDiagnosticLog.Log("CastleDefensiveCleanup", summary);
 	}
 
-	private static bool TryDestroy(DestructableComponent component)
+	private static bool TryRemoveGate(Mission mission, CastleGate gate)
 	{
 		try
 		{
-			ItemObject impactItem = Game.Current?.ObjectManager?.GetObject<ItemObject>("boulder")
-				?? Game.Current?.ObjectManager?.GetObject<ItemObject>("ballista_projectile")
-				?? Game.Current?.ObjectManager?.GetObject<ItemObject>(SiegeCastleLordDuelProfile.FallbackWeaponItemId);
-			if (impactItem == null)
-			{
-				return false;
-			}
-
-			MissionWeapon impactWeapon = new MissionWeapon(impactItem, null, null);
-			int damage = Math.Max(
-				1,
-				(int)Math.Ceiling(component.MaxHitPoint) + SiegeCastleDefensiveDeviceCleanupProfile.DestructionDamageMargin);
-			Vec3 impactPosition = component.GameEntity.GlobalPosition;
-			bool stoneOnly = component.DestroyedByStoneOnly;
 			try
 			{
-				// Native TriggerOnHit drives destruction states, gate callbacks, particles and navmesh updates.
-				component.DestroyedByStoneOnly = false;
-				component.TriggerOnHit(
-					Agent.Main,
-					damage,
-					impactPosition,
-					Vec3.Forward,
-					in impactWeapon,
-					-1,
-					null);
+				// Opening first preserves the vanilla passable navmesh state before the
+				// visual object and all of its collision bodies are removed.
+				gate.OpenDoor();
 			}
-			finally
+			catch (Exception openError)
 			{
-				component.DestroyedByStoneOnly = stoneOnly;
+				if (!GameNetwork.IsClientOrReplay && gate.NavigationMeshId >= 0)
+				{
+					mission.Scene.SetAbilityOfFacesWithId(gate.NavigationMeshId, isEnabled: true);
+				}
+				Logger.Log("CastleAftermath", "Open castle gate before removal failed; passable navmesh fallback applied. Entity="
+					+ gate.GameEntity.Name + ", Error=" + openError.Message);
 			}
-			return component.IsDestroyed;
+
+			DestructableComponent component = gate.DestructionComponent;
+			if (component != null)
+			{
+				component.SetDisabledAndMakeInvisible(isParentObject: true, disableFaces: false);
+			}
+			gate.SetDisabledAndMakeInvisible(isParentObject: true, disableFaces: false);
+			GameEntity.CreateFromWeakEntity(gate.GameEntity)
+				?.SetPhysicsState(isEnabled: false, setChildren: true);
+			return gate.IsDisabled && !gate.GameEntity.IsVisibleIncludeParents();
 		}
 		catch (Exception ex)
 		{
-			string entityName = component == null ? "N/A" : component.GameEntity.Name;
-			Logger.Log("CastleAftermath", "Destroy castle defensive device failed. Entity="
-				+ entityName + ", Error=" + ex.Message);
+			Logger.Log("CastleAftermath", "Remove castle gate failed. Entity="
+				+ (gate?.GameEntity.Name ?? "N/A") + ", Error=" + ex.Message);
+			return false;
+		}
+	}
+
+	private static bool TryRemoveSiegeWeapon(SiegeWeapon siegeWeapon)
+	{
+		try
+		{
+			DestructableComponent component = siegeWeapon.DestructionComponent;
+			if (component != null)
+			{
+				component.SetDisabledAndMakeInvisible(isParentObject: true, disableFaces: false);
+			}
+			siegeWeapon.SetDisabledAndMakeInvisible(isParentObject: true, disableFaces: false);
+			GameEntity.CreateFromWeakEntity(siegeWeapon.GameEntity)
+				?.SetPhysicsState(isEnabled: false, setChildren: true);
+			return siegeWeapon.IsDisabled && !siegeWeapon.GameEntity.IsVisibleIncludeParents();
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CastleAftermath", "Remove castle siege weapon failed. Entity="
+				+ (siegeWeapon?.GameEntity.Name ?? "N/A") + ", Error=" + ex.Message);
 			return false;
 		}
 	}
