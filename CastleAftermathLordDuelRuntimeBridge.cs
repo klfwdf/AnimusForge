@@ -205,6 +205,11 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 	private Team _playerDuelTeam;
 	private Team _lordDuelTeam;
 	private Team _playerMountTeam;
+	private MissionMode _originalMissionMode = MissionMode.Battle;
+	private bool _missionModeChanged;
+	private bool _duelTeamRelationsCaptured;
+	private bool _playerTeamWasEnemyOfLordTeam;
+	private bool _lordTeamWasEnemyOfPlayerTeam;
 	private Vec3 _weaponPosition;
 	private Vec3 _shieldPosition;
 	private Vec3 _arenaCenter;
@@ -301,6 +306,8 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		_lordSnapshot = Capture(agent);
 		_originalMissionPlayerTeam = mission.PlayerTeam;
 		_playerMountTeam = player.MountAgent?.Team;
+		_originalMissionMode = mission.Mode;
+		_missionModeChanged = false;
 		_playerWasMountedWhenAccepted = CastleAftermathLordDuelRuntimeBridge.IsPlayerMounted();
 		_playerCarriedRangedWeaponWhenAccepted = CastleAftermathLordDuelRuntimeBridge.PlayerCarriesRangedWeapon();
 		_playerMountedDuringDuel = _playerWasMountedWhenAccepted;
@@ -319,20 +326,22 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		_stage = RuntimeStage.ApproachingWeapon;
 		_controlledAgentIndexes.Add(agent.Index);
 		PrepareAudience(mission, player, agent);
-		EndCurrentConversation();
-		try
-		{
-			mission.SetMissionMode(MissionMode.Battle, atStart: true);
-		}
-		catch
-		{
-		}
 		if (!TryInitializeDuelTeams(mission, player, agent))
 		{
 			Cancel("castle_duel_team_initialization_failed", showMessage: false);
 			reasonCode = "castle_duel_team_initialization_failed";
 			return false;
 		}
+		if (!TryEnterDuelMissionMode(mission))
+		{
+			Cancel("castle_duel_mission_mode_failed", showMessage: false);
+			reasonCode = "castle_duel_mission_mode_failed";
+			return false;
+		}
+		// Do not close AF's active conversation until every reversible duel
+		// prerequisite has succeeded. A failed setup must leave the player in the
+		// same interaction state instead of stranding the processing overlay.
+		EndCurrentConversation();
 
 		PrepareLordForWeaponApproach(mission, agent);
 		_approachStartedAt = mission.CurrentTime;
@@ -682,7 +691,7 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		Agent lord = _lordAgent;
 		TryDeleteLoadoutVisuals();
 		TryDropAndStripLordLoadout(lord);
-		NeutralizeDuelTeams(base.Mission);
+		RestoreDuelTeamRelations();
 		RestoreTeam(player, _playerSnapshot?.Team);
 		RestoreTeam(_playerMountSnapshot?.Agent, _playerMountTeam);
 		RestoreTeam(lord, _lordSnapshot?.Team);
@@ -731,6 +740,7 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		{
 			CastleAftermathRuntimeBridge.RestorePrisonerAfterExternalControl(lord);
 		}
+		RestoreMissionMode();
 		ResetFields();
 	}
 
@@ -1044,52 +1054,151 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 
 	private bool TryInitializeDuelTeams(Mission mission, Agent player, Agent lord)
 	{
+		if (mission == null || player == null || lord == null)
+		{
+			return false;
+		}
+
+		_playerDuelTeam = player.Team ?? mission.PlayerTeam;
+		_lordDuelTeam = ResolveExistingOpponentTeam(mission, _playerDuelTeam, lord.Team);
+		if (_playerDuelTeam == null || _lordDuelTeam == null || _playerDuelTeam == _lordDuelTeam)
+		{
+			Logger.Log("CastleAftermath", "Initialize captive-lord duel teams failed: no distinct existing opponent team."
+				+ " PlayerTeam=" + (_playerDuelTeam?.TeamIndex.ToString() ?? "null")
+				+ ", LordOriginalTeam=" + (lord.Team?.TeamIndex.ToString() ?? "null")
+				+ ", MissionTeams=" + (mission.Teams?.Count ?? 0));
+			return false;
+		}
+
+		CaptureDuelTeamRelations();
+		if (!TryAssignAgentTeam(player, _playerDuelTeam, "player")
+			|| !TryAssignAgentTeam(player.MountAgent, _playerDuelTeam, "player_mount", allowMissing: true)
+			|| !TryAssignAgentTeam(lord, _lordDuelTeam, "lord")
+			|| !TryAssignAgentTeam(lord.MountAgent, _lordDuelTeam, "lord_mount", allowMissing: true))
+		{
+			return false;
+		}
+		if (!TrySetMutualHostility(_playerDuelTeam, _lordDuelTeam, isEnemy: true))
+		{
+			return false;
+		}
+
+		Logger.Log("CastleAftermath", "Initialized captive-lord duel with existing mission teams. PlayerTeam="
+			+ _playerDuelTeam.TeamIndex + ", LordTeam=" + _lordDuelTeam.TeamIndex
+			+ ", LordAgent=" + lord.Index);
+		return true;
+	}
+
+	private static Team ResolveExistingOpponentTeam(Mission mission, Team playerTeam, Team lordOriginalTeam)
+	{
+		if (lordOriginalTeam != null && lordOriginalTeam != playerTeam)
+		{
+			return lordOriginalTeam;
+		}
 		try
 		{
-			uint playerColor = Hero.MainHero?.MapFaction?.Color ?? 4278190335u;
-			uint playerColor2 = Hero.MainHero?.MapFaction?.Color2 ?? 4278190208u;
-			uint lordColor = _lordHero?.MapFaction?.Color ?? 4294901760u;
-			uint lordColor2 = _lordHero?.MapFaction?.Color2 ?? 4286578688u;
-			_playerDuelTeam ??= mission.Teams.Add(
-				BattleSideEnum.Attacker,
-				playerColor,
-				playerColor2,
-				Hero.MainHero?.Clan?.Banner,
-				isPlayerGeneral: true,
-				isPlayerSergeant: false);
-			_lordDuelTeam ??= mission.Teams.Add(
-				BattleSideEnum.Defender,
-				lordColor,
-				lordColor2,
-				_lordHero?.Clan?.Banner,
-				isPlayerGeneral: false,
-				isPlayerSergeant: true);
-			if (_playerDuelTeam == null || _lordDuelTeam == null || _playerDuelTeam == _lordDuelTeam)
+			Team nativeEnemy = mission?.PlayerEnemyTeam;
+			if (nativeEnemy != null && nativeEnemy != playerTeam)
 			{
-				return false;
+				return nativeEnemy;
 			}
-			mission.PlayerTeam = _playerDuelTeam;
-			player.SetTeam(_playerDuelTeam, sync: true);
-			player.MountAgent?.SetTeam(_playerDuelTeam, sync: true);
-			lord.SetTeam(_lordDuelTeam, sync: true);
-			foreach (Team team in mission.Teams)
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CastleAftermath", "Resolve native castle duel enemy team failed: " + ex);
+		}
+		try
+		{
+			return mission?.Teams?
+				.FirstOrDefault(team => team != null && team != playerTeam && team.Side != playerTeam?.Side)
+				?? mission?.Teams?.FirstOrDefault(team => team != null && team != playerTeam);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CastleAftermath", "Resolve fallback castle duel enemy team failed: " + ex);
+			return null;
+		}
+	}
+
+	private static bool TryAssignAgentTeam(Agent agent, Team team, string role, bool allowMissing = false)
+	{
+		if (agent == null || !agent.IsActive())
+		{
+			return allowMissing;
+		}
+		if (team == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (agent.Team != team)
 			{
-				if (team == null || team == _playerDuelTeam || team == _lordDuelTeam)
-				{
-					continue;
-				}
-				team.SetIsEnemyOf(_playerDuelTeam, isEnemyOf: false);
-				_playerDuelTeam.SetIsEnemyOf(team, isEnemyOf: false);
-				team.SetIsEnemyOf(_lordDuelTeam, isEnemyOf: false);
-				_lordDuelTeam.SetIsEnemyOf(team, isEnemyOf: false);
+				agent.SetTeam(team, sync: true);
 			}
-			_playerDuelTeam.SetIsEnemyOf(_lordDuelTeam, isEnemyOf: true);
-			_lordDuelTeam.SetIsEnemyOf(_playerDuelTeam, isEnemyOf: true);
+			if (agent.Team == team)
+			{
+				return true;
+			}
+			Logger.Log("CastleAftermath", "Assign captive-lord duel team did not stick. Role="
+				+ role + ", Agent=" + agent.Index + ", Team=" + team.TeamIndex);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CastleAftermath", "Assign captive-lord duel team failed. Role="
+				+ role + ", Agent=" + agent.Index + ", Error=" + ex);
+		}
+		return false;
+	}
+
+	private void CaptureDuelTeamRelations()
+	{
+		_duelTeamRelationsCaptured = false;
+		try
+		{
+			_playerTeamWasEnemyOfLordTeam = _playerDuelTeam.IsEnemyOf(_lordDuelTeam);
+			_lordTeamWasEnemyOfPlayerTeam = _lordDuelTeam.IsEnemyOf(_playerDuelTeam);
+			_duelTeamRelationsCaptured = true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CastleAftermath", "Capture castle duel team relations failed; neutral restore will be used. Error=" + ex);
+			_playerTeamWasEnemyOfLordTeam = false;
+			_lordTeamWasEnemyOfPlayerTeam = false;
+			_duelTeamRelationsCaptured = true;
+		}
+	}
+
+	private static bool TrySetMutualHostility(Team playerTeam, Team lordTeam, bool isEnemy)
+	{
+		if (playerTeam == null || lordTeam == null || playerTeam == lordTeam)
+		{
+			return false;
+		}
+		try
+		{
+			playerTeam.SetIsEnemyOf(lordTeam, isEnemy);
+			lordTeam.SetIsEnemyOf(playerTeam, isEnemy);
 			return true;
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("CastleAftermath", "Initialize captive-lord duel teams failed: " + ex.Message);
+			Logger.Log("CastleAftermath", "Set castle duel mutual hostility failed: " + ex);
+			return false;
+		}
+	}
+
+	private bool TryEnterDuelMissionMode(Mission mission)
+	{
+		try
+		{
+			mission.SetMissionMode(MissionMode.Battle, atStart: true);
+			_missionModeChanged = true;
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CastleAftermath", "Enter captive-lord duel mission mode failed: " + ex);
 			return false;
 		}
 	}
@@ -1172,28 +1281,37 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		}
 	}
 
-	private void NeutralizeDuelTeams(Mission mission)
+	private void RestoreDuelTeamRelations()
 	{
-		if (mission == null || _playerDuelTeam == null || _lordDuelTeam == null)
+		if (!_duelTeamRelationsCaptured || _playerDuelTeam == null || _lordDuelTeam == null
+			|| _playerDuelTeam == _lordDuelTeam)
 		{
 			return;
 		}
 		try
 		{
-			foreach (Team team in mission.Teams)
-			{
-				if (team == null)
-				{
-					continue;
-				}
-				team.SetIsEnemyOf(_playerDuelTeam, isEnemyOf: false);
-				_playerDuelTeam.SetIsEnemyOf(team, isEnemyOf: false);
-				team.SetIsEnemyOf(_lordDuelTeam, isEnemyOf: false);
-				_lordDuelTeam.SetIsEnemyOf(team, isEnemyOf: false);
-			}
+			_playerDuelTeam.SetIsEnemyOf(_lordDuelTeam, _playerTeamWasEnemyOfLordTeam);
+			_lordDuelTeam.SetIsEnemyOf(_playerDuelTeam, _lordTeamWasEnemyOfPlayerTeam);
 		}
-		catch
+		catch (Exception ex)
 		{
+			Logger.Log("CastleAftermath", "Restore castle duel team relations failed: " + ex);
+		}
+	}
+
+	private void RestoreMissionMode()
+	{
+		if (!_missionModeChanged || base.Mission == null || base.Mission.IsMissionEnding)
+		{
+			return;
+		}
+		try
+		{
+			base.Mission.SetMissionMode(_originalMissionMode, atStart: true);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CastleAftermath", "Restore captive-lord duel mission mode failed: " + ex);
 		}
 	}
 
@@ -1312,7 +1430,14 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		_playerMountSnapshot = null;
 		_lordSnapshot = null;
 		_originalMissionPlayerTeam = null;
+		_playerDuelTeam = null;
+		_lordDuelTeam = null;
 		_playerMountTeam = null;
+		_originalMissionMode = MissionMode.Battle;
+		_missionModeChanged = false;
+		_duelTeamRelationsCaptured = false;
+		_playerTeamWasEnemyOfLordTeam = false;
+		_lordTeamWasEnemyOfPlayerTeam = false;
 		_duelWeaponItem = null;
 		_duelShieldItem = null;
 		_duelLoadoutKind = DuelLoadoutKind.None;
