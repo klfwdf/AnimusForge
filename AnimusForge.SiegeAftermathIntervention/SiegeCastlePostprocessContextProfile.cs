@@ -75,7 +75,7 @@ public static class SiegeCastlePostprocessContextProfile
                     facts.PlayerIsMounted,
                     facts.PlayerCarriesRangedWeapon,
                     facts.PlayerWieldsRangedWeapon))
-                .Append("领主可因玩家骑马、携弓或认为规则不公而拒绝，或要求玩家先下马、收弓；有条件答复仍不是同意。只有该领主本轮明确、无条件同意立即决斗，才可输出领主决斗标签。玩家单方面说要决斗绝不能触发。");
+                .Append("领主可因玩家骑马、携弓或认为规则不公而拒绝，或要求玩家先下马、收弓；有条件答复仍不是同意。AI后处理必须按完整回复语义判断而不是依赖固定关键词：该领主本轮以任何自然说法明确、无条件表示现在应战时都要输出领主决斗标签。若这是紧接上一轮决斗谈判的续接，玩家本轮确认守信或履行条件后领主明确应战，也应输出，玩家无需再次说“决斗”。玩家单方面说要决斗、领主拒绝或条件尚未满足绝不能触发。");
         }
 
         if (facts.SpeakerCultureMatchesCastle)

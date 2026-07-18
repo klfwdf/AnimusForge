@@ -99,7 +99,7 @@ public static class SiegeCastlePostprocessRuleCatalog
 
     private static readonly SiegePostprocessRuleDefinition DuelLordRule = Rule(
         SiegeCastleActionTagCatalog.DuelLordTag,
-        "【被俘领主单体流程标签·必须本人明确同意】仅当玩家本轮向当前被俘领主提出决斗，而且该领主在本次直接回复中无条件明确答应立刻开战时输出。玩家单方面宣告、领主拒绝、尚在考虑，或仅提出‘先下马/先放下弓/改用公平武器后才答应’等附带条件时一律不得输出；条件满足后必须再由领主明确答应一次。标签只启动当前场景内的不致死决斗，不自动释放或最终处置领主。同一领主本场只触发一次。");
+        "【被俘领主单体流程标签·由AI按回复语义确认】玩家本轮可以直接提出决斗，也可以紧接上一轮决斗谈判明确表示会守信、履行下马/收弓/公平交战等条件。只要当前被俘领主在本次直接回复中已经无条件同意现在应战，就必须输出本标签；接受不要求固定关键词，‘我不会放过这种机会’、‘我定当全力以赴’、‘来吧，为自由而战’等结合当前决斗语境明确表示立即应战的自然说法都算同意。玩家单方面宣告、领主拒绝、尚在考虑，或仍要求‘先下马/先放下弓/改用公平武器后才答应’时不得输出；条件满足后领主本轮明确应战即可输出，玩家无需重复说“决斗”二字。标签只启动当前场景内的不致死决斗，不自动释放或最终处置领主。同一领主本场只触发一次。");
 
     public static IReadOnlyList<SiegePostprocessRuleDefinition> GetAvailableRules(SiegeCastlePostprocessRuleFacts facts)
     {
@@ -212,10 +212,6 @@ public static class SiegeCastlePostprocessRuleCatalog
             {
                 return rules;
             }
-            if (TryAddDirectRule(rules, facts, SiegeCastleActionKind.DuelLord, DuelLordRule))
-            {
-                return rules;
-            }
             SiegeCastleLordRecruitmentBranch branch = SiegeCastleLordRecruitmentBranchProfile.Resolve(
                 facts.SpeakerIsClanLeader,
                 facts.PlayerHasKingdom,
@@ -232,7 +228,18 @@ public static class SiegeCastlePostprocessRuleCatalog
             {
                 return rules;
             }
-            TryAddDirectRule(rules, facts, SiegeCastleActionKind.ExecuteLord, ExecuteLordRule);
+            if (TryAddDirectRule(rules, facts, SiegeCastleActionKind.ExecuteLord, ExecuteLordRule))
+            {
+                return rules;
+            }
+
+            // Do not require a positive duel keyword here. If no other explicit castle
+            // disposition owns this turn, expose the semantic rule and let the AI decide.
+            if (SiegeCastlePlayerAuthorizationPolicy.DetectIntent(facts.PlayerText)
+                == SiegeCastlePrisonerDispositionKind.None)
+            {
+                TryAddDirectRule(rules, facts, SiegeCastleActionKind.DuelLord, DuelLordRule);
+            }
         }
         return rules;
     }

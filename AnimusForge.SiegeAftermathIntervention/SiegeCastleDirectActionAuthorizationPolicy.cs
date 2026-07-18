@@ -3,8 +3,9 @@ using System;
 namespace AnimusForge.SiegeAftermathIntervention;
 
 /// <summary>
-/// Conservative lexical gate used after the role/direct-reply checks. It does not decide
-/// willingness; the response tag plus the trust threshold decide voluntary vs forced service.
+/// Conservative authorization gate used after the role/direct-reply checks. Captive-lord
+/// duel consent is the exception to positive lexical matching: the AI response tag decides
+/// positive intent, while this policy only rejects missing or explicitly cancelled player text.
 /// </summary>
 public static class SiegeCastleDirectActionAuthorizationPolicy
 {
@@ -36,16 +37,6 @@ public static class SiegeCastleDirectActionAuthorizationPolicy
     {
         "处决你", "将你处决", "砍你的头", "斩首", "对你行刑", "送上断头台",
         "execute you", "behead you"
-    };
-
-    private static readonly string[] LordDuelTerms =
-    {
-        "和你决斗", "与你决斗", "跟你决斗", "同你决斗", "向你挑战", "和我决斗", "与我决斗", "跟我决斗",
-        "单挑", "决斗", "赢了我就放", "打赢我就放", "胜过我就放",
-        "我已下马", "我已经下马", "我下马了", "我已收弓", "我已经收弓", "我已收起弓", "我已经收起弓", "我收起弓了",
-        "我不用弓", "不使用弓", "按你的条件", "答应你的条件", "来吧，我答应你", "来吧我答应你", "公平对决", "公平决斗", "可以开始决斗",
-        "fight me", "duel", "single combat", "i have dismounted", "i'm on foot", "i put away my bow",
-        "i will not use a bow", "i accept your terms", "your terms are met", "begin the duel"
     };
 
     private static readonly string[] LordSellTerms =
@@ -104,13 +95,19 @@ public static class SiegeCastleDirectActionAuthorizationPolicy
             return SiegeCastleDirectActionAuthorizationDecision.Denied("player_discussion_not_authorization");
         }
 
+        // The AI postprocessor has the full player/NPC exchange and is authoritative for
+        // positive duel consent. Do not re-implement that semantic decision with keywords.
+        if (action == SiegeCastleActionKind.DuelLord)
+        {
+            return SiegeCastleDirectActionAuthorizationDecision.Authorized("castle_duel_lord_ai_tag_authorized");
+        }
+
         bool matched = action switch
         {
             SiegeCastleActionKind.TreatPrisoners => ContainsAny(text, TreatTerms),
             SiegeCastleActionKind.ReceiveArmaments => ContainsAny(text, ArmamentTerms),
             SiegeCastleActionKind.RecruitLord => ContainsAny(text, LordRecruitTerms),
             SiegeCastleActionKind.SellLord => ContainsAny(text, LordSellTerms),
-            SiegeCastleActionKind.DuelLord => ContainsAny(text, LordDuelTerms),
             SiegeCastleActionKind.ExecuteLord => ContainsAny(text, LordExecuteTerms),
             _ => false
         };
