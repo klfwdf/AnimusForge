@@ -138,12 +138,12 @@ internal static class CastleAftermathLordDuelRuntimeBridge
 		{
 			if (wieldedOnly)
 			{
-				return IsRanged(agent, agent.GetPrimaryWieldedItemIndex())
-					|| IsRanged(agent, agent.GetOffhandWieldedItemIndex());
+				return IsCurrentlyRangedWeapon(agent, agent.GetPrimaryWieldedItemIndex())
+					|| IsCurrentlyRangedWeapon(agent, agent.GetOffhandWieldedItemIndex());
 			}
 			for (EquipmentIndex slot = EquipmentIndex.WeaponItemBeginSlot; slot < EquipmentIndex.NumAllWeaponSlots; slot++)
 			{
-				if (IsRanged(agent, slot))
+				if (HasAnyRangedWeaponUsage(agent, slot))
 				{
 					return true;
 				}
@@ -155,14 +155,27 @@ internal static class CastleAftermathLordDuelRuntimeBridge
 		return false;
 	}
 
-	private static bool IsRanged(Agent agent, EquipmentIndex slot)
+	private static bool IsCurrentlyRangedWeapon(Agent agent, EquipmentIndex slot)
 	{
 		if (agent == null || slot == EquipmentIndex.None)
 		{
 			return false;
 		}
 		MissionWeapon weapon = agent.Equipment[slot];
-		return !weapon.IsEmpty && weapon.CurrentUsageItem?.IsRangedWeapon == true;
+		return !weapon.IsEmpty
+			&& weapon.CurrentUsageItem?.IsRangedWeapon == true
+			&& weapon.CurrentUsageItem.IsAmmo == false;
+	}
+
+	private static bool HasAnyRangedWeaponUsage(Agent agent, EquipmentIndex slot)
+	{
+		if (agent == null || slot == EquipmentIndex.None)
+		{
+			return false;
+		}
+		MissionWeapon weapon = agent.Equipment[slot];
+		return !weapon.IsEmpty
+			&& weapon.Item?.Weapons?.Any(usage => usage != null && usage.IsRangedWeapon && !usage.IsAmmo) == true;
 	}
 }
 
@@ -228,6 +241,7 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 	private float _lordVirtualHealth;
 	private bool _playerWasMountedWhenAccepted;
 	private bool _playerCarriedRangedWeaponWhenAccepted;
+	private bool _playerWieldedRangedWeaponWhenAccepted;
 	private bool _playerMountedDuringDuel;
 	private bool _playerUsedRangedWeapon;
 	private bool _pendingPlayerWon;
@@ -314,6 +328,7 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		_missionModeChanged = false;
 		_playerWasMountedWhenAccepted = CastleAftermathLordDuelRuntimeBridge.IsPlayerMounted();
 		_playerCarriedRangedWeaponWhenAccepted = CastleAftermathLordDuelRuntimeBridge.PlayerCarriesRangedWeapon();
+		_playerWieldedRangedWeaponWhenAccepted = CastleAftermathLordDuelRuntimeBridge.PlayerWieldsRangedWeapon();
 		_playerMountedDuringDuel = _playerWasMountedWhenAccepted;
 		_playerUsedRangedWeapon = false;
 		_playerVirtualHealth = Math.Max(SiegeCastleLordDuelProfile.DuelHealthFloor, player.Health);
@@ -372,7 +387,8 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 			+ ", Loadout=" + _duelLoadoutKind + ", OneHandedPool=" + oneHandedCandidateCount
 			+ ", TwoHandedPool=" + twoHandedCandidateCount + ", ShieldPool=" + shieldCandidateCount
 			+ ", Audience=" + _audienceSnapshots.Count + ", Mounted=" + _playerWasMountedWhenAccepted
-			+ ", CarriesRanged=" + _playerCarriedRangedWeaponWhenAccepted);
+			+ ", CarriesRanged=" + _playerCarriedRangedWeaponWhenAccepted
+			+ ", WieldsRanged=" + _playerWieldedRangedWeaponWhenAccepted);
 		GcczDiagnosticLog.Log("CastleLordDuel", "started hero=" + (hero.StringId ?? "N/A")
 			+ " agent=" + agent.Index + " audience=" + _audienceSnapshots.Count
 			+ " immediateTeleport=true actualDistance=" + actualDistance + " targetAgent=" + player.Index
@@ -380,7 +396,9 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 			+ " shield=" + (_duelShieldItem?.StringId ?? "N/A") + " shieldTier=" + selectedShieldTier
 			+ " loadout=" + _duelLoadoutKind + " oneHandedPool=" + oneHandedCandidateCount
 			+ " twoHandedPool=" + twoHandedCandidateCount + " shieldPool=" + shieldCandidateCount
-			+ " mounted=" + _playerWasMountedWhenAccepted + " ranged=" + _playerCarriedRangedWeaponWhenAccepted);
+			+ " mounted=" + _playerWasMountedWhenAccepted
+			+ " carriesRanged=" + _playerCarriedRangedWeaponWhenAccepted
+			+ " wieldsRanged=" + _playerWieldedRangedWeaponWhenAccepted);
 		GcczDiagnosticLog.Log("CastleLordDuel", "fighting hero=" + (hero.StringId ?? "N/A")
 			+ " immediateTeleport=true targetAgent=" + player.Index);
 		AnimusForgeQuickInfo.Show("【城堡决斗】俘虏领主已在你正前方约20米处拿起"
@@ -518,6 +536,9 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		_playerMountedDuringDuel |= CastleAftermathLordDuelRuntimeBridge.IsPlayerMounted();
 		if (_stage == RuntimeStage.Fighting)
 		{
+			// Polling the wielded slots also records drawing/aiming/firing a ranged
+			// weapon when the missile misses, where OnAgentHit cannot observe it.
+			_playerUsedRangedWeapon |= CastleAftermathLordDuelRuntimeBridge.PlayerWieldsRangedWeapon();
 			player.SetMortalityState(Agent.MortalityState.Immortal);
 			ProtectAgent(_playerMountSnapshot?.Agent, Agent.MortalityState.Immortal);
 			_lordAgent.SetMortalityState(Agent.MortalityState.Immortal);
@@ -647,6 +668,7 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		int targetIndex = lord?.Index ?? -1;
 		bool playerWasMountedWhenAccepted = _playerWasMountedWhenAccepted;
 		bool playerCarriedRangedWeaponWhenAccepted = _playerCarriedRangedWeaponWhenAccepted;
+		bool playerWieldedRangedWeaponWhenAccepted = _playerWieldedRangedWeaponWhenAccepted;
 		bool playerMountedDuringDuel = _playerMountedDuringDuel;
 		bool playerUsedRangedWeapon = _playerUsedRangedWeapon;
 		string resultFact = SiegeCastleLordDuelProfile.BuildResultFact(
@@ -656,12 +678,14 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 			playerWon,
 			playerWasMountedWhenAccepted,
 			playerCarriedRangedWeaponWhenAccepted,
+			playerWieldedRangedWeaponWhenAccepted,
 			playerMountedDuringDuel,
 			playerUsedRangedWeapon);
 		RestoreRuntime(playerWon, cancelled: false);
 		string outcome = "hero=" + (hero?.StringId ?? "N/A") + ", playerWon=" + playerWon
 			+ ", mountedAtAcceptance=" + playerWasMountedWhenAccepted
 			+ ", carriedRangedAtAcceptance=" + playerCarriedRangedWeaponWhenAccepted
+			+ ", wieldedRangedAtAcceptance=" + playerWieldedRangedWeaponWhenAccepted
 			+ ", mountedDuring=" + playerMountedDuringDuel + ", usedRanged=" + playerUsedRangedWeapon;
 		Logger.Log("CastleAftermath", "Completed captive-lord duel. " + outcome);
 		GcczDiagnosticLog.Log("CastleLordDuel", "completed " + outcome);
@@ -1472,6 +1496,7 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		_lordVirtualHealth = 0f;
 		_playerWasMountedWhenAccepted = false;
 		_playerCarriedRangedWeaponWhenAccepted = false;
+		_playerWieldedRangedWeaponWhenAccepted = false;
 		_playerMountedDuringDuel = false;
 		_playerUsedRangedWeapon = false;
 		_pendingPlayerWon = false;
