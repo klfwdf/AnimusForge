@@ -539,6 +539,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		CastleAftermathPrisonerTrustRuntimeBridge.ClearForNewGame();
 		CastleAftermathSettlementRuntimeBridge.ClearForNewGame();
 		CastleAftermathLordRecruitmentRuntimeBridge.ClearForNewGame();
+		CastleAftermathArmyRosterRuntimeBridge.ClearBattleSnapshot("new_game");
 		ClearCastleLordDefeatProvenance("new_game");
 		ClearRepopulationProsperityDebuffs();
 		ClearRecruitmentSuppressionDebuffs();
@@ -548,12 +549,14 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private void OnGameLoaded(CampaignGameStarter starter)
 	{
+		CastleAftermathArmyRosterRuntimeBridge.ClearBattleSnapshot("game_loaded");
 		ClearCastleLordDefeatProvenance("game_loaded");
 		ResetAftermathRuntimeGuards(SiegeAftermathTransitionSourceProfile.ResetGameLoadedSource);
 	}
 
 	private void OnGameLoadFinished()
 	{
+		CastleAftermathArmyRosterRuntimeBridge.ClearBattleSnapshot("game_load_finished");
 		ClearCastleLordDefeatProvenance("game_load_finished");
 		ResetAftermathRuntimeGuards(SiegeAftermathTransitionSourceProfile.ResetGameLoadFinishedSource);
 	}
@@ -571,8 +574,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				|| settlement?.IsCastle != true
 				|| (!mapEvent.IsSiegeAssault && !mapEvent.IsSiegeOutside && !mapEvent.IsSallyOut))
 			{
+				CastleAftermathArmyRosterRuntimeBridge.ClearBattleSnapshot("player_battle_end_not_castle_victory");
 				return;
 			}
+
+			CastleAftermathArmyRosterRuntimeBridge.FinalizePlayerCastleVictory(mapEvent, settlement);
 
 			MapEventSide defeatedSide = mapEvent.PlayerSide == BattleSideEnum.Attacker
 				? mapEvent.DefenderSide
@@ -1301,10 +1307,14 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return false;
 			}
 
-			TroopRoster availableMembers = BuildInterventionTroopSelectionFullRoster();
+			CastleAftermathAlliedRosterSelectionContext alliedSelection =
+				CastleAftermathArmyRosterRuntimeBridge.BuildSelectionContext(
+					_activeSettlement,
+					_partyContributions?.Keys);
+			TroopRoster availableMembers = alliedSelection.BuildAvailableMembers();
 			TroopRoster availablePrisoners = BuildCastlePrisonerSelectionFullRoster();
 			TroopRoster initialMembers = BuildDefaultInterventionTroopSelection(
-				availableMembers,
+				alliedSelection.BuildDefaultPlayerPartyMembers(),
 				SiegeCastleRosterSelectionProfile.MaxAlliedTroops);
 			return CastleAftermathRuntimeBridge.TryOpenRosterSelection(
 				availableMembers,
@@ -1313,16 +1323,21 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				delegate(
 					TroopRoster selectedMembers,
 					TroopRoster selectedPrisoners,
-					TroopRoster notSelectedMembers,
+					TroopRoster _notSelectedMembers,
 					TroopRoster notSelectedPrisoners)
 				{
+					TroopRoster selectedPlayerPartyMembers = alliedSelection.BuildSelectedPlayerPartyMembers(selectedMembers);
+					TroopRoster selectedGuestLeaders = alliedSelection.BuildSelectedGuestLeaders(selectedMembers);
+					TroopRoster runtimeNotSelectedMembers = alliedSelection.BuildRuntimeNotSelectedMainPartyMembers(selectedPlayerPartyMembers);
+					CastleAftermathArmyRosterRuntimeBridge.StoreSelectedGuestLeaders(selectedGuestLeaders);
 					if (!TroopInspectionBehavior.TryPrepareExternalInspectionRuntime(
-						selectedMembers,
+						selectedPlayerPartyMembers,
 						selectedPrisoners,
-						notSelectedMembers,
+						runtimeNotSelectedMembers,
 						notSelectedPrisoners,
 						out string prepareError))
 					{
+						CastleAftermathArmyRosterRuntimeBridge.ClearSelectedGuestLeaders("castle_inspection_runtime_prepare_failed");
 						Logger.Log("CastleAftermath", "Prepare troop-inspection castle runtime failed: " + prepareError);
 						InformationManager.DisplayMessage(new InformationMessage(
 							"城堡处置准备失败，队伍状态已恢复。",
@@ -1330,23 +1345,33 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 						ResetAftermathRuntimeGuards("castle_inspection_runtime_prepare_failed");
 						return;
 					}
-					StoreSelectedInterventionRoster(selectedMembers, SiegeCastleRosterSelectionProfile.MaxAlliedTroops);
+					StoreSelectedInterventionRoster(
+						selectedMembers,
+						SiegeCastleRosterSelectionProfile.MaxAlliedTroops,
+						allowSelectedCastleGuestLeaders: true);
 					CastleAftermathRuntimeBridge.StoreSelectedPrisonerRoster(selectedPrisoners);
 					int alliedCount = _selectedInterventionRoster?.TotalManCount ?? 0;
 					int prisonerCount = CastleAftermathRuntimeBridge.SelectedPrisonerCount;
 					InformationManager.DisplayMessage(new InformationMessage(
 						SiegeCastleRosterSelectionProfile.BuildConfirmedMessage(alliedCount, prisonerCount),
 						Color.FromUint(SiegeInterventionEntryProfile.SelectionConfirmedMessageColor)));
+					Logger.Log("CastleAftermath", "Castle allied selection confirmed. Source=" + alliedSelection.Source
+						+ ", SelectedOwn=" + selectedPlayerPartyMembers.TotalManCount
+						+ ", SelectedCaptains=" + selectedGuestLeaders.TotalManCount
+						+ ", RuntimeHidden=" + runtimeNotSelectedMembers.TotalManCount
+						+ ", SelectedPrisoners=" + (selectedPrisoners?.TotalManCount ?? 0));
 					CastleAftermathMissionEntryBridge.Queue(location, _activeSettlementId, SiegeInterventionEntryProfile.TroopSelectionDoneMissionSource);
 				},
 				delegate
 				{
+					CastleAftermathArmyRosterRuntimeBridge.ClearSelectedGuestLeaders("castle_roster_selection_cancel");
 					ResetAftermathRuntimeGuards(SiegeCastleRosterSelectionProfile.SelectionCanceledSource);
 					Logger.Log("SiegeAiIntervention", "Castle aftermath roster selection canceled.");
 				});
 		}
 		catch (Exception ex)
 		{
+			CastleAftermathArmyRosterRuntimeBridge.ClearSelectedGuestLeaders("castle_roster_selection_exception");
 			TroopInspectionBehavior.CancelPreparedExternalInspectionRuntime("castle_roster_selection_exception");
 			Logger.Log("SiegeAiIntervention", "Open castle aftermath roster selection failed: " + ex);
 			return false;
@@ -1522,7 +1547,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		return IsSelectableInterventionTroop(character);
 	}
 
-	private static void StoreSelectedInterventionRoster(TroopRoster sourceRoster, int maxCount)
+	private static void StoreSelectedInterventionRoster(
+		TroopRoster sourceRoster,
+		int maxCount,
+		bool allowSelectedCastleGuestLeaders = false)
 	{
 		TroopRoster selected = TroopRoster.CreateDummyTroopRoster();
 		if (sourceRoster != null && maxCount > 0)
@@ -1531,7 +1559,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			foreach (TroopRosterElement element in sourceRoster.GetTroopRoster())
 			{
 				CharacterObject character = element.Character;
-				if (!IsSelectableInterventionTroop(character) || element.Number <= 0 || remaining <= 0)
+				if (!IsSelectableInterventionTroop(character, allowSelectedCastleGuestLeaders) || element.Number <= 0 || remaining <= 0)
 				{
 					continue;
 				}
@@ -1559,7 +1587,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		foreach (TroopRosterElement element in _selectedInterventionRoster.GetTroopRoster())
 		{
 			CharacterObject character = element.Character;
-			if (!IsSelectableInterventionTroop(character) || element.Number <= 0)
+			if (!IsSelectableInterventionTroop(character, allowSelectedCastleGuestLeaders: true) || element.Number <= 0)
 			{
 				continue;
 			}
@@ -1727,6 +1755,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private void OnMissionStarted(IMission mission)
 	{
+		CastleAftermathArmyRosterRuntimeBridge.TryCapturePlayerCastleBattleStart();
 		if (_pendingMode == InterventionMode.None)
 		{
 			return;
@@ -1908,6 +1937,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private void OnMissionEnded(IMission mission)
 	{
+		CastleAftermathArmyRosterRuntimeBridge.RefreshTrackedPlayerCastleBattle("mission_end");
 		if (_activeMode == InterventionMode.None && _pendingMode == InterventionMode.None)
 		{
 			return;
@@ -2427,6 +2457,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
+			character ??= TryGetAgent(npc.AgentIndex)?.Character as CharacterObject;
+			if (CastleAftermathArmyRosterRuntimeBridge.IsSelectedGuestLeader(character))
+			{
+				return false;
+			}
 			if (npc.AgentIndex >= 0 && AlliedAgentIndexes.Contains(npc.AgentIndex))
 			{
 				return true;
@@ -2600,8 +2635,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		string settlementName = string.IsNullOrWhiteSpace(_activeSettlementName) ? "这座刚被攻下的定居点" : _activeSettlementName;
 		Agent agent = TryGetAgent(agentIndex);
 		CharacterObject character = (agent?.Character as CharacterObject) ?? hero?.CharacterObject;
+		bool alliedArmyCaptain = CastleAftermathArmyRosterRuntimeBridge.IsSelectedGuestLeader(character);
 		bool alliedSoldier = IsRuntimeAlliedSoldierAgent(agent, character, hero);
-		if (!alliedSoldier && IsNpcRuntimeAlliedSoldierFallback(npc, character))
+		if (!alliedArmyCaptain && !alliedSoldier && IsNpcRuntimeAlliedSoldierFallback(npc, character))
 		{
 			alliedSoldier = true;
 		}
@@ -2695,6 +2731,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return SiegeCastleNpcSituationProfile.BuildPreviouslyCapturedLordPrompt(castleName, playerName);
 			}
 
+			if (CastleAftermathArmyRosterRuntimeBridge.IsSelectedGuestLeader(character))
+			{
+				return SiegeCastleNpcSituationProfile.BuildAlliedArmyCaptainPrompt(castleName, playerName);
+			}
 			return IsRuntimeAlliedSoldierAgent(agent, character, hero)
 				? SiegeCastleNpcSituationProfile.BuildAlliedSoldierPrompt(castleName, playerName)
 				: "";
@@ -2725,7 +2765,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			Agent agent = TryGetAgent(agentIndex);
 			CharacterObject resolved = character ?? (agent?.Character as CharacterObject) ?? hero?.CharacterObject;
-			bool soldierLikeResolved = resolved != null && (resolved.IsSoldier || IsGuardOrSoldier(resolved) || IsMainPartyOrSelectedInterventionTroop(resolved));
+			bool soldierLikeResolved = resolved != null
+				&& !CastleAftermathArmyRosterRuntimeBridge.IsSelectedGuestLeader(resolved)
+				&& (resolved.IsSoldier || IsGuardOrSoldier(resolved) || IsMainPartyOrSelectedInterventionTroop(resolved));
 			NpcDataPacket packet = new NpcDataPacket
 			{
 				AgentIndex = agentIndex,
@@ -9270,6 +9312,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
+			if (CastleAftermathArmyRosterRuntimeBridge.IsSelectedGuestLeader(character))
+			{
+				return false;
+			}
 			if (character == null || character == CharacterObject.PlayerCharacter || IsProtectedChildCharacter(character) || IsCivilianForIntervention(character) || IsBackstreetOrCriminalCharacter(character))
 			{
 				return false;
@@ -12742,6 +12788,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private static bool IsSelectableInterventionTroop(CharacterObject character)
 	{
+		return IsSelectableInterventionTroop(character, allowSelectedCastleGuestLeaders: false);
+	}
+
+	private static bool IsSelectableInterventionTroop(CharacterObject character, bool allowSelectedCastleGuestLeaders)
+	{
 		try
 		{
 			if (character == null || character == CharacterObject.PlayerCharacter)
@@ -12751,7 +12802,13 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			Hero hero = character.HeroObject;
 			if (hero != null)
 			{
-				return hero != Hero.MainHero && hero.PartyBelongedTo == MobileParty.MainParty && !hero.IsPrisoner && !hero.IsWounded;
+				bool playerPartyMember = hero != Hero.MainHero
+					&& hero.PartyBelongedTo == MobileParty.MainParty
+					&& !hero.IsPrisoner
+					&& !hero.IsWounded;
+				return playerPartyMember
+					|| (allowSelectedCastleGuestLeaders
+						&& CastleAftermathArmyRosterRuntimeBridge.IsSelectedGuestLeader(character));
 			}
 			return true;
 		}
@@ -15162,6 +15219,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_playerOrderControllerPrimed = false;
 		_civilianOrderControllerPrimed = false;
 		_selectedInterventionRoster = null;
+		CastleAftermathArmyRosterRuntimeBridge.ClearSelectedGuestLeaders("reset_session_counters");
 		CastleAftermathLordExecutionRuntimeBridge.Reset("reset_session_counters");
 		CastleAftermathRuntimeBridge.Reset("reset_session_counters");
 		CastleAftermathMissionEntryBridge.Reset("reset_session_counters");

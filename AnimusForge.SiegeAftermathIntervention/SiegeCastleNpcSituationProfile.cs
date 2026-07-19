@@ -19,6 +19,16 @@ public static class SiegeCastleNpcSituationProfile
             + "直接指挥；你不是本城战败守军、俘虏或中立旁观者。";
     }
 
+    public static string BuildAlliedArmyCaptainPrompt(string castleName, string playerName)
+    {
+        castleName = Normalize(castleName, DefaultCastleName);
+        playerName = Normalize(playerName, DefaultPlayerName);
+        return "【城堡战后身份·最高优先级】你是与" + playerName + "并肩参加本次攻城、并被邀请进入"
+            + castleName + "参与战后处置的己方军团队长和贵族。你的部队仍归你统领，没有被并入玩家本队；"
+            + "本场景只生成你本人，不会把你麾下普通士兵带入。你不是守城战败者、俘虏或普通随行士兵，"
+            + "可以用友军贵族和部队指挥官的立场评论处置，但不能触发普通士兵或战俘专属的结算标签。";
+    }
+
     public static string BuildDefeatedGarrisonPrisonerPrompt(string castleName, string playerName)
     {
         castleName = Normalize(castleName, DefaultCastleName);

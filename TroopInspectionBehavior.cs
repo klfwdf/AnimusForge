@@ -3440,9 +3440,10 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 			}
 			else
 			{
+				PartyBase originParty = CastleAftermathArmyRosterRuntimeBridge.ResolveAgentOriginParty(character, mainParty);
 				agent = BannerlordApiCompat.SpawnInspectionTroop(
 					mission,
-					new PartyAgentOrigin(mainParty, character),
+					new PartyAgentOrigin(originParty, character),
 					selected.Count,
 					selectedIndex,
 					alliedFormationClass,
