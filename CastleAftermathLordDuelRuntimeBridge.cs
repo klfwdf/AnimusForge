@@ -168,6 +168,9 @@ internal static class CastleAftermathLordDuelRuntimeBridge
 
 internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 {
+	private const float CombatTargetRefreshInterval = 0.2f;
+	private const float CombatTargetStatusLogInterval = 2f;
+
 	private enum RuntimeStage
 	{
 		Idle,
@@ -219,6 +222,8 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 	private ItemObject _duelShieldItem;
 	private DuelLoadoutKind _duelLoadoutKind;
 	private float _nextCombatRefreshAt;
+	private float _nextCombatTargetStatusLogAt;
+	private bool _combatTargetObserved;
 	private float _playerVirtualHealth;
 	private float _lordVirtualHealth;
 	private bool _playerWasMountedWhenAccepted;
@@ -345,14 +350,14 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		}
 		_stage = RuntimeStage.Fighting;
 		_nextCombatRefreshAt = 0f;
+		_nextCombatTargetStatusLogAt = mission.CurrentTime + CombatTargetStatusLogInterval;
 		player.SetMortalityState(Agent.MortalityState.Immortal);
 		agent.SetMortalityState(Agent.MortalityState.Immortal);
-		if (!RefreshLordCombatAi(player, agent, logFailure: true))
-		{
-			Cancel("castle_duel_player_target_lock_failed", showMessage: false);
-			reasonCode = "castle_duel_player_target_lock_failed";
-			return false;
-		}
+		// SetTargetAgent is committed by the native AI update, so GetTargetAgent may
+		// legitimately remain null in this setup frame. Start the duel after the
+		// command is issued and keep repairing the lock from OnMissionTick instead
+		// of treating a same-frame readback as a fatal setup failure.
+		_combatTargetObserved = RefreshLordCombatAi(player, agent, logPending: true);
 		// Do not close AF's active conversation until every reversible duel
 		// prerequisite has succeeded. A failed setup must leave the player in the
 		// same interaction state instead of stranding the processing overlay.
@@ -518,10 +523,20 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 			_lordAgent.SetMortalityState(Agent.MortalityState.Immortal);
 			if (mission.CurrentTime >= _nextCombatRefreshAt)
 			{
-				_nextCombatRefreshAt = mission.CurrentTime + 0.35f;
-				if (!RefreshLordCombatAi(player, _lordAgent, logFailure: true))
+				_nextCombatRefreshAt = mission.CurrentTime + CombatTargetRefreshInterval;
+				bool targetObserved = RefreshLordCombatAi(player, _lordAgent, logPending: false);
+				if (targetObserved && !_combatTargetObserved)
 				{
-					Cancel("castle_duel_player_target_lock_lost", showMessage: true);
+					Logger.Log("CastleAftermath", "Captive-lord duel target lock observed after native AI update. LordAgent="
+						+ _lordAgent.Index + ", PlayerAgent=" + player.Index);
+				}
+				_combatTargetObserved = targetObserved;
+				if (!targetObserved && mission.CurrentTime >= _nextCombatTargetStatusLogAt)
+				{
+					_nextCombatTargetStatusLogAt = mission.CurrentTime + CombatTargetStatusLogInterval;
+					Logger.Log("CastleAftermath", "Captive-lord duel target readback is pending; lock command will continue retrying. LordAgent="
+						+ _lordAgent.Index + ", PlayerAgent=" + player.Index
+						+ ", ActualTarget=" + (BannerlordApiCompat.GetAgentCombatTarget(_lordAgent)?.Index.ToString() ?? "null"));
 				}
 			}
 		}
@@ -1184,7 +1199,7 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		}
 	}
 
-	private static bool RefreshLordCombatAi(Agent player, Agent lord, bool logFailure)
+	private static bool RefreshLordCombatAi(Agent player, Agent lord, bool logPending)
 	{
 		if (player == null || !player.IsActive() || lord == null || !lord.IsActive())
 		{
@@ -1195,32 +1210,40 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 			lord.Controller = AgentControllerType.AI;
 			lord.SetIsAIPaused(isPaused: false);
 			lord.DisableScriptedMovement();
+			Agent currentTarget = BannerlordApiCompat.GetAgentCombatTarget(lord);
+			if (ReferenceEquals(currentTarget, player))
+			{
+				BannerlordApiCompat.TrySetAgentAutomaticTargetSelection(lord, enabled: false);
+				lord.SetWatchState(Agent.WatchState.Alarmed);
+				return true;
+			}
+			lord.SetLookAgent(null);
 			lord.ResetEnemyCaches();
-			lord.SetAutomaticTargetSelection(enable: false);
-			lord.SetTargetAgent(player);
+			lord.InvalidateTargetAgent();
 			lord.InvalidateAIWeaponSelections();
+			bool automaticSelectionSet = BannerlordApiCompat.TrySetAgentAutomaticTargetSelection(lord, enabled: false);
+			bool targetCommandIssued = BannerlordApiCompat.TrySetAgentCombatTarget(lord, player);
 			lord.WieldInitialWeapons(
 				Agent.WeaponWieldActionType.InstantAfterPickUp,
 				Equipment.InitialWeaponEquipPreference.MeleeForMainHand);
 			lord.SetWatchState(Agent.WatchState.Alarmed);
-			if (!ReferenceEquals(lord.GetTargetAgent(), player))
-			{
-				if (logFailure)
-				{
-					Logger.Log("CastleAftermath", "Captive-lord duel target lock did not stick. LordAgent="
-						+ lord.Index + ", ExpectedPlayer=" + player.Index
-						+ ", ActualTarget=" + (lord.GetTargetAgent()?.Index.ToString() ?? "null"));
-				}
-				return false;
-			}
 			lord.ForceAiBehaviorSelection();
-			return true;
+			Agent observedTarget = BannerlordApiCompat.GetAgentCombatTarget(lord);
+			if (!ReferenceEquals(observedTarget, player) && logPending)
+			{
+				Logger.Log("CastleAftermath", "Captive-lord duel target command issued; native readback is pending. LordAgent="
+					+ lord.Index + ", ExpectedPlayer=" + player.Index
+					+ ", ActualTarget=" + (observedTarget?.Index.ToString() ?? "null")
+					+ ", AutomaticSelectionSet=" + automaticSelectionSet
+					+ ", TargetCommandIssued=" + targetCommandIssued);
+			}
+			return ReferenceEquals(observedTarget, player);
 		}
 		catch (Exception ex)
 		{
-			if (logFailure)
+			if (logPending)
 			{
-				Logger.Log("CastleAftermath", "Lock captive-lord duel target to player failed: " + ex);
+				Logger.Log("CastleAftermath", "Issue captive-lord duel target command failed; runtime will retry: " + ex);
 			}
 			return false;
 		}
@@ -1443,6 +1466,8 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		_audienceSnapshots.Clear();
 		_controlledAgentIndexes.Clear();
 		_nextCombatRefreshAt = 0f;
+		_nextCombatTargetStatusLogAt = 0f;
+		_combatTargetObserved = false;
 		_playerVirtualHealth = 0f;
 		_lordVirtualHealth = 0f;
 		_playerWasMountedWhenAccepted = false;
