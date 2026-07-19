@@ -81,6 +81,14 @@ public class SubModule : MBSubModuleBase
 			}
 			try
 			{
+				AiErrorAnalysisInquiry.EnsurePatched(harmony);
+			}
+			catch (Exception ex3a)
+			{
+				Logger.LogTrace("SubModule", ">>> AI error analysis inquiry patch failed: " + ex3a.Message);
+			}
+			try
+			{
 				PatchClassProcessor patchClassProcessor4 = harmony.CreateClassProcessor(typeof(Patch_PlayerEncounter_Start));
 				patchClassProcessor4.Patch();
 			}
@@ -645,6 +653,7 @@ public class SubModule : MBSubModuleBase
 		PlayerNotorietyPopup.ProcessDeferredCloseIfNeeded();
 		AnimusForgeConversationHistoryLogPopup.OnApplicationTick();
 		AnimusForgeNativeConversationOverlay.OnApplicationTick();
+		AiErrorAnalysisInquiry.OnApplicationTick();
 		ShoutBehavior.OnApplicationTickForMainThreadActionsExternal();
 		NativeConversationAnswerAreaController.OnApplicationTick();
 		ShoutBehavior.OnApplicationTickForNativeConversationTtsExternal();
@@ -678,6 +687,7 @@ public class SubModule : MBSubModuleBase
 			RunWatchedTickPhase("SubModule.PlayerNotorietyPopup.ProcessDeferredCloseIfNeeded", () => PlayerNotorietyPopup.ProcessDeferredCloseIfNeeded());
 			RunWatchedTickPhase("SubModule.AnimusForgeConversationHistoryLogPopup.OnApplicationTick", () => AnimusForgeConversationHistoryLogPopup.OnApplicationTick());
 			RunWatchedTickPhase("SubModule.AnimusForgeNativeConversationOverlay.OnApplicationTick", () => AnimusForgeNativeConversationOverlay.OnApplicationTick());
+			RunWatchedTickPhase("SubModule.AiErrorAnalysisInquiry.OnApplicationTick", () => AiErrorAnalysisInquiry.OnApplicationTick());
 			RunWatchedTickPhase("SubModule.ShoutBehavior.MainThreadActions.OnApplicationTick", () => ShoutBehavior.OnApplicationTickForMainThreadActionsExternal());
 			RunWatchedTickPhase("SubModule.NativeConversationAnswerAreaController.OnApplicationTick", () => NativeConversationAnswerAreaController.OnApplicationTick());
 			RunWatchedTickPhase("SubModule.ShoutBehavior.NativeConversationTts.OnApplicationTick", () => ShoutBehavior.OnApplicationTickForNativeConversationTtsExternal());

@@ -391,7 +391,7 @@ internal sealed class AnimusForgeCourierReplyMapNotification : InformationData
 	{
 		SenderHeroId = (senderHeroId ?? "").Trim();
 		SenderName = NormalizeSenderName(senderName);
-		ReplyText = (replyText ?? "").Trim();
+		ReplyText = CourierVisibleLetterSanitizer.Clean(replyText);
 		_titleText = new TextObject("信使带回了回信");
 	}
 
@@ -402,7 +402,8 @@ internal sealed class AnimusForgeCourierReplyMapNotification : InformationData
 
 	internal bool OpenReply()
 	{
-		string body = string.IsNullOrWhiteSpace(ReplyText) ? "（无回信正文）" : ReplyText.Trim();
+		string cleanedReply = CourierVisibleLetterSanitizer.Clean(ReplyText);
+		string body = string.IsNullOrWhiteSpace(cleanedReply) ? "（无回信正文）" : cleanedReply;
 		Action replyAction = string.IsNullOrWhiteSpace(SenderHeroId) ? null : (() => CourierDeliveryBehavior.OpenCourierReplyFlowForExternal(SenderHeroId, SenderName));
 		try
 		{

@@ -4208,6 +4208,14 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		{
 			return "anthropic";
 		}
+		string model = (modelName ?? "").Trim();
+		if (model.IndexOf("glm-4.5", StringComparison.OrdinalIgnoreCase) >= 0
+			|| model.IndexOf("glm-4.6", StringComparison.OrdinalIgnoreCase) >= 0
+			|| model.IndexOf("glm-4.7", StringComparison.OrdinalIgnoreCase) >= 0
+			|| model.IndexOf("glm-5", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return "glm";
+		}
 		if (source.IndexOf("deepseek", StringComparison.OrdinalIgnoreCase) >= 0)
 		{
 			return "openai";
@@ -4241,7 +4249,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 					["effort"] = normalizedEffort
 				};
 			}
-			else
+			else if (format == "openai")
 			{
 				payload["reasoning_effort"] = normalizedEffort;
 			}
