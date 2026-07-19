@@ -73,6 +73,12 @@ public sealed class NpcRulerPolicyRecord
 	[JsonProperty("feedbackDigest")]
 	public string FeedbackDigest { get; set; }
 
+	[JsonProperty("publicFeedbackNoticeDueHour")]
+	public int PublicFeedbackNoticeDueHour { get; set; } = -1;
+
+	[JsonProperty("publicFeedbackNoticeShown")]
+	public bool PublicFeedbackNoticeShown { get; set; }
+
 	[JsonProperty("isPlayerPolicy")]
 	public bool IsPlayerPolicy { get; set; }
 
@@ -1069,6 +1075,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 	private const int DefaultNpcRulerPolicyBatchSize = 1;
 	private const int MaxPoliciesPerBatch = 12;
 	private const int MaxPolicyRecordCount = 180;
+	private const int PublicFeedbackNoticeDelayHours = 48;
 	private const int MaxNameChars = 90;
 	private const int MaxContentChars = 900;
 	private const int MaxFeedbackChars = 500;
@@ -1119,6 +1126,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 	private int _generationVersion;
 	private bool _initialGenerationCheckPending;
 	private float _initialGenerationCheckElapsed;
+	private int _nextPublicFeedbackNoticeDueHour = int.MaxValue;
 
 	public NpcRulerPolicyBehavior()
 	{
@@ -1131,6 +1139,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		CampaignEvents.OnNewGameCreatedEvent.AddNonSerializedListener(this, OnNewGameCreated);
 		CampaignEvents.OnGameLoadedEvent.AddNonSerializedListener(this, OnGameLoaded);
 		CampaignEvents.TickEvent.AddNonSerializedListener(this, OnCampaignTick);
+		CampaignEvents.HourlyTickEvent.AddNonSerializedListener(this, OnHourlyTick);
 		CampaignEvents.DailyTickEvent.AddNonSerializedListener(this, OnDailyTick);
 		CampaignEvents.OnSessionLaunchedEvent.AddNonSerializedListener(this, OnSessionLaunched);
 		Log("registered");
@@ -1227,6 +1236,19 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static bool SchedulePublicFeedbackNoticeForExternal(string policyId)
+	{
+		try
+		{
+			return (Instance ?? Campaign.Current?.GetCampaignBehavior<NpcRulerPolicyBehavior>())?.SchedulePublicFeedbackNoticeInternal(policyId, "player") == true;
+		}
+		catch (Exception ex)
+		{
+			Log("policy-feedback-schedule-failed policy=" + (policyId ?? "") + " error=" + ex.Message);
+			return false;
+		}
+	}
+
 	public static void UpdatePolicyEffectStateForExternal(string policyId, string effectId, string targetKingdomId, int remainingDays, bool isEnded)
 	{
 		try
@@ -1286,6 +1308,17 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		if (record == null || string.Equals(record.AgendaStatus, AgendaStatusActive, StringComparison.OrdinalIgnoreCase))
 		{
 			return;
+		}
+		bool isInitialAdoption = string.Equals(record.AgendaStatus, AgendaStatusPending, StringComparison.OrdinalIgnoreCase);
+		if (isInitialAdoption)
+		{
+			CustomPolicyBehavior.DisplayKingdomPolicyAnnouncementMessage(
+				"npc",
+				record.PolicyId,
+				record.KingdomName,
+				record.PolicyName,
+				record.PolicyContent);
+			SchedulePublicFeedbackNotice(record, "npc");
 		}
 		record.AgendaStatus = AgendaStatusApprovedPendingCommit;
 		_policyRecords[id] = JsonConvert.SerializeObject(record);
@@ -1395,6 +1428,15 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		record.AgendaStatus = AgendaStatusActive;
 		record.PolicyObjectId = string.IsNullOrWhiteSpace(record.PolicyObjectId) ? "af_policy:" + NormalizeKeyPart(record.PolicyId) : record.PolicyObjectId;
 		record.CreatedUtcTicks = record.CreatedUtcTicks > 0L ? record.CreatedUtcTicks : DateTime.UtcNow.Ticks;
+		if (_policyRecords.TryGetValue(record.PolicyId, out string existingRaw))
+		{
+			NpcRulerPolicyRecord existing = DeserializeRecord(existingRaw);
+			if (existing != null)
+			{
+				record.PublicFeedbackNoticeDueHour = existing.PublicFeedbackNoticeDueHour;
+				record.PublicFeedbackNoticeShown = existing.PublicFeedbackNoticeShown;
+			}
+		}
 		_policyRecords[record.PolicyId] = JsonConvert.SerializeObject(record);
 		TrimPolicyRecords();
 		UpsertPolicyWorldEvent(record);
@@ -1442,12 +1484,28 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		TryStartPolicyGeneration("daily", logSkips: true);
 	}
 
+	private void OnHourlyTick()
+	{
+		int currentHour = GetCurrentCampaignHour();
+		if (currentHour < _nextPublicFeedbackNoticeDueHour)
+		{
+			return;
+		}
+		PublishDuePublicFeedbackNotices(currentHour);
+	}
+
 	private void OnSessionLaunched(CampaignGameStarter starter)
 	{
 		foreach (NpcRulerPolicyRecord record in _policyRecords.Values.Select(DeserializeRecord)
 			.Where(x => x != null && string.Equals(x.AgendaStatus, AgendaStatusApprovedPendingCommit, StringComparison.OrdinalIgnoreCase)))
 		{
 			EnqueueApprovedAgendaCommit(record);
+		}
+		RebuildPublicFeedbackNoticeSchedule();
+		int currentHour = GetCurrentCampaignHour();
+		if (currentHour >= _nextPublicFeedbackNoticeDueHour)
+		{
+			PublishDuePublicFeedbackNotices(currentHour);
 		}
 		_initialGenerationCheckPending = true;
 		_initialGenerationCheckElapsed = 0f;
@@ -1477,6 +1535,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		}
 		_initialGenerationCheckPending = false;
 		_initialGenerationCheckElapsed = 0f;
+		_nextPublicFeedbackNoticeDueHour = int.MaxValue;
 		while (_pendingPolicyCommits.TryDequeue(out var _))
 		{
 		}
@@ -1485,6 +1544,104 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		}
 		ResetPolicyGenerationLifecycleForRuntimeClear();
 		Log("transient-cleared reason=" + (reason ?? ""));
+	}
+
+	private bool SchedulePublicFeedbackNoticeInternal(string policyId, string source)
+	{
+		string id = (policyId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(id) || !_policyRecords.TryGetValue(id, out string raw))
+		{
+			return false;
+		}
+		NpcRulerPolicyRecord record = DeserializeRecord(raw);
+		if (record == null || !SchedulePublicFeedbackNotice(record, source))
+		{
+			return false;
+		}
+		_policyRecords[id] = JsonConvert.SerializeObject(record);
+		return true;
+	}
+
+	private bool SchedulePublicFeedbackNotice(NpcRulerPolicyRecord record, string source)
+	{
+		if (record == null || string.IsNullOrWhiteSpace(record.PolicyId) || record.PublicFeedbackNoticeShown || record.PublicFeedbackNoticeDueHour >= 0)
+		{
+			return false;
+		}
+		int currentHour = GetCurrentCampaignHour();
+		int dueHour = currentHour > int.MaxValue - PublicFeedbackNoticeDelayHours
+			? int.MaxValue
+			: currentHour + PublicFeedbackNoticeDelayHours;
+		record.PublicFeedbackNoticeDueHour = dueHour;
+		record.PublicFeedbackNoticeShown = false;
+		_nextPublicFeedbackNoticeDueHour = Math.Min(_nextPublicFeedbackNoticeDueHour, dueHour);
+		Log("policy-feedback-scheduled source=" + (source ?? "")
+			+ " policy=" + (record.PolicyId ?? "")
+			+ " currentHour=" + currentHour.ToString(CultureInfo.InvariantCulture)
+			+ " dueHour=" + dueHour.ToString(CultureInfo.InvariantCulture));
+		return true;
+	}
+
+	private void RebuildPublicFeedbackNoticeSchedule()
+	{
+		int nextDueHour = int.MaxValue;
+		foreach (string raw in _policyRecords.Values)
+		{
+			NpcRulerPolicyRecord record = DeserializeRecord(raw);
+			if (record == null || record.PublicFeedbackNoticeShown || record.PublicFeedbackNoticeDueHour < 0)
+			{
+				continue;
+			}
+			nextDueHour = Math.Min(nextDueHour, record.PublicFeedbackNoticeDueHour);
+		}
+		_nextPublicFeedbackNoticeDueHour = nextDueHour;
+	}
+
+	private void PublishDuePublicFeedbackNotices(int currentHour)
+	{
+		int nextDueHour = int.MaxValue;
+		int displayedCount = 0;
+		foreach (string policyId in _policyRecords.Keys.ToList())
+		{
+			if (!_policyRecords.TryGetValue(policyId, out string raw))
+			{
+				continue;
+			}
+			NpcRulerPolicyRecord record = DeserializeRecord(raw);
+			if (record == null || record.PublicFeedbackNoticeShown || record.PublicFeedbackNoticeDueHour < 0)
+			{
+				continue;
+			}
+			if (record.PublicFeedbackNoticeDueHour > currentHour)
+			{
+				nextDueHour = Math.Min(nextDueHour, record.PublicFeedbackNoticeDueHour);
+				continue;
+			}
+			string source = record.IsPlayerPolicy ? "player" : "npc";
+			if (CustomPolicyBehavior.DisplayKingdomPolicyFeedbackMessage(
+				source,
+				record.PolicyId,
+				record.KingdomName,
+				record.PolicyName,
+				record.PublicFeedback))
+			{
+				record.PublicFeedbackNoticeShown = true;
+				record.PublicFeedbackNoticeDueHour = -1;
+				_policyRecords[policyId] = JsonConvert.SerializeObject(record);
+				displayedCount++;
+			}
+			else
+			{
+				nextDueHour = Math.Min(nextDueHour, record.PublicFeedbackNoticeDueHour);
+			}
+		}
+		_nextPublicFeedbackNoticeDueHour = nextDueHour;
+		if (displayedCount > 0)
+		{
+			Log("policy-feedback-release-complete count=" + displayedCount.ToString(CultureInfo.InvariantCulture)
+				+ " currentHour=" + currentHour.ToString(CultureInfo.InvariantCulture)
+				+ " nextDueHour=" + (nextDueHour == int.MaxValue ? "none" : nextDueHour.ToString(CultureInfo.InvariantCulture)));
+		}
 	}
 
 	private static string BuildPolicyGenerationInFlightKey(int currentDay, int currentHour, NpcRulerPolicyBatchContext context)

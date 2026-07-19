@@ -82,7 +82,7 @@ public static class LlmRetryPrompt
 		{
 			try
 			{
-				InformationManager.ShowInquiry(new InquiryData(
+				InformationManager.ShowInquiry(AiErrorAnalysisInquiry.AddAnalysisOption(new InquiryData(
 					string.IsNullOrWhiteSpace(title) ? "AnimusForge 请求失败" : title.Trim(),
 					NormalizeFullText(message, "未知错误"),
 					isAffirmativeOptionShown: true,
@@ -90,7 +90,7 @@ public static class LlmRetryPrompt
 					"知道了",
 					"",
 					null,
-					null),
+					null), forceFailure: true),
 					pauseGameActiveState: true,
 					prioritize: true);
 			}

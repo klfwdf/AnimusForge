@@ -239,9 +239,13 @@ public static class ShoutNetwork
 	{
 		if (forceDisableThinking)
 		{
-			DuelSettings.RemoveThinkingControls(payload);
-			thinkingMode = "plain_forced";
-			return false;
+			bool controlsApplied = DuelSettings.ApplyThinkingControls(payload, apiUrl, modelName, thinkingEnabled: false, DuelSettings.ReasoningEffortHigh, out thinkingMode);
+			if (!controlsApplied)
+			{
+				DuelSettings.RemoveThinkingControls(payload);
+				thinkingMode = "plain_forced";
+			}
+			return controlsApplied;
 		}
 		bool thinkingEnabled = settings?.MainApiThinkingEnabled ?? true;
 		string effort = settings?.GetMainApiReasoningEffort() ?? DuelSettings.ReasoningEffortHigh;
@@ -762,12 +766,12 @@ public static class ShoutNetwork
 							LogPrimaryRawResponse("non_stream_empty_content", str);
 							if (!HasEmptyResponseRetryMarker(messages))
 							{
-								Logger.Log("ShoutNetwork", "[PrimaryChat] empty content; retrying once with explicit non-empty instruction.");
+								Logger.Log("ShoutNetwork", "[PrimaryChat] empty content; retrying once with explicit non-empty instruction and thinking disabled.");
 								if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_empty_retry"))
 								{
 									return SaveRuntimeGuard.BuildStaleRequestErrorText();
 								}
-								string retryContent = await CallApiWithMessages(BuildEmptyResponseRetryMessages(messages), maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError, cancellationToken);
+								string retryContent = await CallApiWithMessages(BuildEmptyResponseRetryMessages(messages), maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking: true, promptRetryOnError, cancellationToken);
 								if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_empty_retry_complete"))
 								{
 									return SaveRuntimeGuard.BuildStaleRequestErrorText();
@@ -1220,8 +1224,8 @@ public static class ShoutNetwork
 				string retryFailure = "";
 				if (!HasEmptyResponseRetryMarker(messages))
 				{
-					Logger.Log("ShoutNetwork", "[PrimaryChat] empty stream final; retrying once with explicit non-empty instruction.");
-					string retry = await CallApiWithMessages(BuildEmptyResponseRetryMessages(messages), maxTokens, recordTokenStats: false, promptRetryOnError: false);
+					Logger.Log("ShoutNetwork", "[PrimaryChat] empty stream final; retrying once with explicit non-empty instruction and thinking disabled.");
+					string retry = await CallApiWithMessages(BuildEmptyResponseRetryMessages(messages), maxTokens, recordTokenStats: false, forceDisableThinking: true, promptRetryOnError: false);
 					if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_empty_retry"))
 					{
 						return;

@@ -116,6 +116,8 @@ public static class AIConfigHandler
 
 		public int ReturnCap;
 
+		public MentionedWorldEntities MentionedEntities = new MentionedWorldEntities();
+
 		public Dictionary<string, GuardrailRuleEval> Rules = new Dictionary<string, GuardrailRuleEval>(StringComparer.OrdinalIgnoreCase);
 	}
 
@@ -4744,6 +4746,11 @@ public static class AIConfigHandler
 
 	public static void PublishAuxiliaryMentionedEntitiesForExternal(string userText, string secondaryText, string runtimeGuardrailContext, string content)
 	{
+		ParseAndPublishAuxiliaryMentionedEntities(userText, secondaryText, runtimeGuardrailContext, content);
+	}
+
+	private static MentionedWorldEntities ParseAndPublishAuxiliaryMentionedEntities(string userText, string secondaryText, string runtimeGuardrailContext, string content)
+	{
 		try
 		{
 			if (!TryParseAuxiliaryMentionedEntities(content, out var entities, out var error) || entities == null || entities.IsEmpty)
@@ -4752,14 +4759,14 @@ public static class AIConfigHandler
 				{
 					Logger.Log("AuxiliaryEntity", "mentioned_entities skipped parse_error=" + error);
 				}
-				return;
+				return new MentionedWorldEntities();
 			}
 			MergeLatestAuxiliaryMentionedEntities(entities);
 			string key = BuildAuxiliaryMentionedEntitiesCacheKey(userText, secondaryText, runtimeGuardrailContext);
 			if (string.IsNullOrWhiteSpace(key))
 			{
 				Logger.Log("AuxiliaryEntity", "mentioned_entities latest_only reason=empty_key " + FormatMentionedEntitiesCounts(entities));
-				return;
+				return entities.Clone();
 			}
 			lock (_auxiliaryMentionedEntitiesLock)
 			{
@@ -4780,10 +4787,12 @@ public static class AIConfigHandler
 				}
 			}
 			Logger.Log("AuxiliaryEntity", "mentioned_entities published key=" + HashAuxiliaryMentionKey(key) + " " + FormatMentionedEntitiesCounts(entities));
+			return entities.Clone();
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("AuxiliaryEntity", "mentioned_entities publish exception=" + ex.Message);
+			return new MentionedWorldEntities();
 		}
 	}
 
@@ -5133,7 +5142,7 @@ public static class AIConfigHandler
 				}
 				Logger.Log("GuardrailSemantic", "auxiliary_router retry_after_format_error reason=" + parseError);
 			}
-			PublishAuxiliaryMentionedEntitiesForExternal(userText, secondaryText, runtimeGuardrailContext, content);
+			snapshot.MentionedEntities = ParseAndPublishAuxiliaryMentionedEntities(userText, secondaryText, runtimeGuardrailContext, content);
 			if (list2.Count <= 0)
 			{
 				Logger.Log("GuardrailSemantic", "auxiliary_router no_known_topic raw=" + JsonConvert.ToString(content ?? "") + "; fallback=semantic");
@@ -6044,9 +6053,21 @@ public static class AIConfigHandler
 		return GetGuardrailSemanticRuleHits(input, secondaryInput, maxCount, includeBuiltInRules, excludedRuleIds, applyRuntimeAutoExclusions: false);
 	}
 
+	public static List<GuardrailRuleHit> GetGuardrailSemanticRuleHitsForPreprocess(string input, string secondaryInput, int maxCount, bool includeBuiltInRules, IEnumerable<string> excludedRuleIds, out MentionedWorldEntities mentionedEntities)
+	{
+		return GetGuardrailSemanticRuleHits(input, secondaryInput, maxCount, includeBuiltInRules, excludedRuleIds, applyRuntimeAutoExclusions: false, out mentionedEntities);
+	}
+
 	private static List<GuardrailRuleHit> GetGuardrailSemanticRuleHits(string input, string secondaryInput, int maxCount, bool includeBuiltInRules, IEnumerable<string> excludedRuleIds, bool applyRuntimeAutoExclusions)
 	{
+		MentionedWorldEntities ignoredMentionedEntities;
+		return GetGuardrailSemanticRuleHits(input, secondaryInput, maxCount, includeBuiltInRules, excludedRuleIds, applyRuntimeAutoExclusions, out ignoredMentionedEntities);
+	}
+
+	private static List<GuardrailRuleHit> GetGuardrailSemanticRuleHits(string input, string secondaryInput, int maxCount, bool includeBuiltInRules, IEnumerable<string> excludedRuleIds, bool applyRuntimeAutoExclusions, out MentionedWorldEntities mentionedEntities)
+	{
 		List<GuardrailRuleHit> list = new List<GuardrailRuleHit>();
+		mentionedEntities = new MentionedWorldEntities();
 		try
 		{
 			int num = ((maxCount > 0) ? ClampGuardrailReturnCap(maxCount) : GuardrailRuleReturnCap);
@@ -6060,6 +6081,7 @@ public static class AIConfigHandler
 			{
 				return list;
 			}
+			mentionedEntities = snapshot.MentionedEntities?.Clone() ?? new MentionedWorldEntities();
 			Dictionary<string, GuardrailRulePromptConfig> dictionary = BuildRulePromptRegistry();
 			foreach (KeyValuePair<string, GuardrailRuleEval> rule in snapshot.Rules)
 			{
@@ -6340,7 +6362,7 @@ public static class AIConfigHandler
 		case "reward":
 			return text.IndexOf("[ACTION:GIVE_ASSET:", StringComparison.OrdinalIgnoreCase) >= 0;
 		case "loan":
-			return text.IndexOf("[AD;", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("[ADP;", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("[ADP:", StringComparison.OrdinalIgnoreCase) >= 0;
+			return RewardSystemBehavior.ContainsCanonicalDebtActionTagForExternal(text);
 		case "kingdom_service":
 			return text.IndexOf("[ACTION:KINGDOM_SERVICE:", StringComparison.OrdinalIgnoreCase) >= 0;
 		case "kingdom_vassalage":

@@ -53,6 +53,12 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	private const string DefaultNpcPersonaGenerationRequirements = "";
 
+	private const string DefaultDailyMemoryCompressionWritingRequirements = "SUMMARY 必须保留关键动机、承诺、冲突、关系变化、交易、任务与情绪走向。";
+
+	private const string DefaultMemoryOverviewCompressionWritingRequirements = "可按时间线或主题组织，语言紧凑；不要逐条罗列或重复复述同一事实。";
+
+	private const string DefaultMajorActionCompressionWritingRequirements = "写成易懂的概要。不重要、重复或繁杂的信息可以省略。";
+
 	private const string DefaultCustomPolicyGoldCostPromptParagraph = "当输出结构要求你评估政策消耗时，requiredGoldCost 表示完整执行这项政策所需的第纳尔，不是玩家当前实际会支付多少。第纳尔成本应覆盖物资、粮饷、工程、赈济、运输、行政、军备，以及封臣协调、贵族让步、政治动员、合法性维护和秩序压力带来的执行阻力。请按政策本身的规模与阻力评估完整成本，不要因为玩家当前第纳尔不足而故意压低成本。";
 
 	private const string PreviousDefaultCustomPolicyDualCostPromptParagraph = "当输出结构要求你评估政策消耗时，requiredGoldCost 与 requiredInfluenceCost 表示完整执行这项政策所需的财政和政治资本，不是玩家当前实际会支付多少。第纳尔成本对应物资、粮饷、工程、赈济、运输、行政和军备投入；影响力成本对应封臣协调、贵族让步、政治信用、合法性、动员命令和秩序压力。请按政策本身的规模与阻力评估完整成本，不要因为玩家当前资源不足而故意压低成本。";
@@ -331,6 +337,12 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	private const string NpcPersonaGenerationRequirementsJsonFileName = "NpcPersonaGenerationRequirements.json";
 
+	private const string DailyMemoryCompressionWritingRequirementsJsonFileName = "DailyMemoryCompressionWritingRequirements.json";
+
+	private const string MemoryOverviewCompressionWritingRequirementsJsonFileName = "MemoryOverviewCompressionWritingRequirements.json";
+
+	private const string MajorActionCompressionWritingRequirementsJsonFileName = "MajorActionCompressionWritingRequirements.json";
+
 	private const string CustomPolicyEvaluatorPromptJsonFileName = "CustomPolicyEvaluatorPrompt.json";
 
 	private const string NpcRulerPolicyPromptJsonFileName = "NpcRulerPolicyPrompt.json";
@@ -372,6 +384,12 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		public string WeeklyReportWritingRequirements { get; set; }
 
 		public string NpcPersonaGenerationRequirements { get; set; }
+
+		public string DailyMemoryCompressionWritingRequirements { get; set; }
+
+		public string MemoryOverviewCompressionWritingRequirements { get; set; }
+
+		public string MajorActionCompressionWritingRequirements { get; set; }
 
 		public string CustomPolicyEvaluatorPrompt { get; set; }
 
@@ -1643,6 +1661,42 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("9. 提示词扩展")]
 	public Action EditNpcPersonaGenerationRequirements { get; set; }
 
+	private string _dailyMemoryCompressionWritingRequirements = LoadDailyMemoryCompressionWritingRequirementsFromDiskOrDefault();
+
+	public string DailyMemoryCompressionWritingRequirements
+	{
+		get => _dailyMemoryCompressionWritingRequirements;
+		set => _dailyMemoryCompressionWritingRequirements = NormalizeDailyMemoryCompressionWritingRequirementsText(value);
+	}
+
+	[SettingPropertyButton("日结压缩写作要求", -1, true, "", Content = "打开编辑器", Order = 4, RequireRestart = false, HintText = "修改日结压缩的文风和信息取舍。输出标签、公开性判断、AFEF 与身份事实规则不可覆盖。")]
+	[SettingPropertyGroup("9. 提示词扩展")]
+	public Action EditDailyMemoryCompressionWritingRequirements { get; set; }
+
+	private string _memoryOverviewCompressionWritingRequirements = LoadMemoryOverviewCompressionWritingRequirementsFromDiskOrDefault();
+
+	public string MemoryOverviewCompressionWritingRequirements
+	{
+		get => _memoryOverviewCompressionWritingRequirements;
+		set => _memoryOverviewCompressionWritingRequirements = NormalizeMemoryOverviewCompressionWritingRequirementsText(value);
+	}
+
+	[SettingPropertyButton("记忆大压缩写作要求", -1, true, "", Content = "打开编辑器", Order = 5, RequireRestart = false, HintText = "修改记忆大总结的文风和组织方式。输出标签、事实边界和长度范围不可覆盖。")]
+	[SettingPropertyGroup("9. 提示词扩展")]
+	public Action EditMemoryOverviewCompressionWritingRequirements { get; set; }
+
+	private string _majorActionCompressionWritingRequirements = LoadMajorActionCompressionWritingRequirementsFromDiskOrDefault();
+
+	public string MajorActionCompressionWritingRequirements
+	{
+		get => _majorActionCompressionWritingRequirements;
+		set => _majorActionCompressionWritingRequirements = NormalizeMajorActionCompressionWritingRequirementsText(value);
+	}
+
+	[SettingPropertyButton("重大履历压缩写作要求", -1, true, "", Content = "打开编辑器", Order = 6, RequireRestart = false, HintText = "修改 NPC 重大履历滚动摘要的文风和取舍。输出标签、事实边界和长度范围不可覆盖。")]
+	[SettingPropertyGroup("9. 提示词扩展")]
+	public Action EditMajorActionCompressionWritingRequirements { get; set; }
+
 	private string _customPolicyEvaluatorPrompt = LoadCustomPolicyEvaluatorPromptFromDiskOrDefault();
 
 	public string CustomPolicyEvaluatorPrompt
@@ -1667,15 +1721,15 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("16. 政策系统/2. NPC统治者政策", GroupOrder = 160)]
 	public Action EditNpcRulerPolicyPrompt { get; set; }
 
-	[SettingPropertyButton("自定义提示词JSON文件夹", -1, true, "", Content = "打开文件夹", Order = 6, RequireRestart = false, HintText = "打开 CustomPrompts 文件夹，可直接编辑六套提示词 JSON。")]
+	[SettingPropertyButton("自定义提示词JSON文件夹", -1, true, "", Content = "打开文件夹", Order = 9, RequireRestart = false, HintText = "打开 CustomPrompts 文件夹，可直接编辑九套提示词 JSON。")]
 	[SettingPropertyGroup("9. 提示词扩展")]
 	public Action OpenCustomPromptTextStoreFolderAction { get; set; }
 
-	[SettingPropertyBool("保留场景喊话动作/内心描写", Order = 7, RequireRestart = false, HintText = "关闭：仍使用详细动作/内心文案，但输出时过滤动作描写、心理活动。开启：保留动作描写和内心活动。")]
+	[SettingPropertyBool("保留场景喊话动作/内心描写", Order = 10, RequireRestart = false, HintText = "关闭：仍使用详细动作/内心文案，但输出时过滤动作描写、心理活动。开启：保留动作描写和内心活动。")]
 	[SettingPropertyGroup("9. 提示词扩展")]
 	public bool UseDetailedSceneSpeechPrompt { get; set; } = true;
 
-	[SettingPropertyBool("保留星号动作描写", Order = 8, RequireRestart = false, HintText = "开启后，即使关闭“保留场景喊话动作/内心描写”，也不会清洗被 **...** 或 *...* 包住的动作内容。")]
+	[SettingPropertyBool("保留星号动作描写", Order = 11, RequireRestart = false, HintText = "开启后，即使关闭“保留场景喊话动作/内心描写”，也不会清洗被 **...** 或 *...* 包住的动作内容。")]
 	[SettingPropertyGroup("9. 提示词扩展")]
 	public bool PreserveSceneAsteriskActions { get; set; } = false;
 
@@ -2313,6 +2367,54 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		}
 	}
 
+	private void OpenDailyMemoryCompressionWritingRequirementsEditor()
+	{
+		try
+		{
+			string initialText = DailyMemoryCompressionWritingRequirements ?? "";
+			DevTextEditorHelper.ShowLongTextEditor("编辑日结压缩写作要求", "这里只修改日结摘要的文风、信息取舍与组织方式。", "标签结构、公开性判断、日期地点、AFEF、身份事实和长度规则由模组固定；冲突内容不会覆盖硬规则。留空表示不追加写作偏好。", initialText, delegate(string input)
+			{
+				SaveDailyMemoryCompressionWritingRequirementsFromEditor(input);
+			}, null, "保存", "返回");
+		}
+		catch (Exception ex)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("[提示词扩展] 打开日结压缩写作要求编辑器失败: " + ex.Message, Color.FromUint(4294901760u)));
+		}
+	}
+
+	private void OpenMemoryOverviewCompressionWritingRequirementsEditor()
+	{
+		try
+		{
+			string initialText = MemoryOverviewCompressionWritingRequirements ?? "";
+			DevTextEditorHelper.ShowLongTextEditor("编辑记忆大压缩写作要求", "这里只修改长期记忆总览的文风、信息取舍与组织方式。", "SUMMARY 标签、日期地点、事实边界、身份自称规则和长度范围由模组固定；冲突内容不会覆盖硬规则。留空表示不追加写作偏好。", initialText, delegate(string input)
+			{
+				SaveMemoryOverviewCompressionWritingRequirementsFromEditor(input);
+			}, null, "保存", "返回");
+		}
+		catch (Exception ex)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("[提示词扩展] 打开记忆大压缩写作要求编辑器失败: " + ex.Message, Color.FromUint(4294901760u)));
+		}
+	}
+
+	private void OpenMajorActionCompressionWritingRequirementsEditor()
+	{
+		try
+		{
+			string initialText = MajorActionCompressionWritingRequirements ?? "";
+			DevTextEditorHelper.ShowLongTextEditor("编辑重大履历压缩写作要求", "这里只修改 NPC 重大履历摘要的文风、信息取舍与组织方式。", "SUMMARY 标签、日期与事实边界、滚动融合方式和长度范围由模组固定；冲突内容不会覆盖硬规则。留空表示不追加写作偏好。", initialText, delegate(string input)
+			{
+				SaveMajorActionCompressionWritingRequirementsFromEditor(input);
+			}, null, "保存", "返回");
+		}
+		catch (Exception ex)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("[提示词扩展] 打开重大履历压缩写作要求编辑器失败: " + ex.Message, Color.FromUint(4294901760u)));
+		}
+	}
+
 	private void OpenCustomPolicyEvaluatorPromptEditor()
 	{
 		try
@@ -2584,6 +2686,63 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		}
 	}
 
+	private void SaveDailyMemoryCompressionWritingRequirementsFromEditor(string input)
+	{
+		string text = NormalizeDailyMemoryCompressionWritingRequirementsText(input);
+		DailyMemoryCompressionWritingRequirements = text;
+		FinishCompressionWritingRequirementsSave(TryPersistDailyMemoryCompressionWritingRequirementsFile(text), delegate(DuelSettings settings)
+		{
+			settings.DailyMemoryCompressionWritingRequirements = text;
+		}, "日结压缩写作要求");
+	}
+
+	private void SaveMemoryOverviewCompressionWritingRequirementsFromEditor(string input)
+	{
+		string text = NormalizeMemoryOverviewCompressionWritingRequirementsText(input);
+		MemoryOverviewCompressionWritingRequirements = text;
+		FinishCompressionWritingRequirementsSave(TryPersistMemoryOverviewCompressionWritingRequirementsFile(text), delegate(DuelSettings settings)
+		{
+			settings.MemoryOverviewCompressionWritingRequirements = text;
+		}, "记忆大压缩写作要求");
+	}
+
+	private void SaveMajorActionCompressionWritingRequirementsFromEditor(string input)
+	{
+		string text = NormalizeMajorActionCompressionWritingRequirementsText(input);
+		MajorActionCompressionWritingRequirements = text;
+		FinishCompressionWritingRequirementsSave(TryPersistMajorActionCompressionWritingRequirementsFile(text), delegate(DuelSettings settings)
+		{
+			settings.MajorActionCompressionWritingRequirements = text;
+		}, "重大履历压缩写作要求");
+	}
+
+	private void FinishCompressionWritingRequirementsSave(bool persistedToFile, Action<DuelSettings> applyToSettings, string displayName)
+	{
+		try
+		{
+			DuelSettings settings = GetSettings();
+			if (settings != null)
+			{
+				applyToSettings?.Invoke(settings);
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			BaseSettingsProvider.Instance?.SaveSettings(GetSettings() ?? this);
+			string message = persistedToFile
+				? "[提示词扩展] " + displayName + "已保存。"
+				: "[提示词扩展] " + displayName + "已用于本局，但写入本地文件失败，请查看日志。";
+			InformationManager.DisplayMessage(new InformationMessage(message, persistedToFile ? Color.FromUint(4282569842u) : Color.FromUint(4294967040u)));
+		}
+		catch (Exception ex)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("[提示词扩展] 保存" + displayName + "失败，请在 MCM 中再试一次: " + ex.Message, Color.FromUint(4294901760u)));
+		}
+	}
+
 	private void SaveCustomPolicyEvaluatorPromptFromEditor(string input)
 	{
 		string text = NormalizeCustomPolicyEvaluatorPromptText(input);
@@ -2664,6 +2823,18 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		{
 			settings.NpcPersonaGenerationRequirements = store.NpcPersonaGenerationRequirements ?? "";
 		}
+		if (!string.Equals(settings.DailyMemoryCompressionWritingRequirements ?? "", store.DailyMemoryCompressionWritingRequirements ?? "", StringComparison.Ordinal))
+		{
+			settings.DailyMemoryCompressionWritingRequirements = store.DailyMemoryCompressionWritingRequirements ?? "";
+		}
+		if (!string.Equals(settings.MemoryOverviewCompressionWritingRequirements ?? "", store.MemoryOverviewCompressionWritingRequirements ?? "", StringComparison.Ordinal))
+		{
+			settings.MemoryOverviewCompressionWritingRequirements = store.MemoryOverviewCompressionWritingRequirements ?? "";
+		}
+		if (!string.Equals(settings.MajorActionCompressionWritingRequirements ?? "", store.MajorActionCompressionWritingRequirements ?? "", StringComparison.Ordinal))
+		{
+			settings.MajorActionCompressionWritingRequirements = store.MajorActionCompressionWritingRequirements ?? "";
+		}
 		if (!string.Equals(settings.CustomPolicyEvaluatorPrompt ?? "", store.CustomPolicyEvaluatorPrompt ?? "", StringComparison.Ordinal))
 		{
 			settings.CustomPolicyEvaluatorPrompt = store.CustomPolicyEvaluatorPrompt ?? "";
@@ -2693,6 +2864,21 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	private static string LoadNpcPersonaGenerationRequirementsFromDiskOrDefault()
 	{
 		return TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store) ? (store.NpcPersonaGenerationRequirements ?? "") : DefaultNpcPersonaGenerationRequirements;
+	}
+
+	private static string LoadDailyMemoryCompressionWritingRequirementsFromDiskOrDefault()
+	{
+		return TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store) ? (store.DailyMemoryCompressionWritingRequirements ?? "") : DefaultDailyMemoryCompressionWritingRequirements;
+	}
+
+	private static string LoadMemoryOverviewCompressionWritingRequirementsFromDiskOrDefault()
+	{
+		return TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store) ? (store.MemoryOverviewCompressionWritingRequirements ?? "") : DefaultMemoryOverviewCompressionWritingRequirements;
+	}
+
+	private static string LoadMajorActionCompressionWritingRequirementsFromDiskOrDefault()
+	{
+		return TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store) ? (store.MajorActionCompressionWritingRequirements ?? "") : DefaultMajorActionCompressionWritingRequirements;
 	}
 
 	private static string LoadCustomPolicyEvaluatorPromptFromDiskOrDefault()
@@ -2789,6 +2975,21 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	private static string NormalizeNpcPersonaGenerationRequirementsText(string input)
 	{
 		return LimitCustomPromptText((input ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim(), NpcPersonaGenerationRequirementsJsonFileName);
+	}
+
+	private static string NormalizeDailyMemoryCompressionWritingRequirementsText(string input)
+	{
+		return LimitCustomPromptText(NormalizePromptLineEndings(input).Trim(), DailyMemoryCompressionWritingRequirementsJsonFileName);
+	}
+
+	private static string NormalizeMemoryOverviewCompressionWritingRequirementsText(string input)
+	{
+		return LimitCustomPromptText(NormalizePromptLineEndings(input).Trim(), MemoryOverviewCompressionWritingRequirementsJsonFileName);
+	}
+
+	private static string NormalizeMajorActionCompressionWritingRequirementsText(string input)
+	{
+		return LimitCustomPromptText(NormalizePromptLineEndings(input).Trim(), MajorActionCompressionWritingRequirementsJsonFileName);
 	}
 
 	private static string NormalizeCustomPolicyEvaluatorPromptText(string input)
@@ -2990,6 +3191,21 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		return TryPersistCustomPromptTextFile(NpcPersonaGenerationRequirementsJsonFileName, NormalizeNpcPersonaGenerationRequirementsText(text));
 	}
 
+	private static bool TryPersistDailyMemoryCompressionWritingRequirementsFile(string text)
+	{
+		return TryPersistCustomPromptTextFile(DailyMemoryCompressionWritingRequirementsJsonFileName, NormalizeDailyMemoryCompressionWritingRequirementsText(text));
+	}
+
+	private static bool TryPersistMemoryOverviewCompressionWritingRequirementsFile(string text)
+	{
+		return TryPersistCustomPromptTextFile(MemoryOverviewCompressionWritingRequirementsJsonFileName, NormalizeMemoryOverviewCompressionWritingRequirementsText(text));
+	}
+
+	private static bool TryPersistMajorActionCompressionWritingRequirementsFile(string text)
+	{
+		return TryPersistCustomPromptTextFile(MajorActionCompressionWritingRequirementsJsonFileName, NormalizeMajorActionCompressionWritingRequirementsText(text));
+	}
+
 	private static bool TryPersistCustomPolicyEvaluatorPromptFile(string text)
 	{
 		return TryPersistCustomPromptTextFile(CustomPolicyEvaluatorPromptJsonFileName, NormalizeCustomPolicyEvaluatorPromptText(text));
@@ -3014,6 +3230,9 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			KingdomRebellionSystemPrompt = DefaultKingdomRebellionSystemPrompt,
 			WeeklyReportWritingRequirements = DefaultWeeklyReportWritingRequirements,
 			NpcPersonaGenerationRequirements = DefaultNpcPersonaGenerationRequirements,
+			DailyMemoryCompressionWritingRequirements = DefaultDailyMemoryCompressionWritingRequirements,
+			MemoryOverviewCompressionWritingRequirements = DefaultMemoryOverviewCompressionWritingRequirements,
+			MajorActionCompressionWritingRequirements = DefaultMajorActionCompressionWritingRequirements,
 			CustomPolicyEvaluatorPrompt = DefaultCustomPolicyEvaluatorPrompt,
 			NpcRulerPolicyPrompt = DefaultNpcRulerPolicyPrompt
 		});
@@ -3128,6 +3347,18 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 				{
 					store.NpcPersonaGenerationRequirements = npcRequirements;
 				}
+				if (TryReadCustomPromptTextJsonFile(GetCustomPromptTextFilePath(directory, DailyMemoryCompressionWritingRequirementsJsonFileName), NormalizeDailyMemoryCompressionWritingRequirementsText, store.DailyMemoryCompressionWritingRequirements, out string dailyMemoryCompressionRequirements))
+				{
+					store.DailyMemoryCompressionWritingRequirements = dailyMemoryCompressionRequirements;
+				}
+				if (TryReadCustomPromptTextJsonFile(GetCustomPromptTextFilePath(directory, MemoryOverviewCompressionWritingRequirementsJsonFileName), NormalizeMemoryOverviewCompressionWritingRequirementsText, store.MemoryOverviewCompressionWritingRequirements, out string memoryOverviewCompressionRequirements))
+				{
+					store.MemoryOverviewCompressionWritingRequirements = memoryOverviewCompressionRequirements;
+				}
+				if (TryReadCustomPromptTextJsonFile(GetCustomPromptTextFilePath(directory, MajorActionCompressionWritingRequirementsJsonFileName), NormalizeMajorActionCompressionWritingRequirementsText, store.MajorActionCompressionWritingRequirements, out string majorActionCompressionRequirements))
+				{
+					store.MajorActionCompressionWritingRequirements = majorActionCompressionRequirements;
+				}
 				if (TryReadCustomPromptTextJsonFile(GetCustomPromptTextFilePath(directory, CustomPolicyEvaluatorPromptJsonFileName), NormalizeCustomPolicyEvaluatorPromptText, store.CustomPolicyEvaluatorPrompt, out string customPolicyPrompt))
 				{
 					store.CustomPolicyEvaluatorPrompt = customPolicyPrompt;
@@ -3226,6 +3457,9 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		WriteCustomPromptTextJsonFileIfMissingUnlocked(GetCustomPromptTextFilePath(directory, KingdomRebellionSystemPromptJsonFileName), normalized.KingdomRebellionSystemPrompt);
 		WriteCustomPromptTextJsonFileIfMissingUnlocked(GetCustomPromptTextFilePath(directory, WeeklyReportWritingRequirementsJsonFileName), normalized.WeeklyReportWritingRequirements);
 		WriteCustomPromptTextJsonFileIfMissingUnlocked(GetCustomPromptTextFilePath(directory, NpcPersonaGenerationRequirementsJsonFileName), normalized.NpcPersonaGenerationRequirements);
+		WriteCustomPromptTextJsonFileIfMissingUnlocked(GetCustomPromptTextFilePath(directory, DailyMemoryCompressionWritingRequirementsJsonFileName), normalized.DailyMemoryCompressionWritingRequirements);
+		WriteCustomPromptTextJsonFileIfMissingUnlocked(GetCustomPromptTextFilePath(directory, MemoryOverviewCompressionWritingRequirementsJsonFileName), normalized.MemoryOverviewCompressionWritingRequirements);
+		WriteCustomPromptTextJsonFileIfMissingUnlocked(GetCustomPromptTextFilePath(directory, MajorActionCompressionWritingRequirementsJsonFileName), normalized.MajorActionCompressionWritingRequirements);
 		WriteCustomPromptTextJsonFileIfMissingUnlocked(GetCustomPromptTextFilePath(directory, CustomPolicyEvaluatorPromptJsonFileName), normalized.CustomPolicyEvaluatorPrompt);
 		WriteCustomPromptTextJsonFileIfMissingUnlocked(GetCustomPromptTextFilePath(directory, NpcRulerPolicyPromptJsonFileName), normalized.NpcRulerPolicyPrompt);
 	}
@@ -3270,6 +3504,9 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			KingdomRebellionSystemPrompt = store.KingdomRebellionSystemPrompt == null ? DefaultKingdomRebellionSystemPrompt : NormalizeKingdomRebellionSystemPromptText(store.KingdomRebellionSystemPrompt),
 			WeeklyReportWritingRequirements = store.WeeklyReportWritingRequirements == null ? DefaultWeeklyReportWritingRequirements : NormalizeWeeklyReportWritingRequirementsText(store.WeeklyReportWritingRequirements),
 			NpcPersonaGenerationRequirements = store.NpcPersonaGenerationRequirements == null ? DefaultNpcPersonaGenerationRequirements : NormalizeNpcPersonaGenerationRequirementsText(store.NpcPersonaGenerationRequirements),
+			DailyMemoryCompressionWritingRequirements = store.DailyMemoryCompressionWritingRequirements == null ? DefaultDailyMemoryCompressionWritingRequirements : NormalizeDailyMemoryCompressionWritingRequirementsText(store.DailyMemoryCompressionWritingRequirements),
+			MemoryOverviewCompressionWritingRequirements = store.MemoryOverviewCompressionWritingRequirements == null ? DefaultMemoryOverviewCompressionWritingRequirements : NormalizeMemoryOverviewCompressionWritingRequirementsText(store.MemoryOverviewCompressionWritingRequirements),
+			MajorActionCompressionWritingRequirements = store.MajorActionCompressionWritingRequirements == null ? DefaultMajorActionCompressionWritingRequirements : NormalizeMajorActionCompressionWritingRequirementsText(store.MajorActionCompressionWritingRequirements),
 			CustomPolicyEvaluatorPrompt = customPolicyEvaluatorPrompt,
 			NpcRulerPolicyPrompt = npcRulerPolicyPrompt
 		};
@@ -3288,6 +3525,9 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			KingdomRebellionSystemPrompt = store.KingdomRebellionSystemPrompt,
 			WeeklyReportWritingRequirements = store.WeeklyReportWritingRequirements,
 			NpcPersonaGenerationRequirements = store.NpcPersonaGenerationRequirements,
+			DailyMemoryCompressionWritingRequirements = store.DailyMemoryCompressionWritingRequirements,
+			MemoryOverviewCompressionWritingRequirements = store.MemoryOverviewCompressionWritingRequirements,
+			MajorActionCompressionWritingRequirements = store.MajorActionCompressionWritingRequirements,
 			CustomPolicyEvaluatorPrompt = store.CustomPolicyEvaluatorPrompt,
 			NpcRulerPolicyPrompt = store.NpcRulerPolicyPrompt
 		};
@@ -3491,6 +3731,9 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 					KingdomRebellionSystemPromptJsonFileName,
 					WeeklyReportWritingRequirementsJsonFileName,
 					NpcPersonaGenerationRequirementsJsonFileName,
+					DailyMemoryCompressionWritingRequirementsJsonFileName,
+					MemoryOverviewCompressionWritingRequirementsJsonFileName,
+					MajorActionCompressionWritingRequirementsJsonFileName,
 					CustomPolicyEvaluatorPromptJsonFileName,
 					NpcRulerPolicyPromptJsonFileName
 				};
@@ -4208,6 +4451,14 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		{
 			return "anthropic";
 		}
+		string model = (modelName ?? "").Trim();
+		if (model.IndexOf("glm-4.5", StringComparison.OrdinalIgnoreCase) >= 0
+			|| model.IndexOf("glm-4.6", StringComparison.OrdinalIgnoreCase) >= 0
+			|| model.IndexOf("glm-4.7", StringComparison.OrdinalIgnoreCase) >= 0
+			|| model.IndexOf("glm-5", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return "glm";
+		}
 		if (source.IndexOf("deepseek", StringComparison.OrdinalIgnoreCase) >= 0)
 		{
 			return "openai";
@@ -4241,7 +4492,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 					["effort"] = normalizedEffort
 				};
 			}
-			else
+			else if (format == "openai")
 			{
 				payload["reasoning_effort"] = normalizedEffort;
 			}
@@ -4770,6 +5021,18 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		EditNpcPersonaGenerationRequirements = delegate
 		{
 			OpenNpcPersonaGenerationRequirementsEditor();
+		};
+		EditDailyMemoryCompressionWritingRequirements = delegate
+		{
+			OpenDailyMemoryCompressionWritingRequirementsEditor();
+		};
+		EditMemoryOverviewCompressionWritingRequirements = delegate
+		{
+			OpenMemoryOverviewCompressionWritingRequirementsEditor();
+		};
+		EditMajorActionCompressionWritingRequirements = delegate
+		{
+			OpenMajorActionCompressionWritingRequirementsEditor();
 		};
 		EditCustomPolicyEvaluatorPrompt = delegate
 		{
