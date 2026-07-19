@@ -208,6 +208,7 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		internal Formation Formation;
 		internal AgentControllerType Controller;
 		internal Agent.MortalityState Mortality;
+		internal AgentFlag Flags;
 		internal float Health;
 	}
 
@@ -760,6 +761,10 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 				lord.SetMortalityState(Agent.MortalityState.Invulnerable);
 				lord.Controller = _lordSnapshot?.Controller ?? AgentControllerType.AI;
 				lord.Formation = _lordSnapshot?.Formation;
+				if (_lordSnapshot != null)
+				{
+					lord.SetAgentFlags(_lordSnapshot.Flags);
+				}
 				lord.SetAutomaticTargetSelection(enable: true);
 				lord.DisableScriptedMovement();
 				lord.InvalidateTargetAgent();
@@ -801,6 +806,7 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 				? AgentControllerType.Player
 				: _playerSnapshot.Controller;
 			player.Formation = _playerSnapshot.Formation;
+			player.SetAgentFlags(_playerSnapshot.Flags);
 			player.SetIsAIPaused(isPaused: false);
 			player.DisableScriptedMovement();
 			player.InvalidateTargetAgent();
@@ -825,6 +831,7 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 			agent.SetMortalityState(snapshot.Mortality);
 			agent.Controller = snapshot.Controller;
 			agent.Formation = snapshot.Formation;
+			agent.SetAgentFlags(snapshot.Flags);
 			agent.SetIsAIPaused(isPaused: false);
 			agent.DisableScriptedMovement();
 			agent.InvalidateTargetAgent();
@@ -924,6 +931,7 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 			agent.SetMortalityState(snapshot.Mortality);
 			agent.Controller = snapshot.Controller;
 			agent.Formation = snapshot.Formation;
+			agent.SetAgentFlags(snapshot.Flags);
 			agent.SetMaximumSpeedLimit(-1f, false);
 			agent.SetIsAIPaused(isPaused: false);
 			agent.InvalidateTargetAgent();
@@ -1049,16 +1057,23 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 	{
 		try
 		{
-			TryRestoreCombatActionSet(lord);
+			bool combatActionSetRestored = TryRestoreCombatActionSet(lord, out string actionSetCode);
 			StripWeapons(lord);
 			lord.SetMortalityState(Agent.MortalityState.Invulnerable);
 			lord.Controller = AgentControllerType.AI;
 			lord.SetIsAIPaused(isPaused: false);
 			lord.DisableScriptedMovement();
 			lord.SetMaximumSpeedLimit(-1f, false);
-			lord.SetAgentFlags(lord.GetAgentFlags() | AgentFlag.CanGetAlarmed | AgentFlag.CanWieldWeapon);
+			AgentFlag originalFlags = lord.GetAgentFlags();
+			AgentFlag combatFlags = EnableHumanoidCombatFlags(lord);
 			lord.TeleportToPosition(_weaponPosition);
-			return TryEquipDuelLoadout(lord);
+			bool equipped = TryEquipDuelLoadout(lord);
+			Logger.Log("CastleAftermath", "Prepared captive-lord duel combat state. LordAgent="
+				+ lord.Index + ", OriginalFlags=" + originalFlags + ", CombatFlags=" + combatFlags
+				+ ", CanAttack=" + combatFlags.HasAnyFlag(AgentFlag.CanAttack)
+				+ ", ActionSet=" + actionSetCode + ", ActionSetRestored=" + combatActionSetRestored
+				+ ", Equipped=" + equipped);
+			return equipped;
 		}
 		catch (Exception ex)
 		{
@@ -1104,13 +1119,17 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		_stage = RuntimeStage.Fighting;
 		player.SetMortalityState(Agent.MortalityState.Immortal);
 		lord.SetMortalityState(Agent.MortalityState.Immortal);
+		bool combatActionSetRestored = TryRestoreCombatActionSet(lord, out string actionSetCode);
+		AgentFlag combatFlags = EnableHumanoidCombatFlags(lord);
 		lord.SetIsAIPaused(isPaused: false);
 		lord.SetMaximumSpeedLimit(-1f, false);
 		ActivateNativeFightBehavior(lord);
 		IssueDuelFormationOrders();
 		_combatTargetObserved = RefreshLordCombatAi(player, lord, logPending: true);
 		Logger.Log("CastleAftermath", "Captive-lord duel entered fighting stage. LordAgent="
-			+ lord.Index + ", PlayerAgent=" + player.Index + ", TargetObserved=" + _combatTargetObserved);
+			+ lord.Index + ", PlayerAgent=" + player.Index + ", TargetObserved=" + _combatTargetObserved
+			+ ", Flags=" + combatFlags + ", CanAttack=" + combatFlags.HasAnyFlag(AgentFlag.CanAttack)
+			+ ", ActionSet=" + actionSetCode + ", ActionSetRestored=" + combatActionSetRestored);
 		GcczDiagnosticLog.Log("CastleLordDuel", "fighting hero=" + (_lordHero?.StringId ?? "N/A")
 			+ " immediateTeleport=true targetAgent=" + player.Index
 			+ " targetObserved=" + _combatTargetObserved);
@@ -1501,6 +1520,7 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 			Formation = agent?.Formation,
 			Controller = agent?.Controller ?? AgentControllerType.None,
 			Mortality = agent?.CurrentMortalityState ?? Agent.MortalityState.Mortal,
+			Flags = agent?.GetAgentFlags() ?? AgentFlag.None,
 			Health = agent?.Health ?? 1f
 		};
 	}
@@ -1559,22 +1579,42 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 			&& (ReferenceEquals(candidate, principal) || ReferenceEquals(candidate.RiderAgent, principal));
 	}
 
-	private static void TryRestoreCombatActionSet(Agent agent)
+	private static AgentFlag EnableHumanoidCombatFlags(Agent agent)
 	{
+		AgentFlag flags = agent.GetAgentFlags()
+			| AgentFlag.CanAttack
+			| AgentFlag.CanDefend
+			| AgentFlag.IsHumanoid
+			| AgentFlag.CanWieldWeapon
+			| AgentFlag.CanGetAlarmed;
+		agent.SetAgentFlags(flags);
+		return flags;
+	}
+
+	private static bool TryRestoreCombatActionSet(Agent agent, out string actionSetCode)
+	{
+		actionSetCode = agent?.IsFemale == true ? "as_human_female_warrior" : "as_human_warrior";
 		try
 		{
-			if (agent?.Monster == null)
+			if (agent == null || !agent.IsActive() || agent.Monster == null)
 			{
-				return;
+				return false;
 			}
+			agent.SetActionChannel(0, ActionIndexCache.act_none, true, (AnimFlags)0UL,
+				0f, 1f, -0.2f, 0.4f, 0f, false, -0.2f, 0, true);
 			AnimationSystemData data = agent.Monster.FillAnimationSystemData(
-				MBActionSet.GetActionSet(agent.Monster.ActionSetCode),
+				MBActionSet.GetActionSet(actionSetCode),
 				1f,
 				false);
 			agent.SetActionSet(ref data);
+			return true;
 		}
-		catch
+		catch (Exception ex)
 		{
+			Logger.Log("CastleAftermath", "Restore captive-lord combat action set failed. Agent="
+				+ (agent?.Index.ToString() ?? "null") + ", ActionSet=" + actionSetCode
+				+ ", Error=" + ex.Message);
+			return false;
 		}
 	}
 
