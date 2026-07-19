@@ -65,6 +65,7 @@ public static class SiegeCastleLordDuelProfile
         bool playerWon,
         bool playerWasMountedWhenAccepted,
         bool playerCarriedRangedWeaponWhenAccepted,
+        bool playerWieldedRangedWeaponWhenAccepted,
         bool playerMountedDuringDuel,
         bool playerUsedRangedWeapon)
     {
@@ -80,6 +81,7 @@ public static class SiegeCastleLordDuelProfile
             .Append("。双方都没有死亡，决斗已经结束，被俘领主仍是俘虏；本事实不会自动释放、收编、贩卖或处决任何人。")
             .Append("接受决斗时玩家骑乘=").Append(YesNo(playerWasMountedWhenAccepted))
             .Append("；接受决斗时玩家携带远程武器=").Append(YesNo(playerCarriedRangedWeaponWhenAccepted))
+            .Append("；接受决斗时玩家手持远程武器=").Append(YesNo(playerWieldedRangedWeaponWhenAccepted))
             .Append("；决斗中玩家骑乘=").Append(YesNo(playerMountedDuringDuel))
             .Append("；决斗中玩家使用远程武器=").Append(YesNo(playerUsedRangedWeapon)).Append("。");
 

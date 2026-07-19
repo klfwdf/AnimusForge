@@ -3929,11 +3929,12 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		try
 		{
 			CastleAftermathLordPoliticalFacts politicalFacts = CastleAftermathLordRecruitmentRuntimeBridge.GetPoliticalFacts(targetHero);
+			string strippedAiResponse = StripSiegeTags(aiResponseText ?? string.Empty);
 			SiegeCastleLordRecruitmentBranch branch = SiegeCastleLordRecruitmentBranchProfile.Resolve(
 				politicalFacts.SpeakerIsClanLeader,
 				politicalFacts.PlayerHasKingdom,
 				politicalFacts.PlayerRulesKingdom,
-				playerText);
+				(playerText ?? string.Empty) + "\n" + strippedAiResponse);
 			if (branch == SiegeCastleLordRecruitmentBranch.Unknown)
 			{
 				CastleAftermathDispositionSessionBridge.UnmarkApplied(action, role, targetAgent, targetHero);
@@ -3944,7 +3945,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				targetHero,
 				branch,
 				ResolveCurrentSettlement(),
-				StripSiegeTags(aiResponseText ?? string.Empty));
+				strippedAiResponse);
 			if (!result.Succeeded)
 			{
 				CastleAftermathDispositionSessionBridge.UnmarkApplied(action, role, targetAgent, targetHero);

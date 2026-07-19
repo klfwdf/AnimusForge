@@ -77,10 +77,6 @@ public sealed class SiegeCastleActionRoutingFacts
 
     public string SpeakerReplyText { get; }
 
-    public string DuelConsentText => string.IsNullOrWhiteSpace(SpeakerReplyText)
-        ? RawActionText
-        : SpeakerReplyText;
-
     public bool IsActionAlreadyApplied(SiegeCastleActionKind action)
     {
         foreach (SiegeCastleActionKind applied in AppliedActionsForTarget)

@@ -3,7 +3,9 @@ using System.Collections.Generic;
 namespace AnimusForge.SiegeAftermathIntervention;
 
 /// <summary>
-/// Hard role/direct-reply gate for castle actions. Prompt wording may guide the AI, but this policy is authoritative.
+/// Hard role/direct-reply/state gate for castle actions selected by AF's native action
+/// postprocessor. The AI is authoritative for semantic intent and consent; this policy
+/// never reinterprets a selected tag through a second keyword list.
 /// </summary>
 public static class SiegeCastleActionRoutingPolicy
 {
@@ -42,11 +44,6 @@ public static class SiegeCastleActionRoutingPolicy
             return Block(hasRecognizedAction: true, action, "direct_player_response_required");
         }
 
-        SiegeCastlePrisonerDispositionKind disposition = SiegeCastlePrisonerDispositionKindProfile.FromAction(action);
-        SiegeCastlePlayerAuthorizationDecision authorization = SiegeCastlePlayerAuthorizationPolicy.Evaluate(
-            facts.PlayerText,
-            facts.PendingProposalForSpeaker);
-
         if (SiegeCastleActionKindProfile.IsProposal(action))
         {
             if (facts.RemainingRegularPrisoners <= 0)
@@ -62,19 +59,7 @@ public static class SiegeCastleActionRoutingPolicy
                 return Block(hasRecognizedAction: true, action, "soldier_proposal_role_required");
             }
 
-            if (authorization.IsAuthorized)
-            {
-                return Block(
-                    hasRecognizedAction: true,
-                    action,
-                    authorization.Disposition == disposition
-                        ? "player_already_authorized_disposition"
-                        : "player_authorized_different_disposition");
-            }
-
-            return authorization.ReasonCode == "player_rejected_or_cancelled"
-                ? Block(hasRecognizedAction: true, action, "player_rejected_proposal")
-                : Allow(action, "soldier_proposal_record_only");
+            return Allow(action, "castle_ai_proposal_tag_role_state_valid");
         }
 
         if (action == SiegeCastleActionKind.AppeaseSoldiers)
@@ -89,16 +74,16 @@ public static class SiegeCastleActionRoutingPolicy
                 return Block(hasRecognizedAction: true, action, "soldier_appeasement_not_required");
             }
 
-            SiegeCastleSoldierAppeasementAuthorizationDecision appeasementAuthorization =
-                SiegeCastleSoldierAppeasementAuthorizationPolicy.Evaluate(facts.PlayerText);
-            if (!appeasementAuthorization.IsAuthorized)
+            if (facts.SoldierAppeasementApplied)
             {
-                return Block(hasRecognizedAction: true, action, appeasementAuthorization.ReasonCode);
+                return Block(hasRecognizedAction: true, action, "soldier_appeasement_already_applied");
             }
 
-            return !facts.SoldierAppeasementApplied
+            SiegeCastleDirectActionAuthorizationDecision appeasementAuthorization =
+                SiegeCastleDirectActionAuthorizationPolicy.Evaluate(action, facts.PlayerText);
+            return appeasementAuthorization.IsAuthorized
                 ? Allow(action, appeasementAuthorization.ReasonCode)
-                : Block(hasRecognizedAction: true, action, "soldier_appeasement_already_applied");
+                : Block(hasRecognizedAction: true, action, appeasementAuthorization.ReasonCode);
         }
 
         if (SiegeCastleActionKindProfile.IsLordProcess(action))
@@ -115,14 +100,8 @@ public static class SiegeCastleActionRoutingPolicy
             {
                 return Block(hasRecognizedAction: true, action, "castle_lord_process_already_applied");
             }
-            SiegeCastleLordDuelConsentDecision consent =
-                SiegeCastleLordDuelConsentPolicy.Evaluate(facts.DuelConsentText);
-            if (!consent.IsAccepted)
-            {
-                return Block(hasRecognizedAction: true, action, consent.ReasonCode);
-            }
             SiegeCastleDirectActionAuthorizationDecision lordProcessAuthorization =
-                SiegeCastleDirectActionAuthorizationPolicy.Evaluate(action, facts.PlayerText, facts.PendingProposalForSpeaker);
+                SiegeCastleDirectActionAuthorizationPolicy.Evaluate(action, facts.PlayerText);
             return lordProcessAuthorization.IsAuthorized
                 ? Allow(action, lordProcessAuthorization.ReasonCode)
                 : Block(hasRecognizedAction: true, action, lordProcessAuthorization.ReasonCode);
@@ -151,7 +130,7 @@ public static class SiegeCastleActionRoutingPolicy
                 return Block(hasRecognizedAction: true, action, "castle_process_already_applied");
             }
             SiegeCastleDirectActionAuthorizationDecision processAuthorization =
-                SiegeCastleDirectActionAuthorizationPolicy.Evaluate(action, facts.PlayerText, facts.PendingProposalForSpeaker);
+                SiegeCastleDirectActionAuthorizationPolicy.Evaluate(action, facts.PlayerText);
             return processAuthorization.IsAuthorized
                 ? Allow(action, processAuthorization.ReasonCode)
                 : Block(hasRecognizedAction: true, action, processAuthorization.ReasonCode);
@@ -176,7 +155,7 @@ public static class SiegeCastleActionRoutingPolicy
                 return Block(hasRecognizedAction: true, action, "voluntary_trust_threshold_not_met");
             }
             SiegeCastleDirectActionAuthorizationDecision terminalAuthorization =
-                SiegeCastleDirectActionAuthorizationPolicy.Evaluate(action, facts.PlayerText, facts.PendingProposalForSpeaker);
+                SiegeCastleDirectActionAuthorizationPolicy.Evaluate(action, facts.PlayerText);
             return terminalAuthorization.IsAuthorized
                 ? Allow(action, terminalAuthorization.ReasonCode)
                 : Block(hasRecognizedAction: true, action, terminalAuthorization.ReasonCode);
@@ -198,14 +177,14 @@ public static class SiegeCastleActionRoutingPolicy
                     facts.SpeakerIsClanLeader,
                     facts.PlayerHasKingdom,
                     facts.PlayerRulesKingdom,
-                    facts.PlayerText);
+                    facts.PlayerText + "\n" + facts.SpeakerReplyText);
                 if (branch == SiegeCastleLordRecruitmentBranch.Unknown)
                 {
                     return Block(hasRecognizedAction: true, action, "lord_recruitment_branch_required");
                 }
             }
             SiegeCastleDirectActionAuthorizationDecision lordAuthorization =
-                SiegeCastleDirectActionAuthorizationPolicy.Evaluate(action, facts.PlayerText, facts.PendingProposalForSpeaker);
+                SiegeCastleDirectActionAuthorizationPolicy.Evaluate(action, facts.PlayerText);
             return lordAuthorization.IsAuthorized
                 ? Allow(action, lordAuthorization.ReasonCode)
                 : Block(hasRecognizedAction: true, action, lordAuthorization.ReasonCode);
