@@ -434,6 +434,14 @@ public class SubModule : MBSubModuleBase
 			}
 			try
 			{
+				CastleAftermathConstructionSpeedPatchRegistrar.Register(harmony);
+			}
+			catch (Exception ex18bCastleConstruction)
+			{
+				Logger.LogTrace("SubModule", ">>> Castle aftermath construction patches init failed: " + ex18bCastleConstruction.Message);
+			}
+			try
+			{
 				SettlementEntryTroopSelectionBehavior.RegisterHarmonyPatches(harmony);
 			}
 			catch (Exception ex18ba)

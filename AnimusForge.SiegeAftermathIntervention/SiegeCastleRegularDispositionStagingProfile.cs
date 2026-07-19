@@ -22,6 +22,8 @@ public static class SiegeCastleRegularDispositionStagingProfile
             SiegeCastleActionKind.RecruitPrisonersForced => "强制收编普通战俘",
             SiegeCastleActionKind.LaborPrisonersVoluntary => "自愿劳役服刑",
             SiegeCastleActionKind.LaborPrisonersForced => "强制劳役服刑",
+            SiegeCastleActionKind.RepairCastleLaborVoluntary => "自愿劳役修缮城堡",
+            SiegeCastleActionKind.RepairCastleLaborForced => "强制劳役修缮城堡",
             SiegeCastleActionKind.InstructorPrisonersVoluntary => "自愿担任教官",
             SiegeCastleActionKind.InstructorPrisonersForced => "强制担任教官",
             SiegeCastleActionKind.SlaughterPrisoners => "现场屠戮普通战俘",

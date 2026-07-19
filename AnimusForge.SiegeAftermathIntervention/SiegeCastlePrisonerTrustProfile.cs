@@ -30,6 +30,7 @@ public static class SiegeCastlePrisonerTrustProfile
         {
             SiegeCastleActionKind.RecruitPrisonersVoluntary => VoluntaryRecruitThreshold,
             SiegeCastleActionKind.LaborPrisonersVoluntary => VoluntaryLaborThreshold,
+            SiegeCastleActionKind.RepairCastleLaborVoluntary => VoluntaryLaborThreshold,
             SiegeCastleActionKind.InstructorPrisonersVoluntary => VoluntaryInstructorThreshold,
             _ => MinimumTrust
         };

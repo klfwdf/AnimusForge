@@ -57,24 +57,47 @@ public static class SiegePostprocessTagNormalizer
             }
         }
 
-        var extractedCastleKinds = new HashSet<SiegeCastleActionKind>(SiegeCastleActionTagCatalog.ExtractKinds(text));
-        foreach (SiegeCastleActionKind kind in SiegeCastleActionTagCatalog.GetCanonicalOrder())
+        IReadOnlyList<SiegeCastleActionKind> extractedCastleKinds = SiegeCastleActionTagCatalog.ExtractKinds(text);
+        var matchedCastleKinds = new List<SiegeCastleActionKind>();
+        foreach (SiegeCastleActionKind kind in extractedCastleKinds)
         {
-            if (!extractedCastleKinds.Contains(kind))
-            {
-                continue;
-            }
-
             IReadOnlyList<string> aliases = SiegeCastleActionTagCatalog.GetAliases(kind);
             if (aliases.Count > 0
-                && AllowsAny(allowed, aliases)
-                && SiegeCastleActionTagCatalog.TryGetCanonicalTag(kind, out string canonicalTag))
+                && AllowsAny(allowed, aliases))
             {
-                Add(canonicalTag);
-                // Castle actions are also single-choice per reply. Runtime role gates normally
-                // expose only compatible tags, but malformed model output must never stack a
-                // process/terminal action or rely on the live router to reject the whole reply.
-                break;
+                matchedCastleKinds.Add(kind);
+            }
+        }
+
+        bool explicitCompoundDisposition = matchedCastleKinds.Count > 1;
+        foreach (SiegeCastleActionKind kind in matchedCastleKinds)
+        {
+            explicitCompoundDisposition &= SiegeCastleActionKindProfile.IsRegularPrisonerTerminal(kind);
+        }
+
+        if (explicitCompoundDisposition)
+        {
+            foreach (SiegeCastleActionKind kind in matchedCastleKinds)
+            {
+                if (SiegeCastleActionTagCatalog.TryGetCanonicalTag(kind, out string canonicalTag))
+                {
+                    Add(canonicalTag);
+                }
+            }
+        }
+        else
+        {
+            var matchedSet = new HashSet<SiegeCastleActionKind>(matchedCastleKinds);
+            foreach (SiegeCastleActionKind kind in SiegeCastleActionTagCatalog.GetCanonicalOrder())
+            {
+                if (matchedSet.Contains(kind)
+                    && SiegeCastleActionTagCatalog.TryGetCanonicalTag(kind, out string canonicalTag))
+                {
+                    Add(canonicalTag);
+                    // Non-partitioned castle actions remain single-choice. This prevents a
+                    // malformed model reply from stacking process, proposal or high-risk tags.
+                    break;
+                }
             }
         }
 

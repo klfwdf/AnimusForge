@@ -29,7 +29,10 @@ public enum SiegeCastleActionKind
     ProposeInstructorPrisoners = 20,
     SellLord = 21,
     SoldierDiscontent = 22,
-    DuelLord = 23
+    DuelLord = 23,
+    RepairCastleLaborVoluntary = 24,
+    RepairCastleLaborForced = 25,
+    ProposeRepairCastleLabor = 26
 }
 
 /// <summary>
@@ -44,7 +47,8 @@ public static class SiegeCastleActionKindProfile
             || action == SiegeCastleActionKind.ProposeReleasePrisoners
             || action == SiegeCastleActionKind.ProposeSellPrisoners
             || action == SiegeCastleActionKind.ProposeLaborPrisoners
-            || action == SiegeCastleActionKind.ProposeInstructorPrisoners;
+            || action == SiegeCastleActionKind.ProposeInstructorPrisoners
+            || action == SiegeCastleActionKind.ProposeRepairCastleLabor;
     }
 
     public static bool IsProcess(SiegeCastleActionKind action)
@@ -62,6 +66,8 @@ public static class SiegeCastleActionKindProfile
             || action == SiegeCastleActionKind.RecruitPrisonersForced
             || action == SiegeCastleActionKind.LaborPrisonersVoluntary
             || action == SiegeCastleActionKind.LaborPrisonersForced
+            || action == SiegeCastleActionKind.RepairCastleLaborVoluntary
+            || action == SiegeCastleActionKind.RepairCastleLaborForced
             || action == SiegeCastleActionKind.InstructorPrisonersVoluntary
             || action == SiegeCastleActionKind.InstructorPrisonersForced;
     }
@@ -82,6 +88,7 @@ public static class SiegeCastleActionKindProfile
     {
         return action == SiegeCastleActionKind.RecruitPrisonersVoluntary
             || action == SiegeCastleActionKind.LaborPrisonersVoluntary
+            || action == SiegeCastleActionKind.RepairCastleLaborVoluntary
             || action == SiegeCastleActionKind.InstructorPrisonersVoluntary;
     }
 
@@ -89,6 +96,7 @@ public static class SiegeCastleActionKindProfile
     {
         return action == SiegeCastleActionKind.RecruitPrisonersForced
             || action == SiegeCastleActionKind.LaborPrisonersForced
+            || action == SiegeCastleActionKind.RepairCastleLaborForced
             || action == SiegeCastleActionKind.InstructorPrisonersForced;
     }
 
@@ -117,6 +125,7 @@ public static class SiegeCastleActionKindProfile
         return action == SiegeCastleActionKind.ProposeRecruitPrisoners
             || action == SiegeCastleActionKind.ProposeReleasePrisoners
             || action == SiegeCastleActionKind.ProposeLaborPrisoners
+            || action == SiegeCastleActionKind.ProposeRepairCastleLabor
             || action == SiegeCastleActionKind.ProposeInstructorPrisoners;
     }
 

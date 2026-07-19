@@ -3295,6 +3295,22 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		actionHandled = false;
 		try
 		{
+			IReadOnlyList<SiegeCastleActionKind> requestedActions = SiegeCastleActionTagCatalog.ExtractKinds(text);
+			if (requestedActions.Count > 1
+				&& TryProcessCastleCompoundDispositionTags(
+					targetHero,
+					targetCharacter,
+					targetAgentIndex,
+					requestedActions,
+					ref actionHandled,
+					replyIsDirectPlayerResponse,
+					playerText,
+					speakerReplyText))
+			{
+				text = StripSiegeTags(text);
+				return true;
+			}
+
 			Agent targetAgent = TryGetAgent(targetAgentIndex);
 			CharacterObject resolvedCharacter = targetCharacter ?? targetAgent?.Character as CharacterObject ?? targetHero?.CharacterObject;
 			Hero resolvedHero = targetHero ?? resolvedCharacter?.HeroObject;
@@ -3332,6 +3348,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				case SiegeCastleActionKind.ProposeReleasePrisoners:
 				case SiegeCastleActionKind.ProposeSellPrisoners:
 				case SiegeCastleActionKind.ProposeLaborPrisoners:
+				case SiegeCastleActionKind.ProposeRepairCastleLabor:
 				case SiegeCastleActionKind.ProposeInstructorPrisoners:
 					actionHandled = RecordPendingCastleDispositionProposal(
 							SiegeCastlePrisonerDispositionKindProfile.FromAction(decision.Action),
@@ -3353,6 +3370,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					case SiegeCastleActionKind.RecruitPrisonersForced:
 					case SiegeCastleActionKind.LaborPrisonersVoluntary:
 					case SiegeCastleActionKind.LaborPrisonersForced:
+					case SiegeCastleActionKind.RepairCastleLaborVoluntary:
+					case SiegeCastleActionKind.RepairCastleLaborForced:
 					case SiegeCastleActionKind.InstructorPrisonersVoluntary:
 					case SiegeCastleActionKind.InstructorPrisonersForced:
 						actionHandled = ApplyCastleRegularPrisonerTerminalAction(
@@ -3413,6 +3432,65 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			text = StripSiegeTags(text);
 			return true;
 		}
+	}
+
+	private static bool TryProcessCastleCompoundDispositionTags(
+		Hero targetHero,
+		CharacterObject targetCharacter,
+		int targetAgentIndex,
+		IReadOnlyList<SiegeCastleActionKind> requestedActions,
+		ref bool actionHandled,
+		bool replyIsDirectPlayerResponse,
+		string playerText,
+		string speakerReplyText)
+	{
+		if (!replyIsDirectPlayerResponse
+			|| requestedActions == null
+			|| requestedActions.Count < 2
+			|| !SiegeCastleCompoundDispositionPlanProfile.TryBuild(playerText, out SiegeCastleCompoundDispositionPlan plan)
+			|| plan.Steps.Count != requestedActions.Count)
+		{
+			return false;
+		}
+
+		foreach (SiegeCastleActionKind action in requestedActions)
+		{
+			if (!SiegeCastleActionKindProfile.IsRegularPrisonerTerminal(action)
+				|| !plan.Steps.Any(step => step.Disposition == SiegeCastlePrisonerDispositionKindProfile.FromAction(action)))
+			{
+				return false;
+			}
+		}
+
+		foreach (SiegeCastleCompoundDispositionStep step in plan.Steps.OrderBy(step => step.UsesAllAvailable ? 1 : 0))
+		{
+			SiegeCastleActionKind action = requestedActions.FirstOrDefault(candidate =>
+				SiegeCastlePrisonerDispositionKindProfile.FromAction(candidate) == step.Disposition);
+			if (action == SiegeCastleActionKind.Unknown
+				|| !SiegeCastleActionTagCatalog.TryGetCanonicalTag(action, out string canonicalTag))
+			{
+				return false;
+			}
+
+			string singleTagText = canonicalTag;
+			bool singleHandled;
+			TryProcessCastleAiActionTags(
+				targetHero,
+				targetCharacter,
+				targetAgentIndex,
+				ref singleTagText,
+				out singleHandled,
+				replyIsDirectPlayerResponse: true,
+				playerText: step.AllocationText,
+				speakerReplyText: speakerReplyText);
+			actionHandled |= singleHandled;
+		}
+
+		GcczDiagnosticLog.Log("CastleAction", "compound disposition processed actions="
+			+ string.Join(",", requestedActions)
+			+ " handled=" + actionHandled
+			+ " targetAgent=" + targetAgentIndex);
+		return true;
 	}
 
 	private static SiegeCastlePrisonerDispositionKind GetPendingCastleDispositionProposalForSpeaker(int targetAgentIndex)
@@ -3716,6 +3794,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				SiegeCastleActionKind.RecruitPrisonersForced => CastleAftermathActionRuntimeBridge.RecruitRegularPrisoners(allocation.Roster),
 				SiegeCastleActionKind.LaborPrisonersVoluntary => CastleAftermathActionRuntimeBridge.ResolveRegularPrisonersForSettlementEffect(allocation.Roster, "castle_labor_voluntary_exit"),
 				SiegeCastleActionKind.LaborPrisonersForced => CastleAftermathActionRuntimeBridge.ResolveRegularPrisonersForSettlementEffect(allocation.Roster, "castle_labor_forced_exit"),
+				SiegeCastleActionKind.RepairCastleLaborVoluntary => CastleAftermathActionRuntimeBridge.ResolveRegularPrisonersForSettlementEffect(allocation.Roster, "castle_repair_castle_voluntary_exit"),
+				SiegeCastleActionKind.RepairCastleLaborForced => CastleAftermathActionRuntimeBridge.ResolveRegularPrisonersForSettlementEffect(allocation.Roster, "castle_repair_castle_forced_exit"),
 				SiegeCastleActionKind.InstructorPrisonersVoluntary => CastleAftermathActionRuntimeBridge.ResolveRegularPrisonersForSettlementEffect(allocation.Roster, "castle_instructor_voluntary_exit"),
 				SiegeCastleActionKind.InstructorPrisonersForced => CastleAftermathActionRuntimeBridge.ResolveRegularPrisonersForSettlementEffect(allocation.Roster, "castle_instructor_forced_exit"),
 				_ => CastleAftermathActionApplyResult.Failed("unsupported_deferred_terminal_action", CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount)
@@ -3977,9 +4057,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			SiegeCastleActionKind.SellPrisoners => SiegeCastlePrisonerTrustProfile.SellTrustDelta,
 			SiegeCastleActionKind.RecruitPrisonersVoluntary => 5,
 			SiegeCastleActionKind.LaborPrisonersVoluntary => 3,
+			SiegeCastleActionKind.RepairCastleLaborVoluntary => 3,
 			SiegeCastleActionKind.InstructorPrisonersVoluntary => 3,
 			SiegeCastleActionKind.RecruitPrisonersForced => SiegeCastlePrisonerTrustProfile.ForcedDispositionTrustDelta,
 			SiegeCastleActionKind.LaborPrisonersForced => SiegeCastlePrisonerTrustProfile.ForcedDispositionTrustDelta,
+			SiegeCastleActionKind.RepairCastleLaborForced => SiegeCastlePrisonerTrustProfile.ForcedDispositionTrustDelta,
 			SiegeCastleActionKind.InstructorPrisonersForced => SiegeCastlePrisonerTrustProfile.ForcedDispositionTrustDelta,
 			_ => 0
 		};
@@ -14215,7 +14297,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 						_castleSoldierConcernAction,
 						regularActions.Contains(SiegeCastleActionKind.TreatPrisoners),
 						regularActions.Contains(SiegeCastleActionKind.ReceiveArmaments),
-						lordOutcomeSummary));
+						lordOutcomeSummary,
+						settlementResult.ConstructionSpeedBonusPercent));
 				GcczDiagnosticLog.Log("CastleOutcome", "summary settlement=" + (settlement?.StringId ?? _completedSettlementId ?? "N/A")
 					+ " outcomes=" + string.Join(",", regularOutcomes.Select(entry => entry.Action + ":" + entry.AffectedCount))
 					+ " remainingRegular=" + remainingRegularPrisoners
@@ -14223,6 +14306,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					+ " loyaltyDelta=" + settlementResult.LoyaltyDelta
 					+ " securityDelta=" + settlementResult.SecurityDelta
 					+ " prosperityDelta=" + settlementResult.ProsperityDelta
+					+ " constructionBonusPercent=" + settlementResult.ConstructionSpeedBonusPercent
 					+ " appeasementRequired=" + _castleSoldierAppeasementRequired
 					+ " appeasementApplied=" + _castleSoldierAppeasementApplied
 					+ " moralePenaltyApplied=" + _castleSoldierAppliedMoralePenalty);

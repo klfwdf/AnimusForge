@@ -76,6 +76,7 @@ public static class SiegeCastleDirectActionAuthorizationPolicy
                 {
                     SiegeCastlePrisonerDispositionKind.Recruit => "player_voluntary_recruit_negotiation",
                     SiegeCastlePrisonerDispositionKind.Labor => "player_voluntary_labor_negotiation",
+                    SiegeCastlePrisonerDispositionKind.RepairCastle => "player_voluntary_repair_castle_negotiation",
                     SiegeCastlePrisonerDispositionKind.Instructor => "player_voluntary_instructor_negotiation",
                     _ => "player_voluntary_castle_negotiation"
                 };

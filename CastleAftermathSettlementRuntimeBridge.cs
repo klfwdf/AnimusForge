@@ -21,6 +21,7 @@ internal static class CastleAftermathSettlementRuntimeBridge
 	private static Dictionary<string, float> _lastObservedProsperity = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
 	private static Dictionary<string, float> _recruitmentSpeedMultiplier = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
 	private static Dictionary<string, float> _recruitQualityMultiplier = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
+	private static Dictionary<string, float> _constructionSpeedMultiplier = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
 
 	private static readonly List<string> PendingKeys = new List<string>();
 	private static float _pendingLoyalty;
@@ -33,6 +34,7 @@ internal static class CastleAftermathSettlementRuntimeBridge
 	private static float _pendingProsperityMultiplier = 1f;
 	private static float _pendingRecruitmentMultiplier = 1f;
 	private static float _pendingRecruitQualityMultiplier = 1f;
+	private static float _pendingConstructionMultiplier = 1f;
 	private static bool _pendingDevastateEquivalent;
 	private static CastleAftermathSettlementApplyResult _lastAppliedResult = CastleAftermathSettlementApplyResult.Empty;
 
@@ -43,11 +45,13 @@ internal static class CastleAftermathSettlementRuntimeBridge
 		dataStore?.SyncData("_gcczCastleLastObservedProsperity_v1", ref _lastObservedProsperity);
 		dataStore?.SyncData("_gcczCastleRecruitmentSpeedMultiplier_v1", ref _recruitmentSpeedMultiplier);
 		dataStore?.SyncData("_gcczCastleRecruitQualityMultiplier_v1", ref _recruitQualityMultiplier);
+		dataStore?.SyncData("_gcczCastleConstructionSpeedMultiplier_v1", ref _constructionSpeedMultiplier);
 		_annualEffectUntilDay ??= new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 		_prosperityGrowthMultiplier ??= new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
 		_lastObservedProsperity ??= new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
 		_recruitmentSpeedMultiplier ??= new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
 		_recruitQualityMultiplier ??= new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
+		_constructionSpeedMultiplier ??= new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
 	}
 
 	internal static void ClearForNewGame()
@@ -57,6 +61,7 @@ internal static class CastleAftermathSettlementRuntimeBridge
 		_lastObservedProsperity.Clear();
 		_recruitmentSpeedMultiplier.Clear();
 		_recruitQualityMultiplier.Clear();
+		_constructionSpeedMultiplier.Clear();
 		ResetSession("new_game");
 	}
 
@@ -79,6 +84,7 @@ internal static class CastleAftermathSettlementRuntimeBridge
 		_pendingProsperityMultiplier = 1f;
 		_pendingRecruitmentMultiplier = 1f;
 		_pendingRecruitQualityMultiplier = 1f;
+		_pendingConstructionMultiplier = 1f;
 		_pendingDevastateEquivalent = false;
 		Logger.Log("CastleAftermath", "Reset castle settlement effect ledger. Source=" + (source ?? "N/A"));
 	}
@@ -116,11 +122,22 @@ internal static class CastleAftermathSettlementRuntimeBridge
 		_pendingRecruitQualityMultiplier = SiegeCastleSettlementEffectMath.CombineMultiplier(
 			_pendingRecruitQualityMultiplier,
 			1f + (profile.RecruitQualityMultiplier - 1f) * scale);
+		float constructionScale = SiegeCastleSettlementEffectMath.ResolveConstructionScale(
+			profile,
+			affectedRegularPrisoners,
+			scale);
+		_pendingConstructionMultiplier = SiegeCastleSettlementEffectMath.CombineMultiplier(
+			_pendingConstructionMultiplier,
+			SiegeCastleSettlementEffectMath.ScaleMultiplier(
+				profile.ConstructionSpeedMultiplier,
+				constructionScale));
 		_pendingDevastateEquivalent |= profile.ReachesNativeDevastateIntensity;
 		Logger.Log("CastleAftermath", "Queued castle settlement effect. Action=" + action
 			+ ", Key=" + profile.Key + ", Lord=" + singleLordTarget
 			+ ", Affected=" + affectedRegularPrisoners + ", Initial=" + initialRegularPrisoners
-			+ ", Scale=" + scale.ToString("0.###"));
+			+ ", Scale=" + scale.ToString("0.###")
+			+ ", ConstructionScale=" + constructionScale.ToString("0.###")
+			+ ", ConstructionMultiplier=" + _pendingConstructionMultiplier.ToString("0.####"));
 	}
 
 	internal static CastleAftermathSettlementApplyResult GetLastAppliedResult() => _lastAppliedResult;
@@ -171,7 +188,8 @@ internal static class CastleAftermathSettlementRuntimeBridge
 				villageTrustDelta,
 				notableRelationDelta,
 				notableTrustDelta,
-				_pendingDevastateEquivalent);
+				_pendingDevastateEquivalent,
+				MathF.Max(0f, (_pendingConstructionMultiplier - 1f) * 100f));
 
 			Logger.Log("CastleAftermath", "Applied independent castle settlement effects. Settlement="
 				+ (settlement.StringId ?? "N/A")
@@ -179,6 +197,7 @@ internal static class CastleAftermathSettlementRuntimeBridge
 				+ ", Loyalty=" + loyaltyDelta.ToString("0.##")
 				+ ", Security=" + securityDelta.ToString("0.##")
 				+ ", Prosperity=" + (prosperityDelta + prosperityTopUp).ToString("0.##")
+				+ ", ConstructionBonusPercent=" + MathF.Max(0f, (_pendingConstructionMultiplier - 1f) * 100f).ToString("0.##")
 				+ ", DevastateEquivalent=" + _pendingDevastateEquivalent);
 		}
 		catch (Exception ex)
@@ -218,7 +237,8 @@ internal static class CastleAftermathSettlementRuntimeBridge
 		}
 		bool hasAnnualEffect = Math.Abs(_pendingProsperityMultiplier - 1f) > 0.001f
 			|| Math.Abs(_pendingRecruitmentMultiplier - 1f) > 0.001f
-			|| Math.Abs(_pendingRecruitQualityMultiplier - 1f) > 0.001f;
+			|| Math.Abs(_pendingRecruitQualityMultiplier - 1f) > 0.001f
+			|| Math.Abs(_pendingConstructionMultiplier - 1f) > 0.001f;
 		if (hasAnnualEffect)
 		{
 			int untilDay = GetCurrentDay() + Math.Max(1, CampaignTime.DaysInYear * SiegeCastleSettlementEffectProfile.EffectYears);
@@ -226,8 +246,28 @@ internal static class CastleAftermathSettlementRuntimeBridge
 			_prosperityGrowthMultiplier[key] = Math.Max(0f, Math.Min(1.5f, _pendingProsperityMultiplier));
 			_recruitmentSpeedMultiplier[key] = Math.Max(0f, Math.Min(SiegeCastleSettlementEffectProfile.MaximumRecruitmentMultiplier, _pendingRecruitmentMultiplier));
 			_recruitQualityMultiplier[key] = Math.Max(0f, Math.Min(SiegeCastleSettlementEffectProfile.MaximumRecruitQualityMultiplier, _pendingRecruitQualityMultiplier));
+			_constructionSpeedMultiplier[key] = Math.Max(0f, Math.Min(SiegeCastleSettlementEffectProfile.MaximumConstructionSpeedMultiplier, _pendingConstructionMultiplier));
 			_lastObservedProsperity[key] = settlement.Town.Prosperity;
 		}
+	}
+
+	internal static float GetActiveConstructionSpeedBonus(Town town)
+	{
+		Settlement settlement = town?.Settlement;
+		if (settlement?.IsCastle != true || string.IsNullOrWhiteSpace(settlement.StringId))
+		{
+			return 0f;
+		}
+		string key = settlement.StringId;
+		if (!_annualEffectUntilDay.TryGetValue(key, out int untilDay) || GetCurrentDay() > untilDay)
+		{
+			ClearAnnualEffect(key);
+			return 0f;
+		}
+		float multiplier = _constructionSpeedMultiplier.TryGetValue(key, out float saved) ? saved : 1f;
+		return MathF.Max(0f, MathF.Min(
+			SiegeCastleSettlementEffectProfile.MaximumConstructionSpeedMultiplier - 1f,
+			multiplier - 1f));
 	}
 
 	private static void ApplyProsperityGrowthEffect(Town town, string key)
@@ -386,6 +426,7 @@ internal static class CastleAftermathSettlementRuntimeBridge
 		_lastObservedProsperity.Remove(key);
 		_recruitmentSpeedMultiplier.Remove(key);
 		_recruitQualityMultiplier.Remove(key);
+		_constructionSpeedMultiplier.Remove(key);
 	}
 
 	private static int ScaleInt(int value, float scale)
@@ -411,7 +452,7 @@ internal static class CastleAftermathSettlementRuntimeBridge
 internal sealed class CastleAftermathSettlementApplyResult
 {
 	internal static readonly CastleAftermathSettlementApplyResult Empty = new CastleAftermathSettlementApplyResult(
-		0f, 0f, 0f, 0, 0, 0, 0, false);
+		0f, 0f, 0f, 0, 0, 0, 0, false, 0f);
 
 	internal CastleAftermathSettlementApplyResult(
 		float loyaltyDelta,
@@ -421,7 +462,8 @@ internal sealed class CastleAftermathSettlementApplyResult
 		int villageTrustDelta,
 		int notableRelationDelta,
 		int notableTrustDelta,
-		bool devastateEquivalent)
+		bool devastateEquivalent,
+		float constructionSpeedBonusPercent)
 	{
 		LoyaltyDelta = loyaltyDelta;
 		SecurityDelta = securityDelta;
@@ -431,6 +473,7 @@ internal sealed class CastleAftermathSettlementApplyResult
 		NotableRelationDelta = notableRelationDelta;
 		NotableTrustDelta = notableTrustDelta;
 		DevastateEquivalent = devastateEquivalent;
+		ConstructionSpeedBonusPercent = MathF.Max(0f, constructionSpeedBonusPercent);
 	}
 
 	internal float LoyaltyDelta { get; }
@@ -441,4 +484,5 @@ internal sealed class CastleAftermathSettlementApplyResult
 	internal int NotableRelationDelta { get; }
 	internal int NotableTrustDelta { get; }
 	internal bool DevastateEquivalent { get; }
+	internal float ConstructionSpeedBonusPercent { get; }
 }

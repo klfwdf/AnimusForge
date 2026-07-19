@@ -68,6 +68,9 @@ public static class SiegeCastlePrisonerAllocationProfile
     public static bool IsPlanResetRequested(string playerText)
         => ContainsAny(playerText, ResetKeywords);
 
+    public static bool RequestsAllAvailable(string playerText)
+        => ContainsAny(playerText, AllKeywords);
+
     public static bool RequestsEliteTroops(string playerText)
         => ContainsAny(playerText, new[] { "精锐", "高阶", "高级", "强壮", "最强", "老兵" });
 

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace AnimusForge.SiegeAftermathIntervention;
 
@@ -62,11 +63,24 @@ public static class SiegeCastlePlayerAuthorizationPolicy
         "don't sell", "do not sell", "not sell"
     };
 
-    private static readonly string[] LaborTerms =
+    private static readonly string[] GenericLaborTerms =
     {
-        "劳役", "服刑", "农奴", "发配为农奴", "发配农奴", "发放农奴", "送去当农奴", "充作农奴", "编为农奴",
-        "修缮道路", "修路", "修复道路", "修缮城堡", "劳动赎罪", "做苦工",
-        "forced labor", "work sentence", "repair the roads", "labor service"
+        "劳役", "服刑", "劳动赎罪", "做苦工",
+        "forced labor", "work sentence", "labor service"
+    };
+
+    private static readonly string[] ExternalLaborTerms =
+    {
+        "农奴", "发配为农奴", "发配农奴", "发放农奴", "送去当农奴", "充作农奴", "编为农奴",
+        "派往村庄", "送往村庄", "送去村庄", "修缮道路", "修路", "修复道路", "耕种", "耕田", "农田", "农庄", "庄园",
+        "repair the roads", "send to the villages", "serf"
+    };
+
+    private static readonly string[] RepairCastleTerms =
+    {
+        "修缮城堡", "修复城堡", "修缮城池", "修复城池", "修缮城墙", "修复城墙", "重建城墙",
+        "修缮城防", "修复城防", "重建城防", "修缮要塞", "修复要塞", "修城", "修筑城防",
+        "repair the castle", "repair the walls", "rebuild the fortifications"
     };
 
     private static readonly string[] LaborNegationTerms =
@@ -132,6 +146,16 @@ public static class SiegeCastlePlayerAuthorizationPolicy
         }
 
         SiegeCastlePrisonerDispositionKind intent = DetectIntent(text);
+        if (pendingProposalForSpeaker == SiegeCastlePrisonerDispositionKind.Labor
+            && intent == SiegeCastlePrisonerDispositionKind.RepairCastle
+            && IsBareLaborReference(text)
+            && (ContainsAny(text, GenericApprovalTerms) || EqualsAny(text, ShortApprovalTerms)))
+        {
+            return SiegeCastlePlayerAuthorizationDecision.Authorized(
+                pendingProposalForSpeaker,
+                usedPendingProposal: true,
+                "player_approved_matching_proposal");
+        }
         if (intent != SiegeCastlePrisonerDispositionKind.None && !IsDiscussionText(text))
         {
             return SiegeCastlePlayerAuthorizationDecision.Authorized(
@@ -170,22 +194,34 @@ public static class SiegeCastlePlayerAuthorizationPolicy
         {
             return SiegeCastlePrisonerDispositionKind.None;
         }
+        foreach (SiegeCastlePrisonerDispositionKind disposition in DetectPositiveIntents(text))
+        {
+            return disposition;
+        }
+        return SiegeCastlePrisonerDispositionKind.None;
+    }
+
+    public static IReadOnlyList<SiegeCastlePrisonerDispositionKind> DetectPositiveIntents(string playerText)
+    {
+        string text = (playerText ?? string.Empty).Trim();
+        var result = new List<SiegeCastlePrisonerDispositionKind>();
         foreach (SiegeCastlePrisonerDispositionKind disposition in new[]
         {
             SiegeCastlePrisonerDispositionKind.Recruit,
             SiegeCastlePrisonerDispositionKind.Slaughter,
             SiegeCastlePrisonerDispositionKind.Release,
             SiegeCastlePrisonerDispositionKind.Sell,
+            SiegeCastlePrisonerDispositionKind.RepairCastle,
             SiegeCastlePrisonerDispositionKind.Labor,
             SiegeCastlePrisonerDispositionKind.Instructor
         })
         {
             if (HasPositiveIntent(text, disposition))
             {
-                return disposition;
+                result.Add(disposition);
             }
         }
-        return SiegeCastlePrisonerDispositionKind.None;
+        return result;
     }
 
     public static bool HasPositiveIntent(string playerText, SiegeCastlePrisonerDispositionKind disposition)
@@ -197,7 +233,8 @@ public static class SiegeCastlePlayerAuthorizationPolicy
             SiegeCastlePrisonerDispositionKind.Slaughter => ContainsAny(text, SlaughterTerms) && !ContainsAny(text, SlaughterNegationTerms),
             SiegeCastlePrisonerDispositionKind.Release => ContainsAny(text, ReleaseTerms) && !ContainsAny(text, ReleaseNegationTerms),
             SiegeCastlePrisonerDispositionKind.Sell => ContainsAny(text, SellTerms) && !ContainsAny(text, SellNegationTerms),
-            SiegeCastlePrisonerDispositionKind.Labor => ContainsAny(text, LaborTerms) && !ContainsAny(text, LaborNegationTerms),
+            SiegeCastlePrisonerDispositionKind.Labor => HasExternalLaborIntent(text),
+            SiegeCastlePrisonerDispositionKind.RepairCastle => HasRepairCastleIntent(text),
             SiegeCastlePrisonerDispositionKind.Instructor => ContainsAny(text, InstructorTerms) && !ContainsAny(text, InstructorNegationTerms),
             _ => false
         };
@@ -211,23 +248,7 @@ public static class SiegeCastlePlayerAuthorizationPolicy
 
     private static int CountDispositionIntents(string text)
     {
-        int count = 0;
-        foreach (SiegeCastlePrisonerDispositionKind disposition in new[]
-        {
-            SiegeCastlePrisonerDispositionKind.Recruit,
-            SiegeCastlePrisonerDispositionKind.Slaughter,
-            SiegeCastlePrisonerDispositionKind.Release,
-            SiegeCastlePrisonerDispositionKind.Sell,
-            SiegeCastlePrisonerDispositionKind.Labor,
-            SiegeCastlePrisonerDispositionKind.Instructor
-        })
-        {
-            if (HasPositiveIntent(text, disposition))
-            {
-                count++;
-            }
-        }
-        return count;
+        return DetectPositiveIntents(text).Count;
     }
 
     private static string GetExplicitReasonCode(SiegeCastlePrisonerDispositionKind disposition)
@@ -239,9 +260,34 @@ public static class SiegeCastlePlayerAuthorizationPolicy
             SiegeCastlePrisonerDispositionKind.Release => "player_explicit_release_authorization",
             SiegeCastlePrisonerDispositionKind.Sell => "player_explicit_sell_authorization",
             SiegeCastlePrisonerDispositionKind.Labor => "player_explicit_labor_authorization",
+            SiegeCastlePrisonerDispositionKind.RepairCastle => "player_explicit_repair_castle_authorization",
             SiegeCastlePrisonerDispositionKind.Instructor => "player_explicit_instructor_authorization",
             _ => "player_explicit_castle_disposition_authorization"
         };
+    }
+
+    private static bool HasExternalLaborIntent(string text)
+    {
+        return !ContainsAny(text, LaborNegationTerms)
+            && !ContainsAny(text, RepairCastleTerms)
+            && ContainsAny(text, ExternalLaborTerms);
+    }
+
+    private static bool HasRepairCastleIntent(string text)
+    {
+        if (ContainsAny(text, LaborNegationTerms))
+        {
+            return false;
+        }
+        return ContainsAny(text, RepairCastleTerms)
+            || (ContainsAny(text, GenericLaborTerms) && !ContainsAny(text, ExternalLaborTerms));
+    }
+
+    private static bool IsBareLaborReference(string text)
+    {
+        return ContainsAny(text, GenericLaborTerms)
+            && !ContainsAny(text, ExternalLaborTerms)
+            && !ContainsAny(text, RepairCastleTerms);
     }
 
     private static bool ContainsAny(string text, string[] terms)

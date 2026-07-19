@@ -15,6 +15,7 @@ public static class SiegeCastleActionTagCatalog
     public const string ProposeReleasePrisonersTag = "[ACTION:CASTLE_PROPOSE_RELEASE_PRISONERS]";
     public const string ProposeSellPrisonersTag = "[ACTION:CASTLE_PROPOSE_SELL_PRISONERS]";
     public const string ProposeLaborPrisonersTag = "[ACTION:CASTLE_PROPOSE_LABOR_PRISONERS]";
+    public const string ProposeRepairCastleLaborTag = "[ACTION:CASTLE_PROPOSE_REPAIR_CASTLE_LABOR]";
     public const string ProposeInstructorPrisonersTag = "[ACTION:CASTLE_PROPOSE_INSTRUCTOR_PRISONERS]";
     public const string TreatPrisonersTag = "[ACTION:CASTLE_TREAT_PRISONERS]";
     public const string ReceiveArmamentsTag = "[ACTION:CASTLE_RECEIVE_ARMAMENTS]";
@@ -25,6 +26,8 @@ public static class SiegeCastleActionTagCatalog
     public const string RecruitPrisonersForcedTag = "[ACTION:CASTLE_RECRUIT_PRISONERS_FORCED]";
     public const string LaborPrisonersVoluntaryTag = "[ACTION:CASTLE_LABOR_PRISONERS_VOLUNTARY]";
     public const string LaborPrisonersForcedTag = "[ACTION:CASTLE_LABOR_PRISONERS_FORCED]";
+    public const string RepairCastleLaborVoluntaryTag = "[ACTION:CASTLE_REPAIR_CASTLE_LABOR_VOLUNTARY]";
+    public const string RepairCastleLaborForcedTag = "[ACTION:CASTLE_REPAIR_CASTLE_LABOR_FORCED]";
     public const string InstructorPrisonersVoluntaryTag = "[ACTION:CASTLE_INSTRUCTOR_PRISONERS_VOLUNTARY]";
     public const string InstructorPrisonersForcedTag = "[ACTION:CASTLE_INSTRUCTOR_PRISONERS_FORCED]";
     public const string AppeaseSoldiersTag = "[ACTION:CASTLE_APPEASE_SOLDIERS]";
@@ -59,6 +62,9 @@ public static class SiegeCastleActionTagCatalog
             ["CASTLE_PROPOSE_LABOR_PRISONERS"] = SiegeCastleActionKind.ProposeLaborPrisoners,
             ["SIEGE_CASTLE_PROPOSE_LABOR_PRISONERS"] = SiegeCastleActionKind.ProposeLaborPrisoners,
             ["城堡提议劳役战俘"] = SiegeCastleActionKind.ProposeLaborPrisoners,
+            ["CASTLE_PROPOSE_REPAIR_CASTLE_LABOR"] = SiegeCastleActionKind.ProposeRepairCastleLabor,
+            ["SIEGE_CASTLE_PROPOSE_REPAIR_CASTLE_LABOR"] = SiegeCastleActionKind.ProposeRepairCastleLabor,
+            ["城堡提议战俘修缮城堡"] = SiegeCastleActionKind.ProposeRepairCastleLabor,
             ["CASTLE_PROPOSE_INSTRUCTOR_PRISONERS"] = SiegeCastleActionKind.ProposeInstructorPrisoners,
             ["SIEGE_CASTLE_PROPOSE_INSTRUCTOR_PRISONERS"] = SiegeCastleActionKind.ProposeInstructorPrisoners,
             ["城堡提议战俘充当教官"] = SiegeCastleActionKind.ProposeInstructorPrisoners,
@@ -95,6 +101,12 @@ public static class SiegeCastleActionTagCatalog
             ["CASTLE_LABOR_PRISONERS_FORCED"] = SiegeCastleActionKind.LaborPrisonersForced,
             ["SIEGE_CASTLE_LABOR_PRISONERS_FORCED"] = SiegeCastleActionKind.LaborPrisonersForced,
             ["城堡强制劳役服刑"] = SiegeCastleActionKind.LaborPrisonersForced,
+            ["CASTLE_REPAIR_CASTLE_LABOR_VOLUNTARY"] = SiegeCastleActionKind.RepairCastleLaborVoluntary,
+            ["SIEGE_CASTLE_REPAIR_CASTLE_LABOR_VOLUNTARY"] = SiegeCastleActionKind.RepairCastleLaborVoluntary,
+            ["城堡自愿劳役修缮城堡"] = SiegeCastleActionKind.RepairCastleLaborVoluntary,
+            ["CASTLE_REPAIR_CASTLE_LABOR_FORCED"] = SiegeCastleActionKind.RepairCastleLaborForced,
+            ["SIEGE_CASTLE_REPAIR_CASTLE_LABOR_FORCED"] = SiegeCastleActionKind.RepairCastleLaborForced,
+            ["城堡强制劳役修缮城堡"] = SiegeCastleActionKind.RepairCastleLaborForced,
             ["CASTLE_INSTRUCTOR_PRISONERS_VOLUNTARY"] = SiegeCastleActionKind.InstructorPrisonersVoluntary,
             ["SIEGE_CASTLE_INSTRUCTOR_PRISONERS_VOLUNTARY"] = SiegeCastleActionKind.InstructorPrisonersVoluntary,
             ["城堡自愿充当教官"] = SiegeCastleActionKind.InstructorPrisonersVoluntary,
@@ -134,6 +146,7 @@ public static class SiegeCastleActionTagCatalog
         SiegeCastleActionKind.ProposeReleasePrisoners,
         SiegeCastleActionKind.ProposeSellPrisoners,
         SiegeCastleActionKind.ProposeLaborPrisoners,
+        SiegeCastleActionKind.ProposeRepairCastleLabor,
         SiegeCastleActionKind.ProposeInstructorPrisoners,
         SiegeCastleActionKind.TreatPrisoners,
         SiegeCastleActionKind.ReceiveArmaments,
@@ -143,6 +156,8 @@ public static class SiegeCastleActionTagCatalog
         SiegeCastleActionKind.RecruitPrisonersForced,
         SiegeCastleActionKind.LaborPrisonersVoluntary,
         SiegeCastleActionKind.LaborPrisonersForced,
+        SiegeCastleActionKind.RepairCastleLaborVoluntary,
+        SiegeCastleActionKind.RepairCastleLaborForced,
         SiegeCastleActionKind.InstructorPrisonersVoluntary,
         SiegeCastleActionKind.InstructorPrisonersForced,
         SiegeCastleActionKind.SlaughterPrisoners,
@@ -162,6 +177,7 @@ public static class SiegeCastleActionTagCatalog
             [SiegeCastleActionKind.ProposeReleasePrisoners] = ProposeReleasePrisonersTag,
             [SiegeCastleActionKind.ProposeSellPrisoners] = ProposeSellPrisonersTag,
             [SiegeCastleActionKind.ProposeLaborPrisoners] = ProposeLaborPrisonersTag,
+            [SiegeCastleActionKind.ProposeRepairCastleLabor] = ProposeRepairCastleLaborTag,
             [SiegeCastleActionKind.ProposeInstructorPrisoners] = ProposeInstructorPrisonersTag,
             [SiegeCastleActionKind.TreatPrisoners] = TreatPrisonersTag,
             [SiegeCastleActionKind.ReceiveArmaments] = ReceiveArmamentsTag,
@@ -172,6 +188,8 @@ public static class SiegeCastleActionTagCatalog
             [SiegeCastleActionKind.RecruitPrisonersForced] = RecruitPrisonersForcedTag,
             [SiegeCastleActionKind.LaborPrisonersVoluntary] = LaborPrisonersVoluntaryTag,
             [SiegeCastleActionKind.LaborPrisonersForced] = LaborPrisonersForcedTag,
+            [SiegeCastleActionKind.RepairCastleLaborVoluntary] = RepairCastleLaborVoluntaryTag,
+            [SiegeCastleActionKind.RepairCastleLaborForced] = RepairCastleLaborForcedTag,
             [SiegeCastleActionKind.InstructorPrisonersVoluntary] = InstructorPrisonersVoluntaryTag,
             [SiegeCastleActionKind.InstructorPrisonersForced] = InstructorPrisonersForcedTag,
             [SiegeCastleActionKind.AppeaseSoldiers] = AppeaseSoldiersTag,
