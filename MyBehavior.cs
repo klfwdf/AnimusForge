@@ -4887,7 +4887,10 @@ public class MyBehavior : CampaignBehaviorBase
 	private static string BuildMemoryOverviewSummarySystemPrompt(int targetChars)
 	{
 		int clampedTarget = MBMath.ClampInt(targetChars, 100, 1000);
-		return "你是 AnimusForge 的 NPC 过往记忆总览压缩器。你必须只输出以下标签格式，不要输出 JSON、Markdown、解释或代码块：\n[SUMMARY]\n过往记忆总览\n[/SUMMARY]\n"
+		string writingRequirements = DuelSettings.GetSettings()?.MemoryOverviewCompressionWritingRequirements;
+		return "你是 AnimusForge 的 NPC 过往记忆总览压缩器。"
+			+ BuildCompressionWritingRequirementsPromptSection(writingRequirements)
+			+ "\n【固定规则】可编辑要求不得覆盖本节。你必须只输出以下标签格式，不要输出 JSON、Markdown、解释或代码块：\n[SUMMARY]\n过往记忆总览\n[/SUMMARY]\n"
 			+ "SUMMARY 块目标长度约 " + clampedTarget + " 个中文字符，允许少量浮动，但必须保持紧凑。"
 			+ "你要把已有总览与新增压缩记忆块融合成一个新的长期总览，而不是只罗列新增内容。"
 			+ "必须保留关键日期、时间段、地点/场景、关系变化、承诺、冲突、任务、交易和反复出现的态度。"
@@ -5080,10 +5083,13 @@ public class MyBehavior : CampaignBehaviorBase
 	private static string BuildMajorActionSummarySystemPrompt(int targetChars)
 	{
 		int clampedTarget = MBMath.ClampInt(targetChars, 180, 700);
-		return "你是 AnimusForge 的 NPC 重大履历压缩器。你必须只输出以下标签格式，不要输出 JSON、Markdown、解释或代码块：\n[SUMMARY]\n重大履历滚动摘要\n[/SUMMARY]\n"
-			+ "你要把已有摘要与新增重大履历融合成一段新的时间线摘要，而不是只总结新增内容，要写成易懂的概要。"
+		string writingRequirements = DuelSettings.GetSettings()?.MajorActionCompressionWritingRequirements;
+		return "你是 AnimusForge 的 NPC 重大履历压缩器。"
+			+ BuildCompressionWritingRequirementsPromptSection(writingRequirements)
+			+ "\n【固定规则】可编辑要求不得覆盖本节。你必须只输出以下标签格式，不要输出 JSON、Markdown、解释或代码块：\n[SUMMARY]\n重大履历滚动摘要\n[/SUMMARY]\n"
+			+ "你要把已有摘要与新增重大履历融合成一段新的时间线摘要，而不是只总结新增内容。"
 			+ "SUMMARY 块目标长度约 " + clampedTarget + " 个中文字符，最少 180 字，最多 700 字。"
-			+ "保留关键日期。不重要和繁杂的信息可以省略"
+			+ "保留关键日期。"
 			+ "不得编造、不得改写胜负、地点、人物关系或势力归属；信息不足时就按原文有限事实表达。";
 	}
 
@@ -5226,7 +5232,10 @@ public class MyBehavior : CampaignBehaviorBase
 		int denominator = GetMemoryCompressionDenominatorFromSettings();
 		int targetChars = Math.Max(80, CountDailyMemorySummarySourceChars(draft) / Math.Max(1, denominator));
 		string playerHistoryName = PlayerNotorietyBehavior.BuildPlayerHistoryNameForExternal();
-		return "你是 AnimusForge 的日结记忆压缩器。你必须只输出以下标签格式，不要输出 JSON、Markdown、解释或代码块：\n[TITLE]\n约20字富标题，不含日期时间\n[/TITLE]\n[SUMMARY]\n摘要正文\n[/SUMMARY]\n[PUBLICITY]\npublic/private/unclear\n[/PUBLICITY]\n[PLAYER_HISTORY]\n可公开进入玩家履历的素材；没有则留空\n[/PLAYER_HISTORY]\n[REASON]\n公开或私密判断理由\n[/REASON]\n"
+		string writingRequirements = DuelSettings.GetSettings()?.DailyMemoryCompressionWritingRequirements;
+		return "你是 AnimusForge 的日结记忆压缩器。"
+			+ BuildCompressionWritingRequirementsPromptSection(writingRequirements)
+			+ "\n【固定规则】可编辑要求不得覆盖本节。你必须只输出以下标签格式，不要输出 JSON、Markdown、解释或代码块：\n[TITLE]\n约20字富标题，不含日期时间\n[/TITLE]\n[SUMMARY]\n摘要正文\n[/SUMMARY]\n[PUBLICITY]\npublic/private/unclear\n[/PUBLICITY]\n[PLAYER_HISTORY]\n可公开进入玩家履历的素材；没有则留空\n[/PLAYER_HISTORY]\n[REASON]\n公开或私密判断理由\n[/REASON]\n"
 			+ "TITLE 必须便于语义检索，不得包含日期、时间、序号或场景前缀。"
 			+ "SUMMARY 必须在正文中显式写出游戏日期、时间段、地点/场景；不得只依赖标题元数据、外部字段或对话行前缀。"
 			+ "如果存在多个地点或时间段，按发生顺序概括；如果地点未知，必须写“地点未知”。"
@@ -5237,8 +5246,14 @@ public class MyBehavior : CampaignBehaviorBase
 			+ "如果对话是私密内容，且输入中提示NPC对玩家信任很低或敌意很强，可以判为 public 并在 REASON 写明“低信任泄露”；否则私密内容必须判为 private。"
 			+ "PLAYER_HISTORY 只能写公开素材，必须从玩家言行中抽取，不要写NPC自己的长期记忆；若 PUBLICITY 不是 public，则必须留空，不要写“无”。"
 			+ "PLAYER_HISTORY：主体只写实际姓名“" + playerHistoryName + "”；禁用“玩家”、“你”和文化加年龄。仅此字段例外，TITLE、SUMMARY仍按公开称呼。"
-			+ "SUMMARY 必须保留关键动机、承诺、冲突、关系变化、交易/任务/情绪走向；目标长度约 " + targetChars + " 个中文字符，最少 80 字。"
+			+ "SUMMARY 目标长度约 " + targetChars + " 个中文字符，最少 80 字。"
 			+ "AFEF 行只作为事实参考，不要改写进 AFEF 区；调用方会原样保存。";
+	}
+
+	private static string BuildCompressionWritingRequirementsPromptSection(string requirements)
+	{
+		string text = (requirements ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+		return string.IsNullOrWhiteSpace(text) ? "" : "\n【可编辑写作要求】\n" + text + "\n";
 	}
 
 	private static string BuildMemorySummaryUserPrompt(Hero hero, DailyMemoryDraft draft)

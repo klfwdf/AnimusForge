@@ -95,6 +95,123 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		Goods
 	}
 
+	private enum GeneratedRpEquipmentKind
+	{
+		None,
+		AnyEquipment,
+		AnyWeapon,
+		Sword,
+		Axe,
+		Mace,
+		Dagger,
+		Polearm,
+		Bow,
+		Crossbow,
+		Shield,
+		Thrown,
+		ThrowingAxe,
+		ThrowingKnife,
+		Javelin,
+		Arrows,
+		Bolts,
+		Sling,
+		Firearm,
+		Bullets,
+		AnyArmor,
+		HeadArmor,
+		BodyArmor,
+		LegArmor,
+		HandArmor,
+		Cape,
+		HorseHarness,
+		Banner
+	}
+
+	private sealed class GeneratedRpEquipmentSuffixRule
+	{
+		public GeneratedRpEquipmentKind Kind { get; }
+
+		public bool RequiresEnglishWordBoundary { get; }
+
+		public string[] Suffixes { get; }
+
+		public GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind kind, bool requiresEnglishWordBoundary, params string[] suffixes)
+		{
+			Kind = kind;
+			RequiresEnglishWordBoundary = requiresEnglishWordBoundary;
+			Suffixes = suffixes ?? Array.Empty<string>();
+		}
+	}
+
+	private sealed class GeneratedRpEquipmentTemplateCandidate
+	{
+		public ItemObject Item { get; set; }
+
+		public string[] Aliases { get; set; }
+	}
+
+	private static readonly object GeneratedRpEquipmentTemplateCacheLock = new object();
+	private static object GeneratedRpEquipmentTemplateCacheOwner;
+	private static Dictionary<GeneratedRpEquipmentKind, List<GeneratedRpEquipmentTemplateCandidate>> GeneratedRpEquipmentTemplatesByKind = new Dictionary<GeneratedRpEquipmentKind, List<GeneratedRpEquipmentTemplateCandidate>>();
+	private static readonly char[] GeneratedRpEquipmentTrailingPunctuation = new char[18] { '.', ',', ';', '!', '?', ':', '\'', '"', '\u3002', '\uff0c', '\uff1b', '\uff01', '\uff1f', '\uff1a', '\u2019', '\u201d', '\u300b', '\u3011' };
+	private static readonly GeneratedRpEquipmentSuffixRule[] GeneratedRpEquipmentSuffixRules = new GeneratedRpEquipmentSuffixRule[]
+	{
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.ThrowingAxe, false, "投斧", "飞斧"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.ThrowingKnife, false, "投刀", "飞刀"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Javelin, false, "标枪"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Firearm, false, "火枪", "手枪", "步枪", "鸟铳", "火铳", "铳"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Bolts, false, "弩箭", "弩矢"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Crossbow, false, "强弩", "重弩", "轻弩", "弩"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Bow, false, "长弓", "短弓", "战弓", "反曲弓", "弓"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Shield, false, "盾牌", "大盾", "小盾", "圆盾", "塔盾", "盾"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Arrows, false, "箭矢", "箭袋", "箭"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Sling, false, "投石索"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Bullets, false, "弹药", "子弹", "枪弹"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Dagger, false, "匕首", "短刃", "小刀"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Sword, false, "双手剑", "单手剑", "长剑", "短剑", "大剑", "巨剑", "弯刀", "佩剑", "战刀", "军刀", "长刀", "短刀", "剑", "刀"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Axe, false, "双手斧", "单手斧", "战斧", "巨斧", "手斧", "斧"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Mace, false, "钉头锤", "战锤", "大锤", "铁锤", "锤矛", "权杖", "锤", "棒", "棍"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Polearm, false, "长柄武器", "长柄", "长枪", "骑枪", "短枪", "战矛", "长矛", "短矛", "槊", "戟", "矛", "枪"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Thrown, false, "投掷武器"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.HorseHarness, false, "马铠", "马甲", "马具", "鞍具", "马鞍", "鞍"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.HeadArmor, false, "头盔", "战盔", "铁盔", "盔"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.HandArmor, false, "手甲", "臂甲", "护臂", "护手", "手套", "拳套"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.LegArmor, false, "腿甲", "胫甲", "护腿", "战靴", "长靴", "靴子", "靴"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Cape, false, "肩甲", "护肩", "披风", "斗篷", "披肩"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.BodyArmor, false, "胸甲", "身甲", "板甲", "链甲", "鳞甲", "皮甲", "布甲", "重甲", "轻甲"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.BodyArmor, false, "铠甲", "盔甲", "护甲", "铠", "甲"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Banner, false, "旗帜", "军旗", "战旗", "旗"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.AnyWeapon, false, "武器", "兵器", "兵刃"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.AnyEquipment, false, "装备", "武装"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.ThrowingAxe, true, "throwing axes", "throwing axe"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.ThrowingKnife, true, "throwing knives", "throwing knife"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Javelin, true, "javelins", "javelin"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Crossbow, true, "crossbows", "crossbow"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Bow, true, "longbows", "longbow", "shortbows", "shortbow", "warbows", "warbow", "recurve bows", "recurve bow", "bows", "bow"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Shield, true, "shields", "shield", "bucklers", "buckler"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Arrows, true, "arrows", "arrow", "quivers", "quiver"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Bolts, true, "crossbow bolts", "bolts", "bolt"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Sling, true, "slings", "sling"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Firearm, true, "pistols", "pistol", "muskets", "musket", "rifles", "rifle", "firearms", "firearm", "guns", "gun"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Bullets, true, "ammunition", "ammo", "bullets", "bullet"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Sword, true, "longswords", "longsword", "shortswords", "shortsword", "broadswords", "broadsword", "greatswords", "greatsword", "swords", "sword", "sabers", "saber", "sabres", "sabre", "scimitars", "scimitar", "katanas", "katana", "blades", "blade"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Axe, true, "battleaxes", "battleaxe", "greataxes", "greataxe", "handaxes", "handaxe", "axes", "axe"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Mace, true, "warhammers", "warhammer", "hammers", "hammer", "maces", "mace", "clubs", "club"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Dagger, true, "daggers", "dagger", "knives", "knife"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Polearm, true, "polearms", "polearm", "spears", "spear", "lances", "lance", "pikes", "pike", "halberds", "halberd", "glaives", "glaive"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Thrown, true, "throwing weapons", "thrown weapons"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.HorseHarness, true, "horse armors", "horse armor", "horse armours", "horse armour", "bardings", "barding", "saddles", "saddle", "harnesses", "harness"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.HeadArmor, true, "helmets", "helmet", "helms", "helm"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.HandArmor, true, "gauntlets", "gauntlet", "gloves", "glove", "bracers", "bracer", "vambraces", "vambrace"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.LegArmor, true, "greaves", "greave", "boots", "boot"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Cape, true, "pauldrons", "pauldron", "capes", "cape", "cloaks", "cloak", "mantles", "mantle"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.BodyArmor, true, "body armors", "body armor", "body armours", "body armour", "chest armors", "chest armor", "chest armours", "chest armour", "cuirasses", "cuirass", "breastplates", "breastplate", "chainmail"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.BodyArmor, true, "armors", "armor", "armours", "armour"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Banner, true, "banners", "banner", "standards", "standard"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.AnyWeapon, true, "weapons", "weapon", "armaments", "armament"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.AnyEquipment, true, "equipment", "combat gear", "gear")
+	};
+
 	public class RewardItemInfo
 	{
 		public ItemObject Item { get; set; }
@@ -1246,6 +1363,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		RemoveGeneratedRewardItemsFromMarketRosters("game_load_finished");
 		CourierDeliveryBehavior.Instance?.RestoreCourierLetterInventoryItemsAfterGeneratedRewardRestore("reward_game_load_finished");
 		CleanupPlayerCompanionLordCacheDuplicates("game_load_finished");
+		RepairPlayerHeroMemberPrisonerDuplicates("game_load_finished");
 		RepairInactivePromotedPlayerCompanions("game_load_finished");
 		BackfillHeroJoinOriginalClanRecordsForExistingPlayerCompanions();
 	}
@@ -1311,6 +1429,81 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		catch
 		{
 			return false;
+		}
+	}
+
+	private static bool IsHeroInPrisonRoster(Hero hero, PartyBase party)
+	{
+		try
+		{
+			return hero?.CharacterObject != null && party?.PrisonRoster != null && party.PrisonRoster.FindIndexOfTroop(hero.CharacterObject) >= 0;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static int RemoveAllHeroCopiesFromPrisonRoster(PartyBase party, Hero hero)
+	{
+		if (party?.PrisonRoster == null || hero?.CharacterObject == null)
+		{
+			return 0;
+		}
+		int before = Math.Max(0, party.PrisonRoster.GetTroopCount(hero.CharacterObject));
+		if (before <= 0)
+		{
+			return 0;
+		}
+		party.PrisonRoster.AddToCounts(hero.CharacterObject, -before, insertAtFront: false, woundedCount: 0, xpChange: 0, removeDepleted: true, index: -1);
+		int after = Math.Max(0, party.PrisonRoster.GetTroopCount(hero.CharacterObject));
+		return Math.Max(0, before - after);
+	}
+
+	private static void RepairPlayerHeroMemberPrisonerDuplicates(string reason)
+	{
+		try
+		{
+			Clan playerClan = Clan.PlayerClan;
+			MobileParty mainParty = MobileParty.MainParty;
+			TroopRoster memberRoster = mainParty?.MemberRoster;
+			TroopRoster prisonRoster = mainParty?.Party?.PrisonRoster;
+			if (playerClan == null || mainParty == null || memberRoster == null || prisonRoster == null || prisonRoster.Count == 0)
+			{
+				return;
+			}
+			HashSet<Hero> duplicates = new HashSet<Hero>();
+			for (int i = 0; i < prisonRoster.Count; i++)
+			{
+				Hero hero = prisonRoster.GetElementCopyAtIndex(i).Character?.HeroObject;
+				if (hero == null || hero == Hero.MainHero || hero.PartyBelongedTo != mainParty || memberRoster.GetTroopCount(hero.CharacterObject) <= 0)
+				{
+					continue;
+				}
+				if (hero.CompanionOf == playerClan || hero.Clan == playerClan || hero.IsPlayerCompanion)
+				{
+					duplicates.Add(hero);
+				}
+			}
+			foreach (Hero hero in duplicates)
+			{
+				Hero.CharacterStates oldState = hero.HeroState;
+				int removed = RemoveAllHeroCopiesFromPrisonRoster(mainParty.Party, hero);
+				if (removed <= 0 || IsHeroInPrisonRoster(hero, mainParty.Party))
+				{
+					Logger.Log("RewardSystemBehavior", "[HeroJoin] member_prisoner_duplicate_repair_failed reason=" + (reason ?? "") + " hero=" + (hero.StringId ?? "") + " removed=" + removed);
+					continue;
+				}
+				if (!hero.IsActive && !hero.IsDead)
+				{
+					hero.ChangeState(Hero.CharacterStates.Active);
+				}
+				Logger.Log("RewardSystemBehavior", "[HeroJoin] member_prisoner_duplicate_repaired reason=" + (reason ?? "") + " hero=" + (hero.StringId ?? "") + " removed=" + removed + " oldState=" + oldState + " newState=" + hero.HeroState);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("RewardSystemBehavior", "[HeroJoin] member_prisoner_duplicate_repair_failed reason=" + (reason ?? "") + " error=" + ex.Message);
 		}
 	}
 
@@ -4792,6 +4985,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				&& hero.Clan == playerClan
 				&& hero.Occupation == Occupation.Lord
 				&& hero.CompanionOf == null
+				&& hero.IsActive
+				&& !hero.IsPrisoner
+				&& hero.PartyBelongedToAsPrisoner == null
+				&& !IsHeroInPrisonRoster(hero, PartyBase.MainParty)
 				&& (hero.PartyBelongedTo == mainParty || IsHeroInParty(hero, mainParty));
 		}
 		catch
@@ -4811,10 +5008,87 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				&& mainParty != null
 				&& hero.CompanionOf == playerClan
 				&& hero.Occupation == Occupation.Wanderer
+				&& hero.IsActive
+				&& !hero.IsPrisoner
+				&& hero.PartyBelongedToAsPrisoner == null
+				&& !IsHeroInPrisonRoster(hero, PartyBase.MainParty)
 				&& (hero.PartyBelongedTo == mainParty || IsHeroInParty(hero, mainParty));
 		}
 		catch
 		{
+			return false;
+		}
+	}
+
+	private static bool ShouldPreservePlayerFamilyIdentityForCompanionJoin(Hero hero)
+	{
+		try
+		{
+			Hero mainHero = Hero.MainHero;
+			Clan playerClan = Clan.PlayerClan ?? mainHero?.Clan;
+			if (hero == null || mainHero == null || playerClan == null || hero == mainHero)
+			{
+				return false;
+			}
+			if (hero.Spouse == mainHero || mainHero.Spouse == hero)
+			{
+				return true;
+			}
+			return hero.CompanionOf == null && hero.Clan == playerClan;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool TryEndHeroCaptivityForPlayerJoin(Hero hero, PartyBase originalCaptivityParty, string reason, List<string> transitionNotes, out string statusText)
+	{
+		statusText = "";
+		try
+		{
+			if (hero?.CharacterObject == null)
+			{
+				statusText = "执行失败：缺少要解除俘虏身份的目标英雄。";
+				return false;
+			}
+			PartyBase captivityParty = hero.PartyBelongedToAsPrisoner ?? originalCaptivityParty;
+			PartyBase mainParty = PartyBase.MainParty;
+			bool hasCaptivityState = hero.IsPrisoner || hero.PartyBelongedToAsPrisoner != null;
+			bool hasSourceRosterEntry = IsHeroInPrisonRoster(hero, captivityParty);
+			bool hasMainPartyRosterEntry = IsHeroInPrisonRoster(hero, mainParty);
+			if (!hasCaptivityState && !hasSourceRosterEntry && !hasMainPartyRosterEntry)
+			{
+				return true;
+			}
+			Hero.CharacterStates oldState = hero.HeroState;
+			if (hasCaptivityState)
+			{
+				EndCaptivityAction.ApplyByReleasedByChoice(hero, Hero.MainHero);
+			}
+			int residualRemoved = RemoveAllHeroCopiesFromPrisonRoster(captivityParty, hero);
+			if (mainParty != null && mainParty != captivityParty)
+			{
+				residualRemoved += RemoveAllHeroCopiesFromPrisonRoster(mainParty, hero);
+			}
+			bool stillCaptive = hero.IsPrisoner
+				|| hero.PartyBelongedToAsPrisoner != null
+				|| IsHeroInPrisonRoster(hero, captivityParty)
+				|| (mainParty != captivityParty && IsHeroInPrisonRoster(hero, mainParty));
+			if (stillCaptive)
+			{
+				statusText = "执行失败：目标英雄的俘虏状态或俘虏名册残留未能清除。";
+				Logger.Log("RewardSystemBehavior", "[HeroJoin] captivity_cleanup_incomplete reason=" + (reason ?? "") + " hero=" + (hero.StringId ?? "") + " state=" + hero.HeroState + " prisonerParty=" + (hero.PartyBelongedToAsPrisoner?.Id ?? "") + " residualRemoved=" + residualRemoved);
+				return false;
+			}
+			transitionNotes?.Add("已解除其俘虏身份");
+			Logger.Log("RewardSystemBehavior", "[HeroJoin] captivity_ended reason=" + (reason ?? "") + " hero=" + (hero.StringId ?? "") + " oldState=" + oldState + " newState=" + hero.HeroState + " source=" + (captivityParty?.Id ?? "") + " residualRemoved=" + residualRemoved);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			statusText = "执行失败（解除俘虏身份异常）：" + ex.Message;
+			Logger.Log("RewardSystemBehavior", "[HeroJoin] captivity_cleanup_failed reason=" + (reason ?? "") + " hero=" + (hero?.StringId ?? "") + " error=" + ex.Message);
 			return false;
 		}
 	}
@@ -4868,9 +5142,19 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			catch
 			{
 			}
+			if (!hero.IsActive && !hero.IsDead && !TryActivatePromotedCompanionHero(hero, reason))
+			{
+				statusText = "执行失败：目标英雄未能恢复为可加入队伍的活动状态。";
+				return false;
+			}
 			if (hero.PartyBelongedTo != mainParty && !IsHeroInParty(hero, mainParty))
 			{
 				AddHeroToPartyAction.Apply(hero, mainParty, showNotification: true);
+			}
+			if (!IsHeroPlayerClanLordInMainParty(hero))
+			{
+				statusText = "执行失败：目标英雄未能完成玩家家族成员身份或玩家主队归属更新。";
+				return false;
 			}
 			Logger.Log("RewardSystemBehavior", "[HeroJoin] moved_to_player_clan reason=" + (reason ?? "") + " hero=" + (hero.StringId ?? "") + " clan=" + (hero.Clan?.StringId ?? "") + " occupation=" + hero.Occupation + " party=" + (hero.PartyBelongedTo?.StringId ?? ""));
 			return true;
@@ -4912,9 +5196,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				AddCompanionAction.Apply(playerClan, hero);
 			}
-			if (!hero.IsActive && !hero.IsDead)
+			if (!hero.IsActive && !hero.IsDead && !TryActivatePromotedCompanionHero(hero, reason))
 			{
-				TryActivatePromotedCompanionHero(hero, reason);
+				statusText = "执行失败：目标英雄未能恢复为可加入队伍的活动状态。";
+				return false;
 			}
 			if (hero.PartyBelongedTo != mainParty && !IsHeroInParty(hero, mainParty))
 			{
@@ -4936,7 +5221,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void RecordHeroJoinedPlayerClanForExternal(Hero hero, string reason, bool asCompanion = false)
+	private static void RecordHeroJoinedPlayerClanForExternal(Hero hero, string reason, bool asCompanion = false, bool preservedPlayerFamilyIdentity = false)
 	{
 		try
 		{
@@ -4952,14 +5237,15 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			string heroName = hero.Name?.ToString() ?? "该英雄";
 			Settlement settlement = Settlement.CurrentSettlement ?? hero.CurrentSettlement ?? MobileParty.MainParty?.CurrentSettlement;
 			string locationText = settlement?.Name?.ToString() ?? "";
-			string actionType = asCompanion ? "player_companion_join" : "player_clan_join";
+			bool preservedPlayerSpouseIdentity = preservedPlayerFamilyIdentity && (hero.Spouse == Hero.MainHero || Hero.MainHero?.Spouse == hero);
+			string actionType = preservedPlayerFamilyIdentity ? "player_family_party_join" : (asCompanion ? "player_companion_join" : "player_clan_join");
 			string stableKey = actionType + ":" + heroKey + ":" + GetCampaignDayIndex();
-			string npcFact = asCompanion
-				? "你成为了玩家的同伴，并随玩家队伍行动。"
-				: "你加入了玩家家族，成为玩家家族成员，并随玩家队伍行动。";
-			string playerFact = asCompanion
-				? "你招募了" + heroName + "成为同伴，并随你的队伍行动。"
-				: "你招募了" + heroName + "加入玩家家族，并随你的队伍行动。";
+			string npcFact = preservedPlayerFamilyIdentity
+				? (preservedPlayerSpouseIdentity ? "你仍是玩家的配偶，并已加入玩家队伍行动。" : "你仍是玩家家族成员，并已加入玩家队伍行动。")
+				: (asCompanion ? "你成为了玩家的同伴，并随玩家队伍行动。" : "你加入了玩家家族，成为玩家家族成员，并随玩家队伍行动。");
+			string playerFact = preservedPlayerFamilyIdentity
+				? (preservedPlayerSpouseIdentity ? heroName + "仍是你的配偶，并已加入你的队伍。" : heroName + "仍是你的家族成员，并已加入你的队伍。")
+				: (asCompanion ? "你招募了" + heroName + "成为同伴，并随你的队伍行动。" : "你招募了" + heroName + "加入玩家家族，并随你的队伍行动。");
 			MyBehavior.RecordNpcActionForExternal(hero, npcFact, stableKey + ":npc", actionType, isMajor: true, isRecent: true, targetHero: Hero.MainHero, settlement: settlement, locationText: locationText, allowNonLordHero: true, won: true);
 			MyBehavior.RecordPlayerActionForExternal(playerFact, stableKey + ":player", actionType, isMajor: true, targetHero: hero, settlement: settlement, locationText: locationText, won: true);
 			Logger.Log("RewardSystemBehavior", "[HeroJoin] action_history_recorded reason=" + (reason ?? "") + " hero=" + heroKey);
@@ -4995,6 +5281,13 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				statusText = "执行失败：玩家家族或玩家队伍不可用。";
 				return false;
 			}
+			bool preservePlayerFamilyIdentity = asCompanion && ShouldPreservePlayerFamilyIdentityForCompanionJoin(joiningHero);
+			bool preservePlayerSpouseIdentity = preservePlayerFamilyIdentity && (joiningHero.Spouse == Hero.MainHero || Hero.MainHero?.Spouse == joiningHero);
+			if (preservePlayerFamilyIdentity)
+			{
+				asCompanion = false;
+				Logger.Log("RewardSystemBehavior", "[HeroJoin] companion_request_redirected_to_family hero=" + (joiningHero.StringId ?? "") + " spouse=" + preservePlayerSpouseIdentity);
+			}
 			if (asCompanion ? IsHeroPlayerCompanionInMainParty(joiningHero) : IsHeroPlayerClanLordInMainParty(joiningHero))
 			{
 				statusText = asCompanion
@@ -5003,7 +5296,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				return false;
 			}
 			MobileParty originalMobileParty = joiningHero.PartyBelongedTo;
-			PartyBase originalParty = originalMobileParty?.Party;
+			PartyBase originalCaptivityParty = joiningHero.PartyBelongedToAsPrisoner;
+			PartyBase originalParty = originalMobileParty?.Party ?? originalCaptivityParty;
 			List<string> transitionNotes = new List<string>();
 			Clan originalClan = GetHeroBackingClan(joiningHero) ?? joiningHero.Clan;
 			Kingdom originalKingdom = originalClan?.Kingdom;
@@ -5049,6 +5343,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					FinalizeRulingClanTransitionForDepartedClan(originalKingdom, destroyOriginalKingdomAfterClanDestroyed, transitionNotes);
 				}
 			}
+			if (!TryEndHeroCaptivityForPlayerJoin(joiningHero, originalCaptivityParty, asCompanion ? "hero_join_party_companion" : "hero_join_party_lord", transitionNotes, out string captivityStatus))
+			{
+				statusText = captivityStatus;
+				return false;
+			}
 			if (currentSettlement != null && joiningHero.CurrentSettlement != null)
 			{
 				LeaveSettlementAction.ApplyForCharacterOnly(joiningHero);
@@ -5066,10 +5365,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			PlayerEncounter.LocationEncounter?.RemoveAccompanyingCharacter(joiningHero);
 			string transitionSummary = BuildRecruitmentTransitionSummary(transitionNotes);
-			RecordHeroJoinedPlayerClanForExternal(joiningHero, asCompanion ? "hero_join_party_companion" : "hero_join_party_lord", asCompanion);
-			statusText = asCompanion
-				? $"执行成功：{joiningHero.Name} 已成为玩家同伴，并加入玩家队伍{transitionSummary}。"
-				: $"执行成功：{joiningHero.Name} 已成为玩家家族成员，并加入玩家队伍{transitionSummary}。";
+			RecordHeroJoinedPlayerClanForExternal(joiningHero, preservePlayerFamilyIdentity ? "hero_join_party_family_preserved" : (asCompanion ? "hero_join_party_companion" : "hero_join_party_lord"), asCompanion, preservePlayerFamilyIdentity);
+			statusText = preservePlayerFamilyIdentity
+				? $"执行成功：{joiningHero.Name} 已保留{(preservePlayerSpouseIdentity ? "配偶" : "玩家家族成员")}身份，并加入玩家队伍{transitionSummary}。"
+				: (asCompanion
+					? $"执行成功：{joiningHero.Name} 已成为玩家同伴，并加入玩家队伍{transitionSummary}。"
+					: $"执行成功：{joiningHero.Name} 已成为玩家家族成员，并加入玩家队伍{transitionSummary}。");
 			ScheduleHeroJoinConversationClose(joiningHero, originalParty, originalMobileParty);
 			return true;
 		}
@@ -8553,6 +8854,376 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return score.ToString("0.0000", CultureInfo.InvariantCulture);
 	}
 
+	private static bool TryResolveGeneratedRpEquipmentSuffix(string assetName, out GeneratedRpEquipmentKind kind, out string matchedSuffix)
+	{
+		kind = GeneratedRpEquipmentKind.None;
+		matchedSuffix = "";
+		string text = (assetName ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		text = text.TrimEnd(GeneratedRpEquipmentTrailingPunctuation).TrimEnd();
+		foreach (GeneratedRpEquipmentSuffixRule rule in GeneratedRpEquipmentSuffixRules)
+		{
+			if (rule == null || rule.Kind == GeneratedRpEquipmentKind.None)
+			{
+				continue;
+			}
+			foreach (string suffix in rule.Suffixes)
+			{
+				if (!MatchesGeneratedRpEquipmentSuffix(text, suffix, rule.RequiresEnglishWordBoundary))
+				{
+					continue;
+				}
+				kind = rule.Kind;
+				matchedSuffix = suffix;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static bool MatchesGeneratedRpEquipmentSuffix(string text, string suffix, bool requiresEnglishWordBoundary)
+	{
+		if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(suffix) || !text.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
+		{
+			return false;
+		}
+		if (!requiresEnglishWordBoundary)
+		{
+			return true;
+		}
+		int suffixStart = text.Length - suffix.Length;
+		if (suffixStart <= 0)
+		{
+			return true;
+		}
+		char preceding = text[suffixStart - 1];
+		if (!IsAsciiLetterOrDigit(preceding))
+		{
+			return true;
+		}
+		char firstSuffixCharacter = text[suffixStart];
+		return char.IsLower(preceding) && char.IsUpper(firstSuffixCharacter);
+	}
+
+	private static bool IsAsciiLetterOrDigit(char value)
+	{
+		return (value >= 'a' && value <= 'z') || (value >= 'A' && value <= 'Z') || (value >= '0' && value <= '9');
+	}
+
+	private static bool TryResolveGeneratedRpEquipmentTemplate(string assetName, out ItemObject templateItem, out GeneratedRpEquipmentKind kind, out string matchedSuffix, out float matchScore, out int candidateCount)
+	{
+		templateItem = null;
+		matchScore = 0f;
+		candidateCount = 0;
+		if (!TryResolveGeneratedRpEquipmentSuffix(assetName, out kind, out matchedSuffix))
+		{
+			return false;
+		}
+		Dictionary<GeneratedRpEquipmentKind, List<GeneratedRpEquipmentTemplateCandidate>> templatesByKind = GetGeneratedRpEquipmentTemplateCache();
+		if (!templatesByKind.TryGetValue(kind, out List<GeneratedRpEquipmentTemplateCandidate> candidates) || candidates == null || candidates.Count == 0)
+		{
+			return false;
+		}
+		candidateCount = candidates.Count;
+		GeneratedRpEquipmentTemplateCandidate best = null;
+		float bestScore = -1f;
+		int bestSuitability = int.MinValue;
+		float bestTieBreaker = -1f;
+		foreach (GeneratedRpEquipmentTemplateCandidate candidate in candidates)
+		{
+			ItemObject item = candidate?.Item;
+			if (!IsCloneSafeGeneratedRewardTemplateItem(item))
+			{
+				continue;
+			}
+			float score = WorldEntityRetrievalService.CalculateBestAliasScoreForExternal(assetName, candidate.Aliases);
+			int suitability = GetGeneratedRpEquipmentTemplateSuitability(item);
+			float tieBreaker = GetGeneratedRpEquipmentTemplateTieBreaker(assetName, item);
+			bool isBetter = score > bestScore + 0.00001f;
+			if (!isBetter && Math.Abs(score - bestScore) <= 0.00001f)
+			{
+				isBetter = suitability > bestSuitability
+					|| (suitability == bestSuitability && tieBreaker > bestTieBreaker + 0.00001f)
+					|| (suitability == bestSuitability && Math.Abs(tieBreaker - bestTieBreaker) <= 0.00001f && string.Compare(item.StringId ?? "", best?.Item?.StringId ?? "", StringComparison.OrdinalIgnoreCase) < 0);
+			}
+			if (!isBetter)
+			{
+				continue;
+			}
+			best = candidate;
+			bestScore = score;
+			bestSuitability = suitability;
+			bestTieBreaker = tieBreaker;
+		}
+		templateItem = best?.Item;
+		matchScore = Math.Max(0f, bestScore);
+		return templateItem != null;
+	}
+
+	private static int GetGeneratedRpEquipmentTemplateSuitability(ItemObject item)
+	{
+		if (item == null)
+		{
+			return int.MinValue;
+		}
+		int score = 0;
+		try
+		{
+			if (item.ItemCategory != null)
+			{
+				score += 2;
+			}
+			if (!item.NotMerchandise)
+			{
+				score++;
+			}
+			if (item.Value > 0)
+			{
+				score++;
+			}
+		}
+		catch
+		{
+		}
+		return score;
+	}
+
+	private static float GetGeneratedRpEquipmentTemplateTieBreaker(string assetName, ItemObject item)
+	{
+		string key = ((assetName ?? "").Trim() + "|" + (item?.StringId ?? "")).ToLowerInvariant();
+		if (!uint.TryParse(StablePromptKeyHash(key), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out uint hash))
+		{
+			return 0f;
+		}
+		return (hash & 0xffffu) / 65535f;
+	}
+
+	private static Dictionary<GeneratedRpEquipmentKind, List<GeneratedRpEquipmentTemplateCandidate>> GetGeneratedRpEquipmentTemplateCache()
+	{
+		object owner = (object)Game.Current?.ObjectManager ?? MBObjectManager.Instance;
+		lock (GeneratedRpEquipmentTemplateCacheLock)
+		{
+			if (owner != null && ReferenceEquals(owner, GeneratedRpEquipmentTemplateCacheOwner) && GeneratedRpEquipmentTemplatesByKind.Count > 0)
+			{
+				return GeneratedRpEquipmentTemplatesByKind;
+			}
+			Dictionary<GeneratedRpEquipmentKind, List<GeneratedRpEquipmentTemplateCandidate>> result = new Dictionary<GeneratedRpEquipmentKind, List<GeneratedRpEquipmentTemplateCandidate>>();
+			foreach (GeneratedRpEquipmentKind equipmentKind in Enum.GetValues(typeof(GeneratedRpEquipmentKind)))
+			{
+				result[equipmentKind] = new List<GeneratedRpEquipmentTemplateCandidate>();
+			}
+			try
+			{
+				IEnumerable<ItemObject> items = Game.Current?.ObjectManager?.GetObjectTypeList<ItemObject>() ?? MBObjectManager.Instance?.GetObjectTypeList<ItemObject>();
+				foreach (ItemObject item in items ?? Enumerable.Empty<ItemObject>())
+				{
+					if (!IsCloneSafeGeneratedRewardTemplateItem(item))
+					{
+						continue;
+					}
+					bool isWeapon = IsSettlementWeaponLikeItem(item);
+					bool isArmor = IsSettlementArmorLikeItem(item);
+					bool isHorseHarness = item.Type == ItemObject.ItemTypeEnum.HorseHarness;
+					bool isBanner = item.Type == ItemObject.ItemTypeEnum.Banner;
+					if (!isWeapon && !isArmor && !isHorseHarness && !isBanner)
+					{
+						continue;
+					}
+					GeneratedRpEquipmentTemplateCandidate candidate = new GeneratedRpEquipmentTemplateCandidate
+					{
+						Item = item,
+						Aliases = BuildGeneratedRpEquipmentTemplateAliases(item)
+					};
+					AddGeneratedRpEquipmentTemplate(result, GeneratedRpEquipmentKind.AnyEquipment, candidate);
+					if (isWeapon)
+					{
+						AddGeneratedRpEquipmentTemplate(result, GeneratedRpEquipmentKind.AnyWeapon, candidate);
+					}
+					if (isArmor)
+					{
+						AddGeneratedRpEquipmentTemplate(result, GeneratedRpEquipmentKind.AnyArmor, candidate);
+					}
+					IndexGeneratedRpEquipmentSpecificKinds(result, candidate);
+				}
+			}
+			catch (Exception ex)
+			{
+				try
+				{
+					Logger.Log("Logic", "[RewardItemResolve] rp_equipment_template_cache_failed error=" + ex.GetType().Name + ":" + ex.Message);
+				}
+				catch
+				{
+				}
+			}
+			GeneratedRpEquipmentTemplateCacheOwner = owner;
+			GeneratedRpEquipmentTemplatesByKind = result;
+			return GeneratedRpEquipmentTemplatesByKind;
+		}
+	}
+
+	private static void ClearGeneratedRpEquipmentTemplateCache()
+	{
+		lock (GeneratedRpEquipmentTemplateCacheLock)
+		{
+			GeneratedRpEquipmentTemplateCacheOwner = null;
+			GeneratedRpEquipmentTemplatesByKind = new Dictionary<GeneratedRpEquipmentKind, List<GeneratedRpEquipmentTemplateCandidate>>();
+		}
+	}
+
+	private static string[] BuildGeneratedRpEquipmentTemplateAliases(ItemObject item)
+	{
+		List<string> aliases = new List<string>(8);
+		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		AddGeneratedRpEquipmentTemplateAlias(aliases, seen, item?.StringId);
+		AddGeneratedRpEquipmentTemplateAlias(aliases, seen, item?.Name?.ToString());
+		AddGeneratedRpEquipmentTemplateAlias(aliases, seen, item?.ItemCategory?.StringId);
+		AddGeneratedRpEquipmentTemplateAlias(aliases, seen, item?.ItemCategory?.GetName()?.ToString());
+		AddGeneratedRpEquipmentTemplateAlias(aliases, seen, item?.Type.ToString());
+		AddGeneratedRpEquipmentTemplateAlias(aliases, seen, GetItemPromptTypeLabel(item));
+		try
+		{
+			AddGeneratedRpEquipmentTemplateAlias(aliases, seen, item?.PrimaryWeapon?.WeaponClass.ToString());
+		}
+		catch
+		{
+		}
+		return aliases.ToArray();
+	}
+
+	private static void AddGeneratedRpEquipmentTemplateAlias(List<string> aliases, HashSet<string> seen, string value)
+	{
+		string text = (value ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(text) && seen.Add(text))
+		{
+			aliases.Add(text);
+		}
+	}
+
+	private static void AddGeneratedRpEquipmentTemplate(Dictionary<GeneratedRpEquipmentKind, List<GeneratedRpEquipmentTemplateCandidate>> templatesByKind, GeneratedRpEquipmentKind kind, GeneratedRpEquipmentTemplateCandidate candidate)
+	{
+		if (candidate?.Item == null || kind == GeneratedRpEquipmentKind.None || !templatesByKind.TryGetValue(kind, out List<GeneratedRpEquipmentTemplateCandidate> candidates))
+		{
+			return;
+		}
+		candidates.Add(candidate);
+	}
+
+	private static void IndexGeneratedRpEquipmentSpecificKinds(Dictionary<GeneratedRpEquipmentKind, List<GeneratedRpEquipmentTemplateCandidate>> templatesByKind, GeneratedRpEquipmentTemplateCandidate candidate)
+	{
+		ItemObject item = candidate?.Item;
+		if (item == null)
+		{
+			return;
+		}
+		switch (item.Type)
+		{
+		case ItemObject.ItemTypeEnum.OneHandedWeapon:
+		case ItemObject.ItemTypeEnum.TwoHandedWeapon:
+			IndexGeneratedRpEquipmentWeaponClass(templatesByKind, candidate, item.PrimaryWeapon?.WeaponClass);
+			break;
+		case ItemObject.ItemTypeEnum.Polearm:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Polearm, candidate);
+			break;
+		case ItemObject.ItemTypeEnum.Arrows:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Arrows, candidate);
+			break;
+		case ItemObject.ItemTypeEnum.Bolts:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Bolts, candidate);
+			break;
+		case ItemObject.ItemTypeEnum.Shield:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Shield, candidate);
+			break;
+		case ItemObject.ItemTypeEnum.Bow:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Bow, candidate);
+			break;
+		case ItemObject.ItemTypeEnum.Crossbow:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Crossbow, candidate);
+			break;
+		case ItemObject.ItemTypeEnum.Sling:
+		case ItemObject.ItemTypeEnum.SlingStones:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Sling, candidate);
+			break;
+		case ItemObject.ItemTypeEnum.Thrown:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Thrown, candidate);
+			IndexGeneratedRpEquipmentWeaponClass(templatesByKind, candidate, item.PrimaryWeapon?.WeaponClass);
+			break;
+		case ItemObject.ItemTypeEnum.Pistol:
+		case ItemObject.ItemTypeEnum.Musket:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Firearm, candidate);
+			break;
+		case ItemObject.ItemTypeEnum.Bullets:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Bullets, candidate);
+			break;
+		case ItemObject.ItemTypeEnum.HeadArmor:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.HeadArmor, candidate);
+			break;
+		case ItemObject.ItemTypeEnum.BodyArmor:
+		case ItemObject.ItemTypeEnum.ChestArmor:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.BodyArmor, candidate);
+			break;
+		case ItemObject.ItemTypeEnum.LegArmor:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.LegArmor, candidate);
+			break;
+		case ItemObject.ItemTypeEnum.HandArmor:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.HandArmor, candidate);
+			break;
+		case ItemObject.ItemTypeEnum.Cape:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Cape, candidate);
+			break;
+		case ItemObject.ItemTypeEnum.HorseHarness:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.HorseHarness, candidate);
+			break;
+		case ItemObject.ItemTypeEnum.Banner:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Banner, candidate);
+			break;
+		}
+	}
+
+	private static void IndexGeneratedRpEquipmentWeaponClass(Dictionary<GeneratedRpEquipmentKind, List<GeneratedRpEquipmentTemplateCandidate>> templatesByKind, GeneratedRpEquipmentTemplateCandidate candidate, WeaponClass? weaponClass)
+	{
+		if (!weaponClass.HasValue)
+		{
+			return;
+		}
+		switch (weaponClass.Value)
+		{
+		case WeaponClass.OneHandedSword:
+		case WeaponClass.TwoHandedSword:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Sword, candidate);
+			break;
+		case WeaponClass.OneHandedAxe:
+		case WeaponClass.TwoHandedAxe:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Axe, candidate);
+			break;
+		case WeaponClass.Mace:
+		case WeaponClass.TwoHandedMace:
+		case WeaponClass.Pick:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Mace, candidate);
+			break;
+		case WeaponClass.Dagger:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Dagger, candidate);
+			break;
+		case WeaponClass.OneHandedPolearm:
+		case WeaponClass.TwoHandedPolearm:
+		case WeaponClass.LowGripPolearm:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Polearm, candidate);
+			break;
+		case WeaponClass.ThrowingAxe:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.ThrowingAxe, candidate);
+			break;
+		case WeaponClass.ThrowingKnife:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.ThrowingKnife, candidate);
+			break;
+		case WeaponClass.Javelin:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Javelin, candidate);
+			break;
+		}
+	}
+
 	private static float CalculateGeneratedRewardTemplateScore(string lookup, RewardItemInfo info, float aliasScore)
 	{
 		ItemObject item = info?.Item;
@@ -9073,15 +9744,15 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		if (!IsStableGeneratedRewardTemplateItem(templateItem))
+		if (!IsCloneSafeGeneratedRewardTemplateItem(templateItem))
 		{
 			templateItem = ResolveGeneratedInventoryTemplateItem(templateResolution?.MatchedStringId, requestedName);
 		}
-		if (!IsStableGeneratedRewardTemplateItem(templateItem))
+		if (!IsCloneSafeGeneratedRewardTemplateItem(templateItem))
 		{
 			templateItem = ResolveGeneratedInventoryTemplateItem(null, requestedName);
 		}
-		if (!IsStableGeneratedRewardTemplateItem(templateItem))
+		if (!IsCloneSafeGeneratedRewardTemplateItem(templateItem))
 		{
 			return false;
 		}
@@ -9139,7 +9810,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			RewardItemResolution templateResolution = null;
 			ItemObject preferredTemplate = ResolveItemById(preferredTemplateItemId);
-			if (IsStableGeneratedRewardTemplateItem(preferredTemplate))
+			if (IsCloneSafeGeneratedRewardTemplateItem(preferredTemplate))
 			{
 				EquipmentElement preferredTemplateEquipment = new EquipmentElement(preferredTemplate, null, null, false);
 				templateResolution = new RewardItemResolution
@@ -9167,8 +9838,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			else if (!string.IsNullOrWhiteSpace(preferredTemplateItemId))
 			{
-				Logger.Log("Logic", "[RewardItemResolve] preferred_template_missing source=" + (logSource ?? "") + " template=" + preferredTemplateItemId.Trim() + " lookup=" + requestedName);
-				return 0;
+				Logger.Log("Logic", "[RewardItemResolve] preferred_template_rejected source=" + (logSource ?? "") + " template=" + preferredTemplateItemId.Trim() + " lookup=" + requestedName + " fallback=auto reason=" + GetGeneratedRewardTemplateThumbnailRejectionReason(preferredTemplate));
 			}
 			RewardSystemBehavior instance = Instance;
 			if (templateResolution == null && instance != null)
@@ -9177,7 +9847,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				{
 					List<RewardItemInfo> contextItems = instance.BuildRewardItemResolutionContextFromRoster(targetRoster);
 					instance.TryFindBestRewardItemResolution(requestedName, contextItems, includeZeroScore: true, out templateResolution, logSource ?? "external_generate_named", logMatch: false, logMiss: false);
-					if (!IsStableGeneratedRewardTemplateItem(templateResolution?.Item))
+					if (!IsCloneSafeGeneratedRewardTemplateItem(templateResolution?.Item))
 					{
 						templateResolution = null;
 					}
@@ -9285,11 +9955,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				objectId = registered.Id.InternalValue;
 			}
 			ItemObject templateItem = ResolveGeneratedInventoryTemplateItem(templateItemId, name);
-			if (!IsStableGeneratedRewardTemplateItem(templateItem))
+			if (!IsCloneSafeGeneratedRewardTemplateItem(templateItem))
 			{
 				templateItem = ResolveGeneratedInventoryTemplateItem(null, name);
 			}
-			if (!IsStableGeneratedRewardTemplateItem(templateItem))
+			if (!IsCloneSafeGeneratedRewardTemplateItem(templateItem))
 			{
 				return false;
 			}
@@ -9401,7 +10071,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				return false;
 			}
 			ItemObject templateItem = ResolveGeneratedInventoryTemplateItem(normalizedTemplateItemId, name);
-			if (!IsStableGeneratedRewardTemplateItem(templateItem))
+			if (!IsCloneSafeGeneratedRewardTemplateItem(templateItem))
 			{
 				LogGeneratedRewardInventoryGuard("bad_template", normalizedStringId, name, normalizedTemplateItemId, null, templateItem, logSource);
 				return false;
@@ -9518,14 +10188,19 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	private static ItemObject ResolveGeneratedInventoryTemplateItem(string templateItemId, string displayName)
 	{
 		ItemObject explicitTemplate = ResolveItemById(templateItemId);
-		if (IsStableGeneratedRewardTemplateItem(explicitTemplate))
+		if (IsCloneSafeGeneratedRewardTemplateItem(explicitTemplate))
 		{
 			return explicitTemplate;
+		}
+		if (TryResolveGeneratedRpEquipmentTemplate(displayName, out ItemObject equipmentTemplate, out _, out _, out _, out _)
+			&& IsCloneSafeGeneratedRewardTemplateItem(equipmentTemplate))
+		{
+			return equipmentTemplate;
 		}
 		try
 		{
 			IEnumerable<ItemObject> items = Game.Current?.ObjectManager?.GetObjectTypeList<ItemObject>() ?? MBObjectManager.Instance?.GetObjectTypeList<ItemObject>();
-			List<ItemObject> list = items?.Where(IsStableGeneratedRewardTemplateItem).ToList() ?? new List<ItemObject>();
+			List<ItemObject> list = items?.Where(IsCloneSafeGeneratedRewardTemplateItem).ToList() ?? new List<ItemObject>();
 			ItemObject documentLike = list.FirstOrDefault((ItemObject x) => x.Type == ItemObject.ItemTypeEnum.Goods && ContainsGeneratedRewardItemTextAny(x, "book", "letter", "scroll", "decree", "paper", "parchment", "ledger", "document"));
 			if (documentLike != null)
 			{
@@ -9546,6 +10221,105 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 		}
 		return GetGeneratedRewardFallbackTemplateItem();
+	}
+
+	private static ItemObject ResolveCloneSafeGeneratedRewardTemplateItem(ItemObject templateItem, string displayName, string logSource)
+	{
+		if (IsCloneSafeGeneratedRewardTemplateItem(templateItem))
+		{
+			return templateItem;
+		}
+		string rejectedTemplateId = (templateItem?.StringId ?? "").Trim();
+		string rejectionReason = GetGeneratedRewardTemplateThumbnailRejectionReason(templateItem);
+		ItemObject replacement = ResolveGeneratedInventoryTemplateItem(null, displayName);
+		if (!IsCloneSafeGeneratedRewardTemplateItem(replacement))
+		{
+			replacement = null;
+		}
+		if (replacement != null)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] generated_template_thumbnail_guard source=" + (logSource ?? "") + " name=" + (displayName ?? "") + " rejected=" + rejectedTemplateId + " reason=" + rejectionReason + " replacement=" + (replacement.StringId ?? ""));
+			}
+			catch
+			{
+			}
+		}
+		return replacement;
+	}
+
+	private static bool IsCloneSafeGeneratedRewardTemplateItem(ItemObject item)
+	{
+		return IsStableGeneratedRewardTemplateItem(item) && HasCloneSafeGeneratedRewardThumbnailSource(item);
+	}
+
+	private static bool HasCloneSafeGeneratedRewardThumbnailSource(ItemObject item)
+	{
+		if (item == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (item.IsCraftedWeapon)
+			{
+				return item.WeaponDesign?.Template != null && item.WeaponComponent?.PrimaryWeapon != null;
+			}
+			if (IsSettlementWeaponLikeItem(item) && item.WeaponComponent?.PrimaryWeapon == null)
+			{
+				return false;
+			}
+			if ((IsSettlementArmorLikeItem(item) || item.Type == ItemObject.ItemTypeEnum.HorseHarness) && item.ArmorComponent == null)
+			{
+				return false;
+			}
+			if (item.Type == ItemObject.ItemTypeEnum.Arrows || item.Type == ItemObject.ItemTypeEnum.Bolts || item.Type == ItemObject.ItemTypeEnum.SlingStones)
+			{
+				return !string.IsNullOrWhiteSpace(item.HolsterMeshName);
+			}
+			return !string.IsNullOrWhiteSpace(item.MultiMeshName);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static string GetGeneratedRewardTemplateThumbnailRejectionReason(ItemObject item)
+	{
+		if (item == null)
+		{
+			return "missing_template";
+		}
+		try
+		{
+			if (item.IsCraftedWeapon)
+			{
+				if (item.WeaponDesign?.Template == null)
+				{
+					return "crafted_weapon_missing_template";
+				}
+				return item.WeaponComponent?.PrimaryWeapon == null ? "crafted_weapon_missing_primary_weapon" : "unstable_template";
+			}
+			if (IsSettlementWeaponLikeItem(item) && item.WeaponComponent?.PrimaryWeapon == null)
+			{
+				return "missing_primary_weapon";
+			}
+			if ((IsSettlementArmorLikeItem(item) || item.Type == ItemObject.ItemTypeEnum.HorseHarness) && item.ArmorComponent == null)
+			{
+				return "missing_armor_component";
+			}
+			if (item.Type == ItemObject.ItemTypeEnum.Arrows || item.Type == ItemObject.ItemTypeEnum.Bolts || item.Type == ItemObject.ItemTypeEnum.SlingStones)
+			{
+				return string.IsNullOrWhiteSpace(item.HolsterMeshName) ? "missing_holster_mesh" : "unstable_template";
+			}
+			return string.IsNullOrWhiteSpace(item.MultiMeshName) ? "missing_multi_mesh" : "unstable_template";
+		}
+		catch
+		{
+			return "template_inspection_failed";
+		}
 	}
 
 	private static bool IsStableGeneratedRewardTemplateItem(ItemObject item)
@@ -10252,9 +11026,22 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return null;
 		}
+		ItemObject templateItem = ResolveCloneSafeGeneratedRewardTemplateItem(ResolveItemById(record.TemplateStringId), record.DisplayName, source ?? "detached_template_guard");
+		if (templateItem == null)
+		{
+			return null;
+		}
+		record.TemplateStringId = (templateItem.StringId ?? "").Trim();
 		ItemObject registeredExisting = TryGetRegisteredGeneratedRewardItemByStringId(record.GeneratedStringId);
 		if (registeredExisting != null)
 		{
+			ApplyGeneratedRewardItemTemplateState(registeredExisting, templateItem, record.DisplayName);
+			registeredExisting.Initialize();
+			registeredExisting.IsReady = true;
+			if (!TryEnsureGeneratedRewardItemCategory(registeredExisting, templateItem, source))
+			{
+				return null;
+			}
 			lock (GeneratedRewardItemRegistrationLock)
 			{
 				if (registeredExisting.Id.InternalValue != 0u)
@@ -10266,11 +11053,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				RegisterGeneratedRewardManifestRecordNoLock(record);
 			}
 			return registeredExisting;
-		}
-		ItemObject templateItem = ResolveItemById(record.TemplateStringId) ?? GetGeneratedRewardFallbackTemplateItem();
-		if (templateItem == null)
-		{
-			return null;
 		}
 		ItemObject cachedItem = null;
 		lock (GeneratedRewardItemRegistrationLock)
@@ -10391,6 +11173,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				GeneratedRewardManifestByStringId.Clear();
 				GeneratedRewardManifestLoaded = true;
 			}
+			ClearGeneratedRpEquipmentTemplateCache();
 			GeneratedRewardLastInventoryVmLogSignature = "";
 			GeneratedRewardLastInventoryVmLogUtc = DateTime.MinValue;
 			Logger.Log("Logic", "[RewardItemResolve] generated_runtime_state_cleared reason=" + (reason ?? "") + " global_manifest_io=disabled");
@@ -10567,12 +11350,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		try
 		{
 			IEnumerable<ItemObject> items = Game.Current?.ObjectManager?.GetObjectTypeList<ItemObject>() ?? MBObjectManager.Instance?.GetObjectTypeList<ItemObject>();
-			ItemObject item = items?.FirstOrDefault((ItemObject x) => IsStableGeneratedRewardTemplateItem(x) && x.Type == ItemObject.ItemTypeEnum.Goods && x.ItemCategory != null);
+			ItemObject item = items?.FirstOrDefault((ItemObject x) => IsCloneSafeGeneratedRewardTemplateItem(x) && x.Type == ItemObject.ItemTypeEnum.Goods && x.ItemCategory != null);
 			if (item != null)
 			{
 				return item;
 			}
-			return items?.FirstOrDefault(IsStableGeneratedRewardTemplateItem);
+			return items?.FirstOrDefault(IsCloneSafeGeneratedRewardTemplateItem);
 		}
 		catch
 		{
@@ -10650,6 +11433,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			ItemObject copy = new ItemObject(templateItem);
 			CopyGeneratedRewardItemProperty(target, copy, "ItemCategory");
 			CopyGeneratedRewardItemProperty(target, copy, "ItemComponent");
+			CopyGeneratedRewardItemProperty(target, templateItem, "WeaponDesign");
 			CopyGeneratedRewardItemProperty(target, copy, "MultiMeshName");
 			CopyGeneratedRewardItemProperty(target, copy, "HolsterMeshName");
 			CopyGeneratedRewardItemProperty(target, copy, "HolsterWithWeaponMeshName");
@@ -11156,7 +11940,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				continue;
 			}
 			_generatedRewardItemRecords[record.GeneratedStringId] = record;
-			ItemObject templateItem = ResolveItemById(record.TemplateStringId);
+			ItemObject templateItem = ResolveCloneSafeGeneratedRewardTemplateItem(ResolveItemById(record.TemplateStringId), record.DisplayName, (reason ?? "") + "_definition_restore");
 			if (templateItem == null)
 			{
 				failed++;
@@ -11166,19 +11950,19 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				}
 				continue;
 			}
-			ItemObject existing = TryGetRegisteredGeneratedRewardItemByStringId(record.GeneratedStringId);
-			if (existing != null)
-			{
-				TrySetRewardItemObjectName(existing, record.DisplayName);
-				TryEnsureGeneratedRewardItemCategory(existing, templateItem, reason);
-				RememberGeneratedRewardItemRecord(record.GeneratedStringId, record.DisplayName, templateItem, existing);
-				alreadyLoaded++;
-				continue;
-			}
+			record.TemplateStringId = (templateItem.StringId ?? "").Trim();
+			bool wasAlreadyLoaded = TryGetRegisteredGeneratedRewardItemByStringId(record.GeneratedStringId) != null;
 			ItemObject restoredItem = TryGetOrCreateGeneratedRewardItem(record.GeneratedStringId, record.DisplayName, templateItem, reason);
 			if (restoredItem != null)
 			{
-				restored++;
+				if (wasAlreadyLoaded)
+				{
+					alreadyLoaded++;
+				}
+				else
+				{
+					restored++;
+				}
 				if (sample.Count < 8)
 				{
 					sample.Add(record.GeneratedStringId + ":" + restoredItem.Id.InternalValue.ToString(CultureInfo.InvariantCulture));
@@ -11293,16 +12077,22 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				continue;
 			}
+			string previousTemplateStringId = (record.TemplateStringId ?? "").Trim();
+			ItemObject templateItem = ResolveCloneSafeGeneratedRewardTemplateItem(ResolveItemById(previousTemplateStringId), record.DisplayName, (reason ?? "") + "_roster_guard");
+			if (templateItem == null)
+			{
+				continue;
+			}
+			record.TemplateStringId = (templateItem.StringId ?? "").Trim();
 			bool alreadyCorrect = IsGeneratedRewardRosterItemCanonical(currentItem, record);
 			if (alreadyCorrect)
 			{
 				ApplyGeneratedRewardItemRpState(currentItem, record.DisplayName);
-				TryEnsureGeneratedRewardItemCategory(currentItem, ResolveItemById(record.TemplateStringId), reason);
-				continue;
-			}
-			ItemObject templateItem = ResolveItemById(record.TemplateStringId);
-			if (templateItem == null)
-			{
+				TryEnsureGeneratedRewardItemCategory(currentItem, templateItem, reason);
+				if (!string.Equals(previousTemplateStringId, record.TemplateStringId, StringComparison.OrdinalIgnoreCase))
+				{
+					RememberGeneratedRewardItemRecord(record.GeneratedStringId, record.DisplayName, templateItem, currentItem);
+				}
 				continue;
 			}
 			ItemObject generatedItem = TryGetOrCreateGeneratedRewardItem(record.GeneratedStringId, record.DisplayName, templateItem, reason);
@@ -11361,12 +12151,28 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
+		if (!HasCloneSafeGeneratedRewardThumbnailSource(item))
+		{
+			return false;
+		}
 		if (item.ItemComponent is GeneratedRewardRpItemComponent)
 		{
 			return false;
 		}
 		ItemObject templateItem = ResolveItemById(record.TemplateStringId);
 		if (templateItem != null && item.Type != templateItem.Type)
+		{
+			return false;
+		}
+		if (templateItem != null && !ReferenceEquals(item.ItemComponent, templateItem.ItemComponent))
+		{
+			return false;
+		}
+		if (templateItem != null && !string.Equals(item.MultiMeshName ?? "", templateItem.MultiMeshName ?? "", StringComparison.Ordinal))
+		{
+			return false;
+		}
+		if (templateItem != null && !string.Equals(item.HolsterMeshName ?? "", templateItem.HolsterMeshName ?? "", StringComparison.Ordinal))
 		{
 			return false;
 		}
@@ -11667,12 +12473,17 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (string.IsNullOrWhiteSpace(generatedStringId) || string.IsNullOrWhiteSpace(displayName) || templateItem == null)
+			if (string.IsNullOrWhiteSpace(generatedStringId) || string.IsNullOrWhiteSpace(displayName))
 			{
 				return null;
 			}
 			string key = generatedStringId.Trim();
 			string name = displayName.Trim();
+			templateItem = ResolveCloneSafeGeneratedRewardTemplateItem(templateItem, name, logSource ?? "generated_create_template_guard");
+			if (templateItem == null)
+			{
+				return null;
+			}
 			if (TryResolveGeneratedRewardItemForStringId(key, out var cachedGeneratedItem, logSource ?? "generated_create_cached") && cachedGeneratedItem != null)
 			{
 				ApplyGeneratedRewardItemTemplateState(cachedGeneratedItem, templateItem, name);
@@ -11865,6 +12676,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		if (!IsRuntimeGeneratedRewardItemForKey(generatedItem, key))
 		{
 			LogGeneratedRewardInventoryGuard("wrong_runtime_item", key, name, templateItem?.StringId, generatedItem, templateItem, logSource);
+			return false;
+		}
+		if (!HasCloneSafeGeneratedRewardThumbnailSource(generatedItem))
+		{
+			LogGeneratedRewardInventoryGuard("thumbnail_source_unsafe", key, name, templateItem?.StringId, generatedItem, templateItem, logSource);
 			return false;
 		}
 		if (templateItem != null && (ReferenceEquals(generatedItem, templateItem) || (generatedItem.Id.InternalValue != 0u && generatedItem.Id.InternalValue == templateItem.Id.InternalValue)))
@@ -15335,7 +16151,19 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return 0;
 		}
-		int generated = GenerateNamedInventoryItemToRosterForExternal(targetRoster, assetName.Trim(), amount, out var generatedStringId, out itemName, logSource);
+		string requestedName = assetName.Trim();
+		string preferredTemplateItemId = null;
+		bool resolvedEquipmentTemplate = TryResolveGeneratedRpEquipmentTemplate(requestedName, out ItemObject equipmentTemplate, out GeneratedRpEquipmentKind equipmentKind, out string matchedSuffix, out float equipmentMatchScore, out int equipmentCandidateCount);
+		if (resolvedEquipmentTemplate)
+		{
+			preferredTemplateItemId = equipmentTemplate.StringId;
+			Logger.Log("Logic", "[RewardItemResolve] rp_equipment_template source=" + (logSource ?? "") + " asset=" + requestedName + " suffix=" + matchedSuffix + " kind=" + equipmentKind + " template=" + (equipmentTemplate.StringId ?? "") + " templateName=" + (equipmentTemplate.Name?.ToString() ?? "") + " score=" + FormatRewardItemResolutionScore(equipmentMatchScore) + " candidates=" + equipmentCandidateCount.ToString(CultureInfo.InvariantCulture));
+		}
+		else if (equipmentKind != GeneratedRpEquipmentKind.None)
+		{
+			Logger.Log("Logic", "[RewardItemResolve] rp_equipment_template_missing source=" + (logSource ?? "") + " asset=" + requestedName + " suffix=" + matchedSuffix + " kind=" + equipmentKind + " candidates=" + equipmentCandidateCount.ToString(CultureInfo.InvariantCulture) + " fallback=misc");
+		}
+		int generated = GenerateNamedInventoryItemToRosterForExternal(targetRoster, requestedName, amount, out var generatedStringId, out itemName, logSource, preferredTemplateItemId: preferredTemplateItemId);
 		if (generated > 0 && !string.IsNullOrWhiteSpace(generatedStringId))
 		{
 			TryResolveGeneratedRewardItemForStringId(generatedStringId, out item, logSource + "_resolve");
@@ -15945,26 +16773,29 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				if (receiver == Hero.MainHero && giver != Hero.MainHero)
 				{
 					bool asCompanion = string.Equals(joinMatch.Groups[1].Value, "C", StringComparison.OrdinalIgnoreCase);
+					bool preservePlayerFamilyIdentity = asCompanion && ShouldPreservePlayerFamilyIdentityForCompanionJoin(giver);
+					bool preservePlayerSpouseIdentity = preservePlayerFamilyIdentity && (giver.Spouse == Hero.MainHero || Hero.MainHero?.Spouse == giver);
 					string statusText;
 					bool flag2 = TryApplyHeroJoinPlayerPartyForExternal(giver, asCompanion, out statusText);
+					bool joinedAsCompanion = flag2 && giver.CompanionOf == Clan.PlayerClan && giver.Occupation == Occupation.Wanderer;
 					if (!string.IsNullOrWhiteSpace(statusText))
 					{
 						if (flag2)
 						{
 							anyHeroJoinPlayerPartyApplied = true;
-							giverFacts.Add(asCompanion
-								? $"你已经成为 {receiverName} 的同伴，并随玩家队伍行动。"
-								: $"你已经加入了 {receiverName} 的家族，并随玩家队伍行动。");
-							receiverFacts.Add(asCompanion
-								? $"{giverName} 已成为你的同伴，并随你的队伍行动。"
-								: $"{giverName} 已加入你的家族，并随你的队伍行动。");
+							giverFacts.Add(preservePlayerFamilyIdentity
+								? (preservePlayerSpouseIdentity ? $"你仍是 {receiverName} 的配偶，并已随玩家队伍行动。" : $"你仍是 {receiverName} 家族的成员，并已随玩家队伍行动。")
+								: (joinedAsCompanion ? $"你已经成为 {receiverName} 的同伴，并随玩家队伍行动。" : $"你已经加入了 {receiverName} 的家族，并随玩家队伍行动。"));
+							receiverFacts.Add(preservePlayerFamilyIdentity
+								? (preservePlayerSpouseIdentity ? $"{giverName} 仍是你的配偶，并已加入你的队伍。" : $"{giverName} 仍是你的家族成员，并已加入你的队伍。")
+								: (joinedAsCompanion ? $"{giverName} 已成为你的同伴，并随你的队伍行动。" : $"{giverName} 已加入你的家族，并随你的队伍行动。"));
 						}
 						else
 						{
 							giverFacts.Add(statusText);
 							receiverFacts.Add(statusText);
 						}
-						string notificationPrefix = flag2 ? (asCompanion ? "【成为同伴】" : "【加入家族】") : "【加入队伍失败】";
+						string notificationPrefix = flag2 ? (preservePlayerFamilyIdentity ? "【加入队伍】" : (joinedAsCompanion ? "【成为同伴】" : "【加入家族】")) : "【加入队伍失败】";
 						InformationManager.DisplayMessage(new InformationMessage(notificationPrefix + statusText, flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
 					}
 				}

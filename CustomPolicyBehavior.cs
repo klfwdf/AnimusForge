@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
+using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.Election;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem.ViewModelCollection.KingdomManagement.Decisions.ItemTypes;
@@ -49,7 +50,7 @@ public sealed class PolicyActiveEffectRegistration
 	public string Reason { get; set; }
 }
 
-public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
+public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonReadyObjectHandler
 {
 	private const int MaxPolicyNameChars = 100;
 
@@ -188,6 +189,12 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 
 	private static bool _dynamicPolicyPatchesApplied;
 
+	private static readonly System.Reflection.FieldInfo DynamicPolicyDecisionPolicyField = AccessTools.Field(typeof(KingdomPolicyDecision), nameof(KingdomPolicyDecision.Policy));
+
+	private static readonly System.Reflection.FieldInfo DynamicPolicyDecisionInvertedField = AccessTools.Field(typeof(KingdomPolicyDecision), "_isInvertedDecision");
+
+	private static readonly System.Reflection.FieldInfo DynamicPolicyDecisionSnapshotField = AccessTools.Field(typeof(KingdomPolicyDecision), "_kingdomPolicies");
+
 	private static bool _policySettlementModelPatchesApplied;
 
 	private static bool _policySuccessResultVisible;
@@ -284,6 +291,11 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		CampaignEvents.OnSessionLaunchedEvent.AddNonSerializedListener(this, OnSessionLaunched);
 		CampaignEvents.KingdomDecisionConcluded.AddNonSerializedListener(this, OnKingdomDecisionConcluded);
 		CampaignEvents.KingdomDecisionCancelled.AddNonSerializedListener(this, OnKingdomDecisionCancelled);
+	}
+
+	void INonReadyObjectHandler.OnBeforeNonReadyObjectsDeleted()
+	{
+		InitializeLoadedDynamicPoliciesBeforeNonReadyCleanup();
 	}
 
 	public static bool TrySubmitNpcPolicyAgendaForExternal(NpcRulerPolicyRecord record, out string failureReason)
@@ -386,6 +398,15 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 				harmony.Patch(executeDecisionDone,
 					prefix: new HarmonyMethod(typeof(CustomPolicyBehavior), nameof(Patch_DecisionItemBaseVM_ExecuteDone_Prefix)));
 			}
+			Type concludedLogEntryType = AccessTools.TypeByName("TaleWorlds.CampaignSystem.LogEntries.KingdomDecisionConcludedLogEntry");
+			System.Reflection.ConstructorInfo concludedLogEntryConstructor = concludedLogEntryType == null
+				? null
+				: AccessTools.Constructor(concludedLogEntryType, new[] { typeof(KingdomDecision), typeof(DecisionOutcome), typeof(bool) });
+			if (concludedLogEntryConstructor != null)
+			{
+				harmony.Patch(concludedLogEntryConstructor,
+					prefix: new HarmonyMethod(typeof(CustomPolicyBehavior), nameof(Patch_KingdomDecisionConcludedLogEntry_Constructor_Prefix)));
+			}
 			System.Reflection.MethodInfo getAiChoice = AccessTools.Method(typeof(KingdomElection), "GetAiChoice");
 			if (getAiChoice != null)
 			{
@@ -398,7 +419,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 				harmony.Patch(buildShoutPromptContext,
 					postfix: new HarmonyMethod(typeof(CustomPolicyBehavior), nameof(Patch_MyBehavior_BuildShoutPromptContextForExternal_Postfix)));
 			}
-			PolicySystemLog.Write("Agenda", "patches-applied", "dynamic policy ownership, NPC proposer support/cancellation guard, policy list filters, ordered AF result popups, NPC ruler adoption, and agenda-gated policy context applied");
+			PolicySystemLog.Write("Agenda", "patches-applied", "dynamic policy ownership, NPC proposer support/cancellation guard, policy list filters, duplicate NPC adoption chat suppression, ordered AF result popups, NPC ruler adoption, and agenda-gated policy context applied");
 		}
 		catch (Exception ex)
 		{
@@ -560,6 +581,34 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static void Patch_KingdomDecisionConcludedLogEntry_Constructor_Prefix(KingdomDecision decision, ref bool isPlayerInvolved)
+	{
+		if (isPlayerInvolved)
+		{
+			return;
+		}
+		try
+		{
+			KingdomPolicyDecision policyDecision = decision as KingdomPolicyDecision;
+			PolicyObject policy = policyDecision?.Policy;
+			if (policy == null || !IsDynamicPolicyId(policy.StringId))
+			{
+				return;
+			}
+			bool isInvertedDecision = Traverse.Create(policyDecision).Field("_isInvertedDecision").GetValue<bool>();
+			if (isInvertedDecision)
+			{
+				return;
+			}
+			isPlayerInvolved = true;
+			PolicySystemLog.Write("Notice", "original-adoption-chat-suppressed", "policy=" + (policy.StringId ?? ""));
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Write("Notice", "original-adoption-chat-suppress-failed", ex.Message);
+		}
+	}
+
 	private static void Patch_KingdomElection_GetAiChoice_Postfix(KingdomElection __instance, ref DecisionOutcome __result)
 	{
 		try
@@ -689,6 +738,60 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 	{
 		ApplyPolicySettlementModelPatchesOnce();
 		EnsureDynamicPoliciesRegistered(reconcilePending: false);
+	}
+
+	private void InitializeLoadedDynamicPoliciesBeforeNonReadyCleanup()
+	{
+		int initializedReferences = 0;
+		foreach (DynamicPolicySaveData data in LoadDynamicPolicies().Where(x => x != null && ShouldKeepDynamicPolicyRegistered(x.Status)))
+		{
+			try
+			{
+				List<PolicyObject> referencedPolicies = new List<PolicyObject>();
+				PolicyObject registeredPolicy = MBObjectManager.Instance?.GetObject<PolicyObject>(data.PolicyObjectId);
+				if (registeredPolicy != null)
+				{
+					referencedPolicies.Add(registeredPolicy);
+				}
+				Kingdom owner = ResolveKingdomByIdOrName(data.OwnerKingdomId, "");
+				PolicyObject activePolicy = owner?.ActivePolicies?.FirstOrDefault(x => x != null
+					&& string.Equals(x.StringId ?? "", data.PolicyObjectId ?? "", StringComparison.OrdinalIgnoreCase));
+				if (activePolicy != null && !referencedPolicies.Any(x => ReferenceEquals(x, activePolicy)))
+				{
+					referencedPolicies.Add(activePolicy);
+				}
+				foreach (PolicyObject decisionPolicy in owner?.UnresolvedDecisions?.OfType<KingdomPolicyDecision>()
+					.Select(x => x?.Policy)
+					.Where(x => x != null && string.Equals(x.StringId ?? "", data.PolicyObjectId ?? "", StringComparison.OrdinalIgnoreCase))
+					?? Enumerable.Empty<PolicyObject>())
+				{
+					if (!referencedPolicies.Any(x => ReferenceEquals(x, decisionPolicy)))
+					{
+						referencedPolicies.Add(decisionPolicy);
+					}
+				}
+				PolicyObject canonicalPolicy = EnsureDynamicPolicyObject(data);
+				if (canonicalPolicy != null && !referencedPolicies.Any(x => ReferenceEquals(x, canonicalPolicy)))
+				{
+					referencedPolicies.Add(canonicalPolicy);
+				}
+				foreach (PolicyObject policy in referencedPolicies)
+				{
+					if (TryInitializeDynamicPolicyObject(policy, data, out _))
+					{
+						initializedReferences++;
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				PolicySystemLog.Write("Agenda", "pre-cleanup-policy-restore-failed", "policy=" + (data?.PolicyObjectId ?? "") + " " + ex);
+			}
+		}
+		if (initializedReferences > 0)
+		{
+			PolicySystemLog.Write("Agenda", "pre-cleanup-policy-restore-complete", "references=" + initializedReferences.ToString(CultureInfo.InvariantCulture));
+		}
 	}
 
 	private void OnSessionLaunched(CampaignGameStarter starter)
@@ -1040,20 +1143,46 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 
 	private void EnsureDynamicPoliciesRegistered(bool reconcilePending)
 	{
-		foreach (DynamicPolicySaveData data in LoadDynamicPolicies().Where(x => x != null && ShouldKeepDynamicPolicyRegistered(x.Status)))
+		List<DynamicPolicySaveData> livePolicies = LoadDynamicPolicies()
+			.Where(x => x != null && ShouldKeepDynamicPolicyRegistered(x.Status))
+			.ToList();
+		foreach (DynamicPolicySaveData data in livePolicies)
 		{
 			PolicyObject policy = EnsureDynamicPolicyObject(data);
-			if (!reconcilePending || policy == null)
-			{
-				continue;
-			}
 			Kingdom owner = ResolveKingdomByIdOrName(data.OwnerKingdomId, "");
-			bool unresolved = owner?.UnresolvedDecisions?.OfType<KingdomPolicyDecision>().Any(x => x?.Policy != null && string.Equals(x.Policy.StringId, data.PolicyObjectId, StringComparison.OrdinalIgnoreCase)) == true;
-			PolicyObject activePolicy = owner?.ActivePolicies?.FirstOrDefault(x => x != null && string.Equals(x.StringId, data.PolicyObjectId, StringComparison.OrdinalIgnoreCase));
+			PolicyObject activePolicy = owner?.ActivePolicies?.FirstOrDefault(x => x != null
+				&& string.Equals(x.StringId, data.PolicyObjectId, StringComparison.OrdinalIgnoreCase));
 			bool active = activePolicy != null;
 			if (activePolicy != null)
 			{
+				TryInitializeDynamicPolicyObject(activePolicy, data, out _);
 				policy = activePolicy;
+			}
+			bool expectsPendingDecision = IsDynamicPolicyAgendaPending(data);
+			bool expectedInverted = string.Equals(data.Status, DynamicPolicyStatusExpiryVotePending, StringComparison.OrdinalIgnoreCase);
+			KingdomPolicyDecision unresolvedDecision = null;
+			foreach (KingdomPolicyDecision candidate in FindDynamicPolicyDecisions(owner, data.PolicyObjectId))
+			{
+				PolicyObject loadedDecisionPolicy = candidate.Policy;
+				TryInitializeDynamicPolicyObject(loadedDecisionPolicy, data, out _);
+				bool repaired = expectsPendingDecision
+					&& unresolvedDecision == null
+					&& policy != null
+					&& TryRebindDynamicPolicyDecision(candidate, policy, expectedInverted)
+					&& IsUsableDynamicPolicyDecision(candidate, data.PolicyObjectId, policy, expectedInverted);
+				if (repaired)
+				{
+					unresolvedDecision = candidate;
+					continue;
+				}
+				owner?.RemoveDecision(candidate);
+				PolicySystemLog.Write("Agenda", "invalid-or-duplicate-pending-decision-removed", "recordId=" + (data.RecordId ?? "")
+					+ " policy=" + (data.PolicyObjectId ?? "")
+					+ " expectedInverted=" + expectedInverted);
+			}
+			if (!reconcilePending || policy == null)
+			{
+				continue;
 			}
 			bool shouldRestoreActiveMembership = string.Equals(data.Status, DynamicPolicyStatusActive, StringComparison.OrdinalIgnoreCase)
 				|| string.Equals(data.Status, DynamicPolicyStatusExpiryVotePending, StringComparison.OrdinalIgnoreCase);
@@ -1066,9 +1195,17 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 					PolicySystemLog.Write("Agenda", "active-membership-restored-after-load", "recordId=" + data.RecordId + " policy=" + data.PolicyObjectId + " kingdom=" + data.OwnerKingdomId);
 				}
 			}
-			if (unresolved)
+			if (unresolvedDecision != null)
 			{
-				continue;
+				bool membershipStillPending = (string.Equals(data.Status, DynamicPolicyStatusPending, StringComparison.OrdinalIgnoreCase) && !active)
+					|| (string.Equals(data.Status, DynamicPolicyStatusExpiryVotePending, StringComparison.OrdinalIgnoreCase) && active);
+				if (membershipStillPending)
+				{
+					continue;
+				}
+				owner?.RemoveDecision(unresolvedDecision);
+				unresolvedDecision = null;
+				PolicySystemLog.Write("Agenda", "resolved-state-pending-decision-removed", "recordId=" + (data.RecordId ?? "") + " policy=" + (data.PolicyObjectId ?? ""));
 			}
 			if (string.Equals(data.Status, DynamicPolicyStatusPending, StringComparison.OrdinalIgnoreCase))
 			{
@@ -1078,14 +1215,20 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 				}
 				else
 				{
-					RejectDynamicPolicyAdoption(data, policy, "读档后未找到待处理采用议程");
+					if (!TryRestoreDynamicPolicyAgendaAfterLoad(data, policy, owner, isInvertedDecision: false, out string restoreFailure))
+					{
+						RejectDynamicPolicyAdoption(data, policy, "读档后恢复待处理采用议程失败：" + restoreFailure);
+					}
 				}
 			}
 			else if (string.Equals(data.Status, DynamicPolicyStatusExpiryVotePending, StringComparison.OrdinalIgnoreCase))
 			{
 				if (active)
 				{
-					CompleteNaturalExpiryRenewal(data, policy, "读档核对：AF 政策续期通过");
+					if (!TryRestoreDynamicPolicyAgendaAfterLoad(data, policy, owner, isInvertedDecision: true, out string restoreFailure))
+					{
+						CompleteNaturalExpiryRenewal(data, policy, "读档恢复续期议程失败，按兼容逻辑保留政策：" + restoreFailure);
+					}
 				}
 				else
 				{
@@ -1106,6 +1249,187 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 				{
 					NpcRulerPolicyBehavior.OnPolicyAgendaApprovedForExternal(data.RecordId);
 				}
+			}
+		}
+		if (reconcilePending)
+		{
+			HashSet<string> remainingLivePolicyIds = new HashSet<string>(
+				LoadDynamicPolicies()
+					.Where(x => x != null && ShouldKeepDynamicPolicyRegistered(x.Status))
+					.Select(x => x.PolicyObjectId)
+					.Where(IsDynamicPolicyId),
+				StringComparer.OrdinalIgnoreCase);
+			RemoveOrphanedDynamicPolicyDecisions(remainingLivePolicyIds);
+		}
+	}
+
+	private static bool IsDynamicPolicyAgendaPending(DynamicPolicySaveData data)
+	{
+		return data != null && (string.Equals(data.Status, DynamicPolicyStatusPending, StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(data.Status, DynamicPolicyStatusExpiryVotePending, StringComparison.OrdinalIgnoreCase));
+	}
+
+	private static List<KingdomPolicyDecision> FindDynamicPolicyDecisions(Kingdom owner, string policyObjectId)
+	{
+		return owner?.UnresolvedDecisions?.OfType<KingdomPolicyDecision>()
+			.Where(x => x?.Policy != null && string.Equals(x.Policy.StringId ?? "", policyObjectId ?? "", StringComparison.OrdinalIgnoreCase))
+			.ToList() ?? new List<KingdomPolicyDecision>();
+	}
+
+	private static KingdomPolicyDecision FindDynamicPolicyDecision(Kingdom owner, string policyObjectId)
+	{
+		return FindDynamicPolicyDecisions(owner, policyObjectId).FirstOrDefault();
+	}
+
+	private static bool IsUsableDynamicPolicyDecision(
+		KingdomPolicyDecision decision,
+		string policyObjectId,
+		PolicyObject canonicalPolicy,
+		bool expectedInverted)
+	{
+		return decision?.Policy != null
+			&& ReferenceEquals(decision.Policy, canonicalPolicy)
+			&& string.Equals(decision.Policy.StringId ?? "", policyObjectId ?? "", StringComparison.OrdinalIgnoreCase)
+			&& !string.IsNullOrWhiteSpace(decision.Policy.Name?.ToString())
+			&& IsDynamicPolicyDecisionInverted(decision) == expectedInverted;
+	}
+
+	private static bool TryRebindDynamicPolicyDecision(KingdomPolicyDecision decision, PolicyObject policy, bool expectedInverted)
+	{
+		if (decision == null || policy == null)
+		{
+			return false;
+		}
+		if (IsDynamicPolicyDecisionInverted(decision) != expectedInverted)
+		{
+			return false;
+		}
+		try
+		{
+			PolicyObject previousPolicy = decision.Policy;
+			if (!ReferenceEquals(previousPolicy, policy))
+			{
+				if (DynamicPolicyDecisionPolicyField == null)
+				{
+					return false;
+				}
+				DynamicPolicyDecisionPolicyField.SetValue(decision, policy);
+				if (!ReferenceEquals(decision.Policy, policy))
+				{
+					return false;
+				}
+			}
+			if (DynamicPolicyDecisionSnapshotField == null)
+			{
+				return false;
+			}
+			List<PolicyObject> policySnapshot = DynamicPolicyDecisionSnapshotField.GetValue(decision) as List<PolicyObject>;
+			if (policySnapshot == null)
+			{
+				policySnapshot = new List<PolicyObject>();
+				DynamicPolicyDecisionSnapshotField.SetValue(decision, policySnapshot);
+			}
+			policySnapshot.RemoveAll(x => x != null && (ReferenceEquals(x, previousPolicy)
+				|| string.Equals(x.StringId ?? "", policy.StringId ?? "", StringComparison.OrdinalIgnoreCase)));
+			if (expectedInverted)
+			{
+				policySnapshot.Add(policy);
+			}
+			return ReferenceEquals(decision.Policy, policy);
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Write("Agenda", "pending-decision-rebind-failed", "policy=" + (policy.StringId ?? "") + " " + ex.Message);
+			return false;
+		}
+	}
+
+	private static bool IsDynamicPolicyDecisionInverted(KingdomPolicyDecision decision)
+	{
+		try
+		{
+			return decision != null && DynamicPolicyDecisionInvertedField?.GetValue(decision) is bool value && value;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private bool TryRestoreDynamicPolicyAgendaAfterLoad(
+		DynamicPolicySaveData data,
+		PolicyObject policy,
+		Kingdom owner,
+		bool isInvertedDecision,
+		out string failureReason)
+	{
+		failureReason = "";
+		Clan proposer = ResolveClanById(data?.ProposerClanId) ?? owner?.RulingClan;
+		if (data == null || policy == null || owner == null || owner.IsEliminated || proposer == null || proposer.Kingdom != owner)
+		{
+			failureReason = "政策所属王国或提案氏族无效";
+			return false;
+		}
+		KingdomPolicyDecision existingDecision = FindDynamicPolicyDecision(owner, data.PolicyObjectId);
+		if (IsUsableDynamicPolicyDecision(existingDecision, data.PolicyObjectId, policy, isInvertedDecision))
+		{
+			return true;
+		}
+		if (existingDecision != null)
+		{
+			owner.RemoveDecision(existingDecision);
+		}
+		if (owner != Clan.PlayerClan?.Kingdom)
+		{
+			failureReason = "非玩家王国不存在可恢复的未决议程";
+			return false;
+		}
+		try
+		{
+			KingdomPolicyDecision decision = new KingdomPolicyDecision(proposer, policy, isInvertedDecision);
+			if (!decision.IsAllowed())
+			{
+				failureReason = "王国规则不允许恢复该政策议程";
+				return false;
+			}
+			owner.AddDecision(decision, ignoreInfluenceCost: true);
+			KingdomPolicyDecision restoredDecision = FindDynamicPolicyDecision(owner, data.PolicyObjectId);
+			if (!IsUsableDynamicPolicyDecision(restoredDecision, data.PolicyObjectId, policy, isInvertedDecision))
+			{
+				if (restoredDecision != null)
+				{
+					owner.RemoveDecision(restoredDecision);
+				}
+				failureReason = "恢复后的政策议程未被王国保留";
+				return false;
+			}
+			PolicySystemLog.Write("Agenda", "pending-agenda-restored-after-load", "recordId=" + (data.RecordId ?? "")
+				+ " policy=" + (data.PolicyObjectId ?? "")
+				+ " inverted=" + isInvertedDecision);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			failureReason = ex.Message;
+			PolicySystemLog.Write("Agenda", "pending-agenda-restore-failed", "recordId=" + (data?.RecordId ?? "") + " " + ex);
+			return false;
+		}
+	}
+
+	private static void RemoveOrphanedDynamicPolicyDecisions(HashSet<string> livePolicyIds)
+	{
+		foreach (Kingdom kingdom in Kingdom.All?.Where(x => x != null).ToList() ?? new List<Kingdom>())
+		{
+			foreach (KingdomPolicyDecision decision in kingdom.UnresolvedDecisions?.OfType<KingdomPolicyDecision>().ToList()
+				?? new List<KingdomPolicyDecision>())
+			{
+				string policyId = decision?.Policy?.StringId ?? "";
+				if (!IsDynamicPolicyId(policyId) || livePolicyIds.Contains(policyId))
+				{
+					continue;
+				}
+				kingdom.RemoveDecision(decision);
+				PolicySystemLog.Write("Agenda", "orphaned-pending-decision-removed", "policy=" + policyId + " kingdom=" + (kingdom.StringId ?? ""));
 			}
 		}
 	}
@@ -1346,6 +1670,19 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 			{
 				RecordPolicyPublishAsPlayerAction(request, result, application, data.RecordId);
 			}
+			if (!isRenewal)
+			{
+				DisplayKingdomPolicyAnnouncementMessage(
+					"player",
+					data.RecordId,
+					request.PlayerKingdomName,
+					request.PolicyName,
+					request.PolicyContent);
+				if (recordWritten)
+				{
+					NpcRulerPolicyBehavior.SchedulePublicFeedbackNoticeForExternal(data.RecordId);
+				}
+			}
 			if (isRenewal)
 			{
 				ShowPolicyRenewalResultPopup(data.PolicyObjectId, request, application);
@@ -1487,16 +1824,9 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 			{
 				policy = MBObjectManager.Instance?.RegisterPresumedObject(new PolicyObject(data.PolicyObjectId));
 			}
-			string displaySummary = BuildDynamicPolicyDisplaySummary(data);
-			policy?.Initialize(
-				new TextObject(data.PolicyName ?? ""),
-				new TextObject(displaySummary),
-				new TextObject(FirstNonEmpty(data.LogEntryDescription, data.PolicyContent)),
-				new TextObject(data.SecondaryEffects ?? ""),
-				data.AuthoritarianWeight,
-				data.OligarchicWeight,
-				data.EgalitarianWeight);
-			return policy;
+			return TryInitializeDynamicPolicyObject(policy, data, out string initializationError)
+				? policy
+				: throw new InvalidOperationException(initializationError);
 		}
 		catch (Exception ex)
 		{
@@ -4721,6 +5051,98 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase
 		}
 		string popupText = sb.ToString().TrimEnd();
 		return popupText;
+	}
+
+	internal static void DisplayKingdomPolicyAnnouncementMessage(string source, string policyId, string kingdomName, string policyName, string policyContent)
+	{
+		try
+		{
+			string issuer = CompactPolicyContextText(kingdomName ?? "");
+			string name = CompactPolicyContextText(policyName ?? "");
+			string content = CompactPolicyContextText(policyContent ?? "");
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				name = "未命名政策";
+			}
+			if (string.IsNullOrWhiteSpace(content))
+			{
+				content = "未记录政策正文。";
+			}
+			string policySubject = string.IsNullOrWhiteSpace(issuer) ? "王国" : issuer;
+			InformationManager.DisplayMessage(new InformationMessage(
+				"【王国政策】" + policySubject + "颁布《" + name + "》：" + content,
+				Color.FromUint(4294945331u)));
+			PolicySystemLog.Write("Notice", "policy-announcement-displayed",
+				"source=" + (source ?? "")
+				+ " policyId=" + (policyId ?? "")
+				+ " contentChars=" + content.Length.ToString(CultureInfo.InvariantCulture));
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Write("Notice", "policy-announcement-failed",
+				"source=" + (source ?? "") + " policyId=" + (policyId ?? "") + " " + ex);
+		}
+	}
+
+	private static bool TryInitializeDynamicPolicyObject(PolicyObject policy, DynamicPolicySaveData data, out string failureReason)
+	{
+		failureReason = "";
+		if (policy == null || data == null || !IsDynamicPolicyId(data.PolicyObjectId))
+		{
+			failureReason = "动态政策对象或存档数据无效";
+			return false;
+		}
+		try
+		{
+			string displaySummary = BuildDynamicPolicyDisplaySummary(data);
+			policy.Initialize(
+				new TextObject(data.PolicyName ?? ""),
+				new TextObject(displaySummary),
+				new TextObject(FirstNonEmpty(data.LogEntryDescription, data.PolicyContent)),
+				new TextObject(data.SecondaryEffects ?? ""),
+				data.AuthoritarianWeight,
+				data.OligarchicWeight,
+				data.EgalitarianWeight);
+			return !string.IsNullOrWhiteSpace(policy.Name?.ToString());
+		}
+		catch (Exception ex)
+		{
+			failureReason = ex.Message;
+			return false;
+		}
+	}
+
+	internal static bool DisplayKingdomPolicyFeedbackMessage(string source, string policyId, string kingdomName, string policyName, string publicFeedback)
+	{
+		try
+		{
+			string issuer = CompactPolicyContextText(kingdomName ?? "");
+			string name = CompactPolicyContextText(policyName ?? "");
+			string feedback = CompactPolicyContextText(CleanPolicyDisplayText(publicFeedback ?? ""));
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				name = "未命名政策";
+			}
+			if (string.IsNullOrWhiteSpace(feedback))
+			{
+				feedback = "民众尚未形成明确反馈。";
+			}
+			string policySubject = string.IsNullOrWhiteSpace(issuer) ? "王国" : issuer;
+			InformationManager.DisplayMessage(new InformationMessage(
+				"【民众反馈】" + policySubject + "《" + name + "》：" + feedback,
+				Color.FromUint(4278242559u)));
+			PolicySystemLog.Write("Notice", "policy-feedback-displayed",
+				"source=" + (source ?? "")
+				+ " policyId=" + (policyId ?? "")
+				+ " feedbackChars=" + feedback.Length.ToString(CultureInfo.InvariantCulture));
+			return true;
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Write("Notice", "policy-feedback-failed",
+				"source=" + (source ?? "") + " policyId=" + (policyId ?? "") + " " + ex);
+			return false;
+		}
 	}
 
 	private static string BuildAiEvaluatedCostPaymentText(PolicyDraftRequest request)
