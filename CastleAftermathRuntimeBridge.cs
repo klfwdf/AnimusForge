@@ -602,6 +602,7 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 	private readonly Dictionary<Formation, FormationMovementState> _movementStates = new Dictionary<Formation, FormationMovementState>();
 	private readonly HashSet<Agent> _civilianActionSetApplied = new HashSet<Agent>();
 	private readonly HashSet<Agent> _slaughterTargets = new HashSet<Agent>();
+	private readonly Dictionary<Agent, AgentFlag> _slaughterTargetOriginalFlags = new Dictionary<Agent, AgentFlag>();
 	private readonly HashSet<int> _slaughterReadyAlliedAgentIndexes = new HashSet<int>();
 
 	private bool _spawnCompleted;
@@ -703,9 +704,11 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 			}
 			try
 			{
+				AgentFlag originalFlags = agent.GetAgentFlags();
 				agent.SetActionChannel(0, ActionIndexCache.act_none, true, (AnimFlags)0UL, 0f, 1f, -0.2f, 0.4f, 0f, false, -0.2f, 0, true);
 				PrepareSlaughterTarget(agent, enemyFormation);
 				_slaughterTargets.Add(agent);
+				_slaughterTargetOriginalFlags[agent] = originalFlags;
 				requestedCounts[character] = remainingForTroop - 1;
 			}
 			catch (Exception ex)
@@ -757,6 +760,10 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 				prisoner.ResetEnemyCaches();
 				prisoner.SetTeam(playerTeam, sync: true);
 				prisoner.Formation = prisonerFormation;
+				if (_slaughterTargetOriginalFlags.TryGetValue(prisoner, out AgentFlag originalFlags))
+				{
+					prisoner.SetAgentFlags(originalFlags);
+				}
 				prisoner.TryAttachToFormation();
 				prisoner.SetMortalityState(Agent.MortalityState.Immortal);
 				prisoner.SetWatchState(Agent.WatchState.Patrolling);
@@ -770,6 +777,7 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 					+ prisoner.Index + ", Error=" + ex.Message);
 			}
 		}
+		_slaughterTargetOriginalFlags.Clear();
 
 		int restoredAllies = RestoreSlaughterAlliedAgents(mission, playerTeam, "castle_slaughter_cancelled");
 		RestoreSlaughterMissionMode(mission, "castle_slaughter_cancelled");
@@ -835,6 +843,8 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 				}
 			}
 		}
+		int attackableTargets = activeTargets.Count(target => target.GetAgentFlags()
+			.HasAllFlags(AgentFlag.CanAttack | AgentFlag.IsHumanoid));
 
 		List<Agent> alliedSoldiers = mission.Agents
 			.Where(SiegeAiInterventionBehavior.IsCastleSlaughterAttackerForExternal)
@@ -893,6 +903,8 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 				nativeAutomaticFallbacks++;
 			}
 		}
+		int combatReadyAllies = alliedSoldiers.Count(allied => allied.GetAgentFlags()
+			.HasAllFlags(AgentFlag.CanAttack | AgentFlag.IsHumanoid));
 
 		if (logDetails
 			|| alliedSoldiers.Count != _lastLoggedSlaughterAttackerCount
@@ -900,7 +912,9 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 			|| nativeAutomaticFallbacks != _lastLoggedSlaughterAutomaticFallbackCount)
 		{
 			Logger.Log("CastleAftermath", "Started targeted castle prisoner slaughter. Targets=" + activeTargets.Count
+				+ ", AttackableTargets=" + attackableTargets
 				+ ", AlliedAttackers=" + alliedSoldiers.Count
+				+ ", CombatReadyAllies=" + combatReadyAllies
 				+ ", DirectTargetLocks=" + directTargetLocks
 				+ ", NativeAutomaticFallbacks=" + nativeAutomaticFallbacks
 				+ ", NormalizedTeams=" + normalizedTeams
@@ -924,7 +938,12 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 			allied.SetIsAIPaused(isPaused: false);
 			allied.DisableScriptedMovement();
 			allied.SetMaximumSpeedLimit(-1f, false);
-			allied.SetAgentFlags(allied.GetAgentFlags() | AgentFlag.CanGetAlarmed | AgentFlag.CanWieldWeapon);
+			allied.SetAgentFlags(allied.GetAgentFlags()
+				| AgentFlag.CanAttack
+				| AgentFlag.CanDefend
+				| AgentFlag.IsHumanoid
+				| AgentFlag.CanGetAlarmed
+				| AgentFlag.CanWieldWeapon);
 			allied.SetWatchState(Agent.WatchState.Alarmed);
 			ActivateSlaughterFightBehavior(allied);
 			allied.SetShouldCatchUpWithFormation(true);
@@ -990,7 +1009,14 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 		target.SetIsAIPaused(isPaused: true);
 		target.DisableScriptedMovement();
 		target.Controller = AgentControllerType.AI;
-		target.SetAgentFlags(target.GetAgentFlags() | AgentFlag.CanGetAlarmed);
+		// Native AlarmedBehaviorGroup only accepts humanoid candidates carrying
+		// CanAttack as combat targets. Keep the prisoner paused and unarmed so it
+		// remains a non-retaliating execution target while still being attackable.
+		target.SetAgentFlags(target.GetAgentFlags()
+			| AgentFlag.CanAttack
+			| AgentFlag.CanDefend
+			| AgentFlag.IsHumanoid
+			| AgentFlag.CanGetAlarmed);
 		if (target.Team != _slaughterEnemyTeam)
 		{
 			target.SetTeam(_slaughterEnemyTeam, sync: true);
@@ -1345,6 +1371,7 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 		}
 		_agents.Remove(affectedAgent);
 		_civilianActionSetApplied.Remove(affectedAgent);
+		_slaughterTargetOriginalFlags.Remove(affectedAgent);
 		CastleAftermathRuntimeBridge.UnregisterPrisonerAgent(affectedAgent);
 		CharacterObject character = (affectedAgent.Origin as PrisonerAgentOrigin)?.Troop as CharacterObject
 			?? affectedAgent.Character as CharacterObject;
@@ -1636,6 +1663,7 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 		_movementStates.Clear();
 		_civilianActionSetApplied.Clear();
 		_slaughterTargets.Clear();
+		_slaughterTargetOriginalFlags.Clear();
 		_slaughterReadyAlliedAgentIndexes.Clear();
 		_slaughterEnemyTeam = null;
 		_slaughterActive = false;
