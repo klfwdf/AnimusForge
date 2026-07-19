@@ -39,7 +39,7 @@ public static class SiegeCastleRosterSelectionProfile
 
     public const string PrisonerCommandUiRefreshSource = "castle_prisoner_spawn_complete";
 
-    public const string AvailableRosterTitle = "可选随行士兵 / 战俘";
+    public const string AvailableRosterTitle = "可选本队士兵、军团队长 / 战俘";
 
     public const string SelectedRosterTitle = "城堡处置队伍";
 
@@ -89,9 +89,44 @@ public static class SiegeCastleRosterSelectionProfile
         return Math.Max(0, Math.Max(0, originalXp) - Math.Max(0, holdingXp));
     }
 
+    public static bool ShouldIncludePlayerPartyMember(
+        bool isPlayer,
+        bool isHero,
+        bool isAlive,
+        bool isPrisoner,
+        bool isWounded)
+    {
+        return !isPlayer
+            && !isPrisoner
+            && !isWounded
+            && (!isHero || isAlive);
+    }
+
+    public static bool ShouldIncludeArmyPartyLeader(
+        bool isPlayer,
+        bool isHero,
+        bool isLord,
+        bool isPartyLeader,
+        bool isFriendly,
+        bool isAlive,
+        bool isPrisoner,
+        bool isWounded)
+    {
+        return !isPlayer
+            && isHero
+            && isLord
+            && isPartyLeader
+            && isFriendly
+            && isAlive
+            && !isPrisoner
+            && !isWounded;
+    }
+
     public static string BuildInstructionMessage()
     {
-        return "【城堡处置】选择最多 " + MaxAlliedTroops + " 名我方士兵和 " + MaxPrisoners + " 名俘虏进入城堡；俘虏可包含被俘领主。";
+        return "【城堡处置】选择最多 " + MaxAlliedTroops
+            + " 名我方随行人员进入城堡：普通士兵只来自玩家本队，军团其他部队只显示己方贵族队长；另可选择最多 "
+            + MaxPrisoners + " 名俘虏，俘虏可包含被俘领主。";
     }
 
     public static string BuildDecisionPolicyMessage()
@@ -102,7 +137,7 @@ public static class SiegeCastleRosterSelectionProfile
     public static string BuildConfirmedMessage(int alliedTroopCount, int prisonerCount)
     {
         return "【城堡处置】已选择 " + ClampAlliedTroopCount(alliedTroopCount)
-            + " 名我方士兵、" + ClampPrisonerCount(prisonerCount) + " 名俘虏。";
+            + " 名我方随行人员、" + ClampPrisonerCount(prisonerCount) + " 名俘虏。";
     }
 
     public static string BuildPrisonerSceneReadyMessage(int selectedCount, int activeCount)
@@ -123,17 +158,17 @@ public static class SiegeCastleRosterSelectionProfile
         int active = ClampAlliedTroopCount(activeCount);
         if (active >= selected)
         {
-            return "【城堡处置】已带入 " + active + " 名我方士兵，可通过原版指挥系统下令。";
+            return "【城堡处置】已带入 " + active + " 名我方随行人员，可通过原版指挥系统下令。";
         }
 
-        return "【城堡处置】我方士兵实际进入场景 " + active + "/" + selected + " 名；详情已写入日志。";
+        return "【城堡处置】我方随行人员实际进入场景 " + active + "/" + selected + " 名；详情已写入日志。";
     }
 
     public static string BuildLimitMessage(int alliedTroopCount, int prisonerCount)
     {
         if (alliedTroopCount > MaxAlliedTroops)
         {
-            return "我方随行士兵不能超过 " + MaxAlliedTroops + " 人。";
+            return "我方随行人员不能超过 " + MaxAlliedTroops + " 人。";
         }
 
         if (prisonerCount > MaxPrisoners)
