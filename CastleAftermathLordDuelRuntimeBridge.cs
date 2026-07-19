@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AnimusForge.SiegeAftermathIntervention;
+using SandBox;
+using SandBox.Missions.AgentBehaviors;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
@@ -221,6 +223,8 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 	private Team _playerDuelTeam;
 	private Team _lordDuelTeam;
 	private Team _playerMountTeam;
+	private Formation _playerDuelFormation;
+	private Formation _lordDuelFormation;
 	private MissionMode _originalMissionMode = MissionMode.Battle;
 	private bool _missionModeChanged;
 	private bool _duelTeamRelationsCaptured;
@@ -236,6 +240,7 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 	private DuelLoadoutKind _duelLoadoutKind;
 	private float _nextCombatRefreshAt;
 	private float _nextCombatTargetStatusLogAt;
+	private float _fightStartsAt;
 	private bool _combatTargetObserved;
 	private float _playerVirtualHealth;
 	private float _lordVirtualHealth;
@@ -278,8 +283,22 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		}
 		if (CastleAftermathRuntimeBridge.IsRegularPrisonerSlaughterActive(mission))
 		{
-			reasonCode = "castle_slaughter_active";
-			return false;
+			const string source = "castle_duel_superseded_slaughter";
+			int restoredSceneTargets = CastleAftermathRuntimeBridge.CancelRegularPrisonerSlaughter(source);
+			int releasedAllocations = CastleAftermathDispositionSessionBridge.ClearActiveSlaughterTargets(source);
+			if (CastleAftermathRuntimeBridge.IsRegularPrisonerSlaughterActive(mission))
+			{
+				reasonCode = "castle_slaughter_cancel_failed";
+				return false;
+			}
+			Logger.Log("CastleAftermath", "Cancelled active prisoner slaughter before captive-lord duel. RestoredSceneTargets="
+				+ restoredSceneTargets + ", ReleasedAllocations=" + releasedAllocations);
+			GcczDiagnosticLog.Log("CastleLordDuel", "cancelledSlaughter survivors="
+				+ restoredSceneTargets + " releasedAllocations=" + releasedAllocations);
+			if (restoredSceneTargets > 0 || releasedAllocations > 0)
+			{
+				AnimusForgeQuickInfo.Show("【城堡决斗】已停止尚未完成的屠戮命令；未死亡战俘恢复为未分配状态。");
+			}
 		}
 		if (player == null || !player.IsActive() || player.State == AgentState.Killed || player.State == AgentState.Unconscious)
 		{
@@ -363,16 +382,13 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 			reasonCode = "castle_duel_loadout_equip_failed";
 			return false;
 		}
-		_stage = RuntimeStage.Fighting;
+		_stage = RuntimeStage.Preparing;
+		_fightStartsAt = mission.CurrentTime + SiegeCastleLordDuelProfile.PreparationSeconds;
 		_nextCombatRefreshAt = 0f;
 		_nextCombatTargetStatusLogAt = mission.CurrentTime + CombatTargetStatusLogInterval;
 		player.SetMortalityState(Agent.MortalityState.Immortal);
-		agent.SetMortalityState(Agent.MortalityState.Immortal);
-		// SetTargetAgent is committed by the native AI update, so GetTargetAgent may
-		// legitimately remain null in this setup frame. Start the duel after the
-		// command is issued and keep repairing the lock from OnMissionTick instead
-		// of treating a same-frame readback as a fatal setup failure.
-		_combatTargetObserved = RefreshLordCombatAi(player, agent, logPending: true);
+		agent.SetMortalityState(Agent.MortalityState.Invulnerable);
+		HoldLordAtDuelStart(agent);
 		// Do not close AF's active conversation until every reversible duel
 		// prerequisite has succeeded. A failed setup must leave the player in the
 		// same interaction state instead of stranding the processing overlay.
@@ -399,10 +415,8 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 			+ " mounted=" + _playerWasMountedWhenAccepted
 			+ " carriesRanged=" + _playerCarriedRangedWeaponWhenAccepted
 			+ " wieldsRanged=" + _playerWieldedRangedWeaponWhenAccepted);
-		GcczDiagnosticLog.Log("CastleLordDuel", "fighting hero=" + (hero.StringId ?? "N/A")
-			+ " immediateTeleport=true targetAgent=" + player.Index);
-		AnimusForgeQuickInfo.Show("【城堡决斗】俘虏领主已在你正前方约20米处拿起"
-			+ loadoutDescription + "，并将你锁定为唯一决斗目标。双方生命降至最后一点即判负，不会死亡。",
+		AnimusForgeQuickInfo.Show("【城堡决斗】标签已生效：俘虏领主已在你正前方约20米处拿起"
+			+ loadoutDescription + "；双方短暂就位后开打，生命降至最后一点即判负，不会死亡。",
 			agent.Character as CharacterObject);
 		return true;
 	}
@@ -534,11 +548,20 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		}
 
 		_playerMountedDuringDuel |= CastleAftermathLordDuelRuntimeBridge.IsPlayerMounted();
+		if (_stage == RuntimeStage.Preparing)
+		{
+			player.SetMortalityState(Agent.MortalityState.Immortal);
+			ProtectAgent(_playerMountSnapshot?.Agent, Agent.MortalityState.Immortal);
+			_lordAgent.SetMortalityState(Agent.MortalityState.Invulnerable);
+			HoldLordAtDuelStart(_lordAgent);
+			if (mission.CurrentTime >= _fightStartsAt)
+			{
+				BeginFight(player, _lordAgent);
+			}
+			return;
+		}
 		if (_stage == RuntimeStage.Fighting)
 		{
-			// Polling the wielded slots also records drawing/aiming/firing a ranged
-			// weapon when the missile misses, where OnAgentHit cannot observe it.
-			_playerUsedRangedWeapon |= CastleAftermathLordDuelRuntimeBridge.PlayerWieldsRangedWeapon();
 			player.SetMortalityState(Agent.MortalityState.Immortal);
 			ProtectAgent(_playerMountSnapshot?.Agent, Agent.MortalityState.Immortal);
 			_lordAgent.SetMortalityState(Agent.MortalityState.Immortal);
@@ -1034,7 +1057,6 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 			lord.DisableScriptedMovement();
 			lord.SetMaximumSpeedLimit(-1f, false);
 			lord.SetAgentFlags(lord.GetAgentFlags() | AgentFlag.CanGetAlarmed | AgentFlag.CanWieldWeapon);
-			lord.Formation = null;
 			lord.TeleportToPosition(_weaponPosition);
 			return TryEquipDuelLoadout(lord);
 		}
@@ -1043,6 +1065,56 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 			Logger.Log("CastleAftermath", "Place and arm captive-lord duel participant failed: " + ex);
 			return false;
 		}
+	}
+
+	private void HoldLordAtDuelStart(Agent lord)
+	{
+		if (lord == null || !lord.IsActive())
+		{
+			return;
+		}
+		try
+		{
+			if (lord.Position.DistanceSquared(_weaponPosition) > 0.25f)
+			{
+				lord.TeleportToPosition(_weaponPosition);
+			}
+			lord.Controller = AgentControllerType.AI;
+			lord.SetIsAIPaused(isPaused: true);
+			lord.DisableScriptedMovement();
+			lord.SetMaximumSpeedLimit(0f, false);
+			lord.WieldInitialWeapons(
+				Agent.WeaponWieldActionType.InstantAfterPickUp,
+				Equipment.InitialWeaponEquipPreference.MeleeForMainHand);
+			_lordDuelFormation?.SetMovementOrder(MovementOrder.MovementOrderStop);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CastleAftermath", "Hold captive-lord at duel start failed: " + ex.Message);
+		}
+	}
+
+	private void BeginFight(Agent player, Agent lord)
+	{
+		if (_stage != RuntimeStage.Preparing || player == null || lord == null
+			|| !player.IsActive() || !lord.IsActive())
+		{
+			return;
+		}
+		_stage = RuntimeStage.Fighting;
+		player.SetMortalityState(Agent.MortalityState.Immortal);
+		lord.SetMortalityState(Agent.MortalityState.Immortal);
+		lord.SetIsAIPaused(isPaused: false);
+		lord.SetMaximumSpeedLimit(-1f, false);
+		ActivateNativeFightBehavior(lord);
+		IssueDuelFormationOrders();
+		_combatTargetObserved = RefreshLordCombatAi(player, lord, logPending: true);
+		Logger.Log("CastleAftermath", "Captive-lord duel entered fighting stage. LordAgent="
+			+ lord.Index + ", PlayerAgent=" + player.Index + ", TargetObserved=" + _combatTargetObserved);
+		GcczDiagnosticLog.Log("CastleLordDuel", "fighting hero=" + (_lordHero?.StringId ?? "N/A")
+			+ " immediateTeleport=true targetAgent=" + player.Index
+			+ " targetObserved=" + _combatTargetObserved);
+		AnimusForgeQuickInfo.Show("【城堡决斗】双方就位，决斗开始。", lord.Character as CharacterObject);
 	}
 
 	private bool TryEquipDuelLoadout(Agent lord)
@@ -1102,11 +1174,69 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		{
 			return false;
 		}
+		if (!TryAssignDetachedDuelFormations(player, lord))
+		{
+			return false;
+		}
 
 		Logger.Log("CastleAftermath", "Initialized captive-lord duel with existing mission teams. PlayerTeam="
 			+ _playerDuelTeam.TeamIndex + ", LordTeam=" + _lordDuelTeam.TeamIndex
+			+ ", PlayerFormation=" + (_playerDuelFormation?.FormationIndex.ToString() ?? "null")
+			+ ", LordFormation=" + (_lordDuelFormation?.FormationIndex.ToString() ?? "null")
 			+ ", LordAgent=" + lord.Index);
 		return true;
+	}
+
+	private bool TryAssignDetachedDuelFormations(Agent player, Agent lord)
+	{
+		try
+		{
+			_playerDuelFormation = CreateDetachedFormation(_playerDuelTeam, 0);
+			_lordDuelFormation = CreateDetachedFormation(_lordDuelTeam, 0);
+			if (_playerDuelFormation == null || _lordDuelFormation == null)
+			{
+				return false;
+			}
+			player.Formation = _playerDuelFormation;
+			lord.Formation = _lordDuelFormation;
+			player.TryAttachToFormation();
+			lord.TryAttachToFormation();
+			player.SetShouldCatchUpWithFormation(false);
+			lord.SetShouldCatchUpWithFormation(true);
+			_playerDuelFormation.SetControlledByAI(false, false);
+			_lordDuelFormation.SetControlledByAI(true, false);
+			_playerDuelFormation.SetMovementOrder(MovementOrder.MovementOrderStop);
+			_lordDuelFormation.SetMovementOrder(MovementOrder.MovementOrderStop);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CastleAftermath", "Assign detached captive-lord duel formations failed: " + ex);
+			return false;
+		}
+	}
+
+	private static Formation CreateDetachedFormation(Team team, int formationIndex)
+	{
+		if (team == null)
+		{
+			return null;
+		}
+		try
+		{
+			return new Formation(team, formationIndex);
+		}
+		catch
+		{
+			try
+			{
+				return team.GetFormation((FormationClass)formationIndex);
+			}
+			catch
+			{
+				return null;
+			}
+		}
 	}
 
 	private static Team ResolveExistingOpponentTeam(Mission mission, Team playerTeam, Team lordOriginalTeam)
@@ -1223,7 +1353,7 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		}
 	}
 
-	private static bool RefreshLordCombatAi(Agent player, Agent lord, bool logPending)
+	private bool RefreshLordCombatAi(Agent player, Agent lord, bool logPending)
 	{
 		if (player == null || !player.IsActive() || lord == null || !lord.IsActive())
 		{
@@ -1234,6 +1364,9 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 			lord.Controller = AgentControllerType.AI;
 			lord.SetIsAIPaused(isPaused: false);
 			lord.DisableScriptedMovement();
+			lord.SetMaximumSpeedLimit(-1f, false);
+			ActivateNativeFightBehavior(lord);
+			IssueDuelFormationOrders();
 			Agent currentTarget = BannerlordApiCompat.GetAgentCombatTarget(lord);
 			if (ReferenceEquals(currentTarget, player))
 			{
@@ -1253,13 +1386,21 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 			lord.SetWatchState(Agent.WatchState.Alarmed);
 			lord.ForceAiBehaviorSelection();
 			Agent observedTarget = BannerlordApiCompat.GetAgentCombatTarget(lord);
+			bool automaticFallbackEnabled = false;
+			if (!ReferenceEquals(observedTarget, player))
+			{
+				automaticFallbackEnabled = BannerlordApiCompat.TrySetAgentAutomaticTargetSelection(lord, enabled: true);
+				lord.ResetEnemyCaches();
+				lord.ForceAiBehaviorSelection();
+			}
 			if (!ReferenceEquals(observedTarget, player) && logPending)
 			{
 				Logger.Log("CastleAftermath", "Captive-lord duel target command issued; native readback is pending. LordAgent="
 					+ lord.Index + ", ExpectedPlayer=" + player.Index
 					+ ", ActualTarget=" + (observedTarget?.Index.ToString() ?? "null")
 					+ ", AutomaticSelectionSet=" + automaticSelectionSet
-					+ ", TargetCommandIssued=" + targetCommandIssued);
+					+ ", TargetCommandIssued=" + targetCommandIssued
+					+ ", AutomaticFallbackEnabled=" + automaticFallbackEnabled);
 			}
 			return ReferenceEquals(observedTarget, player);
 		}
@@ -1270,6 +1411,59 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 				Logger.Log("CastleAftermath", "Issue captive-lord duel target command failed; runtime will retry: " + ex);
 			}
 			return false;
+		}
+	}
+
+	private void IssueDuelFormationOrders()
+	{
+		try
+		{
+			_playerDuelFormation?.SetMovementOrder(MovementOrder.MovementOrderStop);
+			if (_lordDuelFormation != null && _playerDuelFormation != null)
+			{
+				_lordDuelFormation.SetControlledByAI(true, false);
+				_lordDuelFormation.SetMovementOrder(MovementOrder.MovementOrderChargeToTarget(_playerDuelFormation));
+			}
+			else
+			{
+				_lordDuelFormation?.SetMovementOrder(MovementOrder.MovementOrderCharge);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CastleAftermath", "Issue captive-lord duel formation orders failed: " + ex.Message);
+		}
+	}
+
+	private static void ActivateNativeFightBehavior(Agent agent)
+	{
+		try
+		{
+			CampaignAgentComponent component = agent?.GetComponent<CampaignAgentComponent>();
+			AgentNavigator navigator = component?.AgentNavigator ?? component?.CreateAgentNavigator();
+			if (navigator == null)
+			{
+				return;
+			}
+			AlarmedBehaviorGroup alarmedGroup = navigator.GetBehaviorGroup<AlarmedBehaviorGroup>()
+				?? navigator.AddBehaviorGroup<AlarmedBehaviorGroup>();
+			if (alarmedGroup == null)
+			{
+				return;
+			}
+			alarmedGroup.DisableCalmDown = true;
+			FightBehavior fightBehavior = alarmedGroup.GetBehavior<FightBehavior>()
+				?? alarmedGroup.AddBehavior<FightBehavior>();
+			if (fightBehavior == null)
+			{
+				return;
+			}
+			alarmedGroup.SetScriptedBehavior<FightBehavior>();
+			agent.SetWatchState(Agent.WatchState.Alarmed);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CastleAftermath", "Activate captive-lord native fight behavior failed: " + ex.Message);
 		}
 	}
 
@@ -1477,6 +1671,8 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		_playerDuelTeam = null;
 		_lordDuelTeam = null;
 		_playerMountTeam = null;
+		_playerDuelFormation = null;
+		_lordDuelFormation = null;
 		_originalMissionMode = MissionMode.Battle;
 		_missionModeChanged = false;
 		_duelTeamRelationsCaptured = false;
@@ -1491,6 +1687,7 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		_controlledAgentIndexes.Clear();
 		_nextCombatRefreshAt = 0f;
 		_nextCombatTargetStatusLogAt = 0f;
+		_fightStartsAt = 0f;
 		_combatTargetObserved = false;
 		_playerVirtualHealth = 0f;
 		_lordVirtualHealth = 0f;

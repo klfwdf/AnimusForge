@@ -24,6 +24,8 @@ public static class SiegeCastleLordDuelProfile
 
     public const float DuelHealthFloor = 1f;
 
+    public const float PreparationSeconds = 1.5f;
+
     public const string RuntimeSource = "castle_captive_lord_duel";
 
     public static bool IsEligibleWeapon(
@@ -83,7 +85,8 @@ public static class SiegeCastleLordDuelProfile
             .Append("；接受决斗时玩家携带远程武器=").Append(YesNo(playerCarriedRangedWeaponWhenAccepted))
             .Append("；接受决斗时玩家手持远程武器=").Append(YesNo(playerWieldedRangedWeaponWhenAccepted))
             .Append("；决斗中玩家骑乘=").Append(YesNo(playerMountedDuringDuel))
-            .Append("；决斗中玩家使用远程武器=").Append(YesNo(playerUsedRangedWeapon)).Append("。");
+            .Append("；决斗中玩家使用远程武器=").Append(YesNo(playerUsedRangedWeapon)).Append("。")
+            .Append("接受时携带或手持远程武器只记录当时装备，不等于决斗中实际使用；是否违反近战约定只以‘决斗中玩家使用远程武器’字段判断。");
 
         if (playerWon)
         {

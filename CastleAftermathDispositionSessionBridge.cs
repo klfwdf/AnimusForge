@@ -227,6 +227,23 @@ internal static class CastleAftermathDispositionSessionBridge
 		}
 	}
 
+	internal static int ClearActiveSlaughterTargets(string source)
+	{
+		int survivorCount = Math.Max(0, _activeSlaughterTargets?.TotalManCount ?? 0);
+		if (survivorCount > 0)
+		{
+			_revisionCount++;
+		}
+		_activeSlaughterTargets = null;
+		if (_lastRegularDispositionAction == SiegeCastleActionKind.SlaughterPrisoners)
+		{
+			_lastRegularDispositionAction = SiegeCastleActionKind.Unknown;
+		}
+		Logger.Log("CastleAftermath", "Cleared active castle slaughter allocation. Survivors="
+			+ survivorCount + ", Revision=" + _revisionCount + ", Source=" + (source ?? "N/A"));
+		return survivorCount;
+	}
+
 	internal static void RecordSlaughterDeath(CharacterObject character)
 	{
 		if (character == null || _activeSlaughterTargets == null)

@@ -4,6 +4,7 @@ using System.Linq;
 using AnimusForge.SiegeAftermathIntervention;
 using Helpers;
 using SandBox;
+using SandBox.Missions.AgentBehaviors;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.GameState;
 using TaleWorlds.CampaignSystem.Party;
@@ -617,6 +618,8 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 	private bool _slaughterMissionModeChanged;
 	private float _nextSlaughterCombatRefreshTime;
 	private int _lastLoggedSlaughterAttackerCount = -1;
+	private int _lastLoggedSlaughterDirectTargetLockCount = -1;
+	private int _lastLoggedSlaughterAutomaticFallbackCount = -1;
 
 	internal CastleAftermathPrisonerCommandMissionBehavior(int selectedCount)
 	{
@@ -720,6 +723,8 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 		_slaughterActive = true;
 		_nextSlaughterCombatRefreshTime = 0f;
 		_lastLoggedSlaughterAttackerCount = -1;
+		_lastLoggedSlaughterDirectTargetLockCount = -1;
+		_lastLoggedSlaughterAutomaticFallbackCount = -1;
 		IssueSlaughterCombatOrders(mission, logDetails: true);
 		return _slaughterTargets.Count;
 	}
@@ -863,7 +868,8 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 		try
 		{
 			enemyFormation.SetMovementOrder(MovementOrder.MovementOrderStop);
-			alliedFormation.SetMovementOrder(MovementOrder.MovementOrderChargeToTarget(enemyFormation));
+			alliedFormation.SetControlledByAI(true, false);
+			alliedFormation.SetMovementOrder(MovementOrder.MovementOrderCharge);
 			alliedFormation.SetFiringOrder(FiringOrder.FiringOrderHoldYourFire);
 		}
 		catch (Exception ex)
@@ -872,19 +878,31 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 		}
 
 		int directTargetLocks = 0;
+		int nativeAutomaticFallbacks = 0;
 		foreach (Agent allied in alliedSoldiers)
 		{
-			if (PrepareAlliedForSlaughterCombat(allied, FindNearestTarget(allied, activeTargets)))
+			if (PrepareAlliedForSlaughterCombat(
+				allied,
+				FindNearestTarget(allied, activeTargets),
+				out bool automaticFallbackEnabled))
 			{
 				directTargetLocks++;
 			}
+			if (automaticFallbackEnabled)
+			{
+				nativeAutomaticFallbacks++;
+			}
 		}
 
-		if (logDetails || alliedSoldiers.Count != _lastLoggedSlaughterAttackerCount)
+		if (logDetails
+			|| alliedSoldiers.Count != _lastLoggedSlaughterAttackerCount
+			|| directTargetLocks != _lastLoggedSlaughterDirectTargetLockCount
+			|| nativeAutomaticFallbacks != _lastLoggedSlaughterAutomaticFallbackCount)
 		{
 			Logger.Log("CastleAftermath", "Started targeted castle prisoner slaughter. Targets=" + activeTargets.Count
 				+ ", AlliedAttackers=" + alliedSoldiers.Count
 				+ ", DirectTargetLocks=" + directTargetLocks
+				+ ", NativeAutomaticFallbacks=" + nativeAutomaticFallbacks
 				+ ", NormalizedTeams=" + normalizedTeams
 				+ ", NormalizedFormations=" + normalizedFormations
 				+ ", AlliedFormation=" + alliedFormation.FormationIndex
@@ -892,11 +910,14 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 				+ ", MissionMode=" + mission.Mode
 				+ ", MutualHostility=" + playerTeam.IsEnemyOf(_slaughterEnemyTeam));
 			_lastLoggedSlaughterAttackerCount = alliedSoldiers.Count;
+			_lastLoggedSlaughterDirectTargetLockCount = directTargetLocks;
+			_lastLoggedSlaughterAutomaticFallbackCount = nativeAutomaticFallbacks;
 		}
 	}
 
-	private bool PrepareAlliedForSlaughterCombat(Agent allied, Agent target)
+	private bool PrepareAlliedForSlaughterCombat(Agent allied, Agent target, out bool automaticFallbackEnabled)
 	{
+		automaticFallbackEnabled = false;
 		try
 		{
 			allied.Controller = AgentControllerType.AI;
@@ -905,6 +926,7 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 			allied.SetMaximumSpeedLimit(-1f, false);
 			allied.SetAgentFlags(allied.GetAgentFlags() | AgentFlag.CanGetAlarmed | AgentFlag.CanWieldWeapon);
 			allied.SetWatchState(Agent.WatchState.Alarmed);
+			ActivateSlaughterFightBehavior(allied);
 			allied.SetShouldCatchUpWithFormation(true);
 			allied.TryAttachToFormation();
 			allied.UpdateFormationOrders();
@@ -921,7 +943,11 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 			if (target != null)
 			{
 				Agent currentTarget = BannerlordApiCompat.GetAgentCombatTarget(allied);
-				if (!ReferenceEquals(currentTarget, target))
+				if (currentTarget != null && currentTarget.IsActive() && _slaughterTargets.Contains(currentTarget))
+				{
+					targetLocked = true;
+				}
+				else
 				{
 					allied.SetLookAgent(null);
 					allied.ResetEnemyCaches();
@@ -934,8 +960,14 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 						Equipment.InitialWeaponEquipPreference.MeleeForMainHand);
 					allied.SetLookAgent(target);
 					allied.ForceAiBehaviorSelection();
+					targetLocked = ReferenceEquals(BannerlordApiCompat.GetAgentCombatTarget(allied), target);
+					if (!targetLocked)
+					{
+						automaticFallbackEnabled = BannerlordApiCompat.TrySetAgentAutomaticTargetSelection(allied, enabled: true);
+						allied.ResetEnemyCaches();
+						allied.ForceAiBehaviorSelection();
+					}
 				}
-				targetLocked = ReferenceEquals(BannerlordApiCompat.GetAgentCombatTarget(allied), target);
 			}
 			return targetLocked;
 		}
@@ -981,6 +1013,8 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 		{
 			_slaughterReadyAlliedAgentIndexes.Clear();
 			_lastLoggedSlaughterAttackerCount = -1;
+			_lastLoggedSlaughterDirectTargetLockCount = -1;
+			_lastLoggedSlaughterAutomaticFallbackCount = -1;
 			return 0;
 		}
 		Formation alliedFormation = playerTeam.GetFormation(
@@ -1020,6 +1054,8 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 		}
 		_slaughterReadyAlliedAgentIndexes.Clear();
 		_lastLoggedSlaughterAttackerCount = -1;
+		_lastLoggedSlaughterDirectTargetLockCount = -1;
+		_lastLoggedSlaughterAutomaticFallbackCount = -1;
 		return restored;
 	}
 
@@ -1079,6 +1115,39 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 		{
 			Logger.Log("CastleAftermath", "Clear castle slaughter hostility failed. Source="
 				+ (source ?? "N/A") + ", Error=" + ex.Message);
+		}
+	}
+
+	private static void ActivateSlaughterFightBehavior(Agent agent)
+	{
+		try
+		{
+			CampaignAgentComponent component = agent?.GetComponent<CampaignAgentComponent>();
+			AgentNavigator navigator = component?.AgentNavigator ?? component?.CreateAgentNavigator();
+			if (navigator == null)
+			{
+				return;
+			}
+			AlarmedBehaviorGroup alarmedGroup = navigator.GetBehaviorGroup<AlarmedBehaviorGroup>()
+				?? navigator.AddBehaviorGroup<AlarmedBehaviorGroup>();
+			if (alarmedGroup == null)
+			{
+				return;
+			}
+			alarmedGroup.DisableCalmDown = true;
+			FightBehavior fightBehavior = alarmedGroup.GetBehavior<FightBehavior>()
+				?? alarmedGroup.AddBehavior<FightBehavior>();
+			if (fightBehavior == null)
+			{
+				return;
+			}
+			alarmedGroup.SetScriptedBehavior<FightBehavior>();
+			agent.SetWatchState(Agent.WatchState.Alarmed);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CastleAftermath", "Activate allied castle slaughter fight behavior failed. Agent="
+				+ (agent?.Index.ToString() ?? "null") + ", Error=" + ex.Message);
 		}
 	}
 
@@ -1574,6 +1643,8 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 		_slaughterMissionModeChanged = false;
 		_nextSlaughterCombatRefreshTime = 0f;
 		_lastLoggedSlaughterAttackerCount = -1;
+		_lastLoggedSlaughterDirectTargetLockCount = -1;
+		_lastLoggedSlaughterAutomaticFallbackCount = -1;
 		CastleAftermathRuntimeBridge.ClearMissionAgents(reason);
 	}
 
