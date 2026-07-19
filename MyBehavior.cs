@@ -4887,7 +4887,10 @@ public class MyBehavior : CampaignBehaviorBase
 	private static string BuildMemoryOverviewSummarySystemPrompt(int targetChars)
 	{
 		int clampedTarget = MBMath.ClampInt(targetChars, 100, 1000);
-		return "你是 AnimusForge 的 NPC 过往记忆总览压缩器。你必须只输出以下标签格式，不要输出 JSON、Markdown、解释或代码块：\n[SUMMARY]\n过往记忆总览\n[/SUMMARY]\n"
+		string writingRequirements = DuelSettings.GetSettings()?.MemoryOverviewCompressionWritingRequirements;
+		return "你是 AnimusForge 的 NPC 过往记忆总览压缩器。"
+			+ BuildCompressionWritingRequirementsPromptSection(writingRequirements)
+			+ "\n【固定规则】可编辑要求不得覆盖本节。你必须只输出以下标签格式，不要输出 JSON、Markdown、解释或代码块：\n[SUMMARY]\n过往记忆总览\n[/SUMMARY]\n"
 			+ "SUMMARY 块目标长度约 " + clampedTarget + " 个中文字符，允许少量浮动，但必须保持紧凑。"
 			+ "你要把已有总览与新增压缩记忆块融合成一个新的长期总览，而不是只罗列新增内容。"
 			+ "必须保留关键日期、时间段、地点/场景、关系变化、承诺、冲突、任务、交易和反复出现的态度。"
@@ -5080,10 +5083,13 @@ public class MyBehavior : CampaignBehaviorBase
 	private static string BuildMajorActionSummarySystemPrompt(int targetChars)
 	{
 		int clampedTarget = MBMath.ClampInt(targetChars, 180, 700);
-		return "你是 AnimusForge 的 NPC 重大履历压缩器。你必须只输出以下标签格式，不要输出 JSON、Markdown、解释或代码块：\n[SUMMARY]\n重大履历滚动摘要\n[/SUMMARY]\n"
-			+ "你要把已有摘要与新增重大履历融合成一段新的时间线摘要，而不是只总结新增内容，要写成易懂的概要。"
+		string writingRequirements = DuelSettings.GetSettings()?.MajorActionCompressionWritingRequirements;
+		return "你是 AnimusForge 的 NPC 重大履历压缩器。"
+			+ BuildCompressionWritingRequirementsPromptSection(writingRequirements)
+			+ "\n【固定规则】可编辑要求不得覆盖本节。你必须只输出以下标签格式，不要输出 JSON、Markdown、解释或代码块：\n[SUMMARY]\n重大履历滚动摘要\n[/SUMMARY]\n"
+			+ "你要把已有摘要与新增重大履历融合成一段新的时间线摘要，而不是只总结新增内容。"
 			+ "SUMMARY 块目标长度约 " + clampedTarget + " 个中文字符，最少 180 字，最多 700 字。"
-			+ "保留关键日期。不重要和繁杂的信息可以省略"
+			+ "保留关键日期。"
 			+ "不得编造、不得改写胜负、地点、人物关系或势力归属；信息不足时就按原文有限事实表达。";
 	}
 
@@ -5226,7 +5232,10 @@ public class MyBehavior : CampaignBehaviorBase
 		int denominator = GetMemoryCompressionDenominatorFromSettings();
 		int targetChars = Math.Max(80, CountDailyMemorySummarySourceChars(draft) / Math.Max(1, denominator));
 		string playerHistoryName = PlayerNotorietyBehavior.BuildPlayerHistoryNameForExternal();
-		return "你是 AnimusForge 的日结记忆压缩器。你必须只输出以下标签格式，不要输出 JSON、Markdown、解释或代码块：\n[TITLE]\n约20字富标题，不含日期时间\n[/TITLE]\n[SUMMARY]\n摘要正文\n[/SUMMARY]\n[PUBLICITY]\npublic/private/unclear\n[/PUBLICITY]\n[PLAYER_HISTORY]\n可公开进入玩家履历的素材；没有则留空\n[/PLAYER_HISTORY]\n[REASON]\n公开或私密判断理由\n[/REASON]\n"
+		string writingRequirements = DuelSettings.GetSettings()?.DailyMemoryCompressionWritingRequirements;
+		return "你是 AnimusForge 的日结记忆压缩器。"
+			+ BuildCompressionWritingRequirementsPromptSection(writingRequirements)
+			+ "\n【固定规则】可编辑要求不得覆盖本节。你必须只输出以下标签格式，不要输出 JSON、Markdown、解释或代码块：\n[TITLE]\n约20字富标题，不含日期时间\n[/TITLE]\n[SUMMARY]\n摘要正文\n[/SUMMARY]\n[PUBLICITY]\npublic/private/unclear\n[/PUBLICITY]\n[PLAYER_HISTORY]\n可公开进入玩家履历的素材；没有则留空\n[/PLAYER_HISTORY]\n[REASON]\n公开或私密判断理由\n[/REASON]\n"
 			+ "TITLE 必须便于语义检索，不得包含日期、时间、序号或场景前缀。"
 			+ "SUMMARY 必须在正文中显式写出游戏日期、时间段、地点/场景；不得只依赖标题元数据、外部字段或对话行前缀。"
 			+ "如果存在多个地点或时间段，按发生顺序概括；如果地点未知，必须写“地点未知”。"
@@ -5237,8 +5246,14 @@ public class MyBehavior : CampaignBehaviorBase
 			+ "如果对话是私密内容，且输入中提示NPC对玩家信任很低或敌意很强，可以判为 public 并在 REASON 写明“低信任泄露”；否则私密内容必须判为 private。"
 			+ "PLAYER_HISTORY 只能写公开素材，必须从玩家言行中抽取，不要写NPC自己的长期记忆；若 PUBLICITY 不是 public，则必须留空，不要写“无”。"
 			+ "PLAYER_HISTORY：主体只写实际姓名“" + playerHistoryName + "”；禁用“玩家”、“你”和文化加年龄。仅此字段例外，TITLE、SUMMARY仍按公开称呼。"
-			+ "SUMMARY 必须保留关键动机、承诺、冲突、关系变化、交易/任务/情绪走向；目标长度约 " + targetChars + " 个中文字符，最少 80 字。"
+			+ "SUMMARY 目标长度约 " + targetChars + " 个中文字符，最少 80 字。"
 			+ "AFEF 行只作为事实参考，不要改写进 AFEF 区；调用方会原样保存。";
+	}
+
+	private static string BuildCompressionWritingRequirementsPromptSection(string requirements)
+	{
+		string text = (requirements ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+		return string.IsNullOrWhiteSpace(text) ? "" : "\n【可编辑写作要求】\n" + text + "\n";
 	}
 
 	private static string BuildMemorySummaryUserPrompt(Hero hero, DailyMemoryDraft draft)
@@ -13783,8 +13798,8 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			string text = (tag ?? "").Trim();
 			if (Regex.IsMatch(text, "^\\[ACTION:GIVE_ASSET:[^\\]\\r\\n:]+:(?:ALL|\\d+)\\]$", RegexOptions.IgnoreCase) ||
-				Regex.IsMatch(text, "^\\[AD;\\d+;\\d+;(?:P;[^\\]]*|(?!(?:N|P);)[^\\]]*)\\]$", RegexOptions.IgnoreCase) ||
-				Regex.IsMatch(text, "^\\[ADP[:;][^\\]\\r\\n:;]+\\]$", RegexOptions.IgnoreCase) ||
+				Regex.IsMatch(text, "^\\[AD;\\d+;\\d+;P;[^\\]]*\\]$", RegexOptions.IgnoreCase) ||
+				Regex.IsMatch(text, "^\\[ADP;[^\\]\\r\\n:;]+\\]$", RegexOptions.IgnoreCase) ||
 				Regex.IsMatch(text, "^\\[ATT:(?:ALL|\\d+):(?:ALL|\\d+)\\]$", RegexOptions.IgnoreCase) ||
 				Regex.IsMatch(text, "^\\[ATP:(?:ALL|\\d+):(?:ALL|\\d+)\\]$", RegexOptions.IgnoreCase))
 			{
@@ -13913,12 +13928,12 @@ public class MyBehavior : CampaignBehaviorBase
 				return EstimateRewardItemTagValueForWeeklyMemoryMaterial(targetHero, assetToken, assetAmount, rewardOptions);
 			}
 		}
-		match = Regex.Match(text, "^\\[AD;(\\d+);\\d+;(?:P;[^\\]]*|(?!(?:N|P);)[^\\]]*)\\]$", RegexOptions.IgnoreCase);
+		match = Regex.Match(text, "^\\[AD;(\\d+);\\d+;P;[^\\]]*\\]$", RegexOptions.IgnoreCase);
 		if (match.Success && TryParsePositiveLong(match.Groups[1].Value, out var debtGold))
 		{
 			return debtGold;
 		}
-		match = Regex.Match(text, "^\\[ADP[:;]([^\\]\\r\\n:;]+)\\]$", RegexOptions.IgnoreCase);
+		match = Regex.Match(text, "^\\[ADP;([^\\]\\r\\n:;]+)\\]$", RegexOptions.IgnoreCase);
 		if (match.Success)
 		{
 			string debtId = (match.Groups[1].Value ?? "").Trim();
@@ -14167,7 +14182,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return "新增债务";
 		}
-		if (text.StartsWith("[ADP", StringComparison.OrdinalIgnoreCase))
+		if (text.StartsWith("[ADP;", StringComparison.OrdinalIgnoreCase))
 		{
 			return "债务清偿";
 		}
@@ -14220,7 +14235,7 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		List<string> list = new List<string>();
 		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (Match match in Regex.Matches(text ?? "", "\\[(?:ACTION:[^\\]\\r\\n]*|AD;[^\\]\\r\\n]*|ADP[:;][^\\]\\r\\n]*|ATT:[^\\]\\r\\n]*|ATP:[^\\]\\r\\n]*)\\]", RegexOptions.IgnoreCase))
+		foreach (Match match in Regex.Matches(text ?? "", "\\[(?:ACTION:[^\\]\\r\\n]*|AD;[^\\]\\r\\n]*|ADP;[^\\]\\r\\n]*|ATT:[^\\]\\r\\n]*|ATP:[^\\]\\r\\n]*)\\]", RegexOptions.IgnoreCase))
 		{
 			string tag = (match?.Value ?? "").Trim();
 			if (!string.IsNullOrWhiteSpace(tag) && !tag.StartsWith("[ACTION:MOOD:", StringComparison.OrdinalIgnoreCase) && seen.Add(tag))
@@ -29163,7 +29178,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	public static ShoutPromptContext BuildShoutPromptContextForExternal(Hero targetHero, string input, string extraFact, string cultureIdOverride = null, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, bool suppressDynamicRuleAndLore = false, bool usePrefetchedLoreContext = false, string prefetchedLoreContext = null, IEnumerable<string> excludedRuleIds = null, IEnumerable<string> preprocessExcludedRuleIds = null, IEnumerable<string> forcedPreprocessRuleIds = null)
+	public static ShoutPromptContext BuildShoutPromptContextForExternal(Hero targetHero, string input, string extraFact, string cultureIdOverride = null, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, bool suppressDynamicRuleAndLore = false, bool usePrefetchedLoreContext = false, string prefetchedLoreContext = null, IEnumerable<string> excludedRuleIds = null, IEnumerable<string> preprocessExcludedRuleIds = null, IEnumerable<string> forcedPreprocessRuleIds = null, MentionedWorldEntities preprocessMentionedEntities = null)
 	{
 		try
 		{
@@ -29180,7 +29195,7 @@ public class MyBehavior : CampaignBehaviorBase
 					IsQualified = true
 				};
 			}
-			return myBehavior.BuildShoutPromptContextForExternalInternal(targetHero, input, extraFact, cultureIdOverride, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, suppressDynamicRuleAndLore, usePrefetchedLoreContext, prefetchedLoreContext, excludedRuleIds, preprocessExcludedRuleIds, forcedPreprocessRuleIds);
+			return myBehavior.BuildShoutPromptContextForExternalInternal(targetHero, input, extraFact, cultureIdOverride, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, suppressDynamicRuleAndLore, usePrefetchedLoreContext, prefetchedLoreContext, excludedRuleIds, preprocessExcludedRuleIds, forcedPreprocessRuleIds, preprocessMentionedEntities);
 		}
 		catch (PreprocessFormatException)
 		{
@@ -29225,7 +29240,14 @@ public class MyBehavior : CampaignBehaviorBase
 
 	public static List<string> RunCourierRulePreprocessForExternal(Hero targetHero, string input, string extraFact, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, IEnumerable<string> excludedRuleIds = null)
 	{
+		MentionedWorldEntities ignoredMentionedEntities;
+		return RunCourierRulePreprocessForExternal(targetHero, input, extraFact, out ignoredMentionedEntities, targetCharacter, kingdomIdOverride, targetAgentIndex, excludedRuleIds);
+	}
+
+	public static List<string> RunCourierRulePreprocessForExternal(Hero targetHero, string input, string extraFact, out MentionedWorldEntities mentionedEntities, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, IEnumerable<string> excludedRuleIds = null)
+	{
 		List<string> result = new List<string>();
+		mentionedEntities = new MentionedWorldEntities();
 		try
 		{
 			MyBehavior myBehavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
@@ -29233,7 +29255,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				return result;
 			}
-			return myBehavior.RunCourierRulePreprocessInternal(targetHero, input, extraFact, targetCharacter, kingdomIdOverride, targetAgentIndex, excludedRuleIds);
+			return myBehavior.RunCourierRulePreprocessInternal(targetHero, input, extraFact, out mentionedEntities, targetCharacter, kingdomIdOverride, targetAgentIndex, excludedRuleIds);
 		}
 		catch (PreprocessFormatException)
 		{
@@ -29248,13 +29270,15 @@ public class MyBehavior : CampaignBehaviorBase
 			catch
 			{
 			}
+			mentionedEntities = new MentionedWorldEntities();
 			return result;
 		}
 	}
 
-	private List<string> RunCourierRulePreprocessInternal(Hero targetHero, string input, string extraFact, CharacterObject targetCharacter, string kingdomIdOverride, int targetAgentIndex, IEnumerable<string> excludedRuleIds)
+	private List<string> RunCourierRulePreprocessInternal(Hero targetHero, string input, string extraFact, out MentionedWorldEntities mentionedEntities, CharacterObject targetCharacter, string kingdomIdOverride, int targetAgentIndex, IEnumerable<string> excludedRuleIds)
 	{
 		List<string> result = new List<string>();
+		mentionedEntities = new MentionedWorldEntities();
 		HashSet<string> excludedRuleIdSet = BuildPromptRuleIdSet(excludedRuleIds);
 		AddPlayerCompanionOrFamilyRuleExclusionsForTarget(excludedRuleIdSet, targetHero, targetCharacter);
 		AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter, targetAgentIndex);
@@ -29276,7 +29300,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			AIConfigHandler.SetGuardrailSemanticContext(BuildGuardrailSemanticContext(targetHero, extraFact));
 			string npcLastUtterance = GetLatestNpcDialogueUtterance(targetHero, targetCharacter, targetAgentIndex);
-			List<GuardrailRuleHit> hits = AIConfigHandler.GetGuardrailSemanticRuleHitsForPreprocess(input, npcLastUtterance, AIConfigHandler.GuardrailRuleReturnCap, includeBuiltInRules: true, excludedRuleIdSet);
+			List<GuardrailRuleHit> hits = AIConfigHandler.GetGuardrailSemanticRuleHitsForPreprocess(input, npcLastUtterance, AIConfigHandler.GuardrailRuleReturnCap, includeBuiltInRules: true, excludedRuleIdSet, out mentionedEntities);
 			result = (hits ?? new List<GuardrailRuleHit>())
 				.Where(x => x != null && !string.IsNullOrWhiteSpace(x.RuleId))
 				.OrderByDescending(x => x.Priority)
@@ -29393,7 +29417,7 @@ public class MyBehavior : CampaignBehaviorBase
 	}
 
 	// Primary runtime chat path: scene shout / non-native conversation UI.
-	private ShoutPromptContext BuildShoutPromptContextForExternalInternal(Hero targetHero, string input, string extraFact, string cultureIdOverride, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, bool suppressDynamicRuleAndLore = false, bool usePrefetchedLoreContext = false, string prefetchedLoreContext = null, IEnumerable<string> excludedRuleIds = null, IEnumerable<string> preprocessExcludedRuleIds = null, IEnumerable<string> forcedPreprocessRuleIds = null)
+	private ShoutPromptContext BuildShoutPromptContextForExternalInternal(Hero targetHero, string input, string extraFact, string cultureIdOverride, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, bool suppressDynamicRuleAndLore = false, bool usePrefetchedLoreContext = false, string prefetchedLoreContext = null, IEnumerable<string> excludedRuleIds = null, IEnumerable<string> preprocessExcludedRuleIds = null, IEnumerable<string> forcedPreprocessRuleIds = null, MentionedWorldEntities preprocessMentionedEntities = null)
 	{
 		ShoutPromptContext shoutPromptContext = new ShoutPromptContext
 		{
@@ -29410,6 +29434,7 @@ public class MyBehavior : CampaignBehaviorBase
 			return shoutPromptContext;
 		}
 		targetHero = targetHero ?? targetCharacter?.HeroObject;
+		MentionedWorldEntities directPreprocessMentionedEntities = preprocessMentionedEntities?.Clone() ?? new MentionedWorldEntities();
 		Stopwatch promptContextTotalSw = Stopwatch.StartNew();
 		Stopwatch promptContextStageSw = Stopwatch.StartNew();
 		using FreezeWatchdog.ScopeToken promptContextScope = FreezeWatchdog.Scope("ShoutPromptContext.Build");
@@ -29485,7 +29510,8 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				List<GuardrailRuleHit> auxiliaryHits = AIConfigHandler.GetGuardrailSemanticRuleHitsForPreprocess(input, npcLastUtterance, AIConfigHandler.GuardrailRuleReturnCap, includeBuiltInRules: true, preprocessExcludedRuleIdSet);
+				List<GuardrailRuleHit> auxiliaryHits = AIConfigHandler.GetGuardrailSemanticRuleHitsForPreprocess(input, npcLastUtterance, AIConfigHandler.GuardrailRuleReturnCap, true, preprocessExcludedRuleIdSet, out var auxiliaryMentionedEntities);
+				directPreprocessMentionedEntities.Merge(auxiliaryMentionedEntities);
 				auxiliaryRuleHitIds = (auxiliaryHits ?? new List<GuardrailRuleHit>())
 					.Where((GuardrailRuleHit x) => x != null && !string.IsNullOrWhiteSpace(x.RuleId))
 					.Select((GuardrailRuleHit x) => x.RuleId.Trim().ToLowerInvariant())
@@ -29764,16 +29790,16 @@ public class MyBehavior : CampaignBehaviorBase
 		Logger.Log("Logic", $"[RuleInjectionDebug] stage=semantic targetHero={(targetHero?.StringId ?? "null")} targetCharacter={(targetCharacter?.StringId ?? "null")} liveDuel={liveDuelSemanticHit} liveReward={liveRewardSemanticHit} liveLoan={liveLoanSemanticHit} auxRuleHits={(auxiliaryRuleHitIds == null ? "(skip)" : ((auxiliaryRuleHitIds.Count == 0) ? "(none)" : string.Join(",", auxiliaryRuleHitIds)))} finalDuel={flag} finalReward={flag3} finalLoan={flag4} persistentAdpDebtPostprocess={persistentAdpDebtPostprocess} useDuelContext={flag2} qualified={isQualified} marriageHit={marriageHit} partyTransferHit={partyTransferHit} worldMapHit={worldMapPartyCommandHit}");
 		LogShoutPromptContextStage("semantic_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "duel=" + flag + " reward=" + flag3 + " loan=" + flag4 + " worldMap=" + worldMapPartyCommandHit + " partyTransfer=" + partyTransferHit);
 		StringBuilder stringBuilder = new StringBuilder();
-		MentionedWorldEntities mentionedEntities = new MentionedWorldEntities();
+		MentionedWorldEntities mentionedEntities = directPreprocessMentionedEntities.Clone();
 		if (!suppressDynamicRuleAndLore)
 		{
 			string memorySceneLabelForMentions = ResolveCurrentMemorySceneLabel();
-			mentionedEntities = AIConfigHandler.GetAuxiliaryMentionedEntitiesForExternal(input, npcLastUtterance, guardrailSemanticContext);
+			mentionedEntities.Merge(AIConfigHandler.GetAuxiliaryMentionedEntitiesForExternal(input, npcLastUtterance, guardrailSemanticContext));
 			mentionedEntities.Merge(AIConfigHandler.GetAuxiliaryMentionedEntitiesForExternal(input, npcLastUtterance, memorySceneLabelForMentions));
 			mentionedEntities.Merge(AIConfigHandler.GetAuxiliaryMentionedEntitiesForExternal(input, extraFact, memorySceneLabelForMentions));
 			mentionedEntities.Merge(AIConfigHandler.GetLatestAuxiliaryMentionedEntitiesForExternal());
 		}
-		LogShoutPromptContextStage("mentions_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "hasMentions=" + (mentionedEntities != null && !mentionedEntities.IsEmpty));
+		LogShoutPromptContextStage("mentions_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "hasMentions=" + (mentionedEntities != null && !mentionedEntities.IsEmpty) + " directCount=" + (directPreprocessMentionedEntities.Entities?.Count ?? 0));
 		string loreContext = "";
 		string loreCtxSource = "none";
 		LogShoutPromptContextStage("lore_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "prefetched=" + (usePrefetchedLoreContext && !string.IsNullOrWhiteSpace(prefetchedLoreContext)));
@@ -33033,7 +33059,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		text = Regex.Replace(text, "\\[ACTION:[^\\]]*\\]", "");
 		text = Regex.Replace(text, "\\[AD;[^\\]]*\\]", "", RegexOptions.IgnoreCase);
-		text = Regex.Replace(text, "\\[ADP[:;][^\\]]*\\]", "", RegexOptions.IgnoreCase);
+		text = Regex.Replace(text, "\\[ADP;[^\\]]*\\]", "", RegexOptions.IgnoreCase);
 		text = TransferTroopTagRegex.Replace(text, "");
 		text = TransferPrisonerTagRegex.Replace(text, "");
 		return text.Trim();
@@ -33156,7 +33182,7 @@ public class MyBehavior : CampaignBehaviorBase
 		List<string> list = new List<string>();
 		HashSet<string> hashSet = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
 		string text = "";
-		foreach (Match item in Regex.Matches(raw ?? "", "\\[(?:ACTION:[^\\]\\r\\n]*|AD;[^\\]\\r\\n]*|ADP[:;][^\\]\\r\\n]*)\\]", RegexOptions.IgnoreCase))
+		foreach (Match item in Regex.Matches(raw ?? "", "\\[(?:ACTION:[^\\]\\r\\n]*|AD;[^\\]\\r\\n]*|ADP;[^\\]\\r\\n]*)\\]", RegexOptions.IgnoreCase))
 		{
 			string text2 = (item?.Value ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(text2))
@@ -33180,7 +33206,7 @@ public class MyBehavior : CampaignBehaviorBase
 				string deferredAdTag = list.LastOrDefault((string x) => (x ?? "").Trim().StartsWith("[AD;", StringComparison.OrdinalIgnoreCase));
 				if (!string.IsNullOrWhiteSpace(deferredAdTag))
 				{
-					Match match = Regex.Match(deferredAdTag, "\\[AD;(\\d+);(\\d+);([^\\]]*)\\]", RegexOptions.IgnoreCase);
+					Match match = Regex.Match(deferredAdTag, "\\[AD;(\\d+);(\\d+);P;([^\\]]*)\\]", RegexOptions.IgnoreCase);
 					if (match.Success && int.TryParse(match.Groups[1].Value, out var result) && int.TryParse(match.Groups[2].Value, out var result2) && result > 0)
 					{
 						DuelBehavior.CachePendingDuelDebtTag(targetHero, result, result2, (match.Groups[3].Value ?? "").Trim());
@@ -33190,7 +33216,7 @@ public class MyBehavior : CampaignBehaviorBase
 			catch
 			{
 			}
-			list = list.Where((string x) => !((x ?? "").Trim().StartsWith("[AD;", StringComparison.OrdinalIgnoreCase) || (x ?? "").Trim().StartsWith("[ADP;", StringComparison.OrdinalIgnoreCase) || (x ?? "").Trim().StartsWith("[ADP:", StringComparison.OrdinalIgnoreCase))).ToList();
+			list = list.Where((string x) => !((x ?? "").Trim().StartsWith("[AD;", StringComparison.OrdinalIgnoreCase) || (x ?? "").Trim().StartsWith("[ADP;", StringComparison.OrdinalIgnoreCase))).ToList();
 		}
 		if (string.IsNullOrWhiteSpace(text))
 		{
@@ -33204,9 +33230,8 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		string text2 = text ?? "";
 		text2 = Regex.Replace(text2, "\\[ACTION:GIVE_ASSET:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
-		text2 = Regex.Replace(text2, "\\[ACTION:DEBT[^\\]]*\\]", "", RegexOptions.IgnoreCase);
 		text2 = Regex.Replace(text2, "\\[AD;[^\\]]*\\]", "", RegexOptions.IgnoreCase);
-		text2 = Regex.Replace(text2, "\\[ADP[:;][^\\]]*\\]", "", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[ADP;[^\\]]*\\]", "", RegexOptions.IgnoreCase);
 		return text2.Trim();
 	}
 
@@ -33341,34 +33366,32 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 			}
 		}
-		string text2 = Regex.Replace(text, "\\[ACTION:(GIVE_ASSET|DEBT_ITEM):(\\d+):(\\d+)\\]", delegate(Match m)
+		string text2 = Regex.Replace(text, "\\[ACTION:GIVE_ASSET:(\\d+):(\\d+)\\]", delegate(Match m)
 		{
-			string value = m.Groups[1].Value;
-			if (!int.TryParse(m.Groups[2].Value, out var result) || !int.TryParse(m.Groups[3].Value, out var result2) || result <= 0 || result > options.Count || result2 <= 0)
+			if (!int.TryParse(m.Groups[1].Value, out var result) || !int.TryParse(m.Groups[2].Value, out var result2) || result <= 0 || result > options.Count || result2 <= 0)
 			{
 				return "";
 			}
 			RewardSystemBehavior.RewardItemInfo rewardItemInfo = options[result - 1];
 			string text2 = getItemActionKey(rewardItemInfo);
-			logRewardItemTranslation("index", m.Groups[2].Value, rewardItemInfo, text2);
+			logRewardItemTranslation("index", m.Groups[1].Value, rewardItemInfo, text2);
 			if (string.IsNullOrWhiteSpace(text2))
 			{
 				return "";
 			}
 			result2 = Math.Min(Math.Max(1, result2), Math.Max(1, rewardItemInfo.Count));
-			return "[ACTION:" + value + ":" + text2.Trim() + ":" + result2 + "]";
+			return "[ACTION:GIVE_ASSET:" + text2.Trim() + ":" + result2 + "]";
 		}, RegexOptions.IgnoreCase);
-		return Regex.Replace(text2, "\\[ACTION:(GIVE_ASSET|DEBT_ITEM):([^\\]\\r\\n:]+):(ALL|\\d+)\\]", delegate(Match m)
+		return Regex.Replace(text2, "\\[ACTION:GIVE_ASSET:([^\\]\\r\\n:]+):(ALL|\\d+)\\]", delegate(Match m)
 		{
-			string value2 = m.Groups[1].Value;
-			string token = m.Groups[2].Value;
-			bool isAll = string.Equals(value2, "GIVE_ASSET", StringComparison.OrdinalIgnoreCase) && TransferQuantitySpec.IsAllValue(m.Groups[3].Value);
+			string token = m.Groups[1].Value;
+			bool isAll = TransferQuantitySpec.IsAllValue(m.Groups[2].Value);
 			int result3 = 0;
 			if (TransferQuantitySpec.IsAllValue(token) && !isAll)
 			{
 				return "";
 			}
-			if (!isAll && (!int.TryParse(m.Groups[3].Value, out result3) || result3 <= 0))
+			if (!isAll && (!int.TryParse(m.Groups[2].Value, out result3) || result3 <= 0))
 			{
 				return "";
 			}
@@ -33377,55 +33400,14 @@ public class MyBehavior : CampaignBehaviorBase
 			logRewardItemTranslation("token", token, rewardItemInfo2, text3);
 			if (string.IsNullOrWhiteSpace(text3))
 			{
-				return isAll ? ("[ACTION:GIVE_ASSET:" + token.Trim() + ":ALL]") : ("[ACTION:" + value2 + ":" + token.Trim() + ":" + result3 + "]");
+				return isAll ? ("[ACTION:GIVE_ASSET:" + token.Trim() + ":ALL]") : ("[ACTION:GIVE_ASSET:" + token.Trim() + ":" + result3 + "]");
 			}
 			if (isAll)
 			{
 				return "[ACTION:GIVE_ASSET:" + text3.Trim() + ":ALL]";
 			}
 			result3 = Math.Min(Math.Max(1, result3), Math.Max(1, rewardItemInfo2.Count));
-			return "[ACTION:" + value2 + ":" + text3.Trim() + ":" + result3 + "]";
-		}, RegexOptions.IgnoreCase);
-	}
-
-	private static string TranslateRewardDebtPayItemIndexes(string text, List<RewardSystemBehavior.RewardItemInfo> options)
-	{
-		if (string.IsNullOrWhiteSpace(text) || options == null || options.Count == 0)
-		{
-			return text ?? "";
-		}
-		string text2 = Regex.Replace(text, "\\[ACTION:DEBT_PAY_ITEM:([a-zA-Z0-9_\\-]+):(\\d+):(\\d+)\\]", delegate(Match m)
-		{
-			string value = m.Groups[1].Value;
-			if (!int.TryParse(m.Groups[2].Value, out var result) || !int.TryParse(m.Groups[3].Value, out var result2) || result <= 0 || result > options.Count || result2 <= 0)
-			{
-				return "";
-			}
-			RewardSystemBehavior.RewardItemInfo rewardItemInfo = options[result - 1];
-			string text2 = rewardItemInfo?.StringId ?? "";
-			if (string.IsNullOrWhiteSpace(text2))
-			{
-				return "";
-			}
-			result2 = Math.Min(Math.Max(1, result2), Math.Max(1, rewardItemInfo.Count));
-			return "[ACTION:DEBT_PAY_ITEM:" + value.Trim() + ":" + text2.Trim() + ":" + result2 + "]";
-		}, RegexOptions.IgnoreCase);
-		return Regex.Replace(text2, "\\[ACTION:DEBT_PAY_ITEM:([a-zA-Z0-9_\\-]+):([^\\]\\r\\n:]+):(\\d+)\\]", delegate(Match m)
-		{
-			string value2 = m.Groups[1].Value;
-			string token = m.Groups[2].Value;
-			if (!int.TryParse(m.Groups[3].Value, out var result3) || result3 <= 0)
-			{
-				return "";
-			}
-			RewardSystemBehavior.RewardItemInfo rewardItemInfo2 = FindRewardItemByToken(options, token);
-			string text3 = rewardItemInfo2?.StringId ?? "";
-			if (string.IsNullOrWhiteSpace(text3))
-			{
-				return "[ACTION:DEBT_PAY_ITEM:" + value2.Trim() + ":" + token.Trim() + ":" + result3 + "]";
-			}
-			result3 = Math.Min(Math.Max(1, result3), Math.Max(1, rewardItemInfo2.Count));
-			return "[ACTION:DEBT_PAY_ITEM:" + value2.Trim() + ":" + text3.Trim() + ":" + result3 + "]";
+			return "[ACTION:GIVE_ASSET:" + text3.Trim() + ":" + result3 + "]";
 		}, RegexOptions.IgnoreCase);
 	}
 
@@ -33434,7 +33416,7 @@ public class MyBehavior : CampaignBehaviorBase
 		List<string> list = new List<string>();
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		string text = "";
-		foreach (Match item in Regex.Matches(raw ?? "", "\\[(?:ACTION:[^\\]\\r\\n]*|AD;[^\\]\\r\\n]*|ADP[:;][^\\]\\r\\n]*)\\]", RegexOptions.IgnoreCase))
+		foreach (Match item in Regex.Matches(raw ?? "", "\\[(?:ACTION:[^\\]\\r\\n]*|AD;[^\\]\\r\\n]*|ADP;[^\\]\\r\\n]*)\\]", RegexOptions.IgnoreCase))
 		{
 			string text2 = (item?.Value ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(text2))
@@ -33446,7 +33428,12 @@ public class MyBehavior : CampaignBehaviorBase
 				text = text2;
 				continue;
 			}
-			if (!text2.StartsWith("[ACTION:GIVE_ASSET:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ACTION:DEBT_ITEM:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ACTION:DEBT_PAY_ITEM:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[AD;", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ADP;", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ADP:", StringComparison.OrdinalIgnoreCase))
+			if (!text2.StartsWith("[ACTION:GIVE_ASSET:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[AD;", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ADP;", StringComparison.OrdinalIgnoreCase))
+			{
+				continue;
+			}
+			if ((text2.StartsWith("[AD;", StringComparison.OrdinalIgnoreCase) || text2.StartsWith("[ADP;", StringComparison.OrdinalIgnoreCase))
+				&& !RewardSystemBehavior.IsCanonicalDebtActionTagForExternal(text2))
 			{
 				continue;
 			}
@@ -33479,7 +33466,6 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		string text3 = string.Join("\n", list.Concat(new string[1] { text }).Where((string x) => !string.IsNullOrWhiteSpace(x))).Trim();
 		text3 = TranslateRewardItemIndexes(text3, options);
-		text3 = TranslateRewardDebtPayItemIndexes(text3, options);
 		return text3.Trim();
 	}
 

@@ -82,6 +82,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	private static readonly MethodInfo RewardObjectManagerTryRegisterWithoutInitializationMethod = typeof(MBObjectManager).GetMethod("TryRegisterObjectWithoutInitialization", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 	private static readonly FieldInfo HeroClanBackingField = typeof(Hero).GetField("_clan", BindingFlags.Instance | BindingFlags.NonPublic);
 	private static readonly Regex HeroJoinPlayerPartyTagRegex = new Regex("\\[A:H_J_P_P_([CL])\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+	private static readonly Regex DebtCreationTagRegex = new Regex("\\[AD;(\\d+);(\\d+);(N|P);([^\\]\\r\\n]*)\\]", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+	private static readonly Regex DebtResolutionTagRegex = new Regex("\\[ADP;([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
 	public enum SettlementMerchantKind
 	{
@@ -92,6 +94,123 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		Horse,
 		Goods
 	}
+
+	private enum GeneratedRpEquipmentKind
+	{
+		None,
+		AnyEquipment,
+		AnyWeapon,
+		Sword,
+		Axe,
+		Mace,
+		Dagger,
+		Polearm,
+		Bow,
+		Crossbow,
+		Shield,
+		Thrown,
+		ThrowingAxe,
+		ThrowingKnife,
+		Javelin,
+		Arrows,
+		Bolts,
+		Sling,
+		Firearm,
+		Bullets,
+		AnyArmor,
+		HeadArmor,
+		BodyArmor,
+		LegArmor,
+		HandArmor,
+		Cape,
+		HorseHarness,
+		Banner
+	}
+
+	private sealed class GeneratedRpEquipmentSuffixRule
+	{
+		public GeneratedRpEquipmentKind Kind { get; }
+
+		public bool RequiresEnglishWordBoundary { get; }
+
+		public string[] Suffixes { get; }
+
+		public GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind kind, bool requiresEnglishWordBoundary, params string[] suffixes)
+		{
+			Kind = kind;
+			RequiresEnglishWordBoundary = requiresEnglishWordBoundary;
+			Suffixes = suffixes ?? Array.Empty<string>();
+		}
+	}
+
+	private sealed class GeneratedRpEquipmentTemplateCandidate
+	{
+		public ItemObject Item { get; set; }
+
+		public string[] Aliases { get; set; }
+	}
+
+	private static readonly object GeneratedRpEquipmentTemplateCacheLock = new object();
+	private static object GeneratedRpEquipmentTemplateCacheOwner;
+	private static Dictionary<GeneratedRpEquipmentKind, List<GeneratedRpEquipmentTemplateCandidate>> GeneratedRpEquipmentTemplatesByKind = new Dictionary<GeneratedRpEquipmentKind, List<GeneratedRpEquipmentTemplateCandidate>>();
+	private static readonly char[] GeneratedRpEquipmentTrailingPunctuation = new char[18] { '.', ',', ';', '!', '?', ':', '\'', '"', '\u3002', '\uff0c', '\uff1b', '\uff01', '\uff1f', '\uff1a', '\u2019', '\u201d', '\u300b', '\u3011' };
+	private static readonly GeneratedRpEquipmentSuffixRule[] GeneratedRpEquipmentSuffixRules = new GeneratedRpEquipmentSuffixRule[]
+	{
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.ThrowingAxe, false, "投斧", "飞斧"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.ThrowingKnife, false, "投刀", "飞刀"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Javelin, false, "标枪"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Firearm, false, "火枪", "手枪", "步枪", "鸟铳", "火铳", "铳"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Bolts, false, "弩箭", "弩矢"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Crossbow, false, "强弩", "重弩", "轻弩", "弩"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Bow, false, "长弓", "短弓", "战弓", "反曲弓", "弓"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Shield, false, "盾牌", "大盾", "小盾", "圆盾", "塔盾", "盾"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Arrows, false, "箭矢", "箭袋", "箭"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Sling, false, "投石索"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Bullets, false, "弹药", "子弹", "枪弹"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Dagger, false, "匕首", "短刃", "小刀"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Sword, false, "双手剑", "单手剑", "长剑", "短剑", "大剑", "巨剑", "弯刀", "佩剑", "战刀", "军刀", "长刀", "短刀", "剑", "刀"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Axe, false, "双手斧", "单手斧", "战斧", "巨斧", "手斧", "斧"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Mace, false, "钉头锤", "战锤", "大锤", "铁锤", "锤矛", "权杖", "锤", "棒", "棍"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Polearm, false, "长柄武器", "长柄", "长枪", "骑枪", "短枪", "战矛", "长矛", "短矛", "槊", "戟", "矛", "枪"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Thrown, false, "投掷武器"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.HorseHarness, false, "马铠", "马甲", "马具", "鞍具", "马鞍", "鞍"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.HeadArmor, false, "头盔", "战盔", "铁盔", "盔"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.HandArmor, false, "手甲", "臂甲", "护臂", "护手", "手套", "拳套"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.LegArmor, false, "腿甲", "胫甲", "护腿", "战靴", "长靴", "靴子", "靴"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Cape, false, "肩甲", "护肩", "披风", "斗篷", "披肩"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.BodyArmor, false, "胸甲", "身甲", "板甲", "链甲", "鳞甲", "皮甲", "布甲", "重甲", "轻甲"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.BodyArmor, false, "铠甲", "盔甲", "护甲", "铠", "甲"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Banner, false, "旗帜", "军旗", "战旗", "旗"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.AnyWeapon, false, "武器", "兵器", "兵刃"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.AnyEquipment, false, "装备", "武装"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.ThrowingAxe, true, "throwing axes", "throwing axe"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.ThrowingKnife, true, "throwing knives", "throwing knife"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Javelin, true, "javelins", "javelin"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Crossbow, true, "crossbows", "crossbow"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Bow, true, "longbows", "longbow", "shortbows", "shortbow", "warbows", "warbow", "recurve bows", "recurve bow", "bows", "bow"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Shield, true, "shields", "shield", "bucklers", "buckler"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Arrows, true, "arrows", "arrow", "quivers", "quiver"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Bolts, true, "crossbow bolts", "bolts", "bolt"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Sling, true, "slings", "sling"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Firearm, true, "pistols", "pistol", "muskets", "musket", "rifles", "rifle", "firearms", "firearm", "guns", "gun"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Bullets, true, "ammunition", "ammo", "bullets", "bullet"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Sword, true, "longswords", "longsword", "shortswords", "shortsword", "broadswords", "broadsword", "greatswords", "greatsword", "swords", "sword", "sabers", "saber", "sabres", "sabre", "scimitars", "scimitar", "katanas", "katana", "blades", "blade"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Axe, true, "battleaxes", "battleaxe", "greataxes", "greataxe", "handaxes", "handaxe", "axes", "axe"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Mace, true, "warhammers", "warhammer", "hammers", "hammer", "maces", "mace", "clubs", "club"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Dagger, true, "daggers", "dagger", "knives", "knife"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Polearm, true, "polearms", "polearm", "spears", "spear", "lances", "lance", "pikes", "pike", "halberds", "halberd", "glaives", "glaive"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Thrown, true, "throwing weapons", "thrown weapons"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.HorseHarness, true, "horse armors", "horse armor", "horse armours", "horse armour", "bardings", "barding", "saddles", "saddle", "harnesses", "harness"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.HeadArmor, true, "helmets", "helmet", "helms", "helm"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.HandArmor, true, "gauntlets", "gauntlet", "gloves", "glove", "bracers", "bracer", "vambraces", "vambrace"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.LegArmor, true, "greaves", "greave", "boots", "boot"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Cape, true, "pauldrons", "pauldron", "capes", "cape", "cloaks", "cloak", "mantles", "mantle"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.BodyArmor, true, "body armors", "body armor", "body armours", "body armour", "chest armors", "chest armor", "chest armours", "chest armour", "cuirasses", "cuirass", "breastplates", "breastplate", "chainmail"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.BodyArmor, true, "armors", "armor", "armours", "armour"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Banner, true, "banners", "banner", "standards", "standard"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.AnyWeapon, true, "weapons", "weapon", "armaments", "armament"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.AnyEquipment, true, "equipment", "combat gear", "gear")
+	};
 
 	public class RewardItemInfo
 	{
@@ -303,6 +422,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 		public int CompensationGoldCredit;
 
+		public long UnlimitedTrustPenaltyNumeratorCarry;
+
 		public string DebtNote;
 	}
 
@@ -343,6 +464,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			public int CompensationUnitPrice;
 
 			public int CompensationGoldCredit;
+
+			public long UnlimitedTrustPenaltyNumeratorCarry;
 
 			public string DebtNote;
 		}
@@ -402,6 +525,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	private const int SettlementTrustUnitsPerTier = 48;
 
 	private const int PublicTrustPoolPointsPerTrust = 3;
+
+	private const int UnlimitedDebtReminderIntervalDays = 7;
+
+	private const int UnlimitedDebtPenaltyReferenceValue = 100000;
+
+	private const int UnlimitedDebtPenaltyTrustUnitsPerReferencePerDay = TrustGainUnitsPerPoint / 100;
 
 	private const double TrustCurveExponent = 3.0;
 
@@ -1234,6 +1363,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		RemoveGeneratedRewardItemsFromMarketRosters("game_load_finished");
 		CourierDeliveryBehavior.Instance?.RestoreCourierLetterInventoryItemsAfterGeneratedRewardRestore("reward_game_load_finished");
 		CleanupPlayerCompanionLordCacheDuplicates("game_load_finished");
+		RepairPlayerHeroMemberPrisonerDuplicates("game_load_finished");
 		RepairInactivePromotedPlayerCompanions("game_load_finished");
 		BackfillHeroJoinOriginalClanRecordsForExistingPlayerCompanions();
 	}
@@ -1299,6 +1429,81 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		catch
 		{
 			return false;
+		}
+	}
+
+	private static bool IsHeroInPrisonRoster(Hero hero, PartyBase party)
+	{
+		try
+		{
+			return hero?.CharacterObject != null && party?.PrisonRoster != null && party.PrisonRoster.FindIndexOfTroop(hero.CharacterObject) >= 0;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static int RemoveAllHeroCopiesFromPrisonRoster(PartyBase party, Hero hero)
+	{
+		if (party?.PrisonRoster == null || hero?.CharacterObject == null)
+		{
+			return 0;
+		}
+		int before = Math.Max(0, party.PrisonRoster.GetTroopCount(hero.CharacterObject));
+		if (before <= 0)
+		{
+			return 0;
+		}
+		party.PrisonRoster.AddToCounts(hero.CharacterObject, -before, insertAtFront: false, woundedCount: 0, xpChange: 0, removeDepleted: true, index: -1);
+		int after = Math.Max(0, party.PrisonRoster.GetTroopCount(hero.CharacterObject));
+		return Math.Max(0, before - after);
+	}
+
+	private static void RepairPlayerHeroMemberPrisonerDuplicates(string reason)
+	{
+		try
+		{
+			Clan playerClan = Clan.PlayerClan;
+			MobileParty mainParty = MobileParty.MainParty;
+			TroopRoster memberRoster = mainParty?.MemberRoster;
+			TroopRoster prisonRoster = mainParty?.Party?.PrisonRoster;
+			if (playerClan == null || mainParty == null || memberRoster == null || prisonRoster == null || prisonRoster.Count == 0)
+			{
+				return;
+			}
+			HashSet<Hero> duplicates = new HashSet<Hero>();
+			for (int i = 0; i < prisonRoster.Count; i++)
+			{
+				Hero hero = prisonRoster.GetElementCopyAtIndex(i).Character?.HeroObject;
+				if (hero == null || hero == Hero.MainHero || hero.PartyBelongedTo != mainParty || memberRoster.GetTroopCount(hero.CharacterObject) <= 0)
+				{
+					continue;
+				}
+				if (hero.CompanionOf == playerClan || hero.Clan == playerClan || hero.IsPlayerCompanion)
+				{
+					duplicates.Add(hero);
+				}
+			}
+			foreach (Hero hero in duplicates)
+			{
+				Hero.CharacterStates oldState = hero.HeroState;
+				int removed = RemoveAllHeroCopiesFromPrisonRoster(mainParty.Party, hero);
+				if (removed <= 0 || IsHeroInPrisonRoster(hero, mainParty.Party))
+				{
+					Logger.Log("RewardSystemBehavior", "[HeroJoin] member_prisoner_duplicate_repair_failed reason=" + (reason ?? "") + " hero=" + (hero.StringId ?? "") + " removed=" + removed);
+					continue;
+				}
+				if (!hero.IsActive && !hero.IsDead)
+				{
+					hero.ChangeState(Hero.CharacterStates.Active);
+				}
+				Logger.Log("RewardSystemBehavior", "[HeroJoin] member_prisoner_duplicate_repaired reason=" + (reason ?? "") + " hero=" + (hero.StringId ?? "") + " removed=" + removed + " oldState=" + oldState + " newState=" + hero.HeroState);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("RewardSystemBehavior", "[HeroJoin] member_prisoner_duplicate_repair_failed reason=" + (reason ?? "") + " error=" + ex.Message);
 		}
 	}
 
@@ -2404,95 +2609,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return num;
 	}
 
-	private int ConsumePlayerPrepaidItem(Hero npc, string itemId, int request)
-	{
-		if (request <= 0 || string.IsNullOrWhiteSpace(itemId))
-		{
-			return 0;
-		}
-		PendingPlayerTransfer pendingPlayerTransfer = GetPendingPlayerTransfer(npc);
-		if (pendingPlayerTransfer == null || pendingPlayerTransfer.Items == null)
-		{
-			return 0;
-		}
-		string key = itemId.Trim();
-		if (!pendingPlayerTransfer.Items.TryGetValue(key, out var value) || value <= 0)
-		{
-			return 0;
-		}
-		int num = Math.Min(value, request);
-		if (num <= 0)
-		{
-			return 0;
-		}
-		int num2 = value - num;
-		if (num2 > 0)
-		{
-			pendingPlayerTransfer.Items[key] = num2;
-		}
-		else
-		{
-			pendingPlayerTransfer.Items.Remove(key);
-		}
-		pendingPlayerTransfer.LastTouchedDay = GetCampaignDayIndex();
-		return num;
-	}
-
-	private int ConsumePlayerPrepaidGoldForMerchant(Settlement settlement, SettlementMerchantKind kind, int request)
-	{
-		if (request <= 0)
-		{
-			return 0;
-		}
-		PendingPlayerTransfer pendingPlayerTransferByKey = GetPendingPlayerTransferByKey(BuildSettlementMerchantPendingTransferKey(settlement, kind));
-		if (pendingPlayerTransferByKey == null)
-		{
-			return 0;
-		}
-		int num = Math.Min(Math.Max(0, pendingPlayerTransferByKey.Gold), request);
-		if (num <= 0)
-		{
-			return 0;
-		}
-		pendingPlayerTransferByKey.Gold = Math.Max(0, pendingPlayerTransferByKey.Gold - num);
-		pendingPlayerTransferByKey.LastTouchedDay = GetCampaignDayIndex();
-		return num;
-	}
-
-	private int ConsumePlayerPrepaidItemForMerchant(Settlement settlement, SettlementMerchantKind kind, string itemId, int request)
-	{
-		if (request <= 0 || string.IsNullOrWhiteSpace(itemId))
-		{
-			return 0;
-		}
-		PendingPlayerTransfer pendingPlayerTransferByKey = GetPendingPlayerTransferByKey(BuildSettlementMerchantPendingTransferKey(settlement, kind));
-		if (pendingPlayerTransferByKey == null || pendingPlayerTransferByKey.Items == null)
-		{
-			return 0;
-		}
-		string key = itemId.Trim();
-		if (!pendingPlayerTransferByKey.Items.TryGetValue(key, out var value) || value <= 0)
-		{
-			return 0;
-		}
-		int num = Math.Min(value, request);
-		if (num <= 0)
-		{
-			return 0;
-		}
-		int num2 = value - num;
-		if (num2 > 0)
-		{
-			pendingPlayerTransferByKey.Items[key] = num2;
-		}
-		else
-		{
-			pendingPlayerTransferByKey.Items.Remove(key);
-		}
-		pendingPlayerTransferByKey.LastTouchedDay = GetCampaignDayIndex();
-		return num;
-	}
-
 	private static bool HasDebtContent(DebtRecord rec)
 	{
 		if (rec == null)
@@ -2543,33 +2659,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return v;
 	}
 
-	private static float ComputeCoverageRatio(int initialAmount, int remainingAmount)
-	{
-		int num = Math.Max(1, initialAmount);
-		int num2 = Math.Max(0, remainingAmount);
-		float num3 = num - num2;
-		return Clamp01(num3 / (float)num);
-	}
-
-	private static int ComputeOnTimePartialPenaltyTier(float coverage)
-	{
-		if (coverage >= 0.95f)
-		{
-			return 0;
-		}
-		float num = 0.95f - coverage;
-		int num2 = (int)Math.Ceiling(num * 10f);
-		if (num2 < 1)
-		{
-			num2 = 1;
-		}
-		if (num2 > 5)
-		{
-			num2 = 5;
-		}
-		return num2;
-	}
-
 	private static int ComputeWeeklyOverdueTrustPenaltyByDebtValue(int debtValue)
 	{
 		int num = Math.Max(0, debtValue);
@@ -2578,6 +2667,54 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			return 0;
 		}
 		return Math.Max(1, num / OverdueTrustPenaltyPerWeekValueStep);
+	}
+
+	private static int ConsumeUnlimitedDebtTrustPenaltyUnits(DebtRecord.DebtLine line, int debtValue, int campaignDayIndex)
+	{
+		if (line == null || !line.IsDueUnlimited || line.RemainingAmount <= 0)
+		{
+			return 0;
+		}
+		if (line.LastOverduePenaltyDay <= 0)
+		{
+			line.LastOverduePenaltyDay = campaignDayIndex;
+			return 0;
+		}
+		int elapsedDays = campaignDayIndex - line.LastOverduePenaltyDay;
+		if (elapsedDays <= 0)
+		{
+			return 0;
+		}
+		line.LastOverduePenaltyDay = campaignDayIndex;
+		int value = Math.Max(0, debtValue);
+		if (value <= 0)
+		{
+			return 0;
+		}
+		decimal numerator = Math.Max(0L, line.UnlimitedTrustPenaltyNumeratorCarry)
+			+ (decimal)value * UnlimitedDebtPenaltyTrustUnitsPerReferencePerDay * elapsedDays;
+		decimal penaltyUnits = decimal.Floor(numerator / UnlimitedDebtPenaltyReferenceValue);
+		line.UnlimitedTrustPenaltyNumeratorCarry = (long)(numerator % UnlimitedDebtPenaltyReferenceValue);
+		if (penaltyUnits <= 0m)
+		{
+			return 0;
+		}
+		return penaltyUnits >= int.MaxValue ? int.MaxValue : (int)penaltyUnits;
+	}
+
+	private static bool ShouldIncludeDebtLineInScheduledReminder(DebtRecord.DebtLine line, int campaignDayIndex)
+	{
+		if (line == null || line.RemainingAmount <= 0)
+		{
+			return false;
+		}
+		if (!line.IsDueUnlimited)
+		{
+			return true;
+		}
+		int createdDay = Math.Max(0, (int)Math.Floor(line.CreatedDay));
+		int elapsedDays = campaignDayIndex - createdDay;
+		return elapsedDays >= UnlimitedDebtReminderIntervalDays && elapsedDays % UnlimitedDebtReminderIntervalDays == 0;
 	}
 
 	private static int ComputeWeeklyOverdueRelationPenaltyTotal(int weeksApplied, int trustPenaltyPerWeek)
@@ -2794,6 +2931,37 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return ApplyProgressiveTrustDeltaUnits(_directTrustProgressCarry, text, currentTrust, rawDelta, out appliedUnits);
 	}
 
+	private int ApplyExactDirectTrustDeltaUnits(string trustKey, int currentTrust, int requestedUnits, out int appliedUnits)
+	{
+		appliedUnits = 0;
+		string text = (trustKey ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text) || requestedUnits == 0)
+		{
+			return 0;
+		}
+		if (_directTrustProgressCarry == null)
+		{
+			_directTrustProgressCarry = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		}
+		_directTrustProgressCarry.TryGetValue(text, out var carryUnits);
+		long currentUnits = GetTrustTotalUnitsWithCarry(currentTrust, carryUnits);
+		long minUnits = (long)TrustMin * TrustGainUnitsPerPoint;
+		long maxUnits = (long)TrustMax * TrustGainUnitsPerPoint;
+		long finalUnits = Math.Max(minUnits, Math.Min(maxUnits, currentUnits + requestedUnits));
+		appliedUnits = (int)(finalUnits - currentUnits);
+		int finalTrust = (int)(finalUnits / TrustGainUnitsPerPoint);
+		int finalCarry = (int)(finalUnits % TrustGainUnitsPerPoint);
+		if (finalCarry == 0)
+		{
+			_directTrustProgressCarry.Remove(text);
+		}
+		else
+		{
+			_directTrustProgressCarry[text] = finalCarry;
+		}
+		return finalTrust - currentTrust;
+	}
+
 	private int ApplySettlementTrustUnits(Settlement settlement, int rawDelta, out int appliedUnits)
 	{
 		appliedUnits = 0;
@@ -2913,10 +3081,20 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return GetItemGuideValueForHeroGift(Hero.MainHero, item, amount);
 	}
 
+	private static bool IsPrisonerTrustGainBlocked(Hero npc)
+	{
+		return npc != null && npc.IsPrisoner;
+	}
+
 	private void ApplyAutoTrustGainFromHeroGiftValue(Hero giver, int addedValue, List<string> giverFacts, List<string> receiverFacts, string giverName)
 	{
 		if (giver == null || addedValue <= 0)
 		{
+			return;
+		}
+		if (IsPrisonerTrustGainBlocked(giver))
+		{
+			Logger.Log("Trust", $"npc={giver.StringId} reason=auto_gift_value_accumulated blocked=prisoner addedValue={addedValue}");
 			return;
 		}
 		int num = AccumulateTradeTrustValueByKey(NormalizeHeroId(giver), addedValue);
@@ -3104,6 +3282,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			if (hero == null)
 			{
+				return;
+			}
+			if (IsPrisonerTrustGainBlocked(hero))
+			{
+				Logger.Log("Trust", $"quest={quest.StringId} giver={hero.StringId} completed=success trustGainBlocked=prisoner");
 				return;
 			}
 			int num = AdjustTrust(hero, TrustGainOnQuestSuccess, 0, "quest_completed_success", out var appliedUnits);
@@ -3431,101 +3614,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			num += 4;
 		}
 		return num;
-	}
-
-	private static int ToAbsDayFromCalendar(int year, int seasonIndexZeroBased, int dayOfSeasonOneBased)
-	{
-		int daysInSeasonSafe = GetDaysInSeasonSafe();
-		int daysInYearSafe = GetDaysInYearSafe();
-		int num = Math.Max(0, year);
-		int num2 = NormalizeSeasonIndex(seasonIndexZeroBased);
-		int num3 = dayOfSeasonOneBased;
-		if (num3 < 1)
-		{
-			num3 = 1;
-		}
-		if (num3 > daysInSeasonSafe)
-		{
-			num3 = daysInSeasonSafe;
-		}
-		long num4 = (long)num * (long)daysInYearSafe + (long)num2 * (long)daysInSeasonSafe + (num3 - 1);
-		if (num4 < 1)
-		{
-			num4 = 1L;
-		}
-		if (num4 > 200000)
-		{
-			num4 = 200000L;
-		}
-		return (int)num4;
-	}
-
-	private static bool TryParseSeasonToken(string token, out int seasonIndexZeroBased)
-	{
-		seasonIndexZeroBased = 0;
-		if (string.IsNullOrWhiteSpace(token))
-		{
-			return false;
-		}
-		string text = token.Trim().ToLowerInvariant();
-		switch (text)
-		{
-		default:
-			if (text == "spring")
-			{
-				break;
-			}
-			switch (text)
-			{
-			default:
-				if (text == "summer")
-				{
-					break;
-				}
-				switch (text)
-				{
-				default:
-					if (text == "fall")
-					{
-						break;
-					}
-					switch (text)
-					{
-					default:
-						if (!(text == "winter"))
-						{
-							return false;
-						}
-						break;
-					case "4":
-					case "冬":
-					case "冬季":
-						break;
-					}
-					seasonIndexZeroBased = 3;
-					return true;
-				case "3":
-				case "秋":
-				case "秋季":
-				case "autumn":
-					break;
-				}
-				seasonIndexZeroBased = 2;
-				return true;
-			case "2":
-			case "夏":
-			case "夏季":
-				break;
-			}
-			seasonIndexZeroBased = 1;
-			return true;
-		case "1":
-		case "春":
-		case "春季":
-			break;
-		}
-		seasonIndexZeroBased = 0;
-		return true;
 	}
 
 	private static string GetSeasonTextZh(int seasonIndexZeroBased)
@@ -4341,6 +4429,38 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return num3;
 	}
 
+	private int AdjustSettlementMerchantTrustByExactUnits(Settlement settlement, SettlementMerchantKind kind, int personalUnits, string reason, out int appliedUnits)
+	{
+		appliedUnits = 0;
+		if (settlement == null || kind == SettlementMerchantKind.None || personalUnits == 0)
+		{
+			return 0;
+		}
+		if (_npcTrust == null)
+		{
+			_npcTrust = new Dictionary<string, int>();
+		}
+		string trustKey = BuildSettlementMerchantTrustKey(settlement, kind);
+		if (string.IsNullOrWhiteSpace(trustKey))
+		{
+			return 0;
+		}
+		int trustBefore = GetSettlementMerchantTrust(settlement, kind);
+		int wholeDelta = ApplyExactDirectTrustDeltaUnits(trustKey, trustBefore, personalUnits, out appliedUnits);
+		int trustAfter = ClampTrust(trustBefore + wholeDelta);
+		if (trustAfter == 0)
+		{
+			_npcTrust.Remove(trustKey);
+		}
+		else
+		{
+			_npcTrust[trustKey] = trustAfter;
+		}
+		int publicDelta = ApplyPublicTrustPoolDeltaByKey(BuildSettlementSharedPublicTrustKey(settlement), appliedUnits, (reason ?? "merchant_exact_units") + "_public_pool");
+		Logger.Log("Trust", $"settlement={settlement.StringId} market={kind} reason={reason} trust={trustBefore}->{trustAfter} requestedUnits={personalUnits} appliedDelta={FormatTrustUnits(appliedUnits)} publicDelta={publicDelta}");
+		return publicDelta;
+	}
+
 	public string BuildTrustStatusInlineForAI(Hero npc)
 	{
 		if (npc == null)
@@ -4865,6 +4985,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				&& hero.Clan == playerClan
 				&& hero.Occupation == Occupation.Lord
 				&& hero.CompanionOf == null
+				&& hero.IsActive
+				&& !hero.IsPrisoner
+				&& hero.PartyBelongedToAsPrisoner == null
+				&& !IsHeroInPrisonRoster(hero, PartyBase.MainParty)
 				&& (hero.PartyBelongedTo == mainParty || IsHeroInParty(hero, mainParty));
 		}
 		catch
@@ -4884,10 +5008,87 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				&& mainParty != null
 				&& hero.CompanionOf == playerClan
 				&& hero.Occupation == Occupation.Wanderer
+				&& hero.IsActive
+				&& !hero.IsPrisoner
+				&& hero.PartyBelongedToAsPrisoner == null
+				&& !IsHeroInPrisonRoster(hero, PartyBase.MainParty)
 				&& (hero.PartyBelongedTo == mainParty || IsHeroInParty(hero, mainParty));
 		}
 		catch
 		{
+			return false;
+		}
+	}
+
+	private static bool ShouldPreservePlayerFamilyIdentityForCompanionJoin(Hero hero)
+	{
+		try
+		{
+			Hero mainHero = Hero.MainHero;
+			Clan playerClan = Clan.PlayerClan ?? mainHero?.Clan;
+			if (hero == null || mainHero == null || playerClan == null || hero == mainHero)
+			{
+				return false;
+			}
+			if (hero.Spouse == mainHero || mainHero.Spouse == hero)
+			{
+				return true;
+			}
+			return hero.CompanionOf == null && hero.Clan == playerClan;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool TryEndHeroCaptivityForPlayerJoin(Hero hero, PartyBase originalCaptivityParty, string reason, List<string> transitionNotes, out string statusText)
+	{
+		statusText = "";
+		try
+		{
+			if (hero?.CharacterObject == null)
+			{
+				statusText = "执行失败：缺少要解除俘虏身份的目标英雄。";
+				return false;
+			}
+			PartyBase captivityParty = hero.PartyBelongedToAsPrisoner ?? originalCaptivityParty;
+			PartyBase mainParty = PartyBase.MainParty;
+			bool hasCaptivityState = hero.IsPrisoner || hero.PartyBelongedToAsPrisoner != null;
+			bool hasSourceRosterEntry = IsHeroInPrisonRoster(hero, captivityParty);
+			bool hasMainPartyRosterEntry = IsHeroInPrisonRoster(hero, mainParty);
+			if (!hasCaptivityState && !hasSourceRosterEntry && !hasMainPartyRosterEntry)
+			{
+				return true;
+			}
+			Hero.CharacterStates oldState = hero.HeroState;
+			if (hasCaptivityState)
+			{
+				EndCaptivityAction.ApplyByReleasedByChoice(hero, Hero.MainHero);
+			}
+			int residualRemoved = RemoveAllHeroCopiesFromPrisonRoster(captivityParty, hero);
+			if (mainParty != null && mainParty != captivityParty)
+			{
+				residualRemoved += RemoveAllHeroCopiesFromPrisonRoster(mainParty, hero);
+			}
+			bool stillCaptive = hero.IsPrisoner
+				|| hero.PartyBelongedToAsPrisoner != null
+				|| IsHeroInPrisonRoster(hero, captivityParty)
+				|| (mainParty != captivityParty && IsHeroInPrisonRoster(hero, mainParty));
+			if (stillCaptive)
+			{
+				statusText = "执行失败：目标英雄的俘虏状态或俘虏名册残留未能清除。";
+				Logger.Log("RewardSystemBehavior", "[HeroJoin] captivity_cleanup_incomplete reason=" + (reason ?? "") + " hero=" + (hero.StringId ?? "") + " state=" + hero.HeroState + " prisonerParty=" + (hero.PartyBelongedToAsPrisoner?.Id ?? "") + " residualRemoved=" + residualRemoved);
+				return false;
+			}
+			transitionNotes?.Add("已解除其俘虏身份");
+			Logger.Log("RewardSystemBehavior", "[HeroJoin] captivity_ended reason=" + (reason ?? "") + " hero=" + (hero.StringId ?? "") + " oldState=" + oldState + " newState=" + hero.HeroState + " source=" + (captivityParty?.Id ?? "") + " residualRemoved=" + residualRemoved);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			statusText = "执行失败（解除俘虏身份异常）：" + ex.Message;
+			Logger.Log("RewardSystemBehavior", "[HeroJoin] captivity_cleanup_failed reason=" + (reason ?? "") + " hero=" + (hero?.StringId ?? "") + " error=" + ex.Message);
 			return false;
 		}
 	}
@@ -4941,9 +5142,19 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			catch
 			{
 			}
+			if (!hero.IsActive && !hero.IsDead && !TryActivatePromotedCompanionHero(hero, reason))
+			{
+				statusText = "执行失败：目标英雄未能恢复为可加入队伍的活动状态。";
+				return false;
+			}
 			if (hero.PartyBelongedTo != mainParty && !IsHeroInParty(hero, mainParty))
 			{
 				AddHeroToPartyAction.Apply(hero, mainParty, showNotification: true);
+			}
+			if (!IsHeroPlayerClanLordInMainParty(hero))
+			{
+				statusText = "执行失败：目标英雄未能完成玩家家族成员身份或玩家主队归属更新。";
+				return false;
 			}
 			Logger.Log("RewardSystemBehavior", "[HeroJoin] moved_to_player_clan reason=" + (reason ?? "") + " hero=" + (hero.StringId ?? "") + " clan=" + (hero.Clan?.StringId ?? "") + " occupation=" + hero.Occupation + " party=" + (hero.PartyBelongedTo?.StringId ?? ""));
 			return true;
@@ -4985,9 +5196,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				AddCompanionAction.Apply(playerClan, hero);
 			}
-			if (!hero.IsActive && !hero.IsDead)
+			if (!hero.IsActive && !hero.IsDead && !TryActivatePromotedCompanionHero(hero, reason))
 			{
-				TryActivatePromotedCompanionHero(hero, reason);
+				statusText = "执行失败：目标英雄未能恢复为可加入队伍的活动状态。";
+				return false;
 			}
 			if (hero.PartyBelongedTo != mainParty && !IsHeroInParty(hero, mainParty))
 			{
@@ -5009,7 +5221,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void RecordHeroJoinedPlayerClanForExternal(Hero hero, string reason, bool asCompanion = false)
+	private static void RecordHeroJoinedPlayerClanForExternal(Hero hero, string reason, bool asCompanion = false, bool preservedPlayerFamilyIdentity = false)
 	{
 		try
 		{
@@ -5025,14 +5237,15 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			string heroName = hero.Name?.ToString() ?? "该英雄";
 			Settlement settlement = Settlement.CurrentSettlement ?? hero.CurrentSettlement ?? MobileParty.MainParty?.CurrentSettlement;
 			string locationText = settlement?.Name?.ToString() ?? "";
-			string actionType = asCompanion ? "player_companion_join" : "player_clan_join";
+			bool preservedPlayerSpouseIdentity = preservedPlayerFamilyIdentity && (hero.Spouse == Hero.MainHero || Hero.MainHero?.Spouse == hero);
+			string actionType = preservedPlayerFamilyIdentity ? "player_family_party_join" : (asCompanion ? "player_companion_join" : "player_clan_join");
 			string stableKey = actionType + ":" + heroKey + ":" + GetCampaignDayIndex();
-			string npcFact = asCompanion
-				? "你成为了玩家的同伴，并随玩家队伍行动。"
-				: "你加入了玩家家族，成为玩家家族成员，并随玩家队伍行动。";
-			string playerFact = asCompanion
-				? "你招募了" + heroName + "成为同伴，并随你的队伍行动。"
-				: "你招募了" + heroName + "加入玩家家族，并随你的队伍行动。";
+			string npcFact = preservedPlayerFamilyIdentity
+				? (preservedPlayerSpouseIdentity ? "你仍是玩家的配偶，并已加入玩家队伍行动。" : "你仍是玩家家族成员，并已加入玩家队伍行动。")
+				: (asCompanion ? "你成为了玩家的同伴，并随玩家队伍行动。" : "你加入了玩家家族，成为玩家家族成员，并随玩家队伍行动。");
+			string playerFact = preservedPlayerFamilyIdentity
+				? (preservedPlayerSpouseIdentity ? heroName + "仍是你的配偶，并已加入你的队伍。" : heroName + "仍是你的家族成员，并已加入你的队伍。")
+				: (asCompanion ? "你招募了" + heroName + "成为同伴，并随你的队伍行动。" : "你招募了" + heroName + "加入玩家家族，并随你的队伍行动。");
 			MyBehavior.RecordNpcActionForExternal(hero, npcFact, stableKey + ":npc", actionType, isMajor: true, isRecent: true, targetHero: Hero.MainHero, settlement: settlement, locationText: locationText, allowNonLordHero: true, won: true);
 			MyBehavior.RecordPlayerActionForExternal(playerFact, stableKey + ":player", actionType, isMajor: true, targetHero: hero, settlement: settlement, locationText: locationText, won: true);
 			Logger.Log("RewardSystemBehavior", "[HeroJoin] action_history_recorded reason=" + (reason ?? "") + " hero=" + heroKey);
@@ -5068,6 +5281,13 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				statusText = "执行失败：玩家家族或玩家队伍不可用。";
 				return false;
 			}
+			bool preservePlayerFamilyIdentity = asCompanion && ShouldPreservePlayerFamilyIdentityForCompanionJoin(joiningHero);
+			bool preservePlayerSpouseIdentity = preservePlayerFamilyIdentity && (joiningHero.Spouse == Hero.MainHero || Hero.MainHero?.Spouse == joiningHero);
+			if (preservePlayerFamilyIdentity)
+			{
+				asCompanion = false;
+				Logger.Log("RewardSystemBehavior", "[HeroJoin] companion_request_redirected_to_family hero=" + (joiningHero.StringId ?? "") + " spouse=" + preservePlayerSpouseIdentity);
+			}
 			if (asCompanion ? IsHeroPlayerCompanionInMainParty(joiningHero) : IsHeroPlayerClanLordInMainParty(joiningHero))
 			{
 				statusText = asCompanion
@@ -5076,7 +5296,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				return false;
 			}
 			MobileParty originalMobileParty = joiningHero.PartyBelongedTo;
-			PartyBase originalParty = originalMobileParty?.Party;
+			PartyBase originalCaptivityParty = joiningHero.PartyBelongedToAsPrisoner;
+			PartyBase originalParty = originalMobileParty?.Party ?? originalCaptivityParty;
 			List<string> transitionNotes = new List<string>();
 			Clan originalClan = GetHeroBackingClan(joiningHero) ?? joiningHero.Clan;
 			Kingdom originalKingdom = originalClan?.Kingdom;
@@ -5122,6 +5343,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					FinalizeRulingClanTransitionForDepartedClan(originalKingdom, destroyOriginalKingdomAfterClanDestroyed, transitionNotes);
 				}
 			}
+			if (!TryEndHeroCaptivityForPlayerJoin(joiningHero, originalCaptivityParty, asCompanion ? "hero_join_party_companion" : "hero_join_party_lord", transitionNotes, out string captivityStatus))
+			{
+				statusText = captivityStatus;
+				return false;
+			}
 			if (currentSettlement != null && joiningHero.CurrentSettlement != null)
 			{
 				LeaveSettlementAction.ApplyForCharacterOnly(joiningHero);
@@ -5139,10 +5365,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			PlayerEncounter.LocationEncounter?.RemoveAccompanyingCharacter(joiningHero);
 			string transitionSummary = BuildRecruitmentTransitionSummary(transitionNotes);
-			RecordHeroJoinedPlayerClanForExternal(joiningHero, asCompanion ? "hero_join_party_companion" : "hero_join_party_lord", asCompanion);
-			statusText = asCompanion
-				? $"执行成功：{joiningHero.Name} 已成为玩家同伴，并加入玩家队伍{transitionSummary}。"
-				: $"执行成功：{joiningHero.Name} 已成为玩家家族成员，并加入玩家队伍{transitionSummary}。";
+			RecordHeroJoinedPlayerClanForExternal(joiningHero, preservePlayerFamilyIdentity ? "hero_join_party_family_preserved" : (asCompanion ? "hero_join_party_companion" : "hero_join_party_lord"), asCompanion, preservePlayerFamilyIdentity);
+			statusText = preservePlayerFamilyIdentity
+				? $"执行成功：{joiningHero.Name} 已保留{(preservePlayerSpouseIdentity ? "配偶" : "玩家家族成员")}身份，并加入玩家队伍{transitionSummary}。"
+				: (asCompanion
+					? $"执行成功：{joiningHero.Name} 已成为玩家同伴，并加入玩家队伍{transitionSummary}。"
+					: $"执行成功：{joiningHero.Name} 已成为玩家家族成员，并加入玩家队伍{transitionSummary}。");
 			ScheduleHeroJoinConversationClose(joiningHero, originalParty, originalMobileParty);
 			return true;
 		}
@@ -7251,6 +7479,18 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return 0;
 		}
+		if (IsPrisonerTrustGainBlocked(npc) && (personalDelta > 0 || publicDelta > 0))
+		{
+			int blockedPersonalDelta = Math.Max(0, personalDelta);
+			int blockedPublicDelta = Math.Max(0, publicDelta);
+			personalDelta = Math.Min(0, personalDelta);
+			publicDelta = Math.Min(0, publicDelta);
+			Logger.Log("Trust", $"npc={npc.StringId} reason={reason} blocked=prisoner positivePersonalDelta={blockedPersonalDelta} positivePublicDelta={blockedPublicDelta}");
+			if (personalDelta == 0 && publicDelta == 0)
+			{
+				return 0;
+			}
+		}
 		int npcTrust = GetNpcTrust(npc);
 		int publicTrust = GetPublicTrust(npc);
 		int num = npcTrust;
@@ -7310,10 +7550,47 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return num3;
 	}
 
+	private int AdjustTrustByExactUnits(Hero npc, int personalUnits, string reason, out int appliedUnits)
+	{
+		appliedUnits = 0;
+		if (npc == null || personalUnits == 0)
+		{
+			return 0;
+		}
+		if (_npcTrust == null)
+		{
+			_npcTrust = new Dictionary<string, int>();
+		}
+		string trustKey = BuildNpcTrustKey(npc);
+		if (string.IsNullOrWhiteSpace(trustKey))
+		{
+			return 0;
+		}
+		int trustBefore = GetNpcTrust(npc);
+		int wholeDelta = ApplyExactDirectTrustDeltaUnits(trustKey, trustBefore, personalUnits, out appliedUnits);
+		int trustAfter = ClampTrust(trustBefore + wholeDelta);
+		if (trustAfter == 0)
+		{
+			_npcTrust.Remove(trustKey);
+		}
+		else
+		{
+			_npcTrust[trustKey] = trustAfter;
+		}
+		int publicDelta = ApplyPublicTrustPoolDeltaByKey(BuildPublicTrustKey(npc), appliedUnits, (reason ?? "exact_units") + "_public_pool");
+		Logger.Log("Trust", $"npc={npc.StringId} reason={reason} personal={trustBefore}->{trustAfter} requestedUnits={personalUnits} appliedDelta={FormatTrustUnits(appliedUnits)} publicDelta={publicDelta}");
+		return publicDelta;
+	}
+
 	public int AdjustPersonalTrustWholeDeltaForExternal(Hero npc, int exactDelta, string reason = "external_direct_whole")
 	{
 		if (npc == null || exactDelta == 0)
 		{
+			return 0;
+		}
+		if (exactDelta > 0 && IsPrisonerTrustGainBlocked(npc))
+		{
+			Logger.Log("Trust", $"npc={npc.StringId} reason={reason} blocked=prisoner positiveExactDelta={exactDelta}");
 			return 0;
 		}
 		if (_npcTrust == null)
@@ -7560,7 +7837,22 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					for (int j = 0; j < value.DebtLines.Count; j++)
 					{
 						DebtRecord.DebtLine debtLine2 = value.DebtLines[j];
-						if (debtLine2 == null || debtLine2.RemainingAmount <= 0 || debtLine2.IsDueUnlimited || (!debtLine2.IsGold && debtLine2.IsItemUnavailableDeclared) || debtLine2.DueDay <= 0f || nowCampaignDay <= debtLine2.DueDay + 0.01f)
+						if (debtLine2 == null || debtLine2.RemainingAmount <= 0)
+						{
+							continue;
+						}
+						if (debtLine2.IsDueUnlimited)
+						{
+							int unlimitedDebtValue = EstimateDebtLineRemainingValueForSettlement(settlement, debtLine2);
+							int penaltyUnits = ConsumeUnlimitedDebtTrustPenaltyUnits(debtLine2, unlimitedDebtValue, campaignDayIndex);
+							if (penaltyUnits > 0)
+							{
+								int publicDelta = AdjustSettlementMerchantTrustByExactUnits(settlement, kind, -penaltyUnits, "merchant_unlimited_debt_daily_penalty", out var appliedUnits);
+								Logger.Log("Trust", $"[UnlimitedDebtPenalty] settlement={settlement.StringId} market={kind} debtId={debtLine2.DebtId} value={unlimitedDebtValue} personal={FormatTrustUnits(appliedUnits)} public={publicDelta}");
+							}
+							continue;
+						}
+						if ((!debtLine2.IsGold && debtLine2.IsItemUnavailableDeclared) || debtLine2.DueDay <= 0f || nowCampaignDay <= debtLine2.DueDay + 0.01f)
 						{
 							continue;
 						}
@@ -7589,7 +7881,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 						_debts.Remove(item);
 						continue;
 					}
-					string reminderText = BuildDailyMerchantDebtReminderText(settlement, kind, value);
+					string reminderText = BuildDailyMerchantDebtReminderText(settlement, kind, value, campaignDayIndex);
 					if (!string.IsNullOrWhiteSpace(reminderText))
 					{
 						InformationManager.DisplayMessage(new InformationMessage(reminderText, Color.FromUint(4294945331u)));
@@ -7599,7 +7891,22 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				for (int i = 0; i < value.DebtLines.Count; i++)
 				{
 					DebtRecord.DebtLine debtLine = value.DebtLines[i];
-					if (debtLine == null || debtLine.RemainingAmount <= 0 || debtLine.IsDueUnlimited || (!debtLine.IsGold && debtLine.IsItemUnavailableDeclared) || debtLine.DueDay <= 0f || nowCampaignDay <= debtLine.DueDay + 0.01f)
+					if (debtLine == null || debtLine.RemainingAmount <= 0)
+					{
+						continue;
+					}
+					if (debtLine.IsDueUnlimited)
+					{
+						int unlimitedDebtValue = EstimateDebtLineRemainingValue(hero, debtLine);
+						int penaltyUnits = ConsumeUnlimitedDebtTrustPenaltyUnits(debtLine, unlimitedDebtValue, campaignDayIndex);
+						if (penaltyUnits > 0)
+						{
+							int publicDelta = AdjustTrustByExactUnits(hero, -penaltyUnits, "unlimited_debt_daily_penalty", out var appliedUnits);
+							Logger.Log("Trust", $"[UnlimitedDebtPenalty] npc={hero.StringId} debtId={debtLine.DebtId} value={unlimitedDebtValue} personal={FormatTrustUnits(appliedUnits)} public={publicDelta}");
+						}
+						continue;
+					}
+					if ((!debtLine.IsGold && debtLine.IsItemUnavailableDeclared) || debtLine.DueDay <= 0f || nowCampaignDay <= debtLine.DueDay + 0.01f)
 					{
 						continue;
 					}
@@ -7633,7 +7940,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					_debts.Remove(item);
 					continue;
 				}
-				string text = BuildDailyDebtReminderText(hero, value);
+				string text = BuildDailyDebtReminderText(hero, value, campaignDayIndex);
 				if (!string.IsNullOrWhiteSpace(text))
 				{
 					InformationManager.DisplayMessage(new InformationMessage(text, Color.FromUint(4294945331u)));
@@ -7767,6 +8074,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				debtLine.OverdueRelationPenaltyPerDay = NormalizeLlmPenaltyValue(debtLine.OverdueRelationPenaltyPerDay);
 				debtLine.CompensationUnitPrice = Math.Max(0, debtLine.CompensationUnitPrice);
 				debtLine.CompensationGoldCredit = Math.Max(0, debtLine.CompensationGoldCredit);
+				debtLine.UnlimitedTrustPenaltyNumeratorCarry = Math.Max(0L, Math.Min(UnlimitedDebtPenaltyReferenceValue - 1L, debtLine.UnlimitedTrustPenaltyNumeratorCarry));
 				debtLine.DebtNote = NormalizeDebtNote(debtLine.DebtNote);
 				list.Add(debtLine);
 			}
@@ -7846,6 +8154,17 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		int num3 = Math.Max(1, (int)Math.Ceiling(0f - num));
 		return $"还款期限：已逾期 {num3} 天（截止 {text}）";
+	}
+
+	private static string BuildDebtPromiseDeadlineText(float dueDay, bool isDueUnlimited)
+	{
+		string text = BuildDebtDueStatusText(dueDay, isDueUnlimited);
+		const string prefix = "还款期限：";
+		if (text.StartsWith(prefix, StringComparison.Ordinal))
+		{
+			text = text.Substring(prefix.Length).Trim();
+		}
+		return string.IsNullOrWhiteSpace(text) ? "未设定" : text;
 	}
 
 	private static string NormalizeDebtNote(string note)
@@ -7933,7 +8252,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return Math.Max(0, (int)num);
 	}
 
-	private string BuildDailyDebtReminderText(Hero npc, DebtRecord rec, int maxLines = 2)
+	private string BuildDailyDebtReminderText(Hero npc, DebtRecord rec, int campaignDayIndex, int maxLines = 2)
 	{
 		if (npc == null || rec == null)
 		{
@@ -7944,8 +8263,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return string.Empty;
 		}
-		List<DebtRecord.DebtLine> list = (from x in rec.DebtLines?.Where((DebtRecord.DebtLine x) => x != null && x.RemainingAmount > 0)
-			orderby x.IsDueUnlimited ? 1 : 0, x.DueDay, x.CreatedDay
+		List<DebtRecord.DebtLine> list = (from x in rec.DebtLines?.Where((DebtRecord.DebtLine x) => ShouldIncludeDebtLineInScheduledReminder(x, campaignDayIndex))
+			orderby x.IsDueUnlimited ? 0 : 1, x.DueDay, x.CreatedDay
 			select x).ToList() ?? new List<DebtRecord.DebtLine>();
 		if (list.Count <= 0)
 		{
@@ -7957,35 +8276,20 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		StringBuilder stringBuilder = new StringBuilder();
 		string value = npc.Name?.ToString() ?? "该NPC";
-		stringBuilder.Append("【债务提醒】你当前欠 ").Append(value).Append("：");
-		if (rec.OwedGold > 0)
-		{
-			stringBuilder.Append(rec.OwedGold).Append(" 第纳尔");
-		}
-		else
-		{
-			stringBuilder.Append("金币 0");
-		}
-		stringBuilder.Append("，分笔 ").Append(list.Count).Append(" 笔。");
+		stringBuilder.Append("【承诺或欠款提醒】你对 ").Append(value).Append(" 的承诺或欠款：");
 		int num = Math.Min(maxLines, list.Count);
 		for (int num2 = 0; num2 < num; num2++)
 		{
 			DebtRecord.DebtLine debtLine = list[num2];
-			string value2 = (debtLine.IsGold ? "金币" : (debtLine.ItemId ?? "物品"));
-			string value3 = (debtLine.IsGold ? (debtLine.RemainingAmount + " 第纳尔") : ("x" + debtLine.RemainingAmount));
-			string value4 = BuildDebtDueStatusText(debtLine.DueDay, debtLine.IsDueUnlimited);
-			stringBuilder.Append(" [").Append(debtLine.DebtId).Append("] ")
-				.Append(value2)
-				.Append(" ")
-				.Append(value3);
-			if (!string.IsNullOrWhiteSpace(value4))
-			{
-				stringBuilder.Append("（").Append(value4).Append("）");
-			}
-			if (!debtLine.IsGold && debtLine.IsItemUnavailableDeclared)
-			{
-				stringBuilder.Append("（已声明无法归还原物）");
-			}
+			int debtValue = EstimateDebtLineRemainingValue(npc, debtLine);
+			string deadline = BuildDebtPromiseDeadlineText(debtLine.DueDay, debtLine.IsDueUnlimited);
+			string note = string.IsNullOrWhiteSpace(debtLine.DebtNote) ? "无" : debtLine.DebtNote;
+			stringBuilder.Append(" [ID:").Append(debtLine.DebtId).Append("] 承诺或欠款价值 ")
+				.Append(debtValue)
+				.Append(" 第纳尔，达成期限为：")
+				.Append(deadline)
+				.Append("，备注：")
+				.Append(note);
 			if (num2 < num - 1)
 			{
 				stringBuilder.Append("；");
@@ -7998,7 +8302,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return stringBuilder.ToString();
 	}
 
-	private string BuildDailyMerchantDebtReminderText(Settlement settlement, SettlementMerchantKind kind, DebtRecord rec, int maxLines = 2)
+	private string BuildDailyMerchantDebtReminderText(Settlement settlement, SettlementMerchantKind kind, DebtRecord rec, int campaignDayIndex, int maxLines = 2)
 	{
 		if (settlement == null || kind == SettlementMerchantKind.None || rec == null)
 		{
@@ -8009,8 +8313,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return string.Empty;
 		}
-		List<DebtRecord.DebtLine> list = (from x in rec.DebtLines?.Where((DebtRecord.DebtLine x) => x != null && x.RemainingAmount > 0)
-			orderby x.IsDueUnlimited ? 1 : 0, x.DueDay, x.CreatedDay
+		List<DebtRecord.DebtLine> list = (from x in rec.DebtLines?.Where((DebtRecord.DebtLine x) => ShouldIncludeDebtLineInScheduledReminder(x, campaignDayIndex))
+			orderby x.IsDueUnlimited ? 0 : 1, x.DueDay, x.CreatedDay
 			select x).ToList() ?? new List<DebtRecord.DebtLine>();
 		if (list.Count <= 0)
 		{
@@ -8021,25 +8325,20 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			maxLines = 1;
 		}
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.Append("【市场欠款提醒】你当前欠 ").Append(BuildSettlementMerchantDebtLabel(settlement, kind)).Append("：");
+		stringBuilder.Append("【承诺或欠款提醒】你对 ").Append(BuildSettlementMerchantDebtLabel(settlement, kind)).Append(" 的承诺或欠款：");
 		int num = Math.Min(maxLines, list.Count);
 		for (int i = 0; i < num; i++)
 		{
 			DebtRecord.DebtLine debtLine = list[i];
-			stringBuilder.Append(" [").Append(debtLine.DebtId).Append("] ");
-			if (debtLine.IsGold)
-			{
-				stringBuilder.Append("金币 ").Append(debtLine.RemainingAmount).Append(" 第纳尔");
-			}
-			else
-			{
-				stringBuilder.Append(debtLine.ItemId ?? "物品").Append(" x").Append(debtLine.RemainingAmount);
-			}
-			string text = BuildDebtDueStatusText(debtLine.DueDay, debtLine.IsDueUnlimited);
-			if (!string.IsNullOrWhiteSpace(text))
-			{
-				stringBuilder.Append("（").Append(text).Append("）");
-			}
+			int debtValue = EstimateDebtLineRemainingValueForSettlement(settlement, debtLine);
+			string deadline = BuildDebtPromiseDeadlineText(debtLine.DueDay, debtLine.IsDueUnlimited);
+			string note = string.IsNullOrWhiteSpace(debtLine.DebtNote) ? "无" : debtLine.DebtNote;
+			stringBuilder.Append(" [ID:").Append(debtLine.DebtId).Append("] 承诺或欠款价值 ")
+				.Append(debtValue)
+				.Append(" 第纳尔，达成期限为：")
+				.Append(deadline)
+				.Append("，备注：")
+				.Append(note);
 			if (i < num - 1)
 			{
 				stringBuilder.Append("；");
@@ -8115,6 +8414,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 							OverdueRelationPenaltyPerDay = debtLine.OverdueRelationPenaltyPerDay,
 							CompensationUnitPrice = debtLine.CompensationUnitPrice,
 							CompensationGoldCredit = debtLine.CompensationGoldCredit,
+							UnlimitedTrustPenaltyNumeratorCarry = debtLine.UnlimitedTrustPenaltyNumeratorCarry,
 							DebtNote = debtLine.DebtNote
 						});
 					}
@@ -8199,6 +8499,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 							OverdueRelationPenaltyPerDay = debtLineExportEntry.OverdueRelationPenaltyPerDay,
 							CompensationUnitPrice = debtLineExportEntry.CompensationUnitPrice,
 							CompensationGoldCredit = debtLineExportEntry.CompensationGoldCredit,
+							UnlimitedTrustPenaltyNumeratorCarry = debtLineExportEntry.UnlimitedTrustPenaltyNumeratorCarry,
 							DebtNote = debtLineExportEntry.DebtNote
 						});
 					}
@@ -8551,6 +8852,376 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	private static string FormatRewardItemResolutionScore(float score)
 	{
 		return score.ToString("0.0000", CultureInfo.InvariantCulture);
+	}
+
+	private static bool TryResolveGeneratedRpEquipmentSuffix(string assetName, out GeneratedRpEquipmentKind kind, out string matchedSuffix)
+	{
+		kind = GeneratedRpEquipmentKind.None;
+		matchedSuffix = "";
+		string text = (assetName ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		text = text.TrimEnd(GeneratedRpEquipmentTrailingPunctuation).TrimEnd();
+		foreach (GeneratedRpEquipmentSuffixRule rule in GeneratedRpEquipmentSuffixRules)
+		{
+			if (rule == null || rule.Kind == GeneratedRpEquipmentKind.None)
+			{
+				continue;
+			}
+			foreach (string suffix in rule.Suffixes)
+			{
+				if (!MatchesGeneratedRpEquipmentSuffix(text, suffix, rule.RequiresEnglishWordBoundary))
+				{
+					continue;
+				}
+				kind = rule.Kind;
+				matchedSuffix = suffix;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static bool MatchesGeneratedRpEquipmentSuffix(string text, string suffix, bool requiresEnglishWordBoundary)
+	{
+		if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(suffix) || !text.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
+		{
+			return false;
+		}
+		if (!requiresEnglishWordBoundary)
+		{
+			return true;
+		}
+		int suffixStart = text.Length - suffix.Length;
+		if (suffixStart <= 0)
+		{
+			return true;
+		}
+		char preceding = text[suffixStart - 1];
+		if (!IsAsciiLetterOrDigit(preceding))
+		{
+			return true;
+		}
+		char firstSuffixCharacter = text[suffixStart];
+		return char.IsLower(preceding) && char.IsUpper(firstSuffixCharacter);
+	}
+
+	private static bool IsAsciiLetterOrDigit(char value)
+	{
+		return (value >= 'a' && value <= 'z') || (value >= 'A' && value <= 'Z') || (value >= '0' && value <= '9');
+	}
+
+	private static bool TryResolveGeneratedRpEquipmentTemplate(string assetName, out ItemObject templateItem, out GeneratedRpEquipmentKind kind, out string matchedSuffix, out float matchScore, out int candidateCount)
+	{
+		templateItem = null;
+		matchScore = 0f;
+		candidateCount = 0;
+		if (!TryResolveGeneratedRpEquipmentSuffix(assetName, out kind, out matchedSuffix))
+		{
+			return false;
+		}
+		Dictionary<GeneratedRpEquipmentKind, List<GeneratedRpEquipmentTemplateCandidate>> templatesByKind = GetGeneratedRpEquipmentTemplateCache();
+		if (!templatesByKind.TryGetValue(kind, out List<GeneratedRpEquipmentTemplateCandidate> candidates) || candidates == null || candidates.Count == 0)
+		{
+			return false;
+		}
+		candidateCount = candidates.Count;
+		GeneratedRpEquipmentTemplateCandidate best = null;
+		float bestScore = -1f;
+		int bestSuitability = int.MinValue;
+		float bestTieBreaker = -1f;
+		foreach (GeneratedRpEquipmentTemplateCandidate candidate in candidates)
+		{
+			ItemObject item = candidate?.Item;
+			if (!IsCloneSafeGeneratedRewardTemplateItem(item))
+			{
+				continue;
+			}
+			float score = WorldEntityRetrievalService.CalculateBestAliasScoreForExternal(assetName, candidate.Aliases);
+			int suitability = GetGeneratedRpEquipmentTemplateSuitability(item);
+			float tieBreaker = GetGeneratedRpEquipmentTemplateTieBreaker(assetName, item);
+			bool isBetter = score > bestScore + 0.00001f;
+			if (!isBetter && Math.Abs(score - bestScore) <= 0.00001f)
+			{
+				isBetter = suitability > bestSuitability
+					|| (suitability == bestSuitability && tieBreaker > bestTieBreaker + 0.00001f)
+					|| (suitability == bestSuitability && Math.Abs(tieBreaker - bestTieBreaker) <= 0.00001f && string.Compare(item.StringId ?? "", best?.Item?.StringId ?? "", StringComparison.OrdinalIgnoreCase) < 0);
+			}
+			if (!isBetter)
+			{
+				continue;
+			}
+			best = candidate;
+			bestScore = score;
+			bestSuitability = suitability;
+			bestTieBreaker = tieBreaker;
+		}
+		templateItem = best?.Item;
+		matchScore = Math.Max(0f, bestScore);
+		return templateItem != null;
+	}
+
+	private static int GetGeneratedRpEquipmentTemplateSuitability(ItemObject item)
+	{
+		if (item == null)
+		{
+			return int.MinValue;
+		}
+		int score = 0;
+		try
+		{
+			if (item.ItemCategory != null)
+			{
+				score += 2;
+			}
+			if (!item.NotMerchandise)
+			{
+				score++;
+			}
+			if (item.Value > 0)
+			{
+				score++;
+			}
+		}
+		catch
+		{
+		}
+		return score;
+	}
+
+	private static float GetGeneratedRpEquipmentTemplateTieBreaker(string assetName, ItemObject item)
+	{
+		string key = ((assetName ?? "").Trim() + "|" + (item?.StringId ?? "")).ToLowerInvariant();
+		if (!uint.TryParse(StablePromptKeyHash(key), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out uint hash))
+		{
+			return 0f;
+		}
+		return (hash & 0xffffu) / 65535f;
+	}
+
+	private static Dictionary<GeneratedRpEquipmentKind, List<GeneratedRpEquipmentTemplateCandidate>> GetGeneratedRpEquipmentTemplateCache()
+	{
+		object owner = (object)Game.Current?.ObjectManager ?? MBObjectManager.Instance;
+		lock (GeneratedRpEquipmentTemplateCacheLock)
+		{
+			if (owner != null && ReferenceEquals(owner, GeneratedRpEquipmentTemplateCacheOwner) && GeneratedRpEquipmentTemplatesByKind.Count > 0)
+			{
+				return GeneratedRpEquipmentTemplatesByKind;
+			}
+			Dictionary<GeneratedRpEquipmentKind, List<GeneratedRpEquipmentTemplateCandidate>> result = new Dictionary<GeneratedRpEquipmentKind, List<GeneratedRpEquipmentTemplateCandidate>>();
+			foreach (GeneratedRpEquipmentKind equipmentKind in Enum.GetValues(typeof(GeneratedRpEquipmentKind)))
+			{
+				result[equipmentKind] = new List<GeneratedRpEquipmentTemplateCandidate>();
+			}
+			try
+			{
+				IEnumerable<ItemObject> items = Game.Current?.ObjectManager?.GetObjectTypeList<ItemObject>() ?? MBObjectManager.Instance?.GetObjectTypeList<ItemObject>();
+				foreach (ItemObject item in items ?? Enumerable.Empty<ItemObject>())
+				{
+					if (!IsCloneSafeGeneratedRewardTemplateItem(item))
+					{
+						continue;
+					}
+					bool isWeapon = IsSettlementWeaponLikeItem(item);
+					bool isArmor = IsSettlementArmorLikeItem(item);
+					bool isHorseHarness = item.Type == ItemObject.ItemTypeEnum.HorseHarness;
+					bool isBanner = item.Type == ItemObject.ItemTypeEnum.Banner;
+					if (!isWeapon && !isArmor && !isHorseHarness && !isBanner)
+					{
+						continue;
+					}
+					GeneratedRpEquipmentTemplateCandidate candidate = new GeneratedRpEquipmentTemplateCandidate
+					{
+						Item = item,
+						Aliases = BuildGeneratedRpEquipmentTemplateAliases(item)
+					};
+					AddGeneratedRpEquipmentTemplate(result, GeneratedRpEquipmentKind.AnyEquipment, candidate);
+					if (isWeapon)
+					{
+						AddGeneratedRpEquipmentTemplate(result, GeneratedRpEquipmentKind.AnyWeapon, candidate);
+					}
+					if (isArmor)
+					{
+						AddGeneratedRpEquipmentTemplate(result, GeneratedRpEquipmentKind.AnyArmor, candidate);
+					}
+					IndexGeneratedRpEquipmentSpecificKinds(result, candidate);
+				}
+			}
+			catch (Exception ex)
+			{
+				try
+				{
+					Logger.Log("Logic", "[RewardItemResolve] rp_equipment_template_cache_failed error=" + ex.GetType().Name + ":" + ex.Message);
+				}
+				catch
+				{
+				}
+			}
+			GeneratedRpEquipmentTemplateCacheOwner = owner;
+			GeneratedRpEquipmentTemplatesByKind = result;
+			return GeneratedRpEquipmentTemplatesByKind;
+		}
+	}
+
+	private static void ClearGeneratedRpEquipmentTemplateCache()
+	{
+		lock (GeneratedRpEquipmentTemplateCacheLock)
+		{
+			GeneratedRpEquipmentTemplateCacheOwner = null;
+			GeneratedRpEquipmentTemplatesByKind = new Dictionary<GeneratedRpEquipmentKind, List<GeneratedRpEquipmentTemplateCandidate>>();
+		}
+	}
+
+	private static string[] BuildGeneratedRpEquipmentTemplateAliases(ItemObject item)
+	{
+		List<string> aliases = new List<string>(8);
+		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		AddGeneratedRpEquipmentTemplateAlias(aliases, seen, item?.StringId);
+		AddGeneratedRpEquipmentTemplateAlias(aliases, seen, item?.Name?.ToString());
+		AddGeneratedRpEquipmentTemplateAlias(aliases, seen, item?.ItemCategory?.StringId);
+		AddGeneratedRpEquipmentTemplateAlias(aliases, seen, item?.ItemCategory?.GetName()?.ToString());
+		AddGeneratedRpEquipmentTemplateAlias(aliases, seen, item?.Type.ToString());
+		AddGeneratedRpEquipmentTemplateAlias(aliases, seen, GetItemPromptTypeLabel(item));
+		try
+		{
+			AddGeneratedRpEquipmentTemplateAlias(aliases, seen, item?.PrimaryWeapon?.WeaponClass.ToString());
+		}
+		catch
+		{
+		}
+		return aliases.ToArray();
+	}
+
+	private static void AddGeneratedRpEquipmentTemplateAlias(List<string> aliases, HashSet<string> seen, string value)
+	{
+		string text = (value ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(text) && seen.Add(text))
+		{
+			aliases.Add(text);
+		}
+	}
+
+	private static void AddGeneratedRpEquipmentTemplate(Dictionary<GeneratedRpEquipmentKind, List<GeneratedRpEquipmentTemplateCandidate>> templatesByKind, GeneratedRpEquipmentKind kind, GeneratedRpEquipmentTemplateCandidate candidate)
+	{
+		if (candidate?.Item == null || kind == GeneratedRpEquipmentKind.None || !templatesByKind.TryGetValue(kind, out List<GeneratedRpEquipmentTemplateCandidate> candidates))
+		{
+			return;
+		}
+		candidates.Add(candidate);
+	}
+
+	private static void IndexGeneratedRpEquipmentSpecificKinds(Dictionary<GeneratedRpEquipmentKind, List<GeneratedRpEquipmentTemplateCandidate>> templatesByKind, GeneratedRpEquipmentTemplateCandidate candidate)
+	{
+		ItemObject item = candidate?.Item;
+		if (item == null)
+		{
+			return;
+		}
+		switch (item.Type)
+		{
+		case ItemObject.ItemTypeEnum.OneHandedWeapon:
+		case ItemObject.ItemTypeEnum.TwoHandedWeapon:
+			IndexGeneratedRpEquipmentWeaponClass(templatesByKind, candidate, item.PrimaryWeapon?.WeaponClass);
+			break;
+		case ItemObject.ItemTypeEnum.Polearm:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Polearm, candidate);
+			break;
+		case ItemObject.ItemTypeEnum.Arrows:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Arrows, candidate);
+			break;
+		case ItemObject.ItemTypeEnum.Bolts:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Bolts, candidate);
+			break;
+		case ItemObject.ItemTypeEnum.Shield:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Shield, candidate);
+			break;
+		case ItemObject.ItemTypeEnum.Bow:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Bow, candidate);
+			break;
+		case ItemObject.ItemTypeEnum.Crossbow:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Crossbow, candidate);
+			break;
+		case ItemObject.ItemTypeEnum.Sling:
+		case ItemObject.ItemTypeEnum.SlingStones:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Sling, candidate);
+			break;
+		case ItemObject.ItemTypeEnum.Thrown:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Thrown, candidate);
+			IndexGeneratedRpEquipmentWeaponClass(templatesByKind, candidate, item.PrimaryWeapon?.WeaponClass);
+			break;
+		case ItemObject.ItemTypeEnum.Pistol:
+		case ItemObject.ItemTypeEnum.Musket:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Firearm, candidate);
+			break;
+		case ItemObject.ItemTypeEnum.Bullets:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Bullets, candidate);
+			break;
+		case ItemObject.ItemTypeEnum.HeadArmor:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.HeadArmor, candidate);
+			break;
+		case ItemObject.ItemTypeEnum.BodyArmor:
+		case ItemObject.ItemTypeEnum.ChestArmor:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.BodyArmor, candidate);
+			break;
+		case ItemObject.ItemTypeEnum.LegArmor:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.LegArmor, candidate);
+			break;
+		case ItemObject.ItemTypeEnum.HandArmor:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.HandArmor, candidate);
+			break;
+		case ItemObject.ItemTypeEnum.Cape:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Cape, candidate);
+			break;
+		case ItemObject.ItemTypeEnum.HorseHarness:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.HorseHarness, candidate);
+			break;
+		case ItemObject.ItemTypeEnum.Banner:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Banner, candidate);
+			break;
+		}
+	}
+
+	private static void IndexGeneratedRpEquipmentWeaponClass(Dictionary<GeneratedRpEquipmentKind, List<GeneratedRpEquipmentTemplateCandidate>> templatesByKind, GeneratedRpEquipmentTemplateCandidate candidate, WeaponClass? weaponClass)
+	{
+		if (!weaponClass.HasValue)
+		{
+			return;
+		}
+		switch (weaponClass.Value)
+		{
+		case WeaponClass.OneHandedSword:
+		case WeaponClass.TwoHandedSword:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Sword, candidate);
+			break;
+		case WeaponClass.OneHandedAxe:
+		case WeaponClass.TwoHandedAxe:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Axe, candidate);
+			break;
+		case WeaponClass.Mace:
+		case WeaponClass.TwoHandedMace:
+		case WeaponClass.Pick:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Mace, candidate);
+			break;
+		case WeaponClass.Dagger:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Dagger, candidate);
+			break;
+		case WeaponClass.OneHandedPolearm:
+		case WeaponClass.TwoHandedPolearm:
+		case WeaponClass.LowGripPolearm:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Polearm, candidate);
+			break;
+		case WeaponClass.ThrowingAxe:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.ThrowingAxe, candidate);
+			break;
+		case WeaponClass.ThrowingKnife:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.ThrowingKnife, candidate);
+			break;
+		case WeaponClass.Javelin:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Javelin, candidate);
+			break;
+		}
 	}
 
 	private static float CalculateGeneratedRewardTemplateScore(string lookup, RewardItemInfo info, float aliasScore)
@@ -9073,15 +9744,15 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		if (!IsStableGeneratedRewardTemplateItem(templateItem))
+		if (!IsCloneSafeGeneratedRewardTemplateItem(templateItem))
 		{
 			templateItem = ResolveGeneratedInventoryTemplateItem(templateResolution?.MatchedStringId, requestedName);
 		}
-		if (!IsStableGeneratedRewardTemplateItem(templateItem))
+		if (!IsCloneSafeGeneratedRewardTemplateItem(templateItem))
 		{
 			templateItem = ResolveGeneratedInventoryTemplateItem(null, requestedName);
 		}
-		if (!IsStableGeneratedRewardTemplateItem(templateItem))
+		if (!IsCloneSafeGeneratedRewardTemplateItem(templateItem))
 		{
 			return false;
 		}
@@ -9139,7 +9810,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			RewardItemResolution templateResolution = null;
 			ItemObject preferredTemplate = ResolveItemById(preferredTemplateItemId);
-			if (IsStableGeneratedRewardTemplateItem(preferredTemplate))
+			if (IsCloneSafeGeneratedRewardTemplateItem(preferredTemplate))
 			{
 				EquipmentElement preferredTemplateEquipment = new EquipmentElement(preferredTemplate, null, null, false);
 				templateResolution = new RewardItemResolution
@@ -9167,8 +9838,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			else if (!string.IsNullOrWhiteSpace(preferredTemplateItemId))
 			{
-				Logger.Log("Logic", "[RewardItemResolve] preferred_template_missing source=" + (logSource ?? "") + " template=" + preferredTemplateItemId.Trim() + " lookup=" + requestedName);
-				return 0;
+				Logger.Log("Logic", "[RewardItemResolve] preferred_template_rejected source=" + (logSource ?? "") + " template=" + preferredTemplateItemId.Trim() + " lookup=" + requestedName + " fallback=auto reason=" + GetGeneratedRewardTemplateThumbnailRejectionReason(preferredTemplate));
 			}
 			RewardSystemBehavior instance = Instance;
 			if (templateResolution == null && instance != null)
@@ -9177,7 +9847,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				{
 					List<RewardItemInfo> contextItems = instance.BuildRewardItemResolutionContextFromRoster(targetRoster);
 					instance.TryFindBestRewardItemResolution(requestedName, contextItems, includeZeroScore: true, out templateResolution, logSource ?? "external_generate_named", logMatch: false, logMiss: false);
-					if (!IsStableGeneratedRewardTemplateItem(templateResolution?.Item))
+					if (!IsCloneSafeGeneratedRewardTemplateItem(templateResolution?.Item))
 					{
 						templateResolution = null;
 					}
@@ -9285,11 +9955,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				objectId = registered.Id.InternalValue;
 			}
 			ItemObject templateItem = ResolveGeneratedInventoryTemplateItem(templateItemId, name);
-			if (!IsStableGeneratedRewardTemplateItem(templateItem))
+			if (!IsCloneSafeGeneratedRewardTemplateItem(templateItem))
 			{
 				templateItem = ResolveGeneratedInventoryTemplateItem(null, name);
 			}
-			if (!IsStableGeneratedRewardTemplateItem(templateItem))
+			if (!IsCloneSafeGeneratedRewardTemplateItem(templateItem))
 			{
 				return false;
 			}
@@ -9401,7 +10071,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				return false;
 			}
 			ItemObject templateItem = ResolveGeneratedInventoryTemplateItem(normalizedTemplateItemId, name);
-			if (!IsStableGeneratedRewardTemplateItem(templateItem))
+			if (!IsCloneSafeGeneratedRewardTemplateItem(templateItem))
 			{
 				LogGeneratedRewardInventoryGuard("bad_template", normalizedStringId, name, normalizedTemplateItemId, null, templateItem, logSource);
 				return false;
@@ -9518,14 +10188,19 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	private static ItemObject ResolveGeneratedInventoryTemplateItem(string templateItemId, string displayName)
 	{
 		ItemObject explicitTemplate = ResolveItemById(templateItemId);
-		if (IsStableGeneratedRewardTemplateItem(explicitTemplate))
+		if (IsCloneSafeGeneratedRewardTemplateItem(explicitTemplate))
 		{
 			return explicitTemplate;
+		}
+		if (TryResolveGeneratedRpEquipmentTemplate(displayName, out ItemObject equipmentTemplate, out _, out _, out _, out _)
+			&& IsCloneSafeGeneratedRewardTemplateItem(equipmentTemplate))
+		{
+			return equipmentTemplate;
 		}
 		try
 		{
 			IEnumerable<ItemObject> items = Game.Current?.ObjectManager?.GetObjectTypeList<ItemObject>() ?? MBObjectManager.Instance?.GetObjectTypeList<ItemObject>();
-			List<ItemObject> list = items?.Where(IsStableGeneratedRewardTemplateItem).ToList() ?? new List<ItemObject>();
+			List<ItemObject> list = items?.Where(IsCloneSafeGeneratedRewardTemplateItem).ToList() ?? new List<ItemObject>();
 			ItemObject documentLike = list.FirstOrDefault((ItemObject x) => x.Type == ItemObject.ItemTypeEnum.Goods && ContainsGeneratedRewardItemTextAny(x, "book", "letter", "scroll", "decree", "paper", "parchment", "ledger", "document"));
 			if (documentLike != null)
 			{
@@ -9546,6 +10221,105 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 		}
 		return GetGeneratedRewardFallbackTemplateItem();
+	}
+
+	private static ItemObject ResolveCloneSafeGeneratedRewardTemplateItem(ItemObject templateItem, string displayName, string logSource)
+	{
+		if (IsCloneSafeGeneratedRewardTemplateItem(templateItem))
+		{
+			return templateItem;
+		}
+		string rejectedTemplateId = (templateItem?.StringId ?? "").Trim();
+		string rejectionReason = GetGeneratedRewardTemplateThumbnailRejectionReason(templateItem);
+		ItemObject replacement = ResolveGeneratedInventoryTemplateItem(null, displayName);
+		if (!IsCloneSafeGeneratedRewardTemplateItem(replacement))
+		{
+			replacement = null;
+		}
+		if (replacement != null)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] generated_template_thumbnail_guard source=" + (logSource ?? "") + " name=" + (displayName ?? "") + " rejected=" + rejectedTemplateId + " reason=" + rejectionReason + " replacement=" + (replacement.StringId ?? ""));
+			}
+			catch
+			{
+			}
+		}
+		return replacement;
+	}
+
+	private static bool IsCloneSafeGeneratedRewardTemplateItem(ItemObject item)
+	{
+		return IsStableGeneratedRewardTemplateItem(item) && HasCloneSafeGeneratedRewardThumbnailSource(item);
+	}
+
+	private static bool HasCloneSafeGeneratedRewardThumbnailSource(ItemObject item)
+	{
+		if (item == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (item.IsCraftedWeapon)
+			{
+				return item.WeaponDesign?.Template != null && item.WeaponComponent?.PrimaryWeapon != null;
+			}
+			if (IsSettlementWeaponLikeItem(item) && item.WeaponComponent?.PrimaryWeapon == null)
+			{
+				return false;
+			}
+			if ((IsSettlementArmorLikeItem(item) || item.Type == ItemObject.ItemTypeEnum.HorseHarness) && item.ArmorComponent == null)
+			{
+				return false;
+			}
+			if (item.Type == ItemObject.ItemTypeEnum.Arrows || item.Type == ItemObject.ItemTypeEnum.Bolts || item.Type == ItemObject.ItemTypeEnum.SlingStones)
+			{
+				return !string.IsNullOrWhiteSpace(item.HolsterMeshName);
+			}
+			return !string.IsNullOrWhiteSpace(item.MultiMeshName);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static string GetGeneratedRewardTemplateThumbnailRejectionReason(ItemObject item)
+	{
+		if (item == null)
+		{
+			return "missing_template";
+		}
+		try
+		{
+			if (item.IsCraftedWeapon)
+			{
+				if (item.WeaponDesign?.Template == null)
+				{
+					return "crafted_weapon_missing_template";
+				}
+				return item.WeaponComponent?.PrimaryWeapon == null ? "crafted_weapon_missing_primary_weapon" : "unstable_template";
+			}
+			if (IsSettlementWeaponLikeItem(item) && item.WeaponComponent?.PrimaryWeapon == null)
+			{
+				return "missing_primary_weapon";
+			}
+			if ((IsSettlementArmorLikeItem(item) || item.Type == ItemObject.ItemTypeEnum.HorseHarness) && item.ArmorComponent == null)
+			{
+				return "missing_armor_component";
+			}
+			if (item.Type == ItemObject.ItemTypeEnum.Arrows || item.Type == ItemObject.ItemTypeEnum.Bolts || item.Type == ItemObject.ItemTypeEnum.SlingStones)
+			{
+				return string.IsNullOrWhiteSpace(item.HolsterMeshName) ? "missing_holster_mesh" : "unstable_template";
+			}
+			return string.IsNullOrWhiteSpace(item.MultiMeshName) ? "missing_multi_mesh" : "unstable_template";
+		}
+		catch
+		{
+			return "template_inspection_failed";
+		}
 	}
 
 	private static bool IsStableGeneratedRewardTemplateItem(ItemObject item)
@@ -10252,9 +11026,22 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return null;
 		}
+		ItemObject templateItem = ResolveCloneSafeGeneratedRewardTemplateItem(ResolveItemById(record.TemplateStringId), record.DisplayName, source ?? "detached_template_guard");
+		if (templateItem == null)
+		{
+			return null;
+		}
+		record.TemplateStringId = (templateItem.StringId ?? "").Trim();
 		ItemObject registeredExisting = TryGetRegisteredGeneratedRewardItemByStringId(record.GeneratedStringId);
 		if (registeredExisting != null)
 		{
+			ApplyGeneratedRewardItemTemplateState(registeredExisting, templateItem, record.DisplayName);
+			registeredExisting.Initialize();
+			registeredExisting.IsReady = true;
+			if (!TryEnsureGeneratedRewardItemCategory(registeredExisting, templateItem, source))
+			{
+				return null;
+			}
 			lock (GeneratedRewardItemRegistrationLock)
 			{
 				if (registeredExisting.Id.InternalValue != 0u)
@@ -10266,11 +11053,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				RegisterGeneratedRewardManifestRecordNoLock(record);
 			}
 			return registeredExisting;
-		}
-		ItemObject templateItem = ResolveItemById(record.TemplateStringId) ?? GetGeneratedRewardFallbackTemplateItem();
-		if (templateItem == null)
-		{
-			return null;
 		}
 		ItemObject cachedItem = null;
 		lock (GeneratedRewardItemRegistrationLock)
@@ -10391,6 +11173,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				GeneratedRewardManifestByStringId.Clear();
 				GeneratedRewardManifestLoaded = true;
 			}
+			ClearGeneratedRpEquipmentTemplateCache();
 			GeneratedRewardLastInventoryVmLogSignature = "";
 			GeneratedRewardLastInventoryVmLogUtc = DateTime.MinValue;
 			Logger.Log("Logic", "[RewardItemResolve] generated_runtime_state_cleared reason=" + (reason ?? "") + " global_manifest_io=disabled");
@@ -10567,12 +11350,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		try
 		{
 			IEnumerable<ItemObject> items = Game.Current?.ObjectManager?.GetObjectTypeList<ItemObject>() ?? MBObjectManager.Instance?.GetObjectTypeList<ItemObject>();
-			ItemObject item = items?.FirstOrDefault((ItemObject x) => IsStableGeneratedRewardTemplateItem(x) && x.Type == ItemObject.ItemTypeEnum.Goods && x.ItemCategory != null);
+			ItemObject item = items?.FirstOrDefault((ItemObject x) => IsCloneSafeGeneratedRewardTemplateItem(x) && x.Type == ItemObject.ItemTypeEnum.Goods && x.ItemCategory != null);
 			if (item != null)
 			{
 				return item;
 			}
-			return items?.FirstOrDefault(IsStableGeneratedRewardTemplateItem);
+			return items?.FirstOrDefault(IsCloneSafeGeneratedRewardTemplateItem);
 		}
 		catch
 		{
@@ -10650,6 +11433,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			ItemObject copy = new ItemObject(templateItem);
 			CopyGeneratedRewardItemProperty(target, copy, "ItemCategory");
 			CopyGeneratedRewardItemProperty(target, copy, "ItemComponent");
+			CopyGeneratedRewardItemProperty(target, templateItem, "WeaponDesign");
 			CopyGeneratedRewardItemProperty(target, copy, "MultiMeshName");
 			CopyGeneratedRewardItemProperty(target, copy, "HolsterMeshName");
 			CopyGeneratedRewardItemProperty(target, copy, "HolsterWithWeaponMeshName");
@@ -11156,7 +11940,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				continue;
 			}
 			_generatedRewardItemRecords[record.GeneratedStringId] = record;
-			ItemObject templateItem = ResolveItemById(record.TemplateStringId);
+			ItemObject templateItem = ResolveCloneSafeGeneratedRewardTemplateItem(ResolveItemById(record.TemplateStringId), record.DisplayName, (reason ?? "") + "_definition_restore");
 			if (templateItem == null)
 			{
 				failed++;
@@ -11166,19 +11950,19 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				}
 				continue;
 			}
-			ItemObject existing = TryGetRegisteredGeneratedRewardItemByStringId(record.GeneratedStringId);
-			if (existing != null)
-			{
-				TrySetRewardItemObjectName(existing, record.DisplayName);
-				TryEnsureGeneratedRewardItemCategory(existing, templateItem, reason);
-				RememberGeneratedRewardItemRecord(record.GeneratedStringId, record.DisplayName, templateItem, existing);
-				alreadyLoaded++;
-				continue;
-			}
+			record.TemplateStringId = (templateItem.StringId ?? "").Trim();
+			bool wasAlreadyLoaded = TryGetRegisteredGeneratedRewardItemByStringId(record.GeneratedStringId) != null;
 			ItemObject restoredItem = TryGetOrCreateGeneratedRewardItem(record.GeneratedStringId, record.DisplayName, templateItem, reason);
 			if (restoredItem != null)
 			{
-				restored++;
+				if (wasAlreadyLoaded)
+				{
+					alreadyLoaded++;
+				}
+				else
+				{
+					restored++;
+				}
 				if (sample.Count < 8)
 				{
 					sample.Add(record.GeneratedStringId + ":" + restoredItem.Id.InternalValue.ToString(CultureInfo.InvariantCulture));
@@ -11293,16 +12077,22 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				continue;
 			}
+			string previousTemplateStringId = (record.TemplateStringId ?? "").Trim();
+			ItemObject templateItem = ResolveCloneSafeGeneratedRewardTemplateItem(ResolveItemById(previousTemplateStringId), record.DisplayName, (reason ?? "") + "_roster_guard");
+			if (templateItem == null)
+			{
+				continue;
+			}
+			record.TemplateStringId = (templateItem.StringId ?? "").Trim();
 			bool alreadyCorrect = IsGeneratedRewardRosterItemCanonical(currentItem, record);
 			if (alreadyCorrect)
 			{
 				ApplyGeneratedRewardItemRpState(currentItem, record.DisplayName);
-				TryEnsureGeneratedRewardItemCategory(currentItem, ResolveItemById(record.TemplateStringId), reason);
-				continue;
-			}
-			ItemObject templateItem = ResolveItemById(record.TemplateStringId);
-			if (templateItem == null)
-			{
+				TryEnsureGeneratedRewardItemCategory(currentItem, templateItem, reason);
+				if (!string.Equals(previousTemplateStringId, record.TemplateStringId, StringComparison.OrdinalIgnoreCase))
+				{
+					RememberGeneratedRewardItemRecord(record.GeneratedStringId, record.DisplayName, templateItem, currentItem);
+				}
 				continue;
 			}
 			ItemObject generatedItem = TryGetOrCreateGeneratedRewardItem(record.GeneratedStringId, record.DisplayName, templateItem, reason);
@@ -11361,12 +12151,28 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
+		if (!HasCloneSafeGeneratedRewardThumbnailSource(item))
+		{
+			return false;
+		}
 		if (item.ItemComponent is GeneratedRewardRpItemComponent)
 		{
 			return false;
 		}
 		ItemObject templateItem = ResolveItemById(record.TemplateStringId);
 		if (templateItem != null && item.Type != templateItem.Type)
+		{
+			return false;
+		}
+		if (templateItem != null && !ReferenceEquals(item.ItemComponent, templateItem.ItemComponent))
+		{
+			return false;
+		}
+		if (templateItem != null && !string.Equals(item.MultiMeshName ?? "", templateItem.MultiMeshName ?? "", StringComparison.Ordinal))
+		{
+			return false;
+		}
+		if (templateItem != null && !string.Equals(item.HolsterMeshName ?? "", templateItem.HolsterMeshName ?? "", StringComparison.Ordinal))
 		{
 			return false;
 		}
@@ -11667,12 +12473,17 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (string.IsNullOrWhiteSpace(generatedStringId) || string.IsNullOrWhiteSpace(displayName) || templateItem == null)
+			if (string.IsNullOrWhiteSpace(generatedStringId) || string.IsNullOrWhiteSpace(displayName))
 			{
 				return null;
 			}
 			string key = generatedStringId.Trim();
 			string name = displayName.Trim();
+			templateItem = ResolveCloneSafeGeneratedRewardTemplateItem(templateItem, name, logSource ?? "generated_create_template_guard");
+			if (templateItem == null)
+			{
+				return null;
+			}
 			if (TryResolveGeneratedRewardItemForStringId(key, out var cachedGeneratedItem, logSource ?? "generated_create_cached") && cachedGeneratedItem != null)
 			{
 				ApplyGeneratedRewardItemTemplateState(cachedGeneratedItem, templateItem, name);
@@ -11865,6 +12676,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		if (!IsRuntimeGeneratedRewardItemForKey(generatedItem, key))
 		{
 			LogGeneratedRewardInventoryGuard("wrong_runtime_item", key, name, templateItem?.StringId, generatedItem, templateItem, logSource);
+			return false;
+		}
+		if (!HasCloneSafeGeneratedRewardThumbnailSource(generatedItem))
+		{
+			LogGeneratedRewardInventoryGuard("thumbnail_source_unsafe", key, name, templateItem?.StringId, generatedItem, templateItem, logSource);
 			return false;
 		}
 		if (templateItem != null && (ReferenceEquals(generatedItem, templateItem) || (generatedItem.Id.InternalValue != 0u && generatedItem.Id.InternalValue == templateItem.Id.InternalValue)))
@@ -14526,7 +15342,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			return string.Empty;
 		}
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("【系统账目提示】玩家对你有以下欠款（分笔记录）：");
+		stringBuilder.AppendLine("【系统账目提示】玩家对你有以下承诺或欠款（分笔记录）：");
 		if (debtRecord.DebtLines != null)
 		{
 			List<DebtRecord.DebtLine> list = (from x in debtRecord.DebtLines
@@ -14536,29 +15352,16 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			for (int num = 0; num < list.Count; num++)
 			{
 				DebtRecord.DebtLine debtLine = list[num];
-				string value3 = BuildDebtDueStatusText(debtLine.DueDay, debtLine.IsDueUnlimited);
-				stringBuilder.Append("- [债务ID:").Append(debtLine.DebtId).Append("] ")
-					.Append(debtLine.IsGold ? "金币" : ("物品 " + debtLine.ItemId))
-					.Append("，玩家欠你")
-					.Append(debtLine.IsGold ? (debtLine.RemainingAmount + "第纳尔") : ("x" + debtLine.RemainingAmount));
-				if (!string.IsNullOrWhiteSpace(value3))
-				{
-					stringBuilder.Append("，").Append(value3);
-				}
-				else
-				{
-					stringBuilder.Append("，还款期限：未设定");
-				}
-				if (!debtLine.IsGold && debtLine.IsItemUnavailableDeclared)
-				{
-					stringBuilder.Append("，状态：已声明无法归还原物");
-				}
-				stringBuilder.Append(",债务备注内容：");
-				if (!string.IsNullOrWhiteSpace(debtLine.DebtNote))
-				{
-					stringBuilder.Append(debtLine.DebtNote);
-				}
-				stringBuilder.AppendLine();
+				int debtValue = EstimateDebtLineRemainingValue(npc, debtLine);
+				string deadline = BuildDebtPromiseDeadlineText(debtLine.DueDay, debtLine.IsDueUnlimited);
+				string note = string.IsNullOrWhiteSpace(debtLine.DebtNote) ? "无" : debtLine.DebtNote;
+				stringBuilder.Append("- [债务ID:").Append(debtLine.DebtId).Append("] 玩家的承诺或欠款价值 ")
+					.Append(debtValue)
+					.Append(" 第纳尔，达成期限为：")
+					.Append(deadline)
+					.Append("，备注：")
+					.Append(note)
+					.AppendLine();
 			}
 		}
 		return stringBuilder.ToString().Trim();
@@ -14582,7 +15385,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			return "";
 		}
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("【系统账目提示】玩家对你代表的" + BuildSettlementMerchantDebtLabel(settlement, kind) + "有以下欠款（分笔记录）：");
+		stringBuilder.AppendLine("【系统账目提示】玩家对你代表的" + BuildSettlementMerchantDebtLabel(settlement, kind) + "有以下承诺或欠款（分笔记录）：");
 		stringBuilder.AppendLine("【债务解除确认】若玩家本轮行为已被系统事实明确记录为偿还、豁免或免除，请在回复末尾输出 [ADP;债务ID] 解除对应债务；每笔债务单独确认，禁止口头声称已结清却不输出标签。");
 		List<DebtRecord.DebtLine> list = (from x in settlementMerchantDebtRecord.DebtLines
 			where x != null && x.RemainingAmount > 0
@@ -14591,30 +15394,16 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		for (int i = 0; i < list.Count; i++)
 		{
 			DebtRecord.DebtLine debtLine = list[i];
-			stringBuilder.Append("- [债务ID:").Append(debtLine.DebtId).Append("] ");
-			if (debtLine.IsGold)
-			{
-				stringBuilder.Append("金币，玩家欠你").Append(debtLine.RemainingAmount).Append("第纳尔");
-			}
-			else
-			{
-				stringBuilder.Append("物品 ").Append(debtLine.ItemId).Append("，玩家欠你x").Append(debtLine.RemainingAmount);
-			}
-			string text = BuildDebtDueStatusText(debtLine.DueDay, debtLine.IsDueUnlimited);
-			if (!string.IsNullOrWhiteSpace(text))
-			{
-				stringBuilder.Append("，").Append(text);
-			}
-			else
-			{
-				stringBuilder.Append("，还款期限：未设定");
-			}
-			stringBuilder.Append(",债务备注内容：");
-			if (!string.IsNullOrWhiteSpace(debtLine.DebtNote))
-			{
-				stringBuilder.Append(debtLine.DebtNote);
-			}
-			stringBuilder.AppendLine();
+			int debtValue = EstimateDebtLineRemainingValueForSettlement(settlement, debtLine);
+			string deadline = BuildDebtPromiseDeadlineText(debtLine.DueDay, debtLine.IsDueUnlimited);
+			string note = string.IsNullOrWhiteSpace(debtLine.DebtNote) ? "无" : debtLine.DebtNote;
+			stringBuilder.Append("- [债务ID:").Append(debtLine.DebtId).Append("] 玩家的承诺或欠款价值 ")
+				.Append(debtValue)
+				.Append(" 第纳尔，达成期限为：")
+				.Append(deadline)
+				.Append("，备注：")
+				.Append(note)
+				.AppendLine();
 		}
 		return stringBuilder.ToString().Trim();
 	}
@@ -14980,93 +15769,51 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void SetDebtForNpc(Hero npc, int goldAmount, string itemId, int itemAmount, int? dueDays, int? dueAbsDay, bool dueUnlimited, int? overdueTrustPenaltyPreset, int? overdueRelationPenaltyPreset, string debtNote = null)
+	private DebtRecord.DebtLine SetDebtForNpc(Hero npc, int debtValue, int dueDays, string debtNote)
 	{
-		if (npc == null)
+		if (npc == null || debtValue <= 0)
 		{
-			return;
+			return null;
 		}
 		DebtRecord orCreateDebtRecord = GetOrCreateDebtRecord(npc);
 		if (orCreateDebtRecord == null)
 		{
-			return;
+			return null;
 		}
 		NormalizeDebtRecord(orCreateDebtRecord);
 		float nowCampaignDay = GetNowCampaignDay();
-		float num = 0f;
-		bool flag = dueUnlimited;
-		string text = NormalizeDebtNote(debtNote);
-		int overdueTrustPenaltyPerDay = NormalizeLlmPenaltyValue(overdueTrustPenaltyPreset.GetValueOrDefault());
-		int overdueRelationPenaltyPerDay = NormalizeLlmPenaltyValue(overdueRelationPenaltyPreset.GetValueOrDefault());
-		if (!flag)
+		int campaignDayIndex = GetCampaignDayIndex();
+		bool dueUnlimited = dueDays <= 0;
+		float dueDay = dueUnlimited ? 0f : nowCampaignDay + (float)NormalizeDueDays(dueDays);
+		if (!dueUnlimited && dueDay <= 0f)
 		{
-			if (dueAbsDay.HasValue && dueAbsDay.Value > 0)
-			{
-				num = dueAbsDay.Value;
-			}
-			else
-			{
-				int num2 = ((!dueDays.HasValue) ? 1 : NormalizeDueDays(dueDays.Value));
-				num = nowCampaignDay + (float)num2;
-			}
-			if (num <= 0f)
-			{
-				num = nowCampaignDay + 1f;
-			}
+			dueDay = nowCampaignDay + 1f;
 		}
-		if (goldAmount > 0)
+		DebtRecord.DebtLine debtLine = new DebtRecord.DebtLine
 		{
-			orCreateDebtRecord.DebtLines.Add(new DebtRecord.DebtLine
-			{
-				DebtId = BuildDebtId(),
-				IsGold = true,
-				ItemId = null,
-				IsDueUnlimited = flag,
-				IsItemUnavailableDeclared = false,
-				InitialAmount = goldAmount,
-				RemainingAmount = goldAmount,
-				CreatedDay = nowCampaignDay,
-				DueDay = (flag ? 0f : num),
-				BestPreDueCoverage = 0f,
-				OnTimePenaltyTierApplied = 0,
-				OverduePenaltyDaysApplied = 0,
-				LastOverduePenaltyDay = -1,
-				OverdueTrustPenaltyPerDay = overdueTrustPenaltyPerDay,
-				OverdueRelationPenaltyPerDay = overdueRelationPenaltyPerDay,
-				CompensationUnitPrice = 0,
-				CompensationGoldCredit = 0,
-				DebtNote = text
-			});
-		}
-		if (!string.IsNullOrEmpty(itemId) && itemAmount > 0)
-		{
-			orCreateDebtRecord.DebtLines.Add(new DebtRecord.DebtLine
-			{
-				DebtId = BuildDebtId(),
-				IsGold = false,
-				ItemId = itemId,
-				IsDueUnlimited = flag,
-				IsItemUnavailableDeclared = false,
-				InitialAmount = itemAmount,
-				RemainingAmount = itemAmount,
-				CreatedDay = nowCampaignDay,
-				DueDay = (flag ? 0f : num),
-				BestPreDueCoverage = 0f,
-				OnTimePenaltyTierApplied = 0,
-				OverduePenaltyDaysApplied = 0,
-				LastOverduePenaltyDay = -1,
-				OverdueTrustPenaltyPerDay = overdueTrustPenaltyPerDay,
-				OverdueRelationPenaltyPerDay = overdueRelationPenaltyPerDay,
-				CompensationUnitPrice = 0,
-				CompensationGoldCredit = 0,
-				DebtNote = text
-			});
-		}
+			DebtId = BuildDebtId(),
+			IsGold = true,
+			ItemId = null,
+			IsDueUnlimited = dueUnlimited,
+			IsItemUnavailableDeclared = false,
+			InitialAmount = debtValue,
+			RemainingAmount = debtValue,
+			CreatedDay = nowCampaignDay,
+			DueDay = dueDay,
+			BestPreDueCoverage = 0f,
+			OnTimePenaltyTierApplied = 0,
+			OverduePenaltyDaysApplied = 0,
+			LastOverduePenaltyDay = dueUnlimited ? campaignDayIndex : -1,
+			OverdueTrustPenaltyPerDay = 0,
+			OverdueRelationPenaltyPerDay = 0,
+			CompensationUnitPrice = 0,
+			CompensationGoldCredit = 0,
+			UnlimitedTrustPenaltyNumeratorCarry = 0L,
+			DebtNote = NormalizeDebtNote(debtNote)
+		};
+		orCreateDebtRecord.DebtLines.Add(debtLine);
 		NormalizeDebtRecord(orCreateDebtRecord);
-		if (!HasDebtContent(orCreateDebtRecord) && !string.IsNullOrEmpty(npc.StringId))
-		{
-			_debts.Remove(npc.StringId);
-		}
+		return debtLine;
 	}
 
 	public bool RecordDeferredDuelDebtForNpc(Hero npc, int goldAmount, int dueDays, string debtNote, out string debtId, out string dueStatusText)
@@ -15075,50 +15822,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		dueStatusText = "";
 		try
 		{
-			if (npc == null || goldAmount <= 0)
+			DebtRecord.DebtLine debtLine = SetDebtForNpc(npc, goldAmount, dueDays, debtNote);
+			if (debtLine == null)
 			{
 				return false;
 			}
-			DebtRecord orCreateDebtRecord = GetOrCreateDebtRecord(npc);
-			if (orCreateDebtRecord == null)
-			{
-				return false;
-			}
-			NormalizeDebtRecord(orCreateDebtRecord);
-			float nowCampaignDay = GetNowCampaignDay();
-			bool dueUnlimited = dueDays <= 0;
-			float dueDay = 0f;
-			if (!dueUnlimited)
-			{
-				dueDay = nowCampaignDay + (float)NormalizeDueDays(dueDays);
-				if (dueDay <= 0f)
-				{
-					dueDay = nowCampaignDay + 1f;
-				}
-			}
-			DebtRecord.DebtLine debtLine = new DebtRecord.DebtLine
-			{
-				DebtId = BuildDebtId(),
-				IsGold = true,
-				ItemId = null,
-				IsDueUnlimited = dueUnlimited,
-				IsItemUnavailableDeclared = false,
-				InitialAmount = Math.Max(1, goldAmount),
-				RemainingAmount = Math.Max(1, goldAmount),
-				CreatedDay = nowCampaignDay,
-				DueDay = dueUnlimited ? 0f : dueDay,
-				BestPreDueCoverage = 0f,
-				OnTimePenaltyTierApplied = 0,
-				OverduePenaltyDaysApplied = 0,
-				LastOverduePenaltyDay = -1,
-				OverdueTrustPenaltyPerDay = 0,
-				OverdueRelationPenaltyPerDay = 0,
-				CompensationUnitPrice = 0,
-				CompensationGoldCredit = 0,
-				DebtNote = NormalizeDebtNote(debtNote)
-			};
-			orCreateDebtRecord.DebtLines.Add(debtLine);
-			NormalizeDebtRecord(orCreateDebtRecord);
 			debtId = debtLine.DebtId ?? "";
 			dueStatusText = BuildDebtDueStatusText(debtLine.DueDay, debtLine.IsDueUnlimited) ?? "";
 			return true;
@@ -15131,76 +15839,52 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void SetDebtForSettlementMerchant(Settlement settlement, SettlementMerchantKind kind, int goldAmount, string itemId, int itemAmount, int? dueDays, int? dueAbsDay, bool dueUnlimited, int? overdueTrustPenaltyPreset)
+	private DebtRecord.DebtLine SetDebtForSettlementMerchant(Settlement settlement, SettlementMerchantKind kind, int debtValue, int dueDays, string debtNote)
 	{
+		if (settlement == null || kind == SettlementMerchantKind.None || debtValue <= 0)
+		{
+			return null;
+		}
 		string settlementMerchantDebtKey = BuildSettlementMerchantDebtKey(settlement, kind);
 		DebtRecord orCreateDebtRecordByKey = GetOrCreateDebtRecordByKey(settlementMerchantDebtKey);
 		if (orCreateDebtRecordByKey == null)
 		{
-			return;
+			return null;
 		}
 		NormalizeDebtRecord(orCreateDebtRecordByKey);
 		float nowCampaignDay = GetNowCampaignDay();
-		float num = 0f;
-		bool flag = dueUnlimited;
-		int overdueTrustPenaltyPerDay = NormalizeLlmPenaltyValue(overdueTrustPenaltyPreset.GetValueOrDefault());
-		if (!flag)
+		int campaignDayIndex = GetCampaignDayIndex();
+		bool dueUnlimited = dueDays <= 0;
+		float dueDay = dueUnlimited ? 0f : nowCampaignDay + (float)NormalizeDueDays(dueDays);
+		if (!dueUnlimited && dueDay <= 0f)
 		{
-			if (dueAbsDay.HasValue && dueAbsDay.Value > 0)
-			{
-				num = dueAbsDay.Value;
-			}
-			else
-			{
-				int num2 = ((!dueDays.HasValue) ? 1 : NormalizeDueDays(dueDays.Value));
-				num = nowCampaignDay + (float)num2;
-			}
-			if (num <= 0f)
-			{
-				num = nowCampaignDay + 1f;
-			}
+			dueDay = nowCampaignDay + 1f;
 		}
-		if (goldAmount > 0)
+		DebtRecord.DebtLine debtLine = new DebtRecord.DebtLine
 		{
-			orCreateDebtRecordByKey.DebtLines.Add(new DebtRecord.DebtLine
-			{
-				DebtId = BuildDebtId(),
-				IsGold = true,
-				InitialAmount = goldAmount,
-				RemainingAmount = goldAmount,
-				CreatedDay = nowCampaignDay,
-				DueDay = (flag ? 0f : num),
-				IsDueUnlimited = flag,
-				OverdueTrustPenaltyPerDay = overdueTrustPenaltyPerDay,
-				OverdueRelationPenaltyPerDay = 0
-			});
-		}
-		if (!string.IsNullOrWhiteSpace(itemId) && itemAmount > 0)
-		{
-			orCreateDebtRecordByKey.DebtLines.Add(new DebtRecord.DebtLine
-			{
-				DebtId = BuildDebtId(),
-				IsGold = false,
-				ItemId = itemId,
-				InitialAmount = itemAmount,
-				RemainingAmount = itemAmount,
-				CreatedDay = nowCampaignDay,
-				DueDay = (flag ? 0f : num),
-				IsDueUnlimited = flag,
-				OverdueTrustPenaltyPerDay = overdueTrustPenaltyPerDay,
-				OverdueRelationPenaltyPerDay = 0
-			});
-		}
+			DebtId = BuildDebtId(),
+			IsGold = true,
+			ItemId = null,
+			IsDueUnlimited = dueUnlimited,
+			IsItemUnavailableDeclared = false,
+			InitialAmount = debtValue,
+			RemainingAmount = debtValue,
+			CreatedDay = nowCampaignDay,
+			DueDay = dueDay,
+			BestPreDueCoverage = 0f,
+			OnTimePenaltyTierApplied = 0,
+			OverduePenaltyDaysApplied = 0,
+			LastOverduePenaltyDay = dueUnlimited ? campaignDayIndex : -1,
+			OverdueTrustPenaltyPerDay = 0,
+			OverdueRelationPenaltyPerDay = 0,
+			CompensationUnitPrice = 0,
+			CompensationGoldCredit = 0,
+			UnlimitedTrustPenaltyNumeratorCarry = 0L,
+			DebtNote = NormalizeDebtNote(debtNote)
+		};
+		orCreateDebtRecordByKey.DebtLines.Add(debtLine);
 		NormalizeDebtRecord(orCreateDebtRecordByKey);
-		if (!HasDebtContent(orCreateDebtRecordByKey))
-		{
-			_debts.Remove(settlementMerchantDebtKey);
-		}
-	}
-
-	public bool RegisterPlayerPayment(Hero npc, bool isGold, string itemId, int amount)
-	{
-		return false;
+		return debtLine;
 	}
 
 	private bool TryFindDebtLineById(Hero npc, string debtId, out DebtRecord rec, out DebtRecord.DebtLine line, out string statusText)
@@ -15234,103 +15918,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return true;
 	}
 
-	private bool ApplyDebtLinePayment(Hero npc, DebtRecord rec, DebtRecord.DebtLine line, int amount, out string statusText)
-	{
-		statusText = "";
-		if (npc == null || rec == null || line == null || amount <= 0)
-		{
-			return false;
-		}
-		if (line.InitialAmount <= 0)
-		{
-			line.InitialAmount = Math.Max(1, line.RemainingAmount);
-		}
-		if (line.InitialAmount < line.RemainingAmount)
-		{
-			line.InitialAmount = line.RemainingAmount;
-		}
-		float nowCampaignDay = GetNowCampaignDay();
-		bool isDueUnlimited = line.IsDueUnlimited;
-		bool flag = !isDueUnlimited && line.DueDay > 0f && nowCampaignDay > line.DueDay + 0.01f;
-		bool flag2 = !line.IsGold && line.IsItemUnavailableDeclared;
-		int remainingAmount = line.RemainingAmount;
-		line.RemainingAmount = Math.Max(0, line.RemainingAmount - amount);
-		int remainingAmount2 = line.RemainingAmount;
-		float num = ComputeCoverageRatio(line.InitialAmount, remainingAmount2);
-		if (!flag && !isDueUnlimited)
-		{
-			line.BestPreDueCoverage = Math.Max(line.BestPreDueCoverage, num);
-		}
-		string text = BuildDebtDueStatusText(line.DueDay, line.IsDueUnlimited);
-		statusText = $"债务ID {line.DebtId}：{remainingAmount} -> {remainingAmount2}";
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			statusText = statusText + "（" + text + "）";
-		}
-		if (remainingAmount2 > 0)
-		{
-			if (flag2)
-			{
-				statusText += "；该笔已声明无法归还原物：关系/信任由 LLM 决策，本次不自动奖惩。";
-			}
-			else if (isDueUnlimited)
-			{
-				statusText += "；无限期部分还款：本次不追加奖惩。";
-			}
-			else if (flag)
-			{
-				statusText += "；逾期部分还款：本次不追加奖惩。";
-			}
-			else if (num >= 0.95f)
-			{
-				statusText += "；按时部分还款已达到95%，本次无奖励无惩罚。";
-			}
-			else
-			{
-				int num2 = ComputeOnTimePartialPenaltyTier(num);
-				if (num2 > line.OnTimePenaltyTierApplied)
-				{
-					line.OnTimePenaltyTierApplied = num2;
-					int num3 = AdjustTrust(npc, -num2, 0, "partial_on_time_below_95", out _);
-					AdjustRelationWithPlayer(npc, -num2, "partial_on_time_below_95");
-					statusText += $"；按时部分还款低于95%，按比例惩罚：信任-{num2}" + ((num3 != 0) ? $"，公共{(num3 > 0 ? "+" : "")}{num3}" : "") + $"，关系-{num2}。";
-				}
-				else
-				{
-					statusText += "；按时部分还款低于95%，惩罚已计入，不重复扣减。";
-				}
-			}
-		}
-		else if (flag2)
-		{
-			statusText += "；该笔已声明无法归还原物并结清：关系/信任由 LLM 决策，本次不自动奖惩。";
-		}
-		else if (flag)
-		{
-			if (line.BestPreDueCoverage >= 0.95f)
-			{
-				statusText += "；到期前已达到95%，虽逾期结清但不奖不罚。";
-			}
-			else
-			{
-				statusText += "；逾期结清：本次不追加奖惩。";
-			}
-		}
-		else
-		{
-			int num4 = 2;
-			int num5 = AdjustTrust(npc, num4, 0, "repay_on_time_full", out var appliedUnits);
-			statusText += $"；该笔按时结清，信任变化：个人+{FormatTrustUnits(appliedUnits)}" + ((num5 != 0) ? $"，公共+{num5}" : "") + "。";
-		}
-		NormalizeDebtRecord(rec);
-		if (!HasDebtContent(rec) && !string.IsNullOrWhiteSpace(npc.StringId))
-		{
-			_debts.Remove(npc.StringId);
-			return true;
-		}
-		return false;
-	}
-
 	public bool ResolveDebtByIdByAgreement(Hero npc, string debtId, out string statusText)
 	{
 		statusText = "";
@@ -15348,221 +15935,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			return true;
 		}
 		return false;
-	}
-
-	public bool RegisterPlayerGoldPaymentByDebtId(Hero npc, string debtId, int amount, out string statusText)
-	{
-		statusText = "";
-		if (amount <= 0)
-		{
-			statusText = "参数无效：还款数量必须大于0。";
-			return false;
-		}
-		if (!TryFindDebtLineById(npc, debtId, out var rec, out var line, out statusText))
-		{
-			return false;
-		}
-		if (!line.IsGold)
-		{
-			statusText = "债务ID " + line.DebtId + " 是物品债，默认应使用 [ACTION:DEBT_PAY_ITEM:债务ID:物品名称:数量]；若物品遗失且已协商赔偿，可用 [ACTION:DEBT_PAY_ITEM_GOLD:债务ID:金额]，并可用 [ACTION:DEBT_ITEM_PENALTY:债务ID:信任扣减:关系扣减] 由 LLM 决定扣减。";
-			return false;
-		}
-		int num = ConsumePlayerPrepaidGold(npc, amount);
-		int num2 = Math.Max(0, amount - num);
-		int num3 = 0;
-		if (num2 > 0)
-		{
-			num3 = TransferGold(Hero.MainHero, npc, num2);
-		}
-		int num4 = num + num3;
-		if (num4 <= 0)
-		{
-			statusText = "还款失败：玩家当前第纳尔不足。";
-			return false;
-		}
-		string statusText2;
-		bool result = ApplyDebtLinePayment(npc, rec, line, num4, out statusText2);
-		if (num > 0)
-		{
-			statusText = $"本轮已先行交付 {num} 第纳尔，补扣 {num3} 第纳尔；{statusText2}";
-		}
-		else
-		{
-			statusText = statusText2;
-		}
-		return result;
-	}
-
-	public bool RegisterPlayerItemPaymentByDebtId(Hero npc, string debtId, string itemId, int amount, out string statusText)
-	{
-		statusText = "";
-		if (string.IsNullOrWhiteSpace(itemId) || amount <= 0)
-		{
-			statusText = "参数无效：物品ID为空或数量不正确。";
-			return false;
-		}
-		if (!TryFindDebtLineById(npc, debtId, out var rec, out var line, out statusText))
-		{
-			return false;
-		}
-		if (line.IsGold)
-		{
-			statusText = "债务ID " + line.DebtId + " 是金币债，必须使用 [ACTION:DEBT_PAY_GOLD:债务ID:数量]。";
-			return false;
-		}
-		string submittedItemId = itemId.Trim();
-		if (!string.Equals((line.ItemId ?? "").Trim(), submittedItemId, StringComparison.OrdinalIgnoreCase) && TryResolveRewardItemStringId(submittedItemId, BuildHeroRewardItemResolutionContext(Hero.MainHero), out var resolvedSubmittedItemId, out var _, "debt_pay_item"))
-		{
-			submittedItemId = resolvedSubmittedItemId;
-		}
-		if (!string.Equals((line.ItemId ?? "").Trim(), submittedItemId, StringComparison.OrdinalIgnoreCase))
-		{
-			statusText = "物品不匹配：该债务要求 " + line.ItemId + "，你提交的是 " + itemId + "。";
-			return false;
-		}
-		string text = submittedItemId;
-		int num = ConsumePlayerPrepaidItem(npc, text, amount);
-		int num2 = Math.Max(0, amount - num);
-		int num3 = 0;
-		string itemName = null;
-		if (num2 > 0)
-		{
-			num3 = TransferItemById(Hero.MainHero, npc, text, num2, out itemName);
-		}
-		int num4 = num + num3;
-		if (num4 <= 0)
-		{
-			statusText = "还款失败：玩家当前没有足够的 " + itemId + "。";
-			return false;
-		}
-		string statusText2;
-		bool result = ApplyDebtLinePayment(npc, rec, line, num4, out statusText2);
-		string text2 = (string.IsNullOrWhiteSpace(itemName) ? itemId : itemName);
-		statusText = $"物品还款 {num4} x {text2}（本轮已先行交付 {num}，补扣 {num3}）；{statusText2}";
-		return result;
-	}
-
-	public bool MarkItemDebtUnavailableById(Hero npc, string debtId, out string statusText)
-	{
-		statusText = "";
-		if (!TryFindDebtLineById(npc, debtId, out var rec, out var line, out statusText))
-		{
-			return false;
-		}
-		if (line.IsGold)
-		{
-			statusText = "债务ID " + line.DebtId + " 是金币债，不能标记为“无法归还原物”。";
-			return false;
-		}
-		line.IsItemUnavailableDeclared = true;
-		NormalizeDebtRecord(rec);
-		statusText = "债务ID " + line.DebtId + " 已标记为“无法归还原物”。后续关系/信任改动由 LLM 决策。";
-		return true;
-	}
-
-	public bool ApplyItemDebtLlmPenaltyById(Hero npc, string debtId, int trustLoss, int relationLoss, out string statusText)
-	{
-		statusText = "";
-		if (!TryFindDebtLineById(npc, debtId, out var rec, out var line, out statusText))
-		{
-			return false;
-		}
-		if (line.IsGold)
-		{
-			statusText = "债务ID " + line.DebtId + " 是金币债，不适用物品无法归还惩罚标签。";
-			return false;
-		}
-		if (!line.IsItemUnavailableDeclared)
-		{
-			statusText = "债务ID " + line.DebtId + " 尚未声明“无法归还原物”，请先使用 [ACTION:DEBT_ITEM_UNAVAILABLE:" + line.DebtId + "]。";
-			return false;
-		}
-		int num = NormalizeLlmPenaltyValue(trustLoss);
-		int num2 = NormalizeLlmPenaltyValue(relationLoss);
-		if (num <= 0 && num2 <= 0)
-		{
-			statusText = "债务ID " + line.DebtId + "：本次 LLM 决定不追加关系/信任扣减。";
-			return false;
-		}
-		if (num > 0)
-		{
-			AdjustTrust(npc, -num, 0, "item_unavailable_llm_penalty", out _);
-		}
-		if (num2 > 0)
-		{
-			AdjustRelationWithPlayer(npc, -num2, "item_unavailable_llm_penalty");
-		}
-		NormalizeDebtRecord(rec);
-		statusText = $"债务ID {line.DebtId}：已按 LLM 决策执行扣减（信任-{num}，关系-{num2}）。";
-		return false;
-	}
-
-	public bool RegisterPlayerItemCompensationByDebtId(Hero npc, string debtId, int goldAmount, out string statusText)
-	{
-		statusText = "";
-		if (goldAmount <= 0)
-		{
-			statusText = "参数无效：赔偿金额必须大于0。";
-			return false;
-		}
-		if (!TryFindDebtLineById(npc, debtId, out var rec, out var line, out statusText))
-		{
-			return false;
-		}
-		if (line.IsGold)
-		{
-			statusText = "债务ID " + line.DebtId + " 是金币债，不适用物品赔偿标签。";
-			return false;
-		}
-		ItemObject item = ResolveItemById(line.ItemId);
-		ItemGuidePriceInfo guidePriceForItemNearHero = GetGuidePriceForItemNearHero(npc, item);
-		int compensationUnitPrice = Math.Max(1, guidePriceForItemNearHero.UnitPrice);
-		line.IsItemUnavailableDeclared = true;
-		if (line.CompensationUnitPrice <= 0)
-		{
-			line.CompensationUnitPrice = compensationUnitPrice;
-		}
-		int num = Math.Max(1, line.CompensationUnitPrice);
-		int num2 = ConsumePlayerPrepaidGold(npc, goldAmount);
-		int num3 = Math.Max(0, goldAmount - num2);
-		int num4 = 0;
-		if (num3 > 0)
-		{
-			num4 = TransferGold(Hero.MainHero, npc, num3);
-		}
-		int num5 = num2 + num4;
-		if (num5 <= 0)
-		{
-			statusText = "赔偿失败：玩家当前第纳尔不足。";
-			return false;
-		}
-		line.CompensationGoldCredit = Math.Max(0, line.CompensationGoldCredit) + num5;
-		int num6 = line.CompensationGoldCredit / num;
-		line.CompensationGoldCredit %= num;
-		if (num6 <= 0)
-		{
-			NormalizeDebtRecord(rec);
-			statusText = $"已支付金币赔偿 {num5}（本轮已先行交付 {num2}，补扣 {num4}）；当前折算规则 {num} 第纳尔/个，累计折算进度 {line.CompensationGoldCredit}/{num}。";
-			return false;
-		}
-		int num7 = Math.Min(num6, Math.Max(0, line.RemainingAmount));
-		int num8 = Math.Max(0, num6 - num7);
-		if (num8 > 0)
-		{
-			line.CompensationGoldCredit = 0;
-		}
-		string statusText2;
-		bool result = ApplyDebtLinePayment(npc, rec, line, num7, out statusText2);
-		if (num8 > 0)
-		{
-			int num9 = num8 * num;
-			statusText = $"金币赔偿 {num5}（本轮已先行交付 {num2}，补扣 {num4}；折算 {num7} 个，单价 {num}）；{statusText2}；超额 {num9} 第纳尔视为额外支付，不自动冲抵其他债务。";
-		}
-		else
-		{
-			statusText = $"金币赔偿 {num5}（本轮已先行交付 {num2}，补扣 {num4}；折算 {num7} 个，单价 {num}）；{statusText2}";
-		}
-		return result;
 	}
 
 	private bool TryFindSettlementMerchantDebtLineById(Settlement settlement, SettlementMerchantKind kind, string debtId, out DebtRecord rec, out DebtRecord.DebtLine line, out string statusText)
@@ -15591,79 +15963,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return true;
 	}
 
-	private bool ApplySettlementMerchantDebtLinePayment(Settlement settlement, SettlementMerchantKind kind, DebtRecord rec, DebtRecord.DebtLine line, int amount, out string statusText)
-	{
-		statusText = "";
-		if (settlement == null || kind == SettlementMerchantKind.None || rec == null || line == null || amount <= 0)
-		{
-			return false;
-		}
-		if (line.InitialAmount <= 0)
-		{
-			line.InitialAmount = Math.Max(1, line.RemainingAmount);
-		}
-		if (line.InitialAmount < line.RemainingAmount)
-		{
-			line.InitialAmount = line.RemainingAmount;
-		}
-		float nowCampaignDay = GetNowCampaignDay();
-		bool flag = !line.IsDueUnlimited && line.DueDay > 0f && nowCampaignDay > line.DueDay + 0.01f;
-		int remainingAmount = line.RemainingAmount;
-		line.RemainingAmount = Math.Max(0, line.RemainingAmount - amount);
-		int remainingAmount2 = line.RemainingAmount;
-		float num = ComputeCoverageRatio(line.InitialAmount, remainingAmount2);
-		if (!flag && !line.IsDueUnlimited)
-		{
-			line.BestPreDueCoverage = Math.Max(line.BestPreDueCoverage, num);
-		}
-		statusText = $"债务ID {line.DebtId}：{remainingAmount} -> {remainingAmount2}";
-		if (remainingAmount2 > 0)
-		{
-			if (line.IsDueUnlimited)
-			{
-				statusText += "；无限期部分还款：本次不追加奖惩。";
-			}
-			else if (flag)
-			{
-				statusText += "；逾期部分还款：本次不追加奖惩。";
-			}
-			else if (num >= 0.95f)
-			{
-				statusText += "；按时部分还款已达到95%，本次无奖励无惩罚。";
-			}
-			else
-			{
-				int num2 = ComputeOnTimePartialPenaltyTier(num);
-				if (num2 > line.OnTimePenaltyTierApplied)
-				{
-					line.OnTimePenaltyTierApplied = num2;
-					int num3 = AdjustSettlementMerchantTrust(settlement, kind, -num2, "merchant_partial_on_time_below_95", out _);
-					statusText += $"；按时部分还款低于95%，市场信任-{num2}" + ((num3 != 0) ? $"，公共{(num3 > 0 ? "+" : "")}{num3}" : "") + "。";
-				}
-			}
-		}
-		else if (!flag)
-		{
-			int num4 = AdjustSettlementMerchantTrust(settlement, kind, 2, "merchant_repay_on_time_full", out var appliedMerchantUnits);
-			statusText += "；该笔按时结清，市场信任+" + FormatTrustUnits(appliedMerchantUnits) + ((num4 != 0) ? $"，公共+{num4}" : "") + "。";
-		}
-		else if (line.BestPreDueCoverage >= 0.95f)
-		{
-			statusText += "；到期前已达到95%，虽逾期结清但不奖不罚。";
-		}
-		else
-		{
-			statusText += "；逾期结清：本次不追加奖惩。";
-		}
-		NormalizeDebtRecord(rec);
-		if (!HasDebtContent(rec))
-		{
-			_debts.Remove(BuildSettlementMerchantDebtKey(settlement, kind));
-			return true;
-		}
-		return false;
-	}
-
 	public bool ResolveSettlementMerchantDebtByIdByAgreement(Settlement settlement, SettlementMerchantKind kind, string debtId, out string statusText)
 	{
 		statusText = "";
@@ -15683,98 +15982,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return false;
 	}
 
-	public bool RegisterPlayerGoldPaymentByMerchantDebtId(Settlement settlement, SettlementMerchantKind kind, string debtId, int amount, out string statusText)
-	{
-		statusText = "";
-		if (amount <= 0)
-		{
-			statusText = "参数无效：还款数量必须大于0。";
-			return false;
-		}
-		if (!TryFindSettlementMerchantDebtLineById(settlement, kind, debtId, out var rec, out var line, out statusText))
-		{
-			return false;
-		}
-		if (!line.IsGold)
-		{
-			statusText = "债务ID " + line.DebtId + " 是物品债，必须使用 [ACTION:DEBT_PAY_ITEM:债务ID:物品名称:数量]。";
-			return false;
-		}
-		int num = ConsumePlayerPrepaidGoldForMerchant(settlement, kind, amount);
-		int num2 = Math.Max(0, amount - num);
-		int num3 = 0;
-		if (num2 > 0)
-		{
-			num3 = TransferGoldToSettlement(settlement, Hero.MainHero, num2);
-		}
-		int num4 = num + num3;
-		if (num4 <= 0)
-		{
-			statusText = "还款失败：玩家当前第纳尔不足。";
-			return false;
-		}
-		string statusText2;
-		bool result = ApplySettlementMerchantDebtLinePayment(settlement, kind, rec, line, num4, out statusText2);
-		statusText = ((num > 0) ? $"本轮已先行交付 {num} 第纳尔，补扣 {num3} 第纳尔；{statusText2}" : statusText2);
-		return result;
-	}
-
-	public bool RegisterPlayerItemPaymentByMerchantDebtId(Settlement settlement, SettlementMerchantKind kind, string debtId, string itemId, int amount, out string statusText)
-	{
-		statusText = "";
-		if (string.IsNullOrWhiteSpace(itemId) || amount <= 0)
-		{
-			statusText = "参数无效：物品ID为空或数量不正确。";
-			return false;
-		}
-		if (!TryFindSettlementMerchantDebtLineById(settlement, kind, debtId, out var rec, out var line, out statusText))
-		{
-			return false;
-		}
-		if (line.IsGold)
-		{
-			statusText = "债务ID " + line.DebtId + " 是金币债，必须使用 [ACTION:DEBT_PAY_GOLD:债务ID:数量]。";
-			return false;
-		}
-		string submittedItemId = itemId.Trim();
-		if (!string.Equals((line.ItemId ?? "").Trim(), submittedItemId, StringComparison.OrdinalIgnoreCase) && TryResolveRewardItemStringId(submittedItemId, BuildHeroRewardItemResolutionContext(Hero.MainHero), out var resolvedSubmittedItemId, out var _, "merchant_debt_pay_item"))
-		{
-			submittedItemId = resolvedSubmittedItemId;
-		}
-		if (!string.Equals((line.ItemId ?? "").Trim(), submittedItemId, StringComparison.OrdinalIgnoreCase))
-		{
-			statusText = "物品不匹配：该债务要求 " + line.ItemId + "，你提交的是 " + itemId + "。";
-			return false;
-		}
-		string text = submittedItemId;
-		int num = ConsumePlayerPrepaidItemForMerchant(settlement, kind, text, amount);
-		int num2 = Math.Max(0, amount - num);
-		int num3 = 0;
-		string itemName = null;
-		if (num2 > 0)
-		{
-			num3 = TransferItemToSettlement(settlement, Hero.MainHero, text, num2, out itemName);
-		}
-		int num4 = num + num3;
-		if (num4 <= 0)
-		{
-			statusText = "还款失败：玩家当前没有足够的 " + itemId + "。";
-			return false;
-		}
-		string statusText2;
-		bool result = ApplySettlementMerchantDebtLinePayment(settlement, kind, rec, line, num4, out statusText2);
-		statusText = $"物品还款 {num4} x {(string.IsNullOrWhiteSpace(itemName) ? itemId : itemName)}；{statusText2}";
-		return result;
-	}
-
 	private static string StripHeroTradeActionTags(string text)
 	{
 		string text2 = text ?? "";
 		text2 = Regex.Replace(text2, "\\[ACTION:GIVE_ASSET:[^\\]]*\\]", string.Empty, RegexOptions.IgnoreCase);
-		text2 = Regex.Replace(text2, "\\[ACTION:DEBT[^\\]]*\\]", string.Empty, RegexOptions.IgnoreCase);
+
 		text2 = Regex.Replace(text2, "\\[ACTION:TRADE_TRUST:[^\\]]*\\]", string.Empty, RegexOptions.IgnoreCase);
 		text2 = Regex.Replace(text2, "\\[AD;[^\\]]*\\]", string.Empty, RegexOptions.IgnoreCase);
-		text2 = Regex.Replace(text2, "\\[ADP[:;][^\\]]*\\]", string.Empty, RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[ADP;[^\\]]*\\]", string.Empty, RegexOptions.IgnoreCase);
 		return text2.Trim();
 	}
 
@@ -15793,6 +16008,28 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return true;
 	}
 
+	internal static bool IsCanonicalDebtActionTagForExternal(string tag)
+	{
+		string text = (tag ?? "").Trim();
+		if (string.IsNullOrEmpty(text))
+		{
+			return false;
+		}
+		Match match = DebtCreationTagRegex.Match(text);
+		if (match.Success && match.Index == 0 && match.Length == text.Length)
+		{
+			return true;
+		}
+		match = DebtResolutionTagRegex.Match(text);
+		return match.Success && match.Index == 0 && match.Length == text.Length;
+	}
+
+	internal static bool ContainsCanonicalDebtActionTagForExternal(string text)
+	{
+		string value = text ?? "";
+		return DebtCreationTagRegex.IsMatch(value) || DebtResolutionTagRegex.IsMatch(value);
+	}
+
 	private static string GetAdDebtNote(Match match)
 	{
 		if (match == null)
@@ -15802,10 +16039,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		if (match.Groups.Count > 4)
 		{
 			return (match.Groups[4].Value ?? "").Trim();
-		}
-		if (match.Groups.Count > 3)
-		{
-			return (match.Groups[3].Value ?? "").Trim();
 		}
 		return "";
 	}
@@ -15918,7 +16151,19 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return 0;
 		}
-		int generated = GenerateNamedInventoryItemToRosterForExternal(targetRoster, assetName.Trim(), amount, out var generatedStringId, out itemName, logSource);
+		string requestedName = assetName.Trim();
+		string preferredTemplateItemId = null;
+		bool resolvedEquipmentTemplate = TryResolveGeneratedRpEquipmentTemplate(requestedName, out ItemObject equipmentTemplate, out GeneratedRpEquipmentKind equipmentKind, out string matchedSuffix, out float equipmentMatchScore, out int equipmentCandidateCount);
+		if (resolvedEquipmentTemplate)
+		{
+			preferredTemplateItemId = equipmentTemplate.StringId;
+			Logger.Log("Logic", "[RewardItemResolve] rp_equipment_template source=" + (logSource ?? "") + " asset=" + requestedName + " suffix=" + matchedSuffix + " kind=" + equipmentKind + " template=" + (equipmentTemplate.StringId ?? "") + " templateName=" + (equipmentTemplate.Name?.ToString() ?? "") + " score=" + FormatRewardItemResolutionScore(equipmentMatchScore) + " candidates=" + equipmentCandidateCount.ToString(CultureInfo.InvariantCulture));
+		}
+		else if (equipmentKind != GeneratedRpEquipmentKind.None)
+		{
+			Logger.Log("Logic", "[RewardItemResolve] rp_equipment_template_missing source=" + (logSource ?? "") + " asset=" + requestedName + " suffix=" + matchedSuffix + " kind=" + equipmentKind + " candidates=" + equipmentCandidateCount.ToString(CultureInfo.InvariantCulture) + " fallback=misc");
+		}
+		int generated = GenerateNamedInventoryItemToRosterForExternal(targetRoster, requestedName, amount, out var generatedStringId, out itemName, logSource, preferredTemplateItemId: preferredTemplateItemId);
 		if (generated > 0 && !string.IsNullOrWhiteSpace(generatedStringId))
 		{
 			TryResolveGeneratedRewardItemForStringId(generatedStringId, out item, logSource + "_resolve");
@@ -16017,20 +16262,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			Regex regex = new Regex("\\[ACTION:GIVE_ASSET:(?:GOLD|钱|金币|第纳尔|DENARS?|MONEY|COINS?):(\\d+)\\]", RegexOptions.IgnoreCase);
 			Regex regex2 = new Regex("\\[ACTION:GIVE_ASSET:([^\\]\\r\\n:]+):(ALL|\\d+)\\]", RegexOptions.IgnoreCase);
-			Regex regex3 = new Regex("\\[ACTION:DEBT_GOLD:(\\d+)\\]", RegexOptions.IgnoreCase);
-			Regex regex4 = new Regex("\\[ACTION:DEBT_ADD:(\\d+)\\]", RegexOptions.IgnoreCase);
-			Regex regex5 = new Regex("\\[ACTION:DEBT_ITEM:([^\\]\\r\\n:]+):(\\d+)\\]", RegexOptions.IgnoreCase);
-			Regex regex6 = new Regex("\\[ACTION:DEBT_(?:DUE_)?DAYS:(\\d+)\\]", RegexOptions.IgnoreCase);
-			Regex regex7 = new Regex("\\[ACTION:DEBT_DUE_ABS_DAY:(\\d+)\\]", RegexOptions.IgnoreCase);
-			Regex regex8 = new Regex("\\[ACTION:DEBT_DUE_DATE:(\\d+):([^\\]:]+):(\\d+)\\]", RegexOptions.IgnoreCase);
-			Regex regex9 = new Regex("\\[ACTION:DEBT_DUE_NONE\\]", RegexOptions.IgnoreCase);
-			Regex regex10 = new Regex("\\[ACTION:DEBT_OVERDUE_PRESET:(\\d+):(\\d+)\\]", RegexOptions.IgnoreCase);
-			Regex regex11 = new Regex("\\[ACTION:DEBT_PAY_GOLD:([a-zA-Z0-9_\\-]+):(\\d+)\\]", RegexOptions.IgnoreCase);
-			Regex regex12 = new Regex("\\[ACTION:DEBT_PAY_ITEM:([a-zA-Z0-9_\\-]+):([^\\]\\r\\n:]+):(\\d+)\\]", RegexOptions.IgnoreCase);
-			Regex regex13 = new Regex("\\[ACTION:DEBT_PAY_ITEM_GOLD:([a-zA-Z0-9_\\-]+):(\\d+)\\]", RegexOptions.IgnoreCase);
-			Regex regex14 = new Regex("\\[ACTION:DEBT_ITEM_UNAVAILABLE:([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase);
-			Regex regex15 = new Regex("\\[ACTION:DEBT_ITEM_PENALTY:([a-zA-Z0-9_\\-]+):(\\d+):(\\d+)\\]", RegexOptions.IgnoreCase);
-			Regex regex16 = new Regex("\\[ACTION:DEBT_PAY:([a-zA-Z0-9_\\-]+):(\\d+)\\]", RegexOptions.IgnoreCase);
 			Regex regex17 = new Regex("\\[ACTION:KINGDOM_SERVICE:(MERCENARY|VASSAL|LEAVE|CLAN_JOIN_PLAYER_KINGDOM|CLAN_JOIN_KINGDOM):([a-zA-Z0-9_.\\-]+)\\]", RegexOptions.IgnoreCase);
 			Regex regex18 = new Regex("\\[ACTION:JOIN_MERCENARY:([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase);
 			Regex regex19 = new Regex("\\[ACTION:JOIN_VASSAL:([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase);
@@ -16038,8 +16269,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			Regex regex21 = new Regex("\\[ACTION:TRADE_TRUST:(-?\\d+)\\]", RegexOptions.IgnoreCase);
 			Regex regex22 = new Regex("\\[ACTION:GIVE_ASSET:([^\\]\\r\\n:]+):(ALL|\\d+)\\]", RegexOptions.IgnoreCase);
 			Regex regexAssetTransferAny = new Regex("\\[ACTION:GIVE_ASSET:[^\\]\\r\\n]*\\]", RegexOptions.IgnoreCase);
-			Regex regex23 = new Regex("\\[AD;(\\d+);(\\d+);(?:(N|P);)?([^\\]]*)\\]", RegexOptions.IgnoreCase);
-			Regex regex24 = new Regex("\\[ADP[:;]([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase);
+			Regex regex23 = DebtCreationTagRegex;
+			Regex regex24 = DebtResolutionTagRegex;
 			Regex regex25 = HeroJoinPlayerPartyTagRegex;
 			Regex regexClanJoinPlayerKingdom = new Regex("\\[A:C_J_P_K\\]", RegexOptions.IgnoreCase);
 			Regex regexClanJoinKingdom = new Regex("\\[A:C_J_K:([a-zA-Z0-9_.\\-]+)\\]", RegexOptions.IgnoreCase);
@@ -16051,7 +16282,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			Regex regexVassalageAny = new Regex("\\[ACTION:VASSALAGE:[^\\]\\r\\n]*\\]", RegexOptions.IgnoreCase);
 			Regex regexKingdomAnnex = new Regex("\\[ACTION:KINGDOM_ANNEX:target_kingdom_id=([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase);
 			Regex regexKingdomAnnexAny = new Regex("\\[ACTION:KINGDOM_ANNEX:[^\\]\r\n]*\\]", RegexOptions.IgnoreCase);
-			Regex regexLegacyDebtTag = new Regex("\\[ACTION:DEBT[^\\]]*\\]", RegexOptions.IgnoreCase);
 			HashSet<string> settledDebtIdsThisRound = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			int num = 0;
 			try
@@ -16079,76 +16309,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				["textLen"] = (responseText ?? "").Length,
 				["actionTagCount"] = num
 			});
-			int? dueDaysOverride = null;
-			int? dueAbsDayOverride = null;
-			bool dueUnlimited = regex9.IsMatch(responseText);
-			int? overdueTrustPenaltyPreset = null;
-			int? overdueRelationPenaltyPreset = null;
-			if (!dueUnlimited)
-			{
-				MatchCollection matchCollection = regex7.Matches(responseText);
-				if (matchCollection != null && matchCollection.Count > 0)
-				{
-					string value = matchCollection[matchCollection.Count - 1].Groups[1].Value;
-					if (int.TryParse(value, out var result))
-					{
-						if (result < 1)
-						{
-							result = 1;
-						}
-						if (result > 200000)
-						{
-							result = 200000;
-						}
-						dueAbsDayOverride = result;
-					}
-				}
-			}
-			if (!dueUnlimited && !dueAbsDayOverride.HasValue)
-			{
-				MatchCollection matchCollection2 = regex8.Matches(responseText);
-				if (matchCollection2 != null && matchCollection2.Count > 0)
-				{
-					Match match = matchCollection2[matchCollection2.Count - 1];
-					if (match != null && int.TryParse(match.Groups[1].Value, out var result2) && TryParseSeasonToken(match.Groups[2].Value, out var seasonIndexZeroBased) && int.TryParse(match.Groups[3].Value, out var result3))
-					{
-						dueAbsDayOverride = ToAbsDayFromCalendar(result2, seasonIndexZeroBased, result3);
-					}
-				}
-			}
-			if (!dueUnlimited && !dueAbsDayOverride.HasValue)
-			{
-				MatchCollection matchCollection3 = regex6.Matches(responseText);
-				if (matchCollection3 != null && matchCollection3.Count > 0)
-				{
-					string value2 = matchCollection3[matchCollection3.Count - 1].Groups[1].Value;
-					if (int.TryParse(value2, out var result4))
-					{
-						dueDaysOverride = NormalizeDueDays(result4);
-					}
-				}
-			}
-			responseText = regex9.Replace(responseText, string.Empty);
-			responseText = regex8.Replace(responseText, string.Empty);
-			responseText = regex7.Replace(responseText, string.Empty);
-			responseText = regex6.Replace(responseText, string.Empty);
-			MatchCollection matchCollection4 = regex10.Matches(responseText);
-			if (matchCollection4 != null && matchCollection4.Count > 0)
-			{
-				Match match2 = matchCollection4[matchCollection4.Count - 1];
-				if (match2 != null)
-				{
-					if (int.TryParse(match2.Groups[1].Value, out var result5))
-					{
-						overdueTrustPenaltyPreset = NormalizeLlmPenaltyValue(result5);
-					}
-					if (int.TryParse(match2.Groups[2].Value, out var result6))
-					{
-						overdueRelationPenaltyPreset = NormalizeLlmPenaltyValue(result6);
-					}
-				}
-			}
-			responseText = regex10.Replace(responseText, string.Empty);
 			int? num2 = null;
 			MatchCollection matchCollection5 = regex21.Matches(responseText);
 			if (matchCollection5 != null && matchCollection5.Count > 0)
@@ -16160,21 +16320,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				}
 			}
 			responseText = regex21.Replace(responseText, string.Empty);
-			if (regexLegacyDebtTag.IsMatch(responseText))
-			{
-				Logger.Log("Logic", "[Reward] 检测到旧版 DEBT_* 标签，已停用并忽略。");
-				responseText = regexLegacyDebtTag.Replace(responseText, string.Empty);
-			}
-			bool hasGiveTag = regex.IsMatch(responseText) || regex2.IsMatch(responseText);
-			bool flag = regex3.IsMatch(responseText) || regex4.IsMatch(responseText) || regex5.IsMatch(responseText);
-			if (flag && !hasGiveTag)
-			{
-				Logger.Log("Logic", "[Reward] 警告: 检测到DEBT标签但没有GIVE标签，欠款不会被记录（需要同时交付物品才能记录欠款）");
-			}
-			if (flag && (!overdueTrustPenaltyPreset.HasValue || !overdueRelationPenaltyPreset.HasValue))
-			{
-				Logger.Log("Logic", "[Reward] 警告: 本轮创建欠款未提供 [ACTION:DEBT_OVERDUE_PRESET:信任扣减:关系扣减]，将使用兼容推断。");
-			}
 			string giverName = giver?.Name?.ToString() ?? "某人";
 			string receiverName = receiver?.Name?.ToString() ?? "某人";
 			List<string> giverFacts = new List<string>();
@@ -16182,7 +16327,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			bool anyActualGiveToPlayer = false;
 			bool anyDebtRecorded = false;
 			bool anyDebtPaymentApplied = false;
-			bool anyDebtMetaApplied = false;
+
 			bool anyRoyalAbdicationApplied = false;
 			bool anyKingdomServiceApplied = false;
 			bool anyVassalageApplied = false;
@@ -16401,22 +16546,19 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					}
 					if (result8 > 0)
 					{
-						bool dueUnlimited2 = result9 <= 0;
-						int? dueDaysOverride2 = dueUnlimited2 ? null : NormalizeDueDays(result9);
-						SetDebtForNpc(giver, result8, null, 0, dueDaysOverride2, null, dueUnlimited2, null, null, text3);
+						DebtRecord.DebtLine debtLine = SetDebtForNpc(giver, result8, result9, text3);
+						if (debtLine == null)
+						{
+							return string.Empty;
+						}
 						anyDebtRecorded = true;
-						DebtRecord debtRecord = GetDebtRecord(giver);
-						NormalizeDebtRecord(debtRecord);
-						DebtRecord.DebtLine debtLine = (debtRecord?.DebtLines?.Where((DebtRecord.DebtLine x) => x != null && x.IsGold && x.RemainingAmount > 0)).OrderByDescending((DebtRecord.DebtLine x) => x.CreatedDay).FirstOrDefault();
-						string text4 = ((debtLine != null) ? BuildDebtDueStatusText(debtLine.DueDay, debtLine.IsDueUnlimited) : "");
-						string text5 = debtLine?.DebtId ?? "";
-						string text6 = string.IsNullOrWhiteSpace(text3) ? "" : ("；备注：" + text3);
-						giverFacts.Add($"你已经记下：玩家的承诺值 {result8} （债务ID:{text5}）。{text4}{text6}");
-						receiverFacts.Add($"你的承诺 {giverName}的事物值{result8} （债务ID:{text5}）。{text4}{text6}");
-						string text7 = (string.IsNullOrWhiteSpace(text4) ? "" : ("（" + text4 + "）"));
-						string text8 = (string.IsNullOrWhiteSpace(text5) ? "" : ("[ID:" + text5 + "] "));
-						string text9 = string.IsNullOrWhiteSpace(text3) ? "" : (" 备注：" + text3);
-						ShowRewardMessage($"【欠款或承诺记录】{text8}你欠 {giverName} {result8} 价值{text7}{text9}", Color.FromUint(4294936576u), giver);
+						string text4 = BuildDebtPromiseDeadlineText(debtLine.DueDay, debtLine.IsDueUnlimited);
+						string text5 = debtLine.DebtId ?? "";
+						string text6 = string.IsNullOrWhiteSpace(text3) ? "无" : text3;
+						giverFacts.Add($"你已经记下：玩家的承诺或欠款价值 {result8} 第纳尔，达成期限为：{text4}，备注：{text6}（债务ID:{text5}）。");
+						receiverFacts.Add($"你对 {giverName} 的承诺或欠款价值 {result8} 第纳尔，达成期限为：{text4}，备注：{text6}（债务ID:{text5}）。");
+						string text7 = (string.IsNullOrWhiteSpace(text5) ? "" : ("[ID:" + text5 + "] "));
+						ShowRewardMessage($"【承诺或欠款记录】{text7}你对 {giverName} 的承诺或欠款价值 {result8} 第纳尔，达成期限为：{text4}，备注：{text6}", Color.FromUint(4294936576u), giver);
 					}
 				}
 				return string.Empty;
@@ -16448,262 +16590,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 						if (flag2)
 						{
 							ShowRewardMessage("【欠款已清】你对 " + giverName + " 的全部欠款已还清！", Color.FromUint(4278255360u), giver);
-						}
-					}
-				}
-				return string.Empty;
-			});
-			responseText = regex3.Replace(responseText, delegate(Match m)
-			{
-				if (int.TryParse(m.Groups[1].Value, out var result8))
-				{
-					Logger.Log("Logic", $"[Reward] DEBT_GOLD tag 捕获: giver={giver?.Name} receiver={receiver?.Name} amount={result8} hasGiveTag={hasGiveTag}");
-					if (receiver == Hero.MainHero && giver != Hero.MainHero && hasGiveTag)
-					{
-						SetDebtForNpc(giver, result8, null, 0, dueDaysOverride, dueAbsDayOverride, dueUnlimited, overdueTrustPenaltyPreset, overdueRelationPenaltyPreset);
-						anyDebtRecorded = true;
-						DebtRecord debtRecord = GetDebtRecord(giver);
-						NormalizeDebtRecord(debtRecord);
-						DebtRecord.DebtLine debtLine = (debtRecord?.DebtLines?.Where((DebtRecord.DebtLine x) => x != null && x.IsGold && x.RemainingAmount > 0)).OrderByDescending((DebtRecord.DebtLine x) => x.CreatedDay).FirstOrDefault();
-						string text3 = ((debtLine != null) ? BuildDebtDueStatusText(debtLine.DueDay, debtLine.IsDueUnlimited) : "");
-						string text4 = debtLine?.DebtId ?? "";
-						giverFacts.Add($"你已经记下：玩家欠你 {result8} 第纳尔（债务ID:{text4}）。{text3}");
-						receiverFacts.Add($"你欠 {giverName} {result8} 第纳尔（债务ID:{text4}）。{text3}");
-						if (result8 > 0)
-						{
-							string text5 = (string.IsNullOrWhiteSpace(text3) ? "" : ("（" + text3 + "）"));
-							string text6 = (string.IsNullOrWhiteSpace(text4) ? "" : ("[ID:" + text4 + "] "));
-							ShowRewardMessage($"【欠款记录】{text6}你欠 {giverName} {result8} 第纳尔{text5}", Color.FromUint(4294936576u), giver);
-						}
-						else
-						{
-							ShowRewardMessage("【欠款已清】你对 " + giverName + " 的金币欠款已还清！", Color.FromUint(4278255360u), giver);
-						}
-					}
-				}
-				return string.Empty;
-			});
-			responseText = regex4.Replace(responseText, delegate(Match m)
-			{
-				if (int.TryParse(m.Groups[1].Value, out var result8))
-				{
-					Logger.Log("Logic", $"[Reward] DEBT_ADD(兼容) tag 捕获: giver={giver?.Name} receiver={receiver?.Name} amount={result8} hasGiveTag={hasGiveTag}");
-					if (receiver == Hero.MainHero && giver != Hero.MainHero && hasGiveTag)
-					{
-						SetDebtForNpc(giver, result8, null, 0, dueDaysOverride, dueAbsDayOverride, dueUnlimited, overdueTrustPenaltyPreset, overdueRelationPenaltyPreset);
-						anyDebtRecorded = true;
-						DebtRecord debtRecord = GetDebtRecord(giver);
-						NormalizeDebtRecord(debtRecord);
-						DebtRecord.DebtLine debtLine = (debtRecord?.DebtLines?.Where((DebtRecord.DebtLine x) => x != null && x.IsGold && x.RemainingAmount > 0)).OrderByDescending((DebtRecord.DebtLine x) => x.CreatedDay).FirstOrDefault();
-						string text3 = ((debtLine != null) ? BuildDebtDueStatusText(debtLine.DueDay, debtLine.IsDueUnlimited) : "");
-						string text4 = debtLine?.DebtId ?? "";
-						giverFacts.Add($"你已经记下：玩家欠你 {result8} 第纳尔（债务ID:{text4}）。{text3}");
-						receiverFacts.Add($"你欠 {giverName} {result8} 第纳尔（债务ID:{text4}）。{text3}");
-						if (result8 > 0)
-						{
-							string text5 = (string.IsNullOrWhiteSpace(text3) ? "" : ("（" + text3 + "）"));
-							string text6 = (string.IsNullOrWhiteSpace(text4) ? "" : ("[ID:" + text4 + "] "));
-							ShowRewardMessage($"【欠款记录】{text6}你欠 {giverName} {result8} 第纳尔{text5}", Color.FromUint(4294936576u), giver);
-						}
-						else
-						{
-							ShowRewardMessage("【欠款已清】你对 " + giverName + " 的金币欠款已还清！", Color.FromUint(4278255360u), giver);
-						}
-					}
-				}
-				return string.Empty;
-			});
-			responseText = regex5.Replace(responseText, delegate(Match m)
-			{
-				string itemId = m.Groups[1].Value;
-				if (TryParseNotableMarketPromptStringId(itemId, out var settlementPromptStringId))
-				{
-					itemId = settlementPromptStringId.Split('@')[0];
-				}
-				else if (!TryResolveRewardItemStringId(itemId, giverUsesNotableMarket ? BuildSettlementRewardItemResolutionContext(notableMarketSettlement) : BuildHeroRewardItemResolutionContext(giver), out itemId, out var _, "debt_item"))
-				{
-					return string.Empty;
-				}
-				if (int.TryParse(m.Groups[2].Value, out var result8))
-				{
-					Logger.Log("Logic", $"[Reward] DEBT_ITEM tag 捕获: giver={giver?.Name} receiver={receiver?.Name} itemId={itemId} amount={result8} hasGiveTag={hasGiveTag}");
-					if (receiver == Hero.MainHero && giver != Hero.MainHero && hasGiveTag)
-					{
-						SetDebtForNpc(giver, 0, itemId, result8, dueDaysOverride, dueAbsDayOverride, dueUnlimited, overdueTrustPenaltyPreset, overdueRelationPenaltyPreset);
-						anyDebtRecorded = true;
-						DebtRecord debtRecord = GetDebtRecord(giver);
-						NormalizeDebtRecord(debtRecord);
-						DebtRecord.DebtLine debtLine = (debtRecord?.DebtLines?.Where((DebtRecord.DebtLine x) => x != null && !x.IsGold && string.Equals(x.ItemId ?? "", itemId, StringComparison.OrdinalIgnoreCase) && x.RemainingAmount > 0)).OrderByDescending((DebtRecord.DebtLine x) => x.CreatedDay).FirstOrDefault();
-						string text3 = ((debtLine != null) ? BuildDebtDueStatusText(debtLine.DueDay, debtLine.IsDueUnlimited) : "");
-						string text4 = debtLine?.DebtId ?? "";
-						giverFacts.Add($"你已经记下：玩家欠你 {itemId} x{result8}（债务ID:{text4}）。{text3}");
-						receiverFacts.Add($"你欠 {giverName} {itemId} x{result8}（债务ID:{text4}）。{text3}");
-						string text5 = (string.IsNullOrWhiteSpace(text3) ? "" : ("（" + text3 + "）"));
-						string text6 = (string.IsNullOrWhiteSpace(text4) ? "" : ("[ID:" + text4 + "] "));
-						ShowRewardMessage($"【欠款记录】{text6}你欠 {giverName} {itemId} x{result8}{text5}", Color.FromUint(4294936576u), giver);
-					}
-				}
-				return string.Empty;
-			});
-			responseText = regex11.Replace(responseText, delegate(Match m)
-			{
-				string value4 = m.Groups[1].Value;
-				if (int.TryParse(m.Groups[2].Value, out var result8) && receiver == Hero.MainHero && giver != Hero.MainHero)
-				{
-					string text3 = (value4 ?? "").Trim();
-					if (!string.IsNullOrWhiteSpace(text3) && !settledDebtIdsThisRound.Add(text3))
-					{
-						Logger.Log("Logic", "[Reward] 跳过重复还款标签: debtId=" + text3 + " tag=DEBT_PAY_GOLD");
-						return string.Empty;
-					}
-					string statusText;
-					bool flag2 = RegisterPlayerGoldPaymentByDebtId(giver, value4, result8, out statusText);
-					if (!string.IsNullOrWhiteSpace(statusText))
-					{
-						anyDebtPaymentApplied = true;
-						giverFacts.Add($"你确认收到玩家对债务ID {value4} 的金币还款 {result8}。{statusText}");
-						receiverFacts.Add($"你已偿还金币债务ID {value4} 共 {result8}。{statusText}");
-						if (flag2)
-						{
-							ShowRewardMessage("【欠款已清】你对 " + giverName + " 的全部欠款已还清！", Color.FromUint(4278255360u), giver);
-						}
-						else
-						{
-							ShowRewardMessage($"【还款确认】已偿还金币债务ID {value4}：{result8}", Color.FromUint(4278242559u), giver);
-						}
-					}
-				}
-				return string.Empty;
-			});
-			responseText = regex12.Replace(responseText, delegate(Match m)
-			{
-				string value4 = m.Groups[1].Value;
-				string value5 = m.Groups[2].Value;
-				if (int.TryParse(m.Groups[3].Value, out var result8) && receiver == Hero.MainHero && giver != Hero.MainHero)
-				{
-					string text3 = (value4 ?? "").Trim();
-					if (!string.IsNullOrWhiteSpace(text3) && !settledDebtIdsThisRound.Add(text3))
-					{
-						Logger.Log("Logic", "[Reward] 跳过重复还款标签: debtId=" + text3 + " tag=DEBT_PAY_ITEM");
-						return string.Empty;
-					}
-					string statusText;
-					bool flag2 = RegisterPlayerItemPaymentByDebtId(giver, value4, value5, result8, out statusText);
-					if (!string.IsNullOrWhiteSpace(statusText))
-					{
-						anyDebtPaymentApplied = true;
-						giverFacts.Add($"你确认收到玩家对债务ID {value4} 的物品还款：{value5} x{result8}。{statusText}");
-						receiverFacts.Add($"你已偿还物品债务ID {value4}：{value5} x{result8}。{statusText}");
-						if (flag2)
-						{
-							ShowRewardMessage("【欠款已清】你对 " + giverName + " 的全部欠款已还清！", Color.FromUint(4278255360u), giver);
-						}
-						else
-						{
-							ShowRewardMessage($"【还款确认】已偿还物品债务ID {value4}：{value5} x{result8}", Color.FromUint(4278242559u), giver);
-						}
-					}
-				}
-				return string.Empty;
-			});
-			responseText = regex13.Replace(responseText, delegate(Match m)
-			{
-				string value4 = m.Groups[1].Value;
-				if (int.TryParse(m.Groups[2].Value, out var result8) && receiver == Hero.MainHero && giver != Hero.MainHero)
-				{
-					string text3 = (value4 ?? "").Trim();
-					if (!string.IsNullOrWhiteSpace(text3) && !settledDebtIdsThisRound.Add(text3))
-					{
-						Logger.Log("Logic", "[Reward] 跳过重复还款标签: debtId=" + text3 + " tag=DEBT_PAY_ITEM_GOLD");
-						return string.Empty;
-					}
-					string statusText;
-					bool flag2 = RegisterPlayerItemCompensationByDebtId(giver, value4, result8, out statusText);
-					if (!string.IsNullOrWhiteSpace(statusText))
-					{
-						anyDebtPaymentApplied = true;
-						giverFacts.Add($"你确认收到玩家对债务ID {value4} 的物品金币赔偿：{result8}。{statusText}");
-						receiverFacts.Add($"你已对物品债务ID {value4} 支付金币赔偿：{result8}。{statusText}");
-						if (flag2)
-						{
-							ShowRewardMessage("【欠款已清】你对 " + giverName + " 的全部欠款已还清！", Color.FromUint(4278255360u), giver);
-						}
-						else
-						{
-							ShowRewardMessage($"【赔偿确认】已按协商支付物品债务ID {value4} 的金币赔偿：{result8}", Color.FromUint(4278242559u), giver);
-						}
-					}
-				}
-				return string.Empty;
-			});
-			responseText = regex14.Replace(responseText, delegate(Match m)
-			{
-				string value4 = m.Groups[1].Value;
-				if (receiver == Hero.MainHero && giver != Hero.MainHero)
-				{
-					string statusText;
-					bool flag2 = MarkItemDebtUnavailableById(giver, value4, out statusText);
-					if (!string.IsNullOrWhiteSpace(statusText))
-					{
-						anyDebtMetaApplied = true;
-						giverFacts.Add(statusText);
-						receiverFacts.Add(statusText);
-						if (flag2)
-						{
-							InformationManager.DisplayMessage(new InformationMessage("【债务状态】" + statusText, Color.FromUint(4291611750u)));
-						}
-					}
-				}
-				return string.Empty;
-			});
-			responseText = regex15.Replace(responseText, delegate(Match m)
-			{
-				string value4 = m.Groups[1].Value;
-				if (int.TryParse(m.Groups[2].Value, out var result8) && int.TryParse(m.Groups[3].Value, out var result9) && receiver == Hero.MainHero && giver != Hero.MainHero)
-				{
-					ApplyItemDebtLlmPenaltyById(giver, value4, result8, result9, out var statusText);
-					if (!string.IsNullOrWhiteSpace(statusText))
-					{
-						anyDebtMetaApplied = true;
-						giverFacts.Add(statusText);
-						receiverFacts.Add(statusText);
-						if (statusText.IndexOf("执行扣减", StringComparison.OrdinalIgnoreCase) >= 0)
-						{
-							InformationManager.DisplayMessage(new InformationMessage("【关系变化】" + statusText, Color.FromUint(4294945365u)));
-						}
-					}
-				}
-				return string.Empty;
-			});
-			responseText = regex16.Replace(responseText, delegate(Match m)
-			{
-				string value4 = m.Groups[1].Value;
-				if (int.TryParse(m.Groups[2].Value, out var result8) && receiver == Hero.MainHero && giver != Hero.MainHero)
-				{
-					string text3 = (value4 ?? "").Trim();
-					if (!string.IsNullOrWhiteSpace(text3) && !settledDebtIdsThisRound.Add(text3))
-					{
-						Logger.Log("Logic", "[Reward] 跳过重复还款标签: debtId=" + text3 + " tag=DEBT_PAY(legacy)");
-						return string.Empty;
-					}
-					string statusText;
-					bool flag2 = RegisterPlayerGoldPaymentByDebtId(giver, value4, result8, out statusText);
-					if (!string.IsNullOrWhiteSpace(statusText))
-					{
-						anyDebtPaymentApplied = true;
-						giverFacts.Add($"你确认收到玩家对债务ID {value4} 的还款 {result8}。{statusText}");
-						receiverFacts.Add("你尝试偿还债务ID " + value4 + "：" + statusText);
-						if (statusText.IndexOf("必须使用 [ACTION:DEBT_PAY_ITEM", StringComparison.OrdinalIgnoreCase) >= 0)
-						{
-							InformationManager.DisplayMessage(new InformationMessage("【还款失败】该债务是物品债，请使用 [ACTION:DEBT_PAY_ITEM:债务ID:物品名称:数量]。", Color.FromUint(4294923605u)));
-						}
-						else if (flag2)
-						{
-							ShowRewardMessage("【欠款已清】你对 " + giverName + " 的全部欠款已还清！", Color.FromUint(4278255360u), giver);
-						}
-						else
-						{
-							ShowRewardMessage($"【还款确认】已偿还债务ID {value4}：{result8}", Color.FromUint(4278242559u), giver);
 						}
 					}
 				}
@@ -16887,26 +16773,29 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				if (receiver == Hero.MainHero && giver != Hero.MainHero)
 				{
 					bool asCompanion = string.Equals(joinMatch.Groups[1].Value, "C", StringComparison.OrdinalIgnoreCase);
+					bool preservePlayerFamilyIdentity = asCompanion && ShouldPreservePlayerFamilyIdentityForCompanionJoin(giver);
+					bool preservePlayerSpouseIdentity = preservePlayerFamilyIdentity && (giver.Spouse == Hero.MainHero || Hero.MainHero?.Spouse == giver);
 					string statusText;
 					bool flag2 = TryApplyHeroJoinPlayerPartyForExternal(giver, asCompanion, out statusText);
+					bool joinedAsCompanion = flag2 && giver.CompanionOf == Clan.PlayerClan && giver.Occupation == Occupation.Wanderer;
 					if (!string.IsNullOrWhiteSpace(statusText))
 					{
 						if (flag2)
 						{
 							anyHeroJoinPlayerPartyApplied = true;
-							giverFacts.Add(asCompanion
-								? $"你已经成为 {receiverName} 的同伴，并随玩家队伍行动。"
-								: $"你已经加入了 {receiverName} 的家族，并随玩家队伍行动。");
-							receiverFacts.Add(asCompanion
-								? $"{giverName} 已成为你的同伴，并随你的队伍行动。"
-								: $"{giverName} 已加入你的家族，并随你的队伍行动。");
+							giverFacts.Add(preservePlayerFamilyIdentity
+								? (preservePlayerSpouseIdentity ? $"你仍是 {receiverName} 的配偶，并已随玩家队伍行动。" : $"你仍是 {receiverName} 家族的成员，并已随玩家队伍行动。")
+								: (joinedAsCompanion ? $"你已经成为 {receiverName} 的同伴，并随玩家队伍行动。" : $"你已经加入了 {receiverName} 的家族，并随玩家队伍行动。"));
+							receiverFacts.Add(preservePlayerFamilyIdentity
+								? (preservePlayerSpouseIdentity ? $"{giverName} 仍是你的配偶，并已加入你的队伍。" : $"{giverName} 仍是你的家族成员，并已加入你的队伍。")
+								: (joinedAsCompanion ? $"{giverName} 已成为你的同伴，并随你的队伍行动。" : $"{giverName} 已加入你的家族，并随你的队伍行动。"));
 						}
 						else
 						{
 							giverFacts.Add(statusText);
 							receiverFacts.Add(statusText);
 						}
-						string notificationPrefix = flag2 ? (asCompanion ? "【成为同伴】" : "【加入家族】") : "【加入队伍失败】";
+						string notificationPrefix = flag2 ? (preservePlayerFamilyIdentity ? "【加入队伍】" : (joinedAsCompanion ? "【成为同伴】" : "【加入家族】")) : "【加入队伍失败】";
 						InformationManager.DisplayMessage(new InformationMessage(notificationPrefix + statusText, flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
 					}
 				}
@@ -16925,7 +16814,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				["anyActualGiveToPlayer"] = anyActualGiveToPlayer,
 				["anyDebtRecorded"] = anyDebtRecorded,
 				["anyDebtPaymentApplied"] = anyDebtPaymentApplied,
-				["anyDebtMetaApplied"] = anyDebtMetaApplied,
+
 				["anyRoyalAbdicationApplied"] = anyRoyalAbdicationApplied,
 				["anyKingdomServiceApplied"] = anyKingdomServiceApplied,
 				["anyVassalageApplied"] = anyVassalageApplied,
@@ -17512,10 +17401,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				playerFacts.Add(itemBatchSummary);
 				Logger.Log("Logic", "[RewardParty] item_batch_done attempted=" + itemTransferAttempted + " succeeded=" + itemTransferSucceeded + " failedOrPartial=" + itemTransferFailedOrPartial + " actualQuantity=" + itemTransferActualQuantity + " actualValue=" + itemTransferActualValue);
 			}
-			responseText = Regex.Replace(responseText ?? "", "\\[ACTION:DEBT[^\\]]*\\]", string.Empty, RegexOptions.IgnoreCase);
 			responseText = Regex.Replace(responseText, "\\[ACTION:TRADE_TRUST:[^\\]]*\\]", string.Empty, RegexOptions.IgnoreCase);
 			responseText = Regex.Replace(responseText, "\\[AD;[^\\]]+\\]", string.Empty, RegexOptions.IgnoreCase);
-			responseText = Regex.Replace(responseText, "\\[ADP[:;][^\\]]+\\]", string.Empty, RegexOptions.IgnoreCase).Trim();
+			responseText = Regex.Replace(responseText, "\\[ADP;[^\\]]+\\]", string.Empty, RegexOptions.IgnoreCase).Trim();
 			if (npcFacts.Count > 0)
 			{
 				SetLastGeneratedNpcFactLines(new string[1] { "[AFEF NPC行为补充] " + text + ": " + string.Join(" ", npcFacts) });
@@ -17545,26 +17433,15 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			responseText = Regex.Replace(responseText ?? "", "\\[ACTION:[^\\]]+\\]", string.Empty, RegexOptions.IgnoreCase).Trim();
 			responseText = Regex.Replace(responseText, "\\[AD;[^\\]]+\\]", string.Empty, RegexOptions.IgnoreCase).Trim();
-			responseText = Regex.Replace(responseText, "\\[ADP[:;][^\\]]+\\]", string.Empty, RegexOptions.IgnoreCase).Trim();
+			responseText = Regex.Replace(responseText, "\\[ADP;[^\\]]+\\]", string.Empty, RegexOptions.IgnoreCase).Trim();
 			return;
 		}
 		string giverName = giverCharacter.Name?.ToString() ?? GetSettlementMerchantRoleLabel(kind);
 		Regex regex = new Regex("\\[ACTION:GIVE_ASSET:(?:GOLD|钱|金币|第纳尔|DENARS?|MONEY|COINS?):(\\d+)\\]", RegexOptions.IgnoreCase);
 		Regex regex2 = new Regex("\\[ACTION:GIVE_ASSET:([^\\]\\r\\n:]+):(ALL|\\d+)\\]", RegexOptions.IgnoreCase);
-		Regex regex3 = new Regex("\\[ACTION:DEBT_GOLD:(\\d+)\\]", RegexOptions.IgnoreCase);
-		Regex regex4 = new Regex("\\[ACTION:DEBT_ADD:(\\d+)\\]", RegexOptions.IgnoreCase);
-		Regex regex5 = new Regex("\\[ACTION:DEBT_ITEM:([^\\]\\r\\n:]+):(\\d+)\\]", RegexOptions.IgnoreCase);
-		Regex regex6 = new Regex("\\[ACTION:DEBT_(?:DUE_)?DAYS:(\\d+)\\]", RegexOptions.IgnoreCase);
-		Regex regex7 = new Regex("\\[ACTION:DEBT_DUE_ABS_DAY:(\\d+)\\]", RegexOptions.IgnoreCase);
-		Regex regex8 = new Regex("\\[ACTION:DEBT_DUE_DATE:(\\d+):([^\\]:]+):(\\d+)\\]", RegexOptions.IgnoreCase);
-		Regex regex9 = new Regex("\\[ACTION:DEBT_DUE_NONE\\]", RegexOptions.IgnoreCase);
-		Regex regex10 = new Regex("\\[ACTION:DEBT_OVERDUE_PRESET:(\\d+):(\\d+)\\]", RegexOptions.IgnoreCase);
-		Regex regex11 = new Regex("\\[ACTION:DEBT_PAY_GOLD:([a-zA-Z0-9_\\-]+):(\\d+)\\]", RegexOptions.IgnoreCase);
-		Regex regex12 = new Regex("\\[ACTION:DEBT_PAY_ITEM:([a-zA-Z0-9_\\-]+):([^\\]\\r\\n:]+):(\\d+)\\]", RegexOptions.IgnoreCase);
 		Regex regex13 = new Regex("\\[ACTION:TRADE_TRUST:(-?\\d+)\\]", RegexOptions.IgnoreCase);
-		Regex regex14 = new Regex("\\[AD;(\\d+);(\\d+);(?:(N|P);)?([^\\]]*)\\]", RegexOptions.IgnoreCase);
-		Regex regex15 = new Regex("\\[ADP[:;]([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase);
-		Regex regexLegacyDebtTag = new Regex("\\[ACTION:DEBT[^\\]]*\\]", RegexOptions.IgnoreCase);
+		Regex regex14 = DebtCreationTagRegex;
+		Regex regex15 = DebtResolutionTagRegex;
 		List<string> merchantFacts = new List<string>();
 		List<string> playerFacts = new List<string>();
 		int itemTransferAttempted = 0;
@@ -17576,55 +17453,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		int goldTransferSucceeded = 0;
 		int goldTransferFailedOrPartial = 0;
 		long goldTransferActualAmount = 0L;
-		int? dueDaysOverride = null;
-		int? dueAbsDayOverride = null;
-		bool dueUnlimited = regex9.IsMatch(responseText);
-		int? overdueTrustPenaltyPreset = null;
-		if (!dueUnlimited)
-		{
-			MatchCollection matchCollection = regex7.Matches(responseText);
-			if (matchCollection != null && matchCollection.Count > 0 && int.TryParse(matchCollection[matchCollection.Count - 1].Groups[1].Value, out var result2))
-			{
-				dueAbsDayOverride = Math.Max(1, Math.Min(200000, result2));
-			}
-		}
-		if (!dueUnlimited && !dueAbsDayOverride.HasValue)
-		{
-			MatchCollection matchCollection2 = regex8.Matches(responseText);
-			if (matchCollection2 != null && matchCollection2.Count > 0)
-			{
-				Match match = matchCollection2[matchCollection2.Count - 1];
-				if (match != null && int.TryParse(match.Groups[1].Value, out var result3) && TryParseSeasonToken(match.Groups[2].Value, out var seasonIndexZeroBased) && int.TryParse(match.Groups[3].Value, out var result4))
-				{
-					dueAbsDayOverride = ToAbsDayFromCalendar(result3, seasonIndexZeroBased, result4);
-				}
-			}
-		}
-		if (!dueUnlimited && !dueAbsDayOverride.HasValue)
-		{
-			MatchCollection matchCollection3 = regex6.Matches(responseText);
-			if (matchCollection3 != null && matchCollection3.Count > 0 && int.TryParse(matchCollection3[matchCollection3.Count - 1].Groups[1].Value, out var result5))
-			{
-				dueDaysOverride = NormalizeDueDays(result5);
-			}
-		}
-		MatchCollection matchCollection4 = regex10.Matches(responseText);
-		if (matchCollection4 != null && matchCollection4.Count > 0 && int.TryParse(matchCollection4[matchCollection4.Count - 1].Groups[1].Value, out var result6))
-		{
-			overdueTrustPenaltyPreset = NormalizeLlmPenaltyValue(result6);
-		}
-		bool anyDebtMetaApplied = dueUnlimited || dueAbsDayOverride.HasValue || dueDaysOverride.HasValue || overdueTrustPenaltyPreset.HasValue;
-		responseText = regex10.Replace(responseText, string.Empty);
-		responseText = regex9.Replace(responseText, string.Empty);
-		responseText = regex8.Replace(responseText, string.Empty);
-		responseText = regex7.Replace(responseText, string.Empty);
-		responseText = regex6.Replace(responseText, string.Empty);
-		if (regexLegacyDebtTag.IsMatch(responseText))
-		{
-			Logger.Log("Logic", "[Reward] 非Hero商贩链路检测到旧版 DEBT_* 标签，已停用并忽略。");
-			responseText = regexLegacyDebtTag.Replace(responseText, string.Empty);
-		}
-		bool hasGiveTag = regex.IsMatch(responseText) || regex2.IsMatch(responseText);
 		responseText = regex.Replace(responseText, delegate(Match m)
 		{
 			if (int.TryParse(m.Groups[1].Value, out var result7))
@@ -17774,16 +17602,17 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				if (result8 > 0)
 				{
-					bool dueUnlimited2 = result9 <= 0;
-					int? dueDaysOverride2 = dueUnlimited2 ? null : NormalizeDueDays(result9);
-					SetDebtForSettlementMerchant(currentSettlement, kind, result8, null, 0, dueDaysOverride2, null, dueUnlimited2, null);
-					merchantFacts.Add($"你已经把玩家欠 {BuildSettlementMerchantDebtLabel(currentSettlement, kind)} 的 {result8} 第纳尔记入账目。");
-					playerFacts.Add($"你欠 {BuildSettlementMerchantDebtLabel(currentSettlement, kind)} {result8} 第纳尔。");
-					if (!string.IsNullOrWhiteSpace(text))
+					DebtRecord.DebtLine debtLine = SetDebtForSettlementMerchant(currentSettlement, kind, result8, result9, text);
+					if (debtLine == null)
 					{
-						merchantFacts.Add("本笔备注：" + text);
-						playerFacts.Add("本笔备注：" + text);
+						return string.Empty;
 					}
+					string debtId = debtLine.DebtId ?? "";
+					string deadline = BuildDebtPromiseDeadlineText(debtLine.DueDay, debtLine.IsDueUnlimited);
+					string note = string.IsNullOrWhiteSpace(text) ? "无" : text;
+					string marketLabel = BuildSettlementMerchantDebtLabel(currentSettlement, kind);
+					merchantFacts.Add($"你已经记下：玩家的承诺或欠款价值 {result8} 第纳尔，达成期限为：{deadline}，备注：{note}（债务ID:{debtId}）。");
+					playerFacts.Add($"你对 {marketLabel} 的承诺或欠款价值 {result8} 第纳尔，达成期限为：{deadline}，备注：{note}（债务ID:{debtId}）。");
 				}
 			}
 			return string.Empty;
@@ -17805,72 +17634,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					{
 						ShowRewardMessage("【市场欠款】当前市场债务已全部结清。", Color.FromUint(4278255360u), giverCharacter);
 					}
-				}
-			}
-			return string.Empty;
-		});
-		responseText = regex3.Replace(responseText, delegate(Match m)
-		{
-			if (receiver == Hero.MainHero && hasGiveTag && int.TryParse(m.Groups[1].Value, out var result8) && result8 > 0)
-			{
-				SetDebtForSettlementMerchant(currentSettlement, kind, result8, null, 0, dueDaysOverride, dueAbsDayOverride, dueUnlimited, overdueTrustPenaltyPreset);
-				merchantFacts.Add($"你已经把玩家欠 {BuildSettlementMerchantDebtLabel(currentSettlement, kind)} 的 {result8} 第纳尔记入账目。");
-				playerFacts.Add($"你欠 {BuildSettlementMerchantDebtLabel(currentSettlement, kind)} {result8} 第纳尔。");
-			}
-			return string.Empty;
-		});
-		responseText = regex4.Replace(responseText, delegate(Match m)
-		{
-			if (receiver == Hero.MainHero && hasGiveTag && int.TryParse(m.Groups[1].Value, out var result8) && result8 > 0)
-			{
-				SetDebtForSettlementMerchant(currentSettlement, kind, result8, null, 0, dueDaysOverride, dueAbsDayOverride, dueUnlimited, overdueTrustPenaltyPreset);
-				merchantFacts.Add($"你已经把玩家欠 {BuildSettlementMerchantDebtLabel(currentSettlement, kind)} 的 {result8} 第纳尔记入账目。");
-				playerFacts.Add($"你欠 {BuildSettlementMerchantDebtLabel(currentSettlement, kind)} {result8} 第纳尔。");
-			}
-			return string.Empty;
-		});
-		responseText = regex5.Replace(responseText, delegate(Match m)
-		{
-			string value = m.Groups[1].Value;
-			if (receiver == Hero.MainHero && hasGiveTag && int.TryParse(m.Groups[2].Value, out var result8) && result8 > 0)
-			{
-				string itemId = value;
-				if (!TryResolveRewardItemStringId(value, BuildSettlementRewardItemResolutionContext(currentSettlement), out itemId, out var _, "merchant_debt_item"))
-				{
-					return string.Empty;
-				}
-				SetDebtForSettlementMerchant(currentSettlement, kind, 0, itemId, result8, dueDaysOverride, dueAbsDayOverride, dueUnlimited, overdueTrustPenaltyPreset);
-				merchantFacts.Add($"你已经把玩家欠 {BuildSettlementMerchantDebtLabel(currentSettlement, kind)} 的 {itemId} x{result8} 记入账目。");
-				playerFacts.Add($"你欠 {BuildSettlementMerchantDebtLabel(currentSettlement, kind)} {itemId} x{result8}。");
-			}
-			return string.Empty;
-		});
-		responseText = regex11.Replace(responseText, delegate(Match m)
-		{
-			if (int.TryParse(m.Groups[2].Value, out var result8))
-			{
-				string statusText;
-				bool flag = RegisterPlayerGoldPaymentByMerchantDebtId(currentSettlement, kind, m.Groups[1].Value, result8, out statusText);
-				if (!string.IsNullOrWhiteSpace(statusText))
-				{
-					merchantFacts.Add(statusText);
-					playerFacts.Add(statusText);
-					ShowRewardMessage((flag ? "【市场欠款】" : "【市场还款失败】") + statusText, flag ? Color.FromUint(4278255360u) : Color.FromUint(4294923605u), giverCharacter);
-				}
-			}
-			return string.Empty;
-		});
-		responseText = regex12.Replace(responseText, delegate(Match m)
-		{
-			if (int.TryParse(m.Groups[3].Value, out var result8))
-			{
-				string statusText;
-				bool flag = RegisterPlayerItemPaymentByMerchantDebtId(currentSettlement, kind, m.Groups[1].Value, m.Groups[2].Value, result8, out statusText);
-				if (!string.IsNullOrWhiteSpace(statusText))
-				{
-					merchantFacts.Add(statusText);
-					playerFacts.Add(statusText);
-					ShowRewardMessage((flag ? "【市场欠款】" : "【市场还款失败】") + statusText, flag ? Color.FromUint(4278255360u) : Color.FromUint(4294923605u), giverCharacter);
 				}
 			}
 			return string.Empty;

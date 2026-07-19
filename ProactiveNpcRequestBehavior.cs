@@ -1932,6 +1932,12 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 	private static bool IsPlayerEligibleForTerritorialInterrogation(ProactiveCandidate candidate, out string reason)
 	{
 		reason = "";
+		Kingdom playerKingdom = (Clan.PlayerClan ?? Hero.MainHero?.Clan)?.Kingdom;
+		if (candidate?.TargetKingdom != null && playerKingdom == candidate.TargetKingdom)
+		{
+			reason = "player_serves_territorial_kingdom";
+			return false;
+		}
 		if (IsTerritorialInterrogationOnCooldown())
 		{
 			reason = "territorial_interrogation_global_cooldown";
@@ -4089,6 +4095,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			Hero player = Hero.MainHero;
 			Hero hero = candidate?.Hero;
 			Kingdom kingdom = candidate?.TargetKingdom;
+			Kingdom playerKingdom = (Clan.PlayerClan ?? player?.Clan)?.Kingdom;
 			MobileParty mainParty = MobileParty.MainParty;
 			string playerCultureId = (player?.Culture?.StringId ?? "").Trim();
 			string npcCultureId = (hero?.Culture?.StringId ?? "").Trim();
@@ -4096,6 +4103,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 				|| hero == null
 				|| kingdom == null
 				|| kingdom.IsEliminated
+				|| playerKingdom == kingdom
 				|| mainParty == null
 				|| string.IsNullOrWhiteSpace(playerCultureId)
 				|| string.IsNullOrWhiteSpace(npcCultureId)

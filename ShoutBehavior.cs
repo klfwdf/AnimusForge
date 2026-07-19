@@ -6597,6 +6597,41 @@ private static string BuildSceneSystemTopPromptIntroForSingle(NpcDataPacket npc,
 	return stableIntro;
 }
 
+public static string BuildHeroStableRoleContextForExternal(Hero hero)
+{
+	if (hero == null)
+	{
+		return "";
+	}
+	try
+	{
+		NpcDataPacket npc = BuildNativeConversationNpcData(hero, hero.CharacterObject);
+		if (npc == null)
+		{
+			return "";
+		}
+		npc.AgentIndex = -1;
+		if (string.IsNullOrWhiteSpace(npc.PersonalityDesc) || string.IsNullOrWhiteSpace(npc.BackgroundDesc))
+		{
+			BuildHeroPersonaFallback(hero, out var fallbackPersonality, out var fallbackBackground);
+			if (string.IsNullOrWhiteSpace(npc.PersonalityDesc))
+			{
+				npc.PersonalityDesc = fallbackPersonality ?? "";
+			}
+			if (string.IsNullOrWhiteSpace(npc.BackgroundDesc))
+			{
+				npc.BackgroundDesc = fallbackBackground ?? "";
+			}
+		}
+		return BuildSceneSystemTopPromptIntroForSingle(npc, hero, new List<NpcDataPacket> { npc });
+	}
+	catch (Exception ex)
+	{
+		Logger.Log("ShoutBehavior", "[CourierContext][WARN] build stable hero role context failed hero=" + (hero.StringId ?? "") + " error=" + ex.Message);
+		return "";
+	}
+}
+
 private static string BuildSceneSystemTopPromptIntroForGroup(IEnumerable<NpcDataPacket> npcs, Dictionary<int, Hero> resolvedHeroes, bool partyTransferTopicSelected = false)
 {
 		if (npcs == null)
@@ -8654,7 +8689,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 
 	private static string StripActionTagsForSceneSpeech(string text)
 	{
-		return Regex.Replace((text ?? "").Replace("\r", ""), "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD;[^\\]]*|ADP[:;][^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP)\\]", "", RegexOptions.IgnoreCase).Trim();
+		return Regex.Replace((text ?? "").Replace("\r", ""), "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD;[^\\]]*|ADP;[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP)\\]", "", RegexOptions.IgnoreCase).Trim();
 	}
 
 	private static string ExtractDeferredSceneActionTags(string text)
@@ -8666,7 +8701,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		}
 		List<string> list = new List<string>();
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (Match item in Regex.Matches(text2, "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD;[^\\]]*|ADP[:;][^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END)\\]", RegexOptions.IgnoreCase))
+		foreach (Match item in Regex.Matches(text2, "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD;[^\\]]*|ADP;[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END)\\]", RegexOptions.IgnoreCase))
 		{
 			string text3 = (item?.Value ?? "").Trim();
 			if (!string.IsNullOrWhiteSpace(text3) && hashSet.Add(text3))
@@ -8679,7 +8714,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 
 	private static bool HasNonMoodDeferredSceneActionTag(string text)
 	{
-		foreach (Match item in Regex.Matches(text ?? "", "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD;[^\\]]*|ADP[:;][^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END)\\]", RegexOptions.IgnoreCase))
+		foreach (Match item in Regex.Matches(text ?? "", "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD;[^\\]]*|ADP;[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END)\\]", RegexOptions.IgnoreCase))
 		{
 			string text2 = (item?.Value ?? "").Trim();
 			if (!string.IsNullOrWhiteSpace(text2) && !text2.StartsWith("[ACTION:MOOD:", StringComparison.OrdinalIgnoreCase))
@@ -8694,7 +8729,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 	{
 		List<string> list = new List<string>();
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (Match item in Regex.Matches(text ?? "", "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD;[^\\]]*|ADP[:;][^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END)\\]", RegexOptions.IgnoreCase))
+		foreach (Match item in Regex.Matches(text ?? "", "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD;[^\\]]*|ADP;[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END)\\]", RegexOptions.IgnoreCase))
 		{
 			string text2 = (item?.Value ?? "").Trim();
 			if (!string.IsNullOrWhiteSpace(text2) && !text2.StartsWith("[ACTION:MOOD:", StringComparison.OrdinalIgnoreCase) && hashSet.Add(text2))
@@ -8707,7 +8742,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 
 	private static bool HasDeferredDirectGameActionTag(string text)
 	{
-		return Regex.IsMatch(text ?? "", "\\[(?:ACTION:(?:GIVE_ASSET|DEBT_|DEBT_PAY|KINGDOM_SERVICE|JOIN_MERCENARY|JOIN_VASSAL|TRADE_TRUST|KING_ABDICATE_TO_PLAYER|VASSALAGE|KINGDOM_ANNEX|AGENDA|WORLDMAP_ORDER|DUEL|ISSUE_|QUEST_TURN_IN|NOBLE_GATHERING|INTIMACY_INTERNAL|MEETING_TAUNT_BATTLE|LET_PLAYER_GO|ENCOUNTER_RELEASE_PLAYER|NPC_SURRENDER|SIEGE_|6|召集)[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD;[^\\]]*|ADP[:;][^\\]]*)\\]", RegexOptions.IgnoreCase);
+		return Regex.IsMatch(text ?? "", "\\[(?:ACTION:(?:GIVE_ASSET|KINGDOM_SERVICE|JOIN_MERCENARY|JOIN_VASSAL|TRADE_TRUST|KING_ABDICATE_TO_PLAYER|VASSALAGE|KINGDOM_ANNEX|AGENDA|WORLDMAP_ORDER|DUEL|ISSUE_|QUEST_TURN_IN|NOBLE_GATHERING|INTIMACY_INTERNAL|MEETING_TAUNT_BATTLE|LET_PLAYER_GO|ENCOUNTER_RELEASE_PLAYER|NPC_SURRENDER|SIEGE_|6|召集)[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD;[^\\]]*|ADP;[^\\]]*)\\]", RegexOptions.IgnoreCase);
 	}
 
 	private bool TryApplyDeferredScenePostprocessActionTagsDirectly(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, ref string tags)
@@ -8731,7 +8766,8 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 
 	private static string SanitizeSceneSpeechText(string text)
 	{
-		string text2 = StripLeakedPromptContentForShout(text);
+		string text2 = LlmVisibleReplyNormalizer.NormalizeComplete(text);
+		text2 = StripLeakedPromptContentForShout(text2);
 		text2 = ShoutUtils.StripConversationMetadataPrefix(text2);
 		text2 = StripStageDirectionsForPassiveShout(text2);
 		text2 = StripActionTagsForSceneSpeech(text2);
@@ -12911,6 +12947,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			Logger.Log("Logic", "[MemoryPerf] group_turn_fallback_prompt_ready agent=" + speakerNpc.AgentIndex + " hero=" + (hero?.StringId ?? "") + " messages=" + messages.Count + " persistedChars=" + ((persistedHeroHistory ?? "").Length) + " privateChars=" + ((privateRecentWindowSection ?? "").Length) + " oldCompressedChars=" + ((persistedWithoutRecentWindow ?? "").Length));
 			Stopwatch apiSw = Stopwatch.StartNew();
 			string text = await ShoutNetwork.CallApiWithMessages(messages, 5000, promptRetryOnError: true);
+			text = LlmVisibleReplyNormalizer.NormalizeComplete(text);
 			apiSw.Stop();
 			Logger.Log("Logic", "[MemoryPerf] group_turn_fallback_api_done agent=" + speakerNpc.AgentIndex + " hero=" + (hero?.StringId ?? "") + " outputLen=" + ((text ?? "").Length) + " apiMs=" + Math.Round(apiSw.Elapsed.TotalMilliseconds, 2) + " elapsedMs=" + Math.Round(turnSw.Elapsed.TotalMilliseconds, 2));
 			if (string.IsNullOrWhiteSpace(text) || text.StartsWith("（错误") || text.StartsWith("（程序错误") || text.StartsWith("（API请求失败") || text.StartsWith("（API响应格式错误"))
@@ -13468,7 +13505,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		try
 		{
-			return Regex.Matches(text ?? "", "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD;[^\\]]*|ADP[:;][^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT[:;][^\\]]*|ATP[:;][^\\]]*|FOL|STP|END|RELAY:[^\\]]*|AFEF[^\\]]*|AF_SCENE_SESSION:[^\\]]*|CONTENT)\\]", RegexOptions.IgnoreCase).Count;
+			return Regex.Matches(text ?? "", "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD;[^\\]]*|ADP;[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT[:;][^\\]]*|ATP[:;][^\\]]*|FOL|STP|END|RELAY:[^\\]]*|AFEF[^\\]]*|AF_SCENE_SESSION:[^\\]]*|CONTENT)\\]", RegexOptions.IgnoreCase).Count;
 		}
 		catch
 		{
@@ -17273,6 +17310,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		Stopwatch nativeMainApiSw = Stopwatch.StartNew();
 		FreezeWatchdog.Mark("NativeConversation.main_reply_start", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " messages=" + messages.Count, immediate: true);
 		string output = await CallNativeConversationApiAsync(messages, onStreamText).ConfigureAwait(false);
+		output = LlmVisibleReplyNormalizer.NormalizeComplete(output);
 		nativeMainApiSw.Stop();
 		Logger.Log("Logic", "[NativePerf] main_reply_done target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " outputLen=" + ((output ?? "").Length) + " apiMs=" + Math.Round(nativeMainApiSw.Elapsed.TotalMilliseconds, 2) + " elapsedMs=" + Math.Round(nativeTurnSw.Elapsed.TotalMilliseconds, 2));
 		FreezeWatchdog.Mark("NativeConversation.main_reply_done", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " outputLen=" + ((output ?? "").Length) + " apiMs=" + Math.Round(nativeMainApiSw.Elapsed.TotalMilliseconds, 2), immediate: true);
@@ -17608,6 +17646,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		FreezeWatchdog.Mark("NativeConversation.api_stream_start", "messages=" + (messages?.Count ?? 0) + " timeoutMs=" + NativeConversationMainReplyTimeoutMs, immediate: true);
 		StringBuilder streamed = new StringBuilder();
+		LlmVisibleReplyNormalizer.StreamFilter visibleReplyFilter = new LlmVisibleReplyNormalizer.StreamFilter();
 		string completed = "";
 		string error = "";
 		using CancellationTokenSource timeoutCts = new CancellationTokenSource(NativeConversationMainReplyTimeoutMs);
@@ -17617,7 +17656,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				return;
 			}
-			streamed.Append(delta);
+			string visibleDelta = visibleReplyFilter.Push(delta);
+			if (string.IsNullOrEmpty(visibleDelta))
+			{
+				return;
+			}
+			streamed.Append(visibleDelta);
 			string visible = BuildNativeConversationStreamingVisibleText(streamed.ToString());
 			if (!string.IsNullOrWhiteSpace(visible))
 			{
@@ -17625,7 +17669,16 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 		}, delegate(string full)
 		{
-			completed = (full ?? "").Trim();
+			string finalDelta = visibleReplyFilter.Complete(full ?? "");
+			if (!string.IsNullOrEmpty(finalDelta))
+			{
+				streamed.Append(finalDelta);
+			}
+			completed = (visibleReplyFilter.NormalizedText ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(completed))
+			{
+				onStreamText(BuildNativeConversationStreamingVisibleText(completed));
+			}
 		}, delegate(string err)
 		{
 			error = (err ?? "").Trim();
@@ -17653,7 +17706,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private static string BuildNativeConversationStreamingVisibleText(string text)
 	{
-		string visible = (text ?? "").Replace("\r", "").TrimStart();
+		string visible = LlmVisibleReplyNormalizer.NormalizeStreamingPreview(text);
+		visible = (visible ?? "").Replace("\r", "").TrimStart();
 		if (string.IsNullOrWhiteSpace(visible))
 		{
 			return "...";
@@ -17805,6 +17859,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				List<object> messages = BuildStrictSceneMessagesForNpc(data.AgentIndex, layeredPrompt, new string[8] { privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, sysPrompt.ToString().Trim(), trustBlock, miscExtrasSection, scenePatienceInstruction, BuildSceneCompositeUserBlock("", knowledgeExtrasSection, systemRuleBlock) }, new string[1] { string.IsNullOrWhiteSpace(inputActionText) ? "" : ("【当前触发】\n" + inputActionText.Trim()) }, currentInputAlreadyRecorded: true, persistentHistoryMessages: persistentMemoryRoleMessages);
 				Stopwatch swApi = Stopwatch.StartNew();
 				string output = await ShoutNetwork.CallApiWithMessages(messages, 5000, promptRetryOnError: true);
+				output = LlmVisibleReplyNormalizer.NormalizeComplete(output);
 				swApi.Stop();
 				bool ok = !string.IsNullOrWhiteSpace(output) && !output.StartsWith("（错误") && !output.StartsWith("（程序错误") && !output.StartsWith("（API请求失败") && !output.StartsWith("（API响应格式错误");
 				Logger.Obs("API", "complete", new Dictionary<string, object>
@@ -19592,8 +19647,94 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return "";
 	}
 
+	internal sealed class CourierActionPostprocessWorkItem
+	{
+		private Func<string, string> _completeOnMainThread;
+
+		internal string SystemPrompt { get; }
+
+		internal string UserPrompt { get; }
+
+		internal string FallbackText { get; }
+
+		private readonly string _runtimeTargetKingdomId;
+
+		private readonly string _runtimeTargetHeroId;
+
+		private readonly string _runtimeTargetCharacterId;
+
+		private readonly string _runtimeTargetTroopId;
+
+		private readonly string _runtimeTargetUnnamedRank;
+
+		private readonly int _runtimeTargetAgentIndex;
+
+		internal CourierActionPostprocessWorkItem(string systemPrompt, string userPrompt, string fallbackText, string runtimeTargetKingdomId, string runtimeTargetHeroId, string runtimeTargetCharacterId, string runtimeTargetTroopId, string runtimeTargetUnnamedRank, int runtimeTargetAgentIndex, Func<string, string> completeOnMainThread)
+		{
+			SystemPrompt = systemPrompt ?? "";
+			UserPrompt = userPrompt ?? "";
+			FallbackText = fallbackText ?? "";
+			_runtimeTargetKingdomId = runtimeTargetKingdomId ?? "";
+			_runtimeTargetHeroId = runtimeTargetHeroId ?? "";
+			_runtimeTargetCharacterId = runtimeTargetCharacterId ?? "";
+			_runtimeTargetTroopId = runtimeTargetTroopId ?? "";
+			_runtimeTargetUnnamedRank = runtimeTargetUnnamedRank ?? "";
+			_runtimeTargetAgentIndex = runtimeTargetAgentIndex;
+			_completeOnMainThread = completeOnMainThread;
+		}
+
+		internal string CompleteOnMainThread(string content)
+		{
+			Func<string, string> complete = Interlocked.Exchange(ref _completeOnMainThread, null);
+			if (complete == null)
+			{
+				return FallbackText;
+			}
+			try
+			{
+				AIConfigHandler.SetGuardrailRuntimeTargetKingdom(_runtimeTargetKingdomId);
+				AIConfigHandler.SetGuardrailRuntimeTargetHero(_runtimeTargetHeroId);
+				AIConfigHandler.SetGuardrailRuntimeTargetCharacter(_runtimeTargetCharacterId);
+				AIConfigHandler.SetGuardrailRuntimeTargetTroop(_runtimeTargetTroopId);
+				AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank(_runtimeTargetUnnamedRank);
+				AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(_runtimeTargetAgentIndex);
+				return complete(content ?? "");
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("CourierDelivery", "[UnifiedPostprocess] exception: " + ex);
+				return FallbackText;
+			}
+			finally
+			{
+				AIConfigHandler.SetGuardrailRuntimeTargetKingdom("");
+				AIConfigHandler.SetGuardrailRuntimeTargetHero("");
+				AIConfigHandler.SetGuardrailRuntimeTargetCharacter("");
+				AIConfigHandler.SetGuardrailRuntimeTargetTroop("");
+				AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank("");
+				AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(-1);
+			}
+		}
+	}
+
 	public static string RunCourierActionPostprocessForExternal(Hero targetHero, CharacterObject targetCharacter, string npcName, string playerText, string historyText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected, bool kingdomServiceRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected, bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected, bool voteDealRuleInjected = false, bool diplomacyRuleInjected = false, bool worldMapPartyCommandRuleInjected = false, List<string> preprocessRuleHits = null, string entityPostprocessContext = null, int targetAgentIndex = -1, bool latestReplyHasPlayerInput = true, bool forceLooseWeeklyMemoryMaterialSession = false, bool kingdomVassalageRuleInjected = false, bool kingdomAnnexationRuleInjected = false, string chainName = null)
 	{
+		if (!TryPrepareCourierActionPostprocessForExternal(targetHero, targetCharacter, npcName, playerText, historyText, replyText, duelRuleInjected, rewardRuleInjected, loanRuleInjected, kingdomServiceRuleInjected, lordsHallRuleInjected, meetingReleaseRuleInjected, vanillaIssueRuleInjected, heroJoinPartyRuleInjected, sceneMechanismRuleInjected, partyTransferRuleInjected, out CourierActionPostprocessWorkItem workItem, out string immediateResult, voteDealRuleInjected, diplomacyRuleInjected, worldMapPartyCommandRuleInjected, preprocessRuleHits, entityPostprocessContext, targetAgentIndex, latestReplyHasPlayerInput, forceLooseWeeklyMemoryMaterialSession, kingdomVassalageRuleInjected, kingdomAnnexationRuleInjected, chainName))
+		{
+			return immediateResult;
+		}
+		if (!AIConfigHandler.TryCallAuxiliaryActionPostprocess(workItem.SystemPrompt, workItem.UserPrompt, 5000, 0f, out string content, out string error))
+		{
+			Logger.Log("CourierDelivery", "[UnifiedPostprocess] 调用失败: " + error);
+			return workItem.FallbackText;
+		}
+		return workItem.CompleteOnMainThread(content);
+	}
+
+	internal static bool TryPrepareCourierActionPostprocessForExternal(Hero targetHero, CharacterObject targetCharacter, string npcName, string playerText, string historyText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected, bool kingdomServiceRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected, bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected, out CourierActionPostprocessWorkItem workItem, out string immediateResult, bool voteDealRuleInjected = false, bool diplomacyRuleInjected = false, bool worldMapPartyCommandRuleInjected = false, List<string> preprocessRuleHits = null, string entityPostprocessContext = null, int targetAgentIndex = -1, bool latestReplyHasPlayerInput = true, bool forceLooseWeeklyMemoryMaterialSession = false, bool kingdomVassalageRuleInjected = false, bool kingdomAnnexationRuleInjected = false, string chainName = null)
+	{
+		workItem = null;
+		immediateResult = "";
 		string text = StripActionTagsForSceneSpeech(replyText ?? "");
 		string resolvedChainName = string.IsNullOrWhiteSpace(chainName) ? "courier" : chainName.Trim();
 		string runtimeTargetKingdomId = ResolveCourierRuntimeTargetKingdomId(targetHero, targetCharacter);
@@ -19663,13 +19804,15 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					text = (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
 				}
-				return text.Trim();
+				immediateResult = text.Trim();
+				return false;
 			}
 			string actionPostprocessSystemPrompt = AIConfigHandler.ActionPostprocessSystemPrompt;
 			string actionPostprocessUserPromptTemplate = AIConfigHandler.ActionPostprocessUserPromptTemplate;
 			if (string.IsNullOrWhiteSpace(actionPostprocessSystemPrompt) || string.IsNullOrWhiteSpace(actionPostprocessUserPromptTemplate))
 			{
-				return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
+				immediateResult = (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
+				return false;
 			}
 			bool transactionPostprocessEnabled = rewardRuleInjected || loanRuleInjected || persistentAdpDebtRuleInjected;
 			bool exposeAllRewardItems = rewardRuleInjected && RequestsAllOrdinaryAssetsForPostprocess(playerText, historyText);
@@ -19945,11 +20088,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			string systemPrompt = AIConfigHandler.BuildActionPostprocessSystemPrompt(tagRules, moodRules, displayName, sharedItemList, playerItemList, debtHint, marriagePlayerCandidates, marriageTargetCandidates, marriageFactHint);
 			string latestReplyBlock = latestReplyHasPlayerInput ? AIConfigHandler.BuildActionPostprocessLatestReplyBlock(playerText, text, displayName, normalizedHistory) : AIConfigHandler.BuildActionPostprocessLatestReplyBlock("", text, displayName, null);
 			string userPrompt = BuildSceneActionPostprocessUserPrompt(actionPostprocessUserPromptTemplate, tagRules, displayName, normalizedHistory, latestReplyBlock, sharedItemList, playerItemList, debtHint, marriagePlayerCandidates, marriageTargetCandidates, marriageFactHint, runtimeContext);
-			if (!AIConfigHandler.TryCallAuxiliaryActionPostprocess(systemPrompt, userPrompt, 5000, 0f, out var content, out var error))
+			string fallbackText = (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
+			workItem = new CourierActionPostprocessWorkItem(systemPrompt, userPrompt, fallbackText, runtimeTargetKingdomId, runtimeTargetHeroId, runtimeTargetCharacterId, runtimeTargetTroopId, runtimeTargetUnnamedRank, targetAgentIndex, delegate(string content)
 			{
-				Logger.Log("CourierDelivery", "[UnifiedPostprocess] 调用失败: " + error);
-				return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
-			}
 			string duelTags = duelRuleInjected ? NormalizeDuelPostprocessTagsForScene(content, null, targetHero) : "";
 			string rewardTags = transactionPostprocessEnabled ? NormalizeRewardPostprocessTagsForScene(content, rewardOptions, rewardAllOptions, rewardRuleInjected ? settlementTransferNpcOptions : null, rewardRuleInjected, rewardAvailableGold) : "";
 			if (persistentAdpDebtRuleInjected && !rewardRuleInjected && !loanRuleInjected)
@@ -20003,11 +20144,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			string final = (text + "\n" + merged).Trim();
 			Logger.Log("CourierDelivery", "[UnifiedPostprocess] RAW=\n" + content + "\nFINAL=\n" + final + "\n");
 			return final;
+			});
+			return true;
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("CourierDelivery", "[UnifiedPostprocess] exception: " + ex);
-			return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
+			immediateResult = (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
+			return false;
 		}
 		finally
 		{
@@ -20027,7 +20171,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		foreach (PostprocessRuleEntry rule in MergePostprocessRulesForScene(AIConfigHandler.LoanPostprocessRules, AIConfigHandler.RewardPostprocessRules))
 		{
 			string tag = (rule?.Tag ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(tag) || (!tag.StartsWith("[ADP;", StringComparison.OrdinalIgnoreCase) && !tag.StartsWith("[ADP:", StringComparison.OrdinalIgnoreCase)) || !seen.Add(tag))
+			if (string.IsNullOrWhiteSpace(tag) || !tag.StartsWith("[ADP;", StringComparison.OrdinalIgnoreCase) || !seen.Add(tag))
 			{
 				continue;
 			}
@@ -20062,7 +20206,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		List<string> result = new List<string>();
 		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (Match match in Regex.Matches(tags, "\\[(?:ADP[:;][^\\]\\r\\n]+|ACTION:MOOD:[^\\]\\r\\n]+)\\]", RegexOptions.IgnoreCase))
+		foreach (Match match in Regex.Matches(tags, "\\[(?:ADP;[^\\]\\r\\n]+|ACTION:MOOD:[^\\]\\r\\n]+)\\]", RegexOptions.IgnoreCase))
 		{
 			string value = (match?.Value ?? "").Trim();
 			if (!string.IsNullOrWhiteSpace(value) && seen.Add(value))
@@ -20863,7 +21007,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		List<string> list = new List<string>();
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		string text = "";
-		foreach (Match item in Regex.Matches(raw ?? "", "\\[(?:ACTION:[^\\]\\r\\n]*|AD;[^\\]\\r\\n]*|ADP[:;][^\\]\\r\\n]*)\\]", RegexOptions.IgnoreCase))
+		foreach (Match item in Regex.Matches(raw ?? "", "\\[(?:ACTION:[^\\]\\r\\n]*|AD;[^\\]\\r\\n]*|ADP;[^\\]\\r\\n]*)\\]", RegexOptions.IgnoreCase))
 		{
 			string text2 = (item?.Value ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(text2))
@@ -20887,7 +21031,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				string deferredAdTag = list.LastOrDefault((string x) => (x ?? "").Trim().StartsWith("[AD;", StringComparison.OrdinalIgnoreCase));
 				if (!string.IsNullOrWhiteSpace(deferredAdTag))
 				{
-					Match match = Regex.Match(deferredAdTag, "\\[AD;(\\d+);(\\d+);([^\\]]*)\\]", RegexOptions.IgnoreCase);
+					Match match = Regex.Match(deferredAdTag, "\\[AD;(\\d+);(\\d+);P;([^\\]]*)\\]", RegexOptions.IgnoreCase);
 					if (match.Success && int.TryParse(match.Groups[1].Value, out var result) && int.TryParse(match.Groups[2].Value, out var result2) && result > 0)
 					{
 						DuelBehavior.CachePendingDuelDebtTag(targetHero, result, result2, (match.Groups[3].Value ?? "").Trim());
@@ -20897,7 +21041,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			catch
 			{
 			}
-			list = list.Where((string x) => !((x ?? "").Trim().StartsWith("[AD;", StringComparison.OrdinalIgnoreCase) || (x ?? "").Trim().StartsWith("[ADP;", StringComparison.OrdinalIgnoreCase) || (x ?? "").Trim().StartsWith("[ADP:", StringComparison.OrdinalIgnoreCase))).ToList();
+			list = list.Where((string x) => !((x ?? "").Trim().StartsWith("[AD;", StringComparison.OrdinalIgnoreCase) || (x ?? "").Trim().StartsWith("[ADP;", StringComparison.OrdinalIgnoreCase))).ToList();
 		}
 		if (string.IsNullOrWhiteSpace(text))
 		{
@@ -20911,9 +21055,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		string text2 = text ?? "";
 		text2 = Regex.Replace(text2, "\\[ACTION:GIVE_ASSET:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
-		text2 = Regex.Replace(text2, "\\[ACTION:DEBT[^\\]]*\\]", "", RegexOptions.IgnoreCase);
 		text2 = Regex.Replace(text2, "\\[AD;[^\\]]*\\]", "", RegexOptions.IgnoreCase);
-		text2 = Regex.Replace(text2, "\\[ADP[:;][^\\]]*\\]", "", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[ADP;[^\\]]*\\]", "", RegexOptions.IgnoreCase);
 		return text2.Trim();
 	}
 
@@ -21056,34 +21199,32 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 			}
 		}
-		string text2 = Regex.Replace(text, "\\[ACTION:(GIVE_ASSET|DEBT_ITEM):(\\d+):(\\d+)\\]", delegate(Match m)
+		string text2 = Regex.Replace(text, "\\[ACTION:GIVE_ASSET:(\\d+):(\\d+)\\]", delegate(Match m)
 		{
-			string value = m.Groups[1].Value;
-			if (!int.TryParse(m.Groups[2].Value, out var result) || !int.TryParse(m.Groups[3].Value, out var result2) || result <= 0 || result > options.Count || result2 <= 0)
+			if (!int.TryParse(m.Groups[1].Value, out var result) || !int.TryParse(m.Groups[2].Value, out var result2) || result <= 0 || result > options.Count || result2 <= 0)
 			{
 				return "";
 			}
 			RewardSystemBehavior.RewardItemInfo rewardItemInfo = options[result - 1];
 			string text2 = getItemActionKey(rewardItemInfo);
-			logRewardItemTranslation("index", m.Groups[2].Value, rewardItemInfo, text2);
+			logRewardItemTranslation("index", m.Groups[1].Value, rewardItemInfo, text2);
 			if (string.IsNullOrWhiteSpace(text2))
 			{
 				return "";
 			}
 			result2 = Math.Min(Math.Max(1, result2), Math.Max(1, rewardItemInfo.Count));
-			return "[ACTION:" + value + ":" + text2.Trim() + ":" + result2 + "]";
+			return "[ACTION:GIVE_ASSET:" + text2.Trim() + ":" + result2 + "]";
 		}, RegexOptions.IgnoreCase);
-		return Regex.Replace(text2, "\\[ACTION:(GIVE_ASSET|DEBT_ITEM):([^\\]\\r\\n:]+):(ALL|\\d+)\\]", delegate(Match m)
+		return Regex.Replace(text2, "\\[ACTION:GIVE_ASSET:([^\\]\\r\\n:]+):(ALL|\\d+)\\]", delegate(Match m)
 		{
-			string value2 = m.Groups[1].Value;
-			string token = m.Groups[2].Value;
-			bool isAll = string.Equals(value2, "GIVE_ASSET", StringComparison.OrdinalIgnoreCase) && TransferQuantitySpec.IsAllValue(m.Groups[3].Value);
+			string token = m.Groups[1].Value;
+			bool isAll = TransferQuantitySpec.IsAllValue(m.Groups[2].Value);
 			int result3 = 0;
 			if (TransferQuantitySpec.IsAllValue(token) && !isAll)
 			{
 				return "";
 			}
-			if (!isAll && (!int.TryParse(m.Groups[3].Value, out result3) || result3 <= 0))
+			if (!isAll && (!int.TryParse(m.Groups[2].Value, out result3) || result3 <= 0))
 			{
 				return "";
 			}
@@ -21092,55 +21233,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			logRewardItemTranslation("token", token, rewardItemInfo2, text3);
 			if (string.IsNullOrWhiteSpace(text3))
 			{
-				return isAll ? ("[ACTION:GIVE_ASSET:" + token.Trim() + ":ALL]") : ("[ACTION:" + value2 + ":" + token.Trim() + ":" + result3 + "]");
+				return isAll ? ("[ACTION:GIVE_ASSET:" + token.Trim() + ":ALL]") : ("[ACTION:GIVE_ASSET:" + token.Trim() + ":" + result3 + "]");
 			}
 			if (isAll)
 			{
 				return "[ACTION:GIVE_ASSET:" + text3.Trim() + ":ALL]";
 			}
 			result3 = Math.Min(Math.Max(1, result3), Math.Max(1, rewardItemInfo2.Count));
-			return "[ACTION:" + value2 + ":" + text3.Trim() + ":" + result3 + "]";
-		}, RegexOptions.IgnoreCase);
-	}
-
-	private static string TranslateRewardDebtPayItemIndexesForScene(string text, List<RewardSystemBehavior.RewardItemInfo> options)
-	{
-		if (string.IsNullOrWhiteSpace(text) || options == null || options.Count == 0)
-		{
-			return text ?? "";
-		}
-		string text2 = Regex.Replace(text, "\\[ACTION:DEBT_PAY_ITEM:([a-zA-Z0-9_\\-]+):(\\d+):(\\d+)\\]", delegate(Match m)
-		{
-			string value = m.Groups[1].Value;
-			if (!int.TryParse(m.Groups[2].Value, out var result) || !int.TryParse(m.Groups[3].Value, out var result2) || result <= 0 || result > options.Count || result2 <= 0)
-			{
-				return "";
-			}
-			RewardSystemBehavior.RewardItemInfo rewardItemInfo = options[result - 1];
-			string text2 = rewardItemInfo?.StringId ?? "";
-			if (string.IsNullOrWhiteSpace(text2))
-			{
-				return "";
-			}
-			result2 = Math.Min(Math.Max(1, result2), Math.Max(1, rewardItemInfo.Count));
-			return "[ACTION:DEBT_PAY_ITEM:" + value.Trim() + ":" + text2.Trim() + ":" + result2 + "]";
-		}, RegexOptions.IgnoreCase);
-		return Regex.Replace(text2, "\\[ACTION:DEBT_PAY_ITEM:([a-zA-Z0-9_\\-]+):([^\\]\\r\\n:]+):(\\d+)\\]", delegate(Match m)
-		{
-			string value2 = m.Groups[1].Value;
-			string token = m.Groups[2].Value;
-			if (!int.TryParse(m.Groups[3].Value, out var result3) || result3 <= 0)
-			{
-				return "";
-			}
-			RewardSystemBehavior.RewardItemInfo rewardItemInfo2 = FindRewardItemByTokenForScene(options, token);
-			string text3 = rewardItemInfo2?.StringId ?? "";
-			if (string.IsNullOrWhiteSpace(text3))
-			{
-				return "[ACTION:DEBT_PAY_ITEM:" + value2.Trim() + ":" + token.Trim() + ":" + result3 + "]";
-			}
-			result3 = Math.Min(Math.Max(1, result3), Math.Max(1, rewardItemInfo2.Count));
-			return "[ACTION:DEBT_PAY_ITEM:" + value2.Trim() + ":" + text3.Trim() + ":" + result3 + "]";
+			return "[ACTION:GIVE_ASSET:" + text3.Trim() + ":" + result3 + "]";
 		}, RegexOptions.IgnoreCase);
 	}
 
@@ -21149,7 +21249,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		List<string> list = new List<string>();
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		string text = "";
-		foreach (Match item in Regex.Matches(raw ?? "", "\\[(?:ACTION:[^\\]\\r\\n]*|AD;[^\\]\\r\\n]*|ADP[:;][^\\]\\r\\n]*)\\]", RegexOptions.IgnoreCase))
+		foreach (Match item in Regex.Matches(raw ?? "", "\\[(?:ACTION:[^\\]\\r\\n]*|AD;[^\\]\\r\\n]*|ADP;[^\\]\\r\\n]*)\\]", RegexOptions.IgnoreCase))
 		{
 			string text2 = (item?.Value ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(text2))
@@ -21244,7 +21344,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					}
 				}
 			}
-			else if (!text2.StartsWith("[ACTION:DEBT_ITEM:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ACTION:DEBT_PAY_ITEM:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[AD;", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ADP;", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ADP:", StringComparison.OrdinalIgnoreCase))
+			else if (!RewardSystemBehavior.IsCanonicalDebtActionTagForExternal(text2))
 			{
 				continue;
 			}
@@ -21259,7 +21359,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		string text3 = string.Join("\n", list.Concat(new string[1] { text }).Where((string x) => !string.IsNullOrWhiteSpace(x))).Trim();
 		text3 = TranslateRewardItemIndexesForScene(text3, options);
-		text3 = TranslateRewardDebtPayItemIndexesForScene(text3, options);
 		return text3.Trim();
 	}
 
@@ -24504,6 +24603,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				bool firstChunkSeen = false;
 				Stopwatch swApi = Stopwatch.StartNew();
 				double firstChunkMs = -1.0;
+				LlmVisibleReplyNormalizer.StreamFilter visibleReplyFilter = new LlmVisibleReplyNormalizer.StreamFilter();
 				await ShoutNetwork.CallApiWithMessagesStream(messages, 5000, delegate(string delta)
 				{
 					if (!firstChunkSeen)
@@ -24519,14 +24619,23 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					}
 					try
 					{
-						ftm.AppendChunk(delta);
+						string visibleDelta = visibleReplyFilter.Push(delta);
+						if (!string.IsNullOrEmpty(visibleDelta))
+						{
+							ftm.AppendChunk(visibleDelta);
+						}
 					}
 					catch
 					{
 					}
 				}, delegate(string full)
 				{
-					streamFinalText = full ?? "";
+					string finalDelta = visibleReplyFilter.Complete(full ?? "");
+					if (!string.IsNullOrEmpty(finalDelta))
+					{
+						ftm.AppendChunk(finalDelta);
+					}
+					streamFinalText = visibleReplyFilter.NormalizedText ?? "";
 					streamCompleted = true;
 				}, delegate(string err)
 				{
@@ -24918,6 +25027,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					Logger.Log("Logic", "[MemoryPerf] group_turn_prompt_ready agent=" + currentSpeaker.AgentIndex + " hero=" + (speakingHero?.StringId ?? turnHeroId ?? "") + " messages=" + messages.Count + " persistedChars=" + ((persistedHeroHistory ?? "").Length) + " privateChars=" + ((privateRecentWindowSection ?? "").Length) + " oldCompressedChars=" + ((persistedWithoutRecentWindow ?? "").Length) + " sceneHistoryChars=" + ((scenePublicHistorySection ?? "").Length) + " dynamicChars=" + ((sceneDynamicUserBlock ?? "").Length) + " ruleChars=" + ((systemRuleBlock ?? "").Length) + " promptBuildMs=" + Math.Round(promptSw.Elapsed.TotalMilliseconds, 2));
 					Stopwatch apiSw = Stopwatch.StartNew();
 					string output = await ShoutNetwork.CallApiWithMessages(messages, 5000, promptRetryOnError: true);
+					output = LlmVisibleReplyNormalizer.NormalizeComplete(output);
 					apiSw.Stop();
 					Logger.Log("Logic", "[MemoryPerf] group_turn_api_done agent=" + currentSpeaker.AgentIndex + " hero=" + (speakingHero?.StringId ?? turnHeroId ?? "") + " outputLen=" + ((output ?? "").Length) + " apiMs=" + Math.Round(apiSw.Elapsed.TotalMilliseconds, 2) + " elapsedMs=" + Math.Round(turnSw.Elapsed.TotalMilliseconds, 2));
 					if (!IsSceneConversationEpochCurrent(conversationEpoch))
