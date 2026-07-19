@@ -6,6 +6,10 @@ namespace AnimusForge.SiegeAftermathIntervention;
 /// </summary>
 public static class SiegeInterventionCompletionUiProfile
 {
+    public const string DoneMenuId = "AnimusForge_siege_intervention_done";
+
+    public const string DoneContinueOptionId = "AnimusForge_siege_intervention_done_continue";
+
     public const uint CompletionMessageColor = 0xFFB6F7A8u;
 
     public const uint MassacreVictoryMessageColor = 0xFFFF7777u;
