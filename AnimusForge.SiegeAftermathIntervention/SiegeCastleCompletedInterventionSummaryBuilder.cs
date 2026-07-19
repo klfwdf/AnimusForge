@@ -23,7 +23,14 @@ public static class SiegeCastleCompletedInterventionSummaryBuilder
         sb.Append('【').Append(settlement).Append("·城堡处置结算】").AppendLine();
         sb.Append("领地：忠诚 ").Append(Signed(facts.LoyaltyDelta))
             .Append("｜治安 ").Append(Signed(facts.SecurityDelta))
-            .Append("｜繁荣 ").Append(Signed(facts.ProsperityDelta)).AppendLine();
+            .Append("｜繁荣 ").Append(Signed(facts.ProsperityDelta));
+        if (facts.ConstructionSpeedBonusPercent > 0.005f)
+        {
+            sb.Append("｜项目建设速度 +")
+                .Append(facts.ConstructionSpeedBonusPercent.ToString("0.##"))
+                .Append("%（1年）");
+        }
+        sb.AppendLine();
         sb.Append("战俘：").Append(BuildPrisonerLine(facts)).AppendLine();
         sb.Append("军心：").Append(BuildMoraleLine(facts, player)).AppendLine();
         sb.Append("民意：").Append(SiegeCastlePublicOpinionProfile.Build(
@@ -90,6 +97,8 @@ public static class SiegeCastleCompletedInterventionSummaryBuilder
             SiegeCastleActionKind.RecruitPrisonersForced => count + "被强制收编",
             SiegeCastleActionKind.LaborPrisonersVoluntary => count + "自愿接受劳役安置",
             SiegeCastleActionKind.LaborPrisonersForced => count + "被送去强制劳役",
+            SiegeCastleActionKind.RepairCastleLaborVoluntary => count + "自愿修缮城堡",
+            SiegeCastleActionKind.RepairCastleLaborForced => count + "被强制修缮城堡",
             SiegeCastleActionKind.InstructorPrisonersVoluntary => count + "自愿训练新兵",
             SiegeCastleActionKind.InstructorPrisonersForced => count + "被强迫训练新兵",
             SiegeCastleActionKind.SlaughterPrisoners => count + "在现场被杀",

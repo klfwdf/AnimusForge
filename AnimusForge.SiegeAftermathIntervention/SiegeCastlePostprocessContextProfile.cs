@@ -10,6 +10,9 @@ public static class SiegeCastlePostprocessContextProfile
         SiegeCastlePlayerAuthorizationDecision authorization = SiegeCastlePlayerAuthorizationPolicy.Evaluate(
             facts.PlayerText,
             facts.PendingProposalForSpeaker);
+        bool hasCompoundAuthorization = SiegeCastleCompoundDispositionPlanProfile.TryBuild(
+            facts.PlayerText,
+            out SiegeCastleCompoundDispositionPlan compoundPlan);
         SiegeCastleSoldierAppeasementAuthorizationDecision appeasementAuthorization =
             SiegeCastleSoldierAppeasementAuthorizationPolicy.Evaluate(facts.PlayerText);
         StringBuilder sb = new StringBuilder();
@@ -45,14 +48,16 @@ public static class SiegeCastlePostprocessContextProfile
                 : "；普通战俘当前暂定处置=")
             .Append(facts.TerminalActionForTarget == SiegeCastleActionKind.Unknown ? "未指定" : facts.TerminalActionForTarget.ToString())
             .Append("；玩家本轮授权判定=")
-            .Append(authorization.IsAuthorized
+            .Append(hasCompoundAuthorization
+                ? DescribeCompoundAuthorization(compoundPlan)
+                : authorization.IsAuthorized
                 ? SiegeCastlePrisonerDispositionKindProfile.Describe(authorization.Disposition)
                 : "未授权（" + authorization.ReasonCode + "）")
             .Append("；玩家本轮安兵判定=")
             .Append(appeasementAuthorization.IsAuthorized
                 ? "已明确安抚"
                 : "未满足（" + appeasementAuthorization.ReasonCode + "）")
-            .Append("。己方士兵或普通战俘主动提出释放、贩卖、收编、屠戮、劳役或教官方案时，只能输出与建议语义完全一致的提议标签；提议只记录待确认状态，绝不能直接结算。只有玩家本轮明确命令，或明确同意本说话者此前同类提议后，才可输出对应处置标签。每个普通战俘处置标签只登记玩家本轮指定的数量与兵种，多个分组可以累计；玩家未说明数量或兵种时由运行时随机选择。只有玩家明确说反悔、改判或全部重来时才清空幸存者旧计划。除现场屠戮的真实死亡外，不得声称战俘已经消失、转队、获释、售出或完成地方效果。己方士兵可以代玩家执行群体命令，但不能把劳役、释放、贩卖或教官命令改写成收编。自愿分支只能由普通战俘本人直接回应并达到信任门槛。安兵也必须有玩家本轮明确安抚意图，不能只凭士兵表示服从结算。闲聊、旁听、转述或领主回复不得触发普通战俘处置。一次回复最多输出一个城堡处置标签。");
+            .Append("。己方士兵或普通战俘主动提出释放、贩卖、收编、屠戮、外派村庄劳役、修缮本城堡或教官方案时，只能输出与建议语义完全一致的提议标签；提议只记录待确认状态，绝不能直接结算。只有玩家本轮明确命令，或明确同意本说话者此前同类提议后，才可输出对应处置标签。每个普通战俘处置标签只登记玩家本轮指定的数量与兵种，多个分组可以累计；玩家未说明数量或兵种时由运行时随机选择。只有玩家明确说反悔、改判或全部重来时才清空幸存者旧计划。外派村庄当农奴、修路或耕种使用普通劳役标签；留在当前城堡修城墙、城防或项目使用修缮城堡专用标签，裸称‘劳役’且没有外派目标时按修缮当前城堡理解。除现场屠戮的真实死亡外，不得声称战俘已经消失、转队、获释、售出或完成地方效果。己方士兵可以代玩家执行群体命令，但不能把劳役、释放、贩卖、修缮或教官命令改写成收编。自愿分支只能由普通战俘本人直接回应并达到信任门槛。安兵也必须有玩家本轮明确安抚意图，不能只凭士兵表示服从结算。闲聊、旁听、转述或领主回复不得触发普通战俘处置。一次回复默认最多输出一个城堡处置标签；仅当玩家同一句用明确人数并以‘其余/剩下’划分多个互不重叠的普通战俘去向时，按分组分别输出多个对应标签。");
 
         if (facts.SpeakerRole == SiegeCastleActionSpeakerRole.CapturedLord)
         {
@@ -84,6 +89,20 @@ public static class SiegeCastlePostprocessContextProfile
         }
 
         return sb.ToString();
+    }
+
+    private static string DescribeCompoundAuthorization(SiegeCastleCompoundDispositionPlan plan)
+    {
+        StringBuilder sb = new StringBuilder("明确分组（");
+        for (int i = 0; i < plan.Steps.Count; i++)
+        {
+            if (i > 0)
+            {
+                sb.Append("、");
+            }
+            sb.Append(SiegeCastlePrisonerDispositionKindProfile.Describe(plan.Steps[i].Disposition));
+        }
+        return sb.Append("）").ToString();
     }
 }
 

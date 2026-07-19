@@ -113,6 +113,8 @@ public static class SiegeCastleSoldierReactionProfile
             SiegeCastleActionKind.SellPrisoners => "贩卖战俘",
             SiegeCastleActionKind.LaborPrisonersVoluntary => "自愿劳役",
             SiegeCastleActionKind.LaborPrisonersForced => "强制劳役",
+            SiegeCastleActionKind.RepairCastleLaborVoluntary => "自愿修缮城堡",
+            SiegeCastleActionKind.RepairCastleLaborForced => "强制修缮城堡",
             SiegeCastleActionKind.InstructorPrisonersVoluntary => "自愿担任教官",
             SiegeCastleActionKind.InstructorPrisonersForced => "强迫担任教官",
             SiegeCastleActionKind.RecruitPrisonersVoluntary => "自愿收编",

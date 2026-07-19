@@ -20,6 +20,8 @@ public sealed class SiegeCastleSettlementEffectProfile
     public const float MinDirectProsperityDelta = -75f;
     public const float MaximumRecruitmentMultiplier = 1.5f;
     public const float MaximumRecruitQualityMultiplier = 1.5f;
+    public const float MaximumConstructionSpeedMultiplier = 1.5f;
+    public const int RepairCastleLaborReferencePrisoners = 200;
 
     private SiegeCastleSettlementEffectProfile(
         string key,
@@ -34,6 +36,8 @@ public sealed class SiegeCastleSettlementEffectProfile
         float prosperityGrowthMultiplier,
         float recruitmentSpeedMultiplier,
         float recruitQualityMultiplier,
+        float constructionSpeedMultiplier,
+        int constructionScalingReferenceCount,
         bool reachesNativeDevastateIntensity,
         bool includesArmamentReceipt)
     {
@@ -49,6 +53,8 @@ public sealed class SiegeCastleSettlementEffectProfile
         ProsperityGrowthMultiplier = Math.Max(0f, prosperityGrowthMultiplier);
         RecruitmentSpeedMultiplier = Math.Max(0f, recruitmentSpeedMultiplier);
         RecruitQualityMultiplier = Math.Max(0f, recruitQualityMultiplier);
+        ConstructionSpeedMultiplier = Math.Max(0f, constructionSpeedMultiplier);
+        ConstructionScalingReferenceCount = Math.Max(0, constructionScalingReferenceCount);
         ReachesNativeDevastateIntensity = reachesNativeDevastateIntensity;
         IncludesArmamentReceipt = includesArmamentReceipt;
     }
@@ -65,12 +71,15 @@ public sealed class SiegeCastleSettlementEffectProfile
     public float ProsperityGrowthMultiplier { get; }
     public float RecruitmentSpeedMultiplier { get; }
     public float RecruitQualityMultiplier { get; }
+    public float ConstructionSpeedMultiplier { get; }
+    public int ConstructionScalingReferenceCount { get; }
     public bool ReachesNativeDevastateIntensity { get; }
     public bool IncludesArmamentReceipt { get; }
 
     public bool HasAnnualProsperityGrowthEffect => Math.Abs(ProsperityGrowthMultiplier - 1f) > 0.001f;
     public bool HasAnnualRecruitmentEffect => Math.Abs(RecruitmentSpeedMultiplier - 1f) > 0.001f
         || Math.Abs(RecruitQualityMultiplier - 1f) > 0.001f;
+    public bool HasAnnualConstructionEffect => Math.Abs(ConstructionSpeedMultiplier - 1f) > 0.001f;
 
     public static SiegeCastleSettlementEffectProfile Build(SiegeCastleActionKind action)
     {
@@ -84,6 +93,16 @@ public sealed class SiegeCastleSettlementEffectProfile
             SiegeCastleActionKind.RecruitPrisonersForced => Create("recruit_forced", "强制收编", -8f, -8f, -35f, -15, -10, -15, -15, 0.90f, 1.075f, 1.05f),
             SiegeCastleActionKind.LaborPrisonersVoluntary => Create("labor_voluntary", "自愿劳役服刑", 5f, 8f, -10f, 5, 5, 5, 5, 1.05f),
             SiegeCastleActionKind.LaborPrisonersForced => Create("labor_forced", "强制劳役服刑", -8f, 4f, -25f, -15, -8, -12, -12, 1.025f),
+            SiegeCastleActionKind.RepairCastleLaborVoluntary => Create(
+                "repair_castle_voluntary", "自愿劳役修缮城堡", 5f, 8f, -10f, 5, 5, 5, 5,
+                prosperityGrowthMultiplier: 1.05f,
+                constructionSpeedMultiplier: 1.50f,
+                constructionScalingReferenceCount: RepairCastleLaborReferencePrisoners),
+            SiegeCastleActionKind.RepairCastleLaborForced => Create(
+                "repair_castle_forced", "强制劳役修缮城堡", -8f, 4f, -25f, -15, -8, -12, -12,
+                prosperityGrowthMultiplier: 1.025f,
+                constructionSpeedMultiplier: 1.25f,
+                constructionScalingReferenceCount: RepairCastleLaborReferencePrisoners),
             SiegeCastleActionKind.InstructorPrisonersVoluntary => Create("instructor_voluntary", "自愿充当教官", 6f, 8f, 0f, 8, 5, 8, 8, 1f, 1.50f, 1.50f),
             SiegeCastleActionKind.InstructorPrisonersForced => Create("instructor_forced", "强制充当教官", -9f, 4f, -20f, -12, -8, -12, -12, 1f, 1.25f, 1.25f),
             SiegeCastleActionKind.SlaughterPrisoners => Create("slaughter", "屠戮战俘", -30f, 8f, 0f, -25, -25, -35, -35, 0.75f, 0.50f, 0.75f, reachesNativeDevastateIntensity: true, includesArmamentReceipt: true),
@@ -104,6 +123,8 @@ public sealed class SiegeCastleSettlementEffectProfile
         float prosperityGrowthMultiplier = 1f,
         float recruitmentSpeedMultiplier = 1f,
         float recruitQualityMultiplier = 1f,
+        float constructionSpeedMultiplier = 1f,
+        int constructionScalingReferenceCount = 0,
         bool reachesNativeDevastateIntensity = false,
         bool includesArmamentReceipt = false)
     {
@@ -120,6 +141,8 @@ public sealed class SiegeCastleSettlementEffectProfile
             prosperityGrowthMultiplier,
             recruitmentSpeedMultiplier,
             recruitQualityMultiplier,
+            constructionSpeedMultiplier,
+            constructionScalingReferenceCount,
             reachesNativeDevastateIntensity,
             includesArmamentReceipt);
     }
@@ -127,6 +150,22 @@ public sealed class SiegeCastleSettlementEffectProfile
 
 public static class SiegeCastleSettlementEffectMath
 {
+    public static float ResolveConstructionScale(
+        SiegeCastleSettlementEffectProfile profile,
+        int affectedRegularPrisoners,
+        float fallbackScale)
+    {
+        if (profile != null && profile.ConstructionScalingReferenceCount > 0)
+        {
+            return Math.Min(1f, Math.Max(0f,
+                affectedRegularPrisoners / (float)profile.ConstructionScalingReferenceCount));
+        }
+        return Math.Min(1f, Math.Max(0f, fallbackScale));
+    }
+
+    public static float ScaleMultiplier(float multiplier, float scale)
+        => 1f + (multiplier - 1f) * Math.Min(1f, Math.Max(0f, scale));
+
     public static float ClampLoyalty(float value)
         => Math.Min(SiegeCastleSettlementEffectProfile.MaxPositiveLoyalty,
             Math.Max(SiegeCastleSettlementEffectProfile.MaxNegativeLoyalty, value));

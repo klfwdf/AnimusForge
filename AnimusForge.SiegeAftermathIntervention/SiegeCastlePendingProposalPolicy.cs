@@ -28,6 +28,11 @@ public static class SiegeCastlePendingProposalPolicy
             return SiegeCastlePendingProposalDecision.Clear("player_rejected_pending_proposal");
         }
 
+        if (SiegeCastleCompoundDispositionPlanProfile.TryBuild(playerText, out _))
+        {
+            return SiegeCastlePendingProposalDecision.Clear("player_authorized_compound_disposition");
+        }
+
         if (authorization.IsAuthorized && authorization.Disposition != pendingProposal)
         {
             return SiegeCastlePendingProposalDecision.Clear("player_authorized_different_disposition");

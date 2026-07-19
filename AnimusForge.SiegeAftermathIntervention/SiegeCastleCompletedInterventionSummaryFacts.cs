@@ -27,7 +27,8 @@ public sealed class SiegeCastleCompletedInterventionSummaryFacts
         SiegeCastleActionKind soldierConcernAction = SiegeCastleActionKind.Unknown,
         bool treatedRegularPrisoners = false,
         bool receivedRegularArmaments = false,
-        string lordOutcomeSummary = null)
+        string lordOutcomeSummary = null,
+        float constructionSpeedBonusPercent = 0f)
     {
         SettlementName = settlementName ?? string.Empty;
         PlayerName = playerName ?? string.Empty;
@@ -48,6 +49,7 @@ public sealed class SiegeCastleCompletedInterventionSummaryFacts
         TreatedRegularPrisoners = treatedRegularPrisoners;
         ReceivedRegularArmaments = receivedRegularArmaments;
         LordOutcomeSummary = lordOutcomeSummary ?? string.Empty;
+        ConstructionSpeedBonusPercent = Math.Max(0f, constructionSpeedBonusPercent);
     }
 
     public string SettlementName { get; }
@@ -69,6 +71,7 @@ public sealed class SiegeCastleCompletedInterventionSummaryFacts
     public bool TreatedRegularPrisoners { get; }
     public bool ReceivedRegularArmaments { get; }
     public string LordOutcomeSummary { get; }
+    public float ConstructionSpeedBonusPercent { get; }
 }
 
 public sealed class SiegeCastleDispositionSummaryEntry

@@ -7,7 +7,7 @@ namespace AnimusForge.SiegeAftermathIntervention;
 /// </summary>
 public static class SiegeCastlePostprocessRuleCatalog
 {
-    private const string RevisableStageContract = "标签触发后只为本轮选中的数量与兵种登记暂定去向，尚存战俘不会立即从场景或俘虏名册消失；玩家离场时才逐组执行名册、金币与地方副作用。玩家未说明数量时由运行时随机选取，未说明兵种时随机选兵；说‘其余/剩下/全部’时使用当前未分配者。明确说反悔、改判或全部重来时才清空幸存者旧计划，NPC必须记住前后变化。";
+    private const string RevisableStageContract = "标签触发后只为本轮选中的数量与兵种登记暂定去向，尚存战俘不会立即从场景或俘虏名册消失；玩家离场时才逐组执行名册、金币与地方副作用。玩家未说明数量时由运行时随机选取，未说明兵种时随机选兵；说‘其余/剩下/全部’时使用当前未分配者。玩家同一句以明确数量和‘其余/剩下’划分多个去向时，可按分组顺序输出多个不同的普通战俘处置标签。明确说反悔、改判或全部重来时才清空幸存者旧计划，NPC必须记住前后变化。";
 
     private static readonly SiegePostprocessRuleDefinition SoldierDiscontentRule = Rule(
         SiegeCastleActionTagCatalog.SoldierDiscontentTag,
@@ -31,7 +31,11 @@ public static class SiegeCastlePostprocessRuleCatalog
 
     private static readonly SiegePostprocessRuleDefinition ProposeLaborRule = Rule(
         SiegeCastleActionTagCatalog.ProposeLaborPrisonersTag,
-        "【提议，不结算】仅在己方士兵建议劳役安置，或普通战俘请求以劳役赎罪，而玩家尚未明确同意时输出。只登记待确认；不得提前施加地方效果。");
+        "【提议，不结算】仅在己方士兵建议把战俘派往村庄充作农奴、修路或耕种，或普通战俘请求接受这类外派劳役赎罪，而玩家尚未明确同意时输出。只登记待确认；不得提前施加地方效果，也不得与修缮城堡标签混用。");
+
+    private static readonly SiegePostprocessRuleDefinition ProposeRepairCastleLaborRule = Rule(
+        SiegeCastleActionTagCatalog.ProposeRepairCastleLaborTag,
+        "【提议，不结算】仅在己方士兵建议让战俘留在本城堡修缮城墙、城防或城堡项目，或普通战俘请求以修缮本城堡赎罪，而玩家尚未明确同意时输出。只登记待确认；不得提前施加建设效果。");
 
     private static readonly SiegePostprocessRuleDefinition ProposeInstructorRule = Rule(
         SiegeCastleActionTagCatalog.ProposeInstructorPrisonersTag,
@@ -63,11 +67,19 @@ public static class SiegeCastlePostprocessRuleCatalog
 
     private static readonly SiegePostprocessRuleDefinition VoluntaryLaborRule = Rule(
         SiegeCastleActionTagCatalog.LaborPrisonersVoluntaryTag,
-        "【普通战俘群体暂定标签·自愿】战俘明确同意接受农奴、修路或修缮等劳役处置且信任达到门槛时输出。离场最终执行时对尚存战俘直接施加持续游戏一年的地方效果，不创建服役单位或期限，也不转入玩家部队。" + RevisableStageContract);
+        "【普通战俘群体暂定标签·自愿】战俘明确同意被派往村庄充作农奴、修路或耕种且信任达到门槛时输出。离场最终执行时对尚存战俘直接施加持续游戏一年的地方效果，不创建服役单位或期限，也不转入玩家部队；修缮本城堡必须改用专用修缮城堡标签。" + RevisableStageContract);
 
     private static readonly SiegePostprocessRuleDefinition ForcedLaborRule = Rule(
         SiegeCastleActionTagCatalog.LaborPrisonersForcedTag,
-        "【普通战俘群体暂定标签·强制】玩家强迫本次带入且尚存的普通战俘接受劳役处置时输出。离场最终执行时直接施加持续游戏一年的地方效果，不创建服役单位或期限；正面提升仅为自愿的50%，负面后果约为自愿的1.5倍，也不转入玩家部队。" + RevisableStageContract);
+        "【普通战俘群体暂定标签·强制】玩家强迫本次带入且尚存的普通战俘派往村庄充作农奴、修路或耕种时输出。离场最终执行时直接施加持续游戏一年的地方效果，不创建服役单位或期限；正面提升仅为自愿的50%，负面后果约为自愿的1.5倍，也不转入玩家部队。" + RevisableStageContract);
+
+    private static readonly SiegePostprocessRuleDefinition VoluntaryRepairCastleLaborRule = Rule(
+        SiegeCastleActionTagCatalog.RepairCastleLaborVoluntaryTag,
+        "【普通战俘群体暂定标签·自愿修缮城堡】仅当战俘明确自愿留下修缮本城堡、城墙或城防且信任达到门槛时输出。离场最终执行时按200人为满额基准施加持续游戏一年的城堡项目建设速度加成：200人及以上+50%，不足200人按人数线性缩放；同时结算与村庄劳役相近的地方影响。不创建服役单位或期限。" + RevisableStageContract);
+
+    private static readonly SiegePostprocessRuleDefinition ForcedRepairCastleLaborRule = Rule(
+        SiegeCastleActionTagCatalog.RepairCastleLaborForcedTag,
+        "【普通战俘群体暂定标签·强制修缮城堡】玩家强迫本次带入且尚存的普通战俘修缮本城堡、城墙或城防时输出。离场最终执行时按200人为满额基准施加持续游戏一年的城堡项目建设速度加成：200人及以上+25%，不足200人按人数线性缩放（例如50人+6.25%）；地方负面后果按强制劳役结算。不创建服役单位或期限。" + RevisableStageContract);
 
     private static readonly SiegePostprocessRuleDefinition VoluntaryInstructorRule = Rule(
         SiegeCastleActionTagCatalog.InstructorPrisonersVoluntaryTag,
@@ -134,6 +146,11 @@ public static class SiegeCastlePostprocessRuleCatalog
                 return rules;
             }
 
+            if (TryAddCompoundRegularPrisonerRules(rules, facts))
+            {
+                return rules;
+            }
+
             SiegeCastlePlayerAuthorizationDecision disposition = SiegeCastlePlayerAuthorizationPolicy.Evaluate(
                 facts.PlayerText,
                 facts.PendingProposalForSpeaker);
@@ -175,6 +192,10 @@ public static class SiegeCastlePostprocessRuleCatalog
 
             if (TryAddDirectRule(rules, facts, SiegeCastleActionKind.TreatPrisoners, TreatRule)
                 || TryAddDirectRule(rules, facts, SiegeCastleActionKind.ReceiveArmaments, ArmamentsRule))
+            {
+                return rules;
+            }
+            if (TryAddCompoundRegularPrisonerRules(rules, facts))
             {
                 return rules;
             }
@@ -248,7 +269,8 @@ public static class SiegeCastlePostprocessRuleCatalog
         ICollection<SiegePostprocessRuleDefinition> rules,
         SiegeCastlePostprocessRuleFacts facts,
         SiegeCastleActionKind action,
-        SiegePostprocessRuleDefinition rule)
+        SiegePostprocessRuleDefinition rule,
+        string authorizationText = null)
     {
         if (facts.IsActionAlreadyApplied(action)
             && !SiegeCastleActionKindProfile.IsRegularPrisonerTerminal(action))
@@ -256,7 +278,10 @@ public static class SiegeCastlePostprocessRuleCatalog
             return false;
         }
         SiegeCastleDirectActionAuthorizationDecision authorization =
-            SiegeCastleDirectActionAuthorizationPolicy.Evaluate(action, facts.PlayerText, facts.PendingProposalForSpeaker);
+            SiegeCastleDirectActionAuthorizationPolicy.Evaluate(
+                action,
+                authorizationText ?? facts.PlayerText,
+                facts.PendingProposalForSpeaker);
         if (authorization.IsAuthorized)
         {
             rules.Add(rule);
@@ -268,18 +293,54 @@ public static class SiegeCastlePostprocessRuleCatalog
     private static bool TryAddAlliedAuthorizedDispositionRule(
         ICollection<SiegePostprocessRuleDefinition> rules,
         SiegeCastlePostprocessRuleFacts facts,
-        SiegeCastlePrisonerDispositionKind disposition)
+        SiegeCastlePrisonerDispositionKind disposition,
+        string authorizationText = null)
     {
         return disposition switch
         {
-            SiegeCastlePrisonerDispositionKind.Recruit => TryAddDirectRule(rules, facts, SiegeCastleActionKind.RecruitPrisonersForced, ForcedRecruitRule),
-            SiegeCastlePrisonerDispositionKind.Slaughter => TryAddDirectRule(rules, facts, SiegeCastleActionKind.SlaughterPrisoners, SlaughterRule),
-            SiegeCastlePrisonerDispositionKind.Release => TryAddDirectRule(rules, facts, SiegeCastleActionKind.ReleasePrisoners, ReleaseRule),
-            SiegeCastlePrisonerDispositionKind.Sell => TryAddDirectRule(rules, facts, SiegeCastleActionKind.SellPrisoners, SellRule),
-            SiegeCastlePrisonerDispositionKind.Labor => TryAddDirectRule(rules, facts, SiegeCastleActionKind.LaborPrisonersForced, ForcedLaborRule),
-            SiegeCastlePrisonerDispositionKind.Instructor => TryAddDirectRule(rules, facts, SiegeCastleActionKind.InstructorPrisonersForced, ForcedInstructorRule),
+            SiegeCastlePrisonerDispositionKind.Recruit => TryAddDirectRule(rules, facts, SiegeCastleActionKind.RecruitPrisonersForced, ForcedRecruitRule, authorizationText),
+            SiegeCastlePrisonerDispositionKind.Slaughter => TryAddDirectRule(rules, facts, SiegeCastleActionKind.SlaughterPrisoners, SlaughterRule, authorizationText),
+            SiegeCastlePrisonerDispositionKind.Release => TryAddDirectRule(rules, facts, SiegeCastleActionKind.ReleasePrisoners, ReleaseRule, authorizationText),
+            SiegeCastlePrisonerDispositionKind.Sell => TryAddDirectRule(rules, facts, SiegeCastleActionKind.SellPrisoners, SellRule, authorizationText),
+            SiegeCastlePrisonerDispositionKind.Labor => TryAddDirectRule(rules, facts, SiegeCastleActionKind.LaborPrisonersForced, ForcedLaborRule, authorizationText),
+            SiegeCastlePrisonerDispositionKind.RepairCastle => TryAddDirectRule(rules, facts, SiegeCastleActionKind.RepairCastleLaborForced, ForcedRepairCastleLaborRule, authorizationText),
+            SiegeCastlePrisonerDispositionKind.Instructor => TryAddDirectRule(rules, facts, SiegeCastleActionKind.InstructorPrisonersForced, ForcedInstructorRule, authorizationText),
             _ => false
         };
+    }
+
+    private static bool TryAddCompoundRegularPrisonerRules(
+        ICollection<SiegePostprocessRuleDefinition> rules,
+        SiegeCastlePostprocessRuleFacts facts)
+    {
+        if (!SiegeCastleCompoundDispositionPlanProfile.TryBuild(facts.PlayerText, out SiegeCastleCompoundDispositionPlan plan))
+        {
+            return false;
+        }
+
+        // Both valid speaker roles execute explicit compound orders through forced/neutral
+        // branches. Voluntary outcomes still require a dedicated prisoner negotiation turn.
+        var candidates = new List<SiegePostprocessRuleDefinition>();
+        foreach (SiegeCastleCompoundDispositionStep step in plan.Steps)
+        {
+            if (!TryAddAlliedAuthorizedDispositionRule(
+                    candidates,
+                    facts,
+                    step.Disposition,
+                    step.AllocationText))
+            {
+                return false;
+            }
+        }
+        if (candidates.Count < 2)
+        {
+            return false;
+        }
+        foreach (SiegePostprocessRuleDefinition candidate in candidates)
+        {
+            rules.Add(candidate);
+        }
+        return true;
     }
 
     private static bool TryAddRegularPrisonerDispositionRule(
@@ -323,6 +384,16 @@ public static class SiegeCastlePostprocessRuleCatalog
                     VoluntaryLaborRule,
                     SiegeCastleActionKind.LaborPrisonersForced,
                     ForcedLaborRule);
+            case SiegeCastlePrisonerDispositionKind.RepairCastle:
+                return TryAddConsentSensitiveRule(
+                    rules,
+                    facts,
+                    authorization,
+                    voluntaryContext,
+                    SiegeCastleActionKind.RepairCastleLaborVoluntary,
+                    VoluntaryRepairCastleLaborRule,
+                    SiegeCastleActionKind.RepairCastleLaborForced,
+                    ForcedRepairCastleLaborRule);
             case SiegeCastlePrisonerDispositionKind.Instructor:
                 return TryAddConsentSensitiveRule(
                     rules,
@@ -364,6 +435,7 @@ public static class SiegeCastlePostprocessRuleCatalog
         rules.Add(ProposeReleaseRule);
         rules.Add(ProposeSellRule);
         rules.Add(ProposeLaborRule);
+        rules.Add(ProposeRepairCastleLaborRule);
         rules.Add(ProposeInstructorRule);
     }
 
@@ -372,6 +444,7 @@ public static class SiegeCastlePostprocessRuleCatalog
         rules.Add(ProposeReleaseRule);
         rules.Add(ProposeRecruitRule);
         rules.Add(ProposeLaborRule);
+        rules.Add(ProposeRepairCastleLaborRule);
         rules.Add(ProposeInstructorRule);
     }
 
@@ -396,6 +469,9 @@ public static class SiegeCastlePostprocessRuleCatalog
                 break;
             case SiegeCastlePrisonerDispositionKind.Labor:
                 rules.Add(ProposeLaborRule);
+                break;
+            case SiegeCastlePrisonerDispositionKind.RepairCastle:
+                rules.Add(ProposeRepairCastleLaborRule);
                 break;
             case SiegeCastlePrisonerDispositionKind.Instructor:
                 rules.Add(ProposeInstructorRule);
