@@ -45,6 +45,7 @@ public sealed class PolicyActiveEffectRegistration
 	public float LoyaltyDailyDeltaPerTown { get; set; }
 	public float SecurityDailyDeltaPerTown { get; set; }
 	public float MilitiaDailyDeltaPerTown { get; set; }
+	public float TownTaxPercent { get; set; }
 	public int KingdomStabilityDailyDelta { get; set; }
 	public int DurationDays { get; set; }
 	public string Reason { get; set; }
@@ -103,6 +104,12 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 	private const string SaveKeyLocalPolicyRecords = "_afLocalPolicyRecords_v1";
 
 	private const int MaxEndedLocalPolicyRecords = 100;
+
+	private const float PlayerKingdomDynamicPolicyAdoptionReviewDays = 21f;
+
+	private const float ForeignKingdomDynamicPolicyAdoptionReviewDays = 3f;
+
+	private const float PolicyTownTaxEpsilon = 0.0001f;
 
 	private const string PolicyScopeKingdom = "kingdom";
 
@@ -165,6 +172,12 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 
 	private readonly Dictionary<string, Settlement> _settlementByIdRuntimeCache = new Dictionary<string, Settlement>(StringComparer.OrdinalIgnoreCase);
 
+	private readonly Dictionary<string, List<ActivePolicyTownTaxEntry>> _activeKingdomTownTaxEffects = new Dictionary<string, List<ActivePolicyTownTaxEntry>>(StringComparer.OrdinalIgnoreCase);
+
+	private readonly Dictionary<string, List<ActivePolicyTownTaxEntry>> _activeLocalTownTaxEffects = new Dictionary<string, List<ActivePolicyTownTaxEntry>>(StringComparer.OrdinalIgnoreCase);
+
+	private bool _activeTownTaxEffectCacheDirty = true;
+
 	private Campaign _settlementByIdRuntimeCacheCampaign;
 
 	private readonly Dictionary<string, string> _dynamicPolicyRegistry = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -213,6 +226,17 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		public string Raw;
 
 		public ActivePolicyEffectSaveData Effect;
+	}
+
+	private sealed class ActivePolicyTownTaxEntry
+	{
+		public string EffectId;
+
+		public string PolicyName;
+
+		public float TownTaxPercent;
+
+		public int DisplayIndex;
 	}
 
 	public static CustomPolicyBehavior Instance { get; private set; }
@@ -275,6 +299,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			LoyaltyDailyDeltaPerTown = registration.LoyaltyDailyDeltaPerTown,
 			SecurityDailyDeltaPerTown = registration.SecurityDailyDeltaPerTown,
 			MilitiaDailyDeltaPerTown = registration.MilitiaDailyDeltaPerTown,
+			TownTaxPercent = NormalizePolicyTownTaxPercent(registration.TownTaxPercent),
 			KingdomStabilityDailyDelta = registration.KingdomStabilityDailyDelta,
 			TotalDurationDays = registration.DurationDays,
 			RemainingDays = registration.DurationDays,
@@ -825,6 +850,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			PatchPolicySettlementModelMethod(harmony, Campaign.Current.Models.SettlementLoyaltyModel, "CalculateLoyaltyChange", new Type[2] { typeof(Town), typeof(bool) }, nameof(Patch_PolicyLoyaltyChange_Postfix));
 			PatchPolicySettlementModelMethod(harmony, Campaign.Current.Models.SettlementSecurityModel, "CalculateSecurityChange", new Type[2] { typeof(Town), typeof(bool) }, nameof(Patch_PolicySecurityChange_Postfix));
 			PatchPolicySettlementModelMethod(harmony, Campaign.Current.Models.SettlementMilitiaModel, "CalculateMilitiaChange", new Type[2] { typeof(Settlement), typeof(bool) }, nameof(Patch_PolicyMilitiaChange_Postfix));
+			PatchPolicySettlementModelMethod(harmony, Campaign.Current.Models.SettlementTaxModel, "CalculateTownTax", new Type[2] { typeof(Town), typeof(bool) }, nameof(Patch_PolicyTownTax_Postfix));
 			_policySettlementModelPatchesApplied = true;
 			PolicySystemLog.Write("Effect", "settlement-model-patches-applied", "AF policy effects now participate in vanilla settlement change calculations and tooltips");
 		}
@@ -933,6 +959,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		if (Math.Abs(record?.LoyaltyDailyDeltaPerTown ?? 0f) > 0.0001f) values.Add("忠诚" + FormatSigned(record.LoyaltyDailyDeltaPerTown));
 		if (Math.Abs(record?.SecurityDailyDeltaPerTown ?? 0f) > 0.0001f) values.Add("治安" + FormatSigned(record.SecurityDailyDeltaPerTown));
 		if (Math.Abs(record?.MilitiaDailyDeltaPerTown ?? 0f) > 0.0001f) values.Add("民兵" + FormatSigned(record.MilitiaDailyDeltaPerTown));
+		if (Math.Abs(record?.TownTaxPercent ?? 0f) > PolicyTownTaxEpsilon) values.Add("税收" + FormatSigned(record.TownTaxPercent) + "%");
 		return values.Count <= 0 ? "无持续数值变化" : string.Join("/", values);
 	}
 
@@ -1016,21 +1043,12 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		result.Postprocess = BuildPostprocessResultFromMainAssessment(request, result.MainAssessment);
 		result.PostprocessRaw = SafeSerializeForDebug(result.Postprocess);
 		PolicyApplicationResult application = ApplyLocalPolicyEffects(request, result.Postprocess, validFiefs);
-		if (application.KingdomEffects.Count != 1)
+		if (application.KingdomEffects.Count != 1 || !HasAnyTimedPolicyEffect(application))
 		{
 			InformationManager.ShowInquiry(new InquiryData("地方政策发布失败", "没有生成可计时的地方效果，未扣费、未生效。", true, false, "知道了", "", null, null), pauseGameActiveState: true);
 			return;
 		}
-		bool hasActualEffect = HasAnyActualAppliedEffect(application);
-		if (hasActualEffect)
-		{
-			DeductPublishCost(request);
-		}
-		else
-		{
-			request.GoldCost = 0;
-			request.InfluenceCost = 0f;
-		}
+		DeductPublishCost(request);
 		string recordId = Guid.NewGuid().ToString("N");
 		string feedback = ResolveFeedbackText(result, request);
 		AppliedKingdomEffect effect = application.KingdomEffects[0];
@@ -1038,7 +1056,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		RecordSuccessfulLocalPolicy(request, result, feedback, effect, recordId, validFiefs);
 		InvokeLocalPolicyLifecycleMemoryHook("published", recordId, effect.TargetFiefIds);
 		TrimLocalPolicyRecords();
-		string impactText = BuildImpactPopupText(request, feedback, application, costDeducted: hasActualEffect);
+		string impactText = BuildImpactPopupText(request, feedback, application, costDeducted: true);
 		ShowPolicySuccessResultPopup("local:" + recordId, impactText);
 		PolicySystemLog.Write("Local", "published", BuildPolicyRecordLogPrefix(request, recordId)
 			+ " targets=" + string.Join(",", effect.TargetFiefIds)
@@ -1546,12 +1564,22 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		data.Status = DynamicPolicyStatusPending;
 		StoreDynamicPolicy(data);
 		KingdomPolicyDecision decision = new KingdomPolicyDecision(proposer, policy, isInvertedDecision: false);
+		float reviewDays = GetDynamicPolicyAdoptionReviewDays(owner);
 		if (!decision.IsAllowed())
 		{
 			failureReason = "王国规则不允许提交该政策议程";
 			data.Status = DynamicPolicyStatusRejected;
 			StoreDynamicPolicy(data);
 			TryUnregisterDynamicPolicyObject(data, policy);
+			return false;
+		}
+		if (!TryConfigureDynamicPolicyAdoptionReviewTime(decision, reviewDays, out string reviewTimeError))
+		{
+			failureReason = reviewTimeError;
+			data.Status = DynamicPolicyStatusRejected;
+			StoreDynamicPolicy(data);
+			TryUnregisterDynamicPolicyObject(data, policy);
+			PolicySystemLog.Write("Agenda", "review-time-config-failed", "recordId=" + (data.RecordId ?? "") + " policy=" + (data.PolicyObjectId ?? "") + " reason=" + reviewTimeError);
 			return false;
 		}
 		owner.AddDecision(decision, ignoreInfluenceCost: true);
@@ -1563,8 +1591,218 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			TryUnregisterDynamicPolicyObject(data, policy);
 			return false;
 		}
-		PolicySystemLog.Write("Agenda", "submitted", "recordId=" + data.RecordId + " policy=" + data.PolicyObjectId + " kingdom=" + data.OwnerKingdomId);
+		// Other agenda patches can change TriggerTime while Kingdom.AddDecision is running.
+		// Re-apply and verify the AF adoption deadline after all AddDecision patches return.
+		if (!TryConfigureDynamicPolicyAdoptionReviewTime(decision, reviewDays, out string postAddReviewTimeError))
+		{
+			failureReason = postAddReviewTimeError;
+			try
+			{
+				owner.RemoveDecision(decision);
+			}
+			catch (Exception removeEx)
+			{
+				failureReason += "；移除无效 AF 议程失败：" + removeEx.Message;
+			}
+			bool stillQueued = owner.UnresolvedDecisions?.Contains(decision) == true;
+			data.Status = DynamicPolicyStatusRejected;
+			StoreDynamicPolicy(data);
+			if (!stillQueued)
+			{
+				TryUnregisterDynamicPolicyObject(data, policy);
+			}
+			PolicySystemLog.Write("Agenda", "review-time-post-add-verify-failed",
+				"recordId=" + (data.RecordId ?? "") + " policy=" + (data.PolicyObjectId ?? "")
+				+ " stillQueued=" + stillQueued + " reason=" + failureReason);
+			return false;
+		}
+		PolicySystemLog.Write("Agenda", "submitted", "recordId=" + data.RecordId + " policy=" + data.PolicyObjectId + " kingdom=" + data.OwnerKingdomId + " reviewDays=" + reviewDays.ToString("0.#", CultureInfo.InvariantCulture));
 		return true;
+	}
+
+	private static void Patch_PolicyTownTax_Postfix(Town town, bool includeDescriptions, ref ExplainedNumber __result)
+	{
+		CustomPolicyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<CustomPolicyBehavior>();
+		Settlement settlement = town?.Settlement;
+		if (behavior == null || settlement == null)
+		{
+			return;
+		}
+		float originalTax = __result.ResultNumber;
+		float baseTax = __result.BaseNumber;
+		if (float.IsNaN(originalTax) || float.IsInfinity(originalTax) || originalTax <= PolicyTownTaxEpsilon
+			|| float.IsNaN(baseTax) || float.IsInfinity(baseTax) || Math.Abs(baseTax) <= PolicyTownTaxEpsilon)
+		{
+			return;
+		}
+		behavior.EnsureActiveTownTaxEffectCacheBuilt();
+		bool applied = false;
+		Kingdom currentKingdom = settlement.OwnerClan?.Kingdom ?? settlement.MapFaction as Kingdom;
+		if (currentKingdom != null
+			&& !string.IsNullOrWhiteSpace(currentKingdom.StringId)
+			&& behavior._activeKingdomTownTaxEffects.TryGetValue(currentKingdom.StringId, out List<ActivePolicyTownTaxEntry> kingdomEntries))
+		{
+			applied |= AddActivePolicyTownTaxFactors(kingdomEntries, originalTax, baseTax, includeDescriptions, ref __result);
+		}
+		if (IsPlayerOwnedLocalPolicyFief(settlement)
+			&& !string.IsNullOrWhiteSpace(settlement.StringId)
+			&& behavior._activeLocalTownTaxEffects.TryGetValue(settlement.StringId, out List<ActivePolicyTownTaxEntry> localEntries))
+		{
+			applied |= AddActivePolicyTownTaxFactors(localEntries, originalTax, baseTax, includeDescriptions, ref __result);
+		}
+		if (applied)
+		{
+			__result.LimitMin(0f);
+		}
+	}
+
+	private static bool AddActivePolicyTownTaxFactors(List<ActivePolicyTownTaxEntry> entries, float originalTax, float baseTax, bool includeDescriptions, ref ExplainedNumber result)
+	{
+		bool applied = false;
+		if (entries == null || entries.Count <= 0)
+		{
+			return false;
+		}
+		for (int i = 0; i < entries.Count; i++)
+		{
+			ActivePolicyTownTaxEntry entry = entries[i];
+			if (entry == null || Math.Abs(entry.TownTaxPercent) <= PolicyTownTaxEpsilon)
+			{
+				continue;
+			}
+			double adjustedFactor = ((double)originalTax / baseTax) * ((double)entry.TownTaxPercent / 100.0);
+			if (double.IsNaN(adjustedFactor) || double.IsInfinity(adjustedFactor) || adjustedFactor > float.MaxValue || adjustedFactor < -float.MaxValue)
+			{
+				continue;
+			}
+			double combinedFactor = (double)result.SumOfFactors + adjustedFactor;
+			double projectedTax = (double)result.BaseNumber + (double)result.BaseNumber * combinedFactor;
+			if (double.IsNaN(combinedFactor) || double.IsInfinity(combinedFactor)
+				|| combinedFactor > float.MaxValue || combinedFactor < -float.MaxValue
+				|| double.IsNaN(projectedTax) || double.IsInfinity(projectedTax)
+				|| projectedTax > float.MaxValue || projectedTax < -float.MaxValue)
+			{
+				continue;
+			}
+			result.AddFactor((float)adjustedFactor, includeDescriptions ? BuildPolicyTownTaxEffectExplanation(entry) : null);
+			applied = true;
+		}
+		return applied;
+	}
+
+	private void EnsureActiveTownTaxEffectCacheBuilt()
+	{
+		if (!_activeTownTaxEffectCacheDirty)
+		{
+			return;
+		}
+		_activeKingdomTownTaxEffects.Clear();
+		_activeLocalTownTaxEffects.Clear();
+		int displayIndex = 0;
+		foreach (KeyValuePair<string, string> item in _activePolicyEffects)
+		{
+			try
+			{
+				ActivePolicyEffectSaveData effect = GetActivePolicyEffectForWork(item.Key, item.Value);
+				float townTaxPercent = NormalizePolicyTownTaxPercent(effect?.TownTaxPercent ?? 0f);
+				if (effect == null || effect.Ended || effect.RemainingDays <= 0 || Math.Abs(townTaxPercent) <= PolicyTownTaxEpsilon)
+				{
+					continue;
+				}
+				ActivePolicyTownTaxEntry entry = new ActivePolicyTownTaxEntry
+				{
+					EffectId = effect.EffectId ?? item.Key ?? "",
+					PolicyName = effect.PolicyName ?? "",
+					TownTaxPercent = townTaxPercent,
+					DisplayIndex = ++displayIndex
+				};
+				if (IsLocalActivePolicyEffect(effect))
+				{
+					foreach (string settlementId in NormalizeIdList(effect.TargetSettlementIds))
+					{
+						AddActivePolicyTownTaxCacheEntry(_activeLocalTownTaxEffects, settlementId, entry);
+					}
+				}
+				else if (!string.IsNullOrWhiteSpace(effect.TargetKingdomId))
+				{
+					AddActivePolicyTownTaxCacheEntry(_activeKingdomTownTaxEffects, effect.TargetKingdomId.Trim(), entry);
+				}
+			}
+			catch (Exception ex)
+			{
+				PolicySystemLog.Write("Effect", "town-tax-cache-entry-failed", "effectId=" + (item.Key ?? "") + " reason=" + ex.Message);
+			}
+		}
+		_activeTownTaxEffectCacheDirty = false;
+	}
+
+	private static void AddActivePolicyTownTaxCacheEntry(Dictionary<string, List<ActivePolicyTownTaxEntry>> cache, string key, ActivePolicyTownTaxEntry entry)
+	{
+		if (cache == null || entry == null || string.IsNullOrWhiteSpace(key))
+		{
+			return;
+		}
+		if (!cache.TryGetValue(key, out List<ActivePolicyTownTaxEntry> entries))
+		{
+			entries = new List<ActivePolicyTownTaxEntry>();
+			cache[key] = entries;
+		}
+		entries.Add(entry);
+	}
+
+	private static TextObject BuildPolicyTownTaxEffectExplanation(ActivePolicyTownTaxEntry entry)
+	{
+		string policyName = (entry?.PolicyName ?? "").Replace("{", "").Replace("}", "").Trim();
+		if (policyName.Length > 40)
+		{
+			policyName = policyName.Substring(0, 39).TrimEnd() + "…";
+		}
+		string displayIndex = entry != null && entry.DisplayIndex > 0 ? "（AF#" + entry.DisplayIndex.ToString(CultureInfo.InvariantCulture) + "）" : "";
+		return new TextObject("《" + (string.IsNullOrWhiteSpace(policyName) ? "未命名政策" : policyName) + "》税收 " + FormatSigned(entry?.TownTaxPercent ?? 0f) + "%" + displayIndex);
+	}
+
+	private static float GetDynamicPolicyAdoptionReviewDays(Kingdom owner)
+	{
+		Kingdom playerKingdom = GetPlayerKingdom();
+		return owner != null && playerKingdom != null
+			&& (ReferenceEquals(owner, playerKingdom)
+				|| string.Equals(owner.StringId ?? "", playerKingdom.StringId ?? "", StringComparison.OrdinalIgnoreCase))
+			? PlayerKingdomDynamicPolicyAdoptionReviewDays
+			: ForeignKingdomDynamicPolicyAdoptionReviewDays;
+	}
+
+	private static bool TryConfigureDynamicPolicyAdoptionReviewTime(KingdomPolicyDecision decision, float reviewDays, out string failureReason)
+	{
+		failureReason = "";
+		if (decision == null)
+		{
+			failureReason = "AF 政策议程决定为空";
+			return false;
+		}
+		try
+		{
+			System.Reflection.PropertyInfo triggerTimeProperty = AccessTools.Property(typeof(KingdomDecision), nameof(KingdomDecision.TriggerTime));
+			System.Reflection.MethodInfo setter = triggerTimeProperty?.GetSetMethod(nonPublic: true);
+			if (setter == null)
+			{
+				failureReason = "无法访问 KingdomDecision.TriggerTime setter";
+				return false;
+			}
+			CampaignTime triggerTime = CampaignTime.DaysFromNow(reviewDays);
+			setter.Invoke(decision, new object[1] { triggerTime });
+			float remainingDays = decision.TriggerTime.RemainingDaysFromNow;
+			if (float.IsNaN(remainingDays) || float.IsInfinity(remainingDays) || Math.Abs(remainingDays - reviewDays) > 0.05f)
+			{
+				failureReason = "AF 政策议程审议时间验证失败，实际剩余天数=" + remainingDays.ToString("0.###", CultureInfo.InvariantCulture);
+				return false;
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			failureReason = "设置 AF 政策议程 " + reviewDays.ToString("0.#", CultureInfo.InvariantCulture) + " 天审议时间失败：" + ex.Message;
+			return false;
+		}
 	}
 
 	private void CompleteDynamicPolicyAdoption(DynamicPolicySaveData data, PolicyObject policy)
@@ -1660,9 +1898,8 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 				PostprocessRaw = SafeSerializeForDebug(postprocess)
 			};
 			string feedback = FirstNonEmpty(pending.Feedback, ResolveFeedbackText(result, request));
-			bool hasActualEffect = HasAnyActualAppliedEffect(application);
 			bool hasTimedEffect = HasAnyTimedPolicyEffect(application);
-			if (hasActualEffect)
+			if (hasTimedEffect)
 			{
 				DeductPublishCost(request);
 			}
@@ -1699,7 +1936,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			}
 			else
 			{
-				string impactText = BuildImpactPopupText(request, feedback, application, costDeducted: hasActualEffect);
+				string impactText = BuildImpactPopupText(request, feedback, application, costDeducted: hasTimedEffect);
 				ShowPolicySuccessResultPopup(data.PolicyObjectId, impactText);
 			}
 			if (!hasTimedEffect)
@@ -2015,6 +2252,9 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		_localPolicyRecords.Clear();
 		_activePolicyEffects.Clear();
 		_activePolicyEffectRuntimeCache.Clear();
+		_activeKingdomTownTaxEffects.Clear();
+		_activeLocalTownTaxEffects.Clear();
+		_activeTownTaxEffectCacheDirty = true;
 		_dynamicPolicyRegistry.Clear();
 		Dictionary<string, string> storedHistory = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		dataStore.SyncData(SaveKeyPolicyRecordHistory, ref storedHistory);
@@ -2826,11 +3066,13 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		Kingdom playerKingdom = GetPlayerKingdom();
 		if (playerKingdom == null)
 		{
-			return PolicyEligibility.Blocked("你尚未拥有自己的王国。");
+			return PolicyEligibility.Blocked("你尚未加入任何王国，不能提交全国政策。");
 		}
-		if (!IsPlayerRuler(playerKingdom))
+		Clan playerClan = Clan.PlayerClan;
+		bool ownsFief = playerClan != null && playerClan.Settlements.Any(IsPlayerOwnedLocalPolicyFief);
+		if (!IsPlayerRuler(playerKingdom) && !ownsFief)
 		{
-			return PolicyEligibility.Blocked("只有玩家作为国王或统治家族时才能发布全国政策。");
+			return PolicyEligibility.Blocked("只有王国统治者，或在本王国拥有城镇/城堡的玩家氏族，才能提交全国政策。");
 		}
 		if (options.UseAiEvaluatedCost)
 		{
@@ -3064,6 +3306,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			LoyaltyDailyDeltaPerTown = GetLoyaltyDailyDelta(effect),
 			SecurityDailyDeltaPerTown = GetSecurityDailyDelta(effect),
 			MilitiaDailyDeltaPerTown = GetMilitiaDailyDelta(effect),
+			TownTaxPercent = GetTownTaxPercent(effect),
 			KingdomStabilityDailyDelta = 0,
 			DurationDays = duration,
 			RemainingDays = duration,
@@ -3075,7 +3318,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		}
 		if (!HasAnyDailyDelta(applied))
 		{
-			result.NoticeLines.Add("全部每日数值为 0：政策仍会计时、显示反馈并进入地方记录，本次不扣费。");
+			result.NoticeLines.Add("全部每日数值为 0：政策仍会计时、显示反馈并进入地方记录，费用仍按本次实际投入结算。");
 		}
 		result.AppliedEffectCount = 1;
 		result.KingdomEffects.Add(applied);
@@ -3095,6 +3338,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			LoyaltyDailyDeltaPerTown = GetLoyaltyDailyDelta(effect),
 			SecurityDailyDeltaPerTown = GetSecurityDailyDelta(effect),
 			MilitiaDailyDeltaPerTown = GetMilitiaDailyDelta(effect),
+			TownTaxPercent = GetTownTaxPercent(effect),
 			KingdomStabilityDailyDelta = GetKingdomStabilityDailyDelta(effect),
 			DurationDays = ClampPolicyEffectDurationDays(effect?.DurationDays ?? 0),
 			RemainingDays = ClampPolicyEffectDurationDays(effect?.DurationDays ?? 0),
@@ -3141,6 +3385,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			Raw = raw,
 			Effect = effect
 		};
+		_activeTownTaxEffectCacheDirty = true;
 	}
 
 	private void RemoveActivePolicyEffect(string effectId)
@@ -3151,6 +3396,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		}
 		_activePolicyEffects.Remove(effectId);
 		_activePolicyEffectRuntimeCache.Remove(effectId);
+		_activeTownTaxEffectCacheDirty = true;
 	}
 
 	private void ProcessActivePolicyEffects(int currentDay)
@@ -3474,6 +3720,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			LoyaltyDailyDeltaPerTown = activeEffect?.LoyaltyDailyDeltaPerTown ?? 0f,
 			SecurityDailyDeltaPerTown = activeEffect?.SecurityDailyDeltaPerTown ?? 0f,
 			MilitiaDailyDeltaPerTown = activeEffect?.MilitiaDailyDeltaPerTown ?? 0f,
+			TownTaxPercent = activeEffect?.TownTaxPercent ?? 0f,
 			KingdomStabilityDailyDelta = activeEffect?.KingdomStabilityDailyDelta ?? 0,
 			DurationDays = activeEffect?.TotalDurationDays ?? 0,
 			RemainingDays = activeEffect?.RemainingDays ?? 0,
@@ -3552,6 +3799,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 				LoyaltyDailyDeltaPerTown = effect.LoyaltyDailyDeltaPerTown,
 				SecurityDailyDeltaPerTown = effect.SecurityDailyDeltaPerTown,
 				MilitiaDailyDeltaPerTown = effect.MilitiaDailyDeltaPerTown,
+				TownTaxPercent = effect.TownTaxPercent,
 				KingdomStabilityDailyDelta = effect.KingdomStabilityDailyDelta,
 				DurationDays = effect.DurationDays,
 				Reason = effect.Reason ?? ""
@@ -3599,6 +3847,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			LoyaltyDailyDeltaPerTown = effect.LoyaltyDailyDeltaPerTown,
 			SecurityDailyDeltaPerTown = effect.SecurityDailyDeltaPerTown,
 			MilitiaDailyDeltaPerTown = effect.MilitiaDailyDeltaPerTown,
+			TownTaxPercent = effect.TownTaxPercent,
 			KingdomStabilityDailyDelta = 0,
 			TotalDurationDays = effect.DurationDays,
 			RemainingDays = effect.DurationDays,
@@ -3641,6 +3890,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			LoyaltyDailyDeltaPerTown = effect?.LoyaltyDailyDeltaPerTown ?? 0f,
 			SecurityDailyDeltaPerTown = effect?.SecurityDailyDeltaPerTown ?? 0f,
 			MilitiaDailyDeltaPerTown = effect?.MilitiaDailyDeltaPerTown ?? 0f,
+			TownTaxPercent = effect?.TownTaxPercent ?? 0f,
 			EffectReason = effect?.Reason ?? ""
 		};
 		_localPolicyRecords[recordId] = JsonConvert.SerializeObject(record);
@@ -3852,6 +4102,16 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		return effect?.MilitiaDailyDeltaPerTown ?? 0f;
 	}
 
+	private static float GetTownTaxPercent(PolicyEffectDto effect)
+	{
+		return NormalizePolicyTownTaxPercent(effect?.TownTaxPercent ?? 0f);
+	}
+
+	private static float NormalizePolicyTownTaxPercent(float value)
+	{
+		return float.IsNaN(value) || float.IsInfinity(value) ? 0f : value;
+	}
+
 	private static int GetKingdomStabilityDailyDelta(PolicyEffectDto effect)
 	{
 		return NormalizeKingdomStabilityDailyDelta(effect?.KingdomStabilityDailyDelta ?? 0f);
@@ -3876,6 +4136,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 				|| Math.Abs(effect.LoyaltyDailyDeltaPerTown) > 0.0001f
 				|| Math.Abs(effect.SecurityDailyDeltaPerTown) > 0.0001f
 				|| Math.Abs(effect.MilitiaDailyDeltaPerTown) > 0.0001f
+				|| Math.Abs(effect.TownTaxPercent) > PolicyTownTaxEpsilon
 				|| effect.KingdomStabilityDailyDelta != 0);
 	}
 
@@ -4293,8 +4554,8 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			+ "- egalitarianWeight:number, policy egalitarian orientation weight in range [-1,1]; all three weights must not be zero.\n"
 			+ costSchemaText
 			+ "- effects:array，你直接决定的最终每日持续效果；默认且首选只输出 1 条玩家王国 effect。如果政策名和政策正文没有明确提到他国，effects 必须只包含玩家王国。只有政策名或政策正文明确提到其他王国 ID、王国名称、该国领袖/氏族/定居点且足以指向该王国时，才允许输出其他王国 effect 或多条 effect；世界上下文、王国索引、知识库上下文中出现的他国不算明确提及；否则不得把未提及的他国作为目标。\n"
-			+ "每个 effect 必须包含：targetKingdomId:string；targetKingdomName:string；prosperityDailyDeltaPerTown:number；foodDailyDeltaPerTown:number；hearthDailyDeltaPerVillage:number；loyaltyDailyDeltaPerTown:number；securityDailyDeltaPerTown:number；militiaDailyDeltaPerTown:number；kingdomStabilityDailyDelta:number；durationDays:positive integer；reason:string。\n"
-			+ "所有 daily delta 字段都是每天变化，不是总变化；durationDays 是实际游戏天数；不影响的字段填数字 0；securityDailyDeltaPerTown 和 loyaltyDailyDeltaPerTown 都是 0-100 尺度上的每日变化；militiaDailyDeltaPerTown 是城镇/城堡民兵数量每日变化；kingdomStabilityDailyDelta 是目标王国整体稳定度每日变化，不按城镇数量叠加。判断稳定度强弱时要看政策是否改变王权合法性、封臣信任、贵族利益、财政压力、战争信心和分裂/叛乱风险；它不是固定档位，也不能按城镇数倍增；reason 简短且不能换行。targetKingdomId/name 为空时本地代码只会补玩家王国。"
+			+ "每个 effect 必须包含：targetKingdomId:string；targetKingdomName:string；prosperityDailyDeltaPerTown:number；foodDailyDeltaPerTown:number；hearthDailyDeltaPerVillage:number；loyaltyDailyDeltaPerTown:number；securityDailyDeltaPerTown:number；militiaDailyDeltaPerTown:number；townTaxPercent:number；kingdomStabilityDailyDelta:number；durationDays:positive integer；reason:string。\n"
+			+ "所有 daily delta 字段都是每天变化，不是总变化；durationDays 是实际游戏天数；不影响的字段填数字 0；townTaxPercent 是相对原版城镇/城堡最终主税收的百分比点变化，10 表示原版税收的 110%，-20 表示原版税收的 80%，全国政策作用于目标王国全部氏族的城镇与城堡，地方政策只作用于所选城镇/城堡；securityDailyDeltaPerTown 和 loyaltyDailyDeltaPerTown 都是 0-100 尺度上的每日变化；militiaDailyDeltaPerTown 是城镇/城堡民兵数量每日变化；kingdomStabilityDailyDelta 是目标王国整体稳定度每日变化，不按城镇数量叠加。判断稳定度强弱时要看政策是否改变王权合法性、封臣信任、贵族利益、财政压力、战争信心和分裂/叛乱风险；它不是固定档位，也不能按城镇数倍增；reason 简短且不能换行。targetKingdomId/name 为空时本地代码只会补玩家王国。"
 			+ (isLocalPolicy ? "\n\n地方政策最终提醒：effects 数组长度必须为 1；这组效果由代码只施加到已选封地及附属村庄；kingdomStabilityDailyDelta=0；publicFeedback 只能描述这些地方。" : "");
 		return BuildChatMessages(system, user);
 	}
@@ -4602,6 +4863,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			LoyaltyDailyDeltaPerTown = ScalePolicyDailyDelta(effect.LoyaltyDailyDeltaPerTown, goldScale),
 			SecurityDailyDeltaPerTown = ScalePolicyDailyDelta(effect.SecurityDailyDeltaPerTown, goldScale),
 			MilitiaDailyDeltaPerTown = ScalePolicyDailyDelta(effect.MilitiaDailyDeltaPerTown, goldScale),
+			TownTaxPercent = ScalePolicyDailyDelta(effect.TownTaxPercent, goldScale),
 			KingdomStabilityDailyDelta = ScalePolicyDailyDelta(effect.KingdomStabilityDailyDelta, goldScale),
 			DurationDays = effect.DurationDays,
 			Reason = effect.Reason
@@ -4784,6 +5046,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			}
 			effect.TargetKingdomId = (effect.TargetKingdomId ?? "").Trim();
 			effect.TargetKingdomName = CleanPolicyDisplayText(effect.TargetKingdomName ?? "");
+			effect.TownTaxPercent = NormalizePolicyTownTaxPercent(effect.TownTaxPercent);
 			effect.Reason = LimitDisplayChars(CompactPolicyContextText(effect.Reason ?? ""), 60);
 			if (!IsLocalPolicyRequest(request) && request?.ManualDurationDays > 0)
 			{
@@ -5214,6 +5477,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 						LoyaltyDailyDeltaPerTown = effect.LoyaltyDailyDeltaPerTown,
 						SecurityDailyDeltaPerTown = effect.SecurityDailyDeltaPerTown,
 						MilitiaDailyDeltaPerTown = effect.MilitiaDailyDeltaPerTown,
+						TownTaxPercent = effect.TownTaxPercent,
 						KingdomStabilityDailyDelta = effect.KingdomStabilityDailyDelta,
 						TotalDurationDays = effect.DurationDays,
 						RemainingDays = effect.RemainingDays,
@@ -5332,6 +5596,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			+ "，忠诚度 " + FormatSigned(effect.LoyaltyDailyDeltaPerTown)
 			+ "，治安 " + FormatSigned(effect.SecurityDailyDeltaPerTown)
 			+ "，民兵 " + FormatSigned(effect.MilitiaDailyDeltaPerTown)
+			+ "，税收 " + FormatSigned(effect.TownTaxPercent) + "%"
 			+ "，稳定度 " + FormatSigned(effect.KingdomStabilityDailyDelta)
 			+ "；持续 " + Math.Max(0, effect.DurationDays).ToString(CultureInfo.InvariantCulture) + " 天";
 		if (!string.IsNullOrWhiteSpace(effect.Reason))
@@ -5564,6 +5829,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 				effect.LoyaltyDailyDeltaPerTown,
 				effect.SecurityDailyDeltaPerTown,
 				effect.MilitiaDailyDeltaPerTown,
+				effect.TownTaxPercent,
 				effect.KingdomStabilityDailyDelta,
 				effect.TotalDurationDays)
 				+ "状态：" + status + "。";
@@ -5586,11 +5852,12 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			effect.LoyaltyDailyDeltaPerTown,
 			effect.SecurityDailyDeltaPerTown,
 			effect.MilitiaDailyDeltaPerTown,
+			effect.TownTaxPercent,
 			effect.KingdomStabilityDailyDelta,
 			effect.DurationDays);
 	}
 
-	private static string BuildPlayerVisibleDailyEffectLine(string kingdomName, float prosperityDailyDeltaPerTown, float foodDailyDeltaPerTown, float hearthDailyDeltaPerVillage, float loyaltyDailyDeltaPerTown, float securityDailyDeltaPerTown, float militiaDailyDeltaPerTown, int kingdomStabilityDailyDelta, int durationDays)
+	private static string BuildPlayerVisibleDailyEffectLine(string kingdomName, float prosperityDailyDeltaPerTown, float foodDailyDeltaPerTown, float hearthDailyDeltaPerVillage, float loyaltyDailyDeltaPerTown, float securityDailyDeltaPerTown, float militiaDailyDeltaPerTown, float townTaxPercent, int kingdomStabilityDailyDelta, int durationDays)
 	{
 		string name = string.IsNullOrWhiteSpace(kingdomName) ? "未知王国" : kingdomName.Trim();
 		return name
@@ -5600,6 +5867,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			+ "，忠诚度 " + FormatSigned(loyaltyDailyDeltaPerTown)
 			+ "，治安 " + FormatSigned(securityDailyDeltaPerTown)
 			+ "，民兵 " + FormatSigned(militiaDailyDeltaPerTown)
+			+ "，税收 " + FormatSigned(townTaxPercent) + "%"
 			+ "，稳定度 " + FormatSigned(kingdomStabilityDailyDelta)
 			+ "；持续 " + Math.Max(0, durationDays).ToString(CultureInfo.InvariantCulture) + " 天。";
 	}
@@ -5700,6 +5968,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		record.OriginalDurationDays = Math.Max(1, record.OriginalDurationDays);
 		record.RemainingDays = Math.Max(0, record.RemainingDays);
 		record.GoldEffectScale = float.IsNaN(record.GoldEffectScale) || float.IsInfinity(record.GoldEffectScale) ? 0f : Math.Max(0f, Math.Min(1f, record.GoldEffectScale));
+		record.TownTaxPercent = NormalizePolicyTownTaxPercent(record.TownTaxPercent);
 		if (string.IsNullOrWhiteSpace(record.Status))
 		{
 			record.Status = record.RemainingDays > 0 ? LocalPolicyStatusActive : LocalPolicyStatusExpired;
@@ -5791,6 +6060,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			+ "，忠诚度 " + FormatSigned(record?.LoyaltyDailyDeltaPerTown ?? 0f)
 			+ "，治安 " + FormatSigned(record?.SecurityDailyDeltaPerTown ?? 0f)
 			+ "，民兵 " + FormatSigned(record?.MilitiaDailyDeltaPerTown ?? 0f)
+			+ "，税收 " + FormatSigned(record?.TownTaxPercent ?? 0f) + "%"
 			+ "，王国稳定度 ±0"
 			+ (string.IsNullOrWhiteSpace(record?.EffectReason) ? "" : "；原因：" + record.EffectReason);
 	}
@@ -5957,6 +6227,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 				LoyaltyDailyDeltaPerTown = x.LoyaltyDailyDeltaPerTown,
 				SecurityDailyDeltaPerTown = x.SecurityDailyDeltaPerTown,
 				MilitiaDailyDeltaPerTown = x.MilitiaDailyDeltaPerTown,
+				TownTaxPercent = x.TownTaxPercent,
 				KingdomStabilityDailyDelta = x.KingdomStabilityDailyDelta,
 				DurationDays = x.DurationDays,
 				EffectId = x.EffectId ?? "",
@@ -6191,6 +6462,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			+ ", loyalty=" + FormatNumber(effect.LoyaltyDailyDeltaPerTown)
 			+ ", security=" + FormatNumber(effect.SecurityDailyDeltaPerTown)
 			+ ", militia=" + FormatNumber(effect.MilitiaDailyDeltaPerTown)
+			+ ", townTaxPercent=" + FormatNumber(effect.TownTaxPercent)
 			+ ", stability=" + effect.KingdomStabilityDailyDelta.ToString(CultureInfo.InvariantCulture)
 			+ ") settlementDeltas=model-managed"
 			+ " stabilityActual=" + effect.KingdomStabilityActualDelta.ToString(CultureInfo.InvariantCulture)
@@ -6456,6 +6728,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			LoyaltyDailyDeltaPerTown = record.LoyaltyDailyDeltaPerTown,
 			SecurityDailyDeltaPerTown = record.SecurityDailyDeltaPerTown,
 			MilitiaDailyDeltaPerTown = record.MilitiaDailyDeltaPerTown,
+			TownTaxPercent = record.TownTaxPercent,
 			KingdomStabilityDailyDelta = 0,
 			TotalDurationDays = record.OriginalDurationDays,
 			RemainingDays = record.OriginalDurationDays,
@@ -6746,6 +7019,9 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		[JsonProperty("militiaDailyDeltaPerTown")]
 		public float MilitiaDailyDeltaPerTown { get; set; }
 
+		[JsonProperty("townTaxPercent")]
+		public float TownTaxPercent { get; set; }
+
 		[JsonProperty("kingdomStabilityDailyDelta")]
 		public float KingdomStabilityDailyDelta { get; set; }
 
@@ -6794,6 +7070,8 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		public float SecurityDailyDeltaPerTown;
 
 		public float MilitiaDailyDeltaPerTown;
+
+		public float TownTaxPercent;
 
 		public int KingdomStabilityDailyDelta;
 
@@ -6853,6 +7131,8 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		public float SecurityDailyDeltaPerTown { get; set; }
 
 		public float MilitiaDailyDeltaPerTown { get; set; }
+
+		public float TownTaxPercent { get; set; }
 
 		public int KingdomStabilityDailyDelta { get; set; }
 
@@ -6958,6 +7238,8 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 
 		public float MilitiaDailyDeltaPerTown { get; set; }
 
+		public float TownTaxPercent { get; set; }
+
 		public int KingdomStabilityDailyDelta { get; set; }
 
 		public int TotalDurationDays { get; set; }
@@ -7034,6 +7316,8 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		public float SecurityDailyDeltaPerTown { get; set; }
 
 		public float MilitiaDailyDeltaPerTown { get; set; }
+
+		public float TownTaxPercent { get; set; }
 
 		public string EffectReason { get; set; }
 	}

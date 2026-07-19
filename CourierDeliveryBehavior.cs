@@ -4491,6 +4491,18 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 		try
 		{
+			RulerPolicyProposalBehavior.TryProcessAcceptedTag(recipient, "courier", session.LetterText, session.ReplyText ?? text, ref text, out string proposalFailure);
+			if (!string.IsNullOrWhiteSpace(proposalFailure))
+			{
+				Log("ruler policy proposal not queued session=" + session.Id + " reason=" + proposalFailure);
+			}
+		}
+		catch (Exception ex)
+		{
+			Log("apply ruler policy proposal tag failed session=" + session.Id + " error=" + ex.Message);
+		}
+		try
+		{
 			VoteDealBehavior.ProcessAgendaTagsDispatch(recipient, ref text);
 			DiplomacyBehavior.ProcessDiplomacyTagsDispatch(recipient, ref text);
 		}
@@ -4741,6 +4753,18 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		if (session.DeliveryApplied && !session.PostprocessConsumed && !string.IsNullOrWhiteSpace(session.ReplyPostprocessedText) && recipient != null)
 		{
 			string text = session.ReplyPostprocessedText;
+			try
+			{
+				RulerPolicyProposalBehavior.TryProcessAcceptedTag(recipient, "courier", session.LetterText, session.ReplyText ?? text, ref text, out string proposalFailure);
+				if (!string.IsNullOrWhiteSpace(proposalFailure))
+				{
+					Log("ruler policy proposal fallback not queued session=" + session.Id + " reason=" + proposalFailure);
+				}
+			}
+			catch (Exception ex)
+			{
+				Log("apply ruler policy proposal fallback tag failed session=" + session.Id + " error=" + ex.Message);
+			}
 			try
 			{
 				VoteDealBehavior.ProcessAgendaTagsDispatch(recipient, ref text);

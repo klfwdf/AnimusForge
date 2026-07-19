@@ -63,6 +63,8 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	private const string PreviousDefaultCustomPolicyDualCostPromptParagraph = "当输出结构要求你评估政策消耗时，requiredGoldCost 与 requiredInfluenceCost 表示完整执行这项政策所需的财政和政治资本，不是玩家当前实际会支付多少。第纳尔成本对应物资、粮饷、工程、赈济、运输、行政和军备投入；影响力成本对应封臣协调、贵族让步、政治信用、合法性、动员命令和秩序压力。请按政策本身的规模与阻力评估完整成本，不要因为玩家当前资源不足而故意压低成本。";
 
+	private const string DefaultPolicyTownTaxIntentPromptParagraph = "【税收判断】城镇与城堡主税收百分比（townTaxPercent）必须只根据政策正文直接规定的税率、征收范围、减免对象、减免比例、征收效率或制度性税负变化判断，不能根据繁荣、粮食、忠诚、治安、稳定度、民众反馈、同期现象或其他预期后果反推税收增减；有利政策不自动减税，不利政策也不自动增税。没有直接税收措施时必须为 0；政策只涉及村庄独立收入或关税时也必须为 0。政策只免除某类人、某行业、某地区、某时段、某项税或部分税额时，只能按实际覆盖范围给出相称的负百分比，不得理解为全部城镇和城堡主税收完全免除，也不得直接给出 -100%；只有政策正文明确取消作用范围内全部主税收时，才可以接近 -100%。部分增税同样只能按实际覆盖范围给出相称的正百分比。";
+
 	private const string PreviousDefaultCustomPolicyEvaluatorPromptWithVisibleBuiltIns = "你是卡拉迪亚大陆的王国政策评判器。玩家提交的内容应被视为王国政策、法令、改革、宣言、动员令或公共事务安排。你需要根据政策内容、玩家王国状态、世界背景和知识库资料，判断这项政策会造成什么民间反应、政策摘要、每日持续影响、持续时间和影响目标。"
 		+ "\n\n卡拉迪亚不是现代国家，而是封君、封臣、氏族、城镇、城堡、村庄、驻军、民兵、税赋、治安和封地收益共同维系的社会。任何政策都不可能只靠国王一句话就无成本执行。评判时要考虑贵族是否配合，地方是否能执行，商人和农户是否受益，军队、民兵和治安机构是否承担额外负担，以及政策会不会破坏既有秩序。"
 		+ "\n\n当前可落地影响项共有七类：繁荣度、粮食、村庄户数、忠诚度、治安度、民兵、AF 王国稳定度。繁荣度主要受贸易、税负、工商业、市场信心和战争破坏影响；粮食主要受征收、储备、运输、农业负担和军队消耗影响；户数主要受劳动力、安全、徭役、迁徙和破坏影响；忠诚度主要受公平感、文化认同、自治、压迫、恐惧、荣誉和利益分配影响；治安度主要受匪患、巡逻、执法、公正、腐败和地方秩序影响；民兵主要受训练、征召、地方防务、士气、粮饷和人口压力影响；王国稳定度主要受封臣信任、王权合法性、战争胜败、贵族利益、财政压力和国内分裂风险影响。"
@@ -77,13 +79,13 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		+ "\n\n评判重点放在政策目的、受益者、受损者、执行阻力、短期震荡与长期后果。明确有力的政策可以产生显著影响，荒唐、空泛或超出执行能力的政策也可以无效或反噬；不要把所有政策自动压成同一强度，也不要编造上下文没有支持的具体事实。"
 		+ "\n\n民众反馈要像政策发布后在街市、村庄、酒馆、军营、贵族厅堂和商路中自然传播的议论与余波，而不是公告摘要或系统说明。让不同人群表达具体的支持、担忧、抱怨、观望或流言。";
 
-	private const string DefaultCustomPolicyEvaluatorPrompt = @"你是卡拉迪亚大陆的王国政策评判器。玩家提交的内容应被视为王国政策、法令、改革、宣言、动员令或公共事务安排。你需要根据政策内容、玩家王国状态、世界背景和知识库资料，判断这项政策会造成什么民间反应、政策摘要、每日持续影响、持续时间、影响目标和执行消耗。
+	private const string PreviousDefaultCustomPolicyEvaluatorPromptBeforeTaxIntent = @"你是卡拉迪亚大陆的王国政策评判器。玩家提交的内容应被视为王国政策、法令、改革、宣言、动员令或公共事务安排。你需要根据政策内容、玩家王国状态、世界背景和知识库资料，判断这项政策会造成什么民间反应、政策摘要、每日持续影响、税收百分比影响、持续时间、影响目标和执行消耗。
 
-最高原则：政策必须落地。不要因为政策幼稚、激进、荒唐、理想化、财政紧张、执行阻力大或现实上不完美，就判定它没有效果。好政策应产生收益与代价；坏政策应产生混乱、反噬、贵族不满、民众嘲笑、行政空转、治安恶化、忠诚下降或稳定度下降。即使政策只是象征性口号，也会造成至少一种轻微社会反应。每次都必须给玩家王国生成可每日结算的效果，且至少有一个每日数值不是 0。不相关的指标可以填 0，不要为了凑数让所有指标都变化。
+最高原则：政策必须落地。不要因为政策幼稚、激进、荒唐、理想化、财政紧张、执行阻力大或现实上不完美，就拒绝生成政策结果。好政策可以产生收益与代价；坏政策可以产生混乱、反噬、贵族不满、民众嘲笑、行政空转、治安恶化、忠诚下降或稳定度下降。也允许政策的全部数值效果为 0；只要影响目标和持续时间合法，就不得因此拒绝政策发布。不相关的指标应填 0，不要为了凑数强行制造变化。
 
 卡拉迪亚不是现代国家，而是封君、封臣、氏族、城镇、城堡、村庄、驻军、民兵、税赋、治安和封地收益共同维系的中世纪社会。政策消耗不应按现代国家预算估算，也不要把“全国政策”自动理解成从零购买整个王国所有物资。很多政策实际依靠命令、协调、征发、税制调整、宣传、巡逻、监督、地方摊派、贵族配合或短期补贴来执行。
 
-当前可落地影响项共有七类：繁荣度、粮食、村庄户数/炉户、忠诚度、治安度、民兵、AF 王国稳定度。繁荣度主要受贸易、税负、工商业、市场信心和战争破坏影响；粮食主要受征收、储备、运输、农业负担和军队消耗影响；户数/炉户主要受劳动力、安全、徭役、迁徙和破坏影响；忠诚度主要受公平感、文化认同、自治、压迫、恐惧、荣誉和利益分配影响；治安度主要受匪患、巡逻、执法、公正、腐败和地方秩序影响；民兵主要受训练、征召、地方防务、士气、粮饷和人口压力影响；王国稳定度主要受封臣信任、王权合法性、战争胜败、贵族利益、财政压力和国内分裂风险影响。
+当前可落地影响项共有八类：繁荣度、粮食、村庄户数/炉户、忠诚度、治安度、民兵、AF 王国稳定度、城镇与城堡主税收百分比。繁荣度主要受贸易、税负、工商业、市场信心和战争破坏影响；粮食主要受征收、储备、运输、农业负担和军队消耗影响；户数/炉户主要受劳动力、安全、徭役、迁徙和破坏影响；忠诚度主要受公平感、文化认同、自治、压迫、恐惧、荣誉和利益分配影响；治安度主要受匪患、巡逻、执法、公正、腐败和地方秩序影响；民兵主要受训练、征召、地方防务、士气、粮饷和人口压力影响；王国稳定度主要受封臣信任、王权合法性、战争胜败、贵族利益、财政压力和国内分裂风险影响；主税收百分比主要受税率、减免、征收效率和制度性税负调整影响。
 
 每日影响是每天结算的变化，不是整项政策的总变化。持续时间越长，每日变化越应谨慎。普通政策通常持续 15 到 30 天；短期公告、巡查、临时补贴通常 7 到 15 天；较大改革、军事整顿、税制调整通常 30 到 60 天；全国级长期改革通常 60 到 120 天；超过 120 天只用于长期国策、制度改革、迁徙、战争总动员或灾难级后果。
 
@@ -103,6 +105,8 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。它不是单个城镇民心，而是王国是否还能被同一套权威、利益分配和军事威望维系住。稳定度每日变化应使用整数。普通小政策通常为 0；轻微政治影响为 ±1；明显影响封臣信任、财政压力、王权合法性或战争信心为 ±2；严重改革、暴政、失败、妥协、贵族对抗或全国动员为 ±3；接近内战、崩溃、重大胜利、重大背叛或王国根基动摇时才用 ±4 到 ±5。
 
+城镇与城堡主税收百分比使用相对原版最终税额的百分比点：0 表示保持原版 100%，+10 表示原版的 110%，-20 表示原版的 80%。它不是每日固定增加或减少的第纳尔，不影响村庄独立收入或关税。普通税制微调通常为 ±5% 到 ±15%；明显增税、减税或征收改革通常为 ±15% 到 ±35%；超过 ±35% 只用于政策正文明确要求的极端税制。全国政策作用于目标王国全部氏族的城镇和城堡，地方政策只作用于指定城镇或城堡。
+
 第纳尔购买力必须按骑砍世界理解：
 - 1 到 3000 第纳尔：小规模公告、监察、宴赏、短期巡查、地方宣传、象征性补贴。
 - 3000 到 15000 第纳尔：一座城镇或数个村庄可见的治理行动，例如增派巡逻、修补仓储、短期赈济、临时运输、雇佣书记员。
@@ -119,6 +123,9 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 如果玩家在政策正文或自定义评判器提示词里写了参考数值、倍率、强弱或持续时间，应尊重其意图，并按各项数值本身的尺度折算。强政策可以有强效果，荒唐政策也可以反噬；不要把总影响误当成每日影响，也不要用内置建议压低玩家明确要求。强力正面政策通常也应有对应代价，例如粮食消耗、财政成本、户数压力、贵族不满或稳定度风险。
 
 民众反馈要像真实的卡拉迪亚社会反应，而不是公告摘要。可以写街市、村庄、酒馆、军营、贵族厅堂、商队、工匠、农户、民兵、巡逻队、总督或祭司等不同人群的看法。让他们有具体的支持、担忧、抱怨、观望、嘲笑、恐惧或流言，比如粮价、税吏、征役、治安、士兵口粮、村庄劳力、民兵训练、商路消息、封臣脸色和王国分裂传闻等。语气应像政策发布后在各地传开的议论和余波，不要写成系统说明，也不要编造上下文没有支持的具体人物、定居点或他国事实。";
+
+	private const string DefaultCustomPolicyEvaluatorPrompt = PreviousDefaultCustomPolicyEvaluatorPromptBeforeTaxIntent
+		+ "\n\n" + DefaultPolicyTownTaxIntentPromptParagraph;
 
 	private const string LeakedCustomPolicyPoliticalWeightsPromptSuffix = "同时根据政策内容评估原版政策投票使用的三项政治取向：authoritarianWeight 表示君主集权取向，oligarchicWeight 表示大氏族和贵族议政取向，egalitarianWeight 表示平民、地方自治和广泛参与取向。三项范围均为 -1 到 1，不得全部为 0。";
 
@@ -273,11 +280,20 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		+ "\n\n【数值】所有变化都是每日重复结算，不是政策总变化，必须由 policyContent 中的直接措施、范围和代价支持。除王国稳定度外，任何非零每日变化的绝对值都不得小于 1；因果不足或影响太轻的指标直接填 0，不得用 ±0.05、±0.1、±0.3 等微小数值凑效果。每座城镇或城堡每日繁荣度、民兵：普通政策通常为 ±1—3，重大政策通常为 ±3—6；每座城镇每日粮食：普通政策通常为 ±2—5，重大政策通常为 ±5—10；每座村庄每日户数及每座城镇每日忠诚度、治安度：普通政策通常为 ±1—2，重大政策通常为 ±2—4。普通全国政策至少应有一项核心指标位于适用区间的中段或高段，不要让所有非零数值都贴近下限。普通政策通常持续 7—14 天，猛烈措施持续 3—7 天，持续 15—28 天时使用较低数值，但仍不得输出绝对值小于 1 的非零变化。"
 		+ "\n\n王国稳定度默认且通常必须为 0。贵族不满、税负变化、征粮、征兵、土地赏赐、日常集权、地方冲突以及普通忠诚或治安变化，都不等于触动王国根基，不能因此增加或减少稳定度。只有政策在 1—3 天内直接改变王位继承、统治者合法承认、全国封臣契约、王国级自治结构、君主废立、国家分裂、内战或统一存续时，才可使用 +1 或 -1；不满足这些条件时必须为 0。外国效果只能来自正文明确写出的、有实际规模的直接跨国措施；没有这种措施时不要生成外国效果。impactSummary 和 effects.reason 各不超过 60 个中文字符，并使用直白完整的句子。";
 
-	private const string DefaultNpcRulerPolicyPrompt = "目标快照描述了王国此刻的真实世界。人物、国家、战争、外交和领地归属属于既定事实；传闻、误解和未证实的信息仍保持其不确定性。"
+	private const string PreviousDefaultNpcRulerPolicyPromptBeforeTownTax = "目标快照描述了王国此刻的真实世界。人物、国家、战争、外交和领地归属属于既定事实；传闻、误解和未证实的信息仍保持其不确定性。"
 		+ "\n\n统治者政策是统治者性格、政治目标、权力基础和现实处境共同形成的一项实际决定。不同统治者面对相似局势时，会因为在意的利益、能够依靠的力量和愿意承受的代价不同而作出不同选择。政策正文适合在游戏界面直接阅读，语言自然、直白，篇幅约 60—100 个中文字符；创意核心和摘要是简短完整的一句话。"
 		+ "\n\n同期世界现象是同一时期发生的一项独立变化。它可以与政策有关，也可以无关；可以是真实事件、社会误读或尚未证实的流传。它为当前世界增加一项清楚的新变化，但不产生政策数值效果。正文约 50—100 个中文字符，标题和摘要简短清楚。"
 		+ "\n\n政策数值表示每个游戏日重复发生的实际变化。与政策没有直接关系的指标等同于 0；非零变化以绝对值 1 作为最小有意义单位。每座城镇或城堡每日繁荣度、民兵的常见变化为 ±1—3；每座城镇每日粮食为 ±2—5；每座村庄每日户数以及每座城镇每日忠诚度、治安度为 ±1—2。影响范围广、执行强硬或代价沉重的政策可以达到这些范围的两倍。普通政策通常持续 7—14 天，猛烈的短期措施通常持续 3—7 天。"
 		+ "\n\n王国稳定度表示国家根本政治结构是否仍被承认，而不是一般的不满、税负、征兵、粮食、忠诚或治安变化。绝大多数政策的稳定度变化为 0。只有王位继承、统治合法性、全国封臣契约、国家分裂、内战或统一存续在 1—3 天内被直接改变时，稳定度变化才是 +1 或 -1。";
+
+	private const string PreviousDefaultNpcRulerPolicyPromptBeforeTaxIntent = "目标快照描述了王国此刻的真实世界。人物、国家、战争、外交和领地归属属于既定事实；传闻、误解和未证实的信息仍保持其不确定性。"
+		+ "\n\n统治者政策是统治者性格、政治目标、权力基础和现实处境共同形成的一项实际决定。不同统治者面对相似局势时，会因为在意的利益、能够依靠的力量和愿意承受的代价不同而作出不同选择。政策正文适合在游戏界面直接阅读，语言自然、直白，篇幅约 60—100 个中文字符；创意核心和摘要是简短完整的一句话。"
+		+ "\n\n同期世界现象是同一时期发生的一项独立变化。它可以与政策有关，也可以无关；可以是真实事件、社会误读或尚未证实的流传。它为当前世界增加一项清楚的新变化，但不产生政策数值效果。正文约 50—100 个中文字符，标题和摘要简短清楚。"
+		+ "\n\n政策数值表示每个游戏日重复发生的实际变化。与政策没有直接关系的指标等同于 0；允许所有数值都为 0，只要目标和持续时间合法就不得拒绝政策。非零每日变化以绝对值 1 作为最小有意义单位。每座城镇或城堡每日繁荣度、民兵的常见变化为 ±1—3；每座城镇每日粮食为 ±2—5；每座村庄每日户数以及每座城镇每日忠诚度、治安度为 ±1—2。影响范围广、执行强硬或代价沉重的政策可以达到这些范围的两倍。普通政策通常持续 7—14 天，猛烈的短期措施通常持续 3—7 天。城镇与城堡主税收百分比中，0 表示原版税额的 100%，+10 表示 110%，-20 表示 80%；普通税制调整通常为 ±5% 到 ±15%，明显调整为 ±15% 到 ±35%。全国政策的税收效果覆盖目标王国全部氏族的城镇和城堡，不影响村庄独立收入或关税。"
+		+ "\n\n王国稳定度表示国家根本政治结构是否仍被承认，而不是一般的不满、税负、征兵、粮食、忠诚或治安变化。绝大多数政策的稳定度变化为 0。只有王位继承、统治合法性、全国封臣契约、国家分裂、内战或统一存续在 1—3 天内被直接改变时，稳定度变化才是 +1 或 -1。";
+
+	private const string DefaultNpcRulerPolicyPrompt = PreviousDefaultNpcRulerPolicyPromptBeforeTaxIntent
+		+ "\n\n" + DefaultPolicyTownTaxIntentPromptParagraph;
 
 	private const string LeakedNpcPolicyPoliticalWeightsPromptSuffix = "每项政策还必须根据正文评估原版政策投票使用的 authoritarianWeight、oligarchicWeight、egalitarianWeight，分别表示君主集权、大氏族贵族议政、平民与地方广泛参与取向。三项范围均为 -1 到 1，不得全部为 0。";
 
@@ -3051,7 +3067,9 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptBeforeCompactContext, StringComparison.Ordinal)
 			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptBeforeStrongerEffectsAndPlainLanguage, StringComparison.Ordinal)
 			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptBeforeMinimumOneEffects, StringComparison.Ordinal)
-			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptBeforeConceptOnlyPrompt, StringComparison.Ordinal))
+			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptBeforeConceptOnlyPrompt, StringComparison.Ordinal)
+			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptBeforeTownTax, StringComparison.Ordinal)
+			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptBeforeTaxIntent, StringComparison.Ordinal))
 		{
 			return DefaultNpcRulerPolicyPrompt;
 		}
@@ -3122,6 +3140,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		string text = NormalizeCustomPolicyEvaluatorPromptText(input);
 		string currentWording = NormalizePolicyHearthWordingForBuiltInComparison(text);
 		return string.Equals(currentWording, NormalizePolicyHearthWordingForBuiltInComparison(NormalizeCustomPolicyEvaluatorPromptText(DefaultCustomPolicyEvaluatorPrompt)), StringComparison.Ordinal)
+			|| string.Equals(currentWording, NormalizePolicyHearthWordingForBuiltInComparison(NormalizeCustomPolicyEvaluatorPromptText(PreviousDefaultCustomPolicyEvaluatorPromptBeforeTaxIntent)), StringComparison.Ordinal)
 			|| string.Equals(currentWording, NormalizePolicyHearthWordingForBuiltInComparison(NormalizeCustomPolicyEvaluatorPromptText(PreviousDefaultCustomPolicyEvaluatorPromptWithSeparatedBuiltIns)), StringComparison.Ordinal)
 			|| string.Equals(currentWording, NormalizePolicyHearthWordingForBuiltInComparison(NormalizeCustomPolicyEvaluatorPromptText(PreviousDefaultCustomPolicyEvaluatorPromptWithVisibleBuiltIns)), StringComparison.Ordinal)
 			|| string.Equals(text, NormalizeCustomPolicyEvaluatorPromptText(PreviousDefaultCustomPolicyEvaluatorPromptBeforeExpandedStats), StringComparison.Ordinal)
