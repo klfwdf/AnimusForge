@@ -8733,10 +8733,10 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 	{
 		string value = text ?? "";
 		value = Regex.Replace(value, "\\[ACTION:[^\\]]+\\]", "", RegexOptions.IgnoreCase);
-		value = Regex.Replace(value, "\\[AD;[^\\]]+\\]", "", RegexOptions.IgnoreCase);
-		value = Regex.Replace(value, "\\[ADP;[^\\]]+\\]", "", RegexOptions.IgnoreCase);
-		value = Regex.Replace(value, "\\[ATT[:;][^\\]]+\\]", "", RegexOptions.IgnoreCase);
-		value = Regex.Replace(value, "\\[ATP[:;][^\\]]+\\]", "", RegexOptions.IgnoreCase);
+		value = Regex.Replace(value, "\\[AD:[^\\]]+\\]", "", RegexOptions.IgnoreCase);
+		value = Regex.Replace(value, "\\[ADP:[^\\]]+\\]", "", RegexOptions.IgnoreCase);
+		value = Regex.Replace(value, "\\[ATT:[^\\]]+\\]", "", RegexOptions.IgnoreCase);
+		value = Regex.Replace(value, "\\[ATP:[^\\]]+\\]", "", RegexOptions.IgnoreCase);
 		value = Regex.Replace(value, "\\[A:H_J_P_P_[CL]\\]", "", RegexOptions.IgnoreCase);
 		value = Regex.Replace(value, "\\[A:C_J_P_K\\]", "", RegexOptions.IgnoreCase);
 		value = Regex.Replace(value, "\\[A:C_J_K:[^\\]]+\\]", "", RegexOptions.IgnoreCase);

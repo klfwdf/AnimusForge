@@ -40,7 +40,7 @@ AnimusForge 动作标签实际用途表
 | 标签 | 实际用途 | 触发条件 | 实际效果/注意 |
 | --- | --- | --- | --- |
 | [ACTION:DUEL] | 发起正式决斗 | 玩家与 NPC 双方明确无条件同意单挑/决斗 | 进入决斗处理；普通吵架、叫嚣、群战、还在谈赌注时不应输出。 |
-| [AD;金额;天数;备注内容] | 决斗赌注债务 | 与 [ACTION:DUEL] 同轮，玩家下注但未即时交付 | 决斗链路会把该债务延后到决斗结算后处理。 |
+| [AD:金额:天数:备注内容] | 决斗赌注债务 | 与 [ACTION:DUEL] 同轮，玩家下注但未即时交付 | 决斗链路会把该债务延后到决斗结算后处理。 |
 | [ACTION:DUEL_LINE_WIN:吹嘘的内容] | NPC 决斗胜利台词 | 输出 [ACTION:DUEL] 时配套输出 | DuelBehavior 缓存为 NPC 赢后嘲讽/吹嘘。 |
 | [ACTION:DUEL_LINE_LOSE:吐槽的内容] | NPC 决斗失败台词 | 输出 [ACTION:DUEL] 时配套输出 | DuelBehavior 缓存为 NPC 输后吐槽。 |
 
@@ -50,8 +50,8 @@ AnimusForge 动作标签实际用途表
 | --- | --- | --- | --- |
 | [ACTION:GIVE_GOLD:金额] | NPC 给玩家第纳尔 | NPC 明确把钱交给玩家 | 从 NPC/市场库存转移金币到玩家；数量不足时按实际可给数量处理。 |
 | [ACTION:GIVE_ITEM:物品名称:数量] | NPC 给玩家物品 | NPC 明确交付其库存中存在的物品 | 从 NPC/市场库存转移物品到玩家；禁止填兵种和人名。 |
-| [AD;金额;天数;N/P;备注内容] | 建立承诺/债务 | 一方承诺未来交付，或交易中一方先给、另一方未给 | 金额为承诺价值；天数为期限；N 表示 NPC 欠玩家，P 表示玩家欠 NPC。当前主要债务模型。 |
-| [ADP;债务ID] | 债务解除/付款确认 | NPC 承认收到对应债务付款、豁免或结清 | 解除指定债务；代码也兼容 [ADP:债务ID]。 |
+| [AD:金额:天数:N/P:备注内容] | 建立承诺/债务 | 一方承诺未来交付，或交易中一方先给、另一方未给 | 金额为承诺价值；天数为期限；N 表示 NPC 欠玩家，P 表示玩家欠 NPC。当前主要债务模型。 |
+| [ADP:债务ID] | 债务解除/付款确认 | NPC 承认收到对应债务付款、豁免或结清 | 解除指定债务；当前规范格式统一使用冒号。 |
 | [ATT:部队编号:数量] | 部队转移给玩家 | NPC 明确同意把当前编号清单中的部队交给玩家，或要人允许招募志愿兵 | 编号必须来自本轮清单，不能写兵种名；只用于士兵，不用于物品或同伴部队命令。 |
 | [ATP:俘虏编号:数量] | 俘虏转移给玩家 | NPC 明确同意交出编号清单中的俘虏 | 编号必须来自本轮清单，不能写俘虏名。 |
 | [ACTION:SETTLEMENT_TRANSFER:TO_PLAYER:固定资产ID或编号] | 固定资产转给玩家 | NPC 明确同意现在把城市、城堡、工坊、商队或商船队转给玩家 | 当前规则表只推荐 TO_PLAYER；代码层能识别 TO_NPC，但当前提示词明确不把“玩家给 NPC”走此标签。 |
@@ -143,7 +143,7 @@ AnimusForge 动作标签实际用途表
 
 | 标签 | 实际用途 | 触发条件 | 实际效果/注意 |
 | --- | --- | --- | --- |
-| [ACTION:NOBLE_GATHERING:START:settlement=settlementId;heroes=heroId1,heroId2;clans=clanId1;kingdoms=kingdomId1;cultures=cultureId1;age=18-30;gender=female] | 开始安排贵族宴会 | NPC 明确同意帮玩家举办宴会，且玩家已给出地点和邀请范围 | settlement 必须是可举办地 ID；邀请范围至少要有 heroes/clans/kingdoms/cultures/age/gender 中一类。 |
+| [ACTION:NOBLE_GATHERING:START:settlement=settlementId:heroes=heroId1,heroId2:clans=clanId1:kingdoms=kingdomId1:cultures=cultureId1:age=18-30:gender=female] | 开始安排贵族宴会 | NPC 明确同意帮玩家举办宴会，且玩家已给出地点和邀请范围 | settlement 必须是可举办地 ID；邀请范围至少要有 heroes/clans/kingdoms/cultures/age/gender 中一类。 |
 
 十三、多人场景接力
 
@@ -174,16 +174,15 @@ AnimusForge 动作标签实际用途表
 | [STP] | 兼容短标签 | 等同 [ACTION:SCENE_STOP_FOLLOW]，当前推荐写长标签。 |
 | [ASS:人物名称列表] | 兼容短标签 | 等同 [ACTION:SCENE_SUMMON:人物名称列表]，当前推荐写长标签。 |
 | [GUI:人物名称] | 兼容短标签 | 等同 [ACTION:SCENE_GUIDE:人物名称]，当前推荐写长标签。 |
-| [ADP:债务ID] | 兼容格式 | 等同 [ADP;债务ID]，当前规则表推荐分号格式。 |
 | [ACTION:KINGDOM_SERVICE:LEAVE] | 兼容/旧格式 | C# 有兼容解析，但规则表推荐 [ACTION:KINGDOM_SERVICE:LEAVE:current]。 |
 | [ACTION:JOIN_MERCENARY:kingdomId] | 旧势力身份标签 | C# 仍有旧解析入口；新规则推荐 KINGDOM_SERVICE:MERCENARY。 |
 | [ACTION:JOIN_VASSAL:kingdomId] | 旧势力身份标签 | C# 仍有旧解析入口；新规则推荐 KINGDOM_SERVICE:VASSAL。 |
 | [ACTION:VASSALAGE:SUBMIT:MILITARY:{kingdomId}] | 旧/兼容臣属类型 | C# 解析器接受，但当前规则表使用 GARRISON。 |
 | [ACTION:VASSALAGE:SUBMIT:PROTECTORATE:{kingdomId}] | 旧/兼容臣属类型 | C# 解析器接受，但当前规则表不推荐。 |
-| [ACTION:DEBT_GOLD:金额] | 旧版债务标签 | 代码中仍有旧处理痕迹，但当前链路主要用 [AD;...] 建债，不推荐新输出。 |
+| [ACTION:DEBT_GOLD:金额] | 旧版债务标签 | 代码中仍有旧处理痕迹，但当前链路主要用 [AD:...] 建债，不推荐新输出。 |
 | [ACTION:DEBT_ADD:金额] | 旧版债务标签 | 兼容旧金币债；当前不推荐。 |
 | [ACTION:DEBT_ITEM:物品名称:数量] | 旧版物品债标签 | 场景链路有规范化痕迹，但当前推荐用 AD/ADP 债务模型。 |
-| [ACTION:DEBT_DAYS:天数] / [ACTION:DEBT_DUE_DAYS:天数] | 旧版债务期限标签 | 当前推荐把期限写入 [AD;金额;天数;...]。 |
+| [ACTION:DEBT_DAYS:天数] / [ACTION:DEBT_DUE_DAYS:天数] | 旧版债务期限标签 | 当前推荐把期限写入 [AD:金额:天数:...]。 |
 | [ACTION:DEBT_DUE_ABS_DAY:天数] | 旧版绝对到期日 | 旧债务模型辅助标签；不推荐新输出。 |
 | [ACTION:DEBT_DUE_DATE:年:季节:日] | 旧版日历到期日 | 旧债务模型辅助标签；不推荐新输出。 |
 | [ACTION:DEBT_DUE_NONE] | 旧版无限期债务 | 当前推荐在 AD 期限规则中处理，不推荐新输出。 |
@@ -203,7 +202,7 @@ AnimusForge 动作标签实际用途表
 | --- | --- |
 | NPC 正文答应了但游戏没触发 | 同一话题的 PostprocessRules 是否注入到 {tag_rules}，后处理是否实际输出标签。 |
 | 后处理输出了标签但无效果 | C# 正则是否支持该格式，目标 ID/编号是否来自运行时清单。 |
-| 债务没记录 | 当前推荐用 [AD;金额;天数;N/P;备注]，并确认方向 P/N；旧 DEBT_* 不应作为新规则依赖。 |
+| 债务没记录 | 当前推荐用 [AD:金额:天数:N/P:备注]，并确认方向 P/N；旧 DEBT_* 不应作为新规则依赖。 |
 | 士兵/俘虏没转移 | ATT/ATP 必须使用本轮编号，不要写兵种名或俘虏名。 |
 | 场景带路/传唤失败 | SCENE_GUIDE/SCENE_SUMMON 目标必须来自【带路与传唤NPC清单】，不要输出坐标。 |
 | 攻城处置误触发 | 搜掠/血洗/殖民只能由玩家己方入城士兵直接回应玩家明确命令触发；平民侧只能局部抢钱。 |

@@ -88,8 +88,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	private static readonly MethodInfo RewardObjectManagerTryRegisterWithoutInitializationMethod = typeof(MBObjectManager).GetMethod("TryRegisterObjectWithoutInitialization", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 	private static readonly FieldInfo HeroClanBackingField = typeof(Hero).GetField("_clan", BindingFlags.Instance | BindingFlags.NonPublic);
 	private static readonly Regex HeroJoinPlayerPartyTagRegex = new Regex("\\[A:H_J_P_P_([CL])\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-	private static readonly Regex DebtCreationTagRegex = new Regex("\\[AD;(\\d+);(\\d+);(N|P);([^\\]\\r\\n]*)\\]", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
-	private static readonly Regex DebtResolutionTagRegex = new Regex("\\[ADP;([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+	private static readonly Regex DebtCreationTagRegex = new Regex("\\[AD:(\\d+):(\\d+):(N|P):([^\\]\\r\\n]*)\\]", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+	private static readonly Regex DebtResolutionTagRegex = new Regex("\\[ADP:([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
 	public enum SettlementMerchantKind
 	{
@@ -15690,7 +15690,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine("【系统账目提示】玩家对你代表的" + BuildSettlementMerchantDebtLabel(settlement, kind) + "有以下承诺或欠款（分笔记录）：");
-		stringBuilder.AppendLine("【债务解除确认】若玩家本轮行为已被系统事实明确记录为偿还、豁免或免除，请在回复末尾输出 [ADP;债务ID] 解除对应债务；每笔债务单独确认，禁止口头声称已结清却不输出标签。");
+		stringBuilder.AppendLine("【债务解除确认】若玩家本轮行为已被系统事实明确记录为偿还、豁免或免除，请在回复末尾输出 [ADP:债务ID] 解除对应债务；每笔债务单独确认，禁止口头声称已结清却不输出标签。");
 		List<DebtRecord.DebtLine> list = (from x in settlementMerchantDebtRecord.DebtLines
 			where x != null && x.RemainingAmount > 0
 			orderby x.DueDay, x.CreatedDay
@@ -16292,8 +16292,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		text2 = Regex.Replace(text2, "\\[ACTION:GIVE_ASSET:[^\\]]*\\]", string.Empty, RegexOptions.IgnoreCase);
 
 		text2 = Regex.Replace(text2, "\\[ACTION:TRADE_TRUST:[^\\]]*\\]", string.Empty, RegexOptions.IgnoreCase);
-		text2 = Regex.Replace(text2, "\\[AD;[^\\]]*\\]", string.Empty, RegexOptions.IgnoreCase);
-		text2 = Regex.Replace(text2, "\\[ADP;[^\\]]*\\]", string.Empty, RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[AD:[^\\]]*\\]", string.Empty, RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[ADP:[^\\]]*\\]", string.Empty, RegexOptions.IgnoreCase);
 		return text2.Trim();
 	}
 
@@ -17706,8 +17706,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				Logger.Log("Logic", "[RewardParty] item_batch_done attempted=" + itemTransferAttempted + " succeeded=" + itemTransferSucceeded + " failedOrPartial=" + itemTransferFailedOrPartial + " actualQuantity=" + itemTransferActualQuantity + " actualValue=" + itemTransferActualValue);
 			}
 			responseText = Regex.Replace(responseText, "\\[ACTION:TRADE_TRUST:[^\\]]*\\]", string.Empty, RegexOptions.IgnoreCase);
-			responseText = Regex.Replace(responseText, "\\[AD;[^\\]]+\\]", string.Empty, RegexOptions.IgnoreCase);
-			responseText = Regex.Replace(responseText, "\\[ADP;[^\\]]+\\]", string.Empty, RegexOptions.IgnoreCase).Trim();
+			responseText = Regex.Replace(responseText, "\\[AD:[^\\]]+\\]", string.Empty, RegexOptions.IgnoreCase);
+			responseText = Regex.Replace(responseText, "\\[ADP:[^\\]]+\\]", string.Empty, RegexOptions.IgnoreCase).Trim();
 			if (npcFacts.Count > 0)
 			{
 				SetLastGeneratedNpcFactLines(new string[1] { "[AFEF NPC行为补充] " + text + ": " + string.Join(" ", npcFacts) });
@@ -17736,8 +17736,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		if (currentSettlement == null || !currentSettlement.IsTown)
 		{
 			responseText = Regex.Replace(responseText ?? "", "\\[ACTION:[^\\]]+\\]", string.Empty, RegexOptions.IgnoreCase).Trim();
-			responseText = Regex.Replace(responseText, "\\[AD;[^\\]]+\\]", string.Empty, RegexOptions.IgnoreCase).Trim();
-			responseText = Regex.Replace(responseText, "\\[ADP;[^\\]]+\\]", string.Empty, RegexOptions.IgnoreCase).Trim();
+			responseText = Regex.Replace(responseText, "\\[AD:[^\\]]+\\]", string.Empty, RegexOptions.IgnoreCase).Trim();
+			responseText = Regex.Replace(responseText, "\\[ADP:[^\\]]+\\]", string.Empty, RegexOptions.IgnoreCase).Trim();
 			return;
 		}
 		string giverName = giverCharacter.Name?.ToString() ?? GetSettlementMerchantRoleLabel(kind);

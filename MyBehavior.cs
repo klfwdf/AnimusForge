@@ -10377,6 +10377,19 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static bool IsModCreatedRebelKingdomForExternal(Kingdom kingdom)
+	{
+		try
+		{
+			MyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			return behavior != null && behavior.IsKnownOrLegacyModCreatedRebelKingdom(kingdom);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	public static bool TryAdjustKingdomStabilityForExternal(Kingdom kingdom, int delta, string reason, out int before, out int after)
 	{
 		before = KingdomStabilityDefaultValue;
@@ -13802,8 +13815,8 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			string text = (tag ?? "").Trim();
 			if (Regex.IsMatch(text, "^\\[ACTION:GIVE_ASSET:[^\\]\\r\\n:]+:(?:ALL|\\d+)\\]$", RegexOptions.IgnoreCase) ||
-				Regex.IsMatch(text, "^\\[AD;\\d+;\\d+;P;[^\\]]*\\]$", RegexOptions.IgnoreCase) ||
-				Regex.IsMatch(text, "^\\[ADP;[^\\]\\r\\n:;]+\\]$", RegexOptions.IgnoreCase) ||
+				Regex.IsMatch(text, "^\\[AD:\\d+:\\d+:P:[^\\]]*\\]$", RegexOptions.IgnoreCase) ||
+				Regex.IsMatch(text, "^\\[ADP:[^\\]\\r\\n:;]+\\]$", RegexOptions.IgnoreCase) ||
 				Regex.IsMatch(text, "^\\[ATT:(?:ALL|\\d+):(?:ALL|\\d+)\\]$", RegexOptions.IgnoreCase) ||
 				Regex.IsMatch(text, "^\\[ATP:(?:ALL|\\d+):(?:ALL|\\d+)\\]$", RegexOptions.IgnoreCase))
 			{
@@ -13932,12 +13945,12 @@ public class MyBehavior : CampaignBehaviorBase
 				return EstimateRewardItemTagValueForWeeklyMemoryMaterial(targetHero, assetToken, assetAmount, rewardOptions);
 			}
 		}
-		match = Regex.Match(text, "^\\[AD;(\\d+);\\d+;P;[^\\]]*\\]$", RegexOptions.IgnoreCase);
+		match = Regex.Match(text, "^\\[AD:(\\d+):\\d+:P:[^\\]]*\\]$", RegexOptions.IgnoreCase);
 		if (match.Success && TryParsePositiveLong(match.Groups[1].Value, out var debtGold))
 		{
 			return debtGold;
 		}
-		match = Regex.Match(text, "^\\[ADP;([^\\]\\r\\n:;]+)\\]$", RegexOptions.IgnoreCase);
+		match = Regex.Match(text, "^\\[ADP:([^\\]\\r\\n:;]+)\\]$", RegexOptions.IgnoreCase);
 		if (match.Success)
 		{
 			string debtId = (match.Groups[1].Value ?? "").Trim();
@@ -14182,11 +14195,11 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return "给付金币";
 		}
-		if (text.StartsWith("[AD;", StringComparison.OrdinalIgnoreCase))
+		if (text.StartsWith("[AD:", StringComparison.OrdinalIgnoreCase))
 		{
 			return "新增债务";
 		}
-		if (text.StartsWith("[ADP;", StringComparison.OrdinalIgnoreCase))
+		if (text.StartsWith("[ADP:", StringComparison.OrdinalIgnoreCase))
 		{
 			return "债务清偿";
 		}
@@ -14239,7 +14252,7 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		List<string> list = new List<string>();
 		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (Match match in Regex.Matches(text ?? "", "\\[(?:ACTION:[^\\]\\r\\n]*|AD;[^\\]\\r\\n]*|ADP;[^\\]\\r\\n]*|ATT:[^\\]\\r\\n]*|ATP:[^\\]\\r\\n]*)\\]", RegexOptions.IgnoreCase))
+		foreach (Match match in Regex.Matches(text ?? "", "\\[(?:ACTION:[^\\]\\r\\n]*|AD:[^\\]\\r\\n]*|ADP:[^\\]\\r\\n]*|ATT:[^\\]\\r\\n]*|ATP:[^\\]\\r\\n]*)\\]", RegexOptions.IgnoreCase))
 		{
 			string tag = (match?.Value ?? "").Trim();
 			if (!string.IsNullOrWhiteSpace(tag) && !tag.StartsWith("[ACTION:MOOD:", StringComparison.OrdinalIgnoreCase) && seen.Add(tag))
@@ -33071,8 +33084,8 @@ public class MyBehavior : CampaignBehaviorBase
 			return text;
 		}
 		text = Regex.Replace(text, "\\[ACTION:[^\\]]*\\]", "");
-		text = Regex.Replace(text, "\\[AD;[^\\]]*\\]", "", RegexOptions.IgnoreCase);
-		text = Regex.Replace(text, "\\[ADP;[^\\]]*\\]", "", RegexOptions.IgnoreCase);
+		text = Regex.Replace(text, "\\[AD:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
+		text = Regex.Replace(text, "\\[ADP:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
 		text = TransferTroopTagRegex.Replace(text, "");
 		text = TransferPrisonerTagRegex.Replace(text, "");
 		return text.Trim();
@@ -33195,7 +33208,7 @@ public class MyBehavior : CampaignBehaviorBase
 		List<string> list = new List<string>();
 		HashSet<string> hashSet = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
 		string text = "";
-		foreach (Match item in Regex.Matches(raw ?? "", "\\[(?:ACTION:[^\\]\\r\\n]*|AD;[^\\]\\r\\n]*|ADP;[^\\]\\r\\n]*)\\]", RegexOptions.IgnoreCase))
+		foreach (Match item in Regex.Matches(raw ?? "", "\\[(?:ACTION:[^\\]\\r\\n]*|AD:[^\\]\\r\\n]*|ADP:[^\\]\\r\\n]*)\\]", RegexOptions.IgnoreCase))
 		{
 			string text2 = (item?.Value ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(text2))
@@ -33216,10 +33229,10 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				string deferredAdTag = list.LastOrDefault((string x) => (x ?? "").Trim().StartsWith("[AD;", StringComparison.OrdinalIgnoreCase));
+				string deferredAdTag = list.LastOrDefault((string x) => (x ?? "").Trim().StartsWith("[AD:", StringComparison.OrdinalIgnoreCase));
 				if (!string.IsNullOrWhiteSpace(deferredAdTag))
 				{
-					Match match = Regex.Match(deferredAdTag, "\\[AD;(\\d+);(\\d+);P;([^\\]]*)\\]", RegexOptions.IgnoreCase);
+					Match match = Regex.Match(deferredAdTag, "\\[AD:(\\d+):(\\d+):P:([^\\]]*)\\]", RegexOptions.IgnoreCase);
 					if (match.Success && int.TryParse(match.Groups[1].Value, out var result) && int.TryParse(match.Groups[2].Value, out var result2) && result > 0)
 					{
 						DuelBehavior.CachePendingDuelDebtTag(targetHero, result, result2, (match.Groups[3].Value ?? "").Trim());
@@ -33229,7 +33242,7 @@ public class MyBehavior : CampaignBehaviorBase
 			catch
 			{
 			}
-			list = list.Where((string x) => !((x ?? "").Trim().StartsWith("[AD;", StringComparison.OrdinalIgnoreCase) || (x ?? "").Trim().StartsWith("[ADP;", StringComparison.OrdinalIgnoreCase))).ToList();
+			list = list.Where((string x) => !((x ?? "").Trim().StartsWith("[AD:", StringComparison.OrdinalIgnoreCase) || (x ?? "").Trim().StartsWith("[ADP:", StringComparison.OrdinalIgnoreCase))).ToList();
 		}
 		if (string.IsNullOrWhiteSpace(text))
 		{
@@ -33243,8 +33256,8 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		string text2 = text ?? "";
 		text2 = Regex.Replace(text2, "\\[ACTION:GIVE_ASSET:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
-		text2 = Regex.Replace(text2, "\\[AD;[^\\]]*\\]", "", RegexOptions.IgnoreCase);
-		text2 = Regex.Replace(text2, "\\[ADP;[^\\]]*\\]", "", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[AD:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[ADP:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
 		return text2.Trim();
 	}
 
@@ -33429,7 +33442,7 @@ public class MyBehavior : CampaignBehaviorBase
 		List<string> list = new List<string>();
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		string text = "";
-		foreach (Match item in Regex.Matches(raw ?? "", "\\[(?:ACTION:[^\\]\\r\\n]*|AD;[^\\]\\r\\n]*|ADP;[^\\]\\r\\n]*)\\]", RegexOptions.IgnoreCase))
+		foreach (Match item in Regex.Matches(raw ?? "", "\\[(?:ACTION:[^\\]\\r\\n]*|AD:[^\\]\\r\\n]*|ADP:[^\\]\\r\\n]*)\\]", RegexOptions.IgnoreCase))
 		{
 			string text2 = (item?.Value ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(text2))
@@ -33441,11 +33454,11 @@ public class MyBehavior : CampaignBehaviorBase
 				text = text2;
 				continue;
 			}
-			if (!text2.StartsWith("[ACTION:GIVE_ASSET:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[AD;", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ADP;", StringComparison.OrdinalIgnoreCase))
+			if (!text2.StartsWith("[ACTION:GIVE_ASSET:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[AD:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ADP:", StringComparison.OrdinalIgnoreCase))
 			{
 				continue;
 			}
-			if ((text2.StartsWith("[AD;", StringComparison.OrdinalIgnoreCase) || text2.StartsWith("[ADP;", StringComparison.OrdinalIgnoreCase))
+			if ((text2.StartsWith("[AD:", StringComparison.OrdinalIgnoreCase) || text2.StartsWith("[ADP:", StringComparison.OrdinalIgnoreCase))
 				&& !RewardSystemBehavior.IsCanonicalDebtActionTagForExternal(text2))
 			{
 				continue;

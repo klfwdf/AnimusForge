@@ -26,7 +26,7 @@
                                               "Description":  "玩家和NPC都无条件同意武器决斗时输出。NPC只是提出赌注并问如何/成交吗时禁止。只要输出[ACTION:DUEL]且表内有DUEL_LINE_WIN/LOSE，必须同时输出两条台词。"
                                           },
                                           {
-                                              "Tag":  "[AD;价值;天数;N/P;备注内容]",
+                                              "Tag":  "[AD:价值:天数:N/P:备注内容]",
                                               "Description":  "仅在已经输出[ACTION:DUEL]且玩家赌注已经成立时输出。价值填玩家赌注价值，方向填P；NPC仅提出赌注并等待玩家回答时禁止输出。"
                                           },
                                           {
@@ -52,11 +52,11 @@
                                                  "Description":  "仅当\u003clatest_reply\u003e中NPC明确把资产无条件立即交给玩家时输出。所有货币的名称都写GOLD；普通物品尽量使用NPC物品清单中的具体名称,没有才直接填写NPC给出的物品名称，城市、城堡、工坊、商队只能用【你当前可转移固定资产】原始ID。禁止使用玩家资产清单，资产名称或ID禁止填写兵种、人名。报价、附带条件、未来筹款、尾款或赎金承诺时禁止输出。转移NPC的全部物品（不包含固定资产）时输出[ACTION:GIVE_ASSET:ALL:ALL]。"
                                              },
                                             {
-                                                "Tag":  "[AD;价值;天数;N/P;备注内容]",
+                                                "Tag":  "[AD:价值:天数:N/P:备注内容]",
                                                 "Description":  "该标签的有多种场景输出要求:\n1:NPC在交易过程中先给予了玩家任何事物，玩家还未支付，那么价值处输出玩家应当支付的价值总量，不清楚时可估记，此时天数填1。\n2:玩家明确无条件承诺未来或以后给予NPC某项事物，此时价值较为模糊，应当估计或者随便填写，此时天数填0。\n3:玩家向NPC要求租借任何事物给玩家，如果有指定天数，那么填写指定天数，如果没有指定，填写7。\n4:N/P的含义是，N代表NPC欠玩家，P代表玩家欠NPC，请仔细甄别到底谁欠谁！严禁错误输出。\n5:交易与承诺过程中，如果有指定天数，可以不按1或2末尾的天数要求，按最终NPC与玩家无条件同意的天数。\n6:备注内容不少于50字。"
                                             },
                                             {
-                                                "Tag":  "[ADP;债务ID]",
+                                                "Tag":  "[ADP:债务ID]",
                                                 "Description":  "仅当\u003clatest_reply\u003e中NPC明确无条件同意放弃或结清某笔未付款，欠款，承诺时输出。"
                                             }
                                         ],
@@ -885,7 +885,7 @@
                             "Instruction":  "【贵族宴会规则】宴会运行时事实是强约束：如果上下文说明你正在赴宴，你必须清楚自己正在参加宴会、宴会主人是谁以及举办地；如果上下文说明你是主办方，你必须清楚自己就是宴会主人，并以主人身份接待宾客，不能把宴会说成尚未开始、只是传闻或与你无关。玩家可以通过同伴、总督或亲信安排贵族宴会。正文里只自然确认、追问、接受或拒绝，不要直接写动作标签。举办宴会时，只有当玩家已经明确表达要举办宴会，并且本轮能解析出举办地点以及至少一个具体人物、家族、王国、文化或群体筛选时，才视为可以安排；若缺地点或宾客范围，先追问。取消宴会时必须遵守运行时可取消宴会清单：如果当前模式是 player_order，说明玩家正在命令自己的同伴或总督取消玩家宴会，你必须服从并明确确认散宴；如果当前模式是 host_persuasion，说明你本人是宴会主人，你应依据性格、关系、玩家给出的理由和当前局势决定接受或拒绝劝说。无可取消宴会时不得假装取消成功。",
                             "PostprocessRules":  [
                                                      {
-                                                         "Tag":  "[ACTION:NOBLE_GATHERING:START:settlement=settlementId;heroes=heroId1,heroId2;clans=clanId1;kingdoms=kingdomId1;cultures=cultureId1;age=18-30;gender=female]",
+                                                         "Tag":  "[ACTION:NOBLE_GATHERING:START:settlement=settlementId:heroes=heroId1,heroId2:clans=clanId1:kingdoms=kingdomId1:cultures=cultureId1:age=18-30:gender=female]",
                                                          "Description":  "如果NPC在\u003clatest_reply\u003e里明确无条件同意帮玩家举办宴会，且玩家本轮已经给出了举办地点和邀请对象范围，就输出这个。settlement 必须使用运行时可举办地ID；heroes/clans/kingdoms/cultures/age/gender 可按玩家指定填写，可省略空项，但至少要有一个邀请人物、家族、王国、文化或群体筛选。若NPC仍在追问地点、宾客、费用，或拒绝/拖延/只闲聊，不要输出。"
                                                      },
                                                      {
