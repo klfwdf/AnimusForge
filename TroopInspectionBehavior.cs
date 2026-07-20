@@ -4670,9 +4670,13 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		{
 			return;
 		}
-		bool preserveCastleSlaughterAttackerTarget = _externalCastleRuntime
+		bool castleSlaughterOwnsAgent = _externalCastleRuntime
 			&& CastleAftermathRuntimeBridge.IsRegularPrisonerSlaughterActive(base.Mission)
 			&& agent.Formation?.FormationIndex == SiegeCastleRosterSelectionProfile.AlliedFormationClassIndex;
+		if (castleSlaughterOwnsAgent)
+		{
+			return;
+		}
 		try
 		{
 			agent.DisableScriptedMovement();
@@ -4682,10 +4686,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		}
 		try
 		{
-			if (!preserveCastleSlaughterAttackerTarget)
-			{
-				agent.ClearTargetFrame();
-			}
+			agent.ClearTargetFrame();
 		}
 		catch
 		{
