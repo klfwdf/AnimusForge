@@ -302,12 +302,12 @@
                             "TopicNumber":  7,
                             "TopicLabel":  "Local 3D scene movements (lead, follow). Excludes world map travel and combat/attack actions.",
                             "Code":  "SCENE_MOVE",
-                            "NonHeroInstruction":  "【场景行为规则】即使你只是无名士兵或平民，只要本轮系统确实给了【带路与传唤NPC清单】或相关状态提示，你也可以决定是否带路、传唤、跟随、停止跟随或结束这次会面；但你只能对系统当前列出的目标表态，不能编造名单外的人或地点。只有当你在正文里最终明确答应时，才算真的执行",
+                            "NonHeroInstruction":  "【场景行为规则】本轮系统给了【带路与传唤NPC清单】或相关状态提示，你可以决定是否带路、传唤、跟随、停止跟随或结束这次会面；但你只能对系统当前列出的目标表态，不能编造名单外的人或地点。只有当你在正文里最终明确答应时，才算真的执行,长距离行动，比如去非本地的其他定居点，请询问玩家是否要求你加入队伍,如果不加入队伍，请拒绝",
                             "Instruction":  "【场景行为规则】带路、传唤、跟随、停止跟随、结束传唤后的会面，都只以本轮运行时状态为准。你只能依据系统当前给出的【带路与传唤NPC清单】和状态提示回答；没有列出来的目标，不得擅自答应。若目标在酒馆或领主大厅，带路只需带到对应门口。只有当你在正文里最终明确同意时，才算真的执行",
                             "PostprocessRules":  [
                                                      {
                                                          "Tag":  "[ACTION:SCENE_FOLLOW_PLAYER]",
-                                                         "Description":  "如果NPC在\u003clatest_reply\u003e里明确无条件同意或决定了跟随玩家，就输出这个，包括跟玩家去某个地点,只允许本地"
+                                                         "Description":  "如果NPC在\u003clatest_reply\u003e里明确无条件同意或决定了跟随玩家，就输出这个，包括跟玩家去某个场景内地点,只允许本地，如果是远距离的另一个定居点，禁止输出此标签。"
                                                      },
                                                      {
                                                          "Tag":  "[ACTION:SCENE_STOP_FOLLOW]",
@@ -544,11 +544,11 @@
                             "TopicLabel":  "Recruit an NPC personally or move a clan to a specified kingdom",
                             "Code":  "NPC_JOIN",
                             "NonHeroInstruction":  "【加入玩家家族规则】非英雄NPC也可以被玩家招募；若升格为 Hero，将成为玩家家族成员并随队行动。",
-                            "Instruction":  "【加入与归附规则】区分当前说话者本人加入玩家家族/队伍，以及家族族长决定率领全族加入明确王国。全族归附不要求玩家是国王，目标也可以是第三方王国。是否同意取决于家族利益、关系和信任。",
+                            "Instruction":  "【加入与归附规则】区分当前说话者本人加入玩家家族/队伍，以及家族族长决定率领全族加入明确王国。",
                             "PostprocessRules":  [
                                                      {
                                                          "Tag":  "[A:H_J_P_P_C&L]",
-                                                         "Description":  "仅当当前说话的NPC本人在\u003clatest_reply\u003e中明确无条件同意加入玩家队伍,被玩家雇佣时输出，C为成为玩家同伴,L为成为玩家家族成员，无特殊说明时通常保留去掉&L,除非成为家族成员，则去掉C&，NPC的整个家族加入王国而不是本人加入则禁止输出此标签"
+                                                         "Description":  "仅当当前说话的NPC本人或及其部队在\u003clatest_reply\u003e中明确无条件同意加入玩家队伍,被玩家雇佣时输出，C为成为玩家同伴,L为成为玩家家族成员，无特殊说明时通常保留去掉&L,除非成为家族成员，则去掉C&，NPC的整个家族加入王国而不是本人加入则禁止输出此标签"
                                                      },
                                                      {
                                                          "Tag":  "[A:C_J_K:{targetKingdomId}]",
@@ -660,7 +660,7 @@
                             "TopicLabel":  "Move and attack",
                             "Code":  "Commands and Requests",
                             "NonHeroInstruction":  "只有当你正代表野外当前非英雄MobileParty交涉时，才可作为兜底接受该当前部队的移动、巡逻、跟随或攻击命令；不能创建同伴部队，不能并入玩家队伍，不能指挥无关远方部队或使用英雄/领主专属权力。",
-                            "Instruction":  "【大地图指令规则】你可按关系接受、拒绝或索要利益。默认把玩家的新命令理解为追加到【当前NPC命令任务】末尾；只有玩家明确要求取消、停止或改派时，才表达停止旧任务。可询问执行多久，但不要追问目标位置或准备情况。",
+                            "Instruction":  "【大地图指令规则】你可按关系接受、拒绝或索要利益。默认把玩家的新命令理解为追加到【当前NPC命令任务】末尾；只有玩家明确要求取消、停止或改派时，才表达停止旧任务。可询问执行多久，但不要追问目标位置或准备情况，以及跟随玩家与加入部队有本质不同，请向玩家询问清楚。",
                             "PostprocessRules":  [
                                                      {
                                                          "Tag":  "[ACTION:WORLDMAP_ORDER:GO_TO_SETTLEMENT:settlement:{id}:{days}]",
@@ -751,6 +751,10 @@
                                                          "Description":  "双方国王在\u003clatest_reply\u003e中就停战、休战、议和、和平达成同意时输出。NPC说即刻停火、下令撤军、推动休战议程、契约已成、既然你已应允、记得答应的事、以贡金/赎金/领地换和平，都输出。若history同一组条件包含和平，latest_reply接受整组条件时必须输出和平。tributeAmount用history或本轮金额；未明说填0或auto；durationDays未明说填default。ID必须从运行时事实复制。"
                                                      },
                                                      {
+                                                         "Tag":  "[ACTION:DIPLOMACY:UNLANDED_CLAN_PEACE:player_clan_id:target_faction_id]",
+                                                         "Description":  "仅当运行时事实表明无地玩家家族与目标敌对方仍处于战争，且\u003clatest_reply\u003e中的NPC明确同意立即停战、议和或结束敌对时输出。NPC拒绝、犹豫、报价、反问、提出尚未满足的条件或只说会考虑时不得输出。player_clan_id与target_faction_id必须逐字复制运行时事实。"
+                                                     },
+                                                     {
                                                          "Tag":  "[ACTION:DIPLOMACY:FORM_ALLIANCE:id1:id2:durationDays]",
                                                          "Description":  "双方国王同意结盟、同盟、盟约、共同防御、长期友谊、军事协作时输出。latest_reply接受history整组协议，且history含结盟/长久友谊/共同防御/释放亲族换友谊时，必须输出。durationDays未明说填default；ID顺序按标签占位和运行时事实复制。"
                                                      },
@@ -807,6 +811,7 @@
                                                                 "not_king":  "【外交状态提示】你不是国王，不能代表王国进行外交谈判。",
                                                                 "player_not_king":  "【外交状态提示】玩家不是国王，不能签正式王国外交；只可政治交涉、觐见、承认、停战或建国前条件。",
                                                                 "player_independent_settlement_clan":  "【外交状态提示】玩家尚未建国，但其独立家族占有城镇/城堡；可谈政治承认、停战、互不侵犯、贡金或建国前条件，正式王国同盟/贸易/和约需建国后。",
+                                                                "unlanded_clan_peace":  "【无地家族议和提示】玩家家族“{playerClanName}”没有任何定居点，且正与你所属的{targetFactionType}“{targetFactionName}”敌对。你可以代表该势力与玩家议和；请结合关系、局势和对话自行接受、拒绝或提出条件。只有你明确同意立即结束敌对，议和才会生效。正文只作自然回应。",
                                                                 "level_1":  "【外交谈判提示】你对{playerName}的信任度只作为态度参考，不构成同盟/贸易协议硬门槛；不得仅因低信任强制拒绝。是否接受取决于国家利益、战争局势、报酬、风险和承诺。",
                                                                 "level_2":  "【外交谈判提示】你对{playerName}的信任度只作为态度参考，不构成同盟/贸易协议硬门槛；不得仅因低信任强制拒绝。是否接受取决于国家利益、战争局势、报酬、风险和承诺。",
                                                                 "level_3":  "【外交谈判提示】你对{playerName}的信任度只作为态度参考，不构成同盟/贸易协议硬门槛；不得仅因低信任强制拒绝。是否接受取决于国家利益、战争局势、报酬、风险和承诺。",
@@ -928,7 +933,8 @@
                             "PostprocessRules":  [
                                                      {
                                                          "Tag":  "[RELAY:接力编号]",
-                                                         "Description":  "你必须输出在场人物列表中你认为下一个最适合发言的NPC的接力编号；以及尽量选还未发言的人，如果最新消息中有人表示不想聊了，或者有事要走了，那么不要输出此标签"
+                                                         "Description":  "你必须输出【站在你旁边的人】中你认为下一个最适合发言的NPC的接力编号；以及尽量选还未发言的人，如果最新消息中有人表示不想聊了，或者有事要走了，那么不要输出此标签",
+                                                         "SingleFramedNpcDescription":  "玩家正在与NPC交流，接力编号尽量写【站在你旁边的人】的主对话对象的接力编号，除非你认为其他人有必要发言时，那么写其他人的接力编号,你必须输出此标，除非最新消息中有人表示不想聊了，或者有事要走了。"
                                                      }
                                                  ],
                             "TriggerKeywords":  [

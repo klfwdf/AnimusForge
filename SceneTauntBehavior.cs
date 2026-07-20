@@ -3197,7 +3197,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			return false;
 		}
 		CharacterObject characterObject = targetAgent.Character as CharacterObject;
-		if (SceneTauntBehavior.IsPlayerProtectedSceneAttackTarget(characterObject?.HeroObject))
+		if (IsPlayerProtectedSceneAttackAgent(targetAgent))
 		{
 			return false;
 		}
@@ -3428,7 +3428,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			}
 			CharacterObject victimCharacter = victimAgent.Character as CharacterObject;
 			Hero victimHero = victimCharacter?.HeroObject;
-			if (SceneTauntBehavior.IsPlayerProtectedSceneAttackTarget(victimHero) || SceneTauntBehavior.IsChildSceneProtectedTarget(victimCharacter))
+			if (IsPlayerProtectedSceneAttackAgent(victimAgent) || SceneTauntBehavior.IsChildSceneProtectedTarget(victimCharacter))
 			{
 				return;
 			}
@@ -5492,6 +5492,11 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				return false;
 			}
+			if (IsPlayerProtectedSceneAttackAgent(targetAgent))
+			{
+				Logger.LogVerbose("SceneTaunt", "player_protected_proxy_attack_suppressed:" + targetAgent.Index, () => $"Suppressed SceneTaunt physical conflict for player-protected agent/proxy. Reason={reason}, Target={targetAgent.Name}, AgentIndex={targetAgent.Index}", 1.0);
+				return false;
+			}
 			if (SettlementEntryTroopSelectionBehavior.IsOwnedOrAttachedTownEntryActiveForExternal(Mission.Current))
 			{
 				Logger.LogVerbose("SceneTaunt", "sets_owned_entry_suppress_physical_start:" + targetAgent.Index, () => $"Suppressed SceneTaunt physical conflict start because SETS owned/attached town entry is active. Reason={reason}", 1.0);
@@ -5607,7 +5612,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			}
 			CharacterObject characterObject = targetAgent.Character as CharacterObject;
 			Hero hero = characterObject?.HeroObject;
-			if (SceneTauntBehavior.IsPlayerProtectedSceneAttackTarget(hero))
+			if (IsPlayerProtectedSceneAttackAgent(targetAgent))
 			{
 				return false;
 			}
@@ -5688,7 +5693,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			}
 			CharacterObject characterObject = targetAgent.Character as CharacterObject;
 			Hero hero = characterObject?.HeroObject;
-			if (!IsEligiblePhysicalAttackTarget(hero, characterObject) || SceneTauntBehavior.IsChildSceneProtectedTarget(characterObject))
+			if (IsPlayerProtectedSceneAttackAgent(targetAgent) || !IsEligiblePhysicalAttackTarget(hero, characterObject) || SceneTauntBehavior.IsChildSceneProtectedTarget(characterObject))
 			{
 				return false;
 			}
@@ -6337,7 +6342,16 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		try
 		{
-			return SceneTauntBehavior.IsPlayerProtectedSceneAttackTarget((agent?.Character as CharacterObject)?.HeroObject);
+			if (agent == null)
+			{
+				return false;
+			}
+			if (SceneTauntBehavior.IsPlayerProtectedSceneAttackTarget((agent.Character as CharacterObject)?.HeroObject))
+			{
+				return true;
+			}
+			return RewardSystemBehavior.TryResolvePromotedNonHeroCompanionForSceneAgentExternal(agent.Index, out var promotedHero)
+				&& SceneTauntBehavior.IsPlayerProtectedSceneAttackTarget(promotedHero);
 		}
 		catch
 		{

@@ -65,6 +65,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	private static readonly Dictionary<uint, GeneratedRewardItemRecord> GeneratedRewardManifestByObjectId = new Dictionary<uint, GeneratedRewardItemRecord>();
 	private static readonly Dictionary<string, GeneratedRewardItemRecord> GeneratedRewardManifestByStringId = new Dictionary<string, GeneratedRewardItemRecord>(StringComparer.OrdinalIgnoreCase);
 	private static bool GeneratedRewardManifestLoaded;
+	private static readonly object GeneratedRewardEconomicPoolCacheLock = new object();
+	private static MBReadOnlyList<ItemObject> GeneratedRewardEconomicPoolSource;
+	private static MBReadOnlyList<ItemObject> GeneratedRewardEconomicPoolFiltered;
+	private static int GeneratedRewardEconomicPoolSourceCount = -1;
+	private static readonly FieldInfo WorkshopsItemsInCategoryField = AccessTools.Field(typeof(WorkshopsCampaignBehavior), "_itemsInCategory");
+	private static readonly FieldInfo HideoutPotentialLootItemsField = AccessTools.Field(typeof(HideoutCampaignBehavior), "_potentialLootItems");
 	[ThreadStatic]
 	private static bool SuppressGeneratedRewardObjectLookup;
 	[ThreadStatic]
@@ -899,6 +905,58 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			Logger.LogTrace("RewardSystem", ">>> Generated item caravan market sale guard patch failed: " + ex11.Message);
 		}
+		try
+		{
+			MethodInfo allItemsGetter = AccessTools.PropertyGetter(typeof(Campaign), "AllItems");
+			MethodInfo allItemsGetterPostfix = AccessTools.Method(typeof(RewardSystemBehavior), nameof(CampaignAllItemsGetterPostfix));
+			if (allItemsGetter != null && allItemsGetterPostfix != null)
+			{
+				patcher.Patch(allItemsGetter, postfix: new HarmonyMethod(allItemsGetterPostfix));
+			}
+		}
+		catch (Exception ex12)
+		{
+			Logger.LogTrace("RewardSystem", ">>> Generated item global economy pool guard patch failed: " + ex12.Message);
+		}
+		try
+		{
+			MethodInfo fillItemsInAllCategories = AccessTools.Method(typeof(WorkshopsCampaignBehavior), "FillItemsInAllCategories", Type.EmptyTypes);
+			MethodInfo fillItemsInAllCategoriesPostfix = AccessTools.Method(typeof(RewardSystemBehavior), nameof(WorkshopsCampaignBehaviorFillItemsInAllCategoriesPostfix));
+			if (fillItemsInAllCategories != null && fillItemsInAllCategoriesPostfix != null)
+			{
+				patcher.Patch(fillItemsInAllCategories, postfix: new HarmonyMethod(fillItemsInAllCategoriesPostfix));
+			}
+		}
+		catch (Exception ex13)
+		{
+			Logger.LogTrace("RewardSystem", ">>> Generated item workshop category cache guard patch failed: " + ex13.Message);
+		}
+		try
+		{
+			MethodInfo getRandomWorkshopItem = AccessTools.Method(typeof(WorkshopsCampaignBehavior), "GetRandomItem", new Type[2] { typeof(ItemCategory), typeof(Town) });
+			MethodInfo getRandomWorkshopItemPostfix = AccessTools.Method(typeof(RewardSystemBehavior), nameof(WorkshopsCampaignBehaviorGetRandomItemPostfix));
+			if (getRandomWorkshopItem != null && getRandomWorkshopItemPostfix != null)
+			{
+				patcher.Patch(getRandomWorkshopItem, postfix: new HarmonyMethod(getRandomWorkshopItemPostfix));
+			}
+		}
+		catch (Exception ex14)
+		{
+			Logger.LogTrace("RewardSystem", ">>> Generated item workshop output guard patch failed: " + ex14.Message);
+		}
+		try
+		{
+			MethodInfo hideoutSessionLaunched = AccessTools.Method(typeof(HideoutCampaignBehavior), "OnSessionLaunched", new Type[1] { typeof(CampaignGameStarter) });
+			MethodInfo hideoutSessionLaunchedPostfix = AccessTools.Method(typeof(RewardSystemBehavior), nameof(HideoutCampaignBehaviorOnSessionLaunchedPostfix));
+			if (hideoutSessionLaunched != null && hideoutSessionLaunchedPostfix != null)
+			{
+				patcher.Patch(hideoutSessionLaunched, postfix: new HarmonyMethod(hideoutSessionLaunchedPostfix));
+			}
+		}
+		catch (Exception ex15)
+		{
+			Logger.LogTrace("RewardSystem", ">>> Generated item hideout loot pool guard patch failed: " + ex15.Message);
+		}
 	}
 
 	private static void PatchGeneratedRewardMarketPartySale(Harmony patcher, MethodInfo original, string prefixName, string finalizerName)
@@ -1418,6 +1476,19 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		_promotedNonHeroCompanionsByAgentIndex.Remove(targetAgentIndex);
 		promotedHero = null;
 		return false;
+	}
+
+	internal static bool TryResolvePromotedNonHeroCompanionForSceneAgentExternal(int targetAgentIndex, out Hero promotedHero)
+	{
+		try
+		{
+			return TryGetPromotedNonHeroCompanion(targetAgentIndex, out promotedHero);
+		}
+		catch
+		{
+			promotedHero = null;
+			return false;
+		}
 	}
 
 	private static bool IsHeroInParty(Hero hero, MobileParty party)
@@ -11174,6 +11245,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				GeneratedRewardManifestLoaded = true;
 			}
 			ClearGeneratedRpEquipmentTemplateCache();
+			ClearGeneratedRewardEconomicPoolCache();
 			GeneratedRewardLastInventoryVmLogSignature = "";
 			GeneratedRewardLastInventoryVmLogUtc = DateTime.MinValue;
 			Logger.Log("Logic", "[RewardItemResolve] generated_runtime_state_cleared reason=" + (reason ?? "") + " global_manifest_io=disabled");
@@ -11532,6 +11604,238 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	private static bool IsGeneratedRewardMarketExcludedItem(ItemObject item)
 	{
 		return IsGeneratedRewardItemStringId(item?.StringId);
+	}
+
+	private static void CampaignAllItemsGetterPostfix(ref MBReadOnlyList<ItemObject> __result)
+	{
+		try
+		{
+			__result = GetGeneratedRewardFilteredEconomicPool(__result);
+		}
+		catch
+		{
+		}
+	}
+
+	private static MBReadOnlyList<ItemObject> GetGeneratedRewardFilteredEconomicPool(MBReadOnlyList<ItemObject> source)
+	{
+		if (source == null)
+		{
+			return null;
+		}
+		int observedSourceCount = source.Count;
+		MBReadOnlyList<ItemObject> cachedFiltered = GeneratedRewardEconomicPoolFiltered;
+		if (ReferenceEquals(source, GeneratedRewardEconomicPoolSource)
+			&& observedSourceCount == GeneratedRewardEconomicPoolSourceCount
+			&& cachedFiltered != null)
+		{
+			return cachedFiltered;
+		}
+		lock (GeneratedRewardEconomicPoolCacheLock)
+		{
+			int sourceCount = source.Count;
+			if (ReferenceEquals(source, GeneratedRewardEconomicPoolSource)
+				&& sourceCount == GeneratedRewardEconomicPoolSourceCount
+				&& GeneratedRewardEconomicPoolFiltered != null)
+			{
+				return GeneratedRewardEconomicPoolFiltered;
+			}
+			bool hasGeneratedItems = false;
+			for (int i = 0; i < sourceCount; i++)
+			{
+				if (IsGeneratedRewardMarketExcludedItem(source[i]))
+				{
+					hasGeneratedItems = true;
+					break;
+				}
+			}
+			MBReadOnlyList<ItemObject> filtered = source;
+			if (hasGeneratedItems)
+			{
+				MBList<ItemObject> items = new MBList<ItemObject>(sourceCount);
+				for (int j = 0; j < sourceCount; j++)
+				{
+					ItemObject item = source[j];
+					if (!IsGeneratedRewardMarketExcludedItem(item))
+					{
+						items.Add(item);
+					}
+				}
+				filtered = items;
+			}
+			GeneratedRewardEconomicPoolSource = source;
+			GeneratedRewardEconomicPoolSourceCount = sourceCount;
+			GeneratedRewardEconomicPoolFiltered = filtered;
+			return filtered;
+		}
+	}
+
+	private static void ClearGeneratedRewardEconomicPoolCache()
+	{
+		lock (GeneratedRewardEconomicPoolCacheLock)
+		{
+			GeneratedRewardEconomicPoolSource = null;
+			GeneratedRewardEconomicPoolFiltered = null;
+			GeneratedRewardEconomicPoolSourceCount = -1;
+		}
+	}
+
+	private static void WorkshopsCampaignBehaviorFillItemsInAllCategoriesPostfix(WorkshopsCampaignBehavior __instance)
+	{
+		try
+		{
+			if (!(WorkshopsItemsInCategoryField?.GetValue(__instance) is Dictionary<ItemCategory, List<ItemObject>> itemsByCategory))
+			{
+				return;
+			}
+			int removed = 0;
+			foreach (List<ItemObject> items in itemsByCategory.Values)
+			{
+				if (items != null)
+				{
+					removed += items.RemoveAll(IsGeneratedRewardMarketExcludedItem);
+				}
+			}
+			if (removed > 0)
+			{
+				Logger.Log("Logic", "[RewardItemEconomicGuard] workshop_cache_pruned count=" + removed.ToString(CultureInfo.InvariantCulture));
+			}
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardItemEconomicGuard] workshop_cache_prune_failed error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+		}
+	}
+
+	private static void WorkshopsCampaignBehaviorGetRandomItemPostfix(WorkshopsCampaignBehavior __instance, ItemCategory itemGroupBase, Town townComponent, ref EquipmentElement __result)
+	{
+		ItemObject generatedItem = __result.Item;
+		if (!IsGeneratedRewardMarketExcludedItem(generatedItem))
+		{
+			return;
+		}
+		try
+		{
+			ItemObject replacement = ResolveGeneratedRewardWorkshopOutputReplacement(__instance, generatedItem, itemGroupBase, townComponent);
+			if (replacement == null)
+			{
+				__result = default(EquipmentElement);
+				Logger.Log("Logic", "[RewardItemEconomicGuard] workshop_output_blocked generated=" + (generatedItem.StringId ?? "") + " category=" + (itemGroupBase?.StringId ?? "") + " reason=no_normal_candidate");
+				return;
+			}
+			ItemModifier modifier = __result.ItemModifier;
+			if (!ReferenceEquals(generatedItem.ItemComponent?.ItemModifierGroup, replacement.ItemComponent?.ItemModifierGroup))
+			{
+				modifier = replacement.ItemComponent?.ItemModifierGroup?.GetRandomItemModifierProductionScoreBased();
+			}
+			__result = new EquipmentElement(replacement, modifier, __result.CosmeticItem, __result.IsQuestItem);
+			Logger.Log("Logic", "[RewardItemEconomicGuard] workshop_output_replaced generated=" + (generatedItem.StringId ?? "") + " replacement=" + (replacement.StringId ?? "") + " category=" + (itemGroupBase?.StringId ?? ""));
+		}
+		catch (Exception ex)
+		{
+			__result = default(EquipmentElement);
+			try
+			{
+				Logger.Log("Logic", "[RewardItemEconomicGuard] workshop_output_guard_failed generated=" + (generatedItem.StringId ?? "") + " error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+		}
+	}
+
+	private static ItemObject ResolveGeneratedRewardWorkshopOutputReplacement(WorkshopsCampaignBehavior behavior, ItemObject generatedItem, ItemCategory category, Town town)
+	{
+		GeneratedRewardItemRecord record = Instance?.GetGeneratedRewardItemRecord(generatedItem?.StringId);
+		ItemObject templateItem = ResolveItemById(record?.TemplateStringId);
+		if (IsEligibleNormalWorkshopOutput(templateItem, category))
+		{
+			return templateItem;
+		}
+		IEnumerable<ItemObject> candidates = null;
+		try
+		{
+			if (WorkshopsItemsInCategoryField?.GetValue(behavior) is Dictionary<ItemCategory, List<ItemObject>> itemsByCategory
+				&& category != null
+				&& itemsByCategory.TryGetValue(category, out List<ItemObject> categoryItems))
+			{
+				candidates = categoryItems;
+			}
+		}
+		catch
+		{
+		}
+		candidates ??= Game.Current?.ObjectManager?.GetObjectTypeList<ItemObject>() ?? MBObjectManager.Instance?.GetObjectTypeList<ItemObject>();
+		ItemObject preferred = ChooseNormalWorkshopOutput(candidates, category, town, preferredCultureOnly: true);
+		return preferred ?? ChooseNormalWorkshopOutput(candidates, category, town, preferredCultureOnly: false);
+	}
+
+	private static ItemObject ChooseNormalWorkshopOutput(IEnumerable<ItemObject> candidates, ItemCategory category, Town town, bool preferredCultureOnly)
+	{
+		List<(ItemObject, float)> weighted = new List<(ItemObject, float)>();
+		foreach (ItemObject item in candidates ?? Enumerable.Empty<ItemObject>())
+		{
+			if (!IsEligibleNormalWorkshopOutput(item, category)
+				|| (preferredCultureOnly && !IsWorkshopOutputPreferredForTown(item, town)))
+			{
+				continue;
+			}
+			weighted.Add((item, 1f / (Math.Max(100, item.Value) + 100f)));
+		}
+		return weighted.Count > 0 ? MBRandom.ChooseWeighted(weighted) : null;
+	}
+
+	private static bool IsEligibleNormalWorkshopOutput(ItemObject item, ItemCategory category)
+	{
+		return item != null
+			&& category != null
+			&& ReferenceEquals(item.ItemCategory, category)
+			&& !IsGeneratedRewardMarketExcludedItem(item)
+			&& !item.MultiplayerItem
+			&& !item.NotMerchandise
+			&& !item.IsCraftedByPlayer;
+	}
+
+	private static bool IsWorkshopOutputPreferredForTown(ItemObject item, Town town)
+	{
+		if (town == null || item?.Culture == null)
+		{
+			return true;
+		}
+		string cultureId = item.Culture.StringId ?? "";
+		return string.Equals(cultureId, "neutral_culture", StringComparison.OrdinalIgnoreCase) || ReferenceEquals(item.Culture, town.Culture);
+	}
+
+	private static void HideoutCampaignBehaviorOnSessionLaunchedPostfix(HideoutCampaignBehavior __instance)
+	{
+		try
+		{
+			if (!(HideoutPotentialLootItemsField?.GetValue(__instance) is List<ItemObject> items))
+			{
+				return;
+			}
+			int removed = items.RemoveAll(IsGeneratedRewardMarketExcludedItem);
+			if (removed > 0)
+			{
+				Logger.Log("Logic", "[RewardItemEconomicGuard] hideout_loot_cache_pruned count=" + removed.ToString(CultureInfo.InvariantCulture));
+			}
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardItemEconomicGuard] hideout_loot_cache_prune_failed error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+		}
 	}
 
 	private static void InventoryScreenHelperOpenScreenAsTradePrefix(ItemRoster leftRoster, SettlementComponent settlementComponent, ref Action doneLogicExtrasDelegate)

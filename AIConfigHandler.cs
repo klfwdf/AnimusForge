@@ -2299,7 +2299,8 @@ public static class AIConfigHandler
 				PostprocessRules = ((src.PostprocessRules != null) ? src.PostprocessRules.Where((PostprocessRuleEntry x) => x != null && !string.IsNullOrWhiteSpace((x.Tag ?? "").Trim())).Select((PostprocessRuleEntry x) => new PostprocessRuleEntry
 				{
 					Tag = (x.Tag ?? "").Trim(),
-					Description = (x.Description ?? "").Trim()
+					Description = (x.Description ?? "").Trim(),
+					SingleFramedNpcDescription = (x.SingleFramedNpcDescription ?? "").Trim()
 				}).ToList() : new List<PostprocessRuleEntry>()),
 				TriggerKeywords = NormalizeTriggerKeywordList(src.TriggerKeywords),
 				RuntimeInstructionTemplates = NormalizeTemplateMap(src.RuntimeInstructionTemplates),
@@ -3024,7 +3025,7 @@ public static class AIConfigHandler
 		RequirePreprocessPromptValue(_preprocessPrompts?.MemorySelection?.ParallelModeInstruction, "MemorySelection.ParallelModeInstruction");
 		RequirePreprocessPromptValue(_preprocessPrompts?.MemorySelection?.UnifiedModeInstruction, "MemorySelection.UnifiedModeInstruction");
 		RequirePreprocessPromptValue(_preprocessPrompts?.MemorySelection?.EmptyValue, "MemorySelection.EmptyValue");
-		ValidatePreprocessTemplateVariables(_preprocessPrompts?.MemorySelection?.UserPromptTemplate, "MemorySelection.UserPromptTemplate", "mode_instruction", "mentioned_entities_schema", "final_count", "latest_player_input", "latest_npc_input", "current_scene", "memory_candidates");
+		ValidatePreprocessTemplateVariables(_preprocessPrompts?.MemorySelection?.UserPromptTemplate, "MemorySelection.UserPromptTemplate", "mode_instruction", "final_count", "latest_player_input", "latest_npc_input", "current_scene", "memory_candidates");
 		ValidatePreprocessTemplateVariables(_preprocessPrompts?.MemorySelection?.CandidateLineTemplate, "MemorySelection.CandidateLineTemplate", "memory_id", "game_date", "age_suffix", "hour_range", "rich_title");
 		ValidatePreprocessTemplateVariables(_preprocessPrompts?.MemorySelection?.FallbackGameDateTemplate, "MemorySelection.FallbackGameDateTemplate", "game_day");
 		RequirePreprocessPromptValue(_preprocessPrompts?.ConnectionTest?.ExpectedRuleCode, "ConnectionTest.ExpectedRuleCode");
@@ -3063,7 +3064,6 @@ public static class AIConfigHandler
 		return RenderPreprocessPromptTemplate(config?.UserPromptTemplate, "MemorySelection.UserPromptTemplate", new Dictionary<string, string>(StringComparer.Ordinal)
 		{
 			["mode_instruction"] = modeInstruction,
-			["mentioned_entities_schema"] = StrictPreprocessMentionedEntitiesSchema,
 			["final_count"] = Math.Max(1, finalCount).ToString(),
 			["latest_player_input"] = string.IsNullOrWhiteSpace(latestPlayerInput) ? emptyValue : latestPlayerInput.Trim(),
 			["latest_npc_input"] = string.IsNullOrWhiteSpace(latestNpcInput) ? emptyValue : latestNpcInput.Trim(),
@@ -4423,7 +4423,7 @@ public static class AIConfigHandler
 		return string.IsNullOrWhiteSpace(jsonPayload) ? text : jsonPayload;
 	}
 
-	internal static bool TryValidateStrictPreprocessJsonEnvelope(string content, bool requireMemoryIds, out JObject root, out string error)
+	internal static bool TryValidateStrictPreprocessJsonEnvelope(string content, bool requireMemoryIds, bool requireMentionedEntities, out JObject root, out string error)
 	{
 		root = null;
 		error = "";
@@ -4454,6 +4454,10 @@ public static class AIConfigHandler
 		if (requireMemoryIds && !ValidateStrictPreprocessArray(root, "memory_ids", JTokenType.Integer, out error))
 		{
 			return false;
+		}
+		if (!requireMentionedEntities)
+		{
+			return true;
 		}
 		JToken mentionedToken = root["mentioned_entities"];
 		if (mentionedToken == null || mentionedToken.Type == JTokenType.Null)
@@ -4598,7 +4602,7 @@ public static class AIConfigHandler
 			error = "no_known_rule_codes";
 			return false;
 		}
-		if (!TryValidateStrictPreprocessJsonEnvelope(content, requireMemoryIds: false, out var root, out error))
+		if (!TryValidateStrictPreprocessJsonEnvelope(content, requireMemoryIds: false, requireMentionedEntities: true, out var root, out error))
 		{
 			return false;
 		}

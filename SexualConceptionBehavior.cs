@@ -130,7 +130,7 @@ public static class SexualConceptionBehavior
 			}
 		}
 
-		string fact = "[AFEF 玩家行为补充] 玩家与" + npcName + "发生了亲密关系。";
+		string fact = "[AFEF玩家行为补充] 玩家与" + npcName + "发生了亲密关系。";
 		if (becamePregnant)
 		{
 			fact += (mother == Hero.MainHero)

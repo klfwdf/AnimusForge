@@ -222,6 +222,10 @@ public class MyBehavior : CampaignBehaviorBase
 
 		public int DialogueSessionId = -1;
 
+		public int TargetAgentIndex = -1;
+
+		public string TargetName = "";
+
 		public string MemorySessionKey = "";
 
 		public bool IsAfef;
@@ -15729,7 +15733,7 @@ public class MyBehavior : CampaignBehaviorBase
 		return BuildPlayerAddressedInputForName(hero?.Name?.ToString(), playerText, hero);
 	}
 
-	private static string BuildPlayerAddressedInputForName(string npcName, string playerText, Hero observer = null)
+	private static string BuildPlayerAddressedInputForName(string npcName, string playerText, Hero observer = null, string actualTargetName = null)
 	{
 		string text = (playerText ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(text))
@@ -15737,7 +15741,11 @@ public class MyBehavior : CampaignBehaviorBase
 			return "";
 		}
 		string text2 = BuildPlayerPublicDisplayNameForPrompt(observer);
-		string text3 = (npcName ?? "").Trim();
+		string text3 = (actualTargetName ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text3))
+		{
+			text3 = (npcName ?? "").Trim();
+		}
 		if (string.IsNullOrWhiteSpace(text3))
 		{
 			text3 = "该NPC";
@@ -25241,6 +25249,8 @@ public class MyBehavior : CampaignBehaviorBase
 				x.Scene = (x.Scene ?? "").Trim();
 				x.Speaker = (x.Speaker ?? "").Trim();
 				x.Text = (x.Text ?? "").Trim();
+				x.TargetAgentIndex = Math.Max(-1, x.TargetAgentIndex);
+				x.TargetName = (x.TargetName ?? "").Trim();
 				x.MemorySessionKey = (x.MemorySessionKey ?? "").Trim();
 				if (x.SceneSessionId < -1)
 				{
@@ -25804,17 +25814,17 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void AppendDailyMemoryLine(Hero hero, string speaker, string text, bool isAfef, bool isLlmDialogue, int sceneSessionId = -1)
+	private void AppendDailyMemoryLine(Hero hero, string speaker, string text, bool isAfef, bool isLlmDialogue, int sceneSessionId = -1, int targetAgentIndex = -1, string targetName = null)
 	{
 		if (!IsHeroNpcEligibleForCompressedMemory(hero))
 		{
 			return;
 		}
 		string heroName = (hero.Name?.ToString() ?? "NPC").Trim();
-		AppendDailyMemoryLineById(GetMemoryHeroId(hero), string.IsNullOrWhiteSpace(heroName) ? "NPC" : heroName, speaker, text, isAfef, isLlmDialogue, sceneSessionId);
+		AppendDailyMemoryLineById(GetMemoryHeroId(hero), string.IsNullOrWhiteSpace(heroName) ? "NPC" : heroName, speaker, text, isAfef, isLlmDialogue, sceneSessionId, targetAgentIndex, targetName);
 	}
 
-	private void AppendDailyMemoryLineById(string memoryId, string memoryName, string speaker, string text, bool isAfef, bool isLlmDialogue, int sceneSessionId = -1)
+	private void AppendDailyMemoryLineById(string memoryId, string memoryName, string speaker, string text, bool isAfef, bool isLlmDialogue, int sceneSessionId = -1, int targetAgentIndex = -1, string targetName = null)
 	{
 		string normalizedMemoryId = NormalizeMemoryHeroId(memoryId);
 		if (!IsMemoryEntityEligibleForCompressedMemory(normalizedMemoryId))
@@ -25858,6 +25868,8 @@ public class MyBehavior : CampaignBehaviorBase
 			Text = text2,
 			SceneSessionId = sceneSessionId,
 			DialogueSessionId = dialogueSessionId,
+			TargetAgentIndex = Math.Max(-1, targetAgentIndex),
+			TargetName = (targetName ?? "").Trim(),
 			MemorySessionKey = BuildCurrentMemorySessionKey(sceneSessionId, dialogueSessionId),
 			IsAfef = isAfef,
 			IsLlmDialogue = isLlmDialogue && !isAfef
@@ -26095,11 +26107,11 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	public static void AppendExternalSceneDialogueHistory(Hero hero, string playerText, string aiText, string extraFact, int sceneSessionId)
+	public static void AppendExternalSceneDialogueHistory(Hero hero, string playerText, string aiText, string extraFact, int sceneSessionId, int playerTargetAgentIndex = -1, string playerTargetName = null)
 	{
 		try
 		{
-			(Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.AppendDialogueHistory(hero, playerText, aiText, extraFact, sceneSessionId);
+			(Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.AppendDialogueHistory(hero, playerText, aiText, extraFact, sceneSessionId, playerTargetAgentIndex, playerTargetName);
 		}
 		catch
 		{
@@ -26117,18 +26129,18 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	public static void AppendExternalNonHeroSceneDialogueHistory(string nonHeroMemoryId, string npcName, string playerText, string aiText, string extraFact, int sceneSessionId)
+	public static void AppendExternalNonHeroSceneDialogueHistory(string nonHeroMemoryId, string npcName, string playerText, string aiText, string extraFact, int sceneSessionId, int playerTargetAgentIndex = -1, string playerTargetName = null)
 	{
 		try
 		{
-			(Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.AppendDialogueHistoryById(nonHeroMemoryId, npcName, playerText, aiText, extraFact, sceneSessionId);
+			(Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.AppendDialogueHistoryById(nonHeroMemoryId, npcName, playerText, aiText, extraFact, sceneSessionId, playerTargetAgentIndex, playerTargetName);
 		}
 		catch
 		{
 		}
 	}
 
-	private void AppendDialogueHistory(Hero hero, string playerText, string aiText, string extraFact, int sceneSessionId = -1)
+	private void AppendDialogueHistory(Hero hero, string playerText, string aiText, string extraFact, int sceneSessionId = -1, int playerTargetAgentIndex = -1, string playerTargetName = null)
 	{
 		if (hero == null || (string.IsNullOrWhiteSpace(playerText) && string.IsNullOrWhiteSpace(aiText) && string.IsNullOrWhiteSpace(extraFact)))
 		{
@@ -26141,7 +26153,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				npcNameForMemory = "NPC";
 			}
-			AppendDialogueHistoryById(GetMemoryHeroId(hero), npcNameForMemory, playerText, aiText, extraFact, sceneSessionId);
+			AppendDialogueHistoryById(GetMemoryHeroId(hero), npcNameForMemory, playerText, aiText, extraFact, sceneSessionId, playerTargetAgentIndex, playerTargetName);
 		}
 		catch (Exception ex)
 		{
@@ -26149,7 +26161,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void AppendDialogueHistoryById(string memoryId, string npcNameForMemory, string playerText, string aiText, string extraFact, int sceneSessionId = -1)
+	private void AppendDialogueHistoryById(string memoryId, string npcNameForMemory, string playerText, string aiText, string extraFact, int sceneSessionId = -1, int playerTargetAgentIndex = -1, string playerTargetName = null)
 	{
 		string normalizedMemoryId = NormalizeMemoryHeroId(memoryId);
 		if (!IsMemoryEntityEligibleForCompressedMemory(normalizedMemoryId) || (string.IsNullOrWhiteSpace(playerText) && string.IsNullOrWhiteSpace(aiText) && string.IsNullOrWhiteSpace(extraFact)))
@@ -26170,7 +26182,7 @@ public class MyBehavior : CampaignBehaviorBase
 			if (!string.IsNullOrWhiteSpace(playerText))
 			{
 				Hero memoryHero = FindHeroById(normalizedMemoryId);
-				AppendDailyMemoryLineById(normalizedMemoryId, npcNameForMemory, BuildPlayerPublicDisplayNameForPrompt(memoryHero), BuildPlayerAddressedInputForName(npcNameForMemory, playerText, memoryHero), isAfef: false, isLlmDialogue: true, sceneSessionId: sceneSessionId);
+				AppendDailyMemoryLineById(normalizedMemoryId, npcNameForMemory, BuildPlayerPublicDisplayNameForPrompt(memoryHero), BuildPlayerAddressedInputForName(npcNameForMemory, playerText, memoryHero, playerTargetName), isAfef: false, isLlmDialogue: true, sceneSessionId: sceneSessionId, targetAgentIndex: playerTargetAgentIndex, targetName: playerTargetName);
 			}
 			if (!string.IsNullOrWhiteSpace(extraFact))
 			{
@@ -26207,7 +26219,7 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			if (!string.IsNullOrWhiteSpace(playerText))
 			{
-				string text2 = BuildPlayerAddressedInputForName(npcNameForMemory, playerText);
+				string text2 = BuildPlayerAddressedInputForName(npcNameForMemory, playerText, null, playerTargetName);
 				dialogueDay.Lines.Add((sceneSessionId >= 0) ? TagSceneSessionHistoryLine(text2, sceneSessionId) : text2);
 			}
 			if (!string.IsNullOrWhiteSpace(extraFact))
@@ -29793,10 +29805,7 @@ public class MyBehavior : CampaignBehaviorBase
 		MentionedWorldEntities mentionedEntities = directPreprocessMentionedEntities.Clone();
 		if (!suppressDynamicRuleAndLore)
 		{
-			string memorySceneLabelForMentions = ResolveCurrentMemorySceneLabel();
 			mentionedEntities.Merge(AIConfigHandler.GetAuxiliaryMentionedEntitiesForExternal(input, npcLastUtterance, guardrailSemanticContext));
-			mentionedEntities.Merge(AIConfigHandler.GetAuxiliaryMentionedEntitiesForExternal(input, npcLastUtterance, memorySceneLabelForMentions));
-			mentionedEntities.Merge(AIConfigHandler.GetAuxiliaryMentionedEntitiesForExternal(input, extraFact, memorySceneLabelForMentions));
 			mentionedEntities.Merge(AIConfigHandler.GetLatestAuxiliaryMentionedEntitiesForExternal());
 		}
 		LogShoutPromptContextStage("mentions_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "hasMentions=" + (mentionedEntities != null && !mentionedEntities.IsEmpty) + " directCount=" + (directPreprocessMentionedEntities.Entities?.Count ?? 0));
@@ -31865,7 +31874,6 @@ public class MyBehavior : CampaignBehaviorBase
 			ShowCompressedMemoryBlockingPopup("压缩记忆前处理失败", error + "\n\n请修复前处理提示词或 API 输出后重试。");
 			throw new PreprocessFormatException(error);
 		}
-		AIConfigHandler.PublishAuxiliaryMentionedEntitiesForExternal(currentInput, secondaryInput, ResolveCurrentMemorySceneLabel(), content);
 		if (selectedIds.Count < finalCount)
 		{
 			HashSet<int> selectedSet = new HashSet<int>(selectedIds);
@@ -31892,7 +31900,7 @@ public class MyBehavior : CampaignBehaviorBase
 			error = "no_allowed_memory_ids";
 			return false;
 		}
-		if (!AIConfigHandler.TryValidateStrictPreprocessJsonEnvelope(content, requireMemoryIds: true, out var jObject, out error))
+		if (!AIConfigHandler.TryValidateStrictPreprocessJsonEnvelope(content, requireMemoryIds: true, requireMentionedEntities: false, out var jObject, out error))
 		{
 			return false;
 		}
@@ -31938,7 +31946,7 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private static string BuildMemoryPreprocessFormatError(string reason, string content)
 	{
-		string detail = "（API响应格式错误）压缩记忆前处理返回格式错误：" + (string.IsNullOrWhiteSpace(reason) ? "unknown" : reason.Trim()) + "。必须只输出一个 JSON 对象，并包含 rule_codes、memory_ids 和完整的 mentioned_entities 数组对象。";
+		string detail = "（API响应格式错误）压缩记忆前处理返回格式错误：" + (string.IsNullOrWhiteSpace(reason) ? "unknown" : reason.Trim()) + "。必须只输出一个 JSON 对象，并包含 rule_codes 和 memory_ids 数组。";
 		return LlmRetryPrompt.BuildFailureDetail(detail, content);
 	}
 
@@ -32088,13 +32096,15 @@ public class MyBehavior : CampaignBehaviorBase
 		string npcName = string.IsNullOrWhiteSpace(memoryName) ? "NPC" : memoryName.Trim();
 		string role = "user";
 		int speakerAgentIndex = -1;
-		int targetIndex = targetAgentIndex;
+		int targetIndex = line.TargetAgentIndex >= 0 ? line.TargetAgentIndex : targetAgentIndex;
+		string targetName = string.IsNullOrWhiteSpace(line.TargetName) ? npcName : line.TargetName.Trim();
 		if (line.IsAfef)
 		{
 			role = "system";
 			speaker = "AFEF";
 			speakerAgentIndex = -1;
 			targetIndex = -1;
+			targetName = "";
 		}
 		else if (TryParseDailyMemorySceneShoutLine(text, out var heardSpeaker, out var heardContent))
 		{
@@ -32103,6 +32113,7 @@ public class MyBehavior : CampaignBehaviorBase
 			text = string.IsNullOrWhiteSpace(heardContent) ? text : heardContent.Trim();
 			speakerAgentIndex = -1;
 			targetIndex = -1;
+			targetName = "";
 		}
 		else if (IsDailyMemoryLineNpcSpeech(line, npcName))
 		{
@@ -32110,12 +32121,14 @@ public class MyBehavior : CampaignBehaviorBase
 			speaker = npcName;
 			speakerAgentIndex = targetAgentIndex;
 			targetIndex = -1;
+			targetName = "";
 		}
 		else if (!IsDailyMemoryLinePlayerSpeech(line, npcName))
 		{
 			role = "assistant";
 			speakerAgentIndex = -1;
 			targetIndex = -1;
+			targetName = "";
 		}
 		return new ConversationMessage
 		{
@@ -32128,7 +32141,7 @@ public class MyBehavior : CampaignBehaviorBase
 			SpeakerName = speaker,
 			SpeakerAgentIndex = speakerAgentIndex,
 			TargetAgentIndex = targetIndex,
-			TargetName = npcName,
+			TargetName = targetName,
 			PlayerDistanceMeters = -1f
 		};
 	}
@@ -48592,6 +48605,8 @@ public class MyBehavior : CampaignBehaviorBase
 				Text = line.Text ?? "",
 				SceneSessionId = line.SceneSessionId,
 				DialogueSessionId = line.DialogueSessionId,
+				TargetAgentIndex = line.TargetAgentIndex,
+				TargetName = line.TargetName ?? "",
 				MemorySessionKey = line.MemorySessionKey ?? "",
 				IsAfef = line.IsAfef,
 				IsLlmDialogue = line.IsLlmDialogue

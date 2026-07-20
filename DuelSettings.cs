@@ -5256,7 +5256,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 					{
 						string reply = TryExtractAssistantReplyText(responseString);
 						string text = (controlMode == "plain") ? "" : " [" + controlMode + "]";
-						bool validEnvelope = AIConfigHandler.TryValidateStrictPreprocessJsonEnvelope(reply, requireMemoryIds: false, out var testEnvelope, out var formatError);
+						bool validEnvelope = AIConfigHandler.TryValidateStrictPreprocessJsonEnvelope(reply, requireMemoryIds: false, requireMentionedEntities: true, out var testEnvelope, out var formatError);
 						if (validEnvelope)
 						{
 							JArray testCodes = testEnvelope?["rule_codes"] as JArray;
