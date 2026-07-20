@@ -1843,9 +1843,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		TryKeepMissionExitImmediatelyAvailable(mission);
 		if (CastleAftermathRuntimeBridge.IsCastleAftermathMission(mission))
 		{
+			bool castleCombatControlActive = CastleAftermathRuntimeBridge.IsCastleCombatControlActive(mission);
 			EnsureInterventionPlayerCommandTeam(mission);
 			float castleCurrentTime = mission.CurrentTime;
-			if (castleCurrentTime >= _nextControlTickTime)
+			if (!castleCombatControlActive && castleCurrentTime >= _nextControlTickTime)
 			{
 				_nextControlTickTime = castleCurrentTime + 0.35f;
 				ApplyPlayerBattleEquipment();
@@ -5030,6 +5031,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
+			bool castleCombatControlActive = CastleAftermathRuntimeBridge.IsCastleCombatControlActive(mission);
 			Team playerTeam = mission.PlayerTeam;
 			if (_interventionPlayerCommandTeam != null)
 			{
@@ -5090,7 +5092,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					{
 						continue;
 					}
-					if (!_massacreStarted)
+					if (!_massacreStarted && !castleCombatControlActive)
 					{
 						team.SetIsEnemyOf(playerTeam, isEnemyOf: false);
 						playerTeam.SetIsEnemyOf(team, isEnemyOf: false);
@@ -9493,6 +9495,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
+			if (CastleAftermathRuntimeBridge.IsCastleCombatControlActive(mission))
+			{
+				return false;
+			}
 			float now = mission.CurrentTime;
 			if (!force && _playerOrderControllerPrimed)
 			{
@@ -9623,6 +9629,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			if (playerTeam == null)
 			{
 				return false;
+			}
+			if (CastleAftermathRuntimeBridge.IsCastleCombatControlActive(mission))
+			{
+				return playerTeam.PlayerOrderController != null || playerTeam.MasterOrderController != null;
 			}
 			Agent main = Agent.Main ?? mission.MainAgent;
 			int commandable = 0;

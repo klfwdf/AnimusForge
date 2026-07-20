@@ -56,6 +56,12 @@ internal static class CastleAftermathRuntimeBridge
 		}
 	}
 
+	internal static bool IsCastleCombatControlActive(Mission mission)
+	{
+		return IsRegularPrisonerSlaughterActive(mission)
+			|| CastleAftermathLordDuelRuntimeBridge.IsCombatControlActive(mission);
+	}
+
 	internal static void Reset(string source)
 	{
 		_selectedPrisonerRoster = null;
@@ -951,6 +957,7 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 			allied.UpdateFormationOrders();
 			if (_slaughterReadyAlliedAgentIndexes.Add(allied.Index))
 			{
+				ClearPresentationActionsForCombat(allied);
 				allied.ResetEnemyCaches();
 				allied.InvalidateTargetAgent();
 				allied.InvalidateAIWeaponSelections();
@@ -995,6 +1002,26 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 			Logger.Log("CastleAftermath", "Prepare allied castle slaughter combat failed. Agent="
 				+ (allied?.Index.ToString() ?? "null") + ", Error=" + ex.Message);
 			return false;
+		}
+	}
+
+	private static void ClearPresentationActionsForCombat(Agent agent)
+	{
+		if (agent == null || !agent.IsActive())
+		{
+			return;
+		}
+		try
+		{
+			agent.SetActionChannel(0, ActionIndexCache.act_none, true, (AnimFlags)0UL,
+				0f, 1f, -0.2f, 0.4f, 0f, false, -0.2f, 0, true);
+			agent.SetActionChannel(1, ActionIndexCache.act_none, true, (AnimFlags)0UL,
+				0f, 1f, -0.2f, 0.4f, 0f, false, -0.2f, 0, true);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CastleAftermath", "Clear allied presentation action for slaughter failed. Agent="
+				+ agent.Index + ", Error=" + ex.Message);
 		}
 	}
 

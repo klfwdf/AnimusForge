@@ -60,6 +60,18 @@ internal static class CastleAftermathLordDuelRuntimeBridge
 		}
 	}
 
+	internal static bool IsCombatControlActive(Mission mission)
+	{
+		try
+		{
+			return ResolveBehavior(mission)?.IsActive == true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	internal static void ProtectCapturedLord(Agent agent)
 	{
 		if (agent == null || !agent.IsActive() || !CastleAftermathRuntimeBridge.IsLordPrisonerAgent(agent))
@@ -254,6 +266,8 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 	private string _cancelSource;
 
 	public override MissionBehaviorType BehaviorType => MissionBehaviorType.Other;
+
+	internal bool IsActive => _stage != RuntimeStage.Idle;
 
 	internal bool ControlsAgent(Agent agent)
 	{
@@ -1601,6 +1615,8 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 				return false;
 			}
 			agent.SetActionChannel(0, ActionIndexCache.act_none, true, (AnimFlags)0UL,
+				0f, 1f, -0.2f, 0.4f, 0f, false, -0.2f, 0, true);
+			agent.SetActionChannel(1, ActionIndexCache.act_none, true, (AnimFlags)0UL,
 				0f, 1f, -0.2f, 0.4f, 0f, false, -0.2f, 0, true);
 			AnimationSystemData data = agent.Monster.FillAnimationSystemData(
 				MBActionSet.GetActionSet(actionSetCode),
