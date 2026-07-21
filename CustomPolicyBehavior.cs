@@ -195,6 +195,11 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 
 	private static readonly System.Reflection.FieldInfo DynamicPolicyDecisionSnapshotField = AccessTools.Field(typeof(KingdomPolicyDecision), "_kingdomPolicies");
 
+	// DecisionItemBaseVM normally invokes this only after its native result inquiry is closed.
+	// Custom policy result popups replace that inquiry, so retain the cleanup callback without
+	// re-opening the native popup after the custom result has been acknowledged.
+	private static readonly System.Reflection.FieldInfo DecisionItemOnDecisionOverField = AccessTools.Field(typeof(DecisionItemBaseVM), "_onDecisionOver");
+
 	private static bool _policySettlementModelPatchesApplied;
 
 	private static bool _policySuccessResultVisible;
@@ -563,15 +568,20 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 				return true;
 			}
 			string policyObjectId = decision.Policy.StringId ?? "";
-			System.Reflection.MethodInfo executeDone = AccessTools.Method(typeof(DecisionItemBaseVM), "ExecuteDone");
-			if (executeDone == null || !TryDeferOriginalPolicyResult(policyObjectId, delegate
+			Action onDecisionOver = DecisionItemOnDecisionOverField?.GetValue(__instance) as Action;
+			if (onDecisionOver == null || !TryDeferOriginalPolicyResult(policyObjectId, delegate
 			{
-				executeDone.Invoke(__instance, null);
+				onDecisionOver();
 			}))
 			{
 				return true;
 			}
-			PolicySystemLog.Write("Agenda", "original-result-popup-deferred", "policy=" + policyObjectId);
+			// Mirror the state cleanup in DecisionItemBaseVM.ExecuteDone. Its native inquiry
+			// is intentionally replaced by the custom result popup, but its _onDecisionOver
+			// callback is still required to release the concluded decision VM.
+			__instance.IsActive = false;
+			CampaignEvents.KingdomDecisionConcluded.ClearListeners(__instance);
+			PolicySystemLog.Write("Agenda", "original-result-cleanup-deferred", "policy=" + policyObjectId);
 			return false;
 		}
 		catch (Exception ex)
@@ -694,7 +704,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 				MainThreadActions.Enqueue(action);
 			}
 		}
-		PolicySystemLog.Write("Agenda", releaseDeferredResults ? "original-result-popup-released" : "original-result-popup-suppressed", "policy=" + id
+		PolicySystemLog.Write("Agenda", releaseDeferredResults ? "original-result-cleanup-released" : "original-result-cleanup-suppressed", "policy=" + id
 			+ " deferred=" + deferred.Count.ToString(CultureInfo.InvariantCulture));
 	}
 
@@ -6487,7 +6497,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		BeginPolicySuccessResultSequence(sequencePolicyObjectId);
 		InformationManager.ShowInquiry(new InquiryData("政策已续期", body.ToString(), true, false, "知道了", "", delegate
 		{
-			CompletePolicySuccessResultSequence(sequencePolicyObjectId, releaseDeferredResults: false);
+			CompletePolicySuccessResultSequence(sequencePolicyObjectId);
 		}, null), pauseGameActiveState: true);
 	}
 
@@ -6495,11 +6505,11 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 	{
 		string sequencePolicyObjectId = (policyObjectId ?? "").Trim();
 		string bodyText = impactText ?? "";
+		BeginPolicySuccessResultSequence(sequencePolicyObjectId);
 		bool shown = CustomPolicyResultPopup.Show("政策已经发布", bodyText, "知道了", delegate
 		{
 			CompletePolicySuccessResultSequence(sequencePolicyObjectId);
 		});
-		BeginPolicySuccessResultSequence(sequencePolicyObjectId);
 		if (!shown)
 		{
 			InformationManager.ShowInquiry(new InquiryData("政策已经发布", bodyText, true, false, "知道了", "", delegate
