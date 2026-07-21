@@ -1046,6 +1046,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 	private static bool TryApplyMarriageAction(Hero left, Hero right, out string failReason)
 	{
 		failReason = "";
+		using IDisposable notificationScope = MarriageSceneNotificationSafety.BeginScope(left, right);
 		string text = DescribeHeroMarriageState(left);
 		string text2 = DescribeHeroMarriageState(right);
 		try
@@ -1175,6 +1176,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 	private static bool TryApplyAnimusForgeMultiMarriageAction(Hero left, Hero right, out string failReason)
 	{
 		failReason = "";
+		using IDisposable notificationScope = MarriageSceneNotificationSafety.BeginScope(left, right);
 		try
 		{
 			if (left == null || right == null)
@@ -1532,6 +1534,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 	private static bool TryForceApplyMarriageAction(Hero left, Hero right, out string failReason)
 	{
 		failReason = "";
+		using IDisposable notificationScope = MarriageSceneNotificationSafety.BeginScope(left, right);
 		try
 		{
 			if (left == null || right == null)
@@ -1963,9 +1966,10 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			Hero hero = (left.IsFemale ? right : left);
 			Hero hero2 = (left.IsFemale ? left : right);
 			bool flag = LordEncounterBehavior.IsEncounterMeetingMissionActive || MeetingBattleRuntime.IsMeetingActive || Mission.Current != null;
+			bool flag2 = false;
 			if (!flag)
 			{
-				MBInformationManager.ShowSceneNotification(new TaleWorlds.CampaignSystem.SceneInformationPopupTypes.MarriageSceneNotificationItem(hero, hero2, CampaignTime.Now, SceneNotificationData.RelevantContextType.Any));
+				flag2 = MarriageSceneNotificationSafety.ShowSafeNotification(hero, hero2, SceneNotificationData.RelevantContextType.Any);
 			}
 			var characterMarriedLogEntry = new TaleWorlds.CampaignSystem.LogEntries.CharacterMarriedLogEntry(left, right);
 			TaleWorlds.CampaignSystem.LogEntries.LogEntry.AddLogEntry(characterMarriedLogEntry);
@@ -1973,7 +1977,8 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			{
 				Campaign.Current?.CampaignInformationManager?.NewMapNoticeAdded(new TaleWorlds.CampaignSystem.MapNotificationTypes.MarriageMapNotification(left, right, characterMarriedLogEntry.GetEncyclopediaText(), CampaignTime.Now));
 			}
-			InformationManager.DisplayMessage(new InformationMessage(flag ? "[婚姻系统] 检测到婚姻已生效；当前在会面/任务场景中，已补发婚姻记录与提示。" : "[婚姻系统] 检测到婚姻已生效，已补发婚礼通知。", Color.FromUint(4283878655u)));
+			string information = flag ? "[婚姻系统] 检测到婚姻已生效；当前在会面/任务场景中，已补发婚姻记录与提示。" : (flag2 ? "[婚姻系统] 检测到婚姻已生效，已补发婚礼通知。" : "[婚姻系统] 检测到婚姻已生效；婚礼通知已由本次婚姻事件排队。");
+			InformationManager.DisplayMessage(new InformationMessage(information, Color.FromUint(4283878655u)));
 		}
 		catch (Exception ex)
 		{

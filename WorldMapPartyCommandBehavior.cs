@@ -10,6 +10,7 @@ using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.Map;
 using TaleWorlds.CampaignSystem.MapEvents;
+using TaleWorlds.CampaignSystem.Naval;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
@@ -27,6 +28,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 	private const string StorageKey = "_af_worldmap_party_command_queues_v1";
 	private const string DetachedPartyStorageKey = "_af_worldmap_player_detachments_v1";
 	private const string GovernorExpeditionStorageKey = "_af_worldmap_governor_expeditions_v1";
+	private const string ForeignClanGuestStorageKey = "_af_worldmap_foreign_clan_guests_v1";
 	private const int GovernorExpeditionMinimumTroops = 10;
 	private const int GovernorGarrisonMinimumReserve = 40;
 	private const float GovernorGarrisonReserveRatio = 0.5f;
@@ -36,10 +38,13 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 	private const float SettlementArrivalDistance = 3.0f;
 	private const float PatrolArrivalDistance = 8.0f;
 	private const float PatrolLeashDistance = 24.0f;
-	private const float PartyArrivalDistance = 4.0f;
+	private const float MergeArrivalDistance = 10.0f;
 	private const float FollowArrivalDistance = 10.0f;
 	private const float FollowLeashDistance = 24.0f;
-	private const float EngageCommitDistance = 6.0f;
+	// Vanilla GoAroundParty holds roughly 5.95 map units from its target. Leave
+	// enough margin for the hourly command tick to switch from tracking to engage.
+	private const float PartyAttackCommitDistance = 8.0f;
+	private const float SettlementAttackCommitDistance = 6.0f;
 	private const float EngageMaintainDistance = 10.0f;
 	private const float FriendlySupportRadius = 12.0f;
 	private const float AiAttackStrengthRatio = 0.85f;
@@ -60,6 +65,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 	private readonly Dictionary<string, PendingGovernorExpeditionRequest> _pendingGovernorExpeditionRequests = new Dictionary<string, PendingGovernorExpeditionRequest>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, PlayerDetachedPartyRecord> _playerDetachedParties = new Dictionary<string, PlayerDetachedPartyRecord>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, GovernorExpeditionRecord> _governorExpeditions = new Dictionary<string, GovernorExpeditionRecord>(StringComparer.OrdinalIgnoreCase);
+	private readonly Dictionary<string, ForeignClanGuestRecord> _foreignClanGuests = new Dictionary<string, ForeignClanGuestRecord>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, string> _governorExpeditionHeroByPartyKey = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, MobileParty> _governorExpeditionPartyByHeroId = new Dictionary<string, MobileParty>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, Settlement> _governorReturnTargetByHeroId = new Dictionary<string, Settlement>(StringComparer.OrdinalIgnoreCase);
@@ -69,10 +75,46 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 	private int _hasPendingGovernorExpeditionReconcile;
 	private int _hasPendingFollowSiegeRefresh;
 	private int _hasGovernorExpeditions;
+	private int _hasForeignClanGuests;
 	private bool _isOpeningCreateCompanionPartyScreen;
 	private double _nextDetachedPartyPruneDay;
+	private double _nextForeignClanGuestReconcileDay;
 
 	public static WorldMapPartyCommandBehavior Instance { get; private set; }
+
+	internal static bool ShouldProtectGovernorExpeditionLeaderFromNativeReplacement(MobileParty party)
+	{
+		// Harmony invokes this once per party/day. Keep the common path allocation-free:
+		// one volatile flag, cheap actor predicates, then a single O(1) party-ID lookup.
+		WorldMapPartyCommandBehavior behavior = Instance;
+		if (behavior == null || party == null || Volatile.Read(ref behavior._hasGovernorExpeditions) == 0)
+		{
+			return false;
+		}
+		try
+		{
+			Hero leader = party.LeaderHero;
+			Clan clan = party.ActualClan;
+			if (!party.IsActive || leader == null || leader.PartyBelongedTo != party
+				|| !leader.IsNoncombatant || clan == null || clan == Clan.PlayerClan || clan.Leader == leader)
+			{
+				return false;
+			}
+			bool shouldProtect = behavior.TryGetGovernorExpeditionForParty(party, out GovernorExpeditionRecord record)
+				&& record != null
+				&& string.Equals(record.HeroId, leader.StringId, StringComparison.OrdinalIgnoreCase);
+			if (shouldProtect)
+			{
+				Log("protected governor expedition leader from native noncombatant replacement hero=" + leader.StringId + " party=" + (party.StringId ?? ""));
+			}
+			return shouldProtect;
+		}
+		catch (Exception ex)
+		{
+			Log("check native governor expedition leader guard failed party=" + (party.StringId ?? "") + " error=" + ex.Message);
+			return false;
+		}
+	}
 
 	private enum CommandKind
 	{
@@ -141,6 +183,8 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		public bool FollowSiegeJoinedByCommand;
 		public string PendingSafeExitAction;
 		public string PendingSafeExitReason;
+		public int MergeTransferFailureCount;
+		public double MergeRetryAfterDay = -1.0;
 	}
 
 	private sealed class PartyCommandEntry
@@ -188,11 +232,47 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		public int Xp;
 	}
 
+	private struct RosterElementState
+	{
+		public CharacterObject Character;
+		public int Number;
+		public int WoundedNumber;
+		public int Xp;
+	}
+
+	private sealed class RosterElementTransferRecord
+	{
+		public TroopRoster Source;
+		public TroopRoster Target;
+		public CharacterObject Character;
+		public RosterElementState SourceBefore;
+		public RosterElementState TargetBefore;
+		public bool IsPrisonerRoster;
+	}
+
 	private sealed class PlayerDetachedPartyRecord
 	{
 		public string HeroId;
 		public string PartyStringId;
 		public int PartyIndex = -1;
+	}
+
+	private sealed class ForeignClanGuestRecord
+	{
+		public string HeroId;
+		public string ClanId;
+		public double JoinedDay;
+	}
+
+	private sealed class MergeHeroIdentitySnapshot
+	{
+		[JsonIgnore]
+		public Hero Hero;
+		[JsonIgnore]
+		public Clan Clan;
+		[JsonIgnore]
+		public Clan CompanionOf;
+		public Occupation Occupation;
 	}
 
 	public sealed class WorldMapOrderApplyResult
@@ -230,6 +310,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		Dictionary<string, string> storage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		Dictionary<string, string> detachedStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		Dictionary<string, string> governorExpeditionStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		Dictionary<string, string> foreignClanGuestStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		if (dataStore.IsSaving)
 		{
 			lock (_queueLock)
@@ -255,14 +336,23 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 						governorExpeditionStorage[pair.Key] = JsonConvert.SerializeObject(pair.Value);
 					}
 				}
+				foreach (KeyValuePair<string, ForeignClanGuestRecord> pair in _foreignClanGuests)
+				{
+					if (pair.Value != null && !string.IsNullOrWhiteSpace(pair.Key))
+					{
+						foreignClanGuestStorage[pair.Key] = JsonConvert.SerializeObject(pair.Value);
+					}
+				}
 			}
 			storage = CampaignSaveChunkHelper.FlattenStringDictionary(storage, StorageKey, "WorldMapPartyCommand");
 			detachedStorage = CampaignSaveChunkHelper.FlattenStringDictionary(detachedStorage, DetachedPartyStorageKey, "WorldMapPlayerDetachment");
 			governorExpeditionStorage = CampaignSaveChunkHelper.FlattenStringDictionary(governorExpeditionStorage, GovernorExpeditionStorageKey, "WorldMapGovernorExpedition");
+			foreignClanGuestStorage = CampaignSaveChunkHelper.FlattenStringDictionary(foreignClanGuestStorage, ForeignClanGuestStorageKey, "WorldMapForeignClanGuest");
 		}
 		dataStore.SyncData(StorageKey, ref storage);
 		dataStore.SyncData(DetachedPartyStorageKey, ref detachedStorage);
 		dataStore.SyncData(GovernorExpeditionStorageKey, ref governorExpeditionStorage);
+		dataStore.SyncData(ForeignClanGuestStorageKey, ref foreignClanGuestStorage);
 		if (!dataStore.IsLoading)
 		{
 			return;
@@ -339,10 +429,33 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 					Log("load governor expedition failed key=" + pair.Key + " error=" + ex.Message);
 				}
 			}
+			_foreignClanGuests.Clear();
+			Dictionary<string, string> restoredGuestStorage = CampaignSaveChunkHelper.RestoreStringDictionary(foreignClanGuestStorage, "WorldMapForeignClanGuest");
+			foreach (KeyValuePair<string, string> pair in restoredGuestStorage ?? new Dictionary<string, string>())
+			{
+				try
+				{
+					ForeignClanGuestRecord record = JsonConvert.DeserializeObject<ForeignClanGuestRecord>(pair.Value ?? "");
+					Hero guest = ResolveHeroByIdAny(record?.HeroId);
+					if (record == null || guest == null || string.IsNullOrWhiteSpace(record.HeroId)
+						|| string.IsNullOrWhiteSpace(record.ClanId) || guest.Clan == null
+						|| !string.Equals(guest.Clan.StringId ?? "", record.ClanId, StringComparison.OrdinalIgnoreCase)
+						|| !IsForeignClanGuestPlacementValid(guest))
+					{
+						continue;
+					}
+					_foreignClanGuests[record.HeroId] = record;
+				}
+				catch (Exception ex)
+				{
+					Log("load foreign clan guest failed key=" + pair.Key + " error=" + ex.Message);
+				}
+			}
 		}
 		Volatile.Write(ref _hasPendingFollowSiegeRefresh, 1);
 		Volatile.Write(ref _hasPendingGovernorExpeditionReconcile, 1);
 		Volatile.Write(ref _hasGovernorExpeditions, _governorExpeditions.Count > 0 ? 1 : 0);
+		Volatile.Write(ref _hasForeignClanGuests, _foreignClanGuests.Count > 0 ? 1 : 0);
 	}
 
 	public static bool HasWorldMapOrderTag(string text)
@@ -517,8 +630,8 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			return new List<PostprocessRuleEntry>();
 		}
-		bool useCompanionMergePrompt = false;
-		bool canExposeMerge = targetHero != null && TryResolveMergeToPlayerPostprocessVariant(targetHero, out useCompanionMergePrompt);
+		bool useMainPartyHeroMergePrompt = false;
+		bool canExposeMerge = targetHero != null && TryResolveMergeToPlayerPostprocessVariant(targetHero, out useMainPartyHeroMergePrompt);
 		List<PostprocessRuleEntry> filtered = new List<PostprocessRuleEntry>();
 		foreach (PostprocessRuleEntry rule in rules)
 		{
@@ -532,7 +645,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
-				filtered.Add(ClonePostprocessRule(rule, BuildMergeToPlayerPostprocessDescription(useCompanionMergePrompt)));
+				filtered.Add(ClonePostprocessRule(rule, BuildMergeToPlayerPostprocessDescription(useMainPartyHeroMergePrompt)));
 				continue;
 			}
 			filtered.Add(ClonePostprocessRule(rule));
@@ -540,30 +653,130 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		return filtered;
 	}
 
-	private static bool TryResolveMergeToPlayerPostprocessVariant(Hero targetHero, out bool useCompanionMergePrompt)
+	private static bool TryResolveMergeToPlayerPostprocessVariant(Hero targetHero, out bool useMainPartyHeroMergePrompt)
 	{
-		useCompanionMergePrompt = false;
+		useMainPartyHeroMergePrompt = false;
 		if (targetHero == null || targetHero == Hero.MainHero)
 		{
 			return false;
 		}
 		if (IsHeroActuallyInPlayerMainPartyRoster(targetHero))
 		{
-			useCompanionMergePrompt = true;
+			useMainPartyHeroMergePrompt = true;
 			return true;
-		}
-		MobileParty party = ResolveActorParty(targetHero);
-		if (party == null || party == MobileParty.MainParty || party.LeaderHero != targetHero)
-		{
-			return false;
 		}
 		WorldMapPartyCommandBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<WorldMapPartyCommandBehavior>();
-		if (behavior != null && behavior.IsRegisteredPlayerDetachment(targetHero, party))
+		MobileParty party = ResolveActorParty(targetHero);
+		return TryValidatePlayerWildernessPartyForMerge(targetHero, party, behavior, out _);
+	}
+
+	// Keep the MERGE_TO_PLAYER route and executor on the same eligibility rule.
+	// This mirrors the proven [A:H_J_P_P_C&L] wilderness-party resolution: the
+	// hero's live PartyBelongedTo and roster membership are authoritative. The
+	// detached-party registry is only an additional ownership signal, not a
+	// prerequisite for ordinary player companions or family members.
+	private static bool TryValidatePlayerWildernessPartyForMerge(Hero hero, MobileParty party, WorldMapPartyCommandBehavior behavior, out string reason)
+	{
+		reason = "";
+		if (hero == null || hero == Hero.MainHero || hero.CharacterObject == null)
 		{
-			useCompanionMergePrompt = true;
+			reason = "invalid_hero";
+			return false;
+		}
+		if (!IsPartyUsable(party) || party == MobileParty.MainParty || party.Party == PartyBase.MainParty)
+		{
+			reason = "not_independent_wilderness_party";
+			return false;
+		}
+		if (hero.PartyBelongedTo != party || party.LeaderHero != hero)
+		{
+			reason = "hero_party_mismatch";
+			return false;
+		}
+		if (party.MemberRoster == null || !party.MemberRoster.Contains(hero.CharacterObject))
+		{
+			reason = "hero_missing_from_party_roster";
+			return false;
+		}
+		bool isRegisteredDetachment = behavior != null && behavior.IsRegisteredPlayerDetachment(hero, party);
+		bool isPlayerCompanionOrFamily = RomanceSystemBehavior.IsPlayerCompanionOrFamily(hero);
+		if (IsForeignClanGuestHero(hero))
+		{
+			if (!TryValidateForeignClanGuestMerge(hero, party, out reason))
+			{
+				return false;
+			}
+		}
+		else if (!isRegisteredDetachment && !isPlayerCompanionOrFamily)
+		{
+			reason = "not_player_companion_family_or_registered_detachment";
+			return false;
+		}
+		if (!IsPartyUsable(MobileParty.MainParty))
+		{
+			reason = "main_party_invalid";
+			return false;
+		}
+		return true;
+	}
+
+	private static bool TryValidateForeignClanGuestMerge(Hero hero, MobileParty party, out string reason)
+	{
+		reason = "";
+		Clan playerClan = Clan.PlayerClan ?? Hero.MainHero?.Clan;
+		Clan foreignClan = hero?.Clan;
+		if (playerClan == null || foreignClan == null || foreignClan == playerClan)
+		{
+			reason = "foreign_guest_missing_foreign_clan";
+			return false;
+		}
+		if (hero.IsDead || !hero.IsActive || hero.IsPrisoner || hero.PartyBelongedToAsPrisoner != null)
+		{
+			reason = "foreign_guest_inactive_or_captive";
+			return false;
+		}
+		if (!party.IsLordParty || (party.ActualClan != null && party.ActualClan != foreignClan))
+		{
+			reason = "foreign_guest_not_own_lord_party";
+			return false;
+		}
+		if (hero.GovernorOf != null)
+		{
+			reason = "foreign_guest_is_governor";
+			return false;
+		}
+		if (party.Army != null)
+		{
+			reason = "foreign_guest_in_army";
+			return false;
+		}
+		if (ArePlayerAndClanAtWar(foreignClan))
+		{
+			reason = "foreign_guest_at_war";
+			return false;
+		}
+		return true;
+	}
+
+	private static bool ArePlayerAndClanAtWar(Clan foreignClan)
+	{
+		try
+		{
+			Clan playerClan = Clan.PlayerClan ?? Hero.MainHero?.Clan;
+			if (playerClan == null || foreignClan == null || foreignClan == playerClan)
+			{
+				return false;
+			}
+			IFaction playerFaction = playerClan.Kingdom ?? (IFaction)playerClan;
+			IFaction foreignFaction = foreignClan.Kingdom ?? (IFaction)foreignClan;
+			return playerFaction != null && foreignFaction != null
+				&& playerFaction != foreignFaction
+				&& FactionManager.IsAtWarAgainstFaction(playerFaction, foreignFaction);
+		}
+		catch
+		{
 			return true;
 		}
-		return targetHero.Clan == Clan.PlayerClan;
 	}
 
 	private static bool IsMergeToPlayerPostprocessRule(PostprocessRuleEntry rule)
@@ -581,13 +794,13 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		};
 	}
 
-	private static string BuildMergeToPlayerPostprocessDescription(bool useCompanionMergePrompt)
+	private static string BuildMergeToPlayerPostprocessDescription(bool useMainPartyHeroMergePrompt)
 	{
-		if (useCompanionMergePrompt)
+		if (useMainPartyHeroMergePrompt)
 		{
-			return "你在输出了其他ACTION:WORLDMAP时，如果玩家没有主动提到无需回归队伍，那么你必须输出此标签在最下方";
+			return "你在输出了其他ACTION:WORLDMAP时，如果玩家没有主动提到无需回归队伍，那么你必须输出此标签在最下方,严禁不输出该标签";
 		}
-		return "Independent companion-party variant. Output this only when the NPC already leads an independent player-clan companion party and clearly agrees to move back to the player and merge that independent party into the player main party. {days} is the approach/merge timeout; use 1 if unspecified. Do not use this for ordinary lords, enemies, non-player-clan heroes, or heroes who are already in the player's party unless the player-party temporary-create-party variant applies.";
+		return "Independent-party merge. Output only when the NPC clearly agrees to merge the whole field party into the player's main party. A foreign-clan Hero joins as a guest and keeps Clan, occupation, and companion status. Never use while hostile, captive, governing, in an army, or not the actual party leader. {days} is the return timeout; use 1 if unspecified.";
 	}
 
 	public static bool TryApplyWorldMapOrderTagsForExternal(Hero targetHero, ref string content, out List<string> generatedFacts, out List<string> notifications)
@@ -918,9 +1131,17 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			return false;
 		}
 		List<PartyCommandEntry> safeCommands = (commands ?? new List<PartyCommandEntry>()).Where(IsExecutableCommand).Select(CloneCommand).ToList();
+		string rejectedMergeReason = "";
+		if (safeCommands.Any(command => IsKind(command, CommandKind.MergeToPlayer)) && !CanMergeToPlayer(hero, party, out rejectedMergeReason))
+		{
+			safeCommands.RemoveAll(command => IsKind(command, CommandKind.MergeToPlayer));
+			Log("rejected merge before queue actor=" + (hero.StringId ?? "") + " party=" + (party.StringId ?? "") + " reason=" + rejectedMergeReason);
+		}
 		if (safeCommands.Count == 0)
 		{
-			message = "大地图命令失败：没有通过 ID 校验的命令。";
+			message = string.IsNullOrWhiteSpace(rejectedMergeReason)
+				? "大地图命令失败：没有通过 ID 校验的命令。"
+				: BuildMergeEligibilityFailureMessage(hero, rejectedMergeReason);
 			return false;
 		}
 		safeCommands = ConvertGoToSettlementCommandsToAttacks(hero, party, safeCommands, out int hostileSettlementConvertedCount, out int besiegedSettlementConvertedCount);
@@ -971,6 +1192,10 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		string convertedText = BuildGoToSettlementConversionSummary(hostileSettlementConvertedCount, besiegedSettlementConvertedCount);
 		fact = "[AFEF NPC行为补充] " + GetHeroName(hero) + (startNew ? "建立了" : "向现有清单末尾追加了") + safeCommands.Count + "道大地图命令" + convertedText + "。";
 		message = GetHeroName(hero) + (startNew ? "已开始执行" : "已追加") + safeCommands.Count + "道大地图命令。";
+		if (!string.IsNullOrWhiteSpace(rejectedMergeReason))
+		{
+			message += " " + BuildMergeEligibilityFailureMessage(hero, rejectedMergeReason);
+		}
 		return true;
 	}
 
@@ -1290,11 +1515,164 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				_nextDetachedPartyPruneDay = nowDay + 1.0 / 24.0;
 				PruneInvalidPlayerDetachedParties();
 			}
+			if (Volatile.Read(ref _hasForeignClanGuests) != 0 && nowDay >= _nextForeignClanGuestReconcileDay)
+			{
+				_nextForeignClanGuestReconcileDay = nowDay + 1.0 / 24.0;
+				ReconcileForeignClanGuests();
+			}
 		}
 		catch (Exception ex)
 		{
 			Log("world map command campaign tick failed: " + ex);
 		}
+		}
+	}
+
+	private void ReconcileForeignClanGuests()
+	{
+		List<ForeignClanGuestRecord> snapshot;
+		lock (_queueLock)
+		{
+			snapshot = _foreignClanGuests.Values.Where(record => record != null).ToList();
+		}
+		foreach (ForeignClanGuestRecord record in snapshot)
+		{
+			Hero guest = ResolveHeroByIdAny(record.HeroId);
+			if (guest == null || guest.IsDead || !guest.IsActive || guest.Clan == null
+				|| !IsForeignClanGuestHero(guest) || !IsForeignClanGuestPlacementValid(guest))
+			{
+				RemoveForeignClanGuestRecord(record.HeroId, "guest_no_longer_in_player_party_or_foreign_clan");
+				continue;
+			}
+			string currentClanId = guest.Clan.StringId ?? "";
+			if (!string.Equals(currentClanId, record.ClanId ?? "", StringComparison.OrdinalIgnoreCase))
+			{
+				lock (_queueLock)
+				{
+					if (_foreignClanGuests.TryGetValue(record.HeroId, out ForeignClanGuestRecord current) && current != null)
+					{
+						current.ClanId = currentClanId;
+					}
+				}
+				Log("foreign clan guest clan updated hero=" + record.HeroId + " clan=" + currentClanId);
+			}
+			if (!ArePlayerAndClanAtWar(guest.Clan))
+			{
+				continue;
+			}
+			MobileParty guestParty = guest.PartyBelongedTo;
+			bool leftPlayerControl = IsHeroActuallyInPlayerMainPartyRoster(guest)
+				? TryEjectForeignClanGuestAfterWar(guest)
+				: TryReleaseForeignClanGuestDetachmentAfterWar(guest, guestParty);
+			if (leftPlayerControl)
+			{
+				RemoveForeignClanGuestRecord(record.HeroId, "war_started");
+			}
+		}
+	}
+
+	private static bool TryEjectForeignClanGuestAfterWar(Hero guest)
+	{
+		try
+		{
+			MobileParty mainParty = MobileParty.MainParty;
+			if (guest == null || mainParty == null || guest.PartyBelongedTo != mainParty
+				|| HasActiveMapEvent(mainParty) || mainParty.DefaultBehavior == AiBehavior.EngageParty
+				|| PlayerEncounter.Current != null || Mission.Current != null)
+			{
+				return false;
+			}
+			Settlement destination = ResolveForeignClanGuestReturnSettlement(guest);
+			if (destination != null)
+			{
+				TeleportHeroAction.ApplyImmediateTeleportToSettlement(guest, destination);
+			}
+			else
+			{
+				MakeHeroFugitiveAction.Apply(guest, showNotification: false);
+			}
+			if (guest.PartyBelongedTo == mainParty || IsHeroActuallyInPlayerMainPartyRoster(guest))
+			{
+				return false;
+			}
+			string destinationText = destination == null ? "原家族势力范围" : GetSettlementName(destination);
+			LogFact(guest, GetHeroName(guest) + "所属势力已与玩家开战，因此结束外族客军随队状态并离开玩家主队，返回" + destinationText + "；此前已并入玩家主队的普通兵员和物资不自动撤回。");
+			DisplayCommandMessage(GetHeroName(guest) + "所属势力已与玩家开战，该外族客军 Hero 已离开玩家主队。", CommandMessageTone.Failure);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Log("eject foreign clan guest failed hero=" + (guest?.StringId ?? "") + " error=" + ex);
+			return false;
+		}
+	}
+
+	private bool TryReleaseForeignClanGuestDetachmentAfterWar(Hero guest, MobileParty party)
+	{
+		try
+		{
+			if (guest == null || !IsRegisteredPlayerDetachment(guest, party)
+				|| HasActiveMapEvent(party) || party.DefaultBehavior == AiBehavior.EngageParty || party.BesiegerCamp != null
+				|| PlayerEncounter.Current != null || Mission.Current != null)
+			{
+				return false;
+			}
+			StopQueue(guest, "foreign_guest_war_started", out _);
+			RemovePlayerDetachedParty(guest, party, "foreign_guest_war_started");
+			ReleasePartyAi(party);
+			if (IsRegisteredPlayerDetachment(guest, party))
+			{
+				return false;
+			}
+			LogFact(guest, GetHeroName(guest) + "所属势力已与玩家开战，因此其外族客军分队已脱离玩家指挥并回归原家族的原版AI；该分队现有兵员和物资不自动转回玩家主队。");
+			DisplayCommandMessage(GetHeroName(guest) + "所属势力已与玩家开战，其外族客军分队已脱离玩家指挥。", CommandMessageTone.Failure);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Log("release foreign clan guest detachment failed hero=" + (guest?.StringId ?? "") + " error=" + ex);
+			return false;
+		}
+	}
+
+	private static Settlement ResolveForeignClanGuestReturnSettlement(Hero guest)
+	{
+		try
+		{
+			Clan clan = guest?.Clan;
+			Settlement clanSettlement = clan?.Settlements?.FirstOrDefault(settlement => settlement != null);
+			if (clanSettlement != null)
+			{
+				return clanSettlement;
+			}
+			Settlement home = guest?.HomeSettlement;
+			if (home != null)
+			{
+				return home;
+			}
+			return guest?.BornSettlement;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private void RemoveForeignClanGuestRecord(string heroId, string reason)
+	{
+		if (string.IsNullOrWhiteSpace(heroId))
+		{
+			return;
+		}
+		bool removed;
+		lock (_queueLock)
+		{
+			removed = _foreignClanGuests.Remove(heroId);
+			Volatile.Write(ref _hasForeignClanGuests, _foreignClanGuests.Count > 0 ? 1 : 0);
+		}
+		if (removed)
+		{
+			Log("removed foreign clan guest hero=" + heroId + " reason=" + (reason ?? ""));
 		}
 	}
 
@@ -1850,6 +2228,8 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		state.EngageCommitted = false;
 		state.LastIssuedActionKey = "";
 		state.LastStatusMessageKey = "";
+		state.MergeTransferFailureCount = 0;
+		state.MergeRetryAfterDay = -1.0;
 		state.TimeoutDay = ComputeTimeoutDay(party, command);
 		bool isFollowCommand = IsFollowCommand(command);
 		if (!isFollowCommand && !PreemptBlockingWorldActivityForCommand(hero, party, command, state, "start"))
@@ -1990,12 +2370,20 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 		if (IsKind(command, CommandKind.MergeToPlayer))
 		{
+			if (!CanMergeToPlayer(hero, party, out string mergeReason))
+			{
+				NotifyCommandStatus(state, "merge_to_player_invalid:" + mergeReason, BuildMergeEligibilityFailureMessage(hero, mergeReason), CommandMessageTone.Failure);
+				AdvanceCommand(hero, party, state, "merge_invalid:" + mergeReason, terminalFailure: true);
+				return;
+			}
 			LockPartyAi(party);
 			SynchronizeArmyObjectiveForCommand(party, command);
-			SetPartyAiAction.GetActionForEscortingParty(party, MobileParty.MainParty, MobileParty.NavigationType.Default, isFromPort: false, isTargetingPort: false);
+			IssueMergeApproachAction(party, MobileParty.MainParty);
 			state.Stage = CommandStage.Traveling.ToString();
 			state.LastIssuedActionKey = "merge_to_player";
-			DisplayCommandMessage(GetHeroName(hero) + "开始返回玩家部队，准备会合并转入兵力。", CommandMessageTone.Progress);
+			DisplayCommandMessage(IsForeignClanGuestHero(hero)
+				? (GetHeroName(hero) + "开始率部前往玩家主队，准备在保留原家族身份的情况下以客军形式整队并入。")
+				: (GetHeroName(hero) + "开始返回玩家部队，准备会合并转入兵力。"), CommandMessageTone.Progress);
 			Log("start merge actor=" + GetActorLogId(state, hero, party));
 			return;
 		}
@@ -2600,7 +2988,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			MaintainAttackShelterWaiting(hero, party, targetHero, targetShelter, state, command, "target_inside_settlement");
 			return;
 		}
-		if (!IsPartyNearParty(party, targetParty, EngageCommitDistance))
+		if (!IsPartyNearParty(party, targetParty, PartyAttackCommitDistance))
 		{
 			MaintainAttackTracking(hero, party, targetParty, state, command, "closing_distance");
 			return;
@@ -2659,7 +3047,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			MaintainPartyAttackSettlementWaiting(hero, party, targetParty, targetParty.CurrentSettlement, state, command, "party_target_inside_settlement");
 			return;
 		}
-		if (!IsPartyNearParty(party, targetParty, EngageCommitDistance))
+		if (!IsPartyNearParty(party, targetParty, PartyAttackCommitDistance))
 		{
 			MaintainPartyAttackTracking(hero, party, targetParty, state, command, "closing_distance");
 			return;
@@ -2726,7 +3114,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			CommitSettlementAttack(hero, party, settlement, state, mode);
 			return;
 		}
-		if (!IsPartyNearPosition(party, GetSettlementAttackPosition(settlement), EngageCommitDistance))
+		if (!IsPartyNearPosition(party, GetSettlementAttackPosition(settlement), SettlementAttackCommitDistance))
 		{
 			MaintainSettlementAttackTracking(hero, party, settlement, state, command, "closing_distance");
 			return;
@@ -3069,13 +3457,18 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 	{
 		if (!CanMergeToPlayer(hero, party, out string reason))
 		{
-			AdvanceCommand(hero, party, state, "merge_invalid:" + reason);
+			NotifyCommandStatus(state, "merge_to_player_invalid:" + reason, BuildMergeEligibilityFailureMessage(hero, reason), CommandMessageTone.Failure);
+			AdvanceCommand(hero, party, state, "merge_invalid:" + reason, terminalFailure: true);
 			return;
 		}
-		if (!IsPartyNearParty(party, MobileParty.MainParty, PartyArrivalDistance))
+		if (state.MergeRetryAfterDay > NowDay())
+		{
+			return;
+		}
+		if (!IsPartyNearParty(party, MobileParty.MainParty, MergeArrivalDistance))
 		{
 			bool shouldRefresh = !string.Equals(state.LastIssuedActionKey, "merge_to_player", StringComparison.OrdinalIgnoreCase)
-				|| !IsPartyEscortingTarget(party, MobileParty.MainParty)
+				|| !IsMergeApproachActionCurrent(party, MobileParty.MainParty)
 				|| !IsAiDecisionLockActive(party);
 			if (shouldRefresh)
 			{
@@ -3084,33 +3477,50 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 					return;
 				}
 				LockPartyAi(party);
-				SetPartyAiAction.GetActionForEscortingParty(party, MobileParty.MainParty, MobileParty.NavigationType.Default, isFromPort: false, isTargetingPort: false);
+				IssueMergeApproachAction(party, MobileParty.MainParty);
 				state.LastIssuedActionKey = "merge_to_player";
-				NotifyCommandStatus(state, "merge_to_player_refresh", GetHeroName(hero) + "正在返回玩家部队，若原版AI打断会自动重新下达回队命令。", CommandMessageTone.Progress);
+				NotifyCommandStatus(state, "merge_to_player_refresh", IsForeignClanGuestHero(hero)
+					? (GetHeroName(hero) + "正率部前往玩家主队，若原版AI打断会自动重新下达客军并队命令。")
+					: (GetHeroName(hero) + "正在返回玩家部队，若原版AI打断会自动重新下达回队命令。"), CommandMessageTone.Progress);
 				Log("merge_refresh hero=" + (hero?.StringId ?? "") + " " + DescribePartyAi(party));
 			}
 			return;
 		}
 		LeaveArmyIfNeeded(party);
-		if (HasActiveMapEvent(party) || party.BesiegerCamp != null || party.Army != null || party.AttachedTo != null || HasPartyShips(party))
+		if (HasActiveMapEvent(party) || party.BesiegerCamp != null || party.Army != null || party.AttachedTo != null)
 		{
 			return;
 		}
 		List<TroopRosterElement> memberSnapshot = party.MemberRoster?.GetTroopRoster().ToList() ?? new List<TroopRosterElement>();
 		List<TroopRosterElement> prisonerSnapshot = party.PrisonRoster?.GetTroopRoster().ToList() ?? new List<TroopRosterElement>();
 		List<ItemRosterElement> itemSnapshot = party.ItemRoster?.ToList() ?? new List<ItemRosterElement>();
+		List<Ship> shipSnapshot = GetPartyShipsSnapshot(party);
 		int movedMembers = memberSnapshot.Sum(x => Math.Max(0, x.Number));
 		int movedPrisoners = prisonerSnapshot.Sum(x => Math.Max(0, x.Number));
 		List<Hero> memberHeroes = GetMemberHeroesSnapshot(party);
+		List<MergeHeroIdentitySnapshot> memberHeroIdentities = CaptureMergeHeroIdentities(memberHeroes);
+		bool foreignClanGuestMerge = IsForeignClanGuestHero(hero);
+		List<RosterElementTransferRecord> memberTransfers = new List<RosterElementTransferRecord>();
+		List<RosterElementTransferRecord> prisonerTransfers = new List<RosterElementTransferRecord>();
+		string transferStage = "regular_members";
 		try
 		{
-			MoveAllRegularRosterElementsVerified(party.MemberRoster, MobileParty.MainParty.MemberRoster);
-			MoveAllPrisonersToPartyVerified(party, MobileParty.MainParty);
+			MoveAllRegularRosterElementsVerified(party.MemberRoster, MobileParty.MainParty.MemberRoster, memberTransfers);
+			transferStage = "prisoners";
+			MoveAllPrisonersToPartyVerified(party, MobileParty.MainParty, prisonerTransfers);
+			transferStage = "items";
 			MoveAllItemsVerified(party.ItemRoster, MobileParty.MainParty.ItemRoster);
+			transferStage = "member_heroes";
 			MoveAllMemberHeroesToPartyVerified(party, MobileParty.MainParty, memberHeroes);
+			transferStage = "hero_identity_validation";
+			ValidateMergeHeroIdentitiesUnchanged(memberHeroIdentities);
+			transferStage = "ships";
+			TransferShipsVerified(party.Party, MobileParty.MainParty.Party, shipSnapshot);
+			transferStage = "post_transfer_validation";
 			if ((party.MemberRoster?.TotalManCount ?? 0) != 0
 				|| (party.PrisonRoster?.TotalManCount ?? 0) != 0
-				|| (party.ItemRoster?.Count ?? 0) != 0)
+				|| (party.ItemRoster?.Count ?? 0) != 0
+				|| HasPartyShips(party))
 			{
 				throw new InvalidOperationException("并入主队后源部队仍有未转移资产。");
 			}
@@ -3130,7 +3540,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			}
 			if (!TryDestroyStrictlyEmptyParty(party, "merge_to_player"))
 			{
-				RollbackMergeToPlayerTransfer(party, memberSnapshot, prisonerSnapshot, itemSnapshot, memberHeroes);
+				bool rollbackSucceeded = RollbackMergeToPlayerTransfer(party, memberSnapshot, prisonerSnapshot, itemSnapshot, shipSnapshot, memberHeroes, memberTransfers, prisonerTransfers);
 				lock (_queueLock)
 				{
 					if (hadGovernorExpedition && mergeRecord != null)
@@ -3145,7 +3555,15 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 						_queues[queueKey] = state;
 					}
 				}
-				Log("merge destroy deferred hero=" + (hero?.StringId ?? "") + " party=" + (party?.StringId ?? ""));
+				state.MergeTransferFailureCount++;
+				Log("merge destroy deferred hero=" + (hero?.StringId ?? "") + " party=" + (party?.StringId ?? "") + " rollback=" + rollbackSucceeded + " attempt=" + state.MergeTransferFailureCount);
+				if (!rollbackSucceeded || state.MergeTransferFailureCount >= 3)
+				{
+					NotifyCommandStatus(state, "merge_to_player_destroy_stopped", GetHeroName(hero) + "的临时部队无法安全销毁，自动合并已停止，以免重复转移资产。", CommandMessageTone.Failure);
+					AdvanceCommand(hero, party, state, "merge_destroy_failed", terminalFailure: true);
+					return;
+				}
+				state.MergeRetryAfterDay = NowDay() + 0.25;
 				return;
 			}
 			RemovePlayerDetachedParty(hero, party, "merge_done");
@@ -3157,12 +3575,24 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 					_queues.Remove(queueKey);
 				}
 			}
-			LogFact(hero, GetHeroName(hero) + "已经与玩家部队会合，并转入" + movedMembers + "名成员、" + movedPrisoners + "名俘虏及全部随队物资；临时远征记录已清除。");
+			RegisterForeignClanGuests(memberHeroIdentities);
+			LogFact(hero, GetHeroName(hero) + "已经与玩家部队会合，并转入" + movedMembers + "名成员、" + movedPrisoners + "名俘虏及全部随队物资；"
+				+ (foreignClanGuestMerge ? "原独立部队已解散。" : "临时远征记录已清除。")
+				+ (foreignClanGuestMerge ? (" " + GetHeroName(hero) + "保留原家族、职业和同伴身份，以外族客军身份随玩家主队行动。") : ""));
 		}
 		catch (Exception ex)
 		{
-			RollbackMergeToPlayerTransfer(party, memberSnapshot, prisonerSnapshot, itemSnapshot, memberHeroes);
-			Log("merge to player transfer failed hero=" + (hero?.StringId ?? "") + " error=" + ex.Message);
+			bool rollbackSucceeded = RollbackMergeToPlayerTransfer(party, memberSnapshot, prisonerSnapshot, itemSnapshot, shipSnapshot, memberHeroes, memberTransfers, prisonerTransfers);
+			state.MergeTransferFailureCount++;
+			Log("merge to player transfer failed hero=" + (hero?.StringId ?? "") + " stage=" + transferStage + " rollback=" + rollbackSucceeded + " attempt=" + state.MergeTransferFailureCount + " error=" + ex);
+			if (!rollbackSucceeded || state.MergeTransferFailureCount >= 3)
+			{
+				NotifyCommandStatus(state, "merge_to_player_transfer_stopped", GetHeroName(hero) + "的兵员转入连续失败，自动合并已停止，以免重复回滚损坏资产。", CommandMessageTone.Failure);
+				AdvanceCommand(hero, party, state, "merge_transfer_failed", terminalFailure: true);
+				return;
+			}
+			state.MergeRetryAfterDay = NowDay() + 0.25;
+			NotifyCommandStatus(state, "merge_to_player_transfer_failed", GetHeroName(hero) + "已经抵达玩家部队，但兵员转入失败；资产已回滚，将在6游戏小时后重试。", CommandMessageTone.Failure);
 		}
 	}
 
@@ -3993,7 +4423,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			}
 			if (IsKind(command, CommandKind.MergeToPlayer) && MobileParty.MainParty != null)
 			{
-				if (IsPartyNearParty(party, MobileParty.MainParty, PartyArrivalDistance))
+				if (IsPartyNearParty(party, MobileParty.MainParty, MergeArrivalDistance))
 				{
 					state.TimeoutDay = now + 0.25;
 					Log("merge timeout deferred because party is already near player hero=" + (hero?.StringId ?? "") + " distance=" + GetPartyDistance(party, MobileParty.MainParty).ToString("0.0"));
@@ -4254,6 +4684,18 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			return "所有命令执行完毕";
 		}
+		if (text.StartsWith("merge_invalid:", StringComparison.OrdinalIgnoreCase))
+		{
+			return "回队合并条件已失效";
+		}
+		if (text.IndexOf("merge_transfer_failed", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return "回队资产转入失败";
+		}
+		if (text.IndexOf("merge_destroy_failed", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return "原独立部队无法安全解散";
+		}
 		if (text.IndexOf("timeout", StringComparison.OrdinalIgnoreCase) >= 0)
 		{
 			return "命令时限已到";
@@ -4273,7 +4715,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		return text;
 	}
 
-	private void AdvanceCommand(Hero hero, MobileParty party, PartyCommandQueueState state, string reason)
+	private void AdvanceCommand(Hero hero, MobileParty party, PartyCommandQueueState state, string reason, bool terminalFailure = false)
 	{
 		Log("advance actor=" + GetActorLogId(state, hero, party) + " index=" + state.CurrentIndex + " reason=" + reason);
 		if (HasFollowSiegeState(state) && !TryExitFollowSiegeControl(party, state, detachPreexistingParticipation: false, "advance:" + reason))
@@ -4294,7 +4736,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		state.LastStatusMessageKey = "";
 		if (state.CurrentIndex >= state.Commands.Count)
 		{
-			FinishQueue(hero, party, state, "queue_done", appendFact: true);
+			FinishQueue(hero, party, state, terminalFailure ? reason : "queue_done", appendFact: true);
 			return;
 		}
 		StartCurrentCommand(hero, party, state);
@@ -5811,6 +6253,44 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static void IssueMergeApproachAction(MobileParty party, MobileParty mainParty)
+	{
+		if (!IsPartyUsable(party) || !IsPartyUsable(mainParty))
+		{
+			return;
+		}
+		if (mainParty.CurrentSettlement != null)
+		{
+			SetPartyAiAction.GetActionForVisitingSettlement(party, mainParty.CurrentSettlement, MobileParty.NavigationType.Default, isFromPort: false, isTargetingPort: false);
+			return;
+		}
+		// EscortParty caps a faster returning party to the player's speed, so an
+		// existing gap can never close. Refreshing a point target once per hourly
+		// command tick keeps native pathfinding while allowing normal catch-up speed.
+		party.SetMoveGoToPoint(mainParty.Position, MobileParty.NavigationType.Default);
+	}
+
+	private static bool IsMergeApproachActionCurrent(MobileParty party, MobileParty mainParty)
+	{
+		try
+		{
+			if (!IsPartyUsable(party) || !IsPartyUsable(mainParty))
+			{
+				return false;
+			}
+			if (mainParty.CurrentSettlement != null)
+			{
+				return party.DefaultBehavior == AiBehavior.GoToSettlement && party.TargetSettlement == mainParty.CurrentSettlement;
+			}
+			return party.DefaultBehavior == AiBehavior.GoToPoint
+				&& party.TargetPosition.DistanceSquared(mainParty.Position) <= 1f;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	private static bool IsPartyEscortingTarget(MobileParty party, MobileParty targetParty)
 	{
 		try
@@ -7034,6 +7514,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		MobileParty garrison = null;
 		List<TroopRosterElement> garrisonSnapshot = null;
 		List<GovernorTroopTransferPlan> transferPlan = null;
+		List<RosterElementTransferRecord> transferRecords = new List<RosterElementTransferRecord>();
 		try
 		{
 			List<PartyCommandEntry> safeCommands = SanitizeFollowUpCommands(followUpCommands);
@@ -7075,7 +7556,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			{
 				throw new InvalidOperationException(planMessage);
 			}
-			TransferGovernorTroopsWithVerification(garrison, createdParty, transferPlan);
+			TransferGovernorTroopsWithVerification(garrison, createdParty, transferPlan, transferRecords);
 			RegisterGovernorExpedition(hero, createdParty, origin, hero.Clan);
 			if (!TryAppendQueue(hero, safeCommands, out string fact, out string queueMessage))
 			{
@@ -7093,7 +7574,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			message = "组建总督远征队失败：" + ex.Message;
 			Log("create governor expedition failed hero=" + (hero?.StringId ?? "") + " error=" + ex);
-			RollbackGovernorExpeditionCreation(hero, origin, garrison, garrisonSnapshot, createdParty, transferPlan, "create_failed");
+			RollbackGovernorExpeditionCreation(hero, origin, garrison, garrisonSnapshot, createdParty, transferRecords, "create_failed");
 			return false;
 		}
 	}
@@ -7121,62 +7602,218 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			}
 			party.MemberRoster.AddToCounts(element.Character, -element.Number, false, -element.WoundedNumber, -element.Xp, true, -1);
 		}
-		party.ItemRoster?.Clear();
-		if (party.MemberRoster.TotalRegulars != 0 || (party.PrisonRoster?.TotalManCount ?? 0) != 0 || (party.ItemRoster?.Count ?? 0) != 0)
+		// CreateNewClanMobileParty adds vanilla starter provisions in both supported APIs.
+		// Keep them for the expedition; return/merge already transfers the full item roster.
+		PurgeGeneratedGovernorPartyShips(party);
+		if (party.MemberRoster.TotalRegulars != 0
+			|| (party.PrisonRoster?.TotalManCount ?? 0) != 0
+			|| HasPartyShips(party))
 		{
-			throw new InvalidOperationException("原版模板兵、俘虏或自动物资未能完全清除。");
+			throw new InvalidOperationException("原版模板兵、俘虏或模板船只未能完全清除。");
 		}
 	}
 
-	private static TroopRosterElement GetRosterElement(TroopRoster roster, CharacterObject character)
+	private static void PurgeGeneratedGovernorPartyShips(MobileParty party)
 	{
+		if (party?.Ships == null || party.Ships.Count == 0)
+		{
+			return;
+		}
+		foreach (var ship in party.Ships.Where(x => x != null).ToList())
+		{
+			DestroyShipAction.ApplyByDiscard(ship);
+		}
+		if (HasPartyShips(party))
+		{
+			throw new InvalidOperationException("原版领主队模板船只清理失败。");
+		}
+	}
+
+	private static RosterElementState GetRosterElementState(TroopRoster roster, CharacterObject character)
+	{
+		RosterElementState state = new RosterElementState
+		{
+			Character = character,
+			Number = 0,
+			WoundedNumber = 0,
+			Xp = 0
+		};
 		if (roster == null || character == null)
 		{
-			return default(TroopRosterElement);
+			return state;
 		}
 		int index = roster.FindIndexOfTroop(character);
-		return index >= 0 ? roster.GetElementCopyAtIndex(index) : default(TroopRosterElement);
+		if (index < 0)
+		{
+			return state;
+		}
+		TroopRosterElement element = roster.GetElementCopyAtIndex(index);
+		if (element.Character == null)
+		{
+			return state;
+		}
+		state.Character = element.Character;
+		state.Number = element.Number;
+		state.WoundedNumber = element.WoundedNumber;
+		state.Xp = element.Xp;
+		return state;
 	}
 
-	private static void TransferGovernorTroopsWithVerification(MobileParty garrison, MobileParty expedition, List<GovernorTroopTransferPlan> plans)
+	private static void TransferGovernorTroopsWithVerification(MobileParty garrison, MobileParty expedition, List<GovernorTroopTransferPlan> plans, List<RosterElementTransferRecord> transferRecords)
 	{
-		foreach (GovernorTroopTransferPlan plan in plans ?? new List<GovernorTroopTransferPlan>())
+		if (!IsPartyUsable(garrison) || !IsPartyUsable(expedition) || garrison.MemberRoster == null || expedition.MemberRoster == null || plans == null)
+		{
+			throw new InvalidOperationException("驻军、远征队或抽调计划不可用。");
+		}
+		foreach (GovernorTroopTransferPlan plan in plans)
 		{
 			if (plan?.Character == null || plan.Character.IsHero || plan.Count <= 0)
 			{
 				throw new InvalidOperationException("驻军抽调计划包含无效兵种。");
 			}
-			TroopRosterElement sourceBefore = GetRosterElement(garrison.MemberRoster, plan.Character);
-			TroopRosterElement targetBefore = GetRosterElement(expedition.MemberRoster, plan.Character);
-			if (sourceBefore.Character == null || sourceBefore.Number - sourceBefore.WoundedNumber < plan.Count || sourceBefore.Xp < plan.Xp)
+			RosterElementState sourceBefore = GetRosterElementState(garrison.MemberRoster, plan.Character);
+			RosterElementState targetBefore = GetRosterElementState(expedition.MemberRoster, plan.Character);
+			if (sourceBefore.Number - sourceBefore.WoundedNumber < plan.Count || sourceBefore.Xp < plan.Xp)
 			{
 				throw new InvalidOperationException("驻军兵种状态在转移前已经变化：" + (plan.Character.StringId ?? "unknown"));
 			}
-			expedition.MemberRoster.AddToCounts(plan.Character, plan.Count, false, 0, plan.Xp, true, -1);
-			TroopRosterElement targetAfterAdd = GetRosterElement(expedition.MemberRoster, plan.Character);
-			if (targetAfterAdd.Number != targetBefore.Number + plan.Count
-				|| targetAfterAdd.WoundedNumber != targetBefore.WoundedNumber
-				|| targetAfterAdd.Xp != targetBefore.Xp + plan.Xp)
+			RosterElementTransferRecord transfer = new RosterElementTransferRecord
 			{
-				throw new InvalidOperationException("远征队兵种写入校验失败：" + (plan.Character.StringId ?? "unknown"));
+				Source = garrison.MemberRoster,
+				Target = expedition.MemberRoster,
+				Character = plan.Character,
+				SourceBefore = sourceBefore,
+				TargetBefore = targetBefore,
+				IsPrisonerRoster = false
+			};
+			transferRecords?.Add(transfer);
+			string step = "remove_source_counts";
+			try
+			{
+				// Count and XP must be changed separately. Bannerlord clamps member XP
+				// against the already-reduced source count inside PartyBase.OnXpChanged.
+				// Reading that actual reduction is the only way to conserve saturated XP.
+				garrison.MemberRoster.AddToCounts(plan.Character, -plan.Count, false, 0, 0, true, -1);
+				RosterElementState sourceAfterCounts = GetRosterElementState(garrison.MemberRoster, plan.Character);
+				if (sourceAfterCounts.Number != sourceBefore.Number - plan.Count
+					|| sourceAfterCounts.WoundedNumber != sourceBefore.WoundedNumber)
+				{
+					throw new InvalidOperationException("驻军健康兵员扣除校验失败：" + (plan.Character.StringId ?? "unknown"));
+				}
+				step = "remove_source_xp";
+				RosterElementState sourceAfter = sourceAfterCounts;
+				if (sourceAfterCounts.Number > 0 && plan.Xp > 0)
+				{
+					sourceAfter = ApplyRosterXpDeltaObserved(garrison.MemberRoster, plan.Character, -plan.Xp, allowDownwardClamp: true, context: "governor_source");
+				}
+				int actualXpRemoved = sourceBefore.Xp - sourceAfter.Xp;
+				if (actualXpRemoved < plan.Xp || actualXpRemoved < 0)
+				{
+					throw new InvalidOperationException("驻军 XP 扣除结果异常：" + (plan.Character.StringId ?? "unknown"));
+				}
+				if (actualXpRemoved != plan.Xp)
+				{
+					Log("governor troop xp adjusted by native cap troop=" + (plan.Character.StringId ?? "unknown") + " plannedXp=" + plan.Xp + " actualXp=" + actualXpRemoved);
+				}
+				step = "add_target_counts";
+				expedition.MemberRoster.AddToCounts(plan.Character, plan.Count, false, 0, 0, true, -1);
+				RosterElementState targetAfterCounts = GetRosterElementState(expedition.MemberRoster, plan.Character);
+				if (targetAfterCounts.Number != targetBefore.Number + plan.Count
+					|| targetAfterCounts.WoundedNumber != targetBefore.WoundedNumber
+					|| targetAfterCounts.Xp != targetBefore.Xp)
+				{
+					throw new InvalidOperationException("远征队兵员写入校验失败：" + (plan.Character.StringId ?? "unknown"));
+				}
+				step = "add_target_xp";
+				RosterElementState targetAfter = actualXpRemoved == 0
+					? targetAfterCounts
+					: ApplyRosterXpDeltaObserved(expedition.MemberRoster, plan.Character, actualXpRemoved, allowDownwardClamp: false, context: "governor_target");
+				if (sourceAfter.Number + targetAfter.Number != sourceBefore.Number + targetBefore.Number
+					|| sourceAfter.WoundedNumber + targetAfter.WoundedNumber != sourceBefore.WoundedNumber + targetBefore.WoundedNumber
+					|| sourceAfter.Xp + targetAfter.Xp != sourceBefore.Xp + targetBefore.Xp)
+				{
+					throw new InvalidOperationException("驻军与远征队兵员或 XP 守恒校验失败：" + (plan.Character.StringId ?? "unknown"));
+				}
 			}
-			garrison.MemberRoster.AddToCounts(plan.Character, -plan.Count, false, 0, -plan.Xp, true, -1);
-			TroopRosterElement sourceAfter = GetRosterElement(garrison.MemberRoster, plan.Character);
-			TroopRosterElement targetAfter = GetRosterElement(expedition.MemberRoster, plan.Character);
-			if (sourceAfter.Number + targetAfter.Number != sourceBefore.Number + targetBefore.Number
-				|| sourceAfter.WoundedNumber + targetAfter.WoundedNumber != sourceBefore.WoundedNumber + targetBefore.WoundedNumber
-				|| sourceAfter.Xp + targetAfter.Xp != sourceBefore.Xp + targetBefore.Xp)
+			catch (Exception ex)
 			{
-				throw new InvalidOperationException("驻军与远征队兵员或 XP 守恒校验失败：" + (plan.Character.StringId ?? "unknown"));
+				try
+				{
+					RestoreGovernorRosterElementExact(expedition.MemberRoster, plan.Character, targetBefore);
+					RestoreGovernorRosterElementExact(garrison.MemberRoster, plan.Character, sourceBefore);
+				}
+				catch (Exception rollbackEx)
+				{
+					Log("governor troop immediate rollback failed troop=" + (plan.Character.StringId ?? "unknown") + " step=" + step + " error=" + rollbackEx);
+				}
+				throw new InvalidOperationException("总督远征队兵员转移失败 troop=" + (plan.Character.StringId ?? "unknown") + " step=" + step, ex);
 			}
 		}
 	}
 
-	private void RollbackGovernorExpeditionCreation(Hero hero, Settlement origin, MobileParty garrison, List<TroopRosterElement> garrisonSnapshot, MobileParty createdParty, List<GovernorTroopTransferPlan> transferPlan, string reason)
+	private static RosterElementState ApplyRosterXpDeltaObserved(TroopRoster roster, CharacterObject character, int xpDelta, bool allowDownwardClamp, string context)
+	{
+		RosterElementState before = GetRosterElementState(roster, character);
+		long expectedLong = (long)before.Xp + xpDelta;
+		if (roster == null || character == null || before.Number <= 0 || expectedLong < 0 || expectedLong > int.MaxValue)
+		{
+			throw new InvalidOperationException("兵种 XP 调整参数无效：" + (character?.StringId ?? "unknown"));
+		}
+		int expected = (int)expectedLong;
+		Exception callbackError = null;
+		try
+		{
+			roster.AddXpToTroop(character, xpDelta);
+		}
+		catch (Exception ex)
+		{
+			// SetElementXp writes first and then invokes the owner callback. A custom
+			// troop may throw from that callback even though the requested XP stuck.
+			callbackError = ex;
+		}
+		RosterElementState after = GetRosterElementState(roster, character);
+		bool accepted = after.Xp == expected
+			|| (allowDownwardClamp && after.Xp >= 0 && after.Xp < expected);
+		if (!accepted)
+		{
+			throw new InvalidOperationException("兵种 XP 写入校验失败：" + (character.StringId ?? "unknown") + " context=" + (context ?? ""), callbackError);
+		}
+		if (callbackError != null)
+		{
+			Log("roster xp callback threw after accepted write troop=" + (character.StringId ?? "unknown") + " context=" + (context ?? "") + " error=" + callbackError.Message);
+		}
+		return after;
+	}
+
+	private static void RestoreGovernorRosterElementExact(TroopRoster roster, CharacterObject character, RosterElementState snapshot)
+	{
+		if (roster == null || character == null)
+		{
+			throw new InvalidOperationException("总督远征名册回滚缺少兵种或名册。");
+		}
+		RosterElementState current = GetRosterElementState(roster, character);
+		int countDelta = snapshot.Number - current.Number;
+		int woundedDelta = snapshot.WoundedNumber - current.WoundedNumber;
+		if (countDelta != 0 || woundedDelta != 0)
+		{
+			roster.AddToCounts(character, countDelta, false, woundedDelta, 0, true, -1);
+		}
+		RosterElementState afterCounts = GetRosterElementState(roster, character);
+		int xpDelta = snapshot.Xp - afterCounts.Xp;
+		RosterElementState restored = xpDelta == 0
+			? afterCounts
+			: ApplyRosterXpDeltaObserved(roster, character, xpDelta, allowDownwardClamp: false, context: "governor_rollback");
+		if (restored.Number != snapshot.Number || restored.WoundedNumber != snapshot.WoundedNumber || restored.Xp != snapshot.Xp)
+		{
+			throw new InvalidOperationException("总督远征名册精确回滚失败：" + (character.StringId ?? "unknown"));
+		}
+	}
+
+	private void RollbackGovernorExpeditionCreation(Hero hero, Settlement origin, MobileParty garrison, List<TroopRosterElement> garrisonSnapshot, MobileParty createdParty, List<RosterElementTransferRecord> transferRecords, string reason)
 	{
 		RemoveGovernorExpeditionRecord(hero?.StringId, reason, removeQueue: true);
 		createdParty = IsPartyUsable(createdParty) ? createdParty : hero?.PartyBelongedTo;
-		bool garrisonRestored = TryRestoreGovernorGarrisonFromTransferPlan(garrison, createdParty, garrisonSnapshot, transferPlan, out string restoreError);
+		bool garrisonRestored = TryRestoreGovernorGarrisonFromTransferRecords(garrison, garrisonSnapshot, transferRecords, out string restoreError);
 		if (!garrisonRestored)
 		{
 			Log("restore garrison transfer failed hero=" + (hero?.StringId ?? "") + " error=" + restoreError);
@@ -7204,6 +7841,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				ReleasePartyAi(createdParty);
 				createdParty.ItemRoster?.Clear();
 				createdParty.PrisonRoster?.Clear();
+				PurgeGeneratedGovernorPartyShips(createdParty);
 				for (int i = createdParty.MemberRoster.Count - 1; i >= 0; i--)
 				{
 					TroopRosterElement element = createdParty.MemberRoster.GetElementCopyAtIndex(i);
@@ -7238,7 +7876,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		TryRestoreGovernorAfterRollback(hero, origin);
 	}
 
-	private static bool TryRestoreGovernorGarrisonFromTransferPlan(MobileParty garrison, MobileParty expedition, List<TroopRosterElement> originalSnapshot, List<GovernorTroopTransferPlan> transferPlan, out string error)
+	private static bool TryRestoreGovernorGarrisonFromTransferRecords(MobileParty garrison, List<TroopRosterElement> originalSnapshot, List<RosterElementTransferRecord> transferRecords, out string error)
 	{
 		error = "";
 		try
@@ -7248,44 +7886,25 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				error = "驻军或原始名册快照不可用。";
 				return false;
 			}
-			foreach (GovernorTroopTransferPlan plan in transferPlan ?? new List<GovernorTroopTransferPlan>())
+			for (int i = (transferRecords?.Count ?? 0) - 1; i >= 0; i--)
 			{
-				if (plan?.Character == null)
+				RosterElementTransferRecord transfer = transferRecords[i];
+				if (transfer?.Character == null || transfer.Source != garrison.MemberRoster || transfer.Target == null)
 				{
-					continue;
+					throw new InvalidOperationException("驻军回滚缺少有效事务快照。");
 				}
-				TroopRosterElement desired = originalSnapshot.FirstOrDefault(x => x.Character == plan.Character);
-				TroopRosterElement current = GetRosterElement(garrison.MemberRoster, plan.Character);
-				int missingCount = desired.Number - current.Number;
-				int missingWounded = desired.WoundedNumber - current.WoundedNumber;
-				int missingXp = desired.Xp - current.Xp;
-				if (missingCount < 0 || missingWounded != 0 || missingXp < 0)
+				RestoreGovernorRosterElementExact(transfer.Target, transfer.Character, transfer.TargetBefore);
+				RestoreGovernorRosterElementExact(transfer.Source, transfer.Character, transfer.SourceBefore);
+				RosterElementState sourceAfter = GetRosterElementState(transfer.Source, transfer.Character);
+				RosterElementState targetAfter = GetRosterElementState(transfer.Target, transfer.Character);
+				if (sourceAfter.Number != transfer.SourceBefore.Number
+					|| sourceAfter.WoundedNumber != transfer.SourceBefore.WoundedNumber
+					|| sourceAfter.Xp != transfer.SourceBefore.Xp
+					|| targetAfter.Number != transfer.TargetBefore.Number
+					|| targetAfter.WoundedNumber != transfer.TargetBefore.WoundedNumber
+					|| targetAfter.Xp != transfer.TargetBefore.Xp)
 				{
-					throw new InvalidOperationException("驻军回滚差额异常：" + (plan.Character.StringId ?? "unknown"));
-				}
-				if (missingCount == 0 && missingXp == 0)
-				{
-					continue;
-				}
-				TroopRosterElement expeditionBefore = GetRosterElement(expedition?.MemberRoster, plan.Character);
-				if (expeditionBefore.Number < missingCount || expeditionBefore.Xp < missingXp)
-				{
-					throw new InvalidOperationException("远征队没有足够兵员完成回滚：" + (plan.Character.StringId ?? "unknown"));
-				}
-				if (missingCount > 0)
-				{
-					garrison.MemberRoster.AddToCounts(plan.Character, missingCount, false, 0, missingXp, true, -1);
-					expedition.MemberRoster.AddToCounts(plan.Character, -missingCount, false, 0, -missingXp, true, -1);
-				}
-				else
-				{
-					garrison.MemberRoster.AddXpToTroop(plan.Character, missingXp);
-					expedition.MemberRoster.AddXpToTroop(plan.Character, -missingXp);
-				}
-				TroopRosterElement restored = GetRosterElement(garrison.MemberRoster, plan.Character);
-				if (restored.Number != desired.Number || restored.WoundedNumber != desired.WoundedNumber || restored.Xp != desired.Xp)
-				{
-					throw new InvalidOperationException("驻军回滚校验失败：" + (plan.Character.StringId ?? "unknown"));
+					throw new InvalidOperationException("驻军事务快照回滚校验失败：" + (transfer.Character.StringId ?? "unknown"));
 				}
 			}
 			if (!RosterMatchesSnapshot(garrison.MemberRoster, originalSnapshot))
@@ -7315,7 +7934,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 		return expected.All(element =>
 		{
-			TroopRosterElement current = GetRosterElement(roster, element.Character);
+			RosterElementState current = GetRosterElementState(roster, element.Character);
 			return current.Number == element.Number && current.WoundedNumber == element.WoundedNumber && current.Xp == element.Xp;
 		});
 	}
@@ -7579,11 +8198,6 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		if (HasPartyShips(party))
-		{
-			AbandonGovernorExpeditionToNativeAi(hero, party, record, "party_has_ships");
-			return;
-		}
 		TryFinalizeGovernorExpeditionReturn(hero, party, target, record, emptyCleanupRetry);
 	}
 
@@ -7610,7 +8224,11 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		ReleasePartyAi(party);
 		if (hero != null && !hero.IsDead)
 		{
-			LogFact(hero, GetHeroName(hero) + "的总督远征队没有可安全返还的本家族城市或城堡，已保留当前部队并交还原版 AI 管理。" + (string.Equals(reason, "party_has_ships", StringComparison.OrdinalIgnoreCase) ? "队伍持有船只，未执行销毁。" : ""));
+			string detail = string.Equals(reason, "no_safe_family_settlement", StringComparison.OrdinalIgnoreCase)
+				|| string.Equals(reason, "return_target_lost", StringComparison.OrdinalIgnoreCase)
+				? "没有可安全返还的本家族城市或城堡"
+				: "当前无法安全完成返城资产安置";
+			LogFact(hero, GetHeroName(hero) + "的总督远征队" + detail + "，已保留当前部队并交还原版 AI 管理。");
 		}
 	}
 
@@ -7726,6 +8344,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			int returnedShipCount = 0;
 			if (!emptyCleanupRetry)
 			{
 				List<Hero> memberHeroes = GetMemberHeroesSnapshot(party);
@@ -7747,6 +8366,9 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 					AbandonGovernorExpeditionToNativeAi(hero, party, record, "return_garrison_unavailable");
 					return;
 				}
+				List<Ship> shipSnapshot = GetPartyShipsSnapshot(party);
+				TransferShipsVerified(party.Party, target.Party, shipSnapshot);
+				returnedShipCount = shipSnapshot.Count;
 				MoveAllRegularRosterElementsVerified(party.MemberRoster, garrison.MemberRoster);
 				MoveAllPrisonersToSettlementVerified(party, target);
 				MoveAllItemsVerified(party.ItemRoster, garrison.ItemRoster);
@@ -7766,7 +8388,8 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			}
 			if ((party.MemberRoster?.TotalManCount ?? 0) != 0
 				|| (party.PrisonRoster?.TotalManCount ?? 0) != 0
-				|| (party.ItemRoster?.Count ?? 0) != 0)
+				|| (party.ItemRoster?.Count ?? 0) != 0
+				|| HasPartyShips(party))
 			{
 				return;
 			}
@@ -7782,7 +8405,9 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				return;
 			}
 			bool restored = TryRestoreGovernorAfterReturn(hero, target, record);
-			LogFact(hero, GetHeroName(hero) + "的远征队已返抵" + GetSettlementName(target) + "，普通兵、俘虏与物资已经完成安置，临时部队已回收。" + (restored ? "该人物已恢复原总督职务。" : "未驱逐现任总督。"));
+			LogFact(hero, GetHeroName(hero) + "的远征队已返抵" + GetSettlementName(target) + "，普通兵、俘虏与物资已经完成安置，临时部队已回收。"
+				+ (returnedShipCount > 0 ? (returnedShipCount + "艘随队船只已转交该定居点。") : "")
+				+ (restored ? "该人物已恢复原总督职务。" : "未驱逐现任总督。"));
 		}
 		catch (Exception ex)
 		{
@@ -7854,6 +8479,99 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			.ToList();
 	}
 
+	private static List<MergeHeroIdentitySnapshot> CaptureMergeHeroIdentities(IEnumerable<Hero> heroes)
+	{
+		return (heroes ?? Enumerable.Empty<Hero>())
+			.Where(hero => hero != null)
+			.Distinct()
+			.Select(hero => new MergeHeroIdentitySnapshot
+			{
+				Hero = hero,
+				Clan = hero.Clan,
+				CompanionOf = hero.CompanionOf,
+				Occupation = hero.Occupation
+			})
+			.ToList();
+	}
+
+	private static void ValidateMergeHeroIdentitiesUnchanged(IEnumerable<MergeHeroIdentitySnapshot> identities)
+	{
+		foreach (MergeHeroIdentitySnapshot identity in identities ?? Enumerable.Empty<MergeHeroIdentitySnapshot>())
+		{
+			Hero memberHero = identity?.Hero;
+			if (memberHero == null || memberHero.Clan != identity.Clan
+				|| memberHero.CompanionOf != identity.CompanionOf || memberHero.Occupation != identity.Occupation)
+			{
+				throw new InvalidOperationException("并队改变了随队 Hero 的家族、职业或同伴身份：" + (memberHero?.StringId ?? "unknown"));
+			}
+		}
+	}
+
+	private static bool IsForeignClanGuestHero(Hero hero)
+	{
+		try
+		{
+			Clan playerClan = Clan.PlayerClan ?? Hero.MainHero?.Clan;
+			return hero != null && hero != Hero.MainHero && hero.Clan != null && playerClan != null && hero.Clan != playerClan;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private bool IsForeignClanGuestPlacementValid(Hero guest)
+	{
+		if (IsHeroActuallyInPlayerMainPartyRoster(guest))
+		{
+			return true;
+		}
+		MobileParty party = guest?.PartyBelongedTo;
+		return IsRegisteredPlayerDetachment(guest, party);
+	}
+
+	private void RegisterForeignClanGuests(IEnumerable<MergeHeroIdentitySnapshot> identities)
+	{
+		try
+		{
+			int added = 0;
+			double joinedDay = NowDay();
+			lock (_queueLock)
+			{
+				foreach (MergeHeroIdentitySnapshot identity in identities ?? Enumerable.Empty<MergeHeroIdentitySnapshot>())
+				{
+					Hero guest = identity?.Hero;
+					Clan clan = identity?.Clan;
+					if (!IsForeignClanGuestHero(guest) || clan == null || string.IsNullOrWhiteSpace(guest.StringId)
+						|| string.IsNullOrWhiteSpace(clan.StringId) || guest.Clan != clan
+						|| !IsHeroActuallyInPlayerMainPartyRoster(guest))
+					{
+						continue;
+					}
+					_foreignClanGuests[guest.StringId] = new ForeignClanGuestRecord
+					{
+						HeroId = guest.StringId,
+						ClanId = clan.StringId,
+						JoinedDay = joinedDay
+					};
+					added++;
+				}
+				Volatile.Write(ref _hasForeignClanGuests, _foreignClanGuests.Count > 0 ? 1 : 0);
+			}
+			if (added > 0)
+			{
+				Log("registered foreign clan guests count=" + added);
+			}
+		}
+		catch (Exception ex)
+		{
+			// Asset transfer and source-party destruction have already committed at
+			// this point. Guest bookkeeping must never trigger a rollback attempt
+			// against the destroyed source party.
+			Log("register foreign clan guests failed: " + ex);
+		}
+	}
+
 	private static bool CanSafelyPlaceHeroInSettlement(Hero hero, MobileParty sourceParty, Settlement target)
 	{
 		return hero != null
@@ -7868,60 +8586,146 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			&& sourceParty.BesiegerCamp == null;
 	}
 
-	private static void MoveAllRegularRosterElementsVerified(TroopRoster source, TroopRoster target)
+	private static void MoveAllRegularRosterElementsVerified(TroopRoster source, TroopRoster target, List<RosterElementTransferRecord> transferRecords = null)
 	{
 		List<TroopRosterElement> snapshot = source?.GetTroopRoster()
 			.Where(x => x.Character != null && !x.Character.IsHero && x.Number > 0)
 			.ToList() ?? new List<TroopRosterElement>();
 		foreach (TroopRosterElement element in snapshot)
 		{
-			MoveRosterElementVerified(source, target, element);
+			MoveRosterElementVerified(source, target, element, transferRecords, isPrisonerRoster: false);
 		}
 	}
 
-	private static void MoveRosterElementVerified(TroopRoster source, TroopRoster target, TroopRosterElement element)
+	private static void MoveRosterElementVerified(TroopRoster source, TroopRoster target, TroopRosterElement element, List<RosterElementTransferRecord> transferRecords, bool isPrisonerRoster)
 	{
 		if (source == null || target == null || element.Character == null || element.Number <= 0)
 		{
 			return;
 		}
-		TroopRosterElement sourceBefore = GetRosterElement(source, element.Character);
-		TroopRosterElement targetBefore = GetRosterElement(target, element.Character);
+		RosterElementState sourceBefore = GetRosterElementState(source, element.Character);
+		RosterElementState targetBefore = GetRosterElementState(target, element.Character);
+		RosterElementTransferRecord transfer = new RosterElementTransferRecord
+		{
+			Source = source,
+			Target = target,
+			Character = element.Character,
+			SourceBefore = sourceBefore,
+			TargetBefore = targetBefore,
+			IsPrisonerRoster = isPrisonerRoster
+		};
+		transferRecords?.Add(transfer);
+		string step = "remove_source_counts";
 		try
 		{
-			target.AddToCounts(element.Character, element.Number, false, element.WoundedNumber, element.Xp, true, -1);
-			source.AddToCounts(element.Character, -element.Number, false, -element.WoundedNumber, -element.Xp, true, -1);
-			TroopRosterElement sourceAfter = GetRosterElement(source, element.Character);
-			TroopRosterElement targetAfter = GetRosterElement(target, element.Character);
-			if (sourceAfter.Number + targetAfter.Number != sourceBefore.Number + targetBefore.Number
-				|| sourceAfter.WoundedNumber + targetAfter.WoundedNumber != sourceBefore.WoundedNumber + targetBefore.WoundedNumber
-				|| sourceAfter.Xp + targetAfter.Xp != sourceBefore.Xp + targetBefore.Xp)
+			// Do not pass XP through AddToCounts. Bannerlord dereferences
+			// CharacterObject.UpgradeTargets while applying member XP; some custom
+			// troops legitimately expose a null upgrade array and crash that path.
+			source.AddToCounts(element.Character, -element.Number, false, -element.WoundedNumber, 0, true, -1);
+			step = "add_target_counts";
+			target.AddToCounts(element.Character, element.Number, false, element.WoundedNumber, 0, true, -1);
+			step = "apply_target_xp";
+			AdjustRosterXpBestEffort(target, element.Character, element.Xp, isPrisonerRoster, "transfer");
+			step = "verify";
+			RosterElementState sourceAfter = GetRosterElementState(source, element.Character);
+			RosterElementState targetAfter = GetRosterElementState(target, element.Character);
+			int transferredXp = targetAfter.Xp - targetBefore.Xp;
+			if (sourceAfter.Number != sourceBefore.Number - element.Number
+				|| targetAfter.Number != targetBefore.Number + element.Number
+				|| sourceAfter.WoundedNumber != sourceBefore.WoundedNumber - element.WoundedNumber
+				|| targetAfter.WoundedNumber != targetBefore.WoundedNumber + element.WoundedNumber)
 			{
-				throw new InvalidOperationException("名册守恒校验失败：" + (element.Character.StringId ?? "unknown"));
+				throw new InvalidOperationException("名册人数或伤员守恒校验失败：" + (element.Character.StringId ?? "unknown"));
+			}
+			if (transferredXp < 0 || transferredXp > element.Xp)
+			{
+				throw new InvalidOperationException("名册经验值边界校验失败：" + (element.Character.StringId ?? "unknown"));
+			}
+			if (transferredXp != element.Xp)
+			{
+				Log("roster xp clamped during transfer troop=" + (element.Character.StringId ?? "unknown") + " requestedXp=" + element.Xp + " transferredXp=" + transferredXp);
 			}
 		}
-		catch
+		catch (Exception ex)
 		{
-			RestoreRosterElementExact(source, element.Character, sourceBefore);
-			RestoreRosterElementExact(target, element.Character, targetBefore);
-			throw;
+			try
+			{
+				RestoreRosterElementExact(target, element.Character, targetBefore, isPrisonerRoster);
+				RestoreRosterElementExact(source, element.Character, sourceBefore, isPrisonerRoster);
+			}
+			catch (Exception rollbackEx)
+			{
+				Log("roster element immediate rollback failed troop=" + (element.Character.StringId ?? "unknown") + " step=" + step + " error=" + rollbackEx);
+			}
+			throw new InvalidOperationException("名册转移失败 troop=" + (element.Character.StringId ?? "unknown") + " step=" + step, ex);
 		}
 	}
 
-	private static void RestoreRosterElementExact(TroopRoster roster, CharacterObject character, TroopRosterElement snapshot)
+	private static void RestoreRosterElementExact(TroopRoster roster, CharacterObject character, RosterElementState snapshot, bool isPrisonerRoster)
 	{
 		if (roster == null || character == null)
 		{
 			return;
 		}
-		TroopRosterElement current = GetRosterElement(roster, character);
-		if (current.Character != null && current.Number > 0)
+		RosterElementState current = GetRosterElementState(roster, character);
+		int countDelta = snapshot.Number - current.Number;
+		int woundedDelta = snapshot.WoundedNumber - current.WoundedNumber;
+		if (countDelta != 0 || woundedDelta != 0)
 		{
-			roster.AddToCounts(character, -current.Number, false, -current.WoundedNumber, -current.Xp, true, -1);
+			roster.AddToCounts(character, countDelta, false, woundedDelta, 0, true, -1);
 		}
-		if (snapshot.Character != null && snapshot.Number > 0)
+		RosterElementState afterCounts = GetRosterElementState(roster, character);
+		int xpDelta = snapshot.Xp - afterCounts.Xp;
+		if (xpDelta != 0)
 		{
-			roster.Add(snapshot);
+			AdjustRosterXpBestEffort(roster, character, xpDelta, isPrisonerRoster, "rollback");
+		}
+	}
+
+	private static void AdjustRosterXpBestEffort(TroopRoster roster, CharacterObject character, int xpDelta, bool isPrisonerRoster, string context)
+	{
+		if (roster == null || character == null || xpDelta == 0)
+		{
+			return;
+		}
+		if (!isPrisonerRoster && !CanSafelyApplyMemberRosterXp(character))
+		{
+			Log("roster xp skipped for non-upgradable troop troop=" + (character.StringId ?? "unknown") + " delta=" + xpDelta + " context=" + (context ?? ""));
+			return;
+		}
+		try
+		{
+			roster.AddXpToTroop(character, xpDelta);
+		}
+		catch (Exception ex)
+		{
+			// SetElementXp writes the value before invoking the game's clamp callback.
+			// Keep the count transfer valid and report the callback failure instead of
+			// rolling the entire party transaction forever.
+			Log("roster xp callback failed troop=" + (character.StringId ?? "unknown") + " delta=" + xpDelta + " context=" + (context ?? "") + " error=" + ex);
+		}
+	}
+
+	private static bool CanSafelyApplyMemberRosterXp(CharacterObject character)
+	{
+		try
+		{
+			if (character == null || character.IsHero || character.UpgradeTargets == null || character.UpgradeTargets.Length == 0)
+			{
+				return false;
+			}
+			for (int i = 0; i < character.UpgradeTargets.Length; i++)
+			{
+				if (character.UpgradeTargets[i] == null)
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+		catch
+		{
+			return false;
 		}
 	}
 
@@ -7930,12 +8734,12 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		MoveAllPrisonersVerified(sourceParty, target?.Party);
 	}
 
-	private static void MoveAllPrisonersToPartyVerified(MobileParty sourceParty, MobileParty targetParty)
+	private static void MoveAllPrisonersToPartyVerified(MobileParty sourceParty, MobileParty targetParty, List<RosterElementTransferRecord> transferRecords = null)
 	{
-		MoveAllPrisonersVerified(sourceParty, targetParty?.Party);
+		MoveAllPrisonersVerified(sourceParty, targetParty?.Party, transferRecords);
 	}
 
-	private static void MoveAllPrisonersVerified(MobileParty sourceParty, PartyBase targetParty)
+	private static void MoveAllPrisonersVerified(MobileParty sourceParty, PartyBase targetParty, List<RosterElementTransferRecord> transferRecords = null)
 	{
 		TroopRoster source = sourceParty?.PrisonRoster;
 		TroopRoster destination = targetParty?.PrisonRoster;
@@ -7948,7 +8752,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			if (!element.Character.IsHero)
 			{
-				MoveRosterElementVerified(source, destination, element);
+				MoveRosterElementVerified(source, destination, element, transferRecords, isPrisonerRoster: true);
 				continue;
 			}
 			for (int i = 0; i < element.Number; i++)
@@ -8017,95 +8821,103 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void RollbackMergeToPlayerTransfer(MobileParty sourceParty, List<TroopRosterElement> memberSnapshot, List<TroopRosterElement> prisonerSnapshot, List<ItemRosterElement> itemSnapshot, List<Hero> memberHeroes)
+	private static bool RollbackMergeToPlayerTransfer(MobileParty sourceParty, List<TroopRosterElement> memberSnapshot, List<TroopRosterElement> prisonerSnapshot, List<ItemRosterElement> itemSnapshot, List<Ship> shipSnapshot, List<Hero> memberHeroes, List<RosterElementTransferRecord> memberTransfers, List<RosterElementTransferRecord> prisonerTransfers)
 	{
 		try
 		{
 			if (!IsPartyUsable(sourceParty) || !IsPartyUsable(MobileParty.MainParty))
 			{
-				return;
+				return false;
 			}
 			RestoreMemberHeroesToPartyAfterFailedDestroy(sourceParty, memberHeroes);
-			RestoreRegularRosterFromCounterpartySnapshot(sourceParty.MemberRoster, MobileParty.MainParty.MemberRoster, memberSnapshot);
+			RestoreRosterTransfersExact(memberTransfers);
 			RestoreHeroPrisonersFromMainParty(sourceParty, prisonerSnapshot);
-			RestoreRegularRosterFromCounterpartySnapshot(sourceParty.PrisonRoster, MobileParty.MainParty.PrisonRoster, prisonerSnapshot);
+			RestoreRosterTransfersExact(prisonerTransfers);
 			RestoreItemsFromCounterpartySnapshot(sourceParty.ItemRoster, MobileParty.MainParty.ItemRoster, itemSnapshot);
-			if (!RosterMatchesSnapshot(sourceParty.MemberRoster, memberSnapshot)
-				|| !RosterMatchesSnapshot(sourceParty.PrisonRoster, prisonerSnapshot)
-				|| !ItemRosterMatchesSnapshot(sourceParty.ItemRoster, itemSnapshot))
+			if (!TryRestoreShipOwnership(shipSnapshot, MobileParty.MainParty.Party, sourceParty.Party))
+			{
+				throw new InvalidOperationException("并队回滚未能恢复源队船只所有权。");
+			}
+			if (!RosterMatchesMergeSnapshot(sourceParty.MemberRoster, memberSnapshot, isPrisonerRoster: false)
+				|| !RosterMatchesMergeSnapshot(sourceParty.PrisonRoster, prisonerSnapshot, isPrisonerRoster: true)
+				|| !ItemRosterMatchesSnapshot(sourceParty.ItemRoster, itemSnapshot)
+				|| !PartyShipsMatchSnapshot(sourceParty, shipSnapshot))
 			{
 				throw new InvalidOperationException("并队回滚后的源队资产与事务快照不一致。");
 			}
+			return true;
 		}
 		catch (Exception ex)
 		{
-			Log("rollback merge transfer failed party=" + (sourceParty?.StringId ?? "") + " error=" + ex.Message);
+			Log("rollback merge transfer failed party=" + (sourceParty?.StringId ?? "") + " error=" + ex);
+			return false;
 		}
 	}
 
-	private static void RestoreRegularRosterFromCounterpartySnapshot(TroopRoster source, TroopRoster counterparty, List<TroopRosterElement> sourceSnapshot)
+	private static void RestoreRosterTransfersExact(List<RosterElementTransferRecord> transfers)
 	{
-		if (source == null || counterparty == null || sourceSnapshot == null)
+		if (transfers == null)
 		{
-			throw new InvalidOperationException("并队名册回滚缺少源、目标或快照。");
+			return;
 		}
-		foreach (TroopRosterElement desired in sourceSnapshot.Where(x => x.Character != null && !x.Character.IsHero && x.Number > 0))
+		for (int i = transfers.Count - 1; i >= 0; i--)
 		{
-			TroopRosterElement sourceBefore = GetRosterElement(source, desired.Character);
-			TroopRosterElement counterpartyBefore = GetRosterElement(counterparty, desired.Character);
-			int missingCount = desired.Number - sourceBefore.Number;
-			int missingWounded = desired.WoundedNumber - sourceBefore.WoundedNumber;
-			int missingXp = desired.Xp - sourceBefore.Xp;
-			if (missingCount < 0 || missingWounded < 0 || missingWounded > missingCount || missingXp < 0
-				|| counterpartyBefore.Number < missingCount || counterpartyBefore.WoundedNumber < missingWounded || counterpartyBefore.Xp < missingXp)
+			RosterElementTransferRecord transfer = transfers[i];
+			if (transfer?.Character == null || transfer.Source == null || transfer.Target == null)
 			{
-				throw new InvalidOperationException("并队名册回滚差额异常：" + (desired.Character.StringId ?? "unknown"));
+				throw new InvalidOperationException("并队名册回滚缺少事务记录。");
 			}
-			if (missingCount == 0 && missingXp == 0)
+			RestoreRosterElementExact(transfer.Target, transfer.Character, transfer.TargetBefore, transfer.IsPrisonerRoster);
+			RestoreRosterElementExact(transfer.Source, transfer.Character, transfer.SourceBefore, transfer.IsPrisonerRoster);
+			RosterElementState sourceAfter = GetRosterElementState(transfer.Source, transfer.Character);
+			RosterElementState targetAfter = GetRosterElementState(transfer.Target, transfer.Character);
+			if (!RosterElementMatches(sourceAfter, transfer.SourceBefore, transfer.IsPrisonerRoster)
+				|| !RosterElementMatches(targetAfter, transfer.TargetBefore, transfer.IsPrisonerRoster))
 			{
-				continue;
-			}
-			try
-			{
-				if (missingCount > 0)
-				{
-					source.AddToCounts(desired.Character, missingCount, false, missingWounded, missingXp, true, -1);
-					counterparty.AddToCounts(desired.Character, -missingCount, false, -missingWounded, -missingXp, true, -1);
-				}
-				else
-				{
-					source.AddXpToTroop(desired.Character, missingXp);
-					counterparty.AddXpToTroop(desired.Character, -missingXp);
-				}
-				TroopRosterElement restored = GetRosterElement(source, desired.Character);
-				TroopRosterElement counterpartyAfter = GetRosterElement(counterparty, desired.Character);
-				if (restored.Number != desired.Number || restored.WoundedNumber != desired.WoundedNumber || restored.Xp != desired.Xp
-					|| restored.Number + counterpartyAfter.Number != sourceBefore.Number + counterpartyBefore.Number
-					|| restored.WoundedNumber + counterpartyAfter.WoundedNumber != sourceBefore.WoundedNumber + counterpartyBefore.WoundedNumber
-					|| restored.Xp + counterpartyAfter.Xp != sourceBefore.Xp + counterpartyBefore.Xp)
-				{
-					throw new InvalidOperationException("并队名册回滚守恒校验失败：" + (desired.Character.StringId ?? "unknown"));
-				}
-			}
-			catch
-			{
-				RestoreRosterElementExact(source, desired.Character, sourceBefore);
-				RestoreRosterElementExact(counterparty, desired.Character, counterpartyBefore);
-				throw;
+				throw new InvalidOperationException("并队名册事务快照回滚失败：" + (transfer.Character.StringId ?? "unknown"));
 			}
 		}
+	}
+
+	private static bool RosterElementMatches(RosterElementState actual, RosterElementState expected, bool isPrisonerRoster)
+	{
+		return actual.Number == expected.Number
+			&& actual.WoundedNumber == expected.WoundedNumber
+			&& (actual.Xp == expected.Xp || (!isPrisonerRoster && !CanSafelyApplyMemberRosterXp(expected.Character)));
+	}
+
+	private static bool RosterElementMatches(RosterElementState actual, TroopRosterElement expected, bool isPrisonerRoster)
+	{
+		return actual.Number == expected.Number
+			&& actual.WoundedNumber == expected.WoundedNumber
+			&& (actual.Xp == expected.Xp || (!isPrisonerRoster && !CanSafelyApplyMemberRosterXp(expected.Character)));
+	}
+
+	private static bool RosterMatchesMergeSnapshot(TroopRoster roster, List<TroopRosterElement> snapshot, bool isPrisonerRoster)
+	{
+		if (roster == null || snapshot == null)
+		{
+			return false;
+		}
+		List<TroopRosterElement> expected = snapshot.Where(x => x.Character != null && x.Number > 0).ToList();
+		List<TroopRosterElement> actual = roster.GetTroopRoster().Where(x => x.Character != null && x.Number > 0).ToList();
+		if (expected.Count != actual.Count)
+		{
+			return false;
+		}
+		return expected.All(element => RosterElementMatches(GetRosterElementState(roster, element.Character), element, isPrisonerRoster));
 	}
 
 	private static void RestoreHeroPrisonersFromMainParty(MobileParty sourceParty, List<TroopRosterElement> prisonerSnapshot)
 	{
 		foreach (TroopRosterElement desired in (prisonerSnapshot ?? new List<TroopRosterElement>()).Where(x => x.Character?.IsHero == true && x.Number > 0))
 		{
-			int current = GetRosterElement(sourceParty.PrisonRoster, desired.Character).Number;
+			int current = GetRosterElementState(sourceParty.PrisonRoster, desired.Character).Number;
 			for (int i = current; i < desired.Number; i++)
 			{
 				TransferPrisonerAction.Apply(desired.Character, MobileParty.MainParty.Party, sourceParty.Party);
 			}
-			if (GetRosterElement(sourceParty.PrisonRoster, desired.Character).Number != desired.Number)
+			if (GetRosterElementState(sourceParty.PrisonRoster, desired.Character).Number != desired.Number)
 			{
 				throw new InvalidOperationException("Hero 俘虏并队回滚失败：" + (desired.Character.StringId ?? "unknown"));
 			}
@@ -8214,6 +9026,95 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				throw;
 			}
 		}
+	}
+
+	private static List<Ship> GetPartyShipsSnapshot(MobileParty party)
+	{
+		return party?.Ships == null
+			? new List<Ship>()
+			: party.Ships.Where(x => x != null).Distinct().ToList();
+	}
+
+	private static void TransferShipsVerified(PartyBase sourceOwner, PartyBase targetOwner, IEnumerable<Ship> ships)
+	{
+		List<Ship> snapshot = (ships ?? Enumerable.Empty<Ship>()).Where(x => x != null).Distinct().ToList();
+		if (snapshot.Count == 0)
+		{
+			return;
+		}
+		if (sourceOwner == null || targetOwner == null || sourceOwner == targetOwner)
+		{
+			throw new InvalidOperationException("船只转移的来源或目标无效。");
+		}
+		if (snapshot.Any(ship => ship.Owner != sourceOwner))
+		{
+			throw new InvalidOperationException("船只所有权在转移前已经变化。");
+		}
+		try
+		{
+			foreach (Ship ship in snapshot)
+			{
+				ChangeShipOwnerAction.ApplyByTransferring(targetOwner, ship);
+				if (ship.Owner != targetOwner)
+				{
+					throw new InvalidOperationException("船只所有权转移校验失败。");
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			if (!TryRestoreShipOwnership(snapshot, targetOwner, sourceOwner))
+			{
+				throw new InvalidOperationException("船只转移失败且未能完整回滚。", ex);
+			}
+			throw new InvalidOperationException("船只转移失败，所有权已回滚。", ex);
+		}
+	}
+
+	private static bool TryRestoreShipOwnership(IEnumerable<Ship> ships, PartyBase expectedCurrentOwner, PartyBase targetOwner)
+	{
+		if (targetOwner == null)
+		{
+			return false;
+		}
+		bool restored = true;
+		foreach (Ship ship in (ships ?? Enumerable.Empty<Ship>()).Where(x => x != null).Distinct().Reverse())
+		{
+			if (ship.Owner == targetOwner)
+			{
+				continue;
+			}
+			if (ship.Owner != expectedCurrentOwner)
+			{
+				restored = false;
+				continue;
+			}
+			try
+			{
+				ChangeShipOwnerAction.ApplyByTransferring(targetOwner, ship);
+				if (ship.Owner != targetOwner)
+				{
+					restored = false;
+				}
+			}
+			catch
+			{
+				restored = false;
+			}
+		}
+		return restored;
+	}
+
+	private static bool PartyShipsMatchSnapshot(MobileParty party, IEnumerable<Ship> snapshot)
+	{
+		if (party?.Party == null)
+		{
+			return false;
+		}
+		List<Ship> expected = (snapshot ?? Enumerable.Empty<Ship>()).Where(x => x != null).Distinct().ToList();
+		List<Ship> actual = GetPartyShipsSnapshot(party);
+		return expected.Count == actual.Count
+			&& expected.All(ship => ship.Owner == party.Party && actual.Contains(ship));
 	}
 
 	private static bool HasPartyShips(MobileParty party)
@@ -8583,28 +9484,39 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 
 	private bool CanMergeToPlayer(Hero hero, MobileParty party, out string reason)
 	{
-		reason = "";
-		if (hero == null || hero == Hero.MainHero)
+		return TryValidatePlayerWildernessPartyForMerge(hero, party, this, out reason);
+	}
+
+	private static string BuildMergeEligibilityFailureMessage(Hero hero, string reason)
+	{
+		string actorName = GetHeroName(hero);
+		switch ((reason ?? "").Trim())
 		{
-			reason = "invalid_hero";
-			return false;
+			case "not_player_companion_family_or_registered_detachment":
+				return "大地图命令失败：" + actorName + "不是玩家的家族成员、同伴或本模组登记的临时分队，不能执行回队合并。";
+			case "foreign_guest_missing_foreign_clan":
+				return "大地图命令失败：" + actorName + "既不是玩家成员，也没有可保留的外族家族身份。";
+			case "foreign_guest_inactive_or_captive":
+				return "大地图命令失败：" + actorName + "当前死亡、失效或被俘，不能作为外族客军并入玩家队伍。";
+			case "foreign_guest_not_own_lord_party":
+				return "大地图命令失败：" + actorName + "当前率领的不是自己家族的领主野外部队，不能整队并入。";
+			case "foreign_guest_is_governor":
+				return "大地图命令失败：" + actorName + "仍担任总督；为避免原版自动解除职位，不能作为外族客军并入。";
+			case "foreign_guest_in_army":
+				return "大地图命令失败：" + actorName + "当前正在军团中，必须先退出军团才能整队并入玩家。";
+			case "foreign_guest_at_war":
+				return "大地图命令失败：" + actorName + "所属势力正与玩家交战，不能以保留原家族身份的客军形式并入。";
+			case "not_independent_wilderness_party":
+				return "大地图命令失败：" + actorName + "当前没有可归并的独立野外队伍。";
+			case "hero_party_mismatch":
+				return "大地图命令失败：" + actorName + "已经不是该野外队伍的实际领队，已停止回队合并。";
+			case "hero_missing_from_party_roster":
+				return "大地图命令失败：" + actorName + "不在该野外队伍名册中，已停止回队合并。";
+			case "main_party_invalid":
+				return "大地图命令失败：玩家主队当前不可用，无法执行回队合并。";
+			default:
+				return "大地图命令失败：" + actorName + "当前不满足回队合并条件（" + ((reason ?? "").Trim()) + "）。";
 		}
-		if (!IsPartyUsable(party) || party == MobileParty.MainParty || party.LeaderHero != hero)
-		{
-			reason = "not_independent_companion_party";
-			return false;
-		}
-		if (hero.Clan != Clan.PlayerClan && !IsRegisteredPlayerDetachment(hero, party))
-		{
-			reason = "not_player_party_or_registered_detachment";
-			return false;
-		}
-		if (!IsPartyUsable(MobileParty.MainParty))
-		{
-			reason = "main_party_invalid";
-			return false;
-		}
-		return true;
 	}
 
 	private static int MoveAllMembersToMainParty(MobileParty sourceParty)

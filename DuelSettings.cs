@@ -325,6 +325,12 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	public const int DefaultDailyConversationHistoryLineLimit = 100;
 
+	public const int ActionPostprocessHistoryEntryLimitMin = 1;
+
+	public const int ActionPostprocessHistoryEntryLimitMax = 100;
+
+	public const int DefaultActionPostprocessHistoryEntryLimit = 100;
+
 	private const string NpcPersonaGenerationRequirementsFileName = "NpcPersonaGenerationRequirements.txt";
 
 	private const string CustomPromptTextStoreFolderName = "CustomPrompts";
@@ -644,7 +650,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("2. 决斗规则")]
 	public float HealthThreshold { get; set; } = 0.35f;
 
-	[SettingPropertyBool("启用败者家族声望惩罚", Order = 2, RequireRestart = false, HintText = "正式决斗结算后，败者所属家族扣减声望；玩家获胜时扣对手家族，玩家战败时扣玩家家族。同一家族成员之间决斗不扣声望。不会让声望低于 0，也不会强制降低已经获得的家族等级。")]
+	[SettingPropertyBool("启用决斗家族声望转移", Order = 2, RequireRestart = false, HintText = "正式决斗结算后，败者家族实际扣减多少声望，胜者家族就增加多少声望。双方同属一个家族，或任意一方没有家族时不结算。败者声望不会低于 0，也不会强制降低已经获得的家族等级。")]
 	[SettingPropertyGroup("2. 决斗规则")]
 	public bool EnableDuelLoserClanRenownPenalty { get; set; } = true;
 
@@ -1466,6 +1472,10 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
 	public int ActionPostprocessApiMaxTokens { get; set; } = DefaultGeneralApiMaxTokens;
 
+	[SettingPropertyInteger("后处理历史条数上限", ActionPostprocessHistoryEntryLimitMin, ActionPostprocessHistoryEntryLimitMax, "0", Order = 10, RequireRestart = false, HintText = "控制动作后处理 <history> 最多携带多少条历史。本轮 <latest_reply> 独立保留，不占此额度。默认 100，最低 1，最高 100；数值越高，单次请求 token 与等待时间通常越高。")]
+	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
+	public int ActionPostprocessHistoryEntryLimit { get; set; } = DefaultActionPostprocessHistoryEntryLimit;
+
 	[SettingPropertyText("事件/叛乱API 地址（支持填写 Base URL）", -1, true, "", Order = 0, RequireRestart = false, HintText = "用于事件系统周报与王国叛乱命名的独立接口地址，例如: https://api.openai.com/v1。填写到 /v1 时会自动补全为 /v1/chat/completions。留空时将继续回退使用主API。")]
 	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
 	public string EventAndRebellionApiUrl { get; set; } = "";
@@ -1769,7 +1779,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	[SettingPropertyInteger("周报篇幅档位", 1, 4, "0", Order = 0, RequireRestart = false, HintText = "1=200-400字；2=200-800字；3=200-1200字；4=200-1500字。世界周报和王国周报共用这一档位。")]
 	[SettingPropertyGroup("12. 事件系统（开发）")]
-	public int WeeklyReportLengthPreset { get; set; } = 2;
+	public int WeeklyReportLengthPreset { get; set; } = 1;
 
 	[SettingPropertyInteger("每分钟最多生成周报数", 1, 20, "0", Order = 1, RequireRestart = false, HintText = "限制开发态周报生成的请求速率。默认 5；最高 20。用于应对部分 API 渠道的 RPM 或并发限制。")]
 	[SettingPropertyGroup("12. 事件系统（开发）")]
@@ -2003,6 +2013,27 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			return DefaultDailyConversationHistoryLineLimit;
 		}
 		return Math.Max(DailyConversationHistoryLineLimitMin, Math.Min(DailyConversationHistoryLineLimitMax, value));
+	}
+
+	public static int GetActionPostprocessHistoryEntryLimitForExternal()
+	{
+		try
+		{
+			return ClampActionPostprocessHistoryEntryLimit(GetSettings()?.ActionPostprocessHistoryEntryLimit ?? DefaultActionPostprocessHistoryEntryLimit);
+		}
+		catch
+		{
+			return DefaultActionPostprocessHistoryEntryLimit;
+		}
+	}
+
+	private static int ClampActionPostprocessHistoryEntryLimit(int value)
+	{
+		if (value <= 0)
+		{
+			return DefaultActionPostprocessHistoryEntryLimit;
+		}
+		return Math.Max(ActionPostprocessHistoryEntryLimitMin, Math.Min(ActionPostprocessHistoryEntryLimitMax, value));
 	}
 
 	[Obsolete("Player policy influence cost is no longer used.")]

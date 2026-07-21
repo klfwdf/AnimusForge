@@ -3886,7 +3886,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		List<string> selectedRuleHits = MergeCourierSelectedRuleIds(preprocessRuleHits, ctx?.PreprocessRuleIds);
 		selectedRuleHits = ExcludeCourierSelectedRuleIds(selectedRuleHits, CourierExcludedRuleIds) ?? new List<string>();
 		string extras = (ctx?.Extras ?? "").Trim();
-		extras = AppendCourierPlayerRecentActionsIfSelected(extras, recipient, selectedRuleHits);
+		extras = AppendCourierPlayerRecentActions(extras, recipient);
 		if (HasPreprocessRuleHit(selectedRuleHits, "worldmap_party_command") || ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "worldmap_party_command"))
 		{
 			string commandTasks = WorldMapPartyCommandBehavior.BuildCurrentNpcCommandTasksPromptForExternal(recipient, recipient.CharacterObject, -1);
@@ -4288,7 +4288,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		List<string> selectedRuleHits = MergeCourierSelectedRuleIds(preprocessRuleHits, ctx?.PreprocessRuleIds);
 		selectedRuleHits = ExcludeCourierSelectedRuleIds(selectedRuleHits, CourierExcludedRuleIds) ?? new List<string>();
 		string extras = (ctx?.Extras ?? "").Trim();
-		extras = AppendCourierPlayerRecentActionsIfSelected(extras, sender, selectedRuleHits);
+		extras = AppendCourierPlayerRecentActions(extras, sender);
 		if (HasPreprocessRuleHit(selectedRuleHits, "worldmap_party_command") || ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "worldmap_party_command"))
 		{
 			string commandTasks = WorldMapPartyCommandBehavior.BuildCurrentNpcCommandTasksPromptForExternal(sender, sender.CharacterObject, -1);
@@ -8648,12 +8648,8 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			+ " extrasLen=" + extra.Length);
 	}
 
-	private static string AppendCourierPlayerRecentActionsIfSelected(string extras, Hero recipient, List<string> selectedRuleHits)
+	private static string AppendCourierPlayerRecentActions(string extras, Hero recipient)
 	{
-		if (!HasPreprocessRuleHit(selectedRuleHits, "npc_recent_actions"))
-		{
-			return extras ?? "";
-		}
 		string playerRecent = PlayerNotorietyBehavior.BuildPlayerRecentRuntimeInstructionForExternal(recipient, courier: true);
 		if (string.IsNullOrWhiteSpace(playerRecent))
 		{
@@ -8665,8 +8661,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		{
 			return normalizedExtras;
 		}
-		string block = "【附加规则:npc_recent_actions】" + Environment.NewLine + normalizedPlayerRecent;
-		return string.IsNullOrWhiteSpace(normalizedExtras) ? block : (normalizedExtras.TrimEnd() + Environment.NewLine + block);
+		return string.IsNullOrWhiteSpace(normalizedExtras) ? normalizedPlayerRecent : (normalizedExtras.TrimEnd() + Environment.NewLine + normalizedPlayerRecent);
 	}
 
 	private static bool ContainsKingdomAnnexActionTag(string text)

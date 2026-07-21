@@ -31,7 +31,6 @@ namespace AnimusForge;
 
 public static class AIConfigHandler
 {
-	private const int ActionPostprocessMaxHistoryAndLatestEntries = 8;
 	private const int ActionPostprocessRequestTimeoutMilliseconds = DuelSettings.LlmRequestTimeoutMilliseconds;
 	private const string EmbeddedPreprocessPromptsResourceName = "AnimusForge.Defaults.PreprocessPrompts.json";
 	private const string KingAbdicateToPlayerActionTag = "[ACTION:KING_ABDICATE_TO_PLAYER]";
@@ -908,8 +907,7 @@ public static class AIConfigHandler
 		text = ReplaceActionPostprocessOptionalSection(text, "当前可直接成立的正规婚配组合与现有婚姻（事实清单）：", "marriage_fact_hint", null);
 		text = ReplaceActionPostprocessOptionalSection(text, "债务提示：", "debt_hint", debtHint);
 		text = ReplaceActionPostprocessOptionalSection(text, "运行时补充事实：", "runtime_context", runtimeContext);
-		int latestReplyEntries = CountActionPostprocessLatestReplyEntries(latestReplyBlock);
-		int maxHistoryEntries = Math.Max(0, ActionPostprocessMaxHistoryAndLatestEntries - latestReplyEntries);
+		int maxHistoryEntries = DuelSettings.GetActionPostprocessHistoryEntryLimitForExternal();
 		string newValue = PrepareActionPostprocessHistoryText(historyText, maxHistoryEntries, latestReplyBlock);
 		text = text.Replace("{tag_rules}", string.IsNullOrWhiteSpace(tagRules) ? "（无）" : tagRules.Trim())
 			.Replace("{history}", string.IsNullOrWhiteSpace(newValue) ? "（无）" : newValue)
@@ -1079,7 +1077,7 @@ public static class AIConfigHandler
 
 	public static string PrepareActionPostprocessHistoryText(string historyText)
 	{
-		return PrepareActionPostprocessHistoryText(historyText, ActionPostprocessMaxHistoryAndLatestEntries, null);
+		return PrepareActionPostprocessHistoryText(historyText, DuelSettings.GetActionPostprocessHistoryEntryLimitForExternal(), null);
 	}
 
 	private static string PrepareActionPostprocessHistoryText(string historyText, int maxEntries, string latestReplyBlock)
@@ -1446,27 +1444,6 @@ public static class AIConfigHandler
 		}
 		string speaker = text.Substring(0, num).Trim();
 		return speaker.Equals("玩家", StringComparison.OrdinalIgnoreCase) || speaker.Equals("NPC", StringComparison.OrdinalIgnoreCase) || speaker.Equals("你", StringComparison.OrdinalIgnoreCase) || speaker.Contains("对");
-	}
-
-	private static int CountActionPostprocessLatestReplyEntries(string latestReplyBlock)
-	{
-		int count = 0;
-		foreach (string line in (latestReplyBlock ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Split('\n'))
-		{
-			string text = (line ?? "").Trim();
-			int num = text.IndexOfAny(new char[2] { ':', '：' });
-			if (num <= 0 || num + 1 >= text.Length)
-			{
-				continue;
-			}
-			string speaker = text.Substring(0, num).Trim();
-			string body = text.Substring(num + 1).Trim();
-			if (!string.IsNullOrWhiteSpace(body) && body != "（无）" && (speaker.Equals("玩家", StringComparison.OrdinalIgnoreCase) || speaker.Equals("NPC", StringComparison.OrdinalIgnoreCase)))
-			{
-				count++;
-			}
-		}
-		return count;
 	}
 
 	private static HashSet<string> BuildActionPostprocessLatestReplyEntryKeys(string latestReplyBlock)
@@ -2239,7 +2216,6 @@ public static class AIConfigHandler
 				"party_transfer" => "PARTY_TRANSFER",
 				"vanilla_issue" => "ISSUE",
 				"npc_major_actions" => "NPC_MAJOR",
-				"npc_recent_actions" => "NPC_RECENT",
 				"encounter_release_player" => "MEETING_RELEASE",
 				"hero_join_party" => "HERO_JOIN",
 				"noble_deference" => "NOBLE_PRESSURE",
@@ -6765,14 +6741,6 @@ public static class AIConfigHandler
 						value = text5;
 					}
 				}
-				if (hasAnyHero && string.Equals(text, "npc_recent_actions", StringComparison.OrdinalIgnoreCase))
-				{
-					string text6 = MyBehavior.BuildNpcRecentActionsRuntimeInstructionForExternal(ResolveConversationTargetHero());
-					if (!string.IsNullOrWhiteSpace(text6))
-					{
-						value = text6;
-					}
-				}
 				if (string.Equals(text, "lords_hall_access", StringComparison.OrdinalIgnoreCase))
 				{
 					string text7 = BuildRuntimeLordsHallAccessInstruction();
@@ -8547,8 +8515,6 @@ public static class AIConfigHandler
 					|| !string.IsNullOrWhiteSpace(ResolveRuntimeTargetUnnamedRank());
 			case "npc_major_actions":
 				return !string.IsNullOrWhiteSpace(MyBehavior.BuildNpcMajorActionsRuntimeInstructionForExternal(ResolveConversationTargetHero()));
-			case "npc_recent_actions":
-				return !string.IsNullOrWhiteSpace(MyBehavior.BuildNpcRecentActionsRuntimeInstructionForExternal(ResolveConversationTargetHero()));
 			case "lords_hall_access":
 				return !string.IsNullOrWhiteSpace(BuildRuntimeLordsHallAccessInstructionForExternal());
 			case "noble_deference":
@@ -8584,10 +8550,6 @@ public static class AIConfigHandler
 			if (text == "npc_major_actions")
 			{
 				return MyBehavior.BuildNpcActionsRuntimeConstraintHintForExternal(ResolveConversationTargetHero(), recentOnly: false);
-			}
-			if (text == "npc_recent_actions")
-			{
-				return MyBehavior.BuildNpcActionsRuntimeConstraintHintForExternal(ResolveConversationTargetHero(), recentOnly: true);
 			}
 			if (text == "lords_hall_access")
 			{

@@ -75,12 +75,12 @@ namespace AnimusForge
 		}
 
 		private static readonly Regex DiplomacyTagRegex = new Regex(
-			@"\[ACTION:DIPLOMACY:([A-Z_]+):([^\]]*)\]",
+			@"\[ACTION:DIPLOMACY:([A-Z_]+)(?::([^\]]+))?\]",
 			RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-		private const string UnlandedClanPeaceActionName = "UNLANDED_CLAN_PEACE";
+		private const string IndependentClanPeaceActionName = "INDEPENDENT_CLAN_PEACE";
 
-		internal const string UnlandedClanPeaceTagPrefix = "[ACTION:DIPLOMACY:UNLANDED_CLAN_PEACE:";
+		internal const string IndependentClanPeaceTag = "[ACTION:DIPLOMACY:INDEPENDENT_CLAN_PEACE]";
 
 		private void ProcessDiplomacyTags(Hero npc, ref string responseText)
 		{
@@ -106,7 +106,7 @@ namespace AnimusForge
 				{
 					case "DECLARE_WAR":    return TryExecuteDeclareWar(npc, payload);
 					case "MAKE_PEACE":     return TryExecuteMakePeace(npc, payload);
-					case UnlandedClanPeaceActionName: return TryExecuteUnlandedClanPeace(npc, payload);
+					case IndependentClanPeaceActionName: return TryExecuteIndependentClanPeace(npc, payload);
 					case "FORM_ALLIANCE":  return TryExecuteFormAlliance(npc, payload);
 					case "BREAK_ALLIANCE": return TryExecuteBreakAlliance(npc, payload);
 					case "MAKE_TRADE":     return TryExecuteMakeTrade(npc, payload);
@@ -167,40 +167,30 @@ namespace AnimusForge
 			return "";
 		}
 
-		private string TryExecuteUnlandedClanPeace(Hero npc, string payload)
+		private string TryExecuteIndependentClanPeace(Hero npc, string payload)
 		{
-			string[] parts = (payload ?? "").Split(':');
-			if (parts.Length != 2)
+			if (!string.IsNullOrWhiteSpace(payload))
 			{
-				Logger.Log("DiplomacyBehavior", "[UnlandedClanPeace] Bad format");
+				Logger.Log("DiplomacyBehavior", "[IndependentClanPeace] Unexpected payload rejected");
 				return "";
 			}
 
-			string playerClanId = parts[0].Trim();
-			string targetFactionId = parts[1].Trim();
-			if (!TryResolveUnlandedClanPeaceContext(npc, out Clan playerClan, out IFaction targetFaction))
+			if (!TryResolveIndependentClanPeaceContext(npc, out Clan playerClan, out Kingdom targetKingdom))
 			{
-				Logger.Log("DiplomacyBehavior", "[UnlandedClanPeace] Runtime eligibility no longer valid npc=" + (npc?.StringId ?? ""));
+				Logger.Log("DiplomacyBehavior", "[IndependentClanPeace] Runtime eligibility no longer valid npc=" + (npc?.StringId ?? ""));
 				return "";
 			}
 
-			if (!string.Equals(playerClanId, playerClan.StringId, StringComparison.OrdinalIgnoreCase)
-				|| !string.Equals(targetFactionId, targetFaction.StringId, StringComparison.OrdinalIgnoreCase))
+			MeetingBattleRuntime.RunWithDiplomaticSideEffectsUnlocked("diplomacy_independent_clan_peace", () =>
+				MakePeaceAction.Apply(playerClan, targetKingdom));
+			if (FactionManager.IsAtWarAgainstFaction(playerClan, targetKingdom))
 			{
-				Logger.Log("DiplomacyBehavior", "[UnlandedClanPeace] IDs mismatch expected=" + playerClan.StringId + ":" + targetFaction.StringId + " actual=" + playerClanId + ":" + targetFactionId);
+				Logger.Log("DiplomacyBehavior", "[IndependentClanPeace] Apply completed but factions remain hostile playerClan=" + playerClan.StringId + " targetKingdom=" + targetKingdom.StringId);
 				return "";
 			}
 
-			MeetingBattleRuntime.RunWithDiplomaticSideEffectsUnlocked("diplomacy_unlanded_clan_peace", () =>
-				MakePeaceAction.Apply(playerClan, targetFaction));
-			if (FactionManager.IsAtWarAgainstFaction(playerClan, targetFaction))
-			{
-				Logger.Log("DiplomacyBehavior", "[UnlandedClanPeace] Apply completed but factions remain hostile playerClan=" + playerClan.StringId + " targetFaction=" + targetFaction.StringId);
-				return "";
-			}
-
-			DiplomacyRecentPeaceGuard.RegisterPeace(playerClan, targetFaction, "diplomacy_unlanded_clan_peace");
-			Logger.Log("DiplomacyBehavior", "[UnlandedClanPeace] success playerClan=" + playerClan.StringId + " targetFaction=" + targetFaction.StringId + " npc=" + npc.StringId);
+			DiplomacyRecentPeaceGuard.RegisterPeace(playerClan, targetKingdom, "diplomacy_independent_clan_peace");
+			Logger.Log("DiplomacyBehavior", "[IndependentClanPeace] success playerClan=" + playerClan.StringId + " targetKingdom=" + targetKingdom.StringId + " king=" + npc.StringId);
 			return "";
 		}
 
@@ -502,11 +492,6 @@ namespace AnimusForge
 			return pk != null && Hero.MainHero == pk.RulingClan?.Leader;
 		}
 
-		private static bool IsMercenaryClan(Clan clan)
-		{
-			return clan != null && (clan.IsClanTypeMercenary || clan.IsUnderMercenaryService);
-		}
-
 		private static bool IsNegotiableWar(IFaction playerFaction, IFaction targetFaction)
 		{
 			return playerFaction != null
@@ -518,10 +503,10 @@ namespace AnimusForge
 				&& !FactionManager.IsAtConstantWarAgainstFaction(playerFaction, targetFaction);
 		}
 
-		private static bool TryResolveUnlandedClanPeaceContext(Hero npc, out Clan playerClan, out IFaction targetFaction)
+		private static bool TryResolveIndependentClanPeaceContext(Hero npc, out Clan playerClan, out Kingdom targetKingdom)
 		{
 			playerClan = null;
-			targetFaction = null;
+			targetKingdom = null;
 			try
 			{
 				Clan candidatePlayerClan = Clan.PlayerClan ?? Hero.MainHero?.Clan;
@@ -531,14 +516,12 @@ namespace AnimusForge
 					|| candidatePlayerClan.IsEliminated
 					|| candidatePlayerClan.Kingdom != null
 					|| candidatePlayerClan.IsUnderMercenaryService
-					|| (candidatePlayerClan.Leader != null && candidatePlayerClan.Leader != Hero.MainHero)
-					|| (candidatePlayerClan.Settlements != null && candidatePlayerClan.Settlements.Count > 0))
+					|| (candidatePlayerClan.Leader != null && candidatePlayerClan.Leader != Hero.MainHero))
 				{
 					return false;
 				}
 
 				Clan targetClan = npc?.Clan;
-				bool targetIsMercenary = IsMercenaryClan(targetClan);
 				if (npc == null
 					|| npc == Hero.MainHero
 					|| npc.IsDead
@@ -546,26 +529,19 @@ namespace AnimusForge
 					|| targetClan == candidatePlayerClan
 					|| targetClan.IsEliminated
 					|| targetClan.IsBanditFaction
-					|| targetClan.IsOutlaw
-					|| (!npc.IsLord && !targetIsMercenary))
+					|| targetClan.IsOutlaw)
 				{
 					return false;
 				}
 
-				// This runs on every eligible prompt/postprocess turn. Clan.Settlements.Count is cached by
-				// Bannerlord, and target resolution checks at most one kingdom and one clan without world scans.
-				Kingdom targetKingdom = targetClan.Kingdom ?? npc.MapFaction as Kingdom;
-				if (IsNegotiableWar(candidatePlayerClan, targetKingdom))
+				// Runs on every eligible prompt/postprocess turn. Resolve only the speaking hero's kingdom;
+				// requiring its current ruler avoids world scans and prevents ordinary lords from negotiating.
+				Kingdom candidateTargetKingdom = targetClan.Kingdom ?? npc.MapFaction as Kingdom;
+				if (candidateTargetKingdom?.RulingClan?.Leader == npc
+					&& IsNegotiableWar(candidatePlayerClan, candidateTargetKingdom))
 				{
 					playerClan = candidatePlayerClan;
-					targetFaction = targetKingdom;
-					return true;
-				}
-
-				if (targetIsMercenary && IsNegotiableWar(candidatePlayerClan, targetClan))
-				{
-					playerClan = candidatePlayerClan;
-					targetFaction = targetClan;
+					targetKingdom = candidateTargetKingdom;
 					return true;
 				}
 			}
@@ -575,14 +551,14 @@ namespace AnimusForge
 			return false;
 		}
 
-		internal static bool CanUseUnlandedClanPeaceForExternal(Hero targetHero, CharacterObject targetCharacter = null)
+		internal static bool CanUseIndependentClanPeaceForExternal(Hero targetHero, CharacterObject targetCharacter = null)
 		{
-			return TryResolveUnlandedClanPeaceContext(targetHero ?? targetCharacter?.HeroObject, out _, out _);
+			return TryResolveIndependentClanPeaceContext(targetHero ?? targetCharacter?.HeroObject, out _, out _);
 		}
 
-		internal static bool IsUnlandedClanPeacePostprocessTag(string tag)
+		internal static bool IsIndependentClanPeacePostprocessTag(string tag)
 		{
-			return (tag ?? "").Trim().StartsWith(UnlandedClanPeaceTagPrefix, StringComparison.OrdinalIgnoreCase);
+			return string.Equals((tag ?? "").Trim(), IndependentClanPeaceTag, StringComparison.OrdinalIgnoreCase);
 		}
 
 		private static bool IsPlayerIndependentSettlementClan()
@@ -711,12 +687,12 @@ namespace AnimusForge
 			catch (Exception ex) { Logger.Log("DiplomacyBehavior", $"[BuildInstruction Error] {ex.Message}"); return ""; }
 		}
 
-		internal static string BuildUnlandedClanPeaceInstructionForExternal(Hero targetHero, CharacterObject targetCharacter = null)
+		internal static string BuildIndependentClanPeaceInstructionForExternal(Hero targetHero, CharacterObject targetCharacter = null)
 		{
 			try
 			{
 				Hero npc = targetHero ?? targetCharacter?.HeroObject;
-				if (!TryResolveUnlandedClanPeaceContext(npc, out Clan playerClan, out IFaction targetFaction))
+				if (!TryResolveIndependentClanPeaceContext(npc, out Clan playerClan, out Kingdom targetKingdom))
 				{
 					return "";
 				}
@@ -724,14 +700,14 @@ namespace AnimusForge
 				Dictionary<string, string> tokens = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
 				{
 					["playerClanName"] = playerClan.Name?.ToString() ?? playerClan.StringId ?? "玩家家族",
-					["targetFactionName"] = targetFaction.Name?.ToString() ?? targetFaction.StringId ?? "目标势力",
-					["targetFactionType"] = targetFaction is Kingdom ? "王国" : "雇佣兵家族"
+					["playerSettlementCount"] = (playerClan.Settlements?.Count ?? 0).ToString(),
+					["targetKingdomName"] = targetKingdom.Name?.ToString() ?? targetKingdom.StringId ?? "目标王国"
 				};
-				return AIConfigHandler.ResolveRuleRuntimeText("diplomacy", "unlanded_clan_peace", forConstraint: false, tokens);
+				return AIConfigHandler.ResolveRuleRuntimeText("diplomacy", "independent_clan_peace", forConstraint: false, tokens);
 			}
 			catch (Exception ex)
 			{
-				Logger.Log("DiplomacyBehavior", "[UnlandedClanPeace] Build instruction failed: " + ex.Message);
+				Logger.Log("DiplomacyBehavior", "[IndependentClanPeace] Build instruction failed: " + ex.Message);
 				return "";
 			}
 		}
@@ -789,15 +765,14 @@ namespace AnimusForge
 			try
 			{
 				if (npc == null) return "";
-				if (TryResolveUnlandedClanPeaceContext(npc, out Clan playerClan, out IFaction targetFaction))
+				if (TryResolveIndependentClanPeaceContext(npc, out Clan playerClan, out Kingdom targetKingdom))
 				{
-					string targetType = targetFaction is Kingdom ? "王国" : "雇佣兵家族";
-					StringBuilder unlanded = new StringBuilder();
-					unlanded.AppendLine("【无地家族议和运行时事实】");
-					unlanded.AppendLine("玩家家族ID：" + playerClan.StringId + "；名称：" + (playerClan.Name?.ToString() ?? playerClan.StringId) + "；定居点数：0");
-					unlanded.AppendLine("目标敌对方类型：" + targetType + "；ID：" + targetFaction.StringId + "；名称：" + (targetFaction.Name?.ToString() ?? targetFaction.StringId));
-					unlanded.AppendLine("双方当前敌对：是");
-					return unlanded.ToString().TrimEnd();
+					StringBuilder independent = new StringBuilder();
+					independent.AppendLine("【独立家族议和运行时事实】");
+					independent.AppendLine("玩家家族“" + (playerClan.Name?.ToString() ?? "玩家家族") + "”是独立家族；定居点数：" + (playerClan.Settlements?.Count ?? 0));
+					independent.AppendLine("你是敌对王国“" + (targetKingdom.Name?.ToString() ?? "目标王国") + "”的当前国王。");
+					independent.AppendLine("双方当前敌对：是");
+					return independent.ToString().TrimEnd();
 				}
 				if (!CanInjectDiplomacyRuleForExternal(npc)) return "";
 				Kingdom npcKingdom = npc.Clan?.Kingdom;
@@ -882,8 +857,8 @@ namespace AnimusForge
 				Hero ctx = targetHero ?? targetCharacter?.HeroObject;
 				if (ctx == null) return;
 				bool diplomacyTopicInjected = (__result.Extras ?? "").IndexOf("【附加规则:diplomacy】", StringComparison.OrdinalIgnoreCase) >= 0;
-				string unlandedPeaceInstruction = BuildUnlandedClanPeaceInstructionForExternal(ctx, targetCharacter);
-				if (!diplomacyTopicInjected && string.IsNullOrWhiteSpace(unlandedPeaceInstruction)) return;
+				string independentPeaceInstruction = BuildIndependentClanPeaceInstructionForExternal(ctx, targetCharacter);
+				if (!diplomacyTopicInjected && string.IsNullOrWhiteSpace(independentPeaceInstruction)) return;
 
 				if (diplomacyTopicInjected && CanInjectDiplomacyRuleForExternal(ctx, targetCharacter))
 				{
@@ -893,10 +868,10 @@ namespace AnimusForge
 					if (!string.IsNullOrWhiteSpace(trustIns)) __result.Extras = (__result.Extras ?? "") + "\n" + trustIns;
 				}
 
-				if (!string.IsNullOrWhiteSpace(unlandedPeaceInstruction))
+				if (!string.IsNullOrWhiteSpace(independentPeaceInstruction))
 				{
-					__result.Extras = (__result.Extras ?? "") + "\n" + unlandedPeaceInstruction;
-					Logger.Log("DiplomacyBehavior", "[UnlandedClanPeace] resident main prompt injected npc=" + ctx.StringId);
+					__result.Extras = (__result.Extras ?? "") + "\n" + independentPeaceInstruction;
+					Logger.Log("DiplomacyBehavior", "[IndependentClanPeace] resident main prompt injected npc=" + ctx.StringId);
 				}
 			}
 			catch (Exception ex) { Logger.Log("DiplomacyBehavior", $"[PatchContext Error] {ex.Message}"); }

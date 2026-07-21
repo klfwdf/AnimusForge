@@ -5522,7 +5522,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		if (hero != null)
 		{
 			string pregnancySelfKnowledge = BuildHeroPregnancySelfKnowledgeForPrompt(hero);
-			string clanRoleText = (clanRole == "族长") ? "统治者" : (hero.IsFemale ? "女性成员" : "男性成员");
+			string clanRoleText = (clanRole == "族长") ? "族长" : (hero.IsFemale ? "女性成员" : "男性成员");
 			stringBuilder.Append("你名叫")
 				.Append(name)
 				.Append("，是")
@@ -17647,7 +17647,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		bool sceneMechanismPostprocessSelected = (sceneMechanismRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "scene_mechanism_actions")) && !AIConfigHandler.ShouldExcludeSceneMoveRuleForCurrentMission();
 		bool partyTransferPostprocessSelected = partyTransferRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "party_transfer");
 		bool voteDealPostprocessSelected = voteDealRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "kingdom_agenda");
-		bool diplomacyPostprocessSelected = (shouldRecordPlayerInput && DiplomacyBehavior.CanUseUnlandedClanPeaceForExternal(targetHero, targetCharacter))
+		bool diplomacyPostprocessSelected = (shouldRecordPlayerInput && DiplomacyBehavior.CanUseIndependentClanPeaceForExternal(targetHero, targetCharacter))
 			|| ((diplomacyRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "diplomacy"))
 				&& DiplomacyBehavior.CanUseDiplomacyActionPostprocessForExternal(targetHero, targetCharacter));
 		bool worldMapPartyCommandPostprocessSelected = worldMapPartyCommandRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "worldmap_party_command");
@@ -20046,8 +20046,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			bool royalPostprocessEligible = AIConfigHandler.IsRoyalAbdicationPostprocessTargetForExternal(targetHero ?? targetCharacter?.HeroObject);
 			bool royalDiplomacyRequested = diplomacyRuleInjected || kingdomAnnexationRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "diplomacy");
 			bool royalDiplomacyRuleInjected = royalDiplomacyRequested && DiplomacyBehavior.CanUseDiplomacyActionPostprocessForExternal(targetHero, targetCharacter);
-			bool unlandedClanPeaceResident = latestReplyHasPlayerInput && DiplomacyBehavior.CanUseUnlandedClanPeaceForExternal(targetHero, targetCharacter);
-			diplomacyRuleInjected = royalDiplomacyRuleInjected || unlandedClanPeaceResident;
+			bool independentClanPeaceResident = latestReplyHasPlayerInput && DiplomacyBehavior.CanUseIndependentClanPeaceForExternal(targetHero, targetCharacter);
+			diplomacyRuleInjected = royalDiplomacyRuleInjected || independentClanPeaceResident;
 			kingdomAnnexationRuleInjected = false;
 			worldMapPartyCommandRuleInjected = worldMapPartyCommandRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "worldmap_party_command");
 			bool nobleGatheringRuleInjected = HasPreprocessRuleHit(preprocessRuleHits, "noble_gathering");
@@ -20063,7 +20063,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				+ " kingdom_vassalage_hit=" + kingdomVassalagePreprocessHit
 				+ " kingdom_vassalage_injected=" + kingdomVassalageRuleInjected
 				+ " diplomacy_injected=" + diplomacyRuleInjected
-				+ " unlanded_clan_peace_resident=" + unlandedClanPeaceResident);
+				+ " independent_clan_peace_resident=" + independentClanPeaceResident);
 			if (kingdomVassalageRuleInjected)
 			{
 				VassalageDiagnosticLog.Event("postprocess.native.start", new Dictionary<string, object>
@@ -20190,7 +20190,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						}
 						if (!PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsSnapshotScope, targetHero, targetCharacter, -1, out rewardOptions))
 						{
-							rewardOptions = PromptListRetrievalService.FilterRewardItems(rewardAllOptions, promptListMentions, promptListMax);
+							rewardOptions = PromptListRetrievalService.FilterNpcRewardItemsForAssetTransfer(rewardAllOptions, promptListMentions, promptListMax);
 						}
 						if (exposeAllRewardItems)
 						{
@@ -21494,7 +21494,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				return "";
 			}
-			result2 = Math.Min(Math.Max(1, result2), Math.Max(1, rewardItemInfo.Count));
 			return "[ACTION:GIVE_ASSET:" + text2.Trim() + ":" + result2 + "]";
 		}, RegexOptions.IgnoreCase);
 		return Regex.Replace(text2, "\\[ACTION:GIVE_ASSET:([^\\]\\r\\n:]+):(ALL|\\d+)\\]", delegate(Match m)
@@ -21521,7 +21520,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				return "[ACTION:GIVE_ASSET:" + text3.Trim() + ":ALL]";
 			}
-			result3 = Math.Min(Math.Max(1, result3), Math.Max(1, rewardItemInfo2.Count));
 			return "[ACTION:GIVE_ASSET:" + text3.Trim() + ":" + result3 + "]";
 		}, RegexOptions.IgnoreCase);
 	}
@@ -21562,11 +21560,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				}
 				if (RewardSystemBehavior.IsGoldAssetTokenForExternal(assetToken))
 				{
-					if (!int.TryParse(quantityToken, out var goldAmount) || goldAmount <= 0 || availableGold <= 0)
+					if (!int.TryParse(quantityToken, out var goldAmount) || goldAmount <= 0)
 					{
 						continue;
 					}
-					text2 = "[ACTION:GIVE_ASSET:GOLD:" + Math.Min(goldAmount, availableGold) + "]";
+					text2 = "[ACTION:GIVE_ASSET:GOLD:" + goldAmount + "]";
 				}
 				else
 				{
@@ -21592,16 +21590,30 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 							rewardItem = options[itemIndex - 1];
 						}
 						rewardItem ??= FindRewardItemByTokenForScene(options, assetToken);
+						if (rewardItem == null && !ReferenceEquals(allOptions, options))
+						{
+							rewardItem = FindRewardItemByTokenForScene(allOptions, assetToken);
+						}
 						if (rewardItem == null || rewardItem.Item == null || rewardItem.Count <= 0)
 						{
 							if (TransferQuantitySpec.IsAllValue(quantityToken)
 								|| !int.TryParse(quantityToken, out var rpItemAmount)
-								|| rpItemAmount <= 0
-								|| !RewardSystemBehavior.IsValidGeneratedRpAssetNameForExternal(assetToken))
+								|| rpItemAmount <= 0)
 							{
 								continue;
 							}
-							text2 = "[ACTION:GIVE_ASSET:" + assetToken + ":" + rpItemAmount + "]";
+							if (RewardSystemBehavior.TryResolveKnownItemAssetTokenForExternal(assetToken, out var knownItemKey))
+							{
+								text2 = "[ACTION:GIVE_ASSET:" + knownItemKey.Trim() + ":" + rpItemAmount + "]";
+							}
+							else if (RewardSystemBehavior.IsValidGeneratedRpAssetNameForExternal(assetToken))
+							{
+								text2 = "[ACTION:GIVE_ASSET:" + assetToken + ":" + rpItemAmount + "]";
+							}
+							else
+							{
+								continue;
+							}
 						}
 						else
 						{
@@ -21616,7 +21628,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 							}
 							else if (int.TryParse(quantityToken, out var itemAmount) && itemAmount > 0)
 							{
-								text2 = "[ACTION:GIVE_ASSET:" + itemKey.Trim() + ":" + Math.Min(itemAmount, Math.Max(1, rewardItem.Count)) + "]";
+								text2 = "[ACTION:GIVE_ASSET:" + itemKey.Trim() + ":" + itemAmount + "]";
 							}
 							else
 							{
@@ -22105,7 +22117,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			if (ruleTag.StartsWith("[ACTION:DIPLOMACY:", StringComparison.OrdinalIgnoreCase))
 			{
 				string action = ExtractDiplomacyPostprocessActionName(ruleTag);
-				if (!string.IsNullOrWhiteSpace(action))
+				int payloadSeparator = ruleTag.IndexOf(':', "[ACTION:DIPLOMACY:".Length);
+				if (payloadSeparator < 0)
+				{
+					exactTags.Add(ruleTag);
+				}
+				else if (!string.IsNullOrWhiteSpace(action))
 				{
 					allowedDiplomacyActions.Add(action);
 				}
@@ -22123,7 +22140,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				continue;
 			}
 			bool accepted = tag.StartsWith("[ACTION:DIPLOMACY:", StringComparison.OrdinalIgnoreCase)
-				? allowedDiplomacyActions.Contains(ExtractDiplomacyPostprocessActionName(tag))
+				? exactTags.Contains(tag) || allowedDiplomacyActions.Contains(ExtractDiplomacyPostprocessActionName(tag))
 				: exactTags.Contains(tag);
 			if (accepted && seen.Add(tag))
 			{
@@ -22241,7 +22258,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	private static List<PostprocessRuleEntry> MergePostprocessRulesForScene(params List<PostprocessRuleEntry>[] ruleSets)
 	{
 		List<PostprocessRuleEntry> list = new List<PostprocessRuleEntry>();
-		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		Dictionary<string, int> dictionary = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 		if (ruleSets == null)
 		{
 			return list;
@@ -22254,20 +22271,66 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			foreach (PostprocessRuleEntry item in ruleSet)
 			{
-				string text = item?.Tag ?? "";
-				if (!string.IsNullOrWhiteSpace(text) && hashSet.Add(text))
+				string text = (item?.Tag ?? "").Trim();
+				if (string.IsNullOrWhiteSpace(text))
 				{
+					continue;
+				}
+				if (!dictionary.TryGetValue(text, out var value))
+				{
+					dictionary.Add(text, list.Count);
 					list.Add(item);
+					continue;
+				}
+				if (string.Equals(text, "[AD:价值:天数:N/P:备注内容]", StringComparison.OrdinalIgnoreCase))
+				{
+					list[value] = MergeSharedDeferredDebtPostprocessRule(list[value], item);
 				}
 			}
 		}
 		return list;
 	}
 
+	private static PostprocessRuleEntry MergeSharedDeferredDebtPostprocessRule(PostprocessRuleEntry existing, PostprocessRuleEntry incoming)
+	{
+		if (existing == null || incoming == null)
+		{
+			return existing ?? incoming;
+		}
+		string text = MergePostprocessRuleDescription(existing.Description, incoming.Description);
+		string text2 = MergePostprocessRuleDescription(existing.SingleFramedNpcDescription, incoming.SingleFramedNpcDescription);
+		if (string.Equals(text, existing.Description ?? "", StringComparison.Ordinal) && string.Equals(text2, existing.SingleFramedNpcDescription ?? "", StringComparison.Ordinal))
+		{
+			return existing;
+		}
+		return new PostprocessRuleEntry
+		{
+			Tag = existing.Tag,
+			Description = text,
+			SingleFramedNpcDescription = text2,
+			RuntimeAllowedParameterValues = existing.RuntimeAllowedParameterValues
+		};
+	}
+
+	private static string MergePostprocessRuleDescription(string existingDescription, string incomingDescription)
+	{
+		string text = (existingDescription ?? "").Trim();
+		string text2 = (incomingDescription ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return text2;
+		}
+		if (string.IsNullOrWhiteSpace(text2) || text.IndexOf(text2, StringComparison.Ordinal) >= 0)
+		{
+			return text;
+		}
+		return text + Environment.NewLine + text2;
+	}
+
 	private static List<PostprocessRuleEntry> BuildRuntimeDiplomacyPostprocessRulesForScene(Hero targetHero, CharacterObject targetCharacter)
 	{
 		bool allowRoyalDiplomacy = DiplomacyBehavior.CanUseDiplomacyActionPostprocessForExternal(targetHero, targetCharacter);
-		bool allowUnlandedClanPeace = DiplomacyBehavior.CanUseUnlandedClanPeaceForExternal(targetHero, targetCharacter);
+		bool allowIndependentClanPeace = DiplomacyBehavior.CanUseIndependentClanPeaceForExternal(targetHero, targetCharacter);
 		List<PostprocessRuleEntry> diplomacyRules = (AIConfigHandler.GetGuardrailRulePostprocessRules("diplomacy") ?? new List<PostprocessRuleEntry>())
 			.Where((PostprocessRuleEntry rule) =>
 			{
@@ -22276,8 +22339,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					return false;
 				}
-				return DiplomacyBehavior.IsUnlandedClanPeacePostprocessTag(tag)
-					? allowUnlandedClanPeace
+				return DiplomacyBehavior.IsIndependentClanPeacePostprocessTag(tag)
+					? allowIndependentClanPeace
 					: allowRoyalDiplomacy;
 			})
 			.ToList();
@@ -23086,15 +23149,15 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		bool royalPostprocessEligible = AIConfigHandler.IsRoyalAbdicationPostprocessTargetForExternal(targetHero ?? targetCharacter?.HeroObject);
 		bool royalDiplomacyRequested = diplomacyRuleInjected || kingdomAnnexationRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "diplomacy");
 		bool royalDiplomacyRuleInjected = royalDiplomacyRequested && DiplomacyBehavior.CanUseDiplomacyActionPostprocessForExternal(targetHero, targetCharacter);
-		bool unlandedClanPeaceResident = replyIsDirectPlayerResponse && DiplomacyBehavior.CanUseUnlandedClanPeaceForExternal(targetHero, targetCharacter);
-		diplomacyRuleInjected = royalDiplomacyRuleInjected || unlandedClanPeaceResident;
+		bool independentClanPeaceResident = replyIsDirectPlayerResponse && DiplomacyBehavior.CanUseIndependentClanPeaceForExternal(targetHero, targetCharacter);
+		diplomacyRuleInjected = royalDiplomacyRuleInjected || independentClanPeaceResident;
 		kingdomAnnexationRuleInjected = false;
 		Logger.Log("ShoutBehavior", "[UnifiedPostprocess] setup chain=" + resolvedChainName
 			+ " preprocessHits=" + ((preprocessRuleHits == null || preprocessRuleHits.Count == 0) ? "(none)" : string.Join(",", preprocessRuleHits))
 			+ " kingdom_vassalage_hit=" + kingdomVassalagePreprocessHit
 			+ " kingdom_vassalage_injected=" + kingdomVassalageRuleInjected
 			+ " diplomacy_injected=" + diplomacyRuleInjected
-			+ " unlanded_clan_peace_resident=" + unlandedClanPeaceResident);
+			+ " independent_clan_peace_resident=" + independentClanPeaceResident);
 		if (kingdomVassalageRuleInjected)
 		{
 			VassalageDiagnosticLog.Event("postprocess.scene.start", new Dictionary<string, object>
@@ -23250,7 +23313,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						}
 					if (!PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsSnapshotScope, targetHero, targetCharacter, -1, out rewardOptions))
 					{
-						rewardOptions = PromptListRetrievalService.FilterRewardItems(rewardAllOptions, promptListMentions, promptListMax);
+						rewardOptions = PromptListRetrievalService.FilterNpcRewardItemsForAssetTransfer(rewardAllOptions, promptListMentions, promptListMax);
 					}
 					if (exposeAllRewardItems)
 					{
@@ -23576,7 +23639,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					}
 					if (!PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsSnapshotScope, targetHero, targetCharacter, -1, out list))
 					{
-						list = PromptListRetrievalService.FilterRewardItems(allList, promptListMentions, promptListMax);
+						list = PromptListRetrievalService.FilterNpcRewardItemsForAssetTransfer(allList, promptListMentions, promptListMax);
 					}
 					availableGold = RewardSystemBehavior.Instance.GetRewardPostprocessGoldForHero(targetHero);
 					text5 = BuildRewardPostprocessItemListForScene(list, availableGold, allList);
@@ -24085,9 +24148,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		// 合格国王的每轮回复都要进入王位让渡后处理；不要用 diplomacy 话题命中限制这个常驻规则。
 		bool royalPostprocessSelected = AIConfigHandler.CanUseAuxiliaryActionPostprocess()
 			&& AIConfigHandler.IsRoyalAbdicationPostprocessTargetForExternal(speakingHero ?? npcCharacter?.HeroObject);
-		bool unlandedClanPeaceResident = replyIsDirectPlayerResponse
-			&& DiplomacyBehavior.CanUseUnlandedClanPeaceForExternal(speakingHero, npcCharacter);
-		diplomacyRuleInjected = diplomacyRuleInjected || unlandedClanPeaceResident;
+		bool independentClanPeaceResident = replyIsDirectPlayerResponse
+			&& DiplomacyBehavior.CanUseIndependentClanPeaceForExternal(speakingHero, npcCharacter);
+		diplomacyRuleInjected = diplomacyRuleInjected || independentClanPeaceResident;
 		if (!duelRuleInjected && !rewardRuleInjected && !loanRuleInjected && !persistentAdpDebtRuleInjected && !kingdomServiceRuleInjected && !kingdomVassalageRuleInjected && !kingdomAnnexationRuleInjected && !lordsHallRuleInjected && !meetingReleaseRuleInjected && !vanillaIssueRuleInjected && !heroJoinPartyRuleInjected && !sceneMechanismRuleInjected && !partyTransferRuleInjected && !voteDealRuleInjected && !diplomacyRuleInjected && !worldMapPartyCommandRuleInjected && !nobleGatheringRuleInjected && !proposeAgendaRuleInjected && !marriageRuleInjected && !siegeInterventionRuleInjected && !relayRuleInjected && !npcSurrenderPostprocessSelected && !royalPostprocessSelected)
 		{
 			return Task.FromResult(-1);
@@ -24101,7 +24164,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			+ " kingdomAnnexationInjected=" + kingdomAnnexationRuleInjected
 			+ " proposeAgendaInjected=" + proposeAgendaRuleInjected
 			+ " royalSelected=" + royalPostprocessSelected
-			+ " unlandedClanPeaceResident=" + unlandedClanPeaceResident
+			+ " independentClanPeaceResident=" + independentClanPeaceResident
 			+ " npcSurrenderSelected=" + npcSurrenderPostprocessSelected);
 		if (kingdomVassalageRuleInjected)
 		{
@@ -25397,9 +25460,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					bool partyTransferPostprocessSelected = partyTransferRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "party_transfer");
 					bool voteDealPostprocessSelected = voteDealRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "kingdom_agenda");
 					bool replyIsDirectPlayerResponse = firstTurn;
-					bool unlandedClanPeaceResident = replyIsDirectPlayerResponse
-						&& DiplomacyBehavior.CanUseUnlandedClanPeaceForExternal(speakingHero, npcCharacter);
-					bool diplomacyPostprocessSelected = unlandedClanPeaceResident
+					bool independentClanPeaceResident = replyIsDirectPlayerResponse
+						&& DiplomacyBehavior.CanUseIndependentClanPeaceForExternal(speakingHero, npcCharacter);
+					bool diplomacyPostprocessSelected = independentClanPeaceResident
 						|| ((diplomacyRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "diplomacy"))
 							&& DiplomacyBehavior.CanUseDiplomacyActionPostprocessForExternal(speakingHero, npcCharacter));
 					bool worldMapPartyCommandPostprocessSelected = worldMapPartyCommandRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "worldmap_party_command");
@@ -25429,7 +25492,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					}
 					relayPostprocessSelected = !endRequested && remainingTurns > 0 && relayCandidatesForNextTurn.Count > 0;
 					bool flag11 = duelPostprocessSelected || rewardPostprocessSelected || loanPostprocessSelected || persistentAdpDebtPostprocessSelected || kingdomServicePostprocessSelected || kingdomVassalagePostprocessSelected || kingdomAnnexationPostprocessSelected || lordsHallPostprocessSelected || meetingReleasePostprocessSelected || vanillaIssuePostprocessSelected || heroJoinPartyPostprocessSelected || sceneMechanismPostprocessSelected || partyTransferPostprocessSelected || voteDealPostprocessSelected || diplomacyPostprocessSelected || worldMapPartyCommandPostprocessSelected || nobleGatheringPostprocessSelected || marriagePostprocessSelected || proposeAgendaPostprocessSelected || siegeInterventionPostprocessSelected || npcSurrenderPostprocessSelected || royalPostprocessSelected || relayPostprocessSelected;
-					Logger.Log("ShoutBehavior", "[RuleInjectionDebug] stage=scene_queue npc=" + GetSceneNpcHistoryNameForPrompt(currentSpeaker) + " duelInjected=" + duelRuleInjected + " rewardInjected=" + rewardRuleInjected + " loanInjected=" + loanRuleInjected + " persistentAdpDebtSelected=" + persistentAdpDebtPostprocessSelected + " kingdomServiceInjected=" + kingdomServiceRuleInjected + " kingdomVassalageInjected=" + kingdomVassalageRuleInjected + " kingdomAnnexationInjected=" + kingdomAnnexationRuleInjected + " lordsHallInjected=" + lordsHallRuleInjected + " meetingReleaseInjected=" + meetingReleaseRuleInjected + " vanillaIssueInjected=" + vanillaIssueRuleInjected + " heroJoinPartyInjected=" + heroJoinPartyRuleInjected + " sceneMechanismInjected=" + sceneMechanismRuleInjected + " partyTransferInjected=" + partyTransferRuleInjected + " voteDealInjected=" + voteDealRuleInjected + " diplomacyInjected=" + diplomacyRuleInjected + " unlandedClanPeaceResident=" + unlandedClanPeaceResident + " worldMapInjected=" + worldMapPartyCommandRuleInjected + " nobleGatheringSelected=" + nobleGatheringPostprocessSelected + " marriageSelected=" + marriagePostprocessSelected + " proposeAgendaSelected=" + proposeAgendaPostprocessSelected + " siegeInterventionSelected=" + siegeInterventionPostprocessSelected + " npcSurrenderSelected=" + npcSurrenderPostprocessSelected + " royalSelected=" + royalPostprocessSelected + " relaySelected=" + relayPostprocessSelected + " replyIsDirectPlayerResponse=" + replyIsDirectPlayerResponse + " preprocessHits=" + ((postprocessPreprocessHits == null || postprocessPreprocessHits.Count == 0) ? "(none)" : string.Join(",", postprocessPreprocessHits)) + " queueDeferred=" + flag11 + " replyLen=" + cleaned.Length);
+					Logger.Log("ShoutBehavior", "[RuleInjectionDebug] stage=scene_queue npc=" + GetSceneNpcHistoryNameForPrompt(currentSpeaker) + " duelInjected=" + duelRuleInjected + " rewardInjected=" + rewardRuleInjected + " loanInjected=" + loanRuleInjected + " persistentAdpDebtSelected=" + persistentAdpDebtPostprocessSelected + " kingdomServiceInjected=" + kingdomServiceRuleInjected + " kingdomVassalageInjected=" + kingdomVassalageRuleInjected + " kingdomAnnexationInjected=" + kingdomAnnexationRuleInjected + " lordsHallInjected=" + lordsHallRuleInjected + " meetingReleaseInjected=" + meetingReleaseRuleInjected + " vanillaIssueInjected=" + vanillaIssueRuleInjected + " heroJoinPartyInjected=" + heroJoinPartyRuleInjected + " sceneMechanismInjected=" + sceneMechanismRuleInjected + " partyTransferInjected=" + partyTransferRuleInjected + " voteDealInjected=" + voteDealRuleInjected + " diplomacyInjected=" + diplomacyRuleInjected + " independentClanPeaceResident=" + independentClanPeaceResident + " worldMapInjected=" + worldMapPartyCommandRuleInjected + " nobleGatheringSelected=" + nobleGatheringPostprocessSelected + " marriageSelected=" + marriagePostprocessSelected + " proposeAgendaSelected=" + proposeAgendaPostprocessSelected + " siegeInterventionSelected=" + siegeInterventionPostprocessSelected + " npcSurrenderSelected=" + npcSurrenderPostprocessSelected + " royalSelected=" + royalPostprocessSelected + " relaySelected=" + relayPostprocessSelected + " replyIsDirectPlayerResponse=" + replyIsDirectPlayerResponse + " preprocessHits=" + ((postprocessPreprocessHits == null || postprocessPreprocessHits.Count == 0) ? "(none)" : string.Join(",", postprocessPreprocessHits)) + " queueDeferred=" + flag11 + " replyLen=" + cleaned.Length);
 					float dynamicTimeoutSeconds = ResolveDynamicSceneConversationTimeoutSeconds(playerText, roundNpcVisibleTexts, roundNpcSpeakerIndices.Count, Math.Max(1, speakableCandidates.Count));
 					EnqueueSpeechLineWithOptions(currentSpeaker, cleaned, allNpcData, commitHistory: false, suppressStare: false, allowPlayerDirectedActions: true, conversationEpoch, sceneSummonTargets, sceneGuideTargets, flag11 ? "正在处理NPC行为............" : null, null, remainingTurns > 0 ? (-1f) : dynamicTimeoutSeconds, Math.Max(1, engagedAgentIndices.Count));
 					if (flag11)
@@ -26919,9 +26982,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string arg = "英雄";
 		try
 		{
-			if (hero.IsFactionLeader)
+			if (MyBehavior.IsHeroActiveKingdomRulerForExternal(hero))
 			{
 				arg = "统治者";
+			}
+			else if (hero.Clan?.Leader == hero)
+			{
+				arg = "家族族长";
 			}
 			else if (hero.IsLord)
 			{
