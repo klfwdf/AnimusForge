@@ -4069,9 +4069,9 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		}
 		bool attackerWeaponIsReal = IsMissionWeaponRealWeapon(attackerWeapon);
 		Logger.LogVerbose("SceneTaunt", "attack_timing_on_agent_hit:" + affectedAgent.Index, () => $"[AttackTiming] on_agent_hit time={Mission.Current?.CurrentTime:0.###} location={(CampaignMission.Current?.Location?.StringId ?? "").Trim().ToLowerInvariant()} settlement={Settlement.CurrentSettlement?.StringId} target={affectedAgent.Name} targetIndex={affectedAgent.Index} weapon={attackerWeaponIsReal} conflict={_conflictActive} armed={_armedConflict}", 1.0);
-		if (SettlementEntryTroopSelectionBehavior.IsOwnedOrAttachedTownEntryActiveForExternal(Mission.Current))
+		if (SettlementEntryTroopSelectionBehavior.ShouldHandlePhysicalAttackForExternal(Mission.Current, affectedAgent))
 		{
-			Logger.LogVerbose("SceneTaunt", "sets_owned_entry_suppress_hit:" + affectedAgent.Index, () => $"Suppressed SceneTaunt conflict because SETS owned/attached town entry is active. Target={affectedAgent.Name}", 1.0);
+			Logger.LogVerbose("SceneTaunt", "sets_entry_suppress_hit:" + affectedAgent.Index, () => $"Suppressed SceneTaunt conflict because SETS will handle this settlement attack. Target={affectedAgent.Name}", 1.0);
 			return;
 		}
 		if (TryPrimeOwnedSettlementPassiveAttackOnHit(affectedAgent, "player_physical_hit"))
@@ -4116,9 +4116,9 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			return;
 		}
 		Logger.LogVerbose("SceneTaunt", "attack_timing_on_score_hit:" + affectedAgent.Index, () => $"[AttackTiming] on_score_hit time={Mission.Current?.CurrentTime:0.###} location={(CampaignMission.Current?.Location?.StringId ?? "").Trim().ToLowerInvariant()} settlement={Settlement.CurrentSettlement?.StringId} target={affectedAgent.Name} targetIndex={affectedAgent.Index} weapon={IsWeaponComponentRealWeapon(attackerWeapon)} damage={damagedHp:0.##} blocked={isBlocked} conflict={_conflictActive} armed={_armedConflict}", 1.0);
-		if (SettlementEntryTroopSelectionBehavior.IsOwnedOrAttachedTownEntryActiveForExternal(Mission.Current))
+		if (SettlementEntryTroopSelectionBehavior.ShouldHandlePhysicalAttackForExternal(Mission.Current, affectedAgent))
 		{
-			Logger.LogVerbose("SceneTaunt", "sets_owned_entry_suppress_score_hit:" + affectedAgent.Index, () => $"Suppressed SceneTaunt score-hit conflict because SETS owned/attached town entry is active. Target={affectedAgent.Name}", 1.0);
+			Logger.LogVerbose("SceneTaunt", "sets_entry_suppress_score_hit:" + affectedAgent.Index, () => $"Suppressed SceneTaunt score-hit conflict because SETS will handle this settlement attack. Target={affectedAgent.Name}", 1.0);
 			return;
 		}
 		if (TryHandleOwnedSettlementPassiveAttackDamage(affectedAgent, damagedHp, "player_physical_score_hit"))
@@ -5343,7 +5343,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	internal bool CanStartConflict(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex)
 	{
 		_fightHandler = _fightHandler ?? Mission.Current?.GetMissionBehavior<MissionFightHandler>();
-		if (SettlementEntryTroopSelectionBehavior.IsOwnedOrAttachedTownEntryActiveForExternal(Mission.Current))
+		if (SettlementEntryTroopSelectionBehavior.IsSetsConflictProxyActiveForExternal(Mission.Current))
 		{
 			return false;
 		}
@@ -5497,9 +5497,9 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				Logger.LogVerbose("SceneTaunt", "player_protected_proxy_attack_suppressed:" + targetAgent.Index, () => $"Suppressed SceneTaunt physical conflict for player-protected agent/proxy. Reason={reason}, Target={targetAgent.Name}, AgentIndex={targetAgent.Index}", 1.0);
 				return false;
 			}
-			if (SettlementEntryTroopSelectionBehavior.IsOwnedOrAttachedTownEntryActiveForExternal(Mission.Current))
+			if (SettlementEntryTroopSelectionBehavior.ShouldHandlePhysicalAttackForExternal(Mission.Current, targetAgent))
 			{
-				Logger.LogVerbose("SceneTaunt", "sets_owned_entry_suppress_physical_start:" + targetAgent.Index, () => $"Suppressed SceneTaunt physical conflict start because SETS owned/attached town entry is active. Reason={reason}", 1.0);
+				Logger.LogVerbose("SceneTaunt", "sets_entry_suppress_physical_start:" + targetAgent.Index, () => $"Suppressed SceneTaunt physical conflict start because SETS will handle this settlement attack. Reason={reason}", 1.0);
 				return false;
 			}
 			CharacterObject characterObject = targetAgent.Character as CharacterObject;

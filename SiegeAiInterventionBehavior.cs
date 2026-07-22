@@ -694,9 +694,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		try
 		{
 			Settlement settlement = ResolveCurrentSettlement() ?? _activeSettlement;
+			SetsSettlementSceneKind sceneKind = ResolveSetsSettlementSceneKind(settlement);
 			string playerName = ResolvePlayerCharacterNameForContext();
 			string settlementName = settlement?.Name?.ToString() ?? _activeSettlementName;
-			MBTextManager.SetTextVariable("AF_SETS_OWNED_TOWN_INCIDENT_TEXT", SetsOwnedSettlementIncidentProfile.BuildMenuText(playerName, settlementName), false);
+			MBTextManager.SetTextVariable("AF_SETS_OWNED_TOWN_INCIDENT_TEXT", SetsOwnedSettlementIncidentProfile.BuildMenuText(sceneKind, playerName, settlementName), false);
 			args?.MenuContext?.SetBackgroundMeshName("encounter_win");
 		}
 		catch
@@ -704,17 +705,32 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static SetsSettlementSceneKind ResolveSetsSettlementSceneKind(Settlement settlement)
+	{
+		if (settlement?.IsCastle == true)
+		{
+			return SetsSettlementSceneKind.Castle;
+		}
+		if (settlement?.IsVillage == true)
+		{
+			return SetsSettlementSceneKind.Village;
+		}
+		return settlement?.IsTown == true ? SetsSettlementSceneKind.Town : SetsSettlementSceneKind.Unknown;
+	}
+
 	private static bool SetsOwnedSettlementIncidentEntryCondition(MenuCallbackArgs args)
 	{
 		try
 		{
 			Settlement settlement = ResolveCurrentSettlement() ?? _activeSettlement;
+			SetsSettlementSceneKind sceneKind = ResolveSetsSettlementSceneKind(settlement);
 			bool enabled = _setsOwnedSettlementIncidentContext
-				&& settlement?.IsTown == true
+				&& SiegeInterventionEntryProfile.IsSupportedSettlementKind(settlement?.IsTown == true, settlement?.IsCastle == true)
 				&& ResolveInterventionLocation(settlement) != null;
 			args.IsEnabled = enabled;
 			args.optionLeaveType = GameMenuOption.LeaveType.Submenu;
-			args.Tooltip = new TextObject(enabled ? "{=!}亲自进入城镇，继续决定剩余平民的命运。" : "{=!}当前没有可进入的 SETS 自有城镇事件场景。");
+			string noun = SetsSettlementEntryProfile.GetSettlementNoun(sceneKind);
+			args.Tooltip = new TextObject(enabled ? "{=!}亲自进入" + noun + "，继续决定剩余居民的命运。" : "{=!}当前没有可进入的 SETS 自有/附属定居点事件场景。");
 			return true;
 		}
 		catch
@@ -739,9 +755,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			SetsSettlementSceneKind sceneKind = ResolveSetsSettlementSceneKind(ResolveCurrentSettlement() ?? _activeSettlement);
 			ApplySetsOwnedSettlementIncidentOwnerPenalty(SetsOwnedSettlementIncidentProfile.NotableKilledRelationPenalty, "sets_owned_town_leave_notable", onlyIfNotableKilled: true);
 			ApplySetsOwnedSettlementIncidentOwnerPenalty(SetsOwnedSettlementIncidentProfile.MinorIncidentRelationPenalty, "sets_owned_town_leave_minor", onlyIfNotableKilled: false);
-			InformationManager.DisplayMessage(new InformationMessage(SetsOwnedSettlementIncidentProfile.BuildLeaveMessage(), Color.FromUint(SetsOwnedSettlementIncidentProfile.MessageColor)));
+			InformationManager.DisplayMessage(new InformationMessage(SetsOwnedSettlementIncidentProfile.BuildLeaveMessage(sceneKind), Color.FromUint(SetsOwnedSettlementIncidentProfile.MessageColor)));
 			ClearSetsOwnedSettlementIncidentContext("leave_menu");
 			try
 			{
@@ -840,7 +857,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					? SiegeCastleRosterSelectionProfile.BuildInstructionMessage()
 					: SiegeInterventionEntryProfile.BuildTroopSelectionInstructionMessage(AutoSummonCount),
 				Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
-			InformationManager.DisplayMessage(new InformationMessage(_setsOwnedSettlementIncidentContext ? SetsOwnedSettlementIncidentProfile.BuildEntryInstruction() : SiegeInterventionEntryProfile.BuildDecisionPolicyMessage(settlement.IsCastle), Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
+			InformationManager.DisplayMessage(new InformationMessage(_setsOwnedSettlementIncidentContext ? SetsOwnedSettlementIncidentProfile.BuildEntryInstruction(ResolveSetsSettlementSceneKind(settlement)) : SiegeInterventionEntryProfile.BuildDecisionPolicyMessage(settlement.IsCastle), Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
 			bool selectionOpened = settlement.IsCastle
 				? TryOpenCastleInterventionRosterSelection(location)
 				: TryOpenInterventionTroopSelection(args, location);
@@ -898,7 +915,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (settlement == null || !settlement.IsTown)
+			if (settlement == null || !SiegeInterventionEntryProfile.IsSupportedSettlementKind(settlement.IsTown, settlement.IsCastle))
 			{
 				return false;
 			}
@@ -906,7 +923,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			string bridgeSource = string.IsNullOrWhiteSpace(source) ? "SETS_town_victory_menu" : source;
+			SetsSettlementSceneKind sceneKind = ResolveSetsSettlementSceneKind(settlement);
+			string bridgeSource = string.IsNullOrWhiteSpace(source) ? "SETS_settlement_victory_menu" : source;
 			ResetAftermathRuntimeGuards("sets_victory_menu_prepare");
 			PrepareSetsSettlementEntryVictoryContext(settlement, bridgeSource);
 			int maxSelected = Math.Max(AutoSummonCount, selectedRoster?.TotalManCount ?? 0);
@@ -918,19 +936,19 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			else
 			{
-				Logger.Log("SiegeAiIntervention", "Skipped SETS settlement-entry ownership transfer for already-owned/attached town. Settlement=" + (settlement.StringId ?? "N/A") + ", Source=" + bridgeSource);
+				Logger.Log("SiegeAiIntervention", "Skipped SETS settlement-entry ownership transfer for already-owned/attached settlement. Settlement=" + (settlement.StringId ?? "N/A") + ", Source=" + bridgeSource);
 			}
 			if (setsOwnedIncident)
 			{
 				PrepareSetsOwnedSettlementIncidentContext(settlement, setsTownRiotKilledNotable, bridgeSource);
 				GameMenu.ActivateGameMenu(SetsOwnedSettlementIncidentProfile.MenuId);
-				InformationManager.DisplayMessage(new InformationMessage(SetsOwnedSettlementIncidentProfile.BuildEntryInstruction(), Color.FromUint(SetsOwnedSettlementIncidentProfile.MessageColor)));
-				Logger.Log("SiegeAiIntervention", "Opened SETS owned/attached town incident menu. Settlement=" + (settlement.StringId ?? "N/A") + ", Selected=" + (_selectedInterventionRoster?.TotalManCount ?? 0) + ", Source=" + bridgeSource + ", killedNotable=" + setsTownRiotKilledNotable);
+				InformationManager.DisplayMessage(new InformationMessage(SetsOwnedSettlementIncidentProfile.BuildEntryInstruction(sceneKind), Color.FromUint(SetsOwnedSettlementIncidentProfile.MessageColor)));
+				Logger.Log("SiegeAiIntervention", "Opened SETS owned/attached settlement incident menu. Settlement=" + (settlement.StringId ?? "N/A") + ", Kind=" + sceneKind + ", Selected=" + (_selectedInterventionRoster?.TotalManCount ?? 0) + ", Source=" + bridgeSource + ", killedNotable=" + setsTownRiotKilledNotable);
 				return true;
 			}
 			PrepareNativeSettlementTakenMenuContextForSets(settlement, bridgeSource);
 			GameMenu.ActivateGameMenu(SiegeAftermathMenuProfile.SettlementTakenMenuId);
-			InformationManager.DisplayMessage(new InformationMessage("【SETS内部暴乱】已进入原版围城战胜利处置菜单；可选择原版处置，也可选择 GCCZ 攻城处置。", Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
+			InformationManager.DisplayMessage(new InformationMessage("【SETS内部暴乱】" + SetsSettlementEntryProfile.GetSettlementNoun(sceneKind) + "守军已被击溃，已进入原版围城战胜利处置菜单；可选择原版处置，也可选择 GCCZ 攻城处置。", Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
 			Logger.Log("SiegeAiIntervention", "Opened native settlement-taken menu from SETS victory. Settlement=" + (settlement.StringId ?? "N/A") + ", Selected=" + (_selectedInterventionRoster?.TotalManCount ?? 0) + ", Source=" + bridgeSource + ", transferOwnership=" + transferOwnership);
 			return true;
 		}
@@ -1074,7 +1092,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			settlement.Town.IsOwnerUnassigned = false;
 			Logger.Log("SiegeAiIntervention", "Applied SETS settlement-entry capture ownership. Settlement=" + (settlement.StringId ?? "N/A") + ", PreviousOwner=" + (ownerBefore?.StringId ?? "null") + ", NewOwner=" + (settlement.OwnerClan?.StringId ?? "null") + ", Reason=" + (reason ?? "N/A"));
-			InformationManager.DisplayMessage(new InformationMessage("【SETS内部暴乱】" + (settlement.Name?.ToString() ?? "该城镇") + " 已由你的家族接管。", Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
+			InformationManager.DisplayMessage(new InformationMessage("【SETS内部暴乱】" + (settlement.Name?.ToString() ?? ("该" + SetsSettlementEntryProfile.GetSettlementNoun(ResolveSetsSettlementSceneKind(settlement)))) + " 已由你的家族接管。", Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
 		}
 		catch (Exception ex)
 		{
@@ -2495,8 +2513,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			string context = SiegeRuntimePromptProfile.BuildPlayerCommanderContext(playerName, alliedSoldier, civilian);
 			if (_setsOwnedSettlementIncidentContext)
 			{
-				string settlementName = string.IsNullOrWhiteSpace(_activeSettlementName) ? ResolveCurrentSettlement()?.Name?.ToString() : _activeSettlementName;
-				context = AppendRuntimeContext(context, SetsOwnedSettlementIncidentProfile.BuildRuntimeContext(playerName, settlementName, alliedSoldier, civilian));
+				Settlement settlement = ResolveCurrentSettlement() ?? _activeSettlement;
+				string settlementName = string.IsNullOrWhiteSpace(_activeSettlementName) ? settlement?.Name?.ToString() : _activeSettlementName;
+				context = AppendRuntimeContext(context, SetsOwnedSettlementIncidentProfile.BuildRuntimeContext(ResolveSetsSettlementSceneKind(settlement), playerName, settlementName, alliedSoldier, civilian));
 			}
 			return context;
 		}
@@ -2801,22 +2820,28 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			bool alliedSoldier = IsRuntimeAlliedSoldierAgent(agent, resolved, resolvedHero);
 			bool civilian = IsCivilianForIntervention(resolved);
 			Settlement settlement = ResolveCurrentSettlement();
+			string playerName = ResolvePlayerCharacterNameForContext();
 			if (settlement?.IsCastle == true)
 			{
 				bool prisoner = CastleAftermathRuntimeBridge.IsPrisonerAgent(agent);
 				bool lord = prisoner && (CastleAftermathRuntimeBridge.IsLordPrisonerAgent(agent) || resolvedHero?.IsLord == true || resolved?.IsHero == true);
-				return SiegeCastleRuntimePromptProfile.BuildImmediateReactionIdentityOverride(
+				string castleIdentity = SiegeCastleRuntimePromptProfile.BuildImmediateReactionIdentityOverride(
 					settlement.Name?.ToString() ?? _activeSettlementName,
-					ResolvePlayerCharacterNameForContext(),
+					playerName,
 					alliedSoldier,
 					prisoner,
 					lord);
+				if (_setsOwnedSettlementIncidentContext)
+				{
+					castleIdentity = AppendRuntimeContext(castleIdentity, SetsOwnedSettlementIncidentProfile.BuildRuntimeContext(SetsSettlementSceneKind.Castle, playerName, settlement.Name?.ToString() ?? _activeSettlementName, alliedSoldier, civilian));
+				}
+				return castleIdentity;
 			}
-			string identity = SiegeRuntimePromptProfile.BuildImmediateReactionIdentityOverride(ResolvePlayerCharacterNameForContext(), alliedSoldier, civilian);
+			string identity = SiegeRuntimePromptProfile.BuildImmediateReactionIdentityOverride(playerName, alliedSoldier, civilian);
 			if (_setsOwnedSettlementIncidentContext)
 			{
 				string settlementName = string.IsNullOrWhiteSpace(_activeSettlementName) ? ResolveCurrentSettlement()?.Name?.ToString() : _activeSettlementName;
-				identity = AppendRuntimeContext(identity, SetsOwnedSettlementIncidentProfile.BuildRuntimeContext(ResolvePlayerCharacterNameForContext(), settlementName, alliedSoldier, civilian));
+				identity = AppendRuntimeContext(identity, SetsOwnedSettlementIncidentProfile.BuildRuntimeContext(ResolveSetsSettlementSceneKind(settlement), playerName, settlementName, alliedSoldier, civilian));
 			}
 			return identity;
 		}

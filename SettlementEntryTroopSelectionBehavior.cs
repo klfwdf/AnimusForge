@@ -13,6 +13,7 @@ using SandBox.Objects.Usables;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.AgentOrigins;
+using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.GameState;
 using TaleWorlds.CampaignSystem.GameMenus;
@@ -54,7 +55,6 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	private const float ProtectedFollowerFriendlyFireDuplicateWindowSeconds = 0.05f;
 	private const float VictoryEndMissionFallbackDelaySeconds = 2f;
 	private const string LordHallLocationId = "lordshall";
-	private const string TownCenterLocationId = "center";
 	private const uint InfoColor = 0xFFDFC16Bu;
 	private const uint WarningColor = 0xFFFF6B6Bu;
 	private const uint SuccessColor = 0xFF8DDC7Eu;
@@ -66,6 +66,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	private static PendingProfileSelection _pendingProfileSelection;
 	private static PendingMissionEntry _pendingMissionEntry;
 	private static PendingSettlementVictoryMenuEntry _pendingVictoryMenuEntry;
+	private static PendingVillageVictoryRewardEntry _pendingVillageVictoryRewardEntry;
 	private static Mission _setsActiveUsableProtectionMission;
 	private static Mission _setsSelectedFollowerMission;
 	private static Mission _setsNativeAlleyMission;
@@ -97,7 +98,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		PatchEndMissionGuard(harmony, typeof(BasicLeaveMissionLogic), nameof(BasicLeaveMissionLogic.OnEndMissionRequest), "basic-leave");
 		PatchEndMissionGuard(harmony, typeof(MissionFightHandler), nameof(MissionFightHandler.OnEndMissionRequest), "mission-fight");
 		PatchSetsUsableProtection(harmony);
-		PatchOwnedOrAttachedTownDamage(harmony);
+		PatchSetsEntryDamage(harmony);
 		PatchNativeAlleyCompatibility(harmony);
 	}
 
@@ -151,28 +152,48 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	internal static void QueueSettlementTakenMenuAfterTownVictory(string settlementId, TroopRoster survivingRoster, string source, bool skipOwnershipTransfer = false, bool setsOwnedIncident = false, bool setsTownRiotKilledNotable = false)
+	internal static void QueueSettlementTakenMenuAfterVictory(string settlementId, TroopRoster survivingRoster, string source, bool skipOwnershipTransfer = false, bool setsOwnedIncident = false, bool setsTownRiotKilledNotable = false)
 	{
 		if (string.IsNullOrWhiteSpace(settlementId))
 		{
 			return;
 		}
 		Settlement settlement = Settlement.Find(settlementId);
-		if (settlement != null && !settlement.IsTown)
+		if (settlement != null && !SiegeInterventionEntryProfile.IsSupportedSettlementKind(settlement.IsTown, settlement.IsCastle))
 		{
-			SettlementEntryTroopSelectionLog.Log("Ignored SETS victory menu queue for non-town settlement. settlement=" + SafeSettlementId(settlement) + ", source=" + (source ?? ""));
+			SettlementEntryTroopSelectionLog.Log("Ignored SETS siege-victory menu queue for unsupported settlement. settlement=" + SafeSettlementId(settlement) + ", source=" + (source ?? ""));
 			return;
 		}
 		_pendingVictoryMenuEntry = new PendingSettlementVictoryMenuEntry
 		{
 			SettlementId = settlementId,
 			SurvivingRoster = CloneRoster(survivingRoster, int.MaxValue),
-			Source = string.IsNullOrWhiteSpace(source) ? "SETS_town_victory" : source,
+			Source = string.IsNullOrWhiteSpace(source) ? "SETS_settlement_victory" : source,
 			SkipOwnershipTransfer = skipOwnershipTransfer,
 			SetsOwnedIncident = setsOwnedIncident,
 			SetsTownRiotKilledNotable = setsTownRiotKilledNotable
 		};
-		SettlementEntryTroopSelectionLog.Log("Queued native settlement-taken menu after SETS town victory. settlement=" + settlementId + ", survivors=" + (_pendingVictoryMenuEntry.SurvivingRoster?.TotalManCount ?? 0) + ", source=" + _pendingVictoryMenuEntry.Source + ", skipOwnershipTransfer=" + skipOwnershipTransfer + ", ownedIncident=" + setsOwnedIncident + ", killedNotable=" + setsTownRiotKilledNotable);
+		SettlementEntryTroopSelectionLog.Log("Queued native settlement-taken menu after SETS victory. settlement=" + settlementId + ", survivors=" + (_pendingVictoryMenuEntry.SurvivingRoster?.TotalManCount ?? 0) + ", source=" + _pendingVictoryMenuEntry.Source + ", skipOwnershipTransfer=" + skipOwnershipTransfer + ", ownedIncident=" + setsOwnedIncident + ", killedNotable=" + setsTownRiotKilledNotable);
+	}
+
+	internal static void QueueVillageVictoryReward(string settlementId, string source)
+	{
+		if (string.IsNullOrWhiteSpace(settlementId))
+		{
+			return;
+		}
+		Settlement settlement = Settlement.Find(settlementId);
+		if (settlement != null && !settlement.IsVillage)
+		{
+			SettlementEntryTroopSelectionLog.Log("Ignored SETS village reward queue for non-village settlement. settlement=" + SafeSettlementId(settlement) + ", source=" + (source ?? ""));
+			return;
+		}
+		_pendingVillageVictoryRewardEntry = new PendingVillageVictoryRewardEntry
+		{
+			SettlementId = settlementId,
+			Source = string.IsNullOrWhiteSpace(source) ? "SETS_village_victory" : source
+		};
+		SettlementEntryTroopSelectionLog.Log("Queued SETS village victory reward. settlement=" + settlementId + ", source=" + _pendingVillageVictoryRewardEntry.Source);
 	}
 
 	private void OnNewGameCreated(CampaignGameStarter starter)
@@ -192,6 +213,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		_pendingProfileSelection = null;
 		_pendingMissionEntry = null;
 		_pendingVictoryMenuEntry = null;
+		_pendingVillageVictoryRewardEntry = null;
 		ClearSetsUsableProtectionState(source);
 		ClearSetsSelectedFollowerState(source);
 		SettlementEntryTroopSelectionLog.Log("Runtime cleared. source=" + source);
@@ -231,12 +253,12 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	internal static bool IsOwnedOrAttachedTownEntryActiveForExternal(Mission mission)
+	internal static bool IsOwnedOrAttachedSettlementEntryActiveForExternal(Mission mission)
 	{
 		try
 		{
 			SettlementEntryTroopSelectionMissionLogic logic = mission?.GetMissionBehavior<SettlementEntryTroopSelectionMissionLogic>();
-			return logic != null && logic.IsOwnedOrAttachedTownEntryActive();
+			return logic != null && logic.IsOwnedOrAttachedSettlementEntryActive();
 		}
 		catch
 		{
@@ -244,21 +266,46 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	internal static bool TryGatherOwnedOrAttachedTownSceneAgentsForExternal(int seedAgentIndex, string source)
+	internal static bool IsSetsConflictProxyActiveForExternal(Mission mission)
 	{
 		try
 		{
-			SettlementEntryTroopSelectionMissionLogic logic = Mission.Current?.GetMissionBehavior<SettlementEntryTroopSelectionMissionLogic>();
-			return logic != null && logic.TryGatherOwnedOrAttachedTownSceneAgents(seedAgentIndex, source);
+			SettlementEntryTroopSelectionMissionLogic logic = mission?.GetMissionBehavior<SettlementEntryTroopSelectionMissionLogic>();
+			return logic != null && logic.IsConflictProxyActive();
 		}
-		catch (Exception ex)
+		catch
 		{
-			SettlementEntryTroopSelectionLog.Log("TryGatherOwnedOrAttachedTownSceneAgentsForExternal failed. source=" + (source ?? "N/A") + ", error=" + ex.Message);
 			return false;
 		}
 	}
 
-	internal static bool IsOwnedOrAttachedTownMassacreActiveForExternal(Mission mission)
+	internal static bool ShouldHandlePhysicalAttackForExternal(Mission mission, Agent target)
+	{
+		try
+		{
+			SettlementEntryTroopSelectionMissionLogic logic = mission?.GetMissionBehavior<SettlementEntryTroopSelectionMissionLogic>();
+			return logic != null && logic.ShouldHandlePhysicalAttack(target);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	internal static SetsSettlementSceneKind GetSetsSettlementSceneKindForExternal(Mission mission)
+	{
+		try
+		{
+			SettlementEntryTroopSelectionMissionLogic logic = mission?.GetMissionBehavior<SettlementEntryTroopSelectionMissionLogic>();
+			return logic?.SceneKind ?? SetsSettlementSceneKind.Unknown;
+		}
+		catch
+		{
+			return SetsSettlementSceneKind.Unknown;
+		}
+	}
+
+	internal static bool IsOwnedOrAttachedSettlementMassacreActiveForExternal(Mission mission)
 	{
 		try
 		{
@@ -271,7 +318,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	internal static bool HasOwnedOrAttachedTownMassacreRequestForExternal(Mission mission)
+	internal static bool HasOwnedOrAttachedSettlementMassacreRequestForExternal(Mission mission)
 	{
 		try
 		{
@@ -284,7 +331,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	internal static bool IsOwnedOrAttachedTownMassacreRequestPendingForExternal(Mission mission, int speakerAgentIndex)
+	internal static bool IsOwnedOrAttachedSettlementMassacreRequestPendingForExternal(Mission mission, int speakerAgentIndex)
 	{
 		try
 		{
@@ -297,7 +344,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	internal static bool TryRecordOwnedOrAttachedTownMassacreRequestForExternal(int requestingAgentIndex, string source)
+	internal static bool TryRecordOwnedOrAttachedSettlementMassacreRequestForExternal(int requestingAgentIndex, string source)
 	{
 		try
 		{
@@ -306,12 +353,12 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			SettlementEntryTroopSelectionLog.Log("TryRecordOwnedOrAttachedTownMassacreRequestForExternal failed. source=" + (source ?? "N/A") + ", error=" + ex.Message);
+			SettlementEntryTroopSelectionLog.Log("TryRecordOwnedOrAttachedSettlementMassacreRequestForExternal failed. source=" + (source ?? "N/A") + ", error=" + ex.Message);
 			return false;
 		}
 	}
 
-	internal static bool TryCancelOwnedOrAttachedTownMassacreRequestForExternal(int requestingAgentIndex, string source)
+	internal static bool TryCancelOwnedOrAttachedSettlementMassacreRequestForExternal(int requestingAgentIndex, string source)
 	{
 		try
 		{
@@ -320,12 +367,12 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			SettlementEntryTroopSelectionLog.Log("TryCancelOwnedOrAttachedTownMassacreRequestForExternal failed. source=" + (source ?? "N/A") + ", error=" + ex.Message);
+			SettlementEntryTroopSelectionLog.Log("TryCancelOwnedOrAttachedSettlementMassacreRequestForExternal failed. source=" + (source ?? "N/A") + ", error=" + ex.Message);
 			return false;
 		}
 	}
 
-	internal static bool TryStartOwnedOrAttachedTownMassacreForExternal(int commandingAgentIndex, string source)
+	internal static bool TryStartOwnedOrAttachedSettlementMassacreForExternal(int commandingAgentIndex, string source)
 	{
 		try
 		{
@@ -334,12 +381,12 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			SettlementEntryTroopSelectionLog.Log("TryStartOwnedOrAttachedTownMassacreForExternal failed. source=" + (source ?? "N/A") + ", error=" + ex.Message);
+			SettlementEntryTroopSelectionLog.Log("TryStartOwnedOrAttachedSettlementMassacreForExternal failed. source=" + (source ?? "N/A") + ", error=" + ex.Message);
 			return false;
 		}
 	}
 
-	internal static bool TryStopOwnedOrAttachedTownMassacreForExternal(int commandingAgentIndex, string source)
+	internal static bool TryStopOwnedOrAttachedSettlementMassacreForExternal(int commandingAgentIndex, string source)
 	{
 		try
 		{
@@ -348,7 +395,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			SettlementEntryTroopSelectionLog.Log("TryStopOwnedOrAttachedTownMassacreForExternal failed. source=" + (source ?? "N/A") + ", error=" + ex.Message);
+			SettlementEntryTroopSelectionLog.Log("TryStopOwnedOrAttachedSettlementMassacreForExternal failed. source=" + (source ?? "N/A") + ", error=" + ex.Message);
 			return false;
 		}
 	}
@@ -743,23 +790,23 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void PatchOwnedOrAttachedTownDamage(Harmony harmony)
+	private static void PatchSetsEntryDamage(Harmony harmony)
 	{
 		try
 		{
 			MethodInfo target = AccessTools.Method(typeof(Mission), "CancelsDamageAndBlocksAttackBecauseOfNonEnemyCase");
-			MethodInfo prefix = typeof(SettlementEntryTroopSelectionBehavior).GetMethod(nameof(AllowOwnedOrAttachedTownPlayerDamagePrefix), BindingFlags.Static | BindingFlags.NonPublic);
+			MethodInfo prefix = typeof(SettlementEntryTroopSelectionBehavior).GetMethod(nameof(AllowSetsEntryPlayerDamagePrefix), BindingFlags.Static | BindingFlags.NonPublic);
 			if (target == null || prefix == null)
 			{
-				SettlementEntryTroopSelectionLog.Log("SETS owned/attached town damage patch target not found.");
+				SettlementEntryTroopSelectionLog.Log("SETS settlement-entry damage patch target not found.");
 				return;
 			}
 			harmony.Patch(target, prefix: new HarmonyMethod(prefix));
-			SettlementEntryTroopSelectionLog.Log("Harmony patch registered for SETS owned/attached town player damage.");
+			SettlementEntryTroopSelectionLog.Log("Harmony patch registered for SETS settlement-entry player damage.");
 		}
 		catch (Exception ex)
 		{
-			SettlementEntryTroopSelectionLog.Log("PatchOwnedOrAttachedTownDamage failed. error=" + ex.Message);
+			SettlementEntryTroopSelectionLog.Log("PatchSetsEntryDamage failed. error=" + ex.Message);
 		}
 	}
 
@@ -899,12 +946,12 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			&& _setsSelectedFollowerMission == mission;
 	}
 
-	private static bool AllowOwnedOrAttachedTownPlayerDamagePrefix(Mission __instance, Agent attacker, Agent victim, ref bool __result)
+	private static bool AllowSetsEntryPlayerDamagePrefix(Mission __instance, Agent attacker, Agent victim, ref bool __result)
 	{
 		try
 		{
 			if (__instance == null
-				|| !IsOwnedOrAttachedTownEntryActiveForExternal(__instance)
+				|| !IsSetsEntryMissionActive(__instance)
 				|| !SceneTauntBehavior.IsPeaceSceneConflictEnabled()
 				|| attacker == null
 				|| victim == null
@@ -918,6 +965,10 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			{
 				__result = true;
 				return false;
+			}
+			if (!ShouldHandlePhysicalAttackForExternal(__instance, victim))
+			{
+				return true;
 			}
 			__result = false;
 			return false;
@@ -1096,28 +1147,27 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 
 	private static bool TownCreateAndOpenMissionControllerPrefix(TownEncounter __instance, Location nextLocation, Location previousLocation, CharacterObject talkToChar, string playerSpecialSpawnTag)
 	{
-		TryPrepareSettlementEntryMission(__instance?.Settlement, nextLocation, TownCenterLocationId, "town");
+		TryPrepareSettlementEntryMission(__instance?.Settlement, nextLocation, SetsSettlementEntryProfile.TownCenterLocationId, SetsSettlementSceneKind.Town);
 		return true;
 	}
 
 	private static bool CastleCreateAndOpenMissionControllerPrefix(CastleEncounter __instance, Location nextLocation, Location previousLocation, CharacterObject talkToChar, string playerSpecialSpawnTag)
 	{
-		// SETS never opens a separate castle-entry conflict. If an internal revolt captures a castle,
-		// the native siege-victory menu remains the only route into the GCCZ castle aftermath stage.
+		TryPrepareSettlementEntryMission(__instance?.Settlement, nextLocation, SetsSettlementEntryProfile.CastleCenterLocationId, SetsSettlementSceneKind.Castle);
 		return true;
 	}
 
 	private static bool VillageCreateAndOpenMissionControllerPrefix(VillageEncounter __instance, Location nextLocation, Location previousLocation, CharacterObject talkToChar, string playerSpecialSpawnTag)
 	{
-		// SETS village entry/conflict is intentionally blocked until the village aftermath bridge is fixed.
+		TryPrepareSettlementEntryMission(__instance?.Settlement, nextLocation, SetsSettlementEntryProfile.VillageCenterLocationId, SetsSettlementSceneKind.Village);
 		return true;
 	}
 
-	private static void TryPrepareSettlementEntryMission(Settlement settlement, Location nextLocation, string expectedLocationId, string sceneKind)
+	private static void TryPrepareSettlementEntryMission(Settlement settlement, Location nextLocation, string expectedLocationId, SetsSettlementSceneKind sceneKind)
 	{
 		try
 		{
-			if (!ShouldPrepareSettlementEntry(settlement, nextLocation, expectedLocationId))
+			if (!ShouldPrepareSettlementEntry(settlement, nextLocation, expectedLocationId, sceneKind))
 			{
 				return;
 			}
@@ -1132,7 +1182,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				SelectedRoster = selected,
 				Limit = limit,
 				IsOwnSettlement = profileKind == EntryProfileKind.OwnSettlement,
-				SceneKind = sceneKind ?? "settlement"
+				SceneKind = sceneKind
 			};
 			ShowEntryReminder(settlement, profileKind, limit, selected.TotalManCount, configuredCount, unavailableCount);
 			SettlementEntryTroopSelectionLog.Log("Prepared settlement entry followers. settlement=" + SafeSettlementId(settlement) + ", scene=" + _pendingMissionEntry.SceneKind + ", profile=" + profileKind + ", selected=" + selected.TotalManCount + ", configured=" + configuredCount + ", unavailable=" + unavailableCount);
@@ -1144,7 +1194,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static bool ShouldPrepareSettlementEntry(Settlement settlement, Location nextLocation, string expectedLocationId)
+	private static bool ShouldPrepareSettlementEntry(Settlement settlement, Location nextLocation, string expectedLocationId, SetsSettlementSceneKind sceneKind)
 	{
 		try
 		{
@@ -1152,7 +1202,10 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			if (!settlement.IsTown)
+			if (!SetsSettlementEntryProfile.IsSupported(sceneKind)
+				|| (sceneKind == SetsSettlementSceneKind.Town && !settlement.IsTown)
+				|| (sceneKind == SetsSettlementSceneKind.Castle && !settlement.IsCastle)
+				|| (sceneKind == SetsSettlementSceneKind.Village && !settlement.IsVillage))
 			{
 				return false;
 			}
@@ -1366,6 +1419,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		try
 		{
 			TryPumpPendingSettlementTakenMenu(source);
+			TryPumpPendingVillageVictoryReward(source);
 		}
 		catch (Exception ex)
 		{
@@ -1390,9 +1444,9 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			_pendingVictoryMenuEntry = null;
 			return false;
 		}
-		if (!settlement.IsTown)
+		if (!SiegeInterventionEntryProfile.IsSupportedSettlementKind(settlement.IsTown, settlement.IsCastle))
 		{
-			SettlementEntryTroopSelectionLog.Log("Dropping pending SETS victory menu; non-town SETS is blocked. settlement=" + SafeSettlementId(settlement) + ", source=" + (source ?? ""));
+			SettlementEntryTroopSelectionLog.Log("Dropping pending SETS victory menu; settlement kind is unsupported. settlement=" + SafeSettlementId(settlement) + ", source=" + (source ?? ""));
 			_pendingVictoryMenuEntry = null;
 			return false;
 		}
@@ -1406,8 +1460,74 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			SettlementEntryTroopSelectionLog.Log("Native settlement-taken menu bridge not ready; will retry. settlement=" + SafeSettlementId(settlement) + ", source=" + (source ?? "") + ", hasLocationEncounter=" + (PlayerEncounter.LocationEncounter != null));
 			return true;
 		}
-		SettlementEntryTroopSelectionLog.Log("Opened native settlement-taken menu after SETS town victory. settlement=" + SafeSettlementId(settlement) + ", source=" + (source ?? ""));
+		SettlementEntryTroopSelectionLog.Log("Opened native settlement-taken menu after SETS victory. settlement=" + SafeSettlementId(settlement) + ", source=" + (source ?? ""));
 		return true;
+	}
+
+	private static bool TryPumpPendingVillageVictoryReward(string source)
+	{
+		if (_pendingVillageVictoryRewardEntry == null)
+		{
+			return false;
+		}
+		if (Mission.Current != null || Game.Current?.GameStateManager?.ActiveState is not MapState)
+		{
+			return true;
+		}
+		PendingVillageVictoryRewardEntry pending = _pendingVillageVictoryRewardEntry;
+		Settlement settlement = Settlement.Find(pending.SettlementId);
+		if (settlement?.IsVillage != true || settlement.Village == null)
+		{
+			SettlementEntryTroopSelectionLog.Log("Dropping pending SETS village reward; village missing. settlement=" + (pending.SettlementId ?? "") + ", source=" + (source ?? ""));
+			_pendingVillageVictoryRewardEntry = null;
+			return false;
+		}
+		_pendingVillageVictoryRewardEntry = null;
+		ApplyVillageVictoryReward(settlement, string.IsNullOrWhiteSpace(pending.Source) ? source : pending.Source);
+		return true;
+	}
+
+	private static void ApplyVillageVictoryReward(Settlement settlement, string source)
+	{
+		try
+		{
+			if (settlement?.Village?.VillageType == null || Hero.MainHero == null || MobileParty.MainParty == null || Campaign.Current?.Models?.RaidModel == null)
+			{
+				SettlementEntryTroopSelectionLog.Log("SETS village reward prerequisites missing. settlement=" + SafeSettlementId(settlement) + ", source=" + (source ?? ""));
+				return;
+			}
+			int lootUnits = SetsVillageVictoryRewardProfile.ResolveLootUnits(settlement.Village.Hearth);
+			int gold = SetsVillageVictoryRewardProfile.ResolveGoldReward(lootUnits, Campaign.Current.Models.RaidModel.GoldRewardForEachLostHearth);
+			ItemRoster loot = new ItemRoster();
+			foreach (var production in settlement.Village.VillageType.Productions)
+			{
+				ItemObject item = production.Item1;
+				int count = SetsVillageVictoryRewardProfile.ResolveProductionCount(production.Item2, lootUnits);
+				if (item != null && count > 0)
+				{
+					loot.AddToCounts(item, count);
+				}
+			}
+			if (gold > 0)
+			{
+				GiveGoldAction.ApplyBetweenCharacters(null, Hero.MainHero, gold);
+			}
+			int itemCount = loot.ToList().Sum(element => Math.Max(0, element.Amount));
+			IncreaseSettlementHealthAction.Apply(settlement, -settlement.SettlementHitPoints * SetsVillageVictoryRewardProfile.SettlementHitPointLossRatio);
+			SkillLevelingManager.OnForceSupplies(MobileParty.MainParty, loot, TaleWorlds.CampaignSystem.MapEvents.MapEvent.PlayerMapEvent == null);
+			InformationManager.DisplayMessage(new InformationMessage(
+				SetsVillageVictoryRewardProfile.BuildRewardMessage(gold, itemCount),
+				Color.FromUint(SuccessColor)));
+			InventoryScreenHelper.OpenScreenAsLoot(new Dictionary<PartyBase, ItemRoster>
+			{
+				{ PartyBase.MainParty, loot }
+			});
+			SettlementEntryTroopSelectionLog.Log("Applied SETS village victory reward. settlement=" + SafeSettlementId(settlement) + ", lootUnits=" + lootUnits + ", gold=" + gold + ", items=" + itemCount + ", stacks=" + loot.Count + ", source=" + (source ?? ""));
+		}
+		catch (Exception ex)
+		{
+			SettlementEntryTroopSelectionLog.Log("ApplyVillageVictoryReward failed. settlement=" + SafeSettlementId(settlement) + ", source=" + (source ?? "") + ", error=" + ex);
+		}
 	}
 
 	private static string SafeGameMenuId(MenuCallbackArgs args)
@@ -1757,7 +1877,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		public TroopRoster SelectedRoster;
 		public int Limit;
 		public bool IsOwnSettlement;
-		public string SceneKind;
+		public SetsSettlementSceneKind SceneKind;
 	}
 
 	private sealed class PendingSettlementVictoryMenuEntry
@@ -1768,6 +1888,12 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		public bool SkipOwnershipTransfer;
 		public bool SetsOwnedIncident;
 		public bool SetsTownRiotKilledNotable;
+	}
+
+	private sealed class PendingVillageVictoryRewardEntry
+	{
+		public string SettlementId;
+		public string Source;
 	}
 
 	private sealed class DefenderReserveEntry
@@ -1783,7 +1909,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private readonly string _settlementId;
 		private readonly int _limit;
 		private readonly bool _isOwnSettlement;
-		private readonly string _sceneKind;
+		private readonly SetsSettlementSceneKind _sceneKind;
 		private readonly bool _conflictFeaturesEnabled;
 		private readonly bool _defenderConflictEnabled;
 		private readonly TroopRoster _selectedRoster;
@@ -1792,7 +1918,6 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private readonly HashSet<int> _alliedAgentIndexes = new HashSet<int>();
 		private readonly HashSet<int> _enemyAgentIndexes = new HashSet<int>();
 		private readonly HashSet<int> _ownedSettlementFleeingCivilianAgentIndexes = new HashSet<int>();
-		private readonly HashSet<int> _ownedSettlementGatheredAgentIndexes = new HashSet<int>();
 		private readonly HashSet<int> _ownedSettlementMassacreTargetAgentIndexes = new HashSet<int>();
 		private readonly HashSet<int> _victoryObjectiveEnemyAgentIndexes = new HashSet<int>();
 		private readonly HashSet<int> _spawnedDefenderReserveAgentIndexes = new HashSet<int>();
@@ -1816,6 +1941,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private bool _ownedSettlementIncidentTriggered;
 		private bool _ownedSettlementMassacreActive;
 		private bool _ownedSettlementMassacreStopRequested;
+		private bool _ownedSettlementMassacreCompleted;
 		private int _ownedSettlementMassacreRequestAgentIndex = -1;
 		private bool _townRiotKilledNotable;
 		private bool _victoryReached;
@@ -1848,13 +1974,15 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			_settlementId = entry?.SettlementId ?? "";
 			_limit = Math.Max(0, entry?.Limit ?? OtherSettlementEntryLimit);
 			_isOwnSettlement = entry?.IsOwnSettlement ?? false;
-			_sceneKind = string.IsNullOrWhiteSpace(entry?.SceneKind) ? "settlement" : entry.SceneKind;
-			_conflictFeaturesEnabled = string.Equals(_sceneKind, "town", StringComparison.OrdinalIgnoreCase);
+			_sceneKind = entry?.SceneKind ?? SetsSettlementSceneKind.Unknown;
+			_conflictFeaturesEnabled = SetsSettlementEntryProfile.IsSupported(_sceneKind);
 			_defenderConflictEnabled = _conflictFeaturesEnabled && !_isOwnSettlement;
 			_selectedRoster = CloneRoster(entry?.SelectedRoster, _limit);
 			_survivingRoster = CloneRoster(_selectedRoster, int.MaxValue);
-			_remainingDefenderReserve = _defenderConflictEnabled ? BuildCurrentDefenderReserve(_settlementId) : new List<DefenderReserveEntry>();
+			_remainingDefenderReserve = _defenderConflictEnabled ? BuildCurrentDefenderReserve(_settlementId, _sceneKind) : new List<DefenderReserveEntry>();
 		}
+
+		internal SetsSettlementSceneKind SceneKind => _sceneKind;
 
 		public override void AfterStart()
 		{
@@ -1947,13 +2075,13 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			}
 			bool affectorIsPlayerSide = IsPlayerSideAgent(affectorAgent);
 			bool affectedIsPlayerSide = IsPlayerSideAgent(affectedAgent);
-			if (affectorIsPlayerSide && !affectedIsPlayerSide && IsVictoryObjectiveSceneAgent(affectedAgent))
+			if (affectorIsPlayerSide && !affectedIsPlayerSide && IsSceneConflictTriggerAgent(affectedAgent))
 			{
-				StartConflict("player_side_hit_guard", affectedAgent);
+				StartConflict("player_side_hit_settlement_resident", affectedAgent);
 			}
-			else if (affectedIsPlayerSide && !affectorIsPlayerSide && IsVictoryObjectiveSceneAgent(affectorAgent))
+			else if (affectedIsPlayerSide && !affectorIsPlayerSide && IsSceneConflictTriggerAgent(affectorAgent))
 			{
-				StartConflict("guard_hit_player_side", affectorAgent);
+				StartConflict("settlement_resident_hit_player_side", affectorAgent);
 			}
 		}
 
@@ -1991,7 +2119,6 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			_recentProtectedFollowerFriendlyFireHits.Remove(affectedAgent.Index);
 			_enemyInitialTargetReleaseTimes.Remove(affectedAgent.Index);
 			_ownedSettlementFleeingCivilianAgentIndexes.Remove(affectedAgent.Index);
-			_ownedSettlementGatheredAgentIndexes.Remove(affectedAgent.Index);
 			_ownedSettlementMassacreTargetAgentIndexes.Remove(affectedAgent.Index);
 			if (_ownedSettlementMassacreRequestAgentIndex == affectedAgent.Index)
 			{
@@ -2001,7 +2128,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			if (_conflictFeaturesEnabled && (_ownedSettlementIncidentTriggered || _conflictActive) && agentState == AgentState.Killed && IsPlayerSideAgent(affectorAgent) && !IsPlayerSideAgent(affectedAgent) && IsOwnedSettlementIncidentNotable(affectedAgent))
 			{
 				_townRiotKilledNotable = true;
-				SettlementEntryTroopSelectionLog.Log("SETS town riot notable killed. settlement=" + _settlementId + ", troop=" + SafeCharacterId(affectedAgent.Character as CharacterObject));
+				SettlementEntryTroopSelectionLog.Log("SETS settlement riot notable killed. settlement=" + _settlementId + ", scene=" + _sceneKind + ", troop=" + SafeCharacterId(affectedAgent.Character as CharacterObject));
 			}
 			if (_alliedAgentIndexes.Contains(affectedAgent.Index) && agentState == AgentState.Killed)
 			{
@@ -2033,7 +2160,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			ClearOwnedSettlementMassacreRequest("mission_end");
 			if (_conflictFeaturesEnabled && (_victoryReached || _ownedSettlementIncidentTriggered))
 			{
-				QueueVictoryPostMissionFlow(_ownedSettlementIncidentTriggered ? "SETS_owned_or_attached_town_exit" : "SETS_town_victory_endmission_fallback");
+				QueueVictoryPostMissionFlow(_ownedSettlementIncidentTriggered ? "SETS_owned_or_attached_settlement_exit" : "SETS_settlement_victory_endmission_fallback");
 			}
 			ClearSetsUsableProtectionState("sets_mission_end");
 			ClearSetsSelectedFollowerState("sets_mission_end");
@@ -2078,9 +2205,32 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			}
 		}
 
-		internal bool IsOwnedOrAttachedTownEntryActive()
+		internal bool IsOwnedOrAttachedSettlementEntryActive()
 		{
 			return _conflictFeaturesEnabled && _isOwnSettlement;
+		}
+
+		internal bool IsConflictProxyActive()
+		{
+			return _conflictFeaturesEnabled
+				&& (_conflictActive || _ownedSettlementIncidentTriggered || _ownedSettlementMassacreActive || _victoryReached);
+		}
+
+		internal bool ShouldHandlePhysicalAttack(Agent target)
+		{
+			if (!_conflictFeaturesEnabled || target == null || !target.IsHuman || !target.IsActive() || target.IsMainAgent || IsPlayerSideAgent(target))
+			{
+				return false;
+			}
+			if (_isOwnSettlement)
+			{
+				return IsOwnedSettlementIncidentTarget(target);
+			}
+			if (_victoryReached)
+			{
+				return false;
+			}
+			return (_conflictActive && IsLiveTrackedCombatEnemy(target)) || IsSceneConflictTriggerAgent(target);
 		}
 
 		private void StartConflict(string source, Agent initialEnemy)
@@ -2094,7 +2244,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					return;
 				}
 				_conflictActive = true;
-				ApplyTownRiotPoliticalConsequences(source);
+				ApplySettlementAttackPoliticalConsequences(source);
 				EnsurePlayerTeam(mission, main, requireCommandTeam: true);
 				KeepPlayerEntryFollowersCommandable(refreshFormation: true);
 				EnsureSetsCommandUiReadyForExternal(mission, "conflict_start", force: true, preserveSelection: true);
@@ -2107,7 +2257,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				MaintainConflictTeams();
 				RefreshSetsUsableProtectionState("conflict_start");
 				SpawnInitialDefenderReserveWave();
-				InformationManager.DisplayMessage(new InformationMessage("【SETS内部暴乱】城镇守卫已进入敌对状态（第 0 波），随行士兵等待你的指挥。", Color.FromUint(WarningColor)));
+				InformationManager.DisplayMessage(new InformationMessage(SetsSettlementEntryProfile.BuildConflictStartedMessage(_sceneKind), Color.FromUint(WarningColor)));
 				SettlementEntryTroopSelectionLog.Log("Conflict started. settlement=" + _settlementId + ", source=" + source + ", enemies=" + _enemyAgentIndexes.Count + ", followersCommandable=true, autoCharge=false");
 			}
 			catch (Exception ex)
@@ -2132,7 +2282,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			}
 		}
 
-		private void ApplyTownRiotPoliticalConsequences(string source)
+		private void ApplySettlementAttackPoliticalConsequences(string source)
 		{
 			if (_politicalConsequenceApplied)
 			{
@@ -2154,11 +2304,11 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					bool playerIsRuler = playerKingdom.RulingClan == playerClan || playerKingdom.Leader == Hero.MainHero;
 					if (playerIsRuler)
 					{
-						SettlementEntryTroopSelectionLog.Log("Skipped hostility for ruler attacking an attached town; outcome relation penalty is deferred. settlement=" + _settlementId + ", ownerClan=" + (ownerClan.StringId ?? "null") + ", source=" + source);
+						SettlementEntryTroopSelectionLog.Log("Skipped hostility for ruler attacking an attached settlement; outcome relation penalty is deferred. settlement=" + _settlementId + ", ownerClan=" + (ownerClan.StringId ?? "null") + ", source=" + source);
 						return;
 					}
 					ChangeKingdomAction.ApplyByLeaveWithRebellionAgainstKingdom(playerClan, true);
-					InformationManager.DisplayMessage(new InformationMessage("【SETS内部暴乱】你攻击了本国城镇，已按保留土地财产的叛国处理。", Color.FromUint(WarningColor)));
+					InformationManager.DisplayMessage(new InformationMessage("【SETS内部暴乱】你攻击了本国" + SetsSettlementEntryProfile.GetSettlementNoun(_sceneKind) + "，已按保留土地财产的叛国处理。", Color.FromUint(WarningColor)));
 					SettlementEntryTroopSelectionLog.Log("Applied vassal riot rebellion. settlement=" + _settlementId + ", oldKingdom=" + (playerKingdom.StringId ?? "null") + ", source=" + source);
 					return;
 				}
@@ -2167,13 +2317,13 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				if (playerFaction != null && ownerFaction != null && playerFaction != ownerFaction && !FactionManager.IsAtWarAgainstFaction(playerFaction, ownerFaction))
 				{
 					DeclareWarAction.ApplyByPlayerHostility(playerFaction, ownerFaction);
-					InformationManager.DisplayMessage(new InformationMessage("【SETS内部暴乱】你袭击了该城镇，双方已进入敌对状态。", Color.FromUint(WarningColor)));
-					SettlementEntryTroopSelectionLog.Log("Applied SETS town riot hostility. settlement=" + _settlementId + ", playerFaction=" + (playerFaction.StringId ?? "null") + ", ownerFaction=" + (ownerFaction.StringId ?? "null") + ", source=" + source);
+					InformationManager.DisplayMessage(new InformationMessage("【SETS内部暴乱】你袭击了该" + SetsSettlementEntryProfile.GetSettlementNoun(_sceneKind) + "，双方已进入敌对状态。", Color.FromUint(WarningColor)));
+					SettlementEntryTroopSelectionLog.Log("Applied SETS settlement hostility. settlement=" + _settlementId + ", playerFaction=" + (playerFaction.StringId ?? "null") + ", ownerFaction=" + (ownerFaction.StringId ?? "null") + ", source=" + source);
 				}
 			}
 			catch (Exception ex)
 			{
-				SettlementEntryTroopSelectionLog.Log("ApplyTownRiotPoliticalConsequences failed. settlement=" + _settlementId + ", source=" + source + ", error=" + ex);
+				SettlementEntryTroopSelectionLog.Log("ApplySettlementAttackPoliticalConsequences failed. settlement=" + _settlementId + ", source=" + source + ", error=" + ex);
 			}
 		}
 
@@ -2405,7 +2555,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 
 		internal bool HasPendingOwnedSettlementMassacreRequest()
 		{
-			return IsOwnedOrAttachedTownEntryActive()
+			return IsOwnedOrAttachedSettlementEntryActive()
 				&& !_ownedSettlementMassacreActive
 				&& _ownedSettlementMassacreRequestAgentIndex >= 0;
 		}
@@ -2423,7 +2573,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			{
 				Mission mission = base.Mission;
 				Agent requester = mission?.Agents?.FirstOrDefault(agent => agent != null && agent.Index == requestingAgentIndex);
-				if (!IsOwnedOrAttachedTownEntryActive()
+				if (!IsOwnedOrAttachedSettlementEntryActive()
 					|| _ownedSettlementMassacreActive
 					|| requester == null
 					|| !requester.IsActive()
@@ -2438,9 +2588,10 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 
 				_ownedSettlementMassacreRequestAgentIndex = requester.Index;
 				InformationManager.DisplayMessage(new InformationMessage(
-					SetsOwnedSettlementMassacreProfile.BuildPendingRequestMessage(requester.Name ?? ""),
+					SetsOwnedSettlementMassacreProfile.BuildPendingRequestMessage(_sceneKind, requester.Name ?? ""),
 					Color.FromUint(SetsOwnedSettlementMassacreProfile.PendingMessageColor)));
-				SettlementEntryTroopSelectionLog.Log("SETS owned/attached town massacre request recorded. settlement=" + _settlementId
+				SettlementEntryTroopSelectionLog.Log("SETS owned/attached settlement massacre request recorded. settlement=" + _settlementId
+					+ ", scene=" + _sceneKind
 					+ ", source=" + (source ?? SetsOwnedSettlementMassacreProfile.RequestSource)
 					+ ", requester=" + requester.Index);
 				return true;
@@ -2473,14 +2624,15 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			}
 			int requester = _ownedSettlementMassacreRequestAgentIndex;
 			_ownedSettlementMassacreRequestAgentIndex = -1;
-			SettlementEntryTroopSelectionLog.Log("Cleared SETS owned/attached town massacre request. settlement=" + _settlementId
+			SettlementEntryTroopSelectionLog.Log("Cleared SETS owned/attached settlement massacre request. settlement=" + _settlementId
+				+ ", scene=" + _sceneKind
 				+ ", requester=" + requester
 				+ ", reason=" + (reason ?? "N/A"));
 		}
 
 		internal bool IsOwnedSettlementMassacreActive()
 		{
-			return IsOwnedOrAttachedTownEntryActive() && _ownedSettlementMassacreActive;
+			return IsOwnedOrAttachedSettlementEntryActive() && _ownedSettlementMassacreActive;
 		}
 
 		internal bool TryStartOwnedSettlementMassacre(int commandingAgentIndex, string source)
@@ -2490,7 +2642,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				Mission mission = base.Mission;
 				Agent main = Agent.Main ?? mission?.MainAgent;
 				Agent commander = mission?.Agents?.FirstOrDefault(agent => agent != null && agent.Index == commandingAgentIndex);
-				if (!IsOwnedOrAttachedTownEntryActive()
+				if (!IsOwnedOrAttachedSettlementEntryActive()
 					|| mission?.Agents == null
 					|| main == null
 					|| !main.IsActive()
@@ -2506,7 +2658,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				MissionFightHandler fightHandler = mission.GetMissionBehavior<MissionFightHandler>();
 				if (fightHandler == null || fightHandler.IsThereActiveFight() || IsNativeAlleyFightActive())
 				{
-					SettlementEntryTroopSelectionLog.Log("SETS owned-town massacre start blocked by active or missing MissionFightHandler. settlement=" + _settlementId + ", source=" + (source ?? "N/A"));
+					SettlementEntryTroopSelectionLog.Log("SETS owned-settlement massacre start blocked by active or missing MissionFightHandler. settlement=" + _settlementId + ", scene=" + _sceneKind + ", source=" + (source ?? "N/A"));
 					return false;
 				}
 
@@ -2559,13 +2711,15 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					_ownedSettlementMassacreTargetAgentIndexes.Add(target.Index);
 				}
 				_ownedSettlementMassacreStopRequested = false;
+				_ownedSettlementMassacreCompleted = false;
 				_ownedSettlementMassacreActive = true;
 				fightHandler.StartCustomFight(playerSide, targets, dropWeapons: false, isItemUseDisabled: false, OnOwnedSettlementMassacreFightEnded, float.Epsilon);
 				MaintainOwnedSettlementMassacre(force: true);
 				InformationManager.DisplayMessage(new InformationMessage(
-					SetsOwnedSettlementMassacreProfile.BuildStartedMessage(selectedFollowers.Count, targets.Count),
+					SetsOwnedSettlementMassacreProfile.BuildStartedMessage(_sceneKind, selectedFollowers.Count, targets.Count),
 					Color.FromUint(SetsOwnedSettlementMassacreProfile.StartMessageColor)));
-				SettlementEntryTroopSelectionLog.Log("SETS owned/attached town massacre started. settlement=" + _settlementId
+				SettlementEntryTroopSelectionLog.Log("SETS owned/attached settlement massacre started. settlement=" + _settlementId
+					+ ", scene=" + _sceneKind
 					+ ", source=" + (source ?? SetsOwnedSettlementMassacreProfile.StartSource)
 					+ ", commander=" + commander.Index
 					+ ", attackers=" + selectedFollowers.Count
@@ -2600,7 +2754,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			{
 				Mission mission = base.Mission;
 				Agent commander = mission?.Agents?.FirstOrDefault(agent => agent != null && agent.Index == commandingAgentIndex);
-				if (!IsOwnedOrAttachedTownEntryActive()
+				if (!IsOwnedOrAttachedSettlementEntryActive()
 					|| !_ownedSettlementMassacreActive
 					|| commander == null
 					|| !_alliedAgentIndexes.Contains(commander.Index))
@@ -2622,7 +2776,8 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				InformationManager.DisplayMessage(new InformationMessage(
 					SetsOwnedSettlementMassacreProfile.BuildStoppedMessage(survivors),
 					Color.FromUint(SetsOwnedSettlementMassacreProfile.StopMessageColor)));
-				SettlementEntryTroopSelectionLog.Log("SETS owned/attached town massacre stopped. settlement=" + _settlementId
+				SettlementEntryTroopSelectionLog.Log("SETS owned/attached settlement massacre stopped. settlement=" + _settlementId
+					+ ", scene=" + _sceneKind
 					+ ", source=" + (source ?? SetsOwnedSettlementMassacreProfile.StopSource)
 					+ ", commander=" + commander.Index
 					+ ", survivors=" + survivors);
@@ -2638,14 +2793,19 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private void OnOwnedSettlementMassacreFightEnded(bool playerSideWon)
 		{
 			bool stoppedByPlayer = _ownedSettlementMassacreStopRequested;
+			if (!stoppedByPlayer && playerSideWon)
+			{
+				_ownedSettlementMassacreCompleted = true;
+			}
 			FinalizeOwnedSettlementMassacre(stoppedByPlayer);
 			if (!stoppedByPlayer && playerSideWon)
 			{
 				InformationManager.DisplayMessage(new InformationMessage(
-					SetsOwnedSettlementMassacreProfile.BuildCompletedMessage(),
+					SetsOwnedSettlementMassacreProfile.BuildCompletedMessage(_sceneKind),
 					Color.FromUint(SetsOwnedSettlementMassacreProfile.StartMessageColor)));
 			}
-			SettlementEntryTroopSelectionLog.Log("SETS owned/attached town massacre fight ended. settlement=" + _settlementId
+			SettlementEntryTroopSelectionLog.Log("SETS owned/attached settlement massacre fight ended. settlement=" + _settlementId
+				+ ", scene=" + _sceneKind
 				+ ", stopped=" + stoppedByPlayer
 				+ ", playerSideWon=" + playerSideWon);
 		}
@@ -2697,14 +2857,14 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 						continue;
 					}
 					ShoutBehavior.TryForceStopSceneFollowForExternal(target.Index, "sets_owned_massacre_flee");
-					_ownedSettlementGatheredAgentIndexes.Remove(target.Index);
 					_ownedSettlementFleeingCivilianAgentIndexes.Add(target.Index);
 					ForceOwnedSettlementCivilianFlee(target, mission, main, force: true);
 					fleeing++;
 				}
 				if (force)
 				{
-					SettlementEntryTroopSelectionLog.LogVerbose("Maintained SETS owned-town massacre. settlement=" + _settlementId
+					SettlementEntryTroopSelectionLog.LogVerbose("Maintained SETS owned-settlement massacre. settlement=" + _settlementId
+						+ ", scene=" + _sceneKind
 						+ ", targets=" + CountLiveOwnedSettlementMassacreTargets()
 						+ ", fleeing=" + fleeing);
 				}
@@ -2831,7 +2991,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				EnsureSetsCommandUiReadyForExternal(mission, "owned_settlement_incident", force: true, preserveSelection: true);
 				MaintainOwnedSettlementIncidentPanic(force: true);
 				ClearSetsUsableProtectionState("owned_settlement_incident");
-				InformationManager.DisplayMessage(new InformationMessage("【SETS】自有/附属城镇事件已触发，平民正在逃散。可随时按 TAB 退出后进入 SETS 专用处置菜单。", Color.FromUint(WarningColor)));
+				InformationManager.DisplayMessage(new InformationMessage(SetsSettlementEntryProfile.BuildOwnedIncidentMessage(_sceneKind), Color.FromUint(WarningColor)));
 				SettlementEntryTroopSelectionLog.Log("Owned/attached settlement incident started. settlement=" + _settlementId + ", source=" + (source ?? "") + ", target=" + SafeCharacterId(initialTarget?.Character as CharacterObject));
 			}
 			catch (Exception ex)
@@ -2872,14 +3032,6 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					if (agent == null || !agent.IsHuman || !agent.IsActive() || IsPlayerSideAgent(agent))
 					{
 						continue;
-					}
-					if (_ownedSettlementGatheredAgentIndexes.Contains(agent.Index))
-					{
-						if (ShoutBehavior.IsSceneFollowingPlayerForExternal(agent.Index))
-						{
-							continue;
-						}
-						_ownedSettlementGatheredAgentIndexes.Remove(agent.Index);
 					}
 					NeutralizeOwnedSettlementNonPlayerAgent(agent, neutralTeam);
 					neutralized++;
@@ -3645,50 +3797,6 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			}
 		}
 
-		internal bool TryGatherOwnedOrAttachedTownSceneAgents(int seedAgentIndex, string source)
-		{
-			try
-			{
-				Mission mission = base.Mission;
-				Agent main = Agent.Main ?? mission?.MainAgent;
-				if (!IsOwnedOrAttachedTownEntryActive() || mission?.Agents == null || main == null || !main.IsActive())
-				{
-					return false;
-				}
-				EnsurePlayerTeam(mission, main, requireCommandTeam: true);
-				KeepPlayerEntryFollowersCommandable(refreshFormation: true);
-				int gathered = 0;
-				foreach (Agent agent in mission.Agents.ToList())
-				{
-					if (agent == null || !agent.IsHuman || !agent.IsActive() || agent == main || agent.IsMainAgent)
-					{
-						continue;
-					}
-					if (IsPlayerSideAgent(agent))
-					{
-						AssignAgentToFormation(agent, _playerTeam, FormationClass.Infantry);
-						gathered++;
-						continue;
-					}
-					if (ShoutBehavior.TryForceSceneFollowPlayerForExternal(agent.Index, transient: true, reason: "sets_owned_attached_gather"))
-					{
-						_ownedSettlementFleeingCivilianAgentIndexes.Remove(agent.Index);
-						_ownedSettlementGatheredAgentIndexes.Add(agent.Index);
-						gathered++;
-					}
-				}
-				TrySetFollowerFormationFollowOrder(mission, main);
-				EnsureSetsCommandUiReadyForExternal(mission, "owned_attached_gather", force: true, preserveSelection: true);
-				SettlementEntryTroopSelectionLog.Log("SETS owned/attached town gather executed. settlement=" + _settlementId + ", source=" + (source ?? "") + ", seed=" + seedAgentIndex + ", gathered=" + gathered);
-				return gathered > 0;
-			}
-			catch (Exception ex)
-			{
-				SettlementEntryTroopSelectionLog.Log("TryGatherOwnedOrAttachedTownSceneAgents failed. settlement=" + _settlementId + ", source=" + (source ?? "") + ", error=" + ex.Message);
-				return false;
-			}
-		}
-
 		private void KeepPlayerEntryFollowersCommandable(bool refreshFormation)
 		{
 			try
@@ -3791,9 +3899,16 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				}
 				List<DefenderReserveEntry> defenders = PeekDefenderReserve(DefenderReserveWaveSize, phaseKind);
 				List<CharacterObject> troops = ExtractCharacters(defenders);
+				List<DefenderReserveEntry> spawnedDefenders = new List<DefenderReserveEntry>();
 				int waveNumber = _defenderReserveWaveIndex + 1;
-				int spawned = SpawnAgentsNearPlayer(troops, _enemyTeam, asEnemy: true, "defender_reserve_wave_" + waveNumber + "_" + phaseKind, null, defenders, waveNumber);
-				RemoveDefenderReserveEntries(defenders);
+				int spawned = SpawnAgentsNearPlayer(troops, _enemyTeam, asEnemy: true, "defender_reserve_wave_" + waveNumber + "_" + phaseKind, null, defenders, waveNumber, spawnedDefenders);
+				if (spawned <= 0)
+				{
+					_nextDefenderReserveWaveTime = (base.Mission?.CurrentTime ?? 0f) + 1f;
+					SettlementEntryTroopSelectionLog.Log("Deferred defender reserve wave because no valid spawn point or agent was available. settlement=" + _settlementId + ", scene=" + _sceneKind + ", phase=" + phaseKind + ", requested=" + troops.Count);
+					return;
+				}
+				RemoveDefenderReserveEntries(spawnedDefenders);
 				_defenderReserveWaveIndex++;
 				_nextDefenderReserveWaveTime = (base.Mission?.CurrentTime ?? 0f) + DefenderReserveWaveIntervalSeconds;
 				RefreshSetsUsableProtectionState("defender_reserve_wave");
@@ -3801,7 +3916,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				RefreshEnemyNativeCombatOrders();
 				if (spawned > 0)
 				{
-					InformationManager.DisplayMessage(new InformationMessage("【SETS内部暴乱】" + GetDefenderReservePhaseDisplayName(phaseKind) + "从城镇工坊区加入镇压（第 " + waveNumber + " 波，场上最多 " + MaxActiveDefenderReserveWaves + " 波）。", Color.FromUint(WarningColor)));
+					InformationManager.DisplayMessage(new InformationMessage(SetsSettlementEntryProfile.BuildReserveWaveMessage(_sceneKind, phaseKind, waveNumber, MaxActiveDefenderReserveWaves), Color.FromUint(WarningColor)));
 				}
 				SettlementEntryTroopSelectionLog.Log("Spawned defender reserve wave. settlement=" + _settlementId + ", wave=" + waveNumber + ", activeWaves=" + CountActiveDefenderReserveWaves() + "/" + MaxActiveDefenderReserveWaves + ", phase=" + phaseKind + ", requested=" + troops.Count + ", spawned=" + spawned + ", skipped=" + Math.Max(0, troops.Count - spawned) + ", remainingTotal=" + (_remainingDefenderReserve?.Count ?? 0) + ", nextWaveTime=" + _nextDefenderReserveWaveTime.ToString("0.0"));
 			}
@@ -3887,19 +4002,6 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			return string.Equals(entry.SourceKind, phaseKind, StringComparison.OrdinalIgnoreCase);
 		}
 
-		private static string GetDefenderReservePhaseDisplayName(string phaseKind)
-		{
-			if (string.Equals(phaseKind, "garrison", StringComparison.OrdinalIgnoreCase))
-			{
-				return "城镇驻军";
-			}
-			if (string.Equals(phaseKind, "militia", StringComparison.OrdinalIgnoreCase))
-			{
-				return "城镇民兵";
-			}
-			return "敌对领主部队";
-		}
-
 		private void RemoveDefenderReserveEntries(List<DefenderReserveEntry> entries)
 		{
 			if (_remainingDefenderReserve == null || entries == null || entries.Count <= 0)
@@ -3931,6 +4033,30 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 
 		private bool TryGetEnemyReserveSpawnFrames(out List<MatrixFrame> frames, out string spawnSource)
 		{
+			if (SetsSettlementEntryProfile.ShouldUseVillageBoundarySpawn(_sceneKind))
+			{
+				if (TryGetVillageBoundarySpawnFrame(out MatrixFrame villageFrame))
+				{
+					frames = new List<MatrixFrame> { villageFrame };
+					spawnSource = "village_boundary";
+					return true;
+				}
+				frames = null;
+				spawnSource = "none";
+				return false;
+			}
+			if (SetsSettlementEntryProfile.ShouldUseLordHallDoorSpawn(_sceneKind))
+			{
+				if (TryGetLordHallDoorSpawnFrame(out MatrixFrame castleFrame))
+				{
+					frames = new List<MatrixFrame> { castleFrame };
+					spawnSource = "lord_hall";
+					return true;
+				}
+				frames = null;
+				spawnSource = "none";
+				return false;
+			}
 			if (TryGetTownWorkshopSpawnFrames(out frames))
 			{
 				spawnSource = "workshop";
@@ -3945,6 +4071,158 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			frames = null;
 			spawnSource = "none";
 			return false;
+		}
+
+		private bool TryGetVillageBoundarySpawnFrame(out MatrixFrame frame)
+		{
+			frame = MatrixFrame.Identity;
+			try
+			{
+				Mission mission = base.Mission;
+				Scene scene = mission?.Scene;
+				Agent main = Agent.Main ?? mission?.MainAgent;
+				if (scene == null || main == null || !main.IsActive())
+				{
+					return false;
+				}
+				WorldPosition playerWorld = new WorldPosition(scene, main.Position);
+				if (playerWorld.GetNearestNavMesh() == UIntPtr.Zero)
+				{
+					return false;
+				}
+				List<Vec2> boundary = GetVillageBoundaryVertices(scene);
+				Vec2 centroid = boundary.Count > 0
+					? new Vec2(boundary.Average(vertex => vertex.x), boundary.Average(vertex => vertex.y))
+					: main.Position.AsVec2;
+				Vec3 bestPosition = Vec3.Invalid;
+				float bestScore = float.MinValue;
+				float[] inwardDistances =
+				{
+					SetsSettlementEntryProfile.VillageBoundaryPreferredInwardDistance,
+					SetsSettlementEntryProfile.VillageBoundaryMinimumInwardDistance,
+					SetsSettlementEntryProfile.VillageBoundaryPreferredInwardDistance * 1.5f
+				};
+				for (int i = 0; i < boundary.Count; i++)
+				{
+					Vec2 vertex = boundary[i];
+					Vec2 inward = centroid - vertex;
+					if (inward.LengthSquared < 0.01f)
+					{
+						inward = main.Position.AsVec2 - vertex;
+					}
+					if (inward.LengthSquared < 0.01f)
+					{
+						continue;
+					}
+					inward.Normalize();
+					for (int j = 0; j < inwardDistances.Length; j++)
+					{
+						Vec2 candidate2D = vertex + inward * inwardDistances[j];
+						Vec3 candidate = new Vec3(candidate2D.x, candidate2D.y, 0f);
+						if (!TryEvaluateVillageBoundaryCandidate(scene, ref playerWorld, candidate, main.Position, out Vec3 projected, out float score) || score <= bestScore)
+						{
+							continue;
+						}
+						bestPosition = projected;
+						bestScore = score;
+					}
+				}
+				for (int i = 0; i < SetsSettlementEntryProfile.VillageBoundaryFallbackSampleCount && bestScore == float.MinValue; i++)
+				{
+					Vec3 candidate = mission.GetRandomPositionAroundPoint(
+						main.Position,
+						SetsSettlementEntryProfile.VillageBoundaryFallbackMinimumRadius,
+						SetsSettlementEntryProfile.VillageBoundaryFallbackMaximumRadius,
+						true);
+					if (TryEvaluateVillageBoundaryCandidate(scene, ref playerWorld, candidate, main.Position, out Vec3 projected, out float score) && score > bestScore)
+					{
+						bestPosition = projected;
+						bestScore = score;
+					}
+				}
+				if (bestScore == float.MinValue || bestPosition == Vec3.Invalid)
+				{
+					return false;
+				}
+				Vec3 facing = main.Position - bestPosition;
+				facing.z = 0f;
+				if (facing.LengthSquared < 0.01f)
+				{
+					facing = Vec3.Forward;
+				}
+				facing.Normalize();
+				frame.origin = bestPosition;
+				frame.rotation = Mat3.CreateMat3WithForward(facing);
+				SettlementEntryTroopSelectionLog.LogVerbose("Resolved village boundary spawn frame. settlement=" + _settlementId + ", boundaryVertices=" + boundary.Count + ", playerDistance=" + bestPosition.Distance(main.Position).ToString("0.0"));
+				return true;
+			}
+			catch (Exception ex)
+			{
+				SettlementEntryTroopSelectionLog.Log("Resolve village boundary spawn failed. settlement=" + _settlementId + ", error=" + ex.Message);
+				return false;
+			}
+		}
+
+		private static List<Vec2> GetVillageBoundaryVertices(Scene scene)
+		{
+			List<Vec2> vertices = new List<Vec2>();
+			if (scene == null)
+			{
+				return vertices;
+			}
+			try
+			{
+				int count = scene.GetSoftBoundaryVertexCount();
+				for (int i = 0; i < count; i++)
+				{
+					vertices.Add(scene.GetSoftBoundaryVertex(i));
+				}
+			}
+			catch
+			{
+				vertices.Clear();
+			}
+			if (vertices.Count >= 3)
+			{
+				return vertices;
+			}
+			vertices.Clear();
+			try
+			{
+				int count = scene.GetHardBoundaryVertexCount();
+				for (int i = 0; i < count; i++)
+				{
+					vertices.Add(scene.GetHardBoundaryVertex(i));
+				}
+			}
+			catch
+			{
+				vertices.Clear();
+			}
+			return vertices;
+		}
+
+		private static bool TryEvaluateVillageBoundaryCandidate(Scene scene, ref WorldPosition playerWorld, Vec3 candidate, Vec3 playerPosition, out Vec3 projected, out float score)
+		{
+			projected = candidate;
+			score = float.MinValue;
+			try
+			{
+				candidate.z = scene.GetGroundHeightAtPosition(candidate);
+				WorldPosition candidateWorld = new WorldPosition(scene, candidate);
+				if (candidateWorld.GetNearestNavMesh() == UIntPtr.Zero
+					|| !scene.GetPathDistanceBetweenPositions(ref candidateWorld, ref playerWorld, 0.45f, out float pathDistance))
+				{
+					return false;
+				}
+				projected = candidateWorld.GetNavMeshVec3();
+				score = projected.DistanceSquared(playerPosition) - pathDistance * 0.01f;
+				return true;
+			}
+			catch
+			{
+				return false;
+			}
 		}
 
 		private bool TryGetTownWorkshopSpawnFrames(out List<MatrixFrame> frames)
@@ -4291,7 +4569,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			return false;
 		}
 
-		private int SpawnAgentsNearPlayer(List<CharacterObject> troops, Team team, bool asEnemy, string source, List<CharacterObject> spawnedCharacters = null, List<DefenderReserveEntry> defenderEntries = null, int defenderReserveWaveNumber = -1)
+		private int SpawnAgentsNearPlayer(List<CharacterObject> troops, Team team, bool asEnemy, string source, List<CharacterObject> spawnedCharacters = null, List<DefenderReserveEntry> defenderEntries = null, int defenderReserveWaveNumber = -1, List<DefenderReserveEntry> spawnedDefenderEntries = null)
 		{
 			Mission mission = base.Mission;
 			Agent main = Agent.Main ?? mission?.MainAgent;
@@ -4307,6 +4585,14 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			List<MatrixFrame> enemyReserveSpawnFrames = null;
 			string enemyReserveSpawnSource = null;
 			bool useEnemyReserveSpawnFrames = asEnemy && TryGetEnemyReserveSpawnFrames(out enemyReserveSpawnFrames, out enemyReserveSpawnSource);
+			bool requiresDedicatedEnemySpawn = asEnemy
+				&& (SetsSettlementEntryProfile.ShouldUseLordHallDoorSpawn(_sceneKind)
+					|| SetsSettlementEntryProfile.ShouldUseVillageBoundarySpawn(_sceneKind));
+			if (requiresDedicatedEnemySpawn && !useEnemyReserveSpawnFrames)
+			{
+				SettlementEntryTroopSelectionLog.Log("Dedicated SETS defender spawn point unavailable; wave retained for retry. settlement=" + _settlementId + ", scene=" + _sceneKind + ", source=" + (source ?? ""));
+				return 0;
+			}
 			if (forward.LengthSquared < 0.01f)
 			{
 				forward = Vec3.Forward;
@@ -4391,6 +4677,10 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					}
 					spawned++;
 					spawnedCharacters?.Add(troop);
+					if (defenderEntry != null)
+					{
+						spawnedDefenderEntries?.Add(defenderEntry);
+					}
 					spawnedAgent.SetWatchState(asEnemy ? Agent.WatchState.Alarmed : Agent.WatchState.Patrolling);
 					if (asEnemy)
 					{
@@ -4824,7 +5114,10 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			}
 			if (!_defenderReserveAgentSourceRosters.TryGetValue(affectedAgent.Index, out TroopRoster sourceRoster))
 			{
-				sourceRoster = Settlement.Find(_settlementId)?.Town?.GarrisonParty?.MemberRoster;
+				Settlement settlement = Settlement.Find(_settlementId);
+				sourceRoster = SetsSettlementEntryProfile.UsesVillageMilitiaOnly(_sceneKind)
+					? settlement?.MilitiaPartyComponent?.MobileParty?.MemberRoster
+					: settlement?.Town?.GarrisonParty?.MemberRoster;
 			}
 			TryRemoveFromRoster(sourceRoster, character, 1);
 			_defenderReserveAgentSourceRosters.Remove(affectedAgent.Index);
@@ -4836,7 +5129,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			if (_defenderConflictEnabled && _conflictActive && !_victoryReached)
 			{
 				canPlayerLeave = false;
-				return new InquiryData("【SETS内部暴乱】", "内部暴乱尚未结束。击溃现场守卫、民兵、驻军与驻城领主部队后才能退出。", isAffirmativeOptionShown: true, isNegativeOptionShown: false, "确定", "", null, null);
+				return new InquiryData("【SETS内部暴乱】", SetsSettlementEntryProfile.BuildExitBlockedMessage(_sceneKind), isAffirmativeOptionShown: true, isNegativeOptionShown: false, "确定", "", null, null);
 			}
 			canPlayerLeave = true;
 			return null;
@@ -4859,7 +5152,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			ClearSetsUsableProtectionState("sets_victory");
 			PrepareVictoryExit(source);
 			QueueVictoryPostMissionFlow(source);
-			InformationManager.DisplayMessage(new InformationMessage("【SETS内部暴乱】城镇守卫、民兵、驻军与驻城领主部队已被击溃。按 TAB 退出后进入原版围城战胜利处置菜单，可选择原版处置或 GCCZ 攻城处置。", Color.FromUint(SuccessColor)));
+			InformationManager.DisplayMessage(new InformationMessage(SetsSettlementEntryProfile.BuildVictoryMessage(_sceneKind), Color.FromUint(SuccessColor)));
 			SettlementEntryTroopSelectionLog.Log("Victory reached. settlement=" + _settlementId + ", survivors=" + (_survivingRoster?.TotalManCount ?? 0) + ", source=" + source);
 		}
 
@@ -4901,8 +5194,27 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				return;
 			}
 			_victoryQueued = true;
-			string queueSource = string.IsNullOrWhiteSpace(source) ? "SETS_town_victory" : source;
-			QueueSettlementTakenMenuAfterTownVictory(_settlementId, _survivingRoster, queueSource, skipOwnershipTransfer: _isOwnSettlement || _ownedSettlementIncidentTriggered, setsOwnedIncident: _ownedSettlementIncidentTriggered, setsTownRiotKilledNotable: _townRiotKilledNotable);
+			string queueSource = string.IsNullOrWhiteSpace(source) ? "SETS_settlement_victory" : source;
+			if (SetsSettlementEntryProfile.UsesVillageLootResolution(_sceneKind))
+			{
+				bool shouldReward = SetsVillageVictoryRewardProfile.ShouldGrantReward(
+					_victoryReached || _ownedSettlementMassacreCompleted,
+					_isOwnSettlement,
+					_ownedSettlementMassacreCompleted);
+				if (shouldReward)
+				{
+					QueueVillageVictoryReward(_settlementId, queueSource);
+				}
+				else
+				{
+					SettlementEntryTroopSelectionLog.Log("SETS owned village incident ended without completed massacre; no victory loot queued. settlement=" + _settlementId + ", source=" + queueSource);
+				}
+				return;
+			}
+			if (SetsSettlementEntryProfile.UsesNativeSiegeVictoryMenu(_sceneKind))
+			{
+				QueueSettlementTakenMenuAfterVictory(_settlementId, _survivingRoster, queueSource, skipOwnershipTransfer: _isOwnSettlement || _ownedSettlementIncidentTriggered, setsOwnedIncident: _ownedSettlementIncidentTriggered, setsTownRiotKilledNotable: _townRiotKilledNotable);
+			}
 		}
 
 		private void PrepareVictoryExit(string source)
@@ -4983,6 +5295,22 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				&& !IsPlayerSideAgent(agent);
 		}
 
+		private bool IsSceneConflictTriggerAgent(Agent agent)
+		{
+			CharacterObject character = agent?.Character as CharacterObject;
+			bool validResident = agent != null
+				&& agent.IsHuman
+				&& agent.IsActive()
+				&& !agent.IsMainAgent
+				&& !IsPlayerSideAgent(agent)
+				&& !SceneTauntBehavior.IsChildSceneProtectedTarget(character);
+			return SetsSettlementEntryProfile.IsInitialSceneDefender(
+				_sceneKind,
+				validResident,
+				IsGuardOrSoldier(character),
+				IsLordCombatant(character));
+		}
+
 		private bool IsOwnedSettlementCivilian(Agent agent)
 		{
 			CharacterObject character = agent?.Character as CharacterObject;
@@ -5039,7 +5367,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		return troops;
 	}
 
-	private static List<DefenderReserveEntry> BuildCurrentDefenderReserve(string settlementId)
+	private static List<DefenderReserveEntry> BuildCurrentDefenderReserve(string settlementId, SetsSettlementSceneKind sceneKind)
 	{
 		List<DefenderReserveEntry> entries = new List<DefenderReserveEntry>();
 		Settlement settlement = string.IsNullOrWhiteSpace(settlementId) ? null : Settlement.Find(settlementId);
@@ -5048,11 +5376,17 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			return entries;
 		}
 		HashSet<Hero> addedHeroes = new HashSet<Hero>();
+		MobileParty militiaParty = settlement.MilitiaPartyComponent?.MobileParty;
+		if (SetsSettlementEntryProfile.UsesVillageMilitiaOnly(sceneKind))
+		{
+			AppendDefenderReserveFromRoster(entries, militiaParty?.MemberRoster, militiaParty?.Party, "militia", addedHeroes);
+			SettlementEntryTroopSelectionLog.Log("Built village militia reserve. settlement=" + settlementId + ", militia=" + entries.Count);
+			return entries;
+		}
 		int garrisonStart = entries.Count;
 		MobileParty garrisonParty = settlement.Town?.GarrisonParty;
 		AppendDefenderReserveFromRoster(entries, garrisonParty?.MemberRoster, garrisonParty?.Party, "garrison", addedHeroes);
 		int militiaStart = entries.Count;
-		MobileParty militiaParty = settlement.MilitiaPartyComponent?.MobileParty;
 		AppendDefenderReserveFromRoster(entries, militiaParty?.MemberRoster, militiaParty?.Party, "militia", addedHeroes);
 		int lordPartyStart = entries.Count;
 		for (int i = 0; i < settlement.Parties.Count; i++)

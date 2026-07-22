@@ -2,7 +2,7 @@ namespace AnimusForge.SiegeAftermathIntervention;
 
 /// <summary>
 /// Dependency-free wording and relation policy for SETS incidents inside player-owned
-/// or ruler-attached towns. AF adapters own Bannerlord menu registration and relation calls.
+/// or ruler-attached settlements. AF adapters own Bannerlord menu registration and relation calls.
 /// </summary>
 public static class SetsOwnedSettlementIncidentProfile
 {
@@ -60,44 +60,61 @@ public static class SetsOwnedSettlementIncidentProfile
 
     public static string BuildMenuText(string playerName, string settlementName)
     {
-        return NormalizeName(playerName, "玩家") + "在" + NormalizeName(settlementName, "这座城镇") + "大开杀戒。接下来，剩余平民的命运由你决定。";
+        return BuildMenuText(SetsSettlementSceneKind.Town, playerName, settlementName);
+    }
+
+    public static string BuildMenuText(SetsSettlementSceneKind kind, string playerName, string settlementName)
+    {
+        string noun = SetsSettlementEntryProfile.GetSettlementNoun(kind);
+        return NormalizeName(playerName, "玩家") + "在" + NormalizeName(settlementName, "这处" + noun) + "大开杀戒。接下来，剩余居民的命运由你决定。";
     }
 
     public static string BuildEntryInstruction()
     {
-        return "【SETS】这是自有/附属城镇事件：你可亲自进城继续处置，也可收手离开。原版毁坏、掠夺、宽恕选项已隐藏。";
+        return BuildEntryInstruction(SetsSettlementSceneKind.Town);
+    }
+
+    public static string BuildEntryInstruction(SetsSettlementSceneKind kind)
+    {
+        return "【SETS】这是自有/附属" + SetsSettlementEntryProfile.GetSettlementNoun(kind) + "事件：你可亲自进入继续处置，也可收手离开。原版毁坏、掠夺、宽恕选项已隐藏。";
     }
 
     public static string BuildLeaveMessage()
     {
-        return "【SETS】你收手离开，没有再处置剩余平民。";
+        return BuildLeaveMessage(SetsSettlementSceneKind.Town);
+    }
+
+    public static string BuildLeaveMessage(SetsSettlementSceneKind kind)
+    {
+        return "【SETS】你收手离开，没有再处置" + SetsSettlementEntryProfile.GetSettlementNoun(kind) + "内的剩余居民。";
     }
 
     public static string BuildRelationPenaltyMessage(int penalty)
     {
-        return "【SETS】附属城镇所有者因你的处置与玩家关系变化 " + penalty + "。";
+        return "【SETS】附属领地所有者因你的处置与玩家关系变化 " + penalty + "。";
     }
 
     public static string BuildRuntimeContext(string playerName, string settlementName, bool alliedSoldier, bool civilian)
     {
+        return BuildRuntimeContext(SetsSettlementSceneKind.Town, playerName, settlementName, alliedSoldier, civilian);
+    }
+
+    public static string BuildRuntimeContext(SetsSettlementSceneKind kind, string playerName, string settlementName, bool alliedSoldier, bool civilian)
+    {
         string player = NormalizeName(playerName, "玩家");
-        string settlement = NormalizeName(settlementName, "这座城镇");
-        string context = "【SETS自有/附属城镇事件】当前不是普通攻城胜利后的陌生敌城处置，而是" + player + "已经拥有或以国王身份统治的" + settlement + "内部事件。"
-            + player + "仍是现场最高命令来源，但平民是其领民；若这是附属领主城镇，城镇所有者会因玩家的伤害、搜掠、血洗或殖民而怨恨玩家。";
+        string noun = SetsSettlementEntryProfile.GetSettlementNoun(kind);
+        string settlement = NormalizeName(settlementName, "这处" + noun);
+        string context = "【SETS自有/附属" + noun + "事件】当前不是普通攻城胜利后的陌生敌方定居点处置，而是" + player + "已经拥有或以国王身份统治的" + settlement + "内部事件。"
+            + player + "仍是现场最高命令来源，但居民是其领民；若这是附属领主领地，所有者会因玩家的伤害、搜掠或血洗而怨恨玩家。";
         if (alliedSoldier)
         {
-            context += "【己方士兵特殊认知】你是玩家带入城内的士兵/同伴，不是本城守军。玩家若命令搜掠、血洗或殖民自己的领民，你仍会服从直接命令，但应表现出震惊、迟疑、压低声音、担忧名声和附属领主反应；不要把这当成普通敌城战利权，也不要自行升级处置。";
+            context += "【己方士兵特殊认知】你是玩家带入" + noun + "的士兵/同伴，不是当地守军。玩家若命令搜掠或血洗自己的领民，你仍会服从直接命令，但应表现出震惊、迟疑、压低声音、担忧名声和附属领主反应；不要把这当成普通敌方战利权，也不要自行升级处置。";
         }
         if (civilian)
         {
-            context += "【领民认知】你知道玩家是本城主人或国王，不是路过强盗；你可以恐惧、求饶、控诉或服从召集，但不要否认玩家的统治权。";
+            context += "【领民认知】你知道玩家是这处" + noun + "的主人或国王，不是路过强盗；你可以恐惧、求饶或控诉，但不要否认玩家的统治权。";
         }
         return context;
-    }
-
-    public static string BuildGatherRuntimeInstruction()
-    {
-        return "【SETS现场召集】若玩家明确命令你召集、集合或通知场景内所有人员前来，且你在正文中明确接受，系统会让现场人员向玩家靠拢。只自然回复，不要自行书写动作标签；仅找某一个指定人物时仍使用普通传唤或带路。";
     }
 
     private static string NormalizeName(string value, string fallback)

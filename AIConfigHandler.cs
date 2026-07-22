@@ -476,10 +476,10 @@ public static class AIConfigHandler
 		{
 			return false;
 		}
-		bool allowSetsOwnedTownSceneCommands = false;
+		bool allowSetsOwnedSettlementSceneCommands = false;
 		try
 		{
-			allowSetsOwnedTownSceneCommands = SettlementEntryTroopSelectionBehavior.IsOwnedOrAttachedTownEntryActiveForExternal(mission);
+			allowSetsOwnedSettlementSceneCommands = SettlementEntryTroopSelectionBehavior.IsOwnedOrAttachedSettlementEntryActiveForExternal(mission);
 		}
 		catch
 		{
@@ -521,7 +521,7 @@ public static class AIConfigHandler
 		try
 		{
 			MissionMode mode = mission.Mode;
-			if ((mode == MissionMode.Battle && !allowSetsOwnedTownSceneCommands) || mode == MissionMode.Deployment || mode == MissionMode.Duel || mode == MissionMode.Stealth || mode == MissionMode.Tournament)
+			if ((mode == MissionMode.Battle && !allowSetsOwnedSettlementSceneCommands) || mode == MissionMode.Deployment || mode == MissionMode.Duel || mode == MissionMode.Stealth || mode == MissionMode.Tournament)
 			{
 				return true;
 			}
