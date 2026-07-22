@@ -29,4 +29,14 @@ public class NpcDataPacket
 	public string PromptGivenName;
 
 	public string PromptDisplayName;
+
+	// Position snapshot used by scene prompt rendering. Keeping it on the packet
+	// avoids rescanning Mission.Agents for every nearby-person line and relay turn.
+	public bool HasScenePosition;
+
+	public float ScenePositionX;
+
+	public float ScenePositionY;
+
+	public float ScenePositionZ;
 }

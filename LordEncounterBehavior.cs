@@ -5788,6 +5788,33 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static bool AreEncounterFactionsAlreadyAtWar(IFaction playerFaction, IFaction defenderFaction)
+	{
+		if (playerFaction == null || defenderFaction == null || playerFaction == defenderFaction)
+		{
+			return false;
+		}
+		try
+		{
+			if (FactionManager.IsAtWarAgainstFaction(playerFaction, defenderFaction)
+				|| FactionManager.IsAtWarAgainstFaction(defenderFaction, playerFaction))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			return playerFaction.IsAtWarWith(defenderFaction) || defenderFaction.IsAtWarWith(playerFaction);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	internal static bool ApplyHostileEscalationDiplomaticConsequences(PartyBase defenderParty, Hero targetHero, string reason, string logChannel = "MeetingBattle")
 	{
 		bool flag = false;
@@ -5834,6 +5861,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			faction2 = null;
 		}
+		bool encounterFactionsAlreadyAtWar = AreEncounterFactionsAlreadyAtWar(faction, faction2);
 		if (faction != null && faction2 != null && faction == faction2)
 		{
 			try
@@ -5903,7 +5931,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 				hero = faction2?.Leader;
 			}
-			if (hero != null)
+			if (hero != null && !encounterFactionsAlreadyAtWar)
 			{
 				if (RomanceSystemBehavior.TryGetPrivateLoveAsPlayerRelation(hero, out var _))
 				{
@@ -5915,6 +5943,10 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				}
 				flag = true;
 				Logger.Log(logChannel, $"Immediate escalation: relation penalty applied to {hero.Name}.");
+			}
+			else if (hero != null)
+			{
+				Logger.Log(logChannel, $"Immediate escalation: relation penalty skipped because factions are already at war. Target={hero.Name}.");
 			}
 		}
 		catch (Exception ex2)
@@ -8208,6 +8240,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				}
 			}
 			SetTarget(target);
+			SuppressCustomEncounterMenuUntilBackOnMap("native_dialogue_handoff");
 			Campaign.Current.CurrentConversationContext = ConversationContext.PartyEncounter;
 			try
 			{

@@ -21,6 +21,7 @@ using TaleWorlds.CampaignSystem.MapNotificationTypes;
 using TaleWorlds.CampaignSystem.ViewModelCollection;
 using TaleWorlds.CampaignSystem.ViewModelCollection.KingdomManagement;
 using TaleWorlds.CampaignSystem.ViewModelCollection.KingdomManagement.Decisions;
+using TaleWorlds.CampaignSystem.ViewModelCollection.Map.MapNotificationTypes;
 using TaleWorlds.Core;
 using TaleWorlds.Core.ViewModelCollection.ImageIdentifiers;
 using TaleWorlds.Library;
@@ -308,7 +309,16 @@ namespace AnimusForge
 					typeof(KingdomDecisionsVM).GetMethod(nameof(KingdomDecisionsVM.OnFrameTick),
 						BindingFlags.Public | BindingFlags.Instance),
 					prefix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_KingdomDecisionsVM_OnFrameTick_MarkAgendaDecisionsExamined_Prefix)));
-				Logger.Log("VoteDeal", "[Harmony] Original kingdom vote reminders suppressed.");
+				MethodInfo kingdomVoteNotificationFinalize = AccessTools.Method(
+					typeof(KingdomVoteNotificationItemVM),
+					nameof(KingdomVoteNotificationItemVM.OnFinalize));
+				if (kingdomVoteNotificationFinalize != null)
+				{
+					harmony.Patch(
+						kingdomVoteNotificationFinalize,
+						postfix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_KingdomVoteNotificationItemVM_OnFinalize_Postfix)));
+				}
+				Logger.Log("VoteDeal", "[Harmony] Kingdom vote reminders guarded; policy proposals restored with safe listener cleanup.");
 
 				// ── Kingdom Agenda patches ──
 				try
@@ -2993,6 +3003,15 @@ namespace AnimusForge
 				if (informationData is KingdomDecisionMapNotification notification &&
 					ShouldSuppressOriginalKingdomVoteReminder(notification.Decision))
 				{
+					// Keep the native policy-proposal notice for the whole delayed agenda.
+					// Its remove command only dismisses the notice; the separate
+					// HandleDecision guard below still prevents it from opening a vote.
+					if (notification.Decision is KingdomPolicyDecision)
+					{
+						Logger.Log("VoteDeal", "[ReminderRestore] Kept 21-day policy proposal map reminder.");
+						return true;
+					}
+
 					Logger.Log("VoteDeal", "[ReminderSuppress] Hidden original map kingdom vote reminder.");
 					return false;
 				}
@@ -3011,6 +3030,13 @@ namespace AnimusForge
 			{
 				if (__instance != null && ShouldSuppressOriginalKingdomVoteReminder(__instance.Decision))
 				{
+					if (__instance.Decision is KingdomPolicyDecision)
+					{
+						// Let the native validity check keep the proposal notice alive until
+						// the decision is concluded/cancelled (normally at the 21-day deadline).
+						return true;
+					}
+
 					__result = false;
 					return false;
 				}
@@ -3023,20 +3049,71 @@ namespace AnimusForge
 		}
 
 		private static bool Patch_KingdomDecisionsVM_HandleDecision_SuppressVoteInquiry_Prefix(
-			object __instance, KingdomDecision curDecision)
+			KingdomDecisionsVM __instance, KingdomDecision curDecision)
 		{
+			bool shouldSuppress = false;
 			try
 			{
-				if (!ShouldSuppressOriginalKingdomVoteReminder(curDecision)) return true;
+				shouldSuppress = ShouldSuppressOriginalKingdomVoteReminder(curDecision);
+				if (!shouldSuppress) return true;
 
-				MarkDecisionExaminedWithoutInquiry(__instance, curDecision);
+				try
+				{
+					MarkDecisionExaminedWithoutInquiry(__instance, curDecision);
+				}
+				catch (Exception markEx)
+				{
+					// Once matched, never fall through to vanilla: its inquiry can bypass
+					// the 21-day agenda even if another UI mod changes private VM fields.
+					Logger.Log("VoteDeal", $"[ReminderSuppress] Mark examined error: {markEx.Message}");
+				}
+				if (curDecision is KingdomPolicyDecision)
+				{
+					try
+					{
+						if (KingdomAgendaTabState.Select(__instance))
+						{
+							Logger.Log("VoteDeal", "[ReminderRestore] Policy proposal reminder opened the agenda tab.");
+						}
+						else
+						{
+							Logger.Log("VoteDeal", "[ReminderRestore] WARNING: Agenda tab owner was not registered for the policy reminder.");
+						}
+					}
+					catch (Exception agendaEx)
+					{
+						// Navigation is best-effort, but the original early-vote inquiry must
+						// remain suppressed even if another UI mod breaks tab selection.
+						Logger.Log("VoteDeal", $"[ReminderRestore] Agenda navigation error: {agendaEx.Message}");
+					}
+				}
 				Logger.Log("VoteDeal", "[ReminderSuppress] Hidden original kingdom vote inquiry.");
 				return false;
 			}
 			catch (Exception ex)
 			{
 				Logger.Log("VoteDeal", $"[ReminderSuppress] HandleDecision error: {ex.Message}");
-				return true;
+				return !shouldSuppress;
+			}
+		}
+
+		private static void Patch_KingdomVoteNotificationItemVM_OnFinalize_Postfix(
+			KingdomVoteNotificationItemVM __instance)
+		{
+			if (__instance == null) return;
+
+			try
+			{
+				// Vanilla only clears OnClanChangedKingdomEvent here. Clear the two
+				// decision listeners as well so dismissing X cannot leave a stale VM
+				// alive until the delayed proposal concludes up to 21 days later.
+				CampaignEvents.OnClanChangedKingdomEvent.ClearListeners(__instance);
+				CampaignEvents.KingdomDecisionCancelled.ClearListeners(__instance);
+				CampaignEvents.KingdomDecisionConcluded.ClearListeners(__instance);
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", $"[ReminderRestore] Notification listener cleanup error: {ex.Message}");
 			}
 		}
 
@@ -4123,6 +4200,7 @@ namespace AnimusForge
 	internal static class KingdomAgendaTabState
 	{
 		private static readonly ConditionalWeakTable<KingdomManagementVM, State> _states = new();
+		private static readonly ConditionalWeakTable<KingdomDecisionsVM, State> _decisionStates = new();
 
 		private sealed class State
 		{
@@ -4133,7 +4211,12 @@ namespace AnimusForge
 
 		public static void Register(KingdomManagementVM vm, Action clear, Action select)
 		{
-			_states.Add(vm, new State { Clear = clear, Select = select });
+			State state = new State { Clear = clear, Select = select };
+			_states.Add(vm, state);
+			if (vm?.Decision != null)
+			{
+				_decisionStates.Add(vm.Decision, state);
+			}
 		}
 
 		public static void Clear(KingdomManagementVM vm)
@@ -4146,6 +4229,14 @@ namespace AnimusForge
 		{
 			if (_states.TryGetValue(vm, out var state))
 				state.Select?.Invoke();
+		}
+
+		public static bool Select(KingdomDecisionsVM vm)
+		{
+			if (vm == null || !_decisionStates.TryGetValue(vm, out var state)) return false;
+
+			state.Select?.Invoke();
+			return true;
 		}
 
 		public static void RequestReturnAfterRefresh(KingdomManagementVM vm)

@@ -26,7 +26,7 @@ public class ConversationMessage
 
 	public int TargetAgentIndex { get; set; } = -1;
 
-	public string TargetName { get; set; }
+	public string TargetName { get; set; } = "";
 
 	public string TargetHeroId { get; set; } = "";
 

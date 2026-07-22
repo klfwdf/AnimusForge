@@ -319,6 +319,16 @@ public static class PromptListRetrievalService
 
 	public static List<RewardSystemBehavior.RewardItemInfo> FilterRewardItems(IEnumerable<RewardSystemBehavior.RewardItemInfo> candidates, MentionedWorldEntities mentions, int maxCount = 0)
 	{
+		return FilterRewardItemsCore(candidates, mentions, maxCount, keepPrivateEquipmentOutsideLimit: false);
+	}
+
+	public static List<RewardSystemBehavior.RewardItemInfo> FilterNpcRewardItemsForAssetTransfer(IEnumerable<RewardSystemBehavior.RewardItemInfo> candidates, MentionedWorldEntities mentions, int maxCount = 0)
+	{
+		return FilterRewardItemsCore(candidates, mentions, maxCount, keepPrivateEquipmentOutsideLimit: true);
+	}
+
+	private static List<RewardSystemBehavior.RewardItemInfo> FilterRewardItemsCore(IEnumerable<RewardSystemBehavior.RewardItemInfo> candidates, MentionedWorldEntities mentions, int maxCount, bool keepPrivateEquipmentOutsideLimit)
+	{
 		List<RewardSystemBehavior.RewardItemInfo> list = (candidates ?? Enumerable.Empty<RewardSystemBehavior.RewardItemInfo>()).Where((RewardSystemBehavior.RewardItemInfo x) => x != null).ToList();
 		if (list.Count == 0)
 		{
@@ -331,6 +341,14 @@ public static class PromptListRetrievalService
 		}
 		int limit = ClampCandidateLimit(maxCount);
 		List<RewardSystemBehavior.RewardItemInfo> publicItems = list.Where((RewardSystemBehavior.RewardItemInfo x) => !x.IsPrivateEquipment).ToList();
+		if (keepPrivateEquipmentOutsideLimit)
+		{
+			List<RewardSystemBehavior.RewardItemInfo> selectedPublicItems = SelectCandidates(publicItems, mentions, GetRewardItemAliases, limit);
+			List<RewardSystemBehavior.RewardItemInfo> persistentResult = new List<RewardSystemBehavior.RewardItemInfo>(selectedPublicItems.Count + privateItems.Count);
+			persistentResult.AddRange(selectedPublicItems);
+			persistentResult.AddRange(privateItems);
+			return persistentResult;
+		}
 		List<RewardSystemBehavior.RewardItemInfo> result = SelectCandidates(privateItems, mentions, GetRewardItemAliases, limit);
 		if (result.Count < limit)
 		{

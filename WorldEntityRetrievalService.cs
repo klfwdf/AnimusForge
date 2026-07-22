@@ -3522,7 +3522,7 @@ public static class WorldEntityRetrievalService
 
 	private static string FormatKingdomEncyclopediaBackground(Kingdom kingdom)
 	{
-		if (kingdom == null)
+		if (kingdom == null || !MyBehavior.IsModCreatedRebelKingdomForExternal(kingdom))
 		{
 			return "";
 		}
