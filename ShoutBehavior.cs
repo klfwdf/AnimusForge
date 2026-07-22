@@ -2113,9 +2113,13 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private static readonly Regex SetsOwnedSettlementGatherActionTagRegex = new Regex(SiegeActionTagCatalog.GatherCiviliansTagPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
+	private static readonly Regex SetsOwnedSettlementMassacreRequestActionTagRegex = new Regex(Regex.Escape(SetsOwnedSettlementMassacreProfile.RequestActionTag), RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
 	private static readonly Regex SetsOwnedSettlementMassacreStartActionTagRegex = new Regex(Regex.Escape(SetsOwnedSettlementMassacreProfile.StartActionTag), RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
 	private static readonly Regex SetsOwnedSettlementMassacreStopActionTagRegex = new Regex(Regex.Escape(SetsOwnedSettlementMassacreProfile.StopActionTag), RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+	private static readonly Regex SetsOwnedSettlementMassacreCancelRequestActionTagRegex = new Regex(Regex.Escape(SetsOwnedSettlementMassacreProfile.CancelRequestActionTag), RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
 	private static readonly Regex SceneEndChatActionTagRegex = new Regex("\\[END\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
@@ -5056,7 +5060,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 		{
 			stringBuilder.AppendLine(SetsOwnedSettlementIncidentProfile.BuildGatherRuntimeInstruction());
 			bool massacreActive = SettlementEntryTroopSelectionBehavior.IsOwnedOrAttachedTownMassacreActiveForExternal(Mission.Current);
-			stringBuilder.AppendLine(SetsOwnedSettlementMassacreProfile.BuildRuntimeInstruction(massacreActive));
+			bool requestPending = SettlementEntryTroopSelectionBehavior.HasOwnedOrAttachedTownMassacreRequestForExternal(Mission.Current);
+			stringBuilder.AppendLine(SetsOwnedSettlementMassacreProfile.BuildRuntimeInstruction(massacreActive, requestPending));
 		}
 		AppendSceneUnifiedTargetPromptSection(stringBuilder, sceneSummonTargets, sceneGuideTargets);
 		if (!string.IsNullOrWhiteSpace(sceneSummonClosureInstruction))
@@ -16363,15 +16368,16 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		try
 		{
+			bool requestPermission = !string.IsNullOrWhiteSpace(content) && SetsOwnedSettlementMassacreRequestActionTagRegex.IsMatch(content);
 			bool startRequested = !string.IsNullOrWhiteSpace(content) && SetsOwnedSettlementMassacreStartActionTagRegex.IsMatch(content);
 			bool stopRequested = !string.IsNullOrWhiteSpace(content) && SetsOwnedSettlementMassacreStopActionTagRegex.IsMatch(content);
-			if (!startRequested && !stopRequested)
+			bool cancelRequest = !string.IsNullOrWhiteSpace(content) && SetsOwnedSettlementMassacreCancelRequestActionTagRegex.IsMatch(content);
+			if (!requestPermission && !startRequested && !stopRequested && !cancelRequest)
 			{
 				return false;
 			}
 
-			content = SetsOwnedSettlementMassacreStartActionTagRegex.Replace(content ?? "", "");
-			content = SetsOwnedSettlementMassacreStopActionTagRegex.Replace(content, "").Trim();
+			content = StripSetsOwnedSettlementMassacreActionTags(content);
 			Mission mission = Mission.Current;
 			if (!SettlementEntryTroopSelectionBehavior.IsOwnedOrAttachedTownEntryActiveForExternal(mission))
 			{
@@ -16380,6 +16386,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 
 			bool massacreActive = SettlementEntryTroopSelectionBehavior.IsOwnedOrAttachedTownMassacreActiveForExternal(mission);
+			bool requestPendingForSpeaker = SettlementEntryTroopSelectionBehavior.IsOwnedOrAttachedTownMassacreRequestPendingForExternal(mission, targetAgentIndex);
+			bool anyRequestPending = SettlementEntryTroopSelectionBehavior.HasOwnedOrAttachedTownMassacreRequestForExternal(mission);
 			bool handled = false;
 			string action = "none";
 			if (stopRequested && massacreActive)
@@ -16387,21 +16395,44 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				action = "stop";
 				handled = SettlementEntryTroopSelectionBehavior.TryStopOwnedOrAttachedTownMassacreForExternal(targetAgentIndex, SetsOwnedSettlementMassacreProfile.StopSource);
 			}
+			else if (cancelRequest && !massacreActive && requestPendingForSpeaker)
+			{
+				action = "cancel_request";
+				handled = SettlementEntryTroopSelectionBehavior.TryCancelOwnedOrAttachedTownMassacreRequestForExternal(targetAgentIndex, SetsOwnedSettlementMassacreProfile.CancelRequestSource);
+			}
 			else if (startRequested && !massacreActive)
 			{
 				action = "start";
 				handled = SettlementEntryTroopSelectionBehavior.TryStartOwnedOrAttachedTownMassacreForExternal(targetAgentIndex, SetsOwnedSettlementMassacreProfile.StartSource);
 			}
-			Logger.Log("ShoutBehavior", "[NativeConversation] SETS owned/attached massacre tag action=" + action + " handled=" + handled + " activeBefore=" + massacreActive + " agent=" + targetAgentIndex);
+			else if (requestPermission && !massacreActive && !anyRequestPending)
+			{
+				action = "request_permission";
+				handled = SettlementEntryTroopSelectionBehavior.TryRecordOwnedOrAttachedTownMassacreRequestForExternal(targetAgentIndex, SetsOwnedSettlementMassacreProfile.RequestSource);
+			}
+			Logger.Log("ShoutBehavior", "[NativeConversation] SETS owned/attached massacre tag action=" + action
+				+ " handled=" + handled
+				+ " activeBefore=" + massacreActive
+				+ " pendingForSpeaker=" + requestPendingForSpeaker
+				+ " anyPending=" + anyRequestPending
+				+ " agent=" + targetAgentIndex);
 			return handled;
 		}
 		catch (Exception ex)
 		{
-			content = SetsOwnedSettlementMassacreStartActionTagRegex.Replace(content ?? "", "");
-			content = SetsOwnedSettlementMassacreStopActionTagRegex.Replace(content, "").Trim();
+			content = StripSetsOwnedSettlementMassacreActionTags(content);
 			Logger.Log("ShoutBehavior", "[NativeConversation] SETS owned/attached massacre action failed: " + ex.Message);
 			return false;
 		}
+	}
+
+	private static string StripSetsOwnedSettlementMassacreActionTags(string content)
+	{
+		string result = SetsOwnedSettlementMassacreRequestActionTagRegex.Replace(content ?? "", "");
+		result = SetsOwnedSettlementMassacreStartActionTagRegex.Replace(result, "");
+		result = SetsOwnedSettlementMassacreStopActionTagRegex.Replace(result, "");
+		result = SetsOwnedSettlementMassacreCancelRequestActionTagRegex.Replace(result, "");
+		return result.Trim();
 	}
 
 	private static bool TryProcessRulerPolicyProposalActionTag(Hero targetHero, string chainName, string playerProposalText, ref string content, string npcReplyTextOverride = null)
@@ -22497,8 +22528,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		text2 = Regex.Replace(text2, "\\[(?:GUI|ACTION:SCENE_GUIDE):[^\\]]*\\]", "", RegexOptions.IgnoreCase);
 		text2 = Regex.Replace(text2, "\\[(?:FOL|ACTION:SCENE_FOLLOW_PLAYER)\\]", "", RegexOptions.IgnoreCase);
 		text2 = Regex.Replace(text2, "\\[(?:STP|ACTION:SCENE_STOP_FOLLOW)\\]", "", RegexOptions.IgnoreCase);
-		text2 = SetsOwnedSettlementMassacreStartActionTagRegex.Replace(text2, "");
-		text2 = SetsOwnedSettlementMassacreStopActionTagRegex.Replace(text2, "");
+		text2 = StripSetsOwnedSettlementMassacreActionTags(text2);
 		text2 = SetsOwnedSettlementGatherActionTagRegex.Replace(text2, "");
 		text2 = Regex.Replace(text2, "\\[END\\]", "", RegexOptions.IgnoreCase);
 		return text2.Trim();
@@ -22513,7 +22543,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		List<string> list = new List<string>();
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (Match item in Regex.Matches(text2, "\\[(?:(?:ASS|ACTION:SCENE_SUMMON):[^\\]\\r\\n]+|(?:GUI|ACTION:SCENE_GUIDE):[^\\]\\r\\n]+|ACTION:(?:6|SIEGE_GATHER_CIVILIANS|召集|SETS_START_MASSACRE|SETS_STOP_MASSACRE)|FOL|ACTION:SCENE_FOLLOW_PLAYER|STP|ACTION:SCENE_STOP_FOLLOW|END)\\]", RegexOptions.IgnoreCase))
+		foreach (Match item in Regex.Matches(text2, "\\[(?:(?:ASS|ACTION:SCENE_SUMMON):[^\\]\\r\\n]+|(?:GUI|ACTION:SCENE_GUIDE):[^\\]\\r\\n]+|ACTION:(?:6|SIEGE_GATHER_CIVILIANS|召集|SETS_REQUEST_MASSACRE|SETS_START_MASSACRE|SETS_STOP_MASSACRE|SETS_CANCEL_MASSACRE_REQUEST)|FOL|ACTION:SCENE_FOLLOW_PLAYER|STP|ACTION:SCENE_STOP_FOLLOW|END)\\]", RegexOptions.IgnoreCase))
 		{
 			string text3 = (item?.Value ?? "").Trim();
 			if (!string.IsNullOrWhiteSpace(text3) && hashSet.Add(text3))
@@ -22568,6 +22598,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		bool setsSceneActive = SettlementEntryTroopSelectionBehavior.IsOwnedOrAttachedTownEntryActiveForExternal(Mission.Current);
 		bool setsMassacreActive = setsSceneActive && SettlementEntryTroopSelectionBehavior.IsOwnedOrAttachedTownMassacreActiveForExternal(Mission.Current);
 		bool speakerIsSelectedFollower = SettlementEntryTroopSelectionBehavior.IsSetsSelectedFollowerAgentForExternal(agent);
+		bool anyMassacreRequestPending = setsSceneActive && SettlementEntryTroopSelectionBehavior.HasOwnedOrAttachedTownMassacreRequestForExternal(Mission.Current);
+		bool massacreRequestPendingForSpeaker = anyMassacreRequestPending && SettlementEntryTroopSelectionBehavior.IsOwnedOrAttachedTownMassacreRequestPendingForExternal(Mission.Current, num);
 		if (SetsOwnedSettlementMassacreProfile.ShouldOfferStopRule(setsSceneActive, setsMassacreActive, speakerIsSelectedFollower))
 		{
 			AddSceneMechanismPostprocessRule(list, hashSet, SetsOwnedSettlementMassacreProfile.StopActionTag, SetsOwnedSettlementMassacreProfile.BuildStopRuleDescription());
@@ -22576,9 +22608,17 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return list;
 		}
+		if (SetsOwnedSettlementMassacreProfile.ShouldOfferRequestRule(setsSceneActive, setsMassacreActive, anyMassacreRequestPending, speakerIsSelectedFollower))
+		{
+			AddSceneMechanismPostprocessRule(list, hashSet, SetsOwnedSettlementMassacreProfile.RequestActionTag, SetsOwnedSettlementMassacreProfile.BuildRequestRuleDescription());
+		}
 		if (SetsOwnedSettlementMassacreProfile.ShouldOfferStartRule(setsSceneActive, setsMassacreActive, speakerIsSelectedFollower))
 		{
-			AddSceneMechanismPostprocessRule(list, hashSet, SetsOwnedSettlementMassacreProfile.StartActionTag, SetsOwnedSettlementMassacreProfile.BuildStartRuleDescription());
+			AddSceneMechanismPostprocessRule(list, hashSet, SetsOwnedSettlementMassacreProfile.StartActionTag, SetsOwnedSettlementMassacreProfile.BuildStartRuleDescription(massacreRequestPendingForSpeaker));
+		}
+		if (SetsOwnedSettlementMassacreProfile.ShouldOfferCancelRequestRule(setsSceneActive, setsMassacreActive, massacreRequestPendingForSpeaker, speakerIsSelectedFollower))
+		{
+			AddSceneMechanismPostprocessRule(list, hashSet, SetsOwnedSettlementMassacreProfile.CancelRequestActionTag, SetsOwnedSettlementMassacreProfile.BuildCancelRequestRuleDescription());
 		}
 		if (setsSceneActive)
 		{
@@ -22699,9 +22739,17 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return new List<string> { SetsOwnedSettlementMassacreProfile.StopActionTag };
 		}
+		if (SetsOwnedSettlementMassacreCancelRequestActionTagRegex.IsMatch(raw ?? "") && hashSet.Contains(SetsOwnedSettlementMassacreProfile.CancelRequestActionTag))
+		{
+			return new List<string> { SetsOwnedSettlementMassacreProfile.CancelRequestActionTag };
+		}
 		if (SetsOwnedSettlementMassacreStartActionTagRegex.IsMatch(raw ?? "") && hashSet.Contains(SetsOwnedSettlementMassacreProfile.StartActionTag))
 		{
 			return new List<string> { SetsOwnedSettlementMassacreProfile.StartActionTag };
+		}
+		if (SetsOwnedSettlementMassacreRequestActionTagRegex.IsMatch(raw ?? "") && hashSet.Contains(SetsOwnedSettlementMassacreProfile.RequestActionTag))
+		{
+			return new List<string> { SetsOwnedSettlementMassacreProfile.RequestActionTag };
 		}
 		foreach (Match item in Regex.Matches(raw ?? "", "\\[(?:FOL|ACTION:SCENE_FOLLOW_PLAYER|STP|ACTION:SCENE_STOP_FOLLOW|END|ACTION:(?:6|SIEGE_GATHER_CIVILIANS|召集)|(?:ASS|ACTION:SCENE_SUMMON):[^\\]\\r\\n]+|(?:GUI|ACTION:SCENE_GUIDE):[^\\]\\r\\n]+)\\]", RegexOptions.IgnoreCase))
 		{
@@ -22753,8 +22801,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		bool flag = false;
 		bool flag2 = false;
 		bool flag3 = false;
+		bool setsOwnedMassacreRequestRuleEnabled = false;
 		bool setsOwnedMassacreStartRuleEnabled = false;
 		bool setsOwnedMassacreStopRuleEnabled = false;
+		bool setsOwnedMassacreCancelRequestRuleEnabled = false;
 		bool setsOwnedGatherRuleEnabled = false;
 		foreach (PostprocessRuleEntry rule in rules ?? new List<PostprocessRuleEntry>())
 		{
@@ -22778,6 +22828,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				flag3 = true;
 				continue;
 			}
+			if (string.Equals(text, SetsOwnedSettlementMassacreProfile.RequestActionTag, StringComparison.OrdinalIgnoreCase))
+			{
+				setsOwnedMassacreRequestRuleEnabled = true;
+				continue;
+			}
 			if (string.Equals(text, SetsOwnedSettlementMassacreProfile.StartActionTag, StringComparison.OrdinalIgnoreCase))
 			{
 				setsOwnedMassacreStartRuleEnabled = true;
@@ -22786,6 +22841,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			if (string.Equals(text, SetsOwnedSettlementMassacreProfile.StopActionTag, StringComparison.OrdinalIgnoreCase))
 			{
 				setsOwnedMassacreStopRuleEnabled = true;
+				continue;
+			}
+			if (string.Equals(text, SetsOwnedSettlementMassacreProfile.CancelRequestActionTag, StringComparison.OrdinalIgnoreCase))
+			{
+				setsOwnedMassacreCancelRequestRuleEnabled = true;
 				continue;
 			}
 			if (SetsOwnedSettlementGatherActionTagRegex.IsMatch(text))
@@ -22829,9 +22889,17 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			actionTags.Add(SetsOwnedSettlementMassacreProfile.StopActionTag);
 		}
+		if (setsOwnedMassacreCancelRequestRuleEnabled && SetsOwnedSettlementMassacreCancelRequestActionTagRegex.IsMatch(raw ?? "") && hashSet3.Add(SetsOwnedSettlementMassacreProfile.CancelRequestActionTag))
+		{
+			actionTags.Add(SetsOwnedSettlementMassacreProfile.CancelRequestActionTag);
+		}
 		if (setsOwnedMassacreStartRuleEnabled && SetsOwnedSettlementMassacreStartActionTagRegex.IsMatch(raw ?? "") && hashSet3.Add(SetsOwnedSettlementMassacreProfile.StartActionTag))
 		{
 			actionTags.Add(SetsOwnedSettlementMassacreProfile.StartActionTag);
+		}
+		if (setsOwnedMassacreRequestRuleEnabled && SetsOwnedSettlementMassacreRequestActionTagRegex.IsMatch(raw ?? "") && hashSet3.Add(SetsOwnedSettlementMassacreProfile.RequestActionTag))
+		{
+			actionTags.Add(SetsOwnedSettlementMassacreProfile.RequestActionTag);
 		}
 		if (setsOwnedGatherRuleEnabled && SetsOwnedSettlementGatherActionTagRegex.IsMatch(raw ?? "") && hashSet3.Add(SiegeActionTagCatalog.GatherCiviliansPromptTag))
 		{

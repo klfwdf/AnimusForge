@@ -271,6 +271,60 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		}
 	}
 
+	internal static bool HasOwnedOrAttachedTownMassacreRequestForExternal(Mission mission)
+	{
+		try
+		{
+			SettlementEntryTroopSelectionMissionLogic logic = mission?.GetMissionBehavior<SettlementEntryTroopSelectionMissionLogic>();
+			return logic != null && logic.HasPendingOwnedSettlementMassacreRequest();
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	internal static bool IsOwnedOrAttachedTownMassacreRequestPendingForExternal(Mission mission, int speakerAgentIndex)
+	{
+		try
+		{
+			SettlementEntryTroopSelectionMissionLogic logic = mission?.GetMissionBehavior<SettlementEntryTroopSelectionMissionLogic>();
+			return logic != null && logic.IsPendingOwnedSettlementMassacreRequestFor(speakerAgentIndex);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	internal static bool TryRecordOwnedOrAttachedTownMassacreRequestForExternal(int requestingAgentIndex, string source)
+	{
+		try
+		{
+			SettlementEntryTroopSelectionMissionLogic logic = Mission.Current?.GetMissionBehavior<SettlementEntryTroopSelectionMissionLogic>();
+			return logic != null && logic.TryRecordOwnedSettlementMassacreRequest(requestingAgentIndex, source);
+		}
+		catch (Exception ex)
+		{
+			SettlementEntryTroopSelectionLog.Log("TryRecordOwnedOrAttachedTownMassacreRequestForExternal failed. source=" + (source ?? "N/A") + ", error=" + ex.Message);
+			return false;
+		}
+	}
+
+	internal static bool TryCancelOwnedOrAttachedTownMassacreRequestForExternal(int requestingAgentIndex, string source)
+	{
+		try
+		{
+			SettlementEntryTroopSelectionMissionLogic logic = Mission.Current?.GetMissionBehavior<SettlementEntryTroopSelectionMissionLogic>();
+			return logic != null && logic.TryCancelOwnedSettlementMassacreRequest(requestingAgentIndex, source);
+		}
+		catch (Exception ex)
+		{
+			SettlementEntryTroopSelectionLog.Log("TryCancelOwnedOrAttachedTownMassacreRequestForExternal failed. source=" + (source ?? "N/A") + ", error=" + ex.Message);
+			return false;
+		}
+	}
+
 	internal static bool TryStartOwnedOrAttachedTownMassacreForExternal(int commandingAgentIndex, string source)
 	{
 		try
@@ -1762,6 +1816,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private bool _ownedSettlementIncidentTriggered;
 		private bool _ownedSettlementMassacreActive;
 		private bool _ownedSettlementMassacreStopRequested;
+		private int _ownedSettlementMassacreRequestAgentIndex = -1;
 		private bool _townRiotKilledNotable;
 		private bool _victoryReached;
 		private bool _victoryQueued;
@@ -1938,6 +1993,10 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			_ownedSettlementFleeingCivilianAgentIndexes.Remove(affectedAgent.Index);
 			_ownedSettlementGatheredAgentIndexes.Remove(affectedAgent.Index);
 			_ownedSettlementMassacreTargetAgentIndexes.Remove(affectedAgent.Index);
+			if (_ownedSettlementMassacreRequestAgentIndex == affectedAgent.Index)
+			{
+				ClearOwnedSettlementMassacreRequest("requesting_agent_removed");
+			}
 			ClearEnemyNavigationTracking(affectedAgent.Index);
 			if (_conflictFeaturesEnabled && (_ownedSettlementIncidentTriggered || _conflictActive) && agentState == AgentState.Killed && IsPlayerSideAgent(affectorAgent) && !IsPlayerSideAgent(affectedAgent) && IsOwnedSettlementIncidentNotable(affectedAgent))
 			{
@@ -1971,6 +2030,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		protected override void OnEndMission()
 		{
 			EndOwnedSettlementMassacreForMissionClose();
+			ClearOwnedSettlementMassacreRequest("mission_end");
 			if (_conflictFeaturesEnabled && (_victoryReached || _ownedSettlementIncidentTriggered))
 			{
 				QueueVictoryPostMissionFlow(_ownedSettlementIncidentTriggered ? "SETS_owned_or_attached_town_exit" : "SETS_town_victory_endmission_fallback");
@@ -2343,6 +2403,81 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			}
 		}
 
+		internal bool HasPendingOwnedSettlementMassacreRequest()
+		{
+			return IsOwnedOrAttachedTownEntryActive()
+				&& !_ownedSettlementMassacreActive
+				&& _ownedSettlementMassacreRequestAgentIndex >= 0;
+		}
+
+		internal bool IsPendingOwnedSettlementMassacreRequestFor(int agentIndex)
+		{
+			return agentIndex >= 0
+				&& HasPendingOwnedSettlementMassacreRequest()
+				&& _ownedSettlementMassacreRequestAgentIndex == agentIndex;
+		}
+
+		internal bool TryRecordOwnedSettlementMassacreRequest(int requestingAgentIndex, string source)
+		{
+			try
+			{
+				Mission mission = base.Mission;
+				Agent requester = mission?.Agents?.FirstOrDefault(agent => agent != null && agent.Index == requestingAgentIndex);
+				if (!IsOwnedOrAttachedTownEntryActive()
+					|| _ownedSettlementMassacreActive
+					|| requester == null
+					|| !requester.IsActive()
+					|| !_alliedAgentIndexes.Contains(requester.Index))
+				{
+					return false;
+				}
+				if (_ownedSettlementMassacreRequestAgentIndex >= 0)
+				{
+					return _ownedSettlementMassacreRequestAgentIndex == requester.Index;
+				}
+
+				_ownedSettlementMassacreRequestAgentIndex = requester.Index;
+				InformationManager.DisplayMessage(new InformationMessage(
+					SetsOwnedSettlementMassacreProfile.BuildPendingRequestMessage(requester.Name ?? ""),
+					Color.FromUint(SetsOwnedSettlementMassacreProfile.PendingMessageColor)));
+				SettlementEntryTroopSelectionLog.Log("SETS owned/attached town massacre request recorded. settlement=" + _settlementId
+					+ ", source=" + (source ?? SetsOwnedSettlementMassacreProfile.RequestSource)
+					+ ", requester=" + requester.Index);
+				return true;
+			}
+			catch (Exception ex)
+			{
+				SettlementEntryTroopSelectionLog.Log("TryRecordOwnedSettlementMassacreRequest failed. settlement=" + _settlementId + ", error=" + ex.Message);
+				return false;
+			}
+		}
+
+		internal bool TryCancelOwnedSettlementMassacreRequest(int requestingAgentIndex, string source)
+		{
+			if (!IsPendingOwnedSettlementMassacreRequestFor(requestingAgentIndex))
+			{
+				return false;
+			}
+			ClearOwnedSettlementMassacreRequest(source ?? SetsOwnedSettlementMassacreProfile.CancelRequestSource);
+			InformationManager.DisplayMessage(new InformationMessage(
+				SetsOwnedSettlementMassacreProfile.BuildCancelledRequestMessage(),
+				Color.FromUint(SetsOwnedSettlementMassacreProfile.StopMessageColor)));
+			return true;
+		}
+
+		private void ClearOwnedSettlementMassacreRequest(string reason)
+		{
+			if (_ownedSettlementMassacreRequestAgentIndex < 0)
+			{
+				return;
+			}
+			int requester = _ownedSettlementMassacreRequestAgentIndex;
+			_ownedSettlementMassacreRequestAgentIndex = -1;
+			SettlementEntryTroopSelectionLog.Log("Cleared SETS owned/attached town massacre request. settlement=" + _settlementId
+				+ ", requester=" + requester
+				+ ", reason=" + (reason ?? "N/A"));
+		}
+
 		internal bool IsOwnedSettlementMassacreActive()
 		{
 			return IsOwnedOrAttachedTownEntryActive() && _ownedSettlementMassacreActive;
@@ -2408,6 +2543,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					}
 				}
 
+				ClearOwnedSettlementMassacreRequest("massacre_started");
 				foreach (Agent target in targets)
 				{
 					ShoutBehavior.TryForceStopSceneFollowForExternal(target.Index, "sets_owned_massacre_start");
