@@ -253,6 +253,7 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 	private DuelLoadoutKind _duelLoadoutKind;
 	private float _nextCombatRefreshAt;
 	private float _nextCombatTargetStatusLogAt;
+	private float _nextAudienceIsolationAt;
 	private float _fightStartsAt;
 	private bool _combatTargetObserved;
 	private float _playerVirtualHealth;
@@ -391,6 +392,7 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 			reasonCode = "castle_duel_mission_mode_failed";
 			return false;
 		}
+		RefreshAudienceCombatIsolation();
 		if (!TryPlaceAndArmLord(agent))
 		{
 			Cancel("castle_duel_loadout_equip_failed", showMessage: false);
@@ -560,6 +562,11 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		{
 			Cancel("castle_duel_participant_unavailable", showMessage: true);
 			return;
+		}
+		if (mission.CurrentTime >= _nextAudienceIsolationAt)
+		{
+			_nextAudienceIsolationAt = mission.CurrentTime + SiegeCastleLordDuelProfile.AudienceCombatIsolationRefreshSeconds;
+			RefreshAudienceCombatIsolation();
 		}
 
 		_playerMountedDuringDuel |= CastleAftermathLordDuelRuntimeBridge.IsPlayerMounted();
@@ -913,6 +920,7 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 			-1f);
 		try
 		{
+			MaintainAudienceCombatIsolation(agent);
 			target = ProjectToNearestNavMesh(base.Mission, target);
 			Vec2 facing = _arenaCenter.AsVec2 - target.AsVec2;
 			facing = facing.LengthSquared < 0.01f ? Vec2.Forward : facing.Normalized();
@@ -926,6 +934,43 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 				facing.RotationInRadians,
 				addHumanLikeDelay: false,
 				Agent.AIScriptedFrameFlags.NoAttack | Agent.AIScriptedFrameFlags.DoNotRun);
+		}
+		catch
+		{
+		}
+	}
+
+	private void RefreshAudienceCombatIsolation()
+	{
+		foreach (AgentSnapshot snapshot in _audienceSnapshots.Values)
+		{
+			MaintainAudienceCombatIsolation(snapshot?.Agent);
+		}
+	}
+
+	private static void MaintainAudienceCombatIsolation(Agent agent)
+	{
+		if (agent == null || !agent.IsActive())
+		{
+			return;
+		}
+		try
+		{
+			CampaignAgentComponent component = agent.GetComponent<CampaignAgentComponent>();
+			AlarmedBehaviorGroup alarmedGroup = component?.AgentNavigator?.GetBehaviorGroup<AlarmedBehaviorGroup>();
+			if (alarmedGroup != null)
+			{
+				alarmedGroup.DisableScriptedBehavior();
+				alarmedGroup.RemoveBehavior<FightBehavior>();
+				alarmedGroup.DisableCalmDown = false;
+			}
+			BannerlordApiCompat.TrySetAgentAutomaticTargetSelection(agent, enabled: false);
+			BannerlordApiCompat.TrySetAgentCombatTarget(agent, null);
+			agent.SetLookAgent(null);
+			agent.InvalidateTargetAgent();
+			agent.ResetEnemyCaches();
+			agent.SetAgentFlags(agent.GetAgentFlags() & ~AgentFlag.CanAttack);
+			agent.SetWatchState(Agent.WatchState.Patrolling);
 		}
 		catch
 		{
@@ -948,6 +993,8 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 			agent.SetAgentFlags(snapshot.Flags);
 			agent.SetMaximumSpeedLimit(-1f, false);
 			agent.SetIsAIPaused(isPaused: false);
+			BannerlordApiCompat.TrySetAgentAutomaticTargetSelection(agent, enabled: true);
+			BannerlordApiCompat.TrySetAgentCombatTarget(agent, null);
 			agent.InvalidateTargetAgent();
 			agent.ResetEnemyCaches();
 			agent.UpdateFormationOrders();
@@ -1743,6 +1790,7 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		_controlledAgentIndexes.Clear();
 		_nextCombatRefreshAt = 0f;
 		_nextCombatTargetStatusLogAt = 0f;
+		_nextAudienceIsolationAt = 0f;
 		_fightStartsAt = 0f;
 		_combatTargetObserved = false;
 		_playerVirtualHealth = 0f;

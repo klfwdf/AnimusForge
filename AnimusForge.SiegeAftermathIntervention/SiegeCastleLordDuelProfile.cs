@@ -22,6 +22,8 @@ public static class SiegeCastleLordDuelProfile
 
     public const float AudienceSpacing = 1.25f;
 
+    public const float AudienceCombatIsolationRefreshSeconds = 0.2f;
+
     public const float DuelHealthFloor = 1f;
 
     public const float PreparationSeconds = 1.5f;

@@ -1188,6 +1188,7 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 			}
 			try
 			{
+				DeactivateSlaughterFightBehavior(allied);
 				BannerlordApiCompat.TrySetAgentAutomaticTargetSelection(allied, enabled: true);
 				BannerlordApiCompat.TrySetAgentCombatTarget(allied, null);
 				allied.SetLookAgent(null);
@@ -1211,6 +1212,28 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 		_lastLoggedSlaughterDirectTargetLockCount = -1;
 		_lastLoggedSlaughterAutomaticFallbackCount = -1;
 		return restored;
+	}
+
+	private static void DeactivateSlaughterFightBehavior(Agent agent)
+	{
+		try
+		{
+			CampaignAgentComponent component = agent?.GetComponent<CampaignAgentComponent>();
+			AgentNavigator navigator = component?.AgentNavigator;
+			AlarmedBehaviorGroup alarmedGroup = navigator?.GetBehaviorGroup<AlarmedBehaviorGroup>();
+			if (alarmedGroup == null)
+			{
+				return;
+			}
+			alarmedGroup.DisableScriptedBehavior();
+			alarmedGroup.RemoveBehavior<FightBehavior>();
+			alarmedGroup.DisableCalmDown = false;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CastleAftermath", "Deactivate allied castle slaughter fight behavior failed. Agent="
+				+ (agent?.Index.ToString() ?? "null") + ", Error=" + ex.Message);
+		}
 	}
 
 	private static Agent FindNearestTarget(Agent source, IReadOnlyList<Agent> targets)
