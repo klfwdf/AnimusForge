@@ -18341,18 +18341,6 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		if (_npcPersonaProfiles.TryGetValue(stringId, out var value))
 		{
-			if (IsNpcPersonaProfileIdentityMismatch(npc, value))
-			{
-				_npcPersonaProfiles.Remove(stringId);
-				value = null;
-			}
-			else
-			{
-				return value;
-			}
-		}
-		if (value != null)
-		{
 			return value;
 		}
 		if (!createIfMissing)
@@ -18407,10 +18395,6 @@ public class MyBehavior : CampaignBehaviorBase
 			string stringId = hero.StringId;
 			if (!string.IsNullOrEmpty(stringId) && _npcPersonaProfiles != null && _npcPersonaProfiles.TryGetValue(stringId, out var value) && value != null)
 			{
-				if (IsNpcPersonaProfileIdentityMismatch(hero, value))
-				{
-					return;
-				}
 				personality = value.Personality ?? "";
 				background = value.Background ?? "";
 			}
@@ -18495,10 +18479,6 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		if (_npcPersonaProfiles.TryGetValue(stringId, out var value) && value != null)
 		{
-			if (IsNpcPersonaProfileIdentityMismatch(hero, value))
-			{
-				return "";
-			}
 			return (value.VoiceId ?? "").Trim();
 		}
 		return "";
@@ -23528,7 +23508,7 @@ public class MyBehavior : CampaignBehaviorBase
 			if (!IsPartyTransferRuleEligible(targetHero, targetCharacter))
 			{
 				string guardrailRuleNonHeroInstruction = AIConfigHandler.GetGuardrailRuleNonHeroInstruction("party_transfer");
-				return string.IsNullOrWhiteSpace(guardrailRuleNonHeroInstruction) ? "" : guardrailRuleNonHeroInstruction.Trim();
+				return string.IsNullOrWhiteSpace(guardrailRuleNonHeroInstruction) ? "" : StripPartyTransferTags(guardrailRuleNonHeroInstruction);
 			}
 			List<PartyTransferPromptEntry> list = BuildPartyTransferPromptEntriesInternal(targetHero, targetCharacter, targetAgentIndex);
 			string text = BuildPlayerPublicDisplayNameForPrompt();
@@ -23565,16 +23545,15 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			if (partyTransferRecruitMaxTier <= 0 && list5.Count == 0)
 			{
-				stringBuilder.AppendLine("【当前招募限制】你当前对" + text + "的信任不足，任何士兵都不可开放招募。本轮不要展示【你当前可转移部队】清单；正文只口头拒绝或解释，不写 ATT/ATP。");
+				stringBuilder.AppendLine("【当前招募限制】你当前对" + text + "的信任不足，任何士兵都不可开放招募。本轮不要展示【你当前可转移部队】清单；正文只口头拒绝或解释。");
 			}
 			else if (flag && partyTransferRecruitMaxTier == int.MaxValue)
 			{
-				stringBuilder.AppendLine("【当前招募限制】你当前对" + text + "的信任已足够，所有已编号的士兵都可正常谈招募。若你最终明确同意放人，后处理才会根据正文生成 ATT；正文只口头答应、拒绝或谈条件，不写 ATT/ATP。");
+				stringBuilder.AppendLine("【当前招募限制】你当前对" + text + "的信任已足够，所有已编号的士兵都可正常谈招募。若你最终明确同意放人，才算成交；正文只口头答应、拒绝或谈条件。");
 			}
 			else if (flag)
 			{
-				stringBuilder.AppendLine("【当前招募限制】你当前只可向" + text + "开放 " + partyTransferRecruitMaxTier + " 阶及以下士兵的招募。只有本轮仍带编号的这些士兵才可能在后处理里生成 ATT；正文只口头答应、拒绝或谈条件，不写 ATT/ATP。");
-				stringBuilder.AppendLine("【隐藏编号硬约束】未编号的更高阶兵种绝不可以卖给" + text + "，后处理也绝不可以为其生成 ATT。");
+				stringBuilder.AppendLine("【当前招募限制】你当前只可向" + text + "开放 " + partyTransferRecruitMaxTier + " 阶及以下士兵的招募。只有本轮仍带编号的这些士兵才可供讨论；正文只口头答应、拒绝或谈条件。");
 			}
 			if (flag2)
 			{
@@ -23585,13 +23564,10 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 				else
 				{
-					stringBuilder.AppendLine("【原版要人募兵】你这里按原版城镇/村庄要人募兵规则实时计算；由于关系、阵营或战况等原版条件，本轮没有向" + text + "开放任何招募槽位。正文只口头拒绝或解释，不写 ATT。");
+					stringBuilder.AppendLine("【原版要人募兵】你这里按原版城镇/村庄要人募兵规则实时计算；由于关系、阵营或战况等原版条件，本轮没有向" + text + "开放任何招募槽位。正文只口头拒绝或解释。");
 				}
 			}
 			stringBuilder.AppendLine("若你明确同意移交全部士兵，全量转移不受本段信任阶级和展示上限限制，但所有Hero都会留下；正文仍只自然答复。");
-			stringBuilder.AppendLine("若你最终明确同意把【你当前可转移俘虏】中的俘虏交给玩家，后处理才会根据正文生成 ATP；正文只口头答应、拒绝或谈条件，不写 ATT/ATP。");
-			stringBuilder.AppendLine("单项 ATT/ATP 的序号只来自本轮编号清单；只有明确同意整类全部移交时，才可覆盖未编号或未展示项。");
-			stringBuilder.AppendLine("ATT 只能用于部队序号，ATP 只能用于俘虏序号；数量不得超过当前数量。若本轮尚未明确成交，后处理就不应生成这些标签。");
 			stringBuilder.AppendLine("日薪表示每名士兵每天需要支付多少第纳尔；雇佣价与购买价表示当前谈判指导单价。");
 			stringBuilder.AppendLine("当前与你交易的人：" + text);
 			if (partyTransferRecruitMaxTier > 0 || list5.Count > 0)
@@ -23615,7 +23591,9 @@ public class MyBehavior : CampaignBehaviorBase
 				stringBuilder.AppendLine(prisonerRemainder);
 			}
 			stringBuilder.Append("全部俘虏: ").Append(list7All.Sum((PartyTransferPromptEntry x) => Math.Max(0, x?.Count ?? 0))).Append(" 人 | 购买指导总值: ").Append(CalculatePartyTransferTotalValueForExternal(list7All, isPrisoner: true)).AppendLine(" 第纳尔");
-			return stringBuilder.ToString().Trim();
+			// This text is injected into the NPC's main reply prompt. Action syntax belongs only
+			// to the isolated postprocess prompt, so runtime/configuration values are sanitized here.
+			return StripPartyTransferTags(stringBuilder.ToString());
 		}
 		catch
 		{
@@ -55809,44 +55787,8 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		Hero hero = ResolveHeroByIdForNpcData(heroId);
-		if (IsNpcPersonaProfileIdentityMismatch(hero, profile))
-		{
-			Logger.Log("NpcPersona", "[WARN] Skipped mismatched persona profile for export/save: heroId=" + heroId + " heroName=" + (hero?.Name?.ToString() ?? ""));
-			return false;
-		}
 		StampNpcPersonaProfile(heroId, profile);
 		return true;
-	}
-
-	private static bool IsNpcPersonaProfileIdentityMismatch(Hero hero, NpcPersonaProfile profile)
-	{
-		if (hero == null || profile == null)
-		{
-			return false;
-		}
-		string currentId = (hero.StringId ?? "").Trim();
-		string profileId = (profile.HeroId ?? "").Trim();
-		bool currentIdIsAutoGenerated = IsAutoGeneratedNpcHeroId(currentId);
-		if (!string.IsNullOrWhiteSpace(profileId) && !string.IsNullOrWhiteSpace(currentId) && !string.Equals(profileId, currentId, StringComparison.OrdinalIgnoreCase))
-		{
-			return true;
-		}
-		if (currentIdIsAutoGenerated && string.IsNullOrWhiteSpace(profileId) && string.IsNullOrWhiteSpace(profile.HeroName)
-			&& (!string.IsNullOrWhiteSpace(profile.Personality) || !string.IsNullOrWhiteSpace(profile.Background)))
-		{
-			return true;
-		}
-		string profileName = NormalizeNpcFileDisplayName(profile.HeroName);
-		if (currentIdIsAutoGenerated && IsNpcFileDisplayNameSpecified(profileName))
-		{
-			string currentName = NormalizeNpcFileDisplayName(hero.Name?.ToString() ?? "");
-			if (!string.IsNullOrWhiteSpace(currentName) && !string.Equals(profileName, currentName, StringComparison.OrdinalIgnoreCase))
-			{
-				return true;
-			}
-		}
-		return false;
 	}
 
 	private static string BuildNpcDataFileName(string heroId)

@@ -4491,15 +4491,15 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			RulerPolicyProposalBehavior.TryProcessAcceptedTag(recipient, "courier", session.LetterText, session.ReplyText ?? text, ref text, out string proposalFailure);
+			KingdomAgendaCustomPolicyBehavior.TryProcessAcceptedAgendaTag(recipient, "courier", session.LetterText, session.ReplyText ?? text, ref text, out string proposalFailure);
 			if (!string.IsNullOrWhiteSpace(proposalFailure))
 			{
-				Log("ruler policy proposal not queued session=" + session.Id + " reason=" + proposalFailure);
+				Log("kingdom agenda custom policy not queued session=" + session.Id + " reason=" + proposalFailure);
 			}
 		}
 		catch (Exception ex)
 		{
-			Log("apply ruler policy proposal tag failed session=" + session.Id + " error=" + ex.Message);
+			Log("apply kingdom agenda custom policy tag failed session=" + session.Id + " error=" + ex.Message);
 		}
 		try
 		{
@@ -4755,15 +4755,15 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			string text = session.ReplyPostprocessedText;
 			try
 			{
-				RulerPolicyProposalBehavior.TryProcessAcceptedTag(recipient, "courier", session.LetterText, session.ReplyText ?? text, ref text, out string proposalFailure);
+				KingdomAgendaCustomPolicyBehavior.TryProcessAcceptedAgendaTag(recipient, "courier", session.LetterText, session.ReplyText ?? text, ref text, out string proposalFailure);
 				if (!string.IsNullOrWhiteSpace(proposalFailure))
 				{
-					Log("ruler policy proposal fallback not queued session=" + session.Id + " reason=" + proposalFailure);
+					Log("kingdom agenda custom policy fallback not queued session=" + session.Id + " reason=" + proposalFailure);
 				}
 			}
 			catch (Exception ex)
 			{
-				Log("apply ruler policy proposal fallback tag failed session=" + session.Id + " error=" + ex.Message);
+				Log("apply kingdom agenda custom policy fallback tag failed session=" + session.Id + " error=" + ex.Message);
 			}
 			try
 			{
