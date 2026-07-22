@@ -166,6 +166,8 @@ Same-culture destructive blocking has been removed from this profile. AF adapter
 
 `SiegeMassacreInteractionProfile` owns dependency-free runtime parameters and source codes for GCCZ 血洗 civilian hide distance, hide refresh timing, soldier follow refresh, soldier target refresh, rare/limited civilian resistance selection, panic rout, occupation follow, combat preparation, allied combat drive, and all-targets-down victory completion. AF adapters still own live mission-agent routing, order timing application, hide-point projection, flee/fight behavior assignment, and combat side effects.
 
+`SetsOwnedSettlementMassacreProfile` separately owns the SETS-only 100-follower shout policy and the AI-decided start/stop tags for player-owned or ruler-attached town scenes. It intentionally does not make ordinary GCCZ massacre reversible: only the SETS entry-scene combat can be halted, and stopping does not undo casualties or the incident state.
+
 
 `SiegeAgentWallRescueProfile` owns dependency-free thresholds for temporary native movement rescue when a GCCZ scene NPC appears pinned against collision while still far from its target. The fused AF adapter may reissue the same target with Bannerlord scripted movement flags for a short window, but ordinary AF scenes must not use this rescue.
 

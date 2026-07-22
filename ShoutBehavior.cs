@@ -2113,6 +2113,10 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private static readonly Regex SetsOwnedSettlementGatherActionTagRegex = new Regex(SiegeActionTagCatalog.GatherCiviliansTagPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
+	private static readonly Regex SetsOwnedSettlementMassacreStartActionTagRegex = new Regex(Regex.Escape(SetsOwnedSettlementMassacreProfile.StartActionTag), RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+	private static readonly Regex SetsOwnedSettlementMassacreStopActionTagRegex = new Regex(Regex.Escape(SetsOwnedSettlementMassacreProfile.StopActionTag), RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
 	private static readonly Regex SceneEndChatActionTagRegex = new Regex("\\[END\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
 	private static readonly Regex RulerPolicyProposalActionTagRegex = new Regex(Regex.Escape(RulerPolicyProposalActionTag), RegexOptions.IgnoreCase | RegexOptions.Compiled);
@@ -5051,6 +5055,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 		if (SettlementEntryTroopSelectionBehavior.IsOwnedOrAttachedTownEntryActiveForExternal(Mission.Current))
 		{
 			stringBuilder.AppendLine(SetsOwnedSettlementIncidentProfile.BuildGatherRuntimeInstruction());
+			bool massacreActive = SettlementEntryTroopSelectionBehavior.IsOwnedOrAttachedTownMassacreActiveForExternal(Mission.Current);
+			stringBuilder.AppendLine(SetsOwnedSettlementMassacreProfile.BuildRuntimeInstruction(massacreActive));
 		}
 		AppendSceneUnifiedTargetPromptSection(stringBuilder, sceneSummonTargets, sceneGuideTargets);
 		if (!string.IsNullOrWhiteSpace(sceneSummonClosureInstruction))
@@ -16222,8 +16228,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		Agent agent = agents.FirstOrDefault((Agent a) => a != null && a.Index == npc.AgentIndex);
 		string content = tags;
+		bool setsOwnedMassacre = TryProcessSetsOwnedSettlementMassacreActionTags(npc.AgentIndex, ref content);
 		bool setsOwnedGather = TryProcessSetsOwnedSettlementGatherActionTag(npc.AgentIndex, ref content);
-		if (setsOwnedGather && string.IsNullOrWhiteSpace(content))
+		if ((setsOwnedMassacre || setsOwnedGather) && string.IsNullOrWhiteSpace(content))
 		{
 			return true;
 		}
@@ -16250,7 +16257,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		bool endChat = TryConsumeSceneEndChatActionTag(npc, agent, ref content, out sceneSummonConversationSession);
 		bool summon = !string.IsNullOrWhiteSpace(content) && TryTriggerSceneSummonAction(npc, agent, sceneSummonTargets, ref content, out activeSceneSummonRequest);
 		bool guide = !string.IsNullOrWhiteSpace(content) && TryTriggerSceneGuideAction(npc, agent, sceneGuideTargets, sceneSummonTargets, ref content, out activeSceneGuideRequest);
-		bool handled = setsOwnedGather || stopFollow || startFollow || endChat || summon || guide;
+		bool handled = setsOwnedMassacre || setsOwnedGather || stopFollow || startFollow || endChat || summon || guide;
 		if (!handled)
 		{
 			Logger.Log("ShoutBehavior", "[NativeConversation] scene mechanism direct no-op agent=" + npc.AgentIndex + " tags=" + ((tags ?? "").Replace("\r", "\\r").Replace("\n", "\\n")));
@@ -16279,7 +16286,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			SchedulePreparedSceneGuideLaunch(activeSceneGuideRequest, null, "");
 		}
-		Logger.Log("ShoutBehavior", "[NativeConversation] scene mechanism direct result agent=" + npc.AgentIndex + " setsGather=" + setsOwnedGather + " stop=" + stopFollow + " start=" + startFollow + " end=" + endChat + " summon=" + summon + " guide=" + guide + " remaining=" + ((content ?? "").Replace("\r", "\\r").Replace("\n", "\\n")));
+		Logger.Log("ShoutBehavior", "[NativeConversation] scene mechanism direct result agent=" + npc.AgentIndex + " setsMassacre=" + setsOwnedMassacre + " setsGather=" + setsOwnedGather + " stop=" + stopFollow + " start=" + startFollow + " end=" + endChat + " summon=" + summon + " guide=" + guide + " remaining=" + ((content ?? "").Replace("\r", "\\r").Replace("\n", "\\n")));
 		return true;
 	}
 
@@ -16352,6 +16359,51 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
+	private bool TryProcessSetsOwnedSettlementMassacreActionTags(int targetAgentIndex, ref string content)
+	{
+		try
+		{
+			bool startRequested = !string.IsNullOrWhiteSpace(content) && SetsOwnedSettlementMassacreStartActionTagRegex.IsMatch(content);
+			bool stopRequested = !string.IsNullOrWhiteSpace(content) && SetsOwnedSettlementMassacreStopActionTagRegex.IsMatch(content);
+			if (!startRequested && !stopRequested)
+			{
+				return false;
+			}
+
+			content = SetsOwnedSettlementMassacreStartActionTagRegex.Replace(content ?? "", "");
+			content = SetsOwnedSettlementMassacreStopActionTagRegex.Replace(content, "").Trim();
+			Mission mission = Mission.Current;
+			if (!SettlementEntryTroopSelectionBehavior.IsOwnedOrAttachedTownEntryActiveForExternal(mission))
+			{
+				Logger.Log("ShoutBehavior", "[NativeConversation] ignored SETS massacre tag outside owned/attached town scene. agent=" + targetAgentIndex);
+				return false;
+			}
+
+			bool massacreActive = SettlementEntryTroopSelectionBehavior.IsOwnedOrAttachedTownMassacreActiveForExternal(mission);
+			bool handled = false;
+			string action = "none";
+			if (stopRequested && massacreActive)
+			{
+				action = "stop";
+				handled = SettlementEntryTroopSelectionBehavior.TryStopOwnedOrAttachedTownMassacreForExternal(targetAgentIndex, SetsOwnedSettlementMassacreProfile.StopSource);
+			}
+			else if (startRequested && !massacreActive)
+			{
+				action = "start";
+				handled = SettlementEntryTroopSelectionBehavior.TryStartOwnedOrAttachedTownMassacreForExternal(targetAgentIndex, SetsOwnedSettlementMassacreProfile.StartSource);
+			}
+			Logger.Log("ShoutBehavior", "[NativeConversation] SETS owned/attached massacre tag action=" + action + " handled=" + handled + " activeBefore=" + massacreActive + " agent=" + targetAgentIndex);
+			return handled;
+		}
+		catch (Exception ex)
+		{
+			content = SetsOwnedSettlementMassacreStartActionTagRegex.Replace(content ?? "", "");
+			content = SetsOwnedSettlementMassacreStopActionTagRegex.Replace(content, "").Trim();
+			Logger.Log("ShoutBehavior", "[NativeConversation] SETS owned/attached massacre action failed: " + ex.Message);
+			return false;
+		}
+	}
+
 	private static bool TryProcessRulerPolicyProposalActionTag(Hero targetHero, string chainName, string playerProposalText, ref string content, string npcReplyTextOverride = null)
 	{
 		if (string.IsNullOrWhiteSpace(content) || !RulerPolicyProposalActionTagRegex.IsMatch(content))
@@ -16403,6 +16455,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		try
 		{
 			LogNativeActionStep("start", targetHero, targetCharacter, content);
+			TryProcessSetsOwnedSettlementMassacreActionTags(resolvedTargetAgentIndex, ref content);
 			TryProcessSetsOwnedSettlementGatherActionTag(resolvedTargetAgentIndex, ref content);
 			int siegeAgentIndex = resolvedTargetAgentIndex;
 			bool siegeActionHandled;
@@ -22444,6 +22497,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		text2 = Regex.Replace(text2, "\\[(?:GUI|ACTION:SCENE_GUIDE):[^\\]]*\\]", "", RegexOptions.IgnoreCase);
 		text2 = Regex.Replace(text2, "\\[(?:FOL|ACTION:SCENE_FOLLOW_PLAYER)\\]", "", RegexOptions.IgnoreCase);
 		text2 = Regex.Replace(text2, "\\[(?:STP|ACTION:SCENE_STOP_FOLLOW)\\]", "", RegexOptions.IgnoreCase);
+		text2 = SetsOwnedSettlementMassacreStartActionTagRegex.Replace(text2, "");
+		text2 = SetsOwnedSettlementMassacreStopActionTagRegex.Replace(text2, "");
 		text2 = SetsOwnedSettlementGatherActionTagRegex.Replace(text2, "");
 		text2 = Regex.Replace(text2, "\\[END\\]", "", RegexOptions.IgnoreCase);
 		return text2.Trim();
@@ -22458,7 +22513,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		List<string> list = new List<string>();
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (Match item in Regex.Matches(text2, "\\[(?:(?:ASS|ACTION:SCENE_SUMMON):[^\\]\\r\\n]+|(?:GUI|ACTION:SCENE_GUIDE):[^\\]\\r\\n]+|ACTION:(?:6|SIEGE_GATHER_CIVILIANS|召集)|FOL|ACTION:SCENE_FOLLOW_PLAYER|STP|ACTION:SCENE_STOP_FOLLOW|END)\\]", RegexOptions.IgnoreCase))
+		foreach (Match item in Regex.Matches(text2, "\\[(?:(?:ASS|ACTION:SCENE_SUMMON):[^\\]\\r\\n]+|(?:GUI|ACTION:SCENE_GUIDE):[^\\]\\r\\n]+|ACTION:(?:6|SIEGE_GATHER_CIVILIANS|召集|SETS_START_MASSACRE|SETS_STOP_MASSACRE)|FOL|ACTION:SCENE_FOLLOW_PLAYER|STP|ACTION:SCENE_STOP_FOLLOW|END)\\]", RegexOptions.IgnoreCase))
 		{
 			string text3 = (item?.Value ?? "").Trim();
 			if (!string.IsNullOrWhiteSpace(text3) && hashSet.Add(text3))
@@ -22507,21 +22562,36 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return list;
 		}
-		List<PostprocessRuleEntry> guardrailRulePostprocessRules = AIConfigHandler.GetGuardrailRulePostprocessRules("scene_mechanism_actions") ?? new List<PostprocessRuleEntry>();
-		if (SettlementEntryTroopSelectionBehavior.IsOwnedOrAttachedTownEntryActiveForExternal(Mission.Current))
+		int num = speaker?.AgentIndex ?? (-1);
+		Agent agent = (num >= 0) ? Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == num) : null;
+		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		bool setsSceneActive = SettlementEntryTroopSelectionBehavior.IsOwnedOrAttachedTownEntryActiveForExternal(Mission.Current);
+		bool setsMassacreActive = setsSceneActive && SettlementEntryTroopSelectionBehavior.IsOwnedOrAttachedTownMassacreActiveForExternal(Mission.Current);
+		bool speakerIsSelectedFollower = SettlementEntryTroopSelectionBehavior.IsSetsSelectedFollowerAgentForExternal(agent);
+		if (SetsOwnedSettlementMassacreProfile.ShouldOfferStopRule(setsSceneActive, setsMassacreActive, speakerIsSelectedFollower))
 		{
-			AddSceneMechanismPostprocessRule(list, new HashSet<string>(StringComparer.OrdinalIgnoreCase), SiegeActionTagCatalog.GatherCiviliansPromptTag, "SETS自有/附属城镇：NPC明确接受召集、传令或命令现场人员到玩家身边时触发。");
+			AddSceneMechanismPostprocessRule(list, hashSet, SetsOwnedSettlementMassacreProfile.StopActionTag, SetsOwnedSettlementMassacreProfile.BuildStopRuleDescription());
 		}
+		if (setsMassacreActive)
+		{
+			return list;
+		}
+		if (SetsOwnedSettlementMassacreProfile.ShouldOfferStartRule(setsSceneActive, setsMassacreActive, speakerIsSelectedFollower))
+		{
+			AddSceneMechanismPostprocessRule(list, hashSet, SetsOwnedSettlementMassacreProfile.StartActionTag, SetsOwnedSettlementMassacreProfile.BuildStartRuleDescription());
+		}
+		if (setsSceneActive)
+		{
+			AddSceneMechanismPostprocessRule(list, hashSet, SiegeActionTagCatalog.GatherCiviliansPromptTag, "SETS自有/附属城镇：NPC明确接受召集、传令或命令现场人员到玩家身边时触发。");
+		}
+		List<PostprocessRuleEntry> guardrailRulePostprocessRules = AIConfigHandler.GetGuardrailRulePostprocessRules("scene_mechanism_actions") ?? new List<PostprocessRuleEntry>();
 		if (guardrailRulePostprocessRules.Count == 0)
 		{
 			return list;
 		}
-		int num = speaker?.AgentIndex ?? (-1);
 		SceneSummonConversationSession sceneSummonConversationSession = (num >= 0) ? TryGetSceneSummonConversationSessionForAgentIndex(num) : null;
 		bool flag = sceneSummonConversationSession != null;
-		Agent agent = (num >= 0) ? Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == num) : null;
 		bool flag2 = agent != null && IsAgentFollowingPlayerBySceneCommand(agent);
-		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		if (IsPrisonBreakRescueMissionActive())
 		{
 			if (!IsPrisonBreakRescuePrisonerAgent(agent))
@@ -22625,6 +22695,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return list;
 		}
 		HashSet<string> hashSet = new HashSet<string>(list, StringComparer.OrdinalIgnoreCase);
+		if (SetsOwnedSettlementMassacreStopActionTagRegex.IsMatch(raw ?? "") && hashSet.Contains(SetsOwnedSettlementMassacreProfile.StopActionTag))
+		{
+			return new List<string> { SetsOwnedSettlementMassacreProfile.StopActionTag };
+		}
+		if (SetsOwnedSettlementMassacreStartActionTagRegex.IsMatch(raw ?? "") && hashSet.Contains(SetsOwnedSettlementMassacreProfile.StartActionTag))
+		{
+			return new List<string> { SetsOwnedSettlementMassacreProfile.StartActionTag };
+		}
 		foreach (Match item in Regex.Matches(raw ?? "", "\\[(?:FOL|ACTION:SCENE_FOLLOW_PLAYER|STP|ACTION:SCENE_STOP_FOLLOW|END|ACTION:(?:6|SIEGE_GATHER_CIVILIANS|召集)|(?:ASS|ACTION:SCENE_SUMMON):[^\\]\\r\\n]+|(?:GUI|ACTION:SCENE_GUIDE):[^\\]\\r\\n]+)\\]", RegexOptions.IgnoreCase))
 		{
 			string text = (item?.Value ?? "").Trim();
@@ -22675,6 +22753,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		bool flag = false;
 		bool flag2 = false;
 		bool flag3 = false;
+		bool setsOwnedMassacreStartRuleEnabled = false;
+		bool setsOwnedMassacreStopRuleEnabled = false;
 		bool setsOwnedGatherRuleEnabled = false;
 		foreach (PostprocessRuleEntry rule in rules ?? new List<PostprocessRuleEntry>())
 		{
@@ -22696,6 +22776,16 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			if (string.Equals(text, "[END]", StringComparison.OrdinalIgnoreCase))
 			{
 				flag3 = true;
+				continue;
+			}
+			if (string.Equals(text, SetsOwnedSettlementMassacreProfile.StartActionTag, StringComparison.OrdinalIgnoreCase))
+			{
+				setsOwnedMassacreStartRuleEnabled = true;
+				continue;
+			}
+			if (string.Equals(text, SetsOwnedSettlementMassacreProfile.StopActionTag, StringComparison.OrdinalIgnoreCase))
+			{
+				setsOwnedMassacreStopRuleEnabled = true;
 				continue;
 			}
 			if (SetsOwnedSettlementGatherActionTagRegex.IsMatch(text))
@@ -22734,6 +22824,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		if (flag3 && Regex.IsMatch(raw ?? "", "\\[END\\]", RegexOptions.IgnoreCase) && hashSet3.Add("[END]"))
 		{
 			actionTags.Add("[END]");
+		}
+		if (setsOwnedMassacreStopRuleEnabled && SetsOwnedSettlementMassacreStopActionTagRegex.IsMatch(raw ?? "") && hashSet3.Add(SetsOwnedSettlementMassacreProfile.StopActionTag))
+		{
+			actionTags.Add(SetsOwnedSettlementMassacreProfile.StopActionTag);
+		}
+		if (setsOwnedMassacreStartRuleEnabled && SetsOwnedSettlementMassacreStartActionTagRegex.IsMatch(raw ?? "") && hashSet3.Add(SetsOwnedSettlementMassacreProfile.StartActionTag))
+		{
+			actionTags.Add(SetsOwnedSettlementMassacreProfile.StartActionTag);
 		}
 		if (setsOwnedGatherRuleEnabled && SetsOwnedSettlementGatherActionTagRegex.IsMatch(raw ?? "") && hashSet3.Add(SiegeActionTagCatalog.GatherCiviliansPromptTag))
 		{
@@ -30545,6 +30643,19 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
+	public static bool TryForceStopSceneFollowForExternal(int targetAgentIndex, string reason = null)
+	{
+		try
+		{
+			return CurrentInstance?.TryForceStopSceneFollowInternal(targetAgentIndex, reason) == true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneFollow", "external_force_stop_failed agent=" + targetAgentIndex + " reason=" + (reason ?? "") + " error=" + ex.Message);
+			return false;
+		}
+	}
+
 	public static bool IsSceneFollowingPlayerForExternal(int targetAgentIndex)
 	{
 		try
@@ -30592,6 +30703,20 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		RemoveAgentFromSceneSummonConversationForFollow(agent);
 		StartSceneSummonFollowPlayer(agent);
 		Logger.Log("SceneFollow", "external_force_start_executed agent=" + agent.Index + " name=" + (agent.Name ?? "") + " transient=" + transient + " reason=" + (reason ?? ""));
+		return true;
+	}
+
+	private bool TryForceStopSceneFollowInternal(int targetAgentIndex, string reason)
+	{
+		Mission mission = Mission.Current;
+		Agent agent = mission?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex);
+		if (agent == null || !agent.IsActive() || !IsAgentFollowingPlayerBySceneCommand(agent))
+		{
+			return false;
+		}
+		StopSceneSummonFollowPlayer(agent, restoreDailyBehaviors: false);
+		ReturnAgentAfterStoppingSceneFollow(agent);
+		Logger.Log("SceneFollow", "external_force_stop_executed agent=" + agent.Index + " name=" + (agent.Name ?? "") + " reason=" + (reason ?? ""));
 		return true;
 	}
 
