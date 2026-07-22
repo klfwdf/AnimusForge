@@ -800,37 +800,6 @@ public static class AIConfigHandler
 		}
 	}
 
-	private static bool CanInjectRulerPolicyProposalRuleForPreprocess(Hero targetHero, CharacterObject targetCharacter)
-	{
-		try
-		{
-			Hero hero = targetHero ?? targetCharacter?.HeroObject;
-			if (Campaign.Current == null || hero == null || hero == Hero.MainHero || hero.IsDead || !hero.IsAlive)
-			{
-				return false;
-			}
-			Clan clan = hero.Clan;
-			Kingdom kingdom = clan?.Kingdom ?? hero.MapFaction as Kingdom;
-			if (clan == null || kingdom == null || clan.IsEliminated || kingdom.IsEliminated)
-			{
-				return false;
-			}
-			if (kingdom.Leader != hero && kingdom.RulingClan?.Leader != hero)
-			{
-				return false;
-			}
-			if (!DuelSettings.IsNpcRulerPolicyEnabledForExternal())
-			{
-				return false;
-			}
-			return NpcPolicyLlmClient.IsConfiguredForNpcPolicy(out var _);
-		}
-		catch
-		{
-			return false;
-		}
-	}
-
 	public static List<PostprocessRuleEntry> BuildRuntimeRoyalPostprocessRulesForExternal(Hero targetHero)
 	{
 		List<PostprocessRuleEntry> list = new List<PostprocessRuleEntry>();
@@ -2096,10 +2065,6 @@ public static class AIConfigHandler
 		{
 			return IsKingdomLordOrKingRuleTargetForPreprocess(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
 		}
-		if (string.Equals(text, "ruler_policy_proposal", StringComparison.OrdinalIgnoreCase))
-		{
-			return CanInjectRulerPolicyProposalRuleForPreprocess(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
-		}
 		if (IsSceneAutoGroupRelayRule(text))
 		{
 			return false;
@@ -2255,7 +2220,6 @@ public static class AIConfigHandler
 				"hero_join_party" => "HERO_JOIN",
 				"noble_deference" => "NOBLE_PRESSURE",
 				"kingdom_agenda" => "KINGDOM_AGENDA",
-				"ruler_policy_proposal" => "RULER_POLICY_PROPOSAL",
 				"diplomacy" => "DIPLOMACY",
 				_ => ""
 			};
@@ -8542,8 +8506,6 @@ public static class AIConfigHandler
 				return DiplomacyBehavior.CanInjectDiplomacyRuleForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
 			case "kingdom_agenda":
 				return IsKingdomLordOrKingRuleTargetForPreprocess(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
-			case "ruler_policy_proposal":
-				return CanInjectRulerPolicyProposalRuleForPreprocess(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
 			case "marriage":
 				return ResolveConversationTargetHero() != null && !string.IsNullOrWhiteSpace(RomanceSystemBehavior.Instance?.BuildMarriageRuntimeInstruction(ResolveConversationTargetHero()));
 			case "vanilla_issue":

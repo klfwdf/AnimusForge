@@ -53,6 +53,26 @@ namespace AnimusForge
 		private static readonly Dictionary<string, UnifiedAgendaSnapshot> UnifiedAgendaSnapshots = new Dictionary<string, UnifiedAgendaSnapshot>(StringComparer.OrdinalIgnoreCase);
 		private static readonly Regex UnifiedAgendaTagRx = new Regex(@"\[ACTION:AGENDA:(A\d+):(O\d+):(SLIGHTLY_FAVOR|STRONGLY_FAVOR|FULLY_PUSH)\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
+		public static List<PostprocessRuleEntry> BuildAgendaVotePostprocessRulesForExternal()
+		{
+			List<PostprocessRuleEntry> result = new List<PostprocessRuleEntry>();
+			foreach (PostprocessRuleEntry rule in AIConfigHandler.GetGuardrailRulePostprocessRules("kingdom_agenda") ?? new List<PostprocessRuleEntry>())
+			{
+				string tag = (rule?.Tag ?? "").Trim();
+				if (string.IsNullOrWhiteSpace(tag)
+					|| string.Equals(tag, KingdomAgendaCustomPolicyBehavior.ActionTag, StringComparison.OrdinalIgnoreCase))
+				{
+					continue;
+				}
+				result.Add(new PostprocessRuleEntry
+				{
+					Tag = tag,
+					Description = rule.Description ?? ""
+				});
+			}
+			return result;
+		}
+
 		public static WorldEntityPromptContext BuildUnifiedAgendaPromptContextForExternal(Hero npc, MentionedWorldEntities mentions)
 		{
 			WorldEntityPromptContext result = new WorldEntityPromptContext();
