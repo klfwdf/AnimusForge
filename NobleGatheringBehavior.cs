@@ -4065,7 +4065,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			StringBuilder sb = new StringBuilder();
 			sb.AppendLine("【贵族宴会可用ID】");
 			sb.AppendLine("输出格式：");
-			sb.AppendLine("[ACTION:NOBLE_GATHERING:START:settlement=settlementId;heroes=heroId1,heroId2;clans=clanId1;kingdoms=kingdomId1;cultures=cultureId1;age=18-30;gender=female]");
+			sb.AppendLine("[ACTION:NOBLE_GATHERING:START:settlement=settlementId:heroes=heroId1,heroId2:clans=clanId1:kingdoms=kingdomId1:cultures=cultureId1:age=18-30:gender=female]");
 			sb.AppendLine("[ACTION:NOBLE_GATHERING:CANCEL:gathering=gatheringId]");
 			sb.AppendLine("若玩家只说邀请某家族/王国/文化/年龄/性别群体，可以省略 heroes，由系统按筛选展开。所有 id 必须优先使用下方候选，不要凭空猜。");
 			NobleGatheringBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<NobleGatheringBehavior>();
@@ -4464,7 +4464,7 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 		}
 		text = text.Substring(prefix.Length, text.Length - prefix.Length - 1);
 		NobleGatheringInvitationSelector selector = new NobleGatheringInvitationSelector();
-		foreach (string rawPart in text.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries))
+		foreach (string rawPart in text.Split(new[] { ':' }, StringSplitOptions.RemoveEmptyEntries))
 		{
 			string part = (rawPart ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(part))
@@ -4472,10 +4472,6 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 				continue;
 			}
 			int split = part.IndexOf('=');
-			if (split < 0)
-			{
-				split = part.IndexOf(':');
-			}
 			if (split <= 0)
 			{
 				continue;

@@ -31,7 +31,6 @@ namespace AnimusForge;
 
 public static class AIConfigHandler
 {
-	private const int ActionPostprocessMaxHistoryAndLatestEntries = 8;
 	private const int ActionPostprocessRequestTimeoutMilliseconds = DuelSettings.LlmRequestTimeoutMilliseconds;
 	private const string EmbeddedPreprocessPromptsResourceName = "AnimusForge.Defaults.PreprocessPrompts.json";
 	private const string KingAbdicateToPlayerActionTag = "[ACTION:KING_ABDICATE_TO_PLAYER]";
@@ -801,6 +800,37 @@ public static class AIConfigHandler
 		}
 	}
 
+	private static bool CanInjectRulerPolicyProposalRuleForPreprocess(Hero targetHero, CharacterObject targetCharacter)
+	{
+		try
+		{
+			Hero hero = targetHero ?? targetCharacter?.HeroObject;
+			if (Campaign.Current == null || hero == null || hero == Hero.MainHero || hero.IsDead || !hero.IsAlive)
+			{
+				return false;
+			}
+			Clan clan = hero.Clan;
+			Kingdom kingdom = clan?.Kingdom ?? hero.MapFaction as Kingdom;
+			if (clan == null || kingdom == null || clan.IsEliminated || kingdom.IsEliminated)
+			{
+				return false;
+			}
+			if (kingdom.Leader != hero && kingdom.RulingClan?.Leader != hero)
+			{
+				return false;
+			}
+			if (!DuelSettings.IsNpcRulerPolicyEnabledForExternal())
+			{
+				return false;
+			}
+			return NpcPolicyLlmClient.IsConfiguredForNpcPolicy(out var _);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	public static List<PostprocessRuleEntry> BuildRuntimeRoyalPostprocessRulesForExternal(Hero targetHero)
 	{
 		List<PostprocessRuleEntry> list = new List<PostprocessRuleEntry>();
@@ -908,8 +938,7 @@ public static class AIConfigHandler
 		text = ReplaceActionPostprocessOptionalSection(text, "当前可直接成立的正规婚配组合与现有婚姻（事实清单）：", "marriage_fact_hint", null);
 		text = ReplaceActionPostprocessOptionalSection(text, "债务提示：", "debt_hint", debtHint);
 		text = ReplaceActionPostprocessOptionalSection(text, "运行时补充事实：", "runtime_context", runtimeContext);
-		int latestReplyEntries = CountActionPostprocessLatestReplyEntries(latestReplyBlock);
-		int maxHistoryEntries = Math.Max(0, ActionPostprocessMaxHistoryAndLatestEntries - latestReplyEntries);
+		int maxHistoryEntries = DuelSettings.GetActionPostprocessHistoryEntryLimitForExternal();
 		string newValue = PrepareActionPostprocessHistoryText(historyText, maxHistoryEntries, latestReplyBlock);
 		text = text.Replace("{tag_rules}", string.IsNullOrWhiteSpace(tagRules) ? "（无）" : tagRules.Trim())
 			.Replace("{history}", string.IsNullOrWhiteSpace(newValue) ? "（无）" : newValue)
@@ -1079,7 +1108,7 @@ public static class AIConfigHandler
 
 	public static string PrepareActionPostprocessHistoryText(string historyText)
 	{
-		return PrepareActionPostprocessHistoryText(historyText, ActionPostprocessMaxHistoryAndLatestEntries, null);
+		return PrepareActionPostprocessHistoryText(historyText, DuelSettings.GetActionPostprocessHistoryEntryLimitForExternal(), null);
 	}
 
 	private static string PrepareActionPostprocessHistoryText(string historyText, int maxEntries, string latestReplyBlock)
@@ -1446,27 +1475,6 @@ public static class AIConfigHandler
 		}
 		string speaker = text.Substring(0, num).Trim();
 		return speaker.Equals("玩家", StringComparison.OrdinalIgnoreCase) || speaker.Equals("NPC", StringComparison.OrdinalIgnoreCase) || speaker.Equals("你", StringComparison.OrdinalIgnoreCase) || speaker.Contains("对");
-	}
-
-	private static int CountActionPostprocessLatestReplyEntries(string latestReplyBlock)
-	{
-		int count = 0;
-		foreach (string line in (latestReplyBlock ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Split('\n'))
-		{
-			string text = (line ?? "").Trim();
-			int num = text.IndexOfAny(new char[2] { ':', '：' });
-			if (num <= 0 || num + 1 >= text.Length)
-			{
-				continue;
-			}
-			string speaker = text.Substring(0, num).Trim();
-			string body = text.Substring(num + 1).Trim();
-			if (!string.IsNullOrWhiteSpace(body) && body != "（无）" && (speaker.Equals("玩家", StringComparison.OrdinalIgnoreCase) || speaker.Equals("NPC", StringComparison.OrdinalIgnoreCase)))
-			{
-				count++;
-			}
-		}
-		return count;
 	}
 
 	private static HashSet<string> BuildActionPostprocessLatestReplyEntryKeys(string latestReplyBlock)
@@ -2088,6 +2096,10 @@ public static class AIConfigHandler
 		{
 			return IsKingdomLordOrKingRuleTargetForPreprocess(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
 		}
+		if (string.Equals(text, "ruler_policy_proposal", StringComparison.OrdinalIgnoreCase))
+		{
+			return CanInjectRulerPolicyProposalRuleForPreprocess(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
+		}
 		if (IsSceneAutoGroupRelayRule(text))
 		{
 			return false;
@@ -2239,11 +2251,11 @@ public static class AIConfigHandler
 				"party_transfer" => "PARTY_TRANSFER",
 				"vanilla_issue" => "ISSUE",
 				"npc_major_actions" => "NPC_MAJOR",
-				"npc_recent_actions" => "NPC_RECENT",
 				"encounter_release_player" => "MEETING_RELEASE",
 				"hero_join_party" => "HERO_JOIN",
 				"noble_deference" => "NOBLE_PRESSURE",
 				"kingdom_agenda" => "KINGDOM_AGENDA",
+				"ruler_policy_proposal" => "RULER_POLICY_PROPOSAL",
 				"diplomacy" => "DIPLOMACY",
 				_ => ""
 			};
@@ -2299,7 +2311,8 @@ public static class AIConfigHandler
 				PostprocessRules = ((src.PostprocessRules != null) ? src.PostprocessRules.Where((PostprocessRuleEntry x) => x != null && !string.IsNullOrWhiteSpace((x.Tag ?? "").Trim())).Select((PostprocessRuleEntry x) => new PostprocessRuleEntry
 				{
 					Tag = (x.Tag ?? "").Trim(),
-					Description = (x.Description ?? "").Trim()
+					Description = (x.Description ?? "").Trim(),
+					SingleFramedNpcDescription = (x.SingleFramedNpcDescription ?? "").Trim()
 				}).ToList() : new List<PostprocessRuleEntry>()),
 				TriggerKeywords = NormalizeTriggerKeywordList(src.TriggerKeywords),
 				RuntimeInstructionTemplates = NormalizeTemplateMap(src.RuntimeInstructionTemplates),
@@ -3024,7 +3037,7 @@ public static class AIConfigHandler
 		RequirePreprocessPromptValue(_preprocessPrompts?.MemorySelection?.ParallelModeInstruction, "MemorySelection.ParallelModeInstruction");
 		RequirePreprocessPromptValue(_preprocessPrompts?.MemorySelection?.UnifiedModeInstruction, "MemorySelection.UnifiedModeInstruction");
 		RequirePreprocessPromptValue(_preprocessPrompts?.MemorySelection?.EmptyValue, "MemorySelection.EmptyValue");
-		ValidatePreprocessTemplateVariables(_preprocessPrompts?.MemorySelection?.UserPromptTemplate, "MemorySelection.UserPromptTemplate", "mode_instruction", "mentioned_entities_schema", "final_count", "latest_player_input", "latest_npc_input", "current_scene", "memory_candidates");
+		ValidatePreprocessTemplateVariables(_preprocessPrompts?.MemorySelection?.UserPromptTemplate, "MemorySelection.UserPromptTemplate", "mode_instruction", "final_count", "latest_player_input", "latest_npc_input", "current_scene", "memory_candidates");
 		ValidatePreprocessTemplateVariables(_preprocessPrompts?.MemorySelection?.CandidateLineTemplate, "MemorySelection.CandidateLineTemplate", "memory_id", "game_date", "age_suffix", "hour_range", "rich_title");
 		ValidatePreprocessTemplateVariables(_preprocessPrompts?.MemorySelection?.FallbackGameDateTemplate, "MemorySelection.FallbackGameDateTemplate", "game_day");
 		RequirePreprocessPromptValue(_preprocessPrompts?.ConnectionTest?.ExpectedRuleCode, "ConnectionTest.ExpectedRuleCode");
@@ -3063,7 +3076,6 @@ public static class AIConfigHandler
 		return RenderPreprocessPromptTemplate(config?.UserPromptTemplate, "MemorySelection.UserPromptTemplate", new Dictionary<string, string>(StringComparer.Ordinal)
 		{
 			["mode_instruction"] = modeInstruction,
-			["mentioned_entities_schema"] = StrictPreprocessMentionedEntitiesSchema,
 			["final_count"] = Math.Max(1, finalCount).ToString(),
 			["latest_player_input"] = string.IsNullOrWhiteSpace(latestPlayerInput) ? emptyValue : latestPlayerInput.Trim(),
 			["latest_npc_input"] = string.IsNullOrWhiteSpace(latestNpcInput) ? emptyValue : latestNpcInput.Trim(),
@@ -4423,7 +4435,7 @@ public static class AIConfigHandler
 		return string.IsNullOrWhiteSpace(jsonPayload) ? text : jsonPayload;
 	}
 
-	internal static bool TryValidateStrictPreprocessJsonEnvelope(string content, bool requireMemoryIds, out JObject root, out string error)
+	internal static bool TryValidateStrictPreprocessJsonEnvelope(string content, bool requireMemoryIds, bool requireMentionedEntities, out JObject root, out string error)
 	{
 		root = null;
 		error = "";
@@ -4454,6 +4466,10 @@ public static class AIConfigHandler
 		if (requireMemoryIds && !ValidateStrictPreprocessArray(root, "memory_ids", JTokenType.Integer, out error))
 		{
 			return false;
+		}
+		if (!requireMentionedEntities)
+		{
+			return true;
 		}
 		JToken mentionedToken = root["mentioned_entities"];
 		if (mentionedToken == null || mentionedToken.Type == JTokenType.Null)
@@ -4598,7 +4614,7 @@ public static class AIConfigHandler
 			error = "no_known_rule_codes";
 			return false;
 		}
-		if (!TryValidateStrictPreprocessJsonEnvelope(content, requireMemoryIds: false, out var root, out error))
+		if (!TryValidateStrictPreprocessJsonEnvelope(content, requireMemoryIds: false, requireMentionedEntities: true, out var root, out error))
 		{
 			return false;
 		}
@@ -6761,14 +6777,6 @@ public static class AIConfigHandler
 						value = text5;
 					}
 				}
-				if (hasAnyHero && string.Equals(text, "npc_recent_actions", StringComparison.OrdinalIgnoreCase))
-				{
-					string text6 = MyBehavior.BuildNpcRecentActionsRuntimeInstructionForExternal(ResolveConversationTargetHero());
-					if (!string.IsNullOrWhiteSpace(text6))
-					{
-						value = text6;
-					}
-				}
 				if (string.Equals(text, "lords_hall_access", StringComparison.OrdinalIgnoreCase))
 				{
 					string text7 = BuildRuntimeLordsHallAccessInstruction();
@@ -8534,6 +8542,8 @@ public static class AIConfigHandler
 				return DiplomacyBehavior.CanInjectDiplomacyRuleForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
 			case "kingdom_agenda":
 				return IsKingdomLordOrKingRuleTargetForPreprocess(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
+			case "ruler_policy_proposal":
+				return CanInjectRulerPolicyProposalRuleForPreprocess(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
 			case "marriage":
 				return ResolveConversationTargetHero() != null && !string.IsNullOrWhiteSpace(RomanceSystemBehavior.Instance?.BuildMarriageRuntimeInstruction(ResolveConversationTargetHero()));
 			case "vanilla_issue":
@@ -8543,8 +8553,6 @@ public static class AIConfigHandler
 					|| !string.IsNullOrWhiteSpace(ResolveRuntimeTargetUnnamedRank());
 			case "npc_major_actions":
 				return !string.IsNullOrWhiteSpace(MyBehavior.BuildNpcMajorActionsRuntimeInstructionForExternal(ResolveConversationTargetHero()));
-			case "npc_recent_actions":
-				return !string.IsNullOrWhiteSpace(MyBehavior.BuildNpcRecentActionsRuntimeInstructionForExternal(ResolveConversationTargetHero()));
 			case "lords_hall_access":
 				return !string.IsNullOrWhiteSpace(BuildRuntimeLordsHallAccessInstructionForExternal());
 			case "noble_deference":
@@ -8580,10 +8588,6 @@ public static class AIConfigHandler
 			if (text == "npc_major_actions")
 			{
 				return MyBehavior.BuildNpcActionsRuntimeConstraintHintForExternal(ResolveConversationTargetHero(), recentOnly: false);
-			}
-			if (text == "npc_recent_actions")
-			{
-				return MyBehavior.BuildNpcActionsRuntimeConstraintHintForExternal(ResolveConversationTargetHero(), recentOnly: true);
 			}
 			if (text == "lords_hall_access")
 			{

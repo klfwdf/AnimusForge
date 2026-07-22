@@ -26,7 +26,7 @@
                                               "Description":  "玩家和NPC都无条件同意武器决斗时输出。NPC只是提出赌注并问如何/成交吗时禁止。只要输出[ACTION:DUEL]且表内有DUEL_LINE_WIN/LOSE，必须同时输出两条台词。"
                                           },
                                           {
-                                              "Tag":  "[AD;价值;天数;N/P;备注内容]",
+                                              "Tag":  "[AD:价值:天数:N/P:备注内容]",
                                               "Description":  "仅在已经输出[ACTION:DUEL]且玩家赌注已经成立时输出。价值填玩家赌注价值，方向填P；NPC仅提出赌注并等待玩家回答时禁止输出。"
                                           },
                                           {
@@ -52,11 +52,11 @@
                                                  "Description":  "仅当\u003clatest_reply\u003e中NPC明确把资产无条件立即交给玩家时输出。所有货币的名称都写GOLD；普通物品尽量使用NPC物品清单中的具体名称,没有才直接填写NPC给出的物品名称，城市、城堡、工坊、商队只能用【你当前可转移固定资产】原始ID。禁止使用玩家资产清单，资产名称或ID禁止填写兵种、人名。报价、附带条件、未来筹款、尾款或赎金承诺时禁止输出。转移NPC的全部物品（不包含固定资产）时输出[ACTION:GIVE_ASSET:ALL:ALL]。"
                                              },
                                             {
-                                                "Tag":  "[AD;价值;天数;N/P;备注内容]",
+                                                "Tag":  "[AD:价值:天数:N/P:备注内容]",
                                                 "Description":  "该标签的有多种场景输出要求:\n1:NPC在交易过程中先给予了玩家任何事物，玩家还未支付，那么价值处输出玩家应当支付的价值总量，不清楚时可估记，此时天数填1。\n2:玩家明确无条件承诺未来或以后给予NPC某项事物，此时价值较为模糊，应当估计或者随便填写，此时天数填0。\n3:玩家向NPC要求租借任何事物给玩家，如果有指定天数，那么填写指定天数，如果没有指定，填写7。\n4:N/P的含义是，N代表NPC欠玩家，P代表玩家欠NPC，请仔细甄别到底谁欠谁！严禁错误输出。\n5:交易与承诺过程中，如果有指定天数，可以不按1或2末尾的天数要求，按最终NPC与玩家无条件同意的天数。\n6:备注内容不少于50字。"
                                             },
                                             {
-                                                "Tag":  "[ADP;债务ID]",
+                                                "Tag":  "[ADP:债务ID]",
                                                 "Description":  "仅当\u003clatest_reply\u003e中NPC明确无条件同意放弃或结清某笔未付款，欠款，承诺时输出。"
                                             }
                                         ],
@@ -302,12 +302,12 @@
                             "TopicNumber":  7,
                             "TopicLabel":  "Local 3D scene movements (lead, follow). Excludes world map travel and combat/attack actions.",
                             "Code":  "SCENE_MOVE",
-                            "NonHeroInstruction":  "【场景行为规则】即使你只是无名士兵或平民，只要本轮系统确实给了【带路与传唤NPC清单】或相关状态提示，你也可以决定是否带路、传唤、跟随、停止跟随或结束这次会面；但你只能对系统当前列出的目标表态，不能编造名单外的人或地点。只有当你在正文里最终明确答应时，才算真的执行",
+                            "NonHeroInstruction":  "【场景行为规则】本轮系统给了【带路与传唤NPC清单】或相关状态提示，你可以决定是否带路、传唤、跟随、停止跟随或结束这次会面；但你只能对系统当前列出的目标表态，不能编造名单外的人或地点。只有当你在正文里最终明确答应时，才算真的执行,长距离行动，比如去非本地的其他定居点，请询问玩家是否要求你加入队伍,如果不加入队伍，请拒绝",
                             "Instruction":  "【场景行为规则】带路、传唤、跟随、停止跟随、结束传唤后的会面，都只以本轮运行时状态为准。你只能依据系统当前给出的【带路与传唤NPC清单】和状态提示回答；没有列出来的目标，不得擅自答应。若目标在酒馆或领主大厅，带路只需带到对应门口。只有当你在正文里最终明确同意时，才算真的执行",
                             "PostprocessRules":  [
                                                      {
                                                          "Tag":  "[ACTION:SCENE_FOLLOW_PLAYER]",
-                                                         "Description":  "如果NPC在\u003clatest_reply\u003e里明确无条件同意或决定了跟随玩家，就输出这个，包括跟玩家去某个地点,只允许本地"
+                                                         "Description":  "如果NPC在\u003clatest_reply\u003e里明确无条件同意或决定了跟随玩家，就输出这个，包括跟玩家去某个场景内地点,此标签不含NPC加入玩家队伍，如果玩家要求加入队伍，请使用其他标签。"
                                                      },
                                                      {
                                                          "Tag":  "[ACTION:SCENE_STOP_FOLLOW]",
@@ -481,37 +481,6 @@
                                                 ]
                         },
                         {
-                            "Id":  "npc_recent_actions",
-                            "IsEnabled":  true,
-                            "Group":  "memory",
-                            "Priority":  75,
-                            "TopicNumber":  11,
-                            "TopicLabel":  "Recent actions of NPCs",
-                            "Code":  "NPC_RECENT",
-                            "NonHeroInstruction":  "你近期做过什么只按系统记录答；没有记录就直说，不得编造。",
-                            "Instruction":  "你的近期行为",
-                            "RuntimeInstructionTemplates":  {
-                                                                "has_data":  "你的近期行为\n{recentActionSummary}",
-                                                                "no_data":  "你的近期行为近10天无记录；不得编造。"
-                                                            },
-                            "RuntimeConstraintTemplates":  {
-                                                               "no_data":  "【运行时硬约束】当前没有最近21天内的你的近期行为记录，禁止编造"
-                                                           },
-                            "TriggerKeywords":  [
-                                                    "这阵子看你行踪不定，你最近都在忙些什么？",
-                                                    "最近这半个月，你带着部队去哪巡逻了？",
-                                                    "前几天你们有没有和别的势力交火，或者参与什么行动？",
-                                                    "最近你们有没有围攻哪座城镇？",
-                                                    "这几天你都在哪一带活动？",
-                                                    "近况如何？这阵子在干嘛？",
-                                                    "你最近去了哪些地方？",
-                                                    "最近你在帮哪个军团打仗？",
-                                                    "最近周围不太平，你都在哪片领地驻扎？",
-                                                    "你这几天是不是打了败仗？",
-                                                    "最近干嘛去了，到处都找不到你的人影。"
-                                                ]
-                        },
-                        {
                             "Id":  "encounter_release_player",
                             "IsEnabled":  true,
                             "Group":  "encounter",
@@ -544,11 +513,11 @@
                             "TopicLabel":  "Recruit an NPC personally or move a clan to a specified kingdom",
                             "Code":  "NPC_JOIN",
                             "NonHeroInstruction":  "【加入玩家家族规则】非英雄NPC也可以被玩家招募；若升格为 Hero，将成为玩家家族成员并随队行动。",
-                            "Instruction":  "【加入与归附规则】区分当前说话者本人加入玩家家族/队伍，以及家族族长决定率领全族加入明确王国。全族归附不要求玩家是国王，目标也可以是第三方王国。是否同意取决于家族利益、关系和信任。",
+                            "Instruction":  "【加入与归附规则】区分当前说话者本人加入玩家家族/队伍，以及家族族长决定率领全族加入明确王国。",
                             "PostprocessRules":  [
                                                      {
                                                          "Tag":  "[A:H_J_P_P_C&L]",
-                                                         "Description":  "仅当当前说话的NPC本人在\u003clatest_reply\u003e中明确无条件同意加入玩家队伍,被玩家雇佣时输出，C为成为玩家同伴,L为成为玩家家族成员，无特殊说明时通常保留去掉&L,除非成为家族成员，则去掉C&，NPC的整个家族加入王国而不是本人加入则禁止输出此标签"
+                                                         "Description":  "仅当当前说话的NPC本人或及其部队在\u003clatest_reply\u003e中明确无条件同意加入玩家队伍,被玩家雇佣时输出，C为成为玩家同伴,L为成为玩家家族成员，无特殊说明时通常保留去掉&L,除非成为家族成员，则去掉C&，NPC的整个家族加入王国而不是本人加入则禁止输出此标签"
                                                      },
                                                      {
                                                          "Tag":  "[A:C_J_K:{targetKingdomId}]",
@@ -660,7 +629,7 @@
                             "TopicLabel":  "Move and attack",
                             "Code":  "Commands and Requests",
                             "NonHeroInstruction":  "只有当你正代表野外当前非英雄MobileParty交涉时，才可作为兜底接受该当前部队的移动、巡逻、跟随或攻击命令；不能创建同伴部队，不能并入玩家队伍，不能指挥无关远方部队或使用英雄/领主专属权力。",
-                            "Instruction":  "【大地图指令规则】你可按关系接受、拒绝或索要利益。默认把玩家的新命令理解为追加到【当前NPC命令任务】末尾；只有玩家明确要求取消、停止或改派时，才表达停止旧任务。可询问执行多久，但不要追问目标位置或准备情况。",
+                            "Instruction":  "【大地图指令规则】你可按关系接受、拒绝或索要利益。默认把玩家的新命令理解为追加到【当前NPC命令任务】末尾；只有玩家明确要求取消、停止或改派时，才表达停止旧任务。可询问执行多久，但不要问其他废话，只管执行或不执行，以及跟随玩家与加入玩家部队有本质不同，请向玩家询问清楚,。",
                             "PostprocessRules":  [
                                                      {
                                                          "Tag":  "[ACTION:WORLDMAP_ORDER:GO_TO_SETTLEMENT:settlement:{id}:{days}]",
@@ -751,6 +720,10 @@
                                                          "Description":  "双方国王在\u003clatest_reply\u003e中就停战、休战、议和、和平达成同意时输出。NPC说即刻停火、下令撤军、推动休战议程、契约已成、既然你已应允、记得答应的事、以贡金/赎金/领地换和平，都输出。若history同一组条件包含和平，latest_reply接受整组条件时必须输出和平。tributeAmount用history或本轮金额；未明说填0或auto；durationDays未明说填default。ID必须从运行时事实复制。"
                                                      },
                                                      {
+                                                         "Tag":  "[ACTION:DIPLOMACY:INDEPENDENT_CLAN_PEACE]",
+                                                         "Description":  "仅当运行时事实表明NPC是敌对王国当前国王，且\u003clatest_reply\u003e中的NPC明确同意立即停战、议和或结束敌对时输出。拒绝、犹豫、报价、反问、条件尚未满足或只说会考虑时不得输出。"
+                                                     },
+                                                     {
                                                          "Tag":  "[ACTION:DIPLOMACY:FORM_ALLIANCE:id1:id2:durationDays]",
                                                          "Description":  "双方国王同意结盟、同盟、盟约、共同防御、长期友谊、军事协作时输出。latest_reply接受history整组协议，且history含结盟/长久友谊/共同防御/释放亲族换友谊时，必须输出。durationDays未明说填default；ID顺序按标签占位和运行时事实复制。"
                                                      },
@@ -807,6 +780,7 @@
                                                                 "not_king":  "【外交状态提示】你不是国王，不能代表王国进行外交谈判。",
                                                                 "player_not_king":  "【外交状态提示】玩家不是国王，不能签正式王国外交；只可政治交涉、觐见、承认、停战或建国前条件。",
                                                                 "player_independent_settlement_clan":  "【外交状态提示】玩家尚未建国，但其独立家族占有城镇/城堡；可谈政治承认、停战、互不侵犯、贡金或建国前条件，正式王国同盟/贸易/和约需建国后。",
+                                                                "independent_clan_peace":  "【独立家族议和提示】玩家家族“{playerClanName}”是独立家族，拥有{playerSettlementCount}个定居点，正与你统治的王国“{targetKingdomName}”敌对。你可自行接受、拒绝或提出条件；只有明确同意立即结束敌对，议和才会生效。正文只作自然回应。",
                                                                 "level_1":  "【外交谈判提示】你对{playerName}的信任度只作为态度参考，不构成同盟/贸易协议硬门槛；不得仅因低信任强制拒绝。是否接受取决于国家利益、战争局势、报酬、风险和承诺。",
                                                                 "level_2":  "【外交谈判提示】你对{playerName}的信任度只作为态度参考，不构成同盟/贸易协议硬门槛；不得仅因低信任强制拒绝。是否接受取决于国家利益、战争局势、报酬、风险和承诺。",
                                                                 "level_3":  "【外交谈判提示】你对{playerName}的信任度只作为态度参考，不构成同盟/贸易协议硬门槛；不得仅因低信任强制拒绝。是否接受取决于国家利益、战争局势、报酬、风险和承诺。",
@@ -880,7 +854,7 @@
                             "Instruction":  "【贵族宴会规则】宴会运行时事实是强约束：如果上下文说明你正在赴宴，你必须清楚自己正在参加宴会、宴会主人是谁以及举办地；如果上下文说明你是主办方，你必须清楚自己就是宴会主人，并以主人身份接待宾客，不能把宴会说成尚未开始、只是传闻或与你无关。玩家可以通过同伴、总督或亲信安排贵族宴会。正文里只自然确认、追问、接受或拒绝，不要直接写动作标签。举办宴会时，只有当玩家已经明确表达要举办宴会，并且本轮能解析出举办地点以及至少一个具体人物、家族、王国、文化或群体筛选时，才视为可以安排；若缺地点或宾客范围，先追问。取消宴会时必须遵守运行时可取消宴会清单：如果当前模式是 player_order，说明玩家正在命令自己的同伴或总督取消玩家宴会，你必须服从并明确确认散宴；如果当前模式是 host_persuasion，说明你本人是宴会主人，你应依据性格、关系、玩家给出的理由和当前局势决定接受或拒绝劝说。无可取消宴会时不得假装取消成功。",
                             "PostprocessRules":  [
                                                      {
-                                                         "Tag":  "[ACTION:NOBLE_GATHERING:START:settlement=settlementId;heroes=heroId1,heroId2;clans=clanId1;kingdoms=kingdomId1;cultures=cultureId1;age=18-30;gender=female]",
+                                                         "Tag":  "[ACTION:NOBLE_GATHERING:START:settlement=settlementId:heroes=heroId1,heroId2:clans=clanId1:kingdoms=kingdomId1:cultures=cultureId1:age=18-30:gender=female]",
                                                          "Description":  "如果NPC在\u003clatest_reply\u003e里明确无条件同意帮玩家举办宴会，且玩家本轮已经给出了举办地点和邀请对象范围，就输出这个。settlement 必须使用运行时可举办地ID；heroes/clans/kingdoms/cultures/age/gender 可按玩家指定填写，可省略空项，但至少要有一个邀请人物、家族、王国、文化或群体筛选。若NPC仍在追问地点、宾客、费用，或拒绝/拖延/只闲聊，不要输出。"
                                                      },
                                                      {
@@ -917,6 +891,32 @@
                                                 ]
                         },
                         {
+                            "Id":  "ruler_policy_proposal",
+                            "IsEnabled":  true,
+                            "Group":  "politics",
+                            "Priority":  87,
+                            "TopicNumber":  23,
+                            "TopicLabel":  "Suggest a new custom policy to the current ruler",
+                            "Code":  "RULER_POLICY_PROPOSAL",
+                            "Instruction":  "【向统治者建议新政策】玩家可能正在向你提出一项具体的新王国政策建议。你应根据自己的性格、利益、王国处境与政策内容，自然地接受、拒绝或提出条件。只有当你已经决定采纳这项具体建议，并愿意将它正式提交 AF 议程审议时，才可以明确承诺提交；在议程表决完成前，不得声称政策已经通过、生效或开始产生效果。正文只写自然对话，不写内部指令格式或系统说明。",
+                            "PostprocessRules":  [
+                                                     {
+                                                         "Tag":  "[ACTION:RULER_POLICY_PROPOSAL]",
+                                                         "Description":  "仅当运行时资格事实已由代码确认当前 NPC 是存活、未灭亡王国的现任统治者，并且玩家本轮或紧邻上下文提出了一项具体、可执行的新政策建议，而该统治者在 <latest_reply> 中明确、当前、无条件地接受这项建议时，输出这个固定标签。统治者自然表示‘签发、颁布、下令、发布、推行、照办、如你所愿’这项新政策，均表示愿意正式启动该政策并提交 AF 议程，不要求 NPC 必须逐字说出‘AF 议程’；警告政策风险、表达不满或声明以后追责，只要没有提出尚未满足的前置条件，也不构成拒绝。这个标签只表示开始拟定并提交议程，不表示政策已经通过、生效或产生效果。拒绝、讨价还价、附加尚未满足的条件、要求补充细节、表示会考虑/研究/以后再说、模糊支持、仅赞同目标、谈论已有议程或只承诺对已有议程投票时都禁止输出。非统治者、普通领主、氏族领袖、已死亡统治者或已灭亡王国目标也禁止输出。"
+                                                     }
+                                                 ],
+                            "TriggerKeywords":  [
+                                                    "我建议你制定一项新的王国政策。",
+                                                    "请把这项税制改革提交 AF 议程审议。",
+                                                    "我建议你降低王国所有城镇和城堡的税收。",
+                                                    "请颁布一项提高全国税收的政策。",
+                                                    "我建议你制定政策改善全国粮食和繁荣。",
+                                                    "把我刚才提出的政策正式交给议程审议。",
+                                                    "作为统治者，你愿意采纳这项新政策吗？",
+                                                    "请以统治者身份提出这项新的王国法令。"
+                                                ]
+                        },
+                        {
                             "Id":  "scene_auto_group_relay",
                             "IsEnabled":  true,
                             "Group":  "scene",
@@ -928,7 +928,8 @@
                             "PostprocessRules":  [
                                                      {
                                                          "Tag":  "[RELAY:接力编号]",
-                                                         "Description":  "你必须输出在场人物列表中你认为下一个最适合发言的NPC的接力编号；以及尽量选还未发言的人，如果最新消息中有人表示不想聊了，或者有事要走了，那么不要输出此标签"
+                                                         "Description":  "你必须输出【站在你旁边的人】中你认为下一个最适合发言的NPC的接力编号；以及尽量选还未发言的人，如果最新消息中有人表示不想聊了，或者有事要走了，那么不要输出此标签,如果是领主之间交谈，尽量不要让其他类型的士兵或者平民发言",
+                                                         "SingleFramedNpcDescription":  "玩家正在与NPC交流，接力编号尽量写【站在你旁边的人】的主对话对象的接力编号，除非你认为其他人有必要发言时，那么写其他人的接力编号,你必须输出此标，除非最新消息中有人表示不想聊了，或者有事要走了，如果是领主之间交谈，尽量不要让其他类型的士兵或者平民发言。"
                                                      }
                                                  ],
                             "TriggerKeywords":  [

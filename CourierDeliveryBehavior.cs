@@ -3886,7 +3886,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		List<string> selectedRuleHits = MergeCourierSelectedRuleIds(preprocessRuleHits, ctx?.PreprocessRuleIds);
 		selectedRuleHits = ExcludeCourierSelectedRuleIds(selectedRuleHits, CourierExcludedRuleIds) ?? new List<string>();
 		string extras = (ctx?.Extras ?? "").Trim();
-		extras = AppendCourierPlayerRecentActionsIfSelected(extras, recipient, selectedRuleHits);
+		extras = AppendCourierPlayerRecentActions(extras, recipient);
 		if (HasPreprocessRuleHit(selectedRuleHits, "worldmap_party_command") || ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "worldmap_party_command"))
 		{
 			string commandTasks = WorldMapPartyCommandBehavior.BuildCurrentNpcCommandTasksPromptForExternal(recipient, recipient.CharacterObject, -1);
@@ -4288,7 +4288,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		List<string> selectedRuleHits = MergeCourierSelectedRuleIds(preprocessRuleHits, ctx?.PreprocessRuleIds);
 		selectedRuleHits = ExcludeCourierSelectedRuleIds(selectedRuleHits, CourierExcludedRuleIds) ?? new List<string>();
 		string extras = (ctx?.Extras ?? "").Trim();
-		extras = AppendCourierPlayerRecentActionsIfSelected(extras, sender, selectedRuleHits);
+		extras = AppendCourierPlayerRecentActions(extras, sender);
 		if (HasPreprocessRuleHit(selectedRuleHits, "worldmap_party_command") || ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "worldmap_party_command"))
 		{
 			string commandTasks = WorldMapPartyCommandBehavior.BuildCurrentNpcCommandTasksPromptForExternal(sender, sender.CharacterObject, -1);
@@ -4488,6 +4488,18 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			session.ReplyPostprocessedText = StripCourierActionTags(text);
 			Log("postprocess skipped recipient invalid session=" + session.Id);
 			return;
+		}
+		try
+		{
+			RulerPolicyProposalBehavior.TryProcessAcceptedTag(recipient, "courier", session.LetterText, session.ReplyText ?? text, ref text, out string proposalFailure);
+			if (!string.IsNullOrWhiteSpace(proposalFailure))
+			{
+				Log("ruler policy proposal not queued session=" + session.Id + " reason=" + proposalFailure);
+			}
+		}
+		catch (Exception ex)
+		{
+			Log("apply ruler policy proposal tag failed session=" + session.Id + " error=" + ex.Message);
 		}
 		try
 		{
@@ -4741,6 +4753,18 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		if (session.DeliveryApplied && !session.PostprocessConsumed && !string.IsNullOrWhiteSpace(session.ReplyPostprocessedText) && recipient != null)
 		{
 			string text = session.ReplyPostprocessedText;
+			try
+			{
+				RulerPolicyProposalBehavior.TryProcessAcceptedTag(recipient, "courier", session.LetterText, session.ReplyText ?? text, ref text, out string proposalFailure);
+				if (!string.IsNullOrWhiteSpace(proposalFailure))
+				{
+					Log("ruler policy proposal fallback not queued session=" + session.Id + " reason=" + proposalFailure);
+				}
+			}
+			catch (Exception ex)
+			{
+				Log("apply ruler policy proposal fallback tag failed session=" + session.Id + " error=" + ex.Message);
+			}
 			try
 			{
 				VoteDealBehavior.ProcessAgendaTagsDispatch(recipient, ref text);
@@ -8648,12 +8672,8 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			+ " extrasLen=" + extra.Length);
 	}
 
-	private static string AppendCourierPlayerRecentActionsIfSelected(string extras, Hero recipient, List<string> selectedRuleHits)
+	private static string AppendCourierPlayerRecentActions(string extras, Hero recipient)
 	{
-		if (!HasPreprocessRuleHit(selectedRuleHits, "npc_recent_actions"))
-		{
-			return extras ?? "";
-		}
 		string playerRecent = PlayerNotorietyBehavior.BuildPlayerRecentRuntimeInstructionForExternal(recipient, courier: true);
 		if (string.IsNullOrWhiteSpace(playerRecent))
 		{
@@ -8665,8 +8685,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		{
 			return normalizedExtras;
 		}
-		string block = "【附加规则:npc_recent_actions】" + Environment.NewLine + normalizedPlayerRecent;
-		return string.IsNullOrWhiteSpace(normalizedExtras) ? block : (normalizedExtras.TrimEnd() + Environment.NewLine + block);
+		return string.IsNullOrWhiteSpace(normalizedExtras) ? normalizedPlayerRecent : (normalizedExtras.TrimEnd() + Environment.NewLine + normalizedPlayerRecent);
 	}
 
 	private static bool ContainsKingdomAnnexActionTag(string text)
@@ -8733,10 +8752,10 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 	{
 		string value = text ?? "";
 		value = Regex.Replace(value, "\\[ACTION:[^\\]]+\\]", "", RegexOptions.IgnoreCase);
-		value = Regex.Replace(value, "\\[AD;[^\\]]+\\]", "", RegexOptions.IgnoreCase);
-		value = Regex.Replace(value, "\\[ADP;[^\\]]+\\]", "", RegexOptions.IgnoreCase);
-		value = Regex.Replace(value, "\\[ATT[:;][^\\]]+\\]", "", RegexOptions.IgnoreCase);
-		value = Regex.Replace(value, "\\[ATP[:;][^\\]]+\\]", "", RegexOptions.IgnoreCase);
+		value = Regex.Replace(value, "\\[AD:[^\\]]+\\]", "", RegexOptions.IgnoreCase);
+		value = Regex.Replace(value, "\\[ADP:[^\\]]+\\]", "", RegexOptions.IgnoreCase);
+		value = Regex.Replace(value, "\\[ATT:[^\\]]+\\]", "", RegexOptions.IgnoreCase);
+		value = Regex.Replace(value, "\\[ATP:[^\\]]+\\]", "", RegexOptions.IgnoreCase);
 		value = Regex.Replace(value, "\\[A:H_J_P_P_[CL]\\]", "", RegexOptions.IgnoreCase);
 		value = Regex.Replace(value, "\\[A:C_J_P_K\\]", "", RegexOptions.IgnoreCase);
 		value = Regex.Replace(value, "\\[A:C_J_K:[^\\]]+\\]", "", RegexOptions.IgnoreCase);

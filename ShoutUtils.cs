@@ -2136,7 +2136,7 @@ public static class ShoutUtils
 		return point.IsValid && !float.IsNaN(point.x) && !float.IsNaN(point.y) && !float.IsNaN(point.z) && !float.IsInfinity(point.x) && !float.IsInfinity(point.y) && !float.IsInfinity(point.z);
 	}
 
-	private static bool CanScenePointSeePoint(Scene scene, Vec3 source, Vec3 target)
+	private static bool CanScenePointSeePoint(Scene scene, Vec3 source, Vec3 target, bool failClosed = false)
 	{
 		if (scene == null || !IsValidShoutLineOfSightPoint(source) || !IsValidShoutLineOfSightPoint(target))
 		{
@@ -2153,30 +2153,59 @@ public static class ShoutUtils
 		}
 		catch
 		{
-			return true;
+			return !failClosed;
 		}
 	}
 
 	public static bool HasShoutLineOfSightToMainAgent(Agent targetAgent)
 	{
-		if (targetAgent == null || !targetAgent.IsActive() || Agent.Main == null || !Agent.Main.IsActive())
+		return HasShoutLineOfSightBetweenAgents(Agent.Main, targetAgent);
+	}
+
+	public static bool HasShoutLineOfSightBetweenAgents(Agent sourceAgent, Agent targetAgent, bool failClosed = false)
+	{
+		if (sourceAgent == null || targetAgent == null || !sourceAgent.IsActive() || !targetAgent.IsActive())
 		{
 			return false;
 		}
 		Scene scene = Mission.Current?.Scene;
 		if (scene == null)
 		{
-			return true;
+			return !failClosed;
 		}
-		Vec3 sourceEye = GetShoutLineOfSightPoint(Agent.Main);
+		Vec3 sourceEye = GetShoutLineOfSightPoint(sourceAgent);
 		Vec3 targetEye = GetShoutLineOfSightPoint(targetAgent);
-		if (CanScenePointSeePoint(scene, sourceEye, targetEye))
+		if (CanScenePointSeePoint(scene, sourceEye, targetEye, failClosed))
 		{
 			return true;
 		}
-		Vec3 sourceLower = GetShoutLineOfSightPoint(Agent.Main, lowerBodyPoint: true);
+		Vec3 sourceLower = GetShoutLineOfSightPoint(sourceAgent, lowerBodyPoint: true);
 		Vec3 targetLower = GetShoutLineOfSightPoint(targetAgent, lowerBodyPoint: true);
-		return CanScenePointSeePoint(scene, sourceLower, targetLower);
+		return CanScenePointSeePoint(scene, sourceLower, targetLower, failClosed);
+	}
+
+	public static bool HasShoutLineOfSightFromFixedAnchor(Vec3 sourcePosition, Agent targetAgent)
+	{
+		if (!IsValidShoutLineOfSightPoint(sourcePosition) || targetAgent == null || !targetAgent.IsActive())
+		{
+			return false;
+		}
+		Scene scene = Mission.Current?.Scene;
+		if (scene == null)
+		{
+			return false;
+		}
+		Vec3 sourceEye = sourcePosition;
+		sourceEye.z += ShoutLineOfSightFallbackEyeHeight;
+		Vec3 targetEye = GetShoutLineOfSightPoint(targetAgent);
+		if (CanScenePointSeePoint(scene, sourceEye, targetEye, failClosed: true))
+		{
+			return true;
+		}
+		Vec3 sourceLower = sourcePosition;
+		sourceLower.z += ShoutLineOfSightLowerBodyHeight;
+		Vec3 targetLower = GetShoutLineOfSightPoint(targetAgent, lowerBodyPoint: true);
+		return CanScenePointSeePoint(scene, sourceLower, targetLower, failClosed: true);
 	}
 
 	private static List<Agent> GetNearbyNPCAgentsLegacy(float maxDistance, float halfAngleRadians)
@@ -2387,6 +2416,18 @@ public static class ShoutUtils
 		npcDataPacket.UnnamedKey = "";
 		npcDataPacket.TroopId = "";
 		npcDataPacket.UnnamedRank = "";
+		try
+		{
+			Vec3 scenePosition = agent.Position;
+			npcDataPacket.HasScenePosition = scenePosition.IsValid;
+			npcDataPacket.ScenePositionX = scenePosition.x;
+			npcDataPacket.ScenePositionY = scenePosition.y;
+			npcDataPacket.ScenePositionZ = scenePosition.z;
+		}
+		catch
+		{
+			npcDataPacket.HasScenePosition = false;
+		}
 		if (agent.Character is CharacterObject characterObject)
 		{
 			npcDataPacket.IsFemale = characterObject.IsFemale;

@@ -1043,9 +1043,32 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		return true;
 	}
 
-	private static bool TryApplyMarriageAction(Hero left, Hero right, out string failReason)
+	// 动作标签已由上游规则授权；执行阶段只保留关系数据完整性约束，不能再用原版资格状态否决该标签。
+	private static bool CanExecuteMarriageTagPair(Hero left, Hero right, out string reason)
+	{
+		reason = "";
+		if (left == null || right == null)
+		{
+			reason = "未找到婚配双方。";
+			return false;
+		}
+		if (left == right)
+		{
+			reason = "不能和自己结婚。";
+			return false;
+		}
+		if (HasExistingMarriageBetween(left, right))
+		{
+			reason = "双方已经存在有效婚姻记录。";
+			return false;
+		}
+		return true;
+	}
+
+	private static bool TryApplyMarriageAction(Hero left, Hero right, out string failReason, bool bypassMarriageEligibilityForAuthorizedTag = false)
 	{
 		failReason = "";
+		using IDisposable notificationScope = MarriageSceneNotificationSafety.BeginScope(left, right);
 		string text = DescribeHeroMarriageState(left);
 		string text2 = DescribeHeroMarriageState(right);
 		try
@@ -1055,7 +1078,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 				Logger.Log("Romance", "[WARN] MarriageAction switching to AnimusForge multi-marriage path because at least one side already has a native spouse.");
 				Logger.Log("Romance", "[WARN] MarriageAction left=" + text);
 				Logger.Log("Romance", "[WARN] MarriageAction right=" + text2);
-				return TryApplyAnimusForgeMultiMarriageAction(left, right, out failReason);
+				return TryApplyAnimusForgeMultiMarriageAction(left, right, out failReason, bypassMarriageEligibilityForAuthorizedTag);
 			}
 			if (IsSameGenderMarriagePair(left, right))
 			{
@@ -1172,9 +1195,10 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static bool TryApplyAnimusForgeMultiMarriageAction(Hero left, Hero right, out string failReason)
+	private static bool TryApplyAnimusForgeMultiMarriageAction(Hero left, Hero right, out string failReason, bool bypassMarriageEligibilityForAuthorizedTag = false)
 	{
 		failReason = "";
+		using IDisposable notificationScope = MarriageSceneNotificationSafety.BeginScope(left, right);
 		try
 		{
 			if (left == null || right == null)
@@ -1187,10 +1211,14 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 				failReason = "双方已经存在有效婚姻记录。";
 				return false;
 			}
-			if (!TryValidateMarriagePairIgnoringRuntimeBlockers(left, right, out var reason, allowExistingSpouses: true))
+			if (!bypassMarriageEligibilityForAuthorizedTag && !TryValidateMarriagePairIgnoringRuntimeBlockers(left, right, out var reason, allowExistingSpouses: true))
 			{
 				failReason = reason;
 				return false;
+			}
+			if (bypassMarriageEligibilityForAuthorizedTag)
+			{
+				Logger.Log("Romance", "[MarriageAction] Authorized marriage tag bypassed vanilla multi-marriage eligibility checks.");
 			}
 			var marriageModel = Campaign.Current?.Models?.MarriageModel;
 			if (marriageModel == null)
@@ -1532,6 +1560,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 	private static bool TryForceApplyMarriageAction(Hero left, Hero right, out string failReason)
 	{
 		failReason = "";
+		using IDisposable notificationScope = MarriageSceneNotificationSafety.BeginScope(left, right);
 		try
 		{
 			if (left == null || right == null)
@@ -1963,9 +1992,10 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			Hero hero = (left.IsFemale ? right : left);
 			Hero hero2 = (left.IsFemale ? left : right);
 			bool flag = LordEncounterBehavior.IsEncounterMeetingMissionActive || MeetingBattleRuntime.IsMeetingActive || Mission.Current != null;
+			bool flag2 = false;
 			if (!flag)
 			{
-				MBInformationManager.ShowSceneNotification(new TaleWorlds.CampaignSystem.SceneInformationPopupTypes.MarriageSceneNotificationItem(hero, hero2, CampaignTime.Now, SceneNotificationData.RelevantContextType.Any));
+				flag2 = MarriageSceneNotificationSafety.ShowSafeNotification(hero, hero2, SceneNotificationData.RelevantContextType.Any);
 			}
 			var characterMarriedLogEntry = new TaleWorlds.CampaignSystem.LogEntries.CharacterMarriedLogEntry(left, right);
 			TaleWorlds.CampaignSystem.LogEntries.LogEntry.AddLogEntry(characterMarriedLogEntry);
@@ -1973,7 +2003,8 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			{
 				Campaign.Current?.CampaignInformationManager?.NewMapNoticeAdded(new TaleWorlds.CampaignSystem.MapNotificationTypes.MarriageMapNotification(left, right, characterMarriedLogEntry.GetEncyclopediaText(), CampaignTime.Now));
 			}
-			InformationManager.DisplayMessage(new InformationMessage(flag ? "[婚姻系统] 检测到婚姻已生效；当前在会面/任务场景中，已补发婚姻记录与提示。" : "[婚姻系统] 检测到婚姻已生效，已补发婚礼通知。", Color.FromUint(4283878655u)));
+			string information = flag ? "[婚姻系统] 检测到婚姻已生效；当前在会面/任务场景中，已补发婚姻记录与提示。" : (flag2 ? "[婚姻系统] 检测到婚姻已生效，已补发婚礼通知。" : "[婚姻系统] 检测到婚姻已生效；婚礼通知已由本次婚姻事件排队。");
+			InformationManager.DisplayMessage(new InformationMessage(information, Color.FromUint(4283878655u)));
 		}
 		catch (Exception ex)
 		{
@@ -2574,10 +2605,40 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		return true;
 	}
 
+	private static bool CanExecuteFormalMarriageTagPair(Hero playerClanHero, Hero targetHero, out string reason)
+	{
+		if (!CanExecuteMarriageTagPair(playerClanHero, targetHero, out reason))
+		{
+			return false;
+		}
+		Hero mainHero = Hero.MainHero;
+		if (mainHero == null)
+		{
+			reason = "未找到玩家英雄。";
+			return false;
+		}
+		if (playerClanHero.Clan == null || playerClanHero.Clan != mainHero.Clan)
+		{
+			reason = "玩家方婚配人选必须来自玩家家族。";
+			return false;
+		}
+		if (targetHero.Clan == null)
+		{
+			reason = "目标没有家族，无法走家族联姻流程。";
+			return false;
+		}
+		if (playerClanHero.Clan == targetHero.Clan)
+		{
+			reason = "正规联姻要求双方来自不同家族。";
+			return false;
+		}
+		return true;
+	}
+
 	private bool TryExecuteFormalMarriage(Hero speaker, Hero playerClanHero, Hero targetHero, int? bridePrice, out string status)
 	{
 		status = "";
-		if (!CanArrangeFormalMarriagePair(playerClanHero, targetHero, out var reason))
+		if (!CanExecuteFormalMarriageTagPair(playerClanHero, targetHero, out var reason))
 		{
 			status = "正规联姻失败：" + reason;
 			return false;
@@ -2606,7 +2667,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			num5 = RewardSystemBehavior.Instance?.GetPlayerPrepaidGoldForExternal(leader) ?? 0;
 		}
-		if (!TryApplyMarriageAction(playerClanHero, targetHero, out var failReason))
+		if (!TryApplyMarriageAction(playerClanHero, targetHero, out var failReason, bypassMarriageEligibilityForAuthorizedTag: true))
 		{
 			Logger.Log("Romance", "[WARN] MarriageAction failed after LLM tag, fallback to force apply: " + failReason);
 			if (ShouldUseAnimusForgeMultiMarriage(playerClanHero, targetHero))
@@ -2668,7 +2729,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 	private bool TryExecuteElopeMarriage(Hero speaker, Hero targetHero, out string status)
 	{
 		status = "";
-		if (!CanPlayerMarryTarget(targetHero, out var reason))
+		if (!CanExecuteMarriageTagPair(Hero.MainHero, targetHero, out var reason))
 		{
 			status = "私奔失败：" + reason;
 			return false;
@@ -2709,7 +2770,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			num2 = -20;
 		}
-		if (!TryApplyMarriageAction(Hero.MainHero, targetHero, out var failReason))
+		if (!TryApplyMarriageAction(Hero.MainHero, targetHero, out var failReason, bypassMarriageEligibilityForAuthorizedTag: true))
 		{
 			Logger.Log("Romance", "[WARN] Elope MarriageAction failed after LLM tag, fallback to force apply: " + failReason);
 			if (ShouldUseAnimusForgeMultiMarriage(Hero.MainHero, targetHero))

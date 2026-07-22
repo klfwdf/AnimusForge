@@ -14,6 +14,10 @@ public sealed class AnimusForgeDialogueHistoryEntry
 
 	public string Speaker { get; set; } = "";
 
+	public int TargetAgentIndex { get; set; } = -1;
+
+	public string TargetName { get; set; } = "";
+
 	public string Text { get; set; } = "";
 
 	public string Kind { get; set; } = "";

@@ -273,6 +273,14 @@ public class SubModule : MBSubModuleBase
 			}
 			try
 			{
+				WorldMapGovernorExpeditionNativeLifecyclePatch.EnsurePatched(harmony);
+			}
+			catch (Exception ex8af2)
+			{
+				Logger.LogTrace("SubModule", ">>> Governor expedition native lifecycle patch failed: " + ex8af2.Message);
+			}
+			try
+			{
 				CampaignTickDiagnosticsPatch.EnsurePatched(harmony);
 			}
 			catch (Exception ex8ag)

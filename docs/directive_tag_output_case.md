@@ -19,7 +19,7 @@ AnimusForge 的主对话不是单层提示词，而是三段式链路：
 
 ## 硬性边界：指令标签不进主链路
 
-指令标签绝对不可以写进主链路规则。主链路规则只能指导 NPC 如何自然说话、如何表态、如何遵守事实边界；不得包含 `[ACTION:...]`、`[A:...]`、`[AD;...]`、`[ADP;...]` 等最终动作标签格式、标签示例或“输出标签”的要求。
+指令标签绝对不可以写进主链路规则。主链路规则只能指导 NPC 如何自然说话、如何表态、如何遵守事实边界；不得包含 `[ACTION:...]`、`[A:...]`、`[AD:...]`、`[ADP:...]` 等最终动作标签格式、标签示例或“输出标签”的要求。
 
 所有指令标签格式、输出条件、禁止条件和示例都必须写在同一话题的 `PostprocessRules` 中，并通过后处理链路的 `{tag_rules}` 注入。这样 NPC 正文不会泄露内部标签，游戏机制也只由后处理标签和 C# 解析器稳定触发。
 
@@ -132,13 +132,13 @@ C# 代码只负责：
 ### Duel
 
 - 话题：`Duel`
-- 标签：`[ACTION:DUEL]`、`[AD;金额;天数;备注内容]`、`[ACTION:DUEL_LINE_WIN:...]`、`[ACTION:DUEL_LINE_LOSE:...]`
+- 标签：`[ACTION:DUEL]`、`[AD:金额:天数:备注内容]`、`[ACTION:DUEL_LINE_WIN:...]`、`[ACTION:DUEL_LINE_LOSE:...]`
 - 关键点：决斗标签和赌注/台词标签都在后处理中出现；债务标签与决斗同轮出现时需要延后到决斗结算后处理。
 
 ### Barter, Bestow, or Exchange Assets
 
 - 话题：`IBarter, Bestow, or Exchange Assets`
-- 标签：`[ACTION:GIVE_GOLD:金额]`、`[ACTION:GIVE_ITEM:物品名称:数量]`、`[AD;金额;天数;备注内容]`、`[ADP;债务ID]`
+- 标签：`[ACTION:GIVE_GOLD:金额]`、`[ACTION:GIVE_ITEM:物品名称:数量]`、`[AD:金额:天数:备注内容]`、`[ADP:债务ID]`
 - 关键点：主链路强调系统事实和库存限制，后处理拿到物品清单、玩家可见装备和债务提示。
 
 ### Debts and credit
