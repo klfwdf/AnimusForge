@@ -279,6 +279,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			new InquiryElement("vassalage_management", "臣属国管理", null, isEnabled: true, "只查看已有臣属国；解约、改约、吞并请通过 LLM 对话推进。"),
 			new InquiryElement("player_persona", "修改玩家外貌与背景", null, isEnabled: true, ""),
 			new InquiryElement("settlement_entry_troops", "进城随行配置", null, isEnabled: true, "配置 SETS 进城/城堡/村庄自动带入的同伴和士兵。"),
+			new InquiryElement("noble_prisoner_escort", "贵族俘虏随行配置", null, isEnabled: true, "分别配置攻城处置、普通定居点、领主大厅和野外会面中带入的英雄俘虏。"),
 			new InquiryElement("troop_inspection", "检阅士兵", null, isEnabled: true, ""),
 			new InquiryElement("military_exercise", "军事演习", null, isEnabled: true, ""),
 			new InquiryElement("api_onboarding", "重新进行API首次引导", null, isEnabled: true, "只重新选择和测试 API 配置，不进入数据库导入或首次使用流程。"),
@@ -316,6 +317,11 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			{
 				CloseTerminal();
 				SettlementEntryTroopSelectionBehavior.OpenConfigFromTerminal();
+			}
+			else if (string.Equals(text, "noble_prisoner_escort", StringComparison.Ordinal))
+			{
+				CloseTerminal();
+				NoblePrisonerEscortBehavior.OpenConfigFromTerminal();
 			}
 			else if (string.Equals(text, "troop_inspection", StringComparison.Ordinal))
 			{

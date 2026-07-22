@@ -5045,15 +5045,21 @@ public class ShoutBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static string BuildSceneMechanismPromptSection(List<SceneSummonPromptTarget> sceneSummonTargets = null, List<SceneGuidePromptTarget> sceneGuideTargets = null, string sceneSummonClosureInstruction = null, string sceneFollowControlInstruction = null)
+	private static string BuildSceneMechanismPromptSection(List<SceneSummonPromptTarget> sceneSummonTargets = null, List<SceneGuidePromptTarget> sceneGuideTargets = null, string sceneSummonClosureInstruction = null, string sceneFollowControlInstruction = null, NpcDataPacket publicActionTarget = null)
 	{
+		string executionInstruction = publicActionTarget == null
+			? string.Empty
+			: NoblePrisonerEscortBehavior.BuildPublicExecutionPromptInstruction(publicActionTarget.AgentIndex);
 		if (AIConfigHandler.ShouldExcludeSceneMoveRuleForCurrentMission())
 		{
-			return "";
+			return executionInstruction;
 		}
 		if (IsPrisonBreakRescueMissionActive())
 		{
-			return string.IsNullOrWhiteSpace(sceneFollowControlInstruction) ? "" : sceneFollowControlInstruction.Trim();
+			string prisonBreakInstruction = string.IsNullOrWhiteSpace(sceneFollowControlInstruction) ? "" : sceneFollowControlInstruction.Trim();
+			return string.IsNullOrWhiteSpace(executionInstruction)
+				? prisonBreakInstruction
+				: (prisonBreakInstruction + "\n" + executionInstruction).Trim();
 		}
 		StringBuilder stringBuilder = new StringBuilder();
 		if (SettlementEntryTroopSelectionBehavior.IsOwnedOrAttachedTownEntryActiveForExternal(Mission.Current))
@@ -5071,6 +5077,10 @@ public class ShoutBehavior : CampaignBehaviorBase
 		if (!string.IsNullOrWhiteSpace(sceneFollowControlInstruction))
 		{
 			stringBuilder.AppendLine(sceneFollowControlInstruction);
+		}
+		if (!string.IsNullOrWhiteSpace(executionInstruction))
+		{
+			stringBuilder.AppendLine(executionInstruction);
 		}
 		return stringBuilder.ToString().Trim();
 	}
@@ -9024,7 +9034,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		{
 			return true;
 		}
-		return Regex.IsMatch(text ?? "", "\\[(?:ACTION:(?:GIVE_ASSET|KINGDOM_SERVICE|JOIN_MERCENARY|JOIN_VASSAL|TRADE_TRUST|KING_ABDICATE_TO_PLAYER|VASSALAGE|KINGDOM_ANNEX|AGENDA|WORLDMAP_ORDER|DUEL|ISSUE_|QUEST_TURN_IN|NOBLE_GATHERING|INTIMACY_INTERNAL|MEETING_TAUNT_BATTLE|LET_PLAYER_GO|ENCOUNTER_RELEASE_PLAYER|NPC_SURRENDER|SIEGE_|6|召集)[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD:[^\\]]*|ADP:[^\\]]*)\\]", RegexOptions.IgnoreCase);
+		return Regex.IsMatch(text ?? "", "\\[(?:ACTION:(?:GIVE_ASSET|KINGDOM_SERVICE|JOIN_MERCENARY|JOIN_VASSAL|TRADE_TRUST|KING_ABDICATE_TO_PLAYER|VASSALAGE|KINGDOM_ANNEX|AGENDA|WORLDMAP_ORDER|DUEL|ISSUE_|QUEST_TURN_IN|NOBLE_GATHERING|NOBLE_PRISONER_EXECUTE|INTIMACY_INTERNAL|MEETING_TAUNT_BATTLE|LET_PLAYER_GO|ENCOUNTER_RELEASE_PLAYER|NPC_SURRENDER|SIEGE_|6|召集)[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD:[^\\]]*|ADP:[^\\]]*)\\]", RegexOptions.IgnoreCase);
 	}
 
 	private bool TryApplyDeferredScenePostprocessActionTagsDirectly(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, ref string tags, string playerText, string npcReplyText, string chainName)
@@ -9035,6 +9045,11 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		}
 		string before = tags ?? "";
 		Logger.Log("ShoutBehavior", "[DeferredPostprocess] direct_action_apply start target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown") + " agent=" + targetAgentIndex + " tags=" + before.Replace("\r", "\\r").Replace("\n", "\\n"));
+		NoblePrisonerEscortBehavior.TryProcessPublicExecutionTag(targetAgentIndex, playerText, ref tags);
+		if (string.IsNullOrWhiteSpace(tags))
+		{
+			return !string.Equals(before, tags ?? "", StringComparison.Ordinal);
+		}
 		ApplyNativeConversationActionTags(targetHero, targetCharacter, ref tags, targetAgentIndex, playerText, actionChainName: chainName, npcReplyTextOverride: npcReplyText);
 		bool changed = !string.Equals(before, tags ?? "", StringComparison.Ordinal);
 		Logger.Log("ShoutBehavior", "[DeferredPostprocess] direct_action_apply done target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown") + " agent=" + targetAgentIndex + " changed=" + changed + " remaining=" + ((tags ?? "").Replace("\r", "\\r").Replace("\n", "\\n")));
@@ -13200,7 +13215,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			SplitSceneExtraSections(baseExtrasWithoutTrust, out var miscExtrasSection, out var ruleExtrasSection, out var knowledgeExtrasSection);
 			bool partyTransferTopicSelected = HasPartyTransferRuleContext(baseExtras);
 			string sceneFollowControlInstruction = BuildSceneFollowControlPromptInstruction(speakerNpc);
-			string sceneMechanismPromptSection = BuildSceneMechanismPromptSection(null, null, null, sceneFollowControlInstruction);
+			string sceneMechanismPromptSection = BuildSceneMechanismPromptSection(null, null, null, sceneFollowControlInstruction, speakerNpc);
 			if (!string.IsNullOrWhiteSpace(sceneMechanismPromptSectionBase))
 			{
 				sceneMechanismPromptSection = string.IsNullOrWhiteSpace(sceneMechanismPromptSection) ? sceneMechanismPromptSectionBase.Trim() : (sceneMechanismPromptSectionBase.Trim() + "\n" + sceneMechanismPromptSection);
@@ -16481,6 +16496,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return worldMapResult;
 		}
+		NoblePrisonerEscortBehavior.StripExecutionTag(ref content, "native_private_conversation");
+		if (string.IsNullOrWhiteSpace(content))
+		{
+			return worldMapResult;
+		}
 		targetHero = targetHero ?? targetCharacter?.HeroObject;
 		int resolvedTargetAgentIndex = targetAgentIndexOverride >= 0 ? targetAgentIndexOverride : TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
 		try
@@ -17487,7 +17507,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				sceneSummonClosureInstruction = BuildSceneSummonClosurePromptInstruction(new List<NpcDataPacket> { sceneSpeakerNpc });
 			}
 			string sceneFollowControlInstruction = BuildSceneFollowControlPromptInstruction(sceneSpeakerNpc);
-			string section = BuildSceneMechanismPromptSection(sceneSummonTargets, sceneGuideTargets, sceneSummonClosureInstruction, sceneFollowControlInstruction);
+			string section = BuildSceneMechanismPromptSection(sceneSummonTargets, sceneGuideTargets, sceneSummonClosureInstruction, sceneFollowControlInstruction, sceneSpeakerNpc);
 			return !string.IsNullOrWhiteSpace(section);
 		}
 		catch
@@ -17652,7 +17672,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string roleRuntimeContext = BuildSceneUserRuntimeContextForSingle(npc, targetHero, presentNpcs, includeInventorySummary, includeTradePricing, partyTransferTopicSelected);
 		string nativeSceneSummonClosureInstruction = BuildSceneSummonClosurePromptInstruction(presentNpcs);
 		string nativeSceneFollowControlInstruction = BuildSceneFollowControlPromptInstruction(npc);
-		string nativeSceneMechanismPromptSection = BuildSceneMechanismPromptSection(nativeSceneSummonTargets, nativeSceneGuideTargets, nativeSceneSummonClosureInstruction, nativeSceneFollowControlInstruction);
+		string nativeSceneMechanismPromptSection = BuildSceneMechanismPromptSection(nativeSceneSummonTargets, nativeSceneGuideTargets, nativeSceneSummonClosureInstruction, nativeSceneFollowControlInstruction, npc);
 		string systemRuleBlock = BuildSceneSystemRuleBlock(ruleExtrasSection, nativeSceneMechanismPromptSection);
 		string combinedRuleInspectionBlock = BuildSceneCompositeUserBlock("", knowledgeExtrasSection, systemRuleBlock);
 		Hero nativePostprocessHero = targetHero ?? targetCharacter?.HeroObject;
@@ -25052,7 +25072,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				}
 				string sceneSummonClosureInstruction = BuildSceneSummonClosurePromptInstruction(speakingCandidates);
 				string sceneFollowControlInstruction = BuildSceneFollowControlPromptInstruction(primaryNpc);
-				string sceneMechanismPromptSection = BuildSceneMechanismPromptSection(sceneSummonTargets, sceneGuideTargets, sceneSummonClosureInstruction, sceneFollowControlInstruction);
+				string sceneMechanismPromptSection = BuildSceneMechanismPromptSection(sceneSummonTargets, sceneGuideTargets, sceneSummonClosureInstruction, sceneFollowControlInstruction, primaryNpc);
 				string scenePatienceInstruction = "";
 				GetSceneReplyLengthLimits(settings, out var minTokens, out var maxTokens);
 				sysPrompt.AppendLine("【群体对话规则】");
@@ -25385,7 +25405,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			int sceneGuideFirstPromptId = ((sceneSummonTargets != null && sceneSummonTargets.Count > 0) ? sceneSummonTargets.Max((SceneSummonPromptTarget x) => x?.PromptId ?? 0) : 0) + 1;
 			List<SceneGuidePromptTarget> sceneGuideTargets = BuildSceneGuidePromptTargets(firstPromptId: sceneGuideFirstPromptId);
 			string sceneSummonClosureInstruction = BuildSceneSummonClosurePromptInstruction(actionPromptParticipants);
-			string sceneMechanismPromptSectionBase = BuildSceneMechanismPromptSection(sceneSummonTargets, sceneGuideTargets, sceneSummonClosureInstruction, null);
+			string sceneMechanismPromptSectionBase = BuildSceneMechanismPromptSection(sceneSummonTargets, sceneGuideTargets, sceneSummonClosureInstruction, null, primaryNpc);
 			bool multiNpcScene = speakableCandidates.Count > 1;
 			bool relaySingleFramedNpc = framedNpcData != null && framedNpcData.Count == 1;
 			int primaryTargetAgentIndex = primaryNpc?.AgentIndex ?? (-1);
@@ -25524,7 +25544,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					string trustBlock = ExtractTrustPromptBlock(baseExtras, out var baseExtrasWithoutTrust);
 					SplitSceneExtraSections(baseExtrasWithoutTrust, out var miscExtrasSection, out var ruleExtrasSection, out var knowledgeExtrasSection);
 					string sceneFollowControlInstruction = BuildSceneFollowControlPromptInstruction(currentSpeaker);
-					string sceneMechanismPromptSection = BuildSceneMechanismPromptSection(sceneSummonTargets, sceneGuideTargets, sceneSummonClosureInstruction, sceneFollowControlInstruction);
+					string sceneMechanismPromptSection = BuildSceneMechanismPromptSection(sceneSummonTargets, sceneGuideTargets, sceneSummonClosureInstruction, sceneFollowControlInstruction, currentSpeaker);
 					List<string> historyLines = null;
 					lock (_historyLock)
 					{
@@ -26064,6 +26084,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						{
 							return;
 						}
+						bool noblePrisonerExecutionQueued = allowPlayerDirectedActions
+							&& NoblePrisonerEscortBehavior.TryProcessPublicExecutionTag(
+								matchedNpc.AgentIndex,
+								playerDirectedActionText,
+								ref content);
 						bool flag = false;
 						bool flagMeetingRelease = false;
 						bool flagSceneTaunt = false;
@@ -26294,7 +26319,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 								string fullHistoryText = PrepareSceneHistorySpeechText(historyFullContent);
 								RefreshSceneSummonConversationForSpeaker((agent != null) ? agent.Index : matchedNpc.AgentIndex);
 								bool flag4 = IsAgentHostileToMainAgent(agent);
-								if (interactionTimeoutSeconds > 0f && !flagNpcSurrender && !flag4 && !flag5 && !flag6 && !flag10 && !flagMeetingRelease && !flagSceneTaunt2)
+								if (interactionTimeoutSeconds > 0f && !noblePrisonerExecutionQueued && !flagNpcSurrender && !flag4 && !flag5 && !flag6 && !flag10 && !flagMeetingRelease && !flagSceneTaunt2)
 								{
 									RefreshActiveInteractionTimeout(matchedNpc, interactionParticipantCount, interactionTimeoutSeconds);
 								}

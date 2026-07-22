@@ -567,6 +567,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 				if (!_meetingCombatUnlockApplied)
 				{
 					ArmDeferredDetachedFormationRestoreForCombat();
+					base.Mission.GetMissionBehavior<NoblePrisonerEscortMissionBehavior>()?.BeginMeetingRetreat();
 					EnsureMissionBattleModeForCombat();
 					EnsureMissionCombatTeamRelationships();
 					RestoreTargetLordControllerForCombat();
@@ -1025,6 +1026,10 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 				{
 					continue;
 				}
+				if (NoblePrisonerEscortBehavior.IsMeetingRetreatingAgent(agent))
+				{
+					continue;
+				}
 				Team team = null;
 				try
 				{
@@ -1069,6 +1074,10 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 			foreach (Agent agent in base.Mission.Agents)
 			{
 				if (agent == null || !agent.IsActive())
+				{
+					continue;
+				}
+				if (NoblePrisonerEscortBehavior.IsMeetingRetreatingAgent(agent))
 				{
 					continue;
 				}
@@ -5100,6 +5109,10 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 				{
 					continue;
 				}
+				if (NoblePrisonerEscortBehavior.IsMeetingRetreatingAgent(agent))
+				{
+					continue;
+				}
 				try
 				{
 					if (agent.IsAIControlled)
@@ -5178,6 +5191,10 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 			{
 				if (agent4 != null && agent4.IsActive() && agent4 != agent && agent4 != agent2)
 				{
+					if (NoblePrisonerEscortBehavior.IsMeetingRetreatingAgent(agent4))
+					{
+						continue;
+					}
 					if (ReleaseSingleAgentFromMeetingLock(agent4))
 					{
 						num++;

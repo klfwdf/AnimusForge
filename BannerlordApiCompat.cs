@@ -214,7 +214,9 @@ internal static class BannerlordApiCompat
 		int formationTroopCount,
 		int formationTroopIndex,
 		FormationClass formationClass,
-		bool wieldInitialWeapons)
+		bool wieldInitialWeapons,
+		Vec3? initialPosition = null,
+		Vec2? initialDirection = null)
 	{
 		if (mission == null || origin == null)
 		{
@@ -240,8 +242,8 @@ internal static class BannerlordApiCompat
 				formationTroopIndex,
 				formationClass,
 				wieldInitialWeapons,
-				null,
-				null)).ToArray();
+				initialPosition,
+				initialDirection)).ToArray();
 			return method.Invoke(mission, args) as Agent;
 		}
 		catch (Exception ex)

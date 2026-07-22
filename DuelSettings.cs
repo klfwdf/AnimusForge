@@ -1877,6 +1877,14 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup(SiegeNpcResponseLimitProfile.McmGroupName)]
 	public Action ClearSetsDiagnosticLog { get; set; }
 
+	[SettingPropertyButton("导出贵族俘虏随行日志", -1, true, "", Content = "导出到桌面", Order = 12, RequireRestart = false, HintText = "将 NoblePrisonerEscort.log 独立复制到桌面，用于排查俘虏生成、公开处决与野外会面撤退。")]
+	[SettingPropertyGroup(SiegeNpcResponseLimitProfile.McmGroupName)]
+	public Action ExportNoblePrisonerEscortLog { get; set; }
+
+	[SettingPropertyButton("清空贵族俘虏随行日志", -1, true, "", Content = "立即清空", Order = 13, RequireRestart = false, HintText = "只清空当前 NoblePrisonerEscort.log，不删除上一份轮转日志。")]
+	[SettingPropertyGroup(SiegeNpcResponseLimitProfile.McmGroupName)]
+	public Action ClearNoblePrisonerEscortLog { get; set; }
+
 	[SettingPropertyInteger("怀孕几率（%）", 0, 100, "0", Order = 0, RequireRestart = false, HintText = "当亲密行为标签确认本轮已发生性行为和内射后，女方怀孕的概率。0 表示不会怀孕，100 表示必定怀孕。默认 50%。")]
 	[SettingPropertyGroup("15. 亲密行为与怀孕")]
 	public int IntimacyPregnancyChancePercent { get; set; } = 50;
@@ -2549,6 +2557,20 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	private void ClearSetsDiagnosticLogNow()
 	{
 		ClearDiagnosticLog("SETS", SettlementEntryTroopSelectionLog.GetDiagnosticLogPath, SettlementEntryTroopSelectionLog.ClearLog);
+	}
+
+	private void ExportNoblePrisonerEscortLogToDesktop()
+	{
+		ExportDiagnosticLogToDesktop(
+			"贵族俘虏随行",
+			NoblePrisonerEscortLog.GetDiagnosticLogPath,
+			NoblePrisonerEscortLog.GetDiagnosticLogDirectory,
+			NoblePrisonerEscortLog.ExportLogToDesktop);
+	}
+
+	private void ClearNoblePrisonerEscortLogNow()
+	{
+		ClearDiagnosticLog("贵族俘虏随行", NoblePrisonerEscortLog.GetDiagnosticLogPath, NoblePrisonerEscortLog.ClearLog);
 	}
 
 	private static void ExportDiagnosticLogToDesktop(string featureName, Func<string> getSourcePath, Func<string> getSourceDirectory, Func<string> exportLog)
@@ -5111,6 +5133,14 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		ClearSetsDiagnosticLog = delegate
 		{
 			ClearSetsDiagnosticLogNow();
+		};
+		ExportNoblePrisonerEscortLog = delegate
+		{
+			ExportNoblePrisonerEscortLogToDesktop();
+		};
+		ClearNoblePrisonerEscortLog = delegate
+		{
+			ClearNoblePrisonerEscortLogNow();
 		};
 		TestTtsVolcDedicatedVoice = delegate
 		{

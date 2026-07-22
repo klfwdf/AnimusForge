@@ -565,6 +565,7 @@ public class SubModule : MBSubModuleBase
 			campaignGameStarter.AddBehavior(new SceneTauntBehavior());
 			campaignGameStarter.AddBehavior(new SiegeAiInterventionBehavior());
 			campaignGameStarter.AddBehavior(new SettlementEntryTroopSelectionBehavior());
+			campaignGameStarter.AddBehavior(new NoblePrisonerEscortBehavior());
 			campaignGameStarter.AddBehavior(new VoteDealBehavior());
 			campaignGameStarter.AddBehavior(new DiplomacyBehavior());
 			campaignGameStarter.AddBehavior(new VanillaIssuePromptBehavior());
