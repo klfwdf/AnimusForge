@@ -886,7 +886,7 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 			enemyFormation.SetMovementOrder(MovementOrder.MovementOrderStop);
 			alliedFormation.SetControlledByAI(true, false);
 			alliedFormation.SetMovementOrder(MovementOrder.MovementOrderCharge);
-			alliedFormation.SetFiringOrder(FiringOrder.FiringOrderHoldYourFire);
+			alliedFormation.SetFiringOrder(FiringOrder.FiringOrderFireAtWill);
 		}
 		catch (Exception ex)
 		{
@@ -911,6 +911,8 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 		}
 		int combatReadyAllies = alliedSoldiers.Count(allied => allied.GetAgentFlags()
 			.HasAllFlags(AgentFlag.CanAttack | AgentFlag.IsHumanoid));
+		int armedAllies = alliedSoldiers.Count(DoesAgentCarrySlaughterWeapon);
+		int wieldingWeaponAllies = alliedSoldiers.Count(IsSlaughterWeaponWielded);
 
 		if (logDetails
 			|| alliedSoldiers.Count != _lastLoggedSlaughterAttackerCount
@@ -921,6 +923,8 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 				+ ", AttackableTargets=" + attackableTargets
 				+ ", AlliedAttackers=" + alliedSoldiers.Count
 				+ ", CombatReadyAllies=" + combatReadyAllies
+				+ ", ArmedAllies=" + armedAllies
+				+ ", WieldingWeapons=" + wieldingWeaponAllies
 				+ ", DirectTargetLocks=" + directTargetLocks
 				+ ", NativeAutomaticFallbacks=" + nativeAutomaticFallbacks
 				+ ", NormalizedTeams=" + normalizedTeams
@@ -961,9 +965,11 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 				allied.ResetEnemyCaches();
 				allied.InvalidateTargetAgent();
 				allied.InvalidateAIWeaponSelections();
-				allied.WieldInitialWeapons(
-					Agent.WeaponWieldActionType.InstantAfterPickUp,
-					Equipment.InitialWeaponEquipPreference.Any);
+				EquipPreferredSlaughterWeapon(allied, forceSelection: true);
+			}
+			else
+			{
+				EquipPreferredSlaughterWeapon(allied, forceSelection: false);
 			}
 			bool targetLocked = false;
 			if (target != null)
@@ -981,9 +987,6 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 					allied.InvalidateAIWeaponSelections();
 					BannerlordApiCompat.TrySetAgentAutomaticTargetSelection(allied, enabled: false);
 					BannerlordApiCompat.TrySetAgentCombatTarget(allied, target);
-					allied.WieldInitialWeapons(
-						Agent.WeaponWieldActionType.InstantAfterPickUp,
-						Equipment.InitialWeaponEquipPreference.MeleeForMainHand);
 					allied.SetLookAgent(target);
 					allied.ForceAiBehaviorSelection();
 					targetLocked = ReferenceEquals(BannerlordApiCompat.GetAgentCombatTarget(allied), target);
@@ -1023,6 +1026,104 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 			Logger.Log("CastleAftermath", "Clear allied presentation action for slaughter failed. Agent="
 				+ agent.Index + ", Error=" + ex.Message);
 		}
+	}
+
+	private static bool EquipPreferredSlaughterWeapon(Agent agent, bool forceSelection)
+	{
+		if (agent == null || !agent.IsHuman || !agent.IsActive())
+		{
+			return false;
+		}
+		try
+		{
+			if (!forceSelection && IsSlaughterWeaponWielded(agent))
+			{
+				return true;
+			}
+
+			EquipmentIndex rangedSlot = FindSlaughterWeaponSlot(agent, preferRanged: true);
+			EquipmentIndex meleeSlot = FindSlaughterWeaponSlot(agent, preferRanged: false);
+			bool useRanged = rangedSlot != EquipmentIndex.None;
+			EquipmentIndex preferredSlot = useRanged ? rangedSlot : meleeSlot;
+			if (preferredSlot == EquipmentIndex.None)
+			{
+				return false;
+			}
+
+			agent.InvalidateAIWeaponSelections();
+			agent.WieldInitialWeapons(
+				Agent.WeaponWieldActionType.InstantAfterPickUp,
+				useRanged
+					? Equipment.InitialWeaponEquipPreference.RangedForMainHand
+					: Equipment.InitialWeaponEquipPreference.MeleeForMainHand);
+			if (!IsSlaughterWeaponWielded(agent))
+			{
+				agent.TryToWieldWeaponInSlot(
+					preferredSlot,
+					Agent.WeaponWieldActionType.InstantAfterPickUp,
+					isWieldedOnSpawn: false);
+			}
+			return IsSlaughterWeaponWielded(agent);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CastleAftermath", "Equip allied slaughter weapon failed. Agent="
+				+ agent.Index + ", Error=" + ex.Message);
+			return false;
+		}
+	}
+
+	private static EquipmentIndex FindSlaughterWeaponSlot(Agent agent, bool preferRanged)
+	{
+		for (EquipmentIndex slot = EquipmentIndex.WeaponItemBeginSlot;
+			slot < EquipmentIndex.NumAllWeaponSlots;
+			slot++)
+		{
+			MissionWeapon weapon = agent.Equipment[slot];
+			if (weapon.IsEmpty || weapon.Item?.Weapons == null)
+			{
+				continue;
+			}
+			bool matches = weapon.Item.Weapons.Any(usage => usage != null
+				&& !usage.IsAmmo
+				&& !usage.IsShield
+				&& (preferRanged ? usage.IsRangedWeapon : usage.IsMeleeWeapon));
+			if (matches)
+			{
+				return slot;
+			}
+		}
+		return EquipmentIndex.None;
+	}
+
+	private static bool IsSlaughterWeaponWielded(Agent agent)
+	{
+		return IsSlaughterWeaponWielded(agent, agent.GetPrimaryWieldedItemIndex())
+			|| IsSlaughterWeaponWielded(agent, agent.GetOffhandWieldedItemIndex());
+	}
+
+	private static bool DoesAgentCarrySlaughterWeapon(Agent agent)
+	{
+		return agent != null
+			&& (FindSlaughterWeaponSlot(agent, preferRanged: true) != EquipmentIndex.None
+				|| FindSlaughterWeaponSlot(agent, preferRanged: false) != EquipmentIndex.None);
+	}
+
+	private static bool IsSlaughterWeaponWielded(Agent agent, EquipmentIndex slot)
+	{
+		if (slot == EquipmentIndex.None
+			|| slot < EquipmentIndex.WeaponItemBeginSlot
+			|| slot >= EquipmentIndex.NumAllWeaponSlots)
+		{
+			return false;
+		}
+		MissionWeapon weapon = agent.Equipment[slot];
+		WeaponComponentData usage = weapon.CurrentUsageItem;
+		return !weapon.IsEmpty
+			&& usage != null
+			&& !usage.IsAmmo
+			&& !usage.IsShield
+			&& (usage.IsMeleeWeapon || usage.IsRangedWeapon);
 	}
 
 	private void PrepareSlaughterTarget(Agent target, Formation enemyFormation)
