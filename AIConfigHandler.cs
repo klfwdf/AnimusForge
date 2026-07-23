@@ -2217,7 +2217,6 @@ public static class AIConfigHandler
 				"vanilla_issue" => "ISSUE",
 				"npc_major_actions" => "NPC_MAJOR",
 				"encounter_release_player" => "MEETING_RELEASE",
-				"hero_join_party" => "HERO_JOIN",
 				"noble_deference" => "NOBLE_PRESSURE",
 				"kingdom_agenda" => "KINGDOM_AGENDA",
 				"diplomacy" => "DIPLOMACY",
@@ -6674,19 +6673,25 @@ public static class AIConfigHandler
 				}
 				if ((hasAnyHero || IsPlayerKingdomRecruitmentModeActive()) && string.Equals(text, "kingdom_service", StringComparison.OrdinalIgnoreCase))
 				{
+					List<string> joinInstructions = new List<string>();
+					if (!string.IsNullOrWhiteSpace(value))
+					{
+						joinInstructions.Add(value.Trim());
+					}
 					string runtimeKingdomServiceInstruction = BuildRuntimeKingdomServiceInstruction();
 					if (!string.IsNullOrWhiteSpace(runtimeKingdomServiceInstruction))
 					{
-						value = runtimeKingdomServiceInstruction;
+						joinInstructions.Add(runtimeKingdomServiceInstruction.Trim());
 					}
-				}
-				if (hasAnyHero && string.Equals(text, "hero_join_party", StringComparison.OrdinalIgnoreCase))
-				{
-					string runtimeHeroJoinPartyInstruction = BuildRuntimeHeroJoinPartyInstructionForExternal();
-					if (!string.IsNullOrWhiteSpace(runtimeHeroJoinPartyInstruction))
+					if (hasAnyHero)
 					{
-						value = runtimeHeroJoinPartyInstruction;
+						string runtimeHeroJoinPartyInstruction = BuildRuntimeHeroJoinPartyInstructionForExternal();
+						if (!string.IsNullOrWhiteSpace(runtimeHeroJoinPartyInstruction))
+						{
+							joinInstructions.Add(runtimeHeroJoinPartyInstruction.Trim());
+						}
 					}
+					value = string.Join("\n", joinInstructions.Distinct(StringComparer.OrdinalIgnoreCase));
 				}
 				if (hasAnyHero && string.Equals(text, "kingdom_vassalage", StringComparison.OrdinalIgnoreCase))
 				{
@@ -7188,7 +7193,7 @@ public static class AIConfigHandler
 		try
 		{
 			List<string> list = new List<string>();
-			string baseInstruction = GetGuardrailRuleInstruction("hero_join_party");
+			string baseInstruction = GetGuardrailRuleInstruction("kingdom_service");
 			if (!string.IsNullOrWhiteSpace(baseInstruction))
 			{
 				list.Add(baseInstruction.Trim());
@@ -7197,7 +7202,7 @@ public static class AIConfigHandler
 			string text = ResolveHeroJoinPartyRuntimeStateKey(hero);
 			if (!string.IsNullOrWhiteSpace(text))
 			{
-				string text2 = ResolveRuleRuntimeText("hero_join_party", text, forConstraint: false, BuildHeroJoinPartyRuntimeTokens(hero));
+				string text2 = ResolveRuleRuntimeText("kingdom_service", text, forConstraint: false, BuildHeroJoinPartyRuntimeTokens(hero));
 				if (!string.IsNullOrWhiteSpace(text2))
 				{
 					list.Add(text2.Trim());
@@ -7827,18 +7832,14 @@ public static class AIConfigHandler
 			{
 				includePersonalJoinRule = false;
 			}
-			foreach (PostprocessRuleEntry guardrailRulePostprocessRule in GetGuardrailRulePostprocessRules("hero_join_party"))
+			foreach (PostprocessRuleEntry guardrailRulePostprocessRule in GetGuardrailRulePostprocessRules("kingdom_service"))
 			{
 				string text = (guardrailRulePostprocessRule?.Tag ?? "").Trim();
-				if (string.IsNullOrWhiteSpace(text) || IsClanJoinKingdomServicePostprocessTag(text))
+				if (string.IsNullOrWhiteSpace(text) || !IsPersonalHeroJoinPartyPostprocessTag(text))
 				{
 					continue;
 				}
-				if (!includePersonalJoinRule
-					&& (string.Equals(text, "[A:H_J_P_P_C/L]", StringComparison.OrdinalIgnoreCase)
-						|| string.Equals(text, "[A:H_J_P_P_C&L]", StringComparison.OrdinalIgnoreCase)
-						|| string.Equals(text, "[A:H_J_P_P_C]", StringComparison.OrdinalIgnoreCase)
-						|| string.Equals(text, "[A:H_J_P_P_L]", StringComparison.OrdinalIgnoreCase)))
+				if (!includePersonalJoinRule)
 				{
 					continue;
 				}
@@ -7852,7 +7853,7 @@ public static class AIConfigHandler
 					Description = guardrailRulePostprocessRule?.Description ?? ""
 				});
 			}
-			foreach (PostprocessRuleEntry runtimeClanJoinRule in BuildRuntimeClanJoinKingdomPostprocessRules("hero_join_party", "HeroJoinPartyPostprocessRules", hero, entityPostprocessContext))
+			foreach (PostprocessRuleEntry runtimeClanJoinRule in BuildRuntimeClanJoinKingdomPostprocessRules("kingdom_service", "HeroJoinPartyPostprocessRules", hero, entityPostprocessContext))
 			{
 				string text2 = (runtimeClanJoinRule?.Tag ?? "").Trim();
 				if (string.IsNullOrWhiteSpace(text2))
@@ -8013,6 +8014,15 @@ public static class AIConfigHandler
 		return text.StartsWith("[A:C_J_K:", StringComparison.OrdinalIgnoreCase)
 			|| text.Equals("[A:C_J_P_K]", StringComparison.OrdinalIgnoreCase)
 			|| text.StartsWith("[ACTION:KINGDOM_SERVICE:CLAN_JOIN_PLAYER_KINGDOM:", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool IsPersonalHeroJoinPartyPostprocessTag(string tag)
+	{
+		string text = (tag ?? "").Trim();
+		return text.Equals("[A:H_J_P_P_C/L]", StringComparison.OrdinalIgnoreCase)
+			|| text.Equals("[A:H_J_P_P_C&L]", StringComparison.OrdinalIgnoreCase)
+			|| text.Equals("[A:H_J_P_P_C]", StringComparison.OrdinalIgnoreCase)
+			|| text.Equals("[A:H_J_P_P_L]", StringComparison.OrdinalIgnoreCase);
 	}
 
 	private static bool IsPlayerJoinKingdomServicePostprocessTag(string tag)

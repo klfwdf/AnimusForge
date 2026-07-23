@@ -16549,7 +16549,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	private static string StripHeroTradeActionTags(string text)
 	{
 		string text2 = text ?? "";
-		text2 = Regex.Replace(text2, "\\[ACTION:GIVE_ASSET:[^\\]]*\\]", string.Empty, RegexOptions.IgnoreCase);
+		text2 = GiveAssetTagCodec.StripTags(text2);
 
 		text2 = Regex.Replace(text2, "\\[ACTION:TRADE_TRUST:[^\\]]*\\]", string.Empty, RegexOptions.IgnoreCase);
 		text2 = Regex.Replace(text2, "\\[AD:[^\\]]*\\]", string.Empty, RegexOptions.IgnoreCase);
@@ -16670,6 +16670,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				itemStringId = matchedNameId;
 				return true;
 			}
+			RewardSystemBehavior instance = Instance;
+			if (instance != null && instance.TryResolveRewardItemByNameOrId(text, Enumerable.Empty<RewardItemInfo>(), out var resolution, "known_global_give_asset"))
+			{
+				itemStringId = resolution?.MatchedStringId ?? "";
+				return !string.IsNullOrWhiteSpace(itemStringId);
+			}
 		}
 		catch
 		{
@@ -16685,7 +16691,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			return false;
 		}
 		if (Regex.IsMatch(text, "^\\d+$", RegexOptions.CultureInvariant)
-			|| text.IndexOfAny(new char[5] { '[', ']', ':', '\r', '\n' }) >= 0
+			|| text.IndexOfAny(new char[2] { '\r', '\n' }) >= 0
 			|| text.StartsWith("workshop@", StringComparison.OrdinalIgnoreCase)
 			|| text.StartsWith("caravan@", StringComparison.OrdinalIgnoreCase))
 		{
@@ -16955,15 +16961,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		Stopwatch stopwatch = Stopwatch.StartNew();
 		try
 		{
-			Regex regex = new Regex("\\[ACTION:GIVE_ASSET:(?:GOLD|钱|金币|第纳尔|DENARS?|MONEY|COINS?):(\\d+)\\]", RegexOptions.IgnoreCase);
-			Regex regex2 = new Regex("\\[ACTION:GIVE_ASSET:([^\\]\\r\\n:]+):(ALL|\\d+)\\]", RegexOptions.IgnoreCase);
 			Regex regex17 = new Regex("\\[ACTION:KINGDOM_SERVICE:(MERCENARY|VASSAL|LEAVE|CLAN_JOIN_PLAYER_KINGDOM|CLAN_JOIN_KINGDOM):([a-zA-Z0-9_.\\-]+)\\]", RegexOptions.IgnoreCase);
 			Regex regex18 = new Regex("\\[ACTION:JOIN_MERCENARY:([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase);
 			Regex regex19 = new Regex("\\[ACTION:JOIN_VASSAL:([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase);
 			Regex regex20 = new Regex("\\[ACTION:KINGDOM_SERVICE:LEAVE\\]", RegexOptions.IgnoreCase);
 			Regex regex21 = new Regex("\\[ACTION:TRADE_TRUST:(-?\\d+)\\]", RegexOptions.IgnoreCase);
-			Regex regex22 = new Regex("\\[ACTION:GIVE_ASSET:([^\\]\\r\\n:]+):(ALL|\\d+)\\]", RegexOptions.IgnoreCase);
-			Regex regexAssetTransferAny = new Regex("\\[ACTION:GIVE_ASSET:[^\\]\\r\\n]*\\]", RegexOptions.IgnoreCase);
 			Regex regex23 = DebtCreationTagRegex;
 			Regex regex24 = DebtResolutionTagRegex;
 			Regex regex25 = HeroJoinPlayerPartyTagRegex;
@@ -16981,8 +16983,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			int num = 0;
 			try
 			{
-				num = Regex.Matches(responseText ?? "", "\\[ACTION:[^\\]]+\\]", RegexOptions.IgnoreCase).Count
-					+ Regex.Matches(responseText ?? "", "\\[A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)\\]", RegexOptions.IgnoreCase).Count;
+				List<GiveAssetTag> giveAssetTagsForCount = GiveAssetTagCodec.Extract(responseText);
+				string responseWithoutGiveAssetTagsForCount = GiveAssetTagCodec.StripTags(responseText);
+				num = giveAssetTagsForCount.Count
+					+ Regex.Matches(responseWithoutGiveAssetTagsForCount, "\\[ACTION:[^\\]]+\\]", RegexOptions.IgnoreCase).Count
+					+ Regex.Matches(responseWithoutGiveAssetTagsForCount, "\\[A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)\\]", RegexOptions.IgnoreCase).Count;
 			}
 			catch
 			{
@@ -17046,9 +17051,13 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			Settlement notableMarketSettlement = ResolveNotableMarketSettlement(giver);
 			bool giverUsesNotableMarket = IsNotableMarketHero(giver, notableMarketSettlement);
 			string notableMarketLabel = GetSettlementMarketTypeLabel(notableMarketSettlement) + "市场";
-			responseText = regex.Replace(responseText, delegate(Match m)
+			responseText = GiveAssetTagCodec.ReplaceTags(responseText, delegate(GiveAssetTag tag)
 			{
-				if (int.TryParse(m.Groups[1].Value, out var result8))
+				if (!IsGoldAssetTokenForExternal(tag.AssetToken))
+				{
+					return tag.RawTag;
+				}
+				if (int.TryParse(tag.QuantityToken, out var result8))
 				{
 					goldTransferAttempted++;
 					Logger.Log("Logic", $"[Reward] GIVE_ASSET gold 捕获: giver={giver?.Name} receiver={receiver?.Name} amount={result8}");
@@ -17093,17 +17102,17 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				receiverFacts.Add(goldBatchSummary);
 				Logger.Log("Logic", "[Reward] gold_batch_done attempted=" + goldTransferAttempted + " succeeded=" + goldTransferSucceeded + " failedOrPartial=" + goldTransferFailedOrPartial + " actualAmount=" + goldTransferActualAmount);
 			}
-			responseText = regex2.Replace(responseText, delegate(Match m)
+			responseText = GiveAssetTagCodec.ReplaceTags(responseText, delegate(GiveAssetTag tag)
 			{
-				string value4 = m.Groups[1].Value;
+				string value4 = tag.AssetToken;
 				if (TryResolveAuthorizedNpcFixedAsset(giver, value4, out var _))
 				{
-					return m.Value;
+					return tag.RawTag;
 				}
 				itemTransferAttempted++;
 				string authorizedItemKey = "";
 				bool isAuthorizedInventoryItem = TryResolveAuthorizedHeroRewardItem(giver, value4, out var authorizedItems, out authorizedItemKey);
-				bool hasFiniteRequestedQuantity = int.TryParse(m.Groups[2].Value, out var requestedQuantity) && requestedQuantity > 0;
+				bool hasFiniteRequestedQuantity = int.TryParse(tag.QuantityToken, out var requestedQuantity) && requestedQuantity > 0;
 				string knownItemKey = "";
 				bool isKnownRegisteredItem = !isAuthorizedInventoryItem
 					&& hasFiniteRequestedQuantity
@@ -17130,7 +17139,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				{
 					value4 = knownItemKey;
 				}
-				if (TransferQuantitySpec.TryParse(m.Groups[2].Value, out var quantity))
+				if (TransferQuantitySpec.TryParse(tag.QuantityToken, out var quantity))
 				{
 					if (TransferQuantitySpec.IsAllValue(value4) || (isGeneratedRpItem && quantity.IsAll))
 					{
@@ -17418,11 +17427,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				anyKingdomAnnexationApplied = true;
 			}
-			responseText = regex22.Replace(responseText, delegate(Match m)
+			responseText = GiveAssetTagCodec.ReplaceTags(responseText, delegate(GiveAssetTag tag)
 			{
 				settlementTransferAttempted++;
-				string settlementToken = (m.Groups[1].Value ?? "").Trim();
-				string quantityToken = (m.Groups[2].Value ?? "").Trim();
+				string settlementToken = (tag.AssetToken ?? "").Trim();
+				string quantityToken = (tag.QuantityToken ?? "").Trim();
 				if (receiver == Hero.MainHero && giver != Hero.MainHero)
 				{
 					string statusText = "";
@@ -17468,7 +17477,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				}
 				return string.Empty;
 			});
-			responseText = regexAssetTransferAny.Replace(responseText, string.Empty);
+			responseText = GiveAssetTagCodec.StripTags(responseText);
 			if (settlementTransferAttempted > 0)
 			{
 				string settlementBatchSummary = "固定资产转移汇总：尝试项" + settlementTransferAttempted + "，成功项" + settlementTransferSucceeded + "，失败项" + settlementTransferFailed + "，实际转移" + settlementTransferSucceeded + "项，实际指导总值约" + settlementTransferActualValue + "第纳尔。";
@@ -17981,8 +17990,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			return;
 		}
 		string text = string.IsNullOrWhiteSpace(giverName) ? "对方部队" : giverName.Trim();
-		Regex regex = new Regex("\\[ACTION:GIVE_ASSET:(?:GOLD|钱|金币|第纳尔|DENARS?|MONEY|COINS?):(\\d+)\\]", RegexOptions.IgnoreCase);
-		Regex regex2 = new Regex("\\[ACTION:GIVE_ASSET:([^\\]\\r\\n:]+):(ALL|\\d+)\\]", RegexOptions.IgnoreCase);
 		List<string> npcFacts = new List<string>();
 		List<string> playerFacts = new List<string>();
 		int itemTransferAttempted = 0;
@@ -17996,9 +18003,13 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		long goldTransferActualAmount = 0L;
 		try
 		{
-			responseText = regex.Replace(responseText, delegate(Match m)
+			responseText = GiveAssetTagCodec.ReplaceTags(responseText, delegate(GiveAssetTag tag)
 			{
-				if (int.TryParse(m.Groups[1].Value, out var result))
+				if (!IsGoldAssetTokenForExternal(tag.AssetToken))
+				{
+					return tag.RawTag;
+				}
+				if (int.TryParse(tag.QuantityToken, out var result))
 				{
 					goldTransferAttempted++;
 					int num = TransferGoldFromParty(giverParty, receiver, result, text, giverCharacter, forceComplete: receiver == Hero.MainHero);
@@ -18031,15 +18042,15 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				playerFacts.Add(goldBatchSummary);
 				Logger.Log("Logic", "[RewardParty] gold_batch_done attempted=" + goldTransferAttempted + " succeeded=" + goldTransferSucceeded + " failedOrPartial=" + goldTransferFailedOrPartial + " actualAmount=" + goldTransferActualAmount);
 			}
-			responseText = regex2.Replace(responseText, delegate(Match m)
+			responseText = GiveAssetTagCodec.ReplaceTags(responseText, delegate(GiveAssetTag tag)
 			{
-				string value = m.Groups[1].Value;
+				string value = tag.AssetToken;
 				itemTransferAttempted++;
 				string authorizedItemKey = "";
 				bool isAuthorizedInventoryItem = TryResolveAuthorizedPartyRewardItem(giverParty, giverCharacter, value, out var authorizedItems, out authorizedItemKey);
 				CharacterObject snapshotCharacter = giverCharacter as CharacterObject;
 				Hero contextHero = snapshotCharacter?.HeroObject;
-				bool hasFiniteRequestedQuantity = int.TryParse(m.Groups[2].Value, out var requestedQuantity) && requestedQuantity > 0;
+				bool hasFiniteRequestedQuantity = int.TryParse(tag.QuantityToken, out var requestedQuantity) && requestedQuantity > 0;
 				string knownItemKey = "";
 				bool isKnownRegisteredItem = !isAuthorizedInventoryItem
 					&& hasFiniteRequestedQuantity
@@ -18064,7 +18075,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				{
 					value = knownItemKey;
 				}
-				if (TransferQuantitySpec.TryParse(m.Groups[2].Value, out var quantity))
+				if (TransferQuantitySpec.TryParse(tag.QuantityToken, out var quantity))
 				{
 					if (TransferQuantitySpec.IsAllValue(value) || (isGeneratedRpItem && quantity.IsAll))
 					{
@@ -18169,8 +18180,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			return;
 		}
 		string giverName = giverCharacter.Name?.ToString() ?? GetSettlementMerchantRoleLabel(kind);
-		Regex regex = new Regex("\\[ACTION:GIVE_ASSET:(?:GOLD|钱|金币|第纳尔|DENARS?|MONEY|COINS?):(\\d+)\\]", RegexOptions.IgnoreCase);
-		Regex regex2 = new Regex("\\[ACTION:GIVE_ASSET:([^\\]\\r\\n:]+):(ALL|\\d+)\\]", RegexOptions.IgnoreCase);
 		Regex regex13 = new Regex("\\[ACTION:TRADE_TRUST:(-?\\d+)\\]", RegexOptions.IgnoreCase);
 		Regex regex14 = DebtCreationTagRegex;
 		Regex regex15 = DebtResolutionTagRegex;
@@ -18185,9 +18194,13 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		int goldTransferSucceeded = 0;
 		int goldTransferFailedOrPartial = 0;
 		long goldTransferActualAmount = 0L;
-		responseText = regex.Replace(responseText, delegate(Match m)
+		responseText = GiveAssetTagCodec.ReplaceTags(responseText, delegate(GiveAssetTag tag)
 		{
-			if (int.TryParse(m.Groups[1].Value, out var result7))
+			if (!IsGoldAssetTokenForExternal(tag.AssetToken))
+			{
+				return tag.RawTag;
+			}
+			if (int.TryParse(tag.QuantityToken, out var result7))
 			{
 				goldTransferAttempted++;
 				int num = TransferGoldFromSettlement(currentSettlement, receiver, result7, giverName, giverCharacter, forceComplete: receiver == Hero.MainHero);
@@ -18221,13 +18234,13 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			playerFacts.Add(goldBatchSummary);
 			Logger.Log("Logic", "[RewardMerchant] gold_batch_done attempted=" + goldTransferAttempted + " succeeded=" + goldTransferSucceeded + " failedOrPartial=" + goldTransferFailedOrPartial + " actualAmount=" + goldTransferActualAmount);
 		}
-		responseText = regex2.Replace(responseText, delegate(Match m)
+		responseText = GiveAssetTagCodec.ReplaceTags(responseText, delegate(GiveAssetTag tag)
 		{
-			string value = m.Groups[1].Value;
+			string value = tag.AssetToken;
 			itemTransferAttempted++;
 			string authorizedItemKey = "";
 			bool isAuthorizedInventoryItem = TryResolveAuthorizedMerchantRewardItem(giverCharacter, value, out var authorizedItems, out authorizedItemKey);
-			bool hasFiniteRequestedQuantity = int.TryParse(m.Groups[2].Value, out var requestedQuantity) && requestedQuantity > 0;
+			bool hasFiniteRequestedQuantity = int.TryParse(tag.QuantityToken, out var requestedQuantity) && requestedQuantity > 0;
 			string knownItemKey = "";
 			bool isKnownRegisteredItem = !isAuthorizedInventoryItem
 				&& hasFiniteRequestedQuantity
@@ -18252,7 +18265,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				value = knownItemKey;
 			}
-			if (TransferQuantitySpec.TryParse(m.Groups[2].Value, out var quantity))
+			if (TransferQuantitySpec.TryParse(tag.QuantityToken, out var quantity))
 			{
 				if (TransferQuantitySpec.IsAllValue(value) || (isGeneratedRpItem && quantity.IsAll))
 				{
