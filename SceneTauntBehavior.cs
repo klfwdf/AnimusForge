@@ -6416,9 +6416,17 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		result = AgentState.Unconscious;
 		try
 		{
-			if (!_conflictActive || (!_armedConflict && !_armedConflictOccurredThisConflict) || effectedAgent == null || !effectedAgent.IsMainAgent)
+			bool externalArmedConflict = SettlementEntryTroopSelectionBehavior.IsSetsDefenderConflictActiveForExternal(Mission.Current);
+			if (((!_conflictActive || (!_armedConflict && !_armedConflictOccurredThisConflict)) && !externalArmedConflict)
+				|| effectedAgent == null
+				|| !effectedAgent.IsMainAgent)
 			{
 				return false;
+			}
+			if (externalArmedConflict)
+			{
+				_armedConflictOccurredThisConflict = true;
+				_armedDefeatWasCriminalConflict = false;
 			}
 			if (!_pendingPlayerBattleDeathDecisionCaptured)
 			{
@@ -6463,6 +6471,47 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		catch
 		{
 			return false;
+		}
+	}
+
+	internal static void ApplyArmedConflictStartCrimeForExternal(IFaction faction, string reason)
+	{
+		try
+		{
+			SceneTauntMissionBehavior behavior = Mission.Current?.GetMissionBehavior<SceneTauntMissionBehavior>();
+			if (behavior == null || faction == null)
+			{
+				return;
+			}
+			behavior.ApplySceneTauntCrimeWithDeferredCap(
+				faction,
+				SceneTauntInitialArmedCrimeAmount,
+				string.IsNullOrWhiteSpace(reason) ? "external_armed_conflict_start" : reason);
+			Logger.Log("SceneTaunt", $"Applied AF armed-conflict start crime for external scene bridge. Faction={faction.Name}, Amount={SceneTauntInitialArmedCrimeAmount:0.##}, Reason={reason ?? "N/A"}");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Applying external armed-conflict start crime failed: " + ex.Message);
+		}
+	}
+
+	internal static void TryApplyArmedNpcKnockdownConsequencesForExternal(
+		Agent affectedAgent,
+		Agent affectorAgent,
+		AgentState agentState,
+		string reason)
+	{
+		try
+		{
+			Mission.Current?.GetMissionBehavior<SceneTauntMissionBehavior>()?.TryApplyArmedNpcKnockdownConsequencesCore(
+				affectedAgent,
+				affectorAgent,
+				agentState,
+				string.IsNullOrWhiteSpace(reason) ? "external_armed_knockdown" : reason);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Applying external armed knockdown consequences failed: " + ex.Message);
 		}
 	}
 
@@ -8250,23 +8299,61 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				return;
 			}
+			TryApplyArmedNpcKnockdownConsequencesCore(
+				affectedAgent,
+				affectorAgent,
+				agentState,
+				"scene_taunt_armed_knockdown");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Applying per-NPC armed knockdown consequences failed: " + ex.Message);
+		}
+	}
+
+	private void TryApplyArmedNpcKnockdownConsequencesCore(
+		Agent affectedAgent,
+		Agent affectorAgent,
+		AgentState agentState,
+		string reason)
+	{
+		try
+		{
+			if (affectedAgent == null || !affectedAgent.IsHuman)
+			{
+				return;
+			}
 			if (agentState != AgentState.Killed && agentState != AgentState.Unconscious)
 			{
 				return;
 			}
-			if (_playerAgentIndices.Contains(affectedAgent.Index) || !_penalizedArmedKnockdownAgentIndices.Add(affectedAgent.Index))
+			Hero affectedHero = (affectedAgent.Character as CharacterObject)?.HeroObject;
+			bool affectedIsPlayerSide = _playerAgentIndices.Contains(affectedAgent.Index)
+				|| IsSetsSelectedEntryFollower(affectedAgent)
+				|| SceneTauntBehavior.IsPlayerMainPartyHero(affectedHero);
+			if (affectedIsPlayerSide || !_penalizedArmedKnockdownAgentIndices.Add(affectedAgent.Index))
 			{
 				return;
 			}
-			bool flag = affectorAgent == Agent.Main || (affectorAgent != null && _playerAgentIndices.Contains(affectorAgent.Index));
-			if (!flag)
+			Hero affectorHero = (affectorAgent?.Character as CharacterObject)?.HeroObject;
+			bool affectorIsPlayerSide = affectorAgent == Agent.Main
+				|| (affectorAgent != null
+					&& (_playerAgentIndices.Contains(affectorAgent.Index)
+						|| IsSetsSelectedEntryFollower(affectorAgent)
+						|| SceneTauntBehavior.IsPlayerMainPartyHero(affectorHero)));
+			if (!affectorIsPlayerSide)
 			{
 				return;
 			}
 			CharacterObject characterObject = affectedAgent.Character as CharacterObject;
 			ApplyPerNpcKnockdownConsequences(affectedAgent, characterObject, affectedAgent.Name?.ToString());
 			float crimeAmount = IsSettlementCriminalConflictTarget(characterObject?.HeroObject, characterObject) ? 0f : SceneTauntPerKnockdownCrimeAmount;
-			TryRecordPlayerSceneConflictRecentAction(affectedAgent, affectorAgent, agentState == AgentState.Killed ? "killed" : "unconscious", "scene_taunt_armed_knockdown", crimeAmount);
+			TryRecordPlayerSceneConflictRecentAction(
+				affectedAgent,
+				affectorAgent,
+				agentState == AgentState.Killed ? "killed" : "unconscious",
+				reason,
+				crimeAmount);
 		}
 		catch (Exception ex)
 		{
@@ -9281,7 +9368,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		try
 		{
-			if (!_conflictActive || affectedAgent == null || !affectedAgent.IsMainAgent)
+			bool externalArmedConflict = SettlementEntryTroopSelectionBehavior.IsSetsDefenderConflictActiveForExternal(Mission.Current);
+			if ((!_conflictActive && !externalArmedConflict) || affectedAgent == null || !affectedAgent.IsMainAgent)
 			{
 				return;
 			}

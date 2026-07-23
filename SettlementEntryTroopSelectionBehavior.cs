@@ -115,6 +115,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 
 	public override void SyncData(IDataStore dataStore)
 	{
+		EnsureProfileRosters();
 		dataStore.SyncData("_setsOwnSettlementEntryProfile_v1", ref _ownSettlementProfile);
 		dataStore.SyncData("_setsOtherSettlementEntryProfile_v1", ref _otherSettlementProfile);
 		EnsureProfileRosters();
@@ -272,6 +273,19 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		{
 			SettlementEntryTroopSelectionMissionLogic logic = mission?.GetMissionBehavior<SettlementEntryTroopSelectionMissionLogic>();
 			return logic != null && logic.IsConflictProxyActive();
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	internal static bool IsSetsDefenderConflictActiveForExternal(Mission mission)
+	{
+		try
+		{
+			SettlementEntryTroopSelectionMissionLogic logic = mission?.GetMissionBehavior<SettlementEntryTroopSelectionMissionLogic>();
+			return logic != null && logic.IsDefenderConflictActive();
 		}
 		catch
 		{
@@ -1276,7 +1290,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				LeftPartyPrisonersSizeLimit = 0,
 				RightPartyMembersSizeLimit = Math.Max(1, limit),
 				RightPartyPrisonersSizeLimit = 0,
-				LeftPartyName = new TextObject("可选健康成年人"),
+				LeftPartyName = new TextObject("可选健康普通士兵"),
 				RightPartyName = rightName,
 				TroopTransferableDelegate = EntryProfileTroopTransferableDelegate,
 				CanTalkToTroopDelegate = null,
@@ -1301,7 +1315,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			state.IsDonating = false;
 			state.PartyScreenMode = PartyScreenHelper.PartyScreenMode.Normal;
 			Game.Current.GameStateManager.PushState((GameState)(object)state, 0);
-			InformationManager.DisplayMessage(new InformationMessage("【SETS】正在配置" + GetProfileTitle(profileKind) + "，只列出健康成年同伴和士兵。", Color.FromUint(InfoColor)));
+			InformationManager.DisplayMessage(new InformationMessage("【SETS】正在配置" + GetProfileTitle(profileKind) + "，只列出健康普通士兵；同伴与家族成员继续由原版生成。", Color.FromUint(InfoColor)));
 			SettlementEntryTroopSelectionLog.Log("Profile selection opened. profile=" + profileKind + ", limit=" + limit + ", current=" + current.TotalManCount + ", selectable=" + leftMembers.TotalManCount);
 		}
 		catch (Exception ex)
@@ -1546,6 +1560,47 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	{
 		_ownSettlementProfile ??= TroopRoster.CreateDummyTroopRoster();
 		_otherSettlementProfile ??= TroopRoster.CreateDummyTroopRoster();
+		_ownSettlementProfile = SanitizeEntryProfileRoster(_ownSettlementProfile, OwnSettlementEntryLimit, "own", out int removedOwnHeroes);
+		_otherSettlementProfile = SanitizeEntryProfileRoster(_otherSettlementProfile, OtherSettlementEntryLimit, "other", out int removedOtherHeroes);
+		if (removedOwnHeroes > 0 || removedOtherHeroes > 0)
+		{
+			SettlementEntryTroopSelectionLog.Log("Removed hero entries from SETS saved profiles. own=" + removedOwnHeroes + ", other=" + removedOtherHeroes);
+		}
+	}
+
+	private static TroopRoster SanitizeEntryProfileRoster(TroopRoster sourceRoster, int limit, string profileName, out int removedHeroes)
+	{
+		TroopRoster sanitized = TroopRoster.CreateDummyTroopRoster();
+		removedHeroes = 0;
+		if (sourceRoster == null || limit <= 0)
+		{
+			return sanitized;
+		}
+		int remaining = limit;
+		for (int i = 0; i < sourceRoster.Count && remaining > 0; i++)
+		{
+			TroopRosterElement item = sourceRoster.GetElementCopyAtIndex(i);
+			CharacterObject character = item.Character;
+			if (character == null || item.Number <= 0)
+			{
+				continue;
+			}
+			int number = Math.Min(remaining, Math.Max(0, item.Number));
+			if (!SetsSettlementEntryProfile.IsConfigurableRegularFollower(character.IsHero || character.HeroObject != null))
+			{
+				removedHeroes += number;
+				continue;
+			}
+			int wounded = Math.Min(number, Math.Max(0, item.WoundedNumber));
+			int xp = CalculateRosterXpToMove(item, number);
+			sanitized.AddToCounts(character, number, false, wounded, xp, true, -1);
+			remaining -= number;
+		}
+		if (removedHeroes > 0)
+		{
+			SettlementEntryTroopSelectionLog.LogVerbose("Sanitized SETS profile. profile=" + profileName + ", removedHeroes=" + removedHeroes + ", remaining=" + sanitized.TotalManCount);
+		}
+		return sanitized;
 	}
 
 	private static int GetProfileLimit(EntryProfileKind profileKind)
@@ -1589,13 +1644,13 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			string hint = "已配置 " + configured + "/" + limit + "，当前健康可带入 " + (live?.TotalManCount ?? 0) + "/" + limit + "。" + relationText;
 			if (unavailable > 0)
 			{
-				hint += " 有 " + unavailable + " 个配置名额因受伤/离队/未成年不可用。";
+				hint += " 有 " + unavailable + " 个配置名额因受伤或离队不可用。";
 			}
 			return hint;
 		}
 		catch
 		{
-			return "配置进城/城堡/村庄自动带入的同伴和士兵。";
+			return "配置进城/城堡/村庄自动带入的普通士兵；同伴与家族成员由原版生成。";
 		}
 	}
 
@@ -1619,7 +1674,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				message = "【SETS】本次进入 " + name + " 随行 " + selectedCount + "/" + limit + "，仍可带入 " + free + " 人。";
 				if (unavailableCount > 0)
 				{
-					message += " 有 " + unavailableCount + " 个配置名额因受伤/离队/未成年空缺。";
+					message += " 有 " + unavailableCount + " 个配置名额因受伤或离队空缺。";
 				}
 				message += " 可按 U 重新配置城镇/城堡/村庄随行。";
 			}
@@ -1645,12 +1700,12 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			{
 				continue;
 			}
-			int healthy = character.IsHero ? 1 : Math.Max(0, item.Number - item.WoundedNumber);
+			int healthy = Math.Max(0, item.Number - item.WoundedNumber);
 			if (healthy <= 0)
 			{
 				continue;
 			}
-			int xp = character.IsHero ? 0 : CalculateRosterXpToMove(item, healthy);
+			int xp = CalculateRosterXpToMove(item, healthy);
 			roster.AddToCounts(character, healthy, false, 0, xp, true, -1);
 		}
 		return roster;
@@ -1689,11 +1744,11 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				remaining -= requestedNumber;
 				continue;
 			}
-			int healthy = liveCharacter.IsHero ? 1 : Math.Max(0, liveElement.Number - liveElement.WoundedNumber);
+			int healthy = Math.Max(0, liveElement.Number - liveElement.WoundedNumber);
 			int move = Math.Min(requestedNumber, healthy);
 			if (move > 0)
 			{
-				int xp = liveCharacter.IsHero ? 0 : CalculateRosterXpToMove(liveElement, move);
+				int xp = CalculateRosterXpToMove(liveElement, move);
 				resolved.AddToCounts(liveCharacter, move, false, 0, xp, true, -1);
 				remaining -= move;
 			}
@@ -1710,19 +1765,12 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (character == null || character.IsPlayerCharacter || character.IsNotTransferableInPartyScreen)
+			if (character == null
+				|| character.IsPlayerCharacter
+				|| character.IsNotTransferableInPartyScreen
+				|| !SetsSettlementEntryProfile.IsConfigurableRegularFollower(character.IsHero || character.HeroObject != null))
 			{
 				return false;
-			}
-			Hero hero = character.HeroObject;
-			if (hero != null)
-			{
-				return hero != Hero.MainHero
-					&& hero.PartyBelongedTo == MobileParty.MainParty
-					&& !hero.IsPrisoner
-					&& !hero.IsDead
-					&& !hero.IsWounded
-					&& hero.Age >= 18f;
 			}
 			return true;
 		}
@@ -1828,8 +1876,8 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			{
 				continue;
 			}
-			int wounded = character.IsHero ? 0 : Math.Min(number, Math.Max(0, item.WoundedNumber));
-			int xp = character.IsHero ? 0 : CalculateRosterXpToMove(item, number);
+			int wounded = Math.Min(number, Math.Max(0, item.WoundedNumber));
+			int xp = CalculateRosterXpToMove(item, number);
 			clone.AddToCounts(character, number, false, wounded, xp, true, -1);
 			remaining -= number;
 		}
@@ -2130,6 +2178,16 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				_townRiotKilledNotable = true;
 				SettlementEntryTroopSelectionLog.Log("SETS settlement riot notable killed. settlement=" + _settlementId + ", scene=" + _sceneKind + ", troop=" + SafeCharacterId(affectedAgent.Character as CharacterObject));
 			}
+			if (_defenderConflictEnabled
+				&& _conflictActive
+				&& (agentState == AgentState.Killed || agentState == AgentState.Unconscious))
+			{
+				SceneTauntMissionBehavior.TryApplyArmedNpcKnockdownConsequencesForExternal(
+					affectedAgent,
+					affectorAgent,
+					agentState,
+					"sets_internal_riot_knockdown");
+			}
 			if (_alliedAgentIndexes.Contains(affectedAgent.Index) && agentState == AgentState.Killed)
 			{
 				if (IsPlayerSideAgent(affectorAgent))
@@ -2216,6 +2274,11 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				&& (_conflictActive || _ownedSettlementIncidentTriggered || _ownedSettlementMassacreActive || _victoryReached);
 		}
 
+		internal bool IsDefenderConflictActive()
+		{
+			return _defenderConflictEnabled && _conflictActive && !_victoryReached;
+		}
+
 		internal bool ShouldHandlePhysicalAttack(Agent target)
 		{
 			if (!_conflictFeaturesEnabled || target == null || !target.IsHuman || !target.IsActive() || target.IsMainAgent || IsPlayerSideAgent(target))
@@ -2244,7 +2307,9 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					return;
 				}
 				_conflictActive = true;
-				ApplySettlementAttackPoliticalConsequences(source);
+				SceneTauntMissionBehavior.ApplyArmedConflictStartCrimeForExternal(
+					Settlement.CurrentSettlement?.MapFaction,
+					"sets_internal_riot_start");
 				EnsurePlayerTeam(mission, main, requireCommandTeam: true);
 				KeepPlayerEntryFollowersCommandable(refreshFormation: true);
 				EnsureSetsCommandUiReadyForExternal(mission, "conflict_start", force: true, preserveSelection: true);
@@ -2279,51 +2344,6 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			catch (Exception ex)
 			{
 				SettlementEntryTroopSelectionLog.Log("SpawnInitialDefenderReserveWave failed. error=" + ex);
-			}
-		}
-
-		private void ApplySettlementAttackPoliticalConsequences(string source)
-		{
-			if (_politicalConsequenceApplied)
-			{
-				return;
-			}
-			_politicalConsequenceApplied = true;
-			try
-			{
-				Settlement settlement = Settlement.Find(_settlementId);
-				Clan playerClan = Clan.PlayerClan;
-				Clan ownerClan = settlement?.OwnerClan;
-				if (settlement == null || playerClan == null || ownerClan == null || ownerClan == playerClan)
-				{
-					return;
-				}
-				Kingdom playerKingdom = playerClan.Kingdom ?? Hero.MainHero?.Clan?.Kingdom;
-				if (playerKingdom != null && ownerClan.Kingdom == playerKingdom)
-				{
-					bool playerIsRuler = playerKingdom.RulingClan == playerClan || playerKingdom.Leader == Hero.MainHero;
-					if (playerIsRuler)
-					{
-						SettlementEntryTroopSelectionLog.Log("Skipped hostility for ruler attacking an attached settlement; outcome relation penalty is deferred. settlement=" + _settlementId + ", ownerClan=" + (ownerClan.StringId ?? "null") + ", source=" + source);
-						return;
-					}
-					ChangeKingdomAction.ApplyByLeaveWithRebellionAgainstKingdom(playerClan, true);
-					InformationManager.DisplayMessage(new InformationMessage("【SETS内部暴乱】你攻击了本国" + SetsSettlementEntryProfile.GetSettlementNoun(_sceneKind) + "，已按保留土地财产的叛国处理。", Color.FromUint(WarningColor)));
-					SettlementEntryTroopSelectionLog.Log("Applied vassal riot rebellion. settlement=" + _settlementId + ", oldKingdom=" + (playerKingdom.StringId ?? "null") + ", source=" + source);
-					return;
-				}
-				IFaction playerFaction = Hero.MainHero?.MapFaction ?? playerClan;
-				IFaction ownerFaction = ownerClan.Kingdom ?? (IFaction)ownerClan;
-				if (playerFaction != null && ownerFaction != null && playerFaction != ownerFaction && !FactionManager.IsAtWarAgainstFaction(playerFaction, ownerFaction))
-				{
-					DeclareWarAction.ApplyByPlayerHostility(playerFaction, ownerFaction);
-					InformationManager.DisplayMessage(new InformationMessage("【SETS内部暴乱】你袭击了该" + SetsSettlementEntryProfile.GetSettlementNoun(_sceneKind) + "，双方已进入敌对状态。", Color.FromUint(WarningColor)));
-					SettlementEntryTroopSelectionLog.Log("Applied SETS settlement hostility. settlement=" + _settlementId + ", playerFaction=" + (playerFaction.StringId ?? "null") + ", ownerFaction=" + (ownerFaction.StringId ?? "null") + ", source=" + source);
-				}
-			}
-			catch (Exception ex)
-			{
-				SettlementEntryTroopSelectionLog.Log("ApplySettlementAttackPoliticalConsequences failed. settlement=" + _settlementId + ", source=" + source + ", error=" + ex);
 			}
 		}
 
@@ -4614,12 +4634,6 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					continue;
 				}
 				PartyBase originParty = defenderEntry?.SourceParty ?? fallbackOriginParty;
-				if (!asEnemy && TryAdoptExistingSelectedHeroAgent(troop, team, source, out Agent adoptedAgent))
-				{
-					spawned++;
-					spawnedCharacters?.Add(troop);
-					continue;
-				}
 				int row = i / SpawnGridColumns;
 				int column = i % SpawnGridColumns;
 				float lateralIndex = column - (SpawnGridColumns - 1) * 0.5f;
@@ -4711,55 +4725,6 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				}
 			}
 			return spawned;
-		}
-
-		private bool TryAdoptExistingSelectedHeroAgent(CharacterObject troop, Team team, string source, out Agent adoptedAgent)
-		{
-			adoptedAgent = null;
-			try
-			{
-				Hero selectedHero = troop?.HeroObject;
-				Mission mission = base.Mission;
-				if (selectedHero == null || mission?.Agents == null || team == null)
-				{
-					return false;
-				}
-				foreach (Agent candidate in mission.Agents.ToList())
-				{
-					if (candidate == null || !candidate.IsHuman || !candidate.IsActive() || candidate == Agent.Main || candidate.IsMainAgent)
-					{
-						continue;
-					}
-					CharacterObject candidateCharacter = candidate.Character as CharacterObject;
-					Hero candidateHero = candidateCharacter?.HeroObject;
-					if (candidateHero != selectedHero && !CharactersMatch(candidateCharacter, troop))
-					{
-						continue;
-					}
-					adoptedAgent = candidate;
-					break;
-				}
-				if (adoptedAgent == null)
-				{
-					return false;
-				}
-				if (adoptedAgent.Team != team)
-				{
-					adoptedAgent.SetTeam(team, true);
-				}
-				adoptedAgent.SetWatchState(Agent.WatchState.Patrolling);
-				_alliedAgentIndexes.Add(adoptedAgent.Index);
-				RegisterSetsSelectedFollowerAgent(adoptedAgent, "adopt_existing_selected_hero");
-				CacheProtectedFollowerHealth(adoptedAgent);
-				AssignAgentToFormation(adoptedAgent, team, FormationClass.Infantry);
-				SettlementEntryTroopSelectionLog.Log("Adopted existing selected hero scene agent instead of spawning duplicate. settlement=" + _settlementId + ", source=" + (source ?? "") + ", agent=" + adoptedAgent.Index + ", hero=" + (selectedHero.StringId ?? SafeCharacterId(troop)));
-				return true;
-			}
-			catch (Exception ex)
-			{
-				SettlementEntryTroopSelectionLog.Log("TryAdoptExistingSelectedHeroAgent failed. troop=" + SafeCharacterId(troop) + ", error=" + ex.Message);
-				return false;
-			}
 		}
 
 		private static void AssignAgentToFormation(Agent agent, Team team, FormationClass formationClass)
@@ -5086,9 +5051,8 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				return;
 			}
 			CharacterObject character = affectedAgent.Character as CharacterObject;
-			if (character == null || character.IsHero)
+			if (character == null)
 			{
-				SettlementEntryTroopSelectionLog.Log("Allied hero casualty observed; no roster removal. troop=" + SafeCharacterId(character));
 				return;
 			}
 			TryRemoveFromRoster(MobileParty.MainParty?.MemberRoster, character, 1);
@@ -5126,7 +5090,8 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 
 		public override InquiryData OnEndMissionRequest(out bool canPlayerLeave)
 		{
-			if (_defenderConflictEnabled && _conflictActive && !_victoryReached)
+			Agent main = Agent.Main ?? base.Mission?.MainAgent;
+			if (_defenderConflictEnabled && _conflictActive && !_victoryReached && main != null && main.IsActive())
 			{
 				canPlayerLeave = false;
 				return new InquiryData("【SETS内部暴乱】", SetsSettlementEntryProfile.BuildExitBlockedMessage(_sceneKind), isAffirmativeOptionShown: true, isNegativeOptionShown: false, "确定", "", null, null);
@@ -5252,10 +5217,12 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 
 		private bool IsPlayerSideAgent(Agent agent)
 		{
+			Hero hero = (agent?.Character as CharacterObject)?.HeroObject;
 			return agent != null
 				&& (agent == Agent.Main
 					|| _alliedAgentIndexes.Contains(agent.Index)
-					|| NoblePrisonerEscortBehavior.IsEscortedAgent(agent));
+					|| NoblePrisonerEscortBehavior.IsEscortedAgent(agent)
+					|| SceneTauntBehavior.IsPlayerMainPartyHero(hero));
 		}
 
 		private bool IsNativeAlleyFightActive()

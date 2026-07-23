@@ -58,6 +58,11 @@ public static class SetsSettlementEntryProfile
             || kind == SetsSettlementSceneKind.Village;
     }
 
+    public static bool IsConfigurableRegularFollower(bool isHero)
+    {
+        return !isHero;
+    }
+
     public static bool UsesNativeSiegeVictoryMenu(SetsSettlementSceneKind kind)
     {
         return kind == SetsSettlementSceneKind.Town || kind == SetsSettlementSceneKind.Castle;
