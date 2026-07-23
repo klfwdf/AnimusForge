@@ -63,6 +63,18 @@ public static class SetsSettlementEntryProfile
         return !isHero;
     }
 
+    public static bool ShouldTriggerSameKingdomVassalRebellion(
+        bool isOrdinaryVassal,
+        bool targetOwnedByOtherSameKingdomClan,
+        float trackedCrime,
+        float crimeThreshold)
+    {
+        return isOrdinaryVassal
+            && targetOwnedByOtherSameKingdomClan
+            && crimeThreshold > 0f
+            && trackedCrime >= crimeThreshold;
+    }
+
     public static bool UsesNativeSiegeVictoryMenu(SetsSettlementSceneKind kind)
     {
         return kind == SetsSettlementSceneKind.Town || kind == SetsSettlementSceneKind.Castle;

@@ -67,6 +67,9 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	private static PendingMissionEntry _pendingMissionEntry;
 	private static PendingSettlementVictoryMenuEntry _pendingVictoryMenuEntry;
 	private static PendingVillageVictoryRewardEntry _pendingVillageVictoryRewardEntry;
+	private static string _pendingSameKingdomVassalRebellionKingdomId;
+	private static string _pendingSameKingdomVassalRebellionSettlementId;
+	private static string _pendingSameKingdomVassalRebellionOwnerClanId;
 	private static Mission _setsActiveUsableProtectionMission;
 	private static Mission _setsSelectedFollowerMission;
 	private static Mission _setsNativeAlleyMission;
@@ -118,6 +121,9 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		EnsureProfileRosters();
 		dataStore.SyncData("_setsOwnSettlementEntryProfile_v1", ref _ownSettlementProfile);
 		dataStore.SyncData("_setsOtherSettlementEntryProfile_v1", ref _otherSettlementProfile);
+		dataStore.SyncData("_setsPendingSameKingdomVassalRebellionKingdomId_v1", ref _pendingSameKingdomVassalRebellionKingdomId);
+		dataStore.SyncData("_setsPendingSameKingdomVassalRebellionSettlementId_v1", ref _pendingSameKingdomVassalRebellionSettlementId);
+		dataStore.SyncData("_setsPendingSameKingdomVassalRebellionOwnerClanId_v1", ref _pendingSameKingdomVassalRebellionOwnerClanId);
 		EnsureProfileRosters();
 	}
 
@@ -200,6 +206,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	private void OnNewGameCreated(CampaignGameStarter starter)
 	{
 		ClearRuntime("new_game");
+		ClearPendingSameKingdomVassalRebellion("new_game");
 		EnsureProfileRosters();
 	}
 
@@ -1432,6 +1439,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			TryPumpPendingSameKingdomVassalRebellion(source);
 			TryPumpPendingSettlementTakenMenu(source);
 			TryPumpPendingVillageVictoryReward(source);
 		}
@@ -1542,6 +1550,132 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		{
 			SettlementEntryTroopSelectionLog.Log("ApplyVillageVictoryReward failed. settlement=" + SafeSettlementId(settlement) + ", source=" + (source ?? "") + ", error=" + ex);
 		}
+	}
+
+	internal static void QueueSameKingdomVassalRebellionAfterRiot(Settlement settlement, string source)
+	{
+		try
+		{
+			Clan playerClan = Clan.PlayerClan ?? Hero.MainHero?.Clan;
+			Clan ownerClan = settlement?.OwnerClan;
+			Kingdom sharedKingdom = playerClan?.Kingdom;
+			if (playerClan == null
+				|| ownerClan == null
+				|| sharedKingdom == null
+				|| ownerClan == playerClan
+				|| ownerClan.Kingdom != sharedKingdom
+				|| playerClan.IsUnderMercenaryService
+				|| sharedKingdom.RulingClan == playerClan
+				|| sharedKingdom.Leader == Hero.MainHero)
+			{
+				return;
+			}
+			_pendingSameKingdomVassalRebellionKingdomId = sharedKingdom.StringId;
+			_pendingSameKingdomVassalRebellionSettlementId = settlement.StringId;
+			_pendingSameKingdomVassalRebellionOwnerClanId = ownerClan.StringId;
+			SettlementEntryTroopSelectionLog.Log(
+				"Queued same-kingdom vassal rebellion after SETS riot. kingdom=" + (sharedKingdom.StringId ?? "")
+				+ ", settlement=" + (settlement.StringId ?? "")
+				+ ", ownerClan=" + (ownerClan.StringId ?? "")
+				+ ", source=" + (source ?? ""));
+		}
+		catch (Exception ex)
+		{
+			SettlementEntryTroopSelectionLog.Log("QueueSameKingdomVassalRebellionAfterRiot failed. source=" + (source ?? "") + ", error=" + ex);
+		}
+	}
+
+	private static bool TryPumpPendingSameKingdomVassalRebellion(string source)
+	{
+		string kingdomId = (_pendingSameKingdomVassalRebellionKingdomId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(kingdomId))
+		{
+			return false;
+		}
+		if (Mission.Current != null)
+		{
+			return true;
+		}
+		Kingdom originalKingdom = Kingdom.All?.FirstOrDefault(kingdom =>
+			kingdom != null
+			&& string.Equals((kingdom.StringId ?? "").Trim(), kingdomId, StringComparison.OrdinalIgnoreCase));
+		Clan playerClan = Clan.PlayerClan ?? Hero.MainHero?.Clan;
+		if (originalKingdom == null || playerClan == null)
+		{
+			ClearPendingSameKingdomVassalRebellion("missing_campaign_object_" + (source ?? ""));
+			return false;
+		}
+		if (playerClan.Kingdom != originalKingdom)
+		{
+			ClearPendingSameKingdomVassalRebellion("player_already_left_" + (source ?? ""));
+			return false;
+		}
+		if (playerClan.IsUnderMercenaryService
+			|| originalKingdom.RulingClan == playerClan
+			|| originalKingdom.Leader == Hero.MainHero)
+		{
+			ClearPendingSameKingdomVassalRebellion("no_longer_ordinary_vassal_" + (source ?? ""));
+			return false;
+		}
+		float trackedCrime = SceneTauntBehavior.GetTrackedCrimeTotalForExternal(originalKingdom);
+		float threshold = SceneTauntMissionBehavior.GetCrimeCapBeforeWarForExternal();
+		bool shouldRebel = SetsSettlementEntryProfile.ShouldTriggerSameKingdomVassalRebellion(
+			isOrdinaryVassal: true,
+			targetOwnedByOtherSameKingdomClan: true,
+			trackedCrime: trackedCrime,
+			crimeThreshold: threshold);
+		if (!shouldRebel)
+		{
+			SettlementEntryTroopSelectionLog.Log(
+				"SETS same-kingdom vassal rebellion not triggered below AF crime threshold. kingdom=" + kingdomId
+				+ ", settlement=" + (_pendingSameKingdomVassalRebellionSettlementId ?? "")
+				+ ", crime=" + trackedCrime.ToString("0.##")
+				+ ", threshold=" + threshold.ToString("0.##")
+				+ ", source=" + (source ?? ""));
+			ClearPendingSameKingdomVassalRebellion("below_threshold_" + (source ?? ""));
+			return false;
+		}
+		string settlementId = _pendingSameKingdomVassalRebellionSettlementId;
+		string ownerClanId = _pendingSameKingdomVassalRebellionOwnerClanId;
+		try
+		{
+			ChangeKingdomAction.ApplyByLeaveWithRebellionAgainstKingdom(playerClan);
+			bool leftKingdom = playerClan.Kingdom != originalKingdom;
+			SettlementEntryTroopSelectionLog.Log(
+				"Applied vanilla keep-fiefs rebellion after SETS same-kingdom riot. kingdom=" + kingdomId
+				+ ", settlement=" + (settlementId ?? "")
+				+ ", ownerClan=" + (ownerClanId ?? "")
+				+ ", crime=" + trackedCrime.ToString("0.##")
+				+ ", threshold=" + threshold.ToString("0.##")
+				+ ", leftKingdom=" + leftKingdom
+				+ ", source=" + (source ?? ""));
+			ClearPendingSameKingdomVassalRebellion("applied_" + (source ?? ""));
+			return true;
+		}
+		catch (Exception ex)
+		{
+			SettlementEntryTroopSelectionLog.Log(
+				"Applying vanilla keep-fiefs rebellion after SETS riot failed. kingdom=" + kingdomId
+				+ ", settlement=" + (settlementId ?? "")
+				+ ", crime=" + trackedCrime.ToString("0.##")
+				+ ", source=" + (source ?? "")
+				+ ", error=" + ex);
+			return true;
+		}
+	}
+
+	private static void ClearPendingSameKingdomVassalRebellion(string source)
+	{
+		if (!string.IsNullOrWhiteSpace(_pendingSameKingdomVassalRebellionKingdomId))
+		{
+			SettlementEntryTroopSelectionLog.Log(
+				"Cleared pending same-kingdom vassal rebellion. kingdom=" + (_pendingSameKingdomVassalRebellionKingdomId ?? "")
+				+ ", settlement=" + (_pendingSameKingdomVassalRebellionSettlementId ?? "")
+				+ ", source=" + (source ?? ""));
+		}
+		_pendingSameKingdomVassalRebellionKingdomId = null;
+		_pendingSameKingdomVassalRebellionSettlementId = null;
+		_pendingSameKingdomVassalRebellionOwnerClanId = null;
 	}
 
 	private static string SafeGameMenuId(MenuCallbackArgs args)
@@ -2309,6 +2443,9 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				_conflictActive = true;
 				SceneTauntMissionBehavior.ApplyArmedConflictStartCrimeForExternal(
 					Settlement.CurrentSettlement?.MapFaction,
+					"sets_internal_riot_start");
+				SettlementEntryTroopSelectionBehavior.QueueSameKingdomVassalRebellionAfterRiot(
+					Settlement.CurrentSettlement,
 					"sets_internal_riot_start");
 				EnsurePlayerTeam(mission, main, requireCommandTeam: true);
 				KeepPlayerEntryFollowersCommandable(refreshFormation: true);

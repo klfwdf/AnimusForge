@@ -1145,6 +1145,19 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 		Instance?.TryShowTrackedCrimeTotalMessage(faction);
 	}
 
+	internal static float GetTrackedCrimeTotalForExternal(IFaction faction)
+	{
+		try
+		{
+			return Instance?.GetTrackedCrimeTotalAmount(faction)
+				?? MathF.Max(0f, faction?.MainHeroCrimeRating ?? 0f);
+		}
+		catch
+		{
+			return MathF.Max(0f, faction?.MainHeroCrimeRating ?? 0f);
+		}
+	}
+
 	internal static void TryRewardSettlementTrustForCriminalKnockdownForExternal(Settlement settlement, string victimName)
 	{
 		try
@@ -6493,6 +6506,11 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		{
 			Logger.Log("SceneTaunt", "Applying external armed-conflict start crime failed: " + ex.Message);
 		}
+	}
+
+	internal static float GetCrimeCapBeforeWarForExternal()
+	{
+		return SceneTauntCrimeCapBeforeWar;
 	}
 
 	internal static void TryApplyArmedNpcKnockdownConsequencesForExternal(
