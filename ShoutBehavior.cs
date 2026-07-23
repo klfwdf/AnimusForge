@@ -5043,9 +5043,9 @@ public class ShoutBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static string BuildSceneMechanismPromptSection(List<SceneSummonPromptTarget> sceneSummonTargets = null, List<SceneGuidePromptTarget> sceneGuideTargets = null, string sceneSummonClosureInstruction = null, string sceneFollowControlInstruction = null, NpcDataPacket publicActionTarget = null)
+	private static string BuildSceneMechanismPromptSection(List<SceneSummonPromptTarget> sceneSummonTargets = null, List<SceneGuidePromptTarget> sceneGuideTargets = null, string sceneSummonClosureInstruction = null, string sceneFollowControlInstruction = null, NpcDataPacket publicActionTarget = null, bool allowEscortedExecution = true)
 	{
-		string executionInstruction = publicActionTarget == null
+		string executionInstruction = !allowEscortedExecution || publicActionTarget == null
 			? string.Empty
 			: NoblePrisonerEscortBehavior.BuildPublicExecutionPromptInstruction(publicActionTarget.AgentIndex);
 		if (AIConfigHandler.ShouldExcludeSceneMoveRuleForCurrentMission())
@@ -9447,6 +9447,25 @@ private static string BuildSceneSystemRuleBlock(string ruleSection, string scene
 		text = string.IsNullOrWhiteSpace(text) ? mechanism : InjectSceneMechanismPromptSection(text, mechanism, allowAppendWithoutMarker);
 		text = FormatSceneRuleSection(text);
 	}
+	else if (!string.IsNullOrWhiteSpace(mechanism)
+		&& mechanism.IndexOf(NoblePrisonerEscortBehavior.ExecuteActionTag, StringComparison.OrdinalIgnoreCase) >= 0
+		&& (string.IsNullOrWhiteSpace(text)
+			|| text.IndexOf(NoblePrisonerEscortBehavior.ExecuteActionTag, StringComparison.OrdinalIgnoreCase) < 0))
+	{
+		string executionInstruction = string.Join(
+			"\n",
+			mechanism
+				.Replace("\r", "")
+				.Split('\n')
+				.Where(line => (line ?? "").IndexOf(NoblePrisonerEscortBehavior.ExecuteActionTag, StringComparison.OrdinalIgnoreCase) >= 0))
+			.Trim();
+		if (!string.IsNullOrWhiteSpace(executionInstruction))
+		{
+			string executionRule = "【附加规则:noble_prisoner_execution】\n" + executionInstruction;
+			text = string.IsNullOrWhiteSpace(text) ? executionRule : (text + "\n" + executionRule);
+			text = FormatSceneRuleSection(text);
+		}
+	}
 	return text;
 }
 
@@ -10355,7 +10374,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					bool flag = false;
 					try
 					{
-						flag = !npcSurrenderTriggered && !meetingTauntEscalated && !sceneTauntEscalated && !meetingReleaseTriggered && ShoutUtils.TryTriggerDuelAction(speakerData, ref aiResponse);
+						flag = !npcSurrenderTriggered && !meetingTauntEscalated && !sceneTauntEscalated && !meetingReleaseTriggered && ShoutUtils.TryTriggerDuelAction(speakerData, "", ref aiResponse);
 					}
 					catch
 					{
@@ -13199,7 +13218,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				fullExtra = ((fullExtra == null) ? extraFact : (fullExtra + "\n" + extraFact));
 			}
-			List<string> preprocessExcludedRuleIds = BuildPreprocessExcludedRuleIdsForCurrentInteraction(hero, characterObject, speakerNpc.AgentIndex, speakerNpc.IsHero, sceneSummonTargets, sceneGuideTargets, speakerNpc, allNpcData);
+			List<string> preprocessExcludedRuleIds = BuildPreprocessExcludedRuleIdsForCurrentInteraction(hero, characterObject, speakerNpc.AgentIndex, speakerNpc.IsHero, sceneSummonTargets, sceneGuideTargets, speakerNpc, allNpcData, playerText);
 			Task<string> persistedHeroHistoryTask = StartPrecomputedPersistedHistoryContextTask(speakerNpc.AgentIndex, playerText, resolvedHeroes, precomputedContexts, "group_turn_fallback");
 			Stopwatch preprocessSw = Stopwatch.StartNew();
 			MyBehavior.ShoutPromptContext ctx = MyBehavior.BuildShoutPromptContextForExternal(hero, playerText, fullExtra, speakerNpc.CultureId ?? "neutral", hasAnyHero: speakerNpc.IsHero, targetCharacter: characterObject, kingdomIdOverride: kingdomIdOverride, targetAgentIndex: speakerNpc.AgentIndex, usePrefetchedLoreContext: hasPrecomputed && precomputed != null && precomputed.HasLoreContext, prefetchedLoreContext: precomputed?.LoreContext, preprocessExcludedRuleIds: preprocessExcludedRuleIds);
@@ -17368,7 +17387,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private List<string> BuildPreprocessExcludedRuleIdsForCurrentInteraction(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, bool hasAnyHero, List<SceneSummonPromptTarget> sceneSummonTargets = null, List<SceneGuidePromptTarget> sceneGuideTargets = null, NpcDataPacket sceneSpeakerNpc = null, List<NpcDataPacket> sceneCandidates = null)
+	private List<string> BuildPreprocessExcludedRuleIdsForCurrentInteraction(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, bool hasAnyHero, List<SceneSummonPromptTarget> sceneSummonTargets = null, List<SceneGuidePromptTarget> sceneGuideTargets = null, NpcDataPacket sceneSpeakerNpc = null, List<NpcDataPacket> sceneCandidates = null, string currentPlayerText = null)
 	{
 		List<string> allRuleIds = AIConfigHandler.GetEnabledGuardrailRuleIdsForExternal();
 		if (AfGcczShoutBridge.ShouldUseExclusivePreprocessRuleRouting())
@@ -17397,6 +17416,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				string id = (ruleId ?? "").Trim();
 				if (string.IsNullOrWhiteSpace(id))
 				{
+					continue;
+				}
+				if (string.Equals(id, "duel", StringComparison.OrdinalIgnoreCase)
+					&& !NoblePrisonerEscortBehavior.AllowsGenericDuelForPlayerInput(targetAgentIndex, currentPlayerText))
+				{
+					excluded.Add(id);
 					continue;
 				}
 				if (!CanInjectRuleTopicIntoPreprocessForCurrentInteraction(id, targetHero, targetCharacter, targetAgentIndex, hasAnyHero, sceneSummonTargets, sceneGuideTargets, sceneSpeakerNpc, sceneCandidates))
@@ -17586,7 +17611,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		int nativeSceneGuideFirstPromptId = ((nativeSceneSummonTargets != null && nativeSceneSummonTargets.Count > 0) ? nativeSceneSummonTargets.Max((SceneSummonPromptTarget x) => x?.PromptId ?? 0) : 0) + 1;
 		Agent nativeTargetAgent = (nativeTargetAgentIndex >= 0) ? Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == nativeTargetAgentIndex) : null;
 		List<SceneGuidePromptTarget> nativeSceneGuideTargets = (nativeTargetAgentIndex >= 0) ? BuildSceneGuidePromptTargets(nativeTargetAgent, nativeSceneGuideFirstPromptId) : null;
-		List<string> preprocessExcludedRuleIds = BuildPreprocessExcludedRuleIdsForCurrentInteraction(targetHero, targetCharacter, nativeTargetAgentIndex, npc.IsHero, nativeSceneSummonTargets, nativeSceneGuideTargets, npc, presentNpcs);
+		List<string> preprocessExcludedRuleIds = BuildPreprocessExcludedRuleIdsForCurrentInteraction(targetHero, targetCharacter, nativeTargetAgentIndex, npc.IsHero, nativeSceneSummonTargets, nativeSceneGuideTargets, npc, presentNpcs, routingInput);
 		bool includeCurrentSceneSessionInPersistedHistory = false;
 		if (includeCurrentSceneSessionInPersistedHistory)
 		{
@@ -17639,7 +17664,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string roleRuntimeContext = BuildSceneUserRuntimeContextForSingle(npc, targetHero, presentNpcs, includeInventorySummary, includeTradePricing, partyTransferTopicSelected);
 		string nativeSceneSummonClosureInstruction = BuildSceneSummonClosurePromptInstruction(presentNpcs);
 		string nativeSceneFollowControlInstruction = BuildSceneFollowControlPromptInstruction(npc);
-		string nativeSceneMechanismPromptSection = BuildSceneMechanismPromptSection(nativeSceneSummonTargets, nativeSceneGuideTargets, nativeSceneSummonClosureInstruction, nativeSceneFollowControlInstruction, npc);
+		string nativeSceneMechanismPromptSection = BuildSceneMechanismPromptSection(nativeSceneSummonTargets, nativeSceneGuideTargets, nativeSceneSummonClosureInstruction, nativeSceneFollowControlInstruction, npc, allowEscortedExecution: false);
 		string systemRuleBlock = BuildSceneSystemRuleBlock(ruleExtrasSection, nativeSceneMechanismPromptSection);
 		string combinedRuleInspectionBlock = BuildSceneCompositeUserBlock("", knowledgeExtrasSection, systemRuleBlock);
 		Hero nativePostprocessHero = targetHero ?? targetCharacter?.HeroObject;
@@ -17675,7 +17700,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			+ " kingdom_vassalage_block=" + kingdomVassalageRuleInjected
 			+ " diplomacy_block=" + diplomacyRuleInjected);
 		Hero nativeDuelTargetHero = nativePostprocessHero;
-		if (duelRuleInjected && !CanInjectDuelPostprocessRule(ctx, nativeDuelTargetHero, nativeTargetAgentIndex, out var duelPostprocessBlockedReason))
+		if (duelRuleInjected && !CanInjectDuelPostprocessRule(ctx, nativeDuelTargetHero, nativeTargetAgentIndex, routingInput, out var duelPostprocessBlockedReason))
 		{
 			duelRuleInjected = false;
 			Logger.Log("ShoutBehavior", "[NativeConversation] duel postprocess blocked: " + duelPostprocessBlockedReason);
@@ -18142,7 +18167,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				Agent passiveAgent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == data.AgentIndex);
 				CharacterObject passiveCharacter = passiveAgent?.Character as CharacterObject;
 				string passiveKingdomIdOverride = TryGetKingdomIdOverrideFromAgent(passiveAgent);
-				List<string> preprocessExcludedRuleIds = BuildPreprocessExcludedRuleIdsForCurrentInteraction(hero, passiveCharacter, data.AgentIndex, data.IsHero, sceneSpeakerNpc: data, sceneCandidates: allNpcData);
+				List<string> preprocessExcludedRuleIds = BuildPreprocessExcludedRuleIdsForCurrentInteraction(hero, passiveCharacter, data.AgentIndex, data.IsHero, sceneSpeakerNpc: data, sceneCandidates: allNpcData, currentPlayerText: inputActionText);
 				MyBehavior.ShoutPromptContext ctx = MyBehavior.BuildShoutPromptContextForExternal(hero, inputActionText, fullExtra, cultureId, hasAnyHero: data.IsHero, targetCharacter: passiveCharacter, kingdomIdOverride: passiveKingdomIdOverride, targetAgentIndex: data.AgentIndex, usePrefetchedLoreContext: !string.IsNullOrWhiteSpace(loreContext), prefetchedLoreContext: loreContext, preprocessExcludedRuleIds: preprocessExcludedRuleIds);
 				DuelSettings settings = DuelSettings.GetSettings();
 				GetSceneReplyLengthLimits(settings, out var minTokens, out var maxTokens);
@@ -20633,9 +20658,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return string.Join("\n", result);
 	}
 
-	private static bool CanInjectDuelPostprocessRule(MyBehavior.ShoutPromptContext ctx, Hero targetHero, int targetAgentIndex, out string reason)
+	private static bool CanInjectDuelPostprocessRule(MyBehavior.ShoutPromptContext ctx, Hero targetHero, int targetAgentIndex, string playerText, out string reason)
 	{
 		reason = "";
+		if (!NoblePrisonerEscortBehavior.AllowsGenericDuelForPlayerInput(targetAgentIndex, playerText))
+		{
+			reason = "escorted_prisoner_requires_player_duel_request";
+			return false;
+		}
 		if (ctx == null || !ctx.UseDuelContext)
 		{
 			reason = "no_duel_context";
@@ -24994,7 +25024,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				List<SceneSummonPromptTarget> sceneSummonTargets = BuildSceneSummonPromptTargets(speakingCandidates, resolvedHeroes);
 				int sceneGuideFirstPromptId = ((sceneSummonTargets != null && sceneSummonTargets.Count > 0) ? sceneSummonTargets.Max((SceneSummonPromptTarget x) => x?.PromptId ?? 0) : 0) + 1;
 				List<SceneGuidePromptTarget> sceneGuideTargets = BuildSceneGuidePromptTargets(firstPromptId: sceneGuideFirstPromptId);
-				List<string> preprocessExcludedRuleIds = BuildPreprocessExcludedRuleIdsForCurrentInteraction(contextHero, contextCharacter, contextAgentIndex, hasAnyHero, sceneSummonTargets, sceneGuideTargets, primaryNpc, speakingCandidates);
+				List<string> preprocessExcludedRuleIds = BuildPreprocessExcludedRuleIdsForCurrentInteraction(contextHero, contextCharacter, contextAgentIndex, hasAnyHero, sceneSummonTargets, sceneGuideTargets, primaryNpc, speakingCandidates, playerText);
 				int preferredPersistedHistorySourceIndex = -1;
 				if (primaryNpc != null && speakingCandidates.Any((NpcDataPacket npcDataPacket) => npcDataPacket != null && npcDataPacket.AgentIndex == primaryNpc.AgentIndex))
 				{
@@ -25474,7 +25504,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					npcCharacter = npcAgent?.Character as CharacterObject;
 					speakingHero = npcCharacter?.HeroObject ?? contextHero;
 					string npcKingdomIdOverride = TryGetKingdomIdOverrideFromAgent(npcAgent);
-					List<string> preprocessExcludedRuleIds = BuildPreprocessExcludedRuleIdsForCurrentInteraction(contextHero, npcCharacter, currentSpeaker.AgentIndex, currentSpeaker.IsHero, sceneSummonTargets, sceneGuideTargets, currentSpeaker, speakableCandidates);
+					List<string> preprocessExcludedRuleIds = BuildPreprocessExcludedRuleIdsForCurrentInteraction(contextHero, npcCharacter, currentSpeaker.AgentIndex, currentSpeaker.IsHero, sceneSummonTargets, sceneGuideTargets, currentSpeaker, speakableCandidates, playerText);
 					Task<string> persistedHeroHistoryTask = StartPrecomputedPersistedHistoryContextTask(currentSpeaker.AgentIndex, playerText, resolvedHeroes, precomputedContexts, "group_turn");
 					Stopwatch preprocessSw = Stopwatch.StartNew();
 					MyBehavior.ShoutPromptContext ctx = MyBehavior.BuildShoutPromptContextForExternal(contextHero, playerText, fullExtra, cultureId, hasAnyHero: currentSpeaker.IsHero, targetCharacter: npcCharacter, kingdomIdOverride: npcKingdomIdOverride, targetAgentIndex: currentSpeaker.AgentIndex, usePrefetchedLoreContext: hasPrecomputed && precomputed != null && precomputed.HasLoreContext, prefetchedLoreContext: precomputed?.LoreContext, preprocessExcludedRuleIds: preprocessExcludedRuleIds);
@@ -25550,7 +25580,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					siegeInterventionRuleInjected = AfGcczShoutBridge.ShouldRunPostprocessFromPrompt(combinedRuleInspectionBlock, postprocessPreprocessHits);
 					bool duelRuleInjectedBeforeEligibility = duelRuleInjected;
 					string duelPostprocessBlockedReason = "";
-					if (duelRuleInjected && !CanInjectDuelPostprocessRule(ctx, speakingHero, currentSpeaker.AgentIndex, out duelPostprocessBlockedReason))
+					if (duelRuleInjected && !CanInjectDuelPostprocessRule(ctx, speakingHero, currentSpeaker.AgentIndex, playerText, out duelPostprocessBlockedReason))
 					{
 						duelRuleInjected = false;
 					}
@@ -26254,7 +26284,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						}
 						if (!string.IsNullOrWhiteSpace(content))
 						{
-							bool flag2 = allowPlayerDirectedActions && !flagNpcSurrender && !flag && !flagSceneTaunt && !flagMeetingRelease && ShoutUtils.TryTriggerDuelAction(matchedNpc, ref content);
+							bool flag2 = allowPlayerDirectedActions && !flagNpcSurrender && !flag && !flagSceneTaunt && !flagMeetingRelease && ShoutUtils.TryTriggerDuelAction(matchedNpc, playerDirectedActionText, ref content);
 							bool flag3 = allowPlayerDirectedActions && !flagNpcSurrender && !flagSceneTaunt && !flagMeetingRelease && TryTriggerOpenLordsHallAction(matchedNpc, agent, ref content);
 							bool flag6 = allowPlayerDirectedActions && !flagNpcSurrender && !flagSceneTaunt && !flagMeetingRelease && TryTriggerSceneSummonAction(matchedNpc, agent, sceneSummonTargets, ref content, out activeSceneSummonRequest);
 							bool flag10 = allowPlayerDirectedActions && !flagNpcSurrender && !flagSceneTaunt && !flagMeetingRelease && TryTriggerSceneGuideAction(matchedNpc, agent, sceneGuideTargets, sceneSummonTargets, ref content, out activeSceneGuideRequest);

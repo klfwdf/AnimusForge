@@ -50,6 +50,11 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 		"不要杀", "别杀", "不准杀", "不许杀", "饶了", "放过",
 		"do not execute", "don't execute", "do not kill", "don't kill", "spare"
 	};
+	private static readonly string[] DuelIntentTerms =
+	{
+		"决斗", "单挑", "比武", "比试", "切磋", "较量", "挑战你", "分个胜负",
+		"duel", "single combat", "challenge you", "fight me", "one on one", "one-on-one"
+	};
 
 	private static TroopRoster _townAftermathProfile;
 	private static TroopRoster _settlementEntryProfile;
@@ -373,14 +378,13 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 	{
 		if (!TryGetEscortedHero(agentIndex, out Hero hero, out Agent agent)
 			|| hero == null
-			|| agent == null
-			|| IsNativePrivateConversationActive())
+			|| agent == null)
 		{
 			return string.Empty;
 		}
 		return "【贵族俘虏公开处决】当前回应者“" + (hero.Name?.ToString() ?? "俘虏")
-			+ "”是玩家带入场景且仍由玩家主队拘押的英雄俘虏。只有玩家在当前公开范围对话中明确命令处决、斩首或杀死该俘虏时，才在回复末尾输出 "
-			+ ExecuteActionTag + "；普通谈话、威胁、玩笑、转述、私人原版对话或含糊表达绝不能输出该标签。";
+			+ "”是玩家带入场景且仍由玩家主队拘押的英雄俘虏。玩家在当前公开范围对话中明确命令处决、斩首或杀死该俘虏时，无论你口头拒绝、求饶或服从，都必须在回复末尾输出 "
+			+ ExecuteActionTag + "；普通谈话、一般威胁、玩笑、转述、私人原版对话或含糊表达绝不能输出该标签。";
 	}
 
 	internal static bool TryProcessPublicExecutionTag(int agentIndex, string playerText, ref string content)
@@ -390,11 +394,6 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 			return false;
 		}
 		content = ExecuteActionTagRegex.Replace(content, "").Trim();
-		if (IsNativePrivateConversationActive())
-		{
-			NoblePrisonerEscortLog.Log("Blocked execution tag from native/private conversation. agent=" + agentIndex);
-			return false;
-		}
 		if (!ContainsExplicitExecutionIntent(playerText))
 		{
 			NoblePrisonerEscortLog.Log("Rejected execution tag without explicit player intent. agent=" + agentIndex);
@@ -411,7 +410,29 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 			NoblePrisonerEscortLog.Log("Queue execution failed. hero=" + SafeHeroId(hero) + ", reason=" + reason);
 			return false;
 		}
+		NoblePrisonerEscortLog.Log("Queued public execution confirmation. hero=" + SafeHeroId(hero) + ", agent=" + agentIndex);
 		return true;
+	}
+
+	internal static bool AllowsGenericDuelForPlayerInput(int agentIndex, string playerText)
+	{
+		if (!IsEscortedAgent(agentIndex))
+		{
+			return true;
+		}
+		string text = (playerText ?? string.Empty).Trim();
+		return text.Length > 0
+			&& !ContainsExplicitExecutionIntent(text)
+			&& DuelIntentTerms.Any(term => text.IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0);
+	}
+
+	internal static void LogBlockedAutonomousDuel(int agentIndex, string source)
+	{
+		NoblePrisonerEscortLog.Log(
+			"Blocked autonomous duel for escorted prisoner. agent="
+			+ agentIndex
+			+ ", source="
+			+ (source ?? "unknown"));
 	}
 
 	internal static void StripExecutionTag(ref string content, string source)
@@ -787,19 +808,6 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 		return text.Length > 0
 			&& !ExecutionNegationTerms.Any(term => text.IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0)
 			&& ExecutionIntentTerms.Any(term => text.IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0);
-	}
-
-	private static bool IsNativePrivateConversationActive()
-	{
-		try
-		{
-			return Hero.OneToOneConversationHero != null
-				|| Campaign.Current?.ConversationManager?.IsConversationInProgress == true;
-		}
-		catch
-		{
-			return false;
-		}
 	}
 
 	private static bool HasAnyConfiguredProfile()

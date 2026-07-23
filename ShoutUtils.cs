@@ -2944,12 +2944,21 @@ public static class ShoutUtils
 		return Math.Max(18f, Math.Min(55f, num2));
 	}
 
-	public static bool TryTriggerDuelAction(NpcDataPacket npcData, ref string content)
+	public static bool TryTriggerDuelAction(NpcDataPacket npcData, string playerText, ref string content)
 	{
 		if (content.Contains("[ACTION:DUEL]"))
 		{
 			content = content.Replace("[ACTION:DUEL]", "").Trim();
-			return npcData != null;
+			if (npcData == null)
+			{
+				return false;
+			}
+			if (!NoblePrisonerEscortBehavior.AllowsGenericDuelForPlayerInput(npcData.AgentIndex, playerText))
+			{
+				NoblePrisonerEscortBehavior.LogBlockedAutonomousDuel(npcData.AgentIndex, "final_action_dispatch");
+				return false;
+			}
+			return true;
 		}
 		return false;
 	}
