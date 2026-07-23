@@ -5252,7 +5252,10 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 
 		private bool IsPlayerSideAgent(Agent agent)
 		{
-			return agent != null && (agent == Agent.Main || _alliedAgentIndexes.Contains(agent.Index));
+			return agent != null
+				&& (agent == Agent.Main
+					|| _alliedAgentIndexes.Contains(agent.Index)
+					|| NoblePrisonerEscortBehavior.IsEscortedAgent(agent));
 		}
 
 		private bool IsNativeAlleyFightActive()

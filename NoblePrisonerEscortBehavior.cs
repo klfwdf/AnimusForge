@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using Helpers;
 using SandBox;
@@ -56,6 +57,7 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 	private static TroopRoster _encounterMeetingProfile;
 	private static PendingSelection _pendingSelection;
 	private static Mission _activeMission;
+	private static bool _lordsHallCommandUiPrimed;
 	private static readonly Dictionary<int, EscortedAgentRecord> EscortedAgents = new Dictionary<int, EscortedAgentRecord>();
 
 	public override void RegisterEvents()
@@ -132,6 +134,226 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 		return agent != null
 			&& EscortedAgents.TryGetValue(agent.Index, out EscortedAgentRecord record)
 			&& record.MeetingRetreatStarted;
+	}
+
+	private static bool HasLiveLordsHallProfile()
+	{
+		try
+		{
+			return ResolveLiveProfile(NoblePrisonerEscortMode.LordsHall, out _, out _).TotalManCount > 0;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	internal static bool ShouldInjectOrderViewsForExternal(Mission mission)
+	{
+		try
+		{
+			if (mission == null || mission.IsMissionEnding)
+			{
+				return false;
+			}
+			if (ResolveModeForMission(mission) == NoblePrisonerEscortMode.LordsHall)
+			{
+				return HasLiveLordsHallProfile();
+			}
+			return ReferenceEquals(_activeMission, mission)
+				&& EscortedAgents.Values.Any(record =>
+					record?.Mode == NoblePrisonerEscortMode.LordsHall
+					&& record.Agent != null
+					&& record.Agent.IsActive());
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	internal static Team ResolvePlayerCommandTeamForExternal(Mission mission, string source = null)
+	{
+		try
+		{
+			mission ??= Mission.Current;
+			Agent main = Agent.Main ?? mission?.MainAgent;
+			if (mission == null || mission.IsMissionEnding || main == null || !main.IsActive())
+			{
+				return mission?.PlayerTeam ?? main?.Team;
+			}
+			Team playerTeam = mission.PlayerTeam ?? main.Team;
+			if (playerTeam == null || !playerTeam.IsPlayerGeneral)
+			{
+				uint color = Hero.MainHero?.MapFaction?.Color ?? 0xFF2020FFu;
+				uint color2 = Hero.MainHero?.MapFaction?.Color2 ?? 0xFF101080u;
+				try
+				{
+					playerTeam = mission.Teams.Add(
+						BattleSideEnum.Attacker,
+						color,
+						color2,
+						Hero.MainHero?.Clan?.Banner,
+						isPlayerGeneral: true,
+						isPlayerSergeant: false);
+				}
+				catch (Exception ex)
+				{
+					NoblePrisonerEscortLog.Log("Create lords-hall command team failed. source=" + (source ?? "N/A") + ", error=" + ex.Message);
+					playerTeam = mission.PlayerTeam ?? main.Team;
+				}
+			}
+			if (playerTeam != null)
+			{
+				mission.PlayerTeam = playerTeam;
+				if (main.Team != playerTeam)
+				{
+					main.SetTeam(playerTeam, sync: true);
+				}
+			}
+			return playerTeam;
+		}
+		catch (Exception ex)
+		{
+			NoblePrisonerEscortLog.Log("Resolve lords-hall command team failed. source=" + (source ?? "N/A") + ", error=" + ex.Message);
+			return null;
+		}
+	}
+
+	internal static bool EnsureCommandUiReadyForExternal(Mission mission, string source)
+	{
+		try
+		{
+			mission ??= Mission.Current;
+			if (!ShouldInjectOrderViewsForExternal(mission)
+				|| mission.Mode == MissionMode.Conversation
+				|| mission.Mode == MissionMode.Barter)
+			{
+				return false;
+			}
+			Agent main = Agent.Main ?? mission.MainAgent;
+			Team playerTeam = ResolvePlayerCommandTeamForExternal(mission, source);
+			if (main == null || playerTeam == null)
+			{
+				return false;
+			}
+			Formation formation = playerTeam.GetFormation((FormationClass)LordPrisonerFormationIndex);
+			if (formation == null)
+			{
+				return false;
+			}
+			int commandable = 0;
+			foreach (EscortedAgentRecord record in EscortedAgents.Values.ToList())
+			{
+				Agent agent = record?.Agent;
+				if (record?.Mode != NoblePrisonerEscortMode.LordsHall
+					|| agent == null
+					|| !agent.IsHuman
+					|| !agent.IsActive())
+				{
+					continue;
+				}
+				if (agent.Team != playerTeam)
+				{
+					agent.SetTeam(playerTeam, sync: true);
+				}
+				if (agent.Formation != formation)
+				{
+					agent.Formation = formation;
+				}
+				agent.TryAttachToFormation();
+				agent.SetShouldCatchUpWithFormation(true);
+				agent.UpdateFormationOrders();
+				commandable++;
+			}
+			if (commandable <= 0)
+			{
+				return false;
+			}
+			MarkFormationPlayerCommandable(formation, main);
+			OrderController controller = playerTeam.PlayerOrderController ?? playerTeam.MasterOrderController;
+			if (controller != null && !_lordsHallCommandUiPrimed)
+			{
+				try
+				{
+					if (controller.SelectedFormations == null || controller.SelectedFormations.Count == 0)
+					{
+						controller.SelectFormation(formation);
+					}
+				}
+				catch
+				{
+				}
+				_lordsHallCommandUiPrimed = true;
+				NoblePrisonerEscortLog.Log("Lords-hall command UI ready. source=" + (source ?? "N/A")
+					+ ", commandable=" + commandable + ", formation=" + (LordPrisonerFormationIndex + 1)
+					+ ", controller=true");
+			}
+			return controller != null;
+		}
+		catch (Exception ex)
+		{
+			NoblePrisonerEscortLog.Log("Ensure lords-hall command UI failed. source=" + (source ?? "N/A") + ", error=" + ex.Message);
+			return false;
+		}
+	}
+
+	internal static OrderController TryResolveOrderControllerForExternal(Mission mission)
+	{
+		try
+		{
+			mission ??= Mission.Current;
+			if (!ShouldInjectOrderViewsForExternal(mission)
+				|| mission.Mode == MissionMode.Conversation
+				|| mission.Mode == MissionMode.Barter)
+			{
+				return null;
+			}
+			Team playerTeam = ResolvePlayerCommandTeamForExternal(mission, "resolve_order_controller");
+			return playerTeam?.PlayerOrderController ?? playerTeam?.MasterOrderController;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	internal static bool PlayerHasCommandableAgentsForExternal(Mission mission)
+	{
+		try
+		{
+			mission ??= Mission.Current;
+			if (!ShouldInjectOrderViewsForExternal(mission))
+			{
+				return false;
+			}
+			Team playerTeam = ResolvePlayerCommandTeamForExternal(mission, "has_commandable_agents");
+			return playerTeam != null && EscortedAgents.Values.Any(record =>
+				record?.Mode == NoblePrisonerEscortMode.LordsHall
+				&& record.Agent != null
+				&& record.Agent.IsActive()
+				&& record.Agent.Team == playerTeam
+				&& record.Agent.Formation != null);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	internal static bool NativeOrderControllerHasSelectedFormationsForExternal(Mission mission)
+	{
+		try
+		{
+			OrderController controller = TryResolveOrderControllerForExternal(mission);
+			return controller?.SelectedFormations != null
+				&& controller.SelectedFormations.Count > 0
+				&& PlayerHasCommandableAgentsForExternal(mission);
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	internal static bool TryGetEscortedHero(int agentIndex, out Hero hero, out Agent agent)
@@ -264,11 +486,19 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 		{
 			return NoblePrisonerEscortMode.None;
 		}
-		if (MeetingBattleRuntime.IsMeetingActive || LordEncounterBehavior.IsEncounterMeetingMissionActive)
+		bool actualWorldMapMeeting = MeetingBattleRuntime.IsMeetingActive
+			&& !MeetingBattleRuntime.IsCombatEscalated
+			&& LordEncounterBehavior.IsEncounterMeetingMissionActive
+			&& mission.GetMissionBehavior<MeetingBattleLockMissionBehavior>() != null;
+		if (actualWorldMapMeeting)
 		{
 			return IsNeutralOrHostileEncounterParty()
 				? NoblePrisonerEscortMode.WorldMapEncounterMeeting
 				: NoblePrisonerEscortMode.None;
+		}
+		if (MeetingBattleRuntime.IsMeetingActive || LordEncounterBehavior.IsEncounterMeetingMissionActive)
+		{
+			return NoblePrisonerEscortMode.None;
 		}
 
 		Settlement settlement = Settlement.CurrentSettlement ?? PlayerEncounter.LocationEncounter?.Settlement;
@@ -349,7 +579,11 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 
 	private void OnNewGameCreated(CampaignGameStarter starter)
 	{
-		EnsureProfiles();
+		_townAftermathProfile = TroopRoster.CreateDummyTroopRoster();
+		_settlementEntryProfile = TroopRoster.CreateDummyTroopRoster();
+		_lordsHallProfile = TroopRoster.CreateDummyTroopRoster();
+		_encounterMeetingProfile = TroopRoster.CreateDummyTroopRoster();
+		_pendingSelection = null;
 		ClearRuntime("new_game");
 	}
 
@@ -627,7 +861,7 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 			NoblePrisonerEscortMode.TownAftermath => "城镇攻城处置随行（5名）",
 			NoblePrisonerEscortMode.SettlementEntry => "正常城镇/城堡场景随行（5名）",
 			NoblePrisonerEscortMode.LordsHall => "城镇/城堡领主大厅随行（5名）",
-			NoblePrisonerEscortMode.WorldMapEncounterMeeting => "野外部队3D会面随行（1名）",
+			NoblePrisonerEscortMode.WorldMapEncounterMeeting => "野外会面场景随行（1名）",
 			_ => "贵族俘虏随行"
 		};
 	}
@@ -636,8 +870,51 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 	{
 		EscortedAgents.Clear();
 		_activeMission = null;
+		_lordsHallCommandUiPrimed = false;
 		NoblePrisonerExecutionRuntime.Reset(source);
 		NoblePrisonerEscortLog.Log("Cleared runtime. source=" + (source ?? "N/A"));
+	}
+
+	private static void MarkFormationPlayerCommandable(Formation formation, Agent playerOwner)
+	{
+		try
+		{
+			if (formation == null)
+			{
+				return;
+			}
+			try
+			{
+				formation.SetControlledByAI(false, false);
+			}
+			catch
+			{
+				TrySetFormationProperty(formation, nameof(Formation.IsAIControlled), false);
+			}
+			TrySetFormationProperty(formation, nameof(Formation.HasPlayerControlledTroop), true);
+			if (playerOwner != null && playerOwner.IsActive())
+			{
+				TrySetFormationProperty(formation, nameof(Formation.PlayerOwner), playerOwner);
+			}
+		}
+		catch (Exception ex)
+		{
+			NoblePrisonerEscortLog.Log("Mark lords-hall formation commandable failed. error=" + ex.Message);
+		}
+	}
+
+	private static void TrySetFormationProperty(Formation formation, string propertyName, object value)
+	{
+		try
+		{
+			PropertyInfo property = formation?.GetType().GetProperty(
+				propertyName,
+				BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+			property?.GetSetMethod(true)?.Invoke(formation, new object[] { value });
+		}
+		catch
+		{
+		}
 	}
 
 	private static void ShowMessage(string text, uint color)

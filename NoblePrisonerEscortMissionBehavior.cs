@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Helpers;
+using SandBox;
+using SandBox.Missions.AgentBehaviors;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
@@ -125,6 +127,10 @@ internal sealed class NoblePrisonerEscortMissionBehavior : MissionLogic
 		}
 
 		Agent main = base.Mission.MainAgent;
+		if (_mode == NoblePrisonerEscortMode.LordsHall)
+		{
+			NoblePrisonerEscortBehavior.ResolvePlayerCommandTeamForExternal(base.Mission, "lords_hall_spawn_prepare");
+		}
 		Vec3 forward = main.LookDirection;
 		forward.z = 0f;
 		if (forward.LengthSquared < 0.001f)
@@ -148,13 +154,13 @@ internal sealed class NoblePrisonerEscortMissionBehavior : MissionLogic
 			{
 				continue;
 			}
+			float lateral = (i - (characters.Count - 1) * 0.5f) * 1.35f;
+			Vec3 spawnPosition = main.Position - forward * 2.6f + side * lateral;
+			spawnPosition = ResolveReachableSpawnPosition(spawnPosition, main.Position);
 			Agent agent = FindExistingHeroAgent(hero);
 			bool adopted = agent != null;
 			if (!adopted)
 			{
-				float lateral = (i - (characters.Count - 1) * 0.5f) * 1.35f;
-				Vec3 spawnPosition = main.Position - forward * 2.6f + side * lateral;
-				TrySnapToGround(ref spawnPosition);
 				EscortedNoblePrisonerAgentOrigin origin = new EscortedNoblePrisonerAgentOrigin(character);
 				agent = BannerlordApiCompat.SpawnInspectionTroop(
 					base.Mission,
@@ -173,6 +179,10 @@ internal sealed class NoblePrisonerEscortMissionBehavior : MissionLogic
 			}
 			EnsureEscortFormation(agent);
 			ConfigureNonCombatEscort(agent);
+			if (_mode == NoblePrisonerEscortMode.LordsHall)
+			{
+				PlaceLordsHallEscort(agent, spawnPosition, forward);
+			}
 			EscortedRuntimeAgent runtime = new EscortedRuntimeAgent { Hero = hero, Agent = agent };
 			_agents[agent.Index] = runtime;
 			NoblePrisonerEscortBehavior.RegisterEscortedAgent(base.Mission, _mode, hero, agent);
@@ -184,6 +194,10 @@ internal sealed class NoblePrisonerEscortMissionBehavior : MissionLogic
 		}
 
 		IssueFormationFollowOrder();
+		if (_mode == NoblePrisonerEscortMode.LordsHall)
+		{
+			NoblePrisonerEscortBehavior.EnsureCommandUiReadyForExternal(base.Mission, "lords_hall_spawn");
+		}
 		NoblePrisonerEscortLog.Log("Spawned configured noble prisoners. mode=" + _mode + ", selected=" + characters.Count + ", spawned=" + spawned + ", unavailable=" + unavailable);
 		if (spawned > 0)
 		{
@@ -220,6 +234,10 @@ internal sealed class NoblePrisonerEscortMissionBehavior : MissionLogic
 			EnsureEscortFormation(agent);
 			ConfigureNonCombatEscort(agent);
 			PruneDuplicateHeroAgents(runtime);
+		}
+		if (_mode == NoblePrisonerEscortMode.LordsHall)
+		{
+			NoblePrisonerEscortBehavior.EnsureCommandUiReadyForExternal(base.Mission, "lords_hall_maintain");
 		}
 	}
 
@@ -301,10 +319,78 @@ internal sealed class NoblePrisonerEscortMissionBehavior : MissionLogic
 			agent.SetFiringOrder(FiringOrder.RangedWeaponUsageOrderEnum.HoldYourFire);
 			agent.TryToSheathWeaponInHand(Agent.HandIndex.MainHand, Agent.WeaponWieldActionType.Instant);
 			agent.TryToSheathWeaponInHand(Agent.HandIndex.OffHand, Agent.WeaponWieldActionType.Instant);
+			if (_mode == NoblePrisonerEscortMode.LordsHall)
+			{
+				DisableSettlementDailyBehavior(agent);
+			}
 		}
 		catch (Exception ex)
 		{
 			NoblePrisonerEscortLog.LogVerbose("Maintain non-combat escort failed. agent=" + agent.Index + ", error=" + ex.Message);
+		}
+	}
+
+	private void PlaceLordsHallEscort(Agent agent, Vec3 position, Vec3 facing)
+	{
+		try
+		{
+			if (agent == null || !agent.IsActive())
+			{
+				return;
+			}
+			agent.TeleportToPosition(position);
+			agent.LookDirection = facing;
+			agent.SetMovementDirection(Vec2.Zero);
+			NoblePrisonerEscortLog.Log("Placed lords-hall escorted prisoner near player. hero="
+				+ ((agent.Character as CharacterObject)?.HeroObject?.StringId ?? "null")
+				+ ", agent=" + agent.Index + ", position=" + position);
+		}
+		catch (Exception ex)
+		{
+			NoblePrisonerEscortLog.Log("Place lords-hall escorted prisoner failed. agent="
+				+ (agent?.Index ?? -1) + ", error=" + ex.Message);
+		}
+	}
+
+	private static void DisableSettlementDailyBehavior(Agent agent)
+	{
+		try
+		{
+			CampaignAgentComponent component = agent?.GetComponent<CampaignAgentComponent>();
+			AgentNavigator navigator = component?.AgentNavigator;
+			if (navigator == null)
+			{
+				return;
+			}
+			try
+			{
+				navigator.ClearTarget();
+			}
+			catch
+			{
+			}
+			DailyBehaviorGroup dailyGroup = navigator.GetBehaviorGroup<DailyBehaviorGroup>();
+			if (dailyGroup == null)
+			{
+				return;
+			}
+			try
+			{
+				dailyGroup.DisableScriptedBehavior();
+			}
+			catch
+			{
+			}
+			try
+			{
+				dailyGroup.DisableAllBehaviors();
+			}
+			catch
+			{
+			}
+		}
+		catch
+		{
 		}
 	}
 
@@ -349,7 +435,6 @@ internal sealed class NoblePrisonerEscortMissionBehavior : MissionLogic
 				WorldPosition fleePosition = base.Mission.GetClosestFleePositionForAgent(agent);
 				agent.Retreat(fleePosition);
 			}
-			agent.SetTeam(null, sync: false);
 			NoblePrisonerEscortLog.Log("Started native meeting retreat. hero=" + (runtime.Hero?.StringId ?? "null") + ", agent=" + agent.Index + ", source=" + source + ", retreating=" + agent.IsRetreating());
 		}
 		catch (Exception ex)
@@ -370,15 +455,31 @@ internal sealed class NoblePrisonerEscortMissionBehavior : MissionLogic
 			&& (agent.Character as CharacterObject)?.HeroObject == hero);
 	}
 
-	private void TrySnapToGround(ref Vec3 position)
+	private Vec3 ResolveReachableSpawnPosition(Vec3 candidate, Vec3 anchor)
 	{
 		try
 		{
-			position.z = base.Mission.Scene.GetGroundHeightAtPosition(position);
+			Scene scene = base.Mission?.Scene;
+			if (scene != null)
+			{
+				candidate.z = scene.GetGroundHeightAtPosition(candidate);
+				WorldPosition candidateWorld = new WorldPosition(scene, candidate);
+				if (candidateWorld.GetNearestNavMesh() != UIntPtr.Zero)
+				{
+					return candidateWorld.GetNavMeshVec3();
+				}
+				Vec3 fallback = base.Mission.GetRandomPositionAroundPoint(anchor, 1.5f, 7f, true);
+				WorldPosition fallbackWorld = new WorldPosition(scene, fallback);
+				if (fallbackWorld.GetNearestNavMesh() != UIntPtr.Zero)
+				{
+					return fallbackWorld.GetNavMeshVec3();
+				}
+			}
 		}
 		catch
 		{
 		}
+		return anchor;
 	}
 
 	private static bool IsStillMainPartyPrisoner(Hero hero)
