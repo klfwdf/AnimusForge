@@ -97,9 +97,15 @@ internal static class CastleAftermathLordExecutionRuntimeBridge
 			&& CastleAftermathRuntimeBridge.IsCastleAftermathMission(mission);
 		if (pending.Stage == RuntimeStage.FinalizingCampaignDeath)
 		{
-			ShowFinalizationPendingOnce(
+			ObserveCampaignDeathState(
 				pending,
-				contextAvailable ? "finalization_wait" : "context_ending_with_native_death_mark");
+				contextAvailable ? "finalization_observe" : "context_ending_observe");
+			if (ReferenceEquals(_pending, pending))
+			{
+				ShowFinalizationPendingOnce(
+					pending,
+					contextAvailable ? "finalization_wait" : "context_ending_with_native_death_mark");
+			}
 			return;
 		}
 
@@ -158,7 +164,11 @@ internal static class CastleAftermathLordExecutionRuntimeBridge
 		}
 		if (pending.Stage == RuntimeStage.FinalizingCampaignDeath || HasExecutionDeathMark(pending.Hero))
 		{
-			ShowFinalizationPendingOnce(pending, "mission_exit_request");
+			ObserveCampaignDeathState(pending, "mission_exit_observe");
+			if (ReferenceEquals(_pending, pending))
+			{
+				ShowFinalizationPendingOnce(pending, "mission_exit_request");
+			}
 		}
 		return _pending == null;
 	}
@@ -182,6 +192,13 @@ internal static class CastleAftermathLordExecutionRuntimeBridge
 		}
 		if (pending.Stage == RuntimeStage.FinalizingCampaignDeath || HasExecutionDeathMark(pending.Hero))
 		{
+			ObserveCampaignDeathState(
+				pending,
+				(source ?? "mission_cancelled_execution") + "_observe");
+			if (!ReferenceEquals(_pending, pending))
+			{
+				return;
+			}
 			ReleaseIrreversiblePending(
 				pending,
 				(source ?? "mission_cancelled_execution") + "_native_death_mark_handoff");
@@ -197,6 +214,14 @@ internal static class CastleAftermathLordExecutionRuntimeBridge
 		{
 			if (pending.Stage == RuntimeStage.FinalizingCampaignDeath || HasExecutionDeathMark(pending.Hero))
 			{
+				ObserveCampaignDeathState(
+					pending,
+					(source ?? "reset_execution_runtime") + "_observe");
+				if (!ReferenceEquals(_pending, pending))
+				{
+					_nextToken = 0;
+					return;
+				}
 				ReleaseIrreversiblePending(
 					pending,
 					(source ?? "reset_execution_runtime") + "_native_death_mark_handoff");
@@ -635,6 +660,11 @@ internal static class CastleAftermathLordExecutionRuntimeBridge
 	{
 		if (pending == null || !ReferenceEquals(_pending, pending))
 		{
+			return;
+		}
+		if (pending.Hero?.IsAlive == false)
+		{
+			ObserveCampaignDeathState(pending, (source ?? "native_death_mark_handoff") + "_persisted");
 			return;
 		}
 		_pending = null;
