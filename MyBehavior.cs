@@ -13814,7 +13814,7 @@ public class MyBehavior : CampaignBehaviorBase
 		foreach (string tag in tags ?? Enumerable.Empty<string>())
 		{
 			string text = (tag ?? "").Trim();
-			if (Regex.IsMatch(text, "^\\[ACTION:GIVE_ASSET:[^\\]\\r\\n:]+:(?:ALL|\\d+)\\]$", RegexOptions.IgnoreCase) ||
+			if (GiveAssetTagCodec.TryParseWhole(text, out _) ||
 				Regex.IsMatch(text, "^\\[AD:\\d+:\\d+:P:[^\\]]*\\]$", RegexOptions.IgnoreCase) ||
 				Regex.IsMatch(text, "^\\[ADP:[^\\]\\r\\n:;]+\\]$", RegexOptions.IgnoreCase) ||
 				Regex.IsMatch(text, "^\\[ATT:(?:ALL|\\d+):(?:ALL|\\d+)\\]$", RegexOptions.IgnoreCase) ||
@@ -13922,11 +13922,10 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return 0L;
 		}
-		Match match = Regex.Match(text, "^\\[ACTION:GIVE_ASSET:([^\\]\\r\\n:]+):(ALL|\\d+)\\]$", RegexOptions.IgnoreCase);
-		if (match.Success)
+		if (GiveAssetTagCodec.TryParseWhole(text, out GiveAssetTag giveAssetTag))
 		{
-			string assetToken = (match.Groups[1].Value ?? "").Trim();
-			string quantityToken = (match.Groups[2].Value ?? "").Trim();
+			string assetToken = (giveAssetTag.AssetToken ?? "").Trim();
+			string quantityToken = (giveAssetTag.QuantityToken ?? "").Trim();
 			if (RewardSystemBehavior.IsGoldAssetTokenForExternal(assetToken) && TryParsePositiveLong(quantityToken, out var gold))
 			{
 				return gold;
@@ -13945,7 +13944,7 @@ public class MyBehavior : CampaignBehaviorBase
 				return EstimateRewardItemTagValueForWeeklyMemoryMaterial(targetHero, assetToken, assetAmount, rewardOptions);
 			}
 		}
-		match = Regex.Match(text, "^\\[AD:(\\d+):\\d+:P:[^\\]]*\\]$", RegexOptions.IgnoreCase);
+		Match match = Regex.Match(text, "^\\[AD:(\\d+):\\d+:P:[^\\]]*\\]$", RegexOptions.IgnoreCase);
 		if (match.Success && TryParsePositiveLong(match.Groups[1].Value, out var debtGold))
 		{
 			return debtGold;
@@ -27379,17 +27378,10 @@ public class MyBehavior : CampaignBehaviorBase
 		if (string.Equals(id, "kingdom_service", StringComparison.OrdinalIgnoreCase))
 		{
 			string runtime = AIConfigHandler.BuildRuntimeKingdomServiceInstructionForExternal();
-			if (!string.IsNullOrWhiteSpace(runtime))
+			string heroJoinRuntime = hasAnyHero ? AIConfigHandler.BuildRuntimeHeroJoinPartyInstructionForExternal(hero) : "";
+			if (!string.IsNullOrWhiteSpace(runtime) || !string.IsNullOrWhiteSpace(heroJoinRuntime))
 			{
-				text = runtime;
-			}
-		}
-		if (hasAnyHero && string.Equals(id, "hero_join_party", StringComparison.OrdinalIgnoreCase))
-		{
-			string runtime = AIConfigHandler.BuildRuntimeHeroJoinPartyInstructionForExternal(hero);
-			if (!string.IsNullOrWhiteSpace(runtime))
-			{
-				text = runtime;
+				text = string.Join("\n", new string[3] { text, runtime, heroJoinRuntime }.Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase)).Trim();
 			}
 		}
 		if (hasAnyHero && string.Equals(id, "kingdom_vassalage", StringComparison.OrdinalIgnoreCase))
@@ -27527,14 +27519,6 @@ public class MyBehavior : CampaignBehaviorBase
 				if (!string.IsNullOrWhiteSpace(partyTransferRuntimeInstructionForExternal))
 				{
 					text = ReplaceSingleRuleBlockBody(text, "party_transfer", partyTransferRuntimeInstructionForExternal);
-				}
-			}
-			if (!string.IsNullOrWhiteSpace(text) && text.IndexOf("【附加规则:hero_join_party】", StringComparison.OrdinalIgnoreCase) >= 0)
-			{
-				string heroJoinPartyRuntimeInstruction = AIConfigHandler.BuildRuntimeHeroJoinPartyInstructionForExternal(targetHero ?? targetCharacter?.HeroObject);
-				if (!string.IsNullOrWhiteSpace(heroJoinPartyRuntimeInstruction))
-				{
-					text = ReplaceSingleRuleBlockBody(text, "hero_join_party", heroJoinPartyRuntimeInstruction);
 				}
 			}
 			if (!string.IsNullOrWhiteSpace(text) && text.IndexOf("【附加规则:vanilla_issue】", StringComparison.OrdinalIgnoreCase) >= 0)
@@ -33275,7 +33259,7 @@ public class MyBehavior : CampaignBehaviorBase
 	private static string StripRewardActionTags(string text)
 	{
 		string text2 = text ?? "";
-		text2 = Regex.Replace(text2, "\\[ACTION:GIVE_ASSET:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
+		text2 = GiveAssetTagCodec.StripTags(text2);
 		text2 = Regex.Replace(text2, "\\[AD:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
 		text2 = Regex.Replace(text2, "\\[ADP:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
 		return text2.Trim();
@@ -33427,16 +33411,16 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			return "[ACTION:GIVE_ASSET:" + text2.Trim() + ":" + result2 + "]";
 		}, RegexOptions.IgnoreCase);
-		return Regex.Replace(text2, "\\[ACTION:GIVE_ASSET:([^\\]\\r\\n:]+):(ALL|\\d+)\\]", delegate(Match m)
+		return GiveAssetTagCodec.ReplaceTags(text2, delegate(GiveAssetTag tag)
 		{
-			string token = m.Groups[1].Value;
-			bool isAll = TransferQuantitySpec.IsAllValue(m.Groups[2].Value);
+			string token = tag.AssetToken;
+			bool isAll = TransferQuantitySpec.IsAllValue(tag.QuantityToken);
 			int result3 = 0;
 			if (TransferQuantitySpec.IsAllValue(token) && !isAll)
 			{
 				return "";
 			}
-			if (!isAll && (!int.TryParse(m.Groups[2].Value, out result3) || result3 <= 0))
+			if (!isAll && (!int.TryParse(tag.QuantityToken, out result3) || result3 <= 0))
 			{
 				return "";
 			}
@@ -33452,7 +33436,7 @@ public class MyBehavior : CampaignBehaviorBase
 				return "[ACTION:GIVE_ASSET:" + text3.Trim() + ":ALL]";
 			}
 			return "[ACTION:GIVE_ASSET:" + text3.Trim() + ":" + result3 + "]";
-		}, RegexOptions.IgnoreCase);
+		});
 	}
 
 	private static string NormalizeRewardPostprocessTags(string raw, List<RewardSystemBehavior.RewardItemInfo> options, List<RewardSystemBehavior.RewardItemInfo> allOptions = null)
@@ -33460,9 +33444,15 @@ public class MyBehavior : CampaignBehaviorBase
 		List<string> list = new List<string>();
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		string text = "";
-		foreach (Match item in Regex.Matches(raw ?? "", "\\[(?:ACTION:[^\\]\\r\\n]*|AD:[^\\]\\r\\n]*|ADP:[^\\]\\r\\n]*)\\]", RegexOptions.IgnoreCase))
+		List<string> extractedTags = GiveAssetTagCodec.Extract(raw).Select((GiveAssetTag x) => x.RawTag).ToList();
+		string rawWithoutGiveAssetTags = GiveAssetTagCodec.StripTags(raw);
+		foreach (Match item in Regex.Matches(rawWithoutGiveAssetTags, "\\[(?:ACTION:[^\\]\\r\\n]*|AD:[^\\]\\r\\n]*|ADP:[^\\]\\r\\n]*)\\]", RegexOptions.IgnoreCase))
 		{
-			string text2 = (item?.Value ?? "").Trim();
+			extractedTags.Add(item?.Value ?? "");
+		}
+		foreach (string extractedTag in extractedTags)
+		{
+			string text2 = (extractedTag ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(text2))
 			{
 				continue;
@@ -33481,11 +33471,10 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				continue;
 			}
-			Match assetMatch = Regex.Match(text2, "^\\[ACTION:GIVE_ASSET:([^\\]\\r\\n:]+):(ALL|\\d+)\\]$", RegexOptions.IgnoreCase);
-			if (assetMatch.Success)
+			if (GiveAssetTagCodec.TryParseWhole(text2, out GiveAssetTag giveAssetTag))
 			{
-				string assetToken = (assetMatch.Groups[1].Value ?? "").Trim();
-				string quantityToken = (assetMatch.Groups[2].Value ?? "").Trim();
+				string assetToken = (giveAssetTag.AssetToken ?? "").Trim();
+				string quantityToken = (giveAssetTag.QuantityToken ?? "").Trim();
 				if (TransferQuantitySpec.IsAllValue(assetToken))
 				{
 					continue;

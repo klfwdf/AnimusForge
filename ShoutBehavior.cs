@@ -8975,7 +8975,8 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 
 	private static string StripActionTagsForSceneSpeech(string text)
 	{
-		return Regex.Replace((text ?? "").Replace("\r", ""), "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD:[^\\]]*|ADP:[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP)\\]", "", RegexOptions.IgnoreCase).Trim();
+		string text2 = GiveAssetTagCodec.StripTags((text ?? "").Replace("\r", ""));
+		return Regex.Replace(text2, "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD:[^\\]]*|ADP:[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP)\\]", "", RegexOptions.IgnoreCase).Trim();
 	}
 
 	private static string ExtractDeferredSceneActionTags(string text)
@@ -8987,6 +8988,14 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		}
 		List<string> list = new List<string>();
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (GiveAssetTag giveAssetTag in GiveAssetTagCodec.Extract(text2))
+		{
+			if (!string.IsNullOrWhiteSpace(giveAssetTag.RawTag) && hashSet.Add(giveAssetTag.RawTag))
+			{
+				list.Add(giveAssetTag.RawTag);
+			}
+		}
+		text2 = GiveAssetTagCodec.StripTags(text2);
 		foreach (Match item in Regex.Matches(text2, "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD:[^\\]]*|ADP:[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END)\\]", RegexOptions.IgnoreCase))
 		{
 			string text3 = (item?.Value ?? "").Trim();
@@ -9000,7 +9009,11 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 
 	private static bool HasNonMoodDeferredSceneActionTag(string text)
 	{
-		foreach (Match item in Regex.Matches(text ?? "", "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD:[^\\]]*|ADP:[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END)\\]", RegexOptions.IgnoreCase))
+		if (GiveAssetTagCodec.Contains(text))
+		{
+			return true;
+		}
+		foreach (Match item in Regex.Matches(GiveAssetTagCodec.StripTags(text), "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD:[^\\]]*|ADP:[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END)\\]", RegexOptions.IgnoreCase))
 		{
 			string text2 = (item?.Value ?? "").Trim();
 			if (!string.IsNullOrWhiteSpace(text2) && !text2.StartsWith("[ACTION:MOOD:", StringComparison.OrdinalIgnoreCase))
@@ -9015,7 +9028,14 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 	{
 		List<string> list = new List<string>();
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (Match item in Regex.Matches(text ?? "", "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD:[^\\]]*|ADP:[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END)\\]", RegexOptions.IgnoreCase))
+		foreach (GiveAssetTag giveAssetTag in GiveAssetTagCodec.Extract(text))
+		{
+			if (!string.IsNullOrWhiteSpace(giveAssetTag.RawTag) && hashSet.Add(giveAssetTag.RawTag))
+			{
+				list.Add(giveAssetTag.RawTag);
+			}
+		}
+		foreach (Match item in Regex.Matches(GiveAssetTagCodec.StripTags(text), "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD:[^\\]]*|ADP:[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END)\\]", RegexOptions.IgnoreCase))
 		{
 			string text2 = (item?.Value ?? "").Trim();
 			if (!string.IsNullOrWhiteSpace(text2) && !text2.StartsWith("[ACTION:MOOD:", StringComparison.OrdinalIgnoreCase) && hashSet.Add(text2))
@@ -9028,11 +9048,11 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 
 	private static bool HasDeferredDirectGameActionTag(string text)
 	{
-		if (CustomPolicyAgendaActionTagRegex.IsMatch(text ?? ""))
+		if (CustomPolicyAgendaActionTagRegex.IsMatch(text ?? "") || GiveAssetTagCodec.Contains(text))
 		{
 			return true;
 		}
-		return Regex.IsMatch(text ?? "", "\\[(?:ACTION:(?:GIVE_ASSET|KINGDOM_SERVICE|JOIN_MERCENARY|JOIN_VASSAL|TRADE_TRUST|KING_ABDICATE_TO_PLAYER|VASSALAGE|KINGDOM_ANNEX|AGENDA|WORLDMAP_ORDER|DUEL|ISSUE_|QUEST_TURN_IN|NOBLE_GATHERING|NOBLE_PRISONER_EXECUTE|INTIMACY_INTERNAL|MEETING_TAUNT_BATTLE|LET_PLAYER_GO|ENCOUNTER_RELEASE_PLAYER|NPC_SURRENDER|SIEGE_|6|召集)[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD:[^\\]]*|ADP:[^\\]]*)\\]", RegexOptions.IgnoreCase);
+		return Regex.IsMatch(GiveAssetTagCodec.StripTags(text), "\\[(?:ACTION:(?:GIVE_ASSET|KINGDOM_SERVICE|JOIN_MERCENARY|JOIN_VASSAL|TRADE_TRUST|KING_ABDICATE_TO_PLAYER|VASSALAGE|KINGDOM_ANNEX|AGENDA|WORLDMAP_ORDER|DUEL|ISSUE_|QUEST_TURN_IN|NOBLE_GATHERING|NOBLE_PRISONER_EXECUTE|INTIMACY_INTERNAL|MEETING_TAUNT_BATTLE|LET_PLAYER_GO|ENCOUNTER_RELEASE_PLAYER|NPC_SURRENDER|SIEGE_|6|召集)[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD:[^\\]]*|ADP:[^\\]]*)\\]", RegexOptions.IgnoreCase);
 	}
 
 	private bool TryApplyDeferredScenePostprocessActionTagsDirectly(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, ref string tags, string playerText, string npcReplyText, string chainName)
@@ -13825,7 +13845,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		try
 		{
-			return Regex.Matches(text ?? "", "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD:[^\\]]*|ADP:[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END|RELAY:[^\\]]*|AFEF[^\\]]*|AF_SCENE_SESSION:[^\\]]*|CONTENT)\\]", RegexOptions.IgnoreCase).Count;
+			string text2 = text ?? "";
+			return GiveAssetTagCodec.Extract(text2).Count + Regex.Matches(GiveAssetTagCodec.StripTags(text2), "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD:[^\\]]*|ADP:[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END|RELAY:[^\\]]*|AFEF[^\\]]*|AF_SCENE_SESSION:[^\\]]*|CONTENT)\\]", RegexOptions.IgnoreCase).Count;
 		}
 		catch
 		{
@@ -17470,12 +17491,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return !string.IsNullOrWhiteSpace(LordEncounterBehavior.BuildMeetingPlayerReleaseRuntimeInstructionForExternal(hero));
 		case "meeting_taunt":
 			return !string.IsNullOrWhiteSpace(LordEncounterBehavior.BuildForcedMeetingTauntRuntimeInstructionForExternal(hero, targetCharacter));
-		case "hero_join_party":
-			if (hero != null)
-			{
-				return !ShouldSuppressHeroJoinPartyPostprocessForScene(hero);
-			}
-			return targetCharacter != null && targetCharacter != CharacterObject.PlayerCharacter;
 		default:
 			return AIConfigHandler.CanInjectRuleTopicIntoPreprocessForExternal(id, hasAnyHero);
 		}
@@ -17676,7 +17691,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		bool lordsHallRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "lords_hall_access");
 		bool meetingReleaseRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "encounter_release_player");
 		bool vanillaIssueRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "vanilla_issue");
-		bool heroJoinPartyRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "hero_join_party");
+		bool heroJoinPartyRuleInjected = kingdomServiceRuleInjected;
 		bool sceneMechanismRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "scene_mechanism_actions");
 		if (AIConfigHandler.ShouldExcludeSceneMoveRuleForCurrentMission())
 		{
@@ -17787,7 +17802,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		bool lordsHallPostprocessSelected = lordsHallRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "lords_hall_access");
 		bool meetingReleasePostprocessSelected = meetingReleaseRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "encounter_release_player");
 		bool vanillaIssuePostprocessSelected = vanillaIssueRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "vanilla_issue");
-		bool heroJoinPartyPostprocessSelected = heroJoinPartyRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "hero_join_party");
+		bool heroJoinPartyPostprocessSelected = kingdomServicePostprocessSelected;
 		bool sceneMechanismPostprocessSelected = (sceneMechanismRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "scene_mechanism_actions")) && !AIConfigHandler.ShouldExcludeSceneMoveRuleForCurrentMission();
 		bool partyTransferPostprocessSelected = partyTransferRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "party_transfer");
 		bool voteDealPostprocessSelected = voteDealRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "kingdom_agenda");
@@ -20190,7 +20205,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			lordsHallRuleInjected = lordsHallRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "lords_hall_access");
 			meetingReleaseRuleInjected = meetingReleaseRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "encounter_release_player");
 			vanillaIssueRuleInjected = vanillaIssueRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "vanilla_issue");
-			heroJoinPartyRuleInjected = heroJoinPartyRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "hero_join_party");
+			heroJoinPartyRuleInjected = heroJoinPartyRuleInjected || kingdomServiceRuleInjected;
 			sceneMechanismRuleInjected = sceneMechanismRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "scene_mechanism_actions");
 			partyTransferRuleInjected = partyTransferRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "party_transfer");
 			voteDealRuleInjected = voteDealRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "kingdom_agenda");
@@ -21503,7 +21518,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	private static string StripRewardActionTagsForScene(string text)
 	{
 		string text2 = text ?? "";
-		text2 = Regex.Replace(text2, "\\[ACTION:GIVE_ASSET:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
+		text2 = GiveAssetTagCodec.StripTags(text2);
 		text2 = Regex.Replace(text2, "\\[AD:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
 		text2 = Regex.Replace(text2, "\\[ADP:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
 		return text2.Trim();
@@ -21663,16 +21678,16 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			return "[ACTION:GIVE_ASSET:" + text2.Trim() + ":" + result2 + "]";
 		}, RegexOptions.IgnoreCase);
-		return Regex.Replace(text2, "\\[ACTION:GIVE_ASSET:([^\\]\\r\\n:]+):(ALL|\\d+)\\]", delegate(Match m)
+		return GiveAssetTagCodec.ReplaceTags(text2, delegate(GiveAssetTag tag)
 		{
-			string token = m.Groups[1].Value;
-			bool isAll = TransferQuantitySpec.IsAllValue(m.Groups[2].Value);
+			string token = tag.AssetToken;
+			bool isAll = TransferQuantitySpec.IsAllValue(tag.QuantityToken);
 			int result3 = 0;
 			if (TransferQuantitySpec.IsAllValue(token) && !isAll)
 			{
 				return "";
 			}
-			if (!isAll && (!int.TryParse(m.Groups[2].Value, out result3) || result3 <= 0))
+			if (!isAll && (!int.TryParse(tag.QuantityToken, out result3) || result3 <= 0))
 			{
 				return "";
 			}
@@ -21688,7 +21703,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				return "[ACTION:GIVE_ASSET:" + text3.Trim() + ":ALL]";
 			}
 			return "[ACTION:GIVE_ASSET:" + text3.Trim() + ":" + result3 + "]";
-		}, RegexOptions.IgnoreCase);
+		});
 	}
 
 	private static string NormalizeRewardPostprocessTagsForScene(string raw, List<RewardSystemBehavior.RewardItemInfo> options, List<RewardSystemBehavior.RewardItemInfo> allOptions, List<MyBehavior.SettlementTransferPromptEntry> fixedAssetOptions, bool allowAssetTransfer, int availableGold)
@@ -21696,9 +21711,15 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		List<string> list = new List<string>();
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		string text = "";
-		foreach (Match item in Regex.Matches(raw ?? "", "\\[(?:ACTION:[^\\]\\r\\n]*|AD:[^\\]\\r\\n]*|ADP:[^\\]\\r\\n]*)\\]", RegexOptions.IgnoreCase))
+		List<string> extractedTags = GiveAssetTagCodec.Extract(raw).Select((GiveAssetTag x) => x.RawTag).ToList();
+		string rawWithoutGiveAssetTags = GiveAssetTagCodec.StripTags(raw);
+		foreach (Match item in Regex.Matches(rawWithoutGiveAssetTags, "\\[(?:ACTION:[^\\]\\r\\n]*|AD:[^\\]\\r\\n]*|ADP:[^\\]\\r\\n]*)\\]", RegexOptions.IgnoreCase))
 		{
-			string text2 = (item?.Value ?? "").Trim();
+			extractedTags.Add(item?.Value ?? "");
+		}
+		foreach (string extractedTag in extractedTags)
+		{
+			string text2 = (extractedTag ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(text2))
 			{
 				continue;
@@ -21714,13 +21735,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					continue;
 				}
-				Match assetMatch = Regex.Match(text2, "^\\[ACTION:GIVE_ASSET:([^\\]\\r\\n:]+):(ALL|\\d+)\\]$", RegexOptions.IgnoreCase);
-				if (!assetMatch.Success)
+				if (!GiveAssetTagCodec.TryParseWhole(text2, out GiveAssetTag giveAssetTag))
 				{
 					continue;
 				}
-				string assetToken = (assetMatch.Groups[1].Value ?? "").Trim();
-				string quantityToken = (assetMatch.Groups[2].Value ?? "").Trim();
+				string assetToken = (giveAssetTag.AssetToken ?? "").Trim();
+				string quantityToken = (giveAssetTag.QuantityToken ?? "").Trim();
 				if (TransferQuantitySpec.IsAllValue(assetToken))
 				{
 					continue;
@@ -25561,7 +25581,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					lordsHallRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "lords_hall_access");
 					meetingReleaseRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "encounter_release_player");
 					vanillaIssueRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "vanilla_issue");
-					heroJoinPartyRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "hero_join_party");
+					heroJoinPartyRuleInjected = kingdomServiceRuleInjected;
 					sceneMechanismRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "scene_mechanism_actions");
 					if (AIConfigHandler.ShouldExcludeSceneMoveRuleForCurrentMission())
 					{
@@ -25713,7 +25733,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					bool lordsHallPostprocessSelected = lordsHallRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "lords_hall_access");
 					bool meetingReleasePostprocessSelected = meetingReleaseRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "encounter_release_player");
 					bool vanillaIssuePostprocessSelected = vanillaIssueRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "vanilla_issue");
-					bool heroJoinPartyPostprocessSelected = heroJoinPartyRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "hero_join_party");
+					bool heroJoinPartyPostprocessSelected = kingdomServicePostprocessSelected;
 					bool sceneMechanismPostprocessSelected = (sceneMechanismRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "scene_mechanism_actions")) && !AIConfigHandler.ShouldExcludeSceneMoveRuleForCurrentMission();
 					bool partyTransferPostprocessSelected = partyTransferRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "party_transfer");
 					bool voteDealPostprocessSelected = voteDealRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "kingdom_agenda");

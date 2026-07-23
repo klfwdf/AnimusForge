@@ -3986,7 +3986,6 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			bool lordsHallInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "lords_hall_access");
 			bool meetingReleaseInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "encounter_release_player");
 			bool vanillaIssueInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "vanilla_issue");
-			bool heroJoinPartyInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "hero_join_party");
 			bool sceneMechanismInjected = false;
 			bool partyTransferInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "party_transfer");
 			bool voteDealInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "kingdom_agenda");
@@ -3995,6 +3994,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			diplomacyInjected = diplomacyInjected || diplomacySelected;
 			bool worldMapPartyCommandInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "worldmap_party_command");
 			bool kingdomServiceInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "kingdom_service");
+			bool heroJoinPartyInjected = kingdomServiceInjected;
 			bool kingdomVassalageRuleBlockInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "kingdom_vassalage");
 			bool kingdomVassalageSelected = HasPreprocessRuleHit(selectedRuleHits, "kingdom_vassalage");
 			bool kingdomVassalageInjected = kingdomVassalageRuleBlockInjected || kingdomVassalageSelected;
