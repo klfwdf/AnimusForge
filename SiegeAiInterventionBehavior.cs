@@ -6789,7 +6789,12 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			return IsActiveInCurrentMission() && !_massacreStarted && !_culturalRepopulationRequested;
+			Settlement settlement = ResolveCurrentSettlement();
+			return SiegeSharedReliefBridgeProfile.ShouldCapture(
+				IsActiveInCurrentMission(),
+				settlement?.IsTown == true,
+				settlement?.IsCastle == true,
+				_massacreStarted || _culturalRepopulationRequested);
 		}
 		catch
 		{
@@ -6801,7 +6806,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (!IsActiveInCurrentMission() || _massacreStarted || _culturalRepopulationRequested)
+			if (!ShouldCapturePlayerGiveForSharedCivilianReliefForExternal())
 			{
 				return false;
 			}

@@ -43,7 +43,7 @@ Second extraction slice:
 
 ## Shared civilian relief pool
 
-`SiegeSharedReliefPoolFacts` and `SiegeSharedReliefPoolFormatter` own dependency-free checks and context wording for the AF give-item/give-gold pool reserved for civilian relief. Bannerlord item objects and inventory side effects stay in the AF adapter.
+`SiegeSharedReliefPoolFacts` and `SiegeSharedReliefPoolFormatter` own dependency-free checks and context wording for the AF give-item/give-gold pool reserved for civilian relief in town GCCZ scenes. `SiegeSharedReliefBridgeProfile` keeps castle aftermath gifts private to the receiver. Bannerlord item objects and inventory side effects stay in the AF adapter.
 
 Negative-outcome refund UI, memory wording, and returned-gold source construction for shared relief material also live in `SiegeSharedReliefPoolFormatter`; AF keeps only inventory/gold mutation and summary collection.
 
