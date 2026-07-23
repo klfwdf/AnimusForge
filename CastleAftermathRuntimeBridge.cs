@@ -1513,6 +1513,20 @@ internal sealed class CastleAftermathPrisonerCommandMissionBehavior : MissionLog
 		}
 	}
 
+	public override InquiryData OnEndMissionRequest(out bool canPlayerLeave)
+	{
+		if (!CastleAftermathLordExecutionRuntimeBridge.TryPrepareForMissionExit(base.Mission))
+		{
+			canPlayerLeave = false;
+			InformationManager.DisplayMessage(new InformationMessage(
+				CastleAftermathLordExecutionRuntimeBridge.BuildMissionExitBlockedMessage(),
+				Color.FromUint(SiegeCastleActionOutcomeTextProfile.WarningColor)));
+			return null;
+		}
+		canPlayerLeave = true;
+		return null;
+	}
+
 	public override void OnAgentRemoved(Agent affectedAgent, Agent affectorAgent, AgentState agentState, KillingBlow killingBlow)
 	{
 		base.OnAgentRemoved(affectedAgent, affectorAgent, agentState, killingBlow);

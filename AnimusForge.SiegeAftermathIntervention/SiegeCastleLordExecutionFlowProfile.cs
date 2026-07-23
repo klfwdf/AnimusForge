@@ -31,6 +31,20 @@ public static class SiegeCastleLordExecutionFlowProfile
             ? SiegeCastleLordExecutionFlowDecision.OpenFailed
             : SiegeCastleLordExecutionFlowDecision.Wait;
     }
+
+    public static SiegeCastleLordExecutionCampaignDecision EvaluateCampaignState(
+        bool heroIsAlive,
+        bool executionDeathMarkPresent)
+    {
+        if (!heroIsAlive)
+        {
+            return SiegeCastleLordExecutionCampaignDecision.Persisted;
+        }
+
+        return executionDeathMarkPresent
+            ? SiegeCastleLordExecutionCampaignDecision.IrreversiblePending
+            : SiegeCastleLordExecutionCampaignDecision.Failed;
+    }
 }
 
 public enum SiegeCastleLordExecutionFlowDecision
@@ -39,4 +53,11 @@ public enum SiegeCastleLordExecutionFlowDecision
     Commit = 1,
     Cancel = 2,
     OpenFailed = 3
+}
+
+public enum SiegeCastleLordExecutionCampaignDecision
+{
+    Failed = 0,
+    IrreversiblePending = 1,
+    Persisted = 2
 }

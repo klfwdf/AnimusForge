@@ -4093,7 +4093,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	internal static void NotifyCastleLordExecutedForExternal(
 		Hero targetHero,
-		bool deferredByMapEvent,
 		bool sceneDeathApplied)
 	{
 		string lordName = targetHero?.Name?.ToString() ?? "该被俘领主";
@@ -4104,18 +4103,15 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			: "；场景倒地表现未成功，但原版死亡结算已经登记";
 		RecordInterventionMemory(
 			"城堡处决领主",
-			conciseOutcome + sceneResult + (deferredByMapEvent
-				? "，原版战后处决将在攻城遭遇结束时完成角色状态结算。"
-				: "；原版角色死亡、关系与家族后果已经结算。"));
+			conciseOutcome + sceneResult + "；原版角色死亡、关系与家族后果已经立即结算。");
 		InformationManager.DisplayMessage(new InformationMessage(
 			SiegeCastleActionOutcomeTextProfile.BuildLordExecutionCompletedMessage(
 				lordName,
-				deferredByMapEvent,
 				sceneDeathApplied),
 			Color.FromUint(SiegeCastleActionOutcomeTextProfile.DangerColor)));
 		Logger.Log("CastleAftermath", "Recorded castle lord execution outcome. Hero="
-			+ (targetHero?.StringId ?? "N/A") + ", DeferredByMapEvent=" + deferredByMapEvent
-			+ ", SceneDeath=" + sceneDeathApplied);
+			+ (targetHero?.StringId ?? "N/A") + ", CampaignDeathPersisted="
+			+ (targetHero?.IsAlive == false) + ", SceneDeath=" + sceneDeathApplied);
 	}
 
 	private static int ResolveCastleRegularTerminalTrustDelta(SiegeCastleActionKind action)

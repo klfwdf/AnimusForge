@@ -19,7 +19,8 @@ internal static class CastleAftermathLordExecutionRuntimeBridge
 	private enum RuntimeStage
 	{
 		Queued,
-		WaitingForNotification
+		WaitingForNotification,
+		FinalizingCampaignDeath
 	}
 
 	private sealed class PendingExecution
@@ -32,6 +33,8 @@ internal static class CastleAftermathLordExecutionRuntimeBridge
 		internal bool NotificationSeenActive;
 		internal bool AffirmativeActionReceived;
 		internal float ElapsedSinceNotificationRequest;
+		internal bool MapEventWasActive;
+		internal bool FinalizationWarningShown;
 	}
 
 	private static PendingExecution _pending;
@@ -86,11 +89,21 @@ internal static class CastleAftermathLordExecutionRuntimeBridge
 		{
 			return;
 		}
-		if (!ReferenceEquals(mission, pending.Mission)
-			|| mission == null
-			|| mission.IsMissionEnding
-			|| !SiegeAiInterventionBehavior.ShouldRunSiegeInterventionPostprocessForExternal()
-			|| !CastleAftermathRuntimeBridge.IsCastleAftermathMission(mission))
+
+		bool contextAvailable = ReferenceEquals(mission, pending.Mission)
+			&& mission != null
+			&& !mission.IsMissionEnding
+			&& SiegeAiInterventionBehavior.ShouldRunSiegeInterventionPostprocessForExternal()
+			&& CastleAftermathRuntimeBridge.IsCastleAftermathMission(mission);
+		if (pending.Stage == RuntimeStage.FinalizingCampaignDeath)
+		{
+			ShowFinalizationPendingOnce(
+				pending,
+				contextAvailable ? "finalization_wait" : "context_ending_with_native_death_mark");
+			return;
+		}
+
+		if (!contextAvailable)
 		{
 			Rollback(pending, "castle_execution_context_ended", showMessage: false, hideNotification: true);
 			return;
@@ -136,13 +149,45 @@ internal static class CastleAftermathLordExecutionRuntimeBridge
 		}
 	}
 
+	internal static bool TryPrepareForMissionExit(Mission mission)
+	{
+		PendingExecution pending = _pending;
+		if (pending == null || (mission != null && !ReferenceEquals(mission, pending.Mission)))
+		{
+			return true;
+		}
+		if (pending.Stage == RuntimeStage.FinalizingCampaignDeath || HasExecutionDeathMark(pending.Hero))
+		{
+			ShowFinalizationPendingOnce(pending, "mission_exit_request");
+		}
+		return _pending == null;
+	}
+
+	internal static string BuildMissionExitBlockedMessage()
+	{
+		return _pending?.Stage == RuntimeStage.FinalizingCampaignDeath
+			|| HasExecutionDeathMark(_pending?.Hero)
+				? SiegeCastleActionOutcomeTextProfile.BuildLordExecutionFinalizationPendingMessage(
+					_pending?.Hero?.Name?.ToString())
+				: SiegeCastleActionOutcomeTextProfile.BuildLordExecutionConfirmationPendingMessage(
+					_pending?.Hero?.Name?.ToString());
+	}
+
 	internal static void CancelForMission(Mission mission, string source)
 	{
 		PendingExecution pending = _pending;
-		if (pending != null && (mission == null || ReferenceEquals(mission, pending.Mission)))
+		if (pending == null || (mission != null && !ReferenceEquals(mission, pending.Mission)))
 		{
-			Rollback(pending, source ?? "mission_cancelled_execution", showMessage: false, hideNotification: true);
+			return;
 		}
+		if (pending.Stage == RuntimeStage.FinalizingCampaignDeath || HasExecutionDeathMark(pending.Hero))
+		{
+			ReleaseIrreversiblePending(
+				pending,
+				(source ?? "mission_cancelled_execution") + "_native_death_mark_handoff");
+			return;
+		}
+		Rollback(pending, source ?? "mission_cancelled_execution", showMessage: false, hideNotification: true);
 	}
 
 	internal static void Reset(string source)
@@ -150,7 +195,16 @@ internal static class CastleAftermathLordExecutionRuntimeBridge
 		PendingExecution pending = _pending;
 		if (pending != null)
 		{
-			Rollback(pending, source ?? "reset_execution_runtime", showMessage: false, hideNotification: true);
+			if (pending.Stage == RuntimeStage.FinalizingCampaignDeath || HasExecutionDeathMark(pending.Hero))
+			{
+				ReleaseIrreversiblePending(
+					pending,
+					(source ?? "reset_execution_runtime") + "_native_death_mark_handoff");
+			}
+			else
+			{
+				Rollback(pending, source ?? "reset_execution_runtime", showMessage: false, hideNotification: true);
+			}
 		}
 		_nextToken = 0;
 	}
@@ -223,6 +277,11 @@ internal static class CastleAftermathLordExecutionRuntimeBridge
 		{
 			return;
 		}
+		if (pending.Stage == RuntimeStage.FinalizingCampaignDeath || HasExecutionDeathMark(pending.Hero))
+		{
+			ObserveCampaignDeathState(pending, "commit_reentry");
+			return;
+		}
 		if (!TryValidateTarget(pending.Mission, pending.Hero, pending.Agent, out string reasonCode))
 		{
 			Rollback(pending, reasonCode, showMessage: true, hideNotification: false);
@@ -231,48 +290,58 @@ internal static class CastleAftermathLordExecutionRuntimeBridge
 
 		Hero hero = pending.Hero;
 		Agent agent = pending.Agent;
-		bool deferredByMapEvent = MobileParty.MainParty?.MapEvent != null;
+		pending.MapEventWasActive = MobileParty.MainParty?.MapEvent != null;
 		try
 		{
 			EndCurrentConversation();
-			if (deferredByMapEvent)
-			{
-				KillCharacterAction.ApplyByExecutionAfterMapEvent(
-					hero,
-					Hero.MainHero,
-					showNotification: true,
-					isForced: true);
-			}
-			else
-			{
-				KillCharacterAction.ApplyByExecution(
-					hero,
-					Hero.MainHero,
-					showNotification: true,
-					isForced: true);
-			}
+			KillCharacterAction.ApplyByExecution(
+				hero,
+				Hero.MainHero,
+				showNotification: true,
+				isForced: true);
 
-			bool nativeExecutionAccepted = !hero.IsAlive
-				|| hero.DeathMark == KillCharacterAction.KillCharacterActionDetail.Executed
-				|| hero.DeathMark == KillCharacterAction.KillCharacterActionDetail.ExecutionAfterMapEvent;
-			if (!nativeExecutionAccepted)
+			SiegeCastleLordExecutionCampaignDecision campaignDecision =
+				SiegeCastleLordExecutionFlowProfile.EvaluateCampaignState(
+					hero.IsAlive,
+					HasExecutionDeathMark(hero));
+			if (campaignDecision == SiegeCastleLordExecutionCampaignDecision.Persisted)
 			{
-				Rollback(pending, "native_execution_not_accepted", showMessage: true, hideNotification: false);
+				CompleteAcceptedExecution(
+					pending,
+					hero,
+					agent,
+					pending.MapEventWasActive,
+					"native_execution_persisted");
 				return;
 			}
-			CompleteAcceptedExecution(pending, hero, agent, deferredByMapEvent, "native_execution_accepted");
+			if (campaignDecision == SiegeCastleLordExecutionCampaignDecision.IrreversiblePending)
+			{
+				pending.Stage = RuntimeStage.FinalizingCampaignDeath;
+				ShowFinalizationPendingOnce(pending, "native_execution_left_death_mark");
+				return;
+			}
+			Rollback(pending, "native_execution_not_persisted", showMessage: true, hideNotification: false);
 		}
 		catch (Exception ex)
 		{
-			bool decisiveSideEffectApplied = !hero.IsAlive
-				|| hero.DeathMark == KillCharacterAction.KillCharacterActionDetail.Executed
-				|| hero.DeathMark == KillCharacterAction.KillCharacterActionDetail.ExecutionAfterMapEvent;
+			bool decisiveSideEffectApplied = !hero.IsAlive;
 			Logger.Log("CastleAftermath", "Commit castle lord execution failed. Hero="
 				+ (hero.StringId ?? "N/A") + ", DecisiveSideEffectApplied=" + decisiveSideEffectApplied
+				+ ", ExecutionDeathMarkPresent=" + HasExecutionDeathMark(hero)
 				+ ", Error=" + ex);
 			if (decisiveSideEffectApplied)
 			{
-				CompleteAcceptedExecution(pending, hero, agent, deferredByMapEvent, "native_execution_recovery");
+				CompleteAcceptedExecution(
+					pending,
+					hero,
+					agent,
+					pending.MapEventWasActive,
+					"native_execution_recovery");
+			}
+			else if (HasExecutionDeathMark(hero))
+			{
+				pending.Stage = RuntimeStage.FinalizingCampaignDeath;
+				ShowFinalizationPendingOnce(pending, "native_execution_exception_after_death_mark");
 			}
 			else
 			{
@@ -281,11 +350,80 @@ internal static class CastleAftermathLordExecutionRuntimeBridge
 		}
 	}
 
+	private static void ObserveCampaignDeathState(PendingExecution pending, string source)
+	{
+		if (pending == null || !ReferenceEquals(_pending, pending))
+		{
+			return;
+		}
+
+		Hero hero = pending.Hero;
+		if (hero == null)
+		{
+			Rollback(
+				pending,
+				"native_execution_not_persisted",
+				showMessage: true,
+				hideNotification: false);
+			return;
+		}
+		SiegeCastleLordExecutionCampaignDecision campaignDecision =
+			SiegeCastleLordExecutionFlowProfile.EvaluateCampaignState(
+				hero.IsAlive,
+				HasExecutionDeathMark(hero));
+		if (campaignDecision == SiegeCastleLordExecutionCampaignDecision.Persisted)
+		{
+			CompleteAcceptedExecution(
+				pending,
+				hero,
+				pending.Agent,
+				pending.MapEventWasActive,
+				(source ?? "death_mark_observe") + "_persisted");
+			return;
+		}
+		if (campaignDecision == SiegeCastleLordExecutionCampaignDecision.Failed)
+		{
+			Rollback(
+				pending,
+				"native_execution_not_persisted",
+				showMessage: true,
+				hideNotification: false);
+			return;
+		}
+
+		pending.Stage = RuntimeStage.FinalizingCampaignDeath;
+		ShowFinalizationPendingOnce(pending, source);
+	}
+
+	private static void ShowFinalizationPendingOnce(PendingExecution pending, string source)
+	{
+		if (pending == null || pending.FinalizationWarningShown)
+		{
+			return;
+		}
+		pending.FinalizationWarningShown = true;
+		InformationManager.DisplayMessage(new InformationMessage(
+			SiegeCastleActionOutcomeTextProfile.BuildLordExecutionFinalizationPendingMessage(
+				pending.Hero?.Name?.ToString()),
+			Color.FromUint(SiegeCastleActionOutcomeTextProfile.WarningColor)));
+		Logger.Log("CastleAftermath", "Castle lord execution campaign finalization pending. Hero="
+			+ (pending.Hero?.StringId ?? "N/A") + ", Source=" + (source ?? "N/A"));
+		GcczDiagnosticLog.Log("CastleLordExecution", "finalizationPending hero="
+			+ (pending.Hero?.StringId ?? "N/A") + " source=" + (source ?? "N/A"));
+	}
+
+	private static bool HasExecutionDeathMark(Hero hero)
+	{
+		return hero != null
+			&& (hero.DeathMark == KillCharacterAction.KillCharacterActionDetail.Executed
+				|| hero.DeathMark == KillCharacterAction.KillCharacterActionDetail.ExecutionAfterMapEvent);
+	}
+
 	private static void CompleteAcceptedExecution(
 		PendingExecution pending,
 		Hero hero,
 		Agent agent,
-		bool deferredByMapEvent,
+		bool mapEventWasActive,
 		string source)
 	{
 		if (!ReferenceEquals(_pending, pending))
@@ -309,7 +447,6 @@ internal static class CastleAftermathLordExecutionRuntimeBridge
 		{
 			SiegeAiInterventionBehavior.NotifyCastleLordExecutedForExternal(
 				hero,
-				deferredByMapEvent,
 				sceneDeathApplied);
 		}
 		catch (Exception ex)
@@ -318,10 +455,14 @@ internal static class CastleAftermathLordExecutionRuntimeBridge
 				+ (hero?.StringId ?? "N/A") + ", Error=" + ex);
 		}
 		Logger.Log("CastleAftermath", "Committed castle lord execution. Hero=" + (hero?.StringId ?? "N/A")
-			+ ", DeferredByMapEvent=" + deferredByMapEvent + ", SceneDeath=" + sceneDeathApplied
+			+ ", CampaignDeathPersisted=" + (hero?.IsAlive == false)
+			+ ", MapEventWasActive=" + mapEventWasActive
+			+ ", SceneDeath=" + sceneDeathApplied
 			+ ", Source=" + (source ?? "N/A"));
 		GcczDiagnosticLog.Log("CastleLordExecution", "committed hero=" + (hero?.StringId ?? "N/A")
-			+ " deferred=" + deferredByMapEvent + " sceneDeath=" + sceneDeathApplied
+			+ " campaignDeathPersisted=" + (hero?.IsAlive == false)
+			+ " mapEventWasActive=" + mapEventWasActive
+			+ " sceneDeath=" + sceneDeathApplied
 			+ " source=" + (source ?? "N/A"));
 	}
 
@@ -430,6 +571,16 @@ internal static class CastleAftermathLordExecutionRuntimeBridge
 		{
 			return;
 		}
+		if (HasExecutionDeathMark(pending.Hero))
+		{
+			pending.Stage = RuntimeStage.FinalizingCampaignDeath;
+			ShowFinalizationPendingOnce(pending, reasonCode);
+			Logger.Log("CastleAftermath", "Suppressed castle lord execution rollback after native death mark. Hero="
+				+ (pending.Hero?.StringId ?? "N/A") + ", Reason=" + (reasonCode ?? "N/A"));
+			GcczDiagnosticLog.Log("CastleLordExecution", "rollbackSuppressed hero="
+				+ (pending.Hero?.StringId ?? "N/A") + " reason=" + (reasonCode ?? "N/A"));
+			return;
+		}
 		_pending = null;
 		CastleAftermathDispositionSessionBridge.UnmarkApplied(
 			SiegeCastleActionKind.ExecuteLord,
@@ -456,9 +607,20 @@ internal static class CastleAftermathLordExecutionRuntimeBridge
 				reasonCode,
 				"player_cancelled_original_execution",
 				StringComparison.Ordinal);
+			bool persistenceFailed = string.Equals(
+					reasonCode,
+					"native_execution_not_persisted",
+					StringComparison.Ordinal)
+				|| string.Equals(
+					reasonCode,
+					"native_execution_exception",
+					StringComparison.Ordinal);
 			string message = cancelled
 				? SiegeCastleActionOutcomeTextProfile.BuildLordExecutionCancelledMessage(pending.Hero?.Name?.ToString())
-				: SiegeCastleActionOutcomeTextProfile.BuildLordExecutionFailedMessage(pending.Hero?.Name?.ToString());
+				: persistenceFailed
+					? SiegeCastleActionOutcomeTextProfile.BuildLordExecutionPersistenceFailedMessage(
+						pending.Hero?.Name?.ToString())
+					: SiegeCastleActionOutcomeTextProfile.BuildLordExecutionFailedMessage(pending.Hero?.Name?.ToString());
 			InformationManager.DisplayMessage(new InformationMessage(
 				message,
 				Color.FromUint(SiegeCastleActionOutcomeTextProfile.WarningColor)));
@@ -467,6 +629,23 @@ internal static class CastleAftermathLordExecutionRuntimeBridge
 			+ (pending.Hero?.StringId ?? "N/A") + ", Reason=" + (reasonCode ?? "N/A"));
 		GcczDiagnosticLog.Log("CastleLordExecution", "rollback hero="
 			+ (pending.Hero?.StringId ?? "N/A") + " reason=" + (reasonCode ?? "N/A"));
+	}
+
+	private static void ReleaseIrreversiblePending(PendingExecution pending, string source)
+	{
+		if (pending == null || !ReferenceEquals(_pending, pending))
+		{
+			return;
+		}
+		_pending = null;
+		Logger.Log("CastleAftermath", "Released castle lord execution runtime with native death mark intact. Hero="
+			+ (pending.Hero?.StringId ?? "N/A") + ", Alive=" + (pending.Hero?.IsAlive == true)
+			+ ", DeathMark=" + (pending.Hero?.DeathMark.ToString() ?? "N/A")
+			+ ", Source=" + (source ?? "N/A"));
+		GcczDiagnosticLog.Log("CastleLordExecution", "nativeDeathMarkHandoff hero="
+			+ (pending.Hero?.StringId ?? "N/A") + " alive=" + (pending.Hero?.IsAlive == true)
+			+ " deathMark=" + (pending.Hero?.DeathMark.ToString() ?? "N/A")
+			+ " source=" + (source ?? "N/A"));
 	}
 
 	private static void EndCurrentConversation()

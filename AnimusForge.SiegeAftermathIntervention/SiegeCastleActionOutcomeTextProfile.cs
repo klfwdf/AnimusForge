@@ -59,16 +59,25 @@ public static class SiegeCastleActionOutcomeTextProfile
         => "【城堡处置】未能打开 " + Name(lordName)
             + " 的原版处刑确认，未结算死亡；可稍后重试，详情已写入日志。";
 
+    public static string BuildLordExecutionPersistenceFailedMessage(string lordName)
+        => "【城堡处置】" + Name(lordName)
+            + " 的原版处刑确认已经结束，但原版没有登记角色死亡；本次处置未生效，可稍后重试。";
+
+    public static string BuildLordExecutionFinalizationPendingMessage(string lordName)
+        => "【城堡处置】" + Name(lordName)
+            + " 的处刑死亡标记已经登记，但原版角色状态尚未完成；本次场景内不能继续处置或正常离开。";
+
+    public static string BuildLordExecutionConfirmationPendingMessage(string lordName)
+        => "【城堡处置】" + Name(lordName)
+            + " 的原版处刑确认尚未结束，请先确认或取消。";
+
     public static string BuildLordExecutionCompletedMessage(
         string lordName,
-        bool deferredByMapEvent,
         bool sceneDeathApplied)
         => "【城堡处置】" + Name(lordName)
             + " 已由玩家确认处刑"
             + (sceneDeathApplied ? "，并在城堡场景内当场倒地" : "；场景倒地表现未成功，死亡结算仍已登记")
-            + (deferredByMapEvent
-                ? "；原版战后处决将在当前攻城遭遇结束时完成角色状态结算。"
-                : "；原版角色死亡、关系与家族后果已结算。");
+            + "；原版角色死亡已经持久化，关系与家族后果由原版战役系统结算。";
 
     private static string Signed(int value) => value > 0 ? "+" + value : value.ToString();
     private static int Count(int value) => Math.Max(0, value);
