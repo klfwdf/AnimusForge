@@ -774,6 +774,11 @@ public class MyBehavior : CampaignBehaviorBase
 
 		public string EntityPostprocessContext;
 
+		// Keep the current turn's preprocessor entities with the prompt context.
+		// The main prompt can be assembled after an async/thread boundary, where the
+		// AsyncLocal auxiliary-entity cache is no longer a reliable source.
+		public MentionedWorldEntities MentionedEntities = new MentionedWorldEntities();
+
 		public List<string> PreprocessRuleIds = new List<string>();
 
 		public bool UseDuelContext;
@@ -29820,6 +29825,7 @@ public class MyBehavior : CampaignBehaviorBase
 			mentionedEntities.Merge(AIConfigHandler.GetAuxiliaryMentionedEntitiesForExternal(input, npcLastUtterance, guardrailSemanticContext));
 			mentionedEntities.Merge(AIConfigHandler.GetLatestAuxiliaryMentionedEntitiesForExternal());
 		}
+		shoutPromptContext.MentionedEntities = mentionedEntities.Clone();
 		LogShoutPromptContextStage("mentions_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "hasMentions=" + (mentionedEntities != null && !mentionedEntities.IsEmpty) + " directCount=" + (directPreprocessMentionedEntities.Entities?.Count ?? 0));
 		string loreContext = "";
 		string loreCtxSource = "none";
@@ -33373,16 +33379,16 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private static string TranslateRewardItemIndexes(string text, List<RewardSystemBehavior.RewardItemInfo> options)
 	{
-		if (string.IsNullOrWhiteSpace(text) || options == null || options.Count == 0)
+		if (string.IsNullOrWhiteSpace(text))
 		{
 			return text ?? "";
 		}
-		static string getItemActionKey(RewardSystemBehavior.RewardItemInfo item)
+		static string getItemDisplayName(RewardSystemBehavior.RewardItemInfo item)
 		{
-			string text4 = item?.PromptStringId;
+			string text4 = item?.Name;
 			if (string.IsNullOrWhiteSpace(text4))
 			{
-				text4 = item?.StringId;
+				text4 = item?.Item?.Name?.ToString();
 			}
 			return text4 ?? "";
 		}
@@ -33396,24 +33402,9 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 			}
 		}
-		string text2 = Regex.Replace(text, "\\[ACTION:GIVE_ASSET:(\\d+):(\\d+)\\]", delegate(Match m)
+		return GiveAssetTagCodec.ReplaceTags(text, delegate(GiveAssetTag tag)
 		{
-			if (!int.TryParse(m.Groups[1].Value, out var result) || !int.TryParse(m.Groups[2].Value, out var result2) || result <= 0 || result > options.Count || result2 <= 0)
-			{
-				return "";
-			}
-			RewardSystemBehavior.RewardItemInfo rewardItemInfo = options[result - 1];
-			string text2 = getItemActionKey(rewardItemInfo);
-			logRewardItemTranslation("index", m.Groups[1].Value, rewardItemInfo, text2);
-			if (string.IsNullOrWhiteSpace(text2))
-			{
-				return "";
-			}
-			return "[ACTION:GIVE_ASSET:" + text2.Trim() + ":" + result2 + "]";
-		}, RegexOptions.IgnoreCase);
-		return GiveAssetTagCodec.ReplaceTags(text2, delegate(GiveAssetTag tag)
-		{
-			string token = tag.AssetToken;
+			string token = (tag.AssetToken ?? "").Trim();
 			bool isAll = TransferQuantitySpec.IsAllValue(tag.QuantityToken);
 			int result3 = 0;
 			if (TransferQuantitySpec.IsAllValue(token) && !isAll)
@@ -33424,18 +33415,18 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				return "";
 			}
-			RewardSystemBehavior.RewardItemInfo rewardItemInfo2 = FindRewardItemByToken(options, token);
-			string text3 = getItemActionKey(rewardItemInfo2);
-			logRewardItemTranslation("token", token, rewardItemInfo2, text3);
-			if (string.IsNullOrWhiteSpace(text3))
+			if (options != null && int.TryParse(token, out var itemIndex) && itemIndex > 0 && itemIndex <= options.Count)
 			{
-				return isAll ? ("[ACTION:GIVE_ASSET:" + token.Trim() + ":ALL]") : ("[ACTION:GIVE_ASSET:" + token.Trim() + ":" + result3 + "]");
+				RewardSystemBehavior.RewardItemInfo rewardItemInfo = options[itemIndex - 1];
+				string text3 = getItemDisplayName(rewardItemInfo);
+				logRewardItemTranslation("index", token, rewardItemInfo, text3);
+				if (string.IsNullOrWhiteSpace(text3))
+				{
+					return "";
+				}
+				token = text3.Trim();
 			}
-			if (isAll)
-			{
-				return "[ACTION:GIVE_ASSET:" + text3.Trim() + ":ALL]";
-			}
-			return "[ACTION:GIVE_ASSET:" + text3.Trim() + ":" + result3 + "]";
+			return isAll ? ("[ACTION:GIVE_ASSET:" + token + ":ALL]") : ("[ACTION:GIVE_ASSET:" + token + ":" + result3 + "]");
 		});
 	}
 
@@ -33494,27 +33485,24 @@ public class MyBehavior : CampaignBehaviorBase
 					{
 						rewardItem = FindRewardItemByToken(allOptions, assetToken);
 					}
-					if (rewardItem != null && rewardItem.Item != null && rewardItem.Count > 0)
+					bool isItemIndex = int.TryParse(assetToken, out var itemIndex) && itemIndex > 0 && itemIndex <= (options?.Count ?? 0);
+					if (TransferQuantitySpec.IsAllValue(quantityToken))
 					{
-						string itemKey = string.IsNullOrWhiteSpace(rewardItem.PromptStringId) ? rewardItem.StringId : rewardItem.PromptStringId;
-						if (!string.IsNullOrWhiteSpace(itemKey))
+						if (!isItemIndex && (rewardItem == null || rewardItem.Item == null || rewardItem.Count <= 0))
 						{
-							if (TransferQuantitySpec.IsAllValue(quantityToken))
-							{
-								text2 = "[ACTION:GIVE_ASSET:" + itemKey.Trim() + ":ALL]";
-							}
-							else if (int.TryParse(quantityToken, out var itemAmount) && itemAmount > 0)
-							{
-								text2 = "[ACTION:GIVE_ASSET:" + itemKey.Trim() + ":" + itemAmount + "]";
-							}
+							continue;
 						}
+						text2 = "[ACTION:GIVE_ASSET:" + assetToken + ":ALL]";
 					}
-					else if (!TransferQuantitySpec.IsAllValue(quantityToken)
-						&& int.TryParse(quantityToken, out var generatedItemAmount)
+					else if (int.TryParse(quantityToken, out var generatedItemAmount)
 						&& generatedItemAmount > 0
-						&& RewardSystemBehavior.TryResolveKnownItemAssetTokenForExternal(assetToken, out var knownItemKey))
+						&& (isItemIndex || RewardSystemBehavior.IsValidGeneratedRpAssetNameForExternal(assetToken)))
 					{
-						text2 = "[ACTION:GIVE_ASSET:" + knownItemKey.Trim() + ":" + generatedItemAmount + "]";
+						text2 = "[ACTION:GIVE_ASSET:" + assetToken + ":" + generatedItemAmount + "]";
+					}
+					else
+					{
+						continue;
 					}
 				}
 			}
