@@ -41,6 +41,9 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	private const float AlliedSpawnBaseDistance = 8f;
 	private const float AlliedSpawnRowDistance = 2.8f;
 	private const float AlliedSpawnLateralSpacing = 3.2f;
+	private const int AlliedSpawnBatchSize = 10;
+	private const float AlliedSpawnInitialDelaySeconds = 0.75f;
+	private const float AlliedSpawnBatchIntervalSeconds = 0.15f;
 	private const float EnemyDoorSpawnBaseDistance = 4f;
 	private const float EnemyDoorSpawnRowDistance = 3.4f;
 	private const float EnemyDoorSpawnLateralSpacing = 4f;
@@ -522,7 +525,6 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				AssignSetsAgentToPlayerFormation(agent, playerTeam, FormationClass.Infantry);
 				if (agent.Formation != null)
 				{
-					MarkFormationPlayerCommandable(agent.Formation, main);
 					commandFormations.Add(agent.Formation);
 					commandable++;
 				}
@@ -547,11 +549,6 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				{
 					try { playerTeam.PlayerOrderController?.SelectFormation(formation); } catch { }
 				}
-			}
-			if (shouldInitializeSelection)
-			{
-				try { playerTeam.PlayerOrderController?.SelectAllFormations(false); } catch { }
-				try { playerTeam.MasterOrderController?.SelectAllFormations(false); } catch { }
 			}
 			_setsOrderControllerPrimed = true;
 			SettlementEntryTroopSelectionLog.LogVerbose("Primed SETS player order controller. source=" + (source ?? "N/A") + ", commandable=" + commandable + ", formations=" + commandFormations.Count + ", preserveSelection=" + preserveSelection + ", existingSelection=" + hasExistingSelection);
@@ -671,10 +668,8 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				agent.SetTeam(team, true);
 			}
 			agent.Formation = formation;
-			MarkFormationPlayerCommandable(formation, Agent.Main ?? agent.Mission?.MainAgent);
 			agent.TryAttachToFormation();
 			agent.SetShouldCatchUpWithFormation(true);
-			agent.UpdateFormationOrders();
 		}
 		catch (Exception ex)
 		{
@@ -727,10 +722,13 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (mission == null || !ReferenceEquals(_setsSelectedFollowerMission, mission))
+			bool missionChanged = mission == null || !ReferenceEquals(_setsSelectedFollowerMission, mission);
+			if (missionChanged)
 			{
 				SetsSelectedFollowerAgentIndexes.Clear();
 				_setsSelectedFollowerMission = mission;
+				_setsOrderControllerPrimed = false;
+				_nextSetsOrderControllerPrimeTime = 0f;
 			}
 			_setsEntryMissionActive = active && mission != null;
 			if (!active)
@@ -2152,7 +2150,11 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private readonly Dictionary<int, float> _enemyNavigationRescueReleaseTimes = new Dictionary<int, float>();
 		private static readonly MethodInfo AgentSetTargetAgentMethod = AccessTools.Method(typeof(Agent), "SetTargetAgent", new[] { typeof(Agent) });
 		private static readonly MethodInfo AgentSetAutomaticTargetSelectionMethod = AccessTools.Method(typeof(Agent), "SetAutomaticTargetSelection", new[] { typeof(bool) });
+		private List<CharacterObject> _pendingAlliedSpawnTroops;
+		private int _nextAlliedSpawnIndex;
+		private int _spawnedAlliedCount;
 		private bool _spawnedAllies;
+		private bool _alliedSpawnPrepared;
 		private bool _enemyFormationChargeOrderIssued;
 		private bool _conflictActive;
 		private bool _ownedSettlementIncidentTriggered;
@@ -2169,6 +2171,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private Team _enemyTeam;
 		private Team _neutralTeam;
 		private float _nextEnemyCheckTime;
+		private float _nextAlliedSpawnBatchTime;
 		private float _protectedFollowerHostilitySuppressionUntil;
 		private float _nextDefenderReserveWaveTime;
 		private float _lastDefenderReserveProgressTime;
@@ -2216,7 +2219,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				TrySpawnSelectedAllies("TickFallback");
 			}
 			MaintainProtectedFollowersFriendlyState();
-			if (!_ownedSettlementMassacreActive)
+			if (_spawnedAllies && !_ownedSettlementMassacreActive)
 			{
 				EnsureSetsCommandUiReadyForExternal(base.Mission, _conflictActive ? "tick_conflict" : "tick", force: false, preserveSelection: true);
 			}
@@ -2409,14 +2412,54 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				{
 					return;
 				}
-				List<CharacterObject> troops = ExpandRoster(_selectedRoster, _limit);
-				SetSetsSelectedFollowerState(mission, active: true, "spawn_selected_allies");
-				int spawned = SpawnAgentsNearPlayer(troops, _playerTeam, asEnemy: false, source);
-				_spawnedAllies = true;
-				if (spawned > 0)
+				if (!_alliedSpawnPrepared)
 				{
-					TrySetFollowerFormationFollowOrder(mission, main);
-					EnsureSetsCommandUiReadyForExternal(mission, "spawn_selected_allies", force: true, preserveSelection: false);
+					_pendingAlliedSpawnTroops = ExpandRoster(_selectedRoster, _limit);
+					_alliedSpawnPrepared = true;
+					_nextAlliedSpawnIndex = 0;
+					_spawnedAlliedCount = 0;
+					_nextAlliedSpawnBatchTime = mission.CurrentTime + AlliedSpawnInitialDelaySeconds;
+					SetSetsSelectedFollowerState(mission, active: true, "prepare_selected_allies");
+					SettlementEntryTroopSelectionLog.Log("Prepared staged allied spawn. settlement=" + _settlementId + ", scene=" + _sceneKind + ", selected=" + _pendingAlliedSpawnTroops.Count + ", batchSize=" + AlliedSpawnBatchSize + ", initialDelay=" + AlliedSpawnInitialDelaySeconds);
+					if (_pendingAlliedSpawnTroops.Count == 0)
+					{
+						_spawnedAllies = true;
+					}
+					return;
+				}
+				if (mission.CurrentTime < _nextAlliedSpawnBatchTime)
+				{
+					return;
+				}
+				int selectedCount = _pendingAlliedSpawnTroops?.Count ?? 0;
+				int remaining = selectedCount - _nextAlliedSpawnIndex;
+				if (remaining > 0)
+				{
+					int batchCount = Math.Min(AlliedSpawnBatchSize, remaining);
+					int batchStartIndex = _nextAlliedSpawnIndex;
+					int spawned = SpawnAgentsNearPlayer(
+						_pendingAlliedSpawnTroops,
+						_playerTeam,
+						asEnemy: false,
+						source,
+						spawnStartIndex: batchStartIndex,
+						spawnCount: batchCount,
+						totalFormationSpawnCount: selectedCount);
+					_nextAlliedSpawnIndex += batchCount;
+					_spawnedAlliedCount += spawned;
+					_nextAlliedSpawnBatchTime = mission.CurrentTime + AlliedSpawnBatchIntervalSeconds;
+					SettlementEntryTroopSelectionLog.LogVerbose("Spawned staged allied batch. settlement=" + _settlementId + ", scene=" + _sceneKind + ", start=" + batchStartIndex + ", attempted=" + batchCount + ", spawned=" + spawned + ", progress=" + _nextAlliedSpawnIndex + "/" + selectedCount);
+				}
+				if (_nextAlliedSpawnIndex < selectedCount)
+				{
+					return;
+				}
+				_spawnedAllies = true;
+				_pendingAlliedSpawnTroops = null;
+				if (_spawnedAlliedCount > 0)
+				{
+					TrySetFollowerFormationFollowOrder(mission, main, ensurePlayerCommandable: false);
+					EnsureSetsCommandUiReadyForExternal(mission, "finalize_selected_allies", force: true, preserveSelection: false);
 					string message = "【SETS】随行人员已进入场景，可按原版指挥调整。";
 					if (_defenderConflictEnabled)
 					{
@@ -2424,7 +2467,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					}
 					InformationManager.DisplayMessage(new InformationMessage(message, Color.FromUint(InfoColor)));
 				}
-				SettlementEntryTroopSelectionLog.Log("Spawned selected allies. settlement=" + _settlementId + ", scene=" + _sceneKind + ", source=" + source + ", selected=" + troops.Count + ", spawned=" + spawned + ", ownSettlement=" + _isOwnSettlement);
+				SettlementEntryTroopSelectionLog.Log("Completed staged allied spawn. settlement=" + _settlementId + ", scene=" + _sceneKind + ", source=" + source + ", selected=" + selectedCount + ", spawned=" + _spawnedAlliedCount + ", ownSettlement=" + _isOwnSettlement);
 			}
 			catch (Exception ex)
 			{
@@ -4820,16 +4863,22 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			return false;
 		}
 
-		private int SpawnAgentsNearPlayer(List<CharacterObject> troops, Team team, bool asEnemy, string source, List<CharacterObject> spawnedCharacters = null, List<DefenderReserveEntry> defenderEntries = null, int defenderReserveWaveNumber = -1, List<DefenderReserveEntry> spawnedDefenderEntries = null)
+		private int SpawnAgentsNearPlayer(List<CharacterObject> troops, Team team, bool asEnemy, string source, List<CharacterObject> spawnedCharacters = null, List<DefenderReserveEntry> defenderEntries = null, int defenderReserveWaveNumber = -1, List<DefenderReserveEntry> spawnedDefenderEntries = null, int spawnStartIndex = 0, int spawnCount = -1, int totalFormationSpawnCount = -1)
 		{
 			Mission mission = base.Mission;
 			Agent main = Agent.Main ?? mission?.MainAgent;
 			PartyBase fallbackOriginParty = asEnemy ? Settlement.Find(_settlementId)?.Town?.GarrisonParty?.Party : PartyBase.MainParty;
-			int entryCount = defenderEntries != null ? defenderEntries.Count : (troops?.Count ?? 0);
+			int sourceCount = defenderEntries != null ? defenderEntries.Count : (troops?.Count ?? 0);
+			int firstEntryIndex = Math.Max(0, Math.Min(spawnStartIndex, sourceCount));
+			int lastEntryIndex = spawnCount < 0
+				? sourceCount
+				: Math.Min(sourceCount, firstEntryIndex + Math.Max(0, spawnCount));
+			int entryCount = lastEntryIndex - firstEntryIndex;
 			if (mission == null || main == null || team == null || entryCount == 0)
 			{
 				return 0;
 			}
+			int formationSpawnCount = totalFormationSpawnCount > 0 ? totalFormationSpawnCount : sourceCount;
 			int spawned = 0;
 			Vec3 anchor = main.Position;
 			Vec3 forward = main.LookDirection;
@@ -4856,7 +4905,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			}
 			right.Normalize();
 			Formation formation = team.GetFormation(FormationClass.Infantry);
-			for (int i = 0; i < entryCount; i++)
+			for (int i = firstEntryIndex; i < lastEntryIndex; i++)
 			{
 				DefenderReserveEntry defenderEntry = defenderEntries != null && i < defenderEntries.Count ? defenderEntries[i] : null;
 				CharacterObject troop = defenderEntry?.Character ?? troops[i];
@@ -4910,7 +4959,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					if (formation != null)
 					{
 						buildData = buildData.Formation(formation)
-							.FormationTroopSpawnCount(entryCount)
+							.FormationTroopSpawnCount(formationSpawnCount)
 							.FormationTroopSpawnIndex(i)
 							.SpawnsIntoOwnFormation(true)
 							.SpawnsUsingOwnTroopClass(false);
@@ -4947,7 +4996,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 						_alliedAgentIndexes.Add(spawnedAgent.Index);
 						RegisterSetsSelectedFollowerAgent(spawnedAgent, "spawn_allied_agent");
 						CacheProtectedFollowerHealth(spawnedAgent);
-						AssignAgentToFormation(spawnedAgent, team, FormationClass.Infantry);
+						AssignAgentToFormation(spawnedAgent, team, FormationClass.Infantry, refreshOrders: false, markPlayerCommandable: false);
 					}
 				}
 				catch (Exception ex)
@@ -4958,7 +5007,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			return spawned;
 		}
 
-		private static void AssignAgentToFormation(Agent agent, Team team, FormationClass formationClass)
+		private static void AssignAgentToFormation(Agent agent, Team team, FormationClass formationClass, bool refreshOrders = true, bool markPlayerCommandable = true)
 		{
 			try
 			{
@@ -4968,13 +5017,16 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					return;
 				}
 				agent.Formation = formation;
-				if (team?.IsPlayerGeneral == true)
+				if (markPlayerCommandable && team?.IsPlayerGeneral == true)
 				{
 					MarkFormationPlayerCommandable(formation, Agent.Main ?? agent.Mission?.MainAgent);
 				}
 				agent.TryAttachToFormation();
 				agent.SetShouldCatchUpWithFormation(true);
-				agent.UpdateFormationOrders();
+				if (refreshOrders)
+				{
+					agent.UpdateFormationOrders();
+				}
 			}
 			catch
 			{
@@ -5022,7 +5074,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			}
 		}
 
-		private void TrySetFollowerFormationFollowOrder(Mission mission, Agent main)
+		private void TrySetFollowerFormationFollowOrder(Mission mission, Agent main, bool ensurePlayerCommandable = true)
 		{
 			try
 			{
@@ -5031,7 +5083,10 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				{
 					return;
 				}
-				MarkFormationPlayerCommandable(formation, main);
+				if (ensurePlayerCommandable)
+				{
+					MarkFormationPlayerCommandable(formation, main);
+				}
 				formation.SetMovementOrder(MovementOrder.MovementOrderFollow(main));
 				formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLoose);
 			}
