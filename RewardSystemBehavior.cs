@@ -133,6 +133,26 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		Banner
 	}
 
+	private enum GeneratedRpFoodKind
+	{
+		None,
+		AnyFood,
+		Meat,
+		Fish,
+		Grain,
+		Fruit,
+		Vegetable,
+		Dairy,
+		Egg,
+		Sweet,
+		PreparedMeal,
+		Water,
+		Medicine,
+		Beer,
+		Wine,
+		Drink
+	}
+
 	private sealed class GeneratedRpEquipmentSuffixRule
 	{
 		public GeneratedRpEquipmentKind Kind { get; }
@@ -156,10 +176,60 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		public string[] Aliases { get; set; }
 	}
 
+	private sealed class GeneratedRpFoodSuffixRule
+	{
+		public GeneratedRpFoodKind Kind { get; }
+
+		public bool RequiresEnglishWordBoundary { get; }
+
+		public string[] Suffixes { get; }
+
+		public GeneratedRpFoodSuffixRule(GeneratedRpFoodKind kind, bool requiresEnglishWordBoundary, params string[] suffixes)
+		{
+			Kind = kind;
+			RequiresEnglishWordBoundary = requiresEnglishWordBoundary;
+			Suffixes = suffixes ?? Array.Empty<string>();
+		}
+	}
+
+	private sealed class GeneratedRpFoodTemplateCandidate
+	{
+		public ItemObject Item { get; set; }
+
+		public string[] Aliases { get; set; }
+	}
+
 	private static readonly object GeneratedRpEquipmentTemplateCacheLock = new object();
 	private static object GeneratedRpEquipmentTemplateCacheOwner;
 	private static Dictionary<GeneratedRpEquipmentKind, List<GeneratedRpEquipmentTemplateCandidate>> GeneratedRpEquipmentTemplatesByKind = new Dictionary<GeneratedRpEquipmentKind, List<GeneratedRpEquipmentTemplateCandidate>>();
-	private static readonly char[] GeneratedRpEquipmentTrailingPunctuation = new char[18] { '.', ',', ';', '!', '?', ':', '\'', '"', '\u3002', '\uff0c', '\uff1b', '\uff01', '\uff1f', '\uff1a', '\u2019', '\u201d', '\u300b', '\u3011' };
+	private static readonly object GeneratedRpFoodTemplateCacheLock = new object();
+	private static object GeneratedRpFoodTemplateCacheOwner;
+	private static Dictionary<GeneratedRpFoodKind, List<GeneratedRpFoodTemplateCandidate>> GeneratedRpFoodTemplatesByKind = new Dictionary<GeneratedRpFoodKind, List<GeneratedRpFoodTemplateCandidate>>();
+	private static readonly char[] GeneratedRpTrailingPunctuation = new char[24] { '.', ',', ';', '!', '?', ':', '\'', '"', '\u3002', '\uff0c', '\uff1b', '\uff01', '\uff1f', '\uff1a', '\u2019', '\u201d', '\u300b', '\u3011', ')', ']', '}', '\uff09', '\u3015', '\u3009' };
+	private static readonly string[] GeneratedRpFoodNonFoodEndingExceptions = new string[]
+	{
+		"如果", "结果", "后果", "因果", "效果", "成果", "战果", "恶果", "苦果",
+		"笨蛋", "混蛋", "坏蛋", "傻蛋", "滚蛋", "完蛋", "脸蛋", "捣蛋", "穷光蛋", "王八蛋",
+		"奶奶", "姑奶奶",
+		"血肉", "骨肉", "皮肉",
+		"铁饼", "画饼", "帮派",
+		"香水", "花露水", "墨水", "薪水", "泪水", "汗水", "口水", "血水", "海水", "洪水", "污水", "废水", "泥水",
+		"火药", "炸药", "弹药", "农药", "鼠药", "麻药", "迷药", "外用药", "膏药", "兽药", "杀虫药",
+		"waste water", "sea water", "dirty water", "sewage water"
+	};
+	private static readonly string[] GeneratedRpFoodMeatTemplateTokens = new string[20] { "meat", "beef", "pork", "mutton", "lamb", "chicken", "poultry", "turkey", "duck", "venison", "bacon", "ham", "sausage", "steak", "jerky", "肉", "牛排", "羊排", "猪排", "香肠" };
+	private static readonly string[] GeneratedRpFoodFishTemplateTokens = new string[15] { "fish", "seafood", "salmon", "trout", "herring", "tuna", "sardine", "shrimp", "prawn", "crab", "oyster", "shellfish", "鱼", "虾", "蟹" };
+	private static readonly string[] GeneratedRpFoodGrainTemplateTokens = new string[18] { "grain", "wheat", "flour", "bread", "rice", "noodle", "pasta", "porridge", "cereal", "oatmeal", "dumpling", "ration", "粮", "麦", "面包", "米饭", "面条", "粥" };
+	private static readonly string[] GeneratedRpFoodFruitTemplateTokens = new string[22] { "fruit", "apple", "pear", "peach", "plum", "apricot", "grape", "berry", "orange", "lemon", "melon", "banana", "mango", "coconut", "olive", "date_fruit", "苹果", "梨", "葡萄", "水果", "浆果", "枣" };
+	private static readonly string[] GeneratedRpFoodVegetableTemplateTokens = new string[18] { "vegetable", "veggie", "cabbage", "carrot", "potato", "onion", "garlic", "lentil", "chickpea", "bean", "pea", "turnip", "mushroom", "蔬菜", "白菜", "萝卜", "土豆", "蘑菇" };
+	private static readonly string[] GeneratedRpFoodDairyTemplateTokens = new string[12] { "dairy", "cheese", "butter", "cream", "milk", "yogurt", "yoghurt", "奶酪", "芝士", "黄油", "牛奶", "酸奶" };
+	private static readonly string[] GeneratedRpFoodEggTemplateTokens = new string[6] { "egg", "鸡蛋", "鸭蛋", "鹅蛋", "鸟蛋", "鹌鹑蛋" };
+	private static readonly string[] GeneratedRpFoodSweetTemplateTokens = new string[18] { "cake", "pastry", "biscuit", "cookie", "candy", "chocolate", "pudding", "jam", "honey", "sweet", "糖果", "巧克力", "蛋糕", "糕", "布丁", "果酱", "蜂蜜", "甜点" };
+	private static readonly string[] GeneratedRpFoodBeerTemplateTokens = new string[8] { "beer", "ale", "lager", "stout", "porter", "啤酒", "麦酒", "麦芽酒" };
+	private static readonly string[] GeneratedRpFoodWineTemplateTokens = new string[13] { "wine", "mead", "cider", "liquor", "spirit", "葡萄酒", "果酒", "蜂蜜酒", "红酒", "白酒", "米酒", "黄酒", "烈酒" };
+	private static readonly string[] GeneratedRpFoodDrinkTemplateTokens = new string[16] { "drink", "beverage", "juice", "tea", "coffee", "cocoa", "milkshake", "beer", "wine", "果汁", "饮料", "饮品", "茶", "咖啡", "啤酒", "酒" };
+	private static readonly string[] GeneratedRpFoodWaterTemplateTokens = new string[15] { "water", "freshwater", "spring water", "mineral water", "drinking water", "泉水", "井水", "清水", "净水", "纯净水", "饮用水", "矿泉水", "淡水", "开水", "圣水" };
+	private static readonly string[] GeneratedRpFoodMedicineTemplateTokens = new string[20] { "medicine", "medication", "remedy", "potion", "elixir", "tonic", "antidote", "drug", "pill", "capsule", "herb", "syrup", "药", "药剂", "药丸", "药水", "丹药", "灵药", "草药", "解药" };
 	private static readonly GeneratedRpEquipmentSuffixRule[] GeneratedRpEquipmentSuffixRules = new GeneratedRpEquipmentSuffixRule[]
 	{
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.ThrowingAxe, false, "投斧", "飞斧"),
@@ -180,10 +250,13 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Polearm, false, "长柄武器", "长柄", "长枪", "骑枪", "短枪", "战矛", "长矛", "短矛", "槊", "戟", "矛", "枪"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Thrown, false, "投掷武器"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.HorseHarness, false, "马铠", "马甲", "马具", "鞍具", "马鞍", "鞍"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.HeadArmor, false, "头盔", "战盔", "铁盔", "盔"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.HandArmor, false, "手甲", "臂甲", "护臂", "护手", "手套", "拳套"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.LegArmor, false, "腿甲", "胫甲", "护腿", "战靴", "长靴", "靴子", "靴"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Cape, false, "肩甲", "护肩", "披风", "斗篷", "披肩"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.HeadArmor, false, "头盔", "战盔", "铁盔", "兜帽", "风帽", "帽子", "头巾", "面纱", "面罩", "面具", "头冠", "王冠", "冠冕", "盔", "帽"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.HandArmor, false, "手甲", "臂甲", "腕甲", "臂铠", "护臂", "护腕", "护手", "手套", "拳套", "手衣"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.LegArmor, false, "腿甲", "胫甲", "足甲", "脚甲", "护腿", "护胫", "护膝", "战靴", "长靴", "靴子", "鞋子", "战鞋", "皮鞋", "布鞋", "凉鞋", "袜子", "长袜", "短袜", "靴", "鞋", "袜"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Cape, false, "肩甲", "护肩", "披风", "斗篷", "披肩", "围巾", "披巾", "披帛"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.BodyArmor, false, "长袍", "短袍", "战袍", "法袍", "礼袍", "罩袍", "袍子", "袍"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.BodyArmor, false, "上衣", "外衣", "衬衣", "内衣", "衣服", "服装", "礼服", "制服", "战服", "外套", "大衣", "夹克", "长衫", "短衫", "衫", "衣"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.BodyArmor, false, "裤子", "长裤", "短裤", "马裤", "皮裤", "布裤", "裙子", "长裙", "短裙", "战裙", "裤", "裙"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.BodyArmor, false, "胸甲", "身甲", "板甲", "链甲", "鳞甲", "皮甲", "布甲", "重甲", "轻甲"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.BodyArmor, false, "铠甲", "盔甲", "护甲", "铠", "甲"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Banner, false, "旗帜", "军旗", "战旗", "旗"),
@@ -207,15 +280,49 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Polearm, true, "polearms", "polearm", "spears", "spear", "lances", "lance", "pikes", "pike", "halberds", "halberd", "glaives", "glaive"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Thrown, true, "throwing weapons", "thrown weapons"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.HorseHarness, true, "horse armors", "horse armor", "horse armours", "horse armour", "bardings", "barding", "saddles", "saddle", "harnesses", "harness"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.HeadArmor, true, "helmets", "helmet", "helms", "helm"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.HandArmor, true, "gauntlets", "gauntlet", "gloves", "glove", "bracers", "bracer", "vambraces", "vambrace"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.LegArmor, true, "greaves", "greave", "boots", "boot"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Cape, true, "pauldrons", "pauldron", "capes", "cape", "cloaks", "cloak", "mantles", "mantle"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.HeadArmor, true, "helmets", "helmet", "helms", "helm", "headscarves", "headscarf", "circlets", "circlet", "turbans", "turban", "crowns", "crown", "hoods", "hood", "hats", "hat", "caps", "cap", "masks", "mask", "veils", "veil", "coifs", "coif"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.HandArmor, true, "gauntlets", "gauntlet", "gloves", "glove", "bracers", "bracer", "vambraces", "vambrace", "mittens", "mitten", "handwraps", "handwrap", "wristguards", "wristguard", "armguards", "armguard"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.LegArmor, true, "greaves", "greave", "boots", "boot", "shoes", "shoe", "sandals", "sandal", "slippers", "slipper", "leggings", "legging", "stockings", "stocking", "socks", "sock", "footwear"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Cape, true, "pauldrons", "pauldron", "capes", "cape", "cloaks", "cloak", "mantles", "mantle", "scarves", "scarf", "shawls", "shawl"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.BodyArmor, true, "robes", "robe", "tunics", "tunic", "shirts", "shirt", "trousers", "trouser", "pants", "breeches", "skirts", "skirt", "kilts", "kilt"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.BodyArmor, true, "dresses", "dress", "gowns", "gown", "coats", "coat", "jackets", "jacket", "waistcoats", "waistcoat", "vests", "vest", "jerkins", "jerkin", "doublets", "doublet"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.BodyArmor, true, "uniforms", "uniform", "outfits", "outfit", "garments", "garment", "clothing", "clothes", "apparel"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.BodyArmor, true, "body armors", "body armor", "body armours", "body armour", "chest armors", "chest armor", "chest armours", "chest armour", "cuirasses", "cuirass", "breastplates", "breastplate", "chainmail"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.BodyArmor, true, "armors", "armor", "armours", "armour"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Banner, true, "banners", "banner", "standards", "standard"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.AnyWeapon, true, "weapons", "weapon", "armaments", "armament"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.AnyEquipment, true, "equipment", "combat gear", "gear")
+	};
+	private static readonly GeneratedRpFoodSuffixRule[] GeneratedRpFoodSuffixRules = new GeneratedRpFoodSuffixRule[]
+	{
+		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Medicine, false, "疗伤药水", "解毒药水", "治疗药水", "恢复药水", "法力药水", "生命药水", "药水", "药剂", "药丸", "药片", "药粉", "药散", "药材", "药草", "药酒", "药茶", "药汤", "药粥", "药膳", "丹药", "灵药", "草药", "汤药", "中药", "西药", "补药", "秘药", "圣药", "神药", "解药", "伤药", "疗伤药", "退烧药", "止痛药", "治病药", "仙丹", "金丹", "灵丹", "妙药", "药"),
+		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Wine, false, "蜂蜜酒", "葡萄酒", "苹果酒", "梨酒", "果酒", "米酒", "黄酒", "白酒", "红酒", "烈酒", "烧酒", "清酒", "甜酒", "奶酒", "酒"),
+		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Beer, false, "麦芽啤酒", "黑啤酒", "白啤酒", "淡啤酒", "啤酒", "麦酒"),
+		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Drink, false, "蔬菜汁", "葡萄汁", "苹果汁", "柠檬汁", "橙汁", "梨汁", "果汁", "酸梅汤", "奶茶", "红茶", "绿茶", "花茶", "茶", "咖啡", "可可", "饮料", "饮品", "汽水"),
+		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Water, false, "饮用水", "矿泉水", "纯净水", "过滤水", "净化水", "蜂蜜水", "柠檬水", "椰子水", "泉水", "井水", "清水", "净水", "淡水", "凉水", "温水", "热水", "开水", "圣水", "河水", "雨水", "糖水", "盐水", "水"),
+		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Sweet, false, "巧克力蛋糕", "蜂蜜蛋糕", "奶油蛋糕", "水果蛋糕", "蛋糕", "糕点", "米糕", "年糕", "发糕", "糕", "饼干", "月饼", "烧饼", "煎饼", "烙饼", "馅饼", "糖果", "软糖", "硬糖", "蜂蜜", "巧克力", "布丁", "卜丁", "果酱", "甜点"),
+		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Fish, false, "烤鱼青", "鱼青", "烤虾圭", "虾圭", "虾面盒", "鱼肉", "烤鱼", "咸鱼", "熏鱼", "鱼干", "鱼排", "鱼丸", "鱼饼", "河鱼", "海鱼", "鲜鱼", "海鲜", "虾", "蟹", "鱼"),
+		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Meat, false, "鸡丁敏士", "烤马骏", "纸包鸡", "椰子鸡", "奶油鸡", "焖鸡", "鸡肉元", "肉元", "鸡肉丝", "肉丝", "鸡肉饼", "鸡卷", "鸡排", "鸡徘", "牛扒", "羊腿", "羊肝", "牛尾", "牛排", "羊排", "猪排", "肉排", "牛肉", "羊肉", "猪肉", "鸡肉", "鸭肉", "鹅肉", "鹿肉", "兔肉", "马肉", "禽肉", "兽肉", "熏肉", "腊肉", "烤肉", "肉干", "肉饼", "肉松", "肉酱", "肉串", "香肠", "火腿", "培根", "肉丸", "肉"),
+		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Grain, false, "面包", "馒头", "包子", "饺子", "馄饨", "面条", "拉面", "汤面", "炒面", "凉面", "挂面", "意面", "米饭", "炒饭", "饭团", "稀饭", "米粥", "麦粥", "麦片", "大米", "小麦", "燕麦", "玉米", "口粮", "粮食", "饭", "粥", "粮"),
+		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Fruit, false, "苹果", "雪梨", "鸭梨", "香梨", "梨", "樱桃", "桃子", "蜜桃", "李子", "杏子", "红枣", "蜜枣", "枣", "葡萄", "橙子", "橘子", "柑橘", "柠檬", "石榴", "香蕉", "芒果", "菠萝", "柚子", "柿子", "椰子", "西瓜", "甜瓜", "草莓", "蓝莓", "树莓", "黑莓", "浆果", "莓果", "莓", "水果", "鲜果", "干果", "坚果", "果"),
+		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Vegetable, false, "大白菜", "小白菜", "胡萝卜", "马铃薯", "大蒜", "生姜", "白菜", "青菜", "蔬菜", "萝卜", "土豆", "红薯", "地瓜", "南瓜", "黄瓜", "冬瓜", "丝瓜", "茄子", "洋葱", "豆角", "豌豆", "扁豆", "蚕豆", "豆腐", "蘑菇", "香菇", "菌菇", "菜"),
+		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Dairy, false, "奶酪", "乳酪", "芝士", "黄油", "奶油", "酸奶", "牛奶", "羊奶", "马奶", "驼奶", "椰奶", "乳品", "奶"),
+		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Egg, false, "鹌鹑蛋", "鸡蛋", "鸭蛋", "鹅蛋", "鸟蛋", "咸蛋", "皮蛋", "蛋"),
+		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.PreparedMeal, false, "三明治", "汉堡", "炖菜", "沙拉", "菜肴", "佳肴", "寿司", "浓汤", "肉汤", "鱼汤", "菜汤", "汤", "羹", "餐", "食物", "食品"),
+		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Medicine, true, "healing potions", "healing potion", "health potions", "health potion", "medicinal syrups", "medicinal syrup", "herbal medicines", "herbal medicine", "medicines", "medicine", "medications", "medication", "remedies", "remedy", "potions", "potion", "elixirs", "elixir", "tonics", "tonic", "antidotes", "antidote", "capsules", "capsule", "pills", "pill", "herbs", "herb", "syrups", "syrup", "drugs", "drug"),
+		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Water, true, "purified waters", "purified water", "drinking waters", "drinking water", "mineral waters", "mineral water", "spring waters", "spring water", "holy waters", "holy water", "clean waters", "clean water", "fresh waters", "fresh water", "rainwaters", "rainwater", "freshwaters", "freshwater", "waters", "water"),
+		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Wine, true, "sparkling wines", "sparkling wine", "dessert wines", "dessert wine", "red wines", "red wine", "white wines", "white wine", "fruit wines", "fruit wine", "meads", "mead", "ciders", "cider", "liquors", "liquor", "spirits", "spirit", "wines", "wine"),
+		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Beer, true, "wheat beers", "wheat beer", "dark beers", "dark beer", "lagers", "lager", "stouts", "stout", "porters", "porter", "beers", "beer", "ales", "ale"),
+		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Drink, true, "vegetable juices", "vegetable juice", "fruit juices", "fruit juice", "apple juices", "apple juice", "orange juices", "orange juice", "grape juices", "grape juice", "lemonades", "lemonade", "milkshakes", "milkshake", "beverages", "beverage", "drinks", "drink", "juices", "juice", "coffees", "coffee", "teas", "tea", "cocoa"),
+		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Sweet, true, "cheesecakes", "cheesecake", "fruitcakes", "fruitcake", "shortcakes", "shortcake", "moon cakes", "moon cake", "mooncakes", "mooncake", "cupcakes", "cupcake", "pancakes", "pancake", "cakes", "cake", "pastries", "pastry", "biscuits", "biscuit", "cookies", "cookie", "candies", "candy", "chocolates", "chocolate", "puddings", "pudding", "jams", "jam", "honeys", "honey", "sweets", "sweet"),
+		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Fish, true, "smoked salmon", "grilled salmon", "salmons", "salmon", "trouts", "trout", "herrings", "herring", "tunas", "tuna", "sardines", "sardine", "shrimps", "shrimp", "prawns", "prawn", "crabs", "crab", "oysters", "oyster", "shellfish", "seafood", "fishes", "fish"),
+		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Meat, true, "beefsteaks", "beefsteak", "lamb chops", "lamb chop", "pork chops", "pork chop", "meatballs", "meatball", "sausages", "sausage", "venison", "mutton", "chicken", "poultry", "turkey", "ducks", "duck", "bacons", "bacon", "jerkies", "jerky", "steaks", "steak", "beefs", "beef", "porks", "pork", "lambs", "lamb", "hams", "ham", "meats", "meat"),
+		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Grain, true, "sourdough breads", "sourdough bread", "flatbreads", "flatbread", "cornbreads", "cornbread", "bread rolls", "bread roll", "dumplings", "dumpling", "porridges", "porridge", "noodles", "noodle", "pastas", "pasta", "cereals", "cereal", "oatmeals", "oatmeal", "breads", "bread", "rices", "rice", "grains", "grain", "wheats", "wheat", "rations", "ration"),
+		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Fruit, true, "date fruits", "date fruit", "dragon fruits", "dragon fruit", "passion fruits", "passion fruit", "strawberries", "strawberry", "blueberries", "blueberry", "raspberries", "raspberry", "blackberries", "blackberry", "coconuts", "coconut", "pomegranates", "pomegranate", "apricots", "apricot", "bananas", "banana", "oranges", "orange", "lemons", "lemon", "melons", "melon", "mangoes", "mango", "grapes", "grape", "peaches", "peach", "plums", "plum", "pears", "pear", "apples", "apple", "berries", "berry", "olives", "olive", "fruits", "fruit"),
+		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Vegetable, true, "sweet potatoes", "sweet potato", "green beans", "green bean", "kidney beans", "kidney bean", "mushrooms", "mushroom", "cabbages", "cabbage", "carrots", "carrot", "potatoes", "potato", "onions", "onion", "garlics", "garlic", "lentils", "lentil", "chickpeas", "chickpea", "beans", "bean", "peas", "pea", "turnips", "turnip", "vegetables", "vegetable", "veggies", "veggie"),
+		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Dairy, true, "goat cheeses", "goat cheese", "cream cheeses", "cream cheese", "yoghurts", "yoghurt", "yogurts", "yogurt", "cheeses", "cheese", "butters", "butter", "creams", "cream", "milks", "milk", "dairy products", "dairy"),
+		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Egg, true, "quail eggs", "quail egg", "duck eggs", "duck egg", "chicken eggs", "chicken egg", "boiled eggs", "boiled egg", "fried eggs", "fried egg", "eggs", "egg"),
+		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.PreparedMeal, true, "meat pies", "meat pie", "fruit pies", "fruit pie", "cheeseburgers", "cheeseburger", "hot dogs", "hot dog", "sandwiches", "sandwich", "hamburgers", "hamburger", "burgers", "burger", "pizzas", "pizza", "tacos", "taco", "curries", "curry", "kebabs", "kebab", "sushis", "sushi", "salads", "salad", "stews", "stew", "soups", "soup", "pies", "pie", "meals", "meal", "foods", "food")
 	};
 
 	public class RewardItemInfo
@@ -9048,7 +9155,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		text = text.TrimEnd(GeneratedRpEquipmentTrailingPunctuation).TrimEnd();
+		text = text.TrimEnd(GeneratedRpTrailingPunctuation).TrimEnd();
 		foreach (GeneratedRpEquipmentSuffixRule rule in GeneratedRpEquipmentSuffixRules)
 		{
 			if (rule == null || rule.Kind == GeneratedRpEquipmentKind.None)
@@ -9057,7 +9164,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			foreach (string suffix in rule.Suffixes)
 			{
-				if (!MatchesGeneratedRpEquipmentSuffix(text, suffix, rule.RequiresEnglishWordBoundary))
+				if (!MatchesGeneratedRpSuffix(text, suffix, rule.RequiresEnglishWordBoundary))
 				{
 					continue;
 				}
@@ -9069,7 +9176,54 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return false;
 	}
 
-	private static bool MatchesGeneratedRpEquipmentSuffix(string text, string suffix, bool requiresEnglishWordBoundary)
+	private static bool TryResolveGeneratedRpFoodSuffix(string assetName, out GeneratedRpFoodKind kind, out string matchedSuffix)
+	{
+		kind = GeneratedRpFoodKind.None;
+		matchedSuffix = "";
+		string text = (assetName ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		text = text.TrimEnd(GeneratedRpTrailingPunctuation).TrimEnd();
+		foreach (GeneratedRpFoodSuffixRule rule in GeneratedRpFoodSuffixRules)
+		{
+			if (rule == null || rule.Kind == GeneratedRpFoodKind.None)
+			{
+				continue;
+			}
+			foreach (string suffix in rule.Suffixes)
+			{
+				if (!MatchesGeneratedRpSuffix(text, suffix, rule.RequiresEnglishWordBoundary)
+					|| IsGeneratedRpFoodNonFoodEndingException(text, suffix))
+				{
+					continue;
+				}
+				kind = rule.Kind;
+				matchedSuffix = suffix;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static bool IsGeneratedRpFoodNonFoodEndingException(string text, string matchedSuffix)
+	{
+		if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(matchedSuffix))
+		{
+			return false;
+		}
+		foreach (string exception in GeneratedRpFoodNonFoodEndingExceptions)
+		{
+			if (!string.IsNullOrWhiteSpace(exception) && text.EndsWith(exception, StringComparison.OrdinalIgnoreCase))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static bool MatchesGeneratedRpSuffix(string text, string suffix, bool requiresEnglishWordBoundary)
 	{
 		if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(suffix) || !text.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
 		{
@@ -9125,8 +9279,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				continue;
 			}
 			float score = WorldEntityRetrievalService.CalculateBestAliasScoreForExternal(assetName, candidate.Aliases);
-			int suitability = GetGeneratedRpEquipmentTemplateSuitability(item);
-			float tieBreaker = GetGeneratedRpEquipmentTemplateTieBreaker(assetName, item);
+			int suitability = GetGeneratedRpTemplateSuitability(item);
+			float tieBreaker = GetGeneratedRpTemplateTieBreaker(assetName, item);
 			bool isBetter = score > bestScore + 0.00001f;
 			if (!isBetter && Math.Abs(score - bestScore) <= 0.00001f)
 			{
@@ -9148,7 +9302,61 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return templateItem != null;
 	}
 
-	private static int GetGeneratedRpEquipmentTemplateSuitability(ItemObject item)
+	private static bool TryResolveGeneratedRpFoodTemplate(string assetName, out ItemObject templateItem, out GeneratedRpFoodKind kind, out string matchedSuffix, out float matchScore, out int candidateCount)
+	{
+		templateItem = null;
+		matchScore = 0f;
+		candidateCount = 0;
+		if (!TryResolveGeneratedRpFoodSuffix(assetName, out kind, out matchedSuffix))
+		{
+			return false;
+		}
+		Dictionary<GeneratedRpFoodKind, List<GeneratedRpFoodTemplateCandidate>> templatesByKind = GetGeneratedRpFoodTemplateCache();
+		if (!templatesByKind.TryGetValue(kind, out List<GeneratedRpFoodTemplateCandidate> candidates) || candidates == null || candidates.Count == 0)
+		{
+			templatesByKind.TryGetValue(GeneratedRpFoodKind.AnyFood, out candidates);
+		}
+		if (candidates == null || candidates.Count == 0)
+		{
+			return false;
+		}
+		candidateCount = candidates.Count;
+		GeneratedRpFoodTemplateCandidate best = null;
+		float bestScore = -1f;
+		int bestSuitability = int.MinValue;
+		float bestTieBreaker = -1f;
+		foreach (GeneratedRpFoodTemplateCandidate candidate in candidates)
+		{
+			ItemObject item = candidate?.Item;
+			if (!IsCloneSafeGeneratedRpFoodTemplateItem(item))
+			{
+				continue;
+			}
+			float score = WorldEntityRetrievalService.CalculateBestAliasScoreForExternal(assetName, candidate.Aliases);
+			int suitability = GetGeneratedRpFoodTemplateSuitability(item, kind);
+			float tieBreaker = GetGeneratedRpTemplateTieBreaker(assetName, item);
+			bool isBetter = score > bestScore + 0.00001f;
+			if (!isBetter && Math.Abs(score - bestScore) <= 0.00001f)
+			{
+				isBetter = suitability > bestSuitability
+					|| (suitability == bestSuitability && tieBreaker > bestTieBreaker + 0.00001f)
+					|| (suitability == bestSuitability && Math.Abs(tieBreaker - bestTieBreaker) <= 0.00001f && string.Compare(item.StringId ?? "", best?.Item?.StringId ?? "", StringComparison.OrdinalIgnoreCase) < 0);
+			}
+			if (!isBetter)
+			{
+				continue;
+			}
+			best = candidate;
+			bestScore = score;
+			bestSuitability = suitability;
+			bestTieBreaker = tieBreaker;
+		}
+		templateItem = best?.Item;
+		matchScore = Math.Max(0f, bestScore);
+		return templateItem != null;
+	}
+
+	private static int GetGeneratedRpTemplateSuitability(ItemObject item)
 	{
 		if (item == null)
 		{
@@ -9176,7 +9384,71 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return score;
 	}
 
-	private static float GetGeneratedRpEquipmentTemplateTieBreaker(string assetName, ItemObject item)
+	private static int GetGeneratedRpFoodTemplateSuitability(ItemObject item, GeneratedRpFoodKind kind)
+	{
+		int score = GetGeneratedRpTemplateSuitability(item);
+		switch (kind)
+		{
+		case GeneratedRpFoodKind.Meat:
+			return score + (IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Meat) ? 30 : 0);
+		case GeneratedRpFoodKind.Fish:
+			return score + (IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Fish) ? 30 : 0);
+		case GeneratedRpFoodKind.Grain:
+			return score + (IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Grain) ? 30 : 0);
+		case GeneratedRpFoodKind.Fruit:
+			return score + ((IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Grape)
+				|| IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.DateFruit)
+				|| IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Olives)) ? 30 : 0);
+		case GeneratedRpFoodKind.Vegetable:
+			return score + (IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Olives) ? 30 : 0);
+		case GeneratedRpFoodKind.Dairy:
+			return score + ((IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Cheese)
+				|| IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Butter)) ? 30 : 0);
+		case GeneratedRpFoodKind.Egg:
+			if (ContainsGeneratedRewardItemTextAny(item, GeneratedRpFoodEggTemplateTokens))
+			{
+				return score + 40;
+			}
+			return score + (IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Cheese) ? 25 : 15);
+		case GeneratedRpFoodKind.Sweet:
+			if (IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Grain))
+			{
+				return score + 30;
+			}
+			if (IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Grape) || IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.DateFruit))
+			{
+				return score + 20;
+			}
+			return score + 10;
+		case GeneratedRpFoodKind.Water:
+			if (ContainsGeneratedRewardItemTextAny(item, GeneratedRpFoodWaterTemplateTokens))
+			{
+				return score + 40;
+			}
+			return score + (IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Beer) ? 30 : 0);
+		case GeneratedRpFoodKind.Medicine:
+			if (ContainsGeneratedRewardItemTextAny(item, GeneratedRpFoodMedicineTemplateTokens))
+			{
+				return score + 40;
+			}
+			return score + (IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Butter) ? 30 : 0);
+		case GeneratedRpFoodKind.Beer:
+			return score + (IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Beer) ? 30 : 0);
+		case GeneratedRpFoodKind.Wine:
+			return score + (IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Wine) ? 30 : 0);
+		case GeneratedRpFoodKind.Drink:
+			return score + ((IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Beer)
+				|| IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Wine)) ? 20 : 0);
+		case GeneratedRpFoodKind.PreparedMeal:
+			return score + ((IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Meat)
+				|| IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Fish)
+				|| IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Grain)) ? 20 : 10);
+		default:
+			return score;
+		}
+	}
+
+	private static float GetGeneratedRpTemplateTieBreaker(string assetName, ItemObject item)
 	{
 		string key = ((assetName ?? "").Trim() + "|" + (item?.StringId ?? "")).ToLowerInvariant();
 		if (!uint.TryParse(StablePromptKeyHash(key), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out uint hash))
@@ -9220,7 +9492,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					GeneratedRpEquipmentTemplateCandidate candidate = new GeneratedRpEquipmentTemplateCandidate
 					{
 						Item = item,
-						Aliases = BuildGeneratedRpEquipmentTemplateAliases(item)
+						Aliases = BuildGeneratedRpTemplateAliases(item)
 					};
 					AddGeneratedRpEquipmentTemplate(result, GeneratedRpEquipmentKind.AnyEquipment, candidate);
 					if (isWeapon)
@@ -9259,19 +9531,168 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static string[] BuildGeneratedRpEquipmentTemplateAliases(ItemObject item)
+	private static Dictionary<GeneratedRpFoodKind, List<GeneratedRpFoodTemplateCandidate>> GetGeneratedRpFoodTemplateCache()
+	{
+		object owner = (object)Game.Current?.ObjectManager ?? MBObjectManager.Instance;
+		lock (GeneratedRpFoodTemplateCacheLock)
+		{
+			if (owner != null && ReferenceEquals(owner, GeneratedRpFoodTemplateCacheOwner) && GeneratedRpFoodTemplatesByKind.Count > 0)
+			{
+				return GeneratedRpFoodTemplatesByKind;
+			}
+			Dictionary<GeneratedRpFoodKind, List<GeneratedRpFoodTemplateCandidate>> result = new Dictionary<GeneratedRpFoodKind, List<GeneratedRpFoodTemplateCandidate>>();
+			foreach (GeneratedRpFoodKind foodKind in Enum.GetValues(typeof(GeneratedRpFoodKind)))
+			{
+				result[foodKind] = new List<GeneratedRpFoodTemplateCandidate>();
+			}
+			try
+			{
+				IEnumerable<ItemObject> items = Game.Current?.ObjectManager?.GetObjectTypeList<ItemObject>() ?? MBObjectManager.Instance?.GetObjectTypeList<ItemObject>();
+				foreach (ItemObject item in items ?? Enumerable.Empty<ItemObject>())
+				{
+					if (!IsCloneSafeGeneratedRpFoodTemplateItem(item))
+					{
+						continue;
+					}
+					GeneratedRpFoodTemplateCandidate candidate = new GeneratedRpFoodTemplateCandidate
+					{
+						Item = item,
+						Aliases = BuildGeneratedRpTemplateAliases(item)
+					};
+					AddGeneratedRpFoodTemplate(result, GeneratedRpFoodKind.AnyFood, candidate);
+					IndexGeneratedRpFoodSpecificKinds(result, candidate);
+				}
+			}
+			catch (Exception ex)
+			{
+				try
+				{
+					Logger.Log("Logic", "[RewardItemResolve] rp_food_template_cache_failed error=" + ex.GetType().Name + ":" + ex.Message);
+				}
+				catch
+				{
+				}
+			}
+			GeneratedRpFoodTemplateCacheOwner = owner;
+			GeneratedRpFoodTemplatesByKind = result;
+			return GeneratedRpFoodTemplatesByKind;
+		}
+	}
+
+	private static void ClearGeneratedRpFoodTemplateCache()
+	{
+		lock (GeneratedRpFoodTemplateCacheLock)
+		{
+			GeneratedRpFoodTemplateCacheOwner = null;
+			GeneratedRpFoodTemplatesByKind = new Dictionary<GeneratedRpFoodKind, List<GeneratedRpFoodTemplateCandidate>>();
+		}
+	}
+
+	private static void AddGeneratedRpFoodTemplate(Dictionary<GeneratedRpFoodKind, List<GeneratedRpFoodTemplateCandidate>> templatesByKind, GeneratedRpFoodKind kind, GeneratedRpFoodTemplateCandidate candidate)
+	{
+		if (candidate?.Item == null || kind == GeneratedRpFoodKind.None || !templatesByKind.TryGetValue(kind, out List<GeneratedRpFoodTemplateCandidate> candidates))
+		{
+			return;
+		}
+		candidates.Add(candidate);
+	}
+
+	private static void IndexGeneratedRpFoodSpecificKinds(Dictionary<GeneratedRpFoodKind, List<GeneratedRpFoodTemplateCandidate>> templatesByKind, GeneratedRpFoodTemplateCandidate candidate)
+	{
+		ItemObject item = candidate?.Item;
+		if (item == null)
+		{
+			return;
+		}
+		bool isMeat = IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Meat) || ContainsGeneratedRewardItemTextAny(item, GeneratedRpFoodMeatTemplateTokens);
+		bool isFish = IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Fish) || ContainsGeneratedRewardItemTextAny(item, GeneratedRpFoodFishTemplateTokens);
+		bool isGrain = IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Grain) || ContainsGeneratedRewardItemTextAny(item, GeneratedRpFoodGrainTemplateTokens);
+		bool isFruit = IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Grape)
+			|| IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.DateFruit)
+			|| IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Olives)
+			|| ContainsGeneratedRewardItemTextAny(item, GeneratedRpFoodFruitTemplateTokens);
+		bool isVegetable = IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Olives) || ContainsGeneratedRewardItemTextAny(item, GeneratedRpFoodVegetableTemplateTokens);
+		bool isDairy = IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Cheese)
+			|| IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Butter)
+			|| ContainsGeneratedRewardItemTextAny(item, GeneratedRpFoodDairyTemplateTokens);
+		bool isEgg = ContainsGeneratedRewardItemTextAny(item, GeneratedRpFoodEggTemplateTokens);
+		bool isSweet = isGrain || isFruit || isDairy || ContainsGeneratedRewardItemTextAny(item, GeneratedRpFoodSweetTemplateTokens);
+		bool isBeer = IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Beer) || ContainsGeneratedRewardItemTextAny(item, GeneratedRpFoodBeerTemplateTokens);
+		bool isWine = IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Wine) || ContainsGeneratedRewardItemTextAny(item, GeneratedRpFoodWineTemplateTokens);
+		bool isWater = item.IsFood && (IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Beer) || ContainsGeneratedRewardItemTextAny(item, GeneratedRpFoodWaterTemplateTokens));
+		bool isMedicine = item.IsFood && (IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Butter) || ContainsGeneratedRewardItemTextAny(item, GeneratedRpFoodMedicineTemplateTokens));
+		bool isDrink = isBeer || isWine || isWater || ContainsGeneratedRewardItemTextAny(item, GeneratedRpFoodDrinkTemplateTokens);
+		if (isMeat)
+		{
+			AddGeneratedRpFoodTemplate(templatesByKind, GeneratedRpFoodKind.Meat, candidate);
+		}
+		if (isFish)
+		{
+			AddGeneratedRpFoodTemplate(templatesByKind, GeneratedRpFoodKind.Fish, candidate);
+		}
+		if (isGrain)
+		{
+			AddGeneratedRpFoodTemplate(templatesByKind, GeneratedRpFoodKind.Grain, candidate);
+		}
+		if (isFruit)
+		{
+			AddGeneratedRpFoodTemplate(templatesByKind, GeneratedRpFoodKind.Fruit, candidate);
+		}
+		if (isVegetable)
+		{
+			AddGeneratedRpFoodTemplate(templatesByKind, GeneratedRpFoodKind.Vegetable, candidate);
+		}
+		if (isDairy)
+		{
+			AddGeneratedRpFoodTemplate(templatesByKind, GeneratedRpFoodKind.Dairy, candidate);
+		}
+		if (isEgg || isDairy)
+		{
+			AddGeneratedRpFoodTemplate(templatesByKind, GeneratedRpFoodKind.Egg, candidate);
+		}
+		if (isSweet)
+		{
+			AddGeneratedRpFoodTemplate(templatesByKind, GeneratedRpFoodKind.Sweet, candidate);
+		}
+		if (isWater)
+		{
+			AddGeneratedRpFoodTemplate(templatesByKind, GeneratedRpFoodKind.Water, candidate);
+		}
+		if (isMedicine)
+		{
+			AddGeneratedRpFoodTemplate(templatesByKind, GeneratedRpFoodKind.Medicine, candidate);
+		}
+		if (isBeer)
+		{
+			AddGeneratedRpFoodTemplate(templatesByKind, GeneratedRpFoodKind.Beer, candidate);
+		}
+		if (isWine)
+		{
+			AddGeneratedRpFoodTemplate(templatesByKind, GeneratedRpFoodKind.Wine, candidate);
+		}
+		if (isDrink)
+		{
+			AddGeneratedRpFoodTemplate(templatesByKind, GeneratedRpFoodKind.Drink, candidate);
+		}
+		if (!isDrink && !isMedicine)
+		{
+			AddGeneratedRpFoodTemplate(templatesByKind, GeneratedRpFoodKind.PreparedMeal, candidate);
+		}
+	}
+
+	private static string[] BuildGeneratedRpTemplateAliases(ItemObject item)
 	{
 		List<string> aliases = new List<string>(8);
 		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		AddGeneratedRpEquipmentTemplateAlias(aliases, seen, item?.StringId);
-		AddGeneratedRpEquipmentTemplateAlias(aliases, seen, item?.Name?.ToString());
-		AddGeneratedRpEquipmentTemplateAlias(aliases, seen, item?.ItemCategory?.StringId);
-		AddGeneratedRpEquipmentTemplateAlias(aliases, seen, item?.ItemCategory?.GetName()?.ToString());
-		AddGeneratedRpEquipmentTemplateAlias(aliases, seen, item?.Type.ToString());
-		AddGeneratedRpEquipmentTemplateAlias(aliases, seen, GetItemPromptTypeLabel(item));
+		AddGeneratedRpTemplateAlias(aliases, seen, item?.StringId);
+		AddGeneratedRpTemplateAlias(aliases, seen, item?.Name?.ToString());
+		AddGeneratedRpTemplateAlias(aliases, seen, item?.ItemCategory?.StringId);
+		AddGeneratedRpTemplateAlias(aliases, seen, item?.ItemCategory?.GetName()?.ToString());
+		AddGeneratedRpTemplateAlias(aliases, seen, item?.Type.ToString());
+		AddGeneratedRpTemplateAlias(aliases, seen, GetItemPromptTypeLabel(item));
 		try
 		{
-			AddGeneratedRpEquipmentTemplateAlias(aliases, seen, item?.PrimaryWeapon?.WeaponClass.ToString());
+			AddGeneratedRpTemplateAlias(aliases, seen, item?.PrimaryWeapon?.WeaponClass.ToString());
 		}
 		catch
 		{
@@ -9279,7 +9700,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return aliases.ToArray();
 	}
 
-	private static void AddGeneratedRpEquipmentTemplateAlias(List<string> aliases, HashSet<string> seen, string value)
+	private static void AddGeneratedRpTemplateAlias(List<string> aliases, HashSet<string> seen, string value)
 	{
 		string text = (value ?? "").Trim();
 		if (!string.IsNullOrWhiteSpace(text) && seen.Add(text))
@@ -9590,16 +10011,98 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	private static bool IsGeneratedRewardTemplateCompatibleWithRequestedName(ItemObject item, string requestedName)
 	{
-		if (!IsCloneSafeGeneratedRewardTemplateItem(item))
+		if (item == null)
 		{
 			return false;
 		}
-		if (IsGeneratedRewardMiscItemType(item))
+		if (TryResolveGeneratedRpEquipmentSuffix(requestedName, out GeneratedRpEquipmentKind equipmentKind, out _))
 		{
-			return true;
+			return IsCloneSafeGeneratedRewardTemplateItem(item)
+				&& DoesGeneratedRpEquipmentTemplateMatchKind(item, equipmentKind);
 		}
-		return TryResolveGeneratedRpEquipmentSuffix(requestedName, out GeneratedRpEquipmentKind kind, out _)
-			&& DoesGeneratedRpEquipmentTemplateMatchKind(item, kind);
+		if (TryResolveGeneratedRpFoodSuffix(requestedName, out GeneratedRpFoodKind foodKind, out _))
+		{
+			return IsCloneSafeGeneratedRpFoodTemplateItem(item)
+				&& DoesGeneratedRpFoodTemplateMatchKind(item, foodKind);
+		}
+		return IsCloneSafeGeneratedRewardTemplateItem(item) && IsGeneratedRewardMiscItemType(item);
+	}
+
+	private static bool DoesGeneratedRpFoodTemplateMatchKind(ItemObject item, GeneratedRpFoodKind kind)
+	{
+		if (!IsGeneratedRpFoodTemplateItem(item) || kind == GeneratedRpFoodKind.None)
+		{
+			return false;
+		}
+		switch (kind)
+		{
+		case GeneratedRpFoodKind.AnyFood:
+			return true;
+		case GeneratedRpFoodKind.PreparedMeal:
+			return !IsGeneratedRpDrinkTemplateItem(item) && !IsGeneratedRpMedicineTemplateItem(item);
+		case GeneratedRpFoodKind.Egg:
+			return IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Cheese)
+				|| IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Butter)
+				|| ContainsGeneratedRewardItemTextAny(item, GeneratedRpFoodEggTemplateTokens);
+		case GeneratedRpFoodKind.Meat:
+			return IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Meat) || ContainsGeneratedRewardItemTextAny(item, GeneratedRpFoodMeatTemplateTokens);
+		case GeneratedRpFoodKind.Fish:
+			return IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Fish) || ContainsGeneratedRewardItemTextAny(item, GeneratedRpFoodFishTemplateTokens);
+		case GeneratedRpFoodKind.Grain:
+			return IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Grain) || ContainsGeneratedRewardItemTextAny(item, GeneratedRpFoodGrainTemplateTokens);
+		case GeneratedRpFoodKind.Fruit:
+			return IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Grape)
+				|| IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.DateFruit)
+				|| IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Olives)
+				|| ContainsGeneratedRewardItemTextAny(item, GeneratedRpFoodFruitTemplateTokens);
+		case GeneratedRpFoodKind.Vegetable:
+			return IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Olives) || ContainsGeneratedRewardItemTextAny(item, GeneratedRpFoodVegetableTemplateTokens);
+		case GeneratedRpFoodKind.Dairy:
+			return IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Cheese)
+				|| IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Butter)
+				|| ContainsGeneratedRewardItemTextAny(item, GeneratedRpFoodDairyTemplateTokens);
+		case GeneratedRpFoodKind.Sweet:
+			return IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Grain)
+				|| IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Grape)
+				|| IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.DateFruit)
+				|| IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Olives)
+				|| IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Cheese)
+				|| IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Butter)
+				|| ContainsGeneratedRewardItemTextAny(item, GeneratedRpFoodSweetTemplateTokens);
+		case GeneratedRpFoodKind.Water:
+			return item.IsFood
+				&& (IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Beer)
+					|| ContainsGeneratedRewardItemTextAny(item, GeneratedRpFoodWaterTemplateTokens));
+		case GeneratedRpFoodKind.Medicine:
+			return item.IsFood
+				&& (IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Butter)
+					|| ContainsGeneratedRewardItemTextAny(item, GeneratedRpFoodMedicineTemplateTokens));
+		case GeneratedRpFoodKind.Beer:
+			return IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Beer) || ContainsGeneratedRewardItemTextAny(item, GeneratedRpFoodBeerTemplateTokens);
+		case GeneratedRpFoodKind.Wine:
+			return IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Wine) || ContainsGeneratedRewardItemTextAny(item, GeneratedRpFoodWineTemplateTokens);
+		case GeneratedRpFoodKind.Drink:
+			return IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Beer)
+				|| IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Wine)
+				|| ContainsGeneratedRewardItemTextAny(item, GeneratedRpFoodDrinkTemplateTokens);
+		default:
+			return false;
+		}
+	}
+
+	private static bool IsGeneratedRpDrinkTemplateItem(ItemObject item)
+	{
+		return IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Beer)
+			|| IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Wine)
+			|| ContainsGeneratedRewardItemTextAny(item, GeneratedRpFoodDrinkTemplateTokens)
+			|| ContainsGeneratedRewardItemTextAny(item, GeneratedRpFoodWaterTemplateTokens);
+	}
+
+	private static bool IsGeneratedRpMedicineTemplateItem(ItemObject item)
+	{
+		return item != null && item.IsFood
+			&& (IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Butter)
+				|| ContainsGeneratedRewardItemTextAny(item, GeneratedRpFoodMedicineTemplateTokens));
 	}
 
 	private static bool DoesGeneratedRpEquipmentTemplateMatchKind(ItemObject item, GeneratedRpEquipmentKind kind)
@@ -9939,16 +10442,20 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			AddRewardItemResolutionCandidate(dictionary, item2, isContext: false, ref order);
 		}
-		ItemObject forcedEquipmentTemplate = null;
+		ItemObject forcedGeneratedTemplate = null;
 		if (includeZeroScore)
 		{
-			TryResolveGeneratedRpEquipmentTemplate(text, out forcedEquipmentTemplate, out _, out _, out _, out _);
+			TryResolveGeneratedRpEquipmentTemplate(text, out forcedGeneratedTemplate, out GeneratedRpEquipmentKind equipmentKind, out _, out _, out _);
+			if (forcedGeneratedTemplate == null && equipmentKind == GeneratedRpEquipmentKind.None)
+			{
+				TryResolveGeneratedRpFoodTemplate(text, out forcedGeneratedTemplate, out _, out _, out _, out _);
+			}
 		}
 		var scored = dictionary.Values
 			.Where((RewardItemResolutionCandidate x) => x?.Info?.Item != null)
 			.Where((RewardItemResolutionCandidate x) => !includeZeroScore
-				|| (forcedEquipmentTemplate != null
-					? IsSameGeneratedRewardTemplateItem(x.Info.Item, forcedEquipmentTemplate)
+				|| (forcedGeneratedTemplate != null
+					? IsSameGeneratedRewardTemplateItem(x.Info.Item, forcedGeneratedTemplate)
 					: (IsGeneratedRewardMiscItemType(x.Info.Item) && IsCloneSafeGeneratedRewardTemplateItem(x.Info.Item))))
 			.Select(delegate(RewardItemResolutionCandidate x)
 			{
@@ -10146,7 +10653,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			else if (!string.IsNullOrWhiteSpace(preferredTemplateItemId))
 			{
-				string rejectionReason = IsCloneSafeGeneratedRewardTemplateItem(preferredTemplate) ? "name_category_mismatch" : GetGeneratedRewardTemplateThumbnailRejectionReason(preferredTemplate);
+				string rejectionReason = IsCloneSafeGeneratedRewardAnyTemplateItem(preferredTemplate) ? "name_category_mismatch" : GetGeneratedRewardTemplateThumbnailRejectionReason(preferredTemplate);
 				Logger.Log("Logic", "[RewardItemResolve] preferred_template_rejected source=" + (logSource ?? "") + " template=" + preferredTemplateItemId.Trim() + " lookup=" + requestedName + " fallback=auto reason=" + rejectionReason);
 			}
 			RewardSystemBehavior instance = Instance;
@@ -10264,11 +10771,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				objectId = registered.Id.InternalValue;
 			}
 			ItemObject templateItem = ResolveGeneratedInventoryTemplateItem(templateItemId, name);
-			if (!IsCloneSafeGeneratedRewardTemplateItem(templateItem))
+			if (!IsGeneratedRewardTemplateCompatibleWithRequestedName(templateItem, name))
 			{
 				templateItem = ResolveGeneratedInventoryTemplateItem(null, name);
 			}
-			if (!IsCloneSafeGeneratedRewardTemplateItem(templateItem))
+			if (!IsGeneratedRewardTemplateCompatibleWithRequestedName(templateItem, name))
 			{
 				return false;
 			}
@@ -10380,7 +10887,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				return false;
 			}
 			ItemObject templateItem = ResolveGeneratedInventoryTemplateItem(normalizedTemplateItemId, name);
-			if (!IsCloneSafeGeneratedRewardTemplateItem(templateItem))
+			if (!IsGeneratedRewardTemplateCompatibleWithRequestedName(templateItem, name))
 			{
 				LogGeneratedRewardInventoryGuard("bad_template", normalizedStringId, name, normalizedTemplateItemId, null, templateItem, logSource);
 				return false;
@@ -10501,10 +11008,23 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return explicitTemplate;
 		}
-		if (TryResolveGeneratedRpEquipmentTemplate(displayName, out ItemObject equipmentTemplate, out _, out _, out _, out _)
+		if (TryResolveGeneratedRpEquipmentTemplate(displayName, out ItemObject equipmentTemplate, out GeneratedRpEquipmentKind equipmentKind, out _, out _, out _)
 			&& IsCloneSafeGeneratedRewardTemplateItem(equipmentTemplate))
 		{
 			return equipmentTemplate;
+		}
+		if (equipmentKind != GeneratedRpEquipmentKind.None)
+		{
+			return null;
+		}
+		if (TryResolveGeneratedRpFoodTemplate(displayName, out ItemObject foodTemplate, out GeneratedRpFoodKind foodKind, out _, out _, out _)
+			&& IsCloneSafeGeneratedRpFoodTemplateItem(foodTemplate))
+		{
+			return foodTemplate;
+		}
+		if (foodKind != GeneratedRpFoodKind.None)
+		{
+			return null;
 		}
 		try
 		{
@@ -10548,7 +11068,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			return templateItem;
 		}
 		string rejectedTemplateId = (templateItem?.StringId ?? "").Trim();
-		string rejectionReason = IsCloneSafeGeneratedRewardTemplateItem(templateItem) ? "name_category_mismatch" : GetGeneratedRewardTemplateThumbnailRejectionReason(templateItem);
+		string rejectionReason = IsCloneSafeGeneratedRewardAnyTemplateItem(templateItem) ? "name_category_mismatch" : GetGeneratedRewardTemplateThumbnailRejectionReason(templateItem);
 		ItemObject replacement = ResolveGeneratedInventoryTemplateItem(null, displayName);
 		if (!IsGeneratedRewardTemplateCompatibleWithRequestedName(replacement, displayName))
 		{
@@ -10570,6 +11090,65 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	private static bool IsCloneSafeGeneratedRewardTemplateItem(ItemObject item)
 	{
 		return IsStableGeneratedRewardTemplateItem(item) && HasCloneSafeGeneratedRewardThumbnailSource(item);
+	}
+
+	private static bool IsCloneSafeGeneratedRpFoodTemplateItem(ItemObject item)
+	{
+		return IsStableGeneratedRewardTemplateIdentity(item)
+			&& IsGeneratedRpFoodTemplateItem(item)
+			&& HasCloneSafeGeneratedRewardThumbnailSource(item);
+	}
+
+	private static bool IsCloneSafeGeneratedRewardAnyTemplateItem(ItemObject item)
+	{
+		return IsCloneSafeGeneratedRewardTemplateItem(item) || IsCloneSafeGeneratedRpFoodTemplateItem(item);
+	}
+
+	private static bool IsGeneratedRpFoodTemplateItem(ItemObject item)
+	{
+		if (item == null || item.Type != ItemObject.ItemTypeEnum.Goods)
+		{
+			return false;
+		}
+		try
+		{
+			return item.IsFood || IsGeneratedRpKnownFoodCategory(item);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsGeneratedRpKnownFoodCategory(ItemObject item)
+	{
+		return IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Grain)
+			|| IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Meat)
+			|| IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Cheese)
+			|| IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Fish)
+			|| IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Grape)
+			|| IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.DateFruit)
+			|| IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Olives)
+			|| IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Beer)
+			|| IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Wine)
+			|| IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Butter);
+	}
+
+	private static bool IsGeneratedRpFoodItemCategory(ItemObject item, ItemCategory category)
+	{
+		ItemCategory itemCategory = item?.ItemCategory;
+		if (itemCategory == null || category == null)
+		{
+			return false;
+		}
+		if (ReferenceEquals(itemCategory, category))
+		{
+			return true;
+		}
+		string itemCategoryId = itemCategory.StringId;
+		string categoryId = category.StringId;
+		return !string.IsNullOrWhiteSpace(itemCategoryId)
+			&& string.Equals(itemCategoryId, categoryId, StringComparison.OrdinalIgnoreCase);
 	}
 
 	private static bool HasCloneSafeGeneratedRewardThumbnailSource(ItemObject item)
@@ -10642,12 +11221,17 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	private static bool IsStableGeneratedRewardTemplateItem(ItemObject item)
 	{
+		return IsStableGeneratedRewardTemplateIdentity(item) && !IsGeneratedRewardAutoConsumedTemplateItem(item);
+	}
+
+	private static bool IsStableGeneratedRewardTemplateIdentity(ItemObject item)
+	{
 		if (item == null || item.Id.InternalValue == 0u)
 		{
 			return false;
 		}
 		string stringId = (item.StringId ?? "").Trim();
-		return !IsGeneratedRewardAutoConsumedTemplateItem(item) && !IsGeneratedRewardItemStringId(stringId) && !stringId.StartsWith("af_generated_reward_pending_", StringComparison.OrdinalIgnoreCase);
+		return !IsGeneratedRewardItemStringId(stringId) && !stringId.StartsWith("af_generated_reward_pending_", StringComparison.OrdinalIgnoreCase);
 	}
 
 	private static bool IsGeneratedRewardAutoConsumedTemplateItem(ItemObject item)
@@ -10658,7 +11242,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		return item.Type == ItemObject.ItemTypeEnum.Animal
 			|| item.IsFood
-			|| ItemCategoryIsAny(item, DefaultItemCategories.Meat, DefaultItemCategories.Fish, DefaultItemCategories.Grain, DefaultItemCategories.Beer, DefaultItemCategories.Wine, DefaultItemCategories.DateFruit);
+			|| IsGeneratedRpKnownFoodCategory(item);
 	}
 
 	private GeneratedRewardRosterItemRecord NormalizeGeneratedRewardRosterItemRecord(string fallbackKey, GeneratedRewardRosterItemRecord record)
@@ -11492,6 +12076,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				GeneratedRewardManifestLoaded = true;
 			}
 			ClearGeneratedRpEquipmentTemplateCache();
+			ClearGeneratedRpFoodTemplateCache();
 			ClearGeneratedRewardEconomicPoolCache();
 			GeneratedRewardLastInventoryVmLogSignature = "";
 			GeneratedRewardLastInventoryVmLogUtc = DateTime.MinValue;
@@ -16670,12 +17255,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				itemStringId = matchedNameId;
 				return true;
 			}
-			RewardSystemBehavior instance = Instance;
-			if (instance != null && instance.TryResolveRewardItemByNameOrId(text, Enumerable.Empty<RewardItemInfo>(), out var resolution, "known_global_give_asset"))
-			{
-				itemStringId = resolution?.MatchedStringId ?? "";
-				return !string.IsNullOrWhiteSpace(itemStringId);
-			}
 		}
 		catch
 		{
@@ -16700,17 +17279,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		try
 		{
 			if (Settlement.Find(text) != null || Settlement.All.Any((Settlement x) => x != null && (string.Equals((x.StringId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase) || string.Equals((x.Name?.ToString() ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase))))
-			{
-				return false;
-			}
-		}
-		catch
-		{
-		}
-		try
-		{
-			IEnumerable<ItemObject> items = Game.Current?.ObjectManager?.GetObjectTypeList<ItemObject>() ?? MBObjectManager.Instance?.GetObjectTypeList<ItemObject>();
-			if ((items ?? Enumerable.Empty<ItemObject>()).Any((ItemObject x) => x != null && !IsGeneratedRewardItemStringId(x.StringId) && (string.Equals((x.StringId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase) || string.Equals((x.Name?.ToString() ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase))))
 			{
 				return false;
 			}
@@ -16781,7 +17349,20 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		else if (equipmentKind != GeneratedRpEquipmentKind.None)
 		{
-			Logger.Log("Logic", "[RewardItemResolve] rp_equipment_template_missing source=" + (logSource ?? "") + " asset=" + requestedName + " suffix=" + matchedSuffix + " kind=" + equipmentKind + " candidates=" + equipmentCandidateCount.ToString(CultureInfo.InvariantCulture) + " fallback=misc");
+			Logger.Log("Logic", "[RewardItemResolve] rp_equipment_template_missing source=" + (logSource ?? "") + " asset=" + requestedName + " suffix=" + matchedSuffix + " kind=" + equipmentKind + " candidates=" + equipmentCandidateCount.ToString(CultureInfo.InvariantCulture) + " fallback=blocked");
+		}
+		else
+		{
+			bool resolvedFoodTemplate = TryResolveGeneratedRpFoodTemplate(requestedName, out ItemObject foodTemplate, out GeneratedRpFoodKind foodKind, out string foodMatchedSuffix, out float foodMatchScore, out int foodCandidateCount);
+			if (resolvedFoodTemplate)
+			{
+				preferredTemplateItemId = foodTemplate.StringId;
+				Logger.Log("Logic", "[RewardItemResolve] rp_food_template source=" + (logSource ?? "") + " asset=" + requestedName + " suffix=" + foodMatchedSuffix + " kind=" + foodKind + " template=" + (foodTemplate.StringId ?? "") + " templateName=" + (foodTemplate.Name?.ToString() ?? "") + " score=" + FormatRewardItemResolutionScore(foodMatchScore) + " candidates=" + foodCandidateCount.ToString(CultureInfo.InvariantCulture));
+			}
+			else if (foodKind != GeneratedRpFoodKind.None)
+			{
+				Logger.Log("Logic", "[RewardItemResolve] rp_food_template_missing source=" + (logSource ?? "") + " asset=" + requestedName + " suffix=" + foodMatchedSuffix + " kind=" + foodKind + " candidates=" + foodCandidateCount.ToString(CultureInfo.InvariantCulture) + " fallback=blocked");
+			}
 		}
 		int generated = GenerateNamedInventoryItemToRosterForExternal(targetRoster, requestedName, amount, out var generatedStringId, out itemName, logSource, preferredTemplateItemId: preferredTemplateItemId);
 		if (generated > 0 && !string.IsNullOrWhiteSpace(generatedStringId))
@@ -16790,6 +17371,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		if (generated > 0)
 		{
+			itemName = requestedName;
 			string sourceName = string.IsNullOrWhiteSpace(giverName) ? "对方" : giverName.Trim();
 			string displayName = string.IsNullOrWhiteSpace(itemName) ? assetName.Trim() : itemName;
 			ShowRewardMessage($"{sourceName} 给了你 {FormatItemAmount(generated, item, displayName)}。", giverCharacter);
@@ -17104,29 +17686,22 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			responseText = GiveAssetTagCodec.ReplaceTags(responseText, delegate(GiveAssetTag tag)
 			{
-				string value4 = tag.AssetToken;
+				string value4 = (tag.AssetToken ?? "").Trim();
 				if (TryResolveAuthorizedNpcFixedAsset(giver, value4, out var _))
 				{
 					return tag.RawTag;
 				}
 				itemTransferAttempted++;
-				string authorizedItemKey = "";
-				bool isAuthorizedInventoryItem = TryResolveAuthorizedHeroRewardItem(giver, value4, out var authorizedItems, out authorizedItemKey);
 				bool hasFiniteRequestedQuantity = int.TryParse(tag.QuantityToken, out var requestedQuantity) && requestedQuantity > 0;
-				string knownItemKey = "";
-				bool isKnownRegisteredItem = !isAuthorizedInventoryItem
-					&& hasFiniteRequestedQuantity
-					&& receiver == Hero.MainHero
-					&& giver != Hero.MainHero
-					&& TryResolveKnownItemAssetTokenForExternal(value4, out knownItemKey);
-				bool isGeneratedRpItem = !isAuthorizedInventoryItem
-					&& !isKnownRegisteredItem
-					&& hasFiniteRequestedQuantity
+				bool isGeneratedRpItem = hasFiniteRequestedQuantity
 					&& receiver == Hero.MainHero
 					&& giver != Hero.MainHero
 					&& IsValidGeneratedRpAssetNameForExternal(value4)
 					&& !IsKnownFixedAssetTokenForAnyOwner(giver, value4);
-				if (!isAuthorizedInventoryItem && !isKnownRegisteredItem && !isGeneratedRpItem)
+				List<RewardItemInfo> authorizedItems = null;
+				string authorizedItemKey = "";
+				bool isAuthorizedInventoryItem = !isGeneratedRpItem && TryResolveAuthorizedHeroRewardItem(giver, value4, out authorizedItems, out authorizedItemKey);
+				if (!isAuthorizedInventoryItem && !isGeneratedRpItem)
 				{
 					itemTransferFailedOrPartial++;
 					return string.Empty;
@@ -17134,10 +17709,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				if (isAuthorizedInventoryItem)
 				{
 					value4 = authorizedItemKey;
-				}
-				else if (isKnownRegisteredItem)
-				{
-					value4 = knownItemKey;
 				}
 				if (TransferQuantitySpec.TryParse(tag.QuantityToken, out var quantity))
 				{
@@ -18044,25 +18615,19 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			responseText = GiveAssetTagCodec.ReplaceTags(responseText, delegate(GiveAssetTag tag)
 			{
-				string value = tag.AssetToken;
+				string value = (tag.AssetToken ?? "").Trim();
 				itemTransferAttempted++;
-				string authorizedItemKey = "";
-				bool isAuthorizedInventoryItem = TryResolveAuthorizedPartyRewardItem(giverParty, giverCharacter, value, out var authorizedItems, out authorizedItemKey);
 				CharacterObject snapshotCharacter = giverCharacter as CharacterObject;
 				Hero contextHero = snapshotCharacter?.HeroObject;
 				bool hasFiniteRequestedQuantity = int.TryParse(tag.QuantityToken, out var requestedQuantity) && requestedQuantity > 0;
-				string knownItemKey = "";
-				bool isKnownRegisteredItem = !isAuthorizedInventoryItem
-					&& hasFiniteRequestedQuantity
-					&& receiver == Hero.MainHero
-					&& TryResolveKnownItemAssetTokenForExternal(value, out knownItemKey);
-				bool isGeneratedRpItem = !isAuthorizedInventoryItem
-					&& !isKnownRegisteredItem
-					&& hasFiniteRequestedQuantity
+				bool isGeneratedRpItem = hasFiniteRequestedQuantity
 					&& receiver == Hero.MainHero
 					&& IsValidGeneratedRpAssetNameForExternal(value)
 					&& !IsKnownFixedAssetTokenForAnyOwner(contextHero, value);
-				if (!isAuthorizedInventoryItem && !isKnownRegisteredItem && !isGeneratedRpItem)
+				List<RewardItemInfo> authorizedItems = null;
+				string authorizedItemKey = "";
+				bool isAuthorizedInventoryItem = !isGeneratedRpItem && TryResolveAuthorizedPartyRewardItem(giverParty, giverCharacter, value, out authorizedItems, out authorizedItemKey);
+				if (!isAuthorizedInventoryItem && !isGeneratedRpItem)
 				{
 					itemTransferFailedOrPartial++;
 					return string.Empty;
@@ -18070,10 +18635,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				if (isAuthorizedInventoryItem)
 				{
 					value = authorizedItemKey;
-				}
-				else if (isKnownRegisteredItem)
-				{
-					value = knownItemKey;
 				}
 				if (TransferQuantitySpec.TryParse(tag.QuantityToken, out var quantity))
 				{
@@ -18236,23 +18797,17 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		responseText = GiveAssetTagCodec.ReplaceTags(responseText, delegate(GiveAssetTag tag)
 		{
-			string value = tag.AssetToken;
+			string value = (tag.AssetToken ?? "").Trim();
 			itemTransferAttempted++;
-			string authorizedItemKey = "";
-			bool isAuthorizedInventoryItem = TryResolveAuthorizedMerchantRewardItem(giverCharacter, value, out var authorizedItems, out authorizedItemKey);
 			bool hasFiniteRequestedQuantity = int.TryParse(tag.QuantityToken, out var requestedQuantity) && requestedQuantity > 0;
-			string knownItemKey = "";
-			bool isKnownRegisteredItem = !isAuthorizedInventoryItem
-				&& hasFiniteRequestedQuantity
-				&& receiver == Hero.MainHero
-				&& TryResolveKnownItemAssetTokenForExternal(value, out knownItemKey);
-			bool isGeneratedRpItem = !isAuthorizedInventoryItem
-				&& !isKnownRegisteredItem
-				&& hasFiniteRequestedQuantity
+			bool isGeneratedRpItem = hasFiniteRequestedQuantity
 				&& receiver == Hero.MainHero
 				&& IsValidGeneratedRpAssetNameForExternal(value)
 				&& !IsKnownFixedAssetTokenForAnyOwner(null, value);
-			if (!isAuthorizedInventoryItem && !isKnownRegisteredItem && !isGeneratedRpItem)
+			List<RewardItemInfo> authorizedItems = null;
+			string authorizedItemKey = "";
+			bool isAuthorizedInventoryItem = !isGeneratedRpItem && TryResolveAuthorizedMerchantRewardItem(giverCharacter, value, out authorizedItems, out authorizedItemKey);
+			if (!isAuthorizedInventoryItem && !isGeneratedRpItem)
 			{
 				itemTransferFailedOrPartial++;
 				return string.Empty;
@@ -18260,10 +18815,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			if (isAuthorizedInventoryItem)
 			{
 				value = authorizedItemKey;
-			}
-			else if (isKnownRegisteredItem)
-			{
-				value = knownItemKey;
 			}
 			if (TransferQuantitySpec.TryParse(tag.QuantityToken, out var quantity))
 			{

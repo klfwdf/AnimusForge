@@ -5399,12 +5399,15 @@ public class ShoutBehavior : CampaignBehaviorBase
 		return !string.IsNullOrWhiteSpace(extras) && extras.IndexOf("【附加规则:party_transfer】", StringComparison.OrdinalIgnoreCase) >= 0;
 	}
 
-	private static string BuildSceneNpcRoleIntroForPrompt(NpcDataPacket npc, Hero hero, IEnumerable<NpcDataPacket> presentNpcs = null, bool includeInventorySummary = false, bool includeTradePricing = false, bool partyTransferTopicSelected = false)
+	private static string BuildSceneNpcRoleIntroForPrompt(NpcDataPacket npc, Hero hero, IEnumerable<NpcDataPacket> presentNpcs = null, bool includeInventorySummary = false, bool includeTradePricing = false, bool partyTransferTopicSelected = false, MentionedWorldEntities promptMentions = null)
 	{
 		if (npc == null)
 		{
 			return "";
 		}
+		// This value belongs to the current prompt request. Do not read the
+		// AsyncLocal fallback here: main-prompt assembly may resume on another thread.
+		MentionedWorldEntities inventoryMentions = promptMentions;
 		string name = GetSceneNpcIdentityNameForPrompt(npc);
 		string givenName = hero == null ? GetSceneNpcGivenNameForPrompt(npc) : "";
 		string identity = (npc.RoleDesc ?? "").Trim();
@@ -5469,9 +5472,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 				equipment = MyBehavior.BuildHeroEquipmentSummaryForExternal(hero);
 				if (includeInventorySummary && RewardSystemBehavior.Instance != null)
 				{
-					MentionedWorldEntities mentions = AIConfigHandler.GetLatestAuxiliaryMentionedEntitiesForExternal();
 					int promptListMax = PromptListRetrievalService.GetMaxCandidateCount();
-					inventorySummary = (RewardSystemBehavior.Instance.BuildFilteredInventorySummaryForAI(hero, mentions, promptListMax, includePrivateBattleEquipment: includeTradePricing) ?? "").Trim();
+					inventorySummary = (RewardSystemBehavior.Instance.BuildFilteredInventorySummaryForAI(hero, inventoryMentions, promptListMax, includePrivateBattleEquipment: includeTradePricing) ?? "").Trim();
 				}
 			}
 			catch
@@ -5500,9 +5502,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 				CharacterObject characterObject = agent?.Character as CharacterObject;
 				if (includeInventorySummary && RewardSystemBehavior.Instance != null && characterObject != null && RewardSystemBehavior.Instance.TryGetSettlementMerchantKind(characterObject, out var _))
 				{
-					MentionedWorldEntities mentions = AIConfigHandler.GetLatestAuxiliaryMentionedEntitiesForExternal();
 					int promptListMax = PromptListRetrievalService.GetMaxCandidateCount();
-					string text = RewardSystemBehavior.Instance.BuildFilteredSettlementMerchantInventorySummaryForAI(characterObject, mentions, promptListMax);
+					string text = RewardSystemBehavior.Instance.BuildFilteredSettlementMerchantInventorySummaryForAI(characterObject, inventoryMentions, promptListMax);
 					if (!string.IsNullOrWhiteSpace(text))
 					{
 						inventorySummary = text.Trim();
@@ -6870,9 +6871,9 @@ public class ShoutBehavior : CampaignBehaviorBase
 		}
 	}
 
-private static string BuildSceneSystemTopPromptIntroForSingle(NpcDataPacket npc, Hero hero, IEnumerable<NpcDataPacket> presentNpcs = null, bool includeInventorySummary = false, bool includeTradePricing = false, bool partyTransferTopicSelected = false)
+private static string BuildSceneSystemTopPromptIntroForSingle(NpcDataPacket npc, Hero hero, IEnumerable<NpcDataPacket> presentNpcs = null, bool includeInventorySummary = false, bool includeTradePricing = false, bool partyTransferTopicSelected = false, MentionedWorldEntities promptMentions = null)
 {
-	string fullIntro = BuildSceneNpcRoleIntroForPrompt(npc, hero, presentNpcs, includeInventorySummary, includeTradePricing, partyTransferTopicSelected);
+	string fullIntro = BuildSceneNpcRoleIntroForPrompt(npc, hero, presentNpcs, includeInventorySummary, includeTradePricing, partyTransferTopicSelected, promptMentions);
 	SplitSceneNpcRoleIntroSections(fullIntro, hero != null, out var stableIntro, out var _);
 	string selfActionFact = BuildSceneAgentSelfActionFactForPrompt(npc, hero);
 	if (!string.IsNullOrWhiteSpace(selfActionFact))
@@ -6956,16 +6957,16 @@ private static string BuildSceneSystemTopPromptIntroForGroup(IEnumerable<NpcData
 	return stringBuilder.ToString().Trim();
 }
 
-private static string BuildSceneUserRuntimeContextForSingle(NpcDataPacket npc, Hero hero, IEnumerable<NpcDataPacket> presentNpcs = null, bool includeInventorySummary = false, bool includeTradePricing = false, bool partyTransferTopicSelected = false)
+private static string BuildSceneUserRuntimeContextForSingle(NpcDataPacket npc, Hero hero, IEnumerable<NpcDataPacket> presentNpcs = null, bool includeInventorySummary = false, bool includeTradePricing = false, bool partyTransferTopicSelected = false, MentionedWorldEntities promptMentions = null)
 {
-	string fullIntro = BuildSceneNpcRoleIntroForPrompt(npc, hero, presentNpcs, includeInventorySummary, includeTradePricing, partyTransferTopicSelected);
+	string fullIntro = BuildSceneNpcRoleIntroForPrompt(npc, hero, presentNpcs, includeInventorySummary, includeTradePricing, partyTransferTopicSelected, promptMentions);
 	SplitSceneNpcRoleIntroSections(fullIntro, hero != null, out var _, out var runtimeIntro);
 	return runtimeIntro;
 }
 
-private static string BuildCompactSceneUserRuntimeContextForShortReply(NpcDataPacket npc, Hero hero, IEnumerable<NpcDataPacket> presentNpcs = null, bool includeInventorySummary = false, bool includeTradePricing = false, bool partyTransferTopicSelected = false)
+private static string BuildCompactSceneUserRuntimeContextForShortReply(NpcDataPacket npc, Hero hero, IEnumerable<NpcDataPacket> presentNpcs = null, bool includeInventorySummary = false, bool includeTradePricing = false, bool partyTransferTopicSelected = false, MentionedWorldEntities promptMentions = null)
 {
-	string fullIntro = BuildSceneNpcRoleIntroForPrompt(npc, hero, presentNpcs, includeInventorySummary, includeTradePricing, partyTransferTopicSelected);
+	string fullIntro = BuildSceneNpcRoleIntroForPrompt(npc, hero, presentNpcs, includeInventorySummary, includeTradePricing, partyTransferTopicSelected, promptMentions);
 	SplitSceneNpcRoleIntroSections(fullIntro, hero != null, out var _, out var runtimeIntro);
 	if (string.IsNullOrWhiteSpace(runtimeIntro))
 	{
@@ -6991,7 +6992,7 @@ private static string BuildCompactSceneUserRuntimeContextForShortReply(NpcDataPa
 	return string.Join("\n", keptLines).Trim();
 }
 
-private static string BuildSceneUserRuntimeContextForGroup(IEnumerable<NpcDataPacket> npcs, Dictionary<int, Hero> resolvedHeroes, bool includeInventorySummary = false, bool includeTradePricing = false, bool partyTransferTopicSelected = false)
+private static string BuildSceneUserRuntimeContextForGroup(IEnumerable<NpcDataPacket> npcs, Dictionary<int, Hero> resolvedHeroes, bool includeInventorySummary = false, bool includeTradePricing = false, bool partyTransferTopicSelected = false, MentionedWorldEntities promptMentions = null)
 {
 	if (npcs == null)
 	{
@@ -7009,7 +7010,7 @@ private static string BuildSceneUserRuntimeContextForGroup(IEnumerable<NpcDataPa
 		{
 			resolvedHeroes.TryGetValue(npc.AgentIndex, out hero);
 		}
-		string runtimeIntro = BuildSceneUserRuntimeContextForSingle(npc, hero, npcs, includeInventorySummary, includeTradePricing, partyTransferTopicSelected);
+		string runtimeIntro = BuildSceneUserRuntimeContextForSingle(npc, hero, npcs, includeInventorySummary, includeTradePricing, partyTransferTopicSelected, promptMentions);
 		if (string.IsNullOrWhiteSpace(runtimeIntro))
 		{
 			continue;
@@ -13263,8 +13264,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			SplitPersistedHeroHistorySections(persistedHeroHistory, out privateRecentWindowSection, out persistedWithoutRecentWindow);
 			bool includeInventorySummary = ctx != null && (ctx.UseRewardContext || ctx.IsLoanContext);
 			bool includeTradePricing = includeInventorySummary;
-			string roleTopIntro = BuildSceneSystemTopPromptIntroForSingle(speakerNpc, hero, allNpcData, includeInventorySummary, includeTradePricing, partyTransferTopicSelected);
-			string roleRuntimeContext = BuildSceneUserRuntimeContextForSingle(speakerNpc, hero, allNpcData, includeInventorySummary, includeTradePricing, partyTransferTopicSelected);
+			string roleTopIntro = BuildSceneSystemTopPromptIntroForSingle(speakerNpc, hero, allNpcData, includeInventorySummary, includeTradePricing, partyTransferTopicSelected, ctx?.MentionedEntities);
+			string roleRuntimeContext = BuildSceneUserRuntimeContextForSingle(speakerNpc, hero, allNpcData, includeInventorySummary, includeTradePricing, partyTransferTopicSelected, ctx?.MentionedEntities);
 			string singleReplyPlayerName = GetPlayerDisplayNameForShout();
 			if (string.IsNullOrWhiteSpace(singleReplyPlayerName))
 			{
@@ -17675,8 +17676,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		bool includeInventorySummary = ctx != null && (ctx.UseRewardContext || ctx.IsLoanContext);
 		bool includeTradePricing = includeInventorySummary;
 		bool partyTransferTopicSelected = HasPartyTransferRuleContext(baseExtras);
-		string roleTopIntro = BuildSceneSystemTopPromptIntroForSingle(npc, targetHero, presentNpcs, includeInventorySummary, includeTradePricing, partyTransferTopicSelected);
-		string roleRuntimeContext = BuildSceneUserRuntimeContextForSingle(npc, targetHero, presentNpcs, includeInventorySummary, includeTradePricing, partyTransferTopicSelected);
+		string roleTopIntro = BuildSceneSystemTopPromptIntroForSingle(npc, targetHero, presentNpcs, includeInventorySummary, includeTradePricing, partyTransferTopicSelected, ctx?.MentionedEntities);
+		string roleRuntimeContext = BuildSceneUserRuntimeContextForSingle(npc, targetHero, presentNpcs, includeInventorySummary, includeTradePricing, partyTransferTopicSelected, ctx?.MentionedEntities);
 		string nativeSceneSummonClosureInstruction = BuildSceneSummonClosurePromptInstruction(presentNpcs);
 		string nativeSceneFollowControlInstruction = BuildSceneFollowControlPromptInstruction(npc);
 		string nativeSceneMechanismPromptSection = BuildSceneMechanismPromptSection(nativeSceneSummonTargets, nativeSceneGuideTargets, nativeSceneSummonClosureInstruction, nativeSceneFollowControlInstruction, npc, allowEscortedExecution: false);
@@ -18224,8 +18225,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				SplitSceneExtraSections(baseExtrasWithoutTrust, out var miscExtrasSection, out var ruleExtrasSection, out var knowledgeExtrasSection);
 				bool partyTransferTopicSelected = HasPartyTransferRuleContext(baseExtras);
 				bool includeTradePricing = ctx != null && (ctx.UseRewardContext || ctx.IsLoanContext);
-				string roleTopIntro = BuildSceneSystemTopPromptIntroForSingle(data, hero, allNpcData, includeTradePricing: includeTradePricing, partyTransferTopicSelected: partyTransferTopicSelected);
-				string roleRuntimeContext = BuildSceneUserRuntimeContextForSingle(data, hero, allNpcData, includeTradePricing: includeTradePricing, partyTransferTopicSelected: partyTransferTopicSelected);
+				string roleTopIntro = BuildSceneSystemTopPromptIntroForSingle(data, hero, allNpcData, includeTradePricing: includeTradePricing, partyTransferTopicSelected: partyTransferTopicSelected, promptMentions: ctx?.MentionedEntities);
+				string roleRuntimeContext = BuildSceneUserRuntimeContextForSingle(data, hero, allNpcData, includeTradePricing: includeTradePricing, partyTransferTopicSelected: partyTransferTopicSelected, promptMentions: ctx?.MentionedEntities);
 				string playerNameForLength = GetPlayerDisplayNameForShout();
 				if (string.IsNullOrWhiteSpace(playerNameForLength))
 				{
@@ -21640,16 +21641,16 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private static string TranslateRewardItemIndexesForScene(string text, List<RewardSystemBehavior.RewardItemInfo> options)
 	{
-		if (string.IsNullOrWhiteSpace(text) || options == null || options.Count == 0)
+		if (string.IsNullOrWhiteSpace(text))
 		{
 			return text ?? "";
 		}
-		static string getItemActionKey(RewardSystemBehavior.RewardItemInfo item)
+		static string getItemDisplayName(RewardSystemBehavior.RewardItemInfo item)
 		{
-			string text4 = item?.PromptStringId;
+			string text4 = item?.Name;
 			if (string.IsNullOrWhiteSpace(text4))
 			{
-				text4 = item?.StringId;
+				text4 = item?.Item?.Name?.ToString();
 			}
 			return text4 ?? "";
 		}
@@ -21663,24 +21664,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 			}
 		}
-		string text2 = Regex.Replace(text, "\\[ACTION:GIVE_ASSET:(\\d+):(\\d+)\\]", delegate(Match m)
+		return GiveAssetTagCodec.ReplaceTags(text, delegate(GiveAssetTag tag)
 		{
-			if (!int.TryParse(m.Groups[1].Value, out var result) || !int.TryParse(m.Groups[2].Value, out var result2) || result <= 0 || result > options.Count || result2 <= 0)
-			{
-				return "";
-			}
-			RewardSystemBehavior.RewardItemInfo rewardItemInfo = options[result - 1];
-			string text2 = getItemActionKey(rewardItemInfo);
-			logRewardItemTranslation("index", m.Groups[1].Value, rewardItemInfo, text2);
-			if (string.IsNullOrWhiteSpace(text2))
-			{
-				return "";
-			}
-			return "[ACTION:GIVE_ASSET:" + text2.Trim() + ":" + result2 + "]";
-		}, RegexOptions.IgnoreCase);
-		return GiveAssetTagCodec.ReplaceTags(text2, delegate(GiveAssetTag tag)
-		{
-			string token = tag.AssetToken;
+			string token = (tag.AssetToken ?? "").Trim();
 			bool isAll = TransferQuantitySpec.IsAllValue(tag.QuantityToken);
 			int result3 = 0;
 			if (TransferQuantitySpec.IsAllValue(token) && !isAll)
@@ -21691,18 +21677,18 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				return "";
 			}
-			RewardSystemBehavior.RewardItemInfo rewardItemInfo2 = FindRewardItemByTokenForScene(options, token);
-			string text3 = getItemActionKey(rewardItemInfo2);
-			logRewardItemTranslation("token", token, rewardItemInfo2, text3);
-			if (string.IsNullOrWhiteSpace(text3))
+			if (options != null && int.TryParse(token, out var itemIndex) && itemIndex > 0 && itemIndex <= options.Count)
 			{
-				return isAll ? ("[ACTION:GIVE_ASSET:" + token.Trim() + ":ALL]") : ("[ACTION:GIVE_ASSET:" + token.Trim() + ":" + result3 + "]");
+				RewardSystemBehavior.RewardItemInfo rewardItemInfo = options[itemIndex - 1];
+				string text3 = getItemDisplayName(rewardItemInfo);
+				logRewardItemTranslation("index", token, rewardItemInfo, text3);
+				if (string.IsNullOrWhiteSpace(text3))
+				{
+					return "";
+				}
+				token = text3.Trim();
 			}
-			if (isAll)
-			{
-				return "[ACTION:GIVE_ASSET:" + text3.Trim() + ":ALL]";
-			}
-			return "[ACTION:GIVE_ASSET:" + text3.Trim() + ":" + result3 + "]";
+			return isAll ? ("[ACTION:GIVE_ASSET:" + token + ":ALL]") : ("[ACTION:GIVE_ASSET:" + token + ":" + result3 + "]");
 		});
 	}
 
@@ -21781,46 +21767,24 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						{
 							rewardItem = FindRewardItemByTokenForScene(allOptions, assetToken);
 						}
-						if (rewardItem == null || rewardItem.Item == null || rewardItem.Count <= 0)
+						bool isItemIndex = int.TryParse(assetToken, out var itemIndex2) && itemIndex2 > 0 && itemIndex2 <= (options?.Count ?? 0);
+						if (TransferQuantitySpec.IsAllValue(quantityToken))
 						{
-							if (TransferQuantitySpec.IsAllValue(quantityToken)
-								|| !int.TryParse(quantityToken, out var rpItemAmount)
-								|| rpItemAmount <= 0)
+							if (!isItemIndex && (rewardItem == null || rewardItem.Item == null || rewardItem.Count <= 0))
 							{
 								continue;
 							}
-							if (RewardSystemBehavior.TryResolveKnownItemAssetTokenForExternal(assetToken, out var knownItemKey))
-							{
-								text2 = "[ACTION:GIVE_ASSET:" + knownItemKey.Trim() + ":" + rpItemAmount + "]";
-							}
-							else if (RewardSystemBehavior.IsValidGeneratedRpAssetNameForExternal(assetToken))
-							{
-								text2 = "[ACTION:GIVE_ASSET:" + assetToken + ":" + rpItemAmount + "]";
-							}
-							else
-							{
-								continue;
-							}
+							text2 = "[ACTION:GIVE_ASSET:" + assetToken + ":ALL]";
+						}
+						else if (int.TryParse(quantityToken, out var rpItemAmount)
+							&& rpItemAmount > 0
+							&& (isItemIndex || RewardSystemBehavior.IsValidGeneratedRpAssetNameForExternal(assetToken)))
+						{
+							text2 = "[ACTION:GIVE_ASSET:" + assetToken + ":" + rpItemAmount + "]";
 						}
 						else
 						{
-							string itemKey = string.IsNullOrWhiteSpace(rewardItem.PromptStringId) ? rewardItem.StringId : rewardItem.PromptStringId;
-							if (string.IsNullOrWhiteSpace(itemKey))
-							{
-								continue;
-							}
-							if (TransferQuantitySpec.IsAllValue(quantityToken))
-							{
-								text2 = "[ACTION:GIVE_ASSET:" + itemKey.Trim() + ":ALL]";
-							}
-							else if (int.TryParse(quantityToken, out var itemAmount) && itemAmount > 0)
-							{
-								text2 = "[ACTION:GIVE_ASSET:" + itemKey.Trim() + ":" + itemAmount + "]";
-							}
-							else
-							{
-								continue;
-							}
+							continue;
 						}
 					}
 				}
@@ -25566,8 +25530,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					bool includeInventorySummary = ctx != null && (ctx.UseRewardContext || ctx.IsLoanContext);
 					bool includeTradePricing = includeInventorySummary;
 					bool partyTransferTopicSelected = HasPartyTransferRuleContext(baseExtras);
-					string roleTopIntro = BuildSceneSystemTopPromptIntroForSingle(currentSpeaker, contextHero, speakableCandidates, includeInventorySummary, includeTradePricing, partyTransferTopicSelected);
-					string roleRuntimeContext = BuildSceneUserRuntimeContextForSingle(currentSpeaker, contextHero, speakableCandidates, includeInventorySummary, includeTradePricing, partyTransferTopicSelected);
+					string roleTopIntro = BuildSceneSystemTopPromptIntroForSingle(currentSpeaker, contextHero, speakableCandidates, includeInventorySummary, includeTradePricing, partyTransferTopicSelected, ctx?.MentionedEntities);
+					string roleRuntimeContext = BuildSceneUserRuntimeContextForSingle(currentSpeaker, contextHero, speakableCandidates, includeInventorySummary, includeTradePricing, partyTransferTopicSelected, ctx?.MentionedEntities);
 					string systemRuleBlock = BuildSceneSystemRuleBlock(ruleExtrasSection, sceneMechanismPromptSection);
 					string combinedRuleInspectionBlock = BuildSceneCompositeUserBlock("", knowledgeExtrasSection, systemRuleBlock);
 					string currentAfefFactBlock = BuildCurrentAfefFactPromptBlock(extraFact);

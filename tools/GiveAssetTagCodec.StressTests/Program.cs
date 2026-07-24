@@ -56,6 +56,7 @@ string[] importantNames =
     "[A:B]",
     "{#id=weapon}钢剑",
     "盔甲@稀有+3",
+    "旧罩袍",
     "空 格　全角",
     "emoji🗡️护甲",
     "[ACTION:MOOD:ANNOYED]作为名称",
@@ -160,6 +161,32 @@ string rewardSystem = File.ReadAllText(Path.Combine(repoRoot, "RewardSystemBehav
 Test.True(myBehavior.Contains("GiveAssetTagCodec.TryParseWhole", StringComparison.Ordinal) && myBehavior.Contains("GiveAssetTagCodec.ReplaceTags", StringComparison.Ordinal), "free-conversation parser integration missing");
 Test.True(shoutBehavior.Contains("GiveAssetTagCodec.Extract", StringComparison.Ordinal) && shoutBehavior.Contains("GiveAssetTagCodec.StripTags", StringComparison.Ordinal), "scene/courier parser integration missing");
 Test.True(rewardSystem.Contains("GiveAssetTagCodec.ReplaceTags", StringComparison.Ordinal) && rewardSystem.Contains("GiveAssetTagCodec.StripTags", StringComparison.Ordinal), "all reward execution parser integration missing");
+Test.True(!rewardSystem.Contains("known_global_give_asset", StringComparison.Ordinal), "global fuzzy lookup must not replace a postprocess asset name");
+Test.True(rewardSystem.Contains("itemName = requestedName;", StringComparison.Ordinal), "generated RP item must report the requested postprocess name");
+Test.True(myBehavior.Contains("getItemDisplayName", StringComparison.Ordinal) && !myBehavior.Contains("knownItemKey.Trim()", StringComparison.Ordinal), "free-conversation normalization must preserve direct asset names");
+Test.True(shoutBehavior.Contains("getItemDisplayName", StringComparison.Ordinal) && !shoutBehavior.Contains("knownItemKey.Trim()", StringComparison.Ordinal), "scene normalization must preserve direct asset names");
+Match foodSuffixBlock = Regex.Match(rewardSystem, @"private static readonly GeneratedRpFoodSuffixRule\[\] GeneratedRpFoodSuffixRules.*?(?=\r?\n\s*public class RewardItemInfo)", RegexOptions.Singleline);
+Test.True(foodSuffixBlock.Success, "generated RP food suffix pool missing");
+int foodSuffixCount = Regex.Matches(foodSuffixBlock.Value, "\"(?:[^\"\\\\]|\\\\.)*\"").Count;
+Test.True(foodSuffixCount >= 500, "generated RP food suffix pool unexpectedly small: " + foodSuffixCount);
+foreach (string requiredFoodSuffix in new[] { "\"糕\"", "\"果\"", "\"梨\"", "\"菜\"", "\"肉\"", "\"牛肉\"", "\"羊肉\"", "\"猪肉\"", "\"牛排\"", "\"卜丁\"", "\"鱼青\"", "\"虾圭\"", "\"虾面盒\"", "\"焖鸡\"", "\"鸡徘\"", "\"肉元\"", "\"肉丝\"", "\"羊腿\"", "\"羊肝\"", "\"牛扒\"", "\"牛尾\"", "\"水\"", "\"药\"", "\"药水\"", "\"apple\"", "\"beef\"", "\"bread\"", "\"water\"", "\"medicine\"", "\"potion\"" })
+{
+    Test.True(foodSuffixBlock.Value.Contains(requiredFoodSuffix, StringComparison.Ordinal), "required food suffix missing: " + requiredFoodSuffix);
+}
+Test.True(rewardSystem.Contains("GeneratedRpFoodNonFoodEndingExceptions", StringComparison.Ordinal)
+    && rewardSystem.Contains("\"结果\"", StringComparison.Ordinal)
+    && rewardSystem.Contains("\"王八蛋\"", StringComparison.Ordinal)
+    && rewardSystem.Contains("\"铁饼\"", StringComparison.Ordinal)
+    && rewardSystem.Contains("\"香水\"", StringComparison.Ordinal)
+    && rewardSystem.Contains("\"火药\"", StringComparison.Ordinal), "food false-positive guards missing");
+Test.True(rewardSystem.Contains("IsCloneSafeGeneratedRpFoodTemplateItem", StringComparison.Ordinal)
+    && rewardSystem.Contains("rp_food_template", StringComparison.Ordinal)
+    && rewardSystem.Contains("ClearGeneratedRpFoodTemplateCache", StringComparison.Ordinal), "food template cache integration missing");
+Test.True(rewardSystem.Contains("'\\uff09'", StringComparison.Ordinal), "full-width closing parenthesis must not block a terminal food suffix");
+Test.True(rewardSystem.Contains("GeneratedRpFoodKind.Water", StringComparison.Ordinal)
+    && rewardSystem.Contains("GeneratedRpFoodKind.Medicine", StringComparison.Ordinal)
+    && rewardSystem.Contains("item.IsFood && (IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Beer)", StringComparison.Ordinal)
+    && rewardSystem.Contains("item.IsFood && (IsGeneratedRpFoodItemCategory(item, DefaultItemCategories.Butter)", StringComparison.Ordinal), "water and medicine templates must remain consumable");
 
 Console.WriteLine("PASS assertions=" + Test.Assertions + " fuzz=20000 pressureTags=25000 elapsedMs=" + stopwatch.Elapsed.TotalMilliseconds.ToString("F2"));
 return 0;
