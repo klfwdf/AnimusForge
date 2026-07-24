@@ -471,6 +471,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			{
 				main.SetTeam(playerTeam, true);
 			}
+			BindSetsPlayerOrderController(playerTeam, main);
 			return playerTeam;
 		}
 		catch (Exception ex)
@@ -505,6 +506,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
+			BindSetsPlayerOrderController(playerTeam, main);
 			int commandable = 0;
 			HashSet<Formation> commandFormations = new HashSet<Formation>();
 			foreach (Agent agent in mission.Agents?.ToList() ?? new List<Agent>())
@@ -629,6 +631,29 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		catch
 		{
 			return false;
+		}
+	}
+
+	private static void BindSetsPlayerOrderController(Team playerTeam, Agent main)
+	{
+		try
+		{
+			if (playerTeam == null || main == null || !main.IsActive())
+			{
+				return;
+			}
+			if (!playerTeam.IsPlayerGeneral)
+			{
+				playerTeam.SetPlayerRole(isPlayerGeneral: true, isPlayerSergeant: false);
+			}
+			if (playerTeam.PlayerOrderController != null && playerTeam.PlayerOrderController.Owner != main)
+			{
+				playerTeam.PlayerOrderController.Owner = main;
+			}
+		}
+		catch (Exception ex)
+		{
+			SettlementEntryTroopSelectionLog.Log("BindSetsPlayerOrderController failed. error=" + ex.Message);
 		}
 	}
 
@@ -976,16 +1001,26 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				|| !SceneTauntBehavior.IsPeaceSceneConflictEnabled()
 				|| attacker == null
 				|| victim == null
-				|| !attacker.IsMainAgent
 				|| !victim.IsHuman
 				|| victim.IsMainAgent)
 			{
 				return true;
 			}
-			if (IsSetsSelectedFollowerAgentForExternal(victim))
+			if (IsSetsSelectedFollowerAgentForExternal(victim)
+				&& (attacker.IsMainAgent || IsSetsSelectedFollowerAgentForExternal(attacker)))
 			{
 				__result = true;
 				return false;
+			}
+			SettlementEntryTroopSelectionMissionLogic logic = __instance.GetMissionBehavior<SettlementEntryTroopSelectionMissionLogic>();
+			if (logic?.ShouldAllowDefenderConflictDamage(attacker, victim) == true)
+			{
+				__result = false;
+				return false;
+			}
+			if (!attacker.IsMainAgent)
+			{
+				return true;
 			}
 			if (!ShouldHandlePhysicalAttackForExternal(__instance, victim))
 			{
@@ -2457,10 +2492,11 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				}
 				MarkCurrentSceneGuardsEnemy(initialEnemy);
 				MaintainConflictTeams();
+				int readiedFollowers = ReadyPlayerEntryFollowersForConflict();
 				RefreshSetsUsableProtectionState("conflict_start");
 				SpawnInitialDefenderReserveWave();
 				InformationManager.DisplayMessage(new InformationMessage(SetsSettlementEntryProfile.BuildConflictStartedMessage(_sceneKind), Color.FromUint(WarningColor)));
-				SettlementEntryTroopSelectionLog.Log("Conflict started. settlement=" + _settlementId + ", source=" + source + ", enemies=" + _enemyAgentIndexes.Count + ", followersCommandable=true, autoCharge=false");
+				SettlementEntryTroopSelectionLog.Log("Conflict started. settlement=" + _settlementId + ", source=" + source + ", enemies=" + _enemyAgentIndexes.Count + ", readiedFollowers=" + readiedFollowers + ", followersCommandable=true, autoCharge=false");
 			}
 			catch (Exception ex)
 			{
@@ -2509,6 +2545,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			{
 				main.SetTeam(_playerTeam, true);
 			}
+			SettlementEntryTroopSelectionBehavior.BindSetsPlayerOrderController(_playerTeam, main);
 		}
 
 		private void EnsureEnemyTeam(Mission mission)
@@ -2610,6 +2647,14 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 						{
 							agent.SetTeam(_playerTeam, true);
 						}
+						if (_conflictActive && _alliedAgentIndexes.Contains(agent.Index))
+						{
+							agent.SetWatchState(Agent.WatchState.Alarmed);
+							if (agent.Formation == null)
+							{
+								AssignAgentToFormation(agent, _playerTeam, FormationClass.Infantry);
+							}
+						}
 						continue;
 					}
 					if (_enemyAgentIndexes.Contains(agent.Index) && _enemyTeam != null && agent.Team != _enemyTeam)
@@ -2622,6 +2667,55 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			catch
 			{
 			}
+		}
+
+		internal bool ShouldAllowDefenderConflictDamage(Agent attacker, Agent victim)
+		{
+			if (!_defenderConflictEnabled || !_conflictActive || _victoryReached || attacker == null || victim == null)
+			{
+				return false;
+			}
+			bool attackerIsPlayerSide = IsPlayerSideAgent(attacker);
+			bool victimIsPlayerSide = IsPlayerSideAgent(victim);
+			return (attackerIsPlayerSide && IsLiveTrackedCombatEnemy(victim))
+				|| (IsLiveTrackedCombatEnemy(attacker) && victimIsPlayerSide);
+		}
+
+		private int ReadyPlayerEntryFollowersForConflict()
+		{
+			int readied = 0;
+			try
+			{
+				if (base.Mission == null || _playerTeam == null)
+				{
+					return 0;
+				}
+				foreach (Agent agent in base.Mission.Agents)
+				{
+					if (agent == null
+						|| !agent.IsHuman
+						|| !agent.IsActive()
+						|| !_alliedAgentIndexes.Contains(agent.Index))
+					{
+						continue;
+					}
+					if (agent.Team != _playerTeam)
+					{
+						agent.SetTeam(_playerTeam, true);
+					}
+					AssignAgentToFormation(agent, _playerTeam, FormationClass.Infantry);
+					agent.ResetEnemyCaches();
+					agent.InvalidateTargetAgent();
+					AgentSetAutomaticTargetSelectionMethod?.Invoke(agent, new object[] { true });
+					agent.SetWatchState(Agent.WatchState.Alarmed);
+					readied++;
+				}
+			}
+			catch (Exception ex)
+			{
+				SettlementEntryTroopSelectionLog.Log("ReadyPlayerEntryFollowersForConflict failed. error=" + ex.Message);
+			}
+			return readied;
 		}
 
 		private int CountLiveTrackedEnemies()
