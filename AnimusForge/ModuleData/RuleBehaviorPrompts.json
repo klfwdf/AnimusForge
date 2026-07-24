@@ -142,11 +142,11 @@
                                                      },
                                                      {
                                                          "Tag":  "[A:H_J_P_P_C&L]",
-                                                         "Description":  "仅当当前说话NPC本人或其部队在\u003clatest_reply\u003e中明确无条件同意加入玩家队伍或受雇时输出；C为玩家同伴，L为玩家家族成员。全族加入王国时禁止输出。"
+                                                         "Description":  "仅当当前说话的NPC本人在\u003clatest_reply\u003e中明确无条件同意加入玩家时输出，C为成为玩家同伴,L为成为玩家家族成员，无特殊说明时通常保留去掉&L,除非成为家族成员，则去掉C&，全族加入王国时禁止输出。"
                                                      },
                                                      {
                                                          "Tag":  "[A:C_J_K:{targetKingdomId}]",
-                                                         "Description":  "仅当当前NPC是族长且明确决定全族加入指定王国时输出。targetKingdomId只能复制运行时【王国】中的原始ID；未明确目标、非族长、仅本人入队或加入当前所属王国时禁止。"
+                                                         "Description":  "仅当当前NPC是族长且明确无条件决定全族加入指定王国时输出。targetKingdomId只能复制运行时【王国】中的原始ID；未明确目标、非族长、仅本人入队或加入当前所属王国时禁止。"
                                                      }
                                                  ],
                             "RuntimeInstructionTemplates":  {
@@ -628,7 +628,7 @@
                             "PostprocessRules":  [
                                                      {
                                                          "Tag":  "[ACTION:WORLDMAP_ORDER:GO_TO_SETTLEMENT:settlement:{id}:{days}]",
-                                                         "Description":  "玩家要求NPC去、走到、赶往、守备、驻扎、支援某定居点，且NPC明确同意时输出。{id}必须来自运行时定居点候选原始ID；玩家说附近/最近时可用【玩家当前地点ID】里的最近定居点ID；未指定天数填3。玩家说在这里、此地、本城、当前地点多待几天，id使用当前定居点ID；这不是FOLLOW。若NPC在玩家主队成员名册中，首个有效任务命令会由代码隐式分兵，无需额外建队标签。"
+                                                         "Description":  "玩家要求NPC去、走到、赶往、守备、驻扎、支援某定居点，且NPC无条件明确同意时输出。{id}必须来自运行时定居点候选原始ID；玩家说附近/最近时可用【玩家当前地点ID】里的最近定居点ID；未指定天数填3。玩家说在这里、此地、本城、当前地点多待几天，id使用当前定居点ID；这不是FOLLOW。若NPC在玩家主队成员名册中，首个有效任务命令会由代码隐式分兵，无需额外建队标签。"
                                                      },
                                                      {
                                                          "Tag":  "[ACTION:WORLDMAP_ORDER:PATROL_SETTLEMENT:settlement:{id}:{days}]",
@@ -636,7 +636,7 @@
                                                      },
                                                      {
                                                          "Tag":  "[ACTION:WORLDMAP_ORDER:FOLLOW:{hero|party}:{id}:{days}]",
-                                                         "Description":  "当NPC明确同意自己的队伍跟随玩家、指定英雄或指定部队时输出，与成为玩家队伍成员有本质区别。跟随玩家时目标类型写hero，id填写main_hero，天数默认3。单纯去某地、守某地、留在本城不要额外输出FOLLOW。若语境是场景内NPC本人跟随玩家且标签表含SCENE_FOLLOW_PLAYER，使用场景标签。若NPC在玩家主队成员名册中，首个有效任务命令会由代码隐式分兵。"
+                                                         "Description":  "仅当NPC明确同意自己的队伍无条件跟随玩家、指定英雄或指定部队时输出，与成为玩家队伍成员有本质区别。跟随玩家时目标类型写hero，id填写main_hero，天数默认3。单纯去某地、守某地、留在本城不要额外输出FOLLOW。若语境是场景内NPC本人跟随玩家且标签表含SCENE_FOLLOW_PLAYER，使用场景标签。若NPC在玩家主队成员名册中，首个有效任务命令会由代码隐式分兵。"
                                                      },
                                                      {
                                                          "Tag":  "[ACTION:WORLDMAP_ORDER:ATTACK:{hero|party|settlement}:{id}:{days}:{AI|FORCE}]",

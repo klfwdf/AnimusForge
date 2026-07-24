@@ -162,7 +162,9 @@ Test.True(myBehavior.Contains("GiveAssetTagCodec.TryParseWhole", StringCompariso
 Test.True(shoutBehavior.Contains("GiveAssetTagCodec.Extract", StringComparison.Ordinal) && shoutBehavior.Contains("GiveAssetTagCodec.StripTags", StringComparison.Ordinal), "scene/courier parser integration missing");
 Test.True(rewardSystem.Contains("GiveAssetTagCodec.ReplaceTags", StringComparison.Ordinal) && rewardSystem.Contains("GiveAssetTagCodec.StripTags", StringComparison.Ordinal), "all reward execution parser integration missing");
 Test.True(!rewardSystem.Contains("known_global_give_asset", StringComparison.Ordinal), "global fuzzy lookup must not replace a postprocess asset name");
+Test.True(!rewardSystem.Contains("IsKnownFixedAssetTokenForAnyOwner", StringComparison.Ordinal), "a finite literal asset name must not be diverted away from RP generation");
 Test.True(rewardSystem.Contains("itemName = requestedName;", StringComparison.Ordinal), "generated RP item must report the requested postprocess name");
+Test.True(rewardSystem.Contains("[RewardRpLiteral] generated", StringComparison.Ordinal), "literal RP generation diagnostic missing");
 Test.True(myBehavior.Contains("getItemDisplayName", StringComparison.Ordinal) && !myBehavior.Contains("knownItemKey.Trim()", StringComparison.Ordinal), "free-conversation normalization must preserve direct asset names");
 Test.True(shoutBehavior.Contains("getItemDisplayName", StringComparison.Ordinal) && !shoutBehavior.Contains("knownItemKey.Trim()", StringComparison.Ordinal), "scene normalization must preserve direct asset names");
 Match foodSuffixBlock = Regex.Match(rewardSystem, @"private static readonly GeneratedRpFoodSuffixRule\[\] GeneratedRpFoodSuffixRules.*?(?=\r?\n\s*public class RewardItemInfo)", RegexOptions.Singleline);

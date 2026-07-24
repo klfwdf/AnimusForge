@@ -21776,16 +21776,18 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 							}
 							text2 = "[ACTION:GIVE_ASSET:" + assetToken + ":ALL]";
 						}
-						else if (int.TryParse(quantityToken, out var rpItemAmount)
-							&& rpItemAmount > 0
-							&& (isItemIndex || RewardSystemBehavior.IsValidGeneratedRpAssetNameForExternal(assetToken)))
-						{
-							text2 = "[ACTION:GIVE_ASSET:" + assetToken + ":" + rpItemAmount + "]";
-						}
-						else
-						{
-							continue;
-						}
+					else if (int.TryParse(quantityToken, out var rpItemAmount)
+						&& rpItemAmount > 0
+						&& (isItemIndex || RewardSystemBehavior.IsValidGeneratedRpAssetNameForExternal(assetToken)))
+					{
+						text2 = "[ACTION:GIVE_ASSET:" + assetToken + ":" + rpItemAmount + "]";
+						Logger.Log("ShoutBehavior", "[RewardPostprocess] GIVE_ASSET literal accepted source=scene asset=" + assetToken + " amount=" + rpItemAmount + " indexed=" + isItemIndex);
+					}
+					else
+					{
+						Logger.Log("ShoutBehavior", "[RewardPostprocess] GIVE_ASSET literal rejected source=scene asset=" + assetToken + " quantity=" + quantityToken + " indexed=" + isItemIndex);
+						continue;
+					}
 					}
 				}
 			}

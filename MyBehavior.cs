@@ -33494,16 +33494,18 @@ public class MyBehavior : CampaignBehaviorBase
 						}
 						text2 = "[ACTION:GIVE_ASSET:" + assetToken + ":ALL]";
 					}
-					else if (int.TryParse(quantityToken, out var generatedItemAmount)
-						&& generatedItemAmount > 0
-						&& (isItemIndex || RewardSystemBehavior.IsValidGeneratedRpAssetNameForExternal(assetToken)))
-					{
-						text2 = "[ACTION:GIVE_ASSET:" + assetToken + ":" + generatedItemAmount + "]";
-					}
-					else
-					{
-						continue;
-					}
+			else if (int.TryParse(quantityToken, out var generatedItemAmount)
+				&& generatedItemAmount > 0
+				&& (isItemIndex || RewardSystemBehavior.IsValidGeneratedRpAssetNameForExternal(assetToken)))
+			{
+				text2 = "[ACTION:GIVE_ASSET:" + assetToken + ":" + generatedItemAmount + "]";
+				Logger.Log("Logic", "[RewardPostprocess] GIVE_ASSET literal accepted source=free asset=" + assetToken + " amount=" + generatedItemAmount + " indexed=" + isItemIndex);
+			}
+			else
+			{
+				Logger.Log("Logic", "[RewardPostprocess] GIVE_ASSET literal rejected source=free asset=" + assetToken + " quantity=" + quantityToken + " indexed=" + isItemIndex);
+				continue;
+			}
 				}
 			}
 			if (hashSet.Add(text2))

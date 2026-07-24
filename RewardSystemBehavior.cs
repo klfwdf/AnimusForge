@@ -17270,60 +17270,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			return false;
 		}
 		if (Regex.IsMatch(text, "^\\d+$", RegexOptions.CultureInvariant)
-			|| text.IndexOfAny(new char[2] { '\r', '\n' }) >= 0
-			|| text.StartsWith("workshop@", StringComparison.OrdinalIgnoreCase)
-			|| text.StartsWith("caravan@", StringComparison.OrdinalIgnoreCase))
+			|| text.IndexOfAny(new char[2] { '\r', '\n' }) >= 0)
 		{
 			return false;
 		}
-		try
-		{
-			if (Settlement.Find(text) != null || Settlement.All.Any((Settlement x) => x != null && (string.Equals((x.StringId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase) || string.Equals((x.Name?.ToString() ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase))))
-			{
-				return false;
-			}
-		}
-		catch
-		{
-		}
-		try
-		{
-			IEnumerable<CharacterObject> characters = Game.Current?.ObjectManager?.GetObjectTypeList<CharacterObject>() ?? MBObjectManager.Instance?.GetObjectTypeList<CharacterObject>();
-			if ((characters ?? Enumerable.Empty<CharacterObject>()).Any((CharacterObject x) => x != null && (string.Equals((x.StringId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase) || string.Equals((x.Name?.ToString() ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase))))
-			{
-				return false;
-			}
-		}
-		catch
-		{
-		}
+		// Finite GIVE_ASSET values are literal RP item labels. Keep every printable symbol,
+		// including "[ROT]", and avoid world-wide entity scans on this postprocess path.
+		// A real fixed asset is resolved first from its explicit runtime entry.
 		return true;
-	}
-
-	private static bool IsKnownFixedAssetTokenForAnyOwner(Hero contextHero, string assetToken)
-	{
-		string text = (assetToken ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return false;
-		}
-		try
-		{
-			List<MyBehavior.SettlementTransferPromptEntry> entries = MyBehavior.BuildSettlementTransferPromptEntriesForExternal(contextHero, contextHero?.CharacterObject) ?? new List<MyBehavior.SettlementTransferPromptEntry>();
-			if (contextHero != null)
-			{
-				entries.AddRange(MyBehavior.BuildSettlementTransferPromptEntriesForExternal(null, null) ?? new List<MyBehavior.SettlementTransferPromptEntry>());
-			}
-			return entries.Any((MyBehavior.SettlementTransferPromptEntry x) => x != null &&
-				(string.Equals(MyBehavior.GetSettlementTransferAssetIdForExternal(x), text, StringComparison.OrdinalIgnoreCase)
-					|| string.Equals((x.AssetId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase)
-					|| string.Equals((x.SettlementId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase)
-					|| string.Equals((x.DisplayName ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase)));
-		}
-		catch
-		{
-			return false;
-		}
 	}
 
 	private int GenerateRpAssetToPlayer(string assetName, int amount, string giverName, BasicCharacterObject giverCharacter, out string itemName, out ItemObject item, string logSource)
@@ -17332,11 +17286,13 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		item = null;
 		if (!IsValidGeneratedRpAssetNameForExternal(assetName) || amount <= 0)
 		{
+			Logger.Log("Logic", "[RewardRpLiteral] rejected source=" + (logSource ?? "") + " asset=" + (assetName ?? "") + " amount=" + amount + " reason=invalid_literal");
 			return 0;
 		}
 		ItemRoster targetRoster = ResolveReceiverItemRosterForGive(Hero.MainHero);
 		if (targetRoster == null)
 		{
+			Logger.Log("Logic", "[RewardRpLiteral] rejected source=" + (logSource ?? "") + " asset=" + assetName.Trim() + " reason=player_roster_null");
 			return 0;
 		}
 		string requestedName = assetName.Trim();
@@ -17365,6 +17321,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 		}
 		int generated = GenerateNamedInventoryItemToRosterForExternal(targetRoster, requestedName, amount, out var generatedStringId, out itemName, logSource, preferredTemplateItemId: preferredTemplateItemId);
+		Logger.Log("Logic", "[RewardRpLiteral] generated source=" + (logSource ?? "") + " asset=" + requestedName + " requested=" + amount + " actual=" + generated + " generatedId=" + (generatedStringId ?? ""));
 		if (generated > 0 && !string.IsNullOrWhiteSpace(generatedStringId))
 		{
 			TryResolveGeneratedRewardItemForStringId(generatedStringId, out item, logSource + "_resolve");
@@ -17696,8 +17653,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				bool isGeneratedRpItem = hasFiniteRequestedQuantity
 					&& receiver == Hero.MainHero
 					&& giver != Hero.MainHero
-					&& IsValidGeneratedRpAssetNameForExternal(value4)
-					&& !IsKnownFixedAssetTokenForAnyOwner(giver, value4);
+					&& IsValidGeneratedRpAssetNameForExternal(value4);
 				List<RewardItemInfo> authorizedItems = null;
 				string authorizedItemKey = "";
 				bool isAuthorizedInventoryItem = !isGeneratedRpItem && TryResolveAuthorizedHeroRewardItem(giver, value4, out authorizedItems, out authorizedItemKey);
@@ -18617,13 +18573,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				string value = (tag.AssetToken ?? "").Trim();
 				itemTransferAttempted++;
-				CharacterObject snapshotCharacter = giverCharacter as CharacterObject;
-				Hero contextHero = snapshotCharacter?.HeroObject;
 				bool hasFiniteRequestedQuantity = int.TryParse(tag.QuantityToken, out var requestedQuantity) && requestedQuantity > 0;
 				bool isGeneratedRpItem = hasFiniteRequestedQuantity
 					&& receiver == Hero.MainHero
-					&& IsValidGeneratedRpAssetNameForExternal(value)
-					&& !IsKnownFixedAssetTokenForAnyOwner(contextHero, value);
+					&& IsValidGeneratedRpAssetNameForExternal(value);
 				List<RewardItemInfo> authorizedItems = null;
 				string authorizedItemKey = "";
 				bool isAuthorizedInventoryItem = !isGeneratedRpItem && TryResolveAuthorizedPartyRewardItem(giverParty, giverCharacter, value, out authorizedItems, out authorizedItemKey);
@@ -18802,8 +18755,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			bool hasFiniteRequestedQuantity = int.TryParse(tag.QuantityToken, out var requestedQuantity) && requestedQuantity > 0;
 			bool isGeneratedRpItem = hasFiniteRequestedQuantity
 				&& receiver == Hero.MainHero
-				&& IsValidGeneratedRpAssetNameForExternal(value)
-				&& !IsKnownFixedAssetTokenForAnyOwner(null, value);
+				&& IsValidGeneratedRpAssetNameForExternal(value);
 			List<RewardItemInfo> authorizedItems = null;
 			string authorizedItemKey = "";
 			bool isAuthorizedInventoryItem = !isGeneratedRpItem && TryResolveAuthorizedMerchantRewardItem(giverCharacter, value, out authorizedItems, out authorizedItemKey);
