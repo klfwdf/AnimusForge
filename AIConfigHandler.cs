@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -2660,6 +2661,12 @@ public static class AIConfigHandler
 		return flag && flag2;
 	}
 
+	internal static bool LooksLikeAuxiliaryThinkingControlErrorForExternal(
+		string responseBody)
+	{
+		return LooksLikeAuxiliaryThinkingControlError(responseBody);
+	}
+
 	private static int ResolveAuxiliaryApiMaxTokens(DuelSettings settings, int fallbackMaxTokens)
 	{
 		try
@@ -2672,7 +2679,7 @@ public static class AIConfigHandler
 		}
 	}
 
-	private static JObject BuildAuxiliaryRouterRequestPayload(string apiUrl, string modelName, IEnumerable<object> messages, int maxTokens, float temperature, out string controlMode, bool disableThinkingControls = false, bool useConfiguredMaxTokens = true)
+	private static JObject BuildAuxiliaryRouterRequestPayload(string apiUrl, string modelName, IEnumerable<object> messages, int maxTokens, float temperature, out string controlMode, bool disableThinkingControls = false, bool useConfiguredMaxTokens = true, bool useConfiguredTemperature = true)
 	{
 		DuelSettings settings = DuelSettings.GetSettings();
 		controlMode = ResolveAuxiliaryThinkingControlMode(apiUrl, modelName);
@@ -2687,7 +2694,10 @@ public static class AIConfigHandler
 			["messages"] = JArray.FromObject(messages ?? Array.Empty<object>()),
 			["stream"] = false,
 			["max_tokens"] = normalizedMaxTokens,
-			["temperature"] = DuelSettings.ClampApiTemperature(settings?.GetAuxiliaryApiTemperature() ?? temperature)
+			["temperature"] = DuelSettings.ClampApiTemperature(
+				useConfiguredTemperature
+					? settings?.GetAuxiliaryApiTemperature() ?? temperature
+					: temperature)
 		};
 		if (disableThinkingControls)
 		{
@@ -2700,10 +2710,85 @@ public static class AIConfigHandler
 		return jObject;
 	}
 
-	public static string BuildAuxiliaryRouterRequestJsonForExternal(string apiUrl, string modelName, IEnumerable<object> messages, int maxTokens, float temperature, out string controlMode, bool disableThinkingControls = false, bool useConfiguredMaxTokens = true)
+	public static string BuildAuxiliaryRouterRequestJsonForExternal(string apiUrl, string modelName, IEnumerable<object> messages, int maxTokens, float temperature, out string controlMode, bool disableThinkingControls = false, bool useConfiguredMaxTokens = true, bool useConfiguredTemperature = true)
 	{
-		JObject payload = BuildAuxiliaryRouterRequestPayload(apiUrl, modelName, messages, maxTokens, temperature, out controlMode, disableThinkingControls, useConfiguredMaxTokens);
+		JObject payload = BuildAuxiliaryRouterRequestPayload(apiUrl, modelName, messages, maxTokens, temperature, out controlMode, disableThinkingControls, useConfiguredMaxTokens, useConfiguredTemperature);
 		return LlmApiCompat.PrepareChatRequestJson(apiUrl, payload);
+	}
+
+	internal static void BuildPlayerRpTemplateSelectionRequestJsonsForExternal(
+		string apiUrl,
+		string modelName,
+		IEnumerable<object> messages,
+		out string requestJson,
+		out string plainFallbackRequestJson,
+		out string noTemperatureFallbackRequestJson,
+		out string highTokenFallbackRequestJson,
+		out string reasoningFallbackRequestJson,
+		out string controlMode)
+	{
+		JObject basePayload = BuildAuxiliaryRouterRequestPayload(
+			apiUrl,
+			modelName,
+			messages,
+			256,
+			0f,
+			out controlMode,
+			disableThinkingControls: true,
+			useConfiguredMaxTokens: false,
+			useConfiguredTemperature: false);
+		JObject primaryPayload = (JObject)basePayload.DeepClone();
+		if (DuelSettings.ApplyThinkingControls(
+			primaryPayload,
+			apiUrl,
+			modelName,
+			thinkingEnabled: false,
+			DuelSettings.ReasoningEffortHigh,
+			out string disabledThinkingMode))
+		{
+			controlMode = disabledThinkingMode;
+		}
+		JObject plainPayload = (JObject)basePayload.DeepClone();
+		DuelSettings.RemoveThinkingControls(plainPayload);
+		JObject noTemperaturePayload =
+			(JObject)plainPayload.DeepClone();
+		noTemperaturePayload.Remove("temperature");
+		JObject highTokenPayload =
+			(JObject)noTemperaturePayload.DeepClone();
+		highTokenPayload.Remove("max_completion_tokens");
+		highTokenPayload["max_tokens"] = 2048;
+		JObject reasoningPayload =
+			(JObject)noTemperaturePayload.DeepClone();
+		if (!LlmApiCompat.IsAnthropicCompatibleUrl(apiUrl))
+		{
+			reasoningPayload.Remove("max_tokens");
+			reasoningPayload["max_completion_tokens"] = 2048;
+		}
+		else
+		{
+			reasoningPayload["max_tokens"] = 2048;
+		}
+		requestJson =
+			LlmApiCompat.PrepareChatRequestJson(apiUrl, primaryPayload);
+		plainFallbackRequestJson =
+			LlmApiCompat.PrepareChatRequestJson(apiUrl, plainPayload);
+		noTemperatureFallbackRequestJson =
+			LlmApiCompat.PrepareChatRequestJson(
+				apiUrl,
+				noTemperaturePayload);
+		highTokenFallbackRequestJson =
+			LlmApiCompat.PrepareChatRequestJson(
+				apiUrl,
+				highTokenPayload);
+		if (string.Equals(
+			requestJson,
+			plainFallbackRequestJson,
+			StringComparison.Ordinal))
+		{
+			controlMode = "plain";
+		}
+		reasoningFallbackRequestJson =
+			LlmApiCompat.PrepareChatRequestJson(apiUrl, reasoningPayload);
 	}
 
 	private static string BuildAuxiliarySimpleDialogueRequestJson(string apiUrl, string modelName, IEnumerable<object> messages, int maxTokens, float temperature, out string controlMode)
@@ -3003,6 +3088,14 @@ public static class AIConfigHandler
 		ValidatePreprocessTemplateVariables(_preprocessPrompts?.MemorySelection?.UserPromptTemplate, "MemorySelection.UserPromptTemplate", "mode_instruction", "final_count", "latest_player_input", "latest_npc_input", "current_scene", "memory_candidates");
 		ValidatePreprocessTemplateVariables(_preprocessPrompts?.MemorySelection?.CandidateLineTemplate, "MemorySelection.CandidateLineTemplate", "memory_id", "game_date", "age_suffix", "hour_range", "rich_title");
 		ValidatePreprocessTemplateVariables(_preprocessPrompts?.MemorySelection?.FallbackGameDateTemplate, "MemorySelection.FallbackGameDateTemplate", "game_day");
+		ValidatePreprocessTemplateVariables(
+			_preprocessPrompts?.PlayerRpTemplateSelection?.UserPromptTemplate,
+			"PlayerRpTemplateSelection.UserPromptTemplate",
+			"requested_name",
+			"invested_denars",
+			"craft_mode",
+			"candidate_count",
+			"template_candidates");
 		RequirePreprocessPromptValue(_preprocessPrompts?.ConnectionTest?.ExpectedRuleCode, "ConnectionTest.ExpectedRuleCode");
 		ValidatePreprocessTemplateVariables(_preprocessPrompts?.ConnectionTest?.UserPromptTemplate, "ConnectionTest.UserPromptTemplate", "expected_rule_code", "mentioned_entities_schema");
 	}
@@ -3065,6 +3158,26 @@ public static class AIConfigHandler
 		{
 			["game_day"] = gameDay.ToString()
 		});
+	}
+
+	internal static string BuildPlayerRpTemplateSelectionPromptForExternal(
+		string requestedName,
+		int investedDenars,
+		bool isEquipment,
+		int candidateCount,
+		string templateCandidates)
+	{
+		return RenderPreprocessPromptTemplate(
+			_preprocessPrompts?.PlayerRpTemplateSelection?.UserPromptTemplate,
+			"PlayerRpTemplateSelection.UserPromptTemplate",
+			new Dictionary<string, string>(StringComparer.Ordinal)
+			{
+				["requested_name"] = (requestedName ?? "").Trim(),
+				["invested_denars"] = Math.Max(0, investedDenars).ToString(CultureInfo.InvariantCulture),
+				["craft_mode"] = isEquipment ? "weapon/equipment" : "miscellaneous/food/goods",
+				["candidate_count"] = Math.Max(0, candidateCount).ToString(CultureInfo.InvariantCulture),
+				["template_candidates"] = (templateCandidates ?? "").Trim()
+			});
 	}
 
 	private static object[] BuildAuxiliaryRouterMessages(string prompt)

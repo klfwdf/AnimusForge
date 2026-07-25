@@ -484,10 +484,34 @@ public static class WorldEntityRetrievalService
 		foreach (string value in values)
 		{
 			string text = (value ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(text) && seen.Add(text))
+			if (string.IsNullOrWhiteSpace(text))
 			{
-				result.Add(text);
+				continue;
 			}
+			if (text.IndexOf('的') < 0 && text.IndexOf('之') < 0)
+			{
+				AddMention(result, seen, text);
+				continue;
+			}
+			int segmentStart = 0;
+			for (int i = 0; i <= text.Length; i++)
+			{
+				if (i < text.Length && text[i] != '的' && text[i] != '之')
+				{
+					continue;
+				}
+				AddMention(result, seen, text.Substring(segmentStart, i - segmentStart));
+				segmentStart = i + 1;
+			}
+		}
+	}
+
+	private static void AddMention(List<string> result, HashSet<string> seen, string value)
+	{
+		string text = (value ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(text) && seen.Add(text))
+		{
+			result.Add(text);
 		}
 	}
 

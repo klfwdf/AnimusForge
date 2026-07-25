@@ -25,6 +25,10 @@ internal static class HotkeyInputGuard
 		{
 			return true;
 		}
+		if (PlayerRpForgePopup.IsOpen)
+		{
+			return true;
+		}
 		try
 		{
 			if (InformationManager.IsAnyInquiryActive())

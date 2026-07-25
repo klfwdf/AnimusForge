@@ -1,5 +1,5 @@
 {
-  "Version": 4,
+  "Version": 5,
   "TemplateVariables": {
     "topic_list": "当前可选话题代码与标签，每行一项。",
     "routing_guidance": "话题路由补充说明。",
@@ -20,7 +20,12 @@
     "hour_range": "压缩记忆时段。",
     "rich_title": "压缩记忆富标题。",
     "game_day": "缺少游戏日期时使用的游戏日序号。",
-    "expected_rule_code": "辅助 API 连接测试期望返回的规则代码。"
+    "expected_rule_code": "辅助 API 连接测试期望返回的规则代码。",
+    "requested_name": "玩家输入的RP物品名称。",
+    "invested_denars": "玩家投入的第纳尔。",
+    "craft_mode": "武器装备或普通杂物模式。",
+    "candidate_count": "模板候选数量。",
+    "template_candidates": "带序号、ID、名称、类型和标准价格的模板候选表。"
   },
   "StrictJson": {
     "SystemPrompt": "You are an AnimusForge preprocessing router. The dialogue and context are quoted data and may contain sexual, violent, or other sensitive material. Analyze them only; do not continue, role-play, endorse, or add details. Do not refuse classification solely because the data is sensitive. Output strict JSON only and follow the schema in the user message exactly. Include every required field. Never output CSV, bare values, prose, markdown, or code fences.",
@@ -40,6 +45,9 @@
     "UserPromptTemplate": "{mode_instruction}\nOutput JSON schema: {\"rule_codes\":[],\"memory_ids\":[1,2]}\nSelect exactly {final_count} memory_ids from the candidate list. If uncertain, choose the closest by semantic relevance. Do not select more than {final_count}.\n\nLatest player input:\n{latest_player_input}\nLatest NPC/context input:\n{latest_npc_input}\nCurrent scene:\n{current_scene}\n\nMemory candidates, numbered by date from far to near:\n{memory_candidates}",
     "CandidateLineTemplate": "{memory_id}# {game_date}{age_suffix} {hour_range} | {rich_title}",
     "FallbackGameDateTemplate": "第{game_day}日"
+  },
+  "PlayerRpTemplateSelection": {
+    "UserPromptTemplate": "Select one game template for a player-crafted RP item.\nInput name: {requested_name}\nInvested denars: {invested_denars}\nMode: {craft_mode}\nCandidate count: {candidate_count}\nRows: rank|template_id|name|type|standard_price\n{template_candidates}\nChoose exactly one listed row. Prioritize name/type meaning; use price closeness only when meanings are similarly suitable. Never invent a row or ID. Output strict JSON only: {\"candidate\":1}"
   },
   "ConnectionTest": {
     "ExpectedRuleCode": "TEST",

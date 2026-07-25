@@ -1,0 +1,31 @@
+<Prefab>
+  <Window>
+    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.46">
+      <Children>
+        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1008" SuggestedHeight="559" HorizontalAlignment="Center" VerticalAlignment="Center">
+          <Children>
+            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="af_player_rp_forge\af_player_rp_forge_background" DoNotAcceptEvents="true" />
+
+            <AnimusForgeNativeConversationEditableTextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="336" SuggestedHeight="38" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="242" MarginTop="143" Brush="Review.NameInput.Text" Brush.FontSize="20" Brush.FontColor="#24160CFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" MaxLength="160" RealText="@ItemName" IsEnabled="@CanInteract" IsObfuscationEnabled="false" AutoFocus="true" ClipContents="true" Command.TextEntered="ExecuteSubmit" Command.FocusGained="StartTyping" Command.FocusLost="StopTyping" />
+
+            <AnimusForgeNativeConversationEditableTextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="164" SuggestedHeight="36" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="680" MarginTop="146" Brush="Review.NameInput.Text" Brush.FontSize="20" Brush.FontColor="#24160CFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" MaxLength="10" RealText="@InvestmentText" IsEnabled="@CanInteract" IsObfuscationEnabled="false" ClipContents="true" Command.TextEntered="ExecuteSubmit" Command.FocusGained="StartTyping" Command.FocusLost="StopTyping" />
+
+            <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="45" SuggestedHeight="50" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="235" MarginTop="194" Command.Click="ExecuteToggleForgeAsWeapon" IsEnabled="@CanInteract" IsSelected="@ForgeAsWeapon" UpdateChildrenStates="true" DoNotPassEventsToChildren="true">
+              <Children>
+                <TextWidget IsVisible="@ForgeAsWeapon" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Title.Text" Brush.FontSize="34" Brush.FontColor="#2B180CFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="X" DoNotAcceptEvents="true" />
+              </Children>
+            </ButtonWidget>
+
+            <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="182" SuggestedHeight="103" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="416" MarginTop="423" Command.Click="ExecuteSubmit" Command.HoverBegin="ExecuteCrestHoverBegin" Command.HoverEnd="ExecuteCrestHoverEnd" IsEnabled="@CanInteract" UpdateChildrenStates="true" DoNotPassEventsToChildren="true" ClipContents="true">
+              <Children>
+                <Widget IsVisible="@IsCrestHovered" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1008" SuggestedHeight="559" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="-416" MarginTop="-423" Sprite="af_player_rp_forge\af_player_rp_forge_background" AlphaFactor="0.16" DoNotAcceptEvents="true" />
+              </Children>
+            </ButtonWidget>
+
+            <TextWidget IsVisible="@IsBusy" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="620" SuggestedHeight="44" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="12" Brush="Popup.Title.Text" Brush.FontSize="18" Brush.FontColor="#3A1D0CFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@StatusText" DoNotAcceptEvents="true" />
+          </Children>
+        </Widget>
+      </Children>
+    </Widget>
+  </Window>
+</Prefab>
