@@ -119,6 +119,10 @@ namespace AnimusForge
 
 		private static bool s_globalPatchesApplied;
 		private static bool s_globalPatchesInProgress;
+		// Both supported Bannerlord API lines keep the inversion flag private. Cache the
+		// lookup once so agenda/prompt rendering does not need to infer a policy vote
+		// from its ambiguous vanilla title (which is only the policy name).
+		private static readonly FieldInfo KingdomPolicyDecisionInvertedField = AccessTools.Field(typeof(KingdomPolicyDecision), "_isInvertedDecision");
 		private static readonly ConditionalWeakTable<KingdomDecision, BilateralDiplomacyMemoryMarker> BilateralDiplomacyMemoryMarkers = new ConditionalWeakTable<KingdomDecision, BilateralDiplomacyMemoryMarker>();
 		internal static KingdomDecision s_pendingRequiredAgendaDecision;
 		private bool _agendaAutoVoteTickRunning;
@@ -761,13 +765,168 @@ namespace AnimusForge
 
 		private static string GetSafeDecisionTitle(KingdomDecision decision)
 		{
+			return GetDecisionDisplayTitleForAgenda(decision);
+		}
+
+		internal static string GetPolicyDirectionForAgenda(KingdomDecision decision)
+		{
+			KingdomPolicyDecision policyDecision = decision as KingdomPolicyDecision;
+			if (policyDecision == null)
+			{
+				return "";
+			}
+			return IsPolicyDecisionInvertedForAgenda(policyDecision) ? "ABOLISH" : "ADOPT";
+		}
+
+		// Dynamic LLM policies can be reconstructed while an older instance is still
+		// referenced by an active policy list or a pending decision. PolicyObject does
+		// not provide stable value equality, so agenda state must be compared by its
+		// persisted StringId rather than object identity.
+		internal static bool IsSamePolicyForAgenda(PolicyObject left, PolicyObject right)
+		{
+			if (ReferenceEquals(left, right))
+			{
+				return true;
+			}
+			string leftId = left?.StringId;
+			string rightId = right?.StringId;
+			return !string.IsNullOrWhiteSpace(leftId)
+				&& string.Equals(leftId, rightId, StringComparison.OrdinalIgnoreCase);
+		}
+
+		internal static PolicyObject ResolvePolicyForKingdomAgenda(Kingdom kingdom, PolicyObject policy, out bool isActive)
+		{
+			isActive = false;
+			if (policy == null)
+			{
+				return null;
+			}
 			try
 			{
-				return decision?.GetGeneralTitle()?.ToString() ?? "<null>";
+				foreach (PolicyObject activePolicy in kingdom?.ActivePolicies ?? Enumerable.Empty<PolicyObject>())
+				{
+					if (!IsSamePolicyForAgenda(activePolicy, policy))
+					{
+						continue;
+					}
+					isActive = true;
+					return activePolicy ?? policy;
+				}
 			}
 			catch
 			{
-				return decision?.GetType().Name ?? "<null>";
+			}
+			return policy;
+		}
+
+		internal static string GetDecisionDisplayTitleForAgenda(KingdomDecision decision)
+		{
+			if (decision == null)
+			{
+				return "<null>";
+			}
+
+			try
+			{
+				string bilateralTitle = GetBilateralDiplomacyAgendaTitle(decision);
+				if (!string.IsNullOrWhiteSpace(bilateralTitle))
+				{
+					return CleanVoteDealText(bilateralTitle);
+				}
+
+				KingdomPolicyDecision policyDecision = decision as KingdomPolicyDecision;
+				if (policyDecision != null)
+				{
+					string policyName = CleanVoteDealText(policyDecision.Policy?.Name?.ToString() ?? decision.GetGeneralTitle()?.ToString() ?? "未命名政策");
+					if (string.IsNullOrWhiteSpace(policyName))
+					{
+						policyName = "未命名政策";
+					}
+					return (IsPolicyDecisionInvertedForAgenda(policyDecision) ? "废除政策：" : "推行政策：") + policyName;
+				}
+
+				string title = CleanVoteDealText(decision.GetGeneralTitle()?.ToString() ?? "");
+				return string.IsNullOrWhiteSpace(title) ? "未命名提案" : title;
+			}
+			catch
+			{
+				return decision.GetType().Name ?? "<null>";
+			}
+		}
+
+		internal static string GetDecisionOutcomeDisplayTitleForAgenda(KingdomDecision decision, DecisionOutcome outcome)
+		{
+			KingdomPolicyDecision policyDecision = decision as KingdomPolicyDecision;
+			KingdomPolicyDecision.PolicyDecisionOutcome policyOutcome = outcome as KingdomPolicyDecision.PolicyDecisionOutcome;
+			if (policyDecision != null && policyOutcome != null)
+			{
+				bool isAbolition = IsPolicyDecisionInvertedForAgenda(policyDecision);
+				if (policyOutcome.ShouldDecisionBeEnforced)
+				{
+					return isAbolition ? "赞成废除（是）" : "赞成推行（是）";
+				}
+				return isAbolition ? "反对废除、保留政策（否）" : "反对推行、维持未生效（否）";
+			}
+
+			try
+			{
+				string title = CleanVoteDealText(outcome?.GetDecisionTitle()?.ToString() ?? "");
+				return string.IsNullOrWhiteSpace(title) ? "未知选项" : title;
+			}
+			catch
+			{
+				return "未知选项";
+			}
+		}
+
+		internal static string GetDecisionOutcomeDisplayDescriptionForAgenda(KingdomDecision decision, DecisionOutcome outcome)
+		{
+			KingdomPolicyDecision policyDecision = decision as KingdomPolicyDecision;
+			KingdomPolicyDecision.PolicyDecisionOutcome policyOutcome = outcome as KingdomPolicyDecision.PolicyDecisionOutcome;
+			if (policyDecision != null && policyOutcome != null)
+			{
+				bool isAbolition = IsPolicyDecisionInvertedForAgenda(policyDecision);
+				if (policyOutcome.ShouldDecisionBeEnforced)
+				{
+					return isAbolition ? "投此项将废除该政策。" : "投此项将推行该政策。";
+				}
+				return isAbolition ? "投此项将保留该政策。" : "投此项将不推行该政策。";
+			}
+
+			try
+			{
+				return CleanVoteDealText(outcome?.GetDecisionDescription()?.ToString() ?? "");
+			}
+			catch
+			{
+				return "";
+			}
+		}
+
+		private static bool IsPolicyDecisionInvertedForAgenda(KingdomPolicyDecision decision)
+		{
+			try
+			{
+				if (KingdomPolicyDecisionInvertedField?.GetValue(decision) is bool isInverted)
+				{
+					return isInverted;
+				}
+			}
+			catch
+			{
+			}
+
+			// The fallback preserves correct behavior if a future game build renames the
+			// private field: a valid disavowal decision has an active policy, while a
+			// valid adoption decision does not.
+			try
+			{
+				ResolvePolicyForKingdomAgenda(decision?.Kingdom, decision?.Policy, out bool isActive);
+				return isActive;
+			}
+			catch
+			{
+				return false;
 			}
 		}
 
@@ -2539,7 +2698,7 @@ namespace AnimusForge
 							DecisionKey = BuildVoteDealDecisionKey(decision, includeProposer: true),
 							DecisionBasicKey = BuildVoteDealDecisionKey(decision, includeProposer: false),
 							TypeLabel = VoteDealBehavior.GetBilateralDiplomacyAgendaTypeText(decision) ?? GetDecisionTypeLabel(decision),
-							Title = CleanVoteDealText(VoteDealBehavior.GetBilateralDiplomacyAgendaTitle(decision) ?? decision.GetGeneralTitle()?.ToString() ?? "未命名提案"),
+							Title = GetDecisionDisplayTitleForAgenda(decision),
 							ProposerName = CleanVoteDealText(VoteDealBehavior.GetBilateralDiplomacyAgendaProposerText(decision) ?? decision.ProposerClan?.Name?.ToString() ?? "未知"),
 							RemainingDays = decision.TriggerTime.RemainingDaysFromNow
 						};
@@ -2554,8 +2713,8 @@ namespace AnimusForge
 								Outcome = outcome,
 								OutcomeKey = BuildVoteDealOutcomeKey(outcome, includeSponsor: true),
 								OutcomeBasicKey = BuildVoteDealOutcomeKey(outcome, includeSponsor: false),
-								Title = CleanVoteDealText(outcome.GetDecisionTitle()?.ToString() ?? "未知选项"),
-								Description = CleanVoteDealText(outcome.GetDecisionDescription()?.ToString() ?? ""),
+								Title = GetDecisionOutcomeDisplayTitleForAgenda(decision, outcome),
+								Description = GetDecisionOutcomeDisplayDescriptionForAgenda(decision, outcome),
 								SponsorName = CleanVoteDealText(outcome.SponsorClan?.Name?.ToString() ?? "未知"),
 								SponsorClanId = outcome.SponsorClan?.StringId ?? ""
 							});
@@ -3823,7 +3982,7 @@ namespace AnimusForge
 		public KingdomAgendaItemVM(KingdomDecision decision)
 		{
 			_decision = decision;
-			TitleText = VoteDealBehavior.GetBilateralDiplomacyAgendaTitle(decision) ?? decision.GetGeneralTitle()?.ToString() ?? "未命名提案";
+			TitleText = VoteDealBehavior.GetDecisionDisplayTitleForAgenda(decision);
 			DecisionTypeText = VoteDealBehavior.GetBilateralDiplomacyAgendaTypeText(decision) ?? GetDecisionTypeLabel(decision);
 			RefreshTimingState();
 		}
@@ -3977,8 +4136,8 @@ namespace AnimusForge
 				{
 					if (outcome == null) continue;
 					var opt = new AgendaOptionVM();
-					opt.Name = outcome.GetDecisionTitle()?.ToString() ?? "未知选项";
-					opt.Description = outcome.GetDecisionDescription()?.ToString() ?? "";
+					opt.Name = VoteDealBehavior.GetDecisionOutcomeDisplayTitleForAgenda(_decision, outcome);
+					opt.Description = VoteDealBehavior.GetDecisionOutcomeDisplayDescriptionForAgenda(_decision, outcome);
 					opt.SponsorName = outcome.SponsorClan?.Name?.ToString() ?? "未知";
 					opt.SupportPercentage = totalWeight > 0 ? (int)Math.Round(outcomeWeights[outcome] * 100.0 / totalWeight) : 0;
 
@@ -4201,6 +4360,9 @@ namespace AnimusForge
 	{
 		private static readonly ConditionalWeakTable<KingdomManagementVM, State> _states = new();
 		private static readonly ConditionalWeakTable<KingdomDecisionsVM, State> _decisionStates = new();
+		// Kingdom management is a single active screen. Keep a weak shortcut for
+		// UI-level custom tabs, which do not have a vanilla VM method to patch.
+		private static WeakReference _mostRecentlyRegisteredState;
 
 		private sealed class State
 		{
@@ -4213,6 +4375,8 @@ namespace AnimusForge
 		{
 			State state = new State { Clear = clear, Select = select };
 			_states.Add(vm, state);
+			_mostRecentlyRegisteredState = new WeakReference(state);
+			KingdomCustomTabIsolation.ResetForNewKingdomScreen();
 			if (vm?.Decision != null)
 			{
 				_decisionStates.Add(vm.Decision, state);
@@ -4223,6 +4387,14 @@ namespace AnimusForge
 		{
 			if (_states.TryGetValue(vm, out var state))
 				state.Clear?.Invoke();
+		}
+
+		internal static void ClearForCustomTabClick()
+		{
+			if (_mostRecentlyRegisteredState?.Target is State state)
+			{
+				state.Clear?.Invoke();
+			}
 		}
 
 		public static void Select(KingdomManagementVM vm)
@@ -4322,6 +4494,7 @@ namespace AnimusForge
 				ViewModel.OnPropertyChanged("IsAgendaSelected");
 				ViewModel.OnPropertyChangedWithValue(true, "IsAgendaSelected");
 				ViewModel.OnPropertyChanged("Agenda");
+				KingdomCustomTabIsolation.HideForeignPanelsForAgendaSelection();
 
 			}
 

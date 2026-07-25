@@ -46,7 +46,8 @@ namespace AnimusForge
 					{
 						var po = FindPolicyByName(tgt);
 						if (po == null) return "";
-						bool ia = kd.ActivePolicies.Contains(po);
+						po = ResolvePolicyForKingdomAgenda(kd, po, out bool ia);
+						if (po == null) return "";
 						bool ad = dir == "ADOPT", ab = dir == "ABOLISH";
 						if (!ad && !ab) { ad = !ia; ab = ia; }
 						if ((ad && ia) || (ab && !ia)) return "";
