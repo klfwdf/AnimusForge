@@ -684,16 +684,14 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			FormationClass formationClass = character?.DefaultFormationClass ?? FormationClass.Infantry;
-			if (formationClass >= FormationClass.Infantry && formationClass <= FormationClass.HeavyInfantry)
+			FormationClass formationClass = (character?.DefaultFormationClass ?? FormationClass.Infantry)
+				.DismountedClass()
+				.DefaultClass();
+			if (character?.IsRanged == true && !formationClass.IsRanged())
 			{
-				return formationClass;
+				return FormationClass.Ranged;
 			}
-			if (formationClass == FormationClass.LightCavalry || formationClass == FormationClass.HeavyCavalry)
-			{
-				return FormationClass.Cavalry;
-			}
-			return character?.IsRanged == true ? FormationClass.Ranged : FormationClass.Infantry;
+			return formationClass;
 		}
 		catch
 		{
