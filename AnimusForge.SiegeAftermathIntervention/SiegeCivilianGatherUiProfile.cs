@@ -20,7 +20,7 @@ public static class SiegeCivilianGatherUiProfile
 
     public const string MessengerAddedMessage = "【攻城处置】新的传令者已加入召集。";
 
-    public const string FormationReadyMessage = "【攻城处置】民众已经聚拢听命，你现在可以像战场上调度队列一样让他们列阵。";
+    public const string FormationReadyMessage = "【攻城处置】民众已经聚拢听命并编入3号民众编队，你现在可以像战场上调度队列一样让他们列阵。";
 
     public const string FormationCompleteMemory = "民众已经完成聚集并编入玩家可调度的民众队列，后续NPC应知道民众已到场听命。";
 

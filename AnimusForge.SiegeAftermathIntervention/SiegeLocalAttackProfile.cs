@@ -8,6 +8,8 @@ public static class SiegeLocalAttackProfile
 {
     public const uint MessageColor = 0xFFFFD27Fu;
 
+    public const float AbnormalCivilianHealthLimitMultiplier = 3f;
+
     public const string PlayerAgentHitBridgeSource = "intervention_agent_hit";
 
     public const string PlayerScoreHitBridgeSource = "intervention_score_hit";
@@ -21,6 +23,12 @@ public static class SiegeLocalAttackProfile
     public const string LocalDefiantSource = "local_player_attack_defiant";
 
     public const string MemoryTitle = "局部冲突";
+
+    public static bool ShouldNormalizeCivilianHealth(float currentHealthLimit, float normalHealthLimit)
+    {
+        return normalHealthLimit > 0f
+            && currentHealthLimit > normalHealthLimit * AbnormalCivilianHealthLimitMultiplier;
+    }
 
     public static string BuildPlayerHitMessage(string targetName, bool targetWillDefy)
     {

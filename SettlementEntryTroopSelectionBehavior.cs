@@ -290,6 +290,30 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		}
 	}
 
+	internal static bool TryHandleTownCivilianGatherPlayerCommandForExternal(string playerText, int speakerAgentIndex)
+	{
+		if (!SetsTownCivilianGatherProfile.ShouldHandleExplicitPlayerCommand(playerText))
+		{
+			return false;
+		}
+		return TryGatherTownCiviliansForExternal(speakerAgentIndex, SetsTownCivilianGatherProfile.PlayerCommandSource);
+	}
+
+	internal static bool TryGatherTownCiviliansForExternal(int speakerAgentIndex, string source)
+	{
+		try
+		{
+			Mission mission = Mission.Current;
+			SettlementEntryTroopSelectionMissionLogic logic = mission?.GetMissionBehavior<SettlementEntryTroopSelectionMissionLogic>();
+			return logic?.TryGatherTownCivilians(speakerAgentIndex, source) == true;
+		}
+		catch (Exception ex)
+		{
+			SettlementEntryTroopSelectionLog.Log("TryGatherTownCiviliansForExternal failed. source=" + (source ?? "N/A") + ", error=" + ex.Message);
+			return false;
+		}
+	}
+
 	internal static bool IsSetsDefenderConflictActiveForExternal(Mission mission)
 	{
 		try
@@ -512,9 +536,12 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			BindSetsPlayerOrderController(playerTeam, main);
 			int commandable = 0;
 			HashSet<Formation> commandFormations = new HashSet<Formation>();
+			SettlementEntryTroopSelectionMissionLogic missionLogic = mission.GetMissionBehavior<SettlementEntryTroopSelectionMissionLogic>();
 			foreach (Agent agent in mission.Agents?.ToList() ?? new List<Agent>())
 			{
-				if (!IsSetsSelectedFollowerAgentForExternal(agent) || agent == main)
+				bool selectedFollower = IsSetsSelectedFollowerAgentForExternal(agent);
+				bool gatheredCivilian = missionLogic?.IsGatheredTownCivilian(agent) == true;
+				if ((!selectedFollower && !gatheredCivilian) || agent == main)
 				{
 					continue;
 				}
@@ -522,7 +549,10 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				{
 					agent.SetTeam(playerTeam, true);
 				}
-				AssignSetsAgentToPlayerFormation(agent, playerTeam, ResolveSetsFollowerFormationClass(agent.Character as CharacterObject));
+				FormationClass formationClass = gatheredCivilian
+					? ResolveSetsTownCivilianFormationClass()
+					: ResolveSetsFollowerFormationClass(agent.Character as CharacterObject);
+				AssignSetsAgentToPlayerFormation(agent, playerTeam, formationClass);
 				if (agent.Formation != null)
 				{
 					commandFormations.Add(agent.Formation);
@@ -568,7 +598,13 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			mission ??= Mission.Current;
 			Team playerTeam = ResolveSetsPlayerCommandTeamForExternal(mission, "has_commandable_agents");
 			Agent main = Agent.Main ?? mission?.MainAgent;
-			return mission?.Agents != null && playerTeam != null && mission.Agents.Any(a => IsSetsSelectedFollowerAgentForExternal(a) && a != main && a.Team == playerTeam && a.Formation != null);
+			SettlementEntryTroopSelectionMissionLogic missionLogic = mission?.GetMissionBehavior<SettlementEntryTroopSelectionMissionLogic>();
+			return mission?.Agents != null
+				&& playerTeam != null
+				&& mission.Agents.Any(a => a != main
+					&& (IsSetsSelectedFollowerAgentForExternal(a) || missionLogic?.IsGatheredTownCivilian(a) == true)
+					&& a.Team == playerTeam
+					&& a.Formation != null);
 		}
 		catch
 		{
@@ -678,6 +714,14 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		{
 			SettlementEntryTroopSelectionLog.Log("AssignSetsAgentToPlayerFormation failed. error=" + ex.Message);
 		}
+	}
+
+	private static FormationClass ResolveSetsTownCivilianFormationClass()
+	{
+		int classIndex = SetsTownCivilianGatherProfile.NativeCommandFormationClassIndex;
+		return Enum.IsDefined(typeof(FormationClass), classIndex)
+			? (FormationClass)classIndex
+			: FormationClass.Cavalry;
 	}
 
 	private static FormationClass ResolveSetsFollowerFormationClass(CharacterObject character)
@@ -1016,9 +1060,11 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			SettlementEntryTroopSelectionMissionLogic logic = __instance?.GetMissionBehavior<SettlementEntryTroopSelectionMissionLogic>();
+			bool activeDefenderConflict = logic?.IsDefenderConflictCombatActive() == true;
 			if (__instance == null
 				|| !IsSetsEntryMissionActive(__instance)
-				|| !SceneTauntBehavior.IsPeaceSceneConflictEnabled()
+				|| (!activeDefenderConflict && !SceneTauntBehavior.IsPeaceSceneConflictEnabled())
 				|| attacker == null
 				|| victim == null
 				|| !victim.IsHuman
@@ -1032,7 +1078,6 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				__result = true;
 				return false;
 			}
-			SettlementEntryTroopSelectionMissionLogic logic = __instance.GetMissionBehavior<SettlementEntryTroopSelectionMissionLogic>();
 			if (logic?.ShouldAllowDefenderConflictDamage(attacker, victim) == true)
 			{
 				__result = false;
@@ -1510,7 +1555,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		if (Mission.Current != null)
+		if (Mission.Current != null || Game.Current?.GameStateManager?.ActiveState is not MapState)
 		{
 			return true;
 		}
@@ -1647,7 +1692,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		if (Mission.Current != null)
+		if (Mission.Current != null || Game.Current?.GameStateManager?.ActiveState is not MapState)
 		{
 			return true;
 		}
@@ -2154,6 +2199,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private readonly List<DefenderReserveEntry> _remainingDefenderReserve;
 		private readonly HashSet<int> _alliedAgentIndexes = new HashSet<int>();
 		private readonly HashSet<int> _enemyAgentIndexes = new HashSet<int>();
+		private readonly HashSet<int> _gatheredTownCivilianAgentIndexes = new HashSet<int>();
 		private readonly HashSet<int> _ownedSettlementFleeingCivilianAgentIndexes = new HashSet<int>();
 		private readonly HashSet<int> _ownedSettlementMassacreTargetAgentIndexes = new HashSet<int>();
 		private readonly HashSet<int> _victoryObjectiveEnemyAgentIndexes = new HashSet<int>();
@@ -2226,6 +2272,124 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 
 		internal SetsSettlementSceneKind SceneKind => _sceneKind;
 
+		internal bool IsDefenderConflictCombatActive()
+		{
+			return _defenderConflictEnabled && _conflictActive && !_victoryReached;
+		}
+
+		internal bool IsGatheredTownCivilian(Agent agent)
+		{
+			return agent != null
+				&& agent.IsHuman
+				&& agent.IsActive()
+				&& _gatheredTownCivilianAgentIndexes.Contains(agent.Index);
+		}
+
+		internal bool TryGatherTownCivilians(int speakerAgentIndex, string source)
+		{
+			try
+			{
+				Mission mission = base.Mission;
+				Agent main = Agent.Main ?? mission?.MainAgent;
+				if (!_isOwnSettlement
+					|| _sceneKind != SetsSettlementSceneKind.Town
+					|| mission?.Agents == null
+					|| main == null
+					|| !main.IsActive()
+					|| _conflictActive
+					|| _ownedSettlementIncidentTriggered
+					|| _ownedSettlementMassacreActive
+					|| _victoryReached
+					|| IsNativeAlleyFightActive())
+				{
+					return false;
+				}
+
+				EnsurePlayerTeam(mission, main, requireCommandTeam: true);
+				if (_playerTeam == null)
+				{
+					return false;
+				}
+
+				FormationClass civilianFormationClass = ResolveSetsTownCivilianFormationClass();
+				List<Agent> civilians = mission.Agents
+					.ToList()
+					.Where(agent => IsOwnedSettlementCivilian(agent)
+						&& !IsNativeAlleyCombatant(agent)
+						&& !SceneTauntBehavior.IsChildSceneProtectedTarget(agent.Character as CharacterObject))
+					.OrderBy(agent => agent.Index)
+					.ToList();
+				foreach (Agent civilian in civilians)
+				{
+					PrepareTownCivilianForCommandFormation(civilian);
+					AssignAgentToFormation(civilian, _playerTeam, civilianFormationClass, refreshOrders: false, markPlayerCommandable: true);
+					_gatheredTownCivilianAgentIndexes.Add(civilian.Index);
+				}
+
+				int gathered = civilians.Count;
+				if (gathered <= 0)
+				{
+					InformationManager.DisplayMessage(new InformationMessage(
+						SetsTownCivilianGatherProfile.NoEligibleCivilianMessage,
+						Color.FromUint(SetsTownCivilianGatherProfile.MessageColor)));
+					return true;
+				}
+
+				Formation civilianFormation = _playerTeam.GetFormation(civilianFormationClass);
+				if (civilianFormation != null)
+				{
+					MarkFormationPlayerCommandable(civilianFormation, main);
+					civilianFormation.SetMovementOrder(MovementOrder.MovementOrderFollow(main));
+					civilianFormation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLoose);
+					civilianFormation.SetFiringOrder(FiringOrder.FiringOrderHoldYourFire);
+				}
+				EnsureSetsCommandUiReadyForExternal(mission, "sets_town_civilian_gather", force: true, preserveSelection: true);
+				InformationManager.DisplayMessage(new InformationMessage(
+					SetsTownCivilianGatherProfile.BuildGatheredMessage(gathered),
+					Color.FromUint(SetsTownCivilianGatherProfile.MessageColor)));
+				SettlementEntryTroopSelectionLog.Log("Gathered ordinary-town civilians into formation 3. settlement="
+					+ _settlementId
+					+ ", count=" + gathered
+					+ ", speakerAgent=" + speakerAgentIndex
+					+ ", source=" + (source ?? "N/A"));
+				return true;
+			}
+			catch (Exception ex)
+			{
+				SettlementEntryTroopSelectionLog.Log("TryGatherTownCivilians failed. settlement=" + _settlementId + ", source=" + (source ?? "N/A") + ", error=" + ex.Message);
+				return false;
+			}
+		}
+
+		private static void PrepareTownCivilianForCommandFormation(Agent agent)
+		{
+			try
+			{
+				if (agent == null || !agent.IsHuman || !agent.IsActive())
+				{
+					return;
+				}
+				ShoutBehavior.TryForceStopSceneFollowForExternal(agent.Index, "sets_town_civilian_gather");
+				agent.SetIsAIPaused(false);
+				agent.DisableScriptedMovement();
+				agent.ClearTargetFrame();
+				agent.InvalidateTargetAgent();
+				agent.SetMaximumSpeedLimit(-1f, false);
+				agent.SetCrouchMode(false);
+				agent.SetWatchState(Agent.WatchState.Patrolling);
+				CampaignAgentComponent component = agent.GetComponent<CampaignAgentComponent>();
+				AgentNavigator navigator = component?.AgentNavigator;
+				navigator?.ClearTarget();
+				DailyBehaviorGroup dailyGroup = navigator?.GetBehaviorGroup<DailyBehaviorGroup>();
+				dailyGroup?.DisableScriptedBehavior();
+				dailyGroup?.DisableAllBehaviors();
+			}
+			catch (Exception ex)
+			{
+				SettlementEntryTroopSelectionLog.Log("PrepareTownCivilianForCommandFormation failed. agent=" + agent?.Index + ", error=" + ex.Message);
+			}
+		}
+
 		public override void AfterStart()
 		{
 			base.AfterStart();
@@ -2288,6 +2452,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		public override void OnAgentHit(Agent affectedAgent, Agent affectorAgent, in MissionWeapon attackerWeapon, in Blow blow, in AttackCollisionData attackCollisionData)
 		{
 			base.OnAgentHit(affectedAgent, affectorAgent, in attackerWeapon, in blow, in attackCollisionData);
+			WakeProtectedFollowerForSelfDefense(affectedAgent, affectorAgent, "agent_hit");
 			bool nativeAlleyFight = IsNativeAlleyCombatant(affectedAgent) || IsNativeAlleyFightActive();
 			if (IsProtectedFollowerFriendlyFire(affectedAgent, affectorAgent))
 			{
@@ -2330,6 +2495,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		public override void OnScoreHit(Agent affectedAgent, Agent affectorAgent, WeaponComponentData attackerWeapon, bool isBlocked, bool isSiegeEngineHit, in Blow blow, in AttackCollisionData collisionData, float damagedHp, float hitDistance, float shotDifficulty)
 		{
 			base.OnScoreHit(affectedAgent, affectorAgent, attackerWeapon, isBlocked, isSiegeEngineHit, in blow, in collisionData, damagedHp, hitDistance, shotDifficulty);
+			WakeProtectedFollowerForSelfDefense(affectedAgent, affectorAgent, "score_hit");
 			bool nativeAlleyFight = IsNativeAlleyCombatant(affectedAgent) || IsNativeAlleyFightActive();
 			if (IsProtectedFollowerFriendlyFire(affectedAgent, affectorAgent))
 			{
@@ -2361,6 +2527,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			_recentProtectedFollowerFriendlyFireHits.Remove(affectedAgent.Index);
 			_enemyInitialTargetReleaseTimes.Remove(affectedAgent.Index);
 			_ownedSettlementFleeingCivilianAgentIndexes.Remove(affectedAgent.Index);
+			_gatheredTownCivilianAgentIndexes.Remove(affectedAgent.Index);
 			_ownedSettlementMassacreTargetAgentIndexes.Remove(affectedAgent.Index);
 			if (_ownedSettlementMassacreRequestAgentIndex == affectedAgent.Index)
 			{
@@ -2743,7 +2910,13 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			bool attackerIsPlayerSide = IsPlayerSideAgent(attacker);
 			bool victimIsPlayerSide = IsPlayerSideAgent(victim);
 			return (attackerIsPlayerSide && IsLiveTrackedCombatEnemy(victim))
-				|| (IsLiveTrackedCombatEnemy(attacker) && victimIsPlayerSide);
+				|| (IsLiveTrackedCombatEnemy(attacker) && victimIsPlayerSide)
+				|| (attacker.IsMainAgent
+					&& victim.IsHuman
+					&& victim.IsActive()
+					&& !victim.IsMainAgent
+					&& !victimIsPlayerSide
+					&& !SceneTauntBehavior.IsChildSceneProtectedTarget(victim.Character as CharacterObject));
 		}
 
 		private int ReadyPlayerEntryFollowersForConflict()
@@ -3297,6 +3470,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				_ownedSettlementIncidentTriggered = true;
 				_conflictActive = false;
 				_victoryReached = false;
+				_gatheredTownCivilianAgentIndexes.Clear();
 				ApplyOwnedSettlementIncidentConsequences(source);
 				EnsurePlayerTeam(mission, main, requireCommandTeam: true);
 				KeepPlayerEntryFollowersCommandable(refreshFormation: true);
@@ -5294,13 +5468,61 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				_spawnedDefenderReserveAgentIndexes.Remove(agent.Index);
 				_defenderReserveAgentSourceRosters.Remove(agent.Index);
 				_defenderReserveAgentWaveNumbers.Remove(agent.Index);
-				ClearAgentCombatTarget(agent);
+				Agent currentTarget = agent.GetTargetAgent();
+				if (currentTarget != null && IsPlayerSideAgent(currentTarget))
+				{
+					ClearAgentCombatTarget(agent);
+				}
 				agent.SetWatchState(_conflictActive ? Agent.WatchState.Alarmed : Agent.WatchState.Patrolling);
-				AssignAgentToFormation(agent, _playerTeam, ResolveSetsFollowerFormationClass(agent.Character as CharacterObject));
+				Formation expectedFormation = _playerTeam?.GetFormation(ResolveSetsFollowerFormationClass(agent.Character as CharacterObject));
+				if (expectedFormation != null && agent.Formation != expectedFormation)
+				{
+					AssignAgentToFormation(agent, _playerTeam, ResolveSetsFollowerFormationClass(agent.Character as CharacterObject));
+				}
 			}
 			catch (Exception ex)
 			{
 				SettlementEntryTroopSelectionLog.Log("ForceProtectedFollowerFriendlyState failed. agent=" + agent?.Index + ", error=" + ex.Message);
+			}
+		}
+
+		private void WakeProtectedFollowerForSelfDefense(Agent affectedAgent, Agent affectorAgent, string source)
+		{
+			try
+			{
+				if (!_defenderConflictEnabled
+					|| !_conflictActive
+					|| _victoryReached
+					|| affectedAgent == null
+					|| affectorAgent == null
+					|| !affectedAgent.IsActive()
+					|| !IsProtectedFollowerAgent(affectedAgent)
+					|| !IsLiveTrackedCombatEnemy(affectorAgent))
+				{
+					return;
+				}
+				if (_playerTeam != null && affectedAgent.Team != _playerTeam)
+				{
+					affectedAgent.SetTeam(_playerTeam, true);
+				}
+				Formation expectedFormation = _playerTeam?.GetFormation(ResolveSetsFollowerFormationClass(affectedAgent.Character as CharacterObject));
+				if (expectedFormation != null && affectedAgent.Formation != expectedFormation)
+				{
+					AssignAgentToFormation(affectedAgent, _playerTeam, ResolveSetsFollowerFormationClass(affectedAgent.Character as CharacterObject));
+				}
+				affectedAgent.IsPaused = false;
+				affectedAgent.DisableScriptedMovement();
+				affectedAgent.ClearTargetFrame();
+				affectedAgent.SetWatchState(Agent.WatchState.Alarmed);
+				affectedAgent.ResetEnemyCaches();
+				AgentSetAutomaticTargetSelectionMethod?.Invoke(affectedAgent, new object[] { true });
+				AgentSetTargetAgentMethod?.Invoke(affectedAgent, new object[] { affectorAgent });
+				affectedAgent.InvalidateAIWeaponSelections();
+				SettlementEntryTroopSelectionLog.LogVerbose("Woke SETS follower for self-defense. source=" + source + ", follower=" + SafeCharacterId(affectedAgent.Character as CharacterObject) + ", attacker=" + SafeCharacterId(affectorAgent.Character as CharacterObject));
+			}
+			catch (Exception ex)
+			{
+				SettlementEntryTroopSelectionLog.Log("WakeProtectedFollowerForSelfDefense failed. source=" + source + ", error=" + ex.Message);
 			}
 		}
 

@@ -3114,7 +3114,16 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	internal static bool TryProcessFixedKeywordActionForExternal(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string playerText, bool playerCommandContext, out bool actionHandled)
 	{
 		actionHandled = false;
-		if (!playerCommandContext || !IsActiveInCurrentMission()
+		if (!playerCommandContext)
+		{
+			return false;
+		}
+		if (SettlementEntryTroopSelectionBehavior.TryHandleTownCivilianGatherPlayerCommandForExternal(playerText, targetAgentIndex))
+		{
+			actionHandled = true;
+			return true;
+		}
+		if (!IsActiveInCurrentMission()
 			|| !SiegeCastleRuntimePromptProfile.ShouldExposeTownAftermathRules(ResolveCurrentSettlement()?.IsCastle == true))
 		{
 			return false;
@@ -3165,6 +3174,14 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			if (!IsActiveInCurrentMission())
 			{
+				if (hasTownTag
+					&& GatherCiviliansTagRegex.IsMatch(text)
+					&& SettlementEntryTroopSelectionBehavior.TryGatherTownCiviliansForExternal(targetAgentIndex, SetsTownCivilianGatherProfile.AiActionTagSource))
+				{
+					text = StripSiegeTags(text);
+					actionHandled = true;
+					return true;
+				}
 				text = StripSiegeTags(text);
 				return true;
 			}
@@ -8547,6 +8564,12 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
+			CampaignAgentComponent component = messenger.GetComponent<CampaignAgentComponent>();
+			AgentNavigator navigator = component?.AgentNavigator ?? component?.CreateAgentNavigator();
+			if (navigator?.GetBehaviorGroup<DailyBehaviorGroup>() == null)
+			{
+				return false;
+			}
 			ScriptBehavior.AddAgentTarget(messenger, target);
 			return true;
 		}
@@ -8820,7 +8843,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return;
 			}
 			StopCivilianGatherScriptFollowForCommandControl(mission, SiegeCivilianGatherInteractionProfile.BuildFormationQueueSource(reason));
-			TrySetPlayerFormationFollowOrder(FormationClass.Ranged, SiegeCivilianGatherInteractionProfile.FormationControlBeginSource);
+			TrySetPlayerFormationFollowOrder(ResolveCivilianCommandFormationClass(), SiegeCivilianGatherInteractionProfile.FormationControlBeginSource);
 			float now = mission?.CurrentTime ?? 0f;
 			if (!_civilianFormationControlPending)
 			{
@@ -8835,6 +8858,14 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			Logger.Log("SiegeAiIntervention", "QueueCivilianFormationControl failed: " + ex.Message);
 		}
+	}
+
+	private static FormationClass ResolveCivilianCommandFormationClass()
+	{
+		int classIndex = SiegeCivilianGatherInteractionProfile.NativeCommandFormationClassIndex;
+		return Enum.IsDefined(typeof(FormationClass), classIndex)
+			? (FormationClass)classIndex
+			: FormationClass.Cavalry;
 	}
 
 	private static void StopCivilianGatherScriptFollowForCommandControl(Mission mission, string source)
@@ -8998,7 +9029,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				PrepareCivilianForPreMassacreHitDetection(agent, mission);
 				NeutralizeCivilianDailyUsableBehavior(agent, SiegeCivilianGatherInteractionProfile.FormationControlBatchSource);
-				AssignAgentToPlayerFormation(agent, FormationClass.Ranged, refreshFormationOrders: false);
+				AssignAgentToPlayerFormation(agent, ResolveCivilianCommandFormationClass(), refreshFormationOrders: false);
 				CivilianGatherReadyFormationAgentIndexes.Add(agent.Index);
 				try
 				{
@@ -9042,7 +9073,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private static bool ApplyCivilianFormationFollowOrder(Mission mission, string source)
 	{
-		bool orderIssued = TrySetPlayerFormationFollowOrder(FormationClass.Ranged, source);
+		FormationClass civilianFormationClass = ResolveCivilianCommandFormationClass();
+		bool orderIssued = TrySetPlayerFormationFollowOrder(civilianFormationClass, source);
 		try
 		{
 			if (mission?.Agents == null)
@@ -9058,7 +9090,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				}
 				try
 				{
-					AssignAgentToPlayerFormation(agent, FormationClass.Ranged, refreshFormationOrders: false);
+					AssignAgentToPlayerFormation(agent, civilianFormationClass, refreshFormationOrders: false);
 					agent.DisableScriptedMovement();
 					agent.ClearTargetFrame();
 					agent.InvalidateTargetAgent();
@@ -9987,6 +10019,47 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("SiegeAiIntervention", "PrepareCivilianForPreMassacreHitDetection failed: " + ex.Message);
+		}
+	}
+
+	private static void PrepareCivilianForPlayerDamage(Agent agent, string source)
+	{
+		try
+		{
+			if (!IsOccupationSceneActiveForExternal()
+				|| agent == null
+				|| !agent.IsHuman
+				|| !agent.IsActive()
+				|| !IsEligibleCivilianAgent(agent, includeHeroes: true, requireActive: false))
+			{
+				return;
+			}
+
+			agent.SetMortalityState(Agent.MortalityState.Mortal);
+			float normalHealthLimit = Math.Max(1f, agent.Character?.MaxHitPoints() ?? 0f);
+			float observedHealthCeiling = Math.Max(agent.Health, Math.Max(agent.HealthLimit, agent.BaseHealthLimit));
+			if (!SiegeLocalAttackProfile.ShouldNormalizeCivilianHealth(observedHealthCeiling, normalHealthLimit))
+			{
+				return;
+			}
+
+			float previousHealth = agent.Health;
+			float previousHealthLimit = agent.HealthLimit;
+			agent.BaseHealthLimit = normalHealthLimit;
+			agent.HealthLimit = normalHealthLimit;
+			if (agent.Health > normalHealthLimit)
+			{
+				agent.Health = normalHealthLimit;
+			}
+			Logger.Log("SiegeAiIntervention", "Normalized abnormal GCCZ civilian health before player damage. Agent="
+				+ agent.Index
+				+ ", Health=" + previousHealth.ToString("0.0") + "->" + agent.Health.ToString("0.0")
+				+ ", Limit=" + previousHealthLimit.ToString("0.0") + "->" + agent.HealthLimit.ToString("0.0")
+				+ ", Source=" + (source ?? "N/A"));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "PrepareCivilianForPlayerDamage failed. Agent=" + agent?.Index + ", Source=" + (source ?? "N/A") + ", Error=" + ex.Message);
 		}
 	}
 
@@ -16566,6 +16639,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				}
 				if (SiegeAiInterventionBehavior.IsEligibleCivilianAgent(victim, includeHeroes: true, requireActive: false))
 				{
+					SiegeAiInterventionBehavior.PrepareCivilianForPlayerDamage(victim, SiegeLocalAttackProfile.NonEnemyDamagePrefixSource);
 					__result = false;
 					return false;
 				}

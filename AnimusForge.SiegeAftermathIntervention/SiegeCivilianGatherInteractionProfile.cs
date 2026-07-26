@@ -32,6 +32,9 @@ public static class SiegeCivilianGatherInteractionProfile
 
     public const int FormationControlBatchSize = 8;
 
+    // FormationClass.Cavalry, displayed as command group 3.
+    public const int NativeCommandFormationClassIndex = 2;
+
     public const int MessengerSpeechMinCount = 2;
 
     public const int MessengerSpeechMaxCount = 3;
