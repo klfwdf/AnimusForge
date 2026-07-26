@@ -199,6 +199,14 @@ public class SubModule : MBSubModuleBase
 			}
 			try
 			{
+				AnimusForgePlayerRpForgeUiSprites.EnsurePatched(harmony);
+			}
+			catch (Exception ex6f)
+			{
+				Logger.LogTrace("SubModule", ">>> Player RP forge UI sprite bootstrap failed: " + ex6f.Message);
+			}
+			try
+			{
 				PatchClassProcessor patchClassProcessor7 = harmony.CreateClassProcessor(typeof(Patch_Meeting_SuppressChangeRelationAction));
 				patchClassProcessor7.Patch();
 			}
@@ -668,6 +676,7 @@ public class SubModule : MBSubModuleBase
 		ShoutTextInputPopup.KeepMissionPausedIfOpen();
 		DevWeeklyReportPopup.ProcessDeferredCloseIfNeeded();
 		PlayerNotorietyPopup.ProcessDeferredCloseIfNeeded();
+		PlayerRpForgePopup.ProcessDeferredCloseIfNeeded();
 		AnimusForgeConversationHistoryLogPopup.OnApplicationTick();
 		AnimusForgeNativeConversationOverlay.OnApplicationTick();
 		AiErrorAnalysisInquiry.OnApplicationTick();
@@ -702,6 +711,7 @@ public class SubModule : MBSubModuleBase
 			RunWatchedTickPhase("SubModule.ShoutTextInputPopup.KeepMissionPausedIfOpen", () => ShoutTextInputPopup.KeepMissionPausedIfOpen());
 			RunWatchedTickPhase("SubModule.DevWeeklyReportPopup.ProcessDeferredCloseIfNeeded", () => DevWeeklyReportPopup.ProcessDeferredCloseIfNeeded());
 			RunWatchedTickPhase("SubModule.PlayerNotorietyPopup.ProcessDeferredCloseIfNeeded", () => PlayerNotorietyPopup.ProcessDeferredCloseIfNeeded());
+			RunWatchedTickPhase("SubModule.PlayerRpForgePopup.ProcessDeferredCloseIfNeeded", () => PlayerRpForgePopup.ProcessDeferredCloseIfNeeded());
 			RunWatchedTickPhase("SubModule.AnimusForgeConversationHistoryLogPopup.OnApplicationTick", () => AnimusForgeConversationHistoryLogPopup.OnApplicationTick());
 			RunWatchedTickPhase("SubModule.AnimusForgeNativeConversationOverlay.OnApplicationTick", () => AnimusForgeNativeConversationOverlay.OnApplicationTick());
 			RunWatchedTickPhase("SubModule.AiErrorAnalysisInquiry.OnApplicationTick", () => AiErrorAnalysisInquiry.OnApplicationTick());

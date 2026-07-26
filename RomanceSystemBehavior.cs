@@ -382,6 +382,20 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		return HasDifferentNativeSpouse(left, right) || HasDifferentNativeSpouse(right, left);
 	}
 
+	// 原版拒绝两位族长成婚，是为了避免按普通婚姻规则把其中一位移出其家族。
+	// AnimusForge 的授权婚姻标签允许这类联姻，因此执行时必须保留双方的家族归属。
+	private static bool AreBothClanLeaders(Hero left, Hero right)
+	{
+		try
+		{
+			return left != null && right != null && left.Clan != null && right.Clan != null && left.Clan.Leader == left && right.Clan.Leader == right;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	private static bool IsSameGenderMarriagePair(Hero left, Hero right)
 	{
 		try
@@ -1073,12 +1087,26 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		string text2 = DescribeHeroMarriageState(right);
 		try
 		{
+			if (bypassMarriageEligibilityForAuthorizedTag && !CanExecuteMarriageTagPair(left, right, out var authorizedTagReason))
+			{
+				failReason = authorizedTagReason;
+				return false;
+			}
 			if (ShouldUseAnimusForgeMultiMarriage(left, right))
 			{
 				Logger.Log("Romance", "[WARN] MarriageAction switching to AnimusForge multi-marriage path because at least one side already has a native spouse.");
 				Logger.Log("Romance", "[WARN] MarriageAction left=" + text);
 				Logger.Log("Romance", "[WARN] MarriageAction right=" + text2);
 				return TryApplyAnimusForgeMultiMarriageAction(left, right, out failReason, bypassMarriageEligibilityForAuthorizedTag);
+			}
+			if (bypassMarriageEligibilityForAuthorizedTag)
+			{
+				Logger.Log("Romance", "[MarriageAction] Authorized marriage tag bypassed vanilla eligibility checks and is using the forced path.");
+				if (AreBothClanLeaders(left, right))
+				{
+					Logger.Log("Romance", "[MarriageAction] Authorized marriage tag accepted a two-clan-leader pair; both clan memberships will be preserved.");
+				}
+				return TryForceApplyMarriageAction(left, right, out failReason);
 			}
 			if (IsSameGenderMarriagePair(left, right))
 			{
@@ -1236,8 +1264,9 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			{
 				Logger.Log("Romance", "[WARN] Multi-marriage relation increase failed: " + ex);
 			}
-			Clan clanAfterMarriage = GetClanAfterAnimusMarriage(hero, hero2);
-			if (clanAfterMarriage != null && clanAfterMarriage != hero.Clan)
+			bool preserveClanMembership = AreBothClanLeaders(hero, hero2);
+			Clan clanAfterMarriage = preserveClanMembership ? null : GetClanAfterAnimusMarriage(hero, hero2);
+			if (!preserveClanMembership && clanAfterMarriage != null && clanAfterMarriage != hero.Clan)
 			{
 				Hero hero3 = hero;
 				hero = hero2;
@@ -1253,13 +1282,17 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 				flag = true;
 				Logger.Log("Romance", "[WARN] Multi-marriage event chain failed, will continue and backfill notifications: " + ex2);
 			}
-			if (clanAfterMarriage != null && hero.Clan != clanAfterMarriage)
+			if (!preserveClanMembership && clanAfterMarriage != null && hero.Clan != clanAfterMarriage)
 			{
 				HandleClanChangeAfterMarriageCompat(hero, clanAfterMarriage);
 			}
-			if (clanAfterMarriage != null && hero2.Clan != clanAfterMarriage)
+			if (!preserveClanMembership && clanAfterMarriage != null && hero2.Clan != clanAfterMarriage)
 			{
 				HandleClanChangeAfterMarriageCompat(hero2, clanAfterMarriage);
+			}
+			if (preserveClanMembership)
+			{
+				Logger.Log("Romance", "[MarriageAction] Multi-marriage retained both clan leaders in their original clans.");
 			}
 			try
 			{
@@ -1419,17 +1452,6 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			reason = "有一方家族当前不适合结婚。";
 			return false;
 		}
-		try
-		{
-			if (left.Clan?.Leader == left && right.Clan?.Leader == right)
-			{
-				reason = "双方都是族长。";
-				return false;
-			}
-		}
-		catch
-		{
-		}
 		if (!CanHeroMarryIgnoringRuntimeBlockers(left, out reason, allowExistingSpouses) || !CanHeroMarryIgnoringRuntimeBlockers(right, out reason, allowExistingSpouses))
 		{
 			return false;
@@ -1586,8 +1608,9 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			{
 				Logger.Log("Romance", "[WARN] Force marriage relation increase failed: " + ex);
 			}
-			Clan clanAfterMarriage = GetClanAfterAnimusMarriage(hero, hero2);
-			if (clanAfterMarriage != null && clanAfterMarriage != hero.Clan)
+			bool preserveClanMembership = AreBothClanLeaders(hero, hero2);
+			Clan clanAfterMarriage = preserveClanMembership ? null : GetClanAfterAnimusMarriage(hero, hero2);
+			if (!preserveClanMembership && clanAfterMarriage != null && clanAfterMarriage != hero.Clan)
 			{
 				Hero hero3 = hero;
 				hero = hero2;
@@ -1603,13 +1626,17 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 				flag = true;
 				Logger.Log("Romance", "[WARN] Force marriage event chain failed, will continue and backfill notifications: " + ex2);
 			}
-			if (clanAfterMarriage != null && hero.Clan != clanAfterMarriage)
+			if (!preserveClanMembership && clanAfterMarriage != null && hero.Clan != clanAfterMarriage)
 			{
 				HandleClanChangeAfterMarriageCompat(hero, clanAfterMarriage);
 			}
-			if (clanAfterMarriage != null && hero2.Clan != clanAfterMarriage)
+			if (!preserveClanMembership && clanAfterMarriage != null && hero2.Clan != clanAfterMarriage)
 			{
 				HandleClanChangeAfterMarriageCompat(hero2, clanAfterMarriage);
+			}
+			if (preserveClanMembership)
+			{
+				Logger.Log("Romance", "[MarriageAction] Forced marriage retained both clan leaders in their original clans.");
 			}
 			try
 			{
@@ -1758,16 +1785,6 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			if (left.Clan == null || right.Clan == null)
 			{
 				list.Add("有一方没有家族");
-			}
-		}
-		catch
-		{
-		}
-		try
-		{
-			if (left.Clan?.Leader == left && right.Clan?.Leader == right)
-			{
-				list.Add("双方都是族长");
 			}
 		}
 		catch

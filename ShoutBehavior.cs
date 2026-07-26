@@ -1972,9 +1972,13 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private readonly HashSet<string> _sceneHeroFirstMeetingShownThisSession = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
+	private const string PlayerCraftedAfefInspectionSuffix = "*你的智识分辨出来了该物品由玩家亲手制造*";
+
 	private string _pendingHeroHistoryExtraFactAfterSceneReply = "";
 
 	private List<NpcDataPacket> _pendingHeroHistoryExtraFactTargetsAfterSceneReply = new List<NpcDataPacket>();
+
+	private int _pendingHeroHistoryExtraFactPersonalizedAgentIndexAfterSceneReply = -1;
 
 	private List<Agent> _staringAgents = new List<Agent>();
 
@@ -2474,6 +2478,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 				_sceneHeroFirstMeetingShownThisSession.Clear();
 				_pendingHeroHistoryExtraFactAfterSceneReply = "";
 				_pendingHeroHistoryExtraFactTargetsAfterSceneReply.Clear();
+				_pendingHeroHistoryExtraFactPersonalizedAgentIndexAfterSceneReply = -1;
 			}
 			ClearPendingCurrentAfefFacts();
 			_staringAgents.Clear();
@@ -8977,7 +8982,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 	private static string StripActionTagsForSceneSpeech(string text)
 	{
 		string text2 = GiveAssetTagCodec.StripTags((text ?? "").Replace("\r", ""));
-		return Regex.Replace(text2, "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD:[^\\]]*|ADP:[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP)\\]", "", RegexOptions.IgnoreCase).Trim();
+		return Regex.Replace(text2, "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_(?:C&L|[CL])|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD:[^\\]]*|ADP:[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP)\\]", "", RegexOptions.IgnoreCase).Trim();
 	}
 
 	private static string ExtractDeferredSceneActionTags(string text)
@@ -8997,7 +9002,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 			}
 		}
 		text2 = GiveAssetTagCodec.StripTags(text2);
-		foreach (Match item in Regex.Matches(text2, "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD:[^\\]]*|ADP:[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END)\\]", RegexOptions.IgnoreCase))
+		foreach (Match item in Regex.Matches(text2, "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_(?:C&L|[CL])|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD:[^\\]]*|ADP:[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END)\\]", RegexOptions.IgnoreCase))
 		{
 			string text3 = (item?.Value ?? "").Trim();
 			if (!string.IsNullOrWhiteSpace(text3) && hashSet.Add(text3))
@@ -9014,7 +9019,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		{
 			return true;
 		}
-		foreach (Match item in Regex.Matches(GiveAssetTagCodec.StripTags(text), "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD:[^\\]]*|ADP:[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END)\\]", RegexOptions.IgnoreCase))
+		foreach (Match item in Regex.Matches(GiveAssetTagCodec.StripTags(text), "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_(?:C&L|[CL])|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD:[^\\]]*|ADP:[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END)\\]", RegexOptions.IgnoreCase))
 		{
 			string text2 = (item?.Value ?? "").Trim();
 			if (!string.IsNullOrWhiteSpace(text2) && !text2.StartsWith("[ACTION:MOOD:", StringComparison.OrdinalIgnoreCase))
@@ -9036,7 +9041,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 				list.Add(giveAssetTag.RawTag);
 			}
 		}
-		foreach (Match item in Regex.Matches(GiveAssetTagCodec.StripTags(text), "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD:[^\\]]*|ADP:[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END)\\]", RegexOptions.IgnoreCase))
+		foreach (Match item in Regex.Matches(GiveAssetTagCodec.StripTags(text), "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_(?:C&L|[CL])|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD:[^\\]]*|ADP:[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END)\\]", RegexOptions.IgnoreCase))
 		{
 			string text2 = (item?.Value ?? "").Trim();
 			if (!string.IsNullOrWhiteSpace(text2) && !text2.StartsWith("[ACTION:MOOD:", StringComparison.OrdinalIgnoreCase) && hashSet.Add(text2))
@@ -9053,7 +9058,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		{
 			return true;
 		}
-		return Regex.IsMatch(GiveAssetTagCodec.StripTags(text), "\\[(?:ACTION:(?:GIVE_ASSET|KINGDOM_SERVICE|JOIN_MERCENARY|JOIN_VASSAL|TRADE_TRUST|KING_ABDICATE_TO_PLAYER|VASSALAGE|KINGDOM_ANNEX|AGENDA|WORLDMAP_ORDER|DUEL|ISSUE_|QUEST_TURN_IN|NOBLE_GATHERING|NOBLE_PRISONER_EXECUTE|INTIMACY_INTERNAL|MEETING_TAUNT_BATTLE|LET_PLAYER_GO|ENCOUNTER_RELEASE_PLAYER|NPC_SURRENDER|SIEGE_|6|召集)[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD:[^\\]]*|ADP:[^\\]]*)\\]", RegexOptions.IgnoreCase);
+		return Regex.IsMatch(GiveAssetTagCodec.StripTags(text), "\\[(?:ACTION:(?:GIVE_ASSET|KINGDOM_SERVICE|JOIN_MERCENARY|JOIN_VASSAL|TRADE_TRUST|KING_ABDICATE_TO_PLAYER|VASSALAGE|KINGDOM_ANNEX|AGENDA|WORLDMAP_ORDER|DUEL|ISSUE_|QUEST_TURN_IN|NOBLE_GATHERING|NOBLE_PRISONER_EXECUTE|INTIMACY_INTERNAL|MEETING_TAUNT_BATTLE|LET_PLAYER_GO|ENCOUNTER_RELEASE_PLAYER|NPC_SURRENDER|SIEGE_|6|召集)[^\\]]*|A:(?:H_J_P_P_(?:C&L|[CL])|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD:[^\\]]*|ADP:[^\\]]*)\\]", RegexOptions.IgnoreCase);
 	}
 
 	private bool TryApplyDeferredScenePostprocessActionTagsDirectly(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, ref string tags, string playerText, string npcReplyText, string chainName)
@@ -10603,6 +10608,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			_sceneHeroFirstMeetingShownThisSession.Clear();
 			_pendingHeroHistoryExtraFactAfterSceneReply = "";
 			_pendingHeroHistoryExtraFactTargetsAfterSceneReply.Clear();
+			_pendingHeroHistoryExtraFactPersonalizedAgentIndexAfterSceneReply = -1;
 		}
 		ClearPendingCurrentAfefFacts();
 		ClearPendingNativeSceneMechanismActions("mission_started");
@@ -10685,6 +10691,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				_publicConversationHistory.Clear();
 				_pendingHeroHistoryExtraFactAfterSceneReply = "";
 				_pendingHeroHistoryExtraFactTargetsAfterSceneReply.Clear();
+				_pendingHeroHistoryExtraFactPersonalizedAgentIndexAfterSceneReply = -1;
 			}
 			ClearPendingCurrentAfefFacts();
 			ClearPendingNativeSceneMechanismActions("mission_ended");
@@ -13847,7 +13854,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		try
 		{
 			string text2 = text ?? "";
-			return GiveAssetTagCodec.Extract(text2).Count + Regex.Matches(GiveAssetTagCodec.StripTags(text2), "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD:[^\\]]*|ADP:[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END|RELAY:[^\\]]*|AFEF[^\\]]*|AF_SCENE_SESSION:[^\\]]*|CONTENT)\\]", RegexOptions.IgnoreCase).Count;
+			return GiveAssetTagCodec.Extract(text2).Count + Regex.Matches(GiveAssetTagCodec.StripTags(text2), "\\[(?:ACTION:[^\\]]*|A:(?:H_J_P_P_(?:C&L|[CL])|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD:[^\\]]*|ADP:[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END|RELAY:[^\\]]*|AFEF[^\\]]*|AF_SCENE_SESSION:[^\\]]*|CONTENT)\\]", RegexOptions.IgnoreCase).Count;
 		}
 		catch
 		{
@@ -18663,6 +18670,97 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
+	private bool IsShoutTradePrimaryTargetValidForCommit(bool requireCurrentShoutFrame = false)
+	{
+		NpcDataPacket expectedTarget = _shoutTradeTargetNpc;
+		if (expectedTarget == null || expectedTarget.AgentIndex < 0)
+		{
+			return false;
+		}
+		try
+		{
+			Agent liveAgent = Mission.Current?.Agents?.FirstOrDefault(
+				agent => agent != null && agent.Index == expectedTarget.AgentIndex);
+			if (!CanAgentParticipateInSceneSpeech(liveAgent)
+				|| liveAgent.Character is not CharacterObject liveCharacter)
+			{
+				return false;
+			}
+			if (requireCurrentShoutFrame
+				&& !GetAgentsForShoutTargetingContext(_activeShoutTargetingContext)
+					.Any(agent => agent != null && agent.Index == expectedTarget.AgentIndex))
+			{
+				return false;
+			}
+			if (_shoutTradeTargetHeroOverride != null
+				&& liveCharacter.HeroObject != _shoutTradeTargetHeroOverride)
+			{
+				return false;
+			}
+			if (_shoutTradeTargetCharacterOverride != null
+				&& !ReferenceEquals(liveCharacter, _shoutTradeTargetCharacterOverride)
+				&& !string.Equals(
+					liveCharacter.StringId ?? "",
+					_shoutTradeTargetCharacterOverride.StringId ?? "",
+					StringComparison.OrdinalIgnoreCase))
+			{
+				return false;
+			}
+			if (expectedTarget.IsHero)
+			{
+				return liveCharacter.HeroObject != null;
+			}
+			if (liveCharacter.HeroObject != null)
+			{
+				return false;
+			}
+			if (!string.IsNullOrWhiteSpace(expectedTarget.TroopId)
+				&& !string.Equals(
+					expectedTarget.TroopId,
+					liveCharacter.StringId ?? "",
+					StringComparison.OrdinalIgnoreCase))
+			{
+				return false;
+			}
+			if (!string.IsNullOrWhiteSpace(expectedTarget.UnnamedKey))
+			{
+				NpcDataPacket liveTarget = ShoutUtils.ExtractNpcData(liveAgent);
+				if (!string.Equals(
+					expectedTarget.UnnamedKey,
+					liveTarget?.UnnamedKey ?? "",
+					StringComparison.OrdinalIgnoreCase))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private bool EnsureShoutTradePrimaryTargetValidForCommit(bool requireCurrentShoutFrame = false)
+	{
+		if (IsShoutTradePrimaryTargetValidForCommit(requireCurrentShoutFrame))
+		{
+			return true;
+		}
+		try
+		{
+			Logger.Log("ShoutBehavior", "[ShoutTrade] commit cancelled because primary target is no longer valid agent="
+				+ (_shoutTradeTargetNpc?.AgentIndex ?? (-1)));
+			InformationManager.DisplayMessage(new InformationMessage(
+				"交易目标已经离场或失效，本次给予/展示没有执行。",
+				new Color(1f, 0.45f, 0.25f)));
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
 	private int GetShoutTradeTargetAgentIndex()
 	{
 		return _shoutTradeTargetNpc?.AgentIndex ?? (-1);
@@ -19058,6 +19156,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			ResumeGame();
 			return;
 		}
+		if (!EnsureShoutTradePrimaryTargetValidForCommit(requireCurrentShoutFrame: true))
+		{
+			ResetShoutTradeState();
+			ResumeGame();
+			return;
+		}
 		string text = "";
 		if (IsShoutTradeGiveMode(_shoutTradeMode))
 		{
@@ -19085,6 +19189,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		bool isGive = IsShoutTradeGiveMode(_shoutTradeMode);
 		try
 		{
+			if (Mission.Current != null
+				&& GetShoutTradeTargetAgentIndex() >= 0
+				&& !EnsureShoutTradePrimaryTargetValidForCommit())
+			{
+				return;
+			}
 			if (isGive)
 			{
 				ApplyShoutGiveTransfer();
@@ -19147,7 +19257,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			int targetAgentIndex = (_shoutTradeTargetNpc != null) ? _shoutTradeTargetNpc.AgentIndex : TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
 			if (targetAgentIndex >= 0)
 			{
-				AppendActionAfefFactToSceneHistoryInOrder(targetAgentIndex, fact, mirrorToNativeSharedHistory: false);
+				string sharedFact = ContainsPlayerCraftedAfefInspectionSuffix(fact)
+					? StripPlayerCraftedAfefInspectionSuffix(fact)
+					: fact;
+				AppendActionAfefFactToSceneHistoryInOrder(targetAgentIndex, sharedFact, mirrorToNativeSharedHistory: false);
+				if (!string.Equals(sharedFact, fact, StringComparison.Ordinal))
+				{
+					PromotePersonalizedExtraFactInScenePrivateHistory(fact, targetAgentIndex);
+				}
 				QueuePendingCurrentAfefFactForAgent(targetAgentIndex, fact);
 			}
 			else
@@ -19158,7 +19275,16 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				MyBehavior.AppendExternalDialogueHistory(targetHero, null, null, fact);
 			}
-			AppendNativeConversationSessionHistory(targetHero, targetCharacter, npcName, "玩家动作", fact, "fact", targetAgentIndex: targetAgentIndex, npc: _shoutTradeTargetNpc);
+			AppendNativeConversationSessionHistory(
+				targetHero,
+				targetCharacter,
+				npcName,
+				"玩家动作",
+				fact,
+				"fact",
+				targetAgentIndex: targetAgentIndex,
+				npc: _shoutTradeTargetNpc,
+				bridgeToSceneHistory: false);
 			Logger.Log("NativeConversationTrade", "recorded action-only fact target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName) + " fact=" + fact.Replace("\r", "\\r").Replace("\n", "\\n"));
 		}
 		catch (Exception ex)
@@ -19214,6 +19340,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		bool hasWildernessNonHeroParty = TryResolveWildernessNonHeroRewardParty(hero, characterObject, shoutTradeTargetAgentIndex, out var wildernessNonHeroParty);
 		bool captureGcczSharedRelief = AfGcczShoutBridge.ShouldCaptureSharedReliefTransfer(shoutTradeTargetAgentIndex);
 		string text = MyBehavior.BuildRuleTargetKeyForExternal(hero, characterObject, shoutTradeTargetAgentIndex);
+		string playerCraftObserverKey = ResolveShownTradeTargetKey(shoutTradeTargetNpc, out var _);
+		if (string.IsNullOrWhiteSpace(playerCraftObserverKey))
+		{
+			playerCraftObserverKey = text;
+		}
 		MobileParty mobileParty = Hero.MainHero?.PartyBelongedTo;
 		for (int i = 0; i < _shoutPendingTradeItems.Count; i++)
 		{
@@ -19345,7 +19476,16 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						currentSettlement.ItemRoster.AddToCounts(itemObject, num4);
 						RewardSystemBehavior.Instance?.RecordPlayerPrepaidTransferForMerchant(currentSettlement, settlementMerchantKind, 0, text2, num4);
 						string text3 = RewardSystemBehavior.Instance?.BuildSettlementItemValueFactSuffixForExternal(currentSettlement, itemObject, num4) ?? "";
-						RewardSystemBehavior.Instance?.AppendSettlementMerchantNpcFact(currentSettlement, settlementMerchantKind, $"你已经收下了玩家交来的 {num4} 个 {itemObject.Name?.ToString() ?? text2}{text3}。", characterObject?.Name?.ToString());
+						string merchantFactItemName = RewardSystemBehavior.DecoratePlayerCraftedAfefItemNameForExternal(
+							text2,
+							itemObject.Id.InternalValue,
+							itemObject.Name?.ToString() ?? text2,
+							null,
+							characterObject,
+							playerCraftObserverKey,
+							"give",
+							commit: true);
+						RewardSystemBehavior.Instance?.AppendSettlementMerchantNpcFact(currentSettlement, settlementMerchantKind, $"你已经收下了玩家交来的 {num4} 个 {merchantFactItemName}{text3}。", characterObject?.Name?.ToString());
 					}
 					if (hero != null)
 					{
@@ -19834,6 +19974,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		string text = GetPlayerDisplayNameForShout();
 		string text2 = GetShoutTradeTargetDisplayName();
+		ResolveShoutTradeRuntimeTarget(out var observerHero, out var observerCharacter, out var _);
+		int observerAgentIndex = GetShoutTradeTargetAgentIndex();
+		string observerKey = ResolveShownTradeTargetKey(_shoutTradeTargetNpc, out var _);
+		if (string.IsNullOrWhiteSpace(observerKey))
+		{
+			observerKey = MyBehavior.BuildRuleTargetKeyForExternal(observerHero, observerCharacter, observerAgentIndex);
+		}
 		List<string> list = new List<string>();
 		long num = 0L;
 		for (int i = 0; i < _shoutPendingTradeItems.Count; i++)
@@ -19852,6 +19999,19 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						shoutPendingTradeItem.ItemId ?? shoutPendingTradeItem.Item?.StringId,
 						shoutPendingTradeItem.Item?.Id.InternalValue ?? 0u,
 						shoutPendingTradeItem.ItemName);
+					string playerCraftedItemId = (shoutPendingTradeItem.ItemId ?? shoutPendingTradeItem.Item?.StringId ?? "").Trim();
+					if (!string.IsNullOrWhiteSpace(playerCraftedItemId))
+					{
+						itemFactName = RewardSystemBehavior.DecoratePlayerCraftedAfefItemNameForExternal(
+							playerCraftedItemId,
+							shoutPendingTradeItem.Item?.Id.InternalValue ?? 0u,
+							itemFactName,
+							observerHero,
+							observerCharacter ?? observerHero?.CharacterObject,
+							observerKey,
+							isGive ? "give" : "show",
+							commit: true);
+					}
 					string text3;
 					if (isGive)
 					{
@@ -23258,6 +23418,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		bool allowsPersonalJoinVariants = false;
+		bool allowsCompanionFallbackTemplate = false;
 		foreach (PostprocessRuleEntry rule in rules ?? new List<PostprocessRuleEntry>())
 		{
 			string text2 = (rule?.Tag ?? "").Trim();
@@ -23269,17 +23430,30 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					allowsPersonalJoinVariants = true;
 				}
+				if (string.Equals(text2, "[A:H_J_P_P_C&L]", StringComparison.OrdinalIgnoreCase))
+				{
+					allowsCompanionFallbackTemplate = true;
+				}
 			}
 		}
 		List<string> list = new List<string>();
 		HashSet<string> hashSet2 = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		string text = "";
-		foreach (Match item in Regex.Matches(raw ?? "", "\\[(?:ACTION:[^\\]\\r\\n]*|A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]\\r\\n]+))\\]", RegexOptions.IgnoreCase))
+		foreach (Match item in Regex.Matches(raw ?? "", "\\[(?:ACTION:[^\\]\\r\\n]*|A:(?:H_J_P_P_(?:C&L|[CL])|C_J_P_K|C_J_K:[^\\]\\r\\n]+))\\]", RegexOptions.IgnoreCase))
 		{
 			string text3 = (item?.Value ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(text3))
 			{
 				continue;
+			}
+			if (string.Equals(text3, "[A:H_J_P_P_C&L]", StringComparison.OrdinalIgnoreCase))
+			{
+				if (!allowsCompanionFallbackTemplate)
+				{
+					continue;
+				}
+				// The model copied the rule template instead of selecting a concrete variant.
+				text3 = "[A:H_J_P_P_C]";
 			}
 			if (text3.StartsWith("[ACTION:MOOD:", StringComparison.OrdinalIgnoreCase))
 			{
@@ -24677,16 +24851,68 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string text = (targetNpc.UnnamedKey ?? "").Trim().ToLowerInvariant();
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			return text;
+			return AppendSceneAgentIdentityToShownTargetKey(text, targetNpc.AgentIndex);
 		}
 		string text2 = (targetNpc.TroopId ?? "").Trim().ToLowerInvariant();
 		if (!string.IsNullOrWhiteSpace(text2))
 		{
-			return "troop:" + text2;
+			return AppendSceneAgentIdentityToShownTargetKey("troop:" + text2, targetNpc.AgentIndex);
 		}
 		if (!string.IsNullOrWhiteSpace(targetNpc.Name))
 		{
-			return ("name:" + targetNpc.Name).Trim().ToLowerInvariant();
+			return AppendSceneAgentIdentityToShownTargetKey(
+				("name:" + targetNpc.Name).Trim().ToLowerInvariant(),
+				targetNpc.AgentIndex);
+		}
+		return "";
+	}
+
+	private static string AppendSceneAgentIdentityToShownTargetKey(string targetKey, int agentIndex)
+	{
+		string key = (targetKey ?? "").Trim().ToLowerInvariant();
+		if (string.IsNullOrWhiteSpace(key)
+			|| key.IndexOf("|agent:", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return key;
+		}
+		string scope = ResolveShownTradeNonHeroScope(agentIndex);
+		if (!string.IsNullOrWhiteSpace(scope)
+			&& key.IndexOf("|scope:", StringComparison.OrdinalIgnoreCase) < 0)
+		{
+			key += "|scope:" + scope;
+		}
+		if (agentIndex < 0)
+		{
+			return key;
+		}
+		return key + "|agent:" + agentIndex;
+	}
+
+	private static string ResolveShownTradeNonHeroScope(int agentIndex)
+	{
+		try
+		{
+			string settlementId = NormalizeWildernessNonHeroMemoryKeyPart(
+				Settlement.CurrentSettlement?.StringId);
+			if (!string.IsNullOrWhiteSpace(settlementId))
+			{
+				return "settlement:" + settlementId;
+			}
+			string partyId = NormalizeWildernessNonHeroMemoryKeyPart(
+				TryResolveWildernessNonHeroMobileParty(agentIndex)?.StringId);
+			if (!string.IsNullOrWhiteSpace(partyId))
+			{
+				return "party:" + partyId;
+			}
+			string sceneName = NormalizeWildernessNonHeroMemoryKeyPart(
+				Mission.Current?.SceneName);
+			if (!string.IsNullOrWhiteSpace(sceneName))
+			{
+				return "scene:" + sceneName;
+			}
+		}
+		catch
+		{
 		}
 		return "";
 	}
@@ -24792,23 +25018,43 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			extraFact = string.IsNullOrWhiteSpace(extraFact) ? proactiveSceneExtraFact : (extraFact + "\n" + proactiveSceneExtraFact);
 		}
+		int personalizedPlayerCraftFactAgentIndex =
+			ContainsPlayerCraftedAfefInspectionSuffix(extraFact)
+				? primaryTarget.Index
+				: -1;
+		string sharedExtraFact = personalizedPlayerCraftFactAgentIndex >= 0
+			? StripPlayerCraftedAfefInspectionSuffix(extraFact)
+			: extraFact;
 		List<Agent> directlyEngagedAgents = new List<Agent> { primaryTarget };
 		ResetStaringForActiveInteraction(directlyEngagedAgents, primaryTarget);
 		ExtendStaringHoldForPlayerDrivenSceneRound(1);
 		_pendingHeroHistoryExtraFactAfterSceneReply = "";
 		_pendingHeroHistoryExtraFactTargetsAfterSceneReply = new List<NpcDataPacket>();
-		if (!string.IsNullOrWhiteSpace(extraFact))
+		_pendingHeroHistoryExtraFactPersonalizedAgentIndexAfterSceneReply = -1;
+		if (!string.IsNullOrWhiteSpace(sharedExtraFact))
 		{
-			RecordExtraFactToSceneHistory(extraFact, allNpcData);
-			if (ShouldDeferExtraFactPersistenceUntilAfterSceneReply(extraFact))
+			RecordExtraFactToSceneHistory(sharedExtraFact, allNpcData);
+			if (personalizedPlayerCraftFactAgentIndex >= 0)
 			{
-				SetPendingHeroHistoryExtraFactAfterSceneReply(extraFact, allNpcData);
+				PromotePersonalizedExtraFactInScenePrivateHistory(
+					extraFact,
+					personalizedPlayerCraftFactAgentIndex);
+			}
+			if (ShouldDeferExtraFactPersistenceUntilAfterSceneReply(sharedExtraFact))
+			{
+				SetPendingHeroHistoryExtraFactAfterSceneReply(
+					extraFact,
+					allNpcData,
+					personalizedPlayerCraftFactAgentIndex);
 			}
 			else
 			{
 				try
 				{
-					PersistExtraFactToNamedHeroes(extraFact, allNpcData);
+					PersistExtraFactToNamedHeroes(
+						extraFact,
+						allNpcData,
+						personalizedPlayerCraftFactAgentIndex);
 				}
 				catch
 				{
@@ -24845,7 +25091,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			try
 			{
 				Dictionary<int, PrecomputedShoutRagContext> precomputedContexts = new Dictionary<int, PrecomputedShoutRagContext>();
-				await HandleGroupResponse(shoutText, capturedNpcData, sceneDesc, primaryDataPacket, extraFact, precomputedContexts, capturedResolvedHeroes, conversationEpoch, conversationScope, framedNpcData);
+				await HandleGroupResponse(shoutText, capturedNpcData, sceneDesc, primaryDataPacket, sharedExtraFact, precomputedContexts, capturedResolvedHeroes, conversationEpoch, conversationScope, framedNpcData);
 			}
 			catch (Exception ex)
 			{
@@ -26403,20 +26649,31 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
+	private static string NormalizeSceneExtraFactForHistory(string extraFact)
+	{
+		string text = (extraFact ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		if (!text.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal)
+			&& !text.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal))
+		{
+			text = "[AFEF玩家行为补充] " + text;
+		}
+		return text;
+	}
+
 	private void RecordExtraFactToSceneHistory(string extraFact, List<NpcDataPacket> nearbyData)
 	{
 		if (string.IsNullOrWhiteSpace(extraFact) || nearbyData == null)
 		{
 			return;
 		}
-		string text = extraFact.Replace("\r", " ").Replace("\n", " ").Trim();
+		string text = NormalizeSceneExtraFactForHistory(extraFact);
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			return;
-		}
-		if (!text.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal) && !text.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal))
-		{
-			text = "[AFEF玩家行为补充] " + text;
 		}
 		List<int> visibleAgentIndices = BuildVisibleAgentSnapshot(nearbyData);
 		long eventSequence = NextConversationEventSequence();
@@ -26801,52 +27058,115 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return;
 		}
-		List<int> visibleAgentIndices = new List<int> { targetAgentIndex };
-		ConversationMessage message = StampConversationMessageWithCurrentMemoryContext(new ConversationMessage
+		long eventSequence = NextConversationEventSequence();
+		ConversationMessage publicMessage = StampConversationMessageWithCurrentMemoryContext(new ConversationMessage
 		{
+			EventSequence = eventSequence,
 			Role = "system",
 			Content = factLine,
 			SpeakerName = "系统",
 			SpeakerAgentIndex = -1,
-			VisibleAgentIndices = visibleAgentIndices
+			VisibleAgentIndices = new List<int> { targetAgentIndex }
+		});
+		ConversationMessage privateMessage = StampConversationMessageWithCurrentMemoryContext(new ConversationMessage
+		{
+			EventSequence = eventSequence,
+			Role = "system",
+			Content = factLine,
+			SpeakerName = "系统",
+			SpeakerAgentIndex = -1,
+			VisibleAgentIndices = new List<int> { targetAgentIndex }
 		});
 		lock (_historyLock)
 		{
-			_publicConversationHistory.Add(message);
+			_publicConversationHistory.Add(publicMessage);
 			if (!_npcConversationHistory.TryGetValue(targetAgentIndex, out var history) || history == null)
 			{
 				history = new List<ConversationMessage>();
 				_npcConversationHistory[targetAgentIndex] = history;
 			}
-			history.Add(message);
+			history.Add(privateMessage);
 		}
 		if (mirrorToNativeSharedHistory)
 		{
-			AppendSceneEventToNativeSharedHistory(ResolveSceneNpcDataForSharedHistory(targetAgentIndex), "玩家动作", factLine, "fact", message.EventSequence);
+			AppendSceneEventToNativeSharedHistory(ResolveSceneNpcDataForSharedHistory(targetAgentIndex), "玩家动作", factLine, "fact", eventSequence);
 		}
 	}
 
-	private void PersistExtraFactToNamedHeroes(string extraFact, List<NpcDataPacket> nearbyData)
+	private void PersistExtraFactToNamedHeroes(
+		string extraFact,
+		List<NpcDataPacket> nearbyData,
+		int personalizedAgentIndex = -1)
 	{
 		if (string.IsNullOrWhiteSpace(extraFact) || nearbyData == null)
 		{
 			return;
 		}
+		string sharedExtraFact = personalizedAgentIndex >= 0
+			? StripPlayerCraftedAfefInspectionSuffix(extraFact)
+			: extraFact;
 		HashSet<string> persistedNonHeroIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		if (personalizedAgentIndex >= 0)
+		{
+			NpcDataPacket personalizedTarget = nearbyData.FirstOrDefault(
+				npc => npc != null && npc.AgentIndex == personalizedAgentIndex);
+			PersistExtraFactToNamedObserver(
+				personalizedTarget,
+				extraFact,
+				persistedNonHeroIds);
+		}
 		foreach (NpcDataPacket nearbyDatum in nearbyData)
 		{
-			if (nearbyDatum != null && nearbyDatum.IsHero)
+			if (nearbyDatum == null || nearbyDatum.AgentIndex == personalizedAgentIndex)
 			{
-				Hero hero = ResolveHeroFromAgentIndex(nearbyDatum.AgentIndex);
-				if (hero != null)
-				{
-					MyBehavior.AppendExternalSceneDialogueHistory(hero, null, null, extraFact, _sceneHistorySessionId);
-				}
+				continue;
 			}
-			else if (nearbyDatum != null && TryResolveWildernessNonHeroMemory(nearbyDatum, null, null, nearbyDatum.AgentIndex, out var memoryId, out var memoryName) && persistedNonHeroIds.Add(memoryId))
+			PersistExtraFactToNamedObserver(
+				nearbyDatum,
+				sharedExtraFact,
+				persistedNonHeroIds);
+		}
+	}
+
+	private void PersistExtraFactToNamedObserver(
+		NpcDataPacket observer,
+		string extraFact,
+		HashSet<string> persistedNonHeroIds)
+	{
+		if (observer == null || string.IsNullOrWhiteSpace(extraFact))
+		{
+			return;
+		}
+		if (observer.IsHero)
+		{
+			Hero hero = ResolveHeroFromAgentIndex(observer.AgentIndex);
+			if (hero != null)
 			{
-				MyBehavior.AppendExternalNonHeroSceneDialogueHistory(memoryId, memoryName, null, null, extraFact, _sceneHistorySessionId);
+				MyBehavior.AppendExternalSceneDialogueHistory(
+					hero,
+					null,
+					null,
+					extraFact,
+					_sceneHistorySessionId);
 			}
+			return;
+		}
+		if (TryResolveWildernessNonHeroMemory(
+			observer,
+			null,
+			null,
+			observer.AgentIndex,
+			out var memoryId,
+			out var memoryName)
+			&& (persistedNonHeroIds == null || persistedNonHeroIds.Add(memoryId)))
+		{
+			MyBehavior.AppendExternalNonHeroSceneDialogueHistory(
+				memoryId,
+				memoryName,
+				null,
+				null,
+				extraFact,
+				_sceneHistorySessionId);
 		}
 	}
 
@@ -26911,26 +27231,105 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return false;
 		}
-		return text.Contains("看了看 总值为") && text.Contains("证明自己有这些东西,不过没有把东西交给");
+		return text.Contains("看了看 总值为")
+			&& text.Contains("暂未交付给你")
+			&& text.Contains("证明了他有这些东西");
 	}
 
-	private void SetPendingHeroHistoryExtraFactAfterSceneReply(string extraFact, List<NpcDataPacket> nearbyData)
+	private static bool ContainsPlayerCraftedAfefInspectionSuffix(string extraFact)
+	{
+		return !string.IsNullOrWhiteSpace(extraFact)
+			&& extraFact.IndexOf(
+				PlayerCraftedAfefInspectionSuffix,
+				StringComparison.Ordinal) >= 0;
+	}
+
+	private static string StripPlayerCraftedAfefInspectionSuffix(string extraFact)
+	{
+		return (extraFact ?? "").Replace(
+			PlayerCraftedAfefInspectionSuffix,
+			"");
+	}
+
+	private void SetPendingHeroHistoryExtraFactAfterSceneReply(
+		string extraFact,
+		List<NpcDataPacket> nearbyData,
+		int personalizedAgentIndex = -1)
 	{
 		_pendingHeroHistoryExtraFactAfterSceneReply = (extraFact ?? "").Trim();
 		_pendingHeroHistoryExtraFactTargetsAfterSceneReply = CloneNpcDataSnapshot(nearbyData) ?? new List<NpcDataPacket>();
+		_pendingHeroHistoryExtraFactPersonalizedAgentIndexAfterSceneReply = personalizedAgentIndex;
+	}
+
+	private void PromotePersonalizedExtraFactInScenePrivateHistory(
+		string personalizedExtraFact,
+		int personalizedAgentIndex)
+	{
+		if (personalizedAgentIndex < 0
+			|| !ContainsPlayerCraftedAfefInspectionSuffix(personalizedExtraFact))
+		{
+			return;
+		}
+		string personalizedLine = NormalizeSceneExtraFactForHistory(personalizedExtraFact);
+		string sharedLine = NormalizeSceneExtraFactForHistory(
+			StripPlayerCraftedAfefInspectionSuffix(personalizedExtraFact));
+		if (string.IsNullOrWhiteSpace(personalizedLine)
+			|| string.IsNullOrWhiteSpace(sharedLine)
+			|| string.Equals(personalizedLine, sharedLine, StringComparison.Ordinal))
+		{
+			return;
+		}
+		lock (_historyLock)
+		{
+			if (!_npcConversationHistory.TryGetValue(
+				personalizedAgentIndex,
+				out var privateHistory)
+				|| privateHistory == null)
+			{
+				return;
+			}
+			for (int i = privateHistory.Count - 1; i >= 0; i--)
+			{
+				ConversationMessage message = privateHistory[i];
+				if (message != null
+					&& string.Equals(message.Role ?? "", "system", StringComparison.OrdinalIgnoreCase)
+					&& string.Equals(message.Content ?? "", sharedLine, StringComparison.Ordinal))
+				{
+					message.Content = personalizedLine;
+					message.TargetAgentIndex = personalizedAgentIndex;
+					message.TargetHeroId = "";
+					message.VisibleAgentIndices = new List<int> { personalizedAgentIndex };
+					message.VisibleHeroIds = new List<string>();
+					FillSceneMessageHeroIdentity(message);
+					return;
+				}
+			}
+		}
 	}
 
 	private void FlushPendingHeroHistoryExtraFactAfterSceneReply()
 	{
 		string text = (_pendingHeroHistoryExtraFactAfterSceneReply ?? "").Trim();
+		List<NpcDataPacket> list = _pendingHeroHistoryExtraFactTargetsAfterSceneReply ?? new List<NpcDataPacket>();
+		int personalizedAgentIndex =
+			_pendingHeroHistoryExtraFactPersonalizedAgentIndexAfterSceneReply;
+		_pendingHeroHistoryExtraFactAfterSceneReply = "";
+		_pendingHeroHistoryExtraFactTargetsAfterSceneReply = new List<NpcDataPacket>();
+		_pendingHeroHistoryExtraFactPersonalizedAgentIndexAfterSceneReply = -1;
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			return;
 		}
-		List<NpcDataPacket> list = _pendingHeroHistoryExtraFactTargetsAfterSceneReply ?? new List<NpcDataPacket>();
-		_pendingHeroHistoryExtraFactAfterSceneReply = "";
-		_pendingHeroHistoryExtraFactTargetsAfterSceneReply = new List<NpcDataPacket>();
-		PersistExtraFactToNamedHeroes(text, list);
+		if (personalizedAgentIndex >= 0)
+		{
+			PromotePersonalizedExtraFactInScenePrivateHistory(
+				text,
+				personalizedAgentIndex);
+		}
+		PersistExtraFactToNamedHeroes(
+			text,
+			list,
+			personalizedAgentIndex);
 	}
 
 	private static bool IsSingleUseSceneNpcFactText(string text)
@@ -31852,13 +32251,16 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						merged.Add(msg);
 					}
 				}
-				addVisible(_publicConversationHistory);
 				if (_npcConversationHistory != null)
 				{
 					if (_npcConversationHistory.TryGetValue(npcAgentIndex, out list) && list != null)
 					{
 						addVisible(list);
 					}
+				}
+				addVisible(_publicConversationHistory);
+				if (_npcConversationHistory != null)
+				{
 					foreach (KeyValuePair<int, List<ConversationMessage>> pair in _npcConversationHistory)
 					{
 						if (pair.Key == npcAgentIndex || pair.Value == null || !DoesSceneHistoryBucketRelateToHero(pair.Value, viewerHeroId))

@@ -36,6 +36,10 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private const float NativeConversationReleaseDialogDelaySeconds = 10f;
 
+	// Matches SafePassageBarterable.Apply(): a release must give the player enough
+	// separation time that the same party cannot immediately re-open the encounter.
+	private const int MeetingReleaseSafePassageHours = 32;
+
 	private static bool _encounterMeetingMissionActive;
 
 	private static CampaignVec2 _savedMainPartyPosition;
@@ -6706,71 +6710,45 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			List<MobileParty> list = new List<MobileParty>();
+			// Keep this aligned with the native SafePassageBarterable path. The
+			// encounter can contain army members that are not represented by the
+			// currently speaking hero, so protecting only EncounteredMobileParty lets
+			// one of those members immediately attack the player again.
+			List<MobileParty> partiesJoiningPlayerSide = new List<MobileParty>();
+			List<MobileParty> protectedParties = new List<MobileParty>();
 			try
 			{
-				MobileParty encounteredMobileParty = PlayerEncounter.EncounteredMobileParty;
-				if (encounteredMobileParty != null)
+				PlayerEncounter.Current?.FindAllNpcPartiesWhoWillJoinEvent(partiesJoiningPlayerSide, protectedParties);
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("MeetingRelease", "Could not resolve native safe-passage parties: " + ex.Message);
+			}
+			void AddProtectedParty(MobileParty party)
+			{
+				if (party != null && party != MobileParty.MainParty && !protectedParties.Contains(party))
 				{
-					list.Add(encounteredMobileParty);
-					foreach (MobileParty item in encounteredMobileParty.Army?.Parties ?? Enumerable.Empty<MobileParty>())
-					{
-						if (item != null && !list.Contains(item))
-						{
-							list.Add(item);
-						}
-					}
+					protectedParties.Add(party);
 				}
 			}
-			catch
-			{
-			}
-			try
-			{
-				MobileParty partyBelongedTo = releasedByHero?.PartyBelongedTo;
-				if (partyBelongedTo != null && !list.Contains(partyBelongedTo))
-				{
-					list.Add(partyBelongedTo);
-				}
-			}
-			catch
-			{
-			}
+			PartyBase meetingReleaseEncounterParty = TryGetMeetingReleaseEncounterParty();
+			AddProtectedParty(meetingReleaseEncounterParty?.MobileParty);
+			AddProtectedParty(releasedByHero?.PartyBelongedTo);
 			int num = 0;
-			foreach (MobileParty item2 in list.Where((MobileParty x) => x != null && x != MobileParty.MainParty).Distinct())
+			foreach (MobileParty item in protectedParties)
 			{
 				try
 				{
-					item2.Ai?.SetDoNotAttackMainParty(6);
+					item.Ai?.SetDoNotAttackMainParty(MeetingReleaseSafePassageHours);
+					item.SetMoveModeHold();
+					item.IgnoreForHours(MeetingReleaseSafePassageHours);
+					item.Ai?.SetInitiative(0f, 0.8f, 8f);
+					num++;
 				}
-				catch
+				catch (Exception ex2)
 				{
+					Logger.Log("MeetingRelease", "Could not apply native safe-passage state to party=" + GetPartyLogName(item?.Party) + ": " + ex2.Message);
 				}
-				try
-				{
-					item2.SetMoveModeHold();
-				}
-				catch
-				{
-				}
-				try
-				{
-					if (item2.Ai != null)
-					{
-						item2.Ai.RethinkAtNextHourlyTick = true;
-					}
-				}
-				catch
-				{
-				}
-				num++;
-			}
-			try
-			{
-				MobileParty.MainParty?.IgnoreForHours(0.5f);
-			}
-			catch
-			{
 			}
 			try
 			{
@@ -6779,7 +6757,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			catch
 			{
 			}
-			Logger.Log("MeetingRelease", $"Applied release world-map cooldown. ProtectedParties={num}, Reason={reason ?? "N/A"}");
+			Logger.Log("MeetingRelease", $"Applied native-equivalent release safe passage. ProtectedParties={num}, Hours={MeetingReleaseSafePassageHours}, Reason={reason ?? "N/A"}");
 		}
 		catch (Exception ex)
 		{

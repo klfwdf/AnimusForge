@@ -15,6 +15,8 @@ public sealed class PreprocessPromptsConfigModel
 
 	public MemorySelectionPreprocessPromptConfig MemorySelection { get; set; } = new MemorySelectionPreprocessPromptConfig();
 
+	public PlayerRpTemplateSelectionPreprocessPromptConfig PlayerRpTemplateSelection { get; set; } = new PlayerRpTemplateSelectionPreprocessPromptConfig();
+
 	public ConnectionTestPreprocessPromptConfig ConnectionTest { get; set; } = new ConnectionTestPreprocessPromptConfig();
 }
 
@@ -53,5 +55,10 @@ public sealed class ConnectionTestPreprocessPromptConfig
 {
 	public string ExpectedRuleCode { get; set; } = "";
 
+	public string UserPromptTemplate { get; set; } = "";
+}
+
+public sealed class PlayerRpTemplateSelectionPreprocessPromptConfig
+{
 	public string UserPromptTemplate { get; set; } = "";
 }

@@ -37,7 +37,7 @@ using TaleWorlds.ObjectSystem;
 
 namespace AnimusForge;
 
-public class RewardSystemBehavior : CampaignBehaviorBase
+public partial class RewardSystemBehavior : CampaignBehaviorBase
 {
 	private const int RewardQuickInfoDurationMs = 5000;
 	private const float JoinPartyConversationCloseDelaySeconds = 5f;
@@ -85,9 +85,50 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	private static readonly PropertyInfo RewardItemObjectIsFoodProperty = typeof(ItemObject).GetProperty("IsFood", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 	private static readonly PropertyInfo RewardItemObjectNotMerchandiseProperty = typeof(ItemObject).GetProperty("NotMerchandise", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 	private static readonly PropertyInfo RewardItemObjectItemFlagsProperty = typeof(ItemObject).GetProperty("ItemFlags", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+	private static readonly string[] GeneratedRewardItemTemplateStatePropertyNames = new string[31]
+	{
+		"ItemCategory",
+		"ItemComponent",
+		"WeaponDesign",
+		"MultiMeshName",
+		"HolsterMeshName",
+		"HolsterWithWeaponMeshName",
+		"ItemHolsters",
+		"HolsterPositionShift",
+		"FlyingMeshName",
+		"BodyName",
+		"SkeletonName",
+		"StaticAnimationName",
+		"HolsterBodyName",
+		"CollisionBodyName",
+		"RecalculateBody",
+		"PrefabName",
+		"ItemFlags",
+		"Value",
+		"Effectiveness",
+		"Weight",
+		"Difficulty",
+		"Appearance",
+		"IsUsingTableau",
+		"ArmBandMeshName",
+		"IsFood",
+		"ScaleFactor",
+		"Culture",
+		"MultiplayerItem",
+		"NotMerchandise",
+		"LodAtlasIndex",
+		"ItemType"
+	};
+	private static readonly PropertyInfo[] GeneratedRewardItemTemplateStateProperties =
+		GeneratedRewardItemTemplateStatePropertyNames
+			.Select((string propertyName) => typeof(ItemObject).GetProperty(
+				propertyName,
+				BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+			.ToArray();
 	private static readonly MethodInfo RewardObjectManagerTryRegisterWithoutInitializationMethod = typeof(MBObjectManager).GetMethod("TryRegisterObjectWithoutInitialization", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 	private static readonly FieldInfo HeroClanBackingField = typeof(Hero).GetField("_clan", BindingFlags.Instance | BindingFlags.NonPublic);
-	private static readonly Regex HeroJoinPlayerPartyTagRegex = new Regex("\\[A:H_J_P_P_([CL])\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+	// Some models copy the C&L template verbatim. Its only safe fallback is the companion branch (C).
+	private static readonly Regex HeroJoinPlayerPartyTagRegex = new Regex("\\[A:H_J_P_P_(C(?:&L)?|L)\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 	private static readonly Regex DebtCreationTagRegex = new Regex("\\[AD:(\\d+):(\\d+):(N|P):([^\\]\\r\\n]*)\\]", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
 	private static readonly Regex DebtResolutionTagRegex = new Regex("\\[ADP:([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
@@ -110,6 +151,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		Axe,
 		Mace,
 		Dagger,
+		Whip,
 		Polearm,
 		Bow,
 		Crossbow,
@@ -129,6 +171,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		LegArmor,
 		HandArmor,
 		Cape,
+		Horse,
 		HorseHarness,
 		Banner
 	}
@@ -202,9 +245,18 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	private static readonly object GeneratedRpEquipmentTemplateCacheLock = new object();
 	private static object GeneratedRpEquipmentTemplateCacheOwner;
 	private static Dictionary<GeneratedRpEquipmentKind, List<GeneratedRpEquipmentTemplateCandidate>> GeneratedRpEquipmentTemplatesByKind = new Dictionary<GeneratedRpEquipmentKind, List<GeneratedRpEquipmentTemplateCandidate>>();
+	private static bool GeneratedRpEquipmentTemplateCacheReady;
+	private static DateTime GeneratedRpEquipmentTemplateCacheRetryAfterUtc = DateTime.MinValue;
 	private static readonly object GeneratedRpFoodTemplateCacheLock = new object();
 	private static object GeneratedRpFoodTemplateCacheOwner;
 	private static Dictionary<GeneratedRpFoodKind, List<GeneratedRpFoodTemplateCandidate>> GeneratedRpFoodTemplatesByKind = new Dictionary<GeneratedRpFoodKind, List<GeneratedRpFoodTemplateCandidate>>();
+	private static readonly object PlayerRpMiscTemplateCacheLock = new object();
+	private static object PlayerRpMiscTemplateCacheOwner;
+	private static List<GeneratedRpFoodTemplateCandidate> PlayerRpMiscTemplateCandidates = new List<GeneratedRpFoodTemplateCandidate>();
+	private static readonly object PlayerRpPriceCacheLock = new object();
+	private static object PlayerRpPriceCacheOwner;
+	private static Dictionary<int, int> PlayerRpMedianPriceByItemType = new Dictionary<int, int>();
+	private static int PlayerRpCraftCommitGate;
 	private static readonly char[] GeneratedRpTrailingPunctuation = new char[24] { '.', ',', ';', '!', '?', ':', '\'', '"', '\u3002', '\uff0c', '\uff1b', '\uff01', '\uff1f', '\uff1a', '\u2019', '\u201d', '\u300b', '\u3011', ')', ']', '}', '\uff09', '\u3015', '\u3009' };
 	private static readonly string[] GeneratedRpFoodNonFoodEndingExceptions = new string[]
 	{
@@ -216,6 +268,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		"香水", "花露水", "墨水", "薪水", "泪水", "汗水", "口水", "血水", "海水", "洪水", "污水", "废水", "泥水",
 		"火药", "炸药", "弹药", "农药", "鼠药", "麻药", "迷药", "外用药", "膏药", "兽药", "杀虫药",
 		"waste water", "sea water", "dirty water", "sewage water"
+	};
+	private static readonly string[] GeneratedRpEquipmentNonEquipmentEndingExceptions = new string[]
+	{
+		"bottle cap", "jar cap", "pen cap", "hub cap", "wheel cap", "knee cap",
+		"gold standard", "living standard", "quality standard", "industry standard",
+		"safety standard", "technical standard", "accounting standard"
 	};
 	private static readonly string[] GeneratedRpFoodMeatTemplateTokens = new string[20] { "meat", "beef", "pork", "mutton", "lamb", "chicken", "poultry", "turkey", "duck", "venison", "bacon", "ham", "sausage", "steak", "jerky", "肉", "牛排", "羊排", "猪排", "香肠" };
 	private static readonly string[] GeneratedRpFoodFishTemplateTokens = new string[15] { "fish", "seafood", "salmon", "trout", "herring", "tuna", "sardine", "shrimp", "prawn", "crab", "oyster", "shellfish", "鱼", "虾", "蟹" };
@@ -235,7 +293,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.ThrowingAxe, false, "投斧", "飞斧"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.ThrowingKnife, false, "投刀", "飞刀"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Javelin, false, "标枪"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Firearm, false, "火枪", "手枪", "步枪", "鸟铳", "火铳", "铳"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Firearm, false, "霰弹枪", "散弹枪", "狙击枪", "冲锋枪", "左轮枪", "燧发枪", "火绳枪", "激光枪", "猎枪", "机枪", "火枪", "手枪", "步枪", "鸟铳", "火铳", "铳"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Bolts, false, "弩箭", "弩矢"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Crossbow, false, "强弩", "重弩", "轻弩", "弩"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Bow, false, "长弓", "短弓", "战弓", "反曲弓", "弓"),
@@ -244,13 +302,15 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Sling, false, "投石索"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Bullets, false, "弹药", "子弹", "枪弹"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Dagger, false, "匕首", "短刃", "小刀"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Whip, false, "马鞭", "长鞭", "短鞭", "战鞭", "皮鞭", "鞭子", "鞭"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Sword, false, "双手剑", "单手剑", "长剑", "短剑", "大剑", "巨剑", "弯刀", "佩剑", "战刀", "军刀", "长刀", "短刀", "剑", "刀"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Axe, false, "双手斧", "单手斧", "战斧", "巨斧", "手斧", "斧"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Mace, false, "钉头锤", "战锤", "大锤", "铁锤", "锤矛", "权杖", "锤", "棒", "棍"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Polearm, false, "长柄武器", "长柄", "长枪", "骑枪", "短枪", "战矛", "长矛", "短矛", "槊", "戟", "矛", "枪"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Thrown, false, "投掷武器"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Horse, false, "战马", "骏马", "军马", "良马", "坐骑", "马匹"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.HorseHarness, false, "马铠", "马甲", "马具", "鞍具", "马鞍", "鞍"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.HeadArmor, false, "头盔", "战盔", "铁盔", "兜帽", "风帽", "帽子", "头巾", "面纱", "面罩", "面具", "头冠", "王冠", "冠冕", "盔", "帽"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.HeadArmor, false, "头盔", "战盔", "铁盔", "兜帽", "风帽", "帽子", "头巾", "面纱", "面甲", "面罩", "面具", "头冠", "王冠", "冠冕", "盔", "帽"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.HandArmor, false, "手甲", "臂甲", "腕甲", "臂铠", "护臂", "护腕", "护手", "手套", "拳套", "手衣"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.LegArmor, false, "腿甲", "胫甲", "足甲", "脚甲", "护腿", "护胫", "护膝", "战靴", "长靴", "靴子", "鞋子", "战鞋", "皮鞋", "布鞋", "凉鞋", "袜子", "长袜", "短袜", "靴", "鞋", "袜"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Cape, false, "肩甲", "护肩", "披风", "斗篷", "披肩", "围巾", "披巾", "披帛"),
@@ -258,7 +318,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.BodyArmor, false, "上衣", "外衣", "衬衣", "内衣", "衣服", "服装", "礼服", "制服", "战服", "外套", "大衣", "夹克", "长衫", "短衫", "衫", "衣"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.BodyArmor, false, "裤子", "长裤", "短裤", "马裤", "皮裤", "布裤", "裙子", "长裙", "短裙", "战裙", "裤", "裙"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.BodyArmor, false, "胸甲", "身甲", "板甲", "链甲", "鳞甲", "皮甲", "布甲", "重甲", "轻甲"),
-		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.BodyArmor, false, "铠甲", "盔甲", "护甲", "铠", "甲"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.BodyArmor, false, "甲胄", "铠甲", "盔甲", "护甲", "铠", "甲"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Banner, false, "旗帜", "军旗", "战旗", "旗"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.AnyWeapon, false, "武器", "兵器", "兵刃"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.AnyEquipment, false, "装备", "武装"),
@@ -277,8 +337,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Axe, true, "battleaxes", "battleaxe", "greataxes", "greataxe", "handaxes", "handaxe", "axes", "axe"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Mace, true, "warhammers", "warhammer", "hammers", "hammer", "maces", "mace", "clubs", "club"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Dagger, true, "daggers", "dagger", "knives", "knife"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Whip, true, "horsewhips", "horsewhip", "bullwhips", "bullwhip", "whips", "whip"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Polearm, true, "polearms", "polearm", "spears", "spear", "lances", "lance", "pikes", "pike", "halberds", "halberd", "glaives", "glaive"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Thrown, true, "throwing weapons", "thrown weapons"),
+		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.Horse, true, "warhorses", "warhorse", "horses", "horse", "steeds", "steed", "mounts", "mount"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.HorseHarness, true, "horse armors", "horse armor", "horse armours", "horse armour", "bardings", "barding", "saddles", "saddle", "harnesses", "harness"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.HeadArmor, true, "helmets", "helmet", "helms", "helm", "headscarves", "headscarf", "circlets", "circlet", "turbans", "turban", "crowns", "crown", "hoods", "hood", "hats", "hat", "caps", "cap", "masks", "mask", "veils", "veil", "coifs", "coif"),
 		new GeneratedRpEquipmentSuffixRule(GeneratedRpEquipmentKind.HandArmor, true, "gauntlets", "gauntlet", "gloves", "glove", "bracers", "bracer", "vambraces", "vambrace", "mittens", "mitten", "handwraps", "handwrap", "wristguards", "wristguard", "armguards", "armguard"),
@@ -296,14 +358,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	private static readonly GeneratedRpFoodSuffixRule[] GeneratedRpFoodSuffixRules = new GeneratedRpFoodSuffixRule[]
 	{
 		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Medicine, false, "疗伤药水", "解毒药水", "治疗药水", "恢复药水", "法力药水", "生命药水", "药水", "药剂", "药丸", "药片", "药粉", "药散", "药材", "药草", "药酒", "药茶", "药汤", "药粥", "药膳", "丹药", "灵药", "草药", "汤药", "中药", "西药", "补药", "秘药", "圣药", "神药", "解药", "伤药", "疗伤药", "退烧药", "止痛药", "治病药", "仙丹", "金丹", "灵丹", "妙药", "药"),
+		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Beer, false, "麦芽啤酒", "黑啤酒", "白啤酒", "淡啤酒", "啤酒", "麦芽酒", "麦酒"),
 		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Wine, false, "蜂蜜酒", "葡萄酒", "苹果酒", "梨酒", "果酒", "米酒", "黄酒", "白酒", "红酒", "烈酒", "烧酒", "清酒", "甜酒", "奶酒", "酒"),
-		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Beer, false, "麦芽啤酒", "黑啤酒", "白啤酒", "淡啤酒", "啤酒", "麦酒"),
 		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Drink, false, "蔬菜汁", "葡萄汁", "苹果汁", "柠檬汁", "橙汁", "梨汁", "果汁", "酸梅汤", "奶茶", "红茶", "绿茶", "花茶", "茶", "咖啡", "可可", "饮料", "饮品", "汽水"),
 		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Water, false, "饮用水", "矿泉水", "纯净水", "过滤水", "净化水", "蜂蜜水", "柠檬水", "椰子水", "泉水", "井水", "清水", "净水", "淡水", "凉水", "温水", "热水", "开水", "圣水", "河水", "雨水", "糖水", "盐水", "水"),
 		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Sweet, false, "巧克力蛋糕", "蜂蜜蛋糕", "奶油蛋糕", "水果蛋糕", "蛋糕", "糕点", "米糕", "年糕", "发糕", "糕", "饼干", "月饼", "烧饼", "煎饼", "烙饼", "馅饼", "糖果", "软糖", "硬糖", "蜂蜜", "巧克力", "布丁", "卜丁", "果酱", "甜点"),
 		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Fish, false, "烤鱼青", "鱼青", "烤虾圭", "虾圭", "虾面盒", "鱼肉", "烤鱼", "咸鱼", "熏鱼", "鱼干", "鱼排", "鱼丸", "鱼饼", "河鱼", "海鱼", "鲜鱼", "海鲜", "虾", "蟹", "鱼"),
 		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Meat, false, "鸡丁敏士", "烤马骏", "纸包鸡", "椰子鸡", "奶油鸡", "焖鸡", "鸡肉元", "肉元", "鸡肉丝", "肉丝", "鸡肉饼", "鸡卷", "鸡排", "鸡徘", "牛扒", "羊腿", "羊肝", "牛尾", "牛排", "羊排", "猪排", "肉排", "牛肉", "羊肉", "猪肉", "鸡肉", "鸭肉", "鹅肉", "鹿肉", "兔肉", "马肉", "禽肉", "兽肉", "熏肉", "腊肉", "烤肉", "肉干", "肉饼", "肉松", "肉酱", "肉串", "香肠", "火腿", "培根", "肉丸", "肉"),
-		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Grain, false, "面包", "馒头", "包子", "饺子", "馄饨", "面条", "拉面", "汤面", "炒面", "凉面", "挂面", "意面", "米饭", "炒饭", "饭团", "稀饭", "米粥", "麦粥", "麦片", "大米", "小麦", "燕麦", "玉米", "口粮", "粮食", "饭", "粥", "粮"),
+		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Grain, false, "谷物", "穀物", "谷类", "穀類", "五谷", "五穀", "杂粮", "雜糧", "粗粮", "粗糧", "细粮", "細糧", "稻谷", "稻穀", "谷子", "穀子", "面包", "馒头", "包子", "饺子", "馄饨", "面条", "拉面", "汤面", "炒面", "凉面", "挂面", "意面", "米饭", "炒饭", "饭团", "稀饭", "米粥", "麦粥", "麦片", "大米", "小麦", "燕麦", "玉米", "口粮", "粮食", "饭", "粥", "粮"),
 		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Fruit, false, "苹果", "雪梨", "鸭梨", "香梨", "梨", "樱桃", "桃子", "蜜桃", "李子", "杏子", "红枣", "蜜枣", "枣", "葡萄", "橙子", "橘子", "柑橘", "柠檬", "石榴", "香蕉", "芒果", "菠萝", "柚子", "柿子", "椰子", "西瓜", "甜瓜", "草莓", "蓝莓", "树莓", "黑莓", "浆果", "莓果", "莓", "水果", "鲜果", "干果", "坚果", "果"),
 		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Vegetable, false, "大白菜", "小白菜", "胡萝卜", "马铃薯", "大蒜", "生姜", "白菜", "青菜", "蔬菜", "萝卜", "土豆", "红薯", "地瓜", "南瓜", "黄瓜", "冬瓜", "丝瓜", "茄子", "洋葱", "豆角", "豌豆", "扁豆", "蚕豆", "豆腐", "蘑菇", "香菇", "菌菇", "菜"),
 		new GeneratedRpFoodSuffixRule(GeneratedRpFoodKind.Dairy, false, "奶酪", "乳酪", "芝士", "黄油", "奶油", "酸奶", "牛奶", "羊奶", "马奶", "驼奶", "椰奶", "乳品", "奶"),
@@ -469,6 +531,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		public List<uint> LegacyObjectIds;
 
 		public int LastTouchedDay;
+
+		public PlayerRpCraftData PlayerCraft;
 	}
 
 	private sealed class GeneratedRewardRosterItemRecord
@@ -1355,7 +1419,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			if (dataStore.IsLoading)
 			{
-				ClearGeneratedRewardRuntimeState("sync_data_load_begin");
+				ClearGeneratedRewardRuntimeState(
+					"sync_data_load_begin",
+					preservePendingItems: true);
 				_generatedRewardItemRecords.Clear();
 				_generatedRewardItemStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 				_generatedRewardPlayerRosterRecords.Clear();
@@ -1398,7 +1464,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				SyncGeneratedRewardRecordsToManifest("sync_data_save");
 				return;
 			}
-			ClearGeneratedRewardRuntimeState("sync_data_load");
+			ClearGeneratedRewardRuntimeState(
+				"sync_data_load",
+				preservePendingItems: true);
 			_generatedRewardItemRecords.Clear();
 			foreach (KeyValuePair<string, string> item2 in _generatedRewardItemStorage)
 			{
@@ -1523,6 +1591,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	private void OnGameLoadFinished()
 	{
+		ClearGeneratedRpEquipmentTemplateCache();
+		ClearPlayerRpExactTemplateLookupCache();
 		ClearPromotedNonHeroCompanionCache();
 		RestoreGeneratedRewardItemDefinitions("game_load_finished");
 		RestoreGeneratedRewardPlayerRosterItems("game_load_finished");
@@ -5651,7 +5721,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		bool asCompanion = string.Equals(joinTagMatch.Groups[1].Value, "C", StringComparison.OrdinalIgnoreCase);
+		bool asCompanion = joinTagMatch.Groups[1].Value.StartsWith("C", StringComparison.OrdinalIgnoreCase);
 		string latestReplyWithoutTag = HeroJoinPlayerPartyTagRegex.Replace(responseText, string.Empty).Trim();
 		if (requireCurrentConversationRequest && !DoesNativeConversationRequestStillMatch(joiningCharacter, targetAgentIndex, expectedConversationManager, expectedConversationToken, out string staleReason))
 		{
@@ -9156,6 +9226,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			return false;
 		}
 		text = text.TrimEnd(GeneratedRpTrailingPunctuation).TrimEnd();
+		int bestSuffixLength = -1;
 		foreach (GeneratedRpEquipmentSuffixRule rule in GeneratedRpEquipmentSuffixRules)
 		{
 			if (rule == null || rule.Kind == GeneratedRpEquipmentKind.None)
@@ -9164,12 +9235,31 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			foreach (string suffix in rule.Suffixes)
 			{
-				if (!MatchesGeneratedRpSuffix(text, suffix, rule.RequiresEnglishWordBoundary))
+				if (!MatchesGeneratedRpSuffix(text, suffix, rule.RequiresEnglishWordBoundary)
+					|| IsGeneratedRpEquipmentNonEquipmentEndingException(text)
+					|| suffix.Length <= bestSuffixLength)
 				{
 					continue;
 				}
 				kind = rule.Kind;
 				matchedSuffix = suffix;
+				bestSuffixLength = suffix.Length;
+			}
+		}
+		return bestSuffixLength >= 0;
+	}
+
+	private static bool IsGeneratedRpEquipmentNonEquipmentEndingException(string text)
+	{
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		foreach (string exception in GeneratedRpEquipmentNonEquipmentEndingExceptions)
+		{
+			if (!string.IsNullOrWhiteSpace(exception)
+				&& text.EndsWith(exception, StringComparison.OrdinalIgnoreCase))
+			{
 				return true;
 			}
 		}
@@ -9186,6 +9276,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			return false;
 		}
 		text = text.TrimEnd(GeneratedRpTrailingPunctuation).TrimEnd();
+		int bestSuffixLength = -1;
 		foreach (GeneratedRpFoodSuffixRule rule in GeneratedRpFoodSuffixRules)
 		{
 			if (rule == null || rule.Kind == GeneratedRpFoodKind.None)
@@ -9195,16 +9286,17 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			foreach (string suffix in rule.Suffixes)
 			{
 				if (!MatchesGeneratedRpSuffix(text, suffix, rule.RequiresEnglishWordBoundary)
-					|| IsGeneratedRpFoodNonFoodEndingException(text, suffix))
+					|| IsGeneratedRpFoodNonFoodEndingException(text, suffix)
+					|| suffix.Length <= bestSuffixLength)
 				{
 					continue;
 				}
 				kind = rule.Kind;
 				matchedSuffix = suffix;
-				return true;
+				bestSuffixLength = suffix.Length;
 			}
 		}
-		return false;
+		return bestSuffixLength >= 0;
 	}
 
 	private static bool IsGeneratedRpFoodNonFoodEndingException(string text, string matchedSuffix)
@@ -9463,48 +9555,70 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		object owner = (object)Game.Current?.ObjectManager ?? MBObjectManager.Instance;
 		lock (GeneratedRpEquipmentTemplateCacheLock)
 		{
-			if (owner != null && ReferenceEquals(owner, GeneratedRpEquipmentTemplateCacheOwner) && GeneratedRpEquipmentTemplatesByKind.Count > 0)
+			if (owner != null
+				&& ReferenceEquals(owner, GeneratedRpEquipmentTemplateCacheOwner))
 			{
-				return GeneratedRpEquipmentTemplatesByKind;
+				if (GeneratedRpEquipmentTemplateCacheReady)
+				{
+					return GeneratedRpEquipmentTemplatesByKind;
+				}
+				if (DateTime.UtcNow < GeneratedRpEquipmentTemplateCacheRetryAfterUtc)
+				{
+					return GeneratedRpEquipmentTemplatesByKind;
+				}
 			}
 			Dictionary<GeneratedRpEquipmentKind, List<GeneratedRpEquipmentTemplateCandidate>> result = new Dictionary<GeneratedRpEquipmentKind, List<GeneratedRpEquipmentTemplateCandidate>>();
 			foreach (GeneratedRpEquipmentKind equipmentKind in Enum.GetValues(typeof(GeneratedRpEquipmentKind)))
 			{
 				result[equipmentKind] = new List<GeneratedRpEquipmentTemplateCandidate>();
 			}
+			bool scanCompleted = false;
+			int scannedCount = 0;
+			int rejectedByExceptionCount = 0;
 			try
 			{
 				IEnumerable<ItemObject> items = Game.Current?.ObjectManager?.GetObjectTypeList<ItemObject>() ?? MBObjectManager.Instance?.GetObjectTypeList<ItemObject>();
 				foreach (ItemObject item in items ?? Enumerable.Empty<ItemObject>())
 				{
-					if (!IsCloneSafeGeneratedRewardTemplateItem(item))
+					scannedCount++;
+					try
 					{
-						continue;
+						if (!IsCloneSafeGeneratedRewardTemplateItem(item)
+							|| IsGeneratedRewardItemStringId(item.StringId))
+						{
+							continue;
+						}
+						bool isWeapon = IsSettlementWeaponLikeItem(item);
+						bool isArmor = IsSettlementArmorLikeItem(item);
+						bool isHorse = item.Type == ItemObject.ItemTypeEnum.Horse;
+						bool isHorseHarness = item.Type == ItemObject.ItemTypeEnum.HorseHarness;
+						bool isBanner = item.Type == ItemObject.ItemTypeEnum.Banner;
+						if (!isWeapon && !isArmor && !isHorse && !isHorseHarness && !isBanner)
+						{
+							continue;
+						}
+						GeneratedRpEquipmentTemplateCandidate candidate = new GeneratedRpEquipmentTemplateCandidate
+						{
+							Item = item,
+							Aliases = BuildGeneratedRpTemplateAliases(item)
+						};
+						AddGeneratedRpEquipmentTemplate(result, GeneratedRpEquipmentKind.AnyEquipment, candidate);
+						if (isWeapon)
+						{
+							AddGeneratedRpEquipmentTemplate(result, GeneratedRpEquipmentKind.AnyWeapon, candidate);
+						}
+						if (isArmor)
+						{
+							AddGeneratedRpEquipmentTemplate(result, GeneratedRpEquipmentKind.AnyArmor, candidate);
+						}
+						IndexGeneratedRpEquipmentSpecificKinds(result, candidate);
 					}
-					bool isWeapon = IsSettlementWeaponLikeItem(item);
-					bool isArmor = IsSettlementArmorLikeItem(item);
-					bool isHorseHarness = item.Type == ItemObject.ItemTypeEnum.HorseHarness;
-					bool isBanner = item.Type == ItemObject.ItemTypeEnum.Banner;
-					if (!isWeapon && !isArmor && !isHorseHarness && !isBanner)
+					catch
 					{
-						continue;
+						rejectedByExceptionCount++;
 					}
-					GeneratedRpEquipmentTemplateCandidate candidate = new GeneratedRpEquipmentTemplateCandidate
-					{
-						Item = item,
-						Aliases = BuildGeneratedRpTemplateAliases(item)
-					};
-					AddGeneratedRpEquipmentTemplate(result, GeneratedRpEquipmentKind.AnyEquipment, candidate);
-					if (isWeapon)
-					{
-						AddGeneratedRpEquipmentTemplate(result, GeneratedRpEquipmentKind.AnyWeapon, candidate);
-					}
-					if (isArmor)
-					{
-						AddGeneratedRpEquipmentTemplate(result, GeneratedRpEquipmentKind.AnyArmor, candidate);
-					}
-					IndexGeneratedRpEquipmentSpecificKinds(result, candidate);
 				}
+				scanCompleted = true;
 			}
 			catch (Exception ex)
 			{
@@ -9516,8 +9630,38 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				{
 				}
 			}
+			bool hasSafeCandidates =
+				result.TryGetValue(
+					GeneratedRpEquipmentKind.AnyEquipment,
+					out List<GeneratedRpEquipmentTemplateCandidate> anyEquipment)
+				&& anyEquipment != null
+				&& anyEquipment.Count > 0;
 			GeneratedRpEquipmentTemplateCacheOwner = owner;
 			GeneratedRpEquipmentTemplatesByKind = result;
+			GeneratedRpEquipmentTemplateCacheReady =
+				scanCompleted && hasSafeCandidates;
+			GeneratedRpEquipmentTemplateCacheRetryAfterUtc =
+				GeneratedRpEquipmentTemplateCacheReady
+					? DateTime.MinValue
+					: DateTime.UtcNow.AddSeconds(1d);
+			if (!GeneratedRpEquipmentTemplateCacheReady
+				|| rejectedByExceptionCount > 0)
+			{
+				try
+				{
+					Logger.Log(
+						"Logic",
+						"[RewardItemResolve] rp_equipment_template_cache_status"
+							+ " ready=" + GeneratedRpEquipmentTemplateCacheReady
+							+ " scan_completed=" + scanCompleted
+							+ " scanned=" + scannedCount.ToString(CultureInfo.InvariantCulture)
+							+ " accepted=" + (anyEquipment?.Count ?? 0).ToString(CultureInfo.InvariantCulture)
+							+ " item_errors=" + rejectedByExceptionCount.ToString(CultureInfo.InvariantCulture));
+				}
+				catch
+				{
+				}
+			}
 			return GeneratedRpEquipmentTemplatesByKind;
 		}
 	}
@@ -9528,6 +9672,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			GeneratedRpEquipmentTemplateCacheOwner = null;
 			GeneratedRpEquipmentTemplatesByKind = new Dictionary<GeneratedRpEquipmentKind, List<GeneratedRpEquipmentTemplateCandidate>>();
+			GeneratedRpEquipmentTemplateCacheReady = false;
+			GeneratedRpEquipmentTemplateCacheRetryAfterUtc = DateTime.MinValue;
 		}
 	}
 
@@ -9550,7 +9696,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				IEnumerable<ItemObject> items = Game.Current?.ObjectManager?.GetObjectTypeList<ItemObject>() ?? MBObjectManager.Instance?.GetObjectTypeList<ItemObject>();
 				foreach (ItemObject item in items ?? Enumerable.Empty<ItemObject>())
 				{
-					if (!IsCloneSafeGeneratedRpFoodTemplateItem(item))
+					if (!IsCloneSafeGeneratedRpFoodTemplateItem(item)
+						|| IsGeneratedRewardItemStringId(item.StringId))
 					{
 						continue;
 					}
@@ -9686,6 +9833,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		AddGeneratedRpTemplateAlias(aliases, seen, item?.StringId);
 		AddGeneratedRpTemplateAlias(aliases, seen, item?.Name?.ToString());
+		if (IsGeneratedRpWhipWeaponTemplateItem(item))
+		{
+			AddGeneratedRpTemplateAlias(aliases, seen, "鞭");
+			AddGeneratedRpTemplateAlias(aliases, seen, "whip");
+			return aliases.ToArray();
+		}
 		AddGeneratedRpTemplateAlias(aliases, seen, item?.ItemCategory?.StringId);
 		AddGeneratedRpTemplateAlias(aliases, seen, item?.ItemCategory?.GetName()?.ToString());
 		AddGeneratedRpTemplateAlias(aliases, seen, item?.Type.ToString());
@@ -9725,11 +9878,23 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		bool isExplicitWhip = IsGeneratedRpWhipWeaponTemplateItem(item);
+		if (isExplicitWhip)
+		{
+			AddGeneratedRpEquipmentTemplate(
+				templatesByKind,
+				GeneratedRpEquipmentKind.Whip,
+				candidate);
+			return;
+		}
 		switch (item.Type)
 		{
 		case ItemObject.ItemTypeEnum.OneHandedWeapon:
 		case ItemObject.ItemTypeEnum.TwoHandedWeapon:
-			IndexGeneratedRpEquipmentWeaponClass(templatesByKind, candidate, item.PrimaryWeapon?.WeaponClass);
+			IndexGeneratedRpEquipmentWeaponClass(
+				templatesByKind,
+				candidate,
+				item.PrimaryWeapon?.WeaponClass);
 			break;
 		case ItemObject.ItemTypeEnum.Polearm:
 			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Polearm, candidate);
@@ -9779,6 +9944,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			break;
 		case ItemObject.ItemTypeEnum.Cape:
 			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Cape, candidate);
+			break;
+		case ItemObject.ItemTypeEnum.Horse:
+			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.Horse, candidate);
 			break;
 		case ItemObject.ItemTypeEnum.HorseHarness:
 			AddGeneratedRpEquipmentTemplate(templatesByKind, GeneratedRpEquipmentKind.HorseHarness, candidate);
@@ -10028,6 +10196,22 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return IsCloneSafeGeneratedRewardTemplateItem(item) && IsGeneratedRewardMiscItemType(item);
 	}
 
+	private static bool IsSafePlayerRpCraftGenerationTemplate(ItemObject item)
+	{
+		if (item == null)
+		{
+			return false;
+		}
+		if (IsCloneSafeGeneratedRewardTemplateItem(item)
+			&& PlayerRpCraftItemComponentService.IsSafeEquipmentTemplate(item, out _))
+		{
+			return true;
+		}
+		return IsCloneSafeGeneratedRpFoodTemplateItem(item)
+			|| (IsCloneSafeGeneratedRewardTemplateItem(item)
+				&& IsGeneratedRewardMiscItemType(item));
+	}
+
 	private static bool DoesGeneratedRpFoodTemplateMatchKind(ItemObject item, GeneratedRpFoodKind kind)
 	{
 		if (!IsGeneratedRpFoodTemplateItem(item) || kind == GeneratedRpFoodKind.None)
@@ -10116,7 +10300,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		switch (kind)
 		{
 		case GeneratedRpEquipmentKind.AnyEquipment:
-			return isWeapon || isArmor || item.Type == ItemObject.ItemTypeEnum.HorseHarness || item.Type == ItemObject.ItemTypeEnum.Banner;
+			return isWeapon || isArmor || item.Type == ItemObject.ItemTypeEnum.Horse || item.Type == ItemObject.ItemTypeEnum.HorseHarness || item.Type == ItemObject.ItemTypeEnum.Banner;
 		case GeneratedRpEquipmentKind.AnyWeapon:
 			return isWeapon;
 		case GeneratedRpEquipmentKind.AnyArmor:
@@ -10149,10 +10333,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			return item.Type == ItemObject.ItemTypeEnum.HandArmor;
 		case GeneratedRpEquipmentKind.Cape:
 			return item.Type == ItemObject.ItemTypeEnum.Cape;
+		case GeneratedRpEquipmentKind.Horse:
+			return item.Type == ItemObject.ItemTypeEnum.Horse;
 		case GeneratedRpEquipmentKind.HorseHarness:
 			return item.Type == ItemObject.ItemTypeEnum.HorseHarness;
 		case GeneratedRpEquipmentKind.Banner:
 			return item.Type == ItemObject.ItemTypeEnum.Banner;
+		case GeneratedRpEquipmentKind.Whip:
+			return IsGeneratedRpWhipWeaponTemplateItem(item);
 		case GeneratedRpEquipmentKind.Polearm:
 			if (item.Type == ItemObject.ItemTypeEnum.Polearm)
 			{
@@ -10175,7 +10363,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		switch (kind)
 		{
 		case GeneratedRpEquipmentKind.Sword:
-			return weaponClass == WeaponClass.OneHandedSword || weaponClass == WeaponClass.TwoHandedSword;
+			return !IsGeneratedRpWhipTemplateItem(item)
+				&& (weaponClass == WeaponClass.OneHandedSword
+					|| weaponClass == WeaponClass.TwoHandedSword);
 		case GeneratedRpEquipmentKind.Axe:
 			return weaponClass == WeaponClass.OneHandedAxe || weaponClass == WeaponClass.TwoHandedAxe;
 		case GeneratedRpEquipmentKind.Mace:
@@ -10555,24 +10745,33 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		resolution = null;
 		string requestedName = (lookup ?? "").Trim();
 		ItemObject templateItem = templateResolution?.Item;
+		string normalizedIdentityKey = (identityKey ?? "").Trim();
+		bool isPlayerRpCraftGeneration =
+			IsAuthorizedPlayerRpCraftGenerationKey(normalizedIdentityKey);
 		if (string.IsNullOrWhiteSpace(requestedName))
 		{
 			return false;
 		}
-		if (!IsGeneratedRewardTemplateCompatibleWithRequestedName(templateItem, requestedName))
+		if (!isPlayerRpCraftGeneration
+			&& !IsGeneratedRewardTemplateCompatibleWithRequestedName(templateItem, requestedName))
 		{
 			templateItem = ResolveGeneratedInventoryTemplateItem(templateResolution?.MatchedStringId, requestedName);
 		}
-		if (!IsGeneratedRewardTemplateCompatibleWithRequestedName(templateItem, requestedName))
+		if (!isPlayerRpCraftGeneration
+			&& !IsGeneratedRewardTemplateCompatibleWithRequestedName(templateItem, requestedName))
 		{
 			templateItem = ResolveGeneratedInventoryTemplateItem(null, requestedName);
 		}
-		if (!IsGeneratedRewardTemplateCompatibleWithRequestedName(templateItem, requestedName))
+		if (isPlayerRpCraftGeneration
+			? !IsSafePlayerRpCraftGenerationTemplate(templateItem)
+			: !IsGeneratedRewardTemplateCompatibleWithRequestedName(templateItem, requestedName))
 		{
 			return false;
 		}
 		string templateStringId = templateItem.StringId ?? templateResolution.MatchedStringId ?? "";
-		string generatedStringId = BuildGeneratedRewardItemStringId(string.IsNullOrWhiteSpace(identityKey) ? requestedName : identityKey, templateStringId);
+		string generatedStringId = isPlayerRpCraftGeneration
+			? normalizedIdentityKey
+			: BuildGeneratedRewardItemStringId(string.IsNullOrWhiteSpace(normalizedIdentityKey) ? requestedName : normalizedIdentityKey, templateStringId);
 		ItemObject generatedItem = TryGetOrCreateGeneratedRewardItem(generatedStringId, requestedName, templateItem, logSource);
 		if (generatedItem == null || !TryEnsureGeneratedRewardItemCategory(generatedItem, templateItem, logSource))
 		{
@@ -10588,7 +10787,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				PromptStringId = generatedStringId,
 				Name = requestedName,
 				Count = 0,
-				GuidePrice = Math.Max(1, templateItem.Value),
+				GuidePrice = Math.Max(1, generatedItem.Value),
 				EquipmentElement = equipmentElement
 			},
 			Item = generatedItem,
@@ -10605,7 +10804,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		};
 		try
 		{
-			Logger.Log("Logic", "[RewardItemResolve] generated_low_score source=" + (logSource ?? "") + " lookup=" + requestedName + " generated=" + generatedStringId + " template=" + (templateResolution.MatchedName ?? templateItem.Name?.ToString() ?? "") + " templateStringId=" + (templateItem.StringId ?? "") + " score=" + FormatRewardItemResolutionScore(resolution.BestScore) + " second=" + FormatRewardItemResolutionScore(resolution.SecondScore));
+			Logger.Log("Logic", "[RewardItemResolve] generated_low_score source=" + (logSource ?? "") + " lookup=" + FormatGeneratedRewardNameForLog(generatedStringId, requestedName) + " generated=" + generatedStringId + " template=" + (templateResolution.MatchedName ?? templateItem.Name?.ToString() ?? "") + " templateStringId=" + (templateItem.StringId ?? "") + " score=" + FormatRewardItemResolutionScore(resolution.BestScore) + " second=" + FormatRewardItemResolutionScore(resolution.SecondScore));
 		}
 		catch
 		{
@@ -10625,7 +10824,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			RewardItemResolution templateResolution = null;
 			ItemObject preferredTemplate = ResolveItemById(preferredTemplateItemId);
-			if (IsGeneratedRewardTemplateCompatibleWithRequestedName(preferredTemplate, requestedName))
+			bool isPlayerRpCraftGeneration =
+				IsAuthorizedPlayerRpCraftGenerationKey(identityKey);
+			if (isPlayerRpCraftGeneration
+				? IsSafePlayerRpCraftGenerationTemplate(preferredTemplate)
+				: IsGeneratedRewardTemplateCompatibleWithRequestedName(preferredTemplate, requestedName))
 			{
 				EquipmentElement preferredTemplateEquipment = new EquipmentElement(preferredTemplate, null, null, false);
 				templateResolution = new RewardItemResolution
@@ -10654,7 +10857,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			else if (!string.IsNullOrWhiteSpace(preferredTemplateItemId))
 			{
 				string rejectionReason = IsCloneSafeGeneratedRewardAnyTemplateItem(preferredTemplate) ? "name_category_mismatch" : GetGeneratedRewardTemplateThumbnailRejectionReason(preferredTemplate);
-				Logger.Log("Logic", "[RewardItemResolve] preferred_template_rejected source=" + (logSource ?? "") + " template=" + preferredTemplateItemId.Trim() + " lookup=" + requestedName + " fallback=auto reason=" + rejectionReason);
+				Logger.Log("Logic", "[RewardItemResolve] preferred_template_rejected source=" + (logSource ?? "") + " template=" + preferredTemplateItemId.Trim() + " lookup=" + FormatGeneratedRewardNameForLog(identityKey, requestedName) + " fallback=auto reason=" + rejectionReason);
 			}
 			RewardSystemBehavior instance = Instance;
 			if (templateResolution == null && instance != null)
@@ -10770,12 +10973,39 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				objectId = registered.Id.InternalValue;
 			}
-			ItemObject templateItem = ResolveGeneratedInventoryTemplateItem(templateItemId, name);
-			if (!IsGeneratedRewardTemplateCompatibleWithRequestedName(templateItem, name))
+			bool isPlayerRpCraftGeneration = IsAuthorizedPlayerRpCraftGenerationKey(key);
+			ItemObject templateItem;
+			if (existingRecord?.PlayerCraft != null)
 			{
-				templateItem = ResolveGeneratedInventoryTemplateItem(null, name);
+				templateItem = ResolveGeneratedRewardRecordTemplateItem(
+					existingRecord,
+					logSource ?? "external_prime_player");
 			}
-			if (!IsGeneratedRewardTemplateCompatibleWithRequestedName(templateItem, name))
+			else if (isPlayerRpCraftGeneration)
+			{
+				// During a player-craft transaction the persistent PlayerCraft payload is
+				// attached immediately after the item is created. Do not run its exact,
+				// caller-selected equipment template through the ordinary RP-name suffix
+				// resolver in this short pre-registration window.
+				templateItem = ResolveItemById(templateItemId);
+				if (!IsSafePlayerRpCraftGenerationTemplate(templateItem))
+				{
+					return false;
+				}
+			}
+			else
+			{
+				templateItem = ResolveGeneratedInventoryTemplateItem(templateItemId, name);
+				if (!IsGeneratedRewardTemplateCompatibleWithRequestedName(templateItem, name))
+				{
+					templateItem = ResolveGeneratedInventoryTemplateItem(null, name);
+				}
+				if (!IsGeneratedRewardTemplateCompatibleWithRequestedName(templateItem, name))
+				{
+					return false;
+				}
+			}
+			if (templateItem == null)
 			{
 				return false;
 			}
@@ -10786,7 +11016,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				TemplateStringId = (templateItem.StringId ?? "").Trim(),
 				ObjectId = objectId,
 				LegacyObjectIds = existingRecord?.LegacyObjectIds != null ? existingRecord.LegacyObjectIds.ToList() : new List<uint>(),
-				LastTouchedDay = Math.Max(existingRecord?.LastTouchedDay ?? 0, GetCampaignDayIndex())
+				LastTouchedDay = Math.Max(existingRecord?.LastTouchedDay ?? 0, GetCampaignDayIndex()),
+				PlayerCraft = existingRecord?.PlayerCraft
 			};
 			if (record.ObjectId == 0u && TryGetGeneratedRewardItemId(key, templateItem, 0u, out var stableObjectId, logSource ?? "external_prime"))
 			{
@@ -10886,8 +11117,22 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				LogGeneratedRewardInventoryGuard("prime_failed", generatedStringId, name, templateItemId, null, null, logSource);
 				return false;
 			}
-			ItemObject templateItem = ResolveGeneratedInventoryTemplateItem(normalizedTemplateItemId, name);
-			if (!IsGeneratedRewardTemplateCompatibleWithRequestedName(templateItem, name))
+			GeneratedRewardItemRecord preparedRecord =
+				Instance?.GetGeneratedRewardItemRecord(normalizedStringId);
+			bool isPlayerRpCraftGeneration =
+				preparedRecord?.PlayerCraft != null
+				|| IsAuthorizedPlayerRpCraftGenerationKey(normalizedStringId);
+			ItemObject templateItem = preparedRecord?.PlayerCraft != null
+				? ResolveGeneratedRewardRecordTemplateItem(
+					preparedRecord,
+					logSource ?? "prepare_generated_inventory_player")
+				: (isPlayerRpCraftGeneration
+					? ResolveItemById(normalizedTemplateItemId)
+					: ResolveGeneratedInventoryTemplateItem(normalizedTemplateItemId, name));
+			bool isCompatibleTemplate = isPlayerRpCraftGeneration
+				? IsSafePlayerRpCraftGenerationTemplate(templateItem)
+				: IsGeneratedRewardTemplateCompatibleWithRequestedName(templateItem, name);
+			if (!isCompatibleTemplate)
 			{
 				LogGeneratedRewardInventoryGuard("bad_template", normalizedStringId, name, normalizedTemplateItemId, null, templateItem, logSource);
 				return false;
@@ -11061,7 +11306,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return GetGeneratedRewardFallbackTemplateItem();
 	}
 
-	private static ItemObject ResolveCloneSafeGeneratedRewardTemplateItem(ItemObject templateItem, string displayName, string logSource)
+	private static ItemObject ResolveCloneSafeGeneratedRewardTemplateItem(ItemObject templateItem, string displayName, string logSource, string generatedStringId = null)
 	{
 		if (IsGeneratedRewardTemplateCompatibleWithRequestedName(templateItem, displayName))
 		{
@@ -11078,7 +11323,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				Logger.Log("Logic", "[RewardItemResolve] generated_template_guard source=" + (logSource ?? "") + " name=" + (displayName ?? "") + " rejected=" + rejectedTemplateId + " reason=" + rejectionReason + " replacement=" + (replacement.StringId ?? ""));
+				Logger.Log("Logic", "[RewardItemResolve] generated_template_guard source=" + (logSource ?? "") + " name=" + FormatGeneratedRewardNameForLog(generatedStringId, displayName) + " rejected=" + rejectedTemplateId + " reason=" + rejectionReason + " replacement=" + (replacement.StringId ?? ""));
 			}
 			catch
 			{
@@ -11112,7 +11357,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			return item.IsFood || IsGeneratedRpKnownFoodCategory(item);
+			// A food suffix must always result in an actually consumable ItemObject.
+			// Category alone is insufficient because conversion mods can reuse native
+			// food categories for non-consumable goods.
+			return item.IsFood;
 		}
 		catch
 		{
@@ -11837,12 +12085,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		EnsureGeneratedRewardManifestLoaded();
 		GeneratedRewardItemRecord record = null;
+		ItemObject cachedItem = null;
 		lock (GeneratedRewardItemRegistrationLock)
 		{
 			if (GeneratedRewardDetachedItemsByObjectId.TryGetValue(objectIdValue, out var cached) && cached != null)
 			{
-				item = cached;
-				return true;
+				cachedItem = cached;
 			}
 			GeneratedRewardManifestByObjectId.TryGetValue(objectIdValue, out record);
 		}
@@ -11859,7 +12107,55 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		if (record == null)
 		{
+			if (cachedItem != null)
+			{
+				item = cachedItem;
+				return true;
+			}
 			return false;
+		}
+		PlayerRpCraftItemStatsSnapshot cachedSnapshot =
+			string.Equals(record.PlayerCraft?.CraftKind, "remnant", StringComparison.OrdinalIgnoreCase)
+				? null
+				: record.PlayerCraft?.StatsSnapshot;
+		string cachedCraftKind = (record.PlayerCraft?.CraftKind ?? "").Trim();
+		if (string.Equals(
+			cachedCraftKind,
+			PlayerRpCraftTerminalInvalidKind,
+			StringComparison.OrdinalIgnoreCase))
+		{
+			if (cachedItem != null)
+			{
+				lock (GeneratedRewardItemRegistrationLock)
+				{
+					RemoveGeneratedRewardItemCacheReference(
+						cachedItem,
+						record.GeneratedStringId,
+						objectIdValue,
+						removePending: false);
+				}
+			}
+			return false;
+		}
+		bool cachedSnapshotRequired = string.Equals(
+			cachedCraftKind,
+			"equipment",
+			StringComparison.OrdinalIgnoreCase);
+		bool cachedRemnantRequiresRepair = cachedItem != null
+			&& string.Equals(
+				cachedCraftKind,
+				"remnant",
+				StringComparison.OrdinalIgnoreCase)
+			&& !IsGeneratedRewardRosterItemCanonical(cachedItem, record);
+		if (cachedItem != null
+			&& !cachedRemnantRequiresRepair
+			&& HasExpectedPlayerRpCraftItemValue(cachedItem, record)
+			&& (!cachedSnapshotRequired
+				|| (cachedSnapshot != null
+					&& PlayerRpCraftItemComponentService.MatchesSnapshot(cachedItem, cachedSnapshot))))
+		{
+			item = cachedItem;
+			return true;
 		}
 		item = TryGetOrCreateGeneratedRewardDetachedItem(record, source);
 		return item != null;
@@ -11877,6 +12173,126 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		ItemObject registeredItem = TryGetRegisteredGeneratedRewardItemByStringId(key);
 		if (registeredItem != null)
 		{
+			GeneratedRewardItemRecord registeredRecord = Instance?.GetGeneratedRewardItemRecord(key);
+			if (registeredRecord == null)
+			{
+				lock (GeneratedRewardItemRegistrationLock)
+				{
+					GeneratedRewardManifestByStringId.TryGetValue(key, out registeredRecord);
+				}
+			}
+			string registeredCraftKind =
+				(registeredRecord?.PlayerCraft?.CraftKind ?? "").Trim();
+			if (string.Equals(
+				registeredCraftKind,
+				PlayerRpCraftTerminalInvalidKind,
+				StringComparison.OrdinalIgnoreCase))
+			{
+				lock (GeneratedRewardItemRegistrationLock)
+				{
+					RemoveGeneratedRewardItemCacheReference(
+						registeredItem,
+						key,
+						registeredItem.Id.InternalValue,
+						removePending: false);
+				}
+				return false;
+			}
+			PlayerRpCraftItemStatsSnapshot registeredSnapshot =
+				string.Equals(registeredCraftKind, "remnant", StringComparison.OrdinalIgnoreCase)
+					? null
+					: registeredRecord?.PlayerCraft?.StatsSnapshot;
+			bool registeredSnapshotRequired = string.Equals(
+				registeredCraftKind,
+				"equipment",
+				StringComparison.OrdinalIgnoreCase);
+			bool registeredRemnantRequiresReplay =
+				string.Equals(
+					registeredCraftKind,
+					"remnant",
+					StringComparison.OrdinalIgnoreCase)
+				&& !IsGeneratedRewardRosterItemCanonical(
+					registeredItem,
+					registeredRecord);
+			bool registeredValueRequiresReplay =
+				!HasExpectedPlayerRpCraftItemValue(
+					registeredItem,
+					registeredRecord);
+			if ((registeredSnapshotRequired
+					&& (registeredSnapshot == null
+						|| !PlayerRpCraftItemComponentService.MatchesSnapshot(
+							registeredItem,
+							registeredSnapshot)))
+				|| registeredRemnantRequiresReplay
+				|| registeredValueRequiresReplay)
+			{
+				ItemObject registeredTemplate = ResolveGeneratedRewardRecordTemplateItem(
+					registeredRecord,
+					source ?? "registered_snapshot_replay");
+				bool templateApplied = registeredTemplate != null
+					&& ApplyGeneratedRewardItemTemplateState(
+						registeredItem,
+						registeredTemplate,
+						registeredRecord.DisplayName);
+				if (!templateApplied
+					&& string.Equals(
+						registeredRecord?.PlayerCraft?.CraftKind,
+						"remnant",
+						StringComparison.OrdinalIgnoreCase))
+				{
+					registeredTemplate = ResolveGeneratedRewardRecordTemplateItem(
+						registeredRecord,
+						(source ?? "registered_snapshot_replay") + "_remnant");
+					templateApplied = registeredTemplate != null
+						&& ApplyGeneratedRewardItemTemplateState(
+							registeredItem,
+							registeredTemplate,
+							registeredRecord.DisplayName);
+				}
+				if (!templateApplied)
+				{
+					lock (GeneratedRewardItemRegistrationLock)
+					{
+						RemoveGeneratedRewardItemCacheReference(
+							registeredItem,
+							key,
+							registeredItem.Id.InternalValue,
+							removePending: false);
+					}
+					return false;
+				}
+				try
+				{
+					registeredItem.Initialize();
+					registeredItem.IsReady = true;
+				}
+				catch
+				{
+					lock (GeneratedRewardItemRegistrationLock)
+					{
+						RemoveGeneratedRewardItemCacheReference(
+							registeredItem,
+							key,
+							registeredItem.Id.InternalValue,
+							removePending: false);
+					}
+					return false;
+				}
+				if (!IsGeneratedRewardRosterItemCanonical(
+					registeredItem,
+					registeredRecord))
+				{
+					lock (GeneratedRewardItemRegistrationLock)
+					{
+						RemoveGeneratedRewardItemCacheReference(
+							registeredItem,
+							key,
+							registeredItem.Id.InternalValue,
+							removePending: false);
+					}
+					return false;
+				}
+			}
 			lock (GeneratedRewardItemRegistrationLock)
 			{
 				if (registeredItem.Id.InternalValue != 0u)
@@ -11915,8 +12331,35 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		if (cachedItem != null)
 		{
-			item = cachedItem;
-			return true;
+			PlayerRpCraftItemStatsSnapshot cachedSnapshot =
+				string.Equals(record.PlayerCraft?.CraftKind, "remnant", StringComparison.OrdinalIgnoreCase)
+					? null
+					: record.PlayerCraft?.StatsSnapshot;
+			string cachedCraftKind = (record.PlayerCraft?.CraftKind ?? "").Trim();
+			bool cachedSnapshotRequired = string.Equals(
+				cachedCraftKind,
+				"equipment",
+				StringComparison.OrdinalIgnoreCase);
+			bool cachedTerminalInvalid = string.Equals(
+				cachedCraftKind,
+				PlayerRpCraftTerminalInvalidKind,
+				StringComparison.OrdinalIgnoreCase);
+			bool cachedRemnantCanonical =
+				!string.Equals(
+					cachedCraftKind,
+					"remnant",
+					StringComparison.OrdinalIgnoreCase)
+				|| IsGeneratedRewardRosterItemCanonical(cachedItem, record);
+			if (!cachedTerminalInvalid
+				&& cachedRemnantCanonical
+				&& HasExpectedPlayerRpCraftItemValue(cachedItem, record)
+				&& (!cachedSnapshotRequired
+					|| (cachedSnapshot != null
+					&& PlayerRpCraftItemComponentService.MatchesSnapshot(cachedItem, cachedSnapshot))))
+			{
+				item = cachedItem;
+				return true;
+			}
 		}
 		return false;
 	}
@@ -11928,16 +12371,41 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return null;
 		}
-		ItemObject templateItem = ResolveCloneSafeGeneratedRewardTemplateItem(ResolveItemById(record.TemplateStringId), record.DisplayName, source ?? "detached_template_guard");
+		ItemObject templateItem = ResolveGeneratedRewardRecordTemplateItem(record, source ?? "detached_template_guard");
 		if (templateItem == null)
 		{
 			return null;
 		}
 		record.TemplateStringId = (templateItem.StringId ?? "").Trim();
+		if (record.ObjectId != 0u
+			&& TryRetargetGeneratedRewardPendingItem(
+				new MBGUID(record.ObjectId),
+				record.GeneratedStringId,
+				record.DisplayName,
+				templateItem,
+				out ItemObject retargetedPending,
+				source ?? "detached_pending_retarget")
+			&& retargetedPending != null)
+		{
+			record.ObjectId = retargetedPending.Id.InternalValue;
+			lock (GeneratedRewardItemRegistrationLock)
+			{
+				if (record.ObjectId != 0u)
+				{
+					GeneratedRewardDetachedItemsByObjectId[record.ObjectId] = retargetedPending;
+				}
+				GeneratedRewardDetachedItemsByStringId[record.GeneratedStringId] = retargetedPending;
+				RegisterGeneratedRewardManifestRecordNoLock(record);
+			}
+			return retargetedPending;
+		}
 		ItemObject registeredExisting = TryGetRegisteredGeneratedRewardItemByStringId(record.GeneratedStringId);
 		if (registeredExisting != null)
 		{
-			ApplyGeneratedRewardItemTemplateState(registeredExisting, templateItem, record.DisplayName);
+			if (!ApplyGeneratedRewardItemTemplateState(registeredExisting, templateItem, record.DisplayName))
+			{
+				return null;
+			}
 			registeredExisting.Initialize();
 			registeredExisting.IsReady = true;
 			if (!TryEnsureGeneratedRewardItemCategory(registeredExisting, templateItem, source))
@@ -11983,7 +12451,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			cachedItem.StringId = record.GeneratedStringId;
 			cachedItem.Id = objectId;
-			ApplyGeneratedRewardItemTemplateState(cachedItem, templateItem, record.DisplayName);
+			if (!ApplyGeneratedRewardItemTemplateState(cachedItem, templateItem, record.DisplayName))
+			{
+				return null;
+			}
 			cachedItem.Initialize();
 			cachedItem.IsReady = true;
 			if (TrySetRewardItemObjectName(cachedItem, record.DisplayName) && TryEnsureGeneratedRewardItemCategory(cachedItem, templateItem, source))
@@ -12008,7 +12479,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			StringId = record.GeneratedStringId,
 			Id = objectId
 		};
-		ApplyGeneratedRewardItemTemplateState(generatedItem, templateItem, record.DisplayName);
+		if (!ApplyGeneratedRewardItemTemplateState(generatedItem, templateItem, record.DisplayName))
+		{
+			return null;
+		}
 		generatedItem.Initialize();
 		generatedItem.IsReady = true;
 		if (!TrySetRewardItemObjectName(generatedItem, record.DisplayName))
@@ -12023,7 +12497,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		if (registeredItem != null)
 		{
 			generatedItem = registeredItem;
-			ApplyGeneratedRewardItemTemplateState(generatedItem, templateItem, record.DisplayName);
+			if (!ApplyGeneratedRewardItemTemplateState(generatedItem, templateItem, record.DisplayName))
+			{
+				return null;
+			}
 			generatedItem.Initialize();
 			generatedItem.IsReady = true;
 		}
@@ -12062,13 +12539,18 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void ClearGeneratedRewardRuntimeState(string reason)
+	private static void ClearGeneratedRewardRuntimeState(
+		string reason,
+		bool preservePendingItems = false)
 	{
 		try
 		{
 			lock (GeneratedRewardItemRegistrationLock)
 			{
-				GeneratedRewardPendingItemsByObjectId.Clear();
+				if (!preservePendingItems)
+				{
+					GeneratedRewardPendingItemsByObjectId.Clear();
+				}
 				GeneratedRewardDetachedItemsByObjectId.Clear();
 				GeneratedRewardDetachedItemsByStringId.Clear();
 				GeneratedRewardManifestByObjectId.Clear();
@@ -12077,14 +12559,95 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			ClearGeneratedRpEquipmentTemplateCache();
 			ClearGeneratedRpFoodTemplateCache();
+			ClearPlayerRpCraftTemplateCaches();
+			PlayerRpForgePopup.ClearDraft();
 			ClearGeneratedRewardEconomicPoolCache();
 			GeneratedRewardLastInventoryVmLogSignature = "";
 			GeneratedRewardLastInventoryVmLogUtc = DateTime.MinValue;
-			Logger.Log("Logic", "[RewardItemResolve] generated_runtime_state_cleared reason=" + (reason ?? "") + " global_manifest_io=disabled");
+			Logger.Log(
+				"Logic",
+				"[RewardItemResolve] generated_runtime_state_cleared reason="
+					+ (reason ?? "")
+					+ " pending="
+					+ (preservePendingItems ? "preserved" : "cleared")
+					+ " global_manifest_io=disabled");
 		}
 		catch
 		{
 		}
+	}
+
+	private static void ClearPlayerRpCraftTemplateCaches()
+	{
+		lock (PlayerRpMiscTemplateCacheLock)
+		{
+			PlayerRpMiscTemplateCacheOwner = null;
+			PlayerRpMiscTemplateCandidates = new List<GeneratedRpFoodTemplateCandidate>();
+		}
+		lock (PlayerRpPriceCacheLock)
+		{
+			PlayerRpPriceCacheOwner = null;
+			PlayerRpMedianPriceByItemType = new Dictionary<int, int>();
+		}
+		ClearPlayerRpExactTemplateLookupCache();
+	}
+
+	private static bool IsGeneratedRpWhipTemplateItem(ItemObject item)
+	{
+		// Bannerlord has no native whip WeaponClass. Some weapon mods therefore
+		// implement whips as OneHandedSword. Preserve those templates for explicit
+		// whip names without allowing the borrowed class to pollute the sword pool.
+		return item != null
+			&& (ContainsGeneratedRpWhipIdentity(item.StringId)
+				|| ContainsGeneratedRpWhipIdentity(item.Name?.ToString()));
+	}
+
+	private static bool IsGeneratedRpWhipWeaponTemplateItem(ItemObject item)
+	{
+		return IsSettlementWeaponLikeItem(item)
+			&& IsGeneratedRpWhipTemplateItem(item);
+	}
+
+	private static bool ContainsGeneratedRpWhipIdentity(string value)
+	{
+		string text = (value ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		if (text.IndexOf('鞭') >= 0)
+		{
+			return true;
+		}
+		// Mod IDs commonly append tier tokens (for example chainwhip_tier3), so
+		// terminal suffix matching alone is insufficient here. This helper is
+		// only accepted after the item has already been proven weapon-like.
+		int searchStart = 0;
+		while (searchStart < text.Length)
+		{
+			int index = text.IndexOf(
+				"whip",
+				searchStart,
+				StringComparison.OrdinalIgnoreCase);
+			if (index < 0)
+			{
+				return false;
+			}
+			int boundary = index + 4;
+			if (boundary < text.Length
+				&& (text[boundary] == 's' || text[boundary] == 'S'))
+			{
+				boundary++;
+			}
+			if (boundary >= text.Length
+				|| !((text[boundary] >= 'a' && text[boundary] <= 'z')
+					|| (text[boundary] >= 'A' && text[boundary] <= 'Z')))
+			{
+				return true;
+			}
+			searchStart = index + 4;
+		}
+		return false;
 	}
 
 	private static void RegisterGeneratedRewardManifestRecord(GeneratedRewardItemRecord record)
@@ -12144,6 +12707,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				record.TemplateStringId = existing.TemplateStringId;
 			}
+			record.PlayerCraft = MergePlayerRpCraftData(record.PlayerCraft, existing.PlayerCraft);
 			record.LastTouchedDay = Math.Max(record.LastTouchedDay, existing.LastTouchedDay);
 			record = NormalizeGeneratedRewardItemRecord(record.GeneratedStringId, record);
 			if (record == null)
@@ -12230,9 +12794,27 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				StringId = pendingStringId,
 				Id = objectId
 			};
-			ApplyGeneratedRewardItemTemplateState(pending, template, "AnimusForge generated item");
-			pending.Initialize();
-			pending.IsReady = true;
+			if (!ApplyGeneratedRewardItemTemplateState(
+				pending,
+				template,
+				"AnimusForge generated item"))
+			{
+				return null;
+			}
+			try
+			{
+				pending.Initialize();
+				pending.IsReady = true;
+			}
+			catch (Exception ex)
+			{
+				LogGeneratedRewardPendingRetargetFailure(
+					pending,
+					pendingStringId,
+					source,
+					"pending_initialize_failed:" + ex.GetType().Name + ":" + ex.Message);
+				return null;
+			}
 			if (TryEnsureGeneratedRewardItemCategory(pending, template, source ?? "pending"))
 			{
 				GeneratedRewardPendingItemsByObjectId[objectId.InternalValue] = pending;
@@ -12287,129 +12869,950 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		lock (GeneratedRewardItemRegistrationLock)
 		{
-			bool previousSuppressObjectLookup = SuppressGeneratedRewardObjectLookup;
-			bool previousSuppressPendingLookup = SuppressGeneratedRewardPendingLookup;
-			ItemObject existing;
-			try
+			MBObjectManager manager = MBObjectManager.Instance;
+			ItemObject fallbackTemplate = GetGeneratedRewardFallbackTemplateItem();
+			if (manager == null || fallbackTemplate == null)
 			{
-				SuppressGeneratedRewardObjectLookup = true;
-				SuppressGeneratedRewardPendingLookup = true;
-				existing = MBObjectManager.Instance?.GetObject(objectId) as ItemObject;
+				return false;
 			}
-			finally
-			{
-				SuppressGeneratedRewardObjectLookup = previousSuppressObjectLookup;
-				SuppressGeneratedRewardPendingLookup = previousSuppressPendingLookup;
-			}
-			if (!IsGeneratedRewardPendingItem(existing) && GeneratedRewardPendingItemsByObjectId.TryGetValue(objectId.InternalValue, out var cachedPending) && IsGeneratedRewardPendingItem(cachedPending))
-			{
-				existing = cachedPending;
-			}
+			string generatedKey = generatedStringId.Trim();
+			ItemObject registeredAtId = GetGeneratedRewardRawItem(objectId);
+			GeneratedRewardPendingItemsByObjectId.TryGetValue(
+				objectId.InternalValue,
+				out ItemObject cachedPending);
+			ItemObject existing = IsGeneratedRewardPendingItem(registeredAtId)
+				? registeredAtId
+				: (registeredAtId == null && IsGeneratedRewardPendingItem(cachedPending)
+					? cachedPending
+					: null);
 			if (!IsGeneratedRewardPendingItem(existing))
 			{
 				return false;
 			}
+			string pendingStringId = existing.StringId.Trim();
+			ItemObject registeredAtPendingString = GetGeneratedRewardRawItem(pendingStringId);
+			ItemObject registeredAtGeneratedString = GetGeneratedRewardRawItem(generatedKey);
+			bool registeredById = ReferenceEquals(registeredAtId, existing);
+			bool registeredByPendingString = ReferenceEquals(
+				registeredAtPendingString,
+				existing);
+			if ((registeredAtId != null && !registeredById)
+				|| (registeredAtPendingString != null && !registeredByPendingString)
+				|| registeredAtGeneratedString != null
+				|| (registeredById != registeredByPendingString))
+			{
+				LogGeneratedRewardPendingRetargetFailure(
+					existing,
+					generatedKey,
+					logSource,
+					"preflight_index_collision");
+				return false;
+			}
+			bool restorePendingRegistration = registeredById && registeredByPendingString;
+			if (restorePendingRegistration
+				&& !TryUnregisterGeneratedRewardItemReference(
+					existing,
+					pendingStringId,
+					objectId,
+					out string unregisterFailure))
+			{
+				LogGeneratedRewardPendingRetargetFailure(
+					existing,
+					generatedKey,
+					logSource,
+					"pending_unregister_failed:" + unregisterFailure);
+				return false;
+			}
+			if (GetGeneratedRewardRawItem(objectId) != null
+				|| GetGeneratedRewardRawItem(pendingStringId) != null
+				|| GetGeneratedRewardRawItem(generatedKey) != null)
+			{
+				TryRestoreGeneratedRewardPendingAfterFailedRetarget(
+					existing,
+					pendingStringId,
+					objectId,
+					fallbackTemplate,
+					restorePendingRegistration,
+					generatedKey,
+					logSource,
+					out _);
+				LogGeneratedRewardPendingRetargetFailure(
+					existing,
+					generatedKey,
+					logSource,
+					"post_unregister_index_collision");
+				return false;
+			}
+
+			existing.StringId = generatedKey;
+			existing.Id = objectId;
+			if (!ApplyGeneratedRewardItemTemplateState(existing, templateItem, displayName))
+			{
+				TryRestoreGeneratedRewardPendingAfterFailedRetarget(
+					existing,
+					pendingStringId,
+					objectId,
+					fallbackTemplate,
+					restorePendingRegistration,
+					generatedKey,
+					logSource,
+					out string restoreFailure);
+				LogGeneratedRewardPendingRetargetFailure(
+					existing,
+					generatedKey,
+					logSource,
+					"template_apply_failed:" + restoreFailure);
+				return false;
+			}
+			ItemObject registered = TryRegisterGeneratedRewardItemWithStableId(existing, logSource ?? "pending_retarget");
+			bool registrationIsExactReference = ReferenceEquals(registered, existing)
+				&& ReferenceEquals(GetGeneratedRewardRawItem(objectId), existing)
+				&& ReferenceEquals(GetGeneratedRewardRawItem(generatedKey), existing)
+				&& GetGeneratedRewardRawItem(pendingStringId) == null;
+			if (!registrationIsExactReference
+				|| !IsGeneratedRewardItemVisibleToObjectManager(existing))
+			{
+				TryRestoreGeneratedRewardPendingAfterFailedRetarget(
+					existing,
+					pendingStringId,
+					objectId,
+					fallbackTemplate,
+					restorePendingRegistration,
+					generatedKey,
+					logSource,
+					out string restoreFailure);
+				LogGeneratedRewardPendingRetargetFailure(
+					existing,
+					generatedKey,
+					logSource,
+					"stable_registration_reference_mismatch:" + restoreFailure);
+				return false;
+			}
+			string finalizationFailure = "";
 			try
 			{
-				MBObjectManager.Instance.UnregisterObject(existing);
+				existing.IsReady = true;
+				if (!IsGeneratedRewardPendingRetargetFinalStateValid(
+					existing,
+					objectId,
+					generatedKey,
+					displayName,
+					templateItem))
+				{
+					finalizationFailure = "post_registration_state_validation_failed";
+				}
+			}
+			catch (Exception ex)
+			{
+				finalizationFailure = "post_registration_finalize_failed:"
+					+ ex.GetType().Name
+					+ ":"
+					+ ex.Message;
+			}
+			if (!string.IsNullOrWhiteSpace(finalizationFailure))
+			{
+				TryRestoreGeneratedRewardPendingAfterFailedRetarget(
+					existing,
+					pendingStringId,
+					objectId,
+					fallbackTemplate,
+					restorePendingRegistration,
+					generatedKey,
+					logSource,
+					out string restoreFailure);
+				LogGeneratedRewardPendingRetargetFailure(
+					existing,
+					generatedKey,
+					logSource,
+					finalizationFailure + ":" + restoreFailure);
+				return false;
+			}
+			if (GeneratedRewardPendingItemsByObjectId.TryGetValue(
+					objectId.InternalValue,
+					out ItemObject pendingAtId)
+				&& ReferenceEquals(pendingAtId, existing))
+			{
+				GeneratedRewardPendingItemsByObjectId.Remove(objectId.InternalValue);
+			}
+			GeneratedRewardDetachedItemsByObjectId[objectId.InternalValue] = existing;
+			GeneratedRewardDetachedItemsByStringId[generatedKey] = existing;
+			item = existing;
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] generated_pending_retargeted source="
+					+ (logSource ?? "")
+					+ " generated="
+					+ generatedKey
+					+ " id="
+					+ objectId.InternalValue.ToString(CultureInfo.InvariantCulture));
 			}
 			catch
 			{
 			}
-			existing.StringId = generatedStringId.Trim();
-			existing.Id = objectId;
-			ApplyGeneratedRewardItemTemplateState(existing, templateItem, displayName);
-			ItemObject registered = TryRegisterGeneratedRewardItemWithStableId(existing, logSource ?? "pending_retarget");
-			if (registered != null)
-			{
-				GeneratedRewardPendingItemsByObjectId[objectId.InternalValue] = registered;
-				item = registered;
-				try
-				{
-					Logger.Log("Logic", "[RewardItemResolve] generated_pending_retargeted source=" + (logSource ?? "") + " generated=" + generatedStringId + " id=" + objectId.InternalValue.ToString(CultureInfo.InvariantCulture));
-				}
-				catch
-				{
-				}
-				return true;
-			}
-			return false;
+			return true;
 		}
 	}
 
-	private static void ApplyGeneratedRewardItemTemplateState(ItemObject target, ItemObject templateItem, string displayName)
+	private static bool IsGeneratedRewardPendingRetargetFinalStateValid(
+		ItemObject item,
+		MBGUID objectId,
+		string generatedStringId,
+		string displayName,
+		ItemObject templateItem)
+	{
+		if (item == null
+			|| templateItem == null
+			|| !item.IsReady
+			|| item.Id.InternalValue != objectId.InternalValue
+			|| !string.Equals(
+				(item.StringId ?? "").Trim(),
+				(generatedStringId ?? "").Trim(),
+				StringComparison.OrdinalIgnoreCase)
+			|| !string.Equals(
+				item.Name?.ToString() ?? "",
+				(displayName ?? "").Trim(),
+				StringComparison.Ordinal)
+			|| item.Type != templateItem.Type
+			|| !HasCloneSafeGeneratedRewardThumbnailSource(item))
+		{
+			return false;
+		}
+		if (templateItem.ItemCategory != null
+			&& !ReferenceEquals(item.ItemCategory, templateItem.ItemCategory))
+		{
+			return false;
+		}
+		GeneratedRewardItemRecord record = Instance?.GetGeneratedRewardItemRecord(
+			generatedStringId);
+		if (record == null)
+		{
+			lock (GeneratedRewardItemRegistrationLock)
+			{
+				GeneratedRewardManifestByStringId.TryGetValue(
+					(generatedStringId ?? "").Trim(),
+					out record);
+			}
+		}
+		PlayerRpCraftItemStatsSnapshot snapshot =
+			string.Equals(
+				record?.PlayerCraft?.CraftKind,
+				"equipment",
+				StringComparison.OrdinalIgnoreCase)
+				? record.PlayerCraft.StatsSnapshot
+				: null;
+		if (!HasExpectedPlayerRpCraftItemValue(item, record))
+		{
+			return false;
+		}
+		if (snapshot != null)
+		{
+			if (!PlayerRpCraftItemComponentService.MatchesSnapshot(item, snapshot))
+			{
+				return false;
+			}
+		}
+		else if (!ReferenceEquals(item.ItemComponent, templateItem.ItemComponent))
+		{
+			return false;
+		}
+		return ReferenceEquals(GetGeneratedRewardRawItem(objectId), item)
+			&& ReferenceEquals(GetGeneratedRewardRawItem(generatedStringId), item);
+	}
+
+	private static ItemObject GetGeneratedRewardRawItem(MBGUID objectId)
+	{
+		bool previousSuppressObjectLookup = SuppressGeneratedRewardObjectLookup;
+		bool previousSuppressPendingLookup = SuppressGeneratedRewardPendingLookup;
+		try
+		{
+			SuppressGeneratedRewardObjectLookup = true;
+			SuppressGeneratedRewardPendingLookup = true;
+			return MBObjectManager.Instance?.GetObject(objectId) as ItemObject;
+		}
+		catch
+		{
+			return null;
+		}
+		finally
+		{
+			SuppressGeneratedRewardObjectLookup = previousSuppressObjectLookup;
+			SuppressGeneratedRewardPendingLookup = previousSuppressPendingLookup;
+		}
+	}
+
+	private static ItemObject GetGeneratedRewardRawItem(string stringId)
+	{
+		if (string.IsNullOrWhiteSpace(stringId))
+		{
+			return null;
+		}
+		bool previousSuppressObjectLookup = SuppressGeneratedRewardObjectLookup;
+		bool previousSuppressPendingLookup = SuppressGeneratedRewardPendingLookup;
+		try
+		{
+			SuppressGeneratedRewardObjectLookup = true;
+			SuppressGeneratedRewardPendingLookup = true;
+			return MBObjectManager.Instance?.GetObject<ItemObject>(stringId.Trim());
+		}
+		catch
+		{
+			return null;
+		}
+		finally
+		{
+			SuppressGeneratedRewardObjectLookup = previousSuppressObjectLookup;
+			SuppressGeneratedRewardPendingLookup = previousSuppressPendingLookup;
+		}
+	}
+
+	private static bool TryUnregisterGeneratedRewardItemReference(
+		ItemObject existing,
+		string stringId,
+		MBGUID objectId,
+		out string failure)
+	{
+		failure = "";
+		if (existing == null || MBObjectManager.Instance == null)
+		{
+			failure = "missing_object_manager_or_item";
+			return false;
+		}
+		ItemObject registeredAtId = GetGeneratedRewardRawItem(objectId);
+		ItemObject registeredAtString = GetGeneratedRewardRawItem(stringId);
+		if ((registeredAtId != null && !ReferenceEquals(registeredAtId, existing))
+			|| (registeredAtString != null && !ReferenceEquals(registeredAtString, existing)))
+		{
+			failure = "foreign_index_owner";
+			return false;
+		}
+		if (registeredAtId == null && registeredAtString == null)
+		{
+			return true;
+		}
+		try
+		{
+			MBObjectManager.Instance.UnregisterObject(existing);
+		}
+		catch (Exception ex)
+		{
+			failure = ex.GetType().Name + ":" + ex.Message;
+			return false;
+		}
+		if (ReferenceEquals(GetGeneratedRewardRawItem(objectId), existing)
+			|| ReferenceEquals(GetGeneratedRewardRawItem(stringId), existing))
+		{
+			failure = "owned_index_remained_after_unregister";
+			return false;
+		}
+		return true;
+	}
+
+	private static bool TryRestoreGeneratedRewardPendingAfterFailedRetarget(
+		ItemObject existing,
+		string pendingStringId,
+		MBGUID objectId,
+		ItemObject fallbackTemplate,
+		bool restoreRegistration,
+		string generatedStringId,
+		string source,
+		out string failure)
+	{
+		failure = "";
+		if (existing == null || fallbackTemplate == null)
+		{
+			failure = "missing_pending_or_fallback";
+			return false;
+		}
+		string currentStringId = existing.StringId ?? generatedStringId ?? "";
+		if (!TryUnregisterGeneratedRewardItemReference(
+			existing,
+			currentStringId,
+			objectId,
+			out string unregisterFailure))
+		{
+			bool existingStillIndexed =
+				ReferenceEquals(GetGeneratedRewardRawItem(objectId), existing)
+				|| ReferenceEquals(
+					GetGeneratedRewardRawItem(currentStringId),
+					existing);
+			if (existingStillIndexed)
+			{
+				failure = "generated_unregister_failed:" + unregisterFailure;
+				return false;
+			}
+		}
+		existing.StringId = pendingStringId;
+		existing.Id = objectId;
+		if (!ApplyGeneratedRewardItemTemplateState(
+			existing,
+			fallbackTemplate,
+			"AnimusForge generated item"))
+		{
+			failure = "fallback_state_restore_failed";
+			RemoveGeneratedRewardItemCacheReference(
+				existing,
+				generatedStringId,
+				objectId.InternalValue,
+				removePending: true);
+			return false;
+		}
+		try
+		{
+			existing.Initialize();
+			existing.IsReady = true;
+		}
+		catch (Exception ex)
+		{
+			failure = "fallback_initialize_failed:"
+				+ ex.GetType().Name
+				+ ":"
+				+ ex.Message;
+			RemoveGeneratedRewardItemCacheReference(
+				existing,
+				generatedStringId,
+				objectId.InternalValue,
+				removePending: true);
+			return false;
+		}
+		bool registrationRestored = true;
+		if (restoreRegistration)
+		{
+			ItemObject restoredRegistration = TryRegisterGeneratedRewardItemWithStableId(
+				existing,
+				(source ?? "pending_retarget") + "_restore_pending");
+			registrationRestored = ReferenceEquals(restoredRegistration, existing)
+				&& ReferenceEquals(GetGeneratedRewardRawItem(objectId), existing)
+				&& ReferenceEquals(GetGeneratedRewardRawItem(pendingStringId), existing);
+			if (!registrationRestored)
+			{
+				TryUnregisterGeneratedRewardItemReference(
+					existing,
+					pendingStringId,
+					objectId,
+					out _);
+			}
+		}
+		else
+		{
+			ItemObject idOwner = GetGeneratedRewardRawItem(objectId);
+			ItemObject stringOwner = GetGeneratedRewardRawItem(pendingStringId);
+			registrationRestored =
+				(idOwner == null && stringOwner == null)
+				|| (ReferenceEquals(idOwner, existing)
+					&& ReferenceEquals(stringOwner, existing));
+			if (!registrationRestored
+				&& (ReferenceEquals(idOwner, existing)
+					|| ReferenceEquals(stringOwner, existing)))
+			{
+				TryUnregisterGeneratedRewardItemReference(
+					existing,
+					pendingStringId,
+					objectId,
+					out _);
+			}
+		}
+		if (!registrationRestored)
+		{
+			RemoveGeneratedRewardItemCacheReference(
+				existing,
+				generatedStringId,
+				objectId.InternalValue,
+				removePending: true);
+			failure = "pending_registration_restore_failed";
+			return false;
+		}
+		RemoveGeneratedRewardItemCacheReference(
+			existing,
+			generatedStringId,
+			objectId.InternalValue,
+			removePending: false);
+		GeneratedRewardPendingItemsByObjectId[objectId.InternalValue] = existing;
+		return true;
+	}
+
+	private static void RemoveGeneratedRewardItemCacheReference(
+		ItemObject item,
+		string generatedStringId,
+		uint objectId,
+		bool removePending)
+	{
+		if (GeneratedRewardDetachedItemsByObjectId.TryGetValue(
+				objectId,
+				out ItemObject detachedById)
+			&& ReferenceEquals(detachedById, item))
+		{
+			GeneratedRewardDetachedItemsByObjectId.Remove(objectId);
+		}
+		string key = (generatedStringId ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(key)
+			&& GeneratedRewardDetachedItemsByStringId.TryGetValue(
+				key,
+				out ItemObject detachedByString)
+			&& ReferenceEquals(detachedByString, item))
+		{
+			GeneratedRewardDetachedItemsByStringId.Remove(key);
+		}
+		if (removePending
+			&& GeneratedRewardPendingItemsByObjectId.TryGetValue(
+				objectId,
+				out ItemObject pendingById)
+			&& ReferenceEquals(pendingById, item))
+		{
+			GeneratedRewardPendingItemsByObjectId.Remove(objectId);
+		}
+	}
+
+	private static void LogGeneratedRewardPendingRetargetFailure(
+		ItemObject pending,
+		string generatedStringId,
+		string source,
+		string failure)
+	{
+		try
+		{
+			Logger.Log("Logic", "[RewardItemResolve] generated_pending_retarget_failed source="
+				+ (source ?? "")
+				+ " generated="
+				+ (generatedStringId ?? "")
+				+ " id="
+				+ (pending?.Id.InternalValue ?? 0u).ToString(CultureInfo.InvariantCulture)
+				+ " failure="
+				+ (failure ?? ""));
+		}
+		catch
+		{
+		}
+	}
+
+	private static int GetStoredPlayerRpCraftItemValue(
+		PlayerRpCraftData craftData)
+	{
+		if (craftData == null)
+		{
+			return 0;
+		}
+		if (craftData.CraftedItemValue > 0)
+		{
+			return craftData.CraftedItemValue;
+		}
+		return craftData.SchemaVersion < 3
+			? Math.Max(0, craftData.InvestedDenars)
+			: 0;
+	}
+
+	private static bool TryGetPlayerRpCraftStoredItemValue(
+		ItemObject item,
+		out int expectedValue)
+	{
+		expectedValue = 0;
+		string key = (item?.StringId ?? "").Trim();
+		if (!IsGeneratedRewardItemStringId(key))
+		{
+			return false;
+		}
+		GeneratedRewardItemRecord record =
+			Instance?.GetGeneratedRewardItemRecord(key);
+		if (record == null)
+		{
+			lock (GeneratedRewardItemRegistrationLock)
+			{
+				GeneratedRewardManifestByStringId.TryGetValue(key, out record);
+			}
+		}
+		expectedValue =
+			GetStoredPlayerRpCraftItemValue(record?.PlayerCraft);
+		return expectedValue > 0;
+	}
+
+	private static bool HasExpectedPlayerRpCraftItemValue(
+		ItemObject item,
+		GeneratedRewardItemRecord record)
+	{
+		PlayerRpCraftData craftData = record?.PlayerCraft;
+		if (craftData == null)
+		{
+			return true;
+		}
+		int expectedValue =
+			GetStoredPlayerRpCraftItemValue(craftData);
+		if (expectedValue <= 0)
+		{
+			return craftData.SchemaVersion < 3
+				&& craftData.InvestedDenars <= 0
+				&& item != null;
+		}
+		return expectedValue > 0
+			&& item != null
+			&& item.Value == expectedValue;
+	}
+
+	private static bool ApplyGeneratedRewardItemTemplateState(ItemObject target, ItemObject templateItem, string displayName)
 	{
 		if (target == null || templateItem == null)
 		{
-			return;
+			return false;
 		}
+		ItemObject templateCopy;
 		try
 		{
-			ItemObject copy = new ItemObject(templateItem);
-			CopyGeneratedRewardItemProperty(target, copy, "ItemCategory");
-			CopyGeneratedRewardItemProperty(target, copy, "ItemComponent");
-			CopyGeneratedRewardItemProperty(target, templateItem, "WeaponDesign");
-			CopyGeneratedRewardItemProperty(target, copy, "MultiMeshName");
-			CopyGeneratedRewardItemProperty(target, copy, "HolsterMeshName");
-			CopyGeneratedRewardItemProperty(target, copy, "HolsterWithWeaponMeshName");
-			CopyGeneratedRewardItemProperty(target, copy, "ItemHolsters");
-			CopyGeneratedRewardItemProperty(target, copy, "HolsterPositionShift");
-			CopyGeneratedRewardItemProperty(target, copy, "FlyingMeshName");
-			CopyGeneratedRewardItemProperty(target, copy, "BodyName");
-			CopyGeneratedRewardItemProperty(target, copy, "SkeletonName");
-			CopyGeneratedRewardItemProperty(target, copy, "StaticAnimationName");
-			CopyGeneratedRewardItemProperty(target, copy, "HolsterBodyName");
-			CopyGeneratedRewardItemProperty(target, copy, "CollisionBodyName");
-			CopyGeneratedRewardItemProperty(target, copy, "RecalculateBody");
-			CopyGeneratedRewardItemProperty(target, copy, "PrefabName");
-			CopyGeneratedRewardItemProperty(target, copy, "ItemFlags");
-			CopyGeneratedRewardItemProperty(target, copy, "Value");
-			CopyGeneratedRewardItemProperty(target, copy, "Effectiveness");
-			CopyGeneratedRewardItemProperty(target, copy, "Weight");
-			CopyGeneratedRewardItemProperty(target, copy, "Difficulty");
-			CopyGeneratedRewardItemProperty(target, copy, "Appearance");
-			CopyGeneratedRewardItemProperty(target, copy, "IsUsingTableau");
-			CopyGeneratedRewardItemProperty(target, copy, "ArmBandMeshName");
-			CopyGeneratedRewardItemProperty(target, copy, "IsFood");
-			CopyGeneratedRewardItemProperty(target, copy, "ScaleFactor");
-			CopyGeneratedRewardItemProperty(target, copy, "Culture");
-			CopyGeneratedRewardItemProperty(target, copy, "MultiplayerItem");
-			CopyGeneratedRewardItemProperty(target, copy, "NotMerchandise");
-			CopyGeneratedRewardItemProperty(target, copy, "LodAtlasIndex");
-			CopyGeneratedRewardItemProperty(target, copy, "ItemType");
-			target.Type = templateItem.Type;
+			templateCopy = new ItemObject(templateItem);
 		}
-		catch
+		catch (Exception ex)
 		{
+			LogGeneratedRewardTemplateStateFailure(
+				target,
+				templateItem,
+				"template_copy_failed:" + ex.GetType().Name + ":" + ex.Message,
+				rollbackSucceeded: true);
+			return false;
 		}
-		TrySetRewardItemObjectName(target, displayName);
-		ApplyGeneratedRewardItemRpState(target, displayName);
-		TryEnsureGeneratedRewardItemCategory(target, templateItem, "template_state");
+
+		int propertyCount = GeneratedRewardItemTemplateStateProperties.Length;
+		object[] previousValues = new object[propertyCount];
+		object[] desiredValues = new object[propertyCount];
+		object previousName = null;
+		ItemObject.ItemTypeEnum previousType = target.Type;
+		bool stateCaptured = false;
+		string failure = "";
+		try
+		{
+			bool hasPlayerCraftValueOverride =
+				TryGetPlayerRpCraftStoredItemValue(
+					target,
+					out int playerCraftValue);
+			if (RewardItemObjectNameProperty?.GetGetMethod(nonPublic: true) == null
+				|| RewardItemObjectNameProperty.GetSetMethod(nonPublic: true) == null)
+			{
+				throw new InvalidOperationException("name_property_unavailable");
+			}
+			previousName = RewardItemObjectNameProperty.GetValue(target, null);
+			for (int i = 0; i < propertyCount; i++)
+			{
+				PropertyInfo property = GeneratedRewardItemTemplateStateProperties[i];
+				if (property?.GetGetMethod(nonPublic: true) == null)
+				{
+					throw new InvalidOperationException(
+						"property_unavailable:" + GeneratedRewardItemTemplateStatePropertyNames[i]);
+				}
+				ItemObject source = string.Equals(
+					GeneratedRewardItemTemplateStatePropertyNames[i],
+					"WeaponDesign",
+					StringComparison.Ordinal)
+					? templateItem
+					: templateCopy;
+				previousValues[i] = property.GetValue(target, null);
+				desiredValues[i] = hasPlayerCraftValueOverride
+					&& string.Equals(
+						GeneratedRewardItemTemplateStatePropertyNames[i],
+						"Value",
+						StringComparison.Ordinal)
+					? playerCraftValue
+					: property.GetValue(source, null);
+				if (!AreGeneratedRewardTemplatePropertyValuesEquivalent(
+						previousValues[i],
+						desiredValues[i])
+					&& property.GetSetMethod(nonPublic: true) == null)
+				{
+					throw new InvalidOperationException(
+						"property_setter_unavailable:" + GeneratedRewardItemTemplateStatePropertyNames[i]);
+				}
+			}
+			stateCaptured = true;
+
+			for (int i = 0; i < propertyCount; i++)
+			{
+				PropertyInfo property = GeneratedRewardItemTemplateStateProperties[i];
+				if (AreGeneratedRewardTemplatePropertyValuesEquivalent(
+					previousValues[i],
+					desiredValues[i]))
+				{
+					continue;
+				}
+				property.SetValue(target, desiredValues[i], null);
+				if (!AreGeneratedRewardTemplatePropertyValuesEquivalent(
+					property.GetValue(target, null),
+					desiredValues[i]))
+				{
+					throw new InvalidOperationException(
+						"property_commit_validation_failed:" + GeneratedRewardItemTemplateStatePropertyNames[i]);
+				}
+			}
+			target.Type = templateItem.Type;
+			if (target.Type != templateItem.Type)
+			{
+				throw new InvalidOperationException("item_type_commit_validation_failed");
+			}
+			if (!TrySetRewardItemObjectName(target, displayName))
+			{
+				throw new InvalidOperationException("display_name_commit_validation_failed");
+			}
+			if (!TryEnsureGeneratedRewardItemTemplateCategory(target, templateItem, "template_state"))
+			{
+				throw new InvalidOperationException("item_category_commit_validation_failed");
+			}
+			if (!TryApplyPlayerRpCraftSnapshot(target, templateItem, "template_state"))
+			{
+				throw new InvalidOperationException("player_snapshot_commit_failed");
+			}
+			if (!HasCloneSafeGeneratedRewardThumbnailSource(target))
+			{
+				throw new InvalidOperationException("thumbnail_source_commit_validation_failed");
+			}
+			bool snapshotOverridesComponentAndWeight =
+				HasActivePlayerRpCraftEquipmentSnapshot(target);
+			for (int i = 0; i < propertyCount; i++)
+			{
+				string propertyName = GeneratedRewardItemTemplateStatePropertyNames[i];
+				if (string.Equals(propertyName, "ItemCategory", StringComparison.Ordinal)
+					|| (snapshotOverridesComponentAndWeight
+						&& (string.Equals(propertyName, "ItemComponent", StringComparison.Ordinal)
+							|| string.Equals(propertyName, "Weight", StringComparison.Ordinal))))
+				{
+					continue;
+				}
+				PropertyInfo property = GeneratedRewardItemTemplateStateProperties[i];
+				if (!AreGeneratedRewardTemplatePropertyValuesEquivalent(
+					property.GetValue(target, null),
+					desiredValues[i]))
+				{
+					throw new InvalidOperationException(
+						"property_post_commit_validation_failed:" + propertyName);
+				}
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			failure = ex.GetType().Name + ":" + ex.Message;
+		}
+
+		bool rollbackSucceeded = !stateCaptured
+			|| TryRestoreGeneratedRewardItemTemplateState(
+				target,
+				previousType,
+				previousName,
+				previousValues);
+		LogGeneratedRewardTemplateStateFailure(
+			target,
+			templateItem,
+			failure,
+			rollbackSucceeded);
+		return false;
 	}
 
-	private static void CopyGeneratedRewardItemProperty(ItemObject target, ItemObject source, string propertyName)
+	private static bool AreGeneratedRewardTemplatePropertyValuesEquivalent(
+		object left,
+		object right)
 	{
-		if (target == null || source == null || string.IsNullOrWhiteSpace(propertyName))
+		if (ReferenceEquals(left, right))
 		{
-			return;
+			return true;
+		}
+		return left != null && right != null && left.Equals(right);
+	}
+
+	private static bool TryRestoreGeneratedRewardItemTemplateState(
+		ItemObject target,
+		ItemObject.ItemTypeEnum previousType,
+		object previousName,
+		object[] previousValues)
+	{
+		if (target == null
+			|| previousValues == null
+			|| previousValues.Length != GeneratedRewardItemTemplateStateProperties.Length)
+		{
+			return false;
+		}
+		bool restored = true;
+		for (int i = GeneratedRewardItemTemplateStateProperties.Length - 1; i >= 0; i--)
+		{
+			PropertyInfo property = GeneratedRewardItemTemplateStateProperties[i];
+			if (property?.GetGetMethod(nonPublic: true) == null)
+			{
+				restored = false;
+				continue;
+			}
+			try
+			{
+				object previousValue = previousValues[i];
+				if (!AreGeneratedRewardTemplatePropertyValuesEquivalent(
+					property.GetValue(target, null),
+					previousValue))
+				{
+					MethodInfo setter = property.GetSetMethod(nonPublic: true);
+					if (setter == null)
+					{
+						restored = false;
+						continue;
+					}
+					property.SetValue(target, previousValue, null);
+				}
+				if (!AreGeneratedRewardTemplatePropertyValuesEquivalent(
+					property.GetValue(target, null),
+					previousValue))
+				{
+					restored = false;
+				}
+			}
+			catch
+			{
+				restored = false;
+			}
 		}
 		try
 		{
-			PropertyInfo property = typeof(ItemObject).GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-			if (property == null)
+			target.Type = previousType;
+			restored &= target.Type == previousType;
+		}
+		catch
+		{
+			restored = false;
+		}
+		try
+		{
+			if (!AreGeneratedRewardTemplatePropertyValuesEquivalent(
+				RewardItemObjectNameProperty?.GetValue(target, null),
+				previousName))
 			{
-				return;
+				RewardItemObjectNameProperty?.SetValue(target, previousName, null);
 			}
-			MethodInfo setMethod = property.GetSetMethod(nonPublic: true);
-			if (setMethod == null)
+			if (!AreGeneratedRewardTemplatePropertyValuesEquivalent(
+				RewardItemObjectNameProperty?.GetValue(target, null),
+				previousName))
 			{
-				return;
+				restored = false;
 			}
-			property.SetValue(target, property.GetValue(source, null), null);
+		}
+		catch
+		{
+			restored = false;
+		}
+		return restored;
+	}
+
+	private static bool TryEnsureGeneratedRewardItemTemplateCategory(
+		ItemObject item,
+		ItemObject templateItem,
+		string source)
+	{
+		if (item == null || templateItem == null)
+		{
+			return false;
+		}
+		ItemCategory templateCategory = templateItem.ItemCategory;
+		if (templateCategory == null)
+		{
+			return TryEnsureGeneratedRewardItemCategory(item, null, source);
+		}
+		if (!ReferenceEquals(item.ItemCategory, templateCategory)
+			&& !TrySetGeneratedRewardItemCategory(item, templateCategory))
+		{
+			return false;
+		}
+		return ReferenceEquals(item.ItemCategory, templateCategory);
+	}
+
+	private static bool HasActivePlayerRpCraftEquipmentSnapshot(ItemObject target)
+	{
+		if (target == null || !IsGeneratedRewardItemStringId(target.StringId))
+		{
+			return false;
+		}
+		GeneratedRewardItemRecord record = Instance?.GetGeneratedRewardItemRecord(target.StringId);
+		if (record == null)
+		{
+			lock (GeneratedRewardItemRegistrationLock)
+			{
+				GeneratedRewardManifestByStringId.TryGetValue(target.StringId.Trim(), out record);
+			}
+		}
+		return string.Equals(
+				record?.PlayerCraft?.CraftKind,
+				"equipment",
+				StringComparison.OrdinalIgnoreCase)
+			&& record.PlayerCraft.StatsSnapshot != null;
+	}
+
+	private static void LogGeneratedRewardTemplateStateFailure(
+		ItemObject target,
+		ItemObject templateItem,
+		string failure,
+		bool rollbackSucceeded)
+	{
+		try
+		{
+			Logger.Log("Logic", "[RewardItemResolve] generated_template_state_failed item="
+				+ (target?.StringId ?? "")
+				+ " template="
+				+ (templateItem?.StringId ?? "")
+				+ " failure="
+				+ (failure ?? "")
+				+ " rollback="
+				+ rollbackSucceeded);
 		}
 		catch
 		{
 		}
+	}
+
+	private static bool TryApplyPlayerRpCraftSnapshot(ItemObject target, ItemObject templateItem, string source)
+	{
+		if (target == null || templateItem == null || !IsGeneratedRewardItemStringId(target.StringId))
+		{
+			return false;
+		}
+		GeneratedRewardItemRecord record = Instance?.GetGeneratedRewardItemRecord(target.StringId);
+		if (record == null)
+		{
+			lock (GeneratedRewardItemRegistrationLock)
+			{
+				GeneratedRewardManifestByStringId.TryGetValue(target.StringId.Trim(), out record);
+			}
+		}
+		if (record?.PlayerCraft == null)
+		{
+			return true;
+		}
+		if (string.Equals(record.PlayerCraft.CraftKind, "remnant", StringComparison.OrdinalIgnoreCase))
+		{
+			return true;
+		}
+		PlayerRpCraftItemStatsSnapshot snapshot = record.PlayerCraft.StatsSnapshot;
+		if (snapshot == null)
+		{
+			if (string.Equals(record.PlayerCraft.CraftKind, "equipment", StringComparison.OrdinalIgnoreCase))
+			{
+				TryTransitionPlayerRpCraftEquipmentToRemnant(
+					record,
+					record.PlayerCraft,
+					source,
+					"missing_snapshot",
+					out _);
+				return false;
+			}
+			return true;
+		}
+		if (PlayerRpCraftItemComponentService.TryApplySnapshot(target, templateItem, snapshot, out string error))
+		{
+			return true;
+		}
+		TryTransitionPlayerRpCraftEquipmentToRemnant(
+			record,
+			record.PlayerCraft,
+			source,
+			"snapshot_apply_failed:" + (error ?? ""),
+			out _);
+		try
+		{
+			Logger.Log("Logic", "[PlayerRpCraft] snapshot_apply_failed source=" + (source ?? "")
+				+ " item=" + (target.StringId ?? "")
+				+ " template=" + (templateItem.StringId ?? "")
+				+ " error=" + (error ?? ""));
+		}
+		catch
+		{
+		}
+		return false;
 	}
 
 	private static void ApplyGeneratedRewardItemRpState(ItemObject target, string displayName)
@@ -13031,7 +14434,141 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		record.LegacyObjectIds = record.LegacyObjectIds.Where((uint x) => x != 0u && x != record.ObjectId).Distinct().Take(16).ToList();
 		record.LastTouchedDay = Math.Max(0, record.LastTouchedDay);
+		record.PlayerCraft = NormalizePlayerRpCraftData(record.PlayerCraft, record);
 		return record;
+	}
+
+	private static PlayerRpCraftData NormalizePlayerRpCraftData(PlayerRpCraftData data, GeneratedRewardItemRecord owner)
+	{
+		if (data == null)
+		{
+			return null;
+		}
+		int storedSchemaVersion = data.SchemaVersion;
+		data.SchemaVersion = data.SchemaVersion <= 0 ? PlayerRpCraftData.CurrentSchemaVersion : data.SchemaVersion;
+		data.FormulaVersion = data.FormulaVersion <= 0 ? PlayerRpCraftData.CurrentFormulaVersion : data.FormulaVersion;
+		data.BatchId = (data.BatchId ?? "").Trim();
+		data.CreatorHeroId = (data.CreatorHeroId ?? "").Trim();
+		data.CrafterHeroId = string.IsNullOrWhiteSpace(data.CrafterHeroId)
+			? data.CreatorHeroId
+			: data.CrafterHeroId.Trim();
+		data.CrafterDisplayNameSnapshot =
+			(data.CrafterDisplayNameSnapshot ?? "").Trim();
+		data.CrafterCraftingStaminaSnapshot =
+			Math.Max(0, data.CrafterCraftingStaminaSnapshot);
+		data.CrafterMaxCraftingStaminaSnapshot = Math.Max(
+			data.CrafterCraftingStaminaSnapshot,
+			Math.Max(0, data.CrafterMaxCraftingStaminaSnapshot));
+		data.CraftingStaminaCost =
+			Math.Max(0, data.CraftingStaminaCost);
+		data.CrafterCraftingStaminaAfterSnapshot =
+			Math.Max(0, data.CrafterCraftingStaminaAfterSnapshot);
+		data.CraftingExperienceBaseAmount =
+			Math.Max(0, data.CraftingExperienceBaseAmount);
+		data.OriginalRequestedName = string.IsNullOrWhiteSpace(data.OriginalRequestedName)
+			? owner?.DisplayName ?? ""
+			: data.OriginalRequestedName.Trim();
+		data.OriginalTemplateStringId = string.IsNullOrWhiteSpace(data.OriginalTemplateStringId)
+			? owner?.TemplateStringId ?? ""
+			: data.OriginalTemplateStringId.Trim();
+		data.EffectiveTemplateStringId = string.IsNullOrWhiteSpace(data.EffectiveTemplateStringId)
+			? owner?.TemplateStringId ?? ""
+			: data.EffectiveTemplateStringId.Trim();
+		data.CraftKind = (data.CraftKind ?? "").Trim();
+		data.Outcome = (data.Outcome ?? "").Trim();
+		data.InvestedDenars = Math.Max(0, data.InvestedDenars);
+		if (data.CraftedItemValue <= 0
+			&& storedSchemaVersion < 3
+			&& data.InvestedDenars > 0)
+		{
+			// Schema 1/2 items were intentionally worth the full investment.
+			// Persist that legacy value instead of repricing old saves.
+			data.CraftedItemValue = data.InvestedDenars;
+		}
+		else
+		{
+			data.CraftedItemValue =
+				Math.Max(0, data.CraftedItemValue);
+		}
+		data.TemplateBaseValue = Math.Max(1, data.TemplateBaseValue);
+		data.GoodWeight = Math.Max(0, data.GoodWeight);
+		data.NormalWeight = Math.Max(0, data.NormalWeight);
+		data.BadWeight = Math.Max(0, data.BadWeight);
+		data.Roll = Math.Max(0, data.Roll);
+		data.UpgradeLevel = Math.Max(0, data.UpgradeLevel);
+		data.AppliedBonus = Math.Max(0, data.AppliedBonus);
+		data.CreatedDay = Math.Max(0, data.CreatedDay);
+		data.InitialQuantity = Math.Max(1, data.InitialQuantity);
+		if (data.Inspections == null)
+		{
+			data.Inspections = new Dictionary<string, PlayerRpCraftInspectionRecord>(StringComparer.OrdinalIgnoreCase);
+		}
+		else
+		{
+			Dictionary<string, PlayerRpCraftInspectionRecord> normalizedInspections =
+				new Dictionary<string, PlayerRpCraftInspectionRecord>(StringComparer.OrdinalIgnoreCase);
+			foreach (KeyValuePair<string, PlayerRpCraftInspectionRecord> pair in data.Inspections)
+			{
+				string observerKey = (pair.Key ?? pair.Value?.ObserverKey ?? "").Trim();
+				if (string.IsNullOrWhiteSpace(observerKey) || pair.Value == null)
+				{
+					continue;
+				}
+				pair.Value.ObserverKey = observerKey;
+				normalizedInspections[observerKey] = pair.Value;
+			}
+			data.Inspections = normalizedInspections;
+		}
+		return data;
+	}
+
+	private static PlayerRpCraftData MergePlayerRpCraftData(PlayerRpCraftData preferred, PlayerRpCraftData fallback)
+	{
+		if (preferred == null)
+		{
+			return fallback;
+		}
+		if (fallback != null)
+		{
+			if (preferred.CraftedItemValue <= 0
+				&& fallback.CraftedItemValue > 0)
+			{
+				preferred.CraftedItemValue =
+					fallback.CraftedItemValue;
+			}
+			if (preferred.CraftingStaminaCost <= 0
+				&& fallback.CraftingStaminaCost > 0)
+			{
+				preferred.CraftingStaminaCost =
+					fallback.CraftingStaminaCost;
+				preferred.CrafterCraftingStaminaAfterSnapshot =
+					Math.Max(
+						0,
+						fallback.CrafterCraftingStaminaAfterSnapshot);
+			}
+			if (preferred.CraftingExperienceBaseAmount <= 0
+				&& fallback.CraftingExperienceBaseAmount > 0)
+			{
+				preferred.CraftingExperienceBaseAmount =
+					fallback.CraftingExperienceBaseAmount;
+			}
+		}
+		if (fallback?.Inspections == null || fallback.Inspections.Count == 0)
+		{
+			return preferred;
+		}
+		if (preferred.Inspections == null)
+		{
+			preferred.Inspections = new Dictionary<string, PlayerRpCraftInspectionRecord>(StringComparer.OrdinalIgnoreCase);
+		}
+		foreach (KeyValuePair<string, PlayerRpCraftInspectionRecord> pair in fallback.Inspections)
+		{
+			if (!string.IsNullOrWhiteSpace(pair.Key) && pair.Value != null && !preferred.Inspections.ContainsKey(pair.Key))
+			{
+				preferred.Inspections[pair.Key] = pair.Value;
+			}
+		}
+		return preferred;
 	}
 
 	private void RememberGeneratedRewardItemRecord(string generatedStringId, string displayName, ItemObject templateItem, ItemObject generatedItem)
@@ -13087,7 +14624,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				continue;
 			}
 			_generatedRewardItemRecords[record.GeneratedStringId] = record;
-			ItemObject templateItem = ResolveCloneSafeGeneratedRewardTemplateItem(ResolveItemById(record.TemplateStringId), record.DisplayName, (reason ?? "") + "_definition_restore");
+			ItemObject templateItem = ResolveGeneratedRewardRecordTemplateItem(record, (reason ?? "") + "_definition_restore");
 			if (templateItem == null)
 			{
 				failed++;
@@ -13225,7 +14762,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				continue;
 			}
 			string previousTemplateStringId = (record.TemplateStringId ?? "").Trim();
-			ItemObject templateItem = ResolveCloneSafeGeneratedRewardTemplateItem(ResolveItemById(previousTemplateStringId), record.DisplayName, (reason ?? "") + "_roster_guard");
+			ItemObject templateItem = ResolveGeneratedRewardRecordTemplateItem(record, (reason ?? "") + "_roster_guard");
 			if (templateItem == null)
 			{
 				continue;
@@ -13278,6 +14815,21 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				roster.AddToCounts(oldEquipment, -oldElement.Amount);
 				repaired += oldElement.Amount;
+				ItemObject replacedItem = oldEquipment.Item;
+				if (replacedItem != null && replacedItem.Id.InternalValue != 0u)
+				{
+					lock (GeneratedRewardItemRegistrationLock)
+					{
+						if (GeneratedRewardPendingItemsByObjectId.TryGetValue(
+								replacedItem.Id.InternalValue,
+								out ItemObject pendingAtId)
+							&& ReferenceEquals(pendingAtId, replacedItem))
+						{
+							GeneratedRewardPendingItemsByObjectId.Remove(
+								replacedItem.Id.InternalValue);
+						}
+					}
+				}
 				RememberGeneratedRewardItemRecord(replacement.Item3.GeneratedStringId, replacement.Item3.DisplayName, ResolveItemById(replacement.Item3.TemplateStringId), generatedItem);
 			}
 		}
@@ -13298,6 +14850,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
+		if (!HasExpectedPlayerRpCraftItemValue(item, record))
+		{
+			return false;
+		}
 		if (!HasCloneSafeGeneratedRewardThumbnailSource(item))
 		{
 			return false;
@@ -13311,7 +14867,23 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		if (templateItem != null && !ReferenceEquals(item.ItemComponent, templateItem.ItemComponent))
+		PlayerRpCraftItemStatsSnapshot playerSnapshot =
+			string.Equals(record.PlayerCraft?.CraftKind, "remnant", StringComparison.OrdinalIgnoreCase)
+				? null
+				: record.PlayerCraft?.StatsSnapshot;
+		if (string.Equals(record.PlayerCraft?.CraftKind, "equipment", StringComparison.OrdinalIgnoreCase)
+			&& playerSnapshot == null)
+		{
+			return false;
+		}
+		if (templateItem != null && playerSnapshot == null && !ReferenceEquals(item.ItemComponent, templateItem.ItemComponent))
+		{
+			return false;
+		}
+		if (templateItem != null && playerSnapshot != null
+			&& (ReferenceEquals(item.ItemComponent, templateItem.ItemComponent)
+				|| !PlayerRpCraftItemComponentService.IsStructurallyCompatible(templateItem, playerSnapshot)
+				|| !PlayerRpCraftItemComponentService.MatchesSnapshot(item, playerSnapshot)))
 		{
 			return false;
 		}
@@ -13343,12 +14915,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			SuppressGeneratedRewardObjectLookup = true;
 			SuppressGeneratedRewardPendingLookup = true;
 			ItemObject stringItem = MBObjectManager.Instance?.GetObject<ItemObject>(item.StringId);
-			if (stringItem != null && string.Equals((stringItem.StringId ?? "").Trim(), (item.StringId ?? "").Trim(), StringComparison.OrdinalIgnoreCase))
+			if (!ReferenceEquals(stringItem, item))
 			{
-				return true;
+				return false;
 			}
 			ItemObject idItem = item.Id.InternalValue != 0u ? MBObjectManager.Instance?.GetObject(item.Id) as ItemObject : null;
-			return idItem != null && string.Equals((idItem.StringId ?? "").Trim(), (item.StringId ?? "").Trim(), StringComparison.OrdinalIgnoreCase);
+			return item.Id.InternalValue == 0u || ReferenceEquals(idItem, item);
 		}
 		catch
 		{
@@ -13626,20 +15198,36 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			string key = generatedStringId.Trim();
 			string name = displayName.Trim();
-			templateItem = ResolveCloneSafeGeneratedRewardTemplateItem(templateItem, name, logSource ?? "generated_create_template_guard");
+			GeneratedRewardItemRecord playerCraftRecord = Instance?.GetGeneratedRewardItemRecord(key);
+			templateItem = playerCraftRecord?.PlayerCraft != null
+				? ResolveGeneratedRewardRecordTemplateItem(playerCraftRecord, logSource ?? "generated_create_player_template_guard")
+				: (IsAuthorizedPlayerRpCraftGenerationKey(key)
+					&& IsSafePlayerRpCraftGenerationTemplate(templateItem)
+						? templateItem
+						: ResolveCloneSafeGeneratedRewardTemplateItem(
+							templateItem,
+							name,
+							logSource ?? "generated_create_template_guard",
+							key));
 			if (templateItem == null)
 			{
 				return null;
 			}
 			if (TryResolveGeneratedRewardItemForStringId(key, out var cachedGeneratedItem, logSource ?? "generated_create_cached") && cachedGeneratedItem != null)
 			{
-				ApplyGeneratedRewardItemTemplateState(cachedGeneratedItem, templateItem, name);
+				if (!ApplyGeneratedRewardItemTemplateState(cachedGeneratedItem, templateItem, name))
+				{
+					return null;
+				}
 				ApplyGeneratedRewardItemRpState(cachedGeneratedItem, name);
 				TryEnsureGeneratedRewardItemCategory(cachedGeneratedItem, templateItem, logSource);
 				ItemObject registeredCachedItem = TryRegisterGeneratedRewardItemWithStableId(cachedGeneratedItem, logSource ?? "generated_create_cached_promote");
 				if (registeredCachedItem != null)
 				{
-					ApplyGeneratedRewardItemTemplateState(registeredCachedItem, templateItem, name);
+					if (!ApplyGeneratedRewardItemTemplateState(registeredCachedItem, templateItem, name))
+					{
+						return null;
+					}
 					ApplyGeneratedRewardItemRpState(registeredCachedItem, name);
 					TryEnsureGeneratedRewardItemCategory(registeredCachedItem, templateItem, logSource);
 					registeredCachedItem.Initialize();
@@ -13652,7 +15240,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			ItemObject existing = TryGetRegisteredGeneratedRewardItemByStringId(key);
 			if (existing != null)
 			{
-				ApplyGeneratedRewardItemTemplateState(existing, templateItem, name);
+				if (!ApplyGeneratedRewardItemTemplateState(existing, templateItem, name))
+				{
+					return null;
+				}
 				ApplyGeneratedRewardItemRpState(existing, name);
 				TryEnsureGeneratedRewardItemCategory(existing, templateItem, logSource);
 				existing.Initialize();
@@ -13705,12 +15296,19 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				StringId = key
 			};
-			ApplyGeneratedRewardItemTemplateState(generatedItem, templateItem, name);
+			if (!ApplyGeneratedRewardItemTemplateState(generatedItem, templateItem, name))
+			{
+				return null;
+			}
 			if (!TryEnsureGeneratedRewardItemCategory(generatedItem, templateItem, logSource))
 			{
 				return null;
 			}
 			ItemObject registered = MBObjectManager.Instance?.RegisterObject<ItemObject>(generatedItem) ?? generatedItem;
+			if (!ApplyGeneratedRewardItemTemplateState(registered, templateItem, name))
+			{
+				return null;
+			}
 			ApplyGeneratedRewardItemRpState(registered, name);
 			TryEnsureGeneratedRewardItemCategory(registered, templateItem, logSource);
 			registered.Initialize();
@@ -13845,6 +15443,28 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			LogGeneratedRewardInventoryGuard("category_failed", key, name, templateItem?.StringId, generatedItem, templateItem, logSource);
 			return false;
 		}
+		GeneratedRewardItemRecord record =
+			Instance?.GetGeneratedRewardItemRecord(key);
+		if (record == null)
+		{
+			EnsureGeneratedRewardManifestLoaded();
+			lock (GeneratedRewardItemRegistrationLock)
+			{
+				GeneratedRewardManifestByStringId.TryGetValue(key, out record);
+			}
+		}
+		if (!HasExpectedPlayerRpCraftItemValue(generatedItem, record))
+		{
+			LogGeneratedRewardInventoryGuard(
+				"player_craft_value_mismatch",
+				key,
+				name,
+				templateItem?.StringId,
+				generatedItem,
+				templateItem,
+				logSource);
+			return false;
+		}
 		try
 		{
 			generatedItem.Initialize();
@@ -13860,11 +15480,25 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			Logger.Log("Logic", "[RewardItemResolve] generated_inventory_guard reason=" + (reason ?? "") + " source=" + (logSource ?? "") + " expected=" + (generatedStringId ?? "") + " display=" + (displayName ?? "") + " template=" + (templateStringId ?? templateItem?.StringId ?? "") + " actualStringId=" + (actualItem?.StringId ?? "") + " actualName=" + (actualItem?.Name?.ToString() ?? "") + " actualId=" + (actualItem != null ? actualItem.Id.InternalValue.ToString(CultureInfo.InvariantCulture) : "0") + " templateName=" + (templateItem?.Name?.ToString() ?? "") + " templateId=" + (templateItem != null ? templateItem.Id.InternalValue.ToString(CultureInfo.InvariantCulture) : "0"));
+			Logger.Log("Logic", "[RewardItemResolve] generated_inventory_guard reason=" + (reason ?? "") + " source=" + (logSource ?? "") + " expected=" + (generatedStringId ?? "") + " display=" + FormatGeneratedRewardNameForLog(generatedStringId, displayName) + " template=" + (templateStringId ?? templateItem?.StringId ?? "") + " actualStringId=" + (actualItem?.StringId ?? "") + " actualName=" + FormatGeneratedRewardNameForLog(actualItem?.StringId, actualItem?.Name?.ToString()) + " actualId=" + (actualItem != null ? actualItem.Id.InternalValue.ToString(CultureInfo.InvariantCulture) : "0") + " templateName=" + (templateItem?.Name?.ToString() ?? "") + " templateId=" + (templateItem != null ? templateItem.Id.InternalValue.ToString(CultureInfo.InvariantCulture) : "0"));
 		}
 		catch
 		{
 		}
+	}
+
+	private static string FormatGeneratedRewardNameForLog(string generatedStringId, string displayName)
+	{
+		string value = displayName ?? "";
+		if (!IsExactPlayerRpGeneratedTransactionKey(generatedStringId))
+		{
+			return value;
+		}
+		return "[hash="
+			+ StablePromptKeyHash(value)
+			+ ";length="
+			+ value.Length.ToString(CultureInfo.InvariantCulture)
+			+ "]";
 	}
 
 	private static void LogGeneratedRewardObjectVisibility(string reason, ItemObject item, string logSource = null)
@@ -13893,7 +15527,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				SuppressGeneratedRewardObjectLookup = previousSuppressObjectLookup;
 				SuppressGeneratedRewardPendingLookup = previousSuppressPendingLookup;
 			}
-			Logger.Log("Logic", "[RewardItemResolve] generated_object_visibility reason=" + (reason ?? "") + " source=" + (logSource ?? "") + " item=" + (item.StringId ?? "") + " name=" + (item.Name?.ToString() ?? "") + " id=" + item.Id.InternalValue.ToString(CultureInfo.InvariantCulture) + " byString=" + byString + " byId=" + byId + " ready=" + item.IsReady + " initialized=" + item.IsInitialized + " type=" + item.Type + " category=" + (item.ItemCategory?.StringId ?? "null") + " component=" + (item.ItemComponent?.GetType().Name ?? "null") + " value=" + item.Value.ToString(CultureInfo.InvariantCulture) + " weight=" + item.Weight.ToString(CultureInfo.InvariantCulture));
+			Logger.Log("Logic", "[RewardItemResolve] generated_object_visibility reason=" + (reason ?? "") + " source=" + (logSource ?? "") + " item=" + (item.StringId ?? "") + " name=" + FormatGeneratedRewardNameForLog(item.StringId, item.Name?.ToString()) + " id=" + item.Id.InternalValue.ToString(CultureInfo.InvariantCulture) + " byString=" + byString + " byId=" + byId + " ready=" + item.IsReady + " initialized=" + item.IsInitialized + " type=" + item.Type + " category=" + (item.ItemCategory?.StringId ?? "null") + " component=" + (item.ItemComponent?.GetType().Name ?? "null") + " value=" + item.Value.ToString(CultureInfo.InvariantCulture) + " weight=" + item.Weight.ToString(CultureInfo.InvariantCulture));
 		}
 		catch
 		{
@@ -13960,7 +15594,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					catch
 					{
 					}
-					sample.Add((item.StringId ?? "") + ":" + element.Amount.ToString(CultureInfo.InvariantCulture) + ":filtered=" + isFiltered + ":typeId=" + typeId.ToString(CultureInfo.InvariantCulture) + ":name=" + (item.Name?.ToString() ?? ""));
+					sample.Add((item.StringId ?? "") + ":" + element.Amount.ToString(CultureInfo.InvariantCulture) + ":filtered=" + isFiltered + ":typeId=" + typeId.ToString(CultureInfo.InvariantCulture) + ":name=" + FormatGeneratedRewardNameForLog(item.StringId, item.Name?.ToString()));
 				}
 			}
 			if (generatedCount <= 0)
@@ -14222,6 +15856,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		if (item == null)
 		{
 			return "";
+		}
+		if (IsGeneratedRpWhipWeaponTemplateItem(item))
+		{
+			return "鞭";
 		}
 		try
 		{
@@ -16535,7 +18173,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine("【系统账目提示】玩家对你代表的" + BuildSettlementMerchantDebtLabel(settlement, kind) + "有以下承诺或欠款（分笔记录）：");
-		stringBuilder.AppendLine("【债务解除确认】若玩家本轮行为已被系统事实明确记录为偿还、豁免或免除，请在回复末尾输出 [ADP:债务ID] 解除对应债务；每笔债务单独确认，禁止口头声称已结清却不输出标签。");
+		stringBuilder.AppendLine("【债务解除确认】若玩家本轮行为已被系统事实明确记录为偿还、豁免或免除");
 		List<DebtRecord.DebtLine> list = (from x in settlementMerchantDebtRecord.DebtLines
 			where x != null && x.RemainingAmount > 0
 			orderby x.DueDay, x.CreatedDay
@@ -17336,6 +18974,29 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return generated;
 	}
 
+	private static bool TryResolveExactAuthorizedRewardItem(IEnumerable<RewardItemInfo> authorizedItems, string assetToken, out RewardItemInfo item, out string transferKey)
+	{
+		item = null;
+		transferKey = "";
+		string token = (assetToken ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(token))
+		{
+			return false;
+		}
+		List<RewardItemInfo> candidates = (authorizedItems ?? Enumerable.Empty<RewardItemInfo>())
+			.Where((RewardItemInfo x) => x != null && x.Item != null && x.Count > 0)
+			.ToList();
+		if (TrySelectAuthorizedRewardItem(candidates.Where((RewardItemInfo x) => string.Equals((x.PromptStringId ?? "").Trim(), token, StringComparison.OrdinalIgnoreCase)), allowSharedBaseItemKey: false, out item, out transferKey))
+		{
+			return true;
+		}
+		if (TrySelectAuthorizedRewardItem(candidates.Where((RewardItemInfo x) => string.Equals((x.StringId ?? x.Item?.StringId ?? "").Trim(), token, StringComparison.OrdinalIgnoreCase)), allowSharedBaseItemKey: true, out item, out transferKey))
+		{
+			return true;
+		}
+		return TrySelectAuthorizedRewardItem(candidates.Where((RewardItemInfo x) => string.Equals((x.Name ?? "").Trim(), token, StringComparison.OrdinalIgnoreCase)), allowSharedBaseItemKey: true, out item, out transferKey);
+	}
+
 	private static bool TryResolveAuthorizedRewardItem(IEnumerable<RewardItemInfo> authorizedItems, string assetToken, out RewardItemInfo item, out string transferKey)
 	{
 		item = null;
@@ -17402,9 +19063,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	private bool TryResolveAuthorizedHeroRewardItem(Hero giver, string assetToken, out List<RewardItemInfo> authorizedItems, out string transferKey)
 	{
-		bool hadSnapshot = PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsAllSnapshotScope, giver, giver?.CharacterObject, -1, out authorizedItems);
-		if (hadSnapshot && TryResolveAuthorizedRewardItem(authorizedItems, assetToken, out var _, out transferKey))
+		authorizedItems = GetHeroInventoryItems(giver);
+		if (TryResolveExactAuthorizedRewardItem(authorizedItems, assetToken, out var _, out transferKey))
 		{
+			Logger.Log("Logic", "[Reward] GIVE_ASSET authorization_live source=hero_inventory token=" + (assetToken ?? "") + " liveCount=" + authorizedItems.Count + " resolved=True");
 			return true;
 		}
 		authorizedItems = BuildHeroRewardPostprocessItems(giver);
@@ -17412,43 +19074,32 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			PromptListRetrievalService.PublishRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsAllSnapshotScope, giver, giver?.CharacterObject, -1, authorizedItems);
 		}
-		bool resolved = TryResolveAuthorizedRewardItem(authorizedItems, assetToken, out var _, out transferKey);
-		Logger.Log("Logic", "[Reward] GIVE_ASSET authorization_refresh source=hero token=" + (assetToken ?? "") + " hadSnapshot=" + hadSnapshot + " liveCount=" + authorizedItems.Count + " resolved=" + resolved);
+		bool resolved = TryResolveExactAuthorizedRewardItem(authorizedItems, assetToken, out var _, out transferKey);
+		Logger.Log("Logic", "[Reward] GIVE_ASSET authorization_live source=hero token=" + (assetToken ?? "") + " liveCount=" + authorizedItems.Count + " resolved=" + resolved);
 		return resolved;
 	}
 
 	private bool TryResolveAuthorizedPartyRewardItem(PartyBase giverParty, BasicCharacterObject giverCharacter, string assetToken, out List<RewardItemInfo> authorizedItems, out string transferKey)
 	{
-		CharacterObject snapshotCharacter = giverCharacter as CharacterObject;
-		bool hadSnapshot = PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.PartyRewardItemsAllSnapshotScope, null, snapshotCharacter, -1, out authorizedItems);
-		if (hadSnapshot && TryResolveAuthorizedRewardItem(authorizedItems, assetToken, out var _, out transferKey))
-		{
-			return true;
-		}
 		authorizedItems = BuildPartyRewardPostprocessItems(giverParty);
 		if (authorizedItems.Count > 0)
 		{
-			PromptListRetrievalService.PublishRewardItemSnapshot(PromptListRetrievalService.PartyRewardItemsAllSnapshotScope, null, snapshotCharacter, -1, authorizedItems);
+			PromptListRetrievalService.PublishRewardItemSnapshot(PromptListRetrievalService.PartyRewardItemsAllSnapshotScope, null, giverCharacter as CharacterObject, -1, authorizedItems);
 		}
-		bool resolved = TryResolveAuthorizedRewardItem(authorizedItems, assetToken, out var _, out transferKey);
-		Logger.Log("Logic", "[RewardParty] GIVE_ASSET authorization_refresh token=" + (assetToken ?? "") + " hadSnapshot=" + hadSnapshot + " liveCount=" + authorizedItems.Count + " resolved=" + resolved);
+		bool resolved = TryResolveExactAuthorizedRewardItem(authorizedItems, assetToken, out var _, out transferKey);
+		Logger.Log("Logic", "[RewardParty] GIVE_ASSET authorization_live token=" + (assetToken ?? "") + " liveCount=" + authorizedItems.Count + " resolved=" + resolved);
 		return resolved;
 	}
 
 	private bool TryResolveAuthorizedMerchantRewardItem(CharacterObject giverCharacter, string assetToken, out List<RewardItemInfo> authorizedItems, out string transferKey)
 	{
-		bool hadSnapshot = PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.SettlementMerchantItemsAllSnapshotScope, null, giverCharacter, -1, out authorizedItems);
-		if (hadSnapshot && TryResolveAuthorizedRewardItem(authorizedItems, assetToken, out var _, out transferKey))
-		{
-			return true;
-		}
 		authorizedItems = BuildSettlementMerchantPostprocessItems(giverCharacter);
 		if (authorizedItems.Count > 0)
 		{
 			PromptListRetrievalService.PublishRewardItemSnapshot(PromptListRetrievalService.SettlementMerchantItemsAllSnapshotScope, null, giverCharacter, -1, authorizedItems);
 		}
-		bool resolved = TryResolveAuthorizedRewardItem(authorizedItems, assetToken, out var _, out transferKey);
-		Logger.Log("Logic", "[RewardMerchant] GIVE_ASSET authorization_refresh token=" + (assetToken ?? "") + " hadSnapshot=" + hadSnapshot + " liveCount=" + authorizedItems.Count + " resolved=" + resolved);
+		bool resolved = TryResolveExactAuthorizedRewardItem(authorizedItems, assetToken, out var _, out transferKey);
+		Logger.Log("Logic", "[RewardMerchant] GIVE_ASSET authorization_live token=" + (assetToken ?? "") + " liveCount=" + authorizedItems.Count + " resolved=" + resolved);
 		return resolved;
 	}
 
@@ -17526,7 +19177,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				string responseWithoutGiveAssetTagsForCount = GiveAssetTagCodec.StripTags(responseText);
 				num = giveAssetTagsForCount.Count
 					+ Regex.Matches(responseWithoutGiveAssetTagsForCount, "\\[ACTION:[^\\]]+\\]", RegexOptions.IgnoreCase).Count
-					+ Regex.Matches(responseWithoutGiveAssetTagsForCount, "\\[A:(?:H_J_P_P_[CL]|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)\\]", RegexOptions.IgnoreCase).Count;
+					+ Regex.Matches(responseWithoutGiveAssetTagsForCount, "\\[A:(?:H_J_P_P_(?:C(?:&L)?|L)|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)\\]", RegexOptions.IgnoreCase).Count;
 			}
 			catch
 			{
@@ -17650,13 +19301,15 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				}
 				itemTransferAttempted++;
 				bool hasFiniteRequestedQuantity = int.TryParse(tag.QuantityToken, out var requestedQuantity) && requestedQuantity > 0;
-				bool isGeneratedRpItem = hasFiniteRequestedQuantity
+				List<RewardItemInfo> authorizedItems = null;
+				string authorizedItemKey = "";
+				bool isAuthorizedInventoryItem = TryResolveAuthorizedHeroRewardItem(giver, value4, out authorizedItems, out authorizedItemKey);
+				bool isGeneratedRpItem = !isAuthorizedInventoryItem
+					&& hasFiniteRequestedQuantity
 					&& receiver == Hero.MainHero
 					&& giver != Hero.MainHero
 					&& IsValidGeneratedRpAssetNameForExternal(value4);
-				List<RewardItemInfo> authorizedItems = null;
-				string authorizedItemKey = "";
-				bool isAuthorizedInventoryItem = !isGeneratedRpItem && TryResolveAuthorizedHeroRewardItem(giver, value4, out authorizedItems, out authorizedItemKey);
+				Logger.Log("Logic", "[Reward] GIVE_ASSET route source=hero token=" + value4 + " inventoryExact=" + isAuthorizedInventoryItem + " rpFallback=" + isGeneratedRpItem);
 				if (!isAuthorizedInventoryItem && !isGeneratedRpItem)
 				{
 					itemTransferFailedOrPartial++;
@@ -18016,7 +19669,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				if (receiver == Hero.MainHero && giver != Hero.MainHero)
 				{
-					bool asCompanion = string.Equals(joinMatch.Groups[1].Value, "C", StringComparison.OrdinalIgnoreCase);
+					bool asCompanion = joinMatch.Groups[1].Value.StartsWith("C", StringComparison.OrdinalIgnoreCase);
 					bool preservePlayerFamilyIdentity = asCompanion && ShouldPreservePlayerFamilyIdentityForCompanionJoin(giver);
 					bool preservePlayerSpouseIdentity = preservePlayerFamilyIdentity && (giver.Spouse == Hero.MainHero || Hero.MainHero?.Spouse == giver);
 					string statusText;
@@ -18574,12 +20227,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				string value = (tag.AssetToken ?? "").Trim();
 				itemTransferAttempted++;
 				bool hasFiniteRequestedQuantity = int.TryParse(tag.QuantityToken, out var requestedQuantity) && requestedQuantity > 0;
-				bool isGeneratedRpItem = hasFiniteRequestedQuantity
-					&& receiver == Hero.MainHero
-					&& IsValidGeneratedRpAssetNameForExternal(value);
 				List<RewardItemInfo> authorizedItems = null;
 				string authorizedItemKey = "";
-				bool isAuthorizedInventoryItem = !isGeneratedRpItem && TryResolveAuthorizedPartyRewardItem(giverParty, giverCharacter, value, out authorizedItems, out authorizedItemKey);
+				bool isAuthorizedInventoryItem = TryResolveAuthorizedPartyRewardItem(giverParty, giverCharacter, value, out authorizedItems, out authorizedItemKey);
+				bool isGeneratedRpItem = !isAuthorizedInventoryItem
+					&& hasFiniteRequestedQuantity
+					&& receiver == Hero.MainHero
+					&& IsValidGeneratedRpAssetNameForExternal(value);
+				Logger.Log("Logic", "[RewardParty] GIVE_ASSET route token=" + value + " inventoryExact=" + isAuthorizedInventoryItem + " rpFallback=" + isGeneratedRpItem);
 				if (!isAuthorizedInventoryItem && !isGeneratedRpItem)
 				{
 					itemTransferFailedOrPartial++;
@@ -18753,12 +20408,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			string value = (tag.AssetToken ?? "").Trim();
 			itemTransferAttempted++;
 			bool hasFiniteRequestedQuantity = int.TryParse(tag.QuantityToken, out var requestedQuantity) && requestedQuantity > 0;
-			bool isGeneratedRpItem = hasFiniteRequestedQuantity
-				&& receiver == Hero.MainHero
-				&& IsValidGeneratedRpAssetNameForExternal(value);
 			List<RewardItemInfo> authorizedItems = null;
 			string authorizedItemKey = "";
-			bool isAuthorizedInventoryItem = !isGeneratedRpItem && TryResolveAuthorizedMerchantRewardItem(giverCharacter, value, out authorizedItems, out authorizedItemKey);
+			bool isAuthorizedInventoryItem = TryResolveAuthorizedMerchantRewardItem(giverCharacter, value, out authorizedItems, out authorizedItemKey);
+			bool isGeneratedRpItem = !isAuthorizedInventoryItem
+				&& hasFiniteRequestedQuantity
+				&& receiver == Hero.MainHero
+				&& IsValidGeneratedRpAssetNameForExternal(value);
+			Logger.Log("Logic", "[RewardMerchant] GIVE_ASSET route token=" + value + " inventoryExact=" + isAuthorizedInventoryItem + " rpFallback=" + isGeneratedRpItem);
 			if (!isAuthorizedInventoryItem && !isGeneratedRpItem)
 			{
 				itemTransferFailedOrPartial++;
@@ -19284,7 +20941,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		try
 		{
 			ItemObject item = equipmentElement.Item;
-			Logger.Log("Logic", "[RewardTransfer] " + (reason ?? "") + " source=" + (source ?? "") + " requested=" + requested.ToString(CultureInfo.InvariantCulture) + " before=" + before.ToString(CultureInfo.InvariantCulture) + " after=" + after.ToString(CultureInfo.InvariantCulture) + " index=" + index.ToString(CultureInfo.InvariantCulture) + " rosterSlots=" + (targetRoster?.Count ?? 0).ToString(CultureInfo.InvariantCulture) + " isPlayerRoster=" + IsPlayerMainItemRoster(targetRoster) + " item=" + (item?.StringId ?? "") + " itemName=" + (item?.Name?.ToString() ?? "") + " itemId=" + (item != null ? item.Id.InternalValue.ToString(CultureInfo.InvariantCulture) : "0") + " itemType=" + (item != null ? item.Type.ToString() : "") + " itemCategory=" + (item?.ItemCategory?.StringId ?? "null") + " component=" + (item?.ItemComponent?.GetType().Name ?? "null") + " modifier=" + (equipmentElement.ItemModifier?.StringId ?? ""));
+			Logger.Log("Logic", "[RewardTransfer] " + (reason ?? "") + " source=" + (source ?? "") + " requested=" + requested.ToString(CultureInfo.InvariantCulture) + " before=" + before.ToString(CultureInfo.InvariantCulture) + " after=" + after.ToString(CultureInfo.InvariantCulture) + " index=" + index.ToString(CultureInfo.InvariantCulture) + " rosterSlots=" + (targetRoster?.Count ?? 0).ToString(CultureInfo.InvariantCulture) + " isPlayerRoster=" + IsPlayerMainItemRoster(targetRoster) + " item=" + (item?.StringId ?? "") + " itemName=" + FormatGeneratedRewardNameForLog(item?.StringId, item?.Name?.ToString()) + " itemId=" + (item != null ? item.Id.InternalValue.ToString(CultureInfo.InvariantCulture) : "0") + " itemType=" + (item != null ? item.Type.ToString() : "") + " itemCategory=" + (item?.ItemCategory?.StringId ?? "null") + " component=" + (item?.ItemComponent?.GetType().Name ?? "null") + " modifier=" + (equipmentElement.ItemModifier?.StringId ?? ""));
 		}
 		catch
 		{

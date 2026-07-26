@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
@@ -27,6 +29,15 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 
 	private static readonly Stopwatch TerminalClock = Stopwatch.StartNew();
 
+	private static readonly string[] PlayerRpForgeInquiryGuardTokens =
+	{
+		"失败",
+		"错误",
+		"问题",
+		"error",
+		"problem"
+	};
+
 	private int _lastTerminalHintDay = -999999;
 
 	private bool _terminalUiActive;
@@ -43,10 +54,21 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 
 	private float _nextTerminalKeyRefreshRealTime = -999f;
 
+	private Task<PlayerRpCraftTemplateSelectionResult> _playerRpTemplateSelectionTask;
+
+	private CancellationTokenSource _playerRpTemplateSelectionCancellation;
+
+	private PlayerRpCraftTemplateSelectionRequest _playerRpTemplateSelectionRequest;
+
+	private long _playerRpTemplateSelectionSessionId;
+
+	private long _playerRpTemplateSelectionSaveGeneration;
+
 	public static AnimusForgeTerminalBehavior Instance { get; private set; }
 
 	public AnimusForgeTerminalBehavior()
 	{
+		Instance?.RetirePendingPlayerRpTemplateSelection();
 		Instance = this;
 	}
 
@@ -62,6 +84,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 
 	public void OnEngineTick()
 	{
+		ProcessPlayerRpTemplateSelectionCompletion();
 		if (MilitaryExerciseBehavior.NeedsEngineTick())
 		{
 			using (PerfProbe.Scope("SubModule.AnimusForgeTerminalBehavior.MilitaryExerciseTick"))
@@ -278,6 +301,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			new InquiryElement("custom_policy_management", "政策系统", null, isEnabled: true, "撰写政策，或查看各国已经发布的世界政策。"),
 			new InquiryElement("vassalage_management", "臣属国管理", null, isEnabled: true, "只查看已有臣属国；解约、改约、吞并请通过 LLM 对话推进。"),
 			new InquiryElement("player_persona", "修改玩家外貌与背景", null, isEnabled: true, ""),
+			new InquiryElement("player_rp_forge", "制造RP物品", null, isEnabled: true, "投入第纳尔，制造玩家自己的普通RP物品或武器装备。"),
 			new InquiryElement("settlement_entry_troops", "进城随行配置", null, isEnabled: true, "配置 SETS 进城/城堡/村庄自动带入的同伴和士兵。"),
 			new InquiryElement("noble_prisoner_escort", "贵族俘虏随行配置", null, isEnabled: true, "分别配置攻城处置、普通定居点、领主大厅和野外会面中带入的英雄俘虏。"),
 			new InquiryElement("troop_inspection", "检阅士兵", null, isEnabled: true, ""),
@@ -312,6 +336,10 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			else if (string.Equals(text, "player_persona", StringComparison.Ordinal))
 			{
 				OpenPlayerPersonaEditor();
+			}
+			else if (string.Equals(text, "player_rp_forge", StringComparison.Ordinal))
+			{
+				OpenPlayerRpCrafterSelection();
 			}
 			else if (string.Equals(text, "settlement_entry_troops", StringComparison.Ordinal))
 			{
@@ -533,6 +561,587 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			Logger.Log("Terminal", "[ERROR] open player persona editor failed: " + ex);
 			InformationManager.DisplayMessage(new InformationMessage("打开玩家外貌与背景编辑器失败。"));
 		}
+	}
+
+	private void OpenPlayerRpCrafterSelection()
+	{
+		_terminalUiActive = true;
+		if (!RewardSystemBehavior.TryGetAvailablePlayerRpCraftersForExternal(
+			out List<PlayerRpCrafterOption> crafters,
+			out string error))
+		{
+			InformationManager.ShowInquiry(
+				new InquiryData(
+					"选择制造者",
+					string.IsNullOrWhiteSpace(error)
+						? "当前没有可用的家族成员或同伴。"
+						: error.Trim(),
+					isAffirmativeOptionShown: true,
+					isNegativeOptionShown: false,
+					"返回",
+					"",
+					OpenRootMenu,
+					null),
+				pauseGameActiveState: true,
+				prioritize: false);
+			return;
+		}
+		List<InquiryElement> entries = crafters.Select(crafter =>
+			new InquiryElement(
+				crafter.HeroId,
+				crafter.DisplayName
+					+ "　锻造等级：" + crafter.SmithingSkill
+					+ "　锻造体力："
+					+ (crafter.HasCraftingStamina
+						? crafter.CraftingStamina + "/" + crafter.MaxCraftingStamina
+							+ "（消耗 " + crafter.CraftingStaminaCost + "）"
+						: "不可用"),
+				null,
+				isEnabled: crafter.HasEnoughCraftingStamina,
+				!crafter.HasCraftingStamina
+					? "无法读取该制造者的锻造体力。"
+					: crafter.HasEnoughCraftingStamina
+						? ""
+						: "锻造体力不足，至少需要 "
+							+ crafter.CraftingStaminaCost
+							+ " 点。")).ToList();
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(
+			"选择制造者",
+			"",
+			entries,
+			isExitShown: true,
+			1,
+			1,
+			"选择",
+			"返回",
+			delegate(List<InquiryElement> selected)
+			{
+				string crafterHeroId = selected?.FirstOrDefault()?.Identifier as string;
+				if (string.IsNullOrWhiteSpace(crafterHeroId))
+				{
+					OpenRootMenu();
+					return;
+				}
+				OpenPlayerRpForgePopup(crafterHeroId);
+			},
+			delegate(List<InquiryElement> _)
+			{
+				OpenRootMenu();
+			},
+			"",
+			isSeachAvailable: false);
+		MBInformationManager.ShowMultiSelectionInquiry(
+			data,
+			pauseGameActiveState: true);
+	}
+
+	private void OpenPlayerRpForgePopup(string crafterHeroId)
+	{
+		if (!ReferenceEquals(Instance, this))
+		{
+			return;
+		}
+		if (_playerRpTemplateSelectionTask != null)
+		{
+			InformationManager.DisplayMessage(
+				new InformationMessage("前处理 AI 请求正在取消或收尾，请稍候后再次进入。"));
+			OpenRootMenu();
+			return;
+		}
+		CloseTerminal();
+		int availableDenars = 0;
+		try
+		{
+			availableDenars = Math.Max(0, Hero.MainHero?.Gold ?? 0);
+		}
+		catch
+		{
+		}
+		long popupSaveGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (PlayerRpForgePopup.Show(
+			availableDenars,
+			(sessionId, itemName, investmentDenars, forgeAsWeapon) =>
+				HandlePlayerRpForgePreviewRequested(
+					sessionId,
+					itemName,
+					investmentDenars,
+					forgeAsWeapon,
+					crafterHeroId,
+					popupSaveGeneration),
+			sessionId => CancelPlayerRpForgeSelectionRequest(
+				sessionId,
+				popupSaveGeneration),
+			sessionId => HandlePlayerRpForgeCancelled(
+				sessionId,
+				popupSaveGeneration)))
+		{
+			return;
+		}
+		InformationManager.DisplayMessage(new InformationMessage("无法打开玩家RP物品制造界面。"));
+		OpenPlayerRpCrafterSelection();
+	}
+
+	private void HandlePlayerRpForgePreviewRequested(
+		long sessionId,
+		string itemName,
+		int investmentDenars,
+		bool forgeAsWeapon,
+		string crafterHeroId,
+		long popupSaveGeneration)
+	{
+		if (!IsPlayerRpForgeUiCallbackCurrent(popupSaveGeneration))
+		{
+			PlayerRpForgePopup.TryCloseForPreview(sessionId);
+			return;
+		}
+		if (_playerRpTemplateSelectionTask != null)
+		{
+			InformationManager.DisplayMessage(
+				new InformationMessage("已有一项模板选择请求正在进行。"));
+			PlayerRpForgePopup.TryRestoreEditing(sessionId);
+			return;
+		}
+		if (!RewardSystemBehavior.TryPreviewPlayerRpCraftExactMatchForExternal(
+			itemName,
+			investmentDenars,
+			forgeAsWeapon,
+			crafterHeroId,
+			out bool exactMatchFound,
+			out PlayerRpCraftPreview exactPreview,
+			out string exactError))
+		{
+			InformationManager.DisplayMessage(
+				new InformationMessage(
+					string.IsNullOrWhiteSpace(exactError)
+						? "无法使用精确匹配的游戏物品模板。"
+						: exactError.Trim()));
+			PlayerRpForgePopup.TryRestoreEditing(sessionId);
+			return;
+		}
+		if (exactMatchFound)
+		{
+			if (!PlayerRpForgePopup.TryCloseForPreview(sessionId))
+			{
+				return;
+			}
+			exactPreview.RuntimeGeneration = popupSaveGeneration;
+			ShowPlayerRpForgeConfirmation(exactPreview);
+			return;
+		}
+		if (!RewardSystemBehavior.TryBuildPlayerRpCraftTemplateSelectionRequestForExternal(
+			itemName,
+			investmentDenars,
+			forgeAsWeapon,
+			crafterHeroId,
+			out PlayerRpCraftTemplateSelectionRequest request,
+			out string error))
+		{
+			InformationManager.DisplayMessage(
+				new InformationMessage(
+					string.IsNullOrWhiteSpace(error)
+						? "无法建立安全模板候选榜单。"
+						: error.Trim()));
+			PlayerRpForgePopup.TryRestoreEditing(sessionId);
+			return;
+		}
+		CancellationTokenSource cancellation = new CancellationTokenSource();
+		_playerRpTemplateSelectionSessionId = sessionId;
+		_playerRpTemplateSelectionSaveGeneration = popupSaveGeneration;
+		_playerRpTemplateSelectionRequest = request;
+		_playerRpTemplateSelectionCancellation = cancellation;
+		PlayerRpForgePopup.TrySetBusyStatus(
+			sessionId,
+			"前处理 AI 正在从 "
+				+ request.Candidates.Count.ToString()
+				+ " 个模板中选择……（Esc 可取消）");
+		_playerRpTemplateSelectionTask = Task.Run(
+			() => RewardSystemBehavior.SelectPlayerRpCraftTemplateWithPreprocessForExternal(
+				request,
+				cancellation.Token),
+			cancellation.Token);
+	}
+
+	private void ProcessPlayerRpTemplateSelectionCompletion()
+	{
+		Task<PlayerRpCraftTemplateSelectionResult> task =
+			_playerRpTemplateSelectionTask;
+		if (task == null || !task.IsCompleted)
+		{
+			if (task != null
+				&& _playerRpTemplateSelectionCancellation?.IsCancellationRequested != true
+				&& SaveRuntimeGuard.IsStale(
+					_playerRpTemplateSelectionSaveGeneration,
+					"player_rp_template_selector_pending"))
+			{
+				try
+				{
+					_playerRpTemplateSelectionCancellation?.Cancel();
+				}
+				catch
+				{
+				}
+			}
+			return;
+		}
+		long sessionId = _playerRpTemplateSelectionSessionId;
+		long saveGeneration = _playerRpTemplateSelectionSaveGeneration;
+		PlayerRpCraftTemplateSelectionRequest request =
+			_playerRpTemplateSelectionRequest;
+		CancellationTokenSource cancellation =
+			_playerRpTemplateSelectionCancellation;
+		_playerRpTemplateSelectionTask = null;
+		_playerRpTemplateSelectionRequest = null;
+		_playerRpTemplateSelectionCancellation = null;
+		_playerRpTemplateSelectionSessionId = 0L;
+		_playerRpTemplateSelectionSaveGeneration = 0L;
+		bool wasCancelled =
+			task.IsCanceled || cancellation?.IsCancellationRequested == true;
+		PlayerRpCraftTemplateSelectionResult selection = null;
+		string completionError = "";
+		try
+		{
+			if (!wasCancelled)
+			{
+				selection = task.GetAwaiter().GetResult();
+			}
+		}
+		catch (OperationCanceledException)
+		{
+			wasCancelled = true;
+		}
+		catch (Exception ex)
+		{
+			completionError = ex.GetType().Name + ": " + ex.Message;
+		}
+		finally
+		{
+			cancellation?.Dispose();
+		}
+		if (wasCancelled)
+		{
+			return;
+		}
+		if (SaveRuntimeGuard.IsStale(
+			saveGeneration,
+			"player_rp_template_selector_complete"))
+		{
+			return;
+		}
+		if (!string.IsNullOrWhiteSpace(completionError)
+			|| selection?.Success != true
+			|| string.IsNullOrWhiteSpace(selection.TemplateStringId))
+		{
+			if (!PlayerRpForgePopup.TryCloseForPreview(sessionId))
+			{
+				return;
+			}
+			ShowPlayerRpForgeError(
+				"前处理模板未能选定",
+				string.IsNullOrWhiteSpace(completionError)
+					? selection?.Error
+					: completionError,
+				saveGeneration,
+				() => OpenPlayerRpForgePopup(request?.CrafterHeroId));
+			return;
+		}
+		if (!PlayerRpForgePopup.TrySetBusyStatus(
+			sessionId,
+			"已选定模板，正在进行最终安全复核……"))
+		{
+			return;
+		}
+		if (!RewardSystemBehavior.TryPreviewPlayerRpCraftWithSelectedTemplateForExternal(
+			request,
+			selection.TemplateStringId,
+			out PlayerRpCraftPreview preview,
+			out string error))
+		{
+			if (!PlayerRpForgePopup.TryCloseForPreview(sessionId))
+			{
+				return;
+			}
+			ShowPlayerRpForgeError(
+				"无法预览制造结果",
+				error,
+				saveGeneration,
+				() => OpenPlayerRpForgePopup(request?.CrafterHeroId));
+			return;
+		}
+		if (!PlayerRpForgePopup.TryCloseForPreview(sessionId))
+		{
+			return;
+		}
+		preview.RuntimeGeneration = saveGeneration;
+		ShowPlayerRpForgeConfirmation(preview);
+	}
+
+	private void CancelPlayerRpForgeSelectionRequest(
+		long sessionId,
+		long popupSaveGeneration)
+	{
+		if (!ReferenceEquals(Instance, this)
+			|| _playerRpTemplateSelectionSessionId != sessionId
+			|| _playerRpTemplateSelectionSaveGeneration != popupSaveGeneration)
+		{
+			return;
+		}
+		try
+		{
+			_playerRpTemplateSelectionCancellation?.Cancel();
+		}
+		catch
+		{
+		}
+	}
+
+	private void RetirePendingPlayerRpTemplateSelection()
+	{
+		PlayerRpForgePopup.ClearDraft();
+		Task<PlayerRpCraftTemplateSelectionResult> pendingTask =
+			_playerRpTemplateSelectionTask;
+		CancellationTokenSource cancellation =
+			_playerRpTemplateSelectionCancellation;
+		_playerRpTemplateSelectionTask = null;
+		_playerRpTemplateSelectionRequest = null;
+		_playerRpTemplateSelectionCancellation = null;
+		_playerRpTemplateSelectionSessionId = 0L;
+		_playerRpTemplateSelectionSaveGeneration = 0L;
+		try
+		{
+			cancellation?.Cancel();
+		}
+		catch
+		{
+		}
+		if (cancellation == null)
+		{
+			return;
+		}
+		if (pendingTask == null || pendingTask.IsCompleted)
+		{
+			cancellation.Dispose();
+			return;
+		}
+		pendingTask.ContinueWith(
+			_ =>
+			{
+				try
+				{
+					cancellation.Dispose();
+				}
+				catch
+				{
+				}
+			},
+			CancellationToken.None,
+			TaskContinuationOptions.ExecuteSynchronously,
+			TaskScheduler.Default);
+	}
+
+	private void HandlePlayerRpForgeCancelled(
+		long sessionId,
+		long popupSaveGeneration)
+	{
+		CancelPlayerRpForgeSelectionRequest(
+			sessionId,
+			popupSaveGeneration);
+		if (IsPlayerRpForgeUiCallbackCurrent(popupSaveGeneration))
+		{
+			OpenRootMenu();
+		}
+	}
+
+	private void ShowPlayerRpForgeConfirmation(PlayerRpCraftPreview preview)
+	{
+		long runtimeGeneration = preview?.RuntimeGeneration ?? 0L;
+		if (!IsPlayerRpForgeUiCallbackCurrent(runtimeGeneration))
+		{
+			return;
+		}
+		string itemName = preview?.RequestedName ?? "";
+		int investmentDenars = preview?.InvestedDenars ?? 0;
+		bool forgeAsWeapon = preview?.IsEquipment ?? false;
+		string confirmationText = (preview?.ConfirmationText ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(confirmationText))
+		{
+			confirmationText = "名称：" + (itemName ?? "").Trim()
+				+ "\n投入：" + investmentDenars + " 第纳尔"
+				+ "\n模式：" + (forgeAsWeapon ? "武器与装备" : "普通RP物品")
+				+ "\n\n确认后才会扣除第纳尔并制造物品。";
+		}
+		string confirmationTitle = "确认制造";
+		if (forgeAsWeapon)
+		{
+			string compactItemName = (itemName ?? "").Trim();
+			const int maxTitleItemNameChars = 28;
+			if (compactItemName.Length > maxTitleItemNameChars)
+			{
+				int takeLength = maxTitleItemNameChars;
+				if (char.IsHighSurrogate(compactItemName[takeLength - 1])
+					&& char.IsLowSurrogate(compactItemName[takeLength]))
+				{
+					takeLength--;
+				}
+				compactItemName = compactItemName.Substring(0, takeLength) + "…";
+			}
+			confirmationTitle = "制造“" + compactItemName + "” · "
+				+ investmentDenars + " 第纳尔";
+		}
+		string safeConfirmationTitle =
+			SanitizePlayerRpForgeInquiryText(confirmationTitle);
+		string safeConfirmationText =
+			SanitizePlayerRpForgeInquiryText(confirmationText);
+		int decisionGate = 0;
+		InformationManager.ShowInquiry(
+			new InquiryData(
+				safeConfirmationTitle,
+				safeConfirmationText,
+				isAffirmativeOptionShown: true,
+				isNegativeOptionShown: true,
+				"确认制造",
+				"返回修改",
+				delegate
+				{
+					if (!IsPlayerRpForgeUiCallbackCurrent(runtimeGeneration)
+						|| Interlocked.Exchange(ref decisionGate, 1) != 0)
+					{
+						return;
+					}
+					if (!RewardSystemBehavior.TryCommitPlayerRpCraftForExternal(
+						preview,
+						out var result,
+						out string commitError))
+					{
+						ShowPlayerRpForgeError(
+							"制造未完成",
+							commitError,
+							runtimeGeneration,
+							() => OpenPlayerRpForgePopup(preview.CrafterHeroId));
+						return;
+					}
+					PlayerRpForgePopup.ClearDraft();
+					string resultMessage = (result?.Message ?? "").Trim();
+					if (string.IsNullOrWhiteSpace(resultMessage))
+					{
+						resultMessage = "已成功制造“" + (itemName ?? "").Trim() + "”。";
+					}
+					InformationManager.ShowInquiry(
+						new InquiryData(
+							"制造完成",
+							SanitizePlayerRpForgeInquiryText(resultMessage),
+							isAffirmativeOptionShown: true,
+							isNegativeOptionShown: false,
+							"返回终端",
+							"",
+							delegate
+							{
+								if (IsPlayerRpForgeUiCallbackCurrent(
+									runtimeGeneration))
+								{
+									OpenRootMenu();
+								}
+							},
+							null),
+						pauseGameActiveState: true,
+						prioritize: false);
+				},
+				delegate
+				{
+					if (IsPlayerRpForgeUiCallbackCurrent(runtimeGeneration)
+						&& Interlocked.Exchange(ref decisionGate, 1) == 0)
+					{
+						OpenPlayerRpForgePopup(preview.CrafterHeroId);
+					}
+				}),
+			pauseGameActiveState: true,
+			prioritize: false);
+	}
+
+	private bool IsPlayerRpForgeUiCallbackCurrent(long runtimeGeneration)
+	{
+		return ReferenceEquals(Instance, this)
+			&& SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration);
+	}
+
+	private void ShowPlayerRpForgeError(
+		string title,
+		string error,
+		long runtimeGeneration,
+		Action onReturn)
+	{
+		string safeTitle = SanitizePlayerRpForgeInquiryText(title);
+		string message = SanitizePlayerRpForgeInquiryText(error);
+		if (string.IsNullOrWhiteSpace(message))
+		{
+			message = "原因未提供。";
+		}
+		InformationManager.ShowInquiry(
+			new InquiryData(
+				string.IsNullOrWhiteSpace(safeTitle) ? "玩家RP物品制造" : safeTitle,
+				message,
+				isAffirmativeOptionShown: true,
+				isNegativeOptionShown: false,
+				"返回修改",
+				"",
+				delegate
+				{
+					if (IsPlayerRpForgeUiCallbackCurrent(runtimeGeneration))
+					{
+						onReturn?.Invoke();
+					}
+				},
+				null),
+			pauseGameActiveState: true,
+			prioritize: false);
+	}
+
+	private static string SanitizePlayerRpForgeInquiryText(string value)
+	{
+		string text = (value ?? "").Trim();
+		if (text.Length == 0)
+		{
+			return "";
+		}
+		foreach (string token in PlayerRpForgeInquiryGuardTokens)
+		{
+			text = BreakPlayerRpForgeInquiryToken(text, token);
+		}
+		return text;
+	}
+
+	private static string BreakPlayerRpForgeInquiryToken(
+		string source,
+		string token)
+	{
+		int matchIndex = source.IndexOf(
+			token,
+			StringComparison.OrdinalIgnoreCase);
+		if (matchIndex < 0)
+		{
+			return source;
+		}
+		StringBuilder builder = new StringBuilder(source.Length + 4);
+		int copyIndex = 0;
+		while (matchIndex >= 0)
+		{
+			builder.Append(
+				source,
+				copyIndex,
+				matchIndex - copyIndex);
+			builder.Append(source, matchIndex, 1);
+			builder.Append('\u200B');
+			builder.Append(
+				source,
+				matchIndex + 1,
+				token.Length - 1);
+			copyIndex = matchIndex + token.Length;
+			matchIndex = source.IndexOf(
+				token,
+				copyIndex,
+				StringComparison.OrdinalIgnoreCase);
+		}
+		builder.Append(source, copyIndex, source.Length - copyIndex);
+		return builder.ToString();
 	}
 
 	private void OpenTrustQueryMenu(Action onReturn)

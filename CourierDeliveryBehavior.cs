@@ -3698,7 +3698,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		{
 			ApplyDeliveryPayload(session, courier, recipient);
 			session.DeliveryApplied = true;
-			session.DeliveryFactText = BuildDeliveryFactText(session, delivered: true, recipient);
+			session.DeliveryFactText = BuildDeliveryFactText(session, delivered: true, recipient, commitPlayerCraftInspection: true);
 			string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
 			if (string.IsNullOrWhiteSpace(playerName))
 			{
@@ -4935,8 +4935,42 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		CourierPayloadMode mode = ParsePayloadMode(session.PayloadMode);
 		if (mode == CourierPayloadMode.Show)
 		{
+			string shownTargetKey = BuildCourierShownTargetKey(recipient);
 			int shownGold = 0;
 			Dictionary<string, int> shownItems = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+			int remainingShowableGold = MyBehavior.GetRemainingShowableGoldForExternal(
+				recipient,
+				shownTargetKey,
+				Math.Max(0, Hero.MainHero?.Gold ?? 0));
+			Dictionary<string, int> currentItemCounts = null;
+			bool needsItemSnapshot = (session.Entries ?? new List<CourierCargoEntry>())
+				.Any(entry => entry != null
+					&& entry.Amount > 0
+					&& string.Equals(entry.Kind, "show_item", StringComparison.OrdinalIgnoreCase));
+			if (needsItemSnapshot)
+			{
+				currentItemCounts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+				ItemRoster playerRoster = MobileParty.MainParty?.ItemRoster;
+				if (playerRoster != null)
+				{
+					// Snapshot the player roster once for this arrival. Later entries consume only
+					// this snapshot, so duplicate entries cannot overstate what was actually held.
+					for (int i = 0; i < playerRoster.Count; i++)
+					{
+						ItemRosterElement element = playerRoster.GetElementCopyAtIndex(i);
+						string itemId = (element.EquipmentElement.Item?.StringId ?? "").Trim();
+						if (element.Amount <= 0 || string.IsNullOrWhiteSpace(itemId))
+						{
+							continue;
+						}
+						currentItemCounts[itemId] = (currentItemCounts.TryGetValue(itemId, out int existingCount)
+							? existingCount
+							: 0) + element.Amount;
+					}
+				}
+			}
+			Dictionary<string, int> remainingShowableItems =
+				new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 			foreach (CourierCargoEntry entry in session.Entries ?? new List<CourierCargoEntry>())
 			{
 				if (entry == null || entry.Amount <= 0)
@@ -4945,15 +4979,53 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				}
 				if (string.Equals(entry.Kind, "show_gold", StringComparison.OrdinalIgnoreCase))
 				{
-					shownGold += entry.Amount;
+					int actual = Math.Min(entry.Amount, Math.Max(0, remainingShowableGold));
+					entry.Amount = actual;
+					entry.Delivered = actual > 0;
+					shownGold += actual;
+					remainingShowableGold -= actual;
 				}
 				else if (string.Equals(entry.Kind, "show_item", StringComparison.OrdinalIgnoreCase))
 				{
-					shownItems[entry.Id ?? ""] = (shownItems.TryGetValue(entry.Id ?? "", out var old) ? old : 0) + entry.Amount;
+					string itemId = (entry.Id ?? "").Trim();
+					if (string.IsNullOrWhiteSpace(itemId))
+					{
+						entry.Amount = 0;
+						entry.Delivered = false;
+						continue;
+					}
+					if (!remainingShowableItems.TryGetValue(itemId, out int remaining))
+					{
+						int currentCount = currentItemCounts != null
+							&& currentItemCounts.TryGetValue(itemId, out int heldCount)
+								? Math.Max(0, heldCount)
+								: 0;
+						remaining = MyBehavior.GetRemainingShowableItemCountForExternal(
+							recipient,
+							shownTargetKey,
+							itemId,
+							currentCount);
+					}
+					int actual = Math.Min(entry.Amount, Math.Max(0, remaining));
+					entry.Amount = actual;
+					entry.Delivered = actual > 0;
+					remainingShowableItems[itemId] = Math.Max(0, remaining - actual);
+					if (actual > 0)
+					{
+						shownItems[itemId] = (shownItems.TryGetValue(itemId, out int old) ? old : 0) + actual;
+					}
 				}
-				entry.Delivered = true;
+				else
+				{
+					entry.Amount = 0;
+					entry.Delivered = false;
+				}
 			}
-			MyBehavior.RecordShownResourcesForExternal(recipient, BuildCourierShownTargetKey(recipient), shownGold, shownItems);
+			MyBehavior.RecordShownResourcesForExternal(
+				recipient,
+				shownTargetKey,
+				shownGold,
+				shownItems);
 			return;
 		}
 		PartyBase targetParty = ResolveRecipientPartyBase(recipient);
@@ -6764,7 +6836,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		return text;
 	}
 
-	private static string BuildDeliveryFactText(CourierSession session, bool delivered, Hero recipient = null)
+	private static string BuildDeliveryFactText(CourierSession session, bool delivered, Hero recipient = null, bool commitPlayerCraftInspection = false)
 	{
 		if (session == null)
 		{
@@ -6802,6 +6874,26 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			string factEntryName = (entry.Kind == "item" || entry.Kind == "show_item")
 				? GetCourierLetterTransferFactDescriptionForExternal(entry.Id, 0u, entry.Name)
 				: entry.Name;
+			if (delivered
+				&& entry.Delivered
+				&& (entry.Kind == "item" || entry.Kind == "show_item")
+				&& !string.IsNullOrWhiteSpace(entry.Id))
+			{
+				string observerKey = (recipient?.StringId ?? "").Trim();
+				if (string.IsNullOrWhiteSpace(observerKey))
+				{
+					observerKey = MyBehavior.BuildRuleTargetKeyForExternal(recipient, recipient?.CharacterObject, -1);
+				}
+				factEntryName = RewardSystemBehavior.DecoratePlayerCraftedAfefItemNameForExternal(
+					entry.Id,
+					0u,
+					factEntryName,
+					recipient,
+					recipient?.CharacterObject,
+					observerKey,
+					entry.Kind == "show_item" ? "show" : "give",
+					commitPlayerCraftInspection);
+			}
 			if (entry.Kind == "gold")
 			{
 				sb.Append("\n[AFEF玩家行为补充] ").Append(playerName).Append(verb).Append("转移了 ").Append(entry.Amount).Append(" 第纳尔").Append(delivered ? BuildCourierCargoValueSuffix(entry) : "").Append("。");
@@ -8756,7 +8848,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		value = Regex.Replace(value, "\\[ADP:[^\\]]+\\]", "", RegexOptions.IgnoreCase);
 		value = Regex.Replace(value, "\\[ATT:[^\\]]+\\]", "", RegexOptions.IgnoreCase);
 		value = Regex.Replace(value, "\\[ATP:[^\\]]+\\]", "", RegexOptions.IgnoreCase);
-		value = Regex.Replace(value, "\\[A:H_J_P_P_[CL]\\]", "", RegexOptions.IgnoreCase);
+		value = Regex.Replace(value, "\\[A:H_J_P_P_(?:C&L|[CL])\\]", "", RegexOptions.IgnoreCase);
 		value = Regex.Replace(value, "\\[A:C_J_P_K\\]", "", RegexOptions.IgnoreCase);
 		value = Regex.Replace(value, "\\[A:C_J_K:[^\\]]+\\]", "", RegexOptions.IgnoreCase);
 		value = Regex.Replace(value, "\\[A:P_J_K_[MV]\\]", "", RegexOptions.IgnoreCase);

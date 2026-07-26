@@ -217,6 +217,7 @@ namespace AnimusForge
 				{
 					entry.ProposalType = "POLICY";
 					entry.TargetId = policyDecision.Policy.StringId ?? "";
+					entry.Direction = GetPolicyDirectionForAgenda(policyDecision);
 				}
 				foreach (VoteDealOptionEntry option in agenda.Options)
 				{
@@ -238,9 +239,10 @@ namespace AnimusForge
 			foreach (PolicyObject policy in policies ?? Enumerable.Empty<PolicyObject>())
 			{
 				if (policy == null || HasPendingPolicyDecision(kingdom, policy)) continue;
-				bool active = kingdom.ActivePolicies.Contains(policy);
-				KingdomPolicyDecision decision = new KingdomPolicyDecision(clan, policy, active);
-				AppendPotentialDecision(snapshot, decision, "POLICY", policy.StringId, active ? "ABOLISH" : "ADOPT", active ? "废除政策" : "采纳政策");
+				PolicyObject canonicalPolicy = ResolvePolicyForKingdomAgenda(kingdom, policy, out bool active);
+				if (canonicalPolicy == null) continue;
+				KingdomPolicyDecision decision = new KingdomPolicyDecision(clan, canonicalPolicy, active);
+				AppendPotentialDecision(snapshot, decision, "POLICY", canonicalPolicy.StringId, active ? "ABOLISH" : "ADOPT", active ? "废除政策" : "采纳政策");
 			}
 		}
 
@@ -291,7 +293,7 @@ namespace AnimusForge
 		{
 			try
 			{
-				if (decision == null || snapshot == null || snapshot.Entries.Any(e => !string.IsNullOrWhiteSpace(e.ExistingDecisionBasicKey) && string.Equals(e.Title, decision.GetGeneralTitle()?.ToString(), StringComparison.OrdinalIgnoreCase))) return;
+				if (decision == null || snapshot == null || snapshot.Entries.Any(e => !string.IsNullOrWhiteSpace(e.ExistingDecisionBasicKey) && string.Equals(e.Title, GetDecisionDisplayTitleForAgenda(decision), StringComparison.OrdinalIgnoreCase))) return;
 				MBList<DecisionOutcome> initial = new MBList<DecisionOutcome>();
 				foreach (DecisionOutcome outcome in decision.DetermineInitialCandidates() ?? Enumerable.Empty<DecisionOutcome>()) if (outcome != null) initial.Add(outcome);
 				if (initial.Count == 0) return;
@@ -300,7 +302,7 @@ namespace AnimusForge
 				decision.DetermineSponsors(narrowed);
 				UnifiedAgendaEntry entry = new UnifiedAgendaEntry
 				{
-					Title = decision.GetGeneralTitle()?.ToString() ?? typeLabel,
+					Title = GetDecisionDisplayTitleForAgenda(decision),
 					TypeLabel = typeLabel,
 					ProposalType = type,
 					TargetId = targetId ?? "",
@@ -309,7 +311,12 @@ namespace AnimusForge
 				for (int i = 0; i < narrowed.Count; i++)
 				{
 					DecisionOutcome outcome = narrowed[i];
-					entry.Options.Add(new UnifiedAgendaOption { Title = outcome.GetDecisionTitle()?.ToString() ?? ("选项" + (i + 1)), CreatesProposal = i == 0 });
+					entry.Options.Add(new UnifiedAgendaOption
+					{
+						Title = GetDecisionOutcomeDisplayTitleForAgenda(decision, outcome),
+						Description = GetDecisionOutcomeDisplayDescriptionForAgenda(decision, outcome),
+						CreatesProposal = i == 0
+					});
 				}
 				snapshot.Entries.Add(entry);
 			}
@@ -337,7 +344,7 @@ namespace AnimusForge
 
 		private static bool HasPendingPolicyDecision(Kingdom kingdom, PolicyObject policy)
 		{
-			return kingdom?.UnresolvedDecisions?.OfType<KingdomPolicyDecision>().Any(d => d != null && d.Policy == policy && !d.ShouldBeCancelled()) == true;
+			return kingdom?.UnresolvedDecisions?.OfType<KingdomPolicyDecision>().Any(d => d != null && IsSamePolicyForAgenda(d.Policy, policy) && !d.ShouldBeCancelled()) == true;
 		}
 
 		private static string BuildUnifiedAgendaMainPromptBlock(UnifiedAgendaSnapshot snapshot, Clan clan, Kingdom kingdom, IEnumerable<PolicyObject> policies)
@@ -394,13 +401,18 @@ namespace AnimusForge
 			StringBuilder sb = new StringBuilder("【相关政策实体】以下态度是你作为家族族长的初始政治倾向，不是不可改变的承诺；自然说话时不要念出ID。\n");
 			foreach (PolicyObject policy in list)
 			{
-				float support = CalculatePolicySupportSafe(clan, policy);
-				string pending = HasPendingPolicyDecision(kingdom, policy) ? "已有待决议程" : "暂无待决议程";
-				sb.Append("- ").Append(policy.Name?.ToString() ?? policy.StringId)
-					.Append(" | ").Append(kingdom.ActivePolicies.Contains(policy) ? "已生效" : "未生效").Append(" | ").Append(pending)
-					.Append(" | 初始态度=").Append(FormatPolicyAttitude(support)).Append(" | 原因=").Append(BuildPolicyAttitudeReason(clan, policy)).AppendLine();
-				string introduction = CleanVoteDealText(policy.Description?.ToString() ?? "");
-				if (string.IsNullOrWhiteSpace(introduction)) introduction = CleanVoteDealText(policy.LogEntryDescription?.ToString() ?? "");
+				PolicyObject canonicalPolicy = ResolvePolicyForKingdomAgenda(kingdom, policy, out bool active);
+				if (canonicalPolicy == null) continue;
+				float support = CalculatePolicySupportSafe(clan, canonicalPolicy, active);
+				string pending = HasPendingPolicyDecision(kingdom, canonicalPolicy) ? "已有待决议程" : "暂无待决议程";
+				string direction = active ? "废除" : "推行";
+				sb.Append("- ").Append(canonicalPolicy.Name?.ToString() ?? canonicalPolicy.StringId)
+					.Append(" | ").Append(active ? "已生效" : "未生效").Append(" | ").Append(pending)
+					.Append(" | 本轮仅可议案=").Append(direction)
+					.Append(" | 对").Append(direction).Append("案的初始态度=").Append(FormatPolicyAttitude(support))
+					.Append(" | 原因=").Append(BuildPolicyAttitudeReason(clan, canonicalPolicy, active)).AppendLine();
+				string introduction = CleanVoteDealText(canonicalPolicy.Description?.ToString() ?? "");
+				if (string.IsNullOrWhiteSpace(introduction)) introduction = CleanVoteDealText(canonicalPolicy.LogEntryDescription?.ToString() ?? "");
 				if (introduction.Length > 320) introduction = introduction.Substring(0, 320).TrimEnd() + "…";
 				if (!string.IsNullOrWhiteSpace(introduction)) sb.Append("  介绍：").Append(introduction).AppendLine();
 			}
@@ -419,9 +431,9 @@ namespace AnimusForge
 			return sb.ToString().TrimEnd();
 		}
 
-		private static float CalculatePolicySupportSafe(Clan clan, PolicyObject policy)
+		private static float CalculatePolicySupportSafe(Clan clan, PolicyObject policy, bool isInvertedDecision)
 		{
-			try { return new KingdomPolicyDecision(clan, policy, false).CalculateSupport(clan); }
+			try { return new KingdomPolicyDecision(clan, policy, isInvertedDecision).CalculateSupport(clan); }
 			catch { return 0f; }
 		}
 
@@ -434,7 +446,7 @@ namespace AnimusForge
 			return "中立";
 		}
 
-		private static string BuildPolicyAttitudeReason(Clan clan, PolicyObject policy)
+		private static string BuildPolicyAttitudeReason(Clan clan, PolicyObject policy, bool isInvertedDecision)
 		{
 			try
 			{
@@ -444,19 +456,20 @@ namespace AnimusForge
 				float policyFactor = Math.Max(e, Math.Max(o, a));
 				float statusFactor = clan.Kingdom?.RulingClan == clan ? 3f : (clan.IsMinorFaction || clan.Tier >= 5 ? 1.5f : 0.5f);
 				float traitFactor = Math.Abs(trait) * 1.25f;
+				string directionPrefix = isInvertedDecision ? "本轮为废除案，支持废除表示反对该政策：" : "本轮为推行案，支持推行表示支持该政策：";
 				if (statusFactor >= policyFactor && statusFactor >= traitFactor)
 				{
-					if (clan.Kingdom?.RulingClan == clan) return "作为统治家族，维护王国权力结构是首要考虑";
-					if (clan.IsMinorFaction) return "小派系的生存与政治空间是首要考虑";
-					return "家族的高阶政治地位是首要考虑";
+					if (clan.Kingdom?.RulingClan == clan) return directionPrefix + "作为统治家族，维护王国权力结构是首要考虑";
+					if (clan.IsMinorFaction) return directionPrefix + "小派系的生存与政治空间是首要考虑";
+					return directionPrefix + "家族的高阶政治地位是首要考虑";
 				}
 				if (traitFactor >= policyFactor)
 				{
-					return trait >= 0 ? "族长的" + axis + "政治性格最符合这项政策" : "族长的政治性格最排斥这项政策的" + axis;
+					return directionPrefix + (trait >= 0 ? "族长的" + axis + "政治性格最符合这项政策" : "族长的政治性格最排斥这项政策的" + axis);
 				}
-				return "政策本身鲜明的" + axis + "是主要影响";
+				return directionPrefix + "政策本身鲜明的" + axis + "是主要影响";
 			}
-			catch { return "由政策取向、家族地位和族长政治性格共同决定"; }
+			catch { return (isInvertedDecision ? "本轮为废除案；" : "本轮为推行案；") + "由政策取向、家族地位和族长政治性格共同决定"; }
 		}
 
 		private static void PublishUnifiedAgendaSnapshot(UnifiedAgendaSnapshot snapshot)

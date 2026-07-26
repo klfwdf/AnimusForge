@@ -2409,6 +2409,42 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static void RecordPlayerHighValueRpCraftForExternal(
+		string batchId,
+		string requestedName,
+		string finalDisplayName,
+		int investedDenars,
+		int craftedItemValue,
+		string crafterHeroId,
+		string crafterDisplayName,
+		string outcomeLabel)
+	{
+		if (investedDenars <= 10000)
+		{
+			return;
+		}
+		try
+		{
+			(Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>())
+				?.RecordExternalPlayerHighValueRpCraft(
+					batchId,
+					requestedName,
+					finalDisplayName,
+					investedDenars,
+					craftedItemValue,
+					crafterHeroId,
+					crafterDisplayName,
+					outcomeLabel);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log(
+				"PlayerNotoriety",
+				"[PlayerRpCraft][WARN] record high-value craft failed: "
+					+ ex.Message);
+		}
+	}
+
 	public static void RecordVoteDealFulfilledForExternal(Hero npc, KingdomDecision decision, DecisionOutcome chosenOutcome, string dealId, string targetDecisionTitle, string targetOptionTitle)
 	{
 		try
@@ -2843,6 +2879,131 @@ public class MyBehavior : CampaignBehaviorBase
 			targetHero?.Culture?.StringId ?? "",
 			settlement?.Culture?.StringId ?? "",
 			won);
+	}
+
+	private void RecordExternalPlayerHighValueRpCraft(
+		string batchId,
+		string requestedName,
+		string finalDisplayName,
+		int investedDenars,
+		int craftedItemValue,
+		string crafterHeroId,
+		string crafterDisplayName,
+		string outcomeLabel)
+	{
+		if (investedDenars <= 10000)
+		{
+			return;
+		}
+		string normalizedBatchId = (batchId ?? "").Trim();
+		string requested = LimitCustomPolicyWeeklyMaterialText(
+			requestedName,
+			80);
+		string finalName = LimitCustomPolicyWeeklyMaterialText(
+			finalDisplayName,
+			80);
+		if (string.IsNullOrWhiteSpace(normalizedBatchId)
+			|| string.IsNullOrWhiteSpace(requested)
+			|| string.IsNullOrWhiteSpace(finalName))
+		{
+			return;
+		}
+		string crafterName = LimitCustomPolicyWeeklyMaterialText(
+			crafterDisplayName,
+			60);
+		string result = LimitCustomPolicyWeeklyMaterialText(
+			outcomeLabel,
+			40);
+		Hero player = Hero.MainHero;
+		bool craftedByPlayer = string.Equals(
+			(crafterHeroId ?? "").Trim(),
+			GetHeroId(player),
+			StringComparison.OrdinalIgnoreCase);
+		string investment = investedDenars.ToString(
+			CultureInfo.InvariantCulture);
+		string outputValue = Math.Max(1, craftedItemValue).ToString(
+			CultureInfo.InvariantCulture);
+		bool renamedByOutcome = !string.Equals(
+			requested,
+			finalName,
+			StringComparison.Ordinal);
+		string actionText = craftedByPlayer
+			? "你投入 " + investment + " 第纳尔，亲手制造"
+			: "你投入 " + investment + " 第纳尔，并委托 "
+				+ (string.IsNullOrWhiteSpace(crafterName)
+					? "一名家族成员或同伴"
+					: crafterName)
+				+ " 制造";
+		actionText += renamedByOutcome
+			? "“" + requested + "”，最终得到“" + finalName + "”"
+			: "了“" + finalName + "”";
+		actionText += "；成品价值 " + outputValue + " 第纳尔"
+			+ (string.IsNullOrWhiteSpace(result)
+				? "。"
+				: "，制造结果为" + result + "。");
+
+		string stableKey =
+			"player_rp_craft_high_value:" + normalizedBatchId;
+		Settlement settlement =
+			Settlement.CurrentSettlement
+			?? MobileParty.MainParty?.CurrentSettlement;
+		string locationText =
+			GetSettlementDisplayName(settlement);
+		if (string.IsNullOrWhiteSpace(locationText))
+		{
+			locationText = "旅途中";
+		}
+		RecordExternalPlayerAction(
+			actionText,
+			stableKey + ":action",
+			"player_rp_craft",
+			isMajor: true,
+			targetHero: null,
+			settlement: settlement,
+			locationText: locationText,
+			won: null);
+
+		bool hasKingdom =
+			ResolvePlayerFootholdKingdomForWeeklyMemoryMaterial(
+				out string kingdomId,
+				out string settlementId);
+		if (string.IsNullOrWhiteSpace(settlementId))
+		{
+			settlementId = GetSettlementId(settlement);
+		}
+		string weeklySnapshot = craftedByPlayer
+			? "玩家投入 " + investment + " 第纳尔亲手制造"
+			: "玩家投入 " + investment + " 第纳尔，委托 "
+				+ (string.IsNullOrWhiteSpace(crafterName)
+					? "一名家族成员或同伴"
+					: crafterName)
+				+ " 制造";
+		weeklySnapshot += renamedByOutcome
+			? "“" + requested + "”，最终得到“" + finalName + "”"
+			: "了“" + finalName + "”";
+		weeklySnapshot += "；成品价值 " + outputValue + " 第纳尔"
+			+ (string.IsNullOrWhiteSpace(result)
+				? "。"
+				: "，制造结果为" + result + "。");
+		RecordEventSourceMaterial(
+			"player_rp_craft",
+			"贵重物品制造 - " + finalName,
+			weeklySnapshot,
+			stableKey + ":weekly",
+			kingdomId,
+			settlementId,
+			includeInWorld: true,
+			includeInKingdom: hasKingdom,
+			actorHeroId: GetHeroId(player),
+			actorKingdomId: GetKingdomId(player?.MapFaction));
+		Logger.Log(
+			"EventWeeklyReport",
+			"[PlayerRpCraft] high_value_material_recorded item="
+				+ finalName
+				+ " invested="
+				+ investment
+				+ " kingdom="
+				+ (kingdomId ?? ""));
 	}
 
 	private void RecordVoteDealFulfilled(Hero npc, KingdomDecision decision, DecisionOutcome chosenOutcome, string dealId, string targetDecisionTitle, string targetOptionTitle)
