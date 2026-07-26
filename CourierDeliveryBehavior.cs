@@ -3894,7 +3894,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 		List<ConversationMessage> persistentMemoryRoleMessages = MyBehavior.BuildUncompressedMemoryRoleMessagesForExternal(recipient, -1, includeCurrentActiveSceneSession: false);
 		string npcRoleContext = ShoutBehavior.BuildHeroStableRoleContextForExternal(recipient);
-		List<object> messages = BuildCourierReplyMessages(recipient, session, extras, extraFact, historyText, persistentMemoryRoleMessages, npcRoleContext);
+		List<object> messages = BuildCourierReplyMessages(recipient, session, extras, extraFact, historyText, persistentMemoryRoleMessages, npcRoleContext, ctx?.PreprocessExcludedRuleBlock);
 		LogCourierContextAlignment("reply", session.Id, recipient, npcRoleContext, extras, ctx?.EntityPostprocessContext, historyText, persistentMemoryRoleMessages);
 		return new CourierReplyGenerationRequest
 		{
@@ -3958,17 +3958,17 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				ProcessSessionById(request.SessionId, "reply_generated_recipient_invalid");
 				return;
 			}
-			string reply = CleanNpcReply(output);
-			if (LooksLikeApiError(reply))
+			string postprocessReply = PrepareNpcReplyForActionPostprocess(output);
+			if (LooksLikeApiError(postprocessReply))
 			{
-				Log("llm main failed session=" + session.Id + " output=" + reply);
-				if (ShowCourierReplyGenerationRetryPrompt(request, reply))
+				Log("llm main failed session=" + session.Id + " output=" + postprocessReply);
+				if (ShowCourierReplyGenerationRetryPrompt(request, postprocessReply))
 				{
 					return;
 				}
-				reply = "";
+				postprocessReply = "";
 			}
-			if (string.IsNullOrWhiteSpace(reply))
+			if (string.IsNullOrWhiteSpace(postprocessReply))
 			{
 				session.ReplyText = "";
 				session.ReplyPostprocessedText = "";
@@ -3978,6 +3978,9 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				ProcessSessionById(request.SessionId, "reply_generated_empty");
 				return;
 			}
+			// The letter UI intentionally removes stage directions, but the action
+			// postprocessor must receive the original prose as execution evidence.
+			string reply = CleanNpcReply(postprocessReply);
 			string extras = request.Extras ?? "";
 			List<string> selectedRuleHits = request.SelectedRuleHits ?? new List<string>();
 			bool duelInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "duel");
@@ -4010,7 +4013,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			string completionLogDetails = " preprocessHits=" + ((selectedRuleHits == null || selectedRuleHits.Count == 0) ? "(none)" : string.Join(",", selectedRuleHits)) + " duel=" + duelInjected + " reward=" + rewardInjected + " loan=" + loanInjected + " kingdom=" + kingdomServiceInjected + " kingdomVassalage=" + kingdomVassalageInjected + " kingdomAnnexation=" + kingdomAnnexationInjected + " lordsHall=" + lordsHallInjected + " meetingRelease=" + meetingReleaseInjected + " vanillaIssue=" + vanillaIssueInjected + " heroJoin=" + heroJoinPartyInjected + " sceneMechanism=" + sceneMechanismInjected + " partyTransfer=" + partyTransferInjected + " voteDeal=" + voteDealInjected + " diplomacy=" + diplomacyInjected + " worldMap=" + worldMapPartyCommandInjected;
 			try
 			{
-				if (!ShoutBehavior.TryPrepareCourierActionPostprocessForExternal(recipient, recipient.CharacterObject, recipient.Name?.ToString() ?? request.RecipientName ?? "NPC", request.LetterText, request.HistoryText, reply, duelInjected, rewardInjected, loanInjected, kingdomServiceInjected, lordsHallInjected, meetingReleaseInjected, vanillaIssueInjected, heroJoinPartyInjected, sceneMechanismInjected, partyTransferInjected, out ShoutBehavior.CourierActionPostprocessWorkItem workItem, out string immediateResult, voteDealInjected, diplomacyInjected, worldMapPartyCommandInjected, selectedRuleHits, request.EntityPostprocessContext, -1, true, true, kingdomVassalageInjected, kingdomAnnexationInjected, "courier"))
+				if (!ShoutBehavior.TryPrepareCourierActionPostprocessForExternal(recipient, recipient.CharacterObject, recipient.Name?.ToString() ?? request.RecipientName ?? "NPC", request.LetterText, request.HistoryText, postprocessReply, duelInjected, rewardInjected, loanInjected, kingdomServiceInjected, lordsHallInjected, meetingReleaseInjected, vanillaIssueInjected, heroJoinPartyInjected, sceneMechanismInjected, partyTransferInjected, out ShoutBehavior.CourierActionPostprocessWorkItem workItem, out string immediateResult, voteDealInjected, diplomacyInjected, worldMapPartyCommandInjected, selectedRuleHits, request.EntityPostprocessContext, -1, true, true, kingdomVassalageInjected, kingdomAnnexationInjected, "courier"))
 				{
 					FinalizeCourierReplyGenerationOnMainThread(request, reply, immediateResult, completionLogDetails);
 					return;
@@ -4296,7 +4299,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 		List<ConversationMessage> persistentMemoryRoleMessages = MyBehavior.BuildUncompressedMemoryRoleMessagesForExternal(sender, -1, includeCurrentActiveSceneSession: false);
 		string npcRoleContext = ShoutBehavior.BuildHeroStableRoleContextForExternal(sender);
-		List<object> messages = BuildInboundNpcLetterMessages(sender, session, seed, extras, extraFact, historyText, persistentMemoryRoleMessages, npcRoleContext);
+		List<object> messages = BuildInboundNpcLetterMessages(sender, session, seed, extras, extraFact, historyText, persistentMemoryRoleMessages, npcRoleContext, ctx?.PreprocessExcludedRuleBlock);
 		LogCourierContextAlignment("inbound", session.Id, sender, npcRoleContext, extras, ctx?.EntityPostprocessContext, historyText, persistentMemoryRoleMessages);
 		return new InboundLetterGenerationRequest
 		{
@@ -4599,10 +4602,12 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			string reply = CourierVisibleLetterSanitizer.Clean(StripCourierActionTags(processedReplyText));
+			// Keep role-play action prose in the shared dialogue history for later
+			// postprocessing. The player-facing letter is still sanitized at display.
+			string reply = StripCourierActionTags(processedReplyText);
 			if (string.IsNullOrWhiteSpace(reply))
 			{
-				reply = CourierVisibleLetterSanitizer.Clean(StripCourierActionTags(session.ReplyText));
+				reply = StripCourierActionTags(session.ReplyText);
 			}
 			reply = (reply ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(reply))
@@ -6441,7 +6446,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static List<object> BuildCourierReplyMessages(Hero recipient, CourierSession session, string extras, string deliveryFactForPrompt = null, string prebuiltHistory = null, IEnumerable<ConversationMessage> persistentMemoryRoleMessages = null, string npcRoleContext = null)
+	private static List<object> BuildCourierReplyMessages(Hero recipient, CourierSession session, string extras, string deliveryFactForPrompt = null, string prebuiltHistory = null, IEnumerable<ConversationMessage> persistentMemoryRoleMessages = null, string npcRoleContext = null, string preprocessExcludedRuleBlock = null)
 	{
 		string npcName = recipient?.Name?.ToString() ?? "NPC";
 		string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal(recipient);
@@ -6466,6 +6471,10 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		if (!string.IsNullOrWhiteSpace(npcRoleContext))
 		{
 			system = system.TrimEnd() + "\n" + npcRoleContext.Trim();
+		}
+		if (!string.IsNullOrWhiteSpace(preprocessExcludedRuleBlock))
+		{
+			system = system.TrimEnd() + "\n" + preprocessExcludedRuleBlock.Trim();
 		}
 		system = MyBehavior.AppendPlayerCustomPromptRuleToSystemPromptForExternal(system);
 		StringBuilder context = new StringBuilder();
@@ -6522,7 +6531,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		return messages;
 	}
 
-	private static List<object> BuildInboundNpcLetterMessages(Hero sender, CourierSession session, string seed, string extras, string factForPrompt = null, string prebuiltHistory = null, IEnumerable<ConversationMessage> persistentMemoryRoleMessages = null, string npcRoleContext = null)
+	private static List<object> BuildInboundNpcLetterMessages(Hero sender, CourierSession session, string seed, string extras, string factForPrompt = null, string prebuiltHistory = null, IEnumerable<ConversationMessage> persistentMemoryRoleMessages = null, string npcRoleContext = null, string preprocessExcludedRuleBlock = null)
 	{
 		string npcName = sender?.Name?.ToString() ?? session?.SenderName ?? "NPC";
 		string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal(sender);
@@ -6549,6 +6558,10 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		if (!string.IsNullOrWhiteSpace(npcRoleContext))
 		{
 			system = system.TrimEnd() + "\n" + npcRoleContext.Trim();
+		}
+		if (!string.IsNullOrWhiteSpace(preprocessExcludedRuleBlock))
+		{
+			system = system.TrimEnd() + "\n" + preprocessExcludedRuleBlock.Trim();
 		}
 		system = MyBehavior.AppendPlayerCustomPromptRuleToSystemPromptForExternal(system);
 		StringBuilder context = new StringBuilder();
@@ -8639,18 +8652,24 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		return parts.Count == 0 ? "无" : string.Join("，", parts);
 	}
 
-	private static string CleanNpcReply(string text)
+	private static string PrepareNpcReplyForActionPostprocess(string text)
 	{
 		string value = LlmVisibleReplyNormalizer.NormalizeComplete(text).Trim();
 		value = Regex.Replace(value, "<think>.*?</think>", "", RegexOptions.Singleline | RegexOptions.IgnoreCase).Trim();
 		value = Regex.Replace(value, "^(NPC|回复|回信)[:：]\\s*", "", RegexOptions.IgnoreCase).Trim();
-		if (!LooksLikeApiError(value))
-		{
-			value = CourierVisibleLetterSanitizer.Clean(value);
-		}
 		if (value == "（没说话）" || value == "无" || value == "无回信")
 		{
 			return "";
+		}
+		return value;
+	}
+
+	private static string CleanNpcReply(string text)
+	{
+		string value = PrepareNpcReplyForActionPostprocess(text);
+		if (!LooksLikeApiError(value))
+		{
+			value = CourierVisibleLetterSanitizer.Clean(value);
 		}
 		return value;
 	}

@@ -14,5 +14,7 @@ public class SurroundingsConfig
 
 	public string Instruction { get; set; } = "";
 
+	public string PreprocessExcludedInstruction { get; set; } = "";
+
 	public List<string> TriggerKeywords { get; set; } = new List<string>();
 }

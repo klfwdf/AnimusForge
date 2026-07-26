@@ -132,6 +132,17 @@ public static class AIConfigHandler
 		public string RuleId;
 	}
 
+	private sealed class PreprocessExcludedPromptEntry
+	{
+		public string RuleId;
+
+		public int TopicNumber;
+
+		public int Priority;
+
+		public string Instruction;
+	}
+
 	private sealed class GuardrailIntentInput
 	{
 		public string Text;
@@ -248,6 +259,12 @@ public static class AIConfigHandler
 	private static long _guardrailWarmupVersion = -1L;
 
 	private static long _guardrailConfigVersion = 1L;
+
+	private static readonly object _preprocessExcludedPromptCacheLock = new object();
+
+	private static long _preprocessExcludedPromptCacheVersion = -1L;
+
+	private static List<PreprocessExcludedPromptEntry> _preprocessExcludedPromptCache = new List<PreprocessExcludedPromptEntry>();
 
 	private const int GuardrailPhraseVecCacheMax = 1024;
 
@@ -1182,7 +1199,7 @@ public static class AIConfigHandler
 					continue;
 				}
 			}
-			string text = StripActionPostprocessHistoryInnerThoughts(line);
+			string text = NormalizeActionPostprocessHistoryContent(line);
 			if (string.IsNullOrWhiteSpace(text))
 			{
 				continue;
@@ -1325,7 +1342,7 @@ public static class AIConfigHandler
 				text = latestPlayer;
 			}
 		}
-		text = NormalizeActionPostprocessDialogueText(StripActionPostprocessHistoryInnerThoughts(text));
+		text = NormalizeActionPostprocessDialogueText(NormalizeActionPostprocessHistoryContent(text));
 		return text.Length > 500 ? (text.Substring(0, 500).TrimEnd() + "…") : text;
 	}
 
@@ -1358,7 +1375,7 @@ public static class AIConfigHandler
 		StringBuilder sb = new StringBuilder(text.Length);
 		foreach (string line in text.Split('\n'))
 		{
-			string cleaned = ShoutUtils.StripConversationMetadataPrefix(StripActionPostprocessHistoryInnerThoughts(line));
+			string cleaned = ShoutUtils.StripConversationMetadataPrefix(NormalizeActionPostprocessHistoryContent(line));
 			if (!string.IsNullOrWhiteSpace(cleaned))
 			{
 				sb.Append(cleaned).Append(' ');
@@ -1477,7 +1494,7 @@ public static class AIConfigHandler
 		return text;
 	}
 
-	private static string StripActionPostprocessHistoryInnerThoughts(string line)
+	private static string NormalizeActionPostprocessHistoryContent(string line)
 	{
 		string text = (line ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(text))
@@ -1488,8 +1505,9 @@ public static class AIConfigHandler
 		{
 			return text;
 		}
-		text = Regex.Replace(text, "（[^（）]*）", "", RegexOptions.CultureInvariant);
-		text = Regex.Replace(text, "\\([^()]*\\)", "", RegexOptions.CultureInvariant);
+		// Parenthesized and asterisk-delimited prose can describe an immediately
+		// performed action. The action postprocessor needs that evidence to choose
+		// the correct execution tag, so only normalize whitespace here.
 		text = Regex.Replace(text, "[ \\t]{2,}", " ", RegexOptions.CultureInvariant);
 		text = text.Trim();
 		text = text.TrimStart('，', '。', '、', '；', '：', ',', ';', ':');
@@ -2232,7 +2250,7 @@ public static class AIConfigHandler
 		return string.IsNullOrWhiteSpace(text) ? "RULE" : text;
 	}
 
-	private static GuardrailRulePromptConfig BuildLegacyRulePrompt(string id, bool enabled, string instruction, List<string> triggerKeywords, string group, int priority, int topicNumber, string topicLabel, string code = "")
+	private static GuardrailRulePromptConfig BuildLegacyRulePrompt(string id, bool enabled, string instruction, List<string> triggerKeywords, string group, int priority, int topicNumber, string topicLabel, string code = "", string preprocessExcludedInstruction = "")
 	{
 		return new GuardrailRulePromptConfig
 		{
@@ -2242,6 +2260,7 @@ public static class AIConfigHandler
 			TopicLabel = (topicLabel ?? "").Trim(),
 			Code = NormalizeRuleCode(code, id, topicLabel),
 			Instruction = (instruction ?? ""),
+			PreprocessExcludedInstruction = (preprocessExcludedInstruction ?? ""),
 			TriggerKeywords = NormalizeTriggerKeywordList(triggerKeywords),
 			Group = (group ?? "").Trim(),
 			Priority = priority
@@ -2272,6 +2291,7 @@ public static class AIConfigHandler
 				Code = NormalizeRuleCode(src.Code, text, src.TopicLabel),
 				Instruction = (src.Instruction ?? ""),
 				NonHeroInstruction = (src.NonHeroInstruction ?? ""),
+				PreprocessExcludedInstruction = (src.PreprocessExcludedInstruction ?? ""),
 				PostprocessRules = ((src.PostprocessRules != null) ? src.PostprocessRules.Where((PostprocessRuleEntry x) => x != null && !string.IsNullOrWhiteSpace((x.Tag ?? "").Trim())).Select((PostprocessRuleEntry x) => new PostprocessRuleEntry
 				{
 					Tag = (x.Tag ?? "").Trim(),
@@ -2299,13 +2319,13 @@ public static class AIConfigHandler
 			{
 				duelRegistryInstruction = (_guardrail?.Duel?.DialogueInstruction ?? "").Trim();
 			}
-			upsert(BuildLegacyRulePrompt("duel", _guardrail?.Duel?.IsEnabled ?? true, duelRegistryInstruction, _guardrail?.Duel?.AcceptKeywords ?? new List<string>(), "combat", 90, _guardrail?.Duel?.TopicNumber ?? 0, _guardrail?.Duel?.TopicLabel ?? "", _guardrail?.Duel?.Code ?? ""));
-			upsert(BuildLegacyRulePrompt("reward", _guardrail?.Reward?.IsEnabled ?? true, _guardrail?.Reward?.Instruction ?? "", _guardrail?.Reward?.TriggerKeywords ?? new List<string>(), "trade", 80, _guardrail?.Reward?.TopicNumber ?? 0, _guardrail?.Reward?.TopicLabel ?? "", _guardrail?.Reward?.Code ?? ""));
+			upsert(BuildLegacyRulePrompt("duel", _guardrail?.Duel?.IsEnabled ?? true, duelRegistryInstruction, _guardrail?.Duel?.AcceptKeywords ?? new List<string>(), "combat", 90, _guardrail?.Duel?.TopicNumber ?? 0, _guardrail?.Duel?.TopicLabel ?? "", _guardrail?.Duel?.Code ?? "", _guardrail?.Duel?.PreprocessExcludedInstruction ?? ""));
+			upsert(BuildLegacyRulePrompt("reward", _guardrail?.Reward?.IsEnabled ?? true, _guardrail?.Reward?.Instruction ?? "", _guardrail?.Reward?.TriggerKeywords ?? new List<string>(), "trade", 80, _guardrail?.Reward?.TopicNumber ?? 0, _guardrail?.Reward?.TopicLabel ?? "", _guardrail?.Reward?.Code ?? "", _guardrail?.Reward?.PreprocessExcludedInstruction ?? ""));
 			if (_guardrail?.Loan != null)
 			{
-				upsert(BuildLegacyRulePrompt("loan", _guardrail.Loan.IsEnabled, _guardrail.Loan.Instruction ?? "", _guardrail.Loan.TriggerKeywords ?? new List<string>(), "finance", 85, _guardrail.Loan.TopicNumber, _guardrail.Loan.TopicLabel ?? "", _guardrail.Loan.Code ?? ""));
+				upsert(BuildLegacyRulePrompt("loan", _guardrail.Loan.IsEnabled, _guardrail.Loan.Instruction ?? "", _guardrail.Loan.TriggerKeywords ?? new List<string>(), "finance", 85, _guardrail.Loan.TopicNumber, _guardrail.Loan.TopicLabel ?? "", _guardrail.Loan.Code ?? "", _guardrail.Loan.PreprocessExcludedInstruction ?? ""));
 			}
-			upsert(BuildLegacyRulePrompt("surroundings", _guardrail?.Surroundings?.IsEnabled ?? true, _guardrail?.Surroundings?.Instruction ?? "", _guardrail?.Surroundings?.TriggerKeywords ?? new List<string>(), "world", 70, _guardrail?.Surroundings?.TopicNumber ?? 0, _guardrail?.Surroundings?.TopicLabel ?? "", _guardrail?.Surroundings?.Code ?? ""));
+			upsert(BuildLegacyRulePrompt("surroundings", _guardrail?.Surroundings?.IsEnabled ?? true, _guardrail?.Surroundings?.Instruction ?? "", _guardrail?.Surroundings?.TriggerKeywords ?? new List<string>(), "world", 70, _guardrail?.Surroundings?.TopicNumber ?? 0, _guardrail?.Surroundings?.TopicLabel ?? "", _guardrail?.Surroundings?.Code ?? "", _guardrail?.Surroundings?.PreprocessExcludedInstruction ?? ""));
 			if (_guardrail?.RulePrompts != null && _guardrail.RulePrompts.Count > 0)
 			{
 				for (int i = 0; i < _guardrail.RulePrompts.Count; i++)
@@ -3640,6 +3660,108 @@ public static class AIConfigHandler
 		catch
 		{
 			return new List<string>();
+		}
+	}
+
+	private static List<PreprocessExcludedPromptEntry> GetConfiguredPreprocessExcludedPromptEntries()
+	{
+		long version = Volatile.Read(ref _guardrailConfigVersion);
+		if (Volatile.Read(ref _preprocessExcludedPromptCacheVersion) == version)
+		{
+			List<PreprocessExcludedPromptEntry> snapshot = _preprocessExcludedPromptCache;
+			if (snapshot != null)
+			{
+				return snapshot;
+			}
+		}
+		lock (_preprocessExcludedPromptCacheLock)
+		{
+			if (_preprocessExcludedPromptCacheVersion != version || _preprocessExcludedPromptCache == null)
+			{
+				Dictionary<string, GuardrailRulePromptConfig> registry = BuildRulePromptRegistry();
+				IEnumerable<GuardrailRulePromptConfig> configuredRules = registry != null
+					? registry.Values
+					: Enumerable.Empty<GuardrailRulePromptConfig>();
+				List<PreprocessExcludedPromptEntry> rebuilt = configuredRules
+					.Where((GuardrailRulePromptConfig rule) => rule != null && rule.IsEnabled && !string.IsNullOrWhiteSpace(rule.Id))
+					.Select((GuardrailRulePromptConfig rule) => new PreprocessExcludedPromptEntry
+					{
+						RuleId = rule.Id.Trim().ToLowerInvariant(),
+						TopicNumber = rule.TopicNumber,
+						Priority = rule.Priority,
+						Instruction = (rule.PreprocessExcludedInstruction ?? "").Trim()
+					})
+					.OrderBy((PreprocessExcludedPromptEntry entry) => entry.TopicNumber <= 0 ? int.MaxValue : entry.TopicNumber)
+					.ThenByDescending((PreprocessExcludedPromptEntry entry) => entry.Priority)
+					.ThenBy((PreprocessExcludedPromptEntry entry) => entry.RuleId, StringComparer.OrdinalIgnoreCase)
+					.ToList();
+				_preprocessExcludedPromptCache = rebuilt;
+				Volatile.Write(ref _preprocessExcludedPromptCacheVersion, version);
+			}
+			return _preprocessExcludedPromptCache;
+		}
+	}
+
+	public static List<string> GetConfiguredEnabledGuardrailRuleIdsForExternal()
+	{
+		try
+		{
+			return GetConfiguredPreprocessExcludedPromptEntries()
+				.Select((PreprocessExcludedPromptEntry entry) => entry?.RuleId ?? "")
+				.Where((string ruleId) => !string.IsNullOrWhiteSpace(ruleId))
+				.Distinct(StringComparer.OrdinalIgnoreCase)
+				.ToList();
+		}
+		catch
+		{
+			return new List<string>();
+		}
+	}
+
+	public static string BuildPreprocessExcludedRuleBlockForExternal(IEnumerable<string> excludedRuleIds)
+	{
+		try
+		{
+			HashSet<string> excluded = new HashSet<string>(
+				(excludedRuleIds ?? Enumerable.Empty<string>())
+					.Select((string ruleId) => (ruleId ?? "").Trim())
+					.Where((string ruleId) => !string.IsNullOrWhiteSpace(ruleId)),
+				StringComparer.OrdinalIgnoreCase);
+			if (excluded.Count == 0)
+			{
+				return "";
+			}
+			List<string> instructions = GetConfiguredPreprocessExcludedPromptEntries()
+				.Where((PreprocessExcludedPromptEntry entry) => entry != null
+					&& excluded.Contains(entry.RuleId)
+					&& !string.IsNullOrWhiteSpace(entry.Instruction))
+				.Select((PreprocessExcludedPromptEntry entry) => ApplyPlayerDisplayNameToGuardrailText(entry.Instruction).Trim())
+				.Where((string instruction) => !string.IsNullOrWhiteSpace(instruction))
+				.ToList();
+			if (instructions.Count == 0)
+			{
+				return "";
+			}
+			string header = ApplyPlayerDisplayNameToGuardrailText(_guardrail?.PreprocessExcludedSectionHeader ?? "").Trim();
+			string sectionInstruction = ApplyPlayerDisplayNameToGuardrailText(_guardrail?.PreprocessExcludedSectionInstruction ?? "").Trim();
+			StringBuilder builder = new StringBuilder();
+			if (!string.IsNullOrWhiteSpace(header))
+			{
+				builder.AppendLine(header);
+			}
+			if (!string.IsNullOrWhiteSpace(sectionInstruction))
+			{
+				builder.AppendLine(sectionInstruction);
+			}
+			for (int i = 0; i < instructions.Count; i++)
+			{
+				builder.Append(i + 1).Append(". ").AppendLine(instructions[i]);
+			}
+			return builder.ToString().Trim();
+		}
+		catch
+		{
+			return "";
 		}
 	}
 
@@ -8593,6 +8715,21 @@ public static class AIConfigHandler
 		{
 		}
 		return "";
+	}
+
+	public static bool IsGuardrailRuleAvailableToPreprocessForExternal(string ruleId, bool hasAnyHero)
+	{
+		try
+		{
+			string id = (ruleId ?? "").Trim();
+			return !string.IsNullOrWhiteSpace(id)
+				&& IsRuleCurrentlyEligibleForRag(id)
+				&& CanInjectRuleTopicIntoPreprocessForExternal(id, hasAnyHero);
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	public static bool CanInjectRuleTopicIntoPreprocessForExternal(string ruleId, bool hasAnyHero)

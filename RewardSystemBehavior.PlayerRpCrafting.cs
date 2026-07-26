@@ -2461,11 +2461,11 @@ public partial class RewardSystemBehavior
 		{
 			if (isEquipment && hasSafeMisc)
 			{
-				error = "名称精确匹配到游戏中的普通物品；请取消勾选 FORGE AS WEAPON?。";
+				error = "名称精确匹配到游戏中的普通物品；请取消勾选 FORGE AS WEAPON/EQUIPMENT?。";
 			}
 			else if (!isEquipment && hasSafeEquipment)
 			{
-				error = "名称精确匹配到游戏中的武器装备；请勾选 FORGE AS WEAPON?。";
+				error = "名称精确匹配到游戏中的武器装备；请勾选 FORGE AS WEAPON/EQUIPMENT?。";
 			}
 			else
 			{
@@ -2787,7 +2787,7 @@ public partial class RewardSystemBehavior
 		{
 			if (TryResolveGeneratedRpEquipmentSuffix(name, out _, out _))
 			{
-				error = "名称属于武器装备；请先勾选 FORGE AS WEAPON?。";
+				error = "名称属于武器装备；请先勾选 FORGE AS WEAPON/EQUIPMENT?。";
 				return false;
 			}
 			if (TryResolveGeneratedRpFoodSuffix(
@@ -3001,7 +3001,7 @@ public partial class RewardSystemBehavior
 		{
 			if (TryResolveGeneratedRpEquipmentSuffix(name, out _, out _))
 			{
-				error = "名称属于武器装备；请先勾选 FORGE AS WEAPON?。";
+				error = "名称属于武器装备；请先勾选 FORGE AS WEAPON/EQUIPMENT?。";
 				template = null;
 				return false;
 			}

@@ -24,6 +24,8 @@ public class DuelConfig
 
 	public string NonHeroInstruction { get; set; } = "";
 
+	public string PreprocessExcludedInstruction { get; set; } = "";
+
 	public List<string> AcceptKeywords { get; set; } = new List<string>();
 
 	public List<PostprocessRuleEntry> PostprocessRules { get; set; } = new List<PostprocessRuleEntry>();

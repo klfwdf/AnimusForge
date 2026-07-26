@@ -333,6 +333,8 @@ Test.True(exactGameItemPreviewCall >= 0
     "exact ObjectManager item matching must run before Top 50/LLM selection");
 Test.True(playerRpCrafting.Contains("\"exact_game_item\"", StringComparison.Ordinal)
     && playerRpCrafting.Contains("游戏数据精确匹配（已跳过前处理 AI）", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("FORGE AS WEAPON/EQUIPMENT?", StringComparison.Ordinal)
+    && !playerRpCrafting.Contains("FORGE AS WEAPON?。", StringComparison.Ordinal)
     && playerRpCrafting.Contains("requireExactGameItemMatch", StringComparison.Ordinal)
     && playerRpCrafting.Contains("TryResolvePlayerRpExactRegisteredTemplate(", StringComparison.Ordinal),
     "exact game-item selection must survive preview and commit revalidation");

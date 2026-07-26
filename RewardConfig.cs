@@ -16,6 +16,8 @@ public class RewardConfig
 
 	public string NonHeroInstruction { get; set; } = "";
 
+	public string PreprocessExcludedInstruction { get; set; } = "";
+
 	public List<PostprocessRuleEntry> PostprocessRules { get; set; } = new List<PostprocessRuleEntry>();
 
 	public List<string> TriggerKeywords { get; set; } = new List<string>();

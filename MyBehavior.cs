@@ -781,6 +781,10 @@ public class MyBehavior : CampaignBehaviorBase
 
 		public List<string> PreprocessRuleIds = new List<string>();
 
+		public List<string> PreprocessExcludedRuleIds = new List<string>();
+
+		public string PreprocessExcludedRuleBlock;
+
 		public bool UseDuelContext;
 
 		public bool UseRewardContext;
@@ -29372,6 +29376,8 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					Extras = "",
 					PreprocessRuleIds = new List<string>(),
+					PreprocessExcludedRuleIds = new List<string>(),
+					PreprocessExcludedRuleBlock = "",
 					UseDuelContext = false,
 					UseRewardContext = false,
 					IsLoanContext = false,
@@ -29390,6 +29396,8 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				Extras = "",
 				PreprocessRuleIds = new List<string>(),
+				PreprocessExcludedRuleIds = new List<string>(),
+				PreprocessExcludedRuleBlock = "",
 				UseDuelContext = false,
 				UseRewardContext = false,
 				IsLoanContext = false,
@@ -29607,6 +29615,8 @@ public class MyBehavior : CampaignBehaviorBase
 			Extras = "",
 			EntityPostprocessContext = "",
 			PreprocessRuleIds = new List<string>(),
+			PreprocessExcludedRuleIds = new List<string>(),
+			PreprocessExcludedRuleBlock = "",
 			UseDuelContext = false,
 			UseRewardContext = false,
 			IsLoanContext = false,
@@ -29628,6 +29638,9 @@ public class MyBehavior : CampaignBehaviorBase
 		AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter, targetAgentIndex);
 		AddSceneMoveRuleExclusionForCurrentMission(excludedRuleIdSet);
 		AfGcczShoutBridge.AddExclusivePreprocessRuleExclusions(excludedRuleIdSet);
+		// These are topics removed from the candidate list before routing. They are
+		// intentionally unrelated to topics the preprocessing LLM saw but did not select.
+		bool completeRuntimeExcludedRuleIds = preprocessExcludedRuleIds == null;
 		HashSet<string> preprocessExcludedRuleIdSet = preprocessExcludedRuleIds == null ? new HashSet<string>(excludedRuleIdSet, StringComparer.OrdinalIgnoreCase) : BuildPromptRuleIdSet(preprocessExcludedRuleIds);
 		foreach (string excludedRuleId in explicitExcludedRuleIdSet)
 		{
@@ -29648,6 +29661,26 @@ public class MyBehavior : CampaignBehaviorBase
 		AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(targetAgentIndex);
 		try
 		{
+			if (!suppressDynamicRuleAndLore && completeRuntimeExcludedRuleIds)
+			{
+				foreach (string configuredRuleId in AIConfigHandler.GetConfiguredEnabledGuardrailRuleIdsForExternal())
+				{
+					if (!string.IsNullOrWhiteSpace(configuredRuleId)
+						&& !AIConfigHandler.IsGuardrailRuleAvailableToPreprocessForExternal(configuredRuleId, hasAnyHero))
+					{
+						preprocessExcludedRuleIdSet.Add(configuredRuleId.Trim());
+					}
+				}
+			}
+			if (!suppressDynamicRuleAndLore)
+			{
+				shoutPromptContext.PreprocessExcludedRuleIds = preprocessExcludedRuleIdSet
+					.Where((string ruleId) => !string.IsNullOrWhiteSpace(ruleId))
+					.Select((string ruleId) => ruleId.Trim())
+					.Distinct(StringComparer.OrdinalIgnoreCase)
+					.ToList();
+				shoutPromptContext.PreprocessExcludedRuleBlock = AIConfigHandler.BuildPreprocessExcludedRuleBlockForExternal(shoutPromptContext.PreprocessExcludedRuleIds);
+			}
 			if (!suppressDynamicRuleAndLore)
 			{
 				AIConfigHandler.ClearLatestAuxiliaryMentionedEntitiesForExternal();
@@ -30307,8 +30340,12 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			preprocessRuleIds.Add("noble_gathering");
 		}
+		preprocessRuleIds.ExceptWith(preprocessExcludedRuleIdSet);
 		shoutPromptContext.PreprocessRuleIds = preprocessRuleIds.ToList();
-		LogShoutPromptContextStage("preprocess_ids_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "ids=" + ((shoutPromptContext.PreprocessRuleIds == null || shoutPromptContext.PreprocessRuleIds.Count == 0) ? "(none)" : string.Join(",", shoutPromptContext.PreprocessRuleIds)));
+		LogShoutPromptContextStage("preprocess_ids_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex,
+			"ids=" + ((shoutPromptContext.PreprocessRuleIds == null || shoutPromptContext.PreprocessRuleIds.Count == 0) ? "(none)" : string.Join(",", shoutPromptContext.PreprocessRuleIds))
+			+ " excluded=" + ((shoutPromptContext.PreprocessExcludedRuleIds == null || shoutPromptContext.PreprocessExcludedRuleIds.Count == 0) ? "(none)" : string.Join(",", shoutPromptContext.PreprocessExcludedRuleIds))
+			+ " excludedBlockLen=" + ((shoutPromptContext.PreprocessExcludedRuleBlock ?? "").Length));
 		LogShoutPromptContextStage("gccz_runtime_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex);
 		AfGcczShoutBridge.AppendRuntimePromptToShoutContext(shoutPromptContext, targetHero, targetCharacter, targetAgentIndex, cultureIdOverride);
 		LogShoutPromptContextStage("gccz_runtime_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "extrasLen=" + ((shoutPromptContext.Extras ?? "").Length));
