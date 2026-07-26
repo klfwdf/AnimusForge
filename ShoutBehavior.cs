@@ -5043,11 +5043,11 @@ public class ShoutBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static string BuildSceneMechanismPromptSection(List<SceneSummonPromptTarget> sceneSummonTargets = null, List<SceneGuidePromptTarget> sceneGuideTargets = null, string sceneSummonClosureInstruction = null, string sceneFollowControlInstruction = null, NpcDataPacket publicActionTarget = null, bool allowEscortedExecution = true)
+	private static string BuildSceneMechanismPromptSection(List<SceneSummonPromptTarget> sceneSummonTargets = null, List<SceneGuidePromptTarget> sceneGuideTargets = null, string sceneSummonClosureInstruction = null, string sceneFollowControlInstruction = null, NpcDataPacket publicActionTarget = null)
 	{
-		string executionInstruction = !allowEscortedExecution || publicActionTarget == null
+		string executionInstruction = publicActionTarget == null
 			? string.Empty
-			: NoblePrisonerEscortBehavior.BuildPublicExecutionPromptInstruction(publicActionTarget.AgentIndex);
+			: NoblePrisonerEscortBehavior.BuildSceneExecutionPromptInstruction(publicActionTarget.AgentIndex);
 		if (AIConfigHandler.ShouldExcludeSceneMoveRuleForCurrentMission())
 		{
 			return executionInstruction;
@@ -9064,7 +9064,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		}
 		string before = tags ?? "";
 		Logger.Log("ShoutBehavior", "[DeferredPostprocess] direct_action_apply start target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown") + " agent=" + targetAgentIndex + " tags=" + before.Replace("\r", "\\r").Replace("\n", "\\n"));
-		NoblePrisonerEscortBehavior.TryProcessPublicExecutionTag(targetAgentIndex, playerText, ref tags);
+		NoblePrisonerEscortBehavior.TryProcessSceneExecutionTag(targetAgentIndex, playerText, ref tags);
 		if (string.IsNullOrWhiteSpace(tags))
 		{
 			return !string.Equals(before, tags ?? "", StringComparison.Ordinal);
@@ -16505,13 +16505,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return worldMapResult;
 		}
-		NoblePrisonerEscortBehavior.StripExecutionTag(ref content, "native_private_conversation");
+		targetHero = targetHero ?? targetCharacter?.HeroObject;
+		int resolvedTargetAgentIndex = targetAgentIndexOverride >= 0 ? targetAgentIndexOverride : TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
+		NoblePrisonerEscortBehavior.TryProcessSceneExecutionTag(resolvedTargetAgentIndex, latestPlayerText, ref content);
 		if (string.IsNullOrWhiteSpace(content))
 		{
 			return worldMapResult;
 		}
-		targetHero = targetHero ?? targetCharacter?.HeroObject;
-		int resolvedTargetAgentIndex = targetAgentIndexOverride >= 0 ? targetAgentIndexOverride : TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
 		try
 		{
 			LogNativeActionStep("start", targetHero, targetCharacter, content);
@@ -17680,7 +17680,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string roleRuntimeContext = BuildSceneUserRuntimeContextForSingle(npc, targetHero, presentNpcs, includeInventorySummary, includeTradePricing, partyTransferTopicSelected, ctx?.MentionedEntities);
 		string nativeSceneSummonClosureInstruction = BuildSceneSummonClosurePromptInstruction(presentNpcs);
 		string nativeSceneFollowControlInstruction = BuildSceneFollowControlPromptInstruction(npc);
-		string nativeSceneMechanismPromptSection = BuildSceneMechanismPromptSection(nativeSceneSummonTargets, nativeSceneGuideTargets, nativeSceneSummonClosureInstruction, nativeSceneFollowControlInstruction, npc, allowEscortedExecution: false);
+		string nativeSceneMechanismPromptSection = BuildSceneMechanismPromptSection(nativeSceneSummonTargets, nativeSceneGuideTargets, nativeSceneSummonClosureInstruction, nativeSceneFollowControlInstruction, npc);
 		string systemRuleBlock = BuildSceneSystemRuleBlock(ruleExtrasSection, nativeSceneMechanismPromptSection);
 		string combinedRuleInspectionBlock = BuildSceneCompositeUserBlock("", knowledgeExtrasSection, systemRuleBlock);
 		Hero nativePostprocessHero = targetHero ?? targetCharacter?.HeroObject;
@@ -26050,7 +26050,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 							return;
 						}
 						bool noblePrisonerExecutionQueued = allowPlayerDirectedActions
-							&& NoblePrisonerEscortBehavior.TryProcessPublicExecutionTag(
+							&& NoblePrisonerEscortBehavior.TryProcessSceneExecutionTag(
 								matchedNpc.AgentIndex,
 								playerDirectedActionText,
 								ref content);

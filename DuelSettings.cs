@@ -1877,7 +1877,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup(SiegeNpcResponseLimitProfile.McmGroupName)]
 	public Action ClearSetsDiagnosticLog { get; set; }
 
-	[SettingPropertyButton("导出贵族俘虏随行日志", -1, true, "", Content = "导出到桌面", Order = 12, RequireRestart = false, HintText = "将 NoblePrisonerEscort.log 独立复制到桌面，用于排查俘虏生成、公开处决与野外会面撤退。")]
+	[SettingPropertyButton("导出贵族俘虏随行日志", -1, true, "", Content = "导出到桌面", Order = 12, RequireRestart = false, HintText = "将 NoblePrisonerEscort.log 独立复制到桌面，用于排查俘虏生成、场景处决与野外会面撤退。")]
 	[SettingPropertyGroup(SiegeNpcResponseLimitProfile.McmGroupName)]
 	public Action ExportNoblePrisonerEscortLog { get; set; }
 

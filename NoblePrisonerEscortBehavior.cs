@@ -374,7 +374,7 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 		return hero != null && agent != null && agent.IsActive();
 	}
 
-	internal static string BuildPublicExecutionPromptInstruction(int agentIndex)
+	internal static string BuildSceneExecutionPromptInstruction(int agentIndex)
 	{
 		if (!TryGetEscortedHero(agentIndex, out Hero hero, out Agent agent)
 			|| hero == null
@@ -382,12 +382,12 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 		{
 			return string.Empty;
 		}
-		return "【贵族俘虏公开处决】当前回应者“" + (hero.Name?.ToString() ?? "俘虏")
-			+ "”是玩家带入场景且仍由玩家主队拘押的英雄俘虏。玩家在当前公开范围对话中明确命令处决、斩首或杀死该俘虏时，无论你口头拒绝、求饶或服从，都必须在回复末尾输出 "
-			+ ExecuteActionTag + "；普通谈话、一般威胁、玩笑、转述、私人原版对话或含糊表达绝不能输出该标签。";
+		return "【贵族俘虏场景处决】当前回应者“" + (hero.Name?.ToString() ?? "俘虏")
+			+ "”是玩家带入场景且仍由玩家主队拘押的英雄俘虏。无论当前使用公开范围对话还是 AF 单独对话，只有玩家在本轮直接明确命令处决、斩首或杀死当前俘虏时，才根据回应语义在回复末尾输出 "
+			+ ExecuteActionTag + "。普通谈话、一般威胁、玩笑、转述、NPC 自主提议、历史内容或含糊表达绝不能输出该标签；该标签只请求原版处刑确认，不代表玩家已经确认。";
 	}
 
-	internal static bool TryProcessPublicExecutionTag(int agentIndex, string playerText, ref string content)
+	internal static bool TryProcessSceneExecutionTag(int agentIndex, string playerText, ref string content)
 	{
 		if (string.IsNullOrWhiteSpace(content) || !ExecuteActionTagRegex.IsMatch(content))
 		{
@@ -410,7 +410,7 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 			NoblePrisonerEscortLog.Log("Queue execution failed. hero=" + SafeHeroId(hero) + ", reason=" + reason);
 			return false;
 		}
-		NoblePrisonerEscortLog.Log("Queued public execution confirmation. hero=" + SafeHeroId(hero) + ", agent=" + agentIndex);
+		NoblePrisonerEscortLog.Log("Queued scene execution confirmation. hero=" + SafeHeroId(hero) + ", agent=" + agentIndex);
 		return true;
 	}
 
@@ -433,15 +433,6 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 			+ agentIndex
 			+ ", source="
 			+ (source ?? "unknown"));
-	}
-
-	internal static void StripExecutionTag(ref string content, string source)
-	{
-		if (!string.IsNullOrWhiteSpace(content) && ExecuteActionTagRegex.IsMatch(content))
-		{
-			content = ExecuteActionTagRegex.Replace(content, "").Trim();
-			NoblePrisonerEscortLog.Log("Stripped execution tag without dispatch. source=" + (source ?? "N/A"));
-		}
 	}
 
 	internal static void RegisterEscortedAgent(Mission mission, NoblePrisonerEscortMode mode, Hero hero, Agent agent)
