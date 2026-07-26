@@ -740,20 +740,27 @@ try {
     Write-Host "Staged Module: $stagingModuleDir"
 
     $hadExistingTarget = Test-Path -LiteralPath $targetModuleDir -PathType Container
+    $preservedRuntimeDirectoryArguments = if ($hadExistingTarget) {
+        @("/XD", "Logs", "PlayerExports", "ONNX")
+    }
+    else {
+        @()
+    }
     try {
         if ($hadExistingTarget) {
             # A process can keep the module root as its working directory without
             # locking any file inside it.  Windows then rejects a directory rename
-            # even while every DLL/data file is replaceable.  Build a complete
-            # copy backup and commit with a mirror operation so that this harmless
-            # directory handle no longer blocks deployment.  This remains a cold
-            # deployment path and has no in-game performance impact.
+            # even while every DLL/data file is replaceable. Logs and PlayerExports
+            # can also remain open while the launcher is alive, and the installed
+            # ONNX model must be preserved. Back up and replace only the mutable
+            # module subset; the three preserved directories are never touched by
+            # deployment or rollback.
             New-SafeModuleWorkingDirectory -Path $backupModuleDir -ModulesDir $modulesDir
-            Invoke-Robocopy -SourceDir $targetModuleDir -TargetDir $backupModuleDir -ExtraArguments @(
+            Invoke-Robocopy -SourceDir $targetModuleDir -TargetDir $backupModuleDir -ExtraArguments (@(
                 "/MIR",
                 "/COPY:DAT",
                 "/DCOPY:DAT"
-            ) -RetryCount 3 -WaitSeconds 1
+            ) + $preservedRuntimeDirectoryArguments) -RetryCount 3 -WaitSeconds 1
             $backupCreated = $true
             Write-Host "Backup Module: $backupModuleDir"
         }
@@ -762,11 +769,11 @@ try {
         # this flag before it starts.  Any exception after this point must restore
         # the complete pre-deploy backup rather than merely reporting a copy error.
         $targetMutationStarted = $true
-        Invoke-Robocopy -SourceDir $stagingModuleDir -TargetDir $targetModuleDir -ExtraArguments @(
+        Invoke-Robocopy -SourceDir $stagingModuleDir -TargetDir $targetModuleDir -ExtraArguments (@(
             "/MIR",
             "/COPY:DAT",
             "/DCOPY:DAT"
-        ) -RetryCount 15 -WaitSeconds 1
+        ) + $preservedRuntimeDirectoryArguments) -RetryCount 15 -WaitSeconds 1
         Assert-SingleModuleLayout -ModuleDir $targetModuleDir
         Assert-SameHash -SourcePath $bootstrapFull -TargetPath (Join-Path $targetModuleDir "bin\Win64_Shipping_Client\AnimusForge.Bootstrap.dll")
         Assert-SameHash -SourcePath $dll13Full -TargetPath (Join-Path $targetModuleDir "bin\Win64_Shipping_Client\versions\1.3\AnimusForge.dll")
@@ -799,11 +806,11 @@ try {
             $rollbackCompleted = $false
             if ($backupCreated -and (Test-Path -LiteralPath $backupModuleDir -PathType Container)) {
                 try {
-                    Invoke-Robocopy -SourceDir $backupModuleDir -TargetDir $targetModuleDir -ExtraArguments @(
+                    Invoke-Robocopy -SourceDir $backupModuleDir -TargetDir $targetModuleDir -ExtraArguments (@(
                         "/MIR",
                         "/COPY:DAT",
                         "/DCOPY:DAT"
-                    ) -RetryCount 15 -WaitSeconds 1
+                    ) + $preservedRuntimeDirectoryArguments) -RetryCount 15 -WaitSeconds 1
                     $rollbackCompleted = $true
                 }
                 catch {
