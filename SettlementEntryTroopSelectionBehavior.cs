@@ -1216,13 +1216,22 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			return _setsActiveUsableProtection
-				&& agent != null
-				&& agent.IsHuman
-				&& agent.IsActive()
-				&& Mission.Current != null
-				&& Mission.Current == _setsActiveUsableProtectionMission
-				&& SetsActiveUsableProtectionAgentIndexes.Contains(agent.Index);
+			Mission mission = Mission.Current;
+			if (agent == null
+				|| !agent.IsHuman
+				|| !agent.IsActive()
+				|| mission == null)
+			{
+				return false;
+			}
+			if (_setsActiveUsableProtection
+				&& mission == _setsActiveUsableProtectionMission
+				&& SetsActiveUsableProtectionAgentIndexes.Contains(agent.Index))
+			{
+				return true;
+			}
+			SettlementEntryTroopSelectionMissionLogic logic = mission.GetMissionBehavior<SettlementEntryTroopSelectionMissionLogic>();
+			return logic?.IsGatheredTownCivilian(agent) == true;
 		}
 		catch
 		{
@@ -2510,14 +2519,29 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					continue;
 				}
 				PrepareTownCivilianForCommandFormation(civilian);
+				_gatheredTownCivilianAgentIndexes.Add(civilian.Index);
+				Formation targetFormation = _playerTeam.GetFormation(civilianFormationClass);
 				if (!AssignAgentToFormation(civilian, _playerTeam, civilianFormationClass, refreshOrders: false, markPlayerCommandable: false)
 					|| civilian.Team != _playerTeam
-					|| civilian.Formation != _playerTeam.GetFormation(civilianFormationClass))
+					|| civilian.Formation != targetFormation)
 				{
+					bool enteredPlayerTeam = civilian.Team == _playerTeam;
+					bool enteredTargetFormation = targetFormation != null && civilian.Formation == targetFormation;
+					if (!enteredPlayerTeam && !enteredTargetFormation)
+					{
+						_gatheredTownCivilianAgentIndexes.Remove(civilian.Index);
+					}
+					else
+					{
+						SettlementEntryTroopSelectionLog.Log("Kept usable navigation protection after partial town civilian formation assignment. settlement="
+							+ _settlementId
+							+ ", agent=" + civilian.Index
+							+ ", playerTeam=" + enteredPlayerTeam
+							+ ", targetFormation=" + enteredTargetFormation);
+					}
 					_townCivilianGatherSkippedCount++;
 					continue;
 				}
-				_gatheredTownCivilianAgentIndexes.Add(civilian.Index);
 				_townCivilianGatherAssignedCount++;
 				assignedThisBatch++;
 			}
