@@ -100,6 +100,7 @@ public static class Patch_TriggerMassiveHook
 			MissionScreenSafePatch.EnsurePatched();
 			MissionUiInterruptionPatch.EnsurePatched();
 			CriticalUiLipSyncTeardownPatch.EnsurePatched();
+			MenuTroopSelectionTeardownSafePatch.EnsurePatched();
 			EndMissionInternalSafePatch.EnsurePatched();
 			ConversationCameraSafePatch.EnsurePatched();
 			InteractionComponentSafePatch.EnsurePatched();
