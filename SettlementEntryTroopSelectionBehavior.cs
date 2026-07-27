@@ -81,6 +81,10 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	private static readonly HashSet<int> SetsActiveUsableProtectionAgentIndexes = new HashSet<int>();
 	private static readonly HashSet<int> SetsSelectedFollowerAgentIndexes = new HashSet<int>();
 	private static readonly Dictionary<int, float> SetsUsableProtectionLastLogTimes = new Dictionary<int, float>();
+	private static readonly object TownCivilianGatherRequestSync = new object();
+	private static PendingTownCivilianGatherRequest _pendingTownCivilianGatherRequest;
+	private static bool _townCivilianGatherRuntimeAvailable;
+	private static int _townCivilianGatherRuntimeGeneration;
 	private static bool _setsActiveUsableProtection;
 	private static bool _setsEntryMissionActive;
 	private static bool _setsOrderControllerPrimed;
@@ -90,6 +94,13 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	{
 		OwnSettlement,
 		OtherSettlement
+	}
+
+	private sealed class PendingTownCivilianGatherRequest
+	{
+		public int RuntimeGeneration;
+		public int SpeakerAgentIndex;
+		public string Source;
 	}
 
 	public static void RegisterHarmonyPatches(Harmony harmony)
@@ -301,16 +312,76 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 
 	internal static bool TryGatherTownCiviliansForExternal(int speakerAgentIndex, string source)
 	{
-		try
+		lock (TownCivilianGatherRequestSync)
 		{
-			Mission mission = Mission.Current;
-			SettlementEntryTroopSelectionMissionLogic logic = mission?.GetMissionBehavior<SettlementEntryTroopSelectionMissionLogic>();
-			return logic?.TryGatherTownCivilians(speakerAgentIndex, source) == true;
+			if (!_townCivilianGatherRuntimeAvailable || _townCivilianGatherRuntimeGeneration <= 0)
+			{
+				return false;
+			}
+			_pendingTownCivilianGatherRequest = new PendingTownCivilianGatherRequest
+			{
+				RuntimeGeneration = _townCivilianGatherRuntimeGeneration,
+				SpeakerAgentIndex = speakerAgentIndex,
+				Source = string.IsNullOrWhiteSpace(source) ? SetsTownCivilianGatherProfile.PlayerCommandSource : source
+			};
+			return true;
 		}
-		catch (Exception ex)
+	}
+
+	private static int BeginTownCivilianGatherRuntime(bool available)
+	{
+		lock (TownCivilianGatherRequestSync)
 		{
-			SettlementEntryTroopSelectionLog.Log("TryGatherTownCiviliansForExternal failed. source=" + (source ?? "N/A") + ", error=" + ex.Message);
-			return false;
+			_townCivilianGatherRuntimeGeneration++;
+			if (_townCivilianGatherRuntimeGeneration <= 0)
+			{
+				_townCivilianGatherRuntimeGeneration = 1;
+			}
+			_townCivilianGatherRuntimeAvailable = available;
+			_pendingTownCivilianGatherRequest = null;
+			return _townCivilianGatherRuntimeGeneration;
+		}
+	}
+
+	private static bool TryTakeTownCivilianGatherRequest(int runtimeGeneration, out PendingTownCivilianGatherRequest request)
+	{
+		lock (TownCivilianGatherRequestSync)
+		{
+			request = null;
+			if (!_townCivilianGatherRuntimeAvailable
+				|| runtimeGeneration <= 0
+				|| runtimeGeneration != _townCivilianGatherRuntimeGeneration
+				|| _pendingTownCivilianGatherRequest?.RuntimeGeneration != runtimeGeneration)
+			{
+				return false;
+			}
+			request = _pendingTownCivilianGatherRequest;
+			_pendingTownCivilianGatherRequest = null;
+			return true;
+		}
+	}
+
+	private static void ClearTownCivilianGatherRequest(int runtimeGeneration)
+	{
+		lock (TownCivilianGatherRequestSync)
+		{
+			if (runtimeGeneration == _townCivilianGatherRuntimeGeneration)
+			{
+				_pendingTownCivilianGatherRequest = null;
+			}
+		}
+	}
+
+	private static void EndTownCivilianGatherRuntime(int runtimeGeneration)
+	{
+		lock (TownCivilianGatherRequestSync)
+		{
+			if (runtimeGeneration != _townCivilianGatherRuntimeGeneration)
+			{
+				return;
+			}
+			_townCivilianGatherRuntimeAvailable = false;
+			_pendingTownCivilianGatherRequest = null;
 		}
 	}
 
@@ -838,6 +909,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			_setsEntryMissionActive = false;
 			_setsOrderControllerPrimed = false;
 			_nextSetsOrderControllerPrimeTime = 0f;
+			BeginTownCivilianGatherRuntime(available: false);
 			SettlementEntryTroopSelectionLog.Log("Cleared SETS selected follower state. source=" + source);
 		}
 		catch
@@ -2200,6 +2272,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private readonly HashSet<int> _alliedAgentIndexes = new HashSet<int>();
 		private readonly HashSet<int> _enemyAgentIndexes = new HashSet<int>();
 		private readonly HashSet<int> _gatheredTownCivilianAgentIndexes = new HashSet<int>();
+		private readonly Queue<int> _pendingTownCivilianGatherAgentIndexes = new Queue<int>();
 		private readonly HashSet<int> _ownedSettlementFleeingCivilianAgentIndexes = new HashSet<int>();
 		private readonly HashSet<int> _ownedSettlementMassacreTargetAgentIndexes = new HashSet<int>();
 		private readonly HashSet<int> _victoryObjectiveEnemyAgentIndexes = new HashSet<int>();
@@ -2219,10 +2292,18 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private static readonly MethodInfo AgentSetTargetAgentMethod = AccessTools.Method(typeof(Agent), "SetTargetAgent", new[] { typeof(Agent) });
 		private static readonly MethodInfo AgentSetAutomaticTargetSelectionMethod = AccessTools.Method(typeof(Agent), "SetAutomaticTargetSelection", new[] { typeof(bool) });
 		private List<CharacterObject> _pendingAlliedSpawnTroops;
+		private PendingTownCivilianGatherRequest _deferredTownCivilianGatherRequest;
 		private int _nextAlliedSpawnIndex;
 		private int _spawnedAlliedCount;
+		private int _townCivilianGatherRuntimeGeneration;
+		private int _townCivilianGatherRequestedCount;
+		private int _townCivilianGatherAssignedCount;
+		private int _townCivilianGatherSkippedCount;
+		private int _townCivilianGatherSpeakerAgentIndex = -1;
 		private bool _spawnedAllies;
 		private bool _alliedSpawnPrepared;
+		private bool _townCivilianGatherAssignmentActive;
+		private bool _townCivilianGatherOrderFinalizePending;
 		private bool _enemyFormationChargeOrderIssued;
 		private bool _conflictActive;
 		private bool _ownedSettlementIncidentTriggered;
@@ -2240,6 +2321,8 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private Team _neutralTeam;
 		private float _nextEnemyCheckTime;
 		private float _nextAlliedSpawnBatchTime;
+		private float _nextTownCivilianGatherBatchTime;
+		private float _townCivilianGatherOrderFinalizeTime;
 		private float _protectedFollowerHostilitySuppressionUntil;
 		private float _nextDefenderReserveWaveTime;
 		private float _lastDefenderReserveProgressTime;
@@ -2249,6 +2332,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private bool _defenderReserveStuckNudged;
 		private int _defenderReservePhaseIndex;
 		private int _defenderReserveWaveIndex;
+		private string _townCivilianGatherSource = "";
 
 		private struct ProtectedFollowerFriendlyFireHitRecord
 		{
@@ -2285,79 +2369,242 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				&& _gatheredTownCivilianAgentIndexes.Contains(agent.Index);
 		}
 
-		internal bool TryGatherTownCivilians(int speakerAgentIndex, string source)
+		private void UpdatePendingTownCivilianGather()
 		{
 			try
 			{
 				Mission mission = base.Mission;
-				Agent main = Agent.Main ?? mission?.MainAgent;
+				if (mission == null || _townCivilianGatherRuntimeGeneration <= 0)
+				{
+					return;
+				}
+				if (_deferredTownCivilianGatherRequest == null
+					&& TryTakeTownCivilianGatherRequest(_townCivilianGatherRuntimeGeneration, out PendingTownCivilianGatherRequest request))
+				{
+					_deferredTownCivilianGatherRequest = request;
+					SettlementEntryTroopSelectionLog.Log("Queued ordinary-town civilian gather for mission main thread. settlement="
+						+ _settlementId
+						+ ", speakerAgent=" + request.SpeakerAgentIndex
+						+ ", source=" + (request.Source ?? "N/A"));
+				}
 				if (!_isOwnSettlement
 					|| _sceneKind != SetsSettlementSceneKind.Town
-					|| mission?.Agents == null
-					|| main == null
-					|| !main.IsActive()
 					|| _conflictActive
 					|| _ownedSettlementIncidentTriggered
 					|| _ownedSettlementMassacreActive
 					|| _victoryReached
 					|| IsNativeAlleyFightActive())
 				{
-					return false;
+					CancelPendingTownCivilianGather("runtime_state_blocked", clearExternalRequest: true);
+					return;
 				}
-
-				EnsurePlayerTeam(mission, main, requireCommandTeam: true);
-				if (_playerTeam == null)
+				if (mission.Mode == MissionMode.Conversation || mission.Mode == MissionMode.Barter)
 				{
-					return false;
+					return;
 				}
-
-				FormationClass civilianFormationClass = ResolveSetsTownCivilianFormationClass();
-				List<Agent> civilians = mission.Agents
-					.ToList()
-					.Where(agent => IsOwnedSettlementCivilian(agent)
-						&& !IsNativeAlleyCombatant(agent)
-						&& !SceneTauntBehavior.IsChildSceneProtectedTarget(agent.Character as CharacterObject))
-					.OrderBy(agent => agent.Index)
-					.ToList();
-				foreach (Agent civilian in civilians)
+				if (_deferredTownCivilianGatherRequest != null
+					&& !_townCivilianGatherAssignmentActive
+					&& !_townCivilianGatherOrderFinalizePending)
 				{
-					PrepareTownCivilianForCommandFormation(civilian);
-					AssignAgentToFormation(civilian, _playerTeam, civilianFormationClass, refreshOrders: false, markPlayerCommandable: true);
-					_gatheredTownCivilianAgentIndexes.Add(civilian.Index);
+					PendingTownCivilianGatherRequest deferred = _deferredTownCivilianGatherRequest;
+					_deferredTownCivilianGatherRequest = null;
+					BeginTownCivilianGatherAssignment(deferred);
 				}
-
-				int gathered = civilians.Count;
-				if (gathered <= 0)
+				if (_townCivilianGatherAssignmentActive)
 				{
-					InformationManager.DisplayMessage(new InformationMessage(
-						SetsTownCivilianGatherProfile.NoEligibleCivilianMessage,
-						Color.FromUint(SetsTownCivilianGatherProfile.MessageColor)));
-					return true;
+					ProcessTownCivilianGatherAssignmentBatch();
 				}
-
-				Formation civilianFormation = _playerTeam.GetFormation(civilianFormationClass);
-				if (civilianFormation != null)
+				if (_townCivilianGatherOrderFinalizePending)
 				{
-					MarkFormationPlayerCommandable(civilianFormation, main);
-					civilianFormation.SetMovementOrder(MovementOrder.MovementOrderFollow(main));
-					civilianFormation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLoose);
-					civilianFormation.SetFiringOrder(FiringOrder.FiringOrderHoldYourFire);
+					FinalizeTownCivilianGatherFormationOrders();
 				}
-				EnsureSetsCommandUiReadyForExternal(mission, "sets_town_civilian_gather", force: true, preserveSelection: true);
-				InformationManager.DisplayMessage(new InformationMessage(
-					SetsTownCivilianGatherProfile.BuildGatheredMessage(gathered),
-					Color.FromUint(SetsTownCivilianGatherProfile.MessageColor)));
-				SettlementEntryTroopSelectionLog.Log("Gathered ordinary-town civilians into formation 3. settlement="
-					+ _settlementId
-					+ ", count=" + gathered
-					+ ", speakerAgent=" + speakerAgentIndex
-					+ ", source=" + (source ?? "N/A"));
-				return true;
 			}
 			catch (Exception ex)
 			{
-				SettlementEntryTroopSelectionLog.Log("TryGatherTownCivilians failed. settlement=" + _settlementId + ", source=" + (source ?? "N/A") + ", error=" + ex.Message);
-				return false;
+				SettlementEntryTroopSelectionLog.Log("UpdatePendingTownCivilianGather failed. settlement=" + _settlementId + ", error=" + ex.Message);
+				CancelPendingTownCivilianGather("update_exception", clearExternalRequest: true);
+			}
+		}
+
+		private void BeginTownCivilianGatherAssignment(PendingTownCivilianGatherRequest request)
+		{
+			Mission mission = base.Mission;
+			Agent main = Agent.Main ?? mission?.MainAgent;
+			if (mission?.Agents == null || main == null || !main.IsActive())
+			{
+				return;
+			}
+			EnsurePlayerTeam(mission, main, requireCommandTeam: true);
+			if (_playerTeam == null)
+			{
+				return;
+			}
+			List<int> civilianAgentIndexes = mission.Agents
+				.ToList()
+				.Where(agent => IsOwnedSettlementCivilian(agent)
+					&& !IsNativeAlleyCombatant(agent)
+					&& !_gatheredTownCivilianAgentIndexes.Contains(agent.Index)
+					&& !SceneTauntBehavior.IsChildSceneProtectedTarget(agent.Character as CharacterObject))
+				.OrderBy(agent => agent.Index)
+				.Select(agent => agent.Index)
+				.ToList();
+			if (civilianAgentIndexes.Count <= 0)
+			{
+				InformationManager.DisplayMessage(new InformationMessage(
+					SetsTownCivilianGatherProfile.NoEligibleCivilianMessage,
+					Color.FromUint(SetsTownCivilianGatherProfile.MessageColor)));
+				SettlementEntryTroopSelectionLog.Log("No eligible ordinary-town civilians found for queued gather. settlement="
+					+ _settlementId
+					+ ", speakerAgent=" + request.SpeakerAgentIndex
+					+ ", source=" + (request.Source ?? "N/A"));
+				return;
+			}
+			_pendingTownCivilianGatherAgentIndexes.Clear();
+			foreach (int agentIndex in civilianAgentIndexes)
+			{
+				_pendingTownCivilianGatherAgentIndexes.Enqueue(agentIndex);
+			}
+			_townCivilianGatherRequestedCount = civilianAgentIndexes.Count;
+			_townCivilianGatherAssignedCount = 0;
+			_townCivilianGatherSkippedCount = 0;
+			_townCivilianGatherSpeakerAgentIndex = request.SpeakerAgentIndex;
+			_townCivilianGatherSource = request.Source ?? "N/A";
+			_townCivilianGatherAssignmentActive = true;
+			_townCivilianGatherOrderFinalizePending = false;
+			_nextTownCivilianGatherBatchTime = mission.CurrentTime + SetsTownCivilianGatherProfile.FormationAssignmentInitialDelaySeconds;
+			InformationManager.DisplayMessage(new InformationMessage(
+				SetsTownCivilianGatherProfile.BuildQueuedMessage(_townCivilianGatherRequestedCount),
+				Color.FromUint(SetsTownCivilianGatherProfile.MessageColor)));
+			SettlementEntryTroopSelectionLog.Log("Prepared staged ordinary-town civilian gather. settlement="
+				+ _settlementId
+				+ ", requested=" + _townCivilianGatherRequestedCount
+				+ ", batchSize=" + SetsTownCivilianGatherProfile.FormationAssignmentBatchSize
+				+ ", initialDelay=" + SetsTownCivilianGatherProfile.FormationAssignmentInitialDelaySeconds
+				+ ", speakerAgent=" + _townCivilianGatherSpeakerAgentIndex
+				+ ", source=" + _townCivilianGatherSource);
+		}
+
+		private void ProcessTownCivilianGatherAssignmentBatch()
+		{
+			Mission mission = base.Mission;
+			if (!_townCivilianGatherAssignmentActive
+				|| mission?.Agents == null
+				|| mission.CurrentTime < _nextTownCivilianGatherBatchTime)
+			{
+				return;
+			}
+			FormationClass civilianFormationClass = ResolveSetsTownCivilianFormationClass();
+			int processed = 0;
+			int assignedThisBatch = 0;
+			while (processed < SetsTownCivilianGatherProfile.FormationAssignmentBatchSize
+				&& _pendingTownCivilianGatherAgentIndexes.Count > 0)
+			{
+				int agentIndex = _pendingTownCivilianGatherAgentIndexes.Dequeue();
+				processed++;
+				Agent civilian = mission.Agents.FirstOrDefault(agent => agent != null && agent.Index == agentIndex);
+				if (!IsOwnedSettlementCivilian(civilian)
+					|| IsNativeAlleyCombatant(civilian)
+					|| SceneTauntBehavior.IsChildSceneProtectedTarget(civilian?.Character as CharacterObject))
+				{
+					_townCivilianGatherSkippedCount++;
+					continue;
+				}
+				PrepareTownCivilianForCommandFormation(civilian);
+				if (!AssignAgentToFormation(civilian, _playerTeam, civilianFormationClass, refreshOrders: false, markPlayerCommandable: false)
+					|| civilian.Team != _playerTeam
+					|| civilian.Formation != _playerTeam.GetFormation(civilianFormationClass))
+				{
+					_townCivilianGatherSkippedCount++;
+					continue;
+				}
+				_gatheredTownCivilianAgentIndexes.Add(civilian.Index);
+				_townCivilianGatherAssignedCount++;
+				assignedThisBatch++;
+			}
+			_nextTownCivilianGatherBatchTime = mission.CurrentTime + SetsTownCivilianGatherProfile.FormationAssignmentBatchIntervalSeconds;
+			SettlementEntryTroopSelectionLog.Log("Processed ordinary-town civilian gather batch. settlement="
+				+ _settlementId
+				+ ", processed=" + processed
+				+ ", assigned=" + assignedThisBatch
+				+ ", remaining=" + _pendingTownCivilianGatherAgentIndexes.Count);
+			if (_pendingTownCivilianGatherAgentIndexes.Count > 0)
+			{
+				return;
+			}
+			_townCivilianGatherAssignmentActive = false;
+			_townCivilianGatherOrderFinalizePending = true;
+			_townCivilianGatherOrderFinalizeTime = mission.CurrentTime + SetsTownCivilianGatherProfile.FormationOrderFinalizeDelaySeconds;
+		}
+
+		private void FinalizeTownCivilianGatherFormationOrders()
+		{
+			Mission mission = base.Mission;
+			if (!_townCivilianGatherOrderFinalizePending
+				|| mission == null
+				|| mission.Mode == MissionMode.Conversation
+				|| mission.Mode == MissionMode.Barter
+				|| mission.CurrentTime < _townCivilianGatherOrderFinalizeTime)
+			{
+				return;
+			}
+			Agent main = Agent.Main ?? mission.MainAgent;
+			FormationClass civilianFormationClass = ResolveSetsTownCivilianFormationClass();
+			Formation civilianFormation = _playerTeam?.GetFormation(civilianFormationClass);
+			if (_townCivilianGatherAssignedCount > 0 && main != null && main.IsActive() && civilianFormation != null)
+			{
+				MarkFormationPlayerCommandable(civilianFormation, main);
+				civilianFormation.SetMovementOrder(MovementOrder.MovementOrderFollow(main));
+				civilianFormation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLoose);
+				civilianFormation.SetFiringOrder(FiringOrder.FiringOrderHoldYourFire);
+				EnsureSetsCommandUiReadyForExternal(mission, "sets_town_civilian_gather_complete", force: true, preserveSelection: true);
+				InformationManager.DisplayMessage(new InformationMessage(
+					SetsTownCivilianGatherProfile.BuildGatheredMessage(_townCivilianGatherAssignedCount),
+					Color.FromUint(SetsTownCivilianGatherProfile.MessageColor)));
+			}
+			else
+			{
+				InformationManager.DisplayMessage(new InformationMessage(
+					SetsTownCivilianGatherProfile.NoEligibleCivilianMessage,
+					Color.FromUint(SetsTownCivilianGatherProfile.MessageColor)));
+			}
+			SettlementEntryTroopSelectionLog.Log("Completed staged ordinary-town civilian gather. settlement="
+				+ _settlementId
+				+ ", requested=" + _townCivilianGatherRequestedCount
+				+ ", assigned=" + _townCivilianGatherAssignedCount
+				+ ", skipped=" + _townCivilianGatherSkippedCount
+				+ ", speakerAgent=" + _townCivilianGatherSpeakerAgentIndex
+				+ ", source=" + _townCivilianGatherSource);
+			_pendingTownCivilianGatherAgentIndexes.Clear();
+			_townCivilianGatherOrderFinalizePending = false;
+			_townCivilianGatherRequestedCount = 0;
+			_townCivilianGatherAssignedCount = 0;
+			_townCivilianGatherSkippedCount = 0;
+			_townCivilianGatherSpeakerAgentIndex = -1;
+			_townCivilianGatherSource = "";
+		}
+
+		private void CancelPendingTownCivilianGather(string reason, bool clearExternalRequest)
+		{
+			bool hadPending = _deferredTownCivilianGatherRequest != null
+				|| _townCivilianGatherAssignmentActive
+				|| _townCivilianGatherOrderFinalizePending
+				|| _pendingTownCivilianGatherAgentIndexes.Count > 0;
+			if (clearExternalRequest)
+			{
+				ClearTownCivilianGatherRequest(_townCivilianGatherRuntimeGeneration);
+			}
+			_deferredTownCivilianGatherRequest = null;
+			_pendingTownCivilianGatherAgentIndexes.Clear();
+			_townCivilianGatherAssignmentActive = false;
+			_townCivilianGatherOrderFinalizePending = false;
+			_townCivilianGatherRequestedCount = 0;
+			_townCivilianGatherAssignedCount = 0;
+			_townCivilianGatherSkippedCount = 0;
+			_townCivilianGatherSpeakerAgentIndex = -1;
+			_townCivilianGatherSource = "";
+			if (hadPending)
+			{
+				SettlementEntryTroopSelectionLog.Log("Cancelled staged ordinary-town civilian gather. settlement=" + _settlementId + ", reason=" + reason);
 			}
 		}
 
@@ -2394,6 +2641,8 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		{
 			base.AfterStart();
 			SetSetsSelectedFollowerState(base.Mission, active: true, "after_start");
+			_townCivilianGatherRuntimeGeneration = BeginTownCivilianGatherRuntime(
+				_isOwnSettlement && _sceneKind == SetsSettlementSceneKind.Town);
 			TrySpawnSelectedAllies("AfterStart");
 		}
 
@@ -2404,8 +2653,12 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			{
 				TrySpawnSelectedAllies("TickFallback");
 			}
+			UpdatePendingTownCivilianGather();
 			MaintainProtectedFollowersFriendlyState();
-			if (_spawnedAllies && !_ownedSettlementMassacreActive)
+			if (_spawnedAllies
+				&& !_ownedSettlementMassacreActive
+				&& !_townCivilianGatherAssignmentActive
+				&& !_townCivilianGatherOrderFinalizePending)
 			{
 				EnsureSetsCommandUiReadyForExternal(base.Mission, _conflictActive ? "tick_conflict" : "tick", force: false, preserveSelection: true);
 			}
@@ -2575,6 +2828,8 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 
 		protected override void OnEndMission()
 		{
+			CancelPendingTownCivilianGather("mission_end", clearExternalRequest: true);
+			EndTownCivilianGatherRuntime(_townCivilianGatherRuntimeGeneration);
 			EndOwnedSettlementMassacreForMissionClose();
 			ClearOwnedSettlementMassacreRequest("mission_end");
 			if (_conflictFeaturesEnabled && (_victoryReached || _ownedSettlementIncidentTriggered))
@@ -3470,6 +3725,8 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				_ownedSettlementIncidentTriggered = true;
 				_conflictActive = false;
 				_victoryReached = false;
+				CancelPendingTownCivilianGather("owned_settlement_incident", clearExternalRequest: true);
+				EndTownCivilianGatherRuntime(_townCivilianGatherRuntimeGeneration);
 				_gatheredTownCivilianAgentIndexes.Clear();
 				ApplyOwnedSettlementIncidentConsequences(source);
 				EnsurePlayerTeam(mission, main, requireCommandTeam: true);
@@ -5224,14 +5481,22 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			return count;
 		}
 
-		private static void AssignAgentToFormation(Agent agent, Team team, FormationClass formationClass, bool refreshOrders = true, bool markPlayerCommandable = true)
+		private static bool AssignAgentToFormation(Agent agent, Team team, FormationClass formationClass, bool refreshOrders = true, bool markPlayerCommandable = true)
 		{
 			try
 			{
 				Formation formation = team?.GetFormation(formationClass);
 				if (agent == null || formation == null || !agent.IsActive())
 				{
-					return;
+					return false;
+				}
+				if (agent.Team != team)
+				{
+					agent.SetTeam(team, true);
+				}
+				if (agent.Team != team)
+				{
+					return false;
 				}
 				if (agent.Formation != formation)
 				{
@@ -5247,9 +5512,12 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				{
 					agent.UpdateFormationOrders();
 				}
+				return agent.Team == team && agent.Formation == formation;
 			}
-			catch
+			catch (Exception ex)
 			{
+				SettlementEntryTroopSelectionLog.Log("AssignAgentToFormation failed. agent=" + agent?.Index + ", formation=" + formationClass + ", error=" + ex.Message);
+				return false;
 			}
 		}
 

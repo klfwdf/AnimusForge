@@ -11,6 +11,14 @@ public static class SetsTownCivilianGatherProfile
     // FormationClass.Cavalry, displayed as command group 3.
     public const int NativeCommandFormationClassIndex = 2;
 
+    public const float FormationAssignmentInitialDelaySeconds = 0.8f;
+
+    public const float FormationAssignmentBatchIntervalSeconds = 0.12f;
+
+    public const float FormationOrderFinalizeDelaySeconds = 0.25f;
+
+    public const int FormationAssignmentBatchSize = 8;
+
     public const uint MessageColor = 0xFFB6F7A8u;
 
     public const string PlayerCommandSource = "sets_town_civilian_gather_player_command";
@@ -18,6 +26,11 @@ public static class SetsTownCivilianGatherProfile
     public const string AiActionTagSource = "sets_town_civilian_gather_action_tag";
 
     public const string NoEligibleCivilianMessage = "【SETS】当前没有可召集的成年平民。";
+
+    public static string BuildQueuedMessage(int civilianCount)
+    {
+        return "【SETS】正在召集 " + Math.Max(0, civilianCount) + " 名成年平民，完成后将编入3号民众编队。";
+    }
 
     public static bool ShouldHandleExplicitPlayerCommand(string playerText)
     {
