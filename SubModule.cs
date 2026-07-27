@@ -241,6 +241,14 @@ public class SubModule : MBSubModuleBase
 			}
 			try
 			{
+				BattleObserverInspectionPrisonerSafePatch.EnsurePatched();
+			}
+			catch (Exception ex8aaa)
+			{
+				Logger.LogTrace("SubModule", ">>> BattleObserverInspectionPrisonerSafePatch init failed: " + ex8aaa.Message);
+			}
+			try
+			{
 				KingdomDecisionCleanupSafePatch.EnsurePatched(harmony);
 			}
 			catch (Exception ex8ab)

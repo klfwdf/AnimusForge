@@ -114,6 +114,7 @@ public static class Patch_TriggerMassiveHook
 			SceneTauntWieldBlockPatch.EnsurePatched();
 			MeetingDuelBattleAgentLogicSafePatch.EnsurePatched();
 			AgentVictoryRetreatNullTeamSafePatch.EnsurePatched();
+			BattleObserverInspectionPrisonerSafePatch.EnsurePatched();
 			LipSyncFacialAnimSuppressPatch.EnsurePatched();
 		}
 	}
