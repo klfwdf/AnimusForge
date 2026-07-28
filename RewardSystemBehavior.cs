@@ -5723,17 +5723,20 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		bool asCompanion = joinTagMatch.Groups[1].Value.StartsWith("C", StringComparison.OrdinalIgnoreCase);
 		string latestReplyWithoutTag = HeroJoinPlayerPartyTagRegex.Replace(responseText, string.Empty).Trim();
+		FreezeWatchdog.Mark("NonHeroJoin.tag_received", "target=" + (joiningCharacter.StringId ?? "") + " agent=" + targetAgentIndex + " native=" + requireCurrentConversationRequest, immediate: true);
 		if (requireCurrentConversationRequest && !DoesNativeConversationRequestStillMatch(joiningCharacter, targetAgentIndex, expectedConversationManager, expectedConversationToken, out string staleReason))
 		{
 			responseText = latestReplyWithoutTag;
 			notifications.Add("【加入队伍】已拦截过期动作：原版对话已先处理。");
 			Logger.Log("RewardSystemBehavior", "[NonHeroJoin] stale native join tag intercepted reason=" + staleReason + " target=" + (joiningCharacter.StringId ?? "") + " agentIndex=" + targetAgentIndex + " expectedToken=" + expectedConversationToken);
+			FreezeWatchdog.Mark("NonHeroJoin.stale_intercepted", "target=" + (joiningCharacter.StringId ?? "") + " agent=" + targetAgentIndex + " reason=" + staleReason, immediate: true);
 			return true;
 		}
 		string statusText;
 		Hero promotedHero;
 		bool flag = TryApplyNonHeroJoinPlayerPartyForExternal(joiningCharacter, targetAgentIndex, promptGivenName, promptDisplayName, latestReplyWithoutTag, asCompanion, out statusText, out promotedHero);
 		responseText = latestReplyWithoutTag;
+		FreezeWatchdog.Mark("NonHeroJoin.result", "target=" + (joiningCharacter.StringId ?? "") + " agent=" + targetAgentIndex + " success=" + flag + " status=" + (statusText ?? ""), immediate: true);
 		if (!string.IsNullOrWhiteSpace(statusText))
 		{
 			bool intercepted = !flag && statusText.StartsWith("执行拦截", StringComparison.Ordinal);
@@ -5927,15 +5930,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			bool matchesTarget = false;
-			try
-			{
-				matchesTarget = resolved.MemberRoster != null && resolved.MemberRoster.Contains(joiningCharacter);
-			}
-			catch
-			{
-				matchesTarget = false;
-			}
+			bool matchesTarget = DoesWildernessNonHeroJoinPartyRepresentTarget(resolved, joiningCharacter);
 			if (!matchesTarget && targetAgentIndex >= 0)
 			{
 				try
@@ -5959,6 +5954,39 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		catch
 		{
 			party = null;
+			return false;
+		}
+	}
+
+	private static bool DoesWildernessNonHeroJoinPartyRepresentTarget(PartyBase party, CharacterObject joiningCharacter)
+	{
+		if (party == null || joiningCharacter == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (party.MemberRoster != null && party.MemberRoster.Contains(joiningCharacter))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			CharacterObject conversationLeader = TaleWorlds.CampaignSystem.Conversation.ConversationHelper.GetConversationCharacterPartyLeader(party);
+			if (conversationLeader == joiningCharacter)
+			{
+				return true;
+			}
+			string targetId = joiningCharacter.StringId;
+			return !string.IsNullOrEmpty(targetId)
+				&& string.Equals(conversationLeader?.StringId, targetId, StringComparison.OrdinalIgnoreCase);
+		}
+		catch
+		{
 			return false;
 		}
 	}

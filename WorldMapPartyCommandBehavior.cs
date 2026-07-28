@@ -57,6 +57,11 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 	private const string PendingSafeExitResumeFollow = "resume_follow";
 	private const string PendingSafeExitAdvance = "advance";
 	private const string PendingSafeExitStop = "stop";
+	// Food, peace, and inactivity checks can attempt to dissolve an ordered army
+	// every hour.
+	// Charge at most once per campaign day for the same command, while still
+	// suppressing each repeat attempt until the command itself ends.
+	private const double ArmySurvivalRenewalChargeIntervalDays = 1.0;
 
 	private static readonly Regex WorldMapOrderTagRegex = new Regex("\\[ACTION:WORLDMAP_ORDER:[^\\]\\r\\n]*\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
@@ -114,6 +119,97 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			Log("check native governor expedition leader guard failed party=" + (party.StringId ?? "") + " error=" + ex.Message);
 			return false;
 		}
+	}
+
+	internal static bool TryRenewOrderedArmyBeforeNativeDisband(Army army, Army.ArmyDispersionReason reason)
+	{
+		WorldMapPartyCommandBehavior behavior = Instance;
+		if (behavior == null || !IsRenewableOrderedArmyDispersalReason(reason))
+		{
+			return false;
+		}
+		try
+		{
+			return behavior.TryRenewOrderedArmyBeforeNativeDisbandCore(army, reason);
+		}
+		catch (Exception ex)
+		{
+			Log("ordered army survival renewal failed open reason=" + reason + " error=" + ex.Message);
+			return false;
+		}
+	}
+
+	private static bool IsRenewableOrderedArmyDispersalReason(Army.ArmyDispersionReason reason)
+	{
+		return reason == Army.ArmyDispersionReason.CohesionDepleted
+			|| reason == Army.ArmyDispersionReason.FoodProblem
+			|| reason == Army.ArmyDispersionReason.NoActiveWar
+			|| reason == Army.ArmyDispersionReason.Inactivity;
+	}
+
+	private bool TryRenewOrderedArmyBeforeNativeDisbandCore(Army army, Army.ArmyDispersionReason reason)
+	{
+		MobileParty leaderParty = army?.LeaderParty;
+		Hero leader = leaderParty?.LeaderHero;
+		if (leaderParty == null || leader == null || leader == Hero.MainHero || leaderParty.Army != army || !IsPartyUsable(leaderParty))
+		{
+			return false;
+		}
+		PartyCommandQueueState state = null;
+		lock (_queueLock)
+		{
+			_queues.TryGetValue(leader.StringId ?? "", out state);
+		}
+		PartyCommandEntry command = GetCurrentCommand(state);
+		if (state == null || state.ResultLogged || !PartyMatchesActor(leaderParty, state)
+			|| !IsKind(command, CommandKind.AttackHero) || !IsSettlementTarget(command))
+		{
+			return false;
+		}
+		Settlement settlement = ResolveSettlementById(command.TargetId);
+		Clan clan = leader.Clan;
+		if (!IsSupportedAttackSettlement(settlement) || clan == null || IsSettlementAttackComplete(leaderParty, settlement))
+		{
+			return false;
+		}
+		string renewalKey = (leaderParty.StringId ?? "") + ":" + state.CurrentIndex + ":" + (command.TargetId ?? "") + ":" + state.CommandStartDay.ToString("R", System.Globalization.CultureInfo.InvariantCulture);
+		double now = NowDay();
+		bool shouldCharge = !string.Equals(state.ArmySurvivalRenewalKey, renewalKey, StringComparison.Ordinal)
+			|| state.ArmySurvivalLastPaidDay < 0.0
+			|| now - state.ArmySurvivalLastPaidDay >= ArmySurvivalRenewalChargeIntervalDays;
+		int influenceCost = 0;
+		if (shouldCharge)
+		{
+			float currentCohesion = army.Cohesion;
+			if (float.IsNaN(currentCohesion) || float.IsInfinity(currentCohesion))
+			{
+				currentCohesion = 0f;
+			}
+			currentCohesion = Math.Max(0f, Math.Min(100f, currentCohesion));
+			float renewalPercentage = Math.Max(1f, 100f - currentCohesion);
+			// Food, peace, and inactivity can request dissolution even at full
+			// cohesion. Charge a full renewal in that case so those protections
+			// still consume influence.
+			if (reason != Army.ArmyDispersionReason.CohesionDepleted && renewalPercentage <= 1f)
+			{
+				renewalPercentage = 100f;
+			}
+			influenceCost = Math.Max(0, Campaign.Current.Models.ArmyManagementCalculationModel.CalculateTotalInfluenceCost(army, renewalPercentage));
+			// ChangeClanInfluenceAction deliberately does not clamp its result, which
+			// is required here: a player-authorized campaign order may take the
+			// commander below zero influence.
+			ChangeClanInfluenceAction.Apply(clan, -(float)influenceCost);
+			state.ArmySurvivalRenewalKey = renewalKey;
+			state.ArmySurvivalLastPaidDay = now;
+		}
+		army.Cohesion = 100f;
+		SynchronizeArmyObjectiveForCommand(leaderParty, command);
+		if (shouldCharge)
+		{
+			LogFact(state, leader, GetActorName(state, leader, leaderParty) + "消耗" + influenceCost + "影响力强行维持军团，继续" + (settlement.IsVillage ? "烧掠" : "围攻") + GetSettlementName(settlement) + "（军团长影响力现为" + clan.Influence.ToString("0") + "）。");
+			Log("ordered_army_survival_renewed leader=" + (leader.StringId ?? "") + " party=" + (leaderParty.StringId ?? "") + " settlement=" + (settlement.StringId ?? "") + " reason=" + reason + " cost=" + influenceCost + " influence=" + clan.Influence.ToString("0"));
+		}
+		return true;
 	}
 
 	private enum CommandKind
@@ -185,6 +281,8 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		public string PendingSafeExitReason;
 		public int MergeTransferFailureCount;
 		public double MergeRetryAfterDay = -1.0;
+		public string ArmySurvivalRenewalKey;
+		public double ArmySurvivalLastPaidDay = -1.0;
 	}
 
 	private sealed class PartyCommandEntry
@@ -2223,6 +2321,8 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			command = state.Commands[state.CurrentIndex];
 		}
 		ResetResultTracking(state);
+		state.ArmySurvivalRenewalKey = "";
+		state.ArmySurvivalLastPaidDay = -1.0;
 		state.CommandStartDay = NowDay();
 		state.ArrivalDay = -1.0;
 		state.EngageCommitted = false;
@@ -5470,6 +5570,11 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		state.FollowSiegeSettlementId = (state.FollowSiegeSettlementId ?? "").Trim();
 		state.PendingSafeExitAction = (state.PendingSafeExitAction ?? "").Trim();
 		state.PendingSafeExitReason = (state.PendingSafeExitReason ?? "").Trim();
+		state.ArmySurvivalRenewalKey = (state.ArmySurvivalRenewalKey ?? "").Trim();
+		if (double.IsNaN(state.ArmySurvivalLastPaidDay) || double.IsInfinity(state.ArmySurvivalLastPaidDay) || state.ArmySurvivalLastPaidDay < -1.0)
+		{
+			state.ArmySurvivalLastPaidDay = -1.0;
+		}
 		if (string.IsNullOrWhiteSpace(state.FollowSiegeSettlementId))
 		{
 			state.FollowSiegeJoinedByCommand = false;
