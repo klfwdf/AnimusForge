@@ -9,21 +9,18 @@ using Newtonsoft.Json;
 using SandBox;
 using SandBox.Objects;
 using SandBox.Objects.Usables;
-using SandBox.View.Map;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.AgentOrigins;
 using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.Encounters;
-using TaleWorlds.CampaignSystem.GameState;
 using TaleWorlds.CampaignSystem.Map;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Party.PartyComponents;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem.Settlements.Locations;
-using TaleWorlds.CampaignSystem.ViewModelCollection.Map.MapNotificationTypes;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
@@ -85,6 +82,10 @@ internal sealed class NobleGatheringRecord
 
 	public string PlayerInvitationStatus { get; set; } = "";
 
+	public bool PlayerInvitationCourierSent { get; set; }
+
+	public double PlayerInvitationCourierNextRetryDay { get; set; } = -1.0;
+
 	public bool PlayerAttendanceRewardApplied { get; set; }
 
 	public double PlayerArrivalDay { get; set; } = -1.0;
@@ -129,45 +130,6 @@ internal sealed class NobleGatheringInvitationSelector
 	public string Gender { get; set; } = "";
 }
 
-internal sealed class NobleGatheringInvitationMapNotification : InformationData
-{
-	private readonly TextObject _titleText;
-
-	public string GatheringId { get; }
-
-	public override TextObject TitleText => _titleText;
-
-	public override string SoundEventPath => "event:/ui/notification/kingdom_decision";
-
-	public NobleGatheringInvitationMapNotification(string gatheringId, string titleText, string descriptionText)
-		: base(new TextObject(string.IsNullOrWhiteSpace(descriptionText) ? "有贵族邀请你赴宴。" : descriptionText))
-	{
-		GatheringId = (gatheringId ?? "").Trim();
-		_titleText = new TextObject(string.IsNullOrWhiteSpace(titleText) ? "宴会邀请" : titleText);
-	}
-
-	public override bool IsValid()
-	{
-		return NobleGatheringBehavior.Instance?.HasPendingPlayerInvitation(GatheringId) == true;
-	}
-}
-
-internal sealed class NobleGatheringInvitationMapNotificationItemVM : MapNotificationItemBaseVM
-{
-	public NobleGatheringInvitationMapNotificationItemVM(NobleGatheringInvitationMapNotification data)
-		: base(data)
-	{
-		NotificationIdentifier = "af_noble_gathering";
-		_onInspect = delegate
-		{
-			if (NobleGatheringBehavior.Instance?.OpenPlayerInvitationFromMap(data.GatheringId) == true)
-			{
-				ExecuteRemove();
-			}
-		};
-	}
-}
-
 internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 {
 	private const string LogSource = "NobleGathering";
@@ -202,10 +164,12 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 	private const string SettlementReturnPending = "Pending";
 	private const string SettlementReturnIssued = "Issued";
 	private const string SettlementReturnSkipped = "Skipped";
-	private const string PlayerInvitationPending = "Pending";
-	private const string PlayerInvitationAccepted = "Accepted";
-	private const string PlayerInvitationDeclined = "Declined";
+	private const string PlayerInvitationInvited = "Invited";
 	private const string PlayerInvitationArrived = "Arrived";
+	private const string LegacyPlayerInvitationPending = "Pending";
+	private const string LegacyPlayerInvitationAccepted = "Accepted";
+	private const string LegacyPlayerInvitationDeclined = "Declined";
+	private const double PlayerInvitationCourierRetryIntervalDays = 0.25;
 	private const string PlayerHostCooldownKey = "player";
 	private const string LordHallLocationId = "lordshall";
 	private const int FeastHallVisibleNobleLimit = 16;
@@ -244,13 +208,10 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 	private readonly Dictionary<string, NobleGatheringRecord> _gatherings = new Dictionary<string, NobleGatheringRecord>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, double> _playerHostCooldowns = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, double> _npcKingdomNextHostDays = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
-	private readonly HashSet<string> _playerInvitationNoticesShownThisSession = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, string> _heroActiveFeastId = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 	private readonly HashSet<string> _feastAttendeeClanIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 	private readonly List<LocationCharacter> _addedAtmosphereCharacters = new List<LocationCharacter>();
 	private readonly List<LocationCharacter> _hiddenFeastHallNobleCharacters = new List<LocationCharacter>();
-	private MapNotificationView _registeredMapNotificationView;
-	private long _nextNoticePublishRetryUtcTicks;
 	private bool _pendingOpenPlayerGatheringFlow;
 	private Hero _pendingGovernorHero;
 	private Settlement _pendingSuggestedSettlement;
@@ -354,8 +315,6 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		CampaignEvents.OnMissionStartedEvent.AddNonSerializedListener(this, OnFeastAtmosphereMissionStarted);
 		CampaignEvents.OnMissionEndedEvent.AddNonSerializedListener(this, OnFeastAtmosphereMissionEnded);
 		CampaignEvents.LocationCharactersAreReadyToSpawnEvent.AddNonSerializedListener(this, OnFeastAtmosphereLocationCharactersAreReadyToSpawn);
-		MBInformationManager.OnRemoveMapNotice -= OnMapNoticeRemoved;
-		MBInformationManager.OnRemoveMapNotice += OnMapNoticeRemoved;
 	}
 
 	public override void SyncData(IDataStore dataStore)
@@ -461,17 +420,6 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			_pendingSuggestedSettlement = null;
 			OpenPlayerGatheringFlow(governor, suggestedSettlement);
 		}
-		if (!HasPendingPlayerInvitationNotice())
-		{
-			return;
-		}
-		long ticks = DateTime.UtcNow.Ticks;
-		if (ticks < _nextNoticePublishRetryUtcTicks)
-		{
-			return;
-		}
-		_nextNoticePublishRetryUtcTicks = ticks + TimeSpan.FromSeconds(1.0).Ticks;
-		TryPublishPlayerInvitationNotices();
 	}
 
 	public bool HasActiveGatheringAtSettlement(Settlement settlement)
@@ -2182,6 +2130,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			{
 				continue;
 			}
+			TrySendPlayerInvitationCourier(record);
 			IssueHostTravelCommand(record);
 			IssueTravelCommands(record);
 			ProcessActiveTemporaryParties(record, settlement);
@@ -2426,7 +2375,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		if (record == null
 			|| record.IsPlayerHosted
 			|| record.PlayerAttendanceRewardApplied
-			|| !string.Equals(record.PlayerInvitationStatus, PlayerInvitationAccepted, StringComparison.OrdinalIgnoreCase))
+			|| !string.Equals(record.PlayerInvitationStatus, PlayerInvitationInvited, StringComparison.OrdinalIgnoreCase))
 		{
 			return;
 		}
@@ -2687,7 +2636,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 				StartDay = now,
 				EndDay = now + GatheringDurationDays,
 				IsPlayerHosted = false,
-				PlayerInvitationStatus = invitees.Contains(Hero.MainHero) ? PlayerInvitationPending : ""
+				PlayerInvitationStatus = invitees.Contains(Hero.MainHero) ? PlayerInvitationInvited : ""
 			};
 			foreach (Hero hero in invitees)
 			{
@@ -2732,92 +2681,17 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		return MBRandom.RandomInt(NpcKingdomHostIntervalMinDays, NpcKingdomHostIntervalMaxDays + 1);
 	}
 
-	private bool HasPendingPlayerInvitationNotice()
-	{
-		return _gatherings.Values.Any(record => HasPendingPlayerInvitation(record?.Id));
-	}
-
-	public bool HasPendingPlayerInvitation(string gatheringId)
-	{
-		if (string.IsNullOrWhiteSpace(gatheringId) || !_gatherings.TryGetValue(gatheringId, out NobleGatheringRecord record))
-		{
-			return false;
-		}
-		return string.Equals(record.State, StateActive, StringComparison.OrdinalIgnoreCase)
-			&& !record.IsPlayerHosted
-			&& string.Equals(record.PlayerInvitationStatus, PlayerInvitationPending, StringComparison.OrdinalIgnoreCase);
-	}
-
-	public bool OpenPlayerInvitationFromMap(string gatheringId)
-	{
-		if (!HasPendingPlayerInvitation(gatheringId) || !_gatherings.TryGetValue(gatheringId, out NobleGatheringRecord record))
-		{
-			return false;
-		}
-		Hero host = ResolveHeroById(record.HostHeroId);
-		Settlement settlement = ResolveSettlementById(record.SettlementId);
-		string body = GetHeroName(host) + "邀请你前往" + GetSettlementName(settlement) + "参加宴会。\n拒绝不会降低好感。";
-		InformationManager.ShowInquiry(new InquiryData(
-			"宴会邀请",
-			body,
-			isAffirmativeOptionShown: true,
-			isNegativeOptionShown: true,
-			"接受邀请",
-			"拒绝",
-			() => AcceptPlayerInvitation(record),
-			() => DeclinePlayerInvitation(record)),
-			pauseGameActiveState: true,
-			prioritize: false);
-		return true;
-	}
-
-	private void AcceptPlayerInvitation(NobleGatheringRecord record)
-	{
-		if (record == null)
-		{
-			return;
-		}
-		record.PlayerInvitationStatus = PlayerInvitationAccepted;
-		Hero host = ResolveHeroById(record.HostHeroId);
-		Settlement settlement = ResolveSettlementById(record.SettlementId);
-		ShowMessage("你接受了" + GetHeroName(host) + "的宴会邀请。抵达" + GetSettlementName(settlement) + "后会与主办方提升好感。");
-	}
-
-	private void DeclinePlayerInvitation(NobleGatheringRecord record)
-	{
-		if (record == null)
-		{
-			return;
-		}
-		record.PlayerInvitationStatus = PlayerInvitationDeclined;
-		ShowMessage("你婉拒了宴会邀请。");
-	}
-
-	private void TryPublishPlayerInvitationNotices()
-	{
-		if (!CanPublishMapNotification() || !TryEnsureMapNotificationRegistered())
-		{
-			return;
-		}
-		foreach (NobleGatheringRecord record in _gatherings.Values.ToList())
-		{
-			if (!HasPendingPlayerInvitation(record.Id) || _playerInvitationNoticesShownThisSession.Contains(record.Id))
-			{
-				continue;
-			}
-			Hero host = ResolveHeroById(record.HostHeroId);
-			Settlement settlement = ResolveSettlementById(record.SettlementId);
-			_playerInvitationNoticesShownThisSession.Add(record.Id);
-			record.PlayerInvitationNoticeShown = true;
-			MBInformationManager.AddNotice(new NobleGatheringInvitationMapNotification(record.Id, "宴会邀请", GetHeroName(host) + "邀请你前往" + GetSettlementName(settlement) + "赴宴。"));
-		}
-	}
-
 	private void TrySendPlayerInvitationCourier(NobleGatheringRecord record)
 	{
 		if (record == null
 			|| record.IsPlayerHosted
-			|| !string.Equals(record.PlayerInvitationStatus, PlayerInvitationPending, StringComparison.OrdinalIgnoreCase))
+			|| record.PlayerInvitationCourierSent
+			|| !string.Equals(record.PlayerInvitationStatus, PlayerInvitationInvited, StringComparison.OrdinalIgnoreCase))
+		{
+			return;
+		}
+		double now = NowDay();
+		if (record.PlayerInvitationCourierNextRetryDay >= 0.0 && now < record.PlayerInvitationCourierNextRetryDay)
 		{
 			return;
 		}
@@ -2825,67 +2699,21 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		Settlement settlement = ResolveSettlementById(record.SettlementId);
 		if (host == null || settlement == null)
 		{
+			record.PlayerInvitationCourierNextRetryDay = now + PlayerInvitationCourierRetryIntervalDays;
 			return;
 		}
 		string endDate = CampaignTime.Days((float)record.EndDay).ToString();
 		string letter = GetHeroName(host) + "致" + (Hero.MainHero?.Name?.ToString() ?? "你") + "：\n\n我将在" + GetSettlementName(settlement) + "举办一场宴会，诚邀你前来赴宴。宴会预计持续至 " + endDate + "；若你愿意，到达举办地即可。";
 		if (CourierDeliveryBehavior.TrySendNpcLetterToPlayerForExternal(host, letter, "noble_gathering:" + record.Id, out string status))
 		{
-			record.PlayerInvitationStatus = PlayerInvitationAccepted;
-			record.PlayerInvitationNoticeShown = true;
-			_playerInvitationNoticesShownThisSession.Add(record.Id);
+			record.PlayerInvitationCourierSent = true;
+			record.PlayerInvitationCourierNextRetryDay = -1.0;
 			Log("player invitation courier sent id=" + record.Id + " status=" + status);
 		}
 		else
 		{
+			record.PlayerInvitationCourierNextRetryDay = now + PlayerInvitationCourierRetryIntervalDays;
 			Log("player invitation courier failed id=" + record.Id + " status=" + status);
-		}
-	}
-
-	private bool TryEnsureMapNotificationRegistered()
-	{
-		try
-		{
-			MapNotificationView mapNotificationView = MapScreen.Instance?.MapNotificationView;
-			if (mapNotificationView == null)
-			{
-				return false;
-			}
-			if (!ReferenceEquals(_registeredMapNotificationView, mapNotificationView))
-			{
-				_playerInvitationNoticesShownThisSession.Clear();
-				mapNotificationView.RegisterMapNotificationType(typeof(NobleGatheringInvitationMapNotification), typeof(NobleGatheringInvitationMapNotificationItemVM));
-				_registeredMapNotificationView = mapNotificationView;
-			}
-			return true;
-		}
-		catch (Exception ex)
-		{
-			Log("register notification failed: " + ex.Message);
-			return false;
-		}
-	}
-
-	private static bool CanPublishMapNotification()
-	{
-		try
-		{
-			return Mission.Current == null && Game.Current?.GameStateManager?.ActiveState is MapState && MapScreen.Instance?.MapNotificationView != null;
-		}
-		catch
-		{
-			return false;
-		}
-	}
-
-	private void OnMapNoticeRemoved(InformationData data)
-	{
-		if (data is NobleGatheringInvitationMapNotification notice && _gatherings.TryGetValue(notice.GatheringId, out NobleGatheringRecord record))
-		{
-			if (string.Equals(record.PlayerInvitationStatus, PlayerInvitationPending, StringComparison.OrdinalIgnoreCase))
-			{
-				record.PlayerInvitationStatus = PlayerInvitationDeclined;
-			}
 		}
 	}
 
@@ -4204,6 +4032,71 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static string BuildRecentDiplomacyMaterialForExternal(IEnumerable<string> relevantKingdomIds, int maxCount = 3)
+	{
+		try
+		{
+			NobleGatheringBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<NobleGatheringBehavior>();
+			HashSet<string> relevant = new HashSet<string>((relevantKingdomIds ?? Enumerable.Empty<string>())
+				.Where(id => !string.IsNullOrWhiteSpace(id))
+				.Select(id => id.Trim()), StringComparer.OrdinalIgnoreCase);
+			if (behavior == null || relevant.Count == 0)
+			{
+				return "";
+			}
+
+			double now = NowDay();
+			List<string> lines = new List<string>();
+			foreach (NobleGatheringRecord record in behavior._gatherings.Values
+				.Where(item => item != null
+					&& string.Equals(item.State, StateActive, StringComparison.OrdinalIgnoreCase)
+					&& item.StartDay <= now
+					&& now < item.EndDay
+					&& now - item.StartDay <= 14d)
+				.OrderByDescending(item => item.StartDay)
+				.ThenBy(item => item.Id ?? "", StringComparer.OrdinalIgnoreCase))
+			{
+				Hero host = ResolveHeroById(record.HostHeroId);
+				Settlement settlement = ResolveSettlementById(record.SettlementId);
+				string hostKingdomId = !string.IsNullOrWhiteSpace(record.KingdomId)
+					? record.KingdomId.Trim()
+					: (host?.Clan?.Kingdom?.StringId ?? "").Trim();
+				List<Hero> relevantGuests = (record.Invitees ?? new List<NobleGatheringInviteeRecord>())
+					.Where(invitee => invitee != null
+						&& (string.Equals(invitee.Status, InviteAccepted, StringComparison.OrdinalIgnoreCase)
+							|| string.Equals(invitee.Status, InviteArrived, StringComparison.OrdinalIgnoreCase)))
+					.Select(invitee => ResolveHeroById(invitee.HeroId))
+					.Where(hero => hero != null && relevant.Contains(hero.Clan?.Kingdom?.StringId ?? ""))
+					.Take(4)
+					.ToList();
+				if (!relevant.Contains(hostKingdomId) && relevantGuests.Count == 0)
+				{
+					continue;
+				}
+
+				StringBuilder line = new StringBuilder();
+				line.Append(GetHeroName(host)).Append("已经在").Append(GetSettlementName(settlement)).Append("举办贵族宴会");
+				if (relevantGuests.Count > 0)
+				{
+					line.Append("；与相关各国有关的已受邀或已抵达宾客包括：")
+						.Append(string.Join("、", relevantGuests.Select(GetHeroName)));
+				}
+				line.Append("。这是已经开始的公开事件，不代表任何外交协议已经成立。");
+				lines.Add(line.ToString());
+				if (lines.Count >= Math.Max(1, Math.Min(3, maxCount)))
+				{
+					break;
+				}
+			}
+			return lines.Count == 0 ? "" : "- " + string.Join("\n- ", lines);
+		}
+		catch (Exception ex)
+		{
+			Log("build diplomacy feast material failed: " + ex.Message);
+			return "";
+		}
+	}
+
 	private void RegisterFeastAttendee(Hero hero, NobleGatheringRecord record)
 	{
 		try
@@ -5377,8 +5270,8 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 			.Where(hero => hero != null)
 			.ToList();
 		if (!record.IsPlayerHosted
-			&& !string.IsNullOrWhiteSpace(record.PlayerInvitationStatus)
-			&& !string.Equals(record.PlayerInvitationStatus, PlayerInvitationDeclined, StringComparison.OrdinalIgnoreCase)
+			&& (string.Equals(record.PlayerInvitationStatus, PlayerInvitationInvited, StringComparison.OrdinalIgnoreCase)
+				|| string.Equals(record.PlayerInvitationStatus, PlayerInvitationArrived, StringComparison.OrdinalIgnoreCase))
 			&& Hero.MainHero != null)
 		{
 			acceptedGuests.Add(Hero.MainHero);
@@ -5608,6 +5501,27 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 		record.SettlementId = (record.SettlementId ?? "").Trim();
 		record.State = string.IsNullOrWhiteSpace(record.State) ? StateActive : record.State.Trim();
 		record.PlayerInvitationStatus = (record.PlayerInvitationStatus ?? "").Trim();
+		bool legacyPending = string.Equals(record.PlayerInvitationStatus, LegacyPlayerInvitationPending, StringComparison.OrdinalIgnoreCase);
+		bool legacyAccepted = string.Equals(record.PlayerInvitationStatus, LegacyPlayerInvitationAccepted, StringComparison.OrdinalIgnoreCase);
+		bool legacyDeclined = string.Equals(record.PlayerInvitationStatus, LegacyPlayerInvitationDeclined, StringComparison.OrdinalIgnoreCase);
+		if (!record.IsPlayerHosted && (legacyPending || legacyAccepted || legacyDeclined))
+		{
+			record.PlayerInvitationStatus = PlayerInvitationInvited;
+			if (legacyPending || legacyDeclined)
+			{
+				record.PlayerInvitationCourierSent = false;
+				record.PlayerInvitationCourierNextRetryDay = 0.0;
+			}
+			else if (!record.PlayerInvitationCourierSent && record.PlayerInvitationNoticeShown)
+			{
+				// Legacy "Accepted + notice shown" normally means the courier was already created.
+				record.PlayerInvitationCourierSent = true;
+			}
+		}
+		if (record.PlayerInvitationCourierNextRetryDay < -1.0)
+		{
+			record.PlayerInvitationCourierNextRetryDay = -1.0;
+		}
 		record.HostOriginSettlementId = (record.HostOriginSettlementId ?? "").Trim();
 		record.HostSettlementReturnState = (record.HostSettlementReturnState ?? "").Trim();
 		record.HostTemporaryPartyId = (record.HostTemporaryPartyId ?? "").Trim();

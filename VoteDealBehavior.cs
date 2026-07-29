@@ -424,7 +424,9 @@ namespace AnimusForge
 			Logger.Log("VoteDeal", "[Lifecycle] RegisterEvents called, Instance set");
 			CampaignEvents.KingdomDecisionConcluded.AddNonSerializedListener(this, OnKingdomDecisionConcluded);
 			CampaignEvents.KingdomDecisionCancelled.AddNonSerializedListener(this, OnKingdomDecisionCancelled);
+			CampaignEvents.KingdomDecisionAdded.AddNonSerializedListener(this, OnAgendaKingdomDecisionAdded);
 			CampaignEvents.HourlyTickEvent.AddNonSerializedListener(this, OnHourlyTick);
+			CampaignEvents.TickEvent.AddNonSerializedListener(this, OnAgendaMapNotificationTick);
 		}
 
 		public override void SyncData(IDataStore dataStore)
@@ -439,6 +441,7 @@ namespace AnimusForge
 					}
 					_agendaDeadlineReminderShown.Clear();
 					s_pendingRequiredAgendaDecision = null;
+					ResetAgendaMapNotificationRuntime();
 				}
 				if (_activeDeals == null) _activeDeals = new List<VoteDealRecord>();
 				if (_serializedDeals == null) _serializedDeals = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -583,6 +586,7 @@ namespace AnimusForge
 
 		private void OnKingdomDecisionConcluded(KingdomDecision decision, DecisionOutcome chosenOutcome, bool isPlayerInvolved)
 		{
+			ForgetAgendaMapNotification(decision);
 			try
 			{
 				UnregisterDialogueProposedDecision(decision);
@@ -622,8 +626,9 @@ namespace AnimusForge
 			try
 			{
 				RemoveDuplicateBilateralDiplomacyAgendas();
-				NotifyPlayerKingdomAgendasNearingDeadline();
 				AutoStartExpiredAgendaVotes();
+				NotifyPlayerKingdomAgendasNearingDeadline();
+				ReconcileAndPublishAgendaMapNotifications();
 			}
 			catch (Exception ex)
 			{
@@ -661,6 +666,11 @@ namespace AnimusForge
 				if (decision == null) continue;
 				if (_agendaAutoVoteInProgress.Contains(decision)) continue;
 				if (!kingdom.UnresolvedDecisions.Contains(decision)) continue;
+				if (TryNormalizeRedundantSingleClanFiefAgenda(kingdom, decision, "hourly-cleanup"))
+				{
+					CancelExpiredAgendaDecision(kingdom, decision);
+					continue;
+				}
 
 				bool shouldCancel;
 				try
@@ -935,6 +945,7 @@ namespace AnimusForge
 			try
 			{
 				if (__instance == null || kingdomDecision == null) return true;
+				if (TryNormalizeRedundantSingleClanFiefAgenda(__instance, kingdomDecision, "add-decision")) return false;
 
 				VoteDealBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<VoteDealBehavior>();
 				if (behavior == null) return true;
@@ -1036,6 +1047,15 @@ namespace AnimusForge
 				{
 					if (decision == null || !IsDecisionPendingInKingdom(decision, kingdom))
 					{
+						continue;
+					}
+
+					if (TryNormalizeRedundantSingleClanFiefAgenda(kingdom, decision, "update-cleanup"))
+					{
+						if (CancelDecisionSafe(kingdom, decision))
+						{
+							cancelled++;
+						}
 						continue;
 					}
 
@@ -1141,6 +1161,78 @@ namespace AnimusForge
 				Logger.Log("VoteDeal", $"[AgendaDelay] ShouldBeCancelled failed: {ex.Message}");
 				return false;
 			}
+		}
+
+		private static bool TryNormalizeRedundantSingleClanFiefAgenda(
+			Kingdom kingdom,
+			KingdomDecision decision,
+			string source)
+		{
+			if (!TryGetRedundantSingleClanFiefAgenda(kingdom, decision, out Settlement settlement, out Clan soleClan))
+			{
+				return false;
+			}
+
+			try
+			{
+				// Applying an owner change by kingdom decision removes the governor
+				// even when the selected clan already owns the fief. With only one
+				// eligible clan there is no ownership choice, so finalize the existing
+				// owner marker directly and leave governor/garrison state untouched.
+				settlement.Town.IsOwnerUnassigned = false;
+				Logger.Log(
+					"VoteDeal",
+					$"[SingleClanFief] Suppressed redundant fief agenda: source={source ?? ""}, kingdom={kingdom.StringId ?? ""}, settlement={settlement.StringId ?? ""}, owner={soleClan.StringId ?? ""}, decision={decision.GetType().Name}");
+				return true;
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", $"[SingleClanFief] Normalize failed: source={source ?? ""}, error={ex.Message}");
+				return false;
+			}
+		}
+
+		internal static bool TryGetRedundantSingleClanFiefAgenda(
+			Kingdom kingdom,
+			KingdomDecision decision,
+			out Settlement settlement,
+			out Clan soleClan)
+		{
+			settlement = null;
+			soleClan = null;
+			if (kingdom == null || decision == null || kingdom.Clans == null) return false;
+
+			if (decision is SettlementClaimantDecision claimantDecision)
+			{
+				settlement = claimantDecision.Settlement;
+			}
+			else if (decision is SettlementClaimantPreliminaryDecision preliminaryDecision)
+			{
+				settlement = preliminaryDecision.Settlement;
+			}
+			else
+			{
+				return false;
+			}
+
+			if (decision.Kingdom != null && decision.Kingdom != kingdom) return false;
+			if (settlement == null || !settlement.IsFortification || settlement.Town == null) return false;
+			if (settlement.MapFaction != kingdom) return false;
+
+			// Match claimant eligibility rather than Kingdom.Clans.Count so a
+			// mercenary clan cannot turn a functionally single-clan realm into a
+			// fake multi-clan fief election.
+			foreach (Clan clan in kingdom.Clans)
+			{
+				if (clan == null || clan.IsUnderMercenaryService || clan.IsEliminated || clan.Leader == null || clan.Leader.IsDead)
+				{
+					continue;
+				}
+				if (soleClan != null) return false;
+				soleClan = clan;
+			}
+
+			return soleClan != null && settlement.OwnerClan == soleClan;
 		}
 
 		private static bool IsDecisionTriggerFutureSafe(KingdomDecision decision)
@@ -1815,6 +1907,7 @@ namespace AnimusForge
 
 		private void OnKingdomDecisionCancelled(KingdomDecision decision, bool isPlayerInvolved)
 		{
+			ForgetAgendaMapNotification(decision);
 			try
 			{
 				BilateralDiplomacyRecord record = FindCounterpartRecordForDecision(decision);
@@ -2630,6 +2723,7 @@ namespace AnimusForge
 			foreach (KingdomDecision decision in pending)
 			{
 				if (decision == null || decision.IsEnforced || _agendaDeadlineReminderShown.Contains(decision)) continue;
+				if (TryGetRedundantSingleClanFiefAgenda(kingdom, decision, out _, out _)) continue;
 				if (ShouldCancelDecisionSafe(decision)) continue;
 
 				float remainingHours;
@@ -2676,7 +2770,7 @@ namespace AnimusForge
 				int agendaIndex = 1;
 				foreach (KingdomDecision decision in kingdom.UnresolvedDecisions)
 				{
-					if (decision == null || decision.ShouldBeCancelled()) continue;
+					if (decision == null || TryGetRedundantSingleClanFiefAgenda(kingdom, decision, out _, out _) || decision.ShouldBeCancelled()) continue;
 					try
 					{
 						IEnumerable<DecisionOutcome> initialCandidates = decision.DetermineInitialCandidates();
@@ -3127,11 +3221,18 @@ namespace AnimusForge
 			try
 			{
 				if (kingdomDecision == null) return;
-				if (kingdomDecision.TriggerTime.IsPast) return;
 				Kingdom kingdom = kingdomDecision.Kingdom;
+				if (TryGetRedundantSingleClanFiefAgenda(kingdom, kingdomDecision, out _, out _)) return;
+				VoteDealBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<VoteDealBehavior>();
+				if (kingdomDecision.TriggerTime.IsPast)
+				{
+					behavior?.TryPublishPendingAgendaMapNotifications();
+					return;
+				}
 				if (kingdom == null) return;
 				float delayDays = (kingdom == Clan.PlayerClan?.Kingdom) ? 21f : 3f;
 				RegisterAgendaDelaySnapshot(kingdomDecision, kingdom, delayDays);
+				behavior?.TryPublishPendingAgendaMapNotifications();
 			}
 			catch (Exception ex)
 			{
@@ -3780,7 +3881,7 @@ namespace AnimusForge
 					{
 						foreach (KingdomDecision decision in kingdom.UnresolvedDecisions)
 						{
-							if (decision.ShouldBeCancelled()) continue;
+							if (VoteDealBehavior.TryGetRedundantSingleClanFiefAgenda(kingdom, decision, out _, out _) || decision.ShouldBeCancelled()) continue;
 							KingdomAgendaItemVM item = new KingdomAgendaItemVM(decision);
 							item.Parent = this;
 							AgendaItems.Add(item);
@@ -3794,7 +3895,7 @@ namespace AnimusForge
 						// 1. From live UnresolvedDecisions (survives save/load)
 						foreach (KingdomDecision decision in kingdom.UnresolvedDecisions)
 						{
-							if (decision.ShouldBeCancelled()) continue;
+							if (VoteDealBehavior.TryGetRedundantSingleClanFiefAgenda(kingdom, decision, out _, out _) || decision.ShouldBeCancelled()) continue;
 							seen.Add(decision);
 							KingdomAgendaItemVM item = new KingdomAgendaItemVM(decision);
 							item.Parent = this;
@@ -3859,6 +3960,15 @@ namespace AnimusForge
 			}
 
 			SelectedItem = item;
+		}
+
+		internal bool TrySelectDecision(KingdomDecision decision)
+		{
+			if (decision == null) return false;
+			KingdomAgendaItemVM item = AgendaItems.FirstOrDefault(x => x?.Decision == decision);
+			if (item == null) return false;
+			SelectItem(item);
+			return true;
 		}
 
 		internal void CallVoteMeeting(KingdomAgendaItemVM item)
@@ -4465,9 +4575,31 @@ namespace AnimusForge
 				StartVoteMeeting(decision);
 			}
 
+			private void OpenPendingAgendaMapNotice()
+			{
+				KingdomDecision decision = VoteDealBehavior.s_pendingAgendaMapNoticeDecision;
+				if (decision == null) return;
+
+				VoteDealBehavior.s_pendingAgendaMapNoticeDecision = null;
+				if (!VoteDealBehavior.IsAgendaMapNoticeDecisionValidForExternal(decision)) return;
+				if (VoteDealBehavior.RequiresPlayerRulerResolution(decision))
+				{
+					if (VoteDealBehavior.s_pendingRequiredAgendaDecision == decision)
+					{
+						VoteDealBehavior.s_pendingRequiredAgendaDecision = null;
+					}
+					StartVoteMeeting(decision);
+					return;
+				}
+
+				SelectAgenda();
+				Agenda?.TrySelectDecision(decision);
+			}
+
 			public override void OnRefresh()
 			{
 				Agenda?.RefreshAgendaItems();
+				OpenPendingAgendaMapNotice();
 				OpenPendingRequiredAgendaVote();
 			}
 

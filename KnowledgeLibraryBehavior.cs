@@ -5659,6 +5659,21 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 
 	public string BuildLoreContext(string inputText, Hero npcHero, string secondaryInput, MentionedWorldEntities mentionedEntities)
 	{
+		return BuildLoreContextInternal(inputText, npcHero, secondaryInput, mentionedEntities, includePlayerContext: true);
+	}
+
+	public string BuildLoreContextWithoutPlayerContext(string inputText, Hero npcHero, string secondaryInput, MentionedWorldEntities mentionedEntities = null)
+	{
+		return BuildLoreContextInternal(inputText, npcHero, secondaryInput, mentionedEntities, includePlayerContext: false);
+	}
+
+	public long GetRuleDataVersionForExternal()
+	{
+		return _ruleDataVersion;
+	}
+
+	private string BuildLoreContextInternal(string inputText, Hero npcHero, string secondaryInput, MentionedWorldEntities mentionedEntities, bool includePlayerContext)
+	{
 		string text = (inputText ?? "").Trim();
 		MentionedWorldEntities loreMentionedEntities = mentionedEntities?.Clone() ?? new MentionedWorldEntities();
 		if (string.IsNullOrEmpty(text) && loreMentionedEntities.IsEmpty)
@@ -5677,7 +5692,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			}
 			return "";
 		}
-		bool includePlayerPersona = CanObserverReceivePlayerPersona(npcHero, null);
+		bool includePlayerPersona = includePlayerContext && CanObserverReceivePlayerPersona(npcHero, null);
 		string text2 = (npcHero?.StringId ?? "").Trim();
 		string text3 = (npcHero?.Culture?.StringId ?? "neutral").Trim().ToLower();
 		string text4 = "";
@@ -5744,12 +5759,12 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		long ruleDataVersion = _ruleDataVersion;
 		bool allowLoreContextCache = !HasAnyTextMappings();
 		string mentionSignature = BuildKnowledgeMentionSignature(loreMentionedEntities);
-		string key = Hash8($"{ruleDataVersion}|H|{text2}|{text8}|{text3}|{text4}|{text6}|{text5}|{(flag ? 1 : 0)}|{(flag2 ? 1 : 0)}|player_persona={(includePlayerPersona ? 1 : 0)}|{BuildExactKeywordSlotCacheSignature()}|{mentionSignature}|{text}");
+		string key = Hash8($"{ruleDataVersion}|H|{text2}|{text8}|{text3}|{text4}|{text6}|{text5}|{(flag ? 1 : 0)}|{(flag2 ? 1 : 0)}|player_context={(includePlayerContext ? 1 : 0)}|player_persona={(includePlayerPersona ? 1 : 0)}|{BuildExactKeywordSlotCacheSignature()}|{mentionSignature}|{text}");
 		if (allowLoreContextCache && TryGetLoreContextCache(key, ruleDataVersion, out var value))
 		{
 			return value;
 		}
-		string playerAppearanceForPrompt = GetPlayerAppearanceForPrompt();
+		string playerAppearanceForPrompt = includePlayerContext ? GetPlayerAppearanceForPrompt() : "";
 		int num = 0;
 		try
 		{
@@ -5782,10 +5797,35 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		StringBuilder stringBuilder = new StringBuilder();
 		AppendPermanentPlayerAppearanceContext(stringBuilder, text7, playerAppearanceForPrompt);
 		CandidateRules candidateRules = CollectCandidateRules(loreMentionedEntities);
-		int loreInjectLimit = candidateRules?.InjectLimit ?? GetLoreInjectLimit(GetKnowledgeReturnCap());
+		int loreInjectLimit = candidateRules?.InjectLimit ?? 0;
+		if (loreInjectLimit <= 0)
+		{
+			loreInjectLimit = GetLoreInjectLimit(GetKnowledgeReturnCap());
+		}
 		string matchMode = candidateRules?.MatchMode ?? "none";
 		List<LoreRule> list = candidateRules?.OrderedRules;
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		if (!includePlayerContext)
+		{
+			// External systems such as world diplomacy provide a small, ordered list of
+			// authoritative entities. Prefer their exact lore entries before semantic
+			// recall so a shared culture name (for example, all three Imperial realms)
+			// cannot displace the named kingdom. This path is cached by the caller and by
+			// the lore-context cache, so the bounded exact scan is not on a daily hot path.
+			foreach (string entityTerm in BuildKnowledgeMentionTerms(loreMentionedEntities))
+			{
+				if (num3 >= loreInjectLimit)
+				{
+					break;
+				}
+				if (TryFindRuleByExactKeyword(entityTerm, hashSet, out var matchedEntityRule)
+					&& TryAppendExactKeywordSlotLore(stringBuilder, ref flag3, matchedEntityRule, includePlayerPersona, "keyword_slot_external_entity", npcHero, null, text2, text3, text4, text6, text5, flag, flag2, text7, text, secondaryInput, hashSet))
+				{
+					num3++;
+					num2++;
+				}
+			}
+		}
 		if (list != null)
 		{
 			foreach (LoreRule item in list)
@@ -5801,8 +5841,8 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				}
 			}
 		}
-		string text9 = GetPlayerKeywordSlotKeyword();
-		if (!string.IsNullOrWhiteSpace(text9) && TryFindRuleByExactKeyword(text9, hashSet, out var matchedRule) && TryAppendExactKeywordSlotLore(stringBuilder, ref flag3, matchedRule, includePlayerPersona, "keyword_slot_player", npcHero, null, text2, text3, text4, text6, text5, flag, flag2, text7, text, secondaryInput, hashSet))
+		string text9 = includePlayerContext ? GetPlayerKeywordSlotKeyword() : "";
+		if (includePlayerContext && !string.IsNullOrWhiteSpace(text9) && TryFindRuleByExactKeyword(text9, hashSet, out var matchedRule) && TryAppendExactKeywordSlotLore(stringBuilder, ref flag3, matchedRule, includePlayerPersona, "keyword_slot_player", npcHero, null, text2, text3, text4, text6, text5, flag, flag2, text7, text, secondaryInput, hashSet))
 		{
 			num2++;
 		}

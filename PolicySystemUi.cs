@@ -823,7 +823,10 @@ public sealed class AnimusForgeWorldEventInboxPopupVM : ViewModel
 		WorldEventRecordItemVM selected = RecordItems[index];
 		if (selected.IsUnread)
 		{
-			AnimusForgeWorldEventBehavior.MarkEventReadForExternal(selected.EventId);
+			if (!AnimusForgeWorldEventBehavior.MarkEventReadForExternal(selected.EventId))
+			{
+				WorldDiplomacyBehavior.MarkDocumentReadForExternal(selected.EventId);
+			}
 			selected.MarkRead();
 			CountryItems?.FirstOrDefault(x => x != null && x.IsSelected)?.RefreshUnreadCountFromRecords();
 		}
@@ -964,6 +967,7 @@ public sealed class WorldEventRecordItemVM : ViewModel
 		HeaderRightText = data.HeaderRightText ?? "";
 		DateText = data.DateText ?? "";
 		TitleText = data.TitleText ?? "世界事件";
+		IndexTitleText = string.IsNullOrWhiteSpace(data.IndexTitleText) ? TitleText : data.IndexTitleText;
 		MetaText = data.MetaText ?? "";
 		IndexMetaText = data.IndexMetaText ?? "";
 		PolicyNameText = data.PolicyNameText ?? "";
@@ -987,6 +991,8 @@ public sealed class WorldEventRecordItemVM : ViewModel
 	public string DateText { get; }
 	[DataSourceProperty]
 	public string TitleText { get; }
+	[DataSourceProperty]
+	public string IndexTitleText { get; }
 	[DataSourceProperty]
 	public string MetaText { get; }
 	[DataSourceProperty]
@@ -1084,6 +1090,7 @@ public sealed class WorldEventRecordData
 	public string HeaderRightText = "";
 	public string DateText = "";
 	public string TitleText = "";
+	public string IndexTitleText = "";
 	public string MetaText = "";
 	public string IndexMetaText = "";
 	public string PolicyNameText = "";

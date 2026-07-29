@@ -13353,6 +13353,30 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static void RecordWorldDiplomacyWeeklyMaterialForExternal(string stableKey, string label, string snapshotText, string kingdomId, string actorHeroId, string actorKingdomId, bool includeInWorld, int day, string gameDate)
+	{
+		try
+		{
+			(Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.RecordEventSourceMaterial(
+				"world_diplomacy",
+				label,
+				snapshotText,
+				stableKey,
+				kingdomId,
+				"",
+				includeInWorld,
+				includeInKingdom: true,
+				actorHeroId: actorHeroId,
+				actorKingdomId: actorKingdomId,
+				dayOverride: day,
+				gameDateOverride: gameDate);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EventWeeklyReport", "[WorldDiplomacy][WARN] record weekly material failed: " + ex.Message);
+		}
+	}
+
 	public static void RecordPolicySystemWeeklyMaterialForExternal(string eventKind, string label, string snapshot, string stableKey, string targetKingdomId, bool includeInWorld, string actorHeroId, string actorKingdomId, int day, string gameDate)
 	{
 		try
@@ -27542,6 +27566,7 @@ public class MyBehavior : CampaignBehaviorBase
 		string id = (ruleId ?? "").Trim();
 		return string.Equals(id, "kingdom_vassalage", StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(id, "diplomacy", StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(id, "world_diplomacy_discussion", StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(id, "kingdom_agenda", StringComparison.OrdinalIgnoreCase);
 	}
 
@@ -27848,6 +27873,7 @@ public class MyBehavior : CampaignBehaviorBase
 		switch (id)
 		{
 		case "diplomacy":
+		case "world_diplomacy_discussion":
 		case "kingdom_vassalage":
 		case "kingdom_agenda":
 		case "marriage":

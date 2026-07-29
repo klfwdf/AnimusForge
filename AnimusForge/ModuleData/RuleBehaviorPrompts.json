@@ -712,6 +712,27 @@
                                                 ]
                         },
                         {
+                            "Id":  "world_diplomacy_discussion",
+                            "IsEnabled":  true,
+                            "Group":  "politics",
+                            "Priority":  72,
+                            "TopicNumber":  33,
+                            "TopicLabel":  "Discuss the Current Diplomatic Situation",
+                            "Code":  "WORLD_DIPLOMACY_DISCUSSION",
+                            "NonHeroInstruction":  "你没有可靠的王庭消息来源，只能谈运行时事实中明确提供、且你确实知晓的外交宣言；没有材料时应坦率表示不清楚。",
+                            "Instruction":  "根据运行时提供的已知外交宣言，自然讨论当今外交局势、对本国的影响和可以考虑的立场。可以评论、分析、征求意见或提出尚未决定的建议，但不得把提案写成已经发生的事实，不得替国王承诺、宣布或执行任何外交行动。只能引用运行时明确列出的宣言，不得假装知道尚未传播到此人所在王国或定居点的消息。",
+                            "PostprocessRules":  [
+                                                 ],
+                            "TriggerKeywords":  [
+                                                    "你怎么看最近的外交局势？",
+                                                    "最近各国国王都说了些什么？",
+                                                    "谈谈最近的外交宣言。",
+                                                    "我们国家该如何应对现在的外交局势？",
+                                                    "最近有什么值得注意的国书或宣言？",
+                                                    "你听说最近的外交风波了吗？"
+                                                ]
+                        },
+                        {
                             "Id":  "diplomacy",
                             "IsEnabled":  true,
                             "Group":  "politics",

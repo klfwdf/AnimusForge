@@ -2080,6 +2080,10 @@ public static class AIConfigHandler
 		{
 			return DiplomacyBehavior.CanInjectDiplomacyRuleForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
 		}
+		if (string.Equals(text, "world_diplomacy_discussion", StringComparison.OrdinalIgnoreCase))
+		{
+			return WorldDiplomacyBehavior.CanDiscussWorldDiplomacyForExternal(ResolveConversationTargetHero());
+		}
 		if (string.Equals(text, "kingdom_agenda", StringComparison.OrdinalIgnoreCase))
 		{
 			return IsKingdomLordOrKingRuleTargetForPreprocess(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
@@ -8764,6 +8768,8 @@ public static class AIConfigHandler
 			}
 			case "diplomacy":
 				return DiplomacyBehavior.CanInjectDiplomacyRuleForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
+			case "world_diplomacy_discussion":
+				return WorldDiplomacyBehavior.CanDiscussWorldDiplomacyForExternal(ResolveConversationTargetHero());
 			case "kingdom_agenda":
 				return IsKingdomLordOrKingRuleTargetForPreprocess(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
 			case "marriage":

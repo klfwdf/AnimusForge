@@ -6,6 +6,7 @@ param(
     [string]$BuildDll13 = "",
     [string]$BuildDll14 = "",
     [string]$BootstrapDll = "",
+    [string]$RuntimeDependencyDir = "",
     [string]$StageOnlyOutputDir = ""
 )
 
@@ -189,6 +190,40 @@ function Test-SourceModuleDir {
     if ($missing.Count -gt 0) {
         throw "Source module is incomplete: $Path`nMissing: $($missing -join ', ')"
     }
+}
+
+function Resolve-PrivateRuntimeDependencyDir {
+    param(
+        [string]$RequestedDir,
+        [Parameter(Mandatory = $true)][string]$SourceModuleDir,
+        [Parameter(Mandatory = $true)][string]$TargetModuleDir
+    )
+
+    $candidates = New-Object System.Collections.Generic.List[string]
+    if (-not [string]::IsNullOrWhiteSpace($RequestedDir)) {
+        $candidates.Add((Get-FullPathSafe -Path $RequestedDir))
+    }
+    else {
+        $candidates.Add((Get-FullPathSafe -Path (Join-Path $SourceModuleDir "bin\Win64_Shipping_Client")))
+        $candidates.Add((Get-FullPathSafe -Path (Join-Path $TargetModuleDir "bin\Win64_Shipping_Client")))
+    }
+
+    $errors = New-Object System.Collections.Generic.List[string]
+    foreach ($candidate in @($candidates | Select-Object -Unique)) {
+        if (-not (Test-Path -LiteralPath $candidate -PathType Container)) {
+            $errors.Add("Directory not found: $candidate")
+            continue
+        }
+        $missing = @($PrivateRuntimeDlls | Where-Object {
+            -not (Test-Path -LiteralPath (Join-Path $candidate $_) -PathType Leaf)
+        })
+        if ($missing.Count -eq 0) {
+            return $candidate
+        }
+        $errors.Add("Incomplete runtime dependency directory '$candidate'. Missing: $($missing -join ', ')")
+    }
+
+    throw "A complete AnimusForge private runtime dependency directory is required.`n$($errors -join "`n")"
 }
 
 function Get-BannerlordModulesDir {
@@ -441,7 +476,7 @@ function Assert-StrictBinLayout {
 
 function Build-DesiredModuleBin {
     param(
-        [Parameter(Mandatory = $true)][string]$SourceModuleDir,
+        [Parameter(Mandatory = $true)][string]$RuntimeDependencyDir,
         [Parameter(Mandatory = $true)][string]$StagingBinDir,
         [Parameter(Mandatory = $true)][string]$Implementation13,
         [Parameter(Mandatory = $true)][string]$Implementation14,
@@ -452,12 +487,8 @@ function Build-DesiredModuleBin {
         throw "Staging bin must not already exist: $StagingBinDir"
     }
     New-Item -ItemType Directory -Path $StagingBinDir | Out-Null
-    $sourceBin = Join-Path $SourceModuleDir "bin\Win64_Shipping_Client"
-    if (-not (Test-Path -LiteralPath $sourceBin -PathType Container)) {
-        throw "Source runtime bin directory not found: $sourceBin"
-    }
     foreach ($runtimeDll in $PrivateRuntimeDlls) {
-        $runtimeSource = Join-Path $sourceBin $runtimeDll
+        $runtimeSource = Join-Path $RuntimeDependencyDir $runtimeDll
         if (-not (Test-Path -LiteralPath $runtimeSource -PathType Leaf)) {
             throw "Required private runtime DLL not found: $runtimeSource"
         }
@@ -610,6 +641,7 @@ if ((Test-Path -LiteralPath $targetModuleDir) -and -not (Test-Path -LiteralPath 
 Assert-NotReparsePoint -Path $targetModuleDir
 
 Test-SourceModuleDir -Path $sourceModuleDir
+$runtimeDependencyDirFull = Resolve-PrivateRuntimeDependencyDir -RequestedDir $RuntimeDependencyDir -SourceModuleDir $sourceModuleDir -TargetModuleDir $targetModuleDir
 $dll13Full = Get-FullPathSafe -Path $BuildDll13
 $dll14Full = Get-FullPathSafe -Path $BuildDll14
 $bootstrapFull = Get-FullPathSafe -Path $BootstrapDll
@@ -639,7 +671,7 @@ if (-not [string]::IsNullOrWhiteSpace($StageOnlyOutputDir)) {
             (Join-Path $sourceModuleDir "bin")
         )
         Set-SingleModuleIdentity -ModuleDir $projectStageDir
-        Build-DesiredModuleBin -SourceModuleDir $sourceModuleDir -StagingBinDir (Join-Path $projectStageDir "bin\Win64_Shipping_Client") -Implementation13 $dll13Full -Implementation14 $dll14Full -Bootstrap $bootstrapFull
+        Build-DesiredModuleBin -RuntimeDependencyDir $runtimeDependencyDirFull -StagingBinDir (Join-Path $projectStageDir "bin\Win64_Shipping_Client") -Implementation13 $dll13Full -Implementation14 $dll14Full -Bootstrap $bootstrapFull
         Invoke-Robocopy -SourceDir (Join-Path $sourceModuleDir "PlayerExports") -TargetDir (Join-Path $projectStageDir "PlayerExports") -ExtraArguments @("/E")
         Assert-SingleModuleLayout -ModuleDir $projectStageDir
         Assert-SameHash -SourcePath $bootstrapFull -TargetPath (Join-Path $projectStageDir "bin\Win64_Shipping_Client\AnimusForge.Bootstrap.dll")
@@ -705,7 +737,7 @@ try {
     Set-SingleModuleIdentity -ModuleDir $stagingModuleDir
 
     $stagingBinDir = Join-Path $stagingModuleDir "bin\Win64_Shipping_Client"
-    Build-DesiredModuleBin -SourceModuleDir $sourceModuleDir -StagingBinDir $stagingBinDir -Implementation13 $dll13Full -Implementation14 $dll14Full -Bootstrap $bootstrapFull
+    Build-DesiredModuleBin -RuntimeDependencyDir $runtimeDependencyDirFull -StagingBinDir $stagingBinDir -Implementation13 $dll13Full -Implementation14 $dll14Full -Bootstrap $bootstrapFull
 
     $targetLogsDir = Join-Path $targetModuleDir "Logs"
     if (Test-Path -LiteralPath $targetLogsDir -PathType Container) {
@@ -736,6 +768,7 @@ try {
     Assert-SingleModuleLayout -ModuleDir $stagingModuleDir
 
     Write-Host "Source Module: $sourceModuleDir"
+    Write-Host "Runtime DLLs : $runtimeDependencyDirFull"
     Write-Host "Target Module: $targetModuleDir"
     Write-Host "Staged Module: $stagingModuleDir"
 

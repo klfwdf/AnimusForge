@@ -164,6 +164,7 @@ namespace AnimusForge
 			MeetingBattleRuntime.RunWithDiplomaticSideEffectsUnlocked("diplomacy_declare_war", () =>
 				DeclareWarAction.ApplyByKingdomDecision(declarer, target));
 			Logger.Log("DiplomacyBehavior", $"[DeclareWar] {declarer.StringId} -> {target.StringId}");
+			WorldDiplomacyBehavior.NotifyExternalDiplomacyResolved("declare_war", declarer, target, "面对面口头外交达成");
 			return "";
 		}
 
@@ -227,10 +228,21 @@ namespace AnimusForge
 			if (tributeAmount < 0) return "";
 			int durationDays = ParseDurationDays(daysStr, tributeAmount > 0);
 
-			MeetingBattleRuntime.RunWithDiplomaticSideEffectsUnlocked("diplomacy_make_peace", () =>
-				MakePeaceAction.ApplyByKingdomDecision(payer, receiver, tributeAmount, durationDays));
-			DiplomacyRecentPeaceGuard.RegisterPeace(payer, receiver, "diplomacy_make_peace");
-			Logger.Log("DiplomacyBehavior", $"[MakePeace] {payer.StringId}->{receiver.StringId} tribute={tributeAmount} days={durationDays}");
+			if (!DiplomacyPeaceTermsService.TryApplyPeace(
+				payer,
+				receiver,
+				tributeAmount,
+				durationDays,
+				"diplomacy_make_peace",
+				out int appliedTribute,
+				out int appliedDuration,
+				out string failureReason))
+			{
+				Logger.Log("DiplomacyBehavior", "[MakePeace] execution rejected: " + failureReason);
+				return "";
+			}
+			Logger.Log("DiplomacyBehavior", $"[MakePeace] {payer.StringId}->{receiver.StringId} tribute={appliedTribute} days={appliedDuration}");
+			WorldDiplomacyBehavior.NotifyExternalDiplomacyResolved("accept_peace", payer, receiver, "面对面口头外交达成");
 			return "";
 		}
 
@@ -274,6 +286,7 @@ namespace AnimusForge
 			MeetingBattleRuntime.RunWithDiplomaticSideEffectsUnlocked("diplomacy_form_alliance", () =>
 				allianceBeh.StartAlliance(playerKingdom, npcKingdom));
 			Logger.Log("DiplomacyBehavior", $"[FormAlliance] {playerKingdom.StringId} <-> {npcKingdom.StringId}");
+			WorldDiplomacyBehavior.NotifyExternalDiplomacyResolved("accept_alliance", playerKingdom, npcKingdom, "面对面口头外交达成");
 			return "";
 		}
 
@@ -300,6 +313,7 @@ namespace AnimusForge
 			MeetingBattleRuntime.RunWithDiplomaticSideEffectsUnlocked("diplomacy_break_alliance", () =>
 				allianceBeh.EndAlliance(playerKingdom, npcKingdom));
 			Logger.Log("DiplomacyBehavior", $"[BreakAlliance] {playerKingdom.StringId} <-> {npcKingdom.StringId}");
+			WorldDiplomacyBehavior.NotifyExternalDiplomacyResolved("break_alliance", playerKingdom, npcKingdom, "面对面口头外交达成");
 			return "";
 		}
 
@@ -337,6 +351,7 @@ namespace AnimusForge
 			MeetingBattleRuntime.RunWithDiplomaticSideEffectsUnlocked("diplomacy_make_trade", () =>
 				tradeBeh.MakeTradeAgreement(playerKingdom, npcKingdom, duration));
 			Logger.Log("DiplomacyBehavior", $"[MakeTrade] {playerKingdom.StringId} <-> {npcKingdom.StringId} days={(int)duration.ToDays}");
+			WorldDiplomacyBehavior.NotifyExternalDiplomacyResolved("accept_trade", playerKingdom, npcKingdom, "面对面口头外交达成");
 			return "";
 		}
 
@@ -363,6 +378,7 @@ namespace AnimusForge
 			MeetingBattleRuntime.RunWithDiplomaticSideEffectsUnlocked("diplomacy_cancel_trade", () =>
 				tradeBeh.EndTradeAgreement(playerKingdom, npcKingdom));
 			Logger.Log("DiplomacyBehavior", $"[CancelTrade] {playerKingdom.StringId} <-> {npcKingdom.StringId}");
+			WorldDiplomacyBehavior.NotifyExternalDiplomacyResolved("cancel_trade", playerKingdom, npcKingdom, "面对面口头外交达成");
 			return "";
 		}
 
@@ -385,23 +401,12 @@ namespace AnimusForge
 
 		private static int ParseTributeAmount(string amountStr, Kingdom payer, Kingdom receiver)
 		{
-			if (amountStr == "0" || string.IsNullOrEmpty(amountStr)) return 0;
-			if (amountStr.Equals("auto", StringComparison.OrdinalIgnoreCase)) return CalculateTribute(payer, receiver);
-			if (int.TryParse(amountStr, out int parsed))
-			{
-				int max = (int)(payer.Fiefs.Sum(x => x.Prosperity) * 0.15f * 0.35f);
-				return (MBMath.ClampInt(parsed, 0, max) / 10) * 10;
-			}
-			return -1;
+			return DiplomacyPeaceTermsService.ResolveTributeAmount(amountStr, payer, receiver);
 		}
 
 		private static int ParseDurationDays(string daysStr, bool hasTribute)
 		{
-			if (daysStr.Equals("default", StringComparison.OrdinalIgnoreCase) || string.IsNullOrEmpty(daysStr) || daysStr == "0")
-				return hasTribute ? 100 : 0;
-			if (int.TryParse(daysStr, out int parsed))
-				return MBMath.ClampInt(parsed, 1, 252);
-			return hasTribute ? 100 : 0;
+			return DiplomacyPeaceTermsService.ResolveDurationDays(daysStr, hasTribute);
 		}
 
 		internal static bool TryBuildTributePowerContext(Kingdom payer, Kingdom receiver, out AfTributePowerContext context)

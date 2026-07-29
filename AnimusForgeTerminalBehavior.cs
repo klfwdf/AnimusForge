@@ -117,9 +117,9 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			_wasTerminalKeyDown = false;
 			return;
 		}
-		if (CourierLetterInputPopup.IsOpen || CourierLetterReplyPopup.IsOpen)
+		if (CourierLetterInputPopup.IsOpen || CourierLetterReplyPopup.IsOpen || WorldDiplomacyComposePopup.IsOpen)
 		{
-			LogHotkeyBlocked("courier_letter_ui", configuredTerminalKey);
+			LogHotkeyBlocked("modal_text_input_ui", configuredTerminalKey);
 			_wasTerminalKeyDown = true;
 			return;
 		}
@@ -298,7 +298,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		{
 			new InquiryElement("trust_query", "信任度查询", null, isEnabled: true, ""),
 			new InquiryElement("weekly_reports", "查看周报", null, isEnabled: true, ""),
-			new InquiryElement("custom_policy_management", "政策系统", null, isEnabled: true, "撰写政策，或查看各国已经发布的世界政策。"),
+			new InquiryElement("custom_policy_management", "王国公告", null, isEnabled: true, "撰写自定义政策或外交宣言，并统一查看各国王国公告。"),
 			new InquiryElement("vassalage_management", "臣属国管理", null, isEnabled: true, "只查看已有臣属国；解约、改约、吞并请通过 LLM 对话推进。"),
 			new InquiryElement("player_persona", "修改玩家外貌与背景", null, isEnabled: true, ""),
 			new InquiryElement("player_rp_forge", "制造RP物品", null, isEnabled: true, "投入第纳尔，制造玩家自己的普通RP物品或武器装备。"),
@@ -389,11 +389,11 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		_terminalUiActive = true;
 		List<InquiryElement> list = new List<InquiryElement>
 		{
-			new InquiryElement("compose", "撰写政策", null, isEnabled: true, "填写政策名与政策内容，提交给 LLM 评议后落地数值效果。"),
+			new InquiryElement("compose", "撰写王国公告", null, isEnabled: true, "选择撰写自定义政策或外交宣言。两套功能只共享入口，内部处理互不影响。"),
 			new InquiryElement("local_policies", "地方政策", null, isEnabled: true, "发布只影响玩家家族封地范围的地方政策，或查看地方政策记录。"),
-			new InquiryElement("world_policies", "查看世界政策", null, isEnabled: true, "只读查看各国已经发布的玩家与 NPC 统治者政策及政策衍生事件。")
+			new InquiryElement("world_policies", "查看王国公告", null, isEnabled: true, "统一查看自定义政策、政策衍生事件与各国公开外交宣言。")
 		};
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("政策系统", "请选择政策功能：", list, isExitShown: true, 1, 1, "确定", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData("王国公告", "请选择公告功能：", list, isExitShown: true, 1, 1, "确定", "返回", delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -403,8 +403,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			string text = selected[0].Identifier as string;
 			if (string.Equals(text, "compose", StringComparison.Ordinal))
 			{
-				CloseTerminal();
-				CustomPolicyBehavior.OpenFromTerminal();
+				OpenRoyalAnnouncementComposeChoice();
 			}
 			else if (string.Equals(text, "local_policies", StringComparison.Ordinal))
 			{
@@ -414,9 +413,9 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			else if (string.Equals(text, "world_policies", StringComparison.Ordinal))
 			{
 				CloseTerminal();
-				if (!PolicySystemUi.ShowWorldPolicies())
+				if (!WorldDiplomacyBehavior.ShowRoyalAnnouncementArchive())
 				{
-					InformationManager.DisplayMessage(new InformationMessage("打开世界政策界面失败。"));
+					InformationManager.DisplayMessage(new InformationMessage("打开王国公告界面失败。"));
 				}
 			}
 			else
@@ -426,6 +425,46 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		}, delegate
 		{
 			OpenRootMenu();
+		}, "", isSeachAvailable: true);
+		MBInformationManager.ShowMultiSelectionInquiry(data, pauseGameActiveState: true);
+	}
+
+	private void OpenRoyalAnnouncementComposeChoice()
+	{
+		_terminalUiActive = true;
+		List<InquiryElement> list = new List<InquiryElement>
+		{
+			new InquiryElement("custom_policy", "撰写自定义政策", null, isEnabled: true, "进入原有自定义政策功能。政策评议、费用、议程、效果和存档链路保持不变。"),
+			new InquiryElement("diplomatic_document", "撰写外交宣言", null, isEnabled: true, "发布王国外交宣言；对象国与外交意图由后台判断，不会暂停游戏等待生成。")
+		};
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData("撰写王国公告", "请选择公告类别：", list, isExitShown: true, 1, 1, "确定", "返回", delegate(List<InquiryElement> selected)
+		{
+			if (selected == null || selected.Count == 0)
+			{
+				OpenCustomPolicyManagementView();
+				return;
+			}
+			string id = selected[0].Identifier as string;
+			if (string.Equals(id, "custom_policy", StringComparison.Ordinal))
+			{
+				CloseTerminal();
+				CustomPolicyBehavior.OpenFromTerminal();
+			}
+			else if (string.Equals(id, "diplomatic_document", StringComparison.Ordinal))
+			{
+				CloseTerminal();
+				if (!WorldDiplomacyBehavior.OpenComposeFromTerminal())
+				{
+					InformationManager.DisplayMessage(new InformationMessage("打开外交宣言撰写界面失败。"));
+				}
+			}
+			else
+			{
+				OpenCustomPolicyManagementView();
+			}
+		}, delegate
+		{
+			OpenCustomPolicyManagementView();
 		}, "", isSeachAvailable: true);
 		MBInformationManager.ShowMultiSelectionInquiry(data, pauseGameActiveState: true);
 	}
