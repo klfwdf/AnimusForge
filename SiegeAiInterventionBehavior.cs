@@ -2355,7 +2355,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (targetAgentIndex < 0 || !AlliedAgentIndexes.Contains(targetAgentIndex))
+			if (!TryEnsureRuntimeAlliedSoldierActionTarget(targetAgentIndex))
 			{
 				InformationManager.DisplayMessage(new InformationMessage(SiegeSoldierAppeasementProfile.TargetValidationMessage, Color.FromUint(SiegeSoldierAppeasementProfile.ValidationMessageColor)));
 				return false;
@@ -3208,8 +3208,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			CharacterObject agentCharacter = targetAgent?.Character as CharacterObject;
 			CharacterObject resolvedTargetCharacter = targetCharacter ?? agentCharacter ?? targetHero?.CharacterObject;
 			bool targetIsAlliedSoldier = IsRuntimeAlliedSoldierAgent(targetAgent, resolvedTargetCharacter, targetHero ?? resolvedTargetCharacter?.HeroObject);
+			bool targetWasLegacyRegistered = targetAgent != null && AlliedAgentIndexes.Contains(targetAgent.Index);
 			bool hasSharedReliefPool = HasSharedCivilianReliefPool();
 			bool targetIsCivilian = IsCivilianReliefConversationTarget(targetAgentIndex, resolvedTargetCharacter);
+			IReadOnlyList<SiegeInterventionActionKind> inputActionKinds = SiegeActionTagCatalog.ExtractKinds(text);
 			SiegeActionRoutingDecision actionRouting = SiegeActionRoutingPolicy.Evaluate(new SiegeActionRoutingFacts(
 				text,
 				HasDestructiveOutcomeLocked(),
@@ -3329,7 +3331,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				}
 				TryPromptSoldierDestructiveInquiry(targetAgent, targetAgentIndex, SiegeDestructiveInquiryProfile.CivilianRobberyReason);
 			}
-			if (destructiveAllowed && hasPlunderTag && canApplySoldierMediatedDestructive)
+			if (destructiveAllowed && hasPlunderTag && canApplySoldierMediatedDestructive
+				&& TryEnsureRuntimeAlliedSoldierActionTarget(targetAgentIndex))
 			{
 				bool handled = StartPlunder(SiegePostprocessActionEffectProfile.PlunderTriggerSource, SiegePostprocessActionEffectProfile.PlunderTriggerDetail);
 				actionHandled |= handled;
@@ -3338,7 +3341,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					TryTriggerAmbientReactionsForAction(SiegeInterventionActionKind.Plunder, targetAgentIndex, targetAgentIndex, includeCivilians: true, includeSoldiers: true);
 				}
 			}
-			if (destructiveAllowed && MassacreTagRegex.IsMatch(text) && canApplySoldierMediatedDestructive)
+			if (destructiveAllowed && MassacreTagRegex.IsMatch(text) && canApplySoldierMediatedDestructive
+				&& TryEnsureRuntimeAlliedSoldierActionTarget(targetAgentIndex))
 			{
 				bool handled = StartMassacre(SiegePostprocessActionEffectProfile.MassacreTriggerSource, SiegePostprocessActionEffectProfile.MassacreTriggerDetail);
 				actionHandled |= handled;
@@ -3356,6 +3360,15 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					TryTriggerAmbientReactionsForAction(SiegeInterventionActionKind.CulturalRepopulation, targetAgentIndex, targetAgentIndex, includeCivilians: true, includeSoldiers: true);
 				}
 			}
+			GcczDiagnosticLog.Log("TownAction", "route actions=" + (inputActionKinds.Count > 0 ? string.Join(",", inputActionKinds) : "none")
+				+ " direct=" + replyIsDirectPlayerResponse
+				+ " alliedSoldier=" + targetIsAlliedSoldier
+				+ " registeredBefore=" + targetWasLegacyRegistered
+				+ " registeredAfter=" + (targetAgent != null && AlliedAgentIndexes.Contains(targetAgent.Index))
+				+ " civilian=" + targetIsCivilian
+				+ " destructiveLocked=" + HasDestructiveOutcomeLocked()
+				+ " handled=" + actionHandled
+				+ " targetAgent=" + targetAgentIndex);
 			text = StripSiegeTags(text);
 			return actionHandled;
 		}
@@ -7052,7 +7065,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (targetAgentIndex < 0 || !AlliedAgentIndexes.Contains(targetAgentIndex))
+			if (!TryEnsureRuntimeAlliedSoldierActionTarget(targetAgentIndex))
 			{
 				InformationManager.DisplayMessage(new InformationMessage(SiegeReliefChoiceProfile.SoldierMaterialReliefTargetMessage, Color.FromUint(SiegeReliefChoiceProfile.ValidationMessageColor)));
 				return false;
@@ -7526,7 +7539,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (!AlliedAgentIndexes.Contains(targetAgentIndex))
+			if (!TryEnsureRuntimeAlliedSoldierActionTarget(targetAgentIndex))
 			{
 				InformationManager.DisplayMessage(new InformationMessage(SiegeCulturalRepopulationProfile.TargetValidationMessage, Color.FromUint(SiegeCulturalRepopulationProfile.ValidationMessageColor)));
 				return false;
@@ -7542,6 +7555,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			_culturalRepopulationRequested = true;
 			MarkPendingAftermath(ToNativeAftermathKind(repopulationProfile.AftermathKind), triggerSource, triggerDetail);
 			RecordInterventionMemory(repopulationProfile.MemoryTitle, repopulationProfile.BuildRequestMemoryText(targetCultureText));
+			GcczDiagnosticLog.Log("CulturalRepopulation", "requested targetAgent=" + targetAgentIndex
+				+ " settlement=" + (ResolveCurrentSettlement()?.StringId ?? "N/A")
+				+ " targetCulture=" + (targetCulture?.StringId ?? "N/A")
+				+ " massacreVictory=" + _massacreVictoryReached);
 			if (_massacreVictoryReached)
 			{
 				handled |= ApplyCulturalRepopulationNow(SiegeCulturalRepopulationProfile.VictoryAlreadyReachedApplySource);
@@ -7572,6 +7589,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			if (settlement == null || targetCulture == null)
 			{
 				Logger.Log("SiegeAiIntervention", "ApplyCulturalRepopulationNow skipped. Source=" + (source ?? "N/A") + ", Settlement=" + (settlement?.StringId ?? "null") + ", TargetCulture=" + (targetCulture?.StringId ?? "null") + ", TargetCultureSource=" + (targetCultureSource ?? "N/A"));
+				GcczDiagnosticLog.Log("CulturalRepopulation", "apply skipped source=" + (source ?? "N/A")
+					+ " settlement=" + (settlement?.StringId ?? "null")
+					+ " targetCulture=" + (targetCulture?.StringId ?? "null"));
 				return false;
 			}
 			CultureObject oldCulture = settlement.Culture;
@@ -7605,11 +7625,19 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			string targetCultureText = DescribeCultureForMessage(targetCulture, targetCultureSource);
 			InformationManager.DisplayMessage(new InformationMessage(repopulationProfile.BuildCompletedMessageText(settlementName, targetCultureText, notableResultText), Color.FromUint(repopulationProfile.CompletedMessageColor)));
 			Logger.Log("SiegeAiIntervention", "Applied purge repopulation. Source=" + (source ?? "N/A") + ", Settlement=" + (settlement.StringId ?? "N/A") + ", OldCulture=" + (oldCulture?.StringId ?? "N/A") + ", NewCulture=" + (targetCulture.StringId ?? "N/A") + ", TargetCultureSource=" + (targetCultureSource ?? "N/A") + ", BoundVillages=" + boundVillagesChanged + ", KilledNotables=" + killedNotables + ", SpawnedNotables=" + spawnedNotables);
+			GcczDiagnosticLog.Log("CulturalRepopulation", "applied source=" + (source ?? "N/A")
+				+ " settlement=" + (settlement.StringId ?? "N/A")
+				+ " oldCulture=" + (oldCulture?.StringId ?? "N/A")
+				+ " newCulture=" + (targetCulture.StringId ?? "N/A")
+				+ " villages=" + boundVillagesChanged
+				+ " killedNotables=" + killedNotables
+				+ " spawnedNotables=" + spawnedNotables);
 			return true;
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("SiegeAiIntervention", "ApplyCulturalRepopulationNow failed: " + ex.Message);
+			GcczDiagnosticLog.Log("CulturalRepopulation", "apply failed source=" + (source ?? "N/A") + " error=" + ex);
 			return false;
 		}
 	}
@@ -9402,6 +9430,59 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 		catch
 		{
+			return false;
+		}
+	}
+
+	private static bool TryEnsureRuntimeAlliedSoldierActionTarget(int targetAgentIndex)
+	{
+		try
+		{
+			if (targetAgentIndex < 0)
+			{
+				return false;
+			}
+			Agent agent = TryGetAgent(targetAgentIndex);
+			CharacterObject character = agent?.Character as CharacterObject;
+			Hero hero = character?.HeroObject;
+			if (agent == null || !agent.IsHuman || !agent.IsActive()
+				|| agent.State == AgentState.Killed || agent.State == AgentState.Unconscious
+				|| !IsRuntimeAlliedSoldierAgent(agent, character, hero))
+			{
+				return false;
+			}
+			bool alreadyRegistered = AlliedAgentIndexes.Contains(agent.Index);
+			bool commandableOrigin = agent.Origin != null
+				&& CommandableOriginRuntimeIds.Contains(RuntimeHelpers.GetHashCode(agent.Origin));
+			bool setsSelectedFollower = SettlementEntryTroopSelectionBehavior.IsSetsSelectedFollowerAgentForExternal(agent);
+			bool mainPartyOrigin = agent.Origin is PartyAgentOrigin partyOrigin
+				&& partyOrigin.Party == PartyBase.MainParty;
+			bool mainPartyHero = hero != null
+				&& hero != Hero.MainHero
+				&& hero.PartyBelongedTo == MobileParty.MainParty
+				&& !hero.IsPrisoner
+				&& !hero.IsWounded;
+			if (!alreadyRegistered && !commandableOrigin && !setsSelectedFollower && !mainPartyOrigin && !mainPartyHero)
+			{
+				GcczDiagnosticLog.Log("TownAction", "rejected unproven allied soldier action targetAgent=" + agent.Index
+					+ " character=" + (character?.StringId ?? "N/A"));
+				return false;
+			}
+			if (!alreadyRegistered && AlliedAgentIndexes.Add(agent.Index))
+			{
+				MarkAgentOriginUnderPlayerCommand(agent);
+				GcczDiagnosticLog.Log("TownAction", "registered runtime allied soldier for action targetAgent=" + agent.Index
+					+ " character=" + (character?.StringId ?? "N/A")
+					+ " source=" + (commandableOrigin ? "commandable_origin"
+						: setsSelectedFollower ? "sets_selected_follower"
+						: mainPartyOrigin ? "main_party_origin"
+						: "main_party_hero"));
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "TryEnsureRuntimeAlliedSoldierActionTarget failed: " + ex.Message);
 			return false;
 		}
 	}

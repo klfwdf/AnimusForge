@@ -37,9 +37,11 @@ public static class SiegePostprocessTagNormalizer
 
         string text = raw.Replace("\r", string.Empty);
         var extractedKinds = new HashSet<SiegeInterventionActionKind>(SiegeActionTagCatalog.ExtractKinds(text));
+        SiegeInterventionActionKind? preferredTownKind = ResolvePreferredTownKind(extractedKinds, allowed);
         foreach (var kind in SiegeActionTagCatalog.GetCanonicalOrder())
         {
-            if (!extractedKinds.Contains(kind))
+            if (!extractedKinds.Contains(kind)
+                || (preferredTownKind.HasValue && kind != preferredTownKind.Value))
             {
                 continue;
             }
@@ -51,8 +53,8 @@ public static class SiegePostprocessTagNormalizer
             {
                 Add(canonicalTag);
                 // Town GCCZ numeric actions are mutually exclusive. Canonical order is the
-                // conservative numeric priority (1 before 2 ... before 10), so a malformed
-                // multi-tag reply cannot stack rewards or escalate into a harsher outcome.
+                // conservative numeric priority, except that the explicit 9+10 pair is the
+                // documented bloodbath-to-colonization upgrade and must keep action 10.
                 break;
             }
         }
@@ -112,6 +114,36 @@ public static class SiegePostprocessTagNormalizer
         return string.Join("\n", normalizedTags).Trim();
     }
 
+    private static SiegeInterventionActionKind? ResolvePreferredTownKind(
+        HashSet<SiegeInterventionActionKind> extractedKinds,
+        HashSet<string> allowed)
+    {
+        if (extractedKinds == null || extractedKinds.Count == 0)
+        {
+            return null;
+        }
+
+        bool isExplicitRepopulationUpgrade = extractedKinds.Count == 2
+            && extractedKinds.Contains(SiegeInterventionActionKind.Massacre)
+            && extractedKinds.Contains(SiegeInterventionActionKind.CulturalRepopulation)
+            && AllowsAny(allowed, SiegeActionTagCatalog.GetAliases(SiegeInterventionActionKind.CulturalRepopulation));
+        if (isExplicitRepopulationUpgrade)
+        {
+            return SiegeInterventionActionKind.CulturalRepopulation;
+        }
+
+        foreach (SiegeInterventionActionKind kind in SiegeActionTagCatalog.GetCanonicalOrder())
+        {
+            if (extractedKinds.Contains(kind)
+                && AllowsAny(allowed, SiegeActionTagCatalog.GetAliases(kind)))
+            {
+                return kind;
+            }
+        }
+
+        return null;
+    }
+
     private static HashSet<string> BuildAllowedSet(IEnumerable<string> allowedTags)
     {
         var allowed = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -150,17 +182,6 @@ public static class SiegePostprocessTagNormalizer
             if (allowed.Contains(value))
             {
                 return true;
-            }
-
-            string prefix = value.EndsWith("]", StringComparison.Ordinal)
-                ? value.Substring(0, value.Length - 1)
-                : value;
-            foreach (string allowedTag in allowed)
-            {
-                if ((allowedTag ?? string.Empty).StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
-                {
-                    return true;
-                }
             }
         }
 
