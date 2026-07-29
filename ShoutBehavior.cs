@@ -602,6 +602,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 				{
 					_parent.DrainMainThreadActionsForMissionTick();
 				}
+				SceneActionBehavior.Tick(Mission);
 				using (FreezeWatchdog.Scope("ShoutMissionBehavior.TryTriggerPendingProactiveSceneOpening"))
 				{
 					_parent.TryTriggerPendingProactiveSceneOpening();
@@ -10639,6 +10640,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		_speechWorkerRunning = false;
 		_sceneConversationEpoch = 0;
 		_nextProactiveSceneOpeningProbeMissionTime = 0f;
+		SceneActionBehavior.Reset(currentMission, "mission_started");
 		Action result;
 		while (_mainThreadActions.TryDequeue(out result))
 		{
@@ -10696,6 +10698,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			ClearPendingCurrentAfefFacts();
 			ClearPendingNativeSceneMechanismActions("mission_ended");
 			ClearPendingNativeSceneTauntFight("mission_ended");
+			SceneActionBehavior.Reset(null, "mission_ended");
 			DeactivateMultiSceneMovementSuppression();
 			ClearPendingSceneConversationAttentionRelease();
 			_staringAgents.Clear();
@@ -25082,6 +25085,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 		}
 		RecordPlayerMessage(shoutText, capturedNpcData, primaryDataPacket?.AgentIndex ?? (-1), primaryDataPacket?.Name ?? "", capturedAudienceAgentsByIndex);
+		IReadOnlyList<int> sceneActionNpcAgentIndices = SceneActionBehavior.TryQueuePlayerShout(shoutText, framedAgents);
+		if (sceneActionNpcAgentIndices.Count > 0)
+		{
+			ActivateMultiSceneMovementSuppression(sceneActionNpcAgentIndices);
+		}
 		TrackPlayerInteraction(primaryDataPacket, 1, -1f, false, targetingContext);
 
 		ResumeGame();
