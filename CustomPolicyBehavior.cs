@@ -1067,6 +1067,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 	private static void PatchPolicySettlementModelMethod(Harmony harmony, object model, string methodName, Type[] argumentTypes, string postfixName)
 	{
 		System.Reflection.MethodInfo target = model == null ? null : AccessTools.Method(model.GetType(), methodName, argumentTypes);
+		target = target?.GetDeclaredMember();
 		if (target == null)
 		{
 			throw new MissingMethodException(model?.GetType().FullName ?? "(null)", methodName);
