@@ -1822,59 +1822,67 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	public int NpcRulerPolicyIntervalHours { get; set; } = DefaultNpcRulerPolicyIntervalHours;
 
 	[SettingPropertyBool("启用AI外交", Order = 0, RequireRestart = false, HintText = "开启后，各国会自行发布外交宣言、展开交涉并采取外交行动。关闭后恢复原版王国外交决议。")]
-	[SettingPropertyGroup("17. AI外交", GroupOrder = 170)]
+	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
 	public bool EnableWorldDiplomacy { get; set; } = true;
 
-	[SettingPropertyBool("启用右侧弹窗通知", Order = 1, RequireRestart = false, HintText = "开启后，新发布的外交宣言会显示在屏幕右侧。关闭后仍可在王国公告中查看。")]
-	[SettingPropertyGroup("17. AI外交", GroupOrder = 170)]
+	[SettingPropertyBool("新游戏开局全大陆和平", Order = 1, RequireRestart = false, HintText = "仅对新创建的存档生效。开局时结束王国之间已有的战争，让之后的战争与和平主要由AI外交推动。")]
+	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
+	public bool WorldDiplomacyStartNewGameAtPeace { get; set; } = true;
+
+	[SettingPropertyBool("启用右侧弹窗通知", Order = 2, RequireRestart = false, HintText = "开启后，新发布的外交宣言会显示在屏幕右侧。关闭后仍可在王国公告中查看。")]
+	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
 	public bool EnableWorldDiplomacyMapNotifications { get; set; } = true;
 
-	[SettingPropertyInteger("两场外交事件的间隔（天）", 1, 14, "0", Order = 2, RequireRestart = false, HintText = "上一场外交事件结束后，通常等待多少天开始下一场。默认 3 天。")]
-	[SettingPropertyGroup("17. AI外交", GroupOrder = 170)]
+	[SettingPropertyInteger("两场外交事件的间隔（天）", 1, 14, "0", Order = 3, RequireRestart = false, HintText = "上一场外交事件结束后，通常等待多少天开始下一场。默认 3 天。")]
+	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
 	public int WorldDiplomacyRoundIntervalDays { get; set; } = 3;
 
-	[SettingPropertyDropdown("参与国家数量", Order = 3, RequireRestart = false, HintText = "决定一场外交事件通常有多少国家加入。被宣言明确指向的国家一定会参加。")]
-	[SettingPropertyGroup("17. AI外交", GroupOrder = 170)]
+	[SettingPropertyDropdown("参与国家规模", Order = 4, RequireRestart = false, HintText = "决定一场外交事件最多有多少国家参加，发起国也计算在内。关系不足时不会强行凑满。")]
+	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
 	public Dropdown<string> WorldDiplomacyActivityDropdown { get; set; } = new Dropdown<string>(
 		new List<string> { "少量", "适中", "较多" },
 		1);
 
 	public int WorldDiplomacyPropagationSpeedPercent { get; set; } = 100;
 
-	[SettingPropertyInteger("宣言送达最远王庭（天）", 3, 14, "0", Order = 5, RequireRestart = false, HintText = "决定外交宣言最迟多久传到大陆另一端的王庭。默认 7 天。")]
-	[SettingPropertyGroup("17. AI外交", GroupOrder = 170)]
+	[SettingPropertyInteger("宣言送达最远王庭（天）", 3, 14, "0", Order = 6, RequireRestart = false, HintText = "决定外交宣言最迟多久传到大陆另一端的王庭。默认 7 天。")]
+	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
 	public int WorldDiplomacyCourtMaxDeliveryDays { get; set; } = 7;
 
-	[SettingPropertyInteger("宣言传遍大陆（天）", 7, 42, "0", Order = 6, RequireRestart = false, HintText = "决定地方贵族和平民多久能够得知一篇外交宣言。默认 21 天。")]
-	[SettingPropertyGroup("17. AI外交", GroupOrder = 170)]
+	[SettingPropertyInteger("宣言传遍大陆（天）", 7, 42, "0", Order = 7, RequireRestart = false, HintText = "决定地方贵族和平民多久能够得知一篇外交宣言。默认 21 天。")]
+	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
 	public int WorldDiplomacyContinentSpreadDays { get; set; } = 21;
 
-	[SettingPropertyDropdown("外交回合节奏", Order = 4, RequireRestart = false, HintText = "决定一场外交事件通常持续多久。只影响新开始的事件。")]
-	[SettingPropertyGroup("17. AI外交", GroupOrder = 170)]
+	[SettingPropertyDropdown("外交回合节奏", Order = 5, RequireRestart = false, HintText = "决定一场外交事件通常持续多久。只影响新开始的事件。")]
+	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
 	public Dropdown<string> WorldDiplomacyRoundLengthDropdown { get; set; } = new Dropdown<string>(new List<string> { "紧凑（约15天）", "标准（约21天）", "从容（约28天）" }, 1);
 
-	[SettingPropertyBool("启用“外交局势自动推进”", Order = 7, RequireRestart = false, HintText = "开启后，长期争端会推动相关国家走向战争，久拖不决的战争也会推动相关国家提出议和。关闭后，各国仍可根据实际局势自然选择宣战或议和。")]
-	[SettingPropertyGroup("17. AI外交", GroupOrder = 170)]
+	[SettingPropertyBool("启用“外交局势自动推进”", Order = 8, RequireRestart = false, HintText = "开启后，长期争端会推动相关国家走向战争，久拖不决的战争也会推动相关国家提出议和。关闭后，各国仍可根据实际局势自然选择宣战或议和。")]
+	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
 	public bool EnableWorldDiplomacyForcedWar { get; set; } = true;
 
-	[SettingPropertyInteger("“外交局势自动推进”门槛", 50, 200, "0", Order = 8, RequireRestart = false, HintText = "仅在上方选项开启时生效。数值越低，争端越容易升级为战争，战争也越容易进入议和；默认 100。")]
-	[SettingPropertyGroup("17. AI外交", GroupOrder = 170)]
-	public int WorldDiplomacyWarPressureThreshold { get; set; } = 100;
+	[SettingPropertyInteger("争端升级门槛", 50, 300, "0", Order = 9, RequireRestart = false, HintText = "仅在自动推进开启时生效。数值越低，争端越容易升级为战争；默认 120。")]
+	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
+	public int WorldDiplomacyWarPressureThreshold { get; set; } = 120;
+
+	[SettingPropertyInteger("主动议和门槛", 50, 300, "0", Order = 10, RequireRestart = false, HintText = "仅在自动推进开启时生效。数值越高，国家越不容易主动开启议和；默认 200。")]
+	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
+	public int WorldDiplomacyPeacePressureThreshold { get; set; } = 200;
 
 	public int WorldDiplomacyNativeIntentInfluencePercent { get; set; } = 100;
 
 	public int WorldDiplomacyDocumentInfluencePercent { get; set; } = 100;
 
-	[SettingPropertyInteger("再次主动开战间隔（天）", 7, 120, "0", Order = 9, RequireRestart = false, HintText = "一个国家主动发动战争后，至少等待多少天才能再次主动发动新战争。默认 42 天。")]
-	[SettingPropertyGroup("17. AI外交", GroupOrder = 170)]
+	[SettingPropertyInteger("再次主动开战间隔（天）", 7, 120, "0", Order = 11, RequireRestart = false, HintText = "一个国家主动发动战争后，至少等待多少天才能再次主动发动新战争。默认 42 天。")]
+	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
 	public int WorldDiplomacyOffensiveWarCooldownDays { get; set; } = 42;
 
-	[SettingPropertyInteger("和平保护期（天）", 0, 60, "0", Order = 10, RequireRestart = false, HintText = "两国议和后，在这段时间内不会因为普通外交争端再次开战。默认 21 天。")]
-	[SettingPropertyGroup("17. AI外交", GroupOrder = 170)]
+	[SettingPropertyInteger("和平保护期（天）", 0, 60, "0", Order = 12, RequireRestart = false, HintText = "两国议和后，在这段时间内不会因为普通外交争端再次开战。默认 21 天。")]
+	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
 	public int WorldDiplomacyPeaceProtectionDays { get; set; } = 21;
 
-	[SettingPropertyInteger("外交历史整理门槛（万 Tokens）", 10, 200, "0", Order = 11, RequireRestart = false, HintText = "AI 外交累计使用达到该数量后，会在当前外交事件结束时整理旧记录。数值越低，整理越频繁；默认 50 万 Tokens。")]
-	[SettingPropertyGroup("17. AI外交", GroupOrder = 170)]
+	[SettingPropertyInteger("外交历史整理门槛（万 Tokens）", 10, 200, "0", Order = 13, RequireRestart = false, HintText = "AI 外交累计使用达到该数量后，会在当前外交事件结束时整理旧记录。数值越低，整理越频繁；默认 50 万 Tokens。")]
+	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
 	public int WorldDiplomacyCompressionThresholdTenThousands { get; set; } = 50;
 
 	private string _worldDiplomacyPrompt = LoadWorldDiplomacyPromptFromDiskOrDefault();
@@ -1885,8 +1893,8 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		set => _worldDiplomacyPrompt = NormalizeWorldDiplomacyPromptText(value);
 	}
 
-	[SettingPropertyButton("AI外交自定义提示词", -1, true, "", Content = "打开编辑器", Order = 12, RequireRestart = false, HintText = "调整各国进行外交判断和发表宣言时的倾向与风格。不会改变游戏事实和外交规则。")]
-	[SettingPropertyGroup("17. AI外交", GroupOrder = 170)]
+	[SettingPropertyButton("AI外交自定义提示词", -1, true, "", Content = "打开编辑器", Order = 14, RequireRestart = false, HintText = "调整各国进行外交判断和发表宣言时的倾向与风格。不会改变游戏事实和外交规则。")]
+	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
 	public Action EditWorldDiplomacyPrompt { get; set; }
 
 	[SettingPropertyInteger("周报篇幅档位", 1, 4, "0", Order = 0, RequireRestart = false, HintText = "1=200-400字；2=200-800字；3=200-1200字；4=200-1500字。世界周报和王国周报共用这一档位。")]

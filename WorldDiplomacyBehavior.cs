@@ -56,7 +56,9 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private const int NativeOtherSignalBase = 42;
 	private const int FixedMaxConcurrentOffensiveWars = 2;
 	private const int FailedServiceCooldownHours = 12;
-	private const int ForcedPeaceProposalCooldownDays = 14;
+	private const int ForcedPeaceProposalCooldownDays = 28;
+	private const int MinimumAutomaticPeaceWarDays = 21;
+	private const float CatastrophicPeacePressure = 260f;
 	private const float DiplomaticAdvanceReleaseRatio = 0.7f;
 	private const float CessionCastleUnlockThreshold = 90f;
 	private const float CessionTownUnlockThreshold = 95f;
@@ -78,14 +80,24 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private const int MaxPendingPolicySignals = 24;
 	private const int MaxProcessedPolicySignalKeys = 256;
 	private const int PolicySignalRetentionDays = 21;
-	private const int RelaySchemaVersion = 12;
-	private const string RelayCacheAffinityKey = "diplomacy-relay:v12";
-	private const string DiplomacySystemContractMarker = "【AnimusForge 王国外交共同契约 v11】";
+	private const int RelaySchemaVersion = 17;
+	private const string RelayCacheAffinityKey = "diplomacy-relay:v16";
+	private const string DiplomacySystemContractMarker = "【AnimusForge 王国外交共同契约 v15】";
 	private const int RelayPassDurationDays = 7;
 	private const int RelayTargetDurationDays = 21;
 	private const int RelayHardDurationDays = 24;
 	private const int RepeatedPairCooldownDays = 21;
+	private const int ExactTopicCooldownDays = 84;
+	private const int PairTopicCategoryCooldownDays = 42;
+	private const int InitiatorTopicCategoryCooldownDays = 28;
+	private const int GlobalTopicCategoryCooldownCount = 2;
+	private const int MaxRecentTopicUses = 96;
+	private const float OptionalParticipantAdmissionThreshold = 55f;
 	private const int MaxRelayParticipants = 12;
+	private const int BorderForeignNeighborCount = 2;
+	private const float BorderDistanceMedianMultiplier = 3.5f;
+	private const float MinimumBorderDistance = 24f;
+	private const float MaximumBorderDistance = 72f;
 	private static readonly Regex InternalMetricWithNumberRegex = new Regex(
 		@"(?:战争进展|战争进度|战局进度|议和开放度|和平开放度|劣势评分|优势评分|战争压力(?:值|分数)?|统治者关系(?:值|点数)?|关系点数|好感度|战力值|总战力)[^。\r\n]{0,12}(?:[-+]?\d+(?:\.\d+)?|[零〇一二三四五六七八九十百千万]+分)|(?:领先|落后|高出|低于)[^。\r\n]{0,8}(?:[-+]?\d+(?:\.\d+)?|[零〇一二三四五六七八九十百千万]+)分",
 		RegexOptions.Compiled | RegexOptions.CultureInvariant);
@@ -111,6 +123,10 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private readonly Dictionary<string, string> _courtSettlementCache = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, WeeklyDiplomacySnapshotCacheEntry> _weeklyDiplomacySnapshotCache = new Dictionary<string, WeeklyDiplomacySnapshotCacheEntry>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, string> _realmInstitutionalVoiceCache = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+	private readonly Dictionary<string, WorldDiplomacyRealmRelationProfile> _realmRelationProfileCache = new Dictionary<string, WorldDiplomacyRealmRelationProfile>(StringComparer.OrdinalIgnoreCase);
+	private readonly Dictionary<string, WorldDiplomacyBorderRelation> _kingdomBorderCache = new Dictionary<string, WorldDiplomacyBorderRelation>(StringComparer.OrdinalIgnoreCase);
+	private int _kingdomBorderCacheDay = -1;
+	private float _kingdomBorderDistanceThreshold = MinimumBorderDistance;
 	private long _realmInstitutionalVoiceRuleVersion = -1L;
 
 	private WorldDiplomacyStorage _storage = new WorldDiplomacyStorage();
@@ -131,6 +147,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private long _relayCacheHitTokensThisSession;
 	private long _relayCacheMissTokensThisSession;
 	private bool? _lastMapNotificationsEnabled;
+	private bool _initialPeaceApplicationAttempted;
 
 	public static WorldDiplomacyBehavior Instance { get; private set; }
 
@@ -376,6 +393,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private void OnNewGameCreated(CampaignGameStarter starter)
 	{
 		_storage = new WorldDiplomacyStorage();
+		_storage.InitialPeacePending = IsWorldDiplomacyEnabled() && ShouldStartNewGameAtPeace();
 		InitializeSchedule();
 		ResetTransientRuntime("new-game");
 	}
@@ -396,6 +414,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private void OnCampaignTick(float dt)
 	{
+		TryApplyInitialNewGamePeace();
 		if (!IsWorldDiplomacyEnabled())
 		{
 			HandleDisabledState();
@@ -425,7 +444,10 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		NormalizeStorage();
 		RefreshRoundIntervalScheduleIfNeeded();
 		_warSituationCache.Clear();
+		_realmRelationProfileCache.Clear();
 		_courtSettlementCache.Clear();
+		_kingdomBorderCache.Clear();
+		_kingdomBorderCacheDay = -1;
 		ResetDailyGenerationBudget();
 		RecalculatePendingPropagationIfNeeded();
 		_lastSchedulerDay = CurrentDay();
@@ -487,6 +509,8 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		_kingdomBorderCache.Clear();
+		_kingdomBorderCacheDay = -1;
 		Kingdom oldKingdom = oldOwner?.Clan?.Kingdom;
 		Kingdom newKingdom = newOwner?.Clan?.Kingdom ?? settlement.OwnerClan?.Kingdom;
 		if (oldKingdom == null || newKingdom == null || oldKingdom == newKingdom)
@@ -667,6 +691,9 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		_warSituationCache.Clear();
 		_weeklyDiplomacySnapshotCache.Clear();
 		_realmInstitutionalVoiceCache.Clear();
+		_realmRelationProfileCache.Clear();
+		_kingdomBorderCache.Clear();
+		_kingdomBorderCacheDay = -1;
 		_realmInstitutionalVoiceRuleVersion = -1L;
 		WorldDiplomacyPolicyContext.Clear();
 		_lastLlmCacheAffinityKey = "";
@@ -682,6 +709,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		_relayCacheHitTokensThisSession = 0;
 		_relayCacheMissTokensThisSession = 0;
 		_lastMapNotificationsEnabled = null;
+		_initialPeaceApplicationAttempted = false;
 		foreach (WorldDiplomacyJob job in _storage.Jobs)
 		{
 			if (job != null)
@@ -690,6 +718,68 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			}
 		}
 		Log("runtime reset reason=" + reason);
+	}
+
+	private static bool ShouldStartNewGameAtPeace()
+	{
+		try
+		{
+			return DuelSettings.GetSettings()?.WorldDiplomacyStartNewGameAtPeace ?? true;
+		}
+		catch
+		{
+			return true;
+		}
+	}
+
+	private void TryApplyInitialNewGamePeace()
+	{
+		if (_initialPeaceApplicationAttempted || !_storage.InitialPeacePending || Campaign.Current == null || !IsWorldDiplomacyEnabled())
+		{
+			return;
+		}
+		List<Kingdom> kingdoms = Kingdom.All
+			.Where(x => x != null && !x.IsEliminated)
+			.OrderBy(x => x.StringId, StringComparer.OrdinalIgnoreCase)
+			.ToList();
+		if (kingdoms.Count < 2)
+		{
+			return;
+		}
+		_initialPeaceApplicationAttempted = true;
+		int day = CurrentDay();
+		int endedWars = 0;
+		for (int firstIndex = 0; firstIndex < kingdoms.Count; firstIndex++)
+		{
+			for (int secondIndex = firstIndex + 1; secondIndex < kingdoms.Count; secondIndex++)
+			{
+				Kingdom first = kingdoms[firstIndex];
+				Kingdom second = kingdoms[secondIndex];
+				if (!FactionManager.IsAtWarAgainstFaction(first, second)) continue;
+				try
+				{
+					RunDiplomaticAction("world_diplomacy_initial_peace", () => MakePeaceAction.Apply(first, second));
+					_storage.LastPeaceDayByPair[PairKey(first.StringId, second.StringId)] = day;
+					ClearWarPressure(first.StringId, second.StringId);
+					ClearWarPressure(second.StringId, first.StringId);
+					endedWars++;
+				}
+				catch (Exception ex)
+				{
+					Log("initial peace failed pair=" + first.StringId + "|" + second.StringId + " error=" + ex.Message);
+				}
+			}
+		}
+		_storage.InitialPeacePending = false;
+		_storage.InitialPeaceApplied = true;
+		_storage.ActiveWarLedgers.Clear();
+		_storage.NativeSignals.Clear();
+		RemoveQueuedNativeDiplomacyDecisions();
+		_storage.NativeSignals.Clear();
+		_storage.WarPressure.Clear();
+		_nativeDiplomacyDecisionQueueSanitized = true;
+		_warSituationCache.Clear();
+		Log("new-game initial peace applied endedWars=" + endedWars.ToString(CultureInfo.InvariantCulture));
 	}
 
 	private void HandleDisabledState()
@@ -825,6 +915,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	{
 		_storage.PendingPolicySignals ??= new List<WorldDiplomacyPolicySignal>();
 		_storage.ProcessedPolicySignalKeys ??= new List<string>();
+		_storage.RecentTopicUses ??= new List<WorldDiplomacyTopicUse>();
 		HashSet<string> known = new HashSet<string>(_storage.ProcessedPolicySignalKeys, StringComparer.OrdinalIgnoreCase);
 		foreach (WorldDiplomacyPolicySignal pending in _storage.PendingPolicySignals.Where(item => item != null))
 		{
@@ -927,6 +1018,13 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		{
 			round.ExternalOpeningContext = string.Join("\n", new[] { round.ExternalOpeningContext, context }.Where(text => !string.IsNullOrWhiteSpace(text))).Trim();
 		}
+		if (string.IsNullOrWhiteSpace(round.RoundTopic)) round.RoundTopic = "政策影响、利益回应与两国关系";
+		if (string.IsNullOrWhiteSpace(round.TopicCategory)) round.TopicCategory = "policy";
+		if (string.IsNullOrWhiteSpace(round.EventMotif)) round.EventMotif = "cross_border_policy_effect";
+		if (string.IsNullOrWhiteSpace(round.EventSourceType)) round.EventSourceType = "public_policy";
+		round.AllowedFiction = "可以评价政策造成的公开担忧、商旅反应和使节试探，不得杜撰政策文本之外的强制措施或既成外交结果";
+		round.ForbiddenFiction = "不得杜撰战争、条约、领地变化、具名人物行为或政策未载明的实际执行结果";
+		round.PotentialActionIntents = BuildPotentialDiplomaticActionIntents(issuer, affected);
 		foreach (Kingdom kingdom in new[] { ResolveWorldDiplomacyRepresentative(issuer), ResolveWorldDiplomacyRepresentative(affected) }
 			.Where(x => x != null).Distinct())
 		{
@@ -984,8 +1082,9 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		int index = Math.Abs(_storage.RotationIndex) % initiators.Count;
 		Kingdom initiator = initiators[index];
 		_storage.RotationIndex = (index + 1) % initiators.Count;
-		Kingdom target = SelectTargetKingdom(initiator);
-		if (target == null)
+		WorldDiplomacyTopicCandidate topic = SelectNormalRoundTopic(initiator);
+		Kingdom target = ResolveKingdom(topic?.TargetKingdomId);
+		if (topic == null || target == null)
 		{
 			ScheduleNextNormalRoundAfter(day);
 			return;
@@ -995,7 +1094,29 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			return;
 		}
 		WorldDiplomacyRound round = EnsureActiveRound(initiator, target, isPlayerInsertion: false);
-		EnqueueGenerationJob(initiator, target, null, isResponse: false, forcedIntent: ResolveArmedIntent(initiator, target), sourceDocument: null, priority: 20, roundId: round?.RoundId, allowUntargeted: true);
+		round.RoundTopic = topic.Topic;
+		round.TopicCategory = topic.Category;
+		round.TopicFingerprint = topic.Fingerprint;
+		round.TopicSeedContext = topic.Context;
+		round.EventSourceType = topic.SourceType;
+		round.EventMotif = topic.Motif;
+		round.EventLocation = topic.Location;
+		round.AllowedFiction = topic.AllowedFiction;
+		round.ForbiddenFiction = topic.ForbiddenFiction;
+		round.RequiresSharedBorder = topic.RequiresSharedBorder;
+		round.PotentialActionIntents = (topic.PotentialActionIntents ?? new List<string>())
+			.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+		Log("normal event selected round=" + round.RoundId
+			+ " initiator=" + initiator.StringId
+			+ " target=" + target.StringId
+			+ " family=" + topic.Category
+			+ " motif=" + topic.Motif
+			+ " source=" + topic.SourceType
+			+ " borderRequired=" + topic.RequiresSharedBorder
+			+ " actionOptions=" + string.Join(",", round.PotentialActionIntents));
+		EnqueueGenerationJob(initiator, target, null, isResponse: false,
+			forcedIntent: "",
+			sourceDocument: null, priority: 20, roundId: round?.RoundId, allowUntargeted: !topic.RequiresSharedBorder);
 	}
 
 	private void TryScheduleArmedEscalationOpportunity()
@@ -1068,7 +1189,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		int threshold = GetDiplomaticAdvanceThreshold();
+		int threshold = GetPeaceAdvanceThreshold();
 		int day = CurrentDay();
 		WorldDiplomacyWarLedger selectedLedger = null;
 		Kingdom selectedAuthor = null;
@@ -1102,6 +1223,10 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 				}
 				WarSituationSnapshot snapshot = GetWarSituation(direction.Author, direction.Target);
 				float pressure = snapshot?.AuthorPeacePressure ?? 0f;
+				if ((snapshot?.WarDays ?? 0) < MinimumAutomaticPeaceWarDays && pressure < CatastrophicPeacePressure)
+				{
+					continue;
+				}
 				if (pressure < threshold || pressure <= selectedPressure)
 				{
 					continue;
@@ -1190,13 +1315,35 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 		bool actorProfileAlreadyInTranscript = owningRound?.LlmProfiledKingdomIds?.Any(x => string.Equals(x, author.StringId, StringComparison.OrdinalIgnoreCase)) == true;
 		bool includeEmbeddedRoundPlan = !isRelayTurn && !isResponse && owningRound != null && string.IsNullOrWhiteSpace(owningRound.RootDocumentId);
-		List<string> roundPlanCandidates = includeEmbeddedRoundPlan
-			? Kingdom.All.Where(x => x != null && !x.IsEliminated && x != author && HasIndependentWorldDiplomacyAuthority(x)).OrderBy(x => x.StringId, StringComparer.OrdinalIgnoreCase).Select(x => x.StringId).ToList()
-			: new List<string>();
+		List<string> roundPlanCandidates = new List<string>();
+		if (includeEmbeddedRoundPlan)
+		{
+			WorldDiplomacyDocument planningRoot = new WorldDiplomacyDocument
+			{
+				AuthorKingdomId = author.StringId,
+				TargetKingdomId = target?.StringId ?? "",
+				AddressedKingdomIds = target == null ? new List<string>() : new List<string> { target.StringId }
+			};
+			roundPlanCandidates = Kingdom.All
+				.Where(x => x != null && !x.IsEliminated && x != author && HasIndependentWorldDiplomacyAuthority(x))
+				.Select(x => new
+				{
+					Kingdom = x,
+					Interest = CalculateOptionalParticipantInterest(owningRound, planningRoot, author, x)
+				})
+				.Where(x => x.Kingdom == target || x.Interest >= OptionalParticipantAdmissionThreshold)
+				.OrderByDescending(x => x.Kingdom == target)
+				.ThenByDescending(x => x.Interest)
+				.ThenBy(x => x.Kingdom.StringId, StringComparer.OrdinalIgnoreCase)
+				.Take(MaxParticipationCandidatesPerJob)
+				.Select(x => x.Kingdom.StringId)
+				.ToList();
+		}
 		string userPrompt = isRelayTurn
 			? BuildRelayConversationTurnPrompt(owningRound, author, target, includeActorProfile: !actorProfileAlreadyInTranscript,
 				prioritySource: sourceDocument, priorityResponseOnly: externalResponseOnly)
 			: BuildGenerationPrompt(author, target, exchange, isResponse, forcedIntent, sourceDocument, isReminder, roundId, allowUntargeted, roundPlanCandidates);
+		string normalizedForcedIntent = NormalizeIntent(forcedIntent);
 		WorldDiplomacyJob job = new WorldDiplomacyJob
 		{
 			JobId = NewId("diplomacy_generate"),
@@ -1209,7 +1356,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			TargetKingdomId = target.StringId,
 			SourceDocumentId = sourceDocument?.DocumentId ?? "",
 			IsResponse = isResponse,
-			ForcedIntent = NormalizeIntent(forcedIntent),
+			ForcedIntent = normalizedForcedIntent,
 			IsExternalResponseOnly = externalResponseOnly,
 			IsReminder = isReminder,
 			IsRelayTurn = isRelayTurn,
@@ -1667,14 +1814,18 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 				AbandonRejectedGeneration(job, author, generatedTarget ?? target, legalityReason);
 				return;
 			}
-			raw = BuildRejectedDeclarationFallbackGenerationJson(job, author, generatedTarget ?? target, legalityReason);
-			json = ParseJsonObject(raw);
+			else
+			{
+				raw = BuildRejectedDeclarationFallbackGenerationJson(job, author, generatedTarget ?? target, legalityReason);
+				json = ParseJsonObject(raw);
+			}
 		}
 		WorldDiplomacyDocument sourceDocument = ResolveDocument(job.SourceDocumentId);
 		string title = FirstNonEmpty(
 			ReadString(json, "title"),
 			job.IsResponse ? "外交回应" : "王国外交宣言");
-		string body = NormalizeBody(ReadString(json, "body", "public_document", "document"));
+		title = Limit(SanitizePublicDiplomacyText(title), 100);
+		string body = NormalizeBody(SanitizePublicDiplomacyText(ReadString(json, "body", "public_document", "document")));
 		if (string.IsNullOrWhiteSpace(body))
 		{
 			body = BuildFallbackDocumentBody(author, target, job.ForcedIntent, job.IsResponse, ResolveDocument(job.SourceDocumentId));
@@ -1837,7 +1988,6 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		{
 			return true;
 		}
-
 		bool hasExplicitPeaceNegotiation = LooksLikeExplicitPeaceNegotiationWithTarget(author, generatedTarget, title + "\n" + body);
 		if (!IsPeaceIntent(intent) && !hasExplicitPeaceNegotiation) return false;
 		if (generatedTarget == null || generatedTarget == author)
@@ -1888,7 +2038,8 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			Kingdom other = ResolveKingdom(id);
 			if (other == null || other == author || !FactionManager.IsAtWarAgainstFaction(author, other)) continue;
 			WarSituationSnapshot snapshot = GetWarSituation(author, other);
-			if (snapshot.AuthorPeacePressure < GetDiplomaticAdvanceThreshold()) continue;
+			if (snapshot.AuthorPeacePressure < GetPeaceAdvanceThreshold()) continue;
+			if (snapshot.WarDays < MinimumAutomaticPeaceWarDays && snapshot.AuthorPeacePressure < CatastrophicPeacePressure) continue;
 			bool incoming = (round.PendingOffers ?? new List<WorldDiplomacyRoundOffer>()).Any(x => x != null
 				&& string.Equals(x.Status, "open", StringComparison.OrdinalIgnoreCase)
 				&& string.Equals(NormalizeIntent(x.Intent), "propose_peace", StringComparison.OrdinalIgnoreCase)
@@ -1900,6 +2051,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 				hasIncomingOffer = true;
 				break;
 			}
+			if (!IsPeaceFocusedRound(round)) continue;
 			WorldDiplomacyWarLedger ledger = ResolveWarLedger(author.StringId, other.StringId);
 			int lastProposalDay = GetLastForcedPeaceProposalDay(ledger, author.StringId);
 			if (HasOpenPeaceOffer(author.StringId, other.StringId)
@@ -1995,6 +2147,14 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			reason = "internal_metric_exposed_in_public_declaration";
 			return true;
 		}
+		if (ContainsAny(visibleText,
+			"本回合", "该回合", "此回合", "外交回合", "接力顺序", "接力轮次", "最后行动机会", "程序核验",
+			"预先核验", "预核验", "结果路线", "候选路线", "既定外交动作", "程序执行", "游戏外交", "世界状态", "硬目标",
+			"提示词", "缓存命中", "JSON字段", "系统字段", "程序字段", "AI模型", "游戏机制"))
+		{
+			reason = "internal_round_term_exposed_in_public_declaration";
+			return true;
+		}
 		int privateFirstPersonCount = PrivateFirstPersonRegex.Matches(visibleText).Count;
 		int directSecondPersonCount = DirectSecondPersonRegex.Matches(visibleText).Count;
 		bool hasConversationalPhrase = ConversationalDiplomacyPhraseRegex.IsMatch(visibleText);
@@ -2067,7 +2227,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		StringBuilder correctionBuilder = new StringBuilder();
 		correctionBuilder.AppendLine("【未发布草稿的硬事实纠正】");
 		correctionBuilder.AppendLine("上一份assistant内容只是未发布草稿，不属于外交历史，不得引用、延续或假定其中事件已经发生。");
-		correctionBuilder.AppendLine("草稿违反原因=" + reason + "。");
+		correctionBuilder.AppendLine("草稿未通过公开文书与事实校验，请按下列说明重新起草。");
 		correctionBuilder.AppendLine("当前发文国=" + author.StringId + "=" + KingdomName(author) + "；对象国=" + target.StringId + "=" + KingdomName(target) + "；实时关系=" + BuildBilateralState(author, target) + "。");
 		if (string.Equals(reason, "peace_intent_between_kingdoms_not_at_war", StringComparison.OrdinalIgnoreCase))
 		{
@@ -2097,6 +2257,10 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		else if (string.Equals(reason, "internal_metric_exposed_in_public_declaration", StringComparison.OrdinalIgnoreCase))
 		{
 			correctionBuilder.AppendLine("正文泄露了后台态势指标。统治者不知道战争进展分、议和开放度、劣势评分、关系点、压力阈值或总战力数值。保留原本合法的外交行动与精确条款，但把后台指标改写成由战报、军情、领地得失和王庭账簿支撑的自然判断；贡金金额、条约期限和真实事件数量可以保留。");
+		}
+		else if (string.Equals(reason, "internal_round_term_exposed_in_public_declaration", StringComparison.OrdinalIgnoreCase))
+		{
+			correctionBuilder.AppendLine("草稿泄露了系统内部的外交调度用语。公开标题和正文不得出现‘回合’、‘接力’、‘最后行动机会’、‘程序核验’等说法；应按语境改写为本次交涉、公文往来、最后立场、正式决定或外交结果。round_*字段仍按JSON契约填写，但绝不能出现在title和body中。");
 		}
 		else if (string.Equals(reason, "private_chat_style_in_public_declaration", StringComparison.OrdinalIgnoreCase))
 		{
@@ -2478,7 +2642,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		document.MentionedKingdomIds = NormalizeKingdomIdList(mentionedIds, document.AuthorKingdomId);
 		document.AnalysisStatus = status == "failed" ? "fallback" : "success";
 		document.Title = !string.IsNullOrWhiteSpace(titleSummary)
-			? Limit(titleSummary, 36)
+			? Limit(SanitizePublicDiplomacyText(titleSummary), 36)
 			: (document.IsPlayerAuthored ? BuildFallbackDocumentTitle(document, intent) : document.Title);
 		document.Intent = intent;
 		document.Commitment = commitment;
@@ -2628,8 +2792,29 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 		TrySettleRoundAction(document);
 		TrySettleRelayOffer(document);
+		ApplyDiplomaticPressureEffect(document);
 		StartDocumentPropagation(document, author);
 		HandleRoundDocumentProcessed(document);
+	}
+
+	private void ApplyDiplomaticPressureEffect(WorldDiplomacyDocument document)
+	{
+		if (document == null || !string.IsNullOrWhiteSpace(document.MechanicalResult)) return;
+		string intent = NormalizeIntent(document.Intent);
+		if (intent != "apology" && intent != "concession" && intent != "ultimatum") return;
+		Kingdom author = ResolveKingdom(document.AuthorKingdomId);
+		Kingdom target = ResolveKingdom(document.TargetKingdomId);
+		if (author == null || target == null || author == target) return;
+		if (intent == "ultimatum")
+		{
+			AddWarPressure(author.StringId, target.StringId, 18, "正式最后通牒：" + document.Title, intent);
+		}
+		else
+		{
+			int reduction = intent == "concession" ? -22 : -16;
+			AddWarPressure(author.StringId, target.StringId, reduction, "正式" + (intent == "concession" ? "让步" : "道歉") + "：" + document.Title, intent);
+			AddWarPressure(target.StringId, author.StringId, reduction / 2, "对方作出正式" + (intent == "concession" ? "让步" : "道歉"), intent);
+		}
 	}
 
 	private WorldDiplomacyRound EnsureActiveRound(Kingdom initiator, Kingdom target, bool isPlayerInsertion)
@@ -2653,7 +2838,8 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			SoftEndDay = day + targetDurationDays,
 			HardEndDay = day + GetRoundHardDurationDays(targetDurationDays),
 			RelayPassDurationDays = GetCourtMaxDeliveryDays(),
-			IsPlayerInsertion = isPlayerInsertion
+			IsPlayerInsertion = isPlayerInsertion,
+			PotentialActionIntents = BuildPotentialDiplomaticActionIntents(roundInitiator, roundTarget)
 		};
 		_storage.ActiveRound = round;
 		EnsureRoundParticipant(round, roundInitiator?.StringId, "active", mandatoryReply: false);
@@ -2671,9 +2857,10 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		WorldDiplomacyRound round = ResolveRound(document.RoundId);
 		if (round == null || !string.Equals(round.State, "active", StringComparison.OrdinalIgnoreCase)) return;
 		round.LastActivityDay = CurrentDay();
-		bool successfulMechanicalAction = IsSuccessfulMechanicalResult(document.MechanicalResult);
+		bool successfulMechanicalAction = document.ChangedDiplomaticState;
 		if (successfulMechanicalAction) round.ExecutedActionCount++;
 		bool substantiveProgress = IsValidatedSubstantiveProgress(document, round, successfulMechanicalAction);
+		bool diplomaticActionAttempt = IsValidatedDiplomaticActionAttempt(document, round, successfulMechanicalAction);
 		document.MadeDiplomaticProgress = substantiveProgress;
 		if (substantiveProgress)
 		{
@@ -2683,6 +2870,14 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 				+ " document=" + document.DocumentId
 				+ " intent=" + NormalizeIntent(document.Intent)
 				+ " count=" + round.SubstantiveProgressCount.ToString(CultureInfo.InvariantCulture));
+		}
+		if (diplomaticActionAttempt)
+		{
+			round.DiplomaticActionAttemptCount++;
+			Log("diplomatic relation-change attempt accepted round=" + round.RoundId
+				+ " document=" + document.DocumentId
+				+ " intent=" + NormalizeIntent(document.Intent)
+				+ " count=" + round.DiplomaticActionAttemptCount.ToString(CultureInfo.InvariantCulture));
 		}
 		if (string.IsNullOrWhiteSpace(round.RootDocumentId))
 		{
@@ -2712,15 +2907,16 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		{
 			participant.TurnCount++;
 			participant.LastSpokeDay = CurrentDay();
+			if (substantiveProgress) participant.ContributionMade = true;
 			if (string.Equals(document.RoundParticipation, "withdraw", StringComparison.OrdinalIgnoreCase)
-				&& round.SubstantiveProgressCount > 0)
+				&& participant.ContributionMade)
 			{
 				participant.State = "withdrawn";
 			}
 			else if (string.Equals(document.RoundParticipation, "withdraw", StringComparison.OrdinalIgnoreCase))
 			{
 				document.RoundParticipation = "continue";
-				Log("premature relay withdrawal ignored until substantive diplomacy occurs round=" + round.RoundId + " kingdom=" + document.AuthorKingdomId);
+				Log("premature relay withdrawal ignored until participant contributes round=" + round.RoundId + " kingdom=" + document.AuthorKingdomId);
 			}
 		}
 		if (document.IsExternalResponseOnly)
@@ -2739,7 +2935,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			return;
 		}
 		if (string.Equals(document.RoundStatus, "deadlocked", StringComparison.OrdinalIgnoreCase)
-			&& round.SubstantiveProgressCount > 0
+			&& round.DiplomaticActionAttemptCount > 0
 			&& (round.RelayPassNumber >= 2 || string.Equals(document.RoundParticipation, "withdraw", StringComparison.OrdinalIgnoreCase)))
 		{
 			round.RoundStatus = "deadlocked";
@@ -2747,13 +2943,6 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			return;
 		}
 		AdvanceRelay(round);
-	}
-
-	private static bool IsSuccessfulMechanicalResult(string mechanicalResult)
-	{
-		string value = (mechanicalResult ?? "").Trim();
-		return !string.IsNullOrWhiteSpace(value)
-			&& value.IndexOf("未执行", StringComparison.OrdinalIgnoreCase) < 0;
 	}
 
 	private static bool IsValidatedSubstantiveProgress(WorldDiplomacyDocument document, WorldDiplomacyRound round, bool successfulMechanicalAction)
@@ -2786,13 +2975,40 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			&& string.Equals(x.Status, expectedStatus, StringComparison.OrdinalIgnoreCase));
 	}
 
+	private static bool IsValidatedDiplomaticActionAttempt(WorldDiplomacyDocument document, WorldDiplomacyRound round, bool successfulMechanicalAction)
+	{
+		if (document == null || round == null) return false;
+		if (successfulMechanicalAction) return true;
+		string intent = NormalizeIntent(document.Intent);
+		if (!IsProposalIntent(intent) && string.IsNullOrWhiteSpace(ResponseIntentToProposalIntent(intent))) return false;
+		return IsValidatedSubstantiveProgress(document, round, successfulMechanicalAction: false);
+	}
+
+	private static bool IsPeaceFocusedRound(WorldDiplomacyRound round)
+	{
+		if (round == null) return false;
+		if (string.Equals(round.TopicCategory, "peace_terms", StringComparison.OrdinalIgnoreCase)) return true;
+		string topic = (round.RoundTopic ?? "") + "\n" + (round.TopicSeedContext ?? "");
+		return topic.IndexOf("议和", StringComparison.OrdinalIgnoreCase) >= 0
+			|| topic.IndexOf("停战", StringComparison.OrdinalIgnoreCase) >= 0
+			|| topic.IndexOf("和平条件", StringComparison.OrdinalIgnoreCase) >= 0;
+	}
+
 	private void CommitEmbeddedRoundPlan(WorldDiplomacyRound round, WorldDiplomacyDocument root)
 	{
 		if (round == null || root == null || round.RelayPlanned) return;
+		Kingdom initiator = ResolveKingdom(root.AuthorKingdomId);
+		Kingdom primaryTarget = ResolveKingdom(root.TargetKingdomId);
 		List<string> candidates = Kingdom.All.Where(x => x != null && !x.IsEliminated
 			&& !string.Equals(x.StringId, root.AuthorKingdomId, StringComparison.OrdinalIgnoreCase)
 			&& HasIndependentWorldDiplomacyAuthority(x))
-			.OrderBy(x => x.StringId, StringComparer.OrdinalIgnoreCase).Select(x => x.StringId).ToList();
+			.Select(x => new { Kingdom = x, Interest = CalculateOptionalParticipantInterest(round, root, initiator, x) })
+			.Where(x => x.Kingdom == primaryTarget || x.Interest >= OptionalParticipantAdmissionThreshold)
+			.OrderByDescending(x => x.Kingdom == primaryTarget)
+			.ThenByDescending(x => x.Interest)
+			.ThenBy(x => x.Kingdom.StringId, StringComparer.OrdinalIgnoreCase)
+			.Take(MaxParticipationCandidatesPerJob)
+			.Select(x => x.Kingdom.StringId).ToList();
 		WorldDiplomacyJob plan = new WorldDiplomacyJob
 		{
 			RoundId = round.RoundId,
@@ -2815,12 +3031,17 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		if (round == null || root == null || round.RelayPlanned
 			|| _storage.Jobs.Any(x => x != null && string.Equals(x.Kind, "round_plan", StringComparison.OrdinalIgnoreCase)
 				&& string.Equals(x.RoundId, round.RoundId, StringComparison.OrdinalIgnoreCase))) return;
+		Kingdom initiator = ResolveKingdom(root.AuthorKingdomId);
 		List<string> candidates = Kingdom.All
 			.Where(x => x != null && !x.IsEliminated
 				&& !string.Equals(x.StringId, root.AuthorKingdomId, StringComparison.OrdinalIgnoreCase)
 				&& HasIndependentWorldDiplomacyAuthority(x))
-			.OrderBy(x => x.StringId, StringComparer.OrdinalIgnoreCase)
-			.Select(x => x.StringId).ToList();
+			.Select(x => new { Kingdom = x, Interest = CalculateOptionalParticipantInterest(round, root, initiator, x) })
+			.Where(x => x.Interest >= OptionalParticipantAdmissionThreshold)
+			.OrderByDescending(x => x.Interest)
+			.ThenBy(x => x.Kingdom.StringId, StringComparer.OrdinalIgnoreCase)
+			.Take(MaxParticipationCandidatesPerJob)
+			.Select(x => x.Kingdom.StringId).ToList();
 		WorldDiplomacyJob job = new WorldDiplomacyJob
 		{
 			JobId = NewId("diplomacy_round_plan"),
@@ -2833,7 +3054,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			CandidateKingdomIds = candidates,
 			SystemPrompt = BuildRoundPlanSystemPrompt(),
 			UserPrompt = BuildRoundPlanPrompt(root, candidates),
-			CacheAffinityKey = "diplomacy-round-plan:v4",
+			CacheAffinityKey = "diplomacy-round-plan:v5",
 			MaxTokens = AnalysisMaxTokens
 		};
 		EnqueueJob(job);
@@ -2843,10 +3064,10 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	{
 		StringBuilder sb = new StringBuilder(BuildCommonDiplomacySystemPrefix());
 		AppendWorldDiplomacyCustomPrompt(sb);
-		sb.AppendLine("【当前任务：一次性规划外交回合参与国】根据开场外交宣言和候选国现实利益，一次选定本回合参与者；后续不会反复评估观察国。");
-		sb.AppendLine("若宣言明确指向某国，该国必须参与。其余国家只选择确有战争、同盟、贸易、安全或政治利益关系者。不要为了热闹选满名单。");
-		sb.AppendLine("标准活跃度通常选择2至4个非发起国；低活跃度1至2个，高活跃度3至5个。只可使用候选ID。");
-		sb.AppendLine("回合目标是在当前设定的时间内通过提议、反提议、接受、拒绝、退出或合法外交动作形成进展，不是长期争吵。");
+		sb.AppendLine("【当前任务：一次性规划外交事件参与国】根据开场外交宣言和候选国现实利益，一次选定本次事件参与者；后续不会反复评估观察国。");
+		sb.AppendLine("若宣言明确指向某国，该国必须参与。候选名单已经由程序按现实利益筛过；仍应只选能够提出要求、承诺、条件、调停方案或实际行动者，不选只会旁观评论者。");
+		sb.AppendLine("参与国家规模是包含发起国和主要对象国在内的总数上限，而非必须凑满。只可使用候选ID；没有合适的可少选或不选。");
+		sb.AppendLine("事件由头不等于预定结果。参与国应能把争议或机会引向结盟、解盟、贸易、断绝贸易、宣战、议和等当前合法行为之一，或者对这些行为提出、接受、拒绝或反提具体条件。");
 		sb.AppendLine("只输出JSON：{\"topic\":\"简短外交议题\",\"selected_kingdom_ids\":[\"ID\"],\"reason\":\"简短理由\"}");
 		return sb.ToString().TrimEnd();
 	}
@@ -2854,6 +3075,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private string BuildRoundPlanPrompt(WorldDiplomacyDocument root, List<string> candidateIds)
 	{
 		StringBuilder sb = new StringBuilder();
+		WorldDiplomacyRound round = ResolveRound(root?.RoundId);
 		string vassalageSnapshot = BuildWorldDiplomacyVassalageSnapshot();
 		if (!string.IsNullOrWhiteSpace(vassalageSnapshot))
 		{
@@ -2865,14 +3087,15 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		sb.AppendLine("正文=" + Limit(root.Body, 2200));
 		sb.AppendLine("明确指向=" + string.Join(",", root.AddressedKingdomIds ?? new List<string>()));
 		sb.AppendLine("提及=" + string.Join(",", root.MentionedKingdomIds ?? new List<string>()));
-		sb.AppendLine("外交活跃度=" + GetActivityLevel().ToString(CultureInfo.InvariantCulture));
+		sb.AppendLine("本次参与国总数上限（包括发起国）=" + GetRoundParticipantLimit().ToString(CultureInfo.InvariantCulture));
+		if (round?.RequiresSharedBorder == true) sb.AppendLine("本次是边境类事件：候选国已经过接壤资格过滤，不得另选远方旁观者。");
+		if (!string.IsNullOrWhiteSpace(round?.TopicSeedContext)) sb.AppendLine("既定选题依据=" + round.TopicSeedContext);
 		sb.AppendLine("候选国：");
 		foreach (string id in candidateIds ?? new List<string>())
 		{
 			Kingdom kingdom = ResolveKingdom(id);
 			if (kingdom == null) continue;
-			sb.AppendLine(id + "=" + KingdomName(kingdom) + "，统治者=" + RulerName(kingdom)
-				+ "，与发起国关系=" + GetRulerRelation(ResolveKingdom(root.AuthorKingdomId), kingdom).ToString(CultureInfo.InvariantCulture));
+			sb.AppendLine(BuildCompactRoundPlanCandidateLine(ResolveKingdom(root.AuthorKingdomId), kingdom));
 			string policy = WorldDiplomacyPolicyContext.BuildSnapshot(id);
 			if (!string.IsNullOrWhiteSpace(policy)) sb.AppendLine("  政策=" + Limit(policy, 500));
 			string weekly = BuildWeeklyDiplomacySnapshot(id);
@@ -2888,7 +3111,9 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		Kingdom initiator = ResolveKingdom(root?.AuthorKingdomId ?? round?.InitiatorKingdomId);
 		if (round == null || root == null || initiator == null || round.RelayPlanned) return;
 		JObject json = ParseJsonObject(raw);
-		round.RoundTopic = Limit(FirstNonEmpty(ReadString(json, "topic"), root.Title, "外交交涉"), 120);
+		round.RoundTopic = Limit(SanitizePublicDiplomacyText(FirstNonEmpty(round.RoundTopic, ReadString(json, "topic"), root.Title, "外交交涉")), 120);
+		if (string.IsNullOrWhiteSpace(round.TopicCategory)) round.TopicCategory = InferTopicCategory(round.RoundTopic, initiator, ResolveKingdom(root.TargetKingdomId));
+		if (string.IsNullOrWhiteSpace(round.TopicFingerprint)) round.TopicFingerprint = BuildTopicFingerprint(round.TopicCategory, initiator?.StringId, root.TargetKingdomId, BuildBilateralState(initiator, ResolveKingdom(root.TargetKingdomId)));
 		HashSet<string> selected = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		foreach (string id in ReadStringList(json, "selected_kingdom_ids"))
 		{
@@ -2897,6 +3122,8 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 				&& HasIndependentWorldDiplomacyAuthority(selectedKingdom)) selected.Add(id);
 		}
 		HashSet<string> mandatoryIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		Kingdom explicitTarget = ResolveWorldDiplomacyRepresentative(ResolveKingdom(root.TargetKingdomId));
+		if (explicitTarget != null && explicitTarget != initiator) mandatoryIds.Add(explicitTarget.StringId);
 		foreach (string id in _storage.Documents
 			.Where(x => x != null && string.Equals(x.RoundId, round.RoundId, StringComparison.OrdinalIgnoreCase))
 			.SelectMany(x => x.AddressedKingdomIds ?? new List<string>()).Distinct(StringComparer.OrdinalIgnoreCase))
@@ -2908,23 +3135,20 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 				selected.Add(mandatory.StringId);
 			}
 		}
-		int desired = GetActivityLevel() switch { 0 => 2, 2 => 5, _ => 3 };
-		if (selected.Count == 0)
-		{
-			foreach (Kingdom fallback in (job.CandidateKingdomIds ?? new List<string>()).Select(ResolveKingdom)
-				.Where(x => x != null && !selected.Contains(x.StringId))
-				.OrderBy(x => CourtDistance(initiator, x)).ThenBy(x => x.StringId, StringComparer.OrdinalIgnoreCase))
-			{
-				if (selected.Count >= desired) break;
-				selected.Add(fallback.StringId);
-			}
-		}
+		int participantLimit = GetRoundParticipantLimit();
+		Kingdom primaryTarget = ResolveKingdom(root.TargetKingdomId);
 		List<Kingdom> mandatoryRoute = mandatoryIds.Select(ResolveKingdom).Where(x => x != null && x != initiator)
-			.Distinct().OrderBy(x => CourtDistance(initiator, x)).ToList();
-		int optionalSlots = Math.Max(0, MaxRelayParticipants - 1 - mandatoryRoute.Count);
+			.Distinct()
+			.OrderByDescending(x => x == primaryTarget)
+			.ThenBy(x => CourtDistance(initiator, x))
+			.Take(Math.Max(0, participantLimit - 1))
+			.ToList();
+		int optionalSlots = Math.Max(0, participantLimit - 1 - mandatoryRoute.Count);
 		List<Kingdom> optionalRoute = selected.Where(x => !mandatoryIds.Contains(x)).Select(ResolveKingdom)
-			.Where(x => x != null && x != initiator).Distinct()
-			.OrderBy(x => CourtDistance(initiator, x)).Take(optionalSlots).ToList();
+			.Where(x => x != null && x != initiator
+				&& CalculateOptionalParticipantInterest(round, root, initiator, x) >= OptionalParticipantAdmissionThreshold).Distinct()
+			.OrderByDescending(x => CalculateOptionalParticipantInterest(round, root, initiator, x))
+			.ThenBy(x => CourtDistance(initiator, x)).Take(optionalSlots).ToList();
 		List<Kingdom> remaining = mandatoryRoute.Concat(optionalRoute).Distinct().ToList();
 		List<string> route = new List<string> { initiator.StringId };
 		Kingdom cursor = initiator;
@@ -2953,10 +3177,13 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			WorldDiplomacyRoundParticipant participant = EnsureRoundParticipant(round, id, "active", mandatoryReply: false);
 			participant.SelectedForRelay = true;
 			participant.IsPlayerAsync = IsPlayerKingdom(ResolveKingdom(id));
+			AssignParticipantAgenda(round, root, participant, initiator);
 		}
 		round.CachePrefix = BuildRoundCachePrefix(round, root);
 		int cachePrefixProbeChars = Math.Min(2048, round.CachePrefix?.Length ?? 0);
 		Log("relay round planned round=" + round.RoundId + " route=" + string.Join(">", route)
+			+ " roles=" + string.Join(",", round.Participants.Where(x => x != null && x.SelectedForRelay).Select(x => x.KingdomId + ":" + x.Role))
+			+ " participantLimit=" + participantLimit.ToString(CultureInfo.InvariantCulture)
 			+ " passDays=" + round.RelayPassDurationDays.ToString(CultureInfo.InvariantCulture)
 			+ " targetDays=" + Math.Max(1, round.SoftEndDay - round.StartedDay).ToString(CultureInfo.InvariantCulture)
 			+ " frozenPrefixChars=" + (round.CachePrefix?.Length ?? 0).ToString(CultureInfo.InvariantCulture)
@@ -2971,15 +3198,374 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		return a == null || b == null ? float.MaxValue : a.GatePosition.Distance(b.GatePosition);
 	}
 
+	private WorldDiplomacyBorderRelation GetKingdomBorderRelation(Kingdom first, Kingdom second)
+	{
+		if (first == null || second == null || first == second)
+		{
+			return new WorldDiplomacyBorderRelation();
+		}
+		EnsureKingdomBorderCache();
+		return _kingdomBorderCache.TryGetValue(PairKey(first.StringId, second.StringId), out WorldDiplomacyBorderRelation relation)
+			? relation
+			: new WorldDiplomacyBorderRelation();
+	}
+
+	private void EnsureKingdomBorderCache()
+	{
+		int day = CurrentDay();
+		if (_kingdomBorderCacheDay == day)
+		{
+			return;
+		}
+		_kingdomBorderCacheDay = day;
+		_kingdomBorderCache.Clear();
+		_kingdomBorderDistanceThreshold = MinimumBorderDistance;
+		List<(Kingdom Kingdom, Settlement Settlement)> forts = Kingdom.All
+			.Where(x => x != null && !x.IsEliminated)
+			.SelectMany(kingdom => kingdom.Fiefs
+				.Select(x => x?.Settlement)
+				.Where(x => x != null && (x.IsTown || x.IsCastle))
+				.Select(settlement => (kingdom, settlement)))
+			.GroupBy(x => x.settlement.StringId, StringComparer.OrdinalIgnoreCase)
+			.Select(x => x.First())
+			.ToList();
+		if (forts.Count < 2)
+		{
+			return;
+		}
+		List<float> nearestDistances = new List<float>(forts.Count);
+		for (int i = 0; i < forts.Count; i++)
+		{
+			float nearest = float.MaxValue;
+			for (int j = 0; j < forts.Count; j++)
+			{
+				if (i == j) continue;
+				float distance = forts[i].Settlement.GatePosition.Distance(forts[j].Settlement.GatePosition);
+				if (distance < nearest) nearest = distance;
+			}
+			if (nearest < float.MaxValue) nearestDistances.Add(nearest);
+		}
+		nearestDistances.Sort();
+		float median = nearestDistances.Count == 0 ? MinimumBorderDistance
+			: nearestDistances[nearestDistances.Count / 2];
+		float maximumBorderDistance = Math.Max(MinimumBorderDistance,
+			Math.Min(MaximumBorderDistance, median * BorderDistanceMedianMultiplier));
+		_kingdomBorderDistanceThreshold = maximumBorderDistance;
+		foreach ((Kingdom kingdom, Settlement settlement) in forts)
+		{
+			foreach ((Kingdom otherKingdom, Settlement otherSettlement, float distance) in forts
+				.Where(x => x.Kingdom != kingdom)
+				.Select(x => (x.Kingdom, x.Settlement, settlement.GatePosition.Distance(x.Settlement.GatePosition)))
+				.OrderBy(x => x.Item3)
+				.Take(BorderForeignNeighborCount))
+			{
+				if (distance > maximumBorderDistance) continue;
+				string key = PairKey(kingdom.StringId, otherKingdom.StringId);
+				if (_kingdomBorderCache.TryGetValue(key, out WorldDiplomacyBorderRelation existing)
+					&& existing.Distance <= distance)
+				{
+					continue;
+				}
+				_kingdomBorderCache[key] = new WorldDiplomacyBorderRelation
+				{
+					SharesBorder = true,
+					FirstSettlementId = settlement.StringId ?? "",
+					FirstSettlementName = settlement.Name?.ToString() ?? "",
+					SecondSettlementId = otherSettlement.StringId ?? "",
+					SecondSettlementName = otherSettlement.Name?.ToString() ?? "",
+					Distance = distance
+				};
+			}
+		}
+		Log("kingdom border cache rebuilt day=" + day.ToString(CultureInfo.InvariantCulture)
+			+ " forts=" + forts.Count.ToString(CultureInfo.InvariantCulture)
+			+ " threshold=" + maximumBorderDistance.ToString("0.0", CultureInfo.InvariantCulture)
+			+ " pairs=" + _kingdomBorderCache.Count.ToString(CultureInfo.InvariantCulture));
+	}
+
+	private static string DescribeBorderRelation(WorldDiplomacyBorderRelation relation)
+	{
+		if (relation?.SharesBorder != true) return "两国当前没有共同边境";
+		string first = FirstNonEmpty(relation.FirstSettlementName, relation.FirstSettlementId, "一处边地要塞");
+		string second = FirstNonEmpty(relation.SecondSettlementName, relation.SecondSettlementId, "另一处边地要塞");
+		return "两国当前接壤，最直接的边地联系位于" + first + "与" + second + "一带";
+	}
+
+	private string BuildCurrentGeographicRelations(WorldDiplomacyRound round, Kingdom author)
+	{
+		if (round == null || author == null) return "【当前地理关系】无可核实对象。";
+		List<string> lines = new List<string>();
+		foreach (string id in (round.RelayRouteKingdomIds ?? new List<string>())
+			.Where(x => !string.Equals(x, author.StringId, StringComparison.OrdinalIgnoreCase))
+			.Distinct(StringComparer.OrdinalIgnoreCase))
+		{
+			Kingdom target = ResolveKingdom(id);
+			if (target == null) continue;
+			WorldDiplomacyBorderRelation border = GetKingdomBorderRelation(author, target);
+			if (border.SharesBorder)
+			{
+				lines.Add(id + "=" + KingdomName(target) + "；接壤，可称邻国或讨论共同边境；" + DescribeBorderRelation(border));
+				continue;
+			}
+
+			float courtDistance = CourtDistance(author, target);
+			float distanceScale = Math.Max(MinimumBorderDistance, _kingdomBorderDistanceThreshold);
+			string distanceBand = courtDistance == float.MaxValue
+				? "王庭间距离无法确认"
+				: courtDistance <= distanceScale * 2f
+					? "距离较近但不接壤"
+					: courtDistance <= distanceScale * 4f
+						? "距离中等且不接壤"
+						: "相距遥远且不接壤";
+			lines.Add(id + "=" + KingdomName(target) + "；" + distanceBand + "；不得称为邻国，不得声称拥有共同边境或边界争端");
+		}
+		return lines.Count == 0
+			? "【当前地理关系】无可核实对象。"
+			: "【当前地理关系；仅标为接壤的国家才可称邻国】\n" + string.Join("\n", lines);
+	}
+
+	private float CalculateOptionalParticipantInterest(WorldDiplomacyRound round, WorldDiplomacyDocument root, Kingdom initiator, Kingdom candidate)
+	{
+		if (candidate == null || initiator == null || candidate == initiator) return 0f;
+		HashSet<string> mandatory = new HashSet<string>((root?.AddressedKingdomIds ?? new List<string>())
+			.Concat(string.IsNullOrWhiteSpace(root?.TargetKingdomId) ? Enumerable.Empty<string>() : new[] { root.TargetKingdomId }), StringComparer.OrdinalIgnoreCase);
+		if (mandatory.Contains(candidate.StringId)) return 1000f;
+		Kingdom primaryTarget = ResolveKingdom(root?.TargetKingdomId)
+			?? (root?.AddressedKingdomIds ?? new List<string>()).Select(ResolveKingdom).FirstOrDefault(x => x != null && x != initiator);
+		List<Kingdom> core = new[] { initiator, primaryTarget }.Where(x => x != null).Distinct().ToList();
+		if (round?.RequiresSharedBorder == true
+			&& !core.Any(coreKingdom => coreKingdom != candidate && GetKingdomBorderRelation(candidate, coreKingdom).SharesBorder))
+		{
+			return 0f;
+		}
+		float score = 0f;
+		bool hasMaterialInterest = false;
+		IAllianceCampaignBehavior alliance = Campaign.Current?.GetCampaignBehavior<IAllianceCampaignBehavior>();
+		ITradeAgreementsCampaignBehavior trade = Campaign.Current?.GetCampaignBehavior<ITradeAgreementsCampaignBehavior>();
+		foreach (Kingdom coreKingdom in core)
+		{
+			if (coreKingdom == candidate) continue;
+			if (FactionManager.IsAtWarAgainstFaction(candidate, coreKingdom))
+			{
+				score += 100f;
+				hasMaterialInterest = true;
+			}
+			if (alliance != null && alliance.IsAllyWithKingdom(candidate, coreKingdom))
+			{
+				score += 70f;
+				hasMaterialInterest = true;
+			}
+			if (trade != null && BannerlordApiCompat.HasTradeAgreement(trade, candidate, coreKingdom))
+			{
+				score += 52f;
+				hasMaterialInterest = true;
+			}
+			WorldDiplomacyBorderRelation border = GetKingdomBorderRelation(candidate, coreKingdom);
+			int claims = border.SharesBorder
+				? CountCulturalClaims(candidate, coreKingdom) + CountCulturalClaims(coreKingdom, candidate)
+				: 0;
+			if (claims > 0)
+			{
+				score += Math.Min(42f, 24f + claims * 6f);
+				hasMaterialInterest = true;
+			}
+			if (HasSharedWarOpponent(candidate, coreKingdom))
+			{
+				score += 58f;
+				hasMaterialInterest = true;
+			}
+			WorldDiplomacyRealmRelationProfile profile = GetRealmRelationProfile(candidate, coreKingdom);
+			score += Math.Min(28f, Math.Abs(profile.AverageRelation) * 0.45f);
+		}
+		if ((root?.MentionedKingdomIds ?? new List<string>()).Contains(candidate.StringId, StringComparer.OrdinalIgnoreCase))
+		{
+			score += 55f;
+			hasMaterialInterest = true;
+		}
+		string context = (round?.TopicSeedContext ?? "") + "\n" + (round?.ExternalOpeningContext ?? "");
+		if (!string.IsNullOrWhiteSpace(context)
+			&& (context.IndexOf(candidate.StringId ?? "", StringComparison.OrdinalIgnoreCase) >= 0
+				|| context.IndexOf(KingdomName(candidate), StringComparison.OrdinalIgnoreCase) >= 0))
+		{
+			score += 65f;
+			hasMaterialInterest = true;
+		}
+		return hasMaterialInterest ? score : 0f;
+	}
+
+	private void AssignParticipantAgenda(WorldDiplomacyRound round, WorldDiplomacyDocument root, WorldDiplomacyRoundParticipant participant, Kingdom initiator)
+	{
+		if (round == null || participant == null || initiator == null) return;
+		Kingdom kingdom = ResolveKingdom(participant.KingdomId);
+		if (kingdom == null) return;
+		Kingdom primaryTarget = ResolveKingdom(root?.TargetKingdomId)
+			?? (root?.AddressedKingdomIds ?? new List<string>()).Select(ResolveKingdom).FirstOrDefault(x => x != null && x != initiator);
+		primaryTarget ??= initiator;
+		IAllianceCampaignBehavior alliance = Campaign.Current?.GetCampaignBehavior<IAllianceCampaignBehavior>();
+		ITradeAgreementsCampaignBehavior trade = Campaign.Current?.GetCampaignBehavior<ITradeAgreementsCampaignBehavior>();
+		WorldDiplomacyRealmRelationProfile withInitiator = GetRealmRelationProfile(kingdom, initiator);
+		WorldDiplomacyRealmRelationProfile withTarget = GetRealmRelationProfile(kingdom, primaryTarget);
+		string role;
+		string targetId;
+		if (kingdom == initiator)
+		{
+			role = "发起者";
+			targetId = primaryTarget.StringId;
+		}
+		else if (kingdom == primaryTarget || FactionManager.IsAtWarAgainstFaction(kingdom, initiator))
+		{
+			role = "对手方";
+			targetId = initiator.StringId;
+		}
+		else if (alliance != null && alliance.IsAllyWithKingdom(kingdom, initiator))
+		{
+			role = "支持者";
+			targetId = primaryTarget.StringId;
+		}
+		else if (withInitiator.AverageRelation >= 10f && withTarget.AverageRelation >= 10f)
+		{
+			role = "调停者";
+			targetId = primaryTarget.StringId;
+		}
+		else if (trade != null && (BannerlordApiCompat.HasTradeAgreement(trade, kingdom, initiator) || BannerlordApiCompat.HasTradeAgreement(trade, kingdom, primaryTarget)))
+		{
+			role = "交易撮合者";
+			targetId = primaryTarget.StringId;
+		}
+		else if (withTarget.AverageRelation <= -15f)
+		{
+			role = "逐利介入者";
+			targetId = primaryTarget.StringId;
+		}
+		else
+		{
+			role = "制衡者";
+			targetId = withInitiator.AverageRelation < withTarget.AverageRelation ? initiator.StringId : primaryTarget.StringId;
+		}
+		participant.Role = role;
+		participant.PrimaryTargetKingdomId = targetId ?? "";
+		participant.Agenda = role switch
+		{
+			"发起者" => "推动当前议题形成一项明确外交尝试，而非只发表立场",
+			"对手方" => "正面回应发起国，并以本国条件改变或阻止其方案",
+			"支持者" => "为盟友提供明确承诺、共同条件或代价要求",
+			"调停者" => "提出双方都能答复的具体调停方案并要求限期表态",
+			"交易撮合者" => "把本国商路与利益写入可交换的外交条件",
+			"逐利介入者" => "利用争端索取让步、保证或新的合作安排",
+			_ => "以本国安全为准绳提出制衡条件，不无条件追随任何一方"
+		};
+		participant.PreferredOutcome = role == "对手方" ? "迫使对方接受本国条件或正式拒绝其要求"
+			: role == "调停者" ? "形成一份可以被双方接受或反提的折中案"
+			: "让本国获得明确承诺、保障或可验证的外交收益";
+		participant.RedLine = "不得只旁观、复述或泛泛呼吁；不得替无关国家作答";
+		Kingdom agendaTarget = ResolveKingdom(targetId);
+		participant.Leverage = BuildBilateralState(kingdom, agendaTarget)
+			+ "；贵族整体态度=" + DescribeRealmRelationProfile(GetRealmRelationProfile(kingdom, agendaTarget))
+			+ "；当前可改变关系的方向=" + DescribePotentialDiplomaticActions(BuildPotentialDiplomaticActionIntents(kingdom, agendaTarget));
+		participant.RequiredContribution = "把当前事件由头转化为至少一项指向具体国家的要求、承诺、反条件、调停方案或合法外交尝试；不得只评论事件本身";
+	}
+
+	private WorldDiplomacyRealmRelationProfile GetRealmRelationProfile(Kingdom source, Kingdom target)
+	{
+		if (source == null || target == null) return new WorldDiplomacyRealmRelationProfile();
+		string key = source.StringId + ">" + target.StringId + ":" + CurrentDay().ToString(CultureInfo.InvariantCulture);
+		if (_realmRelationProfileCache.TryGetValue(key, out WorldDiplomacyRealmRelationProfile cached)) return cached;
+		List<Clan> sourceClans = source.Clans.Where(x => x != null && !x.IsEliminated)
+			.OrderByDescending(x => x == source.RulingClan).ThenByDescending(x => x.Tier).ThenByDescending(x => x.Influence).Take(8).ToList();
+		List<Clan> targetClans = target.Clans.Where(x => x != null && !x.IsEliminated)
+			.OrderByDescending(x => x == target.RulingClan).ThenByDescending(x => x.Tier).ThenByDescending(x => x.Influence).Take(8).ToList();
+		double weightedSum = 0d;
+		double weightSum = 0d;
+		double positiveWeight = 0d;
+		double hostileWeight = 0d;
+		List<(double Value, double Weight)> values = new List<(double, double)>();
+		foreach (Clan first in sourceClans)
+		{
+			foreach (Clan second in targetClans)
+			{
+				int relation;
+				try { relation = FactionManager.GetRelationBetweenClans(first, second); }
+				catch { relation = 0; }
+				double weight = Math.Sqrt(Math.Max(1d, 1d + first.Tier * 0.5d + first.Fiefs.Count * 0.25d)
+					* Math.Max(1d, 1d + second.Tier * 0.5d + second.Fiefs.Count * 0.25d));
+				weightedSum += relation * weight;
+				weightSum += weight;
+				if (relation >= 10) positiveWeight += weight;
+				if (relation <= -10) hostileWeight += weight;
+				values.Add((relation, weight));
+			}
+		}
+		float average = weightSum <= 0d ? GetRulerRelation(source, target) : (float)(weightedSum / weightSum);
+		double variance = weightSum <= 0d ? 0d : values.Sum(x => x.Weight * Math.Pow(x.Value - average, 2d)) / weightSum;
+		WorldDiplomacyRealmRelationProfile profile = new WorldDiplomacyRealmRelationProfile
+		{
+			AverageRelation = average,
+			PositiveRatio = weightSum <= 0d ? 0f : (float)(positiveWeight / weightSum),
+			HostileRatio = weightSum <= 0d ? 0f : (float)(hostileWeight / weightSum),
+			Polarization = (float)Math.Sqrt(Math.Max(0d, variance)),
+			RulerRelation = GetRulerRelation(source, target),
+			SamplePairCount = values.Count
+		};
+		profile.RulerEliteGap = profile.RulerRelation - profile.AverageRelation;
+		_realmRelationProfileCache[key] = profile;
+		return profile;
+	}
+
+	private static string DescribeRealmRelationProfile(WorldDiplomacyRealmRelationProfile profile)
+	{
+		if (profile == null || profile.SamplePairCount == 0) return "缺少可靠往来记录";
+		string baseAttitude = profile.AverageRelation >= 25f ? "普遍亲近" : profile.AverageRelation >= 8f ? "大体友善"
+			: profile.AverageRelation <= -25f ? "普遍敌视" : profile.AverageRelation <= -8f ? "积怨较深" : "总体谨慎";
+		if (profile.Polarization >= 28f) baseAttitude += "但国内贵族意见分裂";
+		if (profile.RulerEliteGap >= 25f) baseAttitude += "，统治者比本国贵族更亲近对方";
+		else if (profile.RulerEliteGap <= -25f) baseAttitude += "，统治者比本国贵族更敌视对方";
+		return baseAttitude;
+	}
+
+	private static string InferTopicCategory(string topic, Kingdom initiator, Kingdom target)
+	{
+		string value = topic ?? "";
+		if (value.IndexOf("议和", StringComparison.OrdinalIgnoreCase) >= 0 || value.IndexOf("停战", StringComparison.OrdinalIgnoreCase) >= 0) return "peace_terms";
+		if (value.IndexOf("贸易", StringComparison.OrdinalIgnoreCase) >= 0 || value.IndexOf("商路", StringComparison.OrdinalIgnoreCase) >= 0) return "trade_order";
+		if (value.IndexOf("同盟", StringComparison.OrdinalIgnoreCase) >= 0 || value.IndexOf("盟约", StringComparison.OrdinalIgnoreCase) >= 0) return "alliance_duties";
+		if (initiator != null && target != null && FactionManager.IsAtWarAgainstFaction(initiator, target)) return "war_conduct";
+		return "regional_security";
+	}
+
+	private void RecordRoundTopicUse(WorldDiplomacyRound round)
+	{
+		if (round == null || string.IsNullOrWhiteSpace(round.TopicCategory)) return;
+		WorldDiplomacyDocument root = ResolveDocument(round.RootDocumentId);
+		string targetId = root?.TargetKingdomId ?? (root?.AddressedKingdomIds ?? new List<string>()).FirstOrDefault() ?? "";
+		_storage.RecentTopicUses.Add(new WorldDiplomacyTopicUse
+		{
+			RoundId = round.RoundId ?? "",
+			InitiatorKingdomId = round.InitiatorKingdomId ?? "",
+			Category = round.TopicCategory ?? "",
+			Motif = round.EventMotif ?? "",
+			Fingerprint = FirstNonEmpty(round.TopicFingerprint, BuildTopicFingerprint(round.TopicCategory, round.InitiatorKingdomId, targetId, round.TopicSeedContext, round.EventMotif)),
+			PairKey = PairKey(round.InitiatorKingdomId, targetId),
+			Day = round.CompletedDay > 0 ? round.CompletedDay : CurrentDay()
+		});
+		_storage.RecentTopicUses = _storage.RecentTopicUses.OrderByDescending(x => x?.Day ?? -1).Take(MaxRecentTopicUses).OrderBy(x => x.Day).ToList();
+	}
+
 	private string BuildRoundCachePrefix(WorldDiplomacyRound round, WorldDiplomacyDocument root)
 	{
 		StringBuilder sb = new StringBuilder();
-		sb.AppendLine("【本回合冻结档案 v8】");
-		sb.AppendLine("议题=" + round.RoundTopic);
+		sb.AppendLine("【本次外交事件既定档案 v12】");
+		sb.AppendLine("公开议题由头=" + round.RoundTopic + "；事件家族=" + round.TopicCategory + "；事件母题=" + round.EventMotif);
+		sb.AppendLine("事件来源=" + round.EventSourceType
+			+ (string.IsNullOrWhiteSpace(round.EventLocation) ? "" : "；地理锚点=" + round.EventLocation)
+			+ "；是否要求接壤=" + (round.RequiresSharedBorder ? "是" : "否"));
+		if (!string.IsNullOrWhiteSpace(round.TopicSeedContext)) sb.AppendLine("选题依据=" + round.TopicSeedContext);
+		if (!string.IsNullOrWhiteSpace(round.AllowedFiction)) sb.AppendLine("允许的局部发挥=" + round.AllowedFiction);
+		if (!string.IsNullOrWhiteSpace(round.ForbiddenFiction)) sb.AppendLine("不得杜撰=" + round.ForbiddenFiction);
+		sb.AppendLine("初始合法外交出口（不是预定结果）=" + DescribePotentialDiplomaticActions(round.PotentialActionIntents));
 		sb.AppendLine("开场宣言=" + root.AuthorKingdomId + "|" + root.Title + "|" + Limit(root.Body, 2200));
-		sb.AppendLine("基础接力顺序=" + string.Join(">", round.RelayRouteKingdomIds ?? new List<string>()));
-		sb.AppendLine("计划回合时长=" + Math.Max(1, round.SoftEndDay - round.StartedDay).ToString(CultureInfo.InvariantCulture) + "天；接力单程=" + Math.Max(1, round.RelayPassDurationDays).ToString(CultureInfo.InvariantCulture) + "天");
-		sb.AppendLine("回合硬目标=正常结束前至少出现一次可由程序核验的实质外交尝试。正式提议、反提议、对真实提议的接受或拒绝、最后通牒、明确道歉或让步，以及成功执行的外交机制可以计入；普通声明、谴责、泛泛警告、评论和重复旧立场不计入。");
+		sb.AppendLine("既定公文传递顺序=" + string.Join(">", round.RelayRouteKingdomIds ?? new List<string>()));
+		sb.AppendLine("预计交涉时长=" + Math.Max(1, round.SoftEndDay - round.StartedDay).ToString(CultureInfo.InvariantCulture) + "天；公文单程传播=" + Math.Max(1, round.RelayPassDurationDays).ToString(CultureInfo.InvariantCulture) + "天");
+		sb.AppendLine("交涉目标=事件只是各国展开交涉的由头，不是预定结果。在预计期限内至少形成一次指向具体国家的明确外交尝试，并可自然转向结盟、解盟、贸易、断绝贸易、宣战或议和。是否真正改变关系，必须由各国条件和当前局势自然决定，不得为了结束事件强迫任何一方成交或行动。");
 		string vassalageSnapshot = BuildWorldDiplomacyVassalageSnapshot();
 		if (!string.IsNullOrWhiteSpace(vassalageSnapshot)) sb.AppendLine(vassalageSnapshot);
 		sb.AppendLine("参与国回合初始背景（仅用于保持各统治者自身决策一致；不得声称这些内部信息已被其他王国获知）：");
@@ -2989,6 +3575,13 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			Kingdom kingdom = ResolveKingdom(id);
 			if (kingdom == null) continue;
 			sb.AppendLine("-- " + id + "=" + KingdomName(kingdom) + "，统治者=" + RulerName(kingdom));
+			WorldDiplomacyRoundParticipant participant = (round.Participants ?? new List<WorldDiplomacyRoundParticipant>())
+				.FirstOrDefault(x => x != null && string.Equals(x.KingdomId, id, StringComparison.OrdinalIgnoreCase));
+			if (participant != null)
+			{
+				sb.AppendLine("本次事件角色=" + participant.Role + "；议程=" + participant.Agenda + "；主要对象=" + participant.PrimaryTargetKingdomId);
+				sb.AppendLine("希望结果=" + participant.PreferredOutcome + "；底线=" + participant.RedLine + "；筹码=" + participant.Leverage + "；必须贡献=" + participant.RequiredContribution);
+			}
 			string voice = BuildRulerVoiceContext(kingdom);
 			if (!string.IsNullOrWhiteSpace(voice)) sb.AppendLine("统治者声音=" + Limit(voice, 900));
 			string realmVoice = BuildRealmInstitutionalVoiceContext(kingdom);
@@ -3002,7 +3595,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 		if (!string.IsNullOrWhiteSpace(round.ExternalOpeningContext))
 		{
-			sb.AppendLine("【本回合既定外部事件】");
+			sb.AppendLine("【本次外交事件的既定外部动向】");
 			sb.AppendLine(Limit(round.ExternalOpeningContext, 1800));
 		}
 		return sb.ToString().TrimEnd();
@@ -3020,10 +3613,10 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		if (!string.IsNullOrWhiteSpace(round?.ExternalOpeningContext)
 			&& (round.CachePrefix ?? "").IndexOf((round.ExternalSignalKeys ?? new List<string>()).FirstOrDefault() ?? "", StringComparison.OrdinalIgnoreCase) < 0)
 		{
-			sb.AppendLine("【本回合新增外部事件】");
+			sb.AppendLine("【本次外交事件新增的外部动向】");
 			sb.AppendLine(Limit(round.ExternalOpeningContext, 1800));
 		}
-		sb.AppendLine("【本回合已颁布外交公文档案】");
+		sb.AppendLine("【本次外交事件已颁布公文档案】");
 		foreach (WorldDiplomacyDocument document in _storage.Documents
 			.Where(x => x != null && string.Equals(x.RoundId, round?.RoundId, StringComparison.OrdinalIgnoreCase) && x.IsReadyForPublication
 				&& !string.Equals(x.DocumentId, round?.RootDocumentId, StringComparison.OrdinalIgnoreCase))
@@ -3034,6 +3627,13 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 		sb.AppendLine("【本次动态尾部】");
 		sb.AppendLine("本篇发布国=" + author.StringId + "=" + KingdomName(author) + "，授权统治者=" + RulerName(author));
+		WorldDiplomacyRoundParticipant actorPlan = (round?.Participants ?? new List<WorldDiplomacyRoundParticipant>())
+			.FirstOrDefault(x => x != null && string.Equals(x.KingdomId, author.StringId, StringComparison.OrdinalIgnoreCase));
+		if (actorPlan != null)
+		{
+			sb.AppendLine("本国既定角色=" + actorPlan.Role + "；本国议程=" + actorPlan.Agenda + "；本篇必须贡献=" + actorPlan.RequiredContribution);
+			if (!actorPlan.ContributionMade) sb.AppendLine("本国尚未对本次事件作出实际贡献：不得只表示关注、旁观或复述他国立场，应提出一个与议程一致的具体要求、承诺、交换条件、调停方案或合法外交尝试。");
+		}
 		if ((round?.CachePrefix ?? "").IndexOf("-- " + author.StringId + "=", StringComparison.OrdinalIgnoreCase) < 0)
 		{
 			string addedVoice = BuildRulerVoiceContext(author);
@@ -3049,6 +3649,8 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 		sb.AppendLine("最近送抵本国王庭的公文来源=" + (previous?.StringId ?? "") + "=" + KingdomName(previous));
 		sb.AppendLine("允许动作对象=" + string.Join(",", (round?.RelayRouteKingdomIds ?? new List<string>()).Where(x => !string.Equals(x, author.StringId, StringComparison.OrdinalIgnoreCase))));
+		sb.AppendLine(BuildCurrentLegalDiplomaticOptions(round, author));
+		sb.AppendLine(BuildCurrentGeographicRelations(round, author));
 		foreach (WorldDiplomacyRoundOffer offer in (round?.PendingOffers ?? new List<WorldDiplomacyRoundOffer>()).Where(x => x != null && string.Equals(x.Status, "open", StringComparison.OrdinalIgnoreCase)))
 		{
 			bool canAnswer = string.Equals(offer.TargetKingdomId, author.StringId, StringComparison.OrdinalIgnoreCase);
@@ -3058,8 +3660,8 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		int age = Math.Max(0, CurrentDay() - (round?.StartedDay ?? CurrentDay()));
 		int targetDays = Math.Max(1, (round?.SoftEndDay ?? CurrentDay() + RelayTargetDurationDays) - (round?.StartedDay ?? CurrentDay()));
 		int remainingDays = Math.Max(0, targetDays - age);
-		sb.AppendLine("回合已经进行=" + age.ToString(CultureInfo.InvariantCulture) + "天；计划时长=" + targetDays.ToString(CultureInfo.InvariantCulture)
-			+ "天；距离计划收束=" + remainingDays.ToString(CultureInfo.InvariantCulture) + "天；当前接力轮次=" + (round?.RelayPassNumber ?? 0).ToString(CultureInfo.InvariantCulture));
+		sb.AppendLine("本次交涉已经进行=" + age.ToString(CultureInfo.InvariantCulture) + "天；预计时长=" + targetDays.ToString(CultureInfo.InvariantCulture)
+			+ "天；距离预计收束=" + remainingDays.ToString(CultureInfo.InvariantCulture) + "天；当前公文往来阶段=" + (round?.RelayPassNumber ?? 0).ToString(CultureInfo.InvariantCulture));
 		AppendRoundSubstantiveProgressRequirement(sb, round, age, targetDays);
 		AppendOpenOfferAnswerRequirement(sb, round, author, age, targetDays);
 		if (age * 100 >= targetDays * 85) sb.AppendLine("当前已进入最后阶段：必须给出最终条件、接受、拒绝、退出或合法行动，不得继续空泛争论。");
@@ -3106,10 +3708,10 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		if (priorityResponseOnly && prioritySource != null)
 		{
 			sb.AppendLine("【本篇优先任务：回应玩家王国宣言】");
-			sb.AppendLine("玩家王国的下列宣言已经送达本国王庭并直接指向本国，本篇必须正面回应它，而不是沿原接力顺序改谈其他国家：来源="
+			sb.AppendLine("玩家王国的下列宣言已经送达本国王庭并直接指向本国，本篇必须正面回应它，而不是沿原定公文次序改谈其他国家：来源="
 				+ prioritySource.DocumentId + "|发文国=" + prioritySource.AuthorKingdomId + "|标题=" + prioritySource.Title
 				+ "|已裁定意图=" + NormalizeIntent(prioritySource.Intent));
-			sb.AppendLine("若玩家是在接受或拒绝本国此前提案，应承认该答复已经发生，并对结果作一次正式反应；不得继续声称玩家尚未答复。若玩家提出新提案、反提案或最后通牒，应接受、拒绝、提出明确反方案或说明仍待解决的具体条件。该优先回应完成后，原接力会继续，不得要求玩家立即再次发言。");
+			sb.AppendLine("若玩家是在接受或拒绝本国此前提案，应承认该答复已经发生，并对结果作一次正式反应；不得继续声称玩家尚未答复。若玩家提出新提案、反提案或最后通牒，应接受、拒绝、提出明确反方案或说明仍待解决的具体条件。该优先回应完成后，原定公文传递会继续，不得要求玩家立即再次发言。");
 		}
 		if (includeActorProfile)
 		{
@@ -3131,6 +3733,8 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 		sb.AppendLine("最近送抵本国王庭的公文来源=" + (previous?.StringId ?? "") + "=" + KingdomName(previous));
 		sb.AppendLine("允许动作对象=" + string.Join(",", (round.RelayRouteKingdomIds ?? new List<string>()).Where(x => !string.Equals(x, author.StringId, StringComparison.OrdinalIgnoreCase))));
+		sb.AppendLine(BuildCurrentLegalDiplomaticOptions(round, author));
+		sb.AppendLine(BuildCurrentGeographicRelations(round, author));
 		foreach (WorldDiplomacyRoundOffer offer in (round.PendingOffers ?? new List<WorldDiplomacyRoundOffer>()).Where(x => x != null && string.Equals(x.Status, "open", StringComparison.OrdinalIgnoreCase)))
 		{
 			bool canAnswer = string.Equals(offer.TargetKingdomId, author.StringId, StringComparison.OrdinalIgnoreCase);
@@ -3140,15 +3744,15 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		int age = Math.Max(0, CurrentDay() - round.StartedDay);
 		int targetDays = Math.Max(1, round.SoftEndDay - round.StartedDay);
 		int remainingDays = Math.Max(0, targetDays - age);
-		sb.AppendLine("回合已经进行=" + age.ToString(CultureInfo.InvariantCulture) + "天；计划时长=" + targetDays.ToString(CultureInfo.InvariantCulture)
-			+ "天；距离计划收束=" + remainingDays.ToString(CultureInfo.InvariantCulture) + "天；当前接力轮次=" + round.RelayPassNumber.ToString(CultureInfo.InvariantCulture));
+		sb.AppendLine("本次交涉已经进行=" + age.ToString(CultureInfo.InvariantCulture) + "天；预计时长=" + targetDays.ToString(CultureInfo.InvariantCulture)
+			+ "天；距离预计收束=" + remainingDays.ToString(CultureInfo.InvariantCulture) + "天；当前公文往来阶段=" + round.RelayPassNumber.ToString(CultureInfo.InvariantCulture));
 		AppendRoundSubstantiveProgressRequirement(sb, round, age, targetDays);
 		AppendOpenOfferAnswerRequirement(sb, round, author, age, targetDays);
 		if (age * 100 >= targetDays * 85) sb.AppendLine("当前已进入最后阶段：必须给出最终条件、接受、拒绝、退出或合法行动，不得继续空泛争论。");
 		else if (age * 100 >= targetDays * 70) sb.AppendLine("当前已进入回合后段：优先收束分歧并形成明确结果。");
 		if (!string.IsNullOrWhiteSpace(round.ExternalOpeningContext))
 		{
-			sb.AppendLine("【本回合已知外部事件】");
+			sb.AppendLine("【本次外交事件已知的外部动向】");
 			sb.AppendLine(Limit(round.ExternalOpeningContext, 1800));
 		}
 		string gatheringContext = NobleGatheringBehavior.BuildRecentDiplomacyMaterialForExternal(round.RelayRouteKingdomIds, 3);
@@ -3193,20 +3797,22 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private static void AppendRoundSubstantiveProgressRequirement(StringBuilder sb, WorldDiplomacyRound round, int age, int targetDays)
 	{
 		if (sb == null || round == null) return;
-		sb.AppendLine("程序核验的实质外交进展=" + Math.Max(0, round.SubstantiveProgressCount).ToString(CultureInfo.InvariantCulture)
-			+ "次；已经执行的游戏外交动作=" + Math.Max(0, round.ExecutedActionCount).ToString(CultureInfo.InvariantCulture) + "次。");
-		if (round.SubstantiveProgressCount > 0) return;
+		sb.AppendLine("公开事件只是交涉由头，不限制最终外交方向。可以根据当前真实利益转向任何下方列出的合法关系变更，但必须在公文中提出清楚对象和条件。生成一个合法选项不等于它已经生效。");
+		sb.AppendLine("已经形成的明确外交尝试=" + Math.Max(0, round.SubstantiveProgressCount).ToString(CultureInfo.InvariantCulture)
+			+ "次；其中指向关系变更的尝试=" + Math.Max(0, round.DiplomaticActionAttemptCount).ToString(CultureInfo.InvariantCulture)
+			+ "次；已经正式生效的外交行动=" + Math.Max(0, round.ExecutedActionCount).ToString(CultureInfo.InvariantCulture) + "次。");
+		if (round.DiplomaticActionAttemptCount > 0) return;
 		if (round.FinalActionOpportunityIssued || age * 100 >= targetDays * 85)
 		{
-			sb.AppendLine("硬性要求：本回合至今没有任何可核验的实质外交尝试，本篇是最后行动机会。必须提出一项合法而明确的方案、反方案或最后通牒，或者对本国有资格回答的真实提议作出接受或拒绝；不得只声明、谴责、评论、泛泛警告或退出。");
+			sb.AppendLine("交涉已临近预计期限，但尚未形成关系变更尝试。本篇必须从当前合法出口中提出结盟、解盟、贸易、断绝贸易、宣战或议和方案，或者正式接受、拒绝、反提本国有权回答的真实提议；不要求对方接受，也不得为了收束而虚构已经生效的结果。");
 		}
 		else if (age * 100 >= targetDays * 40)
 		{
-			sb.AppendLine("推进要求：本回合已经进入中段但仍无实质外交尝试。本篇必须开始形成明确条件、提议、反提议、最后通牒、道歉或让步；不得继续只改写旧立场。");
+			sb.AppendLine("交涉已经进入中段但仍无关系变更尝试。本篇应开始把事件由头转化为一项具体结盟、解盟、贸易、断绝贸易、宣战或议和提案，或者对现有提案给出可验证的反条件，不得继续只改写旧立场。");
 		}
 		else
 		{
-			sb.AppendLine("本回合尚无实质外交尝试。可以先说明立场，但必须为随后形成明确提议、条件、让步或其他外交结果留下可执行方向。");
+			sb.AppendLine("本次交涉尚无明确外交尝试。可以先说明立场，但应为随后形成条件、提议、让步或其他外交进展留下方向。");
 		}
 	}
 
@@ -3220,7 +3826,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		if (answerable.Count == 0) return;
 		if (round.FinalActionOpportunityIssued || age * 100 >= targetDays * 70)
 		{
-			sb.AppendLine("本国是尚未答复的正式提议对象，回合已经进入收束阶段。本篇必须接受、拒绝或提出明确反方案；不得绕开提议另谈无关事项，也不得以评论代替答复。");
+			sb.AppendLine("本国是尚未答复的正式提议对象，交涉已经进入收束阶段。本篇必须接受、拒绝或提出明确反方案；不得绕开提议另谈无关事项，也不得以评论代替答复。");
 		}
 		else
 		{
@@ -3249,7 +3855,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			round.RelayPassStartedDay += passDurationDays;
 			if (CurrentDay() >= round.SoftEndDay && round.RelayPassNumber > 3)
 			{
-				if (round.SubstantiveProgressCount > 0 && !HasOpenRoundOffers(round))
+				if (round.DiplomaticActionAttemptCount > 0 && !HasOpenRoundOffers(round))
 				{
 					CloseActiveRound("relay_soft_end");
 					return;
@@ -3257,22 +3863,22 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 				if (!round.FinalActionOpportunityIssued)
 				{
 					round.FinalActionOpportunityIssued = true;
-					Log("relay final substantive action opportunity opened round=" + round.RoundId);
+					Log("relay final substantive attempt opportunity opened round=" + round.RoundId);
 				}
 			}
 			nextIndex = FindNextRelayIndex(round, round.RelayCursor + round.RelayDirection);
 		}
 		if (nextIndex < 0)
 		{
-			CloseActiveRound(round.SubstantiveProgressCount > 0
+			CloseActiveRound(round.DiplomaticActionAttemptCount > 0
 				? "relay_all_participants_withdrew"
-				: "technical_no_substantive_participants");
+				: "technical_no_diplomatic_action_attempt");
 			return;
 		}
 		int edgeCount = Math.Max(1, route.Count - 1);
 		int progress = round.RelayDirection > 0 ? nextIndex : route.Count - 1 - nextIndex;
 		int plannedDay = round.RelayPassStartedDay + (int)Math.Ceiling(passDurationDays * Math.Max(1, progress) / (double)edgeCount);
-		if (round.FinalActionOpportunityIssued && round.SubstantiveProgressCount <= 0)
+		if (round.FinalActionOpportunityIssued && round.DiplomaticActionAttemptCount <= 0)
 		{
 			plannedDay = Math.Min(plannedDay, round.HardEndDay);
 		}
@@ -3354,9 +3960,9 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		if (round == null || !string.Equals(round.State, "active", StringComparison.OrdinalIgnoreCase)) return;
 		if (CurrentDay() >= round.HardEndDay)
 		{
-			CloseActiveRound(round.SubstantiveProgressCount > 0
+			CloseActiveRound(round.DiplomaticActionAttemptCount > 0
 				? "relay_hard_end"
-				: "technical_no_substantive_progress");
+				: "technical_no_diplomatic_action_attempt");
 			return;
 		}
 		round.RelayWaiting = false;
@@ -3386,10 +3992,9 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		WorldDiplomacyRoundParticipant playerParticipant = EnsureRoundParticipant(round, document.AuthorKingdomId, "active", mandatoryReply: false);
 		if (playerParticipant != null)
 		{
-			playerParticipant.SelectedForRelay = true;
 			playerParticipant.IsPlayerAsync = true;
 			playerParticipant.LastSpokeDay = CurrentDay();
-			AddParticipantToRelayRouteIfNeeded(round, document.AuthorKingdomId);
+			playerParticipant.SelectedForRelay = AddParticipantToRelayRouteIfNeeded(round, document.AuthorKingdomId);
 		}
 		WorldDiplomacyPlayerOpportunity opportunity = _storage.PlayerOpportunities.FirstOrDefault(x => x != null
 			&& string.Equals(x.RoundId, round.RoundId, StringComparison.OrdinalIgnoreCase) && string.Equals(x.Status, "open", StringComparison.OrdinalIgnoreCase));
@@ -3401,9 +4006,8 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			Kingdom kingdom = ResolveWorldDiplomacyRepresentative(ResolveKingdom(id));
 			if (kingdom == null) continue;
 			WorldDiplomacyRoundParticipant participant = EnsureRoundParticipant(round, kingdom.StringId, "active", mandatoryReply: false);
-			participant.SelectedForRelay = true;
 			participant.IsPlayerAsync = IsPlayerKingdom(kingdom);
-			AddParticipantToRelayRouteIfNeeded(round, kingdom.StringId);
+			participant.SelectedForRelay = AddParticipantToRelayRouteIfNeeded(round, kingdom.StringId);
 		}
 		Log("player declaration appended to relay round=" + round.RoundId + " document=" + document.DocumentId);
 	}
@@ -3416,7 +4020,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			.Where(x => !string.IsNullOrWhiteSpace(x))
 			.Distinct(StringComparer.OrdinalIgnoreCase)
 			.ToList();
-		string content = "【玩家王国在两次 AI 接力之间公开发布的外交宣言】\n"
+		string content = "【玩家王国在两次既定公文传递之间公开发布的外交宣言】\n"
 			+ "发文国=" + document.AuthorKingdomId + "=" + document.AuthorKingdomName + "\n"
 			+ "标题=" + document.Title + "\n"
 			+ "正文=" + document.Body + "\n"
@@ -3456,13 +4060,14 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		return participant;
 	}
 
-	private static void AddParticipantToRelayRouteIfNeeded(WorldDiplomacyRound round, string kingdomId)
+	private static bool AddParticipantToRelayRouteIfNeeded(WorldDiplomacyRound round, string kingdomId)
 	{
-		if (round == null || !round.RelayPlanned || string.IsNullOrWhiteSpace(kingdomId)) return;
+		if (round == null || !round.RelayPlanned || string.IsNullOrWhiteSpace(kingdomId)) return false;
 		round.RelayRouteKingdomIds ??= new List<string>();
-		if (round.RelayRouteKingdomIds.Contains(kingdomId, StringComparer.OrdinalIgnoreCase)
-			|| round.RelayRouteKingdomIds.Count >= MaxRelayParticipants) return;
+		if (round.RelayRouteKingdomIds.Contains(kingdomId, StringComparer.OrdinalIgnoreCase)) return true;
+		if (round.RelayRouteKingdomIds.Count >= GetRoundParticipantLimit()) return false;
 		round.RelayRouteKingdomIds.Add(kingdomId);
+		return true;
 	}
 
 	private string ResolveArmedIntent(Kingdom author, Kingdom target)
@@ -3478,7 +4083,8 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			int lastProposalDay = GetLastForcedPeaceProposalDay(ledger, author.StringId);
 			WarSituationSnapshot snapshot = GetWarSituation(author, target);
 			if (ledger != null
-				&& snapshot.AuthorPeacePressure >= GetDiplomaticAdvanceThreshold()
+				&& snapshot.AuthorPeacePressure >= GetPeaceAdvanceThreshold()
+				&& (snapshot.WarDays >= MinimumAutomaticPeaceWarDays || snapshot.AuthorPeacePressure >= CatastrophicPeacePressure)
 				&& (lastProposalDay <= 0 || day - lastProposalDay >= ForcedPeaceProposalCooldownDays)
 				&& !HasOpenPeaceOffer(author.StringId, target.StringId))
 			{
@@ -3684,7 +4290,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			{
 				snapshot.Append("，核心主张：").Append(Limit(NormalizeBody(item.Body), 180));
 			}
-			if (!string.IsNullOrWhiteSpace(item.MechanicalResult))
+			if (item.ChangedDiplomaticState && !string.IsNullOrWhiteSpace(item.MechanicalResult))
 			{
 				snapshot.Append("；[游戏已执行] ").Append(Limit(item.MechanicalResult, 120));
 			}
@@ -4092,6 +4698,8 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	{
 		WorldDiplomacyRound round = ResolveRound(job.RoundId);
 		StringBuilder sb = new StringBuilder();
+		sb.AppendLine("本次公开事件由头=" + (round?.RoundTopic ?? "") + "；参与国总数上限（包括发起国）=" + GetRoundParticipantLimit().ToString(CultureInfo.InvariantCulture) + "。候选不足时不得凑数。");
+		if (round?.RequiresSharedBorder == true) sb.AppendLine("这是边境类事件，候选国已经过与主要当事国接壤的硬筛选；不得把它改写成远方国家共同拥有同一边界。");
 		string vassalageSnapshot = BuildWorldDiplomacyVassalageSnapshot();
 		if (!string.IsNullOrWhiteSpace(vassalageSnapshot)) sb.AppendLine(vassalageSnapshot);
 		foreach (WorldDiplomacyParticipationRequest request in requests.OrderBy(x => x?.KingdomId ?? "", StringComparer.OrdinalIgnoreCase))
@@ -4132,7 +4740,11 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			string relation = FactionManager.IsAtWarAgainstFaction(candidate, other)
 				? "交战"
 				: alliance?.IsAllyWithKingdom(candidate, other) == true ? "同盟" : "中立";
-			facts.Add(KingdomName(other) + "=" + relation + ",私人关系=" + DescribeRulerRelation(GetRulerRelation(candidate, other)));
+			WorldDiplomacyBorderRelation border = GetKingdomBorderRelation(candidate, other);
+			facts.Add(KingdomName(other) + "=" + relation
+				+ ",地理=" + (border.SharesBorder ? "接壤" : "不接壤")
+				+ ",私人关系=" + DescribeRulerRelation(GetRulerRelation(candidate, other))
+				+ ",可用方向=" + DescribePotentialDiplomaticActions(BuildPotentialDiplomaticActionIntents(candidate, other)));
 		}
 		return string.Join("；", facts);
 	}
@@ -4150,14 +4762,27 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			if (!(job.CandidateKingdomIds ?? new List<string>()).Contains(kingdomId, StringComparer.OrdinalIgnoreCase)) continue;
 			Kingdom author = ResolveKingdom(kingdomId);
 			if (author == null || IsPlayerKingdom(author) || !HasIndependentWorldDiplomacyAuthority(author)) continue;
+			WorldDiplomacyDocument root = ResolveDocument(round.RootDocumentId);
+			Kingdom initiator = ResolveKingdom(root?.AuthorKingdomId ?? round.InitiatorKingdomId);
+			if (CalculateOptionalParticipantInterest(round, root, initiator, author) < OptionalParticipantAdmissionThreshold) continue;
 			string state = NormalizeToken(token?["state"]?.ToString());
 			if (state != "active" && state != "withdrawn") state = "observer";
+			if (state == "active"
+				&& !(round.RelayRouteKingdomIds ?? new List<string>()).Contains(kingdomId, StringComparer.OrdinalIgnoreCase)
+				&& (round.RelayRouteKingdomIds?.Count ?? 0) >= GetRoundParticipantLimit())
+			{
+				state = "observer";
+			}
 			WorldDiplomacyRoundParticipant participant = EnsureRoundParticipant(round, kingdomId, state, mandatoryReply: false);
 			participant.State = state;
 			if (state == "active")
 			{
-				participant.SelectedForRelay = true;
-				AddParticipantToRelayRouteIfNeeded(round, kingdomId);
+				participant.SelectedForRelay = AddParticipantToRelayRouteIfNeeded(round, kingdomId);
+				if (!participant.SelectedForRelay)
+				{
+					state = "observer";
+					participant.State = state;
+				}
 			}
 			else if (state == "withdrawn")
 			{
@@ -4166,7 +4791,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			participant.LastEvaluationDay = CurrentDay();
 			participant.LastEvaluationMaterialDay = round.LastActivityDay;
 			bool speak = ReadBooleanToken(token?["speak_now"]);
-			if (!speak || state == "withdrawn") continue;
+			if (!speak || state != "active") continue;
 			Kingdom target = ResolveKingdom(token?["target_kingdom_id"]?.ToString());
 			WorldDiplomacyDocument source = (job.TriggerDocumentIds ?? new List<string>())
 				.Where(id => HasKingdomKnowledge(author.StringId, id))
@@ -4287,9 +4912,9 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 				// already-started final turn finish instead of closing the round underneath it.
 				return;
 			}
-			CloseActiveRound(round.SubstantiveProgressCount > 0
+			CloseActiveRound(round.DiplomaticActionAttemptCount > 0
 				? "relay_hard_end"
-				: "technical_no_substantive_progress");
+				: "technical_no_diplomatic_action_attempt");
 			return;
 		}
 		if (!round.RelayPlanned)
@@ -4302,9 +4927,9 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			&& x.SelectedForRelay && !x.IsPlayerAsync && !string.Equals(x.State, "withdrawn", StringComparison.OrdinalIgnoreCase));
 		if (activeAi <= 0)
 		{
-			CloseActiveRound(round.SubstantiveProgressCount > 0
+			CloseActiveRound(round.DiplomaticActionAttemptCount > 0
 				? "relay_all_ai_withdrew"
-				: "technical_no_substantive_participants");
+				: "technical_no_diplomatic_action_attempt");
 			return;
 		}
 		if (!pendingRoundJob && !_storage.RelayArrivals.Any(x => x != null && string.Equals(x.RoundId, round.RoundId, StringComparison.OrdinalIgnoreCase)))
@@ -4385,7 +5010,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		{
 			round.RoundStatus = round.ExecutedActionCount > 0
 				? "resolved"
-				: round.SubstantiveProgressCount > 0 ? "deadlocked" : "closed";
+				: round.DiplomaticActionAttemptCount > 0 ? "deadlocked" : "closed";
 		}
 		foreach (WorldDiplomacyRoundOffer offer in (round.PendingOffers ?? new List<WorldDiplomacyRoundOffer>()).Where(x => x != null && string.Equals(x.Status, "open", StringComparison.OrdinalIgnoreCase))) offer.Status = "expired";
 		List<WorldDiplomacyDocument> documents = _storage.Documents.Where(x => x != null && string.Equals(x.RoundId, round.RoundId, StringComparison.OrdinalIgnoreCase)).OrderBy(x => x.Day).ThenBy(x => x.CreatedUtcTicks).ToList();
@@ -4398,6 +5023,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			if (string.Equals(opportunity.Status, "open", StringComparison.OrdinalIgnoreCase)) opportunity.Status = "expired";
 		}
 		_storage.CompletedRounds.Add(round);
+		RecordRoundTopicUse(round);
 		_storage.ActiveRound = null;
 		ScheduleNextNormalRoundAfter(CurrentDay());
 		if (documents.Count > 0) CommitLocalRoundSummary(round, documents);
@@ -4405,6 +5031,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			+ " reason=" + round.CloseReason
 			+ " documents=" + documents.Count.ToString(CultureInfo.InvariantCulture)
 			+ " substantiveProgress=" + round.SubstantiveProgressCount.ToString(CultureInfo.InvariantCulture)
+			+ " diplomaticActionAttempts=" + round.DiplomaticActionAttemptCount.ToString(CultureInfo.InvariantCulture)
 			+ " executedActions=" + round.ExecutedActionCount.ToString(CultureInfo.InvariantCulture));
 		TryScheduleTokenCompression();
 	}
@@ -4436,7 +5063,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 					.Concat(document.AddressedKingdomIds ?? new List<string>())
 					.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList()
 			});
-			if (!string.IsNullOrWhiteSpace(document.MechanicalResult))
+			if (document.ChangedDiplomaticState && !string.IsNullOrWhiteSpace(document.MechanicalResult))
 			{
 				summary.Facts.Add(new WorldDiplomacyRoundFact
 				{
@@ -4489,7 +5116,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 				SourceDocumentIds = new List<string> { document.DocumentId },
 				KingdomIds = new[] { document.AuthorKingdomId, document.TargetKingdomId }.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList()
 			});
-			if (!string.IsNullOrWhiteSpace(document.MechanicalResult)) summary.Facts.Add(new WorldDiplomacyRoundFact
+			if (document.ChangedDiplomaticState && !string.IsNullOrWhiteSpace(document.MechanicalResult)) summary.Facts.Add(new WorldDiplomacyRoundFact
 			{
 				Kind = "confirmed_result", Text = "[游戏已执行] " + document.MechanicalResult,
 				SourceDocumentIds = new List<string> { document.DocumentId },
@@ -4503,7 +5130,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	{
 		List<string> declarations = (documents ?? new List<WorldDiplomacyDocument>()).Where(x => x != null)
 			.Take(12).Select(BuildCompactDocumentMemoryLine).Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
-		List<string> results = (documents ?? new List<WorldDiplomacyDocument>()).Where(x => x != null && !string.IsNullOrWhiteSpace(x.MechanicalResult))
+		List<string> results = (documents ?? new List<WorldDiplomacyDocument>()).Where(x => x?.ChangedDiplomaticState == true && !string.IsNullOrWhiteSpace(x.MechanicalResult))
 			.Select(x => x.MechanicalResult.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).Take(8).ToList();
 		StringBuilder sb = new StringBuilder();
 		sb.Append("议题：").Append(FirstNonEmpty(round?.RoundTopic, documents?.FirstOrDefault()?.Title, "外交交涉"));
@@ -4723,9 +5350,17 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 				}
 				DeclareWarAction.ApplyByKingdomDecision(author, target);
 			});
-			document.MechanicalResult = "已宣战";
-			ClearWarPressure(author.StringId, target.StringId);
-			_storage.LastOffensiveWarDayByKingdom[author.StringId] = CurrentDay();
+			if (FactionManager.IsAtWarAgainstFaction(author, target))
+			{
+				document.MechanicalResult = "已宣战";
+				document.ChangedDiplomaticState = true;
+				ClearWarPressure(author.StringId, target.StringId);
+				_storage.LastOffensiveWarDayByKingdom[author.StringId] = CurrentDay();
+			}
+			else
+			{
+				document.MechanicalResult = "宣战未执行：游戏状态未发生变化";
+			}
 			return;
 		}
 		if (intent == "break_alliance")
@@ -4734,7 +5369,15 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			if (alliance != null && alliance.IsAllyWithKingdom(author, target))
 			{
 				RunDiplomaticAction("world_diplomacy_break_alliance", () => alliance.EndAlliance(author, target));
-				document.MechanicalResult = "已解除同盟";
+				if (!alliance.IsAllyWithKingdom(author, target))
+				{
+					document.MechanicalResult = "已解除同盟";
+					document.ChangedDiplomaticState = true;
+				}
+				else
+				{
+					document.MechanicalResult = "解盟未执行：游戏状态未发生变化";
+				}
 			}
 			return;
 		}
@@ -4744,7 +5387,15 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			if (trade != null && BannerlordApiCompat.HasTradeAgreement(trade, author, target))
 			{
 				RunDiplomaticAction("world_diplomacy_cancel_trade", () => trade.EndTradeAgreement(author, target));
-				document.MechanicalResult = "已终止贸易协定";
+				if (!BannerlordApiCompat.HasTradeAgreement(trade, author, target))
+				{
+					document.MechanicalResult = "已终止贸易协定";
+					document.ChangedDiplomaticState = true;
+				}
+				else
+				{
+					document.MechanicalResult = "终止贸易未执行：游戏状态未发生变化";
+				}
 			}
 		}
 	}
@@ -4770,6 +5421,11 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			document.MechanicalResult = "议和未执行：" + failureReason;
 			return;
 		}
+		if (FactionManager.IsAtWarAgainstFaction(initiator, target))
+		{
+			document.MechanicalResult = "议和未执行：游戏状态未发生变化";
+			return;
+		}
 		string pairKey = PairKey(initiator.StringId, target.StringId);
 		_storage.LastPeaceDayByPair[pairKey] = CurrentDay();
 		ClearWarPressure(initiator.StringId, target.StringId);
@@ -4778,6 +5434,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		document.MechanicalResult = "双方已达成和平"
 			+ (appliedTribute > 0 ? "；" + KingdomName(payer) + "每日向" + KingdomName(receiver) + "支付" + appliedTribute.ToString(CultureInfo.InvariantCulture) + "第纳尔，共" + appliedDays.ToString(CultureInfo.InvariantCulture) + "天" : "")
 			+ cessionResult;
+		document.ChangedDiplomaticState = true;
 	}
 
 	private WorldDiplomacyPeaceTerms ParseAndValidatePeaceTerms(JObject json, Kingdom author, Kingdom target)
@@ -4860,7 +5517,15 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			return;
 		}
 		RunDiplomaticAction("world_diplomacy_alliance", () => alliance.StartAlliance(initiator, target));
-		document.MechanicalResult = "双方已缔结同盟";
+		if (alliance.IsAllyWithKingdom(initiator, target))
+		{
+			document.MechanicalResult = "双方已缔结同盟";
+			document.ChangedDiplomaticState = true;
+		}
+		else
+		{
+			document.MechanicalResult = "结盟未执行：游戏状态未发生变化";
+		}
 	}
 
 	private void ExecuteTradeAgreement(Kingdom initiator, Kingdom target, WorldDiplomacyDocument document)
@@ -4876,7 +5541,15 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 		CampaignTime duration = Campaign.Current.Models.TradeAgreementModel.GetTradeAgreementDurationInYears(initiator, target);
 		RunDiplomaticAction("world_diplomacy_trade", () => trade.MakeTradeAgreement(initiator, target, duration));
-		document.MechanicalResult = "双方已缔结贸易协定";
+		if (BannerlordApiCompat.HasTradeAgreement(trade, initiator, target))
+		{
+			document.MechanicalResult = "双方已缔结贸易协定";
+			document.ChangedDiplomaticState = true;
+		}
+		else
+		{
+			document.MechanicalResult = "贸易协定未执行：游戏状态未发生变化";
+		}
 	}
 
 	private static void RunDiplomaticAction(string source, Action action)
@@ -5879,21 +6552,21 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	{
 		StringBuilder sb = new StringBuilder();
 		sb.AppendLine(DiplomacySystemContractMarker);
-		sb.AppendLine("你正在处理卡拉迪亚诸王国之间的公开外交。无论当前任务是规划参与国、起草宣言、判断语义还是整理回合，都必须先遵守本共同契约；后面的任务说明只能补充它，不能推翻它。");
+		sb.AppendLine("你正在处理卡拉迪亚诸王国之间的公开外交。无论当前任务是规划参与国、起草宣言、判断语义还是整理外交事件，都必须先遵守本共同契约；后面的任务说明只能补充它，不能推翻它。");
 		sb.AppendLine("【事实与知识边界】");
-		sb.AppendLine("游戏直接提供的王国状态、战争状态、统治者、亲属、领地、关系、合法动作与已发生事件是硬事实，优先级最高。王庭只能依据已经送达或明确放入当前档案的宣言作出反应；尚在传播途中的内容、别国秘密政策、模型记忆和常识推测都不能冒充已知事实。");
+		sb.AppendLine("当前世界明确给出的王国状态、战争状态、统治者、亲属、领地、关系、合法动作与已发生事件是硬事实，优先级最高。王庭只能依据已经送达或明确放入当前档案的宣言作出反应；尚在传播途中的内容、别国秘密政策和常识推测都不能冒充已知事实。");
 		sb.AppendLine("政策快照描述统治目标、利益取向与内部压力，只能影响决策倾向，不能证明政策已经产生未给出的军事或外交结果。周报是可能滞后的近期概括，只能提供背景；它与即时硬事实冲突时，以即时硬事实为准。不得从沉默推导接受，不得从敌意推导已经宣战，不得从同文化、同阵营或王室身份推导未列出的亲属关系。");
 		sb.AppendLine("没有材料支持时，不得补写具体战斗地点、胜负、兵力、伤亡、密约、领土承诺、使节往来或人物动机。可以根据明确关系和利益作审慎判断，但要把判断保持为立场或可能性，不能写成已经发生的事实。");
-		sb.AppendLine("【外交动作与回合原则】");
-		sb.AppendLine("公开宣言应当服务于可理解的外交目的，例如提出或修改条件、争取支持、施加压力、接受、拒绝、让步、道歉、警告、发出最后通牒、退出交涉，或执行当前游戏允许的正式动作。谴责和反驳可以出现，但不能代替进展；同一回合不应只改写旧立场或无限争吵。");
-		sb.AppendLine("正式动作必须同时满足语义和游戏合法性。威胁战争不等于宣战；已经交战的双方不能再次宣布开战。和平、联盟、贸易、解除关系、贡金和割地只能使用任务提供的合法对象与条件。明确指向某国表示它承担主张或需要回应；只是举例、评价或谈到某国时，只算提及。");
+		sb.AppendLine("【外交动作与交涉原则】");
+		sb.AppendLine("公开宣言应当服务于可理解的外交目的，例如提出或修改条件、争取支持、施加压力、接受、拒绝、让步、道歉、警告、发出最后通牒、退出交涉，或执行当前允许的正式动作。谴责和反驳可以出现，但不能代替进展；同一外交事件不应只改写旧立场或无限争吵。");
+		sb.AppendLine("正式动作必须同时满足语义和当前现实条件。威胁战争不等于宣战；已经交战的双方不能再次宣布开战。和平、联盟、贸易、解除关系、贡金和割地只能使用任务提供的合法对象与条件。明确指向某国表示它承担主张或需要回应；只是举例、评价或谈到某国时，只算提及。");
 		sb.AppendLine("每项待回应提议都有唯一的提出国、对象国和来源公文。只有该对象国可以接受或拒绝，答复对象必须是原提出国；第三国可以评论、施压、调停或另行提出一份明确的新提议，但不得把别国收到的提议说成发给自己，也不得替真正的对象国作答。接受或拒绝时填写对应的responding_to_offer_document_id；另行提出新提议时该字段必须为空。");
 		sb.AppendLine("任务提供的宗主—臣属关系是当前世界硬事实。臣属国不得否认现存条约或把宗主国写成普通平等国家；提及宗主国或代表本国对外表态时，应承认宗主地位并保持符合臣属礼制的恭敬，但不必在无关公文中反复颂扬。朝贡国和卫戍国仍可按任务给出的权限表达自身利益；完全没有外交自主权的附庸国不会作为外交回合发言者，其外交事务由宗主国出面。");
-		sb.AppendLine("外交回合应在当前任务给出的时间内形成结果或明确停滞。参与国可以改变目标、回应第三国、提出反方案、退出或采取实质动作，但不得替玩家统治的王国自动发言。回合结束必须来自问题解决、合法动作已经触发、相关国家陆续退出或交涉确实破裂，而不是模型随意遗忘议题。");
-		sb.AppendLine("每个正常运转的外交回合在结束前至少要有一次可由程序核验的实质外交尝试。正式提议、反提议、对真实提议的接受或拒绝、最后通牒、明确道歉或让步，以及成功执行的外交机制可以计入；普通声明、谴责、泛泛警告、评论和重复旧立场不计入。made_progress只是输出字段，最终是否计入由程序依据意图、提议归属和机械结果核验，模型不得自行宣布已经推进。");
+		sb.AppendLine("外交事件应在当前任务给出的时间内至少形成一次真实外交尝试。参与国可以改变目标、回应第三国、提出反方案、接受、拒绝、让步、道歉、退出或采取合法行动，但不得替玩家统治的王国自动发言。交涉不必强行成交；条件不合时可以自然陷入僵局或由参与国退出。");
+		sb.AppendLine("提案、反提案、对真实提议的接受或拒绝、最后通牒、明确道歉或让步，以及已经正式生效的外交行动都可构成交涉进展。正式行动只有在当前关系允许且实际执行成功时才算发生；不得为了结束事件虚构议和、宣战、结盟、通商或解除关系。");
 		sb.AppendLine("【身份、表达与输出纪律】");
 		sb.AppendLine("必须保持王国、统治者和ID一一对应，只使用当前任务给出的合法ID。不得泄露AI、模型、提示词、缓存、数值阈值、程序字段或系统内部机制。输出要求JSON时只输出可解析JSON，不加代码围栏、解释、前言或尾注；布尔值、数字、数组和空字符串必须保持约定类型。");
-		sb.AppendLine("统治者把卡拉迪亚视为自己生活的真实世界，只能以使者来报、公开宣言、战报、俘虏、领地得失、王庭账簿和可见军情来理解局势；不得自称处于游戏或某个历史时代，也不知道战争进展分、议和开放度、劣势评分、关系点、战争压力阈值或总战力数值。后台态势只能转化成势均力敌、略占上风、处境不利、愿听条件等世界内判断，不能复述指标名称或数值。第纳尔金额、条约期限、领地名称、实际战斗场数等可核实事实可以按需准确表达。");
+		sb.AppendLine("统治者把卡拉迪亚视为自己生活的真实世界，只能以使者来报、公开宣言、战报、俘虏、领地得失、王庭账簿和可见军情来理解局势；不得表现为置身世界之外的叙述者，也不知道战争进展分、议和开放度、劣势评分、关系点、战争压力阈值或总战力数值。后台态势只能转化成势均力敌、略占上风、处境不利、愿听条件等世界内判断，不能复述指标名称或数值。第纳尔金额、条约期限、领地名称、实际战斗场数等可核实事实可以按需准确表达。");
 		sb.AppendLine("当任务要求撰写玩家可见的外交宣言时，它必须是一份能够独立颁布、传阅和归档的国家公文，而不是君主之间的即时聊天。王国是政治主体，统治者负责授权、定调或署名；人物差异通过利益判断、承诺、威胁与让步的分寸体现，国家差异则通过档案明确提供的制度、合法性来源、政治共同体和礼制称谓体现。");
 		return sb.ToString();
 	}
@@ -5912,13 +6585,16 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	{
 		if (sb == null) return;
 		sb.AppendLine("【国家外交公文文体契约】");
+		sb.AppendLine("标题和正文只能使用卡拉迪亚世界内的政治与外交语言，不得讨论幕后调度、生成规则、候选方案、数据判定或技术流程；内部字段只出现在JSON结构中，绝不能变成公文内容。");
 		sb.AppendLine("正文是一份面向诸国、本国贵族与臣民公开颁布的外交文书，必须脱离上下文也能成立。此前的宣言只是已经送抵并归档的别国公文，不是正在发言的聊天对象。普通宣言不得用“你”“你的”“你们”持续向另一位君主说话；使用对方国名、“贵国”或其明确制度称谓。禁止“让我说说”“你应该谢我”“你自己选”“那我就……”“等你答复”等私人回嘴句式。");
 		sb.AppendLine("国家而非君主私交是叙述中心。正文至少自然出现一次能够代表政治共同体的称谓，例如王国名、帝国、王庭、诸侯与贵族、臣民、军队、商旅或边地；由统治者的个人性格决定语气和取舍，但不能把国家决定写成几位君主私下讨价还价。不得虚构贵族已经集会、投票、宣誓或一致同意。");
 		sb.AppendLine("知识库提供的制度、合法性来源、历史身份和礼制称谓可以自然进入正文：若明确记载元老院、汗庭、部族、议政传统或其他机构，发文国可用它们说明权威与责任；未明确提供时只能使用中性称谓，不得根据文化刻板印象自创制度。机构身份与统治者个人头衔必须严格区分：元老院制不等于皇帝本人是元老，军功制不等于皇帝是将军，君主制也不能被改写成元老院制。发文档案给出的ruler_title_hard_fact与government_hard_fact优先于人物背景和检索材料，绝不可改称。世界观材料用于决定称谓和立场，不得整段照抄编年史；每篇最多使用一处有辨识度的文化意象，不能堆砌口号。");
 		sb.AppendLine("文风应正式、克制并有国家分量，但不是僵硬的八股模板。开头直接说明事件、判断、决定或条件，不逐一点名所有君主和头衔，不反复自报身份；避免机械套用“回顾—原则—要求—后果”的固定段式，也不要每篇都先致意、再遗憾、最后威胁。需要正式确认的条约可以分项，普通宣言优先用连贯段落表达。");
+		sb.AppendLine("不同国家不得共享一套换名模板。必须依据发文国制度、合法性来源、政治共同体与礼制声音选择公文主体、措辞和节奏：帝国制度、王庭贵族、部族与汗庭、氏族传统或商业城邦只有在档案明确支持时才能使用。文化特色应融入国家如何主张权威、承诺和责任，不能只在通用正文上粘贴一句口号。");
 		sb.AppendLine("可以坚定、务实、冷峻、和缓或骄傲，但讥讽也必须是一个国家对另一个国家的公开评价，不能写成两个人斗嘴。整体要像中世纪国家文书的清楚现代中文译文：不写文言文、半文半白、现代新闻稿、现代法律或国际组织话术，也不堆砌官样套话。直接称呼别国统治者只限于个人誓约或最后通牒的一两句核心文字，其余部分仍由国家作为主语。");
 		sb.AppendLine("按内容自然分段，不强求固定段数；正文超过约180字时至少分成两段，不能挤成一个大段落。贡金、停战期限、开放商路、割地或盟约条件应写成完整而清晰的国家主张；没有新条件时宁可简短明确，也不要用空话扩写。标题应抓住国家决定或外交事件本身，避免万能标题和收信人格式。");
 		sb.AppendLine("不要把供决策的后台态势照抄进正文。不能说战争进展领先多少分、议和开放度或劣势评分达到多少、关系点和战力值是多少；应改成由战报和现实结果支撑的自然判断。精确贡金、停战期限及其他正式条款不受此限制。");
+		sb.AppendLine("地理称谓必须服从用户消息中的当前地理关系：只有明确标为接壤的两国才可互称邻国、边境国家或声称拥有共同边界；标为不接壤时，即使关系密切、同属一种文化、曾经统治相邻领土或正在参与同一场交涉，也不得写成邻国或边界争端。不得把供判断的距离档位和地图距离写进正文。");
 	}
 
 	private static string BuildDiplomaticDeclarationSystemPrompt()
@@ -5926,14 +6602,14 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		StringBuilder sb = new StringBuilder(BuildCommonDiplomacySystemPrefix());
 		AppendWorldDiplomacyCustomPrompt(sb);
 		AppendDiplomaticDeclarationWritingContract(sb);
-		sb.AppendLine("【统一任务：公开外交宣言】根据用户消息提供的档案，为指定王国起草一篇由其统治者授权或署名、面向诸国与本国贵族臣民颁布的外交宣言。用户消息含“本回合冻结档案”时属于接力发文，否则属于开场或普通发文；两种模式使用完全相同的输出结构。");
-		sb.AppendLine("所有宣言都必须推动外交：提出或修改方案、寻求支持、施加压力、接受、拒绝、让步、道歉、发出最后通牒、退出，或执行合法外交动作。可以谴责和反驳，但不得只重复情绪与旧立场。");
-		sb.AppendLine("开场宣言可以明确指向一个或多个王国，也可以面向诸国而没有主要对象；没有主要对象时primary_target_kingdom_id必须为空字符串，addressed_kingdom_ids可以为空。接力发言只能把冻结档案列出的参与国作为外交动作对象，并应根据动态尾部给出的进度及时收束争议。");
-		sb.AppendLine("不要使用现代国际组织、现代法律或现代媒体措辞。不得替玩家王国发言，不得编造输入中没有支持的领土、制度、亲属关系、战斗和事件。优先使用王国名、“我国”“王庭”或档案明确给出的政治共同体称谓。第一人称单数“我”原则上不超过两次，只能用于统治者承担个人誓言或责任；不能用它串起整篇文章。“本王”整篇最多一次。");
+		sb.AppendLine("【统一任务：公开外交宣言】根据用户消息提供的档案，为指定王国起草一篇由其统治者授权或署名、面向诸国与本国贵族臣民颁布的外交宣言。用户消息含外交事件既定档案时属于连续公文，否则属于开场或普通公文；两种模式使用完全相同的输出结构。");
+		sb.AppendLine("公开事件只是各国开始交涉的由头，不是预定结果。所有宣言都必须推动外交：提出或修改方案、寻求支持、施加压力、接受、拒绝、让步、道歉、发出最后通牒、退出，或尝试当前合法的结盟、解盟、贸易、断绝贸易、宣战、议和。可以谴责和反驳，但不得只重复情绪与旧立场。");
+		sb.AppendLine("开场宣言可以明确指向一个或多个王国，也可以面向诸国而没有主要对象；没有主要对象时primary_target_kingdom_id必须为空字符串，addressed_kingdom_ids可以为空。连续公文只能把既定档案列出的参与国作为外交动作对象，并应根据动态尾部给出的进度及时收束争议。");
+		sb.AppendLine("不要使用现代国际组织、现代法律或现代媒体措辞。不得替玩家王国发言，不得编造输入中没有支持的领土、制度、亲属关系、战斗和硬事件。若事件档案明确给出“允许的局部发挥”，可以在该边界内写未具名商队、使节、地方官、巡逻队、边民或传闻，但必须把它写成报告、指控、争议或待核实事项，绝不能冒充已经改变游戏状态的事实。优先使用王国名、“我国”“王庭”或档案明确给出的政治共同体称谓。第一人称单数“我”原则上不超过两次，只能用于统治者承担个人誓言或责任；不能用它串起整篇文章。“本王”整篇最多一次。");
 		sb.AppendLine("和平类意图受战争状态硬约束：propose_peace、accept_peace、reject_peace只能指向当前确实正在交战的王国。双方处于和平状态时，不得把政治分歧、敌对关系、历史内战或统一诉求写成正在交战、停战、议和、退出战争或战争补偿；可以改为声明、警告、通牒、贸易、结盟或其他符合现状的外交主张。");
 		sb.AppendLine("标题应简洁概括事件或决定，通常不超过20个汉字。requires_response只表示正文提出了尚待回答的新提案、反提案、最后通牒或明确问题；接受、拒绝、道歉、普通声明、普通谴责和结束性立场必须为false。");
-		sb.AppendLine("接力模式必须填写round_participation、round_status和made_progress；开场或普通模式固定使用continue、continue和true，这些字段只供系统推进回合，不能写入玩家可见正文。");
-		sb.AppendLine("用户消息含“同次确定本回合参与国”时，必须填写round_plan：topic概括本回合真实议题，selected_kingdom_ids从候选简表中选择，并包含宣言明确指向的王国。没有该段时round_plan使用空标题和空数组。");
+		sb.AppendLine("连续公文模式必须填写round_participation、round_status和made_progress；开场或普通模式固定使用continue、continue和true，这些字段只供内部整理外交事件，不能写入玩家可见正文。");
+		sb.AppendLine("用户消息含“同次确定本次外交事件参与国”时，必须填写round_plan：topic概括本次事件真实议题，selected_kingdom_ids从候选简表中选择，并包含宣言明确指向的王国。没有该段时round_plan使用空标题和空数组。");
 		sb.AppendLine("只输出一个JSON对象，不要代码围栏：");
 		sb.AppendLine("{\"title\":\"简短外交宣言标题\",\"body\":\"自然分段的完整外交宣言正文\",\"author_intent\":{\"intent\":\"statement|condemn|warning|ultimatum|apology|concession|propose_peace|accept_peace|reject_peace|propose_alliance|accept_alliance|reject_alliance|break_alliance|propose_trade|accept_trade|reject_trade|cancel_trade|declare_war\",\"commitment\":\"non_binding|proposal|acceptance|rejection|binding\"},\"responding_to_offer_document_id\":\"接受或拒绝时填写来源公文ID，否则为空\",\"primary_target_kingdom_id\":\"主要对象ID或空\",\"addressed_kingdom_ids\":[\"ID\"],\"mentioned_kingdom_ids\":[\"ID\"],\"requires_response\":false,\"tone\":\"conciliatory|neutral|firm|hostile\",\"confidence\":0.0,\"round_participation\":\"continue|withdraw\",\"round_status\":\"continue|resolved|deadlocked\",\"made_progress\":true,\"round_plan\":{\"topic\":\"简短议题或空\",\"selected_kingdom_ids\":[\"ID\"]},\"peace_terms\":{\"tribute_payer_kingdom_id\":\"ID或空\",\"tribute_receiver_kingdom_id\":\"ID或空\",\"daily_tribute\":0,\"duration_days\":0,\"cession_from_kingdom_id\":\"ID或空\",\"cession_to_kingdom_id\":\"ID或空\",\"cession_settlement_id\":\"允许清单中的ID或空\"}}");
 		return sb.ToString().TrimEnd();
@@ -6032,9 +6708,17 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		{
 			sb.AppendLine("该对象国只是帮助构造开场局势的参考，不要求宣言必须指向它。若统治者更适合面向诸国提出外交议题，请把primary_target_kingdom_id留空，并让addressed_kingdom_ids为空。");
 		}
+		if (activeRound != null && !string.IsNullOrWhiteSpace(activeRound.RoundTopic))
+		{
+			sb.AppendLine("【本次外交事件既定议题】");
+			sb.AppendLine("议题=" + activeRound.RoundTopic + "；类别=" + activeRound.TopicCategory + "。");
+			if (!string.IsNullOrWhiteSpace(activeRound.TopicSeedContext)) sb.AppendLine("现实依据=" + activeRound.TopicSeedContext);
+			if (activeRound.RequiresSharedBorder) sb.AppendLine("这是经过地图校验的双边边境事件。primary_target_kingdom_id必须填写上方主要对象国ID；不得改称其他不接壤国家与发文国共享这条边界。");
+			sb.AppendLine("开场公文必须以这个事件作为交涉由头，不得另起一个无关事件；但解决方向不受事件名称限制，可以根据真实利益自然引向贸易、结盟、解盟、断绝贸易、宣战、议和或明确失败。事件由头不能被直接写成已经生效的外交结果。");
+		}
 		if (!string.IsNullOrWhiteSpace(activeRound?.ExternalOpeningContext))
 		{
-			sb.AppendLine("【本回合的外部起因】");
+			sb.AppendLine("【本次外交事件的外部起因】");
 			sb.AppendLine(Limit(activeRound.ExternalOpeningContext, 1800));
 		}
 		if (!string.IsNullOrWhiteSpace(gatheringSnapshot))
@@ -6074,7 +6758,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		{
 			sb.AppendLine("【最近一次已结束的相关外交事件】");
 			sb.AppendLine(completedRoundHistory);
-			sb.AppendLine("该事件已经结束，只能作为背景；其中的提议、拒绝和争端都不是本回合等待答复的当前公文。除非出现新的事实，不得原样重启同一场争论。");
+			sb.AppendLine("该事件已经结束，只能作为背景；其中的提议、拒绝和争端都不是本次事件等待答复的当前公文。除非出现新的事实，不得原样重启同一场争论。");
 		}
 		if (!string.IsNullOrWhiteSpace(compressedHistory))
 		{
@@ -6084,8 +6768,8 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 		if (roundPlanCandidateIds != null && roundPlanCandidateIds.Count > 0)
 		{
-			sb.AppendLine("【同次确定本回合参与国】");
-			sb.AppendLine("在起草开场宣言的同时填写round_plan。宣言明确指向的王国必须入选；其余只选确有战争、同盟、贸易、安全或政治利益者，不要为了热闹选满。候选简表：");
+			sb.AppendLine("【同次确定本次外交事件参与国】");
+			sb.AppendLine("在起草开场宣言的同时填写round_plan。本次参与国总数上限（包括发起国）=" + GetRoundParticipantLimit().ToString(CultureInfo.InvariantCulture) + "。宣言明确指向的王国必须优先入选；其余只选确有战争、同盟、贸易、安全或政治利益且能够采取外交行为者，不要为了热闹选满。候选简表：");
 			foreach (string candidateId in roundPlanCandidateIds)
 			{
 				Kingdom candidate = ResolveKingdom(candidateId);
@@ -6139,9 +6823,14 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		string policy = CompactPromptFact(WorldDiplomacyPolicyContext.BuildSnapshot(candidate.StringId), 180);
 		string weekly = CompactPromptFact(BuildWeeklyDiplomacySnapshot(candidate.StringId), 120);
 		StringBuilder sb = new StringBuilder();
+		WorldDiplomacyRealmRelationProfile relationProfile = GetRealmRelationProfile(initiator, candidate);
+		WorldDiplomacyBorderRelation border = GetKingdomBorderRelation(initiator, candidate);
 		sb.Append("- ").Append(candidate.StringId).Append('=').Append(KingdomName(candidate))
 			.Append("；与发起国=").Append(BuildBilateralState(initiator, candidate))
-			.Append("；私人关系=").Append(DescribeRulerRelation(GetRulerRelation(initiator, candidate)));
+			.Append("；两国贵族整体关系=").Append(DescribeRealmRelationProfile(relationProfile))
+			.Append("；统治者私人关系=").Append(DescribeRulerRelation(GetRulerRelation(initiator, candidate)))
+			.Append("；地理关系=").Append(border.SharesBorder ? DescribeBorderRelation(border) : "不接壤")
+			.Append("；当前可改变关系的方向=").Append(DescribePotentialDiplomaticActions(BuildPotentialDiplomaticActionIntents(initiator, candidate)));
 		if (!string.IsNullOrWhiteSpace(policy)) sb.Append("；政策倾向=").Append(policy);
 		if (!string.IsNullOrWhiteSpace(weekly)) sb.Append("；近期背景=").Append(weekly);
 		return sb.ToString();
@@ -6163,10 +6852,10 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			+ "；对象国=" + DescribeOtherWarBurden(snapshot.TargetOtherWars) + "。这些是综合判断，只能转写成世界内措辞，不得公开任何评分、分差、开放度或战力数值。");
 		sb.AppendLine("贡金可与割地并存。参考每日贡金：若发文国付款约" + snapshot.AuthorSuggestedTribute + "，若对象国付款约" + snapshot.TargetSuggestedTribute + "；可以谈判但不得超出任务给出的合法上限。");
 		sb.AppendLine("对象国当前可合法提出割让给发文国的领地=" + FormatCessionCandidates(targetCanCede) + "；发文国当前可合法提出割让给对象国的领地=" + FormatCessionCandidates(authorCanCede) + "。清单为空时不得提出或同意割地，也不得编造城名；优先考虑战争中尚未收复的失地。城镇只有在战局严重不利时才会进入清单。");
-		int advanceThreshold = GetDiplomaticAdvanceThreshold();
+		int advanceThreshold = GetPeaceAdvanceThreshold();
 		if (IsDiplomaticSituationAutoAdvanceEnabled() && snapshot.AuthorPeacePressure >= advanceThreshold)
 		{
-			sb.AppendLine("硬性推进要求：发文国承受的战争压力已经达到自动推进门槛。本国本次不能只谈战况或继续谴责，必须提出一份合法和平方案；若正在回应对方的和平提议，则必须接受或提出能够继续成交的明确反方案。");
+			sb.AppendLine("发文国已经有较强的议和动机。若本次事件正在处理战争收束，应提出可执行的和平条件；若本次事件另有明确议题，则只把它作为决策倾向，不得强行把所有话题改成议和。");
 		}
 		if (IsDiplomaticSituationAutoAdvanceEnabled() && snapshot.TargetPeacePressure >= advanceThreshold)
 		{
@@ -6186,7 +6875,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private static string DescribePeacePressure(float pressure)
 	{
-		float threshold = Math.Max(1f, GetDiplomaticAdvanceThreshold());
+		float threshold = Math.Max(1f, GetPeaceAdvanceThreshold());
 		if (pressure < threshold * 0.35f) return "几乎无意谈和";
 		if (pressure < threshold) return "暂不急于谈和，但会衡量条件";
 		if (pressure < threshold * 1.5f) return "愿意主动提出或认真回应和平条件";
@@ -6919,6 +7608,391 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			.First().Target;
 	}
 
+	private WorldDiplomacyTopicCandidate SelectNormalRoundTopic(Kingdom initiator)
+	{
+		if (initiator == null) return null;
+		List<WorldDiplomacyTopicCandidate> available = new List<WorldDiplomacyTopicCandidate>();
+		List<WorldDiplomacyTopicCandidate> deferred = new List<WorldDiplomacyTopicCandidate>();
+		IAllianceCampaignBehavior alliance = Campaign.Current?.GetCampaignBehavior<IAllianceCampaignBehavior>();
+		ITradeAgreementsCampaignBehavior trade = Campaign.Current?.GetCampaignBehavior<ITradeAgreementsCampaignBehavior>();
+		foreach (Kingdom target in Kingdom.All.Where(x => x != null && !x.IsEliminated && x != initiator && HasIndependentWorldDiplomacyAuthority(x)))
+		{
+			bool atWar = FactionManager.IsAtWarAgainstFaction(initiator, target);
+			bool allied = alliance != null && alliance.IsAllyWithKingdom(initiator, target);
+			bool trading = trade != null && BannerlordApiCompat.HasTradeAgreement(trade, initiator, target);
+			WorldDiplomacyRealmRelationProfile profile = GetRealmRelationProfile(initiator, target);
+			WorldDiplomacyBorderRelation border = GetKingdomBorderRelation(initiator, target);
+			float targetScore = ScoreDiplomaticTarget(initiator, target);
+			List<WorldDiplomacyTopicCandidate> pairEvents = new List<WorldDiplomacyTopicCandidate>();
+			if (atWar)
+			{
+				AddNormalEventCandidate(pairEvents, initiator, target, profile, border,
+					"war", "war_objectives", "战争目标、代价与战后秩序",
+					"world_state", "双方真实战争状态及王庭对战争代价的判断",
+					"可以杜撰未具名使者递交的质询、停战试探或对战争责任的公开说法，但不得杜撰具体战役和伤亡",
+					20f, requiresSharedBorder: false);
+				AddNormalEventCandidate(pairEvents, initiator, target, profile, border,
+					"war", "wartime_people", "战俘、流民与战时人员处置原则",
+					"bounded_fiction", "双方处于战争状态，战时人员处置足以成为交涉由头",
+					"可以杜撰未具名俘虏、逃兵、商旅或边民引发的个案传闻；必须写成报告、指控或待核实消息",
+					16f, requiresSharedBorder: false);
+				AddNormalEventCandidate(pairEvents, initiator, target, profile, border,
+					"war", "wartime_passage", "战争中的商路、中立通行与军需往来",
+					"world_state", "战争会改变商路、军需和第三方通行利益",
+					"可以杜撰未具名商队或地方关卡受到影响的传闻，不得声称真实贸易协定已经自动终止",
+					14f, requiresSharedBorder: false);
+				if (border.SharesBorder)
+				{
+					AddNormalEventCandidate(pairEvents, initiator, target, profile, border,
+						"war", "frontier_war_order", "交战边地的驻军、道路与地方秩序",
+						"world_state", DescribeBorderRelation(border),
+						"可以杜撰未具名巡逻队、地方军官或边民提出的争议，不得杜撰城堡失守、村庄被焚或具体伤亡",
+						18f, requiresSharedBorder: true);
+				}
+			}
+			else
+			{
+				if (border.SharesBorder)
+				{
+					AddNormalEventCandidate(pairEvents, initiator, target, profile, border,
+						"frontier", "border_patrol", "边地巡逻、道路安全与地方权责",
+						"bounded_fiction", DescribeBorderRelation(border),
+						"可以杜撰未具名巡逻队、盗匪传闻或地方官互相推诿，但不得杜撰真实战斗、领地易主或具体伤亡",
+						18f, requiresSharedBorder: true);
+					AddNormalEventCandidate(pairEvents, initiator, target, profile, border,
+						"frontier", "border_tolls", "关卡收费、商旅通行与边地税权",
+						"bounded_fiction", DescribeBorderRelation(border),
+						"可以杜撰未具名商队对临时收费的控诉或地方贵族对税权的争论，不得宣称正式贸易协定已经存在",
+						16f, requiresSharedBorder: true);
+					AddNormalEventCandidate(pairEvents, initiator, target, profile, border,
+						"frontier", "border_displacement", "逃民、牧群与跨境安置责任",
+						"bounded_fiction", DescribeBorderRelation(border),
+						"可以杜撰小规模、未具名的逃民、牧民、牲畜或季节性迁徙争议；不得杜撰大饥荒、屠城或整个地区失陷",
+						13f, requiresSharedBorder: true);
+					AddNormalEventCandidate(pairEvents, initiator, target, profile, border,
+						"frontier", "border_nobles", "边地贵族的管辖冲突与王庭责任",
+						"bounded_fiction", DescribeBorderRelation(border),
+						"可以杜撰未具名地方贵族、守军或税吏越权的指控；不得让真实具名英雄实施日志中不存在的重大行为",
+						15f, requiresSharedBorder: true);
+					if (CountCulturalClaims(initiator, target) > 0)
+					{
+						AddNormalEventCandidate(pairEvents, initiator, target, profile, border,
+							"frontier", "historical_border_rights", "边地旧权利、文化领地与通行秩序",
+							"world_state", DescribeBorderRelation(border) + "；对方确实控制发起国文化的城镇或城堡",
+							"可以杜撰围绕旧税权、朝觐、市场或道路习惯的争执，不得杜撰城镇当前归属或虚构已经存在的条约",
+							28f, requiresSharedBorder: true);
+					}
+				}
+				if (trading)
+				{
+					AddNormalEventCandidate(pairEvents, initiator, target, profile, border,
+						"commerce", "caravan_protection", "商队保护、道路责任与损失追索",
+						"bounded_fiction", "双方确实存在贸易协定",
+						"可以杜撰未具名商队受阻、货物遗失或护送责任争议；不得杜撰具名商人死亡或精确巨额损失",
+						24f, requiresSharedBorder: false);
+					AddNormalEventCandidate(pairEvents, initiator, target, profile, border,
+						"commerce", "tariff_interpretation", "关税执行、市场准入与贸易协定解释",
+						"world_state", "双方确实存在贸易协定",
+						"可以杜撰地方市场、税吏或商会对既有协定执行方式的争执，不得改写协定是否存在这一硬事实",
+						22f, requiresSharedBorder: false);
+					AddNormalEventCandidate(pairEvents, initiator, target, profile, border,
+						"commerce", "weights_and_coin", "货币成色、度量衡与跨境交易信誉",
+						"bounded_fiction", "双方确实存在持续商贸往来",
+						"可以杜撰未具名商人对钱币、秤量或货物标准的争论，不能声称整个王国已经发生经济崩溃",
+						14f, requiresSharedBorder: false);
+				}
+				else if (trade != null && (profile.AverageRelation >= 5f || border.SharesBorder))
+				{
+					AddNormalEventCandidate(pairEvents, initiator, target, profile, border,
+						"commerce", "market_access", "市场准入、商路试探与互惠条件",
+						"world_state", border.SharesBorder ? DescribeBorderRelation(border) : "两国关系允许尝试建立新的商贸联系",
+						"可以杜撰未具名商队、行会或使节提出的试探，不得声称尚未签署的贸易协定已经生效",
+						10f, requiresSharedBorder: false);
+				}
+				if (allied)
+				{
+					AddNormalEventCandidate(pairEvents, initiator, target, profile, border,
+						"alliance", "alliance_burden", "盟约责任、援助负担与共同承诺",
+						"world_state", "双方确实处于同盟关系",
+						"可以杜撰使节对援助规模、时机或责任解释的争执，不得杜撰一支不存在的援军已经出发或战败",
+						24f, requiresSharedBorder: false);
+					AddNormalEventCandidate(pairEvents, initiator, target, profile, border,
+						"alliance", "alliance_coordination", "共同防务、使节协调与盟国优先事项",
+						"world_state", "双方确实处于同盟关系",
+						"可以杜撰未具名使节提出的协调方案，不得把方案写成已经执行的军事行动",
+						18f, requiresSharedBorder: false);
+				}
+				else if (profile.AverageRelation >= 8f)
+				{
+					AddNormalEventCandidate(pairEvents, initiator, target, profile, border,
+						"alignment", "mutual_guarantees", "相互保证、政治靠拢与共同利益",
+						"world_state", "两国贵族整体往来较为友善",
+						"可以杜撰使节关于安全保证或政治靠拢的试探，不得声称同盟已经成立",
+						15f, requiresSharedBorder: false);
+				}
+				if (profile.AverageRelation <= -12f)
+				{
+					AddNormalEventCandidate(pairEvents, initiator, target, profile, border,
+						"court", "public_accusations", "公开指责、王庭信誉与政治保证",
+						"bounded_fiction", "两国贵族整体积怨足以支持外交摩擦",
+						"可以杜撰未具名使节受到冷遇、公开言辞引发误解或流言传播；必须写成指控或传闻，不能伪造硬事实",
+						20f, requiresSharedBorder: false);
+				}
+				if (profile.Polarization >= 18f)
+				{
+					AddNormalEventCandidate(pairEvents, initiator, target, profile, border,
+						"court", "noble_contacts", "两国贵族往来、派系分歧与王庭责任",
+						"world_state", "两国贵族对彼此态度明显分裂",
+						"可以杜撰未具名贵族派系对交好或对抗的主张，不得让具名家族完成未发生的投票、婚约或叛乱",
+						17f, requiresSharedBorder: false);
+				}
+				if (HasSharedWarOpponent(initiator, target))
+				{
+					AddNormalEventCandidate(pairEvents, initiator, target, profile, border,
+						"security", "shared_rival", "共同威胁、地区制衡与各国责任",
+						"world_state", "双方当前面对至少一个共同交战对手",
+						"可以杜撰使节提出的协调、保证或互不妨碍方案，不得杜撰共同军事行动已经发生",
+						22f, requiresSharedBorder: false);
+				}
+				AddNormalEventCandidate(pairEvents, initiator, target, profile, border,
+					"protocol", "envoy_reception", "使节接待、外交礼序与王庭信誉",
+					"bounded_fiction", "存续王国之间可以通过使节发生有限外交摩擦或试探",
+					"可以杜撰未具名使节的席次、等待、礼物或措辞争议；不能让真实统治者亲自出席未发生的会面",
+					8f, requiresSharedBorder: false);
+			}
+			string gathering = NobleGatheringBehavior.BuildRecentDiplomacyMaterialForExternal(
+				new[] { initiator.StringId, target.StringId }, 2);
+			if (!string.IsNullOrWhiteSpace(gathering))
+			{
+				AddNormalEventCandidate(pairEvents, initiator, target, profile, border,
+					"court", "public_gathering_signal", "公开宴会、贵族来往与对外立场",
+					"public_event", Limit(gathering, 600),
+					"可以评价宴会释放的信号、宾客往来或由此产生的外交猜测；不得杜撰未列出的参加者、发言、婚约或秘密协议",
+					18f, requiresSharedBorder: false);
+			}
+			string nativeSignal = BuildRecentNativeSignalContext(initiator.StringId, target.StringId);
+			if (!string.IsNullOrWhiteSpace(nativeSignal))
+			{
+				AddNormalEventCandidate(pairEvents, initiator, target, profile, border,
+					"security", "recent_diplomatic_signal", "近期外交动向与两国下一步关系",
+					"public_signal", Limit(nativeSignal, 600),
+					"可以杜撰未具名使节对该动向的试探性解释，不得把尚未执行的原版外交意愿写成已经生效的结果",
+					20f, requiresSharedBorder: false);
+			}
+			foreach (WorldDiplomacyTopicCandidate item in pairEvents)
+			{
+				string pair = PairKey(initiator.StringId, target.StringId);
+				item.Score = Math.Max(1f, targetScore + item.Score + GetTopicNoveltyBonus(item.Category, item.Motif, initiator.StringId));
+				if (WasTopicUsedRecently(item.Fingerprint, pair, item.Category, item.Motif, initiator.StringId)) deferred.Add(item);
+				else available.Add(item);
+			}
+		}
+		if (available.Count == 0 && deferred.Count > 0)
+		{
+			int oldestCategoryDay = deferred.Min(x => GetLastGlobalTopicUseDay(x.Category));
+			available = deferred.Where(x => GetLastGlobalTopicUseDay(x.Category) == oldestCategoryDay).ToList();
+			Log("topic cooldown relaxed after exhausting alternatives initiator=" + initiator.StringId + " oldestCategoryDay=" + oldestCategoryDay.ToString(CultureInfo.InvariantCulture));
+		}
+		if (available.Count == 0) return null;
+		List<(string Category, float Weight)> categoryPool = available
+			.GroupBy(x => x.Category, StringComparer.OrdinalIgnoreCase)
+			.Select(group => (group.Key, Math.Max(1f, 18f + Math.Min(90f, group.Max(x => x.Score)) * 0.35f)))
+			.ToList();
+		double categoryTotal = categoryPool.Sum(x => x.Weight);
+		double categoryRoll = StableUnit(CurrentDay().ToString(CultureInfo.InvariantCulture) + "|" + initiator.StringId
+			+ "|" + _storage.RotationIndex.ToString(CultureInfo.InvariantCulture) + "|category") * categoryTotal;
+		string selectedCategory = categoryPool[categoryPool.Count - 1].Category;
+		foreach ((string category, float weight) in categoryPool)
+		{
+			categoryRoll -= weight;
+			if (categoryRoll <= 0d)
+			{
+				selectedCategory = category;
+				break;
+			}
+		}
+		List<WorldDiplomacyTopicCandidate> pool = available
+			.Where(x => string.Equals(x.Category, selectedCategory, StringComparison.OrdinalIgnoreCase))
+			.OrderByDescending(x => x.Score).Take(8).ToList();
+		double total = pool.Sum(x => Math.Max(1f, 15f + Math.Min(100f, x.Score) * 0.45f));
+		double roll = StableUnit(CurrentDay().ToString(CultureInfo.InvariantCulture) + "|" + initiator.StringId
+			+ "|" + _storage.RotationIndex.ToString(CultureInfo.InvariantCulture) + "|target|" + selectedCategory) * total;
+		foreach (WorldDiplomacyTopicCandidate item in pool)
+		{
+			roll -= Math.Max(1f, 15f + Math.Min(100f, item.Score) * 0.45f);
+			if (roll <= 0d) return item;
+		}
+		return pool[pool.Count - 1];
+	}
+
+	private void AddNormalEventCandidate(
+		List<WorldDiplomacyTopicCandidate> events,
+		Kingdom initiator,
+		Kingdom target,
+		WorldDiplomacyRealmRelationProfile profile,
+		WorldDiplomacyBorderRelation border,
+		string category,
+		string motif,
+		string topic,
+		string sourceType,
+		string hardFact,
+		string allowedFiction,
+		float bonus,
+		bool requiresSharedBorder)
+	{
+		if (events == null || initiator == null || target == null) return;
+		if (requiresSharedBorder && border?.SharesBorder != true) return;
+		List<string> actions = BuildPotentialDiplomaticActionIntents(initiator, target);
+		string forbidden = "不得杜撰战争状态、城镇归属变化、已经生效或解除的条约、具名人物的死亡婚姻、具体战役胜负和精确伤亡；软事件必须写成地方报告、指控、传闻或待交涉事项。";
+		string state = BuildBilateralState(initiator, target);
+		string context = "事件来源=" + sourceType
+			+ "；事件母题=" + motif
+			+ "；当前硬事实=" + state
+			+ "；两国贵族整体关系=" + DescribeRealmRelationProfile(profile)
+			+ (string.IsNullOrWhiteSpace(hardFact) ? "" : "；现实锚点=" + hardFact)
+			+ "；允许的局部发挥=" + allowedFiction
+			+ "；禁止事项=" + forbidden
+			+ "；当前可自然通向但绝不预定的外交行为=" + DescribePotentialDiplomaticActions(actions);
+		events.Add(new WorldDiplomacyTopicCandidate
+		{
+			TargetKingdomId = target.StringId,
+			Category = category,
+			Motif = motif,
+			Topic = topic,
+			Fingerprint = BuildTopicFingerprint(category, initiator.StringId, target.StringId, context, motif),
+			Context = context,
+			SourceType = sourceType,
+			Location = requiresSharedBorder && border?.SharesBorder == true
+				? FirstNonEmpty(border.FirstSettlementName, border.FirstSettlementId) + "—" + FirstNonEmpty(border.SecondSettlementName, border.SecondSettlementId)
+				: "",
+			AllowedFiction = allowedFiction ?? "",
+			ForbiddenFiction = forbidden,
+			RequiresSharedBorder = requiresSharedBorder,
+			PotentialActionIntents = actions,
+			Score = bonus
+		});
+	}
+
+	private List<string> BuildPotentialDiplomaticActionIntents(Kingdom first, Kingdom second)
+	{
+		List<string> actions = new List<string>();
+		if (first == null || second == null || first == second) return actions;
+		bool atWar = FactionManager.IsAtWarAgainstFaction(first, second);
+		IAllianceCampaignBehavior alliance = Campaign.Current?.GetCampaignBehavior<IAllianceCampaignBehavior>();
+		ITradeAgreementsCampaignBehavior trade = Campaign.Current?.GetCampaignBehavior<ITradeAgreementsCampaignBehavior>();
+		bool allied = alliance != null && alliance.IsAllyWithKingdom(first, second);
+		bool trading = trade != null && BannerlordApiCompat.HasTradeAgreement(trade, first, second);
+		if (atWar)
+		{
+			actions.Add("propose_peace");
+			return actions;
+		}
+		if (CanDeclareWar(first, second, forcedByThreshold: false, out _)) actions.Add("declare_war");
+		actions.Add(allied ? "break_alliance" : "propose_alliance");
+		if (trade != null) actions.Add(trading ? "cancel_trade" : "propose_trade");
+		return actions.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+	}
+
+	private static string DescribePotentialDiplomaticActions(IEnumerable<string> intents)
+	{
+		List<string> labels = (intents ?? Enumerable.Empty<string>())
+			.Select(NormalizeIntent)
+			.Where(x => !string.IsNullOrWhiteSpace(x))
+			.Distinct(StringComparer.OrdinalIgnoreCase)
+			.Select(IntentLabel)
+			.ToList();
+		return labels.Count == 0 ? "当前没有可直接执行的关系变更，但仍可提出条件、道歉、让步或退出" : string.Join("、", labels);
+	}
+
+	private string BuildCurrentLegalDiplomaticOptions(WorldDiplomacyRound round, Kingdom author)
+	{
+		if (round == null || author == null) return "当前合法外交出口：无。";
+		List<string> lines = new List<string>();
+		foreach (string id in (round.RelayRouteKingdomIds ?? new List<string>())
+			.Where(x => !string.Equals(x, author.StringId, StringComparison.OrdinalIgnoreCase))
+			.Distinct(StringComparer.OrdinalIgnoreCase))
+		{
+			Kingdom target = ResolveKingdom(id);
+			if (target == null) continue;
+			List<string> actions = BuildPotentialDiplomaticActionIntents(author, target);
+			if (actions.Count == 0) continue;
+			lines.Add(id + "=" + KingdomName(target) + "：" + string.Join("、", actions.Select(x => x + "(" + IntentLabel(x) + ")")));
+		}
+		return lines.Count == 0
+			? "当前合法外交出口：没有可立即改变关系的行为；仍可提出条件、道歉、让步、拒绝或退出。"
+			: "【当前可合法提出或执行的关系变更；不是命令，也不代表已经生效】\n" + string.Join("\n", lines);
+	}
+
+	private static bool HasSharedWarOpponent(Kingdom first, Kingdom second)
+	{
+		if (first == null || second == null) return false;
+		return Kingdom.All.Any(other => other != null && !other.IsEliminated && other != first && other != second
+			&& FactionManager.IsAtWarAgainstFaction(first, other)
+			&& FactionManager.IsAtWarAgainstFaction(second, other));
+	}
+
+	private int GetLastGlobalTopicUseDay(string category)
+	{
+		return (_storage.RecentTopicUses ?? new List<WorldDiplomacyTopicUse>())
+			.Where(x => x != null && string.Equals(x.Category, category, StringComparison.OrdinalIgnoreCase))
+			.Select(x => x.Day).DefaultIfEmpty(int.MinValue).Max();
+	}
+
+	private bool WasTopicUsedRecently(string fingerprint, string pairKey, string category, string motif, string initiatorKingdomId)
+	{
+		int day = CurrentDay();
+		List<WorldDiplomacyTopicUse> recent = (_storage.RecentTopicUses ?? new List<WorldDiplomacyTopicUse>())
+			.Where(x => x != null).OrderByDescending(x => x.Day).Take(MaxRecentTopicUses).ToList();
+		bool exactOrPairRepeat = recent.Any(x =>
+			(string.Equals(x.Fingerprint, fingerprint, StringComparison.OrdinalIgnoreCase) && day - x.Day < ExactTopicCooldownDays)
+				|| (string.Equals(x.PairKey, pairKey, StringComparison.OrdinalIgnoreCase)
+					&& string.Equals(FirstNonEmpty(x.Motif, x.Category), FirstNonEmpty(motif, category), StringComparison.OrdinalIgnoreCase)
+					&& day - x.Day < PairTopicCategoryCooldownDays));
+		if (exactOrPairRepeat) return true;
+		bool initiatorRepeat = recent.Any(x => string.Equals(x.InitiatorKingdomId, initiatorKingdomId, StringComparison.OrdinalIgnoreCase)
+			&& string.Equals(x.Category, category, StringComparison.OrdinalIgnoreCase)
+			&& day - x.Day < InitiatorTopicCategoryCooldownDays);
+		if (initiatorRepeat) return true;
+		if (!string.IsNullOrWhiteSpace(motif) && recent.Take(3)
+			.Any(x => string.Equals(x.Motif, motif, StringComparison.OrdinalIgnoreCase))) return true;
+		return recent.Take(GlobalTopicCategoryCooldownCount)
+			.Any(x => string.Equals(x.Category, category, StringComparison.OrdinalIgnoreCase));
+	}
+
+	private float GetTopicNoveltyBonus(string category, string motif, string initiatorKingdomId)
+	{
+		List<WorldDiplomacyTopicUse> recent = (_storage.RecentTopicUses ?? new List<WorldDiplomacyTopicUse>())
+			.Where(x => x != null).OrderByDescending(x => x.Day).Take(8).ToList();
+		int globalUses = recent.Count(x => string.Equals(x.Category, category, StringComparison.OrdinalIgnoreCase));
+		int initiatorUses = recent.Count(x => string.Equals(x.InitiatorKingdomId, initiatorKingdomId, StringComparison.OrdinalIgnoreCase)
+			&& string.Equals(x.Category, category, StringComparison.OrdinalIgnoreCase));
+		int motifUses = string.IsNullOrWhiteSpace(motif) ? 0 : recent.Count(x => string.Equals(x.Motif, motif, StringComparison.OrdinalIgnoreCase));
+		float bonus = globalUses == 0 ? 24f : -18f * globalUses;
+		if (initiatorUses > 0) bonus -= 24f * initiatorUses;
+		if (motifUses > 0) bonus -= 30f * motifUses;
+		if (recent.Count > 0 && string.Equals(recent[0].Category, category, StringComparison.OrdinalIgnoreCase)) bonus -= 45f;
+		return bonus;
+	}
+
+	private static string BuildTopicFingerprint(string category, string firstId, string secondId, string context, string motif = "")
+	{
+		string state = (context ?? "").IndexOf("交战", StringComparison.OrdinalIgnoreCase) >= 0 ? "war"
+			: (context ?? "").IndexOf("同盟", StringComparison.OrdinalIgnoreCase) >= 0 ? "alliance"
+			: (context ?? "").IndexOf("贸易", StringComparison.OrdinalIgnoreCase) >= 0 ? "trade" : "peace";
+		return "normal:" + (category ?? "general") + ":" + FirstNonEmpty(motif, category, "general")
+			+ ":" + PairKey(firstId, secondId) + ":" + state;
+	}
+
+	private static double StableUnit(string value)
+	{
+		unchecked
+		{
+			uint hash = 2166136261;
+			foreach (char c in value ?? "") hash = (hash ^ c) * 16777619;
+			return hash / ((double)uint.MaxValue + 1d);
+		}
+	}
+
 	private float ScoreDiplomaticTarget(Kingdom initiator, Kingdom target)
 	{
 		float score = MBRandom.RandomFloat * 15f;
@@ -6926,7 +8000,10 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		score += pressure;
 		int relation = GetRulerRelation(initiator, target);
 		score += Math.Abs(relation) * 0.35f;
-		score += CountCulturalClaims(initiator, target) * 8f;
+		if (GetKingdomBorderRelation(initiator, target).SharesBorder)
+		{
+			score += CountCulturalClaims(initiator, target) * 8f;
+		}
 		if (FactionManager.IsAtWarAgainstFaction(initiator, target))
 		{
 			score += 55f;
@@ -7066,6 +8143,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		_storage.ActiveWarLedgers ??= new List<WorldDiplomacyWarLedger>();
 		_storage.RecentBattles ??= new List<WorldDiplomacyBattleFact>();
 		_storage.NativeSignals ??= new List<NativeDiplomacySignal>();
+		_storage.RecentTopicUses ??= new List<WorldDiplomacyTopicUse>();
 		_storage.Jobs ??= new List<WorldDiplomacyJob>();
 		_storage.SuspendedExchanges ??= new List<WorldDiplomacyExchange>();
 		_storage.LastOffensiveWarDayByKingdom ??= new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
@@ -7084,6 +8162,8 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			.Where(x => !string.IsNullOrWhiteSpace(x))
 			.Distinct(StringComparer.OrdinalIgnoreCase)
 			.ToList();
+		_storage.RecentTopicUses = _storage.RecentTopicUses.Where(x => x != null && !string.IsNullOrWhiteSpace(x.Category))
+			.OrderByDescending(x => x.Day).Take(MaxRecentTopicUses).OrderBy(x => x.Day).ToList();
 		if (_storage.ProcessedPolicySignalKeys.Count > MaxProcessedPolicySignalKeys)
 		{
 			_storage.ProcessedPolicySignalKeys.RemoveRange(0, _storage.ProcessedPolicySignalKeys.Count - MaxProcessedPolicySignalKeys);
@@ -7123,6 +8203,8 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 		foreach (WorldDiplomacyDocument document in _storage.Documents)
 		{
+			document.Title = Limit(SanitizePublicDiplomacyText(document.Title), 100);
+			document.Body = NormalizeBody(SanitizePublicDiplomacyText(document.Body));
 			document.AddressedKingdomIds ??= new List<string>();
 			document.MentionedKingdomIds ??= new List<string>();
 			document.PlannedKingdomIds ??= new List<string>();
@@ -7159,6 +8241,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		_storage.Jobs.RemoveAll(x => x == null || string.IsNullOrWhiteSpace(x.JobId)
 			|| string.Equals(x.Kind, "participate", StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(x.Kind, "round_compress", StringComparison.OrdinalIgnoreCase)
+			|| (x.IsRelayTurn && x.Priority == 98 && !string.IsNullOrWhiteSpace(x.ForcedIntent))
 			|| (string.Equals(x.Kind, "compress", StringComparison.OrdinalIgnoreCase) && (x.CompressionRoundIds == null || x.CompressionRoundIds.Count == 0)));
 		foreach (WorldDiplomacyJob job in _storage.Jobs)
 		{
@@ -7176,12 +8259,33 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			round.LlmTranscript.RemoveAll(x => x == null || string.IsNullOrWhiteSpace(x.Role));
 			round.LlmProfiledKingdomIds ??= new List<string>();
 			round.ExternalSignalKeys ??= new List<string>();
+			round.PotentialActionIntents ??= new List<string>();
+			round.PotentialActionIntents = round.PotentialActionIntents
+				.Where(x => !string.IsNullOrWhiteSpace(x))
+				.Select(NormalizeIntent)
+				.Where(x => !string.IsNullOrWhiteSpace(x))
+				.Distinct(StringComparer.OrdinalIgnoreCase)
+				.ToList();
 			round.ExternalSignalKeys = round.ExternalSignalKeys.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 			round.ExternalOpeningContext ??= "";
+			round.EventSourceType ??= "";
+			round.EventMotif ??= "";
+			round.EventLocation ??= "";
+			round.AllowedFiction ??= "";
+			round.ForbiddenFiction ??= "";
 			round.LlmProfiledKingdomIds = round.LlmProfiledKingdomIds.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 			round.LlmLastStateSignatureByKingdom ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			round.PendingOffers.RemoveAll(x => x == null || string.IsNullOrWhiteSpace(x.SourceDocumentId));
 			PruneInvalidPeaceOffers(round);
+			if (round.DiplomaticActionAttemptCount <= 0)
+			{
+				round.DiplomaticActionAttemptCount = round.PendingOffers.Count(x => x != null
+					&& !string.Equals(x.Status, "expired", StringComparison.OrdinalIgnoreCase));
+				if (round.ExecutedActionCount > round.DiplomaticActionAttemptCount)
+				{
+					round.DiplomaticActionAttemptCount = round.ExecutedActionCount;
+				}
+			}
 			int storedTargetDurationDays = round.SoftEndDay > round.StartedDay
 				? round.SoftEndDay - round.StartedDay
 				: RelayTargetDurationDays;
@@ -7201,9 +8305,21 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			if (ReferenceEquals(round, _storage.ActiveRound) && round.RelayPlanned && round.SchemaVersion < RelaySchemaVersion)
 			{
 				WorldDiplomacyDocument root = ResolveDocument(round.RootDocumentId);
+				Kingdom initiator = ResolveKingdom(round.InitiatorKingdomId);
+				if (root != null && initiator != null)
+				{
+					foreach (WorldDiplomacyRoundParticipant participant in round.Participants.Where(x => x != null && x.SelectedForRelay && string.IsNullOrWhiteSpace(x.Agenda)))
+					{
+						AssignParticipantAgenda(round, root, participant, initiator);
+					}
+				}
 				if (root != null) round.CachePrefix = BuildRoundCachePrefix(round, root);
-				WorldDiplomacyLlmMessage frozenSystem = round.LlmTranscript.FirstOrDefault(x => x != null && string.Equals(x.Role, "system", StringComparison.OrdinalIgnoreCase));
-				if (frozenSystem != null) frozenSystem.Content = BuildRelayGenerationSystemPrompt();
+				// 旧版消息链可能包含强制结果控制器的指令。升级时只清理当前活动事件一次，
+				// 下一篇公文会从已归档宣言重建消息链，避免旧术语继续污染公开文风。
+				round.LlmTranscript.Clear();
+				round.LlmProfiledKingdomIds.Clear();
+				round.LlmLastStateSignatureByKingdom.Clear();
+				round.RelayWaiting = false;
 				round.SchemaVersion = RelaySchemaVersion;
 			}
 		}
@@ -7227,10 +8343,10 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 				}
 			}
 			else if (string.Equals(job.Kind, "round_plan", StringComparison.OrdinalIgnoreCase)
-				&& !string.Equals(job.CacheAffinityKey, "diplomacy-round-plan:v4", StringComparison.OrdinalIgnoreCase))
+				&& !string.Equals(job.CacheAffinityKey, "diplomacy-round-plan:v5", StringComparison.OrdinalIgnoreCase))
 			{
 				job.SystemPrompt = BuildRoundPlanSystemPrompt();
-				job.CacheAffinityKey = "diplomacy-round-plan:v4";
+				job.CacheAffinityKey = "diplomacy-round-plan:v5";
 			}
 		}
 		foreach (WorldDiplomacySettlementKnowledge knowledge in _storage.SettlementKnowledge.Where(x => x != null)) knowledge.DocumentIds ??= new List<string>();
@@ -7888,6 +9004,16 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static int GetRoundParticipantLimit()
+	{
+		return Math.Min(MaxRelayParticipants, GetActivityLevel() switch
+		{
+			0 => 2,
+			2 => 5,
+			_ => 3
+		});
+	}
+
 	private static int GetCourtMaxDeliveryDays()
 	{
 		try
@@ -7948,11 +9074,23 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			return Math.Max(50, Math.Min(200, DuelSettings.GetSettings()?.WorldDiplomacyWarPressureThreshold ?? 100));
+			return Math.Max(50, Math.Min(300, DuelSettings.GetSettings()?.WorldDiplomacyWarPressureThreshold ?? 120));
 		}
 		catch
 		{
-			return 100;
+			return 120;
+		}
+	}
+
+	private static int GetPeaceAdvanceThreshold()
+	{
+		try
+		{
+			return Math.Max(50, Math.Min(300, DuelSettings.GetSettings()?.WorldDiplomacyPeacePressureThreshold ?? 200));
+		}
+		catch
+		{
+			return 200;
 		}
 	}
 
@@ -8120,6 +9258,34 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private static string RulerName(Kingdom kingdom)
 	{
 		return kingdom?.RulingClan?.Leader?.Name?.ToString() ?? "未知统治者";
+	}
+
+	private static string SanitizePublicDiplomacyText(string value)
+	{
+		string text = value ?? "";
+		return text
+			.Replace("预先核验的结果路线", "可行的交涉方向")
+			.Replace("预核验结果路线", "可行的交涉方向")
+			.Replace("预核验", "事先审议")
+			.Replace("既定外交动作", "正式外交决定")
+			.Replace("候选路线", "可行方向")
+			.Replace("结果路线", "交涉方向")
+			.Replace("程序执行", "正式施行")
+			.Replace("游戏外交状态", "外交关系")
+			.Replace("世界外交状态", "外交局势")
+			.Replace("游戏外交动作", "正式外交行动")
+			.Replace("世界状态", "当前局势")
+			.Replace("硬目标", "首要目标")
+			.Replace("外交回合", "外交交涉")
+			.Replace("本回合", "本次交涉")
+			.Replace("该回合", "此次交涉")
+			.Replace("此回合", "此次交涉")
+			.Replace("回合开始", "交涉开始")
+			.Replace("回合结束", "交涉告一段落")
+			.Replace("接力顺序", "公文往来次序")
+			.Replace("接力轮次", "公文往来阶段")
+			.Replace("最后行动机会", "最后决定")
+			.Replace("程序核验", "正式确认");
 	}
 
 	private static string NormalizeBody(string value)
@@ -8639,7 +9805,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private string BuildDisplayedDocumentTitle(WorldDiplomacyDocument document)
 	{
-		string title = FirstNonEmpty(document?.Title, document?.AuthorKingdomName + "发布外交宣言", "外交宣言");
+		string title = SanitizePublicDiplomacyText(FirstNonEmpty(document?.Title, document?.AuthorKingdomName + "发布外交宣言", "外交宣言"));
 		if (document == null || string.IsNullOrWhiteSpace(document.RoundId)) return title;
 		WorldDiplomacyRound round = ResolveRound(document.RoundId);
 		if (round == null) return title;
@@ -8655,7 +9821,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private string BuildDocumentEventMeta(WorldDiplomacyDocument document)
 	{
 		WorldDiplomacyRound round = ResolveRound(document?.RoundId);
-		string topic = FirstNonEmpty(round?.RoundTopic, ResolveDocument(round?.RootDocumentId)?.Title);
+		string topic = SanitizePublicDiplomacyText(FirstNonEmpty(round?.RoundTopic, ResolveDocument(round?.RootDocumentId)?.Title));
 		return string.IsNullOrWhiteSpace(topic) ? "" : "  ·  外交事件：" + Limit(topic, 48);
 	}
 
@@ -8667,7 +9833,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		{
 			return "统一查看自定义政策、政策衍生事件与各国公开发布的外交宣言。";
 		}
-		string topic = FirstNonEmpty(round.RoundTopic, ResolveDocument(round.RootDocumentId)?.Title, "外交交涉");
+		string topic = SanitizePublicDiplomacyText(FirstNonEmpty(round.RoundTopic, ResolveDocument(round.RootDocumentId)?.Title, "外交交涉"));
 		List<string> participantNames = (round.Participants ?? new List<WorldDiplomacyRoundParticipant>())
 			.Where(x => x != null && string.Equals(x.State, "active", StringComparison.OrdinalIgnoreCase))
 			.Select(x => ResolveKingdom(x.KingdomId))
@@ -8777,6 +9943,16 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		public string Text = "";
 	}
 
+	private sealed class WorldDiplomacyBorderRelation
+	{
+		public bool SharesBorder;
+		public string FirstSettlementId = "";
+		public string FirstSettlementName = "";
+		public string SecondSettlementId = "";
+		public string SecondSettlementName = "";
+		public float Distance = float.MaxValue;
+	}
+
 	private sealed class LlmJobResult
 	{
 		public string JobId = "";
@@ -8819,6 +9995,16 @@ public sealed class WorldDiplomacyRound
 	[JsonProperty("relayWaiting")] public bool RelayWaiting { get; set; }
 	[JsonProperty("hardEndDay")] public int HardEndDay { get; set; }
 	[JsonProperty("roundTopic")] public string RoundTopic { get; set; } = "";
+	[JsonProperty("topicCategory")] public string TopicCategory { get; set; } = "";
+	[JsonProperty("topicFingerprint")] public string TopicFingerprint { get; set; } = "";
+	[JsonProperty("topicSeedContext")] public string TopicSeedContext { get; set; } = "";
+	[JsonProperty("eventSourceType")] public string EventSourceType { get; set; } = "";
+	[JsonProperty("eventMotif")] public string EventMotif { get; set; } = "";
+	[JsonProperty("eventLocation")] public string EventLocation { get; set; } = "";
+	[JsonProperty("allowedFiction")] public string AllowedFiction { get; set; } = "";
+	[JsonProperty("forbiddenFiction")] public string ForbiddenFiction { get; set; } = "";
+	[JsonProperty("requiresSharedBorder")] public bool RequiresSharedBorder { get; set; }
+	[JsonProperty("potentialActionIntents")] public List<string> PotentialActionIntents { get; set; } = new List<string>();
 	[JsonProperty("cachePrefix")] public string CachePrefix { get; set; } = "";
 	[JsonProperty("externalSignalKeys")] public List<string> ExternalSignalKeys { get; set; } = new List<string>();
 	[JsonProperty("externalOpeningContext")] public string ExternalOpeningContext { get; set; } = "";
@@ -8828,6 +10014,7 @@ public sealed class WorldDiplomacyRound
 	[JsonProperty("roundStatus")] public string RoundStatus { get; set; } = "active";
 	[JsonProperty("executedActionCount")] public int ExecutedActionCount { get; set; }
 	[JsonProperty("substantiveProgressCount")] public int SubstantiveProgressCount { get; set; }
+	[JsonProperty("diplomaticActionAttemptCount")] public int DiplomaticActionAttemptCount { get; set; }
 	[JsonProperty("lastSubstantiveProgressDay")] public int LastSubstantiveProgressDay { get; set; }
 	[JsonProperty("finalActionOpportunityIssued")] public bool FinalActionOpportunityIssued { get; set; }
 	[JsonProperty("pendingOffers")] public List<WorldDiplomacyRoundOffer> PendingOffers { get; set; } = new List<WorldDiplomacyRoundOffer>();
@@ -8864,6 +10051,53 @@ public sealed class WorldDiplomacyRoundParticipant
 	[JsonProperty("selectedForRelay")] public bool SelectedForRelay { get; set; }
 	[JsonProperty("isPlayerAsync")] public bool IsPlayerAsync { get; set; }
 	[JsonProperty("turnCount")] public int TurnCount { get; set; }
+	[JsonProperty("role")] public string Role { get; set; } = "";
+	[JsonProperty("agenda")] public string Agenda { get; set; } = "";
+	[JsonProperty("primaryTargetKingdomId")] public string PrimaryTargetKingdomId { get; set; } = "";
+	[JsonProperty("preferredOutcome")] public string PreferredOutcome { get; set; } = "";
+	[JsonProperty("redLine")] public string RedLine { get; set; } = "";
+	[JsonProperty("leverage")] public string Leverage { get; set; } = "";
+	[JsonProperty("requiredContribution")] public string RequiredContribution { get; set; } = "";
+	[JsonProperty("contributionMade")] public bool ContributionMade { get; set; }
+}
+
+public sealed class WorldDiplomacyTopicUse
+{
+	[JsonProperty("roundId")] public string RoundId { get; set; } = "";
+	[JsonProperty("initiatorKingdomId")] public string InitiatorKingdomId { get; set; } = "";
+	[JsonProperty("fingerprint")] public string Fingerprint { get; set; } = "";
+	[JsonProperty("category")] public string Category { get; set; } = "";
+	[JsonProperty("motif")] public string Motif { get; set; } = "";
+	[JsonProperty("pairKey")] public string PairKey { get; set; } = "";
+	[JsonProperty("day")] public int Day { get; set; }
+}
+
+public sealed class WorldDiplomacyRealmRelationProfile
+{
+	public float AverageRelation { get; set; }
+	public float PositiveRatio { get; set; }
+	public float HostileRatio { get; set; }
+	public float Polarization { get; set; }
+	public int RulerRelation { get; set; }
+	public float RulerEliteGap { get; set; }
+	public int SamplePairCount { get; set; }
+}
+
+public sealed class WorldDiplomacyTopicCandidate
+{
+	public string TargetKingdomId { get; set; } = "";
+	public string Category { get; set; } = "";
+	public string Motif { get; set; } = "";
+	public string Topic { get; set; } = "";
+	public string Fingerprint { get; set; } = "";
+	public string Context { get; set; } = "";
+	public string SourceType { get; set; } = "";
+	public string Location { get; set; } = "";
+	public string AllowedFiction { get; set; } = "";
+	public string ForbiddenFiction { get; set; } = "";
+	public bool RequiresSharedBorder { get; set; }
+	public List<string> PotentialActionIntents { get; set; } = new List<string>();
+	public float Score { get; set; }
 }
 
 public sealed class WorldDiplomacyRelayArrival
@@ -8975,6 +10209,12 @@ public sealed class WorldDiplomacyCompressionSummary
 
 public sealed class WorldDiplomacyStorage
 {
+	[JsonProperty("initialPeacePending")]
+	public bool InitialPeacePending { get; set; }
+
+	[JsonProperty("initialPeaceApplied")]
+	public bool InitialPeaceApplied { get; set; }
+
 	[JsonProperty("activeRound")]
 	public WorldDiplomacyRound ActiveRound { get; set; }
 
@@ -9016,6 +10256,9 @@ public sealed class WorldDiplomacyStorage
 
 	[JsonProperty("processedPolicySignalKeys")]
 	public List<string> ProcessedPolicySignalKeys { get; set; } = new List<string>();
+
+	[JsonProperty("recentTopicUses")]
+	public List<WorldDiplomacyTopicUse> RecentTopicUses { get; set; } = new List<WorldDiplomacyTopicUse>();
 
 	[JsonProperty("forcedWarToggleWasEnabled")]
 	public bool ForcedWarToggleWasEnabled { get; set; } = true;
@@ -9217,6 +10460,9 @@ public sealed class WorldDiplomacyDocument
 
 	[JsonProperty("mechanicalResult")]
 	public string MechanicalResult { get; set; } = "";
+
+	[JsonProperty("changedDiplomaticState")]
+	public bool ChangedDiplomaticState { get; set; }
 
 	[JsonProperty("peaceTerms")]
 	public WorldDiplomacyPeaceTerms PeaceTerms { get; set; }
