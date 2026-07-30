@@ -58,4 +58,3 @@ internal static class WorldMapOrderedArmySurvivalPatch
 		}
 	}
 }
-

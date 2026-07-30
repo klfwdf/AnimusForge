@@ -307,4 +307,3 @@ internal static class PlayerRpCraftTemplateSelectorLog
 			: normalized.Substring(0, safeMaxLength);
 	}
 }
-
