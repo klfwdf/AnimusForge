@@ -2293,6 +2293,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private readonly Dictionary<int, float> _lastProtectedFollowerHealth = new Dictionary<int, float>();
 		private readonly Dictionary<int, ProtectedFollowerFriendlyFireHitRecord> _recentProtectedFollowerFriendlyFireHits = new Dictionary<int, ProtectedFollowerFriendlyFireHitRecord>();
 		private readonly Dictionary<int, float> _enemyInitialTargetReleaseTimes = new Dictionary<int, float>();
+		private readonly HashSet<int> _sharedWallRescueActiveEnemyAgentIndexes = new HashSet<int>();
 		private readonly Dictionary<int, Vec3> _enemyNavigationProbePositions = new Dictionary<int, Vec3>();
 		private readonly Dictionary<int, float> _enemyNavigationProbeTimes = new Dictionary<int, float>();
 		private readonly Dictionary<int, int> _enemyNavigationStallProbeCounts = new Dictionary<int, int>();
@@ -2860,6 +2861,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			{
 				QueueVictoryPostMissionFlow(_ownedSettlementIncidentTriggered ? "SETS_owned_or_attached_settlement_exit" : "SETS_settlement_victory_endmission_fallback");
 			}
+			ClearAllSharedEnemyWallRescueState();
 			ClearSetsUsableProtectionState("sets_mission_end");
 			ClearSetsSelectedFollowerState("sets_mission_end");
 			base.OnEndMission();
@@ -4084,6 +4086,10 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 
 		private bool TryMaintainEnemyNativeNavigationRescue(Agent agent)
 		{
+			if (_sceneKind == SetsSettlementSceneKind.Town || _sceneKind == SetsSettlementSceneKind.Castle)
+			{
+				return TryMaintainSharedEnemyWallRescue(agent);
+			}
 			try
 			{
 				Mission mission = base.Mission;
@@ -4162,6 +4168,88 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				SettlementEntryTroopSelectionLog.Log("SETS enemy native navigation rescue failed. agent=" + agent?.Index + ", error=" + ex.Message);
 				return false;
 			}
+		}
+
+		private bool TryMaintainSharedEnemyWallRescue(Agent agent)
+		{
+			try
+			{
+				Mission mission = base.Mission;
+				Agent target = FindNearestPlayerSideTarget(agent);
+				if (!IsLiveTrackedEnemy(agent)
+					|| mission?.Scene == null
+					|| target == null
+					|| !target.IsActive()
+					|| agent.Position.DistanceSquared(target.Position) <= SiegeAgentWallRescueProfile.TargetMinDistance * SiegeAgentWallRescueProfile.TargetMinDistance
+					|| IsEnemyBusyWithCombatAction(agent))
+				{
+					EndSharedEnemyWallRescue(agent);
+					return false;
+				}
+				bool rescued = SiegeAiInterventionBehavior.TryApplySetsSettlementEnemyWallRescue(
+					agent,
+					mission,
+					target.Position,
+					SiegeAgentWallRescueProfile.Source + ":sets_" + _sceneKind.ToString().ToLowerInvariant() + "_enemy");
+				if (rescued)
+				{
+					if (_sharedWallRescueActiveEnemyAgentIndexes.Add(agent.Index))
+					{
+						SettlementEntryTroopSelectionLog.LogVerbose("Activated shared GCCZ wall rescue for SETS enemy. settlement=" + _settlementId + ", scene=" + _sceneKind + ", agent=" + agent.Index + ", target=" + target.Index);
+					}
+					return true;
+				}
+				if (_sharedWallRescueActiveEnemyAgentIndexes.Contains(agent.Index))
+				{
+					EndSharedEnemyWallRescue(agent);
+				}
+				return false;
+			}
+			catch (Exception ex)
+			{
+				EndSharedEnemyWallRescue(agent);
+				SettlementEntryTroopSelectionLog.Log("Shared GCCZ wall rescue failed for SETS enemy. settlement=" + _settlementId + ", scene=" + _sceneKind + ", agent=" + agent?.Index + ", error=" + ex.Message);
+				return false;
+			}
+		}
+
+		private void EndSharedEnemyWallRescue(Agent agent)
+		{
+			if (agent == null)
+			{
+				return;
+			}
+			bool wasActive = _sharedWallRescueActiveEnemyAgentIndexes.Remove(agent.Index);
+			SiegeAiInterventionBehavior.ClearSetsSettlementEnemyWallRescueTracking(agent.Index);
+			if (!wasActive)
+			{
+				return;
+			}
+			try
+			{
+				agent.DisableScriptedMovement();
+				agent.ClearTargetFrame();
+				agent.GetComponent<CampaignAgentComponent>()?.AgentNavigator?.ClearTarget();
+				agent.SetMaximumSpeedLimit(-1f, false);
+				agent.ResetEnemyCaches();
+				agent.InvalidateTargetAgent();
+				AgentSetTargetAgentMethod?.Invoke(agent, new object[] { null });
+				AgentSetAutomaticTargetSelectionMethod?.Invoke(agent, new object[] { true });
+			}
+			catch
+			{
+			}
+		}
+
+		private void ClearAllSharedEnemyWallRescueState()
+		{
+			foreach (int agentIndex in _enemyAgentIndexes.Concat(_sharedWallRescueActiveEnemyAgentIndexes).Distinct().ToList())
+			{
+				Agent agent = base.Mission?.Agents?.FirstOrDefault(candidate => candidate != null && candidate.Index == agentIndex);
+				EndSharedEnemyWallRescue(agent);
+				SiegeAiInterventionBehavior.ClearSetsSettlementEnemyWallRescueTracking(agentIndex);
+			}
+			_sharedWallRescueActiveEnemyAgentIndexes.Clear();
 		}
 
 		private Agent FindNearestPlayerSideTarget(Agent source)
@@ -4288,7 +4376,25 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 
 		private void ReleaseEnemyNavigationRescuesForCombatActions()
 		{
-			if (_enemyNavigationRescueReleaseTimes.Count <= 0 || base.Mission?.Agents == null)
+			if (base.Mission?.Agents == null)
+			{
+				return;
+			}
+			foreach (int agentIndex in _sharedWallRescueActiveEnemyAgentIndexes.ToList())
+			{
+				Agent agent = base.Mission.Agents.FirstOrDefault(candidate => candidate != null && candidate.Index == agentIndex && candidate.IsActive());
+				if (agent == null)
+				{
+					_sharedWallRescueActiveEnemyAgentIndexes.Remove(agentIndex);
+					SiegeAiInterventionBehavior.ClearSetsSettlementEnemyWallRescueTracking(agentIndex);
+					continue;
+				}
+				if (IsEnemyBusyWithCombatAction(agent))
+				{
+					EndSharedEnemyWallRescue(agent);
+				}
+			}
+			if (_enemyNavigationRescueReleaseTimes.Count <= 0)
 			{
 				return;
 			}
@@ -4370,9 +4476,12 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
+			Agent activeAgent = base.Mission?.Agents?.FirstOrDefault(candidate => candidate != null && candidate.Index == agentIndex);
+			EndSharedEnemyWallRescue(activeAgent);
+			_sharedWallRescueActiveEnemyAgentIndexes.Remove(agentIndex);
+			SiegeAiInterventionBehavior.ClearSetsSettlementEnemyWallRescueTracking(agentIndex);
 			if (_enemyNavigationRescueReleaseTimes.ContainsKey(agentIndex))
 			{
-				Agent activeAgent = base.Mission?.Agents?.FirstOrDefault(candidate => candidate != null && candidate.Index == agentIndex);
 				EndEnemyNativeNavigationRescue(activeAgent);
 			}
 			_enemyNavigationProbePositions.Remove(agentIndex);

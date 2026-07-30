@@ -6524,28 +6524,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			catch
 			{
 			}
-			if (ShouldUseTemporaryWallRescue(agent, mission, resolvedTarget, source))
+			if (TryApplyInterventionTemporaryWallRescue(agent, mission, resolvedTarget, source, rescueFlags))
 			{
-				if (TrySetInterventionNativeNavmeshTargetFrame(agent, mission, resolvedTarget, source, rescueFlags, forceNearbySample: true, out Vec3 nativeRescueTarget))
-				{
-					SetAgentLookTowardPoint(agent, nativeRescueTarget);
-					TryTeleportAgentForWallRescue(agent, mission, nativeRescueTarget, source);
-					return true;
-				}
-				if (TryTeleportAgentForWallRescue(agent, mission, resolvedTarget, source))
-				{
-					return true;
-				}
-				try
-				{
-					WorldPosition scriptedPosition = new WorldPosition(mission.Scene, UIntPtr.Zero, resolvedTarget, false);
-					agent.SetScriptedPosition(ref scriptedPosition, false, rescueFlags);
-					return true;
-				}
-				catch (Exception ex)
-				{
-					Logger.Log("SiegeAiIntervention", "Wall rescue scripted movement failed (" + (source ?? SiegeAgentWallRescueProfile.Source) + "): " + ex.Message);
-				}
+				return true;
 			}
 			if (TrySetInterventionNativeNavmeshTargetFrame(agent, mission, resolvedTarget, source, rescueFlags, forceNearbySample: false, out Vec3 nativeTarget))
 			{
@@ -6558,6 +6539,83 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("SiegeAiIntervention", "TrySetInterventionAgentTargetPosition failed (" + (source ?? "N/A") + "): " + ex.Message);
+			return false;
+		}
+	}
+
+	internal static bool TryApplySetsSettlementEnemyWallRescue(Agent agent, Mission mission, Vec3 target, string source)
+	{
+		try
+		{
+			if (agent == null || mission?.Scene == null || !agent.IsHuman || !agent.IsActive())
+			{
+				return false;
+			}
+			Vec3 resolvedTarget = target;
+			try
+			{
+				resolvedTarget.z = mission.Scene.GetGroundHeightAtPosition(resolvedTarget);
+			}
+			catch
+			{
+			}
+			return TryApplyInterventionTemporaryWallRescue(
+				agent,
+				mission,
+				resolvedTarget,
+				source,
+				Agent.AIScriptedFrameFlags.NeverSlowDown);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "SETS settlement enemy wall rescue failed (" + (source ?? "N/A") + "): " + ex.Message);
+			return false;
+		}
+	}
+
+	internal static void ClearSetsSettlementEnemyWallRescueTracking(int agentIndex)
+	{
+		if (agentIndex < 0)
+		{
+			return;
+		}
+		LastAgentWallRescueProbePositions.Remove(agentIndex);
+		LastAgentWallRescueProbeTimes.Remove(agentIndex);
+		AgentWallRescueUntilTimes.Remove(agentIndex);
+		LastAgentWallRescueLogTimes.Remove(agentIndex);
+		LastAgentWallRescueTeleportTimes.Remove(agentIndex);
+	}
+
+	private static bool TryApplyInterventionTemporaryWallRescue(
+		Agent agent,
+		Mission mission,
+		Vec3 resolvedTarget,
+		string source,
+		Agent.AIScriptedFrameFlags rescueFlags)
+	{
+		if (!ShouldUseTemporaryWallRescue(agent, mission, resolvedTarget, source))
+		{
+			return false;
+		}
+		if (TrySetInterventionNativeNavmeshTargetFrame(agent, mission, resolvedTarget, source, rescueFlags, forceNearbySample: true, out Vec3 nativeRescueTarget))
+		{
+			SetAgentLookTowardPoint(agent, nativeRescueTarget);
+			TryTeleportAgentForWallRescue(agent, mission, nativeRescueTarget, source);
+			return true;
+		}
+		if (TryTeleportAgentForWallRescue(agent, mission, resolvedTarget, source))
+		{
+			return true;
+		}
+		try
+		{
+			WorldPosition scriptedPosition = new WorldPosition(mission.Scene, UIntPtr.Zero, resolvedTarget, false);
+			agent.SetScriptedPosition(ref scriptedPosition, false, rescueFlags);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "Wall rescue scripted movement failed (" + (source ?? SiegeAgentWallRescueProfile.Source) + "): " + ex.Message);
 			return false;
 		}
 	}
