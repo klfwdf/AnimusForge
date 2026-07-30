@@ -30,6 +30,7 @@ internal static class PolicySystemLog
 		"active-effects-created",
 		"effect-ended",
 		"deduct-cost",
+		"player-steward-xp-awarded",
 		"material-recorded"
 	};
 

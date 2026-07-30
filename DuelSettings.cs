@@ -357,9 +357,16 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		+ "\n\n" + DefaultPolicyTownTaxIntentPromptParagraph
 		+ "\n\n" + PreviousDefaultPolicyConstructionSpeedPromptParagraphWithConciseFixedScale;
 
-	private const string DefaultNpcRulerPolicyPrompt = PreviousDefaultNpcRulerPolicyPromptBeforeTaxIntent
+	private const string PreviousDefaultNpcRulerPolicyDurationPromptSentence = "普通政策通常持续 7—14 天，猛烈的短期措施通常持续 3—7 天。";
+
+	private const string DefaultNpcRulerPolicyDurationPromptSentence = "普通政策通常持续 30—60 天；重大改革、长期建设、税制或军制调整通常持续 60—120 天；临时征调、紧急赈济、镇压等猛烈措施通常持续 7—21 天；长期国策可以持续 120—240 天。持续时间越长，每日变化越应谨慎，忠诚度、治安度和王国稳定度等 0—100 尺度不应长期大幅累加。";
+
+	private const string PreviousDefaultNpcRulerPolicyPromptWithExpandedFixedConstructionScale = PreviousDefaultNpcRulerPolicyPromptBeforeTaxIntent
 		+ "\n\n" + DefaultPolicyTownTaxIntentPromptParagraph
 		+ "\n\n" + DefaultPolicyConstructionSpeedPromptParagraph;
+
+	private static readonly string DefaultNpcRulerPolicyPrompt = PreviousDefaultNpcRulerPolicyPromptWithExpandedFixedConstructionScale
+		.Replace(PreviousDefaultNpcRulerPolicyDurationPromptSentence, DefaultNpcRulerPolicyDurationPromptSentence);
 
 	private const string LeakedNpcPolicyPoliticalWeightsPromptSuffix = "每项政策还必须根据正文评估原版政策投票使用的 authoritarianWeight、oligarchicWeight、egalitarianWeight，分别表示君主集权、大氏族贵族议政、平民与地方广泛参与取向。三项范围均为 -1 到 1，不得全部为 0。";
 
@@ -3151,7 +3158,8 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptWithNaturalHeadings, StringComparison.Ordinal)
 			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptWithAggressivePercentConstructionSpeed, StringComparison.Ordinal)
 			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptWithInitialFixedConstructionScale, StringComparison.Ordinal)
-			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptWithConciseFixedConstructionScale, StringComparison.Ordinal))
+			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptWithConciseFixedConstructionScale, StringComparison.Ordinal)
+			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptWithExpandedFixedConstructionScale, StringComparison.Ordinal))
 		{
 			return DefaultNpcRulerPolicyPrompt;
 		}

@@ -78,6 +78,14 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 
 	private const int LocalPolicyGoldReserve = 10000;
 
+	private const int PlayerPolicyStewardXpBase = 50;
+
+	private const int PlayerPolicyStewardXpMax = 500;
+
+	private const int PlayerPolicyStewardXpDurationMax = 100;
+
+	private const int PlayerPolicyStewardXpScopeMax = 100;
+
 	private const int CustomPolicyDebugPreviewChars = 1200;
 
 	private const int MaxPolicyRecordHistoryCount = 200;
@@ -2130,10 +2138,6 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			{
 				RecordPolicyPublishAsPlayerAction(request, result, application, data.RecordId);
 			}
-			if (!isRenewal && hasTimedEffect && recordWritten)
-			{
-				TryAwardPlayerPolicyStewardXp(data);
-			}
 			if (!isRenewal)
 			{
 				DisplayKingdomPolicyAnnouncementMessage(
@@ -2142,6 +2146,10 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 					request.PlayerKingdomName,
 					request.PolicyName,
 					request.PolicyContent);
+				if (hasTimedEffect && recordWritten)
+				{
+					TryAwardPlayerPolicyStewardXp(data, request, application);
+				}
 				if (recordWritten)
 				{
 					NpcRulerPolicyBehavior.SchedulePublicFeedbackNoticeForExternal(data.RecordId);
@@ -2170,7 +2178,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		}
 	}
 
-	private void TryAwardPlayerPolicyStewardXp(DynamicPolicySaveData data)
+	private void TryAwardPlayerPolicyStewardXp(DynamicPolicySaveData data, PolicyDraftRequest request, PolicyApplicationResult application)
 	{
 		if (data == null || data.PlayerStewardXpAwarded)
 		{
@@ -2184,15 +2192,80 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 				PolicySystemLog.Write("Agenda", "player-steward-xp-skipped", "recordId=" + (data.RecordId ?? "") + " reason=main-hero-missing");
 				return;
 			}
-			mainHero.AddSkillXp(DefaultSkills.Steward, 100f);
+			int actualGold = Math.Max(0, request?.GoldCost ?? 0);
+			int affectedTownCount = CountPlayerPolicyAffectedTowns(application);
+			int durationDays = GetPlayerPolicyExperienceDurationDays(application);
+			int experience = CalculatePlayerPolicyStewardXp(
+				actualGold,
+				affectedTownCount,
+				durationDays,
+				out int goldExperience,
+				out int scopeExperience,
+				out int durationExperience);
+			mainHero.AddSkillXp(DefaultSkills.Steward, experience);
 			data.PlayerStewardXpAwarded = true;
 			StoreDynamicPolicy(data);
-			PolicySystemLog.Write("Agenda", "player-steward-xp-awarded", "recordId=" + (data.RecordId ?? "") + " xp=100");
+			PolicySystemLog.Write("Agenda", "player-steward-xp-awarded", "recordId=" + (data.RecordId ?? "")
+				+ " xp=" + experience.ToString(CultureInfo.InvariantCulture)
+				+ " actualGold=" + actualGold.ToString(CultureInfo.InvariantCulture)
+				+ " affectedTowns=" + affectedTownCount.ToString(CultureInfo.InvariantCulture)
+				+ " durationDays=" + durationDays.ToString(CultureInfo.InvariantCulture)
+				+ " components(base=" + PlayerPolicyStewardXpBase.ToString(CultureInfo.InvariantCulture)
+				+ ",gold=" + goldExperience.ToString(CultureInfo.InvariantCulture)
+				+ ",scope=" + scopeExperience.ToString(CultureInfo.InvariantCulture)
+				+ ",duration=" + durationExperience.ToString(CultureInfo.InvariantCulture) + ")");
 		}
 		catch (Exception ex)
 		{
 			PolicySystemLog.Write("Agenda", "player-steward-xp-failed", "recordId=" + (data?.RecordId ?? "") + " " + ex);
 		}
+	}
+
+	private static int CountPlayerPolicyAffectedTowns(PolicyApplicationResult application)
+	{
+		Dictionary<string, int> townCountByKingdom = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		foreach (AppliedKingdomEffect effect in application?.KingdomEffects?.Where(x => x != null && x.DurationDays > 0) ?? Enumerable.Empty<AppliedKingdomEffect>())
+		{
+			string key = FirstNonEmpty(effect.KingdomId, effect.KingdomName, effect.EffectId);
+			int townCount = Math.Max(0, effect.TownCount);
+			if (!townCountByKingdom.TryGetValue(key, out int currentCount) || townCount > currentCount)
+			{
+				townCountByKingdom[key] = townCount;
+			}
+		}
+		long total = townCountByKingdom.Values.Aggregate(0L, (sum, count) => sum + count);
+		return total >= int.MaxValue ? int.MaxValue : (int)total;
+	}
+
+	private static int GetPlayerPolicyExperienceDurationDays(PolicyApplicationResult application)
+	{
+		return application?.KingdomEffects?
+			.Where(x => x != null && x.DurationDays > 0)
+			.Select(x => x.DurationDays)
+			.DefaultIfEmpty(0)
+			.Max() ?? 0;
+	}
+
+	private static int CalculatePlayerPolicyStewardXp(
+		int actualGold,
+		int affectedTownCount,
+		int durationDays,
+		out int goldExperience,
+		out int scopeExperience,
+		out int durationExperience)
+	{
+		actualGold = Math.Max(0, actualGold);
+		affectedTownCount = Math.Max(0, affectedTownCount);
+		durationDays = Math.Max(0, durationDays);
+		goldExperience = actualGold <= 0
+			? 0
+			: (int)Math.Round(100d * Math.Log10(1d + (actualGold / 10000d)), MidpointRounding.AwayFromZero);
+		scopeExperience = (int)Math.Min(
+			PlayerPolicyStewardXpScopeMax,
+			25L + (2L * affectedTownCount));
+		durationExperience = Math.Min(PlayerPolicyStewardXpDurationMax, durationDays);
+		long total = PlayerPolicyStewardXpBase + (long)goldExperience + scopeExperience + durationExperience;
+		return (int)Math.Max(PlayerPolicyStewardXpBase, Math.Min(PlayerPolicyStewardXpMax, total));
 	}
 
 	private static void PrepareApprovedPlayerPolicyCost(PolicyDraftRequest request, PolicyMainAssessmentResult assessment)
