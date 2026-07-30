@@ -1889,11 +1889,6 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("15. 亲密行为与怀孕")]
 	public int IntimacyPregnancyChancePercent { get; set; } = 50;
 
-	[SettingPropertyBool("【测试】允许 NPC 拥有自己的臣属国/朝贡国", Order = 0, RequireRestart = false, HintText = "测试功能，默认关闭。开启后，NPC-NPC 议和时，主动求和且国力明显较弱的一方才有低概率成为对方朝贡国。关闭后只阻止新建 NPC 朝贡；已有 NPC 朝贡协议继续贡赋、保护战与和平同步。")]
-	[SettingPropertyGroup("12. 臣属国系统")]
-	public bool EnableNpcTributaryVassalage { get; set; } = false;
-
-
 	public bool UseMcmKnowledgeRetrieval { get; set; } = true;
 
 	public bool KnowledgeRetrievalEnabled { get; set; } = true;
@@ -2295,14 +2290,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	public static bool IsNpcTributaryVassalageEnabled()
 	{
-		try
-		{
-			return GetSettings()?.EnableNpcTributaryVassalage ?? false;
-		}
-		catch
-		{
-			return false;
-		}
+		return false;
 	}
 
 	public static float GetHealthThreshold()
