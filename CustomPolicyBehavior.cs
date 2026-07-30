@@ -48,6 +48,7 @@ public sealed class PolicyActiveEffectRegistration
 	public float TownTaxPercent { get; set; }
 	public float ConstructionSpeedPercent { get; set; }
 	public int KingdomStabilityDailyDelta { get; set; }
+	public bool ApplyKingdomStabilityOnce { get; set; }
 	public int DurationDays { get; set; }
 	public string Reason { get; set; }
 }
@@ -119,6 +120,8 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 	private const float ForeignKingdomDynamicPolicyAdoptionReviewDays = 3f;
 
 	private const float PolicyTownTaxEpsilon = 0.0001f;
+
+	private const float PolicyEvaluationTemperature = 0.25f;
 
 	private const string PolicyScopeKingdom = "kingdom";
 
@@ -323,7 +326,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			MilitiaDailyDeltaPerTown = registration.MilitiaDailyDeltaPerTown,
 			TownTaxPercent = NormalizePolicyTownTaxPercent(registration.TownTaxPercent),
 			ConstructionSpeedPercent = NormalizePolicyConstructionSpeedPercent(registration.ConstructionSpeedPercent),
-			KingdomStabilityDailyDelta = registration.KingdomStabilityDailyDelta,
+			KingdomStabilityDailyDelta = 0,
 			TotalDurationDays = registration.DurationDays,
 			RemainingDays = registration.DurationDays,
 			LastAppliedDay = GetCurrentCampaignDay(),
@@ -332,6 +335,10 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			EndReason = ""
 		};
 		PersistActivePolicyEffect(effectId, activeEffect);
+		if (registration.ApplyKingdomStabilityOnce)
+		{
+			ApplyKingdomStabilityOneTime(activeEffect, registration.KingdomStabilityDailyDelta);
+		}
 		PolicySystemLog.Write("Effect", "active-created", "recordId=" + activeEffect.RecordId
 			+ " effectId=" + effectId
 			+ " target=" + activeEffect.TargetKingdomId
@@ -2132,7 +2139,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			bool recordWritten = RecordSuccessfulPolicy(request, result, feedback, application, data.RecordId);
 			if (hasTimedEffect)
 			{
-				ActivatePolicyEffects(request, application, data.RecordId);
+				ActivatePolicyEffects(request, application, data.RecordId, applyKingdomStabilityOnce: !isRenewal && recordWritten);
 			}
 			if (recordWritten)
 			{
@@ -3000,13 +3007,13 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			result.KnowledgeContext = (request?.KnowledgeContext ?? "").Trim();
 			int mainMaxTokens = ResolvePolicyMainMaxTokens(request?.PublicFeedbackTargetChars ?? PolicyPublicFeedbackTargetDefaultChars);
 			List<object> mainMessages = BuildMainMessages(request, result.KnowledgeContext);
-			string mainOutput = await ShoutNetwork.CallApiWithMessages(mainMessages, mainMaxTokens, overrideMaxTokens: mainMaxTokens, forceDisableThinking: true, cancellationToken: evaluationTimeout.Token);
+			string mainOutput = await ShoutNetwork.CallApiWithMessages(mainMessages, mainMaxTokens, overrideMaxTokens: mainMaxTokens, forceDisableThinking: true, cancellationToken: evaluationTimeout.Token, overrideTemperature: PolicyEvaluationTemperature);
 			result.MainRaw = CleanLlmText(mainOutput);
 			result.MainAssessment = ParseMainAssessmentResult(result.MainRaw);
 			if (result.MainAssessment == null)
 			{
 				List<object> retryMessages = BuildMainJsonRetryMessages(mainMessages, result.MainRaw);
-				string retryOutput = await ShoutNetwork.CallApiWithMessages(retryMessages, mainMaxTokens, overrideMaxTokens: mainMaxTokens, forceDisableThinking: true, cancellationToken: evaluationTimeout.Token);
+				string retryOutput = await ShoutNetwork.CallApiWithMessages(retryMessages, mainMaxTokens, overrideMaxTokens: mainMaxTokens, forceDisableThinking: true, cancellationToken: evaluationTimeout.Token, overrideTemperature: PolicyEvaluationTemperature);
 				string cleanedRetryOutput = CleanLlmText(retryOutput);
 				result.MainRaw = cleanedRetryOutput;
 				result.MainAssessment = ParseMainAssessmentResult(result.MainRaw);
@@ -3021,7 +3028,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			if (IsLocalPolicyRequest(request) && !TryValidateLocalPolicyAssessment(request, result.MainAssessment, out string localSemanticError))
 			{
 				List<object> semanticRetryMessages = BuildLocalPolicySemanticRetryMessages(mainMessages, result.MainRaw, localSemanticError);
-				string semanticRetryOutput = await ShoutNetwork.CallApiWithMessages(semanticRetryMessages, mainMaxTokens, overrideMaxTokens: mainMaxTokens, forceDisableThinking: true, cancellationToken: evaluationTimeout.Token);
+				string semanticRetryOutput = await ShoutNetwork.CallApiWithMessages(semanticRetryMessages, mainMaxTokens, overrideMaxTokens: mainMaxTokens, forceDisableThinking: true, cancellationToken: evaluationTimeout.Token, overrideTemperature: PolicyEvaluationTemperature);
 				result.MainRaw = CleanLlmText(semanticRetryOutput);
 				result.MainAssessment = NormalizeMainAssessmentResult(request, ParseMainAssessmentResult(result.MainRaw), result.MainRaw);
 				if (!TryValidateLocalPolicyAssessment(request, result.MainAssessment, out localSemanticError))
@@ -3863,15 +3870,11 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 				}
 			}
 			AppliedKingdomEffect actual = pending.AppliedEffect;
-			long finalizeApplyTimestamp = Stopwatch.GetTimestamp();
-			using (PerfProbe.Scope("CustomPolicy.ApplyActiveEffectToKingdom"))
+			activeEffect.KingdomStabilityDailyDelta = 0;
+			if (actual != null)
 			{
-				if (!isLocalEffect)
-				{
-					ApplyKingdomStabilityDailyDelta(targetKingdom, activeEffect, actual);
-				}
+				actual.KingdomStabilityDailyDelta = 0;
 			}
-			LogActivePolicyStageIfOverBudget("CustomPolicy.ApplyActiveEffectToKingdom", finalizeApplyTimestamp, budgetMs, activeEffect.EffectId, "stability/finalize");
 			activeEffect.LastAppliedDay = pending.Day;
 			activeEffect.RemainingDays = Math.Max(0, activeEffect.RemainingDays - 1);
 			bool ended = activeEffect.RemainingDays <= 0;
@@ -4064,44 +4067,59 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		}
 	}
 
-	private static void ApplyKingdomStabilityDailyDelta(Kingdom kingdom, ActivePolicyEffectSaveData activeEffect, AppliedKingdomEffect applied)
+	private void ApplyKingdomStabilityOneTime(ActivePolicyEffectSaveData activeEffect, int delta)
 	{
-		if (applied == null || applied.KingdomStabilityDailyDelta == 0)
+		if (activeEffect == null || delta == 0)
 		{
+			return;
+		}
+		Kingdom kingdom = ResolveKingdomByIdOrName(activeEffect.TargetKingdomId, activeEffect.TargetKingdomName);
+		if (kingdom == null || kingdom.IsEliminated)
+		{
+			PolicySystemLog.Write("Effect", "stability-once-skipped", "recordId=" + (activeEffect.RecordId ?? "")
+				+ " effectId=" + (activeEffect.EffectId ?? "")
+				+ " reason=target-missing");
 			return;
 		}
 		if (!DuelSettings.IsKingdomStabilityAndRebellionEnabled())
 		{
-			int currentValue = MyBehavior.GetKingdomStabilityValueForExternal(kingdom);
-			applied.KingdomStabilityBefore = currentValue;
-			applied.KingdomStabilityAfter = currentValue;
-			applied.KingdomStabilityApplyNote = "MCM 已关闭王国稳定度与叛乱，稳定度变化未应用";
+			PolicySystemLog.Write("Effect", "stability-once-skipped", "recordId=" + (activeEffect.RecordId ?? "")
+				+ " effectId=" + (activeEffect.EffectId ?? "")
+				+ " target=" + (activeEffect.TargetKingdomId ?? "")
+				+ " reason=stability-disabled");
 			return;
 		}
 		if (MyBehavior.TryAdjustKingdomStabilityForExternal(
 			kingdom,
-			applied.KingdomStabilityDailyDelta,
+			delta,
 			"custom_policy:" + (activeEffect?.RecordId ?? "") + ":" + (activeEffect?.EffectId ?? ""),
 			out int before,
 			out int after))
 		{
-			applied.KingdomStabilityApplied = true;
-			applied.KingdomStabilityBefore = before;
-			applied.KingdomStabilityAfter = after;
-			applied.KingdomStabilityActualDelta = after - before;
+			PolicySystemLog.Write("Effect", "stability-once-applied", "recordId=" + (activeEffect.RecordId ?? "")
+				+ " effectId=" + (activeEffect.EffectId ?? "")
+				+ " target=" + (activeEffect.TargetKingdomId ?? "")
+				+ " requested=" + delta.ToString(CultureInfo.InvariantCulture)
+				+ " before=" + before.ToString(CultureInfo.InvariantCulture)
+				+ " after=" + after.ToString(CultureInfo.InvariantCulture)
+				+ " actual=" + (after - before).ToString(CultureInfo.InvariantCulture));
 			return;
 		}
-		applied.KingdomStabilityBefore = before;
-		applied.KingdomStabilityAfter = after;
-		applied.KingdomStabilityApplyNote = "稳定度调整失败";
+		PolicySystemLog.Write("Effect", "stability-once-failed", "recordId=" + (activeEffect.RecordId ?? "")
+			+ " effectId=" + (activeEffect.EffectId ?? "")
+			+ " target=" + (activeEffect.TargetKingdomId ?? "")
+			+ " requested=" + delta.ToString(CultureInfo.InvariantCulture)
+			+ " before=" + before.ToString(CultureInfo.InvariantCulture)
+			+ " after=" + after.ToString(CultureInfo.InvariantCulture));
 	}
 
-	private void ActivatePolicyEffects(PolicyDraftRequest request, PolicyApplicationResult application, string recordId)
+	private void ActivatePolicyEffects(PolicyDraftRequest request, PolicyApplicationResult application, string recordId, bool applyKingdomStabilityOnce)
 	{
 		if (application?.KingdomEffects == null || application.KingdomEffects.Count <= 0)
 		{
 			return;
 		}
+		bool isLocalPolicy = IsLocalPolicyRequest(request);
 		foreach (AppliedKingdomEffect effect in application.KingdomEffects.Where(x => x != null && x.DurationDays > 0))
 		{
 			PolicyActiveEffectRegistration registration = new PolicyActiveEffectRegistration
@@ -4122,6 +4140,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 				TownTaxPercent = effect.TownTaxPercent,
 				ConstructionSpeedPercent = effect.ConstructionSpeedPercent,
 				KingdomStabilityDailyDelta = effect.KingdomStabilityDailyDelta,
+				ApplyKingdomStabilityOnce = applyKingdomStabilityOnce && !isLocalPolicy,
 				DurationDays = effect.DurationDays,
 				Reason = effect.Reason ?? ""
 			};
@@ -4456,8 +4475,12 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		{
 			return 0;
 		}
-		int rounded = (int)Math.Round(value, MidpointRounding.AwayFromZero);
-		return Math.Max(-5, Math.Min(5, rounded));
+		double rounded = Math.Round(value, MidpointRounding.AwayFromZero);
+		if (rounded < int.MinValue || rounded > int.MaxValue)
+		{
+			return 0;
+		}
+		return (int)rounded;
 	}
 
 	private static bool HasAnyDailyDelta(AppliedKingdomEffect effect)
@@ -4858,7 +4881,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			? "【地方政策强制作用域】\n这是玩家家族封地的地方政策，不是全国政策，也不进入王国议程。只能输出一组共用每日效果，并且只能作用于世界上下文列出的已选城镇/城堡及其附属村庄；不要把任何效果或民众反馈扩展到未选领地、其他氏族领地、其他王国或外国。kingdomStabilityDailyDelta 必须严格为数字 0。" + (request.ManualDurationDays > 0 ? "玩家已指定持续 " + request.ManualDurationDays.ToString(CultureInfo.InvariantCulture) + " 个游戏日，你必须原样返回该 durationDays，不得自行修改。" : "玩家未填写持续天数，由你根据政策内容和地方规模决定正整数 durationDays。")
 			: "";
 		string kingdomDurationRule = !isLocalPolicy && request?.ManualDurationDays > 0
-			? "【玩家指定持续时间】\n玩家已经指定这项王国政策持续 " + request.ManualDurationDays.ToString(CultureInfo.InvariantCulture) + " 个游戏日。你必须按这一完整执行周期评估每日效果、累计收益、执行压力与社会代价，所有 effects[].durationDays 都必须原样返回 " + request.ManualDurationDays.ToString(CultureInfo.InvariantCulture) + "。如果当前启用 AI 判断政策消耗，requiredGoldCost 必须基于该完整周期评估，不得忽略持续时间或把完整成本误当成单日成本。"
+			? "【玩家指定持续时间】\n玩家已经指定这项王国政策持续 " + request.ManualDurationDays.ToString(CultureInfo.InvariantCulture) + " 个游戏日，持续天数必须原样返回。忠诚度按整个周期判断后折算为每日变化；其他每日效果按每天实际执行的措施和投入强度判断，不得按整个持续期平均摊薄。如果当前启用 AI 判断政策消耗，完整执行成本仍应基于整个周期评估，不得忽略持续时间或把完整成本误当成单日成本。"
 			: "";
 		string costSchemaText = useAiEvaluatedCost
 			? "- requiredGoldCost:number，完整执行这项政策需要投入的第纳尔；必须综合政策规模、覆盖范围、物资行政投入、封臣协调、政治动员和秩序压力评估，不要为了迎合玩家当前钱包而压低。\n"
@@ -4889,7 +4912,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			+ costSchemaText
 			+ "- effects:array，你直接决定的最终每日持续效果；默认且首选只输出 1 条玩家王国 effect。如果政策名和政策正文没有明确提到他国，effects 必须只包含玩家王国。只有政策名或政策正文明确提到其他王国 ID、王国名称、该国领袖/氏族/定居点且足以指向该王国时，才允许输出其他王国 effect 或多条 effect；世界上下文、王国索引、知识库上下文中出现的他国不算明确提及；否则不得把未提及的他国作为目标。\n"
 			+ "每个 effect 必须包含：targetKingdomId:string；targetKingdomName:string；prosperityDailyDeltaPerTown:number；foodDailyDeltaPerTown:number；hearthDailyDeltaPerVillage:number；loyaltyDailyDeltaPerTown:number；securityDailyDeltaPerTown:number；militiaDailyDeltaPerTown:number；townTaxPercent:number；constructionPowerDailyDelta:number；kingdomStabilityDailyDelta:number；durationDays:positive integer；reason:string。\n"
-			+ "所有 daily delta 字段都是每天变化，不是总变化；durationDays 是实际游戏天数；不影响的字段填数字 0；townTaxPercent 是相对原版城镇/城堡最终主税收的百分比点变化，10 表示原版税收的 110%，-20 表示原版税收的 80%，全国政策作用于目标王国全部氏族的城镇与城堡，地方政策只作用于所选城镇/城堡；constructionPowerDailyDelta 是直接加入每座目标城镇或城堡当天原版建造力的固定点数，0 表示不变，50 表示增加 50 点，-20 表示减少 20 点，它不是百分比，也不随原版建造力按比例变化；securityDailyDeltaPerTown 和 loyaltyDailyDeltaPerTown 都是 0-100 尺度上的每日变化；militiaDailyDeltaPerTown 是城镇/城堡民兵数量每日变化；kingdomStabilityDailyDelta 是目标王国整体稳定度每日变化，不按城镇数量叠加。判断稳定度强弱时要看政策是否改变王权合法性、封臣信任、贵族利益、财政压力、战争信心和分裂/叛乱风险；它不是固定档位，也不能按城镇数倍增；reason 简短且不能换行。targetKingdomId/name 为空时本地代码只会补玩家王国。"
+			+ "除 kingdomStabilityDailyDelta 外，其他 daily delta 字段都是每天变化，不是总变化；durationDays 是实际游戏天数；不影响的字段填数字 0；townTaxPercent 是相对原版城镇/城堡最终主税收的百分比点变化，10 表示原版税收的 110%，-20 表示原版税收的 80%，全国政策作用于目标王国全部氏族的城镇与城堡，地方政策只作用于所选城镇/城堡；constructionPowerDailyDelta 是直接加入每座目标城镇或城堡当天原版建造力的固定点数，0 表示不变，50 表示增加 50 点，-20 表示减少 20 点，它不是百分比，也不随原版建造力按比例变化；securityDailyDeltaPerTown 和 loyaltyDailyDeltaPerTown 都是 0-100 尺度上的每日变化；militiaDailyDeltaPerTown 是城镇/城堡民兵数量每日变化；kingdomStabilityDailyDelta 是政策正式生效时对目标王国整体稳定度结算一次的整数变化，不按城镇数量叠加，也不随 durationDays 每日重复。判断稳定度强弱时要看政策是否改变王权合法性、封臣信任、贵族利益、财政压力、战争信心和分裂/叛乱风险；它不是固定档位，也不能按城镇数倍增；reason 简短且不能换行。targetKingdomId/name 为空时本地代码只会补玩家王国。"
 			+ (isLocalPolicy ? "\n\n地方政策最终提醒：effects 数组长度必须为 1；这组效果由代码只施加到已选封地及附属村庄；kingdomStabilityDailyDelta=0；publicFeedback 只能描述这些地方。" : "");
 		return BuildChatMessages(system, user);
 	}
@@ -4973,7 +4996,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		return "ruleSource=custom_policy_only\n"
 			+ "- 本链路只使用自定义政策独立链路，不注入 RuleBehaviorPrompts、会面对话、原版对话、写信、喊话或其他动作标签规则。\n"
 			+ "- 全国政策与地方政策共用 MCM 可编辑的完整基础评判提示词；地方政策只动态追加所选封地、地方作用域和稳定度为 0 等强制规则。\n"
-			+ "- 效果是每日持续变化，不是一次性变化；成功后每天按目标王国当日实际城镇/村庄结算；王国稳定度是王国级每日变化，不按城镇数量叠加。";
+			+ "- 除王国稳定度外，其他效果是每日持续变化；成功后每天按目标王国当日实际城镇/村庄结算；王国稳定度只在政策首次正式生效时对目标王国整体结算一次，不随持续时间每日重复。";
 	}
 
 	private string BuildPolicyWorldContextCompact(Kingdom playerKingdom, PolicyRuntimeOptions options)
@@ -6227,7 +6250,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		if (Math.Abs(militiaDailyDeltaPerTown) > 0.0001f) values.Add("民兵 " + FormatSigned(militiaDailyDeltaPerTown));
 		if (Math.Abs(townTaxPercent) > PolicyTownTaxEpsilon) values.Add("税收 " + FormatSigned(townTaxPercent) + "%");
 		if (Math.Abs(constructionSpeedPercent) > 0.0001f) values.Add("建造速度 " + FormatSigned(constructionSpeedPercent));
-		if (kingdomStabilityDailyDelta != 0) values.Add("稳定度 " + FormatSigned(kingdomStabilityDailyDelta));
+		if (kingdomStabilityDailyDelta != 0) values.Add("稳定度（生效时一次性） " + FormatSigned(kingdomStabilityDailyDelta));
 		return values;
 	}
 
@@ -6828,13 +6851,8 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			+ ", militia=" + FormatNumber(effect.MilitiaDailyDeltaPerTown)
 			+ ", townTaxPercent=" + FormatNumber(effect.TownTaxPercent)
 			+ ", constructionPowerDailyDelta=" + FormatNumber(effect.ConstructionSpeedPercent)
-			+ ", stability=" + effect.KingdomStabilityDailyDelta.ToString(CultureInfo.InvariantCulture)
 			+ ") settlementDeltas=model-managed"
-			+ " stabilityActual=" + effect.KingdomStabilityActualDelta.ToString(CultureInfo.InvariantCulture)
-			+ " stabilityBefore=" + effect.KingdomStabilityBefore.ToString(CultureInfo.InvariantCulture)
-			+ " stabilityAfter=" + effect.KingdomStabilityAfter.ToString(CultureInfo.InvariantCulture)
-			+ " stabilityApplied=" + (effect.KingdomStabilityApplied ? "true" : "false")
-			+ " stabilityNote=" + PreviewForPolicyDebugLog(effect.KingdomStabilityApplyNote ?? "", 120);
+			+ " stabilityOnce=" + effect.KingdomStabilityDailyDelta.ToString(CultureInfo.InvariantCulture);
 	}
 
 	private static void PolicyEffectLedgerLog(string stage, string message)
@@ -7467,16 +7485,6 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		public int DurationDays;
 
 		public int RemainingDays;
-
-		public int KingdomStabilityActualDelta;
-
-		public int KingdomStabilityBefore;
-
-		public int KingdomStabilityAfter;
-
-		public bool KingdomStabilityApplied;
-
-		public string KingdomStabilityApplyNote;
 
 		public string Reason;
 
