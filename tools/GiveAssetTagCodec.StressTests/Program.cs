@@ -188,6 +188,7 @@ string playerRpComponents = File.ReadAllText(Path.Combine(repoRoot, "PlayerRpCra
 string preprocessPrompts = File.ReadAllText(Path.Combine(repoRoot, "AnimusForge", "ModuleData", "PreprocessPrompts.json"));
 string terminalBehavior = File.ReadAllText(Path.Combine(repoRoot, "AnimusForgeTerminalBehavior.cs"));
 string playerRpPopup = File.ReadAllText(Path.Combine(repoRoot, "PlayerRpForgePopup.cs"));
+string playerRpTemplateSelectorLog = File.ReadAllText(Path.Combine(repoRoot, "PlayerRpCraftTemplateSelectorLog.cs"));
 Test.True(playerRpCrafting.Contains("PlayerRpTemplateCandidateLimit = 50", StringComparison.Ordinal)
     && playerRpCrafting.Contains("Rows: rank|template_id|name|type|standard_price", StringComparison.Ordinal) == false
     && preprocessPrompts.Contains("Rows: rank|template_id|name|type|standard_price", StringComparison.Ordinal), "player RP template Top 50 prompt contract missing");
@@ -214,6 +215,26 @@ Test.True(playerRpModels.Contains("public string PlainFallbackRequestJson;", Str
     && playerRpCrafting.Contains("\"not permitted\"", StringComparison.Ordinal), "player RP preprocess API compatibility retries missing");
 Test.True(Regex.IsMatch(playerRpCrafting, @"LooksLikePlayerRpCompletionTokenParameterError[\s\S]{0,800}?completionRetryJson\s*=\s*request\.ReasoningFallbackRequestJson", RegexOptions.CultureInvariant)
     && Regex.IsMatch(playerRpCrafting, @"reason=reasoning_only[\s\S]{0,800}?request\.HighTokenFallbackRequestJson", RegexOptions.CultureInvariant), "player RP token rejection/reasoning-only retries target the wrong high-budget snapshot");
+Test.True(playerRpTemplateSelectorLog.Contains("PlayerRpCraft_TemplateSelector.txt", StringComparison.Ordinal)
+    && playerRpTemplateSelectorLog.Contains("new FeatureDiagnosticLogFile(", StringComparison.Ordinal)
+    && playerRpTemplateSelectorLog.Contains("MaxLogSizeMegabytes = 16", StringComparison.Ordinal)
+    && playerRpTemplateSelectorLog.Contains("PayloadChunkCharacterLimit = 12000", StringComparison.Ordinal)
+    && playerRpTemplateSelectorLog.Contains("char.IsHighSurrogate", StringComparison.Ordinal)
+    && playerRpTemplateSelectorLog.Contains("char.IsLowSurrogate", StringComparison.Ordinal)
+    && playerRpTemplateSelectorLog.Contains("RedactApiKey", StringComparison.Ordinal)
+    && !playerRpTemplateSelectorLog.Contains("ApiUrl", StringComparison.Ordinal),
+    "player RP template selector log must be UTF-8-safe, bounded, chunked, and omit the API URL");
+Test.True(playerRpCrafting.Contains("PlayerRpCraftTemplateSelectorLog.WriteRequest(", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("PlayerRpCraftTemplateSelectorLog.WriteResponse(", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("PlayerRpCraftTemplateSelectorLog.WriteRequestException(", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("PlayerRpCraftTemplateSelectorLog.WriteParseResult(", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("PlayerRpCraftTemplateSelectorLog.WriteTerminalResult(", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("\"primary\"", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("\"thinking_control_plain\"", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("\"temperature_removed\"", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("\"completion_parameters_2048\"", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("\"reasoning_only_2048\"", StringComparison.Ordinal),
+    "every actual player RP selector attempt and final parse/outcome must reach the dedicated log");
 Regex strictPlayerRpCandidateJson = new(
     @"\A\{[ \t\r\n]*""candidate""[ \t\r\n]*:[ \t\r\n]*(0|[1-9][0-9]*)[ \t\r\n]*\}\z",
     RegexOptions.CultureInvariant);
@@ -333,6 +354,8 @@ Test.True(exactGameItemPreviewCall >= 0
     "exact ObjectManager item matching must run before Top 50/LLM selection");
 Test.True(playerRpCrafting.Contains("\"exact_game_item\"", StringComparison.Ordinal)
     && playerRpCrafting.Contains("游戏数据精确匹配（已跳过前处理 AI）", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("FORGE AS WEAPON/EQUIPMENT?", StringComparison.Ordinal)
+    && !playerRpCrafting.Contains("FORGE AS WEAPON?。", StringComparison.Ordinal)
     && playerRpCrafting.Contains("requireExactGameItemMatch", StringComparison.Ordinal)
     && playerRpCrafting.Contains("TryResolvePlayerRpExactRegisteredTemplate(", StringComparison.Ordinal),
     "exact game-item selection must survive preview and commit revalidation");

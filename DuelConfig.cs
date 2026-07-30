@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace AnimusForge;
 
@@ -23,6 +23,8 @@ public class DuelConfig
 	public string LegacyFollowupInstruction { get; set; } = "";
 
 	public string NonHeroInstruction { get; set; } = "";
+
+	public string PreprocessExcludedInstruction { get; set; } = "";
 
 	public List<string> AcceptKeywords { get; set; } = new List<string>();
 

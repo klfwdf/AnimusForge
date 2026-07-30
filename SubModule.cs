@@ -297,6 +297,14 @@ public class SubModule : MBSubModuleBase
 			}
 			try
 			{
+				WorldMapOrderedArmySurvivalPatch.EnsurePatched(harmony);
+			}
+			catch (Exception ex8af3)
+			{
+				Logger.LogTrace("SubModule", ">>> Ordered army survival patch failed: " + ex8af3.Message);
+			}
+			try
+			{
 				CampaignTickDiagnosticsPatch.EnsurePatched(harmony);
 			}
 			catch (Exception ex8ag)

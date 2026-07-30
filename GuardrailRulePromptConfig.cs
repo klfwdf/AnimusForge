@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace AnimusForge;
@@ -22,6 +22,8 @@ public class GuardrailRulePromptConfig
 	public string Instruction { get; set; } = "";
 
 	public string NonHeroInstruction { get; set; } = "";
+
+	public string PreprocessExcludedInstruction { get; set; } = "";
 
 	public List<PostprocessRuleEntry> PostprocessRules { get; set; } = new List<PostprocessRuleEntry>();
 

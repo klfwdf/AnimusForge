@@ -151,6 +151,25 @@ public sealed class NpcRulerPolicyEffectDto
 	[JsonProperty("townTaxPercent")]
 	public float TownTaxPercent { get; set; }
 
+	[JsonProperty("constructionPowerDailyDelta")]
+	public float ConstructionSpeedPercent { get; set; }
+
+	[JsonProperty("constructionSpeedPercent", NullValueHandling = NullValueHandling.Ignore)]
+	private float? LegacyConstructionSpeedPercent { get; set; }
+
+	[System.Runtime.Serialization.OnDeserialized]
+	private void RestoreLegacyConstructionSpeedPercent(System.Runtime.Serialization.StreamingContext context)
+	{
+		if (Math.Abs(ConstructionSpeedPercent) <= 0.0001f
+			&& LegacyConstructionSpeedPercent.HasValue
+			&& !float.IsNaN(LegacyConstructionSpeedPercent.Value)
+			&& !float.IsInfinity(LegacyConstructionSpeedPercent.Value))
+		{
+			ConstructionSpeedPercent = LegacyConstructionSpeedPercent.Value;
+		}
+		LegacyConstructionSpeedPercent = null;
+	}
+
 	[JsonProperty("durationDays")]
 	public int DurationDays { get; set; }
 
@@ -3454,6 +3473,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		if (Math.Abs(effect.MilitiaDailyDeltaPerTown) > 0.0001f) values.Add("民兵" + FormatSigned(effect.MilitiaDailyDeltaPerTown));
 		if (Math.Abs(effect.KingdomStabilityDailyDelta) > 0.0001f) values.Add("稳定" + FormatSigned(effect.KingdomStabilityDailyDelta));
 		if (Math.Abs(effect.TownTaxPercent) > 0.0001f) values.Add("主税收" + FormatSigned(effect.TownTaxPercent) + "%");
+		if (Math.Abs(effect.ConstructionSpeedPercent) > 0.0001f) values.Add("建造速度" + FormatSigned(effect.ConstructionSpeedPercent));
 		string effectText = values.Count <= 0 ? "无持续数值变化" : string.Join("/", values);
 		return Limit(Limit(FirstNonEmpty(effect.TargetKingdomName, effect.TargetKingdomId, "目标王国"), 30)
 			+ "[" + effectText + "]", AgendaDialoguePolicyEffectChars);
@@ -3709,11 +3729,11 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		StringBuilder contract = new StringBuilder();
 		contract.AppendLine("【不可覆盖的技术契约】");
 		contract.AppendLine("只输出严格 JSON，不输出 Markdown、解释、隐藏标签、玩家操作、扣费或原版 PolicyObject。根对象只能是 {\"policies\":[...]}；目标数量=" + targetCount.ToString(CultureInfo.InvariantCulture) + "，必须为下方每个 Target 各输出 1 条，不得遗漏、重复或增加王国。");
-		contract.AppendLine("每条 policy 必须按下列顺序和形状包含全部字段，不得增删或改名：{\"kingdomId\":\"...\",\"kingdomName\":\"...\",\"rulerHeroId\":\"...\",\"rulerName\":\"...\",\"creativePremise\":\"...\",\"policyName\":\"...\",\"policyContent\":\"...\",\"policyDigest\":\"...\",\"eventPremise\":\"...\",\"derivedEventTitle\":\"...\",\"derivedEventContent\":\"...\",\"derivedEventDigest\":\"...\",\"impactSummary\":\"...\",\"authoritarianWeight\":0,\"oligarchicWeight\":0,\"egalitarianWeight\":0,\"effects\":[{\"targetKingdomId\":\"...\",\"targetKingdomName\":\"...\",\"prosperityDailyDeltaPerTown\":0,\"foodDailyDeltaPerTown\":0,\"hearthDailyDeltaPerVillage\":0,\"loyaltyDailyDeltaPerTown\":0,\"securityDailyDeltaPerTown\":0,\"militiaDailyDeltaPerTown\":0,\"kingdomStabilityDailyDelta\":0,\"townTaxPercent\":0,\"durationDays\":1,\"reason\":\"...\"}]}。");
+		contract.AppendLine("每条 policy 必须按下列顺序和形状包含全部字段，不得增删或改名：{\"kingdomId\":\"...\",\"kingdomName\":\"...\",\"rulerHeroId\":\"...\",\"rulerName\":\"...\",\"creativePremise\":\"...\",\"policyName\":\"...\",\"policyContent\":\"...\",\"policyDigest\":\"...\",\"eventPremise\":\"...\",\"derivedEventTitle\":\"...\",\"derivedEventContent\":\"...\",\"derivedEventDigest\":\"...\",\"impactSummary\":\"...\",\"authoritarianWeight\":0,\"oligarchicWeight\":0,\"egalitarianWeight\":0,\"effects\":[{\"targetKingdomId\":\"...\",\"targetKingdomName\":\"...\",\"prosperityDailyDeltaPerTown\":0,\"foodDailyDeltaPerTown\":0,\"hearthDailyDeltaPerVillage\":0,\"loyaltyDailyDeltaPerTown\":0,\"securityDailyDeltaPerTown\":0,\"militiaDailyDeltaPerTown\":0,\"kingdomStabilityDailyDelta\":0,\"townTaxPercent\":0,\"constructionPowerDailyDelta\":0,\"durationDays\":1,\"reason\":\"...\"}]}。");
 		contract.AppendLine("authoritarianWeight、oligarchicWeight、egalitarianWeight 分别表示政策对君主集权、贵族议政、平民与地方广泛参与的原版政治取向，范围均为 -1 到 1，必须依据政策内容评估，三项不得全部为 0。");
 		contract.AppendLine("身份字段必须复制对应 Target。effects 必须是数组并留在同一 policy 内，且至少包含一个目标和期限有效的 effect；允许所有数值字段都为 0，不得因此拒绝或省略政策。durationDays 必须是正整数；所有数值必须是有限数值；kingdomStabilityDailyDelta 按整数语义输出。");
 		contract.AppendLine("effect 目标只能来自该 Target 的 AllowedEffectTargets，每条政策最多一个 self 和一个 warEnemy。外国目标必须在 policyName 或 policyContent 中点名，且数值只能来自 policyContent 明确写出的直接跨国措施；不得重定向非法目标或从同期现象、摘要、传闻及连锁推测生成外国 effect。");
-		contract.AppendLine("prosperityDailyDeltaPerTown 与 militiaDailyDeltaPerTown 按每座城镇和城堡结算；foodDailyDeltaPerTown、loyaltyDailyDeltaPerTown、securityDailyDeltaPerTown 按每座城镇结算；hearthDailyDeltaPerVillage 按每座村庄结算；kingdomStabilityDailyDelta 对王国整体结算一次。townTaxPercent 是目标王国全部城镇和城堡主税收相对原版最终税额的百分比点变化：0 表示原版 100%，10 表示 110%，-20 表示 80%；它不是每日固定第纳尔变化，也不影响村庄收入或关税。");
+		contract.AppendLine("prosperityDailyDeltaPerTown 与 militiaDailyDeltaPerTown 按每座城镇和城堡结算；foodDailyDeltaPerTown、loyaltyDailyDeltaPerTown、securityDailyDeltaPerTown 按每座城镇结算；hearthDailyDeltaPerVillage 按每座村庄结算；kingdomStabilityDailyDelta 对王国整体结算一次。townTaxPercent 是目标王国全部城镇和城堡主税收相对原版最终税额的百分比点变化：0 表示原版 100%，10 表示 110%，-20 表示 80%；它不是每日固定第纳尔变化，也不影响村庄收入或关税。constructionPowerDailyDelta 是直接加入每座目标城镇或城堡当天原版建造力的固定点数：0 表示不变，50 表示增加 50 点，-20 表示减少 20 点；它不是百分比，也不随原版建造力按比例变化。");
 		contract.AppendLine("derivedEventTitle、derivedEventContent、derivedEventDigest 必须描述 eventPremise 的同一现象，事件不得产生 effects。impactSummary 与 effects 只描述政策影响。JSON 字段使用 ASCII 双引号，字符串中的换行和控制字符必须转义；结构完整性优先。");
 		string fixedContract = contract.ToString().TrimEnd();
 		string dynamicContext = context?.CompactWorldContext ?? "";
@@ -3917,6 +3937,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 				MilitiaDailyDeltaPerTown = effect.MilitiaDailyDeltaPerTown,
 				KingdomStabilityDailyDelta = stability,
 				TownTaxPercent = effect.TownTaxPercent,
+				ConstructionSpeedPercent = effect.ConstructionSpeedPercent,
 				DurationDays = effect.DurationDays,
 				Reason = Limit(effect.Reason ?? "", MaxReasonChars)
 			};
@@ -3983,7 +4004,8 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			|| !IsFinite(effect.LoyaltyDailyDeltaPerTown)
 			|| !IsFinite(effect.SecurityDailyDeltaPerTown)
 			|| !IsFinite(effect.MilitiaDailyDeltaPerTown)
-			|| !IsFinite(effect.TownTaxPercent))
+			|| !IsFinite(effect.TownTaxPercent)
+			|| !IsFinite(effect.ConstructionSpeedPercent))
 		{
 			return false;
 		}
@@ -4158,6 +4180,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			MilitiaDailyDeltaPerTown = effect.MilitiaDailyDeltaPerTown,
 			KingdomStabilityDailyDelta = stability,
 			TownTaxPercent = effect.TownTaxPercent,
+			ConstructionSpeedPercent = effect.ConstructionSpeedPercent,
 			DurationDays = effect.DurationDays,
 			Reason = effect.Reason ?? policy.ImpactSummary ?? ""
 		};
@@ -4370,7 +4393,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		repaired = Regex.Replace(repaired, @"'(?=\s*\r?\n\s*[}\]])", "\"", RegexOptions.CultureInvariant);
 		repaired = Regex.Replace(repaired, @"(?<closing>[’”])(?=\s*\r?\n\s*[}\]])", match => match.Groups["closing"].Value + "\"", RegexOptions.CultureInvariant);
 		repaired = NormalizeJsonStructuralPunctuation(repaired);
-		repaired = Regex.Replace(repaired, @"(?<name>""(?:prosperityDailyDeltaPerTown|foodDailyDeltaPerTown|hearthDailyDeltaPerVillage|loyaltyDailyDeltaPerTown|securityDailyDeltaPerTown|militiaDailyDeltaPerTown|kingdomStabilityDailyDelta|townTaxPercent|durationDays)""\s*:\s*)null\b", match => match.Groups["name"].Value + "0", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+		repaired = Regex.Replace(repaired, @"(?<name>""(?:prosperityDailyDeltaPerTown|foodDailyDeltaPerTown|hearthDailyDeltaPerVillage|loyaltyDailyDeltaPerTown|securityDailyDeltaPerTown|militiaDailyDeltaPerTown|kingdomStabilityDailyDelta|townTaxPercent|constructionPowerDailyDelta|constructionSpeedPercent|durationDays)""\s*:\s*)null\b", match => match.Groups["name"].Value + "0", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 		repaired = Regex.Replace(repaired, @"(?<prefix>[{,]\s*)(?<name>[A-Za-z_][A-Za-z0-9_]*)""?\s*:", match => match.Groups["prefix"].Value + "\"" + match.Groups["name"].Value + "\":", RegexOptions.CultureInvariant);
 		repaired = Regex.Replace(repaired, @"(?<value>""(?:\\.|[^""\\])*"")\s*(?<next>""[A-Za-z_][A-Za-z0-9_]*""\s*:)", match => match.Groups["value"].Value + "," + match.Groups["next"].Value, RegexOptions.Singleline | RegexOptions.CultureInvariant);
 		repaired = Regex.Replace(repaired, @"(?<value>-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?|true|false|null)\s*(?<next>""[A-Za-z_][A-Za-z0-9_]*""\s*:)", match => match.Groups["value"].Value + "," + match.Groups["next"].Value, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
@@ -4880,7 +4903,8 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 				|| Math.Abs(effect.SecurityDailyDeltaPerTown) > 0.0001f
 				|| Math.Abs(effect.MilitiaDailyDeltaPerTown) > 0.0001f
 				|| Math.Abs(effect.KingdomStabilityDailyDelta) > 0.0001f
-				|| Math.Abs(effect.TownTaxPercent) > 0.0001f);
+				|| Math.Abs(effect.TownTaxPercent) > 0.0001f
+				|| Math.Abs(effect.ConstructionSpeedPercent) > 0.0001f);
 	}
 
 	private static bool HasValidEffectShape(NpcRulerPolicyEffectDto effect)
@@ -4896,16 +4920,21 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			return "";
 		}
 		return string.Join("；", validEffects.Select(effect =>
-			"【" + FirstNonEmpty(effect.TargetKingdomName, effect.TargetKingdomId, "目标王国") + "】"
-			+ "每日繁荣" + FormatSigned(effect.ProsperityDailyDeltaPerTown)
-			+ " 粮食" + FormatSigned(effect.FoodDailyDeltaPerTown)
-			+ " 户数" + FormatSigned(effect.HearthDailyDeltaPerVillage)
-			+ " 忠诚" + FormatSigned(effect.LoyaltyDailyDeltaPerTown)
-			+ " 治安" + FormatSigned(effect.SecurityDailyDeltaPerTown)
-			+ " 民兵" + FormatSigned(effect.MilitiaDailyDeltaPerTown)
-			+ " 稳定度" + FormatSigned(effect.KingdomStabilityDailyDelta)
-			+ " 主税收" + FormatSigned(effect.TownTaxPercent) + "%"
-			+ "，持续" + effect.DurationDays.ToString(CultureInfo.InvariantCulture) + "天"));
+		{
+			List<string> values = new List<string>();
+			if (Math.Abs(effect.ProsperityDailyDeltaPerTown) > 0.0001f) values.Add("每日繁荣" + FormatSigned(effect.ProsperityDailyDeltaPerTown));
+			if (Math.Abs(effect.FoodDailyDeltaPerTown) > 0.0001f) values.Add("粮食" + FormatSigned(effect.FoodDailyDeltaPerTown));
+			if (Math.Abs(effect.HearthDailyDeltaPerVillage) > 0.0001f) values.Add("户数" + FormatSigned(effect.HearthDailyDeltaPerVillage));
+			if (Math.Abs(effect.LoyaltyDailyDeltaPerTown) > 0.0001f) values.Add("忠诚" + FormatSigned(effect.LoyaltyDailyDeltaPerTown));
+			if (Math.Abs(effect.SecurityDailyDeltaPerTown) > 0.0001f) values.Add("治安" + FormatSigned(effect.SecurityDailyDeltaPerTown));
+			if (Math.Abs(effect.MilitiaDailyDeltaPerTown) > 0.0001f) values.Add("民兵" + FormatSigned(effect.MilitiaDailyDeltaPerTown));
+			if (Math.Abs(effect.KingdomStabilityDailyDelta) > 0.0001f) values.Add("稳定度" + FormatSigned(effect.KingdomStabilityDailyDelta));
+			if (Math.Abs(effect.TownTaxPercent) > 0.0001f) values.Add("主税收" + FormatSigned(effect.TownTaxPercent) + "%");
+			if (Math.Abs(effect.ConstructionSpeedPercent) > 0.0001f) values.Add("建造速度" + FormatSigned(effect.ConstructionSpeedPercent));
+			return "【" + FirstNonEmpty(effect.TargetKingdomName, effect.TargetKingdomId, "目标王国") + "】"
+				+ (values.Count <= 0 ? "无持续数值变化" : string.Join(" ", values))
+				+ "，持续" + effect.DurationDays.ToString(CultureInfo.InvariantCulture) + "天";
+		}));
 	}
 
 	private void NormalizeGenerationClock(int currentDay, int currentHour)

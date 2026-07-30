@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace AnimusForge;
 
@@ -13,6 +13,8 @@ public class SurroundingsConfig
 	public string Code { get; set; } = "";
 
 	public string Instruction { get; set; } = "";
+
+	public string PreprocessExcludedInstruction { get; set; } = "";
 
 	public List<string> TriggerKeywords { get; set; } = new List<string>();
 }

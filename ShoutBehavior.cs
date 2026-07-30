@@ -13332,7 +13332,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				roleRuntimeContext = AppendPostprocessContextBlockForScene(roleRuntimeContext, WorldMapPartyCommandBehavior.BuildCurrentNpcCommandTasksPromptForExternal(hero, characterObject, speakerNpc.AgentIndex));
 			}
-			string layeredPrompt = BuildSceneCompositeUserBlock("", roleTopIntro, taskSystemBlock);
+			string layeredPrompt = BuildSceneCompositeUserBlock("", roleTopIntro, taskSystemBlock, ctx?.PreprocessExcludedRuleBlock);
 			layeredPrompt = AppendPlayerCustomPromptRuleToSystemPrompt(layeredPrompt);
 			string currentAfefFactBlock = BuildCurrentAfefFactPromptBlock(extraFact);
 			Stopwatch uncompressedSw = Stopwatch.StartNew();
@@ -14468,7 +14468,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				targetCharacter = targetHero?.CharacterObject;
 			}
-			string line = NormalizeNativeConversationVisibleTextKey(text);
+			string line = NormalizeNativeConversationHistoryTextForPostprocess(text);
 			if (string.IsNullOrWhiteSpace(line))
 			{
 				return;
@@ -14492,7 +14492,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				if (_nativeConversationSessionHistory.TryGetValue(key, out var value) && value != null)
 				{
 					AnimusForgeDialogueHistoryEntry lastNpcLine = value.LastOrDefault((AnimusForgeDialogueHistoryEntry x) => x != null && string.Equals((x.Kind ?? "").Trim(), "npc", StringComparison.OrdinalIgnoreCase));
-					if (lastNpcLine != null && string.Equals(NormalizeNativeConversationVisibleTextKey(lastNpcLine.Text), line, StringComparison.Ordinal))
+					if (lastNpcLine != null && string.Equals(NormalizeNativeConversationHistoryTextForPostprocess(lastNpcLine.Text), line, StringComparison.Ordinal))
 					{
 						return;
 					}
@@ -14708,7 +14708,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		try
 		{
-			string normalizedLine = NormalizeNativeConversationVisibleTextKey(currentDialogText);
+			string normalizedLine = NormalizeNativeConversationHistoryTextForPostprocess(currentDialogText);
 			if (string.IsNullOrWhiteSpace(normalizedLine))
 			{
 				return;
@@ -14754,6 +14754,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	private static string NormalizeNativeConversationVisibleTextKey(string text)
 	{
 		return SanitizeSceneSpeechText(StripNpcNamePrefixSafely((text ?? "").Replace("\r", "").Trim(), 30)).Trim();
+	}
+
+	private static string NormalizeNativeConversationHistoryTextForPostprocess(string text)
+	{
+		string value = StripNpcNamePrefixSafely((text ?? "").Replace("\r", "").Trim(), 30);
+		return PrepareSceneHistorySpeechText(value);
 	}
 
 	private static int ResolveDailyConversationHistoryLineLimit(int requestedMaxLines = 0)
@@ -17469,7 +17475,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private List<string> BuildPreprocessExcludedRuleIdsForCurrentInteraction(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, bool hasAnyHero, List<SceneSummonPromptTarget> sceneSummonTargets = null, List<SceneGuidePromptTarget> sceneGuideTargets = null, NpcDataPacket sceneSpeakerNpc = null, List<NpcDataPacket> sceneCandidates = null, string currentPlayerText = null)
 	{
-		List<string> allRuleIds = AIConfigHandler.GetEnabledGuardrailRuleIdsForExternal();
+		List<string> allRuleIds = AIConfigHandler.GetConfiguredEnabledGuardrailRuleIdsForExternal();
 		if (AfGcczShoutBridge.ShouldUseExclusivePreprocessRuleRouting())
 		{
 			return AfGcczShoutBridge.BuildExclusivePreprocessRuleExclusions(allRuleIds);
@@ -17534,6 +17540,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return false;
 		}
+		if (!AIConfigHandler.IsGuardrailRuleAvailableToPreprocessForExternal(id, hasAnyHero))
+		{
+			return false;
+		}
 		if (id == AutoGroupRelayRuleId)
 		{
 			return false;
@@ -17551,7 +17561,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		case "meeting_taunt":
 			return !string.IsNullOrWhiteSpace(LordEncounterBehavior.BuildForcedMeetingTauntRuntimeInstructionForExternal(hero, targetCharacter));
 		default:
-			return AIConfigHandler.CanInjectRuleTopicIntoPreprocessForExternal(id, hasAnyHero);
+			return true;
 		}
 	}
 
@@ -17794,7 +17804,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		List<ConversationMessage> nativeHistoryMessages = BuildNativeConversationSessionHistoryMessages(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, npc: npc);
 		List<ConversationMessage> persistentMemoryRoleMessages = hadNativeConversationSessionHistoryBeforeTurn ? new List<ConversationMessage>() : BuildUncompressedMemoryRoleMessagesForPrompt(targetHero ?? targetCharacter?.HeroObject, targetCharacter, npc, nativeTargetAgentIndex);
 		string taskSystemBlock = BuildSceneSingleNpcTaskSystemBlock(GetSceneNpcHistoryNameForPrompt(npc), false, minTokens, maxTokens, playerName);
-		string layeredPrompt = BuildSceneCompositeUserBlock("", roleTopIntro, taskSystemBlock);
+		string layeredPrompt = BuildSceneCompositeUserBlock("", roleTopIntro, taskSystemBlock, ctx?.PreprocessExcludedRuleBlock);
 		layeredPrompt = AppendPlayerCustomPromptRuleToSystemPrompt(layeredPrompt);
 		string sceneDynamicUserBlock = BuildSceneCompositeUserBlock("", roleRuntimeContext, nativeNpcListBlock, trustBlock, miscExtrasSection);
 		List<object> messages = BuildStrictSceneMessagesForNpc(nativeTargetAgentIndex, layeredPrompt, new string[4] { privateRecentWindowSection, persistedWithoutRecentWindow, sceneDynamicUserBlock, BuildSceneCompositeUserBlock("", knowledgeExtrasSection, systemRuleBlock, nativeMeetingTauntRuleBlock) }, new string[1] { npcInitiatedOpening ? npcOpeningUserText : "" }, currentInputAlreadyRecorded: true, currentPlayerInput: promptPlayerText, injectedHistoryMessages: nativeHistoryMessages, includeSceneHistory: false, persistentHistoryMessages: persistentMemoryRoleMessages, pendingCurrentAfefFactMessages: pendingNativeCurrentAfefFacts, useSceneDistanceSpeechLabels: false);
@@ -17819,14 +17829,16 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			LlmRetryPrompt.ShowFailurePopup("自由对话正文生成失败", output.Trim());
 			return output.Trim();
 		}
-		string cleaned = StripNpcNamePrefixSafely((output ?? "").Replace("\r", "").Trim(), 30);
-		cleaned = StripLeakedPromptContentForShout(cleaned);
-		cleaned = StripStageDirectionsForPassiveShout(cleaned);
-		TryProcessNativeConversationRawMeetingTauntTags(targetHero, targetCharacter, nativeTargetAgentIndex, ref cleaned, out var nativeRawMeetingTauntEscalated);
-		if (TryProcessNativeConversationSceneTauntTags(targetHero, targetCharacter, nativeTargetAgentIndex, ref cleaned, out var nativeRawSceneTauntEscalated) && string.IsNullOrWhiteSpace(cleaned))
+		string postprocessReply = StripNpcNamePrefixSafely((output ?? "").Replace("\r", "").Trim(), 30);
+		postprocessReply = StripLeakedPromptContentForShout(postprocessReply);
+		TryProcessNativeConversationRawMeetingTauntTags(targetHero, targetCharacter, nativeTargetAgentIndex, ref postprocessReply, out var nativeRawMeetingTauntEscalated);
+		if (TryProcessNativeConversationSceneTauntTags(targetHero, targetCharacter, nativeTargetAgentIndex, ref postprocessReply, out var nativeRawSceneTauntEscalated) && string.IsNullOrWhiteSpace(postprocessReply))
 		{
-			cleaned = BuildFallbackSceneTauntSpeech(nativeRawSceneTauntEscalated);
+			postprocessReply = BuildFallbackSceneTauntSpeech(nativeRawSceneTauntEscalated);
 		}
+		// Keep role-play action prose for the postprocessor; display/TTS retains the
+		// existing stage-direction cleanup below.
+		string cleaned = StripStageDirectionsForPassiveShout(postprocessReply);
 		string nativeMainVisibleForTts = SanitizeSceneSpeechText(cleaned);
 		bool nativeTtsDispatchedBeforePostprocess = false;
 		if (!string.IsNullOrWhiteSpace(nativeMainVisibleForTts) && !IsNativeConversationNoSpeechPlaceholder(nativeMainVisibleForTts))
@@ -17912,7 +17924,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(nativeTargetAgentIndex);
 		try
 		{
-			postprocessed = TryRunSceneUnifiedActionPostprocess(targetHero, targetCharacter, nativeTargetAgentIndex, GetSceneNpcHistoryNameForPrompt(npc), shouldRecordPlayerInput ? promptPlayerText : "", historyForPostprocess, cleaned, duelPostprocessSelected, rewardPostprocessSelected, loanPostprocessSelected, kingdomServicePostprocessSelected, kingdomVassalagePostprocessSelected, kingdomAnnexationPostprocessSelected, lordsHallPostprocessSelected, meetingReleasePostprocessSelected, vanillaIssuePostprocessSelected, heroJoinPartyPostprocessSelected, sceneMechanismPostprocessSelected, partyTransferPostprocessSelected, voteDealPostprocessSelected, diplomacyPostprocessSelected, worldMapPartyCommandPostprocessSelected, marriagePostprocessSelected, nativeDuelStakeOptions, null, nativeSceneMechanismPostprocessRules, nativeSceneSummonTargets, nativeSceneGuideTargets, postprocessEntityContext, siegeInterventionRuleInjected: siegeInterventionPostprocessSelected, replyIsDirectPlayerResponse: shouldRecordPlayerInput, preprocessRuleHits: postprocessPreprocessHits, chainName: nativePostprocessChainName, customPolicyAgendaRuleInjected: customPolicyAgendaPostprocessSelected);
+			postprocessed = TryRunSceneUnifiedActionPostprocess(targetHero, targetCharacter, nativeTargetAgentIndex, GetSceneNpcHistoryNameForPrompt(npc), shouldRecordPlayerInput ? promptPlayerText : "", historyForPostprocess, postprocessReply, duelPostprocessSelected, rewardPostprocessSelected, loanPostprocessSelected, kingdomServicePostprocessSelected, kingdomVassalagePostprocessSelected, kingdomAnnexationPostprocessSelected, lordsHallPostprocessSelected, meetingReleasePostprocessSelected, vanillaIssuePostprocessSelected, heroJoinPartyPostprocessSelected, sceneMechanismPostprocessSelected, partyTransferPostprocessSelected, voteDealPostprocessSelected, diplomacyPostprocessSelected, worldMapPartyCommandPostprocessSelected, marriagePostprocessSelected, nativeDuelStakeOptions, null, nativeSceneMechanismPostprocessRules, nativeSceneSummonTargets, nativeSceneGuideTargets, postprocessEntityContext, siegeInterventionRuleInjected: siegeInterventionPostprocessSelected, replyIsDirectPlayerResponse: shouldRecordPlayerInput, preprocessRuleHits: postprocessPreprocessHits, chainName: nativePostprocessChainName, customPolicyAgendaRuleInjected: customPolicyAgendaPostprocessSelected);
 		}
 		finally
 		{
@@ -17964,9 +17976,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		FreezeWatchdog.Mark("NativeConversation.action_tags_done", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " ms=" + Math.Round(nativeActionSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 		string visible = SanitizeSceneSpeechText(cleaned);
 		bool suppressHistoryWrite = IsNativeConversationNoSpeechPlaceholder(visible);
+		string historyReplyText = suppressHistoryWrite ? null : PrepareSceneHistorySpeechText(cleaned);
+		if (!suppressHistoryWrite && string.IsNullOrWhiteSpace(historyReplyText))
+		{
+			historyReplyText = visible;
+		}
 		try
 		{
-			string historyReplyText = suppressHistoryWrite ? null : visible;
 			if (targetHero != null)
 			{
 				int sceneSessionId = TryGetCurrentSceneHistorySessionIdForHistoryPersistence();
@@ -17990,8 +18006,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		if (!suppressHistoryWrite)
 		{
-			RecordNativeConversationNpcLineForExternal(targetHero, targetCharacter, GetSceneNpcHistoryNameForPrompt(npc), visible, nativeTargetAgentIndex, npc);
-			MarkNativeConversationCurrentDialogRecorded(targetHero, targetCharacter, npcName, visible, nativeTargetAgentIndex, npc);
+			RecordNativeConversationNpcLineForExternal(targetHero, targetCharacter, GetSceneNpcHistoryNameForPrompt(npc), historyReplyText, nativeTargetAgentIndex, npc);
+			MarkNativeConversationCurrentDialogRecorded(targetHero, targetCharacter, npcName, historyReplyText, nativeTargetAgentIndex, npc);
 			if (!nativeTtsDispatchedBeforePostprocess)
 			{
 				TrySpeakNativeConversationReplyWithTts(targetHero, targetCharacter, npc, nativeTargetAgentIndex, visible);
@@ -18305,7 +18321,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					roleRuntimeContext = AppendPostprocessContextBlockForScene(roleRuntimeContext, WorldMapPartyCommandBehavior.BuildCurrentNpcCommandTasksPromptForExternal(hero, passiveCharacter, data.AgentIndex));
 				}
-				string layeredPrompt = BuildSceneCompositeUserBlock("", roleTopIntro, taskPreamble, taskSystemBlock);
+				string layeredPrompt = BuildSceneCompositeUserBlock("", roleTopIntro, taskPreamble, taskSystemBlock, ctx?.PreprocessExcludedRuleBlock);
 				layeredPrompt = AppendPlayerCustomPromptRuleToSystemPrompt(layeredPrompt);
 				swPrompt.Stop();
 				int fixedChars = 0;
@@ -25440,7 +25456,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				string taskPreamble = "你是【站在你旁边的人】中的NPC角色,可能是多个人。你们的唯一任务是：根据下方提供的角色信息、场景信息和对话历史，以NPC身份直接回复" + playerNameForTask + "的对话。";
 				string taskLength = BuildReplyLengthInstruction(minTokens, maxTokens);
 				string systemRuleBlock = BuildSceneSystemRuleBlock(ruleExtrasSection, sceneMechanismPromptSection);
-				string layeredPrompt = BuildSceneCompositeUserBlock("", roleTopIntro, taskPreamble, taskLength);
+				string layeredPrompt = BuildSceneCompositeUserBlock("", roleTopIntro, taskPreamble, taskLength, ctx?.PreprocessExcludedRuleBlock);
 				layeredPrompt = AppendPlayerCustomPromptRuleToSystemPrompt(layeredPrompt);
 				swPrompt.Stop();
 				int fixedChars = 0;
@@ -25987,7 +26003,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						sceneMechanismPostprocessRules = BuildRuntimeSceneMechanismPostprocessRulesForScene(currentSpeaker, sceneSummonTargets, sceneGuideTargets);
 					}
 					string taskSystemBlock = BuildSceneSingleNpcTaskSystemBlock(GetSceneNpcHistoryNameForPrompt(currentSpeaker), multiNpcScene, minTokens, maxTokens, singleReplyPlayerName);
-					string layeredPrompt = BuildSceneCompositeUserBlock("", roleTopIntro, taskSystemBlock);
+					string layeredPrompt = BuildSceneCompositeUserBlock("", roleTopIntro, taskSystemBlock, ctx?.PreprocessExcludedRuleBlock);
 					layeredPrompt = AppendPlayerCustomPromptRuleToSystemPrompt(layeredPrompt);
 					if (duelRuleInjected && speakingHero != null && RewardSystemBehavior.Instance != null)
 					{

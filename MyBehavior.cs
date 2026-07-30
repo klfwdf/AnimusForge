@@ -781,6 +781,10 @@ public class MyBehavior : CampaignBehaviorBase
 
 		public List<string> PreprocessRuleIds = new List<string>();
 
+		public List<string> PreprocessExcludedRuleIds = new List<string>();
+
+		public string PreprocessExcludedRuleBlock;
+
 		public bool UseDuelContext;
 
 		public bool UseRewardContext;
@@ -6869,7 +6873,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			Settlement settlement = village?.Settlement;
 			string settlementDisplayName = GetSettlementDisplayName(settlement);
-			string text = settlementDisplayName + "村庄正在遭到掠夺。";
+			string text = settlementDisplayName + "村庄正在遭到掠夺，结果尚未确定，不能视为掠夺成功。";
 			string clanDisplayName = GetClanDisplayName(settlement?.OwnerClan);
 			string kingdomDisplayName = GetKingdomDisplayName(settlement?.MapFaction as Kingdom, "所属王国");
 			if (!string.IsNullOrWhiteSpace(clanDisplayName) && !string.IsNullOrWhiteSpace(kingdomDisplayName))
@@ -6890,7 +6894,16 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			Settlement settlement = raidEvent?.MapEventSettlement;
 			string settlementDisplayName = GetSettlementDisplayName(settlement);
-			string text = settlementDisplayName + "村庄的掠夺结果是：" + GetRaidOutcomeLabel(winnerSide) + "。";
+			string raidOutcomeLabel = GetRaidOutcomeLabel(winnerSide);
+			string text = settlementDisplayName + "村庄的掠夺结果是：" + raidOutcomeLabel + "。";
+			if (winnerSide == BattleSideEnum.Attacker)
+			{
+				text += " 该村庄确已被成功掠夺。";
+			}
+			else
+			{
+				text += " 入侵者未能成功掠夺该村庄。";
+			}
 			Hero hero = raidEvent?.AttackerSide?.LeaderParty?.LeaderHero;
 			if (hero != null)
 			{
@@ -29372,6 +29385,8 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					Extras = "",
 					PreprocessRuleIds = new List<string>(),
+					PreprocessExcludedRuleIds = new List<string>(),
+					PreprocessExcludedRuleBlock = "",
 					UseDuelContext = false,
 					UseRewardContext = false,
 					IsLoanContext = false,
@@ -29390,6 +29405,8 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				Extras = "",
 				PreprocessRuleIds = new List<string>(),
+				PreprocessExcludedRuleIds = new List<string>(),
+				PreprocessExcludedRuleBlock = "",
 				UseDuelContext = false,
 				UseRewardContext = false,
 				IsLoanContext = false,
@@ -29607,6 +29624,8 @@ public class MyBehavior : CampaignBehaviorBase
 			Extras = "",
 			EntityPostprocessContext = "",
 			PreprocessRuleIds = new List<string>(),
+			PreprocessExcludedRuleIds = new List<string>(),
+			PreprocessExcludedRuleBlock = "",
 			UseDuelContext = false,
 			UseRewardContext = false,
 			IsLoanContext = false,
@@ -29628,6 +29647,9 @@ public class MyBehavior : CampaignBehaviorBase
 		AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter, targetAgentIndex);
 		AddSceneMoveRuleExclusionForCurrentMission(excludedRuleIdSet);
 		AfGcczShoutBridge.AddExclusivePreprocessRuleExclusions(excludedRuleIdSet);
+		// These are topics removed from the candidate list before routing. They are
+		// intentionally unrelated to topics the preprocessing LLM saw but did not select.
+		bool completeRuntimeExcludedRuleIds = preprocessExcludedRuleIds == null;
 		HashSet<string> preprocessExcludedRuleIdSet = preprocessExcludedRuleIds == null ? new HashSet<string>(excludedRuleIdSet, StringComparer.OrdinalIgnoreCase) : BuildPromptRuleIdSet(preprocessExcludedRuleIds);
 		foreach (string excludedRuleId in explicitExcludedRuleIdSet)
 		{
@@ -29648,6 +29670,26 @@ public class MyBehavior : CampaignBehaviorBase
 		AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(targetAgentIndex);
 		try
 		{
+			if (!suppressDynamicRuleAndLore && completeRuntimeExcludedRuleIds)
+			{
+				foreach (string configuredRuleId in AIConfigHandler.GetConfiguredEnabledGuardrailRuleIdsForExternal())
+				{
+					if (!string.IsNullOrWhiteSpace(configuredRuleId)
+						&& !AIConfigHandler.IsGuardrailRuleAvailableToPreprocessForExternal(configuredRuleId, hasAnyHero))
+					{
+						preprocessExcludedRuleIdSet.Add(configuredRuleId.Trim());
+					}
+				}
+			}
+			if (!suppressDynamicRuleAndLore)
+			{
+				shoutPromptContext.PreprocessExcludedRuleIds = preprocessExcludedRuleIdSet
+					.Where((string ruleId) => !string.IsNullOrWhiteSpace(ruleId))
+					.Select((string ruleId) => ruleId.Trim())
+					.Distinct(StringComparer.OrdinalIgnoreCase)
+					.ToList();
+				shoutPromptContext.PreprocessExcludedRuleBlock = AIConfigHandler.BuildPreprocessExcludedRuleBlockForExternal(shoutPromptContext.PreprocessExcludedRuleIds);
+			}
 			if (!suppressDynamicRuleAndLore)
 			{
 				AIConfigHandler.ClearLatestAuxiliaryMentionedEntitiesForExternal();
@@ -30307,8 +30349,12 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			preprocessRuleIds.Add("noble_gathering");
 		}
+		preprocessRuleIds.ExceptWith(preprocessExcludedRuleIdSet);
 		shoutPromptContext.PreprocessRuleIds = preprocessRuleIds.ToList();
-		LogShoutPromptContextStage("preprocess_ids_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "ids=" + ((shoutPromptContext.PreprocessRuleIds == null || shoutPromptContext.PreprocessRuleIds.Count == 0) ? "(none)" : string.Join(",", shoutPromptContext.PreprocessRuleIds)));
+		LogShoutPromptContextStage("preprocess_ids_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex,
+			"ids=" + ((shoutPromptContext.PreprocessRuleIds == null || shoutPromptContext.PreprocessRuleIds.Count == 0) ? "(none)" : string.Join(",", shoutPromptContext.PreprocessRuleIds))
+			+ " excluded=" + ((shoutPromptContext.PreprocessExcludedRuleIds == null || shoutPromptContext.PreprocessExcludedRuleIds.Count == 0) ? "(none)" : string.Join(",", shoutPromptContext.PreprocessExcludedRuleIds))
+			+ " excludedBlockLen=" + ((shoutPromptContext.PreprocessExcludedRuleBlock ?? "").Length));
 		LogShoutPromptContextStage("gccz_runtime_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex);
 		AfGcczShoutBridge.AppendRuntimePromptToShoutContext(shoutPromptContext, targetHero, targetCharacter, targetAgentIndex, cultureIdOverride);
 		LogShoutPromptContextStage("gccz_runtime_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "extrasLen=" + ((shoutPromptContext.Extras ?? "").Length));
@@ -37505,7 +37551,114 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private static List<EventMaterialReference> BuildWeeklyPromptMaterialsFull(WeeklyEventMaterialPreviewGroup group)
 	{
-		return OrderWeeklyPreviewMaterials(group?.Materials).Where((EventMaterialReference x) => x != null).Select(CloneEventMaterialReference).ToList();
+		List<EventMaterialReference> source = OrderWeeklyPreviewMaterials(group?.Materials).Where((EventMaterialReference x) => x != null).Select(CloneEventMaterialReference).ToList();
+		return BuildWeeklyPromptMaterialsWithResolvedVillageRaids(source);
+	}
+
+	private static List<EventMaterialReference> BuildWeeklyPromptMaterialsWithResolvedVillageRaids(List<EventMaterialReference> source)
+	{
+		List<EventMaterialReference> list = new List<EventMaterialReference>();
+		Dictionary<string, List<EventMaterialReference>> dictionary = new Dictionary<string, List<EventMaterialReference>>(StringComparer.OrdinalIgnoreCase);
+		int num = 0;
+		foreach (EventMaterialReference item in OrderWeeklyPreviewMaterials(source).Where((EventMaterialReference x) => x != null))
+		{
+			if (!IsWeeklyPromptVillageRaidMaterial(item))
+			{
+				list.Add(item);
+				continue;
+			}
+			string text = ResolveWeeklyPromptVillageRaidKey(item);
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				text = "unknown_village_raid_" + num++;
+			}
+			if (!dictionary.TryGetValue(text, out var value))
+			{
+				value = new List<EventMaterialReference>();
+				dictionary[text] = value;
+			}
+			value.Add(item);
+		}
+		foreach (List<EventMaterialReference> item2 in dictionary.Values.Where((List<EventMaterialReference> x) => x != null && x.Count > 0).OrderBy((List<EventMaterialReference> x) => x.Min((EventMaterialReference y) => y?.ActionDay ?? int.MaxValue)).ThenBy((List<EventMaterialReference> x) => x.Min((EventMaterialReference y) => y?.ActionSequence ?? int.MaxValue)).ThenBy((List<EventMaterialReference> x) => ResolveWeeklyPromptVillageRaidKey(x[0]), StringComparer.OrdinalIgnoreCase))
+		{
+			EventMaterialReference eventMaterialReference = BuildWeeklyPromptResolvedVillageRaidMaterial(item2);
+			if (eventMaterialReference != null)
+			{
+				list.Add(eventMaterialReference);
+			}
+		}
+		return OrderWeeklyPreviewMaterials(list).ToList();
+	}
+
+	private static EventMaterialReference BuildWeeklyPromptResolvedVillageRaidMaterial(List<EventMaterialReference> source)
+	{
+		List<EventMaterialReference> list = OrderWeeklyPreviewMaterials(source).Where((EventMaterialReference x) => x != null).ToList();
+		if (list.Count == 0)
+		{
+			return null;
+		}
+		EventMaterialReference eventMaterialReference = CloneEventMaterialReference(list[0]);
+		string text = ResolveWeeklyPromptVillageRaidKey(eventMaterialReference);
+		string text2 = ResolveSettlementDisplay(eventMaterialReference.SettlementId);
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			text2 = string.IsNullOrWhiteSpace(text) ? "某村庄" : text;
+		}
+		List<EventMaterialReference> list2 = list.Where(IsWeeklyPromptVillageRaidCompletionMaterial).ToList();
+		List<string> list3 = new List<string>();
+		foreach (EventMaterialReference item in list2)
+		{
+			list3.Add(text2 + "：" + GetWeeklyPromptVillageRaidOutcomeMaterialText(ResolveWeeklyPromptVillageRaidOutcome(item)));
+		}
+		bool flag = IsWeeklyPromptVillageRaidStartedMaterial(list[list.Count - 1]);
+		if (list2.Count == 0)
+		{
+			list3.Add(text2 + "：正在遭到掠夺，截止本期没有结算结果，不能写为掠夺成功。");
+		}
+		else if (flag)
+		{
+			list3.Add(text2 + "：随后又遭到掠夺，截止本期没有结算结果，不能写为掠夺成功。");
+		}
+		eventMaterialReference.MaterialType = "prompt_resolved_village_raid";
+		eventMaterialReference.Label = "村庄掠夺结算 - " + text2;
+		eventMaterialReference.SnapshotText = "[村庄掠夺结算]\n- " + string.Join("\n- ", list3);
+		eventMaterialReference.ActionKind = "prompt_resolved:village_raid";
+		eventMaterialReference.ActionStableKey = "prompt_resolved_village_raid:" + text;
+		eventMaterialReference.SourceMaterialCount = list.Count;
+		eventMaterialReference.ActionDay = list.Min((EventMaterialReference x) => x?.ActionDay ?? int.MaxValue);
+		eventMaterialReference.ActionSequence = list.Min((EventMaterialReference x) => x?.ActionSequence ?? int.MaxValue);
+		foreach (EventMaterialReference item2 in list.Skip(1))
+		{
+			AppendMaterialReferenceIds(item2, eventMaterialReference);
+		}
+		return eventMaterialReference;
+	}
+
+	private static bool IsWeeklyPromptVillageRaidStartedMaterial(EventMaterialReference material)
+	{
+		string text = (material?.ActionStableKey ?? "").Trim();
+		return text.StartsWith("village_raid_started:", StringComparison.OrdinalIgnoreCase) || (material?.Label ?? "").Trim().StartsWith("掠夺开始", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool IsWeeklyPromptVillageRaidCompletionMaterial(EventMaterialReference material)
+	{
+		string text = (material?.ActionStableKey ?? "").Trim();
+		return text.StartsWith("raid_completed:", StringComparison.OrdinalIgnoreCase) || (material?.Label ?? "").Trim().StartsWith("掠夺结果", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static string GetWeeklyPromptVillageRaidOutcomeMaterialText(string outcome)
+	{
+		switch ((outcome ?? "").Trim())
+		{
+		case "success":
+			return "掠夺成功，村庄确已被成功掠夺。";
+		case "defended":
+			return "掠夺被击退，入侵者未能成功掠夺村庄。";
+		case "aborted":
+			return "掠夺中止，入侵者未能成功掠夺村庄。";
+		default:
+			return "掠夺已结束但结果未确认，不能写为掠夺成功。";
+		}
 	}
 
 	private static List<EventMaterialReference> BuildWeeklyPromptMaterialsShort(WeeklyEventMaterialPreviewGroup group)
@@ -38130,27 +38283,31 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private static string ResolveWeeklyPromptVillageRaidOutcome(EventMaterialReference material)
 	{
-		string text = (material?.SnapshotText ?? "").Trim();
-		if (text.IndexOf("掠夺成功", StringComparison.OrdinalIgnoreCase) >= 0)
+		string text = (material?.ActionStableKey ?? "").Trim();
+		if (text.EndsWith(":Attacker", StringComparison.OrdinalIgnoreCase))
 		{
 			return "success";
 		}
-		if (text.IndexOf("掠夺被击退", StringComparison.OrdinalIgnoreCase) >= 0)
+		if (text.EndsWith(":Defender", StringComparison.OrdinalIgnoreCase))
 		{
 			return "defended";
 		}
-		if (text.IndexOf("掠夺中止", StringComparison.OrdinalIgnoreCase) >= 0)
+		if (text.EndsWith(":None", StringComparison.OrdinalIgnoreCase))
 		{
 			return "aborted";
 		}
-		string text2 = (material?.ActionStableKey ?? "").Trim();
-		if (text2.EndsWith(":Attacker", StringComparison.OrdinalIgnoreCase))
+		string text2 = (material?.SnapshotText ?? "").Trim();
+		if (text2.IndexOf("掠夺成功", StringComparison.OrdinalIgnoreCase) >= 0)
 		{
 			return "success";
 		}
-		if (text2.EndsWith(":Defender", StringComparison.OrdinalIgnoreCase))
+		if (text2.IndexOf("掠夺被击退", StringComparison.OrdinalIgnoreCase) >= 0)
 		{
 			return "defended";
+		}
+		if (text2.IndexOf("掠夺中止", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return "aborted";
 		}
 		return "";
 	}
@@ -42306,14 +42463,15 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return null;
 		}
+		List<EventMaterialReference> list = CloneWeeklyReportMaterials(entry.Materials);
 		return new WeeklyEventMaterialPreviewGroup
 		{
 			GroupKind = (entry.EventKind ?? "").Trim(),
 			KingdomId = (entry.ScopeKingdomId ?? "").Trim(),
 			Title = (entry.Title ?? "").Trim(),
 			Summary = (entry.ShortSummary ?? "").Trim(),
-			Materials = CloneWeeklyReportMaterials(entry.Materials),
-			PromptMaterials = CloneWeeklyReportMaterials(entry.Materials),
+			Materials = list,
+			PromptMaterials = BuildWeeklyPromptMaterialsWithResolvedVillageRaids(list),
 			OutputMode = WeeklyReportOutputMode.FullReport,
 			IncludePreviousReportInPrompt = true
 		};
@@ -43345,6 +43503,15 @@ public class MyBehavior : CampaignBehaviorBase
 		stringBuilder.AppendLine("若定居点状态材料含“变化原因”，【领地内事件】只写治理趋势和模型原因；禁止复述数字、箭头、加减号、几处、上升多少或下降多少；没有原因材料时不要推测。");
 	}
 
+	private static void AppendWeeklyReportVillageRaidWritingRule(StringBuilder stringBuilder)
+	{
+		if (stringBuilder == null)
+		{
+			return;
+		}
+		stringBuilder.AppendLine("村庄掠夺仅“掠夺成功”算成功；进行中或结果未确认不得写成功，被击退或中止必须写未成功。");
+	}
+
 	private static string BuildWeeklyReportSystemPrompt(WeeklyEventMaterialPreviewGroup group)
 	{
 		WeeklyReportPromptProfile weeklyReportPromptProfile = GetWeeklyReportPromptProfile();
@@ -43357,6 +43524,7 @@ public class MyBehavior : CampaignBehaviorBase
 		stringBuilder.AppendLine("你不是在自由编造故事，而是在根据给定素材生成一篇流利、可信、克制的周报。");
 		stringBuilder.AppendLine(text2);
 		AppendWeeklyReportWritingRequirements(stringBuilder);
+		AppendWeeklyReportVillageRaidWritingRule(stringBuilder);
 		AppendWeeklyReportPoliticalReasonWritingRule(stringBuilder, !flag2);
 		if (!flag2)
 		{
@@ -43404,6 +43572,7 @@ public class MyBehavior : CampaignBehaviorBase
 		stringBuilder.AppendLine("你的任务是根据已保存的完整素材，为一条历史短周报补写完整正文。");
 		stringBuilder.AppendLine("这次补写只用于档案馆展示，不参与当前稳定度结算。");
 		AppendWeeklyReportWritingRequirements(stringBuilder);
+		AppendWeeklyReportVillageRaidWritingRule(stringBuilder);
 		AppendWeeklyReportPoliticalReasonWritingRule(stringBuilder, true);
 		AppendWeeklyReportSettlementReasonWritingRule(stringBuilder);
 		stringBuilder.AppendLine(" ");
@@ -43436,7 +43605,7 @@ public class MyBehavior : CampaignBehaviorBase
 		stringBuilder.AppendLine("篇幅档位：" + weeklyReportPromptProfile.Label);
 		stringBuilder.AppendLine(" ");
 		stringBuilder.AppendLine("【该期保存的完整素材】");
-		stringBuilder.AppendLine(BuildWeeklyReportMaterialLines(group));
+		stringBuilder.AppendLine(BuildWeeklyReportPromptMaterialLines(group));
 		stringBuilder.AppendLine();
 		stringBuilder.AppendLine("请只使用上面的该期保存素材输出 [TITLE]、[SHORT]、[REPORT]。不要输出 [TAGS] 或任何稳定度标签。");
 		return stringBuilder.ToString().TrimEnd();
@@ -43608,6 +43777,7 @@ public class MyBehavior : CampaignBehaviorBase
 		stringBuilder.AppendLine("你必须严格按输入 block 分别生成，不得漏块，不得串写，不得合并不同 report_id。");
 		stringBuilder.AppendLine("输入里的 previous_report 只作连续性参考，不是本周事实来源；本周标题、短摘要、正文和稳定度标签必须依据 materials，禁止复用上一周标题或正文。");
 		AppendWeeklyReportWritingRequirements(stringBuilder);
+		AppendWeeklyReportVillageRaidWritingRule(stringBuilder);
 		AppendWeeklyReportPoliticalReasonWritingRule(stringBuilder, !flag);
 		if (!flag)
 		{

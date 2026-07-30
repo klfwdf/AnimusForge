@@ -2108,6 +2108,9 @@ public partial class RewardSystemBehavior
 			failed.Error = "前处理模板请求快照不完整。";
 			return failed;
 		}
+		string selectorExchangeId =
+			PlayerRpCraftTemplateSelectorLog.CreateExchangeId();
+		int selectorAttemptCount = 0;
 		try
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -2120,6 +2123,9 @@ public partial class RewardSystemBehavior
 				request,
 				activeRequestJson,
 				timeout.Token,
+				selectorExchangeId,
+				++selectorAttemptCount,
+				"primary",
 				out bool requestSucceeded,
 				out int statusCode,
 				out string reasonPhrase,
@@ -2141,6 +2147,9 @@ public partial class RewardSystemBehavior
 					request,
 					activeRequestJson,
 					timeout.Token,
+					selectorExchangeId,
+					++selectorAttemptCount,
+					"thinking_control_plain",
 					out requestSucceeded,
 					out statusCode,
 					out reasonPhrase,
@@ -2162,6 +2171,9 @@ public partial class RewardSystemBehavior
 					request,
 					activeRequestJson,
 					timeout.Token,
+					selectorExchangeId,
+					++selectorAttemptCount,
+					"temperature_removed",
 					out requestSucceeded,
 					out statusCode,
 					out reasonPhrase,
@@ -2187,6 +2199,9 @@ public partial class RewardSystemBehavior
 						request,
 						activeRequestJson,
 						timeout.Token,
+						selectorExchangeId,
+						++selectorAttemptCount,
+						"completion_parameters_2048",
 						out requestSucceeded,
 						out statusCode,
 						out reasonPhrase,
@@ -2207,6 +2222,12 @@ public partial class RewardSystemBehavior
 						+ request.ModelName
 						+ " mode="
 						+ request.ControlMode);
+				PlayerRpCraftTemplateSelectorLog.WriteTerminalResult(
+					selectorExchangeId,
+					selectorAttemptCount,
+					"http_failed",
+					failed.Error,
+					request.ApiKey);
 				return failed;
 			}
 			string content = LlmApiCompat.ExtractAssistantText(responseBody);
@@ -2236,6 +2257,9 @@ public partial class RewardSystemBehavior
 					request,
 					activeRequestJson,
 					timeout.Token,
+					selectorExchangeId,
+					++selectorAttemptCount,
+					"reasoning_only_2048",
 					out requestSucceeded,
 					out statusCode,
 					out reasonPhrase,
@@ -2246,6 +2270,12 @@ public partial class RewardSystemBehavior
 						+ statusCode.ToString(CultureInfo.InvariantCulture)
 						+ " "
 						+ (reasonPhrase ?? "");
+					PlayerRpCraftTemplateSelectorLog.WriteTerminalResult(
+						selectorExchangeId,
+						selectorAttemptCount,
+						"reasoning_retry_http_failed",
+						failed.Error,
+						request.ApiKey);
 					return failed;
 				}
 				content =
@@ -2258,8 +2288,30 @@ public partial class RewardSystemBehavior
 				out string parseError))
 			{
 				failed.Error = "前处理返回了无效模板选择：" + parseError;
+				PlayerRpCraftTemplateSelectorLog.WriteParseResult(
+					selectorExchangeId,
+					selectorAttemptCount,
+					content,
+					false,
+					parseError,
+					null,
+					request.ApiKey);
+				PlayerRpCraftTemplateSelectorLog.WriteTerminalResult(
+					selectorExchangeId,
+					selectorAttemptCount,
+					"parse_failed",
+					failed.Error,
+					request.ApiKey);
 				return failed;
 			}
+			PlayerRpCraftTemplateSelectorLog.WriteParseResult(
+				selectorExchangeId,
+				selectorAttemptCount,
+				content,
+				true,
+				"",
+				selected,
+				request.ApiKey);
 			Logger.Log(
 				"PlayerRpCraft",
 				"template_selector_selected name_hash="
@@ -2279,6 +2331,15 @@ public partial class RewardSystemBehavior
 					+ selected.TemplateStringId
 					+ " price="
 					+ selected.StandardPrice.ToString(CultureInfo.InvariantCulture));
+			PlayerRpCraftTemplateSelectorLog.WriteTerminalResult(
+				selectorExchangeId,
+				selectorAttemptCount,
+				"selected",
+				"candidate_rank="
+					+ selected.Rank.ToString(CultureInfo.InvariantCulture)
+					+ " template="
+					+ selected.TemplateStringId,
+				request.ApiKey);
 			return new PlayerRpCraftTemplateSelectionResult
 			{
 				Success = true,
@@ -2289,11 +2350,23 @@ public partial class RewardSystemBehavior
 		}
 		catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
 		{
+			PlayerRpCraftTemplateSelectorLog.WriteTerminalResult(
+				selectorExchangeId,
+				selectorAttemptCount,
+				"cancelled",
+				"调用方取消了模板选择请求。",
+				request.ApiKey);
 			throw;
 		}
 		catch (OperationCanceledException)
 		{
 			failed.Error = "前处理模板选择超过 60 秒，已取消本次请求。";
+			PlayerRpCraftTemplateSelectorLog.WriteTerminalResult(
+				selectorExchangeId,
+				selectorAttemptCount,
+				"timeout",
+				failed.Error,
+				request.ApiKey);
 			return failed;
 		}
 		catch (Exception ex)
@@ -2303,6 +2376,12 @@ public partial class RewardSystemBehavior
 				+ ": "
 				+ ex.Message;
 			Logger.Log("PlayerRpCraft", "template_selector_failed " + failed.Error);
+			PlayerRpCraftTemplateSelectorLog.WriteTerminalResult(
+				selectorExchangeId,
+				selectorAttemptCount,
+				"exception",
+				failed.Error,
+				request.ApiKey);
 			return failed;
 		}
 	}
@@ -2311,34 +2390,74 @@ public partial class RewardSystemBehavior
 		PlayerRpCraftTemplateSelectionRequest request,
 		string requestJson,
 		CancellationToken cancellationToken,
+		string selectorExchangeId,
+		int selectorAttempt,
+		string retryReason,
 		out bool succeeded,
 		out int statusCode,
 		out string reasonPhrase,
 		out string responseBody)
 	{
-		using HttpRequestMessage httpRequest =
-			new HttpRequestMessage(HttpMethod.Post, request.ApiUrl);
-		LlmApiCompat.ApplyAuthenticationHeaders(
-			httpRequest,
-			request.ApiUrl,
+		succeeded = false;
+		statusCode = 0;
+		reasonPhrase = "";
+		responseBody = "";
+		PlayerRpCraftTemplateSelectorLog.WriteRequest(
+			selectorExchangeId,
+			selectorAttempt,
+			retryReason,
+			request.ModelName,
+			request.ControlMode,
+			request.RequestedName,
+			request.InvestedDenars,
+			request.IsEquipment,
+			requestJson,
 			request.ApiKey);
-		httpRequest.Content =
-			new StringContent(
-				requestJson,
-				Encoding.UTF8,
-				"application/json");
-		using HttpResponseMessage response =
-			DuelSettings.GlobalClient.SendAsync(
+		try
+		{
+			using HttpRequestMessage httpRequest =
+				new HttpRequestMessage(HttpMethod.Post, request.ApiUrl);
+			LlmApiCompat.ApplyAuthenticationHeaders(
 				httpRequest,
-				cancellationToken)
+				request.ApiUrl,
+				request.ApiKey);
+			httpRequest.Content =
+				new StringContent(
+					requestJson,
+					Encoding.UTF8,
+					"application/json");
+			using HttpResponseMessage response =
+				DuelSettings.GlobalClient.SendAsync(
+					httpRequest,
+					cancellationToken)
+					.GetAwaiter()
+					.GetResult();
+			succeeded = response.IsSuccessStatusCode;
+			statusCode = (int)response.StatusCode;
+			reasonPhrase = response.ReasonPhrase ?? "";
+			responseBody = response.Content.ReadAsStringAsync()
 				.GetAwaiter()
 				.GetResult();
-		responseBody = response.Content.ReadAsStringAsync()
-			.GetAwaiter()
-			.GetResult();
-		succeeded = response.IsSuccessStatusCode;
-		statusCode = (int)response.StatusCode;
-		reasonPhrase = response.ReasonPhrase ?? "";
+			PlayerRpCraftTemplateSelectorLog.WriteResponse(
+				selectorExchangeId,
+				selectorAttempt,
+				retryReason,
+				succeeded,
+				statusCode,
+				reasonPhrase,
+				responseBody,
+				request.ApiKey);
+		}
+		catch (Exception ex)
+		{
+			PlayerRpCraftTemplateSelectorLog.WriteRequestException(
+				selectorExchangeId,
+				selectorAttempt,
+				retryReason,
+				ex,
+				request.ApiKey);
+			throw;
+		}
 	}
 
 	private static bool ShouldUsePlayerRpTemplateRetryRequest(
@@ -2461,11 +2580,11 @@ public partial class RewardSystemBehavior
 		{
 			if (isEquipment && hasSafeMisc)
 			{
-				error = "名称精确匹配到游戏中的普通物品；请取消勾选 FORGE AS WEAPON?。";
+				error = "名称精确匹配到游戏中的普通物品；请取消勾选 FORGE AS WEAPON/EQUIPMENT?。";
 			}
 			else if (!isEquipment && hasSafeEquipment)
 			{
-				error = "名称精确匹配到游戏中的武器装备；请勾选 FORGE AS WEAPON?。";
+				error = "名称精确匹配到游戏中的武器装备；请勾选 FORGE AS WEAPON/EQUIPMENT?。";
 			}
 			else
 			{
@@ -2787,7 +2906,7 @@ public partial class RewardSystemBehavior
 		{
 			if (TryResolveGeneratedRpEquipmentSuffix(name, out _, out _))
 			{
-				error = "名称属于武器装备；请先勾选 FORGE AS WEAPON?。";
+				error = "名称属于武器装备；请先勾选 FORGE AS WEAPON/EQUIPMENT?。";
 				return false;
 			}
 			if (TryResolveGeneratedRpFoodSuffix(
@@ -3001,7 +3120,7 @@ public partial class RewardSystemBehavior
 		{
 			if (TryResolveGeneratedRpEquipmentSuffix(name, out _, out _))
 			{
-				error = "名称属于武器装备；请先勾选 FORGE AS WEAPON?。";
+				error = "名称属于武器装备；请先勾选 FORGE AS WEAPON/EQUIPMENT?。";
 				template = null;
 				return false;
 			}
