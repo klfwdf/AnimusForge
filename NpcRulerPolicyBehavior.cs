@@ -1379,7 +1379,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		}
 		record.AgendaStatus = AgendaStatusApprovedPendingCommit;
 		_policyRecords[id] = JsonConvert.SerializeObject(record);
-		EnqueueApprovedAgendaCommit(record);
+		EnqueueApprovedAgendaCommit(record, applyKingdomStabilityOnce: isInitialAdoption);
 		Log("policy-agenda-approved policy=" + id + " kingdom=" + (record.KingdomId ?? ""));
 	}
 
@@ -1421,7 +1421,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		_policyRecords[id] = JsonConvert.SerializeObject(record);
 	}
 
-	private void EnqueueApprovedAgendaCommit(NpcRulerPolicyRecord record)
+	private void EnqueueApprovedAgendaCommit(NpcRulerPolicyRecord record, bool applyKingdomStabilityOnce)
 	{
 		if (record == null || string.IsNullOrWhiteSpace(record.PolicyId))
 		{
@@ -1452,7 +1452,8 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 				ParsedCount = 1
 			},
 			Stage = PendingNpcPolicyCommitStage.UpsertPolicyEvent,
-			IsAgendaApprovalCommit = true
+			IsAgendaApprovalCommit = true,
+			ApplyKingdomStabilityOnce = applyKingdomStabilityOnce
 		});
 	}
 
@@ -1556,7 +1557,9 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		foreach (NpcRulerPolicyRecord record in _policyRecords.Values.Select(DeserializeRecord)
 			.Where(x => x != null && string.Equals(x.AgendaStatus, AgendaStatusApprovedPendingCommit, StringComparison.OrdinalIgnoreCase)))
 		{
-			EnqueueApprovedAgendaCommit(record);
+			bool hasUnregisteredEffect = (record.Effects ?? new List<NpcRulerPolicyEffectDto>())
+				.Any(effect => effect != null && !effect.IsEnded && string.IsNullOrWhiteSpace(effect.EffectId));
+			EnqueueApprovedAgendaCommit(record, applyKingdomStabilityOnce: hasUnregisteredEffect);
 		}
 		RebuildPublicFeedbackNoticeSchedule();
 		int currentHour = GetCurrentCampaignHour();
@@ -2514,7 +2517,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 					List<NpcRulerPolicyEffectDto> effects = record.Effects ?? new List<NpcRulerPolicyEffectDto>();
 					if (context.ActiveEffectIndex < effects.Count)
 					{
-						context.ActiveEffectsCreatedCount += InvokeCustomPolicyActiveEffectBridge(record, context.ActiveEffectIndex++);
+						context.ActiveEffectsCreatedCount += InvokeCustomPolicyActiveEffectBridge(record, context.ActiveEffectIndex++, context.ApplyKingdomStabilityOnce);
 					}
 					if (context.ActiveEffectIndex >= effects.Count)
 					{
@@ -3471,7 +3474,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		if (Math.Abs(effect.LoyaltyDailyDeltaPerTown) > 0.0001f) values.Add("忠诚" + FormatSigned(effect.LoyaltyDailyDeltaPerTown));
 		if (Math.Abs(effect.SecurityDailyDeltaPerTown) > 0.0001f) values.Add("治安" + FormatSigned(effect.SecurityDailyDeltaPerTown));
 		if (Math.Abs(effect.MilitiaDailyDeltaPerTown) > 0.0001f) values.Add("民兵" + FormatSigned(effect.MilitiaDailyDeltaPerTown));
-		if (Math.Abs(effect.KingdomStabilityDailyDelta) > 0.0001f) values.Add("稳定" + FormatSigned(effect.KingdomStabilityDailyDelta));
+		if (Math.Abs(effect.KingdomStabilityDailyDelta) > 0.0001f) values.Add("稳定度（生效时一次性） " + FormatSigned(effect.KingdomStabilityDailyDelta));
 		if (Math.Abs(effect.TownTaxPercent) > 0.0001f) values.Add("主税收" + FormatSigned(effect.TownTaxPercent) + "%");
 		if (Math.Abs(effect.ConstructionSpeedPercent) > 0.0001f) values.Add("建造速度" + FormatSigned(effect.ConstructionSpeedPercent));
 		string effectText = values.Count <= 0 ? "无持续数值变化" : string.Join("/", values);
@@ -3733,7 +3736,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		contract.AppendLine("authoritarianWeight、oligarchicWeight、egalitarianWeight 分别表示政策对君主集权、贵族议政、平民与地方广泛参与的原版政治取向，范围均为 -1 到 1，必须依据政策内容评估，三项不得全部为 0。");
 		contract.AppendLine("身份字段必须复制对应 Target。effects 必须是数组并留在同一 policy 内，且至少包含一个目标和期限有效的 effect；允许所有数值字段都为 0，不得因此拒绝或省略政策。durationDays 必须是正整数；所有数值必须是有限数值；kingdomStabilityDailyDelta 按整数语义输出。");
 		contract.AppendLine("effect 目标只能来自该 Target 的 AllowedEffectTargets，每条政策最多一个 self 和一个 warEnemy。外国目标必须在 policyName 或 policyContent 中点名，且数值只能来自 policyContent 明确写出的直接跨国措施；不得重定向非法目标或从同期现象、摘要、传闻及连锁推测生成外国 effect。");
-		contract.AppendLine("prosperityDailyDeltaPerTown 与 militiaDailyDeltaPerTown 按每座城镇和城堡结算；foodDailyDeltaPerTown、loyaltyDailyDeltaPerTown、securityDailyDeltaPerTown 按每座城镇结算；hearthDailyDeltaPerVillage 按每座村庄结算；kingdomStabilityDailyDelta 对王国整体结算一次。townTaxPercent 是目标王国全部城镇和城堡主税收相对原版最终税额的百分比点变化：0 表示原版 100%，10 表示 110%，-20 表示 80%；它不是每日固定第纳尔变化，也不影响村庄收入或关税。constructionPowerDailyDelta 是直接加入每座目标城镇或城堡当天原版建造力的固定点数：0 表示不变，50 表示增加 50 点，-20 表示减少 20 点；它不是百分比，也不随原版建造力按比例变化。");
+		contract.AppendLine("prosperityDailyDeltaPerTown 与 militiaDailyDeltaPerTown 按每座城镇和城堡结算；foodDailyDeltaPerTown、loyaltyDailyDeltaPerTown、securityDailyDeltaPerTown 按每座城镇结算；hearthDailyDeltaPerVillage 按每座村庄结算；kingdomStabilityDailyDelta 在政策首次正式生效时对王国整体结算一次，不随 durationDays 每日重复，自动续期不重复结算。townTaxPercent 是目标王国全部城镇和城堡主税收相对原版最终税额的百分比点变化：0 表示原版 100%，10 表示 110%，-20 表示 80%；它不是每日固定第纳尔变化，也不影响村庄收入或关税。constructionPowerDailyDelta 是直接加入每座目标城镇或城堡当天原版建造力的固定点数：0 表示不变，50 表示增加 50 点，-20 表示减少 20 点；它不是百分比，也不随原版建造力按比例变化。");
 		contract.AppendLine("derivedEventTitle、derivedEventContent、derivedEventDigest 必须描述 eventPremise 的同一现象，事件不得产生 effects。impactSummary 与 effects 只描述政策影响。JSON 字段使用 ASCII 双引号，字符串中的换行和控制字符必须转义；结构完整性优先。");
 		string fixedContract = contract.ToString().TrimEnd();
 		string dynamicContext = context?.CompactWorldContext ?? "";
@@ -4069,7 +4072,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static int InvokeCustomPolicyActiveEffectBridge(NpcRulerPolicyRecord record, int effectIndex)
+	private static int InvokeCustomPolicyActiveEffectBridge(NpcRulerPolicyRecord record, int effectIndex, bool applyKingdomStabilityOnce)
 	{
 		try
 		{
@@ -4083,7 +4086,8 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 				return 0;
 			}
 			NpcRulerPolicyEffectDto effect = effects[effectIndex];
-			if (!TryBuildNpcActiveEffectRegistration(record, effect, effectIndex, out PolicyActiveEffectRegistration registration, out string failureReason))
+			bool applyStabilityForEffect = applyKingdomStabilityOnce && string.IsNullOrWhiteSpace(effect.EffectId);
+			if (!TryBuildNpcActiveEffectRegistration(record, effect, effectIndex, applyStabilityForEffect, out PolicyActiveEffectRegistration registration, out string failureReason))
 			{
 				effect.RemainingDays = 0;
 				effect.IsEnded = true;
@@ -4132,7 +4136,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		};
 	}
 
-	private static bool TryBuildNpcActiveEffectRegistration(NpcRulerPolicyRecord policy, NpcRulerPolicyEffectDto effect, int effectIndex, out PolicyActiveEffectRegistration registration, out string failureReason)
+	private static bool TryBuildNpcActiveEffectRegistration(NpcRulerPolicyRecord policy, NpcRulerPolicyEffectDto effect, int effectIndex, bool applyKingdomStabilityOnce, out PolicyActiveEffectRegistration registration, out string failureReason)
 	{
 		registration = null;
 		failureReason = "";
@@ -4182,6 +4186,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			TownTaxPercent = effect.TownTaxPercent,
 			ConstructionSpeedPercent = effect.ConstructionSpeedPercent,
 			DurationDays = effect.DurationDays,
+			ApplyKingdomStabilityOnce = applyKingdomStabilityOnce,
 			Reason = effect.Reason ?? policy.ImpactSummary ?? ""
 		};
 		return true;
@@ -4928,7 +4933,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			if (Math.Abs(effect.LoyaltyDailyDeltaPerTown) > 0.0001f) values.Add("忠诚" + FormatSigned(effect.LoyaltyDailyDeltaPerTown));
 			if (Math.Abs(effect.SecurityDailyDeltaPerTown) > 0.0001f) values.Add("治安" + FormatSigned(effect.SecurityDailyDeltaPerTown));
 			if (Math.Abs(effect.MilitiaDailyDeltaPerTown) > 0.0001f) values.Add("民兵" + FormatSigned(effect.MilitiaDailyDeltaPerTown));
-			if (Math.Abs(effect.KingdomStabilityDailyDelta) > 0.0001f) values.Add("稳定度" + FormatSigned(effect.KingdomStabilityDailyDelta));
+			if (Math.Abs(effect.KingdomStabilityDailyDelta) > 0.0001f) values.Add("稳定度（生效时一次性） " + FormatSigned(effect.KingdomStabilityDailyDelta));
 			if (Math.Abs(effect.TownTaxPercent) > 0.0001f) values.Add("主税收" + FormatSigned(effect.TownTaxPercent) + "%");
 			if (Math.Abs(effect.ConstructionSpeedPercent) > 0.0001f) values.Add("建造速度" + FormatSigned(effect.ConstructionSpeedPercent));
 			return "【" + FirstNonEmpty(effect.TargetKingdomName, effect.TargetKingdomId, "目标王国") + "】"
@@ -5221,6 +5226,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 	{
 		public NpcPolicyGenerationResult GenerationResult;
 		public bool IsAgendaApprovalCommit;
+		public bool ApplyKingdomStabilityOnce;
 		public int RecordIndex;
 		public int SavedCount;
 		public int PublicFeedbackSavedCount;
