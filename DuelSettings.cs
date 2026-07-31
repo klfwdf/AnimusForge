@@ -1630,7 +1630,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
 	public float EventAndRebellionApiTemperature { get; set; } = 0.8f;
 
-	[SettingPropertyInteger("最大输出Tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "事件周报与王国叛乱建国命名调用的 max_tokens。默认 12000；如果接口不支持过高上限，可能会被接口拒绝。")]
+	[SettingPropertyInteger("最大输出Tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "事件周报、王国叛乱建国命名与统治者政策生成调用的 max_tokens。默认 12000；如果接口不支持过高上限，可能会被接口拒绝。")]
 	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
 	public int EventAndRebellionApiMaxTokens { get; set; } = DefaultEventAndRebellionApiMaxTokens;
 
