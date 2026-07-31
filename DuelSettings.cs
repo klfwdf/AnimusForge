@@ -1870,11 +1870,11 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	[SettingPropertyBool("启用AI外交", Order = 0, RequireRestart = false, HintText = "开启后，各国会自行发布外交宣言、展开交涉并采取外交行动。关闭后恢复原版王国外交决议。")]
 	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
-	public bool EnableWorldDiplomacy { get; set; } = true;
+	public bool EnableWorldDiplomacy { get; set; } = false;
 
 	[SettingPropertyBool("新游戏开局全大陆和平", Order = 1, RequireRestart = false, HintText = "仅对新创建的存档生效。开局时结束王国之间已有的战争，让之后的战争与和平主要由AI外交推动。")]
 	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
-	public bool WorldDiplomacyStartNewGameAtPeace { get; set; } = true;
+	public bool WorldDiplomacyStartNewGameAtPeace { get; set; } = false;
 
 	[SettingPropertyBool("启用右侧弹窗通知", Order = 2, RequireRestart = false, HintText = "开启后，新发布的外交宣言会显示在屏幕右侧。关闭后仍可在王国公告中查看。")]
 	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]

@@ -42152,25 +42152,37 @@ public class MyBehavior : CampaignBehaviorBase
 			return false;
 		}
 		List<string> list = text.Split(new char[1] { '\n' }, StringSplitOptions.RemoveEmptyEntries).Select((string x) => (x ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).ToList();
-		List<string> list2 = list.Where((string x) => x.StartsWith("STAB_", StringComparison.OrdinalIgnoreCase)).ToList();
-		if (list2.Count != 1)
+		if (list.Count == 1)
 		{
-			failureReason = (list2.Count == 0) ? "缺少稳定度标签。" : "稳定度标签数量不正确。";
+			string text2 = (list[0] ?? "").Trim().ToUpperInvariant();
+			if (text2 == "STAB_FLAT" || GetWeeklyReportStabilityDeltaForTag(text2) != 0)
+			{
+				normalizedTagText = text2;
+				stabilityTag = text2;
+				return true;
+			}
+		}
+		string text3 = "";
+		for (Match match = Regex.Match(text, "(?<![A-Z0-9_])STAB_(?:DOWN_[1-4]|UP_[1-4]|FLAT)(?![A-Z0-9_])", RegexOptions.IgnoreCase); match.Success; match = match.NextMatch())
+		{
+			string text4 = (match.Value ?? "").Trim().ToUpperInvariant();
+			if (string.IsNullOrWhiteSpace(text3))
+			{
+				text3 = text4;
+			}
+			else if (!string.Equals(text3, text4, StringComparison.Ordinal))
+			{
+				failureReason = "包含多个相互冲突的稳定度标签。";
+				return false;
+			}
+		}
+		if (string.IsNullOrWhiteSpace(text3))
+		{
+			failureReason = "缺少合法稳定度标签。";
 			return false;
 		}
-		string text2 = (list2[0] ?? "").Trim().ToUpperInvariant();
-		if (text2 != "STAB_FLAT" && GetWeeklyReportStabilityDeltaForTag(text2) == 0)
-		{
-			failureReason = "稳定度标签不合法。";
-			return false;
-		}
-		if (list.Count != 1)
-		{
-			failureReason = "TAGS 里只能输出一个稳定度标签。";
-			return false;
-		}
-		normalizedTagText = text2;
-		stabilityTag = text2;
+		normalizedTagText = text3;
+		stabilityTag = text3;
 		return true;
 	}
 
@@ -43833,7 +43845,7 @@ public class MyBehavior : CampaignBehaviorBase
 			stringBuilder.AppendLine("[REPORT]正文,\n【军事事件】\n【外交事件】\n【领地内事件】");
 		}
 		stringBuilder.AppendLine("[TAGS]");
-		stringBuilder.AppendLine("标签文本");
+		stringBuilder.AppendLine("STAB_FLAT");
 		stringBuilder.AppendLine("[REPORT_BLOCK_END]");
 		if (flag)
 		{
@@ -43843,7 +43855,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			stringBuilder.AppendLine("3. 每个 block 必须输出 [TITLE] [SHORT] [REPORT] [TAGS]。");
 		}
-		stringBuilder.AppendLine("4. world block 与 kingdom block 的 [TAGS] 中都必须且只能包含一个稳定度评级标签：STAB_DOWN_4、STAB_DOWN_3、STAB_DOWN_2、STAB_DOWN_1、STAB_FLAT、STAB_UP_1、STAB_UP_2、STAB_UP_3、STAB_UP_4，不要太苛刻，问题不大就少给down");
+		stringBuilder.AppendLine("4. [TAGS] 的下一行只能写一个稳定度标签：STAB_DOWN_4、STAB_DOWN_3、STAB_DOWN_2、STAB_DOWN_1、STAB_FLAT、STAB_UP_1、STAB_UP_2、STAB_UP_3、STAB_UP_4；不要中文标签、标点或解释。问题不大少给down。");
 		stringBuilder.AppendLine("5. 不要输出 [REPORT_BLOCK_BEGIN]/[REPORT_BLOCK_END] 之外的额外说明。");
 		return stringBuilder.ToString().TrimEnd();
 	}
@@ -44012,22 +44024,28 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				weeklyReportBatchBlockResult = weeklyReportBatchBlockResult ?? new WeeklyReportBatchBlockResult();
 			}
-			if (!string.IsNullOrWhiteSpace(weeklyReportBatchBlockResult.ReportId) && !dictionary.ContainsKey(weeklyReportBatchBlockResult.ReportId))
+			if (!string.IsNullOrWhiteSpace(weeklyReportBatchBlockResult.ReportId) && (!dictionary.TryGetValue(weeklyReportBatchBlockResult.ReportId, out var value) || (!value.Parsed && weeklyReportBatchBlockResult.Parsed)))
 			{
 				dictionary[weeklyReportBatchBlockResult.ReportId] = weeklyReportBatchBlockResult;
 			}
 			blocks.Add(weeklyReportBatchBlockResult);
 		}
+		List<string> list = new List<string>();
 		foreach (string item2 in BuildWeeklyBatchExpectedReportIds(batch))
 		{
-			if (!dictionary.ContainsKey(item2) || !dictionary[item2].Parsed)
+			if (!dictionary.TryGetValue(item2, out var value2))
 			{
 				missingReportIds.Add(item2);
+			}
+			else if (!value2.Parsed)
+			{
+				missingReportIds.Add(item2);
+				list.Add(item2);
 			}
 		}
 		if (missingReportIds.Count > 0)
 		{
-			failureReason = "批量周报响应缺少部分 report_id：" + string.Join("、", missingReportIds);
+			failureReason = (list.Count == 0) ? ("批量周报响应缺少部分 report_id：" + string.Join("、", missingReportIds)) : ((list.Count == missingReportIds.Count) ? ("批量周报响应中的 report_id 解析失败：" + string.Join("、", list)) : ("批量周报响应缺少或解析失败的 report_id：" + string.Join("、", missingReportIds)));
 		}
 		return blocks.Any((WeeklyReportBatchBlockResult x) => x != null && x.Parsed);
 	}
@@ -45793,7 +45811,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		context.FailureCount += missingGroups.Count;
 		context.FailedGroups.AddRange(missingGroups.Where((WeeklyEventMaterialPreviewGroup x) => x != null));
-		context.FailureMessages.Add(BuildWeeklyReportBatchDisplayLabel(batch) + ": batch request failed; single-report fallback was not started - " + (batchResult?.FailureReason ?? "unknown error"));
+		context.FailureMessages.Add(BuildWeeklyReportBatchDisplayLabel(batch) + "：批量请求未恢复出可用周报区块 - " + (batchResult?.FailureReason ?? "未知错误"));
 	}
 
 	private void FinalizePendingWeeklyReportCommitContext(PendingWeeklyReportCommitContext context)

@@ -724,7 +724,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			return DuelSettings.GetSettings()?.WorldDiplomacyStartNewGameAtPeace ?? true;
+			return DuelSettings.GetSettings()?.WorldDiplomacyStartNewGameAtPeace ?? false;
 		}
 		catch
 		{
@@ -8959,7 +8959,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			return DuelSettings.GetSettings()?.EnableWorldDiplomacy ?? true;
+			return DuelSettings.GetSettings()?.EnableWorldDiplomacy ?? false;
 		}
 		catch
 		{

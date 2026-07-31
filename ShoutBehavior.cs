@@ -15061,6 +15061,84 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
+	// An NPC-initiated opening begins a new native conversation.  Its short-lived
+	// native cache can contain an older conversation with the same NPC, but it
+	// does not contain the shared courier/scene history.  When the canonical
+	// daily memory is injected for that opening, retain only native entries that
+	// have not yet reached persistent memory (for example, an action fact).
+	private static List<ConversationMessage> RemoveNativeMessagesAlreadyInPersistentMemory(List<ConversationMessage> nativeMessages, List<ConversationMessage> persistentMessages)
+	{
+		if (nativeMessages == null || nativeMessages.Count == 0 || persistentMessages == null || persistentMessages.Count == 0)
+		{
+			return nativeMessages ?? new List<ConversationMessage>();
+		}
+		Dictionary<string, int> persistentCounts = new Dictionary<string, int>(StringComparer.Ordinal);
+		foreach (ConversationMessage message in persistentMessages)
+		{
+			string key = BuildConversationMemoryDedupKey(message);
+			if (!string.IsNullOrWhiteSpace(key))
+			{
+				persistentCounts.TryGetValue(key, out int count);
+				persistentCounts[key] = count + 1;
+			}
+		}
+		if (persistentCounts.Count == 0)
+		{
+			return nativeMessages;
+		}
+		List<ConversationMessage> result = new List<ConversationMessage>(nativeMessages.Count);
+		foreach (ConversationMessage message in nativeMessages)
+		{
+			string key = BuildConversationMemoryDedupKey(message);
+			if (!string.IsNullOrWhiteSpace(key) && persistentCounts.TryGetValue(key, out int count) && count > 0)
+			{
+				if (count == 1)
+				{
+					persistentCounts.Remove(key);
+				}
+				else
+				{
+					persistentCounts[key] = count - 1;
+				}
+				continue;
+			}
+			result.Add(message);
+		}
+		return result;
+	}
+
+	private static string BuildConversationMemoryDedupKey(ConversationMessage message)
+	{
+		if (message == null)
+		{
+			return "";
+		}
+		string role = (message.Role ?? "").Trim().ToLowerInvariant();
+		string content = (message.Content ?? "").Replace("\r", "").Trim();
+		if (string.IsNullOrWhiteSpace(role) || string.IsNullOrWhiteSpace(content))
+		{
+			return "";
+		}
+		if (string.Equals(role, "user", StringComparison.Ordinal))
+		{
+			int targetSeparator = content.IndexOf('对');
+			int speechSeparator = content.IndexOf("说:", StringComparison.Ordinal);
+			if (speechSeparator < 0)
+			{
+				speechSeparator = content.IndexOf("说：", StringComparison.Ordinal);
+			}
+			if (targetSeparator > 0 && speechSeparator > targetSeparator && speechSeparator <= 128)
+			{
+				content = content.Substring(speechSeparator + 2).Trim();
+			}
+		}
+		else if (string.Equals(role, "assistant", StringComparison.Ordinal))
+		{
+			content = StripNpcNamePrefixSafely(content, 80).Trim();
+		}
+		return role + "\u001f" + content;
+	}
+
 	private static List<ConversationMessage> BuildUncompressedMemoryRoleMessagesForPrompt(int targetAgentIndex, Dictionary<int, Hero> resolvedHeroes)
 	{
 		try
@@ -17802,13 +17880,20 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string nativePendingAfefKey = BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, npc);
 		List<ConversationMessage> pendingNativeCurrentAfefFacts = ConsumePendingCurrentNativeAfefFactMessagesForPrompt(nativePendingAfefKey);
 		List<ConversationMessage> nativeHistoryMessages = BuildNativeConversationSessionHistoryMessages(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, npc: npc);
-		List<ConversationMessage> persistentMemoryRoleMessages = hadNativeConversationSessionHistoryBeforeTurn ? new List<ConversationMessage>() : BuildUncompressedMemoryRoleMessagesForPrompt(targetHero ?? targetCharacter?.HeroObject, targetCharacter, npc, nativeTargetAgentIndex);
+		bool useSharedDailyMemoryForNpcOpening = npcInitiatedOpening;
+		List<ConversationMessage> persistentMemoryRoleMessages = (useSharedDailyMemoryForNpcOpening || !hadNativeConversationSessionHistoryBeforeTurn)
+			? BuildUncompressedMemoryRoleMessagesForPrompt(targetHero ?? targetCharacter?.HeroObject, targetCharacter, npc, nativeTargetAgentIndex)
+			: new List<ConversationMessage>();
+		if (useSharedDailyMemoryForNpcOpening && persistentMemoryRoleMessages.Count > 0 && nativeHistoryMessages.Count > 0)
+		{
+			nativeHistoryMessages = RemoveNativeMessagesAlreadyInPersistentMemory(nativeHistoryMessages, persistentMemoryRoleMessages);
+		}
 		string taskSystemBlock = BuildSceneSingleNpcTaskSystemBlock(GetSceneNpcHistoryNameForPrompt(npc), false, minTokens, maxTokens, playerName);
 		string layeredPrompt = BuildSceneCompositeUserBlock("", roleTopIntro, taskSystemBlock, ctx?.PreprocessExcludedRuleBlock);
 		layeredPrompt = AppendPlayerCustomPromptRuleToSystemPrompt(layeredPrompt);
 		string sceneDynamicUserBlock = BuildSceneCompositeUserBlock("", roleRuntimeContext, nativeNpcListBlock, trustBlock, miscExtrasSection);
 		List<object> messages = BuildStrictSceneMessagesForNpc(nativeTargetAgentIndex, layeredPrompt, new string[4] { privateRecentWindowSection, persistedWithoutRecentWindow, sceneDynamicUserBlock, BuildSceneCompositeUserBlock("", knowledgeExtrasSection, systemRuleBlock, nativeMeetingTauntRuleBlock) }, new string[1] { npcInitiatedOpening ? npcOpeningUserText : "" }, currentInputAlreadyRecorded: true, currentPlayerInput: promptPlayerText, injectedHistoryMessages: nativeHistoryMessages, includeSceneHistory: false, persistentHistoryMessages: persistentMemoryRoleMessages, pendingCurrentAfefFactMessages: pendingNativeCurrentAfefFacts, useSceneDistanceSpeechLabels: false);
-		Logger.Log("ShoutBehavior", "[NativeConversation] request target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown") + " agentIndex=" + nativeTargetAgentIndex + " messages=" + messages.Count + " includeSceneSessionMemory=" + includeCurrentSceneSessionInPersistedHistory + " persistedChars=" + (persistedHeroHistory?.Length ?? 0) + " preprocessHits=" + ((postprocessPreprocessHits.Count == 0) ? "(none)" : string.Join(",", postprocessPreprocessHits)));
+		Logger.Log("ShoutBehavior", "[NativeConversation] request target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown") + " agentIndex=" + nativeTargetAgentIndex + " messages=" + messages.Count + " includeSceneSessionMemory=" + includeCurrentSceneSessionInPersistedHistory + " sharedDailyMemory=" + useSharedDailyMemoryForNpcOpening + " persistentMemoryMessages=" + persistentMemoryRoleMessages.Count + " nativeHistoryMessages=" + nativeHistoryMessages.Count + " persistedChars=" + (persistedHeroHistory?.Length ?? 0) + " preprocessHits=" + ((postprocessPreprocessHits.Count == 0) ? "(none)" : string.Join(",", postprocessPreprocessHits)));
 		Stopwatch nativeMainApiSw = Stopwatch.StartNew();
 		FreezeWatchdog.Mark("NativeConversation.main_reply_start", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " messages=" + messages.Count, immediate: true);
 		string output = await CallNativeConversationApiAsync(messages, onStreamText).ConfigureAwait(false);
@@ -20586,7 +20671,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			string debtHint = "（无）";
 			string marriagePlayerCandidates = null;
 			string marriageTargetCandidates = null;
-			string marriageFactHint = null;
 			string runtimeContext = "（无）";
 			List<RewardSystemBehavior.RewardItemInfo> rewardOptions = null;
 			List<RewardSystemBehavior.RewardItemInfo> rewardAllOptions = null;
@@ -20768,7 +20852,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				marriagePlayerCandidates = RomanceSystemBehavior.Instance.BuildMarriagePostprocessPlayerCandidatesBlockForExternal(marriageSpeaker);
 				marriageTargetCandidates = RomanceSystemBehavior.Instance.BuildMarriagePostprocessTargetCandidatesBlockForExternal(marriageSpeaker);
-				marriageFactHint = RomanceSystemBehavior.Instance.BuildMarriagePostprocessFactHintBlockForExternal(marriageSpeaker);
 			}
 			if (worldMapPartyCommandRuleInjected || voteDealRuleInjected || customPolicyAgendaRuleInjected || heroJoinPartyRuleInjected)
 			{
@@ -20794,9 +20877,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					latestReplyHasPlayerInput,
 					latestReplyHasPlayerInput ? playerText : string.Empty));
 			}
-			string systemPrompt = AIConfigHandler.BuildActionPostprocessSystemPrompt(tagRules, moodRules, displayName, sharedItemList, playerItemList, debtHint, marriagePlayerCandidates, marriageTargetCandidates, marriageFactHint);
+			string systemPrompt = AIConfigHandler.BuildActionPostprocessSystemPrompt(tagRules, moodRules, displayName, sharedItemList, playerItemList, debtHint, marriagePlayerCandidates, marriageTargetCandidates);
 			string latestReplyBlock = latestReplyHasPlayerInput ? AIConfigHandler.BuildActionPostprocessLatestReplyBlock(playerText, text, displayName, normalizedHistory) : AIConfigHandler.BuildActionPostprocessLatestReplyBlock("", text, displayName, null);
-			string userPrompt = BuildSceneActionPostprocessUserPrompt(actionPostprocessUserPromptTemplate, tagRules, displayName, normalizedHistory, latestReplyBlock, sharedItemList, playerItemList, debtHint, marriagePlayerCandidates, marriageTargetCandidates, marriageFactHint, runtimeContext);
+			string userPrompt = BuildSceneActionPostprocessUserPrompt(actionPostprocessUserPromptTemplate, tagRules, displayName, normalizedHistory, latestReplyBlock, sharedItemList, playerItemList, debtHint, marriagePlayerCandidates, marriageTargetCandidates, runtimeContext);
 			string fallbackText = (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
 			workItem = new CourierActionPostprocessWorkItem(systemPrompt, userPrompt, fallbackText, runtimeTargetKingdomId, runtimeTargetHeroId, runtimeTargetCharacterId, runtimeTargetTroopId, runtimeTargetUnnamedRank, targetAgentIndex, delegate(string content)
 			{
@@ -23836,7 +23919,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string text7 = "（无）";
 		string marriagePlayerCandidates = null;
 		string marriageTargetCandidates = null;
-		string marriageFactHint = null;
 		string runtimeContext = "（无）";
 		List<RewardSystemBehavior.RewardItemInfo> rewardOptions = null;
 		List<RewardSystemBehavior.RewardItemInfo> rewardAllOptions = null;
@@ -24037,7 +24119,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			marriagePlayerCandidates = RomanceSystemBehavior.Instance.BuildMarriagePostprocessPlayerCandidatesBlockForExternal(marriageSpeaker);
 			marriageTargetCandidates = RomanceSystemBehavior.Instance.BuildMarriagePostprocessTargetCandidatesBlockForExternal(marriageSpeaker);
-			marriageFactHint = RomanceSystemBehavior.Instance.BuildMarriagePostprocessFactHintBlockForExternal(marriageSpeaker);
 		}
 		if (nobleGatheringRuleInjected)
 		{
@@ -24059,11 +24140,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, BuildSceneRelayTargetListForPostprocess(relayCandidates, targetAgentIndex, relayPrimaryTargetAgentIndex));
 		}
-		string text8 = AIConfigHandler.BuildActionPostprocessSystemPrompt(text3, text4, text20, text5, text6, text7, marriagePlayerCandidates, marriageTargetCandidates, marriageFactHint);
+		string text8 = AIConfigHandler.BuildActionPostprocessSystemPrompt(text3, text4, text20, text5, text6, text7, marriagePlayerCandidates, marriageTargetCandidates);
 		string latestReplyBlock = replyIsDirectPlayerResponse
 			? AIConfigHandler.BuildActionPostprocessLatestReplyBlock(playerText, text, text20, text2)
 			: AIConfigHandler.BuildActionPostprocessLatestReplyBlock("", text, text20, null);
-		string text9 = BuildSceneActionPostprocessUserPrompt(actionPostprocessUserPromptTemplate, text3, text20, text2, latestReplyBlock, text5, text6, text7, marriagePlayerCandidates, marriageTargetCandidates, marriageFactHint, runtimeContext);
+		string text9 = BuildSceneActionPostprocessUserPrompt(actionPostprocessUserPromptTemplate, text3, text20, text2, latestReplyBlock, text5, text6, text7, marriagePlayerCandidates, marriageTargetCandidates, runtimeContext);
 		if (!AIConfigHandler.TryCallAuxiliaryActionPostprocess(text8, text9, 5000, 0f, out var content, out var error))
 		{
 			Logger.Log("ShoutBehavior", "[UnifiedPostprocess] 调用失败: " + error);
@@ -24272,9 +24353,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private static string BuildSceneActionPostprocessUserPrompt(string userPromptTemplate, string tagRules, string npcName, string historyText, string latestReplyBlock, string sharedItemList = null, string playerItemList = null, string debtHint = null, string marriagePlayerCandidates = null, string marriageTargetCandidates = null, string marriageFactHint = null, string runtimeContext = null)
+	private static string BuildSceneActionPostprocessUserPrompt(string userPromptTemplate, string tagRules, string npcName, string historyText, string latestReplyBlock, string sharedItemList = null, string playerItemList = null, string debtHint = null, string marriagePlayerCandidates = null, string marriageTargetCandidates = null, string runtimeContext = null)
 	{
-		return AIConfigHandler.BuildActionPostprocessUserPrompt(userPromptTemplate, tagRules, npcName, string.IsNullOrWhiteSpace(historyText) ? "（无）" : historyText.Trim(), string.IsNullOrWhiteSpace(latestReplyBlock) ? "玩家: （无）\nNPC: （无）" : latestReplyBlock.Trim(), sharedItemList, playerItemList, debtHint, marriagePlayerCandidates, marriageTargetCandidates, marriageFactHint, runtimeContext);
+		return AIConfigHandler.BuildActionPostprocessUserPrompt(userPromptTemplate, tagRules, npcName, string.IsNullOrWhiteSpace(historyText) ? "（无）" : historyText.Trim(), string.IsNullOrWhiteSpace(latestReplyBlock) ? "玩家: （无）\nNPC: （无）" : latestReplyBlock.Trim(), sharedItemList, playerItemList, debtHint, marriagePlayerCandidates, marriageTargetCandidates, runtimeContext);
 	}
 
 	private static string RemoveStandaloneLatestReplySection(string userPromptTemplate)
