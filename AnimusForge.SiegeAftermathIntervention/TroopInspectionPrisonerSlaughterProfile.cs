@@ -81,8 +81,8 @@ public static class TroopInspectionPrisonerSlaughterProfile
                 return "【检阅士兵】现场没有可处置的普通士兵俘虏；被俘领主不会由此命令处理。";
             case "slaughter_already_active":
                 return "【检阅士兵】士兵已经在执行屠戮命令。";
-            case "native_fight_unavailable":
-                return "【检阅士兵】原版场景战斗控制器当前不可用，屠戮命令未执行；详情已写入日志。";
+            case "combat_setup_unavailable":
+                return "【检阅士兵】当前场景未能建立俘虏处决战斗，屠戮命令未执行；详情已写入日志。";
             default:
                 return "【检阅士兵】未能执行屠戮命令；详情已写入日志。";
         }

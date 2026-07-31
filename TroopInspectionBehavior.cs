@@ -3473,7 +3473,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		DetectDeploymentEnd();
 		TryLogAgentCounts();
 		_prisonerSlaughterRuntime?.Tick(dt);
-		if (!_externalCastleRuntime && _prisonerSlaughterRuntime?.IsActive != true)
+		if (!_externalCastleRuntime && _prisonerSlaughterRuntime?.IsBusy != true)
 		{
 			RefreshPrisonerPoses(dt);
 		}
@@ -5206,7 +5206,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		return TroopInspectionPrisonerSlaughterProfile.ShouldOfferRule(
 			inspectionActive: mission != null && !mission.IsMissionEnding,
 			externalCastleRuntime: _externalCastleRuntime,
-			slaughterActive: _prisonerSlaughterRuntime?.IsActive == true,
+			slaughterActive: _prisonerSlaughterRuntime?.IsBusy == true,
 			speakerIsInspectedRegularSoldier: IsEligibleInspectionSoldier(speaker),
 			regularPrisonerCount,
 			attackerCount);
@@ -5226,7 +5226,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 			reason = "not_normal_inspection";
 			return false;
 		}
-		if (_prisonerSlaughterRuntime?.IsActive == true)
+		if (_prisonerSlaughterRuntime?.IsBusy == true)
 		{
 			reason = "slaughter_already_active";
 			return false;
@@ -5261,7 +5261,10 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		if (!_prisonerSlaughterRuntime.TryStart(out reason))
 		{
 			_prisonerSlaughterRuntime.Cleanup("start_failed");
-			_prisonerSlaughterRuntime = null;
+			if (!_prisonerSlaughterRuntime.HasPendingRestore)
+			{
+				_prisonerSlaughterRuntime = null;
+			}
 			return false;
 		}
 
@@ -5318,7 +5321,11 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 			return false;
 		}
 		CharacterObject character = agent.Character as CharacterObject;
-		return character != null && !character.IsHero && character.IsSoldier;
+		// Inspection selections may contain modded regular troops whose
+		// CharacterObject.IsSoldier flag is not populated. In this mission every
+		// active non-hero player-side non-prisoner is a selected troop, so the
+		// roster/mission identity is the authoritative gate.
+		return character != null && !character.IsHero;
 	}
 
 	private void RestoreInspectionAgentAfterSlaughter(Agent agent, bool prisoner)
