@@ -591,6 +591,22 @@ internal static class NpcPolicyLlmClient
 		{
 			return;
 		}
+		if (string.IsNullOrWhiteSpace(result.Content))
+		{
+			result.Success = false;
+			if (LlmApiCompat.IsReasoningOnlyTokenLimitResponse(result.ResponseBody, out int completionTokens, out int reasoningTokens))
+			{
+				result.ErrorMessage = "LLM returned no assistant content because the output token budget was consumed by reasoning; completion_tokens="
+					+ completionTokens.ToString(CultureInfo.InvariantCulture)
+					+ " reasoning_tokens=" + reasoningTokens.ToString(CultureInfo.InvariantCulture);
+			}
+			else
+			{
+				result.ErrorMessage = "LLM returned a successful HTTP response without assistant content";
+			}
+			Log(source, "[HTTP] NPC policy response contained no assistant content. route=" + resolvedRoute + " thinking_retry_plain=" + (thinkingRetriedPlain ? "true" : "false"));
+			return;
+		}
 		string finishReason = (result.FinishReason ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(finishReason))
 		{
@@ -642,11 +658,7 @@ internal static class NpcPolicyLlmClient
 			["messages"] = messages,
 			["max_tokens"] = maxTokens,
 			["stream"] = false,
-			["temperature"] = temperature,
-			["response_format"] = new JObject
-			{
-				["type"] = "json_object"
-			}
+			["temperature"] = temperature
 		};
 	}
 
@@ -864,6 +876,11 @@ internal static class NpcPolicyLlmClient
 			{
 				["role"] = "system",
 				["content"] = systemPrompt ?? ""
+			},
+			new JObject
+			{
+				["role"] = "user",
+				["content"] = "请根据以上规则生成本次统治者政策，只输出 JSON。"
 			}
 		};
 	}
@@ -1126,7 +1143,6 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 	private const int SuggestedHistoryMaxChars = 4800;
 	private const int SuggestedChainNameMaxChars = 48;
 	private const string PolicyKnowledgeRagFocus = "统治合法性 权力基础 政治目标 制度约束 支持者反对者 社会矛盾";
-	private const int PolicyMaxTokens = 8000;
 	private const int FailedGenerationBackoffHours = 6;
 	private const int PolicyApiHardTimeoutMilliseconds = 540000;
 	private const double PolicyCommitFrameBudgetMs = 1.0;
@@ -1974,7 +1990,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 				InFlightKey = inFlightKey,
 				Version = ++_generationVersion,
 				RuntimeGeneration = SaveRuntimeGuard.CaptureGeneration(),
-				MaxTokens = PolicyMaxTokens,
+				MaxTokens = ResolvePolicyMaxTokens(),
 				HardTimeoutMilliseconds = PolicyApiHardTimeoutMilliseconds,
 				CreatedUtcTicks = DateTime.UtcNow.Ticks
 			};
@@ -2102,7 +2118,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 				InFlightKey = inFlightKey,
 				Version = ++_generationVersion,
 				RuntimeGeneration = SaveRuntimeGuard.CaptureGeneration(),
-				MaxTokens = PolicyMaxTokens,
+				MaxTokens = ResolvePolicyMaxTokens(),
 				HardTimeoutMilliseconds = PolicyApiHardTimeoutMilliseconds,
 				CreatedUtcTicks = DateTime.UtcNow.Ticks
 			};
@@ -3714,6 +3730,19 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 	private static int ResolveNpcRulerPolicyBatchSize()
 	{
 		return Clamp(ReadDuelSettingsInt("GetNpcRulerPolicyMaxKingdomsPerRequestForExternal", DefaultNpcRulerPolicyBatchSize), 1, MaxPoliciesPerBatch);
+	}
+
+	private static int ResolvePolicyMaxTokens()
+	{
+		try
+		{
+			return DuelSettings.GetSettings()?.GetEventAndRebellionApiMaxTokens()
+				?? DuelSettings.DefaultEventAndRebellionApiMaxTokens;
+		}
+		catch
+		{
+			return DuelSettings.DefaultEventAndRebellionApiMaxTokens;
+		}
 	}
 
 	private static int ReadDuelSettingsInt(string methodName, int fallback)
