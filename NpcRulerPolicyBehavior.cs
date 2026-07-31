@@ -3489,18 +3489,18 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		{
 			return result;
 		}
-		result.Add(BuildAllowedEffectTarget(issuer, isIssuer: true));
+		result.Add(BuildAllowedEffectTarget(issuer, isIssuer: true, isAtWar: false));
 		foreach (Kingdom other in Kingdom.All ?? Enumerable.Empty<Kingdom>())
 		{
-			if (other != null && other != issuer && !other.IsEliminated && issuer.IsAtWarWith(other))
+			if (other != null && other != issuer && !other.IsEliminated)
 			{
-				result.Add(BuildAllowedEffectTarget(other, isIssuer: false));
+				result.Add(BuildAllowedEffectTarget(other, isIssuer: false, isAtWar: issuer.IsAtWarWith(other)));
 			}
 		}
 		return result.Where(x => x != null && !string.IsNullOrWhiteSpace(x.KingdomId)).ToList();
 	}
 
-	private static NpcRulerPolicyAllowedEffectTarget BuildAllowedEffectTarget(Kingdom kingdom, bool isIssuer)
+	private static NpcRulerPolicyAllowedEffectTarget BuildAllowedEffectTarget(Kingdom kingdom, bool isIssuer, bool isAtWar)
 	{
 		if (kingdom == null)
 		{
@@ -3511,22 +3511,23 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			KingdomId = kingdom.StringId ?? "",
 			KingdomName = GetKingdomName(kingdom),
 			IsIssuer = isIssuer,
-			Strength = SafeKingdomStrength(kingdom),
+			IsAtWar = isAtWar,
 			MentionCandidates = BuildNpcPolicyKingdomMentionCandidates(kingdom)
 		};
 	}
 
 	private static string BuildAllowedEffectTargetsPrompt(List<NpcRulerPolicyAllowedEffectTarget> targets)
 	{
-		return string.Join(";", (targets ?? new List<NpcRulerPolicyAllowedEffectTarget>()).Select(x => (x.IsIssuer ? "self" : "warEnemy")
+		return string.Join(";", (targets ?? new List<NpcRulerPolicyAllowedEffectTarget>()).Select(x => (x.IsIssuer ? "self" : "foreign")
 			+ "(id=" + (x.KingdomId ?? "")
 			+ ",name=" + (x.KingdomName ?? "")
-			+ ",strength=" + FormatNumber(x.Strength) + ")"));
+			+ (x.IsIssuer ? "" : ",relation=" + (x.IsAtWar ? "war" : "peace"))
+			+ ")"));
 	}
 
 	private static List<string> BuildNpcPolicyKingdomMentionCandidates(Kingdom kingdom)
 	{
-		return new[]
+		List<string> candidates = new List<string>
 		{
 			kingdom?.StringId,
 			GetKingdomName(kingdom),
@@ -3534,8 +3535,39 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			kingdom?.Leader?.StringId,
 			kingdom?.Leader?.Name?.ToString(),
 			kingdom?.RulingClan?.StringId,
-			kingdom?.RulingClan?.Name?.ToString()
-		}.Select(x => (x ?? "").Trim()).Where(x => x.Length >= 2).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+			kingdom?.RulingClan?.Name?.ToString(),
+			kingdom?.RulingClan?.InformalName?.ToString()
+		};
+		try
+		{
+			foreach (Clan clan in ((IEnumerable<Clan>)kingdom?.Clans) ?? Enumerable.Empty<Clan>())
+			{
+				if (clan == null)
+				{
+					continue;
+				}
+				candidates.Add(clan.StringId);
+				candidates.Add(clan.Name?.ToString());
+				candidates.Add(clan.InformalName?.ToString());
+				candidates.Add(clan.Leader?.StringId);
+				candidates.Add(clan.Leader?.Name?.ToString());
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			foreach (Settlement settlement in GetKingdomSettlements(kingdom))
+			{
+				candidates.Add(settlement?.StringId);
+				candidates.Add(settlement?.Name?.ToString());
+			}
+		}
+		catch
+		{
+		}
+		return candidates.Select(x => (x ?? "").Trim()).Where(x => x.Length >= 2).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 	}
 
 	private static string BuildCampaignCalendarContext()
@@ -3735,7 +3767,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		contract.AppendLine("每条 policy 必须按下列顺序和形状包含全部字段，不得增删或改名：{\"kingdomId\":\"...\",\"kingdomName\":\"...\",\"rulerHeroId\":\"...\",\"rulerName\":\"...\",\"creativePremise\":\"...\",\"policyName\":\"...\",\"policyContent\":\"...\",\"policyDigest\":\"...\",\"eventPremise\":\"...\",\"derivedEventTitle\":\"...\",\"derivedEventContent\":\"...\",\"derivedEventDigest\":\"...\",\"impactSummary\":\"...\",\"authoritarianWeight\":0,\"oligarchicWeight\":0,\"egalitarianWeight\":0,\"effects\":[{\"targetKingdomId\":\"...\",\"targetKingdomName\":\"...\",\"prosperityDailyDeltaPerTown\":0,\"foodDailyDeltaPerTown\":0,\"hearthDailyDeltaPerVillage\":0,\"loyaltyDailyDeltaPerTown\":0,\"securityDailyDeltaPerTown\":0,\"militiaDailyDeltaPerTown\":0,\"kingdomStabilityDailyDelta\":0,\"townTaxPercent\":0,\"constructionPowerDailyDelta\":0,\"durationDays\":1,\"reason\":\"...\"}]}。");
 		contract.AppendLine("authoritarianWeight、oligarchicWeight、egalitarianWeight 分别表示政策对君主集权、贵族议政、平民与地方广泛参与的原版政治取向，范围均为 -1 到 1，必须依据政策内容评估，三项不得全部为 0。");
 		contract.AppendLine("身份字段必须复制对应 Target。effects 必须是数组并留在同一 policy 内，且至少包含一个目标和期限有效的 effect；允许所有数值字段都为 0，不得因此拒绝或省略政策。durationDays 必须是正整数；所有数值必须是有限数值；kingdomStabilityDailyDelta 按整数语义输出。");
-		contract.AppendLine("effect 目标只能来自该 Target 的 AllowedEffectTargets，每条政策最多一个 self 和一个 warEnemy。外国目标必须在 policyName 或 policyContent 中点名，且数值只能来自 policyContent 明确写出的直接跨国措施；不得重定向非法目标或从同期现象、摘要、传闻及连锁推测生成外国 effect。");
+		contract.AppendLine("effect 目标只能来自该 Target 的 AllowedEffectTargets，每条政策最多一个 self 和一个 foreign；foreign 可以是交战或和平外国。外国目标必须在 policyName 或 policyContent 中明确点名该王国、现任统治者、其氏族或氏族领袖、或其定居点，且数值只能来自 policyContent 明确写出的直接跨国措施；一旦正文对点名外国写出直接措施，就必须输出对应 foreign effect，不能只保留 self。玩家建议 JSON 中若有 resolvedForeignTargets，它是代码对 playerProposal 点名实体的本地归属检索结果，只提供王国映射而不代替直接措施判断。不得重定向非法目标或从同期现象、摘要、传闻及连锁推测生成外国 effect。");
 		contract.AppendLine("prosperityDailyDeltaPerTown 与 militiaDailyDeltaPerTown 按每座城镇和城堡结算；foodDailyDeltaPerTown、loyaltyDailyDeltaPerTown、securityDailyDeltaPerTown 按每座城镇结算；hearthDailyDeltaPerVillage 按每座村庄结算；kingdomStabilityDailyDelta 在政策首次正式生效时对王国整体结算一次，不随 durationDays 每日重复，自动续期不重复结算。townTaxPercent 是目标王国全部城镇和城堡主税收相对原版最终税额的百分比点变化：0 表示原版 100%，10 表示 110%，-20 表示 80%；它不是每日固定第纳尔变化，也不影响村庄收入或关税。constructionPowerDailyDelta 是直接加入每座目标城镇或城堡当天原版建造力的固定点数：0 表示不变，50 表示增加 50 点，-20 表示减少 20 点；它不是百分比，也不随原版建造力按比例变化。");
 		contract.AppendLine("derivedEventTitle、derivedEventContent、derivedEventDigest 必须描述 eventPremise 的同一现象，事件不得产生 effects。impactSummary 与 effects 只描述政策影响。JSON 字段使用 ASCII 双引号，字符串中的换行和控制字符必须转义；结构完整性优先。");
 		string fixedContract = contract.ToString().TrimEnd();
@@ -3773,8 +3805,30 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			["rulerAcceptanceReply"] = Limit(context?.NpcReplyText ?? "", SuggestedNpcReplyMaxChars),
 			["recentDialogueContext"] = Limit(context?.HistoryContext ?? "", SuggestedHistoryMaxChars)
 		};
+		string resolvedForeignTargets = BuildSuggestedPolicyResolvedForeignTargets(context);
+		if (!string.IsNullOrWhiteSpace(resolvedForeignTargets))
+		{
+			data["resolvedForeignTargets"] = resolvedForeignTargets;
+		}
 		return data.ToString(Formatting.None);
 	}
+
+	private static string BuildSuggestedPolicyResolvedForeignTargets(NpcRulerPolicyBatchContext context)
+	{
+		string proposalText = Compact(context?.ProposalText ?? "");
+		NpcRulerPolicyKingdomContext issuer = (context?.Kingdoms ?? new List<NpcRulerPolicyKingdomContext>())
+			.FirstOrDefault(x => x != null);
+		if (string.IsNullOrWhiteSpace(proposalText) || issuer == null)
+		{
+			return "";
+		}
+		return string.Join(";", (issuer.AllowedEffectTargets ?? new List<NpcRulerPolicyAllowedEffectTarget>())
+			.Where(x => x != null && !x.IsIssuer && PolicyTextMentionsAllowedTarget(proposalText, x))
+			.Select(x => (x.KingdomId ?? "") + "=" + (x.KingdomName ?? ""))
+			.Where(x => x.Length > 1)
+			.Distinct(StringComparer.OrdinalIgnoreCase));
+	}
+
 	private List<NpcRulerPolicyRecord> NormalizeGeneratedRecords(NpcRulerPolicyBatchContext context, List<NpcRulerPolicyRecord> records)
 	{
 		List<NpcRulerPolicyRecord> result = new List<NpcRulerPolicyRecord>();
@@ -3982,9 +4036,27 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		}
 		if (!string.IsNullOrWhiteSpace(id))
 		{
-			return allowed.FirstOrDefault(x => x != null && string.Equals((x.KingdomId ?? "").Trim(), id, StringComparison.OrdinalIgnoreCase));
+			NpcRulerPolicyAllowedEffectTarget byId = allowed.FirstOrDefault(x => x != null && string.Equals((x.KingdomId ?? "").Trim(), id, StringComparison.OrdinalIgnoreCase));
+			if (byId != null)
+			{
+				return byId;
+			}
 		}
-		return allowed.FirstOrDefault(x => x != null && !string.IsNullOrWhiteSpace(name) && string.Equals((x.KingdomName ?? "").Trim(), name, StringComparison.OrdinalIgnoreCase));
+		if (!string.IsNullOrWhiteSpace(name))
+		{
+			NpcRulerPolicyAllowedEffectTarget byName = allowed.FirstOrDefault(x => x != null && string.Equals((x.KingdomName ?? "").Trim(), name, StringComparison.OrdinalIgnoreCase));
+			if (byName != null)
+			{
+				return byName;
+			}
+		}
+		List<NpcRulerPolicyAllowedEffectTarget> entityMatches = allowed
+			.Where(x => x != null && (x.MentionCandidates ?? new List<string>())
+				.Any(candidate => string.Equals((candidate ?? "").Trim(), id, StringComparison.OrdinalIgnoreCase)
+					|| string.Equals((candidate ?? "").Trim(), name, StringComparison.OrdinalIgnoreCase)))
+			.Take(2)
+			.ToList();
+		return entityMatches.Count == 1 ? entityMatches[0] : null;
 	}
 
 	private static bool PolicyTextMentionsAllowedTarget(string policyText, NpcRulerPolicyAllowedEffectTarget target)
@@ -4154,11 +4226,6 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		}
 		if (target != issuer)
 		{
-			if (!issuer.IsAtWarWith(target))
-			{
-				failureReason = "跨国效果失效：当前未交战";
-				return false;
-			}
 			string policyText = ((policy.PolicyName ?? "") + " " + (policy.PolicyContent ?? "")).Trim();
 			if (!BuildNpcPolicyKingdomMentionCandidates(target).Any(x => !string.IsNullOrWhiteSpace(x) && policyText.IndexOf(x, StringComparison.OrdinalIgnoreCase) >= 0))
 			{
@@ -4863,29 +4930,6 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static float SafeKingdomStrength(Kingdom kingdom)
-	{
-		try
-		{
-			foreach (Clan clan in ((IEnumerable<Clan>)kingdom?.Clans) ?? Enumerable.Empty<Clan>())
-			{
-				try
-				{
-					clan?.UpdateCurrentStrength();
-				}
-				catch
-				{
-				}
-			}
-			float value = kingdom?.CurrentTotalStrength ?? 0f;
-			return float.IsNaN(value) || float.IsInfinity(value) ? 0f : Math.Max(0f, value);
-		}
-		catch
-		{
-			return 0f;
-		}
-	}
-
 	private static int SafeKingdomStability(Kingdom kingdom)
 	{
 		try
@@ -5147,7 +5191,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		public string KingdomId;
 		public string KingdomName;
 		public bool IsIssuer;
-		public float Strength;
+		public bool IsAtWar;
 		public List<string> MentionCandidates = new List<string>();
 	}
 

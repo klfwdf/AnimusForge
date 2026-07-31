@@ -65,7 +65,9 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	private const string PreviousDefaultPolicyTownTaxIntentPromptParagraph = "【税收判断】城镇与城堡主税收百分比（townTaxPercent）必须只根据政策正文直接规定的税率、征收范围、减免对象、减免比例、征收效率或制度性税负变化判断，不能根据繁荣、粮食、忠诚、治安、稳定度、民众反馈、同期现象或其他预期后果反推税收增减；有利政策不自动减税，不利政策也不自动增税。没有直接税收措施时必须为 0；政策只涉及村庄独立收入或关税时也必须为 0。政策只免除某类人、某行业、某地区、某时段、某项税或部分税额时，只能按实际覆盖范围给出相称的负百分比，不得理解为全部城镇和城堡主税收完全免除，也不得直接给出 -100%；只有政策正文明确取消作用范围内全部主税收时，才可以接近 -100%。部分增税同样只能按实际覆盖范围给出相称的正百分比。";
 
-	private const string DefaultPolicyTownTaxIntentPromptParagraph = "城镇与城堡主税收百分比表示政策对原版主税收的直接影响。只根据政策名称和正文判断：明确增加税率、扩大征收比例或新增主税时使用正数；明确减税、降税、免税或取消主税时使用负数；没有表达调整主税的意图时保持为 0。繁荣、粮食、忠诚、治安、稳定度、民众反馈以及政策可能造成的财政后果，都不能自行解释成增税或减税。只调整特定人群、行业、地区、时段、税种或部分税额时，应按实际覆盖范围给出相称比例；只有明确取消作用范围内全部城镇与城堡主税收时，才接近 -100%。村庄独立收入和关税不计入这项效果。";
+	private const string PreviousDefaultPolicyTownTaxIntentPromptParagraphBeforePlayerTargetRouting = "城镇与城堡主税收百分比表示政策对原版主税收的直接影响。只根据政策名称和正文判断：明确增加税率、扩大征收比例或新增主税时使用正数；明确减税、降税、免税或取消主税时使用负数；没有表达调整主税的意图时保持为 0。繁荣、粮食、忠诚、治安、稳定度、民众反馈以及政策可能造成的财政后果，都不能自行解释成增税或减税。只调整特定人群、行业、地区、时段、税种或部分税额时，应按实际覆盖范围给出相称比例；只有明确取消作用范围内全部城镇与城堡主税收时，才接近 -100%。村庄独立收入和关税不计入这项效果。";
+
+	private const string DefaultPlayerPolicyTownTaxIntentPromptParagraph = "城镇与城堡主税收百分比表示目标城镇或城堡所属氏族最终收到的原版主税收收入变化，不是当地百姓被抽取的税额本身。必须追踪税款最终归属：提高目标所有者留存的税率、征收效率或让其获得其他地区上缴时使用正数；减税、免税，或把目标领地税款截留、转交、上缴给另一方时使用负数。若从 A 的领地征税并把收益交给 B，且 A、B 都有合法目标句柄，就分别给 A 负数、B 正数；两端不要求守恒，也不得用繁荣度代替这项直接税收得失，其他具有直接因果的次生效果仍可同时输出。没有表达改变任何目标最终主税收收入的意图时保持为 0。只调整特定人群、行业、地区、时段、税种或部分税额时，应按实际覆盖范围给出相称比例；只有明确取消作用范围内全部城镇与城堡主税收时，才接近 -100%。村庄独立收入和关税不计入这项效果。";
 
 	private const string PreviousDefaultCustomPolicyTownTaxScalePromptParagraph = "城镇与城堡主税收百分比使用相对原版最终税额的百分比点：0 表示保持原版 100%，+10 表示原版的 110%，-20 表示原版的 80%。它不是每日固定增加或减少的第纳尔，不影响村庄独立收入或关税。普通税制微调通常为 ±5% 到 ±15%；明显增税、减税或征收改革通常为 ±15% 到 ±35%；超过 ±35% 只用于政策正文明确要求的极端税制。全国政策作用于目标王国全部氏族的城镇和城堡，地方政策只作用于指定城镇或城堡。";
 
@@ -73,9 +75,13 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	private const string DefaultCustomPolicyEffectOverviewPromptParagraph = "当前可落地影响项共有九类：繁荣度、粮食、村庄户数/炉户、忠诚度、治安度、民兵、AF 王国稳定度、城镇与城堡主税收百分比、设施建造力。繁荣度主要受贸易、税负、工商业、市场信心和战争破坏影响；粮食主要受征收、储备、运输、农业负担和军队消耗影响；户数/炉户主要受劳动力、安全、徭役、迁徙和破坏影响；忠诚度主要受公平感、文化认同、自治、压迫、恐惧、荣誉和利益分配影响；治安度主要受匪患、巡逻、执法、公正、腐败和地方秩序影响；民兵主要受训练、征召、地方防务、士气、粮饷和人口压力影响；王国稳定度主要受封臣信任、王权合法性、战争胜败、贵族利益、财政压力和国内分裂风险影响；主税收百分比主要受税率、减免、征收效率和制度性税负调整影响；设施建造力主要受设施修建或修缮、工匠、劳力、建材、工程运输和施工组织影响。";
 
-	private const string DefaultPolicyConstructionSpeedPromptParagraph = "设施建设采用每日固定建造力，直接加入每座目标城镇或城堡当天的原版数值；0 不变，+100 即增加 100。只有政策名称或正文明确涉及设施修建或修缮、工匠、劳力、建材、工程运输、施工组织、停工或工程破坏时，才评估建造力；发展、繁荣、补贴、免税、增税、一般财政投入以及对执行方式的合理补全，都不能自行解释成建设措施，没有明确建设意图时必须保持 0。强度综合工匠、劳力、建材、运输、组织、范围和持续投入判断；第纳尔只是依据，不机械换算。小规模通常为 ±20 到 ±60，持续扩充工程资源通常为 +60 到 +150，全国重大建设或强力动员通常为 +150 到 +350，巨额专项投入并配合全国人力物资动员通常为 +350 到 +700；超过 +700 只用于政策正文明确要求的短期全国工程总动员。只有政策直接造成施工受阻、劳力流失、建材短缺或工程体系破坏时，才使用相称负数。";
+	private const string PreviousDefaultPolicyConstructionSpeedPromptParagraphBeforePlayerAmountScale = "设施建设采用每日固定建造力，直接加入每座目标城镇或城堡当天的原版数值；0 不变，+100 即增加 100。只有政策名称或正文明确涉及设施修建或修缮、工匠、劳力、建材、工程运输、施工组织、停工或工程破坏时，才评估建造力；发展、繁荣、补贴、免税、增税、一般财政投入以及对执行方式的合理补全，都不能自行解释成建设措施，没有明确建设意图时必须保持 0。强度综合工匠、劳力、建材、运输、组织、范围和持续投入判断；第纳尔只是依据，不机械换算。小规模通常为 ±20 到 ±60，持续扩充工程资源通常为 +60 到 +150，全国重大建设或强力动员通常为 +150 到 +350，巨额专项投入并配合全国人力物资动员通常为 +350 到 +700；超过 +700 只用于政策正文明确要求的短期全国工程总动员。只有政策直接造成施工受阻、劳力流失、建材短缺或工程体系破坏时，才使用相称负数。";
 
-	private const string DefaultPolicyLoyaltyPromptParagraph = "忠诚度按整个政策持续期的累计影响判断：普通政策总计约为 ±5—12，重大政策约为 ±12—24，极端政策约为 ±24—40；再除以持续天数作为每日变化，允许小于 1。例如持续 100 天时，每日分别约为 ±0.05—0.12、±0.12—0.24、±0.24—0.4。";
+	private const string DefaultPlayerPolicyConstructionSpeedPromptParagraph = "设施建设采用每日固定建造力，直接加入每座目标城镇或城堡当天的原版数值；0 不变，+100 即增加 100。只有政策名称或正文明确涉及设施修建或修缮、工匠、劳力、建材、工程运输、施工组织、停工或工程破坏时，才评估建造力；发展、繁荣、补贴、免税、增税、一般财政投入以及对执行方式的合理补全，都不能自行解释成建设措施，没有明确建设意图时必须保持 0。强度综合工匠、劳力、建材、运输、组织、范围和持续投入判断。小规模通常为 ±20 到 ±60，持续扩充工程资源通常为 +60 到 +150，全国重大建设通常为 +300 到 +1000；极端动员、巨额专项投入或玩家明确要求极端强度，且执行路径与资源承诺足够清楚时，可以达到这一范围的 2 到 4 倍，超过 +1000 完全合法，不限于短期总动员。只有政策直接造成施工受阻、劳力流失、建材短缺或工程体系破坏时，才使用相称负数。";
+
+	private const string PreviousDefaultPolicyLoyaltyPromptParagraphV2 = "忠诚度按整个政策持续期的累计影响判断：普通政策总计约为 ±5—12，重大政策约为 ±12—24，极端政策约为 ±24—40；再除以持续天数作为每日变化，允许小于 1。例如持续 100 天时，每日分别约为 ±0.05—0.12、±0.12—0.24、±0.24—0.4。";
+
+	private const string DefaultPolicyLoyaltyPromptParagraph = "忠诚度是 0 到 100 的地方政治尺度，必须直接按每日实际影响判断，不得先算整个持续期总量再除以天数。轻微影响通常每天 ±0.1 到 ±0.4；普通安抚、税负、公平感、文化待遇或自治调整通常每天 ±0.4 到 ±1.2；重大改革、强力压迫、重税减免、广泛赈济、荣誉优待或明显歧视通常每天 ±2 到 ±6；极端暴政、重大救民、严重背叛、系统性迫害或接近叛乱级刺激通常每天 ±4 到 ±12。只有政策名称、正文或执行路径直接持续作用于民心、公平感、文化关系、自治预期、荣誉待遇或压迫感时，才给忠诚度变化。";
 
 	private const string DefaultPolicyStabilityOneTimePromptParagraph = "王国稳定度是 0 到 100 的国家级政治尺度，在政策正式生效时只结算一次，不随持续天数每日累加，也不按城镇数量叠加。纯行政或地方数值变化通常为 0；明显改变民众信心、财政威望、封臣信任、王权合法性或分裂风险时通常为 ±4—7；重大改革、全国动员、广泛贵族冲突或严重政治危机通常为 ±7—14；内战边缘、国家存亡、统治体系崩溃或决定性胜利通常为 ±14—22。稳定度的正负必须有直接政治因果；普通经济投入不得仅凭臆测的贵族疑虑变成负数，能够明显提升国家信心和财政威望的成功重大投入可以产生相称正数。";
 
@@ -145,7 +151,9 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	private const string PreviousDefaultCustomPolicyTimingPromptParagraph = "每日影响是每天结算的变化，不是整项政策的总变化。持续时间越长，每日变化越应谨慎。普通政策通常持续 15 到 30 天；短期公告、巡查、临时补贴通常 7 到 15 天；较大改革、军事整顿、税制调整通常 30 到 60 天；全国级长期改革通常 60 到 120 天；超过 120 天只用于长期国策、制度改革、迁徙、战争总动员或灾难级后果。";
 
-	private const string DefaultCustomPolicyTimingPromptParagraph = "除王国稳定度外，其他数值都是每日结算的变化，不是整项政策的总变化。持续时间用于评估累计后果；忠诚度按整个周期折算，其他每日效果按政策每天实际执行的措施和投入强度判断。持续时间较长时必须考虑完整预算能否维持该每日强度，但不要机械压成象征性变化。普通政策通常持续 15 到 30 天；短期公告、巡查、临时补贴通常 7 到 15 天；较大改革、军事整顿、税制调整通常 30 到 60 天；全国级长期改革通常 60 到 120 天；超过 120 天只用于长期国策、制度改革、迁徙、战争总动员或灾难级后果。";
+	private const string PreviousDefaultCustomPolicyTimingPromptParagraphV2 = "除王国稳定度外，其他数值都是每日结算的变化，不是整项政策的总变化。持续时间用于评估累计后果；忠诚度按整个周期折算，其他每日效果按政策每天实际执行的措施和投入强度判断。持续时间较长时必须考虑完整预算能否维持该每日强度，但不要机械压成象征性变化。普通政策通常持续 15 到 30 天；短期公告、巡查、临时补贴通常 7 到 15 天；较大改革、军事整顿、税制调整通常 30 到 60 天；全国级长期改革通常 60 到 120 天；超过 120 天只用于长期国策、制度改革、迁徙、战争总动员或灾难级后果。";
+
+	private const string DefaultCustomPolicyTimingPromptParagraph = "除王国稳定度外，其他数值都是每日结算的变化，不是整项政策的总变化。持续时间只用于判断这套措施能维持多久、累计会造成什么后果，不得因为持续时间长、总投入大、全国范围广，就把本来直接成立的每日强度机械摊薄成象征性数值。只要政策名称、正文和可补全的执行路径明确支持每天都在持续推进该措施，就按每天实际执行的强度给数值；只有预算、组织、劳力、运输或政治阻力明确不足以维持原强度时，才相称下调。普通政策通常持续 15 到 30 天；短期公告、巡查、临时补贴通常 7 到 15 天；较大改革、军事整顿、税制调整通常 30 到 60 天；全国级长期改革通常 60 到 120 天；超过 120 天只用于长期国策、制度改革、迁徙、战争总动员或灾难级后果。";
 
 	private const string PreviousDefaultCustomPolicyLoyaltyPromptParagraph = "忠诚度是 0 到 100 的民心尺度。轻微影响每天 ±0.1 到 ±0.3；普通安抚、税负、公平感变化每天 ±0.3 到 ±1；强烈压迫、文化冲突、赈济、自治让步或荣誉政策每天 ±1 到 ±2；接近叛乱级刺激每天 ±2 到 ±4；超过 ±4 只用于极端暴政、屠掠、严重背叛或重大救民政策。";
 
@@ -153,15 +161,26 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	private const string PreviousDefaultCustomPolicyExplicitScalePromptParagraph = "如果玩家在政策正文或自定义评判器提示词里写了参考数值、倍率、强弱或持续时间，应尊重其意图，并按各项数值本身的尺度折算。强政策可以有强效果，荒唐政策也可以反噬；不要把总影响误当成每日影响，也不要用内置建议压低玩家明确要求。强力正面政策通常也应有对应代价，例如粮食消耗、财政成本、户数压力、贵族不满或稳定度风险。";
 
-	private const string DefaultCustomPolicyExplicitScalePromptParagraph = "政策名称、正文或自定义评判器提示词中明确的参考数值、倍率、强弱、持续时间和资源投入，必须作为相关效果强度的重要依据，但不机械换算。同一政策通常选择一至三项与政策目标最直接相关的主要效果，其他不相关效果保持轻微或为 0。同一笔资金不得在多个效果上重复计算；但覆盖范围和持续时间已经用于判断完整执行成本，不得再以全国范围或长期执行为由二次压低主要效果。全国持续 60—120 天、明确投入 50 万至 100 万第纳尔且目标可执行的政策，主要效果通常应进入全国重大档上半段；投入接近 100 万且目标、受益范围与执行路径明确时，可以进入极端档下半段。巨额财政投入本身就是主要代价，不得为了平衡而臆造负面效果；负面数值必须有政策正文直接支持。";
+	private const string PreviousDefaultCustomPolicyExplicitScalePromptParagraphV2 = "政策名称、正文或自定义评判器提示词中明确的参考数值、倍率、强弱、持续时间和资源投入，必须作为相关效果强度的重要依据，但不机械换算。同一政策通常选择一至三项与政策目标最直接相关的主要效果，其他不相关效果保持轻微或为 0。同一笔资金不得在多个效果上重复计算；但覆盖范围和持续时间已经用于判断完整执行成本，不得再以全国范围或长期执行为由二次压低主要效果。全国持续 60—120 天、明确投入 50 万至 100 万第纳尔且目标可执行的政策，主要效果通常应进入全国重大档上半段；投入接近 100 万且目标、受益范围与执行路径明确时，可以进入极端档下半段。巨额财政投入本身就是主要代价，不得为了平衡而臆造负面效果；负面数值必须有政策正文直接支持。";
 
-	private static readonly string DefaultCustomPolicyEvaluatorPrompt = PreviousDefaultCustomPolicyEvaluatorPromptBeforeTaxIntent
+	private const string DefaultCustomPolicyExplicitScalePromptParagraph = "政策名称、正文或自定义评判器提示词中明确的参考数值、倍率、强弱、持续时间和资源投入，必须作为相关效果强度的重要依据，但不机械线性换算。凡是能够从同一执行方案直接推出的多项效果，都可以同时生效；不要人为限制成一至三项，也不要为了凑热闹把没有直接因果的间接猜测硬塞进去。同一笔资金通过补贴、采购、运输、雇佣、建设、训练等不同直接执行环节产生多项收益，不算重复计算；覆盖范围、持续时间和全国执行难度已经用于判断完整执行成本，不得再以全国范围、长期执行或总投入较大为由二次压低直接效果。全国重大政策只要目标、受益范围、执行路径与资源承诺足够清楚，就应以这些高爽重大档作为直接效果参考：繁荣/粮食/民兵每天约 ±10 到 ±40，户数/炉户每天约 ±3 到 ±12，忠诚/治安每天约 ±2 到 ±6，城镇与城堡主税收约 ±20% 到 ±60%，设施建造力每天约 ±300 到 ±1000，王国稳定度一次性约 ±8 到 ±22。它们是重大政策参考，不要求无关指标凑数，也不是技术上限；极端动员、巨额投入或玩家明确要求极端强度，且正文直接支持、执行路径清楚、资源承诺足够时，对应直接效果可以达到上述高爽重大档的 2 到 4 倍。巨额财政投入本身就是主要代价，不得为了平衡而臆造负面效果；负面数值必须有政策正文直接支持。";
+
+	private static readonly string PreviousDefaultCustomPolicyEvaluatorPromptBeforeSparseEffects = PreviousDefaultCustomPolicyEvaluatorPromptBeforeTaxIntent
 		.Replace(PreviousDefaultCustomPolicyEffectOverviewPromptParagraph, DefaultCustomPolicyEffectOverviewPromptParagraph)
-		.Replace(PreviousDefaultCustomPolicyTimingPromptParagraph, DefaultCustomPolicyTimingPromptParagraph)
-		.Replace(PreviousDefaultCustomPolicyLoyaltyPromptParagraph, DefaultPolicyLoyaltyPromptParagraph)
+		.Replace(PreviousDefaultCustomPolicyTimingPromptParagraph, PreviousDefaultCustomPolicyTimingPromptParagraphV2)
+		.Replace(PreviousDefaultCustomPolicyLoyaltyPromptParagraph, PreviousDefaultPolicyLoyaltyPromptParagraphV2)
 		.Replace(PreviousDefaultCustomPolicyStabilityPromptParagraph, DefaultPolicyStabilityOneTimePromptParagraph)
-		.Replace(PreviousDefaultCustomPolicyTownTaxScalePromptParagraph, DefaultPolicyTownTaxIntentPromptParagraph + "\n\n" + DefaultPolicyConstructionSpeedPromptParagraph)
-		.Replace(PreviousDefaultCustomPolicyExplicitScalePromptParagraph, DefaultCustomPolicyExplicitScalePromptParagraph);
+		.Replace(PreviousDefaultCustomPolicyTownTaxScalePromptParagraph, PreviousDefaultPolicyTownTaxIntentPromptParagraphBeforePlayerTargetRouting + "\n\n" + PreviousDefaultPolicyConstructionSpeedPromptParagraphBeforePlayerAmountScale)
+		.Replace(PreviousDefaultCustomPolicyExplicitScalePromptParagraph, PreviousDefaultCustomPolicyExplicitScalePromptParagraphV2);
+
+	private static readonly string DefaultCustomPolicyEvaluatorPrompt = PreviousDefaultCustomPolicyEvaluatorPromptBeforeSparseEffects
+		.Replace("\r\n", "\n")
+		.Replace('\r', '\n')
+		.Replace(PreviousDefaultPolicyTownTaxIntentPromptParagraphBeforePlayerTargetRouting, DefaultPlayerPolicyTownTaxIntentPromptParagraph)
+		.Replace(PreviousDefaultPolicyConstructionSpeedPromptParagraphBeforePlayerAmountScale, DefaultPlayerPolicyConstructionSpeedPromptParagraph)
+		.Replace(PreviousDefaultCustomPolicyTimingPromptParagraphV2, DefaultCustomPolicyTimingPromptParagraph)
+		.Replace(PreviousDefaultPolicyLoyaltyPromptParagraphV2, DefaultPolicyLoyaltyPromptParagraph)
+		.Replace(PreviousDefaultCustomPolicyExplicitScalePromptParagraphV2, DefaultCustomPolicyExplicitScalePromptParagraph);
 
 	private const string LeakedCustomPolicyPoliticalWeightsPromptSuffix = "同时根据政策内容评估原版政策投票使用的三项政治取向：authoritarianWeight 表示君主集权取向，oligarchicWeight 表示大氏族和贵族议政取向，egalitarianWeight 表示平民、地方自治和广泛参与取向。三项范围均为 -1 到 1，不得全部为 0。";
 
@@ -338,8 +357,8 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	private const string PreviousDefaultNpcRulerPolicyStabilityPromptParagraph = "王国稳定度表示国家根本政治结构是否仍被承认，而不是一般的不满、税负、征兵、粮食、忠诚或治安变化。绝大多数政策的稳定度变化为 0。只有王位继承、统治合法性、全国封臣契约、国家分裂、内战或统一存续在 1—3 天内被直接改变时，稳定度变化才是 +1 或 -1。";
 
 	private static readonly string DefaultNpcRulerPolicyPrompt = (PreviousDefaultNpcRulerPolicyPromptBeforeTaxIntent
-		+ "\n\n" + DefaultPolicyTownTaxIntentPromptParagraph
-		+ "\n\n" + DefaultPolicyConstructionSpeedPromptParagraph)
+		+ "\n\n" + PreviousDefaultPolicyTownTaxIntentPromptParagraphBeforePlayerTargetRouting
+		+ "\n\n" + PreviousDefaultPolicyConstructionSpeedPromptParagraphBeforePlayerAmountScale)
 		.Replace(PreviousDefaultNpcRulerPolicyNumericPromptParagraph, DefaultNpcRulerPolicyNumericPromptParagraph)
 		.Replace(PreviousDefaultNpcRulerPolicyStabilityPromptParagraph, DefaultPolicyStabilityOneTimePromptParagraph);
 
@@ -3199,6 +3218,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		string text = NormalizeCustomPolicyEvaluatorPromptText(input);
 		string currentWording = NormalizePolicyHearthWordingForBuiltInComparison(text);
 		return string.Equals(currentWording, NormalizePolicyHearthWordingForBuiltInComparison(NormalizeCustomPolicyEvaluatorPromptText(DefaultCustomPolicyEvaluatorPrompt)), StringComparison.Ordinal)
+			|| string.Equals(currentWording, NormalizePolicyHearthWordingForBuiltInComparison(NormalizeCustomPolicyEvaluatorPromptText(PreviousDefaultCustomPolicyEvaluatorPromptBeforeSparseEffects)), StringComparison.Ordinal)
 			|| string.Equals(currentWording, NormalizePolicyHearthWordingForBuiltInComparison(NormalizeCustomPolicyEvaluatorPromptText(PreviousDefaultCustomPolicyEvaluatorPromptBeforeConstructionSpeed)), StringComparison.Ordinal)
 			|| string.Equals(currentWording, NormalizePolicyHearthWordingForBuiltInComparison(NormalizeCustomPolicyEvaluatorPromptText(PreviousDefaultCustomPolicyEvaluatorPromptBeforeTaxIntent)), StringComparison.Ordinal)
 			|| string.Equals(currentWording, NormalizePolicyHearthWordingForBuiltInComparison(NormalizeCustomPolicyEvaluatorPromptText(PreviousDefaultCustomPolicyEvaluatorPromptWithSeparatedBuiltIns)), StringComparison.Ordinal)
