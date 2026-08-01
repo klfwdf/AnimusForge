@@ -139,6 +139,15 @@ public sealed class NpcRulerPolicyEffectDto
 	[JsonProperty("targetKingdomName")]
 	public string TargetKingdomName { get; set; }
 
+	[JsonProperty("subjectKind")]
+	public string SubjectKind { get; set; }
+
+	[JsonProperty("minClanTier", NullValueHandling = NullValueHandling.Ignore)]
+	public int? MinClanTier { get; set; }
+
+	[JsonProperty("maxClanTier", NullValueHandling = NullValueHandling.Ignore)]
+	public int? MaxClanTier { get; set; }
+
 	[JsonProperty("prosperityDailyDeltaPerTown")]
 	public float ProsperityDailyDeltaPerTown { get; set; }
 
@@ -165,6 +174,15 @@ public sealed class NpcRulerPolicyEffectDto
 
 	[JsonProperty("constructionPowerDailyDelta")]
 	public float ConstructionSpeedPercent { get; set; }
+
+	[JsonProperty("volunteerProductionPercent")]
+	public float VolunteerProductionPercent { get; set; }
+
+	[JsonProperty("volunteerUpgradeRatePercent")]
+	public float VolunteerUpgradeRatePercent { get; set; }
+
+	[JsonProperty("clanInfluenceDailyDelta")]
+	public float ClanInfluenceDailyDelta { get; set; }
 
 	[JsonProperty("constructionSpeedPercent", NullValueHandling = NullValueHandling.Ignore)]
 	private float? LegacyConstructionSpeedPercent { get; set; }
@@ -1471,6 +1489,13 @@ internal static class NpcPolicyLlmClient
 
 public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 {
+	private const string NpcSubjectRulerClan = "rulerClan";
+	private const string NpcSubjectVassalClans = "vassalClans";
+	private const string NpcSubjectAllMemberClans = "allMemberClans";
+	private const string NpcSubjectRulerFiefs = "rulerFiefs";
+	private const string NpcSubjectVassalFiefs = "vassalFiefs";
+	private const string NpcSubjectAllKingdomFiefs = "allKingdomFiefs";
+
 	private const string SaveKeyPolicyRecords = "_afNpcRulerPolicyRecords_v1";
 	private const string SaveKeyLastGeneratedDay = "_afNpcRulerPolicyLastGeneratedDay_v1";
 	private const string SaveKeyLastGeneratedHour = "_afNpcRulerPolicyLastGeneratedHour_v1";
@@ -3907,8 +3932,11 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		if (Math.Abs(effect.KingdomStabilityDailyDelta) > 0.0001f) values.Add("稳定度（生效时一次性） " + FormatSigned(effect.KingdomStabilityDailyDelta));
 		if (Math.Abs(effect.TownTaxPercent) > 0.0001f) values.Add("主税收" + FormatSigned(effect.TownTaxPercent) + "%");
 		if (Math.Abs(effect.ConstructionSpeedPercent) > 0.0001f) values.Add("建造速度" + FormatSigned(effect.ConstructionSpeedPercent));
+		if (Math.Abs(effect.VolunteerProductionPercent) > 0.0001f) values.Add("志愿兵补充" + FormatSigned(effect.VolunteerProductionPercent) + "%");
+		if (Math.Abs(effect.VolunteerUpgradeRatePercent) > 0.0001f) values.Add("志愿兵精锐化" + FormatSigned(effect.VolunteerUpgradeRatePercent) + "%");
+		if (Math.Abs(effect.ClanInfluenceDailyDelta) > 0.0001f) values.Add("每日影响力" + FormatSigned(effect.ClanInfluenceDailyDelta));
 		string effectText = values.Count <= 0 ? "无持续数值变化" : string.Join("/", values);
-		return Limit(Limit(FirstNonEmpty(effect.TargetKingdomName, effect.TargetKingdomId, "目标王国"), 30)
+		return Limit(Limit(FirstNonEmpty(effect.TargetKingdomName, effect.TargetKingdomId, "目标王国"), 30) + "/" + BuildNpcSubjectDisplayText(effect.SubjectKind)
 			+ "[" + effectText + "]", AgendaDialoguePolicyEffectChars);
 	}
 
@@ -4207,12 +4235,13 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		StringBuilder contract = new StringBuilder();
 		contract.AppendLine("【不可覆盖的技术契约】");
 		contract.AppendLine("只输出严格 JSON，不输出 Markdown、解释、隐藏标签、玩家操作、扣费或原版 PolicyObject。根对象只能是 {\"policies\":[...]}；目标数量=" + targetCount.ToString(CultureInfo.InvariantCulture) + "，必须为下方每个 Target 各输出 1 条，不得遗漏、重复或增加王国。");
-		contract.AppendLine("每条 policy 必须按下列顺序和形状包含全部字段，不得增删或改名：{\"kingdomId\":\"...\",\"kingdomName\":\"...\",\"rulerHeroId\":\"...\",\"rulerName\":\"...\",\"creativePremise\":\"...\",\"policyName\":\"...\",\"policyContent\":\"...\",\"policyDigest\":\"...\",\"eventPremise\":\"...\",\"derivedEventTitle\":\"...\",\"derivedEventContent\":\"...\",\"derivedEventDigest\":\"...\",\"impactSummary\":\"...\",\"authoritarianWeight\":0,\"oligarchicWeight\":0,\"egalitarianWeight\":0,\"effects\":[{\"targetKingdomId\":\"...\",\"targetKingdomName\":\"...\",\"prosperityDailyDeltaPerTown\":0,\"foodDailyDeltaPerTown\":0,\"hearthDailyDeltaPerVillage\":0,\"loyaltyDailyDeltaPerTown\":0,\"securityDailyDeltaPerTown\":0,\"militiaDailyDeltaPerTown\":0,\"kingdomStabilityDailyDelta\":0,\"townTaxPercent\":0,\"constructionPowerDailyDelta\":0,\"durationDays\":1,\"reason\":\"...\"}]}。");
+		contract.AppendLine("每条 policy 必须按下列顺序和形状包含全部字段，不得增删或改名：{\"kingdomId\":\"...\",\"kingdomName\":\"...\",\"rulerHeroId\":\"...\",\"rulerName\":\"...\",\"creativePremise\":\"...\",\"policyName\":\"...\",\"policyContent\":\"...\",\"policyDigest\":\"...\",\"eventPremise\":\"...\",\"derivedEventTitle\":\"...\",\"derivedEventContent\":\"...\",\"derivedEventDigest\":\"...\",\"impactSummary\":\"...\",\"authoritarianWeight\":0,\"oligarchicWeight\":0,\"egalitarianWeight\":0,\"effects\":[{\"targetKingdomId\":\"...\",\"targetKingdomName\":\"...\",\"subjectKind\":\"allKingdomFiefs\",\"minClanTier\":0,\"maxClanTier\":6,\"prosperityDailyDeltaPerTown\":0,\"foodDailyDeltaPerTown\":0,\"hearthDailyDeltaPerVillage\":0,\"loyaltyDailyDeltaPerTown\":0,\"securityDailyDeltaPerTown\":0,\"militiaDailyDeltaPerTown\":0,\"kingdomStabilityDailyDelta\":0,\"townTaxPercent\":0,\"constructionPowerDailyDelta\":0,\"volunteerProductionPercent\":0,\"volunteerUpgradeRatePercent\":0,\"clanInfluenceDailyDelta\":0,\"durationDays\":1,\"reason\":\"...\"}]}。");
 		contract.AppendLine("authoritarianWeight、oligarchicWeight、egalitarianWeight 分别表示政策对君主集权、贵族议政、平民与地方广泛参与的原版政治取向，范围均为 -1 到 1，必须依据政策内容评估，三项不得全部为 0。");
 		contract.AppendLine("身份字段必须复制对应 Target。effects 必须是数组并留在同一 policy 内，且至少包含一个目标和期限有效的 effect；允许所有数值字段都为 0，不得因此拒绝或省略政策。durationDays 必须是正整数；所有数值必须是有限数值；kingdomStabilityDailyDelta 按整数语义输出。");
-		contract.AppendLine("effect 目标只能来自该 Target 的 AllowedEffectTargets，每条政策最多一个 self 和一个 foreign；foreign 可以是交战或和平外国。外国目标必须在 policyName 或 policyContent 中明确点名该王国、现任统治者、其氏族或氏族领袖、或其定居点，且数值只能来自 policyContent 明确写出的直接跨国措施；一旦正文对点名外国写出直接措施，就必须输出对应 foreign effect，不能只保留 self。玩家建议 JSON 中若有 resolvedForeignTargets，它是代码对 playerProposal 点名实体的本地归属检索结果，只提供王国映射而不代替直接措施判断。不得重定向非法目标或从同期现象、摘要、传闻及连锁推测生成外国 effect。");
+		contract.AppendLine("effect 目标只能来自该 Target 的 AllowedEffectTargets；每条政策最多涉及一个 self 王国和一个 foreign 王国，但同一王国允许按不同 subjectKind 拆成多条 effect。foreign 可以是交战或和平外国。外国目标必须在 policyName 或 policyContent 中明确点名该王国、现任统治者、其氏族或氏族领袖、或其定居点，且数值只能来自 policyContent 明确写出的直接跨国措施；一旦正文对点名外国写出直接措施，就必须输出对应 foreign effect，不能只保留 self。玩家建议 JSON 中若有 resolvedForeignTargets，它是代码对 playerProposal 点名实体的本地归属检索结果，只提供王国映射而不代替直接措施判断。不得重定向非法目标或从同期现象、摘要、传闻及连锁推测生成外国 effect。");
 		contract.AppendLine("KingdomStrategicProfile 只表示国家的稳定决策偏好，用于影响政策主题、优先级、落实手段和措辞；不得把它当作当前事实，不得覆盖 CurrentWorldFacts、MechanicalFacts 或 AllowedEffectTargets，也不得据此编造数值效果。玩家已获统治者明确接受的政策建议时，只能依据国家卡调整落实方式，不得拒绝、替换或偏离已接受的政策主题。");
-		contract.AppendLine("prosperityDailyDeltaPerTown 与 militiaDailyDeltaPerTown 按每座城镇和城堡结算；foodDailyDeltaPerTown、loyaltyDailyDeltaPerTown、securityDailyDeltaPerTown 按每座城镇结算；hearthDailyDeltaPerVillage 按每座村庄结算；kingdomStabilityDailyDelta 在政策首次正式生效时对王国整体结算一次，不随 durationDays 每日重复，自动续期不重复结算。townTaxPercent 是目标王国全部城镇和城堡主税收相对原版最终税额的百分比点变化：0 表示原版 100%，10 表示 110%，-20 表示 80%；它不是每日固定第纳尔变化，也不影响村庄收入或关税。constructionPowerDailyDelta 是直接加入每座目标城镇或城堡当天原版建造力的固定点数：0 表示不变，50 表示增加 50 点，-20 表示减少 20 点；它不是百分比，也不随原版建造力按比例变化。");
+		contract.AppendLine("subjectKind 只允许 rulerFiefs、vassalFiefs、allKingdomFiefs、rulerClan、vassalClans、allMemberClans；minClanTier/maxClanTier 可按家族等级 0-6 限制主体。定居点、税收、建造和志愿兵指标只能配领地主体；clanInfluenceDailyDelta 必须配氏族主体，并与领地指标拆成不同 effect；kingdomStabilityDailyDelta 不能指定局部主体，必须使用 allKingdomFiefs，可与同主体领地效果写在同一 effect。集权政策若强化统治氏族，通常应让封臣不受益或承受相反代价；全国动员、共同丰收等语义明确时可以双方同时受益，不得机械零和。");
+		contract.AppendLine("prosperityDailyDeltaPerTown 与 militiaDailyDeltaPerTown 按每座城镇和城堡结算；foodDailyDeltaPerTown、loyaltyDailyDeltaPerTown、securityDailyDeltaPerTown 按每座城镇结算；hearthDailyDeltaPerVillage 按每座村庄结算；kingdomStabilityDailyDelta 在政策首次正式生效时对王国整体结算一次，不随 durationDays 每日重复，自动续期不重复结算。townTaxPercent 是目标王国城镇和城堡主税收相对原版最终税额的百分比点变化。constructionPowerDailyDelta 是直接加入每座目标城镇或城堡当天原版建造力的固定点数。volunteerProductionPercent 改变空缺志愿兵槽位补充概率的百分比，volunteerUpgradeRatePercent 改变已有志愿兵向高阶兵种刷新的概率百分比；clanInfluenceDailyDelta 是目标氏族每日影响力固定变化。");
 		contract.AppendLine("derivedEventTitle、derivedEventContent、derivedEventDigest 必须描述 eventPremise 的同一现象，事件不得产生 effects。impactSummary 与 effects 只描述政策影响。JSON 字段使用 ASCII 双引号，字符串中的换行和控制字符必须转义；结构完整性优先。");
 		string fixedContract = contract.ToString().TrimEnd();
 		string dynamicContext = context?.CompactWorldContext ?? "";
@@ -4393,9 +4422,8 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 	private static List<NpcRulerPolicyEffectDto> NormalizeEffects(List<NpcRulerPolicyEffectDto> effects, NpcRulerPolicyKingdomContext target, string policyName, string policyContent)
 	{
 		List<NpcRulerPolicyEffectDto> result = new List<NpcRulerPolicyEffectDto>();
-		HashSet<string> usedTargetIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		bool issuerEffectAdded = false;
-		bool foreignEffectAdded = false;
+		HashSet<string> usedTargetSubjects = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		string selectedForeignKingdomId = "";
 		string policyText = Compact((policyName ?? "") + " " + (policyContent ?? ""));
 		foreach (NpcRulerPolicyEffectDto effect in effects ?? new List<NpcRulerPolicyEffectDto>())
 		{
@@ -4403,7 +4431,9 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			{
 				continue;
 			}
-			if (effect.DurationDays <= 0 || !TryValidateNpcPolicyEffectNumbers(effect, out int stability))
+			if (effect.DurationDays <= 0
+				|| !TryValidateNpcPolicyEffectNumbers(effect, out int stability)
+				|| !TryNormalizeNpcPolicySubject(effect, stability, out string subjectKind, out int? minClanTier, out int? maxClanTier))
 			{
 				Log("effect-normalize-rejected issuer=" + (target?.KingdomId ?? "") + " reason=invalid-numeric-or-duration");
 				continue;
@@ -4419,17 +4449,28 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 				Log("effect-normalize-rejected issuer=" + (target?.KingdomId ?? "") + " requestedTarget=" + allowedTarget.KingdomId + " reason=foreign-target-not-mentioned");
 				continue;
 			}
-			if (usedTargetIds.Contains(allowedTarget.KingdomId)
-				|| (allowedTarget.IsIssuer && issuerEffectAdded)
-				|| (!allowedTarget.IsIssuer && foreignEffectAdded))
+			if (!allowedTarget.IsIssuer
+				&& !string.IsNullOrWhiteSpace(selectedForeignKingdomId)
+				&& !string.Equals(selectedForeignKingdomId, allowedTarget.KingdomId, StringComparison.OrdinalIgnoreCase))
 			{
-				Log("effect-normalize-rejected issuer=" + (target?.KingdomId ?? "") + " requestedTarget=" + allowedTarget.KingdomId + " reason=duplicate-or-extra-target");
+				Log("effect-normalize-rejected issuer=" + (target?.KingdomId ?? "") + " requestedTarget=" + allowedTarget.KingdomId + " reason=extra-foreign-target");
+				continue;
+			}
+			string targetSubjectKey = allowedTarget.KingdomId + "\u001f" + subjectKind + "\u001f"
+				+ (minClanTier?.ToString(CultureInfo.InvariantCulture) ?? "") + "\u001f"
+				+ (maxClanTier?.ToString(CultureInfo.InvariantCulture) ?? "");
+			if (!usedTargetSubjects.Add(targetSubjectKey))
+			{
+				Log("effect-normalize-rejected issuer=" + (target?.KingdomId ?? "") + " requestedTarget=" + allowedTarget.KingdomId + " reason=duplicate-subject");
 				continue;
 			}
 			NpcRulerPolicyEffectDto normalized = new NpcRulerPolicyEffectDto
 			{
 				TargetKingdomId = allowedTarget.KingdomId,
 				TargetKingdomName = allowedTarget.KingdomName,
+				SubjectKind = subjectKind,
+				MinClanTier = minClanTier,
+				MaxClanTier = maxClanTier,
 				ProsperityDailyDeltaPerTown = effect.ProsperityDailyDeltaPerTown,
 				FoodDailyDeltaPerTown = effect.FoodDailyDeltaPerTown,
 				HearthDailyDeltaPerVillage = effect.HearthDailyDeltaPerVillage,
@@ -4439,13 +4480,17 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 				KingdomStabilityDailyDelta = stability,
 				TownTaxPercent = effect.TownTaxPercent,
 				ConstructionSpeedPercent = effect.ConstructionSpeedPercent,
+				VolunteerProductionPercent = effect.VolunteerProductionPercent,
+				VolunteerUpgradeRatePercent = effect.VolunteerUpgradeRatePercent,
+				ClanInfluenceDailyDelta = effect.ClanInfluenceDailyDelta,
 				DurationDays = effect.DurationDays,
 				Reason = Limit(effect.Reason ?? "", MaxReasonChars)
 			};
 			result.Add(normalized);
-			usedTargetIds.Add(allowedTarget.KingdomId);
-			issuerEffectAdded |= allowedTarget.IsIssuer;
-			foreignEffectAdded |= !allowedTarget.IsIssuer;
+			if (!allowedTarget.IsIssuer)
+			{
+				selectedForeignKingdomId = allowedTarget.KingdomId;
+			}
 		}
 		return result;
 	}
@@ -4524,11 +4569,53 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			|| !IsFinite(effect.SecurityDailyDeltaPerTown)
 			|| !IsFinite(effect.MilitiaDailyDeltaPerTown)
 			|| !IsFinite(effect.TownTaxPercent)
-			|| !IsFinite(effect.ConstructionSpeedPercent))
+			|| !IsFinite(effect.ConstructionSpeedPercent)
+			|| !IsFinite(effect.VolunteerProductionPercent)
+			|| !IsFinite(effect.VolunteerUpgradeRatePercent)
+			|| !IsFinite(effect.ClanInfluenceDailyDelta))
 		{
 			return false;
 		}
 		return TryConvertNpcPolicyStability(effect.KingdomStabilityDailyDelta, out stability);
+	}
+
+	private static bool TryNormalizeNpcPolicySubject(NpcRulerPolicyEffectDto effect, int stability, out string subjectKind, out int? minClanTier, out int? maxClanTier)
+	{
+		subjectKind = string.IsNullOrWhiteSpace(effect?.SubjectKind) ? NpcSubjectAllKingdomFiefs : effect.SubjectKind.Trim();
+		minClanTier = effect?.MinClanTier.HasValue == true ? Math.Max(0, Math.Min(6, effect.MinClanTier.Value)) : null;
+		maxClanTier = effect?.MaxClanTier.HasValue == true ? Math.Max(0, Math.Min(6, effect.MaxClanTier.Value)) : null;
+		if (minClanTier.HasValue && maxClanTier.HasValue && minClanTier.Value > maxClanTier.Value)
+		{
+			int swap = minClanTier.Value;
+			minClanTier = maxClanTier;
+			maxClanTier = swap;
+		}
+		bool clanSubject = string.Equals(subjectKind, NpcSubjectRulerClan, StringComparison.Ordinal)
+			|| string.Equals(subjectKind, NpcSubjectVassalClans, StringComparison.Ordinal)
+			|| string.Equals(subjectKind, NpcSubjectAllMemberClans, StringComparison.Ordinal);
+		bool fiefSubject = string.Equals(subjectKind, NpcSubjectRulerFiefs, StringComparison.Ordinal)
+			|| string.Equals(subjectKind, NpcSubjectVassalFiefs, StringComparison.Ordinal)
+			|| string.Equals(subjectKind, NpcSubjectAllKingdomFiefs, StringComparison.Ordinal);
+		if (!clanSubject && !fiefSubject)
+		{
+			return false;
+		}
+		bool hasInfluence = Math.Abs(effect?.ClanInfluenceDailyDelta ?? 0f) > 0.0001f;
+		bool hasFiefMetric = Math.Abs(effect?.ProsperityDailyDeltaPerTown ?? 0f) > 0.0001f
+			|| Math.Abs(effect?.FoodDailyDeltaPerTown ?? 0f) > 0.0001f
+			|| Math.Abs(effect?.HearthDailyDeltaPerVillage ?? 0f) > 0.0001f
+			|| Math.Abs(effect?.LoyaltyDailyDeltaPerTown ?? 0f) > 0.0001f
+			|| Math.Abs(effect?.SecurityDailyDeltaPerTown ?? 0f) > 0.0001f
+			|| Math.Abs(effect?.MilitiaDailyDeltaPerTown ?? 0f) > 0.0001f
+			|| Math.Abs(effect?.TownTaxPercent ?? 0f) > 0.0001f
+			|| Math.Abs(effect?.ConstructionSpeedPercent ?? 0f) > 0.0001f
+			|| Math.Abs(effect?.VolunteerProductionPercent ?? 0f) > 0.0001f
+			|| Math.Abs(effect?.VolunteerUpgradeRatePercent ?? 0f) > 0.0001f;
+		if ((hasInfluence && !clanSubject) || (hasFiefMetric && !fiefSubject) || (hasInfluence && hasFiefMetric))
+		{
+			return false;
+		}
+		return stability == 0 || string.Equals(subjectKind, NpcSubjectAllKingdomFiefs, StringComparison.Ordinal);
 	}
 
 	private static bool IsFinite(float value)
@@ -4692,6 +4779,9 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			SubmittedDay = Math.Max(0, policy.Day > 0 ? policy.Day : GetCurrentCampaignDay()),
 			TargetKingdomId = target.StringId ?? effect.TargetKingdomId ?? "",
 			TargetKingdomName = GetKingdomName(target),
+			SubjectKind = effect.SubjectKind,
+			MinClanTier = effect.MinClanTier,
+			MaxClanTier = effect.MaxClanTier,
 			ProsperityDailyDeltaPerTown = effect.ProsperityDailyDeltaPerTown,
 			FoodDailyDeltaPerTown = effect.FoodDailyDeltaPerTown,
 			HearthDailyDeltaPerVillage = effect.HearthDailyDeltaPerVillage,
@@ -4701,6 +4791,9 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			KingdomStabilityDailyDelta = stability,
 			TownTaxPercent = effect.TownTaxPercent,
 			ConstructionSpeedPercent = effect.ConstructionSpeedPercent,
+			VolunteerProductionPercent = effect.VolunteerProductionPercent,
+			VolunteerUpgradeRatePercent = effect.VolunteerUpgradeRatePercent,
+			ClanInfluenceDailyDelta = effect.ClanInfluenceDailyDelta,
 			DurationDays = effect.DurationDays,
 			ApplyKingdomStabilityOnce = applyKingdomStabilityOnce,
 			Reason = effect.Reason ?? policy.ImpactSummary ?? ""
@@ -5402,12 +5495,18 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 				|| Math.Abs(effect.MilitiaDailyDeltaPerTown) > 0.0001f
 				|| Math.Abs(effect.KingdomStabilityDailyDelta) > 0.0001f
 				|| Math.Abs(effect.TownTaxPercent) > 0.0001f
-				|| Math.Abs(effect.ConstructionSpeedPercent) > 0.0001f);
+				|| Math.Abs(effect.ConstructionSpeedPercent) > 0.0001f
+				|| Math.Abs(effect.VolunteerProductionPercent) > 0.0001f
+				|| Math.Abs(effect.VolunteerUpgradeRatePercent) > 0.0001f
+				|| Math.Abs(effect.ClanInfluenceDailyDelta) > 0.0001f);
 	}
 
 	private static bool HasValidEffectShape(NpcRulerPolicyEffectDto effect)
 	{
-		return effect != null && effect.DurationDays > 0 && TryValidateNpcPolicyEffectNumbers(effect, out var _);
+		return effect != null
+			&& effect.DurationDays > 0
+			&& TryValidateNpcPolicyEffectNumbers(effect, out int stability)
+			&& TryNormalizeNpcPolicySubject(effect, stability, out _, out _, out _);
 	}
 
 	private static string BuildEffectSummary(List<NpcRulerPolicyEffectDto> effects)
@@ -5429,10 +5528,26 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			if (Math.Abs(effect.KingdomStabilityDailyDelta) > 0.0001f) values.Add("稳定度（生效时一次性） " + FormatSigned(effect.KingdomStabilityDailyDelta));
 			if (Math.Abs(effect.TownTaxPercent) > 0.0001f) values.Add("主税收" + FormatSigned(effect.TownTaxPercent) + "%");
 			if (Math.Abs(effect.ConstructionSpeedPercent) > 0.0001f) values.Add("建造速度" + FormatSigned(effect.ConstructionSpeedPercent));
-			return "【" + FirstNonEmpty(effect.TargetKingdomName, effect.TargetKingdomId, "目标王国") + "】"
+			if (Math.Abs(effect.VolunteerProductionPercent) > 0.0001f) values.Add("志愿兵补充" + FormatSigned(effect.VolunteerProductionPercent) + "%");
+			if (Math.Abs(effect.VolunteerUpgradeRatePercent) > 0.0001f) values.Add("志愿兵精锐化" + FormatSigned(effect.VolunteerUpgradeRatePercent) + "%");
+			if (Math.Abs(effect.ClanInfluenceDailyDelta) > 0.0001f) values.Add("每日影响力" + FormatSigned(effect.ClanInfluenceDailyDelta));
+			return "【" + FirstNonEmpty(effect.TargetKingdomName, effect.TargetKingdomId, "目标王国") + "/" + BuildNpcSubjectDisplayText(effect.SubjectKind) + "】"
 				+ (values.Count <= 0 ? "无持续数值变化" : string.Join(" ", values))
 				+ "，持续" + effect.DurationDays.ToString(CultureInfo.InvariantCulture) + "天";
 		}));
+	}
+
+	private static string BuildNpcSubjectDisplayText(string subjectKind)
+	{
+		return (subjectKind ?? "").Trim() switch
+		{
+			NpcSubjectRulerClan => "统治氏族",
+			NpcSubjectVassalClans => "封臣氏族",
+			NpcSubjectAllMemberClans => "全部成员氏族",
+			NpcSubjectRulerFiefs => "统治氏族领地",
+			NpcSubjectVassalFiefs => "封臣领地",
+			_ => "王国全部领地"
+		};
 	}
 
 	private void NormalizeGenerationClock(int currentDay, int currentHour)
