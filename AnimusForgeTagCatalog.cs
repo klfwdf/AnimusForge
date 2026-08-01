@@ -124,6 +124,7 @@ internal static class AnimusForgeTagCatalog
 		}
 		ScanCurrentAssembly(entries);
 		AddSiegeFallbackRules(entries);
+		AddVillageAftermathRules(entries);
 		snapshot.Entries.AddRange(entries.Values.OrderBy((AnimusForgeTagCatalogEntry x) => CategoryOrder(x.Category)).ThenBy((AnimusForgeTagCatalogEntry x) => x.Tag, StringComparer.OrdinalIgnoreCase));
 		for (int i = 0; i < snapshot.Entries.Count; i++)
 		{
@@ -455,6 +456,17 @@ internal static class AnimusForgeTagCatalog
 		}
 	}
 
+	private static void AddVillageAftermathRules(Dictionary<string, AnimusForgeTagCatalogEntry> entries)
+	{
+		foreach (VillageAftermathActionKind action in VillageAftermathActionTagCatalog.GetCanonicalOrder())
+		{
+			if (VillageAftermathActionTagCatalog.TryGetCanonicalTag(action, out string tag))
+			{
+				AddTag(entries, tag, "后处理/GCCZ村庄", "仅在有权限的普通村庄场景中，由玩家明确命令触发：" + action, "VillageAftermathActionTagCatalog", VillageAftermathRuntimePromptProfile.RuleId);
+			}
+		}
+	}
+
 	private static void AddBuiltInEntries(Dictionary<string, AnimusForgeTagCatalogEntry> entries)
 	{
 		AddTag(entries, "正文（自然语言）", "正文", "不是动作标签。标签测试输入框里除动作标签外的文本会作为 NPC 可见正文显示或写入历史。", "内置说明", "");
@@ -572,6 +584,10 @@ internal static class AnimusForgeTagCatalog
 		if (text.StartsWith("[ACTION:SIEGE_", StringComparison.OrdinalIgnoreCase) || text.StartsWith("[ACTION:宽恕", StringComparison.OrdinalIgnoreCase) || text.StartsWith("[ACTION:救济", StringComparison.OrdinalIgnoreCase) || text.StartsWith("[ACTION:宣抚", StringComparison.OrdinalIgnoreCase) || text.StartsWith("[ACTION:盟誓", StringComparison.OrdinalIgnoreCase) || text.StartsWith("[ACTION:安兵", StringComparison.OrdinalIgnoreCase) || text.StartsWith("[ACTION:召集", StringComparison.OrdinalIgnoreCase) || text.StartsWith("[ACTION:抢钱", StringComparison.OrdinalIgnoreCase) || text.StartsWith("[ACTION:搜掠", StringComparison.OrdinalIgnoreCase) || text.StartsWith("[ACTION:血洗", StringComparison.OrdinalIgnoreCase) || text.StartsWith("[ACTION:殖民", StringComparison.OrdinalIgnoreCase))
 		{
 			return "后处理/GCCZ";
+		}
+		if (text.StartsWith("[VILLAGE_ACTION:", StringComparison.OrdinalIgnoreCase))
+		{
+			return "后处理/GCCZ村庄";
 		}
 		if (text.StartsWith("[ACTION:", StringComparison.OrdinalIgnoreCase)
 			|| text.Equals("[A:H_J_P_P_C/L]", StringComparison.OrdinalIgnoreCase)

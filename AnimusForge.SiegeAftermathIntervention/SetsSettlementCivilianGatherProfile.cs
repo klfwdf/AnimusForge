@@ -3,10 +3,10 @@ using System;
 namespace AnimusForge.SiegeAftermathIntervention;
 
 /// <summary>
-/// Dependency-free policy for gathering civilians during an ordinary SETS town visit.
+/// Dependency-free policy for gathering civilians during an ordinary SETS town or village visit.
 /// Live mission-agent selection and formation assignment remain in the fused AF adapter.
 /// </summary>
-public static class SetsTownCivilianGatherProfile
+public static class SetsSettlementCivilianGatherProfile
 {
     // FormationClass.Cavalry, displayed as command group 3.
     public const int NativeCommandFormationClassIndex = 2;
@@ -21,9 +21,9 @@ public static class SetsTownCivilianGatherProfile
 
     public const uint MessageColor = 0xFFB6F7A8u;
 
-    public const string PlayerCommandSource = "sets_town_civilian_gather_player_command";
+    public const string PlayerCommandSource = "sets_settlement_civilian_gather_player_command";
 
-    public const string AiActionTagSource = "sets_town_civilian_gather_action_tag";
+    public const string AiActionTagSource = "sets_settlement_civilian_gather_action_tag";
 
     public const string NoEligibleCivilianMessage = "【SETS】当前没有可召集的成年平民。";
 
@@ -48,6 +48,10 @@ public static class SetsTownCivilianGatherProfile
             || Contains(normalized, "居民")
             || Contains(normalized, "百姓")
             || Contains(normalized, "城里人")
+            || Contains(normalized, "村民")
+            || Contains(normalized, "乡民")
+            || Contains(normalized, "村里人")
+            || Contains(normalized, "村中人")
             || Contains(normalized, "大家");
         bool givesGatherOrder = Contains(normalized, "召集")
             || Contains(normalized, "集合")

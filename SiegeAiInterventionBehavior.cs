@@ -1950,7 +1950,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("SiegeAiIntervention", "Maintaining GCCZ town civilian scene gold drops failed: " + ex.Message);
+			Logger.Log("SiegeAiIntervention", "Maintaining GCCZ settlement civilian scene gold drops failed: " + ex.Message);
 		}
 	}
 
@@ -3118,7 +3118,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		if (SettlementEntryTroopSelectionBehavior.TryHandleTownCivilianGatherPlayerCommandForExternal(playerText, targetAgentIndex))
+		if (SettlementEntryTroopSelectionBehavior.TryHandleSettlementCivilianGatherPlayerCommandForExternal(playerText, targetAgentIndex))
 		{
 			actionHandled = true;
 			return true;
@@ -3176,7 +3176,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				if (hasTownTag
 					&& GatherCiviliansTagRegex.IsMatch(text)
-					&& SettlementEntryTroopSelectionBehavior.TryGatherTownCiviliansForExternal(targetAgentIndex, SetsTownCivilianGatherProfile.AiActionTagSource))
+					&& SettlementEntryTroopSelectionBehavior.TryGatherSettlementCiviliansForExternal(targetAgentIndex, SetsSettlementCivilianGatherProfile.AiActionTagSource))
 				{
 					text = StripSiegeTags(text);
 					actionHandled = true;
@@ -12040,12 +12040,12 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			if (SceneTauntMissionBehavior.TrySpawnSceneGoldDropForExternal(affectedAgent, agentState, source ?? "gccz_town_civilian_down"))
 			{
-				Logger.Log("SiegeAiIntervention", "Spawned GCCZ town civilian scene gold drop via AF SceneTaunt bridge. Agent=" + affectedAgent.Index + ", State=" + agentState + ", Source=" + (source ?? "N/A"));
+				Logger.Log("SiegeAiIntervention", "Spawned GCCZ settlement civilian scene gold drop via AF SceneTaunt bridge. Agent=" + affectedAgent.Index + ", State=" + agentState + ", Source=" + (source ?? "N/A"));
 			}
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("SiegeAiIntervention", "Spawning GCCZ town civilian scene gold drop failed: " + ex.Message);
+			Logger.Log("SiegeAiIntervention", "Spawning GCCZ settlement civilian scene gold drop failed: " + ex.Message);
 		}
 	}
 

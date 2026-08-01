@@ -31,22 +31,27 @@ internal static class AfGcczShoutBridge
 
 	internal static bool IsActive()
 	{
+		return IsTownOrCastleAftermathActive() || VillageAftermathBehavior.IsActive();
+	}
+
+	private static bool IsTownOrCastleAftermathActive()
+	{
 		return SiegeAiInterventionBehavior.ShouldRunSiegeInterventionPostprocessForExternal();
 	}
 
 	internal static bool ShouldUseExclusivePreprocessRuleRouting()
 	{
-		return IsActive();
+		return IsTownOrCastleAftermathActive();
 	}
 
 	internal static bool ShouldUseExclusivePostprocessRuleRouting()
 	{
-		return IsActive();
+		return IsTownOrCastleAftermathActive();
 	}
 
 	internal static bool ShouldBypassPreprocessForActiveScene()
 	{
-		return IsActive();
+		return IsTownOrCastleAftermathActive();
 	}
 
 	internal static bool IsExclusivePreprocessRuleId(string ruleId)
@@ -116,6 +121,7 @@ internal static class AfGcczShoutBridge
 			return false;
 		}
 		return ruleInspectionBlock.IndexOf(InjectedRuleBlockMarker, StringComparison.OrdinalIgnoreCase) >= 0
+			|| ruleInspectionBlock.IndexOf(VillageAftermathRuntimePromptProfile.InjectedRuleBlockMarker, StringComparison.OrdinalIgnoreCase) >= 0
 			|| ruleInspectionBlock.IndexOf("【附加规则:" + RuleId + "】", StringComparison.OrdinalIgnoreCase) >= 0;
 	}
 
@@ -184,12 +190,16 @@ internal static class AfGcczShoutBridge
 			{
 				return;
 			}
-			string siegePrompt = SiegeAiInterventionBehavior.BuildRuntimePromptForPromptContext(targetHero, targetCharacter, targetAgentIndex, cultureIdOverride);
+			string siegePrompt = VillageAftermathBehavior.IsActive()
+				? VillageAftermathBehavior.BuildRuntimePromptForExternal()
+				: SiegeAiInterventionBehavior.BuildRuntimePromptForPromptContext(targetHero, targetCharacter, targetAgentIndex, cultureIdOverride);
 			if (string.IsNullOrWhiteSpace(siegePrompt))
 			{
 				return;
 			}
-			string marker = SiegeAiInterventionBehavior.GetRuntimeInjectedRuleBlockMarkerForExternal();
+			string marker = VillageAftermathBehavior.IsActive()
+				? VillageAftermathRuntimePromptProfile.InjectedRuleBlockMarker
+				: SiegeAiInterventionBehavior.GetRuntimeInjectedRuleBlockMarkerForExternal();
 			string siegeSection = (string.IsNullOrWhiteSpace(marker) ? InjectedRuleBlockMarker : marker.Trim()) + "\n" + siegePrompt.Trim();
 			shoutPromptContext.Extras = string.IsNullOrWhiteSpace(shoutPromptContext.Extras)
 				? siegeSection
@@ -211,6 +221,10 @@ internal static class AfGcczShoutBridge
 		{
 			return null;
 		}
+		if (VillageAftermathBehavior.IsActive())
+		{
+			return VillageAftermathBehavior.BuildPostprocessRulesForExternal(replyIsDirectPlayerResponse);
+		}
 		return SiegeAiInterventionBehavior.BuildRuntimePostprocessRulesForExternal(
 			targetAgentIndex,
 			replyIsDirectPlayerResponse,
@@ -223,21 +237,31 @@ internal static class AfGcczShoutBridge
 		bool replyIsDirectPlayerResponse,
 		string playerText = null)
 	{
-		return selected
-			? SiegeAiInterventionBehavior.BuildRuntimePostprocessContextForExternal(targetAgentIndex, replyIsDirectPlayerResponse, playerText)
-			: string.Empty;
+		if (!selected)
+		{
+			return string.Empty;
+		}
+		return VillageAftermathBehavior.IsActive()
+			? VillageAftermathBehavior.BuildPostprocessContextForExternal(replyIsDirectPlayerResponse)
+			: SiegeAiInterventionBehavior.BuildRuntimePostprocessContextForExternal(targetAgentIndex, replyIsDirectPlayerResponse, playerText);
 	}
 
 	internal static string BuildImmediateReactionIdentityOverride(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex)
 	{
-		return IsActive()
+		return IsTownOrCastleAftermathActive()
 			? SiegeAiInterventionBehavior.BuildImmediateReactionIdentityOverrideForExternal(targetHero, targetCharacter, targetAgentIndex)
 			: string.Empty;
 	}
 
 	internal static string NormalizePostprocessTags(bool selected, string raw, List<PostprocessRuleEntry> rules)
 	{
-		return selected ? SiegeAiInterventionBehavior.NormalizeSiegeInterventionPostprocessTagsForExternal(raw, rules) : string.Empty;
+		if (!selected)
+		{
+			return string.Empty;
+		}
+		return VillageAftermathBehavior.IsActive()
+			? VillageAftermathBehavior.NormalizePostprocessTagsForExternal(raw, rules)
+			: SiegeAiInterventionBehavior.NormalizeSiegeInterventionPostprocessTagsForExternal(raw, rules);
 	}
 
 	internal static bool TryProcessActionTags(
@@ -250,6 +274,14 @@ internal static class AfGcczShoutBridge
 		string playerText = null,
 		string speakerReplyText = null)
 	{
+		if (VillageAftermathBehavior.IsActive())
+		{
+			return VillageAftermathBehavior.TryProcessActionTagsForExternal(
+				targetAgentIndex,
+				ref text,
+				out actionHandled,
+				replyIsDirectPlayerResponse);
+		}
 		return SiegeAiInterventionBehavior.TryProcessAiActionTags(
 			targetHero,
 			targetCharacter,
@@ -268,7 +300,9 @@ internal static class AfGcczShoutBridge
 
 	internal static bool ShouldCaptureSharedReliefTransfer(int targetAgentIndex)
 	{
-		return targetAgentIndex >= 0 && SiegeAiInterventionBehavior.ShouldCapturePlayerGiveForSharedCivilianReliefForExternal();
+		return targetAgentIndex >= 0
+			&& IsTownOrCastleAftermathActive()
+			&& SiegeAiInterventionBehavior.ShouldCapturePlayerGiveForSharedCivilianReliefForExternal();
 	}
 
 	internal static bool CaptureSharedReliefGoldTransfer(int targetAgentIndex, int goldAmount)
