@@ -9131,7 +9131,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		return Regex.IsMatch(GiveAssetTagCodec.StripTags(text), "\\[(?:ACTION:(?:GIVE_ASSET|KINGDOM_SERVICE|JOIN_MERCENARY|JOIN_VASSAL|TRADE_TRUST|KING_ABDICATE_TO_PLAYER|VASSALAGE|KINGDOM_ANNEX|AGENDA|WORLDMAP_ORDER|DUEL|ISSUE_|QUEST_TURN_IN|NOBLE_GATHERING|NOBLE_PRISONER_EXECUTE|TROOP_INSPECTION_SLAUGHTER_PRISONERS|INTIMACY_INTERNAL|MEETING_TAUNT_BATTLE|LET_PLAYER_GO|ENCOUNTER_RELEASE_PLAYER|NPC_SURRENDER|SIEGE_|6|召集)[^\\]]*|A:(?:H_J_P_P_(?:C&L|[CL])|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD:[^\\]]*|ADP:[^\\]]*)\\]", RegexOptions.IgnoreCase);
 	}
 
-	private bool TryApplyDeferredScenePostprocessActionTagsDirectly(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, ref string tags, string playerText, string npcReplyText, string chainName)
+	private bool TryApplyDeferredScenePostprocessActionTagsDirectly(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, ref string tags, string playerText, string npcReplyText, string chainName, bool replyIsDirectPlayerResponse)
 	{
 		if (!HasDeferredDirectGameActionTag(tags))
 		{
@@ -9139,7 +9139,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		}
 		string before = tags ?? "";
 		Logger.Log("ShoutBehavior", "[DeferredPostprocess] direct_action_apply start target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown") + " agent=" + targetAgentIndex + " tags=" + before.Replace("\r", "\\r").Replace("\n", "\\n"));
-		NoblePrisonerEscortBehavior.TryProcessSceneExecutionTag(targetAgentIndex, playerText, ref tags);
+		NoblePrisonerEscortBehavior.TryProcessSceneExecutionTag(targetAgentIndex, replyIsDirectPlayerResponse, ref tags);
 		if (string.IsNullOrWhiteSpace(tags))
 		{
 			return !string.Equals(before, tags ?? "", StringComparison.Ordinal);
@@ -16694,7 +16694,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		targetHero = targetHero ?? targetCharacter?.HeroObject;
 		int resolvedTargetAgentIndex = targetAgentIndexOverride >= 0 ? targetAgentIndexOverride : TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
-		NoblePrisonerEscortBehavior.TryProcessSceneExecutionTag(resolvedTargetAgentIndex, latestPlayerText, ref content);
+		NoblePrisonerEscortBehavior.TryProcessSceneExecutionTag(resolvedTargetAgentIndex, true, ref content);
 		TroopInspectionBehavior.TryProcessPrisonerSlaughterActionTagForExternal(
 			resolvedTargetAgentIndex,
 			ref content);
@@ -17887,12 +17887,15 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		bool meetingReleaseRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "encounter_release_player");
 		bool vanillaIssueRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "vanilla_issue");
 		bool heroJoinPartyRuleInjected = kingdomServiceRuleInjected;
-		bool sceneMechanismRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "scene_mechanism_actions");
+		bool genericSceneMechanismRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "scene_mechanism_actions");
+		bool noblePrisonerExecutionRuleInjected = shouldRecordPlayerInput
+			&& HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "noble_prisoner_execution");
 		if (!CanUseSceneMechanismPostprocessForSpeaker(nativeTargetAgentIndex)
 			|| (AIConfigHandler.ShouldExcludeSceneMoveRuleForCurrentMission() && !shouldRecordPlayerInput))
 		{
-			sceneMechanismRuleInjected = false;
+			genericSceneMechanismRuleInjected = false;
 		}
+		bool sceneMechanismRuleInjected = genericSceneMechanismRuleInjected || noblePrisonerExecutionRuleInjected;
 		bool partyTransferRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "party_transfer");
 		bool voteDealRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "kingdom_agenda");
 		bool customPolicyAgendaRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, CustomPolicyAgendaPostprocessRuleId);
@@ -18008,9 +18011,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		bool meetingReleasePostprocessSelected = meetingReleaseRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "encounter_release_player");
 		bool vanillaIssuePostprocessSelected = vanillaIssueRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "vanilla_issue");
 		bool heroJoinPartyPostprocessSelected = kingdomServicePostprocessSelected;
-		bool sceneMechanismPostprocessSelected = (sceneMechanismRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "scene_mechanism_actions"))
+		bool genericSceneMechanismPostprocessSelected = (genericSceneMechanismRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "scene_mechanism_actions"))
 			&& CanUseSceneMechanismPostprocessForSpeaker(nativeTargetAgentIndex)
 			&& (!AIConfigHandler.ShouldExcludeSceneMoveRuleForCurrentMission() || shouldRecordPlayerInput);
+		bool noblePrisonerExecutionPostprocessSelected = shouldRecordPlayerInput && noblePrisonerExecutionRuleInjected;
+		bool sceneMechanismPostprocessSelected = genericSceneMechanismPostprocessSelected || noblePrisonerExecutionPostprocessSelected;
 		bool partyTransferPostprocessSelected = partyTransferRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "party_transfer");
 		bool voteDealPostprocessSelected = voteDealRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "kingdom_agenda");
 		bool customPolicyAgendaPostprocessSelected = shouldRecordPlayerInput && (customPolicyAgendaRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, CustomPolicyAgendaPostprocessRuleId));
@@ -18039,7 +18044,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			nativeDuelStakeOptions = RewardSystemBehavior.Instance.BuildDuelStakeOptionsForAI(nativeDuelTargetHero);
 		}
-		List<PostprocessRuleEntry> nativeSceneMechanismPostprocessRules = sceneMechanismPostprocessSelected ? BuildRuntimeSceneMechanismPostprocessRulesForScene(npc, nativeSceneSummonTargets, nativeSceneGuideTargets) : null;
+		List<PostprocessRuleEntry> nativeSceneMechanismPostprocessRules = sceneMechanismPostprocessSelected
+			? BuildRuntimeSceneMechanismPostprocessRulesForScene(
+				npc,
+				nativeSceneSummonTargets,
+				nativeSceneGuideTargets,
+				includeGenericRules: genericSceneMechanismPostprocessSelected)
+			: null;
 		string runtimeTargetKingdomId = ResolveCourierRuntimeTargetKingdomId(targetHero, targetCharacter);
 		string runtimeTargetHeroId = (targetHero?.StringId ?? targetCharacter?.HeroObject?.StringId ?? "").Trim();
 		string runtimeTargetCharacterId = (targetCharacter?.StringId ?? "").Trim();
@@ -22975,7 +22986,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return stringBuilder.ToString().Trim();
 	}
 
-	private List<PostprocessRuleEntry> BuildRuntimeSceneMechanismPostprocessRulesForScene(NpcDataPacket speaker, List<SceneSummonPromptTarget> summonTargets, List<SceneGuidePromptTarget> guideTargets)
+	private List<PostprocessRuleEntry> BuildRuntimeSceneMechanismPostprocessRulesForScene(NpcDataPacket speaker, List<SceneSummonPromptTarget> summonTargets, List<SceneGuidePromptTarget> guideTargets, bool includeGenericRules = true)
 	{
 		List<PostprocessRuleEntry> list = new List<PostprocessRuleEntry>();
 		int num = speaker?.AgentIndex ?? (-1);
@@ -22989,7 +23000,16 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				TroopInspectionPrisonerSlaughterProfile.ActionTag,
 				inspectionSlaughterRule);
 		}
-		if (AIConfigHandler.ShouldExcludeSceneMoveRuleForCurrentMission())
+		string noblePrisonerExecutionRule = NoblePrisonerEscortBehavior.BuildSceneExecutionPostprocessRule(num);
+		if (!string.IsNullOrWhiteSpace(noblePrisonerExecutionRule))
+		{
+			AddSceneMechanismPostprocessRule(
+				list,
+				hashSet,
+				NoblePrisonerEscortBehavior.ExecuteActionTag,
+				noblePrisonerExecutionRule);
+		}
+		if (!includeGenericRules || AIConfigHandler.ShouldExcludeSceneMoveRuleForCurrentMission())
 		{
 			return list;
 		}
@@ -23131,6 +23151,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return list;
 		}
 		HashSet<string> hashSet = new HashSet<string>(list, StringComparer.OrdinalIgnoreCase);
+		if ((raw ?? string.Empty).IndexOf(NoblePrisonerEscortBehavior.ExecuteActionTag, StringComparison.OrdinalIgnoreCase) >= 0
+			&& hashSet.Contains(NoblePrisonerEscortBehavior.ExecuteActionTag))
+		{
+			return new List<string>
+			{
+				NoblePrisonerEscortBehavior.ExecuteActionTag
+			};
+		}
 		if (TroopInspectionPrisonerSlaughterActionTagRegex.IsMatch(raw ?? "")
 			&& hashSet.Contains(TroopInspectionPrisonerSlaughterProfile.ActionTag))
 		{
@@ -23206,6 +23234,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		bool setsOwnedMassacreStopRuleEnabled = false;
 		bool setsOwnedMassacreCancelRequestRuleEnabled = false;
 		bool inspectionPrisonerSlaughterRuleEnabled = false;
+		bool noblePrisonerExecutionRuleEnabled = false;
 		foreach (PostprocessRuleEntry rule in rules ?? new List<PostprocessRuleEntry>())
 		{
 			string text = (rule?.Tag ?? "").Trim();
@@ -23251,6 +23280,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			if (string.Equals(text, TroopInspectionPrisonerSlaughterProfile.ActionTag, StringComparison.OrdinalIgnoreCase))
 			{
 				inspectionPrisonerSlaughterRuleEnabled = true;
+				continue;
+			}
+			if (string.Equals(text, NoblePrisonerEscortBehavior.ExecuteActionTag, StringComparison.OrdinalIgnoreCase))
+			{
+				noblePrisonerExecutionRuleEnabled = true;
 				continue;
 			}
 			if (text.StartsWith("[ACTION:SCENE_SUMMON:", StringComparison.OrdinalIgnoreCase))
@@ -23306,6 +23340,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			&& hashSet3.Add(TroopInspectionPrisonerSlaughterProfile.ActionTag))
 		{
 			actionTags.Add(TroopInspectionPrisonerSlaughterProfile.ActionTag);
+		}
+		if (noblePrisonerExecutionRuleEnabled
+			&& (raw ?? string.Empty).IndexOf(NoblePrisonerEscortBehavior.ExecuteActionTag, StringComparison.OrdinalIgnoreCase) >= 0
+			&& hashSet3.Add(NoblePrisonerEscortBehavior.ExecuteActionTag))
+		{
+			actionTags.Add(NoblePrisonerEscortBehavior.ExecuteActionTag);
 		}
 		List<string> list3 = new List<string>();
 		HashSet<string> hashSet4 = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -23841,11 +23881,16 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				(rule?.Tag ?? "").Trim(),
 				TroopInspectionPrisonerSlaughterProfile.ActionTag,
 				StringComparison.OrdinalIgnoreCase));
+		bool noblePrisonerExecutionRuleAvailable = (sceneMechanismRules ?? new List<PostprocessRuleEntry>())
+			.Any(rule => string.Equals(
+				(rule?.Tag ?? "").Trim(),
+				NoblePrisonerEscortBehavior.ExecuteActionTag,
+				StringComparison.OrdinalIgnoreCase));
 		if (sceneMechanismRuleInjected || excludeSceneMoveRule)
 		{
 			text = StripSceneMechanismActionTagsForScene(text);
 		}
-		if (excludeSceneMoveRule && !inspectionSlaughterRuleAvailable)
+		if (excludeSceneMoveRule && !inspectionSlaughterRuleAvailable && !noblePrisonerExecutionRuleAvailable)
 		{
 			sceneMechanismRuleInjected = false;
 			sceneMechanismRules = null;
@@ -23856,10 +23901,18 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			sceneMechanismRuleInjected = true;
 			sceneMechanismRules = sceneMechanismRules
-				.Where(rule => string.Equals(
-					(rule?.Tag ?? "").Trim(),
-					TroopInspectionPrisonerSlaughterProfile.ActionTag,
-					StringComparison.OrdinalIgnoreCase))
+				.Where(rule =>
+				{
+					string tag = (rule?.Tag ?? "").Trim();
+					return string.Equals(
+						tag,
+						TroopInspectionPrisonerSlaughterProfile.ActionTag,
+						StringComparison.OrdinalIgnoreCase)
+						|| string.Equals(
+							tag,
+							NoblePrisonerEscortBehavior.ExecuteActionTag,
+							StringComparison.OrdinalIgnoreCase);
+				})
 				.ToList();
 			sceneSummonTargets = null;
 			sceneGuideTargets = null;
@@ -25013,7 +25066,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 								text3 = ExtractDeferredSceneActionTags(text3);
 							}
 						}
-						if (TryApplyDeferredScenePostprocessActionTagsDirectly(speakingHero, npcCharacter, runtimeTargetAgentIndex, ref text3, replyIsDirectPlayerResponse ? playerText : string.Empty, replySnapshot, scenePostprocessChainName))
+						if (TryApplyDeferredScenePostprocessActionTagsDirectly(speakingHero, npcCharacter, runtimeTargetAgentIndex, ref text3, replyIsDirectPlayerResponse ? playerText : string.Empty, replySnapshot, scenePostprocessChainName, replyIsDirectPlayerResponse))
 						{
 							text3 = ExtractDeferredSceneActionTags(text3);
 						}
@@ -25978,6 +26031,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				bool vanillaIssueRuleInjected = false;
 				bool heroJoinPartyRuleInjected = false;
 				bool sceneMechanismRuleInjected = false;
+				bool genericSceneMechanismRuleInjected = false;
+				bool noblePrisonerExecutionRuleInjected = false;
 				bool partyTransferRuleInjected = false;
 				bool voteDealRuleInjected = false;
 				bool customPolicyAgendaRuleInjected = false;
@@ -26072,12 +26127,15 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					meetingReleaseRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "encounter_release_player");
 					vanillaIssueRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "vanilla_issue");
 					heroJoinPartyRuleInjected = kingdomServiceRuleInjected;
-					sceneMechanismRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "scene_mechanism_actions");
+					genericSceneMechanismRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "scene_mechanism_actions");
+					noblePrisonerExecutionRuleInjected = firstTurn
+						&& HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "noble_prisoner_execution");
 					if (!CanUseSceneMechanismPostprocessForSpeaker(currentSpeaker.AgentIndex)
 						|| (AIConfigHandler.ShouldExcludeSceneMoveRuleForCurrentMission() && !firstTurn))
 					{
-						sceneMechanismRuleInjected = false;
+						genericSceneMechanismRuleInjected = false;
 					}
+					sceneMechanismRuleInjected = genericSceneMechanismRuleInjected || noblePrisonerExecutionRuleInjected;
 					partyTransferRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "party_transfer");
 					voteDealRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "kingdom_agenda");
 					customPolicyAgendaRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, CustomPolicyAgendaPostprocessRuleId);
@@ -26129,7 +26187,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					}
 					if (sceneMechanismRuleInjected)
 					{
-						sceneMechanismPostprocessRules = BuildRuntimeSceneMechanismPostprocessRulesForScene(currentSpeaker, sceneSummonTargets, sceneGuideTargets);
+						sceneMechanismPostprocessRules = BuildRuntimeSceneMechanismPostprocessRulesForScene(
+							currentSpeaker,
+							sceneSummonTargets,
+							sceneGuideTargets,
+							includeGenericRules: genericSceneMechanismRuleInjected);
 					}
 					string taskSystemBlock = BuildSceneSingleNpcTaskSystemBlock(GetSceneNpcHistoryNameForPrompt(currentSpeaker), multiNpcScene, minTokens, maxTokens, singleReplyPlayerName);
 					string layeredPrompt = BuildSceneCompositeUserBlock("", roleTopIntro, taskSystemBlock, ctx?.PreprocessExcludedRuleBlock);
@@ -26225,9 +26287,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					bool meetingReleasePostprocessSelected = meetingReleaseRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "encounter_release_player");
 					bool vanillaIssuePostprocessSelected = vanillaIssueRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "vanilla_issue");
 					bool heroJoinPartyPostprocessSelected = kingdomServicePostprocessSelected;
-					bool sceneMechanismPostprocessSelected = (sceneMechanismRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "scene_mechanism_actions"))
+					bool genericSceneMechanismPostprocessSelected = (genericSceneMechanismRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "scene_mechanism_actions"))
 						&& CanUseSceneMechanismPostprocessForSpeaker(currentSpeaker.AgentIndex)
 						&& (!AIConfigHandler.ShouldExcludeSceneMoveRuleForCurrentMission() || firstTurn);
+					bool noblePrisonerExecutionPostprocessSelected = firstTurn && noblePrisonerExecutionRuleInjected;
+					bool sceneMechanismPostprocessSelected = genericSceneMechanismPostprocessSelected || noblePrisonerExecutionPostprocessSelected;
 					bool partyTransferPostprocessSelected = partyTransferRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "party_transfer");
 					bool voteDealPostprocessSelected = voteDealRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "kingdom_agenda");
 					bool replyIsDirectPlayerResponse = firstTurn;
@@ -26579,7 +26643,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						bool noblePrisonerExecutionQueued = allowPlayerDirectedActions
 							&& NoblePrisonerEscortBehavior.TryProcessSceneExecutionTag(
 								matchedNpc.AgentIndex,
-								playerDirectedActionText,
+								!string.IsNullOrWhiteSpace(playerDirectedActionText),
 								ref content);
 						bool flag = false;
 						bool flagMeetingRelease = false;

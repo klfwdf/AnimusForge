@@ -383,20 +383,33 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 			return string.Empty;
 		}
 		return "【贵族俘虏场景处决】当前回应者“" + (hero.Name?.ToString() ?? "俘虏")
-			+ "”是玩家带入场景且仍由玩家主队拘押的英雄俘虏。无论当前使用公开范围对话还是 AF 单独对话，只有玩家在本轮直接明确命令处决、斩首或杀死当前俘虏时，才根据回应语义在回复末尾输出 "
+			+ "”是玩家带入场景且仍由玩家主队拘押的英雄俘虏。无论当前使用公开范围对话还是 AF 单独对话，只有当前回复直接回应玩家本轮明确要求杀死当前俘虏的命令时，才由 AI 按完整语义在回复末尾输出 "
 			+ ExecuteActionTag + "。普通谈话、一般威胁、玩笑、转述、NPC 自主提议、历史内容或含糊表达绝不能输出该标签；该标签只请求原版处刑确认，不代表玩家已经确认。";
 	}
 
-	internal static bool TryProcessSceneExecutionTag(int agentIndex, string playerText, ref string content)
+	internal static string BuildSceneExecutionPostprocessRule(int agentIndex)
+	{
+		if (!TryGetEscortedHero(agentIndex, out Hero hero, out Agent agent)
+			|| hero == null
+			|| agent == null)
+		{
+			return string.Empty;
+		}
+		return "仅针对当前直接回应的随行贵族俘虏“"
+			+ (hero.Name?.ToString() ?? "俘虏")
+			+ "”。由 AI 按玩家本轮发言与该俘虏本轮回复的完整语义判断：只有玩家明确要求杀死当前俘虏，且回复直接承接这项命令时输出。提问、假设、一般威胁、反悔、否定、谈论他人、NPC 自主提议、接力闲聊或历史内容均不得输出。标签只打开原版处刑确认，不能代替玩家最终确认。";
+	}
+
+	internal static bool TryProcessSceneExecutionTag(int agentIndex, bool replyIsDirectPlayerResponse, ref string content)
 	{
 		if (string.IsNullOrWhiteSpace(content) || !ExecuteActionTagRegex.IsMatch(content))
 		{
 			return false;
 		}
 		content = ExecuteActionTagRegex.Replace(content, "").Trim();
-		if (!ContainsExplicitExecutionIntent(playerText))
+		if (!replyIsDirectPlayerResponse)
 		{
-			NoblePrisonerEscortLog.Log("Rejected execution tag without explicit player intent. agent=" + agentIndex);
+			NoblePrisonerEscortLog.Log("Rejected execution tag outside direct player response. agent=" + agentIndex);
 			return false;
 		}
 		if (!TryGetEscortedHero(agentIndex, out Hero hero, out Agent agent))
@@ -422,7 +435,7 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 		}
 		string text = (playerText ?? string.Empty).Trim();
 		return text.Length > 0
-			&& !ContainsExplicitExecutionIntent(text)
+			&& !ContainsExecutionIntentForDuelConflict(text)
 			&& DuelIntentTerms.Any(term => text.IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0);
 	}
 
@@ -793,7 +806,7 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 		return result;
 	}
 
-	private static bool ContainsExplicitExecutionIntent(string playerText)
+	private static bool ContainsExecutionIntentForDuelConflict(string playerText)
 	{
 		string text = (playerText ?? string.Empty).Trim();
 		return text.Length > 0
