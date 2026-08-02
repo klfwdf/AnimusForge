@@ -38,6 +38,8 @@ public sealed partial class CustomPolicyBehavior
 	private const string PolicyConditionRulingClanTierAtLeast = "rulingClanTierAtLeast";
 	private const string PolicyConditionSettlementCountAtLeast = "settlementCountAtLeast";
 	private const string PolicyConditionKingdomStabilityAtLeast = "kingdomStabilityAtLeast";
+	private const string PolicyConditionTargetFiefCountAtMost = "targetFiefCountAtMost";
+	private const string PolicyConditionTargetKingdomEliminated = "targetKingdomEliminated";
 
 	private readonly Dictionary<string, string> _policyLifecycleStates = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 	private int _lastPolicyLifecycleAdvancedDay = -1;
@@ -445,13 +447,26 @@ public sealed partial class CustomPolicyBehavior
 			}
 			normalized.TargetKingdomId = handle.KingdomId;
 		}
-		if (string.Equals(type, PolicyConditionIsAtWarWithTarget, StringComparison.Ordinal)
+		if (RequiresPolicyConditionTargetKingdom(type)
 			&& string.IsNullOrWhiteSpace(normalized.TargetKingdomId))
 		{
-			error = "isAtWarWithTarget 必须引用合法的 K* 王国句柄";
+			error = type + " 必须引用合法的 K* 王国句柄";
+			return null;
+		}
+		if (string.Equals(type, PolicyConditionTargetFiefCountAtMost, StringComparison.Ordinal)
+			&& (!normalized.Value.HasValue || normalized.Value.Value < 0f))
+		{
+			error = "targetFiefCountAtMost 必须提供非负 value";
 			return null;
 		}
 		return normalized;
+	}
+
+	private static bool RequiresPolicyConditionTargetKingdom(string type)
+	{
+		return string.Equals(type, PolicyConditionIsAtWarWithTarget, StringComparison.Ordinal)
+			|| string.Equals(type, PolicyConditionTargetFiefCountAtMost, StringComparison.Ordinal)
+			|| string.Equals(type, PolicyConditionTargetKingdomEliminated, StringComparison.Ordinal);
 	}
 
 	private static bool IsSupportedPolicyConditionType(string type)
@@ -463,7 +478,9 @@ public sealed partial class CustomPolicyBehavior
 			|| string.Equals(type, PolicyConditionActiveWarCountAtLeast, StringComparison.Ordinal)
 			|| string.Equals(type, PolicyConditionRulingClanTierAtLeast, StringComparison.Ordinal)
 			|| string.Equals(type, PolicyConditionSettlementCountAtLeast, StringComparison.Ordinal)
-			|| string.Equals(type, PolicyConditionKingdomStabilityAtLeast, StringComparison.Ordinal);
+			|| string.Equals(type, PolicyConditionKingdomStabilityAtLeast, StringComparison.Ordinal)
+			|| string.Equals(type, PolicyConditionTargetFiefCountAtMost, StringComparison.Ordinal)
+			|| string.Equals(type, PolicyConditionTargetKingdomEliminated, StringComparison.Ordinal);
 	}
 
 	private static bool TryCompileConditionalPolicy(
@@ -663,7 +680,22 @@ public sealed partial class CustomPolicyBehavior
 		{
 			return MyBehavior.GetKingdomStabilityValueForExternal(owner) >= (int)Math.Round(condition.Value ?? 0f);
 		}
+		if (string.Equals(type, PolicyConditionTargetFiefCountAtMost, StringComparison.Ordinal))
+		{
+			Kingdom target = ResolveKingdomByIdOrName(condition.TargetKingdomId, "");
+			return target != null && CountKingdomFiefs(target) <= Math.Max(0, (int)Math.Round(condition.Value ?? 0f));
+		}
+		if (string.Equals(type, PolicyConditionTargetKingdomEliminated, StringComparison.Ordinal))
+		{
+			Kingdom target = ResolveKingdomByIdOrName(condition.TargetKingdomId, "");
+			return target != null && target.IsEliminated;
+		}
 		return false;
+	}
+
+	private static int CountKingdomFiefs(Kingdom kingdom)
+	{
+		return GetKingdomSettlements(kingdom).Count(settlement => settlement != null && (settlement.IsTown || settlement.IsCastle));
 	}
 
 	private static List<Kingdom> GetActiveEnemyKingdoms(Kingdom owner)
@@ -768,7 +800,7 @@ public sealed partial class CustomPolicyBehavior
 		ApplyLifecyclePhaseOneTimeEffects(state);
 		UpdatePolicyRecordLifecycleState(state);
 		PolicySystemLog.Write("Lifecycle", "transition", BuildLifecycleLog(state, oldPhase + "->" + nextPhase + " reason=" + (reason ?? "")));
-		ShowPlayerLifecycleMessage(state, "《" + FirstNonEmpty(state.PolicyName, "未命名政策") + "》阶段变更：" + oldPhase + " → " + nextPhase + "（" + (reason ?? "") + "）", Colors.Yellow);
+		ShowPlayerLifecycleMessage(state, "《" + FirstNonEmpty(state.PolicyName, "未命名政策") + "》阶段变更：" + BuildPolicyLifecyclePhaseDisplayText(oldPhase) + " → " + BuildPolicyLifecyclePhaseDisplayText(nextPhase) + "（" + (reason ?? "") + "）", Colors.Yellow);
 	}
 
 	private void SynchronizeLifecycleEffectDurations(PolicyLifecycleStateSaveData state)
@@ -947,7 +979,7 @@ public sealed partial class CustomPolicyBehavior
 		{
 			return "";
 		}
-		return "阶段=" + (state.CurrentPhase ?? "")
+		return "阶段=" + BuildPolicyLifecyclePhaseDisplayText(state.CurrentPhase)
 			+ "；剩余=" + Math.Max(0, state.RemainingDays).ToString(CultureInfo.InvariantCulture) + "天"
 			+ (state.ConditionDeadlineDay > 0 ? "；条件截止日=" + state.ConditionDeadlineDay.ToString(CultureInfo.InvariantCulture) : "")
 			+ (!string.IsNullOrWhiteSpace(state.RecordedEnemyKingdomId) ? "；记录敌国=" + state.RecordedEnemyKingdomId : "");
@@ -959,12 +991,37 @@ public sealed partial class CustomPolicyBehavior
 		{
 			return "";
 		}
-		return "初始阶段=" + (definition.InitialPhase ?? PolicyLifecyclePhaseGrace)
+		return "阶段路径=" + BuildPolicyLifecyclePhaseDisplayText(PolicyLifecyclePhaseGrace)
+			+ " → " + BuildPolicyLifecyclePhaseDisplayText(PolicyLifecyclePhaseMaintained)
+			+ " → " + BuildPolicyLifecyclePhaseDisplayText(PolicyLifecyclePhaseBreached)
+			+ "；初始阶段=" + BuildPolicyLifecyclePhaseDisplayText(definition.InitialPhase ?? PolicyLifecyclePhaseGrace)
 			+ "；宽限=" + Math.Max(0, definition.GraceDays).ToString(CultureInfo.InvariantCulture) + "天"
 			+ "；履约条件=" + BuildPolicyConditionDisplayText(definition.FulfillmentCondition)
 			+ "；维持条件=" + BuildPolicyConditionDisplayText(definition.MaintenanceCondition)
 			+ "；失效容忍=" + Math.Max(0, definition.FailureToleranceDays).ToString(CultureInfo.InvariantCulture) + "天"
 			+ "；违约后果=" + Math.Max(1, definition.PenaltyDurationDays).ToString(CultureInfo.InvariantCulture) + "天；提前废止会进入违约阶段";
+	}
+
+	private static string BuildPolicyLifecyclePhaseDisplayText(string phaseId)
+	{
+		string phase = (phaseId ?? "").Trim().ToLowerInvariant();
+		if (string.Equals(phase, PolicyLifecyclePhaseGrace, StringComparison.Ordinal))
+		{
+			return "grace（履约期限）";
+		}
+		if (string.Equals(phase, PolicyLifecyclePhaseMaintained, StringComparison.Ordinal))
+		{
+			return "maintained（条件维持阶段）";
+		}
+		if (string.Equals(phase, PolicyLifecyclePhaseBreached, StringComparison.Ordinal))
+		{
+			return "breached（违约负面阶段）";
+		}
+		if (string.Equals(phase, PolicyLifecyclePhaseCompleted, StringComparison.Ordinal))
+		{
+			return "completed（已结束）";
+		}
+		return string.IsNullOrWhiteSpace(phase) ? "未指定" : phase;
 	}
 
 	private static string BuildPolicyConditionDisplayText(PolicyConditionSaveData condition)
@@ -973,9 +1030,30 @@ public sealed partial class CustomPolicyBehavior
 		{
 			return "无";
 		}
-		string target = string.IsNullOrWhiteSpace(condition.Target) ? "" : "(" + condition.Target.Trim() + ")";
-		string value = condition.Value.HasValue ? "≥" + FormatNumber(condition.Value.Value) : "";
-		return (condition.Type ?? "未知") + target + value;
+		string target = string.IsNullOrWhiteSpace(condition.Target) ? "" : "（" + condition.Target.Trim() + "）";
+		string value = "";
+		if (condition.Value.HasValue)
+		{
+			value = string.Equals(condition.Type, PolicyConditionTargetFiefCountAtMost, StringComparison.Ordinal)
+				? "≤" + FormatNumber(condition.Value.Value)
+				: "≥" + FormatNumber(condition.Value.Value);
+		}
+		return BuildPolicyConditionTypeDisplayText(condition.Type) + target + value;
+	}
+
+	private static string BuildPolicyConditionTypeDisplayText(string type)
+	{
+		if (string.Equals(type, PolicyConditionWarDeclaredAfterEnactment, StringComparison.Ordinal)) return "政策生效后主动宣战";
+		if (string.Equals(type, PolicyConditionIsAtWarWithAny, StringComparison.Ordinal)) return "与任意外国处于战争";
+		if (string.Equals(type, PolicyConditionIsAtWarWithTarget, StringComparison.Ordinal)) return "与目标王国处于战争";
+		if (string.Equals(type, PolicyConditionIsAtWarWithRecordedEnemy, StringComparison.Ordinal)) return "与已记录敌国保持战争";
+		if (string.Equals(type, PolicyConditionActiveWarCountAtLeast, StringComparison.Ordinal)) return "同时进行的战争数量";
+		if (string.Equals(type, PolicyConditionRulingClanTierAtLeast, StringComparison.Ordinal)) return "统治氏族等级";
+		if (string.Equals(type, PolicyConditionSettlementCountAtLeast, StringComparison.Ordinal)) return "本国定居点数量";
+		if (string.Equals(type, PolicyConditionKingdomStabilityAtLeast, StringComparison.Ordinal)) return "王国稳定度";
+		if (string.Equals(type, PolicyConditionTargetFiefCountAtMost, StringComparison.Ordinal)) return "目标王国剩余城镇/城堡数";
+		if (string.Equals(type, PolicyConditionTargetKingdomEliminated, StringComparison.Ordinal)) return "目标王国已灭亡";
+		return string.IsNullOrWhiteSpace(type) ? "未知条件" : type.Trim();
 	}
 
 	private static string BuildLifecycleLog(PolicyLifecycleStateSaveData state, string detail)

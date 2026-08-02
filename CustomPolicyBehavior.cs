@@ -453,9 +453,14 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		PolicySystemLog.Write("Effect", "active-created", "recordId=" + activeEffect.RecordId
 			+ " effectId=" + effectId
 			+ " target=" + activeEffect.TargetKingdomId
+			+ " subject=" + (activeEffect.Subject?.Kind ?? "")
+			+ " phase=" + (activeEffect.PhaseId ?? "")
 			+ " duration=" + activeEffect.TotalDurationDays.ToString(CultureInfo.InvariantCulture)
 			+ " townTaxPercent=" + FormatNumber(activeEffect.TownTaxPercent)
-			+ " constructionPowerDailyDelta=" + FormatNumber(activeEffect.ConstructionSpeedPercent));
+			+ " constructionPowerDailyDelta=" + FormatNumber(activeEffect.ConstructionSpeedPercent)
+			+ " volunteerProductionPercent=" + FormatNumber(activeEffect.VolunteerProductionPercent)
+			+ " volunteerUpgradeRatePercent=" + FormatNumber(activeEffect.VolunteerUpgradeRatePercent)
+			+ " clanInfluenceDailyDelta=" + FormatNumber(activeEffect.ClanInfluenceDailyDelta));
 		return true;
 	}
 
@@ -3878,7 +3883,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 				PolicyName = request.PolicyName ?? "",
 				PolicyContent = request.PolicyContent ?? "",
 				LogEntryDescription = FirstNonEmpty(result.MainAssessment?.PolicyContentDigest, request.PolicyContent),
-				SecondaryEffects = BuildPolicyEffectSummary(application),
+				SecondaryEffects = BuildPolicyAgendaSecondaryEffects(application),
 				AuthoritarianWeight = authoritarianWeight,
 				OligarchicWeight = oligarchicWeight,
 				EgalitarianWeight = egalitarianWeight,
@@ -6296,10 +6301,11 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 				: "- effects:array，只能引用下方 K* 合法王国句柄；K0 是玩家王国，其他 K* 只会由代码从政策原文明确提到的外国王国、领袖、氏族或定居点解析得到。候选出现不等于必然受影响，由你按政策语义决定是否输出。\n";
 		string conditionalLifecycleRule = isLocalPolicy || isVassalPolicy
 			? ""
-			: "【可选条件生命周期】\n默认仍输出顶层 effects，并省略 lifecycle 与 phases，表示沿用固定 durationDays 的旧玩法。只有当政策正文的利益确实依赖限时履约、持续条件或失败后果时，才改为输出 lifecycle 和 phases；此时顶层 effects 必须为 []，所有效果只写入对应 phase.effects。"
+			: "【AI 必须判断执行机制】\n你必须先根据政策名称、正文目的和可验证结果，独立判断它是普通固定期限政策还是条件履约政策；代码不会按关键词替你决定。纯行政常态、无验收目标且失败不会转为后果的政策，输出顶层 effects 并省略 lifecycle 与 phases。只要政策利益依赖限期完成目标、持续满足条件或失败后转为明确代价，就必须输出 lifecycle 和 phases；此时顶层 effects 必须为 []，所有效果只写入对应 phase.effects。"
+				+ " 宣战、围剿、征服、限期吞并、夺取目标全部领地、消灭目标王国、维持战争、达到指定王国规模等有可验证成败的政策，通常属于条件履约政策；若你仍判定为普通固定期限，必须确认政策正文只描述持续投入而没有承诺上述可验收结果。"
 				+ " lifecycle 固定形状为 {\"kind\":\"conditional\",\"initialPhase\":\"grace或maintained\",\"graceDays\":正整数或0,\"fulfillmentCondition\":条件或null,\"maintenanceCondition\":条件或null,\"failureToleranceDays\":非负整数,\"recoveryMode\":\"none或automatic\",\"penaltyDurationDays\":正整数,\"breachOnAbolition\":true,\"renewalMode\":\"none\"}。"
-				+ " 条件格式为 {\"type\":\"条件类型\",\"target\":\"K*或ANY_FOREIGN\",\"value\":数字}；type 只允许 warDeclaredAfterEnactment、isAtWarWithAny、isAtWarWithTarget、isAtWarWithRecordedEnemy、activeWarCountAtLeast、rulingClanTierAtLeast、settlementCountAtLeast、kingdomStabilityAtLeast、targetFiefCountAtMost、targetKingdomEliminated。无关字段省略。"
-				+ " phases 必须恰好表达 grace、maintained、breached 三阶段，每项格式 {\"id\":\"grace|maintained|breached\",\"effects\":[稀疏效果]}；grace 是准备期，maintained 是履约收益，breached 是失败/提前废止后果。不要为了追求复杂而滥用条件生命周期。";
+				+ " 条件格式为 {\"type\":\"条件类型\",\"target\":\"K*或ANY_FOREIGN\",\"value\":数字}；type 只允许 warDeclaredAfterEnactment、isAtWarWithAny、isAtWarWithTarget、isAtWarWithRecordedEnemy、activeWarCountAtLeast、rulingClanTierAtLeast、settlementCountAtLeast、kingdomStabilityAtLeast、targetFiefCountAtMost、targetKingdomEliminated。targetFiefCountAtMost 必须引用外国 K* 并以 value 表示目标剩余城镇/城堡上限，限期吞并全部领地时使用 0；targetKingdomEliminated 必须引用外国 K*。无关字段省略。"
+				+ " phases 必须恰好表达 grace、maintained、breached 三阶段，每项格式 {\"id\":\"grace|maintained|breached\",\"effects\":[稀疏效果]}；grace 是履约期限/执行准备期，maintained 是条件达成或持续维持阶段，breached 是失败或提前废止后的负面阶段。graceDays 必须小于 durationDays，通常取总期限的三分之一至三分之二。不要为了追求复杂而滥用条件生命周期。";
 		string system = JoinPolicyPromptSections(
 			request?.EvaluatorPrompt,
 			"【自定义政策链路规则】\n" + policyRuleContext,
@@ -6330,6 +6336,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			+ "- " + sparseEffectContract + "\n"
 			+ "- changes 只允许以下 metric：prosperityPerDay、foodPerDay、hearthPerDay、loyaltyPerDay、securityPerDay、militiaPerDay、taxIncomePct、constructionPerDay、kingdomStabilityOnce、volunteerProductionPct、volunteerUpgradeRatePct、clanInfluencePerDay。\n"
 			+ "这些 metric 都是目标对象的最终数值变化，不是措施名称：taxIncomePct 表示目标城镇/城堡所属氏族最终收到的原版主税收收入百分比点变化，而不是当地被抽取的税额；从 A 领地征税并把收益交给 B 时，应对 A 输出负值、对 B 输出正值，两端不要求守恒，不得以 prosperityPerDay 代替这项直接税收得失。constructionPerDay 是每座目标城镇/城堡每天直接增加的原版建造力固定点数。volunteerProductionPct 改变空缺志愿兵槽位的补充概率百分比，volunteerUpgradeRatePct 改变已有志愿兵向更高阶兵种刷新的概率百分比；clanInfluencePerDay 是目标氏族每日影响力固定变化。prosperity/food/hearth/loyalty/security/militia 均为对应目标的每日变化。kingdomStabilityOnce 只在正式生效时对目标王国整体结算一次，不能用于地方句柄。reason 可省略，填写时必须简短且不能换行。\n"
+			+ "全国军事动员、征兵、补员、围剿、征服或快速吞并等直接军事执行政策，除非你能从正文判断它确实只做外交或经济封锁，否则必须评估 volunteerProductionPct；正文还包含训练、整训、军队质量或精锐化时必须评估 volunteerUpgradeRatePct。不得只用 militiaPerDay 代替领主可招募志愿兵的补充或精锐化变化，具体数值和作用于 rulerFiefs、vassalFiefs 或 allKingdomFiefs 仍由你按政策因果关系判断。\n"
 			+ (isLocalPolicy
 				? "地方政策不得输出 subject 或 clanInfluencePerDay；其余指标直接按地方句柄已有范围结算。\n"
 				: "全国政策的 subject 可省略，表示原有整国领地范围；领地类指标可使用 rulerFiefs、vassalFiefs、allKingdomFiefs，并可用 minClanTier/maxClanTier 限定领主家族等级；clanInfluencePerDay 必须使用 rulerClan、vassalClans 或 allMemberClans。集权政策若明确强化统治氏族，通常应考虑封臣不受益或承担相反代价；全国动员、共同丰收等语义明确的政策可以让统治氏族与封臣同时受益，不要机械强行做零和。\n")
@@ -7688,7 +7695,20 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		sb.AppendLine("【民众反馈】");
 		sb.AppendLine(string.IsNullOrWhiteSpace(feedback) ? "民众尚未形成明确反馈。" : feedback.Trim());
 		sb.AppendLine();
-		sb.AppendLine("【每日影响】");
+		sb.AppendLine("【执行机制】");
+		if (application?.Lifecycle != null
+			&& string.Equals(application.Lifecycle.Kind, PolicyLifecycleKindConditional, StringComparison.OrdinalIgnoreCase))
+		{
+			sb.AppendLine("AI 判定：条件履约政策。");
+			sb.AppendLine(BuildLifecycleDefinitionDisplayText(application.Lifecycle));
+			sb.AppendLine("grace、maintained、breached 的效果互斥，只执行当前阶段。");
+		}
+		else
+		{
+			sb.AppendLine("AI 判定：普通固定期限政策，不设置 grace / maintained / breached 阶段。");
+		}
+		sb.AppendLine();
+		sb.AppendLine(application?.Lifecycle == null ? "【每日影响】" : "【分阶段影响】");
 		if (application?.KingdomEffects != null && application.KingdomEffects.Count > 0)
 		{
 			foreach (AppliedKingdomEffect effect in application.KingdomEffects.Where(x => x != null))
@@ -7699,13 +7719,6 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		else
 		{
 			sb.AppendLine("未产生可落地的数值变化。");
-		}
-		if (application?.Lifecycle != null)
-		{
-			sb.AppendLine();
-			sb.AppendLine("【条件生命周期】");
-			sb.AppendLine(BuildLifecycleDefinitionDisplayText(application.Lifecycle));
-			sb.AppendLine("上列 grace、maintained、breached 效果不会同时生效，只执行当前阶段。");
 		}
 		if (application?.NoticeLines != null)
 		{
@@ -8228,6 +8241,24 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		return string.Join("\n", lines);
 	}
 
+	private static string BuildPolicyAgendaSecondaryEffects(PolicyApplicationResult application)
+	{
+		StringBuilder summary = new StringBuilder();
+		if (application?.Lifecycle != null
+			&& string.Equals(application.Lifecycle.Kind, PolicyLifecycleKindConditional, StringComparison.OrdinalIgnoreCase))
+		{
+			summary.AppendLine("执行机制：AI 判定为条件履约政策。");
+			summary.AppendLine(BuildLifecycleDefinitionDisplayText(application.Lifecycle));
+			summary.AppendLine("以下阶段效果互斥，只执行当前阶段：");
+		}
+		else
+		{
+			summary.AppendLine("执行机制：AI 判定为普通固定期限政策（无 grace / maintained / breached 阶段）。");
+		}
+		summary.Append(BuildPolicyEffectSummary(application));
+		return summary.ToString().TrimEnd();
+	}
+
 	private static string BuildPolicyRecordEffectSummary(PolicyRecordSaveData record)
 	{
 		if (record?.Effects == null || record.Effects.Count <= 0)
@@ -8308,7 +8339,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		}
 		if (!string.IsNullOrWhiteSpace(phaseId))
 		{
-			name += " [" + phaseId.Trim() + "]";
+			name += " [" + BuildPolicyLifecyclePhaseDisplayText(phaseId) + "]";
 		}
 		List<string> values = BuildPlayerVisibleEffectValues(
 			prosperityDailyDeltaPerTown,
@@ -8323,8 +8354,10 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			volunteerProductionPercent,
 			volunteerUpgradeRatePercent,
 			clanInfluenceDailyDelta);
-		return name + "：" + (values.Count <= 0 ? "无持续数值变化" : string.Join("，", values))
-			+ "；持续 " + Math.Max(0, durationDays).ToString(CultureInfo.InvariantCulture) + " 天。";
+		string durationText = string.IsNullOrWhiteSpace(phaseId)
+			? "；持续 " + Math.Max(0, durationDays).ToString(CultureInfo.InvariantCulture) + " 天。"
+			: "；仅在该阶段生效。";
+		return name + "：" + (values.Count <= 0 ? "无持续数值变化" : string.Join("，", values)) + durationText;
 	}
 
 	private static List<string> BuildPlayerVisibleEffectValues(float prosperityDailyDeltaPerTown, float foodDailyDeltaPerTown, float hearthDailyDeltaPerVillage, float loyaltyDailyDeltaPerTown, float securityDailyDeltaPerTown, float militiaDailyDeltaPerTown, float townTaxPercent, float constructionSpeedPercent, int kingdomStabilityDailyDelta, float volunteerProductionPercent = 0f, float volunteerUpgradeRatePercent = 0f, float clanInfluenceDailyDelta = 0f)
@@ -9581,6 +9614,8 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			+ " day=" + day.ToString(CultureInfo.InvariantCulture)
 			+ " targetKingdomId=" + (effect.KingdomId ?? "")
 			+ " targetKingdomName=" + (effect.KingdomName ?? "")
+			+ " subject=" + (effect.Subject?.Kind ?? "")
+			+ " phase=" + (effect.PhaseId ?? "")
 			+ " towns=" + effect.TownCount.ToString(CultureInfo.InvariantCulture)
 			+ " villages=" + effect.VillageCount.ToString(CultureInfo.InvariantCulture)
 			+ " remaining=" + remainingDays.ToString(CultureInfo.InvariantCulture)
@@ -9593,6 +9628,9 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			+ ", militia=" + FormatNumber(effect.MilitiaDailyDeltaPerTown)
 			+ ", townTaxPercent=" + FormatNumber(effect.TownTaxPercent)
 			+ ", constructionPowerDailyDelta=" + FormatNumber(effect.ConstructionSpeedPercent)
+			+ ", volunteerProductionPercent=" + FormatNumber(effect.VolunteerProductionPercent)
+			+ ", volunteerUpgradeRatePercent=" + FormatNumber(effect.VolunteerUpgradeRatePercent)
+			+ ", clanInfluenceDailyDelta=" + FormatNumber(effect.ClanInfluenceDailyDelta)
 			+ ") settlementDeltas=model-managed"
 			+ " stabilityOnce=" + effect.KingdomStabilityDailyDelta.ToString(CultureInfo.InvariantCulture);
 	}

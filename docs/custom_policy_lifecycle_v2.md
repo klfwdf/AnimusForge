@@ -5,7 +5,7 @@
 - 未返回 `lifecycle` 的政策继续使用原有 `durationDays + effects` 固定时长流程。
 - 旧存档缺少的新字段按 `0` / 全王国原范围处理；活动效果存档版本由 4 升到 5，但不拒绝读取旧版本。
 - 条件生命周期只对全国政策开放；地方政策仍立即生效、固定时长、不进入王国条件状态机。
-- 只有 AI 明确判断政策利益依赖履约或持续条件时，才允许返回 `conditional`；普通政策不强制增加阶段。
+- AI 必须先判断执行机制：政策利益依赖限期验收、持续条件或失败后果时返回 `conditional`；纯行政常态继续使用普通固定期限。代码不按关键词替 AI 决定。
 
 ## 新增指标
 
@@ -91,7 +91,7 @@ AI 提示规则不是机械零和：
 
 运行顺序：
 
-1. `grace`：准备/宽限期，只应用 grace 效果。
+1. `grace`（履约期限）：准备/宽限期，只应用 grace 效果。
 2. 达成 `fulfillmentCondition` 后进入 `maintained`；超时则进入 `breached`。
 3. `maintained` 可持续检查 `maintenanceCondition`，连续失败超过容忍天数后违约。
 4. `breached` 只应用违约效果，并按 `penaltyDurationDays` 计时。
@@ -108,6 +108,8 @@ AI 提示规则不是机械零和：
 - `rulingClanTierAtLeast`
 - `settlementCountAtLeast`
 - `kingdomStabilityAtLeast`
+- `targetFiefCountAtMost`（目标王国剩余城镇/城堡数不高于 `value`；完全吞并使用 `0`）
+- `targetKingdomEliminated`
 
 条件中的王国只能引用本次提示提供的 `K*` 句柄，不能由模型伪造 StringId。
 
@@ -118,6 +120,8 @@ AI 提示规则不是机械零和：
 - `DailyTick` / 引擎维护推进期限和维持条件；`WarDeclared` 捕获“生效后宣战”；`MakePeace` 进入统一事件观察日志，维持条件在每日检查时决定是否违约。
 - 阶段切换会清理上一阶段未完成的分批结算、刷新税收/建造/征募/影响力缓存，并更新政策历史。
 - 玩家会收到阶段切换和生命周期结束提示；历史记录同时显示当前阶段与各阶段效果。
+- 王国政策页和发布结果会明确显示 AI 判定：普通固定期限，或 `grace（履约期限） → maintained（条件维持阶段） → breached（违约负面阶段）`；条件政策的每条数值效果标注所属阶段。
+- `PolicySystem.txt` 的 `active-created` 记录包含主体、阶段、志愿兵补充、志愿兵精锐化和氏族影响力，便于游戏内验证。
 
 ## NPC 政策
 
