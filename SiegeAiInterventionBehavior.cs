@@ -698,6 +698,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			string playerName = ResolvePlayerCharacterNameForContext();
 			string settlementName = settlement?.Name?.ToString() ?? _activeSettlementName;
 			MBTextManager.SetTextVariable("AF_SETS_OWNED_TOWN_INCIDENT_TEXT", SetsOwnedSettlementIncidentProfile.BuildMenuText(sceneKind, playerName, settlementName), false);
+			MBTextManager.SetTextVariable("AF_SETS_OWNED_INCIDENT_ENTRY_OPTION_TEXT", SetsOwnedSettlementIncidentProfile.BuildEntryOptionText(sceneKind), false);
 			args?.MenuContext?.SetBackgroundMeshName("encounter_win");
 		}
 		catch
@@ -725,8 +726,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			Settlement settlement = ResolveCurrentSettlement() ?? _activeSettlement;
 			SetsSettlementSceneKind sceneKind = ResolveSetsSettlementSceneKind(settlement);
 			bool enabled = _setsOwnedSettlementIncidentContext
-				&& SiegeInterventionEntryProfile.IsSupportedSettlementKind(settlement?.IsTown == true, settlement?.IsCastle == true)
-				&& ResolveInterventionLocation(settlement) != null;
+				&& SetsOwnedSettlementIncidentProfile.SupportsSceneKind(sceneKind)
+				&& ResolveOwnedSettlementIncidentLocation(settlement) != null;
 			args.IsEnabled = enabled;
 			args.optionLeaveType = GameMenuOption.LeaveType.Submenu;
 			string noun = SetsSettlementEntryProfile.GetSettlementNoun(sceneKind);
@@ -741,7 +742,51 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private static void SetsOwnedSettlementIncidentEntryConsequence(MenuCallbackArgs args)
 	{
+		Settlement settlement = ResolveCurrentSettlement() ?? _activeSettlement;
+		if (settlement?.IsVillage == true)
+		{
+			EnterOwnedVillageAftermath(settlement);
+			return;
+		}
 		EnterIntervention(args);
+	}
+
+	private static void EnterOwnedVillageAftermath(Settlement settlement)
+	{
+		try
+		{
+			Location location = ResolveOwnedSettlementIncidentLocation(settlement);
+			if (settlement?.IsVillage != true || PlayerEncounter.LocationEncounter == null || location == null)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("【GCCZ村庄】当前无法进入村庄处置场景。", Color.FromUint(SetsOwnedSettlementIncidentProfile.WarningColor)));
+				return;
+			}
+			if (!VillageAftermathBehavior.QueueIncidentDispositionMission(settlement, "sets_owned_village_incident_menu"))
+			{
+				InformationManager.DisplayMessage(new InformationMessage("【GCCZ村庄】村庄处置状态准备失败。", Color.FromUint(SetsOwnedSettlementIncidentProfile.WarningColor)));
+				return;
+			}
+			IMission openedMission = PlayerEncounter.LocationEncounter.CreateAndOpenMissionController(location, null, null, null);
+			if (openedMission == null)
+			{
+				VillageAftermathBehavior.CancelQueuedIncidentDisposition("open_mission_returned_null");
+				SettlementEntryTroopSelectionBehavior.CancelPendingVillageAftermathMissionEntryForExternal(settlement.StringId, "open_mission_returned_null");
+				InformationManager.DisplayMessage(new InformationMessage("【GCCZ村庄】村庄处置场景尚未就绪，请重试。", Color.FromUint(SetsOwnedSettlementIncidentProfile.WarningColor)));
+				Logger.Log("VillageAftermath", "GCCZ village disposition mission returned null; incident menu kept for retry. Settlement=" + (settlement.StringId ?? "N/A"));
+				return;
+			}
+			ApplySetsOwnedSettlementIncidentOwnerPenalty(SetsOwnedSettlementIncidentProfile.NotableKilledRelationPenalty, "sets_owned_village_enter_notable", onlyIfNotableKilled: true);
+			ApplySetsOwnedSettlementIncidentOwnerPenalty(SetsOwnedSettlementIncidentProfile.MinorIncidentRelationPenalty, "sets_owned_village_enter_minor", onlyIfNotableKilled: false);
+			ClearSetsOwnedSettlementIncidentContext("enter_owned_village_aftermath");
+			Logger.Log("VillageAftermath", "Opened GCCZ village disposition mission from SETS incident menu. Settlement=" + (settlement.StringId ?? "N/A"));
+		}
+		catch (Exception ex)
+		{
+			VillageAftermathBehavior.CancelQueuedIncidentDisposition("open_mission_exception");
+			SettlementEntryTroopSelectionBehavior.CancelPendingVillageAftermathMissionEntryForExternal(settlement?.StringId, "open_mission_exception");
+			Logger.Log("VillageAftermath", "Open GCCZ village disposition mission failed: " + ex);
+			InformationManager.DisplayMessage(new InformationMessage("【GCCZ村庄】进入村庄处置场景失败。", Color.FromUint(SetsOwnedSettlementIncidentProfile.WarningColor)));
+		}
 	}
 
 	private static bool SetsOwnedSettlementIncidentLeaveCondition(MenuCallbackArgs args)
@@ -755,9 +800,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			SetsSettlementSceneKind sceneKind = ResolveSetsSettlementSceneKind(ResolveCurrentSettlement() ?? _activeSettlement);
-			ApplySetsOwnedSettlementIncidentOwnerPenalty(SetsOwnedSettlementIncidentProfile.NotableKilledRelationPenalty, "sets_owned_town_leave_notable", onlyIfNotableKilled: true);
-			ApplySetsOwnedSettlementIncidentOwnerPenalty(SetsOwnedSettlementIncidentProfile.MinorIncidentRelationPenalty, "sets_owned_town_leave_minor", onlyIfNotableKilled: false);
+			Settlement settlement = ResolveCurrentSettlement() ?? _activeSettlement;
+			SetsSettlementSceneKind sceneKind = ResolveSetsSettlementSceneKind(settlement);
+			ApplySetsOwnedSettlementIncidentOwnerPenalty(SetsOwnedSettlementIncidentProfile.NotableKilledRelationPenalty, "sets_owned_settlement_leave_notable", onlyIfNotableKilled: true);
+			ApplySetsOwnedSettlementIncidentOwnerPenalty(SetsOwnedSettlementIncidentProfile.MinorIncidentRelationPenalty, "sets_owned_settlement_leave_minor", onlyIfNotableKilled: false);
 			InformationManager.DisplayMessage(new InformationMessage(SetsOwnedSettlementIncidentProfile.BuildLeaveMessage(sceneKind), Color.FromUint(SetsOwnedSettlementIncidentProfile.MessageColor)));
 			ClearSetsOwnedSettlementIncidentContext("leave_menu");
 			try
@@ -766,12 +812,12 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			catch
 			{
-				try { GameMenu.SwitchToMenu("town"); } catch { }
+				try { GameMenu.SwitchToMenu(settlement?.IsVillage == true ? "village" : settlement?.IsCastle == true ? "castle" : "town"); } catch { }
 			}
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("SiegeAiIntervention", "SETS owned/attached town leave failed: " + ex.Message);
+			Logger.Log("SiegeAiIntervention", "SETS owned/attached settlement leave failed: " + ex.Message);
 		}
 	}
 
@@ -915,7 +961,15 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (settlement == null || !SiegeInterventionEntryProfile.IsSupportedSettlementKind(settlement.IsTown, settlement.IsCastle))
+			bool supportedVillageIncident = setsOwnedIncident
+				&& settlement?.IsVillage == true
+				&& SetsOwnedSettlementIncidentProfile.SupportsSceneKind(SetsSettlementSceneKind.Village);
+			if (settlement == null
+				|| (!SiegeInterventionEntryProfile.IsSupportedSettlementKind(settlement.IsTown, settlement.IsCastle) && !supportedVillageIncident))
+			{
+				return false;
+			}
+			if (supportedVillageIncident && !CanOpenOwnedVillageIncidentMenuForExternal(settlement))
 			{
 				return false;
 			}
@@ -2157,6 +2211,40 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				_pendingEncounterFinish = false;
 				ClearActiveState(preserveSummarySwitch: false);
 			}
+		}
+	}
+
+	private static Location ResolveOwnedSettlementIncidentLocation(Settlement settlement)
+	{
+		if (settlement?.IsVillage != true)
+		{
+			return ResolveInterventionLocation(settlement);
+		}
+		try
+		{
+			LocationComplex complex = settlement.LocationComplex ?? LocationComplex.Current;
+			return complex?.GetLocationWithId(SetsSettlementEntryProfile.VillageCenterLocationId)
+				?? complex?.FindAll(x => x == SetsSettlementEntryProfile.VillageCenterLocationId).FirstOrDefault();
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	internal static bool CanOpenOwnedVillageIncidentMenuForExternal(Settlement settlement)
+	{
+		try
+		{
+			Settlement encounterSettlement = PlayerEncounter.LocationEncounter?.Settlement;
+			return settlement?.IsVillage == true
+				&& encounterSettlement != null
+				&& string.Equals(encounterSettlement.StringId, settlement.StringId, StringComparison.OrdinalIgnoreCase)
+				&& ResolveOwnedSettlementIncidentLocation(settlement) != null;
+		}
+		catch
+		{
+			return false;
 		}
 	}
 

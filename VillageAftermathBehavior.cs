@@ -25,6 +25,8 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 
 	private static Mission _activeMission;
 	private static string _activeVillageId = "";
+	private static string _pendingIncidentVillageId = "";
+	private static DateTime _pendingIncidentQueuedUtc = DateTime.MinValue;
 	private static VillageAftermathAuthorityKind _activeAuthorityKind;
 	private static bool _cultureInquiryPending;
 	private static readonly HashSet<VillageAftermathActionKind> AppliedActions = new HashSet<VillageAftermathActionKind>();
@@ -49,6 +51,8 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 
 	private void OnNewGameCreated(CampaignGameStarter starter)
 	{
+		_pendingIncidentVillageId = "";
+		_pendingIncidentQueuedUtc = DateTime.MinValue;
 		ClearMissionState("new_game");
 		_gradualCultureTargetByVillageId.Clear();
 		_gradualCultureFinishDayByVillageId.Clear();
@@ -56,7 +60,50 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 
 	private void OnGameLoaded(CampaignGameStarter starter)
 	{
+		_pendingIncidentVillageId = "";
+		_pendingIncidentQueuedUtc = DateTime.MinValue;
 		ClearMissionState("game_loaded");
+	}
+
+	internal static bool QueueIncidentDispositionMission(Settlement villageSettlement, string source)
+	{
+		if (villageSettlement?.IsVillage != true || villageSettlement.Village == null || string.IsNullOrWhiteSpace(villageSettlement.StringId))
+		{
+			return false;
+		}
+		_pendingIncidentVillageId = villageSettlement.StringId;
+		_pendingIncidentQueuedUtc = DateTime.UtcNow;
+		GcczDiagnosticLog.Log("VillageEntry", "queued incident disposition village=" + _pendingIncidentVillageId
+			+ " source=" + (source ?? "N/A"));
+		return true;
+	}
+
+	internal static bool TryConsumeQueuedIncidentDisposition(Settlement villageSettlement, string source)
+	{
+		if (villageSettlement?.IsVillage != true
+			|| !string.Equals(_pendingIncidentVillageId, villageSettlement.StringId, StringComparison.OrdinalIgnoreCase))
+		{
+			return false;
+		}
+		bool expired = _pendingIncidentQueuedUtc == DateTime.MinValue
+			|| (DateTime.UtcNow - _pendingIncidentQueuedUtc).TotalSeconds > 30d;
+		_pendingIncidentVillageId = "";
+		_pendingIncidentQueuedUtc = DateTime.MinValue;
+		GcczDiagnosticLog.Log("VillageEntry", (expired ? "expired" : "consumed")
+			+ " queued incident disposition village=" + (villageSettlement.StringId ?? "N/A")
+			+ " source=" + (source ?? "N/A"));
+		return !expired;
+	}
+
+	internal static void CancelQueuedIncidentDisposition(string source)
+	{
+		if (!string.IsNullOrWhiteSpace(_pendingIncidentVillageId))
+		{
+			GcczDiagnosticLog.Log("VillageEntry", "cancelled queued incident disposition village=" + _pendingIncidentVillageId
+				+ " source=" + (source ?? "N/A"));
+		}
+		_pendingIncidentVillageId = "";
+		_pendingIncidentQueuedUtc = DateTime.MinValue;
 	}
 
 	internal static bool TryActivateForSetsVillage(Settlement villageSettlement, Mission mission, string source)
@@ -67,7 +114,6 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-
 			Settlement bound = villageSettlement.Village.Bound;
 			Clan playerClan = Clan.PlayerClan;
 			Kingdom playerKingdom = playerClan?.Kingdom ?? Hero.MainHero?.Clan?.Kingdom;

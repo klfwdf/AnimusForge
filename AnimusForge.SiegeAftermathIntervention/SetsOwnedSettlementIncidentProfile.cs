@@ -12,7 +12,7 @@ public static class SetsOwnedSettlementIncidentProfile
 
     public const string LeaveOptionId = "AnimusForge_sets_owned_town_incident_leave";
 
-    public const string EntryOptionText = "亲自进城决定";
+    public const string EntryOptionText = "{=!}{AF_SETS_OWNED_INCIDENT_ENTRY_OPTION_TEXT}";
 
     public const string LeaveOptionText = "收手离开";
 
@@ -29,6 +29,26 @@ public static class SetsOwnedSettlementIncidentProfile
     public const int MassacreRelationPenalty = -70;
 
     public const int CulturalRepopulationRelationPenalty = -100;
+
+    public static bool SupportsSceneKind(SetsSettlementSceneKind kind)
+    {
+        return kind == SetsSettlementSceneKind.Town
+            || kind == SetsSettlementSceneKind.Castle
+            || kind == SetsSettlementSceneKind.Village;
+    }
+
+    public static string BuildEntryOptionText(SetsSettlementSceneKind kind)
+    {
+        switch (kind)
+        {
+            case SetsSettlementSceneKind.Castle:
+                return "亲自进堡决定";
+            case SetsSettlementSceneKind.Village:
+                return "亲自进村决定";
+            default:
+                return "亲自进城决定";
+        }
+    }
 
     public static int ResolveOwnerRelationPenalty(
         SiegeAftermathResolutionKind aftermath,
@@ -76,6 +96,10 @@ public static class SetsOwnedSettlementIncidentProfile
 
     public static string BuildEntryInstruction(SetsSettlementSceneKind kind)
     {
+        if (kind == SetsSettlementSceneKind.Village)
+        {
+            return "【GCCZ村庄】这是自有/辖下村庄事件：你可亲自进村继续处置，也可收手离开。";
+        }
         return "【SETS】这是自有/附属" + SetsSettlementEntryProfile.GetSettlementNoun(kind) + "事件：你可亲自进入继续处置，也可收手离开。原版毁坏、掠夺、宽恕选项已隐藏。";
     }
 

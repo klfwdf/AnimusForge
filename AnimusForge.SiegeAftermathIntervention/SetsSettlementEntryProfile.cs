@@ -224,7 +224,7 @@ public static class SetsSettlementEntryProfile
         string noun = GetSettlementNoun(kind);
         if (kind == SetsSettlementSceneKind.Village)
         {
-            return "【SETS】自有/附属村庄事件已触发，村民正在逃散。你可以命令随行士兵继续或停止屠村；未完成屠村时退出不会获得战利品。";
+            return "【SETS】自有/附属村庄事件已触发，村民正在逃散。可随时按 TAB 退出并进入 GCCZ 村庄处置菜单，决定是否继续处置。";
         }
 
         return "【SETS】自有/附属" + noun + "事件已触发，居民正在逃散。可随时按 TAB 退出后进入 SETS 专用处置菜单。";

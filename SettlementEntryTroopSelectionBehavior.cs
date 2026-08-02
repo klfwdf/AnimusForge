@@ -57,6 +57,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	private const float ProtectedFollowerHostilitySuppressionSeconds = 8f;
 	private const float ProtectedFollowerFriendlyFireDuplicateWindowSeconds = 0.05f;
 	private const float VictoryEndMissionFallbackDelaySeconds = 2f;
+	private const double PendingMissionEntryLifetimeSeconds = 30d;
 	private const string LordHallLocationId = "lordshall";
 	private const uint InfoColor = 0xFFDFC16Bu;
 	private const uint WarningColor = 0xFFFF6B6Bu;
@@ -180,7 +181,12 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			return;
 		}
 		Settlement settlement = Settlement.Find(settlementId);
-		if (settlement != null && !SiegeInterventionEntryProfile.IsSupportedSettlementKind(settlement.IsTown, settlement.IsCastle))
+		bool villageOwnedIncident = setsOwnedIncident
+			&& settlement?.IsVillage == true
+			&& SetsOwnedSettlementIncidentProfile.SupportsSceneKind(SetsSettlementSceneKind.Village);
+		if (settlement != null
+			&& !SiegeInterventionEntryProfile.IsSupportedSettlementKind(settlement.IsTown, settlement.IsCastle)
+			&& !villageOwnedIncident)
 		{
 			SettlementEntryTroopSelectionLog.Log("Ignored SETS siege-victory menu queue for unsupported settlement. settlement=" + SafeSettlementId(settlement) + ", source=" + (source ?? ""));
 			return;
@@ -215,6 +221,21 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			Source = string.IsNullOrWhiteSpace(source) ? "SETS_village_victory" : source
 		};
 		SettlementEntryTroopSelectionLog.Log("Queued SETS village victory reward. settlement=" + settlementId + ", source=" + _pendingVillageVictoryRewardEntry.Source);
+	}
+
+	internal static void CancelPendingVillageAftermathMissionEntryForExternal(string settlementId, string source)
+	{
+		PendingMissionEntry pending = _pendingMissionEntry;
+		if (pending == null
+			|| !pending.ActivateVillageAftermath
+			|| (!string.IsNullOrWhiteSpace(settlementId)
+				&& !string.Equals(pending.SettlementId, settlementId, StringComparison.OrdinalIgnoreCase)))
+		{
+			return;
+		}
+		_pendingMissionEntry = null;
+		SettlementEntryTroopSelectionLog.Log("Cancelled pending GCCZ village mission entry. settlement=" + (pending.SettlementId ?? "N/A")
+			+ ", source=" + (source ?? "N/A"));
 	}
 
 	private void OnNewGameCreated(CampaignGameStarter starter)
@@ -1378,13 +1399,17 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			int limit = GetProfileLimit(profileKind);
 			TroopRoster profile = GetProfileRoster(profileKind);
 			TroopRoster selected = ResolveProfileRosterForEntry(profile, MobileParty.MainParty?.MemberRoster, limit, out int configuredCount, out int unavailableCount);
+			bool activateVillageAftermath = sceneKind == SetsSettlementSceneKind.Village
+				&& VillageAftermathBehavior.TryConsumeQueuedIncidentDisposition(settlement, "sets_prepare_village_entry");
 			_pendingMissionEntry = new PendingMissionEntry
 			{
 				SettlementId = settlement?.StringId ?? "",
 				SelectedRoster = selected,
 				Limit = limit,
 				IsOwnSettlement = profileKind == EntryProfileKind.OwnSettlement,
-				SceneKind = sceneKind
+				SceneKind = sceneKind,
+				ActivateVillageAftermath = activateVillageAftermath,
+				CreatedUtc = DateTime.UtcNow
 			};
 			ShowEntryReminder(settlement, profileKind, limit, selected.TotalManCount, configuredCount, unavailableCount);
 			SettlementEntryTroopSelectionLog.Log("Prepared settlement entry followers. settlement=" + SafeSettlementId(settlement) + ", scene=" + _pendingMissionEntry.SceneKind + ", profile=" + profileKind + ", selected=" + selected.TotalManCount + ", configured=" + configuredCount + ", unavailable=" + unavailableCount);
@@ -1586,6 +1611,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			if (!string.IsNullOrWhiteSpace(entry.SettlementId) && current?.StringId != entry.SettlementId)
 			{
 				SettlementEntryTroopSelectionLog.Log("Ignored mission start; settlement mismatch. expected=" + entry.SettlementId + ", live=" + SafeSettlementId(current));
+				_pendingMissionEntry = null;
 				return;
 			}
 			if (concreteMission.GetMissionBehavior<SettlementEntryTroopSelectionMissionLogic>() == null)
@@ -1597,13 +1623,31 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
+			_pendingMissionEntry = null;
 			SettlementEntryTroopSelectionLog.Log("OnMissionStarted failed. error=" + ex);
 		}
 	}
 
 	private void OnCampaignTick(float dt)
 	{
+		ClearExpiredPendingMissionEntry();
 		PumpPendingPostMissionFlow("campaign_tick");
+	}
+
+	private static void ClearExpiredPendingMissionEntry()
+	{
+		PendingMissionEntry pending = _pendingMissionEntry;
+		if (pending == null
+			|| Mission.Current != null
+			|| pending.CreatedUtc == DateTime.MinValue
+			|| (DateTime.UtcNow - pending.CreatedUtc).TotalSeconds <= PendingMissionEntryLifetimeSeconds)
+		{
+			return;
+		}
+		_pendingMissionEntry = null;
+		SettlementEntryTroopSelectionLog.Log("Cleared expired SETS pending mission entry. settlement=" + (pending.SettlementId ?? "N/A")
+			+ ", scene=" + pending.SceneKind
+			+ ", villageAftermath=" + pending.ActivateVillageAftermath);
 	}
 
 	private void OnSetsMissionEnded(IMission mission)
@@ -1647,11 +1691,19 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			_pendingVictoryMenuEntry = null;
 			return false;
 		}
-		if (!SiegeInterventionEntryProfile.IsSupportedSettlementKind(settlement.IsTown, settlement.IsCastle))
+		bool villageOwnedIncident = _pendingVictoryMenuEntry.SetsOwnedIncident
+			&& settlement.IsVillage
+			&& SetsOwnedSettlementIncidentProfile.SupportsSceneKind(SetsSettlementSceneKind.Village);
+		if (!SiegeInterventionEntryProfile.IsSupportedSettlementKind(settlement.IsTown, settlement.IsCastle)
+			&& !villageOwnedIncident)
 		{
 			SettlementEntryTroopSelectionLog.Log("Dropping pending SETS victory menu; settlement kind is unsupported. settlement=" + SafeSettlementId(settlement) + ", source=" + (source ?? ""));
 			_pendingVictoryMenuEntry = null;
 			return false;
+		}
+		if (villageOwnedIncident && !SiegeAiInterventionBehavior.CanOpenOwnedVillageIncidentMenuForExternal(settlement))
+		{
+			return true;
 		}
 		PendingSettlementVictoryMenuEntry pending = _pendingVictoryMenuEntry;
 		_pendingVictoryMenuEntry = null;
@@ -2241,6 +2293,8 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		public int Limit;
 		public bool IsOwnSettlement;
 		public SetsSettlementSceneKind SceneKind;
+		public bool ActivateVillageAftermath;
+		public DateTime CreatedUtc;
 	}
 
 	private sealed class PendingSettlementVictoryMenuEntry
@@ -2275,6 +2329,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private readonly SetsSettlementSceneKind _sceneKind;
 		private readonly bool _conflictFeaturesEnabled;
 		private readonly bool _defenderConflictEnabled;
+		private readonly bool _activateVillageAftermath;
 		private readonly TroopRoster _selectedRoster;
 		private readonly TroopRoster _survivingRoster;
 		private readonly List<DefenderReserveEntry> _remainingDefenderReserve;
@@ -2357,6 +2412,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			_limit = Math.Max(0, entry?.Limit ?? OtherSettlementEntryLimit);
 			_isOwnSettlement = entry?.IsOwnSettlement ?? false;
 			_sceneKind = entry?.SceneKind ?? SetsSettlementSceneKind.Unknown;
+			_activateVillageAftermath = entry?.ActivateVillageAftermath ?? false;
 			_conflictFeaturesEnabled = SetsSettlementEntryProfile.IsSupported(_sceneKind);
 			_defenderConflictEnabled = _conflictFeaturesEnabled && !_isOwnSettlement;
 			_selectedRoster = CloneRoster(entry?.SelectedRoster, _limit);
@@ -2666,7 +2722,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		{
 			base.AfterStart();
 			SetSetsSelectedFollowerState(base.Mission, active: true, "after_start");
-			if (_sceneKind == SetsSettlementSceneKind.Village)
+			if (_sceneKind == SetsSettlementSceneKind.Village && _activateVillageAftermath)
 			{
 				VillageAftermathBehavior.TryActivateForSetsVillage(Settlement.Find(_settlementId), base.Mission, "sets_village_after_start");
 			}
@@ -6147,7 +6203,18 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			{
 				if (VillageAftermathBehavior.IsActiveForMission(base.Mission))
 				{
-					SettlementEntryTroopSelectionLog.Log("Suppressed legacy SETS village force-supplies reward during GCCZ noble administration. settlement=" + _settlementId + ", source=" + queueSource);
+					SettlementEntryTroopSelectionLog.Log("Completed GCCZ village disposition mission without recursively reopening the incident menu. settlement=" + _settlementId + ", source=" + queueSource);
+					return;
+				}
+				if (_ownedSettlementIncidentTriggered && _isOwnSettlement)
+				{
+					QueueSettlementTakenMenuAfterVictory(
+						_settlementId,
+						_survivingRoster,
+						queueSource,
+						skipOwnershipTransfer: true,
+						setsOwnedIncident: true,
+						setsTownRiotKilledNotable: _townRiotKilledNotable);
 					return;
 				}
 				bool shouldReward = SetsVillageVictoryRewardProfile.ShouldGrantReward(
