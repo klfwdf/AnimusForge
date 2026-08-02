@@ -4912,6 +4912,31 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 
 	private bool DeclareWarIfNeeded(Kingdom declaringKingdom, Kingdom targetKingdom, string reason, bool forceQueue = false)
 	{
+		if (IsValidKingdom(declaringKingdom)
+			&& IsValidKingdom(targetKingdom)
+			&& declaringKingdom != targetKingdom
+			&& ShouldBlockInternalWarForCurrentVassalage(declaringKingdom, targetKingdom, out string vassalageBlockReason, out var declaringAgreement, out var targetAgreement))
+		{
+			bool wasAtWar = IsAtWar(declaringKingdom, targetKingdom);
+			int removedPendingDeclareWarCount = RemovePendingDeclareWarSyncsByParties(declaringKingdom, targetKingdom, "current_vassalage_forbids_war");
+			bool peaceAppliedNow = wasAtWar && MakePeaceIfNeeded(declaringKingdom, targetKingdom, "current_vassalage_forbids_war_reconcile", forceQueue);
+			bool peaceAfterReconcile = !IsAtWar(declaringKingdom, targetKingdom);
+			VassalageDiagnosticLog.Event("diplomacy.declare_war.skip", new Dictionary<string, object>
+			{
+				["reason"] = "current_vassalage_forbids_war",
+				["syncReason"] = reason ?? "",
+				["vassalageBlockReason"] = vassalageBlockReason,
+				["declaring"] = VassalageDiagnosticLog.DescribeKingdom(declaringKingdom),
+				["target"] = VassalageDiagnosticLog.DescribeKingdom(targetKingdom),
+				["declaringAgreement"] = DescribeAgreementForDiagnostics(declaringAgreement),
+				["targetAgreement"] = DescribeAgreementForDiagnostics(targetAgreement),
+				["wasAtWar"] = wasAtWar,
+				["peaceAppliedNow"] = peaceAppliedNow,
+				["peaceAfterReconcile"] = peaceAfterReconcile,
+				["removedPendingDeclareWarCount"] = removedPendingDeclareWarCount
+			});
+			return false;
+		}
 		if (!IsValidKingdom(declaringKingdom) || !IsValidKingdom(targetKingdom) || declaringKingdom == targetKingdom || IsAtWar(declaringKingdom, targetKingdom))
 		{
 			VassalageDiagnosticLog.Event("diplomacy.declare_war.skip", new Dictionary<string, object>
@@ -5524,6 +5549,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		int removedPendingDeclareWarCount = RemovePendingDeclareWarSyncsByParties(kingdom1, kingdom2, (reason ?? "queued_peace") + "_queued_peace_cancel_pending_declare");
 		_pendingDiplomacySyncs[key] = "make_peace|" + kingdom1Id + "|" + kingdom2Id + "|" + (reason ?? "");
 		_nextDiplomacySyncRetryUtcTicks = 0L;
 		_nextNoticePublishRetryUtcTicks = 0L;
@@ -5549,6 +5575,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			["kingdom1"] = VassalageDiagnosticLog.DescribeKingdom(kingdom1),
 			["kingdom2"] = VassalageDiagnosticLog.DescribeKingdom(kingdom2),
 			["pendingKey"] = key,
+			["removedPendingDeclareWarCount"] = removedPendingDeclareWarCount,
 			["pendingDiplomacySyncCount"] = _pendingDiplomacySyncs.Count,
 			["missionActive"] = missionActive,
 			["meetingBlocked"] = meetingBlocked
@@ -5568,6 +5595,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			return 0;
 		}
 		int removed = 0;
+		List<string> removedDeclareWarSyncs = new List<string>();
 		foreach (KeyValuePair<string, string> item in _pendingDiplomacySyncs.ToList())
 		{
 			string[] parts = (item.Value ?? "").Split('|');
@@ -5588,6 +5616,8 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			if (_pendingDiplomacySyncs.Remove(item.Key))
 			{
 				removed++;
+				string originalSyncReason = parts.Length >= 4 ? (parts[3] ?? "").Trim() : "";
+				removedDeclareWarSyncs.Add(declaringId + "->" + targetId + ";syncReason=" + originalSyncReason + ";pendingKey=" + (item.Key ?? ""));
 			}
 		}
 		if (removed > 0)
@@ -5597,7 +5627,10 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 				["reason"] = reason ?? "",
 				["kingdom1"] = VassalageDiagnosticLog.DescribeKingdom(kingdom1),
 				["kingdom2"] = VassalageDiagnosticLog.DescribeKingdom(kingdom2),
+				["kingdom1Agreement"] = DescribeAgreementForDiagnostics(GetAnyVassalAgreement(kingdom1)),
+				["kingdom2Agreement"] = DescribeAgreementForDiagnostics(GetAnyVassalAgreement(kingdom2)),
 				["removed"] = removed,
+				["removedDeclareWarSyncs"] = removedDeclareWarSyncs,
 				["pendingDiplomacySyncCount"] = _pendingDiplomacySyncs.Count
 			});
 		}
@@ -5612,6 +5645,45 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			|| string.Equals(value, "npc_tributary_protection_accepted", StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(value, "npc_tributary_treaty_protection_accepted", StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(value, "garrison_protection_accepted", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private bool ShouldBlockInternalWarForCurrentVassalage(
+		Kingdom declaringKingdom,
+		Kingdom targetKingdom,
+		out string blockReason,
+		out VassalageAgreement declaringAgreement,
+		out VassalageAgreement targetAgreement)
+	{
+		blockReason = "";
+		declaringAgreement = GetAnyVassalAgreement(declaringKingdom);
+		targetAgreement = GetAnyVassalAgreement(targetKingdom);
+		if (!IsValidKingdom(declaringKingdom) || !IsValidKingdom(targetKingdom) || declaringKingdom == targetKingdom)
+		{
+			return false;
+		}
+		Kingdom declaringSuzerain = declaringAgreement?.ResolveSuzerain();
+		Kingdom targetSuzerain = targetAgreement?.ResolveSuzerain();
+		if (declaringAgreement != null && declaringSuzerain == targetKingdom)
+		{
+			blockReason = "subject_against_suzerain";
+			return true;
+		}
+		if (targetAgreement != null && targetSuzerain == declaringKingdom)
+		{
+			blockReason = "suzerain_against_subject";
+			return true;
+		}
+		if (declaringAgreement != null
+			&& targetAgreement != null
+			&& IsValidKingdom(declaringSuzerain)
+			&& declaringSuzerain == targetSuzerain
+			&& IsControlledSubjectWithoutMilitaryAutonomy(declaringAgreement)
+			&& IsControlledSubjectWithoutMilitaryAutonomy(targetAgreement))
+		{
+			blockReason = "controlled_subjects_same_suzerain";
+			return true;
+		}
+		return false;
 	}
 
 	private bool IsObsoleteTributarySuzerainWarSync(string action, Kingdom declaringKingdom, Kingdom targetKingdom, string reason)
@@ -5675,6 +5747,31 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 					["action"] = action,
 					["kingdom1"] = VassalageDiagnosticLog.DescribeKingdom(kingdom1),
 					["kingdom2"] = VassalageDiagnosticLog.DescribeKingdom(kingdom2)
+				});
+				continue;
+			}
+			if (string.Equals(action, "declare_war", StringComparison.OrdinalIgnoreCase)
+				&& ShouldBlockInternalWarForCurrentVassalage(kingdom1, kingdom2, out string vassalageBlockReason, out var declaringAgreement, out var targetAgreement))
+			{
+				bool wasAtWar = IsAtWar(kingdom1, kingdom2);
+				int removedPendingDeclareWarCount = RemovePendingDeclareWarSyncsByParties(kingdom1, kingdom2, "pending_current_vassalage_forbids_war");
+				bool peaceAppliedNow = wasAtWar && MakePeaceIfNeeded(kingdom1, kingdom2, "pending_current_vassalage_forbids_war_reconcile");
+				bool peaceAfterReconcile = !IsAtWar(kingdom1, kingdom2);
+				VassalageDiagnosticLog.Event("pending_diplomacy.drop", new Dictionary<string, object>
+				{
+					["pendingKey"] = item.Key,
+					["reason"] = "current_vassalage_forbids_war",
+					["syncReason"] = reason,
+					["vassalageBlockReason"] = vassalageBlockReason,
+					["declaring"] = VassalageDiagnosticLog.DescribeKingdom(kingdom1),
+					["target"] = VassalageDiagnosticLog.DescribeKingdom(kingdom2),
+					["declaringAgreement"] = DescribeAgreementForDiagnostics(declaringAgreement),
+					["targetAgreement"] = DescribeAgreementForDiagnostics(targetAgreement),
+					["wasAtWar"] = wasAtWar,
+					["peaceAppliedNow"] = peaceAppliedNow,
+					["peaceAfterReconcile"] = peaceAfterReconcile,
+					["removedPendingDeclareWarCount"] = removedPendingDeclareWarCount,
+					["pendingDiplomacySyncCount"] = _pendingDiplomacySyncs.Count
 				});
 				continue;
 			}
