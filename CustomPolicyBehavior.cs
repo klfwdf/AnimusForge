@@ -6339,7 +6339,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			+ "volunteerProductionPct 与 volunteerUpgradeRatePct 是彼此独立、对所有政策类型开放的可选指标，不与战争、围剿、征服、吞并或任何固定题材绑定。你必须只按政策的具体措施和直接因果判断：确实改变空缺志愿兵槽位补充时才输出 volunteerProductionPct，确实改变已有志愿兵训练、刷新或精锐化时才输出 volunteerUpgradeRatePct；仅有战争目标、扩张愿望或军事措辞不足以生成这两个指标。非战争政策若确实改变兵源、人口吸纳、征募制度或训练体系，同样可以生成；战争政策若没有这些直接变化则必须省略。不得用 militiaPerDay 替代志愿兵指标，也不得为了凑全指标而强加数值；具体数值和作用于 rulerFiefs、vassalFiefs 或 allKingdomFiefs 完全由你按因果关系判断。\n"
 			+ (isLocalPolicy
 				? "地方政策不得输出 subject 或 clanInfluencePerDay；其余指标直接按地方句柄已有范围结算。\n"
-				: "全国政策的 subject 可省略，表示原有整国领地范围；领地类指标可使用 rulerFiefs、vassalFiefs、allKingdomFiefs，并可用 minClanTier/maxClanTier 限定领主家族等级；clanInfluencePerDay 必须使用 rulerClan、vassalClans 或 allMemberClans。集权政策若明确强化统治氏族，通常应考虑封臣不受益或承担相反代价；全国动员、共同丰收等语义明确的政策可以让统治氏族与封臣同时受益，不要机械强行做零和。\n")
+				: "全国政策的 subject 可省略，表示原有整国领地范围；领地类指标可使用 rulerFiefs、vassalFiefs、allKingdomFiefs，并可用 minClanTier/maxClanTier 限定领主家族等级；clanInfluencePerDay 必须使用 rulerClan、vassalClans 或 allMemberClans。你必须先判断统治者与封臣之间的直接因果关系，而不是把每条 effect 孤立生成：若政策在既有权力、税源、兵源控制、行政权限或政治影响力之间做相对再分配，一方增强通常意味着另一方削弱或至少不受益，应按正文分别输出 ruler 与 vassal 的方向和数值；若政策通过新增资源、共同投资、制度增效、全国增长或协同动员扩大双方的绝对能力，则双方可以同时增强，且增幅可以不同；混合政策也可以在某些指标共同增强、同时在影响力或控制权上此消彼长。不得机械零和、不得自动复制相反数，也不得为了对称而凭空补效果；某一方没有直接变化时应省略，最终关系、方向、指标与数值全部由你按政策具体措施判断。\n")
 			+ "不要输出 targetScope、targetKingdomId、targetKingdomName 或旧版扁平数值字段；不要根据动作词猜一个单方效果，要把政策最终让哪些合法目标的哪些数值增减直接写清楚。"
 			+ (isLocalPolicy ? "\n\n地方政策最终提醒：只能引用 S/L*/C*/R*；候选只是可选；publicFeedback 只能描述发布地和被你实际选择的本国目标。" : "")
 			+ (isVassalPolicy ? "\n\n附庸国政策最终提醒：必须返回 vassalIndependenceDelta 与 vassalIndependenceReason；不要把代码另行随机增加的 5–10 点发布费用重复算入该字段。" : "");
