@@ -2725,6 +2725,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 	private static PlayerNotorietyState NormalizeState(PlayerNotorietyState state)
 	{
 		state ??= new PlayerNotorietyState();
+		bool repairLegacyVillageRaidDefense = !state.LegacyVillageRaidDefenseRepairApplied;
 		state.CultureNotoriety ??= new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
 		state.NpcKnowledge ??= new Dictionary<string, PlayerNpcKnowledgeState>(StringComparer.OrdinalIgnoreCase);
 		state.RecentActions ??= new List<PlayerActionEntry>();
@@ -2753,21 +2754,22 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 			}, StringComparer.OrdinalIgnoreCase);
 		state.RecentActions = state.RecentActions
 			.Where(x => x != null && !string.IsNullOrWhiteSpace(x.Text))
-			.Select(NormalizeActionEntry)
+			.Select(x => NormalizeActionEntry(x, repairLegacyVillageRaidDefense))
 			.OrderBy(x => x.Day)
 			.ThenBy(x => x.Sequence)
 			.Take(MaxRecentActions)
 			.ToList();
 		state.MajorMaterials = state.MajorMaterials
 			.Where(x => x != null && !string.IsNullOrWhiteSpace(x.Text))
-			.Select(NormalizeHistoryMaterial)
+			.Select(x => NormalizeHistoryMaterial(x, repairLegacyVillageRaidDefense))
 			.OrderBy(x => x.Day)
 			.ThenBy(x => x.CreatedUtcTicks)
 			.ToList();
+		state.LegacyVillageRaidDefenseRepairApplied = true;
 		return PruneSummarizedMajorMaterials(state);
 	}
 
-	private static PlayerActionEntry NormalizeActionEntry(PlayerActionEntry entry)
+	private static PlayerActionEntry NormalizeActionEntry(PlayerActionEntry entry, bool repairLegacyVillageRaidDefense)
 	{
 		entry.Text = NormalizeLine(entry.Text);
 		entry.StableKey = NormalizeStableKey(entry.StableKey, entry.Text, entry.Day);
@@ -2779,17 +2781,118 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		entry.ActorCultureId = NormalizeCultureId(entry.ActorCultureId);
 		entry.TargetCultureId = NormalizeCultureId(entry.TargetCultureId);
 		entry.SettlementCultureId = NormalizeCultureId(entry.SettlementCultureId);
+		if (repairLegacyVillageRaidDefense)
+		{
+			entry.Text = RepairLegacyVillageRaidDefensePlayerActionText(entry);
+		}
 		return entry;
 	}
 
-	private static PlayerHistoryMaterial NormalizeHistoryMaterial(PlayerHistoryMaterial material)
+	private static PlayerHistoryMaterial NormalizeHistoryMaterial(PlayerHistoryMaterial material, bool repairLegacyVillageRaidDefense)
 	{
 		material.Text = NormalizeLine(material.Text);
 		material.StableKey = NormalizeStableKey(material.StableKey, material.Text, material.Day);
 		material.SourceKind = (material.SourceKind ?? "").Trim();
 		material.GameDate = (material.GameDate ?? "").Trim();
 		material.CultureIds = NormalizeCultureList(material.CultureIds);
+		if (repairLegacyVillageRaidDefense)
+		{
+			material.Text = RepairLegacyVillageRaidDefenseHistoryMaterialText(material);
+		}
 		return material;
+	}
+
+	private static string RepairLegacyVillageRaidDefensePlayerActionText(PlayerActionEntry entry)
+	{
+		string text = NormalizeLine(entry?.Text);
+		if (!IsLegacyVillageRaidDefenseRecord(entry?.ActionKind, entry?.StableKey, text, out bool isAftermath))
+		{
+			return text;
+		}
+		string place = ResolveLegacyVillageRaidDefenseLocation(entry?.LocationText, entry?.SettlementName);
+		return BuildLegacyVillageRaidDefenseText(text, place, entry?.Won, isAftermath);
+	}
+
+	private static string RepairLegacyVillageRaidDefenseHistoryMaterialText(PlayerHistoryMaterial material)
+	{
+		string text = NormalizeLine(material?.Text);
+		if (!IsLegacyVillageRaidDefenseRecord(material?.SourceKind, material?.StableKey, text, out bool isAftermath))
+		{
+			return text;
+		}
+		return BuildLegacyVillageRaidDefenseText(text, "当地村庄", InferLegacyVillageRaidDefenseOutcome(text), isAftermath);
+	}
+
+	private static bool IsLegacyVillageRaidDefenseRecord(string sourceKind, string stableKey, string text, out bool isAftermath)
+	{
+		isAftermath = false;
+		string key = (stableKey ?? "").Trim();
+		if (key.IndexOf(":side:defender:hero:", StringComparison.OrdinalIgnoreCase) < 0)
+		{
+			return false;
+		}
+		string kind = (sourceKind ?? "").Trim();
+		isAftermath = string.Equals(kind, "map_event_aftermath", StringComparison.OrdinalIgnoreCase)
+			|| key.StartsWith("mapevent_aftermath:", StringComparison.OrdinalIgnoreCase);
+		bool isMapEvent = string.Equals(kind, "map_event", StringComparison.OrdinalIgnoreCase)
+			|| key.StartsWith("mapevent:", StringComparison.OrdinalIgnoreCase);
+		if (!isMapEvent && !isAftermath)
+		{
+			return false;
+		}
+		if (isAftermath)
+		{
+			return text.IndexOf("的袭掠已经结束", StringComparison.OrdinalIgnoreCase) >= 0
+				&& (text.IndexOf("清点缴获", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("收拢部队并处理残局", StringComparison.OrdinalIgnoreCase) >= 0);
+		}
+		return text.IndexOf("发动的袭掠中", StringComparison.OrdinalIgnoreCase) >= 0;
+	}
+
+	private static string ResolveLegacyVillageRaidDefenseLocation(string locationText, string settlementName)
+	{
+		string place = NormalizeLine(locationText);
+		if (string.IsNullOrWhiteSpace(place))
+		{
+			place = NormalizeLine(settlementName);
+		}
+		return string.IsNullOrWhiteSpace(place) ? "当地村庄" : place;
+	}
+
+	private static bool? InferLegacyVillageRaidDefenseOutcome(string text)
+	{
+		if ((text ?? "").IndexOf("袭掠中得手", StringComparison.OrdinalIgnoreCase) >= 0
+			|| (text ?? "").IndexOf("清点缴获", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return true;
+		}
+		if ((text ?? "").IndexOf("袭掠中失利", StringComparison.OrdinalIgnoreCase) >= 0
+			|| (text ?? "").IndexOf("收拢部队并处理残局", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return false;
+		}
+		return null;
+	}
+
+	private static string BuildLegacyVillageRaidDefenseText(string originalText, string place, bool? won, bool isAftermath)
+	{
+		string corrected = isAftermath
+			? (won == true
+				? (place + "的袭掠已经结束，你协助守军击退了袭掠者，正在整顿部队。")
+				: (won == false
+					? (place + "的袭掠已经结束，袭掠者已经得手；你正在收拢部队并处理残局。")
+					: (place + "的袭掠已经结束，你正在协助守军整顿部队。")))
+			: (won == true
+				? ("你在" + place + "参与村庄保卫战，击退了袭掠者。")
+				: (won == false
+					? ("你在" + place + "参与村庄保卫战时失利，未能阻止袭掠者。")
+					: ("你在" + place + "参与了村庄保卫战。")));
+		int sentenceEnd = (originalText ?? "").IndexOf('。');
+		if (sentenceEnd < 0 || sentenceEnd >= originalText.Length - 1)
+		{
+			return corrected;
+		}
+		string detail = originalText.Substring(sentenceEnd + 1).Trim();
+		return string.IsNullOrWhiteSpace(detail) ? corrected : (corrected + " " + detail);
 	}
 
 	private static bool ShouldRecordPlayerHeroPrisonerRelease(EndCaptivityDetail detail)
@@ -3653,6 +3756,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		public int SummaryRetryCount;
 		public string LastSummaryError = "";
 		public long UpdatedUtcTicks;
+		public bool LegacyVillageRaidDefenseRepairApplied;
 	}
 
 	private sealed class PlayerNpcKnowledgeState

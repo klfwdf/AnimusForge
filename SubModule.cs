@@ -580,6 +580,7 @@ public class SubModule : MBSubModuleBase
 			RegisterAnimusForgeSettlementLoyaltyModel(campaignGameStarter);
 			campaignGameStarter.AddBehavior(new ModOnboardingBehavior());
 			campaignGameStarter.AddBehavior(new MyBehavior());
+			campaignGameStarter.AddBehavior(new KingdomStrategicProfileBehavior());
 			campaignGameStarter.AddBehavior(new ShoutBehavior());
 			campaignGameStarter.AddBehavior(new CourierDeliveryBehavior());
 			campaignGameStarter.AddBehavior(new DuelBehavior());

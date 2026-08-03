@@ -2859,7 +2859,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			}
 			_suppressWelcomeUntilUtcTicks = ticks + TimeSpan.FromMilliseconds(fromGate ? 800 : 200).Ticks;
 			_activeOnboardingStage = OnboardingUiStage.Import;
-			string text = "此内容包括世界观，角色信息，以及各个王国的开局概括，可以极大提升游戏的体验。\n\n但是一些世界观也会加大cpu的负担。";
+			string text = "此内容包括世界观、角色信息、各王国开局概括，以及国家性格和长期战略，可以极大提升游戏体验。\n\n但是一些世界观也会加大 CPU 的负担。";
 			_welcomeInProgress = true;
 			InformationManager.ShowInquiry(new InquiryData("知识库数据导入", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "一键导入", "跳过", delegate
 			{
@@ -3392,6 +3392,30 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				OpenImportFolderPicker(onReturn);
 				return;
 			}
+			string kingdomProfilesPath = Path.Combine(text, "kingdom_profiles", "KingdomProfiles.json");
+			if (!File.Exists(kingdomProfilesPath))
+			{
+				InformationManager.DisplayMessage(new InformationMessage("导入失败：缺少 kingdom_profiles\\KingdomProfiles.json。"));
+				OpenImportFolderPicker(onReturn);
+				return;
+			}
+			KingdomStrategicProfileBehavior kingdomProfileBehavior = Campaign.Current?.GetCampaignBehavior<KingdomStrategicProfileBehavior>();
+			if (kingdomProfileBehavior == null)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("导入失败：国家战略与性格数据行为未初始化。"));
+				OpenImportFolderPicker(onReturn);
+				return;
+			}
+			if (!kingdomProfileBehavior.InspectImportDirectory(text, out int kingdomProfileTotalCount, out _, out int kingdomProfileSkippedCount, out string kingdomProfileInspectError)
+				|| kingdomProfileTotalCount <= 0)
+			{
+				string reason = string.IsNullOrWhiteSpace(kingdomProfileInspectError)
+					? "资料包中没有与当前世界安全匹配的国家卡。"
+					: kingdomProfileInspectError;
+				InformationManager.DisplayMessage(new InformationMessage("导入失败：国家战略与性格资料无效。原因：" + reason));
+				OpenImportFolderPicker(onReturn);
+				return;
+			}
 			MyBehavior myBehavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
 			if (myBehavior == null)
 			{
@@ -3423,6 +3447,11 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：无法执行 事件库导入。"));
 				OpenImportFolderPicker(onReturn);
 			}
+			else if (!kingdomProfileBehavior.ImportAllFromDirectory(text, overwriteExisting: true, out string kingdomProfileImportDetail))
+			{
+				InformationManager.DisplayMessage(new InformationMessage("导入失败：无法执行国家战略与性格导入。原因：" + kingdomProfileImportDetail));
+				OpenImportFolderPicker(onReturn);
+			}
 			else if (!HasLoadedVoiceMapping())
 			{
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：声音映射未成功载入到当前存档。"));
@@ -3430,6 +3459,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			}
 			else
 			{
+				InformationManager.DisplayMessage(new InformationMessage("国家战略与性格已从资料包导入：匹配 " + kingdomProfileTotalCount + " 条；无法匹配 " + kingdomProfileSkippedCount + " 条。"));
 				CompleteOnboardingAndOpenPlayerPersonaSetup(onReturn, importedDatabase: true);
 			}
 		}
@@ -3543,7 +3573,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			text = text.Replace(oldChar, '_');
 		}
-		return text.Trim();
+		return text.Trim().TrimEnd('.');
 	}
 
 	private static string ResolveImportFolderPath(string folderName)

@@ -2090,6 +2090,20 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			yield break;
 		}
+		Hero hero = null;
+		try
+		{
+			hero = clan.Leader;
+		}
+		catch
+		{
+		}
+		// Clan.Heroes/Lords can be a stale or partial cache while campaign data is changing.
+		// The clan leader must still be visible to the marriage flow, including a kingdom ruler.
+		if (hero != null)
+		{
+			yield return hero;
+		}
 		IEnumerable enumerable = null;
 		try
 		{
@@ -2117,10 +2131,27 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		}
 		foreach (object item in enumerable)
 		{
-			if (item is Hero hero && hero != null)
+			if (item is Hero hero2 && hero2 != null && hero2 != hero)
 			{
-				yield return hero;
+				yield return hero2;
 			}
+		}
+	}
+
+	private static bool IsMarriageAuthorityHero(Hero hero)
+	{
+		if (hero == null)
+		{
+			return false;
+		}
+		try
+		{
+			Clan clan = hero.Clan;
+			return clan != null && (clan.Leader == hero || clan.Kingdom?.Leader == hero);
+		}
+		catch
+		{
+			return false;
 		}
 	}
 
@@ -2167,7 +2198,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		try
 		{
 			int marriageCandidateMaxAgeSetting = GetMarriageCandidateMaxAgeSetting();
-			if (hero.Age < (float)MarriageCandidateMinAge || hero.Age > (float)marriageCandidateMaxAgeSetting)
+			if (hero.Age < (float)MarriageCandidateMinAge || (hero.Age > (float)marriageCandidateMaxAgeSetting && !IsMarriageAuthorityHero(hero)))
 			{
 				return false;
 			}
@@ -2204,7 +2235,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			if (Math.Abs(left.Age - right.Age) > (float)GetMarriageCandidateMaxAgeGapSetting())
+			if (!IsMarriageAuthorityHero(left) && !IsMarriageAuthorityHero(right) && Math.Abs(left.Age - right.Age) > (float)GetMarriageCandidateMaxAgeGapSetting())
 			{
 				reason = "双方年龄差超过当前设置允许范围。";
 				return false;
