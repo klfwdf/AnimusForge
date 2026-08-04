@@ -413,6 +413,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		CampaignEvents.OnSessionLaunchedEvent.AddNonSerializedListener(this, OnSessionLaunched);
 		CampaignEvents.KingdomDecisionConcluded.AddNonSerializedListener(this, OnKingdomDecisionConcluded);
 		CampaignEvents.KingdomDecisionCancelled.AddNonSerializedListener(this, OnKingdomDecisionCancelled);
+		CampaignEvents.KingdomDestroyedEvent.AddNonSerializedListener(this, OnKingdomDestroyed);
 	}
 
 	void INonReadyObjectHandler.OnBeforeNonReadyObjectsDeleted()
@@ -865,6 +866,169 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 	{
 		ApplyPolicySettlementModelPatchesOnce();
 		EnsureDynamicPoliciesRegistered(reconcilePending: false);
+		ReconcileEliminatedKingdomPoliciesAfterLoad();
+	}
+
+	private void OnKingdomDestroyed(Kingdom destroyedKingdom)
+	{
+		string kingdomId = (destroyedKingdom?.StringId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(kingdomId))
+		{
+			return;
+		}
+		try
+		{
+			TerminatePoliciesForDestroyedKingdoms(
+				new HashSet<string>(StringComparer.OrdinalIgnoreCase) { kingdomId },
+				"政策所属国家已经灭亡",
+				"event");
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Write("Lifecycle", "destroyed-kingdom-policy-cleanup-failed", "kingdom=" + kingdomId + " error=" + ex);
+		}
+	}
+
+	private void ReconcileEliminatedKingdomPoliciesAfterLoad()
+	{
+		HashSet<string> eliminatedKingdomIds = new HashSet<string>(
+			(Kingdom.All ?? Enumerable.Empty<Kingdom>())
+				.Where(x => x != null && x.IsEliminated && !string.IsNullOrWhiteSpace(x.StringId))
+				.Select(x => x.StringId.Trim()),
+			StringComparer.OrdinalIgnoreCase);
+		if (eliminatedKingdomIds.Count <= 0)
+		{
+			return;
+		}
+		try
+		{
+			TerminatePoliciesForDestroyedKingdoms(
+				eliminatedKingdomIds,
+				"读档核对：政策所属国家已经灭亡",
+				"load");
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Write("Lifecycle", "eliminated-policy-load-reconcile-failed", ex.ToString());
+		}
+	}
+
+	private void TerminatePoliciesForDestroyedKingdoms(HashSet<string> destroyedKingdomIds, string ownerEndReason, string source)
+	{
+		if (destroyedKingdomIds == null || destroyedKingdomIds.Count <= 0)
+		{
+			return;
+		}
+		HashSet<string> endedVassalTargetIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (LocalPolicyRecordSaveData record in LoadLocalPolicyRecords())
+		{
+			if (record == null
+				|| !string.Equals(record.ScopeKind, PolicyScopeVassal, StringComparison.OrdinalIgnoreCase)
+				|| string.Equals(record.Status, LocalPolicyStatusAbolished, StringComparison.OrdinalIgnoreCase)
+				|| string.Equals(record.Status, LocalPolicyStatusRelationshipEnded, StringComparison.OrdinalIgnoreCase)
+				|| string.IsNullOrWhiteSpace(record.TargetKingdomId))
+			{
+				continue;
+			}
+			if (destroyedKingdomIds.Contains((record.TargetKingdomId ?? "").Trim())
+				|| destroyedKingdomIds.Contains((record.IssuerKingdomId ?? "").Trim()))
+			{
+				endedVassalTargetIds.Add(record.TargetKingdomId.Trim());
+			}
+		}
+		foreach (string vassalTargetId in endedVassalTargetIds)
+		{
+			OnVassalRelationshipEndedInternal(vassalTargetId, "目标附庸国或宗主国已经灭亡");
+		}
+
+		HashSet<string> ownedRecordIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		int endedOwnedPolicyCount = 0;
+		foreach (DynamicPolicySaveData data in LoadDynamicPolicies()
+			.Where(x => x != null
+				&& ShouldKeepDynamicPolicyRegistered(x.Status)
+				&& destroyedKingdomIds.Contains((x.OwnerKingdomId ?? "").Trim()))
+			.ToList())
+		{
+			if (!string.IsNullOrWhiteSpace(data.RecordId))
+			{
+				ownedRecordIds.Add(data.RecordId.Trim());
+			}
+			try
+			{
+				TerminateDynamicPolicyForDestroyedOwner(data, ownerEndReason);
+				endedOwnedPolicyCount++;
+			}
+			catch (Exception ex)
+			{
+				PolicySystemLog.Write("Lifecycle", "destroyed-owner-policy-end-failed", "recordId=" + (data.RecordId ?? "")
+					+ " owner=" + (data.OwnerKingdomId ?? "") + " error=" + ex);
+			}
+		}
+
+		int endedTargetEffectCount = 0;
+		foreach (KeyValuePair<string, string> item in _activePolicyEffects.ToList())
+		{
+			ActivePolicyEffectSaveData effect;
+			try
+			{
+				effect = GetActivePolicyEffectForWork(item.Key, item.Value ?? "");
+			}
+			catch (Exception ex)
+			{
+				PolicySystemLog.Write("Lifecycle", "destroyed-target-effect-load-failed", "effectId=" + item.Key + " error=" + ex.Message);
+				continue;
+			}
+			if (effect == null || IsLocalActivePolicyEffect(effect) || IsVassalActivePolicyEffect(effect))
+			{
+				continue;
+			}
+			bool policyOwnerDestroyed = ownedRecordIds.Contains((effect.RecordId ?? "").Trim());
+			bool effectTargetDestroyed = destroyedKingdomIds.Contains((effect.TargetKingdomId ?? "").Trim());
+			if (!policyOwnerDestroyed && !effectTargetDestroyed)
+			{
+				continue;
+			}
+			string endReason = policyOwnerDestroyed ? ownerEndReason : "效果目标国家已经灭亡";
+			MarkPolicyRecordEffectEnded(effect, endReason, queueNaturalExpiry: !policyOwnerDestroyed);
+			RemoveActivePolicyEffect(item.Key);
+			endedTargetEffectCount++;
+		}
+		_activePolicyEffectModelCache.Clear();
+		PolicySystemLog.Write("Lifecycle", "destroyed-kingdom-policies-ended",
+			"source=" + (source ?? "")
+			+ " kingdoms=" + string.Join(",", destroyedKingdomIds.OrderBy(x => x, StringComparer.OrdinalIgnoreCase))
+			+ " ownedPolicies=" + endedOwnedPolicyCount.ToString(CultureInfo.InvariantCulture)
+			+ " targetEffects=" + endedTargetEffectCount.ToString(CultureInfo.InvariantCulture)
+			+ " vassalPolicies=" + endedVassalTargetIds.Count.ToString(CultureInfo.InvariantCulture));
+	}
+
+	private void TerminateDynamicPolicyForDestroyedOwner(DynamicPolicySaveData data, string reason)
+	{
+		if (data == null)
+		{
+			return;
+		}
+		Kingdom owner = ResolveKingdomByIdOrName(data.OwnerKingdomId, "");
+		List<KingdomPolicyDecision> decisions = FindDynamicPolicyDecisions(owner, data.PolicyObjectId);
+		PolicyObject policy = owner?.ActivePolicies?.FirstOrDefault(x => x != null
+			&& string.Equals(x.StringId ?? "", data.PolicyObjectId ?? "", StringComparison.OrdinalIgnoreCase))
+			?? decisions.FirstOrDefault()?.Policy
+			?? MBObjectManager.Instance?.GetObject<PolicyObject>(data.PolicyObjectId);
+		foreach (KingdomPolicyDecision decision in decisions)
+		{
+			owner?.RemoveDecision(decision);
+		}
+		if (policy != null && owner?.ActivePolicies?.Contains(policy) == true)
+		{
+			owner.RemovePolicy(policy);
+		}
+		if (string.Equals(data.Status, DynamicPolicyStatusPending, StringComparison.OrdinalIgnoreCase))
+		{
+			EndPolicyEffectsForAgendaAbolition(data.RecordId, reason);
+			RejectDynamicPolicyAdoption(data, policy, reason);
+			return;
+		}
+		CompleteDynamicPolicyAbolition(data, policy, reason);
 	}
 
 	private void InitializeLoadedDynamicPoliciesBeforeNonReadyCleanup()
