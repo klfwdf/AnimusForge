@@ -1820,8 +1820,8 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			return;
 		}
 		request.VassalIndependenceBefore = independenceBefore;
-		request.VassalPublicationIndependenceCost = MBRandom.RandomInt(VassalPolicyRules.PublicationCostMinimum, VassalPolicyRules.PublicationCostMaximumInclusive + 1);
-		request.VassalQualityIndependenceDelta = VassalPolicyRules.NormalizeQualityDelta(result.MainAssessment?.VassalIndependenceDelta ?? 0f);
+		request.VassalPublicationIndependenceCost = MBRandom.RandomInt(VassalageBehavior.VassalPolicyPublicationCostMinimum, VassalageBehavior.VassalPolicyPublicationCostMaximumInclusive + 1);
+		request.VassalQualityIndependenceDelta = VassalageBehavior.NormalizeVassalPolicyIndependenceDelta(result.MainAssessment?.VassalIndependenceDelta ?? 0f);
 		request.VassalIndependenceReason = result.MainAssessment?.VassalIndependenceReason ?? "";
 		string recordId = Guid.NewGuid().ToString("N");
 		string feedback = ResolveFeedbackText(result, request);
@@ -6292,7 +6292,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		}
 		if (IsVassalPolicyRequest(request))
 		{
-			assessment.VassalIndependenceDelta = VassalPolicyRules.NormalizeQualityDelta(assessment.VassalIndependenceDelta ?? 0f);
+			assessment.VassalIndependenceDelta = VassalageBehavior.NormalizeVassalPolicyIndependenceDelta(assessment.VassalIndependenceDelta ?? 0f);
 			assessment.VassalIndependenceReason = LimitDisplayChars(CleanPolicyDisplayText(assessment.VassalIndependenceReason ?? ""), 160);
 			if (string.IsNullOrWhiteSpace(assessment.VassalIndependenceReason))
 			{

@@ -781,7 +781,16 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 	private const int ProtectorateStabilityFloor = 60;
 	private const int SubjectObedienceMinValue = 0;
 	private const int SubjectObedienceMaxValue = 100;
-	private const int InitialSubjectObedience = VassalPolicyRules.InitialObedience;
+	private const int InitialSubjectObedience = 70;
+	private const int SubjectRulerRelationMinValue = -100;
+	private const int SubjectRulerRelationMaxValue = 100;
+	private const int SubjectBreakawayThresholdMinValue = 60;
+	private const int SubjectBreakawayThresholdNeutralValue = 80;
+	private const int SubjectBreakawayThresholdMaxValue = 100;
+	private const int VassalPolicyQualityDeltaMinValue = -15;
+	private const int VassalPolicyQualityDeltaMaxValue = 15;
+	internal const int VassalPolicyPublicationCostMinimum = 5;
+	internal const int VassalPolicyPublicationCostMaximumInclusive = 10;
 	private const int GarrisonRefuseProtectionWeakDelta = -50;
 	private const int GarrisonRefuseProtectionEqualDelta = -35;
 	private const int GarrisonRefuseProtectionStrongDelta = -22;
@@ -873,7 +882,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 	internal static bool TryGetDirectVassalIndependenceStatusForExternal(string vassalKingdomId, out int independence, out int breakawayThreshold, out int rulerRelation, out string rulerName)
 	{
 		independence = 0;
-		breakawayThreshold = VassalPolicyRules.CalculateBreakawayThreshold(0);
+		breakawayThreshold = CalculateSubjectBreakawayThreshold(0);
 		rulerRelation = 0;
 		rulerName = "无有效统治者";
 		return Instance?.TryGetDirectVassalIndependenceStatus(vassalKingdomId, out independence, out breakawayThreshold, out rulerRelation, out rulerName) == true;
@@ -4026,7 +4035,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		}
 		AfVassalageType oldType = NormalizeVassalageType(existing.Type);
 		AfVassalageType newType = NormalizeVassalageType(type);
-		bool preserveSubjectIndependence = VassalPolicyRules.ShouldPreserveIndependenceOnRevision(UsesSubjectIndependence(oldType), UsesSubjectIndependence(newType));
+		bool preserveSubjectIndependence = UsesSubjectIndependence(oldType) && UsesSubjectIndependence(newType);
 		if (oldType == newType)
 		{
 			statusText = GetKingdomDisplayName(targetKingdom, "该王国") + "已经是你的" + GetVassalageTypeDisplayName(newType) + "，条约无需重复签署。";
@@ -5182,8 +5191,8 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		string vassalName = GetKingdomDisplayName(vassal, "该卫戍国");
 		int before = EnsureGarrisonObedience(agreement);
 		int after = ClampSubjectObedienceValue(before + delta);
-		int independenceBefore = VassalPolicyRules.IndependenceFromObedience(before);
-		int independenceAfter = VassalPolicyRules.IndependenceFromObedience(after);
+		int independenceBefore = IndependenceFromSubjectObedience(before);
+		int independenceAfter = IndependenceFromSubjectObedience(after);
 		_garrisonObedienceValues[(agreement.VassalKingdomId ?? "").Trim()] = after;
 		VassalageDiagnosticLog.Event("obedience.adjust", new Dictionary<string, object>
 		{
@@ -5217,7 +5226,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 	private bool TryGetDirectVassalIndependenceStatus(string vassalKingdomId, out int independence, out int breakawayThreshold, out int rulerRelation, out string rulerName)
 	{
 		independence = 0;
-		breakawayThreshold = VassalPolicyRules.CalculateBreakawayThreshold(0);
+		breakawayThreshold = CalculateSubjectBreakawayThreshold(0);
 		rulerRelation = 0;
 		rulerName = "无有效统治者";
 		string id = (vassalKingdomId ?? "").Trim();
@@ -5243,9 +5252,9 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		int normalizedQuality = VassalPolicyRules.NormalizeQualityDelta(qualityDelta);
-		after = VassalPolicyRules.ApplyIndependenceChange(before, publicationCost, normalizedQuality);
-		int afterObedience = VassalPolicyRules.ObedienceFromIndependence(after);
+		int normalizedQuality = NormalizeVassalPolicyIndependenceDelta(qualityDelta);
+		after = ApplySubjectIndependenceChange(before, publicationCost, normalizedQuality);
+		int afterObedience = SubjectObedienceFromIndependence(after);
 		_garrisonObedienceValues[id] = afterObedience;
 		Kingdom vassal = agreement.ResolveVassal();
 		string vassalName = GetKingdomDisplayName(vassal, "该附庸国");
@@ -5264,7 +5273,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			["rulerName"] = rulerName,
 			["rulerRelation"] = rulerRelation
 		});
-		brokeAway = VassalPolicyRules.ShouldBreakAway(after, rulerRelation);
+		brokeAway = ShouldSubjectBreakAway(after, rulerRelation);
 		if (brokeAway)
 		{
 			BreakAgreement(agreement, "vassal_policy_independence_threshold", vassalName + "的独立度升至 " + after.ToString(CultureInfo.InvariantCulture) + "/100，已达到按统治者" + rulerName + "与玩家关系 " + FormatSignedRelation(rulerRelation) + " 计算的脱离阈值 " + breakawayThreshold.ToString(CultureInfo.InvariantCulture) + "，该国宣布脱离宗主控制。");
@@ -5279,7 +5288,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 	private bool TryGetSubjectIndependenceStatus(VassalageAgreement agreement, out int independence, out int breakawayThreshold, out int rulerRelation, out string rulerName)
 	{
 		independence = 0;
-		breakawayThreshold = VassalPolicyRules.CalculateBreakawayThreshold(0);
+		breakawayThreshold = CalculateSubjectBreakawayThreshold(0);
 		rulerRelation = 0;
 		rulerName = "无有效统治者";
 		Kingdom playerKingdom = GetPlayerKingdom();
@@ -5295,16 +5304,16 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		}
 		Hero ruler = GetCurrentKingdomRuler(vassal);
 		rulerRelation = GetRulerRelationToPlayer(ruler);
-		breakawayThreshold = VassalPolicyRules.CalculateBreakawayThreshold(rulerRelation);
+		breakawayThreshold = CalculateSubjectBreakawayThreshold(rulerRelation);
 		rulerName = GetHeroDisplayName(ruler, "无有效统治者");
-		independence = VassalPolicyRules.IndependenceFromObedience(EnsureGarrisonObedience(agreement));
+		independence = IndependenceFromSubjectObedience(EnsureGarrisonObedience(agreement));
 		return true;
 	}
 
 	private bool TryBreakSubjectAtCurrentThreshold(VassalageAgreement agreement, string reason, string trigger)
 	{
 		if (!TryGetSubjectIndependenceStatus(agreement, out int independence, out int breakawayThreshold, out int rulerRelation, out string rulerName)
-			|| !VassalPolicyRules.ShouldBreakAway(independence, rulerRelation))
+			|| !ShouldSubjectBreakAway(independence, rulerRelation))
 		{
 			return false;
 		}
@@ -5357,7 +5366,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			return Math.Max(VassalPolicyRules.RulerRelationMinimum, Math.Min(VassalPolicyRules.RulerRelationMaximum, ruler.GetRelation(player)));
+			return Math.Max(SubjectRulerRelationMinValue, Math.Min(SubjectRulerRelationMaxValue, ruler.GetRelation(player)));
 		}
 		catch
 		{
@@ -5381,8 +5390,8 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		string vassalName = GetKingdomDisplayName(vassal, "该卫戍国");
 		int before = EnsureGarrisonObedience(agreement);
 		int after = ClampSubjectObedienceValue(before + delta);
-		int independenceBefore = VassalPolicyRules.IndependenceFromObedience(before);
-		int independenceAfter = VassalPolicyRules.IndependenceFromObedience(after);
+		int independenceBefore = IndependenceFromSubjectObedience(before);
+		int independenceAfter = IndependenceFromSubjectObedience(after);
 		_garrisonObedienceValues[(agreement.VassalKingdomId ?? "").Trim()] = after;
 		VassalageDiagnosticLog.Event("obedience.protection_success", new Dictionary<string, object>
 		{
@@ -7490,7 +7499,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 				["vassal"] = VassalageDiagnosticLog.DescribeKingdom(agreement?.ResolveVassal()),
 				["suzerain"] = VassalageDiagnosticLog.DescribeKingdom(agreement?.ResolveSuzerain()),
 				["value"] = value,
-				["independence"] = VassalPolicyRules.IndependenceFromObedience(value),
+				["independence"] = IndependenceFromSubjectObedience(value),
 				["tier"] = GetSubjectObedienceTierText(value),
 				["initialRule"] = "fixed_30_independence"
 			});
@@ -7526,6 +7535,52 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 	private static int ClampSubjectObedienceValue(int value)
 	{
 		return Math.Max(SubjectObedienceMinValue, Math.Min(SubjectObedienceMaxValue, value));
+	}
+
+	private static int ClampSubjectIndependenceValue(int value)
+	{
+		return Math.Max(SubjectObedienceMinValue, Math.Min(SubjectObedienceMaxValue, value));
+	}
+
+	private static int IndependenceFromSubjectObedience(int obedience)
+	{
+		return SubjectObedienceMaxValue - ClampSubjectObedienceValue(obedience);
+	}
+
+	private static int SubjectObedienceFromIndependence(int independence)
+	{
+		return SubjectObedienceMaxValue - ClampSubjectIndependenceValue(independence);
+	}
+
+	internal static int NormalizeVassalPolicyIndependenceDelta(float value)
+	{
+		if (float.IsNaN(value) || float.IsInfinity(value))
+		{
+			return 0;
+		}
+		int rounded = (int)Math.Round(value, MidpointRounding.AwayFromZero);
+		return Math.Max(VassalPolicyQualityDeltaMinValue, Math.Min(VassalPolicyQualityDeltaMaxValue, rounded));
+	}
+
+	private static int ApplySubjectIndependenceChange(int currentIndependence, int publicationCost, int qualityDelta)
+	{
+		int current = ClampSubjectIndependenceValue(currentIndependence);
+		int cost = Math.Max(0, publicationCost);
+		int quality = Math.Max(VassalPolicyQualityDeltaMinValue, Math.Min(VassalPolicyQualityDeltaMaxValue, qualityDelta));
+		return ClampSubjectIndependenceValue(current + cost + quality);
+	}
+
+	private static int CalculateSubjectBreakawayThreshold(int rulerRelation)
+	{
+		int relation = Math.Max(SubjectRulerRelationMinValue, Math.Min(SubjectRulerRelationMaxValue, rulerRelation));
+		double threshold = SubjectBreakawayThresholdNeutralValue + relation * 0.2d;
+		int rounded = (int)Math.Round(threshold, MidpointRounding.AwayFromZero);
+		return Math.Max(SubjectBreakawayThresholdMinValue, Math.Min(SubjectBreakawayThresholdMaxValue, rounded));
+	}
+
+	private static bool ShouldSubjectBreakAway(int independence, int rulerRelation)
+	{
+		return ClampSubjectIndependenceValue(independence) >= CalculateSubjectBreakawayThreshold(rulerRelation);
 	}
 
 	private static string GetSubjectObedienceTierText(int value)

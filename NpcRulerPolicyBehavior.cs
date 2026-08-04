@@ -1559,7 +1559,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		record.PolicyCooldownDay = Math.Max(VassalPolicyRules.EffectiveCooldownDay(record.Day, record.PolicyCooldownDay), Math.Max(0, day));
+		record.PolicyCooldownDay = Math.Max(Math.Max(record.Day, record.PolicyCooldownDay), Math.Max(0, day));
 		_policyRecords[id] = JsonConvert.SerializeObject(record);
 		Log("player-policy-cooldown-touched policy=" + id + " kingdom=" + (record.KingdomId ?? "") + " day=" + record.PolicyCooldownDay.ToString(CultureInfo.InvariantCulture));
 		return true;
@@ -3656,9 +3656,9 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			{
 				continue;
 			}
-			int recordCooldownDay = VassalPolicyRules.EffectiveCooldownDay(record.Day, record.PolicyCooldownDay);
+			int recordCooldownDay = Math.Max(record.Day, record.PolicyCooldownDay);
 			int existingCooldownDay = result.TryGetValue(kingdomId, out NpcRulerPolicyRecord existing)
-				? VassalPolicyRules.EffectiveCooldownDay(existing.Day, existing.PolicyCooldownDay)
+				? Math.Max(existing.Day, existing.PolicyCooldownDay)
 				: -1;
 			if (existing == null
 				|| recordCooldownDay > existingCooldownDay
@@ -3683,7 +3683,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		{
 			lastGeneratedByKingdom?.TryGetValue(kingdomId, out lastRecord);
 		}
-		int lastDay = lastRecord == null ? -1 : Math.Max(0, VassalPolicyRules.EffectiveCooldownDay(lastRecord.Day, lastRecord.PolicyCooldownDay));
+		int lastDay = lastRecord == null ? -1 : Math.Max(0, Math.Max(lastRecord.Day, lastRecord.PolicyCooldownDay));
 		int safeCooldownDays = Math.Max(1, cooldownDays);
 		int daysSince = lastDay < 0 ? int.MaxValue : currentDay - lastDay;
 		string exclusionReason = "";
