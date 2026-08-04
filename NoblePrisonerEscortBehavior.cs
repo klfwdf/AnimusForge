@@ -439,11 +439,6 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 			&& DuelIntentTerms.Any(term => text.IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0);
 	}
 
-	internal static bool HasExplicitExecutionIntentForExternal(string playerText)
-	{
-		return ContainsExecutionIntentForDuelConflict(playerText);
-	}
-
 	internal static void LogBlockedAutonomousDuel(int agentIndex, string source)
 	{
 		NoblePrisonerEscortLog.Log(

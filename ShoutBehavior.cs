@@ -16694,7 +16694,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		targetHero = targetHero ?? targetCharacter?.HeroObject;
 		int resolvedTargetAgentIndex = targetAgentIndexOverride >= 0 ? targetAgentIndexOverride : TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
-		NoblePrisonerEscortBehavior.TryProcessSceneExecutionTag(resolvedTargetAgentIndex, true, ref content);
+		NoblePrisonerEscortBehavior.TryProcessSceneExecutionTag(
+			resolvedTargetAgentIndex,
+			!string.IsNullOrWhiteSpace(latestPlayerText),
+			ref content);
 		TroopInspectionBehavior.TryProcessPrisonerSlaughterActionTagForExternal(
 			resolvedTargetAgentIndex,
 			ref content);
@@ -18030,7 +18033,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			shouldRecordPlayerInput ? promptPlayerText : "",
 			shouldRecordPlayerInput,
 			"native_conversation");
-		if (shouldRecordPlayerInput)
+		bool directNoblePrisonerConversation = shouldRecordPlayerInput && noblePrisonerExecutionRuleInjected;
+		if (directNoblePrisonerConversation)
+		{
+			siegeInterventionPostprocessSelected = false;
+		}
+		if (shouldRecordPlayerInput && !directNoblePrisonerConversation)
 		{
 			bool fixedSiegeActionHandled;
 			if (AfGcczShoutBridge.TryProcessFixedKeywordAction(targetHero, targetCharacter, nativeTargetAgentIndex, promptPlayerText, replyIsDirectPlayerResponse: true, out fixedSiegeActionHandled) && fixedSiegeActionHandled)
@@ -26308,14 +26316,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					bool persistentAdpDebtPostprocessSelected = HasPreprocessRuleHit(postprocessPreprocessHits, PersistentAdpDebtPostprocessRuleId);
 					bool siegeInterventionPostprocessSelected = AfGcczShoutBridge.ShouldContinuePostprocess(siegeInterventionRuleInjected, postprocessPreprocessHits);
 					siegeInterventionPostprocessSelected = AfGcczShoutBridge.ShouldAllowPostprocessByFrequency(siegeInterventionPostprocessSelected, playerText, replyIsDirectPlayerResponse, "scene_queue");
-					bool directNoblePrisonerExecutionRequested = replyIsDirectPlayerResponse
-						&& noblePrisonerExecutionRuleInjected
-						&& NoblePrisonerEscortBehavior.HasExplicitExecutionIntentForExternal(playerText);
-					if (directNoblePrisonerExecutionRequested)
+					bool directNoblePrisonerConversation = replyIsDirectPlayerResponse
+						&& noblePrisonerExecutionRuleInjected;
+					if (directNoblePrisonerConversation)
 					{
 						siegeInterventionPostprocessSelected = false;
 					}
-					if (replyIsDirectPlayerResponse)
+					if (replyIsDirectPlayerResponse && !directNoblePrisonerConversation)
 					{
 						bool fixedSiegeActionHandled;
 						if (AfGcczShoutBridge.TryProcessFixedKeywordAction(speakingHero, npcCharacter, currentSpeaker.AgentIndex, playerText, replyIsDirectPlayerResponse, out fixedSiegeActionHandled) && fixedSiegeActionHandled)
