@@ -26308,6 +26308,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					bool persistentAdpDebtPostprocessSelected = HasPreprocessRuleHit(postprocessPreprocessHits, PersistentAdpDebtPostprocessRuleId);
 					bool siegeInterventionPostprocessSelected = AfGcczShoutBridge.ShouldContinuePostprocess(siegeInterventionRuleInjected, postprocessPreprocessHits);
 					siegeInterventionPostprocessSelected = AfGcczShoutBridge.ShouldAllowPostprocessByFrequency(siegeInterventionPostprocessSelected, playerText, replyIsDirectPlayerResponse, "scene_queue");
+					bool directNoblePrisonerExecutionRequested = replyIsDirectPlayerResponse
+						&& noblePrisonerExecutionRuleInjected
+						&& NoblePrisonerEscortBehavior.HasExplicitExecutionIntentForExternal(playerText);
+					if (directNoblePrisonerExecutionRequested)
+					{
+						siegeInterventionPostprocessSelected = false;
+					}
 					if (replyIsDirectPlayerResponse)
 					{
 						bool fixedSiegeActionHandled;
