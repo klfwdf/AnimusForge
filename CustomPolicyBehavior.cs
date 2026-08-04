@@ -1837,8 +1837,13 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			out int independenceAfter,
 			out bool brokeAway))
 		{
+			foreach (AppliedKingdomEffect effect in application.KingdomEffects.Where(x => x != null).Reverse())
+			{
+				RollbackJustPublishedVassalPolicyStability(effect, recordId);
+				effect.RemainingDays = 0;
+			}
 			OnVassalRelationshipEndedInternal(request.PlayerKingdomId, "独立度结算时臣属关系失效");
-			InformationManager.ShowInquiry(new InquiryData("附庸国政策发布失败", "独立度结算时臣属关系已经失效，已终止刚创建的政策效果。", true, false, "知道了", "", null, null), pauseGameActiveState: true);
+			InformationManager.ShowInquiry(new InquiryData("附庸国政策发布失败", "独立度结算时臣属关系已经失效，已撤销一次性稳定度结算并终止刚创建的政策效果。", true, false, "知道了", "", null, null), pauseGameActiveState: true);
 			return;
 		}
 		request.VassalIndependenceBefore = appliedBefore;
