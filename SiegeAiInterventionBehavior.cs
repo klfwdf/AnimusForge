@@ -506,7 +506,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		dataStore.SyncData("_gcczRallyOathLoyaltyLockUntilDayBySettlement_v1", ref _rallyOathLoyaltyLockUntilDayBySettlement);
 		dataStore.SyncData("_gcczRallyOathLoyaltyLockValueBySettlement_v1", ref _rallyOathLoyaltyLockValueBySettlement);
 		dataStore.SyncData("_gcczRallyOathRecruitmentBuffUntilDayBySettlement_v1", ref _rallyOathRecruitmentBuffUntilDayBySettlement);
-		dataStore.SyncData("_gcczRecruitmentSuppressionUntilDayBySettlement_v1", ref _recruitmentSuppressionUntilDayBySettlement);
+		SyncRecruitmentSuppressionData(dataStore);
 		_repopulationProsperityDebuffUntilDayBySettlement ??= new Dictionary<string, int>();
 		_repopulationProsperityLastObservedBySettlement ??= new Dictionary<string, float>();
 		_civicProsperityBuffUntilDayBySettlement ??= new Dictionary<string, int>();
@@ -516,6 +516,56 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_rallyOathLoyaltyLockValueBySettlement ??= new Dictionary<string, float>();
 		_rallyOathRecruitmentBuffUntilDayBySettlement ??= new Dictionary<string, int>();
 		_recruitmentSuppressionUntilDayBySettlement ??= new Dictionary<string, int>();
+	}
+
+	private static void SyncRecruitmentSuppressionData(IDataStore dataStore)
+	{
+		const string legacyKey = "_gcczRecruitmentSuppressionUntilDayBySettlement_v1";
+		const string currentKey = "_gcczRecruitmentSuppressionUntilDayBySettlement_v2";
+		const string initializedKey = "_gcczRecruitmentSuppressionStorageV2Initialized";
+		if (dataStore == null)
+		{
+			return;
+		}
+		if (dataStore.IsSaving)
+		{
+			bool initialized = true;
+			dataStore.SyncData(initializedKey, ref initialized);
+			dataStore.SyncData(currentKey, ref _recruitmentSuppressionUntilDayBySettlement);
+			return;
+		}
+		if (!dataStore.IsLoading)
+		{
+			return;
+		}
+
+		bool hasCurrentStorage = false;
+		Dictionary<string, int> current = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		dataStore.SyncData(initializedKey, ref hasCurrentStorage);
+		dataStore.SyncData(currentKey, ref current);
+		if (hasCurrentStorage)
+		{
+			_recruitmentSuppressionUntilDayBySettlement = current ?? new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+			return;
+		}
+
+		Dictionary<string, int> legacy = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		dataStore.SyncData(legacyKey, ref legacy);
+		legacy ??= new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		int migrated = legacy.Count;
+		int removedRepopulationEntries = 0;
+		foreach (string settlementId in legacy.Keys.ToList())
+		{
+			if (_repopulationProsperityDebuffUntilDayBySettlement?.TryGetValue(settlementId, out int repopulationUntilDay) != true
+				|| legacy[settlementId] > repopulationUntilDay)
+			{
+				continue;
+			}
+			legacy.Remove(settlementId);
+			removedRepopulationEntries++;
+		}
+		_recruitmentSuppressionUntilDayBySettlement = new Dictionary<string, int>(legacy, StringComparer.OrdinalIgnoreCase);
+		Logger.Log("SiegeAiIntervention", $"Migrated recruitment suppression storage v1->v2. Migrated={migrated - removedRepopulationEntries}, RemovedRepopulation={removedRepopulationEntries}");
 	}
 
 	private void OnDailyTickTown(Town town)
@@ -7763,6 +7813,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			int killedNotables = 0;
 			int spawnedNotables = 0;
 			ReplaceTownNotablesForCulturalRepopulation(settlement, targetCulture, source, out killedNotables, out spawnedNotables);
+			CountNotableVolunteerState(settlement, out int recruitmentEligibleNotables, out int populatedVolunteerSlots, out int volunteerSlotCapacity);
 			_lastKilledNotables += killedNotables;
 			_culturalRepopulationApplied = true;
 			SiegeCulturalRepopulationProfile repopulationProfile = new SiegeCulturalRepopulationProfile();
@@ -7770,14 +7821,16 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			string settlementName = settlement.Name?.ToString();
 			string targetCultureText = DescribeCultureForMessage(targetCulture, targetCultureSource);
 			InformationManager.DisplayMessage(new InformationMessage(repopulationProfile.BuildCompletedMessageText(settlementName, targetCultureText, notableResultText), Color.FromUint(repopulationProfile.CompletedMessageColor)));
-			Logger.Log("SiegeAiIntervention", "Applied purge repopulation. Source=" + (source ?? "N/A") + ", Settlement=" + (settlement.StringId ?? "N/A") + ", OldCulture=" + (oldCulture?.StringId ?? "N/A") + ", NewCulture=" + (targetCulture.StringId ?? "N/A") + ", TargetCultureSource=" + (targetCultureSource ?? "N/A") + ", BoundVillages=" + boundVillagesChanged + ", KilledNotables=" + killedNotables + ", SpawnedNotables=" + spawnedNotables);
+			Logger.Log("SiegeAiIntervention", "Applied purge repopulation. Source=" + (source ?? "N/A") + ", Settlement=" + (settlement.StringId ?? "N/A") + ", OldCulture=" + (oldCulture?.StringId ?? "N/A") + ", NewCulture=" + (targetCulture.StringId ?? "N/A") + ", TargetCultureSource=" + (targetCultureSource ?? "N/A") + ", BoundVillages=" + boundVillagesChanged + ", KilledNotables=" + killedNotables + ", SpawnedNotables=" + spawnedNotables + ", RecruitmentEligibleNotables=" + recruitmentEligibleNotables + ", VolunteerSlots=" + populatedVolunteerSlots + "/" + volunteerSlotCapacity);
 			GcczDiagnosticLog.Log("CulturalRepopulation", "applied source=" + (source ?? "N/A")
 				+ " settlement=" + (settlement.StringId ?? "N/A")
 				+ " oldCulture=" + (oldCulture?.StringId ?? "N/A")
 				+ " newCulture=" + (targetCulture.StringId ?? "N/A")
 				+ " villages=" + boundVillagesChanged
 				+ " killedNotables=" + killedNotables
-				+ " spawnedNotables=" + spawnedNotables);
+				+ " spawnedNotables=" + spawnedNotables
+				+ " recruitmentEligibleNotables=" + recruitmentEligibleNotables
+				+ " volunteerSlots=" + populatedVolunteerSlots + "/" + volunteerSlotCapacity);
 			return true;
 		}
 		catch (Exception ex)
@@ -9031,6 +9084,30 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("SiegeAiIntervention", "QueueCivilianFormationControl failed: " + ex.Message);
+		}
+	}
+
+	private static void CountNotableVolunteerState(Settlement settlement, out int eligibleNotables, out int populatedSlots, out int slotCapacity)
+	{
+		eligibleNotables = 0;
+		populatedSlots = 0;
+		slotCapacity = 0;
+		try
+		{
+			foreach (Hero notable in settlement?.Notables?.Where(hero => hero != null && hero.IsAlive).ToList() ?? new List<Hero>())
+			{
+				if (!notable.CanHaveRecruits || notable.VolunteerTypes == null)
+				{
+					continue;
+				}
+				eligibleNotables++;
+				slotCapacity += notable.VolunteerTypes.Length;
+				populatedSlots += notable.VolunteerTypes.Count(troop => troop != null);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "CountNotableVolunteerState failed. Settlement=" + (settlement?.StringId ?? "N/A") + ": " + ex.Message);
 		}
 	}
 
@@ -13774,10 +13851,12 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			int villageTrustAdjusted = AdjustBoundVillagePublicTrust(settlement, profile.BoundVillagePublicTrustDelta, profile.BoundVillagePublicTrustReason);
 			int notableRelationAdjusted = AdjustSettlementAndBoundVillageNotableRelations(settlement, profile.NotableRelationDelta, profile.NotableRelationReason);
 			int notableTrustAdjusted = AdjustSettlementAndBoundVillageNotableTrust(settlement, profile.NotableTrustDelta, profile.NotableTrustReason);
+			float prosperityAfterNativeAftermath = settlement.Town?.Prosperity ?? prosperityBeforeNativeAftermath;
+			float nativeProsperityDelta = prosperityAfterNativeAftermath - prosperityBeforeNativeAftermath;
 			float extraProsperityDelta = 0f;
-			if (profile.DoublesNativeDevastateProsperityPenalty)
+			if (profile.AppliesAdditionalNativeDevastateProsperityPenalty)
 			{
-				extraProsperityDelta = ApplyExtraNativeDevastateProsperityPenalty(settlement, prosperityBeforeNativeAftermath, SiegeSettlementOutcomeProfile.CulturalRepopulationNativeDevastateProsperityMultiplier);
+				extraProsperityDelta = ApplyExtraNativeDevastateProsperityPenalty(settlement, prosperityBeforeNativeAftermath, profile.NativeDevastateProsperityMultiplier);
 			}
 			if (profile.ResetsLoyaltyToInitial && settlement.Town != null)
 			{
@@ -13787,11 +13866,17 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				BeginRepopulationProsperityGrowthDebuff(settlement);
 			}
+			if (profile.ClearsExistingRecruitmentSuppression)
+			{
+				ClearRecruitmentSuppressionForSettlement(settlement, profile.Key);
+			}
 			if (profile.SuppressesRecruitment)
 			{
 				BeginRecruitmentSuppressionDebuff(settlement, profile);
 			}
-			Logger.Log("SiegeAiIntervention", $"Applied finalized GCCZ settlement outcome. Key={profile.Key}, Settlement={settlement.StringId}, SettlementTrust={profile.SettlementPublicTrustDelta}, VillageTrust={profile.BoundVillagePublicTrustDelta}x{villageTrustAdjusted}, NotableRelation={profile.NotableRelationDelta}x{notableRelationAdjusted}, NotableTrust={profile.NotableTrustDelta}x{notableTrustAdjusted}, ExtraProsperityDelta={extraProsperityDelta:0.##}");
+			float prosperityAfterAllEffects = settlement.Town?.Prosperity ?? prosperityAfterNativeAftermath;
+			Logger.Log("SiegeAiIntervention", $"Applied finalized GCCZ settlement outcome. Key={profile.Key}, Settlement={settlement.StringId}, SettlementTrust={profile.SettlementPublicTrustDelta}, VillageTrust={profile.BoundVillagePublicTrustDelta}x{villageTrustAdjusted}, NotableRelation={profile.NotableRelationDelta}x{notableRelationAdjusted}, NotableTrust={profile.NotableTrustDelta}x{notableTrustAdjusted}, ProsperityBefore={prosperityBeforeNativeAftermath:0.##}, NativeProsperityDelta={nativeProsperityDelta:0.##}, ExtraProsperityDelta={extraProsperityDelta:0.##}, ProsperityAfter={prosperityAfterAllEffects:0.##}, TotalProsperityDelta={prosperityAfterAllEffects - prosperityBeforeNativeAftermath:0.##}");
+			GcczDiagnosticLog.Log("SettlementOutcome", $"key={profile.Key} settlement={settlement.StringId} prosperityBefore={prosperityBeforeNativeAftermath:0.##} nativeDelta={nativeProsperityDelta:0.##} extraDelta={extraProsperityDelta:0.##} prosperityAfter={prosperityAfterAllEffects:0.##} totalDelta={prosperityAfterAllEffects - prosperityBeforeNativeAftermath:0.##} recruitmentSuppressed={profile.SuppressesRecruitment}");
 		}
 		catch (Exception ex)
 		{
@@ -13972,9 +14057,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return 0f;
 			}
-			float extraDelta = nativeDelta * (totalMultiplier - 1f);
-			settlement.Town.Prosperity = MathF.Max(0f, settlement.Town.Prosperity + extraDelta);
-			return extraDelta;
+			float prosperityBeforeExtraPenalty = settlement.Town.Prosperity;
+			float requestedExtraDelta = nativeDelta * (totalMultiplier - 1f);
+			settlement.Town.Prosperity = MathF.Max(0f, prosperityBeforeExtraPenalty + requestedExtraDelta);
+			return settlement.Town.Prosperity - prosperityBeforeExtraPenalty;
 		}
 		catch (Exception ex)
 		{
@@ -14153,6 +14239,24 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static void ClearRecruitmentSuppressionDebuffs()
 	{
 		_recruitmentSuppressionUntilDayBySettlement.Clear();
+	}
+
+	private static void ClearRecruitmentSuppressionForSettlement(Settlement settlement, string source)
+	{
+		try
+		{
+			string key = settlement?.StringId;
+			if (string.IsNullOrWhiteSpace(key))
+			{
+				return;
+			}
+			bool removed = _recruitmentSuppressionUntilDayBySettlement.Remove(key);
+			Logger.Log("SiegeAiIntervention", $"Cleared recruitment suppression for replacement population. Settlement={key}, Removed={removed}, Source={source ?? "N/A"}");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "ClearRecruitmentSuppressionForSettlement failed. Settlement=" + (settlement?.StringId ?? "N/A") + ": " + ex.Message);
+		}
 	}
 
 

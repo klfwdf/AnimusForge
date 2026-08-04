@@ -8,6 +8,8 @@ public sealed class SiegeSettlementOutcomeProfile
 {
     public const float CulturalRepopulationInitialLoyalty = 100f;
 
+    public const float MassacreNativeDevastateProsperityMultiplier = 2f;
+
     public const float CulturalRepopulationNativeDevastateProsperityMultiplier = 2f;
 
     public const float CulturalRepopulationProsperityGrowthReductionRatio = 0.70f;
@@ -66,11 +68,19 @@ public sealed class SiegeSettlementOutcomeProfile
 
     public bool ResetsLoyaltyToInitial => Key == "cultural_repopulation";
 
-    public bool DoublesNativeDevastateProsperityPenalty => Key == "cultural_repopulation";
+    public float NativeDevastateProsperityMultiplier => Key == "massacre"
+        ? MassacreNativeDevastateProsperityMultiplier
+        : Key == "cultural_repopulation"
+            ? CulturalRepopulationNativeDevastateProsperityMultiplier
+            : 1f;
+
+    public bool AppliesAdditionalNativeDevastateProsperityPenalty => NativeDevastateProsperityMultiplier > 1f;
 
     public bool AppliesProsperityGrowthDebuff => Key == "cultural_repopulation";
 
     public bool SuppressesRecruitment => RecruitmentSuppressionYears > 0;
+
+    public bool ClearsExistingRecruitmentSuppression => Key == "cultural_repopulation";
 
     public static SiegeSettlementOutcomeProfile BuildPlunder()
     {
@@ -116,7 +126,7 @@ public sealed class SiegeSettlementOutcomeProfile
             notableRelationReason: string.Empty,
             notableTrustDelta: 0,
             notableTrustReason: string.Empty,
-            recruitmentSuppressionYears: DestructiveRecruitmentSuppressionYears,
-            recruitmentSuppressionReason: "siege_ai_repopulation_recruitment_suppression");
+            recruitmentSuppressionYears: 0,
+            recruitmentSuppressionReason: string.Empty);
     }
 }

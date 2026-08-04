@@ -89,6 +89,7 @@
     <Compile Remove="FUYONG\**\*.cs" />
     <Compile Remove="_codex_tmp\**\*.cs" />
     <Compile Remove="tmp\**\*.cs" />
+    <Compile Remove="handoff\**\*.cs" />
     <EmbeddedResource Remove="原版游戏本体代码\**\*" />
     <EmbeddedResource Remove="原版游戏本体代码*\**\*" />
     <EmbeddedResource Remove="阅兵\**\*" />
