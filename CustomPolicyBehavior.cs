@@ -52,6 +52,7 @@ public sealed class PolicyActiveEffectRegistration
 	public float ConstructionSpeedPercent { get; set; }
 	public int KingdomStabilityDailyDelta { get; set; }
 	public bool ApplyKingdomStabilityOnce { get; set; }
+	public int AppliedKingdomStabilityOnce { get; set; }
 	public int DurationDays { get; set; }
 	public string Reason { get; set; }
 }
@@ -393,7 +394,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		PersistActivePolicyEffect(effectId, activeEffect);
 		if (registration.ApplyKingdomStabilityOnce)
 		{
-			ApplyKingdomStabilityOneTime(activeEffect, registration.KingdomStabilityDailyDelta);
+			registration.AppliedKingdomStabilityOnce = ApplyKingdomStabilityOneTime(activeEffect, registration.KingdomStabilityDailyDelta);
 		}
 		PolicySystemLog.Write("Effect", "active-created", "recordId=" + activeEffect.RecordId
 			+ " effectId=" + effectId
@@ -1845,8 +1846,9 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		UpdateVassalPolicyIndependenceRecord(recordId, request);
 		if (brokeAway)
 		{
-			foreach (AppliedKingdomEffect effect in application.KingdomEffects.Where(x => x != null))
+			foreach (AppliedKingdomEffect effect in application.KingdomEffects.Where(x => x != null).Reverse())
 			{
+				RollbackJustPublishedVassalPolicyStability(effect, recordId);
 				effect.RemainingDays = 0;
 			}
 		}
@@ -1858,7 +1860,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			+ " + 政策修正 " + FormatSigned(request.VassalQualityIndependenceDelta)
 			+ " = " + independenceAfter.ToString(CultureInfo.InvariantCulture) + "/100"
 			+ "\n当前脱离阈值：" + breakawayThreshold.ToString(CultureInfo.InvariantCulture) + "（" + rulerName + "关系 " + FormatSigned(rulerRelation) + "）"
-			+ (brokeAway ? "\n目标附庸国已达到脱离阈值，臣属关系和全部持续效果已经终止。" : "");
+			+ (brokeAway ? "\n目标附庸国已达到脱离阈值；本次附庸国政策的一次性稳定度结算已撤销，臣属关系和全部持续效果已经终止。" : "");
 		ShowPolicySuccessResultPopup("vassal:" + recordId, impactText);
 		PolicySystemLog.Write("VassalPolicy", "published", BuildPolicyRecordLogPrefix(request, recordId)
 			+ " target=" + (request.PlayerKingdomId ?? "")
@@ -4628,11 +4630,11 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		}
 	}
 
-	private void ApplyKingdomStabilityOneTime(ActivePolicyEffectSaveData activeEffect, int delta)
+	private int ApplyKingdomStabilityOneTime(ActivePolicyEffectSaveData activeEffect, int delta)
 	{
 		if (activeEffect == null || delta == 0)
 		{
-			return;
+			return 0;
 		}
 		Kingdom kingdom = ResolveKingdomByIdOrName(activeEffect.TargetKingdomId, activeEffect.TargetKingdomName);
 		if (kingdom == null || kingdom.IsEliminated)
@@ -4640,7 +4642,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			PolicySystemLog.Write("Effect", "stability-once-skipped", "recordId=" + (activeEffect.RecordId ?? "")
 				+ " effectId=" + (activeEffect.EffectId ?? "")
 				+ " reason=target-missing");
-			return;
+			return 0;
 		}
 		if (!DuelSettings.IsKingdomStabilityAndRebellionEnabled())
 		{
@@ -4648,7 +4650,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 				+ " effectId=" + (activeEffect.EffectId ?? "")
 				+ " target=" + (activeEffect.TargetKingdomId ?? "")
 				+ " reason=stability-disabled");
-			return;
+			return 0;
 		}
 		if (MyBehavior.TryAdjustKingdomStabilityForExternal(
 			kingdom,
@@ -4664,12 +4666,55 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 				+ " before=" + before.ToString(CultureInfo.InvariantCulture)
 				+ " after=" + after.ToString(CultureInfo.InvariantCulture)
 				+ " actual=" + (after - before).ToString(CultureInfo.InvariantCulture));
-			return;
+			return after - before;
 		}
 		PolicySystemLog.Write("Effect", "stability-once-failed", "recordId=" + (activeEffect.RecordId ?? "")
 			+ " effectId=" + (activeEffect.EffectId ?? "")
 			+ " target=" + (activeEffect.TargetKingdomId ?? "")
 			+ " requested=" + delta.ToString(CultureInfo.InvariantCulture)
+			+ " before=" + before.ToString(CultureInfo.InvariantCulture)
+			+ " after=" + after.ToString(CultureInfo.InvariantCulture));
+		return 0;
+	}
+
+	private void RollbackJustPublishedVassalPolicyStability(AppliedKingdomEffect effect, string recordId)
+	{
+		int appliedDelta = effect?.AppliedKingdomStabilityOnce ?? 0;
+		if (effect == null || appliedDelta == 0)
+		{
+			return;
+		}
+		Kingdom kingdom = ResolveKingdomByIdOrName(effect.KingdomId, effect.KingdomName);
+		if (kingdom == null || kingdom.IsEliminated)
+		{
+			PolicySystemLog.Write("Effect", "stability-once-rollback-skipped", "recordId=" + (recordId ?? "")
+				+ " effectId=" + (effect.EffectId ?? "")
+				+ " target=" + (effect.KingdomId ?? "")
+				+ " applied=" + appliedDelta.ToString(CultureInfo.InvariantCulture)
+				+ " reason=target-missing");
+			return;
+		}
+		if (MyBehavior.TryAdjustKingdomStabilityForExternal(
+			kingdom,
+			-appliedDelta,
+			"vassal_policy_publication_breakaway:" + (recordId ?? "") + ":" + (effect.EffectId ?? ""),
+			out int before,
+			out int after))
+		{
+			effect.AppliedKingdomStabilityOnce = 0;
+			PolicySystemLog.Write("Effect", "stability-once-rolled-back", "recordId=" + (recordId ?? "")
+				+ " effectId=" + (effect.EffectId ?? "")
+				+ " target=" + (effect.KingdomId ?? "")
+				+ " applied=" + appliedDelta.ToString(CultureInfo.InvariantCulture)
+				+ " before=" + before.ToString(CultureInfo.InvariantCulture)
+				+ " after=" + after.ToString(CultureInfo.InvariantCulture)
+				+ " actual=" + (after - before).ToString(CultureInfo.InvariantCulture));
+			return;
+		}
+		PolicySystemLog.Write("Effect", "stability-once-rollback-failed", "recordId=" + (recordId ?? "")
+			+ " effectId=" + (effect.EffectId ?? "")
+			+ " target=" + (effect.KingdomId ?? "")
+			+ " applied=" + appliedDelta.ToString(CultureInfo.InvariantCulture)
 			+ " before=" + before.ToString(CultureInfo.InvariantCulture)
 			+ " after=" + after.ToString(CultureInfo.InvariantCulture));
 	}
@@ -4711,6 +4756,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			if (TryRegisterPolicyActiveEffectInternal(registration, out string activeEffectId, out string failureReason))
 			{
 				effect.EffectId = activeEffectId;
+				effect.AppliedKingdomStabilityOnce = registration.AppliedKingdomStabilityOnce;
 				NpcRulerPolicyBehavior.UpdatePolicyEffectStateForExternal(recordId, activeEffectId, registration.TargetKingdomId, registration.DurationDays, isEnded: false);
 				PolicyEffectLedgerLog("active-created", BuildPolicyEffectLedgerLine(recordId, activeEffectId, effect, registration.SubmittedDay, registration.DurationDays));
 			}
@@ -9818,6 +9864,8 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		public float ConstructionSpeedPercent;
 
 		public int KingdomStabilityDailyDelta;
+
+		public int AppliedKingdomStabilityOnce;
 
 		public int DurationDays;
 
