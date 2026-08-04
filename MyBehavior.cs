@@ -13353,6 +13353,30 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static void RecordWorldDiplomacyWeeklyMaterialForExternal(string stableKey, string label, string snapshotText, string kingdomId, string actorHeroId, string actorKingdomId, bool includeInWorld, int day, string gameDate)
+	{
+		try
+		{
+			(Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.RecordEventSourceMaterial(
+				"world_diplomacy",
+				label,
+				snapshotText,
+				stableKey,
+				kingdomId,
+				"",
+				includeInWorld,
+				includeInKingdom: true,
+				actorHeroId: actorHeroId,
+				actorKingdomId: actorKingdomId,
+				dayOverride: day,
+				gameDateOverride: gameDate);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EventWeeklyReport", "[WorldDiplomacy][WARN] record weekly material failed: " + ex.Message);
+		}
+	}
+
 	public static void RecordPolicySystemWeeklyMaterialForExternal(string eventKind, string label, string snapshot, string stableKey, string targetKingdomId, bool includeInWorld, string actorHeroId, string actorKingdomId, int day, string gameDate)
 	{
 		try
@@ -14811,6 +14835,68 @@ public class MyBehavior : CampaignBehaviorBase
 		return npcActionEntry;
 	}
 
+	private static string RepairLegacyVillageRaidDefenseActionText(NpcActionEntry entry, string sourceText)
+	{
+		string text = (sourceText ?? "").Trim();
+		if (!IsLegacyVillageRaidDefenseAction(entry, text, out bool isAftermath))
+		{
+			return text;
+		}
+		string place = (entry?.LocationText ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(place))
+		{
+			place = (entry?.SettlementName ?? "").Trim();
+		}
+		if (string.IsNullOrWhiteSpace(place))
+		{
+			place = "当地村庄";
+		}
+		bool? won = entry?.Won;
+		string corrected = isAftermath
+			? (won == true
+				? (place + "的袭掠已经结束，你协助守军击退了袭掠者，正在整顿部队。")
+				: (won == false
+					? (place + "的袭掠已经结束，袭掠者已经得手；你正在收拢部队并处理残局。")
+					: (place + "的袭掠已经结束，你正在协助守军整顿部队。")))
+			: (won == true
+				? ("你在" + place + "参与村庄保卫战，击退了袭掠者。")
+				: (won == false
+					? ("你在" + place + "参与村庄保卫战时失利，未能阻止袭掠者。")
+					: ("你在" + place + "参与了村庄保卫战。")));
+		int sentenceEnd = text.IndexOf('。');
+		if (sentenceEnd < 0 || sentenceEnd >= text.Length - 1)
+		{
+			return corrected;
+		}
+		string detail = text.Substring(sentenceEnd + 1).Trim();
+		return string.IsNullOrWhiteSpace(detail) ? corrected : (corrected + " " + detail);
+	}
+
+	private static bool IsLegacyVillageRaidDefenseAction(NpcActionEntry entry, string text, out bool isAftermath)
+	{
+		isAftermath = false;
+		string stableKey = (entry?.StableKey ?? "").Trim();
+		if (stableKey.IndexOf(":side:defender:hero:", StringComparison.OrdinalIgnoreCase) < 0)
+		{
+			return false;
+		}
+		string actionKind = (entry?.ActionKind ?? "").Trim();
+		isAftermath = string.Equals(actionKind, "map_event_aftermath", StringComparison.OrdinalIgnoreCase)
+			|| stableKey.StartsWith("mapevent_aftermath:", StringComparison.OrdinalIgnoreCase);
+		bool isMapEvent = string.Equals(actionKind, "map_event", StringComparison.OrdinalIgnoreCase)
+			|| stableKey.StartsWith("mapevent:", StringComparison.OrdinalIgnoreCase);
+		if (!isMapEvent && !isAftermath)
+		{
+			return false;
+		}
+		if (isAftermath)
+		{
+			return text.IndexOf("的袭掠已经结束", StringComparison.OrdinalIgnoreCase) >= 0
+				&& (text.IndexOf("清点缴获", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("收拢部队并处理残局", StringComparison.OrdinalIgnoreCase) >= 0);
+		}
+		return text.IndexOf("发动的袭掠中", StringComparison.OrdinalIgnoreCase) >= 0;
+	}
+
 	private static List<NpcActionEntry> SanitizeNpcActionEntries(List<NpcActionEntry> source, bool keepOnlyRecentWindow)
 	{
 		List<NpcActionEntry> list = new List<NpcActionEntry>();
@@ -14828,7 +14914,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				continue;
 			}
-			string text = (item.Text ?? "").Trim();
+			string text = RepairLegacyVillageRaidDefenseActionText(item, (item.Text ?? "").Trim());
 			if (string.IsNullOrWhiteSpace(text))
 			{
 				continue;
@@ -15729,7 +15815,16 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		if (mapEvent.IsRaid)
 		{
-			return won ? (locationLabel + "的袭掠已经结束，你正在清点缴获并整顿部队。") : (locationLabel + "的袭掠已经结束，你正在收拢部队并处理残局。");
+			string raidLocation = string.IsNullOrWhiteSpace(locationLabel) ? "某处村庄" : locationLabel.Trim();
+			if (side.MissionSide == BattleSideEnum.Attacker)
+			{
+				return won ? (raidLocation + "的袭掠已经结束，你正在清点缴获并整顿部队。") : (raidLocation + "的袭掠已经结束，你的袭掠未能得手，正在收拢部队并处理残局。");
+			}
+			if (side.MissionSide == BattleSideEnum.Defender)
+			{
+				return won ? (raidLocation + "的袭掠已经结束，你协助守军击退了袭掠者，正在整顿部队。") : (raidLocation + "的袭掠已经结束，袭掠者已经得手；你正在收拢部队并处理残局。");
+			}
+			return won ? (raidLocation + "的村庄袭掠冲突已经结束，你正在整顿部队。") : (raidLocation + "的村庄袭掠冲突已经结束，你正在收拢部队并处理残局。");
 		}
 		return won ? ("这场发生在" + locationLabel + "的战斗已经结束，你正在整顿部队并清点战果。") : ("这场发生在" + locationLabel + "的战斗已经结束，你正在收拢残部并处理败战残局。");
 	}
@@ -15782,7 +15877,20 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		else if (mapEvent.IsRaid)
 		{
-			text4 = (won ? (text + "，在" + (string.IsNullOrWhiteSpace(text3) ? "" : (text3 + "于")) + locationLabel + "对" + text2 + "发动的袭掠中得手。") : (text + "，在" + (string.IsNullOrWhiteSpace(text3) ? "" : (text3 + "于")) + locationLabel + "对" + text2 + "发动的袭掠中失利。"));
+			string raidLocation = string.IsNullOrWhiteSpace(locationLabel) ? "某处村庄" : locationLabel.Trim();
+			string raidCommandPrefix = string.IsNullOrWhiteSpace(text3) ? "在" : ("随" + text3 + "在");
+			if (side.MissionSide == BattleSideEnum.Attacker)
+			{
+				text4 = won ? (text + "，" + raidCommandPrefix + raidLocation + "对" + text2 + "发动的袭掠中得手。") : (text + "，" + raidCommandPrefix + raidLocation + "对" + text2 + "发动的袭掠中失利。");
+			}
+			else if (side.MissionSide == BattleSideEnum.Defender)
+			{
+				text4 = won ? (text + "，" + raidCommandPrefix + raidLocation + "保卫村庄，击退了" + text2 + "的袭掠。") : (text + "，" + raidCommandPrefix + raidLocation + "保卫村庄时失利，未能阻止" + text2 + "的袭掠。");
+			}
+			else
+			{
+				text4 = won ? (text + "，" + raidCommandPrefix + raidLocation + "的村庄袭掠冲突中获胜。") : (text + "，" + raidCommandPrefix + raidLocation + "的村庄袭掠冲突中失利。");
+			}
 		}
 		else
 		{
@@ -18297,6 +18405,7 @@ public class MyBehavior : CampaignBehaviorBase
 		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_nonhero", "非heroNPC编辑（士兵/平民/无名/无姓NPC）", DevRootSubOptionCondition, DevRootNonHeroOptionConsequence);
 		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_knowledge", "知识编辑", DevRootSubOptionCondition, DevRootKnowledgeOptionConsequence);
 		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_event", "事件编辑", DevRootSubOptionCondition, DevRootEventOptionConsequence);
+		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_kingdom_strategic_profiles", "国家战略与性格", DevRootSubOptionCondition, DevRootKingdomStrategicProfilesOptionConsequence);
 		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_all", "全部导出/导入", DevRootSubOptionCondition, DevRootAllOptionConsequence);
 		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_voice", "声音映射管理（VoiceMapping）", DevRootSubOptionCondition, DevRootVoiceMappingOptionConsequence);
 		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_back", "返回", DevRootBackCondition, DevRootBackConsequence, isLeave: true);
@@ -27542,6 +27651,7 @@ public class MyBehavior : CampaignBehaviorBase
 		string id = (ruleId ?? "").Trim();
 		return string.Equals(id, "kingdom_vassalage", StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(id, "diplomacy", StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(id, "world_diplomacy_discussion", StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(id, "kingdom_agenda", StringComparison.OrdinalIgnoreCase);
 	}
 
@@ -27848,6 +27958,7 @@ public class MyBehavior : CampaignBehaviorBase
 		switch (id)
 		{
 		case "diplomacy":
+		case "world_diplomacy_discussion":
 		case "kingdom_vassalage":
 		case "kingdom_agenda":
 		case "marriage":
@@ -35800,6 +35911,17 @@ public class MyBehavior : CampaignBehaviorBase
 		OpenDevEventEditorMenu();
 	}
 
+	private void DevRootKingdomStrategicProfilesOptionConsequence(MenuCallbackArgs args)
+	{
+		KingdomStrategicProfileBehavior behavior = KingdomStrategicProfileBehavior.Instance;
+		if (behavior == null)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("国家战略与性格数据行为尚未初始化。"));
+			return;
+		}
+		behavior.OpenDevMenu();
+	}
+
 	private void DevRootAllOptionConsequence(MenuCallbackArgs args)
 	{
 		OpenDevAllDataMenu();
@@ -42126,25 +42248,37 @@ public class MyBehavior : CampaignBehaviorBase
 			return false;
 		}
 		List<string> list = text.Split(new char[1] { '\n' }, StringSplitOptions.RemoveEmptyEntries).Select((string x) => (x ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).ToList();
-		List<string> list2 = list.Where((string x) => x.StartsWith("STAB_", StringComparison.OrdinalIgnoreCase)).ToList();
-		if (list2.Count != 1)
+		if (list.Count == 1)
 		{
-			failureReason = (list2.Count == 0) ? "缺少稳定度标签。" : "稳定度标签数量不正确。";
+			string text2 = (list[0] ?? "").Trim().ToUpperInvariant();
+			if (text2 == "STAB_FLAT" || GetWeeklyReportStabilityDeltaForTag(text2) != 0)
+			{
+				normalizedTagText = text2;
+				stabilityTag = text2;
+				return true;
+			}
+		}
+		string text3 = "";
+		for (Match match = Regex.Match(text, "(?<![A-Z0-9_])STAB_(?:DOWN_[1-4]|UP_[1-4]|FLAT)(?![A-Z0-9_])", RegexOptions.IgnoreCase); match.Success; match = match.NextMatch())
+		{
+			string text4 = (match.Value ?? "").Trim().ToUpperInvariant();
+			if (string.IsNullOrWhiteSpace(text3))
+			{
+				text3 = text4;
+			}
+			else if (!string.Equals(text3, text4, StringComparison.Ordinal))
+			{
+				failureReason = "包含多个相互冲突的稳定度标签。";
+				return false;
+			}
+		}
+		if (string.IsNullOrWhiteSpace(text3))
+		{
+			failureReason = "缺少合法稳定度标签。";
 			return false;
 		}
-		string text2 = (list2[0] ?? "").Trim().ToUpperInvariant();
-		if (text2 != "STAB_FLAT" && GetWeeklyReportStabilityDeltaForTag(text2) == 0)
-		{
-			failureReason = "稳定度标签不合法。";
-			return false;
-		}
-		if (list.Count != 1)
-		{
-			failureReason = "TAGS 里只能输出一个稳定度标签。";
-			return false;
-		}
-		normalizedTagText = text2;
-		stabilityTag = text2;
+		normalizedTagText = text3;
+		stabilityTag = text3;
 		return true;
 	}
 
@@ -43807,7 +43941,7 @@ public class MyBehavior : CampaignBehaviorBase
 			stringBuilder.AppendLine("[REPORT]正文,\n【军事事件】\n【外交事件】\n【领地内事件】");
 		}
 		stringBuilder.AppendLine("[TAGS]");
-		stringBuilder.AppendLine("标签文本");
+		stringBuilder.AppendLine("STAB_FLAT");
 		stringBuilder.AppendLine("[REPORT_BLOCK_END]");
 		if (flag)
 		{
@@ -43817,7 +43951,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			stringBuilder.AppendLine("3. 每个 block 必须输出 [TITLE] [SHORT] [REPORT] [TAGS]。");
 		}
-		stringBuilder.AppendLine("4. world block 与 kingdom block 的 [TAGS] 中都必须且只能包含一个稳定度评级标签：STAB_DOWN_4、STAB_DOWN_3、STAB_DOWN_2、STAB_DOWN_1、STAB_FLAT、STAB_UP_1、STAB_UP_2、STAB_UP_3、STAB_UP_4，不要太苛刻，问题不大就少给down");
+		stringBuilder.AppendLine("4. [TAGS] 的下一行只能写一个稳定度标签：STAB_DOWN_4、STAB_DOWN_3、STAB_DOWN_2、STAB_DOWN_1、STAB_FLAT、STAB_UP_1、STAB_UP_2、STAB_UP_3、STAB_UP_4；不要中文标签、标点或解释。问题不大少给down。");
 		stringBuilder.AppendLine("5. 不要输出 [REPORT_BLOCK_BEGIN]/[REPORT_BLOCK_END] 之外的额外说明。");
 		return stringBuilder.ToString().TrimEnd();
 	}
@@ -43986,22 +44120,28 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				weeklyReportBatchBlockResult = weeklyReportBatchBlockResult ?? new WeeklyReportBatchBlockResult();
 			}
-			if (!string.IsNullOrWhiteSpace(weeklyReportBatchBlockResult.ReportId) && !dictionary.ContainsKey(weeklyReportBatchBlockResult.ReportId))
+			if (!string.IsNullOrWhiteSpace(weeklyReportBatchBlockResult.ReportId) && (!dictionary.TryGetValue(weeklyReportBatchBlockResult.ReportId, out var value) || (!value.Parsed && weeklyReportBatchBlockResult.Parsed)))
 			{
 				dictionary[weeklyReportBatchBlockResult.ReportId] = weeklyReportBatchBlockResult;
 			}
 			blocks.Add(weeklyReportBatchBlockResult);
 		}
+		List<string> list = new List<string>();
 		foreach (string item2 in BuildWeeklyBatchExpectedReportIds(batch))
 		{
-			if (!dictionary.ContainsKey(item2) || !dictionary[item2].Parsed)
+			if (!dictionary.TryGetValue(item2, out var value2))
 			{
 				missingReportIds.Add(item2);
+			}
+			else if (!value2.Parsed)
+			{
+				missingReportIds.Add(item2);
+				list.Add(item2);
 			}
 		}
 		if (missingReportIds.Count > 0)
 		{
-			failureReason = "批量周报响应缺少部分 report_id：" + string.Join("、", missingReportIds);
+			failureReason = (list.Count == 0) ? ("批量周报响应缺少部分 report_id：" + string.Join("、", missingReportIds)) : ((list.Count == missingReportIds.Count) ? ("批量周报响应中的 report_id 解析失败：" + string.Join("、", list)) : ("批量周报响应缺少或解析失败的 report_id：" + string.Join("、", missingReportIds)));
 		}
 		return blocks.Any((WeeklyReportBatchBlockResult x) => x != null && x.Parsed);
 	}
@@ -45767,7 +45907,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		context.FailureCount += missingGroups.Count;
 		context.FailedGroups.AddRange(missingGroups.Where((WeeklyEventMaterialPreviewGroup x) => x != null));
-		context.FailureMessages.Add(BuildWeeklyReportBatchDisplayLabel(batch) + ": batch request failed; single-report fallback was not started - " + (batchResult?.FailureReason ?? "unknown error"));
+		context.FailureMessages.Add(BuildWeeklyReportBatchDisplayLabel(batch) + "：批量请求未恢复出可用周报区块 - " + (batchResult?.FailureReason ?? "未知错误"));
 	}
 
 	private void FinalizePendingWeeklyReportCommitContext(PendingWeeklyReportCommitContext context)
@@ -46562,6 +46702,8 @@ public class MyBehavior : CampaignBehaviorBase
 			stringBuilder.AppendLine("Knowledge：" + CountKnowledgeRulesForDev() + " 条");
 			stringBuilder.AppendLine("事件记录：" + ((_eventRecordEntries != null) ? SanitizeEventRecordEntries(_eventRecordEntries).Count : 0) + " 条");
 			stringBuilder.AppendLine("王国稳定度：" + ((_kingdomStabilityValues != null) ? _kingdomStabilityValues.Count : 0) + " 条");
+			KingdomStrategicProfileBehavior kingdomProfiles = KingdomStrategicProfileBehavior.Instance;
+			stringBuilder.AppendLine("国家战略/性格：" + (kingdomProfiles?.GetProfileCountForDev() ?? 0) + " 条（玩家覆盖 " + (kingdomProfiles?.GetPlayerOverrideCountForDev() ?? 0) + " 条）");
 			stringBuilder.AppendLine("声音映射：" + CountVoiceMappingForDev() + " 个声音");
 			return stringBuilder.ToString().TrimEnd();
 		}
@@ -46574,13 +46716,13 @@ public class MyBehavior : CampaignBehaviorBase
 	private void ConfirmClearAllData()
 	{
 		string text = "这会清空当前存档中的 AnimusForge 数据，包括：\n" +
-			"HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命名 NPC 个性、Knowledge、事件记录、王国稳定度、声音映射、耐心状态等。\n\n" +
+			"HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命名 NPC 个性、Knowledge、事件记录、王国稳定度、国家战略/性格玩家覆盖、声音映射、耐心状态等。\n\n" +
 			"不会删除 PlayerExports 下已经导出的备份文件，也不会回滚已经真实发生的原版世界状态变化。\n\n" +
 			"此操作不可撤销。建议先执行一次“导出（全部）”。是否继续？";
 		InformationManager.ShowInquiry(new InquiryData("确认清理全部数据", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确认清理", "取消", delegate
 		{
 			ClearAllDataForCurrentSave();
-			InformationManager.DisplayMessage(new InformationMessage("已清理当前存档中的全部 AnimusForge 数据。"));
+			InformationManager.DisplayMessage(new InformationMessage("已清理当前存档中的 AnimusForge 可清理数据；国家战略与性格已恢复默认基线。"));
 			OpenDevAllDataMenu();
 		}, delegate
 		{
@@ -46699,6 +46841,7 @@ public class MyBehavior : CampaignBehaviorBase
 		ResetPendingWeeklyKingdomRebellionMaintenance();
 		RebuildRuntimeDerivedIndexes();
 		RewardSystemBehavior.Instance?.ImportDebtEntries(new Dictionary<string, RewardSystemBehavior.DebtExportEntry>());
+		KingdomStrategicProfileBehavior.Instance?.ResetAllProfilesToDefaults();
 		ClearKnowledgeDataForCurrentSave();
 		ClearVoiceMappingDataForCurrentSave();
 		ClearUnnamedPersonaDataForCurrentSave();
@@ -52922,6 +53065,10 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			File.WriteAllText(path5, text6, Encoding.UTF8);
 			ExportEventDataToDir(text);
+			if (KingdomStrategicProfileBehavior.Instance != null && !KingdomStrategicProfileBehavior.Instance.ExportAllToDirectory(text, out var kingdomProfileExportMessage))
+			{
+				InformationManager.DisplayMessage(new InformationMessage("警告：国家战略与性格导出失败，已跳过。原因：" + kingdomProfileExportMessage));
+			}
 			VoiceMapper.SetPreferredExportFolder(text);
 			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
 		}
@@ -55069,6 +55216,11 @@ public class MyBehavior : CampaignBehaviorBase
 			int eventKingdomTotalCount = 0;
 			int eventRecordDupCount = 0;
 			int eventRecordTotalCount = 0;
+			int kingdomProfileDupCount = 0;
+			int kingdomProfileTotalCount = 0;
+			int kingdomProfileSkippedCount = 0;
+			string kingdomProfileImportError = "";
+			KingdomStrategicProfileBehavior kingdomProfileBehavior = KingdomStrategicProfileBehavior.Instance;
 			string vmJson = null;
 			string vmPath = null;
 			EventImportPayload eventPayload = null;
@@ -55383,7 +55535,13 @@ public class MyBehavior : CampaignBehaviorBase
 				eventRecordTotalCount = 0;
 				eventPayload = null;
 			}
-			bool flag2 = num + num3 + num5 + num7 + num9 + num11 + eventWorldDupCount + eventKingdomDupCount + eventRecordDupCount > 0;
+			if (kingdomProfileBehavior != null && !kingdomProfileBehavior.InspectImportDirectory(importDir, out kingdomProfileTotalCount, out kingdomProfileDupCount, out kingdomProfileSkippedCount, out kingdomProfileImportError))
+			{
+				kingdomProfileDupCount = 0;
+				kingdomProfileTotalCount = 0;
+				kingdomProfileSkippedCount = 0;
+			}
+			bool flag2 = num + num3 + num5 + num7 + num9 + num11 + eventWorldDupCount + eventKingdomDupCount + eventRecordDupCount + kingdomProfileDupCount > 0;
 			Action action = delegate
 			{
 				if (pbNew != null)
@@ -55445,6 +55603,14 @@ public class MyBehavior : CampaignBehaviorBase
 				if (eventPayload != null)
 				{
 					ApplyImportedEventData(eventPayload, overwriteExisting: true);
+				}
+				if (kingdomProfileBehavior != null && kingdomProfileTotalCount > 0 && !kingdomProfileBehavior.ImportAllFromDirectory(importDir, overwriteExisting: true, out var kingdomProfileMessage))
+				{
+					InformationManager.DisplayMessage(new InformationMessage("警告：国家战略与性格导入失败，已跳过。原因：" + kingdomProfileMessage));
+				}
+				else if (!string.IsNullOrWhiteSpace(kingdomProfileImportError))
+				{
+					InformationManager.DisplayMessage(new InformationMessage("警告：国家战略与性格导入文件无效，已跳过。原因：" + kingdomProfileImportError));
 				}
 				ShoutUtils.ImportUnnamedPersonaFromDir(importDir);
 				_unnamedPersonaJsonStorage = ShoutUtils.ExportUnnamedPersonaStateJson(pretty: false) ?? "";
@@ -55517,6 +55683,14 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					ApplyImportedEventData(eventPayload, overwriteExisting: false);
 				}
+				if (kingdomProfileBehavior != null && kingdomProfileTotalCount > 0 && !kingdomProfileBehavior.ImportAllFromDirectory(importDir, overwriteExisting: false, out var kingdomProfileMessage))
+				{
+					InformationManager.DisplayMessage(new InformationMessage("警告：国家战略与性格导入失败，已跳过。原因：" + kingdomProfileMessage));
+				}
+				else if (!string.IsNullOrWhiteSpace(kingdomProfileImportError))
+				{
+					InformationManager.DisplayMessage(new InformationMessage("警告：国家战略与性格导入文件无效，已跳过。原因：" + kingdomProfileImportError));
+				}
 				ShoutUtils.ImportUnnamedPersonaFromDir(importDir, overwriteExisting: false);
 				_unnamedPersonaJsonStorage = ShoutUtils.ExportUnnamedPersonaStateJson(pretty: false) ?? "";
 				if (!ImportKnowledgeFromDir(importDir, overwriteExisting: false, out var knowledgeImportMessage))
@@ -55531,7 +55705,7 @@ public class MyBehavior : CampaignBehaviorBase
 			};
 			if (flag2)
 			{
-				string text14 = "导入数据与当前游戏存在重复。\n个性/背景：" + num + "/" + num2 + "\n对话历史：" + num3 + "/" + num4 + "\n欠款：" + num5 + "/" + num6 + "\n未命名NPC：" + num7 + "/" + num8 + "\nKnowledge：" + num9 + "/" + num10 + "\n声音映射：" + num11 + "/" + num12 + "\n世界开局概要：" + eventWorldDupCount + "/" + eventWorldTotalCount + "\n王国开局概要：" + eventKingdomDupCount + "/" + eventKingdomTotalCount + "\n事件记录：" + eventRecordDupCount + "/" + eventRecordTotalCount + "\n请选择处理方式：";
+				string text14 = "导入数据与当前游戏存在重复。\n个性/背景：" + num + "/" + num2 + "\n对话历史：" + num3 + "/" + num4 + "\n欠款：" + num5 + "/" + num6 + "\n未命名NPC：" + num7 + "/" + num8 + "\nKnowledge：" + num9 + "/" + num10 + "\n声音映射：" + num11 + "/" + num12 + "\n世界开局概要：" + eventWorldDupCount + "/" + eventWorldTotalCount + "\n王国开局概要：" + eventKingdomDupCount + "/" + eventKingdomTotalCount + "\n事件记录：" + eventRecordDupCount + "/" + eventRecordTotalCount + "\n国家战略/性格：" + kingdomProfileDupCount + "/" + kingdomProfileTotalCount + "（无法匹配 " + kingdomProfileSkippedCount + "）\n请选择处理方式：";
 				ShowDuplicateImportInquiry("检测到重复 - 全部导入", text14, action, onSkipDuplicates, delegate
 				{
 				});
@@ -56181,7 +56355,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			text = text.Replace(oldChar, '_');
 		}
-		return text.Trim();
+		return text.Trim().TrimEnd('.');
 	}
 
 	private static void WriteJson(string path, object obj)

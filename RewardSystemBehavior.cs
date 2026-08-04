@@ -1603,6 +1603,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		RepairPlayerHeroMemberPrisonerDuplicates("game_load_finished");
 		RepairInactivePromotedPlayerCompanions("game_load_finished");
 		BackfillHeroJoinOriginalClanRecordsForExistingPlayerCompanions();
+		CleanupStalePlayerJoinedHeroMapPartiesAfterLoad();
 	}
 
 	public void OnEngineTick()
@@ -5595,6 +5596,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			MobileParty originalMobileParty = joiningHero.PartyBelongedTo;
 			PartyBase originalCaptivityParty = joiningHero.PartyBelongedToAsPrisoner;
 			PartyBase originalParty = originalMobileParty?.Party ?? originalCaptivityParty;
+			bool shouldCleanupOriginalMapParty = ShouldScheduleOriginalMapPartyCleanupAfterHeroJoin(originalMobileParty);
 			TryResolveWildernessHeroJoinParty(joiningHero, out MobileParty wildernessSourceParty);
 			string wildernessSourcePartyName = wildernessSourceParty?.Name?.ToString() ?? "";
 			bool wildernessRosterTransferred = false;
@@ -5683,7 +5685,14 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				: (asCompanion
 					? $"执行成功：{joiningHero.Name} 已成为玩家同伴，并加入玩家队伍{transitionSummary}。"
 					: $"执行成功：{joiningHero.Name} 已成为玩家家族成员，并加入玩家队伍{transitionSummary}。");
-			ScheduleHeroJoinConversationClose(joiningHero, originalParty, originalMobileParty, joinedWildernessParty);
+			if (shouldCleanupOriginalMapParty && IsEmptyMapPartyAfterHeroJoin(originalMobileParty))
+			{
+				CloseHeroJoinMapPartyConversationImmediately(joiningHero, originalParty, originalMobileParty);
+			}
+			else
+			{
+				ScheduleHeroJoinConversationClose(joiningHero, originalParty, originalMobileParty, shouldCleanupOriginalMapParty);
+			}
 			return true;
 		}
 		catch (Exception ex)
@@ -5858,6 +5867,93 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			party = null;
 			return false;
+		}
+	}
+
+	// A hero can still be moved out of its party even when the optional wilderness-roster
+	// transfer path is not applicable (for example, when the conversation context is not
+	// classified as wilderness). Keep the original map party eligible for post-conversation
+	// empty-party cleanup so an otherwise valid hero transfer cannot leave a 0-man party.
+	private static bool ShouldScheduleOriginalMapPartyCleanupAfterHeroJoin(MobileParty party)
+	{
+		try
+		{
+			return party != null
+				&& party != MobileParty.MainParty
+				&& party.Party != PartyBase.MainParty
+				&& party.IsActive
+				&& party.CurrentSettlement == null
+				&& party.MapEvent == null;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsEmptyMapPartyAfterHeroJoin(MobileParty party)
+	{
+		try
+		{
+			return party != null
+				&& party.IsActive
+				&& (party.MemberRoster?.TotalManCount ?? 0) <= 0
+				&& (party.PrisonRoster?.TotalManCount ?? 0) <= 0;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	// The delayed close context is intentionally runtime-only. If a player saves or exits
+	// before it runs, repair only the precise orphan pattern created by a completed hero
+	// join: an empty map party whose recorded leader is already in the player's main party.
+	// This is a one-shot load repair, never a campaign-tick scan.
+	private static void CleanupStalePlayerJoinedHeroMapPartiesAfterLoad()
+	{
+		try
+		{
+			MobileParty mainParty = MobileParty.MainParty;
+			if (mainParty == null)
+			{
+				return;
+			}
+			List<MobileParty> parties = Campaign.Current?.MobileParties?.ToList();
+			if (parties == null || parties.Count == 0)
+			{
+				return;
+			}
+			int staleCount = 0;
+			int destroyedCount = 0;
+			foreach (MobileParty party in parties)
+			{
+				if (!ShouldScheduleOriginalMapPartyCleanupAfterHeroJoin(party)
+					|| (party.MemberRoster?.TotalManCount ?? 0) > 0
+					|| (party.PrisonRoster?.TotalManCount ?? 0) > 0)
+				{
+					continue;
+				}
+				Hero formerLeader = party.LeaderHero;
+				if (formerLeader == null || !IsHeroInParty(formerLeader, mainParty))
+				{
+					continue;
+				}
+				staleCount++;
+				TryDestroyEmptyWildernessNonHeroJoinParty(party);
+				if (!party.IsActive)
+				{
+					destroyedCount++;
+				}
+			}
+			if (staleCount > 0)
+			{
+				Logger.Log("RewardSystemBehavior", "[HeroJoin] load_orphan_party_cleanup candidates=" + staleCount + " destroyed=" + destroyedCount);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("RewardSystemBehavior", "[HeroJoin] load_orphan_party_cleanup_failed error=" + ex.Message);
 		}
 	}
 
@@ -6160,6 +6256,29 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		Logger.Log("RewardSystemBehavior", "[HeroJoin] scheduled delayed conversation close hero=" + pending.JoinedHeroId + " originalParty=" + pending.OriginalPartyId);
 	}
 
+	private static void CloseHeroJoinMapPartyConversationImmediately(Hero joinedHero, PartyBase originalParty, MobileParty originalMobileParty)
+	{
+		if (joinedHero == null)
+		{
+			return;
+		}
+		PendingHeroJoinConversationClose pending = new PendingHeroJoinConversationClose
+		{
+			JoinedHero = joinedHero,
+			TargetCharacter = joinedHero.CharacterObject,
+			OriginalParty = originalParty,
+			OriginalMobileParty = originalMobileParty,
+			JoinedHeroId = joinedHero.StringId ?? "",
+			TargetCharacterId = joinedHero.CharacterObject?.StringId ?? "",
+			OriginalPartyId = originalMobileParty?.StringId ?? "",
+			DestroyOriginalPartyIfEmpty = true,
+			CreatedUtcTicks = DateTime.UtcNow.Ticks
+		};
+		ConversationExceptionGuard.MarkCurrentConversationStale("hero_join_party_immediate_map_party_cleanup");
+		ExecutePendingHeroJoinConversationClose(pending);
+		Logger.Log("RewardSystemBehavior", "[HeroJoin] immediate map-party cleanup requested hero=" + pending.JoinedHeroId + " originalParty=" + pending.OriginalPartyId);
+	}
+
 	private static void TryClosePendingHeroJoinConversation()
 	{
 		if (Volatile.Read(ref _hasPendingHeroJoinConversationClose) == 0)
@@ -6232,7 +6351,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			TryDestroyEmptyWildernessNonHeroJoinParty(pending.OriginalMobileParty);
 		}
-		Logger.Log("RewardSystemBehavior", "[HeroJoin] delayed close applied conversation=" + conversationMatches + " encounter=" + encounterMatches + " hero=" + (pending.JoinedHeroId ?? "") + " originalParty=" + (pending.OriginalPartyId ?? ""));
+		Logger.Log("RewardSystemBehavior", "[HeroJoin] close applied conversation=" + conversationMatches + " encounter=" + encounterMatches + " hero=" + (pending.JoinedHeroId ?? "") + " originalParty=" + (pending.OriginalPartyId ?? ""));
 	}
 
 	private static bool DoesWildernessNonHeroJoinConversationMatch(WildernessNonHeroJoinConversationCloseContext context)

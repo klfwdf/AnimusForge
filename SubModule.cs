@@ -514,6 +514,14 @@ public class SubModule : MBSubModuleBase
 			}
 			try
 			{
+				WorldDiplomacyBehavior.RegisterHarmonyPatches(harmony);
+			}
+			catch (Exception worldDiplomacyPatchEx)
+			{
+				Logger.LogTrace("SubModule", ">>> WorldDiplomacy patches init failed: " + worldDiplomacyPatchEx.Message);
+			}
+			try
+			{
 				RewardSystemBehavior.RegisterHarmonyPatches(harmony);
 			}
 			catch (Exception ex18e)
@@ -572,6 +580,7 @@ public class SubModule : MBSubModuleBase
 			RegisterAnimusForgeSettlementLoyaltyModel(campaignGameStarter);
 			campaignGameStarter.AddBehavior(new ModOnboardingBehavior());
 			campaignGameStarter.AddBehavior(new MyBehavior());
+			campaignGameStarter.AddBehavior(new KingdomStrategicProfileBehavior());
 			campaignGameStarter.AddBehavior(new ShoutBehavior());
 			campaignGameStarter.AddBehavior(new CourierDeliveryBehavior());
 			campaignGameStarter.AddBehavior(new DuelBehavior());
@@ -591,6 +600,7 @@ public class SubModule : MBSubModuleBase
 			campaignGameStarter.AddBehavior(new SettlementEntryTroopSelectionBehavior());
 			campaignGameStarter.AddBehavior(new NoblePrisonerEscortBehavior());
 			campaignGameStarter.AddBehavior(new VoteDealBehavior());
+			campaignGameStarter.AddBehavior(new WorldDiplomacyBehavior());
 			campaignGameStarter.AddBehavior(new DiplomacyBehavior());
 			campaignGameStarter.AddBehavior(new VanillaIssuePromptBehavior());
 			campaignGameStarter.AddBehavior(new WorldMapPartyCommandBehavior());
@@ -715,6 +725,7 @@ public class SubModule : MBSubModuleBase
 		AnimusForgeTerminalBehavior.Instance?.OnEngineTick();
 		CustomPolicyBehavior.Instance?.OnEngineTick();
 		NpcRulerPolicyBehavior.Instance?.OnEngineTick();
+		WorldDiplomacyBehavior.Instance?.OnEngineTick();
 		PolicySystemUi.OnApplicationTick();
 		NobleGatheringBehavior.Instance?.OnEngineTick();
 		VassalageBehavior.Instance?.OnEngineTick();
@@ -750,6 +761,7 @@ public class SubModule : MBSubModuleBase
 			RunWatchedTickPhase("SubModule.AnimusForgeTerminalBehavior.OnEngineTick", () => AnimusForgeTerminalBehavior.Instance?.OnEngineTick());
 			RunWatchedTickPhase("SubModule.CustomPolicyBehavior.OnEngineTick", () => CustomPolicyBehavior.Instance?.OnEngineTick());
 			RunWatchedTickPhase("SubModule.NpcRulerPolicyBehavior.OnEngineTick", () => NpcRulerPolicyBehavior.Instance?.OnEngineTick());
+			RunWatchedTickPhase("SubModule.WorldDiplomacyBehavior.OnEngineTick", () => WorldDiplomacyBehavior.Instance?.OnEngineTick());
 			RunWatchedTickPhase("SubModule.PolicySystemUi.OnApplicationTick", () => PolicySystemUi.OnApplicationTick());
 			RunWatchedTickPhase("SubModule.NobleGatheringBehavior.OnEngineTick", () => NobleGatheringBehavior.Instance?.OnEngineTick());
 			RunWatchedTickPhase("SubModule.VassalageBehavior.OnEngineTick", () => VassalageBehavior.Instance?.OnEngineTick());

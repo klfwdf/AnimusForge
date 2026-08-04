@@ -563,34 +563,6 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		return stringBuilder.ToString().Trim();
 	}
 
-	private IEnumerable<string> EnumerateFormalMarriageCandidatePairLines(Hero speaker)
-	{
-		Clan clan = Clan.PlayerClan;
-		Clan clan2 = speaker?.Clan;
-		if (clan == null || clan2 == null || clan == clan2)
-		{
-			yield break;
-		}
-		List<Hero> list = GetClanMembersCompat(clan).Where(IsFormalMarriageCandidate).ToList();
-		List<Hero> list2 = GetClanMembersCompat(clan2).Where(IsFormalMarriageCandidate).ToList();
-		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (Hero item in list)
-		{
-			foreach (Hero item2 in list2)
-			{
-				if (item == null || item2 == null || item == item2 || !IsFormalMarriagePairCompatible(item, item2, out var _))
-				{
-					continue;
-				}
-				string text = NormalizeId(item.StringId) + "|" + NormalizeId(item2.StringId);
-				if (hashSet.Add(text))
-				{
-					yield return $"- {GetHeroDisplayWithClanAndGender(item)} 与 {GetHeroDisplayWithClanAndGender(item2)} 可正规成婚（playerClanHeroId={item.StringId}，targetHeroId={item2.StringId}）";
-				}
-			}
-		}
-	}
-
 	private IEnumerable<string> EnumerateActiveMarriageSituationLines(Hero speaker)
 	{
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -658,7 +630,6 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			List<string> list = EnumerateActiveMarriageSituationLines(speaker).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 			List<string> list2 = GetClanMembersCompat(Clan.PlayerClan).Where(IsFormalMarriageCandidate).Select((Hero x) => BuildMarriageHeroFactLine(x, "playerClanHeroId")).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 			List<string> list3 = ((speaker?.Clan != null) ? GetClanMembersCompat(speaker.Clan).Where(IsFormalMarriageCandidate).Select((Hero x) => BuildMarriageHeroFactLine(x, "targetHeroId")).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList() : new List<string>());
-			List<string> list4 = EnumerateFormalMarriageCandidatePairLines(speaker).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.AppendLine("【玩家家族可婚配成员（允许已有配偶，事实清单）】");
 			stringBuilder.AppendLine("多配偶已允许：已婚者仍可作为候选；只禁止同一对对象重复结婚。原版当前配偶字段只能显示一个人，完整婚姻关系以本模组事实清单为准。");
@@ -686,18 +657,6 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 					stringBuilder.AppendLine(list3[j]);
 				}
 			}
-			stringBuilder.AppendLine("【当前可直接成立的正规婚配组合（事实清单）】");
-			if (list4.Count <= 0)
-			{
-				stringBuilder.AppendLine("（无）");
-			}
-			else
-			{
-				for (int k = 0; k < list4.Count; k++)
-				{
-					stringBuilder.AppendLine(list4[k]);
-				}
-			}
 			stringBuilder.AppendLine("【你们两家的现有婚姻（事实清单）】");
 			if (list.Count <= 0)
 			{
@@ -710,7 +669,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 					stringBuilder.AppendLine(list[l]);
 				}
 			}
-			stringBuilder.Append("正规结婚只能在“当前可直接成立的正规婚配组合”里选人。多配偶已允许，已有配偶不是拒绝理由；但同一对对象不能重复结婚。离婚只能在“现有婚姻”里选人。若NPC愿意把先前收取的彩礼退还给玩家，可按以上明细协商返还金额；也可以明确表示不返还。不要把玩家向NPC还钱当作自动离婚结果。");
+			stringBuilder.Append("正规结婚的人选须分别来自两份可婚配成员事实清单，最终由运行时婚姻规则校验。多配偶已允许，已有配偶不是拒绝理由；同一对对象不得重复结婚。离婚只能在“现有婚姻”里选人。若NPC愿意退还先前收取的彩礼，可按以上明细协商金额，也可明确表示不退还；不要把玩家还钱当作自动离婚结果。");
 			return stringBuilder.ToString().Trim();
 		}
 		catch
@@ -742,46 +701,6 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		catch
 		{
 			return "【对方家族可婚配成员（允许已有配偶，事实清单）】\n（无）";
-		}
-	}
-
-	private string BuildMarriagePostprocessFactHintBlock(Hero speaker)
-	{
-		try
-		{
-			List<string> list = EnumerateFormalMarriageCandidatePairLines(speaker).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-			List<string> list2 = EnumerateActiveMarriageSituationLines(speaker).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.AppendLine("【当前可直接成立的正规婚配组合（事实清单）】");
-			if (list.Count <= 0)
-			{
-				stringBuilder.AppendLine("（无）");
-			}
-			else
-			{
-				for (int i = 0; i < list.Count; i++)
-				{
-					stringBuilder.AppendLine(list[i]);
-				}
-			}
-			stringBuilder.AppendLine("【你们两家的现有婚姻（事实清单）】");
-			if (list2.Count <= 0)
-			{
-				stringBuilder.AppendLine("当前未发现玩家家族与你方家族之间的已成婚记录。");
-			}
-			else
-			{
-				for (int j = 0; j < list2.Count; j++)
-				{
-					stringBuilder.AppendLine(list2[j]);
-				}
-			}
-			stringBuilder.Append("正规结婚只能在“当前可直接成立的正规婚配组合”里选人。多配偶已允许，已有配偶不是拒绝理由；但同一对对象不能重复结婚。离婚只能在“现有婚姻”里选人。若NPC愿意把先前收取的彩礼退还给玩家，可按以上明细协商返还金额；也可以明确表示不返还。不要把玩家向NPC还钱当作自动离婚结果。");
-			return stringBuilder.ToString().Trim();
-		}
-		catch
-		{
-			return "【当前可直接成立的正规婚配组合（事实清单）】\n（无）\n【你们两家的现有婚姻（事实清单）】\n当前未发现玩家家族与你方家族之间的已成婚记录。";
 		}
 	}
 
@@ -2171,6 +2090,20 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			yield break;
 		}
+		Hero hero = null;
+		try
+		{
+			hero = clan.Leader;
+		}
+		catch
+		{
+		}
+		// Clan.Heroes/Lords can be a stale or partial cache while campaign data is changing.
+		// The clan leader must still be visible to the marriage flow, including a kingdom ruler.
+		if (hero != null)
+		{
+			yield return hero;
+		}
 		IEnumerable enumerable = null;
 		try
 		{
@@ -2198,10 +2131,27 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		}
 		foreach (object item in enumerable)
 		{
-			if (item is Hero hero && hero != null)
+			if (item is Hero hero2 && hero2 != null && hero2 != hero)
 			{
-				yield return hero;
+				yield return hero2;
 			}
+		}
+	}
+
+	private static bool IsMarriageAuthorityHero(Hero hero)
+	{
+		if (hero == null)
+		{
+			return false;
+		}
+		try
+		{
+			Clan clan = hero.Clan;
+			return clan != null && (clan.Leader == hero || clan.Kingdom?.Leader == hero);
+		}
+		catch
+		{
+			return false;
 		}
 	}
 
@@ -2248,7 +2198,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		try
 		{
 			int marriageCandidateMaxAgeSetting = GetMarriageCandidateMaxAgeSetting();
-			if (hero.Age < (float)MarriageCandidateMinAge || hero.Age > (float)marriageCandidateMaxAgeSetting)
+			if (hero.Age < (float)MarriageCandidateMinAge || (hero.Age > (float)marriageCandidateMaxAgeSetting && !IsMarriageAuthorityHero(hero)))
 			{
 				return false;
 			}
@@ -2285,7 +2235,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			if (Math.Abs(left.Age - right.Age) > (float)GetMarriageCandidateMaxAgeGapSetting())
+			if (!IsMarriageAuthorityHero(left) && !IsMarriageAuthorityHero(right) && Math.Abs(left.Age - right.Age) > (float)GetMarriageCandidateMaxAgeGapSetting())
 			{
 				reason = "双方年龄差超过当前设置允许范围。";
 				return false;
@@ -3528,11 +3478,6 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		return BuildMarriagePostprocessTargetCandidatesBlock(speaker);
 	}
 
-	public string BuildMarriagePostprocessFactHintBlockForExternal(Hero speaker)
-	{
-		return BuildMarriagePostprocessFactHintBlock(speaker);
-	}
-
 	private string NormalizeMarriagePostprocessTags(string raw, List<PostprocessRuleEntry> rules, Hero speaker)
 	{
 		List<string> ruleTags = (rules ?? new List<PostprocessRuleEntry>()).Select((PostprocessRuleEntry x) => (x?.Tag ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).ToList();
@@ -3618,9 +3563,8 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		bool injectClanFacts = IsMarriagePostprocessClanLeaderSpeaker(speaker);
 		string text4 = injectClanFacts ? BuildMarriagePostprocessPlayerCandidatesBlock(speaker) : null;
 		string text5 = injectClanFacts ? BuildMarriagePostprocessTargetCandidatesBlock(speaker) : null;
-		string text6 = injectClanFacts ? BuildMarriagePostprocessFactHintBlock(speaker) : null;
-		string text7 = AIConfigHandler.BuildActionPostprocessSystemPrompt(text2, text3, speaker?.Name?.ToString() ?? "NPC", null, null, null, text4, text5, text6);
-		string text8 = AIConfigHandler.BuildActionPostprocessUserPrompt(actionPostprocessUserPromptTemplate, text2, speaker?.Name?.ToString() ?? "NPC", "（无）", text, null, null, null, text4, text5, text6);
+		string text7 = AIConfigHandler.BuildActionPostprocessSystemPrompt(text2, text3, speaker?.Name?.ToString() ?? "NPC", null, null, null, text4, text5);
+		string text8 = AIConfigHandler.BuildActionPostprocessUserPrompt(actionPostprocessUserPromptTemplate, text2, speaker?.Name?.ToString() ?? "NPC", "（无）", text, null, null, null, text4, text5);
 		if (!AIConfigHandler.TryCallAuxiliaryActionPostprocess(text7, text8, 5000, 0f, out var content, out var error))
 		{
 			Logger.Log("Romance", "[MarriagePostprocess] 调用失败: " + error);

@@ -80,6 +80,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 	private ProactiveNpcRequestSession _activeSession;
 	private Dictionary<string, float> _heroCooldownUntilDays = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
 	private Dictionary<string, float> _needTypeFatigueUntilDays = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
+	private Dictionary<string, float> _diplomacyDiscussionKeysUntilDays = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
 	private float _globalCooldownUntilHours;
 	private float _lastScanHour = -99999f;
 	private PendingOpeningFact _pendingNativeOpening;
@@ -118,6 +119,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 				ActiveSession = _activeSession,
 				HeroCooldownUntilDays = _heroCooldownUntilDays,
 				NeedTypeFatigueUntilDays = _needTypeFatigueUntilDays,
+				DiplomacyDiscussionKeysUntilDays = _diplomacyDiscussionKeysUntilDays,
 				GlobalCooldownUntilHours = _globalCooldownUntilHours,
 				// Incremental scans are runtime-only. A save during the one-second scan window retries after load.
 				LastScanHour = _candidateScan == null ? _lastScanHour : -99999f
@@ -138,6 +140,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			NormalizeActiveSessionSingleNeed();
 			_heroCooldownUntilDays = NormalizeCooldownDictionary(storage?.HeroCooldownUntilDays);
 			_needTypeFatigueUntilDays = NormalizeCooldownDictionary(storage?.NeedTypeFatigueUntilDays ?? storage?.NeedCooldownUntilDays);
+			_diplomacyDiscussionKeysUntilDays = NormalizeCooldownDictionary(storage?.DiplomacyDiscussionKeysUntilDays);
 			_globalCooldownUntilHours = storage?.GlobalCooldownUntilHours ?? 0f;
 			_lastScanHour = storage?.LastScanHour ?? -99999f;
 			_pendingNativeOpening = null;
@@ -151,6 +154,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			_activeSession = null;
 			_heroCooldownUntilDays = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
 			_needTypeFatigueUntilDays = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
+			_diplomacyDiscussionKeysUntilDays = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
 			ClearActivePartyCache();
 			_candidateScan = null;
 			_policyDiscussionSnapshotCache = null;
@@ -436,6 +440,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		}
 		_lastScanHour = nowHours;
 		PruneExpiredNeedTypeFatigue(NowDays());
+		PruneExpiredDiplomacyDiscussionKeys(NowDays());
 		if (_activeSession != null)
 		{
 			Logger.Log("ProactiveNpcRequest", "scan skipped: active session hero=" + (_activeSession.HeroId ?? "") + " stage=" + (_activeSession.Stage ?? ""));
@@ -1195,7 +1200,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		if (string.Equals(needType, NeedKingdomVassalInvite, StringComparison.OrdinalIgnoreCase)) return "王国需要愿意长期分担责任的家族。";
 		if (string.Equals(needType, NeedPoliticalAgenda, StringComparison.OrdinalIgnoreCase)) return "王国内有一件议事正需要有人表态。";
 		if (string.Equals(needType, NeedPolicySupport, StringComparison.OrdinalIgnoreCase)) return "他一直主张《" + (candidate.PolicySupportPolicyName ?? "某项政策") + "》。";
-		if (string.Equals(needType, NeedDiplomacy, StringComparison.OrdinalIgnoreCase)) return "两国之间有一件事值得尽早谈一谈。";
+		if (string.Equals(needType, NeedDiplomacy, StringComparison.OrdinalIgnoreCase)) return "本国近日收到了一些值得商议的外交消息。";
 		return "";
 	}
 
@@ -1230,7 +1235,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		if (string.Equals(needType, NeedKingdomVassalInvite, StringComparison.OrdinalIgnoreCase)) return "王国缺少封臣";
 		if (string.Equals(needType, NeedPoliticalAgenda, StringComparison.OrdinalIgnoreCase)) return "王国政治议程";
 		if (string.Equals(needType, NeedPolicySupport, StringComparison.OrdinalIgnoreCase)) return "支持政策";
-		if (string.Equals(needType, NeedDiplomacy, StringComparison.OrdinalIgnoreCase)) return "外交谈判";
+		if (string.Equals(needType, NeedDiplomacy, StringComparison.OrdinalIgnoreCase)) return "讨论外交局势";
 		return string.IsNullOrWhiteSpace(needType) ? "具体请求" : needType;
 	}
 
@@ -1818,20 +1823,17 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 	private static bool IsPlayerEligibleForDiplomacyRequest(ProactiveCandidate candidate, out string reason)
 	{
 		reason = "";
+		Clan playerClan = Clan.PlayerClan;
 		Kingdom playerKingdom = Clan.PlayerClan?.Kingdom;
-		if (playerKingdom == null || playerKingdom.IsEliminated)
+		if (playerClan == null || playerKingdom == null || playerKingdom.IsEliminated || playerClan.IsUnderMercenaryService)
 		{
-			reason = "player_kingdom_missing";
+			reason = "player_not_formal_kingdom_member";
 			return false;
 		}
-		if (Hero.MainHero != playerKingdom.RulingClan?.Leader)
+		Clan npcClan = candidate?.Hero?.Clan;
+		if (npcClan == null || npcClan == playerClan || npcClan.Kingdom != playerKingdom || npcClan.IsUnderMercenaryService)
 		{
-			reason = "player_not_kingdom_leader";
-			return false;
-		}
-		if (candidate.TargetKingdom == null || candidate.TargetKingdom == playerKingdom || candidate.Hero != candidate.TargetKingdom.RulingClan?.Leader)
-		{
-			reason = "target_not_foreign_king";
+			reason = "target_not_same_kingdom_formal_lord";
 			return false;
 		}
 		return true;
@@ -2675,42 +2677,16 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 	private bool TryBuildDiplomacyCandidate(ProactiveCandidate source, DuelSettings settings, out ProactiveCandidate candidate)
 	{
 		candidate = null;
-		if (source == null || !IsDiplomacyNeedMet(source, out float urgency))
+		if (source?.Hero == null
+			|| !WorldDiplomacyBehavior.TryBuildProactiveDiscussionForExternal(source.Hero, out string discussionKey, out string discussionFact, out float urgency)
+			|| string.IsNullOrWhiteSpace(discussionKey)
+			|| (_diplomacyDiscussionKeysUntilDays.TryGetValue(discussionKey, out float untilDay) && untilDay > NowDays()))
 			return false;
 		candidate = TryBuildNeedCandidate(source, settings, NeedDiplomacy, urgency);
-		return candidate != null;
-	}
-
-	private static bool IsDiplomacyNeedMet(ProactiveCandidate source, out float urgency)
-	{
-		urgency = 0f;
-		try
-		{
-			Hero hero = source?.Hero;
-			if (hero == null) return false;
-			Kingdom npcKingdom = hero.Clan?.Kingdom;
-			if (npcKingdom == null || hero != npcKingdom.RulingClan?.Leader) return false;
-			Kingdom playerKingdom = Clan.PlayerClan?.Kingdom;
-			if (playerKingdom == null || playerKingdom.IsEliminated) return false;
-			if (Hero.MainHero != playerKingdom.RulingClan?.Leader) return false;
-			if (npcKingdom == playerKingdom) return false;
-			bool atWar = FactionManager.IsAtWarAgainstFaction(npcKingdom, playerKingdom);
-			if (atWar) { urgency = 55f; return true; }
-			bool hasCommonEnemy = false;
-			foreach (Kingdom k in Kingdom.All)
-			{
-				if (!k.IsEliminated && k != npcKingdom && k != playerKingdom
-					&& FactionManager.IsAtWarAgainstFaction(npcKingdom, k)
-					&& FactionManager.IsAtWarAgainstFaction(playerKingdom, k))
-				{ hasCommonEnemy = true; break; }
-			}
-			if (hasCommonEnemy) { urgency = 65f; return true; }
-			ITradeAgreementsCampaignBehavior tradeBeh = Campaign.Current.GetCampaignBehavior<ITradeAgreementsCampaignBehavior>();
-			bool hasTrade = BannerlordApiCompat.HasTradeAgreement(tradeBeh, npcKingdom, playerKingdom);
-			if (!hasTrade) { urgency = 45f; return true; }
-			return false;
-		}
-		catch { urgency = 0f; return false; }
+		if (candidate == null) return false;
+		candidate.DiplomacyDiscussionKey = discussionKey;
+		candidate.DiplomacyDiscussionFact = discussionFact;
+		return true;
 	}
 
 	private static bool IsFoodShortageNeedMet(MobileParty party, int foodDays, DuelSettings settings, out float urgency)
@@ -4357,6 +4333,8 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			NeedTypeFatigueMultiplierAtSelection = candidate.NeedTypeFatigueMultiplier,
 			NeedTypeWeightMultiplierAtSelection = candidate.NeedTypeWeightMultiplier,
 			NeedTypeFatigueRemainingDaysAtSelection = candidate.NeedTypeFatigueRemainingDays,
+			DiplomacyDiscussionKey = candidate.DiplomacyDiscussionKey,
+			DiplomacyDiscussionFact = candidate.DiplomacyDiscussionFact,
 			LastKnownFoodDays = candidate.FoodDays,
 			LastKnownPartyGold = candidate.PartyGold,
 			LastKnownTotalWage = candidate.TotalWage,
@@ -4800,6 +4778,11 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		{
 			RecordNeedTypeFatigue(needType, "map_encounter_opened");
 		}
+		if (!string.IsNullOrWhiteSpace(_activeSession.DiplomacyDiscussionKey))
+		{
+			int retentionDays = Math.Max(7, GetEffectiveNeedTypeFatigueDays(NeedDiplomacy, DuelSettings.GetSettings()));
+			_diplomacyDiscussionKeysUntilDays[_activeSession.DiplomacyDiscussionKey] = NowDays() + retentionDays;
+		}
 		_activeSession.NeedTypeFatigueRecorded = true;
 	}
 
@@ -5043,7 +5026,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 	{
 		if (string.Equals(needType, NeedDiplomacy, StringComparison.OrdinalIgnoreCase))
 		{
-			return 120;
+			return 88;
 		}
 		if (string.Equals(needType, NeedPoliticalAgenda, StringComparison.OrdinalIgnoreCase))
 		{
@@ -5490,12 +5473,12 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 
 	private string BuildDiplomacyOpeningFact(Hero hero, string playerName, string npcName)
 	{
-		Kingdom npcKingdom = hero?.Clan?.Kingdom;
-		Kingdom playerKingdom = Clan.PlayerClan?.Kingdom;
-		string npcKingdomName = ResolveKnownKingdomName(npcKingdom);
-		string playerKingdomName = ResolveKnownKingdomName(playerKingdom);
-		string topic = ResolveDiplomacyRequestLabel(npcKingdom, playerKingdom);
-		return BuildNpcInitiatedRequestFact(npcName, playerName, "你是" + npcKingdomName + "的国王，" + playerName + "是" + playerKingdomName + "的国王。两国之间有必要谈谈" + topic + "，你想当面探一探对方的口风。 ");
+		if (!string.IsNullOrWhiteSpace(_activeSession?.DiplomacyDiscussionFact))
+		{
+			return BuildNpcInitiatedRequestFact(npcName, playerName, _activeSession.DiplomacyDiscussionFact);
+		}
+		string kingdomName = ResolveKnownKingdomName(hero?.Clan?.Kingdom);
+		return BuildNpcInitiatedRequestFact(npcName, playerName, "你与" + playerName + "同属" + kingdomName + "。本国近日收到了一些外交消息，你想与对方交换判断；不得替国王承诺或执行外交行动。");
 	}
 
 	private string BuildPoliticalAgendaOpeningFact(Hero hero, string playerName, string npcName)
@@ -5536,60 +5519,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 
 	private static string BuildDiplomacyOpeningSummary(Hero hero, string playerName, string npcName)
 	{
-		Kingdom npcKingdom = hero?.Clan?.Kingdom;
-		Kingdom playerKingdom = Clan.PlayerClan?.Kingdom;
-		string topic = ResolveDiplomacyRequestLabel(npcKingdom, playerKingdom);
-		return "你和" + playerName + "分别是两个王国的国王；你主动来谈" + topic + "，可以提出条件，但不要主动宣战，也不要假定玩家已经同意";
-	}
-
-	private static string ResolveDiplomacyRequestLabel(Kingdom npcKingdom, Kingdom playerKingdom)
-	{
-		try
-		{
-			if (npcKingdom != null && playerKingdom != null && FactionManager.IsAtWarAgainstFaction(npcKingdom, playerKingdom))
-			{
-				return "议和";
-			}
-			if (HasCommonEnemy(npcKingdom, playerKingdom))
-			{
-				return "结盟";
-			}
-			ITradeAgreementsCampaignBehavior tradeBeh = Campaign.Current.GetCampaignBehavior<ITradeAgreementsCampaignBehavior>();
-			if (npcKingdom != null && playerKingdom != null && !BannerlordApiCompat.HasTradeAgreement(tradeBeh, npcKingdom, playerKingdom))
-			{
-				return "通商";
-			}
-		}
-		catch
-		{
-		}
-		return "国王间外交";
-	}
-
-	private static bool HasCommonEnemy(Kingdom first, Kingdom second)
-	{
-		try
-		{
-			if (first == null || second == null)
-			{
-				return false;
-			}
-			foreach (Kingdom kingdom in Kingdom.All)
-			{
-				if (kingdom == null || kingdom.IsEliminated || kingdom == first || kingdom == second)
-				{
-					continue;
-				}
-				if (FactionManager.IsAtWarAgainstFaction(first, kingdom) && FactionManager.IsAtWarAgainstFaction(second, kingdom))
-				{
-					return true;
-				}
-			}
-		}
-		catch
-		{
-		}
-		return false;
+		return npcName + "与" + playerName + "同属一个王国；他根据本国已经获知的近期外交宣言，主动来讨论局势、影响和可考虑的立场。不得替国王作出承诺，不得把建议说成已经执行的外交行动。";
 	}
 
 	private string BuildKingdomMercenaryInviteOpeningFact(Hero hero, string playerName, string npcName)
@@ -7398,6 +7328,22 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private void PruneExpiredDiplomacyDiscussionKeys(float nowDays)
+	{
+		if (_diplomacyDiscussionKeysUntilDays == null || _diplomacyDiscussionKeysUntilDays.Count == 0) return;
+		foreach (string key in _diplomacyDiscussionKeysUntilDays.Where(pair => pair.Value <= nowDays).Select(pair => pair.Key).ToList())
+		{
+			_diplomacyDiscussionKeysUntilDays.Remove(key);
+		}
+		if (_diplomacyDiscussionKeysUntilDays.Count > 256)
+		{
+			foreach (string key in _diplomacyDiscussionKeysUntilDays.OrderBy(pair => pair.Value).Take(_diplomacyDiscussionKeysUntilDays.Count - 256).Select(pair => pair.Key).ToList())
+			{
+				_diplomacyDiscussionKeysUntilDays.Remove(key);
+			}
+		}
+	}
+
 	private static int GetEffectiveScanIntervalHours(DuelSettings settings)
 	{
 		int value = Clamp(settings?.ProactiveNpcRequestScanIntervalHours ?? 1, 1, 24);
@@ -7541,6 +7487,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		public ProactiveNpcRequestSession ActiveSession { get; set; }
 		public Dictionary<string, float> HeroCooldownUntilDays { get; set; }
 		public Dictionary<string, float> NeedTypeFatigueUntilDays { get; set; }
+		public Dictionary<string, float> DiplomacyDiscussionKeysUntilDays { get; set; }
 		// Legacy v1 field: old saves stored a hard type cooldown here.
 		public Dictionary<string, float> NeedCooldownUntilDays { get; set; }
 		public float GlobalCooldownUntilHours { get; set; }
@@ -7567,6 +7514,8 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		public float NeedTypeFatigueMultiplierAtSelection { get; set; } = 1f;
 		public float NeedTypeWeightMultiplierAtSelection { get; set; } = 1f;
 		public float NeedTypeFatigueRemainingDaysAtSelection { get; set; }
+		public string DiplomacyDiscussionKey { get; set; }
+		public string DiplomacyDiscussionFact { get; set; }
 		public int LastKnownFoodDays { get; set; }
 		public int LastKnownPartyGold { get; set; }
 		public int LastKnownTotalWage { get; set; }
@@ -7821,6 +7770,8 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		public float NeedTypeWeightMultiplier { get; set; } = 1f;
 		public float IntrinsicNeedTypeWeightMultiplier { get; set; } = 1f;
 		public float NeedTypeFatigueRemainingDays { get; set; }
+		public string DiplomacyDiscussionKey { get; set; }
+		public string DiplomacyDiscussionFact { get; set; }
 		public bool IsTestFallback { get; set; }
 	}
 

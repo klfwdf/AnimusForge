@@ -3,6 +3,8 @@ param(
     [string]$BannerlordRoot = "",
     [string]$Bannerlord13ReferenceDir = "",
     [string]$Bannerlord14ReferenceDir = "",
+    [string]$RuntimeDependencyDir = "",
+    [string]$HarmonyCorePath = "",
     [string]$WorkshopContentDir = "",
     [ValidateSet("Debug", "Release")]
     [string]$Configuration = "Debug",
@@ -18,6 +20,14 @@ $ImplementationProjectName = "AnimusForge.csproj"
 $BootstrapProjectRelativePath = "AnimusForge.Bootstrap\AnimusForge.Bootstrap.csproj"
 $FlavorKey = "AnimusForge.BuildFlavor"
 $ApiKey = "AnimusForge.BannerlordApi"
+$PrivateRuntimeDlls = @(
+    "Microsoft.ML.OnnxRuntime.dll",
+    "onnxruntime.dll",
+    "onnxruntime_providers_shared.dll",
+    "System.Buffers.dll",
+    "System.Memory.dll",
+    "System.Runtime.CompilerServices.Unsafe.dll"
+)
 
 function Get-FullPathSafe {
     param([Parameter(Mandatory = $true)][string]$Path)
@@ -41,6 +51,70 @@ function Get-FileSha256 {
     finally {
         $stream.Dispose()
     }
+}
+
+function Resolve-PrivateRuntimeDependencyDir {
+    param(
+        [Parameter(Mandatory = $true)][string]$Root,
+        [Parameter(Mandatory = $true)][string]$GameRoot,
+        [string]$RequestedDir
+    )
+
+    $candidates = New-Object System.Collections.Generic.List[string]
+    if (-not [string]::IsNullOrWhiteSpace($RequestedDir)) {
+        $candidates.Add((Get-FullPathSafe -Path $RequestedDir))
+    }
+    else {
+        $candidates.Add((Get-FullPathSafe -Path (Join-Path $Root "AnimusForge\bin\Win64_Shipping_Client")))
+        $candidates.Add((Get-FullPathSafe -Path (Join-Path $GameRoot "Modules\AnimusForge\bin\Win64_Shipping_Client")))
+    }
+
+    $errors = New-Object System.Collections.Generic.List[string]
+    foreach ($candidate in @($candidates | Select-Object -Unique)) {
+        if (-not (Test-Path -LiteralPath $candidate -PathType Container)) {
+            $errors.Add("Directory not found: $candidate")
+            continue
+        }
+        $missing = @($PrivateRuntimeDlls | Where-Object {
+            -not (Test-Path -LiteralPath (Join-Path $candidate $_) -PathType Leaf)
+        })
+        if ($missing.Count -eq 0) {
+            return $candidate
+        }
+        $errors.Add("Incomplete runtime dependency directory '$candidate'. Missing: $($missing -join ', ')")
+    }
+
+    throw "A complete AnimusForge private runtime dependency directory is required.`n$($errors -join "`n")"
+}
+
+function Resolve-HarmonyCorePath {
+    param(
+        [Parameter(Mandatory = $true)][string]$Root,
+        [Parameter(Mandatory = $true)][string]$GameRoot,
+        [string]$WorkshopDir,
+        [string]$RequestedPath
+    )
+
+    $candidates = New-Object System.Collections.Generic.List[string]
+    if (-not [string]::IsNullOrWhiteSpace($RequestedPath)) {
+        $candidates.Add((Get-FullPathSafe -Path $RequestedPath))
+    }
+    else {
+        $candidates.Add((Get-FullPathSafe -Path (Join-Path $GameRoot "Modules\Bannerlord.Harmony\bin\Win64_Shipping_Client\0Harmony.dll")))
+        if (-not [string]::IsNullOrWhiteSpace($WorkshopDir)) {
+            $candidates.Add((Get-FullPathSafe -Path (Join-Path $WorkshopDir "2859188632\bin\Win64_Shipping_Client\0Harmony.dll")))
+        }
+        $candidates.Add((Get-FullPathSafe -Path (Join-Path $Root "AnimusForge\bin\Win64_Shipping_Client\0Harmony.dll")))
+        $candidates.Add((Get-FullPathSafe -Path (Join-Path $GameRoot "Modules\AnimusForge\bin\Win64_Shipping_Client\0Harmony.dll")))
+    }
+
+    foreach ($candidate in @($candidates | Select-Object -Unique)) {
+        if (Test-Path -LiteralPath $candidate -PathType Leaf) {
+            return $candidate
+        }
+    }
+
+    throw "0Harmony.dll was not found. Install/enable Bannerlord.Harmony or pass -HarmonyCorePath. Checked:`n$($candidates -join "`n")"
 }
 
 function Get-EmbeddedBannerlordVersion {
@@ -319,7 +393,9 @@ function Invoke-DotNetBuild {
         [Parameter(Mandatory = $true)][string]$IntermediateDir,
         [string]$BannerlordApi = "",
         [string]$VersionedReferenceDir = "",
-        [string]$BootstrapReferenceDir = ""
+        [string]$BootstrapReferenceDir = "",
+        [string]$PrivateRuntimeDir = "",
+        [string]$ResolvedHarmonyCorePath = ""
     )
 
     Reset-Directory -Path $OutputDir -AllowedRoot $projectRootFull
@@ -354,7 +430,6 @@ function Invoke-DotNetBuild {
             $arguments += "/p:BannerlordBinDir=$VersionedReferenceDir"
             $arguments += "/p:NativeBinDir=$VersionedReferenceDir"
             $arguments += "/p:SandBoxBinDir=$VersionedReferenceDir"
-            $arguments += "/p:AnimusForgeBinDir=$VersionedReferenceDir"
         }
     }
     if (-not [string]::IsNullOrWhiteSpace($BootstrapReferenceDir)) {
@@ -365,6 +440,12 @@ function Invoke-DotNetBuild {
     }
     if (-not [string]::IsNullOrWhiteSpace($WorkshopContentDir)) {
         $arguments += "/p:WorkshopContentDir=$WorkshopContentDir"
+    }
+    if (-not [string]::IsNullOrWhiteSpace($PrivateRuntimeDir)) {
+        $arguments += "/p:AnimusForgeBinDir=$PrivateRuntimeDir"
+    }
+    if (-not [string]::IsNullOrWhiteSpace($ResolvedHarmonyCorePath)) {
+        $arguments += "/p:HarmonyCorePath=$ResolvedHarmonyCorePath"
     }
 
     & dotnet @arguments
@@ -398,6 +479,10 @@ $bannerlord14ReferenceDirFull = Resolve-Bannerlord14ReferenceDir -Root $projectR
 $version14 = Get-EmbeddedBannerlordVersion -ReferenceDir $bannerlord14ReferenceDirFull
 $bannerlord13ReferenceDirFull = Resolve-Bannerlord13ReferenceDir -Root $projectRootFull -RequestedDir $Bannerlord13ReferenceDir
 $version13 = Get-EmbeddedBannerlordVersion -ReferenceDir $bannerlord13ReferenceDirFull
+$runtimeDependencyDirFull = Resolve-PrivateRuntimeDependencyDir -Root $projectRootFull -GameRoot $bannerlordRootFull -RequestedDir $RuntimeDependencyDir
+$harmonyCorePathFull = Resolve-HarmonyCorePath -Root $projectRootFull -GameRoot $bannerlordRootFull -WorkshopDir $WorkshopContentDir -RequestedPath $HarmonyCorePath
+Write-Host "Runtime DLLs : $runtimeDependencyDirFull"
+Write-Host "Harmony Core : $harmonyCorePathFull"
 
 $artifactRoot = Join-Path $projectRootFull "bin\$Configuration\single_module_artifacts"
 $intermediateRoot = Join-Path $projectRootFull "obj\single_module\$Configuration"
@@ -410,7 +495,7 @@ $flavor13 = "ANIMUSFORGE_BANNERLORD_API_1_3"
 $flavor14 = "ANIMUSFORGE_BANNERLORD_API_1_4"
 
 Write-Host "[1/3] Building AnimusForge implementation for Bannerlord 1.3.x..."
-Invoke-DotNetBuild -ProjectPath $implementationProject -OutputDir (Split-Path -Parent $dll13) -IntermediateDir (Join-Path $intermediateRoot "implementation_1.3") -BannerlordApi "1.3" -VersionedReferenceDir $bannerlord13ReferenceDirFull
+Invoke-DotNetBuild -ProjectPath $implementationProject -OutputDir (Split-Path -Parent $dll13) -IntermediateDir (Join-Path $intermediateRoot "implementation_1.3") -BannerlordApi "1.3" -VersionedReferenceDir $bannerlord13ReferenceDirFull -PrivateRuntimeDir $runtimeDependencyDirFull -ResolvedHarmonyCorePath $harmonyCorePathFull
 Keep-OnlyBuildArtifacts -OutputDir (Split-Path -Parent $dll13) -AllowedFileNames @("AnimusForge.dll", "AnimusForge.pdb") -AllowedRoot $artifactRoot
 Assert-ImplementationFlavor -DllPath $dll13 -ExpectedApi "1.3" -ExpectedFlavor $flavor13 -UnexpectedFlavor $flavor14
 Assert-BuildPdb -DllPath $dll13
@@ -418,7 +503,7 @@ Write-BuildMarker -DllPath $dll13 -Role "Implementation" -BannerlordApi "1.3" -B
 
 Write-Host ""
 Write-Host "[2/3] Building AnimusForge implementation for Bannerlord 1.4.x..."
-Invoke-DotNetBuild -ProjectPath $implementationProject -OutputDir (Split-Path -Parent $dll14) -IntermediateDir (Join-Path $intermediateRoot "implementation_1.4") -BannerlordApi "1.4" -VersionedReferenceDir $bannerlord14ReferenceDirFull
+Invoke-DotNetBuild -ProjectPath $implementationProject -OutputDir (Split-Path -Parent $dll14) -IntermediateDir (Join-Path $intermediateRoot "implementation_1.4") -BannerlordApi "1.4" -VersionedReferenceDir $bannerlord14ReferenceDirFull -PrivateRuntimeDir $runtimeDependencyDirFull -ResolvedHarmonyCorePath $harmonyCorePathFull
 Keep-OnlyBuildArtifacts -OutputDir (Split-Path -Parent $dll14) -AllowedFileNames @("AnimusForge.dll", "AnimusForge.pdb") -AllowedRoot $artifactRoot
 Assert-ImplementationFlavor -DllPath $dll14 -ExpectedApi "1.4" -ExpectedFlavor $flavor14 -UnexpectedFlavor $flavor13
 Assert-BuildPdb -DllPath $dll14
@@ -453,7 +538,7 @@ if ($Stage) {
     $stageOutputDir = Join-Path $projectRootFull "bin\$Configuration\single_module_stage\AnimusForge"
     Write-Host ""
     Write-Host "Assembling the project-local unified module staging output..."
-    & $deployScript -ProjectRoot $projectRootFull -BannerlordRoot $BannerlordRoot -Configuration $Configuration -BuildDll13 $dll13 -BuildDll14 $dll14 -BootstrapDll $bootstrapDll -StageOnlyOutputDir $stageOutputDir
+    & $deployScript -ProjectRoot $projectRootFull -BannerlordRoot $BannerlordRoot -Configuration $Configuration -BuildDll13 $dll13 -BuildDll14 $dll14 -BootstrapDll $bootstrapDll -RuntimeDependencyDir $runtimeDependencyDirFull -StageOnlyOutputDir $stageOutputDir
 }
 
 if ($Deploy) {
@@ -463,5 +548,5 @@ if ($Deploy) {
 
     Write-Host ""
     Write-Host "Deploying the unified module..."
-    & $deployScript -ProjectRoot $projectRootFull -BannerlordRoot $BannerlordRoot -Configuration $Configuration -BuildDll13 $dll13 -BuildDll14 $dll14 -BootstrapDll $bootstrapDll
+    & $deployScript -ProjectRoot $projectRootFull -BannerlordRoot $BannerlordRoot -Configuration $Configuration -BuildDll13 $dll13 -BuildDll14 $dll14 -BootstrapDll $bootstrapDll -RuntimeDependencyDir $runtimeDependencyDirFull
 }

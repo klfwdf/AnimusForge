@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using Helpers;
 using HarmonyLib;
 using MCM.Abstractions.Attributes;
@@ -206,6 +207,28 @@ internal sealed class MilitaryExerciseMissionLogic : MissionLogic
 		if (agentState == AgentState.Killed || agentState == AgentState.Unconscious)
 		{
 			TryRequestSettlementForDefeatedSide();
+		}
+	}
+
+	public override void OnAgentFleeing(Agent affectedAgent)
+	{
+		base.OnAgentFleeing(affectedAgent);
+		if (!MilitaryExerciseBehavior.ShouldPreventExerciseRetreat(affectedAgent))
+		{
+			return;
+		}
+		try
+		{
+			if (affectedAgent.GetMorale() < 0.02f)
+			{
+				affectedAgent.SetMorale(0.02f);
+			}
+			affectedAgent.StopRetreatingMoraleComponent();
+			MilitaryExerciseBehavior.RecordNoRetreatSuppression();
+		}
+		catch (Exception ex)
+		{
+			Log("no_retreat_fleeing_fallback failed: " + ex.GetType().Name + ": " + ex.Message);
 		}
 	}
 
@@ -541,6 +564,90 @@ internal sealed class MilitaryExerciseMissionLogic : MissionLogic
 	}
 }
 
+[HarmonyPatch]
+public static class MilitaryExerciseNoRetreatPatch
+{
+	[HarmonyPatch(typeof(CommonAIComponent), "CanPanic")]
+	public static class CanPanicPatch
+	{
+		public static bool Prefix(CommonAIComponent __instance, ref bool __result)
+		{
+			if (!MilitaryExerciseBehavior.ShouldPreventExerciseRetreat(__instance))
+			{
+				return true;
+			}
+			MilitaryExerciseBehavior.RecordNoRetreatSuppression();
+			__result = false;
+			return false;
+		}
+	}
+
+	[HarmonyPatch(typeof(CommonAIComponent), "Panic")]
+	public static class PanicPatch
+	{
+		public static bool Prefix(CommonAIComponent __instance)
+		{
+			if (!MilitaryExerciseBehavior.ShouldPreventExerciseRetreat(__instance))
+			{
+				return true;
+			}
+			MilitaryExerciseBehavior.RecordNoRetreatSuppression();
+			return false;
+		}
+	}
+
+	[HarmonyPatch(typeof(CommonAIComponent), "Retreat")]
+	public static class RetreatPatch
+	{
+		public static bool Prefix(CommonAIComponent __instance)
+		{
+			if (__instance?.IsPanicked != true || !MilitaryExerciseBehavior.ShouldPreventExerciseRetreat(__instance))
+			{
+				return true;
+			}
+			MilitaryExerciseBehavior.RecordNoRetreatSuppression();
+			return false;
+		}
+	}
+
+	[HarmonyPatch(typeof(MissionAgentPanicHandler), "OnAgentPanicked")]
+	public static class PanicHandlerPatch
+	{
+		public static bool Prefix(Agent agent)
+		{
+			if (!MilitaryExerciseBehavior.ShouldPreventExerciseRetreat(agent))
+			{
+				return true;
+			}
+			MilitaryExerciseBehavior.RecordNoRetreatSuppression();
+			return false;
+		}
+	}
+
+	[HarmonyPatch(typeof(BehaviorRetreat), "GetAiWeight")]
+	public static class BehaviorWeightPatch
+	{
+		public static bool Prefix(BehaviorRetreat __instance, ref float __result)
+		{
+			if (!MilitaryExerciseBehavior.ShouldPreventExerciseFormationRetreat(__instance?.Formation))
+			{
+				return true;
+			}
+			__result = 0.0001f;
+			return false;
+		}
+	}
+
+	[HarmonyPatch(typeof(BehaviorRetreat), "TickOccasionally")]
+	public static class BehaviorTickPatch
+	{
+		public static bool Prefix(BehaviorRetreat __instance)
+		{
+			return !MilitaryExerciseBehavior.ShouldPreventExerciseFormationRetreat(__instance?.Formation);
+		}
+	}
+}
+
 [HarmonyPatch(typeof(SandBox.GameComponents.SandboxAgentDecideKilledOrUnconsciousModel), "GetAgentStateProbability")]
 public static class MilitaryExerciseDeathRatePatch
 {
@@ -785,6 +892,7 @@ public static class MilitaryExerciseBehavior
 
 	private const string HoldingDummyPartyPrefix = "animusforge_military_exercise_holding_";
 
+	private static readonly AccessTools.FieldRef<AgentComponent, Agent> AgentComponentAgentRef = AccessTools.FieldRefAccess<AgentComponent, Agent>("Agent");
 
 	private static readonly FieldInfo MapEventPartyRosterField = typeof(MapEventParty).GetField("_roster", BindingFlags.Instance | BindingFlags.NonPublic);
 
@@ -979,6 +1087,75 @@ public static class MilitaryExerciseBehavior
 	internal static MilitaryExerciseRuntime GetCurrentRuntime()
 	{
 		return _runtime;
+	}
+
+	internal static bool ShouldPreventExerciseRetreat(CommonAIComponent component)
+	{
+		try
+		{
+			return component != null && ShouldPreventExerciseRetreat(AgentComponentAgentRef(component));
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	internal static bool ShouldPreventExerciseRetreat(Agent agent)
+	{
+		try
+		{
+			MilitaryExerciseRuntime runtime = _runtime;
+			if (runtime == null || runtime.SettlementStarted || runtime.SettlementDone || agent == null || !agent.IsHuman || !agent.IsAIControlled)
+			{
+				return false;
+			}
+			Mission mission = agent.Mission;
+			if (mission == null || !ReferenceEquals(mission, Mission.Current) || mission.GetMissionBehavior<MilitaryExerciseMissionLogic>() == null)
+			{
+				return false;
+			}
+			PartyBase party = agent.Origin?.BattleCombatant as PartyBase;
+			return ReferenceEquals(party, PartyBase.MainParty)
+				|| ReferenceEquals(party, runtime.OpponentDummyParty?.Party);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	internal static bool ShouldPreventExerciseFormationRetreat(Formation formation)
+	{
+		try
+		{
+			MilitaryExerciseRuntime runtime = _runtime;
+			Mission mission = Mission.Current;
+			if (runtime == null || runtime.SettlementStarted || runtime.SettlementDone || mission == null || formation == null || !formation.IsAIControlled)
+			{
+				return false;
+			}
+			if (mission.GetMissionBehavior<MilitaryExerciseMissionLogic>() == null)
+			{
+				return false;
+			}
+			Team team = formation.Team;
+			return team != null
+				&& (ReferenceEquals(team, mission.PlayerTeam) || ReferenceEquals(team, mission.PlayerEnemyTeam));
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	internal static void RecordNoRetreatSuppression()
+	{
+		MilitaryExerciseRuntime runtime = _runtime;
+		if (runtime != null && !runtime.SettlementStarted && !runtime.SettlementDone)
+		{
+			Interlocked.Increment(ref runtime.NoRetreatSuppressions);
+		}
 	}
 
 	internal static bool ShouldProtectPlayerOrCompanionFromDeath(Agent agent)
@@ -1283,6 +1460,12 @@ public static class MilitaryExerciseBehavior
 		try
 		{
 			harmony ??= new Harmony("com.AnimusForge.militaryexercise");
+			PatchHarmonyClass(harmony, typeof(MilitaryExerciseNoRetreatPatch.CanPanicPatch));
+			PatchHarmonyClass(harmony, typeof(MilitaryExerciseNoRetreatPatch.PanicPatch));
+			PatchHarmonyClass(harmony, typeof(MilitaryExerciseNoRetreatPatch.RetreatPatch));
+			PatchHarmonyClass(harmony, typeof(MilitaryExerciseNoRetreatPatch.PanicHandlerPatch));
+			PatchHarmonyClass(harmony, typeof(MilitaryExerciseNoRetreatPatch.BehaviorWeightPatch));
+			PatchHarmonyClass(harmony, typeof(MilitaryExerciseNoRetreatPatch.BehaviorTickPatch));
 			PatchHarmonyClass(harmony, typeof(MilitaryExerciseDeathRatePatch));
 			PatchHarmonyClass(harmony, typeof(MilitaryExerciseMapEventXpOnlySettlementPatch));
 			PatchHarmonyClass(harmony, typeof(MilitaryExercisePlayerEncounterResultsCleanupPatch));
@@ -2669,6 +2852,7 @@ public static class MilitaryExerciseBehavior
 			int opponentXpDelta = CalculateRosterXpDelta(opponentBeforeXp, BuildRosterTotals(runtime.OpponentDummyParty?.MemberRoster));
 			int holdingXpDelta = CalculateRosterXpDelta(holdingBeforeXp, BuildRosterTotals(runtime.HoldingDummyParty?.MemberRoster));
 			Log($"xp_delta_summary main={mainXpDelta} opponent={opponentXpDelta} holding={holdingXpDelta}");
+			summary.RoutedRestored = RestoreRoutedRegularTroops(runtime, reason);
 			summary.OpponentReturned = MoveAllMembersBackToMainParty(runtime.OpponentDummyParty, "exercise_opponent");
 			summary.HoldingReturned = MoveAllMembersBackToMainParty(runtime.HoldingDummyParty, "exercise_holding");
 			RestoreMainPartyRolesFromSnapshot(runtime, reason);
@@ -2684,6 +2868,7 @@ public static class MilitaryExerciseBehavior
 			ValidateMainPartyHeroRosterReadyForExercise(MobileParty.MainParty, MobileParty.MainParty?.MemberRoster, "cleanup_" + reason);
 			Log("cleanup_state_validate_ok reason=" + reason + " main=" + RosterSummary(MobileParty.MainParty?.MemberRoster));
 			Display("军事演习结束。");
+			Log($"no_retreat_summary suppressed={Volatile.Read(ref runtime.NoRetreatSuppressions)} routed_restored={summary.RoutedRestored}");
 			Log($"cleanup_exercise end reason={reason} xp_committed={summary.XpCommitted} opponent_returned={summary.OpponentReturned} holding_returned={summary.HoldingReturned}");
 		}
 		catch (Exception ex)
@@ -2896,6 +3081,83 @@ public static class MilitaryExerciseBehavior
 			totalDelta += afterTotals.Xp - beforeTotals.Xp;
 		}
 		return totalDelta;
+	}
+
+	private static int RestoreRoutedRegularTroops(MilitaryExerciseRuntime runtime, string reason)
+	{
+		if (runtime == null || runtime.RoutedTroopsRestored)
+		{
+			return 0;
+		}
+		runtime.RoutedTroopsRestored = true;
+		try
+		{
+			MapEvent mapEvent = runtime.MapEvent;
+			if (mapEvent == null)
+			{
+				return 0;
+			}
+			int restored = RestoreRoutedRegularTroopsFromSide(mapEvent.AttackerSide, runtime, reason)
+				+ RestoreRoutedRegularTroopsFromSide(mapEvent.DefenderSide, runtime, reason);
+			return restored;
+		}
+		catch (Exception ex)
+		{
+			Log("routed_restore failed reason=" + reason + " " + ex.GetType().Name + ": " + ex.Message);
+			return 0;
+		}
+	}
+
+	private static int RestoreRoutedRegularTroopsFromSide(MapEventSide side, MilitaryExerciseRuntime runtime, string reason)
+	{
+		if (side == null)
+		{
+			return 0;
+		}
+		int restored = 0;
+		foreach (MapEventParty mapEventParty in side.Parties)
+		{
+			PartyBase party = mapEventParty?.Party;
+			TroopRoster initialRoster = null;
+			if (ReferenceEquals(party, PartyBase.MainParty))
+			{
+				initialRoster = runtime.FirstTeamRoster;
+			}
+			else if (ReferenceEquals(party, runtime.OpponentDummyParty?.Party))
+			{
+				initialRoster = runtime.OpponentRoster;
+			}
+			if (party?.MemberRoster == null || initialRoster == null || mapEventParty.RoutedInBattle == null)
+			{
+				continue;
+			}
+			int partyRestored = 0;
+			foreach (TroopRosterElement item in SnapshotRoster(mapEventParty.RoutedInBattle))
+			{
+				CharacterObject character = item.Character;
+				if (character == null || character.IsHero || item.Number <= 0)
+				{
+					continue;
+				}
+				int initialNumber = GetRosterCount(initialRoster, character);
+				int diedNumber = GetRosterCount(mapEventParty.DiedInBattle, character);
+				int expectedSurvivors = Math.Max(0, initialNumber - diedNumber);
+				int currentNumber = GetRosterCount(party.MemberRoster, character);
+				int missingNumber = Math.Min(item.Number, Math.Max(0, expectedSurvivors - currentNumber));
+				if (missingNumber <= 0)
+				{
+					continue;
+				}
+				party.MemberRoster.AddToCounts(character, missingNumber, insertAtFront: false, woundedCount: 0, xpChange: 0, removeDepleted: true, index: -1);
+				partyRestored += missingNumber;
+			}
+			if (partyRestored > 0)
+			{
+				RebuildTroopRosterCachedTotals(party.MemberRoster, "routed_restore_" + reason);
+				restored += partyRestored;
+			}
+		}
+		return restored;
 	}
 
 	private static MoveRosterResult MoveAllMembersBackToMainParty(MobileParty sourceParty, string label)
@@ -3878,6 +4140,10 @@ public static class MilitaryExerciseBehavior
 		public bool EarlyXpCommittedOnMissionEnd { get; set; }
 
 		public bool RenownInfluenceSkipped { get; set; }
+
+		public int NoRetreatSuppressions;
+
+		public bool RoutedTroopsRestored { get; set; }
 	}
 
 	internal sealed class MainPartyRoleSnapshot
@@ -3931,6 +4197,8 @@ public static class MilitaryExerciseBehavior
 	private sealed class ExerciseSettlementSummary
 	{
 		public bool XpCommitted;
+
+		public int RoutedRestored;
 
 		public MoveRosterResult OpponentReturned = new MoveRosterResult();
 

@@ -29,14 +29,19 @@
     <AnimusForgeModuleId Condition="'$(AnimusForgeModuleId)' == ''">AnimusForge</AnimusForgeModuleId>
     <AnimusForgeSourceBinDir Condition="'$(AnimusForgeSourceBinDir)' == ''">$(MSBuildProjectDirectory)\AnimusForge\bin\Win64_Shipping_Client</AnimusForgeSourceBinDir>
     <AnimusForgeUnifiedBinDir Condition="'$(AnimusForgeUnifiedBinDir)' == ''">$(BannerlordRoot)\Modules\AnimusForge\bin\Win64_Shipping_Client</AnimusForgeUnifiedBinDir>
-    <AnimusForgeBinDir Condition="'$(AnimusForgeBinDir)' == '' and Exists('$(AnimusForgeUnifiedBinDir)\0Harmony.dll')">$(AnimusForgeUnifiedBinDir)</AnimusForgeBinDir>
-    <AnimusForgeBinDir Condition="'$(AnimusForgeBinDir)' == '' and Exists('$(AnimusForgeSourceBinDir)\0Harmony.dll')">$(AnimusForgeSourceBinDir)</AnimusForgeBinDir>
+    <AnimusForgeBinDir Condition="'$(AnimusForgeBinDir)' == '' and Exists('$(AnimusForgeUnifiedBinDir)\Microsoft.ML.OnnxRuntime.dll') and Exists('$(AnimusForgeUnifiedBinDir)\System.Memory.dll') and Exists('$(AnimusForgeUnifiedBinDir)\System.Buffers.dll') and Exists('$(AnimusForgeUnifiedBinDir)\System.Runtime.CompilerServices.Unsafe.dll')">$(AnimusForgeUnifiedBinDir)</AnimusForgeBinDir>
+    <AnimusForgeBinDir Condition="'$(AnimusForgeBinDir)' == '' and Exists('$(AnimusForgeSourceBinDir)\Microsoft.ML.OnnxRuntime.dll') and Exists('$(AnimusForgeSourceBinDir)\System.Memory.dll') and Exists('$(AnimusForgeSourceBinDir)\System.Buffers.dll') and Exists('$(AnimusForgeSourceBinDir)\System.Runtime.CompilerServices.Unsafe.dll')">$(AnimusForgeSourceBinDir)</AnimusForgeBinDir>
     <AnimusForgeBinDir Condition="'$(AnimusForgeBinDir)' == ''">$(AnimusForgeSourceBinDir)</AnimusForgeBinDir>
     <BannerlordBinDir Condition="'$(BannerlordBinDir)' == ''">$(BannerlordRoot)\bin\Win64_Shipping_Client</BannerlordBinDir>
     <NativeBinDir Condition="'$(NativeBinDir)' == ''">$(BannerlordRoot)\Modules\Native\bin\Win64_Shipping_Client</NativeBinDir>
     <SandBoxBinDir Condition="'$(SandBoxBinDir)' == ''">$(BannerlordRoot)\Modules\SandBox\bin\Win64_Shipping_Client</SandBoxBinDir>
     <WorkshopContentDir Condition="'$(WorkshopContentDir)' == '' and '$(WORKSHOP_CONTENT_DIR)' != ''">$(WORKSHOP_CONTENT_DIR)</WorkshopContentDir>
     <WorkshopContentDir Condition="'$(WorkshopContentDir)' == ''">F:\SteamLibrary\steamapps\workshop\content\261550</WorkshopContentDir>
+    <HarmonyCorePath Condition="'$(HarmonyCorePath)' == '' and Exists('$(BannerlordRoot)\Modules\Bannerlord.Harmony\bin\Win64_Shipping_Client\0Harmony.dll')">$(BannerlordRoot)\Modules\Bannerlord.Harmony\bin\Win64_Shipping_Client\0Harmony.dll</HarmonyCorePath>
+    <HarmonyCorePath Condition="'$(HarmonyCorePath)' == '' and Exists('$(WorkshopContentDir)\2859188632\bin\Win64_Shipping_Client\0Harmony.dll')">$(WorkshopContentDir)\2859188632\bin\Win64_Shipping_Client\0Harmony.dll</HarmonyCorePath>
+    <HarmonyCorePath Condition="'$(HarmonyCorePath)' == '' and Exists('$(AnimusForgeSourceBinDir)\0Harmony.dll')">$(AnimusForgeSourceBinDir)\0Harmony.dll</HarmonyCorePath>
+    <HarmonyCorePath Condition="'$(HarmonyCorePath)' == '' and Exists('$(AnimusForgeUnifiedBinDir)\0Harmony.dll')">$(AnimusForgeUnifiedBinDir)\0Harmony.dll</HarmonyCorePath>
+    <HarmonyCorePath Condition="'$(HarmonyCorePath)' == ''">$(BannerlordRoot)\Modules\Bannerlord.Harmony\bin\Win64_Shipping_Client\0Harmony.dll</HarmonyCorePath>
     <HarmonyPath Condition="'$(HarmonyPath)' == '' and ! $([System.String]::Copy('$(BannerlordApi)').StartsWith('1.4')) and Exists('$(WorkshopContentDir)\2859188632\bin\Win64_Shipping_Client\Bannerlord.Harmony.dll')">$(WorkshopContentDir)\2859188632\bin\Win64_Shipping_Client\Bannerlord.Harmony.dll</HarmonyPath>
     <HarmonyPath Condition="'$(HarmonyPath)' == '' and Exists('$(BannerlordRoot)\Modules\Bannerlord.Harmony\bin\Win64_Shipping_Client\Bannerlord.Harmony.dll')">$(BannerlordRoot)\Modules\Bannerlord.Harmony\bin\Win64_Shipping_Client\Bannerlord.Harmony.dll</HarmonyPath>
     <HarmonyPath Condition="'$(HarmonyPath)' == '' and Exists('$(WorkshopContentDir)\2859188632\bin\Win64_Shipping_Client\Bannerlord.Harmony.dll')">$(WorkshopContentDir)\2859188632\bin\Win64_Shipping_Client\Bannerlord.Harmony.dll</HarmonyPath>
@@ -87,7 +92,6 @@
     <Compile Remove="FUYONG\**\*.cs" />
     <Compile Remove="_codex_tmp\**\*.cs" />
     <Compile Remove="tmp\**\*.cs" />
-    <Compile Remove="TrueAutoBlock\**\*.cs" />
     <EmbeddedResource Remove="原版游戏本体代码\**\*" />
     <EmbeddedResource Remove="原版游戏本体代码*\**\*" />
     <EmbeddedResource Remove="阅兵\**\*" />
@@ -136,7 +140,7 @@
       <HintPath>$(BannerlordBinDir)\TaleWorlds.Engine.dll</HintPath>
     </Reference>
     <Reference Include="0Harmony">
-      <HintPath>$(AnimusForgeBinDir)\0Harmony.dll</HintPath>
+      <HintPath>$(HarmonyCorePath)</HintPath>
     </Reference>
     <Reference Include="TaleWorlds.GauntletUI">
       <HintPath>$(TaleWorldsGauntletUiPath)</HintPath>
@@ -425,7 +429,7 @@
     <_RequiredRef Include="$(NativeBinDir)\TaleWorlds.MountAndBlade.View.dll" />
     <_RequiredRef Include="$(BannerlordBinDir)\TaleWorlds.Engine.GauntletUI.dll" />
     <_RequiredRef Include="$(BannerlordBinDir)\TaleWorlds.Engine.dll" />
-    <_RequiredRef Include="$(AnimusForgeBinDir)\0Harmony.dll" />
+    <_RequiredRef Include="$(HarmonyCorePath)" />
     <_RequiredRef Include="$(BannerlordBinDir)\TaleWorlds.GauntletUI.dll" />
     <_RequiredRef Include="$(BannerlordBinDir)\Newtonsoft.Json.dll" />
     <_RequiredRef Include="$(BannerlordBinDir)\TaleWorlds.Localization.dll" />

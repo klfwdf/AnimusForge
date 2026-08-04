@@ -282,11 +282,24 @@ namespace AnimusForge
 
 		private static void AppendPotentialFiefEntries(Clan clan, Kingdom kingdom, MentionedWorldEntities mentions, UnifiedAgendaSnapshot snapshot)
 		{
+			if (!HasMultipleEligibleFiefClaimants(kingdom)) return;
 			IEnumerable<Settlement> candidates = Settlement.All.Where(s => s != null && (s.IsTown || s.IsCastle) && s.MapFaction == kingdom);
 			foreach (Settlement target in PromptListRetrievalService.SelectCandidates(candidates, mentions, s => new[] { s?.Name?.ToString() ?? "", s?.StringId ?? "" }, PromptListRetrievalService.GetMaxCandidateCount(), false))
 			{
 				AppendPotentialDecision(snapshot, new SettlementClaimantPreliminaryDecision(clan, target), "FIEF", target.StringId, "", "重新分配封地");
 			}
+		}
+
+		private static bool HasMultipleEligibleFiefClaimants(Kingdom kingdom)
+		{
+			if (kingdom?.Clans == null) return false;
+			int eligibleCount = 0;
+			foreach (Clan candidate in kingdom.Clans)
+			{
+				if (candidate == null || candidate.IsUnderMercenaryService || candidate.IsEliminated || candidate.Leader == null || candidate.Leader.IsDead) continue;
+				if (++eligibleCount > 1) return true;
+			}
+			return false;
 		}
 
 		private static void AppendPotentialDecision(UnifiedAgendaSnapshot snapshot, KingdomDecision decision, string type, string targetId, string direction, string typeLabel)

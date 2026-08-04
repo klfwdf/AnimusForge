@@ -880,7 +880,7 @@ public static class AIConfigHandler
 		return text.Replace(text3, text2);
 	}
 
-	public static string BuildActionPostprocessSystemPrompt(string tagRules, string moodRules, string npcName, string sharedItemList = null, string playerItemList = null, string debtHint = null, string marriagePlayerCandidates = null, string marriageTargetCandidates = null, string marriageFactHint = null)
+	public static string BuildActionPostprocessSystemPrompt(string tagRules, string moodRules, string npcName, string sharedItemList = null, string playerItemList = null, string debtHint = null, string marriagePlayerCandidates = null, string marriageTargetCandidates = null)
 	{
 		string text = ActionPostprocessSystemPrompt;
 		if (string.IsNullOrWhiteSpace(text))
@@ -897,14 +897,13 @@ public static class AIConfigHandler
 		text = ReplaceActionPostprocessOptionalSection(text, "债务提示：", "debt_hint", debtHint);
 		text = ReplaceActionPostprocessOptionalSection(text, "玩家家族可婚配成员（允许已有配偶，事实清单）：", "marriage_player_candidates", marriagePlayerCandidates);
 		text = ReplaceActionPostprocessOptionalSection(text, "对方家族可婚配成员（允许已有配偶，事实清单）：", "marriage_target_candidates", marriageTargetCandidates);
-		text = ReplaceActionPostprocessOptionalSection(text, "当前可直接成立的正规婚配组合与现有婚姻（事实清单）：", "marriage_fact_hint", null);
 		text = text.Replace("{tag_rules}", string.IsNullOrWhiteSpace(tagRules) ? "（无）" : tagRules.Trim())
 			.Replace("{mood_rules}", string.IsNullOrWhiteSpace(moodRules) ? "（无）" : moodRules.Trim())
 			.Replace("{npc_name}", "NPC");
 		return Regex.Replace(text.Trim(), "(\\r?\\n){3,}", Environment.NewLine + Environment.NewLine);
 	}
 
-	public static string BuildActionPostprocessUserPrompt(string userPromptTemplate, string tagRules, string npcName, string historyText, string latestReplyBlock, string sharedItemList = null, string playerItemList = null, string debtHint = null, string marriagePlayerCandidates = null, string marriageTargetCandidates = null, string marriageFactHint = null, string runtimeContext = null)
+	public static string BuildActionPostprocessUserPrompt(string userPromptTemplate, string tagRules, string npcName, string historyText, string latestReplyBlock, string sharedItemList = null, string playerItemList = null, string debtHint = null, string marriagePlayerCandidates = null, string marriageTargetCandidates = null, string runtimeContext = null)
 	{
 		string text = userPromptTemplate ?? "";
 		if (string.IsNullOrWhiteSpace(text))
@@ -922,7 +921,6 @@ public static class AIConfigHandler
 		text = ReplaceActionPostprocessOptionalSection(text, "{npc_name}的物品清单：", "shared_item_list", sharedItemList);
 		text = ReplaceActionPostprocessOptionalSection(text, "玩家家族可婚配成员（允许已有配偶，事实清单）：", "marriage_player_candidates", marriagePlayerCandidates);
 		text = ReplaceActionPostprocessOptionalSection(text, "对方家族可婚配成员（允许已有配偶，事实清单）：", "marriage_target_candidates", marriageTargetCandidates);
-		text = ReplaceActionPostprocessOptionalSection(text, "当前可直接成立的正规婚配组合与现有婚姻（事实清单）：", "marriage_fact_hint", null);
 		text = ReplaceActionPostprocessOptionalSection(text, "债务提示：", "debt_hint", debtHint);
 		text = ReplaceActionPostprocessOptionalSection(text, "运行时补充事实：", "runtime_context", runtimeContext);
 		int maxHistoryEntries = DuelSettings.GetActionPostprocessHistoryEntryLimitForExternal();
@@ -2079,6 +2077,10 @@ public static class AIConfigHandler
 		if (string.Equals(text, "diplomacy", StringComparison.OrdinalIgnoreCase))
 		{
 			return DiplomacyBehavior.CanInjectDiplomacyRuleForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
+		}
+		if (string.Equals(text, "world_diplomacy_discussion", StringComparison.OrdinalIgnoreCase))
+		{
+			return WorldDiplomacyBehavior.CanDiscussWorldDiplomacyForExternal(ResolveConversationTargetHero());
 		}
 		if (string.Equals(text, "kingdom_agenda", StringComparison.OrdinalIgnoreCase))
 		{
@@ -8764,6 +8766,8 @@ public static class AIConfigHandler
 			}
 			case "diplomacy":
 				return DiplomacyBehavior.CanInjectDiplomacyRuleForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
+			case "world_diplomacy_discussion":
+				return WorldDiplomacyBehavior.CanDiscussWorldDiplomacyForExternal(ResolveConversationTargetHero());
 			case "kingdom_agenda":
 				return IsKingdomLordOrKingRuleTargetForPreprocess(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
 			case "marriage":

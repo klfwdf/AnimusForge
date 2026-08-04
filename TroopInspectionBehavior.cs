@@ -404,6 +404,114 @@ public static partial class TroopInspectionBehavior
 		}
 	}
 
+	internal static bool CanOfferPrisonerSlaughterActionForExternal(
+		int speakerAgentIndex,
+		out int regularPrisonerCount,
+		out int attackerCount)
+	{
+		regularPrisonerCount = 0;
+		attackerCount = 0;
+		try
+		{
+			TroopInspectionMissionLogic logic = Mission.Current?.GetMissionBehavior<TroopInspectionMissionLogic>();
+			return logic != null
+				&& logic.CanOfferPrisonerSlaughterAction(
+					speakerAgentIndex,
+					out regularPrisonerCount,
+					out attackerCount);
+		}
+		catch (Exception ex)
+		{
+			Log("inspection_slaughter_offer failed agent=" + speakerAgentIndex + " error="
+				+ ex.GetType().Name + ": " + ex.Message);
+			return false;
+		}
+	}
+
+	internal static string BuildPrisonerSlaughterPromptInstructionForExternal(int speakerAgentIndex)
+	{
+		return CanOfferPrisonerSlaughterActionForExternal(
+			speakerAgentIndex,
+			out int regularPrisonerCount,
+			out int attackerCount)
+			? TroopInspectionPrisonerSlaughterProfile.BuildRuntimeInstruction(
+				regularPrisonerCount,
+				attackerCount)
+			: string.Empty;
+	}
+
+	internal static string BuildPrisonerSlaughterPostprocessRuleForExternal(int speakerAgentIndex)
+	{
+		return CanOfferPrisonerSlaughterActionForExternal(
+			speakerAgentIndex,
+			out int regularPrisonerCount,
+			out int attackerCount)
+			? TroopInspectionPrisonerSlaughterProfile.BuildPostprocessRuleDescription(
+				regularPrisonerCount,
+				attackerCount)
+			: string.Empty;
+	}
+
+	internal static bool TryProcessPrisonerSlaughterActionTagForExternal(
+		int speakerAgentIndex,
+		ref string content)
+	{
+		string actionTag = TroopInspectionPrisonerSlaughterProfile.ActionTag;
+		if (string.IsNullOrWhiteSpace(content)
+			|| content.IndexOf(actionTag, StringComparison.OrdinalIgnoreCase) < 0)
+		{
+			return false;
+		}
+
+		content = System.Text.RegularExpressions.Regex.Replace(
+			content ?? string.Empty,
+			System.Text.RegularExpressions.Regex.Escape(actionTag),
+			string.Empty,
+			System.Text.RegularExpressions.RegexOptions.IgnoreCase).Trim();
+		try
+		{
+			TroopInspectionMissionLogic logic = Mission.Current?.GetMissionBehavior<TroopInspectionMissionLogic>();
+			int attackerCount = 0;
+			int targetCount = 0;
+			string reason = "not_normal_inspection";
+			if (logic == null
+				|| !logic.TryStartPrisonerSlaughter(
+					speakerAgentIndex,
+					out attackerCount,
+					out targetCount,
+					out reason))
+			{
+				string blockedReason = string.IsNullOrWhiteSpace(reason)
+					? "not_normal_inspection"
+					: reason;
+				InformationManager.DisplayMessage(new InformationMessage(
+					TroopInspectionPrisonerSlaughterProfile.BuildUnavailableMessage(blockedReason),
+					Color.FromUint(TroopInspectionPrisonerSlaughterProfile.WarningMessageColor)));
+				Log("inspection_slaughter_tag blocked agent=" + speakerAgentIndex
+					+ " reason=" + blockedReason);
+				return false;
+			}
+
+			InformationManager.DisplayMessage(new InformationMessage(
+				TroopInspectionPrisonerSlaughterProfile.BuildStartedMessage(
+					attackerCount,
+					targetCount),
+				Color.FromUint(TroopInspectionPrisonerSlaughterProfile.StartMessageColor)));
+			Log("inspection_slaughter_tag started agent=" + speakerAgentIndex
+				+ " attackers=" + attackerCount
+				+ " targets=" + targetCount);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			InformationManager.DisplayMessage(new InformationMessage(
+				TroopInspectionPrisonerSlaughterProfile.BuildUnavailableMessage("exception"),
+				Color.FromUint(TroopInspectionPrisonerSlaughterProfile.WarningMessageColor)));
+			Log("inspection_slaughter_tag failed agent=" + speakerAgentIndex + " error=" + ex);
+			return false;
+		}
+	}
+
 	internal static void CleanupRuntime(string reason)
 	{
 		bool alreadyDone = _cleanupDone;
@@ -3199,6 +3307,8 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 
 	private readonly HashSet<Agent> _prisonerPoseApplied = new HashSet<Agent>();
 
+	private TroopInspectionPrisonerSlaughterRuntime _prisonerSlaughterRuntime;
+
 	private ActionIndexCache _lordPrisonerAction;
 
 	private ActionIndexCache _soldierPrisonerAction;
@@ -3362,7 +3472,8 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		}
 		DetectDeploymentEnd();
 		TryLogAgentCounts();
-		if (!_externalCastleRuntime)
+		_prisonerSlaughterRuntime?.Tick(dt);
+		if (!_externalCastleRuntime && _prisonerSlaughterRuntime?.IsBusy != true)
 		{
 			RefreshPrisonerPoses(dt);
 		}
@@ -3654,6 +3765,10 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 	public override void OnAgentRemoved(Agent affectedAgent, Agent affectorAgent, AgentState agentState, KillingBlow killingBlow)
 	{
 		base.OnAgentRemoved(affectedAgent, affectorAgent, agentState, killingBlow);
+		_prisonerSlaughterRuntime?.OnAgentRemoved(
+			affectedAgent,
+			affectorAgent,
+			agentState);
 		LogAgentRemovedDiag(affectedAgent, affectorAgent, agentState);
 	}
 
@@ -4666,7 +4781,8 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 	private void RefreshSingleAgent(Agent agent)
 	{
 		if (agent == null || !agent.IsActive()
-			|| CastleAftermathLordDuelRuntimeBridge.ControlsAgent(agent))
+			|| CastleAftermathLordDuelRuntimeBridge.ControlsAgent(agent)
+			|| _prisonerSlaughterRuntime?.ControlsAgent(agent) == true)
 		{
 			return;
 		}
@@ -5041,6 +5157,15 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		_cleanupRequested = true;
 		try
 		{
+			_prisonerSlaughterRuntime?.Cleanup(reason);
+		}
+		catch (Exception ex)
+		{
+			Log("inspection_slaughter_cleanup failed reason=" + (reason ?? "N/A")
+				+ " error=" + ex.GetType().Name + ": " + ex.Message);
+		}
+		try
+		{
 			Log($"request_cleanup reason={reason} battle_end_disabled={_battleEndDisabled} mission_result={base.Mission?.MissionResult?.ToString() ?? "null"}");
 		}
 		catch
@@ -5062,6 +5187,161 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		_civilianPrisonerActionSetApplied.Clear();
 		_prisonerPoseSuppressedUntil.Clear();
 		_prisonerPoseApplied.Clear();
+	}
+
+	internal bool CanOfferPrisonerSlaughterAction(
+		int speakerAgentIndex,
+		out int regularPrisonerCount,
+		out int attackerCount)
+	{
+		regularPrisonerCount = 0;
+		attackerCount = 0;
+		Mission mission = base.Mission;
+		Agent speaker = mission?.Agents?.FirstOrDefault(agent =>
+			agent != null && agent.Index == speakerAgentIndex);
+		List<Agent> prisoners = GetActiveRegularInspectionPrisoners();
+		List<Agent> attackers = GetActiveInspectionSoldiers();
+		regularPrisonerCount = prisoners.Count;
+		attackerCount = attackers.Count;
+		return TroopInspectionPrisonerSlaughterProfile.ShouldOfferRule(
+			inspectionActive: mission != null && !mission.IsMissionEnding,
+			externalCastleRuntime: _externalCastleRuntime,
+			slaughterActive: _prisonerSlaughterRuntime?.IsBusy == true,
+			speakerIsInspectedRegularSoldier: IsEligibleInspectionSoldier(speaker),
+			regularPrisonerCount,
+			attackerCount);
+	}
+
+	internal bool TryStartPrisonerSlaughter(
+		int speakerAgentIndex,
+		out int attackerCount,
+		out int targetCount,
+		out string reason)
+	{
+		attackerCount = 0;
+		targetCount = 0;
+		reason = string.Empty;
+		if (_externalCastleRuntime || base.Mission == null || base.Mission.IsMissionEnding)
+		{
+			reason = "not_normal_inspection";
+			return false;
+		}
+		if (_prisonerSlaughterRuntime?.IsBusy == true)
+		{
+			reason = "slaughter_already_active";
+			return false;
+		}
+
+		Agent speaker = base.Mission.Agents?.FirstOrDefault(agent =>
+			agent != null && agent.Index == speakerAgentIndex);
+		if (!IsEligibleInspectionSoldier(speaker))
+		{
+			reason = "speaker_not_inspected_soldier";
+			return false;
+		}
+
+		List<Agent> targets = GetActiveRegularInspectionPrisoners();
+		if (targets.Count == 0)
+		{
+			reason = "no_regular_prisoners";
+			return false;
+		}
+		List<Agent> attackers = GetActiveInspectionSoldiers();
+		if (attackers.Count == 0)
+		{
+			reason = "speaker_not_inspected_soldier";
+			return false;
+		}
+
+		_prisonerSlaughterRuntime = new TroopInspectionPrisonerSlaughterRuntime(
+			base.Mission,
+			attackers,
+			targets,
+			RestoreInspectionAgentAfterSlaughter);
+		if (!_prisonerSlaughterRuntime.TryStart(out reason))
+		{
+			_prisonerSlaughterRuntime.Cleanup("start_failed");
+			if (!_prisonerSlaughterRuntime.HasPendingRestore)
+			{
+				_prisonerSlaughterRuntime = null;
+			}
+			return false;
+		}
+
+		attackerCount = attackers.Count;
+		targetCount = targets.Count;
+		return true;
+	}
+
+	private List<Agent> GetActiveRegularInspectionPrisoners()
+	{
+		try
+		{
+			return base.Mission?.Agents?
+				.Where(agent =>
+					agent != null
+					&& agent.IsHuman
+					&& agent.IsActive()
+					&& agent.Origin is PrisonerAgentOrigin
+					&& TryGetPrisonerIsLord(agent, out bool isLord)
+					&& !isLord)
+				.OrderBy(agent => agent.Index)
+				.ToList() ?? new List<Agent>();
+		}
+		catch
+		{
+			return new List<Agent>();
+		}
+	}
+
+	private List<Agent> GetActiveInspectionSoldiers()
+	{
+		try
+		{
+			return base.Mission?.Agents?
+				.Where(IsEligibleInspectionSoldier)
+				.OrderBy(agent => agent.Index)
+				.ToList() ?? new List<Agent>();
+		}
+		catch
+		{
+			return new List<Agent>();
+		}
+	}
+
+	private bool IsEligibleInspectionSoldier(Agent agent)
+	{
+		if (agent == null
+			|| !agent.IsHuman
+			|| !agent.IsActive()
+			|| agent == Agent.Main
+			|| agent.Origin is PrisonerAgentOrigin
+			|| agent.Team != (base.Mission?.PlayerTeam ?? Agent.Main?.Team))
+		{
+			return false;
+		}
+		CharacterObject character = agent.Character as CharacterObject;
+		// Inspection selections may contain modded regular troops whose
+		// CharacterObject.IsSoldier flag is not populated. In this mission every
+		// active non-hero player-side non-prisoner is a selected troop, so the
+		// roster/mission identity is the authoritative gate.
+		return character != null && !character.IsHero;
+	}
+
+	private void RestoreInspectionAgentAfterSlaughter(Agent agent, bool prisoner)
+	{
+		if (agent == null || !agent.IsActive())
+		{
+			return;
+		}
+		if (prisoner)
+		{
+			_prisonerPoseSuppressedUntil.Remove(agent);
+			_prisonerPoseApplied.Remove(agent);
+			ApplyPrisonerPose(agent, isLord: false, _deploymentEndDetected);
+			return;
+		}
+		RefreshSingleAgent(agent);
 	}
 
 	private static void Log(string message)
