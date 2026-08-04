@@ -16,7 +16,9 @@ public sealed class SiegeSettlementOutcomeProfile
 
     public const int CulturalRepopulationProsperityGrowthDebuffYears = 1;
 
-    public const int DestructiveRecruitmentSuppressionYears = 1;
+    public const int DestructiveRecruitmentSlowdownYears = 1;
+
+    public const float DestructiveRecruitmentRateMultiplier = 0.20f;
 
     private SiegeSettlementOutcomeProfile(
         string key,
@@ -28,8 +30,9 @@ public sealed class SiegeSettlementOutcomeProfile
         string notableRelationReason,
         int notableTrustDelta,
         string notableTrustReason,
-        int recruitmentSuppressionYears,
-        string recruitmentSuppressionReason)
+        int recruitmentSlowdownYears,
+        float recruitmentRateMultiplier,
+        string recruitmentSlowdownReason)
     {
         Key = key;
         SettlementPublicTrustDelta = settlementPublicTrustDelta;
@@ -40,8 +43,9 @@ public sealed class SiegeSettlementOutcomeProfile
         NotableRelationReason = notableRelationReason;
         NotableTrustDelta = notableTrustDelta;
         NotableTrustReason = notableTrustReason;
-        RecruitmentSuppressionYears = recruitmentSuppressionYears;
-        RecruitmentSuppressionReason = recruitmentSuppressionReason;
+        RecruitmentSlowdownYears = recruitmentSlowdownYears;
+        RecruitmentRateMultiplier = recruitmentRateMultiplier;
+        RecruitmentSlowdownReason = recruitmentSlowdownReason;
     }
 
     public string Key { get; }
@@ -62,9 +66,11 @@ public sealed class SiegeSettlementOutcomeProfile
 
     public string NotableTrustReason { get; }
 
-    public int RecruitmentSuppressionYears { get; }
+    public int RecruitmentSlowdownYears { get; }
 
-    public string RecruitmentSuppressionReason { get; }
+    public float RecruitmentRateMultiplier { get; }
+
+    public string RecruitmentSlowdownReason { get; }
 
     public bool ResetsLoyaltyToInitial => Key == "cultural_repopulation";
 
@@ -78,9 +84,7 @@ public sealed class SiegeSettlementOutcomeProfile
 
     public bool AppliesProsperityGrowthDebuff => Key == "cultural_repopulation";
 
-    public bool SuppressesRecruitment => RecruitmentSuppressionYears > 0;
-
-    public bool ClearsExistingRecruitmentSuppression => Key == "cultural_repopulation";
+    public bool AppliesRecruitmentSlowdown => RecruitmentSlowdownYears > 0 && RecruitmentRateMultiplier < 1f;
 
     public static SiegeSettlementOutcomeProfile BuildPlunder()
     {
@@ -94,8 +98,9 @@ public sealed class SiegeSettlementOutcomeProfile
             notableRelationReason: "siege_ai_plunder_notables",
             notableTrustDelta: -30,
             notableTrustReason: "siege_ai_plunder_notable_trust",
-            recruitmentSuppressionYears: 0,
-            recruitmentSuppressionReason: string.Empty);
+            recruitmentSlowdownYears: 0,
+            recruitmentRateMultiplier: 1f,
+            recruitmentSlowdownReason: string.Empty);
     }
 
     public static SiegeSettlementOutcomeProfile BuildMassacre()
@@ -110,8 +115,9 @@ public sealed class SiegeSettlementOutcomeProfile
             notableRelationReason: "siege_ai_massacre_notables",
             notableTrustDelta: -70,
             notableTrustReason: "siege_ai_massacre_notable_trust",
-            recruitmentSuppressionYears: DestructiveRecruitmentSuppressionYears,
-            recruitmentSuppressionReason: "siege_ai_massacre_recruitment_suppression");
+            recruitmentSlowdownYears: DestructiveRecruitmentSlowdownYears,
+            recruitmentRateMultiplier: DestructiveRecruitmentRateMultiplier,
+            recruitmentSlowdownReason: "siege_ai_massacre_recruitment_slowdown");
     }
 
     public static SiegeSettlementOutcomeProfile BuildCulturalRepopulation()
@@ -126,7 +132,8 @@ public sealed class SiegeSettlementOutcomeProfile
             notableRelationReason: string.Empty,
             notableTrustDelta: 0,
             notableTrustReason: string.Empty,
-            recruitmentSuppressionYears: 0,
-            recruitmentSuppressionReason: string.Empty);
+            recruitmentSlowdownYears: DestructiveRecruitmentSlowdownYears,
+            recruitmentRateMultiplier: DestructiveRecruitmentRateMultiplier,
+            recruitmentSlowdownReason: "siege_ai_repopulation_recruitment_slowdown");
     }
 }

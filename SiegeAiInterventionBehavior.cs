@@ -445,7 +445,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static Dictionary<string, int> _rallyOathLoyaltyLockUntilDayBySettlement = new Dictionary<string, int>();
 	private static Dictionary<string, float> _rallyOathLoyaltyLockValueBySettlement = new Dictionary<string, float>();
 	private static Dictionary<string, int> _rallyOathRecruitmentBuffUntilDayBySettlement = new Dictionary<string, int>();
-	private static Dictionary<string, int> _recruitmentSuppressionUntilDayBySettlement = new Dictionary<string, int>();
+	private static Dictionary<string, int> _recruitmentSlowdownUntilDayBySettlement = new Dictionary<string, int>();
 	private static int _pendingPositiveNotableRelationDelta;
 	private static bool _pendingPositiveNotableRelationIncludesBoundVillages;
 	private static string _pendingPositiveNotableRelationReason = "";
@@ -480,6 +480,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		SiegeInterventionSceneTauntSuppressionPatch.EnsurePatched();
 		SiegeInterventionCommandOriginPatch.EnsurePatched();
+		GcczVolunteerRecruitmentRatePatch.EnsurePatched();
 		CampaignEvents.OnNewGameCreatedEvent.AddNonSerializedListener(this, OnNewGameCreated);
 		CampaignEvents.OnGameLoadedEvent.AddNonSerializedListener(this, OnGameLoaded);
 		CampaignEvents.OnGameLoadFinishedEvent.AddNonSerializedListener(this, OnGameLoadFinished);
@@ -506,7 +507,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		dataStore.SyncData("_gcczRallyOathLoyaltyLockUntilDayBySettlement_v1", ref _rallyOathLoyaltyLockUntilDayBySettlement);
 		dataStore.SyncData("_gcczRallyOathLoyaltyLockValueBySettlement_v1", ref _rallyOathLoyaltyLockValueBySettlement);
 		dataStore.SyncData("_gcczRallyOathRecruitmentBuffUntilDayBySettlement_v1", ref _rallyOathRecruitmentBuffUntilDayBySettlement);
-		SyncRecruitmentSuppressionData(dataStore);
+		SyncRecruitmentSlowdownData(dataStore);
 		_repopulationProsperityDebuffUntilDayBySettlement ??= new Dictionary<string, int>();
 		_repopulationProsperityLastObservedBySettlement ??= new Dictionary<string, float>();
 		_civicProsperityBuffUntilDayBySettlement ??= new Dictionary<string, int>();
@@ -515,23 +516,26 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_rallyOathLoyaltyLockUntilDayBySettlement ??= new Dictionary<string, int>();
 		_rallyOathLoyaltyLockValueBySettlement ??= new Dictionary<string, float>();
 		_rallyOathRecruitmentBuffUntilDayBySettlement ??= new Dictionary<string, int>();
-		_recruitmentSuppressionUntilDayBySettlement ??= new Dictionary<string, int>();
+		_recruitmentSlowdownUntilDayBySettlement ??= new Dictionary<string, int>();
 	}
 
-	private static void SyncRecruitmentSuppressionData(IDataStore dataStore)
+	private static void SyncRecruitmentSlowdownData(IDataStore dataStore)
 	{
-		const string legacyKey = "_gcczRecruitmentSuppressionUntilDayBySettlement_v1";
-		const string currentKey = "_gcczRecruitmentSuppressionUntilDayBySettlement_v2";
-		const string initializedKey = "_gcczRecruitmentSuppressionStorageV2Initialized";
+		const string legacyKeyV1 = "_gcczRecruitmentSuppressionUntilDayBySettlement_v1";
+		const string legacyKeyV2 = "_gcczRecruitmentSuppressionUntilDayBySettlement_v2";
+		const string legacyInitializedKeyV2 = "_gcczRecruitmentSuppressionStorageV2Initialized";
+		const string currentKey = "_gcczRecruitmentSlowdownUntilDayBySettlement_v3";
+		const string initializedKey = "_gcczRecruitmentSlowdownStorageV3Initialized";
 		if (dataStore == null)
 		{
 			return;
 		}
 		if (dataStore.IsSaving)
 		{
+			_recruitmentSlowdownUntilDayBySettlement ??= new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 			bool initialized = true;
 			dataStore.SyncData(initializedKey, ref initialized);
-			dataStore.SyncData(currentKey, ref _recruitmentSuppressionUntilDayBySettlement);
+			dataStore.SyncData(currentKey, ref _recruitmentSlowdownUntilDayBySettlement);
 			return;
 		}
 		if (!dataStore.IsLoading)
@@ -545,27 +549,45 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		dataStore.SyncData(currentKey, ref current);
 		if (hasCurrentStorage)
 		{
-			_recruitmentSuppressionUntilDayBySettlement = current ?? new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+			_recruitmentSlowdownUntilDayBySettlement = current == null
+				? new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
+				: new Dictionary<string, int>(current, StringComparer.OrdinalIgnoreCase);
 			return;
 		}
 
-		Dictionary<string, int> legacy = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-		dataStore.SyncData(legacyKey, ref legacy);
-		legacy ??= new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-		int migrated = legacy.Count;
-		int removedRepopulationEntries = 0;
-		foreach (string settlementId in legacy.Keys.ToList())
+		bool hasV2Storage = false;
+		Dictionary<string, int> legacyV2 = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		dataStore.SyncData(legacyInitializedKeyV2, ref hasV2Storage);
+		dataStore.SyncData(legacyKeyV2, ref legacyV2);
+		Dictionary<string, int> migrated;
+		string source;
+		if (hasV2Storage)
 		{
-			if (_repopulationProsperityDebuffUntilDayBySettlement?.TryGetValue(settlementId, out int repopulationUntilDay) != true
-				|| legacy[settlementId] > repopulationUntilDay)
-			{
-				continue;
-			}
-			legacy.Remove(settlementId);
-			removedRepopulationEntries++;
+			migrated = legacyV2 == null
+				? new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
+				: new Dictionary<string, int>(legacyV2, StringComparer.OrdinalIgnoreCase);
+			source = "v2";
 		}
-		_recruitmentSuppressionUntilDayBySettlement = new Dictionary<string, int>(legacy, StringComparer.OrdinalIgnoreCase);
-		Logger.Log("SiegeAiIntervention", $"Migrated recruitment suppression storage v1->v2. Migrated={migrated - removedRepopulationEntries}, RemovedRepopulation={removedRepopulationEntries}");
+		else
+		{
+			Dictionary<string, int> legacyV1 = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+			dataStore.SyncData(legacyKeyV1, ref legacyV1);
+			migrated = legacyV1 == null
+				? new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
+				: new Dictionary<string, int>(legacyV1, StringComparer.OrdinalIgnoreCase);
+			source = "v1";
+		}
+		int restoredRepopulationEntries = 0;
+		foreach (KeyValuePair<string, int> repopulationEntry in _repopulationProsperityDebuffUntilDayBySettlement ?? new Dictionary<string, int>())
+		{
+			if (!migrated.TryGetValue(repopulationEntry.Key, out int existingUntilDay) || existingUntilDay < repopulationEntry.Value)
+			{
+				migrated[repopulationEntry.Key] = repopulationEntry.Value;
+				restoredRepopulationEntries++;
+			}
+		}
+		_recruitmentSlowdownUntilDayBySettlement = migrated;
+		Logger.Log("SiegeAiIntervention", $"Migrated recruitment slowdown storage {source}->v3. Entries={migrated.Count}, RestoredRepopulation={restoredRepopulationEntries}");
 	}
 
 	private void OnDailyTickTown(Town town)
@@ -573,7 +595,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		CastleAftermathSettlementRuntimeBridge.OnDailyTickTown(town);
 		CastleAftermathLordRecruitmentRuntimeBridge.ProcessDueLetters();
 		ApplyRepopulationProsperityGrowthDebuff(town);
-		ApplyRecruitmentSuppressionDebuff(town);
+		ApplyRecruitmentSlowdownDebuff(town);
 		ApplyCivicProsperityGrowthBuff(town);
 		ApplyRallyOathLoyaltyLock(town);
 		ApplyRallyOathRecruitmentBuff(town);
@@ -581,6 +603,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private void OnSessionLaunched(CampaignGameStarter starter)
 	{
+		GcczVolunteerRecruitmentRatePatch.EnsurePatched();
 		AddGameMenus(starter);
 	}
 
@@ -592,13 +615,14 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		CastleAftermathArmyRosterRuntimeBridge.ClearBattleSnapshot("new_game");
 		ClearCastleLordDefeatProvenance("new_game");
 		ClearRepopulationProsperityDebuffs();
-		ClearRecruitmentSuppressionDebuffs();
+		ClearRecruitmentSlowdownDebuffs();
 		ClearCivicPositiveBuffs();
 		ResetAftermathRuntimeGuards(SiegeAftermathTransitionSourceProfile.ResetNewGameCreatedSource);
 	}
 
 	private void OnGameLoaded(CampaignGameStarter starter)
 	{
+		GcczVolunteerRecruitmentRatePatch.EnsurePatched();
 		CastleAftermathArmyRosterRuntimeBridge.ClearBattleSnapshot("game_loaded");
 		ClearCastleLordDefeatProvenance("game_loaded");
 		ResetAftermathRuntimeGuards(SiegeAftermathTransitionSourceProfile.ResetGameLoadedSource);
@@ -13866,17 +13890,13 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				BeginRepopulationProsperityGrowthDebuff(settlement);
 			}
-			if (profile.ClearsExistingRecruitmentSuppression)
+			if (profile.AppliesRecruitmentSlowdown)
 			{
-				ClearRecruitmentSuppressionForSettlement(settlement, profile.Key);
-			}
-			if (profile.SuppressesRecruitment)
-			{
-				BeginRecruitmentSuppressionDebuff(settlement, profile);
+				BeginRecruitmentSlowdownDebuff(settlement, profile);
 			}
 			float prosperityAfterAllEffects = settlement.Town?.Prosperity ?? prosperityAfterNativeAftermath;
 			Logger.Log("SiegeAiIntervention", $"Applied finalized GCCZ settlement outcome. Key={profile.Key}, Settlement={settlement.StringId}, SettlementTrust={profile.SettlementPublicTrustDelta}, VillageTrust={profile.BoundVillagePublicTrustDelta}x{villageTrustAdjusted}, NotableRelation={profile.NotableRelationDelta}x{notableRelationAdjusted}, NotableTrust={profile.NotableTrustDelta}x{notableTrustAdjusted}, ProsperityBefore={prosperityBeforeNativeAftermath:0.##}, NativeProsperityDelta={nativeProsperityDelta:0.##}, ExtraProsperityDelta={extraProsperityDelta:0.##}, ProsperityAfter={prosperityAfterAllEffects:0.##}, TotalProsperityDelta={prosperityAfterAllEffects - prosperityBeforeNativeAftermath:0.##}");
-			GcczDiagnosticLog.Log("SettlementOutcome", $"key={profile.Key} settlement={settlement.StringId} prosperityBefore={prosperityBeforeNativeAftermath:0.##} nativeDelta={nativeProsperityDelta:0.##} extraDelta={extraProsperityDelta:0.##} prosperityAfter={prosperityAfterAllEffects:0.##} totalDelta={prosperityAfterAllEffects - prosperityBeforeNativeAftermath:0.##} recruitmentSuppressed={profile.SuppressesRecruitment}");
+			GcczDiagnosticLog.Log("SettlementOutcome", $"key={profile.Key} settlement={settlement.StringId} prosperityBefore={prosperityBeforeNativeAftermath:0.##} nativeDelta={nativeProsperityDelta:0.##} extraDelta={extraProsperityDelta:0.##} prosperityAfter={prosperityAfterAllEffects:0.##} totalDelta={prosperityAfterAllEffects - prosperityBeforeNativeAftermath:0.##} recruitmentRateMultiplier={profile.RecruitmentRateMultiplier:0.##}");
 		}
 		catch (Exception ex)
 		{
@@ -14134,27 +14154,26 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_repopulationProsperityLastObservedBySettlement.Clear();
 	}
 
-	private static void BeginRecruitmentSuppressionDebuff(Settlement settlement, SiegeSettlementOutcomeProfile profile)
+	private static void BeginRecruitmentSlowdownDebuff(Settlement settlement, SiegeSettlementOutcomeProfile profile)
 	{
 		try
 		{
 			string key = settlement?.StringId;
-			if (string.IsNullOrWhiteSpace(key) || settlement?.Town == null || profile == null || !profile.SuppressesRecruitment)
+			if (string.IsNullOrWhiteSpace(key) || settlement?.Town == null || profile == null || !profile.AppliesRecruitmentSlowdown)
 			{
 				return;
 			}
-			int untilDay = GetCurrentCampaignDay() + Math.Max(1, CampaignTime.DaysInYear * profile.RecruitmentSuppressionYears);
-			_recruitmentSuppressionUntilDayBySettlement[key] = untilDay;
-			int cleared = ClearVolunteerSlotsForSettlementAndBoundVillages(settlement);
-			Logger.Log("SiegeAiIntervention", $"Applied recruitment suppression debuff. Settlement={key}, UntilDay={untilDay}, ClearedSlots={cleared}, Reason={profile.RecruitmentSuppressionReason ?? "N/A"}");
+			int untilDay = GetCurrentCampaignDay() + Math.Max(1, CampaignTime.DaysInYear * profile.RecruitmentSlowdownYears);
+			_recruitmentSlowdownUntilDayBySettlement[key] = untilDay;
+			Logger.Log("SiegeAiIntervention", $"Applied recruitment slowdown. Settlement={key}, UntilDay={untilDay}, Rate={profile.RecruitmentRateMultiplier:P0}, Reason={profile.RecruitmentSlowdownReason ?? "N/A"}");
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("SiegeAiIntervention", "BeginRecruitmentSuppressionDebuff failed: " + ex.Message);
+			Logger.Log("SiegeAiIntervention", "BeginRecruitmentSlowdownDebuff failed: " + ex.Message);
 		}
 	}
 
-	private static void ApplyRecruitmentSuppressionDebuff(Town town)
+	private static void ApplyRecruitmentSlowdownDebuff(Town town)
 	{
 		try
 		{
@@ -14165,98 +14184,53 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return;
 			}
 			int today = GetCurrentCampaignDay();
-			if (!_recruitmentSuppressionUntilDayBySettlement.TryGetValue(key, out int untilDay) || today > untilDay)
-			{
-				_recruitmentSuppressionUntilDayBySettlement.Remove(key);
-				return;
-			}
-			int cleared = ClearVolunteerSlotsForSettlementAndBoundVillages(settlement);
-			if (cleared > 0)
-			{
-				Logger.Log("SiegeAiIntervention", $"Recruitment suppression debuff applied. Settlement={key}, ClearedSlots={cleared}, UntilDay={untilDay}");
-			}
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "ApplyRecruitmentSuppressionDebuff failed: " + ex.Message);
-		}
-	}
-
-	private static int ClearVolunteerSlotsForSettlementAndBoundVillages(Settlement settlement)
-	{
-		int cleared = ClearVolunteerSlotsForSettlement(settlement);
-		try
-		{
-			if (settlement?.BoundVillages != null)
-			{
-				foreach (Village village in settlement.BoundVillages)
-				{
-					cleared += ClearVolunteerSlotsForSettlement(village?.Settlement);
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "ClearVolunteerSlotsForSettlementAndBoundVillages failed: " + ex.Message);
-		}
-		return cleared;
-	}
-
-	private static int ClearVolunteerSlotsForSettlement(Settlement settlement)
-	{
-		int cleared = 0;
-		try
-		{
-			if (settlement?.Notables == null)
-			{
-				return 0;
-			}
-			foreach (Hero notable in settlement.Notables.ToList())
-			{
-				CharacterObject[] volunteerTypes = notable?.VolunteerTypes;
-				if (notable == null || !notable.IsAlive || volunteerTypes == null)
-				{
-					continue;
-				}
-				for (int i = 0; i < volunteerTypes.Length; i++)
-				{
-					if (volunteerTypes[i] == null)
-					{
-						continue;
-					}
-					volunteerTypes[i] = null;
-					cleared++;
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "ClearVolunteerSlotsForSettlement failed. Settlement=" + (settlement?.StringId ?? "N/A") + ": " + ex.Message);
-		}
-		return cleared;
-	}
-
-	private static void ClearRecruitmentSuppressionDebuffs()
-	{
-		_recruitmentSuppressionUntilDayBySettlement.Clear();
-	}
-
-	private static void ClearRecruitmentSuppressionForSettlement(Settlement settlement, string source)
-	{
-		try
-		{
-			string key = settlement?.StringId;
-			if (string.IsNullOrWhiteSpace(key))
+			if (!_recruitmentSlowdownUntilDayBySettlement.TryGetValue(key, out int untilDay))
 			{
 				return;
 			}
-			bool removed = _recruitmentSuppressionUntilDayBySettlement.Remove(key);
-			Logger.Log("SiegeAiIntervention", $"Cleared recruitment suppression for replacement population. Settlement={key}, Removed={removed}, Source={source ?? "N/A"}");
+			if (today > untilDay)
+			{
+				_recruitmentSlowdownUntilDayBySettlement.Remove(key);
+				Logger.Log("SiegeAiIntervention", $"Recruitment slowdown expired. Settlement={key}, UntilDay={untilDay}");
+			}
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("SiegeAiIntervention", "ClearRecruitmentSuppressionForSettlement failed. Settlement=" + (settlement?.StringId ?? "N/A") + ": " + ex.Message);
+			Logger.Log("SiegeAiIntervention", "ApplyRecruitmentSlowdownDebuff failed: " + ex.Message);
 		}
+	}
+
+	internal static bool TryGetActiveRecruitmentRateMultiplier(Settlement settlement, out float multiplier)
+	{
+		multiplier = 1f;
+		try
+		{
+			string key = settlement?.IsVillage == true
+				? settlement.Village?.Bound?.StringId
+				: settlement?.StringId;
+			if (string.IsNullOrWhiteSpace(key)
+				|| !_recruitmentSlowdownUntilDayBySettlement.TryGetValue(key, out int untilDay))
+			{
+				return false;
+			}
+			if (GetCurrentCampaignDay() > untilDay)
+			{
+				_recruitmentSlowdownUntilDayBySettlement.Remove(key);
+				return false;
+			}
+			multiplier = SiegeSettlementOutcomeProfile.DestructiveRecruitmentRateMultiplier;
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "TryGetActiveRecruitmentRateMultiplier failed. Settlement=" + (settlement?.StringId ?? "N/A") + ": " + ex.Message);
+			return false;
+		}
+	}
+
+	private static void ClearRecruitmentSlowdownDebuffs()
+	{
+		_recruitmentSlowdownUntilDayBySettlement.Clear();
 	}
 
 
