@@ -781,9 +781,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 	private const int ProtectorateStabilityFloor = 60;
 	private const int SubjectObedienceMinValue = 0;
 	private const int SubjectObedienceMaxValue = 100;
-	private const int GarrisonInitialObedienceMin = 70;
-	private const int GarrisonInitialObedienceMax = 100;
-	private const int GarrisonBreakawayThreshold = 25;
+	private const int InitialSubjectObedience = VassalPolicyRules.InitialObedience;
 	private const int GarrisonRefuseProtectionWeakDelta = -50;
 	private const int GarrisonRefuseProtectionEqualDelta = -35;
 	private const int GarrisonRefuseProtectionStrongDelta = -22;
@@ -845,6 +843,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 	private readonly HashSet<string> _protectionNoticesOpenedFromMap = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 	private readonly HashSet<string> _npcTributaryVassalageNoticesShownThisSession = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 	private readonly HashSet<string> _tributaryPaymentNoticesShownThisSession = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+	private readonly HashSet<string> _subjectBreakawayChecksInProgress = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 	private readonly object _noticePublishLock = new object();
 	private long _nextNoticePublishRetryUtcTicks;
 	private long _nextDiplomacySyncRetryUtcTicks;
@@ -854,6 +853,39 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 
 	internal static bool IsApplyingVassalageDiplomacy => Instance?._isApplyingVassalageDiplomacy == true;
 	internal static bool CanApplyVassalageDiplomacyNowForExternal => Instance?.CanApplyVassalageDiplomacyNow() == true;
+
+	internal static List<Kingdom> GetPlayerDirectVassalKingdomsForExternal()
+	{
+		return Instance?.GetPlayerVassalAgreements()
+			.Where(x => x != null && NormalizeVassalageType(x.Type) == AfVassalageType.Vassal)
+			.Select(x => x.ResolveVassal())
+			.Where(IsValidKingdom)
+			.Distinct()
+			.ToList() ?? new List<Kingdom>();
+	}
+
+	internal static bool TryGetDirectVassalIndependenceForExternal(string vassalKingdomId, out int independence)
+	{
+		independence = 0;
+		return Instance?.TryGetDirectVassalIndependence(vassalKingdomId, out independence) == true;
+	}
+
+	internal static bool TryGetDirectVassalIndependenceStatusForExternal(string vassalKingdomId, out int independence, out int breakawayThreshold, out int rulerRelation, out string rulerName)
+	{
+		independence = 0;
+		breakawayThreshold = VassalPolicyRules.CalculateBreakawayThreshold(0);
+		rulerRelation = 0;
+		rulerName = "无有效统治者";
+		return Instance?.TryGetDirectVassalIndependenceStatus(vassalKingdomId, out independence, out breakawayThreshold, out rulerRelation, out rulerName) == true;
+	}
+
+	internal static bool TryApplyDirectVassalPolicyIndependenceForExternal(string vassalKingdomId, int publicationCost, int qualityDelta, string policyName, out int before, out int after, out bool brokeAway)
+	{
+		before = 0;
+		after = 0;
+		brokeAway = false;
+		return Instance?.TryApplyDirectVassalPolicyIndependence(vassalKingdomId, publicationCost, qualityDelta, policyName, out before, out after, out brokeAway) == true;
+	}
 
 	internal static bool ShouldAllowCampaignLogNotification(LogEntry log)
 	{
@@ -874,6 +906,9 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		CampaignEvents.WarDeclared.AddNonSerializedListener(this, OnWarDeclared);
 		CampaignEvents.MakePeace.AddNonSerializedListener(this, OnMakePeace);
 		CampaignEvents.KingdomDestroyedEvent.AddNonSerializedListener(this, OnKingdomDestroyed);
+		CampaignEvents.HeroRelationChanged.AddNonSerializedListener(this, OnHeroRelationChanged);
+		CampaignEvents.RulingClanChanged.AddNonSerializedListener(this, OnRulingClanChanged);
+		CampaignEvents.OnClanLeaderChangedEvent.AddNonSerializedListener(this, OnClanLeaderChanged);
 		MBInformationManager.OnRemoveMapNotice -= OnMapNoticeRemoved;
 		MBInformationManager.OnRemoveMapNotice += OnMapNoticeRemoved;
 		VassalageDiagnosticLog.Event("behavior.register_events", new Dictionary<string, object>
@@ -1576,7 +1611,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			lines.Add("   履约时长：" + subject.ElapsedDaysText);
 			if (!string.IsNullOrWhiteSpace(subject.ObedienceText))
 			{
-				lines.Add("   忠诚度：" + subject.ObedienceText);
+				lines.Add("   独立度：" + subject.ObedienceText);
 			}
 			lines.Add(subject.IsTributePaying
 				? "   贡赋记录：请在臣属国管理列表中选择“查看贡赋记录”（当前 " + subject.TributeRecordCount.ToString(CultureInfo.InvariantCulture) + " 条）。"
@@ -1663,17 +1698,17 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		int recordCount = isTributePaying ? GetTributaryPaymentHistoryForAgreement(agreement).Count : 0;
 		string obedienceText = "";
 		string obedienceShortText = "";
-		if (normalizedType == AfVassalageType.Garrison)
+		if (UsesSubjectIndependence(normalizedType))
 		{
-			int obedience = GetGarrisonObedienceForDisplay(agreement);
-			obedienceText = obedience.ToString(CultureInfo.InvariantCulture) + "/100（" + GetSubjectObedienceTierText(obedience) + "）";
-			obedienceShortText = obedience.ToString(CultureInfo.InvariantCulture) + "/100";
+			TryGetSubjectIndependenceStatus(agreement, out int independence, out int breakawayThreshold, out int rulerRelation, out string rulerName);
+			obedienceText = independence.ToString(CultureInfo.InvariantCulture) + "/100；脱离阈值 " + breakawayThreshold.ToString(CultureInfo.InvariantCulture) + "；" + rulerName + "关系 " + FormatSignedRelation(rulerRelation);
+			obedienceShortText = independence.ToString(CultureInfo.InvariantCulture) + "/100";
 		}
 		string elapsedText = elapsedDays.ToString(CultureInfo.InvariantCulture) + "天";
 		string title = vassalName + " · " + typeName + " · " + elapsedText;
 		if (!string.IsNullOrWhiteSpace(obedienceShortText))
 		{
-			title += " · 忠诚" + obedienceShortText;
+			title += " · 独立" + obedienceShortText;
 		}
 		title += isTributePaying
 			? " · 贡赋" + recordCount.ToString(CultureInfo.InvariantCulture) + "条"
@@ -1693,19 +1728,9 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			EntryHintText = "条约：" + typeName
 				+ "\n立约日：" + FormatCampaignDate(createdDay)
 				+ "\n履约时长：" + elapsedText
-				+ (string.IsNullOrWhiteSpace(obedienceText) ? "" : "\n忠诚度：" + obedienceText)
+				+ (string.IsNullOrWhiteSpace(obedienceText) ? "" : "\n独立度：" + obedienceText)
 				+ (isTributePaying ? "\n点击查看详细贡赋记录。" : "\n该臣属类型不产生贡赋记录。")
 		};
-	}
-
-	private int GetGarrisonObedienceForDisplay(VassalageAgreement agreement)
-	{
-		string key = (agreement?.VassalKingdomId ?? "").Trim();
-		if (!string.IsNullOrWhiteSpace(key) && _garrisonObedienceValues.TryGetValue(key, out var value))
-		{
-			return ClampSubjectObedienceValue(value);
-		}
-		return CalculateInitialGarrisonObedience(agreement);
 	}
 
 	private List<TributaryPaymentNoticeRecord> GetTributaryPaymentHistoryForAgreement(VassalageAgreement agreement)
@@ -2352,6 +2377,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 	{
 		RemoveInvalidAgreements();
 		EnsureGarrisonObedienceForLoadedAgreements();
+		CheckLoadedSubjectBreakawayThresholds();
 		VassalageDiagnosticLog.Event("behavior.game_load_finished", new Dictionary<string, object>
 		{
 			["agreementCount"] = _agreementsByVassalId.Count,
@@ -2382,6 +2408,87 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 	private void OnDailyTick()
 	{
 		ProcessTributaryPayments();
+	}
+
+	private void CheckLoadedSubjectBreakawayThresholds()
+	{
+		foreach (VassalageAgreement agreement in GetPlayerVassalAgreements()
+			.Where(x => x != null && UsesSubjectIndependence(NormalizeVassalageType(x.Type)))
+			.ToList())
+		{
+			TryBreakSubjectAtCurrentThreshold(agreement, "subject_ruler_relation_threshold", "存档载入复核");
+		}
+	}
+
+	private void OnHeroRelationChanged(Hero effectiveHero, Hero effectiveHeroGainedRelationWith, int relationChange, bool showNotification, ChangeRelationAction.ChangeRelationDetail detail, Hero originalHero, Hero originalGainedRelationWith)
+	{
+		Hero player = Hero.MainHero;
+		if (player == null)
+		{
+			return;
+		}
+		if (IsSameHero(effectiveHero, player))
+		{
+			TryCheckSubjectBreakawayForPotentialRuler(effectiveHeroGainedRelationWith, "关系变化");
+		}
+		if (IsSameHero(effectiveHeroGainedRelationWith, player))
+		{
+			TryCheckSubjectBreakawayForPotentialRuler(effectiveHero, "关系变化");
+		}
+		if (IsSameHero(originalHero, player))
+		{
+			TryCheckSubjectBreakawayForPotentialRuler(originalGainedRelationWith, "关系变化");
+		}
+		if (IsSameHero(originalGainedRelationWith, player))
+		{
+			TryCheckSubjectBreakawayForPotentialRuler(originalHero, "关系变化");
+		}
+	}
+
+	private void OnRulingClanChanged(Kingdom kingdom, Clan changedClan)
+	{
+		TryCheckSubjectBreakawayForKingdom(kingdom, "统治氏族更替");
+	}
+
+	private void OnClanLeaderChanged(Hero oldLeader, Hero newLeader)
+	{
+		TryCheckSubjectBreakawayForPotentialRuler(newLeader, "统治者更替");
+	}
+
+	private void TryCheckSubjectBreakawayForPotentialRuler(Hero hero, string trigger)
+	{
+		Kingdom kingdom = ResolveHeroKingdom(hero);
+		if (!IsValidKingdom(kingdom) || !IsKingdomRuler(hero, kingdom))
+		{
+			return;
+		}
+		TryCheckSubjectBreakawayForKingdom(kingdom, trigger);
+	}
+
+	private void TryCheckSubjectBreakawayForKingdom(Kingdom kingdom, string trigger)
+	{
+		string kingdomId = (kingdom?.StringId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(kingdomId)
+			|| !_agreementsByVassalId.TryGetValue(kingdomId, out VassalageAgreement agreement)
+			|| agreement == null)
+		{
+			return;
+		}
+		TryBreakSubjectAtCurrentThreshold(agreement, "subject_ruler_relation_threshold", trigger);
+	}
+
+	private static Kingdom ResolveHeroKingdom(Hero hero)
+	{
+		return hero?.Clan?.Kingdom ?? hero?.MapFaction as Kingdom;
+	}
+
+	private static bool IsSameHero(Hero first, Hero second)
+	{
+		if (first == null || second == null)
+		{
+			return false;
+		}
+		return first == second || string.Equals(first.StringId ?? "", second.StringId ?? "", StringComparison.OrdinalIgnoreCase);
 	}
 
 	private void ProcessTributaryPayments()
@@ -3660,9 +3767,27 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		HashSet<string> endedVassalIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (VassalageAgreement agreement in _agreementsByVassalId.Values.Where(x => x != null
+			&& (string.Equals(x.VassalKingdomId, id, StringComparison.OrdinalIgnoreCase)
+				|| string.Equals(x.SuzerainKingdomId, id, StringComparison.OrdinalIgnoreCase))))
+		{
+			string vassalId = (agreement.VassalKingdomId ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(vassalId))
+			{
+				endedVassalIds.Add(vassalId);
+			}
+		}
 		foreach (string key in _agreementsByVassalId.Where((KeyValuePair<string, VassalageAgreement> x) => x.Value == null || string.Equals(x.Value.VassalKingdomId, id, StringComparison.OrdinalIgnoreCase) || string.Equals(x.Value.SuzerainKingdomId, id, StringComparison.OrdinalIgnoreCase)).Select((KeyValuePair<string, VassalageAgreement> x) => x.Key).ToList())
 		{
 			_agreementsByVassalId.Remove(key);
+		}
+		foreach (string vassalId in endedVassalIds)
+		{
+			string reason = string.Equals(vassalId, id, StringComparison.OrdinalIgnoreCase)
+				? "目标附庸国已经灭亡"
+				: "宗主国已经灭亡";
+			CustomPolicyBehavior.OnVassalRelationshipEndedForExternal(vassalId, reason);
 		}
 		foreach (string noticeId in _pendingInfoNotices.Keys.Where((string x) => (x ?? "").IndexOf(id, StringComparison.OrdinalIgnoreCase) >= 0 || (_pendingInfoNotices[x] ?? "").IndexOf(id, StringComparison.OrdinalIgnoreCase) >= 0).ToList())
 		{
@@ -3823,7 +3948,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		List<Kingdom> playerEnemies = GetKingdomWarEnemies(playerKingdom).Where((Kingdom x) => x != targetKingdom).ToList();
 		List<Kingdom> targetEnemies = GetKingdomWarEnemies(targetKingdom).Where((Kingdom x) => x != playerKingdom).ToList();
 		_agreementsByVassalId[agreement.VassalKingdomId] = agreement;
-		if (NormalizeVassalageType(agreement.Type) == AfVassalageType.Garrison)
+		if (UsesSubjectIndependence(NormalizeVassalageType(agreement.Type)))
 		{
 			EnsureGarrisonObedience(agreement);
 		}
@@ -3901,6 +4026,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		}
 		AfVassalageType oldType = NormalizeVassalageType(existing.Type);
 		AfVassalageType newType = NormalizeVassalageType(type);
+		bool preserveSubjectIndependence = VassalPolicyRules.ShouldPreserveIndependenceOnRevision(UsesSubjectIndependence(oldType), UsesSubjectIndependence(newType));
 		if (oldType == newType)
 		{
 			statusText = GetKingdomDisplayName(targetKingdom, "该王国") + "已经是你的" + GetVassalageTypeDisplayName(newType) + "，条约无需重复签署。";
@@ -3932,7 +4058,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		int removedPendingDiplomacySyncCount = RemovePendingDiplomacySyncsForAgreement(existing, "agreement_revised_reset");
 		RemoveProtectedTributaryWarsForAgreement(existing, "agreement_revised_reset");
 		string obedienceKey = (existing.VassalKingdomId ?? "").Trim();
-		if (!string.IsNullOrWhiteSpace(obedienceKey))
+		if (!preserveSubjectIndependence && !string.IsNullOrWhiteSpace(obedienceKey))
 		{
 			_garrisonObedienceValues.Remove(obedienceKey);
 			_garrisonObedienceStorage.Remove(obedienceKey);
@@ -3940,9 +4066,13 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		existing.Type = newType;
 		existing.CreatedDay = newCreatedDay;
 		existing.NegotiatedByHeroId = negotiatedWith?.StringId ?? "";
-		if (newType == AfVassalageType.Garrison)
+		if (UsesSubjectIndependence(newType))
 		{
 			EnsureGarrisonObedience(existing);
+		}
+		if (oldType == AfVassalageType.Vassal && newType != AfVassalageType.Vassal)
+		{
+			CustomPolicyBehavior.OnVassalRelationshipEndedForExternal(existing.VassalKingdomId, "臣属类型已改订为" + GetVassalageTypeDisplayName(newType));
 		}
 		pendingDiplomacySyncCountBefore = _pendingDiplomacySyncs.Count;
 		if (wasAtWarWithPlayer && MakePeaceIfNeeded(playerKingdom, targetKingdom, "agreement_revise_player_subject_peace"))
@@ -4912,6 +5042,31 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 
 	private bool DeclareWarIfNeeded(Kingdom declaringKingdom, Kingdom targetKingdom, string reason, bool forceQueue = false)
 	{
+		if (IsValidKingdom(declaringKingdom)
+			&& IsValidKingdom(targetKingdom)
+			&& declaringKingdom != targetKingdom
+			&& ShouldBlockInternalWarForCurrentVassalage(declaringKingdom, targetKingdom, out string vassalageBlockReason, out var declaringAgreement, out var targetAgreement))
+		{
+			bool wasAtWar = IsAtWar(declaringKingdom, targetKingdom);
+			int removedPendingDeclareWarCount = RemovePendingDeclareWarSyncsByParties(declaringKingdom, targetKingdom, "current_vassalage_forbids_war");
+			bool peaceAppliedNow = wasAtWar && MakePeaceIfNeeded(declaringKingdom, targetKingdom, "current_vassalage_forbids_war_reconcile", forceQueue);
+			bool peaceAfterReconcile = !IsAtWar(declaringKingdom, targetKingdom);
+			VassalageDiagnosticLog.Event("diplomacy.declare_war.skip", new Dictionary<string, object>
+			{
+				["reason"] = "current_vassalage_forbids_war",
+				["syncReason"] = reason ?? "",
+				["vassalageBlockReason"] = vassalageBlockReason,
+				["declaring"] = VassalageDiagnosticLog.DescribeKingdom(declaringKingdom),
+				["target"] = VassalageDiagnosticLog.DescribeKingdom(targetKingdom),
+				["declaringAgreement"] = DescribeAgreementForDiagnostics(declaringAgreement),
+				["targetAgreement"] = DescribeAgreementForDiagnostics(targetAgreement),
+				["wasAtWar"] = wasAtWar,
+				["peaceAppliedNow"] = peaceAppliedNow,
+				["peaceAfterReconcile"] = peaceAfterReconcile,
+				["removedPendingDeclareWarCount"] = removedPendingDeclareWarCount
+			});
+			return false;
+		}
 		if (!IsValidKingdom(declaringKingdom) || !IsValidKingdom(targetKingdom) || declaringKingdom == targetKingdom || IsAtWar(declaringKingdom, targetKingdom))
 		{
 			VassalageDiagnosticLog.Event("diplomacy.declare_war.skip", new Dictionary<string, object>
@@ -5027,6 +5182,8 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		string vassalName = GetKingdomDisplayName(vassal, "该卫戍国");
 		int before = EnsureGarrisonObedience(agreement);
 		int after = ClampSubjectObedienceValue(before + delta);
+		int independenceBefore = VassalPolicyRules.IndependenceFromObedience(before);
+		int independenceAfter = VassalPolicyRules.IndependenceFromObedience(after);
 		_garrisonObedienceValues[(agreement.VassalKingdomId ?? "").Trim()] = after;
 		VassalageDiagnosticLog.Event("obedience.adjust", new Dictionary<string, object>
 		{
@@ -5035,6 +5192,8 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			["before"] = before,
 			["delta"] = delta,
 			["after"] = after,
+			["independenceBefore"] = independenceBefore,
+			["independenceAfter"] = independenceAfter,
 			["playerStrength"] = playerStrength,
 			["subjectStrength"] = subjectStrength,
 			["strengthRatio"] = strengthRatio,
@@ -5042,12 +5201,173 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			["tier"] = GetSubjectObedienceTierText(after),
 			["reason"] = reason ?? ""
 		});
-		if (after <= GarrisonBreakawayThreshold)
+		if (TryBreakSubjectAtCurrentThreshold(agreement, reason ?? "garrison_obedience_collapsed", "卫戍国独立度变化"))
 		{
-			BreakAgreement(agreement, reason ?? "garrison_obedience_collapsed", vassalName + "的忠诚度降至 " + after.ToString(CultureInfo.InvariantCulture) + "（" + GetSubjectObedienceTierText(after) + "），卫戍誓约已经崩溃，该国宣布脱离宗主控制。");
 			return;
 		}
-		InformationManager.DisplayMessage(new InformationMessage(vassalName + "的忠诚度由 " + before.ToString(CultureInfo.InvariantCulture) + " 降至 " + after.ToString(CultureInfo.InvariantCulture) + "（" + GetSubjectObedienceTierText(after) + "）。", Color.FromUint(4294936661u)));
+		TryGetSubjectIndependenceStatus(agreement, out _, out int breakawayThreshold, out int rulerRelation, out string rulerName);
+		InformationManager.DisplayMessage(new InformationMessage(vassalName + "的独立度由 " + independenceBefore.ToString(CultureInfo.InvariantCulture) + " 变为 " + independenceAfter.ToString(CultureInfo.InvariantCulture) + "/100；当前脱离阈值为 " + breakawayThreshold.ToString(CultureInfo.InvariantCulture) + "（" + rulerName + "关系 " + FormatSignedRelation(rulerRelation) + "）。", Color.FromUint(4294936661u)));
+	}
+
+	private bool TryGetDirectVassalIndependence(string vassalKingdomId, out int independence)
+	{
+		return TryGetDirectVassalIndependenceStatus(vassalKingdomId, out independence, out _, out _, out _);
+	}
+
+	private bool TryGetDirectVassalIndependenceStatus(string vassalKingdomId, out int independence, out int breakawayThreshold, out int rulerRelation, out string rulerName)
+	{
+		independence = 0;
+		breakawayThreshold = VassalPolicyRules.CalculateBreakawayThreshold(0);
+		rulerRelation = 0;
+		rulerName = "无有效统治者";
+		string id = (vassalKingdomId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(id)
+			|| !_agreementsByVassalId.TryGetValue(id, out VassalageAgreement agreement)
+			|| agreement == null
+			|| NormalizeVassalageType(agreement.Type) != AfVassalageType.Vassal)
+		{
+			return false;
+		}
+		return TryGetSubjectIndependenceStatus(agreement, out independence, out breakawayThreshold, out rulerRelation, out rulerName);
+	}
+
+	private bool TryApplyDirectVassalPolicyIndependence(string vassalKingdomId, int publicationCost, int qualityDelta, string policyName, out int before, out int after, out bool brokeAway)
+	{
+		before = 0;
+		after = 0;
+		brokeAway = false;
+		string id = (vassalKingdomId ?? "").Trim();
+		if (!TryGetDirectVassalIndependence(id, out before)
+			|| !_agreementsByVassalId.TryGetValue(id, out VassalageAgreement agreement)
+			|| agreement == null)
+		{
+			return false;
+		}
+		int normalizedQuality = VassalPolicyRules.NormalizeQualityDelta(qualityDelta);
+		after = VassalPolicyRules.ApplyIndependenceChange(before, publicationCost, normalizedQuality);
+		int afterObedience = VassalPolicyRules.ObedienceFromIndependence(after);
+		_garrisonObedienceValues[id] = afterObedience;
+		Kingdom vassal = agreement.ResolveVassal();
+		string vassalName = GetKingdomDisplayName(vassal, "该附庸国");
+		TryGetSubjectIndependenceStatus(agreement, out _, out int breakawayThreshold, out int rulerRelation, out string rulerName);
+		VassalageDiagnosticLog.Event("independence.vassal_policy", new Dictionary<string, object>
+		{
+			["agreementId"] = agreement.AgreementId,
+			["vassal"] = VassalageDiagnosticLog.DescribeKingdom(vassal),
+			["policyName"] = policyName ?? "",
+			["before"] = before,
+			["publicationCost"] = Math.Max(0, publicationCost),
+			["qualityDelta"] = normalizedQuality,
+			["after"] = after,
+			["obedienceAfter"] = afterObedience,
+			["breakawayThreshold"] = breakawayThreshold,
+			["rulerName"] = rulerName,
+			["rulerRelation"] = rulerRelation
+		});
+		brokeAway = VassalPolicyRules.ShouldBreakAway(after, rulerRelation);
+		if (brokeAway)
+		{
+			BreakAgreement(agreement, "vassal_policy_independence_threshold", vassalName + "的独立度升至 " + after.ToString(CultureInfo.InvariantCulture) + "/100，已达到按统治者" + rulerName + "与玩家关系 " + FormatSignedRelation(rulerRelation) + " 计算的脱离阈值 " + breakawayThreshold.ToString(CultureInfo.InvariantCulture) + "，该国宣布脱离宗主控制。");
+		}
+		else
+		{
+			InformationManager.DisplayMessage(new InformationMessage(vassalName + "的独立度由 " + before.ToString(CultureInfo.InvariantCulture) + " 变为 " + after.ToString(CultureInfo.InvariantCulture) + "；当前脱离阈值为 " + breakawayThreshold.ToString(CultureInfo.InvariantCulture) + "（统治者关系 " + FormatSignedRelation(rulerRelation) + "）。", Color.FromUint(4294936661u)));
+		}
+		return true;
+	}
+
+	private bool TryGetSubjectIndependenceStatus(VassalageAgreement agreement, out int independence, out int breakawayThreshold, out int rulerRelation, out string rulerName)
+	{
+		independence = 0;
+		breakawayThreshold = VassalPolicyRules.CalculateBreakawayThreshold(0);
+		rulerRelation = 0;
+		rulerName = "无有效统治者";
+		Kingdom playerKingdom = GetPlayerKingdom();
+		Kingdom vassal = agreement?.ResolveVassal();
+		if (agreement == null
+			|| !agreement.IsValid()
+			|| !UsesSubjectIndependence(NormalizeVassalageType(agreement.Type))
+			|| !IsValidKingdom(playerKingdom)
+			|| !string.Equals(agreement.SuzerainKingdomId ?? "", playerKingdom.StringId ?? "", StringComparison.OrdinalIgnoreCase)
+			|| !IsValidKingdom(vassal))
+		{
+			return false;
+		}
+		Hero ruler = GetCurrentKingdomRuler(vassal);
+		rulerRelation = GetRulerRelationToPlayer(ruler);
+		breakawayThreshold = VassalPolicyRules.CalculateBreakawayThreshold(rulerRelation);
+		rulerName = GetHeroDisplayName(ruler, "无有效统治者");
+		independence = VassalPolicyRules.IndependenceFromObedience(EnsureGarrisonObedience(agreement));
+		return true;
+	}
+
+	private bool TryBreakSubjectAtCurrentThreshold(VassalageAgreement agreement, string reason, string trigger)
+	{
+		if (!TryGetSubjectIndependenceStatus(agreement, out int independence, out int breakawayThreshold, out int rulerRelation, out string rulerName)
+			|| !VassalPolicyRules.ShouldBreakAway(independence, rulerRelation))
+		{
+			return false;
+		}
+		string vassalId = (agreement.VassalKingdomId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(vassalId) || !_subjectBreakawayChecksInProgress.Add(vassalId))
+		{
+			return false;
+		}
+		try
+		{
+			Kingdom vassal = agreement.ResolveVassal();
+			string vassalName = GetKingdomDisplayName(vassal, GetVassalageTypeDisplayName(agreement.Type));
+			VassalageDiagnosticLog.Event("independence.breakaway_threshold", new Dictionary<string, object>
+			{
+				["agreementId"] = agreement.AgreementId,
+				["vassal"] = VassalageDiagnosticLog.DescribeKingdom(vassal),
+				["trigger"] = trigger ?? "",
+				["independence"] = independence,
+				["breakawayThreshold"] = breakawayThreshold,
+				["rulerName"] = rulerName,
+				["rulerRelation"] = rulerRelation
+			});
+			BreakAgreement(agreement, reason ?? "subject_ruler_relation_threshold", vassalName + "当前独立度为 " + independence.ToString(CultureInfo.InvariantCulture) + "/100，已达到按统治者" + rulerName + "与玩家关系 " + FormatSignedRelation(rulerRelation) + " 计算的脱离阈值 " + breakawayThreshold.ToString(CultureInfo.InvariantCulture) + "，该国宣布脱离宗主控制。");
+			return true;
+		}
+		finally
+		{
+			_subjectBreakawayChecksInProgress.Remove(vassalId);
+		}
+	}
+
+	private static Hero GetCurrentKingdomRuler(Kingdom kingdom)
+	{
+		try
+		{
+			return kingdom?.Leader ?? kingdom?.RulingClan?.Leader;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static int GetRulerRelationToPlayer(Hero ruler)
+	{
+		Hero player = Hero.MainHero;
+		if (ruler == null || player == null)
+		{
+			return 0;
+		}
+		try
+		{
+			return Math.Max(VassalPolicyRules.RulerRelationMinimum, Math.Min(VassalPolicyRules.RulerRelationMaximum, ruler.GetRelation(player)));
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static string FormatSignedRelation(int relation)
+	{
+		return relation > 0 ? "+" + relation.ToString(CultureInfo.InvariantCulture) : relation.ToString(CultureInfo.InvariantCulture);
 	}
 
 	private void IncreaseGarrisonObedienceAfterProtection(VassalageAgreement agreement)
@@ -5061,6 +5381,8 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		string vassalName = GetKingdomDisplayName(vassal, "该卫戍国");
 		int before = EnsureGarrisonObedience(agreement);
 		int after = ClampSubjectObedienceValue(before + delta);
+		int independenceBefore = VassalPolicyRules.IndependenceFromObedience(before);
+		int independenceAfter = VassalPolicyRules.IndependenceFromObedience(after);
 		_garrisonObedienceValues[(agreement.VassalKingdomId ?? "").Trim()] = after;
 		VassalageDiagnosticLog.Event("obedience.protection_success", new Dictionary<string, object>
 		{
@@ -5069,6 +5391,8 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			["before"] = before,
 			["delta"] = delta,
 			["after"] = after,
+			["independenceBefore"] = independenceBefore,
+			["independenceAfter"] = independenceAfter,
 			["playerStrength"] = playerStrength,
 			["subjectStrength"] = subjectStrength,
 			["strengthRatio"] = strengthRatio,
@@ -5076,7 +5400,12 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			["tier"] = GetSubjectObedienceTierText(after),
 			["reason"] = "garrison_protection_accepted"
 		});
-		InformationManager.DisplayMessage(new InformationMessage(vassalName + "因宗主国履行保护义务而更加忠诚：由 " + before.ToString(CultureInfo.InvariantCulture) + " 提升至 " + after.ToString(CultureInfo.InvariantCulture) + "（+" + delta.ToString(CultureInfo.InvariantCulture) + "，" + GetSubjectObedienceTierText(after) + "）。", Color.FromUint(4278242559u)));
+		if (TryBreakSubjectAtCurrentThreshold(agreement, "garrison_obedience_collapsed", "卫戍国保护履约结算"))
+		{
+			return;
+		}
+		TryGetSubjectIndependenceStatus(agreement, out _, out int breakawayThreshold, out int rulerRelation, out string rulerName);
+		InformationManager.DisplayMessage(new InformationMessage(vassalName + "因宗主国履行保护义务，独立度由 " + independenceBefore.ToString(CultureInfo.InvariantCulture) + " 降至 " + independenceAfter.ToString(CultureInfo.InvariantCulture) + "/100；当前脱离阈值为 " + breakawayThreshold.ToString(CultureInfo.InvariantCulture) + "（" + rulerName + "关系 " + FormatSignedRelation(rulerRelation) + "）。", Color.FromUint(4278242559u)));
 	}
 
 	public int BreakAgreementsForAnnexedKingdom(Kingdom annexedKingdom, string reason = "kingdom_annexation", string message = null)
@@ -5125,6 +5454,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			_agreementsByVassalId.Remove(vassalId);
 			_garrisonObedienceValues.Remove(vassalId);
 			_garrisonObedienceStorage.Remove(vassalId);
+			CustomPolicyBehavior.OnVassalRelationshipEndedForExternal(vassalId, reason ?? "臣属关系终止");
 		}
 		foreach (string noticeId in _pendingProtectionNotices.Keys.Where((string x) => NoticeBelongsToAgreement(x, agreement)).ToList())
 		{
@@ -5200,7 +5530,11 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		case "tributary_protection_dismissed":
 			return "宗主国未回应朝贡国求援";
 		case "garrison_obedience_collapsed":
-			return "卫戍国忠诚度崩溃";
+			return "卫戍国独立度达到脱离阈值";
+		case "vassal_policy_independence_threshold":
+			return "附庸国独立度达到脱离阈值";
+		case "subject_ruler_relation_threshold":
+			return "独立度达到当前统治者关系对应的脱离阈值";
 		case "kingdom_annexation":
 			return "王国被吞并";
 		default:
@@ -5524,6 +5858,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		int removedPendingDeclareWarCount = RemovePendingDeclareWarSyncsByParties(kingdom1, kingdom2, (reason ?? "queued_peace") + "_queued_peace_cancel_pending_declare");
 		_pendingDiplomacySyncs[key] = "make_peace|" + kingdom1Id + "|" + kingdom2Id + "|" + (reason ?? "");
 		_nextDiplomacySyncRetryUtcTicks = 0L;
 		_nextNoticePublishRetryUtcTicks = 0L;
@@ -5549,6 +5884,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			["kingdom1"] = VassalageDiagnosticLog.DescribeKingdom(kingdom1),
 			["kingdom2"] = VassalageDiagnosticLog.DescribeKingdom(kingdom2),
 			["pendingKey"] = key,
+			["removedPendingDeclareWarCount"] = removedPendingDeclareWarCount,
 			["pendingDiplomacySyncCount"] = _pendingDiplomacySyncs.Count,
 			["missionActive"] = missionActive,
 			["meetingBlocked"] = meetingBlocked
@@ -5568,6 +5904,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			return 0;
 		}
 		int removed = 0;
+		List<string> removedDeclareWarSyncs = new List<string>();
 		foreach (KeyValuePair<string, string> item in _pendingDiplomacySyncs.ToList())
 		{
 			string[] parts = (item.Value ?? "").Split('|');
@@ -5588,6 +5925,8 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			if (_pendingDiplomacySyncs.Remove(item.Key))
 			{
 				removed++;
+				string originalSyncReason = parts.Length >= 4 ? (parts[3] ?? "").Trim() : "";
+				removedDeclareWarSyncs.Add(declaringId + "->" + targetId + ";syncReason=" + originalSyncReason + ";pendingKey=" + (item.Key ?? ""));
 			}
 		}
 		if (removed > 0)
@@ -5597,7 +5936,10 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 				["reason"] = reason ?? "",
 				["kingdom1"] = VassalageDiagnosticLog.DescribeKingdom(kingdom1),
 				["kingdom2"] = VassalageDiagnosticLog.DescribeKingdom(kingdom2),
+				["kingdom1Agreement"] = DescribeAgreementForDiagnostics(GetAnyVassalAgreement(kingdom1)),
+				["kingdom2Agreement"] = DescribeAgreementForDiagnostics(GetAnyVassalAgreement(kingdom2)),
 				["removed"] = removed,
+				["removedDeclareWarSyncs"] = removedDeclareWarSyncs,
 				["pendingDiplomacySyncCount"] = _pendingDiplomacySyncs.Count
 			});
 		}
@@ -5612,6 +5954,45 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			|| string.Equals(value, "npc_tributary_protection_accepted", StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(value, "npc_tributary_treaty_protection_accepted", StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(value, "garrison_protection_accepted", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private bool ShouldBlockInternalWarForCurrentVassalage(
+		Kingdom declaringKingdom,
+		Kingdom targetKingdom,
+		out string blockReason,
+		out VassalageAgreement declaringAgreement,
+		out VassalageAgreement targetAgreement)
+	{
+		blockReason = "";
+		declaringAgreement = GetAnyVassalAgreement(declaringKingdom);
+		targetAgreement = GetAnyVassalAgreement(targetKingdom);
+		if (!IsValidKingdom(declaringKingdom) || !IsValidKingdom(targetKingdom) || declaringKingdom == targetKingdom)
+		{
+			return false;
+		}
+		Kingdom declaringSuzerain = declaringAgreement?.ResolveSuzerain();
+		Kingdom targetSuzerain = targetAgreement?.ResolveSuzerain();
+		if (declaringAgreement != null && declaringSuzerain == targetKingdom)
+		{
+			blockReason = "subject_against_suzerain";
+			return true;
+		}
+		if (targetAgreement != null && targetSuzerain == declaringKingdom)
+		{
+			blockReason = "suzerain_against_subject";
+			return true;
+		}
+		if (declaringAgreement != null
+			&& targetAgreement != null
+			&& IsValidKingdom(declaringSuzerain)
+			&& declaringSuzerain == targetSuzerain
+			&& IsControlledSubjectWithoutMilitaryAutonomy(declaringAgreement)
+			&& IsControlledSubjectWithoutMilitaryAutonomy(targetAgreement))
+		{
+			blockReason = "controlled_subjects_same_suzerain";
+			return true;
+		}
+		return false;
 	}
 
 	private bool IsObsoleteTributarySuzerainWarSync(string action, Kingdom declaringKingdom, Kingdom targetKingdom, string reason)
@@ -5675,6 +6056,31 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 					["action"] = action,
 					["kingdom1"] = VassalageDiagnosticLog.DescribeKingdom(kingdom1),
 					["kingdom2"] = VassalageDiagnosticLog.DescribeKingdom(kingdom2)
+				});
+				continue;
+			}
+			if (string.Equals(action, "declare_war", StringComparison.OrdinalIgnoreCase)
+				&& ShouldBlockInternalWarForCurrentVassalage(kingdom1, kingdom2, out string vassalageBlockReason, out var declaringAgreement, out var targetAgreement))
+			{
+				bool wasAtWar = IsAtWar(kingdom1, kingdom2);
+				int removedPendingDeclareWarCount = RemovePendingDeclareWarSyncsByParties(kingdom1, kingdom2, "pending_current_vassalage_forbids_war");
+				bool peaceAppliedNow = wasAtWar && MakePeaceIfNeeded(kingdom1, kingdom2, "pending_current_vassalage_forbids_war_reconcile");
+				bool peaceAfterReconcile = !IsAtWar(kingdom1, kingdom2);
+				VassalageDiagnosticLog.Event("pending_diplomacy.drop", new Dictionary<string, object>
+				{
+					["pendingKey"] = item.Key,
+					["reason"] = "current_vassalage_forbids_war",
+					["syncReason"] = reason,
+					["vassalageBlockReason"] = vassalageBlockReason,
+					["declaring"] = VassalageDiagnosticLog.DescribeKingdom(kingdom1),
+					["target"] = VassalageDiagnosticLog.DescribeKingdom(kingdom2),
+					["declaringAgreement"] = DescribeAgreementForDiagnostics(declaringAgreement),
+					["targetAgreement"] = DescribeAgreementForDiagnostics(targetAgreement),
+					["wasAtWar"] = wasAtWar,
+					["peaceAppliedNow"] = peaceAppliedNow,
+					["peaceAfterReconcile"] = peaceAfterReconcile,
+					["removedPendingDeclareWarCount"] = removedPendingDeclareWarCount,
+					["pendingDiplomacySyncCount"] = _pendingDiplomacySyncs.Count
 				});
 				continue;
 			}
@@ -7055,10 +7461,16 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 
 	private void EnsureGarrisonObedienceForLoadedAgreements()
 	{
-		foreach (VassalageAgreement agreement in GetPlayerVassalAgreements().Where((VassalageAgreement x) => NormalizeVassalageType(x.Type) == AfVassalageType.Garrison))
+		foreach (VassalageAgreement agreement in GetPlayerVassalAgreements().Where((VassalageAgreement x) => UsesSubjectIndependence(NormalizeVassalageType(x.Type))))
 		{
 			EnsureGarrisonObedience(agreement);
 		}
+	}
+
+	private static bool UsesSubjectIndependence(AfVassalageType type)
+	{
+		AfVassalageType normalized = NormalizeVassalageType(type);
+		return normalized == AfVassalageType.Garrison || normalized == AfVassalageType.Vassal;
 	}
 
 	private int EnsureGarrisonObedience(VassalageAgreement agreement)
@@ -7066,31 +7478,21 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		string key = (agreement?.VassalKingdomId ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(key))
 		{
-			return GarrisonInitialObedienceMin;
+			return InitialSubjectObedience;
 		}
 		if (!_garrisonObedienceValues.TryGetValue(key, out var value))
 		{
 			value = CalculateInitialGarrisonObedience(agreement);
 			_garrisonObedienceValues[key] = value;
-			float suzerainStrength = GetRefreshedKingdomStrengthForVassalage(agreement?.ResolveSuzerain());
-			float vassalStrength = GetRefreshedKingdomStrengthForVassalage(agreement?.ResolveVassal());
-			float strengthRatio = CalculateSuzerainSubjectStrengthRatio(suzerainStrength, vassalStrength);
-			float strengthAdvantage = CalculateSuzerainSubjectStrengthAdvantage(suzerainStrength, vassalStrength);
 			VassalageDiagnosticLog.Event("obedience.initialized", new Dictionary<string, object>
 			{
 				["agreementId"] = agreement?.AgreementId ?? "",
 				["vassal"] = VassalageDiagnosticLog.DescribeKingdom(agreement?.ResolveVassal()),
 				["suzerain"] = VassalageDiagnosticLog.DescribeKingdom(agreement?.ResolveSuzerain()),
 				["value"] = value,
+				["independence"] = VassalPolicyRules.IndependenceFromObedience(value),
 				["tier"] = GetSubjectObedienceTierText(value),
-				["suzerainStrength"] = suzerainStrength,
-				["vassalStrength"] = vassalStrength,
-				["strengthRatio"] = strengthRatio,
-				["strengthAdvantage"] = strengthAdvantage,
-				["initialMin"] = GarrisonInitialObedienceMin,
-				["initialMax"] = GarrisonInitialObedienceMax,
-				["equalAdvantage"] = GarrisonStrengthAdvantageEqual,
-				["overwhelmingAdvantage"] = GarrisonStrengthAdvantageOverwhelming
+				["initialRule"] = "fixed_30_independence"
 			});
 		}
 		else
@@ -7103,24 +7505,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 
 	private int CalculateInitialGarrisonObedience(VassalageAgreement agreement)
 	{
-		if (agreement == null)
-		{
-			return GarrisonInitialObedienceMin;
-		}
-		float suzerainStrength = GetRefreshedKingdomStrengthForVassalage(agreement.ResolveSuzerain());
-		float vassalStrength = GetRefreshedKingdomStrengthForVassalage(agreement.ResolveVassal());
-		if (suzerainStrength <= 0f && vassalStrength <= 0f)
-		{
-			return GarrisonInitialObedienceMin;
-		}
-		float strengthAdvantage = CalculateSuzerainSubjectStrengthAdvantage(suzerainStrength, vassalStrength);
-		if (strengthAdvantage <= GarrisonStrengthAdvantageEqual)
-		{
-			return GarrisonInitialObedienceMin;
-		}
-		float normalized = Math.Max(0f, Math.Min(1f, strengthAdvantage / GarrisonStrengthAdvantageOverwhelming));
-		int value = (int)Math.Round(GarrisonInitialObedienceMin + (GarrisonInitialObedienceMax - GarrisonInitialObedienceMin) * normalized, MidpointRounding.AwayFromZero);
-		return ClampSubjectObedienceValue(value);
+		return InitialSubjectObedience;
 	}
 
 	private static float GetRefreshedKingdomStrengthForVassalage(Kingdom kingdom)

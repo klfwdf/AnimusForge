@@ -9,15 +9,22 @@
             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="20" ExtendTop="20" ExtendRight="20" ExtendBottom="20" IsEnabled="false" />
             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="26" MarginRight="26" MarginTop="22" MarginBottom="22">
               <Children>
-                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="112" VerticalAlignment="Top" Sprite="General\CharacterCreation\character_creation_background_gradient" AlphaFactor="0.3" Color="#000000FF">
+                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="150" VerticalAlignment="Top" Sprite="General\CharacterCreation\character_creation_background_gradient" AlphaFactor="0.3" Color="#000000FF">
                   <Children>
                     <AutoHideRichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" MarginLeft="26" MarginRight="26" MarginTop="14" Brush="Popup.Title.Text" Text="@TitleText" />
-                    <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Bottom" MarginLeft="26" MarginRight="26" MarginBottom="14" Brush="Popup.Description.Text" Text="@SubtitleText" />
+                    <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="44" HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="48" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                      <Children>
+                        <ButtonWidget IsSelected="@IsLocalTabSelected" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="180" SuggestedHeight="42" Brush="Popup.Done.Button" Command.Click="ExecuteShowLocalPolicies" UpdateChildrenStates="true" DoNotPassEventsToChildren="true"><Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Text="@LocalTabText" /></Children></ButtonWidget>
+                        <Widget WidthSizePolicy="Fixed" SuggestedWidth="16" />
+                        <ButtonWidget IsSelected="@IsVassalTabSelected" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="180" SuggestedHeight="42" Brush="Popup.Done.Button" Command.Click="ExecuteShowVassalPolicies" UpdateChildrenStates="true" DoNotPassEventsToChildren="true"><Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Text="@VassalTabText" /></Children></ButtonWidget>
+                      </Children>
+                    </ListPanel>
+                    <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Bottom" MarginLeft="26" MarginRight="26" MarginBottom="8" Brush="Popup.Description.Text" Brush.TextHorizontalAlignment="Center" Text="@SubtitleText" />
                   </Children>
                 </Widget>
-                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="12" VerticalAlignment="Top" MarginTop="118" Sprite="StdAssets\Popup\divider" />
+                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="12" VerticalAlignment="Top" MarginTop="156" Sprite="StdAssets\Popup\divider" />
 
-                <Widget IsVisible="@HasRecords" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="520" HorizontalAlignment="Left" MarginTop="142" MarginBottom="76" Sprite="BlankWhiteSquare_9" Color="#251C14FF" AlphaFactor="0.84">
+                <Widget IsVisible="@HasRecords" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="520" HorizontalAlignment="Left" MarginTop="180" MarginBottom="76" Sprite="BlankWhiteSquare_9" Color="#251C14FF" AlphaFactor="0.84">
                   <Children>
                     <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="10" MarginRight="10" MarginTop="10" MarginBottom="10" ClipRect="RecordClip" InnerPanel="RecordClip\RecordList" AutoHideScrollBars="true" VerticalScrollbar="..\RecordScrollbar\Scrollbar">
                       <Children>
@@ -51,7 +58,7 @@
                   </Children>
                 </Widget>
 
-                <Widget IsVisible="@HasRecords" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="542" MarginTop="142" MarginBottom="76" Sprite="BlankWhiteSquare_9" Color="#17110DFF" AlphaFactor="0.76">
+                <Widget IsVisible="@HasRecords" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="542" MarginTop="180" MarginBottom="76" Sprite="BlankWhiteSquare_9" Color="#17110DFF" AlphaFactor="0.76">
                   <Children>
                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="100" VerticalAlignment="Top" MarginLeft="22" MarginRight="22" MarginTop="16">
                       <Children>
@@ -95,7 +102,7 @@
                   </Children>
                 </Widget>
 
-                <Widget IsVisible="@ShowEmptyState" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginTop="150" MarginBottom="90"><Children><RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="Popup.Title.Text" Brush.TextHorizontalAlignment="Center" Text="@EmptyStateText" /></Children></Widget>
+                <Widget IsVisible="@ShowEmptyState" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginTop="188" MarginBottom="90"><Children><RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="Popup.Title.Text" Brush.TextHorizontalAlignment="Center" Text="@EmptyStateText" /></Children></Widget>
                 <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="270" SuggestedHeight="56" HorizontalAlignment="Center" VerticalAlignment="Bottom" Brush="Popup.Done.Button" Command.Click="ExecuteClose" UpdateChildrenStates="true" DoNotPassEventsToChildren="true"><Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Text="@CloseText" /></Children></ButtonWidget>
               </Children>
             </Widget>

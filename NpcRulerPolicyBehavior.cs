@@ -43,6 +43,18 @@ public sealed class NpcRulerPolicyRecord
 	[JsonProperty("kingdomName")]
 	public string KingdomName { get; set; }
 
+	[JsonProperty("policyKind")]
+	public string PolicyKind { get; set; }
+
+	[JsonProperty("issuerKingdomId")]
+	public string IssuerKingdomId { get; set; }
+
+	[JsonProperty("issuerKingdomName")]
+	public string IssuerKingdomName { get; set; }
+
+	[JsonProperty("policyCooldownDay")]
+	public int PolicyCooldownDay { get; set; } = -1;
+
 	[JsonProperty("rulerHeroId")]
 	public string RulerHeroId { get; set; }
 
@@ -1399,6 +1411,19 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		Log("policy-agenda-approved policy=" + id + " kingdom=" + (record.KingdomId ?? ""));
 	}
 
+	public static bool TouchPlayerPolicyCooldownForExternal(string policyId, int day)
+	{
+		try
+		{
+			return (Instance ?? Campaign.Current?.GetCampaignBehavior<NpcRulerPolicyBehavior>())?.TouchPlayerPolicyCooldownInternal(policyId, day) == true;
+		}
+		catch (Exception ex)
+		{
+			Log("player-policy-cooldown-touch-failed policy=" + (policyId ?? "") + " error=" + ex.Message);
+			return false;
+		}
+	}
+
 	private void OnPolicyAgendaRejectedInternal(string policyId, string reason)
 	{
 		string id = (policyId ?? "").Trim();
@@ -1497,11 +1522,12 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		record.Version = 3;
+		record.Version = Math.Max(4, record.Version);
 		record.IsPlayerPolicy = true;
 		record.AgendaStatus = AgendaStatusActive;
 		record.PolicyObjectId = string.IsNullOrWhiteSpace(record.PolicyObjectId) ? "af_policy:" + NormalizeKeyPart(record.PolicyId) : record.PolicyObjectId;
 		record.CreatedUtcTicks = record.CreatedUtcTicks > 0L ? record.CreatedUtcTicks : DateTime.UtcNow.Ticks;
+		record.PolicyCooldownDay = Math.Max(Math.Max(0, record.Day), record.PolicyCooldownDay);
 		if (_policyRecords.TryGetValue(record.PolicyId, out string existingRaw))
 		{
 			NpcRulerPolicyRecord existing = DeserializeRecord(existingRaw);
@@ -1518,6 +1544,24 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		AnimusForgeWorldEventBehavior.UpsertWorldEventForExternal(feedbackEntry, markUnread: true);
 		RecordUnifiedPolicyWeeklyMaterial(record);
 		Log("player-policy-registered policy=" + record.PolicyId + " kingdom=" + record.KingdomId);
+		return true;
+	}
+
+	private bool TouchPlayerPolicyCooldownInternal(string policyId, int day)
+	{
+		string id = (policyId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(id) || !_policyRecords.TryGetValue(id, out string raw))
+		{
+			return false;
+		}
+		NpcRulerPolicyRecord record = DeserializeRecord(raw);
+		if (record == null || !record.IsPlayerPolicy)
+		{
+			return false;
+		}
+		record.PolicyCooldownDay = Math.Max(VassalPolicyRules.EffectiveCooldownDay(record.Day, record.PolicyCooldownDay), Math.Max(0, day));
+		_policyRecords[id] = JsonConvert.SerializeObject(record);
+		Log("player-policy-cooldown-touched policy=" + id + " kingdom=" + (record.KingdomId ?? "") + " day=" + record.PolicyCooldownDay.ToString(CultureInfo.InvariantCulture));
 		return true;
 	}
 
@@ -3612,9 +3656,13 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			{
 				continue;
 			}
-			if (!result.TryGetValue(kingdomId, out NpcRulerPolicyRecord existing)
-				|| record.Day > existing.Day
-				|| (record.Day == existing.Day && record.CreatedUtcTicks > existing.CreatedUtcTicks))
+			int recordCooldownDay = VassalPolicyRules.EffectiveCooldownDay(record.Day, record.PolicyCooldownDay);
+			int existingCooldownDay = result.TryGetValue(kingdomId, out NpcRulerPolicyRecord existing)
+				? VassalPolicyRules.EffectiveCooldownDay(existing.Day, existing.PolicyCooldownDay)
+				: -1;
+			if (existing == null
+				|| recordCooldownDay > existingCooldownDay
+				|| (recordCooldownDay == existingCooldownDay && record.CreatedUtcTicks > existing.CreatedUtcTicks))
 			{
 				result[kingdomId] = record;
 			}
@@ -3635,7 +3683,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		{
 			lastGeneratedByKingdom?.TryGetValue(kingdomId, out lastRecord);
 		}
-		int lastDay = lastRecord == null ? -1 : Math.Max(0, lastRecord.Day);
+		int lastDay = lastRecord == null ? -1 : Math.Max(0, VassalPolicyRules.EffectiveCooldownDay(lastRecord.Day, lastRecord.PolicyCooldownDay));
 		int safeCooldownDays = Math.Max(1, cooldownDays);
 		int daysSince = lastDay < 0 ? int.MaxValue : currentDay - lastDay;
 		string exclusionReason = "";
@@ -4141,14 +4189,19 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			bool isVassalPolicy = string.Equals(record?.PolicyKind ?? "", "vassal", StringComparison.OrdinalIgnoreCase);
 			string title = FirstNonEmpty(record.PolicyName, "新政策");
 			string detail = record.PolicyContent ?? "";
+			if (isVassalPolicy && !string.IsNullOrWhiteSpace(record.IssuerKingdomName))
+			{
+				detail = "宗主国：" + record.IssuerKingdomName.Trim() + "\n发布对象：" + FirstNonEmpty(record.KingdomName, record.KingdomId) + "\n\n" + detail;
+			}
 			AnimusForgeWorldEventInboxEntry entry = new AnimusForgeWorldEventInboxEntry
 			{
 				EventId = "npc_ruler_policy:" + NormalizeKeyPart(record.PolicyId),
-				EventKind = "npc_ruler_policy",
-				KindLabel = "统治者政策",
-				HeaderRightText = "统治者政策",
+				EventKind = isVassalPolicy ? "vassal_policy" : "npc_ruler_policy",
+				KindLabel = isVassalPolicy ? "附庸国政策" : "统治者政策",
+				HeaderRightText = isVassalPolicy ? "宗主发布" : "统治者政策",
 				BodySectionTitleText = "政策内容",
 				ImpactSectionTitleText = "政策影响效果",
 				ImpactText = BuildEffectSummary(record.Effects),

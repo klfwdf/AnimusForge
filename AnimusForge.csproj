@@ -5,6 +5,9 @@
     <TargetFramework>net472</TargetFramework>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="tools\VassalPolicyRules.Tests\**\*.cs" />
+  </ItemGroup>
   <PropertyGroup>
     <LangVersion>10.0</LangVersion>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>

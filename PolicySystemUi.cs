@@ -1097,6 +1097,15 @@ public sealed class WorldEventRecordData
 	public bool HasImpact;
 }
 
+public sealed class PolicyComposeTargetData
+{
+	public string TargetId = "";
+	public string ScopeKind = "kingdom";
+	public string DisplayText = "";
+	public string HintText = "";
+	public bool IsSelected;
+}
+
 public sealed class CustomPolicyComposePopup
 {
 	private static CustomPolicyComposePopup _activePopup;
@@ -1107,7 +1116,7 @@ public sealed class CustomPolicyComposePopup
 
 	private readonly CustomPolicyComposePopupVM _dataSource;
 
-	private readonly Action<string, string, string, string> _onPublish;
+	private readonly Action<string, string, string, string, string> _onPublish;
 
 	private readonly Action _onCancel;
 
@@ -1122,6 +1131,8 @@ public sealed class CustomPolicyComposePopup
 	private string _pendingDurationText;
 
 	private string _pendingDateText;
+
+	private string _pendingTargetId;
 
 	private enum PendingCloseAction
 	{
@@ -1144,16 +1155,16 @@ public sealed class CustomPolicyComposePopup
 		}
 	}
 
-	private CustomPolicyComposePopup(ScreenBase screen, string titleText, string nameLabelText, string contentLabelText, string dateText, bool canPublish, string blockReason, Action<string, string, string, string> onPublish, Action onCancel)
+	private CustomPolicyComposePopup(ScreenBase screen, string titleText, string nameLabelText, string contentLabelText, string dateText, bool canPublish, string blockReason, List<PolicyComposeTargetData> targets, Action<string, string, string, string, string> onPublish, Action onCancel)
 	{
 		_screen = screen;
 		_onPublish = onPublish;
 		_onCancel = onCancel;
-		_dataSource = new CustomPolicyComposePopupVM(titleText, nameLabelText, contentLabelText, dateText, canPublish, blockReason, HandlePublishRequested, HandleCancelRequested);
+		_dataSource = new CustomPolicyComposePopupVM(titleText, nameLabelText, contentLabelText, dateText, canPublish, blockReason, targets, HandlePublishRequested, HandleCancelRequested);
 		_layer = new GauntletLayer("CustomPolicyComposePopup", 4000, false);
 	}
 
-	public static bool Show(string titleText, string nameLabelText, string contentLabelText, string dateText, bool canPublish, string blockReason, Action<string, string, string, string> onPublish, Action onCancel)
+	public static bool Show(string titleText, string nameLabelText, string contentLabelText, string dateText, bool canPublish, string blockReason, List<PolicyComposeTargetData> targets, Action<string, string, string, string, string> onPublish, Action onCancel)
 	{
 		ScreenBase topScreen = ScreenManager.TopScreen;
 		if (topScreen == null)
@@ -1163,7 +1174,7 @@ public sealed class CustomPolicyComposePopup
 		try
 		{
 			_activePopup?.Close(silent: true);
-			CustomPolicyComposePopup popup = new CustomPolicyComposePopup(topScreen, titleText, nameLabelText, contentLabelText, dateText, canPublish, blockReason, onPublish, onCancel);
+			CustomPolicyComposePopup popup = new CustomPolicyComposePopup(topScreen, titleText, nameLabelText, contentLabelText, dateText, canPublish, blockReason, targets, onPublish, onCancel);
 			popup.Open();
 			_activePopup = popup;
 			return true;
@@ -1193,17 +1204,17 @@ public sealed class CustomPolicyComposePopup
 		ScreenManager.TrySetFocus(_layer);
 	}
 
-	private void HandlePublishRequested(string policyName, string policyContent, string durationText, string dateText)
+	private void HandlePublishRequested(string policyName, string policyContent, string durationText, string dateText, string targetId)
 	{
-		RequestDeferredClose(PendingCloseAction.Publish, policyName ?? "", policyContent ?? "", durationText ?? "", dateText ?? "");
+		RequestDeferredClose(PendingCloseAction.Publish, policyName ?? "", policyContent ?? "", durationText ?? "", dateText ?? "", targetId ?? "");
 	}
 
 	private void HandleCancelRequested()
 	{
-		RequestDeferredClose(PendingCloseAction.Cancel, null, null, null, null);
+		RequestDeferredClose(PendingCloseAction.Cancel, null, null, null, null, null);
 	}
 
-	private void RequestDeferredClose(PendingCloseAction action, string policyName, string policyContent, string durationText, string dateText)
+	private void RequestDeferredClose(PendingCloseAction action, string policyName, string policyContent, string durationText, string dateText, string targetId)
 	{
 		if (_isClosed || _pendingCloseAction != PendingCloseAction.None)
 		{
@@ -1214,6 +1225,7 @@ public sealed class CustomPolicyComposePopup
 		_pendingPolicyContent = policyContent;
 		_pendingDurationText = durationText;
 		_pendingDateText = dateText;
+		_pendingTargetId = targetId;
 	}
 
 	private void ProcessPendingCloseAction()
@@ -1227,15 +1239,17 @@ public sealed class CustomPolicyComposePopup
 		string policyContent = _pendingPolicyContent ?? "";
 		string durationText = _pendingDurationText ?? "";
 		string dateText = _pendingDateText ?? "";
+		string targetId = _pendingTargetId ?? "";
 		_pendingCloseAction = PendingCloseAction.None;
 		_pendingPolicyName = null;
 		_pendingPolicyContent = null;
 		_pendingDurationText = null;
 		_pendingDateText = null;
+		_pendingTargetId = null;
 		Close(silent: true);
 		if (action == PendingCloseAction.Publish)
 		{
-			_onPublish?.Invoke(policyName, policyContent, durationText, dateText);
+			_onPublish?.Invoke(policyName, policyContent, durationText, dateText, targetId);
 		}
 		else if (action == PendingCloseAction.Cancel)
 		{
@@ -1279,7 +1293,7 @@ public sealed class CustomPolicyComposePopup
 
 public sealed class CustomPolicyComposePopupVM : ViewModel
 {
-	private readonly Action<string, string, string, string> _onPublish;
+	private readonly Action<string, string, string, string, string> _onPublish;
 
 	private readonly Action _onCancel;
 
@@ -1311,7 +1325,13 @@ public sealed class CustomPolicyComposePopupVM : ViewModel
 
 	private bool _canPublish;
 
-	public CustomPolicyComposePopupVM(string titleText, string nameLabelText, string contentLabelText, string dateText, bool canPublish, string blockReason, Action<string, string, string, string> onPublish, Action onCancel)
+	private string _selectedTargetId;
+
+	private string _targetHintText;
+
+	private MBBindingList<PolicyComposeTargetItemVM> _targetItems;
+
+	public CustomPolicyComposePopupVM(string titleText, string nameLabelText, string contentLabelText, string dateText, bool canPublish, string blockReason, List<PolicyComposeTargetData> targets, Action<string, string, string, string, string> onPublish, Action onCancel)
 	{
 		_onPublish = onPublish;
 		_onCancel = onCancel;
@@ -1326,6 +1346,19 @@ public sealed class CustomPolicyComposePopupVM : ViewModel
 		DurationText = "";
 		PublishText = "发布王国政策";
 		CancelText = "取消";
+		TargetItems = new MBBindingList<PolicyComposeTargetItemVM>();
+		List<PolicyComposeTargetData> availableTargets = (targets ?? new List<PolicyComposeTargetData>()).Where(x => x != null).ToList();
+		if (availableTargets.Count == 0)
+		{
+			availableTargets.Add(new PolicyComposeTargetData { TargetId = "", ScopeKind = "kingdom", DisplayText = "玩家王国", IsSelected = true });
+		}
+		for (int i = 0; i < availableTargets.Count; i++)
+		{
+			PolicyComposeTargetData target = availableTargets[i];
+			TargetItems.Add(new PolicyComposeTargetItemVM(target, SelectTarget));
+		}
+		PolicyComposeTargetItemVM selected = TargetItems.FirstOrDefault(x => x.IsSelected) ?? TargetItems.FirstOrDefault();
+		SelectTarget(selected);
 		_readyStatusText = string.IsNullOrWhiteSpace(blockReason) ? "填写政策名和政策内容后即可发布。" : blockReason;
 		StatusText = canPublish ? _readyStatusText : (string.IsNullOrWhiteSpace(blockReason) ? "当前不能发布政策。" : blockReason);
 		RefreshCanPublish();
@@ -1505,6 +1538,48 @@ public sealed class CustomPolicyComposePopupVM : ViewModel
 		}
 	}
 
+	[DataSourceProperty]
+	public string SelectedTargetId
+	{
+		get => _selectedTargetId;
+		set
+		{
+			if (value != _selectedTargetId)
+			{
+				_selectedTargetId = value;
+				OnPropertyChangedWithValue(value, nameof(SelectedTargetId));
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public string TargetHintText
+	{
+		get => _targetHintText;
+		set
+		{
+			if (value != _targetHintText)
+			{
+				_targetHintText = value;
+				OnPropertyChangedWithValue(value, nameof(TargetHintText));
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public MBBindingList<PolicyComposeTargetItemVM> TargetItems
+	{
+		get => _targetItems;
+		set
+		{
+			if (value != _targetItems)
+			{
+				_targetItems = value;
+				OnPropertyChangedWithValue(value, nameof(TargetItems));
+			}
+		}
+	}
+
 	public void ExecutePublish()
 	{
 		RefreshCanPublish();
@@ -1516,7 +1591,7 @@ public sealed class CustomPolicyComposePopupVM : ViewModel
 			}
 			return;
 		}
-		_onPublish?.Invoke(PolicyName ?? "", PolicyContent ?? "", DurationText ?? "", DateText ?? "");
+		_onPublish?.Invoke(PolicyName ?? "", PolicyContent ?? "", DurationText ?? "", DateText ?? "", SelectedTargetId ?? "");
 	}
 
 	public void ExecuteCancel()
@@ -1530,6 +1605,22 @@ public sealed class CustomPolicyComposePopupVM : ViewModel
 
 	public void StopTyping()
 	{
+	}
+
+	private void SelectTarget(PolicyComposeTargetItemVM selected)
+	{
+		if (selected == null)
+		{
+			return;
+		}
+		foreach (PolicyComposeTargetItemVM item in TargetItems ?? new MBBindingList<PolicyComposeTargetItemVM>())
+		{
+			item.IsSelected = ReferenceEquals(item, selected);
+		}
+		SelectedTargetId = selected.TargetId;
+		TargetHintText = selected.HintText;
+		PublishText = string.Equals(selected.ScopeKind, "vassal", StringComparison.OrdinalIgnoreCase) ? "发布附庸国政策" : "发布王国政策";
+		RefreshCanPublish();
 	}
 
 	private void RefreshCanPublish()
@@ -1559,6 +1650,33 @@ public sealed class CustomPolicyComposePopupVM : ViewModel
 			}
 		}
 	}
+}
+
+public sealed class PolicyComposeTargetItemVM : ViewModel
+{
+	private readonly Action<PolicyComposeTargetItemVM> _select;
+	private bool _isSelected;
+	private string _selectionText;
+
+	public PolicyComposeTargetItemVM(PolicyComposeTargetData data, Action<PolicyComposeTargetItemVM> select)
+	{
+		PolicyComposeTargetData source = data ?? new PolicyComposeTargetData();
+		_select = select;
+		TargetId = source.TargetId ?? "";
+		ScopeKind = source.ScopeKind ?? "kingdom";
+		DisplayText = string.IsNullOrWhiteSpace(source.DisplayText) ? "未知国家" : source.DisplayText.Trim();
+		HintText = source.HintText ?? "";
+		SelectionText = DisplayText;
+		IsSelected = source.IsSelected;
+	}
+
+	public string TargetId { get; }
+	public string ScopeKind { get; }
+	[DataSourceProperty] public string DisplayText { get; }
+	[DataSourceProperty] public string HintText { get; }
+	[DataSourceProperty] public string SelectionText { get => _selectionText; set { if (value != _selectionText) { _selectionText = value; OnPropertyChangedWithValue(value, nameof(SelectionText)); } } }
+	[DataSourceProperty] public bool IsSelected { get => _isSelected; set { if (value != _isSelected) { _isSelected = value; SelectionText = value ? "● " + DisplayText : DisplayText; OnPropertyChangedWithValue(value, nameof(IsSelected)); } } }
+	public void ExecuteSelect() => _select?.Invoke(this);
 }
 
 public sealed class PolicyHistoryData
@@ -1886,6 +2004,7 @@ internal sealed class LocalPolicyHistoryData
 
 internal sealed class LocalPolicyHistoryRecordData
 {
+	public string ScopeKind { get; set; }
 	public string RecordId { get; set; }
 	public string DateText { get; set; }
 	public string PolicyNameText { get; set; }
@@ -1962,11 +2081,15 @@ internal sealed class LocalPolicyHistoryPopupVM : ViewModel
 	private readonly Action<string> _onRenew;
 	private readonly Action<string> _onAbolish;
 	private readonly Action _onClose;
+	private readonly List<LocalPolicyHistoryRecordData> _allRecords;
 	private LocalPolicyHistoryRecordItemVM _selected;
 	private bool _hasRecords;
 	private bool _showEmptyState;
+	private bool _isLocalTabSelected;
+	private bool _isVassalTabSelected;
 	private bool _canRenew;
 	private bool _canAbolish;
+	private string _emptyStateText = "";
 	private string _policyNameText = "";
 	private string _statusText = "";
 	private string _targetText = "";
@@ -1980,22 +2103,32 @@ internal sealed class LocalPolicyHistoryPopupVM : ViewModel
 	public LocalPolicyHistoryPopupVM(LocalPolicyHistoryData data, Action<string> onRenew, Action<string> onAbolish, Action onClose)
 	{
 		_onRenew = onRenew; _onAbolish = onAbolish; _onClose = onClose;
-		TitleText = "地方政策记录"; SubtitleText = "有效记录全部保留；已结束记录只保留最近 100 条。"; EmptyStateText = "尚无地方政策记录。";
-		RenewText = "续约"; AbolishText = "废除"; CloseText = "返回地方政策";
+		_allRecords = (data?.Records ?? new List<LocalPolicyHistoryRecordData>()).Where(x => x != null).ToList();
 		RecordItems = new MBBindingList<LocalPolicyHistoryRecordItemVM>();
-		foreach (LocalPolicyHistoryRecordData record in data?.Records ?? new List<LocalPolicyHistoryRecordData>()) RecordItems.Add(new LocalPolicyHistoryRecordItemVM(record, Select));
-		HasRecords = RecordItems.Count > 0; ShowEmptyState = !HasRecords;
-		if (HasRecords) Select(RecordItems[0]);
+		TitleText = "政策记录";
+		SubtitleText = "地方政策与附庸国政策分别管理；有效记录保留，已结束记录只保留最近 100 条。";
+		LocalTabText = "地方政策";
+		VassalTabText = "附庸国政策";
+		RenewText = "续约";
+		AbolishText = "停止政策";
+		CloseText = "返回政策菜单";
+		bool showVassalFirst = !_allRecords.Any(x => !string.Equals(x.ScopeKind ?? "", "vassal", StringComparison.OrdinalIgnoreCase))
+			&& _allRecords.Any(x => string.Equals(x.ScopeKind ?? "", "vassal", StringComparison.OrdinalIgnoreCase));
+		ShowScope(showVassalFirst);
 	}
 	[DataSourceProperty] public string TitleText { get; set; }
 	[DataSourceProperty] public string SubtitleText { get; set; }
-	[DataSourceProperty] public string EmptyStateText { get; set; }
+	[DataSourceProperty] public string EmptyStateText { get => _emptyStateText; set { _emptyStateText = value; OnPropertyChangedWithValue(value, nameof(EmptyStateText)); } }
+	[DataSourceProperty] public string LocalTabText { get; set; }
+	[DataSourceProperty] public string VassalTabText { get; set; }
 	[DataSourceProperty] public string RenewText { get; set; }
 	[DataSourceProperty] public string AbolishText { get; set; }
 	[DataSourceProperty] public string CloseText { get; set; }
 	[DataSourceProperty] public MBBindingList<LocalPolicyHistoryRecordItemVM> RecordItems { get; set; }
 	[DataSourceProperty] public bool HasRecords { get => _hasRecords; set { if (value != _hasRecords) { _hasRecords = value; OnPropertyChangedWithValue(value, nameof(HasRecords)); } } }
 	[DataSourceProperty] public bool ShowEmptyState { get => _showEmptyState; set { if (value != _showEmptyState) { _showEmptyState = value; OnPropertyChangedWithValue(value, nameof(ShowEmptyState)); } } }
+	[DataSourceProperty] public bool IsLocalTabSelected { get => _isLocalTabSelected; set { if (value != _isLocalTabSelected) { _isLocalTabSelected = value; OnPropertyChangedWithValue(value, nameof(IsLocalTabSelected)); } } }
+	[DataSourceProperty] public bool IsVassalTabSelected { get => _isVassalTabSelected; set { if (value != _isVassalTabSelected) { _isVassalTabSelected = value; OnPropertyChangedWithValue(value, nameof(IsVassalTabSelected)); } } }
 	[DataSourceProperty] public bool CanRenew { get => _canRenew; set { if (value != _canRenew) { _canRenew = value; OnPropertyChangedWithValue(value, nameof(CanRenew)); } } }
 	[DataSourceProperty] public bool CanAbolish { get => _canAbolish; set { if (value != _canAbolish) { _canAbolish = value; OnPropertyChangedWithValue(value, nameof(CanAbolish)); } } }
 	[DataSourceProperty] public string PolicyNameText { get => _policyNameText; set { _policyNameText = value; OnPropertyChangedWithValue(value, nameof(PolicyNameText)); } }
@@ -2018,6 +2151,33 @@ internal sealed class LocalPolicyHistoryPopupVM : ViewModel
 		ContentText = item.ContentText; FeedbackText = item.FeedbackText; EffectText = item.EffectText; CostText = item.CostText; CycleText = item.CycleText; RenewalText = item.RenewalText;
 		CanRenew = item.CanRenew; CanAbolish = item.CanAbolish;
 	}
+	private void ShowScope(bool showVassal)
+	{
+		IsVassalTabSelected = showVassal;
+		IsLocalTabSelected = !showVassal;
+		if (_selected != null) _selected.IsSelected = false;
+		_selected = null;
+		RecordItems.Clear();
+		foreach (LocalPolicyHistoryRecordData record in _allRecords.Where(x => string.Equals(x.ScopeKind ?? "", "vassal", StringComparison.OrdinalIgnoreCase) == showVassal))
+		{
+			RecordItems.Add(new LocalPolicyHistoryRecordItemVM(record, Select));
+		}
+		HasRecords = RecordItems.Count > 0;
+		ShowEmptyState = !HasRecords;
+		EmptyStateText = showVassal ? "暂无附庸国政策记录。" : "暂无地方政策记录。";
+		if (HasRecords)
+		{
+			Select(RecordItems[0]);
+		}
+		else
+		{
+			PolicyNameText = ""; StatusText = ""; TargetText = ""; RemainingText = "";
+			ContentText = ""; FeedbackText = ""; EffectText = ""; CostText = ""; CycleText = ""; RenewalText = "";
+			CanRenew = false; CanAbolish = false;
+		}
+	}
+	public void ExecuteShowLocalPolicies() => ShowScope(false);
+	public void ExecuteShowVassalPolicies() => ShowScope(true);
 	public void ExecuteRenew() { if (CanRenew && _selected != null) _onRenew?.Invoke(_selected.RecordId); }
 	public void ExecuteAbolish() { if (CanAbolish && _selected != null) _onAbolish?.Invoke(_selected.RecordId); }
 	public void ExecuteClose() => _onClose?.Invoke();
@@ -2029,10 +2189,11 @@ internal sealed class LocalPolicyHistoryRecordItemVM : ViewModel
 	private bool _isSelected;
 	public LocalPolicyHistoryRecordItemVM(LocalPolicyHistoryRecordData data, Action<LocalPolicyHistoryRecordItemVM> onSelect)
 	{
-		_onSelect = onSelect; RecordId = data?.RecordId ?? ""; DateText = data?.DateText ?? ""; PolicyNameText = data?.PolicyNameText ?? ""; StatusText = data?.StatusText ?? "";
+		_onSelect = onSelect; ScopeKind = data?.ScopeKind ?? "local"; RecordId = data?.RecordId ?? ""; DateText = data?.DateText ?? ""; PolicyNameText = data?.PolicyNameText ?? ""; StatusText = data?.StatusText ?? "";
 		TargetText = data?.TargetText ?? ""; RemainingText = data?.RemainingText ?? ""; ContentText = data?.ContentText ?? ""; FeedbackText = data?.FeedbackText ?? "";
 		EffectText = data?.EffectText ?? ""; CostText = data?.CostText ?? ""; CycleText = data?.CycleText ?? ""; RenewalText = data?.RenewalText ?? ""; CanRenew = data?.CanRenew == true; CanAbolish = data?.CanAbolish == true;
 	}
+	[DataSourceProperty] public string ScopeKind { get; set; }
 	[DataSourceProperty] public string RecordId { get; set; }
 	[DataSourceProperty] public string DateText { get; set; }
 	[DataSourceProperty] public string PolicyNameText { get; set; }

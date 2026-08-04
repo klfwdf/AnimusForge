@@ -173,7 +173,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		.Replace(PreviousDefaultCustomPolicyTownTaxScalePromptParagraph, PreviousDefaultPolicyTownTaxIntentPromptParagraphBeforePlayerTargetRouting + "\n\n" + PreviousDefaultPolicyConstructionSpeedPromptParagraphBeforePlayerAmountScale)
 		.Replace(PreviousDefaultCustomPolicyExplicitScalePromptParagraph, PreviousDefaultCustomPolicyExplicitScalePromptParagraphV2);
 
-	private static readonly string DefaultCustomPolicyEvaluatorPrompt = PreviousDefaultCustomPolicyEvaluatorPromptBeforeSparseEffects
+	private static readonly string PreviousDefaultCustomPolicyEvaluatorPromptBeforeVassalIndependence = PreviousDefaultCustomPolicyEvaluatorPromptBeforeSparseEffects
 		.Replace("\r\n", "\n")
 		.Replace('\r', '\n')
 		.Replace(PreviousDefaultPolicyTownTaxIntentPromptParagraphBeforePlayerTargetRouting, DefaultPlayerPolicyTownTaxIntentPromptParagraph)
@@ -181,6 +181,11 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		.Replace(PreviousDefaultCustomPolicyTimingPromptParagraphV2, DefaultCustomPolicyTimingPromptParagraph)
 		.Replace(PreviousDefaultPolicyLoyaltyPromptParagraphV2, DefaultPolicyLoyaltyPromptParagraph)
 		.Replace(PreviousDefaultCustomPolicyExplicitScalePromptParagraphV2, DefaultCustomPolicyExplicitScalePromptParagraph);
+
+	private const string DefaultVassalPolicyIndependencePromptParagraph = "当输出结构要求评估附庸国政策时，vassalIndependenceDelta 表示目标附庸国因政策好坏产生的一次性独立度修正，范围 -15 到 +15：政策让附庸国明显受益、受到尊重或认可宗主时使用负数；造成压迫、损害、羞辱或不满时使用正数；没有清楚因果时为 0。vassalIndependenceReason 用一句短句说明直接原因。代码会另行随机增加 5—10 点发布费用，不得把这笔随机费用重复计入修正。";
+
+	private static readonly string DefaultCustomPolicyEvaluatorPrompt = PreviousDefaultCustomPolicyEvaluatorPromptBeforeVassalIndependence
+		+ "\n\n" + DefaultVassalPolicyIndependencePromptParagraph;
 
 	private const string LeakedCustomPolicyPoliticalWeightsPromptSuffix = "同时根据政策内容评估原版政策投票使用的三项政治取向：authoritarianWeight 表示君主集权取向，oligarchicWeight 表示大氏族和贵族议政取向，egalitarianWeight 表示平民、地方自治和广泛参与取向。三项范围均为 -1 到 1，不得全部为 0。";
 
@@ -1853,7 +1858,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("16. 政策系统/2. NPC统治者政策", GroupOrder = 160)]
 	public int NpcRulerPolicyMaxKingdomsPerRequest { get; set; } = DefaultNpcRulerPolicyMaxKingdomsPerRequest;
 
-	[SettingPropertyInteger("同一王国政策冷却（天）", NpcRulerPolicyIntervalMinDays, NpcRulerPolicyIntervalMaxDays, "0", Order = 4, RequireRestart = false, HintText = "同一 NPC 王国两次政策草案之间至少间隔多少个游戏日。默认 7 天，可在 1—30 天之间调整；待审、通过和否决的正常草案均参与冷却，玩家政策不参与。")]
+	[SettingPropertyInteger("同一王国政策冷却（天）", NpcRulerPolicyIntervalMinDays, NpcRulerPolicyIntervalMaxDays, "0", Order = 4, RequireRestart = false, HintText = "同一 NPC 王国两次政策草案之间至少间隔多少个游戏日。默认 7 天，可在 1—30 天之间调整；待审、通过和否决的正常草案均参与冷却。玩家发布或续约附庸国政策不受冷却限制，但会从当天起按此天数压制目标附庸国的 NPC 统治者政策。")]
 	[SettingPropertyGroup("16. 政策系统/2. NPC统治者政策", GroupOrder = 160)]
 	public int NpcRulerPolicyIntervalDays { get; set; } = DefaultNpcRulerPolicyIntervalDays;
 
@@ -3218,6 +3223,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		string text = NormalizeCustomPolicyEvaluatorPromptText(input);
 		string currentWording = NormalizePolicyHearthWordingForBuiltInComparison(text);
 		return string.Equals(currentWording, NormalizePolicyHearthWordingForBuiltInComparison(NormalizeCustomPolicyEvaluatorPromptText(DefaultCustomPolicyEvaluatorPrompt)), StringComparison.Ordinal)
+			|| string.Equals(currentWording, NormalizePolicyHearthWordingForBuiltInComparison(NormalizeCustomPolicyEvaluatorPromptText(PreviousDefaultCustomPolicyEvaluatorPromptBeforeVassalIndependence)), StringComparison.Ordinal)
 			|| string.Equals(currentWording, NormalizePolicyHearthWordingForBuiltInComparison(NormalizeCustomPolicyEvaluatorPromptText(PreviousDefaultCustomPolicyEvaluatorPromptBeforeSparseEffects)), StringComparison.Ordinal)
 			|| string.Equals(currentWording, NormalizePolicyHearthWordingForBuiltInComparison(NormalizeCustomPolicyEvaluatorPromptText(PreviousDefaultCustomPolicyEvaluatorPromptBeforeConstructionSpeed)), StringComparison.Ordinal)
 			|| string.Equals(currentWording, NormalizePolicyHearthWordingForBuiltInComparison(NormalizeCustomPolicyEvaluatorPromptText(PreviousDefaultCustomPolicyEvaluatorPromptBeforeTaxIntent)), StringComparison.Ordinal)

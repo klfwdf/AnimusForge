@@ -17,7 +17,22 @@
                 </Widget>
                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="12" VerticalAlignment="Top" MarginTop="88" Sprite="StdAssets\Popup\divider" />
 
-                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginTop="112" MarginBottom="92" MarginLeft="16" MarginRight="16" Sprite="BlankWhiteSquare_9" Color="#16110DFF" AlphaFactor="0.72">
+				<Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="70" VerticalAlignment="Top" MarginTop="104" MarginLeft="16" MarginRight="16" Sprite="BlankWhiteSquare_9" Color="#16110DFF" AlphaFactor="0.72">
+				  <Children>
+					<ListPanel DataSource="{TargetItems}" WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="38" HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="5" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+					  <ItemTemplate>
+						<ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="240" SuggestedHeight="38" Brush="Popup.Cancel.Button" Command.Click="ExecuteSelect" UpdateChildrenStates="true" DoNotPassEventsToChildren="true">
+						  <Children>
+							<TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="16" Text="@SelectionText" />
+						  </Children>
+						</ButtonWidget>
+					  </ItemTemplate>
+					</ListPanel>
+					<RichTextWidget Text="@TargetHintText" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Bottom" MarginBottom="3" MarginLeft="18" MarginRight="18" Brush="Popup.Description.Text" Brush.FontSize="14" Brush.TextHorizontalAlignment="Center" />
+				  </Children>
+				</Widget>
+
+                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginTop="182" MarginBottom="92" MarginLeft="16" MarginRight="16" Sprite="BlankWhiteSquare_9" Color="#16110DFF" AlphaFactor="0.72">
                   <Children>
                     <RichTextWidget Text="@NameLabelText" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="30" VerticalAlignment="Top" MarginTop="16" MarginLeft="18" MarginRight="18" Brush="Popup.Description.Text" Brush.FontSize="18" />
                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="56" VerticalAlignment="Top" MarginTop="48" MarginLeft="16" MarginRight="16" Sprite="BlankWhiteSquare_9" Color="#0B0907FF" AlphaFactor="0.62">
