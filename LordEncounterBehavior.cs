@@ -4680,7 +4680,13 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		try
 		{
 			bool eligibleMercenary = IsEligibleMercenaryClanForCustomLordEncounter(clan);
-			if ((!clan.IsNoble && !eligibleMercenary) || clan.Kingdom == null || clan.IsBanditFaction || (clan.IsMinorFaction && !eligibleMercenary) || clan.IsOutlaw)
+			// A mercenary clan keeps its static IsClanTypeMercenary identity while it is
+			// between contracts, so its Kingdom can legitimately be null here.
+			if (eligibleMercenary)
+			{
+				return false;
+			}
+			if (!clan.IsNoble || clan.Kingdom == null || clan.IsBanditFaction || clan.IsMinorFaction || clan.IsOutlaw)
 			{
 				return true;
 			}
@@ -4713,7 +4719,10 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			return clan.IsUnderMercenaryService && clan.Kingdom != null && !clan.IsBanditFaction && !clan.IsOutlaw;
+			return (clan.IsClanTypeMercenary || clan.IsUnderMercenaryService)
+				&& !clan.IsEliminated
+				&& !clan.IsBanditFaction
+				&& !clan.IsOutlaw;
 		}
 		catch
 		{

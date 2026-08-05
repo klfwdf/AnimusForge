@@ -86,6 +86,7 @@ internal static class CastleAftermathArmamentRuntimeBridge
 		}
 		int count = 0;
 		var kinds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		bool queueNpcBattleEquipmentRestore = DuelSettings.IsNpcBattleEquipmentRestoreEnabled();
 		for (EquipmentIndex slot = EquipmentIndex.WeaponItemBeginSlot; slot < EquipmentIndex.NumEquipmentSetSlots; slot++)
 		{
 			EquipmentElement element = equipment[slot];
@@ -94,6 +95,19 @@ internal static class CastleAftermathArmamentRuntimeBridge
 				continue;
 			}
 			target.AddToCounts(element, 1);
+			if (queueNpcBattleEquipmentRestore && !RewardSystemBehavior.TryQueueNpcBattleEquipmentRestoreForExternal(lord, slot, element, "castle_aftermath_lord_armaments"))
+			{
+				try
+				{
+					target.AddToCounts(element, -1);
+				}
+				catch (Exception ex)
+				{
+					Logger.Log("CastleAftermath", "Failed to roll back captured lord armament after restore queue failure. Hero=" + (lord?.StringId ?? "N/A") + ", Slot=" + ((int)slot).ToString() + ", Error=" + ex.Message);
+				}
+				Logger.Log("CastleAftermath", "Kept captured lord armament equipped because delayed restore queue failed. Hero=" + (lord?.StringId ?? "N/A") + ", Slot=" + ((int)slot).ToString());
+				continue;
+			}
 			equipment[slot] = EquipmentElement.Invalid;
 			count++;
 			kinds.Add(element.Item.StringId ?? element.Item.Name?.ToString() ?? "item");

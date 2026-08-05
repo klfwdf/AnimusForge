@@ -163,7 +163,15 @@ Test.True(myBehavior.Contains("GiveAssetTagCodec.TryParseWhole", StringCompariso
 Test.True(shoutBehavior.Contains("GiveAssetTagCodec.Extract", StringComparison.Ordinal) && shoutBehavior.Contains("GiveAssetTagCodec.StripTags", StringComparison.Ordinal), "scene/courier parser integration missing");
 Test.True(rewardSystem.Contains("GiveAssetTagCodec.ReplaceTags", StringComparison.Ordinal) && rewardSystem.Contains("GiveAssetTagCodec.StripTags", StringComparison.Ordinal), "all reward execution parser integration missing");
 Test.True(!rewardSystem.Contains("known_global_give_asset", StringComparison.Ordinal), "global fuzzy lookup must not replace a postprocess asset name");
-Test.True(!rewardSystem.Contains("IsKnownFixedAssetTokenForAnyOwner", StringComparison.Ordinal), "a finite literal asset name must not be diverted away from RP generation");
+Test.True(myBehavior.Contains("LooksLikeFixedAssetTransferIdForExternal", StringComparison.Ordinal)
+    && myBehavior.Contains("TryResolveFixedAssetTransferEntryByIdForExternal", StringComparison.Ordinal)
+    && rewardSystem.Contains("TryResolveFixedAssetTokenForGiveAsset", StringComparison.Ordinal)
+    && rewardSystem.Contains("allowDirectFixedAssetIdOverride", StringComparison.Ordinal),
+    "an exact fixed-asset ID outside the prompt snapshot must route to a real transfer before RP fallback");
+Test.True(!myBehavior.Contains("if (!LooksLikeFixedAssetTransferIdForExternal(text))", StringComparison.Ordinal)
+    && myBehavior.Contains("FindSettlementByExactRuntimeIdForFixedAssetTransfer", StringComparison.Ordinal)
+    && rewardSystem.Contains("if (MyBehavior.TryResolveFixedAssetTransferEntryByIdForExternal(token, out entry))", StringComparison.Ordinal),
+    "an exact custom Settlement.StringId must resolve as a fixed asset without a global settlement scan");
 Test.True(rewardSystem.Contains("itemName = requestedName;", StringComparison.Ordinal), "generated RP item must report the requested postprocess name");
 Test.True(rewardSystem.Contains("[RewardRpLiteral] generated", StringComparison.Ordinal), "literal RP generation diagnostic missing");
 MatchCollection inventoryFirstRoutes = Regex.Matches(rewardSystem,
