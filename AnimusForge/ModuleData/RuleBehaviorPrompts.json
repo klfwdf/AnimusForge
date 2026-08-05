@@ -754,11 +754,11 @@
                                                      },
                                                      {
                                                          "Tag":  "[ACTION:DIPLOMACY:INDEPENDENT_CLAN_PEACE]",
-                                                         "Description":  "仅当运行时事实表明NPC是敌对王国当前国王，且\u003clatest_reply\u003e中的NPC明确同意立即停战、议和或结束敌对时输出。拒绝、犹豫、报价、反问、条件尚未满足或只说会考虑时不得输出。"
+                                                         "Description":  "仅当运行时事实表明NPC是敌对王国当前国王，且\u003clatest_reply\u003e中的NPC和玩家都明确同意无条件立即停战、议和或结束敌对时输出。拒绝、犹豫、报价、反问、条件尚未满足或只说会考虑时不得输出。"
                                                      },
                                                      {
                                                          "Tag":  "[ACTION:DIPLOMACY:FORM_ALLIANCE:id1:id2:durationDays]",
-                                                         "Description":  "双方国王同意结盟、同盟、盟约、共同防御、长期友谊、军事协作时输出。latest_reply接受history整组协议，且history含结盟/长久友谊/共同防御/释放亲族换友谊时，必须输出。durationDays未明说填default；ID顺序按标签占位和运行时事实复制。"
+                                                         "Description":  "玩家和NPC都无条件同意结盟、同盟、盟约、共同防御、长期友谊、军事协作时输出。latest_reply接受history整组协议，且history含结盟/长久友谊/共同防御/释放亲族换友谊时，必须输出。durationDays未明说填default；ID顺序按标签占位和运行时事实复制。"
                                                      },
                                                      {
                                                          "Tag":  "[ACTION:DIPLOMACY:BREAK_ALLIANCE:id1:id2]",
@@ -766,7 +766,7 @@
                                                      },
                                                      {
                                                          "Tag":  "[ACTION:DIPLOMACY:MAKE_TRADE:id1:id2:durationDays]",
-                                                         "Description":  "双方国王同意贸易协议、免税贸易、商队通行、恢复商贸，或NPC接受history里的免税贸易/商路安排时输出。latest_reply说契约已成、既然你已应允、我会下令、交易成为友谊基石、接受整组协议时，若history条件含贸易，必须与和平/结盟同轮输出。durationDays未明说填default；ID顺序按标签占位和运行时事实复制。"
+                                                         "Description":  "玩家和NPC都无条件同意贸易协议、免税贸易、商队通行、恢复商贸，或NPC接受history里的免税贸易/商路安排时输出。latest_reply说契约已成、既然你已应允、我会下令、交易成为友谊基石、接受整组协议时，若history条件含贸易，必须与和平/结盟同轮输出。durationDays未明说填default；ID顺序按标签占位和运行时事实复制。"
                                                      },
                                                      {
                                                          "Tag":  "[ACTION:DIPLOMACY:CANCEL_TRADE:id1:id2]",
@@ -834,7 +834,7 @@
                             "TopicNumber":  19,
                             "TopicLabel":  "Kingdom vassalage and submission",
                             "Code":  "VASSALAGE",
-                            "PreprocessExcludedInstruction":  "你不能代表王国答应臣属、朝贡、卫戍或附庸条约；应让玩家找国王谈。（VASSALAGE）",
+                            "PreprocessExcludedInstruction":  "当前玩家或者你都并非国家统治者，不可以答应臣属、朝贡、卫戍或附庸条约，你可以指出这一点，请让玩家去找王国统治者。（VASSALAGE）",
                             "NonHeroInstruction":  "只有国家统治者之间才能谈附庸国臣服。若玩家对非国王、士兵、平民或普通领主提出国家臣服要求，对方不能代表王国答应，只能说明必须找国王谈。",
                             "Instruction":  "【AF臣属国谈判规则】以运行时事实为准：玩家必须是自己王国的国王，对话对象必须是另一个NPC王国的国王。本规则只处理“对方王国向玩家王国臣服成为臣属国”，不是玩家加入对方王国，也不是普通家族归附。正文里只能自然谈判，不要写动作标签。第二版可谈三类：TRIBUTARY=朝贡国，交钱买保护但不出兵，保留军事自主权；GARRISON=卫戍国，军事臣属，出兵，不交钱，没有军事自主权，并使用0-100忠诚度；VASSAL=附庸国，也就是傀儡国，出钱、出兵，外交军事受宗主控制。注意：“附庸国”只对应VASSAL傀儡国，不叫完全附庸国。若本轮只泛称臣属、称臣、归顺或承认宗主地位但没有明确朝贡/卫戍/附庸，应追随语义：交钱求保护=TRIBUTARY；军事臣属/卫戍/出兵=GARRISON；傀儡、附庸国、外交军事由宗主控制=VASSAL。只有当你在\u003clatest_reply\u003e中已经最终明确接受臣属条约、愿意以你的王国名义向玩家王国递交臣属誓约时，才算同意；如果仍在谈条件、索要保证、犹豫、拖延、拒绝、反问或只是表达尊重，就不算同意。通知只是宫廷收到誓约的报告，不是玩家再次确认。吞并不是臣属国条约；若玩家明确要求彻底吞并整个国家、取消目标王国独立王权并让所有家族并入玩家王国，应按国家吞并规则处理，而不是输出臣属国标签。",
                             "PostprocessRules":  [

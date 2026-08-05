@@ -23054,6 +23054,202 @@ public class MyBehavior : CampaignBehaviorBase
 		return entry?.Settlement?.Name?.ToString() ?? entry?.Workshop?.Name?.ToString() ?? entry?.CaravanParty?.Name?.ToString() ?? "未知资产";
 	}
 
+	/// <summary>
+	/// Checks only the stable fixed-asset ID grammar used by GIVE_ASSET. This deliberately
+	/// does not treat display names or arbitrary item labels as fixed assets, so ordinary
+	/// RP item literals keep their existing fallback behavior.
+	/// </summary>
+	public static bool LooksLikeFixedAssetTransferIdForExternal(string assetToken)
+	{
+		string text = (assetToken ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text) || text.Length > 256 || text.IndexOf('\r') >= 0 || text.IndexOf('\n') >= 0)
+		{
+			return false;
+		}
+		if (text.StartsWith("workshop@", StringComparison.OrdinalIgnoreCase)
+			|| text.StartsWith("caravan@", StringComparison.OrdinalIgnoreCase))
+		{
+			return true;
+		}
+		if (text.StartsWith("settlement:", StringComparison.OrdinalIgnoreCase))
+		{
+			return text.Length > "settlement:".Length;
+		}
+		return text.StartsWith("town_", StringComparison.OrdinalIgnoreCase)
+			|| text.StartsWith("castle_", StringComparison.OrdinalIgnoreCase)
+			|| text.StartsWith("village_", StringComparison.OrdinalIgnoreCase);
+	}
+
+	/// <summary>
+	/// Resolves a real fixed asset from its canonical runtime ID without consulting the
+	/// current prompt snapshot. Settlement IDs are checked by exact runtime ID so custom
+	/// module settlement IDs work too; there is no name matching or item-object scan here.
+	/// </summary>
+	public static bool TryResolveFixedAssetTransferEntryByIdForExternal(string assetToken, out SettlementTransferPromptEntry entry)
+	{
+		entry = null;
+		string text = (assetToken ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text) || text.Length > 256 || text.IndexOf('\r') >= 0 || text.IndexOf('\n') >= 0)
+		{
+			return false;
+		}
+		try
+		{
+			if (text.StartsWith("workshop@", StringComparison.OrdinalIgnoreCase))
+			{
+				return TryResolveWorkshopFixedAssetTransferEntryById(text, out entry);
+			}
+			if (text.StartsWith("caravan@", StringComparison.OrdinalIgnoreCase))
+			{
+				return TryResolveCaravanFixedAssetTransferEntryById(text, out entry);
+			}
+			string settlementId = text.StartsWith("settlement:", StringComparison.OrdinalIgnoreCase)
+				? text.Substring("settlement:".Length).Trim()
+				: text;
+			Settlement settlement = FindSettlementByExactRuntimeIdForFixedAssetTransfer(settlementId);
+			if (settlement == null || !settlement.IsFortification)
+			{
+				return false;
+			}
+			Clan ownerClan = settlement.OwnerClan;
+			entry = new SettlementTransferPromptEntry
+			{
+				Section = SettlementTransferEntrySection.NpcFiefs,
+				AssetKind = SettlementTransferAssetKind.Settlement,
+				Settlement = settlement,
+				OwnerHero = ownerClan?.Leader,
+				SettlementId = (settlement.StringId ?? "").Trim(),
+				AssetId = (settlement.StringId ?? "").Trim(),
+				DisplayName = settlement.Name?.ToString() ?? "未知定居点",
+				TypeLabel = settlement.IsTown ? "城市" : "城堡",
+				DailyIncomeDenars = CalculateSettlementDailyIncomeDenars(settlement, ownerClan),
+				GuidePriceDenars = CalculateSettlementGuidePriceDenars(settlement, Clan.PlayerClan),
+				OwnerClan = ownerClan
+			};
+			return true;
+		}
+		catch
+		{
+			entry = null;
+			return false;
+		}
+	}
+
+	private static Settlement FindSettlementByExactRuntimeIdForFixedAssetTransfer(string settlementId)
+	{
+		string text = (settlementId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return null;
+		}
+		try
+		{
+			return Settlement.Find(text);
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static bool TryResolveWorkshopFixedAssetTransferEntryById(string assetId, out SettlementTransferPromptEntry entry)
+	{
+		entry = null;
+		int firstSeparator = assetId.IndexOf('@');
+		int lastSeparator = assetId.LastIndexOf('@');
+		if (firstSeparator < 0 || lastSeparator <= firstSeparator + 1 || lastSeparator >= assetId.Length - 1)
+		{
+			return false;
+		}
+		string settlementId = assetId.Substring(firstSeparator + 1, lastSeparator - firstSeparator - 1).Trim();
+		if (string.IsNullOrWhiteSpace(settlementId) || !int.TryParse(assetId.Substring(lastSeparator + 1), out int index) || index < 0)
+		{
+			return false;
+		}
+		Settlement settlement = FindSettlementByExactRuntimeIdForFixedAssetTransfer(settlementId);
+		if (settlement?.Town?.Workshops == null)
+		{
+			return false;
+		}
+		Workshop workshop = null;
+		if (index < settlement.Town.Workshops.Length)
+		{
+			workshop = settlement.Town.Workshops[index];
+			if (!string.Equals(BuildSettlementTransferAssetId(SettlementTransferAssetKind.Workshop, workshop: workshop), assetId, StringComparison.OrdinalIgnoreCase))
+			{
+				workshop = null;
+			}
+		}
+		if (workshop == null)
+		{
+			foreach (Workshop candidate in settlement.Town.Workshops)
+			{
+				if (candidate != null && string.Equals(BuildSettlementTransferAssetId(SettlementTransferAssetKind.Workshop, workshop: candidate), assetId, StringComparison.OrdinalIgnoreCase))
+				{
+					workshop = candidate;
+					break;
+				}
+			}
+		}
+		if (workshop == null)
+		{
+			return false;
+		}
+		Hero owner = workshop.Owner;
+		entry = new SettlementTransferPromptEntry
+		{
+			Section = SettlementTransferEntrySection.NpcFiefs,
+			AssetKind = SettlementTransferAssetKind.Workshop,
+			Settlement = settlement,
+			Workshop = workshop,
+			OwnerHero = owner,
+			SettlementId = assetId,
+			AssetId = assetId,
+			DisplayName = BuildWorkshopDisplayName(workshop),
+			TypeLabel = "工坊",
+			DailyIncomeDenars = CalculateWorkshopDailyIncomeDenars(workshop),
+			GuidePriceDenars = CalculateWorkshopGuidePriceDenars(workshop, playerIsBuyer: true),
+			OwnerClan = owner?.Clan
+		};
+		return true;
+	}
+
+	private static bool TryResolveCaravanFixedAssetTransferEntryById(string assetId, out SettlementTransferPromptEntry entry)
+	{
+		entry = null;
+		if (assetId.Length <= "caravan@".Length)
+		{
+			return false;
+		}
+		foreach (MobileParty caravanParty in MobileParty.AllCaravanParties)
+		{
+			if (caravanParty == null || !caravanParty.IsActive || caravanParty.CaravanPartyComponent == null
+				|| !string.Equals(BuildSettlementTransferAssetId(SettlementTransferAssetKind.Caravan, caravanParty: caravanParty), assetId, StringComparison.OrdinalIgnoreCase))
+			{
+				continue;
+			}
+			CaravanPartyComponent component = caravanParty.CaravanPartyComponent;
+			Hero owner = component.Owner;
+			entry = new SettlementTransferPromptEntry
+			{
+				Section = SettlementTransferEntrySection.NpcFiefs,
+				AssetKind = SettlementTransferAssetKind.Caravan,
+				Settlement = component.Settlement,
+				CaravanParty = caravanParty,
+				OwnerHero = owner,
+				SettlementId = assetId,
+				AssetId = assetId,
+				DisplayName = BuildCaravanDisplayName(component),
+				TypeLabel = component.CanHaveNavalNavigationCapability ? "商船队" : "商队",
+				DailyIncomeDenars = CalculateCaravanDailyIncomeDenars(caravanParty),
+				GuidePriceDenars = CalculateCaravanGuidePriceDenars(caravanParty),
+				OwnerClan = owner?.Clan
+			};
+			return true;
+		}
+		return false;
+	}
+
 	private static int CalculateWorkshopDailyIncomeDenars(Workshop workshop)
 	{
 		try

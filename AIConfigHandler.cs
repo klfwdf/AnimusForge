@@ -8409,14 +8409,6 @@ public static class AIConfigHandler
 	{
 		if (playerKingdom == null)
 		{
-			if (playerTier < mercTier)
-			{
-				return "no_kingdom_tier_below_merc";
-			}
-			if (playerTier < vassalTier)
-			{
-				return "no_kingdom_tier_merc_only";
-			}
 			return "no_kingdom";
 		}
 		if (isMercenaryService)
@@ -8427,10 +8419,6 @@ public static class AIConfigHandler
 			}
 			if (isSameKingdom)
 			{
-				if (playerTier < vassalTier)
-				{
-					return "mercenary_same_kingdom_tier_vassal_locked";
-				}
 				return "mercenary_same_kingdom_tier_vassal_ready";
 			}
 			return "mercenary_other_kingdom";
@@ -8846,14 +8834,6 @@ public static class AIConfigHandler
 			if (string.IsNullOrWhiteSpace(text2))
 			{
 				return "";
-			}
-			if (string.Equals(text2, "no_kingdom", StringComparison.OrdinalIgnoreCase))
-			{
-				text2 = "no_kingdom_tier_full";
-			}
-			else if (string.Equals(text2, "mercenary_same_kingdom", StringComparison.OrdinalIgnoreCase))
-			{
-				text2 = "mercenary_same_kingdom_tier_vassal_ready";
 			}
 			if (!ShouldAppendKingdomServiceConstraint(text2))
 			{

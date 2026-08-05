@@ -550,6 +550,26 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		public int LastTouchedDay;
 	}
 
+	private sealed class PendingNpcBattleEquipmentRestoreSlot
+	{
+		public int SlotIndex;
+
+		public string ItemId;
+
+		public string ModifierId;
+
+		public string CosmeticItemId;
+
+		public bool IsQuestItem;
+
+		public float RestoreOnOrAfterDay;
+	}
+
+	private sealed class PendingNpcBattleEquipmentRestoreRecord
+	{
+		public List<PendingNpcBattleEquipmentRestoreSlot> Slots = new List<PendingNpcBattleEquipmentRestoreSlot>();
+	}
+
 	public class DebtExportEntry
 	{
 		public int OwedGold;
@@ -689,6 +709,10 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 
 	private const float DefaultDebtDueDays = 1f;
 
+	private const float NpcBattleEquipmentRestoreDelayDays = 3f;
+
+	private const string PendingNpcBattleEquipmentRestoreStorageKey = "_rewardPendingNpcBattleEquipmentRestore_v1";
+
 	private const int TrustMin = -100;
 
 	private const int TrustMax = 100;
@@ -800,6 +824,10 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 	private Dictionary<string, GeneratedRewardRosterItemRecord> _generatedRewardPlayerRosterRecords = new Dictionary<string, GeneratedRewardRosterItemRecord>(StringComparer.OrdinalIgnoreCase);
 
 	private Dictionary<string, string> _generatedRewardPlayerRosterStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+	private Dictionary<string, PendingNpcBattleEquipmentRestoreRecord> _pendingNpcBattleEquipmentRestoreRecords = new Dictionary<string, PendingNpcBattleEquipmentRestoreRecord>(StringComparer.OrdinalIgnoreCase);
+
+	private Dictionary<string, string> _pendingNpcBattleEquipmentRestoreStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
 	private List<string> _lastGeneratedNpcFactLines = new List<string>();
 
@@ -1263,6 +1291,14 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			_generatedRewardPlayerRosterStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		}
+		if (_pendingNpcBattleEquipmentRestoreRecords == null)
+		{
+			_pendingNpcBattleEquipmentRestoreRecords = new Dictionary<string, PendingNpcBattleEquipmentRestoreRecord>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_pendingNpcBattleEquipmentRestoreStorage == null)
+		{
+			_pendingNpcBattleEquipmentRestoreStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		}
 		try
 		{
 			_debtStorage.Clear();
@@ -1324,6 +1360,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			SyncPublicTrustProgressCarryData(dataStore);
 			SyncHeroJoinOriginalClanData(dataStore);
 			SyncGeneratedRewardItemData(dataStore);
+			SyncPendingNpcBattleEquipmentRestoreData(dataStore);
 		}
 		catch (Exception ex3)
 		{
@@ -1352,6 +1389,8 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			_generatedRewardItemStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			_generatedRewardPlayerRosterRecords = new Dictionary<string, GeneratedRewardRosterItemRecord>(StringComparer.OrdinalIgnoreCase);
 			_generatedRewardPlayerRosterStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			_pendingNpcBattleEquipmentRestoreRecords = new Dictionary<string, PendingNpcBattleEquipmentRestoreRecord>(StringComparer.OrdinalIgnoreCase);
+			_pendingNpcBattleEquipmentRestoreStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		}
 	}
 
@@ -1405,6 +1444,119 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			Logger.Log("RewardSystem", "[HeroJoinOriginalClan] SyncData failed: " + ex2.Message);
 			_heroJoinOriginalClanRecords = new Dictionary<string, HeroJoinOriginalClanRecord>(StringComparer.OrdinalIgnoreCase);
 			_heroJoinOriginalClanStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		}
+	}
+
+	private static bool IsValidNpcBattleEquipmentRestoreSlot(int slotIndex)
+	{
+		return slotIndex >= 0 && slotIndex < (int)EquipmentIndex.NumEquipmentSetSlots;
+	}
+
+	private static bool CanTransferNpcBattleEquipment(EquipmentIndex slot, EquipmentElement equipmentElement)
+	{
+		ItemObject item = equipmentElement.Item;
+		return IsValidNpcBattleEquipmentRestoreSlot((int)slot)
+			&& item != null
+			&& item != DefaultItems.Trash
+			&& !equipmentElement.IsQuestItem
+			&& !item.IsBannerItem;
+	}
+
+	private static PendingNpcBattleEquipmentRestoreRecord NormalizePendingNpcBattleEquipmentRestoreRecord(string heroId, PendingNpcBattleEquipmentRestoreRecord record)
+	{
+		if (string.IsNullOrWhiteSpace(heroId) || record == null || record.Slots == null)
+		{
+			return null;
+		}
+		Dictionary<int, PendingNpcBattleEquipmentRestoreSlot> slotsByIndex = new Dictionary<int, PendingNpcBattleEquipmentRestoreSlot>();
+		foreach (PendingNpcBattleEquipmentRestoreSlot slot in record.Slots)
+		{
+			string itemId = (slot?.ItemId ?? "").Trim();
+			if (slot == null || !IsValidNpcBattleEquipmentRestoreSlot(slot.SlotIndex) || string.IsNullOrWhiteSpace(itemId))
+			{
+				continue;
+			}
+			slotsByIndex[slot.SlotIndex] = new PendingNpcBattleEquipmentRestoreSlot
+			{
+				SlotIndex = slot.SlotIndex,
+				ItemId = itemId,
+				ModifierId = (slot.ModifierId ?? "").Trim(),
+				CosmeticItemId = (slot.CosmeticItemId ?? "").Trim(),
+				IsQuestItem = slot.IsQuestItem,
+				RestoreOnOrAfterDay = Math.Max(0f, slot.RestoreOnOrAfterDay)
+			};
+		}
+		if (slotsByIndex.Count == 0)
+		{
+			return null;
+		}
+		record.Slots = slotsByIndex.Values.OrderBy((PendingNpcBattleEquipmentRestoreSlot x) => x.SlotIndex).ToList();
+		return record;
+	}
+
+	private void SyncPendingNpcBattleEquipmentRestoreData(IDataStore dataStore)
+	{
+		if (dataStore == null)
+		{
+			return;
+		}
+		if (_pendingNpcBattleEquipmentRestoreRecords == null)
+		{
+			_pendingNpcBattleEquipmentRestoreRecords = new Dictionary<string, PendingNpcBattleEquipmentRestoreRecord>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_pendingNpcBattleEquipmentRestoreStorage == null)
+		{
+			_pendingNpcBattleEquipmentRestoreStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		}
+		try
+		{
+			if (dataStore.IsSaving)
+			{
+				_pendingNpcBattleEquipmentRestoreStorage.Clear();
+				foreach (KeyValuePair<string, PendingNpcBattleEquipmentRestoreRecord> item in _pendingNpcBattleEquipmentRestoreRecords)
+				{
+					PendingNpcBattleEquipmentRestoreRecord record = NormalizePendingNpcBattleEquipmentRestoreRecord(item.Key, item.Value);
+					if (record != null)
+					{
+						_pendingNpcBattleEquipmentRestoreStorage[item.Key] = JsonConvert.SerializeObject(record);
+					}
+				}
+			}
+			Dictionary<string, string> storage = dataStore.IsSaving
+				? CampaignSaveChunkHelper.FlattenStringDictionary(_pendingNpcBattleEquipmentRestoreStorage, PendingNpcBattleEquipmentRestoreStorageKey, "RewardNpcEquipmentRestore")
+				: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			dataStore.SyncData(PendingNpcBattleEquipmentRestoreStorageKey, ref storage);
+			_pendingNpcBattleEquipmentRestoreStorage = CampaignSaveChunkHelper.RestoreStringDictionary(storage, "RewardNpcEquipmentRestore") ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			if (!dataStore.IsLoading)
+			{
+				return;
+			}
+			_pendingNpcBattleEquipmentRestoreRecords.Clear();
+			foreach (KeyValuePair<string, string> item2 in _pendingNpcBattleEquipmentRestoreStorage)
+			{
+				if (string.IsNullOrWhiteSpace(item2.Key) || string.IsNullOrWhiteSpace(item2.Value))
+				{
+					continue;
+				}
+				try
+				{
+					PendingNpcBattleEquipmentRestoreRecord record2 = NormalizePendingNpcBattleEquipmentRestoreRecord(item2.Key, JsonConvert.DeserializeObject<PendingNpcBattleEquipmentRestoreRecord>(item2.Value));
+					if (record2 != null)
+					{
+						_pendingNpcBattleEquipmentRestoreRecords[item2.Key] = record2;
+					}
+				}
+				catch (Exception ex)
+				{
+					Logger.Log("RewardSystem", "[NpcEquipmentRestore] deserialize failed hero=" + item2.Key + " error=" + ex.Message);
+				}
+			}
+		}
+		catch (Exception ex2)
+		{
+			Logger.Log("RewardSystem", "[NpcEquipmentRestore] SyncData failed: " + ex2.Message);
+			_pendingNpcBattleEquipmentRestoreRecords = new Dictionary<string, PendingNpcBattleEquipmentRestoreRecord>(StringComparer.OrdinalIgnoreCase);
+			_pendingNpcBattleEquipmentRestoreStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		}
 	}
 
@@ -4809,6 +4961,11 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 
 	private bool TryApplySettlementTransferEntryAction(Hero giver, Hero receiver, string directionToken, MyBehavior.SettlementTransferPromptEntry entry, out string statusText)
 	{
+		return TryApplySettlementTransferEntryAction(giver, receiver, directionToken, entry, allowDirectFixedAssetIdOverride: false, out statusText);
+	}
+
+	private bool TryApplySettlementTransferEntryAction(Hero giver, Hero receiver, string directionToken, MyBehavior.SettlementTransferPromptEntry entry, bool allowDirectFixedAssetIdOverride, out string statusText)
+	{
 		statusText = "";
 		try
 		{
@@ -4838,11 +4995,11 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			switch (entry.AssetKind)
 			{
 			case MyBehavior.SettlementTransferAssetKind.Settlement:
-				return TryApplySettlementFixedAssetTransfer(giver, receiver, targetOwner, direction, entry.Settlement, assetName, out statusText);
+				return TryApplySettlementFixedAssetTransfer(giver, receiver, targetOwner, direction, entry.Settlement, assetName, allowDirectFixedAssetIdOverride, out statusText);
 			case MyBehavior.SettlementTransferAssetKind.Workshop:
-				return TryApplyWorkshopFixedAssetTransfer(giver, receiver, targetOwner, direction, entry.Workshop, assetName, out statusText);
+				return TryApplyWorkshopFixedAssetTransfer(giver, receiver, targetOwner, direction, entry.Workshop, assetName, allowDirectFixedAssetIdOverride, out statusText);
 			case MyBehavior.SettlementTransferAssetKind.Caravan:
-				return TryApplyCaravanFixedAssetTransfer(giver, receiver, targetOwner, direction, entry.CaravanParty, assetName, out statusText);
+				return TryApplyCaravanFixedAssetTransfer(giver, receiver, targetOwner, direction, entry.CaravanParty, assetName, allowDirectFixedAssetIdOverride, out statusText);
 			default:
 				statusText = "执行失败：未知固定资产类型。";
 				return false;
@@ -4855,7 +5012,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private bool TryApplySettlementFixedAssetTransfer(Hero giver, Hero receiver, Hero targetOwner, string direction, Settlement settlement, string assetName, out string statusText)
+	private bool TryApplySettlementFixedAssetTransfer(Hero giver, Hero receiver, Hero targetOwner, string direction, Settlement settlement, string assetName, bool allowDirectFixedAssetIdOverride, out string statusText)
 	{
 		statusText = "";
 		if (settlement == null || !settlement.IsFortification || settlement.Town == null)
@@ -4875,7 +5032,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		if (direction == "TO_PLAYER")
 		{
-			if (settlement.OwnerClan != giver.Clan)
+			if (!allowDirectFixedAssetIdOverride && settlement.OwnerClan != giver.Clan)
 			{
 				statusText = $"执行失败：{assetName} 不属于 {giver.Name} 的家族，不能由其转给玩家。";
 				return false;
@@ -4929,7 +5086,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private bool TryApplyWorkshopFixedAssetTransfer(Hero giver, Hero receiver, Hero targetOwner, string direction, Workshop workshop, string assetName, out string statusText)
+	private bool TryApplyWorkshopFixedAssetTransfer(Hero giver, Hero receiver, Hero targetOwner, string direction, Workshop workshop, string assetName, bool allowDirectFixedAssetIdOverride, out string statusText)
 	{
 		statusText = "";
 		if (!IsWorkshopFixedAssetStateUsable(workshop))
@@ -4950,7 +5107,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		if (direction == "TO_PLAYER")
 		{
-			if (oldOwner != giver)
+			if (!allowDirectFixedAssetIdOverride && oldOwner != giver)
 			{
 				statusText = $"执行失败：{assetName} 不属于 {giver.Name}，不能由其转给玩家。";
 				return false;
@@ -4982,7 +5139,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		return true;
 	}
 
-	private bool TryApplyCaravanFixedAssetTransfer(Hero giver, Hero receiver, Hero targetOwner, string direction, MobileParty caravanParty, string assetName, out string statusText)
+	private bool TryApplyCaravanFixedAssetTransfer(Hero giver, Hero receiver, Hero targetOwner, string direction, MobileParty caravanParty, string assetName, bool allowDirectFixedAssetIdOverride, out string statusText)
 	{
 		statusText = "";
 		CaravanPartyComponent component = caravanParty?.CaravanPartyComponent;
@@ -4997,9 +5154,14 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			return false;
 		}
 		Hero oldOwner = component.Owner;
+		if (oldOwner == null || !IsValidWorkshopFixedAssetOwner(oldOwner))
+		{
+			statusText = $"执行失败：{assetName} 当前商队主人无效或已死亡。";
+			return false;
+		}
 		if (direction == "TO_PLAYER")
 		{
-			if (oldOwner != giver)
+			if (!allowDirectFixedAssetIdOverride && oldOwner != giver)
 			{
 				statusText = $"执行失败：{assetName} 不属于 {giver.Name}，不能由其转给玩家。";
 				return false;
@@ -7560,31 +7722,21 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			int num = 2;
+			int num = 0;
 			try
 			{
-				num = Campaign.Current?.Models?.ClanTierModel?.VassalEligibleTier ?? 2;
+				num = (Campaign.Current?.Models?.DiplomacyModel?.MinimumRelationWithConversationCharacterToJoinKingdom).GetValueOrDefault();
 			}
 			catch
 			{
-				num = 2;
-			}
-			int num2 = 0;
-			try
-			{
-				num2 = (Campaign.Current?.Models?.DiplomacyModel?.MinimumRelationWithConversationCharacterToJoinKingdom).GetValueOrDefault();
-			}
-			catch
-			{
-				num2 = 0;
+				num = 0;
 			}
 			bool flag = playerClan.Kingdom == null || playerClan.IsUnderMercenaryService;
 			bool flag2 = !playerClan.IsAtWarWith(offerKingdom);
-			bool flag3 = playerClan.Tier >= num;
-			bool flag4 = !offerKingdom.IsEliminated;
-			bool flag5 = offerKingdom.Leader != null && offerKingdom.Leader.GetRelationWithPlayer() >= (float)num2;
-			bool flag6 = IsPlayerWarsCompatibleWithKingdom(offerKingdom);
-			return flag && flag2 && flag3 && flag4 && flag5 && flag6;
+			bool flag3 = !offerKingdom.IsEliminated;
+			bool flag4 = offerKingdom.Leader != null && offerKingdom.Leader.GetRelationWithPlayer() >= (float)num;
+			bool flag5 = IsPlayerWarsCompatibleWithKingdom(offerKingdom);
+			return flag && flag2 && flag3 && flag4 && flag5;
 		}
 		catch
 		{
@@ -7902,26 +8054,28 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 					statusText = "执行失败：只有目标王国的国王才能授予正式封臣身份。";
 					return false;
 				}
-				int num3 = 2;
-				try
-				{
-					num3 = Campaign.Current?.Models?.ClanTierModel?.VassalEligibleTier ?? 2;
-				}
-				catch
-				{
-					num3 = 2;
-				}
-				if (playerClan.Tier < num3)
-				{
-					statusText = "执行失败：玩家家族等级不足，成为正式封臣至少需要家族等级 " + num3 + "。";
-					return false;
-				}
 				if (playerClan.Kingdom == kingdom2 && !playerClan.IsUnderMercenaryService)
 				{
 					statusText = $"执行跳过：玩家已是 {kingdom2.Name} 的正式封臣。";
 					return false;
 				}
-				ChangeKingdomAction.ApplyByJoinToKingdom(playerClan, kingdom2);
+				if (playerClan.Kingdom == kingdom2 && playerClan.IsUnderMercenaryService)
+				{
+					EndMercenaryServiceAction.EndByBecomingVassal(playerClan);
+				}
+				else
+				{
+					if (playerClan.IsUnderMercenaryService)
+					{
+						EndMercenaryServiceAction.EndByLeavingKingdom(playerClan);
+					}
+					ChangeKingdomAction.ApplyByJoinToKingdom(playerClan, kingdom2);
+				}
+				if (playerClan.Kingdom != kingdom2 || playerClan.IsUnderMercenaryService)
+				{
+					statusText = $"执行失败：玩家未能成为 {kingdom2.Name} 的正式封臣。";
+					return false;
+				}
 				statusText = $"执行成功：玩家已加入 {kingdom2.Name} 成为正式封臣（KingdomId={kingdom2.StringId}）。";
 				return true;
 			}
@@ -7935,7 +8089,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private bool TryApplySettlementTransferAction(Hero giver, Hero receiver, string directionToken, string settlementToken, out MyBehavior.SettlementTransferPromptEntry authorizedEntry, out string statusText)
+	private bool TryApplySettlementTransferAction(Hero giver, Hero receiver, string directionToken, string settlementToken, IDictionary<string, FixedAssetTokenResolution> fixedAssetResolutionCache, ISet<string> unresolvedFixedAssetTokens, out MyBehavior.SettlementTransferPromptEntry authorizedEntry, out string statusText)
 	{
 		authorizedEntry = null;
 		statusText = "";
@@ -7952,27 +8106,16 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				statusText = "执行失败：后处理仅允许 NPC 向玩家转移固定资产。";
 				return false;
 			}
-			if (!PromptListRetrievalService.TryGetSettlementTransferSnapshot(PromptListRetrievalService.SettlementTransferAllNpcAssetsSnapshotScope, giver, giver?.CharacterObject, -1, out var authorizedEntries))
-			{
-				statusText = "执行失败：固定资产授权快照缺失。";
-				return false;
-			}
-			string token = (settlementToken ?? "").Trim();
-			authorizedEntry = authorizedEntries.FirstOrDefault((MyBehavior.SettlementTransferPromptEntry x) => x != null &&
-				(string.Equals(MyBehavior.GetSettlementTransferAssetIdForExternal(x), token, StringComparison.OrdinalIgnoreCase) ||
-				 string.Equals((x.AssetId ?? "").Trim(), token, StringComparison.OrdinalIgnoreCase) ||
-				 string.Equals((x.SettlementId ?? "").Trim(), token, StringComparison.OrdinalIgnoreCase) ||
-				 string.Equals((x.DisplayName ?? "").Trim(), token, StringComparison.OrdinalIgnoreCase)));
-			if (authorizedEntry == null && int.TryParse(token, out var promptIndex) && promptIndex > 0)
-			{
-				authorizedEntry = authorizedEntries.FirstOrDefault((MyBehavior.SettlementTransferPromptEntry x) => x != null && x.PromptIndex == promptIndex);
-			}
-			if (authorizedEntry == null)
+			if (!TryResolveFixedAssetTokenForGiveAsset(giver, settlementToken, fixedAssetResolutionCache, unresolvedFixedAssetTokens, out authorizedEntry, out bool isPromptAuthorized))
 			{
 				statusText = "执行失败：未找到可转移的固定资产（" + settlementToken + "）。";
 				return false;
 			}
-			return TryApplySettlementTransferEntryAction(giver, receiver, text, authorizedEntry, out statusText);
+			if (!isPromptAuthorized)
+			{
+				Logger.Log("Logic", "[Reward] GIVE_ASSET fixed_asset_direct_id_execute giver=" + (giver.StringId ?? "") + " asset=" + (settlementToken ?? "").Trim());
+			}
+			return TryApplySettlementTransferEntryAction(giver, receiver, text, authorizedEntry, allowDirectFixedAssetIdOverride: !isPromptAuthorized, out statusText);
 		}
 		catch (Exception ex)
 		{
@@ -8304,6 +8447,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		try
 		{
 			RemoveGeneratedRewardItemsFromMarketRosters("daily_tick");
+			RestoreDueNpcBattleEquipment("daily_tick");
 			if (_debts == null || _debts.Count <= 0)
 			{
 				return;
@@ -8459,6 +8603,114 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("Trust", "[WARN] OnDailyTick overdue penalty failed: " + ex.Message);
+		}
+	}
+
+	private void RestoreDueNpcBattleEquipment(string source)
+	{
+		if (_pendingNpcBattleEquipmentRestoreRecords == null || _pendingNpcBattleEquipmentRestoreRecords.Count == 0)
+		{
+			return;
+		}
+		if (!DuelSettings.IsNpcBattleEquipmentRestoreEnabled())
+		{
+			return;
+		}
+		float nowCampaignDay = GetNowCampaignDay();
+		foreach (KeyValuePair<string, PendingNpcBattleEquipmentRestoreRecord> pending in _pendingNpcBattleEquipmentRestoreRecords.ToList())
+		{
+			string heroId = (pending.Key ?? "").Trim();
+			PendingNpcBattleEquipmentRestoreRecord record = NormalizePendingNpcBattleEquipmentRestoreRecord(heroId, pending.Value);
+			if (record == null)
+			{
+				_pendingNpcBattleEquipmentRestoreRecords.Remove(pending.Key);
+				continue;
+			}
+			Hero hero = null;
+			try
+			{
+				hero = Hero.Find(heroId);
+			}
+			catch
+			{
+				hero = null;
+			}
+			if (hero == null || hero == Hero.MainHero || hero.IsDead || hero.BattleEquipment == null)
+			{
+				_pendingNpcBattleEquipmentRestoreRecords.Remove(pending.Key);
+				Logger.Log("RewardSystem", "[NpcEquipmentRestore] discarded hero=" + heroId + " reason=" + ((hero == null) ? "hero_unavailable" : ((hero.IsDead) ? "hero_dead" : "not_restorable")) + " source=" + (source ?? ""));
+				continue;
+			}
+			List<PendingNpcBattleEquipmentRestoreSlot> remainingSlots = new List<PendingNpcBattleEquipmentRestoreSlot>(record.Slots.Count);
+			foreach (PendingNpcBattleEquipmentRestoreSlot slot in record.Slots)
+			{
+				if (slot == null || !IsValidNpcBattleEquipmentRestoreSlot(slot.SlotIndex))
+				{
+					continue;
+				}
+				if (nowCampaignDay + 0.01f < slot.RestoreOnOrAfterDay)
+				{
+					remainingSlots.Add(slot);
+					continue;
+				}
+				EquipmentIndex equipmentIndex = (EquipmentIndex)slot.SlotIndex;
+				ItemObject currentItem = hero.BattleEquipment[equipmentIndex].Item;
+				if (currentItem != null && currentItem != DefaultItems.Trash)
+				{
+					Logger.Log("RewardSystem", "[NpcEquipmentRestore] skipped hero=" + heroId + " slot=" + slot.SlotIndex.ToString(CultureInfo.InvariantCulture) + " reason=slot_already_filled source=" + (source ?? ""));
+					continue;
+				}
+				ItemObject item = ResolveItemById(slot.ItemId);
+				if (item == null || slot.IsQuestItem || item.IsBannerItem || !Equipment.IsItemFitsToSlot(equipmentIndex, item))
+				{
+					Logger.Log("RewardSystem", "[NpcEquipmentRestore] discarded hero=" + heroId + " slot=" + slot.SlotIndex.ToString(CultureInfo.InvariantCulture) + " item=" + (slot.ItemId ?? "") + " reason=item_unavailable_or_incompatible source=" + (source ?? ""));
+					continue;
+				}
+				ItemModifier modifier = null;
+				if (!string.IsNullOrWhiteSpace(slot.ModifierId))
+				{
+					try
+					{
+						modifier = Game.Current?.ObjectManager?.GetObject<ItemModifier>(slot.ModifierId);
+					}
+					catch
+					{
+						modifier = null;
+					}
+					if (modifier == null)
+					{
+						Logger.Log("RewardSystem", "[NpcEquipmentRestore] modifier fallback hero=" + heroId + " slot=" + slot.SlotIndex.ToString(CultureInfo.InvariantCulture) + " modifier=" + slot.ModifierId);
+					}
+				}
+				ItemObject cosmeticItem = null;
+				if (!string.IsNullOrWhiteSpace(slot.CosmeticItemId))
+				{
+					cosmeticItem = ResolveItemById(slot.CosmeticItemId);
+					if (cosmeticItem == null)
+					{
+						Logger.Log("RewardSystem", "[NpcEquipmentRestore] cosmetic fallback hero=" + heroId + " slot=" + slot.SlotIndex.ToString(CultureInfo.InvariantCulture) + " cosmetic=" + slot.CosmeticItemId);
+					}
+				}
+				try
+				{
+					hero.BattleEquipment[equipmentIndex] = new EquipmentElement(item, modifier, cosmeticItem, slot.IsQuestItem);
+					Logger.Log("RewardSystem", "[NpcEquipmentRestore] restored hero=" + heroId + " slot=" + slot.SlotIndex.ToString(CultureInfo.InvariantCulture) + " item=" + (item.StringId ?? "") + " source=" + (source ?? ""));
+				}
+				catch (Exception ex)
+				{
+					remainingSlots.Add(slot);
+					Logger.Log("RewardSystem", "[NpcEquipmentRestore] restore failed hero=" + heroId + " slot=" + slot.SlotIndex.ToString(CultureInfo.InvariantCulture) + " error=" + ex.Message);
+				}
+			}
+			if (remainingSlots.Count == 0)
+			{
+				_pendingNpcBattleEquipmentRestoreRecords.Remove(pending.Key);
+			}
+			else
+			{
+				record.Slots = remainingSlots;
+				_pendingNpcBattleEquipmentRestoreRecords[pending.Key] = record;
+			}
 		}
 	}
 
@@ -19271,6 +19523,67 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		return entry != null;
 	}
 
+	private sealed class FixedAssetTokenResolution
+	{
+		public MyBehavior.SettlementTransferPromptEntry Entry;
+
+		public bool IsPromptAuthorized;
+	}
+
+	/// <summary>
+	/// Resolves a GIVE_ASSET token as a fixed asset. The prompt snapshot remains the first
+	/// choice; only an exact, canonical runtime asset ID may use the global fallback. The
+	/// per-response caches avoid repeated lookup/scans when a postprocess emits duplicate IDs.
+	/// </summary>
+	private static bool TryResolveFixedAssetTokenForGiveAsset(Hero giver, string assetToken, IDictionary<string, FixedAssetTokenResolution> fixedAssetResolutionCache, ISet<string> unresolvedFixedAssetTokens, out MyBehavior.SettlementTransferPromptEntry entry, out bool isPromptAuthorized)
+	{
+		entry = null;
+		isPromptAuthorized = false;
+		string token = (assetToken ?? "").Trim();
+		if (giver == null || string.IsNullOrWhiteSpace(token))
+		{
+			return false;
+		}
+		if (fixedAssetResolutionCache != null && fixedAssetResolutionCache.TryGetValue(token, out FixedAssetTokenResolution cached) && cached?.Entry != null)
+		{
+			entry = cached.Entry;
+			isPromptAuthorized = cached.IsPromptAuthorized;
+			return true;
+		}
+		if (unresolvedFixedAssetTokens != null && unresolvedFixedAssetTokens.Contains(token))
+		{
+			return false;
+		}
+		if (TryResolveAuthorizedNpcFixedAsset(giver, token, out entry))
+		{
+			isPromptAuthorized = true;
+			if (fixedAssetResolutionCache != null)
+			{
+				fixedAssetResolutionCache[token] = new FixedAssetTokenResolution
+				{
+					Entry = entry,
+					IsPromptAuthorized = true
+				};
+			}
+			return true;
+		}
+		if (MyBehavior.TryResolveFixedAssetTransferEntryByIdForExternal(token, out entry))
+		{
+			if (fixedAssetResolutionCache != null)
+			{
+				fixedAssetResolutionCache[token] = new FixedAssetTokenResolution
+				{
+					Entry = entry,
+					IsPromptAuthorized = false
+				};
+			}
+			Logger.Log("Logic", "[Reward] GIVE_ASSET fixed_asset_direct_id_resolved giver=" + (giver.StringId ?? "") + " asset=" + token + " kind=" + entry.AssetKind);
+			return true;
+		}
+		unresolvedFixedAssetTokens?.Add(token);
+		return false;
+	}
+
 	private int ResolveAllRewardItemAmount(string itemToken, IEnumerable<RewardItemInfo> contextItems)
 	{
 		string token = (itemToken ?? "").Trim();
@@ -19385,6 +19698,8 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			int settlementTransferSucceeded = 0;
 			int settlementTransferFailed = 0;
 			long settlementTransferActualValue = 0L;
+			Dictionary<string, FixedAssetTokenResolution> fixedAssetResolutionCache = new Dictionary<string, FixedAssetTokenResolution>(StringComparer.OrdinalIgnoreCase);
+			HashSet<string> unresolvedFixedAssetTokens = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			Settlement notableMarketSettlement = ResolveNotableMarketSettlement(giver);
 			bool giverUsesNotableMarket = IsNotableMarketHero(giver, notableMarketSettlement);
 			string notableMarketLabel = GetSettlementMarketTypeLabel(notableMarketSettlement) + "市场";
@@ -19442,7 +19757,8 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			responseText = GiveAssetTagCodec.ReplaceTags(responseText, delegate(GiveAssetTag tag)
 			{
 				string value4 = (tag.AssetToken ?? "").Trim();
-				if (TryResolveAuthorizedNpcFixedAsset(giver, value4, out var _))
+				if (TryResolveFixedAssetTokenForGiveAsset(giver, value4, fixedAssetResolutionCache, unresolvedFixedAssetTokens, out var _, out var _)
+					|| MyBehavior.LooksLikeFixedAssetTransferIdForExternal(value4))
 				{
 					return tag.RawTag;
 				}
@@ -19767,7 +20083,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 					bool flag2 = false;
 					if (validQuantity)
 					{
-						flag2 = TryApplySettlementTransferAction(giver, receiver, "TO_PLAYER", settlementToken, out entry, out statusText);
+						flag2 = TryApplySettlementTransferAction(giver, receiver, "TO_PLAYER", settlementToken, fixedAssetResolutionCache, unresolvedFixedAssetTokens, out entry, out statusText);
 					}
 					else
 					{
@@ -21104,6 +21420,76 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		Instance?.RememberGeneratedRewardPlayerRosterItem(equipmentElement, amount, source);
 	}
 
+	internal static bool TryQueueNpcBattleEquipmentRestoreForExternal(Hero hero, EquipmentIndex slot, EquipmentElement equipmentElement, string source)
+	{
+		RewardSystemBehavior instance = Instance;
+		return instance != null && instance.TryQueueNpcBattleEquipmentRestore(hero, slot, equipmentElement, source);
+	}
+
+	private bool TryQueueNpcBattleEquipmentRestore(Hero hero, EquipmentIndex slot, EquipmentElement equipmentElement, string source)
+	{
+		try
+		{
+			if (hero == null || hero == Hero.MainHero || hero.IsDead || !CanTransferNpcBattleEquipment(slot, equipmentElement))
+			{
+				return false;
+			}
+			string heroId = NormalizeHeroId(hero);
+			string itemId = (equipmentElement.Item.StringId ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(heroId) || string.IsNullOrWhiteSpace(itemId))
+			{
+				return false;
+			}
+			if (_pendingNpcBattleEquipmentRestoreRecords == null)
+			{
+				_pendingNpcBattleEquipmentRestoreRecords = new Dictionary<string, PendingNpcBattleEquipmentRestoreRecord>(StringComparer.OrdinalIgnoreCase);
+			}
+			float restoreDay = GetNowCampaignDay() + NpcBattleEquipmentRestoreDelayDays;
+			PendingNpcBattleEquipmentRestoreSlot pendingSlot = new PendingNpcBattleEquipmentRestoreSlot
+			{
+				SlotIndex = (int)slot,
+				ItemId = itemId,
+				ModifierId = (equipmentElement.ItemModifier?.StringId ?? "").Trim(),
+				CosmeticItemId = (equipmentElement.CosmeticItem?.StringId ?? "").Trim(),
+				IsQuestItem = equipmentElement.IsQuestItem,
+				RestoreOnOrAfterDay = restoreDay
+			};
+			if (!_pendingNpcBattleEquipmentRestoreRecords.TryGetValue(heroId, out PendingNpcBattleEquipmentRestoreRecord record) || record == null)
+			{
+				record = new PendingNpcBattleEquipmentRestoreRecord();
+				_pendingNpcBattleEquipmentRestoreRecords[heroId] = record;
+			}
+			if (record.Slots == null)
+			{
+				record.Slots = new List<PendingNpcBattleEquipmentRestoreSlot>();
+			}
+			int existingSlotIndex = -1;
+			for (int i = record.Slots.Count - 1; i >= 0; i--)
+			{
+				if (record.Slots[i] != null && record.Slots[i].SlotIndex == (int)slot)
+				{
+					existingSlotIndex = i;
+					break;
+				}
+			}
+			if (existingSlotIndex >= 0)
+			{
+				record.Slots[existingSlotIndex] = pendingSlot;
+			}
+			else
+			{
+				record.Slots.Add(pendingSlot);
+			}
+			Logger.Log("RewardSystem", "[NpcEquipmentRestore] queued hero=" + heroId + " slot=" + ((int)slot).ToString(CultureInfo.InvariantCulture) + " item=" + itemId + " restoreDay=" + restoreDay.ToString("0.00", CultureInfo.InvariantCulture) + " source=" + (source ?? ""));
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("RewardSystem", "[NpcEquipmentRestore] queue failed hero=" + (hero?.StringId ?? "") + " slot=" + ((int)slot).ToString(CultureInfo.InvariantCulture) + " error=" + ex.Message);
+			return false;
+		}
+	}
+
 	internal int TransferItemById(Hero giver, Hero receiver, string itemStringId, int amount, out string itemName)
 	{
 		return TransferItemById(giver, receiver, itemStringId, amount, out itemName, forceComplete: false);
@@ -21182,8 +21568,9 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		EquipmentIndex[] array3 = array2;
 		foreach (EquipmentIndex equipmentIndex in array3)
 		{
-			ItemObject item2 = giver.BattleEquipment[equipmentIndex].Item;
-			if (item2 != null && MatchesItemLookupToken(giver.BattleEquipment[equipmentIndex], lookup))
+			EquipmentElement equipmentElement2 = giver.BattleEquipment[equipmentIndex];
+			ItemObject item2 = equipmentElement2.Item;
+			if (CanTransferNpcBattleEquipment(equipmentIndex, equipmentElement2) && MatchesItemLookupToken(equipmentElement2, lookup))
 			{
 				if (itemObject == null)
 				{
@@ -21223,6 +21610,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				itemName = equipmentElement.GetModifiedItemName()?.ToString() ?? equipmentElement.Item.Name?.ToString() ?? itemStringId;
 			}
 		}
+		bool queueNpcBattleEquipmentRestore = giver != Hero.MainHero && DuelSettings.IsNpcBattleEquipmentRestoreEnabled();
 		for (int l = 0; l < list.Count; l++)
 		{
 			if (num3 <= 0)
@@ -21232,11 +21620,24 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			EquipmentIndex index = list[l];
 			EquipmentElement equipmentElement2 = giver.BattleEquipment[index];
 			ItemObject item4 = equipmentElement2.Item;
-			if (item4 != null && MatchesItemLookupToken(equipmentElement2, lookup))
+			if (CanTransferNpcBattleEquipment(index, equipmentElement2) && item4 != null && MatchesItemLookupToken(equipmentElement2, lookup))
 			{
 				int addedFromEquipment = AddEquipmentElementToRosterAndCountDelta(itemRoster2, equipmentElement2, 1, "hero_equipment:" + lookup);
 				if (addedFromEquipment <= 0)
 				{
+					continue;
+				}
+				if (queueNpcBattleEquipmentRestore && !TryQueueNpcBattleEquipmentRestore(giver, index, equipmentElement2, "hero_item_transfer"))
+				{
+					try
+					{
+						itemRoster2.AddToCounts(equipmentElement2, -addedFromEquipment);
+					}
+					catch (Exception ex)
+					{
+						Logger.Log("RewardSystem", "[NpcEquipmentRestore] rollback failed hero=" + (giver.StringId ?? "") + " slot=" + ((int)index).ToString(CultureInfo.InvariantCulture) + " error=" + ex.Message);
+					}
+					Logger.Log("RewardSystem", "[NpcEquipmentRestore] transfer kept source equipped because queue failed hero=" + (giver.StringId ?? "") + " slot=" + ((int)index).ToString(CultureInfo.InvariantCulture));
 					continue;
 				}
 				giver.BattleEquipment[index] = EquipmentElement.Invalid;

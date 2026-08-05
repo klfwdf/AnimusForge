@@ -329,6 +329,42 @@ public class ShoutBehavior : CampaignBehaviorBase
 		public Func<bool> CanStillPublish;
 	}
 
+	// This request is created and consumed only on the Bannerlord main thread.
+	// Its Messages payload is copied into locals before the background HTTP task starts,
+	// so the worker never needs to dereference Mission, Agent, Hero, or UI state.
+	private sealed class ImmediateSceneReactionRequest
+	{
+		public long RequestId;
+
+		public long RuntimeGeneration;
+
+		public int SceneHistorySessionId;
+
+		public Mission SourceMission;
+
+		public int TargetAgentIndex = -1;
+
+		public NpcDataPacket TargetNpc;
+
+		public List<NpcDataPacket> AllNpcData;
+
+		public bool SuppressStare;
+
+		public string FactText;
+
+		public bool RunSiegeReactionPostprocess;
+
+		public Func<bool> CanStillPublish;
+
+		public Action OnNoSpeech;
+
+		public Action<bool> OnCompleted;
+
+		public List<object> Messages;
+
+		public int MaxTokens;
+	}
+
 	private sealed class SceneSummonPromptTarget
 	{
 		public int PromptId;
@@ -1922,7 +1958,11 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private readonly Dictionary<int, float> _immediateSceneReactionLastStartedMissionTime = new Dictionary<int, float>();
 
-	private readonly HashSet<int> _immediateSceneReactionInFlightAgentIndices = new HashSet<int>();
+	private readonly Dictionary<int, long> _immediateSceneReactionActiveRequestIds = new Dictionary<int, long>();
+
+	private readonly Dictionary<long, ImmediateSceneReactionRequest> _pendingImmediateSceneReactionRequests = new Dictionary<long, ImmediateSceneReactionRequest>();
+
+	private long _immediateSceneReactionRequestSequence;
 
 	private readonly object _scenePostprocessGateLock = new object();
 
@@ -2496,6 +2536,12 @@ public class ShoutBehavior : CampaignBehaviorBase
 			_pendingWorldMapMissionExitsAfterSpeech.Clear();
 			_transientSceneFollowAgentIndices.Clear();
 			InvalidateSceneCommandFollowerCache();
+			lock (_immediateSceneReactionGateLock)
+			{
+				_immediateSceneReactionLastStartedMissionTime.Clear();
+				_immediateSceneReactionActiveRequestIds.Clear();
+				_pendingImmediateSceneReactionRequests.Clear();
+			}
 			lock (_speechQueueLock)
 			{
 				_speechQueue.Clear();
@@ -10678,7 +10724,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		lock (_immediateSceneReactionGateLock)
 		{
 			_immediateSceneReactionLastStartedMissionTime.Clear();
-			_immediateSceneReactionInFlightAgentIndices.Clear();
+			_immediateSceneReactionActiveRequestIds.Clear();
+			_pendingImmediateSceneReactionRequests.Clear();
 		}
 		lock (_speechQueueLock)
 		{
@@ -10761,7 +10808,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			lock (_immediateSceneReactionGateLock)
 			{
 				_immediateSceneReactionLastStartedMissionTime.Clear();
-				_immediateSceneReactionInFlightAgentIndices.Clear();
+				_immediateSceneReactionActiveRequestIds.Clear();
+				_pendingImmediateSceneReactionRequests.Clear();
 			}
 			lock (_speechQueueLock)
 			{
@@ -33276,8 +33324,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private bool TryBeginImmediateSceneReactionGeneration(int targetAgentIndex, out string suppressReason)
+	private bool TryBeginImmediateSceneReactionGeneration(int targetAgentIndex, out long requestId, out string suppressReason)
 	{
+		requestId = 0L;
 		suppressReason = "";
 		if (targetAgentIndex < 0)
 		{
@@ -33295,7 +33344,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		lock (_immediateSceneReactionGateLock)
 		{
-			if (_immediateSceneReactionInFlightAgentIndices.Contains(targetAgentIndex))
+			if (_immediateSceneReactionActiveRequestIds.ContainsKey(targetAgentIndex))
 			{
 				suppressReason = "in_flight";
 				return false;
@@ -33305,27 +33354,70 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				suppressReason = $"cooldown elapsed={Math.Max(0f, currentTime - lastStarted):0.###}s";
 				return false;
 			}
-			_immediateSceneReactionInFlightAgentIndices.Add(targetAgentIndex);
+			requestId = Interlocked.Increment(ref _immediateSceneReactionRequestSequence);
+			_immediateSceneReactionActiveRequestIds[targetAgentIndex] = requestId;
 			_immediateSceneReactionLastStartedMissionTime[targetAgentIndex] = currentTime;
 			return true;
 		}
 	}
 
-	private void FinishImmediateSceneReactionGeneration(int targetAgentIndex)
+	private bool FinishImmediateSceneReactionGeneration(int targetAgentIndex, long requestId)
 	{
-		if (targetAgentIndex < 0)
+		if (targetAgentIndex < 0 || requestId <= 0L)
 		{
-			return;
+			return false;
 		}
 		try
 		{
 			lock (_immediateSceneReactionGateLock)
 			{
-				_immediateSceneReactionInFlightAgentIndices.Remove(targetAgentIndex);
+				_pendingImmediateSceneReactionRequests.Remove(requestId);
+				if (_immediateSceneReactionActiveRequestIds.TryGetValue(targetAgentIndex, out var activeRequestId) && activeRequestId == requestId)
+				{
+					_immediateSceneReactionActiveRequestIds.Remove(targetAgentIndex);
+					return true;
+				}
 			}
 		}
 		catch
 		{
+		}
+		return false;
+	}
+
+	private bool RegisterImmediateSceneReactionRequest(ImmediateSceneReactionRequest request)
+	{
+		if (request == null || request.RequestId <= 0L || request.TargetAgentIndex < 0)
+		{
+			return false;
+		}
+		lock (_immediateSceneReactionGateLock)
+		{
+			if (_immediateSceneReactionActiveRequestIds.TryGetValue(request.TargetAgentIndex, out var activeRequestId) && activeRequestId == request.RequestId)
+			{
+				_pendingImmediateSceneReactionRequests[request.RequestId] = request;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private bool TryTakeImmediateSceneReactionRequest(long requestId, out ImmediateSceneReactionRequest request)
+	{
+		request = null;
+		if (requestId <= 0L)
+		{
+			return false;
+		}
+		lock (_immediateSceneReactionGateLock)
+		{
+			if (!_pendingImmediateSceneReactionRequests.TryGetValue(requestId, out request) || request == null)
+			{
+				request = null;
+				return false;
+			}
+			_pendingImmediateSceneReactionRequests.Remove(requestId);
+			return true;
 		}
 	}
 
@@ -33394,14 +33486,25 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private bool TriggerImmediateSceneBehaviorReaction(string factText, int targetAgentIndex, bool persistHeroPrivateHistory, bool suppressStare, float postSpeechLeaveSeconds = -1f, bool skipSceneFactRecord = false, bool returnSceneSummonOnTimeout = false, Action onNoSpeech = null, bool runSiegeReactionPostprocess = false, Func<bool> canStillPublish = null, Action<bool> onCompleted = null)
 	{
+		if (!IsBannerlordMainThreadForNativeActions())
+		{
+			_mainThreadActions.Enqueue(delegate
+			{
+				TriggerImmediateSceneBehaviorReaction(factText, targetAgentIndex, persistHeroPrivateHistory, suppressStare, postSpeechLeaveSeconds, skipSceneFactRecord, returnSceneSummonOnTimeout, onNoSpeech, runSiegeReactionPostprocess, canStillPublish, onCompleted);
+			});
+			return true;
+		}
+		LlmRetryPrompt.CaptureMainThreadContext();
 		Mission mission = Mission.Current;
 		var agents = mission?.Agents;
 		if (string.IsNullOrWhiteSpace(factText) || targetAgentIndex < 0 || agents == null)
 		{
 			InvokeImmediateSceneReactionNoSpeechFallback(onNoSpeech);
+			QueueImmediateSceneReactionCompletion(onCompleted, generated: false);
 			return false;
 		}
 		bool immediateSceneReactionGateEntered = false;
+		long requestId = 0L;
 		try
 		{
 			List<Agent> nearbyNPCAgents = ShoutUtils.GetNearbyNPCAgents() ?? new List<Agent>();
@@ -33409,6 +33512,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			if (!CanAgentParticipateInSceneSpeech(agent))
 			{
 				InvokeImmediateSceneReactionNoSpeechFallback(onNoSpeech);
+				QueueImmediateSceneReactionCompletion(onCompleted, generated: false);
 				return false;
 			}
 			if (!suppressStare)
@@ -33423,12 +33527,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			if (npcDataPacket == null)
 			{
 				InvokeImmediateSceneReactionNoSpeechFallback(onNoSpeech);
+				QueueImmediateSceneReactionCompletion(onCompleted, generated: false);
 				return false;
 			}
-			if (!TryBeginImmediateSceneReactionGeneration(targetAgentIndex, out var suppressReason))
+			if (!TryBeginImmediateSceneReactionGeneration(targetAgentIndex, out requestId, out var suppressReason))
 			{
 				Logger.Log("ShoutBehavior", $"[ImmediateSceneReaction] skipped targetAgentIndex={targetAgentIndex} reason={suppressReason}");
 				InvokeImmediateSceneReactionNoSpeechFallback(onNoSpeech);
+				QueueImmediateSceneReactionCompletion(onCompleted, generated: false);
 				return false;
 			}
 			immediateSceneReactionGateEntered = true;
@@ -33466,33 +33572,33 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					}
 				}
 			}
-			_ = Task.Run(async delegate
+			if (!TryPrepareImmediateSceneReactionRequest(mission, requestId, npcDataPacket, list, dictionary, suppressStare, factText, runSiegeReactionPostprocess, canStillPublish, out var request))
 			{
-				bool generated = false;
-				try
+				FinishImmediateSceneReactionGeneration(targetAgentIndex, requestId);
+				if (runSiegeReactionPostprocess)
 				{
-					generated = await GenerateImmediateSceneBehaviorReactionAsync(npcDataPacket, list, dictionary, suppressStare, factText, runSiegeReactionPostprocess, canStillPublish);
+					SiegeAiInterventionBehavior.CompleteCastleSoldierReactionForExternal(targetAgentIndex, "generation_failed");
 				}
-				catch (Exception ex2)
+				QueueImmediateSceneReactionNoSpeechFallback(onNoSpeech);
+				QueueImmediateSceneReactionCompletion(onCompleted, generated: false);
+				immediateSceneReactionGateEntered = false;
+				return false;
+			}
+			request.OnNoSpeech = onNoSpeech;
+			request.OnCompleted = onCompleted;
+			if (!RegisterImmediateSceneReactionRequest(request))
+			{
+				FinishImmediateSceneReactionGeneration(targetAgentIndex, requestId);
+				if (runSiegeReactionPostprocess)
 				{
-					Logger.Log("ShoutBehavior", "[ERROR] TriggerImmediateSceneBehaviorReaction background failed: " + ex2.Message);
+					SiegeAiInterventionBehavior.CompleteCastleSoldierReactionForExternal(targetAgentIndex, "generation_failed");
 				}
-				finally
-				{
-					FinishImmediateSceneReactionGeneration(npcDataPacket.AgentIndex);
-					if (runSiegeReactionPostprocess)
-					{
-						SiegeAiInterventionBehavior.CompleteCastleSoldierReactionForExternal(
-							npcDataPacket.AgentIndex,
-							generated ? "generated" : "generation_failed");
-					}
-					if (!generated)
-					{
-						QueueImmediateSceneReactionNoSpeechFallback(onNoSpeech);
-					}
-					QueueImmediateSceneReactionCompletion(onCompleted, generated);
-				}
-			});
+				QueueImmediateSceneReactionNoSpeechFallback(onNoSpeech);
+				QueueImmediateSceneReactionCompletion(onCompleted, generated: false);
+				immediateSceneReactionGateEntered = false;
+				return false;
+			}
+			StartImmediateSceneReactionBackgroundRequest(request.RequestId, request.TargetAgentIndex, request.Messages, request.MaxTokens);
 			immediateSceneReactionGateEntered = false;
 			return true;
 		}
@@ -33500,10 +33606,20 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			if (immediateSceneReactionGateEntered)
 			{
-				FinishImmediateSceneReactionGeneration(targetAgentIndex);
+				FinishImmediateSceneReactionGeneration(targetAgentIndex, requestId);
+				if (runSiegeReactionPostprocess)
+				{
+					SiegeAiInterventionBehavior.CompleteCastleSoldierReactionForExternal(targetAgentIndex, "generation_failed");
+				}
+				QueueImmediateSceneReactionNoSpeechFallback(onNoSpeech);
+				QueueImmediateSceneReactionCompletion(onCompleted, generated: false);
+			}
+			else
+			{
+				InvokeImmediateSceneReactionNoSpeechFallback(onNoSpeech);
+				QueueImmediateSceneReactionCompletion(onCompleted, generated: false);
 			}
 			Logger.Log("ShoutBehavior", "[ERROR] TriggerImmediateSceneBehaviorReaction failed: " + ex.Message);
-			InvokeImmediateSceneReactionNoSpeechFallback(onNoSpeech);
 			return false;
 		}
 	}
@@ -35512,7 +35628,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			lock (instance._immediateSceneReactionGateLock)
 			{
-				return instance._immediateSceneReactionInFlightAgentIndices.Count > 0;
+				return instance._immediateSceneReactionActiveRequestIds.Count > 0;
 			}
 		}
 		catch
@@ -36392,13 +36508,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		_stopStaringTime = Math.Max(_stopStaringTime, mission.CurrentTime + PLAYER_DRIVEN_MULTI_SCENE_STARE_HOLD_SECONDS);
 	}
 
-	private async Task<bool> GenerateImmediateSceneBehaviorReactionAsync(NpcDataPacket targetNpc, List<NpcDataPacket> allNpcData, Dictionary<int, Hero> resolvedHeroes, bool suppressStare, string factText, bool runSiegeReactionPostprocess, Func<bool> canStillPublish = null)
+	private bool TryPrepareImmediateSceneReactionRequest(Mission sourceMission, long requestId, NpcDataPacket targetNpc, List<NpcDataPacket> allNpcData, Dictionary<int, Hero> resolvedHeroes, bool suppressStare, string factText, bool runSiegeReactionPostprocess, Func<bool> canStillPublish, out ImmediateSceneReactionRequest request)
 	{
+		request = null;
 		if (targetNpc == null || allNpcData == null || allNpcData.Count == 0)
 		{
 			return false;
 		}
-		if (!CanPublishImmediateSceneReaction(canStillPublish))
+		if (sourceMission == null || !ReferenceEquals(Mission.Current, sourceMission) || !CanPublishImmediateSceneReaction(canStillPublish))
 		{
 			return false;
 		}
@@ -36411,20 +36528,24 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		targetNpc = npcDataPacket;
 		allNpcData = list;
-		await EnsurePersonaForCandidatesAsync(new List<NpcDataPacket> { targetNpc }, resolvedHeroes ?? new Dictionary<int, Hero>());
-		DuelSettings settings = DuelSettings.GetSettings();
-		GetSceneReplyLengthLimits(settings, out var minTokens, out var maxTokens);
-		Agent npcAgent = Mission.Current?.Agents?.FirstOrDefault(a => a != null && a.Index == targetNpc.AgentIndex);
-		if (!CanAgentParticipateInSceneSpeech(npcAgent))
-		{
-			return false;
-		}
-		CharacterObject npcCharacter = npcAgent.Character as CharacterObject;
 		Hero contextHero = null;
 		if (targetNpc.IsHero && resolvedHeroes != null)
 		{
 			resolvedHeroes.TryGetValue(targetNpc.AgentIndex, out contextHero);
 		}
+		Agent npcAgent = sourceMission.Agents?.FirstOrDefault(a => a != null && a.Index == targetNpc.AgentIndex);
+		if (!CanAgentParticipateInSceneSpeech(npcAgent))
+		{
+			return false;
+		}
+		CharacterObject npcCharacter = npcAgent.Character as CharacterObject;
+		if (contextHero == null)
+		{
+			contextHero = npcCharacter?.HeroObject;
+		}
+		PopulateImmediateSceneReactionPersonaOnMainThread(targetNpc, contextHero);
+		DuelSettings settings = DuelSettings.GetSettings();
+		GetSceneReplyLengthLimits(settings, out var minTokens, out var maxTokens);
 		string npcKingdomIdOverride = TryGetKingdomIdOverrideFromAgent(npcAgent);
 		MyBehavior.ShoutPromptContext shoutPromptContext = MyBehavior.BuildShoutPromptContextForExternal(contextHero, "请直接根据刚刚发生的公开互动做出即时反应。", null, targetNpc.CultureId ?? "neutral", hasAnyHero: targetNpc.IsHero, targetCharacter: npcCharacter, kingdomIdOverride: npcKingdomIdOverride, targetAgentIndex: targetNpc.AgentIndex, suppressDynamicRuleAndLore: true);
 		StringBuilder stringBuilder = new StringBuilder();
@@ -36465,33 +36586,178 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		layeredPrompt = BuildSceneCompositeUserBlock("", BuildSceneCompositeUserBlock("", gcczIdentityOverrideBlock, systemRuleBlock), layeredPrompt);
 		List<ConversationMessage> persistentMemoryRoleMessages = BuildUncompressedMemoryRoleMessagesForPrompt(contextHero, npcCharacter, targetNpc, targetNpc.AgentIndex);
 		List<object> messages = BuildStrictSceneMessagesForNpc(targetNpc.AgentIndex, layeredPrompt, new string[3] { privateRecentWindowSection, persistedWithoutRecentWindow, BuildSceneCompositeUserBlock("", roleRuntimeContext, knowledgeExtrasSection, text) }, new string[1] { "请只根据你当前可见的场景消息、你自己的身份、处境和性格，回复一段发言，" + BuildSimpleDialogueReplyLengthInstruction(minTokens, maxTokens) + "，只输出你嘴里说出的话，不要描述你的行为和思考。" }, suppressReplyFormatInstruction: true, persistentHistoryMessages: persistentMemoryRoleMessages);
-		if (!AIConfigHandler.TryCallAuxiliarySimpleDialogue(messages, maxTokens, 0.35f, out var text2, out var error))
+		request = new ImmediateSceneReactionRequest
 		{
-			Logger.Log("ShoutBehavior", "[ImmediateSceneReaction] auxiliary_simple_dialogue failed: " + error);
+			RequestId = requestId,
+			RuntimeGeneration = SaveRuntimeGuard.CurrentGeneration,
+			SceneHistorySessionId = Volatile.Read(ref _sceneHistorySessionId),
+			SourceMission = sourceMission,
+			TargetAgentIndex = targetNpc.AgentIndex,
+			TargetNpc = targetNpc,
+			AllNpcData = allNpcData,
+			SuppressStare = suppressStare,
+			FactText = factText ?? string.Empty,
+			RunSiegeReactionPostprocess = runSiegeReactionPostprocess,
+			CanStillPublish = canStillPublish,
+			Messages = new List<object>(messages),
+			MaxTokens = maxTokens
+		};
+		return true;
+	}
+
+	private void StartImmediateSceneReactionBackgroundRequest(long requestId, int targetAgentIndex, List<object> messages, int maxTokens)
+	{
+		if (requestId <= 0L || targetAgentIndex < 0 || messages == null || messages.Count == 0)
+		{
+			CompleteImmediateSceneReactionOnMainThread(requestId, requestSucceeded: false, response: "", error: "invalid_background_request");
+			return;
+		}
+		try
+		{
+			_ = Task.Run(delegate
+			{
+				bool requestSucceeded = false;
+				string response = "";
+				string error = "";
+				try
+				{
+					requestSucceeded = AIConfigHandler.TryCallAuxiliarySimpleDialogue(messages, maxTokens, 0.35f, out response, out error);
+					if (!requestSucceeded)
+					{
+						Logger.Log("ShoutBehavior", "[ImmediateSceneReaction] auxiliary_simple_dialogue failed: " + (error ?? ""));
+					}
+				}
+				catch (Exception ex)
+				{
+					error = ex.Message ?? "background_request_exception";
+					Logger.Log("ShoutBehavior", "[ERROR] ImmediateSceneReaction background request failed: " + error);
+				}
+				try
+				{
+					_mainThreadActions.Enqueue(delegate
+					{
+						CompleteImmediateSceneReactionOnMainThread(requestId, requestSucceeded, response, error);
+					});
+				}
+				catch (Exception ex2)
+				{
+					Logger.Log("ShoutBehavior", "[ERROR] ImmediateSceneReaction completion queue failed: " + ex2.Message);
+					FinishImmediateSceneReactionGeneration(targetAgentIndex, requestId);
+				}
+			});
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ShoutBehavior", "[ERROR] ImmediateSceneReaction background start failed: " + ex.Message);
+			CompleteImmediateSceneReactionOnMainThread(requestId, requestSucceeded: false, response: "", error: ex.Message);
+		}
+	}
+
+	private void CompleteImmediateSceneReactionOnMainThread(long requestId, bool requestSucceeded, string response, string error)
+	{
+		if (!IsBannerlordMainThreadForNativeActions())
+		{
+			_mainThreadActions.Enqueue(delegate
+			{
+				CompleteImmediateSceneReactionOnMainThread(requestId, requestSucceeded, response, error);
+			});
+			return;
+		}
+		if (!TryTakeImmediateSceneReactionRequest(requestId, out var request) || request == null)
+		{
+			return;
+		}
+		if (!IsImmediateSceneReactionRuntimeCurrent(request))
+		{
+			Logger.Log("ShoutBehavior", "[ImmediateSceneReaction] discarded stale completion request=" + requestId + " targetAgentIndex=" + request.TargetAgentIndex);
+			FinishImmediateSceneReactionGeneration(request.TargetAgentIndex, request.RequestId);
+			return;
+		}
+		bool generated = false;
+		try
+		{
+			if (!requestSucceeded || string.IsNullOrWhiteSpace(response))
+			{
+				Logger.Log("ShoutBehavior", "[ImmediateSceneReaction] no reply request=" + requestId + " targetAgentIndex=" + request.TargetAgentIndex + " error=" + (error ?? ""));
+			}
+			else
+			{
+				generated = TryPublishImmediateSceneReactionOnMainThread(request, response);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ShoutBehavior", "[ERROR] ImmediateSceneReaction main-thread publish failed request=" + requestId + " targetAgentIndex=" + request.TargetAgentIndex + " error=" + ex.Message);
+		}
+		finally
+		{
+			FinishImmediateSceneReactionGeneration(request.TargetAgentIndex, request.RequestId);
+			if (request.RunSiegeReactionPostprocess)
+			{
+				SiegeAiInterventionBehavior.CompleteCastleSoldierReactionForExternal(
+					request.TargetAgentIndex,
+					generated ? "generated" : "generation_failed");
+			}
+			if (!generated)
+			{
+				QueueImmediateSceneReactionNoSpeechFallback(request.OnNoSpeech);
+			}
+			QueueImmediateSceneReactionCompletion(request.OnCompleted, generated);
+		}
+	}
+
+	private bool IsImmediateSceneReactionRuntimeCurrent(ImmediateSceneReactionRequest request)
+	{
+		if (request == null || request.SourceMission == null)
+		{
 			return false;
 		}
-		if (string.IsNullOrWhiteSpace(text2))
+		if (!ReferenceEquals(Mission.Current, request.SourceMission))
 		{
 			return false;
 		}
-		if (!CanPublishImmediateSceneReaction(canStillPublish))
+		if (!SaveRuntimeGuard.IsCurrentGeneration(request.RuntimeGeneration))
 		{
-			Logger.Log("ShoutBehavior", $"[ImmediateSceneReaction] discarded stale response targetAgentIndex={targetNpc.AgentIndex}");
 			return false;
 		}
-		string text3 = (text2 ?? "").Replace("\r", "").Trim();
-		if (runSiegeReactionPostprocess)
+		return true;
+	}
+
+	private bool CanPublishImmediateSceneReactionRequest(ImmediateSceneReactionRequest request)
+	{
+		return IsImmediateSceneReactionRuntimeCurrent(request)
+			&& request.SceneHistorySessionId == Volatile.Read(ref _sceneHistorySessionId)
+			&& CanPublishImmediateSceneReaction(request.CanStillPublish);
+	}
+
+	private bool TryPublishImmediateSceneReactionOnMainThread(ImmediateSceneReactionRequest request, string response)
+	{
+		if (!CanPublishImmediateSceneReactionRequest(request))
+		{
+			Logger.Log("ShoutBehavior", "[ImmediateSceneReaction] discarded stale response request=" + request.RequestId + " targetAgentIndex=" + request.TargetAgentIndex);
+			return false;
+		}
+		Agent npcAgent = request.SourceMission.Agents?.FirstOrDefault((Agent agent) => agent != null && agent.Index == request.TargetAgentIndex);
+		if (!CanAgentParticipateInSceneSpeech(npcAgent))
+		{
+			Logger.Log("ShoutBehavior", "[ImmediateSceneReaction] discarded unavailable target request=" + request.RequestId + " targetAgentIndex=" + request.TargetAgentIndex);
+			return false;
+		}
+		CharacterObject npcCharacter = npcAgent.Character as CharacterObject;
+		Hero contextHero = npcCharacter?.HeroObject;
+		string text = (response ?? "").Replace("\r", "").Trim();
+		if (request.RunSiegeReactionPostprocess)
 		{
 			try
 			{
-				text3 = TryRunSceneUnifiedActionPostprocess(
+				text = TryRunSceneUnifiedActionPostprocess(
 					contextHero,
 					npcCharacter,
-					targetNpc.AgentIndex,
-					targetNpc.Name,
-					factText ?? string.Empty,
-					factText ?? string.Empty,
-					text3,
+					request.TargetAgentIndex,
+					request.TargetNpc?.Name,
+					request.FactText ?? string.Empty,
+					request.FactText ?? string.Empty,
+					text,
 					duelRuleInjected: false,
 					rewardRuleInjected: false,
 					loanRuleInjected: false,
@@ -36519,38 +36785,84 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				AfGcczShoutBridge.TryProcessActionTags(
 					contextHero,
 					npcCharacter,
-					targetNpc.AgentIndex,
-					ref text3,
+					request.TargetAgentIndex,
+					ref text,
 					out _,
 					replyIsDirectPlayerResponse: false,
-					playerText: factText);
+					playerText: request.FactText);
 			}
 			catch (Exception ex)
 			{
 				Logger.Log("ShoutBehavior", "[CastleSoldierWitnessPostprocess] failed: " + ex.Message);
 			}
 		}
-		text3 = Regex.Replace(text3, "\\[(?:ACTION:[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|FOL|STP)\\]", "", RegexOptions.IgnoreCase).Trim();
-		text3 = StripNpcNamePrefixSafely(text3, 30);
-		text3 = StripLeakedPromptContentForShout(text3);
-		string fullHistoryText = PrepareSceneHistorySpeechText(text3);
-		text3 = StripStageDirectionsForPassiveShout(text3);
-		if (string.IsNullOrWhiteSpace(text3))
+		text = Regex.Replace(text, "\\[(?:ACTION:[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|FOL|STP)\\]", "", RegexOptions.IgnoreCase).Trim();
+		text = StripNpcNamePrefixSafely(text, 30);
+		text = StripLeakedPromptContentForShout(text);
+		string fullHistoryText = PrepareSceneHistorySpeechText(text);
+		text = StripStageDirectionsForPassiveShout(text);
+		if (string.IsNullOrWhiteSpace(text))
 		{
 			return false;
 		}
-		if (!CanPublishImmediateSceneReaction(canStillPublish))
+		if (!CanPublishImmediateSceneReactionRequest(request))
 		{
-			Logger.Log("ShoutBehavior", $"[ImmediateSceneReaction] discarded stale processed response targetAgentIndex={targetNpc.AgentIndex}");
+			Logger.Log("ShoutBehavior", "[ImmediateSceneReaction] discarded stale processed response request=" + request.RequestId + " targetAgentIndex=" + request.TargetAgentIndex);
 			return false;
 		}
 		if (!string.IsNullOrWhiteSpace(fullHistoryText))
 		{
-			RecordResponseForAllNearbySafe(allNpcData, targetNpc.AgentIndex, targetNpc.Name, fullHistoryText);
-			PersistNpcSpeechToNamedHeroes(targetNpc.AgentIndex, targetNpc.Name, fullHistoryText, allNpcData);
+			RecordResponseForAllNearbySafe(request.AllNpcData, request.TargetAgentIndex, request.TargetNpc?.Name, fullHistoryText);
+			PersistNpcSpeechToNamedHeroes(request.TargetAgentIndex, request.TargetNpc?.Name, fullHistoryText, request.AllNpcData);
 		}
-		EnqueueSpeechLine(targetNpc, text3, allNpcData, skipHistory: true, suppressStare: suppressStare, canStillPublish: canStillPublish);
+		EnqueueSpeechLine(request.TargetNpc, text, request.AllNpcData, skipHistory: true, suppressStare: request.SuppressStare, canStillPublish: request.CanStillPublish);
 		return true;
+	}
+
+	private void PopulateImmediateSceneReactionPersonaOnMainThread(NpcDataPacket npc, Hero hero)
+	{
+		if (npc == null)
+		{
+			return;
+		}
+		try
+		{
+			if (npc.IsHero && hero != null)
+			{
+				MyBehavior.GetNpcPersonaForExternal(hero, out var personality, out var background);
+				if (string.IsNullOrWhiteSpace(personality) || string.IsNullOrWhiteSpace(background))
+				{
+					BuildHeroPersonaFallback(hero, out var fallbackPersonality, out var fallbackBackground);
+					personality = string.IsNullOrWhiteSpace(personality) ? fallbackPersonality : personality;
+					background = string.IsNullOrWhiteSpace(background) ? fallbackBackground : background;
+				}
+				if (!string.IsNullOrWhiteSpace(personality))
+				{
+					npc.PersonalityDesc = personality.Trim();
+				}
+				if (!string.IsNullOrWhiteSpace(background))
+				{
+					npc.BackgroundDesc = background.Trim();
+				}
+				return;
+			}
+			string key = (npc.UnnamedKey ?? "").Trim().ToLowerInvariant();
+			if (!string.IsNullOrWhiteSpace(key) && ShoutUtils.TryGetUnnamedPersonaByKey(key, out var unnamedPersonality, out var unnamedBackground))
+			{
+				if (!string.IsNullOrWhiteSpace(unnamedPersonality))
+				{
+					npc.PersonalityDesc = unnamedPersonality.Trim();
+				}
+				if (!string.IsNullOrWhiteSpace(unnamedBackground))
+				{
+					npc.BackgroundDesc = unnamedBackground.Trim();
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ShoutBehavior", "[ImmediateSceneReaction] persona snapshot failed agent=" + npc.AgentIndex + " error=" + ex.Message);
+		}
 	}
 
 	private static string BuildPlayerMarriageFactForNpcListLine(Hero npcHero)
