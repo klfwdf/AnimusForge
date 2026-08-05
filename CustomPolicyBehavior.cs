@@ -3420,15 +3420,26 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		try
 		{
 			result.KnowledgeContext = (request?.KnowledgeContext ?? "").Trim();
-			int mainMaxTokens = ResolvePolicyMainMaxTokens();
+			if (!PolicyLlmClient.TryResolvePlayerPolicyProfile(
+				DuelSettings.GetPlayerPolicyApiSourceForExternal(),
+				DuelSettings.GetPlayerPolicyFollowSelectedApiTokensForExternal(),
+				DuelSettings.GetPlayerPolicyCustomMaxTokensForExternal(),
+				PolicyEvaluationTemperature,
+				out PolicyApiExecutionProfile apiProfile,
+				out string apiConfigError))
+			{
+				result.Error = apiConfigError;
+				return result;
+			}
+			long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 			List<object> mainMessages = BuildMainMessages(request, result.KnowledgeContext);
-			string mainOutput = await ShoutNetwork.CallApiWithMessages(mainMessages, mainMaxTokens, forceDisableThinking: true, cancellationToken: evaluationTimeout.Token, overrideTemperature: PolicyEvaluationTemperature);
+			string mainOutput = await CallPlayerPolicyApiOrThrowAsync(mainMessages, apiProfile, runtimeGeneration, evaluationTimeout.Token);
 			result.MainRaw = CleanLlmText(mainOutput);
 			result.MainAssessment = ParseMainAssessmentResult(result.MainRaw);
 			if (result.MainAssessment == null)
 			{
 				List<object> retryMessages = BuildMainJsonRetryMessages(mainMessages, result.MainRaw);
-				string retryOutput = await ShoutNetwork.CallApiWithMessages(retryMessages, mainMaxTokens, forceDisableThinking: true, cancellationToken: evaluationTimeout.Token, overrideTemperature: PolicyEvaluationTemperature);
+				string retryOutput = await CallPlayerPolicyApiOrThrowAsync(retryMessages, apiProfile, runtimeGeneration, evaluationTimeout.Token);
 				string cleanedRetryOutput = CleanLlmText(retryOutput);
 				result.MainRaw = cleanedRetryOutput;
 				result.MainAssessment = ParseMainAssessmentResult(result.MainRaw);
@@ -3443,7 +3454,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			if (!string.IsNullOrWhiteSpace(result.MainAssessment?.EffectIrValidationError))
 			{
 				List<object> effectIrRetryMessages = BuildPolicyEffectIrRetryMessages(request, mainMessages, result.MainRaw, result.MainAssessment.EffectIrValidationError);
-				string effectIrRetryOutput = await ShoutNetwork.CallApiWithMessages(effectIrRetryMessages, mainMaxTokens, forceDisableThinking: true, cancellationToken: evaluationTimeout.Token, overrideTemperature: PolicyEvaluationTemperature);
+				string effectIrRetryOutput = await CallPlayerPolicyApiOrThrowAsync(effectIrRetryMessages, apiProfile, runtimeGeneration, evaluationTimeout.Token);
 				result.MainRaw = CleanLlmText(effectIrRetryOutput);
 				result.MainAssessment = NormalizeMainAssessmentResult(request, ParseMainAssessmentResult(result.MainRaw), result.MainRaw);
 				if (!string.IsNullOrWhiteSpace(result.MainAssessment?.EffectIrValidationError))
@@ -3456,7 +3467,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			if (IsLocalPolicyRequest(request) && !TryValidateLocalPolicyAssessment(request, result.MainAssessment, out string localSemanticError))
 			{
 				List<object> semanticRetryMessages = BuildLocalPolicySemanticRetryMessages(request, mainMessages, result.MainRaw, localSemanticError);
-				string semanticRetryOutput = await ShoutNetwork.CallApiWithMessages(semanticRetryMessages, mainMaxTokens, forceDisableThinking: true, cancellationToken: evaluationTimeout.Token, overrideTemperature: PolicyEvaluationTemperature);
+				string semanticRetryOutput = await CallPlayerPolicyApiOrThrowAsync(semanticRetryMessages, apiProfile, runtimeGeneration, evaluationTimeout.Token);
 				result.MainRaw = CleanLlmText(semanticRetryOutput);
 				result.MainAssessment = NormalizeMainAssessmentResult(request, ParseMainAssessmentResult(result.MainRaw), result.MainRaw);
 				if (!TryValidateLocalPolicyAssessment(request, result.MainAssessment, out localSemanticError))
@@ -5900,16 +5911,22 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		return Math.Max(PolicyPublicFeedbackTargetMinChars, Math.Min(PolicyPublicFeedbackTargetMaxChars, rounded));
 	}
 
-	private static int ResolvePolicyMainMaxTokens()
+	private static async Task<string> CallPlayerPolicyApiOrThrowAsync(List<object> messages, PolicyApiExecutionProfile profile, long runtimeGeneration, CancellationToken cancellationToken)
 	{
-		try
+		JArray messageArray = messages == null ? new JArray() : JArray.FromObject(messages);
+		NpcPolicyApiCallResult apiResult = await PolicyLlmClient.CallPolicyApiWithRetriesAsync(
+			messageArray,
+			profile,
+			PlayerPolicyEvaluationTimeoutMilliseconds,
+			"PlayerPolicy",
+			runtimeGeneration,
+			3,
+			cancellationToken);
+		if (apiResult?.Success == true)
 		{
-			return DuelSettings.GetSettings()?.GetMainApiMaxTokens() ?? DuelSettings.DefaultGeneralApiMaxTokens;
+			return apiResult.Content ?? "";
 		}
-		catch
-		{
-			return DuelSettings.DefaultGeneralApiMaxTokens;
-		}
+		throw new InvalidOperationException(string.IsNullOrWhiteSpace(apiResult?.ErrorMessage) ? "政策 API 请求失败。" : apiResult.ErrorMessage);
 	}
 
 	private static List<object> BuildMainMessages(PolicyDraftRequest request, string knowledgeContext)

@@ -251,11 +251,65 @@ internal sealed class NpcPolicyApiCallResult
 	public bool ThinkingRetryPlain;
 }
 
-internal static class NpcPolicyLlmClient
+internal sealed class PolicyApiExecutionProfile
+{
+	public string RequestedSource = DuelSettings.PolicyApiSourceMain;
+
+	public string ResolvedRoute = "";
+
+	public string EffectiveApiUrl = "";
+
+	public string ApiKey = "";
+
+	public string ModelName = "";
+
+	public int MaxTokens = DuelSettings.DefaultPolicyApiMaxTokens;
+
+	public float Temperature = 0.8f;
+}
+
+internal static class PolicyLlmClient
 {
 	private const int DefaultMaxAttempts = 3;
 
 	private const int MaxRetryAfterDelaySeconds = 180;
+
+	private const int MaxCapabilityCacheEntries = 32;
+
+	private enum PolicyTokenParameterMode
+	{
+		MaxTokens,
+		MaxCompletionTokens,
+		Omit
+	}
+
+	private sealed class PolicyRequestCapabilities
+	{
+		public PolicyTokenParameterMode TokenParameterMode = PolicyTokenParameterMode.MaxTokens;
+
+		public bool OmitThinkingControls;
+
+		public bool OmitTemperature;
+
+		public int? MaxTokensOverride;
+
+		public PolicyRequestCapabilities Clone()
+		{
+			return new PolicyRequestCapabilities
+			{
+				TokenParameterMode = TokenParameterMode,
+				OmitThinkingControls = OmitThinkingControls,
+				OmitTemperature = OmitTemperature,
+				MaxTokensOverride = MaxTokensOverride
+			};
+		}
+	}
+
+	private static readonly object CapabilityCacheLock = new object();
+
+	private static readonly Dictionary<string, PolicyRequestCapabilities> CapabilityCache = new Dictionary<string, PolicyRequestCapabilities>(StringComparer.OrdinalIgnoreCase);
+
+	private static readonly Queue<string> CapabilityCacheOrder = new Queue<string>();
 
 	private sealed class NpcPolicyHttpExchange : IDisposable
 	{
@@ -354,111 +408,167 @@ internal static class NpcPolicyLlmClient
 
 	public static bool IsConfiguredForNpcPolicy(out string errorMessage)
 	{
-		return TryResolveEventAndRebellionApiConfig(DuelSettings.GetSettings(), out var _, out var _, out var _, out var _, out errorMessage);
+		return TryResolvePolicyApiConfig(
+			DuelSettings.GetNpcRulerPolicyApiSourceForExternal(),
+			DuelSettings.GetNpcRulerPolicyFollowSelectedApiTokensForExternal(),
+			DuelSettings.GetNpcRulerPolicyCustomMaxTokensForExternal(),
+			null,
+			out var _,
+			out errorMessage);
 	}
 
-	public static async Task<NpcPolicyApiCallResult> CallEventAndRebellionApiWithRetriesAsync(string systemPrompt, int maxTokens, int hardTimeoutMilliseconds, string source, long runtimeGeneration, int maxAttempts = DefaultMaxAttempts)
+	public static bool IsConfiguredForLegacyEventApi(out string errorMessage)
+	{
+		return TryResolvePolicyApiConfig(DuelSettings.PolicyApiSourceEventAndRebellion, true, DuelSettings.DefaultEventAndRebellionApiMaxTokens, null, out var _, out errorMessage);
+	}
+
+	public static bool TryResolvePlayerPolicyProfile(string requestedSource, bool followSelectedApiTokens, int customMaxTokens, float fixedTemperature, out PolicyApiExecutionProfile profile, out string errorMessage)
+	{
+		return TryResolvePolicyApiConfig(requestedSource, followSelectedApiTokens, customMaxTokens, fixedTemperature, out profile, out errorMessage);
+	}
+
+	public static bool TryResolveNpcPolicyProfile(out PolicyApiExecutionProfile profile, out string errorMessage)
+	{
+		return TryResolvePolicyApiConfig(
+			DuelSettings.GetNpcRulerPolicyApiSourceForExternal(),
+			DuelSettings.GetNpcRulerPolicyFollowSelectedApiTokensForExternal(),
+			DuelSettings.GetNpcRulerPolicyCustomMaxTokensForExternal(),
+			null,
+			out profile,
+			out errorMessage);
+	}
+
+	// 保留非政策调用方的既有“事件/叛乱 API，缺失时回退主 API”入口；不启用政策专用 Token/温度兼容降级。
+	public static Task<NpcPolicyApiCallResult> CallEventAndRebellionApiWithRetriesAsync(string systemPrompt, int maxTokens, int hardTimeoutMilliseconds, string source, long runtimeGeneration, int maxAttempts = DefaultMaxAttempts)
+	{
+		if (!TryResolvePolicyApiConfig(DuelSettings.PolicyApiSourceEventAndRebellion, true, maxTokens, null, out PolicyApiExecutionProfile profile, out string errorMessage))
+		{
+			return Task.FromResult(new NpcPolicyApiCallResult { ErrorMessage = errorMessage });
+		}
+		profile.MaxTokens = Math.Max(1, maxTokens);
+		return CallPolicyApiWithRetriesAsync(BuildMessageArray(systemPrompt), profile, hardTimeoutMilliseconds, source, runtimeGeneration, maxAttempts, default, enablePolicyCompatibility: false);
+	}
+
+	public static Task<NpcPolicyApiCallResult> CallPolicyApiWithRetriesAsync(string systemPrompt, PolicyApiExecutionProfile profile, int hardTimeoutMilliseconds, string source, long runtimeGeneration, int maxAttempts = DefaultMaxAttempts, CancellationToken cancellationToken = default)
+	{
+		return CallPolicyApiWithRetriesAsync(BuildMessageArray(systemPrompt), profile, hardTimeoutMilliseconds, source, runtimeGeneration, maxAttempts, cancellationToken);
+	}
+
+	public static async Task<NpcPolicyApiCallResult> CallPolicyApiWithRetriesAsync(JArray messages, PolicyApiExecutionProfile profile, int hardTimeoutMilliseconds, string source, long runtimeGeneration, int maxAttempts = DefaultMaxAttempts, CancellationToken cancellationToken = default, bool enablePolicyCompatibility = true)
 	{
 		NpcPolicyApiCallResult finalResult = new NpcPolicyApiCallResult();
-		int attempts = Math.Max(1, maxAttempts);
+		if (profile == null || string.IsNullOrWhiteSpace(profile.EffectiveApiUrl) || string.IsNullOrWhiteSpace(profile.ApiKey) || string.IsNullOrWhiteSpace(profile.ModelName))
+		{
+			finalResult.ErrorMessage = "政策 API 执行配置不完整。";
+			return finalResult;
+		}
+		JArray frozenMessages = messages == null ? new JArray() : (JArray)messages.DeepClone();
+		string capabilityKey = BuildCapabilityCacheKey(profile.EffectiveApiUrl, profile.ModelName);
+		PolicyRequestCapabilities capabilities = enablePolicyCompatibility ? GetCachedCapabilities(capabilityKey) : new PolicyRequestCapabilities();
+		int attempts = Math.Max(1, Math.Min(DefaultMaxAttempts, maxAttempts));
 		for (int attempt = 1; attempt <= attempts; attempt++)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (SaveRuntimeGuard.IsStale(runtimeGeneration, (source ?? "NpcPolicy") + "_api_before_attempt"))
 			{
 				finalResult.ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText();
 				finalResult.AttemptsUsed = attempt;
 				return finalResult;
 			}
-			NpcPolicyApiCallResult result = await CallEventAndRebellionApiOnceAsync(systemPrompt, Math.Max(1, maxTokens), Math.Max(1000, hardTimeoutMilliseconds), source, runtimeGeneration);
+
+			NpcPolicyApiCallResult result = new NpcPolicyApiCallResult
+			{
+				AttemptsUsed = attempt,
+				ResolvedRoute = profile.ResolvedRoute,
+				ThinkingRetryPlain = capabilities.OmitThinkingControls
+			};
+			int requestMaxTokens = Math.Max(1, Math.Min(profile.MaxTokens, capabilities.MaxTokensOverride ?? profile.MaxTokens));
+			JObject body = BuildCompatibleChatRequestBody(profile, frozenMessages, requestMaxTokens, capabilities, out string thinkingMode);
+			string jsonBody = LlmApiCompat.PrepareChatRequestJson(profile.EffectiveApiUrl, body);
+			Log(source, BuildRequestStartLog(profile.ResolvedRoute, profile.ModelName, requestMaxTokens, thinkingMode, profile.EffectiveApiUrl)
+				+ " tokenField=" + GetTokenParameterLogName(capabilities.TokenParameterMode)
+				+ " temperature=" + (capabilities.OmitTemperature ? "omitted" : profile.Temperature.ToString(CultureInfo.InvariantCulture))
+				+ " attempt=" + attempt.ToString(CultureInfo.InvariantCulture) + "/" + attempts.ToString(CultureInfo.InvariantCulture));
+			NpcPolicyHttpExchange exchange = await SendAndReadNpcPolicyExchangeAsync(
+				profile.EffectiveApiUrl,
+				profile.ApiKey,
+				jsonBody,
+				Math.Max(1000, hardTimeoutMilliseconds),
+				source,
+				runtimeGeneration,
+				BuildApiStagePrefix(source, "api_" + attempt.ToString(CultureInfo.InvariantCulture)),
+				result,
+				cancellationToken);
+			if (exchange == null)
+			{
+				finalResult = result;
+				return finalResult;
+			}
+			try
+			{
+				result = CompleteApiCallResult(exchange, result, frozenMessages, profile.ResolvedRoute, profile.ModelName, thinkingMode, capabilities.OmitThinkingControls, source);
+			}
+			finally
+			{
+				exchange.Dispose();
+			}
 			result.AttemptsUsed = attempt;
 			finalResult = result;
 			if (result.Success)
 			{
+				if (enablePolicyCompatibility)
+				{
+					CacheSuccessfulCapabilities(capabilityKey, capabilities);
+				}
 				return result;
 			}
 			if (result.IsAuthFailure)
 			{
-				Log(source, "[HTTP] NPC policy retry stopped because authentication failure was detected. attempts_used=" + attempt.ToString(CultureInfo.InvariantCulture));
+				Log(source, "[HTTP] Policy retry stopped because authentication failure was detected. attempts_used=" + attempt.ToString(CultureInfo.InvariantCulture));
 				return result;
 			}
 			if (result.IsQuotaLimit)
 			{
-				Log(source, "[HTTP] NPC policy retry stopped because quota/balance limit was detected. attempts_used=" + attempt.ToString(CultureInfo.InvariantCulture));
+				Log(source, "[HTTP] Policy retry stopped because quota/balance limit was detected. attempts_used=" + attempt.ToString(CultureInfo.InvariantCulture));
 				return result;
 			}
 			if (result.IsOutputTruncated)
 			{
-				Log(source, "[HTTP] NPC policy retry stopped because output was truncated by finish_reason=length. attempts_used=" + attempt.ToString(CultureInfo.InvariantCulture));
+				Log(source, "[HTTP] Policy retry stopped because output was truncated by finish_reason=length. attempts_used=" + attempt.ToString(CultureInfo.InvariantCulture));
 				return result;
 			}
-			if (attempt < attempts)
+			string compatibilityReason = "";
+			bool compatibilityChanged = false;
+			if (result.StatusCode == (int)HttpStatusCode.BadRequest || (enablePolicyCompatibility && result.StatusCode == 422))
+			{
+				compatibilityChanged = enablePolicyCompatibility
+					? TryApplyPolicyCompatibilityDowngrade(result.ResponseBody, requestMaxTokens, capabilities, out compatibilityReason)
+					: TryApplyLegacyThinkingDowngrade(result.ResponseBody, capabilities, out compatibilityReason);
+			}
+			if (compatibilityChanged)
+			{
+				Log(source, "[HTTP] Policy compatibility downgrade applied: " + compatibilityReason
+					+ " route=" + profile.ResolvedRoute
+					+ " attempt=" + attempt.ToString(CultureInfo.InvariantCulture) + "/" + attempts.ToString(CultureInfo.InvariantCulture));
+			}
+			bool transientFailure = IsTransientPolicyFailure(result);
+			if (!compatibilityChanged && !transientFailure)
+			{
+				return result;
+			}
+			if (attempt < attempts && transientFailure && !compatibilityChanged)
 			{
 				RetryBackoffPlan backoff = RetryBackoffPlan.FromResult(result);
 				Log(source, backoff.BuildLog(attempt, attempts));
-				await Task.Delay(backoff.DelayMilliseconds);
+				await Task.Delay(backoff.DelayMilliseconds, cancellationToken);
 			}
 		}
 		return finalResult;
 	}
 
-	private static async Task<NpcPolicyApiCallResult> CallEventAndRebellionApiOnceAsync(string systemPrompt, int maxTokens, int hardTimeoutMilliseconds, string source, long runtimeGeneration)
+	private static async Task<NpcPolicyHttpExchange> SendAndReadNpcPolicyExchangeAsync(string effectiveApiUrl, string apiKey, string jsonBody, int hardTimeoutMilliseconds, string source, long runtimeGeneration, string staleStagePrefix, NpcPolicyApiCallResult result, CancellationToken cancellationToken)
 	{
-		NpcPolicyApiCallResult result = new NpcPolicyApiCallResult();
-		try
-		{
-			DuelSettings settings = DuelSettings.GetSettings();
-			if (!TryResolveEventAndRebellionApiConfig(settings, out var effectiveApiUrl, out var apiKey, out var modelName, out var resolvedRoute, out var errorMessage))
-			{
-				result.ErrorMessage = errorMessage;
-				return result;
-			}
-			result.ResolvedRoute = resolvedRoute;
-			JArray messages = BuildMessageArray(systemPrompt);
-			JObject body = BuildChatRequestBody(modelName, messages, maxTokens, ResolveTemperature(settings, resolvedRoute));
-			DuelSettings.ApplyThinkingControls(body, effectiveApiUrl, modelName, thinkingEnabled: false, DuelSettings.ReasoningEffortHigh, out var thinkingMode);
-			string jsonBody = LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, body);
-			Log(source, BuildRequestStartLog(resolvedRoute, modelName, maxTokens, thinkingMode, effectiveApiUrl));
-			NpcPolicyHttpExchange exchange = await SendAndReadNpcPolicyExchangeAsync(effectiveApiUrl, apiKey, jsonBody, hardTimeoutMilliseconds, source, runtimeGeneration, BuildApiStagePrefix(source, "api"), result);
-			if (exchange == null)
-			{
-				return result;
-			}
-			try
-			{
-				if (ShouldRetryWithoutThinkingControls(exchange.Response, exchange.ResponseBody, thinkingMode))
-				{
-					Log(source, "[HTTP] NPC policy thinking controls rejected; retrying without thinking controls. route=" + resolvedRoute + " thinking_retry_plain=true");
-					exchange.Dispose();
-					exchange = null;
-					JObject retryBody = BuildPlainRetryBody(body);
-					string retryJsonBody = LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, retryBody);
-					result.ThinkingRetryPlain = true;
-					thinkingMode += "_retry_plain";
-					exchange = await SendAndReadNpcPolicyExchangeAsync(effectiveApiUrl, apiKey, retryJsonBody, hardTimeoutMilliseconds, source, runtimeGeneration, BuildApiStagePrefix(source, "api_retry"), result);
-					if (exchange == null)
-					{
-						return result;
-					}
-					Log(source, "[HTTP] NPC policy thinking plain retry response status=" + ((int)exchange.Response.StatusCode).ToString(CultureInfo.InvariantCulture) + " " + (exchange.Response.ReasonPhrase ?? "") + " thinking_retry_plain=true");
-				}
-				return CompleteApiCallResult(exchange, result, messages, resolvedRoute, modelName, thinkingMode, result.ThinkingRetryPlain, source);
-			}
-			finally
-			{
-				exchange?.Dispose();
-			}
-		}
-		catch (Exception ex)
-		{
-			result.ErrorMessage = ex.Message;
-			Log(source, "[ERROR] NPC policy API exception: " + ex);
-			return result;
-		}
-	}
-
-	private static async Task<NpcPolicyHttpExchange> SendAndReadNpcPolicyExchangeAsync(string effectiveApiUrl, string apiKey, string jsonBody, int hardTimeoutMilliseconds, string source, long runtimeGeneration, string staleStagePrefix, NpcPolicyApiCallResult result)
-	{
-		HttpResponseMessage response = await SendNpcPolicyRequestWithHardTimeoutAsync(effectiveApiUrl, apiKey, jsonBody, hardTimeoutMilliseconds, source, result);
+		HttpResponseMessage response = await SendNpcPolicyRequestWithHardTimeoutAsync(effectiveApiUrl, apiKey, jsonBody, hardTimeoutMilliseconds, source, result, cancellationToken);
 		if (response == null)
 		{
 			return null;
@@ -662,32 +772,168 @@ internal static class NpcPolicyLlmClient
 		result.ErrorMessage = BuildApiFailureMessage(response.StatusCode, responseBody, result.RetryAfterSeconds, result.RetryAfterSecondsRaw, result.RetryAfterSecondsCapped, result.IsRateLimit, result.IsRequestsPerMinuteLimit, result.IsQuotaLimit);
 	}
 
-	private static JObject BuildChatRequestBody(string modelName, JArray messages, int maxTokens, float temperature)
+	private static JObject BuildCompatibleChatRequestBody(PolicyApiExecutionProfile profile, JArray messages, int maxTokens, PolicyRequestCapabilities capabilities, out string thinkingMode)
 	{
-		return new JObject
+		JObject body = new JObject
 		{
-			["model"] = modelName,
+			["model"] = profile.ModelName,
 			["messages"] = messages,
-			["max_tokens"] = maxTokens,
-			["stream"] = false,
-			["temperature"] = temperature
+			["stream"] = false
 		};
+		if (capabilities.TokenParameterMode == PolicyTokenParameterMode.MaxTokens)
+		{
+			body["max_tokens"] = maxTokens;
+		}
+		else if (capabilities.TokenParameterMode == PolicyTokenParameterMode.MaxCompletionTokens)
+		{
+			body["max_completion_tokens"] = maxTokens;
+		}
+		if (!capabilities.OmitTemperature)
+		{
+			body["temperature"] = profile.Temperature;
+		}
+		if (capabilities.OmitThinkingControls)
+		{
+			thinkingMode = "plain";
+		}
+		else
+		{
+			DuelSettings.ApplyThinkingControls(body, profile.EffectiveApiUrl, profile.ModelName, thinkingEnabled: false, DuelSettings.ReasoningEffortHigh, out thinkingMode);
+		}
+		return body;
 	}
 
-	private static JObject BuildPlainRetryBody(JObject originalBody)
+	private static bool TryApplyPolicyCompatibilityDowngrade(string responseBody, int requestedMaxTokens, PolicyRequestCapabilities capabilities, out string reason)
 	{
-		JObject retryBody = (JObject)originalBody.DeepClone();
-		DuelSettings.RemoveThinkingControls(retryBody);
-		return retryBody;
+		List<string> changes = new List<string>();
+		bool maxTokensReduced = TryReadAdvertisedMaxTokens(responseBody, requestedMaxTokens, out int advertisedMaxTokens)
+			&& (!capabilities.MaxTokensOverride.HasValue || advertisedMaxTokens < capabilities.MaxTokensOverride.Value);
+		if (maxTokensReduced)
+		{
+			capabilities.MaxTokensOverride = advertisedMaxTokens;
+			changes.Add("maxTokens=" + advertisedMaxTokens.ToString(CultureInfo.InvariantCulture));
+		}
+		if (!capabilities.OmitThinkingControls && LooksLikeNpcThinkingControlError(responseBody))
+		{
+			capabilities.OmitThinkingControls = true;
+			changes.Add("thinking=omitted");
+		}
+		if (!capabilities.OmitTemperature && LooksLikeTemperatureControlError(responseBody))
+		{
+			capabilities.OmitTemperature = true;
+			changes.Add("temperature=omitted");
+		}
+		if (!maxTokensReduced && LooksLikeTokenParameterError(responseBody, capabilities.TokenParameterMode))
+		{
+			if (capabilities.TokenParameterMode == PolicyTokenParameterMode.MaxTokens)
+			{
+				capabilities.TokenParameterMode = PolicyTokenParameterMode.MaxCompletionTokens;
+				changes.Add("tokenField=max_completion_tokens");
+			}
+			else if (capabilities.TokenParameterMode == PolicyTokenParameterMode.MaxCompletionTokens)
+			{
+				capabilities.TokenParameterMode = PolicyTokenParameterMode.Omit;
+				changes.Add("tokenField=omitted");
+			}
+		}
+		reason = string.Join(",", changes);
+		return changes.Count > 0;
 	}
 
-	private static bool ShouldRetryWithoutThinkingControls(HttpResponseMessage response, string responseBody, string thinkingMode)
+	private static bool TryApplyLegacyThinkingDowngrade(string responseBody, PolicyRequestCapabilities capabilities, out string reason)
 	{
-		return response != null
-			&& !response.IsSuccessStatusCode
-			&& response.StatusCode == HttpStatusCode.BadRequest
-			&& thinkingMode != "plain"
-			&& LooksLikeNpcThinkingControlError(responseBody);
+		if (!capabilities.OmitThinkingControls && LooksLikeNpcThinkingControlError(responseBody))
+		{
+			capabilities.OmitThinkingControls = true;
+			reason = "thinking=omitted";
+			return true;
+		}
+		reason = "";
+		return false;
+	}
+
+	private static bool LooksLikeTokenParameterError(string responseBody, PolicyTokenParameterMode mode)
+	{
+		string field = mode == PolicyTokenParameterMode.MaxCompletionTokens ? "max_completion_tokens" : "max_tokens";
+		return ContainsAnyIgnoreCase(responseBody, field)
+			&& ContainsAnyIgnoreCase(responseBody, "unsupported", "not supported", "unknown", "unrecognized", "unexpected", "invalid parameter", "extra inputs", "not permitted", "不支持", "未知", "无法识别", "无效参数");
+	}
+
+	private static bool LooksLikeTemperatureControlError(string responseBody)
+	{
+		return ContainsAnyIgnoreCase(responseBody, "temperature")
+			&& ContainsAnyIgnoreCase(responseBody, "unsupported", "not supported", "unknown", "unrecognized", "unexpected", "invalid", "only the default", "not permitted", "不支持", "未知", "无法识别", "无效");
+	}
+
+	private static bool TryReadAdvertisedMaxTokens(string responseBody, int requestedMaxTokens, out int advertisedMaxTokens)
+	{
+		advertisedMaxTokens = 0;
+		string text = responseBody ?? "";
+		if (!ContainsAnyIgnoreCase(text, "token", "令牌") || !ContainsAnyIgnoreCase(text, "maximum", "max allowed", "at most", "less than or equal", "must be <=", "不能超过", "最大"))
+		{
+			return false;
+		}
+		Match match = Regex.Match(text, @"(?i)(?:maximum|max(?:imum)?\s+allowed|at\s+most|less\s+than\s+or\s+equal\s+to|must\s+be\s*<=|不能超过|最大)[^0-9]{0,64}([0-9]{1,6})");
+		if (!match.Success || !int.TryParse(match.Groups[1].Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out int parsed))
+		{
+			return false;
+		}
+		advertisedMaxTokens = parsed;
+		return parsed > 0 && parsed < requestedMaxTokens;
+	}
+
+	private static bool IsTransientPolicyFailure(NpcPolicyApiCallResult result)
+	{
+		int statusCode = result?.StatusCode ?? 0;
+		return statusCode == 408 || statusCode == 429 || statusCode >= 500;
+	}
+
+	private static string GetTokenParameterLogName(PolicyTokenParameterMode mode)
+	{
+		switch (mode)
+		{
+		case PolicyTokenParameterMode.MaxCompletionTokens:
+			return "max_completion_tokens";
+		case PolicyTokenParameterMode.Omit:
+			return "omitted";
+		default:
+			return "max_tokens";
+		}
+	}
+
+	private static string BuildCapabilityCacheKey(string effectiveApiUrl, string modelName)
+	{
+		return (effectiveApiUrl ?? "").Trim().ToLowerInvariant() + "\n" + (modelName ?? "").Trim().ToLowerInvariant();
+	}
+
+	private static PolicyRequestCapabilities GetCachedCapabilities(string key)
+	{
+		lock (CapabilityCacheLock)
+		{
+			return CapabilityCache.TryGetValue(key ?? "", out PolicyRequestCapabilities cached)
+				? cached.Clone()
+				: new PolicyRequestCapabilities();
+		}
+	}
+
+	private static void CacheSuccessfulCapabilities(string key, PolicyRequestCapabilities capabilities)
+	{
+		if (string.IsNullOrWhiteSpace(key) || capabilities == null)
+		{
+			return;
+		}
+		lock (CapabilityCacheLock)
+		{
+			if (!CapabilityCache.ContainsKey(key))
+			{
+				while (CapabilityCache.Count >= MaxCapabilityCacheEntries && CapabilityCacheOrder.Count > 0)
+				{
+					CapabilityCache.Remove(CapabilityCacheOrder.Dequeue());
+				}
+				CapabilityCacheOrder.Enqueue(key);
+			}
+			CapabilityCache[key] = capabilities.Clone();
+		}
 	}
 
 	private static string BuildApiStagePrefix(string source, string stage)
@@ -748,12 +994,12 @@ internal static class NpcPolicyLlmClient
 			+ "\nraw_response_sample=\n" + TrimForLog(responseBody);
 	}
 
-	private static async Task<HttpResponseMessage> SendNpcPolicyRequestWithHardTimeoutAsync(string effectiveApiUrl, string apiKey, string jsonBody, int hardTimeoutMilliseconds, string source, NpcPolicyApiCallResult result)
+	private static async Task<HttpResponseMessage> SendNpcPolicyRequestWithHardTimeoutAsync(string effectiveApiUrl, string apiKey, string jsonBody, int hardTimeoutMilliseconds, string source, NpcPolicyApiCallResult result, CancellationToken cancellationToken)
 	{
 		using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
 		LlmApiCompat.ApplyAuthenticationHeaders(request, effectiveApiUrl, apiKey);
 		request.Content = new StringContent(jsonBody ?? "{}", Encoding.UTF8, "application/json");
-		using CancellationTokenSource timeoutCts = new CancellationTokenSource();
+		using CancellationTokenSource timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 		using CancellationTokenSource delayCts = new CancellationTokenSource();
 		Task<HttpResponseMessage> apiTask = DuelSettings.GlobalClient.SendAsync(request, timeoutCts.Token);
 		Task completed = await Task.WhenAny(apiTask, Task.Delay(hardTimeoutMilliseconds, delayCts.Token));
@@ -768,6 +1014,10 @@ internal static class NpcPolicyLlmClient
 		try
 		{
 			return await apiTask;
+		}
+		catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+		{
+			throw;
 		}
 		catch (TaskCanceledException ex) when (timeoutCts.IsCancellationRequested)
 		{
@@ -823,60 +1073,146 @@ internal static class NpcPolicyLlmClient
 		}
 	}
 
-	private static bool TryResolveEventAndRebellionApiConfig(DuelSettings settings, out string effectiveApiUrl, out string apiKey, out string modelName, out string resolvedRoute, out string errorMessage)
+	private static bool TryResolvePolicyApiConfig(string requestedSource, bool followSelectedApiTokens, int customMaxTokens, float? fixedTemperature, out PolicyApiExecutionProfile profile, out string errorMessage)
 	{
-		effectiveApiUrl = "";
-		apiKey = "";
-		modelName = "";
-		resolvedRoute = "event_rebellion_fallback_main";
-		errorMessage = "请检查 MCM 的事件/叛乱 API 或主 API 设置。";
+		return TryResolvePolicyApiConfig(DuelSettings.GetSettings(), requestedSource, followSelectedApiTokens, customMaxTokens, fixedTemperature, out profile, out errorMessage);
+	}
+
+	private static bool TryResolvePolicyApiConfig(DuelSettings settings, string requestedSource, bool followSelectedApiTokens, int customMaxTokens, float? fixedTemperature, out PolicyApiExecutionProfile profile, out string errorMessage)
+	{
+		profile = null;
+		errorMessage = "请检查 MCM 的政策 API 来源或主 API 设置。";
 		if (settings == null)
 		{
 			return false;
 		}
-		string eventUrl = (settings.EventAndRebellionApiUrl ?? "").Trim();
-		string eventKey = (settings.EventAndRebellionApiKey ?? "").Trim();
-		string eventModel = settings.GetEffectiveEventAndRebellionModelName();
-		string eventSelected = settings.GetEventAndRebellionSelectedModelOption();
-		bool hasEventField = !string.IsNullOrWhiteSpace(eventUrl)
-			|| !string.IsNullOrWhiteSpace(eventKey)
-			|| !string.IsNullOrWhiteSpace((settings.EventAndRebellionModelName ?? "").Trim())
-			|| !string.IsNullOrWhiteSpace(eventSelected);
-		if (hasEventField)
+		string source = NormalizePolicyApiSource(requestedSource);
+		ReadPolicyApiSourceConfig(settings, source, out string selectedUrl, out string selectedKey, out string selectedModel, out int selectedMaxTokens, out float selectedTemperature, out bool hasSelectedField);
+		string effectiveSelectedUrl = DuelSettings.GetEffectiveApiUrl(selectedUrl);
+		bool selectedComplete = !string.IsNullOrWhiteSpace(effectiveSelectedUrl)
+			&& !string.IsNullOrWhiteSpace(selectedKey)
+			&& !string.IsNullOrWhiteSpace(selectedModel);
+
+		string resolvedRoute;
+		string effectiveApiUrl;
+		string apiKey;
+		string modelName;
+		int effectiveSourceMaxTokens;
+		float effectiveSourceTemperature;
+		if (source == DuelSettings.PolicyApiSourceMain && selectedComplete)
 		{
-			effectiveApiUrl = DuelSettings.GetEffectiveApiUrl(eventUrl);
-			apiKey = eventKey;
-			modelName = eventModel;
-			if (!string.IsNullOrWhiteSpace(effectiveApiUrl) && !string.IsNullOrWhiteSpace(apiKey) && !string.IsNullOrWhiteSpace(modelName))
+			resolvedRoute = "main";
+			effectiveApiUrl = effectiveSelectedUrl;
+			apiKey = selectedKey;
+			modelName = selectedModel;
+			effectiveSourceMaxTokens = selectedMaxTokens;
+			effectiveSourceTemperature = selectedTemperature;
+		}
+		else if (source != DuelSettings.PolicyApiSourceMain && selectedComplete)
+		{
+			resolvedRoute = source + "_dedicated";
+			effectiveApiUrl = effectiveSelectedUrl;
+			apiKey = selectedKey;
+			modelName = selectedModel;
+			effectiveSourceMaxTokens = selectedMaxTokens;
+			effectiveSourceTemperature = selectedTemperature;
+		}
+		else
+		{
+			string mainUrl = DuelSettings.GetEffectiveApiUrl(settings.ApiUrl ?? "");
+			string mainKey = (settings.ApiKey ?? "").Trim();
+			string mainModel = (settings.GetEffectiveMainModelName() ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(mainUrl) || string.IsNullOrWhiteSpace(mainKey) || string.IsNullOrWhiteSpace(mainModel))
 			{
-				resolvedRoute = "event_rebellion_dedicated";
-				errorMessage = "";
-				return true;
+				errorMessage = source == DuelSettings.PolicyApiSourceMain
+					? "主 API 配置不完整，政策生成无法开始。"
+					: "所选政策 API 配置不完整，且主 API 也不完整，政策生成无法开始。";
+				return false;
 			}
+			resolvedRoute = source == DuelSettings.PolicyApiSourceMain
+				? "main"
+				: source + (hasSelectedField ? "_partial_fallback_main" : "_fallback_main");
+			effectiveApiUrl = mainUrl;
+			apiKey = mainKey;
+			modelName = mainModel;
+			effectiveSourceMaxTokens = settings.GetMainApiMaxTokens();
+			effectiveSourceTemperature = settings.GetMainApiTemperature();
 		}
-		effectiveApiUrl = DuelSettings.GetEffectiveApiUrl(settings.ApiUrl ?? "");
-		apiKey = (settings.ApiKey ?? "").Trim();
-		modelName = settings.GetEffectiveMainModelName();
-		if (!string.IsNullOrWhiteSpace(effectiveApiUrl) && !string.IsNullOrWhiteSpace(apiKey) && !string.IsNullOrWhiteSpace(modelName))
+
+		profile = new PolicyApiExecutionProfile
 		{
-			resolvedRoute = hasEventField ? "event_rebellion_partial_fallback_main" : "event_rebellion_fallback_main";
-			errorMessage = "";
-			return true;
-		}
-		return false;
+			RequestedSource = source,
+			ResolvedRoute = resolvedRoute,
+			EffectiveApiUrl = effectiveApiUrl,
+			ApiKey = apiKey,
+			ModelName = modelName,
+			MaxTokens = followSelectedApiTokens
+				? Math.Max(1, effectiveSourceMaxTokens)
+				: DuelSettings.ClampPolicyApiMaxTokens(customMaxTokens),
+			Temperature = fixedTemperature.HasValue
+				? DuelSettings.ClampApiTemperature(fixedTemperature.Value)
+				: DuelSettings.ClampApiTemperature(effectiveSourceTemperature)
+		};
+		errorMessage = "";
+		return true;
 	}
 
-	private static float ResolveTemperature(DuelSettings settings, string resolvedRoute)
+	private static string NormalizePolicyApiSource(string source)
 	{
-		try
+		string normalized = (source ?? "").Trim().ToLowerInvariant();
+		switch (normalized)
 		{
-			return (resolvedRoute ?? "").StartsWith("event_rebellion_dedicated", StringComparison.OrdinalIgnoreCase)
-				? settings.GetEventAndRebellionApiTemperature()
-				: settings.GetMainApiTemperature();
+		case DuelSettings.PolicyApiSourceAuxiliary:
+		case DuelSettings.PolicyApiSourceActionPostprocess:
+		case DuelSettings.PolicyApiSourceEventAndRebellion:
+			return normalized;
+		default:
+			return DuelSettings.PolicyApiSourceMain;
 		}
-		catch
+	}
+
+	private static void ReadPolicyApiSourceConfig(DuelSettings settings, string source, out string rawUrl, out string apiKey, out string modelName, out int maxTokens, out float temperature, out bool hasAnyField)
+	{
+		rawUrl = "";
+		apiKey = "";
+		modelName = "";
+		maxTokens = DuelSettings.DefaultGeneralApiMaxTokens;
+		temperature = 0.8f;
+		hasAnyField = false;
+		switch (source)
 		{
-			return 0.8f;
+		case DuelSettings.PolicyApiSourceAuxiliary:
+			rawUrl = (settings.AuxiliaryApiUrl ?? "").Trim();
+			apiKey = (settings.AuxiliaryApiKey ?? "").Trim();
+			modelName = (settings.GetEffectiveAuxiliaryModelName() ?? "").Trim();
+			maxTokens = settings.GetAuxiliaryApiMaxTokens();
+			temperature = settings.GetAuxiliaryApiTemperature();
+			hasAnyField = !string.IsNullOrWhiteSpace(rawUrl) || !string.IsNullOrWhiteSpace(apiKey) || !string.IsNullOrWhiteSpace((settings.AuxiliaryModelName ?? "").Trim()) || !string.IsNullOrWhiteSpace(settings.GetAuxiliarySelectedModelOption());
+			break;
+		case DuelSettings.PolicyApiSourceActionPostprocess:
+			rawUrl = (settings.ActionPostprocessApiUrl ?? "").Trim();
+			apiKey = (settings.ActionPostprocessApiKey ?? "").Trim();
+			modelName = (settings.GetEffectiveActionPostprocessModelName() ?? "").Trim();
+			maxTokens = settings.GetActionPostprocessApiMaxTokens();
+			temperature = settings.GetActionPostprocessApiTemperature();
+			hasAnyField = !string.IsNullOrWhiteSpace(rawUrl) || !string.IsNullOrWhiteSpace(apiKey) || !string.IsNullOrWhiteSpace((settings.ActionPostprocessModelName ?? "").Trim()) || !string.IsNullOrWhiteSpace(settings.GetActionPostprocessSelectedModelOption());
+			break;
+		case DuelSettings.PolicyApiSourceEventAndRebellion:
+			rawUrl = (settings.EventAndRebellionApiUrl ?? "").Trim();
+			apiKey = (settings.EventAndRebellionApiKey ?? "").Trim();
+			modelName = (settings.GetEffectiveEventAndRebellionModelName() ?? "").Trim();
+			maxTokens = settings.GetEventAndRebellionApiMaxTokens();
+			temperature = settings.GetEventAndRebellionApiTemperature();
+			hasAnyField = !string.IsNullOrWhiteSpace(rawUrl) || !string.IsNullOrWhiteSpace(apiKey) || !string.IsNullOrWhiteSpace((settings.EventAndRebellionModelName ?? "").Trim()) || !string.IsNullOrWhiteSpace(settings.GetEventAndRebellionSelectedModelOption());
+			break;
+		default:
+			rawUrl = (settings.ApiUrl ?? "").Trim();
+			apiKey = (settings.ApiKey ?? "").Trim();
+			modelName = (settings.GetEffectiveMainModelName() ?? "").Trim();
+			maxTokens = settings.GetMainApiMaxTokens();
+			temperature = settings.GetMainApiTemperature();
+			hasAnyField = !string.IsNullOrWhiteSpace(rawUrl) || !string.IsNullOrWhiteSpace(apiKey) || !string.IsNullOrWhiteSpace(modelName);
+			break;
 		}
 	}
 
@@ -1116,6 +1452,20 @@ internal static class NpcPolicyStructuredParseLogger
 			return text;
 		}
 		return text.Substring(0, SampleChars) + "...";
+	}
+}
+
+// 兼容既有非政策调用点；政策调用统一走 PolicyLlmClient。
+internal static class NpcPolicyLlmClient
+{
+	public static bool IsConfiguredForNpcPolicy(out string errorMessage)
+	{
+		return PolicyLlmClient.IsConfiguredForLegacyEventApi(out errorMessage);
+	}
+
+	public static Task<NpcPolicyApiCallResult> CallEventAndRebellionApiWithRetriesAsync(string systemPrompt, int maxTokens, int hardTimeoutMilliseconds, string source, long runtimeGeneration, int maxAttempts = 3)
+	{
+		return PolicyLlmClient.CallEventAndRebellionApiWithRetriesAsync(systemPrompt, maxTokens, hardTimeoutMilliseconds, source, runtimeGeneration, maxAttempts);
 	}
 }
 
@@ -1956,7 +2306,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			failureReason = "NPC 统治者政策功能当前已关闭。";
 			return false;
 		}
-		if (!NpcPolicyLlmClient.IsConfiguredForNpcPolicy(out string apiConfigError))
+		if (!PolicyLlmClient.IsConfiguredForNpcPolicy(out string apiConfigError))
 		{
 			failureReason = string.IsNullOrWhiteSpace(apiConfigError) ? "NPC 统治者政策 API 尚未配置。" : apiConfigError;
 			return false;
@@ -2023,6 +2373,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		NpcPolicyGenerationJob job = null;
 		try
 		{
+			PolicyApiExecutionProfile apiProfile = ResolveNpcPolicyApiProfile();
 			job = new NpcPolicyGenerationJob
 			{
 				JobId = "npc_policy_job:" + context.BatchId,
@@ -2034,7 +2385,8 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 				InFlightKey = inFlightKey,
 				Version = ++_generationVersion,
 				RuntimeGeneration = SaveRuntimeGuard.CaptureGeneration(),
-				MaxTokens = ResolvePolicyMaxTokens(),
+				ApiProfile = apiProfile,
+				MaxTokens = apiProfile.MaxTokens,
 				HardTimeoutMilliseconds = PolicyApiHardTimeoutMilliseconds,
 				CreatedUtcTicks = DateTime.UtcNow.Ticks
 			};
@@ -2084,7 +2436,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			}
 			return;
 		}
-		if (!NpcPolicyLlmClient.IsConfiguredForNpcPolicy(out string apiConfigError))
+		if (!PolicyLlmClient.IsConfiguredForNpcPolicy(out string apiConfigError))
 		{
 			if (shouldLogSkips)
 			{
@@ -2151,6 +2503,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		NpcPolicyGenerationJob job = null;
 		try
 		{
+			PolicyApiExecutionProfile apiProfile = ResolveNpcPolicyApiProfile();
 			job = new NpcPolicyGenerationJob
 			{
 				JobId = "npc_policy_job:" + context.BatchId,
@@ -2162,7 +2515,8 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 				InFlightKey = inFlightKey,
 				Version = ++_generationVersion,
 				RuntimeGeneration = SaveRuntimeGuard.CaptureGeneration(),
-				MaxTokens = ResolvePolicyMaxTokens(),
+				ApiProfile = apiProfile,
+				MaxTokens = apiProfile.MaxTokens,
 				HardTimeoutMilliseconds = PolicyApiHardTimeoutMilliseconds,
 				CreatedUtcTicks = DateTime.UtcNow.Ticks
 			};
@@ -2213,7 +2567,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 					+ " systemPromptChars=" + (job.SystemPrompt?.Length ?? 0).ToString(CultureInfo.InvariantCulture)
 					+ " messageCount=1");
 				PolicyTraceLog("generation-batch-call-start", BuildPolicyJobTracePrefix(job), job.PromptPreview);
-				NpcPolicyApiCallResult apiResult = await NpcPolicyLlmClient.CallEventAndRebellionApiWithRetriesAsync(job.SystemPrompt, job.MaxTokens, job.HardTimeoutMilliseconds, "NpcRulerPolicy", job.RuntimeGeneration, 3);
+				NpcPolicyApiCallResult apiResult = await PolicyLlmClient.CallPolicyApiWithRetriesAsync(job.SystemPrompt, job.ApiProfile, job.HardTimeoutMilliseconds, "NpcRulerPolicy", job.RuntimeGeneration, 3);
 				CopyApiResultToPolicyResult(result, apiResult, accumulateAttempts: false);
 				LogPolicyApiMetrics(job, apiResult);
 				PolicyTraceLog("generation-batch-api-finished", BuildPolicyApiResultTracePrefix(job, apiResult), apiResult.Success ? apiResult.Content : apiResult.ErrorMessage);
@@ -2322,7 +2676,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			}
 			NpcRulerPolicyBatchContext singleContext = BuildSingleKingdomFallbackContext(job.Context, target);
 			NpcPolicyPrompt singlePrompt = BuildPolicyPrompt(singleContext);
-			NpcPolicyApiCallResult apiResult = await NpcPolicyLlmClient.CallEventAndRebellionApiWithRetriesAsync(singlePrompt.SystemPrompt, job.MaxTokens, job.HardTimeoutMilliseconds, "NpcRulerPolicySingleFallback", job.RuntimeGeneration, 3);
+			NpcPolicyApiCallResult apiResult = await PolicyLlmClient.CallPolicyApiWithRetriesAsync(singlePrompt.SystemPrompt, job.ApiProfile, job.HardTimeoutMilliseconds, "NpcRulerPolicySingleFallback", job.RuntimeGeneration, 3);
 			CopyApiResultToPolicyResult(result, apiResult, accumulateAttempts: true);
 			PolicyTraceLog("generation-single-fallback-finished", BuildPolicyJobTracePrefix(job) + " target=" + (target.KingdomId ?? "") + " success=" + apiResult.Success.ToString(CultureInfo.InvariantCulture) + " attempts=" + apiResult.AttemptsUsed.ToString(CultureInfo.InvariantCulture), apiResult.Success ? apiResult.Content : apiResult.ErrorMessage);
 			if (!apiResult.Success)
@@ -3780,17 +4134,13 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		return Clamp(ReadDuelSettingsInt("GetNpcRulerPolicyMaxKingdomsPerRequestForExternal", DefaultNpcRulerPolicyBatchSize), 1, MaxPoliciesPerBatch);
 	}
 
-	private static int ResolvePolicyMaxTokens()
+	private static PolicyApiExecutionProfile ResolveNpcPolicyApiProfile()
 	{
-		try
+		if (PolicyLlmClient.TryResolveNpcPolicyProfile(out PolicyApiExecutionProfile profile, out string errorMessage))
 		{
-			return DuelSettings.GetSettings()?.GetEventAndRebellionApiMaxTokens()
-				?? DuelSettings.DefaultEventAndRebellionApiMaxTokens;
+			return profile;
 		}
-		catch
-		{
-			return DuelSettings.DefaultEventAndRebellionApiMaxTokens;
-		}
+		throw new InvalidOperationException(string.IsNullOrWhiteSpace(errorMessage) ? "NPC 统治者政策 API 配置不完整。" : errorMessage);
 	}
 
 	private static int ReadDuelSettingsInt(string methodName, int fallback)
@@ -5104,7 +5454,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			return NpcPolicyLlmClient.IsConfiguredForNpcPolicy(out var _);
+			return PolicyLlmClient.IsConfiguredForNpcPolicy(out var _);
 		}
 		catch
 		{
@@ -5301,6 +5651,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		public string InFlightKey = "";
 		public int Version;
 		public long RuntimeGeneration;
+		public PolicyApiExecutionProfile ApiProfile;
 		public int MaxTokens;
 		public int HardTimeoutMilliseconds;
 		public long CreatedUtcTicks;

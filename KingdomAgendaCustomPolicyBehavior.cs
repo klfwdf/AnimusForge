@@ -69,7 +69,7 @@ public static class KingdomAgendaCustomPolicyBehavior
 				failureReason = "NPC统治者政策功能当前未启用。";
 				return false;
 			}
-			if (!NpcPolicyLlmClient.IsConfiguredForNpcPolicy(out string apiFailure))
+			if (!PolicyLlmClient.IsConfiguredForNpcPolicy(out string apiFailure))
 			{
 				failureReason = string.IsNullOrWhiteSpace(apiFailure) ? "NPC统治者政策 API 尚未配置。" : apiFailure.Trim();
 				return false;

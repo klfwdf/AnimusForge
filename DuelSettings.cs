@@ -667,6 +667,20 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	public const int DefaultGeneralApiMaxTokens = 12000;
 
+	public const int PolicyApiMaxTokensMinimum = 1000;
+
+	public const int PolicyApiMaxTokensMaximum = 100000;
+
+	public const int DefaultPolicyApiMaxTokens = 12000;
+
+	public const string PolicyApiSourceMain = "main";
+
+	public const string PolicyApiSourceAuxiliary = "auxiliary";
+
+	public const string PolicyApiSourceActionPostprocess = "action_postprocess";
+
+	public const string PolicyApiSourceEventAndRebellion = "event_rebellion";
+
 	private const int ConnectionTestMaxTokens = ApiMaxTokensMinimum;
 
 	public const int DefaultEventAndRebellionApiMaxTokens = 12000;
@@ -1885,6 +1899,10 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("16. 政策系统/1. 玩家政策", GroupOrder = 160)]
 	public bool UseAiEvaluatedCustomPolicyCost { get; set; } = true;
 
+	[SettingPropertyDropdown("API来源", Order = 0, RequireRestart = false, HintText = "复用所选链路现有的 URL、Key、模型和地址解析规则；所选配置不完整时自动回退主 API。明确选择前处理时不受常规前处理 API 开关影响。")]
+	[SettingPropertyGroup("16. 政策系统/1. 玩家政策", GroupOrder = 160)]
+	public Dropdown<string> PlayerPolicyApiSourceDropdown { get; set; } = BuildPolicyApiSourceDropdown(0);
+
 	[SettingPropertyInteger("固定第纳尔消耗", 0, 500000, "0", Order = 2, RequireRestart = false, HintText = "仅在关闭“由AI评估政策消耗”后生效。玩家政策成功发布时扣除相应第纳尔；默认 50000，设置为 0 表示免费。")]
 	[SettingPropertyGroup("16. 政策系统/1. 玩家政策", GroupOrder = 160)]
 	public int CustomPolicyGoldCost { get; set; } = DefaultCustomPolicyGoldCost;
@@ -1896,9 +1914,21 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("16. 政策系统/1. 玩家政策", GroupOrder = 160)]
 	public int CustomPolicyPublicFeedbackTargetChars { get; set; } = DefaultCustomPolicyPublicFeedbackTargetChars;
 
+	[SettingPropertyBool("跟随所选API Token", Order = 4, RequireRestart = false, HintText = "开启时使用实际生效 API 来源的最大输出 Tokens；若回退主 API，则改用主 API Token。关闭时始终使用下面的政策自定义值。")]
+	[SettingPropertyGroup("16. 政策系统/1. 玩家政策", GroupOrder = 160)]
+	public bool PlayerPolicyFollowSelectedApiTokens { get; set; } = true;
+
+	[SettingPropertyInteger("自定义最大输出Tokens", PolicyApiMaxTokensMinimum, PolicyApiMaxTokensMaximum, "0", Order = 5, RequireRestart = false, HintText = "仅在关闭“跟随所选API Token”后使用。只影响玩家政策，允许 1000—100000；不修改其他 API 的全局上限。")]
+	[SettingPropertyGroup("16. 政策系统/1. 玩家政策", GroupOrder = 160)]
+	public int PlayerPolicyCustomMaxTokens { get; set; } = DefaultPolicyApiMaxTokens;
+
 	[SettingPropertyBool("启用NPC统治者政策", Order = 0, RequireRestart = false, HintText = "开启后，各 NPC 王国会按设定间隔制定并发布政策。关闭后不再生成新政策，已经生效的政策及其记录不受影响。")]
 	[SettingPropertyGroup("16. 政策系统/2. NPC统治者政策", GroupOrder = 160)]
 	public bool EnableNpcRulerPolicy { get; set; } = true;
+
+	[SettingPropertyDropdown("API来源", Order = 1, RequireRestart = false, HintText = "复用所选链路现有的 URL、Key、模型和地址解析规则；所选配置不完整时自动回退主 API。明确选择前处理时不受常规前处理 API 开关影响。")]
+	[SettingPropertyGroup("16. 政策系统/2. NPC统治者政策", GroupOrder = 160)]
+	public Dropdown<string> NpcRulerPolicyApiSourceDropdown { get; set; } = BuildPolicyApiSourceDropdown(3);
 
 	[SettingPropertyInteger("政策检查间隔（天）", NpcRulerPolicyCheckIntervalMinDays, NpcRulerPolicyCheckIntervalMaxDays, "0", Order = 2, RequireRestart = false, HintText = "每隔多少个游戏日检查一次是否需要生成新的 NPC 政策。默认 7 天，可在 1—30 天之间调整；没有符合条件的王国时，本轮不会生成政策。")]
 	[SettingPropertyGroup("16. 政策系统/2. NPC统治者政策", GroupOrder = 160)]
@@ -1911,6 +1941,14 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyInteger("同一王国政策冷却（天）", NpcRulerPolicyIntervalMinDays, NpcRulerPolicyIntervalMaxDays, "0", Order = 4, RequireRestart = false, HintText = "同一 NPC 王国两次政策草案之间至少间隔多少个游戏日。默认 7 天，可在 1—30 天之间调整；待审、通过和否决的正常草案均参与冷却。玩家发布或续约附庸国政策不受冷却限制，但会从当天起按此天数压制目标附庸国的 NPC 统治者政策。")]
 	[SettingPropertyGroup("16. 政策系统/2. NPC统治者政策", GroupOrder = 160)]
 	public int NpcRulerPolicyIntervalDays { get; set; } = DefaultNpcRulerPolicyIntervalDays;
+
+	[SettingPropertyBool("跟随所选API Token", Order = 5, RequireRestart = false, HintText = "开启时使用实际生效 API 来源的最大输出 Tokens；若回退主 API，则改用主 API Token。关闭时始终使用下面的政策自定义值。")]
+	[SettingPropertyGroup("16. 政策系统/2. NPC统治者政策", GroupOrder = 160)]
+	public bool NpcRulerPolicyFollowSelectedApiTokens { get; set; } = true;
+
+	[SettingPropertyInteger("自定义最大输出Tokens", PolicyApiMaxTokensMinimum, PolicyApiMaxTokensMaximum, "0", Order = 6, RequireRestart = false, HintText = "仅在关闭“跟随所选API Token”后使用。只影响 NPC 统治者政策，允许 1000—100000；不修改其他 API 的全局上限。")]
+	[SettingPropertyGroup("16. 政策系统/2. NPC统治者政策", GroupOrder = 160)]
+	public int NpcRulerPolicyCustomMaxTokens { get; set; } = DefaultPolicyApiMaxTokens;
 
 	[Obsolete("Use NpcRulerPolicyIntervalDays / GetNpcRulerPolicyIntervalDaysForExternal instead.")]
 	public int NpcRulerPolicyIntervalHours { get; set; } = DefaultNpcRulerPolicyIntervalHours;
@@ -2249,6 +2287,84 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		{
 			return DefaultCustomPolicyGoldCost;
 		}
+	}
+
+	public static string GetPlayerPolicyApiSourceForExternal()
+	{
+		try
+		{
+			return ReadPolicyApiSourceSelection(GetSettings()?.PlayerPolicyApiSourceDropdown, 0);
+		}
+		catch
+		{
+			return PolicyApiSourceMain;
+		}
+	}
+
+	public static bool GetPlayerPolicyFollowSelectedApiTokensForExternal()
+	{
+		try
+		{
+			return GetSettings()?.PlayerPolicyFollowSelectedApiTokens ?? true;
+		}
+		catch
+		{
+			return true;
+		}
+	}
+
+	public static int GetPlayerPolicyCustomMaxTokensForExternal()
+	{
+		try
+		{
+			return ClampPolicyApiMaxTokens(GetSettings()?.PlayerPolicyCustomMaxTokens ?? DefaultPolicyApiMaxTokens);
+		}
+		catch
+		{
+			return DefaultPolicyApiMaxTokens;
+		}
+	}
+
+	public static string GetNpcRulerPolicyApiSourceForExternal()
+	{
+		try
+		{
+			return ReadPolicyApiSourceSelection(GetSettings()?.NpcRulerPolicyApiSourceDropdown, 3);
+		}
+		catch
+		{
+			return PolicyApiSourceEventAndRebellion;
+		}
+	}
+
+	public static bool GetNpcRulerPolicyFollowSelectedApiTokensForExternal()
+	{
+		try
+		{
+			return GetSettings()?.NpcRulerPolicyFollowSelectedApiTokens ?? true;
+		}
+		catch
+		{
+			return true;
+		}
+	}
+
+	public static int GetNpcRulerPolicyCustomMaxTokensForExternal()
+	{
+		try
+		{
+			return ClampPolicyApiMaxTokens(GetSettings()?.NpcRulerPolicyCustomMaxTokens ?? DefaultPolicyApiMaxTokens);
+		}
+		catch
+		{
+			return DefaultPolicyApiMaxTokens;
+		}
+	}
+
+	public static int ClampPolicyApiMaxTokens(int maxTokens)
+	{
+		int normalized = maxTokens > 0 ? maxTokens : DefaultPolicyApiMaxTokens;
+		return Math.Max(PolicyApiMaxTokensMinimum, Math.Min(PolicyApiMaxTokensMaximum, normalized));
 	}
 
 	public static int GetDailyConversationHistoryLineLimitForExternal()
@@ -4791,6 +4907,42 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			return ShoutInputUiBackgroundPink;
 		}
 		return ShoutInputUiBackgroundBlack;
+	}
+
+	private static List<string> BuildPolicyApiSourceOptions()
+	{
+		return new List<string> { "主链路", "前处理", "后处理", "周报" };
+	}
+
+	private static Dropdown<string> BuildPolicyApiSourceDropdown(int selectedIndex)
+	{
+		List<string> options = BuildPolicyApiSourceOptions();
+		if (selectedIndex < 0 || selectedIndex >= options.Count)
+		{
+			selectedIndex = 0;
+		}
+		return new Dropdown<string>(options, selectedIndex);
+	}
+
+	private static string ReadPolicyApiSourceSelection(Dropdown<string> dropdown, int defaultIndex)
+	{
+		List<string> options = BuildPolicyApiSourceOptions();
+		int selectedIndex = dropdown?.SelectedIndex ?? defaultIndex;
+		if (selectedIndex < 0 || selectedIndex >= options.Count)
+		{
+			selectedIndex = defaultIndex;
+		}
+		switch (selectedIndex)
+		{
+		case 1:
+			return PolicyApiSourceAuxiliary;
+		case 2:
+			return PolicyApiSourceActionPostprocess;
+		case 3:
+			return PolicyApiSourceEventAndRebellion;
+		default:
+			return PolicyApiSourceMain;
+		}
 	}
 
 	private static Dropdown<string> BuildShoutInputUiBackgroundDropdown(string selectedValue)
