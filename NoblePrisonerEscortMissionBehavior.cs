@@ -19,8 +19,6 @@ internal sealed class NoblePrisonerEscortMissionBehavior : MissionLogic
 	private const float ResolveTimeoutSeconds = 8f;
 	private const float NativePopulationSettleSeconds = 1.25f;
 	private const float MaintainIntervalSeconds = 0.5f;
-	private const float RetreatRetryIntervalSeconds = 1.5f;
-	private const float RetreatFadeFallbackSeconds = 15f;
 
 	private readonly Dictionary<int, EscortedRuntimeAgent> _agents = new Dictionary<int, EscortedRuntimeAgent>();
 	private NoblePrisonerEscortMode _mode;
@@ -71,7 +69,7 @@ internal sealed class NoblePrisonerEscortMissionBehavior : MissionLogic
 		}
 		if (_mode == NoblePrisonerEscortMode.WorldMapEncounterMeeting && MeetingBattleRuntime.IsCombatEscalated)
 		{
-			BeginMeetingRetreat();
+			DespawnMeetingEscortsForCombat();
 		}
 		_maintainTimer -= Math.Max(0f, dt);
 		if (_maintainTimer <= 0f)
@@ -96,7 +94,7 @@ internal sealed class NoblePrisonerEscortMissionBehavior : MissionLogic
 		base.OnEndMission();
 	}
 
-	internal void BeginMeetingRetreat()
+	internal void DespawnMeetingEscortsForCombat()
 	{
 		if (_mode != NoblePrisonerEscortMode.WorldMapEncounterMeeting)
 		{
@@ -104,15 +102,13 @@ internal sealed class NoblePrisonerEscortMissionBehavior : MissionLogic
 		}
 		foreach (EscortedRuntimeAgent runtime in _agents.Values.ToList())
 		{
-			if (runtime?.Agent == null || runtime.RetreatStarted)
+			if (runtime?.Agent == null || runtime.CombatDespawnStarted)
 			{
 				continue;
 			}
-			runtime.RetreatStarted = true;
-			runtime.RetreatElapsed = 0f;
-			runtime.RetreatRetryTimer = 0f;
-			NoblePrisonerEscortBehavior.MarkMeetingRetreatStarted(runtime.Agent);
-			TryStartNativeRetreat(runtime, "combat_escalated");
+			runtime.CombatDespawnStarted = true;
+			NoblePrisonerEscortBehavior.MarkMeetingCombatDespawnStarted(runtime.Agent);
+			DespawnMeetingEscortForCombat(runtime, "combat_escalated");
 		}
 	}
 
@@ -216,19 +212,8 @@ internal sealed class NoblePrisonerEscortMissionBehavior : MissionLogic
 			{
 				continue;
 			}
-			if (runtime.RetreatStarted)
+			if (runtime.CombatDespawnStarted)
 			{
-				runtime.RetreatElapsed += MaintainIntervalSeconds;
-				runtime.RetreatRetryTimer -= MaintainIntervalSeconds;
-				if (runtime.RetreatRetryTimer <= 0f && !agent.IsRetreating())
-				{
-					TryStartNativeRetreat(runtime, "retreat_retry");
-				}
-				if (runtime.RetreatElapsed >= RetreatFadeFallbackSeconds && agent.IsActive() && !agent.IsFadingOut())
-				{
-					agent.FadeOut(hideInstantly: false, hideMount: true);
-					NoblePrisonerEscortLog.Log("Applied scene-only retreat fade fallback. hero=" + (runtime.Hero?.StringId ?? "null") + ", agent=" + agent.Index);
-				}
 				continue;
 			}
 			EnsureEscortFormation(agent);
@@ -412,34 +397,30 @@ internal sealed class NoblePrisonerEscortMissionBehavior : MissionLogic
 		}
 	}
 
-	private void TryStartNativeRetreat(EscortedRuntimeAgent runtime, string source)
+	private void DespawnMeetingEscortForCombat(EscortedRuntimeAgent runtime, string source)
 	{
 		Agent agent = runtime?.Agent;
 		if (agent == null || !agent.IsActive())
 		{
 			return;
 		}
-		runtime.RetreatRetryTimer = RetreatRetryIntervalSeconds;
 		try
 		{
+			string formation = agent.Formation?.FormationIndex.ToString() ?? "null";
 			agent.SetMortalityState(Agent.MortalityState.Invulnerable);
-			agent.SetIsAIPaused(isPaused: false);
+			agent.SetIsAIPaused(isPaused: true);
 			agent.DisableScriptedMovement();
 			agent.ClearTargetFrame();
 			agent.InvalidateTargetAgent();
 			BannerlordApiCompat.TrySetAgentAutomaticTargetSelection(agent, enabled: false);
-			agent.Formation?.DetachUnit(agent, isLoose: true);
-			agent.CommonAIComponent?.Retreat();
-			if (!agent.IsRetreating())
-			{
-				WorldPosition fleePosition = base.Mission.GetClosestFleePositionForAgent(agent);
-				agent.Retreat(fleePosition);
-			}
-			NoblePrisonerEscortLog.Log("Started native meeting retreat. hero=" + (runtime.Hero?.StringId ?? "null") + ", agent=" + agent.Index + ", source=" + source + ", retreating=" + agent.IsRetreating());
+			// Full removal keeps the formation arrangement and Agent state in sync; DetachUnit alone does not.
+			agent.Formation = null;
+			agent.FadeOut(hideInstantly: true, hideMount: true);
+			NoblePrisonerEscortLog.Log("Despawned meeting escort for combat. hero=" + (runtime.Hero?.StringId ?? "null") + ", agent=" + agent.Index + ", source=" + source + ", previousFormation=" + formation + ", fading=" + agent.IsFadingOut());
 		}
 		catch (Exception ex)
 		{
-			NoblePrisonerEscortLog.Log("Start native meeting retreat failed. hero=" + (runtime.Hero?.StringId ?? "null") + ", agent=" + agent.Index + ", source=" + source + ", error=" + ex.Message);
+			NoblePrisonerEscortLog.Log("Meeting escort combat despawn failed. hero=" + (runtime.Hero?.StringId ?? "null") + ", agent=" + agent.Index + ", source=" + source + ", error=" + ex.Message);
 		}
 	}
 
@@ -528,9 +509,7 @@ internal sealed class NoblePrisonerEscortMissionBehavior : MissionLogic
 	{
 		internal Hero Hero;
 		internal Agent Agent;
-		internal bool RetreatStarted;
-		internal float RetreatElapsed;
-		internal float RetreatRetryTimer;
+		internal bool CombatDespawnStarted;
 	}
 }
 

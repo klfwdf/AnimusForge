@@ -134,11 +134,11 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 			&& EscortedAgents.ContainsKey(agentIndex);
 	}
 
-	internal static bool IsMeetingRetreatingAgent(Agent agent)
+	internal static bool IsMeetingCombatDespawningAgent(Agent agent)
 	{
 		return agent != null
 			&& EscortedAgents.TryGetValue(agent.Index, out EscortedAgentRecord record)
-			&& record.MeetingRetreatStarted;
+			&& record.MeetingCombatDespawnStarted;
 	}
 
 	private static bool HasLiveLordsHallProfile()
@@ -468,11 +468,11 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 		NoblePrisonerEscortLog.Log("Registered escorted noble prisoner. mode=" + mode + ", hero=" + SafeHeroId(hero) + ", agent=" + agent.Index);
 	}
 
-	internal static void MarkMeetingRetreatStarted(Agent agent)
+	internal static void MarkMeetingCombatDespawnStarted(Agent agent)
 	{
 		if (agent != null && EscortedAgents.TryGetValue(agent.Index, out EscortedAgentRecord record))
 		{
-			record.MeetingRetreatStarted = true;
+			record.MeetingCombatDespawnStarted = true;
 		}
 	}
 
@@ -958,6 +958,6 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 		internal Hero Hero;
 		internal Agent Agent;
 		internal NoblePrisonerEscortMode Mode;
-		internal bool MeetingRetreatStarted;
+		internal bool MeetingCombatDespawnStarted;
 	}
 }

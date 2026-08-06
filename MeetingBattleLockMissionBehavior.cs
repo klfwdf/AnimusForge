@@ -567,7 +567,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 				if (!_meetingCombatUnlockApplied)
 				{
 					ArmDeferredDetachedFormationRestoreForCombat();
-					base.Mission.GetMissionBehavior<NoblePrisonerEscortMissionBehavior>()?.BeginMeetingRetreat();
+					base.Mission.GetMissionBehavior<NoblePrisonerEscortMissionBehavior>()?.DespawnMeetingEscortsForCombat();
 					EnsureMissionBattleModeForCombat();
 					EnsureMissionCombatTeamRelationships();
 					RestoreTargetLordControllerForCombat();
@@ -1026,7 +1026,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 				{
 					continue;
 				}
-				if (NoblePrisonerEscortBehavior.IsMeetingRetreatingAgent(agent))
+				if (NoblePrisonerEscortBehavior.IsMeetingCombatDespawningAgent(agent))
 				{
 					continue;
 				}
@@ -1077,7 +1077,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 				{
 					continue;
 				}
-				if (NoblePrisonerEscortBehavior.IsMeetingRetreatingAgent(agent))
+				if (NoblePrisonerEscortBehavior.IsMeetingCombatDespawningAgent(agent))
 				{
 					continue;
 				}
@@ -5109,7 +5109,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 				{
 					continue;
 				}
-				if (NoblePrisonerEscortBehavior.IsMeetingRetreatingAgent(agent))
+				if (NoblePrisonerEscortBehavior.IsMeetingCombatDespawningAgent(agent))
 				{
 					continue;
 				}
@@ -5191,7 +5191,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 			{
 				if (agent4 != null && agent4.IsActive() && agent4 != agent && agent4 != agent2)
 				{
-					if (NoblePrisonerEscortBehavior.IsMeetingRetreatingAgent(agent4))
+					if (NoblePrisonerEscortBehavior.IsMeetingCombatDespawningAgent(agent4))
 					{
 						continue;
 					}
