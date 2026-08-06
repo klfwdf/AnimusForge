@@ -225,6 +225,17 @@ public static partial class TroopInspectionBehavior
 			Log("precheck blocked: already opening");
 			return;
 		}
+		if (_pendingSelection != null)
+		{
+			if (IsPartyScreenStillActive())
+			{
+				Display("检阅队伍选择界面已经打开。");
+				Log("precheck blocked: selection screen active");
+				return;
+			}
+			Log("selection abandoned: party screen no longer active");
+			ResetPendingSelection("selection_screen_lost");
+		}
 		TryCleanupStaleInspectionStateBeforeOpen("terminal_open_stale_cleanup");
 		EnsureMainHeroReadyForInspection("terminal_open");
 		_isOpening = true;
@@ -269,6 +280,10 @@ public static partial class TroopInspectionBehavior
 			Log("open failed: " + ex.GetType().Name + ": " + ex.Message + "\n" + ex.StackTrace);
 			ResetPendingSelection("open_failed");
 			Display("打开检阅士兵失败。");
+		}
+		finally
+		{
+			_isOpening = false;
 		}
 	}
 
@@ -1728,6 +1743,7 @@ public static partial class TroopInspectionBehavior
 
 	private static void ResetPendingSelection(string reason)
 	{
+		Log("selection_reset reason=" + (reason ?? "unknown"));
 		CleanupOrphanSelectionPoolDummyParties(reason + "_selection_pool_orphan");
 		_pendingSelection = null;
 		_isOpening = false;
