@@ -3346,6 +3346,20 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		}
 		string kingdomId = kingdom.StringId ?? "";
 		string kingdomName = GetKingdomName(kingdom);
+		string kingdomStrategicProfile = "";
+		KingdomStrategicProfileBehavior strategicProfiles = KingdomStrategicProfileBehavior.Instance;
+		if (strategicProfiles != null
+			&& strategicProfiles.TryGetEffectiveProfile(kingdomId, out string nationalPersonality, out string longTermStrategy))
+		{
+			string compactNationalPersonality = FirstNonEmpty(
+				CompressCompleteText(nationalPersonality, 180, 240),
+				Limit(Compact(nationalPersonality), 240));
+			string compactLongTermStrategy = FirstNonEmpty(
+				CompressCompleteText(longTermStrategy, 240, 320),
+				Limit(Compact(longTermStrategy), 320));
+			kingdomStrategicProfile = "NationalPersonality=" + compactNationalPersonality
+				+ "\nLongTermStrategy=" + compactLongTermStrategy;
+		}
 		List<Settlement> settlements = GetKingdomSettlements(kingdom);
 		List<Settlement> towns = settlements.Where(x => x?.Town != null).ToList();
 		List<Settlement> villages = settlements.Where(x => x?.Village != null).ToList();
@@ -3398,6 +3412,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			PersonalityChars = compactPersonality.Length,
 			BackgroundChars = compactBackground.Length,
 			CurrentWorldFacts = currentWorldFacts,
+			KingdomStrategicProfile = kingdomStrategicProfile,
 			PolicyMemory = policyMemoryItems.Count == 0 ? "" : string.Join("\n", policyMemoryItems),
 			RecentWorldPhenomenon = recentWorldPhenomenon ?? "",
 			ForeignDirectPressure = foreignDirectPressures.Count == 0 ? "" : string.Join("\n", foreignDirectPressures),
@@ -3417,6 +3432,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		}
 		StringBuilder sb = new StringBuilder();
 		AppendNpcPolicyPromptBlock(sb, "CurrentWorldFacts", context.CurrentWorldFacts);
+		AppendNpcPolicyPromptBlock(sb, "KingdomStrategicProfile", context.KingdomStrategicProfile);
 		AppendNpcPolicyPromptBlock(sb, "KnowledgeGrounding", context.KnowledgeGrounding);
 		AppendNpcPolicyPromptBlock(sb, "PolicyMemory", context.PolicyMemory);
 		AppendNpcPolicyPromptBlock(sb, "RecentWorldPhenomenon", context.RecentWorldPhenomenon);
@@ -4195,6 +4211,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		contract.AppendLine("authoritarianWeight、oligarchicWeight、egalitarianWeight 分别表示政策对君主集权、贵族议政、平民与地方广泛参与的原版政治取向，范围均为 -1 到 1，必须依据政策内容评估，三项不得全部为 0。");
 		contract.AppendLine("身份字段必须复制对应 Target。effects 必须是数组并留在同一 policy 内，且至少包含一个目标和期限有效的 effect；允许所有数值字段都为 0，不得因此拒绝或省略政策。durationDays 必须是正整数；所有数值必须是有限数值；kingdomStabilityDailyDelta 按整数语义输出。");
 		contract.AppendLine("effect 目标只能来自该 Target 的 AllowedEffectTargets，每条政策最多一个 self 和一个 foreign；foreign 可以是交战或和平外国。外国目标必须在 policyName 或 policyContent 中明确点名该王国、现任统治者、其氏族或氏族领袖、或其定居点，且数值只能来自 policyContent 明确写出的直接跨国措施；一旦正文对点名外国写出直接措施，就必须输出对应 foreign effect，不能只保留 self。玩家建议 JSON 中若有 resolvedForeignTargets，它是代码对 playerProposal 点名实体的本地归属检索结果，只提供王国映射而不代替直接措施判断。不得重定向非法目标或从同期现象、摘要、传闻及连锁推测生成外国 effect。");
+		contract.AppendLine("KingdomStrategicProfile 只表示国家的稳定决策偏好，用于影响政策主题、优先级、落实手段和措辞；不得把它当作当前事实，不得覆盖 CurrentWorldFacts、MechanicalFacts 或 AllowedEffectTargets，也不得据此编造数值效果。玩家已获统治者明确接受的政策建议时，只能依据国家卡调整落实方式，不得拒绝、替换或偏离已接受的政策主题。");
 		contract.AppendLine("prosperityDailyDeltaPerTown 与 militiaDailyDeltaPerTown 按每座城镇和城堡结算；foodDailyDeltaPerTown、loyaltyDailyDeltaPerTown、securityDailyDeltaPerTown 按每座城镇结算；hearthDailyDeltaPerVillage 按每座村庄结算；kingdomStabilityDailyDelta 在政策首次正式生效时对王国整体结算一次，不随 durationDays 每日重复，自动续期不重复结算。townTaxPercent 是目标王国全部城镇和城堡主税收相对原版最终税额的百分比点变化：0 表示原版 100%，10 表示 110%，-20 表示 80%；它不是每日固定第纳尔变化，也不影响村庄收入或关税。constructionPowerDailyDelta 是直接加入每座目标城镇或城堡当天原版建造力的固定点数：0 表示不变，50 表示增加 50 点，-20 表示减少 20 点；它不是百分比，也不随原版建造力按比例变化。");
 		contract.AppendLine("derivedEventTitle、derivedEventContent、derivedEventDigest 必须描述 eventPremise 的同一现象，事件不得产生 effects。impactSummary 与 effects 只描述政策影响。JSON 字段使用 ASCII 双引号，字符串中的换行和控制字符必须转义；结构完整性优先。");
 		string fixedContract = contract.ToString().TrimEnd();
@@ -5608,6 +5625,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		public int PersonalityChars;
 		public int BackgroundChars;
 		public string CurrentWorldFacts;
+		public string KingdomStrategicProfile;
 		public string PolicyMemory;
 		public string RecentWorldPhenomenon;
 		public string ForeignDirectPressure;
