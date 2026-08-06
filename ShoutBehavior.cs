@@ -17688,7 +17688,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		case "encounter_release_player":
 			return !string.IsNullOrWhiteSpace(LordEncounterBehavior.BuildMeetingPlayerReleaseRuntimeInstructionForExternal(hero));
 		case "meeting_taunt":
-			return !string.IsNullOrWhiteSpace(LordEncounterBehavior.BuildForcedMeetingTauntRuntimeInstructionForExternal(hero, targetCharacter));
+			PartyBase meetingTauntParty = null;
+			if (hero == null)
+			{
+				TryResolveNativeConversationMeetingTauntParty(targetHero, targetCharacter, targetAgentIndex, out meetingTauntParty);
+			}
+			return !string.IsNullOrWhiteSpace(LordEncounterBehavior.BuildMeetingTauntRuntimeInstructionForExternal(hero, targetCharacter, meetingTauntParty))
+				|| !string.IsNullOrWhiteSpace(SceneTauntBehavior.BuildUnifiedTauntRuntimeInstructionForExternal(hero, targetCharacter, targetAgentIndex));
 		default:
 			return true;
 		}
@@ -17810,8 +17816,17 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		bool hadNativeConversationSessionHistoryBeforeTurn = HasNativeConversationSessionHistory(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, npc);
 		string extraFact = npcOpeningPersistentFactText;
 		string nativeMeetingTauntRuleBlock = "";
-		string nativeMeetingTauntInstruction = (LordEncounterBehavior.BuildForcedMeetingTauntRuntimeInstructionForExternal(targetHero, targetCharacter) ?? "").Trim();
-		if (!string.IsNullOrWhiteSpace(nativeMeetingTauntInstruction))
+		PartyBase nativeMeetingTauntParty = null;
+		if (targetHero == null)
+		{
+			TryResolveNativeConversationMeetingTauntParty(targetHero, targetCharacter, nativeTargetAgentIndex, out nativeMeetingTauntParty);
+		}
+		string nativeMeetingTauntInstruction = (LordEncounterBehavior.BuildMeetingTauntRuntimeInstructionForExternal(targetHero, targetCharacter, nativeMeetingTauntParty) ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(nativeMeetingTauntInstruction))
+		{
+			nativeMeetingTauntInstruction = (SceneTauntBehavior.BuildSceneTauntRuntimeInstructionForExternal(targetHero, targetCharacter, nativeTargetAgentIndex) ?? "").Trim();
+		}
+		if (!AfGcczShoutBridge.ShouldUseExclusivePreprocessRuleRouting() && !string.IsNullOrWhiteSpace(nativeMeetingTauntInstruction))
 		{
 			nativeMeetingTauntRuleBlock = "【附加规则:meeting_taunt】" + Environment.NewLine + nativeMeetingTauntInstruction;
 		}
@@ -20850,10 +20865,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					bool hasPrisonerSnapshot = PromptListRetrievalService.TryGetPartyTransferSnapshot(PromptListRetrievalService.PartyTransferPrisonersSnapshotScope, targetHero, targetCharacter, targetAgentIndex, out partyTransferPrisonerOptions);
 					bool hasAllTroopSnapshot = PromptListRetrievalService.TryGetPartyTransferSnapshot(PromptListRetrievalService.PartyTransferAllTroopsSnapshotScope, targetHero, targetCharacter, targetAgentIndex, out partyTransferAllTroopOptions);
 					bool hasAllPrisonerSnapshot = PromptListRetrievalService.TryGetPartyTransferSnapshot(PromptListRetrievalService.PartyTransferAllPrisonersSnapshotScope, targetHero, targetCharacter, targetAgentIndex, out partyTransferAllPrisonerOptions);
+					bool wildernessNonHeroPartyTransfer = MyBehavior.IsWildernessNonHeroPartyTransferEligibleForExternal(targetHero, targetCharacter, targetAgentIndex);
+					IEnumerable<MyBehavior.PartyTransferPromptEntry> troopOptions = (recruitMaxTier > 0) ? list.Where((MyBehavior.PartyTransferPromptEntry x) => x != null && x.Section == MyBehavior.PartyTransferEntrySection.NpcTroops && Math.Max(0, x.Character?.Tier ?? 0) > 0 && Math.Max(0, x.Character?.Tier ?? 0) <= recruitMaxTier) : Enumerable.Empty<MyBehavior.PartyTransferPromptEntry>();
+					IEnumerable<MyBehavior.PartyTransferPromptEntry> volunteerOptions = list.Where((MyBehavior.PartyTransferPromptEntry x) => x != null && x.Section == MyBehavior.PartyTransferEntrySection.NpcVolunteers);
 					if (!hasTroopSnapshot || !hasPrisonerSnapshot)
 					{
-						IEnumerable<MyBehavior.PartyTransferPromptEntry> troopOptions = (recruitMaxTier > 0) ? list.Where((MyBehavior.PartyTransferPromptEntry x) => x != null && x.Section == MyBehavior.PartyTransferEntrySection.NpcTroops && Math.Max(0, x.Character?.Tier ?? 0) > 0 && Math.Max(0, x.Character?.Tier ?? 0) <= recruitMaxTier) : Enumerable.Empty<MyBehavior.PartyTransferPromptEntry>();
-						IEnumerable<MyBehavior.PartyTransferPromptEntry> volunteerOptions = list.Where((MyBehavior.PartyTransferPromptEntry x) => x != null && x.Section == MyBehavior.PartyTransferEntrySection.NpcVolunteers);
 						if (!hasTroopSnapshot)
 						{
 							partyTransferTroopOptions = BuildDisplayIndexedPartyTransferEntriesForScene(troopOptions.Concat(volunteerOptions));
@@ -20869,7 +20885,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					}
 					if (!hasAllTroopSnapshot)
 					{
-						partyTransferAllTroopOptions = BuildDisplayIndexedPartyTransferEntriesForScene(list.Where((MyBehavior.PartyTransferPromptEntry x) => x != null && (x.Section == MyBehavior.PartyTransferEntrySection.NpcTroops || x.Section == MyBehavior.PartyTransferEntrySection.NpcVolunteers)));
+						IEnumerable<MyBehavior.PartyTransferPromptEntry> allTroopOptions = wildernessNonHeroPartyTransfer
+							? troopOptions.Concat(volunteerOptions)
+							: list.Where((MyBehavior.PartyTransferPromptEntry x) => x != null && (x.Section == MyBehavior.PartyTransferEntrySection.NpcTroops || x.Section == MyBehavior.PartyTransferEntrySection.NpcVolunteers));
+						partyTransferAllTroopOptions = BuildDisplayIndexedPartyTransferEntriesForScene(allTroopOptions);
 						PromptListRetrievalService.PublishPartyTransferSnapshot(PromptListRetrievalService.PartyTransferAllTroopsSnapshotScope, targetHero, targetCharacter, targetAgentIndex, partyTransferAllTroopOptions);
 					}
 					if (!hasAllPrisonerSnapshot)
@@ -24143,10 +24162,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				bool hasPrisonerSnapshot = PromptListRetrievalService.TryGetPartyTransferSnapshot(PromptListRetrievalService.PartyTransferPrisonersSnapshotScope, targetHero, targetCharacter, targetAgentIndex, out partyTransferPrisonerOptions);
 				bool hasAllTroopSnapshot = PromptListRetrievalService.TryGetPartyTransferSnapshot(PromptListRetrievalService.PartyTransferAllTroopsSnapshotScope, targetHero, targetCharacter, targetAgentIndex, out partyTransferAllTroopOptions);
 				bool hasAllPrisonerSnapshot = PromptListRetrievalService.TryGetPartyTransferSnapshot(PromptListRetrievalService.PartyTransferAllPrisonersSnapshotScope, targetHero, targetCharacter, targetAgentIndex, out partyTransferAllPrisonerOptions);
+				bool wildernessNonHeroPartyTransfer = MyBehavior.IsWildernessNonHeroPartyTransferEligibleForExternal(targetHero, targetCharacter, targetAgentIndex);
+				IEnumerable<MyBehavior.PartyTransferPromptEntry> troopOptions = (num2 > 0) ? list.Where((MyBehavior.PartyTransferPromptEntry x) => x != null && x.Section == MyBehavior.PartyTransferEntrySection.NpcTroops && Math.Max(0, x.Character?.Tier ?? 0) > 0 && Math.Max(0, x.Character?.Tier ?? 0) <= num2) : Enumerable.Empty<MyBehavior.PartyTransferPromptEntry>();
+				IEnumerable<MyBehavior.PartyTransferPromptEntry> volunteerOptions = list.Where((MyBehavior.PartyTransferPromptEntry x) => x != null && x.Section == MyBehavior.PartyTransferEntrySection.NpcVolunteers);
 				if (!hasTroopSnapshot || !hasPrisonerSnapshot)
 				{
-					IEnumerable<MyBehavior.PartyTransferPromptEntry> troopOptions = (num2 > 0) ? list.Where((MyBehavior.PartyTransferPromptEntry x) => x != null && x.Section == MyBehavior.PartyTransferEntrySection.NpcTroops && Math.Max(0, x.Character?.Tier ?? 0) > 0 && Math.Max(0, x.Character?.Tier ?? 0) <= num2) : Enumerable.Empty<MyBehavior.PartyTransferPromptEntry>();
-					IEnumerable<MyBehavior.PartyTransferPromptEntry> volunteerOptions = list.Where((MyBehavior.PartyTransferPromptEntry x) => x != null && x.Section == MyBehavior.PartyTransferEntrySection.NpcVolunteers);
 					if (!hasTroopSnapshot)
 					{
 						partyTransferTroopOptions = BuildDisplayIndexedPartyTransferEntriesForScene(troopOptions.Concat(volunteerOptions));
@@ -24162,7 +24182,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				}
 				if (!hasAllTroopSnapshot)
 				{
-					partyTransferAllTroopOptions = BuildDisplayIndexedPartyTransferEntriesForScene(list.Where((MyBehavior.PartyTransferPromptEntry x) => x != null && (x.Section == MyBehavior.PartyTransferEntrySection.NpcTroops || x.Section == MyBehavior.PartyTransferEntrySection.NpcVolunteers)));
+					IEnumerable<MyBehavior.PartyTransferPromptEntry> allTroopOptions = wildernessNonHeroPartyTransfer
+						? troopOptions.Concat(volunteerOptions)
+						: list.Where((MyBehavior.PartyTransferPromptEntry x) => x != null && (x.Section == MyBehavior.PartyTransferEntrySection.NpcTroops || x.Section == MyBehavior.PartyTransferEntrySection.NpcVolunteers));
+					partyTransferAllTroopOptions = BuildDisplayIndexedPartyTransferEntriesForScene(allTroopOptions);
 					PromptListRetrievalService.PublishPartyTransferSnapshot(PromptListRetrievalService.PartyTransferAllTroopsSnapshotScope, targetHero, targetCharacter, targetAgentIndex, partyTransferAllTroopOptions);
 				}
 				if (!hasAllPrisonerSnapshot)

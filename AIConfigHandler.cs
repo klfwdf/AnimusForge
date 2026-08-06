@@ -6969,7 +6969,7 @@ public static class AIConfigHandler
 				}
 				if (string.Equals(text, "meeting_taunt", StringComparison.OrdinalIgnoreCase))
 				{
-					string text4 = LordEncounterBehavior.BuildForcedMeetingTauntRuntimeInstructionForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
+					string text4 = SceneTauntBehavior.BuildUnifiedTauntRuntimeInstructionForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter(), ResolveConversationTargetAgentIndex());
 					if (!string.IsNullOrWhiteSpace(text4))
 					{
 						value = text4;

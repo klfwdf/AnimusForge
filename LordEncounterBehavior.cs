@@ -6442,7 +6442,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			text = "玩家";
 		}
-		return "若" + text + "辱骂、贬低或挑衅你，并且你决定让部队立刻开战，就在句末输出[ACTION:MEETING_TAUNT_BATTLE]；该标签会把当前野外会面直接升级为正式战斗，并按玩家攻击了你方部队处理。";
+		return "若" + text + "辱骂、贬低或挑衅你，你可以在句末输出[ACTION:MEETING_TAUNT_BATTLE]；该标签会触发你和" + text + "的战斗，你的友军会上来帮助你，这与单挑和决斗有本质的不同。";
 	}
 
 	private static int GetRelationToPlayerSafe(Hero hero)

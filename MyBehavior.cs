@@ -22621,13 +22621,106 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static bool IsPartyTransferRuleEligible(Hero targetHero, CharacterObject targetCharacter = null)
+	private static bool IsSamePartyTransferCharacter(CharacterObject left, CharacterObject right)
 	{
-		Hero hero = ResolvePartyTransferRuleHero(targetHero, targetCharacter);
-		return IsPartyTransferLordEligible(targetHero, targetCharacter) || IsPartyTransferNotableRecruitEligible(hero);
+		if (left == null || right == null)
+		{
+			return false;
+		}
+		if (ReferenceEquals(left, right))
+		{
+			return true;
+		}
+		string leftId = (left.StringId ?? "").Trim();
+		string rightId = (right.StringId ?? "").Trim();
+		return !string.IsNullOrWhiteSpace(leftId) && string.Equals(leftId, rightId, StringComparison.OrdinalIgnoreCase);
 	}
 
-	private static void AddPartyTransferEntriesFromRoster(List<PartyTransferPromptEntry> entries, TroopRoster roster, PartyBase ownerParty, PartyTransferEntrySection section, ref int nextPromptIndex)
+	// Used at preprocess, prompt, and action boundaries. Do not cache this authorization:
+	// it checks only the current Agent and one live party, so revalidation stays bounded and
+	// prevents a changed encounter or roster from reusing stale transfer authority.
+	private static bool TryResolveWildernessNonHeroPartyTransferSource(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, out PartyBase sourceParty)
+	{
+		sourceParty = null;
+		try
+		{
+			if (targetHero != null || targetCharacter == null || targetCharacter.HeroObject != null || targetCharacter.IsHero)
+			{
+				return false;
+			}
+			if (Settlement.CurrentSettlement != null || MobileParty.MainParty?.CurrentSettlement != null || PlayerEncounterCompat.IsInPostBattleResultFlow())
+			{
+				return false;
+			}
+
+			PartyBase resolved;
+			Mission mission = Mission.Current;
+			if (targetAgentIndex >= 0)
+			{
+				if (mission == null)
+				{
+					return false;
+				}
+				MissionMode mode = mission.Mode;
+				bool isPeacefulSceneMode = mode == MissionMode.StartUp
+					|| mode == MissionMode.Conversation
+					|| mode == MissionMode.Barter
+					|| (mode == MissionMode.Battle
+						&& LordEncounterBehavior.IsEncounterMeetingMissionActive
+						&& !MeetingBattleRuntime.IsCombatEscalated);
+				if (!isPeacefulSceneMode)
+				{
+					return false;
+				}
+				Agent agent = mission.Agents?.FirstOrDefault((Agent candidate) => candidate != null && candidate.Index == targetAgentIndex);
+				CharacterObject agentCharacter = agent?.Character as CharacterObject;
+				if (agent == null || !agent.IsActive() || agentCharacter == null || agentCharacter.HeroObject != null || !IsSamePartyTransferCharacter(agentCharacter, targetCharacter))
+				{
+					return false;
+				}
+				resolved = NormalizePartyTransferCounterparty(agent?.Origin?.BattleCombatant as PartyBase);
+			}
+			else
+			{
+				if (mission != null)
+				{
+					return false;
+				}
+				resolved = NormalizePartyTransferCounterparty(ResolvePartyTransferCounterpartyInternal(null, targetCharacter, -1));
+			}
+
+			MobileParty mobileParty = resolved?.MobileParty;
+			if (resolved == null || !resolved.IsMobile || mobileParty == null || !mobileParty.IsActive
+				|| mobileParty == MobileParty.MainParty || mobileParty.CurrentSettlement != null
+				|| mobileParty.LeaderHero != null || CourierDeliveryBehavior.IsCourierParty(mobileParty)
+				|| !IsNonHeroConversationCounterpartyForCharacter(resolved, targetCharacter))
+			{
+				return false;
+			}
+			sourceParty = resolved;
+			return true;
+		}
+		catch
+		{
+			sourceParty = null;
+			return false;
+		}
+	}
+
+	public static bool IsWildernessNonHeroPartyTransferEligibleForExternal(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex = -1)
+	{
+		return TryResolveWildernessNonHeroPartyTransferSource(targetHero, targetCharacter, targetAgentIndex, out var _);
+	}
+
+	private static bool IsPartyTransferRuleEligible(Hero targetHero, CharacterObject targetCharacter = null, int targetAgentIndex = -1)
+	{
+		Hero hero = ResolvePartyTransferRuleHero(targetHero, targetCharacter);
+		return IsPartyTransferLordEligible(targetHero, targetCharacter)
+			|| IsPartyTransferNotableRecruitEligible(hero)
+			|| TryResolveWildernessNonHeroPartyTransferSource(targetHero, targetCharacter, targetAgentIndex, out var _);
+	}
+
+	private static void AddPartyTransferEntriesFromRoster(List<PartyTransferPromptEntry> entries, TroopRoster roster, PartyBase ownerParty, PartyTransferEntrySection section, ref int nextPromptIndex, CharacterObject reservedCharacter = null, int reservedCount = 0)
 	{
 		if (entries == null || roster == null)
 		{
@@ -22638,7 +22731,12 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			TroopRosterElement elementCopyAtIndex = roster.GetElementCopyAtIndex(i);
 			CharacterObject character = elementCopyAtIndex.Character;
-			if (character == null || elementCopyAtIndex.Number <= 0)
+			int availableCount = Math.Max(0, elementCopyAtIndex.Number);
+			if (!flag && reservedCount > 0 && IsSamePartyTransferCharacter(character, reservedCharacter))
+			{
+				availableCount = Math.Max(0, availableCount - reservedCount);
+			}
+			if (character == null || availableCount <= 0)
 			{
 				continue;
 			}
@@ -22660,8 +22758,8 @@ public class MyBehavior : CampaignBehaviorBase
 				Section = section,
 				Character = character,
 				DisplayName = GetPartyTransferEntryDisplayName(character),
-				Count = Math.Max(0, elementCopyAtIndex.Number),
-				WoundedCount = flag ? 0 : Math.Max(0, elementCopyAtIndex.WoundedNumber),
+				Count = availableCount,
+				WoundedCount = flag ? 0 : Math.Min(availableCount, Math.Max(0, elementCopyAtIndex.WoundedNumber)),
 				WageDenarsPerDay = flag ? 0 : Math.Max(1, character.TroopWage),
 				HirePriceDenarsPerUnit = flag ? 0 : GetPartyTransferHirePrice(character),
 				BuyPriceDenarsPerUnit = flag ? GetPartyTransferPrisonerPrice(character) : 0,
@@ -22820,31 +22918,39 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private static List<PartyTransferPromptEntry> BuildPartyTransferPromptEntriesInternal(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex = -1)
 	{
+		return BuildPartyTransferPromptEntriesInternal(targetHero, targetCharacter, targetAgentIndex, out var _);
+	}
+
+	private static List<PartyTransferPromptEntry> BuildPartyTransferPromptEntriesInternal(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, out PartyBase wildernessNonHeroSource)
+	{
 		List<PartyTransferPromptEntry> list = new List<PartyTransferPromptEntry>();
-		if (!IsPartyTransferRuleEligible(targetHero, targetCharacter))
+		wildernessNonHeroSource = null;
+		Hero hero = ResolvePartyTransferRuleHero(targetHero, targetCharacter);
+		bool isLord = IsPartyTransferLordEligible(targetHero, targetCharacter);
+		bool isNotable = IsPartyTransferNotableRecruitEligible(hero);
+		bool isWildernessNonHero = TryResolveWildernessNonHeroPartyTransferSource(targetHero, targetCharacter, targetAgentIndex, out wildernessNonHeroSource);
+		if (!isLord && !isNotable && !isWildernessNonHero)
 		{
 			return list;
 		}
 		PartyBase partyBase = Hero.MainHero?.PartyBelongedTo?.Party ?? MobileParty.MainParty?.Party;
-		PartyBase partyBase2 = ResolvePartyTransferCounterpartyInternal(targetHero, targetCharacter, targetAgentIndex);
+		PartyBase partyBase2 = wildernessNonHeroSource ?? ResolvePartyTransferCounterpartyInternal(targetHero, targetCharacter, targetAgentIndex);
 		int num = 1;
-		Hero hero = ResolvePartyTransferRuleHero(targetHero, targetCharacter);
-		bool flag = IsPartyTransferLordEligible(targetHero, targetCharacter);
-		if (flag && partyBase != null)
+		if (isLord && partyBase != null)
 		{
 			AddPartyTransferEntriesFromRoster(list, partyBase.MemberRoster, partyBase, PartyTransferEntrySection.PlayerTroops, ref num);
 			AddPartyTransferEntriesFromRoster(list, partyBase.PrisonRoster, partyBase, PartyTransferEntrySection.PlayerPrisoners, ref num);
 		}
-		if (flag)
+		if (isLord)
 		{
 			AddPartyTransferDungeonHeroEntries(list, Clan.PlayerClan, PartyTransferEntrySection.PlayerPrisoners, ref num);
 		}
-		if (flag && partyBase2 != null)
+		if ((isLord || isWildernessNonHero) && partyBase2 != null)
 		{
-			AddPartyTransferEntriesFromRoster(list, partyBase2.MemberRoster, partyBase2, PartyTransferEntrySection.NpcTroops, ref num);
+			AddPartyTransferEntriesFromRoster(list, partyBase2.MemberRoster, partyBase2, PartyTransferEntrySection.NpcTroops, ref num, isWildernessNonHero ? targetCharacter : null, isWildernessNonHero ? 1 : 0);
 			AddPartyTransferEntriesFromRoster(list, partyBase2.PrisonRoster, partyBase2, PartyTransferEntrySection.NpcPrisoners, ref num);
 		}
-		if (flag)
+		if (isLord)
 		{
 			AddPartyTransferDungeonHeroEntries(list, hero?.Clan, PartyTransferEntrySection.NpcPrisoners, ref num);
 		}
@@ -23988,12 +24094,15 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (!IsPartyTransferRuleEligible(targetHero, targetCharacter))
+			List<PartyTransferPromptEntry> list = BuildPartyTransferPromptEntriesInternal(targetHero, targetCharacter, targetAgentIndex, out PartyBase wildernessNonHeroSource);
+			Hero hero = ResolvePartyTransferRuleHero(targetHero, targetCharacter);
+			bool flag = IsPartyTransferLordEligible(targetHero, targetCharacter);
+			bool flag2 = IsPartyTransferNotableRecruitEligible(hero);
+			if (!flag && !flag2 && wildernessNonHeroSource == null)
 			{
 				string guardrailRuleNonHeroInstruction = AIConfigHandler.GetGuardrailRuleNonHeroInstruction("party_transfer");
 				return string.IsNullOrWhiteSpace(guardrailRuleNonHeroInstruction) ? "" : StripPartyTransferTags(guardrailRuleNonHeroInstruction);
 			}
-			List<PartyTransferPromptEntry> list = BuildPartyTransferPromptEntriesInternal(targetHero, targetCharacter, targetAgentIndex);
 			string text = BuildPlayerPublicDisplayNameForPrompt();
 			if (string.IsNullOrWhiteSpace(text))
 			{
@@ -24001,15 +24110,14 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			int partyTransferRecruitTrustLevelIndex = ResolvePartyTransferRecruitTrustLevelIndex(targetHero, targetCharacter);
 			int partyTransferRecruitMaxTier = ResolvePartyTransferRecruitMaxTier(partyTransferRecruitTrustLevelIndex);
-			Hero hero = ResolvePartyTransferRuleHero(targetHero, targetCharacter);
-			bool flag = IsPartyTransferLordEligible(targetHero, targetCharacter);
-			bool flag2 = IsPartyTransferNotableRecruitEligible(hero);
+			bool canUseCounterpartyRoster = flag || wildernessNonHeroSource != null;
 			List<PartyTransferPromptEntry> list2 = list.Where((PartyTransferPromptEntry x) => x != null && x.Section == PartyTransferEntrySection.NpcTroops).ToList();
 			List<PartyTransferPromptEntry> list3 = list2.Where((PartyTransferPromptEntry x) => GetPartyTransferTroopTier(x) > 0 && GetPartyTransferTroopTier(x) <= partyTransferRecruitMaxTier).ToList();
 			List<PartyTransferPromptEntry> list4 = list2.Where((PartyTransferPromptEntry x) => !list3.Contains(x)).ToList();
 			List<PartyTransferPromptEntry> list5 = list.Where((PartyTransferPromptEntry x) => x != null && x.Section == PartyTransferEntrySection.NpcVolunteers).ToList();
 			List<PartyTransferPromptEntry> listAllTroops = BuildDisplayIndexedPartyTransferEntries(list2.Concat(list5));
 			List<PartyTransferPromptEntry> list6All = BuildDisplayIndexedPartyTransferEntries(list3.Concat(list5));
+			List<PartyTransferPromptEntry> authorizedAllTroops = wildernessNonHeroSource != null ? list6All : listAllTroops;
 			List<PartyTransferPromptEntry> list7All = BuildDisplayIndexedPartyTransferEntries(list.Where((PartyTransferPromptEntry x) => x.Section == PartyTransferEntrySection.NpcPrisoners));
 			MentionedWorldEntities mentions = AIConfigHandler.GetLatestAuxiliaryMentionedEntitiesForExternal();
 			int promptListMax = PromptListRetrievalService.GetMaxCandidateCount();
@@ -24018,10 +24126,22 @@ public class MyBehavior : CampaignBehaviorBase
 			List<PartyTransferPromptEntry> list7 = PromptListRetrievalService.FilterPartyTransferEntries(list7All, mentions, promptListMax, isPrisoner: true);
 			PromptListRetrievalService.PublishPartyTransferSnapshot(PromptListRetrievalService.PartyTransferTroopsSnapshotScope, targetHero, targetCharacter, targetAgentIndex, list6);
 			PromptListRetrievalService.PublishPartyTransferSnapshot(PromptListRetrievalService.PartyTransferPrisonersSnapshotScope, targetHero, targetCharacter, targetAgentIndex, list7);
-			PromptListRetrievalService.PublishPartyTransferSnapshot(PromptListRetrievalService.PartyTransferAllTroopsSnapshotScope, targetHero, targetCharacter, targetAgentIndex, listAllTroops);
+			PromptListRetrievalService.PublishPartyTransferSnapshot(PromptListRetrievalService.PartyTransferAllTroopsSnapshotScope, targetHero, targetCharacter, targetAgentIndex, authorizedAllTroops);
 			PromptListRetrievalService.PublishPartyTransferSnapshot(PromptListRetrievalService.PartyTransferAllPrisonersSnapshotScope, targetHero, targetCharacter, targetAgentIndex, list7All);
 			StringBuilder stringBuilder = new StringBuilder();
-			string runtimeHint = flag ? AIConfigHandler.BuildRuntimePartyTransferInstructionForExternal(targetHero, targetCharacter) : "";
+			if (wildernessNonHeroSource != null)
+			{
+				string wildernessInstruction = AIConfigHandler.ResolveRuleRuntimeText("party_transfer", "wilderness_nonhero_party", forConstraint: false, null);
+				if (!string.IsNullOrWhiteSpace(wildernessInstruction))
+				{
+					stringBuilder.AppendLine(wildernessInstruction.Trim());
+				}
+			}
+			string runtimeHint = flag
+				? AIConfigHandler.BuildRuntimePartyTransferInstructionForExternal(targetHero, targetCharacter)
+				: (wildernessNonHeroSource != null
+					? AIConfigHandler.ResolveRuleRuntimeText("party_transfer", "level_" + partyTransferRecruitTrustLevelIndex, forConstraint: false, new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { ["playerName"] = text })
+					: "");
 			if (!string.IsNullOrWhiteSpace(runtimeHint))
 			{
 				stringBuilder.AppendLine(runtimeHint.Trim());
@@ -24030,11 +24150,11 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				stringBuilder.AppendLine("【当前招募限制】你当前对" + text + "的信任不足，任何士兵都不可开放招募。本轮不要展示【你当前可转移部队】清单；正文只口头拒绝或解释。");
 			}
-			else if (flag && partyTransferRecruitMaxTier == int.MaxValue)
+			else if (canUseCounterpartyRoster && partyTransferRecruitMaxTier == int.MaxValue)
 			{
 				stringBuilder.AppendLine("【当前招募限制】你当前对" + text + "的信任已足够，所有已编号的士兵都可正常谈招募。若你最终明确同意放人，才算成交；正文只口头答应、拒绝或谈条件。");
 			}
-			else if (flag)
+			else if (canUseCounterpartyRoster)
 			{
 				stringBuilder.AppendLine("【当前招募限制】你当前只可向" + text + "开放 " + partyTransferRecruitMaxTier + " 阶及以下士兵的招募。只有本轮仍带编号的这些士兵才可供讨论；正文只口头答应、拒绝或谈条件。");
 			}
@@ -24050,7 +24170,10 @@ public class MyBehavior : CampaignBehaviorBase
 					stringBuilder.AppendLine("【原版要人募兵】你这里按原版城镇/村庄要人募兵规则实时计算；由于关系、阵营或战况等原版条件，本轮没有向" + text + "开放任何招募槽位。正文只口头拒绝或解释。");
 				}
 			}
-			stringBuilder.AppendLine("若你明确同意移交全部士兵，全量转移不受本段信任阶级和展示上限限制，但所有Hero都会留下；正文仍只自然答复。");
+			if (wildernessNonHeroSource == null)
+			{
+				stringBuilder.AppendLine("若你明确同意移交全部士兵，全量转移不受本段信任阶级和展示上限限制，但所有Hero都会留下；正文仍只自然答复。");
+			}
 			stringBuilder.AppendLine("日薪表示每名士兵每天需要支付多少第纳尔；雇佣价与购买价表示当前谈判指导单价。");
 			stringBuilder.AppendLine("当前与你交易的人：" + text);
 			if (partyTransferRecruitMaxTier > 0 || list5.Count > 0)
@@ -24062,11 +24185,12 @@ public class MyBehavior : CampaignBehaviorBase
 					stringBuilder.AppendLine(troopRemainder);
 				}
 			}
-			if (flag && partyTransferRecruitMaxTier > 0 && partyTransferRecruitMaxTier < int.MaxValue)
+			if (canUseCounterpartyRoster && partyTransferRecruitMaxTier > 0 && partyTransferRecruitMaxTier < int.MaxValue)
 			{
 				AppendPartyTransferHiddenTroopSection(stringBuilder, "【由于你对" + text + "不够信任，你当前不可向" + text + "开放招募的更高阶部队】：", list4Filtered);
 			}
-			stringBuilder.Append("全部非Hero士兵: ").Append(listAllTroops.Sum((PartyTransferPromptEntry x) => Math.Max(0, x?.Count ?? 0))).Append(" 人 | 雇佣指导总值: ").Append(CalculatePartyTransferTotalValueForExternal(listAllTroops, isPrisoner: false)).AppendLine(" 第纳尔");
+			string troopTotalLabel = wildernessNonHeroSource != null ? "本轮可移交的全部非Hero士兵: " : "全部非Hero士兵: ";
+			stringBuilder.Append(troopTotalLabel).Append(authorizedAllTroops.Sum((PartyTransferPromptEntry x) => Math.Max(0, x?.Count ?? 0))).Append(" 人 | 雇佣指导总值: ").Append(CalculatePartyTransferTotalValueForExternal(authorizedAllTroops, isPrisoner: false)).AppendLine(" 第纳尔");
 			AppendPartyTransferPromptSection(stringBuilder, "【你当前可转移俘虏】：", list7, isPrisoner: true, showPromptIndex: true);
 			string prisonerRemainder = PromptListRetrievalService.BuildRemainingPartyTransferSummary(list7All, list7, isPrisoner: true, "你");
 			if (!string.IsNullOrWhiteSpace(prisonerRemainder))
@@ -24081,6 +24205,38 @@ public class MyBehavior : CampaignBehaviorBase
 		catch
 		{
 			return "";
+		}
+	}
+
+	private static int ClampWildernessNonHeroPartyTransferAmount(PartyTransferPromptEntry entry, int requestedAmount, PartyBase wildernessNonHeroSource, CharacterObject representativeCharacter)
+	{
+		int amount = Math.Max(0, requestedAmount);
+		if (wildernessNonHeroSource == null)
+		{
+			return amount;
+		}
+		if (entry == null || entry.OwnerParty != wildernessNonHeroSource)
+		{
+			return 0;
+		}
+		if (!IsSamePartyTransferCharacter(entry.Character, representativeCharacter))
+		{
+			return amount;
+		}
+		try
+		{
+			TroopRoster roster = wildernessNonHeroSource.MemberRoster;
+			int index = roster?.FindIndexOfTroop(entry.Character) ?? (-1);
+			if (index < 0)
+			{
+				return 0;
+			}
+			int currentCount = Math.Max(0, roster.GetElementCopyAtIndex(index).Number);
+			return Math.Min(amount, Math.Max(0, currentCount - 1));
+		}
+		catch
+		{
+			return 0;
 		}
 	}
 
@@ -24286,7 +24442,9 @@ public class MyBehavior : CampaignBehaviorBase
 		try
 		{
 			string text = content ?? "";
-			if (!IsPartyTransferRuleEligible(targetHero, targetCharacter))
+			Hero ruleHero = ResolvePartyTransferRuleHero(targetHero, targetCharacter);
+			bool wildernessNonHeroEligible = TryResolveWildernessNonHeroPartyTransferSource(targetHero, targetCharacter, targetAgentIndex, out PartyBase wildernessNonHeroSource);
+			if (!IsPartyTransferLordEligible(targetHero, targetCharacter) && !IsPartyTransferNotableRecruitEligible(ruleHero) && !wildernessNonHeroEligible)
 			{
 				content = StripPartyTransferTags(text);
 				return false;
@@ -24318,7 +24476,8 @@ public class MyBehavior : CampaignBehaviorBase
 				void applyTroop(PartyTransferPromptEntry entry, int requested, string source)
 				{
 					attemptedEntries++;
-					int applied = TransferPartyMemberEntry(entry, requested, party);
+					int authorizedRequested = ClampWildernessNonHeroPartyTransferAmount(entry, requested, wildernessNonHeroSource, targetCharacter);
+					int applied = TransferPartyMemberEntry(entry, authorizedRequested, party);
 					Logger.Log("Logic", "[PartyTransfer] ATT source=" + source + " amount=" + requested + " resolved=" + (entry?.DisplayName ?? "null") + " section=" + (entry?.Section.ToString() ?? "null") + " applied=" + applied);
 					if (applied <= 0)
 					{
@@ -24340,8 +24499,8 @@ public class MyBehavior : CampaignBehaviorBase
 				void applyPrisoner(PartyTransferPromptEntry entry, int requested, string source)
 				{
 					attemptedEntries++;
-					Clan expectedSourceClan = ResolvePartyTransferRuleHero(targetHero, targetCharacter)?.Clan;
-					int applied = TransferPartyPrisonerEntry(entry, requested, party, expectedSourceClan);
+					bool currentWildernessSource = wildernessNonHeroSource == null || entry?.OwnerParty == wildernessNonHeroSource;
+					int applied = currentWildernessSource ? TransferPartyPrisonerEntry(entry, requested, party, ruleHero?.Clan) : 0;
 					Logger.Log("Logic", "[PartyTransfer] ATP source=" + source + " amount=" + requested + " resolved=" + (entry?.DisplayName ?? "null") + " applied=" + applied);
 					if (applied <= 0)
 					{
@@ -27899,7 +28058,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		if (string.Equals(id, "meeting_taunt", StringComparison.OrdinalIgnoreCase))
 		{
-			string runtime = LordEncounterBehavior.BuildForcedMeetingTauntRuntimeInstructionForExternal(hero, targetCharacter);
+			string runtime = SceneTauntBehavior.BuildUnifiedTauntRuntimeInstructionForExternal(hero, targetCharacter, targetAgentIndex);
 			if (!string.IsNullOrWhiteSpace(runtime))
 			{
 				text = runtime;
@@ -28165,7 +28324,7 @@ public class MyBehavior : CampaignBehaviorBase
 		case "worldmap_party_command":
 			return ShouldExcludeWorldMapCommandRuleForTarget(hero, targetCharacter, targetAgentIndex);
 		case "party_transfer":
-			return !IsPartyTransferRuleEligible(hero, targetCharacter);
+			return !IsPartyTransferRuleEligible(hero, targetCharacter, targetAgentIndex);
 		default:
 			return false;
 		}
@@ -28520,7 +28679,7 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 				AppendRuleBlock(stringBuilder, "worldmap_party_command", worldMapInstruction);
 			}
-			if (IsPartyTransferRuleEligible(targetHero, targetCharacter) && !string.IsNullOrWhiteSpace(text3) && text3.IndexOf("【附加规则:party_transfer】", StringComparison.OrdinalIgnoreCase) >= 0)
+			if (IsPartyTransferRuleEligible(targetHero, targetCharacter, targetAgentIndex) && !string.IsNullOrWhiteSpace(text3) && text3.IndexOf("【附加规则:party_transfer】", StringComparison.OrdinalIgnoreCase) >= 0)
 			{
 				bool flag12 = stringBuilder.ToString().IndexOf("【附加规则:reward】", StringComparison.OrdinalIgnoreCase) >= 0;
 				bool flag13 = stringBuilder.ToString().IndexOf("【附加规则:loan】", StringComparison.OrdinalIgnoreCase) >= 0;
@@ -28567,9 +28726,9 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				stringBuilder.AppendLine(text3.Trim());
 			}
-			if (!suppressForcedMeetingTaunt && stringBuilder.ToString().IndexOf("【附加规则:meeting_taunt】", StringComparison.OrdinalIgnoreCase) < 0)
+			if (!AfGcczShoutBridge.ShouldUseExclusivePreprocessRuleRouting() && !suppressForcedMeetingTaunt && stringBuilder.ToString().IndexOf("【附加规则:meeting_taunt】", StringComparison.OrdinalIgnoreCase) < 0)
 			{
-				string text4 = LordEncounterBehavior.BuildForcedMeetingTauntRuntimeInstructionForExternal(targetHero ?? targetCharacter?.HeroObject, targetCharacter);
+				string text4 = SceneTauntBehavior.BuildUnifiedTauntRuntimeInstructionForExternal(targetHero ?? targetCharacter?.HeroObject, targetCharacter, targetAgentIndex);
 				if (!string.IsNullOrWhiteSpace(text4))
 				{
 					AppendRuleBlock(stringBuilder, "meeting_taunt", text4);
@@ -30306,7 +30465,7 @@ public class MyBehavior : CampaignBehaviorBase
 				persistentAdpDebtPostprocess = false;
 			}
 		}
-		if (partyTransferHit && IsPartyTransferRuleEligible(targetHero, targetCharacter))
+		if (partyTransferHit && IsPartyTransferRuleEligible(targetHero, targetCharacter, targetAgentIndex))
 		{
 			flag7 = flag7 || AIConfigHandler.RewardEnabled;
 			flag8 = flag8 || AIConfigHandler.LoanEnabled;
