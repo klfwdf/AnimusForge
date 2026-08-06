@@ -330,6 +330,10 @@ public sealed partial class CustomPolicyBehavior
 
 	private void RegisterPolicyLifecycle(PolicyDraftRequest request, PolicyApplicationResult application, string recordId)
 	{
+		if (IsLocalPolicyRequest(request) || IsVassalPolicyRequest(request))
+		{
+			return;
+		}
 		PolicyLifecycleDefinitionSaveData definition = NormalizePolicyLifecycleDefinition(application?.Lifecycle, request?.TargetHandles, out _);
 		if (definition == null || !string.Equals(definition.Kind, PolicyLifecycleKindConditional, StringComparison.Ordinal))
 		{
@@ -495,9 +499,9 @@ public sealed partial class CustomPolicyBehavior
 		{
 			return false;
 		}
-		if (IsLocalPolicyRequest(request))
+		if (IsLocalPolicyRequest(request) || IsVassalPolicyRequest(request))
 		{
-			error = "地方政策暂不支持 conditional lifecycle";
+			error = "地方政策与附庸直属政策暂不支持 conditional lifecycle";
 			return false;
 		}
 		if ((assessment.Effects ?? new List<PolicyEffectDto>()).Any(x => x != null))
