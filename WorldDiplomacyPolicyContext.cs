@@ -84,6 +84,26 @@ internal static class WorldDiplomacyPolicyContext
 		}
 	}
 
+	public static IReadOnlyList<PublishedPolicyArtifactLedgerEntry> GetPublishedPolicyHistoryArtifacts(long afterSequence = 0L, int maxCount = 256)
+	{
+		return CustomPolicyBehavior.GetPublishedPolicyArtifactLedgerForExternal(afterSequence, maxCount);
+	}
+
+	public static string GetPublishedPolicyHistoryLedgerId()
+	{
+		return CustomPolicyBehavior.GetPublishedPolicyArtifactLedgerIdForExternal();
+	}
+
+	public static long GetPublishedPolicyHistoryCurrentSequence()
+	{
+		return CustomPolicyBehavior.GetPublishedPolicyArtifactCurrentSequenceForExternal();
+	}
+
+	public static bool TryAcknowledgePublishedPolicyHistoryThrough(long sequence)
+	{
+		return CustomPolicyBehavior.TryAcknowledgePublishedPolicyArtifactConsumedThroughForExternal(sequence);
+	}
+
 	public static void Clear()
 	{
 		lock (CacheLock)
@@ -251,6 +271,7 @@ internal static class WorldDiplomacyPolicyContext
 		}
 		return hash;
 	}
+
 
 	private static void AppendHash(ref ulong hash, string value)
 	{

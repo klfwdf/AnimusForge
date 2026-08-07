@@ -757,35 +757,42 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			return list;
 		}
 		int num = Math.Max(32, maxBytesPerChunk);
-		StringBuilder stringBuilder = new StringBuilder();
 		int num2 = 0;
-		for (int i = 0; i < text.Length; i++)
+		int num3 = 0;
+		int num4 = 0;
+		while (num4 < text.Length)
 		{
-			int num3 = 1;
-			if (char.IsHighSurrogate(text[i]) && i + 1 < text.Length && char.IsLowSurrogate(text[i + 1]))
+			int utf8ScalarByteCount = GetUtf8ScalarByteCount(text, num4, out int charCount);
+			if (num3 > 0 && num3 + utf8ScalarByteCount > num)
 			{
-				num3 = 2;
+				list.Add(text.Substring(num2, num4 - num2));
+				num2 = num4;
+				num3 = 0;
 			}
-			string text2 = text.Substring(i, num3);
-			int utf8ByteCount = GetUtf8ByteCount(text2);
-			if (stringBuilder.Length > 0 && num2 + utf8ByteCount > num)
-			{
-				list.Add(stringBuilder.ToString());
-				stringBuilder.Clear();
-				num2 = 0;
-			}
-			stringBuilder.Append(text2);
-			num2 += utf8ByteCount;
-			if (num3 == 2)
-			{
-				i++;
-			}
+			num3 += utf8ScalarByteCount;
+			num4 += charCount;
 		}
-		if (stringBuilder.Length > 0)
+		if (num4 > num2)
 		{
-			list.Add(stringBuilder.ToString());
+			list.Add(text.Substring(num2, num4 - num2));
 		}
 		return list;
+	}
+
+	private static int GetUtf8ScalarByteCount(string value, int index, out int charCount)
+	{
+		char c = value[index];
+		if (char.IsHighSurrogate(c) && index + 1 < value.Length && char.IsLowSurrogate(value[index + 1]))
+		{
+			charCount = 2;
+			return 4;
+		}
+		charCount = 1;
+		if (c <= '\u007f')
+		{
+			return 1;
+		}
+		return (c <= '\u07ff') ? 2 : 3;
 	}
 
 	private static void SaveStorageJson(IDataStore dataStore, string json)

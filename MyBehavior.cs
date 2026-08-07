@@ -694,6 +694,88 @@ public class MyBehavior : CampaignBehaviorBase
 		public List<EventMaterialReference> Materials = new List<EventMaterialReference>();
 	}
 
+	// A native-conversation preprocess runs off the Bannerlord thread.  Keep its
+	// weekly-report input as plain copied values so it never touches Campaign
+	// collections or the mutable event record graph.
+	public sealed class WeeklyPromptSnapshot
+	{
+		internal static readonly WeeklyPromptSnapshot Empty = new WeeklyPromptSnapshot("", "", "", "", "", "");
+
+		internal readonly string ShortReportsIncludingNpc;
+
+		internal readonly string ShortReportsExcludingNpc;
+
+		internal readonly string NpcFullReport;
+
+		internal readonly string WorldFullReport;
+
+		internal readonly string SurroundingsFullReport;
+
+		internal readonly string NpcKingdomId;
+
+		internal readonly string SurroundingsKingdomId;
+
+		internal WeeklyPromptSnapshot(string shortReportsIncludingNpc, string shortReportsExcludingNpc, string npcFullReport, string worldFullReport, string surroundingsFullReport, string npcKingdomId, string surroundingsKingdomId = "")
+		{
+			ShortReportsIncludingNpc = shortReportsIncludingNpc ?? "";
+			ShortReportsExcludingNpc = shortReportsExcludingNpc ?? "";
+			NpcFullReport = npcFullReport ?? "";
+			WorldFullReport = worldFullReport ?? "";
+			SurroundingsFullReport = surroundingsFullReport ?? "";
+			NpcKingdomId = npcKingdomId ?? "";
+			SurroundingsKingdomId = surroundingsKingdomId ?? "";
+		}
+	}
+
+	private sealed class WeeklyPromptReportSnapshot
+	{
+		public readonly int WeekIndex;
+
+		public readonly int CreatedDay;
+
+		public readonly string Title;
+
+		public readonly string ShortSummary;
+
+		public readonly string Summary;
+
+		public WeeklyPromptReportSnapshot(int weekIndex, int createdDay, string title, string shortSummary, string summary)
+		{
+			WeekIndex = Math.Max(0, weekIndex);
+			CreatedDay = Math.Max(0, createdDay);
+			Title = title ?? "";
+			ShortSummary = shortSummary ?? "";
+			Summary = summary ?? "";
+		}
+	}
+
+	public sealed class WorldWeeklyReportHistoryEntry
+	{
+		internal WorldWeeklyReportHistoryEntry(string sourceId, int weekIndex, int createdDay, string createdDate, string publishedTitle, string publishedReportText)
+		{
+			SourceId = sourceId;
+			WeekIndex = weekIndex;
+			CreatedDay = createdDay;
+			CreatedDate = createdDate;
+			PublishedTitle = publishedTitle;
+			PublishedReportText = publishedReportText;
+		}
+
+		public string SourceId { get; }
+
+		public int WeekIndex { get; }
+
+		public int CreatedDay { get; }
+
+		public string CreatedDate { get; }
+
+		public string PublishedTitle { get; }
+
+		// EventRecordEntry.Summary is the final published LLM report. PromptText, ShortSummary
+		// and Materials are intentionally not exposed to diplomacy history.
+		public string PublishedReportText { get; }
+	}
+
 	public sealed class WeeklyReportBrowserEntryData
 	{
 		public string EventId;
@@ -1669,6 +1751,8 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private int _weekZeroOpeningSummaryMaintenanceCursor;
 
+	private bool _weekZeroOpeningSummaryMaintenanceChanged;
+
 	private List<Kingdom> _missedStrategicWorldEventMaintenanceKingdoms;
 
 	private HashSet<string> _missedStrategicWorldEventMaintenanceStableKeys;
@@ -1706,6 +1790,7 @@ public class MyBehavior : CampaignBehaviorBase
 	private string _eventWorldOpeningSummary = "";
 
 	private List<EventRecordEntry> _eventRecordEntries = new List<EventRecordEntry>();
+	private long _publishedWorldWeeklyHistoryRevision = 1L;
 
 	private string _eventRecordJsonStorage = "";
 
@@ -1836,6 +1921,8 @@ public class MyBehavior : CampaignBehaviorBase
 	private readonly HashSet<string> _weekZeroShortSummaryGenerationAttempted = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
 	private readonly List<WeekZeroShortSummaryRequest> _weekZeroShortSummaryPendingQueue = new List<WeekZeroShortSummaryRequest>();
+
+	private readonly ConcurrentQueue<Action> _weekZeroShortSummaryMainThreadActions = new ConcurrentQueue<Action>();
 
 	private bool _weekZeroShortSummaryQueueProcessing;
 
@@ -6332,7 +6419,7 @@ public class MyBehavior : CampaignBehaviorBase
 	private void EnsureWeekZeroOpeningSummaryEvents()
 	{
 		FreezeWatchdog.Mark("WeeklyPrompt.EnsureWeek0.start", "entries=" + (_eventRecordEntries?.Count ?? 0) + " thread=" + Thread.CurrentThread.ManagedThreadId);
-		UpsertWeekZeroOpeningSummaryEvent("world", "", "第0天世界开局概要", _eventWorldOpeningSummary, "世界开局概要", "world_opening_summary", sanitizeAfter: false);
+		bool flag = UpsertWeekZeroOpeningSummaryEvent("world", "", "第0天世界开局概要", _eventWorldOpeningSummary, "世界开局概要", "world_opening_summary", sanitizeAfter: false);
 		FreezeWatchdog.Mark("WeeklyPrompt.EnsureWeek0.world_done", "entries=" + (_eventRecordEntries?.Count ?? 0));
 		int kingdomIndex = 0;
 		foreach (Kingdom devEditableKingdom in GetDevEditableKingdoms())
@@ -6344,11 +6431,14 @@ public class MyBehavior : CampaignBehaviorBase
 			if (!string.IsNullOrWhiteSpace(kingdomOpeningSummary))
 			{
 				string text = devEditableKingdom.Name?.ToString() ?? (devEditableKingdom.StringId ?? "王国");
-				UpsertWeekZeroOpeningSummaryEvent("kingdom", devEditableKingdom.StringId ?? "", text + "第0天开局概要", kingdomOpeningSummary, text + " 开局概要", "kingdom_opening_summary", sanitizeAfter: false);
+				flag |= UpsertWeekZeroOpeningSummaryEvent("kingdom", devEditableKingdom.StringId ?? "", text + "第0天开局概要", kingdomOpeningSummary, text + " 开局概要", "kingdom_opening_summary", sanitizeAfter: false);
 			}
 			FreezeWatchdog.Mark("WeeklyPrompt.EnsureWeek0.kingdom_done", "index=" + kingdomIndex + " kingdom=" + diagnosticKingdomId + " entries=" + (_eventRecordEntries?.Count ?? 0));
 		}
-		_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
+		if (flag)
+		{
+			_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
+		}
 		FreezeWatchdog.Mark("WeeklyPrompt.EnsureWeek0.done", "kingdoms=" + kingdomIndex + " entries=" + (_eventRecordEntries?.Count ?? 0) + " thread=" + Thread.CurrentThread.ManagedThreadId);
 	}
 
@@ -6358,7 +6448,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			if (!_weekZeroOpeningSummaryMaintenanceWorldProcessed)
 			{
-				UpsertWeekZeroOpeningSummaryEvent("world", "", "第0天世界开局概要", _eventWorldOpeningSummary, "世界开局概要", "world_opening_summary", sanitizeAfter: false);
+				_weekZeroOpeningSummaryMaintenanceChanged |= UpsertWeekZeroOpeningSummaryEvent("world", "", "第0天世界开局概要", _eventWorldOpeningSummary, "世界开局概要", "world_opening_summary", sanitizeAfter: false);
 				_weekZeroOpeningSummaryMaintenanceWorldProcessed = true;
 				return false;
 			}
@@ -6374,7 +6464,7 @@ public class MyBehavior : CampaignBehaviorBase
 				if (!string.IsNullOrWhiteSpace(summary))
 				{
 					string kingdomName = kingdom?.Name?.ToString() ?? (kingdom?.StringId ?? "王国");
-					UpsertWeekZeroOpeningSummaryEvent("kingdom", kingdom?.StringId ?? "", kingdomName + "第0天开局概要", summary, kingdomName + " 开局概要", "kingdom_opening_summary", sanitizeAfter: false);
+					_weekZeroOpeningSummaryMaintenanceChanged |= UpsertWeekZeroOpeningSummaryEvent("kingdom", kingdom?.StringId ?? "", kingdomName + "第0天开局概要", summary, kingdomName + " 开局概要", "kingdom_opening_summary", sanitizeAfter: false);
 				}
 				return false;
 			}
@@ -6391,10 +6481,14 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void FinalizeWeekZeroOpeningSummaryMaintenance()
 	{
-		_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
+		if (_weekZeroOpeningSummaryMaintenanceChanged)
+		{
+			_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
+		}
 		_weekZeroOpeningSummaryMaintenanceWorldProcessed = false;
 		_weekZeroOpeningSummaryMaintenanceKingdoms = null;
 		_weekZeroOpeningSummaryMaintenanceCursor = 0;
+		_weekZeroOpeningSummaryMaintenanceChanged = false;
 	}
 
 	private bool ProcessMissedStrategicWorldEventsSlice()
@@ -6659,20 +6753,7 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 				else
 				{
-					EventRecordEntry eventRecordEntry = _eventRecordEntries?.FirstOrDefault((EventRecordEntry x) => x != null && string.Equals((x.EventId ?? "").Trim(), request.EventId, StringComparison.OrdinalIgnoreCase));
-					if (eventRecordEntry == null)
-					{
-						return false;
-					}
-					string text2 = ComputeWeekZeroShortSummarySourceHash(eventRecordEntry.Summary ?? "");
-					if (!string.Equals(text2, (request.SourceHash ?? "").Trim(), StringComparison.OrdinalIgnoreCase))
-					{
-						return false;
-					}
-					eventRecordEntry.ShortSummary = text.Trim();
-					eventRecordEntry.PromptText = BuildWeekZeroPromptText(request.SourceHash, llmGenerated: true);
-					_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
-					return true;
+					return await ApplyWeekZeroShortSummaryOnMainThreadAsync(request.EventId, request.SourceHash, text).ConfigureAwait(false);
 				}
 			}
 			else
@@ -6698,6 +6779,62 @@ public class MyBehavior : CampaignBehaviorBase
 		return false;
 	}
 
+	private Task<bool> ApplyWeekZeroShortSummaryOnMainThreadAsync(string eventId, string sourceHash, string shortSummary)
+	{
+		TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+		string text = (eventId ?? "").Trim();
+		string text2 = (sourceHash ?? "").Trim();
+		string text3 = (shortSummary ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(text2) || string.IsNullOrWhiteSpace(text3))
+		{
+			taskCompletionSource.TrySetResult(false);
+			return taskCompletionSource.Task;
+		}
+		_weekZeroShortSummaryMainThreadActions.Enqueue(delegate
+		{
+			try
+			{
+				EventRecordEntry eventRecordEntry = _eventRecordEntries?.FirstOrDefault((EventRecordEntry x) => x != null && string.Equals((x.EventId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase));
+				if (eventRecordEntry == null || !string.Equals(ComputeWeekZeroShortSummarySourceHash(eventRecordEntry.Summary ?? ""), text2, StringComparison.OrdinalIgnoreCase))
+				{
+					taskCompletionSource.TrySetResult(false);
+					return;
+				}
+				eventRecordEntry.ShortSummary = text3;
+				eventRecordEntry.PromptText = BuildWeekZeroPromptText(text2, llmGenerated: true);
+				taskCompletionSource.TrySetResult(true);
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("EventWeeklyReport", "[Week0Short][ERROR] main-thread result apply failed: " + ex.Message);
+				taskCompletionSource.TrySetResult(false);
+			}
+		});
+		FreezeWatchdog.Mark("WeeklyPrompt.Week0Short.apply_queued", "event=" + text + " pending=" + _weekZeroShortSummaryMainThreadActions.Count, immediate: true);
+		return taskCompletionSource.Task;
+	}
+
+	private void ProcessWeekZeroShortSummaryMainThreadActions()
+	{
+		int num = 0;
+		while (num < 2 && _weekZeroShortSummaryMainThreadActions.TryDequeue(out var action))
+		{
+			num++;
+			try
+			{
+				action?.Invoke();
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("EventWeeklyReport", "[Week0Short][ERROR] main-thread action failed: " + ex.Message);
+			}
+		}
+		if (num > 0)
+		{
+			FreezeWatchdog.Mark("WeeklyPrompt.Week0Short.apply_done", "processed=" + num + " pending=" + _weekZeroShortSummaryMainThreadActions.Count, immediate: true);
+		}
+	}
+
 	private async Task ProcessWeekZeroShortSummaryQueueAsync()
 	{
 		try
@@ -6707,7 +6844,6 @@ public class MyBehavior : CampaignBehaviorBase
 				WeekZeroShortSummaryRequest weekZeroShortSummaryRequest = null;
 				lock (_weekZeroShortSummaryQueueLock)
 				{
-					SortWeekZeroShortSummaryPendingQueue();
 					if (_weekZeroShortSummaryPendingQueue.Count > 0)
 					{
 						weekZeroShortSummaryRequest = _weekZeroShortSummaryPendingQueue[0];
@@ -6789,39 +6925,69 @@ public class MyBehavior : CampaignBehaviorBase
 		EnsureWeekZeroShortSummaryQueueWorker();
 	}
 
-	private void UpsertWeekZeroOpeningSummaryEvent(string eventKind, string kingdomId, string title, string summary, string materialLabel, string materialType, bool sanitizeAfter = true)
+	private bool UpsertWeekZeroOpeningSummaryEvent(string eventKind, string kingdomId, string title, string summary, string materialLabel, string materialType, bool sanitizeAfter = true)
 	{
 		FreezeWatchdog.Mark("WeeklyPrompt.UpsertWeek0.start", "kind=" + (eventKind ?? "") + " kingdom=" + (kingdomId ?? "") + " entries=" + (_eventRecordEntries?.Count ?? 0));
 		string text = (summary ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			return;
+			return false;
 		}
 		if (_eventRecordEntries == null)
 		{
 			_eventRecordEntries = new List<EventRecordEntry>();
 		}
-		string text2 = "weekly_report:" + (eventKind ?? "").Trim().ToLowerInvariant() + ":0:" + ((kingdomId ?? "").Trim());
-		EventRecordEntry eventRecordEntry = _eventRecordEntries.FirstOrDefault((EventRecordEntry x) => x != null && string.Equals((x.EventId ?? "").Trim(), text2, StringComparison.OrdinalIgnoreCase));
+		string text2 = (eventKind ?? "").Trim();
+		string text3 = (kingdomId ?? "").Trim();
+		string text4 = (title ?? "").Trim();
+		string text5 = "weekly_report:" + text2.ToLowerInvariant() + ":0:" + text3;
+		EventRecordEntry eventRecordEntry = _eventRecordEntries.FirstOrDefault((EventRecordEntry x) => x != null && string.Equals((x.EventId ?? "").Trim(), text5, StringComparison.OrdinalIgnoreCase));
+		bool flag = eventRecordEntry == null;
 		if (eventRecordEntry == null)
 		{
 			eventRecordEntry = new EventRecordEntry
 			{
-				EventId = text2
+				EventId = text5
 			};
 			_eventRecordEntries.Add(eventRecordEntry);
 		}
-		eventRecordEntry.EventKind = (eventKind ?? "").Trim();
-		eventRecordEntry.ScopeKingdomId = (kingdomId ?? "").Trim();
-		eventRecordEntry.WeekIndex = 0;
-		eventRecordEntry.Title = (title ?? "").Trim();
-		string text3 = ComputeWeekZeroShortSummarySourceHash(text);
-		bool flag = HasWeekZeroLlmShortSummary(eventRecordEntry, text3) && string.Equals((eventRecordEntry.Summary ?? "").Trim(), text, StringComparison.Ordinal);
-		if (!flag)
+		string text6 = ComputeWeekZeroShortSummarySourceHash(text);
+		bool flag2 = HasWeekZeroLlmShortSummary(eventRecordEntry, text6) && string.Equals((eventRecordEntry.Summary ?? "").Trim(), text, StringComparison.Ordinal);
+		string text7 = flag2 ? (eventRecordEntry.ShortSummary ?? "") : BuildFallbackWeeklyReportShortSummary(text);
+		string text8 = flag2 ? (eventRecordEntry.PromptText ?? "") : BuildWeekZeroPromptText(text6, llmGenerated: false);
+		EventMaterialReference eventMaterialReference = ((eventRecordEntry.Materials?.Count == 1) ? eventRecordEntry.Materials[0] : null);
+		bool flag3 = eventMaterialReference != null
+			&& string.Equals((eventMaterialReference.MaterialType ?? "").Trim(), (materialType ?? "").Trim(), StringComparison.Ordinal)
+			&& string.Equals((eventMaterialReference.Label ?? "").Trim(), (materialLabel ?? "").Trim(), StringComparison.Ordinal)
+			&& string.Equals((eventMaterialReference.SnapshotText ?? "").Trim(), text, StringComparison.Ordinal)
+			&& string.Equals((eventMaterialReference.KingdomId ?? "").Trim(), text3, StringComparison.Ordinal);
+		bool flag4 = flag
+			|| !string.Equals((eventRecordEntry.EventId ?? "").Trim(), text5, StringComparison.Ordinal)
+			|| !string.Equals((eventRecordEntry.EventKind ?? "").Trim(), text2, StringComparison.Ordinal)
+			|| !string.Equals((eventRecordEntry.ScopeKingdomId ?? "").Trim(), text3, StringComparison.Ordinal)
+			|| eventRecordEntry.WeekIndex != 0
+			|| !string.Equals((eventRecordEntry.Title ?? "").Trim(), text4, StringComparison.Ordinal)
+			|| !string.Equals(eventRecordEntry.ShortSummary ?? "", text7, StringComparison.Ordinal)
+			|| !string.Equals((eventRecordEntry.Summary ?? "").Trim(), text, StringComparison.Ordinal)
+			|| !string.Equals(eventRecordEntry.PromptText ?? "", text8, StringComparison.Ordinal)
+			|| !string.Equals(eventRecordEntry.TagText ?? "", "", StringComparison.Ordinal)
+			|| eventRecordEntry.CreatedDay != 0
+			|| !string.Equals((eventRecordEntry.CreatedDate ?? "").Trim(), "第 0 日", StringComparison.Ordinal)
+			|| !flag3;
+		if (!flag4)
 		{
-			eventRecordEntry.ShortSummary = BuildFallbackWeeklyReportShortSummary(text);
-			eventRecordEntry.PromptText = BuildWeekZeroPromptText(text3, llmGenerated: false);
+			TryQueueWeekZeroShortSummaryGeneration(eventRecordEntry, text6);
+			FreezeWatchdog.Mark("WeeklyPrompt.UpsertWeek0.queue_done", "kind=" + (eventKind ?? "") + " kingdom=" + (kingdomId ?? "") + " entries=" + (_eventRecordEntries?.Count ?? 0) + " changed=false");
+			return false;
 		}
+		string previousPublishedProductState = BuildPublishedWorldWeeklyProductState(eventRecordEntry);
+		eventRecordEntry.EventId = text5;
+		eventRecordEntry.EventKind = text2;
+		eventRecordEntry.ScopeKingdomId = text3;
+		eventRecordEntry.WeekIndex = 0;
+		eventRecordEntry.Title = text4;
+		eventRecordEntry.ShortSummary = text7;
+		eventRecordEntry.PromptText = text8;
 		eventRecordEntry.Summary = text;
 		eventRecordEntry.TagText = "";
 		eventRecordEntry.CreatedDay = 0;
@@ -6836,13 +7002,17 @@ public class MyBehavior : CampaignBehaviorBase
 				KingdomId = (kingdomId ?? "").Trim()
 			}
 		};
+		EventRecordEntry publishedProductEntry = eventRecordEntry;
 		if (sanitizeAfter)
 		{
 			_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
+			publishedProductEntry = FindWeeklyReportRecordById(text5) ?? eventRecordEntry;
 			FreezeWatchdog.Mark("WeeklyPrompt.UpsertWeek0.sanitize_done", "kind=" + (eventKind ?? "") + " kingdom=" + (kingdomId ?? "") + " entries=" + (_eventRecordEntries?.Count ?? 0));
 		}
-		TryQueueWeekZeroShortSummaryGeneration(eventRecordEntry, text3);
+		NotifyPublishedWorldWeeklyProductChanged(previousPublishedProductState, publishedProductEntry);
+		TryQueueWeekZeroShortSummaryGeneration(eventRecordEntry, text6);
 		FreezeWatchdog.Mark("WeeklyPrompt.UpsertWeek0.queue_done", "kind=" + (eventKind ?? "") + " kingdom=" + (kingdomId ?? "") + " entries=" + (_eventRecordEntries?.Count ?? 0));
+		return true;
 	}
 
 	private void OnSiegeAftermathApplied(MobileParty attackerParty, Settlement settlement, SiegeAftermathAction.SiegeAftermath aftermathType, Clan previousSettlementOwner, Dictionary<MobileParty, float> partyContributions)
@@ -17776,9 +17946,11 @@ public class MyBehavior : CampaignBehaviorBase
 				Dictionary<string, string> dictionary6 = CampaignSaveChunkHelper.FlattenStringDictionary(_eventKingdomOpeningSummaryStorage, "_eventKingdomOpeningSummaries_v1", "EventOpeningSummary");
 				dataStore.SyncData("_eventKingdomOpeningSummaries_v1", ref dictionary6);
 				CampaignSaveChunkHelper.SaveChunkedString(dataStore, "_eventWorldOpeningSummary_v1", _eventWorldOpeningSummary ?? "", "EventOpeningSummary");
+				Stopwatch eventRecordSaveStopwatch = Stopwatch.StartNew();
 				try
 				{
-					_eventRecordJsonStorage = JsonConvert.SerializeObject(SanitizeEventRecordEntries(_eventRecordEntries));
+					NormalizeEventRecordEntriesInPlace(_eventRecordEntries);
+					_eventRecordJsonStorage = JsonConvert.SerializeObject(_eventRecordEntries);
 				}
 				catch (Exception ex5)
 				{
@@ -17786,6 +17958,9 @@ public class MyBehavior : CampaignBehaviorBase
 					Logger.Log("EventRecord", "[ERROR] Serialize event records failed: " + ex5.Message);
 				}
 				CampaignSaveChunkHelper.SaveChunkedString(dataStore, "_eventRecordEntries_v1", _eventRecordJsonStorage ?? "[]", "EventRecord");
+				eventRecordSaveStopwatch.Stop();
+				Logger.Log("EventRecord", "[SyncData] save entries=" + (_eventRecordEntries?.Count ?? 0) + " chars=" + (_eventRecordJsonStorage?.Length ?? 0) + " ms=" + Math.Round(eventRecordSaveStopwatch.Elapsed.TotalMilliseconds, 2));
+				_eventRecordJsonStorage = "";
 				_unreadWeeklyReportNoticeEventIds = SanitizeUnreadWeeklyReportNoticeEventIds(_unreadWeeklyReportNoticeEventIds).Where((string x) => FindWeeklyReportRecordById(x) != null).ToList();
 				List<string> unreadWeeklyReportNoticeEventIds = new List<string>(_unreadWeeklyReportNoticeEventIds);
 				dataStore.SyncData("_af_unreadWeeklyReportNotices_v1", ref unreadWeeklyReportNoticeEventIds);
@@ -17818,6 +17993,7 @@ public class MyBehavior : CampaignBehaviorBase
 					Logger.Log("EventMaterial", "[ERROR] Serialize event source materials failed: " + ex6.Message);
 				}
 				CampaignSaveChunkHelper.SaveChunkedString(dataStore, "_eventSourceMaterials_v1", _eventSourceMaterialJsonStorage ?? "[]", "EventMaterial");
+				_eventSourceMaterialJsonStorage = "";
 				_kingdomStabilityStorage.Clear();
 				foreach (KeyValuePair<string, int> kingdomStabilityValue in _kingdomStabilityValues)
 				{
@@ -18206,6 +18382,7 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 			}
 			_eventWorldOpeningSummary = CampaignSaveChunkHelper.LoadChunkedString(dataStore, "_eventWorldOpeningSummary_v1", "EventOpeningSummary") ?? "";
+			Stopwatch eventRecordLoadStopwatch = Stopwatch.StartNew();
 			_eventRecordEntries.Clear();
 			_eventRecordJsonStorage = CampaignSaveChunkHelper.LoadChunkedString(dataStore, "_eventRecordEntries_v1", "EventRecord") ?? "";
 			if (!string.IsNullOrWhiteSpace(_eventRecordJsonStorage))
@@ -18213,7 +18390,8 @@ public class MyBehavior : CampaignBehaviorBase
 				try
 				{
 					List<EventRecordEntry> list4 = JsonConvert.DeserializeObject<List<EventRecordEntry>>(_eventRecordJsonStorage) ?? new List<EventRecordEntry>();
-					_eventRecordEntries = SanitizeEventRecordEntries(list4);
+					NormalizeEventRecordEntriesInPlace(list4);
+					_eventRecordEntries = list4;
 				}
 				catch (Exception ex7)
 				{
@@ -18221,6 +18399,9 @@ public class MyBehavior : CampaignBehaviorBase
 					_eventRecordEntries = new List<EventRecordEntry>();
 				}
 			}
+			eventRecordLoadStopwatch.Stop();
+			Logger.Log("EventRecord", "[SyncData] load entries=" + (_eventRecordEntries?.Count ?? 0) + " chars=" + (_eventRecordJsonStorage?.Length ?? 0) + " ms=" + Math.Round(eventRecordLoadStopwatch.Elapsed.TotalMilliseconds, 2));
+			_eventRecordJsonStorage = "";
 			List<string> unreadWeeklyReportNoticeEventIdsLoad = new List<string>();
 			dataStore.SyncData("_af_unreadWeeklyReportNotices_v1", ref unreadWeeklyReportNoticeEventIdsLoad);
 			_unreadWeeklyReportNoticeEventIds = SanitizeUnreadWeeklyReportNoticeEventIds(unreadWeeklyReportNoticeEventIdsLoad).Where((string x) => FindWeeklyReportRecordById(x) != null).ToList();
@@ -18249,6 +18430,7 @@ public class MyBehavior : CampaignBehaviorBase
 					_eventSourceMaterials = new List<EventSourceMaterialEntry>();
 				}
 			}
+			_eventSourceMaterialJsonStorage = "";
 			RebuildEventSourceMaterialIndex();
 			dataStore.SyncData("_lastAutoGeneratedWeeklyReportWeek_v1", ref _lastAutoGeneratedWeeklyReportWeek);
 			_kingdomStabilityValues.Clear();
@@ -19591,6 +19773,7 @@ public class MyBehavior : CampaignBehaviorBase
 			ProcessPendingWeeklyReportManualRetryResult();
 			ProcessWeeklyReportUiResume();
 			TryPublishUnreadWeeklyReportMapNotifications();
+			ProcessWeekZeroShortSummaryMainThreadActions();
 			ProcessKingdomRebellionApiRepairResume();
 			ProcessKingdomRebellionNamingMainThreadActions();
 			ProcessPendingDevForcedKingdomRebellionResult();
@@ -29840,11 +30023,30 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	public static ShoutPromptContext BuildShoutPromptContextForExternal(Hero targetHero, string input, string extraFact, string cultureIdOverride = null, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, bool suppressDynamicRuleAndLore = false, bool usePrefetchedLoreContext = false, string prefetchedLoreContext = null, IEnumerable<string> excludedRuleIds = null, IEnumerable<string> preprocessExcludedRuleIds = null, IEnumerable<string> forcedPreprocessRuleIds = null, MentionedWorldEntities preprocessMentionedEntities = null)
+	public static WeeklyPromptSnapshot CaptureWeeklyPromptSnapshotForExternal(Hero targetHero, CharacterObject targetCharacter = null, string kingdomIdOverride = null)
 	{
 		try
 		{
+			if (!TWParallel.IsMainThread())
+			{
+				Logger.Log("EventWeeklyReport", "[WeeklyPrompt][WARN] refused off-main-thread snapshot capture.");
+				return WeeklyPromptSnapshot.Empty;
+			}
 			MyBehavior myBehavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			return myBehavior?.CaptureWeeklyPromptSnapshot(targetHero, targetCharacter, kingdomIdOverride) ?? WeeklyPromptSnapshot.Empty;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EventWeeklyReport", "[WeeklyPrompt][WARN] main-thread snapshot capture failed: " + ex.Message);
+			return WeeklyPromptSnapshot.Empty;
+		}
+	}
+
+	public static ShoutPromptContext BuildShoutPromptContextForExternal(Hero targetHero, string input, string extraFact, string cultureIdOverride = null, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, bool suppressDynamicRuleAndLore = false, bool usePrefetchedLoreContext = false, string prefetchedLoreContext = null, IEnumerable<string> excludedRuleIds = null, IEnumerable<string> preprocessExcludedRuleIds = null, IEnumerable<string> forcedPreprocessRuleIds = null, MentionedWorldEntities preprocessMentionedEntities = null, WeeklyPromptSnapshot weeklyPromptSnapshot = null)
+	{
+		try
+		{
+			MyBehavior myBehavior = (weeklyPromptSnapshot != null || !TWParallel.IsMainThread()) ? Instance : Campaign.Current?.GetCampaignBehavior<MyBehavior>();
 			if (myBehavior == null)
 			{
 				return new ShoutPromptContext
@@ -29859,7 +30061,7 @@ public class MyBehavior : CampaignBehaviorBase
 					IsQualified = true
 				};
 			}
-			return myBehavior.BuildShoutPromptContextForExternalInternal(targetHero, input, extraFact, cultureIdOverride, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, suppressDynamicRuleAndLore, usePrefetchedLoreContext, prefetchedLoreContext, excludedRuleIds, preprocessExcludedRuleIds, forcedPreprocessRuleIds, preprocessMentionedEntities);
+			return myBehavior.BuildShoutPromptContextForExternalInternal(targetHero, input, extraFact, cultureIdOverride, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, suppressDynamicRuleAndLore, usePrefetchedLoreContext, prefetchedLoreContext, excludedRuleIds, preprocessExcludedRuleIds, forcedPreprocessRuleIds, preprocessMentionedEntities, weeklyPromptSnapshot);
 		}
 		catch (PreprocessFormatException)
 		{
@@ -30083,7 +30285,7 @@ public class MyBehavior : CampaignBehaviorBase
 	}
 
 	// Primary runtime chat path: scene shout / non-native conversation UI.
-	private ShoutPromptContext BuildShoutPromptContextForExternalInternal(Hero targetHero, string input, string extraFact, string cultureIdOverride, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, bool suppressDynamicRuleAndLore = false, bool usePrefetchedLoreContext = false, string prefetchedLoreContext = null, IEnumerable<string> excludedRuleIds = null, IEnumerable<string> preprocessExcludedRuleIds = null, IEnumerable<string> forcedPreprocessRuleIds = null, MentionedWorldEntities preprocessMentionedEntities = null)
+	private ShoutPromptContext BuildShoutPromptContextForExternalInternal(Hero targetHero, string input, string extraFact, string cultureIdOverride, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, bool suppressDynamicRuleAndLore = false, bool usePrefetchedLoreContext = false, string prefetchedLoreContext = null, IEnumerable<string> excludedRuleIds = null, IEnumerable<string> preprocessExcludedRuleIds = null, IEnumerable<string> forcedPreprocessRuleIds = null, MentionedWorldEntities preprocessMentionedEntities = null, WeeklyPromptSnapshot weeklyPromptSnapshot = null)
 	{
 		ShoutPromptContext shoutPromptContext = new ShoutPromptContext
 		{
@@ -30663,9 +30865,9 @@ public class MyBehavior : CampaignBehaviorBase
 		string value8 = allowRulePreprocess ? BuildTriggeredRuleInstructions(input, targetHero, flag2, isQualified, num, flag7, flag8, flag5, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, npcLastUtterance, includeDuelStakeContext, playerWonLastDuelForRule, worldMapPartyCommandHit, excludedRuleIdSet, auxiliaryRuleHitIds, IsPromptRuleExcluded(explicitExcludedRuleIdSet, "meeting_taunt")) : "";
 		LogShoutPromptContextStage("triggered_rules_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "ruleLen=" + ((value8 ?? "").Length));
 		LogShoutPromptContextStage("weekly_short_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "", immediate: false);
-		bool excludeNpcShortReport2 = ShouldExcludeNpcShortReportFromWeeklyShortLayer(value8, targetHero, targetCharacter, kingdomIdOverride);
+		bool excludeNpcShortReport2 = ShouldExcludeNpcShortReportFromWeeklyShortLayer(value8, targetHero, targetCharacter, kingdomIdOverride, weeklyPromptSnapshot);
 		FreezeWatchdog.Mark("ShoutPromptContext.weekly_short_exclusion_done", "excludeNpcKingdom=" + excludeNpcShortReport2 + " thread=" + Thread.CurrentThread.ManagedThreadId);
-		string value8a = BuildWeeklyShortReportsPromptBlock(targetHero, targetCharacter, kingdomIdOverride, excludeNpcShortReport2);
+		string value8a = BuildWeeklyShortReportsPromptBlock(targetHero, targetCharacter, kingdomIdOverride, excludeNpcShortReport2, weeklyPromptSnapshot);
 		if (!string.IsNullOrWhiteSpace(value8a))
 		{
 			stringBuilder.AppendLine(value8a);
@@ -30685,7 +30887,7 @@ public class MyBehavior : CampaignBehaviorBase
 			stringBuilder.AppendLine(value8);
 		}
 		LogShoutPromptContextStage("weekly_full_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "", immediate: false);
-		string value8b = BuildTriggeredWeeklyFullReportsPromptBlock(value8, targetHero, targetCharacter, kingdomIdOverride);
+		string value8b = BuildTriggeredWeeklyFullReportsPromptBlock(value8, targetHero, targetCharacter, kingdomIdOverride, weeklyPromptSnapshot);
 		if (!string.IsNullOrWhiteSpace(value8b))
 		{
 			stringBuilder.AppendLine(value8b);
@@ -37111,6 +37313,112 @@ public class MyBehavior : CampaignBehaviorBase
 		return list.OrderByDescending((EventRecordEntry x) => x.WeekIndex).ThenByDescending((EventRecordEntry x) => x.CreatedDay).ThenBy((EventRecordEntry x) => x.Title ?? "", StringComparer.OrdinalIgnoreCase).ToList();
 	}
 
+	// SyncData already owns the event list. Normalize that list in place instead of
+	// cloning every material graph solely to serialize or deserialize it.
+	private static void NormalizeEventRecordEntriesInPlace(List<EventRecordEntry> source)
+	{
+		if (source == null)
+		{
+			return;
+		}
+		for (int num = source.Count - 1; num >= 0; num--)
+		{
+			EventRecordEntry eventRecordEntry = source[num];
+			if (eventRecordEntry == null)
+			{
+				source.RemoveAt(num);
+				continue;
+			}
+			string text = (eventRecordEntry.EventId ?? "").Trim();
+			string text2 = (eventRecordEntry.Title ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(text2))
+			{
+				source.RemoveAt(num);
+				continue;
+			}
+			bool flag = text.StartsWith("weekly_report:", StringComparison.OrdinalIgnoreCase);
+			eventRecordEntry.EventId = text;
+			eventRecordEntry.WeekIndex = Math.Max(0, eventRecordEntry.WeekIndex);
+			eventRecordEntry.EventKind = (eventRecordEntry.EventKind ?? "").Trim();
+			eventRecordEntry.ScopeKingdomId = (eventRecordEntry.ScopeKingdomId ?? "").Trim();
+			eventRecordEntry.Title = flag ? NeutralizeWeeklyReportScenarioName(text2) : text2;
+			eventRecordEntry.ShortSummary = BuildFallbackWeeklyReportShortSummary(eventRecordEntry.ShortSummary);
+			eventRecordEntry.Summary = flag ? NeutralizeWeeklyReportScenarioName(eventRecordEntry.Summary) : (eventRecordEntry.Summary ?? "").Trim();
+			eventRecordEntry.TagText = NormalizeWeeklyReportTagText(eventRecordEntry.TagText);
+			eventRecordEntry.PromptText = flag ? NeutralizeWeeklyReportScenarioName(eventRecordEntry.PromptText) : (eventRecordEntry.PromptText ?? "").Trim();
+			eventRecordEntry.CreatedDay = Math.Max(0, eventRecordEntry.CreatedDay);
+			eventRecordEntry.CreatedDate = (eventRecordEntry.CreatedDate ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(eventRecordEntry.ShortSummary))
+			{
+				eventRecordEntry.ShortSummary = BuildFallbackWeeklyReportShortSummary(eventRecordEntry.Summary);
+			}
+			eventRecordEntry.Materials = NormalizeEventMaterialReferencesInPlace(eventRecordEntry.Materials, flag);
+		}
+		List<EventRecordEntry> list = source.OrderByDescending((EventRecordEntry x) => x.WeekIndex).ThenByDescending((EventRecordEntry x) => x.CreatedDay).ThenBy((EventRecordEntry x) => x.Title ?? "", StringComparer.OrdinalIgnoreCase).ToList();
+		source.Clear();
+		source.AddRange(list);
+	}
+
+	private static List<EventMaterialReference> NormalizeEventMaterialReferencesInPlace(List<EventMaterialReference> materials, bool neutralizeWeeklyText)
+	{
+		List<EventMaterialReference> list = materials ?? new List<EventMaterialReference>();
+		for (int num = list.Count - 1; num >= 0; num--)
+		{
+			EventMaterialReference eventMaterialReference = list[num];
+			if (eventMaterialReference == null)
+			{
+				list.RemoveAt(num);
+				continue;
+			}
+			eventMaterialReference.MaterialType = (eventMaterialReference.MaterialType ?? "").Trim();
+			eventMaterialReference.Label = neutralizeWeeklyText ? NeutralizeWeeklyReportScenarioName(eventMaterialReference.Label) : (eventMaterialReference.Label ?? "").Trim();
+			eventMaterialReference.SnapshotText = neutralizeWeeklyText ? NeutralizeWeeklyReportScenarioName(eventMaterialReference.SnapshotText) : (eventMaterialReference.SnapshotText ?? "").Trim();
+			eventMaterialReference.HeroId = (eventMaterialReference.HeroId ?? "").Trim();
+			eventMaterialReference.KingdomId = (eventMaterialReference.KingdomId ?? "").Trim();
+			eventMaterialReference.SettlementId = (eventMaterialReference.SettlementId ?? "").Trim();
+			eventMaterialReference.ActionKind = (eventMaterialReference.ActionKind ?? "").Trim();
+			eventMaterialReference.ActorHeroId = (eventMaterialReference.ActorHeroId ?? "").Trim();
+			eventMaterialReference.ActorClanId = (eventMaterialReference.ActorClanId ?? "").Trim();
+			eventMaterialReference.ActorKingdomId = (eventMaterialReference.ActorKingdomId ?? "").Trim();
+			eventMaterialReference.TargetHeroId = (eventMaterialReference.TargetHeroId ?? "").Trim();
+			eventMaterialReference.TargetClanId = (eventMaterialReference.TargetClanId ?? "").Trim();
+			eventMaterialReference.TargetKingdomId = (eventMaterialReference.TargetKingdomId ?? "").Trim();
+			eventMaterialReference.SettlementOwnerHeroId = (eventMaterialReference.SettlementOwnerHeroId ?? "").Trim();
+			eventMaterialReference.SettlementOwnerClanId = (eventMaterialReference.SettlementOwnerClanId ?? "").Trim();
+			eventMaterialReference.SettlementOwnerKingdomId = (eventMaterialReference.SettlementOwnerKingdomId ?? "").Trim();
+			eventMaterialReference.PreviousSettlementOwnerHeroId = (eventMaterialReference.PreviousSettlementOwnerHeroId ?? "").Trim();
+			eventMaterialReference.PreviousSettlementOwnerClanId = (eventMaterialReference.PreviousSettlementOwnerClanId ?? "").Trim();
+			eventMaterialReference.PreviousSettlementOwnerKingdomId = (eventMaterialReference.PreviousSettlementOwnerKingdomId ?? "").Trim();
+			eventMaterialReference.LocationText = (eventMaterialReference.LocationText ?? "").Trim();
+			eventMaterialReference.RelatedHeroIds = NormalizeEventMaterialIdListInPlace(eventMaterialReference.RelatedHeroIds);
+			eventMaterialReference.RelatedClanIds = NormalizeEventMaterialIdListInPlace(eventMaterialReference.RelatedClanIds);
+			eventMaterialReference.RelatedKingdomIds = NormalizeEventMaterialIdListInPlace(eventMaterialReference.RelatedKingdomIds);
+			eventMaterialReference.SourceStableKeys = NormalizeEventMaterialIdListInPlace(eventMaterialReference.SourceStableKeys);
+			eventMaterialReference.SourceActionKinds = NormalizeEventMaterialIdListInPlace(eventMaterialReference.SourceActionKinds);
+			eventMaterialReference.SourceMaterialCount = Math.Max(0, eventMaterialReference.SourceMaterialCount);
+			eventMaterialReference.ActionStableKey = (eventMaterialReference.ActionStableKey ?? "").Trim();
+		}
+		return list;
+	}
+
+	private static List<string> NormalizeEventMaterialIdListInPlace(List<string> values)
+	{
+		List<string> list = values ?? new List<string>();
+		for (int num = list.Count - 1; num >= 0; num--)
+		{
+			string text = (list[num] ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				list.RemoveAt(num);
+			}
+			else
+			{
+				list[num] = text;
+			}
+		}
+		return list;
+	}
+
 	private static List<EventSourceMaterialEntry> SanitizeEventSourceMaterials(List<EventSourceMaterialEntry> source)
 	{
 		List<EventSourceMaterialEntry> list = new List<EventSourceMaterialEntry>();
@@ -37524,18 +37832,22 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		DevTextEditorHelper.ShowLongTextEditor("编辑周报标题", "修改当前这条周报记录的标题。", "请输入新的标题（留空将回退为默认标题）。", entry.Title ?? "", delegate(string input)
 		{
-			entry.Title = (input ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(entry.Title))
+			EventRecordEntry storedEntry = FindWeeklyReportRecordById(entry.EventId) ?? entry;
+			string previousPublishedProductState = BuildPublishedWorldWeeklyProductState(storedEntry);
+			storedEntry.Title = (input ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(storedEntry.Title))
 			{
-				entry.Title = BuildDefaultWeeklyReportTitle(new WeeklyEventMaterialPreviewGroup
+				storedEntry.Title = BuildDefaultWeeklyReportTitle(new WeeklyEventMaterialPreviewGroup
 				{
-					GroupKind = entry.EventKind,
-					KingdomId = entry.ScopeKingdomId
-				}, entry.WeekIndex);
+					GroupKind = storedEntry.EventKind,
+					KingdomId = storedEntry.ScopeKingdomId
+				}, storedEntry.WeekIndex);
 			}
 			_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
+			EventRecordEntry updatedEntry = FindWeeklyReportRecordById(storedEntry.EventId);
+			NotifyPublishedWorldWeeklyProductChanged(previousPublishedProductState, updatedEntry);
 			InformationManager.DisplayMessage(new InformationMessage("周报标题已更新。"));
-			OpenDevEventRecordDetail(FindEventRecordById(entry.EventId) ?? entry, returnPage);
+			OpenDevEventRecordDetail(updatedEntry ?? entry, returnPage);
 		}, delegate
 		{
 			OpenDevEventRecordDetail(entry, returnPage);
@@ -37551,10 +37863,14 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		DevTextEditorHelper.ShowLongTextEditor("编辑周报正文", "这里修改的是最终展示出来的周报正文，不会改动原始素材。", "请输入新的周报正文。", entry.Summary ?? "", delegate(string input)
 		{
-			entry.Summary = (input ?? "").Trim();
+			EventRecordEntry storedEntry = FindWeeklyReportRecordById(entry.EventId) ?? entry;
+			string previousPublishedProductState = BuildPublishedWorldWeeklyProductState(storedEntry);
+			storedEntry.Summary = (input ?? "").Trim();
 			_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
+			EventRecordEntry updatedEntry = FindWeeklyReportRecordById(storedEntry.EventId);
+			NotifyPublishedWorldWeeklyProductChanged(previousPublishedProductState, updatedEntry);
 			InformationManager.DisplayMessage(new InformationMessage("周报正文已更新。"));
-			OpenDevEventRecordDetail(FindEventRecordById(entry.EventId) ?? entry, returnPage);
+			OpenDevEventRecordDetail(updatedEntry ?? entry, returnPage);
 		}, delegate
 		{
 			OpenDevEventRecordDetail(entry, returnPage);
@@ -37769,6 +38085,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		if (payload.HasEventRecordsFile)
 		{
+			string previousWorldWeeklyProductsFingerprint = BuildPublishedWorldWeeklyProductsFingerprint();
 			if (_eventRecordEntries == null)
 			{
 				_eventRecordEntries = new List<EventRecordEntry>();
@@ -37806,6 +38123,10 @@ public class MyBehavior : CampaignBehaviorBase
 					}
 				}
 				_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
+			}
+			if (!string.Equals(previousWorldWeeklyProductsFingerprint, BuildPublishedWorldWeeklyProductsFingerprint(), StringComparison.Ordinal))
+			{
+				Interlocked.Increment(ref _publishedWorldWeeklyHistoryRevision);
 			}
 		}
 	}
@@ -42738,6 +43059,274 @@ public class MyBehavior : CampaignBehaviorBase
 		return text.IndexOf("【附加规则:" + text2 + "】", StringComparison.OrdinalIgnoreCase) >= 0;
 	}
 
+	private WeeklyPromptSnapshot CaptureWeeklyPromptSnapshot(Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride)
+	{
+		using FreezeWatchdog.ScopeToken scopeToken = FreezeWatchdog.Scope("WeeklyPrompt.Capture.mainthread");
+		Stopwatch stopwatch = Stopwatch.StartNew();
+		EnsureWeekZeroOpeningSummaryEvents();
+		string text = ResolveWeeklyReportNpcKingdomId(targetHero, targetCharacter, kingdomIdOverride);
+		string text2 = ResolveWeeklyReportSurroundingsKingdomId(targetHero, targetCharacter, kingdomIdOverride);
+		List<Kingdom> list = GetDevEditableKingdoms();
+		Dictionary<string, string> dictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		List<string> list2 = new List<string>();
+		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (Kingdom item in list)
+		{
+			string text3 = (item?.StringId ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text3))
+			{
+				continue;
+			}
+			string text4 = (item?.Name?.ToString() ?? "").Trim();
+			dictionary[text3] = string.IsNullOrWhiteSpace(text4) ? text3 : text4;
+			if (IsKingdomEligibleForWeeklyReport(item) && hashSet.Add(text3))
+			{
+				list2.Add(text3);
+			}
+		}
+		List<string> kingdomIdsByPlayerProximity = GetKingdomIdsByPlayerProximity(list2);
+		bool flag = !string.IsNullOrWhiteSpace(text) && hashSet.Contains(text);
+		List<string> list3 = SelectWeeklyShortReportKingdomIdsFromSnapshot(text, excludeNpcKingdom: false, flag, kingdomIdsByPlayerProximity, list2);
+		List<string> list4 = SelectWeeklyShortReportKingdomIdsFromSnapshot(text, excludeNpcKingdom: true, flag, kingdomIdsByPlayerProximity, list2);
+		HashSet<string> hashSet2 = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (string item2 in list3)
+		{
+			hashSet2.Add(item2);
+		}
+		foreach (string item3 in list4)
+		{
+			hashSet2.Add(item3);
+		}
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			hashSet2.Add(text);
+		}
+		if (!string.IsNullOrWhiteSpace(text2))
+		{
+			hashSet2.Add(text2);
+		}
+		Dictionary<string, WeeklyPromptReportSnapshot> dictionary2 = CaptureLatestWeeklyPromptReportSnapshots(hashSet2, out WeeklyPromptReportSnapshot worldReport);
+		dictionary2.TryGetValue(text, out WeeklyPromptReportSnapshot value);
+		dictionary2.TryGetValue(text2, out WeeklyPromptReportSnapshot value2);
+		string text5 = BuildWeeklyShortReportsPromptBlockFromSnapshot(list3, dictionary2, dictionary);
+		string text6 = BuildWeeklyShortReportsPromptBlockFromSnapshot(list4, dictionary2, dictionary);
+		string text7 = BuildSingleWeeklyFullReportPromptBlockFromSnapshot("NPC所属王国完整周报", value);
+		string text8 = BuildSingleWeeklyFullReportPromptBlockFromSnapshot("世界完整周报", worldReport);
+		string text9 = BuildSingleWeeklyFullReportPromptBlockFromSnapshot("周边相关王国完整周报", value2);
+		stopwatch.Stop();
+		Logger.Log("Logic", "[NativePerf] weekly_prompt_snapshot_mainthread target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown") + " ms=" + Math.Round(stopwatch.Elapsed.TotalMilliseconds, 2) + " candidates=" + hashSet2.Count + " records=" + dictionary2.Count + " entries=" + (_eventRecordEntries?.Count ?? 0));
+		FreezeWatchdog.Mark("WeeklyPrompt.Capture.done", "ms=" + Math.Round(stopwatch.Elapsed.TotalMilliseconds, 2) + " candidates=" + hashSet2.Count + " records=" + dictionary2.Count + " entries=" + (_eventRecordEntries?.Count ?? 0), immediate: true);
+		return new WeeklyPromptSnapshot(text5, text6, text7, text8, text9, text, text2);
+	}
+
+	private static List<string> SelectWeeklyShortReportKingdomIdsFromSnapshot(string npcKingdomId, bool excludeNpcKingdom, bool npcKingdomEligible, IEnumerable<string> proximityOrderedKingdomIds, IEnumerable<string> fallbackKingdomIds)
+	{
+		string text = (npcKingdomId ?? "").Trim();
+		List<string> list = (proximityOrderedKingdomIds ?? Enumerable.Empty<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+		if (list.Count == 0)
+		{
+			list = (fallbackKingdomIds ?? Enumerable.Empty<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+		}
+		if (excludeNpcKingdom && !string.IsNullOrWhiteSpace(text))
+		{
+			list.RemoveAll((string x) => string.Equals((x ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase));
+		}
+		List<string> list2 = list.Take(3).ToList();
+		if (!excludeNpcKingdom && npcKingdomEligible && !string.IsNullOrWhiteSpace(text) && !list2.Any((string x) => string.Equals((x ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase)))
+		{
+			if (list2.Count >= 3)
+			{
+				list2.RemoveAt(list2.Count - 1);
+			}
+			list2.Insert(0, text);
+		}
+		return list2.Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).Take(3).ToList();
+	}
+
+	private Dictionary<string, WeeklyPromptReportSnapshot> CaptureLatestWeeklyPromptReportSnapshots(ISet<string> kingdomIds, out WeeklyPromptReportSnapshot worldReport)
+	{
+		HashSet<string> hashSet = new HashSet<string>((kingdomIds ?? new HashSet<string>(StringComparer.OrdinalIgnoreCase)).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()), StringComparer.OrdinalIgnoreCase);
+		Dictionary<string, WeeklyPromptReportSnapshot> dictionary = new Dictionary<string, WeeklyPromptReportSnapshot>(StringComparer.OrdinalIgnoreCase);
+		worldReport = null;
+		List<EventRecordEntry> list = _eventRecordEntries;
+		if (list == null || list.Count == 0)
+		{
+			return dictionary;
+		}
+		for (int i = 0; i < list.Count; i++)
+		{
+			EventRecordEntry eventRecordEntry = list[i];
+			if (eventRecordEntry == null)
+			{
+				continue;
+			}
+			string text = (eventRecordEntry.EventKind ?? "").Trim();
+			string text2 = (eventRecordEntry.ScopeKingdomId ?? "").Trim();
+			bool flag = string.Equals(text, "world", StringComparison.OrdinalIgnoreCase) && string.IsNullOrWhiteSpace(text2);
+			bool flag2 = string.Equals(text, "kingdom", StringComparison.OrdinalIgnoreCase) && hashSet.Contains(text2);
+			if (!flag && !flag2)
+			{
+				continue;
+			}
+			WeeklyPromptReportSnapshot weeklyPromptReportSnapshot = CreateWeeklyPromptReportSnapshot(eventRecordEntry);
+			if (weeklyPromptReportSnapshot == null)
+			{
+				continue;
+			}
+			if (flag)
+			{
+				if (IsNewerWeeklyPromptReportSnapshot(weeklyPromptReportSnapshot, worldReport))
+				{
+					worldReport = weeklyPromptReportSnapshot;
+				}
+			}
+			else if (!dictionary.TryGetValue(text2, out WeeklyPromptReportSnapshot value) || IsNewerWeeklyPromptReportSnapshot(weeklyPromptReportSnapshot, value))
+			{
+				dictionary[text2] = weeklyPromptReportSnapshot;
+			}
+		}
+		return dictionary;
+	}
+
+	private static WeeklyPromptReportSnapshot CreateWeeklyPromptReportSnapshot(EventRecordEntry entry)
+	{
+		string text = (entry?.EventId ?? "").Trim();
+		string text2 = (entry?.Title ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(text2))
+		{
+			return null;
+		}
+		bool flag = text.StartsWith("weekly_report:", StringComparison.OrdinalIgnoreCase);
+		string text3 = BuildFallbackWeeklyReportShortSummary(entry.ShortSummary);
+		string text4 = flag ? NeutralizeWeeklyReportScenarioName(entry.Summary) : (entry.Summary ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text3))
+		{
+			text3 = BuildFallbackWeeklyReportShortSummary(text4);
+		}
+		return new WeeklyPromptReportSnapshot(entry.WeekIndex, entry.CreatedDay, flag ? NeutralizeWeeklyReportScenarioName(text2) : text2, text3, text4);
+	}
+
+	private static bool IsNewerWeeklyPromptReportSnapshot(WeeklyPromptReportSnapshot candidate, WeeklyPromptReportSnapshot current)
+	{
+		if (candidate == null)
+		{
+			return false;
+		}
+		if (current == null || candidate.WeekIndex != current.WeekIndex)
+		{
+			return current == null || candidate.WeekIndex > current.WeekIndex;
+		}
+		if (candidate.CreatedDay != current.CreatedDay)
+		{
+			return candidate.CreatedDay > current.CreatedDay;
+		}
+		return StringComparer.OrdinalIgnoreCase.Compare(candidate.Title, current.Title) < 0;
+	}
+
+	private static string BuildWeeklyShortReportsPromptBlockFromSnapshot(IEnumerable<string> kingdomIds, IReadOnlyDictionary<string, WeeklyPromptReportSnapshot> reports, IReadOnlyDictionary<string, string> kingdomDisplays)
+	{
+		StringBuilder stringBuilder = new StringBuilder();
+		int num = 0;
+		foreach (string kingdomId in kingdomIds ?? Enumerable.Empty<string>())
+		{
+			string text = (kingdomId ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text) || reports == null || !reports.TryGetValue(text, out WeeklyPromptReportSnapshot value))
+			{
+				continue;
+			}
+			string text2 = BuildFallbackWeeklyReportShortSummary(value.ShortSummary ?? value.Summary);
+			if (string.IsNullOrWhiteSpace(text2))
+			{
+				continue;
+			}
+			if (num == 0)
+			{
+				stringBuilder.AppendLine("【近期三个王国发生的事】");
+				stringBuilder.AppendLine("以下为最近三个相关王国的事");
+			}
+			num++;
+			string text3 = (kingdomDisplays != null && kingdomDisplays.TryGetValue(text, out string value2)) ? value2 : text;
+			stringBuilder.Append("- ").Append(string.IsNullOrWhiteSpace(text3) ? text : text3);
+			if (value.WeekIndex >= 0)
+			{
+				stringBuilder.Append("（第").Append(value.WeekIndex).Append("周）");
+			}
+			stringBuilder.Append("：").AppendLine(text2);
+		}
+		return num > 0 ? stringBuilder.ToString().TrimEnd() : "";
+	}
+
+	private static string BuildSingleWeeklyFullReportPromptBlockFromSnapshot(string header, WeeklyPromptReportSnapshot entry)
+	{
+		if (entry == null)
+		{
+			return "";
+		}
+		string text = (entry.Summary ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = (entry.ShortSummary ?? "").Trim();
+		}
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.AppendLine("【" + ((header ?? "").Trim()) + "】");
+		if (!string.IsNullOrWhiteSpace(entry.Title))
+		{
+			stringBuilder.AppendLine("标题：" + entry.Title.Trim());
+		}
+		if (entry.WeekIndex >= 0)
+		{
+			stringBuilder.AppendLine("周次：第" + entry.WeekIndex + "周");
+		}
+		stringBuilder.AppendLine(text);
+		return stringBuilder.ToString().TrimEnd();
+	}
+
+	private static string BuildTriggeredWeeklyFullReportsPromptBlockFromSnapshot(string triggeredRuleInstructions, WeeklyPromptSnapshot weeklyPromptSnapshot)
+	{
+		bool flag = HasInjectedRuleBlock(triggeredRuleInstructions, "npc_major_actions");
+		bool flag2 = HasInjectedRuleBlock(triggeredRuleInstructions, "surroundings");
+		if (!flag && !flag2)
+		{
+			return "";
+		}
+		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		StringBuilder stringBuilder = new StringBuilder();
+		if (flag)
+		{
+			string text = weeklyPromptSnapshot.NpcFullReport;
+			if (!string.IsNullOrWhiteSpace(text) && hashSet.Add("kingdom:" + (weeklyPromptSnapshot.NpcKingdomId ?? "").Trim()))
+			{
+				stringBuilder.AppendLine(text);
+			}
+			string text2 = weeklyPromptSnapshot.WorldFullReport;
+			if (!string.IsNullOrWhiteSpace(text2) && hashSet.Add("world"))
+			{
+				if (stringBuilder.Length > 0)
+				{
+					stringBuilder.AppendLine();
+				}
+				stringBuilder.AppendLine(text2);
+			}
+		}
+		if (flag2)
+		{
+			string text3 = weeklyPromptSnapshot.SurroundingsFullReport;
+			if (!string.IsNullOrWhiteSpace(text3) && hashSet.Add("kingdom:" + (weeklyPromptSnapshot.SurroundingsKingdomId ?? "").Trim()))
+			{
+				if (stringBuilder.Length > 0)
+				{
+					stringBuilder.AppendLine();
+				}
+				stringBuilder.AppendLine(text3);
+			}
+		}
+		return stringBuilder.ToString().TrimEnd();
+	}
+
 	private static string ResolveWeeklyReportNpcKingdomId(Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride = null)
 	{
 		string text = (kingdomIdOverride ?? "").Trim();
@@ -42790,25 +43379,34 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		string text = (eventKind ?? "").Trim();
 		string text2 = (kingdomId ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
+		if (string.IsNullOrWhiteSpace(text) || !TWParallel.IsMainThread())
 		{
 			return null;
 		}
-		try
+		WeeklyPromptReportSnapshot weeklyPromptReportSnapshot = null;
+		if (string.Equals(text, "world", StringComparison.OrdinalIgnoreCase) && string.IsNullOrWhiteSpace(text2))
 		{
-			FreezeWatchdog.Mark("WeeklyPrompt.FindLatest.ensure_week0_start", "kind=" + text + " kingdom=" + text2 + " entries=" + (_eventRecordEntries?.Count ?? 0) + " thread=" + Thread.CurrentThread.ManagedThreadId);
-			EnsureWeekZeroOpeningSummaryEvents();
-			FreezeWatchdog.Mark("WeeklyPrompt.FindLatest.ensure_week0_done", "kind=" + text + " kingdom=" + text2 + " entries=" + (_eventRecordEntries?.Count ?? 0) + " thread=" + Thread.CurrentThread.ManagedThreadId);
+			CaptureLatestWeeklyPromptReportSnapshots(new HashSet<string>(StringComparer.OrdinalIgnoreCase), out weeklyPromptReportSnapshot);
 		}
-		catch
+		else if (string.Equals(text, "kingdom", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrWhiteSpace(text2))
 		{
+			Dictionary<string, WeeklyPromptReportSnapshot> dictionary = CaptureLatestWeeklyPromptReportSnapshots(new HashSet<string>(new[] { text2 }, StringComparer.OrdinalIgnoreCase), out var _);
+			dictionary.TryGetValue(text2, out weeklyPromptReportSnapshot);
 		}
-		FreezeWatchdog.Mark("WeeklyPrompt.FindLatest.sanitize_start", "kind=" + text + " kingdom=" + text2 + " entries=" + (_eventRecordEntries?.Count ?? 0));
-		List<EventRecordEntry> sanitized = SanitizeEventRecordEntries(_eventRecordEntries);
-		FreezeWatchdog.Mark("WeeklyPrompt.FindLatest.sanitize_done", "kind=" + text + " kingdom=" + text2 + " entries=" + (sanitized?.Count ?? 0));
-		EventRecordEntry result = (sanitized ?? new List<EventRecordEntry>()).Where((EventRecordEntry x) => x != null && string.Equals((x.EventKind ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase) && string.Equals((x.ScopeKingdomId ?? "").Trim(), text2, StringComparison.OrdinalIgnoreCase)).OrderByDescending((EventRecordEntry x) => x.WeekIndex).ThenByDescending((EventRecordEntry x) => x.CreatedDay).FirstOrDefault();
-		FreezeWatchdog.Mark("WeeklyPrompt.FindLatest.query_done", "kind=" + text + " kingdom=" + text2 + " found=" + (result != null));
-		return result;
+		if (weeklyPromptReportSnapshot == null)
+		{
+			return null;
+		}
+		return new EventRecordEntry
+		{
+			EventKind = text,
+			ScopeKingdomId = text2,
+			WeekIndex = weeklyPromptReportSnapshot.WeekIndex,
+			CreatedDay = weeklyPromptReportSnapshot.CreatedDay,
+			Title = weeklyPromptReportSnapshot.Title,
+			ShortSummary = weeklyPromptReportSnapshot.ShortSummary,
+			Summary = weeklyPromptReportSnapshot.Summary
+		};
 	}
 
 
@@ -42830,6 +43428,142 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static IReadOnlyList<WorldWeeklyReportHistoryEntry> GetPublishedWorldWeeklyReportHistoryForExternal(int minWeekExclusive = -1)
+	{
+		try
+		{
+			return (Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.GetPublishedWorldWeeklyReportHistoryInternal(minWeekExclusive) ?? Array.Empty<WorldWeeklyReportHistoryEntry>();
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EventWeeklyReport", "[WorldWeeklyHistory][WARN] get published world weekly history failed: " + ex.Message);
+			return Array.Empty<WorldWeeklyReportHistoryEntry>();
+		}
+	}
+
+	public static long GetPublishedWorldWeeklyReportHistoryRevisionForExternal()
+	{
+		try
+		{
+			MyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			return behavior == null ? 0L : Math.Max(0L, Volatile.Read(ref behavior._publishedWorldWeeklyHistoryRevision));
+		}
+		catch
+		{
+			return 0L;
+		}
+	}
+
+	private static string BuildPublishedWorldWeeklyProductState(EventRecordEntry entry)
+	{
+		if (entry == null
+			|| !string.Equals((entry.EventKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase)
+			|| !string.IsNullOrWhiteSpace(entry.ScopeKingdomId))
+		{
+			return "";
+		}
+		string sourceId = (entry.EventId ?? "").Trim();
+		string report = (entry.Summary ?? "").Trim();
+		if (!sourceId.StartsWith("weekly_report:world:", StringComparison.OrdinalIgnoreCase) || string.IsNullOrWhiteSpace(report))
+		{
+			return "";
+		}
+		StringBuilder stringBuilder = new StringBuilder(sourceId.Length + report.Length + (entry.Title?.Length ?? 0) + 48);
+		AppendPublishedWorldWeeklyProductField(stringBuilder, sourceId);
+		stringBuilder.Append(Math.Max(0, entry.WeekIndex)).Append('|');
+		AppendPublishedWorldWeeklyProductField(stringBuilder, (entry.Title ?? "").Trim());
+		AppendPublishedWorldWeeklyProductField(stringBuilder, report);
+		return stringBuilder.ToString();
+	}
+
+	private static void AppendPublishedWorldWeeklyProductField(StringBuilder builder, string value)
+	{
+		string text = value ?? "";
+		builder.Append(text.Length).Append(':').Append(text).Append('|');
+	}
+
+	private void NotifyPublishedWorldWeeklyProductChanged(string previousProductState, EventRecordEntry currentEntry)
+	{
+		string currentProductState = BuildPublishedWorldWeeklyProductState(currentEntry);
+		if (!string.Equals(previousProductState ?? "", currentProductState, StringComparison.Ordinal))
+		{
+			Interlocked.Increment(ref _publishedWorldWeeklyHistoryRevision);
+		}
+	}
+
+	private string BuildPublishedWorldWeeklyProductsFingerprint()
+	{
+		// Import is a developer-facing cold path. Comparing its complete published products here
+		// avoids adding any full-list scan to weekly generation, browsing, or diplomacy hot paths.
+		IReadOnlyList<WorldWeeklyReportHistoryEntry> history = GetPublishedWorldWeeklyReportHistoryInternal(-1);
+		if (history == null || history.Count == 0)
+		{
+			return "";
+		}
+		List<WorldWeeklyReportHistoryEntry> orderedHistory = history.Where((WorldWeeklyReportHistoryEntry x) => x != null).OrderBy((WorldWeeklyReportHistoryEntry x) => x.SourceId ?? "", StringComparer.OrdinalIgnoreCase).ToList();
+		StringBuilder stringBuilder = new StringBuilder();
+		for (int i = 0; i < orderedHistory.Count; i++)
+		{
+			WorldWeeklyReportHistoryEntry item = orderedHistory[i];
+			AppendPublishedWorldWeeklyProductField(stringBuilder, (item.SourceId ?? "").Trim().ToLowerInvariant());
+			stringBuilder.Append(Math.Max(0, item.WeekIndex)).Append('|');
+			AppendPublishedWorldWeeklyProductField(stringBuilder, item.PublishedTitle);
+			AppendPublishedWorldWeeklyProductField(stringBuilder, item.PublishedReportText);
+		}
+		return ComputeWeekZeroShortSummarySourceHash(stringBuilder.ToString());
+	}
+
+	private IReadOnlyList<WorldWeeklyReportHistoryEntry> GetPublishedWorldWeeklyReportHistoryInternal(int minWeekExclusive)
+	{
+		List<EventRecordEntry> source = _eventRecordEntries;
+		if (source == null || source.Count == 0)
+		{
+			return Array.Empty<WorldWeeklyReportHistoryEntry>();
+		}
+		Dictionary<string, WorldWeeklyReportHistoryEntry> latestBySource = null;
+		int count = source.Count;
+		for (int i = 0; i < count; i++)
+		{
+			EventRecordEntry eventRecordEntry = source[i];
+			if (eventRecordEntry == null || eventRecordEntry.WeekIndex <= minWeekExclusive || !string.Equals((eventRecordEntry.EventKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase) || !string.IsNullOrWhiteSpace(eventRecordEntry.ScopeKingdomId))
+			{
+				continue;
+			}
+			string text = (eventRecordEntry.EventId ?? "").Trim();
+			string text2 = (eventRecordEntry.Summary ?? "").Trim();
+			if (!text.StartsWith("weekly_report:world:", StringComparison.OrdinalIgnoreCase) || string.IsNullOrWhiteSpace(text2))
+			{
+				continue;
+			}
+			latestBySource ??= new Dictionary<string, WorldWeeklyReportHistoryEntry>(StringComparer.OrdinalIgnoreCase);
+			// The record list is append ordered. If a same-week report is corrected under the same
+			// stable source ID, expose the latest full text so canonical history can append a correction.
+			WorldWeeklyReportHistoryEntry candidate = new WorldWeeklyReportHistoryEntry(text, Math.Max(0, eventRecordEntry.WeekIndex), Math.Max(0, eventRecordEntry.CreatedDay), (eventRecordEntry.CreatedDate ?? "").Trim(), (eventRecordEntry.Title ?? "").Trim(), text2);
+			if (!latestBySource.TryGetValue(text, out WorldWeeklyReportHistoryEntry existing)
+				|| candidate.WeekIndex > existing.WeekIndex
+				|| (candidate.WeekIndex == existing.WeekIndex && candidate.CreatedDay >= existing.CreatedDay))
+			{
+				latestBySource[text] = candidate;
+			}
+		}
+		if (latestBySource == null)
+		{
+			return Array.Empty<WorldWeeklyReportHistoryEntry>();
+		}
+		List<WorldWeeklyReportHistoryEntry> list = latestBySource.Values.ToList();
+		list.Sort(delegate(WorldWeeklyReportHistoryEntry left, WorldWeeklyReportHistoryEntry right)
+		{
+			int num = left.WeekIndex.CompareTo(right.WeekIndex);
+			if (num != 0)
+			{
+				return num;
+			}
+			num = left.CreatedDay.CompareTo(right.CreatedDay);
+			return (num != 0) ? num : StringComparer.OrdinalIgnoreCase.Compare(left.SourceId, right.SourceId);
+		});
+		return list.AsReadOnly();
+	}
+
 	private string GetLatestKingdomWeeklyShortSummaryInternal(string kingdomId)
 	{
 		string text = (kingdomId ?? "").Trim();
@@ -42837,6 +43571,11 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
+		if (!TWParallel.IsMainThread())
+		{
+			return "";
+		}
+		EnsureWeekZeroOpeningSummaryEvents();
 		EventRecordEntry latestWeeklyReportRecord = FindLatestWeeklyReportRecord("kingdom", text);
 		return BuildFallbackWeeklyReportShortSummary(latestWeeklyReportRecord?.ShortSummary ?? latestWeeklyReportRecord?.Summary);
 	}
@@ -43002,12 +43741,14 @@ public class MyBehavior : CampaignBehaviorBase
 				ShowWeeklyFullOnDemandFailurePopup(LlmRetryPrompt.BuildFailureDetail("完整周报返回内容无法解析。", apiCallResult.Content, apiCallResult.ResponseBody));
 				return false;
 			}
+			string previousPublishedProductState = BuildPublishedWorldWeeklyProductState(eventRecordEntry);
 			eventRecordEntry.Title = title;
 			eventRecordEntry.ShortSummary = BuildFallbackWeeklyReportShortSummary(shortSummary);
 			eventRecordEntry.Summary = (report ?? "").Trim();
 			eventRecordEntry.PromptText = text3;
 			eventRecordEntry.Materials = CloneWeeklyReportMaterials(eventRecordEntry.Materials);
 			_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
+			NotifyPublishedWorldWeeklyProductChanged(previousPublishedProductState, FindWeeklyReportRecordById(eventRecordEntry.EventId));
 			InformationManager.HideInquiry();
 			InformationManager.DisplayMessage(new InformationMessage("完整周报已生成。"));
 			return true;
@@ -43062,8 +43803,19 @@ public class MyBehavior : CampaignBehaviorBase
 		return list2.Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).Take(3).ToList();
 	}
 
-	private string BuildWeeklyShortReportsPromptBlock(Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride, bool excludeNpcKingdom)
+	private string BuildWeeklyShortReportsPromptBlock(Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride, bool excludeNpcKingdom, WeeklyPromptSnapshot weeklyPromptSnapshot = null)
 	{
+		if (weeklyPromptSnapshot != null)
+		{
+			FreezeWatchdog.Mark("WeeklyPrompt.Short.snapshot", "excludeNpc=" + excludeNpcKingdom + " thread=" + Thread.CurrentThread.ManagedThreadId);
+			return excludeNpcKingdom ? weeklyPromptSnapshot.ShortReportsExcludingNpc : weeklyPromptSnapshot.ShortReportsIncludingNpc;
+		}
+		if (!TWParallel.IsMainThread())
+		{
+			Logger.Log("EventWeeklyReport", "[WeeklyPrompt][WARN] skipped live short-report query off the main thread.");
+			return "";
+		}
+		EnsureWeekZeroOpeningSummaryEvents();
 		FreezeWatchdog.Mark("WeeklyPrompt.Short.resolve_npc_kingdom_start", "thread=" + Thread.CurrentThread.ManagedThreadId);
 		string weeklyReportNpcKingdomId = ResolveWeeklyReportNpcKingdomId(targetHero, targetCharacter, kingdomIdOverride);
 		FreezeWatchdog.Mark("WeeklyPrompt.Short.resolve_npc_kingdom_done", "kingdom=" + (weeklyReportNpcKingdomId ?? "") + " thread=" + Thread.CurrentThread.ManagedThreadId);
@@ -43131,8 +43883,18 @@ public class MyBehavior : CampaignBehaviorBase
 		return stringBuilder.ToString().TrimEnd();
 	}
 
-	private string BuildTriggeredWeeklyFullReportsPromptBlock(string triggeredRuleInstructions, Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride = null)
+	private string BuildTriggeredWeeklyFullReportsPromptBlock(string triggeredRuleInstructions, Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride = null, WeeklyPromptSnapshot weeklyPromptSnapshot = null)
 	{
+		if (weeklyPromptSnapshot != null)
+		{
+			FreezeWatchdog.Mark("WeeklyPrompt.Full.snapshot", "thread=" + Thread.CurrentThread.ManagedThreadId);
+			return BuildTriggeredWeeklyFullReportsPromptBlockFromSnapshot(triggeredRuleInstructions, weeklyPromptSnapshot);
+		}
+		if (!TWParallel.IsMainThread())
+		{
+			Logger.Log("EventWeeklyReport", "[WeeklyPrompt][WARN] skipped live full-report query off the main thread.");
+			return "";
+		}
 		FreezeWatchdog.Mark("WeeklyPrompt.Full.start", "thread=" + Thread.CurrentThread.ManagedThreadId);
 		bool flag = HasInjectedRuleBlock(triggeredRuleInstructions, "npc_major_actions");
 		bool flag3 = HasInjectedRuleBlock(triggeredRuleInstructions, "surroundings");
@@ -43190,7 +43952,7 @@ public class MyBehavior : CampaignBehaviorBase
 		return result;
 	}
 
-	private bool ShouldExcludeNpcShortReportFromWeeklyShortLayer(string triggeredRuleInstructions, Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride = null)
+	private bool ShouldExcludeNpcShortReportFromWeeklyShortLayer(string triggeredRuleInstructions, Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride = null, WeeklyPromptSnapshot weeklyPromptSnapshot = null)
 	{
 		if (HasInjectedRuleBlock(triggeredRuleInstructions, "npc_major_actions"))
 		{
@@ -43198,6 +43960,14 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		if (HasInjectedRuleBlock(triggeredRuleInstructions, "surroundings"))
 		{
+			if (weeklyPromptSnapshot != null)
+			{
+				return !string.IsNullOrWhiteSpace(weeklyPromptSnapshot.NpcKingdomId) && string.Equals(weeklyPromptSnapshot.NpcKingdomId, weeklyPromptSnapshot.SurroundingsKingdomId, StringComparison.OrdinalIgnoreCase);
+			}
+			if (!TWParallel.IsMainThread())
+			{
+				return false;
+			}
 			string weeklyReportNpcKingdomId = ResolveWeeklyReportNpcKingdomId(targetHero, targetCharacter, kingdomIdOverride);
 			string weeklyReportSurroundingsKingdomId = ResolveWeeklyReportSurroundingsKingdomId(targetHero, targetCharacter, kingdomIdOverride);
 			if (!string.IsNullOrWhiteSpace(weeklyReportNpcKingdomId) && string.Equals(weeklyReportNpcKingdomId, weeklyReportSurroundingsKingdomId, StringComparison.OrdinalIgnoreCase))
@@ -44807,6 +45577,7 @@ public class MyBehavior : CampaignBehaviorBase
 			};
 			_eventRecordEntries.Add(eventRecordEntry);
 		}
+		string previousPublishedProductState = BuildPublishedWorldWeeklyProductState(eventRecordEntry);
 		eventRecordEntry.EventKind = text;
 		eventRecordEntry.ScopeKingdomId = text2;
 		eventRecordEntry.WeekIndex = weekIndex;
@@ -44823,10 +45594,13 @@ public class MyBehavior : CampaignBehaviorBase
 		eventRecordEntry.CreatedDate = GetCurrentGameDateTextSafe();
 		eventRecordEntry.Materials = materials ?? new List<EventMaterialReference>();
 		ApplyWeeklyReportStabilityDelta(group, eventRecordEntry.EventId, eventRecordEntry.TagText);
+		EventRecordEntry publishedProductEntry = eventRecordEntry;
 		if (sanitizeAfter)
 		{
 			_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
+			publishedProductEntry = FindWeeklyReportRecordById(text3) ?? eventRecordEntry;
 		}
+		NotifyPublishedWorldWeeklyProductChanged(previousPublishedProductState, publishedProductEntry);
 	}
 
 	private List<EventSourceMaterialEntry> GetWeeklyEventSourceMaterialsForBuild()
@@ -47178,6 +47952,9 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		_weekZeroShortSummaryQueueProcessing = false;
 		_weekZeroShortSummaryLastRequestUtcTicks = 0L;
+		while (_weekZeroShortSummaryMainThreadActions.TryDequeue(out var _))
+		{
+		}
 		_voiceMappingJsonStorage = "";
 		_voiceMappingExportFolderStorage = "";
 		_unnamedPersonaJsonStorage = "";

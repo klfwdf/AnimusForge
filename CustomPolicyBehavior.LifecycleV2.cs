@@ -803,6 +803,10 @@ public sealed partial class CustomPolicyBehavior
 		SynchronizeLifecycleEffectDurations(state);
 		ApplyLifecyclePhaseOneTimeEffects(state);
 		UpdatePolicyRecordLifecycleState(state);
+		RecordPolicySnapshotForRecordId(
+			state.RecordId,
+			"lifecycle_transition",
+			"条件生命周期阶段 " + oldPhase + "→" + nextPhase + "；原因=" + (reason ?? ""));
 		PolicySystemLog.Write("Lifecycle", "transition", BuildLifecycleLog(state, oldPhase + "->" + nextPhase + " reason=" + (reason ?? "")));
 		ShowPlayerLifecycleMessage(state, "《" + FirstNonEmpty(state.PolicyName, "未命名政策") + "》阶段变更：" + BuildPolicyLifecyclePhaseDisplayText(oldPhase) + " → " + BuildPolicyLifecyclePhaseDisplayText(nextPhase) + "（" + (reason ?? "") + "）", Colors.Yellow);
 	}
@@ -900,6 +904,7 @@ public sealed partial class CustomPolicyBehavior
 		{
 			ExpireDynamicPolicyWithoutRenewal(data, EnsureDynamicPolicyObject(data), state.CompletionReason);
 		}
+		RecordPolicySnapshotForRecordId(state.RecordId, "lifecycle_completed", "条件生命周期完成；结果=" + state.CompletionReason);
 		_policyLifecycleStates.Remove(state.RecordId ?? "");
 		PolicySystemLog.Write("Lifecycle", "completed", BuildLifecycleLog(state, state.CompletionReason));
 		ShowPlayerLifecycleMessage(state, "《" + FirstNonEmpty(state.PolicyName, "未命名政策") + "》条件生命周期结束：" + state.CompletionReason, Colors.Green);

@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -64,6 +65,57 @@ public sealed class PolicyActiveEffectRegistration
 	public string Reason { get; set; }
 }
 
+/// <summary>
+/// A read-only, final policy artifact emitted only after the policy system has committed the
+/// corresponding game result. Sequence is global; Revision is monotonic within one PolicyId.
+/// </summary>
+public sealed class PublishedPolicyArtifactLedgerEntry
+{
+	internal PublishedPolicyArtifactLedgerEntry(
+		long sequence,
+		long revision,
+		string policyId,
+		string eventKind,
+		int occurredDay,
+		string gameDate,
+		long createdUtcTicks,
+		string scopeKind,
+		string kingdomId,
+		string kingdomName,
+		string policyName,
+		string publishedText,
+		string contentHash)
+	{
+		Sequence = sequence;
+		Revision = revision;
+		PolicyId = policyId ?? "";
+		EventKind = eventKind ?? "";
+		OccurredDay = occurredDay;
+		GameDate = gameDate ?? "";
+		CreatedUtcTicks = createdUtcTicks;
+		ScopeKind = scopeKind ?? "";
+		KingdomId = kingdomId ?? "";
+		KingdomName = kingdomName ?? "";
+		PolicyName = policyName ?? "";
+		PublishedText = publishedText ?? "";
+		ContentHash = contentHash ?? "";
+	}
+
+	public long Sequence { get; }
+	public long Revision { get; }
+	public string PolicyId { get; }
+	public string EventKind { get; }
+	public int OccurredDay { get; }
+	public string GameDate { get; }
+	public long CreatedUtcTicks { get; }
+	public string ScopeKind { get; }
+	public string KingdomId { get; }
+	public string KingdomName { get; }
+	public string PolicyName { get; }
+	public string PublishedText { get; }
+	public string ContentHash { get; }
+}
+
 public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonReadyObjectHandler
 {
 	private const int MaxPolicyNameChars = 100;
@@ -109,6 +161,22 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 	private const int MaxPolicyRecordImpactChars = 260;
 
 	private const string SaveKeyPolicyRecordHistory = "_afCustomPolicyRecordHistory_v1";
+
+	private const string SaveKeyPublishedPolicyArtifactLedger = "_afPublishedPolicyArtifactLedger_v1";
+
+	private const string PublishedPolicyArtifactLedgerStateKey = "__state_v1";
+
+	private const string PublishedPolicyArtifactEntryKeyPrefix = "entry:";
+
+	// Canonical diplomacy history consumes this incrementally. Keeping 8k acknowledged events
+	// gives a generous replay window; unacknowledged events are never trimmed.
+	private const int MaxPublishedPolicyArtifactLedgerEntries = 8192;
+
+	private const int PublishedPolicyArtifactLedgerTrimBatch = 256;
+
+	private const int MaxPublishedPolicyArtifactReadCount = 1024;
+
+	private const int PublishedPolicyArtifactLegacyBackfillVersion = 2;
 
 	private const int MaxPolicyRecentActionChars = 160;
 
@@ -228,6 +296,28 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 	private static readonly ConcurrentQueue<Action> MainThreadActions = new ConcurrentQueue<Action>();
 
 	private readonly Dictionary<string, string> _policyRecordHistory = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+	private readonly List<PublishedPolicyArtifactLedgerEntrySaveData> _publishedPolicyArtifactEntries = new List<PublishedPolicyArtifactLedgerEntrySaveData>();
+
+	private readonly Dictionary<string, long> _publishedPolicyArtifactRevisionByPolicyId = new Dictionary<string, long>(StringComparer.OrdinalIgnoreCase);
+
+	private readonly Dictionary<string, string> _publishedPolicyArtifactLastFingerprintByStream = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+	private readonly object _publishedPolicyArtifactLedgerGate = new object();
+
+	private string _publishedPolicyArtifactLedgerId = "";
+
+	private long _publishedPolicyArtifactCurrentSequence;
+
+	private long _publishedPolicyArtifactConsumedThroughSequence;
+
+	private int _publishedPolicyArtifactLegacyBackfillVersion;
+
+	private bool _publishedPolicyArtifactLegacyBackfillInProgress;
+
+	// A vassalage break can be raised synchronously while a renewal is still committing.
+	// Defer only the artifact emission; the relationship state itself is still updated immediately.
+	private readonly HashSet<string> _deferredVassalRelationshipArtifactRecordIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
 	private readonly Dictionary<string, string> _activePolicyEffects = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
@@ -367,6 +457,478 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 	public CustomPolicyBehavior()
 	{
 		Instance = this;
+	}
+
+	public static long GetPublishedPolicyArtifactCurrentSequenceForExternal()
+	{
+		try
+		{
+			CustomPolicyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<CustomPolicyBehavior>();
+			if (behavior == null)
+			{
+				return 0L;
+			}
+			behavior.BackfillPublishedPolicyArtifactsFromExistingRecords();
+			lock (behavior._publishedPolicyArtifactLedgerGate)
+			{
+				return behavior._publishedPolicyArtifactCurrentSequence;
+			}
+		}
+		catch
+		{
+			return 0L;
+		}
+	}
+
+	public static long PublishedPolicyArtifactCurrentSequence => GetPublishedPolicyArtifactCurrentSequenceForExternal();
+
+	public static string GetPublishedPolicyArtifactLedgerIdForExternal()
+	{
+		try
+		{
+			CustomPolicyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<CustomPolicyBehavior>();
+			if (behavior == null)
+			{
+				return "";
+			}
+			lock (behavior._publishedPolicyArtifactLedgerGate)
+			{
+				if (string.IsNullOrWhiteSpace(behavior._publishedPolicyArtifactLedgerId))
+				{
+					behavior._publishedPolicyArtifactLedgerId = Guid.NewGuid().ToString("N");
+				}
+				return behavior._publishedPolicyArtifactLedgerId;
+			}
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	public static bool TryAcknowledgePublishedPolicyArtifactConsumedThroughForExternal(long consumedThroughSequence)
+	{
+		try
+		{
+			CustomPolicyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<CustomPolicyBehavior>();
+			if (behavior == null || consumedThroughSequence < 0L)
+			{
+				return false;
+			}
+			lock (behavior._publishedPolicyArtifactLedgerGate)
+			{
+				if (consumedThroughSequence > behavior._publishedPolicyArtifactCurrentSequence)
+				{
+					return false;
+				}
+				if (consumedThroughSequence > behavior._publishedPolicyArtifactConsumedThroughSequence)
+				{
+					behavior._publishedPolicyArtifactConsumedThroughSequence = consumedThroughSequence;
+					behavior.TrimPublishedPolicyArtifactLedgerIfNeeded();
+				}
+				return true;
+			}
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Write("PolicyArtifact", "ack-failed", "sequence=" + consumedThroughSequence.ToString(CultureInfo.InvariantCulture) + " " + ex.Message);
+			return false;
+		}
+	}
+
+	public static IReadOnlyList<PublishedPolicyArtifactLedgerEntry> GetPublishedPolicyArtifactLedgerForExternal(long afterSequence = 0L, int maxCount = 256)
+	{
+		try
+		{
+			CustomPolicyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<CustomPolicyBehavior>();
+			behavior?.BackfillPublishedPolicyArtifactsFromExistingRecords();
+			return behavior?.GetPublishedPolicyArtifactLedgerInternal(afterSequence, maxCount)
+				?? Array.Empty<PublishedPolicyArtifactLedgerEntry>();
+		}
+		catch
+		{
+			return Array.Empty<PublishedPolicyArtifactLedgerEntry>();
+		}
+	}
+
+	internal static void RecordNpcPolicyPublishedArtifactForExternal(NpcRulerPolicyRecord record, bool allowLegacyCommittedEffectsWithoutIds = false)
+	{
+		try
+		{
+			(Instance ?? Campaign.Current?.GetCampaignBehavior<CustomPolicyBehavior>())?.RecordNpcPolicyPublishedArtifact(record, allowLegacyCommittedEffectsWithoutIds);
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Write("PolicyArtifact", "npc-published-failed", "policyId=" + (record?.PolicyId ?? "") + " " + ex);
+		}
+	}
+
+	internal static void RecordNpcPolicySnapshotArtifactForExternal(NpcRulerPolicyRecord record, string changeKind, string changeText)
+	{
+		try
+		{
+			(Instance ?? Campaign.Current?.GetCampaignBehavior<CustomPolicyBehavior>())?.RecordNpcPolicySnapshotArtifact(record, changeKind, changeText);
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Write("PolicyArtifact", "npc-snapshot-failed", "policyId=" + (record?.PolicyId ?? "") + " kind=" + (changeKind ?? "") + " " + ex);
+		}
+	}
+
+	internal static void RecordNpcPolicyPublicFeedbackArtifactForExternal(NpcRulerPolicyRecord record)
+	{
+		try
+		{
+			if (record?.PublicFeedbackNoticeShown == true && !string.IsNullOrWhiteSpace(record.PublicFeedback))
+			{
+				(Instance ?? Campaign.Current?.GetCampaignBehavior<CustomPolicyBehavior>())?.RecordNpcPolicySnapshotArtifact(
+					record,
+					"public_feedback_shown",
+					"公开反馈已展示：\n" + record.PublicFeedback.Trim());
+			}
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Write("PolicyArtifact", "feedback-failed", "policyId=" + (record?.PolicyId ?? "") + " " + ex);
+		}
+	}
+
+	private IReadOnlyList<PublishedPolicyArtifactLedgerEntry> GetPublishedPolicyArtifactLedgerInternal(long afterSequence, int maxCount)
+	{
+		long cursor = Math.Max(0L, afterSequence);
+		int limit = Math.Max(1, Math.Min(MaxPublishedPolicyArtifactReadCount, maxCount <= 0 ? 256 : maxCount));
+		lock (_publishedPolicyArtifactLedgerGate)
+		{
+			int low = 0;
+			int high = _publishedPolicyArtifactEntries.Count;
+			while (low < high)
+			{
+				int middle = low + ((high - low) / 2);
+				if (_publishedPolicyArtifactEntries[middle].Sequence <= cursor)
+				{
+					low = middle + 1;
+				}
+				else
+				{
+					high = middle;
+				}
+			}
+			int count = Math.Min(limit, _publishedPolicyArtifactEntries.Count - low);
+			if (count <= 0)
+			{
+				return Array.Empty<PublishedPolicyArtifactLedgerEntry>();
+			}
+			List<PublishedPolicyArtifactLedgerEntry> result = new List<PublishedPolicyArtifactLedgerEntry>(count);
+			for (int i = 0; i < count; i++)
+			{
+				result.Add(ToPublishedPolicyArtifactLedgerEntry(_publishedPolicyArtifactEntries[low + i]));
+			}
+			return result;
+		}
+	}
+
+	private bool AppendPublishedPolicyArtifact(
+		string policyId,
+		string eventKind,
+		int occurredDay,
+		string gameDate,
+		long createdUtcTicks,
+		string scopeKind,
+		string kingdomId,
+		string kingdomName,
+		string policyName,
+		string publishedText)
+	{
+		string id = (policyId ?? "").Trim();
+		string kind = (eventKind ?? "").Trim().ToLowerInvariant();
+		string text = (publishedText ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(id)
+			|| (kind != "policy_published" && kind != "policy_snapshot")
+			|| string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		string cleanScope = (scopeKind ?? "").Trim().ToLowerInvariant();
+		string cleanKingdomId = (kingdomId ?? "").Trim();
+		string cleanKingdomName = (kingdomName ?? "").Trim();
+		string cleanPolicyName = string.IsNullOrWhiteSpace(policyName) ? "未命名政策" : policyName.Trim();
+		string contentHash = ComputePublishedPolicyArtifactHash(text);
+		string streamKey = id + "\u001f" + kind;
+		string fingerprint = ComputePublishedPolicyArtifactHash(
+			kind + "\n" + cleanScope + "\n" + cleanKingdomId + "\n" + cleanKingdomName + "\n" + cleanPolicyName + "\n" + contentHash);
+		PublishedPolicyArtifactLedgerEntrySaveData entry;
+		lock (_publishedPolicyArtifactLedgerGate)
+		{
+			if (_publishedPolicyArtifactLastFingerprintByStream.TryGetValue(streamKey, out string previousFingerprint)
+				&& string.Equals(previousFingerprint, fingerprint, StringComparison.Ordinal))
+			{
+				return false;
+			}
+			long revision = _publishedPolicyArtifactRevisionByPolicyId.TryGetValue(id, out long priorRevision)
+				? checked(priorRevision + 1L)
+				: 1L;
+			long sequence = checked(_publishedPolicyArtifactCurrentSequence + 1L);
+			entry = new PublishedPolicyArtifactLedgerEntrySaveData
+			{
+				Sequence = sequence,
+				Revision = revision,
+				PolicyId = id,
+				EventKind = kind,
+				OccurredDay = Math.Max(0, occurredDay),
+				GameDate = gameDate ?? "",
+				CreatedUtcTicks = createdUtcTicks > 0L ? createdUtcTicks : DateTime.UtcNow.Ticks,
+				ScopeKind = cleanScope,
+				KingdomId = cleanKingdomId,
+				KingdomName = cleanKingdomName,
+				PolicyName = cleanPolicyName,
+				PublishedText = text,
+				ContentHash = contentHash
+			};
+			_publishedPolicyArtifactCurrentSequence = sequence;
+			_publishedPolicyArtifactRevisionByPolicyId[id] = revision;
+			_publishedPolicyArtifactLastFingerprintByStream[streamKey] = fingerprint;
+			_publishedPolicyArtifactEntries.Add(entry);
+			TrimPublishedPolicyArtifactLedgerIfNeeded();
+		}
+		PolicySystemLog.Write("PolicyArtifact", "append", "sequence=" + entry.Sequence.ToString(CultureInfo.InvariantCulture)
+			+ " revision=" + entry.Revision.ToString(CultureInfo.InvariantCulture)
+			+ " policyId=" + entry.PolicyId
+			+ " eventKind=" + entry.EventKind
+			+ " chars=" + entry.PublishedText.Length.ToString(CultureInfo.InvariantCulture));
+		return true;
+	}
+
+	private static string BuildPublishedPolicyArtifactEntryKey(long sequence)
+	{
+		return PublishedPolicyArtifactEntryKeyPrefix + Math.Max(0L, sequence).ToString("D20", CultureInfo.InvariantCulture);
+	}
+
+	private static string ComputePublishedPolicyArtifactHash(string value)
+	{
+		using (SHA256 sha256 = SHA256.Create())
+		{
+			byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(value ?? ""));
+			StringBuilder hash = new StringBuilder(bytes.Length * 2);
+			foreach (byte item in bytes)
+			{
+				hash.Append(item.ToString("x2", CultureInfo.InvariantCulture));
+			}
+			return hash.ToString();
+		}
+	}
+
+	private void TrimPublishedPolicyArtifactLedgerIfNeeded()
+	{
+		if (_publishedPolicyArtifactEntries.Count <= MaxPublishedPolicyArtifactLedgerEntries + PublishedPolicyArtifactLedgerTrimBatch)
+		{
+			return;
+		}
+		int desiredRemoveCount = _publishedPolicyArtifactEntries.Count - MaxPublishedPolicyArtifactLedgerEntries;
+		int removeCount = 0;
+		while (removeCount < desiredRemoveCount
+			&& _publishedPolicyArtifactEntries[removeCount].Sequence <= _publishedPolicyArtifactConsumedThroughSequence)
+		{
+			removeCount++;
+		}
+		if (removeCount <= 0)
+		{
+			return;
+		}
+		_publishedPolicyArtifactEntries.RemoveRange(0, removeCount);
+	}
+
+	private static PublishedPolicyArtifactLedgerEntry ToPublishedPolicyArtifactLedgerEntry(PublishedPolicyArtifactLedgerEntrySaveData entry)
+	{
+		return new PublishedPolicyArtifactLedgerEntry(
+			entry?.Sequence ?? 0L,
+			entry?.Revision ?? 0L,
+			entry?.PolicyId,
+			entry?.EventKind,
+			entry?.OccurredDay ?? 0,
+			entry?.GameDate,
+			entry?.CreatedUtcTicks ?? 0L,
+			entry?.ScopeKind,
+			entry?.KingdomId,
+			entry?.KingdomName,
+			entry?.PolicyName,
+			entry?.PublishedText,
+			entry?.ContentHash);
+	}
+
+	private void RecordNpcPolicyPublishedArtifact(NpcRulerPolicyRecord record, bool allowLegacyCommittedEffectsWithoutIds = false)
+	{
+		bool hasPublishedStatus = string.IsNullOrWhiteSpace(record?.AgendaStatus)
+			|| string.Equals(record.AgendaStatus, DynamicPolicyStatusActive, StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(record.AgendaStatus, DynamicPolicyStatusExpiryVotePending, StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(record.AgendaStatus, DynamicPolicyStatusAbolished, StringComparison.OrdinalIgnoreCase);
+		if (record == null
+			|| string.IsNullOrWhiteSpace(record.PolicyId)
+			|| !hasPublishedStatus
+			|| !(record.Effects ?? new List<NpcRulerPolicyEffectDto>()).Any(effect => effect != null
+				&& effect.DurationDays > 0
+				&& (allowLegacyCommittedEffectsWithoutIds || !string.IsNullOrWhiteSpace(effect.EffectId))))
+		{
+			return;
+		}
+		AppendPublishedPolicyArtifact(
+			record.PolicyId,
+			"policy_published",
+			Math.Max(0, record.Day),
+			record.GameDate,
+			record.CreatedUtcTicks,
+			string.IsNullOrWhiteSpace(record.PolicyKind) ? PolicyScopeKingdom : record.PolicyKind,
+			record.KingdomId,
+			record.KingdomName,
+			record.PolicyName,
+			BuildNpcPolicyPublishedArtifactText(record, allowLegacyCommittedEffectsWithoutIds));
+	}
+
+	private void RecordNpcPolicySnapshotArtifact(NpcRulerPolicyRecord record, string changeKind, string changeText)
+	{
+		if (record == null || string.IsNullOrWhiteSpace(record.PolicyId))
+		{
+			return;
+		}
+		if (!HasPublishedPolicyArtifact(record.PolicyId))
+		{
+			RecordNpcPolicyPublishedArtifact(record);
+			if (!HasPublishedPolicyArtifact(record.PolicyId))
+			{
+				return;
+			}
+		}
+		string cleanChangeKind = string.IsNullOrWhiteSpace(changeKind) ? "changed" : changeKind.Trim().ToLowerInvariant();
+		StringBuilder text = new StringBuilder();
+		text.Append("事件：").Append(cleanChangeKind).AppendLine();
+		text.Append("结果：").Append(string.IsNullOrWhiteSpace(changeText) ? "政策状态已经更新。" : changeText.Trim());
+		if (string.Equals(cleanChangeKind, "renewed", StringComparison.Ordinal)
+			|| string.Equals(cleanChangeKind, "expired", StringComparison.Ordinal)
+			|| string.Equals(cleanChangeKind, "abolished", StringComparison.Ordinal)
+			|| string.Equals(cleanChangeKind, "target_lost", StringComparison.Ordinal)
+			|| string.Equals(cleanChangeKind, "relationship_ended", StringComparison.Ordinal))
+		{
+			string effectState = BuildNpcPolicyEffectStateChangeText(record);
+			if (!string.IsNullOrWhiteSpace(effectState))
+			{
+				text.AppendLine().Append(effectState);
+			}
+		}
+		AppendPublishedPolicyArtifact(
+			record.PolicyId,
+			"policy_snapshot",
+			GetCurrentCampaignDay(),
+			FormatCurrentCampaignDate(),
+			DateTime.UtcNow.Ticks,
+			string.IsNullOrWhiteSpace(record.PolicyKind) ? PolicyScopeKingdom : record.PolicyKind,
+			record.KingdomId,
+			record.KingdomName,
+			record.PolicyName,
+			text.ToString());
+	}
+
+	private static string BuildNpcPolicyPublishedArtifactText(NpcRulerPolicyRecord record, bool allowLegacyCommittedEffectsWithoutIds)
+	{
+		StringBuilder text = new StringBuilder();
+		text.Append("政策正文：\n").Append((record?.PolicyContent ?? "").Trim());
+		if (!string.IsNullOrWhiteSpace(record?.ImpactSummary))
+		{
+			text.Append("\n\n已发布影响说明：\n").Append(record.ImpactSummary.Trim());
+		}
+		string effects = BuildNpcPolicyCommittedEffectText(record?.Effects, allowLegacyCommittedEffectsWithoutIds);
+		if (!string.IsNullOrWhiteSpace(effects))
+		{
+			text.Append("\n\n已验证落地效果：\n").Append(effects);
+		}
+		return text.ToString();
+	}
+
+	private static string BuildNpcPolicyCommittedEffectText(IEnumerable<NpcRulerPolicyEffectDto> effects, bool allowLegacyCommittedEffectsWithoutIds)
+	{
+		List<string> lines = new List<string>();
+		foreach (NpcRulerPolicyEffectDto effect in effects ?? Enumerable.Empty<NpcRulerPolicyEffectDto>())
+		{
+			if (effect == null || effect.DurationDays <= 0 || (!allowLegacyCommittedEffectsWithoutIds && string.IsNullOrWhiteSpace(effect.EffectId)))
+			{
+				continue;
+			}
+			List<string> values = BuildPublishedPolicyEffectValues(
+				effect.ProsperityDailyDeltaPerTown,
+				effect.FoodDailyDeltaPerTown,
+				effect.HearthDailyDeltaPerVillage,
+				effect.LoyaltyDailyDeltaPerTown,
+				effect.SecurityDailyDeltaPerTown,
+				effect.MilitiaDailyDeltaPerTown,
+				effect.TownTaxPercent,
+				effect.ConstructionSpeedPercent,
+				effect.KingdomStabilityDailyDelta,
+				effect.VolunteerProductionPercent,
+				effect.VolunteerUpgradeRatePercent,
+				effect.ClanInfluenceDailyDelta);
+			string target = FirstNonEmpty(effect.TargetKingdomName, effect.TargetKingdomId, "未指定目标");
+			string subject = string.IsNullOrWhiteSpace(effect.SubjectKind) ? "" : "；对象=" + effect.SubjectKind.Trim();
+			lines.Add("- " + target + subject
+				+ "；期限=" + Math.Max(0, effect.DurationDays).ToString(CultureInfo.InvariantCulture) + "天"
+				+ "；效果=" + (values.Count == 0 ? "无持续数值变化" : string.Join("/", values))
+				+ (string.IsNullOrWhiteSpace(effect.Reason) ? "" : "；说明=" + effect.Reason.Trim()));
+		}
+		return string.Join("\n", lines);
+	}
+
+	private static string BuildNpcPolicyEffectStateChangeText(NpcRulerPolicyRecord record)
+	{
+		List<string> states = (record?.Effects ?? new List<NpcRulerPolicyEffectDto>())
+			.Where(effect => effect != null)
+			.Select(effect => "- " + FirstNonEmpty(effect.TargetKingdomName, effect.TargetKingdomId, "未指定目标")
+				+ "：" + (effect.IsEnded || effect.RemainingDays <= 0 ? "已结束" : "有效")
+				+ "，剩余 " + Math.Max(0, effect.RemainingDays).ToString(CultureInfo.InvariantCulture) + " 天")
+			.ToList();
+		return states.Count == 0 ? "" : "效果状态：\n" + string.Join("\n", states);
+	}
+
+	private static List<string> BuildPublishedPolicyEffectValues(
+		float prosperity,
+		float food,
+		float hearth,
+		float loyalty,
+		float security,
+		float militia,
+		float townTaxPercent,
+		float constructionSpeedPercent,
+		float kingdomStability,
+		float volunteerProductionPercent,
+		float volunteerUpgradeRatePercent,
+		float clanInfluenceDailyDelta)
+	{
+		List<string> values = new List<string>();
+		void Add(string label, float value, string suffix)
+		{
+			if (!float.IsNaN(value) && !float.IsInfinity(value) && Math.Abs(value) > 0.0001f)
+			{
+				values.Add(label + FormatSigned(value) + suffix);
+			}
+		}
+		Add("繁荣/日", prosperity, "");
+		Add("食物/日", food, "");
+		Add("炉火/日", hearth, "");
+		Add("忠诚/日", loyalty, "");
+		Add("治安/日", security, "");
+		Add("民兵/日", militia, "");
+		Add("税收", townTaxPercent, "%");
+		Add("建设", constructionSpeedPercent, "%");
+		Add("稳定度", kingdomStability, "");
+		Add("志愿兵产出", volunteerProductionPercent, "%");
+		Add("志愿兵升级", volunteerUpgradeRatePercent, "%");
+		Add("氏族影响力/日", clanInfluenceDailyDelta, "");
+		return values;
+	}
+
+	private bool HasPublishedPolicyArtifact(string policyId)
+	{
+		string streamKey = (policyId ?? "").Trim() + "\u001fpolicy_published";
+		lock (_publishedPolicyArtifactLedgerGate)
+		{
+			return _publishedPolicyArtifactLastFingerprintByStream.ContainsKey(streamKey);
+		}
 	}
 
 	public static bool TryRegisterPolicyActiveEffectForExternal(PolicyActiveEffectRegistration registration, out string effectId, out string failureReason)
@@ -926,6 +1488,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 	private void OnGameLoaded(CampaignGameStarter starter)
 	{
 		ApplyPolicySettlementModelPatchesOnce();
+		BackfillPublishedPolicyArtifactsFromExistingRecords();
 		EnsureDynamicPoliciesRegistered(reconcilePending: false);
 		ReconcileEliminatedKingdomPoliciesAfterLoad();
 	}
@@ -1050,7 +1613,15 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 				continue;
 			}
 			string endReason = policyOwnerDestroyed ? ownerEndReason : "效果目标国家已经灭亡";
-			MarkPolicyRecordEffectEnded(effect, endReason, queueNaturalExpiry: !policyOwnerDestroyed);
+			MarkPolicyRecordEffectEnded(effect, endReason, queueNaturalExpiry: false);
+			if (!policyOwnerDestroyed && effectTargetDestroyed)
+			{
+				RecordPolicySnapshotForRecordId(
+					effect.RecordId,
+					"target_lost",
+					"政策效果目标国家 " + FirstNonEmpty(effect.TargetKingdomName, effect.TargetKingdomId, "未知") + " 已经灭亡，该目标效果已结束。");
+				TryQueueNaturalExpiryAbolition(effect.RecordId, effect.EffectId);
+			}
 			RemoveActivePolicyEffect(item.Key);
 			endedTargetEffectCount++;
 		}
@@ -1089,7 +1660,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			RejectDynamicPolicyAdoption(data, policy, reason);
 			return;
 		}
-		CompleteDynamicPolicyAbolition(data, policy, reason);
+		CompleteDynamicPolicyAbolition(data, policy, reason, "target_lost");
 	}
 
 	private void InitializeLoadedDynamicPoliciesBeforeNonReadyCleanup()
@@ -1149,7 +1720,338 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 	private void OnSessionLaunched(CampaignGameStarter starter)
 	{
 		ApplyPolicySettlementModelPatchesOnce();
+		BackfillPublishedPolicyArtifactsFromExistingRecords();
 		EnsureDynamicPoliciesRegistered(reconcilePending: true);
+	}
+
+	private void BackfillPublishedPolicyArtifactsFromExistingRecords()
+	{
+		lock (_publishedPolicyArtifactLedgerGate)
+		{
+			if (_publishedPolicyArtifactLegacyBackfillVersion >= PublishedPolicyArtifactLegacyBackfillVersion
+				|| _publishedPolicyArtifactLegacyBackfillInProgress)
+			{
+				return;
+			}
+			_publishedPolicyArtifactLegacyBackfillInProgress = true;
+		}
+		try
+		{
+			List<PublishedPolicyArtifactBackfillItem> items = new List<PublishedPolicyArtifactBackfillItem>();
+			List<LocalPolicyRecordSaveData> localRecords = LoadLocalPolicyRecords()
+				.Where(record => record != null
+					&& record.PublicationCommitted
+					&& !string.IsNullOrWhiteSpace(record.RecordId)
+					&& !string.IsNullOrWhiteSpace(record.PolicyContent))
+				.ToList();
+			HashSet<string> localRecordIds = new HashSet<string>(localRecords.Select(record => record.RecordId), StringComparer.OrdinalIgnoreCase);
+			foreach (LocalPolicyRecordSaveData record in localRecords)
+			{
+				LocalPolicyRecordSaveData captured = record;
+				items.Add(new PublishedPolicyArtifactBackfillItem
+				{
+					OccurredDay = Math.Max(0, captured.SubmittedDay),
+					CreatedUtcTicks = captured.CreatedUtcTicks,
+					StableKey = "local:" + captured.RecordId + ":000:published",
+					Append = () => RecordLocalPolicyArtifact("published", captured.RecordId, captured.TargetFiefIds)
+				});
+				int renewalOrdinal = 0;
+				foreach (LocalPolicyRenewalSaveData renewal in (captured.Renewals ?? new List<LocalPolicyRenewalSaveData>())
+					.Where(item => item != null)
+					.OrderBy(item => item.Day)
+					.ThenBy(item => item.DateText ?? "", StringComparer.Ordinal))
+				{
+					LocalPolicyRenewalSaveData capturedRenewal = renewal;
+					int capturedOrdinal = ++renewalOrdinal;
+					items.Add(new PublishedPolicyArtifactBackfillItem
+					{
+						OccurredDay = Math.Max(Math.Max(0, captured.SubmittedDay), capturedRenewal.Day),
+						CreatedUtcTicks = AddLegacyArtifactTickOffset(captured.CreatedUtcTicks, capturedOrdinal),
+						StableKey = "local:" + captured.RecordId + ":100:renewal:" + capturedOrdinal.ToString("D6", CultureInfo.InvariantCulture),
+						Append = () => AppendLegacyLocalRenewalArtifact(captured, capturedRenewal, capturedOrdinal)
+					});
+				}
+				int lastKnownDay = Math.Max(Math.Max(0, captured.SubmittedDay),
+					(captured.Renewals ?? new List<LocalPolicyRenewalSaveData>()).Where(item => item != null).Select(item => item.Day).DefaultIfEmpty(0).Max());
+				if (captured.PublicFeedbackNoticeShown && !string.IsNullOrWhiteSpace(captured.PublicFeedback))
+				{
+					items.Add(new PublishedPolicyArtifactBackfillItem
+					{
+						OccurredDay = lastKnownDay,
+						CreatedUtcTicks = AddLegacyArtifactTickOffset(captured.CreatedUtcTicks, 1000001),
+						StableKey = "local:" + captured.RecordId + ":800:feedback",
+						Append = () => AppendLegacyLocalFeedbackArtifact(captured)
+					});
+				}
+				if (TryMapLegacyLocalTerminalEvent(captured.Status, out string terminalKind))
+				{
+					string capturedTerminalKind = terminalKind;
+					items.Add(new PublishedPolicyArtifactBackfillItem
+					{
+						OccurredDay = lastKnownDay,
+						CreatedUtcTicks = AddLegacyArtifactTickOffset(captured.CreatedUtcTicks, 1000002),
+						StableKey = "local:" + captured.RecordId + ":900:terminal",
+						Append = () => AppendLegacyLocalTerminalArtifact(captured, capturedTerminalKind)
+					});
+				}
+			}
+			foreach (NpcRulerPolicyRecord record in NpcRulerPolicyBehavior.GetRecentPolicyRecordsForExternal(null, 200)
+				.Where(record => record != null
+					&& !localRecordIds.Contains(record.PolicyId ?? "")
+					&& !string.IsNullOrWhiteSpace(record.PolicyId)
+					&& !string.IsNullOrWhiteSpace(record.PolicyContent)))
+			{
+				NpcRulerPolicyRecord captured = record;
+				items.Add(new PublishedPolicyArtifactBackfillItem
+				{
+					OccurredDay = Math.Max(0, captured.Day),
+					CreatedUtcTicks = captured.CreatedUtcTicks,
+					StableKey = "npc:" + captured.PolicyId + ":000:published",
+					Append = () => RecordNpcPolicyPublishedArtifact(captured, allowLegacyCommittedEffectsWithoutIds: true)
+				});
+				if (IsLegacyNpcPublishedPolicyRecord(captured)
+					&& captured.PublicFeedbackNoticeShown
+					&& !string.IsNullOrWhiteSpace(captured.PublicFeedback))
+				{
+					items.Add(new PublishedPolicyArtifactBackfillItem
+					{
+						OccurredDay = Math.Max(0, captured.Day),
+						CreatedUtcTicks = AddLegacyArtifactTickOffset(captured.CreatedUtcTicks, 1000001),
+						StableKey = "npc:" + captured.PolicyId + ":800:feedback",
+						Append = () => AppendLegacyNpcFeedbackArtifact(captured)
+					});
+				}
+				if (TryMapLegacyNpcTerminalEvent(captured, out string npcTerminalKind, out string npcTerminalDetail))
+				{
+					string capturedTerminalKind = npcTerminalKind;
+					string capturedTerminalDetail = npcTerminalDetail;
+					items.Add(new PublishedPolicyArtifactBackfillItem
+					{
+						OccurredDay = Math.Max(0, captured.Day),
+						CreatedUtcTicks = AddLegacyArtifactTickOffset(captured.CreatedUtcTicks, 1000002),
+						StableKey = "npc:" + captured.PolicyId + ":900:terminal",
+						Append = () => AppendLegacyNpcTerminalArtifact(captured, capturedTerminalKind, capturedTerminalDetail)
+					});
+				}
+			}
+			foreach (PublishedPolicyArtifactBackfillItem item in items
+				.OrderBy(item => item.OccurredDay)
+				.ThenBy(item => item.CreatedUtcTicks)
+				.ThenBy(item => item.StableKey, StringComparer.Ordinal))
+			{
+				item.Append?.Invoke();
+			}
+			lock (_publishedPolicyArtifactLedgerGate)
+			{
+				_publishedPolicyArtifactLegacyBackfillVersion = PublishedPolicyArtifactLegacyBackfillVersion;
+				_publishedPolicyArtifactLegacyBackfillInProgress = false;
+			}
+			PolicySystemLog.Write("PolicyArtifact", "legacy-backfill-complete", "candidates=" + items.Count.ToString(CultureInfo.InvariantCulture));
+		}
+		catch (Exception ex)
+		{
+			lock (_publishedPolicyArtifactLedgerGate)
+			{
+				_publishedPolicyArtifactLegacyBackfillInProgress = false;
+			}
+			PolicySystemLog.Write("PolicyArtifact", "legacy-backfill-failed", ex.ToString());
+		}
+	}
+
+	private static long AddLegacyArtifactTickOffset(long createdUtcTicks, int offset)
+	{
+		if (createdUtcTicks <= 0L)
+		{
+			return 0L;
+		}
+		long safeOffset = Math.Max(0, offset);
+		return createdUtcTicks > long.MaxValue - safeOffset ? createdUtcTicks : createdUtcTicks + safeOffset;
+	}
+
+	private bool AppendLegacyPolicyArtifactIfMissing(
+		string policyId,
+		string eventKind,
+		int occurredDay,
+		string gameDate,
+		long createdUtcTicks,
+		string scopeKind,
+		string kingdomId,
+		string kingdomName,
+		string policyName,
+		string publishedText)
+	{
+		string id = (policyId ?? "").Trim();
+		string kind = (eventKind ?? "").Trim().ToLowerInvariant();
+		string text = (publishedText ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		string contentHash = ComputePublishedPolicyArtifactHash(text);
+		lock (_publishedPolicyArtifactLedgerGate)
+		{
+			if (_publishedPolicyArtifactEntries.Any(entry => entry != null
+				&& string.Equals(entry.PolicyId, id, StringComparison.OrdinalIgnoreCase)
+				&& string.Equals(entry.EventKind, kind, StringComparison.Ordinal)
+				&& string.Equals(entry.ContentHash, contentHash, StringComparison.Ordinal)
+				&& string.Equals(entry.PublishedText?.Trim(), text, StringComparison.Ordinal)))
+			{
+				return false;
+			}
+		}
+		return AppendPublishedPolicyArtifact(policyId, kind, occurredDay, gameDate, createdUtcTicks,
+			scopeKind, kingdomId, kingdomName, policyName, text);
+	}
+
+	private void AppendLegacyLocalRenewalArtifact(LocalPolicyRecordSaveData record, LocalPolicyRenewalSaveData renewal, int ordinal)
+	{
+		if (record == null || renewal == null)
+		{
+			return;
+		}
+		StringBuilder text = new StringBuilder();
+		text.AppendLine("事件：renewed");
+		text.Append("结果：[从旧存档恢复的已确认续期成品] 第")
+			.Append(Math.Max(1, ordinal).ToString(CultureInfo.InvariantCulture))
+			.Append("次续期，增加 ")
+			.Append(Math.Max(0, renewal.AddedDays).ToString(CultureInfo.InvariantCulture))
+			.Append(" 天");
+		if (renewal.PaidGold > 0)
+		{
+			text.Append("；支付 ").Append(renewal.PaidGold.ToString(CultureInfo.InvariantCulture)).Append(" 第纳尔");
+		}
+		if (renewal.IndependenceCost > 0 || string.Equals(record.ScopeKind, PolicyScopeVassal, StringComparison.OrdinalIgnoreCase))
+		{
+			text.Append("；独立度 ")
+				.Append(renewal.IndependenceBefore.ToString(CultureInfo.InvariantCulture))
+				.Append('→')
+				.Append(renewal.IndependenceAfter.ToString(CultureInfo.InvariantCulture));
+		}
+		AppendLegacyLocalSnapshotArtifact(record, Math.Max(Math.Max(0, record.SubmittedDay), renewal.Day),
+			FirstNonEmpty(renewal.DateText, record.DateText), AddLegacyArtifactTickOffset(record.CreatedUtcTicks, ordinal), text.ToString());
+	}
+
+	private void AppendLegacyLocalFeedbackArtifact(LocalPolicyRecordSaveData record)
+	{
+		if (record == null || !record.PublicFeedbackNoticeShown || string.IsNullOrWhiteSpace(record.PublicFeedback))
+		{
+			return;
+		}
+		int lastKnownDay = Math.Max(Math.Max(0, record.SubmittedDay),
+			(record.Renewals ?? new List<LocalPolicyRenewalSaveData>()).Where(item => item != null).Select(item => item.Day).DefaultIfEmpty(0).Max());
+		AppendLegacyLocalSnapshotArtifact(record, lastKnownDay, record.DateText,
+			AddLegacyArtifactTickOffset(record.CreatedUtcTicks, 1000001),
+			"事件：public_feedback_shown\n结果：[从旧存档恢复；已确认展示，具体展示时间未知]\n" + record.PublicFeedback.Trim());
+	}
+
+	private void AppendLegacyLocalTerminalArtifact(LocalPolicyRecordSaveData record, string terminalKind)
+	{
+		if (record == null || string.IsNullOrWhiteSpace(terminalKind))
+		{
+			return;
+		}
+		int lastKnownDay = Math.Max(Math.Max(0, record.SubmittedDay),
+			(record.Renewals ?? new List<LocalPolicyRenewalSaveData>()).Where(item => item != null).Select(item => item.Day).DefaultIfEmpty(0).Max());
+		string result = "事件：" + terminalKind
+			+ "\n结果：[从旧存档恢复的已确认最终状态；具体发生时间未知] 状态=" + FirstNonEmpty(record.Status, terminalKind)
+			+ (string.IsNullOrWhiteSpace(record.EndReason) ? "" : "；原因=" + record.EndReason.Trim());
+		AppendLegacyLocalSnapshotArtifact(record, lastKnownDay, record.DateText,
+			AddLegacyArtifactTickOffset(record.CreatedUtcTicks, 1000002), result);
+	}
+
+	private void AppendLegacyLocalSnapshotArtifact(LocalPolicyRecordSaveData record, int occurredDay, string gameDate, long createdUtcTicks, string text)
+	{
+		Kingdom currentKingdom = GetPlayerKingdom();
+		bool isVassal = string.Equals(record?.ScopeKind, PolicyScopeVassal, StringComparison.OrdinalIgnoreCase);
+		string kingdomId = isVassal ? record?.TargetKingdomId : FirstNonEmpty(record?.IssuerKingdomId, currentKingdom?.StringId);
+		string kingdomName = isVassal ? record?.TargetKingdomName : FirstNonEmpty(record?.IssuerKingdomName, GetKingdomName(currentKingdom));
+		AppendLegacyPolicyArtifactIfMissing(record?.RecordId, "policy_snapshot", occurredDay, gameDate, createdUtcTicks,
+			record?.ScopeKind, kingdomId, kingdomName, record?.PolicyName, text);
+	}
+
+	private static bool TryMapLegacyLocalTerminalEvent(string status, out string eventKind)
+	{
+		string normalized = (status ?? "").Trim().ToLowerInvariant();
+		eventKind = normalized switch
+		{
+			LocalPolicyStatusExpired => "expired",
+			LocalPolicyStatusTargetsLost => "target_lost",
+			LocalPolicyStatusAbolished => "abolished",
+			LocalPolicyStatusRelationshipEnded => "relationship_ended",
+			_ => ""
+		};
+		return !string.IsNullOrWhiteSpace(eventKind);
+	}
+
+	private static bool IsLegacyNpcPublishedPolicyRecord(NpcRulerPolicyRecord record)
+	{
+		string status = (record?.AgendaStatus ?? "").Trim();
+		bool publishedStatus = string.IsNullOrWhiteSpace(status)
+			|| string.Equals(status, DynamicPolicyStatusActive, StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(status, DynamicPolicyStatusExpiryVotePending, StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(status, DynamicPolicyStatusAbolished, StringComparison.OrdinalIgnoreCase);
+		return record != null
+			&& publishedStatus
+			&& !string.IsNullOrWhiteSpace(record.PolicyId)
+			&& (record.Effects ?? new List<NpcRulerPolicyEffectDto>()).Any(effect => effect != null && effect.DurationDays > 0);
+	}
+
+	private static bool TryMapLegacyNpcTerminalEvent(NpcRulerPolicyRecord record, out string eventKind, out string detail)
+	{
+		eventKind = "";
+		detail = "";
+		if (!IsLegacyNpcPublishedPolicyRecord(record))
+		{
+			return false;
+		}
+		if (string.Equals(record.AgendaStatus, DynamicPolicyStatusAbolished, StringComparison.OrdinalIgnoreCase))
+		{
+			eventKind = "abolished";
+			detail = "议程状态已确认为 abolished。";
+			return true;
+		}
+		if (string.Equals(record.AgendaStatus, DynamicPolicyStatusExpiryVotePending, StringComparison.OrdinalIgnoreCase))
+		{
+			eventKind = "expired";
+			detail = "持续效果已经到期，议程状态为 expiry_vote_pending。";
+			return true;
+		}
+		List<NpcRulerPolicyEffectDto> effects = record.Effects ?? new List<NpcRulerPolicyEffectDto>();
+		if (effects.Count > 0 && effects.All(effect => effect == null || effect.IsEnded || effect.RemainingDays <= 0))
+		{
+			eventKind = "effects_ended";
+			detail = "全部已存档持续效果均已结束；具体终止原因未知。";
+			return true;
+		}
+		return false;
+	}
+
+	private void AppendLegacyNpcFeedbackArtifact(NpcRulerPolicyRecord record)
+	{
+		if (!IsLegacyNpcPublishedPolicyRecord(record)
+			|| !record.PublicFeedbackNoticeShown
+			|| string.IsNullOrWhiteSpace(record.PublicFeedback))
+		{
+			return;
+		}
+		AppendLegacyPolicyArtifactIfMissing(record.PolicyId, "policy_snapshot", Math.Max(0, record.Day), record.GameDate,
+			AddLegacyArtifactTickOffset(record.CreatedUtcTicks, 1000001),
+			string.IsNullOrWhiteSpace(record.PolicyKind) ? PolicyScopeKingdom : record.PolicyKind,
+			record.KingdomId, record.KingdomName, record.PolicyName,
+			"事件：public_feedback_shown\n结果：[从旧存档恢复；已确认展示，具体展示时间未知]\n" + record.PublicFeedback.Trim());
+	}
+
+	private void AppendLegacyNpcTerminalArtifact(NpcRulerPolicyRecord record, string terminalKind, string terminalDetail)
+	{
+		if (!IsLegacyNpcPublishedPolicyRecord(record) || string.IsNullOrWhiteSpace(terminalKind))
+		{
+			return;
+		}
+		AppendLegacyPolicyArtifactIfMissing(record.PolicyId, "policy_snapshot", Math.Max(0, record.Day), record.GameDate,
+			AddLegacyArtifactTickOffset(record.CreatedUtcTicks, 1000002),
+			string.IsNullOrWhiteSpace(record.PolicyKind) ? PolicyScopeKingdom : record.PolicyKind,
+			record.KingdomId, record.KingdomName, record.PolicyName,
+			"事件：" + terminalKind + "\n结果：[从旧存档恢复的已确认最终状态；具体发生时间未知] " + (terminalDetail ?? "").Trim());
 	}
 
 	private static void ApplyPolicySettlementModelPatchesOnce()
@@ -1429,6 +2331,10 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		TrimLocalPolicyRecords();
 		string impactText = BuildImpactPopupText(request, feedback, application, costDeducted: true);
 		ShowPolicySuccessResultPopup("local:" + recordId, impactText);
+		if (!string.IsNullOrWhiteSpace(feedback))
+		{
+			RecordLocalPolicyPublicFeedbackShown(recordId, sourceEffect.TargetFiefIds, feedback);
+		}
 		PolicySystemLog.Write("Local", "published", BuildPolicyRecordLogPrefix(request, recordId)
 			+ " sourceTargets=" + string.Join(",", sourceEffect.TargetFiefIds)
 			+ " effectCount=" + application.KingdomEffects.Count.ToString(CultureInfo.InvariantCulture)
@@ -1964,7 +2870,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		}
 	}
 
-	private void CompleteDynamicPolicyAbolition(DynamicPolicySaveData data, PolicyObject policy, string reason)
+	private void CompleteDynamicPolicyAbolition(DynamicPolicySaveData data, PolicyObject policy, string reason, string artifactChangeKind = "abolished")
 	{
 		if (data == null)
 		{
@@ -1978,6 +2884,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		}
 		NpcRulerPolicyBehavior.UpdatePolicyAgendaStatusForExternal(data.RecordId, DynamicPolicyStatusAbolished);
 		TryUnregisterDynamicPolicyObject(data, policy);
+		RecordPolicySnapshotForRecordId(data.RecordId, artifactChangeKind, reason);
 		PolicySystemLog.Write("Agenda", "abolished", "recordId=" + data.RecordId + " policy=" + data.PolicyObjectId + " reason=" + (reason ?? ""));
 	}
 
@@ -2182,6 +3089,17 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			}
 		}
 		RegisterUnifiedPlayerPolicy(request, result, feedback, application, recordId, DateTime.UtcNow.Ticks, effectsEnded: brokeAway);
+		InvokeLocalPolicyLifecycleMemoryHook("published", recordId, Array.Empty<string>());
+		if (brokeAway)
+		{
+			RecordLocalPolicyArtifact(
+				"relationship_ended",
+				recordId,
+				Array.Empty<string>(),
+				"本次政策发布使独立度 " + appliedBefore.ToString(CultureInfo.InvariantCulture)
+				+ "→" + independenceAfter.ToString(CultureInfo.InvariantCulture)
+				+ "，达到脱离阈值；臣属关系和全部持续效果已经终止。");
+		}
 		TrimLocalPolicyRecords();
 		string impactText = BuildImpactPopupText(request, feedback, application, costDeducted: false)
 			+ "\n\n独立度：" + appliedBefore.ToString(CultureInfo.InvariantCulture)
@@ -2191,6 +3109,10 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			+ "\n当前脱离阈值：" + breakawayThreshold.ToString(CultureInfo.InvariantCulture) + "（" + rulerName + "关系 " + FormatSigned(rulerRelation) + "）"
 			+ (brokeAway ? "\n目标附庸国已达到脱离阈值；本次附庸国政策的一次性稳定度结算已撤销，臣属关系和全部持续效果已经终止。" : "");
 		ShowPolicySuccessResultPopup("vassal:" + recordId, impactText);
+		if (!string.IsNullOrWhiteSpace(feedback))
+		{
+			RecordLocalPolicyPublicFeedbackShown(recordId, Array.Empty<string>(), feedback);
+		}
 		PolicySystemLog.Write("VassalPolicy", "published", BuildPolicyRecordLogPrefix(request, recordId)
 			+ " target=" + (request.PlayerKingdomId ?? "")
 			+ " independence=" + appliedBefore.ToString(CultureInfo.InvariantCulture) + "->" + independenceAfter.ToString(CultureInfo.InvariantCulture)
@@ -2670,7 +3592,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		{
 			owner.RemovePolicy(policy);
 		}
-		CompleteDynamicPolicyAbolition(data, policy, reason);
+		CompleteDynamicPolicyAbolition(data, policy, reason, "expired");
 	}
 
 	private void RejectDynamicPolicyAdoption(DynamicPolicySaveData data, PolicyObject policy, string reason)
@@ -2725,6 +3647,18 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			if (hasTimedEffect)
 			{
 				ActivatePolicyEffects(request, application, data.RecordId, applyKingdomStabilityOnce: !isRenewal && recordWritten);
+			}
+			if (recordWritten)
+			{
+				NpcRulerPolicyRecord committedRecord = NpcRulerPolicyBehavior.GetPolicyRecordForExternal(data.RecordId);
+				if (isRenewal)
+				{
+					RecordNpcPolicySnapshotArtifact(committedRecord, "renewed", "续期议程通过，政策效果已按新周期提交。");
+				}
+				else
+				{
+					RecordNpcPolicyPublishedArtifact(committedRecord);
+				}
 			}
 			if (recordWritten)
 			{
@@ -2954,6 +3888,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		{
 			return;
 		}
+		RecordPolicySnapshotForRecordId(data.RecordId, "expired", "政策全部持续效果已经自然到期。");
 		data.Status = DynamicPolicyStatusExpiryVotePending;
 		StoreDynamicPolicy(data);
 		NpcRulerPolicyBehavior.UpdatePolicyAgendaStatusForExternal(data.RecordId, DynamicPolicyStatusExpiryVotePending);
@@ -2966,6 +3901,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			NpcRulerPolicyBehavior.UpdatePolicyAgendaStatusForExternal(data.RecordId, DynamicPolicyStatusActive);
 			return;
 		}
+		RecordPolicySnapshotForRecordId(data.RecordId, "expiry_vote_pending", "政策已自然到期，正式进入到期废止/续期表决。");
 		PolicySystemLog.Write("Agenda", "expiry-abolition-submitted", "recordId=" + data.RecordId + " policy=" + data.PolicyObjectId);
 	}
 
@@ -3148,6 +4084,11 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			TrimPolicyRecordHistory();
 			Dictionary<string, string> historyStore = CampaignSaveChunkHelper.FlattenStringDictionary(_policyRecordHistory, SaveKeyPolicyRecordHistory, "CustomPolicyHistory");
 			dataStore.SyncData(SaveKeyPolicyRecordHistory, ref historyStore);
+			Dictionary<string, string> artifactLedgerStore = CampaignSaveChunkHelper.FlattenStringDictionary(
+				BuildPublishedPolicyArtifactLedgerStorageForSave(),
+				SaveKeyPublishedPolicyArtifactLedger,
+				"PublishedPolicyArtifactLedger");
+			dataStore.SyncData(SaveKeyPublishedPolicyArtifactLedger, ref artifactLedgerStore);
 			TrimLocalPolicyRecords();
 			Dictionary<string, string> localPolicyStore = CampaignSaveChunkHelper.FlattenStringDictionary(_localPolicyRecords, SaveKeyLocalPolicyRecords, "LocalPolicyRecords");
 			dataStore.SyncData(SaveKeyLocalPolicyRecords, ref localPolicyStore);
@@ -3175,6 +4116,9 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		_activePolicyPercentEffectCacheDirty = true;
 		_dynamicPolicyRegistry.Clear();
 		_policyLifecycleStates.Clear();
+		Dictionary<string, string> storedArtifactLedger = new Dictionary<string, string>(StringComparer.Ordinal);
+		dataStore.SyncData(SaveKeyPublishedPolicyArtifactLedger, ref storedArtifactLedger);
+		LoadPublishedPolicyArtifactLedger(CampaignSaveChunkHelper.RestoreStringDictionary(storedArtifactLedger, "PublishedPolicyArtifactLedger"));
 		Dictionary<string, string> storedHistory = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		dataStore.SyncData(SaveKeyPolicyRecordHistory, ref storedHistory);
 		foreach (KeyValuePair<string, string> item in CampaignSaveChunkHelper.RestoreStringDictionary(storedHistory, "CustomPolicyHistory"))
@@ -3304,6 +4248,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		_activePolicyRuntimeGeneration++;
 		_pendingActivePolicyEffectWork.Clear();
 		_queuedActivePolicyEffectIds.Clear();
+		_deferredVassalRelationshipArtifactRecordIds.Clear();
 		_activePolicyEffectModelCache.Clear();
 		_activePolicyEffectRuntimeCache.Clear();
 		_settlementByIdRuntimeCache.Clear();
@@ -4847,7 +5792,12 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 				}
 				else
 				{
-					MarkPolicyRecordEffectEnded(activeEffect, activeEffect.EndReason);
+					MarkPolicyRecordEffectEnded(activeEffect, activeEffect.EndReason, queueNaturalExpiry: false);
+					RecordPolicySnapshotForRecordId(
+						activeEffect.RecordId,
+						"target_lost",
+						"政策效果目标国家 " + FirstNonEmpty(activeEffect.TargetKingdomName, activeEffect.TargetKingdomId, "未知") + " 不存在或已经消亡，该目标效果已结束。");
+					TryQueueNaturalExpiryAbolition(activeEffect.RecordId, activeEffect.EffectId);
 				}
 				RemoveActivePolicyEffect(key);
 				PolicyDebugLog("daily-ended-missing-target", "effectId=" + activeEffect.EffectId
@@ -4929,7 +5879,6 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 						|| IsSourceVassalPolicyEffect(activeEffect))
 					{
 						MarkLocalPolicyEnded(activeEffect, LocalPolicyStatusExpired, "自然到期");
-						if (isLocalEffect) InvokeLocalPolicyLifecycleMemoryHook("expired", activeEffect.RecordId, activeEffect.TargetFiefIds);
 					}
 				}
 				else
@@ -5331,7 +6280,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			?? validEffects.FirstOrDefault();
 		LocalPolicyRecordSaveData record = new LocalPolicyRecordSaveData
 		{
-			Version = 3,
+			Version = 4,
 			ScopeKind = PolicyScopeLocal,
 			RecordId = recordId,
 			ActiveEffectId = sourceEffect?.EffectId ?? "",
@@ -5343,6 +6292,9 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			PublicFeedback = CleanPolicyDisplayText(feedback ?? ""),
 			ImpactSummary = CleanPolicyDisplayText(result?.MainAssessment?.ImpactSummary ?? ""),
 			Status = LocalPolicyStatusActive,
+			PublicationCommitted = true,
+			IssuerKingdomId = request?.PlayerKingdomId ?? "",
+			IssuerKingdomName = request?.PlayerKingdomName ?? "",
 			UseAiEvaluatedCost = request?.UseAiEvaluatedCost == true,
 			RequiredGoldCost = Math.Max(0, request?.RequiredGoldCost ?? 0),
 			InitialActualGoldCost = Math.Max(0, request?.GoldCost ?? 0),
@@ -5376,7 +6328,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			?? validEffects.FirstOrDefault();
 		LocalPolicyRecordSaveData record = new LocalPolicyRecordSaveData
 		{
-			Version = 3,
+			Version = 4,
 			ScopeKind = PolicyScopeVassal,
 			RecordId = recordId,
 			ActiveEffectId = sourceEffect?.EffectId ?? "",
@@ -5388,6 +6340,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			PublicFeedback = CleanPolicyDisplayText(feedback ?? ""),
 			ImpactSummary = CleanPolicyDisplayText(result?.MainAssessment?.ImpactSummary ?? ""),
 			Status = LocalPolicyStatusActive,
+			PublicationCommitted = false,
 			TargetKingdomId = request?.PlayerKingdomId ?? "",
 			TargetKingdomName = request?.PlayerKingdomName ?? "",
 			IssuerKingdomId = request?.IssuerKingdomId ?? "",
@@ -5433,6 +6386,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		record.TotalIndependenceCost = Math.Max(record.TotalIndependenceCost, record.InitialIndependenceCost);
 		record.VassalQualityIndependenceDelta = request?.VassalQualityIndependenceDelta ?? record.VassalQualityIndependenceDelta;
 		record.IndependenceReason = request?.VassalIndependenceReason ?? record.IndependenceReason;
+		record.PublicationCommitted = true;
 		_localPolicyRecords[record.RecordId] = JsonConvert.SerializeObject(record);
 	}
 
@@ -5502,6 +6456,13 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			RemoveActivePolicyEffect(item.Key);
 		}
 		_activePolicyEffectModelCache.Clear();
+		foreach (string recordId in affectedRecordIds)
+		{
+			if (!_deferredVassalRelationshipArtifactRecordIds.Contains(recordId))
+			{
+				InvokeLocalPolicyLifecycleMemoryHook("relationship_ended", recordId, Array.Empty<string>());
+			}
+		}
 		PolicySystemLog.Write("VassalPolicy", "relationship-ended", "target=" + targetId + " records=" + affectedRecordIds.Count.ToString(CultureInfo.InvariantCulture) + " reason=" + endReason);
 	}
 
@@ -5702,6 +6663,14 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		{
 			PolicyDebugLog("local-end-update-failed", ex.Message);
 		}
+		string artifactKind = string.Equals(status, LocalPolicyStatusTargetsLost, StringComparison.OrdinalIgnoreCase)
+			? "target_lost"
+			: string.Equals(status, LocalPolicyStatusRelationshipEnded, StringComparison.OrdinalIgnoreCase)
+				? "relationship_ended"
+				: string.Equals(status, LocalPolicyStatusAbolished, StringComparison.OrdinalIgnoreCase)
+					? "abolished"
+					: "expired";
+		InvokeLocalPolicyLifecycleMemoryHook(artifactKind, activeEffect.RecordId, activeEffect.TargetFiefIds);
 		if (IsVassalActivePolicyEffect(activeEffect))
 		{
 			RemoveVassalPolicyEffectsByRecordId(activeEffect.RecordId);
@@ -8485,7 +9454,17 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 	private static LocalPolicyRecordSaveData NormalizeLocalPolicyRecord(LocalPolicyRecordSaveData record)
 	{
 		if (record == null) return null;
-		record.Version = Math.Max(3, record.Version);
+		int loadedVersion = record.Version;
+		if (loadedVersion < 4)
+		{
+			// v1-v3 normally represented successful publications. One legacy vassal rollback path
+			// persisted the provisional record before independence settlement failed; exclude that
+			// exact failure rather than promoting it into final diplomatic history.
+			record.PublicationCommitted = !(string.Equals(record.ScopeKind, PolicyScopeVassal, StringComparison.OrdinalIgnoreCase)
+				&& string.Equals(record.Status, LocalPolicyStatusRelationshipEnded, StringComparison.OrdinalIgnoreCase)
+				&& string.Equals(record.EndReason, "独立度结算时臣属关系失效", StringComparison.Ordinal));
+		}
+		record.Version = Math.Max(4, record.Version);
 		record.ScopeKind = string.Equals(record.ScopeKind ?? "", PolicyScopeVassal, StringComparison.OrdinalIgnoreCase)
 			? PolicyScopeVassal
 			: PolicyScopeLocal;
@@ -9759,6 +10738,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			record.TargetFiefIds.Clear();
 			record.RemainingDays = 0;
 			_localPolicyRecords[record.RecordId] = JsonConvert.SerializeObject(record);
+			InvokeLocalPolicyLifecycleMemoryHook("target_lost", record.RecordId, Array.Empty<string>());
 			InformationManager.ShowInquiry(new InquiryData("无法续约", "原目标封地已经全部失去，政策永久终止。", true, false, "知道了", "", () => OpenLocalPolicyHistoryPopup(onClose), null), pauseGameActiveState: true);
 			return;
 		}
@@ -9785,7 +10765,16 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			LocalPolicyRecordSaveData record = LoadLocalPolicyRecords().FirstOrDefault(x => string.Equals(x.RecordId, recordId, StringComparison.OrdinalIgnoreCase));
 			if (record == null) throw new InvalidOperationException("地方政策记录不存在。");
 			List<Settlement> ownedTargets = ResolveOwnedLocalPolicyFiefs(record.TargetFiefIds);
-			if (ownedTargets.Count <= 0) throw new InvalidOperationException("原目标封地已经全部失去。");
+			if (ownedTargets.Count <= 0)
+			{
+				record.Status = LocalPolicyStatusTargetsLost;
+				record.EndReason = "确认续约时已无任何原目标归玩家所有";
+				record.TargetFiefIds.Clear();
+				record.RemainingDays = 0;
+				_localPolicyRecords[record.RecordId] = JsonConvert.SerializeObject(record);
+				InvokeLocalPolicyLifecycleMemoryHook("target_lost", record.RecordId, Array.Empty<string>());
+				throw new InvalidOperationException("原目标封地已经全部失去。");
+			}
 			int charge = Math.Max(0, record.InitialActualGoldCost);
 			int currentGold = Math.Max(0, Hero.MainHero?.Gold ?? 0);
 			if (record.UseAiEvaluatedCost ? currentGold - charge < LocalPolicyGoldReserve : currentGold < charge) throw new InvalidOperationException("确认续约时第纳尔已经不足。");
@@ -9887,7 +10876,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		record.RemainingDays = 0;
 		_localPolicyRecords[record.RecordId] = JsonConvert.SerializeObject(record);
 		_activePolicyEffectModelCache.Clear();
-		if (!isVassalPolicy) InvokeLocalPolicyLifecycleMemoryHook("abolished", record.RecordId, record.TargetFiefIds);
+		InvokeLocalPolicyLifecycleMemoryHook("abolished", record.RecordId, record.TargetFiefIds);
 		TrimLocalPolicyRecords();
 		string title = isVassalPolicy ? "附庸国政策已停止" : "地方政策已废除";
 		string body = isVassalPolicy
@@ -10062,14 +11051,27 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			record.Renewals.Add(renewal);
 			_localPolicyRecords[record.RecordId] = JsonConvert.SerializeObject(record);
 
-			if (!VassalageBehavior.TryApplyDirectVassalPolicyIndependenceForExternal(
-				record.TargetKingdomId,
-				independenceCost,
-				0,
-				record.PolicyName,
-				out int appliedBefore,
-				out int independenceAfter,
-				out bool brokeAway))
+			int appliedBefore;
+			int independenceAfter;
+			bool brokeAway;
+			bool independenceApplied;
+			_deferredVassalRelationshipArtifactRecordIds.Add(record.RecordId);
+			try
+			{
+				independenceApplied = VassalageBehavior.TryApplyDirectVassalPolicyIndependenceForExternal(
+					record.TargetKingdomId,
+					independenceCost,
+					0,
+					record.PolicyName,
+					out appliedBefore,
+					out independenceAfter,
+					out brokeAway);
+			}
+			finally
+			{
+				_deferredVassalRelationshipArtifactRecordIds.Remove(record.RecordId);
+			}
+			if (!independenceApplied)
 			{
 				OnVassalRelationshipEndedInternal(record.TargetKingdomId, "续约独立度结算时臣属关系失效");
 				throw new InvalidOperationException("续约独立度结算时臣属关系已经失效。");
@@ -10087,6 +11089,17 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			}
 			NpcRulerPolicyBehavior.TouchPlayerPolicyCooldownForExternal(record.RecordId, currentDay);
 			_activePolicyEffectModelCache.Clear();
+			InvokeLocalPolicyLifecycleMemoryHook("renewed", record.RecordId, Array.Empty<string>());
+			if (brokeAway)
+			{
+				RecordLocalPolicyArtifact(
+					"relationship_ended",
+					record.RecordId,
+					Array.Empty<string>(),
+					"本次续期结算使独立度 " + appliedBefore.ToString(CultureInfo.InvariantCulture)
+					+ "→" + independenceAfter.ToString(CultureInfo.InvariantCulture)
+					+ "，达到脱离阈值；臣属关系和全部持续效果已经终止。");
+			}
 			string resultText = "《" + record.PolicyName + "》已增加 " + record.OriginalDurationDays.ToString(CultureInfo.InvariantCulture) + " 天；独立度 " + appliedBefore.ToString(CultureInfo.InvariantCulture) + " + " + independenceCost.ToString(CultureInfo.InvariantCulture) + " = " + independenceAfter.ToString(CultureInfo.InvariantCulture) + "/100；脱离阈值 " + breakawayThreshold.ToString(CultureInfo.InvariantCulture) + "（" + rulerName + "关系 " + FormatSigned(rulerRelation) + "）。";
 			if (brokeAway) resultText += "\n\n独立度达到脱离阈值，臣属关系已经解除，政策全部持续效果已立即停止。";
 			InformationManager.ShowInquiry(new InquiryData("续约成功", resultText, true, false, "知道了", "", () => OpenLocalPolicyHistoryPopup(onClose), null), pauseGameActiveState: true);
@@ -10211,7 +11224,343 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 
 	private static void InvokeLocalPolicyLifecycleMemoryHook(string eventKind, string recordId, IEnumerable<string> targetFiefIds)
 	{
-		// Reserved internal extension point. Local policy lifecycle events intentionally do not write NPC/AFEF memory yet.
+		try
+		{
+			(Instance ?? Campaign.Current?.GetCampaignBehavior<CustomPolicyBehavior>())
+				?.RecordLocalPolicyArtifact(eventKind, recordId, targetFiefIds);
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Write("PolicyArtifact", "local-hook-failed", "recordId=" + (recordId ?? "") + " kind=" + (eventKind ?? "") + " " + ex);
+		}
+	}
+
+	private Dictionary<string, string> BuildPublishedPolicyArtifactLedgerStorageForSave()
+	{
+		lock (_publishedPolicyArtifactLedgerGate)
+		{
+			if (string.IsNullOrWhiteSpace(_publishedPolicyArtifactLedgerId))
+			{
+				_publishedPolicyArtifactLedgerId = Guid.NewGuid().ToString("N");
+			}
+			TrimPublishedPolicyArtifactLedgerIfNeeded();
+			Dictionary<string, string> storage = new Dictionary<string, string>(_publishedPolicyArtifactEntries.Count + 1, StringComparer.Ordinal);
+			foreach (PublishedPolicyArtifactLedgerEntrySaveData entry in _publishedPolicyArtifactEntries)
+			{
+				storage[BuildPublishedPolicyArtifactEntryKey(entry.Sequence)] = JsonConvert.SerializeObject(entry);
+			}
+			storage[PublishedPolicyArtifactLedgerStateKey] = JsonConvert.SerializeObject(new PublishedPolicyArtifactLedgerStateSaveData
+				{
+					LedgerId = _publishedPolicyArtifactLedgerId,
+					CurrentSequence = _publishedPolicyArtifactCurrentSequence,
+					ConsumedThroughSequence = _publishedPolicyArtifactConsumedThroughSequence,
+					LegacyPublishedBackfillCompleted = _publishedPolicyArtifactLegacyBackfillVersion >= 1,
+					LegacyPublishedBackfillVersion = _publishedPolicyArtifactLegacyBackfillVersion,
+					RevisionByPolicyId = new Dictionary<string, long>(_publishedPolicyArtifactRevisionByPolicyId, StringComparer.OrdinalIgnoreCase),
+					LastFingerprintByStream = new Dictionary<string, string>(_publishedPolicyArtifactLastFingerprintByStream, StringComparer.OrdinalIgnoreCase)
+				});
+			return storage;
+		}
+	}
+
+	private void LoadPublishedPolicyArtifactLedger(Dictionary<string, string> stored)
+	{
+		lock (_publishedPolicyArtifactLedgerGate)
+		{
+			_publishedPolicyArtifactEntries.Clear();
+			_publishedPolicyArtifactRevisionByPolicyId.Clear();
+			_publishedPolicyArtifactLastFingerprintByStream.Clear();
+			_publishedPolicyArtifactLedgerId = "";
+			_publishedPolicyArtifactCurrentSequence = 0L;
+			_publishedPolicyArtifactConsumedThroughSequence = 0L;
+			_publishedPolicyArtifactLegacyBackfillVersion = 0;
+			_publishedPolicyArtifactLegacyBackfillInProgress = false;
+			PublishedPolicyArtifactLedgerStateSaveData state = null;
+			if (stored != null && stored.TryGetValue(PublishedPolicyArtifactLedgerStateKey, out string stateRaw))
+			{
+				try
+				{
+					state = JsonConvert.DeserializeObject<PublishedPolicyArtifactLedgerStateSaveData>(stateRaw ?? "");
+				}
+				catch (Exception ex)
+				{
+					PolicySystemLog.Write("PolicyArtifact", "state-load-skip", ex.Message);
+				}
+			}
+			foreach (KeyValuePair<string, long> item in state?.RevisionByPolicyId ?? new Dictionary<string, long>())
+			{
+				string id = (item.Key ?? "").Trim();
+				if (!string.IsNullOrWhiteSpace(id) && item.Value > 0L)
+				{
+					_publishedPolicyArtifactRevisionByPolicyId[id] = item.Value;
+				}
+			}
+			foreach (KeyValuePair<string, string> item in state?.LastFingerprintByStream ?? new Dictionary<string, string>())
+			{
+				if (!string.IsNullOrWhiteSpace(item.Key) && !string.IsNullOrWhiteSpace(item.Value))
+				{
+					_publishedPolicyArtifactLastFingerprintByStream[item.Key] = item.Value;
+				}
+			}
+			_publishedPolicyArtifactLedgerId = (state?.LedgerId ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(_publishedPolicyArtifactLedgerId))
+			{
+				_publishedPolicyArtifactLedgerId = Guid.NewGuid().ToString("N");
+			}
+			_publishedPolicyArtifactCurrentSequence = Math.Max(0L, state?.CurrentSequence ?? 0L);
+			_publishedPolicyArtifactConsumedThroughSequence = Math.Max(0L, state?.ConsumedThroughSequence ?? 0L);
+			_publishedPolicyArtifactLegacyBackfillVersion = Math.Max(0, state?.LegacyPublishedBackfillVersion ?? 0);
+			if (_publishedPolicyArtifactLegacyBackfillVersion == 0 && state?.LegacyPublishedBackfillCompleted == true)
+			{
+				_publishedPolicyArtifactLegacyBackfillVersion = 1;
+			}
+			HashSet<long> seenSequences = new HashSet<long>();
+			foreach (KeyValuePair<string, string> item in stored ?? new Dictionary<string, string>())
+			{
+				if (!(item.Key ?? "").StartsWith(PublishedPolicyArtifactEntryKeyPrefix, StringComparison.Ordinal)
+					|| string.IsNullOrWhiteSpace(item.Value))
+				{
+					continue;
+				}
+				try
+				{
+					PublishedPolicyArtifactLedgerEntrySaveData entry = JsonConvert.DeserializeObject<PublishedPolicyArtifactLedgerEntrySaveData>(item.Value);
+					if (entry == null
+						|| entry.Sequence <= 0L
+						|| entry.Revision <= 0L
+						|| !seenSequences.Add(entry.Sequence)
+						|| string.IsNullOrWhiteSpace(entry.PolicyId)
+						|| (entry.EventKind != "policy_published" && entry.EventKind != "policy_snapshot")
+						|| string.IsNullOrWhiteSpace(entry.PublishedText)
+						|| !string.Equals(entry.ContentHash, ComputePublishedPolicyArtifactHash(entry.PublishedText.Trim()), StringComparison.Ordinal))
+					{
+						continue;
+					}
+					entry.PolicyId = entry.PolicyId.Trim();
+					entry.PublishedText = entry.PublishedText.Trim();
+					_publishedPolicyArtifactEntries.Add(entry);
+				}
+				catch (Exception ex)
+				{
+					PolicySystemLog.Write("PolicyArtifact", "entry-load-skip", "key=" + (item.Key ?? "") + " error=" + ex.Message);
+				}
+			}
+			_publishedPolicyArtifactEntries.Sort((left, right) => left.Sequence.CompareTo(right.Sequence));
+			foreach (PublishedPolicyArtifactLedgerEntrySaveData entry in _publishedPolicyArtifactEntries)
+			{
+				_publishedPolicyArtifactCurrentSequence = Math.Max(_publishedPolicyArtifactCurrentSequence, entry.Sequence);
+				if (!_publishedPolicyArtifactRevisionByPolicyId.TryGetValue(entry.PolicyId, out long revision) || entry.Revision > revision)
+				{
+					_publishedPolicyArtifactRevisionByPolicyId[entry.PolicyId] = entry.Revision;
+				}
+				string streamKey = entry.PolicyId + "\u001f" + entry.EventKind;
+				_publishedPolicyArtifactLastFingerprintByStream[streamKey] = ComputePublishedPolicyArtifactHash(
+					entry.EventKind + "\n" + (entry.ScopeKind ?? "") + "\n" + (entry.KingdomId ?? "") + "\n" + (entry.KingdomName ?? "") + "\n" + (entry.PolicyName ?? "") + "\n" + entry.ContentHash);
+			}
+			_publishedPolicyArtifactConsumedThroughSequence = Math.Min(
+				_publishedPolicyArtifactConsumedThroughSequence,
+				_publishedPolicyArtifactCurrentSequence);
+			TrimPublishedPolicyArtifactLedgerIfNeeded();
+		}
+	}
+
+	private void RecordPolicySnapshotForRecordId(string recordId, string changeKind, string changeText)
+	{
+		string id = (recordId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(id))
+		{
+			return;
+		}
+		if (_localPolicyRecords.ContainsKey(id))
+		{
+			RecordLocalPolicyArtifact(changeKind, id, Array.Empty<string>(), changeText);
+			return;
+		}
+		NpcRulerPolicyRecord record = NpcRulerPolicyBehavior.GetPolicyRecordForExternal(id);
+		if (record != null)
+		{
+			RecordNpcPolicySnapshotArtifact(record, changeKind, changeText);
+		}
+	}
+
+	private void RecordLocalPolicyPublicFeedbackShown(string recordId, IEnumerable<string> targetFiefIds, string feedback)
+	{
+		string id = (recordId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(feedback) || !_localPolicyRecords.TryGetValue(id, out string raw))
+		{
+			return;
+		}
+		try
+		{
+			LocalPolicyRecordSaveData record = NormalizeLocalPolicyRecord(JsonConvert.DeserializeObject<LocalPolicyRecordSaveData>(raw ?? ""));
+			if (record == null)
+			{
+				return;
+			}
+			record.PublicFeedbackNoticeShown = true;
+			_localPolicyRecords[id] = JsonConvert.SerializeObject(record);
+			RecordLocalPolicyArtifact("public_feedback_shown", id, targetFiefIds, "公开反馈已展示：\n" + feedback.Trim());
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Write("PolicyArtifact", "local-feedback-failed", "recordId=" + id + " " + ex);
+		}
+	}
+
+	private void RecordLocalPolicyArtifact(string eventKind, string recordId, IEnumerable<string> targetFiefIds, string explicitChangeText = null)
+	{
+		string id = (recordId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(id) || !_localPolicyRecords.TryGetValue(id, out string raw) || string.IsNullOrWhiteSpace(raw))
+		{
+			return;
+		}
+		LocalPolicyRecordSaveData record;
+		try
+		{
+			record = NormalizeLocalPolicyRecord(JsonConvert.DeserializeObject<LocalPolicyRecordSaveData>(raw));
+		}
+		catch
+		{
+			return;
+		}
+		if (record == null || !record.PublicationCommitted)
+		{
+			return;
+		}
+		string changeKind = string.IsNullOrWhiteSpace(eventKind) ? "changed" : eventKind.Trim().ToLowerInvariant();
+		bool isPublished = string.Equals(changeKind, "published", StringComparison.Ordinal);
+		if (string.Equals(changeKind, "public_feedback_shown", StringComparison.Ordinal) && !record.PublicFeedbackNoticeShown)
+		{
+			return;
+		}
+		if (!isPublished && !HasPublishedPolicyArtifact(record.RecordId))
+		{
+			RecordLocalPolicyArtifact("published", record.RecordId, targetFiefIds);
+		}
+		Kingdom currentKingdom = GetPlayerKingdom();
+		bool isVassal = string.Equals(record.ScopeKind, PolicyScopeVassal, StringComparison.OrdinalIgnoreCase);
+		string kingdomId = isVassal ? record.TargetKingdomId : FirstNonEmpty(record.IssuerKingdomId, currentKingdom?.StringId);
+		string kingdomName = isVassal ? record.TargetKingdomName : FirstNonEmpty(record.IssuerKingdomName, GetKingdomName(currentKingdom));
+		string text = isPublished
+			? BuildLocalPolicyPublishedArtifactText(record)
+			: BuildLocalPolicySnapshotArtifactText(record, changeKind, targetFiefIds, explicitChangeText);
+		AppendPublishedPolicyArtifact(
+			record.RecordId,
+			isPublished ? "policy_published" : "policy_snapshot",
+			isPublished ? Math.Max(0, record.SubmittedDay) : GetCurrentCampaignDay(),
+			isPublished ? record.DateText : FormatCurrentCampaignDate(),
+			isPublished ? record.CreatedUtcTicks : DateTime.UtcNow.Ticks,
+			record.ScopeKind,
+			kingdomId,
+			kingdomName,
+			record.PolicyName,
+			text);
+	}
+
+	private static string BuildLocalPolicyPublishedArtifactText(LocalPolicyRecordSaveData record)
+	{
+		StringBuilder text = new StringBuilder();
+		text.Append("政策正文：\n").Append((record?.PolicyContent ?? "").Trim());
+		if (string.Equals(record?.ScopeKind, PolicyScopeVassal, StringComparison.OrdinalIgnoreCase))
+		{
+			text.Append("\n\n已验证作用域：宗主国 ")
+				.Append(FirstNonEmpty(record.IssuerKingdomName, record.IssuerKingdomId, "未知"))
+				.Append(" 向附庸国 ")
+				.Append(FirstNonEmpty(record.TargetKingdomName, record.TargetKingdomId, "未知"))
+				.Append(" 发布。");
+			text.Append("\n独立度结算：")
+				.Append(record.IndependenceBefore.ToString(CultureInfo.InvariantCulture))
+				.Append("→")
+				.Append(record.IndependenceAfter.ToString(CultureInfo.InvariantCulture));
+		}
+		else
+		{
+			List<string> targetNames = (record?.OriginalTargets ?? new List<LocalPolicyTargetSnapshotSaveData>())
+				.Where(target => target != null)
+				.Select(target => FirstNonEmpty(target.Name, target.FiefId))
+				.Where(name => !string.IsNullOrWhiteSpace(name))
+				.ToList();
+			text.Append("\n\n已验证作用域：")
+				.Append(targetNames.Count == 0 ? string.Join("、", record?.OriginalTargetFiefIds ?? new List<string>()) : string.Join("、", targetNames));
+		}
+		if (!string.IsNullOrWhiteSpace(record?.ImpactSummary))
+		{
+			text.Append("\n\n已发布影响说明：\n").Append(record.ImpactSummary.Trim());
+		}
+		List<string> effects = new List<string>();
+		foreach (LocalPolicyEffectRecordSaveData effect in record?.Effects ?? new List<LocalPolicyEffectRecordSaveData>())
+		{
+			if (effect == null)
+			{
+				continue;
+			}
+			List<string> values = BuildPublishedPolicyEffectValues(
+				effect.ProsperityDailyDeltaPerTown,
+				effect.FoodDailyDeltaPerTown,
+				effect.HearthDailyDeltaPerVillage,
+				effect.LoyaltyDailyDeltaPerTown,
+				effect.SecurityDailyDeltaPerTown,
+				effect.MilitiaDailyDeltaPerTown,
+				effect.TownTaxPercent,
+				effect.ConstructionSpeedPercent,
+				effect.KingdomStabilityDailyDelta,
+				effect.VolunteerProductionPercent,
+				effect.VolunteerUpgradeRatePercent,
+				0f);
+			effects.Add("- " + FirstNonEmpty(effect.TargetLabel, effect.TargetKingdomName, effect.TargetKingdomId, "政策作用域")
+				+ "；期限=" + Math.Max(1, record.OriginalDurationDays).ToString(CultureInfo.InvariantCulture) + "天"
+				+ "；效果=" + (values.Count == 0 ? "无持续数值变化" : string.Join("/", values))
+				+ (string.IsNullOrWhiteSpace(effect.Reason) ? "" : "；说明=" + effect.Reason.Trim()));
+		}
+		if (effects.Count > 0)
+		{
+			text.Append("\n\n已验证落地效果：\n").Append(string.Join("\n", effects));
+		}
+		return text.ToString();
+	}
+
+	private static string BuildLocalPolicySnapshotArtifactText(LocalPolicyRecordSaveData record, string changeKind, IEnumerable<string> targetFiefIds, string explicitChangeText)
+	{
+		StringBuilder text = new StringBuilder();
+		text.Append("事件：").Append(changeKind).AppendLine();
+		if (!string.IsNullOrWhiteSpace(explicitChangeText))
+		{
+			text.Append("结果：").Append(explicitChangeText.Trim());
+			return text.ToString();
+		}
+		if (string.Equals(changeKind, "renewed", StringComparison.Ordinal))
+		{
+			LocalPolicyRenewalSaveData renewal = record?.Renewals?.LastOrDefault();
+			text.Append("结果：续期完成，增加 ")
+				.Append(Math.Max(0, renewal?.AddedDays ?? record?.OriginalDurationDays ?? 0).ToString(CultureInfo.InvariantCulture))
+				.Append(" 天，当前剩余 ")
+				.Append(Math.Max(0, record?.RemainingDays ?? 0).ToString(CultureInfo.InvariantCulture))
+				.Append(" 天。");
+			if (renewal != null && renewal.PaidGold > 0)
+			{
+				text.Append("支付 ").Append(renewal.PaidGold.ToString(CultureInfo.InvariantCulture)).Append(" 第纳尔。");
+			}
+			if (renewal != null && renewal.IndependenceCost > 0)
+			{
+				text.Append("独立度 ")
+					.Append(renewal.IndependenceBefore.ToString(CultureInfo.InvariantCulture))
+					.Append("→")
+					.Append(renewal.IndependenceAfter.ToString(CultureInfo.InvariantCulture))
+					.Append("。");
+			}
+			return text.ToString();
+		}
+		List<string> targets = NormalizeIdList(targetFiefIds);
+		text.Append("结果：状态=").Append(string.IsNullOrWhiteSpace(record?.Status) ? changeKind : record.Status);
+		if (!string.IsNullOrWhiteSpace(record?.EndReason))
+		{
+			text.Append("；原因=").Append(record.EndReason.Trim());
+		}
+		if (targets.Count > 0 || string.Equals(changeKind, "target_lost", StringComparison.Ordinal))
+		{
+			text.Append("；当前目标=").Append(targets.Count == 0 ? "无" : string.Join("、", targets));
+		}
+		return text.ToString();
 	}
 
 	private static void ShowPolicyRenewalResultPopup(string policyObjectId, PolicyDraftRequest request, PolicyApplicationResult application)
@@ -10908,7 +12257,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 
 	private sealed class LocalPolicyRecordSaveData
 	{
-		public int Version { get; set; } = 3;
+		public int Version { get; set; } = 4;
 
 		public string ScopeKind { get; set; } = PolicyScopeLocal;
 
@@ -10928,9 +12277,13 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 
 		public string PublicFeedback { get; set; }
 
+		public bool PublicFeedbackNoticeShown { get; set; }
+
 		public string ImpactSummary { get; set; }
 
 		public string Status { get; set; } = LocalPolicyStatusActive;
+
+		public bool PublicationCommitted { get; set; }
 
 		public string EndReason { get; set; }
 
@@ -11082,6 +12435,63 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		public bool FollowCurrentRulingClan { get; set; }
 
 		public int CurrentSettlementCount { get; set; }
+	}
+
+	private sealed class PublishedPolicyArtifactLedgerStateSaveData
+	{
+		public string LedgerId { get; set; }
+
+		public long CurrentSequence { get; set; }
+
+		public long ConsumedThroughSequence { get; set; }
+
+		public bool LegacyPublishedBackfillCompleted { get; set; }
+
+		public int LegacyPublishedBackfillVersion { get; set; }
+
+		public Dictionary<string, long> RevisionByPolicyId { get; set; } = new Dictionary<string, long>(StringComparer.OrdinalIgnoreCase);
+
+		public Dictionary<string, string> LastFingerprintByStream { get; set; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+	}
+
+	private sealed class PublishedPolicyArtifactLedgerEntrySaveData
+	{
+		public long Sequence { get; set; }
+
+		public long Revision { get; set; }
+
+		public string PolicyId { get; set; }
+
+		public string EventKind { get; set; }
+
+		public int OccurredDay { get; set; }
+
+		public string GameDate { get; set; }
+
+		public long CreatedUtcTicks { get; set; }
+
+		public string ScopeKind { get; set; }
+
+		public string KingdomId { get; set; }
+
+		public string KingdomName { get; set; }
+
+		public string PolicyName { get; set; }
+
+		public string PublishedText { get; set; }
+
+		public string ContentHash { get; set; }
+	}
+
+	private sealed class PublishedPolicyArtifactBackfillItem
+	{
+		public int OccurredDay { get; set; }
+
+		public long CreatedUtcTicks { get; set; }
+
+		public string StableKey { get; set; }
+
+		public Action Append { get; set; }
 	}
 
 	private sealed class LocalPolicyTargetSnapshotSaveData

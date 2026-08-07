@@ -45,12 +45,14 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private const int DefaultApiTimeoutMilliseconds = 90000;
 	private const int GenerationMaxTokens = 1800;
 	private const int AnalysisMaxTokens = 900;
-	private const int CompressionMaxTokens = 1800;
+	private const int CompressionOutputTokenReserve = 1024;
+	private const int CompressionJobPriority = 1000;
 	private const int MaxStoredDocuments = 420;
 	private const int MaxStoredAnnualSummaries = 24;
 	private const int MaxStoredCompressionSummaries = 24;
 	private const int MaxStoredRoundSummaries = 96;
-	private const int CompressionRetryCooldownHours = 12;
+	private const int CompressionRetryInitialHours = 1;
+	private const int CompressionRetryMaximumHours = 24;
 	private const int MaxPendingJobs = 24;
 	private const int NativeWarSignalBase = 24;
 	private const int NativeOtherSignalBase = 42;
@@ -72,11 +74,19 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private const int MaxKnownDocumentsPerLocation = 64;
 	private const int MaxPendingPolicySignals = 24;
 	private const int MaxProcessedPolicySignalKeys = 256;
+	private const int PolicyHistorySyncBatchSize = 256;
+	private const int PolicyHistoryForceSyncMaxBatches = 40;
 	private const int PolicySignalRetentionDays = 21;
 	private const int DecisionArchitectureVersion = 1;
+	private const int HistoryMemorySchemaVersion = 4;
+	private const int DiplomacyPromptContractVersion = 3;
 	private const int RelaySchemaVersion = 20;
-	private const string RelayCacheAffinityKey = "diplomacy-relay:v19";
+	private const string CanonicalHistoryCacheAffinityKey = "diplomacy-history:v4";
+	private const string CanonicalHistoryContractMarker = "【AI外交长期记忆共同模式】";
 	private const string DiplomaticDeclarationWritingContractMarker = "【国家外交公文文体契约】";
+	private const string DiplomacyModeDispatchContractMarker = "【AI外交固定任务MODE分派】";
+	private const string DiplomaticDeclarationModeContractMarker = "【MODE=DECLARE 固定任务合同】";
+	private const string CanonicalHistoryCompressionModeContractMarker = "【MODE=COMPACT 固定任务合同】";
 	private const string RoundPlanTaskMarker = "【当前任务：一次性规划外交事件参与国】";
 	private const string DiplomacyAnalysisTaskMarker = "【任务：外交宣言语义裁判】";
 	private const string KingdomStrategicProfileMarkerPrefix = "【AnimusForge 发文国国家卡：";
@@ -122,8 +132,12 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private readonly HashSet<string> _notifiedDocumentIdsThisSession = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, WarSituationSnapshot> _warSituationCache = new Dictionary<string, WarSituationSnapshot>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, string> _courtSettlementCache = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-	private readonly Dictionary<string, WeeklyDiplomacySnapshotCacheEntry> _weeklyDiplomacySnapshotCache = new Dictionary<string, WeeklyDiplomacySnapshotCacheEntry>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, string> _realmInstitutionalVoiceCache = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+	private readonly HashSet<string> _canonicalHistorySourceKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+	private readonly Queue<string> _deferredCanonicalHistoryDocumentIds = new Queue<string>();
+	private readonly HashSet<string> _deferredCanonicalHistoryDocumentIdSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+	private readonly Dictionary<string, int> _deferredCanonicalHistoryRetryAttempts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+	private readonly Dictionary<string, int> _deferredCanonicalHistoryRetryAfterHour = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, WorldDiplomacyRealmRelationProfile> _realmRelationProfileCache = new Dictionary<string, WorldDiplomacyRealmRelationProfile>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, WorldDiplomacyBorderRelation> _kingdomBorderCache = new Dictionary<string, WorldDiplomacyBorderRelation>(StringComparer.OrdinalIgnoreCase);
 	private int _kingdomBorderCacheDay = -1;
@@ -133,6 +147,8 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private WorldDiplomacyStorage _storage = new WorldDiplomacyStorage();
 	private bool _llmRequestRunning;
 	private string _activeJobId = "";
+	private long _activeRequestRuntimeGeneration;
+	private bool _disabledStateApplied;
 	private MapNotificationView _registeredMapNotificationView;
 	private long _runtimeGeneration;
 	private bool _nativeDiplomacyDecisionQueueSanitized;
@@ -149,6 +165,11 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private long _relayCacheMissTokensThisSession;
 	private bool? _lastMapNotificationsEnabled;
 	private bool _initialPeaceApplicationAttempted;
+	private string _canonicalHistoryRenderCacheKey = "";
+	private string _canonicalHistoryRenderCache = "";
+	private int _lastCanonicalSourceSyncHour = int.MinValue;
+	private long _lastObservedWorldWeeklyHistoryRevision = -1L;
+	private bool _canonicalHistoryInitializedThisSession;
 
 	public static WorldDiplomacyBehavior Instance { get; private set; }
 
@@ -208,6 +229,13 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	public void OnEngineTick()
 	{
 		ProcessComposePopup();
+		if (!IsWorldDiplomacyEnabled())
+		{
+			if (!_disabledStateApplied) HandleDisabledState();
+			ProcessCompletedJobs();
+			return;
+		}
+		_disabledStateApplied = false;
 		ProcessCompletedJobs();
 		TryScheduleTokenCompression();
 		TryStartNextLlmJob();
@@ -394,6 +422,9 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private void OnNewGameCreated(CampaignGameStarter starter)
 	{
 		_storage = new WorldDiplomacyStorage();
+		_storage.HistoryMemorySchemaVersion = HistoryMemorySchemaVersion;
+		_storage.PromptContractVersion = DiplomacyPromptContractVersion;
+		_storage.CanonicalHistory = new WorldDiplomacyCanonicalHistoryState();
 		_storage.DecisionArchitectureVersion = DecisionArchitectureVersion;
 		_storage.PropagationReliabilityVersion = 1;
 		_storage.InitialPeacePending = IsWorldDiplomacyEnabled() && ShouldStartNewGameAtPeace();
@@ -420,9 +451,10 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		TryApplyInitialNewGamePeace();
 		if (!IsWorldDiplomacyEnabled())
 		{
-			HandleDisabledState();
+			if (!_disabledStateApplied) HandleDisabledState();
 			return;
 		}
+		_disabledStateApplied = false;
 		if (!_nativeDiplomacyDecisionQueueSanitized)
 		{
 			RemoveQueuedNativeDiplomacyDecisions();
@@ -456,13 +488,16 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		TrimRecentBattleFacts();
 		if (!IsWorldDiplomacyEnabled())
 		{
+			if (!_disabledStateApplied) HandleDisabledState();
 			return;
 		}
+		_disabledStateApplied = false;
 		RemoveQueuedNativeDiplomacyDecisions();
 		_nativeDiplomacyDecisionQueueSanitized = true;
 		DecayWarPressure();
 		RefreshPolicyDiplomacySignals();
 		RetryDeferredDocumentPropagation();
+		RetryDeferredCanonicalHistoryEntries();
 		ProcessPropagationArrivals();
 		ProcessRelayArrivals();
 		RetryDeferredRoundProgress();
@@ -684,13 +719,14 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		_runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		_llmRequestRunning = false;
 		_activeJobId = "";
+		_activeRequestRuntimeGeneration = 0L;
+		_disabledStateApplied = false;
 		while (_completedJobs.TryDequeue(out _))
 		{
 		}
 		_notifiedDocumentIdsThisSession.Clear();
 		_registeredMapNotificationView = null;
 		_warSituationCache.Clear();
-		_weeklyDiplomacySnapshotCache.Clear();
 		_realmInstitutionalVoiceCache.Clear();
 		_realmRelationProfileCache.Clear();
 		_kingdomBorderCache.Clear();
@@ -711,6 +747,20 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		_relayCacheMissTokensThisSession = 0;
 		_lastMapNotificationsEnabled = null;
 		_initialPeaceApplicationAttempted = false;
+		_canonicalHistorySourceKeys.Clear();
+		_deferredCanonicalHistoryDocumentIds.Clear();
+		_deferredCanonicalHistoryDocumentIdSet.Clear();
+		_deferredCanonicalHistoryRetryAttempts.Clear();
+		_deferredCanonicalHistoryRetryAfterHour.Clear();
+		foreach (WorldDiplomacyDocument document in _storage.Documents ?? new List<WorldDiplomacyDocument>())
+		{
+			if (NeedsCanonicalHistoryRetry(document)) EnqueueDeferredCanonicalHistoryRetry(document.DocumentId);
+		}
+		_canonicalHistoryRenderCacheKey = "";
+		_canonicalHistoryRenderCache = "";
+		_lastCanonicalSourceSyncHour = int.MinValue;
+		_lastObservedWorldWeeklyHistoryRevision = -1L;
+		_canonicalHistoryInitializedThisSession = false;
 		foreach (WorldDiplomacyJob job in _storage.Jobs)
 		{
 			if (job != null)
@@ -785,6 +835,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private void HandleDisabledState()
 	{
+		_disabledStateApplied = true;
 		if (_storage.ActiveExchange != null)
 		{
 			_storage.ActiveExchange.State = "closed_disabled";
@@ -795,8 +846,13 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		_storage.Jobs.Clear();
 		foreach (WarPressureEntry entry in _storage.WarPressure.Where(x => x != null)) entry.IsEscalationArmed = false;
 		_storage.ForcedWarToggleWasEnabled = false;
-		_llmRequestRunning = false;
-		_activeJobId = "";
+		// An HTTP task may still be in flight. Keep the runtime request flag until its
+		// completion is dequeued, so re-enabling cannot start a second request.
+		if (!_llmRequestRunning)
+		{
+			_activeJobId = "";
+			_activeRequestRuntimeGeneration = 0L;
+		}
 		ScheduleNextNormalRoundAfter(CurrentDay());
 		_nativeDiplomacyDecisionQueueSanitized = false;
 	}
@@ -1131,21 +1187,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		string systemPrompt = isRelayTurn
 			? BuildRelayGenerationSystemPrompt(frozenCommonContract)
 			: BuildGenerationSystemPrompt(frozenCommonContract);
-		if (isRelayTurn && owningRound?.LlmTranscript?.FirstOrDefault(x => x != null && string.Equals(x.Role, "system", StringComparison.OrdinalIgnoreCase)) is WorldDiplomacyLlmMessage frozenSystem
-			&& !string.IsNullOrWhiteSpace(frozenSystem.Content))
-		{
-			if (owningRound.SchemaVersion >= RelaySchemaVersion)
-			{
-				systemPrompt = frozenSystem.Content;
-			}
-			else
-			{
-				frozenSystem.Content = systemPrompt;
-				Log("relay system prompt upgraded by internal schema round=" + (owningRound.RoundId ?? "")
-					+ " schema=" + RelaySchemaVersion.ToString(CultureInfo.InvariantCulture));
-			}
-		}
-		bool actorProfileAlreadyInTranscript = owningRound?.LlmProfiledKingdomIds?.Any(x => string.Equals(x, author.StringId, StringComparison.OrdinalIgnoreCase)) == true;
+		SyncCanonicalHistorySources();
 		bool includeEmbeddedRoundPlan = !isRelayTurn && !isResponse && owningRound != null && string.IsNullOrWhiteSpace(owningRound.RootDocumentId);
 		List<string> roundPlanCandidates = new List<string>();
 		if (includeEmbeddedRoundPlan)
@@ -1156,10 +1198,11 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 				.Select(x => x.StringId)
 				.ToList();
 		}
-		string userPrompt = isRelayTurn
-			? BuildRelayConversationTurnPrompt(owningRound, author, target, includeActorProfile: !actorProfileAlreadyInTranscript,
+		string dynamicPrompt = isRelayTurn
+			? BuildRelayConversationTurnPrompt(owningRound, author, target,
 				prioritySource: sourceDocument, priorityResponseOnly: externalResponseOnly)
 			: BuildGenerationPrompt(author, target, exchange, isResponse, sourceDocument, isReminder, roundId, allowUntargeted, roundPlanCandidates);
+		string userPrompt = BuildDeclareModePrompt(dynamicPrompt);
 		WorldDiplomacyJob job = new WorldDiplomacyJob
 		{
 			JobId = NewId("diplomacy_generate"),
@@ -1182,20 +1225,16 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			WasAtWarWhenQueued = target != null && FactionManager.IsAtWarAgainstFaction(author, target),
 			SystemPrompt = systemPrompt,
 			UserPrompt = userPrompt,
-			CacheAffinityKey = isRelayTurn ? RelayCacheAffinityKey : "generate:v2:" + (author.StringId ?? ""),
-			ProfiledKingdomId = isRelayTurn && !actorProfileAlreadyInTranscript ? author.StringId ?? "" : "",
+			CacheAffinityKey = CanonicalHistoryCacheAffinityKey,
+			ProfiledKingdomId = "",
 			MaxTokens = GenerationMaxTokens
 		};
-		if (isRelayTurn && owningRound?.LlmTranscript?.Count > 0)
-		{
-			job.LlmMessages = CloneLlmMessages(owningRound.LlmTranscript);
-			job.LlmMessages.Add(new WorldDiplomacyLlmMessage { Role = "user", Content = userPrompt });
-		}
 		if (!EnsureGenerationJobHasKingdomStrategicProfile(job))
 		{
 			AbandonRejectedGeneration(job, author, target, "missing_kingdom_strategic_profile");
 			return;
 		}
+		CaptureCanonicalHistoryForJob(job, syncSources: false);
 		if (owningRound != null && !playerPriorityResponse) owningRound.AutomaticDocumentsStarted++;
 		EnqueueJob(job);
 	}
@@ -1394,29 +1433,50 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		EnqueueJob(job);
 	}
 
-	private void EnqueueCompressionJob(List<WorldDiplomacyRoundSummary> summaries, long tokenCount)
+	private void EnqueueCompressionJob(long throughSequence, long tokenCount, int targetTokens)
 	{
-		if (summaries == null || summaries.Count == 0) return;
 		int batchSequence = Math.Max(0, _storage.CompressionSequence) + 1;
 		string batchId = "diplomacy_compaction_" + batchSequence.ToString(CultureInfo.InvariantCulture);
+		int overallTargetTokens = Math.Max(1, targetTokens);
+		int protectedBudgetTokens = Math.Max(0, Math.Min(overallTargetTokens - 256, overallTargetTokens / 4));
+		List<WorldDiplomacyCanonicalProtectedFact> protectedFacts = SelectCanonicalProtectedFactsWithinTokenBudget(
+			BuildCanonicalProtectedFactsThrough(throughSequence), protectedBudgetTokens);
+		List<string> preservedResultIds = protectedFacts
+			.Where(x => string.Equals(x.Kind, "diplomatic_result", StringComparison.OrdinalIgnoreCase))
+			.Select(x => x.SourceId).Where(x => !string.IsNullOrWhiteSpace(x))
+			.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+		long protectedTokens = EstimateHistoryTokens(RenderCanonicalProtectedFacts(protectedFacts, preservedResultIds));
+		int configuredOutputTokenLimit = WorldDiplomacyLlmClient.GetConfiguredOutputTokenLimit();
+		int outputTokenReserve = Math.Min(CompressionOutputTokenReserve, Math.Max(128, configuredOutputTokenLimit / 8));
+		int outputSummaryCapacity = Math.Max(256, configuredOutputTokenLimit - outputTokenReserve);
+		long desiredSummaryTokens = Math.Max(256L, overallTargetTokens - protectedTokens - 32L);
+		int summaryTargetTokens = (int)Math.Min(desiredSummaryTokens, outputSummaryCapacity);
 		WorldDiplomacyJob job = new WorldDiplomacyJob
 		{
 			JobId = NewId("diplomacy_compress"),
 			Kind = "compress",
-			Priority = 1,
+			Priority = CompressionJobPriority,
 			CreatedDay = CurrentDay(),
 			CompressionBatchId = batchId,
-			CompressionRoundIds = summaries.Select(x => x.RoundId).Where(x => !string.IsNullOrWhiteSpace(x)).ToList(),
 			CompressionTokenCount = Math.Max(0L, tokenCount),
-			SystemPrompt = BuildTokenCompressionSystemPrompt(),
-			UserPrompt = BuildTokenCompressionPrompt(batchId, summaries, tokenCount),
-			CacheAffinityKey = "compress:token-cycle:v1",
-			MaxTokens = CompressionMaxTokens
+			CompressionThroughSequence = Math.Max(0L, throughSequence),
+			CompressionOverallTargetTokens = overallTargetTokens,
+			CompressionTargetTokens = summaryTargetTokens,
+			SystemPrompt = BuildCanonicalHistorySystemPrompt(BuildCommonDiplomacySystemPrefix()),
+			UserPrompt = BuildTokenCompressionPrompt(batchId, throughSequence, tokenCount, summaryTargetTokens, protectedTokens),
+			CacheAffinityKey = CanonicalHistoryCacheAffinityKey,
+			MaxTokens = Math.Min(configuredOutputTokenLimit, summaryTargetTokens + outputTokenReserve)
 		};
+		CaptureCanonicalHistoryForJob(job, syncSources: false);
 		EnqueueJob(job);
 		Log("token compression queued batch=" + batchId
-			+ " rounds=" + summaries.Count.ToString(CultureInfo.InvariantCulture)
-			+ " accumulated=" + tokenCount.ToString(CultureInfo.InvariantCulture));
+			+ " through_sequence=" + throughSequence.ToString(CultureInfo.InvariantCulture)
+			+ " estimated_tokens=" + tokenCount.ToString(CultureInfo.InvariantCulture)
+			+ " overall_target_tokens=" + overallTargetTokens.ToString(CultureInfo.InvariantCulture)
+			+ " protected_tokens=" + protectedTokens.ToString(CultureInfo.InvariantCulture)
+			+ " summary_target_tokens=" + summaryTargetTokens.ToString(CultureInfo.InvariantCulture)
+			+ " configured_output_token_limit=" + configuredOutputTokenLimit.ToString(CultureInfo.InvariantCulture)
+			+ " request_max_tokens=" + job.MaxTokens.ToString(CultureInfo.InvariantCulture));
 	}
 
 	private void EnqueueJob(WorldDiplomacyJob job)
@@ -1430,12 +1490,14 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			return;
 		}
 		_storage.Jobs.Add(job);
+		int queueCapacity = MaxPendingJobs + (_storage.Jobs.Any(x => x != null
+			&& string.Equals(x.Kind, "compress", StringComparison.OrdinalIgnoreCase)) ? 1 : 0);
 		_storage.Jobs = _storage.Jobs
 			.Where(x => x != null)
 			.OrderByDescending(x => x.Priority)
 			.ThenBy(x => x.CreatedDay)
 			.ThenBy(x => x.JobId, StringComparer.OrdinalIgnoreCase)
-			.Take(MaxPendingJobs)
+			.Take(queueCapacity)
 			.ToList();
 	}
 
@@ -1451,35 +1513,28 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private void LogPromptCacheShape(WorldDiplomacyJob job)
 	{
-		List<WorldDiplomacyLlmMessage> messages = job?.LlmMessages?.Count > 0
-			? job.LlmMessages
-			: new List<WorldDiplomacyLlmMessage>
-			{
-				new WorldDiplomacyLlmMessage { Role = "system", Content = job?.SystemPrompt ?? "" },
-				new WorldDiplomacyLlmMessage { Role = "user", Content = job?.UserPrompt ?? "" }
-			};
+		List<WorldDiplomacyLlmMessage> messages = BuildLlmMessagesForJob(job);
 		string system = messages.FirstOrDefault(x => x != null && string.Equals(x.Role, "system", StringComparison.OrdinalIgnoreCase))?.Content ?? "";
 		string user = messages.LastOrDefault(x => x != null && string.Equals(x.Role, "user", StringComparison.OrdinalIgnoreCase))?.Content ?? "";
 		string frozenContract = ResolveCommonContractForCacheDiagnostics(job, out string contractSource);
 		int userPrefix1024Chars = Math.Min(1024, user.Length);
 		int userPrefixChars = Math.Min(2048, user.Length);
 		int totalChars = messages.Sum(x => x?.Content?.Length ?? 0);
-		int expectedCachedMessageCount = 0;
-		for (int index = messages.Count - 1; index >= 0; index--)
-		{
-			if (!string.Equals(messages[index]?.Role, "assistant", StringComparison.OrdinalIgnoreCase)) continue;
-			expectedCachedMessageCount = index + 1;
-			break;
-		}
+		int expectedCachedMessageCount = UsesCanonicalHistory(job) && messages.Count >= 2 ? 2 : 0;
 		int expectedCachedPrefixChars = messages.Take(expectedCachedMessageCount).Sum(x => x?.Content?.Length ?? 0);
-		string expectedCachedPrefixShape = string.Join("\n", messages.Take(expectedCachedMessageCount).Select(x => (x?.Role ?? "") + ":" + (x?.Content ?? "")));
 		Log("cache-shape kind=" + (job?.Kind ?? "")
 			+ " affinity=" + ResolveCacheAffinityKey(job)
 			+ " messages=" + messages.Count.ToString(CultureInfo.InvariantCulture)
 			+ " totalChars=" + totalChars.ToString(CultureInfo.InvariantCulture)
 			+ " expectedCachedMessages=" + expectedCachedMessageCount.ToString(CultureInfo.InvariantCulture)
 			+ " expectedCachedPrefixChars=" + expectedCachedPrefixChars.ToString(CultureInfo.InvariantCulture)
-			+ " expectedCachedPrefixHash=" + StablePromptHash(expectedCachedPrefixShape)
+			+ " expectedCachedPrefixHash=" + StablePromptHashMessagePrefix(messages, expectedCachedMessageCount)
+			+ " historyRevision=" + (job?.HistoryRevision ?? 0L).ToString(CultureInfo.InvariantCulture)
+			+ " historyThroughSequence=" + (job?.HistoryThroughSequence ?? 0L).ToString(CultureInfo.InvariantCulture)
+			+ " historyEstimatedTokens=" + (job?.HistoryEstimatedTokens ?? 0L).ToString(CultureInfo.InvariantCulture)
+			+ " snapshotThroughSequence=" + (job?.HistorySnapshotThroughSequence ?? 0L).ToString(CultureInfo.InvariantCulture)
+			+ " snapshotHash=" + (job?.HistorySnapshotHash ?? "")
+			+ " stablePrefixHash=" + (job?.HistoryPrefixHash ?? "")
 			+ " contractSource=" + contractSource
 			+ " contractState=" + (frozenContract.Length == 0 ? "empty" : "present")
 			+ " contractChars=" + frozenContract.Length.ToString(CultureInfo.InvariantCulture)
@@ -1495,68 +1550,97 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private void LogPromptCacheUsage(WorldDiplomacyJob job, LlmJobResult result)
 	{
+		bool usageKnown = result?.PromptCacheHitTokens.HasValue == true
+			&& (result.PromptTokens.HasValue
+				|| result.PromptCacheMissTokens.HasValue
+				|| (result.PromptCacheCreationTokens.HasValue && result.PromptUncachedTokens.HasValue));
+		bool breakdownKnown = result?.PromptCacheHitTokens.HasValue == true
+			&& result.PromptCacheCreationTokens.HasValue
+			&& result.PromptUncachedTokens.HasValue;
 		int hit = Math.Max(0, result?.PromptCacheHitTokens ?? 0);
-		int miss = Math.Max(0, result?.PromptCacheMissTokens ?? 0);
-		int denominator = hit + miss;
-		string rate = denominator <= 0 ? "n/a" : (100d * hit / denominator).ToString("F1", CultureInfo.InvariantCulture) + "%";
+		int creation = Math.Max(0, result?.PromptCacheCreationTokens ?? 0);
+		int uncached = Math.Max(0, result?.PromptUncachedTokens ?? 0);
+		int denominator = result?.PromptTokens.HasValue == true
+			? Math.Max(0, result.PromptTokens.Value)
+			: result?.PromptCacheMissTokens.HasValue == true
+				? hit + Math.Max(0, result.PromptCacheMissTokens.Value)
+				: hit + creation + uncached;
+		string rate = !usageKnown || denominator <= 0 ? "n/a" : (100d * hit / denominator).ToString("F1", CultureInfo.InvariantCulture) + "%";
 		Log("cache-usage kind=" + (job?.Kind ?? "")
 			+ " affinity=" + ResolveCacheAffinityKey(job)
 			+ " prompt_tokens=" + (result?.PromptTokens?.ToString(CultureInfo.InvariantCulture) ?? "")
 			+ " completion_tokens=" + (result?.CompletionTokens?.ToString(CultureInfo.InvariantCulture) ?? "")
 			+ " prompt_cache_hit_tokens=" + (result?.PromptCacheHitTokens?.ToString(CultureInfo.InvariantCulture) ?? "")
 			+ " prompt_cache_miss_tokens=" + (result?.PromptCacheMissTokens?.ToString(CultureInfo.InvariantCulture) ?? "")
+			+ " prompt_cache_creation_tokens=" + (result?.PromptCacheCreationTokens?.ToString(CultureInfo.InvariantCulture) ?? "")
+			+ " prompt_uncached_tokens=" + (result?.PromptUncachedTokens?.ToString(CultureInfo.InvariantCulture) ?? "")
+			+ " cache_usage_known=" + usageKnown.ToString()
+			+ " cache_breakdown_known=" + breakdownKnown.ToString()
 			+ " hit_rate=" + rate);
-		_cacheHitTokensThisSession += hit;
-		_cacheMissTokensThisSession += miss;
-		if (string.Equals(ResolveCacheAffinityKey(job), RelayCacheAffinityKey, StringComparison.OrdinalIgnoreCase))
+		if (usageKnown)
+		{
+			_cacheHitTokensThisSession += hit;
+			_cacheMissTokensThisSession += Math.Max(0, denominator - hit);
+		}
+		if (usageKnown && job?.IsRelayTurn == true)
 		{
 			_relayCacheHitTokensThisSession += hit;
-			_relayCacheMissTokensThisSession += miss;
+			_relayCacheMissTokensThisSession += Math.Max(0, denominator - hit);
 		}
 		long overall = _cacheHitTokensThisSession + _cacheMissTokensThisSession;
 		long relay = _relayCacheHitTokensThisSession + _relayCacheMissTokensThisSession;
 		Log("cache-session overall_hit_rate=" + (overall <= 0 ? "n/a" : (100d * _cacheHitTokensThisSession / overall).ToString("F1", CultureInfo.InvariantCulture) + "%")
-			+ " relay_hit_rate=" + (relay <= 0 ? "n/a" : (100d * _relayCacheHitTokensThisSession / relay).ToString("F1", CultureInfo.InvariantCulture) + "%")
-			+ " target=70.0%");
-	}
-
-	private void RecordDiplomacyTokenUsage(WorldDiplomacyJob job, LlmJobResult result)
-	{
-		if (job == null || result == null || string.Equals(job.Kind, "compress", StringComparison.OrdinalIgnoreCase)) return;
-		long prompt = result.PromptTokens ?? 0;
-		if (prompt <= 0)
-		{
-			prompt = Math.Max(0, result.PromptCacheHitTokens ?? 0) + Math.Max(0, result.PromptCacheMissTokens ?? 0);
-		}
-		if (prompt <= 0)
-		{
-			IEnumerable<object> messages = BuildLlmMessageArray(job).Children().Cast<object>();
-			prompt = Logger.EstimateTokensFromMessages(messages);
-		}
-		long completion = result.CompletionTokens ?? 0;
-		if (completion <= 0 && !string.IsNullOrWhiteSpace(result.Content)) completion = Logger.EstimateTokens(result.Content);
-		long added = Math.Max(0, prompt) + Math.Max(0, completion);
-		if (added <= 0) return;
-		_storage.DiplomacyTokensSinceCompression = Math.Max(0L, _storage.DiplomacyTokensSinceCompression) + added;
-		long threshold = GetCompressionThresholdTokens();
-		if (_storage.DiplomacyTokensSinceCompression >= threshold) _storage.DiplomacyCompressionPending = true;
-		Log("compression-meter added=" + added.ToString(CultureInfo.InvariantCulture)
-			+ " accumulated=" + _storage.DiplomacyTokensSinceCompression.ToString(CultureInfo.InvariantCulture)
-			+ " threshold=" + threshold.ToString(CultureInfo.InvariantCulture)
-			+ " pending=" + _storage.DiplomacyCompressionPending.ToString());
+			+ " relay_hit_rate=" + (relay <= 0 ? "n/a" : (100d * _relayCacheHitTokensThisSession / relay).ToString("F1", CultureInfo.InvariantCulture) + "%"));
 	}
 
 	private static string StablePromptHash(string text)
 	{
 		unchecked
 		{
+			ulong hash = AppendStablePromptHash(1469598103934665603UL, text);
+			return hash.ToString("x16", CultureInfo.InvariantCulture);
+		}
+	}
+
+	private static string StablePromptHashPair(string first, string second)
+	{
+		unchecked
+		{
+			ulong hash = AppendStablePromptHash(1469598103934665603UL, first);
+			hash = AppendStablePromptHash(hash, "\n");
+			hash = AppendStablePromptHash(hash, second);
+			return hash.ToString("x16", CultureInfo.InvariantCulture);
+		}
+	}
+
+	private static string StablePromptHashMessagePrefix(IReadOnlyList<WorldDiplomacyLlmMessage> messages, int messageCount)
+	{
+		unchecked
+		{
 			ulong hash = 1469598103934665603UL;
+			int count = Math.Min(Math.Max(0, messageCount), messages?.Count ?? 0);
+			for (int i = 0; i < count; i++)
+			{
+				if (i > 0) hash = AppendStablePromptHash(hash, "\n");
+				WorldDiplomacyLlmMessage message = messages[i];
+				hash = AppendStablePromptHash(hash, message?.Role);
+				hash = AppendStablePromptHash(hash, ":");
+				hash = AppendStablePromptHash(hash, message?.Content);
+			}
+			return hash.ToString("x16", CultureInfo.InvariantCulture);
+		}
+	}
+
+	private static ulong AppendStablePromptHash(ulong hash, string text)
+	{
+		unchecked
+		{
 			foreach (char ch in text ?? "")
 			{
 				hash ^= ch;
 				hash *= 1099511628211UL;
 			}
-			return hash.ToString("x16", CultureInfo.InvariantCulture);
+			return hash;
 		}
 	}
 
@@ -1573,15 +1657,55 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			.ToList();
 	}
 
-	private static JArray BuildLlmMessageArray(WorldDiplomacyJob job)
+	private static bool UsesCanonicalHistory(WorldDiplomacyJob job)
 	{
-		List<WorldDiplomacyLlmMessage> source = job?.LlmMessages?.Count > 0
-			? job.LlmMessages
-			: new List<WorldDiplomacyLlmMessage>
+		return job != null && (string.Equals(job.Kind, "generate", StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(job.Kind, "compress", StringComparison.OrdinalIgnoreCase));
+	}
+
+	private List<WorldDiplomacyLlmMessage> BuildLlmMessagesForJob(WorldDiplomacyJob job)
+	{
+		if (IsValidSemanticRepairMessageChain(job)) return job.LlmMessages;
+		List<WorldDiplomacyLlmMessage> source = new List<WorldDiplomacyLlmMessage>
+		{
+			new WorldDiplomacyLlmMessage { Role = "system", Content = job?.SystemPrompt ?? "" }
+		};
+		if (UsesCanonicalHistory(job))
+		{
+			source.Add(new WorldDiplomacyLlmMessage
 			{
-				new WorldDiplomacyLlmMessage { Role = "system", Content = job?.SystemPrompt ?? "" },
-				new WorldDiplomacyLlmMessage { Role = "user", Content = job?.UserPrompt ?? "" }
-			};
+				Role = "system",
+				Content = BuildCanonicalHistoryBlock(job?.HistoryThroughSequence ?? long.MaxValue)
+			});
+		}
+		source.Add(new WorldDiplomacyLlmMessage { Role = "user", Content = job?.UserPrompt ?? "" });
+		return source;
+	}
+
+	private static bool IsValidSemanticRepairMessageChain(WorldDiplomacyJob job)
+	{
+		List<WorldDiplomacyLlmMessage> messages = job?.LlmMessages;
+		if (job == null || job.SemanticRepairAttempts <= 0 || messages == null || messages.Count < 5
+			|| !string.Equals(job.Kind, "generate", StringComparison.OrdinalIgnoreCase)) return false;
+		WorldDiplomacyLlmMessage first = messages[0];
+		WorldDiplomacyLlmMessage history = messages[1];
+		WorldDiplomacyLlmMessage originalTail = messages[2];
+		WorldDiplomacyLlmMessage rejected = messages[messages.Count - 2];
+		WorldDiplomacyLlmMessage correction = messages[messages.Count - 1];
+		return string.Equals(first?.Role, "system", StringComparison.OrdinalIgnoreCase)
+			&& string.Equals(first?.Content ?? "", job.SystemPrompt ?? "", StringComparison.Ordinal)
+			&& string.Equals(history?.Role, "system", StringComparison.OrdinalIgnoreCase)
+			&& string.Equals(StablePromptHashPair(first?.Content, history?.Content), job.HistoryPrefixHash ?? "", StringComparison.Ordinal)
+			&& string.Equals(originalTail?.Role, "user", StringComparison.OrdinalIgnoreCase)
+			&& (originalTail?.Content ?? "").IndexOf("【MODE=DECLARE】", StringComparison.Ordinal) >= 0
+			&& string.Equals(rejected?.Role, "assistant", StringComparison.OrdinalIgnoreCase)
+			&& string.Equals(correction?.Role, "user", StringComparison.OrdinalIgnoreCase)
+			&& string.Equals(correction?.Content ?? "", job.UserPrompt ?? "", StringComparison.Ordinal);
+	}
+
+	private JArray BuildLlmMessageArray(WorldDiplomacyJob job)
+	{
+		List<WorldDiplomacyLlmMessage> source = BuildLlmMessagesForJob(job);
 		JArray messages = new JArray();
 		foreach (WorldDiplomacyLlmMessage message in source.Where(x => x != null && !string.IsNullOrWhiteSpace(x.Role)))
 		{
@@ -1596,7 +1720,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private void TryStartNextLlmJob()
 	{
-		if (_llmRequestRunning || _storage.Jobs.Count == 0)
+		if (!IsWorldDiplomacyEnabled() || _llmRequestRunning || _storage.Jobs.Count == 0)
 		{
 			return;
 		}
@@ -1616,6 +1740,22 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		if (job == null)
 		{
 			return;
+		}
+		if (!EnsureCurrentCanonicalPromptContractBeforeSend(job))
+		{
+			return;
+		}
+		if (job.LlmMessages?.Count > 0 && !IsValidSemanticRepairMessageChain(job))
+		{
+			Log("retired invalid persisted LLM message chain job=" + (job.JobId ?? "") + " kind=" + (job.Kind ?? ""));
+			job.LlmMessages.Clear();
+			job.SemanticRepairAttempts = 0;
+			if (string.Equals(job.Kind, "generate", StringComparison.OrdinalIgnoreCase)
+				&& !TryRebuildPendingWorldDiplomacyJob(job))
+			{
+				CommitFailedJob(job, "invalid persisted LLM message chain could not be rebuilt");
+				return;
+			}
 		}
 		if (string.Equals(job.Kind, "generate", StringComparison.OrdinalIgnoreCase)
 			&& !EnsureGenerationJobHasKingdomStrategicProfile(job))
@@ -1646,6 +1786,13 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 				RemoveJob(job.JobId);
 				return;
 			}
+			// Ordinary queued generations consume the newest committed archive at actual send time.
+			// Semantic repairs carry explicit messages and intentionally retain their rejected
+			// request's frozen prefix.
+			if (job.LlmMessages == null || job.LlmMessages.Count == 0)
+			{
+				CaptureCanonicalHistoryForJob(job, syncSources: true);
+			}
 		}
 		JArray requestMessages = BuildLlmMessageArray(job);
 		job.IsRunning = true;
@@ -1655,6 +1802,10 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		_llmRequestRunning = true;
 		_activeJobId = job.JobId;
 		long generation = _runtimeGeneration;
+		_activeRequestRuntimeGeneration = generation;
+		int requestTimeoutMilliseconds = string.Equals(job.Kind, "compress", StringComparison.OrdinalIgnoreCase)
+			? DuelSettings.LlmRequestTimeoutMilliseconds
+			: DefaultApiTimeoutMilliseconds;
 		_ = Task.Run(async delegate
 		{
 			LlmJobResult result = new LlmJobResult
@@ -1667,7 +1818,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 				WorldDiplomacyApiCallResult api = await WorldDiplomacyLlmClient.CallMessagesWithRetriesAsync(
 					requestMessages,
 					Math.Max(256, job.MaxTokens),
-					DefaultApiTimeoutMilliseconds,
+					requestTimeoutMilliseconds,
 					Source,
 					generation,
 					maxAttempts: 2);
@@ -1679,6 +1830,8 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 				result.CompletionTokens = api?.CompletionTokens;
 				result.PromptCacheHitTokens = api?.PromptCacheHitTokens;
 				result.PromptCacheMissTokens = api?.PromptCacheMissTokens;
+				result.PromptCacheCreationTokens = api?.PromptCacheCreationTokens;
+				result.PromptUncachedTokens = api?.PromptUncachedTokens;
 			}
 			catch (Exception ex)
 			{
@@ -1689,12 +1842,72 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		});
 	}
 
+	private static bool HasCurrentCanonicalPromptContract(WorldDiplomacyJob job)
+	{
+		if (!UsesCanonicalHistory(job)) return true;
+		string expectedMode = string.Equals(job.Kind, "compress", StringComparison.OrdinalIgnoreCase)
+			? "【MODE=COMPACT】"
+			: "【MODE=DECLARE】";
+		string modePrompt = job.SemanticRepairAttempts > 0 && job.LlmMessages?.Count >= 3
+			? job.LlmMessages[2]?.Content ?? ""
+			: job.UserPrompt ?? "";
+		string systemPrompt = job.SystemPrompt ?? "";
+		return string.Equals((job.CacheAffinityKey ?? "").Trim(), CanonicalHistoryCacheAffinityKey, StringComparison.Ordinal)
+			&& systemPrompt.IndexOf(DiplomaticDeclarationWritingContractMarker, StringComparison.Ordinal) >= 0
+			&& systemPrompt.IndexOf(DiplomacyModeDispatchContractMarker, StringComparison.Ordinal) >= 0
+			&& systemPrompt.IndexOf(DiplomaticDeclarationModeContractMarker, StringComparison.Ordinal) >= 0
+			&& systemPrompt.IndexOf(CanonicalHistoryCompressionModeContractMarker, StringComparison.Ordinal) >= 0
+			&& systemPrompt.IndexOf(CanonicalHistoryContractMarker, StringComparison.Ordinal) >= 0
+			&& modePrompt.IndexOf(expectedMode, StringComparison.Ordinal) >= 0
+			&& modePrompt.IndexOf(DiplomaticDeclarationWritingContractMarker, StringComparison.Ordinal) < 0
+			&& modePrompt.IndexOf(DiplomacyModeDispatchContractMarker, StringComparison.Ordinal) < 0
+			&& modePrompt.IndexOf(DiplomaticDeclarationModeContractMarker, StringComparison.Ordinal) < 0
+			&& modePrompt.IndexOf(CanonicalHistoryCompressionModeContractMarker, StringComparison.Ordinal) < 0;
+	}
+
+	private bool EnsureCurrentCanonicalPromptContractBeforeSend(WorldDiplomacyJob job)
+	{
+		if (HasCurrentCanonicalPromptContract(job)) return true;
+		if (!UsesCanonicalHistory(job)) return true;
+		Log("retired stale canonical prompt contract before send job=" + (job.JobId ?? "")
+			+ " kind=" + (job.Kind ?? "")
+			+ " affinity=" + (job.CacheAffinityKey ?? ""));
+		job.LlmMessages?.Clear();
+		job.SemanticRepairAttempts = 0;
+		job.HistoryPrefixHash = "";
+		if (string.Equals(job.Kind, "generate", StringComparison.OrdinalIgnoreCase))
+		{
+			if (TryRebuildPendingWorldDiplomacyJob(job)) return true;
+			CommitFailedJob(job, "stale canonical prompt contract could not be rebuilt");
+			return false;
+		}
+		_storage.DiplomacyCompressionPending = true;
+		_storage.CompressionRetryAfterHour = 0;
+		_storage.CompressionRetryAttempts = 0;
+		RemoveJob(job.JobId);
+		return false;
+	}
+
 	private void ProcessCompletedJobs()
 	{
 		while (_completedJobs.TryDequeue(out LlmJobResult result))
 		{
-			_llmRequestRunning = false;
-			_activeJobId = "";
+			bool completesActiveRequest = string.Equals(result?.JobId, _activeJobId, StringComparison.OrdinalIgnoreCase)
+				&& result.RuntimeGeneration == _activeRequestRuntimeGeneration;
+			if (completesActiveRequest)
+			{
+				_llmRequestRunning = false;
+				_activeJobId = "";
+				_activeRequestRuntimeGeneration = 0L;
+			}
+			// A completion from a previous save/runtime may share the same persisted
+			// JobId with a rebuilt request. It must not inspect, mutate or remove the
+			// current runtime's job.
+			if (result == null || result.RuntimeGeneration != _runtimeGeneration
+				|| SaveRuntimeGuard.IsStale(result.RuntimeGeneration, "world_diplomacy_commit"))
+			{
+				continue;
+			}
 			WorldDiplomacyJob job = _storage.Jobs.FirstOrDefault(x => x != null && string.Equals(x.JobId, result.JobId, StringComparison.OrdinalIgnoreCase));
 			if (job == null)
 			{
@@ -1702,12 +1915,6 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			}
 			job.IsRunning = false;
 			LogPromptCacheUsage(job, result);
-			RecordDiplomacyTokenUsage(job, result);
-			if (result.RuntimeGeneration != _runtimeGeneration || SaveRuntimeGuard.IsStale(result.RuntimeGeneration, "world_diplomacy_commit"))
-			{
-				RemoveJob(job.JobId);
-				continue;
-			}
 			if (!result.Success)
 			{
 				if (result.IsServiceFailure)
@@ -1778,8 +1985,15 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		else if (string.Equals(job.Kind, "compress", StringComparison.OrdinalIgnoreCase))
 		{
 			_storage.DiplomacyCompressionPending = true;
-			_storage.CompressionRetryAfterHour = CurrentHour() + CompressionRetryCooldownHours;
+			_storage.CompressionRetryAttempts = Math.Min(31, Math.Max(0, _storage.CompressionRetryAttempts) + 1);
+			int retryHours = _storage.CompressionRetryAttempts >= 6
+				? CompressionRetryMaximumHours
+				: Math.Min(CompressionRetryMaximumHours,
+					CompressionRetryInitialHours << Math.Max(0, _storage.CompressionRetryAttempts - 1));
+			_storage.CompressionRetryAfterHour = CurrentHour() + retryHours;
 			Log("token compression retained for retry batch=" + (job.CompressionBatchId ?? "")
+				+ " attempt=" + _storage.CompressionRetryAttempts.ToString(CultureInfo.InvariantCulture)
+				+ " retry_hours=" + retryHours.ToString(CultureInfo.InvariantCulture)
 				+ " retry_after_hour=" + _storage.CompressionRetryAfterHour.ToString(CultureInfo.InvariantCulture));
 		}
 		else if (string.Equals(job.Kind, "round_plan", StringComparison.OrdinalIgnoreCase))
@@ -1886,16 +2100,6 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			return;
 		}
 		AddDocument(document);
-		try
-		{
-			RecordGeneratedLlmTranscript(job, raw);
-		}
-		catch (Exception ex)
-		{
-			// The declaration has already passed semantic validation; a cache transcript failure
-			// must not turn it into an untracked ghost draft.
-			Log("valid declaration transcript commit failed document=" + document.DocumentId + " error=" + ex.Message);
-		}
 		WorldDiplomacyExchange exchange = ResolveExchange(job.ExchangeId);
 		if (exchange != null)
 		{
@@ -2106,13 +2310,10 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 				return true;
 			}
 		}
-		if (TryGetVisibleIntentViolation(intent, visibleText, json, author, generatedTarget, out reason)) return true;
-
-		if (LooksLikeMisaddressedThirdPartyOfferResponse(job, author, generatedTarget, intent, visibleText))
-		{
-			reason = "new_proposal_claims_third_party_offer";
-			return true;
-		}
+		// The LLM's structured author_intent is authoritative for generated declarations.
+		// Do not re-infer an action from literary wording: the structured intent is always
+		// exposed to players through DocumentTypeLabel, while C# still owns legality and execution.
+		if (TryGetPublicPeaceTermsDisclosureViolation(intent, visibleText, json, author, generatedTarget, out reason)) return true;
 		if (TryGetImmersionViolation(visibleText, out reason))
 		{
 			return true;
@@ -2121,8 +2322,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		{
 			return true;
 		}
-		bool hasExplicitPeaceNegotiation = LooksLikeExplicitPeaceNegotiationWithTarget(author, generatedTarget, title + "\n" + body);
-		if (!IsPeaceIntent(intent) && !hasExplicitPeaceNegotiation) return false;
+		if (!IsPeaceIntent(intent)) return false;
 		if (generatedTarget == null || generatedTarget == author)
 		{
 			reason = "peace_intent_has_no_valid_target";
@@ -2148,7 +2348,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			&& string.Equals(first.CessionSettlementId ?? "", second.CessionSettlementId ?? "", StringComparison.OrdinalIgnoreCase);
 	}
 
-	private bool TryGetVisibleIntentViolation(string intent, string visibleText, JObject json, Kingdom author, Kingdom target, out string reason)
+	private bool TryGetPlayerVisibleIntentViolation(string intent, string visibleText, Kingdom author, Kingdom target, out string reason)
 	{
 		reason = "";
 		string normalized = NormalizeIntent(intent);
@@ -2226,6 +2426,14 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			return true;
 		}
 
+		return false;
+	}
+
+	private bool TryGetPublicPeaceTermsDisclosureViolation(string intent, string visibleText, JObject json, Kingdom author, Kingdom target, out string reason)
+	{
+		reason = "";
+		string normalized = NormalizeIntent(intent);
+		string text = visibleText ?? "";
 		if (normalized != "propose_peace" || json?.SelectToken("peace_terms") is not JToken terms) return false;
 		int.TryParse(terms["daily_tribute"]?.ToString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int tribute);
 		int.TryParse(terms["duration_days"]?.ToString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int duration);
@@ -2646,25 +2854,6 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			&& (response.IsPlayerAuthored || string.Equals(response.RespondingToOfferDocumentId, x.SourceDocumentId, StringComparison.OrdinalIgnoreCase))) == true;
 	}
 
-	private bool LooksLikeMisaddressedThirdPartyOfferResponse(WorldDiplomacyJob job, Kingdom author, Kingdom target, string intent, string visibleText)
-	{
-		if (job == null || author == null || target == null || string.IsNullOrWhiteSpace(visibleText)) return false;
-		WorldDiplomacyRound round = ResolveRound(FirstNonEmpty(job.RoundId, job.ExchangeId));
-		if (round?.PendingOffers == null) return false;
-		List<WorldDiplomacyRoundOffer> offersFromTargetToOthers = round.PendingOffers.Where(x => x != null
-			&& string.Equals(x.Status, "open", StringComparison.OrdinalIgnoreCase)
-			&& string.Equals(x.ProposerKingdomId, target.StringId, StringComparison.OrdinalIgnoreCase)
-			&& !string.Equals(x.TargetKingdomId, author.StringId, StringComparison.OrdinalIgnoreCase)).ToList();
-		if (offersFromTargetToOthers.Count == 0) return false;
-		string normalizedIntent = NormalizeIntent(intent);
-		if (IsProposalIntent(normalizedIntent)
-			&& !offersFromTargetToOthers.Any(x => string.Equals(NormalizeIntent(x.Intent), normalizedIntent, StringComparison.OrdinalIgnoreCase))) return false;
-		if (ContainsAny(visibleText, "另行提议", "另提一案", "另有一项提议", "由我国重新提出", "不是对先前提议的答复")) return false;
-		bool claimsDirectOffer = ContainsAny(visibleText, "你的提议", "你的建议", "你所提出", "你的使者", "你派来的使者", "你想结盟", "你要求结盟", "你提出结盟", "你希望通商", "你提出议和");
-		bool answersOffer = ContainsAny(visibleText, "接受", "同意", "答应", "拒绝", "可以，但", "可以，不过", "我有条件", "条件是");
-		return claimsDirectOffer && answersOffer;
-	}
-
 	private static bool TryGetImmersionViolation(string visibleText, out string reason)
 	{
 		reason = "";
@@ -2877,18 +3066,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 		correctionBuilder.Append("重新输出完整JSON。接受或拒绝时填写正确的responding_to_offer_document_id，其他情况留空。不要提到草稿、纠正、系统或上述错误。");
 		string correction = correctionBuilder.ToString();
-		List<WorldDiplomacyLlmMessage> messages = source.LlmMessages?.Count > 0
-			? CloneLlmMessages(source.LlmMessages)
-			: new List<WorldDiplomacyLlmMessage>
-			{
-				new WorldDiplomacyLlmMessage { Role = "system", Content = source.SystemPrompt ?? "" },
-				new WorldDiplomacyLlmMessage
-				{
-					Role = "user",
-					Content = source.UserPrompt ?? "",
-					StrategicProfileKingdomId = source.StrategicProfileKingdomId ?? ""
-				}
-			};
+		List<WorldDiplomacyLlmMessage> messages = CloneLlmMessages(BuildLlmMessagesForJob(source));
 		messages.Add(new WorldDiplomacyLlmMessage { Role = "assistant", Content = rejectedRaw ?? "" });
 		messages.Add(new WorldDiplomacyLlmMessage { Role = "user", Content = correction });
 		WorldDiplomacyJob repair = new WorldDiplomacyJob
@@ -2917,6 +3095,12 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			ProfiledKingdomId = source.ProfiledKingdomId ?? "",
 			StrategicProfileKingdomId = source.StrategicProfileKingdomId ?? "",
 			CacheAffinityKey = source.CacheAffinityKey ?? "",
+			HistoryThroughSequence = source.HistoryThroughSequence,
+			HistoryRevision = source.HistoryRevision,
+			HistoryPrefixHash = source.HistoryPrefixHash ?? "",
+			HistoryEstimatedTokens = source.HistoryEstimatedTokens,
+			HistorySnapshotThroughSequence = source.HistorySnapshotThroughSequence,
+			HistorySnapshotHash = source.HistorySnapshotHash ?? "",
 			MaxTokens = source.MaxTokens,
 			SemanticRepairAttempts = source.SemanticRepairAttempts + 1
 		};
@@ -2955,23 +3139,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			+ " reason=" + (reason ?? ""));
 		_storage.Documents.RemoveAll(x => x != null && string.Equals(x.DocumentId, document.DocumentId, StringComparison.OrdinalIgnoreCase));
 		WorldDiplomacyRound round = ResolveRound(document.RoundId);
-		if (round?.LlmTranscript != null)
-		{
-			for (int index = round.LlmTranscript.Count - 1; index >= 0; index--)
-			{
-				WorldDiplomacyLlmMessage message = round.LlmTranscript[index];
-				if (!string.Equals(message?.Role, "assistant", StringComparison.OrdinalIgnoreCase)
-					|| string.IsNullOrWhiteSpace(document.Title)
-					|| (message.Content ?? "").IndexOf(document.Title, StringComparison.OrdinalIgnoreCase) < 0) continue;
-				round.LlmTranscript.RemoveAt(index);
-				if (index > 0 && string.Equals(round.LlmTranscript[index - 1]?.Role, "user", StringComparison.OrdinalIgnoreCase))
-				{
-					round.LlmTranscript.RemoveAt(index - 1);
-				}
-				break;
-			}
-			round.LlmProfiledKingdomIds?.RemoveAll(x => string.Equals(x, document.AuthorKingdomId, StringComparison.OrdinalIgnoreCase));
-		}
+		round?.LlmProfiledKingdomIds?.RemoveAll(x => string.Equals(x, document.AuthorKingdomId, StringComparison.OrdinalIgnoreCase));
 		if (document.IsRelayTurn && round != null && string.Equals(round.State, "active", StringComparison.OrdinalIgnoreCase))
 		{
 			round.RelayWaiting = false;
@@ -2986,78 +3154,6 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		{
 			CloseActiveRound("technical_invalid_document_suppressed");
 		}
-	}
-
-	private void RecordGeneratedLlmTranscript(WorldDiplomacyJob job, string rawAssistantContent)
-	{
-		if (job == null || !string.Equals(job.Kind, "generate", StringComparison.OrdinalIgnoreCase)) return;
-		WorldDiplomacyRound round = ResolveRound(FirstNonEmpty(job.RoundId, job.ExchangeId));
-		if (round == null) return;
-		round.LlmTranscript ??= new List<WorldDiplomacyLlmMessage>();
-		round.LlmProfiledKingdomIds ??= new List<string>();
-		if (!job.IsRelayTurn && round.LlmTranscript.Count > 0) return;
-
-		List<WorldDiplomacyLlmMessage> transcript = job.LlmMessages?.Count > 0
-			? CloneLlmMessages(job.LlmMessages)
-			: new List<WorldDiplomacyLlmMessage>
-			{
-				new WorldDiplomacyLlmMessage { Role = "system", Content = job.SystemPrompt ?? "" },
-				new WorldDiplomacyLlmMessage
-				{
-					Role = "user",
-					Content = job.UserPrompt ?? "",
-					StrategicProfileKingdomId = job.StrategicProfileKingdomId ?? ""
-				}
-			};
-		if (job.SemanticRepairAttempts > 0 && transcript.Count >= 2)
-		{
-			int correctionIndex = transcript.Count - 1;
-			WorldDiplomacyLlmMessage correction = transcript[correctionIndex];
-			WorldDiplomacyLlmMessage rejectedDraft = transcript[correctionIndex - 1];
-			if (string.Equals(correction?.Role, "user", StringComparison.OrdinalIgnoreCase)
-				&& (correction.Content ?? "").StartsWith("【未发布草稿的硬事实纠正】", StringComparison.Ordinal)
-				&& string.Equals(rejectedDraft?.Role, "assistant", StringComparison.OrdinalIgnoreCase))
-			{
-				transcript.RemoveRange(correctionIndex - 1, 2);
-			}
-		}
-		List<WorldDiplomacyLlmMessage> interleavedExternalMessages = new List<WorldDiplomacyLlmMessage>();
-		if (job.IsRelayTurn && job.LlmMessages?.Count > 0)
-		{
-			int priorTranscriptCount = Math.Max(0, job.LlmMessages.Count - 1);
-			if (round.LlmTranscript.Count > priorTranscriptCount
-				&& LlmMessagePrefixMatches(round.LlmTranscript, job.LlmMessages, priorTranscriptCount))
-			{
-				interleavedExternalMessages = CloneLlmMessages(round.LlmTranscript.Skip(priorTranscriptCount));
-			}
-		}
-		transcript.Add(new WorldDiplomacyLlmMessage { Role = "assistant", Content = rawAssistantContent ?? "" });
-		transcript.AddRange(interleavedExternalMessages);
-		round.LlmTranscript = transcript;
-		string profiledId = FirstNonEmpty(job.ProfiledKingdomId, !job.IsRelayTurn ? job.AuthorKingdomId : "");
-		if (!string.IsNullOrWhiteSpace(profiledId)
-			&& !round.LlmProfiledKingdomIds.Any(x => string.Equals(x, profiledId, StringComparison.OrdinalIgnoreCase)))
-		{
-			round.LlmProfiledKingdomIds.Add(profiledId);
-		}
-		int transcriptChars = round.LlmTranscript.Sum(x => x?.Content?.Length ?? 0);
-		Log("relay transcript committed round=" + round.RoundId
-			+ " messages=" + round.LlmTranscript.Count.ToString(CultureInfo.InvariantCulture)
-			+ " chars=" + transcriptChars.ToString(CultureInfo.InvariantCulture)
-			+ " hash=" + StablePromptHash(string.Join("\n", round.LlmTranscript.Select(x => (x?.Role ?? "") + ":" + (x?.Content ?? "")))));
-	}
-
-	private static bool LlmMessagePrefixMatches(IReadOnlyList<WorldDiplomacyLlmMessage> first, IReadOnlyList<WorldDiplomacyLlmMessage> second, int count)
-	{
-		if (first == null || second == null || count < 0 || first.Count < count || second.Count < count) return false;
-		for (int index = 0; index < count; index++)
-		{
-			WorldDiplomacyLlmMessage a = first[index];
-			WorldDiplomacyLlmMessage b = second[index];
-			if (!string.Equals(a?.Role ?? "", b?.Role ?? "", StringComparison.Ordinal)
-				|| !string.Equals(a?.Content ?? "", b?.Content ?? "", StringComparison.Ordinal)) return false;
-		}
-		return true;
 	}
 
 	private bool TryApplyGeneratedSemanticEnvelope(WorldDiplomacyDocument document, JObject json, Kingdom author, Kingdom fallbackTarget, bool allowUntargeted, bool relayTurn)
@@ -3335,7 +3431,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			return;
 		}
 		if (!document.IsPlayerAuthored && target != null
-			&& (IsPeaceIntent(normalizedIntent) || LooksLikeExplicitPeaceNegotiationWithTarget(author, target, document.Title + "\n" + document.Body))
+			&& IsPeaceIntent(normalizedIntent)
 			&& !FactionManager.IsAtWarAgainstFaction(author, target))
 		{
 			Log("illegal AI peace intent blocked before propagation document=" + document.DocumentId
@@ -3364,6 +3460,15 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			}
 			Log("diplomatic mechanism failed without discarding valid declaration document=" + document.DocumentId
 				+ " intent=" + normalizedIntent + " error=" + ex.Message);
+		}
+		try
+		{
+			AppendCanonicalDocumentEvents(document);
+		}
+		catch (Exception ex)
+		{
+			ScheduleDeferredCanonicalHistoryRetry(document.DocumentId);
+			Log("canonical history append deferred document=" + document.DocumentId + " error=" + ex.Message);
 		}
 		try
 		{
@@ -3425,7 +3530,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			return true;
 		}
 		if ((isNewProposal || isQualitativeCommitment)
-			&& TryGetVisibleIntentViolation(normalizedIntent, document.Body, null, author, target, out string visibleActionReason))
+			&& TryGetPlayerVisibleIntentViolation(normalizedIntent, document.Body, author, target, out string visibleActionReason))
 		{
 			reason = "player_action_" + visibleActionReason;
 			return true;
@@ -3481,7 +3586,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			bool usesReplyReference = targetIsReplyContext
 				&& ContainsAny(clause, "贵国", "你国", "贵方", "你方", "贵朝", "贵邦", "双方", "两国");
 			if (!namesTarget && !usesReplyReference) continue;
-			if (!TryGetVisibleIntentViolation(intent, clause, null, author, target, out string visibleReason))
+			if (!TryGetPlayerVisibleIntentViolation(intent, clause, author, target, out string visibleReason))
 			{
 				reason = "";
 				return true;
@@ -3560,9 +3665,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			SoftEndDay = day + targetDurationDays,
 			HardEndDay = day + GetRoundHardDurationDays(targetDurationDays),
 			RelayPassDurationDays = GetCourtMaxDeliveryDays(),
-			IsPlayerInsertion = isPlayerInsertion,
-			CommonContractSnapshot = BuildCommonDiplomacySystemPrefix(),
-			CommonContractSnapshotInitialized = true
+			IsPlayerInsertion = isPlayerInsertion
 		};
 		_storage.ActiveRound = round;
 		EnsureRoundParticipant(round, roundInitiator?.StringId, "active", mandatoryReply: false);
@@ -3822,12 +3925,82 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private string BuildRoundPlanSystemPrompt(WorldDiplomacyRound round)
 	{
 		StringBuilder sb = CreateSystemPromptBuilder(GetCommonDiplomacyContract(round));
-		sb.AppendLine(RoundPlanTaskMarker + "根据开场外交宣言和候选国现实利益，一次选定本次事件参与者；后续不会反复评估观察国。");
-		sb.AppendLine("若宣言明确指向某国，该国必须参与。候选名单包含当前仍有独立外交权的全部其他国家；只选确实会介入本次交涉者，不选只会旁观评论者。");
-		sb.AppendLine("参与国家规模是包含发起国和主要对象国在内的总数上限，而非必须凑满。只可使用候选ID；没有合适的可少选或不选。");
-		sb.AppendLine("事件由头不等于预定结果。参与国应能把争议或机会引向结盟、解盟、贸易、断绝贸易、宣战、议和等当前合法行为之一，或者对这些行为提出、接受、拒绝或反提具体条件。");
-		sb.AppendLine("只输出JSON：{\"topic\":\"简短外交议题\",\"selected_kingdom_ids\":[\"ID\"],\"reason\":\"简短理由\"}");
+		sb.AppendLine(RoundPlanTaskMarker + "最后一条消息的 MODE=ROUND_PLAN 决定本次任务和输出结构。");
 		return sb.ToString().TrimEnd();
+	}
+
+	private static bool NeedsCanonicalHistoryRetry(WorldDiplomacyDocument document)
+	{
+		if (document == null || !document.IsReadyForPublication || string.IsNullOrWhiteSpace(document.DocumentId)) return false;
+		bool externalResolvedFact = string.Equals(document.AnalysisStatus, "external_fact", StringComparison.OrdinalIgnoreCase);
+		bool declarationPending = !externalResolvedFact
+			&& !document.HistoryDeclarationRecorded
+			&& !string.IsNullOrWhiteSpace(document.Body);
+		bool resultPending = !document.HistoryResultRecorded
+			&& (document.ChangedDiplomaticState || externalResolvedFact)
+			&& !string.IsNullOrWhiteSpace(document.MechanicalResult);
+		return declarationPending || resultPending;
+	}
+
+	private void EnqueueDeferredCanonicalHistoryRetry(string documentId)
+	{
+		string normalizedId = (documentId ?? "").Trim();
+		if (normalizedId.Length == 0 || !_deferredCanonicalHistoryDocumentIdSet.Add(normalizedId)) return;
+		_deferredCanonicalHistoryDocumentIds.Enqueue(normalizedId);
+	}
+
+	private void ScheduleDeferredCanonicalHistoryRetry(string documentId)
+	{
+		string normalizedId = (documentId ?? "").Trim();
+		if (normalizedId.Length == 0) return;
+		_deferredCanonicalHistoryRetryAttempts.TryGetValue(normalizedId, out int attempts);
+		attempts = Math.Min(30, attempts + 1);
+		_deferredCanonicalHistoryRetryAttempts[normalizedId] = attempts;
+		int delayHours = Math.Min(24, 1 << Math.Min(4, Math.Max(0, attempts - 1)));
+		_deferredCanonicalHistoryRetryAfterHour[normalizedId] = CurrentHour() + delayHours;
+		EnqueueDeferredCanonicalHistoryRetry(normalizedId);
+	}
+
+	private void RetryDeferredCanonicalHistoryEntries(int maxAttempts = 16)
+	{
+		int attempts = Math.Min(Math.Max(0, maxAttempts), _deferredCanonicalHistoryDocumentIds.Count);
+		for (int i = 0; i < attempts; i++)
+		{
+			string documentId = _deferredCanonicalHistoryDocumentIds.Dequeue();
+			_deferredCanonicalHistoryDocumentIdSet.Remove(documentId);
+			WorldDiplomacyDocument document = ResolveDocument(documentId);
+			if (!NeedsCanonicalHistoryRetry(document))
+			{
+				_deferredCanonicalHistoryRetryAttempts.Remove(documentId);
+				_deferredCanonicalHistoryRetryAfterHour.Remove(documentId);
+				continue;
+			}
+			if (_deferredCanonicalHistoryRetryAfterHour.TryGetValue(documentId, out int retryAfterHour)
+				&& CurrentHour() < retryAfterHour)
+			{
+				EnqueueDeferredCanonicalHistoryRetry(documentId);
+				continue;
+			}
+			try
+			{
+				AppendCanonicalDocumentEvents(document);
+			}
+			catch (Exception ex)
+			{
+				ScheduleDeferredCanonicalHistoryRetry(documentId);
+				Log("deferred canonical history retry failed document=" + documentId + " error=" + ex.Message);
+				continue;
+			}
+			if (NeedsCanonicalHistoryRetry(document))
+			{
+				ScheduleDeferredCanonicalHistoryRetry(documentId);
+			}
+			else
+			{
+				_deferredCanonicalHistoryRetryAttempts.Remove(documentId);
+				_deferredCanonicalHistoryRetryAfterHour.Remove(documentId);
+			}
+		}
 	}
 
 	private string BuildRoundPlanPrompt(WorldDiplomacyDocument root, List<string> candidateIds)
@@ -3853,9 +4026,12 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			sb.AppendLine(BuildCompactRoundPlanCandidateLine(ResolveKingdom(root.AuthorKingdomId), kingdom));
 			string policy = WorldDiplomacyPolicyContext.BuildSnapshot(id);
 			if (!string.IsNullOrWhiteSpace(policy)) sb.AppendLine("  政策=" + Limit(policy, 500));
-			string weekly = BuildWeeklyDiplomacySnapshot(id);
-			if (!string.IsNullOrWhiteSpace(weekly)) sb.AppendLine("  周报=" + Limit(weekly, 260));
 		}
+		sb.AppendLine("【MODE=ROUND_PLAN】");
+		sb.AppendLine("根据开场外交宣言和候选国现实利益，一次选定本次事件参与者；后续不会反复评估观察国。");
+		sb.AppendLine("若宣言明确指向某国，该国必须参与。只选确实会介入本次交涉者，不选只会旁观评论者。参与国总数是上限，不必凑满；只可使用候选ID。");
+		sb.AppendLine("事件由头不预定结果。参与国应能推动当前合法的结盟、解盟、贸易、断贸、宣战、议和，或提出、接受、拒绝、反提条件。");
+		sb.AppendLine("只输出JSON：{\"topic\":\"简短外交议题\",\"selected_kingdom_ids\":[\"ID\"],\"reason\":\"简短理由\"}");
 		return sb.ToString().TrimEnd();
 	}
 
@@ -3934,14 +4110,11 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			participant.SelectedForRelay = true;
 			participant.IsPlayerAsync = IsPlayerKingdom(ResolveKingdom(id));
 		}
-		round.CachePrefix = BuildRoundCachePrefix(round, root);
-		int cachePrefixProbeChars = Math.Min(2048, round.CachePrefix?.Length ?? 0);
+		round.CachePrefix = "";
 		Log("relay round planned round=" + round.RoundId + " route=" + string.Join(">", route)
 			+ " participantLimit=" + participantLimit.ToString(CultureInfo.InvariantCulture)
 			+ " passDays=" + round.RelayPassDurationDays.ToString(CultureInfo.InvariantCulture)
-			+ " targetDays=" + Math.Max(1, round.SoftEndDay - round.StartedDay).ToString(CultureInfo.InvariantCulture)
-			+ " frozenPrefixChars=" + (round.CachePrefix?.Length ?? 0).ToString(CultureInfo.InvariantCulture)
-			+ " frozenPrefix2048Hash=" + StablePromptHash(cachePrefixProbeChars <= 0 ? "" : round.CachePrefix.Substring(0, cachePrefixProbeChars)));
+			+ " targetDays=" + Math.Max(1, round.SoftEndDay - round.StartedDay).ToString(CultureInfo.InvariantCulture));
 		ScheduleNextRelayHop(round);
 	}
 
@@ -4145,140 +4318,22 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		return "regional_security";
 	}
 
-	private string BuildRoundCachePrefix(WorldDiplomacyRound round, WorldDiplomacyDocument root)
-	{
-		StringBuilder sb = new StringBuilder();
-		sb.AppendLine("【本次外交事件公开档案 v14】");
-		sb.AppendLine("公开议题=" + FirstNonEmpty(round.RoundTopic, root.Title, "外交交涉"));
-		sb.AppendLine("开场宣言=" + root.AuthorKingdomId + "|" + root.Title + "|" + Limit(root.Body, 2200));
-		sb.AppendLine("公文传递顺序=" + string.Join(">", round.RelayRouteKingdomIds ?? new List<string>()));
-		sb.AppendLine("预计交涉时长=" + Math.Max(1, round.SoftEndDay - round.StartedDay).ToString(CultureInfo.InvariantCulture) + "天；公文单程传播=" + Math.Max(1, round.RelayPassDurationDays).ToString(CultureInfo.InvariantCulture) + "天");
-		sb.AppendLine("决策原则=议题和开场宣言只是已经公开的外交事实，不预定后续国家的立场或行动。每个国家依据自己的国家卡、利益和即时局势自行决定回应、另提方案、施压、合作、退出或维持现状；任何关系变化都必须符合当前真实状态。");
-		string vassalageSnapshot = BuildWorldDiplomacyVassalageSnapshot();
-		if (!string.IsNullOrWhiteSpace(vassalageSnapshot)) sb.AppendLine(vassalageSnapshot);
-		sb.AppendLine("参与国稳定背景（仅用于各国独立决策；不得声称这些内部信息已被其他王国获知）：");
-		sb.AppendLine("档案中的政策、周报和态势材料只供判断。公开宣言必须改写成卡拉迪亚统治者能从使者、战报、账簿与领地得失中理解的说法，不得复述后台评分、关系点或其他游戏指标。");
-		foreach (string id in (round.RelayRouteKingdomIds ?? new List<string>()).OrderBy(x => x, StringComparer.OrdinalIgnoreCase))
-		{
-			Kingdom kingdom = ResolveKingdom(id);
-			if (kingdom == null) continue;
-			sb.AppendLine("-- " + id + "=" + KingdomName(kingdom) + "，统治者=" + RulerName(kingdom));
-			string voice = BuildRulerVoiceContext(kingdom);
-			if (!string.IsNullOrWhiteSpace(voice)) sb.AppendLine("统治者声音=" + Limit(voice, 900));
-			string realmVoice = BuildRealmInstitutionalVoiceContext(kingdom);
-			if (!string.IsNullOrWhiteSpace(realmVoice)) sb.AppendLine("国家制度与礼制声音=" + Limit(realmVoice, 1400));
-			string family = BuildAuthorRulerFamilyContext(kingdom);
-			if (!string.IsNullOrWhiteSpace(family)) sb.AppendLine("王室与亲属=" + Limit(family, 650));
-			string policy = WorldDiplomacyPolicyContext.BuildSnapshot(id);
-			if (!string.IsNullOrWhiteSpace(policy)) sb.AppendLine("政策=" + Limit(policy, 900));
-			string weekly = BuildWeeklyDiplomacySnapshot(id);
-			if (!string.IsNullOrWhiteSpace(weekly)) sb.AppendLine("周报=" + Limit(weekly, 500));
-		}
-		if (!string.IsNullOrWhiteSpace(round.ExternalOpeningContext))
-		{
-			sb.AppendLine("【已经发生的外部外交事件】");
-			sb.AppendLine(Limit(round.ExternalOpeningContext, 1800));
-			sb.AppendLine("这些是已发生事实，不预定任何参与国的回应或结果。");
-		}
-		return sb.ToString().TrimEnd();
-	}
-
 	private static string BuildRelayGenerationSystemPrompt(string commonContract)
 	{
-		return BuildDiplomaticDeclarationSystemPrompt(commonContract);
-	}
-
-	private string BuildRelayGenerationPrompt(WorldDiplomacyRound round, Kingdom author, Kingdom previous)
-	{
-		StringBuilder sb = new StringBuilder();
-		sb.AppendLine(round?.CachePrefix ?? "");
-		if (!string.IsNullOrWhiteSpace(round?.ExternalOpeningContext)
-			&& (round.CachePrefix ?? "").IndexOf((round.ExternalSignalKeys ?? new List<string>()).FirstOrDefault() ?? "", StringComparison.OrdinalIgnoreCase) < 0)
-		{
-			sb.AppendLine("【本次外交事件新增的外部动向】");
-			sb.AppendLine(Limit(round.ExternalOpeningContext, 1800));
-		}
-		sb.AppendLine("【本次外交事件已颁布公文档案】");
-		foreach (WorldDiplomacyDocument document in _storage.Documents
-			.Where(x => x != null && string.Equals(x.RoundId, round?.RoundId, StringComparison.OrdinalIgnoreCase) && x.IsReadyForPublication
-				&& !string.Equals(x.DocumentId, round?.RootDocumentId, StringComparison.OrdinalIgnoreCase))
-			.OrderBy(x => x.Day).ThenBy(x => x.CreatedUtcTicks).Take(30))
-		{
-			sb.AppendLine("DOC " + document.DocumentId + "|" + document.AuthorKingdomId + "|" + document.Intent + "|" + document.Title);
-			sb.AppendLine(Limit(document.Body, 1800));
-		}
-		sb.AppendLine("【本次动态尾部】");
-		sb.AppendLine("本篇发布国=" + author.StringId + "=" + KingdomName(author) + "，授权统治者=" + RulerName(author));
-		sb.AppendLine("本国没有程序分配的角色或议程；依据本国国家卡、已送达公文和即时硬事实自行决定本篇立场与行动。");
-		if ((round?.CachePrefix ?? "").IndexOf("-- " + author.StringId + "=", StringComparison.OrdinalIgnoreCase) < 0)
-		{
-			string addedVoice = BuildRulerVoiceContext(author);
-			if (!string.IsNullOrWhiteSpace(addedVoice)) sb.AppendLine("玩家介入后新增参与国声音=" + Limit(addedVoice, 900));
-			string addedRealmVoice = BuildRealmInstitutionalVoiceContext(author);
-			if (!string.IsNullOrWhiteSpace(addedRealmVoice)) sb.AppendLine("玩家介入后新增参与国制度与礼制声音=" + Limit(addedRealmVoice, 1400));
-			string addedFamily = BuildAuthorRulerFamilyContext(author);
-			if (!string.IsNullOrWhiteSpace(addedFamily)) sb.AppendLine("玩家介入后新增参与国王室与亲属=" + Limit(addedFamily, 650));
-			string addedPolicy = WorldDiplomacyPolicyContext.BuildSnapshot(author.StringId);
-			if (!string.IsNullOrWhiteSpace(addedPolicy)) sb.AppendLine("玩家介入后新增参与国政策=" + Limit(addedPolicy, 900));
-			string addedWeekly = BuildWeeklyDiplomacySnapshot(author.StringId);
-			if (!string.IsNullOrWhiteSpace(addedWeekly)) sb.AppendLine("玩家介入后新增参与国周报=" + Limit(addedWeekly, 500));
-		}
-		sb.AppendLine("最近送抵本国王庭的公文来源=" + (previous?.StringId ?? "") + "=" + KingdomName(previous));
-		sb.AppendLine("送件国只是最近来文来源，不是程序指定对象；本国自行选择参与国作为对象，非行动性宣言也可不设主要对象。");
-		sb.AppendLine("允许动作对象=" + string.Join(",", (round?.RelayRouteKingdomIds ?? new List<string>()).Where(x => !string.Equals(x, author.StringId, StringComparison.OrdinalIgnoreCase))));
-		sb.AppendLine(BuildCurrentLegalDiplomaticOptions(round, author));
-		sb.AppendLine(BuildCurrentGeographicRelations(round, author));
-		foreach (WorldDiplomacyRoundOffer offer in (round?.PendingOffers ?? new List<WorldDiplomacyRoundOffer>()).Where(x => x != null && string.Equals(x.Status, "open", StringComparison.OrdinalIgnoreCase)))
-		{
-			bool canAnswer = string.Equals(offer.TargetKingdomId, author.StringId, StringComparison.OrdinalIgnoreCase);
-			sb.AppendLine("待回应提议=" + offer.Intent + "|提出国=" + offer.ProposerKingdomId + "|对象国=" + offer.TargetKingdomId + "|来源=" + offer.SourceDocumentId
-				+ (canAnswer ? "|答复资格=本国可以接受或拒绝" : "|答复资格=本国不是对象国，不得接受或拒绝；只能评论或明确另提新案"));
-		}
-		int age = Math.Max(0, CurrentDay() - (round?.StartedDay ?? CurrentDay()));
-		int targetDays = Math.Max(1, (round?.SoftEndDay ?? CurrentDay() + RelayTargetDurationDays) - (round?.StartedDay ?? CurrentDay()));
-		int remainingDays = Math.Max(0, targetDays - age);
-		sb.AppendLine("本次交涉已经进行=" + age.ToString(CultureInfo.InvariantCulture) + "天；预计时长=" + targetDays.ToString(CultureInfo.InvariantCulture)
-			+ "天；距离预计收束=" + remainingDays.ToString(CultureInfo.InvariantCulture) + "天；当前公文往来阶段=" + (round?.RelayPassNumber ?? 0).ToString(CultureInfo.InvariantCulture));
-		AppendRoundSubstantiveProgressRequirement(sb, round, age, targetDays);
-		AppendOpenOfferAnswerRequirement(sb, round, author, age, targetDays);
-		if (age * 100 >= targetDays * 85) sb.AppendLine("当前已进入最后阶段：必须给出最终条件、接受、拒绝、退出或合法行动，不得继续空泛争论。");
-		else if (age * 100 >= targetDays * 70) sb.AppendLine("当前已进入回合后段：优先收束分歧并形成明确结果。");
-		string gatheringContext = NobleGatheringBehavior.BuildRecentDiplomacyMaterialForExternal(round?.RelayRouteKingdomIds, 3);
-		if (!string.IsNullOrWhiteSpace(gatheringContext))
-		{
-			sb.AppendLine("【近期相关宴会】");
-			sb.AppendLine(Limit(gatheringContext, 900));
-			sb.AppendLine("宴会只是当前可利用或评论的公开动向，不预设赞扬、嘲讽或敌意，也不自动产生外交结果。");
-		}
-		foreach (string id in round?.RelayRouteKingdomIds ?? new List<string>())
-		{
-			Kingdom other = ResolveKingdom(id);
-			if (other == null || other == author) continue;
-			sb.AppendLine("即时状态：" + id + "=" + BuildBilateralState(author, other) + "，私人关系=" + DescribeRulerRelation(GetRulerRelation(author, other)));
-			if (FactionManager.IsAtWarAgainstFaction(author, other)) sb.AppendLine(Limit(BuildWarNegotiationContext(author, other), 1200));
-		}
-		return sb.ToString().TrimEnd();
+		return BuildCanonicalHistorySystemPrompt(commonContract);
 	}
 
 	private string BuildRelayConversationTurnPrompt(
 		WorldDiplomacyRound round,
 		Kingdom author,
 		Kingdom previous,
-		bool includeActorProfile,
 		WorldDiplomacyDocument prioritySource = null,
 		bool priorityResponseOnly = false)
 	{
 		PruneInvalidOffers(round);
-		if (round?.LlmTranscript == null || round.LlmTranscript.Count == 0)
-		{
-			// 旧存档或玩家发起的回合没有可逐字复用的 API 历史；首个 AI 回应沿用完整档案，
-			// 成功后会把这次真实请求和原始输出保存为后续接力的缓存链起点。
-			return BuildRelayGenerationPrompt(round, author, previous);
-		}
-
 		StringBuilder sb = new StringBuilder();
-		sb.AppendLine("【本次新增外交公文任务 v10】");
-		sb.AppendLine("此前的assistant JSON是按日期归档的已颁布外交公文，不是君主们正在进行的即时聊天。读取其中已经送达的主张与未决提议，为当前王国另行起草一份能够独立传阅的正式公文；不要承接上一句的聊天语气，不要重述全部历史，也不要把内部档案写成公开事实。");
+		sb.AppendLine("【本次外交公文动态状态】");
+		sb.AppendLine("长期档案中的宣言是已颁布公文，不是君主即时聊天。为当前王国另行起草一份可独立传阅的正式公文；不要承接聊天语气，绝不可以重述历史发言，严禁反复扯皮，必须在四个轮次内产生行为结果。");
 		sb.AppendLine("议题=" + (round.RoundTopic ?? ""));
 		sb.AppendLine("公文送达与发布顺序=" + string.Join(">", round.RelayRouteKingdomIds ?? new List<string>()));
 		sb.AppendLine("本篇发布国=" + author.StringId + "=" + KingdomName(author) + "，授权统治者=" + RulerName(author));
@@ -4290,9 +4345,8 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 				+ "|已裁定意图=" + NormalizeIntent(prioritySource.Intent));
 			sb.AppendLine("若玩家是在接受或拒绝本国此前提案，应承认该答复已经发生，并对结果作一次正式反应；不得继续声称玩家尚未答复。若玩家提出新提案、反提案或最后通牒，应接受、拒绝、提出明确反方案或说明仍待解决的具体条件。该优先回应完成后，原定公文传递会继续，不得要求玩家立即再次发言。");
 		}
-		if (includeActorProfile)
 		{
-			sb.AppendLine("【本发布国首次进入公文链的稳定决策档案】");
+			sb.AppendLine("【本发布国当前决策档案】");
 			string voice = BuildRulerVoiceContext(author);
 			if (!string.IsNullOrWhiteSpace(voice)) sb.AppendLine("统治者声音=" + Limit(voice, 700));
 			string realmVoice = BuildRealmInstitutionalVoiceContext(author);
@@ -4301,12 +4355,6 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			if (!string.IsNullOrWhiteSpace(family)) sb.AppendLine("王室与亲属=" + Limit(family, 400));
 			string policy = WorldDiplomacyPolicyContext.BuildSnapshot(author.StringId);
 			if (!string.IsNullOrWhiteSpace(policy)) sb.AppendLine("政策=" + Limit(policy, 550));
-			string weekly = BuildWeeklyDiplomacySnapshot(author.StringId);
-			if (!string.IsNullOrWhiteSpace(weekly)) sb.AppendLine("周报=" + Limit(weekly, 300));
-		}
-		else
-		{
-			sb.AppendLine("该国的稳定决策档案已在此前消息中给出，继续沿用，不要重新发明人物立场。");
 		}
 		sb.AppendLine("最近送抵本国王庭的公文来源=" + (previous?.StringId ?? "") + "=" + KingdomName(previous));
 		sb.AppendLine("送件国只是最近来文来源，不是程序指定对象；本国自行选择参与国作为对象，非行动性宣言也可不设主要对象。");
@@ -4356,19 +4404,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		stateSnapshot.AppendLine(legalPeaceTargetIds.Count == 0
 			? "当前没有可合法议和的参与国：不得使用propose_peace、accept_peace或reject_peace，也不得把和平关系写成停战谈判。"
 			: "当前可合法使用和平类意图的对象=" + string.Join(",", legalPeaceTargetIds) + "。和平类意图不得指向名单外王国。");
-		string stateText = stateSnapshot.ToString().TrimEnd();
-		string stateSignature = StablePromptHash(stateText);
-		round.LlmLastStateSignatureByKingdom ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-		if (round.LlmLastStateSignatureByKingdom.TryGetValue(author.StringId, out string previousStateSignature)
-			&& string.Equals(previousStateSignature, stateSignature, StringComparison.Ordinal))
-		{
-			sb.AppendLine("当前即时状态与该国上次发言时相同，继续沿用此前已经给出的战争、和平、关系与合法动作边界。");
-		}
-		else
-		{
-			sb.AppendLine(stateText);
-			round.LlmLastStateSignatureByKingdom[author.StringId] = stateSignature;
-		}
+		sb.AppendLine(stateSnapshot.ToString().TrimEnd());
 		return sb.ToString().TrimEnd();
 	}
 
@@ -4566,7 +4602,6 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private void IntegratePlayerDeclaration(WorldDiplomacyRound round, WorldDiplomacyDocument document)
 	{
 		if (round == null || document == null) return;
-		AppendPlayerDeclarationToLlmTranscript(round, document);
 		WorldDiplomacyRoundParticipant playerParticipant = EnsureRoundParticipant(round, document.AuthorKingdomId, "active", mandatoryReply: false);
 		if (playerParticipant != null)
 		{
@@ -4588,31 +4623,6 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			participant.SelectedForRelay = AddParticipantToRelayRouteIfNeeded(round, kingdom.StringId);
 		}
 		Log("player declaration appended to relay round=" + round.RoundId + " document=" + document.DocumentId);
-	}
-
-	private void AppendPlayerDeclarationToLlmTranscript(WorldDiplomacyRound round, WorldDiplomacyDocument document)
-	{
-		if (round?.LlmTranscript == null || round.LlmTranscript.Count == 0 || document == null) return;
-		string documentMarker = "公文ID=" + (document.DocumentId ?? "");
-		if (!string.IsNullOrWhiteSpace(document.DocumentId)
-			&& round.LlmTranscript.Any(x => x != null && string.Equals(x.Role, "user", StringComparison.OrdinalIgnoreCase)
-				&& (x.Content ?? "").IndexOf(documentMarker, StringComparison.OrdinalIgnoreCase) >= 0)) return;
-		List<string> directTargets = (document.AddressedKingdomIds ?? new List<string>())
-			.Concat(string.IsNullOrWhiteSpace(document.TargetKingdomId) ? Enumerable.Empty<string>() : new[] { document.TargetKingdomId })
-			.Where(x => !string.IsNullOrWhiteSpace(x))
-			.Distinct(StringComparer.OrdinalIgnoreCase)
-			.ToList();
-		string content = "【玩家王国在两次公文传递之间公开发布的外交宣言】\n"
-			+ documentMarker + "\n"
-			+ "发文国=" + document.AuthorKingdomId + "=" + document.AuthorKingdomName + "\n"
-			+ "标题=" + document.Title + "\n"
-			+ "正文=" + document.Body + "\n"
-			+ "指向=" + string.Join(",", directTargets) + "\n"
-			+ "语义=" + NormalizeIntent(document.Intent)
-			+ (string.IsNullOrWhiteSpace(document.RespondingToOfferDocumentId) ? "" : "|回应来源=" + document.RespondingToOfferDocumentId) + "\n"
-			+ "这是玩家亲自写出的公开材料，不得替玩家补写承诺；后续 AI 王国可以据此作出自己的回应。";
-		round.LlmTranscript.Add(new WorldDiplomacyLlmMessage { Role = "user", Content = content });
-		Log("relay transcript appended player declaration round=" + round.RoundId + " messages=" + round.LlmTranscript.Count.ToString(CultureInfo.InvariantCulture));
 	}
 
 	private static bool RoundContainsKingdom(WorldDiplomacyRound round, string kingdomId)
@@ -5226,7 +5236,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			return;
 		}
 		Kingdom target = ResolveKingdom(trigger.AuthorKingdomId);
-		bool reuseRelayTranscript = round.LlmTranscript?.Count > 0;
+		bool reuseRelayTranscript = round.RelayPlanned;
 		EnqueueGenerationJob(receiver, target, null, isResponse: true, sourceDocument: trigger,
 			priority: 95, externalResponseOnly: true, roundId: round.RoundId, isRelayTurn: reuseRelayTranscript,
 			previousKingdomId: trigger.AuthorKingdomId, scheduledDay: CurrentDay());
@@ -6113,6 +6123,8 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		fact.Commitment = "binding";
 		fact.AnalysisStatus = "external_fact";
 		fact.MechanicalResult = "已由口头外交执行";
+		fact.ChangedDiplomaticState = true;
+		fact.HistoryDeclarationRecorded = true;
 		WorldDiplomacyRound round = EnsureActiveRound(initiator, target, isPlayerInsertion: IsPlayerKingdom(initiator));
 		fact.RoundId = round?.RoundId ?? "";
 		fact.ExchangeId = fact.RoundId;
@@ -6124,7 +6136,23 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		{
 			ClearWarPressure(initiator.StringId, target.StringId);
 		}
-		StartDocumentPropagation(fact, initiator);
+		try
+		{
+			StartDocumentPropagation(fact, initiator);
+		}
+		catch (Exception ex)
+		{
+			Log("external diplomacy propagation failed document=" + fact.DocumentId + " error=" + ex.Message);
+		}
+		try
+		{
+			AppendCanonicalDocumentEvents(fact);
+		}
+		catch (Exception ex)
+		{
+			ScheduleDeferredCanonicalHistoryRetry(fact.DocumentId);
+			Log("external diplomacy canonical history append deferred document=" + fact.DocumentId + " error=" + ex.Message);
+		}
 	}
 
 	private static bool Patch_Kingdom_AddDecision_Prefix(Kingdom __instance, KingdomDecision kingdomDecision, bool ignoreInfluenceCost)
@@ -6573,75 +6601,92 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private void TryScheduleTokenCompression()
 	{
-		long threshold = GetCompressionThresholdTokens();
-		if (_storage.DiplomacyTokensSinceCompression >= threshold) _storage.DiplomacyCompressionPending = true;
-		if (!_storage.DiplomacyCompressionPending || _storage.ActiveRound != null || CurrentHour() < _storage.CompressionRetryAfterHour) return;
-		if (_llmRequestRunning || _storage.Jobs.Any(x => x != null)) return;
-		List<WorldDiplomacyRoundSummary> summaries = _storage.RoundSummaries
-			.Where(x => x != null && !x.IsTokenCompressed && !string.IsNullOrWhiteSpace(x.RoundId))
-			.OrderBy(x => x.CreatedDay).ThenBy(x => x.RoundId, StringComparer.OrdinalIgnoreCase).Take(MaxStoredRoundSummaries).ToList();
-		if (summaries.Count == 0)
-		{
-			// 没有可整理的历史时保留累计值，等下一场外交结束后再尝试。
-			return;
-		}
-		EnqueueCompressionJob(summaries, _storage.DiplomacyTokensSinceCompression);
+		if (!IsWorldDiplomacyEnabled()) return;
+		EnsureCanonicalHistoryInitialized();
+		SyncCanonicalHistorySources();
+		long threshold = GetHistoryCompressionTriggerTokens();
+		_storage.DiplomacyCompressionPending = _storage.CanonicalHistory.EstimatedTokens >= threshold;
+		if (!_storage.DiplomacyCompressionPending || CurrentHour() < _storage.CompressionRetryAfterHour) return;
+		if (_storage.Jobs.Any(x => x != null && string.Equals(x.Kind, "compress", StringComparison.OrdinalIgnoreCase))) return;
+		long throughSequence = Math.Max(_storage.CanonicalHistory.Snapshot.CoveredThroughSequence, _storage.CanonicalHistory.NextSequence - 1L);
+		EnqueueCompressionJob(throughSequence, _storage.CanonicalHistory.EstimatedTokens, GetHistoryCompressionTargetTokens());
 	}
 
 	private void CommitCompression(WorldDiplomacyJob job, string raw)
 	{
+		if (job == null) throw new InvalidOperationException("missing compression job");
+		EnsureCanonicalHistoryInitialized();
+		WorldDiplomacyCanonicalHistoryState history = _storage.CanonicalHistory;
+		long cutoff = Math.Max(0L, job.CompressionThroughSequence);
+		if (cutoff < history.Snapshot.CoveredThroughSequence) throw new InvalidOperationException("compression cutoff predates current snapshot");
 		JObject json = ParseJsonObject(raw);
-		string summaryText = NormalizeBody(ReadString(json, "summary", "diplomatic_memory", "body"));
-		if (string.IsNullOrWhiteSpace(summaryText))
-		{
-			summaryText = BuildFallbackTokenCompressionSummary(job.CompressionRoundIds);
-		}
-		HashSet<string> roundIds = new HashSet<string>(job.CompressionRoundIds ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
-		List<WorldDiplomacyRoundSummary> sourceSummaries = _storage.RoundSummaries.Where(x => x != null && roundIds.Contains(x.RoundId ?? "")).ToList();
+		string summaryText = NormalizeCanonicalHistoryText(ReadString(json, "summary"));
+		if (string.IsNullOrWhiteSpace(summaryText)) throw new InvalidOperationException("compression output has empty summary");
+		long covered = json.Value<long?>("covered_through_sequence") ?? -1L;
+		if (covered != cutoff) throw new InvalidOperationException("compression output covered_through_sequence mismatch");
+		int targetTokens = Math.Max(1, job.CompressionTargetTokens > 0 ? job.CompressionTargetTokens : GetHistoryCompressionTargetTokens());
+		long summaryTokens = EstimateHistoryTokens(summaryText);
+		if (summaryTokens > targetTokens) throw new InvalidOperationException("compression output exceeds target token budget");
+		int overallTargetTokens = Math.Max(1, job.CompressionOverallTargetTokens > 0
+			? job.CompressionOverallTargetTokens
+			: GetHistoryCompressionTargetTokens());
+		int protectedBudgetTokens = Math.Max(0, Math.Min(overallTargetTokens - 256, overallTargetTokens / 4));
+		List<WorldDiplomacyCanonicalProtectedFact> protectedFacts = SelectCanonicalProtectedFactsWithinTokenBudget(
+			BuildCanonicalProtectedFactsThrough(cutoff), protectedBudgetTokens);
+		List<string> preservedResultIds = protectedFacts
+			.Where(x => string.Equals(x.Kind, "diplomatic_result", StringComparison.OrdinalIgnoreCase))
+			.Select(x => x.SourceId).Where(x => !string.IsNullOrWhiteSpace(x))
+			.Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(x => x, StringComparer.OrdinalIgnoreCase).ToList();
+		List<WorldDiplomacyCanonicalHistoryEntry> compressedEntries = history.DeltaEntries
+			.Where(x => x != null && x.Sequence <= cutoff).OrderBy(x => x.Sequence).ToList();
+		List<string> sourceIds = compressedEntries.Select(x => x.SourceId).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 		WorldDiplomacyCompressionSummary summary = new WorldDiplomacyCompressionSummary
 		{
 			BatchId = FirstNonEmpty(job.CompressionBatchId, "diplomacy_compaction_" + (_storage.CompressionSequence + 1).ToString(CultureInfo.InvariantCulture)),
 			Summary = summaryText,
 			CreatedDay = CurrentDay(),
-			StartDay = sourceSummaries.Count == 0 ? CurrentDay() : sourceSummaries.Min(x => x.CreatedDay),
-			EndDay = sourceSummaries.Count == 0 ? CurrentDay() : sourceSummaries.Max(x => x.CreatedDay),
+			StartDay = compressedEntries.Count == 0 ? CurrentDay() : compressedEntries.Min(x => x.Day),
+			EndDay = compressedEntries.Count == 0 ? CurrentDay() : compressedEntries.Max(x => x.Day),
 			TokenCount = Math.Max(0L, job.CompressionTokenCount),
-			SourceRoundIds = roundIds.ToList(),
-			KingdomIds = sourceSummaries.SelectMany(x => x.KingdomIds ?? new List<string>()).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList(),
-			ConfirmedResults = sourceSummaries.SelectMany(x => x.Facts ?? new List<WorldDiplomacyRoundFact>())
-				.Where(x => x != null && string.Equals(x.Kind, "confirmed_result", StringComparison.OrdinalIgnoreCase))
+			SourceRoundIds = sourceIds,
+			KingdomIds = compressedEntries.SelectMany(x => (x.TargetKingdomIds ?? new List<string>()).Concat(new[] { x.AuthorKingdomId }))
+				.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList(),
+			ConfirmedResults = compressedEntries.Where(x => string.Equals(x.Kind, "diplomatic_result", StringComparison.OrdinalIgnoreCase))
 				.Select(x => x.Text).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).Take(48).ToList()
 		};
+		WorldDiplomacyCanonicalHistorySnapshot replacement = new WorldDiplomacyCanonicalHistorySnapshot
+		{
+			Content = summaryText,
+			CoveredThroughSequence = cutoff,
+			CreatedDay = CurrentDay(),
+			PreservedResultSourceIds = preservedResultIds,
+			ProtectedFacts = protectedFacts
+		};
+		string replacementPayload = RenderCanonicalSnapshotPayload(replacement);
+		replacement.ContentHash = StablePromptHash(replacementPayload);
+		replacement.EstimatedTokens = EstimateHistoryTokens(replacementPayload);
+		if (replacement.EstimatedTokens > overallTargetTokens)
+		{
+			throw new InvalidOperationException("compressed history exceeds overall target token budget");
+		}
+		// Commit snapshot and delete only the frozen prefix. Entries appended while the request
+		// was running have greater sequence numbers and remain as delta.
+		history.Snapshot = replacement;
+		history.DeltaEntries.RemoveAll(x => x != null && x.Sequence <= cutoff);
+		history.Revision++;
 		_storage.CompressionSummaries.RemoveAll(x => x != null && string.Equals(x.BatchId, summary.BatchId, StringComparison.OrdinalIgnoreCase));
 		_storage.CompressionSummaries.Add(summary);
-		foreach (WorldDiplomacyRoundSummary roundSummary in sourceSummaries)
-		{
-			roundSummary.IsTokenCompressed = true;
-			roundSummary.CompressionBatchId = summary.BatchId;
-		}
-		HashSet<string> compressedDocumentIds = new HashSet<string>(sourceSummaries
-			.SelectMany(x => x.SourceDocumentIds ?? new List<string>()).Where(x => !string.IsNullOrWhiteSpace(x)), StringComparer.OrdinalIgnoreCase);
-		foreach (WorldDiplomacyDocument document in _storage.Documents.Where(x => x != null && compressedDocumentIds.Contains(x.DocumentId ?? "")))
-		{
-			document.IsCompressed = true;
-		}
-		foreach (WorldDiplomacyRound round in _storage.CompletedRounds.Where(x => x != null && roundIds.Contains(x.RoundId ?? "")))
-		{
-			round.LlmTranscript?.Clear();
-			round.LlmProfiledKingdomIds?.Clear();
-			round.LlmLastStateSignatureByKingdom?.Clear();
-			round.CachePrefix = "";
-			round.CommonContractSnapshot = "";
-			round.CommonContractSnapshotInitialized = false;
-		}
 		_storage.CompressionSequence = Math.Max(_storage.CompressionSequence + 1, ParseCompressionSequence(summary.BatchId));
 		_storage.LastDiplomacyCompressionDay = CurrentDay();
 		_storage.CompressionRetryAfterHour = 0;
-		_storage.DiplomacyTokensSinceCompression = Math.Max(0L, _storage.DiplomacyTokensSinceCompression - Math.Max(0L, job.CompressionTokenCount));
-		_storage.DiplomacyCompressionPending = _storage.DiplomacyTokensSinceCompression >= GetCompressionThresholdTokens();
+		_storage.CompressionRetryAttempts = 0;
+		InvalidateCanonicalHistoryRenderCache();
+		RecalculateCanonicalHistoryTokens();
 		Log("token compression committed batch=" + summary.BatchId
-			+ " rounds=" + sourceSummaries.Count.ToString(CultureInfo.InvariantCulture)
-			+ " remaining_tokens=" + _storage.DiplomacyTokensSinceCompression.ToString(CultureInfo.InvariantCulture));
+			+ " through_sequence=" + cutoff.ToString(CultureInfo.InvariantCulture)
+			+ " retained_delta=" + history.DeltaEntries.Count.ToString(CultureInfo.InvariantCulture)
+			+ " protected_facts=" + protectedFacts.Count.ToString(CultureInfo.InvariantCulture)
+			+ " remaining_tokens=" + history.EstimatedTokens.ToString(CultureInfo.InvariantCulture));
 	}
 
 	private static int ParseCompressionSequence(string batchId)
@@ -6954,63 +6999,24 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private string GetCommonDiplomacyContract(WorldDiplomacyRound round)
 	{
-		if (round == null) return BuildCommonDiplomacySystemPrefix();
-		if (!round.CommonContractSnapshotInitialized)
-		{
-			InitializeRoundCommonContractSnapshot(round);
-		}
-		return round.CommonContractSnapshot ?? "";
-	}
-
-	private void InitializeRoundCommonContractSnapshot(WorldDiplomacyRound round)
-	{
-		if (round == null || round.CommonContractSnapshotInitialized) return;
-		string contract = null;
-		string source = "current-config";
-		WorldDiplomacyLlmMessage transcriptSystem = (round.LlmTranscript ?? new List<WorldDiplomacyLlmMessage>())
-			.FirstOrDefault(x => x != null && string.Equals(x.Role, "system", StringComparison.OrdinalIgnoreCase));
-		if (TryExtractCommonContractBeforeMarker(transcriptSystem?.Content, DiplomaticDeclarationWritingContractMarker, out string transcriptContract))
-		{
-			contract = transcriptContract;
-			source = "legacy-transcript";
-		}
-		else
-		{
-			foreach (WorldDiplomacyJob pendingJob in (_storage?.Jobs ?? new List<WorldDiplomacyJob>())
-				.Where(x => x != null
-					&& (string.Equals(x.Kind, "generate", StringComparison.OrdinalIgnoreCase)
-						|| string.Equals(x.Kind, "round_plan", StringComparison.OrdinalIgnoreCase)
-						|| string.Equals(x.Kind, "analyze", StringComparison.OrdinalIgnoreCase))
-					&& (string.Equals(x.RoundId, round.RoundId, StringComparison.OrdinalIgnoreCase)
-						|| string.Equals(x.ExchangeId, round.RoundId, StringComparison.OrdinalIgnoreCase)))
-				.OrderBy(x => x.CreatedDay).ThenBy(x => x.JobId, StringComparer.OrdinalIgnoreCase))
-			{
-				if (!TryExtractCommonContractFromJob(pendingJob, out string jobContract)) continue;
-				contract = jobContract;
-				source = "legacy-pending-job:" + (pendingJob.Kind ?? "");
-				break;
-			}
-		}
-		contract ??= BuildCommonDiplomacySystemPrefix();
-		round.CommonContractSnapshot = contract;
-		round.CommonContractSnapshotInitialized = true;
-		Log("round common contract frozen round=" + (round.RoundId ?? "")
-			+ " source=" + source
-			+ " state=" + (contract.Length == 0 ? "empty" : "present")
-			+ " chars=" + contract.Length.ToString(CultureInfo.InvariantCulture)
-			+ " hash=" + StablePromptHash(contract));
+		return BuildCommonDiplomacySystemPrefix();
 	}
 
 	private static bool TryExtractCommonContractFromJob(WorldDiplomacyJob job, out string contract)
 	{
 		contract = "";
 		if (job == null) return false;
-		string marker;
 		if (string.Equals(job.Kind, "generate", StringComparison.OrdinalIgnoreCase))
 		{
-			marker = DiplomaticDeclarationWritingContractMarker;
+			string generateMessageSystem = job.LlmMessages?.FirstOrDefault(x => x != null
+				&& string.Equals(x.Role, "system", StringComparison.OrdinalIgnoreCase))?.Content;
+			return TryExtractCommonContractBeforeMarker(generateMessageSystem, DiplomaticDeclarationWritingContractMarker, out contract)
+				|| TryExtractCommonContractBeforeMarker(job.SystemPrompt, DiplomaticDeclarationWritingContractMarker, out contract)
+				|| TryExtractCommonContractBeforeMarker(generateMessageSystem, CanonicalHistoryContractMarker, out contract)
+				|| TryExtractCommonContractBeforeMarker(job.SystemPrompt, CanonicalHistoryContractMarker, out contract);
 		}
-		else if (string.Equals(job.Kind, "round_plan", StringComparison.OrdinalIgnoreCase))
+		string marker;
+		if (string.Equals(job.Kind, "round_plan", StringComparison.OrdinalIgnoreCase))
 		{
 			marker = RoundPlanTaskMarker;
 		}
@@ -7040,13 +7046,6 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private string ResolveCommonContractForCacheDiagnostics(WorldDiplomacyJob job, out string source)
 	{
-		WorldDiplomacyRound round = ResolveRound(FirstNonEmpty(job?.RoundId, job?.ExchangeId));
-		if (round != null && (round.CommonContractSnapshotInitialized
-			|| ReferenceEquals(round, _storage?.ActiveRound)))
-		{
-			source = "round-snapshot";
-			return GetCommonDiplomacyContract(round);
-		}
 		if (TryExtractCommonContractFromJob(job, out string jobContract))
 		{
 			source = "job-system";
@@ -7070,6 +7069,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	{
 		if (sb == null) return;
 		sb.AppendLine(DiplomaticDeclarationWritingContractMarker);
+		sb.AppendLine("本节仅在MODE=DECLARE时生效；MODE=COMPACT时忽略本节，并严格执行system中的MODE=COMPACT固定任务合同与尾部动态参数。");
 		sb.AppendLine("标题和正文只能使用卡拉迪亚世界内的政治与外交语言，不得讨论幕后调度、生成规则、候选方案、数据判定或技术流程；内部字段只出现在JSON结构中，绝不能变成公文内容。");
 		sb.AppendLine("正文是一份面向诸国、本国贵族与臣民公开颁布的外交文书，必须脱离上下文也能成立。此前的宣言只是已经送抵并归档的别国公文，不是正在发言的聊天对象。普通宣言不得用“你”“你的”“你们”持续向另一位君主说话；使用对方国名、“贵国”或其明确制度称谓。禁止“让我说说”“你应该谢我”“你自己选”“那我就……”“等你答复”等私人回嘴句式。");
 		sb.AppendLine("国家而非君主私交是叙述中心。正文至少自然出现一次能够代表政治共同体的称谓，例如王国名、帝国、王庭、诸侯与贵族、臣民、军队、商旅或边地；由统治者的个人性格决定语气和取舍，但不能把国家决定写成几位君主私下讨价还价。不得虚构贵族已经集会、投票、宣誓或一致同意。");
@@ -7082,10 +7082,9 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		sb.AppendLine("地理称谓必须服从用户消息中的当前地理关系：只有明确标为接壤的两国才可互称邻国、边境国家或声称拥有共同边界；标为不接壤时，即使关系密切、同属一种文化、曾经统治相邻领土或正在参与同一场交涉，也不得写成邻国或边界争端。不得把供判断的距离档位和地图距离写进正文。");
 	}
 
-	private static string BuildDiplomaticDeclarationSystemPrompt(string commonContract)
+	private static string BuildDiplomaticDeclarationModeContract()
 	{
-		StringBuilder sb = CreateSystemPromptBuilder(commonContract);
-		AppendDiplomaticDeclarationWritingContract(sb);
+		StringBuilder sb = new StringBuilder();
 		sb.AppendLine("【统一任务：公开外交宣言】根据用户消息提供的档案，为当前发布国起草一篇由其统治者授权或署名、面向诸国与本国贵族臣民颁布的外交宣言。连续公文与开场公文使用相同输出结构；开场时程序没有预选对象、议题或动作，由发布国在同次输出中自主决定。");
 		sb.AppendLine("公开事件和既有来文只是已发生背景，不是预定结果。依据发布国国家卡和真实利益，选择最符合本国战略的回应、条件、合作、施压、冲突、退出或维持现状；不要为凑出关系变化而行动，也不要只重复旧措辞。");
 		sb.AppendLine("开场宣言可以明确指向一个或多个王国，也可以面向诸国而没有主要对象；没有主要对象时primary_target_kingdom_id必须为空字符串。连续公文只能把公开档案列出的传递参与国作为外交动作对象。");
@@ -7100,31 +7099,45 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		return sb.ToString().TrimEnd();
 	}
 
-	private static string BuildGenerationSystemPrompt(string commonContract)
+	private static string BuildCanonicalHistoryCompressionModeContract()
 	{
-		return BuildDiplomaticDeclarationSystemPrompt(commonContract);
+		StringBuilder sb = new StringBuilder();
+		sb.AppendLine("只压缩前一条全局长期外交历史，不起草宣言、不执行外交动作，也不引用尾部参数之外的动态国家状态。");
+		sb.AppendLine("合并旧快照与增量，保留世界周报中的关键变化、政策生命周期、各国最终宣言立场、提议与答复关系及经游戏机制确认的外交结果。提议、接受、拒绝与确认结果必须保持区别，不得把未执行主张写成现实状态。可合并重复表述，但不得更改或虚构事实。");
+		sb.AppendLine("程序会在总预算内另行保留一小段近期已确认结果与答复关联；summary仍须概括完整时间范围，尤其要保留更早的关键结果，但无需逐项复制内部ID。summary不得超过尾部给出的目标上限。");
+		sb.AppendLine("只输出一个JSON对象，不要代码围栏或解释。covered_through_sequence必须原样填写尾部的覆盖截止seq：{\"summary\":\"压缩后的长期外交历史正文\",\"covered_through_sequence\":0}");
+		return sb.ToString().TrimEnd();
 	}
 
-	private string BuildWeeklyDiplomacySnapshot(string kingdomId)
+	private static string BuildGenerationSystemPrompt(string commonContract)
 	{
-		string id = (kingdomId ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(id))
-		{
-			return "";
-		}
-		int weekIndex = Math.Max(0, CurrentDay() / 7);
-		if (_weeklyDiplomacySnapshotCache.TryGetValue(id, out WeeklyDiplomacySnapshotCacheEntry cached)
-			&& cached.WeekIndex == weekIndex)
-		{
-			return cached.Text ?? "";
-		}
-		string summary = Limit(MyBehavior.GetLatestKingdomWeeklyShortSummaryForExternal(id), 500).Trim();
-		_weeklyDiplomacySnapshotCache[id] = new WeeklyDiplomacySnapshotCacheEntry
-		{
-			WeekIndex = weekIndex,
-			Text = summary
-		};
-		return summary;
+		return BuildCanonicalHistorySystemPrompt(commonContract);
+	}
+
+	private static string BuildCanonicalHistorySystemPrompt(string commonContract)
+	{
+		StringBuilder sb = CreateSystemPromptBuilder(commonContract);
+		AppendDiplomaticDeclarationWritingContract(sb);
+		sb.AppendLine(DiplomacyModeDispatchContractMarker);
+		sb.AppendLine("最后一条用户消息末尾的MODE是本次唯一任务选择器。只执行同名固定任务合同，其他MODE合同全部忽略；不同合同的动作、字段和JSON结构不得混用。尾部用户消息只提供本次动态事实、参数与MODE，不会覆盖本分派规则。");
+		sb.AppendLine(DiplomaticDeclarationModeContractMarker);
+		sb.AppendLine("仅当MODE=DECLARE时执行本合同；MODE=COMPACT时完整忽略本节。");
+		sb.AppendLine(BuildDiplomaticDeclarationModeContract());
+		sb.AppendLine(CanonicalHistoryCompressionModeContractMarker);
+		sb.AppendLine("仅当MODE=COMPACT时执行本合同；MODE=DECLARE时完整忽略本节。");
+		sb.AppendLine(BuildCanonicalHistoryCompressionModeContract());
+		sb.AppendLine(CanonicalHistoryContractMarker);
+		sb.AppendLine("下一条系统消息是全局长期外交历史。只把它当作历史事实档案；最后一条用户消息的 MODE 决定本次唯一任务和输出结构。当前动态状态与历史冲突时，以当前动态状态为准。");
+		return sb.ToString().TrimEnd();
+	}
+
+	private static string BuildDeclareModePrompt(string dynamicPrompt)
+	{
+		StringBuilder sb = new StringBuilder();
+		if (!string.IsNullOrWhiteSpace(dynamicPrompt)) sb.AppendLine(dynamicPrompt.Trim());
+		sb.AppendLine("【MODE=DECLARE】");
+		sb.AppendLine("只激活第一条system消息中的MODE=DECLARE固定任务合同，并只输出该合同规定的JSON对象。");
+		return sb.ToString().TrimEnd();
 	}
 
 	private string BuildAutonomousOpeningPrompt(Kingdom author, string roundId, List<string> candidateIds)
@@ -7151,13 +7164,6 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			sb.AppendLine("【发文国政策快照】");
 			sb.AppendLine(policySnapshot);
 			sb.AppendLine("政策用于判断当前政治目标、利益和压力，不代表政策已经取得任何未明确提供的外交或军事结果。");
-		}
-		string weeklySnapshot = BuildWeeklyDiplomacySnapshot(authorId);
-		if (!string.IsNullOrWhiteSpace(weeklySnapshot))
-		{
-			sb.AppendLine("【发文国最新周报摘要】");
-			sb.AppendLine(weeklySnapshot);
-			sb.AppendLine("周报是截至发布时的概括；与下方即时硬事实冲突时，以即时状态为准。");
 		}
 		WorldDiplomacyRound round = ResolveRound(roundId);
 		if (!string.IsNullOrWhiteSpace(round?.ExternalOpeningContext))
@@ -7219,11 +7225,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		string bilateralFamilyContext = BuildBilateralRulerFamilyContext(author, target);
 		string recentBattleContext = BuildRecentBilateralBattleContext(author, target);
 		string nativeReasons = BuildRecentNativeSignalContext(authorId, targetId);
-		string recentDocuments = BuildRecentBilateralDocumentContext(authorId, targetId, 5);
-		string completedRoundHistory = BuildRelevantCompletedRoundContext(authorId, targetId);
-		string compressedHistory = BuildRelevantCompressedDiplomacyContext(authorId, targetId, 2);
 		string policySnapshot = WorldDiplomacyPolicyContext.BuildSnapshot(authorId);
-		string weeklySnapshot = BuildWeeklyDiplomacySnapshot(authorId);
 		string resolvedRoundId = FirstNonEmpty(roundId, exchange?.ExchangeId, sourceDocument?.RoundId);
 		WorldDiplomacyRound activeRound = ResolveRound(resolvedRoundId);
 		List<string> relevantKingdomIds = new List<string> { authorId, targetId };
@@ -7248,12 +7250,6 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			sb.AppendLine("【发文国政策快照】");
 			sb.AppendLine(policySnapshot);
 			sb.AppendLine("政策用于判断当前政治目标、利益和压力，不代表政策已经取得任何未明确提供的外交或军事结果。");
-		}
-		if (!string.IsNullOrWhiteSpace(weeklySnapshot))
-		{
-			sb.AppendLine("【发文国最新周报摘要】");
-			sb.AppendLine(weeklySnapshot);
-			sb.AppendLine("周报是截至发布时的概括，可能滞后于下方即时硬事实；发生冲突时以下方即时状态为准。");
 		}
 		sb.AppendLine("【本次双边对象与即时事实】");
 		sb.AppendLine("主要对象国：" + KingdomName(target) + "（ID=" + targetId + "），统治者：" + RulerName(target));
@@ -7297,23 +7293,6 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			sb.AppendLine("近期原版外交动机素材：");
 			sb.AppendLine(nativeReasons);
 		}
-		if (!string.IsNullOrWhiteSpace(recentDocuments))
-		{
-			sb.AppendLine("当前外交事件内的相关宣言：");
-			sb.AppendLine(recentDocuments);
-		}
-		if (!string.IsNullOrWhiteSpace(completedRoundHistory))
-		{
-			sb.AppendLine("【最近一次已结束的相关外交事件】");
-			sb.AppendLine(completedRoundHistory);
-			sb.AppendLine("该事件已经结束，只能作为背景；其中的提议、拒绝和争端都不是本次事件等待答复的当前公文。除非出现新的事实，不得原样重启同一场争论。");
-		}
-		if (!string.IsNullOrWhiteSpace(compressedHistory))
-		{
-			sb.AppendLine("【相关往期外交记忆】");
-			sb.AppendLine(compressedHistory);
-			sb.AppendLine("其中的宣言、提案和威胁只表示有关王国曾公开表达这些立场；只有明确标注为游戏已执行的内容才是已经发生的外交结果。");
-		}
 		if (roundPlanCandidateIds != null && roundPlanCandidateIds.Count > 0)
 		{
 			sb.AppendLine("【同次确定本次外交事件参与国】");
@@ -7325,17 +7304,10 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 				sb.AppendLine(BuildCompactRoundPlanCandidateLine(author, candidate));
 			}
 		}
-		string roundContext = BuildKnownRoundContext(author.StringId, resolvedRoundId, 10);
 		if (activeRound != null)
 		{
 			int age = Math.Max(0, CurrentDay() - activeRound.StartedDay);
 			sb.AppendLine("当前外交事件已经持续" + age.ToString(CultureInfo.InvariantCulture) + "天，软时间尺度为" + Math.Max(1, activeRound.SoftEndDay - activeRound.StartedDay).ToString(CultureInfo.InvariantCulture) + "天。接近或超过软尺度时，统治者应更重视收束重复争论、给出最终立场或停止无意义往返；但尚未解决且直接关系本国利益的正式问题不能被假装遗忘。");
-		}
-		if (!string.IsNullOrWhiteSpace(roundContext))
-		{
-			sb.AppendLine("当前外交事件中，发文国王庭已经收到的外交宣言（按实际传播结果）：");
-			sb.AppendLine(roundContext);
-			sb.AppendLine("只能依据这里已经抵达的宣言作出回应，不得知晓仍在路上的宣言。");
 		}
 		if (isResponse && sourceDocument != null)
 		{
@@ -7361,7 +7333,6 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private string BuildCompactRoundPlanCandidateLine(Kingdom initiator, Kingdom candidate)
 	{
 		string policy = CompactPromptFact(WorldDiplomacyPolicyContext.BuildSnapshot(candidate.StringId), 180);
-		string weekly = CompactPromptFact(BuildWeeklyDiplomacySnapshot(candidate.StringId), 120);
 		StringBuilder sb = new StringBuilder();
 		WorldDiplomacyRealmRelationProfile relationProfile = GetRealmRelationProfile(initiator, candidate);
 		WorldDiplomacyBorderRelation border = GetKingdomBorderRelation(initiator, candidate);
@@ -7374,7 +7345,6 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			.Append("；总体军力=").Append(DescribeStrengthBalance(strengthSituation.AuthorStrength, strengthSituation.TargetStrength))
 			.Append("；当前可改变关系的方向=").Append(DescribePotentialDiplomaticActions(BuildPotentialDiplomaticActionIntents(initiator, candidate)));
 		if (!string.IsNullOrWhiteSpace(policy)) sb.Append("；政策倾向=").Append(policy);
-		if (!string.IsNullOrWhiteSpace(weekly)) sb.Append("；近期背景=").Append(weekly);
 		return sb.ToString();
 	}
 
@@ -7772,7 +7742,14 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private static string BuildAnalysisSystemPrompt(string commonContract)
 	{
 		StringBuilder sb = CreateSystemPromptBuilder(commonContract);
-		sb.AppendLine(DiplomacyAnalysisTaskMarker + "读懂已经发布的宣言表达了什么，不是替作者决定世界局势。玩家文风偏好不参与语义裁判。");
+		sb.AppendLine(DiplomacyAnalysisTaskMarker + "最后一条消息的 MODE=ANALYZE 决定本次任务和输出结构。");
+		return sb.ToString().TrimEnd();
+	}
+
+	private static string BuildAnalysisModeContract()
+	{
+		StringBuilder sb = new StringBuilder();
+		sb.AppendLine("读懂已经发布的宣言表达了什么，不替作者决定世界局势；玩家文风偏好不参与语义裁判。");
 		sb.AppendLine("区分正式宣战与威胁：明确终结和平、宣布战争状态、命令军队越境或用刀剑取代外交，可判为declare_war；“不要逼迫我们开战”“我们不惧战争”只是warning或ultimatum。");
 		sb.AppendLine("公文可以只是讨论或公开表态。没有正式行为时必须返回statement、condemn、warning等，而不是判定失败。");
 		sb.AppendLine("若材料列出当前待本国答复的正式提案，宣言明确接受或拒绝其中一项时，intent必须使用对应的accept_*或reject_*，primary_target_kingdom_id必须是原提出国，并把来源公文ID填入responding_to_offer_document_id。提出不同条件属于新反提案，应使用propose_*并把该字段留空。");
@@ -7832,32 +7809,22 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 		sb.AppendLine("公文标题：" + document.Title);
 		sb.AppendLine("公文正文：" + Limit(document.Body, 3000));
-		return sb.ToString();
+		sb.AppendLine("【MODE=ANALYZE】");
+		sb.AppendLine(BuildAnalysisModeContract());
+		return sb.ToString().TrimEnd();
 	}
 
-	private static string BuildTokenCompressionSystemPrompt()
+	private static string BuildTokenCompressionPrompt(string batchId, long throughSequence, long tokenCount, int summaryTargetTokens, long protectedTokens)
 	{
-		return "你是卡拉迪亚外交编年史官。把若干已经结束的外交事件整理成长期外交记忆。"
-			+ "材料严格区分[宣言记录]与[游戏已执行]：宣言记录只证明某国公开提出、接受、拒绝、谴责或威胁过某事，不能证明提案已经执行；"
-			+ "只有[游戏已执行]才能写成已经发生的战争、和平、联盟、贸易、贡金或领地变化。保留重要立场、未果提案与确认结果，合并重复内容，不逐篇复述，不补充材料外事实。"
-			+ "只输出JSON：{\"summary\":\"长期外交记忆正文\"}";
-	}
-
-	private string BuildTokenCompressionPrompt(string batchId, List<WorldDiplomacyRoundSummary> summaries, long tokenCount)
-	{
-		StringBuilder material = new StringBuilder();
-		material.AppendLine("压缩批次=" + (batchId ?? ""));
-		material.AppendLine("本周期累计外交Tokens=" + Math.Max(0L, tokenCount).ToString(CultureInfo.InvariantCulture));
-		foreach (WorldDiplomacyRoundSummary roundSummary in (summaries ?? new List<WorldDiplomacyRoundSummary>()).Where(x => x != null).OrderBy(x => x.CreatedDay).Take(MaxStoredRoundSummaries))
-		{
-			material.AppendLine("[已结束回合 " + roundSummary.RoundId + "] " + Limit(roundSummary.Summary, 1200));
-			foreach (WorldDiplomacyRoundFact fact in (roundSummary.Facts ?? new List<WorldDiplomacyRoundFact>())
-				.Where(x => x != null && string.Equals(x.Kind, "confirmed_result", StringComparison.OrdinalIgnoreCase)).Take(8))
-			{
-				material.AppendLine(Limit(FormatRoundFactForPrompt(fact), 500));
-			}
-		}
-		return material.ToString().TrimEnd();
+		StringBuilder sb = new StringBuilder();
+		sb.AppendLine("【本次压缩参数】");
+		sb.AppendLine("压缩批次=" + (batchId ?? "") + "；覆盖截止seq=" + Math.Max(0L, throughSequence).ToString(CultureInfo.InvariantCulture)
+			+ "；当前估算tokens=" + Math.Max(0L, tokenCount).ToString(CultureInfo.InvariantCulture)
+			+ "；近期硬事实预算占用tokens=" + Math.Max(0L, protectedTokens).ToString(CultureInfo.InvariantCulture)
+			+ "；summary目标上限tokens=" + Math.Max(1, summaryTargetTokens).ToString(CultureInfo.InvariantCulture) + "。");
+		sb.AppendLine("【MODE=COMPACT】");
+		sb.AppendLine("只激活第一条system消息中的MODE=COMPACT固定任务合同，并只输出该合同规定的JSON对象。");
+		return sb.ToString().TrimEnd();
 	}
 
 	private string BuildFallbackAnalysisJson(WorldDiplomacyJob job)
@@ -7879,22 +7846,6 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			["tone"] = intent == "declare_war" || intent == "warning" || intent == "ultimatum" ? "hostile" : "neutral",
 			["confidence"] = 0.55
 		}.ToString(Formatting.None);
-	}
-
-	private string BuildFallbackCompressionJson(WorldDiplomacyJob job)
-	{
-		return new JObject
-		{
-			["summary"] = BuildFallbackTokenCompressionSummary(job.CompressionRoundIds)
-		}.ToString(Formatting.None);
-	}
-
-	private string BuildFallbackTokenCompressionSummary(List<string> roundIds)
-	{
-		HashSet<string> ids = new HashSet<string>(roundIds ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
-		List<string> summaries = _storage.RoundSummaries.Where(x => x != null && ids.Contains(x.RoundId ?? ""))
-			.OrderBy(x => x.CreatedDay).Select(x => Limit(x.Summary, 900)).Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
-		return summaries.Count == 0 ? "本周期没有留下可整理的外交事件。" : string.Join("\n", summaries);
 	}
 
 	private string BuildFallbackAnnualSummary(int year, List<string> ids)
@@ -8185,12 +8136,962 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		_storage.Documents.Add(document);
 		_storage.Documents = _storage.Documents
 			.Where(x => x != null)
-			.OrderByDescending(x => x.Day)
+			// Keep any publishable artifact whose canonical append is still pending
+			// ahead of ordinary archive eviction.
+			.OrderByDescending(NeedsCanonicalHistoryRetry)
+			.ThenByDescending(x => x.Day)
 			.ThenByDescending(x => x.CreatedUtcTicks)
 			.Take(MaxStoredDocuments)
 			.OrderBy(x => x.Day)
 			.ThenBy(x => x.CreatedUtcTicks)
 			.ToList();
+	}
+
+	private void EnsureCanonicalHistoryInitialized()
+	{
+		if (_canonicalHistoryInitializedThisSession && _storage?.CanonicalHistory?.Snapshot != null && _storage.CanonicalHistory.DeltaEntries != null) return;
+		_storage.CanonicalHistory ??= new WorldDiplomacyCanonicalHistoryState();
+		WorldDiplomacyCanonicalHistoryState history = _storage.CanonicalHistory;
+		history.Snapshot ??= new WorldDiplomacyCanonicalHistorySnapshot();
+		history.Snapshot.PreservedResultSourceIds ??= new List<string>();
+		history.Snapshot.ProtectedFacts ??= new List<WorldDiplomacyCanonicalProtectedFact>();
+		history.Snapshot.ProtectedFacts = history.Snapshot.ProtectedFacts
+			.Select(CloneProtectedFact)
+			.Where(x => x != null
+				&& (x.Kind == "diplomatic_result" || x.Kind == "response_link")
+				&& !string.IsNullOrWhiteSpace(x.SourceId)
+				&& (x.Kind != "diplomatic_result" || !string.IsNullOrWhiteSpace(x.Text))
+				&& (x.Kind != "response_link" || !string.IsNullOrWhiteSpace(x.RelatedSourceId)))
+			.GroupBy(ProtectedFactStableKey, StringComparer.OrdinalIgnoreCase)
+			.Select(x => x.OrderBy(y => y.Sequence).First())
+			.OrderBy(x => x.Sequence).ThenBy(x => x.Kind, StringComparer.Ordinal).ThenBy(x => x.SourceKey, StringComparer.OrdinalIgnoreCase)
+			.ToList();
+		history.Snapshot.PreservedResultSourceIds = history.Snapshot.PreservedResultSourceIds
+			.Concat(history.Snapshot.ProtectedFacts.Where(x => x.Kind == "diplomatic_result").Select(x => x.SourceId))
+			.Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(x => x, StringComparer.OrdinalIgnoreCase).ToList();
+		history.DeltaEntries ??= new List<WorldDiplomacyCanonicalHistoryEntry>();
+		history.WorldWeeklySourceHashes ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		history.WorldWeeklySourceRevisions ??= new Dictionary<string, long>(StringComparer.OrdinalIgnoreCase);
+		history.PolicyRevisionSignatures ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		history.LastPolicyArtifactSequence = Math.Max(0L, history.LastPolicyArtifactSequence);
+		history.LastPolicyArtifactLedgerId = (history.LastPolicyArtifactLedgerId ?? "").Trim();
+		history.WorldWeeklySourceHashes = history.WorldWeeklySourceHashes.Where(x => !string.IsNullOrWhiteSpace(x.Key))
+			.GroupBy(x => x.Key, StringComparer.OrdinalIgnoreCase).ToDictionary(x => x.Key, x => x.Last().Value ?? "", StringComparer.OrdinalIgnoreCase);
+		history.WorldWeeklySourceRevisions = history.WorldWeeklySourceRevisions.Where(x => !string.IsNullOrWhiteSpace(x.Key))
+			.GroupBy(x => x.Key, StringComparer.OrdinalIgnoreCase).ToDictionary(x => x.Key, x => Math.Max(0L, x.Last().Value), StringComparer.OrdinalIgnoreCase);
+		history.PolicyRevisionSignatures = history.PolicyRevisionSignatures.Where(x => !string.IsNullOrWhiteSpace(x.Key))
+			.GroupBy(x => x.Key, StringComparer.OrdinalIgnoreCase).ToDictionary(x => x.Key, x => x.Last().Value ?? "", StringComparer.OrdinalIgnoreCase);
+		history.DeltaEntries.RemoveAll(x => x == null || x.Sequence <= history.Snapshot.CoveredThroughSequence || string.IsNullOrWhiteSpace(x.Kind));
+		history.DeltaEntries = history.DeltaEntries
+			.OrderBy(x => x.Sequence)
+			.GroupBy(x => x.Sequence)
+			.Select(x => x.First())
+			.ToList();
+		_canonicalHistorySourceKeys.Clear();
+		foreach (string sourceKey in history.DeltaEntries.Select(x => x?.SourceKey).Where(x => !string.IsNullOrWhiteSpace(x))) _canonicalHistorySourceKeys.Add(sourceKey);
+		long lastSequence = history.DeltaEntries.Count == 0
+			? history.Snapshot.CoveredThroughSequence
+			: Math.Max(history.Snapshot.CoveredThroughSequence, history.DeltaEntries[history.DeltaEntries.Count - 1].Sequence);
+		history.NextSequence = Math.Max(Math.Max(1L, history.NextSequence), lastSequence + 1L);
+		foreach (WorldDiplomacyCanonicalHistoryEntry entry in history.DeltaEntries)
+		{
+			entry.TargetKingdomIds ??= new List<string>();
+			entry.TargetKingdomIds = entry.TargetKingdomIds.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+			entry.RespondingToOfferDocumentId = (entry.RespondingToOfferDocumentId ?? "").Trim();
+			if (entry.EstimatedTokens <= 0) entry.EstimatedTokens = EstimateHistoryTokens(RenderCanonicalHistoryEntry(entry));
+		}
+		string snapshotPayload = RenderCanonicalSnapshotPayload(history.Snapshot);
+		history.Snapshot.EstimatedTokens = EstimateHistoryTokens(snapshotPayload);
+		history.Snapshot.ContentHash = StablePromptHash(snapshotPayload);
+		RecalculateCanonicalHistoryTokens();
+		_canonicalHistoryInitializedThisSession = true;
+	}
+
+	private static long EstimateHistoryTokens(string text)
+	{
+		return Math.Max(0, Logger.EstimateTokens(text ?? ""));
+	}
+
+	private void RecalculateCanonicalHistoryTokens()
+	{
+		WorldDiplomacyCanonicalHistoryState history = _storage?.CanonicalHistory;
+		if (history == null) return;
+		long total = Math.Max(0L, history.Snapshot?.EstimatedTokens ?? 0L);
+		foreach (WorldDiplomacyCanonicalHistoryEntry entry in history.DeltaEntries ?? new List<WorldDiplomacyCanonicalHistoryEntry>())
+		{
+			total += Math.Max(0L, entry?.EstimatedTokens ?? 0L);
+		}
+		history.EstimatedTokens = Math.Max(0L, total);
+		_storage.DiplomacyTokensSinceCompression = history.EstimatedTokens;
+		_storage.DiplomacyCompressionPending = history.EstimatedTokens >= GetHistoryCompressionTriggerTokens();
+	}
+
+	private bool AppendCanonicalHistoryEntry(
+		string kind,
+		string sourceKey,
+		string sourceId,
+		int day,
+		string gameDate,
+		string authorKingdomId,
+		IEnumerable<string> targetKingdomIds,
+		string intent,
+		string commitment,
+		string content,
+		bool verified,
+		string respondingToOfferDocumentId = null)
+	{
+		EnsureCanonicalHistoryInitialized();
+		string normalizedKind = (kind ?? "").Trim().ToLowerInvariant();
+		string normalizedSourceKey = (sourceKey ?? "").Trim();
+		string normalizedContent = NormalizeCanonicalHistoryText(content);
+		if (string.IsNullOrWhiteSpace(normalizedKind) || string.IsNullOrWhiteSpace(normalizedSourceKey) || string.IsNullOrWhiteSpace(normalizedContent)) return false;
+		WorldDiplomacyCanonicalHistoryState history = _storage.CanonicalHistory;
+		if (_canonicalHistorySourceKeys.Contains(normalizedSourceKey)) return false;
+		WorldDiplomacyCanonicalHistoryEntry entry = new WorldDiplomacyCanonicalHistoryEntry
+		{
+			EntryId = NewId("diplomacy_history"),
+			SourceKey = normalizedSourceKey,
+			Sequence = history.NextSequence++,
+			Day = Math.Max(0, day),
+			GameDate = FirstNonEmpty(gameDate, FormatCampaignDate(Math.Max(0, day))),
+			Kind = normalizedKind,
+			SourceId = (sourceId ?? "").Trim(),
+			RespondingToOfferDocumentId = (respondingToOfferDocumentId ?? "").Trim(),
+			AuthorKingdomId = (authorKingdomId ?? "").Trim(),
+			TargetKingdomIds = (targetKingdomIds ?? Enumerable.Empty<string>()).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList(),
+			Intent = NormalizeIntent(intent),
+			Commitment = NormalizeCommitment(commitment),
+			Text = normalizedContent,
+			Verified = verified
+		};
+		entry.EstimatedTokens = EstimateHistoryTokens(RenderCanonicalHistoryEntry(entry));
+		history.DeltaEntries.Add(entry);
+		_canonicalHistorySourceKeys.Add(normalizedSourceKey);
+		history.Revision++;
+		history.EstimatedTokens += entry.EstimatedTokens;
+		_storage.DiplomacyTokensSinceCompression = history.EstimatedTokens;
+		_storage.DiplomacyCompressionPending = history.EstimatedTokens >= GetHistoryCompressionTriggerTokens();
+		InvalidateCanonicalHistoryRenderCache();
+		return true;
+	}
+
+	private void AppendCanonicalDocumentEvents(WorldDiplomacyDocument document)
+	{
+		if (document == null || !document.IsReadyForPublication || string.IsNullOrWhiteSpace(document.DocumentId)) return;
+		bool externalResolvedFact = string.Equals(document.AnalysisStatus, "external_fact", StringComparison.OrdinalIgnoreCase);
+		if (externalResolvedFact) document.HistoryDeclarationRecorded = true;
+		List<string> targets = (document.AddressedKingdomIds ?? new List<string>())
+			.Concat(string.IsNullOrWhiteSpace(document.TargetKingdomId) ? Enumerable.Empty<string>() : new[] { document.TargetKingdomId })
+			.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+		if (!document.HistoryDeclarationRecorded && !string.IsNullOrWhiteSpace(document.Body))
+		{
+			string declarationSourceKey = "document:" + document.DocumentId + ":declaration";
+			bool appended = AppendCanonicalHistoryEntry("declaration", declarationSourceKey, document.DocumentId,
+				document.Day, document.GameDate, document.AuthorKingdomId, targets, document.Intent, document.Commitment, document.Body,
+				verified: true, respondingToOfferDocumentId: document.RespondingToOfferDocumentId);
+			if (appended || CanonicalDeltaContainsSourceKey(declarationSourceKey))
+			{
+				document.HistoryDeclarationRecorded = true;
+			}
+		}
+		if (!document.HistoryResultRecorded && (document.ChangedDiplomaticState || externalResolvedFact) && !string.IsNullOrWhiteSpace(document.MechanicalResult))
+		{
+			string resultText = "经游戏机制确认：" + document.MechanicalResult;
+			string resultSourceKey = "document:" + document.DocumentId + ":result";
+			bool appended = AppendCanonicalHistoryEntry("diplomatic_result", resultSourceKey, document.DocumentId,
+				document.Day, document.GameDate, document.AuthorKingdomId, targets, document.Intent, document.Commitment, resultText,
+				verified: true, respondingToOfferDocumentId: document.RespondingToOfferDocumentId);
+			if (appended || CanonicalDeltaContainsSourceKey(resultSourceKey)
+				|| (_storage.CanonicalHistory.Snapshot.PreservedResultSourceIds ?? new List<string>()).Contains(document.DocumentId, StringComparer.OrdinalIgnoreCase))
+			{
+				document.HistoryResultRecorded = true;
+			}
+		}
+	}
+
+	private bool CanonicalDeltaContainsSourceKey(string sourceKey)
+	{
+		return !string.IsNullOrWhiteSpace(sourceKey) && _canonicalHistorySourceKeys.Contains(sourceKey);
+	}
+
+	private void SyncCanonicalHistorySources(bool force = false)
+	{
+		EnsureCanonicalHistoryInitialized();
+		int currentHour = CurrentHour();
+		if (!force && _lastCanonicalSourceSyncHour == currentHour) return;
+		long weeklyRevision = MyBehavior.GetPublishedWorldWeeklyReportHistoryRevisionForExternal();
+		if (_lastObservedWorldWeeklyHistoryRevision != weeklyRevision)
+		{
+			foreach (MyBehavior.WorldWeeklyReportHistoryEntry report in MyBehavior.GetPublishedWorldWeeklyReportHistoryForExternal())
+			{
+				AppendPublishedWorldWeeklyReportArtifact(report);
+			}
+			_lastObservedWorldWeeklyHistoryRevision = weeklyRevision;
+		}
+		SyncPublishedPolicyArtifacts(force ? PolicyHistoryForceSyncMaxBatches : 1);
+		_lastCanonicalSourceSyncHour = currentHour;
+	}
+
+	private void AppendPublishedWorldWeeklyReportArtifact(MyBehavior.WorldWeeklyReportHistoryEntry report)
+	{
+		if (report == null || string.IsNullOrWhiteSpace(report.SourceId) || string.IsNullOrWhiteSpace(report.PublishedReportText)) return;
+		WorldDiplomacyCanonicalHistoryState history = _storage.CanonicalHistory;
+		string publishedTitle = (report.PublishedTitle ?? "").Trim();
+		string publishedBody = report.PublishedReportText.Trim();
+		string hash = StablePromptHash(publishedTitle + "\n" + publishedBody);
+		history.WorldWeeklySourceHashes.TryGetValue(report.SourceId, out string previousHash);
+		if (string.Equals(previousHash, hash, StringComparison.Ordinal)) return;
+		history.WorldWeeklySourceRevisions.TryGetValue(report.SourceId, out long previousRevision);
+		long revision = Math.Max(0L, previousRevision) + 1L;
+		string sourceKey = "weekly:" + report.SourceId + ":r" + revision.ToString(CultureInfo.InvariantCulture);
+		while (CanonicalDeltaContainsSourceKey(sourceKey))
+		{
+			revision++;
+			sourceKey = "weekly:" + report.SourceId + ":r" + revision.ToString(CultureInfo.InvariantCulture);
+		}
+		bool correction = !string.IsNullOrWhiteSpace(previousHash);
+		string heading = correction ? "世界周报成品更正版" : "世界周报成品";
+		string text = heading + (string.IsNullOrWhiteSpace(publishedTitle) ? "：\n" : "《" + publishedTitle + "》：\n") + publishedBody;
+		if (AppendCanonicalHistoryEntry("world_weekly", sourceKey, report.SourceId,
+			report.CreatedDay, report.CreatedDate, "", Enumerable.Empty<string>(), "", "", text, verified: true))
+		{
+			history.WorldWeeklySourceHashes[report.SourceId] = hash;
+			history.WorldWeeklySourceRevisions[report.SourceId] = revision;
+		}
+	}
+
+	private void SyncPublishedPolicyArtifacts(int maxBatches)
+	{
+		WorldDiplomacyCanonicalHistoryState history = _storage.CanonicalHistory;
+		string ledgerId = (WorldDiplomacyPolicyContext.GetPublishedPolicyHistoryLedgerId() ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(ledgerId)) return;
+		if (string.IsNullOrWhiteSpace(history.LastPolicyArtifactLedgerId))
+		{
+			history.LastPolicyArtifactLedgerId = ledgerId;
+			if (history.LastPolicyArtifactSequence > 0L)
+			{
+				RebuildPublishedPolicySignaturesThrough(history.LastPolicyArtifactSequence);
+			}
+		}
+		else if (!string.Equals(history.LastPolicyArtifactLedgerId, ledgerId, StringComparison.Ordinal))
+		{
+			Log("published policy ledger epoch changed old=" + history.LastPolicyArtifactLedgerId
+				+ " new=" + ledgerId + "; resynchronizing immutable artifacts");
+			history.LastPolicyArtifactLedgerId = ledgerId;
+			history.LastPolicyArtifactSequence = 0L;
+		}
+		long availableSequence = WorldDiplomacyPolicyContext.GetPublishedPolicyHistoryCurrentSequence();
+		long cursor = Math.Max(0L, history.LastPolicyArtifactSequence);
+		if (cursor > availableSequence)
+		{
+			Log("published policy cursor exceeds current ledger sequence cursor="
+				+ cursor.ToString(CultureInfo.InvariantCulture)
+				+ " available=" + availableSequence.ToString(CultureInfo.InvariantCulture)
+				+ "; resynchronizing immutable artifacts");
+			cursor = 0L;
+			history.LastPolicyArtifactSequence = 0L;
+		}
+		int batchLimit = Math.Max(1, maxBatches);
+		for (int batch = 0; batch < batchLimit && cursor < availableSequence; batch++)
+		{
+			IReadOnlyList<PublishedPolicyArtifactLedgerEntry> entries = WorldDiplomacyPolicyContext.GetPublishedPolicyHistoryArtifacts(cursor, PolicyHistorySyncBatchSize);
+			if (entries == null || entries.Count == 0) break;
+			long previousCursor = cursor;
+			foreach (PublishedPolicyArtifactLedgerEntry policy in entries.OrderBy(x => x?.Sequence ?? long.MaxValue))
+			{
+				if (policy == null || policy.Sequence <= cursor) continue;
+				if (!AppendPublishedPolicyArtifact(policy)) break;
+				cursor = policy.Sequence;
+				history.LastPolicyArtifactSequence = cursor;
+			}
+			if (cursor <= previousCursor) break;
+			WorldDiplomacyPolicyContext.TryAcknowledgePublishedPolicyHistoryThrough(cursor);
+		}
+	}
+
+	private void RebuildPublishedPolicySignaturesThrough(long throughSequence)
+	{
+		WorldDiplomacyCanonicalHistoryState history = _storage.CanonicalHistory;
+		long cutoff = Math.Max(0L, throughSequence);
+		long cursor = 0L;
+		while (cursor < cutoff)
+		{
+			IReadOnlyList<PublishedPolicyArtifactLedgerEntry> entries =
+				WorldDiplomacyPolicyContext.GetPublishedPolicyHistoryArtifacts(cursor, 1024);
+			if (entries == null || entries.Count == 0) break;
+			long previousCursor = cursor;
+			foreach (PublishedPolicyArtifactLedgerEntry policy in entries.OrderBy(x => x?.Sequence ?? long.MaxValue))
+			{
+				if (policy == null || policy.Sequence <= cursor) continue;
+				if (policy.Sequence > cutoff) return;
+				if (TryBuildPublishedPolicySignature(policy, out string signatureKey, out string fingerprint))
+				{
+					history.PolicyRevisionSignatures[signatureKey] = fingerprint;
+				}
+				cursor = policy.Sequence;
+			}
+			if (cursor <= previousCursor) break;
+		}
+	}
+
+	private static bool TryBuildPublishedPolicySignature(
+		PublishedPolicyArtifactLedgerEntry policy,
+		out string signatureKey,
+		out string fingerprint)
+	{
+		signatureKey = "";
+		fingerprint = "";
+		string eventKind = (policy?.EventKind ?? "").Trim().ToLowerInvariant();
+		if (policy == null || policy.Revision <= 0L || string.IsNullOrWhiteSpace(policy.PolicyId)
+			|| (eventKind != "policy_published" && eventKind != "policy_snapshot")) return false;
+		signatureKey = policy.PolicyId.Trim() + ":" + policy.Revision.ToString(CultureInfo.InvariantCulture) + ":" + eventKind;
+		fingerprint = StablePromptHash(string.Join("\n", new[]
+		{
+			policy.PolicyName ?? "",
+			policy.KingdomId ?? "",
+			policy.KingdomName ?? "",
+			policy.ScopeKind ?? "",
+			policy.PublishedText ?? ""
+		}));
+		return true;
+	}
+
+	private bool AppendPublishedPolicyArtifact(PublishedPolicyArtifactLedgerEntry policy)
+	{
+		string eventKind = (policy?.EventKind ?? "").Trim().ToLowerInvariant();
+		if (policy == null
+			|| policy.Sequence <= 0L
+			|| policy.Revision <= 0L
+			|| string.IsNullOrWhiteSpace(policy.PolicyId)
+			|| string.IsNullOrWhiteSpace(policy.PublishedText)
+			|| (eventKind != "policy_published" && eventKind != "policy_snapshot")) return false;
+		if (!TryBuildPublishedPolicySignature(policy, out string signatureKey, out string fingerprint)) return false;
+		WorldDiplomacyCanonicalHistoryState history = _storage.CanonicalHistory;
+		if (history.PolicyRevisionSignatures.TryGetValue(signatureKey, out string previousFingerprint)
+			&& string.Equals(previousFingerprint, fingerprint, StringComparison.Ordinal)) return true;
+		string ledgerId = FirstNonEmpty(history.LastPolicyArtifactLedgerId, "legacy");
+		string sourceKey = "policy:" + ledgerId + ":" + signatureKey;
+		if (CanonicalDeltaContainsSourceKey(sourceKey))
+		{
+			history.PolicyRevisionSignatures[signatureKey] = fingerprint;
+			return true;
+		}
+		StringBuilder text = new StringBuilder();
+		text.Append("政策《").Append(FirstNonEmpty(policy.PolicyName, "未命名政策")).Append("》");
+		if (!string.IsNullOrWhiteSpace(policy.KingdomName) || !string.IsNullOrWhiteSpace(policy.KingdomId))
+		{
+			text.Append("；发布国=").Append(FirstNonEmpty(policy.KingdomName, policy.KingdomId));
+		}
+		if (!string.IsNullOrWhiteSpace(policy.ScopeKind)) text.Append("；范围=").Append(policy.ScopeKind.Trim());
+		text.AppendLine().Append(policy.PublishedText.Trim());
+		bool appended = AppendCanonicalHistoryEntry(eventKind, sourceKey, policy.PolicyId,
+			policy.OccurredDay, policy.GameDate, policy.KingdomId, Enumerable.Empty<string>(), "", "",
+			text.ToString(), verified: true);
+		if (appended) history.PolicyRevisionSignatures[signatureKey] = fingerprint;
+		return appended;
+	}
+
+	private static string RenderCanonicalHistoryEntry(WorldDiplomacyCanonicalHistoryEntry entry)
+	{
+		if (entry == null) return "";
+		StringBuilder sb = new StringBuilder();
+		sb.Append("[seq=").Append(entry.Sequence.ToString(CultureInfo.InvariantCulture))
+			.Append("|kind=").Append(entry.Kind ?? "")
+			.Append("|date=").Append(entry.GameDate ?? "")
+			.Append("|source=").Append(entry.SourceId ?? "");
+		if (!string.IsNullOrWhiteSpace(entry.RespondingToOfferDocumentId))
+		{
+			sb.Append("|responding_to=").Append(entry.RespondingToOfferDocumentId);
+		}
+		sb.Append("|author=").Append(entry.AuthorKingdomId ?? "")
+			.Append("|targets=").Append(string.Join(",", entry.TargetKingdomIds ?? new List<string>()))
+			.Append("|intent=").Append(entry.Intent ?? "")
+			.Append("|commitment=").Append(entry.Commitment ?? "")
+			.Append("|verified=").Append(entry.Verified ? "true" : "false").AppendLine("]");
+		sb.Append(entry.Text ?? "");
+		return sb.ToString().TrimEnd();
+	}
+
+	private static string ProtectedFactStableKey(WorldDiplomacyCanonicalProtectedFact fact)
+	{
+		if (fact == null) return "";
+		string kind = (fact.Kind ?? "").Trim().ToLowerInvariant();
+		string sourceKey = (fact.SourceKey ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(sourceKey)) return kind + ":" + sourceKey;
+		return kind + ":" + (fact.SourceId ?? "").Trim() + ":" + (fact.RelatedSourceId ?? "").Trim();
+	}
+
+	private static WorldDiplomacyCanonicalProtectedFact CloneProtectedFact(WorldDiplomacyCanonicalProtectedFact fact)
+	{
+		if (fact == null) return null;
+		return new WorldDiplomacyCanonicalProtectedFact
+		{
+			Kind = (fact.Kind ?? "").Trim().ToLowerInvariant(),
+			SourceKey = (fact.SourceKey ?? "").Trim(),
+			SourceId = (fact.SourceId ?? "").Trim(),
+			RelatedSourceId = (fact.RelatedSourceId ?? "").Trim(),
+			Sequence = Math.Max(0L, fact.Sequence),
+			Day = Math.Max(0, fact.Day),
+			GameDate = (fact.GameDate ?? "").Trim(),
+			AuthorKingdomId = (fact.AuthorKingdomId ?? "").Trim(),
+			TargetKingdomIds = (fact.TargetKingdomIds ?? new List<string>())
+				.Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).ToList(),
+			Intent = NormalizeIntent(fact.Intent),
+			Commitment = NormalizeCommitment(fact.Commitment),
+			Text = NormalizeCanonicalHistoryText(fact.Text)
+		};
+	}
+
+	private List<WorldDiplomacyCanonicalProtectedFact> BuildCanonicalProtectedFactsThrough(long cutoff)
+	{
+		EnsureCanonicalHistoryInitialized();
+		Dictionary<string, WorldDiplomacyCanonicalProtectedFact> facts = new Dictionary<string, WorldDiplomacyCanonicalProtectedFact>(StringComparer.OrdinalIgnoreCase);
+		void Add(WorldDiplomacyCanonicalProtectedFact candidate)
+		{
+			WorldDiplomacyCanonicalProtectedFact clean = CloneProtectedFact(candidate);
+			if (clean == null
+				|| (clean.Kind != "diplomatic_result" && clean.Kind != "response_link")
+				|| string.IsNullOrWhiteSpace(clean.SourceId)
+				|| (clean.Kind == "diplomatic_result" && string.IsNullOrWhiteSpace(clean.Text))
+				|| (clean.Kind == "response_link" && string.IsNullOrWhiteSpace(clean.RelatedSourceId))) return;
+			string key = ProtectedFactStableKey(clean);
+			if (!string.IsNullOrWhiteSpace(key) && !facts.ContainsKey(key)) facts.Add(key, clean);
+		}
+		foreach (WorldDiplomacyCanonicalProtectedFact fact in _storage.CanonicalHistory.Snapshot.ProtectedFacts ?? new List<WorldDiplomacyCanonicalProtectedFact>()) Add(fact);
+		foreach (WorldDiplomacyCanonicalHistoryEntry entry in _storage.CanonicalHistory.DeltaEntries
+			.Where(x => x != null && x.Sequence <= cutoff).OrderBy(x => x.Sequence))
+		{
+			if (entry.Verified && string.Equals(entry.Kind, "diplomatic_result", StringComparison.OrdinalIgnoreCase))
+			{
+				Add(new WorldDiplomacyCanonicalProtectedFact
+				{
+					Kind = "diplomatic_result",
+					SourceKey = FirstNonEmpty(entry.SourceKey, "result:" + entry.SourceId),
+					SourceId = entry.SourceId,
+					RelatedSourceId = entry.RespondingToOfferDocumentId,
+					Sequence = entry.Sequence,
+					Day = entry.Day,
+					GameDate = entry.GameDate,
+					AuthorKingdomId = entry.AuthorKingdomId,
+					TargetKingdomIds = entry.TargetKingdomIds,
+					Intent = entry.Intent,
+					Commitment = entry.Commitment,
+					Text = entry.Text
+				});
+			}
+			if (!string.IsNullOrWhiteSpace(entry.SourceId) && !string.IsNullOrWhiteSpace(entry.RespondingToOfferDocumentId))
+			{
+				Add(new WorldDiplomacyCanonicalProtectedFact
+				{
+					Kind = "response_link",
+					SourceKey = "response:" + entry.SourceId + "->" + entry.RespondingToOfferDocumentId,
+					SourceId = entry.SourceId,
+					RelatedSourceId = entry.RespondingToOfferDocumentId,
+					Sequence = entry.Sequence,
+					Day = entry.Day,
+					GameDate = entry.GameDate,
+					AuthorKingdomId = entry.AuthorKingdomId,
+					TargetKingdomIds = entry.TargetKingdomIds,
+					Intent = entry.Intent,
+					Commitment = entry.Commitment
+				});
+			}
+		}
+		return facts.Values.OrderBy(x => x.Sequence).ThenBy(x => x.Kind, StringComparer.Ordinal).ThenBy(x => x.SourceKey, StringComparer.OrdinalIgnoreCase).ToList();
+	}
+
+	private static List<WorldDiplomacyCanonicalProtectedFact> SelectCanonicalProtectedFactsWithinTokenBudget(
+		IEnumerable<WorldDiplomacyCanonicalProtectedFact> source,
+		long tokenBudget)
+	{
+		if (tokenBudget <= 0L) return new List<WorldDiplomacyCanonicalProtectedFact>();
+		List<WorldDiplomacyCanonicalProtectedFact> selected = new List<WorldDiplomacyCanonicalProtectedFact>();
+		long estimated = 0L;
+		foreach (WorldDiplomacyCanonicalProtectedFact fact in (source ?? Enumerable.Empty<WorldDiplomacyCanonicalProtectedFact>())
+			.Where(x => x != null)
+			.OrderByDescending(x => x.Sequence)
+			.ThenByDescending(x => x.Kind, StringComparer.Ordinal)
+			.ThenByDescending(x => x.SourceKey, StringComparer.OrdinalIgnoreCase))
+		{
+			long factTokens = EstimateHistoryTokens(RenderCanonicalProtectedFacts(
+				new[] { fact }, Enumerable.Empty<string>()));
+			if (factTokens <= 0L || estimated + factTokens > tokenBudget) continue;
+			selected.Add(fact);
+			estimated += factTokens;
+		}
+		selected = selected.OrderBy(x => x.Sequence).ThenBy(x => x.Kind, StringComparer.Ordinal)
+			.ThenBy(x => x.SourceKey, StringComparer.OrdinalIgnoreCase).ToList();
+		while (selected.Count > 0
+			&& EstimateHistoryTokens(RenderCanonicalProtectedFacts(selected, Enumerable.Empty<string>())) > tokenBudget)
+		{
+			selected.RemoveAt(0);
+		}
+		return selected;
+	}
+
+	private static string RenderCanonicalProtectedFacts(
+		IEnumerable<WorldDiplomacyCanonicalProtectedFact> protectedFacts,
+		IEnumerable<string> preservedResultSourceIds)
+	{
+		List<WorldDiplomacyCanonicalProtectedFact> facts = (protectedFacts ?? Enumerable.Empty<WorldDiplomacyCanonicalProtectedFact>())
+			.Where(x => x != null).OrderBy(x => x.Sequence).ThenBy(x => x.Kind, StringComparer.Ordinal).ThenBy(x => x.SourceKey, StringComparer.OrdinalIgnoreCase).ToList();
+		HashSet<string> exactResultIds = new HashSet<string>(facts.Where(x => string.Equals(x.Kind, "diplomatic_result", StringComparison.OrdinalIgnoreCase))
+			.Select(x => x.SourceId).Where(x => !string.IsNullOrWhiteSpace(x)), StringComparer.OrdinalIgnoreCase);
+		List<string> legacyResultIds = (preservedResultSourceIds ?? Enumerable.Empty<string>())
+			.Where(x => !string.IsNullOrWhiteSpace(x) && !exactResultIds.Contains(x)).Select(x => x.Trim())
+			.Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(x => x, StringComparer.OrdinalIgnoreCase).ToList();
+		if (facts.Count == 0 && legacyResultIds.Count == 0) return "";
+		StringBuilder sb = new StringBuilder();
+		sb.AppendLine("【确定性保留的外交硬事实；压缩摘要不得覆盖】");
+		foreach (WorldDiplomacyCanonicalProtectedFact fact in facts)
+		{
+			if (string.Equals(fact.Kind, "response_link", StringComparison.OrdinalIgnoreCase))
+			{
+				sb.Append("[kind=response_link|source=").Append(fact.SourceId)
+					.Append("|responding_to=").Append(fact.RelatedSourceId)
+					.Append("|date=").Append(fact.GameDate ?? "")
+					.Append("|author=").Append(fact.AuthorKingdomId ?? "")
+					.Append("|targets=").Append(string.Join(",", fact.TargetKingdomIds ?? new List<string>()))
+					.Append("|intent=").Append(fact.Intent ?? "")
+					.Append("|commitment=").Append(fact.Commitment ?? "").AppendLine("]");
+				continue;
+			}
+			sb.Append("[kind=diplomatic_result|source=").Append(fact.SourceId)
+				.Append("|date=").Append(fact.GameDate ?? "")
+				.Append("|author=").Append(fact.AuthorKingdomId ?? "")
+				.Append("|targets=").Append(string.Join(",", fact.TargetKingdomIds ?? new List<string>()))
+				.Append("|intent=").Append(fact.Intent ?? "")
+				.Append("|commitment=").Append(fact.Commitment ?? "")
+				.AppendLine("|verified=true]");
+			sb.AppendLine(fact.Text ?? "");
+		}
+		foreach (string sourceId in legacyResultIds)
+		{
+			sb.Append("[kind=diplomatic_result_manifest|source=").Append(sourceId)
+				.AppendLine("|verified=true|detail_in_compressed_summary=true]");
+		}
+		return sb.ToString().TrimEnd();
+	}
+
+	private static string RenderCanonicalSnapshotPayload(WorldDiplomacyCanonicalHistorySnapshot snapshot)
+	{
+		if (snapshot == null) return "";
+		StringBuilder sb = new StringBuilder();
+		if (!string.IsNullOrWhiteSpace(snapshot.Content)) sb.AppendLine(snapshot.Content.Trim());
+		string protectedFacts = RenderCanonicalProtectedFacts(snapshot.ProtectedFacts, snapshot.PreservedResultSourceIds);
+		if (!string.IsNullOrWhiteSpace(protectedFacts)) sb.AppendLine(protectedFacts);
+		return sb.ToString().TrimEnd();
+	}
+
+	private string BuildCanonicalHistoryBlock(long throughSequence = long.MaxValue)
+	{
+		EnsureCanonicalHistoryInitialized();
+		WorldDiplomacyCanonicalHistoryState history = _storage.CanonicalHistory;
+		long cutoff = throughSequence == long.MaxValue ? history.NextSequence - 1L : Math.Max(0L, throughSequence);
+		string cacheKey = (history.Snapshot.ContentHash ?? "") + "|" + history.Snapshot.CoveredThroughSequence.ToString(CultureInfo.InvariantCulture)
+			+ "|" + cutoff.ToString(CultureInfo.InvariantCulture);
+		if (string.Equals(_canonicalHistoryRenderCacheKey, cacheKey, StringComparison.Ordinal) && !string.IsNullOrEmpty(_canonicalHistoryRenderCache))
+		{
+			return _canonicalHistoryRenderCache;
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.AppendLine("【全局长期外交历史】");
+		sb.AppendLine("本档案对所有王国可见；动态当前状态与本档案冲突时，以动态当前状态为准。提议或宣言不等于已执行结果，只有 verified=true 的 diplomatic_result 表示游戏机制已确认改变现实状态。");
+		string snapshotPayload = RenderCanonicalSnapshotPayload(history.Snapshot);
+		if (!string.IsNullOrWhiteSpace(snapshotPayload) && history.Snapshot.CoveredThroughSequence <= cutoff)
+		{
+			sb.AppendLine("【已压缩历史；覆盖至seq=" + history.Snapshot.CoveredThroughSequence.ToString(CultureInfo.InvariantCulture) + "】");
+			sb.AppendLine(snapshotPayload);
+		}
+		foreach (WorldDiplomacyCanonicalHistoryEntry entry in history.DeltaEntries.Where(x => x != null && x.Sequence <= cutoff).OrderBy(x => x.Sequence))
+		{
+			sb.AppendLine(RenderCanonicalHistoryEntry(entry));
+		}
+		if (string.IsNullOrWhiteSpace(snapshotPayload) && !history.DeltaEntries.Any(x => x != null && x.Sequence <= cutoff)) sb.AppendLine("（暂无历史记录）");
+		string rendered = sb.ToString().TrimEnd();
+		_canonicalHistoryRenderCacheKey = cacheKey;
+		_canonicalHistoryRenderCache = rendered;
+		return rendered;
+	}
+
+	private void InvalidateCanonicalHistoryRenderCache()
+	{
+		_canonicalHistoryRenderCacheKey = "";
+		_canonicalHistoryRenderCache = "";
+	}
+
+	private void CaptureCanonicalHistoryForJob(WorldDiplomacyJob job, bool syncSources)
+	{
+		if (job == null) return;
+		if (syncSources)
+		{
+			RetryDeferredCanonicalHistoryEntries();
+			SyncCanonicalHistorySources(force: true);
+		}
+		EnsureCanonicalHistoryInitialized();
+		WorldDiplomacyCanonicalHistoryState history = _storage.CanonicalHistory;
+		job.HistoryThroughSequence = Math.Max(history.Snapshot.CoveredThroughSequence, history.NextSequence - 1L);
+		job.HistoryRevision = history.Revision;
+		job.HistoryEstimatedTokens = history.EstimatedTokens;
+		job.HistorySnapshotThroughSequence = history.Snapshot.CoveredThroughSequence;
+		job.HistorySnapshotHash = history.Snapshot.ContentHash ?? "";
+		string historyBlock = BuildCanonicalHistoryBlock(job.HistoryThroughSequence);
+		job.HistoryPrefixHash = StablePromptHashPair(job.SystemPrompt, historyBlock);
+	}
+
+	private static List<PublishedPolicyArtifactLedgerEntry> ReadAllPublishedPolicyArtifactsForMigration()
+	{
+		List<PublishedPolicyArtifactLedgerEntry> result = new List<PublishedPolicyArtifactLedgerEntry>();
+		long cursor = 0L;
+		long available = WorldDiplomacyPolicyContext.GetPublishedPolicyHistoryCurrentSequence();
+		while (cursor < available)
+		{
+			IReadOnlyList<PublishedPolicyArtifactLedgerEntry> batch = WorldDiplomacyPolicyContext.GetPublishedPolicyHistoryArtifacts(cursor, 1024);
+			if (batch == null || batch.Count == 0) break;
+			long previousCursor = cursor;
+			foreach (PublishedPolicyArtifactLedgerEntry entry in batch.OrderBy(x => x?.Sequence ?? long.MaxValue))
+			{
+				if (entry == null || entry.Sequence <= cursor) continue;
+				result.Add(entry);
+				cursor = entry.Sequence;
+			}
+			if (cursor <= previousCursor) break;
+		}
+		return result;
+	}
+
+	private void MigrateCanonicalHistoryIfNeeded()
+	{
+		if (_storage == null || _storage.HistoryMemorySchemaVersion >= HistoryMemorySchemaVersion) return;
+		if (Campaign.Current == null || !Kingdom.All.Any()) return;
+		EnsureCanonicalHistoryInitialized();
+		WorldDiplomacyCanonicalHistoryState history = _storage.CanonicalHistory;
+		if (_storage.HistoryMemorySchemaVersion == 3)
+		{
+			// Schema v3 temporarily kept an unbounded, exact hard-fact appendix beside the
+			// summary. Fold it once into the compressible snapshot so the configured
+			// summary target and independent trigger apply to the complete history again.
+			string legacyProtectedFacts = RenderCanonicalProtectedFacts(
+				history.Snapshot.ProtectedFacts,
+				history.Snapshot.PreservedResultSourceIds);
+			if (!string.IsNullOrWhiteSpace(legacyProtectedFacts))
+			{
+				history.Snapshot.Content = NormalizeCanonicalHistoryText(
+					string.Join("\n", new[] { history.Snapshot.Content, legacyProtectedFacts }
+						.Where(x => !string.IsNullOrWhiteSpace(x))));
+				history.Revision++;
+			}
+			history.Snapshot.ProtectedFacts.Clear();
+			history.Snapshot.PreservedResultSourceIds.Clear();
+			string upgradedSnapshotPayload = RenderCanonicalSnapshotPayload(history.Snapshot);
+			history.Snapshot.ContentHash = StablePromptHash(upgradedSnapshotPayload);
+			history.Snapshot.EstimatedTokens = EstimateHistoryTokens(upgradedSnapshotPayload);
+		}
+		if (_storage.HistoryMemorySchemaVersion >= 3)
+		{
+			history.LastPolicyArtifactLedgerId =
+				(WorldDiplomacyPolicyContext.GetPublishedPolicyHistoryLedgerId() ?? "").Trim();
+			if (history.LastPolicyArtifactSequence > 0L)
+			{
+				RebuildPublishedPolicySignaturesThrough(history.LastPolicyArtifactSequence);
+			}
+			RecalculateCanonicalHistoryTokens();
+			_storage.HistoryMemorySchemaVersion = HistoryMemorySchemaVersion;
+			InvalidateCanonicalHistoryRenderCache();
+			Log("canonical diplomacy history schema upgraded version="
+				+ HistoryMemorySchemaVersion.ToString(CultureInfo.InvariantCulture)
+				+ " entries=" + history.DeltaEntries.Count.ToString(CultureInfo.InvariantCulture)
+				+ " snapshot_tokens=" + history.Snapshot.EstimatedTokens.ToString(CultureInfo.InvariantCulture));
+			return;
+		}
+		if (_storage.HistoryMemorySchemaVersion < 3)
+		{
+			// Early canonical-history schemas could contain pre-final policy material whose
+			// provenance cannot be proven after it was compressed. Rebuild this cold migration
+			// exclusively from published documents/results, final world reports, the immutable
+			// policy artifact ledger and legacy summary products; never carry the old request body.
+			history.Snapshot = new WorldDiplomacyCanonicalHistorySnapshot();
+			history.DeltaEntries.Clear();
+			history.NextSequence = 1L;
+			history.EstimatedTokens = 0L;
+			history.WorldWeeklySourceHashes.Clear();
+			history.WorldWeeklySourceRevisions.Clear();
+			history.PolicyRevisionSignatures.Clear();
+			history.LastPolicyArtifactSequence = 0L;
+			history.LastPolicyArtifactLedgerId = "";
+			history.Revision++;
+			_canonicalHistorySourceKeys.Clear();
+			foreach (WorldDiplomacyDocument document in _storage.Documents ?? new List<WorldDiplomacyDocument>())
+			{
+				if (document == null) continue;
+				document.HistoryDeclarationRecorded = false;
+				document.HistoryResultRecorded = false;
+			}
+		}
+		history.LastPolicyArtifactLedgerId =
+			(WorldDiplomacyPolicyContext.GetPublishedPolicyHistoryLedgerId() ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(history.Snapshot.Content) && history.DeltaEntries.Count == 0)
+		{
+			List<string> legacy = new List<string>();
+			foreach (WorldDiplomacyAnnualSummary summary in (_storage.AnnualSummaries ?? new List<WorldDiplomacyAnnualSummary>())
+				.Where(x => x != null && !string.IsNullOrWhiteSpace(x.Summary)).OrderBy(x => x.Year).ThenBy(x => x.CreatedDay))
+			{
+				legacy.Add("[旧年度档案 " + summary.Year.ToString(CultureInfo.InvariantCulture) + "]\n" + summary.Summary.Trim());
+			}
+			foreach (WorldDiplomacyCompressionSummary summary in (_storage.CompressionSummaries ?? new List<WorldDiplomacyCompressionSummary>())
+				.Where(x => x != null && !string.IsNullOrWhiteSpace(x.Summary)).OrderBy(x => x.CreatedDay).ThenBy(x => x.BatchId, StringComparer.OrdinalIgnoreCase))
+			{
+				legacy.Add("[旧压缩档案 " + (summary.BatchId ?? "") + "]\n" + summary.Summary.Trim());
+			}
+			foreach (WorldDiplomacyRoundSummary summary in (_storage.RoundSummaries ?? new List<WorldDiplomacyRoundSummary>())
+				.Where(x => x != null && !x.IsTokenCompressed && !string.IsNullOrWhiteSpace(x.Summary)).OrderBy(x => x.CreatedDay).ThenBy(x => x.RoundId, StringComparer.OrdinalIgnoreCase))
+			{
+				legacy.Add("[旧回合档案 " + (summary.RoundId ?? "") + "]\n" + summary.Summary.Trim());
+			}
+			if (legacy.Count > 0)
+			{
+				history.Snapshot.Content = "【从旧存档恢复的外交摘要；仅作历史背景】\n" + string.Join("\n", legacy.Distinct(StringComparer.Ordinal));
+				history.Snapshot.CoveredThroughSequence = 0L;
+				history.Snapshot.CreatedDay = CurrentDay();
+				history.Snapshot.ContentHash = StablePromptHash(history.Snapshot.Content);
+				history.Snapshot.EstimatedTokens = EstimateHistoryTokens(history.Snapshot.Content);
+			}
+		}
+		List<CanonicalHistoryMigrationWorkItem> migrationItems = new List<CanonicalHistoryMigrationWorkItem>();
+		foreach (WorldDiplomacyDocument document in (_storage.Documents ?? new List<WorldDiplomacyDocument>())
+			.Where(x => x != null && x.IsReadyForPublication
+				&& (!string.IsNullOrWhiteSpace(x.Body)
+					|| ((x.ChangedDiplomaticState || string.Equals(x.AnalysisStatus, "external_fact", StringComparison.OrdinalIgnoreCase))
+						&& !string.IsNullOrWhiteSpace(x.MechanicalResult)))))
+		{
+			migrationItems.Add(new CanonicalHistoryMigrationWorkItem
+			{
+				Day = Math.Max(0, document.Day),
+				CreatedUtcTicks = Math.Max(0L, document.CreatedUtcTicks),
+				StableKey = "document:" + (document.DocumentId ?? ""),
+				Document = document
+			});
+		}
+		foreach (MyBehavior.WorldWeeklyReportHistoryEntry report in MyBehavior.GetPublishedWorldWeeklyReportHistoryForExternal())
+		{
+			if (report == null || string.IsNullOrWhiteSpace(report.SourceId) || string.IsNullOrWhiteSpace(report.PublishedReportText)) continue;
+			migrationItems.Add(new CanonicalHistoryMigrationWorkItem
+			{
+				Day = Math.Max(0, report.CreatedDay),
+				StableKey = "weekly:" + report.SourceId,
+				WorldWeeklyReport = report
+			});
+		}
+		List<PublishedPolicyArtifactLedgerEntry> policyArtifacts = ReadAllPublishedPolicyArtifactsForMigration();
+		foreach (PublishedPolicyArtifactLedgerEntry policy in policyArtifacts)
+		{
+			if (policy == null || string.IsNullOrWhiteSpace(policy.PolicyId) || string.IsNullOrWhiteSpace(policy.PublishedText)) continue;
+			migrationItems.Add(new CanonicalHistoryMigrationWorkItem
+			{
+				Day = Math.Max(0, policy.OccurredDay),
+				CreatedUtcTicks = Math.Max(0L, policy.CreatedUtcTicks),
+				StableKey = "policy:" + policy.Sequence.ToString("D20", CultureInfo.InvariantCulture),
+				Policy = policy
+			});
+		}
+		foreach (CanonicalHistoryMigrationWorkItem item in migrationItems
+			.OrderBy(x => x.Day)
+			.ThenBy(x => x.CreatedUtcTicks)
+			.ThenBy(x => x.StableKey, StringComparer.OrdinalIgnoreCase))
+		{
+			if (item.Document != null) AppendCanonicalDocumentEvents(item.Document);
+			else if (item.WorldWeeklyReport != null) AppendPublishedWorldWeeklyReportArtifact(item.WorldWeeklyReport);
+			else if (item.Policy != null) AppendPublishedPolicyArtifact(item.Policy);
+		}
+		BackfillCanonicalResponseLinksV2();
+		if (policyArtifacts.Count > 0)
+		{
+			history.LastPolicyArtifactSequence = Math.Max(history.LastPolicyArtifactSequence, policyArtifacts.Max(x => x.Sequence));
+			WorldDiplomacyPolicyContext.TryAcknowledgePublishedPolicyHistoryThrough(history.LastPolicyArtifactSequence);
+		}
+		_lastObservedWorldWeeklyHistoryRevision = MyBehavior.GetPublishedWorldWeeklyReportHistoryRevisionForExternal();
+		foreach (WorldDiplomacyRound round in (_storage.CompletedRounds ?? new List<WorldDiplomacyRound>())
+			.Concat(_storage.ActiveRound == null ? Enumerable.Empty<WorldDiplomacyRound>() : new[] { _storage.ActiveRound }).Where(x => x != null))
+		{
+			round.LlmTranscript?.Clear();
+			round.LlmProfiledKingdomIds?.Clear();
+			round.LlmLastStateSignatureByKingdom?.Clear();
+			round.CachePrefix = "";
+			round.CommonContractSnapshot = "";
+			round.CommonContractSnapshotInitialized = false;
+			round.SchemaVersion = Math.Max(round.SchemaVersion, RelaySchemaVersion);
+		}
+		List<WorldDiplomacyJob> invalidJobs = new List<WorldDiplomacyJob>();
+		foreach (WorldDiplomacyJob job in (_storage.Jobs ?? new List<WorldDiplomacyJob>()).Where(x => x != null))
+		{
+			job.IsRunning = false;
+			job.LlmMessages?.Clear();
+			if (string.Equals(job.Kind, "compress", StringComparison.OrdinalIgnoreCase))
+			{
+				invalidJobs.Add(job);
+				continue;
+			}
+			if (!TryRebuildPendingWorldDiplomacyJob(job)) invalidJobs.Add(job);
+		}
+		if (invalidJobs.Count > 0)
+		{
+			HashSet<string> invalidIds = new HashSet<string>(invalidJobs.Select(x => x.JobId), StringComparer.OrdinalIgnoreCase);
+			_storage.Jobs.RemoveAll(x => x != null && invalidIds.Contains(x.JobId ?? ""));
+			foreach (WorldDiplomacyJob invalidJob in invalidJobs)
+			{
+				if (ResolveExchange(invalidJob.ExchangeId) != null) CompleteExchange(invalidJob.ExchangeId, "canonical_history_migration_retired_invalid_job");
+			}
+			WorldDiplomacyRound activeRound = _storage.ActiveRound;
+			if (activeRound != null)
+			{
+				activeRound.RelayWaiting = false;
+				bool hasRoundJob = _storage.Jobs.Any(x => x != null && string.Equals(x.RoundId, activeRound.RoundId, StringComparison.OrdinalIgnoreCase));
+				bool hasPublishedRoot = ResolveDocument(activeRound.RootDocumentId)?.IsReadyForPublication == true;
+				if (!hasRoundJob && !hasPublishedRoot) CloseActiveRound("canonical_history_migration_missing_root");
+			}
+		}
+		RecalculateCanonicalHistoryTokens();
+		_storage.HistoryMemorySchemaVersion = HistoryMemorySchemaVersion;
+		InvalidateCanonicalHistoryRenderCache();
+		Log("canonical diplomacy history migration completed entries=" + history.DeltaEntries.Count.ToString(CultureInfo.InvariantCulture)
+			+ " snapshot_tokens=" + history.Snapshot.EstimatedTokens.ToString(CultureInfo.InvariantCulture)
+			+ " retired_jobs=" + invalidJobs.Count.ToString(CultureInfo.InvariantCulture));
+	}
+
+	private void BackfillCanonicalResponseLinksV2()
+	{
+		if (_storage == null || _storage.HistoryMemorySchemaVersion >= 2) return;
+		foreach (WorldDiplomacyDocument document in (_storage.Documents ?? new List<WorldDiplomacyDocument>())
+			.Where(x => x != null && x.IsReadyForPublication
+				&& !string.IsNullOrWhiteSpace(x.DocumentId)
+				&& !string.IsNullOrWhiteSpace(x.RespondingToOfferDocumentId)
+				&& !string.IsNullOrWhiteSpace(x.Body))
+			.OrderBy(x => x.Day).ThenBy(x => x.CreatedUtcTicks))
+		{
+			bool alreadyLinked = (_storage.CanonicalHistory.DeltaEntries ?? new List<WorldDiplomacyCanonicalHistoryEntry>())
+				.Any(x => x != null
+					&& string.Equals(x.SourceId, document.DocumentId, StringComparison.OrdinalIgnoreCase)
+					&& string.Equals(x.RespondingToOfferDocumentId, document.RespondingToOfferDocumentId, StringComparison.OrdinalIgnoreCase));
+			if (alreadyLinked) continue;
+			List<string> targets = (document.AddressedKingdomIds ?? new List<string>())
+				.Concat(string.IsNullOrWhiteSpace(document.TargetKingdomId) ? Enumerable.Empty<string>() : new[] { document.TargetKingdomId })
+				.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+			AppendCanonicalHistoryEntry("declaration",
+				"document:" + document.DocumentId + ":response_link_v2",
+				document.DocumentId,
+				document.Day,
+				document.GameDate,
+				document.AuthorKingdomId,
+				targets,
+				document.Intent,
+				document.Commitment,
+				document.Body,
+				verified: true,
+				respondingToOfferDocumentId: document.RespondingToOfferDocumentId);
+		}
+	}
+
+	private void MigrateDiplomacyPromptContractIfNeeded()
+	{
+		if (_storage == null || _storage.PromptContractVersion >= DiplomacyPromptContractVersion) return;
+		if (Campaign.Current == null || !Kingdom.All.Any()) return;
+		List<WorldDiplomacyJob> retiredJobs = new List<WorldDiplomacyJob>();
+		bool retiredCompression = false;
+		foreach (WorldDiplomacyJob job in (_storage.Jobs ?? new List<WorldDiplomacyJob>()).Where(x => x != null).ToList())
+		{
+			job.IsRunning = false;
+			if (!UsesCanonicalHistory(job)) continue;
+			job.LlmMessages?.Clear();
+			job.SemanticRepairAttempts = 0;
+			job.HistoryPrefixHash = "";
+			if (string.Equals(job.Kind, "compress", StringComparison.OrdinalIgnoreCase))
+			{
+				retiredCompression = true;
+				retiredJobs.Add(job);
+				continue;
+			}
+			if (!TryRebuildPendingWorldDiplomacyJob(job)) retiredJobs.Add(job);
+		}
+		if (retiredJobs.Count > 0)
+		{
+			HashSet<string> retiredIds = new HashSet<string>(retiredJobs.Select(x => x.JobId), StringComparer.OrdinalIgnoreCase);
+			_storage.Jobs.RemoveAll(x => x != null && retiredIds.Contains(x.JobId ?? ""));
+			foreach (WorldDiplomacyJob retired in retiredJobs.Where(x => !string.Equals(x.Kind, "compress", StringComparison.OrdinalIgnoreCase)))
+			{
+				if (ResolveExchange(retired.ExchangeId) != null) CompleteExchange(retired.ExchangeId, "prompt_contract_migration_retired_invalid_job");
+			}
+		}
+		if (retiredCompression)
+		{
+			_storage.DiplomacyCompressionPending = true;
+			_storage.CompressionRetryAfterHour = 0;
+			_storage.CompressionRetryAttempts = 0;
+		}
+		foreach (WorldDiplomacyRound round in (_storage.CompletedRounds ?? new List<WorldDiplomacyRound>())
+			.Concat(_storage.ActiveRound == null ? Enumerable.Empty<WorldDiplomacyRound>() : new[] { _storage.ActiveRound })
+			.Where(x => x != null))
+		{
+			round.LlmTranscript?.Clear();
+			round.LlmProfiledKingdomIds?.Clear();
+			round.LlmLastStateSignatureByKingdom?.Clear();
+			round.CachePrefix = "";
+			round.CommonContractSnapshot = "";
+			round.CommonContractSnapshotInitialized = false;
+		}
+		_lastLlmCacheAffinityKey = "";
+		_storage.PromptContractVersion = DiplomacyPromptContractVersion;
+		Log("diplomacy prompt contract migration completed version=" + DiplomacyPromptContractVersion.ToString(CultureInfo.InvariantCulture)
+			+ " rebuilt_jobs=" + ((_storage.Jobs ?? new List<WorldDiplomacyJob>()).Count(UsesCanonicalHistory)).ToString(CultureInfo.InvariantCulture)
+			+ " retired_jobs=" + retiredJobs.Count.ToString(CultureInfo.InvariantCulture)
+			+ " compression_requeued=" + retiredCompression.ToString());
+	}
+
+	private bool TryRebuildPendingWorldDiplomacyJob(WorldDiplomacyJob job)
+	{
+		if (job == null) return false;
+		if (string.Equals(job.Kind, "generate", StringComparison.OrdinalIgnoreCase))
+		{
+			Kingdom author = ResolveKingdom(job.AuthorKingdomId);
+			Kingdom target = ResolveKingdom(job.TargetKingdomId);
+			if (author == null || (target == null && !job.AllowUntargeted)) return false;
+			WorldDiplomacyRound round = ResolveRound(FirstNonEmpty(job.RoundId, job.ExchangeId));
+			string commonContract = GetCommonDiplomacyContract(round);
+			job.SystemPrompt = job.IsRelayTurn ? BuildRelayGenerationSystemPrompt(commonContract) : BuildGenerationSystemPrompt(commonContract);
+			List<string> candidates = job.CandidateKingdomIds ?? new List<string>();
+			if (job.IsRelayTurn && round == null) return false;
+			string dynamicPrompt = job.IsRelayTurn
+				? BuildRelayConversationTurnPrompt(round, author, target,
+					prioritySource: ResolveDocument(job.SourceDocumentId), priorityResponseOnly: job.IsExternalResponseOnly)
+				: BuildGenerationPrompt(author, target, ResolveExchange(job.ExchangeId), job.IsResponse, ResolveDocument(job.SourceDocumentId), job.IsReminder, job.RoundId, job.AllowUntargeted, candidates);
+			job.UserPrompt = BuildDeclareModePrompt(dynamicPrompt);
+			job.CacheAffinityKey = CanonicalHistoryCacheAffinityKey;
+			job.ProfiledKingdomId = "";
+			job.StrategicProfileKingdomId = author.StringId;
+			job.MaxTokens = GenerationMaxTokens;
+			CaptureCanonicalHistoryForJob(job, syncSources: false);
+			return !string.IsNullOrWhiteSpace(job.UserPrompt);
+		}
+		if (string.Equals(job.Kind, "analyze", StringComparison.OrdinalIgnoreCase))
+		{
+			WorldDiplomacyDocument document = ResolveDocument(job.DocumentId);
+			if (document == null) return false;
+			job.SystemPrompt = BuildAnalysisSystemPrompt(GetCommonDiplomacyContract(ResolveRound(FirstNonEmpty(document.RoundId, document.ExchangeId))));
+			job.UserPrompt = BuildAnalysisPrompt(document);
+			job.CacheAffinityKey = "analyze";
+			job.MaxTokens = AnalysisMaxTokens;
+			return true;
+		}
+		if (string.Equals(job.Kind, "round_plan", StringComparison.OrdinalIgnoreCase))
+		{
+			WorldDiplomacyRound round = ResolveRound(job.RoundId);
+			WorldDiplomacyDocument root = ResolveDocument(job.DocumentId);
+			if (round == null || root == null) return false;
+			job.SystemPrompt = BuildRoundPlanSystemPrompt(round);
+			job.UserPrompt = BuildRoundPlanPrompt(root, job.CandidateKingdomIds ?? new List<string>());
+			job.MaxTokens = AnalysisMaxTokens;
+			return true;
+		}
+		return false;
 	}
 
 	private List<WorldDiplomacyDocument> GetRecentDocuments(int maxCount)
@@ -8217,10 +9118,6 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	{
 		if (_storage == null || _storage.DecisionArchitectureVersion >= DecisionArchitectureVersion) return;
 		if (_storage.ActiveRound != null && (Campaign.Current == null || !Kingdom.All.Any())) return;
-		if (_storage.ActiveRound != null && !_storage.ActiveRound.CommonContractSnapshotInitialized)
-		{
-			InitializeRoundCommonContractSnapshot(_storage.ActiveRound);
-		}
 		int day = CurrentDay();
 		List<WorldDiplomacyJob> retiredJobs = (_storage.Jobs ?? new List<WorldDiplomacyJob>())
 			.Where(x => x != null && (string.Equals(x.Kind, "generate", StringComparison.OrdinalIgnoreCase)
@@ -8335,7 +9232,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 						active.RelayDirection = 1;
 					}
 				}
-				if (active.RelayPlanned) active.CachePrefix = BuildRoundCachePrefix(active, root);
+				active.CachePrefix = "";
 			}
 		}
 		_storage.DecisionArchitectureVersion = DecisionArchitectureVersion;
@@ -8346,6 +9243,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private void NormalizeStorage(bool allowWorldValidation = false)
 	{
 		_storage ??= new WorldDiplomacyStorage();
+		_storage.CanonicalHistory ??= new WorldDiplomacyCanonicalHistoryState();
 		_storage.CompletedRounds ??= new List<WorldDiplomacyRound>();
 		_storage.PropagationArrivals ??= new List<WorldDiplomacyPropagationArrival>();
 		_storage.SettlementKnowledge ??= new List<WorldDiplomacySettlementKnowledge>();
@@ -8370,6 +9268,8 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		_storage.SuspendedExchanges ??= new List<WorldDiplomacyExchange>();
 		_storage.LastOffensiveWarDayByKingdom ??= new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 		_storage.LastPeaceDayByPair ??= new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		_storage.CompressionRetryAfterHour = Math.Max(0, _storage.CompressionRetryAfterHour);
+		_storage.CompressionRetryAttempts = Math.Max(0, Math.Min(31, _storage.CompressionRetryAttempts));
 		if (allowWorldValidation)
 		{
 			try
@@ -8482,6 +9382,17 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 				document.HasReachedPlayerCourt = document.HasReachedPlayerCourt || !document.IsPlayerAuthored;
 			}
 		}
+		if (allowWorldValidation)
+		{
+			try
+			{
+				MigrateCanonicalHistoryIfNeeded();
+			}
+			catch (Exception ex)
+			{
+				Log("canonical diplomacy history migration deferred after error=" + ex.Message);
+			}
+		}
 		foreach (WorldDiplomacyJob legacyRoundCompression in _storage.Jobs
 			.Where(x => x != null && string.Equals(x.Kind, "round_compress", StringComparison.OrdinalIgnoreCase)).ToList())
 		{
@@ -8495,7 +9406,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			|| string.Equals(x.Kind, "participate", StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(x.Kind, "round_compress", StringComparison.OrdinalIgnoreCase)
 			|| (x.IsRelayTurn && x.Priority == 98 && !string.IsNullOrWhiteSpace(x.ForcedIntent))
-			|| (string.Equals(x.Kind, "compress", StringComparison.OrdinalIgnoreCase) && (x.CompressionRoundIds == null || x.CompressionRoundIds.Count == 0)));
+			|| (string.Equals(x.Kind, "compress", StringComparison.OrdinalIgnoreCase) && x.CompressionTargetTokens <= 0));
 		foreach (WorldDiplomacyJob job in _storage.Jobs)
 		{
 			job.CandidateKingdomIds ??= new List<string>();
@@ -8510,19 +9421,13 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			round.RelayRouteKingdomIds ??= new List<string>();
 			round.PendingOffers ??= new List<WorldDiplomacyRoundOffer>();
 			round.LlmTranscript ??= new List<WorldDiplomacyLlmMessage>();
-			round.LlmTranscript.RemoveAll(x => x == null || string.IsNullOrWhiteSpace(x.Role));
+			round.LlmTranscript.Clear();
 			round.LlmProfiledKingdomIds ??= new List<string>();
 			round.ExternalSignalKeys ??= new List<string>();
 			round.PotentialActionIntents ??= new List<string>();
-			if (ReferenceEquals(round, _storage.ActiveRound) && !round.CommonContractSnapshotInitialized)
-			{
-				InitializeRoundCommonContractSnapshot(round);
-			}
-			else if (!ReferenceEquals(round, _storage.ActiveRound))
-			{
-				round.CommonContractSnapshot = "";
-				round.CommonContractSnapshotInitialized = false;
-			}
+			round.CommonContractSnapshot = "";
+			round.CommonContractSnapshotInitialized = false;
+			round.CachePrefix = "";
 			round.PotentialActionIntents = round.PotentialActionIntents
 				.Where(x => !string.IsNullOrWhiteSpace(x))
 				.Select(NormalizeIntent)
@@ -8536,8 +9441,9 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			round.EventLocation ??= "";
 			round.AllowedFiction ??= "";
 			round.ForbiddenFiction ??= "";
-			round.LlmProfiledKingdomIds = round.LlmProfiledKingdomIds.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+			round.LlmProfiledKingdomIds.Clear();
 			round.LlmLastStateSignatureByKingdom ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			round.LlmLastStateSignatureByKingdom.Clear();
 			round.PendingOffers.RemoveAll(x => x == null || string.IsNullOrWhiteSpace(x.SourceDocumentId));
 			if (allowWorldValidation
 				&& ReferenceEquals(round, _storage.ActiveRound)
@@ -8583,13 +9489,23 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 					&& string.Equals(x.RoundId, round.RoundId, StringComparison.OrdinalIgnoreCase));
 				round.AutomaticDocumentsStarted = Math.Max(publishedAutomatic, round.AutomaticDocumentsStarted - retiredGenerateCount);
 				_storage.RelayArrivals.RemoveAll(x => x != null && string.Equals(x.RoundId, round.RoundId, StringComparison.OrdinalIgnoreCase));
-				WorldDiplomacyDocument root = ResolveDocument(round.RootDocumentId);
-				if (root != null) round.CachePrefix = BuildRoundCachePrefix(round, root);
+				round.CachePrefix = "";
 				round.LlmTranscript.Clear();
 				round.LlmProfiledKingdomIds.Clear();
 				round.LlmLastStateSignatureByKingdom.Clear();
 				round.RelayWaiting = false;
 				round.SchemaVersion = RelaySchemaVersion;
+			}
+		}
+		if (allowWorldValidation)
+		{
+			try
+			{
+				MigrateDiplomacyPromptContractIfNeeded();
+			}
+			catch (Exception ex)
+			{
+				Log("diplomacy prompt contract migration deferred after error=" + ex.Message);
 			}
 		}
 		if (migrateLegacyPropagationState) _storage.PropagationReliabilityVersion = 1;
@@ -8648,8 +9564,8 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			.ToList();
 		_storage.CompressionSummaries = _storage.CompressionSummaries.Where(x => x != null && !string.IsNullOrWhiteSpace(x.BatchId))
 			.OrderByDescending(x => x.CreatedDay).Take(MaxStoredCompressionSummaries).ToList();
-		_storage.DiplomacyTokensSinceCompression = Math.Max(0L, _storage.DiplomacyTokensSinceCompression);
-		if (_storage.DiplomacyTokensSinceCompression >= GetCompressionThresholdTokens()) _storage.DiplomacyCompressionPending = true;
+		EnsureCanonicalHistoryInitialized();
+		RecalculateCanonicalHistoryTokens();
 		TrimNativeSignals();
 		TrimRecentBattleFacts();
 	}
@@ -9310,16 +10226,35 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static long GetCompressionThresholdTokens()
+	private static int GetHistoryCompressionTargetTokens()
 	{
 		try
 		{
-			int tenThousands = Math.Max(10, Math.Min(200, DuelSettings.GetSettings()?.WorldDiplomacyCompressionThresholdTenThousands ?? 50));
-			return tenThousands * 10000L;
+			int thousands = Math.Max(DuelSettings.WorldDiplomacyHistoryCompressionTargetThousandsMin,
+				Math.Min(DuelSettings.WorldDiplomacyHistoryCompressionTargetThousandsMax,
+					DuelSettings.GetSettings()?.WorldDiplomacyHistoryCompressionTargetThousands
+					?? DuelSettings.DefaultWorldDiplomacyHistoryCompressionTargetThousands));
+			return thousands * 1000;
 		}
 		catch
 		{
-			return 500000L;
+			return DuelSettings.DefaultWorldDiplomacyHistoryCompressionTargetThousands * 1000;
+		}
+	}
+
+	private static long GetHistoryCompressionTriggerTokens()
+	{
+		try
+		{
+			int thousands = Math.Max(DuelSettings.WorldDiplomacyHistoryCompressionTriggerThousandsMin,
+				Math.Min(DuelSettings.WorldDiplomacyHistoryCompressionTriggerThousandsMax,
+					DuelSettings.GetSettings()?.WorldDiplomacyHistoryCompressionTriggerThousands
+					?? DuelSettings.DefaultWorldDiplomacyHistoryCompressionTriggerThousands));
+			return thousands * 1000L;
+		}
+		catch
+		{
+			return DuelSettings.DefaultWorldDiplomacyHistoryCompressionTriggerThousands * 1000L;
 		}
 	}
 
@@ -9455,6 +10390,13 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	{
 		string text = (value ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
 		return Limit(text, 6000);
+	}
+
+	private static string NormalizeCanonicalHistoryText(string value)
+	{
+		// Canonical artifacts and configured-size snapshots must never inherit the per-document
+		// display cap. Compression, rather than silent truncation, owns their size control.
+		return (value ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
 	}
 
 	private static string FormatDiplomaticBodyForDisplay(string value)
@@ -9782,45 +10724,6 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		return normalized == "propose_peace" || normalized == "accept_peace" || normalized == "reject_peace";
 	}
 
-	private static bool LooksLikeExplicitPeaceNegotiation(string text)
-	{
-		if (string.IsNullOrWhiteSpace(text)) return false;
-		if (ContainsAny(text, "并未交战", "没有战争", "不存在停战", "不存在议和")) return false;
-		return ContainsAny(text, "停战", "停火", "议和", "和谈", "休战", "结束战争", "结束这场战争", "退出战争", "战争补偿");
-	}
-
-	private static bool LooksLikeExplicitPeaceNegotiationWithTarget(Kingdom author, Kingdom target, string text)
-	{
-		if (author == null || target == null || author == target || !LooksLikeExplicitPeaceNegotiation(text)) return false;
-		string targetName = KingdomName(target);
-		string targetRulerName = RulerName(target);
-		foreach (string rawClause in Regex.Split(text ?? "", @"[\r\n。！？；]+"))
-		{
-			string clause = (rawClause ?? "").Trim();
-			if (!LooksLikeExplicitPeaceNegotiation(clause) || IsPeaceDiscussionDisclaimer(clause)) continue;
-			bool namesTarget = (!string.IsNullOrWhiteSpace(targetName) && clause.IndexOf(targetName, StringComparison.OrdinalIgnoreCase) >= 0)
-				|| (!string.IsNullOrWhiteSpace(targetRulerName) && clause.IndexOf(targetRulerName, StringComparison.OrdinalIgnoreCase) >= 0);
-			bool namesOtherKingdom = Kingdom.All.Any(x => x != null && x != author && x != target
-				&& ((!string.IsNullOrWhiteSpace(KingdomName(x)) && clause.IndexOf(KingdomName(x), StringComparison.OrdinalIgnoreCase) >= 0)
-					|| (!string.IsNullOrWhiteSpace(RulerName(x)) && clause.IndexOf(RulerName(x), StringComparison.OrdinalIgnoreCase) >= 0)));
-			if (namesTarget) return true;
-			if (namesOtherKingdom) continue;
-			bool refersToBilateralParties = ContainsAny(clause, "贵国", "双方", "两国", "彼此", "本国与", "我国与");
-			bool statesPeaceMove = ContainsAny(clause, "提议", "提出", "接受", "同意", "拒绝", "要求", "愿意", "愿与", "请求", "条件", "必须", "应当", "准备", "另行商议", "另行讨论");
-			if (refersToBilateralParties || statesPeaceMove) return true;
-		}
-		return false;
-	}
-
-	private static bool IsPeaceDiscussionDisclaimer(string clause)
-	{
-		if (string.IsNullOrWhiteSpace(clause)) return false;
-		if (ContainsAny(clause, "不是一份和平条约", "不构成和平条约", "不改变战争状态", "不改变任何两国之间的战争状态", "不等于停战", "不等于议和", "不把和平与", "不把停战与")) return true;
-		return Regex.IsMatch(clause,
-			@"(?:无意|不打算|并非要|不会在此).{0,24}(?:讨论|商议|提出|缔结).{0,16}(?:停战|停火|议和|和谈|休战)|(?:不应|不得|不要).{0,20}(?:变成|视为|混同为).{0,12}(?:停战|停火|议和|和谈|休战)",
-			RegexOptions.CultureInvariant);
-	}
-
 	private static bool IsSupportedDiplomacyIntent(string intent)
 	{
 		return NormalizeIntent(intent) is "statement" or "condemn" or "warning" or "ultimatum" or "apology" or "concession"
@@ -10105,12 +11008,6 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		public int TargetSuggestedTribute;
 	}
 
-	private sealed class WeeklyDiplomacySnapshotCacheEntry
-	{
-		public int WeekIndex;
-		public string Text = "";
-	}
-
 	private sealed class WorldDiplomacyBorderRelation
 	{
 		public bool SharesBorder;
@@ -10119,6 +11016,16 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		public string SecondSettlementId = "";
 		public string SecondSettlementName = "";
 		public float Distance = float.MaxValue;
+	}
+
+	private sealed class CanonicalHistoryMigrationWorkItem
+	{
+		public int Day;
+		public long CreatedUtcTicks;
+		public string StableKey = "";
+		public WorldDiplomacyDocument Document;
+		public MyBehavior.WorldWeeklyReportHistoryEntry WorldWeeklyReport;
+		public PublishedPolicyArtifactLedgerEntry Policy;
 	}
 
 	private sealed class LlmJobResult
@@ -10133,6 +11040,8 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		public int? CompletionTokens;
 		public int? PromptCacheHitTokens;
 		public int? PromptCacheMissTokens;
+		public int? PromptCacheCreationTokens;
+		public int? PromptUncachedTokens;
 	}
 }
 
@@ -10363,6 +11272,15 @@ public sealed class WorldDiplomacyCompressionSummary
 
 public sealed class WorldDiplomacyStorage
 {
+	[JsonProperty("historyMemorySchemaVersion")]
+	public int HistoryMemorySchemaVersion { get; set; }
+
+	[JsonProperty("promptContractVersion")]
+	public int PromptContractVersion { get; set; }
+
+	[JsonProperty("canonicalHistory")]
+	public WorldDiplomacyCanonicalHistoryState CanonicalHistory { get; set; } = new WorldDiplomacyCanonicalHistoryState();
+
 	[JsonProperty("decisionArchitectureVersion")]
 	public int DecisionArchitectureVersion { get; set; }
 
@@ -10495,6 +11413,9 @@ public sealed class WorldDiplomacyStorage
 	[JsonProperty("compressionRetryAfterHour")]
 	public int CompressionRetryAfterHour { get; set; }
 
+	[JsonProperty("compressionRetryAttempts")]
+	public int CompressionRetryAttempts { get; set; }
+
 	[JsonProperty("serviceCooldownUntilHour")]
 	public int ServiceCooldownUntilHour { get; set; }
 
@@ -10540,6 +11461,12 @@ public sealed class WorldDiplomacyBattleFact
 
 public sealed class WorldDiplomacyDocument
 {
+	[JsonProperty("historyDeclarationRecorded")]
+	public bool HistoryDeclarationRecorded { get; set; }
+
+	[JsonProperty("historyResultRecorded")]
+	public bool HistoryResultRecorded { get; set; }
+
 	[JsonProperty("roundId")]
 	public string RoundId { get; set; } = "";
 
@@ -10759,6 +11686,24 @@ public sealed class WorldDiplomacyExchange
 
 public sealed class WorldDiplomacyJob
 {
+	[JsonProperty("historyThroughSequence")]
+	public long HistoryThroughSequence { get; set; }
+
+	[JsonProperty("historyRevision")]
+	public long HistoryRevision { get; set; }
+
+	[JsonProperty("historyPrefixHash")]
+	public string HistoryPrefixHash { get; set; } = "";
+
+	[JsonProperty("historyEstimatedTokens")]
+	public long HistoryEstimatedTokens { get; set; }
+
+	[JsonProperty("historySnapshotThroughSequence")]
+	public long HistorySnapshotThroughSequence { get; set; }
+
+	[JsonProperty("historySnapshotHash")]
+	public string HistorySnapshotHash { get; set; } = "";
+
 	[JsonProperty("roundId")]
 	public string RoundId { get; set; } = "";
 
@@ -10860,6 +11805,159 @@ public sealed class WorldDiplomacyJob
 
 	[JsonProperty("compressionTokenCount")]
 	public long CompressionTokenCount { get; set; }
+
+	[JsonProperty("compressionThroughSequence")]
+	public long CompressionThroughSequence { get; set; }
+
+	[JsonProperty("compressionTargetTokens")]
+	public int CompressionTargetTokens { get; set; }
+
+	[JsonProperty("compressionOverallTargetTokens")]
+	public int CompressionOverallTargetTokens { get; set; }
+}
+
+public sealed class WorldDiplomacyCanonicalHistoryState
+{
+	[JsonProperty("snapshot")]
+	public WorldDiplomacyCanonicalHistorySnapshot Snapshot { get; set; } = new WorldDiplomacyCanonicalHistorySnapshot();
+
+	[JsonProperty("deltaEntries")]
+	public List<WorldDiplomacyCanonicalHistoryEntry> DeltaEntries { get; set; } = new List<WorldDiplomacyCanonicalHistoryEntry>();
+
+	[JsonProperty("nextSequence")]
+	public long NextSequence { get; set; } = 1L;
+
+	[JsonProperty("revision")]
+	public long Revision { get; set; }
+
+	[JsonProperty("estimatedTokens")]
+	public long EstimatedTokens { get; set; }
+
+	[JsonProperty("worldWeeklySourceHashes")]
+	public Dictionary<string, string> WorldWeeklySourceHashes { get; set; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+	[JsonProperty("worldWeeklySourceRevisions")]
+	public Dictionary<string, long> WorldWeeklySourceRevisions { get; set; } = new Dictionary<string, long>(StringComparer.OrdinalIgnoreCase);
+
+	[JsonProperty("policyRevisionSignatures")]
+	public Dictionary<string, string> PolicyRevisionSignatures { get; set; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+	[JsonProperty("lastPolicyArtifactSequence")]
+	public long LastPolicyArtifactSequence { get; set; }
+
+	[JsonProperty("lastPolicyArtifactLedgerId")]
+	public string LastPolicyArtifactLedgerId { get; set; } = "";
+}
+
+public sealed class WorldDiplomacyCanonicalHistorySnapshot
+{
+	[JsonProperty("content")]
+	public string Content { get; set; } = "";
+
+	[JsonProperty("coveredThroughSequence")]
+	public long CoveredThroughSequence { get; set; }
+
+	[JsonProperty("contentHash")]
+	public string ContentHash { get; set; } = "";
+
+	[JsonProperty("createdDay")]
+	public int CreatedDay { get; set; } = -1;
+
+	[JsonProperty("estimatedTokens")]
+	public long EstimatedTokens { get; set; }
+
+	[JsonProperty("preservedResultSourceIds")]
+	public List<string> PreservedResultSourceIds { get; set; } = new List<string>();
+
+	[JsonProperty("protectedFacts")]
+	public List<WorldDiplomacyCanonicalProtectedFact> ProtectedFacts { get; set; } = new List<WorldDiplomacyCanonicalProtectedFact>();
+}
+
+public sealed class WorldDiplomacyCanonicalProtectedFact
+{
+	[JsonProperty("kind")]
+	public string Kind { get; set; } = "";
+
+	[JsonProperty("sourceKey")]
+	public string SourceKey { get; set; } = "";
+
+	[JsonProperty("sourceId")]
+	public string SourceId { get; set; } = "";
+
+	[JsonProperty("relatedSourceId")]
+	public string RelatedSourceId { get; set; } = "";
+
+	[JsonProperty("sequence")]
+	public long Sequence { get; set; }
+
+	[JsonProperty("day")]
+	public int Day { get; set; }
+
+	[JsonProperty("gameDate")]
+	public string GameDate { get; set; } = "";
+
+	[JsonProperty("authorKingdomId")]
+	public string AuthorKingdomId { get; set; } = "";
+
+	[JsonProperty("targetKingdomIds")]
+	public List<string> TargetKingdomIds { get; set; } = new List<string>();
+
+	[JsonProperty("intent")]
+	public string Intent { get; set; } = "";
+
+	[JsonProperty("commitment")]
+	public string Commitment { get; set; } = "";
+
+	[JsonProperty("text")]
+	public string Text { get; set; } = "";
+}
+
+public sealed class WorldDiplomacyCanonicalHistoryEntry
+{
+	[JsonProperty("entryId")]
+	public string EntryId { get; set; } = "";
+
+	[JsonProperty("sourceKey")]
+	public string SourceKey { get; set; } = "";
+
+	[JsonProperty("sequence")]
+	public long Sequence { get; set; }
+
+	[JsonProperty("day")]
+	public int Day { get; set; }
+
+	[JsonProperty("gameDate")]
+	public string GameDate { get; set; } = "";
+
+	[JsonProperty("kind")]
+	public string Kind { get; set; } = "";
+
+	[JsonProperty("sourceId")]
+	public string SourceId { get; set; } = "";
+
+	[JsonProperty("respondingToOfferDocumentId")]
+	public string RespondingToOfferDocumentId { get; set; } = "";
+
+	[JsonProperty("authorKingdomId")]
+	public string AuthorKingdomId { get; set; } = "";
+
+	[JsonProperty("targetKingdomIds")]
+	public List<string> TargetKingdomIds { get; set; } = new List<string>();
+
+	[JsonProperty("intent")]
+	public string Intent { get; set; } = "";
+
+	[JsonProperty("commitment")]
+	public string Commitment { get; set; } = "";
+
+	[JsonProperty("text")]
+	public string Text { get; set; } = "";
+
+	[JsonProperty("verified")]
+	public bool Verified { get; set; }
+
+	[JsonProperty("estimatedTokens")]
+	public long EstimatedTokens { get; set; }
 }
 
 public sealed class WorldDiplomacyPeaceTerms

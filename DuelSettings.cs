@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using MCM.Abstractions;
@@ -31,9 +32,17 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	private static bool _duelRenownDefaultMigrationChecked;
 
+	private static bool _worldDiplomacyCompressionDefaultsMigrationChecked;
+
 	private const string LogCleanupDefaultMigrationId = "v0.8.9-force-log-cleanup-3-days";
 
 	private const string LogCleanupDefaultMigrationMarkerFileName = ".log_cleanup_3days_migration_v089";
+
+	private const string WorldDiplomacyCompressionDefaultsMigrationId = "v0.8.9-world-diplomacy-compression-800k-48k";
+
+	private const string WorldDiplomacyCompressionDefaultsMigrationMarkerFileName = ".world_diplomacy_compression_800k_48k_migration_v089";
+
+	private const int LegacyWorldDiplomacyHistoryCompressionTargetThousands = 16;
 
 	private const int LegacyDuelLoserClanRenownPenaltyMinimum = 100;
 
@@ -77,31 +86,39 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	private const string PreviousDefaultWorldDiplomacyPromptV1 = "让统治者依据自己真正收到的外交宣言、文化、性格、人物关系、战争局势与现实利益作出自然判断。允许讨论、试探、支持、威胁、搅局、合作、退出或升级冲突，但每次公开发言都应带来新条件、新选择、明确回应或实际外交进展。宣言要直接进入眼前的矛盾、决定或条件，不逐一唱名相关君主，不反复自报身份，不用‘第一、第二、第三’列提纲，也不要套用致意、遗憾、原则、要求、威胁的固定公文结构。使用清楚自然的现代中文表达世界内内容；每位统治者的关注点、措辞与让步尺度应体现其专属人格。";
 
-	private const string DefaultWorldDiplomacyContractCore = "【AnimusForge 王国外交共同契约 v18】\n"
-		+ "你正在处理卡拉迪亚诸王国之间的公开外交。无论当前任务是规划参与国、起草宣言、判断语义还是整理外交事件，都必须先遵守本共同契约；后面的任务说明只能补充它，不能推翻它。\n"
-		+ "【事实与知识边界】\n"
-		+ "当前世界明确给出的王国状态、战争状态、统治者、亲属、领地、关系、合法动作与已发生事件是硬事实，优先级最高。王庭只能依据已经送达或明确放入当前档案的宣言作出反应；尚在传播途中的内容、别国秘密政策和常识推测都不能冒充已知事实。\n"
-		+ "政策快照描述统治目标、利益取向与内部压力，只能影响决策倾向，不能证明政策已经产生未给出的军事或外交结果。周报是可能滞后的近期概括，只能提供背景；它与即时硬事实冲突时，以即时硬事实为准。不得从沉默推导接受，不得从敌意推导已经宣战，不得从同文化、同阵营或王室身份推导未列出的亲属关系。\n"
-		+ "没有材料支持时，不得补写具体战斗地点、胜负、兵力、伤亡、密约、领土承诺、使节往来或人物动机。可以根据明确关系和利益作审慎判断，但要把判断保持为立场或可能性，不能写成已经发生的事实。\n"
-		+ "【外交动作与交涉原则】\n"
-		+ "公开宣言应当服务于可理解的外交目的，例如提出或修改条件、争取支持、施加压力、接受、拒绝、让步、道歉、警告、发出最后通牒、退出交涉，或执行当前允许的正式动作。谴责和反驳可以出现，但不能代替进展；同一外交事件不应只改写旧立场或无限争吵。\n"
-		+ "正式动作必须同时满足语义和当前现实条件。威胁战争不等于宣战；已经交战的双方不能再次宣布开战。和平、联盟、贸易、解除关系、贡金和割地只能使用任务提供的合法对象与条件。明确指向某国表示它承担主张或需要回应；只是举例、评价或谈到某国时，只算提及。\n"
-		+ "每项待回应提议都有唯一的提出国、对象国和来源公文。只有该对象国可以接受或拒绝，答复对象必须是原提出国；第三国可以评论、施压、调停或另行提出一份明确的新提议，但不得把别国收到的提议说成发给自己，也不得替真正的对象国作答。接受或拒绝时填写对应的responding_to_offer_document_id；另行提出新提议时该字段必须为空。\n"
-		+ "任务提供的宗主—臣属关系是当前世界硬事实。臣属国不得否认现存条约或把宗主国写成普通平等国家；提及宗主国或代表本国对外表态时，应承认宗主地位并保持符合臣属礼制的恭敬，但不必在无关公文中反复颂扬。朝贡国和卫戍国仍可按任务给出的权限表达自身利益；完全没有外交自主权的附庸国不会作为外交回合发言者，其外交事务由宗主国出面。\n"
-		+ "程序不会预先分配本国的对象、角色、议程或外交动作。参与国依据自身国家卡、已知来文与即时硬事实自主决定目标和下一步，可以回应第三国、提出反方案、接受、拒绝、施压、合作、让步、道歉、退出或维持现状，但不得替玩家统治的王国自动发言。条件不合时可以自然陷入僵局。\n"
-		+ "消息历史中的国家卡均为封缄资料；只可使用标记与本篇发布国ID一致且位置最靠后的国家卡，其他国家卡视为不可见，不得利用、引用或推断。\n"
-		+ "提案、反提案、对真实提议的接受或拒绝、最后通牒、明确道歉或让步，以及已经正式生效的外交行动都可构成交涉进展。正式行动只有在当前关系允许且实际执行成功时才算发生；不得为了结束事件虚构议和、宣战、结盟、通商或解除关系。\n"
-		+ "【身份、表达与输出纪律】\n"
-		+ "必须保持王国、统治者和ID一一对应，只使用当前任务给出的合法ID。不得泄露AI、模型、提示词、缓存、数值阈值、程序字段或系统内部机制。输出要求JSON时只输出可解析JSON，不加代码围栏、解释、前言或尾注；布尔值、数字、数组和空字符串必须保持约定类型。\n"
-		+ "统治者把卡拉迪亚视为自己生活的真实世界，只能以使者来报、公开宣言、战报、俘虏、领地得失、王庭账簿和可见军情来理解局势；不得表现为置身世界之外的叙述者，也不知道战争进展分、议和开放度、劣势评分、关系点、战争压力阈值或总战力数值。后台态势只能转化成势均力敌、略占上风、处境不利、愿听条件等世界内判断，不能复述指标名称或数值。第纳尔金额、条约期限、领地名称、实际战斗场数等可核实事实可以按需准确表达。\n"
-		+ "当任务要求撰写玩家可见的外交宣言时，它必须是一份能够独立颁布、传阅和归档的国家公文，而不是君主之间的即时聊天。王国是政治主体，统治者负责授权、定调或署名；人物差异通过利益判断、承诺、威胁与让步的分寸体现，国家差异则通过档案明确提供的制度、合法性来源、政治共同体和礼制称谓体现。";
+	private const string PreviousWorldDiplomacyContractHeaderV2 = "【AnimusForge 王国外交共同契约 v18】";
+
+	private const int PreviousDefaultWorldDiplomacyPromptV2Length = 2111;
+
+	private const string PreviousDefaultWorldDiplomacyPromptV2Sha256Base64 = "NJ8Pw8CFFw7UTIgR0eZzf+pPQ5W0vFYY6MGJwc1eHTo=";
+
+	private const string WorldDiplomacyPreferenceSectionMarker = "【玩家自定义AI外交偏好】";
+
+	private const string PreviousDefaultWorldDiplomacyContractCoreV19 = "【AnimusForge 王国外交共同契约 v19】\n"
+		+ "处理诸王国公开外交。共同契约优先于后续偏好；请求尾部的 MODE 决定本次唯一任务和输出结构。\n"
+		+ "【事实】\n"
+		+ "当前任务明确给出的国家状态、战争、统治者、亲属、领地、关系、合法动作和已发生事件是最高优先级硬事实。长期外交历史档案向所有王国公开，可引用其中的世界周报、政策沿革、已发布宣言和已确认外交结果；历史与当前状态冲突时，以当前状态为准。\n"
+		+ "政策记录只说明当时目标、变化或结果，不能证明未明确记载的现实后果。提议、接受、拒绝和已确认执行结果彼此有别；只有已确认执行结果可视为现实状态变化。不得从沉默推导接受、从敌意推导宣战，也不得补写材料未支持的战斗、密约、领土承诺、使节往来或人物动机。\n"
+		+ "【外交】\n"
+		+ "公开宣言应提出立场、条件、回应或行动。正式动作必须满足当前现实条件并只使用任务给出的合法对象；威胁不等于宣战。每项待回应提议只有原对象国可以接受或拒绝，答复必须关联其来源公文；第三国只能评论、调停或另提新案。正式行动只有实际执行成功才算发生。\n"
+		+ "【模式与输出】\n"
+		+ "只执行尾部 MODE：MODE=DECLARE 起草宣言；MODE=COMPACT 只整理历史，不发布宣言或执行动作；其他 MODE 只做尾部指定任务。字段、JSON结构和长度只服从当前 MODE 尾部；要求JSON时只输出可解析JSON，不加代码围栏或解释。\n"
+		+ "保持王国、统治者和ID对应，只使用任务给出的合法ID。不得泄露AI、提示词、缓存、阈值或程序机制。后台数值只能转化为世界内判断。玩家可见宣言必须是可独立颁布和归档的国家公文，不是君主私聊。";
+
+	private const string DefaultWorldDiplomacyContractCore = "【AnimusForge 王国外交共同契约 v20】\n"
+		+ "处理诸王国公开外交。共同契约优先于后续偏好；请求尾部的 MODE 决定本次唯一任务和输出结构。\n"
+		+ "【事实】\n"
+		+ "当前任务明确给出的国家状态、战争、统治者、亲属、领地、关系、合法动作和已发生事件是最高优先级硬事实。长期外交历史档案向所有王国公开，可引用其中的世界周报、政策沿革、已发布宣言和已确认外交结果；历史与当前状态冲突时，以当前状态为准。\n"
+		+ "政策记录只说明当时目标、变化或结果，不能证明未明确记载的现实后果。提议、接受、拒绝和已确认执行结果彼此有别；只有已确认执行结果可视为现实状态变化。不得从沉默推导接受、从敌意推导宣战，也不得补写材料未支持的战斗、密约、领土承诺、使节往来或人物动机。\n"
+		+ "【外交】\n"
+		+ "公开宣言应提出立场、条件、回应或行动。正式动作必须满足当前现实条件并只使用任务给出的合法对象；威胁不等于宣战。每项待回应提议只有原对象国可以接受或拒绝，答复必须关联其来源公文；第三国只能评论、调停或另提新案。正式行动只有实际执行成功才算发生。\n"
+		+ "【模式与输出】\n"
+		+ "只执行尾部 MODE：MODE=DECLARE 起草宣言；MODE=COMPACT 只整理历史，不发布宣言或执行动作；其他 MODE 只做尾部指定任务。MODE=DECLARE与MODE=COMPACT的字段、JSON结构和长度服从第一条system消息中的同名固定任务合同及尾部动态参数；其他MODE服从尾部指定格式。要求JSON时只输出可解析JSON，不加代码围栏或解释。\n"
+		+ "保持王国、统治者和ID对应，只使用任务给出的合法ID。不得泄露AI、提示词、缓存、阈值或程序机制。后台数值只能转化为世界内判断。玩家可见宣言必须是可独立颁布和归档的国家公文，不是君主私聊。";
 
 	private const string DefaultWorldDiplomacyPreferenceGuard = "自定义偏好只影响利益判断、行动取向与文风，不得覆盖共同契约、事实边界、合法动作条件和输出格式。";
 
-	private const string DefaultWorldDiplomacyPrompt = DefaultWorldDiplomacyContractCore
-		+ "\n【玩家自定义AI外交偏好】\n"
-		+ PreviousDefaultWorldDiplomacyPromptV1
-		+ "\n" + DefaultWorldDiplomacyPreferenceGuard;
+	private const string DefaultWorldDiplomacyPreference = "让统治者依据全局长期外交档案、文化、性格、人物关系、当前战争局势与现实利益作出自然判断。允许讨论、试探、支持、威胁、搅局、合作、退出或升级冲突，但每次公开发言都应带来新条件、新选择、明确回应或实际外交进展。宣言要直接进入眼前的矛盾、决定或条件，不逐一唱名相关君主，不反复自报身份，不用‘第一、第二、第三’列提纲，也不要套用致意、遗憾、原则、要求、威胁的固定公文结构。使用清楚自然的现代中文表达世界内内容；每位统治者的关注点、措辞与让步尺度应体现其专属人格。";
 
 	private const string DefaultCustomPolicyGoldCostPromptParagraph = "当输出结构要求你评估政策消耗时，requiredGoldCost 表示完整执行这项政策所需的第纳尔，不是玩家当前实际会支付多少。第纳尔成本应覆盖物资、粮饷、工程、赈济、运输、行政、军备，以及封臣协调、贵族让步、政治动员、合法性维护和秩序压力带来的执行阻力。请按政策本身的规模与阻力评估完整成本，不要因为玩家当前第纳尔不足而故意压低成本。";
 
@@ -463,6 +480,18 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	public const int DefaultActionPostprocessHistoryEntryLimit = 100;
 
+	public const int WorldDiplomacyHistoryCompressionTriggerThousandsMin = 64;
+
+	public const int WorldDiplomacyHistoryCompressionTriggerThousandsMax = 900;
+
+	public const int DefaultWorldDiplomacyHistoryCompressionTriggerThousands = 800;
+
+	public const int WorldDiplomacyHistoryCompressionTargetThousandsMin = 8;
+
+	public const int WorldDiplomacyHistoryCompressionTargetThousandsMax = 60;
+
+	public const int DefaultWorldDiplomacyHistoryCompressionTargetThousands = 48;
+
 	private const string NpcPersonaGenerationRequirementsFileName = "NpcPersonaGenerationRequirements.txt";
 
 	private const string CustomPromptTextStoreFolderName = "CustomPrompts";
@@ -487,7 +516,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	private const string WorldDiplomacyPromptJsonFileName = "WorldDiplomacyPrompt.json";
 
-	private const int WorldDiplomacyPromptJsonVersion = 2;
+	private const int WorldDiplomacyPromptJsonVersion = 3;
 
 	private const string LegacyCustomPromptTextStoreFileName = "CustomPrompts.json";
 
@@ -1899,6 +1928,10 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("9. 提示词扩展")]
 	public bool PreserveSceneAsteriskActions { get; set; } = false;
 
+	[SettingPropertyBool("自定义格式：不注入默认场景回复提示词", Order = 12, RequireRestart = false, HintText = "开启后，不再注入单人交谈身份限制，以及“回复格式/动作/内心/字数”的默认要求。请在“玩家自定义规则文案”中自行提供完整格式。默认关闭。")]
+	[SettingPropertyGroup("9. 提示词扩展")]
+	public bool DisableBuiltInSceneReplyFormatPrompt { get; set; } = false;
+
 	[SettingPropertyBool("由AI评估政策消耗", Order = 1, RequireRestart = false, HintText = "开启后，AI 会根据政策规模和执行难度评估所需第纳尔；第纳尔不足时，全部政策效果按实际投入比例折减。关闭后使用下面的固定第纳尔消耗。")]
 	[SettingPropertyGroup("16. 政策系统/1. 玩家政策", GroupOrder = 160)]
 	public bool UseAiEvaluatedCustomPolicyCost { get; set; } = true;
@@ -2012,8 +2045,15 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
 	public int WorldDiplomacyPeaceProtectionDays { get; set; } = 21;
 
-	[SettingPropertyInteger("外交历史整理门槛（万 Tokens）", 10, 200, "0", Order = 13, RequireRestart = false, HintText = "AI 外交累计使用达到该数量后，会在当前外交事件结束时整理旧记录。数值越低，整理越频繁；默认 50 万 Tokens。")]
+	[SettingPropertyInteger("外交长期记忆压缩触发值（千估算 Tokens）", WorldDiplomacyHistoryCompressionTriggerThousandsMin, WorldDiplomacyHistoryCompressionTriggerThousandsMax, "0", Order = 13, RequireRestart = false, HintText = "长期外交历史达到该估算长度时开始压缩。默认 800，即约 800k Tokens；阈值越高，每次外交请求的延迟与费用通常越高。所选 API 模型必须有足够输入上下文，900k 仅适合上下文明显大于 1M 的模型。")]
 	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
+	public int WorldDiplomacyHistoryCompressionTriggerThousands { get; set; } = DefaultWorldDiplomacyHistoryCompressionTriggerThousands;
+
+	[SettingPropertyInteger("外交长期记忆压缩后目标（千估算 Tokens）", WorldDiplomacyHistoryCompressionTargetThousandsMin, WorldDiplomacyHistoryCompressionTargetThousandsMax, "0", Order = 14, RequireRestart = false, HintText = "压缩完成后，长期外交快照与程序保留的近期硬事实合计目标长度。默认 48，即约 48k Tokens；上限 60k。实际摘要仍受所选 API 的“最大输出Tokens”限制，该上限较低时会生成更短快照。")]
+	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
+	public int WorldDiplomacyHistoryCompressionTargetThousands { get; set; } = DefaultWorldDiplomacyHistoryCompressionTargetThousands;
+
+	// 仅保留用于兼容旧 MCM 配置反序列化；新的长期记忆不再按累计 API Tokens 触发。
 	public int WorldDiplomacyCompressionThresholdTenThousands { get; set; } = 50;
 
 	private string _worldDiplomacyPrompt = LoadWorldDiplomacyPromptFromDiskOrDefault();
@@ -2024,11 +2064,11 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		set => _worldDiplomacyPrompt = NormalizeWorldDiplomacyPromptText(value);
 	}
 
-	[SettingPropertyButton("AI外交共同契约", -1, true, "", Content = "打开编辑器", Order = 14, RequireRestart = false, HintText = "完整编辑AI外交共同契约的全部静态内容，包括标题、事实边界、行动原则和文风。留空表示不注入共同契约；动态事实、JSON结构与C#合法性规则仍由模组固定。")]
+	[SettingPropertyButton("AI外交自定义偏好", -1, true, "", Content = "打开编辑器", Order = 15, RequireRestart = false, HintText = "编辑利益判断、行动取向与文风偏好。留空表示不添加偏好；固定共同契约、事实边界和 MODE 输出规则不会被覆盖。")]
 	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
 	public Action EditWorldDiplomacyPrompt { get; set; }
 
-	[SettingPropertyButton("恢复默认AI外交共同契约", -1, true, "", Content = "恢复默认", Order = 15, RequireRestart = false, HintText = "弹出确认后，将完整共同契约恢复为模组当前默认内容。")]
+	[SettingPropertyButton("恢复默认AI外交偏好", -1, true, "", Content = "恢复默认", Order = 16, RequireRestart = false, HintText = "弹出确认后，将自定义偏好恢复为模组默认内容。")]
 	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
 	public Action RestoreDefaultWorldDiplomacyPrompt { get; set; }
 
@@ -2136,6 +2176,18 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	public int KnowledgeSemanticTopK { get; set; } = 4;
 
+	public static bool IsBuiltInSceneReplyFormatPromptDisabled()
+	{
+		try
+		{
+			return GetSettings()?.DisableBuiltInSceneReplyFormatPrompt ?? false;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	public static DuelSettings GetSettings()
 	{
 		if (GlobalSettings<DuelSettings>.Instance != null)
@@ -2144,6 +2196,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			EnsureCustomPromptTextSettingsLoaded(settings);
 			EnsureLogCleanupDefaultMigration(settings);
 			EnsureDuelRenownDefaultMigration(settings);
+			EnsureWorldDiplomacyCompressionDefaultsMigration(settings);
 			return settings;
 		}
 		try
@@ -2153,6 +2206,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 				EnsureCustomPromptTextSettingsLoaded(result);
 				EnsureLogCleanupDefaultMigration(result);
 				EnsureDuelRenownDefaultMigration(result);
+				EnsureWorldDiplomacyCompressionDefaultsMigration(result);
 				return result;
 			}
 		}
@@ -2262,6 +2316,71 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			try
 			{
 				Logger.Log("DuelSettings", "[WARN] 决斗家族声望转移默认值迁移失败：" + ex.Message);
+			}
+			catch
+			{
+			}
+		}
+	}
+
+	private static void EnsureWorldDiplomacyCompressionDefaultsMigration(DuelSettings settings)
+	{
+		if (settings == null || _worldDiplomacyCompressionDefaultsMigrationChecked)
+		{
+			return;
+		}
+		try
+		{
+			string markerPath = AnimusForgeModulePaths.GetLogFilePath(WorldDiplomacyCompressionDefaultsMigrationMarkerFileName);
+			if (File.Exists(markerPath))
+			{
+				string marker = File.ReadAllText(markerPath, Encoding.UTF8).Trim();
+				if (string.Equals(marker, WorldDiplomacyCompressionDefaultsMigrationId, StringComparison.Ordinal))
+				{
+					_worldDiplomacyCompressionDefaultsMigrationChecked = true;
+					return;
+				}
+			}
+			if (BaseSettingsProvider.Instance == null)
+			{
+				return;
+			}
+
+			bool changed = false;
+			if (settings.WorldDiplomacyHistoryCompressionTargetThousands == LegacyWorldDiplomacyHistoryCompressionTargetThousands)
+			{
+				settings.WorldDiplomacyHistoryCompressionTargetThousands = DefaultWorldDiplomacyHistoryCompressionTargetThousands;
+				changed = true;
+			}
+			if (settings.WorldDiplomacyHistoryCompressionTriggerThousands < WorldDiplomacyHistoryCompressionTriggerThousandsMin
+				|| settings.WorldDiplomacyHistoryCompressionTriggerThousands > WorldDiplomacyHistoryCompressionTriggerThousandsMax)
+			{
+				settings.WorldDiplomacyHistoryCompressionTriggerThousands = DefaultWorldDiplomacyHistoryCompressionTriggerThousands;
+				changed = true;
+			}
+			if (changed)
+			{
+				BaseSettingsProvider.Instance.SaveSettings(settings);
+			}
+			string directoryName = Path.GetDirectoryName(markerPath);
+			if (!string.IsNullOrWhiteSpace(directoryName) && !Directory.Exists(directoryName))
+			{
+				Directory.CreateDirectory(directoryName);
+			}
+			File.WriteAllText(markerPath, WorldDiplomacyCompressionDefaultsMigrationId, Encoding.UTF8);
+			_worldDiplomacyCompressionDefaultsMigrationChecked = true;
+			Logger.Log("DuelSettings", changed
+				? "版本迁移：AI外交长期记忆采用 800k 触发、48k 压缩后目标；旧版默认 16k 已迁移，其他手动目标保持不变。"
+				: "版本迁移：AI外交长期记忆启用独立的压缩触发值与压缩后目标；现有手动配置保持不变。");
+		}
+		catch (Exception ex)
+		{
+			// Avoid retrying file I/O on every hot-path GetSettings call in this session.
+			// A later process start can retry the one-time migration.
+			_worldDiplomacyCompressionDefaultsMigrationChecked = true;
+			try
+			{
+				Logger.Log("DuelSettings", "[WARN] AI外交长期记忆压缩默认值迁移失败：" + ex.Message);
 			}
 			catch
 			{
@@ -2461,11 +2580,11 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	{
 		try
 		{
-			return NormalizeWorldDiplomacyPromptText(GetSettings()?.WorldDiplomacyPrompt ?? DefaultWorldDiplomacyPrompt);
+			return BuildWorldDiplomacyCommonContract(GetSettings()?.WorldDiplomacyPrompt ?? DefaultWorldDiplomacyPreference);
 		}
 		catch
 		{
-			return DefaultWorldDiplomacyPrompt;
+			return BuildWorldDiplomacyCommonContract(DefaultWorldDiplomacyPreference);
 		}
 	}
 
@@ -2866,7 +2985,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	{
 		try
 		{
-			DevTextEditorHelper.ShowLongTextEditor("编辑AI外交共同契约", "这里可以修改或删除共同契约中的全部静态文字，包括契约标题。", "留空保存表示完全不注入共同契约。动态国家资料、实时战争与兵力事实、任务专用JSON结构和C#外交合法性校验仍由模组固定。", WorldDiplomacyPrompt ?? "", delegate(string input)
+			DevTextEditorHelper.ShowLongTextEditor("编辑AI外交自定义偏好", "这里可以调整利益判断、行动取向与文风。", "留空表示不添加自定义偏好。固定共同契约、长期历史事实边界、MODE 与任务输出结构仍由模组保证。", WorldDiplomacyPrompt ?? "", delegate(string input)
 			{
 				SaveWorldDiplomacyPromptFromEditor(input);
 			}, null, "保存", "返回");
@@ -2882,8 +3001,8 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		try
 		{
 			InformationManager.ShowInquiry(new InquiryData(
-				"恢复默认AI外交共同契约",
-				"这会覆盖当前共同契约文本，并恢复模组默认内容。是否继续？",
+				"恢复默认AI外交偏好",
+				"这会覆盖当前自定义偏好，并恢复模组默认内容。是否继续？",
 				true,
 				true,
 				"恢复默认",
@@ -2899,7 +3018,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	private void RestoreDefaultWorldDiplomacyPromptNow()
 	{
-		SaveWorldDiplomacyPromptFromEditor(DefaultWorldDiplomacyPrompt);
+		SaveWorldDiplomacyPromptFromEditor(DefaultWorldDiplomacyPreference);
 	}
 
 	private void OpenNpcRulerPolicyPromptEditor()
@@ -3265,11 +3384,11 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			DuelSettings settings = GetSettings();
 			if (settings != null) settings.WorldDiplomacyPrompt = text;
 			BaseSettingsProvider.Instance?.SaveSettings(settings ?? this);
-			InformationManager.DisplayMessage(new InformationMessage(persisted ? "[AI外交] 共同契约已保存。" : "[AI外交] 共同契约已用于本局，但写入本地文件失败。", persisted ? Color.FromUint(4282569842u) : Color.FromUint(4294967040u)));
+			InformationManager.DisplayMessage(new InformationMessage(persisted ? "[AI外交] 自定义偏好已保存。" : "[AI外交] 自定义偏好已用于本局，但写入本地文件失败。", persisted ? Color.FromUint(4282569842u) : Color.FromUint(4294967040u)));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[AI外交] 保存共同契约失败: " + ex.Message, Color.FromUint(4294901760u)));
+			InformationManager.DisplayMessage(new InformationMessage("[AI外交] 保存自定义偏好失败: " + ex.Message, Color.FromUint(4294901760u)));
 		}
 	}
 
@@ -3408,8 +3527,8 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	private static string LoadWorldDiplomacyPromptFromDiskOrDefault()
 	{
 		return TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store)
-			? (store.WorldDiplomacyPrompt == null ? DefaultWorldDiplomacyPrompt : NormalizeWorldDiplomacyPromptText(store.WorldDiplomacyPrompt))
-			: DefaultWorldDiplomacyPrompt;
+			? (store.WorldDiplomacyPrompt == null ? DefaultWorldDiplomacyPreference : NormalizeWorldDiplomacyPromptText(store.WorldDiplomacyPrompt))
+			: DefaultWorldDiplomacyPreference;
 	}
 
 	private static string NormalizePlayerCustomPromptRuleText(string input)
@@ -3515,30 +3634,69 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	private static string NormalizeWorldDiplomacyPromptText(string input)
 	{
-		return LimitCustomPromptText(NormalizePromptLineEndings(input).Trim(), WorldDiplomacyPromptJsonFileName);
+		string text = LimitCustomPromptText(NormalizePromptLineEndings(input).Trim(), WorldDiplomacyPromptJsonFileName);
+		return TryExtractWorldDiplomacyPreference(text, out string preference)
+			? LimitCustomPromptText(preference, WorldDiplomacyPromptJsonFileName)
+			: text;
 	}
 
 	private static string MigrateLegacyWorldDiplomacyPromptText(string input)
 	{
 		string text = NormalizeWorldDiplomacyPromptText(input);
-		if (string.IsNullOrWhiteSpace(text)
-			|| string.Equals(text, PreviousDefaultWorldDiplomacyPrompt, StringComparison.Ordinal)
+		if (string.Equals(text, PreviousDefaultWorldDiplomacyPrompt, StringComparison.Ordinal)
 			|| string.Equals(text, PreviousDefaultWorldDiplomacyPromptV1, StringComparison.Ordinal))
 		{
-			return DefaultWorldDiplomacyPrompt;
+			return DefaultWorldDiplomacyPreference;
 		}
-		string migrated = DefaultWorldDiplomacyContractCore
-			+ "\n【玩家自定义AI外交偏好】\n"
-			+ text
-			+ "\n" + DefaultWorldDiplomacyPreferenceGuard;
-		if (migrated.Length <= CustomPromptTextMaxChars)
-		{
-			return migrated;
-		}
-		// 旧版文件的整项上限同样是 60,000 字。极端长度下无法同时加入默认契约而不截断
-		// 玩家原文；此时把原偏好完整升级为整份可编辑契约，优先保证用户内容零丢失。
-		LogPlayerCustomPromptRuleWarning("旧 AI 外交自定义提示词接近长度上限；为避免迁移截断，已将原文直接作为完整共同契约保留。");
 		return text;
+	}
+
+	private static string BuildWorldDiplomacyCommonContract(string preference)
+	{
+		string normalizedPreference = NormalizeWorldDiplomacyPromptText(preference);
+		if (string.IsNullOrWhiteSpace(normalizedPreference))
+		{
+			return DefaultWorldDiplomacyContractCore;
+		}
+		return DefaultWorldDiplomacyContractCore
+			+ "\n" + WorldDiplomacyPreferenceSectionMarker + "\n"
+			+ normalizedPreference
+			+ "\n" + DefaultWorldDiplomacyPreferenceGuard;
+	}
+
+	private static bool TryExtractWorldDiplomacyPreference(string text, out string preference)
+	{
+		preference = "";
+		if (string.IsNullOrWhiteSpace(text)) return false;
+		bool knownContract = text.StartsWith(DefaultWorldDiplomacyContractCore, StringComparison.Ordinal)
+			|| text.StartsWith(PreviousDefaultWorldDiplomacyContractCoreV19, StringComparison.Ordinal)
+			|| IsExactPreviousDefaultWorldDiplomacyPromptV2(text);
+		if (!knownContract) return false;
+		string marker = "\n" + WorldDiplomacyPreferenceSectionMarker + "\n";
+		int markerIndex = text.IndexOf(marker, StringComparison.Ordinal);
+		if (markerIndex < 0) return false;
+		preference = text.Substring(markerIndex + marker.Length).Trim();
+		string guardSuffix = "\n" + DefaultWorldDiplomacyPreferenceGuard;
+		if (preference.EndsWith(guardSuffix, StringComparison.Ordinal))
+		{
+			preference = preference.Substring(0, preference.Length - guardSuffix.Length).Trim();
+		}
+		return true;
+	}
+
+	private static bool IsExactPreviousDefaultWorldDiplomacyPromptV2(string text)
+	{
+		if (string.IsNullOrEmpty(text)
+			|| text.Length != PreviousDefaultWorldDiplomacyPromptV2Length
+			|| !text.StartsWith(PreviousWorldDiplomacyContractHeaderV2, StringComparison.Ordinal))
+		{
+			return false;
+		}
+		using (SHA256 sha256 = SHA256.Create())
+		{
+			string hash = Convert.ToBase64String(sha256.ComputeHash(CustomPromptWriteEncoding.GetBytes(text)));
+			return string.Equals(hash, PreviousDefaultWorldDiplomacyPromptV2Sha256Base64, StringComparison.Ordinal);
+		}
 	}
 
 	private static bool IsWorldDiplomacyPromptPath(string path)
@@ -3794,7 +3952,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			MajorActionCompressionWritingRequirements = DefaultMajorActionCompressionWritingRequirements,
 			CustomPolicyEvaluatorPrompt = DefaultCustomPolicyEvaluatorPrompt,
 			NpcRulerPolicyPrompt = DefaultNpcRulerPolicyPrompt,
-			WorldDiplomacyPrompt = DefaultWorldDiplomacyPrompt
+			WorldDiplomacyPrompt = DefaultWorldDiplomacyPreference
 		});
 	}
 
@@ -3928,13 +4086,13 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 					store.NpcRulerPolicyPrompt = npcRulerPolicyPrompt;
 				}
 				string worldDiplomacyPromptPath = GetCustomPromptTextFilePath(directory, WorldDiplomacyPromptJsonFileName);
-				if (TryReadCustomPromptTextJsonFile(worldDiplomacyPromptPath, NormalizeWorldDiplomacyPromptText, DefaultWorldDiplomacyPrompt, out string worldDiplomacyPrompt))
+				if (TryReadCustomPromptTextJsonFile(worldDiplomacyPromptPath, NormalizeWorldDiplomacyPromptText, DefaultWorldDiplomacyPreference, out string worldDiplomacyPrompt))
 				{
 					store.WorldDiplomacyPrompt = worldDiplomacyPrompt;
 				}
 				else
 				{
-					store.WorldDiplomacyPrompt = DefaultWorldDiplomacyPrompt;
+					store.WorldDiplomacyPrompt = DefaultWorldDiplomacyPreference;
 				}
 				store = NormalizeCustomPromptTextStore(store);
 				_customPromptTextStoreFolderHydrated = true;
@@ -4067,7 +4225,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			customPolicyEvaluatorPrompt = DefaultCustomPolicyEvaluatorPrompt;
 		}
 		string npcRulerPolicyPrompt = store.NpcRulerPolicyPrompt == null ? DefaultNpcRulerPolicyPrompt : NormalizeNpcRulerPolicyPromptText(store.NpcRulerPolicyPrompt);
-		string worldDiplomacyPrompt = store.WorldDiplomacyPrompt == null ? DefaultWorldDiplomacyPrompt : NormalizeWorldDiplomacyPromptText(store.WorldDiplomacyPrompt);
+		string worldDiplomacyPrompt = store.WorldDiplomacyPrompt == null ? DefaultWorldDiplomacyPreference : NormalizeWorldDiplomacyPromptText(store.WorldDiplomacyPrompt);
 		return new CustomPromptTextStoreJson
 		{
 			Version = store.Version <= 0 ? 1 : store.Version,
@@ -4163,7 +4321,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			bool migrateWorldDiplomacyPrompt = IsWorldDiplomacyPromptPath(path) && parsed.Version < WorldDiplomacyPromptJsonVersion;
 			if (migrateWorldDiplomacyPrompt)
 			{
-				BackupCustomPromptMigrationSourceUnlocked(path, "v1");
+				BackupCustomPromptMigrationSourceUnlocked(path, "v" + Math.Max(1, parsed.Version).ToString(CultureInfo.InvariantCulture));
 			}
 			string sourceText = migrateWorldDiplomacyPrompt
 				? MigrateLegacyWorldDiplomacyPromptText(parsed.Text)
@@ -4330,7 +4488,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			}
 			if (IsCustomPromptTextFileTooLarge(path))
 			{
-				LogPlayerCustomPromptRuleWarning("旧自定义提示词 JSON 过大，已隔离并恢复 v2 默认值: " + path);
+				LogPlayerCustomPromptRuleWarning("旧自定义提示词 JSON 过大，已隔离并恢复当前默认值: " + path);
 				QuarantineAndRestoreLegacyCustomPromptTextStoreUnlocked(path, "too_large");
 				// 不让坏损的 aggregate 默认值覆盖已成功读取的更旧独立文本。
 				return false;
@@ -4342,7 +4500,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			}
 			catch (DecoderFallbackException ex)
 			{
-				LogPlayerCustomPromptRuleWarning("旧自定义提示词 JSON 不是严格 UTF-8，已隔离并恢复 v2 默认值: " + path + " - " + ex.Message);
+				LogPlayerCustomPromptRuleWarning("旧自定义提示词 JSON 不是严格 UTF-8，已隔离并恢复当前默认值: " + path + " - " + ex.Message);
 				QuarantineAndRestoreLegacyCustomPromptTextStoreUnlocked(path, "non_utf8");
 				return false;
 			}
@@ -4353,20 +4511,20 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			}
 			catch (Exception ex)
 			{
-				LogPlayerCustomPromptRuleWarning("旧自定义提示词 JSON 格式错误，已隔离并恢复 v2 默认值: " + path + " - " + ex.Message);
+				LogPlayerCustomPromptRuleWarning("旧自定义提示词 JSON 格式错误，已隔离并恢复当前默认值: " + path + " - " + ex.Message);
 				QuarantineAndRestoreLegacyCustomPromptTextStoreUnlocked(path, "invalid_json");
 				return false;
 			}
 			if (parsed == null)
 			{
-				LogPlayerCustomPromptRuleWarning("旧自定义提示词 JSON 缺少有效内容，已隔离并恢复 v2 默认值: " + path);
+				LogPlayerCustomPromptRuleWarning("旧自定义提示词 JSON 缺少有效内容，已隔离并恢复当前默认值: " + path);
 				QuarantineAndRestoreLegacyCustomPromptTextStoreUnlocked(path, "invalid_schema");
 				return false;
 			}
 			bool needsMigration = parsed.Version < WorldDiplomacyPromptJsonVersion;
 			if (needsMigration)
 			{
-				BackupCustomPromptMigrationSourceUnlocked(path, "aggregate-v1");
+				BackupCustomPromptMigrationSourceUnlocked(path, "aggregate-v" + Math.Max(1, parsed.Version).ToString(CultureInfo.InvariantCulture));
 				parsed.WorldDiplomacyPrompt = MigrateLegacyWorldDiplomacyPromptText(parsed.WorldDiplomacyPrompt);
 			}
 			store = NormalizeCustomPromptTextStore(parsed);
@@ -4395,7 +4553,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		}
 		catch (Exception ex)
 		{
-			LogPlayerCustomPromptRuleWarning("恢复旧自定义提示词 v2 默认 JSON 失败: " + path + " - " + ex.Message);
+			LogPlayerCustomPromptRuleWarning("恢复旧自定义提示词当前默认 JSON 失败: " + path + " - " + ex.Message);
 		}
 	}
 

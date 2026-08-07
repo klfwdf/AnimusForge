@@ -22,6 +22,8 @@ internal sealed class WorldDiplomacyApiCallResult
 	public int? TotalTokens;
 	public int? PromptCacheHitTokens;
 	public int? PromptCacheMissTokens;
+	public int? PromptCacheCreationTokens;
+	public int? PromptUncachedTokens;
 	public int? StatusCode;
 	public string ResponseBody = "";
 	public bool IsRateLimit;
@@ -39,10 +41,20 @@ internal static class WorldDiplomacyLlmClient
 {
 	private const int DefaultMaxAttempts = 2;
 	private const int MaxRetryDelaySeconds = 10;
+	private const int TokenStatsFullDumpMaxChars = 128 * 1024;
+	private const int TokenStatsMessageExcerptMaxChars = 12 * 1024;
+	private const int TokenStatsRequestExcerptMaxChars = 16 * 1024;
 
 	public static bool IsConfigured(out string errorMessage)
 	{
 		return TryResolveApiConfig(DuelSettings.GetSettings(), out _, out _, out _, out _, out errorMessage);
+	}
+
+	internal static int GetConfiguredOutputTokenLimit()
+	{
+		DuelSettings settings = DuelSettings.GetSettings();
+		TryResolveApiConfig(settings, out _, out _, out _, out string route, out _);
+		return ResolveConfiguredOutputTokenLimit(settings, route);
 	}
 
 	public static async Task<WorldDiplomacyApiCallResult> CallMessagesWithRetriesAsync(
@@ -79,7 +91,8 @@ internal static class WorldDiplomacyLlmClient
 				runtimeGeneration);
 			result.AttemptsUsed = attempt;
 			finalResult = result;
-			if (result.Success || result.IsAuthFailure || result.IsQuotaLimit || attempt >= attempts)
+			if (result.Success || result.IsAuthFailure || result.IsQuotaLimit
+				|| IsNonRetryableClientError(result) || attempt >= attempts)
 			{
 				return result;
 			}
@@ -108,13 +121,17 @@ internal static class WorldDiplomacyLlmClient
 			}
 
 			result.ResolvedRoute = route;
+			int configuredOutputTokenLimit = ResolveConfiguredOutputTokenLimit(settings, route);
+			int effectiveMaxTokens = Math.Min(Math.Max(1, maxTokens), configuredOutputTokenLimit);
 			JArray messages = (JArray)stableMessages.DeepClone();
-			JObject body = BuildRequestBody(modelName, messages, maxTokens, ResolveTemperature(settings, route));
+			JObject body = BuildRequestBody(modelName, messages, effectiveMaxTokens, ResolveTemperature(settings, route));
 			DuelSettings.ApplyThinkingControls(body, apiUrl, modelName, thinkingEnabled: false, DuelSettings.ReasoningEffortHigh, out string thinkingMode);
 			string requestBody = LlmApiCompat.PrepareChatRequestJson(apiUrl, body);
 			Log(source, "request route=" + route
 				+ " model=" + modelName
-				+ " maxTokens=" + maxTokens.ToString(CultureInfo.InvariantCulture)
+				+ " requestedMaxTokens=" + maxTokens.ToString(CultureInfo.InvariantCulture)
+				+ " effectiveMaxTokens=" + effectiveMaxTokens.ToString(CultureInfo.InvariantCulture)
+				+ " configuredOutputTokenLimit=" + configuredOutputTokenLimit.ToString(CultureInfo.InvariantCulture)
 				+ " thinking=" + thinkingMode);
 
 			WorldDiplomacyHttpExchange exchange = await SendAndReadAsync(
@@ -304,14 +321,51 @@ internal static class WorldDiplomacyLlmClient
 
 	private static void ApplyUsageStats(WorldDiplomacyApiCallResult result, JObject json)
 	{
-		result.PromptTokens = ReadIntToken(json, "usage.prompt_tokens", "usage.input_tokens");
+		int? promptTokens = ReadIntToken(json, "usage.prompt_tokens");
+		int? inputTokens = ReadIntToken(json, "usage.input_tokens");
+		int? anthropicCacheReadTokens = ReadIntToken(json, "usage.cache_read_input_tokens");
+		int? anthropicCacheCreationTokens = ReadIntToken(json, "usage.cache_creation_input_tokens");
+		bool usesAnthropicCacheAccounting = anthropicCacheReadTokens.HasValue || anthropicCacheCreationTokens.HasValue;
+		result.PromptTokens = promptTokens ?? inputTokens;
 		result.CompletionTokens = ReadIntToken(json, "usage.completion_tokens", "usage.output_tokens");
 		result.TotalTokens = ReadIntToken(json, "usage.total_tokens");
-		result.PromptCacheHitTokens = ReadIntToken(json, "usage.prompt_cache_hit_tokens", "usage.prompt_tokens_details.cached_tokens", "usage.cache_read_input_tokens");
-		result.PromptCacheMissTokens = ReadIntToken(json, "usage.prompt_cache_miss_tokens", "usage.cache_creation_input_tokens");
-		if (!result.PromptCacheMissTokens.HasValue && result.PromptTokens.HasValue && result.PromptCacheHitTokens.HasValue)
+		result.PromptCacheHitTokens = ReadIntToken(json,
+			"usage.prompt_cache_hit_tokens",
+			"usage.prompt_tokens_details.cached_tokens",
+			"usage.input_tokens_details.cached_tokens",
+			"usage.cache_read_input_tokens");
+		result.PromptCacheMissTokens = ReadIntToken(json, "usage.prompt_cache_miss_tokens");
+		result.PromptCacheCreationTokens = ReadIntToken(json,
+			"usage.cache_creation_input_tokens",
+			"usage.prompt_tokens_details.cache_write_tokens",
+			"usage.input_tokens_details.cache_write_tokens",
+			"usage.prompt_cache_write_tokens");
+		if (usesAnthropicCacheAccounting && inputTokens.HasValue)
 		{
-			result.PromptCacheMissTokens = Math.Max(0, result.PromptTokens.Value - result.PromptCacheHitTokens.Value);
+			// Anthropic input_tokens already means ordinary, non-cache input. Cache read
+			// and cache creation are separate billable categories and must be added, not
+			// subtracted from input_tokens.
+			result.PromptCacheHitTokens = Math.Max(0, anthropicCacheReadTokens ?? 0);
+			result.PromptCacheCreationTokens = Math.Max(0, anthropicCacheCreationTokens ?? 0);
+			result.PromptUncachedTokens = inputTokens.Value;
+			result.PromptTokens = inputTokens.Value
+				+ Math.Max(0, anthropicCacheReadTokens ?? 0)
+				+ Math.Max(0, anthropicCacheCreationTokens ?? 0);
+		}
+		else if (result.PromptTokens.HasValue && result.PromptCacheHitTokens.HasValue
+			&& result.PromptCacheCreationTokens.HasValue)
+		{
+			result.PromptUncachedTokens = Math.Max(0, result.PromptTokens.Value
+				- result.PromptCacheHitTokens.Value
+				- Math.Max(0, result.PromptCacheCreationTokens ?? 0));
+		}
+		else if (!result.PromptTokens.HasValue && result.PromptCacheMissTokens.HasValue
+			&& result.PromptCacheCreationTokens.HasValue)
+		{
+			// Generic cache-miss counters normally include cache writes. Only derive the
+			// ordinary remainder when the write category is also explicit.
+			result.PromptUncachedTokens = Math.Max(0,
+				result.PromptCacheMissTokens.Value - result.PromptCacheCreationTokens.Value);
 		}
 	}
 
@@ -471,6 +525,10 @@ internal static class WorldDiplomacyLlmClient
 	{
 		try
 		{
+			JArray diagnosticMessages = BuildTokenStatsDiagnosticMessages(messages);
+			string diagnosticRequestBody = (requestBody?.Length ?? 0) > TokenStatsFullDumpMaxChars
+				? BuildTokenStatsDiagnosticText(requestBody, TokenStatsRequestExcerptMaxChars, "WORLD_DIPLOMACY_REQUEST_BODY")
+				: requestBody;
 			string output = "[WORLD DIPLOMACY API]\nroute=" + route
 				+ "\nmodel=" + modelName
 				+ "\nthinking=" + thinkingMode
@@ -479,14 +537,78 @@ internal static class WorldDiplomacyLlmClient
 			Logger.RecordTokenStats(
 				Logger.EstimateTokensFromMessages(messages),
 				Logger.EstimateTokens(content),
-				messages,
+				diagnosticMessages,
 				output,
 				mode,
-				requestBody);
+				diagnosticRequestBody);
 		}
 		catch
 		{
 		}
+	}
+
+	private static int ResolveConfiguredOutputTokenLimit(DuelSettings settings, string route)
+	{
+		bool useDedicatedEventApi = (route ?? "").StartsWith("event_rebellion_dedicated", StringComparison.OrdinalIgnoreCase);
+		int fallback = useDedicatedEventApi
+			? DuelSettings.DefaultEventAndRebellionApiMaxTokens
+			: DuelSettings.DefaultGeneralApiMaxTokens;
+		int configured = useDedicatedEventApi
+			? settings?.EventAndRebellionApiMaxTokens ?? fallback
+			: settings?.MainApiMaxTokens ?? fallback;
+		return DuelSettings.ClampApiMaxTokens(configured, fallback);
+	}
+
+	private static bool IsNonRetryableClientError(WorldDiplomacyApiCallResult result)
+	{
+		int status = result?.StatusCode ?? 0;
+		return status >= 400 && status < 500
+			&& status != 408
+			&& status != 409
+			&& status != 425
+			&& status != 429;
+	}
+
+	private static JArray BuildTokenStatsDiagnosticMessages(JArray messages)
+	{
+		if (messages == null) return new JArray();
+		long totalChars = 0L;
+		foreach (JToken token in messages)
+		{
+			totalChars += token?["content"]?.ToString().Length ?? 0;
+			if (totalChars > TokenStatsFullDumpMaxChars) break;
+		}
+		if (totalChars <= TokenStatsFullDumpMaxChars) return messages;
+
+		JArray result = new JArray();
+		foreach (JToken token in messages)
+		{
+			string role = token?["role"]?.ToString() ?? "unknown";
+			string content = token?["content"]?.ToString() ?? "";
+			result.Add(new JObject
+			{
+				["role"] = role,
+				["content"] = BuildTokenStatsDiagnosticText(content, TokenStatsMessageExcerptMaxChars, "MESSAGE"),
+				["diagnostic_original_chars"] = content.Length
+			});
+		}
+		return result;
+	}
+
+	private static string BuildTokenStatsDiagnosticText(string text, int maxChars, string label)
+	{
+		string value = text ?? "";
+		int limit = Math.Max(256, maxChars);
+		if (value.Length <= limit) return value;
+		int markerReserve = 160;
+		int contentBudget = Math.Max(96, limit - markerReserve);
+		int headLength = contentBudget / 2;
+		int tailLength = contentBudget - headLength;
+		string marker = "\n...[" + (label ?? "CONTENT") + " DIAGNOSTIC OMITTED; original_chars="
+			+ value.Length.ToString(CultureInfo.InvariantCulture) + "]...\n";
+		return value.Substring(0, Math.Min(headLength, value.Length))
+			+ marker
+			+ value.Substring(Math.Max(0, value.Length - tailLength));
 	}
 
 	private static bool ContainsAny(string text, params string[] values)

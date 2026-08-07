@@ -9929,6 +9929,10 @@ private static string BuildSceneCompositeUserBlock(string sceneHistoryUserBlock,
 
 private static string BuildSceneSingleNpcTaskSystemBlock(string npcName, bool hasMultiplePresentNpcs, int minTokens, int maxTokens, string playerNameForLength)
 {
+	if (DuelSettings.IsBuiltInSceneReplyFormatPromptDisabled())
+	{
+		return "";
+	}
 	StringBuilder stringBuilder = new StringBuilder();
 	stringBuilder.AppendLine(BuildSingleNpcSceneReplyInstruction(npcName, hasMultiplePresentNpcs));
 	stringBuilder.Append(BuildReplyLengthInstruction(minTokens, maxTokens));
@@ -9937,6 +9941,10 @@ private static string BuildSceneSingleNpcTaskSystemBlock(string npcName, bool ha
 
 private static string BuildReplyLengthInstruction(int minTokens, int maxTokens)
 {
+	if (DuelSettings.IsBuiltInSceneReplyFormatPromptDisabled())
+	{
+		return "";
+	}
 	int num = Math.Max(1, minTokens);
 	int num2 = Math.Max(num, maxTokens);
 	int num3 = GetShoutThoughtMinTokens();
@@ -17850,11 +17858,17 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		Stopwatch nativePreprocessSw = Stopwatch.StartNew();
 		FreezeWatchdog.Mark("NativeConversation.preprocess_start", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex, immediate: true);
 		string nativeTargetLog = targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown";
+		MyBehavior.WeeklyPromptSnapshot weeklyPromptSnapshot = await RunNativeConversationMainThreadFuncAsync(
+			"weekly_prompt_snapshot",
+			nativeTargetLog,
+			nativeTargetAgentIndex,
+			() => MyBehavior.CaptureWeeklyPromptSnapshotForExternal(targetHero, targetCharacter),
+			MyBehavior.WeeklyPromptSnapshot.Empty).ConfigureAwait(false) ?? MyBehavior.WeeklyPromptSnapshot.Empty;
 		Task<MyBehavior.ShoutPromptContext> nativePreprocessTask = RunNativeConversationBackgroundPreprocessAsync(
 			nativeTargetLog,
 			nativeTargetAgentIndex,
 			runtimeGeneration,
-			() => MyBehavior.BuildShoutPromptContextForExternal(targetHero, routingInput, extraFact, cultureId, hasAnyHero: npc.IsHero, targetCharacter: targetCharacter, kingdomIdOverride: null, targetAgentIndex: nativeTargetAgentIndex, preprocessExcludedRuleIds: preprocessExcludedRuleIds));
+			() => MyBehavior.BuildShoutPromptContextForExternal(targetHero, routingInput, extraFact, cultureId, hasAnyHero: npc.IsHero, targetCharacter: targetCharacter, kingdomIdOverride: null, targetAgentIndex: nativeTargetAgentIndex, preprocessExcludedRuleIds: preprocessExcludedRuleIds, weeklyPromptSnapshot: weeklyPromptSnapshot));
 		MyBehavior.ShoutPromptContext ctx = await AwaitNativeConversationBackgroundPreprocessAsync(nativePreprocessTask, nativeTargetLog, nativeTargetAgentIndex, runtimeGeneration).ConfigureAwait(false);
 		nativePreprocessSw.Stop();
 		if (ctx == null)
@@ -32601,7 +32615,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		string text = (systemPrompt ?? "").Trim();
 		string value = "【messages说明】在下面的对话消息里，assistant 只代表你自己过去说过的话；role=user 里的系统事实和规则必须严格遵守。如果 AFEF 事实前有【当下行为】，表示本轮刚刚真实发生；如果前有【过往行为】，只表示历史上已经发生过，不代表玩家本轮又交付了一次。玩家口头声称给了相同财物，必须以本轮是否存在对应【当下行为】AFEF事实为准。如果附加规则和开头的规则冲突，优先遵循开头的规则";
-		TryExtractReplyFormatInstruction(ref text, out var instruction);
+		bool disableBuiltInReplyFormatPrompt = DuelSettings.IsBuiltInSceneReplyFormatPromptDisabled();
+		string instruction = "";
+		if (!disableBuiltInReplyFormatPrompt)
+		{
+			TryExtractReplyFormatInstruction(ref text, out instruction);
+		}
 		if (suppressReplyFormatInstruction)
 		{
 			instruction = "";

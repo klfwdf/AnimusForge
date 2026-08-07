@@ -34,6 +34,9 @@ public sealed class NpcRulerPolicyRecord
 	[JsonProperty("agendaStatus")]
 	public string AgendaStatus { get; set; }
 
+	[JsonProperty("agendaCommitKind")]
+	public string AgendaCommitKind { get; set; }
+
 	[JsonProperty("batchId")]
 	public string BatchId { get; set; }
 
@@ -1650,6 +1653,22 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	internal static NpcRulerPolicyRecord GetPolicyRecordForExternal(string policyId)
+	{
+		try
+		{
+			NpcRulerPolicyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<NpcRulerPolicyBehavior>();
+			string id = (policyId ?? "").Trim();
+			return behavior != null && !string.IsNullOrWhiteSpace(id) && behavior._policyRecords.TryGetValue(id, out string raw)
+				? DeserializeRecord(raw)
+				: null;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
 	public static bool TryStartSuggestedPolicyForExternal(Hero ruler, string proposalText, string npcReplyText, string historyContext, string chainName, out string failureReason)
 	{
 		failureReason = "";
@@ -1770,6 +1789,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			return;
 		}
 		bool isInitialAdoption = string.Equals(record.AgendaStatus, AgendaStatusPending, StringComparison.OrdinalIgnoreCase);
+		bool isRenewalCommit = string.Equals(record.AgendaStatus, AgendaStatusExpiryVotePending, StringComparison.OrdinalIgnoreCase);
 		if (isInitialAdoption)
 		{
 			CustomPolicyBehavior.DisplayKingdomPolicyAnnouncementMessage(
@@ -1781,8 +1801,9 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			SchedulePublicFeedbackNotice(record, "npc");
 		}
 		record.AgendaStatus = AgendaStatusApprovedPendingCommit;
+		record.AgendaCommitKind = isRenewalCommit ? "renewal" : "publication";
 		_policyRecords[id] = JsonConvert.SerializeObject(record);
-		EnqueueApprovedAgendaCommit(record, applyKingdomStabilityOnce: isInitialAdoption);
+		EnqueueApprovedAgendaCommit(record, applyKingdomStabilityOnce: isInitialAdoption, isRenewalCommit: isRenewalCommit);
 		Log("policy-agenda-approved policy=" + id + " kingdom=" + (record.KingdomId ?? ""));
 	}
 
@@ -1837,7 +1858,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		_policyRecords[id] = JsonConvert.SerializeObject(record);
 	}
 
-	private void EnqueueApprovedAgendaCommit(NpcRulerPolicyRecord record, bool applyKingdomStabilityOnce)
+	private void EnqueueApprovedAgendaCommit(NpcRulerPolicyRecord record, bool applyKingdomStabilityOnce, bool isRenewalCommit = false)
 	{
 		if (record == null || string.IsNullOrWhiteSpace(record.PolicyId))
 		{
@@ -1869,6 +1890,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			},
 			Stage = PendingNpcPolicyCommitStage.UpsertPolicyEvent,
 			IsAgendaApprovalCommit = true,
+			IsRenewalCommit = isRenewalCommit,
 			ApplyKingdomStabilityOnce = applyKingdomStabilityOnce
 		});
 	}
@@ -1994,7 +2016,10 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		{
 			bool hasUnregisteredEffect = (record.Effects ?? new List<NpcRulerPolicyEffectDto>())
 				.Any(effect => effect != null && !effect.IsEnded && string.IsNullOrWhiteSpace(effect.EffectId));
-			EnqueueApprovedAgendaCommit(record, applyKingdomStabilityOnce: hasUnregisteredEffect);
+			EnqueueApprovedAgendaCommit(
+				record,
+				applyKingdomStabilityOnce: hasUnregisteredEffect,
+				isRenewalCommit: string.Equals(record.AgendaCommitKind, "renewal", StringComparison.OrdinalIgnoreCase));
 		}
 		RebuildPublicFeedbackNoticeSchedule();
 		int currentHour = GetCurrentCampaignHour();
@@ -2123,6 +2148,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 				record.PublicFeedbackNoticeShown = true;
 				record.PublicFeedbackNoticeDueHour = -1;
 				_policyRecords[policyId] = JsonConvert.SerializeObject(record);
+				CustomPolicyBehavior.RecordNpcPolicyPublicFeedbackArtifactForExternal(record);
 				displayedCount++;
 			}
 			else
@@ -2824,7 +2850,19 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 				{
 					NpcRulerPolicyRecord storedApproved = DeserializeRecord(approvedRaw) ?? approved;
 					storedApproved.AgendaStatus = AgendaStatusActive;
+					storedApproved.AgendaCommitKind = "";
 					_policyRecords[storedApproved.PolicyId] = JsonConvert.SerializeObject(storedApproved);
+					if (context.IsRenewalCommit)
+					{
+						CustomPolicyBehavior.RecordNpcPolicySnapshotArtifactForExternal(
+							storedApproved,
+							"renewed",
+							"续期议程通过，政策效果已完成新周期提交。");
+					}
+					else
+					{
+						CustomPolicyBehavior.RecordNpcPolicyPublishedArtifactForExternal(storedApproved);
+					}
 				}
 				TrimPolicyRecords();
 				CustomPolicyBehavior.TryQueuePolicyExpiryAgendaForExternal(approved?.PolicyId);
@@ -5836,6 +5874,7 @@ public sealed class NpcRulerPolicyBehavior : CampaignBehaviorBase
 	{
 		public NpcPolicyGenerationResult GenerationResult;
 		public bool IsAgendaApprovalCommit;
+		public bool IsRenewalCommit;
 		public bool ApplyKingdomStabilityOnce;
 		public int RecordIndex;
 		public int SavedCount;
