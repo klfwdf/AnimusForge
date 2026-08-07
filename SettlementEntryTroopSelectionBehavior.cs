@@ -71,6 +71,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	private static PendingMissionEntry _pendingMissionEntry;
 	private static PendingSettlementVictoryMenuEntry _pendingVictoryMenuEntry;
 	private static PendingVillageVictoryRewardEntry _pendingVillageVictoryRewardEntry;
+	private static PendingVillageAftermathEncounterExit _pendingVillageAftermathEncounterExit;
 	private static string _pendingSameKingdomVassalRebellionKingdomId;
 	private static string _pendingSameKingdomVassalRebellionSettlementId;
 	private static string _pendingSameKingdomVassalRebellionOwnerClanId;
@@ -257,6 +258,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		_pendingMissionEntry = null;
 		_pendingVictoryMenuEntry = null;
 		_pendingVillageVictoryRewardEntry = null;
+		_pendingVillageAftermathEncounterExit = null;
 		ClearSetsUsableProtectionState(source);
 		ClearSetsSelectedFollowerState(source);
 		SettlementEntryTroopSelectionLog.Log("Runtime cleared. source=" + source);
@@ -1664,6 +1666,10 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			if (TryPumpPendingVillageAftermathEncounterExit(source))
+			{
+				return;
+			}
 			TryPumpPendingSameKingdomVassalRebellion(source);
 			TryPumpPendingSettlementTakenMenu(source);
 			TryPumpPendingVillageVictoryReward(source);
@@ -1671,6 +1677,104 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			SettlementEntryTroopSelectionLog.Log("PumpPendingPostMissionFlow failed. source=" + (source ?? "") + ", error=" + ex);
+		}
+	}
+
+	private static void QueueVillageAftermathEncounterExit(string settlementId, string source)
+	{
+		if (string.IsNullOrWhiteSpace(settlementId))
+		{
+			return;
+		}
+		if (_pendingVillageAftermathEncounterExit != null
+			&& string.Equals(_pendingVillageAftermathEncounterExit.SettlementId, settlementId, StringComparison.OrdinalIgnoreCase))
+		{
+			return;
+		}
+		_pendingVillageAftermathEncounterExit = new PendingVillageAftermathEncounterExit
+		{
+			SettlementId = settlementId,
+			Source = string.IsNullOrWhiteSpace(source) ? "GCCZ_village_disposition_exit" : source
+		};
+		SettlementEntryTroopSelectionLog.Log("Queued GCCZ village disposition encounter exit. settlement=" + settlementId
+			+ ", source=" + _pendingVillageAftermathEncounterExit.Source);
+	}
+
+	private static bool TryPumpPendingVillageAftermathEncounterExit(string source)
+	{
+		PendingVillageAftermathEncounterExit pending = _pendingVillageAftermathEncounterExit;
+		if (pending == null)
+		{
+			return false;
+		}
+		if (Mission.Current != null || Game.Current?.GameStateManager?.ActiveState is not MapState)
+		{
+			return true;
+		}
+
+		Settlement village = Settlement.Find(pending.SettlementId);
+		MobileParty mainParty = MobileParty.MainParty;
+		if (village?.IsVillage != true || mainParty == null)
+		{
+			SettlementEntryTroopSelectionLog.Log("Dropped GCCZ village disposition encounter exit because runtime state is missing. settlement="
+				+ (pending.SettlementId ?? "N/A") + ", source=" + (source ?? "N/A"));
+			_pendingVillageAftermathEncounterExit = null;
+			return false;
+		}
+
+		Settlement liveSettlement = mainParty.CurrentSettlement
+			?? Settlement.CurrentSettlement
+			?? PlayerEncounter.LocationEncounter?.Settlement
+			?? PlayerEncounter.EncounterSettlement;
+		if (liveSettlement != null
+			&& !string.Equals(liveSettlement.StringId, pending.SettlementId, StringComparison.OrdinalIgnoreCase))
+		{
+			SettlementEntryTroopSelectionLog.Log("Dropped stale GCCZ village disposition encounter exit after settlement changed. expected="
+				+ pending.SettlementId + ", live=" + SafeSettlementId(liveSettlement) + ", source=" + (source ?? "N/A"));
+			_pendingVillageAftermathEncounterExit = null;
+			return false;
+		}
+
+		pending.Attempts++;
+		try
+		{
+			if (mainParty.CurrentSettlement == village)
+			{
+				mainParty.Position = village.GatePosition;
+				if (mainParty.Army != null)
+				{
+					foreach (MobileParty attachedParty in mainParty.AttachedParties)
+					{
+						attachedParty.Position = mainParty.Position;
+					}
+				}
+			}
+
+			if (liveSettlement == village
+				|| string.Equals(liveSettlement?.StringId, pending.SettlementId, StringComparison.OrdinalIgnoreCase))
+			{
+				PlayerEncounter.LeaveSettlement();
+			}
+			if (PlayerEncounter.Current != null || PlayerEncounter.LocationEncounter != null)
+			{
+				PlayerEncounter.Finish(true);
+			}
+			mainParty.SetMoveModeHold();
+			Campaign.Current?.SaveHandler?.SignalAutoSave();
+			_pendingVillageAftermathEncounterExit = null;
+			SettlementEntryTroopSelectionLog.Log("Completed GCCZ village disposition encounter exit. settlement=" + pending.SettlementId
+				+ ", queuedSource=" + (pending.Source ?? "N/A")
+				+ ", pumpSource=" + (source ?? "N/A")
+				+ ", attempts=" + pending.Attempts);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			SettlementEntryTroopSelectionLog.Log("GCCZ village disposition encounter exit will retry. settlement=" + pending.SettlementId
+				+ ", source=" + (source ?? "N/A")
+				+ ", attempts=" + pending.Attempts
+				+ ", error=" + ex.Message);
+			return true;
 		}
 	}
 
@@ -2313,6 +2417,13 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		public string Source;
 	}
 
+	private sealed class PendingVillageAftermathEncounterExit
+	{
+		public string SettlementId;
+		public string Source;
+		public int Attempts;
+	}
+
 	private sealed class DefenderReserveEntry
 	{
 		public CharacterObject Character;
@@ -2918,7 +3029,13 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			EndSettlementCivilianGatherRuntime(_settlementCivilianGatherRuntimeGeneration);
 			EndOwnedSettlementMassacreForMissionClose();
 			ClearOwnedSettlementMassacreRequest("mission_end");
-			if (_conflictFeaturesEnabled && (_victoryReached || _ownedSettlementIncidentTriggered))
+			bool completingVillageAftermath = _activateVillageAftermath
+				|| VillageAftermathBehavior.IsActiveForMission(base.Mission);
+			if (completingVillageAftermath)
+			{
+				QueueVillageAftermathEncounterExit(_settlementId, "GCCZ_village_disposition_mission_exit");
+			}
+			else if (_conflictFeaturesEnabled && (_victoryReached || _ownedSettlementIncidentTriggered))
 			{
 				QueueVictoryPostMissionFlow(_ownedSettlementIncidentTriggered ? "SETS_owned_or_attached_settlement_exit" : "SETS_settlement_victory_endmission_fallback");
 			}
@@ -6203,7 +6320,8 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			{
 				if (VillageAftermathBehavior.IsActiveForMission(base.Mission))
 				{
-					SettlementEntryTroopSelectionLog.Log("Completed GCCZ village disposition mission without recursively reopening the incident menu. settlement=" + _settlementId + ", source=" + queueSource);
+					QueueVillageAftermathEncounterExit(_settlementId, queueSource);
+					SettlementEntryTroopSelectionLog.Log("Completed GCCZ village disposition mission without recursively reopening the incident menu; encounter exit is queued. settlement=" + _settlementId + ", source=" + queueSource);
 					return;
 				}
 				if (_ownedSettlementIncidentTriggered && _isOwnSettlement)
