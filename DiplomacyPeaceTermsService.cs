@@ -21,7 +21,10 @@ internal static class DiplomacyPeaceTermsService
 				? context.CalculatedTribute
 				: 0;
 		}
-		return int.TryParse(token, out int parsed) ? ClampTributeAmount(payer, parsed) : -1;
+		// An explicitly negotiated amount is authoritative. The prosperity-based
+		// calculation is only for "auto" terms and must not silently rewrite a
+		// concrete amount that the player and NPC already accepted.
+		return int.TryParse(token, out int parsed) && parsed >= 0 ? parsed : -1;
 	}
 
 	public static int ClampTributeAmount(Kingdom payer, int requestedAmount)
@@ -69,7 +72,12 @@ internal static class DiplomacyPeaceTermsService
 			failureReason = "双方已不处于战争状态";
 			return false;
 		}
-		appliedDailyTribute = ClampTributeAmount(payer, requestedDailyTribute);
+		if (requestedDailyTribute < 0)
+		{
+			failureReason = "每日贡金不能为负数";
+			return false;
+		}
+		appliedDailyTribute = requestedDailyTribute;
 		appliedDurationDays = ResolveDurationDays(requestedDurationDays.ToString(), appliedDailyTribute > 0);
 		int tributeForAction = appliedDailyTribute;
 		int durationForAction = appliedDurationDays;

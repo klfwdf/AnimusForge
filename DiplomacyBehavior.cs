@@ -777,7 +777,7 @@ namespace AnimusForge
 			sb.AppendLine($"- 你方总战力：{myKingdom.CurrentTotalStrength:F0}，敌方总战力：{enemy.CurrentTotalStrength:F0}");
 
 			float enemyProsperity = enemy.Fiefs.Sum(x => x.Prosperity);
-			sb.AppendLine($"- 敌方繁荣度：{enemyProsperity:F0}，合理贡金范围 0 ~ {(int)(enemyProsperity*0.15f*0.35f)} 第纳尔/天");
+			sb.AppendLine($"- 敌方繁荣度：{enemyProsperity:F0}，参考贡金范围 0 ~ {(int)(enemyProsperity*0.15f*0.35f)} 第纳尔/天（仅供谈判参考，不是系统上限；双方可商定任意非负整数金额）");
 
 			int myOtherEnemies = 0; float myOtherStr = 0;
 			foreach (Kingdom k in Kingdom.All)
@@ -850,7 +850,7 @@ namespace AnimusForge
 				{
 					// MAKE_PEACE (king only)
 					sb.AppendLine(); sb.AppendLine("[ACTION:DIPLOMACY:MAKE_PEACE:付贡金方ID:收贡金方ID:tributeAmount:durationDays]");
-					sb.AppendLine("  两个ID必须是玩家王国和你的王国。tributeAmount: 0=无条件和平 / auto / 具体数字。durationDays: default=100 / 1-252。双方同意后输出。");
+					sb.AppendLine("  两个ID必须是玩家王国和你的王国。tributeAmount: 0=无条件和平 / auto / 双方商定的具体非负整数；明确金额不受繁荣度参考值限制，必须原样输出。durationDays: default=100 / 1-252。双方同意后输出。");
 
 					// FORM_ALLIANCE (king only)
 					sb.AppendLine(); sb.AppendLine("[ACTION:DIPLOMACY:FORM_ALLIANCE:id1:id2:durationDays]");
