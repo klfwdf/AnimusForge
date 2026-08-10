@@ -43,6 +43,8 @@ internal static class Program
             "AI-generated declarations must use structured offer ownership instead of prose inference");
         Test.True(!generatedValidation.Contains("LooksLikeExplicitPeaceNegotiationWithTarget", StringComparison.Ordinal),
             "AI-generated declarations must not acquire a different intent from prose keywords");
+        Test.True(!generatedValidation.Contains("TryGetPublicPeaceTermsDisclosureViolation", StringComparison.Ordinal),
+            "AI-generated declarations must not require peace terms to use a fixed prose vocabulary");
 
         foreach (string requiredGuard in new[]
         {
@@ -50,23 +52,55 @@ internal static class Program
             "CommitmentMatchesIntent",
             "TryGetDiplomaticStateViolation",
             "TryResolveOpenProposalFor",
-            "offer_response_source_mismatch",
+            "offer_response_stale_offer_version",
             "diplomatic_action_has_no_target",
-            "TryGetPublicPeaceTermsDisclosureViolation"
+            "IsBoundOfferVersionStale"
         })
         {
             Test.True(generatedValidation.Contains(requiredGuard, StringComparison.Ordinal),
                 "generated validation must retain hard guard: " + requiredGuard);
         }
+        Test.True(source.Contains("BoundOfferDocumentId", StringComparison.Ordinal)
+                  && source.Contains("BoundOfferChainId", StringComparison.Ordinal)
+                  && source.Contains("BoundOfferRevision", StringComparison.Ordinal),
+            "queued response jobs must persist the exact offer document, chain, and revision");
 
-        Test.True(source.Contains("TryGetPlayerVisibleIntentViolation", StringComparison.Ordinal),
-            "player-authored free text must retain its separate safety boundary");
+        string playerWorldStateGuard = ExtractSection(
+            source,
+            "private bool TryGetPlayerWorldStateIntentViolation(",
+            "private void ApplyDiplomaticPressureEffect(");
+        Test.True(!playerWorldStateGuard.Contains("TryGetPlayerVisibleIntentViolation", StringComparison.Ordinal)
+                  && !playerWorldStateGuard.Contains("HasExplicitPlayer", StringComparison.Ordinal),
+            "player-authored declarations must trust structured LLM intent instead of a prose keyword whitelist");
+
+        string playerOfferReconcile = ExtractSection(
+            source,
+            "private void ReconcilePlayerDeclarationWithOpenOffer(",
+            "private void ProcessAnalyzedDocument(");
+        Test.True(!playerOfferReconcile.Contains("LooksLikeExplicit", StringComparison.Ordinal)
+                  && !playerOfferReconcile.Contains("InferProposalIntentFromOfferResponseText", StringComparison.Ordinal),
+            "player offer binding must use structured intent and offer-chain identity, not prose matching");
         Test.True(source.Contains("\"propose_trade\" => \"贸易申请\"", StringComparison.Ordinal),
             "structured trade intent must remain visible in the document UI");
         Test.True(source.Contains("\"declare_war\" => \"宣战告知\"", StringComparison.Ordinal),
             "structured war intent must remain visible in the document UI");
         Test.True(source.Contains("\"propose_alliance\" => \"同盟申请\"", StringComparison.Ordinal),
             "structured alliance intent must remain visible in the document UI");
+
+        string canonicalAppend = ExtractSection(
+            source,
+            "private void AppendCanonicalDocumentEvents(",
+            "private bool CanonicalDeltaContainsSourceKey(");
+        Test.True(canonicalAppend.Contains("IsDeclarationEligibleForSharedCanonicalHistory(document)", StringComparison.Ordinal),
+            "shared canonical declarations must wait until court propagation makes them public");
+
+        string inTransitContext = ExtractSection(
+            source,
+            "private string BuildKnownInTransitDeclarationContext(",
+            "private string BuildCompactRoundPlanCandidateLine(");
+        Test.True(inTransitContext.Contains(".Take(6)", StringComparison.Ordinal)
+                  && inTransitContext.Contains("Limit(document.Body, 420)", StringComparison.Ordinal),
+            "kingdom-specific in-transit memory must stay bounded in the dynamic tail");
 
         Console.WriteLine("World diplomacy intent-boundary smoke tests passed: " + Test.Assertions);
         return 0;

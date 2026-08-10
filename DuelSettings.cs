@@ -108,7 +108,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	private const string DefaultWorldDiplomacyContractCore = "【AnimusForge 王国外交共同契约 v20】\n"
 		+ "处理诸王国公开外交。共同契约优先于后续偏好；请求尾部的 MODE 决定本次唯一任务和输出结构。\n"
 		+ "【事实】\n"
-		+ "当前任务明确给出的国家状态、战争、统治者、亲属、领地、关系、合法动作和已发生事件是最高优先级硬事实。长期外交历史档案向所有王国公开，可引用其中的世界周报、政策沿革、已发布宣言和已确认外交结果；历史与当前状态冲突时，以当前状态为准。\n"
+		+ "当前任务明确给出的国家状态、战争、统治者、亲属、领地、关系、合法动作和已发生事件是最高优先级硬事实。长期外交历史档案只收录已传播至各国王庭的公共材料，并向所有王国公开；尚在传播中的宣言只能由已经正式收到的王庭使用。可引用档案中的世界周报、政策沿革、已发布宣言和已确认外交结果；历史与当前状态冲突时，以当前状态为准。\n"
 		+ "政策记录只说明当时目标、变化或结果，不能证明未明确记载的现实后果。提议、接受、拒绝和已确认执行结果彼此有别；只有已确认执行结果可视为现实状态变化。不得从沉默推导接受、从敌意推导宣战，也不得补写材料未支持的战斗、密约、领土承诺、使节往来或人物动机。\n"
 		+ "【外交】\n"
 		+ "公开宣言应提出立场、条件、回应或行动。正式动作必须满足当前现实条件并只使用任务给出的合法对象；威胁不等于宣战。每项待回应提议只有原对象国可以接受或拒绝，答复必须关联其来源公文；第三国只能评论、调停或另提新案。正式行动只有实际执行成功才算发生。\n"
@@ -2012,6 +2012,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		new List<string> { "少量", "适中", "较多" },
 		1);
 
+	[Obsolete("Legacy configuration compatibility only; court and civilian delivery settings control propagation.")]
 	public int WorldDiplomacyPropagationSpeedPercent { get; set; } = 100;
 
 	[SettingPropertyInteger("宣言送达最远王庭（天）", 3, 14, "0", Order = 6, RequireRestart = false, HintText = "决定外交宣言最迟多久传到大陆另一端的王庭。默认 7 天。")]
@@ -2026,15 +2027,20 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
 	public Dropdown<string> WorldDiplomacyRoundLengthDropdown { get; set; } = new Dropdown<string>(new List<string> { "紧凑（约15天）", "标准（约21天）", "从容（约28天）" }, 1);
 
-	// 仅保留用于兼容旧配置反序列化；自由外交流程不再使用或展示这些设置。
+	// 仅保留用于兼容旧配置反序列化；自由外交流程不再读取或展示这些设置。
+	[Obsolete("Legacy configuration compatibility only; free-form diplomacy no longer forces wars from pressure thresholds.")]
 	public bool EnableWorldDiplomacyForcedWar { get; set; } = true;
 
+	[Obsolete("Legacy configuration compatibility only; free-form diplomacy no longer uses a forced-war pressure threshold.")]
 	public int WorldDiplomacyWarPressureThreshold { get; set; } = 120;
 
+	[Obsolete("Legacy configuration compatibility only; free-form diplomacy no longer uses a forced-peace pressure threshold.")]
 	public int WorldDiplomacyPeacePressureThreshold { get; set; } = 200;
 
+	[Obsolete("Legacy configuration compatibility only; native diplomacy signals use their fixed semantic weight.")]
 	public int WorldDiplomacyNativeIntentInfluencePercent { get; set; } = 100;
 
+	[Obsolete("Legacy configuration compatibility only; published declarations use their fixed semantic weight.")]
 	public int WorldDiplomacyDocumentInfluencePercent { get; set; } = 100;
 
 	[SettingPropertyInteger("再次主动开战间隔（天）", 7, 120, "0", Order = 11, RequireRestart = false, HintText = "一个国家主动发动战争后，至少等待多少天才能再次主动发动新战争。默认 42 天。")]

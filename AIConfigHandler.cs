@@ -4528,17 +4528,37 @@ public static class AIConfigHandler
 			}
 		}
 		TopicRoutingPreprocessPromptConfig config = _preprocessPrompts?.TopicRouting;
+		string routingGuidance = NormalizeAuxiliaryRoutingRequestText(config?.RoutingGuidance ?? "");
+		if (IsWorldDiplomacyTakeoverEnabledForTopicRouting())
+		{
+			routingGuidance = (routingGuidance
+				+ "\n【外交接管话题边界】宣战、议和、结盟、解盟、贸易等国与国外交必须选择 DIPLOMACY（口头外交），不得选择 KINGDOM_AGENDA。"
+				+ "玩家即使不是国王，只要是在劝说当前NPC国王让其自己的王国向第三国宣战，也选择 DIPLOMACY。"
+				+ "KINGDOM_AGENDA 只用于国内政策、封地处置、驱逐氏族等非外交议程，以及对已经存在的非外交议程拉票。").Trim();
+		}
 		string emptyValue = RequirePreprocessPromptValue(config?.EmptyValue, "TopicRouting.EmptyValue");
 		return RenderPreprocessPromptTemplate(config?.UserPromptTemplate, "TopicRouting.UserPromptTemplate", new Dictionary<string, string>(StringComparer.Ordinal)
 		{
 			["topic_list"] = topicList.ToString().TrimEnd(),
-			["routing_guidance"] = NormalizeAuxiliaryRoutingRequestText(config?.RoutingGuidance ?? ""),
+			["routing_guidance"] = routingGuidance,
 			["history"] = string.IsNullOrWhiteSpace(historyBlock) ? emptyValue : NormalizeAuxiliaryRoutingRequestText(historyBlock),
 			["latest_npc"] = string.IsNullOrWhiteSpace(text2) ? emptyValue : NormalizeAuxiliaryRoutingRequestText(text2),
 			["latest_player"] = string.IsNullOrWhiteSpace(text5) ? emptyValue : NormalizeAuxiliaryRoutingRequestText(text5),
 			["top_n"] = Math.Max(1, topN).ToString(),
 			["mentioned_entities_schema"] = StrictPreprocessMentionedEntitiesSchema
 		});
+	}
+
+	private static bool IsWorldDiplomacyTakeoverEnabledForTopicRouting()
+	{
+		try
+		{
+			return DuelSettings.GetSettings()?.EnableWorldDiplomacy ?? false;
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	private static bool TryCallAuxiliaryRuleRouterApi(string apiUrl, string apiKey, string modelName, string prompt, out string content, out string error)
@@ -5380,6 +5400,7 @@ public static class AIConfigHandler
 					break;
 				}
 			}
+			PreferDirectDiplomacyTopicOverAgenda(list3);
 			if (list3.Count <= 0)
 			{
 				snapshot = null;
@@ -5514,6 +5535,7 @@ public static class AIConfigHandler
 					break;
 				}
 			}
+			PreferDirectDiplomacyTopicOverAgenda(ruleIds);
 			if (ruleIds.Count <= 0)
 			{
 				error = "rule_ids_empty";
@@ -6321,6 +6343,11 @@ public static class AIConfigHandler
 					}
 				}
 			}
+			if (IsWorldDiplomacyTakeoverEnabledForTopicRouting()
+				&& list.Any(hit => string.Equals(hit?.RuleId, "diplomacy", StringComparison.OrdinalIgnoreCase)))
+			{
+				list.RemoveAll(hit => string.Equals(hit?.RuleId, "kingdom_agenda", StringComparison.OrdinalIgnoreCase));
+			}
 			list = (from x in list
 				orderby x.Priority descending, x.Score descending
 				select x).ThenBy((GuardrailRuleHit x) => x.RuleId, StringComparer.OrdinalIgnoreCase).ToList();
@@ -6337,6 +6364,17 @@ public static class AIConfigHandler
 		{
 		}
 		return list;
+	}
+
+	private static void PreferDirectDiplomacyTopicOverAgenda(List<string> ruleIds)
+	{
+		if (ruleIds == null
+			|| !IsWorldDiplomacyTakeoverEnabledForTopicRouting()
+			|| !ruleIds.Any(id => string.Equals(id, "diplomacy", StringComparison.OrdinalIgnoreCase)))
+		{
+			return;
+		}
+		ruleIds.RemoveAll(id => string.Equals(id, "kingdom_agenda", StringComparison.OrdinalIgnoreCase));
 	}
 
 	private static HashSet<string> BuildExcludedRuleIdSet(IEnumerable<string> excludedRuleIds)

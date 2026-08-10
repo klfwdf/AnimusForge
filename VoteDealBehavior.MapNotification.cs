@@ -178,6 +178,7 @@ public partial class VoteDealBehavior
 		if (decision == null) return;
 		_pendingAgendaMapNotices.Remove(decision);
 		_publishedAgendaMapNotices.Remove(decision);
+		ForgetRequiredAgendaVotePrompt(decision);
 		if (s_pendingAgendaMapNoticeDecision == decision) s_pendingAgendaMapNoticeDecision = null;
 	}
 

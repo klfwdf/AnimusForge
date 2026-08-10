@@ -150,9 +150,9 @@ internal static class Program
 
     private static void VerifyStaticModeContractsAndPromptMigration(string behavior)
     {
-        Test.Equal(3, ReadIntConstant(behavior, "DiplomacyPromptContractVersion"),
+        Test.Equal(4, ReadIntConstant(behavior, "DiplomacyPromptContractVersion"),
             "moving both fixed mode contracts into system must advance the prompt contract version");
-        Test.Equal("diplomacy-history:v4", ReadStringConstant(behavior, "CanonicalHistoryCacheAffinityKey"),
+        Test.Equal("diplomacy-history:v5", ReadStringConstant(behavior, "CanonicalHistoryCacheAffinityKey"),
             "the shared canonical-history cache affinity must advance with the system prefix");
         Test.Equal("【AI外交固定任务MODE分派】", ReadStringConstant(behavior, "DiplomacyModeDispatchContractMarker"),
             "the static system prefix must expose an explicit mode dispatcher");

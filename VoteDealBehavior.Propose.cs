@@ -16,6 +16,15 @@ namespace AnimusForge
 				Kingdom kd = cl?.Kingdom;
 				if (cl == null || kd == null || cl.IsUnderMercenaryService || npc != cl.Leader)
 					return "";
+				if (IsWorldDiplomacyTakeoverEnabled()
+					&& (string.Equals(type, "WAR", StringComparison.OrdinalIgnoreCase)
+						|| string.Equals(type, "PEACE", StringComparison.OrdinalIgnoreCase)
+						|| string.Equals(type, "ALLIANCE", StringComparison.OrdinalIgnoreCase)
+						|| string.Equals(type, "TRADE", StringComparison.OrdinalIgnoreCase)))
+				{
+					Logger.Log("ProposeAgenda", "Rejected: world diplomacy takeover requires direct sovereign action type=" + type + " target=" + tgt);
+					return "";
+				}
 
 				var dm = Campaign.Current.Models.DiplomacyModel;
 				KingdomDecision d = null;

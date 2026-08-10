@@ -203,6 +203,7 @@ namespace AnimusForge
 		{
 			foreach (VoteDealAgendaEntry agenda in BuildVoteDealAgendaEntries(npc))
 			{
+				if (IsWorldDiplomacyControlledAgendaDecision(agenda.Decision)) continue;
 				UnifiedAgendaEntry entry = new UnifiedAgendaEntry
 				{
 					ExistingDecisionKey = agenda.DecisionKey,
@@ -248,6 +249,9 @@ namespace AnimusForge
 
 		private static void AppendPotentialKingdomEntries(Clan clan, Kingdom kingdom, MentionedWorldEntities mentions, UnifiedAgendaSnapshot snapshot)
 		{
+			// When world diplomacy takeover is enabled, war/peace/alliance/trade are
+			// immediate sovereign diplomacy actions, not kingdom-agenda proposals.
+			if (IsWorldDiplomacyTakeoverEnabled()) return;
 			foreach (Kingdom target in PromptListRetrievalService.SelectCandidates(Kingdom.All, mentions, k => new[] { k?.Name?.ToString() ?? "", k?.InformalName?.ToString() ?? "", k?.StringId ?? "" }, PromptListRetrievalService.GetMaxCandidateCount(), false))
 			{
 				if (target == null || target == kingdom || target.IsEliminated) continue;
@@ -269,6 +273,27 @@ namespace AnimusForge
 					if (!alreadyTrading) AppendPotentialDecision(snapshot, new TradeAgreementDecision(clan, target), "TRADE", target.StringId, "", "贸易协定");
 				}
 			}
+		}
+
+		private static bool IsWorldDiplomacyTakeoverEnabled()
+		{
+			try
+			{
+				return DuelSettings.GetSettings()?.EnableWorldDiplomacy ?? false;
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
+		private static bool IsWorldDiplomacyControlledAgendaDecision(KingdomDecision decision)
+		{
+			return IsWorldDiplomacyTakeoverEnabled()
+				&& (decision is DeclareWarDecision
+					|| decision is MakePeaceKingdomDecision
+					|| decision is StartAllianceDecision
+					|| decision is TradeAgreementDecision);
 		}
 
 		private static void AppendPotentialClanEntries(Clan clan, Kingdom kingdom, MentionedWorldEntities mentions, UnifiedAgendaSnapshot snapshot)

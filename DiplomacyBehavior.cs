@@ -612,6 +612,12 @@ namespace AnimusForge
 
 		internal static bool CanUseDiplomacyActionPostprocessForExternal(Hero targetHero, CharacterObject targetCharacter = null)
 		{
+			return CanUseFullDiplomacyActionPostprocessForExternal(targetHero, targetCharacter)
+				|| CanUseNpcSovereignDeclareWarPostprocessForExternal(targetHero, targetCharacter);
+		}
+
+		internal static bool CanUseFullDiplomacyActionPostprocessForExternal(Hero targetHero, CharacterObject targetCharacter = null)
+		{
 			try
 			{
 				Hero npc = targetHero ?? targetCharacter?.HeroObject;
@@ -624,6 +630,25 @@ namespace AnimusForge
 					&& !npcKingdom.IsEliminated
 					&& playerKingdom != npcKingdom
 					&& IsPlayerKing()
+					&& IsNpcKing(npc, npcKingdom);
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
+		internal static bool CanUseNpcSovereignDeclareWarPostprocessForExternal(Hero targetHero, CharacterObject targetCharacter = null)
+		{
+			try
+			{
+				Hero npc = targetHero ?? targetCharacter?.HeroObject;
+				Kingdom npcKingdom = npc?.Clan?.Kingdom;
+				return npc != null
+					&& npc != Hero.MainHero
+					&& !npc.IsDead
+					&& npcKingdom != null
+					&& !npcKingdom.IsEliminated
 					&& IsNpcKing(npc, npcKingdom);
 			}
 			catch
@@ -779,12 +804,12 @@ namespace AnimusForge
 					independent.AppendLine("双方当前敌对：是");
 					return independent.ToString().TrimEnd();
 				}
-				if (!CanInjectDiplomacyRuleForExternal(npc)) return "";
+				bool allowFullDiplomacy = CanUseFullDiplomacyActionPostprocessForExternal(npc);
+				bool allowNpcDeclareWar = CanUseNpcSovereignDeclareWarPostprocessForExternal(npc);
+				if (!allowFullDiplomacy && !allowNpcDeclareWar) return "";
 				Kingdom npcKingdom = npc.Clan?.Kingdom;
 				if (npcKingdom == null) return "";
-				if (npc != npcKingdom.RulingClan?.Leader && !IsPlayerKing()) return "";
 				Kingdom playerKingdom = Clan.PlayerClan?.Kingdom;
-				if (playerKingdom == null || playerKingdom.IsEliminated) return "";
 
 				StringBuilder sb = new StringBuilder();
 				sb.AppendLine(); sb.AppendLine("【外交后处理标签】");
@@ -794,54 +819,61 @@ namespace AnimusForge
 				sb.AppendLine();
 				sb.AppendLine("【关键身份】");
 				sb.AppendLine($"  你的王国ID：{npcKingdom.StringId}（{GetKingdomDisplayName(npcKingdom)}）");
-				sb.AppendLine($"  玩家王国ID：{playerKingdom.StringId}（{GetKingdomDisplayName(playerKingdom)}）" + (IsPlayerKing() ? "，玩家是国王" : ""));
-				string annexationHint = KingdomAnnexationBehavior.BuildRuntimeAnnexationConstraintHintForExternal(npc);
-				if (!string.IsNullOrWhiteSpace(annexationHint))
+				if (playerKingdom != null && !playerKingdom.IsEliminated)
 				{
-					sb.AppendLine();
-					sb.AppendLine("【国家吞并约束】");
-					sb.AppendLine(annexationHint);
+					sb.AppendLine($"  玩家王国ID：{playerKingdom.StringId}（{GetKingdomDisplayName(playerKingdom)}）" + (IsPlayerKing() ? "，玩家是国王" : ""));
+				}
+				else
+				{
+					sb.AppendLine("  玩家当前没有可代表的王国。");
+				}
+				if (allowFullDiplomacy)
+				{
+					string annexationHint = KingdomAnnexationBehavior.BuildRuntimeAnnexationConstraintHintForExternal(npc);
+					if (!string.IsNullOrWhiteSpace(annexationHint))
+					{
+						sb.AppendLine();
+						sb.AppendLine("【国家吞并约束】");
+						sb.AppendLine(annexationHint);
+					}
 				}
 
 				// DECLARE_WAR
 				sb.AppendLine(); sb.AppendLine("[ACTION:DIPLOMACY:DECLARE_WAR:id1:id2]");
-				sb.AppendLine("  【强制】不看NPC是否同意,只看玩家说了什么。玩家宣战时填 " + playerKingdom.StringId + ":" + npcKingdom.StringId + "，NPC即使暴怒也必须输出。");
+				if (allowFullDiplomacy && playerKingdom != null && playerKingdom != npcKingdom)
+				{
+					sb.AppendLine("  【强制】不看NPC是否同意，只看玩家说了什么。玩家宣战时填 " + playerKingdom.StringId + ":" + npcKingdom.StringId + "，NPC即使暴怒也必须输出。");
+				}
 				sb.AppendLine($"  你对别国宣战时填 {npcKingdom.StringId}:目标王国ID（需你明确同意）。");
 
-				// MAKE_PEACE (king only)
-				if (IsPlayerKing())
+				if (allowFullDiplomacy)
 				{
+					// MAKE_PEACE (king only)
 					sb.AppendLine(); sb.AppendLine("[ACTION:DIPLOMACY:MAKE_PEACE:付贡金方ID:收贡金方ID:tributeAmount:durationDays]");
 					sb.AppendLine("  两个ID必须是玩家王国和你的王国。tributeAmount: 0=无条件和平 / auto / 具体数字。durationDays: default=100 / 1-252。双方同意后输出。");
-				}
 
-				// FORM_ALLIANCE (king only)
-				if (IsPlayerKing())
-				{
+					// FORM_ALLIANCE (king only)
 					sb.AppendLine(); sb.AppendLine("[ACTION:DIPLOMACY:FORM_ALLIANCE:id1:id2:durationDays]");
 					sb.AppendLine("  两个ID必须是玩家王国和你的王国。durationDays: default / 具体数字(1-252)。双方国王同意后输出。");
-				}
 
-				// BREAK_ALLIANCE (unilateral)
-				sb.AppendLine(); sb.AppendLine("[ACTION:DIPLOMACY:BREAK_ALLIANCE:id1:id2]");
-				sb.AppendLine("  单方行为。两个ID必须是玩家王国和你的王国。【覆盖一般规则】必须输出，不需对方同意。");
+					// BREAK_ALLIANCE (unilateral)
+					sb.AppendLine(); sb.AppendLine("[ACTION:DIPLOMACY:BREAK_ALLIANCE:id1:id2]");
+					sb.AppendLine("  单方行为。两个ID必须是玩家王国和你的王国。【覆盖一般规则】必须输出，不需对方同意。");
 
-				// MAKE_TRADE (king only)
-				if (IsPlayerKing())
-				{
+					// MAKE_TRADE (king only)
 					sb.AppendLine(); sb.AppendLine("[ACTION:DIPLOMACY:MAKE_TRADE:id1:id2:durationDays]");
 					sb.AppendLine("  两个ID必须是玩家王国和你的王国。durationDays: default / 具体数字(1-252)。双方国王同意后输出。");
-				}
 
-				// CANCEL_TRADE (unilateral)
-				sb.AppendLine(); sb.AppendLine("[ACTION:DIPLOMACY:CANCEL_TRADE:id1:id2]");
-				sb.AppendLine("  单方行为。两个ID必须是玩家王国和你的王国。【覆盖一般规则】必须输出，不需对方同意。");
+					// CANCEL_TRADE (unilateral)
+					sb.AppendLine(); sb.AppendLine("[ACTION:DIPLOMACY:CANCEL_TRADE:id1:id2]");
+					sb.AppendLine("  单方行为。两个ID必须是玩家王国和你的王国。【覆盖一般规则】必须输出，不需对方同意。");
 
-				// War-specific tribute hints
-				if (playerKingdom != npcKingdom && FactionManager.IsAtWarAgainstFaction(npcKingdom, playerKingdom))
-				{
-					int a = CalculateTribute(npcKingdom, playerKingdom), b = CalculateTribute(playerKingdom, npcKingdom);
-					sb.AppendLine(); sb.AppendLine($"auto贡金：{npcKingdom.StringId}付{a}/天，{playerKingdom.StringId}付{b}/天");
+					// War-specific tribute hints
+					if (playerKingdom != null && playerKingdom != npcKingdom && FactionManager.IsAtWarAgainstFaction(npcKingdom, playerKingdom))
+					{
+						int a = CalculateTribute(npcKingdom, playerKingdom), b = CalculateTribute(playerKingdom, npcKingdom);
+						sb.AppendLine(); sb.AppendLine($"auto贡金：{npcKingdom.StringId}付{a}/天，{playerKingdom.StringId}付{b}/天");
+					}
 				}
 				return sb.ToString().TrimEnd();
 			}

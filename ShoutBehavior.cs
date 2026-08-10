@@ -22928,7 +22928,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private static List<PostprocessRuleEntry> BuildRuntimeDiplomacyPostprocessRulesForScene(Hero targetHero, CharacterObject targetCharacter)
 	{
-		bool allowRoyalDiplomacy = DiplomacyBehavior.CanUseDiplomacyActionPostprocessForExternal(targetHero, targetCharacter);
+		bool allowRoyalDiplomacy = DiplomacyBehavior.CanUseFullDiplomacyActionPostprocessForExternal(targetHero, targetCharacter);
+		bool allowNpcDeclareWar = DiplomacyBehavior.CanUseNpcSovereignDeclareWarPostprocessForExternal(targetHero, targetCharacter);
 		bool allowIndependentClanPeace = DiplomacyBehavior.CanUseIndependentClanPeaceForExternal(targetHero, targetCharacter);
 		List<PostprocessRuleEntry> diplomacyRules = (AIConfigHandler.GetGuardrailRulePostprocessRules("diplomacy") ?? new List<PostprocessRuleEntry>())
 			.Where((PostprocessRuleEntry rule) =>
@@ -22938,9 +22939,30 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					return false;
 				}
+				if (tag.StartsWith("[ACTION:DIPLOMACY:DECLARE_WAR:", StringComparison.OrdinalIgnoreCase))
+				{
+					return allowRoyalDiplomacy || allowNpcDeclareWar;
+				}
 				return DiplomacyBehavior.IsIndependentClanPeacePostprocessTag(tag)
 					? allowIndependentClanPeace
 					: allowRoyalDiplomacy;
+			})
+			.Select((PostprocessRuleEntry rule) =>
+			{
+				string tag = (rule?.Tag ?? "").Trim();
+				if (!allowRoyalDiplomacy
+					&& allowNpcDeclareWar
+					&& tag.StartsWith("[ACTION:DIPLOMACY:DECLARE_WAR:", StringComparison.OrdinalIgnoreCase))
+				{
+					return new PostprocessRuleEntry
+					{
+						Tag = rule.Tag,
+						Description = "仅当NPC国王在<latest_reply>中明确同意让自己的王国立即向第三方王国宣战、开战、讨伐或出兵时输出。玩家不是国王，不能以自己的名义或代表所属王国宣战。id1必须是NPC王国ID，id2必须是目标第三方王国ID；两者都从运行时事实复制。",
+						SingleFramedNpcDescription = rule.SingleFramedNpcDescription,
+						RuntimeAllowedParameterValues = rule.RuntimeAllowedParameterValues
+					};
+				}
+				return rule;
 			})
 			.ToList();
 		List<PostprocessRuleEntry> annexationRules = allowRoyalDiplomacy

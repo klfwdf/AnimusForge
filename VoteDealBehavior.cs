@@ -112,6 +112,7 @@ namespace AnimusForge
 		private List<BilateralDiplomacyRecord> _bilateralDiplomacyRecords = new List<BilateralDiplomacyRecord>();
 		private Dictionary<string, string> _serializedBilateralDiplomacy = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		private Dictionary<string, string> _dialogueProposalDecisionKeys = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		private Dictionary<string, string> _shownRequiredAgendaVoteKeys = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
 		private const string DealIdPrefix = "VD";
 		private const string BilateralDiplomacyIdPrefix = "BD";
@@ -448,9 +449,11 @@ namespace AnimusForge
 				if (_bilateralDiplomacyRecords == null) _bilateralDiplomacyRecords = new List<BilateralDiplomacyRecord>();
 				if (_serializedBilateralDiplomacy == null) _serializedBilateralDiplomacy = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 				if (_dialogueProposalDecisionKeys == null) _dialogueProposalDecisionKeys = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+				if (_shownRequiredAgendaVoteKeys == null) _shownRequiredAgendaVoteKeys = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
 				if (dataStore.IsSaving)
 				{
+					CleanupRequiredAgendaVotePromptKeys();
 					_serializedDeals.Clear();
 					for (int i = 0; i < _activeDeals.Count; i++)
 					{
@@ -499,6 +502,9 @@ namespace AnimusForge
 
 				Dictionary<string, string> dialogueProposalKeysForSync = dataStore.IsSaving ? CampaignSaveChunkHelper.FlattenStringDictionary(_dialogueProposalDecisionKeys, "_vdDialogueProposalKeys", "VoteDeal") : _dialogueProposalDecisionKeys;
 				dataStore.SyncData("_vdDialogueProposalKeys", ref dialogueProposalKeysForSync);
+
+				Dictionary<string, string> shownRequiredAgendaVoteKeysForSync = dataStore.IsSaving ? CampaignSaveChunkHelper.FlattenStringDictionary(_shownRequiredAgendaVoteKeys, "_vdShownRequiredAgendaVoteKeys", "VoteDeal") : _shownRequiredAgendaVoteKeys;
+				dataStore.SyncData("_vdShownRequiredAgendaVoteKeys", ref shownRequiredAgendaVoteKeysForSync);
 
 				if (dataStore.IsLoading)
 				{
@@ -569,6 +575,9 @@ namespace AnimusForge
 					CleanupBilateralDiplomacyRecords();
 					_dialogueProposalDecisionKeys = CampaignSaveChunkHelper.RestoreStringDictionary(dialogueProposalKeysForSync, "VoteDeal")
 						?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+					_shownRequiredAgendaVoteKeys = CampaignSaveChunkHelper.RestoreStringDictionary(shownRequiredAgendaVoteKeysForSync, "VoteDeal")
+						?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+					CleanupRequiredAgendaVotePromptKeys();
 				}
 			}
 			catch (Exception ex)
@@ -579,6 +588,7 @@ namespace AnimusForge
 				_bilateralDiplomacyRecords = new List<BilateralDiplomacyRecord>();
 				_serializedBilateralDiplomacy = new Dictionary<string, string>();
 				_dialogueProposalDecisionKeys = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+				_shownRequiredAgendaVoteKeys = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			}
 		}
 
@@ -642,6 +652,7 @@ namespace AnimusForge
 			_agendaAutoVoteTickRunning = true;
 			try
 			{
+				CleanupRequiredAgendaVotePromptKeys();
 				List<Kingdom> kingdoms = Kingdom.All?.ToList();
 				if (kingdoms == null || kingdoms.Count == 0) return;
 
@@ -2691,12 +2702,16 @@ namespace AnimusForge
 		{
 			if (!RequiresPlayerRulerResolution(decision)) return;
 			if (s_pendingRequiredAgendaDecision != null) return;
+			VoteDealBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<VoteDealBehavior>();
+			string promptKey = BuildRequiredAgendaVotePromptKey(decision);
+			if (behavior != null && !string.IsNullOrWhiteSpace(promptKey) && behavior._shownRequiredAgendaVoteKeys.ContainsKey(promptKey)) return;
 
 			try
 			{
 				GameStateManager stateManager = Game.Current?.GameStateManager;
 				if (stateManager == null || !(stateManager.ActiveState is MapState)) return;
 
+				if (behavior != null && !string.IsNullOrWhiteSpace(promptKey)) behavior._shownRequiredAgendaVoteKeys[promptKey] = "1";
 				s_pendingRequiredAgendaDecision = decision;
 				KingdomState kingdomState = stateManager.CreateState<KingdomState>();
 				stateManager.PushState(kingdomState, 0);
@@ -2707,8 +2722,41 @@ namespace AnimusForge
 			}
 			catch (Exception ex)
 			{
+				if (behavior != null && !string.IsNullOrWhiteSpace(promptKey)) behavior._shownRequiredAgendaVoteKeys.Remove(promptKey);
 				s_pendingRequiredAgendaDecision = null;
 				Logger.Log("VoteDeal", $"[AgendaRequiredVote] Failed to open vote UI for {GetSafeDecisionTitle(decision)}: {ex.Message}");
+			}
+		}
+
+		private static string BuildRequiredAgendaVotePromptKey(KingdomDecision decision)
+		{
+			return BuildVoteDealDecisionKey(decision, includeProposer: true);
+		}
+
+		private void ForgetRequiredAgendaVotePrompt(KingdomDecision decision)
+		{
+			string key = BuildRequiredAgendaVotePromptKey(decision);
+			if (!string.IsNullOrWhiteSpace(key)) _shownRequiredAgendaVoteKeys?.Remove(key);
+		}
+
+		private void CleanupRequiredAgendaVotePromptKeys()
+		{
+			if (_shownRequiredAgendaVoteKeys == null || _shownRequiredAgendaVoteKeys.Count == 0) return;
+			Clan playerClan = Clan.PlayerClan;
+			if (playerClan == null) return;
+			Kingdom playerKingdom = playerClan.Kingdom;
+			if (playerKingdom?.UnresolvedDecisions == null)
+			{
+				_shownRequiredAgendaVoteKeys.Clear();
+				return;
+			}
+			HashSet<string> activeKeys = new HashSet<string>(playerKingdom.UnresolvedDecisions
+				.Where(decision => decision != null)
+				.Select(BuildRequiredAgendaVotePromptKey)
+				.Where(key => !string.IsNullOrWhiteSpace(key)), StringComparer.OrdinalIgnoreCase);
+			foreach (string staleKey in _shownRequiredAgendaVoteKeys.Keys.Where(key => !activeKeys.Contains(key)).ToList())
+			{
+				_shownRequiredAgendaVoteKeys.Remove(staleKey);
 			}
 		}
 
