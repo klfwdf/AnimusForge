@@ -86,6 +86,10 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	private const string PreviousDefaultWorldDiplomacyPromptV1 = "让统治者依据自己真正收到的外交宣言、文化、性格、人物关系、战争局势与现实利益作出自然判断。允许讨论、试探、支持、威胁、搅局、合作、退出或升级冲突，但每次公开发言都应带来新条件、新选择、明确回应或实际外交进展。宣言要直接进入眼前的矛盾、决定或条件，不逐一唱名相关君主，不反复自报身份，不用‘第一、第二、第三’列提纲，也不要套用致意、遗憾、原则、要求、威胁的固定公文结构。使用清楚自然的现代中文表达世界内内容；每位统治者的关注点、措辞与让步尺度应体现其专属人格。";
 
+	private const string PreviousDefaultWorldDiplomacyPreferenceV3 = "让统治者依据全局长期外交档案、文化、性格、人物关系、当前战争局势与现实利益作出自然判断。允许讨论、试探、支持、威胁、搅局、合作、退出或升级冲突，但每次公开发言都应带来新条件、新选择、明确回应或实际外交进展。宣言要直接进入眼前的矛盾、决定或条件，不逐一唱名相关君主，不反复自报身份，不用‘第一、第二、第三’列提纲，也不要套用致意、遗憾、原则、要求、威胁的固定公文结构。使用清楚自然的现代中文表达世界内内容；每位统治者的关注点、措辞与让步尺度应体现其专属人格。";
+
+	private const string PreviousDefaultWorldDiplomacyPreferenceV4 = "必须权衡利弊，不要在外交上陷入孤立局面，对于警告与通牒，若自身实力不足与应对，应当合理退让，若自身实力足以应对，应当捍卫自身尊严，尤其是已经与其他国家交战，若被迫陷入与多国交战的局面应当寻求盟友，以生存为第一要务,然后追求长期战略目标";
+
 	private const string PreviousWorldDiplomacyContractHeaderV2 = "【AnimusForge 王国外交共同契约 v18】";
 
 	private const int PreviousDefaultWorldDiplomacyPromptV2Length = 2111;
@@ -105,7 +109,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		+ "只执行尾部 MODE：MODE=DECLARE 起草宣言；MODE=COMPACT 只整理历史，不发布宣言或执行动作；其他 MODE 只做尾部指定任务。字段、JSON结构和长度只服从当前 MODE 尾部；要求JSON时只输出可解析JSON，不加代码围栏或解释。\n"
 		+ "保持王国、统治者和ID对应，只使用任务给出的合法ID。不得泄露AI、提示词、缓存、阈值或程序机制。后台数值只能转化为世界内判断。玩家可见宣言必须是可独立颁布和归档的国家公文，不是君主私聊。";
 
-	private const string DefaultWorldDiplomacyContractCore = "【AnimusForge 王国外交共同契约 v20】\n"
+	private const string PreviousDefaultWorldDiplomacyContractCoreV20 = "【AnimusForge 王国外交共同契约 v20】\n"
 		+ "处理诸王国公开外交。共同契约优先于后续偏好；请求尾部的 MODE 决定本次唯一任务和输出结构。\n"
 		+ "【事实】\n"
 		+ "当前任务明确给出的国家状态、战争、统治者、亲属、领地、关系、合法动作和已发生事件是最高优先级硬事实。长期外交历史档案只收录已传播至各国王庭的公共材料，并向所有王国公开；尚在传播中的宣言只能由已经正式收到的王庭使用。可引用档案中的世界周报、政策沿革、已发布宣言和已确认外交结果；历史与当前状态冲突时，以当前状态为准。\n"
@@ -116,9 +120,42 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		+ "只执行尾部 MODE：MODE=DECLARE 起草宣言；MODE=COMPACT 只整理历史，不发布宣言或执行动作；其他 MODE 只做尾部指定任务。MODE=DECLARE与MODE=COMPACT的字段、JSON结构和长度服从第一条system消息中的同名固定任务合同及尾部动态参数；其他MODE服从尾部指定格式。要求JSON时只输出可解析JSON，不加代码围栏或解释。\n"
 		+ "保持王国、统治者和ID对应，只使用任务给出的合法ID。不得泄露AI、提示词、缓存、阈值或程序机制。后台数值只能转化为世界内判断。玩家可见宣言必须是可独立颁布和归档的国家公文，不是君主私聊。";
 
+	private const string PreviousDefaultWorldDiplomacyContractCoreV21 = "【AnimusForge 王国外交共同契约 v21】\n"
+		+ "处理诸王国公开外交。共同契约优先于后续偏好；请求尾部的 MODE 决定本次唯一任务和输出结构。\n"
+		+ "【事实】\n"
+		+ "当前任务明确给出的国家状态、战争、统治者、亲属、领地、关系、合法动作和已发生事件是最高优先级硬事实。长期外交历史档案向所有王国公开，可引用其中的世界周报、政策沿革、已发布宣言和已确认外交结果；历史与当前状态冲突时，以当前状态为准。\n"
+		+ "政策记录只说明当时目标、变化或结果，不能证明未明确记载的现实后果。提议、接受、拒绝和已确认执行结果彼此有别；只有已确认执行结果可视为现实状态变化。不得从沉默推导接受、从敌意推导宣战，也不得补写材料未支持的战斗、密约、领土承诺、使节往来或人物动机。\n"
+		+ "【外交】\n"
+		+ "MODE=DECLARE的每篇公开宣言都必须选择一项会登记或执行机制状态的实际外交动作，并明确合法对象；纯表态、谴责、道歉或让步不能单独发布。威胁不等于宣战。每项待回应提议只有原对象国可以接受或拒绝，答复必须关联来源；正式行动只有实际执行成功才算发生。\n"
+		+ "【模式与输出】\n"
+		+ "只执行尾部 MODE：MODE=DECLARE 起草宣言；MODE=COMPACT 只整理历史，不发布宣言或执行动作；其他 MODE 只做尾部指定任务。MODE=DECLARE与MODE=COMPACT的字段、JSON结构和长度服从第一条system消息中的同名固定任务合同及尾部动态参数；其他MODE服从尾部指定格式。要求JSON时只输出可解析JSON，不加代码围栏或解释。\n"
+		+ "保持王国、统治者和ID对应，只使用任务给出的合法ID。不得泄露AI、提示词、缓存、阈值或程序机制。后台数值只能转化为世界内判断。玩家可见宣言必须是可独立颁布和归档的国家公文，不是君主私聊。";
+
+	private const string PreviousDefaultWorldDiplomacyContractCoreV22 = "【AnimusForge 王国外交共同契约 v22】\n"
+		+ "处理诸王国公开外交。共同契约优先于后续偏好；请求尾部的 MODE 决定本次唯一任务和输出结构。\n"
+		+ "【事实】\n"
+		+ "当前任务明确给出的国家状态、战争、统治者、亲属、领地、关系、合法动作和已发生事件是最高优先级硬事实。长期外交历史档案向所有王国公开，可引用其中的世界周报、政策沿革、已发布宣言和已确认外交结果；历史与当前状态冲突时，以当前状态为准。\n"
+		+ "政策记录只说明当时目标、变化或结果，不能证明未明确记载的现实后果。提议、接受、拒绝和已确认执行结果彼此有别；只有已确认执行结果可视为现实状态变化。不得从沉默推导接受、从敌意推导宣战，也不得补写材料未支持的战斗、密约、领土承诺、使节往来或人物动机。\n"
+		+ "【外交】\n"
+		+ "MODE=DECLARE通常必须选择会登记或执行机制状态的实际外交动作并明确合法对象；只有尾部合法清单明确列出statement时，才允许发布一次无动作表态。威胁不等于宣战。每项待回应提议只有原对象国可以接受或拒绝；正式行动只有实际执行成功才算发生。\n"
+		+ "【模式与输出】\n"
+		+ "只执行尾部 MODE：MODE=DECLARE 起草宣言；MODE=COMPACT 只整理历史，不发布宣言或执行动作；其他 MODE 只做尾部指定任务。MODE=DECLARE与MODE=COMPACT的字段、JSON结构和长度服从第一条system消息中的同名固定任务合同及尾部动态参数；其他MODE服从尾部指定格式。要求JSON时只输出可解析JSON，不加代码围栏或解释。\n"
+		+ "保持王国、统治者和ID对应，只使用任务给出的合法ID。不得泄露AI、提示词、缓存、阈值或程序机制。后台数值只能转化为世界内判断。玩家可见宣言必须是可独立颁布和归档的国家公文，不是君主私聊。";
+
+	private const string DefaultWorldDiplomacyContractCore = "【AnimusForge 王国外交共同契约 v23】\n"
+		+ "处理诸王国公开外交。共同契约优先于后续偏好；请求尾部的 MODE 决定本次唯一任务和输出结构。\n"
+		+ "【事实】\n"
+		+ "当前任务明确给出的国家状态、战争、统治者、亲属、领地、关系、合法动作和已发生事件是最高优先级硬事实。长期外交历史档案向所有王国公开，可引用其中的世界周报、政策沿革、已发布宣言和已确认外交结果；历史与当前状态冲突时，以当前状态为准。\n"
+		+ "政策记录只说明当时目标、变化或结果，不能证明未明确记载的现实后果。提议、接受、拒绝和已确认执行结果彼此有别；只有已确认执行结果可视为现实状态变化。不得从沉默推导接受、从敌意推导宣战，也不得补写材料未支持的战斗、密约、领土承诺、使节往来或人物动机。\n"
+		+ "【外交】\n"
+		+ "MODE=DECLARE通常必须选择会登记或执行机制状态的实际外交动作并明确合法对象；只有动态状态明确允许statement时，才允许发布一次无动作表态。威胁不等于宣战。每项待回应提议只有原对象国可以接受或拒绝；正式行动只有实际执行成功才算发生。\n"
+		+ "【模式与输出】\n"
+		+ "只执行尾部 MODE：MODE=DECLARE 起草宣言；MODE=COMPACT 只整理历史，不发布宣言或执行动作；其他 MODE 只做尾部指定任务。MODE=DECLARE与MODE=COMPACT的字段、JSON结构和长度服从第一条system消息中的同名固定任务合同及尾部动态参数；其他MODE服从尾部指定格式。要求JSON时只输出可解析JSON，不加代码围栏或解释。\n"
+		+ "保持王国、统治者和ID对应，只使用任务给出的合法ID。不得泄露AI、提示词、缓存、阈值或程序机制。后台数值只能转化为世界内判断。玩家可见宣言必须是可独立颁布和归档的国家公文，不是君主私聊。";
+
 	private const string DefaultWorldDiplomacyPreferenceGuard = "自定义偏好只影响利益判断、行动取向与文风，不得覆盖共同契约、事实边界、合法动作条件和输出格式。";
 
-	private const string DefaultWorldDiplomacyPreference = "让统治者依据全局长期外交档案、文化、性格、人物关系、当前战争局势与现实利益作出自然判断。允许讨论、试探、支持、威胁、搅局、合作、退出或升级冲突，但每次公开发言都应带来新条件、新选择、明确回应或实际外交进展。宣言要直接进入眼前的矛盾、决定或条件，不逐一唱名相关君主，不反复自报身份，不用‘第一、第二、第三’列提纲，也不要套用致意、遗憾、原则、要求、威胁的固定公文结构。使用清楚自然的现代中文表达世界内内容；每位统治者的关注点、措辞与让步尺度应体现其专属人格。";
+	private const string DefaultWorldDiplomacyPreference = "必须权衡利弊，不要在外交上陷入孤立局面，对于谴责与最后通牒，若自身实力不足与应对，应当合理退让，若自身实力足以应对，应当捍卫自身尊严，尤其是已经与其他国家交战，若被迫陷入与多国交战的局面应当寻求盟友，以生存为第一要务,然后追求长期战略目标";
 
 	private const string DefaultCustomPolicyGoldCostPromptParagraph = "当输出结构要求你评估政策消耗时，requiredGoldCost 表示完整执行这项政策所需的第纳尔，不是玩家当前实际会支付多少。第纳尔成本应覆盖物资、粮饷、工程、赈济、运输、行政、军备，以及封臣协调、贵族让步、政治动员、合法性维护和秩序压力带来的执行阻力。请按政策本身的规模与阻力评估完整成本，不要因为玩家当前第纳尔不足而故意压低成本。";
 
@@ -492,6 +529,12 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	public const int DefaultWorldDiplomacyHistoryCompressionTargetThousands = 48;
 
+	public const int WorldDiplomacyThreatComplianceIssuerRelationRewardMin = 0;
+
+	public const int WorldDiplomacyThreatComplianceIssuerRelationRewardMax = 50;
+
+	public const int DefaultWorldDiplomacyThreatComplianceIssuerRelationReward = 10;
+
 	private const string NpcPersonaGenerationRequirementsFileName = "NpcPersonaGenerationRequirements.txt";
 
 	private const string CustomPromptTextStoreFolderName = "CustomPrompts";
@@ -516,7 +559,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	private const string WorldDiplomacyPromptJsonFileName = "WorldDiplomacyPrompt.json";
 
-	private const int WorldDiplomacyPromptJsonVersion = 3;
+	private const int WorldDiplomacyPromptJsonVersion = 5;
 
 	private const string LegacyCustomPromptTextStoreFileName = "CustomPrompts.json";
 
@@ -2051,11 +2094,19 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
 	public int WorldDiplomacyPeaceProtectionDays { get; set; } = 21;
 
-	[SettingPropertyInteger("外交长期记忆压缩触发值（千估算 Tokens）", WorldDiplomacyHistoryCompressionTriggerThousandsMin, WorldDiplomacyHistoryCompressionTriggerThousandsMax, "0", Order = 13, RequireRestart = false, HintText = "长期外交历史达到该估算长度时开始压缩。默认 800，即约 800k Tokens；阈值越高，每次外交请求的延迟与费用通常越高。所选 API 模型必须有足够输入上下文，900k 仅适合上下文明显大于 1M 的模型。")]
+	[SettingPropertyInteger("贸易/结盟失败冷却（天）", 0, 672, "0", Order = 13, RequireRestart = false, HintText = "贸易或结盟提议未达成后，同一提出国→同一对象国在这段时间内不能再次发起相同类型提议；反向提议和另一类型互不影响。默认 168 天；设为 0 关闭。")]
+	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
+	public int WorldDiplomacyTradeAllianceFailedProposalCooldownDays { get; set; } = 168;
+
+	[SettingPropertyInteger("威慑退让国内关系奖励", WorldDiplomacyThreatComplianceIssuerRelationRewardMin, WorldDiplomacyThreatComplianceIssuerRelationRewardMax, "0", Order = 14, RequireRestart = false, HintText = "对象国明确服从谴责或最后通牒后，发出国每个正式、非雇佣兵封臣家族的族长与当前国王关系增加此数值。每次威慑只结算一次；设为 0 关闭。")]
+	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
+	public int WorldDiplomacyThreatComplianceIssuerRelationReward { get; set; } = DefaultWorldDiplomacyThreatComplianceIssuerRelationReward;
+
+	[SettingPropertyInteger("外交长期记忆压缩触发值（千估算 Tokens）", WorldDiplomacyHistoryCompressionTriggerThousandsMin, WorldDiplomacyHistoryCompressionTriggerThousandsMax, "0", Order = 15, RequireRestart = false, HintText = "长期外交历史达到该估算长度时开始压缩。默认 800，即约 800k Tokens；阈值越高，每次外交请求的延迟与费用通常越高。所选 API 模型必须有足够输入上下文，900k 仅适合上下文明显大于 1M 的模型。")]
 	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
 	public int WorldDiplomacyHistoryCompressionTriggerThousands { get; set; } = DefaultWorldDiplomacyHistoryCompressionTriggerThousands;
 
-	[SettingPropertyInteger("外交长期记忆压缩后目标（千估算 Tokens）", WorldDiplomacyHistoryCompressionTargetThousandsMin, WorldDiplomacyHistoryCompressionTargetThousandsMax, "0", Order = 14, RequireRestart = false, HintText = "压缩完成后，长期外交快照与程序保留的近期硬事实合计目标长度。默认 48，即约 48k Tokens；上限 60k。实际摘要仍受所选 API 的“最大输出Tokens”限制，该上限较低时会生成更短快照。")]
+	[SettingPropertyInteger("外交长期记忆压缩后目标（千估算 Tokens）", WorldDiplomacyHistoryCompressionTargetThousandsMin, WorldDiplomacyHistoryCompressionTargetThousandsMax, "0", Order = 16, RequireRestart = false, HintText = "压缩完成后，长期外交快照与程序保留的近期硬事实合计目标长度。默认 48，即约 48k Tokens；上限 60k。实际摘要仍受所选 API 的“最大输出Tokens”限制，该上限较低时会生成更短快照。")]
 	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
 	public int WorldDiplomacyHistoryCompressionTargetThousands { get; set; } = DefaultWorldDiplomacyHistoryCompressionTargetThousands;
 
@@ -2070,11 +2121,11 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		set => _worldDiplomacyPrompt = NormalizeWorldDiplomacyPromptText(value);
 	}
 
-	[SettingPropertyButton("AI外交自定义偏好", -1, true, "", Content = "打开编辑器", Order = 15, RequireRestart = false, HintText = "编辑利益判断、行动取向与文风偏好。留空表示不添加偏好；固定共同契约、事实边界和 MODE 输出规则不会被覆盖。")]
+	[SettingPropertyButton("AI外交自定义偏好", -1, true, "", Content = "打开编辑器", Order = 17, RequireRestart = false, HintText = "编辑利益判断、行动取向与文风偏好。留空表示不添加偏好；固定共同契约、事实边界和 MODE 输出规则不会被覆盖。")]
 	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
 	public Action EditWorldDiplomacyPrompt { get; set; }
 
-	[SettingPropertyButton("恢复默认AI外交偏好", -1, true, "", Content = "恢复默认", Order = 16, RequireRestart = false, HintText = "弹出确认后，将自定义偏好恢复为模组默认内容。")]
+	[SettingPropertyButton("恢复默认AI外交偏好", -1, true, "", Content = "恢复默认", Order = 18, RequireRestart = false, HintText = "弹出确认后，将自定义偏好恢复为模组默认内容。")]
 	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
 	public Action RestoreDefaultWorldDiplomacyPrompt { get; set; }
 
@@ -3650,7 +3701,9 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	{
 		string text = NormalizeWorldDiplomacyPromptText(input);
 		if (string.Equals(text, PreviousDefaultWorldDiplomacyPrompt, StringComparison.Ordinal)
-			|| string.Equals(text, PreviousDefaultWorldDiplomacyPromptV1, StringComparison.Ordinal))
+			|| string.Equals(text, PreviousDefaultWorldDiplomacyPromptV1, StringComparison.Ordinal)
+			|| string.Equals(text, PreviousDefaultWorldDiplomacyPreferenceV3, StringComparison.Ordinal)
+			|| string.Equals(text, PreviousDefaultWorldDiplomacyPreferenceV4, StringComparison.Ordinal))
 		{
 			return DefaultWorldDiplomacyPreference;
 		}
@@ -3675,6 +3728,9 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		preference = "";
 		if (string.IsNullOrWhiteSpace(text)) return false;
 		bool knownContract = text.StartsWith(DefaultWorldDiplomacyContractCore, StringComparison.Ordinal)
+			|| text.StartsWith(PreviousDefaultWorldDiplomacyContractCoreV22, StringComparison.Ordinal)
+			|| text.StartsWith(PreviousDefaultWorldDiplomacyContractCoreV21, StringComparison.Ordinal)
+			|| text.StartsWith(PreviousDefaultWorldDiplomacyContractCoreV20, StringComparison.Ordinal)
 			|| text.StartsWith(PreviousDefaultWorldDiplomacyContractCoreV19, StringComparison.Ordinal)
 			|| IsExactPreviousDefaultWorldDiplomacyPromptV2(text);
 		if (!knownContract) return false;

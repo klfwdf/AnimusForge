@@ -69,6 +69,7 @@ internal static class WorldDiplomacyPolicyContext
 					{
 						SignalKey = "policy:" + record.PolicyId.Trim() + ":" + targetId,
 						PolicyId = record.PolicyId.Trim(),
+						PolicyKind = string.IsNullOrWhiteSpace(record.PolicyKind) ? "kingdom" : record.PolicyKind.Trim(),
 						PolicyName = Limit(FirstNonEmpty(record.PolicyName, "未命名政策"), 80),
 						PolicySummary = Limit(FirstNonEmpty(record.PolicyDigest, record.PolicyContent), 260),
 						IssuerKingdomId = issuerId,
@@ -81,6 +82,36 @@ internal static class WorldDiplomacyPolicyContext
 				}
 			}
 			return result.OrderBy(item => item.PublishedDay).ThenBy(item => item.SignalKey, StringComparer.OrdinalIgnoreCase).ToList();
+		}
+	}
+
+	public static bool IsForeignPolicySignalActive(string policyId, string ownerKingdomId, string affectedKingdomId)
+	{
+		string normalizedPolicyId = (policyId ?? "").Trim();
+		string normalizedOwnerId = (ownerKingdomId ?? "").Trim();
+		string normalizedAffectedId = (affectedKingdomId ?? "").Trim();
+		if (normalizedPolicyId.Length == 0 || normalizedOwnerId.Length == 0 || normalizedAffectedId.Length == 0)
+		{
+			return false;
+		}
+
+		try
+		{
+			NpcRulerPolicyRecord record = NpcRulerPolicyBehavior.GetPolicyRecordForExternal(normalizedPolicyId);
+			return record != null
+				&& string.Equals((record.PolicyId ?? "").Trim(), normalizedPolicyId, StringComparison.OrdinalIgnoreCase)
+				&& string.Equals((record.KingdomId ?? "").Trim(), normalizedOwnerId, StringComparison.OrdinalIgnoreCase)
+				&& (string.IsNullOrWhiteSpace(record.AgendaStatus)
+					|| string.Equals(record.AgendaStatus.Trim(), "active", StringComparison.OrdinalIgnoreCase)
+					|| string.Equals(record.AgendaStatus.Trim(), "expiry_vote_pending", StringComparison.OrdinalIgnoreCase))
+				&& (string.IsNullOrWhiteSpace(record.PolicyKind)
+					|| string.Equals(record.PolicyKind.Trim(), "kingdom", StringComparison.OrdinalIgnoreCase))
+				&& (record.Effects ?? new List<NpcRulerPolicyEffectDto>()).Any(effect => IsActiveEffect(effect)
+					&& string.Equals((effect.TargetKingdomId ?? "").Trim(), normalizedAffectedId, StringComparison.OrdinalIgnoreCase));
+		}
+		catch
+		{
+			return false;
 		}
 	}
 
@@ -300,6 +331,7 @@ internal sealed class WorldDiplomacyPolicySignalSnapshot
 {
 	public string SignalKey { get; set; } = "";
 	public string PolicyId { get; set; } = "";
+	public string PolicyKind { get; set; } = "kingdom";
 	public string PolicyName { get; set; } = "";
 	public string PolicySummary { get; set; } = "";
 	public string IssuerKingdomId { get; set; } = "";

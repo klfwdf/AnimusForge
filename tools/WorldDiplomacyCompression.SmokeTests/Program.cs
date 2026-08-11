@@ -40,6 +40,7 @@ internal static class Program
         VerifyDefaultsAndRanges(settings);
         VerifyIndependentSettingsAndMcmOrder(settings, behavior);
         VerifyPersistentMigration(settings);
+        VerifyWorldDiplomacyPromptV5Migration(settings);
         VerifyStaticModeContractsAndPromptMigration(behavior);
         VerifyCompressionScheduling(behavior);
         VerifyFrozenOverallTarget(behavior);
@@ -55,6 +56,8 @@ internal static class Program
 
     private static void VerifyDefaultsAndRanges(string settings)
     {
+		Test.True(settings.Contains("【AnimusForge 王国外交共同契约 v23】", StringComparison.Ordinal),
+			"the compact live-action contract must use common diplomacy contract v23");
         Test.Equal(64, ReadIntConstant(settings, "WorldDiplomacyHistoryCompressionTriggerThousandsMin"),
             "trigger minimum must retain a practical lower bound");
         Test.Equal(900, ReadIntConstant(settings, "WorldDiplomacyHistoryCompressionTriggerThousandsMax"),
@@ -67,6 +70,10 @@ internal static class Program
             "post-compression target maximum must leave JSON/output headroom");
         Test.Equal(48, ReadIntConstant(settings, "DefaultWorldDiplomacyHistoryCompressionTargetThousands"),
             "post-compression overall target must default to 48k estimated tokens");
+		Test.Equal(0, ReadIntConstant(settings, "WorldDiplomacyThreatComplianceIssuerRelationRewardMin"),
+			"threat-compliance issuer relation reward must support disabling at zero");
+		Test.Equal(10, ReadIntConstant(settings, "DefaultWorldDiplomacyThreatComplianceIssuerRelationReward"),
+			"threat-compliance issuer relation reward must default to 10");
     }
 
     private static void VerifyIndependentSettingsAndMcmOrder(string settings, string behavior)
@@ -93,6 +100,8 @@ internal static class Program
 
         string[] properties =
         {
+			"WorldDiplomacyTradeAllianceFailedProposalCooldownDays",
+			"WorldDiplomacyThreatComplianceIssuerRelationReward",
             "WorldDiplomacyHistoryCompressionTriggerThousands",
             "WorldDiplomacyHistoryCompressionTargetThousands",
             "EditWorldDiplomacyPrompt",
@@ -100,9 +109,9 @@ internal static class Program
         };
         int[] orders = properties.Select(property => ReadPrecedingMcmOrder(settings, property)).ToArray();
         Test.True(orders.Distinct().Count() == orders.Length,
-            "the four adjacent AI-diplomacy MCM controls must have unique order values");
-        Test.True(orders.OrderBy(value => value).SequenceEqual(new[] { 13, 14, 15, 16 }),
-            "AI-diplomacy compression and prompt controls must occupy orders 13/14/15/16");
+            "the six adjacent AI-diplomacy MCM controls must have unique order values");
+        Test.True(orders.SequenceEqual(new[] { 13, 14, 15, 16, 17, 18 }),
+            "AI-diplomacy cooldown, reward, compression, and prompt controls must occupy orders 13/14/15/16/17/18 in declaration order");
     }
 
     private static void VerifyPersistentMigration(string settings)
@@ -148,12 +157,68 @@ internal static class Program
             "the marker must be written even when existing custom values need no rewrite");
     }
 
+    private static void VerifyWorldDiplomacyPromptV5Migration(string settings)
+    {
+        Test.Equal(5, ReadIntConstant(settings, "WorldDiplomacyPromptJsonVersion"),
+            "the warning-wording prompt migration must use JSON version 5");
+
+        string previousDefault = ReadStringConstant(settings, "PreviousDefaultWorldDiplomacyPreferenceV4");
+        string currentDefault = ReadStringConstant(settings, "DefaultWorldDiplomacyPreference");
+        Test.True(previousDefault.Contains("警告与通牒", StringComparison.Ordinal)
+                  && currentDefault.Contains("谴责与最后通牒", StringComparison.Ordinal),
+            "version 5 must identify the exact old warning wording and the new war-condemnation wording");
+        Test.True(!string.Equals(previousDefault, currentDefault, StringComparison.Ordinal),
+            "the version-4 default and version-5 default must remain distinguishable for exact migration");
+
+        string migration = ExtractSection(
+            settings,
+            "private static string MigrateLegacyWorldDiplomacyPromptText(string input)",
+            "private static string BuildWorldDiplomacyCommonContract(string preference)");
+        string compactMigration = CompactWhitespace(migration);
+        Test.True(compactMigration.Contains(
+                "string.Equals(text, PreviousDefaultWorldDiplomacyPreferenceV4, StringComparison.Ordinal)",
+                StringComparison.Ordinal),
+            "only an ordinal-exact match of the untouched version-4 default may use the version-5 replacement");
+        Test.True(!migration.Contains("text.Contains(PreviousDefaultWorldDiplomacyPreferenceV4", StringComparison.Ordinal)
+                  && !migration.Contains("text.StartsWith(PreviousDefaultWorldDiplomacyPreferenceV4", StringComparison.Ordinal),
+            "the version-4 migration must not use substring or prefix matching that can overwrite a custom prompt");
+        Test.True(migration.Contains("return DefaultWorldDiplomacyPreference;", StringComparison.Ordinal)
+                  && migration.Contains("return text;", StringComparison.Ordinal)
+                  && migration.IndexOf("return text;", StringComparison.Ordinal)
+                     > migration.IndexOf("return DefaultWorldDiplomacyPreference;", StringComparison.Ordinal),
+            "the exact old default must migrate while every unmatched custom prompt is returned unchanged");
+
+        string standaloneReader = ExtractSection(
+            settings,
+            "private static bool TryReadCustomPromptTextJsonFile(string path, Func<string, string> normalize, string fallbackText, out string text)",
+            "private static bool IsCustomPromptTextFileTooLarge(string path)");
+        Test.True(standaloneReader.Contains(
+                "IsWorldDiplomacyPromptPath(path) && parsed.Version < WorldDiplomacyPromptJsonVersion",
+                StringComparison.Ordinal)
+                  && standaloneReader.Contains("MigrateLegacyWorldDiplomacyPromptText(parsed.Text)", StringComparison.Ordinal),
+            "the standalone world-diplomacy prompt file must run exact migration only for an older JSON version");
+
+        string aggregateReader = ExtractSection(
+            settings,
+            "private static bool TryReadLegacyCustomPromptTextStore(out CustomPromptTextStoreJson store)",
+            "private static void QuarantineAndRestoreLegacyCustomPromptTextStoreUnlocked(string path, string reason)");
+        Test.True(aggregateReader.Contains(
+                "parsed.Version < WorldDiplomacyPromptJsonVersion",
+                StringComparison.Ordinal)
+                  && aggregateReader.Contains(
+                      "parsed.WorldDiplomacyPrompt = MigrateLegacyWorldDiplomacyPromptText(parsed.WorldDiplomacyPrompt)",
+                      StringComparison.Ordinal),
+            "the aggregate legacy store must use the same exact migration and leave current-version custom text alone");
+        Test.True(aggregateReader.Contains("store.Version = WorldDiplomacyPromptJsonVersion;", StringComparison.Ordinal),
+            "a migrated aggregate store must persist JSON version 5");
+    }
+
     private static void VerifyStaticModeContractsAndPromptMigration(string behavior)
     {
-        Test.Equal(4, ReadIntConstant(behavior, "DiplomacyPromptContractVersion"),
-            "moving both fixed mode contracts into system must advance the prompt contract version");
-        Test.Equal("diplomacy-history:v5", ReadStringConstant(behavior, "CanonicalHistoryCacheAffinityKey"),
-            "the shared canonical-history cache affinity must advance with the system prefix");
+		Test.Equal(21, ReadIntConstant(behavior, "DiplomacyPromptContractVersion"),
+			"the warning-as-war-condemnation contract must advance the prompt contract version");
+		Test.Equal("diplomacy-history:v21", ReadStringConstant(behavior, "CanonicalHistoryCacheAffinityKey"),
+			"the changed shared system prefix must advance canonical-history cache affinity");
         Test.Equal("【AI外交固定任务MODE分派】", ReadStringConstant(behavior, "DiplomacyModeDispatchContractMarker"),
             "the static system prefix must expose an explicit mode dispatcher");
         Test.Equal("【MODE=DECLARE 固定任务合同】", ReadStringConstant(behavior, "DiplomaticDeclarationModeContractMarker"),
@@ -167,9 +232,19 @@ internal static class Program
             "private static string BuildCanonicalHistoryCompressionModeContract()");
         Test.True(declarationContract.Contains("【统一任务：公开外交宣言】", StringComparison.Ordinal),
             "the unified public-declaration task must live in the fixed declaration contract");
-        Test.True(declarationContract.Contains("author_intent", StringComparison.Ordinal)
-                  && declarationContract.Contains("primary_target_kingdom_id", StringComparison.Ordinal),
-            "the complete declaration JSON schema must live in the fixed declaration contract");
+		Test.True(declarationContract.Contains("\\\"actions\\\":[{", StringComparison.Ordinal)
+				  && declarationContract.Contains("\\\"target_kingdom_id\\\"", StringComparison.Ordinal)
+				  && declarationContract.Contains("\\\"intent\\\":\\\"当前可选动作\\\"", StringComparison.Ordinal)
+				  && declarationContract.Contains("\\\"peace_terms\\\"", StringComparison.Ordinal),
+			"the fixed declaration JSON schema must expose the short directed-actions array");
+		Test.True(!declarationContract.Contains("author_intent", StringComparison.Ordinal)
+				  && !declarationContract.Contains("primary_target_kingdom_id", StringComparison.Ordinal)
+				  && !declarationContract.Contains("【本篇唯一合法intent清单】", StringComparison.Ordinal)
+				  && !declarationContract.Contains("\\\"commitment\\\"", StringComparison.Ordinal)
+				  && !declarationContract.Contains(
+					  "\\\"intent\\\":\\\"warning|ultimatum|",
+					  StringComparison.Ordinal),
+			"the fixed DECLARE JSON must stay short and must not restore the retired singular or global-list contracts");
 
         string compressionContract = ExtractSection(
             behavior,
@@ -180,8 +255,9 @@ internal static class Program
         Test.True(compressionContract.Contains("covered_through_sequence", StringComparison.Ordinal)
                   && compressionContract.Contains("\\\"summary\\\"", StringComparison.Ordinal),
             "the complete compression JSON schema must live in the fixed compression contract");
-        Test.True(!compressionContract.Contains("author_intent", StringComparison.Ordinal),
-            "the compression contract must not inherit the declaration JSON schema");
+		Test.True(!compressionContract.Contains("author_intent", StringComparison.Ordinal)
+				  && !compressionContract.Contains("\\\"actions\\\"", StringComparison.Ordinal),
+			"the compression contract must not inherit the declaration JSON schema");
 
         string canonicalSystem = ExtractSection(
             behavior,
@@ -252,16 +328,18 @@ internal static class Program
         string declarationTail = ExtractSection(
             behavior,
             "private static string BuildDeclareModePrompt(string dynamicPrompt)",
-            "private string BuildAutonomousOpeningPrompt(");
+            "private void AppendDiplomaticThreatDynamicContext(");
         Test.True(declarationTail.Contains("【MODE=DECLARE】", StringComparison.Ordinal)
                   && declarationTail.Contains("第一条system消息", StringComparison.Ordinal),
             "the declaration tail must only activate the fixed DECLARE system contract");
-        foreach (string forbidden in new[]
-        {
-            "BuildDiplomaticDeclarationModeContract",
-            "【统一任务：公开外交宣言】",
-            "author_intent",
-            "primary_target_kingdom_id"
+		foreach (string forbidden in new[]
+		{
+			"BuildDiplomaticDeclarationModeContract",
+			"【统一任务：公开外交宣言】",
+			"author_intent",
+			"primary_target_kingdom_id",
+			"\\\"actions\\\"",
+			"target_kingdom_id"
         })
         {
             Test.True(!declarationTail.Contains(forbidden, StringComparison.Ordinal),
@@ -278,13 +356,14 @@ internal static class Program
                   && compressionTail.Contains("【MODE=COMPACT】", StringComparison.Ordinal)
                   && compressionTail.Contains("第一条system消息", StringComparison.Ordinal),
             "the compression tail must retain only its dynamic range/budget parameters and mode selector");
-        foreach (string forbidden in new[]
+		foreach (string forbidden in new[]
         {
             "BuildCanonicalHistoryCompressionModeContract",
             "合并旧快照与增量",
             "covered_through_sequence",
             "\\\"summary\\\"",
-            "author_intent"
+			"author_intent",
+			"\\\"actions\\\""
         })
         {
             Test.True(!compressionTail.Contains(forbidden, StringComparison.Ordinal),

@@ -159,7 +159,10 @@ namespace AnimusForge
 
 			IAllianceCampaignBehavior allianceBeh = Campaign.Current.GetCampaignBehavior<IAllianceCampaignBehavior>();
 			if (allianceBeh != null && allianceBeh.IsAllyWithKingdom(declarer, target))
-			{ allianceBeh.EndAlliance(declarer, target); Logger.Log("DiplomacyBehavior", $"[DeclareWar] Broke alliance"); }
+			{
+				Logger.Log("DiplomacyBehavior", "[DeclareWar] Allied kingdoms must explicitly break the alliance before declaring war");
+				return "";
+			}
 
 			MeetingBattleRuntime.RunWithDiplomaticSideEffectsUnlocked("diplomacy_declare_war", () =>
 				DeclareWarAction.ApplyByKingdomDecision(declarer, target));
@@ -311,7 +314,10 @@ namespace AnimusForge
 			if (!allianceBeh.IsAllyWithKingdom(playerKingdom, npcKingdom)) { Logger.Log("DiplomacyBehavior", "[BreakAlliance] Not allied"); return ""; }
 
 			MeetingBattleRuntime.RunWithDiplomaticSideEffectsUnlocked("diplomacy_break_alliance", () =>
-				allianceBeh.EndAlliance(playerKingdom, npcKingdom));
+				PermanentAllianceGuard.RunAuthorizedBreak("diplomacy_break_alliance",
+					playerKingdom,
+					npcKingdom,
+					() => allianceBeh.EndAlliance(playerKingdom, npcKingdom)));
 			Logger.Log("DiplomacyBehavior", $"[BreakAlliance] {playerKingdom.StringId} <-> {npcKingdom.StringId}");
 			WorldDiplomacyBehavior.NotifyExternalDiplomacyResolved("break_alliance", playerKingdom, npcKingdom, "面对面口头外交达成");
 			return "";

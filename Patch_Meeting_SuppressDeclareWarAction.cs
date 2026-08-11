@@ -8,8 +8,12 @@ namespace AnimusForge;
 [HarmonyPatch(typeof(DeclareWarAction), "ApplyInternal")]
 public static class Patch_Meeting_SuppressDeclareWarAction
 {
-	public static bool Prefix(IFaction faction1, IFaction faction2, DeclareWarAction.DeclareWarDetail declareWarDetail)
+	private static bool Prefix(
+		IFaction faction1,
+		IFaction faction2,
+		DeclareWarAction.DeclareWarDetail declareWarDetail)
 	{
+		bool bypassMeetingGuard = false;
 		if (VassalageBehavior.IsApplyingVassalageDiplomacy && VassalageBehavior.CanApplyVassalageDiplomacyNowForExternal)
 		{
 			VassalageDiagnosticLog.Event("meeting_suppress.declare_war.allow_vassalage_diplomacy", new Dictionary<string, object>
@@ -18,17 +22,21 @@ public static class Patch_Meeting_SuppressDeclareWarAction
 				["faction2"] = VassalageDiagnosticLog.DescribeKingdom(faction2 as Kingdom),
 				["detail"] = declareWarDetail
 			});
-			return true;
+			bypassMeetingGuard = true;
 		}
-		if (DiplomacyRecentPeaceGuard.ShouldBlockDeclareWar(faction1, faction2, declareWarDetail, "DeclareWarAction.ApplyInternal"))
+		if (!bypassMeetingGuard
+			&& DiplomacyRecentPeaceGuard.ShouldBlockDeclareWar(faction1, faction2, declareWarDetail, "DeclareWarAction.ApplyInternal"))
 		{
 			return false;
 		}
-		if (!MeetingBattleRuntime.ShouldBlockDiplomaticSideEffects)
+		if (!bypassMeetingGuard && MeetingBattleRuntime.ShouldBlockDiplomaticSideEffects)
 		{
-			return true;
+			Logger.Log("MeetingBattle", "Blocked DeclareWarAction.ApplyInternal during meeting-safe phase.");
+			return false;
 		}
-		Logger.Log("MeetingBattle", "Blocked DeclareWarAction.ApplyInternal during meeting-safe phase.");
-		return false;
+		return PermanentAllianceGuard.ShouldAllowDeclareWar(
+			faction1,
+			faction2,
+			declareWarDetail);
 	}
 }

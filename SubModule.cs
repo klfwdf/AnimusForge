@@ -149,6 +149,14 @@ public class SubModule : MBSubModuleBase
 			}
 			try
 			{
+				PermanentAllianceGuard.RegisterHarmonyPatches(harmony);
+			}
+			catch (Exception permanentAllianceEx)
+			{
+				Logger.LogTrace("SubModule", ">>> Permanent alliance guard patches failed: " + permanentAllianceEx.Message);
+			}
+			try
+			{
 				PatchClassProcessor vassalageDeclareWarPatch = harmony.CreateClassProcessor(typeof(Patch_Vassalage_DeclareWarAction));
 				vassalageDeclareWarPatch.Patch();
 			}

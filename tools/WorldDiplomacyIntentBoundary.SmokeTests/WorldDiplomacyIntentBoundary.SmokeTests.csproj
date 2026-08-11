@@ -5,4 +5,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\WorldDiplomacyThreatStateRules.cs" Link="WorldDiplomacyThreatStateRules.cs" />
+    <Compile Include="..\..\WorldDiplomacyOfferCooldownRules.cs" Link="WorldDiplomacyOfferCooldownRules.cs" />
+  </ItemGroup>
 </Project>

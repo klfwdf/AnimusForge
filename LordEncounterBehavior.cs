@@ -74,6 +74,17 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private static bool _meetingPlayerReleaseAuthorized;
 
+	// The custom meeting mission performs an additional encounter cleanup after
+	// OnMissionEnded. Keep the release target until that cleanup has finished so
+	// its final Finish call cannot restore the party's prior pursuit order.
+	private static bool _pendingMeetingReleaseSafePassageFinalReapply;
+
+	private static Hero _pendingMeetingReleaseSafePassageHero;
+
+	private static PartyBase _pendingMeetingReleaseSafePassageParty;
+
+	private static string _pendingMeetingReleaseSafePassageReason;
+
 	private static bool _meetingStartedForProactiveRequest;
 
 	private static Hero _meetingStartedForProactiveRequestHero;
@@ -257,6 +268,25 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 	{
 		_meetingPlayerReleaseAuthorized = false;
 		Logger.Log("MeetingRelease", "Meeting player release authorization cleared. Reason=" + (reason ?? "N/A"));
+	}
+
+	private static void ScheduleMeetingReleaseSafePassageFinalReapply(Hero releasedByHero, string reason)
+	{
+		PartyBase partyBase = TryGetMeetingReleaseEncounterParty();
+		_pendingMeetingReleaseSafePassageFinalReapply = true;
+		_pendingMeetingReleaseSafePassageHero = IsNonHeroMeetingReleaseParty(partyBase) ? null : releasedByHero;
+		_pendingMeetingReleaseSafePassageParty = partyBase ?? _pendingMeetingReleaseSafePassageHero?.PartyBelongedTo?.Party;
+		_pendingMeetingReleaseSafePassageReason = reason;
+		Logger.Log("MeetingRelease", "Scheduled safe-passage reapply after final meeting cleanup. Target=" + (_pendingMeetingReleaseSafePassageHero?.StringId ?? "null") + ", Party=" + GetPartyLogName(_pendingMeetingReleaseSafePassageParty) + ", Reason=" + (reason ?? "N/A"));
+	}
+
+	private static void ClearMeetingReleaseSafePassageFinalReapply(string reason)
+	{
+		_pendingMeetingReleaseSafePassageFinalReapply = false;
+		_pendingMeetingReleaseSafePassageHero = null;
+		_pendingMeetingReleaseSafePassageParty = null;
+		_pendingMeetingReleaseSafePassageReason = null;
+		Logger.Log("MeetingRelease", "Cleared pending safe-passage reapply. Reason=" + (reason ?? "N/A"));
 	}
 
 	private static void MarkPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit(string reason)
@@ -506,12 +536,13 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			flag10 = flag2;
 			flag11 = false;
+			Hero hero5 = ResolveMeetingReleaseHeroForCurrentEncounter(hero4 ?? _targetHero);
 			ClearPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit("meeting_release_authorized_exit");
 			if (flag21)
 			{
 				try
 				{
-					ProactiveNpcRequestBehavior.CompleteActiveForHero(hero4 ?? _targetHero, "meeting_release_authorized_exit");
+					ProactiveNpcRequestBehavior.CompleteActiveForHero(hero5, "meeting_release_authorized_exit");
 				}
 				catch
 				{
@@ -519,29 +550,35 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			}
 			try
 			{
-				ApplyMeetingPlayerReleaseWorldMapCooldown(_targetHero, "meeting_release_authorized_exit");
+				ApplyMeetingPlayerReleaseWorldMapCooldown(hero5, "meeting_release_authorized_exit");
 			}
 			catch
 			{
+			}
+			if (flag10)
+			{
+				ScheduleMeetingReleaseSafePassageFinalReapply(hero5, "meeting_release_authorized_exit");
 			}
 		}
 		else if (flag10 && (flag22 || flag21))
 		{
 			flag11 = false;
 			string text = flag21 ? "proactive_request_meeting_exit" : "custom_encounter_meeting_exit";
+			Hero hero6 = ResolveMeetingReleaseHeroForCurrentEncounter(hero4 ?? _targetHero);
 			ClearPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit(text);
 			try
 			{
-				ApplyMeetingPlayerReleaseWorldMapCooldown(hero4 ?? _targetHero, text);
+				ApplyMeetingPlayerReleaseWorldMapCooldown(hero6, text);
 			}
 			catch
 			{
 			}
+			ScheduleMeetingReleaseSafePassageFinalReapply(hero6, text);
 			if (flag21)
 			{
 				try
 				{
-					ProactiveNpcRequestBehavior.CompleteActiveForHero(hero4 ?? _targetHero, text);
+					ProactiveNpcRequestBehavior.CompleteActiveForHero(hero6, text);
 				}
 				catch
 				{
@@ -4481,6 +4518,22 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 					Logger.Log("MeetingBattle", "Peaceful cleanup incomplete; will retry on next campaign tick.");
 				}
 			}
+			if (_pendingMeetingReleaseSafePassageFinalReapply)
+			{
+				try
+				{
+					// FinalizeBattle/Finish can restore the party's old movement state.
+					// Apply the native safe-passage state only after this custom cleanup.
+					ApplyMeetingPlayerReleaseWorldMapCooldown(_pendingMeetingReleaseSafePassageHero, (_pendingMeetingReleaseSafePassageReason ?? "meeting_release") + "_after_final_cleanup", _pendingMeetingReleaseSafePassageParty);
+				}
+				catch
+				{
+				}
+				if (!pendingPeacefulMeetingBattleCleanup)
+				{
+					ClearMeetingReleaseSafePassageFinalReapply("final_meeting_cleanup_finished");
+				}
+			}
 		}
 		finally
 		{
@@ -4952,6 +5005,13 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
+			PartyBase partyBase = GetCurrentEncounterPartySafe();
+			if (IsBanditOrOutlawEncounterParty(partyBase))
+			{
+				// Bandit factions are not guaranteed to report a formal faction war,
+				// but PlayerIsDefender means this party initiated the encounter.
+				return true;
+			}
 			IFaction faction = null;
 			IFaction faction2 = null;
 			try
@@ -4963,7 +5023,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			}
 			try
 			{
-				faction2 = PlayerEncounter.EncounteredParty?.MapFaction;
+				faction2 = partyBase?.MapFaction ?? PlayerEncounter.EncounteredParty?.MapFaction;
 			}
 			catch
 			{
@@ -4982,6 +5042,26 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				flag = false;
 			}
 			return flag;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsBanditOrOutlawEncounterParty(PartyBase party)
+	{
+		if (party == null)
+		{
+			return false;
+		}
+		try
+		{
+			MobileParty mobileParty = party.MobileParty;
+			return party.MapFaction?.IsBanditFaction == true
+				|| mobileParty?.IsBandit == true
+				|| mobileParty?.MapFaction?.IsBanditFaction == true
+				|| mobileParty?.ActualClan?.IsBanditFaction == true;
 		}
 		catch
 		{
@@ -6546,6 +6626,40 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		}
 	}
 
+	internal static PartyBase CaptureMeetingReleaseEncounterPartyForExternal()
+	{
+		return TryGetMeetingReleaseEncounterParty();
+	}
+
+	private static bool IsNonHeroMeetingReleaseParty(PartyBase party)
+	{
+		try
+		{
+			return party != null && party.LeaderHero == null;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static Hero ResolveMeetingReleaseHeroForCurrentEncounter(Hero fallback)
+	{
+		PartyBase partyBase = TryGetMeetingReleaseEncounterParty();
+		if (IsNonHeroMeetingReleaseParty(partyBase))
+		{
+			return null;
+		}
+		try
+		{
+			return fallback ?? partyBase?.LeaderHero ?? _targetHero;
+		}
+		catch
+		{
+			return fallback ?? _targetHero;
+		}
+	}
+
 	private static bool TryGetMeetingReleaseContext(Hero target, out Hero resolvedTarget, out int clanRelation, out int privateRelation, out int averageRelation, out int kingRelation, out string kingName, out bool negotiable)
 	{
 		resolvedTarget = null;
@@ -6557,14 +6671,17 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		negotiable = false;
 		try
 		{
-			resolvedTarget = target ?? EnsureEncounterTargetHero("meeting_release_context");
+			PartyBase partyBase = TryGetMeetingReleaseEncounterParty();
+			bool isNonHeroEncounterParty = IsNonHeroMeetingReleaseParty(partyBase);
+			// A bandit/looter party has no Hero. Do not let a stale lord target turn
+			// that party into a hero negotiation or prevent its release tag.
+			resolvedTarget = isNonHeroEncounterParty ? null : (target ?? EnsureEncounterTargetHero("meeting_release_context"));
 			if (!IsMeetingReleaseRuntimeSceneActive() || !IsHostileEncounterInitiatedByOpponent())
 			{
 				return false;
 			}
 			if (resolvedTarget == null)
 			{
-				PartyBase partyBase = TryGetMeetingReleaseEncounterParty();
 				if (partyBase == null || partyBase == PartyBase.MainParty)
 				{
 					return false;
@@ -6715,7 +6832,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void ApplyMeetingPlayerReleaseWorldMapCooldown(Hero releasedByHero, string reason)
+	private static void ApplyMeetingPlayerReleaseWorldMapCooldown(Hero releasedByHero, string reason, PartyBase encounterPartyOverride = null)
 	{
 		try
 		{
@@ -6740,9 +6857,30 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 					protectedParties.Add(party);
 				}
 			}
-			PartyBase meetingReleaseEncounterParty = TryGetMeetingReleaseEncounterParty();
+			void AddProtectedArmy(Army army)
+			{
+				if (army == null)
+				{
+					return;
+				}
+				AddProtectedParty(army.LeaderParty);
+				try
+				{
+					foreach (MobileParty party in army.Parties)
+					{
+						AddProtectedParty(party);
+					}
+				}
+				catch (Exception ex2)
+				{
+					Logger.Log("MeetingRelease", "Could not resolve release army members: " + ex2.Message);
+				}
+			}
+			PartyBase meetingReleaseEncounterParty = encounterPartyOverride ?? TryGetMeetingReleaseEncounterParty();
 			AddProtectedParty(meetingReleaseEncounterParty?.MobileParty);
 			AddProtectedParty(releasedByHero?.PartyBelongedTo);
+			AddProtectedArmy(meetingReleaseEncounterParty?.MobileParty?.Army);
+			AddProtectedArmy(releasedByHero?.PartyBelongedTo?.Army);
 			int num = 0;
 			foreach (MobileParty item in protectedParties)
 			{
@@ -6786,7 +6924,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static bool TryFinishMeetingPlayerReleaseEncounterDirectly(Hero releasedByHero, string reason)
+	private static bool TryFinishMeetingPlayerReleaseEncounterDirectly(Hero releasedByHero, string reason, PartyBase encounterPartyOverride = null)
 	{
 		try
 		{
@@ -6795,6 +6933,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				Logger.Log("MeetingRelease", "Direct release finish skipped because PlayerEncounter.Current is null. Reason=" + (reason ?? "N/A"));
 				return false;
 			}
+			PartyBase partyBase = encounterPartyOverride ?? TryGetMeetingReleaseEncounterParty();
 			try
 			{
 				PlayerEncounter.CampaignBattleResult = null;
@@ -6825,12 +6964,20 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			}
 			try
 			{
-				ApplyMeetingPlayerReleaseWorldMapCooldown(releasedByHero, reason ?? "meeting_release_direct_finish");
+				ApplyMeetingPlayerReleaseWorldMapCooldown(releasedByHero, reason ?? "meeting_release_direct_finish", partyBase);
 			}
 			catch
 			{
 			}
 			PlayerEncounter.Finish(true);
+			try
+			{
+				// Finish may reset the party AI after the first application above.
+				ApplyMeetingPlayerReleaseWorldMapCooldown(releasedByHero, (reason ?? "meeting_release_direct_finish") + "_after_final_finish", partyBase);
+			}
+			catch
+			{
+			}
 			Logger.Log("MeetingRelease", "Directly finished player encounter after release. Reason=" + (reason ?? "N/A"));
 			return true;
 		}
@@ -6843,17 +6990,29 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	internal static bool TryExecuteMeetingPlayerRelease(Hero target, string reason)
 	{
+		return TryExecuteMeetingPlayerRelease(target, null, reason);
+	}
+
+	internal static bool TryExecuteMeetingPlayerRelease(Hero target, PartyBase expectedEncounterParty, string reason)
+	{
 		try
 		{
+			PartyBase partyBase = TryGetMeetingReleaseEncounterParty();
+			if (expectedEncounterParty != null && partyBase != expectedEncounterParty)
+			{
+				Logger.Log("MeetingRelease", "Execute release ignored because the scheduled encounter party changed. Expected=" + GetPartyLogName(expectedEncounterParty) + ", Current=" + GetPartyLogName(partyBase));
+				return false;
+			}
 			if (!TryGetMeetingReleaseContext(target, out var resolvedTarget, out var _, out var _, out var _, out var _, out var _, out var negotiable) || !negotiable)
 			{
 				Logger.Log("MeetingRelease", "Execute release ignored because current encounter is not eligible.");
 				return false;
 			}
 			string targetName = resolvedTarget?.Name?.ToString();
+			PartyBase releaseParty = expectedEncounterParty ?? partyBase;
 			if (string.IsNullOrWhiteSpace(targetName))
 			{
-				targetName = TryGetMeetingReleaseEncounterParty()?.Name?.ToString() ?? "encounter_party";
+				targetName = releaseParty?.Name?.ToString() ?? "encounter_party";
 			}
 			Logger.Log("MeetingRelease", $"Player release triggered. Target={targetName}, Reason={reason ?? "N/A"}");
 			bool flag = IsMissionStateActiveForMeetingRelease();
@@ -6873,7 +7032,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 					Logger.Log("MeetingRelease", "Release authorized but mission could not be ended automatically; waiting for mission exit. Reason=" + (reason ?? "N/A"));
 				}
 			}
-			else if (TryFinishMeetingPlayerReleaseEncounterDirectly(resolvedTarget, reason ?? "meeting_release_player"))
+			else if (TryFinishMeetingPlayerReleaseEncounterDirectly(resolvedTarget, reason ?? "meeting_release_player", releaseParty))
 			{
 				ClearMeetingPlayerReleaseAuthorization("direct_release_finished");
 			}
@@ -6912,8 +7071,9 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				_pendingNativeConversationMeetingReleaseAtTime = 0f;
 			}
 			_pendingNativeConversationMeetingReleaseLastAttemptTime = -1f;
-			_pendingNativeConversationMeetingReleaseHero = resolvedTarget ?? target;
 			_pendingNativeConversationMeetingReleaseParty = TryGetMeetingReleaseEncounterParty();
+			bool isNonHeroEncounterParty = IsNonHeroMeetingReleaseParty(_pendingNativeConversationMeetingReleaseParty);
+			_pendingNativeConversationMeetingReleaseHero = isNonHeroEncounterParty ? null : (resolvedTarget ?? target);
 			_pendingNativeConversationMeetingReleaseReason = reason ?? "native_conversation_release_tag";
 			ClearPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit("native_conversation_release_scheduled");
 			DisableCustomEncounterMenuForCurrentEncounter("native_conversation_release_scheduled");
@@ -7020,7 +7180,21 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			return;
 		}
 		string reason = _pendingNativeConversationMeetingReleaseReason ?? "native_conversation_release_tag";
-		Hero target = _pendingNativeConversationMeetingReleaseHero ?? _targetHero;
+		Hero target = _pendingNativeConversationMeetingReleaseHero;
+		if (target == null)
+		{
+			try
+			{
+				target = _pendingNativeConversationMeetingReleaseParty?.LeaderHero;
+			}
+			catch
+			{
+			}
+			if (target == null && _pendingNativeConversationMeetingReleaseParty == null)
+			{
+				target = _targetHero;
+			}
+		}
 		try
 		{
 			SuppressCustomEncounterMenuUntilBackOnMap("native_conversation_release");

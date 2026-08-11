@@ -953,6 +953,168 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		}
 	}
 
+	internal static bool TryCancelActiveKingdomPolicyForExternal(
+		string policyId,
+		string ownerKingdomId,
+		string reason,
+		out string policyName,
+		out string result)
+	{
+		policyName = "";
+		result = "error";
+		try
+		{
+			CustomPolicyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<CustomPolicyBehavior>();
+			if (behavior == null)
+			{
+				PolicySystemLog.Write("Agenda", "external-cancel-unavailable", "policyId=" + (policyId ?? "") + " owner=" + (ownerKingdomId ?? ""));
+				return false;
+			}
+			bool succeeded = behavior.TryCancelActiveKingdomPolicyInternal(
+				policyId,
+				ownerKingdomId,
+				reason,
+				out policyName,
+				out result);
+			if (succeeded)
+			{
+				WorldDiplomacyPolicyContext.Clear();
+			}
+			return succeeded;
+		}
+		catch (Exception ex)
+		{
+			result = "error";
+			PolicySystemLog.Write("Agenda", "external-cancel-exception", "policyId=" + (policyId ?? "")
+				+ " owner=" + (ownerKingdomId ?? "") + " error=" + ex);
+			return false;
+		}
+	}
+
+	private bool TryCancelActiveKingdomPolicyInternal(
+		string policyId,
+		string ownerKingdomId,
+		string reason,
+		out string policyName,
+		out string result)
+	{
+		policyName = "";
+		result = "error";
+		string normalizedPolicyId = (policyId ?? "").Trim();
+		string normalizedOwnerKingdomId = (ownerKingdomId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(normalizedPolicyId))
+		{
+			result = "not_found";
+			return false;
+		}
+		if (string.IsNullOrWhiteSpace(normalizedOwnerKingdomId))
+		{
+			result = "owner_mismatch";
+			return false;
+		}
+
+		DynamicPolicySaveData matched = null;
+		bool recordIdFound = false;
+		foreach (string raw in _dynamicPolicyRegistry.Values)
+		{
+			DynamicPolicySaveData candidate;
+			try
+			{
+				candidate = JsonConvert.DeserializeObject<DynamicPolicySaveData>(raw ?? "");
+			}
+			catch
+			{
+				continue;
+			}
+			if (candidate == null || !string.Equals(candidate.RecordId ?? "", normalizedPolicyId, StringComparison.OrdinalIgnoreCase))
+			{
+				continue;
+			}
+			recordIdFound = true;
+			if (!string.Equals(candidate.OwnerKingdomId ?? "", normalizedOwnerKingdomId, StringComparison.OrdinalIgnoreCase))
+			{
+				continue;
+			}
+			if (matched != null && !string.Equals(matched.PolicyObjectId ?? "", candidate.PolicyObjectId ?? "", StringComparison.OrdinalIgnoreCase))
+			{
+				PolicySystemLog.Write("Agenda", "external-cancel-ambiguous", "policyId=" + normalizedPolicyId + " owner=" + normalizedOwnerKingdomId);
+				return false;
+			}
+			matched = candidate;
+		}
+
+		if (matched == null)
+		{
+			result = recordIdFound ? "owner_mismatch" : "not_found";
+			return false;
+		}
+		policyName = (matched.PolicyName ?? "").Trim();
+		if (string.Equals(matched.Status, DynamicPolicyStatusAbolished, StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(matched.Status, DynamicPolicyStatusRejected, StringComparison.OrdinalIgnoreCase))
+		{
+			result = "already_inactive";
+			return true;
+		}
+		bool cancellable = string.Equals(matched.Status, DynamicPolicyStatusActive, StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(matched.Status, DynamicPolicyStatusExpiryVotePending, StringComparison.OrdinalIgnoreCase);
+		if (!cancellable || !IsDynamicPolicyId(matched.PolicyObjectId))
+		{
+			PolicySystemLog.Write("Agenda", "external-cancel-invalid-state", "policyId=" + normalizedPolicyId
+				+ " owner=" + normalizedOwnerKingdomId + " status=" + (matched.Status ?? "")
+				+ " policyObjectId=" + (matched.PolicyObjectId ?? ""));
+			return false;
+		}
+
+		Kingdom owner = ResolveKingdomByIdOrName(matched.OwnerKingdomId, "");
+		if (owner == null || owner.IsEliminated
+			|| !string.Equals(owner.StringId ?? "", normalizedOwnerKingdomId, StringComparison.OrdinalIgnoreCase))
+		{
+			PolicySystemLog.Write("Agenda", "external-cancel-owner-unavailable", "policyId=" + normalizedPolicyId + " owner=" + normalizedOwnerKingdomId);
+			return false;
+		}
+
+		List<KingdomPolicyDecision> decisions = FindDynamicPolicyDecisions(owner, matched.PolicyObjectId);
+		List<PolicyObject> activePolicies = owner.ActivePolicies?
+			.Where(x => x != null && string.Equals(x.StringId ?? "", matched.PolicyObjectId ?? "", StringComparison.OrdinalIgnoreCase))
+			.ToList() ?? new List<PolicyObject>();
+		PolicyObject policy = activePolicies.FirstOrDefault()
+			?? decisions.FirstOrDefault()?.Policy
+			?? MBObjectManager.Instance?.GetObject<PolicyObject>(matched.PolicyObjectId);
+		foreach (KingdomPolicyDecision decision in decisions)
+		{
+			owner.RemoveDecision(decision);
+		}
+		if (FindDynamicPolicyDecisions(owner, matched.PolicyObjectId).Count > 0)
+		{
+			PolicySystemLog.Write("Agenda", "external-cancel-decision-retained", "policyId=" + normalizedPolicyId + " owner=" + normalizedOwnerKingdomId);
+			return false;
+		}
+		foreach (PolicyObject activePolicy in activePolicies)
+		{
+			owner.RemovePolicy(activePolicy);
+		}
+		if (owner.ActivePolicies?.Any(x => x != null
+			&& string.Equals(x.StringId ?? "", matched.PolicyObjectId ?? "", StringComparison.OrdinalIgnoreCase)) == true)
+		{
+			PolicySystemLog.Write("Agenda", "external-cancel-policy-retained", "policyId=" + normalizedPolicyId + " owner=" + normalizedOwnerKingdomId);
+			return false;
+		}
+
+		string cancellationReason = string.IsNullOrWhiteSpace(reason) ? "外交威胁退让，政策被废止" : reason.Trim();
+		CompleteDynamicPolicyAbolition(matched, policy, cancellationReason);
+		if (!TryGetDynamicPolicyData(matched.PolicyObjectId, out DynamicPolicySaveData stored)
+			|| !string.Equals(stored.Status, DynamicPolicyStatusAbolished, StringComparison.OrdinalIgnoreCase))
+		{
+			PolicySystemLog.Write("Agenda", "external-cancel-state-not-committed", "policyId=" + normalizedPolicyId + " owner=" + normalizedOwnerKingdomId);
+			return false;
+		}
+		result = "cancelled";
+		PolicySystemLog.Write("Agenda", "external-cancelled", "policyId=" + normalizedPolicyId
+			+ " policy=" + (matched.PolicyObjectId ?? "") + " owner=" + normalizedOwnerKingdomId
+			+ " name=" + policyName + " reason=" + cancellationReason);
+		return true;
+	}
+
 	private bool TryRegisterPolicyActiveEffectInternal(PolicyActiveEffectRegistration registration, out string effectId, out string failureReason)
 	{
 		effectId = "";
@@ -2877,7 +3039,6 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 			return;
 		}
 		data.Status = DynamicPolicyStatusAbolished;
-		StoreDynamicPolicy(data);
 		if (!TryHandleConditionalPolicyAbolition(data.RecordId, reason))
 		{
 			EndPolicyEffectsForAgendaAbolition(data.RecordId, reason);
@@ -2885,6 +3046,9 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		NpcRulerPolicyBehavior.UpdatePolicyAgendaStatusForExternal(data.RecordId, DynamicPolicyStatusAbolished);
 		TryUnregisterDynamicPolicyObject(data, policy);
 		RecordPolicySnapshotForRecordId(data.RecordId, artifactChangeKind, reason);
+		// Commit the terminal registry state last. If a lifecycle, artifact, or external-record
+		// step throws, the next retry still sees an active record and replays the idempotent cleanup.
+		StoreDynamicPolicy(data);
 		PolicySystemLog.Write("Agenda", "abolished", "recordId=" + data.RecordId + " policy=" + data.PolicyObjectId + " reason=" + (reason ?? ""));
 	}
 

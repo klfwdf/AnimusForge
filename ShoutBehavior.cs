@@ -230,6 +230,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 		public Hero TargetHero;
 
+		public PartyBase EncounterParty;
+
 		public bool WaitForPlaybackFinished;
 
 		public float ExecuteAtMissionTime = -1f;
@@ -35365,7 +35367,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	private void ScheduleMeetingReleaseAfterSpeech(int agentIndex, Hero targetHero, SceneSpeechPlaybackInfo playbackInfo)
 	{
 		Mission mission = Mission.Current;
-		if (agentIndex < 0 || targetHero == null || mission == null)
+		if (agentIndex < 0 || mission == null)
 		{
 			return;
 		}
@@ -35374,6 +35376,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			AgentIndex = agentIndex,
 			TargetHero = targetHero,
+			EncounterParty = LordEncounterBehavior.CaptureMeetingReleaseEncounterPartyForExternal(),
 			WaitForPlaybackFinished = playbackInfo != null && playbackInfo.TtsAccepted && playbackInfo.WaitForPlaybackFinished,
 			ExecuteAtMissionTime = ((playbackInfo != null && playbackInfo.TtsAccepted && playbackInfo.WaitForPlaybackFinished) ? (-1f) : (mission.CurrentTime + num))
 		};
@@ -35386,7 +35389,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return;
 		}
 		_pendingMeetingReleasesAfterSpeech.Remove(agentIndex);
-		LordEncounterBehavior.TryExecuteMeetingPlayerRelease(value.TargetHero, "meeting_release_player_after_speech");
+		LordEncounterBehavior.TryExecuteMeetingPlayerRelease(value.TargetHero, value.EncounterParty, "meeting_release_player_after_speech");
 	}
 
 	private void ScheduleWorldMapMissionExitAfterSpeech(int agentIndex, SceneSpeechPlaybackInfo playbackInfo)
