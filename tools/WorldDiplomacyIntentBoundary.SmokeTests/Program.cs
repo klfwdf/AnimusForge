@@ -417,10 +417,63 @@ internal static class Program
         RunLiveLegalActionPublicationContractTests(source);
         RunGeneratedDraftRepairContractTests(source);
         RunOutputTruncationRepairContractTests(source);
+		RunRecoveredDiplomacyRegressionContractTests(source);
 
         Console.WriteLine("World diplomacy intent-boundary smoke tests passed: " + Test.Assertions);
         return 0;
     }
+
+	private static void RunRecoveredDiplomacyRegressionContractTests(string source)
+	{
+		string authorGate = ExtractMethod(source, "private static bool CanAiAuthorDiplomaticDocument(");
+		Test.True(authorGate.Contains("ruler.IsPrisoner", StringComparison.Ordinal)
+			&& authorGate.Contains("player_controlled_realm_requires_player_authorization", StringComparison.Ordinal),
+			"AI diplomatic authorship must reject captive rulers and player-ruled realms");
+		Test.True(CountOccurrences(source, "CanAiAuthorDiplomaticDocument(") >= 8,
+			"AI author authority must be checked at scheduling, request, commit, propagation, and execution boundaries");
+		string mandatoryResponse = ExtractMethod(source, "private void TryScheduleMandatoryCourtResponse(");
+		Test.True(mandatoryResponse.Contains("CanAiAuthorDiplomaticDocument(receiver", StringComparison.Ordinal)
+			&& mandatoryResponse.Contains("ruler_is_prisoner", StringComparison.Ordinal)
+			&& mandatoryResponse.Contains("王庭暂时无法正式回应你的宣言", StringComparison.Ordinal),
+			"a player declaration delivered to a captive ruler must receive an explicit unable-to-respond notice instead of hanging");
+		Test.True(mandatoryResponse.IndexOf("CanAiAuthorDiplomaticDocument(receiver", StringComparison.Ordinal)
+			< mandatoryResponse.IndexOf("if (round.ResultSettlementPending)", StringComparison.Ordinal),
+			"captive-ruler feedback must not be bypassed when the round has already entered result settlement");
+
+		string courtArrival = ExtractMethod(source, "private void ProcessCourtArrival(");
+		Test.True(courtArrival.Contains("IsPlayerAffiliatedKingdom(receiver)", StringComparison.Ordinal),
+			"formal court arrival must work for player rulers and player vassals");
+		string propagation = ExtractMethod(source, "private void StartDocumentPropagation(");
+		Test.True(propagation.Contains("IsPlayerAffiliatedKingdom(author)", StringComparison.Ordinal)
+			&& propagation.Contains("document.HasReachedPlayerCourt = true", StringComparison.Ordinal),
+			"a declaration authored at the player-affiliated sovereign court must be formally available immediately");
+		string notifications = ExtractMethod(source, "private void TryPublishPendingNotifications(");
+		Test.True(notifications.Contains("!x.RumorNotified", StringComparison.Ordinal)
+			&& notifications.Contains("x.HasReachedPlayerCourt", StringComparison.Ordinal)
+			&& notifications.Contains("!x.FormalNoticeShown", StringComparison.Ordinal),
+			"rumor and formal court delivery must remain separate notification stages");
+		Test.True(notifications.Contains("_nextNotificationPollUtc", StringComparison.Ordinal),
+			"per-frame diplomacy notification work must remain throttled");
+
+		string knownDocuments = ExtractMethod(source, "private HashSet<string> GetKnownDocumentIdsForHero(");
+		Test.True(!knownDocuments.Contains("Settlement.CurrentSettlement", StringComparison.Ordinal),
+			"a remote NPC must not inherit the player's current-settlement diplomatic knowledge");
+		string sharedMemoryPatch = ExtractMethod(source, "private static void Patch_BuildSharedDiplomacyMemory_Postfix(");
+		Test.True(sharedMemoryPatch.Contains("ShouldInjectDiplomacyMemoryForInput", StringComparison.Ordinal)
+			&& sharedMemoryPatch.Contains("BuildDiplomacyMemoryContext(hero, kingdomIdOverride, input)", StringComparison.Ordinal),
+			"explicit player questions about known diplomacy must inject query-aware shared memory");
+		string detailedMemory = ExtractMethod(source, "private static string BuildDetailedDocumentMemoryLine(");
+		Test.True(detailedMemory.Contains("document.Body", StringComparison.Ordinal)
+			&& detailedMemory.Contains("具体诉求与条件", StringComparison.Ordinal),
+			"known declarations must expose concrete demands to NPC conversation memory");
+
+		string archive = ExtractMethod(source, "private WorldEventInboxPopupData BuildRoyalAnnouncementArchiveData(");
+		Test.True(archive.Contains("x.IsReadyForPublication && x.HasReachedPlayerCourt", StringComparison.Ordinal),
+			"the archive must not reveal AI declarations before they reach the player's court");
+		Test.True(archive.Contains("IndexTitleText = BuildArchiveIndexDocumentTitle(document)", StringComparison.Ordinal)
+			&& archive.Contains("IndexMetaText = \"外交宣言：\" + typeLabel", StringComparison.Ordinal),
+			"the archive index must show a clean title and centered declaration type line");
+	}
 
     private static void RunRelayPromptDecisionContextParityContractTests(string source)
     {
@@ -1730,11 +1783,12 @@ internal static class Program
         Test.True(CountOccurrences(generatedCommit, "RejectGeneratedDraftBeforePublication(") == 4,
             "parse, legality, sanitized-body, and second-stage envelope failures must share one draft-rejection exit");
         Test.True(!generatedCommit.Contains("EnqueueGeneratedDeclarationRepair(", StringComparison.Ordinal)
-                  && CountOccurrences(generatedCommit, "AbandonRejectedGeneration(") == 1
+                  && CountOccurrences(generatedCommit, "AbandonRejectedGeneration(") == 2
                   && generatedCommit.Contains(
                       "AbandonRejectedGeneration(job, null, fallbackTarget, \"generated_party_missing\");",
-                      StringComparison.Ordinal),
-            "only a missing author may bypass draft repair; model-output failures must use the shared retry-budget decision");
+                      StringComparison.Ordinal)
+				  && generatedCommit.Contains("CanAiAuthorDiplomaticDocument(author", StringComparison.Ordinal),
+            "missing or newly unauthorized authors may bypass draft repair; model-output failures must use the shared retry-budget decision");
 
         int parseAttempt = generatedCommit.IndexOf("if (!TryParseJsonObject(raw, out JObject json))", StringComparison.Ordinal);
         int parseRejection = generatedCommit.IndexOf(

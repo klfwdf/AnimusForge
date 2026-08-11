@@ -91,6 +91,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private const int UltimatumComplianceRoyalRelationPenalty = -20;
 	private const int DecisionArchitectureVersion = 1;
 	private const int HistoryMemorySchemaVersion = 4;
+	private const int DiplomacyNotificationStateSchemaVersion = 1;
 	private const int DiplomacyPromptContractVersion = 21;
 	private const int RelaySchemaVersion = 22;
 	private const string CanonicalHistoryCacheAffinityKey = "diplomacy-history:v21";
@@ -167,6 +168,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private long _relayCacheHitTokensThisSession;
 	private long _relayCacheMissTokensThisSession;
 	private bool? _lastMapNotificationsEnabled;
+	private DateTime _nextNotificationPollUtc = DateTime.MinValue;
 	private bool _initialPeaceApplicationAttempted;
 	private string _canonicalHistoryRenderCacheKey = "";
 	private string _canonicalHistoryRenderCache = "";
@@ -430,6 +432,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		_storage.DiplomaticThreatStateSchemaVersion = DiplomaticThreatStateSchemaVersion;
 		_storage.OfferCooldownStateSchemaVersion = OfferCooldownStateSchemaVersion;
 		_storage.ResultSettlementStateSchemaVersion = ResultSettlementStateSchemaVersion;
+		_storage.DiplomacyNotificationStateSchemaVersion = DiplomacyNotificationStateSchemaVersion;
 		_storage.CanonicalHistory = new WorldDiplomacyCanonicalHistoryState();
 		_storage.DecisionArchitectureVersion = DecisionArchitectureVersion;
 		_storage.PropagationReliabilityVersion = 1;
@@ -757,6 +760,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		_relayCacheHitTokensThisSession = 0;
 		_relayCacheMissTokensThisSession = 0;
 		_lastMapNotificationsEnabled = null;
+		_nextNotificationPollUtc = DateTime.MinValue;
 		_initialPeaceApplicationAttempted = false;
 		_canonicalHistorySourceKeys.Clear();
 		_deferredCanonicalHistoryDocumentIds.Clear();
@@ -1239,6 +1243,23 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		PruneInvalidOffers(owningRound);
 		bool isResultSettlementTurn = owningRound?.ResultSettlementPending == true
 			&& !string.IsNullOrWhiteSpace(resultSettlementSlotId);
+		if (!CanAiAuthorDiplomaticDocument(author, out string authorBlockReason))
+		{
+			Log("generation blocked by author authority author=" + (author.StringId ?? "")
+				+ " reason=" + authorBlockReason + " source=" + (sourceDocument?.DocumentId ?? ""));
+			CompleteExchange(exchange?.ExchangeId, authorBlockReason);
+			if (isRelayTurn && owningRound != null)
+			{
+				owningRound.RelayWaiting = false;
+				if (owningRound.ResultSettlementPending)
+				{
+					SkipResultSettlementSlot(owningRound, resultSettlementSlotId, author.StringId, authorBlockReason);
+					ScheduleNextResultSettlementTurn(owningRound);
+				}
+				else AdvanceRelay(owningRound);
+			}
+			return;
+		}
 		if (!HasIndependentWorldDiplomacyAuthority(author))
 		{
 			Log("generation skipped for diplomatically controlled vassal author=" + (author.StringId ?? "")
@@ -1965,6 +1986,15 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			}
 		}
 		if (string.Equals(job.Kind, "generate", StringComparison.OrdinalIgnoreCase)
+			&& !CanAiAuthorDiplomaticDocument(ResolveKingdom(job.AuthorKingdomId), out string authorBlockReason))
+		{
+			Log("queued generation cancelled before request job=" + job.JobId + " author=" + (job.AuthorKingdomId ?? "")
+				+ " reason=" + authorBlockReason);
+			AbandonRejectedGeneration(job, ResolveKingdom(job.AuthorKingdomId), ResolveKingdom(job.TargetKingdomId), authorBlockReason);
+			RemoveJob(job.JobId);
+			return;
+		}
+		if (string.Equals(job.Kind, "generate", StringComparison.OrdinalIgnoreCase)
 			&& !EnsureGenerationJobHasKingdomStrategicProfile(job))
 		{
 			AbandonRejectedGeneration(job, ResolveKingdom(job.AuthorKingdomId), ResolveKingdom(job.TargetKingdomId), "missing_kingdom_strategic_profile");
@@ -2302,6 +2332,13 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		if (author == null)
 		{
 			AbandonRejectedGeneration(job, null, fallbackTarget, "generated_party_missing");
+			return;
+		}
+		if (!CanAiAuthorDiplomaticDocument(author, out string authorBlockReason))
+		{
+			Log("generated declaration discarded at commit job=" + job.JobId + " author=" + author.StringId
+				+ " reason=" + authorBlockReason);
+			AbandonRejectedGeneration(job, author, fallbackTarget, authorBlockReason);
 			return;
 		}
 		PruneInvalidOffers(jobRound);
@@ -4085,6 +4122,13 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			SuppressInvalidDocumentBeforePropagation(document, "controlled_vassal_has_no_diplomatic_authority");
 			return;
 		}
+		if (!document.IsPlayerAuthored && !CanAiAuthorDiplomaticDocument(author, out string authorBlockReason))
+		{
+			Log("AI document blocked before propagation document=" + document.DocumentId + " author=" + author.StringId
+				+ " reason=" + authorBlockReason);
+			SuppressInvalidDocumentBeforePropagation(document, authorBlockReason);
+			return;
+		}
 		string normalizedIntent = NormalizeIntent(intent);
 		WorldDiplomacyRound owningRound = ResolveRound(document.RoundId);
 		PruneInvalidOffers(owningRound);
@@ -4300,6 +4344,11 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		if (!document.IsPlayerAuthored && !HasIndependentWorldDiplomacyAuthority(author))
 		{
 			SuppressInvalidDocumentBeforePropagation(document, "controlled_vassal_has_no_diplomatic_authority");
+			return;
+		}
+		if (!document.IsPlayerAuthored && !CanAiAuthorDiplomaticDocument(author, out string authorBlockReason))
+		{
+			SuppressInvalidDocumentBeforePropagation(document, authorBlockReason);
 			return;
 		}
 		string sourceContextDocumentId = document.SourceDocumentId ?? "";
@@ -7953,6 +8002,11 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		if (!document.IsPlayerAuthored && !CanAiAuthorDiplomaticDocument(author, out string authorBlockReason))
+		{
+			SuppressInvalidDocumentBeforePropagation(document, authorBlockReason);
+			return;
+		}
 		WorldDiplomacyRound round = ResolveRound(document.RoundId);
 		if (round == null
 			&& !string.Equals(document.AnalysisStatus, "external_fact", StringComparison.OrdinalIgnoreCase))
@@ -7963,14 +8017,12 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 		Settlement origin = ResolveCourtSettlement(author);
 		document.OriginSettlementId = origin?.StringId ?? "";
+		if (!document.IsPlayerAuthored && IsPlayerAffiliatedKingdom(author))
+		{
+			document.HasReachedPlayerCourt = true;
+		}
 		document.PropagationStarted = true;
 		document.IsReadyForPublication = true;
-		if (!document.IsPlayerAuthored && !AreMapNotificationsEnabled())
-		{
-			// A declaration published while notifications are disabled must not be replayed
-			// as a backlog when the player enables them later.
-			document.IsNotified = true;
-		}
 		if (round != null)
 		{
 			round.RootDocumentId = FirstNonEmpty(round.RootDocumentId, document.DocumentId);
@@ -8399,7 +8451,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		bool directlyAddressed = (document.AddressedKingdomIds ?? new List<string>()).Contains(receiver.StringId, StringComparer.OrdinalIgnoreCase)
 			|| string.Equals(document.TargetKingdomId, receiver.StringId, StringComparison.OrdinalIgnoreCase)
 			|| IsDiplomaticRepresentativeForAddressedVassal(receiver, document);
-		if (IsPlayerKingdom(receiver))
+		if (IsPlayerAffiliatedKingdom(receiver))
 		{
 			document.HasReachedPlayerCourt = true;
 		}
@@ -8488,15 +8540,28 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			if (participant != null) participant.MandatoryReplyPending = false;
 			return;
 		}
+		if (HasKingdomRespondedToDocument(receiver.StringId, trigger.DocumentId))
+		{
+			participant.MandatoryReplyPending = false;
+			return;
+		}
+		if (!CanAiAuthorDiplomaticDocument(receiver, out string authorBlockReason))
+		{
+			participant.MandatoryReplyPending = false;
+			participant.State = "observer";
+			Log("mandatory response blocked by author authority round=" + round.RoundId
+				+ " author=" + receiver.StringId + " reason=" + authorBlockReason);
+			if (string.Equals(authorBlockReason, "ruler_is_prisoner", StringComparison.OrdinalIgnoreCase))
+			{
+				InformationManager.DisplayMessage(new InformationMessage(
+					KingdomName(receiver) + "的统治者目前身陷囹圄，王庭暂时无法正式回应你的宣言。"));
+			}
+			return;
+		}
 		if (round.ResultSettlementPending)
 		{
 			// The settlement queue owns every remaining speaking right. Scheduling the
 			// older priority-response path here would create a job without a slot id.
-			participant.MandatoryReplyPending = false;
-			return;
-		}
-		if (HasKingdomRespondedToDocument(receiver.StringId, trigger.DocumentId))
-		{
 			participant.MandatoryReplyPending = false;
 			return;
 		}
@@ -9060,6 +9125,14 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private void ExecuteImmediateIntent(Kingdom author, Kingdom target, string intent, WorldDiplomacyDocument document)
 	{
+		if (document != null && !document.IsPlayerAuthored
+			&& !CanAiAuthorDiplomaticDocument(author, out string authorBlockReason))
+		{
+			document.MechanicalResult = "外交行动未执行：发文者当前没有有效的自主发文权限。";
+			Log("AI diplomatic action blocked author=" + (author?.StringId ?? "") + " document=" + (document.DocumentId ?? "")
+				+ " reason=" + authorBlockReason);
+			return;
+		}
 		if (intent == "declare_war")
 		{
 			if (!CanDeclareWar(author, target, out string blockReason, IsEnforcingRejectedUltimatum(author, target)))
@@ -9800,11 +9873,12 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			Hero hero = targetHero ?? targetCharacter?.HeroObject;
 			bool proactiveDiscussion = ProactiveNpcRequestBehavior.IsNeedTypeActiveForExternal("Diplomacy")
 				&& ProactiveNpcRequestBehavior.IsActiveRequestHero(hero);
-			if (!discussionHit && !proactiveDiscussion)
+			bool inputRequestsKnownDiplomacy = ResolveInstance()?.ShouldInjectDiplomacyMemoryForInput(hero, kingdomIdOverride, input) == true;
+			if (!discussionHit && !proactiveDiscussion && !inputRequestsKnownDiplomacy)
 			{
 				return;
 			}
-			string block = ResolveInstance()?.BuildDiplomacyMemoryContext(hero, kingdomIdOverride);
+			string block = ResolveInstance()?.BuildDiplomacyMemoryContext(hero, kingdomIdOverride, input);
 			if (!string.IsNullOrWhiteSpace(block))
 			{
 				__result.Extras = (__result.Extras ?? "").TrimEnd() + "\n\n" + block;
@@ -9883,11 +9957,24 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		return true;
 	}
 
+	private bool ShouldInjectDiplomacyMemoryForInput(Hero hero, string kingdomIdOverride, string input)
+	{
+		string text = (input ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text)) return false;
+		if (new[] { "外交", "宣言", "公文", "王庭", "结盟", "同盟", "议和", "停战", "宣战", "贸易", "通商", "条约", "回应", "条件", "最后通牒" }
+			.Any(keyword => text.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0)) return true;
+		HashSet<string> knownIds = GetKnownDocumentIdsForHero(hero, kingdomIdOverride);
+		return _storage.Documents.Any(document => document != null && knownIds.Contains(document.DocumentId ?? "")
+			&& ((!string.IsNullOrWhiteSpace(document.Title) && text.IndexOf(document.Title, StringComparison.OrdinalIgnoreCase) >= 0)
+				|| (!string.IsNullOrWhiteSpace(document.AuthorKingdomName) && text.IndexOf(document.AuthorKingdomName, StringComparison.OrdinalIgnoreCase) >= 0)
+				|| (!string.IsNullOrWhiteSpace(document.TargetKingdomName) && text.IndexOf(document.TargetKingdomName, StringComparison.OrdinalIgnoreCase) >= 0)));
+	}
+
 	private HashSet<string> GetKnownDocumentIdsForHero(Hero hero, string kingdomIdOverride)
 	{
 		string kingdomId = FirstNonEmpty(hero?.Clan?.Kingdom?.StringId, kingdomIdOverride);
 		HashSet<string> knownIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		Settlement currentSettlement = hero?.CurrentSettlement ?? hero?.PartyBelongedTo?.CurrentSettlement ?? Settlement.CurrentSettlement;
+		Settlement currentSettlement = hero?.CurrentSettlement ?? hero?.PartyBelongedTo?.CurrentSettlement;
 		WorldDiplomacySettlementKnowledge localKnowledge = _storage.SettlementKnowledge.FirstOrDefault(x => x != null && string.Equals(x.SettlementId, currentSettlement?.StringId, StringComparison.OrdinalIgnoreCase));
 		foreach (string id in localKnowledge?.DocumentIds ?? new List<string>()) knownIds.Add(id);
 		bool isKingdomNoble = hero?.IsLord == true && !string.IsNullOrWhiteSpace(hero.Clan?.Kingdom?.StringId);
@@ -9905,7 +9992,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		return knownIds;
 	}
 
-	private string BuildDiplomacyMemoryContext(Hero hero, string kingdomIdOverride)
+	private string BuildDiplomacyMemoryContext(Hero hero, string kingdomIdOverride, string input = "")
 	{
 		if (_storage.Documents.Count == 0)
 		{
@@ -9914,16 +10001,29 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		string kingdomId = FirstNonEmpty(hero?.Clan?.Kingdom?.StringId, kingdomIdOverride);
 		HashSet<string> knownIds = GetKnownDocumentIdsForHero(hero, kingdomIdOverride);
 		if (knownIds.Count == 0) return "";
+		List<WorldDiplomacyDocument> queryMatches = _storage.Documents
+			.Where(x => x != null && !x.IsCompressed && knownIds.Contains(x.DocumentId ?? "")
+				&& DiplomacyDocumentQueryRelevance(x, input) > 0)
+			.OrderByDescending(x => DiplomacyDocumentQueryRelevance(x, input))
+			.ThenByDescending(x => x.Day)
+			.ThenByDescending(x => x.CreatedUtcTicks)
+			.Take(2)
+			.ToList();
+		HashSet<string> selectedIds = new HashSet<string>(queryMatches.Select(x => x.DocumentId), StringComparer.OrdinalIgnoreCase);
 		List<WorldDiplomacyDocument> direct = _storage.Documents
 			.Where(x => x != null && !x.IsCompressed && knownIds.Contains(x.DocumentId ?? "")
-				&& (!string.IsNullOrWhiteSpace(kingdomId) && (string.Equals(x.AuthorKingdomId, kingdomId, StringComparison.OrdinalIgnoreCase) || (x.AddressedKingdomIds ?? new List<string>()).Contains(kingdomId, StringComparer.OrdinalIgnoreCase))))
-			.OrderByDescending(x => x.Day)
+				&& !selectedIds.Contains(x.DocumentId ?? "")
+				&& (!string.IsNullOrWhiteSpace(kingdomId) && (string.Equals(x.AuthorKingdomId, kingdomId, StringComparison.OrdinalIgnoreCase)
+					|| string.Equals(x.TargetKingdomId, kingdomId, StringComparison.OrdinalIgnoreCase)
+					|| (x.AddressedKingdomIds ?? new List<string>()).Contains(kingdomId, StringComparer.OrdinalIgnoreCase))))
+			.OrderByDescending(x => DiplomacyDocumentQueryRelevance(x, input))
+			.ThenByDescending(x => x.Day)
 			.ThenByDescending(x => x.CreatedUtcTicks)
 			.Take(3)
 			.ToList();
-		HashSet<string> directIds = new HashSet<string>(direct.Select(x => x.DocumentId), StringComparer.OrdinalIgnoreCase);
+		foreach (WorldDiplomacyDocument document in direct) selectedIds.Add(document.DocumentId ?? "");
 		List<WorldDiplomacyDocument> headlines = _storage.Documents
-			.Where(x => x != null && !x.IsCompressed && knownIds.Contains(x.DocumentId ?? "") && !directIds.Contains(x.DocumentId ?? "") && IsMajorDiplomaticDocument(x))
+			.Where(x => x != null && !x.IsCompressed && knownIds.Contains(x.DocumentId ?? "") && !selectedIds.Contains(x.DocumentId ?? "") && IsMajorDiplomaticDocument(x))
 			.OrderByDescending(x => x.Day)
 			.ThenByDescending(x => x.CreatedUtcTicks)
 			.Take(2)
@@ -9931,9 +10031,13 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		StringBuilder sb = new StringBuilder();
 		sb.AppendLine("【当前人物已获知的王国公告】");
 		sb.AppendLine("以下仅是公文传播到此人所在地点后，或传到其所属王庭后由贵族通信网获得的事实；不代表全世界同步知晓，也不是当前对话的新承诺。");
+		foreach (WorldDiplomacyDocument document in queryMatches)
+		{
+			sb.AppendLine("- [当前问题命中] " + BuildDetailedDocumentMemoryLine(document));
+		}
 		foreach (WorldDiplomacyDocument document in direct)
 		{
-			sb.AppendLine("- [直接相关] " + BuildCompactDocumentMemoryLine(document));
+			sb.AppendLine("- [直接相关] " + BuildDetailedDocumentMemoryLine(document));
 		}
 		foreach (WorldDiplomacyDocument document in headlines)
 		{
@@ -9947,6 +10051,26 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			sb.AppendLine("- [往期外交事件] " + Limit(visibleFacts.Count > 0 ? string.Join("；", visibleFacts) : summary.Summary, 650));
 		}
 		return sb.ToString().TrimEnd();
+	}
+
+	private static int DiplomacyDocumentQueryRelevance(WorldDiplomacyDocument document, string input)
+	{
+		if (document == null || string.IsNullOrWhiteSpace(input)) return 0;
+		int score = 0;
+		if (!string.IsNullOrWhiteSpace(document.Title) && input.IndexOf(document.Title, StringComparison.OrdinalIgnoreCase) >= 0) score += 100;
+		if (!string.IsNullOrWhiteSpace(document.AuthorKingdomName) && input.IndexOf(document.AuthorKingdomName, StringComparison.OrdinalIgnoreCase) >= 0) score += 40;
+		if (!string.IsNullOrWhiteSpace(document.TargetKingdomName) && input.IndexOf(document.TargetKingdomName, StringComparison.OrdinalIgnoreCase) >= 0) score += 40;
+		if (input.IndexOf(IntentLabel(document.Intent), StringComparison.OrdinalIgnoreCase) >= 0) score += 20;
+		return score;
+	}
+
+	private static string BuildDetailedDocumentMemoryLine(WorldDiplomacyDocument document)
+	{
+		if (document == null) return "";
+		string response = document.RequiresResponse ? "；该公文明确等待回应" : "";
+		string source = string.IsNullOrWhiteSpace(document.SourceDocumentId) ? "" : "；回应来源=" + document.SourceDocumentId;
+		string body = string.IsNullOrWhiteSpace(document.Body) ? "" : "；具体诉求与条件=" + Limit(document.Body, 800);
+		return BuildCompactDocumentMemoryLine(document) + response + source + body;
 	}
 
 	private void ApplyDocumentPressure(WorldDiplomacyDocument document)
@@ -10148,16 +10272,28 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private void TryPublishPendingNotifications()
 	{
+		DateTime nowUtc = DateTime.UtcNow;
+		if (nowUtc < _nextNotificationPollUtc) return;
+		_nextNotificationPollUtc = nowUtc.AddSeconds(1d);
+		foreach (WorldDiplomacyDocument rumor in _storage.Documents
+			.Where(x => x != null && !x.IsPlayerAuthored && x.IsReadyForPublication && !x.RumorNotified)
+			.OrderBy(x => x.Day).ThenBy(x => x.CreatedUtcTicks).Take(3).ToList())
+		{
+			rumor.RumorNotified = true;
+			InformationManager.DisplayMessage(new InformationMessage(BuildDiplomacyRumor(rumor)));
+			Log("diplomacy-rumor.shown document=" + rumor.DocumentId + " day=" + CurrentDay().ToString(CultureInfo.InvariantCulture));
+		}
 		bool enabled = AreMapNotificationsEnabled();
 		if (!enabled)
 		{
+			foreach (WorldDiplomacyDocument document in _storage.Documents.Where(x => x != null
+				&& !x.IsPlayerAuthored && x.IsReadyForPublication && x.HasReachedPlayerCourt && !x.FormalNoticeShown))
+			{
+				document.FormalNoticeShown = true;
+				document.IsNotified = true;
+			}
 			if (_lastMapNotificationsEnabled != false)
 			{
-				foreach (WorldDiplomacyDocument document in _storage.Documents.Where(x => x != null
-					&& !x.IsPlayerAuthored && x.IsReadyForPublication && !x.IsNotified))
-				{
-					document.IsNotified = true;
-				}
 				_notifiedDocumentIdsThisSession.Clear();
 			}
 			_lastMapNotificationsEnabled = false;
@@ -10172,8 +10308,9 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			.Where(x => x != null
 				&& !x.IsPlayerAuthored
 				&& x.IsReadyForPublication
+				&& x.HasReachedPlayerCourt
 				&& !x.IsRead
-				&& !x.IsNotified
+				&& !x.FormalNoticeShown
 				&& !_notifiedDocumentIdsThisSession.Contains(x.DocumentId ?? ""))
 			.OrderBy(x => x.Day)
 			.ThenBy(x => x.CreatedUtcTicks)
@@ -10188,6 +10325,9 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 					BuildDisplayedDocumentTitle(document),
 					BuildNotificationDescription(document)));
 				document.IsNotified = true;
+				document.FormalNoticeShown = true;
+				Log("formal-court-notice.shown document=" + document.DocumentId + " realm=" + (Clan.PlayerClan?.Kingdom?.StringId ?? "")
+					+ " day=" + CurrentDay().ToString(CultureInfo.InvariantCulture));
 			}
 			catch (Exception ex)
 			{
@@ -10196,6 +10336,29 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 				break;
 			}
 		}
+	}
+
+	private static string BuildDiplomacyRumor(WorldDiplomacyDocument document)
+	{
+		string author = FirstNonEmpty(document?.AuthorKingdomName, KingdomName(ResolveKingdom(document?.AuthorKingdomId)), "某国");
+		string targetId = FirstNonEmpty(document?.TargetKingdomId, document?.Actions?.FirstOrDefault()?.TargetKingdomId, document?.AddressedKingdomIds?.FirstOrDefault());
+		string target = string.IsNullOrWhiteSpace(targetId) ? "" : KingdomName(ResolveKingdom(targetId));
+		HashSet<string> intents = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		if (document?.Actions?.Count > 0)
+		{
+			foreach (WorldDiplomacyDocumentAction action in document.Actions.Where(x => x != null)) intents.Add(NormalizeIntent(action.Intent));
+		}
+		else intents.Add(NormalizeIntent(document?.Intent));
+		string subject = intents.Contains("declare_war") ? "战争事宜"
+			: intents.Any(x => x == "propose_peace" || x == "accept_peace" || x == "reject_peace") ? "停战事宜"
+			: intents.Any(x => x == "propose_alliance" || x == "accept_alliance" || x == "reject_alliance" || x == "break_alliance") ? "盟约事宜"
+			: intents.Any(x => x == "propose_trade" || x == "accept_trade" || x == "reject_trade" || x == "cancel_trade") ? "贸易事宜"
+			: intents.Any(x => x == "ultimatum" || x == "warning" || x == "comply_ultimatum") ? "最后通牒事宜"
+			: intents.Any(x => x == "apology" || x == "concession") ? "外交让步"
+			: "当前外交局势";
+		return string.IsNullOrWhiteSpace(target)
+			? "据传" + author + "王庭发布了一份新的外交宣言，似乎涉及" + subject + "。"
+			: "据传" + author + "王庭发布了一份面向" + target + "的外交宣言，似乎涉及" + subject + "。";
 	}
 
 	private bool TryEnsureMapNotificationRegistered()
@@ -10335,7 +10498,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			});
 		}
 		foreach (WorldDiplomacyDocument document in _storage.Documents
-			.Where(x => x != null && (x.IsPlayerAuthored || x.IsReadyForPublication))
+			.Where(x => x != null && (x.IsPlayerAuthored || (x.IsReadyForPublication && x.HasReachedPlayerCourt)))
 			.OrderByDescending(x => x.Day).ThenByDescending(x => x.CreatedUtcTicks).Take(240))
 		{
 			if (document == null)
@@ -10356,14 +10519,14 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 				HeaderRightText = FirstNonEmpty(targetSummary, "世界公告"),
 				DateText = date,
 				TitleText = BuildDisplayedDocumentTitle(document),
-				IndexTitleText = FirstNonEmpty(document.Title, document.AuthorKingdomName + "发布外交宣言", "外交宣言"),
+				IndexTitleText = BuildArchiveIndexDocumentTitle(document),
 				MetaText = date + "  ·  " + typeLabel + "  ·  " + document.AuthorKingdomName + (string.IsNullOrWhiteSpace(targetSummary) ? "" : " → " + targetSummary) + eventMeta,
 				PolicyNameText = "",
 				BodyText = string.IsNullOrWhiteSpace(document.Body) ? "该旧公文正文已经压缩，可查看对应年度外交摘要。" : FormatDiplomaticBodyForDisplay(document.Body),
 				BodySectionTitleText = "公告正文",
 				ImpactSectionTitleText = string.IsNullOrWhiteSpace(document.MechanicalResult) ? "" : "外交结果",
 				ImpactText = document.MechanicalResult ?? "",
-				IndexMetaText = date + "  ·  " + typeLabel + eventMeta,
+				IndexMetaText = "外交宣言：" + typeLabel,
 				UnreadMarkerText = document.IsRead ? "" : "新",
 				IsUnread = !document.IsRead,
 				HasPolicyName = false,
@@ -12499,14 +12662,13 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private List<Kingdom> GetEligibleAiKingdoms()
 	{
-		Kingdom player = Clan.PlayerClan?.Kingdom;
 		return Kingdom.All
 			.Where(x => x != null
 				&& !x.IsEliminated
 				&& HasIndependentWorldDiplomacyAuthority(x)
+				&& CanAiAuthorDiplomaticDocument(x, out _)
 				&& x.RulingClan?.Leader != null
-				&& x.RulingClan.Leader.IsAlive
-				&& x != player)
+				&& x.RulingClan.Leader.IsAlive)
 			.OrderBy(x => x.StringId, StringComparer.OrdinalIgnoreCase)
 			.ToList();
 	}
@@ -14535,6 +14697,21 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		_storage.PendingPolicySignals ??= new List<WorldDiplomacyPolicySignal>();
 		_storage.ProcessedPolicySignalKeys ??= new List<string>();
 		_storage.Documents ??= new List<WorldDiplomacyDocument>();
+		if (_storage.DiplomacyNotificationStateSchemaVersion < DiplomacyNotificationStateSchemaVersion)
+		{
+			foreach (WorldDiplomacyDocument document in _storage.Documents.Where(x => x != null))
+			{
+				if (document.IsPlayerAuthored)
+				{
+					document.RumorNotified = true;
+					document.FormalNoticeShown = true;
+					continue;
+				}
+				if (document.IsReadyForPublication) document.RumorNotified = true;
+				if (document.IsNotified || document.IsRead || document.IsCompressed) document.FormalNoticeShown = true;
+			}
+			_storage.DiplomacyNotificationStateSchemaVersion = DiplomacyNotificationStateSchemaVersion;
+		}
 		_storage.AnnualSummaries ??= new List<WorldDiplomacyAnnualSummary>();
 		_storage.CompressionSummaries ??= new List<WorldDiplomacyCompressionSummary>();
 		_storage.WarPressure ??= new List<WarPressureEntry>();
@@ -15921,6 +16098,38 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		return kingdom != null && kingdom == Clan.PlayerClan?.Kingdom && kingdom.RulingClan?.Leader == Hero.MainHero;
 	}
 
+	private static bool IsPlayerAffiliatedKingdom(Kingdom kingdom)
+	{
+		return kingdom != null && kingdom == Clan.PlayerClan?.Kingdom;
+	}
+
+	private static bool CanAiAuthorDiplomaticDocument(Kingdom kingdom, out string reason)
+	{
+		reason = "";
+		if (kingdom == null || kingdom.IsEliminated)
+		{
+			reason = "author_kingdom_missing";
+			return false;
+		}
+		if (IsPlayerKingdom(kingdom))
+		{
+			reason = "player_controlled_realm_requires_player_authorization";
+			return false;
+		}
+		Hero ruler = kingdom.RulingClan?.Leader;
+		if (ruler == null || !ruler.IsAlive)
+		{
+			reason = "ruler_unavailable";
+			return false;
+		}
+		if (ruler.IsPrisoner)
+		{
+			reason = "ruler_is_prisoner";
+			return false;
+		}
+		return true;
+	}
+
 	private static int CurrentDay()
 	{
 		try
@@ -16677,6 +16886,26 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		return title;
 	}
 
+	private static string BuildArchiveIndexDocumentTitle(WorldDiplomacyDocument document)
+	{
+		string title = SanitizePublicDiplomacyText(FirstNonEmpty(document?.Title, document?.AuthorKingdomName + "发布外交宣言", "外交宣言"));
+		string cleaned = Regex.Replace(
+			title,
+			@"^\s*(?:致|复|回复|回应|答复|答|回)\s*[^：:\r\n]{1,48}[：:]\s*",
+			"",
+			RegexOptions.CultureInvariant);
+		string targetName = (document?.TargetKingdomName ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(targetName))
+		{
+			cleaned = Regex.Replace(
+				cleaned,
+				@"^\s*(?:致|复|回复|回应|答复|答|回)\s*" + Regex.Escape(targetName) + @"(?:王国|帝国|王庭)?(?:的)?\s*[：:—\-·]*\s*",
+				"",
+				RegexOptions.CultureInvariant);
+		}
+		return FirstNonEmpty(cleaned, title, "外交宣言");
+	}
+
 	private string BuildDocumentEventMeta(WorldDiplomacyDocument document)
 	{
 		WorldDiplomacyRound round = ResolveRound(document?.RoundId);
@@ -17157,6 +17386,9 @@ public sealed class WorldDiplomacyCompressionSummary
 
 public sealed class WorldDiplomacyStorage
 {
+	[JsonProperty("diplomacyNotificationStateSchemaVersion")]
+	public int DiplomacyNotificationStateSchemaVersion { get; set; }
+
 	[JsonProperty("resultSettlementStateSchemaVersion")]
 	public int ResultSettlementStateSchemaVersion { get; set; }
 
@@ -17534,6 +17766,12 @@ public sealed class WorldDiplomacyDocument
 
 	[JsonProperty("isNotified")]
 	public bool IsNotified { get; set; }
+
+	[JsonProperty("rumorNotified")]
+	public bool RumorNotified { get; set; }
+
+	[JsonProperty("formalNoticeShown")]
+	public bool FormalNoticeShown { get; set; }
 
 	[JsonProperty("isCompressed")]
 	public bool IsCompressed { get; set; }
