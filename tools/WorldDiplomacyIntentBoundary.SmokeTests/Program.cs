@@ -473,6 +473,11 @@ internal static class Program
 		Test.True(archive.Contains("IndexTitleText = BuildArchiveIndexDocumentTitle(document)", StringComparison.Ordinal)
 			&& archive.Contains("IndexMetaText = \"外交宣言：\" + typeLabel", StringComparison.Ordinal),
 			"the archive index must show a clean title and centered declaration type line");
+		string displayedTitle = ExtractMethod(source, "private string BuildDisplayedDocumentTitle(");
+		Test.True(!displayedTitle.Contains("外交事件开始", StringComparison.Ordinal)
+			&& !displayedTitle.Contains("外交事件结束", StringComparison.Ordinal)
+			&& !displayedTitle.Contains("外交事件始末", StringComparison.Ordinal),
+			"formal declaration popups must show only the original declaration title");
 	}
 
     private static void RunRelayPromptDecisionContextParityContractTests(string source)

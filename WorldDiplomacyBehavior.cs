@@ -16849,17 +16849,10 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private string BuildDisplayedDocumentTitle(WorldDiplomacyDocument document)
 	{
-		string title = SanitizePublicDiplomacyText(FirstNonEmpty(document?.Title, document?.AuthorKingdomName + "发布外交宣言", "外交宣言"));
-		if (document == null || string.IsNullOrWhiteSpace(document.RoundId)) return title;
-		WorldDiplomacyRound round = ResolveRound(document.RoundId);
-		if (round == null) return title;
-		bool isStart = string.Equals(round.RootDocumentId, document.DocumentId, StringComparison.OrdinalIgnoreCase);
-		bool isEnd = string.Equals(round.State, "closed", StringComparison.OrdinalIgnoreCase)
-			&& string.Equals(round.FinalDocumentId, document.DocumentId, StringComparison.OrdinalIgnoreCase);
-		if (isStart && isEnd) return "外交事件始末：" + title;
-		if (isStart) return "外交事件开始：" + title;
-		if (isEnd) return "外交事件结束：" + title;
-		return title;
+		return SanitizePublicDiplomacyText(FirstNonEmpty(
+			document?.Title,
+			document?.AuthorKingdomName + "发布外交宣言",
+			"外交宣言"));
 	}
 
 	private static string BuildArchiveIndexDocumentTitle(WorldDiplomacyDocument document)
