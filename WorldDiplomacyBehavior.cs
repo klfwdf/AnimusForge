@@ -10498,7 +10498,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			});
 		}
 		foreach (WorldDiplomacyDocument document in _storage.Documents
-			.Where(x => x != null && (x.IsPlayerAuthored || (x.IsReadyForPublication && x.HasReachedPlayerCourt)))
+			.Where(x => x != null && (x.IsPlayerAuthored || x.IsReadyForPublication))
 			.OrderByDescending(x => x.Day).ThenByDescending(x => x.CreatedUtcTicks).Take(240))
 		{
 			if (document == null)

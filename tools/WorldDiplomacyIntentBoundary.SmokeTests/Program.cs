@@ -468,8 +468,11 @@ internal static class Program
 			"known declarations must expose concrete demands to NPC conversation memory");
 
 		string archive = ExtractMethod(source, "private WorldEventInboxPopupData BuildRoyalAnnouncementArchiveData(");
-		Test.True(archive.Contains("x.IsReadyForPublication && x.HasReachedPlayerCourt", StringComparison.Ordinal),
-			"the archive must not reveal AI declarations before they reach the player's court");
+		Test.True(archive.Contains("x.IsPlayerAuthored || x.IsReadyForPublication", StringComparison.Ordinal)
+			&& !archive.Contains("x.IsReadyForPublication && x.HasReachedPlayerCourt", StringComparison.Ordinal),
+			"the U-key archive must expose every published declaration immediately, even before the player joins a kingdom");
+		Test.True(notifications.Contains("x.HasReachedPlayerCourt", StringComparison.Ordinal),
+			"the right-side formal notice must still wait for delivery to the player's affiliated court");
 		Test.True(archive.Contains("IndexTitleText = BuildArchiveIndexDocumentTitle(document)", StringComparison.Ordinal)
 			&& archive.Contains("IndexMetaText = \"外交宣言：\" + typeLabel", StringComparison.Ordinal),
 			"the archive index must show a clean title and centered declaration type line");
