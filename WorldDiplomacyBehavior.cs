@@ -9781,7 +9781,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			return false;
 		}
 		int baseValue = action == "declare_war" ? NativeWarSignalBase : NativeOtherSignalBase;
-		int scaledValue = (int)Math.Round(baseValue * GetNativeIntentMultiplier());
+		int scaledValue = baseValue;
 		string reason = BuildNativeDecisionReason(sourceKingdom, target, decision, action);
 		_storage.NativeSignals.Add(new NativeDiplomacySignal
 		{
@@ -10099,7 +10099,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			WarPressureEntry existing = FindWarPressure(document.AuthorKingdomId, targetId);
 			int repetition = existing != null && string.Equals(existing.LastIntent, document.Intent, StringComparison.OrdinalIgnoreCase) ? existing.ConsecutiveSimilarCount : 0;
 			float repetitionFactor = delta > 0 ? 1f / (1f + repetition * 0.35f) : 1f;
-			int scaledDelta = (int)Math.Round(delta * GetDocumentInfluenceMultiplier() * repetitionFactor);
+			int scaledDelta = (int)Math.Round(delta * repetitionFactor);
 			if (scaledDelta != 0) AddWarPressure(document.AuthorKingdomId, targetId, scaledDelta, "外交宣言：" + document.Title, document.Intent);
 		}
 	}
@@ -15915,30 +15915,6 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		if (targetDurationDays <= 15) return 18;
 		if (targetDurationDays >= 28) return 32;
 		return RelayHardDurationDays;
-	}
-
-	private static float GetNativeIntentMultiplier()
-	{
-		try
-		{
-			return Math.Max(0.5f, Math.Min(2f, (DuelSettings.GetSettings()?.WorldDiplomacyNativeIntentInfluencePercent ?? 100) / 100f));
-		}
-		catch
-		{
-			return 1f;
-		}
-	}
-
-	private static float GetDocumentInfluenceMultiplier()
-	{
-		try
-		{
-			return Math.Max(0f, Math.Min(2f, (DuelSettings.GetSettings()?.WorldDiplomacyDocumentInfluencePercent ?? 100) / 100f));
-		}
-		catch
-		{
-			return 1f;
-		}
 	}
 
 	private static int GetOffensiveWarCooldownDays()
