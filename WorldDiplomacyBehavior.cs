@@ -13759,7 +13759,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			.Where(x => x != null)
 			.OrderByDescending(x => x.Day)
 			.ThenByDescending(x => x.CreatedUtcTicks)
-			.Take(Math.Max(1, Math.Min(200, maxCount)))
+			.Take(Math.Max(1, Math.Min(MaxStoredDocuments, maxCount)))
 			.Select(CloneDocument)
 			.ToList();
 	}

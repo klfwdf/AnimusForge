@@ -2215,6 +2215,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private const double SceneMainThreadActionSlowMs = 40.0;
 
+	private const int DeferredPostprocessTargetUnavailableResult = -2;
+
 	private const int NativeConversationMainThreadPreprocessTimeoutMs = 30000;
 
 	private const int NativeConversationBackgroundPreprocessTimeoutMs = 480000;
@@ -3852,6 +3854,78 @@ public class ShoutBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
+	}
+
+	// This runs only at asynchronous-response handoff points on the Bannerlord main thread.
+	// A queued LLM result must never act on an Agent that was knocked out, killed, or removed
+	// while the request was in flight.
+	private static bool IsSceneResponseTargetAvailableForActionDispatch(int targetAgentIndex, Hero expectedHero, CharacterObject expectedCharacter, out string unavailableReason)
+	{
+		unavailableReason = "";
+		if (targetAgentIndex < 0)
+		{
+			// Map/tableau conversations and non-scene channels have no live Agent to validate here.
+			return true;
+		}
+		var agents = Mission.Current?.Agents;
+		if (agents == null)
+		{
+			unavailableReason = "mission_or_agents_missing";
+			return false;
+		}
+		Agent liveAgent;
+		try
+		{
+			liveAgent = agents.FirstOrDefault((Agent agent) => agent != null && agent.Index == targetAgentIndex);
+		}
+		catch
+		{
+			unavailableReason = "agent_lookup_failed";
+			return false;
+		}
+		if (!CanAgentParticipateInSceneSpeech(liveAgent))
+		{
+			unavailableReason = "agent_unavailable";
+			return false;
+		}
+		try
+		{
+			CharacterObject liveCharacter = liveAgent.Character as CharacterObject;
+			if (expectedHero != null)
+			{
+				Hero liveHero = liveCharacter?.HeroObject;
+				if (liveHero == null || !string.Equals(liveHero.StringId, expectedHero.StringId, StringComparison.OrdinalIgnoreCase))
+				{
+					unavailableReason = "agent_identity_changed";
+					return false;
+				}
+			}
+			else if (expectedCharacter != null && (liveCharacter == null || !string.Equals(liveCharacter.StringId, expectedCharacter.StringId, StringComparison.OrdinalIgnoreCase)))
+			{
+				unavailableReason = "agent_identity_changed";
+				return false;
+			}
+		}
+		catch
+		{
+			unavailableReason = "agent_identity_check_failed";
+			return false;
+		}
+		return true;
+	}
+
+	private static bool IsNativeConversationResponseTargetAvailableForActionDispatch(int targetAgentIndex, Hero expectedHero, CharacterObject expectedCharacter, out string unavailableReason)
+	{
+		unavailableReason = "";
+		// Unlike map/tableau conversations, a native conversation running inside a
+		// live Mission must retain its concrete Agent. If lookup already returns -1,
+		// the original scene target was removed and must fail closed.
+		if (targetAgentIndex < 0 && Mission.Current != null)
+		{
+			unavailableReason = "scene_target_missing";
+			return false;
+		}
+		return IsSceneResponseTargetAvailableForActionDispatch(targetAgentIndex, expectedHero, expectedCharacter, out unavailableReason);
 	}
 
 	private static string StripScenePersonaBlocks(string text)
@@ -13592,6 +13666,27 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
+	// Called by the native-conversation overlay immediately before it renders an
+	// asynchronous chunk or final reply. This is intentionally fail-closed for a
+	// scene Agent, while map/tableau conversations (which have no live Agent) keep
+	// their existing behavior.
+	public static bool IsNativeConversationResponseTargetAvailableForExternal()
+	{
+		try
+		{
+			if (!TryResolveNativeConversationTarget(out var targetHero, out var targetCharacter, out var _))
+			{
+				return false;
+			}
+			int targetAgentIndex = TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
+			return IsNativeConversationResponseTargetAvailableForActionDispatch(targetAgentIndex, targetHero, targetCharacter, out var _);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	public static bool ShouldSuppressNativeConversationVisibleStreamingForTtsExternal()
 	{
 		try
@@ -14722,6 +14817,42 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		catch
 		{
+		}
+	}
+
+	// A native request records the player line before its LLM calls so the current
+	// turn is available to the main and postprocess prompts. If its live scene
+	// target disappears, remove only that request's globally unique event rather
+	// than leaving an orphaned player line in either shared history store.
+	private static void RollbackNativeConversationPendingPlayerHistory(Hero targetHero, CharacterObject targetCharacter, string npcName, int targetAgentIndex, NpcDataPacket npc, long eventSequence, string reason)
+	{
+		if (eventSequence <= 0L)
+		{
+			return;
+		}
+		try
+		{
+			string key = BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName, targetAgentIndex, npc);
+			if (!string.IsNullOrWhiteSpace(key))
+			{
+				lock (_nativeConversationSessionHistoryLock)
+				{
+					if (_nativeConversationSessionHistory.TryGetValue(key, out var entries) && entries != null)
+					{
+						entries.RemoveAll((AnimusForgeDialogueHistoryEntry entry) => entry != null && entry.EventSequence == eventSequence);
+						if (entries.Count == 0)
+						{
+							_nativeConversationSessionHistory.Remove(key);
+						}
+					}
+				}
+			}
+			CurrentInstance?.RemoveNativeConversationSessionHistoryEventFromSceneHistory(eventSequence);
+			Logger.Log("ShoutBehavior", "[NativeConversation] rolled back pending player history because response target became unavailable target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agentIndex=" + targetAgentIndex + " event=" + eventSequence + " reason=" + (reason ?? "unknown"));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ShoutBehavior", "[NativeConversation] pending player-history rollback failed: " + ex.Message);
 		}
 	}
 
@@ -16704,6 +16835,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		targetHero = targetHero ?? targetCharacter?.HeroObject;
 		int resolvedTargetAgentIndex = targetAgentIndexOverride >= 0 ? targetAgentIndexOverride : TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
+		if (!IsNativeConversationResponseTargetAvailableForActionDispatch(resolvedTargetAgentIndex, targetHero, targetCharacter, out string unavailableReason))
+		{
+			Logger.Log("ShoutBehavior", "[NativeConversation] dropped postprocess response because target is unavailable target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown") + " agentIndex=" + resolvedTargetAgentIndex + " reason=" + unavailableReason);
+			content = "";
+			return worldMapResult;
+		}
 		NoblePrisonerEscortBehavior.TryProcessSceneExecutionTag(
 			resolvedTargetAgentIndex,
 			!string.IsNullOrWhiteSpace(latestPlayerText),
@@ -17319,6 +17456,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		public string Content;
 		public WorldMapPartyCommandBehavior.WorldMapOrderApplyResult WorldMapResult;
+		public bool ResponseDiscarded;
 	}
 
 	private Task<NativeConversationGameActionResult> ApplyNativeConversationGameActionsOnMainThreadAsync(Hero targetHero, CharacterObject targetCharacter, NpcDataPacket npc, List<NpcDataPacket> allNpcData, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string content, string npcName, int targetAgentIndex, string playerText, ConversationManager expectedConversationManager, int expectedConversationToken)
@@ -17375,8 +17513,27 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	private NativeConversationGameActionResult ApplyNativeConversationGameActionsCore(Hero targetHero, CharacterObject targetCharacter, NpcDataPacket npc, List<NpcDataPacket> allNpcData, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string content, string playerText, ConversationManager expectedConversationManager, int expectedConversationToken)
 	{
 		string result = content ?? "";
+		int targetAgentIndex = npc?.AgentIndex ?? (-1);
+		if (!IsNativeConversationResponseTargetAvailableForActionDispatch(targetAgentIndex, targetHero, targetCharacter, out string unavailableReason))
+		{
+			Logger.Log("ShoutBehavior", "[NativeConversation] dropped queued postprocess actions because target is unavailable target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npc?.Name ?? "unknown") + " agentIndex=" + targetAgentIndex + " reason=" + unavailableReason);
+			return new NativeConversationGameActionResult
+			{
+				Content = "",
+				WorldMapResult = new WorldMapPartyCommandBehavior.WorldMapOrderApplyResult(),
+				ResponseDiscarded = true
+			};
+		}
+		if (targetHero != null)
+		{
+			MyBehavior.ApplyPostprocessMoodFromSceneHeroResponseExternal(targetHero, ref result);
+		}
+		else
+		{
+			MyBehavior.ApplyPostprocessMoodFromSceneUnnamedResponseExternal(npc?.UnnamedKey, npc?.Name, ref result);
+		}
 		TryQueueNativeSceneMechanismActionAfterConversationExit(npc, allNpcData, sceneSummonTargets, sceneGuideTargets, ref result);
-		WorldMapPartyCommandBehavior.WorldMapOrderApplyResult worldMapResult = ApplyNativeConversationActionTags(targetHero, targetCharacter, ref result, npc?.AgentIndex ?? -1, playerText, expectedConversationManager, expectedConversationToken);
+		WorldMapPartyCommandBehavior.WorldMapOrderApplyResult worldMapResult = ApplyNativeConversationActionTags(targetHero, targetCharacter, ref result, targetAgentIndex, playerText, expectedConversationManager, expectedConversationToken);
 		return new NativeConversationGameActionResult { Content = result ?? "", WorldMapResult = worldMapResult };
 	}
 
@@ -17819,6 +17976,19 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		int nativeTargetAgentIndex = TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
 		NpcDataPacket npc = BuildNativeConversationNpcData(targetHero, targetCharacter);
 		npc.AgentIndex = nativeTargetAgentIndex;
+		string nativeTargetLog = targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown";
+		string nativeInitialTargetUnavailableReason = "";
+		bool nativeInitialTargetAvailable = await RunNativeConversationMainThreadFuncAsync(
+			"request_target_validation",
+			nativeTargetLog,
+			nativeTargetAgentIndex,
+			() => IsNativeConversationResponseTargetAvailableForActionDispatch(nativeTargetAgentIndex, targetHero, targetCharacter, out nativeInitialTargetUnavailableReason),
+			false).ConfigureAwait(false);
+		if (!nativeInitialTargetAvailable)
+		{
+			Logger.Log("ShoutBehavior", "[NativeConversation] skipped request because target is unavailable target=" + nativeTargetLog + " agentIndex=" + nativeTargetAgentIndex + " reason=" + (string.IsNullOrWhiteSpace(nativeInitialTargetUnavailableReason) ? "main_thread_validation_failed" : nativeInitialTargetUnavailableReason));
+			return "";
+		}
 		List<NpcDataPacket> presentNpcs = new List<NpcDataPacket> { npc };
 		string cultureId = npc.CultureId ?? "neutral";
 		// Do not feed vanilla conversation UI text into AF prompt history.
@@ -17859,7 +18029,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		Task<string> persistedHeroHistoryTask = Task.Run(() => BuildNativeConversationPersistedHistoryContextForPrompt(targetHero, targetCharacter, shouldRecordPlayerInput ? promptPlayerText : "", currentNativeDialogText, includeCurrentSceneSessionInPersistedHistory));
 		Stopwatch nativePreprocessSw = Stopwatch.StartNew();
 		FreezeWatchdog.Mark("NativeConversation.preprocess_start", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex, immediate: true);
-		string nativeTargetLog = targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown";
 		MyBehavior.WeeklyPromptSnapshot weeklyPromptSnapshot = await RunNativeConversationMainThreadFuncAsync(
 			"weekly_prompt_snapshot",
 			nativeTargetLog,
@@ -17958,9 +18127,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			playerName = "玩家";
 		}
+		long nativePendingPlayerHistoryEventSequence = 0L;
 		if (shouldRecordPlayerInput)
 		{
-			AppendNativeConversationSessionHistory(targetHero, targetCharacter, npcName, playerName, promptPlayerText, "player", targetAgentIndex: nativeTargetAgentIndex, npc: npc);
+			nativePendingPlayerHistoryEventSequence = NextConversationEventSequence();
+			AppendNativeConversationSessionHistory(targetHero, targetCharacter, npcName, playerName, promptPlayerText, "player", nativePendingPlayerHistoryEventSequence, targetAgentIndex: nativeTargetAgentIndex, npc: npc);
 		}
 		string nativePendingAfefKey = BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, npc);
 		List<ConversationMessage> pendingNativeCurrentAfefFacts = ConsumePendingCurrentNativeAfefFactMessagesForPrompt(nativePendingAfefKey);
@@ -17990,6 +18161,20 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return SaveRuntimeGuard.BuildStaleRequestErrorText();
 		}
+		string nativeMainReplyTargetUnavailableBeforeDispatchReason = "";
+		bool nativeMainReplyTargetAvailableBeforeDispatch = await RunNativeConversationMainThreadFuncAsync(
+			"main_reply_target_validation",
+			nativeTargetLog,
+			nativeTargetAgentIndex,
+			() => IsNativeConversationResponseTargetAvailableForActionDispatch(nativeTargetAgentIndex, targetHero, targetCharacter, out nativeMainReplyTargetUnavailableBeforeDispatchReason),
+			false).ConfigureAwait(false);
+		if (!nativeMainReplyTargetAvailableBeforeDispatch)
+		{
+			string reason = string.IsNullOrWhiteSpace(nativeMainReplyTargetUnavailableBeforeDispatchReason) ? "main_thread_validation_failed" : nativeMainReplyTargetUnavailableBeforeDispatchReason;
+			RollbackNativeConversationPendingPlayerHistory(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, npc, nativePendingPlayerHistoryEventSequence, reason);
+			Logger.Log("ShoutBehavior", "[NativeConversation] dropped main reply because target is unavailable target=" + nativeTargetLog + " agentIndex=" + nativeTargetAgentIndex + " reason=" + reason);
+			return "";
+		}
 		if (string.IsNullOrWhiteSpace(output))
 		{
 			return "";
@@ -18001,21 +18186,56 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		string postprocessReply = StripNpcNamePrefixSafely((output ?? "").Replace("\r", "").Trim(), 30);
 		postprocessReply = StripLeakedPromptContentForShout(postprocessReply);
-		TryProcessNativeConversationRawMeetingTauntTags(targetHero, targetCharacter, nativeTargetAgentIndex, ref postprocessReply, out var nativeRawMeetingTauntEscalated);
-		if (TryProcessNativeConversationSceneTauntTags(targetHero, targetCharacter, nativeTargetAgentIndex, ref postprocessReply, out var nativeRawSceneTauntEscalated) && string.IsNullOrWhiteSpace(postprocessReply))
+		string nativeMainReplyTargetUnavailableReason = "";
+		bool nativeMainReplyTargetAvailable = await RunNativeConversationMainThreadFuncAsync(
+			"main_reply_action_validation",
+			nativeTargetLog,
+			nativeTargetAgentIndex,
+			() =>
+			{
+				if (!IsNativeConversationResponseTargetAvailableForActionDispatch(nativeTargetAgentIndex, targetHero, targetCharacter, out nativeMainReplyTargetUnavailableReason))
+				{
+					return false;
+				}
+				TryProcessNativeConversationRawMeetingTauntTags(targetHero, targetCharacter, nativeTargetAgentIndex, ref postprocessReply, out var nativeRawMeetingTauntEscalated);
+				if (TryProcessNativeConversationSceneTauntTags(targetHero, targetCharacter, nativeTargetAgentIndex, ref postprocessReply, out var nativeRawSceneTauntEscalated) && string.IsNullOrWhiteSpace(postprocessReply))
+				{
+					postprocessReply = BuildFallbackSceneTauntSpeech(nativeRawSceneTauntEscalated);
+				}
+				return true;
+			},
+			false).ConfigureAwait(false);
+		if (!nativeMainReplyTargetAvailable)
 		{
-			postprocessReply = BuildFallbackSceneTauntSpeech(nativeRawSceneTauntEscalated);
+			string reason = string.IsNullOrWhiteSpace(nativeMainReplyTargetUnavailableReason) ? "main_thread_validation_failed" : nativeMainReplyTargetUnavailableReason;
+			RollbackNativeConversationPendingPlayerHistory(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, npc, nativePendingPlayerHistoryEventSequence, reason);
+			Logger.Log("ShoutBehavior", "[NativeConversation] dropped main reply before postprocess because target is unavailable target=" + nativeTargetLog + " agentIndex=" + nativeTargetAgentIndex + " reason=" + reason);
+			return "";
 		}
 		// Keep role-play action prose for the postprocessor; display/TTS retains the
 		// existing stage-direction cleanup below.
 		string cleaned = StripStageDirectionsForPassiveShout(postprocessReply);
 		string nativeMainVisibleForTts = SanitizeSceneSpeechText(cleaned);
 		bool nativeTtsDispatchedBeforePostprocess = false;
-		if (!string.IsNullOrWhiteSpace(nativeMainVisibleForTts) && !IsNativeConversationNoSpeechPlaceholder(nativeMainVisibleForTts))
+		if (nativeTargetAgentIndex < 0 && !string.IsNullOrWhiteSpace(nativeMainVisibleForTts) && !IsNativeConversationNoSpeechPlaceholder(nativeMainVisibleForTts))
 		{
 			TrySpeakNativeConversationReplyWithTts(targetHero, targetCharacter, npc, nativeTargetAgentIndex, nativeMainVisibleForTts);
 			nativeTtsDispatchedBeforePostprocess = true;
 			LogTtsReport("NativeConversationTts.EarlyDispatchBeforePostprocess", nativeTargetAgentIndex, $"uiLen={nativeMainVisibleForTts.Length};target={(targetHero?.StringId ?? targetCharacter?.StringId ?? npc?.Name ?? "unknown")}");
+		}
+		string nativePostprocessStartTargetUnavailableReason = "";
+		bool nativePostprocessStartTargetAvailable = await RunNativeConversationMainThreadFuncAsync(
+			"postprocess_start_target_validation",
+			nativeTargetLog,
+			nativeTargetAgentIndex,
+			() => IsNativeConversationResponseTargetAvailableForActionDispatch(nativeTargetAgentIndex, targetHero, targetCharacter, out nativePostprocessStartTargetUnavailableReason),
+			false).ConfigureAwait(false);
+		if (!nativePostprocessStartTargetAvailable)
+		{
+			string reason = string.IsNullOrWhiteSpace(nativePostprocessStartTargetUnavailableReason) ? "main_thread_validation_failed" : nativePostprocessStartTargetUnavailableReason;
+			RollbackNativeConversationPendingPlayerHistory(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, npc, nativePendingPlayerHistoryEventSequence, reason);
+			Logger.Log("ShoutBehavior", "[NativeConversation] skipped postprocess because target is unavailable target=" + nativeTargetLog + " agentIndex=" + nativeTargetAgentIndex + " reason=" + reason);
+			return "";
 		}
 		try
 		{
@@ -18071,6 +18291,20 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		if (shouldRecordPlayerInput && !directNoblePrisonerConversation)
 		{
+			string nativeFixedActionTargetUnavailableReason = "";
+			bool nativeFixedActionTargetAvailable = await RunNativeConversationMainThreadFuncAsync(
+				"fixed_action_target_validation",
+				nativeTargetLog,
+				nativeTargetAgentIndex,
+				() => IsNativeConversationResponseTargetAvailableForActionDispatch(nativeTargetAgentIndex, targetHero, targetCharacter, out nativeFixedActionTargetUnavailableReason),
+				false).ConfigureAwait(false);
+			if (!nativeFixedActionTargetAvailable)
+			{
+				string reason = string.IsNullOrWhiteSpace(nativeFixedActionTargetUnavailableReason) ? "main_thread_validation_failed" : nativeFixedActionTargetUnavailableReason;
+				RollbackNativeConversationPendingPlayerHistory(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, npc, nativePendingPlayerHistoryEventSequence, reason);
+				Logger.Log("ShoutBehavior", "[NativeConversation] skipped fixed action because target is unavailable target=" + nativeTargetLog + " agentIndex=" + nativeTargetAgentIndex + " reason=" + reason);
+				return "";
+			}
 			bool fixedSiegeActionHandled;
 			if (AfGcczShoutBridge.TryProcessFixedKeywordAction(targetHero, targetCharacter, nativeTargetAgentIndex, promptPlayerText, replyIsDirectPlayerResponse: true, out fixedSiegeActionHandled) && fixedSiegeActionHandled)
 			{
@@ -18129,13 +18363,19 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return SaveRuntimeGuard.BuildStaleRequestErrorText();
 		}
-		if (targetHero != null)
+		string nativePostprocessTargetUnavailableReason = "";
+		bool nativePostprocessTargetAvailable = await RunNativeConversationMainThreadFuncAsync(
+			"postprocess_target_validation",
+			nativeTargetLog,
+			nativeTargetAgentIndex,
+			() => IsNativeConversationResponseTargetAvailableForActionDispatch(nativeTargetAgentIndex, targetHero, targetCharacter, out nativePostprocessTargetUnavailableReason),
+			false).ConfigureAwait(false);
+		if (!nativePostprocessTargetAvailable)
 		{
-			MyBehavior.ApplyPostprocessMoodFromSceneHeroResponseExternal(targetHero, ref cleaned);
-		}
-		else
-		{
-			MyBehavior.ApplyPostprocessMoodFromSceneUnnamedResponseExternal(npc?.UnnamedKey, npc?.Name, ref cleaned);
+			string reason = string.IsNullOrWhiteSpace(nativePostprocessTargetUnavailableReason) ? "main_thread_validation_failed" : nativePostprocessTargetUnavailableReason;
+			RollbackNativeConversationPendingPlayerHistory(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, npc, nativePendingPlayerHistoryEventSequence, reason);
+			Logger.Log("ShoutBehavior", "[NativeConversation] dropped completed response because target is unavailable target=" + nativeTargetLog + " agentIndex=" + nativeTargetAgentIndex + " reason=" + reason);
+			return "";
 		}
 		Stopwatch nativeActionSw = Stopwatch.StartNew();
 		FreezeWatchdog.Mark("NativeConversation.action_tags_start", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex, immediate: true);
@@ -18152,6 +18392,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			shouldRecordPlayerInput ? promptPlayerText : string.Empty,
 			nativeRequestConversationManager,
 			nativeRequestConversationToken).ConfigureAwait(false);
+		if (nativeActionResult?.ResponseDiscarded == true)
+		{
+			RollbackNativeConversationPendingPlayerHistory(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, npc, nativePendingPlayerHistoryEventSequence, "action_dispatch_target_unavailable");
+			Logger.Log("ShoutBehavior", "[NativeConversation] response discarded during main-thread action dispatch because the target became unavailable target=" + nativeTargetLog + " agentIndex=" + nativeTargetAgentIndex);
+			return "";
+		}
 		cleaned = nativeActionResult?.Content ?? cleaned;
 		bool closeNativeConversationForImplicitPartyCreation = nativeActionResult?.WorldMapResult?.NeedsChannelExit == true;
 		nativeActionSw.Stop();
@@ -18163,6 +18409,45 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		if (!suppressHistoryWrite && string.IsNullOrWhiteSpace(historyReplyText))
 		{
 			historyReplyText = visible;
+		}
+		string nativeCompletionTargetUnavailableReason = "";
+		bool nativeCompletionTargetAvailable = await RunNativeConversationMainThreadFuncAsync(
+			"completion_target_validation",
+			nativeTargetLog,
+			nativeTargetAgentIndex,
+			() => IsNativeConversationResponseTargetAvailableForActionDispatch(nativeTargetAgentIndex, targetHero, targetCharacter, out nativeCompletionTargetUnavailableReason),
+			false).ConfigureAwait(false);
+		if (!nativeCompletionTargetAvailable)
+		{
+			string reason = string.IsNullOrWhiteSpace(nativeCompletionTargetUnavailableReason) ? "main_thread_validation_failed" : nativeCompletionTargetUnavailableReason;
+			RollbackNativeConversationPendingPlayerHistory(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, npc, nativePendingPlayerHistoryEventSequence, reason);
+			Logger.Log("ShoutBehavior", "[NativeConversation] dropped final reply because target is unavailable target=" + nativeTargetLog + " agentIndex=" + nativeTargetAgentIndex + " reason=" + reason);
+			return "";
+		}
+		if (!suppressHistoryWrite && !nativeTtsDispatchedBeforePostprocess)
+		{
+			string nativeFinalTtsTargetUnavailableReason = "";
+			bool nativeFinalTtsTargetAvailable = await RunNativeConversationMainThreadFuncAsync(
+				"final_tts_target_validation",
+				nativeTargetLog,
+				nativeTargetAgentIndex,
+				() =>
+				{
+					if (!IsNativeConversationResponseTargetAvailableForActionDispatch(nativeTargetAgentIndex, targetHero, targetCharacter, out nativeFinalTtsTargetUnavailableReason))
+					{
+						return false;
+					}
+					TrySpeakNativeConversationReplyWithTts(targetHero, targetCharacter, npc, nativeTargetAgentIndex, visible);
+					return true;
+				},
+				false).ConfigureAwait(false);
+			if (!nativeFinalTtsTargetAvailable)
+			{
+				string reason = string.IsNullOrWhiteSpace(nativeFinalTtsTargetUnavailableReason) ? "main_thread_validation_failed" : nativeFinalTtsTargetUnavailableReason;
+				RollbackNativeConversationPendingPlayerHistory(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, npc, nativePendingPlayerHistoryEventSequence, reason);
+				Logger.Log("ShoutBehavior", "[NativeConversation] skipped final TTS because target is unavailable target=" + nativeTargetLog + " agentIndex=" + nativeTargetAgentIndex + " reason=" + reason);
+				return "";
+			}
 		}
 		try
 		{
@@ -18191,10 +18476,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			RecordNativeConversationNpcLineForExternal(targetHero, targetCharacter, GetSceneNpcHistoryNameForPrompt(npc), historyReplyText, nativeTargetAgentIndex, npc);
 			MarkNativeConversationCurrentDialogRecorded(targetHero, targetCharacter, npcName, historyReplyText, nativeTargetAgentIndex, npc);
-			if (!nativeTtsDispatchedBeforePostprocess)
-			{
-				TrySpeakNativeConversationReplyWithTts(targetHero, targetCharacter, npc, nativeTargetAgentIndex, visible);
-			}
 		}
 		string finalVisible = string.IsNullOrWhiteSpace(visible) ? cleaned.Trim() : visible.Trim();
 		nativeTurnSw.Stop();
@@ -25111,6 +25392,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 							postprocessCompletion.TrySetResult(-1);
 							return;
 						}
+						if (!IsNativeConversationResponseTargetAvailableForActionDispatch(runtimeTargetAgentIndex, speakingHero, npcCharacter, out string unavailableReason))
+						{
+							Logger.Log("ShoutBehavior", "[DeferredPostprocess] dropped response because target is unavailable npc=" + (speakingHero?.StringId ?? currentSpeaker?.Name ?? "unknown") + " agentIndex=" + runtimeTargetAgentIndex + " reason=" + unavailableReason);
+							postprocessCompletion.TrySetResult(DeferredPostprocessTargetUnavailableResult);
+							return;
+						}
 						string text3 = ExtractDeferredSceneActionTags(deferredTags);
 						if (TryApplyDeferredSceneMoodTag(speakerSnapshot, text3))
 						{
@@ -26428,7 +26715,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						if (relayPostprocessSelected)
 						{
 							relayTargetAgentIndex = await postprocessTask;
-							if (relayTargetAgentIndex < 0)
+							if (relayTargetAgentIndex == DeferredPostprocessTargetUnavailableResult)
+							{
+								Logger.Log("ShoutBehavior", "[SceneRelay] stopped because the current postprocess target became unavailable agent=" + currentSpeaker.AgentIndex);
+								relayRequested = false;
+							}
+							else if (relayTargetAgentIndex < 0)
 							{
 								QueueSceneInfoMessage("没有人愿意作为下一个发言者", new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
 								relayRequested = false;
@@ -27245,6 +27537,29 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		catch (Exception ex)
 		{
 			Logger.Log("NativeConversation", "[WARN] scene-history bridge failed: " + ex.Message);
+		}
+	}
+
+	private void RemoveNativeConversationSessionHistoryEventFromSceneHistory(long eventSequence)
+	{
+		if (eventSequence <= 0L)
+		{
+			return;
+		}
+		try
+		{
+			lock (_historyLock)
+			{
+				_publicConversationHistory.RemoveAll((ConversationMessage message) => message != null && message.EventSequence == eventSequence);
+				foreach (List<ConversationMessage> history in _npcConversationHistory.Values)
+				{
+					history?.RemoveAll((ConversationMessage message) => message != null && message.EventSequence == eventSequence);
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NativeConversation", "[WARN] scene-history rollback failed: " + ex.Message);
 		}
 	}
 

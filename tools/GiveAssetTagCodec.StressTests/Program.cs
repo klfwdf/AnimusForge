@@ -172,6 +172,22 @@ Test.True(!myBehavior.Contains("if (!LooksLikeFixedAssetTransferIdForExternal(te
     && myBehavior.Contains("FindSettlementByExactRuntimeIdForFixedAssetTransfer", StringComparison.Ordinal)
     && rewardSystem.Contains("if (MyBehavior.TryResolveFixedAssetTransferEntryByIdForExternal(token, out entry))", StringComparison.Ordinal),
     "an exact custom Settlement.StringId must resolve as a fixed asset without a global settlement scan");
+Match tournamentParticipantPromptContract = Regex.Match(myBehavior,
+    @"private void RecordTournamentParticipantNpcActions\(.*?(?=\r?\n\s*private static Kingdom ResolveTournamentHostKingdom)",
+    RegexOptions.Singleline);
+Match tournamentParticipantSummaryContract = Regex.Match(myBehavior,
+    @"private static string BuildTournamentParticipantSummary\(.*?(?=\r?\n\s*private static string GetTournamentPrizeDisplayName)",
+    RegexOptions.Singleline);
+Test.True(tournamentParticipantPromptContract.Success
+    && tournamentParticipantPromptContract.Value.Contains("全部参赛者（含冠军）", StringComparison.Ordinal)
+    && tournamentParticipantPromptContract.Value.Contains("冠军是", StringComparison.Ordinal)
+    && tournamentParticipantPromptContract.Value.Contains("foreach (Hero tournamentHero in participantHeroes)", StringComparison.Ordinal)
+    && tournamentParticipantPromptContract.Value.Contains("RecordNpcRecentAction(tournamentHero, participantActionText", StringComparison.Ordinal)
+    && tournamentParticipantSummaryContract.Success
+    && tournamentParticipantSummaryContract.Value.Contains("GetTournamentCharacterDisplayName(participant, \"未命名参赛者\")", StringComparison.Ordinal)
+    && !tournamentParticipantSummaryContract.Value.Contains("list.Count >= 8", StringComparison.Ordinal)
+    && !tournamentParticipantSummaryContract.Value.Contains(".Take(8)", StringComparison.Ordinal),
+    "tournament prompt context must keep the champion and every participant, including non-Hero entrants, without an eight-person cap");
 Test.True(rewardSystem.Contains("itemName = requestedName;", StringComparison.Ordinal), "generated RP item must report the requested postprocess name");
 Test.True(rewardSystem.Contains("[RewardRpLiteral] generated", StringComparison.Ordinal), "literal RP generation diagnostic missing");
 MatchCollection inventoryFirstRoutes = Regex.Matches(rewardSystem,

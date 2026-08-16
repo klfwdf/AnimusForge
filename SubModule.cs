@@ -598,6 +598,7 @@ public class SubModule : MBSubModuleBase
 			campaignGameStarter.AddBehavior(new CustomPolicyBehavior());
 			campaignGameStarter.AddBehavior(new NpcRulerPolicyBehavior());
 			campaignGameStarter.AddBehavior(new AnimusForgeWorldEventBehavior());
+			campaignGameStarter.AddBehavior(new WorldMessageTimelineMenuBehavior());
 			campaignGameStarter.AddBehavior(new RomanceSystemBehavior());
 			campaignGameStarter.AddBehavior(new KnowledgeLibraryBehavior());
 			campaignGameStarter.AddBehavior(new LordEncounterBehavior());

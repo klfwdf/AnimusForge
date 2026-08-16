@@ -238,6 +238,7 @@ public static class PolicySystemUi
 		try
 		{
 			AnimusForgeWorldEventInboxPopup.OnApplicationTick();
+			WorldMessageTimelineUi.OnApplicationTick();
 			ScreenBase top = ScreenManager.TopScreen;
 			if (Campaign.Current == null || !(top is MapScreen))
 			{

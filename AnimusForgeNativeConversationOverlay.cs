@@ -918,6 +918,15 @@ public sealed class AnimusForgeNativeConversationOverlay
 				{
 					if (IsSubmitGenerationActive(generation) && !string.IsNullOrWhiteSpace(partial))
 					{
+						if (!ShoutBehavior.IsNativeConversationResponseTargetAvailableForExternal())
+						{
+							receivedVisibleText = false;
+							suppressReadyNotice = true;
+							StopWaitingDotsAnimation(generation);
+							ClearPendingPostprocessNotice();
+							ConversationHelper.UpdateDialogText(originalDialogText ?? "");
+							return;
+						}
 						if (suppressVisibleStreamingForTts)
 						{
 							return;
@@ -929,13 +938,38 @@ public sealed class AnimusForgeNativeConversationOverlay
 				});
 			}, originalDialogText, delegate(string npcName)
 			{
-				RunOnMainThread(() => QueuePostprocessNotice(generation, npcName));
+				RunOnMainThread(delegate
+				{
+					if (!IsSubmitGenerationActive(generation))
+					{
+						return;
+					}
+					if (!ShoutBehavior.IsNativeConversationResponseTargetAvailableForExternal())
+					{
+						receivedVisibleText = false;
+						suppressReadyNotice = true;
+						StopWaitingDotsAnimation(generation);
+						ClearPendingPostprocessNotice();
+						ConversationHelper.UpdateDialogText(originalDialogText ?? "");
+						return;
+					}
+					QueuePostprocessNotice(generation, npcName);
+				});
 			});
 			string completedReply = reply;
 			RunOnMainThread(delegate
 			{
 				if (_isClosed)
 				{
+					return;
+				}
+				if (IsSubmitGenerationActive(generation) && !ShoutBehavior.IsNativeConversationResponseTargetAvailableForExternal())
+				{
+					receivedVisibleText = false;
+					suppressReadyNotice = true;
+					StopWaitingDotsAnimation(generation);
+					ClearPendingPostprocessNotice();
+					ConversationHelper.UpdateDialogText(originalDialogText ?? "");
 					return;
 				}
 				completedReply = (completedReply ?? "").Replace("\r", "").Trim();
@@ -1047,6 +1081,15 @@ public sealed class AnimusForgeNativeConversationOverlay
 				{
 					if (IsSubmitGenerationActive(generation) && !string.IsNullOrWhiteSpace(partial))
 					{
+						if (!ShoutBehavior.IsNativeConversationResponseTargetAvailableForExternal())
+						{
+							receivedVisibleText = false;
+							suppressReadyNotice = true;
+							StopWaitingDotsAnimation(generation);
+							ClearPendingPostprocessNotice();
+							ConversationHelper.UpdateDialogText(originalDialogText ?? "");
+							return;
+						}
 						if (suppressVisibleStreamingForTts)
 						{
 							return;
@@ -1058,13 +1101,38 @@ public sealed class AnimusForgeNativeConversationOverlay
 				});
 			}, originalDialogText, delegate(string npcName)
 			{
-				RunOnMainThread(() => QueuePostprocessNotice(generation, npcName));
+				RunOnMainThread(delegate
+				{
+					if (!IsSubmitGenerationActive(generation))
+					{
+						return;
+					}
+					if (!ShoutBehavior.IsNativeConversationResponseTargetAvailableForExternal())
+					{
+						receivedVisibleText = false;
+						suppressReadyNotice = true;
+						StopWaitingDotsAnimation(generation);
+						ClearPendingPostprocessNotice();
+						ConversationHelper.UpdateDialogText(originalDialogText ?? "");
+						return;
+					}
+					QueuePostprocessNotice(generation, npcName);
+				});
 			});
 			string completedReply = reply;
 			RunOnMainThread(delegate
 			{
 				if (_isClosed)
 				{
+					return;
+				}
+				if (IsSubmitGenerationActive(generation) && !ShoutBehavior.IsNativeConversationResponseTargetAvailableForExternal())
+				{
+					receivedVisibleText = false;
+					suppressReadyNotice = true;
+					StopWaitingDotsAnimation(generation);
+					ClearPendingPostprocessNotice();
+					ConversationHelper.UpdateDialogText(originalDialogText ?? "");
 					return;
 				}
 				completedReply = (completedReply ?? "").Replace("\r", "").Trim();
