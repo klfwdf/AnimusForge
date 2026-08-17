@@ -92,9 +92,9 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private const int DecisionArchitectureVersion = 1;
 	private const int HistoryMemorySchemaVersion = 4;
 	private const int DiplomacyNotificationStateSchemaVersion = 1;
-	private const int DiplomacyPromptContractVersion = 21;
+	private const int DiplomacyPromptContractVersion = 22;
 	private const int RelaySchemaVersion = 22;
-	private const string CanonicalHistoryCacheAffinityKey = "diplomacy-history:v21";
+	private const string CanonicalHistoryCacheAffinityKey = "diplomacy-history:v22";
 	private const string CanonicalHistoryContractMarker = "【AI外交长期记忆共同模式】";
 	private const string DiplomaticDeclarationWritingContractMarker = "【国家外交公文文体契约】";
 	private const string DiplomacyModeDispatchContractMarker = "【AI外交固定任务MODE分派】";
@@ -10685,10 +10685,15 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private static void AppendDiplomaticDeclarationWritingContract(StringBuilder sb)
 	{
 		if (sb == null) return;
+		GetDiplomaticDeclarationCharacterRange(out int minimumCharacters, out int maximumCharacters);
 		sb.AppendLine(DiplomaticDeclarationWritingContractMarker);
 		sb.AppendLine("本节仅在MODE=DECLARE时生效；MODE=COMPACT时忽略本节，并严格执行system中的MODE=COMPACT固定任务合同与尾部动态参数。");
 		sb.AppendLine("不得讨论幕后调度、生成规则、候选方案、数据判定或技术流程；内部字段只出现在JSON结构中，绝不能变成公文内容。");
-		sb.AppendLine("body应以王国，王庭，王国，政府等为发言主体,字数为100字以内。");
+		sb.Append("body应以王国，王庭，王国，政府等为发言主体,正文必须最少")
+			.Append(minimumCharacters.ToString(CultureInfo.InvariantCulture))
+			.Append("个中文字符，最多")
+			.Append(maximumCharacters.ToString(CultureInfo.InvariantCulture))
+			.AppendLine("个中文字符（标点计入）。");
 		sb.AppendLine("文风应当符合国家设定，禁止使用文言文，内容要有最终决定（除非还需继续讨论）");
 		sb.AppendLine("可以坚定、务实、冷峻、和缓或骄傲，但讥讽也必须是一个国家对另一个国家的公开评价");
 		sb.AppendLine("不必讲述自身的文化与状况，只需发言不违反文化与状况，只针对当前外交局面做出必要的回应，尽量说明意图之事，言简意赅即可，不要一大堆废话。");
@@ -15812,6 +15817,33 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		{
 			return 0;
 		}
+	}
+
+	private static void GetDiplomaticDeclarationCharacterRange(out int minimumCharacters, out int maximumCharacters)
+	{
+		minimumCharacters = DuelSettings.DefaultWorldDiplomacyDeclarationMinCharacters;
+		int configuredMaximumCharacters = DuelSettings.DefaultWorldDiplomacyDeclarationMaxCharacters;
+		try
+		{
+			DuelSettings settings = DuelSettings.GetSettings();
+			minimumCharacters = Math.Max(
+				DuelSettings.WorldDiplomacyDeclarationCharactersMin,
+				Math.Min(
+					DuelSettings.WorldDiplomacyDeclarationCharactersMax,
+					settings?.WorldDiplomacyDeclarationMinCharacters
+					?? DuelSettings.DefaultWorldDiplomacyDeclarationMinCharacters));
+			configuredMaximumCharacters = Math.Max(
+				DuelSettings.WorldDiplomacyDeclarationCharactersMin,
+				Math.Min(
+					DuelSettings.WorldDiplomacyDeclarationCharactersMax,
+					settings?.WorldDiplomacyDeclarationMaxCharacters
+					?? DuelSettings.DefaultWorldDiplomacyDeclarationMaxCharacters));
+		}
+		catch
+		{
+			// Keep the declared defaults when MCM settings are temporarily unavailable.
+		}
+		maximumCharacters = Math.Max(minimumCharacters, configuredMaximumCharacters);
 	}
 
 	private static bool IsWorldDiplomacyEnabled()

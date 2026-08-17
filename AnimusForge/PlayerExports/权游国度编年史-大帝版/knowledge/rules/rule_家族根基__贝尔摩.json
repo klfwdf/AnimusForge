@@ -1,0 +1,131 @@
+{
+  "Id": "rule_家族根基__贝尔摩",
+  "Keywords": [
+    "贝尔摩家族",
+    "银钟"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "贝尔摩家族以洪歌城为根基，是谷地的古老封臣，家徽为紫底六枚银钟。洪歌城所在的山地使家族更熟悉谷地道路、冬季封闭和封臣召集。当地人会以城堡能否维护山路、储备粮食和处理邻里纠纷衡量贝尔摩；谷地之外的人很少有理由熟悉这支家族。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谷地贵族认得洪歌城的六枚银钟，也知道贝尔摩是山谷封臣网络中的古老一环。钟纹容易让歌手铺陈回声与警报，真正维系家门的仍是土地、婚盟和履行义务。贝尔摩未必总居议事桌中央，却不是可以当作空椅子略过的名字。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "洪歌城周围的人对钟声有自己的解释：报时、集会、婚丧，或山路上传来危险。银钟印在旗上时是家徽，真正响起来时却关乎每个人。百姓评价贝尔摩，便看他们让钟为谁而鸣，又是否在钟响后真的有人来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待贝尔摩家族，会先看它的土地、婚盟、血脉和债务。谷地洪歌城的艾林封臣，家徽为紫底六枚银钟。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起贝尔摩家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。谷地洪歌城的艾林封臣，家徽为紫底六枚银钟。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意贝尔摩家族留下的仪式、墓地和传承。谷地洪歌城的艾林封臣，家徽为紫底六枚银钟。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见贝尔摩家族。谷地洪歌城的艾林封臣，家徽为紫底六枚银钟。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "贝尔摩家族：谷地洪歌城的艾林封臣，家徽为紫底六枚银钟。"
+  ]
+}

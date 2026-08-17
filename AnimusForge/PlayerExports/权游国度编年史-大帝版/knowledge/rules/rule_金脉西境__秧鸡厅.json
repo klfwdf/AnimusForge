@@ -1,0 +1,151 @@
+{
+  "Id": "rule_金脉西境__秧鸡厅",
+  "Keywords": [
+    "秧鸡厅"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "秧鸡厅是克雷赫家族的西境席位，周边是适宜农牧与狩猎的丘陵地带。秧鸡这种常见猎物被写进地名，说明这里的贵族文化既有宴猎、马匹和骑士礼，也依赖普通土地的收获。西境封臣的荣誉常以披甲人数和家族旗帜衡量，但每一名骑士背后都有管家、铁匠、农户、磨坊和能够供应燕麦的田地。秧鸡厅不应被简化为某场战争的背景板；它是一个长期运转的庄园社会，既向凯岩城承担义务，也由地方资源决定能承担多少义务。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "外乡人记得秧鸡厅的名字，本地人记得的却是井泉、田租、磨坊、林地和危急时能否进堡。当地家庭还要依靠矿道、牧地、山路、金银流通和凯岩城庇护下的市集；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主在厅堂里谈秧鸡厅，经验老到的士兵却只问外墙、塔楼、水井、粮仓与最近的援军道路。在七国的封建秩序中，秧鸡厅的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "关于秧鸡厅的消息传到远方，往往伴着领地税、庄园产物、驮队路程和堡下形成的小市集。他们还会辨认西境的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谁在秧鸡厅升起旗帜，谁就继承这里的旧债、旧臣与边界争端。在七国的封建秩序中，秧鸡厅的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "向导描述秧鸡厅，总从坡势、城门、饮水与守军盘查外人的规矩讲起。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "工匠用双手丈量秧鸡厅的石墙、木梁、铁门、墓窖和代代修补留下的接缝，祭司用仪式延续七神、家族墓窖与领主权威留下的石刻。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "平民记住秧鸡厅的方式，是哪一年开仓、哪一年征走最后一头牛。他们关心矿道、牧地、山路、金银流通和凯岩城庇护下的市集，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "秧鸡厅：秧鸡厅是克雷赫家族的西境席位，周边是适宜农牧与狩猎的丘陵地带。秧鸡这种常见猎物被写进地名，说明这里的贵族文化既有宴猎、马匹和骑士礼，也依赖普通土地的收获。西境封臣的荣誉常以披甲人数和家族旗帜衡量，但每一名骑士背后都有管家、铁匠、农户、磨坊和能够供应燕麦的田地。秧鸡厅不应被简化为某场战争的背景板；它是一个长期运转的庄园社会，既向凯岩城承担义务，也由地方资源决定能承担多少义务。"
+  ]
+}

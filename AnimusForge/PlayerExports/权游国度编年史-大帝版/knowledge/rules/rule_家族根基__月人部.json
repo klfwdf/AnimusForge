@@ -1,0 +1,152 @@
+{
+  "Id": "rule_家族根基__月人部",
+  "Keywords": [
+    "月人部"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "月人部生活在明月山脉，是被谷地贵族统称为山地氏族的部族之一。他们依靠亲族、首领声望、羊群、狩猎和对隐秘山路的掌握生存，不承认鹰巢城对群山拥有天然权利。石堡居民称他们为盗匪，月人部则记得土地被安达尔人夺取、祖先被赶入贫瘠高地的旧恨。武器、粮食和婚盟能改变部族强弱，却不会轻易消除他们对谷地骑士的敌意。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "hilltribesmen"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "月人部成员不把自己看作无主盗匪，而是被逼进高山的自由亲族。能分食物、替死者复仇并带人绕过谷地巡骑的首领，比山下任何盖印的领主更有资格发号施令。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "notable",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谷地农户害怕月人部突袭牲畜和山路，却也知道长期仇杀并非只由一边造成。每次贵族惩罚队烧毁高地营地，下一代便又多出新的复仇理由。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谷地骑士往往轻视山民缺少盔甲，直到队伍在狭道被滚石和箭雨截断。月人部不按比武场规则作战，地形就是他们最厚的甲。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待月人部，会先看它的土地、婚盟、血脉和债务。月人部是明月山脉的山地氏族，以亲族首领、山路知识和反抗谷地城堡统治维系自身。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起月人部时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。月人部是明月山脉的山地氏族，以亲族首领、山路知识和反抗谷地城堡统治维系自身。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意月人部留下的仪式、墓地和传承。月人部是明月山脉的山地氏族，以亲族首领、山路知识和反抗谷地城堡统治维系自身。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见月人部。月人部是明月山脉的山地氏族，以亲族首领、山路知识和反抗谷地城堡统治维系自身。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "月人部：月人部是明月山脉的山地氏族，以亲族首领、山路知识和反抗谷地城堡统治维系自身。"
+  ]
+}

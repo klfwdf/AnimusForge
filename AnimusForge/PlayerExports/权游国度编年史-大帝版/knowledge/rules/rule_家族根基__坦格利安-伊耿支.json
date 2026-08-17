@@ -1,0 +1,133 @@
+{
+  "Id": "rule_家族根基__坦格利安-伊耿支",
+  "Keywords": [
+    "坦格利安-伊耿支",
+    "伊耿·坦格利安",
+    "青年格里芬",
+    "格里芬"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "围绕青年格里芬形成的坦格利安宣称，以“伊耿·坦格利安”之名连接雷加王子的遗产、琼恩·克林顿的旧忠诚和黄金团中流亡者的归乡愿望。青年自幼接受语言、历史、信仰、兵法与庶民劳作的训练，被教导去理解一个国王不仅要坐上王座，还要知道百姓如何生活。公开故事称他是在君临陷落时被秘密换出的王子；怀疑者则从容貌、时机和扶持者的利益中寻找另一种答案。无论血统真伪如何，这项宣称已经具有真实力量：有人盼望雷加之子回来偿还旧债，有人害怕又一条龙把七国变成证明自己身份的柴堆。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "王领贵族对青年伊耿的第一反应往往不是相信或否认，而是计算。若他真是雷加之子，旧王朝便有了男性继承人；若不是，一支军队和一群坚定追随者仍能让名字变得危险。谱系需要证据，王权有时只需要足够多人同时行动。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "风暴地人会从琼恩·克林顿与鹫巢堡的旧名认识这项宣称。雷加的朋友愿把余生押在青年身上，使一些人觉得此事有忠诚作证，也使另一些人怀疑那只是一个流亡者试图改写失败。狮鹫替龙开路，旧乡因此最先听见翅声。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "流亡骑士和佣兵不一定关心襁褓中的秘密。他们看见的是一个被训练成国王的年轻人、一面可能带他们回家的旗，以及胜利后重新分配土地的希望。对黄金团中的许多人而言，真假最终会被城门是否打开来裁决。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待坦格利安-伊耿支，会先看它的土地、婚盟、血脉和债务。青年格里芬以伊耿·坦格利安之名承接雷加遗产；琼恩·克林顿、黄金团、流亡者愿望与血统疑云共同围绕这项宣称。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意坦格利安-伊耿支留下的仪式、墓地和传承。青年格里芬以伊耿·坦格利安之名承接雷加遗产；琼恩·克林顿、黄金团、流亡者愿望与血统疑云共同围绕这项宣称。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见坦格利安-伊耿支。青年格里芬以伊耿·坦格利安之名承接雷加遗产；琼恩·克林顿、黄金团、流亡者愿望与血统疑云共同围绕这项宣称。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "青年格里芬以伊耿·坦格利安之名承接雷加遗产；琼恩·克林顿、黄金团、流亡者愿望与血统疑云共同围绕这项宣称。"
+  ]
+}

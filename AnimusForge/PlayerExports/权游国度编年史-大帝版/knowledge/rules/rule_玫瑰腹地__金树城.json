@@ -1,0 +1,153 @@
+{
+  "Id": "rule_玫瑰腹地__金树城",
+  "Keywords": [
+    "金树城",
+    "园丁王朝",
+    "果园"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "金树城是河湾地内陆城堡，名称保留了园丁王朝与河湾果园文化的影子。树、果园和肥沃土壤让当地成为高庭粮食体系的一部分；树木也提供木材、阴凉、蜂蜜与酿酒所需的果实。河湾地的家族喜欢用玫瑰、橡树和金色描绘自身，但真正维持纹章荣耀的是一代代农人、园丁、磨坊主与车夫。金树城的道路连接周围庄园和高庭腹地，和平时是货物路线，战时则会被征粮、驻军和逃难者改变。其固定意义在于农园经济与河湾地的旧王朝记忆，不在于任何未来旗帜。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "一座据点如何落到百姓身上，在金树城要从井泉、田租、磨坊、林地和危急时能否进堡说起。当地家庭还要依靠谷物、葡萄酒、果园、牧场与曼德河沿线的集市；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "任何关于金树城的军议，最后都会回到外墙、塔楼、水井、粮仓与最近的援军道路。在七国的封建秩序中，金树城的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商队把金树城写进账本时，会核算领地税、庄园产物、驮队路程和堡下形成的小市集。他们还会辨认河湾地的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "婚约、继承与征召令会把贵族的目光引向金树城。在七国的封建秩序中，金树城的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "老兵讲起金树城，很少赞美风景，只会提醒别人坡势、城门、饮水与守军盘查外人的规矩。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "从作坊到圣所，金树城把石墙、木梁、铁门、墓窖和代代修补留下的接缝同七神、骑士传奇与园丁王时代留下的门第记忆并置在一起。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对普通家庭来说，金树城的威严要在灾年才见真假。他们关心谷物、葡萄酒、果园、牧场与曼德河沿线的集市，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "金树城：金树城是河湾地内陆城堡，名称保留了园丁王朝与河湾果园文化的影子。树、果园和肥沃土壤让当地成为高庭粮食体系的一部分；树木也提供木材、阴凉、蜂蜜与酿酒所需的果实。河湾地的家族喜欢用玫瑰、橡树和金色描绘自身，但真正维持纹章荣耀的是一代代农人、园丁、磨坊主与车夫。金树城的道路连接周围庄园和高庭腹地，和平时是货物路线，战时则会被征粮、驻军和逃难者改变。其固定意义在于农园经济与河湾地的旧王朝记忆，不在于任何未来旗帜。"
+  ]
+}

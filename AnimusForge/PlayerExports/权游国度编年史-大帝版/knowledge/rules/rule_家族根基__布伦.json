@@ -1,0 +1,135 @@
+{
+  "Id": "rule_家族根基__布伦",
+  "Keywords": [
+    "布伦",
+    "布伦家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "布伦家族在蟹爪半岛有两个相关支系：恐穴堡的布伦与褐穴山的布伦，彼此以亲族相连。家门是当地有地骑士传统的一部分，祖先故事中著名的布伦兄弟曾为半岛带来和平。蟹爪半岛遍布沼泽、林地与难行小径，外来军队难以施展；布伦的权势因此不只来自堡寨，也来自亲族、向导和对当地人情地势的掌握。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "dragonstone",
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "蟹爪半岛的地方骑士把布伦视作自己人。恐穴堡与褐穴山的亲族或有各自利益，但遇到外来者强行闯入时，半岛旧誓和共同地形会比支系分歧更有分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "dragonstone",
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "wanderer",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "半岛农户和猎人不喜欢外人把他们叫作野蛮人。他们信任熟悉泥沼、尊重旧客礼的布伦，也会抵制带着华丽文书来夺林地和渔场的陌生管事。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待布伦，会先看它的土地、婚盟、血脉和债务。布伦家族分居蟹爪半岛的恐穴堡与褐穴山，家业植根先民血脉、崎岖地形和半岛自治传统。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起布伦时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。布伦家族分居蟹爪半岛的恐穴堡与褐穴山，家业植根先民血脉、崎岖地形和半岛自治传统。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意布伦留下的仪式、墓地和传承。布伦家族分居蟹爪半岛的恐穴堡与褐穴山，家业植根先民血脉、崎岖地形和半岛自治传统。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见布伦。布伦家族分居蟹爪半岛的恐穴堡与褐穴山，家业植根先民血脉、崎岖地形和半岛自治传统。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "布伦：布伦家族分居蟹爪半岛的恐穴堡与褐穴山，家业植根先民血脉、崎岖地形和半岛自治传统。"
+  ]
+}

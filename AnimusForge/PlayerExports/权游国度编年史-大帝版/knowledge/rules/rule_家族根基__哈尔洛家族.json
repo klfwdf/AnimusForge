@@ -1,0 +1,153 @@
+{
+  "Id": "rule_家族根基__哈尔洛家族",
+  "Keywords": [
+    "哈尔洛家族",
+    "银色镰刀",
+    "收获旋风",
+    "读书人"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "哈尔洛家族统治铁群岛人口最多、最富裕的哈尔洛岛，主支以十塔城为根基，家徽为黑底银色镰刀，箴言“收获旋风”。灰园、哈尔洛厅、闪闪塔与其他同姓支系各守自己的厅堡、亲族和利益，十塔城的主支则在全岛事务中拥有最重分量。哈尔洛的财富来自耕地、矿产、渔业、港口和人口，使他们比许多只靠贫瘠礁岛的铁民拥有更多选择。十塔城的罗德利克“读书人”珍爱书籍，其他哈尔洛仍可能更爱长船、斧头或土地；铁民也因此争论富裕与学问究竟使这座岛更强，还是使它离旧道更远。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "铁群岛诸家知道哈尔洛岛人口多、土地厚、厅堡也多，十塔城主因而拥有不能仅以长船数量衡量的分量。银色镰刀与“收获旋风”把耕作和海上掠取奇异地并列；在只爱谈斧与盐妻的人中，哈尔洛提醒众人，铁群岛同样需要收成、书本与长久经营。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "铁民水手尊敬敢上甲板的人，却对十塔城里的书卷气各有看法。有人认为读书使铁变软，也有人知道认得海图、旧史和敌人习惯能少沉几条船。哈尔洛的强处在于岛大、人多、选择也多；一把镰刀既能割麦，也能钩住盾沿。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "哈尔洛岛上的农户和铁匠不觉得耕地有损铁种尊严。船要木材、钉子和粮，远航者也得先吃饱。对他们而言，家族若只赞美掠夺却不管收成，就是忘了“收获旋风”前两个字同样重要。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待哈尔洛家族，会先看它的土地、婚盟、血脉和债务。十塔城主支统治富裕的哈尔洛岛，另有多个同姓支系；镰刀、收成、长船、矿产和罗德利克的书卷共同构成复杂名声。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起哈尔洛家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。十塔城主支统治富裕的哈尔洛岛，另有多个同姓支系；镰刀、收成、长船、矿产和罗德利克的书卷共同构成复杂名声。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意哈尔洛家族留下的仪式、墓地和传承。十塔城主支统治富裕的哈尔洛岛，另有多个同姓支系；镰刀、收成、长船、矿产和罗德利克的书卷共同构成复杂名声。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见哈尔洛家族。十塔城主支统治富裕的哈尔洛岛，另有多个同姓支系；镰刀、收成、长船、矿产和罗德利克的书卷共同构成复杂名声。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "哈尔洛家族：十塔城主支统治富裕的哈尔洛岛，另有多个同姓支系；镰刀、收成、长船、矿产和罗德利克的书卷共同构成复杂名声。"
+  ]
+}

@@ -486,13 +486,13 @@ internal static class Program
     private static void RunRelayPromptDecisionContextParityContractTests(string source)
     {
         Test.True(source.Contains(
-                "private const int DiplomacyPromptContractVersion = 21;",
+                "private const int DiplomacyPromptContractVersion = 22;",
                 StringComparison.Ordinal),
-            "the all-kingdom response context must advance the dynamic prompt contract to v21");
+            "the configurable declaration-length contract must advance the dynamic prompt contract to v22");
         Test.True(source.Contains(
-                "private const string CanonicalHistoryCacheAffinityKey = \"diplomacy-history:v21\";",
+                "private const string CanonicalHistoryCacheAffinityKey = \"diplomacy-history:v22\";",
                 StringComparison.Ordinal),
-            "the changed generation request prefix must advance canonical-history cache affinity to v21");
+            "the configurable declaration-length prefix must advance canonical-history cache affinity to v22");
 
         string authorContext = ExtractMethod(
             source,
@@ -1361,13 +1361,13 @@ internal static class Program
     private static void RunLiveLegalActionPublicationContractTests(string source)
     {
         Test.True(source.Contains(
-                "private const int DiplomacyPromptContractVersion = 21;",
+                "private const int DiplomacyPromptContractVersion = 22;",
                 StringComparison.Ordinal),
-			"the all-kingdom response context must use prompt contract version 21");
+			"the all-kingdom response context must use prompt contract version 22");
         Test.True(source.Contains(
-				"private const string CanonicalHistoryCacheAffinityKey = \"diplomacy-history:v21\";",
+				"private const string CanonicalHistoryCacheAffinityKey = \"diplomacy-history:v22\";",
                 StringComparison.Ordinal),
-			"the changed shared dynamic request context must advance canonical-history cache affinity to v21");
+			"the configurable declaration-length prefix must advance canonical-history cache affinity to v22");
 		string settings = File.ReadAllText(FindRepositoryFile("DuelSettings.cs"), Encoding.UTF8);
 		Test.True(settings.Contains("【AnimusForge 王国外交共同契约 v23】", StringComparison.Ordinal),
 			"the compact live-action contract must use common diplomacy contract v23");

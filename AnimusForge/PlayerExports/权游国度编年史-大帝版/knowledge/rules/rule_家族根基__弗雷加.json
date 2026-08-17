@@ -1,0 +1,132 @@
+{
+  "Id": "rule_家族根基__弗雷加",
+  "Keywords": [
+    "弗雷加",
+    "弗雷加家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "弗雷加家族属于布拉佛斯的地方精英。关于其独有历史流传不广，可以确定的是家门生活在一座由水道、岛屿、商船与工坊组成的共和国，而非依赖乡村封地的王国。弗雷加的财富无论来自船运、房产还是贸易，都必须通过契约、合伙和城市法庭得到保护。家族地位会随海王政治与市场起伏改变，唯有谨慎经营和可信声誉能够跨过数代。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "布拉佛斯同阶家门看弗雷加，重视的是婚盟、船股和它在争端中是否守约。没有人会因为一段模糊祖先故事便借出大笔钱，现实信用才是共和国的族谱。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "artisan",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "水道边的船夫和摊贩只在弗雷加影响租金、工钱或码头规则时谈起他们。显赫家门若让普通人也能从繁荣中获利，名声便不只留在贵族客厅。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待弗雷加，会先看它的土地、婚盟、血脉和债务。弗雷加是布拉佛斯地方家门，其可确认根基是城市贸易、亲族网络和水道社会中的长期信用。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起弗雷加时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。弗雷加是布拉佛斯地方家门，其可确认根基是城市贸易、亲族网络和水道社会中的长期信用。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意弗雷加留下的仪式、墓地和传承。弗雷加是布拉佛斯地方家门，其可确认根基是城市贸易、亲族网络和水道社会中的长期信用。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见弗雷加。弗雷加是布拉佛斯地方家门，其可确认根基是城市贸易、亲族网络和水道社会中的长期信用。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "弗雷加：弗雷加是布拉佛斯地方家门，其可确认根基是城市贸易、亲族网络和水道社会中的长期信用。"
+  ]
+}

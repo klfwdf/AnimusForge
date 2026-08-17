@@ -1,0 +1,133 @@
+{
+  "Id": "rule_家族根基__卡史塔克家族",
+  "Keywords": [
+    "卡史塔克家族",
+    "卡霍城",
+    "卡隆·史塔克",
+    "白色日芒"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "卡史塔克家族是史塔克家族的古老旁支，始祖卡隆·史塔克因平定叛乱受封，卡隆堡后来演变为卡霍城，后裔也由“卡隆的史塔克”得名卡史塔克。家徽是在黑底上的白色日芒，领地位于北境东北，寒冷而辽阔。血缘使他们与临冬城亲近，却没有抹去数百年独立家名形成的骄傲；北境领主看待卡史塔克时，既会想到同宗，也会想到一支能够因荣誉、血债和继承问题坚持己见的强大封臣。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北境领主谈起卡史塔克，常先承认他们与临冬城同出一脉，再提醒一句：旁支的血也是狼血。卡霍城远在东北，土地严寒，能够在那里维持厅堂、骑手与粮仓，本身就意味着分量；可血缘越近，荣誉与怨恨往往也越难分开。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "卡霍城周围的人不靠族谱过冬。他们看的是领主能否在雪前收好粮，敌人来时是否点燃烽火，征走青壮后又给寡妇留下多少柴薪。史塔克的灰狼在南方更有名，东北人却认得白日黑底上的旭日，也认得卡史塔克骑兵踏过冻土的声音。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待卡史塔克家族，会先看它的土地、婚盟、血脉和债务。由卡隆·史塔克建立的临冬城旁支，以卡霍城为根基，家徽为黑底白色日芒。其传统兼具史塔克血缘、东北边地责任与独立家名的骄傲。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起卡史塔克家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。由卡隆·史塔克建立的临冬城旁支，以卡霍城为根基，家徽为黑底白色日芒。其传统兼具史塔克血缘、东北边地责任与独立家名的骄傲。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意卡史塔克家族留下的仪式、墓地和传承。由卡隆·史塔克建立的临冬城旁支，以卡霍城为根基，家徽为黑底白色日芒。其传统兼具史塔克血缘、东北边地责任与独立家名的骄傲。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见卡史塔克家族。由卡隆·史塔克建立的临冬城旁支，以卡霍城为根基，家徽为黑底白色日芒。其传统兼具史塔克血缘、东北边地责任与独立家名的骄傲。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "卡史塔克家族：由卡隆·史塔克建立的临冬城旁支，以卡霍城为根基，家徽为黑底白色日芒。其传统兼具史塔克血缘、东北边地责任与独立家名的骄傲；"
+  ]
+}

@@ -1,0 +1,153 @@
+{
+  "Id": "rule_风暴海岸__暮临厅",
+  "Keywords": [
+    "暮临厅",
+    "塔斯岛",
+    "蓝宝石岛"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "暮临厅是塔斯岛的主要席位，塔斯家族世代在此统治。塔斯岛也被称作蓝宝石岛，传言与海上贸易把蓝宝石的故事传得很远；但岛上真实的财富还包括港湾、树林、渔场、牧地和能把岛民送往大陆的船。暮临厅面对风暴地海岸与狭海，既有岛屿的相对独立，也无法脱离风息堡与王领的航路。塔斯人的身份常同时属于岛与大陆：他们珍视本地习俗，也以骑士礼和封臣义务进入七国秩序。任何一时的战争不应覆盖这层更久远的地理与社会背景。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "一座据点如何落到百姓身上，在暮临厅要从潮汐、渔汛、淡水和船只能否安全靠岸说起。当地家庭还要依靠雨林木材、猎物、瘠薄农田、渔获和躲避风暴的屋顶；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "任何关于暮临厅的军议，最后都会回到港湾入口、泊位、烽火与可供登陆的岸线。在七国的封建秩序中，暮临厅的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商队把暮临厅写进账本时，会核算航期、码头脚费、补水和下一处避风港。他们还会辨认风暴地的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "婚约、继承与征召令会把贵族的目光引向暮临厅。在七国的封建秩序中，暮临厅的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "老兵讲起暮临厅，很少赞美风景，只会提醒别人风向、礁石、渡船与城门落锁后的锚地。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "从作坊到圣所，暮临厅把修船木、帆布、盐、鱼获和抵御海风的石料同七神、风暴王旧史与抵御海风的厚重石墙并置在一起。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对普通家庭来说，暮临厅的威严要在灾年才见真假。他们关心雨林木材、猎物、瘠薄农田、渔获和躲避风暴的屋顶，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "暮临厅：暮临厅是塔斯岛的主要席位，塔斯家族世代在此统治。塔斯岛也被称作蓝宝石岛，传言与海上贸易把蓝宝石的故事传得很远；但岛上真实的财富还包括港湾、树林、渔场、牧地和能把岛民送往大陆的船。暮临厅面对风暴地海岸与狭海，既有岛屿的相对独立，也无法脱离风息堡与王领的航路。塔斯人的身份常同时属于岛与大陆：他们珍视本地习俗，也以骑士礼和封臣义务进入七国秩序。任何一时的战争不应覆盖这层更久远的地理与社会背景。"
+  ]
+}

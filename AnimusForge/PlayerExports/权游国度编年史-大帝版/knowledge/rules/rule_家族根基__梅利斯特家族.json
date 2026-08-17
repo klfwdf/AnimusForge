@@ -1,0 +1,151 @@
+{
+  "Id": "rule_家族根基__梅利斯特家族",
+  "Keywords": [
+    "梅利斯特家族",
+    "银鹰"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "梅利斯特家族以铁民湾岸边的海疆城为根基，家徽为紫底银鹰。海疆城的高塔与港口长期监视铁民来袭，因此梅利斯特的声望首先来自守海，而不是河间地内部的桥梁与农田。家族骑士重视礼仪和名誉，但海岸居民衡量他们的标准更实际：烽火是否及时点燃、船能否入港、劫掠者上岸时城门是否仍开向逃难者。守住铁民湾入口已经足以解释其地位。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河间诸侯看梅利斯特，往往先想到海疆城面向铁民湾的高塔。内陆家族可以把海盗当作远方消息，梅利斯特却必须把船帆、烽火和沿岸村落写进每年的税粮安排。银鹰的名望来自守望，而守望是一件昂贵又很少被感谢的事。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "海疆城附近的渔民知道，塔楼上的眼睛若早看见半个时辰，海边一家人就可能多活一代。人们会抱怨修船、守夜和征粮，也会在海雾里盼银鹰旗仍挂在原处。对沿岸百姓而言，梅利斯特的好坏首先由警钟是否及时决定。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "铁民不把海疆城当普通河间堡垒。那里的高塔、港湾和长期戒备意味着突袭难有真正的惊喜。梅利斯特在铁民歌里未必值得赞美，却值得侦察；海上的敌人若能让人先看风向再下桨，便已经赢得了一种不情愿的尊重。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待梅利斯特家族，会先看它的土地、婚盟、血脉和债务。铁民湾海疆城的银鹰家族，长期承担河间地西海岸防御。贵族重其骑士名誉，海岸百姓更以烽火、港口和抵御铁民的能力衡量它。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起梅利斯特家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。铁民湾海疆城的银鹰家族，长期承担河间地西海岸防御。贵族重其骑士名誉，海岸百姓更以烽火、港口和抵御铁民的能力衡量它。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意梅利斯特家族留下的仪式、墓地和传承。铁民湾海疆城的银鹰家族，长期承担河间地西海岸防御。贵族重其骑士名誉，海岸百姓更以烽火、港口和抵御铁民的能力衡量它。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见梅利斯特家族。铁民湾海疆城的银鹰家族，长期承担河间地西海岸防御。贵族重其骑士名誉，海岸百姓更以烽火、港口和抵御铁民的能力衡量它。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "梅利斯特家族：铁民湾海疆城的银鹰家族，长期承担河间地西海岸防御。贵族重其骑士名誉，海岸百姓更以烽火、港口和抵御铁民的能力衡量它。"
+  ]
+}

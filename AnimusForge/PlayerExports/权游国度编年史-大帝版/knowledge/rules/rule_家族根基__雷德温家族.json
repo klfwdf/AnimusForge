@@ -1,0 +1,152 @@
+{
+  "Id": "rule_家族根基__雷德温家族",
+  "Keywords": [
+    "雷德温家族",
+    "葡萄串",
+    "雷德温舰队"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "雷德温家族以青亭岛为根基，家徽为蓝底葡萄串，家族财富来自闻名七国的葡萄酒、岛屿农庄、商船与强大舰队。青亭岛位于维斯特洛西南海路上，使雷德温既是河湾封臣，也是能影响旧镇、盾牌列岛和夏日海航运的海上力量。贵族在宴席上认识青亭岛酒，港口商人更关心酒桶、护航和船期；铁民与海盗则首先衡量雷德温舰队是否出港。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河湾诸侯把雷德温视作一门以葡萄藤连结土地、金钱与海权的家族。青亭岛的酒能进入从北境厅堂到自由城邦的酒杯，舰船又能把岛屿的富庶变成政治分量。有人笑他们的纹章像商人招牌，真正需要船队时，却没人会轻视一串葡萄。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "酒商和水手眼中的雷德温，是一整套采摘、装桶、封蜡、信贷与远航。好年份让码头挤满买主，坏天气会让一船财富在礁石上变成木片。雷德温若能护住航路、维护酒的声名，商人便替他们把家徽带到比骑士更远的地方。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "青亭岛的农人知道，美酒最初不过是一篮篮必须赶在腐烂前摘下的葡萄。桶匠、压榨工和佃户不会只赞美宴席上的香气，他们也记得收成、工钱与领主酒窖的份额。雷德温的富贵长在藤上，也压在许多弯下的腰背上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待雷德温家族，会先看它的土地、婚盟、血脉和债务。青亭岛的葡萄与舰队家族，家徽为蓝底葡萄串。葡萄酒、商船、舰队与西南航路共同构成其财富和政治地位。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起雷德温家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。青亭岛的葡萄与舰队家族，家徽为蓝底葡萄串。葡萄酒、商船、舰队与西南航路共同构成其财富和政治地位。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意雷德温家族留下的仪式、墓地和传承。青亭岛的葡萄与舰队家族，家徽为蓝底葡萄串。葡萄酒、商船、舰队与西南航路共同构成其财富和政治地位。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见雷德温家族。青亭岛的葡萄与舰队家族，家徽为蓝底葡萄串。葡萄酒、商船、舰队与西南航路共同构成其财富和政治地位。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "雷德温家族：青亭岛的葡萄与舰队家族，家徽为蓝底葡萄串。葡萄酒、商船、舰队与西南航路共同构成其财富和政治地位。"
+  ]
+}

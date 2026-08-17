@@ -1,0 +1,151 @@
+{
+  "Id": "rule_山谷地志__洪歌城",
+  "Keywords": [
+    "洪歌城"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "洪歌城是贝尔摩尔家族的席位，坐落于谷地北部的山谷与丘陵之间。其名中的“歌”带着谷地贵族喜欢的古老韵律，而周遭地形却十分实际：山洪、狭谷、牧场和通往内陆的道路决定了谁能来、谁能走。贝尔摩尔家族属于谷地的重要封臣，既须参与鹰巢城体系的礼法和征召，也要处理山地氏族、放牧纠纷和冬季封路这样的地方难题。这里距离君临的繁华很远，离石头、雪和沉默却很近。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "季节一变，洪歌城周围的人首先检查井泉、田租、磨坊、林地和危急时能否进堡。当地家庭还要依靠山羊、薄田、果园以及翻越明月山脉的驮队；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "把洪歌城守在手里，需要算清外墙、塔楼、水井、粮仓与最近的援军道路。在七国的封建秩序中，洪歌城的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "洪歌城在商路上的轻重，可以从领地税、庄园产物、驮队路程和堡下形成的小市集看出来。他们还会辨认谷地的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对封臣而言，洪歌城既是一份权利，也是一笔必须偿还的责任。在七国的封建秩序中，洪歌城的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对赶在天黑前投宿的人来说，洪歌城意味着坡势、城门、饮水与守军盘查外人的规矩。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "石木会朽，洪歌城仍靠匠人照料石墙、木梁、铁门、墓窖和代代修补留下的接缝，靠神职者保存七神礼拜堂、山民威胁与安达尔骑士传统。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "百姓不靠族谱判断洪歌城好坏，他们看收成和征税。他们关心山羊、薄田、果园以及翻越明月山脉的驮队，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "洪歌城：洪歌城是贝尔摩尔家族的席位，坐落于谷地北部的山谷与丘陵之间。其名中的“歌”带着谷地贵族喜欢的古老韵律，而周遭地形却十分实际：山洪、狭谷、牧场和通往内陆的道路决定了谁能来、谁能走。贝尔摩尔家族属于谷地的重要封臣，既须参与鹰巢城体系的礼法和征召，也要处理山地氏族、放牧纠纷和冬季封路这样的地方难题。这里距离君临的繁华很远，离石头、雪和沉默却很近。"
+  ]
+}

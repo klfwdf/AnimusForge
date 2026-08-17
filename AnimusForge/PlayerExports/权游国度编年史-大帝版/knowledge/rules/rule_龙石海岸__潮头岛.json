@@ -1,0 +1,152 @@
+{
+  "Id": "rule_龙石海岸__潮头岛",
+  "Keywords": [
+    "潮头岛",
+    "潮头"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "潮头岛是黑水湾及其外海航路上的岛屿据点。岛岸的礁石、浅滩和潮汐决定了它比陆地城堡更依赖熟悉水道的人；港湾能提供停泊、补水和传递消息的机会，也可能在坏天气里变成困住船只的口袋。王领近海的岛屿从不是孤立的石头：它们与君临、龙石岛、蟹爪半岛和狭海商路互相牵连。对水手而言，岛屿首先是一处避风标记；对领主而言，它是税收、信号与海上警戒的一点支撑。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在潮头岛的墙影与道路旁生活的人，先看潮汐、渔汛、淡水和船只能否安全靠岸。当地家庭还要依靠捕鱼、盐业、码头、火山石地与狭海航运；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "军队接近潮头岛时，地图很快让位给港湾入口、泊位、烽火与可供登陆的岸线。在七国的封建秩序中，潮头岛的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "学士能记下潮头岛的沿革，商人更先打听航期、码头脚费、补水和下一处避风港。他们还会辨认龙石岛海域的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贵族谈论潮头岛时常先说家名，土地本身却要求道路、粮仓与守备。在七国的封建秩序中，潮头岛的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "一支疲惫队伍接近潮头岛时，人人关心风向、礁石、渡船与城门落锁后的锚地。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "潮头岛并非只有城主大厅；修船木、帆布、盐、鱼获和抵御海风的石料与七神与光之王信仰并存时留下的圣堂、火焰和旧龙记忆同样塑造这里。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "市井与村舍谈起潮头岛，先问今年还能留下多少粮。他们关心捕鱼、盐业、码头、火山石地与狭海航运，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "潮头岛：潮头岛是黑水湾及其外海航路上的岛屿据点。岛岸的礁石、浅滩和潮汐决定了它比陆地城堡更依赖熟悉水道的人；港湾能提供停泊、补水和传递消息的机会，也可能在坏天气里变成困住船只的口袋。王领近海的岛屿从不是孤立的石头：它们与君临、龙石岛、蟹爪半岛和狭海商路互相牵连。对水手而言，岛屿首先是一处避风标记；对领主而言，它是税收、信号与海上警戒的一点支撑。"
+  ]
+}

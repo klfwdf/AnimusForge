@@ -1,0 +1,154 @@
+{
+  "Id": "rule_家族根基__埃拉诺斯",
+  "Keywords": [
+    "埃拉诺斯",
+    "埃拉诺斯家族",
+    "海岛家门"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "埃拉诺斯是罗拉斯的贵族家门。罗拉斯的规模、贫瘠土地与群岛地形，决定了这里的贵族不能只守着一扇庄园门：他们必须与船主、渔业行当、仓主、神职者和相邻岛屿反复协商。埃拉诺斯的根基由这些关系织成，家名的价值体现在能否调停债务、组织护航、为坏收成寻找外粮。它可能在某届议事中居前，也可能因失去船队支持而退后；只要罗拉斯仍靠海吃饭，家门就必须接受港口信用比空洞排场更严厉的审判。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "地方权贵把埃拉诺斯视作一张关系网：亲族连着谁，仓单欠着谁，船主愿意替谁说话。岛城政治很少只在一把椅子上发生。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "码头工与船员不在乎埃拉诺斯的席位排第几。他们只记得拖欠的工钱、风暴后的修缮，以及家门遇到危险时是否也肯站在湿冷的堤岸上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗拉斯的穷户与沉默者更看重克制。埃拉诺斯若把宴饮节省成冬粮，会赢得不善言辞的敬意；若只把贫瘠当成向下征收的借口，怨气会藏在静默里。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待埃拉诺斯，会先看它的土地、婚盟、血脉和债务。罗拉斯岛屿秩序中的贵族家门，以地方议事、港口关系和灾年供养维持声望。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起埃拉诺斯时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。罗拉斯岛屿秩序中的贵族家门，以地方议事、港口关系和灾年供养维持声望。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意埃拉诺斯留下的仪式、墓地和传承。罗拉斯岛屿秩序中的贵族家门，以地方议事、港口关系和灾年供养维持声望。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见埃拉诺斯。罗拉斯岛屿秩序中的贵族家门，以地方议事、港口关系和灾年供养维持声望。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "埃拉诺斯：罗拉斯岛屿秩序中的贵族家门，以地方议事、港口关系和灾年供养维持声望。"
+  ]
+}

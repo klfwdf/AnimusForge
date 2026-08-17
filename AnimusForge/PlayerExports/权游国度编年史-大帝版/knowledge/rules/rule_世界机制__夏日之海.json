@@ -1,0 +1,157 @@
+{
+  "Id": "rule_世界机制__夏日之海",
+  "Keywords": [
+    "夏日之海",
+    "多恩南岸",
+    "盛夏群岛航路",
+    "南方海域"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "夏日之海横贯维斯特洛南方与厄索斯南岸之间，航线可通多恩、石阶列岛、里斯、瓦兰提斯、奴隶湾及盛夏群岛。温暖海域孕育香料、葡萄酒、硬木、丝绸和奴隶贸易，也聚集海盗、私掠船与争夺港口的舰队。季节风向决定远航时机，淡水、帆布、腌食和可靠领航员决定船能否抵达。它在贵族宴席上表现为异国货物，在水手身上则表现为晒裂皮肤、热病和数月不见陆地的疲惫。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai",
+          "summer",
+          "lyseni",
+          "volantine"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "熟悉夏日海的人按风季安排财富。早几日出航也许抢得好价，误判一场风却会把整船香料和多年积蓄送进海底。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai",
+          "summer"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "沿岸统治者既靠海收税，也必须防海盗与奴隶船。港口若只有关卡没有巡船，税吏会很富，海岸村庄却会越来越空。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "slave"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "普通人从夏日海得到盐、工作和外来货，也可能被它带走亲人。对被锁进船舱的人而言，这片温暖海水不是道路，而是一堵没有门的墙。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把夏日之海看成可执行的秩序。连接多恩、石阶列岛、自由城邦、奴隶湾与盛夏群岛的温暖海域，贸易丰厚而航程危险。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起夏日之海时，关心它如何影响道路、命令和安全。连接多恩、石阶列岛、自由城邦、奴隶湾与盛夏群岛的温暖海域，贸易丰厚而航程危险。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解夏日之海。连接多恩、石阶列岛、自由城邦、奴隶湾与盛夏群岛的温暖海域，贸易丰厚而航程危险。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到夏日之海的方式最小也最准确。连接多恩、石阶列岛、自由城邦、奴隶湾与盛夏群岛的温暖海域，贸易丰厚而航程危险。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "夏日之海：连接多恩、石阶列岛、自由城邦、奴隶湾与盛夏群岛的温暖海域，贸易丰厚而航程危险。"
+  ]
+}

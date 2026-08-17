@@ -1,0 +1,134 @@
+{
+  "Id": "rule_区域文化__西境社会",
+  "Keywords": [
+    "西境文化",
+    "西境社会",
+    "金矿"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "西境的山丘、矿脉、港口和兰尼斯特家族塑造了财富、债务与家族体面极为重要的社会。黄金和白银能购买盔甲、婚盟、佣兵和宫廷影响，却不能自动种出粮食或守住山口；西境的繁荣仍依赖矿工、车队、庄园、兰尼斯港与封臣网络。贵族重视声望和偿还旧债，平民则知道矿井、道路和税收比金色纹章更接近日常。西境人的冷酷或慷慨常被外人归因于财富，真正的根源在资源如何被集中与分配。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贵族在西境社会里辨认血脉与体面，乡绅在意邻里是否守规矩，祭司则提醒人们礼节背后的禁忌；身份与礼数使习惯变成可以传下去的秩序。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谈到西境社会，农户、工匠和商人不总能负担完整的礼数，却会保留最要紧的部分：称呼、座次、赠礼和道歉；失礼有时比少一袋粮更快招来麻烦。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵与旅人穿过不同地域时，最容易在西境社会上犯错；懂得先观察再开口的人，往往比自称见多识广的人更快取得信任。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在领主和商人眼中，西境文化首先是地图上的一处要害。西境社会：西境的山丘、矿脉、港口和兰尼斯特家族塑造了财富、债务与家族体面极为重要的社会。黄金和白银能购买盔甲、婚盟、佣兵和宫廷影响，却不能自动种出粮食或守住山口；西境的繁。他们关心水源、道路、税关和守军，知道地名背后往往连着一条能让城堡活下去的粮道。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从另一面理解西境文化。西境社会：西境的山丘、矿脉、港口和兰尼斯特家族塑造了财富、债务与家族体面极为重要的社会。黄金和白银能购买盔甲、婚盟、佣兵和宫廷影响，却不能自动种出粮食或守住山口；西境的繁。石头、林木、河流或山口既能成为谋生之所，也可能被赋予圣洁、禁忌和祖先记忆，因而不能只用金钱衡量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民对西境文化的看法最实际。西境社会：西境的山丘、矿脉、港口和兰尼斯特家族塑造了财富、债务与家族体面极为重要的社会。黄金和白银能购买盔甲、婚盟、佣兵和宫廷影响，却不能自动种出粮食或守住山口；西境的繁。他们先看这里能否取水、耕作、放牧和躲过兵灾；地图上的一行字，落到村里便是柴薪、井绳和过冬的粮。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "西境社会：西境的山丘、矿脉、港口和兰尼斯特家族塑造了财富、债务与家族体面极为重要的社会。黄金和白银能购买盔甲、婚盟、佣兵和宫廷影响，却不能自动种出粮食或守住山口；西境的繁"
+  ]
+}

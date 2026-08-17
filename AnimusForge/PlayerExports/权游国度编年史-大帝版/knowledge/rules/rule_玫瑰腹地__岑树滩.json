@@ -1,0 +1,152 @@
+{
+  "Id": "rule_玫瑰腹地__岑树滩",
+  "Keywords": [
+    "岑树滩",
+    "艾什福德"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "岑树滩是河湾地西南的重要市镇，以艾什福德家族和当地比武传统闻名。市镇坐落在河流、道路与肥沃田地之间，能接待商队、农夫、骑士和前来参加集会的人；比武场的荣誉因此与市场的喧闹同时存在。河湾地的比武并非只关乎个人名声，它带来住宿、马匹、铁器、酒和税收，也让不同领主在短暂和平中交换婚约与消息。岑树滩的常态仍是粮食、布匹和季节劳作，而不是每年都有英雄诞生。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "岑树滩可以写在领主的地契上，附近人真正依靠的却是井泉、田租、磨坊、林地和危急时能否进堡。当地家庭还要依靠谷物、葡萄酒、果园、牧场与曼德河沿线的集市；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "守将衡量岑树滩，先查外墙、塔楼、水井、粮仓与最近的援军道路。在七国的封建秩序中，岑树滩的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "旅人判断是否经过岑树滩，看的是领地税、庄园产物、驮队路程和堡下形成的小市集。他们还会辨认河湾地的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主可以凭岑树滩收税举兵，却也要为这里的治安与饥馑负责。在七国的封建秩序中，岑树滩的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "旅人在岑树滩附近最怕弄错坡势、城门、饮水与守军盘查外人的规矩。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "修补岑树滩的人熟悉石墙、木梁、铁门、墓窖和代代修补留下的接缝，安慰死者家属的人熟悉七神、骑士传奇与园丁王时代留下的门第记忆。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "岑树滩的纹章离田地很远，收税人与守军却离田地很近。他们关心谷物、葡萄酒、果园、牧场与曼德河沿线的集市，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "岑树滩：岑树滩是河湾地西南的重要市镇，以艾什福德家族和当地比武传统闻名。市镇坐落在河流、道路与肥沃田地之间，能接待商队、农夫、骑士和前来参加集会的人；比武场的荣誉因此与市场的喧闹同时存在。河湾地的比武并非只关乎个人名声，它带来住宿、马匹、铁器、酒和税收，也让不同领主在短暂和平中交换婚约与消息。岑树滩的常态仍是粮食、布匹和季节劳作，而不是每年都有英雄诞生。"
+  ]
+}

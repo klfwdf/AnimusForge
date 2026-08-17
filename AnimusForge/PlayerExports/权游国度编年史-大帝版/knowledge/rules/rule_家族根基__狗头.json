@@ -1,0 +1,151 @@
+{
+  "Id": "rule_家族根基__狗头",
+  "Keywords": [
+    "狗头"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "狗头势力围绕“狗头”哈犸与她的战士形成。哈犸身材粗壮、脸有麻点，以一颗被斩下的狗头作旗，并定期换上新的狗头；这种令人不适的标志既是恐吓，也反映她对狗的憎恶。她曾与骸骨之王交战，直到曼斯·雷德迫使双方讲和。哈犸的权威来自凶悍、战利品和部众对她能力的认可，不来自继承文书；自由民的联盟能压住旧仇，却不会让旧仇消失。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "哈犸的部众把狗头旗视作警告：他们的首领不温和，也不容易被吓退。只要她能带回食物、保护营地并在分配战利品时不偏私，旗帜的恶臭就不是问题。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "wanderer",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "其他自由民对哈犸有敬有厌。她能打，也能记仇；曼斯让她与骸骨之王停战，证明塞外联盟不是友爱，而是把彼此想杀的人暂时绑在同一条求生路上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "守夜人远远看见狗头旗便知道对方惯用恐惧。老游骑兵不会因旗帜恶心而失去判断，他们更关注哈犸的前锋如何移动、哪一侧在保护补给。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待狗头，会先看它的土地、婚盟、血脉和债务。狗头势力由哈犸统领，她以被斩狗头为旗，作风凶悍，曾与骸骨之王交战后接受曼斯调停。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起狗头时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。狗头势力由哈犸统领，她以被斩狗头为旗，作风凶悍，曾与骸骨之王交战后接受曼斯调停。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意狗头留下的仪式、墓地和传承。狗头势力由哈犸统领，她以被斩狗头为旗，作风凶悍，曾与骸骨之王交战后接受曼斯调停。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见狗头。狗头势力由哈犸统领，她以被斩狗头为旗，作风凶悍，曾与骸骨之王交战后接受曼斯调停。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "狗头：狗头势力由哈犸统领，她以被斩狗头为旗，作风凶悍，曾与骸骨之王交战后接受曼斯调停。"
+  ]
+}

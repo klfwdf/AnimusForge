@@ -18,6 +18,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SandBox.Tournaments.MissionLogics;
 using SandBox.View.Map;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
@@ -38,6 +39,7 @@ using TaleWorlds.CampaignSystem.Siege;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem.Settlements.Locations;
 using TaleWorlds.CampaignSystem.Settlements.Workshops;
+using TaleWorlds.CampaignSystem.TournamentGames;
 using TaleWorlds.CampaignSystem.ViewModelCollection.GameMenu.Events;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
@@ -7199,6 +7201,7 @@ public class MyBehavior : CampaignBehaviorBase
 			string winnerStatusText = BuildTournamentWinnerStatusText(winner);
 			string prizeDisplayName = GetTournamentPrizeDisplayName(prize);
 			string participantSummary = BuildTournamentParticipantSummary(participants, winner);
+			Dictionary<string, string> tournamentParticipantRankLabels = BuildTournamentParticipantRankLabels(winner, town);
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.Append(settlementDisplayName).Append("完成了一场竞技大会结算，举办地隶属于").Append(kingdomDisplayName).Append("。");
 			stringBuilder.Append(" 冠军是").Append(winnerDisplayName).Append(BuildTournamentCharacterRoleSuffix(winner)).Append("。");
@@ -7216,7 +7219,7 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			string stableKey = "tournament_finished:" + settlementId + ":" + GetCurrentGameDayIndexSafe() + ":" + GetTournamentCharacterId(winner) + ":" + ((prize?.StringId ?? "").Trim());
 			RecordEventSourceMaterial("tournament_finished", "竞技大会结算 - " + settlementDisplayName, stringBuilder.ToString(), stableKey, kingdomId, settlementId, includeInWorld: false, includeInKingdom: true, GetTournamentHeroId(winner), GetKingdomId(GetTournamentHero(winner)?.MapFaction));
-			RecordTournamentParticipantNpcActions(winner, participants, town, settlementDisplayName, prizeDisplayName, participantSummary, stableKey);
+			RecordTournamentParticipantNpcActions(winner, participants, town, settlementDisplayName, prizeDisplayName, participantSummary, tournamentParticipantRankLabels, stableKey);
 		}
 		catch (Exception ex)
 		{
@@ -7224,7 +7227,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void RecordTournamentParticipantNpcActions(CharacterObject winner, MBReadOnlyList<CharacterObject> participants, Town town, string settlementDisplayName, string prizeDisplayName, string participantSummary, string stableKey)
+	private void RecordTournamentParticipantNpcActions(CharacterObject winner, MBReadOnlyList<CharacterObject> participants, Town town, string settlementDisplayName, string prizeDisplayName, string participantSummary, Dictionary<string, string> tournamentParticipantRankLabels, string stableKey)
 	{
 		try
 		{
@@ -7267,7 +7270,12 @@ public class MyBehavior : CampaignBehaviorBase
 				string participantStableKey = isChampion
 					? stableKey
 					: (stableKey + ":participant:" + GetHeroId(tournamentHero));
-				string participantActionText = BuildTournamentParticipantActionText(text, championName, isChampion, prizeDisplayName, participantSummary);
+				string tournamentRankLabel = "";
+				if (tournamentParticipantRankLabels != null)
+				{
+					tournamentParticipantRankLabels.TryGetValue(GetHeroId(tournamentHero), out tournamentRankLabel);
+				}
+				string participantActionText = BuildTournamentParticipantActionText(text, championName, isChampion, prizeDisplayName, participantSummary, tournamentRankLabel);
 				if (isChampion)
 				{
 					RecordNpcMajorAction(tournamentHero, participantActionText, participantStableKey, npcActionFacts, allowNonLordHero: true);
@@ -7302,7 +7310,7 @@ public class MyBehavior : CampaignBehaviorBase
 		return list;
 	}
 
-	private static string BuildTournamentParticipantActionText(string settlementDisplayName, string championName, bool isChampion, string prizeDisplayName, string participantSummary)
+	private static string BuildTournamentParticipantActionText(string settlementDisplayName, string championName, bool isChampion, string prizeDisplayName, string participantSummary, string tournamentRankLabel)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
 		if (isChampion)
@@ -7313,6 +7321,10 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			stringBuilder.Append("你参加了").Append(settlementDisplayName).Append("的竞技大会。冠军是").Append(championName).Append("。");
 		}
+		if (!string.IsNullOrWhiteSpace(tournamentRankLabel))
+		{
+			stringBuilder.Append(" 你的最终名次是").Append(tournamentRankLabel.Trim()).Append("。");
+		}
 		if (!string.IsNullOrWhiteSpace(prizeDisplayName))
 		{
 			stringBuilder.Append(" 本次大会奖品是").Append(prizeDisplayName.Trim()).Append("。");
@@ -7322,6 +7334,102 @@ public class MyBehavior : CampaignBehaviorBase
 			stringBuilder.Append(" 全部参赛者（含冠军）：").Append(participantSummary.Trim()).Append("。");
 		}
 		return stringBuilder.ToString();
+	}
+
+	private static Dictionary<string, string> BuildTournamentParticipantRankLabels(CharacterObject winner, Town town)
+	{
+		Dictionary<string, string> dictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		Hero tournamentHero = GetTournamentHero(winner);
+		string heroId = GetHeroId(tournamentHero);
+		if (!string.IsNullOrWhiteSpace(heroId))
+		{
+			dictionary[heroId] = "冠军（第1名）";
+		}
+		try
+		{
+			TournamentBehavior missionBehavior = Mission.Current?.GetMissionBehavior<TournamentBehavior>();
+			if (missionBehavior == null || missionBehavior.Settlement?.Town != town || missionBehavior.Winner?.Character != winner || missionBehavior.Rounds == null || missionBehavior.Rounds.Length == 0)
+			{
+				return dictionary;
+			}
+			Dictionary<string, int> dictionary2 = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+			for (int i = 0; i < missionBehavior.Rounds.Length; i++)
+			{
+				TournamentRound tournamentRound = missionBehavior.Rounds[i];
+				if (tournamentRound?.Matches == null)
+				{
+					continue;
+				}
+				foreach (TournamentMatch match in tournamentRound.Matches)
+				{
+					if (match?.Participants == null)
+					{
+						continue;
+					}
+					foreach (TournamentParticipant participant in match.Participants)
+					{
+						Hero tournamentHero2 = GetTournamentHero(participant?.Character);
+						string heroId2 = GetHeroId(tournamentHero2);
+						if (string.IsNullOrWhiteSpace(heroId2))
+						{
+							continue;
+						}
+						if (!dictionary2.TryGetValue(heroId2, out int value) || i > value)
+						{
+							dictionary2[heroId2] = i;
+						}
+					}
+				}
+			}
+			foreach (KeyValuePair<string, int> item in dictionary2)
+			{
+				if (!dictionary.ContainsKey(item.Key))
+				{
+					string text = BuildTournamentEliminationRankLabel(item.Value, missionBehavior.Rounds.Length);
+					if (!string.IsNullOrWhiteSpace(text))
+					{
+						dictionary[item.Key] = text;
+					}
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcAction", "[WARN] BuildTournamentParticipantRankLabels: " + ex.Message);
+		}
+		return dictionary;
+	}
+
+	private static string BuildTournamentEliminationRankLabel(int furthestRoundIndex, int roundCount)
+	{
+		if (furthestRoundIndex < 0 || roundCount <= 0 || furthestRoundIndex >= roundCount)
+		{
+			return "";
+		}
+		int num = roundCount - furthestRoundIndex - 1;
+		if (num < 0 || num >= 30)
+		{
+			return "";
+		}
+		int num2 = 1 << num;
+		int num3 = num2 + 1;
+		if (num2 == 1)
+		{
+			return "亚军（第2名）";
+		}
+		if (num2 == 2)
+		{
+			return "四强（并列第3名）";
+		}
+		if (num2 == 4)
+		{
+			return "八强（并列第5名）";
+		}
+		if (num2 == 8)
+		{
+			return "十六强（并列第9名）";
+		}
+		return "并列第" + num3 + "名";
 	}
 
 	private static Kingdom ResolveTournamentHostKingdom(Town town)

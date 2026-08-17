@@ -1,0 +1,133 @@
+{
+  "Id": "rule_家族根基__魏克利",
+  "Keywords": [
+    "魏克利",
+    "魏克利家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "魏克利家族统治烛穴城，是谷地的贵族家门。当地以肉豆蔻等昂贵香料熏制蜡烛而闻名，香气把领主庄园、商旅账簿和七神祭坛联系在一起。蜡烛看似微小，却需要蜂蜡、香料、模具和安全商路；魏克利的地位因此既依赖土地与骑士，也依赖工匠和贸易。能让火焰稳定燃烧，是这座城最朴素的财富。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "priest",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谷地贵族和修士都认得烛穴城的香烛。婚礼、守灵与圣堂祈祷需要灯火，魏克利的产品因此进入许多庄严时刻，也让一个地方家族在宴会之外拥有温和而持久的名声。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "merchant",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "制烛匠知道一支好蜡烛远不只是香气。蜂蜡要净，烛芯要直，香料不能糟蹋；他们希望魏克利保护商道、少让管事克扣，而不是把全部功劳都写进家族账簿。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待魏克利，会先看它的土地、婚盟、血脉和债务。魏克利家族以烛穴城为席位，谷地香料蜡烛的手艺把庄园、商路与七神礼仪连接起来。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起魏克利时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。魏克利家族以烛穴城为席位，谷地香料蜡烛的手艺把庄园、商路与七神礼仪连接起来。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意魏克利留下的仪式、墓地和传承。魏克利家族以烛穴城为席位，谷地香料蜡烛的手艺把庄园、商路与七神礼仪连接起来。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见魏克利。魏克利家族以烛穴城为席位，谷地香料蜡烛的手艺把庄园、商路与七神礼仪连接起来。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "魏克利：魏克利家族以烛穴城为席位，谷地香料蜡烛的手艺把庄园、商路与七神礼仪连接起来。"
+  ]
+}

@@ -1,0 +1,155 @@
+{
+  "Id": "rule_世界机制__日落之海",
+  "Keywords": [
+    "日落之海",
+    "铁群岛航路",
+    "未知西方"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "日落之海沿维斯特洛西岸展开，铁群岛、仙女岛、兰尼斯港、青亭岛和多处小港都与其潮汐相连。铁民长船把它当作道路，西岸居民则既靠渔获、盐和海运生活，也警惕从雾线外出现的帆。越过熟悉沿岸继续向西，可靠海图和补给港迅速减少；关于远方岛屿、沉没船队与世界尽头的故事因此不断生长。日落之海不是空白边界，而是一片被沿岸人熟知、被远航者畏惧、仍未被任何王冠完全掌握的空间。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "铁民把日落之海视作祖辈留下的道路，风、礁石和潮口比陆上界碑更可信。能读海的人不必看见岸，也知道自己离家多远。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia",
+          "reach",
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "西岸居民从海上得到鱼、酒路和利润，也会在每次陌生帆影出现时点燃烽火。海对他们既是粮仓，也是没有门闩的边境。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "探险者从西方看见名望，学者看见未绘海域，虔诚信徒看见神秘。最老的船长通常只看见需要多装几桶水。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把日落之海看成可执行的秩序。维斯特洛以西的广阔海域，连接铁群岛与西岸港湾，也承载渔业、劫掠和驶向未知西方的梦想。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起日落之海时，关心它如何影响道路、命令和安全。维斯特洛以西的广阔海域，连接铁群岛与西岸港湾，也承载渔业、劫掠和驶向未知西方的梦想。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解日落之海。维斯特洛以西的广阔海域，连接铁群岛与西岸港湾，也承载渔业、劫掠和驶向未知西方的梦想。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到日落之海的方式最小也最准确。维斯特洛以西的广阔海域，连接铁群岛与西岸港湾，也承载渔业、劫掠和驶向未知西方的梦想。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "日落之海：维斯特洛以西的广阔海域，连接铁群岛与西岸港湾，也承载渔业、劫掠和驶向未知西方的梦想。"
+  ]
+}

@@ -1,0 +1,128 @@
+{
+  "Id": "rule_称谓礼法__“私生子”的社会重量",
+  "Keywords": [
+    "“私生子”的社会重量"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "私生子不是单纯的出生事实，而是围绕继承、婚姻与家名形成的一整套社会判断。有人以此羞辱，也有人借能力赢得位置；无论多么努力，旁人先看见的往往仍是那个被写在姓氏里的界线。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贵族在“私生子”的社会重量里辨认血脉与体面，乡绅在意邻里是否守规矩，祭司则提醒人们礼节背后的禁忌；身份与礼数使习惯变成可以传下去的秩序。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谈到“私生子”的社会重量，农户、工匠和商人不总能负担完整的礼数，却会保留最要紧的部分：称呼、座次、赠礼和道歉；失礼有时比少一袋粮更快招来麻烦。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵与旅人穿过不同地域时，最容易在“私生子”的社会重量上犯错；懂得先观察再开口的人，往往比自称见多识广的人更快取得信任。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把“私生子”的社会重量看成可执行的秩序。私生子不是单纯的出生事实，而是围绕继承、婚姻与家名形成的一整套社会判断。有人以此羞辱，也有人借能力赢得位置；无论多么努力，旁人先看见的往往仍是那个被写在姓氏里的。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解“私生子”的社会重量。私生子不是单纯的出生事实，而是围绕继承、婚姻与家名形成的一整套社会判断。有人以此羞辱，也有人借能力赢得位置；无论多么努力，旁人先看见的往往仍是那个被写在姓氏里的。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到“私生子”的社会重量的方式最小也最准确。私生子不是单纯的出生事实，而是围绕继承、婚姻与家名形成的一整套社会判断。有人以此羞辱，也有人借能力赢得位置；无论多么努力，旁人先看见的往往仍是那个被写在姓氏里的。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "“私生子”的社会重量：私生子不是单纯的出生事实，而是围绕继承、婚姻与家名形成的一整套社会判断。有人以此羞辱，也有人借能力赢得位置；无论多么努力，旁人先看见的往往仍是那个被写在姓氏里的"
+  ]
+}

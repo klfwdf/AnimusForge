@@ -1,0 +1,150 @@
+{
+  "Id": "rule_物产贸易__河湾地的园艺与花卉",
+  "Keywords": [
+    "河湾地的园艺与花卉"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "河湾地的花园、香草和精心修剪的林荫路不仅是装饰，也是富裕与安定的展示。领主夫人能用园圃表现教养，药剂师从中寻找材料，农人却知道漂亮的花畦依赖稳定水源与不被征走的劳力。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商人衡量河湾地的园艺与花卉，先看货源、损耗和沿途关卡，再看货源与信用能否换来稳定的信用；一笔好买卖必须经得起季节和战乱的反复检验。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "artisan",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主把河湾地的园艺与花卉写进税收与军需，工匠关心原料是否足够，农户和搬运工承担价格起落最直接的重量；账面繁荣未必落到每双手上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "wanderer",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "水手、脚夫与流动摊贩最早察觉河湾地的园艺与花卉的变化：风向、道路和一纸通行文书都能改变利润；学者记录这些细节，免得宏大的财富故事遮住具体的人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把河湾地的园艺与花卉看成一条可以计算的链。河湾地的花园、香草和精心修剪的林荫路不仅是装饰，也是富裕与安定的展示。领主夫人能用园圃表现教养，药剂师从中寻找材料，农人却知道漂亮的花畦依赖稳定水源与不被征走的。产地、关卡、船期、债务和保护费任何一处断裂，都会让远方的贵族立刻感到价格和权力的变化。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人遇到河湾地的园艺与花卉时，最先注意到的是能否买到马料、修好装备或找到下一处补给。河湾地的花园、香草和精心修剪的林荫路不仅是装饰，也是富裕与安定的展示。领主夫人能用园圃表现教养，药剂师从中寻找材料，农人却知道漂亮的花畦依赖稳定水源与不被征走的。他们不一定懂账本，却知道一袋盐和一枚铁钉在路上的真实分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者在河湾地的园艺与花卉中承担具体工作。河湾地的花园、香草和精心修剪的林荫路不仅是装饰，也是富裕与安定的展示。领主夫人能用园圃表现教养，药剂师从中寻找材料，农人却知道漂亮的花畦依赖稳定水源与不被征走的。有人把原料变成工具、布匹和药物，有人规定交换的节日与禁忌；财富由许多双手堆起，很少只属于一个名字。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民对河湾地的园艺与花卉的记忆来自收成和欠账。河湾地的花园、香草和精心修剪的林荫路不仅是装饰，也是富裕与安定的展示。领主夫人能用园圃表现教养，药剂师从中寻找材料，农人却知道漂亮的花畦依赖稳定水源与不被征走的。若价格上涨而工钱不涨，远方的繁荣只会变成更薄的面包；若道路安全，连小村也能从贸易中得到一点春天。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "河湾地的园艺与花卉：河湾地的花园、香草和精心修剪的林荫路不仅是装饰，也是富裕与安定的展示。领主夫人能用园圃表现教养，药剂师从中寻找材料，农人却知道漂亮的花畦依赖稳定水源与不被征走的"
+  ]
+}

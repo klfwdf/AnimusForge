@@ -1,0 +1,131 @@
+{
+  "Id": "rule_家族根基__史威佛",
+  "Keywords": [
+    "史威佛",
+    "史威佛家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "史威佛家族以玉米城为根基，是西境的骑士家门，振翅雄鸡是其醒目标志。家族历史说明金钱和婚姻如何重塑贵族命运：哈瑞斯·史威佛欠下债款后将女儿多娜送作人质，她后来嫁给凯冯·兰尼斯特，使债务关系变成血缘纽带。玉米城的田地与粮仓才是家业底座，而与凯岩城的姻亲关系则让这个家名进入更高层的权力网络。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "西境贵族从史威佛的婚事里看到现实：债务会羞辱家门，婚姻也能把羞辱改造成联盟。与兰尼斯特结亲带来庇护，却也意味着玉米城更难摆脱凯岩城的意志。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "玉米城农户不觉得雄鸡纹章滑稽，因为天亮、播种和粮仓都比宴会重要。他们希望史威佛记得，姻亲再尊贵，也不能让被征走的粮食凭空长回来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待史威佛，会先看它的土地、婚盟、血脉和债务。史威佛家族以玉米城为席位，是西境的重要骑士家门，其兴衰牵连债务、婚姻与兰尼斯特权力。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起史威佛时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。史威佛家族以玉米城为席位，是西境的重要骑士家门，其兴衰牵连债务、婚姻与兰尼斯特权力。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意史威佛留下的仪式、墓地和传承。史威佛家族以玉米城为席位，是西境的重要骑士家门，其兴衰牵连债务、婚姻与兰尼斯特权力。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见史威佛。史威佛家族以玉米城为席位，是西境的重要骑士家门，其兴衰牵连债务、婚姻与兰尼斯特权力。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "史威佛：史威佛家族以玉米城为席位，是西境的重要骑士家门，其兴衰牵连债务、婚姻与兰尼斯特权力。"
+  ]
+}

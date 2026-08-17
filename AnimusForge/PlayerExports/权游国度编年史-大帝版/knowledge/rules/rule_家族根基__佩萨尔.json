@@ -1,0 +1,154 @@
+{
+  "Id": "rule_家族根基__佩萨尔",
+  "Keywords": [
+    "佩萨尔",
+    "佩萨尔家族",
+    "岛屿贵族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "佩萨尔是罗拉斯政治共同体中的一个家门。岛屿城邦缺少广阔农田，家门的稳定不能只靠土地租赋，而要靠渔获、仓储、船只份额、港口人脉和与附近岛屿的婚姻旧交。佩萨尔能够支配多少人，取决于它能否在歉收、风暴与航路中断时仍维持粮盐流转。罗拉斯的权贵不必模仿维斯特洛封臣；他们更像站在潮汐、行会与地方议事之间的中介。具体盟友会更换，这种岛城根基不会凭一场战争消失。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗拉斯的权贵以仓中存货、船主支持和能否平息码头争端衡量佩萨尔。只有名字而没有信用的家门，很快会在岛城漫长的冬账里露底。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "渔民关心佩萨尔收取多少泊费、坏季节是否允许赊盐。一个家门在议事厅里说得再漂亮，也抵不过风暴后肯不肯打开仓门。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "artisan",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "沉默者的信徒与老匠人不喜浮夸。他们认为佩萨尔若想长久，就该少许诺奇迹，多维护堤岸、秤具和冬季储备。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待佩萨尔，会先看它的土地、婚盟、血脉和债务。罗拉斯的地方家门，其根基在港口中介、岛间关系和贫瘠海岛上的实际供养能力。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起佩萨尔时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。罗拉斯的地方家门，其根基在港口中介、岛间关系和贫瘠海岛上的实际供养能力。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意佩萨尔留下的仪式、墓地和传承。罗拉斯的地方家门，其根基在港口中介、岛间关系和贫瘠海岛上的实际供养能力。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见佩萨尔。罗拉斯的地方家门，其根基在港口中介、岛间关系和贫瘠海岛上的实际供养能力。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "佩萨尔：罗拉斯的地方家门，其根基在港口中介、岛间关系和贫瘠海岛上的实际供养能力。"
+  ]
+}

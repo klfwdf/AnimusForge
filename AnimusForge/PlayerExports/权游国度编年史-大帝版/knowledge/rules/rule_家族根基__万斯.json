@@ -1,0 +1,131 @@
+{
+  "Id": "rule_家族根基__万斯",
+  "Keywords": [
+    "万斯",
+    "万斯家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "万斯家族是多恩红丘城的领主，其土地沿万斯河伸展，西面便是深沙。这个家门的祖先被认为是进入多恩后在沙丘东缘定居的安达尔冒险者，家名后来也留在河流上。红丘城的权力首先来自水：谁维护河道、井泉和绿洲道路，谁便能让旅人、牧群与田地在酷热中存续。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "多恩贵族知道红丘城的价值不只在城墙，而在河水与沙路。万斯若能让商旅找到井泉、让边地骑手及时传讯，便守住了比华丽头衔更实际的权力。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "深沙边缘的牧民不会浪费水，也不会轻易忘记谁封过一口井。对他们而言，万斯领主是否值得尊敬，要看旱季里水囊能否装满，而非宴席上说得多漂亮。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待万斯，会先看它的土地、婚盟、血脉和债务。万斯家族统治多恩红丘城与同名河谷，家业位于深沙边缘，连接水源、绿洲与荒漠道路。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起万斯时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。万斯家族统治多恩红丘城与同名河谷，家业位于深沙边缘，连接水源、绿洲与荒漠道路。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意万斯留下的仪式、墓地和传承。万斯家族统治多恩红丘城与同名河谷，家业位于深沙边缘，连接水源、绿洲与荒漠道路。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见万斯。万斯家族统治多恩红丘城与同名河谷，家业位于深沙边缘，连接水源、绿洲与荒漠道路。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "万斯：万斯家族统治多恩红丘城与同名河谷，家业位于深沙边缘，连接水源、绿洲与荒漠道路。"
+  ]
+}

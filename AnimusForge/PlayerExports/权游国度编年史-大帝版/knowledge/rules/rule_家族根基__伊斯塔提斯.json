@@ -1,0 +1,133 @@
+{
+  "Id": "rule_家族根基__伊斯塔提斯",
+  "Keywords": [
+    "伊斯塔提斯",
+    "伊斯塔提斯家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "伊斯塔提斯家族在潘托斯权贵社会中占有位置。它必须遵守这座城市的现实逻辑：财富需要护卫，贸易需要担保，政治需要宴席与婚盟，任何公开违背布拉佛斯条约的行为又可能招来外部压力。家徽即使华丽，也不能代替这些责任。 潘托斯由亲王与总督阶层共同维持表面秩序，真正力量却常藏在商馆、债务、婚姻和佣兵契约里。与布拉佛斯签订的条约禁止公开蓄奴、限制军备，富人仍会以契约仆役和复杂名目绕行规则。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "pentoshi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "潘托斯权贵衡量伊斯塔提斯，会看它能否进入总督会议、调动商队并承担宴饮与公共开支。这里的高位不是封地带来的天然权利，而是财富和同侪认可维持的脆弱平衡。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "pentoshi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "peasant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "潘托斯工匠与脚夫从工钱、粮价和债务看伊斯塔提斯。富家若按时结账、在歉收时不囤粮，便有人称赞；若只用奢华宴会展示慷慨，穷人很快会看穿。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待伊斯塔提斯，会先看它的土地、婚盟、血脉和债务。伊斯塔提斯是潘托斯富裕家门，以家产、亲族和城邦精英间可兑现的承诺维持身份。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起伊斯塔提斯时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。伊斯塔提斯是潘托斯富裕家门，以家产、亲族和城邦精英间可兑现的承诺维持身份。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意伊斯塔提斯留下的仪式、墓地和传承。伊斯塔提斯是潘托斯富裕家门，以家产、亲族和城邦精英间可兑现的承诺维持身份。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见伊斯塔提斯。伊斯塔提斯是潘托斯富裕家门，以家产、亲族和城邦精英间可兑现的承诺维持身份。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "伊斯塔提斯：伊斯塔提斯是潘托斯富裕家门，以家产、亲族和城邦精英间可兑现的承诺维持身份。"
+  ]
+}

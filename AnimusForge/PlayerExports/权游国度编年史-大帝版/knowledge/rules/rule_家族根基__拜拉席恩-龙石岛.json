@@ -1,0 +1,154 @@
+{
+  "Id": "rule_家族根基__拜拉席恩-龙石岛",
+  "Keywords": [
+    "拜拉席恩-龙石岛",
+    "史坦尼斯·拜拉席恩",
+    "龙石岛拜拉席恩",
+    "宝冠雄鹿"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "龙石岛的拜拉席恩旗帜围绕史坦尼斯·拜拉席恩、他的继承主张与岛上宫廷而聚集。史坦尼斯并非因为喜爱王冠才坚持权利；在他眼中，劳勃之后的继承次序是一条必须执行的律法，正如守城、裁判和偿还旧债都是责任。龙石岛曾是坦格利安王储之地，黑色火山岩、狭海航道和龙形石雕使这项主张天然带着旧王权的阴影。追随者可能出于律法、忠诚、光之王信仰或现实利益靠近他，却都必须面对同一个严厉问题：当责任要求付出不光彩的代价时，一个人还能剩下多少公正。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "dragonstone"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "龙石岛贵族知道史坦尼斯不会用笑容换取忠诚。他记得功劳，也记得违法；赏罚像岛上的黑石一样坚硬。有人相信这正是乱世所需的公正，有人则担心一位从不弯曲的君主最终会先折断身边所有人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "dragonstone"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "岛民和士兵从补给、舰船与命令认识史坦尼斯。他会与守军一同挨饿，也会要求别人承担他认为应当承担的一切。这样的领主不容易被爱，却可能在风暴最重时让人相信，他不会先替自己寻找暖屋。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "风暴地诸侯对史坦尼斯常有复杂心情：他们记得他守住风息堡，也记得风息堡后来给了更讨人喜欢的弟弟。律法支持他的次序，人情却未必随律法行动。许多人尊敬这块铁，却不愿被它统治。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待拜拉席恩-龙石岛，会先看它的土地、婚盟、血脉和债务。史坦尼斯以继承次序、律法与责任主张王权；龙石岛的旧王储传统、严苛公正与光之王信仰共同塑造追随者对他的理解。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起拜拉席恩-龙石岛时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。史坦尼斯以继承次序、律法与责任主张王权；龙石岛的旧王储传统、严苛公正与光之王信仰共同塑造追随者对他的理解。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意拜拉席恩-龙石岛留下的仪式、墓地和传承。史坦尼斯以继承次序、律法与责任主张王权；龙石岛的旧王储传统、严苛公正与光之王信仰共同塑造追随者对他的理解。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见拜拉席恩-龙石岛。史坦尼斯以继承次序、律法与责任主张王权；龙石岛的旧王储传统、严苛公正与光之王信仰共同塑造追随者对他的理解。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "史坦尼斯以继承次序、律法与责任主张王权；龙石岛的旧王储传统、严苛公正与光之王信仰共同塑造追随者对他的理解。"
+  ]
+}

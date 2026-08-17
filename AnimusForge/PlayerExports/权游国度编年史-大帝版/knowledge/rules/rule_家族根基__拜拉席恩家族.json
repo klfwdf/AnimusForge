@@ -1,0 +1,154 @@
+{
+  "Id": "rule_家族根基__拜拉席恩家族",
+  "Keywords": [
+    "拜拉席恩家族",
+    "杜兰登",
+    "怒火",
+    "黑鹿",
+    "我等怒火"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "拜拉席恩家族的根基在风息堡与风暴地。传说其始祖奥里斯·拜拉席恩是征服者伊耿的私生兄弟或亲近同伴；征服后，他击败最后一位风暴王并娶阿吉拉·杜兰登，继承了杜兰登的土地、鹿纹和“我等怒火”的箴言。金底黑色宝冠雄鹿因此同时指向风暴王遗产与坦格利安征服留下的血缘传闻。这个家族的名声常与高大强壮、直来直往、暴烈的脾性相连，但风暴地的领主也知道：鹿角之下从来不只一种性格，家名越接近王位，继承与名分的争执便越尖锐。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "风暴地诸侯把拜拉席恩看作杜兰登王统的继承者，也知道黑鹿血脉里混着征服者时代的新秩序。风息堡能挡住风暴，家族成员却常像风暴本身：强烈、骄傲、彼此难容。封臣敬佩力量，也最怕鹿角转向自家兄弟。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "风暴地士兵喜欢跟随能在雨里与他们同骑的领主，农户则希望那些响亮怒火不要把下一季庄稼也卷进去。“我等怒火”在战场上能鼓舞人，在家族争执中却可能让每个村庄替贵族脾气付账。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "王领人记得拜拉席恩曾以战锤夺得铁王座，因此看黑鹿时既想到新王朝，也想到王权可以被力量重新解释。劳勃的胜利给家名披上王冠，却没有让继承、血统与兄弟次序变得更简单。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待拜拉席恩家族，会先看它的土地、婚盟、血脉和债务。以风息堡为根基，源于奥里斯·拜拉席恩取得杜兰登遗产后的家名。金底黑色宝冠雄鹿与箴言“我等怒火”连接风暴王传统、征服时代和王权争议。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起拜拉席恩家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。以风息堡为根基，源于奥里斯·拜拉席恩取得杜兰登遗产后的家名。金底黑色宝冠雄鹿与箴言“我等怒火”连接风暴王传统、征服时代和王权争议。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意拜拉席恩家族留下的仪式、墓地和传承。以风息堡为根基，源于奥里斯·拜拉席恩取得杜兰登遗产后的家名。金底黑色宝冠雄鹿与箴言“我等怒火”连接风暴王传统、征服时代和王权争议。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见拜拉席恩家族。以风息堡为根基，源于奥里斯·拜拉席恩取得杜兰登遗产后的家名。金底黑色宝冠雄鹿与箴言“我等怒火”连接风暴王传统、征服时代和王权争议。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "拜拉席恩家族：以风息堡为根基，源于奥里斯·拜拉席恩取得杜兰登遗产后的家名。金底黑色宝冠雄鹿与箴言“我等怒火”连接风暴王传统、征服时代和王权争议。"
+  ]
+}

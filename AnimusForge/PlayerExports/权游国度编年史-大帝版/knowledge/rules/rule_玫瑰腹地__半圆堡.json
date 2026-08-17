@@ -1,0 +1,152 @@
+{
+  "Id": "rule_玫瑰腹地__半圆堡",
+  "Keywords": [
+    "半圆堡",
+    "提利尔封臣"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "半圆堡是河湾地的一处城堡领，名称来自其城墙或地形的弧形轮廓。河湾地的城堡很少只为战争而建，它们同时是粮仓、磨坊、法庭、马厩和收取地租的地方。半圆堡周边的平原适合谷物、葡萄与牧草，曼德河水网则把收成送往高庭、旧镇和沿海港口。富饶也意味着暴露：一支军队能从多条道路抵达，征粮者和逃难者同样会把城门堵住。它属于河湾地那种依靠土地与交通维持的地方权力。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对靠半圆堡周边土地吃饭的人而言，日子由水位、渡口、芦苇地、可耕高地和雨季道路决定。当地家庭还要依靠谷物、葡萄酒、果园、牧场与曼德河沿线的集市；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对攻守双方而言，半圆堡的分量首先落在桥梁、浅滩、堤道、舟船与不陷入泥沼的粮道上。在七国的封建秩序中，半圆堡的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "货物抵达半圆堡以前，货主已经算过水运、桥税、渡资、磨坊和沿河集市。他们还会辨认河湾地的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "半圆堡能给一家人带来头衔，也能在灾年与战争中拖垮那一家人。在七国的封建秩序中，半圆堡的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵靠脚底记住半圆堡：哪处能涉水、哪条堤道不被洪水吞没。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "数代人在半圆堡留下的痕迹，一半藏在舟船、桥木、磨坊石、渔网与河岸圣堂，一半藏在七神、骑士传奇与园丁王时代留下的门第记忆。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户、牧民和渔民评价半圆堡最少绕弯。他们关心谷物、葡萄酒、果园、牧场与曼德河沿线的集市，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "半圆堡：半圆堡是河湾地的一处城堡领，名称来自其城墙或地形的弧形轮廓。河湾地的城堡很少只为战争而建，它们同时是粮仓、磨坊、法庭、马厩和收取地租的地方。半圆堡周边的平原适合谷物、葡萄与牧草，曼德河水网则把收成送往高庭、旧镇和沿海港口。富饶也意味着暴露：一支军队能从多条道路抵达，征粮者和逃难者同样会把城门堵住。它属于河湾地那种依靠土地与交通维持的地方权力。"
+  ]
+}

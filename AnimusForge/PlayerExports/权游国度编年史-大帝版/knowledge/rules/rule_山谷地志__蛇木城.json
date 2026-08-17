@@ -1,0 +1,152 @@
+{
+  "Id": "rule_山谷地志__蛇木城",
+  "Keywords": [
+    "蛇木城",
+    "林地"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "蛇木城位于谷地的林地与山路之间。蛇木这一地名带着密林、盘曲根系和不易直行的道路印象；当地城堡的职责因此不仅是抵御成规模的敌军，也包括保护伐木队、商旅、牧人和穿过狭谷的信使。谷地的南部平原可以养育骑士，边缘地带却始终提醒人们：山里仍有不服领主的氏族，森林也能成为伏击和逃亡的屏障。蛇木城与更大的谷地封臣网络相连，却不会因这种联系失去自己的地方性。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对靠蛇木城周边土地吃饭的人而言，日子由井泉、田租、磨坊、林地和危急时能否进堡决定。当地家庭还要依靠山羊、薄田、果园以及翻越明月山脉的驮队；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对攻守双方而言，蛇木城的分量首先落在外墙、塔楼、水井、粮仓与最近的援军道路上。在七国的封建秩序中，蛇木城的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "货物抵达蛇木城以前，货主已经算过领地税、庄园产物、驮队路程和堡下形成的小市集。他们还会辨认谷地的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "蛇木城能给一家人带来头衔，也能在灾年与战争中拖垮那一家人。在七国的封建秩序中，蛇木城的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵靠脚底记住蛇木城：坡势、城门、饮水与守军盘查外人的规矩。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "数代人在蛇木城留下的痕迹，一半藏在石墙、木梁、铁门、墓窖和代代修补留下的接缝，一半藏在七神礼拜堂、山民威胁与安达尔骑士传统。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户、牧民和渔民评价蛇木城最少绕弯。他们关心山羊、薄田、果园以及翻越明月山脉的驮队，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "蛇木城：蛇木城位于谷地的林地与山路之间。蛇木这一地名带着密林、盘曲根系和不易直行的道路印象；当地城堡的职责因此不仅是抵御成规模的敌军，也包括保护伐木队、商旅、牧人和穿过狭谷的信使。谷地的南部平原可以养育骑士，边缘地带却始终提醒人们：山里仍有不服领主的氏族，森林也能成为伏击和逃亡的屏障。蛇木城与更大的谷地封臣网络相连，却不会因这种联系失去自己的地方性。"
+  ]
+}

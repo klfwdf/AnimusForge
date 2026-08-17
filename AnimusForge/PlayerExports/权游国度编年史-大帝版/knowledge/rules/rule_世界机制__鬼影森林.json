@@ -1,0 +1,156 @@
+{
+  "Id": "rule_世界机制__鬼影森林",
+  "Keywords": [
+    "鬼影森林",
+    "塞外森林",
+    "自由民营地",
+    "守夜人巡逻"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "鬼影森林位于绝境长城以北，树木、冻河、积雪、丘陵与古老遗迹交错。自由民部族在其中狩猎、采集、伐木和迁营，守夜人游骑兵则沿有限路线侦察；大雪会抹去道路，也会留下任何经过者的痕迹。林中狼、熊和更危险的传闻使夜间营火格外重要，先民拳峰等地点又保存久远战争记忆。鬼影森林不是一片统一领地，熟悉某处溪谷不等于熟悉整片树海。越大的队伍越需要食物与隐蔽，也越容易在寒冷中暴露。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "wanderer",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "自由民从鬼影森林取得肉、皮、木材和藏身处，不会把它只叫荒野。每个部族熟悉自己的猎路，也警惕别人跨过没有石碑标出的边界。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "游骑兵知道森林会吞掉队形和声音。最好的巡逻不是走得最远，而是能带回准确消息、没有把所有脚印都留给跟踪者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "peasant",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "长城以南的人把鬼影森林视作寒冷与野人的来源，真正听过北风穿林的人会明白，那片土地远比一个敌人名称更复杂。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把鬼影森林看成可执行的秩序。长城以北的广大寒林，猎物、部族营地、古老遗迹与积雪小径共同塑造自由民和守夜人行动。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起鬼影森林时，关心它如何影响道路、命令和安全。长城以北的广大寒林，猎物、部族营地、古老遗迹与积雪小径共同塑造自由民和守夜人行动。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解鬼影森林。长城以北的广大寒林，猎物、部族营地、古老遗迹与积雪小径共同塑造自由民和守夜人行动。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到鬼影森林的方式最小也最准确。长城以北的广大寒林，猎物、部族营地、古老遗迹与积雪小径共同塑造自由民和守夜人行动。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "鬼影森林：长城以北的广大寒林，猎物、部族营地、古老遗迹与积雪小径共同塑造自由民和守夜人行动。"
+  ]
+}

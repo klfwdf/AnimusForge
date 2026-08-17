@@ -1,0 +1,132 @@
+{
+  "Id": "rule_家族根基__克连恩",
+  "Keywords": [
+    "克连恩",
+    "克连恩家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "克连恩家族以红湖为根基，是河湾地的古老贵族，家名与仙鹤纹章相伴。湖泊、湿地、牧场和周围农庄构成其财富，也决定领主必须重视堤岸、渡口与季节水患。古老传说为家族增添光彩，日常统治却仍落在粮租、婚盟、骑士训练和对高庭的责任上。仙鹤能飞得很高，红湖的家业却扎在泥土与水草之间。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河湾贵族把克连恩视作有根基的旧家，仙鹤旗在宴会和军阵中都容易辨认。家名的分量来自世代积累，但每一代仍需证明自己能守住红湖与盟约。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "sailor",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "红湖边的渔户与农民更关心堤岸是否修补、渡船是否收费公道。对他们而言，仙鹤是田边常见的鸟，也是领主是否懂得这片水土的试金石。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待克连恩，会先看它的土地、婚盟、血脉和债务。克连恩家族是红湖的河湾贵族，家名与仙鹤纹章、古老血缘和当地湖泽田庄相连。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起克连恩时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。克连恩家族是红湖的河湾贵族，家名与仙鹤纹章、古老血缘和当地湖泽田庄相连。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意克连恩留下的仪式、墓地和传承。克连恩家族是红湖的河湾贵族，家名与仙鹤纹章、古老血缘和当地湖泽田庄相连。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见克连恩。克连恩家族是红湖的河湾贵族，家名与仙鹤纹章、古老血缘和当地湖泽田庄相连。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "克连恩：克连恩家族是红湖的河湾贵族，家名与仙鹤纹章、古老血缘和当地湖泽田庄相连。"
+  ]
+}

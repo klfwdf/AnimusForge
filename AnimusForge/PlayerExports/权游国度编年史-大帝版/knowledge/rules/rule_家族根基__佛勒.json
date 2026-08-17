@@ -1,0 +1,153 @@
+{
+  "Id": "rule_家族根基__佛勒",
+  "Keywords": [
+    "佛勒家族",
+    "隘口守护者",
+    "蓝色猎鹰"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "佛勒家族以赤红山脉中的天及城为根基，家主传统上称“亲王隘口守护者”，家徽为银底戴兜帽的蓝色猎鹰。家族控制多恩通往河湾地的重要山道，长期边疆战争使他们熟悉堡垒、侦察、山地骑兵与来往商旅。佛勒与河湾边疆家族之间积着血仇，然而每一代人面对的婚盟、贸易与战争并不相同；猎鹰盯着山口，未必永远只盯着复仇。当地山民衡量佛勒，首先看隘口是否安全、水粮是否充足，外来军队则会在狭窄山路上明白猎鹰旗的价值。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "多恩贵族把佛勒视作亲王隘口的守门家族。天及城高悬于赤红山脉，蓝色猎鹰所代表的不只是高傲，也是一双必须终日盯着北方道路的眼睛。守关者能保护多恩，也能影响商旅，因此每一次开门与闭门都带着政治。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "隘口守军数箭、数水囊，也数山道上扬起的尘。商人希望佛勒的关卡可靠而不过分贪婪，士兵希望烽火比敌军先到。对这些人而言，“亲王隘口守护者”不是长称号，而是一份若有疏忽就会有人死去的差事。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach",
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "来自北面的旅人与士兵看佛勒，往往先看天及城是否允许自己通过。高处的猎鹰既可能是道路的保护者，也可能是收税与盘查的阴影。山口让双方不得不相识，却很少让彼此真正放心。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待佛勒家族，会先看它的土地、婚盟、血脉和债务。天及城的亲王隘口守护者，以戴兜帽的蓝色猎鹰为家徽；山口、侦察、商旅与边疆战争塑造其责任。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起佛勒家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。天及城的亲王隘口守护者，以戴兜帽的蓝色猎鹰为家徽；山口、侦察、商旅与边疆战争塑造其责任。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意佛勒家族留下的仪式、墓地和传承。天及城的亲王隘口守护者，以戴兜帽的蓝色猎鹰为家徽；山口、侦察、商旅与边疆战争塑造其责任。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见佛勒家族。天及城的亲王隘口守护者，以戴兜帽的蓝色猎鹰为家徽；山口、侦察、商旅与边疆战争塑造其责任。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "佛勒家族：天及城的亲王隘口守护者，以戴兜帽的蓝色猎鹰为家徽；山口、侦察、商旅与边疆战争塑造其责任。"
+  ]
+}

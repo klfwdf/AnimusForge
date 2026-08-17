@@ -529,6 +529,14 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	public const int DefaultWorldDiplomacyHistoryCompressionTargetThousands = 48;
 
+	public const int WorldDiplomacyDeclarationCharactersMin = 1;
+
+	public const int WorldDiplomacyDeclarationCharactersMax = 1000;
+
+	public const int DefaultWorldDiplomacyDeclarationMinCharacters = 40;
+
+	public const int DefaultWorldDiplomacyDeclarationMaxCharacters = 200;
+
 	public const int WorldDiplomacyThreatComplianceIssuerRelationRewardMin = 0;
 
 	public const int WorldDiplomacyThreatComplianceIssuerRelationRewardMax = 50;
@@ -2069,6 +2077,14 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyDropdown("外交回合节奏", Order = 5, RequireRestart = false, HintText = "决定一场外交事件通常持续多久。只影响新开始的事件。")]
 	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
 	public Dropdown<string> WorldDiplomacyRoundLengthDropdown { get; set; } = new Dropdown<string>(new List<string> { "紧凑（约15天）", "标准（约21天）", "从容（约28天）" }, 1);
+
+	[SettingPropertyInteger("外交宣言最小字数", WorldDiplomacyDeclarationCharactersMin, WorldDiplomacyDeclarationCharactersMax, "0", Order = 8, RequireRestart = false, HintText = "AI 生成的外交宣言正文最少使用多少个中文字符，标点计入。默认 40；可在 1—1000 之间调整。")]
+	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
+	public int WorldDiplomacyDeclarationMinCharacters { get; set; } = DefaultWorldDiplomacyDeclarationMinCharacters;
+
+	[SettingPropertyInteger("外交宣言最大字数", WorldDiplomacyDeclarationCharactersMin, WorldDiplomacyDeclarationCharactersMax, "0", Order = 9, RequireRestart = false, HintText = "AI 生成的外交宣言正文最多使用多少个中文字符，标点计入。默认 200；可在 1—1000 之间调整；若小于最小字数，运行时按最小字数处理。")]
+	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
+	public int WorldDiplomacyDeclarationMaxCharacters { get; set; } = DefaultWorldDiplomacyDeclarationMaxCharacters;
 
 	// 仅保留用于兼容旧配置反序列化；自由外交流程不再读取或展示这些设置。
 	[Obsolete("Legacy configuration compatibility only; free-form diplomacy no longer forces wars from pressure thresholds.")]

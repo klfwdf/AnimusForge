@@ -1,0 +1,133 @@
+{
+  "Id": "rule_家族根基__艾摩若",
+  "Keywords": [
+    "艾摩若",
+    "艾摩若家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "艾摩若家族属于魁尔斯城市精英，家业受海港、商队、宅邸和权贵关系支撑。家族亲近的商团会随利益改变，一时选择未必能定义往后每一次交易；任何想在魁尔斯保持体面的人都必须理解纯种人的礼节、十三巨子等商团的竞争，以及红色荒原道路对物价的影响。 魁尔斯依靠三重城墙、海港和穿越红色荒原的贸易自称世界中心。纯种人、十三巨子、碧玺兄弟会与香料古公会等集团相互竞争，华丽礼节之下是商路、奴隶和债务的冷静计算。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qartheen"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "魁尔斯权贵看艾摩若，会问它与哪个商团同行、拥有多少船货，并能否在纯种人的礼法中保持体面。这里的微笑和裸胸丝袍都可能是交易的一部分。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qartheen"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "魁尔斯码头工、奴隶和小贩从水价、粮价与商队到港看艾摩若。权贵称城市为世界中心，底层更清楚，荒原断路几日便足以让中心陷入饥渴。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待艾摩若，会先看它的土地、婚盟、血脉和债务。艾摩若是魁尔斯权贵家门，地位处在纯种人礼法、商团竞争、海港财富与荒原商路交汇处。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起艾摩若时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。艾摩若是魁尔斯权贵家门，地位处在纯种人礼法、商团竞争、海港财富与荒原商路交汇处。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意艾摩若留下的仪式、墓地和传承。艾摩若是魁尔斯权贵家门，地位处在纯种人礼法、商团竞争、海港财富与荒原商路交汇处。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见艾摩若。艾摩若是魁尔斯权贵家门，地位处在纯种人礼法、商团竞争、海港财富与荒原商路交汇处。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "艾摩若：艾摩若是魁尔斯权贵家门，地位处在纯种人礼法、商团竞争、海港财富与荒原商路交汇处。"
+  ]
+}

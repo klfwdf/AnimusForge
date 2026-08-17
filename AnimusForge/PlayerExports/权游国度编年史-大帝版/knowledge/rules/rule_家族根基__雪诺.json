@@ -1,0 +1,153 @@
+{
+  "Id": "rule_家族根基__雪诺",
+  "Keywords": [
+    "雪诺"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "琼恩·雪诺以北境私生子的姓氏进入长城，外貌比奈德·史塔克的婚生子女更像史塔克：长脸、灰眼、棕发和沉静神情既令他自豪，也不断提醒他在临冬城的尴尬位置。他珍视父亲教给他的荣誉，却不拘泥于刻板荣誉；长期被迫观察席间每一道目光，使他善于隐藏意图、衡量人心并在必要时说出不完整的真话。他的根基是黑衣誓言、北境教养、白灵的陪伴，以及对长城两侧活人命运的责任。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "守夜人兄弟对琼恩评价不一：有人看见领主之子的傲气，有人看见愿与新兵同吃同练的伙伴。真正跟他出过任务的人更清楚，他会冒险，但很少毫无打算地冒险。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "peasant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北境人第一眼常从琼恩脸上认出奈德·史塔克。那份相似能唤起信任，也会引出关于母亲与名分的窃语；无论答案是什么，他都无法像普通私生子那样躲开史塔克的影子。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "自由民不在乎“雪诺”是否合法，只看他说话算不算数、是否把他们当作人。琼恩懂得守夜人的纪律，也能理解不跪之民的骄傲，这让他有机会成为桥梁，也让双方都可能怀疑他。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待雪诺，会先看它的土地、婚盟、血脉和债务。雪诺势力围绕琼恩·雪诺在守夜人中的身份形成，他把史塔克教养、私生子处境、谋略与长城责任带入每次选择。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起雪诺时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。雪诺势力围绕琼恩·雪诺在守夜人中的身份形成，他把史塔克教养、私生子处境、谋略与长城责任带入每次选择。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意雪诺留下的仪式、墓地和传承。雪诺势力围绕琼恩·雪诺在守夜人中的身份形成，他把史塔克教养、私生子处境、谋略与长城责任带入每次选择。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见雪诺。雪诺势力围绕琼恩·雪诺在守夜人中的身份形成，他把史塔克教养、私生子处境、谋略与长城责任带入每次选择。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "雪诺：雪诺势力围绕琼恩·雪诺在守夜人中的身份形成，他把史塔克教养、私生子处境、谋略与长城责任带入每次选择。"
+  ]
+}

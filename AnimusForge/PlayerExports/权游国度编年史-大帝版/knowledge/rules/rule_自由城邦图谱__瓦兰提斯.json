@@ -1,0 +1,153 @@
+{
+  "Id": "rule_自由城邦图谱__瓦兰提斯",
+  "Keywords": [
+    "瓦兰提斯",
+    "洛恩河",
+    "黑墙",
+    "老血",
+    "老虎党",
+    "大象党",
+    "红神庙"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "瓦兰提斯横跨洛恩河下游，是自由城邦中最古老、也最执着于自称继承瓦雷利亚旧梦的城市之一。黑墙以内住着老血贵族，墙外则是码头、市场、神庙、工坊、奴隶与来自四方的移民。老虎党歌颂扩张、军功和昔日自由堡垒的威严；大象党偏爱贸易、安定和缓慢增殖的财富。两种口号都离不开河运、港口、庄园与被奴役者的劳作。红神庙在此格外庞大，火焰、游行与预言能把街头情绪卷入政治。瓦兰提斯的统治者会轮换，黑墙的阶层、洛恩河的财富与瓦雷利亚怀旧造成的裂缝却不会轻易消失。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对黑墙里的老血而言，瓦兰提斯应当记得谁的血统更接近旧瓦雷利亚；对河港商人而言，城市应当记得哪一艘船按时到港。两者的争执有时披着选举和派系的衣裳，本质却是同一个问题：这座城要靠祖先的名字活下去，还是靠今日的货物活下去。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave",
+          "artisan",
+          "sailor",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "墙外的人很少有闲心谈祖先。对桨手、码头工、奴隶和小贩来说，河水涨落、监督者的鞭子、市场的价格和神庙施不施粥，才是一天真正的政治。红神祭司向穷人许诺光与未来，老血贵族则在高墙后谈荣耀；两种声音都会传到河边，只是落在每个人身上的分量不同。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire",
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "维斯特洛来客常为黑墙与河上长桥震慑；布拉佛斯人先看见奴隶锁链；草原人则看见一座把太多人塞进石头里的城市。瓦兰提斯欢迎外国货物，却从不让外来人忘记：这里相信自己曾是世界中心，并愿意为这个记忆付出别人的代价。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在领主和商人眼中，瓦兰提斯首先是地图上的一处要害。洛恩河上的古老自由城邦。黑墙内的老血贵族与墙外的港口、奴隶和移民构成深刻阶层；老虎党、大象党、河运和红神庙共同塑造城市。他们关心水源、道路、税关和守军，知道地名背后往往连着一条能让城堡活下去的粮道。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈到瓦兰提斯时，记住的不是边界线，而是风向、坡度、渡口和能否在天黑前找到避难处。洛恩河上的古老自由城邦。黑墙内的老血贵族与墙外的港口、奴隶和移民构成深刻阶层；老虎党、大象党、河运和红神庙共同塑造城市。一处地形的名声，常由死在那里的人的数量决定。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从另一面理解瓦兰提斯。洛恩河上的古老自由城邦。黑墙内的老血贵族与墙外的港口、奴隶和移民构成深刻阶层；老虎党、大象党、河运和红神庙共同塑造城市。石头、林木、河流或山口既能成为谋生之所，也可能被赋予圣洁、禁忌和祖先记忆，因而不能只用金钱衡量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民对瓦兰提斯的看法最实际。洛恩河上的古老自由城邦。黑墙内的老血贵族与墙外的港口、奴隶和移民构成深刻阶层；老虎党、大象党、河运和红神庙共同塑造城市。他们先看这里能否取水、耕作、放牧和躲过兵灾；地图上的一行字，落到村里便是柴薪、井绳和过冬的粮。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "瓦兰提斯：洛恩河上的古老自由城邦。黑墙内的老血贵族与墙外的港口、奴隶和移民构成深刻阶层；老虎党、大象党、河运和红神庙共同塑造城市。"
+  ]
+}

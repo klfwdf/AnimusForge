@@ -188,6 +188,23 @@ Test.True(tournamentParticipantPromptContract.Success
     && !tournamentParticipantSummaryContract.Value.Contains("list.Count >= 8", StringComparison.Ordinal)
     && !tournamentParticipantSummaryContract.Value.Contains(".Take(8)", StringComparison.Ordinal),
     "tournament prompt context must keep the champion and every participant, including non-Hero entrants, without an eight-person cap");
+Match tournamentRankContract = Regex.Match(myBehavior,
+    @"private static Dictionary<string, string> BuildTournamentParticipantRankLabels\(.*?(?=\r?\n\s*private static Kingdom ResolveTournamentHostKingdom)",
+    RegexOptions.Singleline);
+Test.True(tournamentRankContract.Success
+    && tournamentRankContract.Value.Contains("Mission.Current?.GetMissionBehavior<TournamentBehavior>()", StringComparison.Ordinal)
+    && tournamentRankContract.Value.Contains("missionBehavior.Settlement?.Town != town", StringComparison.Ordinal)
+    && tournamentRankContract.Value.Contains("missionBehavior.Winner?.Character != winner", StringComparison.Ordinal)
+    && tournamentRankContract.Value.Contains("foreach (TournamentMatch match in tournamentRound.Matches)", StringComparison.Ordinal)
+    && tournamentRankContract.Value.Contains("foreach (TournamentParticipant participant in match.Participants)", StringComparison.Ordinal)
+    && tournamentRankContract.Value.Contains("冠军（第1名）", StringComparison.Ordinal)
+    && tournamentRankContract.Value.Contains("亚军（第2名）", StringComparison.Ordinal)
+    && tournamentRankContract.Value.Contains("四强（并列第3名）", StringComparison.Ordinal)
+    && tournamentRankContract.Value.Contains("八强（并列第5名）", StringComparison.Ordinal)
+    && tournamentRankContract.Value.Contains("十六强（并列第9名）", StringComparison.Ordinal)
+    && !tournamentRankContract.Value.Contains("GetLeaderBoardRank", StringComparison.Ordinal)
+    && !tournamentRankContract.Value.Contains("TournamentParticipant.Score", StringComparison.Ordinal),
+    "tournament placement prompt context must derive only truthful bracket tiers from the completed live tournament tree");
 Test.True(rewardSystem.Contains("itemName = requestedName;", StringComparison.Ordinal), "generated RP item must report the requested postprocess name");
 Test.True(rewardSystem.Contains("[RewardRpLiteral] generated", StringComparison.Ordinal), "literal RP generation diagnostic missing");
 MatchCollection inventoryFirstRoutes = Regex.Matches(rewardSystem,

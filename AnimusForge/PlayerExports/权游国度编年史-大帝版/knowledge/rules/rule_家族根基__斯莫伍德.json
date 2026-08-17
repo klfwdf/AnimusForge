@@ -1,0 +1,132 @@
+{
+  "Id": "rule_家族根基__斯莫伍德",
+  "Keywords": [
+    "斯莫伍德",
+    "斯莫伍德家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "斯莫伍德家族统治橡果厅，黄色底上的六枚棕色橡果是其纹章。橡果厅周围的林地、牧场和农庄构成家业，家族向奔流城体系承担义务。这里既是贵族宅邸，也是储粮、裁断与庇护当地人的中心。橡果很小，却能长成大树；斯莫伍德的名望同样来自一代代积累，而不是一次耀眼的胜利。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河间地领主认为斯莫伍德是可靠的地方家门。橡果厅位于容易受军队波及的土地上，能保存粮秣、约束部众并维护林道，本身就是难得的本领。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "林农、猎户和牧人熟悉橡果厅的界石与林权。他们赞扬允许捡柴、在灾年开仓的领主，也会痛恨把整片树林圈作贵族猎场的人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待斯莫伍德，会先看它的土地、婚盟、血脉和债务。斯莫伍德家族以橡果厅为席位，六枚棕色橡果象征其河间地林野庄园与封臣责任。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起斯莫伍德时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。斯莫伍德家族以橡果厅为席位，六枚棕色橡果象征其河间地林野庄园与封臣责任。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意斯莫伍德留下的仪式、墓地和传承。斯莫伍德家族以橡果厅为席位，六枚棕色橡果象征其河间地林野庄园与封臣责任。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见斯莫伍德。斯莫伍德家族以橡果厅为席位，六枚棕色橡果象征其河间地林野庄园与封臣责任。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "斯莫伍德：斯莫伍德家族以橡果厅为席位，六枚棕色橡果象征其河间地林野庄园与封臣责任。"
+  ]
+}

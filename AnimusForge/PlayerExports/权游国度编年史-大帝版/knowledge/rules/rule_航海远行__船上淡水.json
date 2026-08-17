@@ -1,0 +1,147 @@
+{
+  "Id": "rule_航海远行__船上淡水",
+  "Keywords": [
+    "船上淡水"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "淡水是远航最严格的限制之一，通常储存在木桶中并按日配给。水会变味、滋生污物或因桶裂流失；船只因此必须计算补水港和雨季，缺水往往比缺粮更快摧毁纪律。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "水手与沿岸居民谈起船上淡水时，先看风、潮和船况。淡水是远航最严格的限制之一，通常储存在木桶中并按日配给。水会变味、滋生污物或因桶裂流失；船只因此必须计算补水港和雨季，缺水往往比缺粮更快摧毁纪律。海上的规矩最终都要经得住湿绳、坏水和突然转向的天气。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主与士兵把船上淡水放在舰队、补给和港口防务中衡量。淡水是远航最严格的限制之一，通常储存在木桶中并按日配给。水会变味、滋生污物或因桶裂流失；船只因此必须计算补水港和雨季，缺水往往比缺粮更快摧毁纪律。任何海上计划若忽略船员体力与返航条件，胜利也可能变成漂流。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商人、学士和旅人关心船上淡水如何改变航程、价格与消息速度。淡水是远航最严格的限制之一，通常储存在木桶中并按日配给。水会变味、滋生污物或因桶裂流失；船只因此必须计算补水港和雨季，缺水往往比缺粮更快摧毁纪律。一次判断失误会同时损失货物、信用和性命。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人愿意为可靠的船上淡水投入金钱，因为海路能在陆路断绝时继续搬运粮食与军队。淡水是远航最严格的限制之一，通常储存在木桶中并按日配给。水会变味、滋生污物或因桶裂流失；船只因此必须计算补水港和雨季，缺水往往比缺粮更快摧毁纪律。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵与远行者更在意船上淡水能否让人活着抵港。淡水是远航最严格的限制之一，通常储存在木桶中并按日配给。水会变味、滋生污物或因桶裂流失；船只因此必须计算补水港和雨季，缺水往往比缺粮更快摧毁纪律。船上没有多余道路可供绕行，错误往往只能由整船人共同承担。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者从修船、誓言和海葬中理解船上淡水。淡水是远航最严格的限制之一，通常储存在木桶中并按日配给。水会变味、滋生污物或因桶裂流失；船只因此必须计算补水港和雨季，缺水往往比缺粮更快摧毁纪律。木料与绳结维持船体，信仰则帮助人面对无法控制的海。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "普通港民通过鱼价、失踪船只和码头工作认识船上淡水。淡水是远航最严格的限制之一，通常储存在木桶中并按日配给。水会变味、滋生污物或因桶裂流失；船只因此必须计算补水港和雨季，缺水往往比缺粮更快摧毁纪律。远方海面上的变化，常会在第二天变成市场里的空摊位。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "船上淡水：淡水是远航最严格的限制之一，通常储存在木桶中并按日配给。水会变味、滋生污物或因桶裂流失；船只因此必须计算补水港和雨季，缺水往往比缺粮更快摧毁纪律。"
+  ]
+}

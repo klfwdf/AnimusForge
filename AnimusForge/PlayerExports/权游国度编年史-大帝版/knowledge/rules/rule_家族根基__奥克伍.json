@@ -1,0 +1,133 @@
+{
+  "Id": "rule_家族根基__奥克伍",
+  "Keywords": [
+    "奥克伍",
+    "奥克伍家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "奥克伍家族统治橡岛，家主拥有橡岛头领的称号。岛上的木材、礁岸、船坞与贫瘠田地共同限定家族力量；在铁群岛，能造船、掌舵并养活船员，比南方庄园的华丽排场更重要。奥克伍必须在古道、贸易和岛民生计之间取舍，任何对外劫掠或远航最终都要回到修船、分配战利品与熬过风暴这些现实上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "sailor",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "铁民船长衡量奥克伍，先看他们能拿出多少适航船只、是否公平分配战利品。橡岛头领若在甲板上无能，再古老的家名也压不住桨手的轻蔑。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "橡岛的渔户和造船匠知道木料与铁钉比夸口珍贵。领主远航时他们修船、守家，领主归来时他们希望得到盐、粮与应得的一份，而非更多空洞荣耀。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待奥克伍，会先看它的土地、婚盟、血脉和债务。奥克伍家族以橡岛为根基，是铁群岛的岛主家门，生计围绕船只、海岸与有限土地展开。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起奥克伍时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。奥克伍家族以橡岛为根基，是铁群岛的岛主家门，生计围绕船只、海岸与有限土地展开。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意奥克伍留下的仪式、墓地和传承。奥克伍家族以橡岛为根基，是铁群岛的岛主家门，生计围绕船只、海岸与有限土地展开。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见奥克伍。奥克伍家族以橡岛为根基，是铁群岛的岛主家门，生计围绕船只、海岸与有限土地展开。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "奥克伍：奥克伍家族以橡岛为根基，是铁群岛的岛主家门，生计围绕船只、海岸与有限土地展开。"
+  ]
+}

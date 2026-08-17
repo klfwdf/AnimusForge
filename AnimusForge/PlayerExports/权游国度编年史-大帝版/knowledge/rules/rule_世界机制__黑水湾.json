@@ -1,0 +1,155 @@
+{
+  "Id": "rule_世界机制__黑水湾",
+  "Keywords": [
+    "黑水湾",
+    "君临海门",
+    "龙石岛航道",
+    "黑水河口"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "黑水湾承接黑水河注入狭海，君临建在河口北岸，龙石岛与多座小岛守望通向外海的道路。首都大量粮食、柴薪和货物经湾内码头抵达，王家舰队与商船共享锚地、潮道和领航需求。敌方若控制湾口，可以威胁补给与登陆；守方若封锁河道，也必须为拥挤船只、火攻和风向负责。黑水河之战使野火与燃烧舰船成为湾内最骇人的记忆之一，但即使没有战争，淤积、走私和粮船延误也足以让君临不安。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "merchant",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "君临码头人从帆数和吃水判断城里会不会涨价。王座厅还在争论时，粮船少了几艘已经足以让跳蚤窝排起长队。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands",
+          "dragonstone"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "王领与龙石岛将领都把黑水湾视作通往首都的钥匙。舰队若不熟潮汐和河口，再多船也可能在狭窄水面互相妨碍。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "外来者容易从湾面看见红堡与财富，亲历火战的人却会记得绿色火焰如何映亮整片水。海湾的平静从此总带一点不可信。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把黑水湾看成可执行的秩序。君临、龙石岛与狭海之间的战略水域，粮船、商港、舰队和黑水河口共同决定首都安危。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起黑水湾时，关心它如何影响道路、命令和安全。君临、龙石岛与狭海之间的战略水域，粮船、商港、舰队和黑水河口共同决定首都安危。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解黑水湾。君临、龙石岛与狭海之间的战略水域，粮船、商港、舰队和黑水河口共同决定首都安危。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到黑水湾的方式最小也最准确。君临、龙石岛与狭海之间的战略水域，粮船、商港、舰队和黑水河口共同决定首都安危。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "黑水湾：君临、龙石岛与狭海之间的战略水域，粮船、商港、舰队和黑水河口共同决定首都安危。"
+  ]
+}

@@ -1,0 +1,152 @@
+{
+  "Id": "rule_霜墙之外__艰难屯",
+  "Keywords": [
+    "艰难屯",
+    "港湾"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "艰难屯位于塞外东部的颤抖海岸，是自由民中少见的大型海岸聚落。它拥有可供船只靠泊的海湾，居民靠捕鱼、海上贸易、拾荒、狩猎和与南方偶发的交换维生。名称说明这里从不轻易：风暴、海冰、饥荒与部族冲突会把许多人逼到海边，却不能保证海会救他们。艰难屯比山中营地更接近外界，也更容易承受来自外界的谣言、疫病和船帆。它不是一座稳定的七国市镇，而是艰苦环境中不断聚散的人群。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谈到艰难屯，最可靠的判断来自亲身生活其中的人；眼前的利害不是抽象名词，而是每天要作出的取舍。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "掌权者、士兵与平民会从各自的位置理解艰难屯，他们的说法可能冲突，却共同决定它在世上留下的形状。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "wanderer",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "远方来客对艰难屯的印象往往来自片段消息；真正的分量要等道路、账簿和人的记忆彼此印证之后才显出来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把艰难屯看成可执行的秩序。艰难屯位于塞外东部的颤抖海岸，是自由民中少见的大型海岸聚落。它拥有可供船只靠泊的海湾，居民靠捕鱼、海上贸易、拾荒、狩猎和与南方偶发的交换维生。名称说明这里从不轻。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起艰难屯时，关心它如何影响道路、命令和安全。艰难屯位于塞外东部的颤抖海岸，是自由民中少见的大型海岸聚落。它拥有可供船只靠泊的海湾，居民靠捕鱼、海上贸易、拾荒、狩猎和与南方偶发的交换维生。名称说明这里从不轻。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解艰难屯。艰难屯位于塞外东部的颤抖海岸，是自由民中少见的大型海岸聚落。它拥有可供船只靠泊的海湾，居民靠捕鱼、海上贸易、拾荒、狩猎和与南方偶发的交换维生。名称说明这里从不轻。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到艰难屯的方式最小也最准确。艰难屯位于塞外东部的颤抖海岸，是自由民中少见的大型海岸聚落。它拥有可供船只靠泊的海湾，居民靠捕鱼、海上贸易、拾荒、狩猎和与南方偶发的交换维生。名称说明这里从不轻。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "艰难屯：艰难屯位于塞外东部的颤抖海岸，是自由民中少见的大型海岸聚落。它拥有可供船只靠泊的海湾，居民靠捕鱼、海上贸易、拾荒、狩猎和与南方偶发的交换维生。名称说明这里从不轻"
+  ]
+}

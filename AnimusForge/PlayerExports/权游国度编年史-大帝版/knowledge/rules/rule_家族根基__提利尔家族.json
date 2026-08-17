@@ -1,0 +1,154 @@
+{
+  "Id": "rule_家族根基__提利尔家族",
+  "Keywords": [
+    "提利尔家族",
+    "金玫瑰",
+    "生生不息"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "提利尔家族以高庭为根基，原为园丁王的总管；征服者伊耿焚毁末代园丁王后，提利尔因交出高庭而受封为河湾地统治者。绿底金玫瑰与“生生不息”很适合河湾地的田野、河流、繁衍和礼仪，也掩不住一个始终存在的事实：他们的权位来自受封，而非园丁王的血脉。因此提利尔的力量格外依赖把封臣、婚盟、粮食、旧镇、青亭岛与比武场上的声望编织成网络。有人轻视他们为总管之后，有人赞赏他们懂得让繁荣为自己说话；两种看法都承认，高庭的玫瑰若能一直供养众人，就很难被轻易连根拔起。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河湾诸侯向高庭俯首时，仍有人在心里背诵自己与园丁王的血缘。提利尔没有最古老的王族谱系，便更依赖礼仪、婚盟、职位、粮食和慷慨把众多强家门织在一起。玫瑰的刺不总露在外面，它更多藏在座次、婚约和谁能进入高庭花园之中。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户和粮商不太在意谁的祖母更接近园丁王。他们看高庭能否让曼德河畅通、谷仓有价、道路少盗匪。提利尔的繁荣若让普通人也能吃饱，金玫瑰便确实生生不息；若丰收只堆进贵族仓房，刺会先扎进佃户手里。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai",
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "邻国贵族把提利尔看成善于把婚礼、比武和宴席变成政治的人。有人轻视这种柔软，直到发现河湾的粮食能养活大军，青亭岛的船能封住海路。玫瑰很少像巨剑那样吓人，却能决定握剑者多久之后开始挨饿。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待提利尔家族，会先看它的土地、婚盟、血脉和债务。高庭的金玫瑰家族，原为园丁王总管，征服后受封统治河湾。箴言“生生不息”与粮食、婚盟和封臣网络相连，也始终伴随血统正统性的议论。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起提利尔家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。高庭的金玫瑰家族，原为园丁王总管，征服后受封统治河湾。箴言“生生不息”与粮食、婚盟和封臣网络相连，也始终伴随血统正统性的议论。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意提利尔家族留下的仪式、墓地和传承。高庭的金玫瑰家族，原为园丁王总管，征服后受封统治河湾。箴言“生生不息”与粮食、婚盟和封臣网络相连，也始终伴随血统正统性的议论。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见提利尔家族。高庭的金玫瑰家族，原为园丁王总管，征服后受封统治河湾。箴言“生生不息”与粮食、婚盟和封臣网络相连，也始终伴随血统正统性的议论。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "提利尔家族：高庭的金玫瑰家族，原为园丁王总管，征服后受封统治河湾。箴言“生生不息”与粮食、婚盟和封臣网络相连，也始终伴随血统正统性的议论。"
+  ]
+}

@@ -1,0 +1,152 @@
+{
+  "Id": "rule_地理档案__弥林",
+  "Keywords": [
+    "弥林",
+    "奴隶湾",
+    "吉斯",
+    "大金字塔",
+    "鹰身女妖",
+    "砖墙"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "弥林位于奴隶湾北部海岸、斯卡哈扎丹河口附近，是奴隶湾诸城中规模最大、腹地最广的一座。多彩砖墙、阶梯金字塔、大金字塔、港口和鹰身女妖图案保存着吉斯卡利城邦的等级传统，灌溉庄园与跨海贸易则养活城中权贵、市民、工匠和庞大劳役人口。丹妮莉丝成为奴隶湾之主后，弥林也成为旧奴隶秩序、获释者诉求、商贸利益与新统治责任彼此碰撞的中心；无论谁坐在高处，城市都必须面对粮食、水利、疾病、治安和各阶层如何共同生活。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "弥林旧家族习惯把金字塔、古老姓氏和鹰身女妖视为天经地义的秩序；商人则知道，秩序若不能让港口开张、作坊运转、粮食入城，再高的金字塔也只是昂贵的石头。城里每一次有关传统的争执，都不只关乎礼节，也关乎谁有权命令人劳动、买卖和低头。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave",
+          "peasant",
+          "artisan",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对曾经被卖过、鞭打过或被迫服役的人而言，弥林的砖墙从来不是古迹。它们记得主人、账本、锁链和斗技场的叫喊。可自由若只是一句命令，也会带来另一种艰难：人需要工作、住所、亲人和不必回头张望的夜晚。弥林的街巷里，盼望改变与害怕改变往往住在同一扇门后。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait",
+          "volantine"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "维斯特洛人会把弥林看成遥远而炎热的异国大城；多斯拉克人看见可掠夺也可交易的石头巢穴；瓦兰提斯商人则看见一处会改变海湾账目的市场。外来者总以为自己能迅速判断这里的对错，真正住在金字塔阴影下的人却知道，旧秩序留下的东西比旗帜难以搬走得多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在领主和商人眼中，弥林首先是地图上的一处要害。奴隶湾北岸的吉斯卡利金字塔之城。砖墙、鹰身女妖、港口与旧奴隶经济塑造其阶层；无论统治者如何更换，新旧秩序的伤痕都留在城市生活里。他们关心水源、道路、税关和守军，知道地名背后往往连着一条能让城堡活下去的粮道。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈到弥林时，记住的不是边界线，而是风向、坡度、渡口和能否在天黑前找到避难处。奴隶湾北岸的吉斯卡利金字塔之城。砖墙、鹰身女妖、港口与旧奴隶经济塑造其阶层；无论统治者如何更换，新旧秩序的伤痕都留在城市生活里。一处地形的名声，常由死在那里的人的数量决定。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从另一面理解弥林。奴隶湾北岸的吉斯卡利金字塔之城。砖墙、鹰身女妖、港口与旧奴隶经济塑造其阶层；无论统治者如何更换，新旧秩序的伤痕都留在城市生活里。石头、林木、河流或山口既能成为谋生之所，也可能被赋予圣洁、禁忌和祖先记忆，因而不能只用金钱衡量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民对弥林的看法最实际。奴隶湾北岸的吉斯卡利金字塔之城。砖墙、鹰身女妖、港口与旧奴隶经济塑造其阶层；无论统治者如何更换，新旧秩序的伤痕都留在城市生活里。他们先看这里能否取水、耕作、放牧和躲过兵灾；地图上的一行字，落到村里便是柴薪、井绳和过冬的粮。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "弥林：弥林位于奴隶湾北部海岸、斯卡哈扎丹河口附近，是奴隶湾诸城中规模最大、腹地最广的一座。多彩砖墙、阶梯金字塔、大金字塔、港口和鹰身女妖图案保存着吉斯卡利城邦的等级传统，灌溉庄园与跨海贸易则养活城中权贵、市民、工匠和庞大劳役人口。丹妮莉丝成为奴隶湾之主后，弥林也成为旧奴隶秩序、获释者诉求、商贸利益与新统治责任彼此碰撞的中心；无论谁坐在高处，城市都必须面对粮食、水利、疾病、治安和各阶层如何共同生活。"
+  ]
+}

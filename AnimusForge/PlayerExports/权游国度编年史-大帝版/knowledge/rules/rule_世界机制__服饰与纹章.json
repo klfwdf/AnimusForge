@@ -1,0 +1,150 @@
+{
+  "Id": "rule_世界机制__服饰与纹章",
+  "Keywords": [
+    "服饰",
+    "纹章",
+    "家徽",
+    "旗帜",
+    "身份"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "维斯特洛的身份常穿在身上。贵族使用家徽颜色、刺绣、珠宝、毛皮和昂贵染料表明血统与财富，骑士在盾牌、罩袍和马衣上绘制纹章，士兵靠旗帜在混战中辨认集结方向。学士颈链、修士粗袍、守夜人黑衣和城防军制服也把职业与誓言变成可见标记。纹章需要被识别才有力量，传令官与侍从因此学习各家图案。它能带来礼遇，也会在仇敌控制的道路上把一个人变成最醒目的俘虏。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贵族把纹章视作祖先与权利，战士则把它当作烟尘中的方向。旗倒下时，哪怕军队尚未战败，恐慌也可能先开始。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "裁缝、染匠、甲匠和画师知道体面需要钱与手艺。年轻骑士越想显赫，越可能在账房里欠下与披风同样鲜艳的债。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "wanderer",
+          "slave"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "普通人从旗帜判断该欢呼、躲避还是准备交粮。他们未必读得出复杂族谱，却能记住哪一种颜色曾带走自家的马。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把服饰看成可执行的秩序。服饰与纹章：颜色、布料、徽记和旗帜使家族、阶层、职业与效忠关系在远处可见，也可能把穿戴者变成目标。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起服饰时，关心它如何影响道路、命令和安全。服饰与纹章：颜色、布料、徽记和旗帜使家族、阶层、职业与效忠关系在远处可见，也可能把穿戴者变成目标。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解服饰。服饰与纹章：颜色、布料、徽记和旗帜使家族、阶层、职业与效忠关系在远处可见，也可能把穿戴者变成目标。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到服饰的方式最小也最准确。服饰与纹章：颜色、布料、徽记和旗帜使家族、阶层、职业与效忠关系在远处可见，也可能把穿戴者变成目标。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "服饰与纹章：颜色、布料、徽记和旗帜使家族、阶层、职业与效忠关系在远处可见，也可能把穿戴者变成目标。"
+  ]
+}

@@ -1,0 +1,150 @@
+{
+  "Id": "rule_世界机制__季风与远航",
+  "Keywords": [
+    "季风",
+    "远航",
+    "领航",
+    "补水港",
+    "海上季节"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "远航不是沿海短程航行的简单延长。船长要判断季节风、洋流、风暴带和适合补水的港口，还要计算船体吃水、帆索损耗、食物腐坏与船员疾病。顺风能让数周航程大幅缩短，逆风则可能迫使船在陌生海岸过季；一处港口拒绝补给，整条计划都会改变。星辰、罗盘、铅锤和世代口传的航路知识彼此配合，没有哪一种工具能替代经验。商人以抵达日期估算利润，水手知道海从不为账本守时。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "老水手宁愿错过高价，也不愿为催促在坏风里离港。岸上的人把等待称作胆怯，见过断桅和坏水的人把它称作活命。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "notable",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "出资者计算货价、利息和迟到损失，却必须把最终判断交给船长。若每次都用债务逼船冒险，迟早会得到一份无人归来偿还的账。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "peasant",
+          "slave"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "造帆、制桶、腌食和搬水的人很少出现在远航故事里，却决定船能撑多久。被迫登船者则最清楚，所谓探险也可能只是别人为自己选择的危险。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把季风看成可执行的秩序。季风与远航：远洋船只必须顺应季节风、潮流与补水条件，任何航期都受自然、船况和人心共同约束。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起季风时，关心它如何影响道路、命令和安全。季风与远航：远洋船只必须顺应季节风、潮流与补水条件，任何航期都受自然、船况和人心共同约束。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解季风。季风与远航：远洋船只必须顺应季节风、潮流与补水条件，任何航期都受自然、船况和人心共同约束。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到季风的方式最小也最准确。季风与远航：远洋船只必须顺应季节风、潮流与补水条件，任何航期都受自然、船况和人心共同约束。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "季风与远航：远洋船只必须顺应季节风、潮流与补水条件，任何航期都受自然、船况和人心共同约束。"
+  ]
+}

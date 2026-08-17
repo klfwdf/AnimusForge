@@ -1,0 +1,154 @@
+{
+  "Id": "rule_家族根基__马泰尔家族",
+  "Keywords": [
+    "马泰尔家族",
+    "多恩亲王",
+    "太阳穿矛",
+    "不屈不挠百折不回"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "马泰尔家族以阳戟城为根基，其家名与洛伊拿女王娜梅莉亚及她的丈夫莫尔斯·马泰尔的结合密不可分。橙红日轮被金矛贯穿的纹章象征娜梅莉亚的太阳与莫尔斯的矛；“不屈不挠，百折不回”则是多恩在征服、战争与干旱中保留自我的语言。马泰尔称亲王而非领主，承认长女可继承，与盐岸、沙地、石地多恩人的差异、绿血河的洛伊拿遗产和边疆的旧仇共处。多恩最终以婚盟加入七国，却从不把这件事理解成屈膝；因此马泰尔的政治往往显得耐心、隐忍而重视记忆。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "多恩诸侯尊马泰尔为亲王，却由盐岸、沙地和石地各自理解阳戟城。伊伦伍德记得旧王权，佛勒与戴恩守着自己的古老荣耀；马泰尔的本事不在抹平差异，而在让这些骄傲仍愿意共处于太阳与长矛之下。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "绿血河船民、沙漠牧人和阳戟城商贩对马泰尔有不同需求，却都知道水比冠冕更实际。亲王若能保护水井、商道和多恩人的习俗，“不屈不挠”便属于全境；若只顾宫廷旧仇，这句话就会变成宫墙上的回声。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach",
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河湾与风暴地的边疆家族谈马泰尔时，敬意常与怨恨同桌。他们记得山口、突袭和烧不尽的多恩，也不得不承认阳戟城靠耐心与地形守住了别处用刀剑夺不走的尊严。太阳看似遥远，长矛却一直朝北。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待马泰尔家族，会先看它的土地、婚盟、血脉和债务。阳戟城的多恩亲王家族，源于莫尔斯·马泰尔与娜梅莉亚的结合。太阳穿矛与“不屈不挠，百折不回”体现洛伊拿遗产、长女继承和多恩不以婚盟等同屈服的传统。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起马泰尔家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。阳戟城的多恩亲王家族，源于莫尔斯·马泰尔与娜梅莉亚的结合。太阳穿矛与“不屈不挠，百折不回”体现洛伊拿遗产、长女继承和多恩不以婚盟等同屈服的传统。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意马泰尔家族留下的仪式、墓地和传承。阳戟城的多恩亲王家族，源于莫尔斯·马泰尔与娜梅莉亚的结合。太阳穿矛与“不屈不挠，百折不回”体现洛伊拿遗产、长女继承和多恩不以婚盟等同屈服的传统。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见马泰尔家族。阳戟城的多恩亲王家族，源于莫尔斯·马泰尔与娜梅莉亚的结合。太阳穿矛与“不屈不挠，百折不回”体现洛伊拿遗产、长女继承和多恩不以婚盟等同屈服的传统。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "马泰尔家族：阳戟城的多恩亲王家族，源于莫尔斯·马泰尔与娜梅莉亚的结合。太阳穿矛与“不屈不挠，百折不回”体现洛伊拿遗产、长女继承和多恩不以婚盟等同屈服的传统。"
+  ]
+}

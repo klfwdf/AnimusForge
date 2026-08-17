@@ -1,0 +1,128 @@
+{
+  "Id": "rule_人间风俗__名字与家名",
+  "Keywords": [
+    "名字与家名"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "名字会暴露地域、信仰、家世与父母的野心。贵族用祖辈之名维系传承，私生子从地域姓氏中听见一道看不见的界线，平民的名字或许从未进入家谱，却同样会被亲人认真地叫上一生。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贵族在名字与家名里辨认血脉与体面，乡绅在意邻里是否守规矩，祭司则提醒人们礼节背后的禁忌；身份与礼数使习惯变成可以传下去的秩序。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谈到名字与家名，农户、工匠和商人不总能负担完整的礼数，却会保留最要紧的部分：称呼、座次、赠礼和道歉；失礼有时比少一袋粮更快招来麻烦。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵与旅人穿过不同地域时，最容易在名字与家名上犯错；懂得先观察再开口的人，往往比自称见多识广的人更快取得信任。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把名字与家名看成可执行的秩序。名字会暴露地域、信仰、家世与父母的野心。贵族用祖辈之名维系传承，私生子从地域姓氏中听见一道看不见的界线，平民的名字或许从未进入家谱，却同样会被亲人认真地叫上一生。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解名字与家名。名字会暴露地域、信仰、家世与父母的野心。贵族用祖辈之名维系传承，私生子从地域姓氏中听见一道看不见的界线，平民的名字或许从未进入家谱，却同样会被亲人认真地叫上一生。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到名字与家名的方式最小也最准确。名字会暴露地域、信仰、家世与父母的野心。贵族用祖辈之名维系传承，私生子从地域姓氏中听见一道看不见的界线，平民的名字或许从未进入家谱，却同样会被亲人认真地叫上一生。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "名字与家名：名字会暴露地域、信仰、家世与父母的野心。贵族用祖辈之名维系传承，私生子从地域姓氏中听见一道看不见的界线，平民的名字或许从未进入家谱，却同样会被亲人认真地叫上一生"
+  ]
+}

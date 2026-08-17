@@ -38,6 +38,7 @@ internal static class Program
         string client = ReadRepositoryFile("WorldDiplomacyLlmClient.cs");
 
         VerifyDefaultsAndRanges(settings);
+        VerifyDeclarationLengthSettingsAndPromptContract(settings, behavior);
         VerifyIndependentSettingsAndMcmOrder(settings, behavior);
         VerifyPersistentMigration(settings);
         VerifyWorldDiplomacyPromptV5Migration(settings);
@@ -74,6 +75,55 @@ internal static class Program
 			"threat-compliance issuer relation reward must support disabling at zero");
 		Test.Equal(10, ReadIntConstant(settings, "DefaultWorldDiplomacyThreatComplianceIssuerRelationReward"),
 			"threat-compliance issuer relation reward must default to 10");
+    }
+
+    private static void VerifyDeclarationLengthSettingsAndPromptContract(string settings, string behavior)
+    {
+        Test.Equal(1, ReadIntConstant(settings, "WorldDiplomacyDeclarationCharactersMin"),
+            "declaration length must allow a one-character lower bound");
+        Test.Equal(1000, ReadIntConstant(settings, "WorldDiplomacyDeclarationCharactersMax"),
+            "declaration length must retain the selected 1000-character upper bound");
+        Test.Equal(40, ReadIntConstant(settings, "DefaultWorldDiplomacyDeclarationMinCharacters"),
+            "declaration minimum must default to 40 characters");
+        Test.Equal(200, ReadIntConstant(settings, "DefaultWorldDiplomacyDeclarationMaxCharacters"),
+            "declaration maximum must default to 200 characters");
+
+        string[] properties =
+        {
+            "WorldDiplomacyDeclarationMinCharacters",
+            "WorldDiplomacyDeclarationMaxCharacters"
+        };
+        int[] orders = properties.Select(property => ReadPrecedingMcmOrder(settings, property)).ToArray();
+        Test.True(orders.SequenceEqual(new[] { 8, 9 }),
+            "declaration length controls must occupy the reserved AI-diplomacy orders 8 and 9");
+
+        string rangeHelper = ExtractSection(
+            behavior,
+            "private static void GetDiplomaticDeclarationCharacterRange(out int minimumCharacters, out int maximumCharacters)",
+            "private static bool IsWorldDiplomacyEnabled()");
+        string compactRangeHelper = CompactWhitespace(rangeHelper);
+        Test.True(compactRangeHelper.Contains("DuelSettings.WorldDiplomacyDeclarationCharactersMin", StringComparison.Ordinal)
+                  && compactRangeHelper.Contains("DuelSettings.WorldDiplomacyDeclarationCharactersMax", StringComparison.Ordinal),
+            "declaration range must clamp both MCM values to the configured bounds");
+        Test.True(compactRangeHelper.Contains("maximumCharacters = Math.Max(minimumCharacters, configuredMaximumCharacters);", StringComparison.Ordinal),
+            "an inverted declaration range must normalize its maximum to the minimum");
+        Test.True(rangeHelper.Contains("DuelSettings.DefaultWorldDiplomacyDeclarationMinCharacters", StringComparison.Ordinal)
+                  && rangeHelper.Contains("DuelSettings.DefaultWorldDiplomacyDeclarationMaxCharacters", StringComparison.Ordinal),
+            "declaration range must fall back to the selected defaults when settings are unavailable");
+
+        string writingContract = ExtractSection(
+            behavior,
+            "private static void AppendDiplomaticDeclarationWritingContract(StringBuilder sb)",
+            "private static string BuildDiplomaticDeclarationModeContract()");
+        Test.True(writingContract.Contains(
+                "GetDiplomaticDeclarationCharacterRange(out int minimumCharacters, out int maximumCharacters);",
+                StringComparison.Ordinal),
+            "the declaration writing contract must resolve the live MCM character range");
+        Test.True(writingContract.Contains("正文必须最少", StringComparison.Ordinal)
+                  && writingContract.Contains("个中文字符（标点计入）", StringComparison.Ordinal),
+            "the declaration writing contract must state the dynamic Chinese-character range including punctuation");
+        Test.True(!writingContract.Contains("字数为100字以内", StringComparison.Ordinal),
+            "the retired fixed 100-character declaration requirement must be removed");
     }
 
     private static void VerifyIndependentSettingsAndMcmOrder(string settings, string behavior)
@@ -215,10 +265,10 @@ internal static class Program
 
     private static void VerifyStaticModeContractsAndPromptMigration(string behavior)
     {
-		Test.Equal(21, ReadIntConstant(behavior, "DiplomacyPromptContractVersion"),
-			"the warning-as-war-condemnation contract must advance the prompt contract version");
-		Test.Equal("diplomacy-history:v21", ReadStringConstant(behavior, "CanonicalHistoryCacheAffinityKey"),
-			"the changed shared system prefix must advance canonical-history cache affinity");
+		Test.Equal(22, ReadIntConstant(behavior, "DiplomacyPromptContractVersion"),
+			"the configurable declaration-length contract must advance the prompt contract version");
+		Test.Equal("diplomacy-history:v22", ReadStringConstant(behavior, "CanonicalHistoryCacheAffinityKey"),
+			"the configurable declaration-length prefix must advance canonical-history cache affinity");
         Test.Equal("【AI外交固定任务MODE分派】", ReadStringConstant(behavior, "DiplomacyModeDispatchContractMarker"),
             "the static system prefix must expose an explicit mode dispatcher");
         Test.Equal("【MODE=DECLARE 固定任务合同】", ReadStringConstant(behavior, "DiplomaticDeclarationModeContractMarker"),

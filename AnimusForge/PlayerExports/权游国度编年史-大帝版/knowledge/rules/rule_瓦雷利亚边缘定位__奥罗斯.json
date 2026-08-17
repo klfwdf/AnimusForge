@@ -1,0 +1,153 @@
+{
+  "Id": "rule_瓦雷利亚边缘定位__奥罗斯",
+  "Keywords": [
+    "奥罗斯",
+    "烟海",
+    "遗迹"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "奥罗斯位于瓦雷利亚半岛的烟海边缘，是末日浩劫后仍残留名称的港址与废墟之一。它不属于七国，也缺乏稳定王权保护；火山、毒雾、破碎航道和关于失落财宝的传闻，使靠近者必须在贪欲与生存之间权衡。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "valyrian"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "外乡人记得奥罗斯的名字，本地人记得的却是井泉、田租、磨坊、林地和危急时能否进堡。当地家庭还要依靠危险海路、火山烟雾、废墟传闻与难以补充的淡水；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "valyrian"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主在厅堂里谈奥罗斯，经验老到的士兵却只问外墙、塔楼、水井、粮仓与最近的援军道路。奥罗斯处在瓦雷利亚半岛的权力与贸易网络中，城门内外的规矩由当地秩序决定；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "关于奥罗斯的消息传到远方，往往伴着领地税、庄园产物、驮队路程和堡下形成的小市集。他们还会辨认瓦雷利亚半岛的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谁在奥罗斯升起旗帜，谁就继承这里的旧债、旧臣与边界争端。奥罗斯处在瓦雷利亚半岛的权力与贸易网络中，城门内外的规矩由当地秩序决定；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "向导描述奥罗斯，总从坡势、城门、饮水与守军盘查外人的规矩讲起。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "工匠用双手丈量奥罗斯的石墙、木梁、铁门、墓窖和代代修补留下的接缝，祭司用仪式延续末日浩劫、龙王遗迹和水手不愿轻慢的禁忌。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "平民记住奥罗斯的方式，是哪一年开仓、哪一年征走最后一头牛。他们关心危险海路、火山烟雾、废墟传闻与难以补充的淡水，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "奥罗斯：奥罗斯位于瓦雷利亚半岛的烟海边缘，是末日浩劫后仍残留名称的港址与废墟之一。它不属于七国，也缺乏稳定王权保护；火山、毒雾、破碎航道和关于失落财宝的传闻，使靠近者必须在贪欲与生存之间权衡。"
+  ]
+}

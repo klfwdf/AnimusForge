@@ -1,0 +1,155 @@
+{
+  "Id": "rule_世界机制__曼德河水网",
+  "Keywords": [
+    "曼德河",
+    "河湾地水运",
+    "支流"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "曼德河及其众多支流贯穿河湾地肥沃平原，流经高庭附近，最终在盾牌列岛方向汇入日落之海。水网灌溉谷田、果园与葡萄园，推动磨坊，也让粮食、木材、酒桶和士兵能够沿河移动。河湾地的富庶不仅来自土壤，还来自把庄园产物送到市集和港口的低廉水运。桥梁、渡口与河港因此拥有政治分量；洪水、淤塞或敌军封锁某段航道，也会让远处粮价变化。曼德河养育骑士歌谣背后的全部日常劳动。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "sailor",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河湾农人看曼德河水色判断灌溉，船夫按浅滩和桥洞装货。贵族赞美金色田野，他们更清楚每一袋粮先经过多少泥、水和肩膀。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河湾权贵把河港、磨坊和桥税当作稳定收入，也必须防止征敛堵死贸易。河水会绕开石头，商路同样会绕开过分贪婪的关卡。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "铁民从海口看曼德河，看到的是深入富饶腹地的水路和盾牌列岛的防线。河湾人称它母亲，袭击者则会把每座粮仓视作目标。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把曼德河看成可执行的秩序。曼德河水网：河湾地的水运与灌溉骨架，串联高庭、农庄、磨坊和西岸河口，支撑七国最富饶地区。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起曼德河时，关心它如何影响道路、命令和安全。曼德河水网：河湾地的水运与灌溉骨架，串联高庭、农庄、磨坊和西岸河口，支撑七国最富饶地区。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解曼德河。曼德河水网：河湾地的水运与灌溉骨架，串联高庭、农庄、磨坊和西岸河口，支撑七国最富饶地区。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到曼德河的方式最小也最准确。曼德河水网：河湾地的水运与灌溉骨架，串联高庭、农庄、磨坊和西岸河口，支撑七国最富饶地区。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "曼德河水网：河湾地的水运与灌溉骨架，串联高庭、农庄、磨坊和西岸河口，支撑七国最富饶地区。"
+  ]
+}

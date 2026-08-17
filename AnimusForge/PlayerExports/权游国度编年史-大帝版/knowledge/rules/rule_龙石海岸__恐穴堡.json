@@ -1,0 +1,152 @@
+{
+  "Id": "rule_龙石海岸__恐穴堡",
+  "Keywords": [
+    "恐穴堡",
+    "恐穴"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "恐穴堡是王领沿海的一处城堡领，其名称保留了海岸地形带给人的阴郁印象。沿岸的洞穴、陡坡、林地或礁岸常使当地居民把自然危险写进地名；对陌生人而言，这些名字像威吓，对熟悉土地的人而言却只是风向、渔场和避雨处的标记。恐穴堡所处区域与黑水湾及狭海航线相连，因此既可能接触商船，也会听到走私者、海盗与远方战争的消息。它的固定价值是海岸观察和地方控制，不该被写成某一阵营永恒不变的前哨。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "从恐穴堡望出去，最贴近生活的并非纹章，而是潮汐、渔汛、淡水和船只能否安全靠岸。当地家庭还要依靠捕鱼、盐业、码头、火山石地与狭海航运；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "号角与旗帜之外，恐穴堡的防务依靠港湾入口、泊位、烽火与可供登陆的岸线。在七国的封建秩序中，恐穴堡的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "远行者在恐穴堡停留多久，取决于航期、码头脚费、补水和下一处避风港。他们还会辨认龙石岛海域的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "一纸封赐可以决定恐穴堡的主人，却不能立刻赢得附近人的服从。在七国的封建秩序中，恐穴堡的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "走过恐穴堡的士兵记得风向、礁石、渡船与城门落锁后的锚地。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "恐穴堡的匠人靠修船木、帆布、盐、鱼获和抵御海风的石料留下手艺，神职者则用七神与光之王信仰并存时留下的圣堂、火焰和旧龙记忆解释生死。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "住在领地下层的人用灶火和粮袋衡量恐穴堡。他们关心捕鱼、盐业、码头、火山石地与狭海航运，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "恐穴堡：恐穴堡是王领沿海的一处城堡领，其名称保留了海岸地形带给人的阴郁印象。沿岸的洞穴、陡坡、林地或礁岸常使当地居民把自然危险写进地名；对陌生人而言，这些名字像威吓，对熟悉土地的人而言却只是风向、渔场和避雨处的标记。恐穴堡所处区域与黑水湾及狭海航线相连，因此既可能接触商船，也会听到走私者、海盗与远方战争的消息。它的固定价值是海岸观察和地方控制，不该被写成某一阵营永恒不变的前哨。"
+  ]
+}

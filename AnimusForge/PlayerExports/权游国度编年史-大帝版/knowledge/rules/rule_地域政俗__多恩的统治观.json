@@ -1,0 +1,151 @@
+{
+  "Id": "rule_地域政俗__多恩的统治观",
+  "Keywords": [
+    "多恩的统治观"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "多恩的统治观由水源、洛伊拿遗绪、长女继承与边境记忆共同塑造。它不是一条抽象原则：上位者以此说明自己为何应被服从，下位者则以能否获得保护、食物与公道检验这份说辞。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谈到多恩的统治观，最可靠的判断来自亲身生活其中的人；眼前的利害不是抽象名词，而是每天要作出的取舍。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "掌权者、士兵与平民会从各自的位置理解多恩的统治观，他们的说法可能冲突，却共同决定它在世上留下的形状。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "wanderer",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "远方来客对多恩的统治观的印象往往来自片段消息；真正的分量要等道路、账簿和人的记忆彼此印证之后才显出来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把多恩的统治观看成可执行的秩序。多恩的统治观由水源、洛伊拿遗绪、长女继承与边境记忆共同塑造。它不是一条抽象原则：上位者以此说明自己为何应被服从，下位者则以能否获得保护、食物与公道检验这份说辞。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起多恩的统治观时，关心它如何影响道路、命令和安全。多恩的统治观由水源、洛伊拿遗绪、长女继承与边境记忆共同塑造。它不是一条抽象原则：上位者以此说明自己为何应被服从，下位者则以能否获得保护、食物与公道检验这份说辞。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解多恩的统治观。多恩的统治观由水源、洛伊拿遗绪、长女继承与边境记忆共同塑造。它不是一条抽象原则：上位者以此说明自己为何应被服从，下位者则以能否获得保护、食物与公道检验这份说辞。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到多恩的统治观的方式最小也最准确。多恩的统治观由水源、洛伊拿遗绪、长女继承与边境记忆共同塑造。它不是一条抽象原则：上位者以此说明自己为何应被服从，下位者则以能否获得保护、食物与公道检验这份说辞。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "多恩的统治观：多恩的统治观由水源、洛伊拿遗绪、长女继承与边境记忆共同塑造。它不是一条抽象原则：上位者以此说明自己为何应被服从，下位者则以能否获得保护、食物与公道检验这份说辞。"
+  ]
+}

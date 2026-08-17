@@ -1,0 +1,154 @@
+{
+  "Id": "rule_世界机制__绿先知",
+  "Keywords": [
+    "绿先知",
+    "绿之视野"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "绿先知是森林之子中极其罕见的天赋者，常兼具易形能力与“绿之视野”。他们可能在梦中看见相隔遥远的地点、尚未理解的象征，或透过鱼梁木触及被树木见证的往事。鱼梁木的寿命远长于人，刻面心树遍布古老神木林，使记忆像根系一样跨越地点；但所见并非一本按年月排好的史书，更不是随意改写未来的明令。象征会被误读，视角会受限制，知道某件事与有能力阻止它也完全不同。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "freefolk",
+          "battania",
+          "skagosi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "信奉旧神的人会在鱼梁木前保持敬畏，却未必能分清绿梦、普通梦和恐惧。真正谨慎的解释者少下断言，因为树看见许多，人只能接住碎片。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania",
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "普通北方人更愿意相信心树记得誓言，而不是每天都有人从树眼里窥视自己。绿先知对他们既像古老祝福，也像不该主动招惹的秘密。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "掌权者会渴望把绿之视野变成可靠情报，却容易失望。梦给出的常是画面而非命令，越急于从中得到确定答案，越可能只看见自己本来就想相信的事。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把绿先知看成可执行的秩序。森林之子中极罕见的先见者，可借绿之视野与鱼梁木触及梦、远方和被树木保存的记忆。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起绿先知时，关心它如何影响道路、命令和安全。森林之子中极罕见的先见者，可借绿之视野与鱼梁木触及梦、远方和被树木保存的记忆。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解绿先知。森林之子中极罕见的先见者，可借绿之视野与鱼梁木触及梦、远方和被树木保存的记忆。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到绿先知的方式最小也最准确。森林之子中极罕见的先见者，可借绿之视野与鱼梁木触及梦、远方和被树木保存的记忆。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "绿先知：森林之子中极罕见的先见者，可借绿之视野与鱼梁木触及梦、远方和被树木保存的记忆。"
+  ]
+}

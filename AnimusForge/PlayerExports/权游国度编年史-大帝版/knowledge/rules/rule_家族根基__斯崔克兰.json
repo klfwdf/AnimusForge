@@ -1,0 +1,148 @@
+{
+  "Id": "rule_家族根基__斯崔克兰",
+  "Keywords": [
+    "斯崔克兰",
+    "斯崔克兰家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "哈利·斯崔克兰是黄金团中的老资格指挥者，家名与流亡者军团的长期服务联系在一起。斯崔克兰并非凭一块维斯特洛世袭土地统领黄金团，他的分量来自多年军旅、对队伍账目与契约的熟悉，以及在危险时刻对士兵损失的谨慎计算。黄金团的成员来自失去土地的家族、厄索斯雇佣兵和数代流亡者，他们未必崇拜同一位王，却尊重能让军团按时领到薪金、保持队形并看见退路的指挥者。斯崔克兰的权威因此带着军营的现实主义：荣誉可以写在旗上，粮草、军饷和活着回家才是每天要兑现的合同。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "黄金团士兵评价斯崔克兰，先看命令是否清楚、军饷是否准时、撤退时谁被留下。军团能活过几代，不只因为传说中的无败名声，也因为有人愿意把冷酷的账算清楚。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands",
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "维斯特洛贵族听到斯崔克兰，想到的往往是海外军团与可能回到故土的旧债。有人轻视他不是王族，有人害怕一个懂得契约和队伍的人比浪漫的流亡王子更难对付。黄金团的旗帜从不免费为任何人的血统服务。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "为黄金团运送货物的人知道，斯崔克兰的权力落在仓单、港口、马匹和谈判桌上。他可能不讲英雄故事，却会记得一船粮食少了几袋、一名向导晚了多久。流亡生活把浪漫磨薄，只留下必须兑现的约定。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待斯崔克兰，会先看它的土地、婚盟、血脉和债务。哈利·斯崔克兰以多年军旅、契约、军饷与后勤经验维持黄金团；他代表流亡军团谨慎而现实的一面。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起斯崔克兰时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。哈利·斯崔克兰以多年军旅、契约、军饷与后勤经验维持黄金团；他代表流亡军团谨慎而现实的一面。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意斯崔克兰留下的仪式、墓地和传承。哈利·斯崔克兰以多年军旅、契约、军饷与后勤经验维持黄金团；他代表流亡军团谨慎而现实的一面。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见斯崔克兰。哈利·斯崔克兰以多年军旅、契约、军饷与后勤经验维持黄金团；他代表流亡军团谨慎而现实的一面。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "哈利·斯崔克兰以多年军旅、契约、军饷与后勤经验维持黄金团；他代表流亡军团谨慎而现实的一面。"
+  ]
+}

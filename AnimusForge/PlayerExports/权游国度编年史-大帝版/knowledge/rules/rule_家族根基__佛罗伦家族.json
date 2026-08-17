@@ -1,0 +1,132 @@
+{
+  "Id": "rule_家族根基__佛罗伦家族",
+  "Keywords": [
+    "佛罗伦家族",
+    "狐狸鲜花",
+    "园丁王血脉",
+    "高庭继承"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "佛罗伦家族以亮水城为根基，家徽为花环中的蓝狐，自称拥有比提利尔更接近园丁王的血统。征服者把高庭授予提利尔后，这份血缘主张便成为河湾政治中从未完全消失的暗线：佛罗伦可以向玫瑰宣誓，却不会忘记自己认为更优越的继承资格。家族中多人以显眼的大耳朵为外貌特征，蓝狐的机敏却更多属于纹章和旁人的议论，而非血液里必然传递的性情。河湾贵族在婚约和继承争论中重视佛罗伦血统，亮水城百姓则更关心领主如何管理土地与河道。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河湾贵族知道佛罗伦把园丁王血统看得极重，也知道血统越被反复提起，往往越说明今日的座次令人不甘。蓝狐纹章象征聪敏，在支持者眼中佛罗伦是被低估的古老家门，在提利尔的朋友眼中，他们总在计算一顶早已落到别人头上的冠冕。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "亮水城周围的百姓不必在园丁王谱系中选边。他们关心的是河水、磨坊、收成和领主法庭。佛罗伦若治理得好，古老血统便成了值得自豪的故事；若狐狸只顾盯着高庭，田里的人就会说，再高贵的祖母也不会替人收麦。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待佛罗伦家族，会先看它的土地、婚盟、血脉和债务。亮水城的蓝狐家族，以园丁王血统自豪；他们效忠高庭，也始终记得自己对高庭继承资格的主张。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起佛罗伦家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。亮水城的蓝狐家族，以园丁王血统自豪；他们效忠高庭，也始终记得自己对高庭继承资格的主张。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意佛罗伦家族留下的仪式、墓地和传承。亮水城的蓝狐家族，以园丁王血统自豪；他们效忠高庭，也始终记得自己对高庭继承资格的主张。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见佛罗伦家族。亮水城的蓝狐家族，以园丁王血统自豪；他们效忠高庭，也始终记得自己对高庭继承资格的主张。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "佛罗伦家族：亮水城的蓝狐家族，以园丁王血统自豪；他们效忠高庭，也始终记得自己对高庭继承资格的主张。"
+  ]
+}

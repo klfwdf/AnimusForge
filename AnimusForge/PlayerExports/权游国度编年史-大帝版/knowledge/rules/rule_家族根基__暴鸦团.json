@@ -1,0 +1,111 @@
+{
+  "Id": "rule_家族根基__暴鸦团",
+  "Keywords": [
+    "暴鸦团"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "暴鸦团是活动于厄斯索斯的佣兵团，规模不大，却以机动和大胆闻名。团中曾由多名团长共同领兵，泰洛西人达里奥·纳哈里斯以华丽衣饰、染色胡须和危险魅力最为醒目；佣兵政治容不下长久犹豫，领导权往往由敢下注、能带来胜利和军饷的人掌握。暴鸦团的契约可以改变，战士却不会无条件跟随任何人；团长必须不断证明自己的选择能让部众活着、获利并保有名声。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "雇主看暴鸦团，既被其速度与胆量吸引，也会担心团长把战场当成个人赌局。金钱可以买到一段时间，按时兑现承诺才能让下一次号角仍有人响应。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "佣兵欣赏达里奥式的炫耀，因为醒目的衣服是在告诉世界：这个人活过许多想杀他的敌手。但老兵更关心哨岗、马料和撤退路线，颜色鲜艳的胡须不能替任何人挡箭。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave",
+          "artisan",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "奴隶湾居民对暴鸦团没有统一看法。旧主人、获释者和市集商贩会因他们替谁守门而给出完全不同的评价；佣兵的名声总随站在刀刃哪一侧而变。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意暴鸦团留下的仪式、墓地和传承。暴鸦团是以机动、华丽首领与迅速判断胜负闻名的佣兵团，忠诚依靠军饷、战利品和团长威望。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见暴鸦团。暴鸦团是以机动、华丽首领与迅速判断胜负闻名的佣兵团，忠诚依靠军饷、战利品和团长威望。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "暴鸦团：暴鸦团是以机动、华丽首领与迅速判断胜负闻名的佣兵团，忠诚依靠军饷、战利品和团长威望。"
+  ]
+}

@@ -1,0 +1,155 @@
+{
+  "Id": "rule_家族根基__欧莫伦",
+  "Keywords": [
+    "欧莫伦",
+    "欧莫伦家族",
+    "商人贵族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "欧莫伦是里斯有分量的商人贵族家门。温暖岛城以香水、甜酒、织物、享乐产业和海运闻名，财富却建立在严酷的奴隶制与对外来粮食、原料的依赖之上。欧莫伦的影响力因而不会只存在于宅邸：船主、经纪、仓主、作坊监工、债权人与被迫劳动者共同支撑它。家门可以通过婚姻和贸易扩展关系，也会因战争、封港或奴隶反抗而暴露脆弱。谁暂时统治里斯可以改变，欧莫伦必须同时面对利润与秩序代价的事实不变。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "lyseni"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "里斯上层把欧莫伦视作能把船货、婚姻和议席连成一张网的家门。盟友赞它可靠，竞争者则认为每一份慷慨背后都附着一张看不见的账单。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "lyseni"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "自由匠人与水手关心欧莫伦是否按期付钱、是否在封港时把损失全推给码头。华美宴席离不开有人在炎热船舱和作坊里劳动。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "lyseni",
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave",
+          "peasant",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "被奴役者看到的欧莫伦不是香水和白墙，而是买卖、惩罚与被拆散的家庭。家门的繁荣在他们眼里有另一种气味，任何权贵都无法靠礼仪把它完全遮住。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待欧莫伦，会先看它的土地、婚盟、血脉和债务。里斯富有的商人贵族家门，其影响扎根于海运、奢侈品市场、奴隶制与城邦议事。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起欧莫伦时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。里斯富有的商人贵族家门，其影响扎根于海运、奢侈品市场、奴隶制与城邦议事。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意欧莫伦留下的仪式、墓地和传承。里斯富有的商人贵族家门，其影响扎根于海运、奢侈品市场、奴隶制与城邦议事。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见欧莫伦。里斯富有的商人贵族家门，其影响扎根于海运、奢侈品市场、奴隶制与城邦议事。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "欧莫伦：里斯富有的商人贵族家门，其影响扎根于海运、奢侈品市场、奴隶制与城邦议事。"
+  ]
+}

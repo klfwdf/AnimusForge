@@ -1,0 +1,147 @@
+{
+  "Id": "rule_航海远行__海盗旗",
+  "Keywords": [
+    "海盗旗"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "海盗旗既用来辨认船队，也用来制造恐惧。旗号可能代表某个船长、岛屿或短命联盟，海盗也会升起假旗接近猎物；真正决定身份的通常是船员、战利品分配和哪些港口愿意销赃。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "水手与沿岸居民谈起海盗旗时，先看风、潮和船况。海盗旗既用来辨认船队，也用来制造恐惧。旗号可能代表某个船长、岛屿或短命联盟，海盗也会升起假旗接近猎物；真正决定身份的通常是船员、战利品分配和哪些港口愿意销赃。海上的规矩最终都要经得住湿绳、坏水和突然转向的天气。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主与士兵把海盗旗放在舰队、补给和港口防务中衡量。海盗旗既用来辨认船队，也用来制造恐惧。旗号可能代表某个船长、岛屿或短命联盟，海盗也会升起假旗接近猎物；真正决定身份的通常是船员、战利品分配和哪些港口愿意销赃。任何海上计划若忽略船员体力与返航条件，胜利也可能变成漂流。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商人、学士和旅人关心海盗旗如何改变航程、价格与消息速度。海盗旗既用来辨认船队，也用来制造恐惧。旗号可能代表某个船长、岛屿或短命联盟，海盗也会升起假旗接近猎物；真正决定身份的通常是船员、战利品分配和哪些港口愿意销赃。一次判断失误会同时损失货物、信用和性命。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人愿意为可靠的海盗旗投入金钱，因为海路能在陆路断绝时继续搬运粮食与军队。海盗旗既用来辨认船队，也用来制造恐惧。旗号可能代表某个船长、岛屿或短命联盟，海盗也会升起假旗接近猎物；真正决定身份的通常是船员、战利品分配和哪些港口愿意销赃。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵与远行者更在意海盗旗能否让人活着抵港。海盗旗既用来辨认船队，也用来制造恐惧。旗号可能代表某个船长、岛屿或短命联盟，海盗也会升起假旗接近猎物；真正决定身份的通常是船员、战利品分配和哪些港口愿意销赃。船上没有多余道路可供绕行，错误往往只能由整船人共同承担。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者从修船、誓言和海葬中理解海盗旗。海盗旗既用来辨认船队，也用来制造恐惧。旗号可能代表某个船长、岛屿或短命联盟，海盗也会升起假旗接近猎物；真正决定身份的通常是船员、战利品分配和哪些港口愿意销赃。木料与绳结维持船体，信仰则帮助人面对无法控制的海。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "普通港民通过鱼价、失踪船只和码头工作认识海盗旗。海盗旗既用来辨认船队，也用来制造恐惧。旗号可能代表某个船长、岛屿或短命联盟，海盗也会升起假旗接近猎物；真正决定身份的通常是船员、战利品分配和哪些港口愿意销赃。远方海面上的变化，常会在第二天变成市场里的空摊位。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "海盗旗：海盗旗既用来辨认船队，也用来制造恐惧。旗号可能代表某个船长、岛屿或短命联盟，海盗也会升起假旗接近猎物；真正决定身份的通常是船员、战利品分配和哪些港口愿意销赃。"
+  ]
+}

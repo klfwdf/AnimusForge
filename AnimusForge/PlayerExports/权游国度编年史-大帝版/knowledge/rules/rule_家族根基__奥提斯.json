@@ -1,0 +1,154 @@
+{
+  "Id": "rule_家族根基__奥提斯",
+  "Keywords": [
+    "奥提斯",
+    "奥提斯家族",
+    "岛城贵族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "奥提斯是里斯的贵族家门。它所处的岛城把美貌、礼仪和享乐经营成产业，也把船运、奴隶劳动与外粮供应藏在白墙花园背后。像奥提斯这样的家门，地位来自多条线索的结合：与哪些船主和作坊合作，婚姻连接哪些议事家族，危机时能否筹到粮食与守卫。其成员不必永远从事同一门生意，也不必固定站在某一派；家名若想延续，就要在善变的城邦政治中维持可信而不过度依附。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "lyseni"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "里斯权贵观察奥提斯，常从婚宴座次、共同船货和互相担保的债务推断亲疏。公开誓言很响，真正的联盟往往写在谁替谁偿付一笔钱上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "lyseni"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "sailor",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "普通市民希望奥提斯的投资能带来稳定工作，而不是只在宴会季雇人装饰花园。一个家门是否扎根，淡季最看得清楚。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "lyseni"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "奴隶与神职者会以不同语言质问同一件事：奥提斯的体面由谁承担。里斯最芬芳的香水，也遮不住财富背后的强迫劳动。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待奥提斯，会先看它的土地、婚盟、血脉和债务。里斯的地方贵族家门，以港口投资、婚姻网络和对城市机构的参与维持位置。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起奥提斯时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。里斯的地方贵族家门，以港口投资、婚姻网络和对城市机构的参与维持位置。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意奥提斯留下的仪式、墓地和传承。里斯的地方贵族家门，以港口投资、婚姻网络和对城市机构的参与维持位置。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见奥提斯。里斯的地方贵族家门，以港口投资、婚姻网络和对城市机构的参与维持位置。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "奥提斯：里斯的地方贵族家门，以港口投资、婚姻网络和对城市机构的参与维持位置。"
+  ]
+}

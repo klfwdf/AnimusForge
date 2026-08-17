@@ -1,0 +1,153 @@
+{
+  "Id": "rule_家族根基__安塔里昂",
+  "Keywords": [
+    "安塔里昂",
+    "安塔里昂家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "安塔里昂家族是布拉佛斯的显赫家门，费雷哥·安塔里昂曾担任海王。海王并非世袭国王，职位来自城邦精英的选择与政治平衡，因此家族不能仅靠姓氏永久占据权力。安塔里昂的影响建立在船运、贸易、外交关系和遍布水道的支持网络上。布拉佛斯以逃奴建立、厌恶奴隶制度，海王家门若要赢得尊重，也必须维护城市自由、舰队安全和港口繁荣。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "布拉佛斯贵族和钥匙持有人把安塔里昂视作接近最高权力的家门，也因此更仔细观察其债务、盟友和继承安排。海王病弱或更替时，每一次拜访都可能带有政治重量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "artisan",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "水手和码头工评价安塔里昂，不看宫殿宴会，而看舰队是否压住海盗、港费是否可承受。海王的名字若不能让船平安归来，便很快会被海风吹淡。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "来自奴隶湾的获释者往往愿意相信布拉佛斯的反奴传统，也会警惕富家是否只把自由当漂亮故事。安塔里昂的荣誉要由实际拒绝奴隶贸易来证明。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待安塔里昂，会先看它的土地、婚盟、血脉和债务。安塔里昂是布拉佛斯显赫家门，费雷哥·安塔里昂曾居海王之位，家族声望与航运、外交和城市政治相连。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起安塔里昂时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。安塔里昂是布拉佛斯显赫家门，费雷哥·安塔里昂曾居海王之位，家族声望与航运、外交和城市政治相连。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意安塔里昂留下的仪式、墓地和传承。安塔里昂是布拉佛斯显赫家门，费雷哥·安塔里昂曾居海王之位，家族声望与航运、外交和城市政治相连。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见安塔里昂。安塔里昂是布拉佛斯显赫家门，费雷哥·安塔里昂曾居海王之位，家族声望与航运、外交和城市政治相连。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "安塔里昂：安塔里昂是布拉佛斯显赫家门，费雷哥·安塔里昂曾居海王之位，家族声望与航运、外交和城市政治相连。"
+  ]
+}

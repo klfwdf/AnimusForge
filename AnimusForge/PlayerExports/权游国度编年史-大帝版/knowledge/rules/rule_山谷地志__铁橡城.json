@@ -1,0 +1,152 @@
+{
+  "Id": "rule_山谷地志__铁橡城",
+  "Keywords": [
+    "铁橡城",
+    "高路"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "铁橡城是谷地强大封臣韦伍德家族的席位。它的名称将坚硬的铁与深根的橡树放在一起，恰好贴合谷地贵族的理想：土地要稳，家族要久，誓言要能在山风里站住。韦伍德领连接谷地内陆、山谷道路与高路附近的复杂地形，既受肥沃平原的馈赠，也必须防备山地氏族和道路断绝。这里的贵族生活离不开骑士、侍从、婚盟与礼法，但一到冬季或山道不安，能否运进粮食和守住关口比礼仪更要紧。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "一座据点如何落到百姓身上，在铁橡城要从井泉、田租、磨坊、林地和危急时能否进堡说起。当地家庭还要依靠山羊、薄田、果园以及翻越明月山脉的驮队；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "任何关于铁橡城的军议，最后都会回到外墙、塔楼、水井、粮仓与最近的援军道路。在七国的封建秩序中，铁橡城的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商队把铁橡城写进账本时，会核算领地税、庄园产物、驮队路程和堡下形成的小市集。他们还会辨认谷地的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "婚约、继承与征召令会把贵族的目光引向铁橡城。在七国的封建秩序中，铁橡城的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "老兵讲起铁橡城，很少赞美风景，只会提醒别人坡势、城门、饮水与守军盘查外人的规矩。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "从作坊到圣所，铁橡城把石墙、木梁、铁门、墓窖和代代修补留下的接缝同七神礼拜堂、山民威胁与安达尔骑士传统并置在一起。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对普通家庭来说，铁橡城的威严要在灾年才见真假。他们关心山羊、薄田、果园以及翻越明月山脉的驮队，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "铁橡城：铁橡城是谷地强大封臣韦伍德家族的席位。它的名称将坚硬的铁与深根的橡树放在一起，恰好贴合谷地贵族的理想：土地要稳，家族要久，誓言要能在山风里站住。韦伍德领连接谷地内陆、山谷道路与高路附近的复杂地形，既受肥沃平原的馈赠，也必须防备山地氏族和道路断绝。这里的贵族生活离不开骑士、侍从、婚盟与礼法，但一到冬季或山道不安，能否运进粮食和守住关口比礼仪更要紧。"
+  ]
+}

@@ -1,0 +1,131 @@
+{
+  "Id": "rule_家族根基__寇瓦特",
+  "Keywords": [
+    "寇瓦特",
+    "寇瓦特家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "寇瓦特家族以冷水城为席位，是谷地仍带有先民血脉的古老家门。他们曾与符石城的罗伊斯一同抵抗安达尔人，在七星之战失败后接受艾林统治。那段历史让冷水城同时记得抵抗与妥协：祖先的勇气值得讲述，家族的存续却来自知道何时继续战斗、何时承认新的秩序。如今其责任仍是守土、履约与维护谷地道路。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谷地贵族把寇瓦特视作旧血家门。七星之战的失败并未抹去其资历，反而提醒后人，今日被称作古老传统的秩序，也曾由战争和臣服缝合而成。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "冷水城周围的农户对千年前的王位争夺只在长夜故事里感兴趣。他们更在意山泉、牧场和领主能否让道路免受山地氏族袭扰。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待寇瓦特，会先看它的土地、婚盟、血脉和债务。寇瓦特家族据有冷水城，是谷地古老的先民血脉，曾在七星之战后向艾林王权臣服。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起寇瓦特时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。寇瓦特家族据有冷水城，是谷地古老的先民血脉，曾在七星之战后向艾林王权臣服。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意寇瓦特留下的仪式、墓地和传承。寇瓦特家族据有冷水城，是谷地古老的先民血脉，曾在七星之战后向艾林王权臣服。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见寇瓦特。寇瓦特家族据有冷水城，是谷地古老的先民血脉，曾在七星之战后向艾林王权臣服。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "寇瓦特：寇瓦特家族据有冷水城，是谷地古老的先民血脉，曾在七星之战后向艾林王权臣服。"
+  ]
+}

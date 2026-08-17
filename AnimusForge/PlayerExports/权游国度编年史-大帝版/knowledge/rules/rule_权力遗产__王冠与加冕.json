@@ -1,0 +1,145 @@
+{
+  "Id": "rule_权力遗产__王冠与加冕",
+  "Keywords": [
+    "王冠与加冕"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "王冠把血统、承认和仪式凝成可见的金属。宝石与式样会暗示王朝、信仰或个人野心，真正决定其分量的却是愿意下跪的人；无主的王冠只是贵重首饰，被承认的王冠才能让命令穿过整个王国。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "学者和祭司谈到王冠与加冕，争论的从来不只是哪一年发生了什么，也包括谁有资格记住、谁被迫沉默；名分与记忆在不同厅堂里会有不同的名字。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贵族把王冠与加冕当作法统与债务的账本，士兵记得其中的饥饿和尸骨，农户只在税册、旧堡垛和家中传下的忌讳里感到它的重量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商旅与旅人很少掌握王冠与加冕的全貌，却会在酒馆、渡口和集市重复其中最能解释眼前利害的片段；传闻会变形，留下的影响却很少凭空消失。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把王冠与加冕当作仍在生效的旧账。王冠把血统、承认和仪式凝成可见的金属。宝石与式样会暗示王朝、信仰或个人野心，真正决定其分量的却是愿意下跪的人；无主的王冠只是贵重首饰，被承认的王冠才能让命令穿过。一场过去的战争或一次王朝更替，会决定今日的税率、盟约、道路与谁有资格在大厅里先开口。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人记住王冠与加冕的方式不同于史官。王冠把血统、承认和仪式凝成可见的金属。宝石与式样会暗示王朝、信仰或个人野心，真正决定其分量的却是愿意下跪的人；无主的王冠只是贵重首饰，被承认的王冠才能让命令穿过。他们记得哪面旗倒下、哪座桥被烧、谁在雪里分过最后一口水；对他们来说，历史首先是身体留下的记忆。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者谈及王冠与加冕时，常把事实与寓意放在一起。王冠把血统、承认和仪式凝成可见的金属。宝石与式样会暗示王朝、信仰或个人野心，真正决定其分量的却是愿意下跪的人；无主的王冠只是贵重首饰，被承认的王冠才能让命令穿过。胜者会把它写成秩序的证明，败者会把它留作警告，而普通人只记得那一年粮价和墓地增加了多少。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民很少说出王冠与加冕的完整名字。王冠把血统、承认和仪式凝成可见的金属。宝石与式样会暗示王朝、信仰或个人野心，真正决定其分量的却是愿意下跪的人；无主的王冠只是贵重首饰，被承认的王冠才能让命令穿过。他们通过旧屋、家谱、墓碑和老人讲过的禁忌认识过去；只要某件往事还影响收税、征兵或婚姻，它就没有真正结束。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "王冠与加冕：王冠把血统、承认和仪式凝成可见的金属。宝石与式样会暗示王朝、信仰或个人野心，真正决定其分量的却是愿意下跪的人；无主的王冠只是贵重首饰，被承认的王冠才能让命令穿过"
+  ]
+}
