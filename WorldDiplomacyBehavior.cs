@@ -935,7 +935,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		WorldDiplomacyDocument document = CreateDocument(
 			playerKingdom,
 			null,
-			"待解析的外交宣言",
+			"外交宣言",
 			cleanBody,
 			"player",
 			isPlayerAuthored: true,
@@ -959,8 +959,30 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			round.LastActivityDay = CurrentDay();
 			EnsureRoundParticipant(round, playerKingdom.StringId, "active", mandatoryReply: false);
 		}
+		PublishPlayerAuthoredDocumentImmediately(document);
 		EnqueueAnalysisJob(document, priority: 100);
-		InformationManager.DisplayMessage(new InformationMessage("外交宣言已提交解析；确认包含实际外交动作后才会公开发布。"));
+		InformationManager.DisplayMessage(new InformationMessage("外交宣言已经公开发布；系统正在后台解析其对象、诉求与外交动作。"));
+	}
+
+	private void PublishPlayerAuthoredDocumentImmediately(WorldDiplomacyDocument document)
+	{
+		if (document?.IsPlayerAuthored != true) return;
+		document.IsReadyForPublication = true;
+		document.AnalysisStatus = "pending_analysis";
+		Kingdom author = ResolveKingdom(document.AuthorKingdomId);
+		if (author == null) return;
+		try
+		{
+			StartDocumentPropagation(document, author);
+		}
+		catch (Exception ex)
+		{
+			// IsReadyForPublication remains true, so the bounded deferred retry path can
+			// rebuild geographic propagation without ever hiding the player's document.
+			document.PropagationCompleted = false;
+			Log("immediate player declaration propagation deferred document=" + document.DocumentId
+				+ " error=" + ex.Message);
+		}
 	}
 
 	private void SuspendActiveExchangeForPlayerInsertion()
@@ -3701,6 +3723,11 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private void SuppressInvalidDocumentBeforePropagation(WorldDiplomacyDocument document, string reason)
 	{
 		if (document == null) return;
+		if (document.IsPlayerAuthored && document.IsReadyForPublication)
+		{
+			PreservePublishedPlayerDocumentAfterRejectedMechanic(document, reason);
+			return;
+		}
 		Log("invalid generated document suppressed before propagation document=" + document.DocumentId
 			+ " author=" + (document.AuthorKingdomId ?? "") + " target=" + (document.TargetKingdomId ?? "")
 			+ " reason=" + (reason ?? ""));
@@ -3970,37 +3997,52 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		if (!string.Equals(status, "success", StringComparison.OrdinalIgnoreCase)
 			&& !string.Equals(status, "fallback", StringComparison.OrdinalIgnoreCase))
 		{
-			document.AnalysisStatus = "no_action";
-			SuppressInvalidDocumentBeforePropagation(document, "analysis_status_has_no_publishable_action");
-			if (document.IsPlayerAuthored)
+			if (!document.IsPlayerAuthored)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("外交宣言没有发布：解析结果没有确认可执行的外交动作。"));
+				document.AnalysisStatus = "no_action";
+				SuppressInvalidDocumentBeforePropagation(document, "analysis_status_has_no_publishable_action");
+				return;
 			}
-			return;
+			// Player speech is already public and authoritative. A no-action or malformed
+			// classifier result means "public statement", never "permission denied".
+			status = "fallback";
+			intent = "statement";
+			commitment = "non_binding";
+			Log("player declaration analysis downgraded to public statement document=" + document.DocumentId
+				+ " reason=analysis_status_" + NormalizeToken(ReadString(json, "status")));
 		}
 		if (string.IsNullOrWhiteSpace(intent))
 		{
-			document.AnalysisStatus = "no_action";
-			SuppressInvalidDocumentBeforePropagation(document, "analysis_has_no_structured_intent");
-			if (document.IsPlayerAuthored)
+			if (!document.IsPlayerAuthored)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("外交宣言没有发布：解析结果没有确认可执行的外交动作。"));
+				document.AnalysisStatus = "no_action";
+				SuppressInvalidDocumentBeforePropagation(document, "analysis_has_no_structured_intent");
+				return;
 			}
-			return;
+			status = "fallback";
+			intent = "statement";
+			commitment = "non_binding";
+			Log("player declaration analysis supplied no intent; retained as public statement document=" + document.DocumentId);
 		}
 		if (document.IsPlayerAuthored)
 		{
 			ReconcilePlayerDeclarationWithOpenOffer(document, intent, ref targetId, ref respondingToOfferDocumentId);
 		}
-		if (!IsActionableDiplomacyIntent(intent) || !CommitmentMatchesIntent(intent, commitment))
+		bool playerPublicIntent = document.IsPlayerAuthored && IsSupportedDiplomacyIntent(intent);
+		if ((!IsActionableDiplomacyIntent(intent) && !playerPublicIntent)
+			|| !CommitmentMatchesIntent(intent, commitment))
 		{
-			document.AnalysisStatus = "no_action";
-			SuppressInvalidDocumentBeforePropagation(document, "analysis_has_no_actionable_intent");
-			if (document.IsPlayerAuthored)
+			if (!document.IsPlayerAuthored)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("外交宣言没有发布：未识别到明确且可执行的外交动作。"));
+				document.AnalysisStatus = "no_action";
+				SuppressInvalidDocumentBeforePropagation(document, "analysis_has_no_actionable_intent");
+				return;
 			}
-			return;
+			if (!IsSupportedDiplomacyIntent(intent)) intent = "statement";
+			commitment = DefaultCommitmentForIntent(intent);
+			status = "fallback";
+			Log("player declaration analysis normalized without suppressing publication document=" + document.DocumentId
+				+ " intent=" + intent + " commitment=" + commitment);
 		}
 		if (string.IsNullOrWhiteSpace(targetId))
 		{
@@ -4150,14 +4192,33 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			SuppressInvalidDocumentBeforePropagation(document, "stale_round_response_no_action_declaration");
 			return;
 		}
-		bool allowedNoAction = allowedRoundResponseNoAction;
+		bool allowedPlayerPublicIntent = document.IsPlayerAuthored
+			&& IsSupportedDiplomacyIntent(normalizedIntent)
+			&& !IsActionableDiplomacyIntent(normalizedIntent);
+		bool allowedNoAction = allowedRoundResponseNoAction || allowedPlayerPublicIntent;
 		if (!IsActionableDiplomacyIntent(normalizedIntent) && !allowedNoAction)
 		{
 			SuppressInvalidDocumentBeforePropagation(document, "non_actionable_diplomatic_intent");
-			if (document.IsPlayerAuthored)
+			if (document.IsPlayerAuthored && !document.IsReadyForPublication)
 			{
 				InformationManager.DisplayMessage(new InformationMessage("外交宣言没有发布：正文必须明确包含一项可执行的外交动作。"));
 			}
+			return;
+		}
+		if (allowedPlayerPublicIntent)
+		{
+			document.IsReadyForPublication = true;
+			try
+			{
+				ApplyDocumentPressure(document);
+				ApplyDiplomaticPressureEffect(document);
+			}
+			catch (Exception ex)
+			{
+				Log("player public-statement effect failed without hiding declaration document="
+					+ document.DocumentId + " intent=" + normalizedIntent + " error=" + ex.Message);
+			}
+			FinalizePublishedDocumentAfterAnalysis(document, author, target, normalizedIntent, recordNoActionDecision: true);
 			return;
 		}
 		if (owningRound?.ResultSettlementPending == true
@@ -4168,7 +4229,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			Log("result-settlement document target blocked because participant expansion is unavailable document=" + document.DocumentId
 				+ " author=" + author.StringId + " target=" + target.StringId);
 			SuppressInvalidDocumentBeforePropagation(document, "result_settlement_target_capacity_reached");
-			if (document.IsPlayerAuthored)
+			if (document.IsPlayerAuthored && !document.IsReadyForPublication)
 			{
 				InformationManager.DisplayMessage(new InformationMessage("外交宣言没有发布：本次外交事件已无法再加入新的处理国。"));
 			}
@@ -4185,7 +4246,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 				+ " author=" + author.StringId + " target=" + (target?.StringId ?? "")
 				+ " intent=" + normalizedIntent + " reason=" + liveStateBlockReason);
 			SuppressInvalidDocumentBeforePropagation(document, "final_live_state_guard:" + liveStateBlockReason);
-			if (document.IsPlayerAuthored)
+			if (document.IsPlayerAuthored && !document.IsReadyForPublication)
 			{
 				InformationManager.DisplayMessage(new InformationMessage("外交宣言没有发布：正文中的外交动作与当前真实状态不相容。"));
 			}
@@ -4216,7 +4277,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		if (!DocumentContainsRequiredPeaceOfferResponse(document, requiredPeaceOffer))
 		{
 			SuppressInvalidDocumentBeforePropagation(document, "required_peace_offer_response_missing");
-			if (document.IsPlayerAuthored)
+			if (document.IsPlayerAuthored && !document.IsReadyForPublication)
 			{
 				InformationManager.DisplayMessage(new InformationMessage("外交宣言没有发布：本篇必须先接受或拒绝当前和平原案。"));
 			}
@@ -4235,7 +4296,10 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 				+ " author=" + author.StringId + " target=" + (target?.StringId ?? "")
 				+ " intent=" + normalizedIntent + " reason=" + playerActionBlockReason);
 			SuppressInvalidDocumentBeforePropagation(document, "player_action_not_executable:" + playerActionBlockReason);
-			InformationManager.DisplayMessage(new InformationMessage("外交宣言没有发布：正文中的外交动作与当前真实状态不相容。"));
+			if (!document.IsReadyForPublication)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("外交宣言没有发布：正文中的外交动作与当前真实状态不相容。"));
+			}
 			return;
 		}
 		string responseProposalIntent = ResponseIntentToProposalIntent(normalizedIntent);
@@ -4301,10 +4365,76 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			Log("diplomatic mechanism failed without discarding valid declaration document=" + document.DocumentId
 				+ " intent=" + normalizedIntent + " error=" + ex.Message);
 		}
+		FinalizePublishedDocumentAfterAnalysis(document, author, target, normalizedIntent, allowedNoAction);
+	}
+
+	private void PreservePublishedPlayerDocumentAfterRejectedMechanic(
+		WorldDiplomacyDocument document,
+		string reason)
+	{
+		if (document == null) return;
+		string normalizedIntent = NormalizeIntent(document.Intent);
+		if (!IsSupportedDiplomacyIntent(normalizedIntent))
+		{
+			normalizedIntent = "statement";
+			document.Intent = normalizedIntent;
+		}
+		if (!CommitmentMatchesIntent(normalizedIntent, document.Commitment))
+		{
+			document.Commitment = DefaultCommitmentForIntent(normalizedIntent);
+		}
+		document.AnalysisStatus = "published_action_rejected";
+		if (string.IsNullOrWhiteSpace(document.MechanicalResult))
+		{
+			document.MechanicalResult = "外交动作未执行：当前局势不支持解析出的动作。";
+		}
+		Log("published player declaration retained after mechanic rejection document=" + document.DocumentId
+			+ " intent=" + normalizedIntent + " reason=" + (reason ?? ""));
+		InformationManager.DisplayMessage(new InformationMessage(
+			"外交宣言已经发布，但其中解析出的外交动作因当前局势不成立而未执行。"));
+		FinalizePublishedDocumentAfterAnalysis(
+			document,
+			ResolveKingdom(document.AuthorKingdomId),
+			ResolveKingdom(document.TargetKingdomId),
+			normalizedIntent,
+			recordNoActionDecision: true);
+	}
+
+	private void FinalizePublishedDocumentAfterAnalysis(
+		WorldDiplomacyDocument document,
+		Kingdom author,
+		Kingdom target,
+		string normalizedIntent,
+		bool recordNoActionDecision)
+	{
+		if (document == null || author == null) return;
+		document.IsReadyForPublication = true;
+		if (recordNoActionDecision)
+		{
+			RecordDiplomaticThreatTargetDecisions(document, author, target, normalizedIntent);
+		}
 		bool requiredThreatActionDeferred = DeferUnresolvedRequiredThreatAction(document, author, target, normalizedIntent);
 		if (!requiredThreatActionDeferred)
 		{
 			SettleDiplomaticThreatFollowThroughAfterDeclaration(document, author);
+		}
+		try
+		{
+			StartDocumentPropagation(document, author);
+		}
+		catch (Exception ex)
+		{
+			document.PropagationCompleted = false;
+			Log("valid declaration propagation deferred document=" + document.DocumentId + " error=" + ex.Message);
+		}
+		try
+		{
+			RecordDiplomacyWeeklyMaterial(document);
+			ReconcileAnalyzedPlayerDeclarationWithReachedCourts(document);
+		}
+		catch (Exception ex)
+		{
+			Log("analyzed player declaration routing refresh deferred document=" + document.DocumentId + " error=" + ex.Message);
 		}
 		try
 		{
@@ -4319,19 +4449,37 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			StartDocumentPropagation(document, author);
-		}
-		catch (Exception ex)
-		{
-			Log("valid declaration propagation failed document=" + document.DocumentId + " error=" + ex.Message);
-		}
-		try
-		{
 			HandleRoundDocumentProcessed(document);
 		}
 		catch (Exception ex)
 		{
 			Log("valid declaration round progress deferred document=" + document.DocumentId + " error=" + ex.Message);
+		}
+	}
+
+	private void ReconcileAnalyzedPlayerDeclarationWithReachedCourts(WorldDiplomacyDocument document)
+	{
+		if (document?.IsPlayerAuthored != true) return;
+		WorldDiplomacyRound round = ResolveRound(document.RoundId);
+		if (round == null || !ReferenceEquals(_storage.ActiveRound, round)
+			|| !string.Equals(round.State, "active", StringComparison.OrdinalIgnoreCase)) return;
+		foreach (string kingdomId in GetKnownKingdomIdsForDocument(document.DocumentId))
+		{
+			Kingdom receiver = ResolveKingdom(kingdomId);
+			if (receiver == null || string.Equals(receiver.StringId, document.AuthorKingdomId, StringComparison.OrdinalIgnoreCase)
+				|| !HasIndependentWorldDiplomacyAuthority(receiver)) continue;
+			bool directlyAddressed = (document.AddressedKingdomIds ?? new List<string>())
+				.Contains(receiver.StringId, StringComparer.OrdinalIgnoreCase)
+				|| string.Equals(document.TargetKingdomId, receiver.StringId, StringComparison.OrdinalIgnoreCase)
+				|| IsDiplomaticRepresentativeForAddressedVassal(receiver, document);
+			bool isPrimaryTarget = string.Equals(document.TargetKingdomId, receiver.StringId, StringComparison.OrdinalIgnoreCase);
+			if (!directlyAddressed || (!isPrimaryTarget && !DocumentRequiresResponseFrom(document, receiver.StringId))) continue;
+			WorldDiplomacyRoundParticipant participant = EnsureRoundParticipant(
+				round,
+				receiver.StringId,
+				"active",
+				mandatoryReply: true);
+			TryScheduleMandatoryCourtResponse(round, participant, receiver, document);
 		}
 	}
 
@@ -10445,7 +10593,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 				WorldDiplomacyDocument response = CreateDocument(
 					player,
 					target,
-					"待解析的外交回应",
+					"外交回应",
 					NormalizeBody(body),
 					"player_response",
 					isPlayerAuthored: true,
@@ -10459,8 +10607,9 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 				participant.MandatoryReplyPending = false;
 				participant.LastTriggeredDocumentId = sourceDocument.DocumentId;
 				round.LastActivityDay = CurrentDay();
+				PublishPlayerAuthoredDocumentImmediately(response);
 				EnqueueAnalysisJob(response, priority: 100);
-				InformationManager.DisplayMessage(new InformationMessage("外交回应已提交解析；确认包含实际外交动作后才会公开发布。"));
+				InformationManager.DisplayMessage(new InformationMessage("外交回应已经公开发布；系统正在后台解析其诉求与外交动作。"));
 			},
 			null);
 	}
@@ -11890,16 +12039,16 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private static string BuildAnalysisModeContract()
 	{
 		StringBuilder sb = new StringBuilder();
-		sb.AppendLine("读懂已经发布的宣言表达了什么，不替作者决定世界局势；玩家文风偏好不参与语义裁判。");
+		sb.AppendLine("这份玩家宣言已经正式公开发布。只负责理解和提取语义，不得决定是否允许发布，也不得因没有游戏机制动作而退回公文；玩家文风偏好不参与语义裁判。");
 		sb.AppendLine("warning表示谴责，不是劝告、关心或善意提醒；只有明确要求停止具体敌对或军事行为，并说明否则升级最后通牒或战争时才可使用。ultimatum表示战争最后通牒；已经开战用declare_war。");
-		sb.AppendLine("只识别会登记或执行机制状态的实际外交动作。正文没有下列明确动作时返回status=no_action且intent留空；不得用纯表态、一般批评、道歉或让步填充，也不得替作者臆造动作。");
+		sb.AppendLine("优先提取会登记或执行机制状态的实际外交动作，不得替作者臆造动作。正文没有这类动作时仍返回status=success：普通立场用statement，一般谴责用condemn，明确正式道歉用apology，明确正式让步用concession；这些公开语义不等于宣战、提案、接受或拒绝。");
 		sb.AppendLine("若材料列出当前待本国答复的正式提案，明确接受或拒绝时必须使用对应accept_*或reject_*并绑定原提出国和来源。和平原案只能原样接受或明确拒绝，不得改写条款或另提和平方案；其他提案只能使用材料列出的当前合法动作。");
 		sb.AppendLine("只有正文明确、肯定且无条件地服从材料列出的未决谴责或最后通牒时，intent才可使用comply_ultimatum，commitment用binding，primary_target_kingdom_id填发出国，并把当前阶段来源公文ID填入responding_to_threat_document_id。对象国本篇就是一次性决定；含糊、沉默、附带条件、反条件、仅愿继续谈判或任何其他intent一律是不退让，该字段留空。");
 		sb.AppendLine("同时生成title_summary：以发文国统治者的立场简洁概括公告核心，不使用书信标题，不超过20个汉字。");
 		sb.AppendLine("addressed_kingdom_ids列出被直接点名、要求答复或承受正式主张的国家；mentioned_kingdom_ids只列被谈及但未被直接要求回应的国家。只允许使用用户消息给出的王国ID。");
 		sb.AppendLine("propose_peace的peace_terms只提取正文明确条款；accept_peace由系统继承原案。领地必须来自允许清单，清单为空就留空。");
 		sb.AppendLine("只输出一个JSON对象，不要解释或代码围栏：");
-		sb.AppendLine("{\"status\":\"success|no_action\",\"title_summary\":\"公告要点标题\",\"responding_to_offer_document_id\":\"提议来源公文ID或空字符串\",\"responding_to_threat_document_id\":\"退让对象的谴责或最后通牒来源公文ID或空字符串\",\"primary_target_kingdom_id\":\"王国ID或空字符串\",\"addressed_kingdom_ids\":[\"王国ID\"],\"mentioned_kingdom_ids\":[\"王国ID\"],\"intent\":\"warning|ultimatum|comply_ultimatum|propose_peace|accept_peace|reject_peace|propose_alliance|accept_alliance|reject_alliance|break_alliance|propose_trade|accept_trade|reject_trade|cancel_trade|declare_war\",\"commitment\":\"non_binding|proposal|acceptance|rejection|binding\",\"requires_response\":true,\"tone\":\"conciliatory|neutral|firm|hostile\",\"confidence\":0.0,\"peace_terms\":{\"tribute_payer_kingdom_id\":\"ID或空\",\"tribute_receiver_kingdom_id\":\"ID或空\",\"daily_tribute\":0,\"duration_days\":0,\"cession_from_kingdom_id\":\"ID或空\",\"cession_to_kingdom_id\":\"ID或空\",\"cession_settlement_id\":\"ID或空\"}}");
+		sb.AppendLine("{\"status\":\"success\",\"title_summary\":\"公告要点标题\",\"responding_to_offer_document_id\":\"提议来源公文ID或空字符串\",\"responding_to_threat_document_id\":\"退让对象的谴责或最后通牒来源公文ID或空字符串\",\"primary_target_kingdom_id\":\"王国ID或空字符串\",\"addressed_kingdom_ids\":[\"王国ID\"],\"mentioned_kingdom_ids\":[\"王国ID\"],\"intent\":\"statement|condemn|apology|concession|warning|ultimatum|comply_ultimatum|propose_peace|accept_peace|reject_peace|propose_alliance|accept_alliance|reject_alliance|break_alliance|propose_trade|accept_trade|reject_trade|cancel_trade|declare_war\",\"commitment\":\"non_binding|proposal|acceptance|rejection|binding\",\"requires_response\":true,\"tone\":\"conciliatory|neutral|firm|hostile\",\"confidence\":0.0,\"peace_terms\":{\"tribute_payer_kingdom_id\":\"ID或空\",\"tribute_receiver_kingdom_id\":\"ID或空\",\"daily_tribute\":0,\"duration_days\":0,\"cession_from_kingdom_id\":\"ID或空\",\"cession_to_kingdom_id\":\"ID或空\",\"cession_settlement_id\":\"ID或空\"}}");
 		return sb.ToString().TrimEnd();
 	}
 
@@ -11966,7 +12115,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 								+ "|答复=原样接受或明确拒绝"
 							: ""));
 				}
-				sb.AppendLine("接受或拒绝必须绑定对应来源；和平原案不得改写或另提方案，其他动作以当前合法状态为准。只有评论且没有实际动作时返回no_action。");
+				sb.AppendLine("接受或拒绝必须绑定对应来源；和平原案不得改写或另提方案，其他动作以当前合法状态为准。只有评论且没有实际动作时按其语义返回statement或condemn，公文仍然有效。");
 			}
 		}
 		WorldDiplomacyDocument sourceDocument = ResolveDocument(document.SourceDocumentId);
@@ -12001,15 +12150,18 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private string BuildFallbackAnalysisJson(WorldDiplomacyJob job)
 	{
+		WorldDiplomacyDocument document = ResolveDocument(job?.DocumentId);
 		return new JObject
 		{
-			["status"] = "no_action",
-			["title_summary"] = "",
+			["status"] = "fallback",
+			["title_summary"] = BuildFallbackDocumentTitle(document, "statement"),
 			["responding_to_offer_document_id"] = "",
 			["responding_to_threat_document_id"] = "",
-			["primary_target_kingdom_id"] = "",
-			["intent"] = "",
-			["commitment"] = "",
+			["primary_target_kingdom_id"] = FirstNonEmpty(document?.TargetKingdomId, job?.TargetKingdomId),
+			["addressed_kingdom_ids"] = new JArray(),
+			["mentioned_kingdom_ids"] = new JArray(),
+			["intent"] = "statement",
+			["commitment"] = "non_binding",
 			["requires_response"] = false,
 			["tone"] = "neutral",
 			["confidence"] = 0.0

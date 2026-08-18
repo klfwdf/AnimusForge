@@ -46,6 +46,18 @@ internal static class Program
             source,
             "private string BuildFallbackAnalysisJson(",
             "private string BuildFallbackAnnualSummary(");
+        string playerSubmission = ExtractSection(
+            source,
+            "private void SubmitPlayerDocument(",
+            "private void SuspendActiveExchangeForPlayerInsertion(");
+        string invalidSuppression = ExtractSection(
+            source,
+            "private void SuppressInvalidDocumentBeforePropagation(",
+            "private bool TryApplyGeneratedSemanticEnvelope(");
+        string playerReplySubmission = ExtractSection(
+            source,
+            "private void OpenPlayerReplyCompose(",
+            "private WorldEventInboxPopupData BuildRoyalAnnouncementArchiveData(");
 
         Test.True(NaturalTradeProposal.Contains("商路", StringComparison.Ordinal), "fixture must describe the trade domain");
         Test.True(!new[] { "提议", "建议", "倡议", "邀请", "请求" }
@@ -112,20 +124,33 @@ internal static class Program
                       ": RoundRouteContainsKingdom(envelopeRound, target.StringId)",
                       StringComparison.Ordinal),
             "the secondary generation envelope must preserve the same settlement-only target expansion boundary");
-        Test.True(!analysisCommit.Contains("intent = \"statement\"", StringComparison.Ordinal)
-                  && !playerOfferReconciliation.Contains("intent = \"statement\"", StringComparison.Ordinal)
-                  && !fallbackAnalysis.Contains("intent = \"statement\"", StringComparison.Ordinal)
-                  && !fallbackAnalysis.Contains("FirstNonEmpty(document?.HiddenIntent, \"statement\")", StringComparison.Ordinal),
-            "analysis and its fallback paths must never manufacture a statement intent");
+        Test.True(playerSubmission.Contains("PublishPlayerAuthoredDocumentImmediately(document)", StringComparison.Ordinal)
+                  && playerSubmission.Contains("外交宣言已经公开发布", StringComparison.Ordinal)
+                  && playerSubmission.IndexOf("PublishPlayerAuthoredDocumentImmediately(document)", StringComparison.Ordinal)
+                     < playerSubmission.IndexOf("EnqueueAnalysisJob(document", StringComparison.Ordinal),
+            "a player declaration must become public before its semantic-analysis job is queued");
+        Test.True(playerReplySubmission.Contains("PublishPlayerAuthoredDocumentImmediately(response)", StringComparison.Ordinal)
+                  && playerReplySubmission.Contains("外交回应已经公开发布", StringComparison.Ordinal)
+                  && playerReplySubmission.IndexOf("PublishPlayerAuthoredDocumentImmediately(response)", StringComparison.Ordinal)
+                     < playerReplySubmission.IndexOf("EnqueueAnalysisJob(response", StringComparison.Ordinal),
+            "a player response must become public before its semantic-analysis job is queued");
+        Test.True(analysisCommit.Contains("intent = \"statement\"", StringComparison.Ordinal)
+                  && fallbackAnalysis.Contains("[\"intent\"] = \"statement\"", StringComparison.Ordinal)
+                  && fallbackAnalysis.Contains("[\"status\"] = \"fallback\"", StringComparison.Ordinal),
+            "no-action, malformed, and failed player analysis must preserve the public declaration as a statement");
+        Test.True(invalidSuppression.Contains("document.IsPlayerAuthored && document.IsReadyForPublication", StringComparison.Ordinal)
+                  && invalidSuppression.Contains("PreservePublishedPlayerDocumentAfterRejectedMechanic", StringComparison.Ordinal),
+            "a mechanic rejection must never delete a player declaration that was already published");
         string analyzedPublication = ExtractSection(
             source,
             "private void ProcessAnalyzedDocument(",
             "private bool TryGetPlayerWorldStateIntentViolation(");
-        Test.True(analyzedPublication.Contains("IsActionableDiplomacyIntent(normalizedIntent)", StringComparison.Ordinal)
-                  && analyzedPublication.Contains("non_actionable_diplomatic_intent", StringComparison.Ordinal),
-            "an analyzed declaration must pass the same action-only publication boundary");
-        Test.True(analysisCommit.Contains("analysis_status_has_no_publishable_action", StringComparison.Ordinal),
-            "MODE=ANALYZE status=no_action or malformed status must suppress publication before intent fallback");
+        Test.True(analyzedPublication.Contains("allowedPlayerPublicIntent", StringComparison.Ordinal)
+                  && analyzedPublication.Contains("FinalizePublishedDocumentAfterAnalysis", StringComparison.Ordinal)
+                  && analyzedPublication.Contains("ApplyDiplomaticPressureEffect", StringComparison.Ordinal),
+            "player statements, condemnations, apologies, and concessions must remain published and retain their semantic effects");
+        Test.True(analysisCommit.Contains("player declaration analysis downgraded to public statement", StringComparison.Ordinal),
+            "MODE=ANALYZE no-action or malformed status must downgrade player mechanics without suppressing publication");
 
         Test.True(!source.Contains("TryGetPlayerVisibleIntentViolation", StringComparison.Ordinal)
                   && !source.Contains("HasExplicitUltimatumCompliance", StringComparison.Ordinal)
@@ -178,7 +203,7 @@ internal static class Program
             "propose_alliance", "accept_alliance", "reject_alliance", "break_alliance",
             "propose_trade", "accept_trade", "reject_trade", "cancel_trade", "declare_war"
         };
-        string[] retiredIntents = { "statement", "condemn", "apology", "concession" };
+        string[] publicNonMechanicalIntents = { "statement", "condemn", "apology", "concession" };
         string externalResolvedPublication = ExtractSection(
             source,
             "private void NotifyExternalDiplomacyResolvedInternal(",
@@ -197,7 +222,7 @@ internal static class Program
             Test.True(externalResolvedWhitelist.Contains("\"" + resolvedIntent + "\"", StringComparison.Ordinal),
                 "external resolved-action whitelist is missing: " + resolvedIntent);
         }
-        foreach (string unresolvedIntent in retiredIntents.Concat(new[]
+        foreach (string unresolvedIntent in publicNonMechanicalIntents.Concat(new[]
         {
             "warning", "ultimatum", "comply_ultimatum", "propose_peace", "propose_alliance", "propose_trade",
             "reject_peace", "reject_alliance", "reject_trade"
@@ -277,8 +302,10 @@ internal static class Program
             Test.True(!fixedDeclarationContract.Contains(forbiddenFixedBodyTemplate, StringComparison.Ordinal),
                 "the fixed contract must state semantics without a literal body template: " + forbiddenFixedBodyTemplate);
         }
-        Test.True(analysisIntentEnum.SetEquals(expectedActionableIntents),
-            "MODE=ANALYZE must expose exactly the current action-only intent enum; actual="
+        HashSet<string> expectedAnalysisIntents = new(expectedActionableIntents, StringComparer.Ordinal);
+        expectedAnalysisIntents.UnionWith(publicNonMechanicalIntents);
+        Test.True(analysisIntentEnum.SetEquals(expectedAnalysisIntents),
+            "MODE=ANALYZE must expose actual mechanics plus public non-mechanical meanings; actual="
             + string.Join(",", analysisIntentEnum.OrderBy(x => x, StringComparer.Ordinal)));
         Test.True(actionableIntentHelper.Contains("NormalizeIntent(intent)", StringComparison.Ordinal),
             "the actionable whitelist must normalize intent before matching");
@@ -287,12 +314,12 @@ internal static class Program
             Test.True(actionableIntentHelper.Contains("\"" + intent + "\"", StringComparison.Ordinal),
                 "actionable intent helper is missing: " + intent);
         }
-        foreach (string retiredIntent in retiredIntents)
+        foreach (string publicIntent in publicNonMechanicalIntents)
         {
-            Test.True(!actionableIntentHelper.Contains("\"" + retiredIntent + "\"", StringComparison.Ordinal),
-                "actionable intent helper must reject retired type: " + retiredIntent);
-            Test.True(!declarationIntentTemplate.Contains(retiredIntent) && !analysisIntentEnum.Contains(retiredIntent),
-                "fixed DECLARE template and ANALYZE enum must not expose retired type: " + retiredIntent);
+            Test.True(!actionableIntentHelper.Contains("\"" + publicIntent + "\"", StringComparison.Ordinal),
+                "mechanical-action helper must not execute public-only type: " + publicIntent);
+            Test.True(!declarationIntentTemplate.Contains(publicIntent) && analysisIntentEnum.Contains(publicIntent),
+                "AI DECLARE must stay action-scoped while player ANALYZE retains public-only type: " + publicIntent);
         }
         string potentialActions = ExtractSection(
             source,
@@ -340,7 +367,7 @@ internal static class Program
             "private static string ProtectedFactStableKey(");
         Test.True(canonicalEntryRenderer.Contains("entry.Intent", StringComparison.Ordinal)
                   && !canonicalEntryRenderer.Contains("IsActionableDiplomacyIntent", StringComparison.Ordinal),
-            "legacy statement-style archive entries must remain renderable even though new declarations are action-only");
+            "statement-style archive entries must remain renderable without treating them as executable mechanics");
         string threatDynamicContext = ExtractSection(
             source,
             "private void AppendDiplomaticThreatDynamicContext(",
@@ -1709,13 +1736,16 @@ internal static class Program
             "if (document.IsPlayerAuthored",
             liveGuardStart,
             StringComparison.Ordinal);
-        int publishReady = publication.IndexOf("document.IsReadyForPublication = true;", StringComparison.Ordinal);
+        int publishReady = publication.IndexOf(
+            "document.IsReadyForPublication = true;",
+            liveGuardSuppression,
+            StringComparison.Ordinal);
         Test.True(liveGuardStart >= 0
                   && liveStateValidation > liveGuardStart
                   && liveGuardSuppression > liveStateValidation
                   && playerSpecificGuard > liveGuardSuppression
                   && publishReady > liveGuardSuppression,
-            "the shared publication path must apply the live-state guard before player-only checks and publication");
+            "the executable-action path must apply the live-state guard before player-only mechanic checks; the player document itself may already be public");
         Test.True(publication.Contains(
                 "bool invalidLiveTarget = target == null || target == author || target.IsEliminated",
                 StringComparison.Ordinal)
