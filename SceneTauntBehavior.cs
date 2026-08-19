@@ -4082,7 +4082,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		}
 		bool attackerWeaponIsReal = IsMissionWeaponRealWeapon(attackerWeapon);
 		Logger.LogVerbose("SceneTaunt", "attack_timing_on_agent_hit:" + affectedAgent.Index, () => $"[AttackTiming] on_agent_hit time={Mission.Current?.CurrentTime:0.###} location={(CampaignMission.Current?.Location?.StringId ?? "").Trim().ToLowerInvariant()} settlement={Settlement.CurrentSettlement?.StringId} target={affectedAgent.Name} targetIndex={affectedAgent.Index} weapon={attackerWeaponIsReal} conflict={_conflictActive} armed={_armedConflict}", 1.0);
-		if (SettlementEntryTroopSelectionBehavior.ShouldHandlePhysicalAttackForExternal(Mission.Current, affectedAgent))
+		if (SettlementEntryTroopSelectionBehavior.ShouldHandlePhysicalAttackForExternal(Mission.Current, affectorAgent, affectedAgent, attackerWeaponIsReal))
 		{
 			Logger.LogVerbose("SceneTaunt", "sets_entry_suppress_hit:" + affectedAgent.Index, () => $"Suppressed SceneTaunt conflict because SETS will handle this settlement attack. Target={affectedAgent.Name}", 1.0);
 			return;
@@ -4128,8 +4128,9 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		{
 			return;
 		}
-		Logger.LogVerbose("SceneTaunt", "attack_timing_on_score_hit:" + affectedAgent.Index, () => $"[AttackTiming] on_score_hit time={Mission.Current?.CurrentTime:0.###} location={(CampaignMission.Current?.Location?.StringId ?? "").Trim().ToLowerInvariant()} settlement={Settlement.CurrentSettlement?.StringId} target={affectedAgent.Name} targetIndex={affectedAgent.Index} weapon={IsWeaponComponentRealWeapon(attackerWeapon)} damage={damagedHp:0.##} blocked={isBlocked} conflict={_conflictActive} armed={_armedConflict}", 1.0);
-		if (SettlementEntryTroopSelectionBehavior.ShouldHandlePhysicalAttackForExternal(Mission.Current, affectedAgent))
+		bool attackerWeaponIsReal = IsWeaponComponentRealWeapon(attackerWeapon);
+		Logger.LogVerbose("SceneTaunt", "attack_timing_on_score_hit:" + affectedAgent.Index, () => $"[AttackTiming] on_score_hit time={Mission.Current?.CurrentTime:0.###} location={(CampaignMission.Current?.Location?.StringId ?? "").Trim().ToLowerInvariant()} settlement={Settlement.CurrentSettlement?.StringId} target={affectedAgent.Name} targetIndex={affectedAgent.Index} weapon={attackerWeaponIsReal} damage={damagedHp:0.##} blocked={isBlocked} conflict={_conflictActive} armed={_armedConflict}", 1.0);
+		if (SettlementEntryTroopSelectionBehavior.ShouldHandlePhysicalAttackForExternal(Mission.Current, affectorAgent, affectedAgent, attackerWeaponIsReal))
 		{
 			Logger.LogVerbose("SceneTaunt", "sets_entry_suppress_score_hit:" + affectedAgent.Index, () => $"Suppressed SceneTaunt score-hit conflict because SETS will handle this settlement attack. Target={affectedAgent.Name}", 1.0);
 			return;
@@ -4144,7 +4145,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		}
 		if (!_conflictActive)
 		{
-			bool playerUsedWeapon = IsWeaponComponentRealWeapon(attackerWeapon);
+			bool playerUsedWeapon = attackerWeaponIsReal;
 			float startCrimeAmount = EstimatePlayerSceneConflictStartCrimeAmount(affectedAgent, playerUsedWeapon);
 			if (TryStartConflictFromPhysicalAttack(affectedAgent, playerUsedWeapon, "player_physical_score_hit"))
 			{
@@ -4153,7 +4154,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			return;
 		}
 		TryRecordPlayerSceneConflictRecentAction(affectedAgent, affectorAgent, "damage", "player_physical_score_hit_existing_conflict");
-		if (!_armedConflict && IsWeaponComponentRealWeapon(attackerWeapon))
+		if (!_armedConflict && attackerWeaponIsReal)
 		{
 			EscalateToArmedConflict("player_dealt_weapon_damage");
 			return;
@@ -5372,6 +5373,67 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		return agent != null && agent.IsHuman && agent.IsActive() && !IsSetsSelectedEntryFollower(agent);
 	}
 
+	private bool ShouldPrioritizeUnarmedVillageBrawlOverSets(Agent attacker, Agent target, bool attackerUsedRealWeapon)
+	{
+		try
+		{
+			if (attacker == null
+				|| target == null
+				|| !target.IsHuman
+				|| !target.IsActive()
+				|| target.IsMainAgent
+				|| SettlementEntryTroopSelectionBehavior.IsSetsConflictProxyActiveForExternal(base.Mission))
+			{
+				return false;
+			}
+			if (_conflictActive)
+			{
+				bool attackerOnPlayerSide = _playerAgentIndices.Contains(attacker.Index);
+				bool attackerOnOpponentSide = _opponentAgentIndices.Contains(attacker.Index);
+				bool targetOnPlayerSide = _playerAgentIndices.Contains(target.Index);
+				bool targetOnOpponentSide = _opponentAgentIndices.Contains(target.Index);
+				return _openedAsUnarmedBrawl
+					&& !_armedConflict
+					&& ((attackerOnPlayerSide && targetOnOpponentSide) || (attackerOnOpponentSide && targetOnPlayerSide));
+			}
+			if (attackerUsedRealWeapon
+				|| (!attacker.IsMainAgent && attacker != Agent.Main)
+				|| IsSetsSelectedEntryFollower(target)
+				|| !SceneTauntBehavior.IsPeaceSceneConflictEnabled())
+			{
+				return false;
+			}
+			CharacterObject targetCharacter = target.Character as CharacterObject;
+			Hero targetHero = targetCharacter?.HeroObject;
+			if (IsPlayerProtectedSceneAttackAgent(target) || SceneTauntBehavior.IsChildSceneProtectedTarget(targetCharacter))
+			{
+				return false;
+			}
+			if (IsOwnedSettlementPassiveAttackScene())
+			{
+				return false;
+			}
+			if (!IsEligiblePhysicalAttackTarget(targetHero, targetCharacter)
+				|| IsSettlementCriminalConflictTarget(targetHero, targetCharacter))
+			{
+				return false;
+			}
+			if (IsAuthorityPhysicalAttackTarget(targetHero, targetCharacter))
+			{
+				return false;
+			}
+			_fightHandler = _fightHandler ?? base.Mission?.GetMissionBehavior<MissionFightHandler>();
+			return base.Mission != null
+				&& Settlement.CurrentSettlement != null
+				&& _fightHandler != null
+				&& !_fightHandler.IsThereActiveFight();
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	internal bool TryStartConflict(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string targetKey, bool fromVerbalTaunt = false, bool playerUsedWeaponOverride = false)
 	{
 		try
@@ -5510,7 +5572,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				Logger.LogVerbose("SceneTaunt", "player_protected_proxy_attack_suppressed:" + targetAgent.Index, () => $"Suppressed SceneTaunt physical conflict for player-protected agent/proxy. Reason={reason}, Target={targetAgent.Name}, AgentIndex={targetAgent.Index}", 1.0);
 				return false;
 			}
-			if (SettlementEntryTroopSelectionBehavior.ShouldHandlePhysicalAttackForExternal(Mission.Current, targetAgent))
+			if (SettlementEntryTroopSelectionBehavior.ShouldHandlePhysicalAttackForExternal(Mission.Current, Agent.Main, targetAgent, playerUsedWeapon))
 			{
 				Logger.LogVerbose("SceneTaunt", "sets_entry_suppress_physical_start:" + targetAgent.Index, () => $"Suppressed SceneTaunt physical conflict start because SETS will handle this settlement attack. Reason={reason}", 1.0);
 				return false;
@@ -6480,6 +6542,40 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		try
 		{
 			return agent?.Mission?.GetMissionBehavior<SceneTauntMissionBehavior>()?.ShouldBlockAgentWeaponWield(agent) ?? false;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	internal static bool IsAgentUsingRealWeaponForExternal(Agent agent)
+	{
+		return IsAgentUsingRealWeapon(agent);
+	}
+
+	internal static bool IsMissionWeaponRealWeaponForExternal(in MissionWeapon attackerWeapon)
+	{
+		return IsMissionWeaponRealWeapon(attackerWeapon);
+	}
+
+	internal static bool IsWeaponComponentRealWeaponForExternal(WeaponComponentData attackerWeapon)
+	{
+		return IsWeaponComponentRealWeapon(attackerWeapon);
+	}
+
+	internal static bool ShouldPrioritizeUnarmedVillageBrawlOverSetsForExternal(
+		Mission mission,
+		Agent attacker,
+		Agent target,
+		bool attackerUsedRealWeapon)
+	{
+		try
+		{
+			return mission?.GetMissionBehavior<SceneTauntMissionBehavior>()?.ShouldPrioritizeUnarmedVillageBrawlOverSets(
+				attacker,
+				target,
+				attackerUsedRealWeapon) ?? false;
 		}
 		catch
 		{

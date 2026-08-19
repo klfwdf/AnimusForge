@@ -423,10 +423,19 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 
 	internal static bool ShouldHandlePhysicalAttackForExternal(Mission mission, Agent target)
 	{
+		return ShouldHandlePhysicalAttackForExternal(
+			mission,
+			Agent.Main,
+			target,
+			SceneTauntMissionBehavior.IsAgentUsingRealWeaponForExternal(Agent.Main));
+	}
+
+	internal static bool ShouldHandlePhysicalAttackForExternal(Mission mission, Agent attacker, Agent target, bool attackerUsedRealWeapon)
+	{
 		try
 		{
 			SettlementEntryTroopSelectionMissionLogic logic = mission?.GetMissionBehavior<SettlementEntryTroopSelectionMissionLogic>();
-			return logic != null && logic.ShouldHandlePhysicalAttack(target);
+			return logic != null && logic.ShouldHandlePhysicalAttack(attacker, target, attackerUsedRealWeapon);
 		}
 		catch
 		{
@@ -1182,7 +1191,11 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			{
 				return true;
 			}
-			if (!ShouldHandlePhysicalAttackForExternal(__instance, victim))
+			if (!ShouldHandlePhysicalAttackForExternal(
+				__instance,
+				attacker,
+				victim,
+				SceneTauntMissionBehavior.IsAgentUsingRealWeaponForExternal(attacker)))
 			{
 				return true;
 			}
@@ -2914,6 +2927,15 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
+			if (_sceneKind == SetsSettlementSceneKind.Village
+				&& !IsConflictProxyActive()
+				&& ShouldYieldPhysicalAttackToSceneTaunt(
+					affectorAgent,
+					affectedAgent,
+					SceneTauntMissionBehavior.IsMissionWeaponRealWeaponForExternal(in attackerWeapon)))
+			{
+				return;
+			}
 			if (_conflictFeaturesEnabled && _isOwnSettlement)
 			{
 				if (!_ownedSettlementIncidentTriggered && IsPlayerSideAgent(affectorAgent) && !IsPlayerSideAgent(affectedAgent) && IsOwnedSettlementIncidentTarget(affectedAgent))
@@ -3155,6 +3177,25 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				return false;
 			}
 			return (_conflictActive && IsLiveTrackedCombatEnemy(target)) || IsSceneConflictTriggerAgent(target);
+		}
+
+		internal bool ShouldHandlePhysicalAttack(Agent attacker, Agent target, bool attackerUsedRealWeapon)
+		{
+			return ShouldHandlePhysicalAttack(target)
+				&& !ShouldYieldPhysicalAttackToSceneTaunt(attacker, target, attackerUsedRealWeapon);
+		}
+
+		private bool ShouldYieldPhysicalAttackToSceneTaunt(Agent attacker, Agent target, bool attackerUsedRealWeapon)
+		{
+			if (_sceneKind != SetsSettlementSceneKind.Village || IsConflictProxyActive())
+			{
+				return false;
+			}
+			return SceneTauntMissionBehavior.ShouldPrioritizeUnarmedVillageBrawlOverSetsForExternal(
+				base.Mission,
+				attacker,
+				target,
+				attackerUsedRealWeapon);
 		}
 
 		private void StartConflict(string source, Agent initialEnemy)

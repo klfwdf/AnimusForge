@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -30,17 +29,26 @@ public partial class RewardSystemBehavior
 
 	private const int PlayerRpTemplateCandidateLimit = 50;
 
-	private const int PlayerRpTemplateSelectionTimeoutMilliseconds = 60000;
+	private const int PlayerRpTemplatePricePerSmithingLevel = 1000;
+
+	private const int PlayerRpMasterSmithingLevel = 275;
+
+	// Each surplus-investment doubling adds three points to a normal result;
+	// the good result intentionally keeps its two-to-one bonus relationship.
+	private const int PlayerRpNormalAttributeBonusPerUpgradeLevel = 3;
+
+	private const int PlayerRpGoodAttributeBonusPerUpgradeLevel =
+		PlayerRpNormalAttributeBonusPerUpgradeLevel * 2;
+
+	private const int PlayerRpMasterNormalAttributeBonus = 3;
+
+	private const int PlayerRpMasterGoodAttributeBonus =
+		PlayerRpMasterNormalAttributeBonus * 2;
 
 	private static readonly object PlayerRpCraftGenerationAuthorizationLock = new object();
 
 	private static readonly HashSet<string> ActivePlayerRpCraftGenerationKeys =
 		new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-	private static readonly Regex PlayerRpTemplateSelectionResponseRegex =
-		new Regex(
-			@"\A\{[ \t\r\n]*""candidate""[ \t\r\n]*:[ \t\r\n]*(0|[1-9][0-9]*)[ \t\r\n]*\}\z",
-			RegexOptions.CultureInvariant);
 
 	private sealed class PlayerRpExactTemplateLookupCache
 	{
@@ -442,7 +450,7 @@ public partial class RewardSystemBehavior
 		return true;
 	}
 
-	internal static bool TryPreviewPlayerRpCraftWithSelectedTemplateForExternal(
+	internal static bool TryPreviewPlayerRpCraftWithPlayerSelectedTemplateForExternal(
 		PlayerRpCraftTemplateSelectionRequest request,
 		string selectedTemplateStringId,
 		out PlayerRpCraftPreview preview,
@@ -451,7 +459,7 @@ public partial class RewardSystemBehavior
 		if (request == null)
 		{
 			preview = null;
-			error = "前处理模板候选已经失效。";
+			error = "模板候选已经失效。";
 			return false;
 		}
 		return TryPreviewPlayerRpCraftCore(
@@ -460,7 +468,7 @@ public partial class RewardSystemBehavior
 			request.IsEquipment,
 			request.CrafterHeroId,
 			selectedTemplateStringId,
-			"preprocess",
+			"player_choice",
 			request.Candidates,
 			out preview,
 			out error);
@@ -497,7 +505,7 @@ public partial class RewardSystemBehavior
 		}
 		else if (candidates.Count == 0)
 		{
-			error = "前处理模板候选为空。";
+			error = "模板候选为空。";
 			return false;
 		}
 		string selectedId = (selectedTemplateStringId ?? "").Trim();
@@ -510,7 +518,7 @@ public partial class RewardSystemBehavior
 					StringComparison.OrdinalIgnoreCase));
 		if (selected == null)
 		{
-			error = "前处理返回的模板不在当前 Top 50 安全候选榜单中。";
+			error = "所选模板不在当前 Top 50 安全候选中。";
 			return false;
 		}
 		if (!TryValidatePlayerRpSelectedTemplateForCurrentRequest(
@@ -590,9 +598,9 @@ public partial class RewardSystemBehavior
 				.Append(" 第纳尔\n投入金额：").Append(investedDenars.ToString(CultureInfo.InvariantCulture))
 				.Append(" 第纳尔\n成品价值：").Append(craftedItemValue.ToString(CultureInfo.InvariantCulture))
 				.Append(" 第纳尔");
-			if (string.Equals(selectionSource, "preprocess", StringComparison.Ordinal))
+			if (string.Equals(selectionSource, "player_choice", StringComparison.Ordinal))
 			{
-				confirmation.Append("\n模板选择：前处理 AI（Top ")
+				confirmation.Append("\n模板选择：玩家手动选择（Top ")
 					.Append(candidates.Count.ToString(CultureInfo.InvariantCulture))
 					.Append(" 候选）");
 			}
@@ -601,7 +609,7 @@ public partial class RewardSystemBehavior
 				"exact_game_item",
 				StringComparison.Ordinal))
 			{
-				confirmation.Append("\n模板选择：游戏数据精确匹配（已跳过前处理 AI）");
+				confirmation.Append("\n模板选择：游戏数据精确匹配");
 			}
 
 			if (investedDenars >= templateBaseValue)
@@ -803,6 +811,7 @@ public partial class RewardSystemBehavior
 				ResolvePlayerRpEquipmentOutcome(
 					current.InvestedDenars,
 					current.TemplateBaseValue,
+					current.SmithingSkill,
 					outcome,
 					out underfunded,
 					out multiplier,
@@ -1944,7 +1953,7 @@ public partial class RewardSystemBehavior
 		return Math.Max(0, Math.Min(10, proxy));
 	}
 
-	internal static bool TryBuildPlayerRpCraftTemplateSelectionRequestForExternal(
+	internal static bool TryBuildPlayerRpCraftTemplateSelectionForExternal(
 		string requestedName,
 		int investedDenars,
 		bool isEquipment,
@@ -1990,533 +1999,17 @@ public partial class RewardSystemBehavior
 		{
 			return false;
 		}
-		try
+		request = new PlayerRpCraftTemplateSelectionRequest
 		{
-			StringBuilder rows = new StringBuilder(candidates.Count * 96);
-			foreach (PlayerRpCraftTemplateCandidate candidate in candidates)
-			{
-				if (rows.Length > 0)
-				{
-					rows.Append('\n');
-				}
-				rows.Append(candidate.Rank.ToString(CultureInfo.InvariantCulture))
-					.Append('|')
-					.Append(SanitizePlayerRpTemplatePromptField(candidate.TemplateStringId, 120))
-					.Append('|')
-					.Append(SanitizePlayerRpTemplatePromptField(candidate.DisplayName, 100))
-					.Append('|')
-					.Append(SanitizePlayerRpTemplatePromptField(candidate.TypeLabel, 80))
-					.Append('|')
-					.Append(candidate.StandardPrice.ToString(CultureInfo.InvariantCulture));
-			}
-			string name = (requestedName ?? "").Trim();
-			string prompt =
-				AIConfigHandler.BuildPlayerRpTemplateSelectionPromptForExternal(
-					SanitizePlayerRpTemplatePromptField(name, 160),
-					investedDenars,
-					isEquipment,
-					candidates.Count,
-					rows.ToString());
-			DuelSettings settings = DuelSettings.GetSettings();
-			if (settings == null)
-			{
-				error = "无法读取 MCM 前处理 API 配置。";
-				return false;
-			}
-			string apiUrl =
-				DuelSettings.GetEffectiveApiUrl(settings.AuxiliaryApiUrl ?? "");
-			string apiKey = (settings.AuxiliaryApiKey ?? "").Trim();
-			string modelName = settings.GetEffectiveAuxiliaryModelName();
-			if (string.IsNullOrWhiteSpace(apiUrl)
-				|| string.IsNullOrWhiteSpace(apiKey)
-				|| string.IsNullOrWhiteSpace(modelName))
-			{
-				error = "前处理 API 地址、密钥或模型名未配置完整。";
-				return false;
-			}
-			object[] messages = new object[2]
-			{
-				new
-				{
-					role = "system",
-					content = AIConfigHandler.StrictPreprocessJsonSystemPrompt
-				},
-				new
-				{
-					role = "user",
-					content = prompt
-				}
-			};
-			AIConfigHandler
-				.BuildPlayerRpTemplateSelectionRequestJsonsForExternal(
-					apiUrl,
-					modelName,
-					messages,
-					out string requestJson,
-					out string plainFallbackRequestJson,
-					out string noTemperatureFallbackRequestJson,
-					out string highTokenFallbackRequestJson,
-					out string reasoningFallbackRequestJson,
-					out string controlMode);
-			request = new PlayerRpCraftTemplateSelectionRequest
-			{
-				CrafterHeroId = crafter.StringId ?? "",
-				RequestedName = name,
-				InvestedDenars = investedDenars,
-				IsEquipment = isEquipment,
-				Candidates = candidates,
-				Prompt = prompt,
-				ApiUrl = apiUrl,
-				ApiKey = apiKey,
-				ModelName = modelName,
-				RequestJson = requestJson,
-				PlainFallbackRequestJson = plainFallbackRequestJson,
-				NoTemperatureFallbackRequestJson =
-					noTemperatureFallbackRequestJson,
-				HighTokenFallbackRequestJson =
-					highTokenFallbackRequestJson,
-				ReasoningFallbackRequestJson =
-					reasoningFallbackRequestJson,
-				ControlMode = controlMode
-			};
-			return true;
-		}
-		catch (Exception ex)
-		{
-			error = "无法构建前处理模板榜单：" + ex.Message;
-			return false;
-		}
-	}
-
-	internal static PlayerRpCraftTemplateSelectionResult SelectPlayerRpCraftTemplateWithPreprocessForExternal(
-		PlayerRpCraftTemplateSelectionRequest request,
-		CancellationToken cancellationToken)
-	{
-		PlayerRpCraftTemplateSelectionResult failed = new PlayerRpCraftTemplateSelectionResult
-		{
-			Success = false,
-			Error = "前处理模板选择失败。"
+			CrafterHeroId = crafter.StringId ?? "",
+			RequestedName = (requestedName ?? "").Trim(),
+			InvestedDenars = investedDenars,
+			IsEquipment = isEquipment,
+			Candidates = candidates
 		};
-		if (request?.Candidates == null
-			|| request.Candidates.Count == 0
-			|| string.IsNullOrWhiteSpace(request.Prompt)
-			|| string.IsNullOrWhiteSpace(request.ApiUrl)
-			|| string.IsNullOrWhiteSpace(request.ApiKey)
-			|| string.IsNullOrWhiteSpace(request.ModelName)
-			|| string.IsNullOrWhiteSpace(request.RequestJson))
-		{
-			failed.Error = "前处理模板请求快照不完整。";
-			return failed;
-		}
-		string selectorExchangeId =
-			PlayerRpCraftTemplateSelectorLog.CreateExchangeId();
-		int selectorAttemptCount = 0;
-		try
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			using CancellationTokenSource timeout =
-				CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-			timeout.CancelAfter(PlayerRpTemplateSelectionTimeoutMilliseconds);
-			string activeRequestJson = request.RequestJson;
-			bool usedHighBudgetFallback = false;
-			SendPlayerRpTemplateSelectionHttpRequest(
-				request,
-				activeRequestJson,
-				timeout.Token,
-				selectorExchangeId,
-				++selectorAttemptCount,
-				"primary",
-				out bool requestSucceeded,
-				out int statusCode,
-				out string reasonPhrase,
-				out string responseBody);
-			if (!requestSucceeded
-				&& AIConfigHandler
-					.LooksLikeAuxiliaryThinkingControlErrorForExternal(
-						responseBody)
-				&& ShouldUsePlayerRpTemplateRetryRequest(
-					activeRequestJson,
-					request.PlainFallbackRequestJson))
-			{
-				Logger.Log(
-					"PlayerRpCraft",
-					"template_selector_retry reason=thinking_control model="
-						+ request.ModelName);
-				activeRequestJson = request.PlainFallbackRequestJson;
-				SendPlayerRpTemplateSelectionHttpRequest(
-					request,
-					activeRequestJson,
-					timeout.Token,
-					selectorExchangeId,
-					++selectorAttemptCount,
-					"thinking_control_plain",
-					out requestSucceeded,
-					out statusCode,
-					out reasonPhrase,
-					out responseBody);
-			}
-			if (!requestSucceeded
-				&& LooksLikePlayerRpTemperatureParameterError(responseBody)
-				&& ShouldUsePlayerRpTemplateRetryRequest(
-					activeRequestJson,
-					request.NoTemperatureFallbackRequestJson))
-			{
-				Logger.Log(
-					"PlayerRpCraft",
-					"template_selector_retry reason=temperature_parameter model="
-						+ request.ModelName);
-				activeRequestJson =
-					request.NoTemperatureFallbackRequestJson;
-				SendPlayerRpTemplateSelectionHttpRequest(
-					request,
-					activeRequestJson,
-					timeout.Token,
-					selectorExchangeId,
-					++selectorAttemptCount,
-					"temperature_removed",
-					out requestSucceeded,
-					out statusCode,
-					out reasonPhrase,
-					out responseBody);
-			}
-			if (!requestSucceeded
-				&& LooksLikePlayerRpCompletionTokenParameterError(
-					responseBody))
-			{
-				string completionRetryJson =
-					request.ReasoningFallbackRequestJson;
-				if (ShouldUsePlayerRpTemplateRetryRequest(
-					activeRequestJson,
-					completionRetryJson))
-				{
-					Logger.Log(
-						"PlayerRpCraft",
-						"template_selector_retry reason=completion_parameters model="
-							+ request.ModelName);
-					activeRequestJson = completionRetryJson;
-					usedHighBudgetFallback = true;
-					SendPlayerRpTemplateSelectionHttpRequest(
-						request,
-						activeRequestJson,
-						timeout.Token,
-						selectorExchangeId,
-						++selectorAttemptCount,
-						"completion_parameters_2048",
-						out requestSucceeded,
-						out statusCode,
-						out reasonPhrase,
-						out responseBody);
-				}
-			}
-			if (!requestSucceeded)
-			{
-				failed.Error = "前处理 API 返回 HTTP "
-					+ statusCode.ToString(CultureInfo.InvariantCulture)
-					+ " "
-					+ (reasonPhrase ?? "");
-				Logger.Log(
-					"PlayerRpCraft",
-					"template_selector_http_failed status="
-						+ statusCode.ToString(CultureInfo.InvariantCulture)
-						+ " model="
-						+ request.ModelName
-						+ " mode="
-						+ request.ControlMode);
-				PlayerRpCraftTemplateSelectorLog.WriteTerminalResult(
-					selectorExchangeId,
-					selectorAttemptCount,
-					"http_failed",
-					failed.Error,
-					request.ApiKey);
-				return failed;
-			}
-			string content = LlmApiCompat.ExtractAssistantText(responseBody);
-			if (string.IsNullOrWhiteSpace(content)
-				&& !usedHighBudgetFallback
-				&& LlmApiCompat.IsReasoningOnlyTokenLimitResponse(
-					responseBody,
-					out int completionTokens,
-					out int reasoningTokens)
-				&& ShouldUsePlayerRpTemplateRetryRequest(
-					activeRequestJson,
-					request.HighTokenFallbackRequestJson))
-			{
-				Logger.Log(
-					"PlayerRpCraft",
-					"template_selector_retry reason=reasoning_only"
-						+ " completion_tokens="
-						+ completionTokens.ToString(CultureInfo.InvariantCulture)
-						+ " reasoning_tokens="
-						+ reasoningTokens.ToString(CultureInfo.InvariantCulture)
-						+ " model="
-						+ request.ModelName);
-				activeRequestJson =
-					request.HighTokenFallbackRequestJson;
-				usedHighBudgetFallback = true;
-				SendPlayerRpTemplateSelectionHttpRequest(
-					request,
-					activeRequestJson,
-					timeout.Token,
-					selectorExchangeId,
-					++selectorAttemptCount,
-					"reasoning_only_2048",
-					out requestSucceeded,
-					out statusCode,
-					out reasonPhrase,
-					out responseBody);
-				if (!requestSucceeded)
-				{
-					failed.Error = "前处理 API 推理兼容重试返回 HTTP "
-						+ statusCode.ToString(CultureInfo.InvariantCulture)
-						+ " "
-						+ (reasonPhrase ?? "");
-					PlayerRpCraftTemplateSelectorLog.WriteTerminalResult(
-						selectorExchangeId,
-						selectorAttemptCount,
-						"reasoning_retry_http_failed",
-						failed.Error,
-						request.ApiKey);
-					return failed;
-				}
-				content =
-					LlmApiCompat.ExtractAssistantText(responseBody);
-			}
-			if (!TryParsePlayerRpTemplateSelection(
-				content,
-				request.Candidates,
-				out PlayerRpCraftTemplateCandidate selected,
-				out string parseError))
-			{
-				failed.Error = "前处理返回了无效模板选择：" + parseError;
-				PlayerRpCraftTemplateSelectorLog.WriteParseResult(
-					selectorExchangeId,
-					selectorAttemptCount,
-					content,
-					false,
-					parseError,
-					null,
-					request.ApiKey);
-				PlayerRpCraftTemplateSelectorLog.WriteTerminalResult(
-					selectorExchangeId,
-					selectorAttemptCount,
-					"parse_failed",
-					failed.Error,
-					request.ApiKey);
-				return failed;
-			}
-			PlayerRpCraftTemplateSelectorLog.WriteParseResult(
-				selectorExchangeId,
-				selectorAttemptCount,
-				content,
-				true,
-				"",
-				selected,
-				request.ApiKey);
-			Logger.Log(
-				"PlayerRpCraft",
-				"template_selector_selected name_hash="
-					+ StablePromptKeyHash(request.RequestedName ?? "")
-					+ " name_length="
-					+ (request.RequestedName ?? "").Length.ToString(
-						CultureInfo.InvariantCulture)
-					+ " invested="
-					+ request.InvestedDenars.ToString(CultureInfo.InvariantCulture)
-					+ " mode="
-					+ (request.IsEquipment ? "equipment" : "misc")
-					+ " candidates="
-					+ request.Candidates.Count.ToString(CultureInfo.InvariantCulture)
-					+ " rank="
-					+ selected.Rank.ToString(CultureInfo.InvariantCulture)
-					+ " template="
-					+ selected.TemplateStringId
-					+ " price="
-					+ selected.StandardPrice.ToString(CultureInfo.InvariantCulture));
-			PlayerRpCraftTemplateSelectorLog.WriteTerminalResult(
-				selectorExchangeId,
-				selectorAttemptCount,
-				"selected",
-				"candidate_rank="
-					+ selected.Rank.ToString(CultureInfo.InvariantCulture)
-					+ " template="
-					+ selected.TemplateStringId,
-				request.ApiKey);
-			return new PlayerRpCraftTemplateSelectionResult
-			{
-				Success = true,
-				TemplateStringId = selected.TemplateStringId,
-				CandidateRank = selected.Rank,
-				Error = ""
-			};
-		}
-		catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
-		{
-			PlayerRpCraftTemplateSelectorLog.WriteTerminalResult(
-				selectorExchangeId,
-				selectorAttemptCount,
-				"cancelled",
-				"调用方取消了模板选择请求。",
-				request.ApiKey);
-			throw;
-		}
-		catch (OperationCanceledException)
-		{
-			failed.Error = "前处理模板选择超过 60 秒，已取消本次请求。";
-			PlayerRpCraftTemplateSelectorLog.WriteTerminalResult(
-				selectorExchangeId,
-				selectorAttemptCount,
-				"timeout",
-				failed.Error,
-				request.ApiKey);
-			return failed;
-		}
-		catch (Exception ex)
-		{
-			failed.Error = "前处理模板选择异常："
-				+ ex.GetType().Name
-				+ ": "
-				+ ex.Message;
-			Logger.Log("PlayerRpCraft", "template_selector_failed " + failed.Error);
-			PlayerRpCraftTemplateSelectorLog.WriteTerminalResult(
-				selectorExchangeId,
-				selectorAttemptCount,
-				"exception",
-				failed.Error,
-				request.ApiKey);
-			return failed;
-		}
+		return true;
 	}
 
-	private static void SendPlayerRpTemplateSelectionHttpRequest(
-		PlayerRpCraftTemplateSelectionRequest request,
-		string requestJson,
-		CancellationToken cancellationToken,
-		string selectorExchangeId,
-		int selectorAttempt,
-		string retryReason,
-		out bool succeeded,
-		out int statusCode,
-		out string reasonPhrase,
-		out string responseBody)
-	{
-		succeeded = false;
-		statusCode = 0;
-		reasonPhrase = "";
-		responseBody = "";
-		PlayerRpCraftTemplateSelectorLog.WriteRequest(
-			selectorExchangeId,
-			selectorAttempt,
-			retryReason,
-			request.ModelName,
-			request.ControlMode,
-			request.RequestedName,
-			request.InvestedDenars,
-			request.IsEquipment,
-			requestJson,
-			request.ApiKey);
-		try
-		{
-			using HttpRequestMessage httpRequest =
-				new HttpRequestMessage(HttpMethod.Post, request.ApiUrl);
-			LlmApiCompat.ApplyAuthenticationHeaders(
-				httpRequest,
-				request.ApiUrl,
-				request.ApiKey);
-			httpRequest.Content =
-				new StringContent(
-					requestJson,
-					Encoding.UTF8,
-					"application/json");
-			using HttpResponseMessage response =
-				DuelSettings.GlobalClient.SendAsync(
-					httpRequest,
-					cancellationToken)
-					.GetAwaiter()
-					.GetResult();
-			succeeded = response.IsSuccessStatusCode;
-			statusCode = (int)response.StatusCode;
-			reasonPhrase = response.ReasonPhrase ?? "";
-			responseBody = response.Content.ReadAsStringAsync()
-				.GetAwaiter()
-				.GetResult();
-			PlayerRpCraftTemplateSelectorLog.WriteResponse(
-				selectorExchangeId,
-				selectorAttempt,
-				retryReason,
-				succeeded,
-				statusCode,
-				reasonPhrase,
-				responseBody,
-				request.ApiKey);
-		}
-		catch (Exception ex)
-		{
-			PlayerRpCraftTemplateSelectorLog.WriteRequestException(
-				selectorExchangeId,
-				selectorAttempt,
-				retryReason,
-				ex,
-				request.ApiKey);
-			throw;
-		}
-	}
-
-	private static bool ShouldUsePlayerRpTemplateRetryRequest(
-		string currentRequestJson,
-		string retryRequestJson)
-	{
-		return !string.IsNullOrWhiteSpace(retryRequestJson)
-			&& !string.Equals(
-				currentRequestJson ?? "",
-				retryRequestJson,
-				StringComparison.Ordinal);
-	}
-
-	private static bool LooksLikePlayerRpTemperatureParameterError(
-		string responseBody)
-	{
-		string text = (responseBody ?? "").Trim();
-		return text.IndexOf(
-				"temperature",
-				StringComparison.OrdinalIgnoreCase) >= 0
-			&& LooksLikePlayerRpRejectedParameterResponse(text);
-	}
-
-	private static bool LooksLikePlayerRpCompletionTokenParameterError(
-		string responseBody)
-	{
-		string text = (responseBody ?? "").Trim();
-		return (text.IndexOf(
-					"max_tokens",
-					StringComparison.OrdinalIgnoreCase) >= 0
-				|| text.IndexOf(
-					"max_completion_tokens",
-					StringComparison.OrdinalIgnoreCase) >= 0
-				|| text.IndexOf(
-					"completion token",
-					StringComparison.OrdinalIgnoreCase) >= 0)
-			&& LooksLikePlayerRpRejectedParameterResponse(text);
-	}
-
-	private static bool LooksLikePlayerRpRejectedParameterResponse(
-		string text)
-	{
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return false;
-		}
-		return text.IndexOf("unsupported", StringComparison.OrdinalIgnoreCase) >= 0
-			|| text.IndexOf("unknown", StringComparison.OrdinalIgnoreCase) >= 0
-			|| text.IndexOf("unrecognized", StringComparison.OrdinalIgnoreCase) >= 0
-			|| text.IndexOf("invalid", StringComparison.OrdinalIgnoreCase) >= 0
-			|| text.IndexOf("unexpected", StringComparison.OrdinalIgnoreCase) >= 0
-			|| text.IndexOf("not allowed", StringComparison.OrdinalIgnoreCase) >= 0
-			|| text.IndexOf("not permitted", StringComparison.OrdinalIgnoreCase) >= 0
-			|| text.IndexOf("not supported", StringComparison.OrdinalIgnoreCase) >= 0
-			|| text.IndexOf("does not support", StringComparison.OrdinalIgnoreCase) >= 0
-			|| text.IndexOf(
-				"extra inputs are not permitted",
-				StringComparison.OrdinalIgnoreCase) >= 0;
-	}
 
 	private static bool TryResolvePlayerRpExactRegisteredTemplate(
 		string requestedName,
@@ -3263,70 +2756,6 @@ public partial class RewardSystemBehavior
 			: localized + " (" + technical + ")";
 	}
 
-	private static string SanitizePlayerRpTemplatePromptField(
-		string value,
-		int maxLength)
-	{
-		string text = Regex.Replace(
-				value ?? "",
-				"[\\r\\n\\t|]+",
-				" ")
-			.Trim();
-		int limit = Math.Max(8, maxLength);
-		return text.Length <= limit
-			? text
-			: text.Substring(0, limit);
-	}
-
-	private static bool TryParsePlayerRpTemplateSelection(
-		string content,
-		List<PlayerRpCraftTemplateCandidate> candidates,
-		out PlayerRpCraftTemplateCandidate selected,
-		out string error)
-	{
-		selected = null;
-		error = "";
-		string text = (content ?? "").Trim(
-			'\uFEFF',
-			'\u200B',
-			' ',
-			'\t',
-			'\r',
-			'\n');
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			error = "返回内容为空。";
-			return false;
-		}
-		try
-		{
-			Match responseMatch =
-				PlayerRpTemplateSelectionResponseRegex.Match(text);
-			if (!responseMatch.Success
-				|| !int.TryParse(
-					responseMatch.Groups[1].Value,
-					NumberStyles.None,
-					CultureInfo.InvariantCulture,
-					out int rank))
-			{
-				error = "必须只输出严格 JSON：{\"candidate\":整数序号}。";
-				return false;
-			}
-			selected = candidates?.FirstOrDefault(candidate =>
-				candidate?.Rank == rank);
-			if (selected == null)
-			{
-				error = "候选序号越界。";
-				return false;
-			}
-			return true;
-		}
-		catch (Exception ex)
-		{
-			error = "JSON 解析失败：" + ex.Message;
-			return false;
-		}
-	}
 
 	private static bool TryResolvePlayerRpEquipmentTemplate(
 		string name,
@@ -3987,10 +3416,18 @@ public partial class RewardSystemBehavior
 		out int normal,
 		out int bad)
 	{
+		int safeSmithing = Math.Max(0, smithing);
+		if (safeSmithing >= PlayerRpMasterSmithingLevel)
+		{
+			good = 20000;
+			normal = 10000;
+			bad = 0;
+			return;
+		}
 		double difficulty =
 			GetPlayerRpEquipmentRecommendedSmithingLevel(templateBaseValue);
-		double q = (Math.Max(0, smithing) + 1d)
-			/ (Math.Max(0, smithing) + difficulty + 2d);
+		double q = (safeSmithing + 1d)
+			/ (safeSmithing + difficulty + 2d);
 		good = Math.Max(
 			0,
 			Math.Min(
@@ -4004,13 +3441,15 @@ public partial class RewardSystemBehavior
 		int templateBaseValue)
 	{
 		long safeTemplateValue = Math.Max(1L, (long)templateBaseValue);
-		long recommendedLevel = (safeTemplateValue + 99L) / 100L;
+		long recommendedLevel = (safeTemplateValue + PlayerRpTemplatePricePerSmithingLevel - 1L)
+			/ PlayerRpTemplatePricePerSmithingLevel;
 		return (int)Math.Max(1L, Math.Min(int.MaxValue, recommendedLevel));
 	}
 
 	private static void ResolvePlayerRpEquipmentOutcome(
 		int invested,
 		int templateBaseValue,
+		int smithing,
 		string outcome,
 		out bool underfunded,
 		out double multiplier,
@@ -4040,10 +3479,19 @@ public partial class RewardSystemBehavior
 			threshold *= 2L;
 			upgradeLevel++;
 		}
+		int normalBonus =
+			upgradeLevel * PlayerRpNormalAttributeBonusPerUpgradeLevel;
+		int goodBonus =
+			upgradeLevel * PlayerRpGoodAttributeBonusPerUpgradeLevel;
+		if (Math.Max(0, smithing) >= PlayerRpMasterSmithingLevel)
+		{
+			normalBonus += PlayerRpMasterNormalAttributeBonus;
+			goodBonus += PlayerRpMasterGoodAttributeBonus;
+		}
 		additiveBonus = string.Equals(outcome, "good", StringComparison.OrdinalIgnoreCase)
-			? upgradeLevel * 2
+			? goodBonus
 			: string.Equals(outcome, "normal", StringComparison.OrdinalIgnoreCase)
-				? upgradeLevel
+				? normalBonus
 				: 0;
 	}
 
@@ -4061,19 +3509,22 @@ public partial class RewardSystemBehavior
 			"good",
 			goodWeight,
 			invested,
-			templateBaseValue);
+			templateBaseValue,
+			smithing);
 		AppendPlayerRpEquipmentProbabilityRow(
 			builder,
 			"normal",
 			normalWeight,
 			invested,
-			templateBaseValue);
+			templateBaseValue,
+			smithing);
 		AppendPlayerRpEquipmentProbabilityRow(
 			builder,
 			"bad",
 			badWeight,
 			invested,
-			templateBaseValue);
+			templateBaseValue,
+			smithing);
 
 		// The normal tier is the fixed one-third baseline (10000 / 30000).
 		// Warn only when degradation is more likely than that baseline.
@@ -4086,7 +3537,9 @@ public partial class RewardSystemBehavior
 				.Append(Math.Max(0, smithing).ToString(CultureInfo.InvariantCulture))
 				.Append(" 提高至 ")
 				.Append(recommendedSmithing.ToString(CultureInfo.InvariantCulture))
-				.Append(" 级（模板每 100 第纳尔对应 1 级）。");
+				.Append(" 级（模板每 ")
+				.Append(PlayerRpTemplatePricePerSmithingLevel.ToString(CultureInfo.InvariantCulture))
+				.Append(" 第纳尔对应 1 级）。");
 		}
 	}
 
@@ -4095,11 +3548,13 @@ public partial class RewardSystemBehavior
 		string outcome,
 		int probabilityWeight,
 		int invested,
-		int templateBaseValue)
+		int templateBaseValue,
+		int smithing)
 	{
 		ResolvePlayerRpEquipmentOutcome(
 			invested,
 			templateBaseValue,
+			smithing,
 			outcome,
 			out bool underfunded,
 			out double multiplier,

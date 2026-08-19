@@ -1230,6 +1230,10 @@ public class MyBehavior : CampaignBehaviorBase
 
 		public List<string> PopupCandidateKingdomIds = new List<string>();
 
+		public bool WeeklyReportNoticeNearestKingdomResolved;
+
+		public string WeeklyReportNoticeNearestKingdomId = "";
+
 		public List<WeeklyEventMaterialPreviewGroup> Groups = new List<WeeklyEventMaterialPreviewGroup>();
 
 		public Dictionary<string, WeeklyEventMaterialPreviewGroup> GroupMap;
@@ -1843,6 +1847,8 @@ public class MyBehavior : CampaignBehaviorBase
 	private int _weeklyReportReadingXpPendingSteward;
 
 	private readonly HashSet<string> _weeklyReportNoticeEventIdsShownThisSession = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+	private bool _weeklyReportNoticeQueueNormalizedForCurrentPolicy;
 
 	private MapNotificationView _weeklyReportRegisteredMapNotificationView;
 
@@ -18606,6 +18612,7 @@ public class MyBehavior : CampaignBehaviorBase
 			dataStore.SyncData("_af_weeklyReportReadingXpPendingSteward_v1", ref _weeklyReportReadingXpPendingSteward);
 			NormalizeWeeklyReportReadingXpPendingBatch();
 			_weeklyReportNoticeEventIdsShownThisSession.Clear();
+			_weeklyReportNoticeQueueNormalizedForCurrentPolicy = false;
 			_weeklyReportRegisteredMapNotificationView = null;
 			_eventSourceMaterials.Clear();
 			_eventSourceMaterialJsonStorage = CampaignSaveChunkHelper.LoadChunkedString(dataStore, "_eventSourceMaterials_v1", "EventMaterial") ?? "";
@@ -42770,14 +42777,14 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private static WeeklyReportPromptProfile GetWeeklyReportPromptProfile()
 	{
-		int num = 1;
+		int num = 2;
 		try
 		{
-			num = ClampInt((DuelSettings.GetSettings()?.WeeklyReportLengthPreset).GetValueOrDefault(1), 1, 4);
+			num = ClampInt((DuelSettings.GetSettings()?.WeeklyReportLengthPreset).GetValueOrDefault(2), 1, 4);
 		}
 		catch
 		{
-			num = 1;
+			num = 2;
 		}
 		return num switch
 		{
@@ -46838,7 +46845,7 @@ public class MyBehavior : CampaignBehaviorBase
 		List<string> list2 = (popupCandidateKingdomIdsOverride ?? Enumerable.Empty<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 		if (list2.Count == 0)
 		{
-			list2 = list.Where((WeeklyEventMaterialPreviewGroup x) => x != null && string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase)).Select((WeeklyEventMaterialPreviewGroup x) => (x.KingdomId ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+			list2 = list.Where((WeeklyEventMaterialPreviewGroup x) => x != null && string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase) && x.OutputMode != WeeklyReportOutputMode.TitleShortTagsOnly).Select((WeeklyEventMaterialPreviewGroup x) => (x.KingdomId ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 		}
 		Dictionary<string, WeeklyEventMaterialPreviewGroup> groupMap = BuildWeeklyReportGroupMap(list);
 		List<WeeklyReportBatchRequest> batches = (preparedBatches ?? new List<WeeklyReportBatchRequest>()).Where((WeeklyReportBatchRequest x) => x != null && x.Groups != null && x.Groups.Count > 0).ToList();
@@ -47099,7 +47106,7 @@ public class MyBehavior : CampaignBehaviorBase
 							return false;
 						}
 						context.CurrentParsedReportIds.Add(block.ReportId);
-						TryQueueWeeklyReportMapNoticeForGeneratedReport(group, context.WeekIndex, context.PopupCandidateKingdomIds, context.WeeklyReportNoticeEventIdsQueued);
+						TryQueueWeeklyReportMapNoticeForGeneratedReport(group, context.WeekIndex, ResolveWeeklyReportNoticeNearestKingdomId(context), context.WeeklyReportNoticeEventIdsQueued);
 						context.SuccessCount++;
 					}
 					context.BlockIndex++;
@@ -47302,23 +47309,18 @@ public class MyBehavior : CampaignBehaviorBase
 		return (list[0] ?? "").Trim();
 	}
 
-	private static List<string> ResolveWeeklyReportNoticeKingdomIds(IEnumerable<string> kingdomIds)
+	private static string ResolveWeeklyReportNoticeNearestKingdomId(PendingWeeklyReportCommitContext context)
 	{
-		List<string> list = (kingdomIds ?? Enumerable.Empty<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-		if (list.Count == 0)
+		if (context == null)
 		{
-			return new List<string>();
+			return "";
 		}
-		List<string> kingdomIdsByPlayerProximity = GetKingdomIdsByPlayerProximity(list);
-		List<string> ordered = kingdomIdsByPlayerProximity.Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-		foreach (string item in list)
+		if (!context.WeeklyReportNoticeNearestKingdomResolved)
 		{
-			if (!ordered.Any((string x) => string.Equals(x, item, StringComparison.OrdinalIgnoreCase)))
-			{
-				ordered.Add(item);
-			}
+			context.WeeklyReportNoticeNearestKingdomId = ResolveNearestWeeklyReportKingdomId(context.PopupCandidateKingdomIds);
+			context.WeeklyReportNoticeNearestKingdomResolved = true;
 		}
-		return ordered.Take(3).ToList();
+		return context.WeeklyReportNoticeNearestKingdomId ?? "";
 	}
 
 	private static bool CanPublishWeeklyReportMapNotification()
@@ -47359,7 +47361,12 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void TryPublishUnreadWeeklyReportMapNotifications()
 	{
-		if (_unreadWeeklyReportNoticeEventIds == null || _unreadWeeklyReportNoticeEventIds.Count == 0 || !CanPublishWeeklyReportMapNotification() || !TryEnsureWeeklyReportMapNotificationRegistered())
+		if (_unreadWeeklyReportNoticeEventIds == null || _unreadWeeklyReportNoticeEventIds.Count == 0 || !IsWeeklyReportMapNotificationEnabled())
+		{
+			return;
+		}
+		NormalizeUnreadWeeklyReportNoticesForCurrentPolicy();
+		if (_unreadWeeklyReportNoticeEventIds.Count == 0 || !CanPublishWeeklyReportMapNotification() || !TryEnsureWeeklyReportMapNotificationRegistered())
 		{
 			return;
 		}
@@ -47383,6 +47390,10 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void QueueWeeklyReportMapNotice(string eventId)
 	{
+		if (!IsWeeklyReportMapNotificationEnabled())
+		{
+			return;
+		}
 		string text = (eventId ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(text))
 		{
@@ -47396,6 +47407,57 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			_unreadWeeklyReportNoticeEventIds.Add(text);
 		}
+	}
+
+	private void NormalizeUnreadWeeklyReportNoticesForCurrentPolicy()
+	{
+		if (_weeklyReportNoticeQueueNormalizedForCurrentPolicy)
+		{
+			return;
+		}
+		try
+		{
+			List<string> unreadEventIds = SanitizeUnreadWeeklyReportNoticeEventIds(_unreadWeeklyReportNoticeEventIds);
+			Dictionary<int, List<EventRecordEntry>> kingdomReportsByWeek = new Dictionary<int, List<EventRecordEntry>>();
+			foreach (string eventId in unreadEventIds)
+			{
+				EventRecordEntry entry = FindWeeklyReportRecordById(eventId);
+				if (entry == null || !string.Equals((entry.EventKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase))
+				{
+					continue;
+				}
+				if (!kingdomReportsByWeek.TryGetValue(entry.WeekIndex, out List<EventRecordEntry> entries))
+				{
+					entries = new List<EventRecordEntry>();
+					kingdomReportsByWeek[entry.WeekIndex] = entries;
+				}
+				entries.Add(entry);
+			}
+			HashSet<string> retainedEventIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			foreach (List<EventRecordEntry> entries in kingdomReportsByWeek.Values)
+			{
+				string nearestKingdomId = ResolveNearestWeeklyReportKingdomId(entries.Select((EventRecordEntry x) => x?.ScopeKingdomId));
+				EventRecordEntry nearestEntry = entries.FirstOrDefault((EventRecordEntry x) => string.Equals((x?.ScopeKingdomId ?? "").Trim(), nearestKingdomId, StringComparison.OrdinalIgnoreCase));
+				if (nearestEntry != null)
+				{
+					retainedEventIds.Add(nearestEntry.EventId ?? "");
+				}
+			}
+			_unreadWeeklyReportNoticeEventIds = unreadEventIds.Where((string x) => retainedEventIds.Contains(x)).ToList();
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EventWeeklyReport", "[WARN] normalize legacy weekly report notices failed: " + ex.Message);
+		}
+		finally
+		{
+			_weeklyReportNoticeQueueNormalizedForCurrentPolicy = true;
+		}
+	}
+
+	private static bool IsWeeklyReportMapNotificationEnabled()
+	{
+		return DuelSettings.IsWeeklyReportMapNotificationEnabled();
 	}
 
 	private void OnMapNoticeRemoved(InformationData data)
@@ -47695,40 +47757,22 @@ public class MyBehavior : CampaignBehaviorBase
 		return (source ?? Enumerable.Empty<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).Where((string x) => x.StartsWith("weekly_report:", StringComparison.OrdinalIgnoreCase)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 	}
 
-	private void TryQueueWeeklyReportMapNoticeForGeneratedReport(WeeklyEventMaterialPreviewGroup group, int weekIndex, IEnumerable<string> candidateKingdomIds, HashSet<string> queuedEventIds)
+	private void TryQueueWeeklyReportMapNoticeForGeneratedReport(WeeklyEventMaterialPreviewGroup group, int weekIndex, string nearestKingdomId, HashSet<string> queuedEventIds)
 	{
 		if (group == null || weekIndex <= 0)
 		{
 			return;
 		}
-		string groupKind = (group.GroupKind ?? "").Trim();
-		string eventId = "";
-		if (string.Equals(groupKind, "world", StringComparison.OrdinalIgnoreCase))
-		{
-			eventId = BuildWeeklyReportEventId("world", weekIndex, "");
-		}
-		else if (string.Equals(groupKind, "kingdom", StringComparison.OrdinalIgnoreCase))
-		{
-			if (group.OutputMode == WeeklyReportOutputMode.TitleShortTagsOnly)
-			{
-				return;
-			}
-			string kingdomId = (group.KingdomId ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(kingdomId))
-			{
-				return;
-			}
-			List<string> noticeKingdomIds = ResolveWeeklyReportNoticeKingdomIds(candidateKingdomIds);
-			if (noticeKingdomIds.Count > 0 && !noticeKingdomIds.Any((string x) => string.Equals((x ?? "").Trim(), kingdomId, StringComparison.OrdinalIgnoreCase)))
-			{
-				return;
-			}
-			eventId = BuildWeeklyReportEventId("kingdom", weekIndex, kingdomId);
-		}
-		if (string.IsNullOrWhiteSpace(eventId))
+		if (!string.Equals((group.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase) || group.OutputMode == WeeklyReportOutputMode.TitleShortTagsOnly)
 		{
 			return;
 		}
+		string kingdomId = (group.KingdomId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(kingdomId) || string.IsNullOrWhiteSpace(nearestKingdomId) || !string.Equals(kingdomId, nearestKingdomId, StringComparison.OrdinalIgnoreCase))
+		{
+			return;
+		}
+		string eventId = BuildWeeklyReportEventId("kingdom", weekIndex, kingdomId);
 		if (queuedEventIds != null && !queuedEventIds.Add(eventId))
 		{
 			return;
@@ -48106,6 +48150,7 @@ public class MyBehavior : CampaignBehaviorBase
 		_weeklyReportReadingXpPendingLeadership = 0;
 		_weeklyReportReadingXpPendingSteward = 0;
 		_weeklyReportNoticeEventIdsShownThisSession.Clear();
+		_weeklyReportNoticeQueueNormalizedForCurrentPolicy = false;
 		_weeklyReportRegisteredMapNotificationView = null;
 		_weeklyReportGenerationInProgress = false;
 		_weeklyReportUiStage = WeeklyReportUiStage.None;

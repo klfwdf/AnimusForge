@@ -229,64 +229,39 @@ string playerRpComponents = File.ReadAllText(Path.Combine(repoRoot, "PlayerRpCra
 string preprocessPrompts = File.ReadAllText(Path.Combine(repoRoot, "AnimusForge", "ModuleData", "PreprocessPrompts.json"));
 string terminalBehavior = File.ReadAllText(Path.Combine(repoRoot, "AnimusForgeTerminalBehavior.cs"));
 string playerRpPopup = File.ReadAllText(Path.Combine(repoRoot, "PlayerRpForgePopup.cs"));
-string playerRpTemplateSelectorLog = File.ReadAllText(Path.Combine(repoRoot, "PlayerRpCraftTemplateSelectorLog.cs"));
 Test.True(playerRpCrafting.Contains("PlayerRpTemplateCandidateLimit = 50", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("Rows: rank|template_id|name|type|standard_price", StringComparison.Ordinal) == false
-    && preprocessPrompts.Contains("Rows: rank|template_id|name|type|standard_price", StringComparison.Ordinal), "player RP template Top 50 prompt contract missing");
-Test.True(preprocessPrompts.Contains("{requested_name}", StringComparison.Ordinal)
-    && preprocessPrompts.Contains("{invested_denars}", StringComparison.Ordinal)
-    && preprocessPrompts.Contains("{craft_mode}", StringComparison.Ordinal)
-    && preprocessPrompts.Contains("{template_candidates}", StringComparison.Ordinal), "player RP preprocess prompt must include name, investment, mode, and candidates");
-Test.True(playerRpCrafting.Contains("candidate.StandardPrice.ToString", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("candidate.TypeLabel", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("TryBuildPlayerRpCraftTemplateSelectionForExternal(", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("Candidates = candidates", StringComparison.Ordinal)
+    && terminalBehavior.Contains("candidate.TypeLabel", StringComparison.Ordinal)
+    && terminalBehavior.Contains("candidate.StandardPrice", StringComparison.Ordinal)
     && playerRpModels.Contains("public string TypeLabel;", StringComparison.Ordinal)
-    && playerRpModels.Contains("public int StandardPrice;", StringComparison.Ordinal), "every player RP template row must include type and standard price");
-Test.True(playerRpCrafting.Contains("前处理返回的模板不在当前 Top 50 安全候选榜单中", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("PlayerRpTemplateSelectionResponseRegex", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("必须只输出严格 JSON", StringComparison.Ordinal), "player RP preprocess selection whitelist/strict JSON guard missing");
-Test.True(playerRpCrafting.Contains("preview.TemplateStringId", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("preview.TemplateSelectionSource", StringComparison.Ordinal)
-    && terminalBehavior.Contains("TryPreviewPlayerRpCraftWithSelectedTemplateForExternal", StringComparison.Ordinal), "player RP commit/preview must preserve the preprocess-selected exact template");
-Test.True(playerRpModels.Contains("public string PlainFallbackRequestJson;", StringComparison.Ordinal)
-    && playerRpModels.Contains("public string HighTokenFallbackRequestJson;", StringComparison.Ordinal)
-    && playerRpModels.Contains("public string ReasoningFallbackRequestJson;", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("LooksLikeAuxiliaryThinkingControlErrorForExternal", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("IsReasoningOnlyTokenLimitResponse", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("\"unexpected\"", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("\"not permitted\"", StringComparison.Ordinal), "player RP preprocess API compatibility retries missing");
-Test.True(Regex.IsMatch(playerRpCrafting, @"LooksLikePlayerRpCompletionTokenParameterError[\s\S]{0,800}?completionRetryJson\s*=\s*request\.ReasoningFallbackRequestJson", RegexOptions.CultureInvariant)
-    && Regex.IsMatch(playerRpCrafting, @"reason=reasoning_only[\s\S]{0,800}?request\.HighTokenFallbackRequestJson", RegexOptions.CultureInvariant), "player RP token rejection/reasoning-only retries target the wrong high-budget snapshot");
-Test.True(playerRpTemplateSelectorLog.Contains("PlayerRpCraft_TemplateSelector.txt", StringComparison.Ordinal)
-    && playerRpTemplateSelectorLog.Contains("new FeatureDiagnosticLogFile(", StringComparison.Ordinal)
-    && playerRpTemplateSelectorLog.Contains("MaxLogSizeMegabytes = 16", StringComparison.Ordinal)
-    && playerRpTemplateSelectorLog.Contains("PayloadChunkCharacterLimit = 12000", StringComparison.Ordinal)
-    && playerRpTemplateSelectorLog.Contains("char.IsHighSurrogate", StringComparison.Ordinal)
-    && playerRpTemplateSelectorLog.Contains("char.IsLowSurrogate", StringComparison.Ordinal)
-    && playerRpTemplateSelectorLog.Contains("RedactApiKey", StringComparison.Ordinal)
-    && !playerRpTemplateSelectorLog.Contains("ApiUrl", StringComparison.Ordinal),
-    "player RP template selector log must be UTF-8-safe, bounded, chunked, and omit the API URL");
-Test.True(playerRpCrafting.Contains("PlayerRpCraftTemplateSelectorLog.WriteRequest(", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("PlayerRpCraftTemplateSelectorLog.WriteResponse(", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("PlayerRpCraftTemplateSelectorLog.WriteRequestException(", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("PlayerRpCraftTemplateSelectorLog.WriteParseResult(", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("PlayerRpCraftTemplateSelectorLog.WriteTerminalResult(", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("\"primary\"", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("\"thinking_control_plain\"", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("\"temperature_removed\"", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("\"completion_parameters_2048\"", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("\"reasoning_only_2048\"", StringComparison.Ordinal),
-    "every actual player RP selector attempt and final parse/outcome must reach the dedicated log");
-Regex strictPlayerRpCandidateJson = new(
-    @"\A\{[ \t\r\n]*""candidate""[ \t\r\n]*:[ \t\r\n]*(0|[1-9][0-9]*)[ \t\r\n]*\}\z",
-    RegexOptions.CultureInvariant);
-foreach (string acceptedCandidateJson in new[] { "{\"candidate\":1}", "{ \"candidate\" : 50 }", "{\n\"candidate\":2\n}" })
-{
-    Test.True(strictPlayerRpCandidateJson.IsMatch(acceptedCandidateJson), "valid strict player RP candidate JSON rejected: " + acceptedCandidateJson);
-}
-foreach (string rejectedCandidateJson in new[] { "{'candidate':1}", "{\"candidate\":1,}", "{\"candidate\":01}", "{\"candidate\":0x1}", "{\"candidate\":\"1\"}", "```json\n{\"candidate\":1}\n```", "{\"candidate\":1,\"candidate\":2}" })
-{
-    Test.True(!strictPlayerRpCandidateJson.IsMatch(rejectedCandidateJson), "non-strict player RP candidate JSON accepted: " + rejectedCandidateJson);
-}
+    && playerRpModels.Contains("public int StandardPrice;", StringComparison.Ordinal),
+    "player RP template selection must build a local Top 50 candidate snapshot with type and price");
+Test.True(playerRpCrafting.Contains("TryPreviewPlayerRpCraftWithPlayerSelectedTemplateForExternal(", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("\"player_choice\"", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("所选模板不在当前 Top 50 安全候选中。", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("preview.TemplateStringId", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("preview.TemplateSelectionSource", StringComparison.Ordinal),
+    "player-selected templates must stay inside the captured candidate snapshot through preview and commit");
+Test.True(terminalBehavior.Contains("ShowPlayerRpCraftTemplateSelection(", StringComparison.Ordinal)
+    && terminalBehavior.Contains("new ItemImageIdentifier(template)", StringComparison.Ordinal)
+    && terminalBehavior.Contains("new InquiryElement(", StringComparison.Ordinal)
+    && terminalBehavior.Contains("isSeachAvailable: true", StringComparison.Ordinal)
+    && terminalBehavior.Contains("TryPreviewPlayerRpCraftWithPlayerSelectedTemplateForExternal", StringComparison.Ordinal)
+    && terminalBehavior.Contains("Interlocked.Exchange(ref callbackGate, 1)", StringComparison.Ordinal),
+    "player RP template picker must be a searchable single-choice list with item thumbnails and a one-shot callback");
+Test.True(!terminalBehavior.Contains("Task.Run(", StringComparison.Ordinal)
+    && !terminalBehavior.Contains("TryPreviewPlayerRpCraftExactMatchForExternal(", StringComparison.Ordinal)
+    && !terminalBehavior.Contains("SelectPlayerRpCraftTemplateWithPreprocessForExternal", StringComparison.Ordinal)
+    && !playerRpCrafting.Contains("BuildPlayerRpTemplateSelectionPromptForExternal", StringComparison.Ordinal)
+    && !playerRpCrafting.Contains("SendPlayerRpTemplateSelectionHttpRequest", StringComparison.Ordinal)
+    && !playerRpCrafting.Contains("PlayerRpCraftTemplateSelectorLog", StringComparison.Ordinal)
+    && !File.Exists(Path.Combine(repoRoot, "PlayerRpCraftTemplateSelectorLog.cs")),
+    "U-key player RP crafting must not retain an LLM request, HTTP selector, or selector log path");
+Test.True(preprocessPrompts.Contains("PlayerRpTemplateSelection", StringComparison.Ordinal)
+    && preprocessPrompts.Contains("Rows: rank|template_id|name|type|standard_price", StringComparison.Ordinal),
+    "the retired selector prompt configuration must remain untouched for backward-compatible config loading");
+
 Test.True(rewardSystem.Contains("|| IsGeneratedRewardItemStringId(item.StringId)", StringComparison.Ordinal), "generated AF items must not feed back into RP template caches");
 Test.True(playerRpComponents.Contains("IsRuntimeCraftedWeapon(template)", StringComparison.Ordinal)
     && playerRpComponents.Contains("template.IsCraftedByPlayer", StringComparison.Ordinal)
@@ -338,17 +313,43 @@ Test.True(compactEquipmentProbabilityPreview.Success
 Test.True(playerRpCrafting.Contains("if (badWeight > normalWeight)", StringComparison.Ordinal)
     && playerRpCrafting.Contains("【警告】劣化概率高于 33.33%", StringComparison.Ordinal)
     && playerRpCrafting.Contains("建议将锻造从 ", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("模板每 100 第纳尔对应 1 级", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("PlayerRpTemplatePricePerSmithingLevel.ToString", StringComparison.Ordinal)
+    && playerRpCrafting.Contains(" 第纳尔对应 1 级）。", StringComparison.Ordinal)
     && playerRpCrafting.Contains("有效正属性保留 ", StringComparison.Ordinal)
     && playerRpCrafting.Contains("每项有效正属性 +", StringComparison.Ordinal)
     && playerRpCrafting.Contains("有效正属性与重量不变", StringComparison.Ordinal),
     "equipment confirmation effect summaries or degradation warning are missing");
 Test.True(playerRpCrafting.Contains("GetPlayerRpEquipmentRecommendedSmithingLevel(templateBaseValue)", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("long recommendedLevel = (safeTemplateValue + 99L) / 100L;", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("PlayerRpTemplatePricePerSmithingLevel = 1000", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("(safeTemplateValue + PlayerRpTemplatePricePerSmithingLevel - 1L)", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("/ PlayerRpTemplatePricePerSmithingLevel;", StringComparison.Ordinal)
     && !playerRpCrafting.Contains("Math.Sqrt(Math.Max(1, templateBaseValue))", StringComparison.Ordinal)
     && !playerRpCrafting.Contains("Math.Min(300d, Math.Sqrt", StringComparison.Ordinal)
     && playerRpModels.Contains("CurrentFormulaVersion = 4", StringComparison.Ordinal),
-    "equipment probability difficulty must use one smithing level per 100 denars without the former sqrt/300 cap");
+    "equipment probability difficulty must use one smithing level per 1000 denars without the former sqrt/300 cap");
+Test.True(playerRpCrafting.Contains("PlayerRpNormalAttributeBonusPerUpgradeLevel = 3", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("PlayerRpGoodAttributeBonusPerUpgradeLevel =", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("PlayerRpNormalAttributeBonusPerUpgradeLevel * 2", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("int normalBonus =", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("upgradeLevel * PlayerRpNormalAttributeBonusPerUpgradeLevel", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("int goodBonus =", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("upgradeLevel * PlayerRpGoodAttributeBonusPerUpgradeLevel", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("? goodBonus", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("? normalBonus", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("while (threshold <= invested / 2L)", StringComparison.Ordinal),
+    "each surplus-investment doubling must grant normal +3 and good +6 per applicable positive attribute");
+Test.True(playerRpCrafting.Contains("PlayerRpMasterSmithingLevel = 275", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("safeSmithing >= PlayerRpMasterSmithingLevel", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("good = 20000;", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("normal = 10000;", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("bad = 0;", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("PlayerRpMasterNormalAttributeBonus = 3", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("normalBonus += PlayerRpMasterNormalAttributeBonus", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("PlayerRpMasterGoodAttributeBonus =", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("goodBonus += PlayerRpMasterGoodAttributeBonus", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("if (underfunded)", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("return;", StringComparison.Ordinal),
+    "smithing 275 must remove the bad roll and add normal +3/good +6 only after the template is fully funded");
 Test.True(terminalBehavior.Contains("OpenPlayerRpCrafterSelection()", StringComparison.Ordinal)
     && terminalBehavior.Contains("\"选择制造者\"", StringComparison.Ordinal)
     && terminalBehavior.Contains("\"　锻造等级：\"", StringComparison.Ordinal)
@@ -384,35 +385,16 @@ Test.True(!playerRpCrafting.Contains("\\n玩家锻造：", StringComparison.Ordi
     && !playerRpCrafting.Contains("\\n优良 / 正常 / 劣化：", StringComparison.Ordinal)
     && terminalBehavior.Contains("confirmationTitle = \"制造“\" + compactItemName", StringComparison.Ordinal),
     "equipment confirmation still exposes the verbose numeric header instead of moving identity to the title");
-int exactGameItemPreviewCall = terminalBehavior.IndexOf(
-    "TryPreviewPlayerRpCraftExactMatchForExternal(",
-    StringComparison.Ordinal);
-int preprocessTemplateRequestCall = terminalBehavior.IndexOf(
-    "TryBuildPlayerRpCraftTemplateSelectionRequestForExternal(",
-    StringComparison.Ordinal);
-Test.True(exactGameItemPreviewCall >= 0
-    && preprocessTemplateRequestCall > exactGameItemPreviewCall,
-    "exact ObjectManager item matching must run before Top 50/LLM selection");
-Test.True(playerRpCrafting.Contains("\"exact_game_item\"", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("游戏数据精确匹配（已跳过前处理 AI）", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("FORGE AS WEAPON/EQUIPMENT?", StringComparison.Ordinal)
-    && !playerRpCrafting.Contains("FORGE AS WEAPON?。", StringComparison.Ordinal)
+Test.True(!terminalBehavior.Contains("TryPreviewPlayerRpCraftExactMatchForExternal(", StringComparison.Ordinal)
+    && terminalBehavior.Contains("TryBuildPlayerRpCraftTemplateSelectionForExternal(", StringComparison.Ordinal)
+    && terminalBehavior.Contains("ShowPlayerRpCraftTemplateSelection(", StringComparison.Ordinal),
+    "every U-key forge submission must enter the player-controlled template list instead of an automatic exact-match path");
+Test.True(playerRpCrafting.Contains("\"player_choice\"", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("模板选择：玩家手动选择（Top ", StringComparison.Ordinal)
     && playerRpCrafting.Contains("requireExactGameItemMatch", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("TryResolvePlayerRpExactRegisteredTemplate(", StringComparison.Ordinal),
-    "exact game-item selection must survive preview and commit revalidation");
-Test.True(playerRpCrafting.Contains("GetPlayerRpExactTemplateLookupCache()", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("GetObjectTypeList<ItemObject>()", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("ByStringId", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("ByDisplayName", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("IsPlayerRpSafeExactEquipmentTemplate", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("IsPlayerRpSafeExactMiscTemplate", StringComparison.Ordinal)
-    && rewardSystem.Contains("ClearPlayerRpExactTemplateLookupCache();", StringComparison.Ordinal),
-    "all registered Native/Mod items need a cached exact-name/id index with lifecycle invalidation");
-Test.True(playerRpCrafting.Contains("游戏中存在多个同名物品", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("请改为输入其中一个模板 StringId", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("名称精确匹配到游戏中的普通物品", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("名称精确匹配到游戏中的武器装备", StringComparison.Ordinal),
-    "ambiguous or wrong-domain exact matches must fail closed instead of falling back to LLM");
+    && playerRpCrafting.Contains("TryValidatePlayerRpSelectedTemplateForCurrentRequest(", StringComparison.Ordinal),
+    "manual choice must retain template safety and current-price revalidation before preview and commit");
+
 Test.True(rewardSystem.Contains("TryGetPlayerRpCraftStoredItemValue", StringComparison.Ordinal)
     && rewardSystem.Contains("GetStoredPlayerRpCraftItemValue", StringComparison.Ordinal)
     && rewardSystem.Contains("HasExpectedPlayerRpCraftItemValue", StringComparison.Ordinal)

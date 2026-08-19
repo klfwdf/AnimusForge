@@ -3569,16 +3569,43 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			title = legacyTitle;
 			letterBody = legacyBody;
 		}
-		if (string.IsNullOrWhiteSpace(letterBody))
+		if (!string.IsNullOrWhiteSpace(letterBody))
 		{
-			return original;
+			if (string.IsNullOrWhiteSpace(title))
+			{
+				title = "信件";
+			}
+			return BuildInventoryDetailFactDescription(title, "信件正文", letterBody);
+		}
+		// Courier letters remain the authoritative detail when an item happens to
+		// match both formats. RP introductions are only appended for non-letter
+		// generated items so every give/show request uses the same fact shape.
+		if (RewardSystemBehavior.TryGetGeneratedRpItemIntroductionForExternal(
+			itemStringId,
+			objectId,
+			out string introduction))
+		{
+			return BuildInventoryDetailFactDescription(title, "物品介绍", introduction);
+		}
+		return original;
+	}
+
+	private static string BuildInventoryDetailFactDescription(
+		string title,
+		string detailLabel,
+		string detail)
+	{
+		string detailText = (detail ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(detailText))
+		{
+			return (title ?? "").Trim();
 		}
 		if (string.IsNullOrWhiteSpace(title))
 		{
-			title = "信件";
+			title = "物品";
 		}
-		string factBody = Regex.Replace(letterBody.Trim(), "\\s+", " ");
-		return title.Trim() + "（信件正文：" + factBody + "）";
+		string factBody = Regex.Replace(detailText, "\\s+", " ");
+		return title.Trim() + "（" + detailLabel + "：" + factBody + "）";
 	}
 
 	public static bool TryGetCourierLetterInventoryDetailForExternal(string itemStringId, uint objectId, out string letterBody)
@@ -4565,7 +4592,10 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			bool rewardBeforeHasVassalage = ContainsVassalageActionTag(text);
 			bool rewardBeforeHasKingdomAnnex = ContainsKingdomAnnexActionTag(text);
 			Log("ApplyRewardTags start chain=courier session=" + session.Id + " containsVASSALAGE=" + rewardBeforeHasVassalage + " containsKINGDOM_ANNEX=" + rewardBeforeHasKingdomAnnex);
-			RewardSystemBehavior.Instance?.ApplyRewardTags(recipient, Hero.MainHero, ref text);
+			RewardSystemBehavior.RpItemIntroductionContext rpItemIntroductionContext = MayContainGeneratedRpItemReward(text)
+				? CreateCourierRpItemIntroductionContext(session, recipient, text)
+				: null;
+			RewardSystemBehavior.Instance?.ApplyRewardTags(recipient, Hero.MainHero, ref text, rpItemIntroductionContext);
 			Log("ApplyRewardTags done chain=courier session=" + session.Id + " beforeVASSALAGE=" + rewardBeforeHasVassalage + " afterVASSALAGE=" + ContainsVassalageActionTag(text) + " beforeKINGDOM_ANNEX=" + rewardBeforeHasKingdomAnnex + " afterKINGDOM_ANNEX=" + ContainsKingdomAnnexActionTag(text));
 		}
 		catch (Exception ex)
@@ -4831,7 +4861,10 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				bool rewardBeforeHasVassalage = ContainsVassalageActionTag(text);
 				bool rewardBeforeHasKingdomAnnex = ContainsKingdomAnnexActionTag(text);
 				Log("ApplyRewardTags start chain=courier session=" + session.Id + " containsVASSALAGE=" + rewardBeforeHasVassalage + " containsKINGDOM_ANNEX=" + rewardBeforeHasKingdomAnnex);
-				RewardSystemBehavior.Instance?.ApplyRewardTags(recipient, Hero.MainHero, ref text);
+				RewardSystemBehavior.RpItemIntroductionContext rpItemIntroductionContext = MayContainGeneratedRpItemReward(text)
+					? CreateCourierRpItemIntroductionContext(session, recipient, text)
+					: null;
+				RewardSystemBehavior.Instance?.ApplyRewardTags(recipient, Hero.MainHero, ref text, rpItemIntroductionContext);
 				Log("ApplyRewardTags done chain=courier session=" + session.Id + " beforeVASSALAGE=" + rewardBeforeHasVassalage + " afterVASSALAGE=" + ContainsVassalageActionTag(text) + " beforeKINGDOM_ANNEX=" + rewardBeforeHasKingdomAnnex + " afterKINGDOM_ANNEX=" + ContainsKingdomAnnexActionTag(text));
 			}
 			catch (Exception ex)
@@ -8874,6 +8907,38 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		value = Regex.Replace(value, "\\[A:P_L_K\\]", "", RegexOptions.IgnoreCase);
 		value = Regex.Replace(value, "\\[(?:FOL|STP|END)\\]", "", RegexOptions.IgnoreCase);
 		return value.Trim();
+	}
+
+	private static RewardSystemBehavior.RpItemIntroductionContext CreateCourierRpItemIntroductionContext(
+		CourierSession session,
+		Hero recipient,
+		string fallbackReplyText)
+	{
+		try
+		{
+			string replyText = session?.ReplyText;
+			if (string.IsNullOrWhiteSpace(replyText))
+			{
+				replyText = fallbackReplyText;
+			}
+			return RewardSystemBehavior.CreateRpItemIntroductionContextForExternal(
+				recipient,
+				null,
+				recipient?.Name?.ToString(),
+				session?.LetterText,
+				StripCourierActionTags(replyText));
+		}
+		catch
+		{
+			// Context enrichment must never stop the existing reward-tag processing.
+			return null;
+		}
+	}
+
+	private static bool MayContainGeneratedRpItemReward(string responseText)
+	{
+		return !string.IsNullOrEmpty(responseText)
+			&& responseText.IndexOf(GiveAssetTagCodec.Prefix, StringComparison.OrdinalIgnoreCase) >= 0;
 	}
 
 	private static string BuildCourierStatusSnapshot(CourierSession session, MobileParty courier, Hero recipient, string phase)

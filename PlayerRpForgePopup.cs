@@ -300,7 +300,7 @@ public sealed class PlayerRpForgePopup
 		{
 			_dataSource?.SetBusy(
 				true,
-				"正在整理 Top 50 模板并调用前处理 AI……（Esc 可取消）");
+				"正在整理 Top 50 安全模板……（Esc 可取消）");
 			try
 			{
 				_onSubmit?.Invoke(

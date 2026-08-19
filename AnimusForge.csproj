@@ -76,6 +76,9 @@
     <EmbeddedResource Include="AnimusForge\ModuleData\PreprocessPrompts.json">
       <LogicalName>AnimusForge.Defaults.PreprocessPrompts.json</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="AnimusForge\ModuleData\RpItemIntroductionPrompts.json">
+      <LogicalName>AnimusForge.Defaults.RpItemIntroductionPrompts.json</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="原版游戏本体代码\**\*.cs" />

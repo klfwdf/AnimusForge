@@ -532,6 +532,14 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 
 		public int LastTouchedDay;
 
+		// Shared by every stack that resolves to this deterministic generated id.
+		// The runtime "pending" state intentionally lives outside save data.
+		public string RpItemIntroductionText;
+
+		public string RpItemIntroductionSource;
+
+		public int RpItemIntroductionLastTouchedDay;
+
 		public PlayerRpCraftData PlayerCraft;
 	}
 
@@ -1766,6 +1774,8 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 	private void OnCampaignTick(float dt)
 	{
 		TryClosePendingHeroJoinConversation();
+		DrainRpItemIntroductionCompletionsOnCampaignTick();
+		StartQueuedRpItemIntroductionRequestsOnCampaignTick();
 	}
 
 	private static void ClearPromotedNonHeroCompanionCache()
@@ -11416,6 +11426,9 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				ObjectId = objectId,
 				LegacyObjectIds = existingRecord?.LegacyObjectIds != null ? existingRecord.LegacyObjectIds.ToList() : new List<uint>(),
 				LastTouchedDay = Math.Max(existingRecord?.LastTouchedDay ?? 0, GetCampaignDayIndex()),
+				RpItemIntroductionText = existingRecord?.RpItemIntroductionText,
+				RpItemIntroductionSource = existingRecord?.RpItemIntroductionSource,
+				RpItemIntroductionLastTouchedDay = existingRecord?.RpItemIntroductionLastTouchedDay ?? 0,
 				PlayerCraft = existingRecord?.PlayerCraft
 			};
 			if (record.ObjectId == 0u && TryGetGeneratedRewardItemId(key, templateItem, 0u, out var stableObjectId, logSource ?? "external_prime"))
@@ -12961,6 +12974,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			ClearPlayerRpCraftTemplateCaches();
 			PlayerRpForgePopup.ClearDraft();
 			ClearGeneratedRewardEconomicPoolCache();
+			ClearRpItemIntroductionRuntimeState(reason);
 			GeneratedRewardLastInventoryVmLogSignature = "";
 			GeneratedRewardLastInventoryVmLogUtc = DateTime.MinValue;
 			Logger.Log(
@@ -13106,6 +13120,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				record.TemplateStringId = existing.TemplateStringId;
 			}
+			MergeRpItemIntroductionFromFallback(record, existing);
 			record.PlayerCraft = MergePlayerRpCraftData(record.PlayerCraft, existing.PlayerCraft);
 			record.LastTouchedDay = Math.Max(record.LastTouchedDay, existing.LastTouchedDay);
 			record = NormalizeGeneratedRewardItemRecord(record.GeneratedStringId, record);
@@ -14833,6 +14848,18 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		record.LegacyObjectIds = record.LegacyObjectIds.Where((uint x) => x != 0u && x != record.ObjectId).Distinct().Take(16).ToList();
 		record.LastTouchedDay = Math.Max(0, record.LastTouchedDay);
+		record.RpItemIntroductionText = AnimusForgeTextInputSanitizer.SanitizeMultiline(record.RpItemIntroductionText ?? "", AnimusForgeTextInputSanitizer.MaxCourierLetterChars).Trim();
+		if (string.IsNullOrWhiteSpace(record.RpItemIntroductionText))
+		{
+			record.RpItemIntroductionText = "";
+			record.RpItemIntroductionSource = "";
+			record.RpItemIntroductionLastTouchedDay = 0;
+		}
+		else
+		{
+			record.RpItemIntroductionSource = string.Equals((record.RpItemIntroductionSource ?? "").Trim(), "player", StringComparison.OrdinalIgnoreCase) ? "player" : "npc";
+			record.RpItemIntroductionLastTouchedDay = Math.Max(0, record.RpItemIntroductionLastTouchedDay);
+		}
 		record.PlayerCraft = NormalizePlayerRpCraftData(record.PlayerCraft, record);
 		return record;
 	}
@@ -14978,7 +15005,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			string key = generatedStringId.Trim();
 			if (!_generatedRewardItemRecords.TryGetValue(key, out var record) || record == null)
 			{
-				record = new GeneratedRewardItemRecord();
+				record = GetGeneratedRewardItemRecord(key) ?? new GeneratedRewardItemRecord();
 			}
 			uint oldObjectId = record.ObjectId;
 			uint newObjectId = generatedItem.Id.InternalValue;
@@ -16076,23 +16103,40 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		try
 		{
 			ItemObject itemObject = item?.ItemRosterElement.EquipmentElement.Item;
-			if (itemObject == null || !CourierDeliveryBehavior.TryGetCourierLetterInventoryDetailForExternal(itemObject.StringId, itemObject.Id.InternalValue, out string letterBody))
+			if (itemObject == null)
 			{
 				return true;
 			}
-			string title = itemObject.Name?.ToString();
-			if (string.IsNullOrWhiteSpace(title))
+			if (CourierDeliveryBehavior.TryGetCourierLetterInventoryDetailForExternal(itemObject.StringId, itemObject.Id.InternalValue, out string letterBody))
 			{
-				title = "信件";
+				string title = itemObject.Name?.ToString();
+				if (string.IsNullOrWhiteSpace(title))
+				{
+					title = "信件";
+				}
+				if (CourierLetterReplyPopup.Show("查看信件", title.Trim(), letterBody, null, "关闭"))
+				{
+					return false;
+				}
+				return true;
 			}
-			if (CourierLetterReplyPopup.Show("查看信件", title.Trim(), letterBody, null, "关闭"))
+			if (TryGetGeneratedRpItemIntroductionDetailForExternal(itemObject.StringId, itemObject.Id.InternalValue, out string generatedTitle, out string introduction, out bool isPending))
 			{
-				return false;
+				string title2 = string.IsNullOrWhiteSpace(generatedTitle) ? (itemObject.Name?.ToString() ?? "RP 物品") : generatedTitle;
+				string body = introduction;
+				if (string.IsNullOrWhiteSpace(body))
+				{
+					body = isPending ? "物品介绍正在生成，请稍后再查看。" : "该 RP 物品暂无介绍。";
+				}
+				if (CourierLetterReplyPopup.Show("查看物品介绍", title2.Trim(), body, null, "关闭"))
+				{
+					return false;
+				}
 			}
 		}
 		catch (Exception ex)
 		{
-			Logger.LogTrace("RewardSystem", ">>> Courier letter inventory preview failed: " + ex.Message);
+			Logger.LogTrace("RewardSystem", ">>> Courier letter or RP item inventory preview failed: " + ex.Message);
 		}
 		return true;
 	}
@@ -19317,7 +19361,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		return true;
 	}
 
-	private int GenerateRpAssetToPlayer(string assetName, int amount, string giverName, BasicCharacterObject giverCharacter, out string itemName, out ItemObject item, string logSource)
+	private int GenerateRpAssetToPlayer(string assetName, int amount, string giverName, BasicCharacterObject giverCharacter, out string itemName, out ItemObject item, string logSource, RpItemIntroductionContext rpItemIntroductionContext = null)
 	{
 		itemName = null;
 		item = null;
@@ -19362,6 +19406,13 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		if (generated > 0 && !string.IsNullOrWhiteSpace(generatedStringId))
 		{
 			TryResolveGeneratedRewardItemForStringId(generatedStringId, out item, logSource + "_resolve");
+			RpItemIntroductionContext effectiveIntroductionContext = rpItemIntroductionContext ?? CreateRpItemIntroductionContextForExternal(
+				(giverCharacter as CharacterObject)?.HeroObject,
+				null,
+				giverName,
+				null,
+				null);
+			QueueNpcRpItemIntroductionForExternal(generatedStringId, requestedName, effectiveIntroductionContext, logSource);
 		}
 		if (generated > 0)
 		{
@@ -19601,7 +19652,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		return (int)Math.Min(int.MaxValue, Math.Max(0L, total));
 	}
 
-	public void ApplyRewardTags(Hero giver, Hero receiver, ref string responseText)
+	public void ApplyRewardTags(Hero giver, Hero receiver, ref string responseText, RpItemIntroductionContext rpItemIntroductionContext = null)
 	{
 		SetLastGeneratedNpcFactLines(null);
 		if (giver == null || receiver == null || string.IsNullOrEmpty(responseText))
@@ -19817,7 +19868,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 					ItemObject generatedRpItem = null;
 					bool forceCompleteItemTransfer = !quantity.IsAll && receiver == Hero.MainHero && giver != Hero.MainHero;
 					int num4 = isGeneratedRpItem
-						? GenerateRpAssetToPlayer(value4, result8, giverName, giver?.CharacterObject, out itemName, out generatedRpItem, "give_asset_rp_hero")
+						? GenerateRpAssetToPlayer(value4, result8, giverName, giver?.CharacterObject, out itemName, out generatedRpItem, "give_asset_rp_hero", rpItemIntroductionContext)
 						: (isNotableMarketItem ? TransferItemFromSettlement(notableMarketSettlement, receiver, settlementPromptStringId, result8, giverName, out itemName, giver?.CharacterObject, forceComplete: forceCompleteItemTransfer) : TransferItemById(giver, receiver, value4, result8, out itemName, forceComplete: forceCompleteItemTransfer));
 					if (num4 > 0)
 					{
@@ -20625,7 +20676,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		return anyKingdomAnnexationApplied;
 	}
 
-	public void ApplyPartyRewardTags(PartyBase giverParty, Hero receiver, string giverName, BasicCharacterObject giverCharacter, ref string responseText)
+	public void ApplyPartyRewardTags(PartyBase giverParty, Hero receiver, string giverName, BasicCharacterObject giverCharacter, ref string responseText, RpItemIntroductionContext rpItemIntroductionContext = null)
 	{
 		SetLastGeneratedNpcFactLines(null);
 		if (giverParty == null || receiver == null || string.IsNullOrEmpty(responseText))
@@ -20729,7 +20780,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 					ItemObject generatedRpItem = null;
 					bool forceCompleteItemTransfer = !quantity.IsAll && receiver == Hero.MainHero;
 					int num = isGeneratedRpItem
-						? GenerateRpAssetToPlayer(value, result, text, giverCharacter, out itemName, out generatedRpItem, "give_asset_rp_party")
+						? GenerateRpAssetToPlayer(value, result, text, giverCharacter, out itemName, out generatedRpItem, "give_asset_rp_party", rpItemIntroductionContext)
 						: TransferItemFromParty(giverParty, receiver, value, result, text, out itemName, giverCharacter, forceComplete: forceCompleteItemTransfer);
 					ItemObject itemObject = generatedRpItem ?? ResolveItemById((value ?? "").Split('@')[0]);
 					if (itemObject == null && TryResolveRewardItemStringId(value, allContext, out var _, out var resolvedPartyFactItem, "party_give_item_fact"))
@@ -20796,7 +20847,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
-	public void ApplyMerchantRewardTags(CharacterObject giverCharacter, Hero receiver, ref string responseText)
+	public void ApplyMerchantRewardTags(CharacterObject giverCharacter, Hero receiver, ref string responseText, RpItemIntroductionContext rpItemIntroductionContext = null)
 	{
 		SetLastGeneratedNpcFactLines(null);
 		if (giverCharacter == null || receiver == null || string.IsNullOrEmpty(responseText) || !TryGetSettlementMerchantKind(giverCharacter, out var kind))
@@ -20910,7 +20961,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				ItemObject generatedRpItem = null;
 				bool forceCompleteItemTransfer = !quantity.IsAll && receiver == Hero.MainHero;
 				int num = isGeneratedRpItem
-					? GenerateRpAssetToPlayer(value, result, giverName, giverCharacter, out itemName, out generatedRpItem, "give_asset_rp_merchant")
+					? GenerateRpAssetToPlayer(value, result, giverName, giverCharacter, out itemName, out generatedRpItem, "give_asset_rp_merchant", rpItemIntroductionContext)
 					: TransferItemFromSettlement(currentSettlement, receiver, value, result, giverName, out itemName, giverCharacter, forceComplete: forceCompleteItemTransfer);
 				string text = ((!string.IsNullOrWhiteSpace(itemName)) ? itemName : ResolveSettlementMerchantDisplayNameFromPromptStringId(value));
 				ItemObject itemObject = generatedRpItem ?? ResolveItemById(value.Split('@')[0]);

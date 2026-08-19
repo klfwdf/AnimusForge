@@ -97,38 +97,7 @@ internal sealed class PlayerRpCraftTemplateSelectionRequest
 
 	public bool IsEquipment;
 
-	public string Prompt;
-
-	public string ApiUrl;
-
-	public string ApiKey;
-
-	public string ModelName;
-
-	public string RequestJson;
-
-	public string PlainFallbackRequestJson;
-
-	public string NoTemperatureFallbackRequestJson;
-
-	public string HighTokenFallbackRequestJson;
-
-	public string ReasoningFallbackRequestJson;
-
-	public string ControlMode;
-
 	public List<PlayerRpCraftTemplateCandidate> Candidates = new List<PlayerRpCraftTemplateCandidate>();
-}
-
-internal sealed class PlayerRpCraftTemplateSelectionResult
-{
-	public bool Success;
-
-	public string TemplateStringId;
-
-	public int CandidateRank;
-
-	public string Error;
 }
 
 internal sealed class PlayerRpCraftResult

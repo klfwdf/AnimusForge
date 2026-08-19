@@ -1104,6 +1104,18 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		}
 	}
 
+	internal static bool IsWeeklyReportMapNotificationEnabled()
+	{
+		try
+		{
+			return GlobalSettings<DuelSettings>.Instance?.EnableWeeklyReportMapNotifications ?? true;
+		}
+		catch
+		{
+			return true;
+		}
+	}
+
 	internal static bool IsGcczVerboseDiagnosticLogEnabled()
 	{
 		try
@@ -2145,9 +2157,9 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
 	public Action RestoreDefaultWorldDiplomacyPrompt { get; set; }
 
-	[SettingPropertyInteger("周报篇幅档位", 1, 4, "0", Order = 0, RequireRestart = false, HintText = "1=200-400字；2=200-800字；3=200-1200字；4=200-1500字。世界周报和王国周报共用这一档位。")]
+	[SettingPropertyInteger("周报篇幅档位", 1, 4, "0", Order = 0, RequireRestart = false, HintText = "1=200-400字；2=200-800字；3=200-1200字；4=200-1500字。世界周报和王国周报共用这一档位；默认 2。")]
 	[SettingPropertyGroup("12. 事件系统（开发）")]
-	public int WeeklyReportLengthPreset { get; set; } = 1;
+	public int WeeklyReportLengthPreset { get; set; } = 2;
 
 	[SettingPropertyInteger("每分钟最多生成周报数", 1, 20, "0", Order = 1, RequireRestart = false, HintText = "限制开发态周报生成的请求速率。默认 5；最高 20。用于应对部分 API 渠道的 RPM 或并发限制。")]
 	[SettingPropertyGroup("12. 事件系统（开发）")]
@@ -2161,23 +2173,27 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("12. 事件系统（开发）")]
 	public int WeeklyReportPopupBodyFontSize { get; set; } = 18;
 
-	[SettingPropertyBool("启用周报阅读经验奖励", Order = 4, RequireRestart = false, HintText = "开启后，从地图通知打开周报并停留满 10 秒，会按三栏字数累计经验；每研读 20 篇后一次性给玩家魅力、统御和管理经验。")]
+	[SettingPropertyBool("周报右下角消息提示", Order = 4, RequireRestart = false, HintText = "开启后，周报生成完成时会在大地图右下角显示可点击消息；关闭后不显示，且关闭期间新生成的周报不会排队提示。默认开启。")]
+	[SettingPropertyGroup("12. 事件系统（开发）")]
+	public bool EnableWeeklyReportMapNotifications { get; set; } = true;
+
+	[SettingPropertyBool("启用周报阅读经验奖励", Order = 5, RequireRestart = false, HintText = "开启后，从地图通知打开周报并停留满 10 秒，会按三栏字数累计经验；每研读 20 篇后一次性给玩家魅力、统御和管理经验。")]
 	[SettingPropertyGroup("12. 事件系统（开发）")]
 	public bool EnableWeeklyReportReadingXpReward { get; set; } = true;
 
-	[SettingPropertyInteger("周报每百字经验", 0, 100, "0", Order = 5, RequireRestart = false, HintText = "周报阅读奖励的字数倍率。默认 20，表示每栏每 100 个有效字/词给 20 点对应技能经验。")]
+	[SettingPropertyInteger("周报每百字经验", 0, 100, "0", Order = 6, RequireRestart = false, HintText = "周报阅读奖励的字数倍率。默认 20，表示每栏每 100 个有效字/词给 20 点对应技能经验。")]
 	[SettingPropertyGroup("12. 事件系统（开发）")]
 	public int WeeklyReportReadingXpPerHundredChars { get; set; } = 20;
 
-	[SettingPropertyInteger("周报单技能经验上限", 0, 500, "0", Order = 6, RequireRestart = false, HintText = "单份周报每个技能最多获得多少经验。默认 100；设置为 0 表示不发放周报阅读经验。")]
+	[SettingPropertyInteger("周报单技能经验上限", 0, 500, "0", Order = 7, RequireRestart = false, HintText = "单份周报每个技能最多获得多少经验。默认 100；设置为 0 表示不发放周报阅读经验。")]
 	[SettingPropertyGroup("12. 事件系统（开发）")]
 	public int WeeklyReportReadingXpSkillCap { get; set; } = 100;
 
-	[SettingPropertyBool("启用王国稳定度与叛乱", Order = 7, RequireRestart = false, HintText = "关闭后，不再触发本模组的王国叛乱；王国稳定度不会再影响国王直辖领地忠诚度，也不会继续施加稳定度关系修正。")]
+	[SettingPropertyBool("启用王国稳定度与叛乱", Order = 8, RequireRestart = false, HintText = "关闭后，不再触发本模组的王国叛乱；王国稳定度不会再影响国王直辖领地忠诚度，也不会继续施加稳定度关系修正。")]
 	[SettingPropertyGroup("12. 事件系统（开发）")]
 	public bool EnableKingdomStabilityAndRebellion { get; set; } = true;
 
-	[SettingPropertyBool("玩家为国王时免疫稳定度叛乱", Order = 8, RequireRestart = false, HintText = "开启后，当玩家家族是某个王国的执政家族或玩家本人是该王国领袖时，本模组的王国稳定度不会继续给该王国施加关系修正、国王直辖地忠诚修正或王国叛乱判定。原版城镇低忠诚叛乱仍按原版规则运行。")]
+	[SettingPropertyBool("玩家为国王时免疫稳定度叛乱", Order = 9, RequireRestart = false, HintText = "开启后，当玩家家族是某个王国的执政家族或玩家本人是该王国领袖时，本模组的王国稳定度不会继续给该王国施加关系修正、国王直辖地忠诚修正或王国叛乱判定。原版城镇低忠诚叛乱仍按原版规则运行。")]
 	[SettingPropertyGroup("12. 事件系统（开发）")]
 	public bool EnablePlayerKingdomRebellionImmunity { get; set; } = false;
 

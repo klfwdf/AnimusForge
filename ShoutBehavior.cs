@@ -10446,7 +10446,17 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 									bool sceneRewardBeforeHasKingdomAnnex = ContainsKingdomAnnexActionTagForLog(aiResponse);
 									string sceneRewardChainName = ResolveScenePostprocessChainName();
 									Logger.Log("ShoutBehavior", "[SceneSystemShout] ApplyRewardTags start chain=" + sceneRewardChainName + " target=" + (characterObject.HeroObject?.StringId ?? characterObject.StringId ?? speakerData?.Name ?? "unknown") + " containsVASSALAGE=" + sceneRewardBeforeHasVassalage + " containsKINGDOM_ANNEX=" + sceneRewardBeforeHasKingdomAnnex);
-									RewardSystemBehavior.Instance.ApplyRewardTags(characterObject.HeroObject, Hero.MainHero, ref aiResponse);
+									RewardSystemBehavior.RpItemIntroductionContext rpItemIntroductionContext = MayContainGeneratedRpItemReward(aiResponse)
+										? CreateRpItemIntroductionContextForReward(
+											characterObject.HeroObject,
+											speakerData,
+											characterObject,
+											speakerData.AgentIndex,
+											characterObject.Name?.ToString() ?? speakerData?.Name,
+											null,
+											aiResponse)
+										: null;
+									RewardSystemBehavior.Instance.ApplyRewardTags(characterObject.HeroObject, Hero.MainHero, ref aiResponse, rpItemIntroductionContext);
 									Logger.Log("ShoutBehavior", "[SceneSystemShout] ApplyRewardTags done chain=" + sceneRewardChainName + " target=" + (characterObject.HeroObject?.StringId ?? characterObject.StringId ?? speakerData?.Name ?? "unknown") + " beforeVASSALAGE=" + sceneRewardBeforeHasVassalage + " afterVASSALAGE=" + ContainsVassalageActionTagForLog(aiResponse) + " beforeKINGDOM_ANNEX=" + sceneRewardBeforeHasKingdomAnnex + " afterKINGDOM_ANNEX=" + ContainsKingdomAnnexActionTagForLog(aiResponse));
 									List<string> list2 = RewardSystemBehavior.Instance.ConsumeLastGeneratedNpcFactLines();
 									if (list2 != null)
@@ -10531,14 +10541,24 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 										}
 									}
 								}
+								string rewardGiverName = (speakerData.PromptDisplayName ?? speakerData.PromptGivenName ?? speakerData.Name ?? characterObject2.Name?.ToString() ?? "对方部队").Trim();
+								RewardSystemBehavior.RpItemIntroductionContext rpItemIntroductionContext = MayContainGeneratedRpItemReward(aiResponse)
+									? CreateRpItemIntroductionContextForReward(
+										null,
+										speakerData,
+										characterObject2,
+										speakerData.AgentIndex,
+										rewardGiverName,
+										null,
+										aiResponse)
+									: null;
 								if (TryResolveWildernessNonHeroRewardParty(null, characterObject2, speakerData.AgentIndex, out var party))
 								{
-									string giverName = (speakerData.PromptDisplayName ?? speakerData.PromptGivenName ?? speakerData.Name ?? characterObject2.Name?.ToString() ?? "对方部队").Trim();
-									RewardSystemBehavior.Instance.ApplyPartyRewardTags(party, Hero.MainHero, giverName, characterObject2, ref aiResponse);
+									RewardSystemBehavior.Instance.ApplyPartyRewardTags(party, Hero.MainHero, rewardGiverName, characterObject2, ref aiResponse, rpItemIntroductionContext);
 								}
 								else
 								{
-									RewardSystemBehavior.Instance.ApplyMerchantRewardTags(characterObject2, Hero.MainHero, ref aiResponse);
+									RewardSystemBehavior.Instance.ApplyMerchantRewardTags(characterObject2, Hero.MainHero, ref aiResponse, rpItemIntroductionContext);
 								}
 								List<string> list = RewardSystemBehavior.Instance.ConsumeLastGeneratedNpcFactLines();
 								if (list != null)
@@ -15810,6 +15830,60 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return TryResolveWildernessNonHeroMemory(npc, targetHero, targetCharacter, agentIndex, out memoryId, out memoryName);
 	}
 
+	private static RewardSystemBehavior.RpItemIntroductionContext CreateRpItemIntroductionContextForReward(
+		Hero giverHero,
+		NpcDataPacket giverNpc,
+		CharacterObject giverCharacter,
+		int giverAgentIndex,
+		string giverName,
+		string currentPlayerText,
+		string currentNpcText,
+		bool includeNativeConversationSessionHistory = false)
+	{
+		try
+		{
+			string nonHeroMemoryId = "";
+			string resolvedGiverName = (giverName ?? "").Trim();
+			if (giverHero == null
+				&& TryResolveWildernessNonHeroMemoryForExternal(
+					giverNpc,
+					null,
+					giverCharacter,
+					giverAgentIndex,
+					out string memoryId,
+					out string memoryName))
+			{
+				nonHeroMemoryId = memoryId;
+				if (string.IsNullOrWhiteSpace(resolvedGiverName))
+				{
+					resolvedGiverName = memoryName;
+				}
+			}
+			if (string.IsNullOrWhiteSpace(resolvedGiverName))
+			{
+				resolvedGiverName = giverCharacter?.Name?.ToString() ?? "";
+			}
+			return RewardSystemBehavior.CreateRpItemIntroductionContextForExternal(
+				giverHero,
+				nonHeroMemoryId,
+				resolvedGiverName,
+				currentPlayerText,
+				StripActionTagsForSceneSpeech(currentNpcText),
+				includeNativeConversationSessionHistory);
+		}
+		catch
+		{
+			// Context enrichment is optional; preserve existing reward processing on failure.
+			return null;
+		}
+	}
+
+	private static bool MayContainGeneratedRpItemReward(string responseText)
+	{
+		return !string.IsNullOrEmpty(responseText)
+			&& responseText.IndexOf(GiveAssetTagCodec.Prefix, StringComparison.OrdinalIgnoreCase) >= 0;
+	}
+
 	private static string BuildNativeConversationNonHeroVoiceKey(NpcDataPacket npc, Hero targetHero, CharacterObject targetCharacter, int agentIndex)
 	{
 		try
@@ -16946,7 +17020,18 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				LogNativeActionStep("party_transfer_after", targetHero, targetCharacter, content);
 				RewardSystemBehavior rewardSystem = RewardSystemBehavior.Instance;
 				LogNativeActionStep("reward_before", targetHero, targetCharacter, content);
-				rewardSystem?.ApplyRewardTags(targetHero, Hero.MainHero, ref content);
+				RewardSystemBehavior.RpItemIntroductionContext rpItemIntroductionContext = MayContainGeneratedRpItemReward(content)
+					? CreateRpItemIntroductionContextForReward(
+						targetHero,
+						null,
+						targetCharacter,
+						targetAgentIndex,
+						targetHero?.Name?.ToString() ?? targetCharacter?.Name?.ToString(),
+						latestPlayerText,
+						content,
+						includeNativeConversationSessionHistory: true)
+					: null;
+				rewardSystem?.ApplyRewardTags(targetHero, Hero.MainHero, ref content, rpItemIntroductionContext);
 				RecordGeneratedNpcAfefFactsForNativeConversation(targetHero, targetCharacter, rewardSystem?.ConsumeLastGeneratedNpcFactLines());
 				Logger.Log("ShoutBehavior", "[NativeConversation] ApplyRewardTags done chain=" + rewardChainName + " target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown") + " beforeVASSALAGE=" + rewardBeforeHasVassalage + " afterVASSALAGE=" + ContainsVassalageActionTagForLog(content) + " beforeKINGDOM_ANNEX=" + rewardBeforeHasKingdomAnnex + " afterKINGDOM_ANNEX=" + ContainsKingdomAnnexActionTagForLog(content));
 				LogNativeActionStep("reward_after", targetHero, targetCharacter, content);
@@ -17032,15 +17117,27 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				PartyBase wildernessNonHeroParty = null;
 				bool hasWildernessNonHeroParty = !nonHeroJoinTagHandled && TryResolveWildernessNonHeroRewardParty(targetHero, targetCharacter, agentIndex, out wildernessNonHeroParty);
 				LogNativeActionStep("nonhero_reward_before", targetHero, targetCharacter, content);
+				string npcName = (targetCharacter.Name?.ToString() ?? "对方部队").Trim();
+				RewardSystemBehavior.RpItemIntroductionContext rpItemIntroductionContext = (rewardSystem == null
+					|| !MayContainGeneratedRpItemReward(content))
+					? null
+					: CreateRpItemIntroductionContextForReward(
+						null,
+						nonHeroNpc,
+						targetCharacter,
+						agentIndex,
+						npcName,
+						latestPlayerText,
+						content,
+						includeNativeConversationSessionHistory: true);
 				if (rewardSystem != null && hasWildernessNonHeroParty)
 				{
-					string npcName = (targetCharacter.Name?.ToString() ?? "对方部队").Trim();
-					rewardSystem.ApplyPartyRewardTags(wildernessNonHeroParty, Hero.MainHero, npcName, targetCharacter, ref content);
+					rewardSystem.ApplyPartyRewardTags(wildernessNonHeroParty, Hero.MainHero, npcName, targetCharacter, ref content, rpItemIntroductionContext);
 					isWildernessNonHeroPartyReward = true;
 				}
 				else
 				{
-					rewardSystem?.ApplyMerchantRewardTags(targetCharacter, Hero.MainHero, ref content);
+					rewardSystem?.ApplyMerchantRewardTags(targetCharacter, Hero.MainHero, ref content, rpItemIntroductionContext);
 				}
 				LogNativeActionStep("nonhero_reward_after", targetHero, targetCharacter, content);
 				List<string> list = rewardSystem?.ConsumeLastGeneratedNpcFactLines();
@@ -20010,10 +20107,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						currentSettlement.ItemRoster.AddToCounts(itemObject, num4);
 						RewardSystemBehavior.Instance?.RecordPlayerPrepaidTransferForMerchant(currentSettlement, settlementMerchantKind, 0, text2, num4);
 						string text3 = RewardSystemBehavior.Instance?.BuildSettlementItemValueFactSuffixForExternal(currentSettlement, itemObject, num4) ?? "";
-						string merchantFactItemName = RewardSystemBehavior.DecoratePlayerCraftedAfefItemNameForExternal(
+						string merchantFactItemName = CourierDeliveryBehavior.GetCourierLetterTransferFactDescriptionForExternal(
 							text2,
 							itemObject.Id.InternalValue,
-							itemObject.Name?.ToString() ?? text2,
+							itemObject.Name?.ToString() ?? text2);
+						merchantFactItemName = RewardSystemBehavior.DecoratePlayerCraftedAfefItemNameForExternal(
+							text2,
+							itemObject.Id.InternalValue,
+							merchantFactItemName,
 							null,
 							characterObject,
 							playerCraftObserverKey,
@@ -27089,7 +27190,17 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 										bool sceneRewardBeforeHasKingdomAnnex = ContainsKingdomAnnexActionTagForLog(content);
 										string sceneRewardChainName = ResolveScenePostprocessChainName();
 										Logger.Log("ShoutBehavior", "[SceneConversation] ApplyRewardTags start chain=" + sceneRewardChainName + " target=" + (characterObject.HeroObject?.StringId ?? characterObject.StringId ?? matchedNpc?.Name ?? "unknown") + " containsVASSALAGE=" + sceneRewardBeforeHasVassalage + " containsKINGDOM_ANNEX=" + sceneRewardBeforeHasKingdomAnnex);
-										RewardSystemBehavior.Instance.ApplyRewardTags(characterObject.HeroObject, Hero.MainHero, ref content);
+										RewardSystemBehavior.RpItemIntroductionContext rpItemIntroductionContext = MayContainGeneratedRpItemReward(content)
+											? CreateRpItemIntroductionContextForReward(
+												characterObject.HeroObject,
+												matchedNpc,
+												characterObject,
+												matchedNpc.AgentIndex,
+												characterObject.Name?.ToString() ?? matchedNpc?.Name,
+												playerDirectedActionText,
+												string.IsNullOrWhiteSpace(playerDirectedNpcReplyText) ? content : playerDirectedNpcReplyText)
+											: null;
+										RewardSystemBehavior.Instance.ApplyRewardTags(characterObject.HeroObject, Hero.MainHero, ref content, rpItemIntroductionContext);
 										Logger.Log("ShoutBehavior", "[SceneConversation] ApplyRewardTags done chain=" + sceneRewardChainName + " target=" + (characterObject.HeroObject?.StringId ?? characterObject.StringId ?? matchedNpc?.Name ?? "unknown") + " beforeVASSALAGE=" + sceneRewardBeforeHasVassalage + " afterVASSALAGE=" + ContainsVassalageActionTagForLog(content) + " beforeKINGDOM_ANNEX=" + sceneRewardBeforeHasKingdomAnnex + " afterKINGDOM_ANNEX=" + ContainsKingdomAnnexActionTagForLog(content));
 										List<string> list2 = RewardSystemBehavior.Instance.ConsumeLastGeneratedNpcFactLines();
 										if (list2 != null)
@@ -27175,14 +27286,24 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 											}
 										}
 									}
+									string rewardGiverName = (matchedNpc.PromptDisplayName ?? matchedNpc.PromptGivenName ?? matchedNpc.Name ?? characterObject2.Name?.ToString() ?? "对方部队").Trim();
+									RewardSystemBehavior.RpItemIntroductionContext rpItemIntroductionContext = MayContainGeneratedRpItemReward(content)
+										? CreateRpItemIntroductionContextForReward(
+											null,
+											matchedNpc,
+											characterObject2,
+											matchedNpc.AgentIndex,
+											rewardGiverName,
+											playerDirectedActionText,
+											string.IsNullOrWhiteSpace(playerDirectedNpcReplyText) ? content : playerDirectedNpcReplyText)
+										: null;
 									if (TryResolveWildernessNonHeroRewardParty(null, characterObject2, matchedNpc.AgentIndex, out var party))
 									{
-										string giverName = (matchedNpc.PromptDisplayName ?? matchedNpc.PromptGivenName ?? matchedNpc.Name ?? characterObject2.Name?.ToString() ?? "对方部队").Trim();
-										RewardSystemBehavior.Instance.ApplyPartyRewardTags(party, Hero.MainHero, giverName, characterObject2, ref content);
+										RewardSystemBehavior.Instance.ApplyPartyRewardTags(party, Hero.MainHero, rewardGiverName, characterObject2, ref content, rpItemIntroductionContext);
 									}
 									else
 									{
-										RewardSystemBehavior.Instance.ApplyMerchantRewardTags(characterObject2, Hero.MainHero, ref content);
+										RewardSystemBehavior.Instance.ApplyMerchantRewardTags(characterObject2, Hero.MainHero, ref content, rpItemIntroductionContext);
 									}
 									List<string> list = RewardSystemBehavior.Instance.ConsumeLastGeneratedNpcFactLines();
 									if (list != null)

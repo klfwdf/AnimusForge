@@ -34,10 +34,14 @@ public static class AIConfigHandler
 {
 	private const int ActionPostprocessRequestTimeoutMilliseconds = DuelSettings.LlmRequestTimeoutMilliseconds;
 	private const string EmbeddedPreprocessPromptsResourceName = "AnimusForge.Defaults.PreprocessPrompts.json";
+	private const string EmbeddedRpItemIntroductionPromptsResourceName = "AnimusForge.Defaults.RpItemIntroductionPrompts.json";
 	private const string KingAbdicateToPlayerActionTag = "[ACTION:KING_ABDICATE_TO_PLAYER]";
 	private static readonly Lazy<JObject> EmbeddedPreprocessPromptsDefaults = new Lazy<JObject>(LoadEmbeddedDefaultPreprocessPrompts, LazyThreadSafetyMode.ExecutionAndPublication);
+	private static readonly Lazy<RpItemIntroductionPromptsConfigModel> EmbeddedRpItemIntroductionPromptsDefaults = new Lazy<RpItemIntroductionPromptsConfigModel>(LoadEmbeddedDefaultRpItemIntroductionPrompts, LazyThreadSafetyMode.ExecutionAndPublication);
 	private static readonly Encoding StrictUtf8Encoding = new UTF8Encoding(false, true);
 	private static volatile string _preprocessPromptsLoadError = "";
+	private static int _rpItemIntroductionPromptsFallbackLogged;
+	private static int _rpItemIntroductionPromptBuildFailureLogged;
 	private sealed class ActionPostprocessHistoryEntry
 	{
 		public int Index;
@@ -246,7 +250,18 @@ public static class AIConfigHandler
 
 	private static ProactiveNpcRequestPromptsConfigModel _proactiveNpcRequestPrompts;
 
+	private static RpItemIntroductionPromptsConfigModel _rpItemIntroductionPrompts;
+
 	private static readonly Regex PreprocessTemplateVariableRegex = new Regex("\\{([a-z][a-z0-9_]*)\\}", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+
+	private static readonly Regex RpItemIntroductionTemplateVariableRegex = new Regex("\\{([^{}]*)\\}", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+
+	private static readonly HashSet<string> RpItemIntroductionTemplateVariables = new HashSet<string>(StringComparer.Ordinal)
+	{
+		"item_name",
+		"giver_name",
+		"dialogue"
+	};
 
 	private static readonly object _guardrailSemanticLock = new object();
 
@@ -752,6 +767,42 @@ public static class AIConfigHandler
 			}
 		}
 		return config?.Default;
+	}
+
+	/// <summary>
+	/// Renders an immutable prompt snapshot for one RP item introduction request.
+	/// This does not read from disk and therefore remains safe for background request preparation.
+	/// </summary>
+	public static bool TryBuildRpItemIntroductionPromptsForExternal(string itemName, string giverName, string dialogue, out string systemPrompt, out string userPrompt, out string error)
+	{
+		systemPrompt = "";
+		userPrompt = "";
+		error = "";
+		try
+		{
+			RpItemIntroductionPromptsConfigModel config = _rpItemIntroductionPrompts;
+			if (config == null)
+			{
+				throw new InvalidOperationException("RP物品介绍提示词尚未加载");
+			}
+			systemPrompt = RequireRpItemIntroductionPromptValue(config.SystemPrompt, "SystemPrompt");
+			userPrompt = RenderRpItemIntroductionPromptTemplate(config.UserPromptTemplate, new Dictionary<string, string>(StringComparer.Ordinal)
+			{
+				["item_name"] = itemName ?? "",
+				["giver_name"] = giverName ?? "",
+				["dialogue"] = dialogue ?? ""
+			});
+			return true;
+		}
+		catch (Exception ex)
+		{
+			error = ex.Message;
+			if (Interlocked.Exchange(ref _rpItemIntroductionPromptBuildFailureLogged, 1) == 0)
+			{
+				Logger.Log("AIConfig", "[RP物品介绍] 无法渲染提示词，自动介绍已跳过: " + error);
+			}
+			return false;
+		}
 	}
 
 	public static List<PostprocessRuleEntry> WildernessPostprocessRules => _actionPostprocess?.WildernessPostprocessRules ?? new List<PostprocessRuleEntry>();
@@ -2738,80 +2789,6 @@ public static class AIConfigHandler
 		return LlmApiCompat.PrepareChatRequestJson(apiUrl, payload);
 	}
 
-	internal static void BuildPlayerRpTemplateSelectionRequestJsonsForExternal(
-		string apiUrl,
-		string modelName,
-		IEnumerable<object> messages,
-		out string requestJson,
-		out string plainFallbackRequestJson,
-		out string noTemperatureFallbackRequestJson,
-		out string highTokenFallbackRequestJson,
-		out string reasoningFallbackRequestJson,
-		out string controlMode)
-	{
-		JObject basePayload = BuildAuxiliaryRouterRequestPayload(
-			apiUrl,
-			modelName,
-			messages,
-			256,
-			0f,
-			out controlMode,
-			disableThinkingControls: true,
-			useConfiguredMaxTokens: false,
-			useConfiguredTemperature: false);
-		JObject primaryPayload = (JObject)basePayload.DeepClone();
-		if (DuelSettings.ApplyThinkingControls(
-			primaryPayload,
-			apiUrl,
-			modelName,
-			thinkingEnabled: false,
-			DuelSettings.ReasoningEffortHigh,
-			out string disabledThinkingMode))
-		{
-			controlMode = disabledThinkingMode;
-		}
-		JObject plainPayload = (JObject)basePayload.DeepClone();
-		DuelSettings.RemoveThinkingControls(plainPayload);
-		JObject noTemperaturePayload =
-			(JObject)plainPayload.DeepClone();
-		noTemperaturePayload.Remove("temperature");
-		JObject highTokenPayload =
-			(JObject)noTemperaturePayload.DeepClone();
-		highTokenPayload.Remove("max_completion_tokens");
-		highTokenPayload["max_tokens"] = 2048;
-		JObject reasoningPayload =
-			(JObject)noTemperaturePayload.DeepClone();
-		if (!LlmApiCompat.IsAnthropicCompatibleUrl(apiUrl))
-		{
-			reasoningPayload.Remove("max_tokens");
-			reasoningPayload["max_completion_tokens"] = 2048;
-		}
-		else
-		{
-			reasoningPayload["max_tokens"] = 2048;
-		}
-		requestJson =
-			LlmApiCompat.PrepareChatRequestJson(apiUrl, primaryPayload);
-		plainFallbackRequestJson =
-			LlmApiCompat.PrepareChatRequestJson(apiUrl, plainPayload);
-		noTemperatureFallbackRequestJson =
-			LlmApiCompat.PrepareChatRequestJson(
-				apiUrl,
-				noTemperaturePayload);
-		highTokenFallbackRequestJson =
-			LlmApiCompat.PrepareChatRequestJson(
-				apiUrl,
-				highTokenPayload);
-		if (string.Equals(
-			requestJson,
-			plainFallbackRequestJson,
-			StringComparison.Ordinal))
-		{
-			controlMode = "plain";
-		}
-		reasoningFallbackRequestJson =
-			LlmApiCompat.PrepareChatRequestJson(apiUrl, reasoningPayload);
-	}
 
 	private static string BuildAuxiliarySimpleDialogueRequestJson(string apiUrl, string modelName, IEnumerable<object> messages, int maxTokens, float temperature, out string controlMode)
 	{
@@ -3079,6 +3056,115 @@ public static class AIConfigHandler
 		return JObject.Parse(reader.ReadToEnd());
 	}
 
+	private static RpItemIntroductionPromptsConfigModel LoadRpItemIntroductionPromptsConfig(string filePath, out bool usedEmbeddedDefaults, out string fallbackReason)
+	{
+		usedEmbeddedDefaults = false;
+		fallbackReason = "";
+		try
+		{
+			if (!File.Exists(filePath))
+			{
+				throw new FileNotFoundException("找不到 RpItemIntroductionPrompts.json", filePath);
+			}
+			RpItemIntroductionPromptsConfigModel config = JsonConvert.DeserializeObject<RpItemIntroductionPromptsConfigModel>(ReadStrictUtf8NoBomFile(filePath, "RpItemIntroductionPrompts.json"));
+			if (config == null)
+			{
+				throw new InvalidDataException("RpItemIntroductionPrompts.json 内容为空或不是对象");
+			}
+			ValidateRpItemIntroductionPromptsConfig(config, "RpItemIntroductionPrompts.json");
+			return config;
+		}
+		catch (Exception diskConfigEx)
+		{
+			usedEmbeddedDefaults = true;
+			fallbackReason = diskConfigEx.Message;
+			RpItemIntroductionPromptsConfigModel embeddedConfig = EmbeddedRpItemIntroductionPromptsDefaults.Value;
+			ValidateRpItemIntroductionPromptsConfig(embeddedConfig, "程序集内置 RpItemIntroductionPrompts.json");
+			return embeddedConfig;
+		}
+	}
+
+	private static RpItemIntroductionPromptsConfigModel LoadEmbeddedDefaultRpItemIntroductionPrompts()
+	{
+		using Stream stream = typeof(AIConfigHandler).Assembly.GetManifestResourceStream(EmbeddedRpItemIntroductionPromptsResourceName);
+		if (stream == null)
+		{
+			throw new MissingManifestResourceException("找不到程序集内置 RP物品介绍提示词资源: " + EmbeddedRpItemIntroductionPromptsResourceName);
+		}
+		using StreamReader reader = new StreamReader(stream, StrictUtf8Encoding, detectEncodingFromByteOrderMarks: false);
+		RpItemIntroductionPromptsConfigModel config = JsonConvert.DeserializeObject<RpItemIntroductionPromptsConfigModel>(reader.ReadToEnd());
+		if (config == null)
+		{
+			throw new InvalidDataException("程序集内置 RpItemIntroductionPrompts.json 内容为空或不是对象");
+		}
+		return config;
+	}
+
+	private static string ReadStrictUtf8NoBomFile(string filePath, string displayName)
+	{
+		byte[] bytes = File.ReadAllBytes(filePath);
+		if (bytes.Length >= 3 && bytes[0] == 239 && bytes[1] == 187 && bytes[2] == 191)
+		{
+			throw new InvalidDataException((displayName ?? "配置文件") + " 必须使用 UTF-8 无 BOM 编码");
+		}
+		return StrictUtf8Encoding.GetString(bytes);
+	}
+
+	private static void ValidateRpItemIntroductionPromptsConfig(RpItemIntroductionPromptsConfigModel config, string configName)
+	{
+		if (config == null)
+		{
+			throw new InvalidDataException((configName ?? "RpItemIntroductionPrompts.json") + " 内容为空");
+		}
+		if (config.Version != 1)
+		{
+			throw new InvalidDataException((configName ?? "RpItemIntroductionPrompts.json") + " 的 Version 必须为 1，当前为 " + config.Version);
+		}
+		RequireRpItemIntroductionPromptValue(config.SystemPrompt, "SystemPrompt");
+		string template = RequireRpItemIntroductionPromptValue(config.UserPromptTemplate, "UserPromptTemplate");
+		bool hasItemName = false;
+		bool hasDialogue = false;
+		foreach (Match match in RpItemIntroductionTemplateVariableRegex.Matches(template))
+		{
+			string variable = match.Groups[1].Value;
+			if (!RpItemIntroductionTemplateVariables.Contains(variable))
+			{
+				throw new InvalidDataException((configName ?? "RpItemIntroductionPrompts.json") + " 的 UserPromptTemplate 包含不支持的占位符: {" + variable + "}。只允许 {item_name}、{giver_name}、{dialogue}");
+			}
+			hasItemName |= string.Equals(variable, "item_name", StringComparison.Ordinal);
+			hasDialogue |= string.Equals(variable, "dialogue", StringComparison.Ordinal);
+		}
+		if (!hasItemName || !hasDialogue)
+		{
+			throw new InvalidDataException((configName ?? "RpItemIntroductionPrompts.json") + " 的 UserPromptTemplate 必须包含 {item_name} 和 {dialogue}");
+		}
+	}
+
+	private static string RequireRpItemIntroductionPromptValue(string value, string fieldName)
+	{
+		string text = (value ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			throw new InvalidDataException("RpItemIntroductionPrompts.json 缺少必填项: " + (fieldName ?? "unknown"));
+		}
+		return text;
+	}
+
+	private static string RenderRpItemIntroductionPromptTemplate(string template, IDictionary<string, string> values)
+	{
+		string text = RequireRpItemIntroductionPromptValue(template, "UserPromptTemplate");
+		IDictionary<string, string> replacements = values ?? new Dictionary<string, string>(StringComparer.Ordinal);
+		return RpItemIntroductionTemplateVariableRegex.Replace(text, delegate(Match match)
+		{
+			string key = match.Groups[1].Value;
+			if (!RpItemIntroductionTemplateVariables.Contains(key) || !replacements.TryGetValue(key, out var value))
+			{
+				throw new InvalidOperationException("RpItemIntroductionPrompts.json 的 UserPromptTemplate 包含未提供的占位符: {" + key + "}");
+			}
+			return value ?? "";
+		}).Trim();
+	}
+
 	private static string RenderPreprocessPromptTemplate(string template, string configPath, IDictionary<string, string> values)
 	{
 		string text = RequirePreprocessPromptValue(template, configPath);
@@ -3110,14 +3196,6 @@ public static class AIConfigHandler
 		ValidatePreprocessTemplateVariables(_preprocessPrompts?.MemorySelection?.UserPromptTemplate, "MemorySelection.UserPromptTemplate", "mode_instruction", "final_count", "latest_player_input", "latest_npc_input", "current_scene", "memory_candidates");
 		ValidatePreprocessTemplateVariables(_preprocessPrompts?.MemorySelection?.CandidateLineTemplate, "MemorySelection.CandidateLineTemplate", "memory_id", "game_date", "age_suffix", "hour_range", "rich_title");
 		ValidatePreprocessTemplateVariables(_preprocessPrompts?.MemorySelection?.FallbackGameDateTemplate, "MemorySelection.FallbackGameDateTemplate", "game_day");
-		ValidatePreprocessTemplateVariables(
-			_preprocessPrompts?.PlayerRpTemplateSelection?.UserPromptTemplate,
-			"PlayerRpTemplateSelection.UserPromptTemplate",
-			"requested_name",
-			"invested_denars",
-			"craft_mode",
-			"candidate_count",
-			"template_candidates");
 		RequirePreprocessPromptValue(_preprocessPrompts?.ConnectionTest?.ExpectedRuleCode, "ConnectionTest.ExpectedRuleCode");
 		ValidatePreprocessTemplateVariables(_preprocessPrompts?.ConnectionTest?.UserPromptTemplate, "ConnectionTest.UserPromptTemplate", "expected_rule_code", "mentioned_entities_schema");
 	}
@@ -3182,25 +3260,6 @@ public static class AIConfigHandler
 		});
 	}
 
-	internal static string BuildPlayerRpTemplateSelectionPromptForExternal(
-		string requestedName,
-		int investedDenars,
-		bool isEquipment,
-		int candidateCount,
-		string templateCandidates)
-	{
-		return RenderPreprocessPromptTemplate(
-			_preprocessPrompts?.PlayerRpTemplateSelection?.UserPromptTemplate,
-			"PlayerRpTemplateSelection.UserPromptTemplate",
-			new Dictionary<string, string>(StringComparer.Ordinal)
-			{
-				["requested_name"] = (requestedName ?? "").Trim(),
-				["invested_denars"] = Math.Max(0, investedDenars).ToString(CultureInfo.InvariantCulture),
-				["craft_mode"] = isEquipment ? "weapon/equipment" : "miscellaneous/food/goods",
-				["candidate_count"] = Math.Max(0, candidateCount).ToString(CultureInfo.InvariantCulture),
-				["template_candidates"] = (templateCandidates ?? "").Trim()
-			});
-	}
 
 	private static object[] BuildAuxiliaryRouterMessages(string prompt)
 	{
@@ -3578,6 +3637,15 @@ public static class AIConfigHandler
 			}
 			Logger.Log("AIConfig", "[AuxiliarySimpleDialogue] user requested retry after error: " + error);
 		}
+	}
+
+	/// <summary>
+	/// Executes one auxiliary simple-dialogue request without the interactive retry prompt.
+	/// Callers that run background, non-critical work (such as RP item introductions) must use this overload.
+	/// </summary>
+	public static bool TryCallAuxiliarySimpleDialogueOnceForExternal(IEnumerable<object> messages, int maxTokens, float temperature, out string content, out string error)
+	{
+		return TryCallAuxiliarySimpleDialogueOnce(messages, maxTokens, temperature, out content, out error);
 	}
 
 	private static bool TryCallAuxiliarySimpleDialogueOnce(IEnumerable<object> messages, int maxTokens, float temperature, out string content, out string error)
@@ -9096,6 +9164,7 @@ public static class AIConfigHandler
 			string path3 = ResolveModuleDataFilePath("ActionPostprocessPrompts.json");
 			string path4 = ResolveModuleDataFilePath("PreprocessPrompts.json");
 			string path5 = ResolveModuleDataFilePath("ProactiveNpcRequestPrompts.json");
+			string path6 = ResolveModuleDataFilePath("RpItemIntroductionPrompts.json");
 			if (!File.Exists(path2))
 			{
 				Logger.Log("AIConfig", "[错误] 找不到 RuleBehaviorPrompts.json");
@@ -9149,6 +9218,30 @@ public static class AIConfigHandler
 				Logger.Log("AIConfig", "[错误] 载入 ProactiveNpcRequestPrompts.json 失败: " + proactivePromptEx.Message);
 				_proactiveNpcRequestPrompts = new ProactiveNpcRequestPromptsConfigModel();
 			}
+			try
+			{
+				_rpItemIntroductionPrompts = LoadRpItemIntroductionPromptsConfig(path6, out var usedEmbeddedDefaults2, out var fallbackReason);
+				Interlocked.Exchange(ref _rpItemIntroductionPromptBuildFailureLogged, 0);
+				if (usedEmbeddedDefaults2)
+				{
+					if (Interlocked.Exchange(ref _rpItemIntroductionPromptsFallbackLogged, 1) == 0)
+					{
+						Logger.Log("AIConfig", "[RP物品介绍] RpItemIntroductionPrompts.json 无效或缺失，已回退程序集内置默认提示词；磁盘文件未改写。原因: " + fallbackReason);
+					}
+				}
+				else
+				{
+					Interlocked.Exchange(ref _rpItemIntroductionPromptsFallbackLogged, 0);
+				}
+			}
+			catch (Exception rpItemIntroductionPromptEx)
+			{
+				_rpItemIntroductionPrompts = new RpItemIntroductionPromptsConfigModel();
+				if (Interlocked.Exchange(ref _rpItemIntroductionPromptsFallbackLogged, 1) == 0)
+				{
+					Logger.Log("AIConfig", "[错误] RP物品介绍提示词配置及其内置默认值均不可用，自动介绍已停用: " + rpItemIntroductionPromptEx.Message);
+				}
+			}
 			lock (_guardrailSemanticLock)
 			{
 				_guardrailPhraseVecCache.Clear();
@@ -9176,7 +9269,7 @@ public static class AIConfigHandler
 			}
 			string text = (KnowledgeRetrievalFromMcm ? "MCM" : "Guardrail");
 			Logger.Log("AIConfig", string.Format("配置加载成功。触发词(决斗/奖励/借贷/地理)={0}/{1}/{2}/{3}，扩展规则={4}，启用规则总数={5}。规则返回上限={6}。知识检索({7})：{8}（语义优先={9}, returnCap={10}）。后处理模板：{11}。", valueOrDefault, valueOrDefault2, valueOrDefault3, valueOrDefault4, valueOrDefault5, num2, GetGuardrailReturnCapFromMcm(), text, KnowledgeRetrievalEnabled ? "开启" : "关闭", KnowledgeSemanticFirst, KnowledgeSemanticTopK, ActionPostprocessEnabled ? "开启" : "关闭"));
-			Logger.Log("AIConfig", "配置文件路径：AIConfig=" + path + " RuleBehavior=" + path2 + " ActionPostprocess=" + path3 + " PreprocessPrompts=" + path4);
+			Logger.Log("AIConfig", "配置文件路径：AIConfig=" + path + " RuleBehavior=" + path2 + " ActionPostprocess=" + path3 + " PreprocessPrompts=" + path4 + " RpItemIntroductionPrompts=" + path6);
 		}
 		catch (Exception ex)
 		{
@@ -9187,6 +9280,7 @@ public static class AIConfigHandler
 			_preprocessPrompts = new PreprocessPromptsConfigModel();
 			_preprocessPromptsLoadError = ex.Message;
 			_proactiveNpcRequestPrompts = new ProactiveNpcRequestPromptsConfigModel();
+			_rpItemIntroductionPrompts = new RpItemIntroductionPromptsConfigModel();
 		}
 	}
 
