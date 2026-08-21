@@ -4,7 +4,7 @@ namespace AnimusForge.SiegeAftermathIntervention;
 
 /// <summary>
 /// Dependency-free formatter for GCCZ per-scene memory context.
-/// AF adapters still own event collection, de-duplication, trim application, and log side effects.
+/// TownSceneMemoryStore owns collection, duplicate suppression, and trimming.
 /// </summary>
 public static class SiegeInterventionMemoryContextBuilder
 {
