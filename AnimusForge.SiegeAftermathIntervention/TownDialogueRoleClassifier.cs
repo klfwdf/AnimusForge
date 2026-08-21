@@ -6,6 +6,8 @@ namespace AnimusForge.SiegeAftermathIntervention;
 /// </summary>
 public static class TownDialogueRoleClassifier
 {
+    public const TownDialogueRole SafeFallbackRole = TownDialogueRole.OrdinaryCivilian;
+
     public static TownDialogueRole Resolve(TownDialogueRoleFacts facts)
     {
         if (facts.IsNoblePrisoner)
@@ -38,16 +40,33 @@ public static class TownDialogueRoleClassifier
             return TownDialogueRole.OrdinaryCivilian;
         }
 
-        return TownDialogueRole.Unknown;
+        return SafeFallbackRole;
+    }
+
+    public static TownDialogueRole NormalizeForRuntime(TownDialogueRole role)
+    {
+        if (role == TownDialogueRole.AccompanyingNoble
+            || role == TownDialogueRole.NoblePrisoner
+            || role == TownDialogueRole.PlayerCompanion
+            || role == TownDialogueRole.SettlementNotable
+            || role == TownDialogueRole.OrdinarySoldier
+            || role == TownDialogueRole.OrdinaryCivilian)
+        {
+            return role;
+        }
+
+        return SafeFallbackRole;
     }
 
     public static bool CanExecuteAlliedSoldierOrders(TownDialogueRole role, bool isAlliedSoldier)
     {
+        role = NormalizeForRuntime(role);
         return role == TownDialogueRole.OrdinarySoldier && isAlliedSoldier;
     }
 
     public static bool CanBeRobberyTarget(TownDialogueRole role)
     {
+        role = NormalizeForRuntime(role);
         return role == TownDialogueRole.SettlementNotable
             || role == TownDialogueRole.OrdinaryCivilian;
     }

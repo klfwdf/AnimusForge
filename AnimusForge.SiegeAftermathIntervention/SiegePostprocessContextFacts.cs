@@ -23,7 +23,7 @@ public readonly struct SiegePostprocessContextFacts
         DestructiveAllowed = destructiveAllowed;
         SpeakerName = speakerName ?? string.Empty;
         SpeakerIdentity = speakerIdentity ?? string.Empty;
-        DialogueRole = dialogueRole;
+        DialogueRole = TownDialogueRoleClassifier.NormalizeForRuntime(dialogueRole);
         TargetAgentIndex = targetAgentIndex;
         ReplyIsDirectPlayerResponse = replyIsDirectPlayerResponse;
         SharedReliefPoolDescription = sharedReliefPoolDescription ?? string.Empty;

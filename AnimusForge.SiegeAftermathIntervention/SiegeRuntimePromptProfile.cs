@@ -143,7 +143,7 @@ public sealed class SiegeRuntimePromptFacts
         bool massacreStarted)
     {
         SettlementName = settlementName ?? string.Empty;
-        DialogueRole = dialogueRole;
+        DialogueRole = TownDialogueRoleClassifier.NormalizeForRuntime(dialogueRole);
         IsAlliedSoldier = isAlliedSoldier;
         IsGuardOrSoldier = isGuardOrSoldier;
         IsCivilian = isCivilian;
@@ -162,10 +162,10 @@ public sealed class SiegeRuntimePromptFacts
         {
             return new SiegeRuntimePromptFacts(
                 settlementName: string.Empty,
-                dialogueRole: TownDialogueRole.Unknown,
+                dialogueRole: TownDialogueRoleClassifier.SafeFallbackRole,
                 isAlliedSoldier: false,
                 isGuardOrSoldier: false,
-                isCivilian: false,
+                isCivilian: true,
                 soldierAppeasementRequired: false,
                 soldierAppeasementApplied: false,
                 gatherContext: string.Empty,
