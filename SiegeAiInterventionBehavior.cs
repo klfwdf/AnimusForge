@@ -2874,7 +2874,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			memoryContext,
 			DescribeSharedCivilianReliefPoolForContext(),
 			_plunderStarted,
-			_massacreStarted));
+			_massacreStarted),
+			GcczTownPromptResourceProvider.GetCatalog());
 	}
 
 	internal static string BuildCastleNpcSituationPromptForAgent(Hero hero, CharacterObject character, int agentIndex)
@@ -3269,7 +3270,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				sharedReliefPoolDescription: DescribeSharedCivilianReliefPoolForContext(),
 				civilianGatherContext: gatherContext,
 				interventionMemoryContext: memoryContext);
-			return SiegePostprocessContextBuilder.Build(facts);
+			return SiegePostprocessContextBuilder.Build(facts, GcczTownPromptResourceProvider.GetCatalog());
 		}
 		catch
 		{
@@ -3299,7 +3300,15 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					allowed.Add(tag);
 				}
 			}
-			return SiegePostprocessTagNormalizer.Normalize(raw, allowed);
+			SiegePostprocessValidationResult validation = SiegePostprocessTagNormalizer.Validate(raw, allowed);
+			GcczDiagnosticLog.LogVerbose(
+				"PostprocessValidation",
+				"detected=" + validation.DetectedTownActionCount
+				+ " rejected=" + validation.RejectedTownActionCount
+				+ " selected=" + (validation.SelectedTownAction?.ToString() ?? "none")
+				+ " multiple=" + validation.HadMultipleTownActions
+				+ " legacy=" + validation.UsedLegacyTownTagFormat);
+			return validation.NormalizedTags;
 		}
 		catch (Exception ex)
 		{

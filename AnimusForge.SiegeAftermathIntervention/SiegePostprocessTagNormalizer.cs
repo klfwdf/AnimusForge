@@ -17,9 +17,14 @@ public static class SiegePostprocessTagNormalizer
 
     public static string Normalize(string raw, IEnumerable<string> allowedTags)
     {
+        return Validate(raw, allowedTags).NormalizedTags;
+    }
+
+    public static SiegePostprocessValidationResult Validate(string raw, IEnumerable<string> allowedTags)
+    {
         if (string.IsNullOrWhiteSpace(raw))
         {
-            return string.Empty;
+            return new SiegePostprocessValidationResult(string.Empty, null, 0, 0, false);
         }
 
         var allowed = BuildAllowedSet(allowedTags);
@@ -38,6 +43,7 @@ public static class SiegePostprocessTagNormalizer
         string text = raw.Replace("\r", string.Empty);
         var extractedKinds = new HashSet<SiegeInterventionActionKind>(SiegeActionTagCatalog.ExtractKinds(text));
         SiegeInterventionActionKind? preferredTownKind = ResolvePreferredTownKind(extractedKinds, allowed);
+        SiegeInterventionActionKind? selectedTownKind = null;
         foreach (var kind in SiegeActionTagCatalog.GetCanonicalOrder())
         {
             if (!extractedKinds.Contains(kind)
@@ -52,6 +58,7 @@ public static class SiegePostprocessTagNormalizer
                 && SiegeActionTagCatalog.TryGetCanonicalTag(kind, out string canonicalTag))
             {
                 Add(canonicalTag);
+                selectedTownKind = kind;
                 // Town GCCZ numeric actions are mutually exclusive. Canonical order is the
                 // conservative numeric priority, except that the explicit 9+10 pair is the
                 // documented bloodbath-to-colonization upgrade and must keep action 10.
@@ -111,7 +118,13 @@ public static class SiegePostprocessTagNormalizer
         }
 
         Add(mood);
-        return string.Join("\n", normalizedTags).Trim();
+        int rejectedTownActionCount = extractedKinds.Count - (selectedTownKind.HasValue ? 1 : 0);
+        return new SiegePostprocessValidationResult(
+            string.Join("\n", normalizedTags).Trim(),
+            selectedTownKind,
+            extractedKinds.Count,
+            rejectedTownActionCount,
+            UsesLegacyTownTagFormat(text, extractedKinds));
     }
 
     private static SiegeInterventionActionKind? ResolvePreferredTownKind(
@@ -182,6 +195,32 @@ public static class SiegePostprocessTagNormalizer
             if (allowed.Contains(value))
             {
                 return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool UsesLegacyTownTagFormat(
+        string raw,
+        IEnumerable<SiegeInterventionActionKind> extractedKinds)
+    {
+        if (string.IsNullOrWhiteSpace(raw) || extractedKinds == null)
+        {
+            return false;
+        }
+
+        foreach (SiegeInterventionActionKind kind in extractedKinds)
+        {
+            IReadOnlyList<string> aliases = SiegeActionTagCatalog.GetAliases(kind);
+            for (int i = 1; i < aliases.Count; i++)
+            {
+                string legacyAlias = (aliases[i] ?? string.Empty).Trim();
+                if (!string.IsNullOrWhiteSpace(legacyAlias)
+                    && raw.IndexOf(legacyAlias, StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    return true;
+                }
             }
         }
 
