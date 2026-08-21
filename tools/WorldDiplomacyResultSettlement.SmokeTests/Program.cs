@@ -58,7 +58,7 @@ internal static class Program
             Test.Equal(
                 WorldDiplomacyConfirmedResultKind.OfferRejected,
                 Evaluate(rejectIntent, hasOffer: true, offerStatus: "rejected"),
-                rejectIntent + " must settle when its exact offer is rejected");
+                rejectIntent + " must identify the exact rejected offer without treating it as a round result");
             Test.Equal(
                 WorldDiplomacyConfirmedResultKind.None,
                 Evaluate(rejectIntent, hasOffer: false, offerStatus: "rejected"),
@@ -105,7 +105,7 @@ internal static class Program
         Test.Equal(
             WorldDiplomacyConfirmedResultKind.OfferRejected,
             Evaluate("reject_peace", hasOffer: true, offerStatus: "rejected"),
-            "an exact rejection is a completed negotiation result without a state mutation");
+            "an exact rejection must remain distinguishable so only that proposal closes");
         Test.Equal(
             WorldDiplomacyConfirmedResultKind.None,
             Evaluate("reject_peace", hasOffer: false, offerStatus: "rejected"),
@@ -141,9 +141,10 @@ internal static class Program
         Test.True(
             !WorldDiplomacyResultSettlementRules.IsResolvedOutcome(WorldDiplomacyConfirmedResultKind.ThreatBreached),
             "threat breach must retain a deadlocked outcome");
-        Test.True(
-            WorldDiplomacyResultSettlementRules.IsResolvedOutcome(WorldDiplomacyConfirmedResultKind.OfferRejected),
-            "rejection is a resolved negotiation outcome");
+		Test.True(
+			!WorldDiplomacyResultSettlementRules.IsConfirmedResult(WorldDiplomacyConfirmedResultKind.OfferRejected)
+			&& !WorldDiplomacyResultSettlementRules.IsResolvedOutcome(WorldDiplomacyConfirmedResultKind.OfferRejected),
+			"rejection closes only its proposal and must not resolve the whole negotiation round");
         Test.Equal(
             WorldDiplomacyConfirmedResultKind.DiplomaticStateChanged,
             Evaluate("accept_peace", changed: true, externalFact: true),
@@ -1065,7 +1066,7 @@ internal static class Program
 		int singleFinalGuard = singlePublication.IndexOf(
 			"IsImmediateWarResponsePeaceSuppressed(owningRound, document.ResultSettlementSlotId, author, target)",
 			StringComparison.Ordinal);
-		int singlePublish = singlePublication.IndexOf("document.IsReadyForPublication = true", StringComparison.Ordinal);
+		int singlePublish = singlePublication.IndexOf("document.IsReadyForPublication = true", singleFinalGuard, StringComparison.Ordinal);
 		Test.True(singlePublication.Contains("normalizedIntent == \"propose_peace\"", StringComparison.Ordinal)
 			&& singlePublication.Contains("immediate_war_response_peace_suppressed", StringComparison.Ordinal)
 			&& singleFinalGuard >= 0 && singlePublish > singleFinalGuard,
@@ -1077,7 +1078,7 @@ internal static class Program
 		int multiFinalGuard = multiPublication.IndexOf(
 			"IsImmediateWarResponsePeaceSuppressed(round, document.ResultSettlementSlotId, author, target)",
 			StringComparison.Ordinal);
-		int multiPublish = multiPublication.IndexOf("document.IsReadyForPublication = true", StringComparison.Ordinal);
+		int multiPublish = multiPublication.IndexOf("document.IsReadyForPublication = true", multiFinalGuard, StringComparison.Ordinal);
 		Test.True(multiPublication.Contains("intent == \"propose_peace\"", StringComparison.Ordinal)
 			&& multiPublication.Contains("immediate_war_response_peace_suppressed", StringComparison.Ordinal)
 			&& multiFinalGuard >= 0 && multiPublish > multiFinalGuard,
@@ -1291,7 +1292,7 @@ internal static class Program
 		int singleFinalLegalSet = singlePublication.IndexOf(
 			"BuildLegalDiplomaticDeclarationIntents(",
 			StringComparison.Ordinal);
-		int singlePublish = singlePublication.IndexOf("document.IsReadyForPublication = true", StringComparison.Ordinal);
+		int singlePublish = singlePublication.IndexOf("document.IsReadyForPublication = true", singleFinalLegalSet, StringComparison.Ordinal);
 		Test.True(singleFinalLegalSet >= 0 && singlePublish > singleFinalLegalSet
 			&& singlePublication.Contains("document.ResultSettlementSlotId", StringComparison.Ordinal)
 			&& singlePublication.Contains("normalizedIntent", StringComparison.Ordinal),
@@ -1301,7 +1302,7 @@ internal static class Program
 		int multiFinalLegalSet = multiPublication.IndexOf(
 			"BuildLegalDiplomaticDeclarationIntents(",
 			StringComparison.Ordinal);
-		int multiPublish = multiPublication.IndexOf("document.IsReadyForPublication = true", StringComparison.Ordinal);
+		int multiPublish = multiPublication.IndexOf("document.IsReadyForPublication = true", multiFinalLegalSet, StringComparison.Ordinal);
 		Test.True(multiFinalLegalSet >= 0 && multiPublish > multiFinalLegalSet
 			&& multiPublication.Contains("document.ResultSettlementSlotId", StringComparison.Ordinal)
 			&& multiPublication.Contains("intent", StringComparison.Ordinal),

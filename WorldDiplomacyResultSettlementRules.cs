@@ -120,12 +120,16 @@ public static class WorldDiplomacyResultSettlementRules
 
 	public static bool IsConfirmedResult(WorldDiplomacyConfirmedResultKind kind)
 	{
-		return kind != WorldDiplomacyConfirmedResultKind.None;
+		// A refusal closes only that proposal. It is progress inside the negotiation,
+		// not a terminal result for the entire diplomatic round.
+		return kind != WorldDiplomacyConfirmedResultKind.None
+			&& kind != WorldDiplomacyConfirmedResultKind.OfferRejected;
 	}
 
 	public static bool IsResolvedOutcome(WorldDiplomacyConfirmedResultKind kind)
 	{
 		return kind != WorldDiplomacyConfirmedResultKind.None
+			&& kind != WorldDiplomacyConfirmedResultKind.OfferRejected
 			&& kind != WorldDiplomacyConfirmedResultKind.ThreatBreached;
 	}
 
