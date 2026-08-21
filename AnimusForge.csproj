@@ -81,6 +81,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="AnimusForge\ModuleData\GcczTownPrompt.zh-CN.json">
       <LogicalName>AnimusForge.Defaults.GcczTownPrompt.zh-CN.json</LogicalName>
+      <WithCulture>false</WithCulture>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
