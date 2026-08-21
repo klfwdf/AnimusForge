@@ -293,9 +293,9 @@ internal static class AfGcczShoutBridge
 			speakerReplyText);
 	}
 
-	internal static bool TryProcessFixedKeywordAction(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string playerText, bool replyIsDirectPlayerResponse, out bool actionHandled)
+	internal static bool TryProcessDirectSceneCommand(int targetAgentIndex, string playerText, bool replyIsDirectPlayerResponse, out bool actionHandled)
 	{
-		return SiegeAiInterventionBehavior.TryProcessFixedKeywordActionForExternal(targetHero, targetCharacter, targetAgentIndex, playerText, replyIsDirectPlayerResponse, out actionHandled);
+		return SiegeAiInterventionBehavior.TryProcessDirectSceneCommandForExternal(targetAgentIndex, playerText, replyIsDirectPlayerResponse, out actionHandled);
 	}
 
 	internal static bool ShouldCaptureSharedReliefTransfer(int targetAgentIndex)
