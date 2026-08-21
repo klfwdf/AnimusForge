@@ -29,6 +29,7 @@
                 </ScrollbarWidget>
               </Children>
             </Widget>
+            <RichTextWidget IsVisible="@HasImpact" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="245" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="790" MarginRight="145" MarginTop="190" Brush="AFCourierLetter.Meta.Text" Text="@ImpactText" />
             <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="48" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="102" LayoutImp.LayoutMethod="HorizontalLeftToRight">
               <Children>
                 <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="146" SuggestedHeight="44" Brush="Popup.Cancel.Button" Command.Click="ExecuteClose" UpdateChildrenStates="true">

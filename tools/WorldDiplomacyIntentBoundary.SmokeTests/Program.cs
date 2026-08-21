@@ -445,10 +445,128 @@ internal static class Program
         RunGeneratedDraftRepairContractTests(source);
         RunOutputTruncationRepairContractTests(source);
 		RunRecoveredDiplomacyRegressionContractTests(source);
+		RunNegotiationAndDiplomaticStandingContractTests(source);
 
         Console.WriteLine("World diplomacy intent-boundary smoke tests passed: " + Test.Assertions);
-        return 0;
-    }
+		return 0;
+	}
+
+	private static void RunNegotiationAndDiplomaticStandingContractTests(string source)
+	{
+		Test.True(source.Contains("[JsonProperty(\"diplomaticReputationByKingdom\")]", StringComparison.Ordinal)
+			&& source.Contains("public Dictionary<string, int> NationalPrestigeByKingdom", StringComparison.Ordinal)
+			&& source.Contains("[JsonProperty(\"internationalReputationByKingdom\")]", StringComparison.Ordinal)
+			&& source.Contains("[JsonProperty(\"internationalReputationNaturalChangeLastDayByKingdom\")]", StringComparison.Ordinal),
+			"old diplomatic-reputation saves must migrate in place to prestige while international reputation persists separately");
+		Test.True(source.Contains("MaximumInternationalReputationChangePerDocument = 10", StringComparison.Ordinal)
+			&& source.Contains("SettleInternationalReputationForDocument(document)", StringComparison.Ordinal)
+			&& source.Contains("international_reputation_reason", StringComparison.Ordinal),
+			"every new declaration must carry one bounded retrospective international-reputation evaluation into publication settlement");
+		string generatedEnvelope = ExtractMethod(source, "private bool TryApplyGeneratedSemanticEnvelope(");
+		Test.True(!generatedEnvelope.Contains("json[\"international_reputation_delta\"] == null", StringComparison.Ordinal)
+			&& !generatedEnvelope.Contains("json[\"international_reputation_reason\"] == null", StringComparison.Ordinal),
+			"missing reputation fields must not reject an otherwise valid declaration or spend a repair API call");
+		string reputationEvaluation = ExtractMethod(source, "private static void ApplyInternationalReputationEvaluation(");
+		Test.True(reputationEvaluation.Contains("TryReadInteger", StringComparison.Ordinal)
+			&& reputationEvaluation.Contains("modelDelta != 0", StringComparison.Ordinal)
+			&& reputationEvaluation.Contains("CalculateStructuredInternationalReputationFallback", StringComparison.Ordinal)
+			&& reputationEvaluation.Contains("local_structured_fallback", StringComparison.Ordinal),
+			"reputation evaluation must use a nonzero model value and a no-call structured fallback for zero or invalid output");
+		string reputationFallback = ExtractMethod(source, "private static int CalculateStructuredInternationalReputationFallback(");
+		Test.True(reputationFallback.Contains("if (score == 0) score = -1", StringComparison.Ordinal)
+			&& reputationFallback.Contains("没有提供新的条件、解释、行动或谈判进展", StringComparison.Ordinal)
+			&& reputationFallback.Contains("及时、明确地答复了正式提案", StringComparison.Ordinal),
+			"the structured fallback must always return a nonzero result and distinguish clear replies from empty repetition");
+		string reputationSettlement = ExtractMethod(source, "private void SettleInternationalReputationForDocument(");
+		Test.True(reputationSettlement.Contains("if (delta == 0)", StringComparison.Ordinal)
+			&& reputationSettlement.Contains("local_nonzero_settlement_guard", StringComparison.Ordinal),
+			"the final settlement boundary must prevent every remaining zero evaluation, including legacy and fallback paths");
+		string declarationContract = ExtractMethod(source, "private static string BuildDiplomaticDeclarationModeContract(");
+		string analysisContract = ExtractMethod(source, "private static string BuildAnalysisModeContract(");
+		Test.True(declarationContract.Contains("只能填写-10到-1或1到10，不得为0", StringComparison.Ordinal)
+			&& analysisContract.Contains("只能填写-10到-1或1到10，不得为0", StringComparison.Ordinal)
+			&& !declarationContract.Contains("也可以为0", StringComparison.Ordinal)
+			&& !analysisContract.Contains("也可以为0", StringComparison.Ordinal),
+			"both AI generation and player-declaration analysis contracts must require a retrospective nonzero evaluation");
+		string reputationRecovery = ExtractMethod(source, "private void RecoverUnsettledAiInternationalReputation(");
+		Test.True(reputationRecovery.Contains("!x.IsPlayerAuthored", StringComparison.Ordinal)
+			&& reputationRecovery.Contains("!x.InternationalReputationSettled", StringComparison.Ordinal)
+			&& reputationRecovery.Contains("OrderBy(x => x.Day)", StringComparison.Ordinal)
+			&& reputationRecovery.Contains("SettleInternationalReputationForDocument(document)", StringComparison.Ordinal)
+			&& CountOccurrences(source, "RecoverUnsettledAiInternationalReputation();") == 2,
+			"load/session migration must replay each persisted missed AI evaluation once in chronological order");
+		Test.True(source.Contains("WarningCompliancePrestigeChange = 5", StringComparison.Ordinal)
+			&& source.Contains("UltimatumCompliancePrestigeChange = 10", StringComparison.Ordinal)
+			&& source.Contains("WarningEscalationPrestigeReward = 3", StringComparison.Ordinal)
+			&& source.Contains("UltimatumWarPrestigeReward = 5", StringComparison.Ordinal),
+			"the approved warning, ultimatum, compliance, and war prestige rewards must remain explicit");
+		string prestigeTarget = ExtractMethod(source, "private static int GetNationalPrestigeRelationTarget(");
+		Test.True(prestigeTarget.Contains("if (prestige >= 80) return 0", StringComparison.Ordinal)
+			&& prestigeTarget.Contains("if (prestige >= 60) return -2", StringComparison.Ordinal)
+			&& prestigeTarget.Contains("if (prestige >= 40) return -5", StringComparison.Ordinal)
+			&& prestigeTarget.Contains("if (prestige >= 20) return -10", StringComparison.Ordinal)
+			&& prestigeTarget.Contains("if (prestige >= 1) return -15", StringComparison.Ordinal)
+			&& prestigeTarget.Contains("return -20", StringComparison.Ordinal),
+			"prestige must drive the approved reversible vassal-leader relation bands");
+
+		string passAccounting = ExtractMethod(source, "private void CompleteRelayPassProgressAccounting(");
+		Test.True(passAccounting.Contains("round.DiplomaticActionAttemptCount > round.ActionAttemptCountAtPassStart", StringComparison.Ordinal)
+			&& passAccounting.Contains("round.ConsecutiveNoActionPasses + 1", StringComparison.Ordinal),
+			"non-mechanical talk must not reset the hard diplomatic-action progress counter");
+		string roundPrompt = ExtractMethod(source, "private static void AppendRoundSubstantiveProgressRequirement(");
+		Test.True(roundPrompt.Contains("round.ConsecutiveNoActionPasses >= 2", StringComparison.Ordinal)
+			&& roundPrompt.Contains("end_negotiation", StringComparison.Ordinal)
+			&& roundPrompt.Contains("declare_deadlock", StringComparison.Ordinal),
+			"the third no-action phase must force a concrete result, exit, or declared deadlock");
+		string resultRules = File.ReadAllText(FindRepositoryFile("WorldDiplomacyResultSettlementRules.cs"), Encoding.UTF8);
+		Test.True(resultRules.Contains("kind != WorldDiplomacyConfirmedResultKind.OfferRejected", StringComparison.Ordinal),
+			"rejecting one proposal must not be a confirmed terminal result for the whole round");
+
+		string impactBuilder = ExtractMethod(source, "public static string BuildDiplomaticStandingImpactTextForExternal(");
+		string boundaryImpact = ExtractMethod(source, "private static string BuildInternationalReputationImpactDeltaText(");
+		string timeline = File.ReadAllText(FindRepositoryFile("WorldMessageTimelineUi.cs"), Encoding.UTF8);
+		Test.True(impactBuilder.Contains("【外交影响】", StringComparison.Ordinal)
+			&& impactBuilder.Contains("国际声誉 ", StringComparison.Ordinal)
+			&& impactBuilder.Contains("国家威望 ", StringComparison.Ordinal)
+			&& timeline.Contains("BuildDiplomaticStandingImpactTextForExternal(document)", StringComparison.Ordinal),
+			"the persisted declaration detail must always render both diplomatic standing lines and reasons");
+		Test.True(boundaryImpact.Contains("已达上限100", StringComparison.Ordinal)
+			&& boundaryImpact.Contains("已达下限0", StringComparison.Ordinal)
+			&& boundaryImpact.Contains("无实际变化（评价", StringComparison.Ordinal),
+			"a nonzero evaluation absorbed at 0 or 100 must remain visible instead of being mislabeled as a zero evaluation");
+		string dailyTick = ExtractMethod(source, "private void OnDailyTick(");
+		string naturalChange = ExtractMethod(source, "private void ProcessInternationalReputationNaturalChange(");
+		string naturalCalculation = ExtractMethod(source, "private static int CalculateInternationalReputationNaturalChange(");
+		Test.True(source.Contains("InternationalReputationNaturalAnchor = 20", StringComparison.Ordinal)
+			&& source.Contains("InternationalReputationFastDecayMinimum = 71", StringComparison.Ordinal)
+			&& source.Contains("InternationalReputationNormalDecayMinimum = 51", StringComparison.Ordinal)
+			&& source.Contains("InternationalReputationSlowDecayMinimum = 21", StringComparison.Ordinal)
+			&& source.Contains("InternationalReputationSlowDecayIntervalDays = 14", StringComparison.Ordinal)
+			&& source.Contains("InternationalReputationFastDecayStep = 2", StringComparison.Ordinal),
+			"international reputation must naturally converge on 20 using the approved fast, normal, slow, stable, and recovery bands");
+		Test.True(dailyTick.Contains("AnchorInternationalReputationNaturalChangeDays();", StringComparison.Ordinal)
+			&& dailyTick.Contains("ProcessInternationalReputationNaturalChange();", StringComparison.Ordinal)
+			&& naturalChange.Contains("never apply retroactive decay", StringComparison.Ordinal)
+			&& naturalChange.Contains("updated == InternationalReputationNaturalAnchor", StringComparison.Ordinal),
+			"daily processing must avoid retroactive old-save or disabled-period decay and reset accumulated time at the stable anchor");
+		Test.True(naturalCalculation.Contains("availableTicks = remainingDays / intervalDays", StringComparison.Ordinal)
+			&& naturalCalculation.Contains("Math.Min(availableTicks, maximumTicksInBand)", StringComparison.Ordinal)
+			&& naturalCalculation.Contains("step = -InternationalReputationFastDecayStep", StringComparison.Ordinal)
+			&& naturalCalculation.Contains("step = 1", StringComparison.Ordinal),
+			"long time skips must be processed in bounded band batches instead of scanning every elapsed day");
+		string popup = File.ReadAllText(FindRepositoryFile("CourierLetterReplyPopup.cs"), Encoding.UTF8);
+		string popupVm = File.ReadAllText(FindRepositoryFile("CourierLetterReplyPopupVM.cs"), Encoding.UTF8);
+		string repositoryRoot = Path.GetDirectoryName(FindRepositoryFile("WorldDiplomacyBehavior.cs"))!;
+		string popupPrefab = File.ReadAllText(Path.Combine(repositoryRoot, "AnimusForge", "GUI", "Prefabs", "CourierLetterReplyPopup.xml"), Encoding.UTF8);
+		Test.True(popup.Contains("string impactText = null", StringComparison.Ordinal)
+			&& popupVm.Contains("public string ImpactText", StringComparison.Ordinal)
+			&& popupVm.Contains("public bool HasImpact", StringComparison.Ordinal)
+			&& popupPrefab.Contains("Text=\"@ImpactText\"", StringComparison.Ordinal),
+			"the formal letter popup must bind the standing changes and reasons into its right-side impact area");
+		string encyclopedia = File.ReadAllText(FindRepositoryFile("EncyclopediaKingdomStabilityPatch.cs"), Encoding.UTF8);
+		Test.True(encyclopedia.Contains("BuildKingdomDiplomaticStandingEncyclopediaTextForExternal", StringComparison.Ordinal),
+			"kingdom encyclopedia refresh must append prestige and international reputation beside stability");
+	}
 
 	private static void RunRecoveredDiplomacyRegressionContractTests(string source)
 	{
@@ -474,6 +592,19 @@ internal static class Program
 		Test.True(propagation.Contains("IsPlayerAffiliatedKingdom(author)", StringComparison.Ordinal)
 			&& propagation.Contains("document.HasReachedPlayerCourt = true", StringComparison.Ordinal),
 			"a declaration authored at the player-affiliated sovereign court must be formally available immediately");
+		Test.True(propagation.Contains("playerCourtReceiptMissing", StringComparison.Ordinal)
+			&& propagation.Contains("knownKingdomIds.Contains", StringComparison.Ordinal),
+			"relay knowledge must not suppress a still-missing formal player-court delivery");
+		string propagationArrivals = ExtractMethod(source, "private void ProcessPropagationArrivals(");
+		Test.True(propagationArrivals.Contains("newlyKnown || (IsPlayerAffiliatedKingdom(receiver) && !document.HasReachedPlayerCourt)", StringComparison.Ordinal),
+			"an already-known declaration must still complete its formal player-court receipt");
+		string relayArrivals = ExtractMethod(source, "private void ProcessRelayArrivals(");
+		Test.True(CountOccurrences(relayArrivals, "MarkPlayerCourtReachedByRelay") == 2,
+			"both ordinary and result-settlement relays must mark formal delivery when they reach the player court");
+		string receiptRecovery = ExtractMethod(source, "private void RecoverPlayerCourtReceiptsFromKnowledge(");
+		Test.True(receiptRecovery.Contains("knownDocumentIds", StringComparison.Ordinal)
+			&& source.Contains("RecoverPlayerCourtReceiptsFromKnowledge();", StringComparison.Ordinal),
+			"old saves whose player court already knows a declaration must recover the missing formal receipt flag");
 		string notifications = ExtractMethod(source, "private void TryPublishPendingNotifications(");
 		Test.True(notifications.Contains("!x.RumorNotified", StringComparison.Ordinal)
 			&& notifications.Contains("x.HasReachedPlayerCourt", StringComparison.Ordinal)
@@ -512,14 +643,85 @@ internal static class Program
 
     private static void RunRelayPromptDecisionContextParityContractTests(string source)
     {
-        Test.True(source.Contains(
-                "private const int DiplomacyPromptContractVersion = 22;",
-                StringComparison.Ordinal),
-            "the configurable declaration-length contract must advance the dynamic prompt contract to v22");
-        Test.True(source.Contains(
-                "private const string CanonicalHistoryCacheAffinityKey = \"diplomacy-history:v22\";",
-                StringComparison.Ordinal),
-            "the configurable declaration-length prefix must advance canonical-history cache affinity to v22");
+		Test.True(source.Contains(
+				"private const int DiplomacyPromptContractVersion = 27;",
+				StringComparison.Ordinal),
+			"the reputation-maintenance contract must advance the dynamic prompt contract to v27");
+		Test.True(source.Contains(
+				"private const string CanonicalHistoryCacheAffinityKey = \"diplomacy-history:v27\";",
+				StringComparison.Ordinal),
+			"the reputation-maintenance prompt must advance canonical-history cache affinity to v27");
+
+		string ownStandingContext = ExtractMethod(
+			source,
+			"private void AppendDiplomaticThreatDynamicContext(");
+		Test.True(ownStandingContext.Contains("GetInternationalReputation(author.StringId)", StringComparison.Ordinal)
+			&& ownStandingContext.Contains("DescribeInternationalReputation(reputation)", StringComparison.Ordinal)
+			&& ownStandingContext.Contains("DescribeInternationalReputationNaturalTrend(reputation)", StringComparison.Ordinal)
+			&& ownStandingContext.Contains("GetRecentOwnInternationalReputationReasons(author.StringId)", StringComparison.Ordinal)
+			&& !ownStandingContext.Contains("reputation.ToString", StringComparison.Ordinal)
+			&& ownStandingContext.Contains("string.Equals(x.Kind, \"national_prestige\"", StringComparison.Ordinal),
+			"the declaring kingdom must receive its own reputation tier, trend, and recent reasons without receiving the exact score");
+		string ownReputationReasons = ExtractMethod(
+			source,
+			"private List<string> GetRecentOwnInternationalReputationReasons(");
+		Test.True(ownReputationReasons.Contains("MaxPromptRecentOwnReputationReasons", StringComparison.Ordinal)
+			&& ownReputationReasons.Contains("document.IsReadyForPublication", StringComparison.Ordinal)
+			&& ownReputationReasons.Contains("document.InternationalReputationSettled", StringComparison.Ordinal)
+			&& ownReputationReasons.Contains("评价方向=", StringComparison.Ordinal)
+			&& !ownReputationReasons.Contains("FormatSignedDelta", StringComparison.Ordinal),
+			"own-state prompt reasons must be bounded, settled public facts with qualitative direction and no exact delta");
+
+		string foreignStandingContext = ExtractMethod(
+			source,
+			"private void AppendDiplomaticTargetDecisionContext(");
+		string compactForeignStandingContext = ExtractMethod(
+			source,
+			"private string BuildCompactDiplomaticRelationshipLine(");
+		Test.True(foreignStandingContext.Contains("DescribeInternationalReputation(targetReputation)", StringComparison.Ordinal)
+			&& !foreignStandingContext.Contains("GetInternationalReputation(targetId).ToString", StringComparison.Ordinal)
+			&& compactForeignStandingContext.Contains("DescribeInternationalReputation(candidateReputation)", StringComparison.Ordinal)
+			&& !compactForeignStandingContext.Contains("Append(GetInternationalReputation", StringComparison.Ordinal),
+			"foreign kingdoms may receive a public reputation tier, but exact foreign reputation scores must stay out of declaration prompts");
+
+		string reputationConflictOpportunity = ExtractMethod(
+			source,
+			"private string BuildLowReputationConflictOpportunityContext(");
+		string reputationConflictFacts = ExtractMethod(
+			source,
+			"private List<string> GetRecentPublicNegativeReputationFacts(");
+		string compactCandidateContext = ExtractMethod(
+			source,
+			"private string BuildCompactRoundPlanCandidateLine(");
+		Test.True(source.Contains("LowInternationalReputationThreshold = 40", StringComparison.Ordinal)
+			&& source.Contains("SevereInternationalReputationThreshold = 20", StringComparison.Ordinal)
+			&& reputationConflictOpportunity.Contains("x is \"warning\" or \"ultimatum\"", StringComparison.Ordinal)
+			&& reputationConflictOpportunity.Contains("【国际声誉冲突机会】", StringComparison.Ordinal)
+			&& reputationConflictOpportunity.Contains("不是强制行动", StringComparison.Ordinal)
+			&& reputationConflictOpportunity.Contains("不得编造", StringComparison.Ordinal),
+			"only low-reputation foreign targets with a currently legal warning or ultimatum may expose the bounded conflict-opportunity guidance");
+		Test.True(reputationConflictFacts.Contains("document.IsReadyForPublication", StringComparison.Ordinal)
+			&& reputationConflictFacts.Contains("document.InternationalReputationSettled", StringComparison.Ordinal)
+			&& reputationConflictFacts.Contains("document.InternationalReputationEvaluationDelta >= 0", StringComparison.Ordinal)
+			&& reputationConflictFacts.Contains("RecentNegativeReputationFactRetentionDays", StringComparison.Ordinal)
+			&& reputationConflictFacts.Contains("MaxPromptRecentNegativeReputationFacts", StringComparison.Ordinal),
+			"low-reputation guidance must cite at most two recent, published, settled, actually negative reputation facts");
+		Test.True(foreignStandingContext.Contains("BuildLowReputationConflictOpportunityContext(target, legalActions)", StringComparison.Ordinal)
+			&& compactCandidateContext.Contains("BuildLowReputationConflictOpportunityContext(candidate, actions)", StringComparison.Ordinal),
+			"both detailed targets and autonomous candidate cards must receive the same legal-action-gated low-reputation guidance");
+
+		string declarationContract = ExtractMethod(
+			source,
+			"private static string BuildDiplomaticDeclarationModeContract(");
+		Test.True(declarationContract.Contains("国家生存与现实利益、长期战略", StringComparison.Ordinal)
+			&& declarationContract.Contains("国家性格决定本国多看重守约与可靠", StringComparison.Ordinal)
+			&& declarationContract.Contains("不得单独触发或阻止宣战", StringComparison.Ordinal)
+			&& declarationContract.Contains("高声誉不等于爱好和平", StringComparison.Ordinal)
+			&& declarationContract.Contains("需要由持续行为维护的战略资本", StringComparison.Ordinal)
+			&& declarationContract.Contains("国家性格决定愿意为信誉付出多少代价", StringComparison.Ordinal)
+			&& declarationContract.Contains("长期战略决定希望维持何种档位", StringComparison.Ordinal)
+			&& declarationContract.Contains("不能刷取声誉", StringComparison.Ordinal),
+			"personality and long-term strategy must interpret foreign reputation without turning it into an automatic peace or war switch");
 
         string authorContext = ExtractMethod(
             source,
@@ -1387,17 +1589,17 @@ internal static class Program
 
     private static void RunLiveLegalActionPublicationContractTests(string source)
     {
-        Test.True(source.Contains(
-                "private const int DiplomacyPromptContractVersion = 22;",
-                StringComparison.Ordinal),
-			"the all-kingdom response context must use prompt contract version 22");
-        Test.True(source.Contains(
-				"private const string CanonicalHistoryCacheAffinityKey = \"diplomacy-history:v22\";",
-                StringComparison.Ordinal),
-			"the configurable declaration-length prefix must advance canonical-history cache affinity to v22");
+		Test.True(source.Contains(
+				"private const int DiplomacyPromptContractVersion = 27;",
+				StringComparison.Ordinal),
+			"the all-kingdom response context must use prompt contract version 27");
+		Test.True(source.Contains(
+				"private const string CanonicalHistoryCacheAffinityKey = \"diplomacy-history:v27\";",
+				StringComparison.Ordinal),
+			"the reputation-maintenance prompt must advance canonical-history cache affinity to v27");
 		string settings = File.ReadAllText(FindRepositoryFile("DuelSettings.cs"), Encoding.UTF8);
-		Test.True(settings.Contains("【AnimusForge 王国外交共同契约 v23】", StringComparison.Ordinal),
-			"the compact live-action contract must use common diplomacy contract v23");
+		Test.True(settings.Contains("【AnimusForge 王国外交共同契约 v25】", StringComparison.Ordinal),
+			"the negotiated-round contract must use common diplomacy contract v25");
 
         string compactCurrentOptions = ExtractSection(
             source,
@@ -2442,9 +2644,10 @@ internal static class Program
 			"private string BuildRelayConversationTurnPrompt(",
 			"private static void AppendRoundSubstantiveProgressRequirement(");
 		Test.True(relayPrompt.Contains("statement", StringComparison.Ordinal)
-			&& relayPrompt.Contains("不要求答复", StringComparison.Ordinal)
-			&& relayPrompt.Contains("不提出、接受、拒绝、解除或执行", StringComparison.Ordinal),
-			"the relay-only prompt needs one short semantic rule for the mechanically inert statement option");
+			&& relayPrompt.Contains("结构化谈判动作", StringComparison.Ordinal)
+			&& relayPrompt.Contains("negotiation_move", StringComparison.Ordinal)
+			&& relayPrompt.Contains("不得用空泛立场冒充新进展", StringComparison.Ordinal),
+			"the relay-only prompt must require a meaningful structured negotiation move");
 
 		string analyzedPublication = ExtractSection(
 			source,
@@ -2472,11 +2675,9 @@ internal static class Program
 		Test.True(!roundProgress.Contains("CloseActiveRound(\"autonomous_no_action_declaration\")", StringComparison.Ordinal)
 			&& !roundProgress.Contains("if (document.IsAutonomousNoActionDeclaration)", StringComparison.Ordinal),
 			"a relay statement must not use the retired root-close shortcut");
-		int statementWithdrawal = roundProgress.IndexOf("document.IsRoundResponseNoActionDeclaration", StringComparison.Ordinal);
-		int withdrawnState = roundProgress.IndexOf("participant.State = \"withdrawn\"", statementWithdrawal, StringComparison.Ordinal);
-		int advanceRelay = roundProgress.IndexOf("AdvanceRelay(round)", withdrawnState, StringComparison.Ordinal);
-		Test.True(statementWithdrawal >= 0 && withdrawnState > statementWithdrawal && advanceRelay > withdrawnState,
-			"an ordinary relay statement must consume that AI participant once before the relay advances");
+		Test.True(!roundProgress.Contains("document.RoundParticipation = \"withdraw\"", StringComparison.Ordinal)
+			&& roundProgress.Contains("AdvanceRelay(round)", StringComparison.Ordinal),
+			"an ordinary negotiation statement must keep its participant in the back-and-forth relay");
 		int consumeSettlement = roundProgress.IndexOf("ConsumeResultSettlementSpeaker(round, document)", StringComparison.Ordinal);
 		int expireSettlementOffers = roundProgress.IndexOf(
 			"ExpireUnansweredSettlementOffersForNoActionDeclaration(round, document)",
@@ -2815,8 +3016,9 @@ internal static class Program
 			"pressure, threats, offers, and mechanical results must execute under only the current target/action before advancing");
 		Test.True(CountOccurrences(multiActionProcessing, "AppendCanonicalDocumentEvents(document)") == 1
 			&& CountOccurrences(multiActionProcessing, "StartDocumentPropagation(document, author)") == 1
-			&& CountOccurrences(multiActionProcessing, "HandleRoundDocumentProcessed(document)") == 1,
-			"one multi-action document must publish history, propagate, and consume its round turn exactly once");
+			&& CountOccurrences(multiActionProcessing, "HandleRoundDocumentProcessed(document)") == 1
+			&& CountOccurrences(multiActionProcessing, "SettleInternationalReputationForDocument(document)") == 1,
+			"one multi-action document must settle reputation, publish history, propagate, and consume its round turn exactly once");
 		Test.True(multiActionProcessing.Contains("new List<Kingdom>(actions.Count)", StringComparison.Ordinal)
 			&& multiActionProcessing.Contains("new HashSet<string>(StringComparer.OrdinalIgnoreCase)", StringComparison.Ordinal)
 			&& !multiActionProcessing.Contains("Kingdom.All", StringComparison.Ordinal),

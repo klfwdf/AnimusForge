@@ -57,8 +57,8 @@ internal static class Program
 
     private static void VerifyDefaultsAndRanges(string settings)
     {
-		Test.True(settings.Contains("【AnimusForge 王国外交共同契约 v23】", StringComparison.Ordinal),
-			"the compact live-action contract must use common diplomacy contract v23");
+		Test.True(settings.Contains("【AnimusForge 王国外交共同契约 v25】", StringComparison.Ordinal),
+			"the negotiated-round contract must use common diplomacy contract v25");
         Test.Equal(64, ReadIntConstant(settings, "WorldDiplomacyHistoryCompressionTriggerThousandsMin"),
             "trigger minimum must retain a practical lower bound");
         Test.Equal(900, ReadIntConstant(settings, "WorldDiplomacyHistoryCompressionTriggerThousandsMax"),
@@ -265,10 +265,10 @@ internal static class Program
 
     private static void VerifyStaticModeContractsAndPromptMigration(string behavior)
     {
-		Test.Equal(22, ReadIntConstant(behavior, "DiplomacyPromptContractVersion"),
-			"the configurable declaration-length contract must advance the prompt contract version");
-		Test.Equal("diplomacy-history:v22", ReadStringConstant(behavior, "CanonicalHistoryCacheAffinityKey"),
-			"the configurable declaration-length prefix must advance canonical-history cache affinity");
+		Test.Equal(27, ReadIntConstant(behavior, "DiplomacyPromptContractVersion"),
+			"the reputation-maintenance contract must advance the prompt contract version");
+		Test.Equal("diplomacy-history:v27", ReadStringConstant(behavior, "CanonicalHistoryCacheAffinityKey"),
+			"the reputation-maintenance prompt must advance canonical-history cache affinity");
         Test.Equal("【AI外交固定任务MODE分派】", ReadStringConstant(behavior, "DiplomacyModeDispatchContractMarker"),
             "the static system prefix must expose an explicit mode dispatcher");
         Test.Equal("【MODE=DECLARE 固定任务合同】", ReadStringConstant(behavior, "DiplomaticDeclarationModeContractMarker"),
