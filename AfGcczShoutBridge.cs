@@ -246,6 +246,32 @@ internal static class AfGcczShoutBridge
 			: SiegeAiInterventionBehavior.BuildRuntimePostprocessContextForExternal(targetAgentIndex, replyIsDirectPlayerResponse, playerText);
 	}
 
+	internal static string AppendTownPostprocessDecisionContract(
+		string userPrompt,
+		bool useExclusiveTownContract,
+		IEnumerable<PostprocessRuleEntry> rules)
+	{
+		if (!useExclusiveTownContract)
+		{
+			return userPrompt ?? string.Empty;
+		}
+
+		IEnumerable<string> eligibleTags = (rules ?? Enumerable.Empty<PostprocessRuleEntry>())
+			.Select(rule => (rule?.Tag ?? string.Empty).Trim())
+			.Where(tag => !string.IsNullOrWhiteSpace(tag));
+		string contract = TownPromptComposer.BuildPostprocessContract(
+			eligibleTags,
+			GcczTownPromptResourceProvider.GetCatalog());
+		if (string.IsNullOrWhiteSpace(contract))
+		{
+			return userPrompt ?? string.Empty;
+		}
+
+		return string.IsNullOrWhiteSpace(userPrompt)
+			? contract
+			: userPrompt.TrimEnd() + "\n\n" + contract;
+	}
+
 	internal static string BuildImmediateReactionIdentityOverride(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex)
 	{
 		return IsTownOrCastleAftermathActive()

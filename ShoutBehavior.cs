@@ -21430,6 +21430,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			string systemPrompt = AIConfigHandler.BuildActionPostprocessSystemPrompt(tagRules, moodRules, displayName, sharedItemList, playerItemList, debtHint, marriagePlayerCandidates, marriageTargetCandidates);
 			string latestReplyBlock = latestReplyHasPlayerInput ? AIConfigHandler.BuildActionPostprocessLatestReplyBlock(playerText, text, displayName, normalizedHistory) : AIConfigHandler.BuildActionPostprocessLatestReplyBlock("", text, displayName, null);
 			string userPrompt = BuildSceneActionPostprocessUserPrompt(actionPostprocessUserPromptTemplate, tagRules, displayName, normalizedHistory, latestReplyBlock, sharedItemList, playerItemList, debtHint, marriagePlayerCandidates, marriageTargetCandidates, runtimeContext);
+			userPrompt = AfGcczShoutBridge.AppendTownPostprocessDecisionContract(userPrompt, siegeInterventionExclusive, siegeInterventionRules);
 			string fallbackText = (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
 			workItem = new CourierActionPostprocessWorkItem(systemPrompt, userPrompt, fallbackText, runtimeTargetKingdomId, runtimeTargetHeroId, runtimeTargetCharacterId, runtimeTargetTroopId, runtimeTargetUnnamedRank, targetAgentIndex, delegate(string content)
 			{
@@ -24768,6 +24769,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			? AIConfigHandler.BuildActionPostprocessLatestReplyBlock(playerText, text, text20, text2)
 			: AIConfigHandler.BuildActionPostprocessLatestReplyBlock("", text, text20, null);
 		string text9 = BuildSceneActionPostprocessUserPrompt(actionPostprocessUserPromptTemplate, text3, text20, text2, latestReplyBlock, text5, text6, text7, marriagePlayerCandidates, marriageTargetCandidates, runtimeContext);
+		text9 = AfGcczShoutBridge.AppendTownPostprocessDecisionContract(text9, siegeInterventionExclusive, siegeInterventionRules);
 		if (!AIConfigHandler.TryCallAuxiliaryActionPostprocess(text8, text9, 5000, 0f, out var content, out var error))
 		{
 			Logger.Log("ShoutBehavior", "[UnifiedPostprocess] 调用失败: " + error);
