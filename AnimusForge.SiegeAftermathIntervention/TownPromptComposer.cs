@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace AnimusForge.SiegeAftermathIntervention;
@@ -152,6 +153,60 @@ public static class TownPromptComposer
         return prompt.ToString().Trim();
     }
 
+    public static string BuildSettlementRuleMemoryContext(
+        SettlementRuleMemoryRecord record,
+        int currentDay,
+        TownPromptTextCatalog textCatalog)
+    {
+        if (record == null)
+        {
+            return string.Empty;
+        }
+
+        TownPromptTextCatalog text = TownPromptTextCatalog.Resolve(textCatalog);
+        int elapsedDays = Math.Max(0, Math.Max(0, currentDay) - Math.Max(0, record.RuleStartDay));
+        bool durationUsesMinimum = record.MinimumRuleDurationDays > elapsedDays;
+        string currentDuration = FormatRuleDuration(
+            SettlementRuleMemoryStore.GetEffectiveRuleDurationDays(record, currentDay),
+            durationUsesMinimum,
+            text);
+        string current = text.SettlementRuleMemoryCurrentTemplate;
+        current = ApplyTemplate(current, "ruler", NormalizeRuleMemoryValue(record.RulerName, record.RulerId, text.SettlementRuleMemoryUnknownRuler));
+        current = ApplyTemplate(current, "settlement", NormalizeRuleMemoryValue(record.SettlementName, record.SettlementId));
+        current = ApplyTemplate(current, "culture", NormalizeRuleMemoryValue(record.CultureName, record.CultureId, text.SettlementRuleMemoryUnknownCulture));
+        current = ApplyTemplate(current, "duration", currentDuration);
+
+        var lines = new List<string> { current };
+        if (!string.IsNullOrWhiteSpace(record.RulerPersonality))
+        {
+            lines.Add(ApplyTemplate(
+                text.SettlementRuleMemoryPersonalityTemplate,
+                "personality",
+                record.RulerPersonality.Trim()));
+        }
+
+        if (record.HasPreviousRule)
+        {
+            bool cultureOnlyTransition = IsSameRuleMemoryValue(
+                record.RulerId,
+                record.RulerName,
+                record.PreviousRulerId,
+                record.PreviousRulerName);
+            string previous = cultureOnlyTransition
+                ? text.SettlementRuleMemoryPreviousCultureTemplate
+                : text.SettlementRuleMemoryPreviousTemplate;
+            previous = ApplyTemplate(previous, "ruler", NormalizeRuleMemoryValue(record.PreviousRulerName, record.PreviousRulerId, text.SettlementRuleMemoryUnknownRuler));
+            previous = ApplyTemplate(previous, "culture", NormalizeRuleMemoryValue(record.PreviousCultureName, record.PreviousCultureId, text.SettlementRuleMemoryUnknownCulture));
+            previous = ApplyTemplate(
+                previous,
+                "duration",
+                FormatRuleDuration(record.PreviousRuleDurationDays, record.PreviousDurationWasMinimum, text));
+            lines.Add(previous);
+        }
+
+        return string.Join(Environment.NewLine, lines);
+    }
+
     private static void AppendSection(StringBuilder prompt, string title, string content)
     {
         AppendSection(prompt, title, new[] { content });
@@ -186,6 +241,65 @@ public static class TownPromptComposer
     private static string ApplyTemplate(string template, string key, string value)
     {
         return (template ?? string.Empty).Replace("{" + key + "}", value ?? string.Empty);
+    }
+
+    private static string FormatRuleDuration(int durationDays, bool usesMinimum, TownPromptTextCatalog text)
+    {
+        if (usesMinimum)
+        {
+            return text.SettlementRuleMemoryDurationAtLeastTwoYears;
+        }
+
+        int days = Math.Max(0, durationDays);
+        if (days == 0)
+        {
+            return text.SettlementRuleMemoryDurationLessThanDay;
+        }
+        if (days < 7)
+        {
+            return ApplyTemplate(text.SettlementRuleMemoryDurationDaysTemplate, "value", days.ToString(CultureInfo.InvariantCulture));
+        }
+        if (days < SettlementRuleMemoryStore.MinimumFallbackRuleDays)
+        {
+            int weeks = Math.Max(1, days / 7);
+            return ApplyTemplate(text.SettlementRuleMemoryDurationWeeksTemplate, "value", weeks.ToString(CultureInfo.InvariantCulture));
+        }
+
+        decimal years = Math.Round(days / 84m, 1, MidpointRounding.AwayFromZero);
+        return ApplyTemplate(
+            text.SettlementRuleMemoryDurationYearsTemplate,
+            "value",
+            years.ToString("0.#", CultureInfo.InvariantCulture));
+    }
+
+    private static string NormalizeRuleMemoryValue(string primary, string fallback, string unknown = "")
+    {
+        string normalized = (primary ?? string.Empty).Trim();
+        if (!string.IsNullOrWhiteSpace(normalized))
+        {
+            return normalized;
+        }
+        string fallbackValue = (fallback ?? string.Empty).Trim();
+        return string.IsNullOrWhiteSpace(fallbackValue) ? (unknown ?? string.Empty).Trim() : fallbackValue;
+    }
+
+    private static bool IsSameRuleMemoryValue(
+        string currentId,
+        string currentName,
+        string previousId,
+        string previousName)
+    {
+        string normalizedCurrentId = (currentId ?? string.Empty).Trim();
+        string normalizedPreviousId = (previousId ?? string.Empty).Trim();
+        if (!string.IsNullOrWhiteSpace(normalizedCurrentId) || !string.IsNullOrWhiteSpace(normalizedPreviousId))
+        {
+            return string.Equals(normalizedCurrentId, normalizedPreviousId, StringComparison.OrdinalIgnoreCase);
+        }
+
+        return string.Equals(
+            (currentName ?? string.Empty).Trim(),
+            (previousName ?? string.Empty).Trim(),
+            StringComparison.OrdinalIgnoreCase);
     }
 
     private static string NormalizeSettlementName(string settlementName)
