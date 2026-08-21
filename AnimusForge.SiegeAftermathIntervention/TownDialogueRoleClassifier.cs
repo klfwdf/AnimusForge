@@ -41,20 +41,6 @@ public static class TownDialogueRoleClassifier
         return TownDialogueRole.Unknown;
     }
 
-    public static bool UsesPersistentPersonalMemory(TownDialogueRole role)
-    {
-        return role == TownDialogueRole.AccompanyingNoble
-            || role == TownDialogueRole.NoblePrisoner
-            || role == TownDialogueRole.PlayerCompanion
-            || role == TownDialogueRole.SettlementNotable;
-    }
-
-    public static bool UsesSceneLocalMemory(TownDialogueRole role)
-    {
-        return role == TownDialogueRole.OrdinarySoldier
-            || role == TownDialogueRole.OrdinaryCivilian;
-    }
-
     public static bool CanExecuteAlliedSoldierOrders(TownDialogueRole role, bool isAlliedSoldier)
     {
         return role == TownDialogueRole.OrdinarySoldier && isAlliedSoldier;

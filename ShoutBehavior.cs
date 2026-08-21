@@ -15265,6 +15265,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		try
 		{
+			if (!AfGcczShoutBridge.ShouldUsePersistentPersonalMemory(hero, targetCharacter, targetAgentIndex))
+			{
+				return new List<ConversationMessage>();
+			}
 			if (hero != null)
 			{
 				return MyBehavior.BuildUncompressedMemoryRoleMessagesForExternal(hero, targetAgentIndex, includeCurrentActiveSceneSession: false) ?? new List<ConversationMessage>();
@@ -33992,7 +33996,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				text = "[AFEF NPC行为补充] " + text;
 			}
 			RecordExtraFactToSceneHistory(text, new List<NpcDataPacket> { npcDataPacket });
-			if (persistHeroPrivateHistory && agent.Character is CharacterObject { HeroObject: not null } characterObject)
+			if (persistHeroPrivateHistory
+				&& agent.Character is CharacterObject { HeroObject: not null } characterObject
+				&& AfGcczShoutBridge.ShouldUsePersistentPersonalMemory(characterObject.HeroObject, characterObject, targetAgentIndex))
 			{
 				MyBehavior.AppendExternalDialogueHistory(characterObject.HeroObject, null, null, text);
 			}
@@ -34235,7 +34241,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				RecordExtraFactToSceneHistory(factText, list);
 			}
-			if (persistHeroPrivateHistory && agent.Character is CharacterObject characterObject && characterObject.HeroObject != null)
+			if (persistHeroPrivateHistory
+				&& agent.Character is CharacterObject characterObject
+				&& characterObject.HeroObject != null
+				&& AfGcczShoutBridge.ShouldUsePersistentPersonalMemory(characterObject.HeroObject, characterObject, targetAgentIndex))
 			{
 				MyBehavior.AppendExternalDialogueHistory(characterObject.HeroObject, null, null, factText);
 			}
@@ -37793,6 +37802,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			if (resolvedHeroes != null) resolvedHeroes.TryGetValue(agentIndex, out hero);
 			Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex && a.IsActive());
 			CharacterObject character = agent?.Character as CharacterObject;
+			if (!AfGcczShoutBridge.ShouldUsePersistentPersonalMemory(hero, character, agentIndex))
+			{
+				return "";
+			}
 			if (hero == null)
 			{
 				NpcDataPacket npc = ShoutUtils.ExtractNpcData(agent);
@@ -37966,7 +37979,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					agent = Mission.Current?.Agents?.FirstOrDefault(a => a != null && a.Index == nearbyDatum.AgentIndex);
 				}
-				if (agent != null && agent.Character is CharacterObject co && co.HeroObject != null)
+				if (agent != null
+					&& agent.Character is CharacterObject co
+					&& co.HeroObject != null
+					&& AfGcczShoutBridge.ShouldUsePersistentPersonalMemory(co.HeroObject, co, nearbyDatum.AgentIndex))
 				{
 					MyBehavior.AppendExternalSceneDialogueHistory(co.HeroObject, text, null, null, _sceneHistorySessionId, primaryTargetAgentIndex, primaryTargetName);
 				}
@@ -38005,7 +38021,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				continue;
 			}
 			Agent agent = Mission.Current?.Agents?.FirstOrDefault(a => a != null && a.Index == nearbyDatum.AgentIndex);
-			if (agent != null && agent.Character is CharacterObject co && co.HeroObject != null)
+			if (agent != null
+				&& agent.Character is CharacterObject co
+				&& co.HeroObject != null
+				&& AfGcczShoutBridge.ShouldUsePersistentPersonalMemory(co.HeroObject, co, nearbyDatum.AgentIndex))
 			{
 				if (nearbyDatum.AgentIndex == speakerAgentIndex)
 				{

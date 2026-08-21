@@ -253,6 +253,12 @@ internal static class AfGcczShoutBridge
 			: string.Empty;
 	}
 
+	internal static bool ShouldUsePersistentPersonalMemory(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex)
+	{
+		return !IsTownOrCastleAftermathActive()
+			|| SiegeAiInterventionBehavior.ShouldUsePersistentPersonalMemoryForExternal(targetHero, targetCharacter, targetAgentIndex);
+	}
+
 	internal static string NormalizePostprocessTags(bool selected, string raw, List<PostprocessRuleEntry> rules)
 	{
 		if (!selected)

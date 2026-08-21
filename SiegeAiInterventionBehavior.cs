@@ -3013,6 +3013,28 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
+	internal static bool ShouldUsePersistentPersonalMemoryForExternal(Hero hero, CharacterObject character, int agentIndex)
+	{
+		try
+		{
+			if (!IsActiveInCurrentMission() || ResolveCurrentSettlement()?.IsTown != true)
+			{
+				return true;
+			}
+
+			Agent agent = TryGetAgent(agentIndex);
+			CharacterObject resolvedCharacter = character ?? (agent?.Character as CharacterObject) ?? hero?.CharacterObject;
+			Hero resolvedHero = hero ?? resolvedCharacter?.HeroObject;
+			bool alliedSoldier = IsRuntimeAlliedSoldierAgent(agent, resolvedCharacter, resolvedHero);
+			TownDialogueRole role = ResolveTownDialogueRole(agent, resolvedCharacter, resolvedHero, alliedSoldier);
+			return TownDialogueMemoryPolicy.CanUsePersistentPersonalMemory(role, resolvedHero != null);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	internal static bool ShouldRunSiegeInterventionPostprocessForExternal()
 	{
 		return IsActiveInCurrentMission();
