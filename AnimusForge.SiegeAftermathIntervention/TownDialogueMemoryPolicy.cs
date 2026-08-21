@@ -2,9 +2,8 @@ namespace AnimusForge.SiegeAftermathIntervention;
 
 public enum TownDialogueMemoryScope
 {
-    None = 0,
+    SceneLocal = 0,
     PersistentPersonal = 1,
-    SceneLocal = 2,
 }
 
 /// <summary>
@@ -15,6 +14,7 @@ public static class TownDialogueMemoryPolicy
 {
     public static TownDialogueMemoryScope ResolveScope(TownDialogueRole role)
     {
+        role = TownDialogueRoleClassifier.NormalizeForRuntime(role);
         if (role == TownDialogueRole.AccompanyingNoble
             || role == TownDialogueRole.NoblePrisoner
             || role == TownDialogueRole.PlayerCompanion
@@ -23,13 +23,7 @@ public static class TownDialogueMemoryPolicy
             return TownDialogueMemoryScope.PersistentPersonal;
         }
 
-        if (role == TownDialogueRole.OrdinarySoldier
-            || role == TownDialogueRole.OrdinaryCivilian)
-        {
-            return TownDialogueMemoryScope.SceneLocal;
-        }
-
-        return TownDialogueMemoryScope.None;
+        return TownDialogueMemoryScope.SceneLocal;
     }
 
     public static bool CanUsePersistentPersonalMemory(TownDialogueRole role, bool hasNamedHero)

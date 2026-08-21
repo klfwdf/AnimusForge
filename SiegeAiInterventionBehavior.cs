@@ -9723,7 +9723,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 		catch
 		{
-			return TownDialogueRole.Unknown;
+			return TownDialogueRoleClassifier.SafeFallbackRole;
 		}
 	}
 

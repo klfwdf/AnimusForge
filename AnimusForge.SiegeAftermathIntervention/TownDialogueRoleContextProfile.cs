@@ -12,13 +12,12 @@ public static class TownDialogueRoleContextProfile
 
     public const string SceneLocalMemoryScope = "scene_local";
 
-    public const string NoPersonalMemoryScope = "none";
-
     public static string Build(TownDialogueRole role)
     {
+        TownDialogueRole normalizedRole = TownDialogueRoleClassifier.NormalizeForRuntime(role);
         return Marker
-            + " role=" + role
-            + "; memory_scope=" + ResolveMemoryScope(role)
+            + " role=" + normalizedRole
+            + "; memory_scope=" + ResolveMemoryScope(normalizedRole)
             + ";";
     }
 
@@ -30,11 +29,6 @@ public static class TownDialogueRoleContextProfile
             return PersistentPersonalMemoryScope;
         }
 
-        if (scope == TownDialogueMemoryScope.SceneLocal)
-        {
-            return SceneLocalMemoryScope;
-        }
-
-        return NoPersonalMemoryScope;
+        return SceneLocalMemoryScope;
     }
 }

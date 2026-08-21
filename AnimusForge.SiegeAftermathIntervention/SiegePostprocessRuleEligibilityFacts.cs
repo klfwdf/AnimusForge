@@ -17,7 +17,7 @@ public readonly struct SiegePostprocessRuleEligibilityFacts
         DestructiveLocked = destructiveLocked;
         SoldierAppeasementRequired = soldierAppeasementRequired;
         SoldierAppeasementApplied = soldierAppeasementApplied;
-        DialogueRole = dialogueRole;
+        DialogueRole = TownDialogueRoleClassifier.NormalizeForRuntime(dialogueRole);
         IsAlliedSoldier = isAlliedSoldier;
         ReplyIsDirectPlayerResponse = replyIsDirectPlayerResponse;
     }
