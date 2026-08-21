@@ -37,7 +37,7 @@ public static class SiegePostprocessRuleFilter
 
         bool soldierAppeasementTag = kinds.Contains(SiegeInterventionActionKind.AppeaseSoldiers);
         if (soldierAppeasementTag
-            && (!facts.IsAlliedSoldier
+            && (!TownDialogueRoleClassifier.CanExecuteAlliedSoldierOrders(facts.DialogueRole, facts.IsAlliedSoldier)
                 || !facts.SoldierAppeasementRequired
                 || facts.SoldierAppeasementApplied))
         {
@@ -45,13 +45,14 @@ public static class SiegePostprocessRuleFilter
         }
 
         bool soldierMediatedDestructiveTag = kinds.Any(SiegeInterventionActionRules.IsSoldierMediatedDestructive);
-        if (soldierMediatedDestructiveTag && !facts.IsAlliedSoldier)
+        if (soldierMediatedDestructiveTag
+            && !TownDialogueRoleClassifier.CanExecuteAlliedSoldierOrders(facts.DialogueRole, facts.IsAlliedSoldier))
         {
             return false;
         }
 
         bool civilianRobberyTag = kinds.Contains(SiegeInterventionActionKind.CivilianRobbery);
-        if (civilianRobberyTag && !facts.IsCivilian)
+        if (civilianRobberyTag && !TownDialogueRoleClassifier.CanBeRobberyTarget(facts.DialogueRole))
         {
             return false;
         }

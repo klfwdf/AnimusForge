@@ -3136,12 +3136,14 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			bool destructiveLocked = HasDestructiveOutcomeLocked();
 			Agent townAgent = TryGetAgent(targetAgentIndex);
 			CharacterObject townCharacter = townAgent?.Character as CharacterObject;
+			Hero townHero = townCharacter?.HeroObject;
+			bool townAlliedSoldier = IsRuntimeAlliedSoldierAgent(townAgent, townCharacter, townHero);
 			var eligibilityFacts = new SiegePostprocessRuleEligibilityFacts(
 				destructiveLocked,
 				_soldierAppeasementRequired,
 				_soldierAppeasementApplied,
-				IsRuntimeAlliedSoldierAgent(townAgent, townCharacter, townCharacter?.HeroObject),
-				IsCivilianForIntervention(townCharacter),
+				ResolveTownDialogueRole(townAgent, townCharacter, townHero, townAlliedSoldier),
+				townAlliedSoldier,
 				replyIsDirectPlayerResponse);
 			List<PostprocessRuleEntry> filtered = new List<PostprocessRuleEntry>();
 			foreach (PostprocessRuleEntry rule in rules)
@@ -9659,6 +9661,44 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		catch
 		{
 			return false;
+		}
+	}
+
+	private static TownDialogueRole ResolveTownDialogueRole(
+		Agent agent,
+		CharacterObject character = null,
+		Hero hero = null,
+		bool? isAlliedSoldier = null)
+	{
+		try
+		{
+			character ??= agent?.Character as CharacterObject ?? hero?.CharacterObject;
+			hero ??= character?.HeroObject;
+			bool noblePrisoner = hero != null
+				&& (CastleAftermathRuntimeBridge.IsLordPrisonerAgent(agent)
+					|| NoblePrisonerEscortBehavior.IsEscortedAgent(agent)
+					|| (hero.IsLord && hero.IsPrisoner));
+			bool playerCompanion = hero != null
+				&& (hero.IsPlayerCompanion
+					|| (hero.Clan == Clan.PlayerClan && hero.PartyBelongedTo == MobileParty.MainParty && !hero.IsLord));
+			bool accompanyingNoble = hero != null
+				&& hero.IsLord
+				&& !hero.IsPrisoner
+				&& (CastleAftermathArmyRosterRuntimeBridge.IsSelectedGuestLeader(character)
+					|| hero.PartyBelongedTo == MobileParty.MainParty);
+			bool alliedSoldier = isAlliedSoldier ?? IsRuntimeAlliedSoldierAgent(agent, character, hero);
+
+			return TownDialogueRoleClassifier.Resolve(new TownDialogueRoleFacts(
+				accompanyingNoble,
+				noblePrisoner,
+				playerCompanion,
+				IsInterventionNotableHero(hero),
+				alliedSoldier || IsGuardOrSoldier(character),
+				IsCivilianForIntervention(character)));
+		}
+		catch
+		{
+			return TownDialogueRole.Unknown;
 		}
 	}
 
