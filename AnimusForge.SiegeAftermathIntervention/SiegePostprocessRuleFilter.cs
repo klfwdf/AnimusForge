@@ -11,10 +11,7 @@ public static class SiegePostprocessRuleFilter
 {
     public static bool ShouldAllowTag(
         string tag,
-        bool destructiveAllowed,
-        bool destructiveLocked,
-        bool soldierAppeasementRequired,
-        bool soldierAppeasementApplied)
+        SiegePostprocessRuleEligibilityFacts facts)
     {
         if (string.IsNullOrWhiteSpace(tag))
         {
@@ -22,14 +19,39 @@ public static class SiegePostprocessRuleFilter
         }
 
         var kinds = SiegeActionTagCatalog.ExtractKinds(tag.Trim());
+        if (kinds.Count == 0)
+        {
+            return true;
+        }
+
+        if (!facts.ReplyIsDirectPlayerResponse)
+        {
+            return false;
+        }
+
         bool mercyTrackTag = kinds.Any(SiegeInterventionActionRules.IsMercyTrack);
-        if (destructiveLocked && mercyTrackTag)
+        if (facts.DestructiveLocked && mercyTrackTag)
         {
             return false;
         }
 
         bool soldierAppeasementTag = kinds.Contains(SiegeInterventionActionKind.AppeaseSoldiers);
-        if (soldierAppeasementTag && (!soldierAppeasementRequired || soldierAppeasementApplied))
+        if (soldierAppeasementTag
+            && (!facts.IsAlliedSoldier
+                || !facts.SoldierAppeasementRequired
+                || facts.SoldierAppeasementApplied))
+        {
+            return false;
+        }
+
+        bool soldierMediatedDestructiveTag = kinds.Any(SiegeInterventionActionRules.IsSoldierMediatedDestructive);
+        if (soldierMediatedDestructiveTag && !facts.IsAlliedSoldier)
+        {
+            return false;
+        }
+
+        bool civilianRobberyTag = kinds.Contains(SiegeInterventionActionKind.CivilianRobbery);
+        if (civilianRobberyTag && !facts.IsCivilian)
         {
             return false;
         }
