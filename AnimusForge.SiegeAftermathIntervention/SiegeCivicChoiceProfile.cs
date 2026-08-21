@@ -12,33 +12,33 @@ public sealed class SiegeCivicChoiceProfile
 
     public const float ReliefBaselineLoyaltyBonus = SiegeReliefChoiceProfile.BaseLoyaltyBonus;
 
-    public const float InspirationLoyaltyMultiplierOverRelief = 1.5f;
+    public const float InspirationLoyaltyMultiplierOverRelief = TownOutcomeCompatibilityProfile.InspirationLoyaltyMultiplierOverRelief;
 
     public const float InspirationLoyaltyBonus = ReliefBaselineLoyaltyBonus * InspirationLoyaltyMultiplierOverRelief;
 
-    public const float InspirationProsperityGrowthMultiplier = 1.2f;
+    public const float InspirationProsperityGrowthMultiplier = TownOutcomeCompatibilityProfile.InspirationProsperityGrowthMultiplier;
 
-    public const int InspirationPublicTrustBonus = 30;
+    public const int InspirationPublicTrustBonus = TownOutcomeCompatibilityProfile.InspirationPublicTrustBonus;
 
-    public const int InspirationNotableRelationBonus = 50;
+    public const int InspirationNotableRelationBonus = TownOutcomeCompatibilityProfile.InspirationNotableRelationBonus;
 
-    public const int InspirationNotableTrustBonus = InspirationNotableRelationBonus;
+    public const int InspirationNotableTrustBonus = TownOutcomeCompatibilityProfile.InspirationNotableTrustBonus;
 
-    public const float RallyOathLoyaltyValue = 100f;
+    public const float RallyOathLoyaltyValue = TownOutcomeCompatibilityProfile.RallyOathLoyaltyValue;
 
-    public const float RallyOathProsperityGrowthMultiplier = 2f;
+    public const float RallyOathProsperityGrowthMultiplier = TownOutcomeCompatibilityProfile.RallyOathProsperityGrowthMultiplier;
 
-    public const float RallyOathRecruitmentSpeedMultiplier = 2f;
+    public const float RallyOathRecruitmentSpeedMultiplier = TownOutcomeCompatibilityProfile.RallyOathRecruitmentSpeedMultiplier;
 
-    public const int RallyOathSettlementPublicTrustBonus = 100;
+    public const int RallyOathSettlementPublicTrustBonus = TownOutcomeCompatibilityProfile.RallyOathSettlementPublicTrustBonus;
 
-    public const int RallyOathBoundVillagePublicTrustBonus = 50;
+    public const int RallyOathBoundVillagePublicTrustBonus = TownOutcomeCompatibilityProfile.RallyOathBoundVillagePublicTrustBonus;
 
-    public const int RallyOathNotableRelationBonus = 100;
+    public const int RallyOathNotableRelationBonus = TownOutcomeCompatibilityProfile.RallyOathNotableRelationBonus;
 
-    public const int RallyOathNotableTrustBonus = RallyOathNotableRelationBonus;
+    public const int RallyOathNotableTrustBonus = TownOutcomeCompatibilityProfile.RallyOathNotableTrustBonus;
 
-    public const int PositiveBuffYears = 1;
+    public const int PositiveBuffYears = TownOutcomeCompatibilityProfile.PositiveBuffYears;
 
     public const string InspirationBlockedAfterDestructiveActionName = "安民宣抚";
 
