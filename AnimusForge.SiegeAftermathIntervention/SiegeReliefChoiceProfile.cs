@@ -10,11 +10,11 @@ public sealed class SiegeReliefChoiceProfile
 
     public const uint ValidationMessageColor = 0xFFFFD27Fu;
 
-    public const float BaseLoyaltyBonus = 20f;
+    public const float BaseLoyaltyBonus = TownOutcomeCompatibilityProfile.ReliefLoyaltyBonus;
 
-    public const int NotableRelationBonus = 10;
+    public const int NotableRelationBonus = TownOutcomeCompatibilityProfile.ReliefNotableRelationBonus;
 
-    public const int NotableTrustBonus = NotableRelationBonus;
+    public const int NotableTrustBonus = TownOutcomeCompatibilityProfile.ReliefNotableTrustBonus;
 
     public const string SoldierMaterialReliefTargetMessage = "【攻城处置】命令分发共享物资需要对己方入城士兵进行。";
 

@@ -8,7 +8,7 @@ public sealed class SiegeMercyChoiceProfile
 {
     private const uint PositiveMessageColor = 0xFFB6F7A8u;
 
-    public const float LoyaltyBonus = 15f;
+    public const float LoyaltyBonus = TownOutcomeCompatibilityProfile.MercyLoyaltyBonus;
 
     public const string BlockedAfterDestructiveActionName = "宽恕";
 

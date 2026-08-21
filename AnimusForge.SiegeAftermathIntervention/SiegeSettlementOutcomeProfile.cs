@@ -6,19 +6,19 @@ namespace AnimusForge.SiegeAftermathIntervention;
 /// </summary>
 public sealed class SiegeSettlementOutcomeProfile
 {
-    public const float CulturalRepopulationInitialLoyalty = 100f;
+    public const float CulturalRepopulationInitialLoyalty = TownOutcomeCompatibilityProfile.CulturalRepopulationInitialLoyalty;
 
-    public const float MassacreNativeDevastateProsperityMultiplier = 2f;
+    public const float MassacreNativeDevastateProsperityMultiplier = TownOutcomeCompatibilityProfile.MassacreNativeDevastateProsperityMultiplier;
 
-    public const float CulturalRepopulationNativeDevastateProsperityMultiplier = 2f;
+    public const float CulturalRepopulationNativeDevastateProsperityMultiplier = TownOutcomeCompatibilityProfile.CulturalRepopulationNativeDevastateProsperityMultiplier;
 
-    public const float CulturalRepopulationProsperityGrowthReductionRatio = 0.70f;
+    public const float CulturalRepopulationProsperityGrowthReductionRatio = TownOutcomeCompatibilityProfile.CulturalRepopulationProsperityGrowthReductionRatio;
 
-    public const int CulturalRepopulationProsperityGrowthDebuffYears = 1;
+    public const int CulturalRepopulationProsperityGrowthDebuffYears = TownOutcomeCompatibilityProfile.CulturalRepopulationProsperityGrowthDebuffYears;
 
-    public const int DestructiveRecruitmentSlowdownYears = 1;
+    public const int DestructiveRecruitmentSlowdownYears = TownOutcomeCompatibilityProfile.DestructiveRecruitmentSlowdownYears;
 
-    public const float DestructiveRecruitmentRateMultiplier = 0.20f;
+    public const float DestructiveRecruitmentRateMultiplier = TownOutcomeCompatibilityProfile.DestructiveRecruitmentRateMultiplier;
 
     private SiegeSettlementOutcomeProfile(
         string key,
@@ -90,13 +90,13 @@ public sealed class SiegeSettlementOutcomeProfile
     {
         return new SiegeSettlementOutcomeProfile(
             key: "plunder",
-            settlementPublicTrustDelta: -30,
+            settlementPublicTrustDelta: TownOutcomeCompatibilityProfile.PlunderSettlementPublicTrustDelta,
             settlementPublicTrustReason: "siege_ai_plunder_finalized",
-            boundVillagePublicTrustDelta: -20,
+            boundVillagePublicTrustDelta: TownOutcomeCompatibilityProfile.PlunderBoundVillagePublicTrustDelta,
             boundVillagePublicTrustReason: "siege_ai_plunder_bound_village",
-            notableRelationDelta: -30,
+            notableRelationDelta: TownOutcomeCompatibilityProfile.PlunderNotableRelationDelta,
             notableRelationReason: "siege_ai_plunder_notables",
-            notableTrustDelta: -30,
+            notableTrustDelta: TownOutcomeCompatibilityProfile.PlunderNotableTrustDelta,
             notableTrustReason: "siege_ai_plunder_notable_trust",
             recruitmentSlowdownYears: 0,
             recruitmentRateMultiplier: 1f,
@@ -107,13 +107,13 @@ public sealed class SiegeSettlementOutcomeProfile
     {
         return new SiegeSettlementOutcomeProfile(
             key: "massacre",
-            settlementPublicTrustDelta: -50,
+            settlementPublicTrustDelta: TownOutcomeCompatibilityProfile.MassacreSettlementPublicTrustDelta,
             settlementPublicTrustReason: "siege_ai_massacre_finalized",
-            boundVillagePublicTrustDelta: -50,
+            boundVillagePublicTrustDelta: TownOutcomeCompatibilityProfile.MassacreBoundVillagePublicTrustDelta,
             boundVillagePublicTrustReason: "siege_ai_massacre_bound_village",
-            notableRelationDelta: -70,
+            notableRelationDelta: TownOutcomeCompatibilityProfile.MassacreNotableRelationDelta,
             notableRelationReason: "siege_ai_massacre_notables",
-            notableTrustDelta: -70,
+            notableTrustDelta: TownOutcomeCompatibilityProfile.MassacreNotableTrustDelta,
             notableTrustReason: "siege_ai_massacre_notable_trust",
             recruitmentSlowdownYears: DestructiveRecruitmentSlowdownYears,
             recruitmentRateMultiplier: DestructiveRecruitmentRateMultiplier,
@@ -124,13 +124,13 @@ public sealed class SiegeSettlementOutcomeProfile
     {
         return new SiegeSettlementOutcomeProfile(
             key: "cultural_repopulation",
-            settlementPublicTrustDelta: 0,
+            settlementPublicTrustDelta: TownOutcomeCompatibilityProfile.CulturalRepopulationSettlementPublicTrustDelta,
             settlementPublicTrustReason: string.Empty,
-            boundVillagePublicTrustDelta: -80,
+            boundVillagePublicTrustDelta: TownOutcomeCompatibilityProfile.CulturalRepopulationBoundVillagePublicTrustDelta,
             boundVillagePublicTrustReason: "siege_ai_repopulation_bound_village",
-            notableRelationDelta: 0,
+            notableRelationDelta: TownOutcomeCompatibilityProfile.CulturalRepopulationNotableRelationDelta,
             notableRelationReason: string.Empty,
-            notableTrustDelta: 0,
+            notableTrustDelta: TownOutcomeCompatibilityProfile.CulturalRepopulationNotableTrustDelta,
             notableTrustReason: string.Empty,
             recruitmentSlowdownYears: DestructiveRecruitmentSlowdownYears,
             recruitmentRateMultiplier: DestructiveRecruitmentRateMultiplier,
