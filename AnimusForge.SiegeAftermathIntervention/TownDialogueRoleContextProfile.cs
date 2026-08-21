@@ -24,12 +24,13 @@ public static class TownDialogueRoleContextProfile
 
     public static string ResolveMemoryScope(TownDialogueRole role)
     {
-        if (TownDialogueRoleClassifier.UsesPersistentPersonalMemory(role))
+        TownDialogueMemoryScope scope = TownDialogueMemoryPolicy.ResolveScope(role);
+        if (scope == TownDialogueMemoryScope.PersistentPersonal)
         {
             return PersistentPersonalMemoryScope;
         }
 
-        if (TownDialogueRoleClassifier.UsesSceneLocalMemory(role))
+        if (scope == TownDialogueMemoryScope.SceneLocal)
         {
             return SceneLocalMemoryScope;
         }
