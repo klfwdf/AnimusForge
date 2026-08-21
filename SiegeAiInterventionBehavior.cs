@@ -3273,7 +3273,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	internal static bool TryProcessFixedKeywordActionForExternal(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string playerText, bool playerCommandContext, out bool actionHandled)
+	internal static bool TryProcessDirectSceneCommandForExternal(int targetAgentIndex, string playerText, bool playerCommandContext, out bool actionHandled)
 	{
 		actionHandled = false;
 		if (!playerCommandContext)
@@ -3285,34 +3285,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			actionHandled = true;
 			return true;
 		}
-		if (!IsActiveInCurrentMission()
-			|| !SiegeCastleRuntimePromptProfile.ShouldExposeTownAftermathRules(ResolveCurrentSettlement()?.IsCastle == true))
-		{
-			return false;
-		}
-
-		try
-		{
-			if (!SiegeFixedKeywordActionProfile.TryBuildTagText(playerText, out string tagText, out SiegeFixedKeywordActionDefinition definition))
-			{
-				return false;
-			}
-
-			RecordInterventionMemory("固定词测试", SiegeFixedKeywordActionProfile.BuildMatchedMemoryText(definition, playerText));
-			GcczDiagnosticLog.Log("FixedKeywordAction", SiegeFixedKeywordActionProfile.BuildMatchedDiagnosticText(definition)
-				+ " targetAgent=" + targetAgentIndex);
-			string generatedTagText = tagText;
-			bool processed = TryProcessAiActionTags(targetHero, targetCharacter, targetAgentIndex, ref generatedTagText, out actionHandled, replyIsDirectPlayerResponse: true);
-			Logger.Log("SiegeAiIntervention", "Processed fixed keyword action. Tag=" + tagText
-				+ ", Handled=" + actionHandled
-				+ ", TargetAgent=" + targetAgentIndex);
-			return processed;
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "TryProcessFixedKeywordActionForExternal failed: " + ex.Message);
-			return false;
-		}
+		return false;
 	}
 
 	internal static bool TryProcessAiActionTags(

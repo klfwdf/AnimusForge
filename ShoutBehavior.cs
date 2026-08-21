@@ -18456,25 +18456,25 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		if (shouldRecordPlayerInput && !directNoblePrisonerConversation)
 		{
-			string nativeFixedActionTargetUnavailableReason = "";
-			bool nativeFixedActionTargetAvailable = await RunNativeConversationMainThreadFuncAsync(
-				"fixed_action_target_validation",
+			string nativeDirectCommandTargetUnavailableReason = "";
+			bool nativeDirectCommandTargetAvailable = await RunNativeConversationMainThreadFuncAsync(
+				"direct_scene_command_target_validation",
 				nativeTargetLog,
 				nativeTargetAgentIndex,
-				() => IsNativeConversationResponseTargetAvailableForActionDispatch(nativeTargetAgentIndex, targetHero, targetCharacter, out nativeFixedActionTargetUnavailableReason),
+				() => IsNativeConversationResponseTargetAvailableForActionDispatch(nativeTargetAgentIndex, targetHero, targetCharacter, out nativeDirectCommandTargetUnavailableReason),
 				false).ConfigureAwait(false);
-			if (!nativeFixedActionTargetAvailable)
+			if (!nativeDirectCommandTargetAvailable)
 			{
-				string reason = string.IsNullOrWhiteSpace(nativeFixedActionTargetUnavailableReason) ? "main_thread_validation_failed" : nativeFixedActionTargetUnavailableReason;
+				string reason = string.IsNullOrWhiteSpace(nativeDirectCommandTargetUnavailableReason) ? "main_thread_validation_failed" : nativeDirectCommandTargetUnavailableReason;
 				RollbackNativeConversationPendingPlayerHistory(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, npc, nativePendingPlayerHistoryEventSequence, reason);
-				Logger.Log("ShoutBehavior", "[NativeConversation] skipped fixed action because target is unavailable target=" + nativeTargetLog + " agentIndex=" + nativeTargetAgentIndex + " reason=" + reason);
+				Logger.Log("ShoutBehavior", "[NativeConversation] skipped direct scene command because target is unavailable target=" + nativeTargetLog + " agentIndex=" + nativeTargetAgentIndex + " reason=" + reason);
 				return "";
 			}
-			bool fixedSiegeActionHandled;
-			if (AfGcczShoutBridge.TryProcessFixedKeywordAction(targetHero, targetCharacter, nativeTargetAgentIndex, promptPlayerText, replyIsDirectPlayerResponse: true, out fixedSiegeActionHandled) && fixedSiegeActionHandled)
+			bool directSceneCommandHandled;
+			if (AfGcczShoutBridge.TryProcessDirectSceneCommand(nativeTargetAgentIndex, promptPlayerText, replyIsDirectPlayerResponse: true, out directSceneCommandHandled) && directSceneCommandHandled)
 			{
 				siegeInterventionPostprocessSelected = false;
-				Logger.Log("ShoutBehavior", "[NativeConversation] siege_intervention fixed keyword handled target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown"));
+				Logger.Log("ShoutBehavior", "[NativeConversation] GCCZ direct scene command handled target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown"));
 			}
 		}
 		List<RewardSystemBehavior.DuelStakeOption> nativeDuelStakeOptions = null;
@@ -26842,11 +26842,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					}
 					if (replyIsDirectPlayerResponse && !directNoblePrisonerConversation)
 					{
-						bool fixedSiegeActionHandled;
-						if (AfGcczShoutBridge.TryProcessFixedKeywordAction(speakingHero, npcCharacter, currentSpeaker.AgentIndex, playerText, replyIsDirectPlayerResponse, out fixedSiegeActionHandled) && fixedSiegeActionHandled)
+						bool directSceneCommandHandled;
+						if (AfGcczShoutBridge.TryProcessDirectSceneCommand(currentSpeaker.AgentIndex, playerText, replyIsDirectPlayerResponse, out directSceneCommandHandled) && directSceneCommandHandled)
 						{
 							siegeInterventionPostprocessSelected = false;
-							Logger.Log("ShoutBehavior", "[SceneConversation] siege_intervention fixed keyword handled npc=" + (speakingHero?.StringId ?? currentSpeaker?.Name ?? "unknown"));
+							Logger.Log("ShoutBehavior", "[SceneConversation] GCCZ direct scene command handled npc=" + (speakingHero?.StringId ?? currentSpeaker?.Name ?? "unknown"));
 						}
 					}
 					bool npcSurrenderPostprocessSelected = IsNpcSurrenderPostprocessContext();
