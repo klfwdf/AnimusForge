@@ -228,7 +228,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private const float SoldierCordonSettleTolerance = SiegeSoldierCordonProfile.SettleTolerance;
 	private const float SoldierCordonOrderRefreshSeconds = SiegeSoldierCordonProfile.OrderRefreshSeconds;
 	private const float SoldierCordonLookRefreshSeconds = SiegeSoldierCordonProfile.LookRefreshSeconds;
-	private const int MaxInterventionMemoryEvents = SiegeInterventionMemoryContextBuilder.MaxMemoryEvents;
 	private const float AmbientReactionWindowSeconds = SiegeAmbientReactionProfile.WindowSeconds;
 	private const float AmbientReactionRequestSpacingSeconds = SiegeAmbientReactionProfile.RequestSpacingSeconds;
 
@@ -333,14 +332,13 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static bool _sharedCivilianReliefReturned;
 	private static readonly Dictionary<string, int> SharedCivilianReliefItems = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 	private static readonly Dictionary<string, ItemObject> SharedCivilianReliefItemObjects = new Dictionary<string, ItemObject>(StringComparer.OrdinalIgnoreCase);
-	private static readonly List<string> InterventionMemoryEvents = new List<string>();
+	private static readonly TownSceneMemoryStore InterventionSceneMemory = new TownSceneMemoryStore(SiegeInterventionMemoryContextBuilder.MaxMemoryEvents);
 	private static bool _pendingSummarySwitch;
 	private static SiegeAftermathAction.SiegeAftermath _pendingSummaryAftermath;
 	private static ItemRoster _pendingLootRoster = new ItemRoster();
 	private static bool _pendingLootScreen;
 	private static bool _pendingLootScreenShown;
 	private static bool _afAftermathResolved;
-	private static int _interventionMemorySequence;
 	private static string _completedSettlementId = "";
 	private static string _completedSettlementName = "";
 	private static bool _completedSettlementIsCastle;
@@ -2574,16 +2572,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		try
 		{
 			string entry = SiegeInterventionMemoryEventFormatter.FormatEntry(kind, detail);
-			if (InterventionMemoryEvents.Count > 0
-				&& string.Equals(SiegeInterventionMemoryEventFormatter.StripSequencePrefix(InterventionMemoryEvents[InterventionMemoryEvents.Count - 1]), entry, StringComparison.OrdinalIgnoreCase))
+			if (!InterventionSceneMemory.TryRecord(entry))
 			{
 				return;
-			}
-			_interventionMemorySequence++;
-			InterventionMemoryEvents.Add(_interventionMemorySequence + "." + entry);
-			while (InterventionMemoryEvents.Count > MaxInterventionMemoryEvents)
-			{
-				InterventionMemoryEvents.RemoveAt(0);
 			}
 			Logger.Log("SiegeAiIntervention", "Memory: " + entry);
 		}
@@ -2596,11 +2587,12 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (InterventionMemoryEvents.Count == 0)
+			IReadOnlyList<string> memoryEvents = InterventionSceneMemory.Snapshot();
+			if (memoryEvents.Count == 0)
 			{
 				return "";
 			}
-			return SiegeInterventionMemoryContextBuilder.Build(InterventionMemoryEvents, audience);
+			return SiegeInterventionMemoryContextBuilder.Build(memoryEvents, audience);
 		}
 		catch
 		{
@@ -15750,8 +15742,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_sharedCivilianReliefReturned = false;
 		SharedCivilianReliefItems.Clear();
 		SharedCivilianReliefItemObjects.Clear();
-		InterventionMemoryEvents.Clear();
-		_interventionMemorySequence = 0;
+		InterventionSceneMemory.Reset();
 		_pendingLootRoster = new ItemRoster();
 		_pendingLootScreen = false;
 		_pendingLootScreenShown = false;
