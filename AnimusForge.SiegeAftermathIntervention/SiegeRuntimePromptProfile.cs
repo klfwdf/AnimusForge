@@ -16,6 +16,7 @@ public static class SiegeRuntimePromptProfile
 
         string settlementName = NormalizeSettlementName(facts.SettlementName);
         StringBuilder sb = new StringBuilder();
+        sb.Append(TownDialogueRoleContextProfile.Build(facts.DialogueRole));
         sb.Append("【攻城后入城处置】")
             .Append(settlementName)
             .Append("刚被玩家一方攻下。玩家本人就是攻城胜利者和当前处置者，穿着战甲，带约50名健康士兵入城；普通民众仍散在城内街区，士兵会跟随玩家寻找目标并等待命令。玩家掌握这座定居点的生杀、安抚、搜掠与财产处置权。此刻尚未完成战后处置，结局由场景互动决定。不要把玩家当普通路人、帮派挑衅者、本地领民或城内罪犯。");
@@ -129,6 +130,7 @@ public sealed class SiegeRuntimePromptFacts
 {
     public SiegeRuntimePromptFacts(
         string settlementName,
+        TownDialogueRole dialogueRole,
         bool isAlliedSoldier,
         bool isGuardOrSoldier,
         bool isCivilian,
@@ -141,6 +143,7 @@ public sealed class SiegeRuntimePromptFacts
         bool massacreStarted)
     {
         SettlementName = settlementName ?? string.Empty;
+        DialogueRole = dialogueRole;
         IsAlliedSoldier = isAlliedSoldier;
         IsGuardOrSoldier = isGuardOrSoldier;
         IsCivilian = isCivilian;
@@ -159,6 +162,7 @@ public sealed class SiegeRuntimePromptFacts
         {
             return new SiegeRuntimePromptFacts(
                 settlementName: string.Empty,
+                dialogueRole: TownDialogueRole.Unknown,
                 isAlliedSoldier: false,
                 isGuardOrSoldier: false,
                 isCivilian: false,
@@ -173,6 +177,8 @@ public sealed class SiegeRuntimePromptFacts
     }
 
     public string SettlementName { get; }
+
+    public TownDialogueRole DialogueRole { get; }
 
     public bool IsAlliedSoldier { get; }
 

@@ -5,4 +5,4 @@
 - Ordinary soldier execution tags require both the `OrdinarySoldier` role and verified allied-soldier authority. A companion or noble cannot inherit soldier execution tags merely because the Hero belongs to the main party.
 - Robbery tags are available only to settlement notables and ordinary civilians. Noble prisoners remain outside the ordinary robbery route.
 - The core records the required memory lifetime policy: the four named roles use persistent personal memory, while ordinary soldiers and civilians use scene-local memory.
-- This slice wires the role into postprocess eligibility. Prompt identity blocks and memory storage will consume the same role in later slices instead of adding parallel classifiers.
+- Main reply, immediate reaction, and postprocess prompts now consume the same role marker and memory-scope code. Localized prompt resources explain the six codes without adding a second classifier.

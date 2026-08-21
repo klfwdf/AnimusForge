@@ -11,6 +11,7 @@ public readonly struct SiegePostprocessContextFacts
         bool destructiveAllowed,
         string speakerName,
         string speakerIdentity,
+        TownDialogueRole dialogueRole,
         int targetAgentIndex,
         bool replyIsDirectPlayerResponse,
         string sharedReliefPoolDescription,
@@ -22,6 +23,7 @@ public readonly struct SiegePostprocessContextFacts
         DestructiveAllowed = destructiveAllowed;
         SpeakerName = speakerName ?? string.Empty;
         SpeakerIdentity = speakerIdentity ?? string.Empty;
+        DialogueRole = dialogueRole;
         TargetAgentIndex = targetAgentIndex;
         ReplyIsDirectPlayerResponse = replyIsDirectPlayerResponse;
         SharedReliefPoolDescription = sharedReliefPoolDescription ?? string.Empty;
@@ -38,6 +40,8 @@ public readonly struct SiegePostprocessContextFacts
     public string SpeakerName { get; }
 
     public string SpeakerIdentity { get; }
+
+    public TownDialogueRole DialogueRole { get; }
 
     public int TargetAgentIndex { get; }
 
