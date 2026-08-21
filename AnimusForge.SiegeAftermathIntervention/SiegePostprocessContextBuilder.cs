@@ -31,6 +31,7 @@ public static class SiegePostprocessContextBuilder
     public static string Build(SiegePostprocessContextFacts facts)
     {
         var sb = new StringBuilder();
+        sb.AppendLine(TownDialogueRoleContextProfile.Build(facts.DialogueRole));
         sb.AppendLine("【攻城处置后处理运行时事实】");
         sb.AppendLine("- 当前场景：" + (string.IsNullOrWhiteSpace(facts.SettlementName) ? DefaultSettlementName : facts.SettlementName));
         sb.AppendLine("- 当前处置状态：" + (string.IsNullOrWhiteSpace(facts.CurrentOutcome) ? "尚未选择最终处置" : facts.CurrentOutcome));

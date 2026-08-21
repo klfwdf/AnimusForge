@@ -2608,13 +2608,15 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static SiegeInterventionMemoryAudience SelectInterventionMemoryAudience(bool alliedSoldier, bool civilian)
+	private static SiegeInterventionMemoryAudience SelectInterventionMemoryAudience(TownDialogueRole role, bool alliedSoldier)
 	{
-		if (alliedSoldier)
+		if (role == TownDialogueRole.OrdinarySoldier && alliedSoldier)
 		{
 			return SiegeInterventionMemoryAudience.AlliedSoldier;
 		}
-		return civilian ? SiegeInterventionMemoryAudience.Civilian : SiegeInterventionMemoryAudience.General;
+		return role == TownDialogueRole.OrdinaryCivilian || role == TownDialogueRole.SettlementNotable
+			? SiegeInterventionMemoryAudience.Civilian
+			: SiegeInterventionMemoryAudience.General;
 	}
 
 	private static string AppendRuntimeContext(string existingContext, string extraContext)
@@ -2825,8 +2827,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 		bool guard = IsGuardOrSoldier(character);
 		bool civilian = IsCivilianForIntervention(character);
+		TownDialogueRole dialogueRole = ResolveTownDialogueRole(agent, character, hero, alliedSoldier);
+		bool ordinaryAlliedSoldier = TownDialogueRoleClassifier.CanExecuteAlliedSoldierOrders(dialogueRole, alliedSoldier);
 		string gatherContext = BuildCivilianGatherRuntimeContext(Mission.Current);
-		string memoryContext = BuildInterventionMemoryContext(SelectInterventionMemoryAudience(alliedSoldier, civilian));
+		string memoryContext = BuildInterventionMemoryContext(SelectInterventionMemoryAudience(dialogueRole, alliedSoldier));
 		Settlement activeSettlement = ResolveCurrentSettlement();
 		if (activeSettlement?.IsCastle == true)
 		{
@@ -2865,10 +2869,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				CastleAftermathLordDuelRuntimeBridge.PlayerCarriesRangedWeapon(),
 				CastleAftermathLordDuelRuntimeBridge.PlayerWieldsRangedWeapon()));
 		}
-		memoryContext = AppendRuntimeContext(memoryContext, BuildPlayerCommanderRuntimeContext(alliedSoldier, civilian));
+		memoryContext = AppendRuntimeContext(memoryContext, BuildPlayerCommanderRuntimeContext(ordinaryAlliedSoldier, civilian));
 		return SiegeRuntimePromptProfile.Build(new SiegeRuntimePromptFacts(
 			settlementName,
-			alliedSoldier,
+			dialogueRole,
+			ordinaryAlliedSoldier,
 			guard,
 			civilian,
 			_soldierAppeasementRequired,
@@ -2981,6 +2986,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			Hero resolvedHero = hero ?? resolved?.HeroObject;
 			bool alliedSoldier = IsRuntimeAlliedSoldierAgent(agent, resolved, resolvedHero);
 			bool civilian = IsCivilianForIntervention(resolved);
+			TownDialogueRole dialogueRole = ResolveTownDialogueRole(agent, resolved, resolvedHero, alliedSoldier);
+			bool ordinaryAlliedSoldier = TownDialogueRoleClassifier.CanExecuteAlliedSoldierOrders(dialogueRole, alliedSoldier);
 			Settlement settlement = ResolveCurrentSettlement();
 			string playerName = ResolvePlayerCharacterNameForContext();
 			if (settlement?.IsCastle == true)
@@ -2999,11 +3006,12 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				}
 				return castleIdentity;
 			}
-			string identity = SiegeRuntimePromptProfile.BuildImmediateReactionIdentityOverride(playerName, alliedSoldier, civilian);
+			string identity = SiegeRuntimePromptProfile.BuildImmediateReactionIdentityOverride(playerName, ordinaryAlliedSoldier, civilian);
+			identity = AppendRuntimeContext(TownDialogueRoleContextProfile.Build(dialogueRole), identity);
 			if (_setsOwnedSettlementIncidentContext)
 			{
 				string settlementName = string.IsNullOrWhiteSpace(_activeSettlementName) ? ResolveCurrentSettlement()?.Name?.ToString() : _activeSettlementName;
-				identity = AppendRuntimeContext(identity, SetsOwnedSettlementIncidentProfile.BuildRuntimeContext(ResolveSetsSettlementSceneKind(settlement), playerName, settlementName, alliedSoldier, civilian));
+				identity = AppendRuntimeContext(identity, SetsOwnedSettlementIncidentProfile.BuildRuntimeContext(ResolveSetsSettlementSceneKind(settlement), playerName, settlementName, ordinaryAlliedSoldier, civilian));
 			}
 			return identity;
 		}
@@ -3227,18 +3235,21 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					CastleAftermathLordDuelRuntimeBridge.PlayerWieldsRangedWeapon()));
 			}
 			bool civilian = IsCivilianForIntervention(character);
+			TownDialogueRole dialogueRole = ResolveTownDialogueRole(agent, character, character?.HeroObject, alliedSoldier);
+			bool ordinaryAlliedSoldier = TownDialogueRoleClassifier.CanExecuteAlliedSoldierOrders(dialogueRole, alliedSoldier);
 			bool destructiveAllowed = IsDestructiveInterventionAllowed();
 			string currentOutcome = SiegePostprocessOutcomeTextBuilder.Build(BuildPostprocessOutcomeFacts());
 			string gatherContext = BuildCivilianGatherRuntimeContext(Mission.Current);
 			string memoryContext = AppendRuntimeContext(
-				BuildInterventionMemoryContext(SelectInterventionMemoryAudience(alliedSoldier, civilian)),
-				BuildPlayerCommanderRuntimeContext(alliedSoldier, civilian));
+				BuildInterventionMemoryContext(SelectInterventionMemoryAudience(dialogueRole, alliedSoldier)),
+				BuildPlayerCommanderRuntimeContext(ordinaryAlliedSoldier, civilian));
 			var facts = new SiegePostprocessContextFacts(
 				settlementName: _activeSettlementName,
 				currentOutcome: currentOutcome,
 				destructiveAllowed: destructiveAllowed,
 				speakerName: agent?.Name?.ToString() ?? character?.Name?.ToString() ?? SiegePostprocessContextBuilder.DefaultSpeakerName,
-				speakerIdentity: SiegePostprocessContextBuilder.SelectSpeakerIdentity(alliedSoldier, civilian),
+				speakerIdentity: SiegePostprocessContextBuilder.SelectSpeakerIdentity(ordinaryAlliedSoldier, civilian),
+				dialogueRole: dialogueRole,
 				targetAgentIndex: targetAgentIndex,
 				replyIsDirectPlayerResponse: replyIsDirectPlayerResponse,
 				sharedReliefPoolDescription: DescribeSharedCivilianReliefPoolForContext(),
