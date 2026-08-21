@@ -92,9 +92,9 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private const int InternationalReputationFastDecayMinimum = 71;
 	private const int InternationalReputationNormalDecayMinimum = 51;
 	private const int InternationalReputationSlowDecayMinimum = 21;
-	private const int InternationalReputationWeeklyIntervalDays = 7;
-	private const int InternationalReputationSlowDecayIntervalDays = 14;
-	private const int InternationalReputationFastDecayStep = 2;
+	private const int InternationalReputationDailyIntervalDays = 1;
+	private const int InternationalReputationFastDecayStep = 3;
+	private const int InternationalReputationNormalDecayStep = 2;
 	private const int WarningFollowThroughPrestigePenalty = 10;
 	private const int UltimatumFollowThroughPrestigePenalty = 25;
 	private const int WarningCompliancePrestigeChange = 5;
@@ -107,9 +107,9 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private const int DecisionArchitectureVersion = 1;
 	private const int HistoryMemorySchemaVersion = 4;
 	private const int DiplomacyNotificationStateSchemaVersion = 1;
-	private const int DiplomacyPromptContractVersion = 27;
+	private const int DiplomacyPromptContractVersion = 28;
 	private const int RelaySchemaVersion = 23;
-	private const string CanonicalHistoryCacheAffinityKey = "diplomacy-history:v27";
+	private const string CanonicalHistoryCacheAffinityKey = "diplomacy-history:v28";
 	private const string CanonicalHistoryContractMarker = "【AI外交长期记忆共同模式】";
 	private const string DiplomaticDeclarationWritingContractMarker = "【国家外交公文文体契约】";
 	private const string DiplomacyModeDispatchContractMarker = "【AI外交固定任务MODE分派】";
@@ -715,26 +715,27 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			int maximumTicksInBand;
 			if (reputation >= InternationalReputationFastDecayMinimum)
 			{
-				intervalDays = InternationalReputationWeeklyIntervalDays;
+				intervalDays = InternationalReputationDailyIntervalDays;
 				step = -InternationalReputationFastDecayStep;
 				maximumTicksInBand = (reputation - (InternationalReputationFastDecayMinimum - 1)
 					+ InternationalReputationFastDecayStep - 1) / InternationalReputationFastDecayStep;
 			}
 			else if (reputation >= InternationalReputationNormalDecayMinimum)
 			{
-				intervalDays = InternationalReputationWeeklyIntervalDays;
-				step = -1;
-				maximumTicksInBand = reputation - (InternationalReputationNormalDecayMinimum - 1);
+				intervalDays = InternationalReputationDailyIntervalDays;
+				step = -InternationalReputationNormalDecayStep;
+				maximumTicksInBand = (reputation - (InternationalReputationNormalDecayMinimum - 1)
+					+ InternationalReputationNormalDecayStep - 1) / InternationalReputationNormalDecayStep;
 			}
 			else if (reputation >= InternationalReputationSlowDecayMinimum)
 			{
-				intervalDays = InternationalReputationSlowDecayIntervalDays;
+				intervalDays = InternationalReputationDailyIntervalDays;
 				step = -1;
 				maximumTicksInBand = reputation - InternationalReputationNaturalAnchor;
 			}
 			else
 			{
-				intervalDays = InternationalReputationWeeklyIntervalDays;
+				intervalDays = InternationalReputationDailyIntervalDays;
 				step = 1;
 				maximumTicksInBand = InternationalReputationNaturalAnchor - reputation;
 			}
@@ -11199,7 +11200,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		sb.AppendLine("回合首篇不得使用statement；仅后续AI轮次的当前可选动作出现statement时可用。此时必须填写negotiation_move，表示有意义的谈判动作，而非机械外交行为。可用值为question|clarification|state_position|justify_demand|acknowledge_concern|dispute_claim|counterproposal|conditional_acceptance|partial_concession|request_concession|revise_terms|request_delay|consult_court|set_deadline|final_offer|withdraw_offer|end_negotiation|declare_deadlock。不得重复上一轮原话。");
 		sb.AppendLine("accept_*只表示无条件接受全部原条件并立即生效；仍需议价、审批或修改条款时不得选择，且建立与解除同盟或贸易的措辞不得相反。");
 		sb.AppendLine("决策顺序是国家生存与现实利益、长期战略、战争局势与双边关系、国家性格，最后才以对象国国际声誉作为可信度证据。国家性格决定本国多看重守约与可靠，长期战略决定如何利用这份判断；国际声誉只调整对外国承诺的信任、合作条件与外交风险，不得单独触发或阻止宣战，不得覆盖领土、安全或遏制目标。高声誉不等于爱好和平、值得喜欢或不会扩张，低声誉也不自动构成宣战理由；一个守约但强大的扩张国仍可能是必须遏制的威胁。");
-		sb.AppendLine("本国国际声誉是会随时间消散、需要由持续行为维护的战略资本，不是最高目标，也不是必须最大化的分数。国家性格决定愿意为信誉付出多少代价，长期战略决定希望维持何种档位：重视贸易、联盟、守约或调停的国家通常更珍惜高声誉，务实、扩张或危急中的国家可以为了生存、领土、安全与遏制主动承受声誉损失。提高声誉必须由实际履约、可执行让步、承担代价或现实成果支撑；重复礼貌表态、空洞承诺和没有进展的宣言不能刷取声誉。声誉得失只在宣言拟定后评估，不得反过来强迫国家改口或沉默。");
+		sb.AppendLine("本国国际声誉是会随时间消散、需要由持续行为维护的战略资本，不是最高目标，也不是必须最大化的分数。国家性格决定愿意为信誉付出多少代价，长期战略决定希望维持何种档位：重视贸易、联盟、守约或调停的国家通常更珍惜高声誉，务实、扩张或危急中的国家可以为了生存、领土、安全与遏制主动承受声誉损失。在获得外交发言机会且现实局势允许时，可主动用履行承诺、提出可执行合作、承担责任、有效调停或其他有实际内容的宣言维护声誉；提高声誉必须由实际履约、可执行让步、承担代价或现实成果支撑，重复礼貌表态、空洞承诺和没有进展的宣言不能刷取声誉。声誉得失只在宣言拟定后评估，不得反过来强迫国家改口或沉默。");
 		sb.AppendLine("标题应简洁概括事件或决定，通常不超过20个字。");
 		sb.AppendLine("先独立完成title、body与actions，再对这篇已经拟定的宣言做事后国际声誉评估。评估不能反过来改变、软化、取消宣言或令国家沉默。每篇宣言都必须产生非零评价：只能填写-10到-1或1到10，不得为0。履约、可执行的妥协、有效调停、承担责任和可靠协作通常提高；违约、反复改条件、欺骗、拖延、滥用威胁和违反停战通常降低。单纯拒绝要求时，根据是否及时、明确、前后一致以及是否给出可继续谈判的说明判定最低幅度±1；重复没有新条件、没有新解释、没有新行动或没有谈判进展的空洞表态应当判-1，不能靠礼貌套话反复获得声誉。reason只写简短事实理由。");
 		sb.AppendLine("用户消息含“同次确定本次外交事件参与国”时，round_plan.selected_kingdom_ids必须包含全部动作对象。");
@@ -11411,9 +11412,10 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		sb.AppendLine("本国当前国家威望=" + prestige.ToString(CultureInfo.InvariantCulture)
 			+ "/100（" + DescribeNationalPrestige(prestige) + "）。");
 		sb.AppendLine("国家威望衡量本国威慑与承诺是否兑现：威望低会削弱威胁可信度，并按档位动态降低正式封臣家族领袖对国王的关系；恢复威望会撤回这部分动态关系惩罚。");
-		sb.AppendLine("外国对本国的公开国际声誉档位=" + DescribeInternationalReputation(reputation)
-			+ "；当前自然趋势=" + DescribeInternationalReputationNaturalTrend(reputation)
-			+ "。这里不提供精确分数；档位与趋势用于规划如何维护、修复或为核心利益消耗这项战略资本，不得为了声誉而沉默、回避合法立场或机械改选动作。");
+		sb.AppendLine("本国当前国际声誉=" + reputation.ToString(CultureInfo.InvariantCulture)
+			+ "/100（外国公开评价档位=" + DescribeInternationalReputation(reputation)
+			+ "）；当前自然趋势=" + DescribeInternationalReputationNaturalTrend(reputation)
+			+ "。精确值、档位与趋势用于规划如何维护、修复或为核心利益消耗这项战略资本；现实局势允许时可主动发表有实际内容的宣言维护声誉，但不得为了声誉而沉默、回避合法立场、机械改选动作或发布空话。");
 		List<string> recentReputationReasons = GetRecentOwnInternationalReputationReasons(author.StringId);
 		if (recentReputationReasons.Count == 0)
 		{
@@ -11537,11 +11539,11 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private static string DescribeInternationalReputationNaturalTrend(int value)
 	{
-		if (value >= InternationalReputationFastDecayMinimum) return "快速消散，需要持续以实际成果维护";
-		if (value >= InternationalReputationNormalDecayMinimum) return "正常消散，需要定期以实际行为维护";
-		if (value >= InternationalReputationSlowDecayMinimum) return "缓慢消散，正逐步回归常态";
+		if (value >= InternationalReputationFastDecayMinimum) return "每天自然下降3点，需要持续以实际成果维护";
+		if (value >= InternationalReputationNormalDecayMinimum) return "每天自然下降2点，需要积极以实际行为维护";
+		if (value >= InternationalReputationSlowDecayMinimum) return "每天自然下降1点，正逐步回归常态";
 		if (value == InternationalReputationNaturalAnchor) return "保持稳定";
-		return "缓慢自然修复，但仍需实际行为才能取得更高评价";
+		return "每天自然恢复1点直至稳定点，但仍需实际行为才能取得更高评价";
 	}
 
 	private static string FormatSignedDelta(int value)

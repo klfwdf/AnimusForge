@@ -541,8 +541,9 @@ internal static class Program
 			&& source.Contains("InternationalReputationFastDecayMinimum = 71", StringComparison.Ordinal)
 			&& source.Contains("InternationalReputationNormalDecayMinimum = 51", StringComparison.Ordinal)
 			&& source.Contains("InternationalReputationSlowDecayMinimum = 21", StringComparison.Ordinal)
-			&& source.Contains("InternationalReputationSlowDecayIntervalDays = 14", StringComparison.Ordinal)
-			&& source.Contains("InternationalReputationFastDecayStep = 2", StringComparison.Ordinal),
+			&& source.Contains("InternationalReputationDailyIntervalDays = 1", StringComparison.Ordinal)
+			&& source.Contains("InternationalReputationFastDecayStep = 3", StringComparison.Ordinal)
+			&& source.Contains("InternationalReputationNormalDecayStep = 2", StringComparison.Ordinal),
 			"international reputation must naturally converge on 20 using the approved fast, normal, slow, stable, and recovery bands");
 		Test.True(dailyTick.Contains("AnchorInternationalReputationNaturalChangeDays();", StringComparison.Ordinal)
 			&& dailyTick.Contains("ProcessInternationalReputationNaturalChange();", StringComparison.Ordinal)
@@ -551,9 +552,11 @@ internal static class Program
 			"daily processing must avoid retroactive old-save or disabled-period decay and reset accumulated time at the stable anchor");
 		Test.True(naturalCalculation.Contains("availableTicks = remainingDays / intervalDays", StringComparison.Ordinal)
 			&& naturalCalculation.Contains("Math.Min(availableTicks, maximumTicksInBand)", StringComparison.Ordinal)
+			&& CountOccurrences(naturalCalculation, "intervalDays = InternationalReputationDailyIntervalDays;") == 4
 			&& naturalCalculation.Contains("step = -InternationalReputationFastDecayStep", StringComparison.Ordinal)
+			&& naturalCalculation.Contains("step = -InternationalReputationNormalDecayStep", StringComparison.Ordinal)
 			&& naturalCalculation.Contains("step = 1", StringComparison.Ordinal),
-			"long time skips must be processed in bounded band batches instead of scanning every elapsed day");
+			"all natural reputation bands must tick daily while long time skips remain batched instead of scanning every elapsed day");
 		string popup = File.ReadAllText(FindRepositoryFile("CourierLetterReplyPopup.cs"), Encoding.UTF8);
 		string popupVm = File.ReadAllText(FindRepositoryFile("CourierLetterReplyPopupVM.cs"), Encoding.UTF8);
 		string repositoryRoot = Path.GetDirectoryName(FindRepositoryFile("WorldDiplomacyBehavior.cs"))!;
@@ -644,13 +647,13 @@ internal static class Program
     private static void RunRelayPromptDecisionContextParityContractTests(string source)
     {
 		Test.True(source.Contains(
-				"private const int DiplomacyPromptContractVersion = 27;",
+				"private const int DiplomacyPromptContractVersion = 28;",
 				StringComparison.Ordinal),
-			"the reputation-maintenance contract must advance the dynamic prompt contract to v27");
+			"the exact own-reputation contract must advance the dynamic prompt contract to v28");
 		Test.True(source.Contains(
-				"private const string CanonicalHistoryCacheAffinityKey = \"diplomacy-history:v27\";",
+				"private const string CanonicalHistoryCacheAffinityKey = \"diplomacy-history:v28\";",
 				StringComparison.Ordinal),
-			"the reputation-maintenance prompt must advance canonical-history cache affinity to v27");
+			"the exact own-reputation prompt must advance canonical-history cache affinity to v28");
 
 		string ownStandingContext = ExtractMethod(
 			source,
@@ -659,9 +662,10 @@ internal static class Program
 			&& ownStandingContext.Contains("DescribeInternationalReputation(reputation)", StringComparison.Ordinal)
 			&& ownStandingContext.Contains("DescribeInternationalReputationNaturalTrend(reputation)", StringComparison.Ordinal)
 			&& ownStandingContext.Contains("GetRecentOwnInternationalReputationReasons(author.StringId)", StringComparison.Ordinal)
-			&& !ownStandingContext.Contains("reputation.ToString", StringComparison.Ordinal)
+			&& ownStandingContext.Contains("reputation.ToString(CultureInfo.InvariantCulture)", StringComparison.Ordinal)
+			&& ownStandingContext.Contains("现实局势允许时可主动发表有实际内容的宣言维护声誉", StringComparison.Ordinal)
 			&& ownStandingContext.Contains("string.Equals(x.Kind, \"national_prestige\"", StringComparison.Ordinal),
-			"the declaring kingdom must receive its own reputation tier, trend, and recent reasons without receiving the exact score");
+			"the declaring kingdom must receive its exact reputation, tier, trend, and recent reasons so substantive diplomacy can maintain it");
 		string ownReputationReasons = ExtractMethod(
 			source,
 			"private List<string> GetRecentOwnInternationalReputationReasons(");
@@ -1590,13 +1594,13 @@ internal static class Program
     private static void RunLiveLegalActionPublicationContractTests(string source)
     {
 		Test.True(source.Contains(
-				"private const int DiplomacyPromptContractVersion = 27;",
+				"private const int DiplomacyPromptContractVersion = 28;",
 				StringComparison.Ordinal),
-			"the all-kingdom response context must use prompt contract version 27");
+			"the all-kingdom response context must use prompt contract version 28");
 		Test.True(source.Contains(
-				"private const string CanonicalHistoryCacheAffinityKey = \"diplomacy-history:v27\";",
+				"private const string CanonicalHistoryCacheAffinityKey = \"diplomacy-history:v28\";",
 				StringComparison.Ordinal),
-			"the reputation-maintenance prompt must advance canonical-history cache affinity to v27");
+			"the exact own-reputation prompt must advance canonical-history cache affinity to v28");
 		string settings = File.ReadAllText(FindRepositoryFile("DuelSettings.cs"), Encoding.UTF8);
 		Test.True(settings.Contains("【AnimusForge 王国外交共同契约 v25】", StringComparison.Ordinal),
 			"the negotiated-round contract must use common diplomacy contract v25");
