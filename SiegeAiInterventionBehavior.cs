@@ -3133,8 +3133,16 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			List<PostprocessRuleEntry> configured = AIConfigHandler.GetGuardrailRulePostprocessRules(SiegePostprocessRuleCatalog.RuleId) ?? new List<PostprocessRuleEntry>();
 			List<PostprocessRuleEntry> rules = configured.Count > 0 ? configured : BuildFallbackSiegeInterventionPostprocessRules();
-			bool destructiveAllowed = IsDestructiveInterventionAllowed();
 			bool destructiveLocked = HasDestructiveOutcomeLocked();
+			Agent townAgent = TryGetAgent(targetAgentIndex);
+			CharacterObject townCharacter = townAgent?.Character as CharacterObject;
+			var eligibilityFacts = new SiegePostprocessRuleEligibilityFacts(
+				destructiveLocked,
+				_soldierAppeasementRequired,
+				_soldierAppeasementApplied,
+				IsRuntimeAlliedSoldierAgent(townAgent, townCharacter, townCharacter?.HeroObject),
+				IsCivilianForIntervention(townCharacter),
+				replyIsDirectPlayerResponse);
 			List<PostprocessRuleEntry> filtered = new List<PostprocessRuleEntry>();
 			foreach (PostprocessRuleEntry rule in rules)
 			{
@@ -3143,7 +3151,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
-				if (!SiegePostprocessRuleFilter.ShouldAllowTag(tag, destructiveAllowed, destructiveLocked, _soldierAppeasementRequired, _soldierAppeasementApplied))
+				if (!SiegePostprocessRuleFilter.ShouldAllowTag(tag, eligibilityFacts))
 				{
 					continue;
 				}
