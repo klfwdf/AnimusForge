@@ -2196,6 +2196,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private const float SceneGoldGroundOffset = 0.035f;
 
+	private const double SceneGoldTavernSettlementPoolRatio = 0.1;
+
+	private const double SceneGoldLordHallSettlementPoolRatio = 0.3;
+
 	private const string SceneGoldCustomItemId = "animusforge_denar_coin_item";
 
 	private const string SceneGoldCustomIngotItemId = "animusforge_denar_ingot_item";
@@ -2226,6 +2230,13 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private static readonly uint SceneGoldTintColor = new Color(1f, 0.72f, 0.08f, 1f).ToUnsignedInteger();
 
+	private enum SceneGoldSettlementPoolLocation
+	{
+		None,
+		Tavern,
+		LordHall
+	}
+
 	private sealed class SceneGoldDrop
 	{
 		public int AgentIndex;
@@ -2243,6 +2254,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		public Settlement SourceSettlement;
 
 		public int FixedSettlementGold;
+
+		public bool UsesLocationSettlementPool;
 
 		public int VisualGoldAmount;
 
@@ -2393,6 +2406,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	private bool _sceneGoldShareSnapshotCaptured;
 
 	private string _sceneGoldShareSnapshotSettlementId = "";
+
+	private SceneGoldSettlementPoolLocation _sceneGoldShareSnapshotLocation;
 
 	private int _sceneGoldMotionDiagTicks;
 
@@ -4241,7 +4256,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				return;
 			}
 			Hero heroObject = characterObject.HeroObject;
-			if (IsCurrentSceneGoldLordHall() && !SceneTauntBehavior.IsSceneLordTauntTarget(heroObject))
+			SceneGoldSettlementPoolLocation sceneGoldSettlementPoolLocation = GetCurrentSceneGoldSettlementPoolLocation();
+			if (sceneGoldSettlementPoolLocation == SceneGoldSettlementPoolLocation.LordHall && !SceneTauntBehavior.IsSceneLordTauntTarget(heroObject))
 			{
 				LogSceneGoldDiag($"spawn_skip lordhall_non_lord idx={affectedAgent.Index} hero={(heroObject?.StringId ?? "null")} character={characterObject.StringId}");
 				return;
@@ -4250,7 +4266,19 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			int fixedSettlementGold = 0;
 			int visualGoldAmount = 0;
 			bool isHeroDrop = heroObject != null;
-			if (isHeroDrop)
+			bool usesLocationSettlementPool = sceneGoldSettlementPoolLocation != SceneGoldSettlementPoolLocation.None;
+			if (usesLocationSettlementPool)
+			{
+				fixedSettlementGold = GetSceneGoldSettlementShareForAgent(currentSettlement, affectedAgent, sceneGoldSettlementPoolLocation);
+				visualGoldAmount = fixedSettlementGold;
+				LogSceneGoldDiag($"spawn_amount location_pool location={sceneGoldSettlementPoolLocation} hero={(heroObject?.StringId ?? "null")} settlementGold={currentSettlement?.SettlementComponent?.Gold ?? -1} fixed={fixedSettlementGold} visual={visualGoldAmount}");
+				if (visualGoldAmount <= 0)
+				{
+					LogSceneGoldDiag("spawn_skip location_pool_amount_zero");
+					return;
+				}
+			}
+			else if (isHeroDrop)
 			{
 				int heroGoldAmount = GetHeroSceneGoldPickupAmount(heroObject);
 				if (heroGoldAmount > 0)
@@ -4277,7 +4305,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 					return;
 				}
 				LogSceneGoldDiag($"spawn_snapshot_begin settlement={currentSettlement.StringId} settlementGold={currentSettlement.SettlementComponent.Gold}");
-				CaptureSceneGoldShareSnapshot(currentSettlement, affectedAgent);
+				CaptureSceneGoldShareSnapshot(currentSettlement, affectedAgent, sceneGoldSettlementPoolLocation);
 				LogSceneGoldDiag($"spawn_snapshot_done shares={_sceneGoldSettlementShareByAgentIndex.Count}");
 				if (!_sceneGoldSettlementShareByAgentIndex.TryGetValue(affectedAgent.Index, out fixedSettlementGold) || fixedSettlementGold <= 0)
 				{
@@ -4328,6 +4356,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				SourceHero = heroObject,
 				SourceSettlement = currentSettlement,
 				FixedSettlementGold = Math.Max(0, fixedSettlementGold),
+				UsesLocationSettlementPool = usesLocationSettlementPool,
 				VisualGoldAmount = Math.Max(0, visualGoldAmount),
 				IsHeroDrop = isHeroDrop,
 				UsesNativeItemPhysics = usesNativeItemPhysics
@@ -4922,6 +4951,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				return 0;
 			}
+			if (drop.UsesLocationSettlementPool)
+			{
+				return TryCollectFixedSettlementSceneGold(drop);
+			}
 			if (drop.IsHeroDrop)
 			{
 				Hero sourceHero = drop.SourceHero;
@@ -4965,22 +4998,31 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				LogSceneGoldDiag($"collect_hero amount={heroPickedGold} heroPaid={heroPaidGold} settlementPaid={settlementPaidGold} hero={sourceHero.StringId}");
 				return heroPickedGold;
 			}
-			Settlement settlement = drop.SourceSettlement ?? Settlement.CurrentSettlement;
-			int availableGold = Math.Max(0, settlement?.SettlementComponent?.Gold ?? 0);
-			int pickedGold = Math.Min(Math.Max(0, drop.FixedSettlementGold), availableGold);
-			if (pickedGold <= 0)
-			{
-				return 0;
-			}
-			settlement.SettlementComponent.ChangeGold(-pickedGold);
-			Hero.MainHero.ChangeHeroGold(pickedGold);
-			return pickedGold;
+			return TryCollectFixedSettlementSceneGold(drop);
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("SceneTaunt", "Collecting scene gold drop failed: " + ex.Message);
 			return 0;
 		}
+	}
+
+	private static int TryCollectFixedSettlementSceneGold(SceneGoldDrop drop)
+	{
+		Settlement settlement = drop?.SourceSettlement ?? Settlement.CurrentSettlement;
+		if (settlement?.SettlementComponent == null)
+		{
+			return 0;
+		}
+		int availableGold = Math.Max(0, settlement.SettlementComponent.Gold);
+		int pickedGold = Math.Min(Math.Max(0, drop.FixedSettlementGold), availableGold);
+		if (pickedGold <= 0)
+		{
+			return 0;
+		}
+		settlement.SettlementComponent.ChangeGold(-pickedGold);
+		Hero.MainHero.ChangeHeroGold(pickedGold);
+		return pickedGold;
 	}
 
 	private static int GetHeroSceneGoldPickupAmount(Hero sourceHero)
@@ -4995,16 +5037,42 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		}
 	}
 
-	private static bool IsCurrentSceneGoldLordHall()
+	private static SceneGoldSettlementPoolLocation GetCurrentSceneGoldSettlementPoolLocation()
 	{
 		try
 		{
-			string text = (CampaignMission.Current?.Location?.StringId ?? "").Trim();
-			return string.Equals(text, "lordshall", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "lords_hall", StringComparison.OrdinalIgnoreCase);
+			string locationId = (CampaignMission.Current?.Location?.StringId ?? "").Trim();
+			if (string.Equals(locationId, "tavern", StringComparison.OrdinalIgnoreCase))
+			{
+				return SceneGoldSettlementPoolLocation.Tavern;
+			}
+			if (string.Equals(locationId, "lordshall", StringComparison.OrdinalIgnoreCase) || string.Equals(locationId, "lords_hall", StringComparison.OrdinalIgnoreCase))
+			{
+				return SceneGoldSettlementPoolLocation.LordHall;
+			}
 		}
 		catch
 		{
-			return false;
+		}
+		return SceneGoldSettlementPoolLocation.None;
+	}
+
+	private static int GetSceneGoldSettlementPoolAmount(Settlement settlement, SceneGoldSettlementPoolLocation location)
+	{
+		try
+		{
+			int settlementGold = Math.Max(0, settlement?.SettlementComponent?.Gold ?? 0);
+			double poolRatio = location switch
+			{
+				SceneGoldSettlementPoolLocation.Tavern => SceneGoldTavernSettlementPoolRatio,
+				SceneGoldSettlementPoolLocation.LordHall => SceneGoldLordHallSettlementPoolRatio,
+				_ => 1.0
+			};
+			return Math.Max(0, (int)Math.Floor(settlementGold * poolRatio));
+		}
+		catch
+		{
+			return 0;
 		}
 	}
 
@@ -5020,18 +5088,26 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		}
 	}
 
-	private void CaptureSceneGoldShareSnapshot(Settlement settlement, Agent affectedAgent)
+	private int GetSceneGoldSettlementShareForAgent(Settlement settlement, Agent affectedAgent, SceneGoldSettlementPoolLocation location)
+	{
+		CaptureSceneGoldShareSnapshot(settlement, affectedAgent, location);
+		return _sceneGoldSettlementShareByAgentIndex.TryGetValue(affectedAgent?.Index ?? -1, out int share) ? Math.Max(0, share) : 0;
+	}
+
+	private void CaptureSceneGoldShareSnapshot(Settlement settlement, Agent affectedAgent, SceneGoldSettlementPoolLocation location)
 	{
 		string settlementId = settlement?.StringId ?? "";
-		if (_sceneGoldShareSnapshotCaptured && string.Equals(_sceneGoldShareSnapshotSettlementId, settlementId, StringComparison.OrdinalIgnoreCase))
+		if (_sceneGoldShareSnapshotCaptured && string.Equals(_sceneGoldShareSnapshotSettlementId, settlementId, StringComparison.OrdinalIgnoreCase) && _sceneGoldShareSnapshotLocation == location)
 		{
 			return;
 		}
 		_sceneGoldShareSnapshotCaptured = true;
 		_sceneGoldShareSnapshotSettlementId = settlementId;
+		_sceneGoldShareSnapshotLocation = location;
 		_sceneGoldSettlementShareByAgentIndex.Clear();
 		int settlementGold = Math.Max(0, settlement?.SettlementComponent?.Gold ?? 0);
-		if (settlementGold <= 0)
+		int poolGold = GetSceneGoldSettlementPoolAmount(settlement, location);
+		if (poolGold <= 0)
 		{
 			return;
 		}
@@ -5039,26 +5115,41 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		List<int> functionalAgentIndices = new List<int>();
 		foreach (Agent agent in Mission.Current?.Agents ?? Enumerable.Empty<Agent>())
 		{
-			AddAgentToSceneGoldSnapshot(agent, ordinaryAgentIndices, functionalAgentIndices);
+			AddAgentToSceneGoldSnapshot(agent, ordinaryAgentIndices, functionalAgentIndices, location);
 		}
-		AddAgentToSceneGoldSnapshot(affectedAgent, ordinaryAgentIndices, functionalAgentIndices);
-		AssignSceneGoldSnapshotShares(ordinaryAgentIndices, settlementGold / 2);
-		AssignSceneGoldSnapshotShares(functionalAgentIndices, settlementGold - settlementGold / 2);
-		Logger.Log("SceneTaunt", $"Captured scene gold share snapshot. Settlement={settlementId}, Gold={settlementGold}, Ordinary={ordinaryAgentIndices.Count}, Functional={functionalAgentIndices.Count}");
+		AddAgentToSceneGoldSnapshot(affectedAgent, ordinaryAgentIndices, functionalAgentIndices, location);
+		if (location == SceneGoldSettlementPoolLocation.None)
+		{
+			AssignSceneGoldSnapshotShares(ordinaryAgentIndices, poolGold / 2);
+			AssignSceneGoldSnapshotShares(functionalAgentIndices, poolGold - poolGold / 2);
+		}
+		else
+		{
+			AssignSceneGoldSnapshotShares(ordinaryAgentIndices, poolGold);
+		}
+		Logger.Log("SceneTaunt", $"Captured scene gold share snapshot. Settlement={settlementId}, LocationPool={location}, SettlementGold={settlementGold}, PoolGold={poolGold}, Eligible={ordinaryAgentIndices.Count}, Functional={functionalAgentIndices.Count}");
 	}
 
-	private void AddAgentToSceneGoldSnapshot(Agent agent, List<int> ordinaryAgentIndices, List<int> functionalAgentIndices)
+	private void AddAgentToSceneGoldSnapshot(Agent agent, List<int> ordinaryAgentIndices, List<int> functionalAgentIndices, SceneGoldSettlementPoolLocation location)
 	{
 		if (agent == null || agent.IsMainAgent || !agent.IsHuman || agent.Index < 0)
 		{
 			return;
 		}
 		CharacterObject characterObject = agent.Character as CharacterObject;
-		if (characterObject == null || characterObject.IsHero || SceneTauntBehavior.IsChildSceneProtectedTarget(characterObject))
+		if (characterObject == null || SceneTauntBehavior.IsChildSceneProtectedTarget(characterObject))
 		{
 			return;
 		}
-		List<int> targetList = IsSceneGoldFunctionalServiceAgent(agent, characterObject) ? functionalAgentIndices : ordinaryAgentIndices;
+		if (location == SceneGoldSettlementPoolLocation.None && characterObject.IsHero)
+		{
+			return;
+		}
+		if (location == SceneGoldSettlementPoolLocation.LordHall && !SceneTauntBehavior.IsSceneLordTauntTarget(characterObject.HeroObject))
+		{
+			return;
+		}
+		List<int> targetList = location == SceneGoldSettlementPoolLocation.None && IsSceneGoldFunctionalServiceAgent(agent, characterObject) ? functionalAgentIndices : ordinaryAgentIndices;
 		if (!targetList.Contains(agent.Index))
 		{
 			targetList.Add(agent.Index);
@@ -5270,6 +5361,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		_sceneGoldSettlementShareByAgentIndex.Clear();
 		_sceneGoldShareSnapshotCaptured = false;
 		_sceneGoldShareSnapshotSettlementId = "";
+		_sceneGoldShareSnapshotLocation = SceneGoldSettlementPoolLocation.None;
 	}
 
 	private void TryApplyNativeAlleyNpcKnockdownConsequences(Agent affectedAgent, Agent affectorAgent, AgentState agentState)

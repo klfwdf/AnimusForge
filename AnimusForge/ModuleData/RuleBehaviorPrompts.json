@@ -286,7 +286,7 @@
                                                      },
                                                      {
                                                          "Tag":  "[ACTION:MARRIAGE_ELOPE:targetHeroId]",
-                                                         "Description":  "如果NPC在\u003clatest_reply\u003e里同意或决定了无条件同意自己本人与玩家私奔，就输出这个"
+                                                         "Description":  "如果NPC在\u003clatest_reply\u003e里同意或决定了无条件同意自己本人与玩家私奔/结婚，就输出这个"
                                                      },
                                                      {
                                                          "Tag":  "[ACTION:DIVORCE:playerClanHeroId:targetHeroId]",

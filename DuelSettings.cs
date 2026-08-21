@@ -707,7 +707,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	private const string UnsupportedContextExtractionApiWarningMessage = "该站点使用的模型不满足本mod的上下文提取要求，你依然可以继续使用，但使用后产生的任何回复内容不合理问题，不由本mod负责。";
 
-	private const string AfdianSupportUrl = "https://www.ifdian.net/a/1517599431e?utm_source=copylink&utm_medium=link";
+	private const string AfdianSupportUrl = "https://www.ifdian.net/a/AnimusForge";
 
 	public const string ShoutInputUiBackgroundBlack = "黑色透明";
 
@@ -780,8 +780,8 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	public override string FormatType => "json";
 
-	[SettingPropertyButton("支持作者（爱发电）", -1, true, "", Content = "打开爱发电", Order = 0, RequireRestart = false, HintText = "点击后会用系统默认浏览器打开爱发电页面。")]
-	[SettingPropertyGroup("0. 支持作者", GroupOrder = -400)]
+	[SettingPropertyButton("支持Animusforge制作组", -1, true, "", Content = "打开爱发电", Order = 0, RequireRestart = false, HintText = "点击后会用系统默认浏览器打开爱发电页面。")]
+	[SettingPropertyGroup("0. 支持", GroupOrder = -400)]
 	public Action OpenAfdianSupportLink { get; set; }
 
 	[SettingPropertyText("API 地址（支持填写 Base URL）", -1, true, "", Order = 0, RequireRestart = false, HintText = "请填写你的接口地址，例如: https://api.openai.com/v1 或 https://api.openai.com/v1/chat/completions\n当你填写到 /v1 时，本模组会自动请求 /v1/chat/completions。")]

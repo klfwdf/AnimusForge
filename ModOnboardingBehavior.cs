@@ -28,6 +28,8 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		None,
 		SetupModeChoice,
+		YjApiChoice,
+		YjApiKey,
 		Welcome,
 		DeepSeekApiKeyOwnership,
 		QuickPresetApiKey,
@@ -55,6 +57,13 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		None,
 		DeepSeekFlash,
 		DeepSeekPro
+	}
+
+	private enum YjApiSetupMode
+	{
+		None,
+		SingleGroup,
+		MultiGroup
 	}
 
 	private enum SaveAndExitStage
@@ -101,6 +110,14 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private const string DeepSeekApiKeysUrl = "https://platform.deepseek.com/api_keys";
 
+	private const string YjApiBaseUrl = "https://yjapi.manqiaotechnology.com/v1";
+
+	private const string YjApiKeysUrl = "https://yjapi.manqiaotechnology.com/keys";
+
+	private const string YjApiPurchaseUrl = "https://pay.ldxp.cn/shop/OF6AKWNI";
+
+	private const string YjApiPlayerQqGroupNumber = "1097237977";
+
 	private const string DeepSeekFlashModelName = "deepseek-v4-flash";
 
 	private const string DeepSeekProModelName = "deepseek-v4-pro";
@@ -124,6 +141,8 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	private int _apiValidationVersion;
 
 	private bool _pendingApiValidationResult;
+
+	private int _pendingApiValidationVersion;
 
 	private bool _pendingApiValidationSuccess;
 
@@ -163,6 +182,8 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private bool _pendingModelFetchResult;
 
+	private int _pendingModelFetchVersion;
+
 	private bool _pendingModelFetchSuccess;
 
 	private string _pendingModelFetchMessage = "";
@@ -194,6 +215,10 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	private QuickApiPreset _selectedQuickApiPreset;
 
 	private bool _quickPresetFlowActive;
+
+	private YjApiSetupMode _yjApiSetupMode;
+
+	private bool _yjSingleGroupKeyConfirmed;
 
 	private bool _apiOnlySetupFlowActive;
 
@@ -361,6 +386,22 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		return _currentApiSetupTarget == ApiSetupTarget.EventAndRebellion;
 	}
 
+	private bool IsYjApiSetupActive()
+	{
+		return _yjApiSetupMode != YjApiSetupMode.None && (!_setupDone || _apiOnlySetupFlowActive) && !_apiRepairFlowActive;
+	}
+
+	private bool IsYjApiSetupAvailable()
+	{
+		return (!_setupDone || _apiOnlySetupFlowActive) && !_apiRepairFlowActive;
+	}
+
+	private void ResetYjApiSetup()
+	{
+		_yjApiSetupMode = YjApiSetupMode.None;
+		_yjSingleGroupKeyConfirmed = false;
+	}
+
 	private string CurrentApiDisplayName()
 	{
 		if (IsAuxiliaryApiSetupTarget())
@@ -427,6 +468,23 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			return "事件/叛乱模型名称";
 		}
 		return "主模型名称";
+	}
+
+	private string CurrentYjApiModelRecommendation()
+	{
+		if (IsAuxiliaryApiSetupTarget())
+		{
+			return "前处理API：建议优先选择速度快且价格较低的模型。";
+		}
+		if (IsActionPostprocessApiSetupTarget())
+		{
+			return "后处理API：建议选择分析与推理能力较强的模型，例如 GPT。";
+		}
+		if (IsEventAndRebellionApiSetupTarget())
+		{
+			return "周报与叛乱API：周报生成建议选择文采较好的模型，例如 Gemini；叛乱命名也会共用此模型。";
+		}
+		return "主API（NPC 正文）：建议选择文采较好的模型，例如 Gemini。";
 	}
 
 	private string CurrentApiBaseUrlExample()
@@ -599,6 +657,22 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static void SetYjApiBaseUrlForAllTargets(DuelSettings settings)
+	{
+		SetApiUrlForTarget(settings, ApiSetupTarget.Primary, YjApiBaseUrl);
+		SetApiUrlForTarget(settings, ApiSetupTarget.Auxiliary, YjApiBaseUrl);
+		SetApiUrlForTarget(settings, ApiSetupTarget.ActionPostprocess, YjApiBaseUrl);
+		SetApiUrlForTarget(settings, ApiSetupTarget.EventAndRebellion, YjApiBaseUrl);
+	}
+
+	private static void SetYjApiKeyForAllTargets(DuelSettings settings, string value)
+	{
+		SetApiKeyForTarget(settings, ApiSetupTarget.Primary, value);
+		SetApiKeyForTarget(settings, ApiSetupTarget.Auxiliary, value);
+		SetApiKeyForTarget(settings, ApiSetupTarget.ActionPostprocess, value);
+		SetApiKeyForTarget(settings, ApiSetupTarget.EventAndRebellion, value);
+	}
+
 	private static void SetModelNameForTarget(DuelSettings settings, ApiSetupTarget target, string value)
 	{
 		if (settings == null)
@@ -629,6 +703,11 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private void ReopenCurrentApiEntry(bool ignoreSuppress = true)
 	{
+		if (IsYjApiSetupActive())
+		{
+			OpenYjApiKeyInput();
+			return;
+		}
 		if (_quickPresetFlowActive && !IsAuxiliaryApiSetupTarget() && !IsActionPostprocessApiSetupTarget() && !IsEventAndRebellionApiSetupTarget())
 		{
 			ShowQuickPresetApiKeyInput(_selectedQuickApiPreset);
@@ -689,7 +768,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
 			return;
 		}
-		if (_activeOnboardingStage != OnboardingUiStage.SetupModeChoice && _activeOnboardingStage != OnboardingUiStage.Welcome && _activeOnboardingStage != OnboardingUiStage.DeepSeekApiKeyOwnership && _activeOnboardingStage != OnboardingUiStage.QuickPresetApiKey && _activeOnboardingStage != OnboardingUiStage.AuxiliaryChoice && _activeOnboardingStage != OnboardingUiStage.PostprocessChoice && _activeOnboardingStage != OnboardingUiStage.EventRebellionChoice && _activeOnboardingStage != OnboardingUiStage.BaseUrlValidation && _activeOnboardingStage != OnboardingUiStage.BaseUrlValidationFailure && _activeOnboardingStage != OnboardingUiStage.ApiValidation && _activeOnboardingStage != OnboardingUiStage.ModelFetch && _activeOnboardingStage != OnboardingUiStage.ModelSelect && _activeOnboardingStage != OnboardingUiStage.Import)
+		if (_activeOnboardingStage != OnboardingUiStage.SetupModeChoice && _activeOnboardingStage != OnboardingUiStage.YjApiChoice && _activeOnboardingStage != OnboardingUiStage.YjApiKey && _activeOnboardingStage != OnboardingUiStage.Welcome && _activeOnboardingStage != OnboardingUiStage.DeepSeekApiKeyOwnership && _activeOnboardingStage != OnboardingUiStage.QuickPresetApiKey && _activeOnboardingStage != OnboardingUiStage.AuxiliaryChoice && _activeOnboardingStage != OnboardingUiStage.PostprocessChoice && _activeOnboardingStage != OnboardingUiStage.EventRebellionChoice && _activeOnboardingStage != OnboardingUiStage.BaseUrlValidation && _activeOnboardingStage != OnboardingUiStage.BaseUrlValidationFailure && _activeOnboardingStage != OnboardingUiStage.ApiValidation && _activeOnboardingStage != OnboardingUiStage.ModelFetch && _activeOnboardingStage != OnboardingUiStage.ModelSelect && _activeOnboardingStage != OnboardingUiStage.Import)
 		{
 			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
 			return;
@@ -716,6 +795,12 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 		case OnboardingUiStage.SetupModeChoice:
 			ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+			break;
+		case OnboardingUiStage.YjApiChoice:
+			ShowYjApiSetupMenu();
+			break;
+		case OnboardingUiStage.YjApiKey:
+			OpenYjApiKeyInput();
 			break;
 		case OnboardingUiStage.DeepSeekApiKeyOwnership:
 			ShowDeepSeekApiKeyOwnershipInquiry(_selectedQuickApiPreset);
@@ -812,13 +897,19 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		int pendingModelFetchVersion = _pendingModelFetchVersion;
 		bool pendingModelFetchSuccess = _pendingModelFetchSuccess;
 		string pendingModelFetchMessage = _pendingModelFetchMessage ?? "";
 		List<string> list = _pendingModelFetchModels?.Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList() ?? new List<string>();
 		_pendingModelFetchResult = false;
+		_pendingModelFetchVersion = 0;
 		_pendingModelFetchSuccess = false;
 		_pendingModelFetchMessage = "";
 		_pendingModelFetchModels = new List<string>();
+		if (pendingModelFetchVersion != _modelFetchVersion)
+		{
+			return;
+		}
 		_welcomeInProgress = false;
 		_activeOnboardingStage = OnboardingUiStage.None;
 		InformationManager.HideInquiry();
@@ -838,13 +929,19 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		int pendingApiValidationVersion = _pendingApiValidationVersion;
 		bool pendingApiValidationSuccess = _pendingApiValidationSuccess;
 		string pendingApiValidationMessage = _pendingApiValidationMessage ?? "";
 		string pendingApiValidationFailureHint = _pendingApiValidationFailureHint ?? "";
 		_pendingApiValidationResult = false;
+		_pendingApiValidationVersion = 0;
 		_pendingApiValidationSuccess = false;
 		_pendingApiValidationMessage = "";
 		_pendingApiValidationFailureHint = "";
+		if (pendingApiValidationVersion != _apiValidationVersion)
+		{
+			return;
+		}
 		bool apiValidationReturnToModelSelection = _apiValidationReturnToModelSelection;
 		_apiValidationReturnToModelSelection = false;
 		ApiValidationFlow apiValidationFlow = _apiValidationFlow;
@@ -885,6 +982,11 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 					return;
 				}
 				ShowImportSetupPopup(fromGate: true, ignoreSuppress: true);
+				return;
+			}
+			if (IsYjApiSetupActive())
+			{
+				AdvanceYjApiSetupAfterValidation();
 				return;
 			}
 			if (IsAuxiliaryApiSetupTarget())
@@ -1020,6 +1122,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				InformationManager.DisplayMessage(new InformationMessage("当前已有 AnimusForge 引导或 API 测试正在进行，请先完成或取消当前流程。"));
 				return false;
 			}
+			ResetYjApiSetup();
 			_apiOnlySetupFlowActive = true;
 			_pendingWelcome = false;
 			_pendingReturnToWelcome = false;
@@ -1037,13 +1140,14 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			_apiOnlySetupFlowActive = false;
-			InformationManager.DisplayMessage(new InformationMessage("打开 API 首次引导失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage("打开 API 重新配置失败：" + ex.Message));
 			return false;
 		}
 	}
 
 	private void CancelApiSetupOnlyFlow()
 	{
+		ResetYjApiSetup();
 		_apiOnlySetupFlowActive = false;
 		_quickPresetFlowActive = false;
 		_selectedQuickApiPreset = QuickApiPreset.None;
@@ -1055,11 +1159,12 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		_showModelSelectionValidationFailedHint = false;
 		_lastApiValidationFailureHint = "";
 		InformationManager.HideInquiry();
-		InformationManager.DisplayMessage(new InformationMessage("已取消 API 首次引导。"));
+		InformationManager.DisplayMessage(new InformationMessage("已取消 API 重新配置。"));
 	}
 
 	private void CompleteApiSetupOnlyFlow()
 	{
+		ResetYjApiSetup();
 		_apiOnlySetupFlowActive = false;
 		_quickPresetFlowActive = false;
 		_selectedQuickApiPreset = QuickApiPreset.None;
@@ -1072,7 +1177,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		_lastApiValidationFailureHint = "";
 		TryPersistMcmSettings(DuelSettings.GetSettings());
 		InformationManager.HideInquiry();
-		InformationManager.DisplayMessage(new InformationMessage("API 首次引导已完成：配置已写入 MCM，本次不会进入数据库导入或首次使用流程。"));
+		InformationManager.DisplayMessage(new InformationMessage("API 重新配置已完成：配置已写入 MCM，已返回游戏，不会进入数据库导入或首次使用流程。"));
 	}
 
 	public static bool OpenAuxiliaryApiRepairFlow()
@@ -1122,14 +1227,16 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			SetApiSetupTarget(ApiSetupTarget.Primary);
-			SetApiRepairFlowActive(active: false);
-			_quickPresetFlowActive = false;
-			_selectedQuickApiPreset = QuickApiPreset.None;
 			if ((!_apiOnlySetupFlowActive && _setupDone) || _welcomeInProgress || _apiValidationInProgress || _baseUrlValidationInProgress || _modelFetchInProgress)
 			{
 				return;
 			}
+			bool showYjApiSetupOption = (!_setupDone || _apiOnlySetupFlowActive) && !_apiRepairFlowActive;
+			SetApiSetupTarget(ApiSetupTarget.Primary);
+			SetApiRepairFlowActive(active: false);
+			_quickPresetFlowActive = false;
+			_selectedQuickApiPreset = QuickApiPreset.None;
+			ResetYjApiSetup();
 			long ticks = DateTime.UtcNow.Ticks;
 			if (!ignoreSuppress && _suppressWelcomeUntilUtcTicks > ticks)
 			{
@@ -1140,12 +1247,16 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_welcomeInProgress = true;
 			List<InquiryElement> list = new List<InquiryElement>
 			{
-				new InquiryElement("support", "支持作者", null, isEnabled: true, "打开爱发电支持页面。"),
+				new InquiryElement("support", "支持AnimusForge制作组", null, isEnabled: true, "打开爱发电支持页面。"),
 				new InquiryElement("deepseek_flash", "使用deepseek-flash推荐API组合进行游玩", null, isEnabled: true, "自动填写 DeepSeek Flash 预设，只需输入一次 API Key。"),
 				new InquiryElement("deepseek_pro", "使用deepseek-pro推荐API组合进行游玩", null, isEnabled: true, "自动填写 DeepSeek Pro 预设，只需输入一次 API Key。"),
 				new InquiryElement("custom", "使用完全自定义的API进行游玩", null, isEnabled: true, "进入旧路径，逐项填写 Base URL、API Key 和模型。"),
 				new InquiryElement("existing_config", "使用现有配置进行游玩", null, isEnabled: true, "直接测试当前 MCM 配置；周报和叛乱API未配置完整时会跳过该项。")
 			};
+			if (showYjApiSetupOption)
+			{
+				list.Insert(1, new InquiryElement("yj_api", "使用 YJ API 中转站进行游玩", null, isEnabled: true, "固定接入 YJ API 中转站；可选择单分组或多分组 API Key 配置。"));
+			}
 			if (!_apiOnlySetupFlowActive)
 			{
 				list.Add(new InquiryElement("save_exit", "保存存档并退出", null, isEnabled: true, "保存当前存档后退出到主界面。"));
@@ -1185,6 +1296,10 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				{
 					ShowDeepSeekApiKeyOwnershipInquiry(QuickApiPreset.DeepSeekPro);
 				}
+				else if (text2 == "yj_api")
+				{
+					ShowYjApiSetupMenu();
+				}
 				else if (text2 == "custom")
 				{
 					ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
@@ -1219,6 +1334,258 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			_welcomeInProgress = false;
 		}
+	}
+
+	private void ShowYjApiSetupMenu()
+	{
+		try
+		{
+			if (!IsYjApiSetupAvailable() || _welcomeInProgress || _apiValidationInProgress || _baseUrlValidationInProgress || _modelFetchInProgress)
+			{
+				return;
+			}
+			_activeOnboardingStage = OnboardingUiStage.YjApiChoice;
+			_welcomeInProgress = true;
+			string yjBackLabel = _apiOnlySetupFlowActive ? "返回 API 重新配置菜单" : "返回首次引导菜单";
+			string yjBackDescription = _apiOnlySetupFlowActive ? "返回 AnimusForge 的 API 重新配置菜单。" : "返回 AnimusForge 的首次 API 配置菜单。";
+			List<InquiryElement> list = new List<InquiryElement>
+			{
+				new InquiryElement("yj_prepare_account", "获取 API Key 并购买额度", null, isEnabled: true, "依次打开 YJ API Key 管理页和额度购买页。"),
+				new InquiryElement("yj_multi_group", "多分组 API Key 输入", null, isEnabled: true, "主API、前处理API、后处理API、周报与叛乱API分别输入一个 Key，并分别拉取该分组的模型。"),
+				new InquiryElement("yj_single_group", "单分组 API Key 输入", null, isEnabled: true, "只输入一次 Key，自动写入四条 API；随后仍会为四条 API 分别拉取模型并选择。"),
+				new InquiryElement("yj_back", yjBackLabel, null, isEnabled: true, yjBackDescription),
+				new InquiryElement("yj_copy_qq_group", "复制YJ中转站 QQ 群号", null, isEnabled: true, "复制 QQ 群号 " + YjApiPlayerQqGroupNumber + " 到剪贴板。")
+			};
+			string text = "【开始游玩前必须完成】\n点击“获取 API Key 并购买额度”会依次打开 Key 管理页和额度购买页；请创建有效 Key 并充值足够额度。\n\n缺少有效 API Key 或可用额度时，无法拉取模型、通过连接测试或使用 AI 进行游玩。\n单分组 Key 只需输入一次；多分组 Key 需要为四条 API 分别输入。";
+			if (_apiOnlySetupFlowActive)
+			{
+				text += "\n\n当前为终端 API 重新配置：四条 API 完成连接测试后会直接返回游戏，不会进入数据库导入。";
+			}
+			MultiSelectionInquiryData data = new MultiSelectionInquiryData("YJ API 中转站", text, list, isExitShown: false, 0, 1, "确定", "返回", delegate(List<InquiryElement> selected)
+			{
+				_welcomeInProgress = false;
+				string text2 = selected?.FirstOrDefault()?.Identifier as string;
+				if (text2 == "yj_prepare_account")
+				{
+					OpenYjApiPreparationPages();
+					ShowYjApiSetupMenu();
+				}
+				else if (text2 == "yj_multi_group")
+				{
+					BeginYjApiSetup(YjApiSetupMode.MultiGroup);
+				}
+				else if (text2 == "yj_single_group")
+				{
+					BeginYjApiSetup(YjApiSetupMode.SingleGroup);
+				}
+				else if (text2 == "yj_copy_qq_group")
+				{
+					CopyYjApiPlayerQqGroupNumberToClipboard();
+					ShowYjApiSetupMenu();
+				}
+				else
+				{
+					ResetYjApiSetup();
+					ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+				}
+			}, delegate
+			{
+				_welcomeInProgress = false;
+				ResetYjApiSetup();
+				ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+			});
+			MBInformationManager.ShowMultiSelectionInquiry(data);
+		}
+		catch (Exception ex)
+		{
+			_welcomeInProgress = false;
+			InformationManager.DisplayMessage(new InformationMessage("打开 YJ API 中转站菜单失败：" + ex.Message));
+			ResetYjApiSetup();
+			ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+		}
+	}
+
+	private static void CopyYjApiPlayerQqGroupNumberToClipboard()
+	{
+		try
+		{
+			TaleWorlds.InputSystem.Input.SetClipboardText(YjApiPlayerQqGroupNumber);
+			InformationManager.DisplayMessage(new InformationMessage("YJ 交流 QQ 群号已复制到剪贴板：" + YjApiPlayerQqGroupNumber, new Color(0.35f, 1f, 0.35f)));
+		}
+		catch
+		{
+			InformationManager.DisplayMessage(new InformationMessage("复制 QQ 群号失败，请手动复制：" + YjApiPlayerQqGroupNumber, Colors.Yellow));
+		}
+	}
+
+	private static void OpenYjApiPreparationPages()
+	{
+		OpenYjApiExternalPage(YjApiKeysUrl, "API Key 管理");
+		OpenYjApiExternalPage(YjApiPurchaseUrl, "额度购买");
+	}
+
+	private static void OpenYjApiExternalPage(string url, string pageName)
+	{
+		try
+		{
+			Process.Start(new ProcessStartInfo(url)
+			{
+				UseShellExecute = true
+			});
+			InformationManager.DisplayMessage(new InformationMessage("[系统] 正在打开 YJ API " + pageName + "页面。"));
+		}
+		catch (Exception ex)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("[系统] 打开 YJ API " + pageName + "页面失败：" + ex.Message));
+		}
+	}
+
+	private void BeginYjApiSetup(YjApiSetupMode mode)
+	{
+		if (mode == YjApiSetupMode.None || !IsYjApiSetupAvailable())
+		{
+			ResetYjApiSetup();
+			ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+			return;
+		}
+		ResetYjApiSetup();
+		_yjApiSetupMode = mode;
+		SetApiSetupTarget(ApiSetupTarget.Primary);
+		SetApiRepairFlowActive(active: false);
+		_showApiValidationFailedHint = false;
+		_showModelSelectionValidationFailedHint = false;
+		_lastApiValidationFailureHint = "";
+		BeginYjApiCurrentTargetSetup();
+	}
+
+	private void BeginYjApiCurrentTargetSetup()
+	{
+		if (!IsYjApiSetupActive())
+		{
+			ResetYjApiSetup();
+			ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+			return;
+		}
+		DuelSettings settings = DuelSettings.GetSettings();
+		if (settings == null)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置，暂时不能配置 " + CurrentApiDisplayName() + "。"));
+			ShowYjApiSetupMenu();
+			return;
+		}
+		if (_yjApiSetupMode == YjApiSetupMode.SingleGroup && _yjSingleGroupKeyConfirmed)
+		{
+			if (!string.IsNullOrWhiteSpace(GetApiKeyForTarget(settings, _currentApiSetupTarget)))
+			{
+				SetApiUrlForTarget(settings, _currentApiSetupTarget, YjApiBaseUrl);
+				TryPersistMcmSettings(settings);
+				BeginFetchAvailableModelsForSetup();
+				return;
+			}
+			_yjSingleGroupKeyConfirmed = false;
+		}
+		OpenYjApiKeyInput();
+	}
+
+	private void OpenYjApiKeyInput()
+	{
+		try
+		{
+			if (!IsYjApiSetupActive())
+			{
+				ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+				return;
+			}
+			DuelSettings settings = DuelSettings.GetSettings();
+			if (settings == null)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置，暂时不能填写 " + CurrentApiKeyDisplayName() + "。"));
+				ShowYjApiSetupMenu();
+				return;
+			}
+			_activeOnboardingStage = OnboardingUiStage.YjApiKey;
+			_welcomeInProgress = true;
+			bool singleGroup = _yjApiSetupMode == YjApiSetupMode.SingleGroup;
+			string title = singleGroup ? "填写 YJ API 单分组 Key" : "填写 YJ API " + CurrentApiKeyDisplayName();
+			string text = singleGroup
+				? "请输入一个 YJ API Key。确认后会将固定 Base URL 和该 Key 写入主API、前处理API、后处理API、周报与叛乱API；随后会依次拉取四次模型列表并为每条 API 选择模型。"
+				: "请输入当前 " + CurrentApiDisplayName() + " 所属分组的 YJ API Key。确认后只会写入当前 API，并拉取该 Key 可用的模型。";
+			InformationManager.ShowTextInquiry(new TextInquiryData(title, text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "下一步", "返回", delegate(string input)
+			{
+				string text2 = (input ?? "").Trim();
+				if (string.IsNullOrWhiteSpace(text2))
+				{
+					InformationManager.DisplayMessage(new InformationMessage("API Key 不能为空。"));
+					OpenYjApiKeyInput();
+					return;
+				}
+				if (singleGroup)
+				{
+					SetYjApiBaseUrlForAllTargets(settings);
+					SetYjApiKeyForAllTargets(settings, text2);
+					_yjSingleGroupKeyConfirmed = true;
+				}
+				else
+				{
+					SetApiUrlForTarget(settings, _currentApiSetupTarget, YjApiBaseUrl);
+					SetApiKeyForTarget(settings, _currentApiSetupTarget, text2);
+				}
+				TryPersistMcmSettings(settings);
+				_welcomeInProgress = false;
+				_showApiValidationFailedHint = false;
+				_showModelSelectionValidationFailedHint = false;
+				InformationManager.DisplayMessage(new InformationMessage((singleGroup ? "YJ API 单分组 Key" : CurrentApiKeyDisplayName()) + " 已写入 MCM，正在拉取 " + CurrentApiModelDisplayName() + " 可用模型。"));
+				BeginFetchAvailableModelsForSetup();
+			}, delegate
+			{
+				_welcomeInProgress = false;
+				ShowYjApiSetupMenu();
+			}));
+		}
+		catch (Exception ex)
+		{
+			_welcomeInProgress = false;
+			InformationManager.DisplayMessage(new InformationMessage("打开 YJ API Key 输入框失败：" + ex.Message));
+			ShowYjApiSetupMenu();
+		}
+	}
+
+	private void AdvanceYjApiSetupAfterValidation()
+	{
+		if (IsAuxiliaryApiSetupTarget())
+		{
+			DuelSettings settings = DuelSettings.GetSettings();
+			if (settings != null)
+			{
+				settings.UseAuxiliaryRuleApi = true;
+				TryPersistMcmSettings(settings);
+			}
+		}
+		if (_currentApiSetupTarget == ApiSetupTarget.Primary)
+		{
+			SetApiSetupTarget(ApiSetupTarget.Auxiliary);
+			BeginYjApiCurrentTargetSetup();
+			return;
+		}
+		if (_currentApiSetupTarget == ApiSetupTarget.Auxiliary)
+		{
+			SetApiSetupTarget(ApiSetupTarget.ActionPostprocess);
+			BeginYjApiCurrentTargetSetup();
+			return;
+		}
+		if (_currentApiSetupTarget == ApiSetupTarget.ActionPostprocess)
+		{
+			SetApiSetupTarget(ApiSetupTarget.EventAndRebellion);
+			BeginYjApiCurrentTargetSetup();
+			return;
+		}
+		if (_apiOnlySetupFlowActive)
+		{
+			CompleteApiSetupOnlyFlow();
+			return;
+		}
+		ResetYjApiSetup();
+		ShowImportSetupPopup(fromGate: true, ignoreSuppress: true);
 	}
 
 	private void ShowDeepSeekApiKeyOwnershipInquiry(QuickApiPreset preset)
@@ -1509,6 +1876,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 						_apiValidationCancellation = null;
 					}
 					_apiValidationInProgress = false;
+					_pendingApiValidationVersion = num;
 					_pendingApiValidationSuccess = flag;
 					_pendingApiValidationMessage = text ?? "";
 					_pendingApiValidationFailureHint = failureHint ?? "";
@@ -1586,7 +1954,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
 			LlmApiCompat.ApplyAuthenticationHeaders(request, effectiveApiUrl, target.ApiKey);
 			request.Content = new StringContent(LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, requestPayload), Encoding.UTF8, "application/json");
-			HttpResponseMessage response = await DuelSettings.GlobalClient.SendAsync(request, cancellationToken);
+			using HttpResponseMessage response = await DuelSettings.GlobalClient.SendAsync(request, cancellationToken);
 			string responseBody = await response.Content.ReadAsStringAsync();
 			if (response.IsSuccessStatusCode)
 			{
@@ -1663,12 +2031,13 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			SetApiSetupTarget(ApiSetupTarget.Primary);
-			SetApiRepairFlowActive(active: true);
 			if (_welcomeInProgress || _apiValidationInProgress || _baseUrlValidationInProgress || _modelFetchInProgress)
 			{
 				return;
 			}
+			ResetYjApiSetup();
+			SetApiSetupTarget(ApiSetupTarget.Primary);
+			SetApiRepairFlowActive(active: true);
 			_activeOnboardingStage = OnboardingUiStage.Welcome;
 			_welcomeInProgress = true;
 			string text = "周事件自动生成失败，请检查你的 Base URL、API Key、模型名或当前网络环境。";
@@ -1696,12 +2065,13 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			SetApiSetupTarget(ApiSetupTarget.Auxiliary);
-			SetApiRepairFlowActive(active: true);
 			if (_welcomeInProgress || _apiValidationInProgress || _baseUrlValidationInProgress || _modelFetchInProgress)
 			{
 				return;
 			}
+			ResetYjApiSetup();
+			SetApiSetupTarget(ApiSetupTarget.Auxiliary);
+			SetApiRepairFlowActive(active: true);
 			_activeOnboardingStage = OnboardingUiStage.AuxiliaryChoice;
 			_welcomeInProgress = true;
 			DuelSettings settings = DuelSettings.GetSettings();
@@ -1733,12 +2103,13 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			SetApiSetupTarget(ApiSetupTarget.ActionPostprocess);
-			SetApiRepairFlowActive(active: true);
 			if (_welcomeInProgress || _apiValidationInProgress || _baseUrlValidationInProgress || _modelFetchInProgress)
 			{
 				return;
 			}
+			ResetYjApiSetup();
+			SetApiSetupTarget(ApiSetupTarget.ActionPostprocess);
+			SetApiRepairFlowActive(active: true);
 			_activeOnboardingStage = OnboardingUiStage.PostprocessChoice;
 			_welcomeInProgress = true;
 			DuelSettings settings = DuelSettings.GetSettings();
@@ -1778,12 +2149,13 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			SetApiSetupTarget(ApiSetupTarget.EventAndRebellion);
-			SetApiRepairFlowActive(active: true);
 			if (_welcomeInProgress || _apiValidationInProgress || _baseUrlValidationInProgress || _modelFetchInProgress)
 			{
 				return;
 			}
+			ResetYjApiSetup();
+			SetApiSetupTarget(ApiSetupTarget.EventAndRebellion);
+			SetApiRepairFlowActive(active: true);
 			_activeOnboardingStage = OnboardingUiStage.EventRebellionChoice;
 			_welcomeInProgress = true;
 			DuelSettings settings = DuelSettings.GetSettings();
@@ -1815,12 +2187,13 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			SetApiSetupTarget(ApiSetupTarget.Primary);
-			SetApiRepairFlowActive(active: false);
-			if ((!_apiOnlySetupFlowActive && _setupDone) || _welcomeInProgress || _apiValidationInProgress)
+			if ((!_apiOnlySetupFlowActive && _setupDone) || _welcomeInProgress || _apiValidationInProgress || _baseUrlValidationInProgress || _modelFetchInProgress)
 			{
 				return;
 			}
+			ResetYjApiSetup();
+			SetApiSetupTarget(ApiSetupTarget.Primary);
+			SetApiRepairFlowActive(active: false);
 			long ticks = DateTime.UtcNow.Ticks;
 			if (!ignoreSuppress && _suppressWelcomeUntilUtcTicks > ticks)
 			{
@@ -1860,12 +2233,13 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			SetApiSetupTarget(ApiSetupTarget.Auxiliary);
-			SetApiRepairFlowActive(active: false);
-			if ((!_apiOnlySetupFlowActive && _setupDone) || _welcomeInProgress || _apiValidationInProgress)
+			if ((!_apiOnlySetupFlowActive && _setupDone) || _welcomeInProgress || _apiValidationInProgress || _baseUrlValidationInProgress || _modelFetchInProgress)
 			{
 				return;
 			}
+			ResetYjApiSetup();
+			SetApiSetupTarget(ApiSetupTarget.Auxiliary);
+			SetApiRepairFlowActive(active: false);
 			long ticks = DateTime.UtcNow.Ticks;
 			if (!ignoreSuppress && _suppressWelcomeUntilUtcTicks > ticks)
 			{
@@ -1911,12 +2285,13 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			SetApiSetupTarget(ApiSetupTarget.ActionPostprocess);
-			SetApiRepairFlowActive(active: false);
-			if ((!allowWhenSetupDone && !_apiOnlySetupFlowActive && _setupDone) || _welcomeInProgress || _apiValidationInProgress)
+			if ((!allowWhenSetupDone && !_apiOnlySetupFlowActive && _setupDone) || _welcomeInProgress || _apiValidationInProgress || _baseUrlValidationInProgress || _modelFetchInProgress)
 			{
 				return;
 			}
+			ResetYjApiSetup();
+			SetApiSetupTarget(ApiSetupTarget.ActionPostprocess);
+			SetApiRepairFlowActive(active: false);
 			long ticks = DateTime.UtcNow.Ticks;
 			if (!ignoreSuppress && _suppressWelcomeUntilUtcTicks > ticks)
 			{
@@ -1975,6 +2350,11 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private void OpenApiBaseUrlInput()
 	{
+		if (IsYjApiSetupActive())
+		{
+			OpenYjApiKeyInput();
+			return;
+		}
 		try
 		{
 			DuelSettings settings = DuelSettings.GetSettings();
@@ -2028,7 +2408,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				_baseUrlValidationCancellation = cancellationTokenSource;
 				string modelsApiUrl = BuildModelsApiUrl(validatedBaseUrl);
 				using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, modelsApiUrl);
-				HttpResponseMessage httpResponseMessage = await DuelSettings.GlobalClient.SendAsync(request, cancellationTokenSource.Token);
+				using HttpResponseMessage httpResponseMessage = await DuelSettings.GlobalClient.SendAsync(request, cancellationTokenSource.Token);
 				string text2 = await httpResponseMessage.Content.ReadAsStringAsync();
 				if (CanUseBaseUrlStatusCode(httpResponseMessage.StatusCode))
 				{
@@ -2162,6 +2542,11 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private void OpenApiKeyInput()
 	{
+		if (IsYjApiSetupActive())
+		{
+			OpenYjApiKeyInput();
+			return;
+		}
 		try
 		{
 			DuelSettings settings = DuelSettings.GetSettings();
@@ -2241,7 +2626,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				string modelsApiUrl = BuildModelsApiUrl(apiUrl);
 				using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, modelsApiUrl);
 				LlmApiCompat.ApplyAuthenticationHeaders(request, modelsApiUrl, apiKey);
-				HttpResponseMessage httpResponseMessage = await DuelSettings.GlobalClient.SendAsync(request, cancellationTokenSource.Token);
+				using HttpResponseMessage httpResponseMessage = await DuelSettings.GlobalClient.SendAsync(request, cancellationTokenSource.Token);
 				string text2 = await httpResponseMessage.Content.ReadAsStringAsync();
 				if (httpResponseMessage.IsSuccessStatusCode)
 				{
@@ -2278,6 +2663,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 						_modelFetchCancellation = null;
 					}
 					_modelFetchInProgress = false;
+					_pendingModelFetchVersion = num;
 					_pendingModelFetchSuccess = flag;
 					_pendingModelFetchMessage = text ?? "";
 					_pendingModelFetchModels = list ?? new List<string>();
@@ -2313,6 +2699,11 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			_modelFetchVersion++;
 			_modelFetchInProgress = false;
+			_pendingModelFetchResult = false;
+			_pendingModelFetchVersion = 0;
+			_pendingModelFetchSuccess = false;
+			_pendingModelFetchMessage = "";
+			_pendingModelFetchModels = new List<string>();
 			_welcomeInProgress = false;
 			_activeOnboardingStage = OnboardingUiStage.None;
 			try
@@ -2343,9 +2734,13 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			}
 			_welcomeInProgress = true;
 			_activeOnboardingStage = OnboardingUiStage.ModelSelect;
+			bool yjApiSetupActive = IsYjApiSetupActive();
 			List<InquiryElement> list = new List<InquiryElement>();
 			list.Add(new InquiryElement("__manual__", "手动输入模型名称", null));
-			list.Add(new InquiryElement("__base_url__", "重新填写base URL", null));
+			if (!yjApiSetupActive)
+			{
+				list.Add(new InquiryElement("__base_url__", "重新填写base URL", null));
+			}
 			list.Add(new InquiryElement("__api_key__", "重新填写API key", null));
 			foreach (string item in _lastFetchedModelNames.Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase))
 			{
@@ -2376,7 +2771,14 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			{
 				text = text + "\n\n提示：" + _lastModelFetchMessage;
 			}
-			text += "\n\n如果你的base URL或API key填写错误，那你也可以将本菜单的滑条拉到最底部重新返回填写。";
+			if (yjApiSetupActive)
+			{
+				text = text + "\n\n【本通道模型选择建议（仅供参考）】\n" + CurrentYjApiModelRecommendation() + "\n最终选择由你自行决定。\n\nYJ API 中转站使用固定 Base URL；如需更换分组 Key，请选择“重新填写API key”。";
+			}
+			else
+			{
+				text += "\n\n如果你的base URL或API key填写错误，那你也可以将本菜单的滑条拉到最底部重新返回填写。";
+			}
 			MultiSelectionInquiryData data = new MultiSelectionInquiryData(title, text, list, isExitShown: false, 0, 1, "下一步", "返回", delegate(List<InquiryElement> selected)
 			{
 				_welcomeInProgress = false;
@@ -2396,7 +2798,14 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				else if (text2 == "__base_url__")
 				{
 					_showModelSelectionValidationFailedHint = false;
-					OpenApiBaseUrlInput();
+					if (IsYjApiSetupActive())
+					{
+						OpenYjApiKeyInput();
+					}
+					else
+					{
+						OpenApiBaseUrlInput();
+					}
 				}
 				else if (text2 == "__api_key__")
 				{
@@ -2554,7 +2963,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
 				LlmApiCompat.ApplyAuthenticationHeaders(request, effectiveApiUrl, apiKey);
 				request.Content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-				HttpResponseMessage httpResponseMessage = await DuelSettings.GlobalClient.SendAsync(request, cancellationTokenSource.Token);
+				using HttpResponseMessage httpResponseMessage = await DuelSettings.GlobalClient.SendAsync(request, cancellationTokenSource.Token);
 				string text2 = await httpResponseMessage.Content.ReadAsStringAsync();
 				if (httpResponseMessage.IsSuccessStatusCode)
 				{
@@ -2604,6 +3013,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 						_apiValidationCancellation = null;
 					}
 					_apiValidationInProgress = false;
+					_pendingApiValidationVersion = num;
 					_pendingApiValidationSuccess = flag;
 					_pendingApiValidationMessage = text ?? "";
 					_pendingApiValidationFailureHint = failureHint ?? "";
@@ -2671,6 +3081,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	private void CancelApiValidationAndReturnToWelcome()
 	{
 		bool returnToSetupMenu = _apiValidationFlow == ApiValidationFlow.QuickPresetAll || _apiValidationFlow == ApiValidationFlow.ExistingConfigAll;
+		bool returnToModelSelection = _apiValidationReturnToModelSelection;
 		CancelApiValidationCore();
 		if (returnToSetupMenu)
 		{
@@ -2678,7 +3089,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_selectedQuickApiPreset = QuickApiPreset.None;
 			ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
 		}
-		else if (_apiValidationReturnToModelSelection)
+		else if (returnToModelSelection)
 		{
 			ShowModelSelectionPopup();
 		}
@@ -2695,6 +3106,12 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_apiValidationVersion++;
 			_apiValidationInProgress = false;
 			_apiValidationFlow = ApiValidationFlow.Normal;
+			_apiValidationReturnToModelSelection = false;
+			_pendingApiValidationResult = false;
+			_pendingApiValidationVersion = 0;
+			_pendingApiValidationSuccess = false;
+			_pendingApiValidationMessage = "";
+			_pendingApiValidationFailureHint = "";
 			_welcomeInProgress = false;
 			_activeOnboardingStage = OnboardingUiStage.None;
 			try
@@ -2716,20 +3133,24 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			ResetYjApiSetup();
 			_saveAndExitStage = SaveAndExitStage.None;
 			_pendingWelcome = false;
 			_pendingReturnToWelcome = false;
 			_pendingApiValidationResult = false;
+			_pendingApiValidationVersion = 0;
 			_pendingApiValidationSuccess = false;
 			_pendingApiValidationMessage = "";
 			_pendingApiValidationFailureHint = "";
 			_apiValidationFlow = ApiValidationFlow.Normal;
+			_apiValidationReturnToModelSelection = false;
 			_pendingBaseUrlValidationResult = false;
 			_pendingBaseUrlValidationSuccess = false;
 			_pendingBaseUrlValidationMessage = "";
 			_pendingValidatedBaseUrl = "";
 			_lastBaseUrlValidationFailureMessage = "";
 			_pendingModelFetchResult = false;
+			_pendingModelFetchVersion = 0;
 			_pendingModelFetchSuccess = false;
 			_pendingModelFetchMessage = "";
 			_pendingModelFetchModels = new List<string>();
@@ -2917,6 +3338,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			ResetYjApiSetup();
 			_setupDone = true;
 			_activeOnboardingStage = OnboardingUiStage.None;
 			KnowledgeLibraryBehavior knowledgeLibraryBehavior = KnowledgeLibraryBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<KnowledgeLibraryBehavior>();

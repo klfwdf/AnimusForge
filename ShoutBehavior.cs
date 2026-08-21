@@ -244,6 +244,17 @@ public class ShoutBehavior : CampaignBehaviorBase
 		public float ExecuteAtMissionTime = -1f;
 	}
 
+	private sealed class PendingLordsHallMissionEntryAfterSpeech
+	{
+		public Mission Mission;
+		public int AgentIndex;
+		public string SettlementId;
+		public string Reason;
+		public bool WaitForConversationEnd;
+		public bool WaitForPlaybackFinished;
+		public float ExecuteAtMissionTime = -1f;
+	}
+
 	private sealed class PendingSceneGuideReturnAfterSpeech
 	{
 		public int AgentIndex;
@@ -701,6 +712,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 			_parent.UpdatePendingSceneGuideReturnsAfterSpeech();
 			_parent.UpdateSceneGuideArrivalHolds();
 			_parent.UpdatePendingSceneAutonomyRestoresAfterSpeech();
+			_parent.UpdatePendingLordsHallMissionEntryAfterSpeech();
 			_parent.UpdatePendingMeetingReleasesAfterSpeech();
 			_parent.UpdatePendingWorldMapMissionExitsAfterSpeech();
 			_parent.UpdatePendingSceneFollowCommands();
@@ -2119,6 +2131,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private const float SCENE_GUIDE_ARRIVAL_HOLD_FAILSAFE_SECONDS = 90f;
 
+	private const float LORDS_HALL_ENTRY_TTS_FALLBACK_SECONDS = 15f;
+
 	private static readonly FieldInfo FollowAgentBehaviorIdleDistanceField = typeof(FollowAgentBehavior).GetField("_idleDistance", BindingFlags.Instance | BindingFlags.NonPublic);
 
 	private const float PLAYER_DRIVEN_MULTI_SCENE_STARE_HOLD_SECONDS = 60f;
@@ -2324,6 +2338,10 @@ public class ShoutBehavior : CampaignBehaviorBase
 	private readonly Dictionary<int, PendingMeetingReleaseAfterSpeech> _pendingMeetingReleasesAfterSpeech = new Dictionary<int, PendingMeetingReleaseAfterSpeech>();
 
 	private readonly Dictionary<int, PendingWorldMapMissionExitAfterSpeech> _pendingWorldMapMissionExitsAfterSpeech = new Dictionary<int, PendingWorldMapMissionExitAfterSpeech>();
+
+	private PendingLordsHallMissionEntryAfterSpeech _pendingLordsHallMissionEntryAfterSpeech;
+
+	private bool _pendingLordsHallMissionEntryConversationEndHookRegistered;
 
 	private readonly Dictionary<int, PendingSceneGuideReturnAfterSpeech> _pendingSceneGuideReturnsAfterSpeech = new Dictionary<int, PendingSceneGuideReturnAfterSpeech>();
 
@@ -3435,6 +3453,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 				}
 				FlushPendingSceneSummonLaunches(agentIndex, (typingDuration > 0f) ? typingDuration : 0f);
 				FlushPendingSceneGuideLaunches(agentIndex, (typingDuration > 0f) ? typingDuration : 0f);
+				FlushLordsHallMissionEntryAfterSpeech(agentIndex);
 			}
 			catch
 			{
@@ -9209,6 +9228,10 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 
 	private bool TryApplyDeferredScenePostprocessActionTagsDirectly(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, ref string tags, string playerText, string npcReplyText, string chainName, bool replyIsDirectPlayerResponse)
 	{
+		if (TryTriggerNativeConversationOpenLordsHallAction(targetHero, targetCharacter, targetAgentIndex, ref tags))
+		{
+			return true;
+		}
 		if (!HasDeferredDirectGameActionTag(tags))
 		{
 			return false;
@@ -10895,6 +10918,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			ClearPendingCurrentAfefFacts();
 			ClearPendingNativeSceneMechanismActions("mission_ended");
 			ClearPendingNativeSceneTauntFight("mission_ended");
+			_pendingLordsHallMissionEntryAfterSpeech = null;
+			UnregisterPendingLordsHallMissionEntryConversationEndHook();
 			DeactivateMultiSceneMovementSuppression();
 			ClearPendingSceneConversationAttentionRelease();
 			_staringAgents.Clear();
@@ -11359,6 +11384,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		});
 		RunSceneTtsPlaybackFinishedStep("meeting_release", agentIndex, delegate
 		{
+			if (FlushLordsHallMissionEntryAfterSpeech(agentIndex))
+			{
+				return;
+			}
 			FlushMeetingReleaseAfterSpeech(agentIndex);
 			FlushWorldMapMissionExitAfterSpeech(agentIndex);
 		});
@@ -16446,6 +16475,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private bool TryQueueNativeSceneMechanismActionAfterConversationExit(NpcDataPacket npc, List<NpcDataPacket> allNpcData, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, ref string content)
 	{
+		if (ContainsOpenLordsHallActionTag(content))
+		{
+			// OPEN_LORDS_HALL is an immediate scene transition, never an escort follow-up.
+			return false;
+		}
 		string text = ExtractSceneMechanismActionTagsForScene(content);
 		if (npc == null || string.IsNullOrWhiteSpace(text))
 		{
@@ -16689,6 +16723,18 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		Agent agent = agents.FirstOrDefault((Agent a) => a != null && a.Index == npc.AgentIndex);
 		string content = tags;
+		bool openLordsHall = TryTriggerOpenLordsHallAction(npc, agent, ref content);
+		if (openLordsHall)
+		{
+			bool waitForConversationEnd = IsNativeConversationActiveForLordsHallEntry();
+			ScheduleLordsHallMissionEntryAfterSpeech(npc.AgentIndex, null, "native_scene_direct_tag", waitForConversationEnd);
+			if (waitForConversationEnd)
+			{
+				CloseNativeConversationForSceneMechanism("native_scene_open_lords_hall_tag");
+			}
+			Logger.Log("ShoutBehavior", "[NativeConversation] scene mechanism direct result agent=" + npc.AgentIndex + " openLordsHall=True");
+			return true;
+		}
 		bool setsOwnedMassacre = TryProcessSetsOwnedSettlementMassacreActionTags(npc.AgentIndex, ref content);
 		if (setsOwnedMassacre && string.IsNullOrWhiteSpace(content))
 		{
@@ -16715,9 +16761,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		bool stopFollow = TryConsumeSceneFollowStopTag(npc, agent, ref content);
 		bool startFollow = TryConsumeSceneFollowStartTag(npc, agent, ref content);
 		bool endChat = TryConsumeSceneEndChatActionTag(npc, agent, ref content, out sceneSummonConversationSession);
-		bool summon = !string.IsNullOrWhiteSpace(content) && TryTriggerSceneSummonAction(npc, agent, sceneSummonTargets, ref content, out activeSceneSummonRequest);
-		bool guide = !string.IsNullOrWhiteSpace(content) && TryTriggerSceneGuideAction(npc, agent, sceneGuideTargets, sceneSummonTargets, ref content, out activeSceneGuideRequest);
-		bool handled = setsOwnedMassacre || stopFollow || startFollow || endChat || summon || guide;
+		bool summon = !openLordsHall && !string.IsNullOrWhiteSpace(content) && TryTriggerSceneSummonAction(npc, agent, sceneSummonTargets, ref content, out activeSceneSummonRequest);
+		bool guide = !openLordsHall && !string.IsNullOrWhiteSpace(content) && TryTriggerSceneGuideAction(npc, agent, sceneGuideTargets, sceneSummonTargets, ref content, out activeSceneGuideRequest);
+		bool handled = setsOwnedMassacre || openLordsHall || stopFollow || startFollow || endChat || summon || guide;
 		if (!handled)
 		{
 			Logger.Log("ShoutBehavior", "[NativeConversation] scene mechanism direct no-op agent=" + npc.AgentIndex + " tags=" + ((tags ?? "").Replace("\r", "\\r").Replace("\n", "\\n")));
@@ -16746,7 +16792,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			SchedulePreparedSceneGuideLaunch(activeSceneGuideRequest, null, "");
 		}
-		Logger.Log("ShoutBehavior", "[NativeConversation] scene mechanism direct result agent=" + npc.AgentIndex + " setsMassacre=" + setsOwnedMassacre + " stop=" + stopFollow + " start=" + startFollow + " end=" + endChat + " summon=" + summon + " guide=" + guide + " remaining=" + ((content ?? "").Replace("\r", "\\r").Replace("\n", "\\n")));
+		Logger.Log("ShoutBehavior", "[NativeConversation] scene mechanism direct result agent=" + npc.AgentIndex + " openLordsHall=" + openLordsHall + " setsMassacre=" + setsOwnedMassacre + " stop=" + stopFollow + " start=" + startFollow + " end=" + endChat + " summon=" + summon + " guide=" + guide + " remaining=" + ((content ?? "").Replace("\r", "\\r").Replace("\n", "\\n")));
 		return true;
 	}
 
@@ -16770,7 +16816,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private bool TryTriggerNativeConversationOpenLordsHallAction(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, ref string content)
 	{
-		if (string.IsNullOrWhiteSpace(content) || content.IndexOf("[ACTION:OPEN_LORDS_HALL]", StringComparison.OrdinalIgnoreCase) < 0)
+		if (!ContainsOpenLordsHallActionTag(content))
 		{
 			return false;
 		}
@@ -16780,6 +16826,16 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			npc.AgentIndex = targetAgentIndex;
 			Agent agent = (targetAgentIndex >= 0) ? Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex) : null;
 			bool result = TryTriggerOpenLordsHallAction(npc, agent, ref content);
+			if (result)
+			{
+				content = StripActionTagsForSceneSpeech(content);
+				bool waitForConversationEnd = IsNativeConversationActiveForLordsHallEntry();
+				ScheduleLordsHallMissionEntryAfterSpeech(targetAgentIndex, null, "native_conversation_tag", waitForConversationEnd);
+				if (waitForConversationEnd)
+				{
+					CloseNativeConversationForSceneMechanism("native_conversation_open_lords_hall_tag");
+				}
+			}
 			Logger.Log("ShoutBehavior", "[NativeConversation] open lords hall tag handled=" + result + " target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown") + " agentIndex=" + targetAgentIndex);
 			return result;
 		}
@@ -16909,6 +16965,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		targetHero = targetHero ?? targetCharacter?.HeroObject;
 		int resolvedTargetAgentIndex = targetAgentIndexOverride >= 0 ? targetAgentIndexOverride : TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
+		if (TryTriggerNativeConversationOpenLordsHallAction(targetHero, targetCharacter, resolvedTargetAgentIndex, ref content))
+		{
+			return worldMapResult;
+		}
 		if (!IsNativeConversationResponseTargetAvailableForActionDispatch(resolvedTargetAgentIndex, targetHero, targetCharacter, out string unavailableReason))
 		{
 			Logger.Log("ShoutBehavior", "[NativeConversation] dropped postprocess response because target is unavailable target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown") + " agentIndex=" + resolvedTargetAgentIndex + " reason=" + unavailableReason);
@@ -17611,6 +17671,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		string result = content ?? "";
 		int targetAgentIndex = npc?.AgentIndex ?? (-1);
+		if (TryTriggerNativeConversationOpenLordsHallAction(targetHero, targetCharacter, targetAgentIndex, ref result))
+		{
+			return new NativeConversationGameActionResult
+			{
+				Content = result ?? "",
+				WorldMapResult = new WorldMapPartyCommandBehavior.WorldMapOrderApplyResult()
+			};
+		}
 		if (!IsNativeConversationResponseTargetAvailableForActionDispatch(targetAgentIndex, targetHero, targetCharacter, out string unavailableReason))
 		{
 			Logger.Log("ShoutBehavior", "[NativeConversation] dropped queued postprocess actions because target is unavailable target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npc?.Name ?? "unknown") + " agentIndex=" + targetAgentIndex + " reason=" + unavailableReason);
@@ -20526,41 +20594,32 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		try
 		{
 			Settlement settlement = Settlement.CurrentSettlement;
-			if (npc == null || settlement == null || !settlement.IsTown)
+			Mission mission = Mission.Current;
+			LocationComplex locationComplex = LocationComplex.Current;
+			Location currentLocation = CampaignMission.Current?.Location;
+			if (settlement == null || !settlement.IsTown || mission == null || locationComplex == null || currentLocation == null)
 			{
+				Logger.Log("ShoutBehavior", "[LordsHallAccess] ignored OPEN_LORDS_HALL outside an active town-center scene. speaker=" + (npc?.Name ?? agent?.Name?.ToString() ?? "unknown"));
 				return false;
 			}
-			Agent agent2 = agent ?? Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == npc.AgentIndex);
-			CharacterObject characterObject = agent2?.Character as CharacterObject;
-			if (npc.IsHero || characterObject == null || !characterObject.IsSoldier || !IsLordsHallGuardAgent(agent2))
+			if (!string.Equals(currentLocation.StringId, "center", StringComparison.OrdinalIgnoreCase))
 			{
+				Logger.Log("ShoutBehavior", "[LordsHallAccess] ignored OPEN_LORDS_HALL outside town center. location=" + (currentLocation.StringId ?? "") + " speaker=" + (npc?.Name ?? agent?.Name?.ToString() ?? "unknown"));
 				return false;
 			}
-			var settlementAccessModel = Campaign.Current?.Models?.SettlementAccessModel;
-			if (settlementAccessModel == null)
+			Location lordsHall = locationComplex.GetLocationWithId("lordshall");
+			Location center = locationComplex.GetLocationWithId("center");
+			if (lordsHall == null || center == null || Campaign.Current?.GameMenuManager == null)
 			{
+				Logger.Log("ShoutBehavior", "[LordsHallAccess] ignored OPEN_LORDS_HALL because the location transition is unavailable. settlement=" + (settlement.StringId ?? "") + " hasHall=" + (lordsHall != null) + " hasCenter=" + (center != null));
 				return false;
 			}
-			bool disableOption = false;
-			TaleWorlds.Localization.TextObject disabledText = null;
-			if (settlementAccessModel.CanMainHeroAccessLocation(settlement, "lordshall", out disableOption, out disabledText))
-			{
-				return true;
-			}
-			SettlementAccessModel.AccessDetails accessDetails = default(SettlementAccessModel.AccessDetails);
-			settlementAccessModel.CanMainHeroEnterLordsHall(settlement, out accessDetails);
-			int bribeToEnterLordsHall = Campaign.Current?.Models?.BribeCalculationModel?.GetBribeToEnterLordsHall(settlement) ?? 0;
-			string text = MyBehavior.BuildRuleTargetKeyForExternal(null, characterObject, npc.AgentIndex);
-			int recentNonHeroGoldForRuleTarget = GetRecentNonHeroGoldForRuleTarget(text);
-			if (accessDetails.AccessLevel == SettlementAccessModel.AccessLevel.LimitedAccess && accessDetails.LimitedAccessSolution == SettlementAccessModel.LimitedAccessSolution.Bribe && bribeToEnterLordsHall > 0 && recentNonHeroGoldForRuleTarget > 0)
-			{
-				settlement.BribePaid += bribeToEnterLordsHall;
-				ConsumeRecentNonHeroGoldForRuleTarget(text, recentNonHeroGoldForRuleTarget);
-				return true;
-			}
+			Logger.Log("ShoutBehavior", "[LordsHallAccess] accepted OPEN_LORDS_HALL. settlement=" + (settlement.StringId ?? "") + " speaker=" + (npc?.Name ?? agent?.Name?.ToString() ?? "unknown"));
+			return true;
 		}
-		catch
+		catch (Exception ex)
 		{
+			Logger.Log("ShoutBehavior", "[LordsHallAccess] OPEN_LORDS_HALL validation failed: " + ex.Message);
 		}
 		return false;
 	}
@@ -20569,15 +20628,18 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		try
 		{
-			if (string.IsNullOrWhiteSpace(content) || content.IndexOf("[ACTION:OPEN_LORDS_HALL]", StringComparison.OrdinalIgnoreCase) < 0)
+			if (!ContainsOpenLordsHallActionTag(content))
 			{
 				return false;
 			}
-			content = content.Replace("[ACTION:OPEN_LORDS_HALL]", "").Trim();
-			return TryUnlockLordsHallForNpc(npc, agent);
+			content = StripLordsHallAccessActionTagsForScene(content);
+			bool result = TryUnlockLordsHallForNpc(npc, agent);
+			Logger.Log("ShoutBehavior", "[LordsHallAccess] OPEN_LORDS_HALL parsed handled=" + result + " speaker=" + (npc?.Name ?? agent?.Name?.ToString() ?? "unknown"));
+			return result;
 		}
-		catch
+		catch (Exception ex)
 		{
+			Logger.Log("ShoutBehavior", "[LordsHallAccess] OPEN_LORDS_HALL parse failed: " + ex.Message);
 			return false;
 		}
 	}
@@ -23370,6 +23432,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return text2.Trim();
 	}
 
+	private static bool ContainsOpenLordsHallActionTag(string text)
+	{
+		return !string.IsNullOrWhiteSpace(text) && Regex.IsMatch(text, "\\[ACTION:OPEN_LORDS_HALL\\]", RegexOptions.IgnoreCase);
+	}
+
 	private static string StripSceneMechanismActionTagsForScene(string text)
 	{
 		string text2 = text ?? "";
@@ -25210,6 +25277,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			_pendingInteractionTimeoutArms.Clear();
 			ClearPendingNativeSceneMechanismActions("reset_runtime:" + (reason ?? ""));
 			ClearPendingNativeSceneTauntFight("reset_runtime:" + (reason ?? ""));
+			_pendingLordsHallMissionEntryAfterSpeech = null;
+			UnregisterPendingLordsHallMissionEntryConversationEndHook();
 			Action result;
 			while (_mainThreadActions.TryDequeue(out result))
 			{
@@ -27086,6 +27155,19 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 							Logger.Log("ShoutBehavior", $"[ImmediateSceneReaction] discarded stale queued speech targetAgentIndex={matchedNpc?.AgentIndex ?? (-1)}");
 							return;
 						}
+						if (ContainsOpenLordsHallActionTag(content))
+						{
+							if (!IsSceneConversationEpochCurrent(requiredConversationEpoch))
+							{
+								return;
+							}
+							Agent openLordsHallAgent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == (matchedNpc?.AgentIndex ?? (-1)));
+							if (TryTriggerOpenLordsHallAction(matchedNpc, openLordsHallAgent, ref content))
+							{
+								ShowOpenLordsHallResponseAndScheduleEntry(matchedNpc, openLordsHallAgent, allNpcData, content, commitHistory, afterSpeechInfoMessage);
+								return;
+							}
+						}
 						bool hasDeferredIssueActionTag = allowPlayerDirectedActions && !string.IsNullOrWhiteSpace(content) && (content.IndexOf("[ACTION:ISSUE_ACCEPT_SELF]", StringComparison.OrdinalIgnoreCase) >= 0 || content.IndexOf("[ACTION:ISSUE_ACCEPT_ALT:", StringComparison.OrdinalIgnoreCase) >= 0 || content.IndexOf("[ACTION:QUEST_TURN_IN]", StringComparison.OrdinalIgnoreCase) >= 0);
 						if (hasDeferredIssueActionTag)
 						{
@@ -27133,6 +27215,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						bool flagSceneTaunt = false;
 						bool flagSceneTaunt2 = false;
 						bool flagNpcSurrender = false;
+						SceneSpeechPlaybackInfo sceneSpeechPlaybackInfo = null;
 						WorldMapPartyCommandBehavior.WorldMapOrderApplyResult worldMapResult = new WorldMapPartyCommandBehavior.WorldMapOrderApplyResult();
 						try
 						{
@@ -27364,10 +27447,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						}
 						if (!string.IsNullOrWhiteSpace(content))
 						{
-							bool flag2 = allowPlayerDirectedActions && !flagNpcSurrender && !flag && !flagSceneTaunt && !flagMeetingRelease && ShoutUtils.TryTriggerDuelAction(matchedNpc, playerDirectedActionText, ref content);
-							bool flag3 = allowPlayerDirectedActions && !flagNpcSurrender && !flagSceneTaunt && !flagMeetingRelease && TryTriggerOpenLordsHallAction(matchedNpc, agent, ref content);
-							bool flag6 = allowPlayerDirectedActions && !flagNpcSurrender && !flagSceneTaunt && !flagMeetingRelease && TryTriggerSceneSummonAction(matchedNpc, agent, sceneSummonTargets, ref content, out activeSceneSummonRequest);
-							bool flag10 = allowPlayerDirectedActions && !flagNpcSurrender && !flagSceneTaunt && !flagMeetingRelease && TryTriggerSceneGuideAction(matchedNpc, agent, sceneGuideTargets, sceneSummonTargets, ref content, out activeSceneGuideRequest);
+							bool flag3 = TryTriggerOpenLordsHallAction(matchedNpc, agent, ref content);
+							bool flag2 = !flag3 && allowPlayerDirectedActions && !flagNpcSurrender && !flag && !flagSceneTaunt && !flagMeetingRelease && ShoutUtils.TryTriggerDuelAction(matchedNpc, playerDirectedActionText, ref content);
+							bool flag6 = !flag3 && allowPlayerDirectedActions && !flagNpcSurrender && !flagSceneTaunt && !flagMeetingRelease && TryTriggerSceneSummonAction(matchedNpc, agent, sceneSummonTargets, ref content, out activeSceneSummonRequest);
+							bool flag10 = !flag3 && allowPlayerDirectedActions && !flagNpcSurrender && !flagSceneTaunt && !flagMeetingRelease && TryTriggerSceneGuideAction(matchedNpc, agent, sceneGuideTargets, sceneSummonTargets, ref content, out activeSceneGuideRequest);
 							if (!string.IsNullOrWhiteSpace(content))
 							{
 								if (!IsSceneConversationEpochCurrent(requiredConversationEpoch))
@@ -27383,7 +27466,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 									RefreshActiveInteractionTimeout(matchedNpc, interactionParticipantCount, interactionTimeoutSeconds);
 								}
 								bool suppressInteractionTimeoutArm = interactionParticipantCount > 1 && interactionTimeoutSeconds <= 0f;
-								SceneSpeechPlaybackInfo sceneSpeechPlaybackInfo = ShowNpcSpeechOutput(matchedNpc, agent, historyText, allowTts: true, attachTtsToSceneAgent: true, suppressInteractionTimeoutArm);
+								sceneSpeechPlaybackInfo = ShowNpcSpeechOutput(matchedNpc, agent, historyText, allowTts: true, attachTtsToSceneAgent: true, suppressInteractionTimeoutArm);
 								if (!string.IsNullOrWhiteSpace(afterSpeechInfoMessage))
 								{
 									InformationManager.DisplayMessage(new InformationMessage(afterSpeechInfoMessage, new Color(1f, 0.95f, 0.25f)));
@@ -27459,6 +27542,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 							}
 							if (flag3)
 							{
+								ScheduleLordsHallMissionEntryAfterSpeech(matchedNpc.AgentIndex, sceneSpeechPlaybackInfo, "scene_tag");
 								return;
 							}
 							else if (flag6 && activeSceneSummonRequest != null && string.IsNullOrWhiteSpace(content))
@@ -35828,6 +35912,185 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		LordEncounterBehavior.TryExecuteMeetingPlayerRelease(value.TargetHero, value.EncounterParty, "meeting_release_player_after_speech");
 	}
 
+	private void ShowOpenLordsHallResponseAndScheduleEntry(NpcDataPacket npc, Agent agent, List<NpcDataPacket> allNpcData, string content, bool commitHistory, string afterSpeechInfoMessage)
+	{
+		int agentIndex = npc?.AgentIndex ?? agent?.Index ?? -1;
+		string visibleContent = StripActionTagsForSceneSpeech(content);
+		string historyText = SanitizeSceneSpeechText(visibleContent);
+		string fullHistoryText = PrepareSceneHistorySpeechText(visibleContent);
+		SceneSpeechPlaybackInfo playbackInfo = null;
+		if (npc != null && CanAgentParticipateInSceneSpeech(agent) && !string.IsNullOrWhiteSpace(historyText))
+		{
+			playbackInfo = ShowNpcSpeechOutput(npc, agent, historyText, allowTts: true, attachTtsToSceneAgent: true, suppressInteractionTimeoutArm: true);
+			if (commitHistory && !string.IsNullOrWhiteSpace(fullHistoryText))
+			{
+				RecordResponseForAllNearbySafe(allNpcData, npc.AgentIndex, npc.Name, fullHistoryText);
+				PersistNpcSpeechToNamedHeroes(npc.AgentIndex, npc.Name, fullHistoryText, allNpcData);
+			}
+		}
+		if (!string.IsNullOrWhiteSpace(afterSpeechInfoMessage))
+		{
+			try
+			{
+				InformationManager.DisplayMessage(new InformationMessage(afterSpeechInfoMessage, new Color(1f, 0.95f, 0.25f)));
+			}
+			catch
+			{
+			}
+		}
+		ScheduleLordsHallMissionEntryAfterSpeech(agentIndex, playbackInfo, "scene_tag_priority");
+	}
+
+	private void ScheduleLordsHallMissionEntryAfterSpeech(int agentIndex, SceneSpeechPlaybackInfo playbackInfo, string reason, bool waitForConversationEnd = false)
+	{
+		Mission mission = Mission.Current;
+		Settlement settlement = Settlement.CurrentSettlement;
+		if (mission == null || settlement == null || !settlement.IsTown)
+		{
+			Logger.Log("ShoutBehavior", "[LordsHallAccess] entry schedule skipped because the town mission is no longer active. reason=" + (reason ?? ""));
+			return;
+		}
+		float delay = Math.Max(0.25f, playbackInfo?.VisualDurationSeconds ?? 0f);
+		bool waitForNativeConversation = waitForConversationEnd && IsNativeConversationActiveForLordsHallEntry();
+		bool waitForPlayback = !waitForNativeConversation && agentIndex >= 0 && playbackInfo != null && playbackInfo.TtsAccepted && playbackInfo.WaitForPlaybackFinished;
+		float fallbackDelay = waitForPlayback ? Math.Max(LORDS_HALL_ENTRY_TTS_FALLBACK_SECONDS, delay + 3f) : delay;
+		UnregisterPendingLordsHallMissionEntryConversationEndHook();
+		_pendingLordsHallMissionEntryAfterSpeech = new PendingLordsHallMissionEntryAfterSpeech
+		{
+			Mission = mission,
+			AgentIndex = agentIndex,
+			SettlementId = settlement.StringId ?? "",
+			Reason = reason ?? "",
+			WaitForConversationEnd = waitForNativeConversation,
+			WaitForPlaybackFinished = waitForPlayback,
+			ExecuteAtMissionTime = mission.CurrentTime + fallbackDelay
+		};
+		if (waitForNativeConversation)
+		{
+			RegisterPendingLordsHallMissionEntryConversationEndHook();
+		}
+		Logger.Log("ShoutBehavior", "[LordsHallAccess] entry scheduled after speech. agent=" + agentIndex + " settlement=" + (settlement.StringId ?? "") + " waitForConversationEnd=" + waitForNativeConversation + " waitForPlayback=" + waitForPlayback + " delay=" + delay.ToString("F2") + " fallback=" + fallbackDelay.ToString("F2") + " reason=" + (reason ?? ""));
+	}
+
+	private static bool IsNativeConversationActiveForLordsHallEntry()
+	{
+		try
+		{
+			ConversationManager conversationManager = Campaign.Current?.ConversationManager;
+			return conversationManager != null && (conversationManager.IsConversationInProgress || conversationManager.IsConversationFlowActive);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private void RegisterPendingLordsHallMissionEntryConversationEndHook()
+	{
+		try
+		{
+			ConversationManager conversationManager = Campaign.Current?.ConversationManager;
+			if (conversationManager == null)
+			{
+				return;
+			}
+			conversationManager.ConversationEndOneShot -= OnPendingLordsHallMissionEntryConversationEnded;
+			conversationManager.ConversationEndOneShot += OnPendingLordsHallMissionEntryConversationEnded;
+			_pendingLordsHallMissionEntryConversationEndHookRegistered = true;
+			Logger.Log("ShoutBehavior", "[LordsHallAccess] registered native conversation-end transition hook.");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ShoutBehavior", "[LordsHallAccess] failed to register native conversation-end transition hook: " + ex.Message);
+		}
+	}
+
+	private void UnregisterPendingLordsHallMissionEntryConversationEndHook()
+	{
+		if (!_pendingLordsHallMissionEntryConversationEndHookRegistered)
+		{
+			return;
+		}
+		try
+		{
+			ConversationManager conversationManager = Campaign.Current?.ConversationManager;
+			if (conversationManager != null)
+			{
+				conversationManager.ConversationEndOneShot -= OnPendingLordsHallMissionEntryConversationEnded;
+			}
+		}
+		catch
+		{
+		}
+		_pendingLordsHallMissionEntryConversationEndHookRegistered = false;
+	}
+
+	private void OnPendingLordsHallMissionEntryConversationEnded()
+	{
+		_pendingLordsHallMissionEntryConversationEndHookRegistered = false;
+		PendingLordsHallMissionEntryAfterSpeech pending = _pendingLordsHallMissionEntryAfterSpeech;
+		if (pending == null || !pending.WaitForConversationEnd)
+		{
+			return;
+		}
+		Logger.Log("ShoutBehavior", "[LordsHallAccess] native conversation ended; entering lordshall.");
+		ExecutePendingLordsHallMissionEntry(pending);
+	}
+
+	private bool FlushLordsHallMissionEntryAfterSpeech(int agentIndex)
+	{
+		PendingLordsHallMissionEntryAfterSpeech pending = _pendingLordsHallMissionEntryAfterSpeech;
+		if (pending == null || pending.WaitForConversationEnd || !pending.WaitForPlaybackFinished || pending.AgentIndex != agentIndex)
+		{
+			return false;
+		}
+		ExecutePendingLordsHallMissionEntry(pending);
+		return true;
+	}
+
+	private void ExecutePendingLordsHallMissionEntry(PendingLordsHallMissionEntryAfterSpeech pending)
+	{
+		if (pending == null || !ReferenceEquals(_pendingLordsHallMissionEntryAfterSpeech, pending))
+		{
+			return;
+		}
+		_pendingLordsHallMissionEntryAfterSpeech = null;
+		UnregisterPendingLordsHallMissionEntryConversationEndHook();
+		try
+		{
+			Mission mission = Mission.Current;
+			Settlement settlement = Settlement.CurrentSettlement;
+			LocationComplex locationComplex = LocationComplex.Current;
+			Location currentLocation = CampaignMission.Current?.Location;
+			if (mission == null || !ReferenceEquals(mission, pending.Mission) || settlement == null || !settlement.IsTown || locationComplex == null || currentLocation == null)
+			{
+				Logger.Log("ShoutBehavior", "[LordsHallAccess] entry cancelled because the scene changed. reason=" + (pending.Reason ?? ""));
+				return;
+			}
+			if (!string.Equals(settlement.StringId ?? "", pending.SettlementId ?? "", StringComparison.OrdinalIgnoreCase)
+				|| !string.Equals(currentLocation.StringId, "center", StringComparison.OrdinalIgnoreCase))
+			{
+				Logger.Log("ShoutBehavior", "[LordsHallAccess] entry cancelled because the settlement or source location changed. expectedSettlement=" + (pending.SettlementId ?? "") + " actualSettlement=" + (settlement.StringId ?? "") + " location=" + (currentLocation.StringId ?? ""));
+				return;
+			}
+			Location lordsHall = locationComplex.GetLocationWithId("lordshall");
+			Location center = locationComplex.GetLocationWithId("center");
+			if (lordsHall == null || center == null || Campaign.Current?.GameMenuManager == null)
+			{
+				Logger.Log("ShoutBehavior", "[LordsHallAccess] entry cancelled because the lordshall transition is unavailable. settlement=" + (settlement.StringId ?? ""));
+				return;
+			}
+			Campaign.Current.GameMenuManager.NextLocation = lordsHall;
+			Campaign.Current.GameMenuManager.PreviousLocation = center;
+			mission.EndMission();
+			Logger.Log("ShoutBehavior", "[LordsHallAccess] entered lordshall from OPEN_LORDS_HALL. settlement=" + (settlement.StringId ?? "") + " agent=" + pending.AgentIndex + " reason=" + (pending.Reason ?? ""));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ShoutBehavior", "[LordsHallAccess] entry transition failed: " + ex.Message);
+		}
+	}
+
 	private void ScheduleWorldMapMissionExitAfterSpeech(int agentIndex, SceneSpeechPlaybackInfo playbackInfo)
 	{
 		Mission mission = Mission.Current;
@@ -36131,6 +36394,41 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		foreach (int item in list)
 		{
 			FlushMeetingReleaseAfterSpeech(item);
+		}
+	}
+
+	private void UpdatePendingLordsHallMissionEntryAfterSpeech()
+	{
+		PendingLordsHallMissionEntryAfterSpeech pending = _pendingLordsHallMissionEntryAfterSpeech;
+		if (pending == null)
+		{
+			return;
+		}
+		Mission mission = Mission.Current;
+		if (mission == null || !ReferenceEquals(mission, pending.Mission))
+		{
+			_pendingLordsHallMissionEntryAfterSpeech = null;
+			UnregisterPendingLordsHallMissionEntryConversationEndHook();
+			Logger.Log("ShoutBehavior", "[LordsHallAccess] cleared stale pending entry because the mission changed.");
+			return;
+		}
+		if (pending.WaitForConversationEnd)
+		{
+			if (IsNativeConversationActiveForLordsHallEntry())
+			{
+				return;
+			}
+			Logger.Log("ShoutBehavior", "[LordsHallAccess] native conversation-end hook fallback entering lordshall.");
+			ExecutePendingLordsHallMissionEntry(pending);
+			return;
+		}
+		if (pending.ExecuteAtMissionTime >= 0f && mission.CurrentTime >= pending.ExecuteAtMissionTime)
+		{
+			if (pending.WaitForPlaybackFinished)
+			{
+				Logger.Log("ShoutBehavior", "[LordsHallAccess] TTS completion fallback entering lordshall. agent=" + pending.AgentIndex);
+			}
+			ExecutePendingLordsHallMissionEntry(pending);
 		}
 	}
 
