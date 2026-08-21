@@ -10,15 +10,15 @@ public readonly struct SiegePostprocessRuleEligibilityFacts
         bool destructiveLocked,
         bool soldierAppeasementRequired,
         bool soldierAppeasementApplied,
+        TownDialogueRole dialogueRole,
         bool isAlliedSoldier,
-        bool isCivilian,
         bool replyIsDirectPlayerResponse)
     {
         DestructiveLocked = destructiveLocked;
         SoldierAppeasementRequired = soldierAppeasementRequired;
         SoldierAppeasementApplied = soldierAppeasementApplied;
+        DialogueRole = dialogueRole;
         IsAlliedSoldier = isAlliedSoldier;
-        IsCivilian = isCivilian;
         ReplyIsDirectPlayerResponse = replyIsDirectPlayerResponse;
     }
 
@@ -28,9 +28,9 @@ public readonly struct SiegePostprocessRuleEligibilityFacts
 
     public bool SoldierAppeasementApplied { get; }
 
-    public bool IsAlliedSoldier { get; }
+    public TownDialogueRole DialogueRole { get; }
 
-    public bool IsCivilian { get; }
+    public bool IsAlliedSoldier { get; }
 
     public bool ReplyIsDirectPlayerResponse { get; }
 }
