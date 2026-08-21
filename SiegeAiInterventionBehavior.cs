@@ -494,6 +494,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	public override void SyncData(IDataStore dataStore)
 	{
+		GcczTownRuleMemoryRuntimeBridge.SyncData(dataStore);
 		CastleAftermathPrisonerTrustRuntimeBridge.SyncData(dataStore);
 		CastleAftermathSettlementRuntimeBridge.SyncData(dataStore);
 		CastleAftermathLordRecruitmentRuntimeBridge.SyncData(dataStore);
@@ -607,6 +608,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private void OnNewGameCreated(CampaignGameStarter starter)
 	{
+		GcczTownRuleMemoryRuntimeBridge.ClearForNewGame();
 		CastleAftermathPrisonerTrustRuntimeBridge.ClearForNewGame();
 		CastleAftermathSettlementRuntimeBridge.ClearForNewGame();
 		CastleAftermathLordRecruitmentRuntimeBridge.ClearForNewGame();
@@ -2861,6 +2863,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				CastleAftermathLordDuelRuntimeBridge.PlayerCarriesRangedWeapon(),
 				CastleAftermathLordDuelRuntimeBridge.PlayerWieldsRangedWeapon()));
 		}
+		memoryContext = AppendRuntimeContext(
+			memoryContext,
+			GcczTownRuleMemoryRuntimeBridge.BuildPromptContext(activeSettlement, _previousSettlementOwnerClan, IsActiveInCurrentMission()));
 		memoryContext = AppendRuntimeContext(memoryContext, BuildPlayerCommanderRuntimeContext(ordinaryAlliedSoldier, civilian));
 		return SiegeRuntimePromptProfile.Build(new SiegeRuntimePromptFacts(
 			settlementName,
@@ -3255,9 +3260,14 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			bool destructiveAllowed = IsDestructiveInterventionAllowed();
 			string currentOutcome = SiegePostprocessOutcomeTextBuilder.Build(BuildPostprocessOutcomeFacts());
 			string gatherContext = BuildCivilianGatherRuntimeContext(Mission.Current);
-			string memoryContext = AppendRuntimeContext(
-				BuildInterventionMemoryContext(SelectInterventionMemoryAudience(dialogueRole, alliedSoldier)),
-				BuildPlayerCommanderRuntimeContext(ordinaryAlliedSoldier, civilian));
+			string memoryContext = BuildInterventionMemoryContext(SelectInterventionMemoryAudience(dialogueRole, alliedSoldier));
+			memoryContext = AppendRuntimeContext(
+				memoryContext,
+				GcczTownRuleMemoryRuntimeBridge.BuildPromptContext(
+					ResolveCurrentSettlement(),
+					_previousSettlementOwnerClan,
+					IsActiveInCurrentMission()));
+			memoryContext = AppendRuntimeContext(memoryContext, BuildPlayerCommanderRuntimeContext(ordinaryAlliedSoldier, civilian));
 			var facts = new SiegePostprocessContextFacts(
 				settlementName: _activeSettlementName,
 				currentOutcome: currentOutcome,
@@ -7833,6 +7843,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			CultureObject oldCulture = settlement.Culture;
 			settlement.Culture = targetCulture;
+			GcczTownRuleMemoryRuntimeBridge.RefreshAfterRuntimeTransition(
+				settlement,
+				_previousSettlementOwnerClan,
+				IsActiveInCurrentMission(),
+				"culture_change");
 			int boundVillagesChanged = 0;
 			try
 			{
@@ -13840,6 +13855,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				SiegeAftermathAction.ApplyAftermath(attackerParty, settlement, aftermath, previousOwner, contributions);
 				ApplySoldierAppeasementMoralePenaltyIfNeeded(aftermath);
 			}
+			GcczTownRuleMemoryRuntimeBridge.RefreshAfterRuntimeTransition(
+				settlement,
+				previousOwner,
+				IsActiveInCurrentMission(),
+				"aftermath_finalized");
 			if (aftermath == SiegeAftermathAction.SiegeAftermath.Devastate)
 			{
 				if (_culturalRepopulationRequested)

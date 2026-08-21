@@ -32,6 +32,28 @@ public sealed class TownPromptTextCatalog
 
     public string NoAdditionalMemory { get; set; }
 
+    public string SettlementRuleMemoryCurrentTemplate { get; set; }
+
+    public string SettlementRuleMemoryPersonalityTemplate { get; set; }
+
+    public string SettlementRuleMemoryPreviousTemplate { get; set; }
+
+    public string SettlementRuleMemoryPreviousCultureTemplate { get; set; }
+
+    public string SettlementRuleMemoryUnknownRuler { get; set; }
+
+    public string SettlementRuleMemoryUnknownCulture { get; set; }
+
+    public string SettlementRuleMemoryDurationLessThanDay { get; set; }
+
+    public string SettlementRuleMemoryDurationAtLeastTwoYears { get; set; }
+
+    public string SettlementRuleMemoryDurationDaysTemplate { get; set; }
+
+    public string SettlementRuleMemoryDurationWeeksTemplate { get; set; }
+
+    public string SettlementRuleMemoryDurationYearsTemplate { get; set; }
+
     public string StateSectionTitle { get; set; }
 
     public string DefaultState { get; set; }
@@ -120,6 +142,17 @@ public sealed class TownPromptTextCatalog
             PersistentMemoryInstruction = Pick(source.PersistentMemoryInstruction, fallback.PersistentMemoryInstruction),
             SceneLocalMemoryInstruction = Pick(source.SceneLocalMemoryInstruction, fallback.SceneLocalMemoryInstruction),
             NoAdditionalMemory = Pick(source.NoAdditionalMemory, fallback.NoAdditionalMemory),
+            SettlementRuleMemoryCurrentTemplate = Pick(source.SettlementRuleMemoryCurrentTemplate, fallback.SettlementRuleMemoryCurrentTemplate),
+            SettlementRuleMemoryPersonalityTemplate = Pick(source.SettlementRuleMemoryPersonalityTemplate, fallback.SettlementRuleMemoryPersonalityTemplate),
+            SettlementRuleMemoryPreviousTemplate = Pick(source.SettlementRuleMemoryPreviousTemplate, fallback.SettlementRuleMemoryPreviousTemplate),
+            SettlementRuleMemoryPreviousCultureTemplate = Pick(source.SettlementRuleMemoryPreviousCultureTemplate, fallback.SettlementRuleMemoryPreviousCultureTemplate),
+            SettlementRuleMemoryUnknownRuler = Pick(source.SettlementRuleMemoryUnknownRuler, fallback.SettlementRuleMemoryUnknownRuler),
+            SettlementRuleMemoryUnknownCulture = Pick(source.SettlementRuleMemoryUnknownCulture, fallback.SettlementRuleMemoryUnknownCulture),
+            SettlementRuleMemoryDurationLessThanDay = Pick(source.SettlementRuleMemoryDurationLessThanDay, fallback.SettlementRuleMemoryDurationLessThanDay),
+            SettlementRuleMemoryDurationAtLeastTwoYears = Pick(source.SettlementRuleMemoryDurationAtLeastTwoYears, fallback.SettlementRuleMemoryDurationAtLeastTwoYears),
+            SettlementRuleMemoryDurationDaysTemplate = Pick(source.SettlementRuleMemoryDurationDaysTemplate, fallback.SettlementRuleMemoryDurationDaysTemplate),
+            SettlementRuleMemoryDurationWeeksTemplate = Pick(source.SettlementRuleMemoryDurationWeeksTemplate, fallback.SettlementRuleMemoryDurationWeeksTemplate),
+            SettlementRuleMemoryDurationYearsTemplate = Pick(source.SettlementRuleMemoryDurationYearsTemplate, fallback.SettlementRuleMemoryDurationYearsTemplate),
             StateSectionTitle = Pick(source.StateSectionTitle, fallback.StateSectionTitle),
             DefaultState = Pick(source.DefaultState, fallback.DefaultState),
             PlunderState = Pick(source.PlunderState, fallback.PlunderState),
@@ -180,6 +213,17 @@ public sealed class TownPromptTextCatalog
             PersistentMemoryInstruction = "Use named AF personal memory, but current GCCZ facts override conflicting routine impressions.",
             SceneLocalMemoryInstruction = "Use current scene memory only. Do not retain it after scene exit.",
             NoAdditionalMemory = "No additional GCCZ event memory is available. Do not invent completed actions.",
+            SettlementRuleMemoryCurrentTemplate = "Town rule memory: {ruler} has governed {settlement} for {duration}; the current ruling culture is {culture}.",
+            SettlementRuleMemoryPersonalityTemplate = "Ruler personality recorded by AF: {personality}.",
+            SettlementRuleMemoryPreviousTemplate = "Previous rule: {ruler}, {culture} culture, for {duration}.",
+            SettlementRuleMemoryPreviousCultureTemplate = "Latest culture transition: {culture} culture was replaced while {ruler} remained ruler.",
+            SettlementRuleMemoryUnknownRuler = "an unrecorded ruler",
+            SettlementRuleMemoryUnknownCulture = "an unrecorded culture",
+            SettlementRuleMemoryDurationLessThanDay = "less than one day",
+            SettlementRuleMemoryDurationAtLeastTwoYears = "at least two years",
+            SettlementRuleMemoryDurationDaysTemplate = "{value} days",
+            SettlementRuleMemoryDurationWeeksTemplate = "{value} weeks",
+            SettlementRuleMemoryDurationYearsTemplate = "{value} years",
             StateSectionTitle = "[4. CURRENT STATE]",
             DefaultState = "No massacre state is active. Use runtime facts for all other outcomes.",
             PlunderState = "Plunder is active but has not escalated to massacre.",
