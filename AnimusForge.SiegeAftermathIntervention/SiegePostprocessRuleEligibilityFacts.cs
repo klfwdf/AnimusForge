@@ -13,7 +13,8 @@ public readonly struct SiegePostprocessRuleEligibilityFacts
         TownDialogueRole dialogueRole,
         bool isAlliedSoldier,
         bool replyIsDirectPlayerResponse,
-        bool massacreActive = false)
+        bool massacreActive = false,
+        bool colonizationAvailable = true)
     {
         DestructiveLocked = destructiveLocked;
         SoldierAppeasementRequired = soldierAppeasementRequired;
@@ -22,6 +23,7 @@ public readonly struct SiegePostprocessRuleEligibilityFacts
         IsAlliedSoldier = isAlliedSoldier;
         ReplyIsDirectPlayerResponse = replyIsDirectPlayerResponse;
         MassacreActive = massacreActive;
+        ColonizationAvailable = colonizationAvailable;
     }
 
     public bool DestructiveLocked { get; }
@@ -37,4 +39,6 @@ public readonly struct SiegePostprocessRuleEligibilityFacts
     public bool ReplyIsDirectPlayerResponse { get; }
 
     public bool MassacreActive { get; }
+
+    public bool ColonizationAvailable { get; }
 }

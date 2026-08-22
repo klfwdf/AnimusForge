@@ -272,8 +272,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static float _civilianFormationControlNotBeforeTime = -1f;
 	private static float _nextCivilianFormationControlBatchTime;
 	private static float _nextPlayerOrderControllerPrimeTime;
-	private static bool _culturalRepopulationRequested;
-	private static bool _culturalRepopulationApplied;
+	private static bool IsCulturalRepopulationOutcome => ActiveTownColonization.ResolvesAsColonization;
+	private static bool IsCulturalRepopulationCommitted => ActiveTownColonization.IsCommitted;
 	private static bool _reliefChoiceApplied;
 	private static int _inspirationLevelApplied;
 	private static bool _soldierAppeasementCheckDone;
@@ -334,6 +334,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static readonly Dictionary<string, ItemObject> SharedCivilianReliefItemObjects = new Dictionary<string, ItemObject>(StringComparer.OrdinalIgnoreCase);
 	private static readonly TownSceneMemoryStore InterventionSceneMemory = new TownSceneMemoryStore(SiegeInterventionMemoryContextBuilder.MaxMemoryEvents);
 	private static readonly TownOperationLedger ActiveTownOperationLedger = new TownOperationLedger();
+	private static readonly TownColonizationStateMachine ActiveTownColonization = new TownColonizationStateMachine();
 	private static bool _pendingSummarySwitch;
 	private static SiegeAftermathAction.SiegeAftermath _pendingSummaryAftermath;
 	private static ItemRoster _pendingLootRoster = new ItemRoster();
@@ -493,6 +494,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	public override void SyncData(IDataStore dataStore)
 	{
 		GcczTownRuleMemoryRuntimeBridge.SyncData(dataStore);
+		SyncTownColonizationState(dataStore);
 		CastleAftermathPrisonerTrustRuntimeBridge.SyncData(dataStore);
 		CastleAftermathSettlementRuntimeBridge.SyncData(dataStore);
 		CastleAftermathLordRecruitmentRuntimeBridge.SyncData(dataStore);
@@ -514,6 +516,36 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_rallyOathLoyaltyLockValueBySettlement ??= new Dictionary<string, float>();
 		_rallyOathRecruitmentBuffUntilDayBySettlement ??= new Dictionary<string, int>();
 		_recruitmentSlowdownUntilDayBySettlement ??= new Dictionary<string, int>();
+	}
+
+	private static void SyncTownColonizationState(IDataStore dataStore)
+	{
+		const string storageKey = "_gcczTownColonizationOperation_v1";
+		if (dataStore == null)
+		{
+			return;
+		}
+
+		if (dataStore.IsSaving)
+		{
+			string payload = TownColonizationSnapshotCodec.Encode(ActiveTownColonization.Snapshot());
+			dataStore.SyncData(storageKey, ref payload);
+			return;
+		}
+		if (!dataStore.IsLoading)
+		{
+			return;
+		}
+
+		string loadedPayload = string.Empty;
+		dataStore.SyncData(storageKey, ref loadedPayload);
+		if (TownColonizationSnapshotCodec.TryDecode(loadedPayload, out TownColonizationSnapshot loaded))
+		{
+			ActiveTownColonization.Restore(loaded);
+			Logger.Log("SiegeAiIntervention", "Restored GCCZ town colonization state. Settlement=" + loaded.SettlementId + ", State=" + loaded.State + ", OutcomeCommitted=" + loaded.SettlementOutcomeCommitted);
+			return;
+		}
+		ActiveTownColonization.Reset();
 	}
 
 	private static void SyncRecruitmentSlowdownData(IDataStore dataStore)
@@ -1235,7 +1267,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		int desiredPenalty = SetsOwnedSettlementIncidentProfile.ResolveOwnerRelationPenalty(
 			ToStandaloneAftermathKind(aftermath),
 			_setsOwnedSettlementIncidentKilledNotable,
-			_culturalRepopulationRequested || _culturalRepopulationApplied);
+			IsCulturalRepopulationOutcome);
 		int nativePenalty = ResolveNativeSettlementOwnerRelationPenalty(aftermath);
 		int additionalPenalty = SetsOwnedSettlementIncidentProfile.ResolveAdditionalPenaltyAfterNative(desiredPenalty, nativePenalty);
 		ApplySetsOwnedSettlementIncidentOwnerPenalty(additionalPenalty, reason ?? "sets_owned_town_outcome", onlyIfNotableKilled: false, desiredTotalPenalty: desiredPenalty);
@@ -1261,7 +1293,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			int desiredPenalty = SetsOwnedSettlementIncidentProfile.ResolveOwnerRelationPenalty(
 				ToStandaloneAftermathKind(aftermath),
 				_setsCapturedTownRiotKilledNotable,
-				_culturalRepopulationRequested || _culturalRepopulationApplied);
+				IsCulturalRepopulationOutcome);
 			int nativePenalty = ResolveNativeSettlementOwnerRelationPenalty(aftermath);
 			int additionalPenalty = SetsOwnedSettlementIncidentProfile.ResolveAdditionalPenaltyAfterNative(desiredPenalty, nativePenalty);
 			ChangeRelationAction.ApplyPlayerRelation(ownerLeader, additionalPenalty, true, true);
@@ -1880,6 +1912,26 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		return null;
 	}
 
+	private static CultureObject ResolveCapturedCulturalRepopulationTargetCulture(out string sourceLabel)
+	{
+		CultureObject currentTarget = ResolveCulturalRepopulationTargetCulture(out sourceLabel);
+		TownColonizationSnapshot colonization = ActiveTownColonization.Snapshot();
+		if (string.IsNullOrWhiteSpace(colonization.TargetCultureId))
+		{
+			return currentTarget;
+		}
+		try
+		{
+			CultureObject capturedTarget = Game.Current?.ObjectManager?.GetObject<CultureObject>(colonization.TargetCultureId);
+			return capturedTarget;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "ResolveCapturedCulturalRepopulationTargetCulture failed: " + ex.Message);
+			return null;
+		}
+	}
+
 	private static string DescribeCultureForMessage(CultureObject culture, string sourceLabel)
 	{
 		try
@@ -2135,7 +2187,12 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (_massacreStarted && !_massacreVictoryReached && !_culturalRepopulationRequested)
+			if (ActiveTownColonization.IsPending)
+			{
+				ActiveTownColonization.PrepareSceneExitCommit();
+				GcczDiagnosticLog.Log("Colonization", "scene exit locked pending operation for full legacy settlement");
+			}
+			if (_massacreStarted && !_massacreVictoryReached && !IsCulturalRepopulationOutcome)
 			{
 				TryCompleteMassacreIfAllTargetsDown(Mission.Current);
 				if (!_massacreVictoryReached)
@@ -2143,10 +2200,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					StopMassacre("mission_exit_partial_massacre", "mission_exit_before_all_captured_victims_died", showMessage: false);
 				}
 			}
-			bool needsFallbackPolicy = !_culturalRepopulationRequested && !_massacreStarted && !_plunderStarted && !_hasPendingAftermath;
+			bool needsFallbackPolicy = !IsCulturalRepopulationOutcome && !_massacreStarted && !_plunderStarted && !_hasPendingAftermath;
 			bool isCastle = ResolveCurrentSettlement()?.IsCastle == true;
 			SiegeMissionExitOutcomeDecision decision = SiegeMissionExitOutcomeProfile.Resolve(
-				_culturalRepopulationRequested,
+				IsCulturalRepopulationOutcome,
 				_massacreStarted,
 				_plunderStarted,
 				_hasPendingAftermath,
@@ -2472,7 +2529,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (_soldierAppeasementCheckDone || _soldierAppeasementRequired || _massacreStarted || _culturalRepopulationRequested)
+			if (_soldierAppeasementCheckDone || _soldierAppeasementRequired || _massacreStarted || IsCulturalRepopulationOutcome)
 			{
 				return;
 			}
@@ -2500,7 +2557,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (_soldierAppeasementRequired || _massacreStarted || _culturalRepopulationRequested)
+			if (_soldierAppeasementRequired || _massacreStarted || IsCulturalRepopulationOutcome)
 			{
 				return;
 			}
@@ -3187,7 +3244,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				ResolveTownDialogueRole(townAgent, townCharacter, townHero, townAlliedSoldier),
 				townAlliedSoldier,
 				replyIsDirectPlayerResponse,
-				_massacreStarted && !_massacreVictoryReached);
+				massacreActive: _massacreStarted && !_massacreVictoryReached,
+				colonizationAvailable: ActiveTownColonization.State == TownColonizationState.None);
 			List<PostprocessRuleEntry> filtered = new List<PostprocessRuleEntry>();
 			foreach (PostprocessRuleEntry rule in rules)
 			{
@@ -4887,7 +4945,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			if (_massacreStarted && !_massacreVictoryReached)
 			{
 				TryTriggerAmbientReactionsForAction(
-					_culturalRepopulationRequested ? SiegeInterventionActionKind.CulturalRepopulation : SiegeInterventionActionKind.Massacre,
+					IsCulturalRepopulationOutcome ? SiegeInterventionActionKind.CulturalRepopulation : SiegeInterventionActionKind.Massacre,
 					directAgentIndex: -1,
 					focusAgentIndex: -1,
 					includeCivilians: true,
@@ -7030,7 +7088,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private static SiegeInterventionOutcome GetStandaloneOutcome()
 	{
-		if (_massacreStarted || _culturalRepopulationRequested)
+		if (_massacreStarted || IsCulturalRepopulationOutcome)
 		{
 			return SiegeInterventionOutcome.Massacre;
 		}
@@ -7056,7 +7114,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private static bool HasDestructiveOutcomeLocked()
 	{
-		return SiegeInterventionActionRules.HasDestructiveOutcomeLocked(GetStandaloneOutcome(), _culturalRepopulationRequested, HasPendingDevastateAftermath());
+		return SiegeInterventionActionRules.HasDestructiveOutcomeLocked(GetStandaloneOutcome(), IsCulturalRepopulationOutcome, HasPendingDevastateAftermath());
 	}
 
 	private static bool TryBlockMercyTrackAfterDestructive(string actionName)
@@ -7078,7 +7136,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				&& ledger.State == TownOperationState.Active;
 			if ((!_plunderStarted && !hasActivePlunderLedger)
 				|| _massacreStarted
-				|| _culturalRepopulationRequested)
+				|| IsCulturalRepopulationOutcome)
 			{
 				return;
 			}
@@ -7109,7 +7167,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				IsActiveInCurrentMission(),
 				settlement?.IsTown == true,
 				settlement?.IsCastle == true,
-				_massacreStarted || _culturalRepopulationRequested);
+				_massacreStarted || IsCulturalRepopulationOutcome);
 		}
 		catch
 		{
@@ -7715,7 +7773,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private static bool ApplyCivilianRobberyChoice(int targetAgentIndex, CharacterObject targetCharacter, Hero targetHero)
 	{
-		if (_massacreStarted || _culturalRepopulationRequested)
+		if (_massacreStarted || IsCulturalRepopulationOutcome)
 		{
 			return false;
 		}
@@ -8056,17 +8114,27 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			TownOperationLedgerSnapshot ledger = ActiveTownOperationLedger.Snapshot();
 			if ((ledger.Kind != TownOperationKind.Massacre && ledger.Kind != TownOperationKind.Colonization)
-				|| !ledger.VictimSnapshotSealed
-				|| !ActiveTownOperationLedger.Stop())
+				|| ledger.State != TownOperationState.Active
+				|| !ledger.VictimSnapshotSealed)
 			{
 				return false;
 			}
 
-			if (_culturalRepopulationRequested)
+			if (IsCulturalRepopulationOutcome)
+			{
+				if (!ActiveTownColonization.CancelBeforeCompletion(ledger))
+				{
+					return false;
+				}
+			}
+			if (!ActiveTownOperationLedger.Stop())
+			{
+				return false;
+			}
+			if (ledger.Kind == TownOperationKind.Colonization)
 			{
 				ActiveTownOperationLedger.CancelColonizationToMassacre();
 			}
-			_culturalRepopulationRequested = false;
 			_massacreStarted = false;
 			_massacreStopped = true;
 			_plunderStarted = true;
@@ -8183,20 +8251,27 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				handled |= StartMassacre(repopulationProfile.MassacreTriggerSource, repopulationProfile.MassacreTriggerDetail);
 			}
+			Settlement settlement = ResolveCurrentSettlement();
 			CultureObject targetCulture = ResolveCulturalRepopulationTargetCulture(out string targetCultureSource);
 			string targetCultureText = DescribeCultureForMessage(targetCulture, targetCultureSource);
 			if (!EnsureMassacreOperationLedger(Mission.Current, TownOperationKind.Colonization))
 			{
 				return false;
 			}
-			_culturalRepopulationRequested = true;
+			TownOperationLedgerSnapshot operationLedger = ActiveTownOperationLedger.Snapshot();
+			if (!ActiveTownColonization.Request(settlement?.StringId, targetCulture?.StringId, operationLedger))
+			{
+				Logger.Log("SiegeAiIntervention", "Cultural repopulation request rejected by state machine. Settlement=" + (settlement?.StringId ?? "null") + ", Culture=" + (targetCulture?.StringId ?? "null") + ", State=" + ActiveTownColonization.State);
+				return false;
+			}
 			MarkPendingAftermath(ToNativeAftermathKind(repopulationProfile.AftermathKind), triggerSource, triggerDetail);
 			RecordInterventionMemory(repopulationProfile.MemoryTitle, repopulationProfile.BuildRequestMemoryText(targetCultureText));
 			GcczDiagnosticLog.Log("CulturalRepopulation", "requested targetAgent=" + targetAgentIndex
 				+ " settlement=" + (ResolveCurrentSettlement()?.StringId ?? "N/A")
 				+ " targetCulture=" + (targetCulture?.StringId ?? "N/A")
 				+ " massacreVictory=" + _massacreVictoryReached);
-			if (_massacreVictoryReached)
+			bool targetsAlreadyEliminated = ActiveTownColonization.ObserveCapturedTargets(operationLedger);
+			if (_massacreVictoryReached || targetsAlreadyEliminated)
 			{
 				handled |= ApplyCulturalRepopulationNow(SiegeCulturalRepopulationProfile.VictoryAlreadyReachedApplySource);
 			}
@@ -8217,18 +8292,25 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (_culturalRepopulationApplied)
+			if (IsCulturalRepopulationCommitted)
 			{
 				return false;
 			}
 			Settlement settlement = ResolveCurrentSettlement();
-			CultureObject targetCulture = ResolveCulturalRepopulationTargetCulture(out string targetCultureSource);
+			CultureObject targetCulture = ResolveCapturedCulturalRepopulationTargetCulture(out string targetCultureSource);
 			if (settlement == null || targetCulture == null)
 			{
 				Logger.Log("SiegeAiIntervention", "ApplyCulturalRepopulationNow skipped. Source=" + (source ?? "N/A") + ", Settlement=" + (settlement?.StringId ?? "null") + ", TargetCulture=" + (targetCulture?.StringId ?? "null") + ", TargetCultureSource=" + (targetCultureSource ?? "N/A"));
 				GcczDiagnosticLog.Log("CulturalRepopulation", "apply skipped source=" + (source ?? "N/A")
 					+ " settlement=" + (settlement?.StringId ?? "null")
 					+ " targetCulture=" + (targetCulture?.StringId ?? "null"));
+				return false;
+			}
+			TownColonizationSnapshot colonization = ActiveTownColonization.Snapshot();
+			if (!string.Equals(colonization.SettlementId, settlement.StringId, StringComparison.OrdinalIgnoreCase)
+				|| !ActiveTownColonization.TryCommit())
+			{
+				Logger.Log("SiegeAiIntervention", "Cultural repopulation commit rejected. Source=" + (source ?? "N/A") + ", Settlement=" + (settlement.StringId ?? "N/A") + ", ExpectedSettlement=" + (colonization.SettlementId ?? "N/A") + ", State=" + colonization.State);
 				return false;
 			}
 			CultureObject oldCulture = settlement.Culture;
@@ -8261,7 +8343,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			ReplaceTownNotablesForCulturalRepopulation(settlement, targetCulture, source, out killedNotables, out spawnedNotables);
 			CountNotableVolunteerState(settlement, out int recruitmentEligibleNotables, out int populatedVolunteerSlots, out int volunteerSlotCapacity);
 			_lastKilledNotables += killedNotables;
-			_culturalRepopulationApplied = true;
 			SiegeCulturalRepopulationProfile repopulationProfile = new SiegeCulturalRepopulationProfile();
 			string notableResultText = repopulationProfile.BuildCompletedNotableResultText(settlement.IsTown, killedNotables, spawnedNotables);
 			string settlementName = settlement.Name?.ToString();
@@ -12559,9 +12640,14 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_massacreVictoryReached = true;
 		TryEndNativeMissionFightHandlerForManualExit(mission);
 		KeepAlliedVictoryCheer(mission);
-		if (_culturalRepopulationRequested)
+		if (IsCulturalRepopulationOutcome)
 		{
-			ApplyCulturalRepopulationNow(SiegeCulturalRepopulationProfile.MassacreVictoryApplySource);
+			TownOperationLedgerSnapshot operationLedger = ActiveTownOperationLedger.Snapshot();
+			if (ActiveTownColonization.ObserveCapturedTargets(operationLedger)
+				|| ActiveTownColonization.State == TownColonizationState.ReadyToCommit)
+			{
+				ApplyCulturalRepopulationNow(SiegeCulturalRepopulationProfile.MassacreVictoryApplySource);
+			}
 		}
 		InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionCompletionUiProfile.MassacreVictoryMessage, Color.FromUint(SiegeInterventionCompletionUiProfile.MassacreVictoryMessageColor)));
 		ShowMassacreVictoryLootMessages();
@@ -14163,7 +14249,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 		SiegeAftermathAction.SiegeAftermath previousAftermath = _pendingAftermath;
 		bool hadPendingAftermath = _hasPendingAftermath;
-		bool replacePendingAftermath = SiegeAftermathSelectionPolicy.ShouldReplacePendingAftermath(requestedAftermath, ToStandaloneAftermathKind(_pendingAftermath), _hasPendingAftermath, _massacreStarted, _culturalRepopulationRequested);
+		bool replacePendingAftermath = SiegeAftermathSelectionPolicy.ShouldReplacePendingAftermath(requestedAftermath, ToStandaloneAftermathKind(_pendingAftermath), _hasPendingAftermath, _massacreStarted, IsCulturalRepopulationOutcome);
 		if (replacePendingAftermath)
 		{
 			ResetOutcomeMessageDedupForTrack(aftermath.ToString());
@@ -14364,25 +14450,32 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			if (aftermath == SiegeAftermathAction.SiegeAftermath.Devastate)
 			{
-				if (_culturalRepopulationRequested)
+				if (IsCulturalRepopulationOutcome)
 				{
-					SiegeSettlementOutcomeProfile repopulationProfile = SiegeSettlementOutcomeProfile.BuildCulturalRepopulation();
-					TownOperationLedgerSnapshot repopulationLedger = ActiveTownOperationLedger.Snapshot();
-					bool ledgerBackedRepopulation = (repopulationLedger.Kind == TownOperationKind.Colonization
-						|| repopulationLedger.Kind == TownOperationKind.Massacre)
-						&& repopulationLedger.VictimSnapshotSealed;
-					if (ledgerBackedRepopulation)
+					if (ActiveTownColonization.TryCommitSettlementOutcome())
 					{
-						ApplyFinalAtrocityRelationshipAnchor(settlement, repopulationProfile);
-						ApplyFinalizedSettlementOutcomeEffects(
-							settlement,
-							repopulationProfile,
-							prosperityBefore,
-							applyLegacyRelationshipEffects: false);
+						SiegeSettlementOutcomeProfile repopulationProfile = SiegeSettlementOutcomeProfile.BuildCulturalRepopulation();
+						TownOperationLedgerSnapshot repopulationLedger = ActiveTownOperationLedger.Snapshot();
+						bool ledgerBackedRepopulation = (repopulationLedger.Kind == TownOperationKind.Colonization
+							|| repopulationLedger.Kind == TownOperationKind.Massacre)
+							&& repopulationLedger.VictimSnapshotSealed;
+						if (ledgerBackedRepopulation)
+						{
+							ApplyFinalAtrocityRelationshipAnchor(settlement, repopulationProfile);
+							ApplyFinalizedSettlementOutcomeEffects(
+								settlement,
+								repopulationProfile,
+								prosperityBefore,
+								applyLegacyRelationshipEffects: false);
+						}
+						else
+						{
+							ApplyFinalizedSettlementOutcomeEffects(settlement, repopulationProfile, prosperityBefore);
+						}
 					}
 					else
 					{
-						ApplyFinalizedSettlementOutcomeEffects(settlement, repopulationProfile, prosperityBefore);
+						Logger.Log("SiegeAiIntervention", "Skipped duplicate cultural repopulation reward and penalty settlement. Settlement=" + (settlement.StringId ?? "N/A") + ", Reason=" + (reason ?? "N/A"));
 					}
 					ApplyCulturalRepopulationNow(SiegeCulturalRepopulationProfile.FinalizeAftermathApplySource);
 					ActiveTownOperationLedger.CompleteFullOutcome();
@@ -15435,7 +15528,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					+ " moralePenaltyApplied=" + _castleSoldierAppliedMoralePenalty);
 				return;
 			}
-			bool culturalRepopulationApplied = _culturalRepopulationRequested || _culturalRepopulationApplied;
+			bool culturalRepopulationApplied = IsCulturalRepopulationOutcome;
 			string targetCultureText = "";
 			if (culturalRepopulationApplied)
 			{
@@ -16050,14 +16143,14 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		if (_culturalRepopulationRequested && !_culturalRepopulationApplied)
+		if (IsCulturalRepopulationOutcome && !IsCulturalRepopulationCommitted)
 		{
 			ApplyCulturalRepopulationNow(SiegeCulturalRepopulationProfile.DirectMassacreLootMessageApplySource);
 		}
 		_directMassacreScriptMessageShown = true;
 		try
 		{
-			string action = _culturalRepopulationRequested || _culturalRepopulationApplied ? SiegeLootAccountingProfile.CulturalRepopulationActionName : SiegeLootAccountingProfile.MassacreActionName;
+			string action = IsCulturalRepopulationOutcome ? SiegeLootAccountingProfile.CulturalRepopulationActionName : SiegeLootAccountingProfile.MassacreActionName;
 			InformationManager.DisplayMessage(new InformationMessage(SiegeLootAccountingProfile.BuildDirectDevastateSettlementMessage(action), Color.FromUint(SiegeLootAccountingProfile.DirectDevastateSettlementMessageColor)));
 			InformationManager.DisplayMessage(new InformationMessage(SiegeLootAccountingProfile.BuildLootCreditedSummaryMessage(_lastMarketGoldLoot, _lastCivilianGoldLoot, _lastLootItemTotal, _lastLootStackKinds), Color.FromUint(SiegeLootAccountingProfile.LootMessageColor)));
 		}
@@ -16094,7 +16187,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			if (!_pendingSummaryMenuPresented)
 			{
-				InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionCompletionUiProfile.BuildCompletedEncounterMessage(ToStandaloneAftermathKind(aftermath), _culturalRepopulationRequested || _culturalRepopulationApplied), Color.FromUint(SiegeInterventionCompletionUiProfile.CompletionMessageColor)));
+				InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionCompletionUiProfile.BuildCompletedEncounterMessage(ToStandaloneAftermathKind(aftermath), IsCulturalRepopulationOutcome), Color.FromUint(SiegeInterventionCompletionUiProfile.CompletionMessageColor)));
 			}
 			if (_lastLootItemTotal > 0 || _lastMarketGoldLoot > 0 || _lastCivilianGoldLoot > 0)
 			{
@@ -16300,8 +16393,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_civilianFormationControlNotBeforeTime = -1f;
 		_nextCivilianFormationControlBatchTime = 0f;
 		_nextPlayerOrderControllerPrimeTime = 0f;
-		_culturalRepopulationRequested = false;
-		_culturalRepopulationApplied = false;
+		ActiveTownColonization.Reset();
 		_reliefChoiceApplied = false;
 		_inspirationLevelApplied = 0;
 		_soldierAppeasementCheckDone = false;

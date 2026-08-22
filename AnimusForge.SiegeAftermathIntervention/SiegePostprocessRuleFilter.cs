@@ -41,6 +41,12 @@ public static class SiegePostprocessRuleFilter
             return false;
         }
 
+        bool colonizationTag = kinds.Contains(SiegeInterventionActionKind.CulturalRepopulation);
+        if (colonizationTag && !facts.ColonizationAvailable)
+        {
+            return false;
+        }
+
         bool soldierAppeasementTag = kinds.Contains(SiegeInterventionActionKind.AppeaseSoldiers);
         if (soldierAppeasementTag
             && (!TownDialogueRoleClassifier.CanExecuteAlliedSoldierOrders(facts.DialogueRole, facts.IsAlliedSoldier)
