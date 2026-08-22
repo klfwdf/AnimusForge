@@ -12,18 +12,52 @@ public static class SiegeActionRoutingPolicy
         facts ??= new SiegeActionRoutingFacts(string.Empty, false, false, false);
 
         var kinds = SiegeActionTagCatalog.ExtractKinds(facts.RawActionText);
+        return Evaluate(
+            kinds,
+            facts.DestructiveOutcomeLocked,
+            facts.TargetIsAlliedSoldier,
+            facts.HasSharedReliefPool,
+            facts.ReplyIsDirectPlayerResponse);
+    }
+
+    public static SiegeActionRoutingDecision Evaluate(
+        SiegeInterventionActionKind action,
+        bool destructiveOutcomeLocked,
+        bool targetIsAlliedSoldier,
+        bool hasSharedReliefPool,
+        bool replyIsDirectPlayerResponse)
+    {
+        SiegeInterventionActionKind[] actions = action == SiegeInterventionActionKind.Unknown
+            ? System.Array.Empty<SiegeInterventionActionKind>()
+            : new[] { action };
+        return Evaluate(
+            actions,
+            destructiveOutcomeLocked,
+            targetIsAlliedSoldier,
+            hasSharedReliefPool,
+            replyIsDirectPlayerResponse);
+    }
+
+    private static SiegeActionRoutingDecision Evaluate(
+        System.Collections.Generic.IEnumerable<SiegeInterventionActionKind> actions,
+        bool destructiveOutcomeLocked,
+        bool targetIsAlliedSoldier,
+        bool hasSharedReliefPool,
+        bool replyIsDirectPlayerResponse)
+    {
+        var kinds = actions?.Distinct().ToArray() ?? System.Array.Empty<SiegeInterventionActionKind>();
         bool containsDestructiveAction = kinds.Any(SiegeInterventionActionRules.IsDestructive);
         bool containsSoldierMediatedDestructiveAction = kinds.Any(SiegeInterventionActionRules.IsSoldierMediatedDestructive);
         bool containsCivilianRobberyAction = kinds.Contains(SiegeInterventionActionKind.CivilianRobbery);
         bool canApplySoldierMediatedDestructiveAction = !containsSoldierMediatedDestructiveAction
-            || (facts.TargetIsAlliedSoldier && facts.ReplyIsDirectPlayerResponse);
+            || (targetIsAlliedSoldier && replyIsDirectPlayerResponse);
         bool canApplyCivilianRobberyAction = containsCivilianRobberyAction
-            && !facts.TargetIsAlliedSoldier
-            && facts.ReplyIsDirectPlayerResponse;
+            && !targetIsAlliedSoldier
+            && replyIsDirectPlayerResponse;
         bool shouldPromptSoldierForCivilianRobbery = containsCivilianRobberyAction
             && !canApplyCivilianRobberyAction;
         bool hasMercyTrackAction = kinds.Any(SiegeInterventionActionRules.IsMercyTrack);
-        bool canApplyMercyTrack = !containsDestructiveAction && !facts.DestructiveOutcomeLocked;
+        bool canApplyMercyTrack = !containsDestructiveAction && !destructiveOutcomeLocked;
         bool hasReliefAction = kinds.Contains(SiegeInterventionActionKind.Relief);
         bool hasSoldierPositiveCapCandidate = kinds.Contains(SiegeInterventionActionKind.Inspire)
             || kinds.Contains(SiegeInterventionActionKind.RallyOath);
@@ -38,7 +72,7 @@ public static class SiegeActionRoutingPolicy
             shouldPromptSoldierDestructiveInquiry: containsSoldierMediatedDestructiveAction && !canApplySoldierMediatedDestructiveAction,
             hasMercyTrackAction,
             canApplyMercyTrack,
-            shouldDowngradeSoldierReliefToMercy: facts.TargetIsAlliedSoldier && hasReliefAction && !facts.HasSharedReliefPool,
-            shouldCapSoldierPositiveToRelief: facts.TargetIsAlliedSoldier && canApplyMercyTrack && facts.HasSharedReliefPool && hasSoldierPositiveCapCandidate);
+            shouldDowngradeSoldierReliefToMercy: targetIsAlliedSoldier && hasReliefAction && !hasSharedReliefPool,
+            shouldCapSoldierPositiveToRelief: targetIsAlliedSoldier && canApplyMercyTrack && hasSharedReliefPool && hasSoldierPositiveCapCandidate);
     }
 }

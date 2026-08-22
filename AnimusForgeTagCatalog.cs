@@ -581,7 +581,7 @@ internal static class AnimusForgeTagCatalog
 		{
 			return "后处理/接力";
 		}
-		if (text.StartsWith("[ACTION:SIEGE_", StringComparison.OrdinalIgnoreCase) || text.StartsWith("[ACTION:宽恕", StringComparison.OrdinalIgnoreCase) || text.StartsWith("[ACTION:救济", StringComparison.OrdinalIgnoreCase) || text.StartsWith("[ACTION:宣抚", StringComparison.OrdinalIgnoreCase) || text.StartsWith("[ACTION:盟誓", StringComparison.OrdinalIgnoreCase) || text.StartsWith("[ACTION:安兵", StringComparison.OrdinalIgnoreCase) || text.StartsWith("[ACTION:召集", StringComparison.OrdinalIgnoreCase) || text.StartsWith("[ACTION:抢钱", StringComparison.OrdinalIgnoreCase) || text.StartsWith("[ACTION:搜掠", StringComparison.OrdinalIgnoreCase) || text.StartsWith("[ACTION:血洗", StringComparison.OrdinalIgnoreCase) || text.StartsWith("[ACTION:殖民", StringComparison.OrdinalIgnoreCase))
+		if (SiegeActionTagCatalog.ContainsRecognizedTag(text))
 		{
 			return "后处理/GCCZ";
 		}
