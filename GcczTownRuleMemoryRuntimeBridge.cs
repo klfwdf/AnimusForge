@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using AnimusForge.SiegeAftermathIntervention;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Settlements;
@@ -36,11 +35,7 @@ internal static class GcczTownRuleMemoryRuntimeBridge
 			{
 				lock (Gate)
 				{
-					_serializedRecordsBySettlement = Store.Export()
-						.ToDictionary(
-							record => record.SettlementId,
-							SettlementRuleMemoryCodec.Encode,
-							StringComparer.OrdinalIgnoreCase);
+					_serializedRecordsBySettlement = SettlementRuleMemorySaveCodec.Encode(Store.Export());
 					_storageInitialized = true;
 				}
 				dataStore.SyncData(StorageInitializedKey, ref _storageInitialized);
@@ -57,33 +52,22 @@ internal static class GcczTownRuleMemoryRuntimeBridge
 			Dictionary<string, string> serialized = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			dataStore.SyncData(StorageInitializedKey, ref initialized);
 			dataStore.SyncData(RecordsBySettlementKey, ref serialized);
-			var restored = new List<SettlementRuleMemoryRecord>();
-			int rejected = 0;
-			foreach (KeyValuePair<string, string> entry in serialized ?? new Dictionary<string, string>())
-			{
-				if (SettlementRuleMemoryCodec.TryDecode(entry.Key, entry.Value, out SettlementRuleMemoryRecord record))
-				{
-					restored.Add(record);
-				}
-				else
-				{
-					rejected++;
-				}
-			}
+			SettlementRuleMemorySaveDecodeResult decoded = SettlementRuleMemorySaveCodec.Decode(serialized);
+			int rejected = decoded.RejectedCount;
 			lock (Gate)
 			{
 				_storageInitialized = initialized;
 				_serializedRecordsBySettlement = serialized == null
 					? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
 					: new Dictionary<string, string>(serialized, StringComparer.OrdinalIgnoreCase);
-				rejected += Store.Restore(restored);
+				rejected += Store.Restore(decoded.Records);
 			}
 			GcczTownRuleMemoryGenerationBridge.Reset();
 			DrainChangedSettlementIds();
 			Logger.Log(
 				"GcczTownRuleMemory",
 				"Loaded town rule memory. Initialized=" + _storageInitialized
-				+ ", Records=" + restored.Count
+				+ ", Records=" + decoded.Records.Count
 				+ ", Rejected=" + rejected);
 		}
 		catch (Exception ex)
