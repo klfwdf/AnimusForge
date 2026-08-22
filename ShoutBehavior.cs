@@ -3875,6 +3875,24 @@ public class ShoutBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static bool IsEscortedPrisonerAgentIdentityMatch(Agent liveAgent, int targetAgentIndex, Hero expectedHero, CharacterObject expectedCharacter)
+	{
+		// Custom prisoner agents can use a mission representation whose Character
+		// identity is not the same object exposed by the native conversation adapter.
+		// The escort registry is the authoritative, bounded identity bridge for them.
+		if (liveAgent == null
+			|| !NoblePrisonerEscortBehavior.TryGetEscortedHero(targetAgentIndex, out Hero escortedHero, out Agent escortedAgent)
+			|| !ReferenceEquals(escortedAgent, liveAgent))
+		{
+			return false;
+		}
+		Hero expectedTargetHero = expectedHero ?? expectedCharacter?.HeroObject;
+		string expectedHeroId = (expectedTargetHero?.StringId ?? "").Trim();
+		string escortedHeroId = (escortedHero?.StringId ?? "").Trim();
+		return !string.IsNullOrWhiteSpace(expectedHeroId)
+			&& string.Equals(escortedHeroId, expectedHeroId, StringComparison.OrdinalIgnoreCase);
+	}
+
 	// This runs only at asynchronous-response handoff points on the Bannerlord main thread.
 	// A queued LLM result must never act on an Agent that was knocked out, killed, or removed
 	// while the request was in flight.
@@ -3909,6 +3927,10 @@ public class ShoutBehavior : CampaignBehaviorBase
 		}
 		try
 		{
+			if (IsEscortedPrisonerAgentIdentityMatch(liveAgent, targetAgentIndex, expectedHero, expectedCharacter))
+			{
+				return true;
+			}
 			CharacterObject liveCharacter = liveAgent.Character as CharacterObject;
 			if (expectedHero != null)
 			{
@@ -3935,15 +3957,10 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private static bool IsNativeConversationResponseTargetAvailableForActionDispatch(int targetAgentIndex, Hero expectedHero, CharacterObject expectedCharacter, out string unavailableReason)
 	{
-		unavailableReason = "";
-		// Unlike map/tableau conversations, a native conversation running inside a
-		// live Mission must retain its concrete Agent. If lookup already returns -1,
-		// the original scene target was removed and must fail closed.
-		if (targetAgentIndex < 0 && Mission.Current != null)
-		{
-			unavailableReason = "scene_target_missing";
-			return false;
-		}
+		// A negative index means this conversation adapter did not capture a concrete
+		// scene Agent; it does not prove that a target that was once present despawned.
+		// The shared guard still fails closed for every captured Agent index, covering
+		// the async knockout/removal race without suppressing valid prisoner adapters.
 		return IsSceneResponseTargetAvailableForActionDispatch(targetAgentIndex, expectedHero, expectedCharacter, out unavailableReason);
 	}
 
