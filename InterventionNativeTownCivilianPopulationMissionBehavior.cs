@@ -64,10 +64,18 @@ internal sealed class InterventionNativeTownCivilianPopulationMissionBehavior : 
 	private int _commonCreatorIndex;
 	private int _limitedCreatorIndex;
 	private int _beggarCreatorIndex;
+	private readonly bool _regularTownMultiplierMode;
+	private int _regularTownBaseline = -1;
+	private float _nextPopulationCheckAt = -1f;
+	private const float RegularTownPopulationMultiplierMin = 2.1f;
+	private const float RegularTownPopulationMultiplierMax = 2.8f;
+	private const int RegularTownPopulationHardCap = 220;
+	private const float PopulationCheckIntervalSeconds = 0.75f;
 
-	public InterventionNativeTownCivilianPopulationMissionBehavior(string settlementId)
+	public InterventionNativeTownCivilianPopulationMissionBehavior(string settlementId, bool regularTownMultiplierMode = false)
 	{
 		_settlementId = string.IsNullOrWhiteSpace(settlementId) ? "N/A" : settlementId;
+		_regularTownMultiplierMode = regularTownMultiplierMode;
 	}
 
 	public override MissionBehaviorType BehaviorType => MissionBehaviorType.Other;
@@ -90,7 +98,7 @@ internal sealed class InterventionNativeTownCivilianPopulationMissionBehavior : 
 
 	private void TryEnsureNativeTownCivilianMaximum(string source)
 	{
-		if (_completed)
+		if (_completed || DuelSettings.GetTownAmbientDialogueDensity() <= 0)
 		{
 			return;
 		}
@@ -103,36 +111,59 @@ internal sealed class InterventionNativeTownCivilianPopulationMissionBehavior : 
 		{
 			_firstAttemptTime = mission.CurrentTime;
 		}
+		// Avoid walking every active Agent once per Mission tick while native
+		// location characters are still settling in.
+		if (_nextPopulationCheckAt >= 0f && mission.CurrentTime < _nextPopulationCheckAt)
+		{
+			return;
+		}
+		_nextPopulationCheckAt = mission.CurrentTime + PopulationCheckIntervalSeconds;
 		try
 		{
 			MissionAgentHandler missionAgentHandler = mission.GetMissionBehavior<MissionAgentHandler>();
 			Settlement settlement = PlayerEncounter.LocationEncounter?.Settlement ?? Settlement.CurrentSettlement;
 			Location location = CampaignMission.Current?.Location;
-			if (missionAgentHandler == null || settlement?.Town == null || location == null || !settlement.IsTown || !string.Equals(location.StringId, "center", StringComparison.OrdinalIgnoreCase))
+			if (missionAgentHandler == null || settlement == null || location == null || (!settlement.IsTown && !settlement.IsVillage))
 			{
 				CompleteIfRetryWindowExpired(mission, "not_ready", source);
 				return;
 			}
+			if (IsPrivatePopulationLocation(location))
+			{
+				_completed = true;
+				Logger.Log("SiegeAiIntervention", "Native settlement civilian pass blocked for private location. Settlement=" + _settlementId + ", Location=" + (location.StringId ?? "N/A"));
+				return;
+			}
 
 			int currentCivilianCount = CountCurrentCivilianLikeAgents(mission, location);
+			if (_regularTownMultiplierMode && currentCivilianCount < 8 && mission.CurrentTime - _firstAttemptTime < SiegeCivilianAssemblyProfile.NativeTownPopulationRetrySeconds)
+			{
+				return;
+			}
 			int targetCivilianCount = GetTargetCivilianCount(mission, settlement, currentCivilianCount);
 			if (targetCivilianCount <= currentCivilianCount)
 			{
 				_completed = true;
-				Logger.Log("SiegeAiIntervention", "Native town prosperity civilian target already satisfied. Settlement=" + _settlementId + ", Current=" + currentCivilianCount + ", Target=" + targetCivilianCount + ", Prosperity=" + _targetProsperity.ToString("0") + ", Source=" + (source ?? "N/A"));
+				Logger.Log("SiegeAiIntervention", "Native settlement civilian target already satisfied. Settlement=" + _settlementId + ", Type=" + (settlement.IsVillage ? "village" : "town") + ", Current=" + currentCivilianCount + ", Target=" + targetCivilianCount + ", Activity=" + _targetProsperity.ToString("0") + ", Source=" + (source ?? "N/A"));
 				return;
 			}
 
 			int spawned = SpawnCivilianDeficit(mission, missionAgentHandler, settlement, location, targetCivilianCount - currentCivilianCount);
 			int finalCivilianCount = CountCurrentCivilianLikeAgents(mission, location);
 			_completed = true;
-			Logger.Log("SiegeAiIntervention", "Native town prosperity civilian pass completed. Settlement=" + _settlementId + ", CurrentBefore=" + currentCivilianCount + ", Target=" + targetCivilianCount + ", Prosperity=" + _targetProsperity.ToString("0") + ", Spawned=" + spawned + ", CurrentAfter=" + finalCivilianCount + ", Source=" + (source ?? "N/A") + ", VanillaLocationCharacters=true, VanillaSpawnPoints=true, SiegeDeployment=false, TargetPolicy=100-200 prosperity-random");
+			Logger.Log("SiegeAiIntervention", "Native settlement civilian pass completed. Settlement=" + _settlementId + ", Type=" + (settlement.IsVillage ? "village" : "town") + ", CurrentBefore=" + currentCivilianCount + ", Baseline=" + _regularTownBaseline + ", Target=" + targetCivilianCount + ", Activity=" + _targetProsperity.ToString("0") + ", Spawned=" + spawned + ", CurrentAfter=" + finalCivilianCount + ", Source=" + (source ?? "N/A") + ", VanillaLocationCharacters=true, VanillaSpawnPoints=true, SiegeDeployment=false");
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("SiegeAiIntervention", "Native town civilian maximum pass failed. Settlement=" + _settlementId + ", Source=" + (source ?? "N/A") + ", Error=" + ex.Message);
 			CompleteIfRetryWindowExpired(mission, "exception", source);
 		}
+	}
+
+	private static bool IsPrivatePopulationLocation(Location location)
+	{
+		string id = (location?.StringId ?? "").Trim().ToLowerInvariant();
+		return id.Contains("lordhall") || id.Contains("lordshall") || id.Contains("lord_hall") || id.Contains("lords_hall") || id.Contains("keep") || id.Contains("tavern") || id.Contains("castle");
 	}
 
 	private void CompleteIfRetryWindowExpired(Mission mission, string reason, string source)
@@ -150,12 +181,88 @@ internal sealed class InterventionNativeTownCivilianPopulationMissionBehavior : 
 
 	private int GetTargetCivilianCount(Mission mission, Settlement settlement, int currentCivilianCount)
 	{
+		if (_regularTownMultiplierMode)
+		{
+			if (_regularTownBaseline < 0)
+			{
+				// A first-frame scene can expose only a few native civilians.  Use a
+				// type-specific floor so the configured multiplier remains visible.
+				_regularTownBaseline = Math.Max(GetBaselineFloor(settlement), currentCivilianCount);
+				_targetProsperity = GetSettlementActivity(settlement);
+			}
+			float configuredMultiplier = DuelSettings.GetTownAmbientPopulationMultiplier();
+			int density = DuelSettings.GetTownAmbientDialogueDensity();
+			float activityRatio = GetSettlementActivityRatio(settlement);
+			float lowActivityFloor = settlement.IsVillage ? 1.05f : 1.15f;
+			// Prosperity controls the curve itself rather than merely nudging a
+			// fixed multiplier: a struggling settlement stays close to vanilla,
+			// while a prosperous one can approach the configured 2-3x target.
+			configuredMultiplier = lowActivityFloor + (configuredMultiplier - lowActivityFloor) * activityRatio;
+			if (density <= 1)
+			{
+				configuredMultiplier = Math.Min(configuredMultiplier, settlement.IsVillage ? 1.35f : 1.50f);
+			}
+			else if (density >= 3)
+			{
+				configuredMultiplier = Math.Min(3f, configuredMultiplier + 0.35f);
+			}
+			float multiplier;
+			try
+			{
+				float variation = 0.10f;
+				multiplier = configuredMultiplier - variation + MBRandom.RandomFloat * variation * 2f;
+			}
+			catch
+			{
+				multiplier = configuredMultiplier;
+			}
+			multiplier = Math.Max(1f, Math.Min(3f, multiplier));
+			int targetByMultiplier = (int)Math.Round(_regularTownBaseline * multiplier);
+			int hardCap = settlement.IsVillage ? SiegeCivilianAssemblyProfile.VillageSceneCap : RegularTownPopulationHardCap;
+			int regularTarget = Math.Max(_regularTownBaseline, Math.Min(hardCap, targetByMultiplier));
+			int regularActiveHumanCount = mission?.Agents?.Count(agent => agent != null && agent.IsHuman && agent.IsActive()) ?? currentCivilianCount;
+			int regularNonCivilianActiveCount = Math.Max(0, regularActiveHumanCount - currentCivilianCount);
+			int regularSceneRoomForCivilians = Math.Max(0, SiegeCivilianAssemblyProfile.SceneTotalAgentSoftCap - regularNonCivilianActiveCount);
+			return Math.Max(currentCivilianCount, Math.Min(regularTarget, regularSceneRoomForCivilians));
+		}
 		int prosperityTarget = GetOrCreateProsperityWeightedTarget(settlement);
 		int activeHumanCount = mission?.Agents?.Count(agent => agent != null && agent.IsHuman && agent.IsActive()) ?? currentCivilianCount;
 		int nonCivilianActiveCount = Math.Max(0, activeHumanCount - currentCivilianCount);
 		int sceneRoomForCivilians = Math.Max(0, SiegeCivilianAssemblyProfile.SceneTotalAgentSoftCap - nonCivilianActiveCount);
-		int target = Math.Min(SiegeCivilianAssemblyProfile.TownSceneCap, Math.Min(prosperityTarget, sceneRoomForCivilians));
+		int sceneCap = settlement?.IsVillage == true ? SiegeCivilianAssemblyProfile.VillageSceneCap : SiegeCivilianAssemblyProfile.TownSceneCap;
+		int target = Math.Min(sceneCap, Math.Min(prosperityTarget, sceneRoomForCivilians));
 		return Math.Max(currentCivilianCount, target);
+	}
+
+	private static int GetBaselineFloor(Settlement settlement)
+	{
+		return settlement?.IsVillage == true ? 12 : 40;
+	}
+
+	private static float GetSettlementActivity(Settlement settlement)
+	{
+		try
+		{
+			if (settlement?.Town != null)
+			{
+				return Math.Max(0f, settlement.Town.Prosperity);
+			}
+			if (settlement?.Village != null)
+			{
+				return Math.Max(0f, settlement.Village.Hearth);
+			}
+		}
+		catch
+		{
+		}
+		return 0f;
+	}
+
+	private static float GetSettlementActivityRatio(Settlement settlement)
+	{
+		float activity = GetSettlementActivity(settlement);
+		float max = settlement?.IsVillage == true ? 100f : SiegeCivilianAssemblyProfile.NativeTownPopulationProsperityForMaxCount;
+		return Clamp01(activity / Math.Max(1f, max));
 	}
 
 	private int GetOrCreateProsperityWeightedTarget(Settlement settlement)
@@ -166,8 +273,8 @@ internal sealed class InterventionNativeTownCivilianPopulationMissionBehavior : 
 		}
 		_targetProsperity = GetTownProsperity(settlement);
 		float prosperityRatio = Clamp01(_targetProsperity / Math.Max(1f, SiegeCivilianAssemblyProfile.NativeTownPopulationProsperityForMaxCount));
-		int min = SiegeCivilianAssemblyProfile.MinDesiredCivilianCount;
-		int max = SiegeCivilianAssemblyProfile.MaxDesiredCivilianCount;
+		int min = settlement?.IsVillage == true ? 20 : SiegeCivilianAssemblyProfile.MinDesiredCivilianCount;
+		int max = settlement?.IsVillage == true ? 80 : SiegeCivilianAssemblyProfile.MaxDesiredCivilianCount;
 		int band = Math.Max(0, Math.Min(SiegeCivilianAssemblyProfile.NativeTownPopulationRandomBand, max - min));
 		int lower = (int)Math.Round(Lerp(min, max - band, prosperityRatio));
 		int upper = (int)Math.Round(Lerp(min + band, max, prosperityRatio));
@@ -191,6 +298,10 @@ internal sealed class InterventionNativeTownCivilianPopulationMissionBehavior : 
 			if (settlement?.Town != null)
 			{
 				return Math.Max(0f, settlement.Town.Prosperity);
+			}
+			if (settlement?.Village != null)
+			{
+				return Math.Max(0f, settlement.Village.Hearth / 100f * SiegeCivilianAssemblyProfile.NativeTownPopulationProsperityForMaxCount);
 			}
 			SettlementComponent.ProsperityLevel level = settlement?.SettlementComponent?.GetProsperityLevel() ?? SettlementComponent.ProsperityLevel.Mid;
 			return ((float)level / 2f) * SiegeCivilianAssemblyProfile.NativeTownPopulationProsperityForMaxCount;
@@ -270,18 +381,31 @@ internal sealed class InterventionNativeTownCivilianPopulationMissionBehavior : 
 			expectedTag = "npc_common_limited";
 			return LimitedAdultCreators[(_limitedCreatorIndex++) % LimitedAdultCreators.Length];
 		}
+		// Prefer a specialist creator when a named vanilla profession point is
+		// available.  This keeps added agents bound to merchant/horse/forge
+		// identities instead of spawning a generic townsman at that point.
+		string specialistTag = ChooseAdditionalCivilianSpawnTag(availablePointCounts);
+		if (!string.IsNullOrWhiteSpace(specialistTag))
+		{
+			expectedTag = specialistTag;
+			return ChooseSpecialistCreator(specialistTag);
+		}
 		if (HasAvailable(availablePointCounts, "npc_common"))
 		{
 			expectedTag = "npc_common";
 			return CommonAdultCreators[(_commonCreatorIndex++) % CommonAdultCreators.Length];
 		}
-		string additionalTag = ChooseAdditionalCivilianSpawnTag(availablePointCounts);
-		if (!string.IsNullOrWhiteSpace(additionalTag))
-		{
-			expectedTag = additionalTag;
-			return CommonAdultCreators[(_commonCreatorIndex++) % CommonAdultCreators.Length];
-		}
 		return null;
+	}
+
+	private string ChooseSpecialistCreator(string tag)
+	{
+		if (string.Equals(tag, "sp_merchant", StringComparison.OrdinalIgnoreCase)) return "CreateMerchant";
+		if (string.Equals(tag, "sp_horse_merchant", StringComparison.OrdinalIgnoreCase)) return "CreateHorseTrader";
+		if (string.Equals(tag, "sp_armorer", StringComparison.OrdinalIgnoreCase)) return "CreateArmorer";
+		if (string.Equals(tag, "sp_weaponsmith", StringComparison.OrdinalIgnoreCase)) return "CreateWeaponsmith";
+		if (string.Equals(tag, "sp_blacksmith", StringComparison.OrdinalIgnoreCase)) return "CreateBlacksmith";
+		return CommonAdultCreators[(_commonCreatorIndex++) % CommonAdultCreators.Length];
 	}
 
 	private string ChooseAdditionalCivilianSpawnTag(Dictionary<string, int> availablePointCounts)
@@ -403,7 +527,11 @@ internal sealed class InterventionNativeTownCivilianPopulationMissionBehavior : 
 			}
 			if (locationCharacter != null)
 			{
-				return locationCharacter.UseCivilianEquipment && IsCivilianSpawnTag(locationCharacter.SpecialTargetTag);
+				// Vanilla citizens often use a location-specific target tag that is
+				// not one of our extra spawn tags.  They are still civilians and
+				// must count toward the baseline; otherwise the multiplier sees
+				// zero residents and never visibly increases a town.
+				return locationCharacter.UseCivilianEquipment || IsCivilianSpawnTag(locationCharacter.SpecialTargetTag);
 			}
 			return IsCivilianOccupation(character.Occupation);
 		}
