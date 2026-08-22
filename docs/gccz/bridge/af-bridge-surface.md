@@ -8,6 +8,7 @@ This file records the current AF-facing bridge surface so GCCZ can be isolated w
 - `SubModule.OnGameStart()` / campaign starter path registers `new SiegeAiInterventionBehavior()`.
 - `Patch_GameMenu_ActivateGameMenu.Prefix()` first lets GCCZ intercept direct massacre/plunder/native aftermath menus, then falls through to normal AF encounter redirect logic.
 - Current AF086 bridge ships a small `Patch_SiegeAftermath_AFIntervention.cs` AF adapter file. Native aftermath routing is handled by this file, `Patch_GameMenu_ActivateGameMenu.cs`, and the guarded menu/encounter helpers inside `SiegeAiInterventionBehavior.cs`; GCCZ policy/rules remain outside the AF patch file.
+- Fused agent-spawn adapters must rely on `Mission.SpawnAgent(...)` to dispatch `MissionBehavior.OnAgentBuild(...)`; do not manually invoke `BattleAgentLogic.OnAgentBuild` after spawning, because Bannerlord already performs that lifecycle notification.
 
 ## Current public/internal bridge methods called by AF-side code
 
@@ -100,7 +101,7 @@ Follow-up isolation: GCCZ passive rule id and injected-rule marker now also live
 Follow-up isolation: postprocess context text and speaker identity labels now live in `SiegePostprocessContextBuilder`; fused AF gathers live facts into `SiegePostprocessContextFacts` and delegates formatting plus identity-label selection to GCCZ core.
 
 
-Follow-up isolation: postprocess tag normalization now lives in `SiegePostprocessTagNormalizer`; `SiegeAiInterventionBehavior.NormalizeSiegeInterventionPostprocessTagsForExternal(...)` is a thin bridge that passes the runtime-allowed rule tags and delegates alias matching, canonical ordering, de-duplication, and mood preservation to GCCZ core.
+Follow-up isolation: postprocess tag normalization now lives in `SiegePostprocessTagNormalizer`; `SiegeAiInterventionBehavior.NormalizeSiegeInterventionPostprocessTagsForExternal(...)` is a thin bridge that passes the runtime-allowed rule tags and delegates legacy alias mapping, numeric canonical output, action ordering, de-duplication, and mood preservation to GCCZ core.
 
 
 Follow-up isolation: shared civilian relief-pool context now uses `SiegeSharedReliefPoolFacts` and `SiegeSharedReliefPoolFormatter`; `SiegeAiInterventionBehavior` still owns Bannerlord inventory, UI, and settlement effects while delegating dependency-free material checks and context text.
@@ -192,7 +193,7 @@ Follow-up isolation: pending native aftermath selection now uses `SiegeAftermath
 Follow-up isolation: action-tag routing now uses `SiegeActionRoutingFacts`, `SiegeActionRoutingDecision`, and `SiegeActionRoutingPolicy`; AF keeps regex replacement and side effects while GCCZ core owns destructive/mercy-track detection plus soldier relief routing decisions.
 
 
-Follow-up isolation: postprocess action effect triggers now use `SiegePostprocessActionEffectProfile`; AF keeps regex matches and live target checks while GCCZ core owns normalized mercy replacement plus the source/detail wording passed into aftermath mutations.
+Follow-up isolation: postprocess action effect triggers now use `SiegePostprocessActionEffectProfile`; AF keeps live Bannerlord target checks and applies one validated `SiegeInterventionActionKind`, while GCCZ core owns action selection, compatibility aliases, routing policy, and source/detail wording. The retired dialogue-keyword mercy-to-relief upgrader and duplicated per-action town regex path must not be restored.
 
 
 Follow-up isolation: mercy-track transition UI now uses `SiegeMercyTrackTransitionProfile`; AF keeps destructive-lock checks, plunder-state clearing, logging, and `InformationMessage` display while GCCZ core owns blocked-action and reversible-plunder-stop wording.
@@ -257,6 +258,12 @@ Follow-up isolation: final completion and encounter-exit UI now uses `SiegeInter
 
 Follow-up isolation: mission-exit fallback aftermath selection now uses `SiegeMissionExitOutcomeProfile`; AF keeps live state flags, native enum mapping, plunder start side effects, and pending-aftermath mutation while GCCZ core owns the exit priority order plus trigger source/detail wording.
 
+## 2026-07-29 town action routing repair
+
+- The core normalizer must preserve the explicit bloodbath-plus-colonization pair as `[ACTION:殖民]`; reducing `[ACTION:9] [ACTION:10]` to bloodbath silently loses the documented action-10 upgrade.
+- Fused AF town-action handlers may bridge 安兵、士兵救济、搜掠、血洗、殖民 targets into the historical allied index set only when the live Agent has explicit player provenance: already registered/commandable origin, SETS selected follower, main-party origin, or an active main-party hero. A matching troop template or a shared peaceful-scene team is not sufficient.
+- Fused diagnostics should record the normalized town action kinds, direct-response state, runtime allied identity, legacy registration state, and final handled result without changing ordinary AF dialogue outside active GCCZ.
+
 Follow-up isolation: direct AF aftermath campaign tick, native-menu intercept, external-pump, script-phase, and direct loot-screen defer source codes now use `SiegeDirectAftermathSourceProfile`; AF keeps the campaign tick callbacks, loot-screen timing, pending-script state, and encounter transition side effects while GCCZ core owns those source-code strings.
 
 Follow-up isolation: mission-end, session-load runtime guard reset, post-mission encounter finish, done-menu continue finish, native menu init/detection, and native devastate summary transition source codes now use `SiegeAftermathTransitionSourceProfile`; AF keeps mission lifecycle, native menu handling, loot-screen timing, and encounter transition side effects while GCCZ core owns the source-code strings.
@@ -265,9 +272,9 @@ Follow-up isolation: native flee/order bridge, commandable-agent probing, contro
 
 Follow-up isolation: GCCZ aftermath menu IDs and contextual-summary source marker now use `SiegeAftermathMenuProfile`; AF keeps Bannerlord menu registration, switching, and live menu side effects while GCCZ core owns the menu identifier strings, source marker, and matching helpers.
 
-Current tooling note: `一键编译覆盖推送` always builds both Bannerlord implementations plus Bootstrap and assembles one unified `AnimusForge` client module. Build/package entries use a project-local stage; only explicit overwrite entries replace `Modules\AnimusForge`. The old 1.3-default/`--dual` workflow is retired.
+Handoff/tooling note: fused `G:\AFMOD\new-\一键编译覆盖推送` scripts now default to Bannerlord 1.3.x for build/overwrite/package/push workflows and require explicit `--dual` for 1.4.5 output; this keeps the GCCZ+AF test path aligned with the current 1.3.x game install and prevents optional 1.4.5 dependency gaps from blocking 1.3.x handoff work.
 
-Handoff/tooling note: unified deployment restores only allowlisted private runtime dependencies (`Microsoft.ML.OnnxRuntime.dll`, native ONNX runtime DLLs, `System.Memory.dll`, `System.Buffers.dll`, and `System.Runtime.CompilerServices.Unsafe.dll`) from the source module bin after module assembly. Harmony and game-owned DLLs are never bundled.
+Handoff/tooling note: fused deploy now restores module-local runtime dependencies (`0Harmony.dll`, `Microsoft.ML.OnnxRuntime.dll`, `System.Memory.dll`, `System.Buffers.dll`, and `System.Runtime.CompilerServices.Unsafe.dll`) from the local build output after module mirroring, and build scripts pass `AnimusForgeBinDir` to the local output folder so Steam target cleanup cannot break the next 1.3.x build.
 
 Handoff/tooling note: AF v0.8.3 zip fusion completed from `F:\YLQxz\Mount-Blade-Bannerlord-AnimusForge-mod-main (2).zip` into fused `G:\AFMOD\new-` and deployed to the Bannerlord 1.3.x module. The 0.8.3 upstream added `WorldMapPartyCommandBehavior`; the fused tree now carries that file and registers it in `SubModule.cs`, while GCCZ remains isolated under `AnimusForge.SiegeAftermathIntervention` with AF-side hooks limited to guarded prompt injection, shared relief capture, and postprocess tag dispatch. Build/deploy verification used 1.3.x Debug output with DLL SHA256 `3F2D7A33919341A307718D2AE2BD1104462A97D8A6302325F7A5288655671751`.
 
@@ -285,12 +292,13 @@ Follow-up outcome tuning: finalized GCCZ destructive settlement effects now use 
 - GCCZ core policy treats [ACTION:搜掠]/[ACTION:血洗]/[ACTION:殖民] as soldier-mediated destructive labels: they execute only when the target is a player-allied siege soldier directly responding to the player's current command.
 - Invalid soldier-mediated destructive tags from NPC-to-NPC chatter are stripped and may trigger a nearby allied soldier inquiry instead of applying settlement consequences.
 
-## 2026-06-13 soldier thinking and same-culture cleanup
+## 2026-08-22 town role reaction guidance
 
-- `SiegeSoldierThinkingProfile` owns the allied-soldier visible behavior chain: scene fact → player command authority → current outcome → original culture/troop voice → emotion/personality variation → natural reply.
-- Soldier identity override does not erase AF culture/troop knowledge. A Khuzait soldier brought into GCCZ should still be able to use Khuzait knowledge-library material if AF passes the original `CultureId`, troop/identity id, and `CharacterObject` through the prompt bridge.
-- Same-culture destructive blocking is removed from GCCZ core. Same-culture may make soldiers more tense, ashamed, quiet, or uncomfortable, but it must not block GCCZ entry, 搜掠, 血洗, or 屠民迁殖.
-- 血洗 cannot be downgraded back to 搜掠/宽恕/救济, but it may still be upgraded into 屠民迁殖. 屠民迁殖 can also be triggered directly at the start by a clear player command to allied soldiers.
+- `TownPromptComposer` injects the localized six-role reaction matrix from `GcczTownPrompt.zh-CN.json` into the active town prompt.
+- AF remains responsible for live personality, relationship, identity, culture, knowledge-library, and memory facts. GCCZ does not create a parallel persona store.
+- Runtime scene facts and witnessed events have the highest priority, followed by AF personality and relationship. Role and cultural background refine expression without replacing current authority or causality.
+- Shared culture changes tone only. It cannot block or authorize `Plunder`, `Massacre`, `CulturalRepopulation`, or any other semantic action.
+- The same accepted action may sound different across roles and personalities, but eligibility, requirements, completion, rewards, penalties, and state transitions remain unchanged.
 
 ## 2026-06-14 AF086 prompt/postprocess bridge
 
@@ -326,11 +334,11 @@ Follow-up outcome tuning: finalized GCCZ destructive settlement effects now use 
 - `MyBehavior.RecordAnimusForgeSiegeInterventionForExternal(...)` is now present in the fused tree. It records the finalized GCCZ aftermath into AF's NPC action memory for relevant lords/owners while GCCZ still owns the settlement outcome logic and summary facts.
 - These are AF adapter/host compile fixes only; they do not move GCCZ outcome rules into `MyBehavior` or `SceneTauntBehavior`.
 
-## 2026-06-14 runtime dependency restore (updated for unified module)
+## 2026-06-14 dual deploy runtime dependency restore
 
-- `一键编译覆盖推送\deploy_module.ps1` restores only allowlisted module-local runtime dependencies after mirroring the source module and installing Bootstrap plus both implementation DLLs.
-- The single deployed `AnimusForge` bin receives `Microsoft.ML.OnnxRuntime.dll`, native ONNX runtime DLLs, `System.Memory.dll`, `System.Buffers.dll`, and `System.Runtime.CompilerServices.Unsafe.dll` from the source module bin. It does not receive `0Harmony.dll` or game-owned DLLs.
-- This prevents the single-module overwrite script from deleting runtime dependencies while mirroring the source module into Bannerlord `Modules`.
+- `G:\AFMOD\new-086\一键编译覆盖推送\deploy_module.ps1` now restores module-local runtime dependencies after the `/MIR` module copy and DLL/PDB update.
+- The deployed `AnimusForge_1_3_x` and `AnimusForge_1_4_5` bins receive `0Harmony.dll`, `Microsoft.ML.OnnxRuntime.dll`, `System.Memory.dll`, `System.Buffers.dll`, and `System.Runtime.CompilerServices.Unsafe.dll` from the current build output or source module bin.
+- This prevents the dual overwrite script from deleting runtime dependencies while mirroring the source module into Bannerlord `Modules`.
 - The same deploy script now uses a local SHA-256 helper with a `.NET` fallback when the host PowerShell does not expose `Get-FileHash`, so post-copy verification works on the older shell launched by the batch file.
 
 ## 2026-06-14 dual native siege aftermath entry menus
@@ -392,13 +400,15 @@ Fused AF short scene-reaction generators must keep GCCZ identity rules at the to
 
 ## 2026-06-25 AF094 ceremonial banner-bearer bridge
 
-- `SiegeBannerBearerProfile` owns dependency-free constants for the GCCZ ceremonial entry escort: two enabled banner bearers, the native third-command formation index (`FormationClass.Cavalry` in the AF bridge), initial spawn offsets, and AF bridge source strings.
-- Fused `G:\AFMOD\new-0.9.6\SiegeAiInterventionBehavior.cs` owns live Bannerlord side effects only: resolving the player's clan banner/banner item, picking non-hero main-party troops, spawning two banner-bearer agents with `AgentBuildData.BannerItem(...)`, assigning them to the native third formation, and giving that formation the same follow/order-controller priming as other GCCZ troops.
+- `SiegeBannerBearerProfile` owns dependency-free constants for the GCCZ ceremonial entry escort: two enabled banner bearers, the native second-command formation index (`FormationClass.Ranged` in the AF bridge), initial spawn offsets, and AF bridge source strings. `SiegeCastleRosterSelectionProfile` separately fixes all player-selected castle escort troops to the native first command formation (`FormationClass.Infantry`).
+- Fused `G:\AFMOD\NEW-10\SiegeAiInterventionBehavior.cs` owns live Bannerlord side effects only: resolving the player's clan banner/banner item, picking non-hero main-party troops, spawning two banner-bearer agents with `AgentBuildData.BannerItem(...)`, assigning them to the native second formation, and giving that formation the same follow/order-controller priming as other GCCZ troops. `TroopInspectionBehavior.cs` reassigns both reused and newly spawned selected escorts to the first formation.
 - The old custom banner-bearer follow/stop/teleport loop is intentionally removed. After initial spawn, banner bearers are ordinary player-team formation troops, so vanilla formation commands, including mount/dismount for mounted troops, can control them.
 - Banner bearers are added to the allied-agent set so GCCZ cleanup, prompt identity, and friendly-state restoration treat them as player soldiers, but the AF bridge excludes them from plunder allocation and massacre hunter selection. They remain visual/command-formation escorts, not part of the 70% plunder/attack executor pool.
 - The bridge is gated by the active GCCZ mission and runs after normal allied troop summon succeeds; ordinary AF scenes and vanilla town entries are unaffected.
 
-Mounted-player follow-up: TownCenter normally calls `SandBoxHelpers.MissionHelper.SpawnPlayer(..., noHorses: true)`, which forces the player on foot even when `Hero.MainHero.BattleEquipment` has a horse. During the active GCCZ mission, or the immediately pending GCCZ mission whose live settlement still matches `_activeSettlementId`, the fused AF bridge patches the `SpawnPlayer` overloads before the original body runs and rewrites the spawn parameters to `civilianEquipment=false` and `noHorses=false`. This makes the player enter GCCZ directly with battle equipment and the equipped mount when one exists, without spawning a separate ceremony horse after mission start. The pending-stage prefix is live-settlement gated and falls through unchanged for ordinary AF scenes and vanilla town entry. Banner bearers spawn mounted only when the player is already mounted or the player's battle equipment has a horse, and only if the selected non-hero troop can spawn mounted; otherwise they enter on foot in the same third formation.
+Mounted-player follow-up: TownCenter normally calls `SandBoxHelpers.MissionHelper.SpawnPlayer(..., noHorses: true)`, which forces the player on foot even when `Hero.MainHero.BattleEquipment` has a horse. During the active GCCZ mission, or the immediately pending GCCZ mission whose live settlement still matches `_activeSettlementId`, the fused AF bridge patches the `SpawnPlayer` overloads before the original body runs and rewrites the spawn parameters to `civilianEquipment=false` and `noHorses=false`. This makes the player enter GCCZ directly with battle equipment and the equipped mount when one exists, without spawning a separate ceremony horse after mission start. The pending-stage prefix is live-settlement gated and falls through unchanged for ordinary AF scenes and vanilla town entry. Banner bearers spawn mounted only when the player is already mounted or the player's battle equipment has a horse, and only if the selected non-hero troop can spawn mounted; otherwise they enter on foot in the same second formation.
+
+Castle scene input follow-up: fused `G:\AFMOD\NEW-10\AnimusForge\GUI\Prefabs\ShoutTextInputPopup.xml` keeps Enter-to-submit but also exposes explicit `发送` and `取消` buttons. This is an AF UI bridge fix for battle-hosted castle scenes; no GCCZ action is triggered until the normal shout submit callback receives non-empty player text.
 
 Banner-bearer source refinement: banner bearers are never heroes. The fused bridge now selects the banner-bearer troop type from the active selected entry roster first: among non-hero selected troops, the largest stack supplies both flag bearers; if multiple stacks have the same count, one stack is chosen randomly. Only when the selected entry roster has no non-hero troops, such as a pure companion/family/wanderer entry, does the bridge fall back to the player's hero culture and pick a highest-tier/highest-level non-hero soldier from that culture. Main-party majority is only a final safety fallback if the culture lookup cannot produce a soldier. Normal summoned heroes and soldiers remain forced on foot via the regular allied-spawn `.NoHorses(true)` path; only banner bearers may spawn mounted under the player-mount rule above.
 

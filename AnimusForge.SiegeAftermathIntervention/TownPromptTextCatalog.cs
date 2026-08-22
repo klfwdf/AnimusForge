@@ -18,6 +18,14 @@ public sealed class TownPromptTextCatalog
 
     public Dictionary<string, string> RoleInstructions { get; set; }
 
+    public string PersonalityPriorityInstruction { get; set; }
+
+    public string RelationshipAndWitnessInstruction { get; set; }
+
+    public string SameCultureSecondaryInstruction { get; set; }
+
+    public string ActionExpressionVariationInstruction { get; set; }
+
     public string AlliedSoldierState { get; set; }
 
     public string DefeatedGuardState { get; set; }
@@ -209,6 +217,10 @@ public sealed class TownPromptTextCatalog
             SceneSummaryTemplate = Pick(source.SceneSummaryTemplate, fallback.SceneSummaryTemplate),
             RoleSectionTitle = Pick(source.RoleSectionTitle, fallback.RoleSectionTitle),
             RoleInstructions = ResolveRoleInstructions(source.RoleInstructions, fallback.RoleInstructions),
+            PersonalityPriorityInstruction = Pick(source.PersonalityPriorityInstruction, fallback.PersonalityPriorityInstruction),
+            RelationshipAndWitnessInstruction = Pick(source.RelationshipAndWitnessInstruction, fallback.RelationshipAndWitnessInstruction),
+            SameCultureSecondaryInstruction = Pick(source.SameCultureSecondaryInstruction, fallback.SameCultureSecondaryInstruction),
+            ActionExpressionVariationInstruction = Pick(source.ActionExpressionVariationInstruction, fallback.ActionExpressionVariationInstruction),
             AlliedSoldierState = Pick(source.AlliedSoldierState, fallback.AlliedSoldierState),
             DefeatedGuardState = Pick(source.DefeatedGuardState, fallback.DefeatedGuardState),
             CivilianState = Pick(source.CivilianState, fallback.CivilianState),
@@ -304,19 +316,23 @@ public sealed class TownPromptTextCatalog
     {
         return new TownPromptTextCatalog
         {
-            Version = 1,
+            Version = 3,
             SceneSectionTitle = "[1. CURRENT SCENE]",
             SceneSummaryTemplate = "{settlement} was just captured by the player. Treat this as an occupied aftermath scene, not ordinary town life.",
             RoleSectionTitle = "[2. SPEAKER ROLE]",
             RoleInstructions = new Dictionary<string, string>
             {
-                [TownDialogueRole.AccompanyingNoble.ToString()] = "An accompanying allied noble. React through AF personality, politics, relationship, and witnessed events.",
-                [TownDialogueRole.NoblePrisoner.ToString()] = "A noble prisoner. React through dignity, fear, ransom value, and personal risk.",
-                [TownDialogueRole.PlayerCompanion.ToString()] = "A player companion. React through AF personality, relationship, and shared experience.",
-                [TownDialogueRole.SettlementNotable.ToString()] = "A settlement notable. React through occupation, local interests, civilian risk, and survival.",
-                [TownDialogueRole.OrdinarySoldier.ToString()] = "An ordinary soldier. Use only current orders, allegiance, morale, and witnessed scene events.",
-                [TownDialogueRole.OrdinaryCivilian.ToString()] = "An ordinary civilian. Use only current fear, safety, and witnessed scene events.",
+                [TownDialogueRole.AccompanyingNoble.ToString()] = "An accompanying allied noble. Use AF personality, political interests, relationship with the player, the player's conduct, and witnessed scene events. Advise or criticize as a noble without pretending to execute ordinary soldier orders.",
+                [TownDialogueRole.NoblePrisoner.ToString()] = "A noble prisoner. Use AF personality while emphasizing captivity, dignity, fear, ransom or bargaining value, personal risk, and judgment of the player's conduct. Do not speak as a free allied noble.",
+                [TownDialogueRole.PlayerCompanion.ToString()] = "A player companion. Use AF personality first, then relationship with the player, shared experience, the player's current conduct, and witnessed scene events. Comment or advise without pretending to be an ordinary soldier.",
+                [TownDialogueRole.SettlementNotable.ToString()] = "A settlement headman or notable. Use profession, local assets and networks, town rule memory, local interests, civilian risk, personal danger, and AF personality. Negotiate as a local representative without claiming victorious soldier authority.",
+                [TownDialogueRole.OrdinarySoldier.ToString()] = "An ordinary soldier. Use current orders, allegiance, morale, witnessed scene events, troop identity, and the AF unnamed-character personality. Keep all GCCZ personal memory scene-local.",
+                [TownDialogueRole.OrdinaryCivilian.ToString()] = "An ordinary civilian. Use occupation or social identity, town rule memory, the AF unnamed-character personality, fear, safety, witnessed harm, and the player's scene conduct. Keep all GCCZ personal memory scene-local.",
             },
+            PersonalityPriorityInstruction = "Priority: live scene facts and witnessed events first; then AF personality and relationship; then role, occupation, and background culture. Never invent a trait that AF did not provide.",
+            RelationshipAndWitnessInstruction = "Relationship changes trust, familiarity, restraint, and willingness to advise, but cannot erase captivity, command authority, witnessed harm, or another live scene fact.",
+            SameCultureSecondaryInstruction = "Shared culture is secondary atmosphere only. It may change idiom, grief, shame, or sympathy, but never overrides AF personality, personal relationship, current authority, or scene causality.",
+            ActionExpressionVariationInstruction = "Voice the same accepted action differently for different personalities and roles, while leaving its eligibility, requirements, completion, rewards, and consequences unchanged.",
             AlliedSoldierState = "The player is your direct commander. Obey valid scene orders without claiming to be a prisoner or defeated guard.",
             DefeatedGuardState = "You are a defeated or disarmed guard and no longer have enforcement authority.",
             CivilianState = "You are inside the defeated settlement and may fear, negotiate, request, or comply.",
