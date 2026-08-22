@@ -32,6 +32,8 @@ public static class SiegeActionTagCatalog
 
     public const string StopMassacrePromptTag = "[ACTION:11]";
 
+    public const string ConstructiveCultureChangePromptTag = "[ACTION:12]";
+
     public const string MercyTagPattern = @"\[ACTION:(?:1|SIEGE_MERCY|宽恕)\]";
 
     public const string ReliefTagPattern = @"\[ACTION:(?:2|SIEGE_RELIEF|救济)\]";
@@ -54,10 +56,12 @@ public static class SiegeActionTagCatalog
 
     public const string StopMassacreTagPattern = @"\[ACTION:(?:11|SIEGE_STOP_MASSACRE)\]";
 
-    public const string AnyActionTagPattern = @"\[ACTION:(?:10|[1-9]|SIEGE_[A-Z_]+|宽恕|救济|宣抚|盟誓|安兵|召集|抢钱|搜掠|血洗|殖民)(?::\d+)?\]";
+    public const string ConstructiveCultureChangeTagPattern = @"\[ACTION:(?:12|SIEGE_CHANGE_CULTURE)\]";
+
+    public const string AnyActionTagPattern = @"\[ACTION:(?:1[0-2]|[1-9]|SIEGE_[A-Z_]+|宽恕|救济|宣抚|盟誓|安兵|召集|抢钱|搜掠|血洗|殖民)(?::\d+)?\]";
 
     private static readonly Regex ActionTagRegex = new Regex(
-        @"\[ACTION:(?<name>10|[1-9]|SIEGE_[A-Z_]+|宽恕|救济|宣抚|盟誓|安兵|召集|抢钱|搜掠|血洗|殖民)(?::\d+)?\]",
+        @"\[ACTION:(?<name>1[0-2]|[1-9]|SIEGE_[A-Z_]+|宽恕|救济|宣抚|盟誓|安兵|召集|抢钱|搜掠|血洗|殖民)(?::\d+)?\]",
         RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
     private static readonly Regex StopMassacreActionTagRegex = new Regex(
@@ -100,6 +104,8 @@ public static class SiegeActionTagCatalog
             ["殖民"] = SiegeInterventionActionKind.CulturalRepopulation,
             ["11"] = SiegeInterventionActionKind.StopMassacre,
             ["SIEGE_STOP_MASSACRE"] = SiegeInterventionActionKind.StopMassacre,
+            ["12"] = SiegeInterventionActionKind.ConstructiveCultureChange,
+            ["SIEGE_CHANGE_CULTURE"] = SiegeInterventionActionKind.ConstructiveCultureChange,
         };
 
     private static readonly SiegeInterventionActionKind[] CanonicalOrder =
@@ -115,6 +121,7 @@ public static class SiegeActionTagCatalog
         SiegeInterventionActionKind.Massacre,
         SiegeInterventionActionKind.CulturalRepopulation,
         SiegeInterventionActionKind.StopMassacre,
+        SiegeInterventionActionKind.ConstructiveCultureChange,
     };
 
     private static readonly IReadOnlyDictionary<SiegeInterventionActionKind, string> KindToCanonicalTag =
@@ -131,6 +138,7 @@ public static class SiegeActionTagCatalog
             [SiegeInterventionActionKind.Massacre] = "[ACTION:血洗]",
             [SiegeInterventionActionKind.CulturalRepopulation] = "[ACTION:殖民]",
             [SiegeInterventionActionKind.StopMassacre] = "[ACTION:SIEGE_STOP_MASSACRE]",
+            [SiegeInterventionActionKind.ConstructiveCultureChange] = "[ACTION:SIEGE_CHANGE_CULTURE]",
         };
 
     private static readonly IReadOnlyDictionary<SiegeInterventionActionKind, string[]> KindToAliases =
@@ -147,6 +155,7 @@ public static class SiegeActionTagCatalog
             [SiegeInterventionActionKind.Massacre] = new[] { MassacrePromptTag, "[ACTION:血洗]", "[ACTION:SIEGE_MASSACRE]" },
             [SiegeInterventionActionKind.CulturalRepopulation] = new[] { CulturalRepopulationPromptTag, "[ACTION:殖民]", "[ACTION:SIEGE_PURGE_REPOPULATION]", "[ACTION:SIEGE_CULTURAL_REPOPULATION]" },
             [SiegeInterventionActionKind.StopMassacre] = new[] { StopMassacrePromptTag, "[ACTION:SIEGE_STOP_MASSACRE]" },
+            [SiegeInterventionActionKind.ConstructiveCultureChange] = new[] { ConstructiveCultureChangePromptTag, "[ACTION:SIEGE_CHANGE_CULTURE]" },
         };
 
     public static bool TryParseName(string tagName, out SiegeInterventionActionKind kind)

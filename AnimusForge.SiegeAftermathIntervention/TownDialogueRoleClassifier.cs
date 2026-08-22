@@ -70,4 +70,13 @@ public static class TownDialogueRoleClassifier
         return role == TownDialogueRole.SettlementNotable
             || role == TownDialogueRole.OrdinaryCivilian;
     }
+
+    public static bool CanAuthorizeConstructiveCultureChange(TownDialogueRole role, bool isAlliedSoldier)
+    {
+        role = NormalizeForRuntime(role);
+        return role == TownDialogueRole.AccompanyingNoble
+            || role == TownDialogueRole.PlayerCompanion
+            || role == TownDialogueRole.SettlementNotable
+            || (role == TownDialogueRole.OrdinarySoldier && isAlliedSoldier);
+    }
 }

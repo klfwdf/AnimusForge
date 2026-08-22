@@ -74,6 +74,16 @@ public sealed class TownPromptTextCatalog
 
     public string MassacreSoldierMemoryPerspective { get; set; }
 
+    public string ConstructiveCultureChangeContextTemplate { get; set; }
+
+    public string ConstructiveCultureChangeUnavailableContextTemplate { get; set; }
+
+    public string ConstructiveCultureChangeSuccessMessageTemplate { get; set; }
+
+    public string ConstructiveCultureChangeMemoryTitle { get; set; }
+
+    public string ConstructiveCultureChangeMemoryTemplate { get; set; }
+
     public string OutcomeNoDecision { get; set; }
 
     public string OutcomeMassacreActive { get; set; }
@@ -191,6 +201,11 @@ public sealed class TownPromptTextCatalog
             MassacreLedgerCompletedState = Pick(source.MassacreLedgerCompletedState, fallback.MassacreLedgerCompletedState),
             MassacreStoppedMessageTemplate = Pick(source.MassacreStoppedMessageTemplate, fallback.MassacreStoppedMessageTemplate),
             MassacreSoldierMemoryPerspective = Pick(source.MassacreSoldierMemoryPerspective, fallback.MassacreSoldierMemoryPerspective),
+            ConstructiveCultureChangeContextTemplate = Pick(source.ConstructiveCultureChangeContextTemplate, fallback.ConstructiveCultureChangeContextTemplate),
+            ConstructiveCultureChangeUnavailableContextTemplate = Pick(source.ConstructiveCultureChangeUnavailableContextTemplate, fallback.ConstructiveCultureChangeUnavailableContextTemplate),
+            ConstructiveCultureChangeSuccessMessageTemplate = Pick(source.ConstructiveCultureChangeSuccessMessageTemplate, fallback.ConstructiveCultureChangeSuccessMessageTemplate),
+            ConstructiveCultureChangeMemoryTitle = Pick(source.ConstructiveCultureChangeMemoryTitle, fallback.ConstructiveCultureChangeMemoryTitle),
+            ConstructiveCultureChangeMemoryTemplate = Pick(source.ConstructiveCultureChangeMemoryTemplate, fallback.ConstructiveCultureChangeMemoryTemplate),
             OutcomeNoDecision = Pick(source.OutcomeNoDecision, fallback.OutcomeNoDecision),
             OutcomeMassacreActive = Pick(source.OutcomeMassacreActive, fallback.OutcomeMassacreActive),
             OutcomePlunderActive = Pick(source.OutcomePlunderActive, fallback.OutcomePlunderActive),
@@ -276,6 +291,11 @@ public sealed class TownPromptTextCatalog
             MassacreLedgerCompletedState = "completed and locked",
             MassacreStoppedMessageTemplate = "Massacre stopped. {survivor_count} captured targets survive; prior deaths and consequences remain.",
             MassacreSoldierMemoryPerspective = "Massacre is active, but a stop order remains valid until every captured target is dead. Obedience may still sound tense or distressed.",
+            ConstructiveCultureChangeContextTemplate = "Constructive culture administration is available for {settlement}: current culture {current_culture}, player governance culture {target_culture}. This changes only the town culture and does not imply killing, expulsion, colonization, or a settlement aftermath result.",
+            ConstructiveCultureChangeUnavailableContextTemplate = "Constructive culture administration is not currently executable for {settlement}: current culture {current_culture}, player governance culture {target_culture}. Do not claim it was completed.",
+            ConstructiveCultureChangeSuccessMessageTemplate = "{settlement} now uses {target_culture} culture through ordinary administration. No colonization, massacre, plunder, or settlement aftermath result was triggered.",
+            ConstructiveCultureChangeMemoryTitle = "Constructive culture administration",
+            ConstructiveCultureChangeMemoryTemplate = "The player changed {settlement} from {current_culture} culture to {target_culture} culture through ordinary administration without colonization or destructive settlement resolution.",
             OutcomeNoDecision = "No final aftermath has been selected.",
             OutcomeMassacreActive = "Massacre is active and may be stopped before every captured target is dead; prior deaths remain.",
             OutcomePlunderActive = "Plunder is active and remains reversible.",

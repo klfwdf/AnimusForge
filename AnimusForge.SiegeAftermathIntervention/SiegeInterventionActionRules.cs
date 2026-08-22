@@ -66,6 +66,11 @@ public static class SiegeInterventionActionRules
 
         bool destructiveLocked = HasDestructiveOutcomeLocked(currentOutcome, culturalRepopulationRequested, pendingDevastateAftermath);
 
+        if (action == SiegeInterventionActionKind.ConstructiveCultureChange)
+        {
+            return Allow(action, currentOutcome, currentOutcome, stopsReversiblePlunder: false, "constructive_culture_change_allowed");
+        }
+
         if (action == SiegeInterventionActionKind.StopMassacre)
         {
             return currentOutcome == SiegeInterventionOutcome.Massacre

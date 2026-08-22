@@ -38,7 +38,7 @@ Second extraction slice:
 
 ## Postprocess tag normalizer
 
-`SiegePostprocessTagNormalizer` owns dependency-free AI output tag normalization for the active GCCZ scene. AF adapters pass the runtime-allowed postprocess tags; the core preserves English/Chinese alias matching, fixed canonical output order, duplicate removal, and last mood tag preservation.
+`SiegePostprocessTagNormalizer` owns dependency-free AI output tag normalization for the active GCCZ scene. AF adapters pass the runtime-allowed postprocess tags; the core preserves English/Chinese alias matching, conservative single-action ordering, duplicate removal, and last mood tag preservation. The explicit `[ACTION:9]` + `[ACTION:10]` pair is normalized to colonization because action 10 is the documented bloodbath-to-colonization upgrade; unrelated ambiguous multi-action batches retain conservative priority. Allowed tags are matched exactly, so `[ACTION:1]` cannot pass an `[ACTION:10]`-only allowlist.
 
 
 ## Shared civilian relief pool
@@ -176,6 +176,12 @@ Same-culture destructive blocking has been removed from this profile. AF adapter
 `SiegeCulturalRepopulationProfile` owns dependency-free aftermath kind, massacre trigger wording, request memory text, pending UI message, completion UI message, and apply source codes for 屠民迁殖. AF adapters still resolve Bannerlord cultures, mutate settlements/villages/notables, and run mission/combat side effects.
 
 屠民迁殖 target validation UI text also lives on this profile, keeping the fused AF handler limited to allied-soldier checks. Same-culture is not a policy block.
+
+## Constructive town culture administration
+
+`TownConstructiveCultureChangePolicy` owns the dependency-free eligibility matrix for ordinary town culture administration. It requires an active GCCZ town stage, a different player-governance target culture, a direct response from an authorized role, and no active massacre or colonization state.
+
+`TownConstructiveCultureChangeTextProfile` formats localized prompt context, completion UI, and scene memory. The AF adapter may mutate only the current town culture and refresh settlement rule memory; it must not modify bound villages, notables, operation ledgers, pending aftermath, rewards, penalties, or completion requirements. Destructive cultural repopulation remains a separate action and state machine.
 
 ## Soldier thinking profile
 

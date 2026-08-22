@@ -47,6 +47,14 @@ public static class SiegePostprocessRuleFilter
             return false;
         }
 
+        bool constructiveCultureChangeTag = kinds.Contains(SiegeInterventionActionKind.ConstructiveCultureChange);
+        if (constructiveCultureChangeTag
+            && (!facts.ConstructiveCultureChangeAvailable
+                || !TownDialogueRoleClassifier.CanAuthorizeConstructiveCultureChange(facts.DialogueRole, facts.IsAlliedSoldier)))
+        {
+            return false;
+        }
+
         bool soldierAppeasementTag = kinds.Contains(SiegeInterventionActionKind.AppeaseSoldiers);
         if (soldierAppeasementTag
             && (!TownDialogueRoleClassifier.CanExecuteAlliedSoldierOrders(facts.DialogueRole, facts.IsAlliedSoldier)
