@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" type="string">
+  <tags>
+    <tag language="简体中文" />
+  </tags>
+  <strings>
+    <string id="gccz_town_manual_setting_name" text="城镇说明书" />
+    <string id="gccz_town_manual_setting_content" text="打开说明书" />
+    <string id="gccz_town_manual_setting_hint" text="打开仅介绍 GCCZ 城镇处置的分页说明书。" />
+  </strings>
+</base>
