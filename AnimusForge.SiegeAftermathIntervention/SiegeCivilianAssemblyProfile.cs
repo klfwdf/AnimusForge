@@ -12,6 +12,11 @@ public static class SiegeCivilianAssemblyProfile
 
     public const int TownSceneCap = MaxDesiredCivilianCount;
 
+    // Villages have fewer navigation points and a much smaller native crowd.
+    // Keep their cap separate so prosperity can make a village feel alive
+    // without turning it into a second town.
+    public const int VillageSceneCap = 100;
+
     public const int SceneTotalAgentSoftCap = 320;
 
     public const int MinimumSceneCap = 60;
