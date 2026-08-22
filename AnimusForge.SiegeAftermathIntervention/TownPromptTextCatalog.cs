@@ -38,11 +38,15 @@ public sealed class TownPromptTextCatalog
 
     public string SettlementRuleMemoryPreviousTemplate { get; set; }
 
-    public string SettlementRuleMemoryPreviousCultureTemplate { get; set; }
+    public string SettlementRuleMemoryNarrativeTemplate { get; set; }
+
+    public string SettlementRuleMemoryPreviousNarrativeTemplate { get; set; }
 
     public string SettlementRuleMemoryUnknownRuler { get; set; }
 
     public string SettlementRuleMemoryUnknownCulture { get; set; }
+
+    public string SettlementRuleMemoryUnknownPersonality { get; set; }
 
     public string SettlementRuleMemoryDurationLessThanDay { get; set; }
 
@@ -53,6 +57,38 @@ public sealed class TownPromptTextCatalog
     public string SettlementRuleMemoryDurationWeeksTemplate { get; set; }
 
     public string SettlementRuleMemoryDurationYearsTemplate { get; set; }
+
+    public string SettlementRuleMemoryEncyclopediaHeader { get; set; }
+
+    public string SettlementRuleMemoryEncyclopediaCurrentTemplate { get; set; }
+
+    public string SettlementRuleMemoryEncyclopediaPreviousTemplate { get; set; }
+
+    public string SettlementRuleMemoryEncyclopediaGenerating { get; set; }
+
+    public string SettlementRuleMemoryGenerationSystemPrompt { get; set; }
+
+    public string SettlementRuleMemoryGenerationUserTemplate { get; set; }
+
+    public string SettlementRuleMemoryGenerationOutputProtocol { get; set; }
+
+    public string SettlementRuleMemoryDeveloperMenuOption { get; set; }
+
+    public string SettlementRuleMemoryDeveloperSelectionTitle { get; set; }
+
+    public string SettlementRuleMemoryDeveloperSelectionDescription { get; set; }
+
+    public string SettlementRuleMemoryDeveloperEntryTemplate { get; set; }
+
+    public string SettlementRuleMemoryDeveloperEditTitleTemplate { get; set; }
+
+    public string SettlementRuleMemoryDeveloperEditHint { get; set; }
+
+    public string SettlementRuleMemoryDeveloperSaveLabel { get; set; }
+
+    public string SettlementRuleMemoryDeveloperCancelLabel { get; set; }
+
+    public string SettlementRuleMemoryDeveloperRegenerateLabel { get; set; }
 
     public string PlunderLedgerContextTemplate { get; set; }
 
@@ -183,14 +219,32 @@ public sealed class TownPromptTextCatalog
             SettlementRuleMemoryCurrentTemplate = Pick(source.SettlementRuleMemoryCurrentTemplate, fallback.SettlementRuleMemoryCurrentTemplate),
             SettlementRuleMemoryPersonalityTemplate = Pick(source.SettlementRuleMemoryPersonalityTemplate, fallback.SettlementRuleMemoryPersonalityTemplate),
             SettlementRuleMemoryPreviousTemplate = Pick(source.SettlementRuleMemoryPreviousTemplate, fallback.SettlementRuleMemoryPreviousTemplate),
-            SettlementRuleMemoryPreviousCultureTemplate = Pick(source.SettlementRuleMemoryPreviousCultureTemplate, fallback.SettlementRuleMemoryPreviousCultureTemplate),
+            SettlementRuleMemoryNarrativeTemplate = Pick(source.SettlementRuleMemoryNarrativeTemplate, fallback.SettlementRuleMemoryNarrativeTemplate),
+            SettlementRuleMemoryPreviousNarrativeTemplate = Pick(source.SettlementRuleMemoryPreviousNarrativeTemplate, fallback.SettlementRuleMemoryPreviousNarrativeTemplate),
             SettlementRuleMemoryUnknownRuler = Pick(source.SettlementRuleMemoryUnknownRuler, fallback.SettlementRuleMemoryUnknownRuler),
             SettlementRuleMemoryUnknownCulture = Pick(source.SettlementRuleMemoryUnknownCulture, fallback.SettlementRuleMemoryUnknownCulture),
+            SettlementRuleMemoryUnknownPersonality = Pick(source.SettlementRuleMemoryUnknownPersonality, fallback.SettlementRuleMemoryUnknownPersonality),
             SettlementRuleMemoryDurationLessThanDay = Pick(source.SettlementRuleMemoryDurationLessThanDay, fallback.SettlementRuleMemoryDurationLessThanDay),
             SettlementRuleMemoryDurationAtLeastTwoYears = Pick(source.SettlementRuleMemoryDurationAtLeastTwoYears, fallback.SettlementRuleMemoryDurationAtLeastTwoYears),
             SettlementRuleMemoryDurationDaysTemplate = Pick(source.SettlementRuleMemoryDurationDaysTemplate, fallback.SettlementRuleMemoryDurationDaysTemplate),
             SettlementRuleMemoryDurationWeeksTemplate = Pick(source.SettlementRuleMemoryDurationWeeksTemplate, fallback.SettlementRuleMemoryDurationWeeksTemplate),
             SettlementRuleMemoryDurationYearsTemplate = Pick(source.SettlementRuleMemoryDurationYearsTemplate, fallback.SettlementRuleMemoryDurationYearsTemplate),
+            SettlementRuleMemoryEncyclopediaHeader = Pick(source.SettlementRuleMemoryEncyclopediaHeader, fallback.SettlementRuleMemoryEncyclopediaHeader),
+            SettlementRuleMemoryEncyclopediaCurrentTemplate = Pick(source.SettlementRuleMemoryEncyclopediaCurrentTemplate, fallback.SettlementRuleMemoryEncyclopediaCurrentTemplate),
+            SettlementRuleMemoryEncyclopediaPreviousTemplate = Pick(source.SettlementRuleMemoryEncyclopediaPreviousTemplate, fallback.SettlementRuleMemoryEncyclopediaPreviousTemplate),
+            SettlementRuleMemoryEncyclopediaGenerating = Pick(source.SettlementRuleMemoryEncyclopediaGenerating, fallback.SettlementRuleMemoryEncyclopediaGenerating),
+            SettlementRuleMemoryGenerationSystemPrompt = Pick(source.SettlementRuleMemoryGenerationSystemPrompt, fallback.SettlementRuleMemoryGenerationSystemPrompt),
+            SettlementRuleMemoryGenerationUserTemplate = Pick(source.SettlementRuleMemoryGenerationUserTemplate, fallback.SettlementRuleMemoryGenerationUserTemplate),
+            SettlementRuleMemoryGenerationOutputProtocol = Pick(source.SettlementRuleMemoryGenerationOutputProtocol, fallback.SettlementRuleMemoryGenerationOutputProtocol),
+            SettlementRuleMemoryDeveloperMenuOption = Pick(source.SettlementRuleMemoryDeveloperMenuOption, fallback.SettlementRuleMemoryDeveloperMenuOption),
+            SettlementRuleMemoryDeveloperSelectionTitle = Pick(source.SettlementRuleMemoryDeveloperSelectionTitle, fallback.SettlementRuleMemoryDeveloperSelectionTitle),
+            SettlementRuleMemoryDeveloperSelectionDescription = Pick(source.SettlementRuleMemoryDeveloperSelectionDescription, fallback.SettlementRuleMemoryDeveloperSelectionDescription),
+            SettlementRuleMemoryDeveloperEntryTemplate = Pick(source.SettlementRuleMemoryDeveloperEntryTemplate, fallback.SettlementRuleMemoryDeveloperEntryTemplate),
+            SettlementRuleMemoryDeveloperEditTitleTemplate = Pick(source.SettlementRuleMemoryDeveloperEditTitleTemplate, fallback.SettlementRuleMemoryDeveloperEditTitleTemplate),
+            SettlementRuleMemoryDeveloperEditHint = Pick(source.SettlementRuleMemoryDeveloperEditHint, fallback.SettlementRuleMemoryDeveloperEditHint),
+            SettlementRuleMemoryDeveloperSaveLabel = Pick(source.SettlementRuleMemoryDeveloperSaveLabel, fallback.SettlementRuleMemoryDeveloperSaveLabel),
+            SettlementRuleMemoryDeveloperCancelLabel = Pick(source.SettlementRuleMemoryDeveloperCancelLabel, fallback.SettlementRuleMemoryDeveloperCancelLabel),
+            SettlementRuleMemoryDeveloperRegenerateLabel = Pick(source.SettlementRuleMemoryDeveloperRegenerateLabel, fallback.SettlementRuleMemoryDeveloperRegenerateLabel),
             PlunderLedgerContextTemplate = Pick(source.PlunderLedgerContextTemplate, fallback.PlunderLedgerContextTemplate),
             PlunderLedgerActiveState = Pick(source.PlunderLedgerActiveState, fallback.PlunderLedgerActiveState),
             PlunderLedgerStoppedState = Pick(source.PlunderLedgerStoppedState, fallback.PlunderLedgerStoppedState),
@@ -273,14 +327,32 @@ public sealed class TownPromptTextCatalog
             SettlementRuleMemoryCurrentTemplate = "Town rule memory: {ruler} has governed {settlement} for {duration}; the current ruling culture is {culture}.",
             SettlementRuleMemoryPersonalityTemplate = "Ruler personality recorded by AF: {personality}.",
             SettlementRuleMemoryPreviousTemplate = "Previous rule: {ruler}, {culture} culture, for {duration}.",
-            SettlementRuleMemoryPreviousCultureTemplate = "Latest culture transition: {culture} culture was replaced while {ruler} remained ruler.",
+            SettlementRuleMemoryNarrativeTemplate = "Local account under {ruler}: {narrative}",
+            SettlementRuleMemoryPreviousNarrativeTemplate = "Retained local account under {ruler}: {narrative}",
             SettlementRuleMemoryUnknownRuler = "an unrecorded ruler",
             SettlementRuleMemoryUnknownCulture = "an unrecorded culture",
+            SettlementRuleMemoryUnknownPersonality = "no reliable AF personality record",
             SettlementRuleMemoryDurationLessThanDay = "less than one day",
             SettlementRuleMemoryDurationAtLeastTwoYears = "at least two years",
             SettlementRuleMemoryDurationDaysTemplate = "{value} days",
             SettlementRuleMemoryDurationWeeksTemplate = "{value} weeks",
             SettlementRuleMemoryDurationYearsTemplate = "{value} years",
+            SettlementRuleMemoryEncyclopediaHeader = "[Town memory]",
+            SettlementRuleMemoryEncyclopediaCurrentTemplate = "Current ruler: {ruler}; {culture}; {duration}.\n{narrative}",
+            SettlementRuleMemoryEncyclopediaPreviousTemplate = "Former ruler: {ruler}; {culture}; {duration}.\n{narrative}",
+            SettlementRuleMemoryEncyclopediaGenerating = "The local account is being compiled.",
+            SettlementRuleMemoryGenerationSystemPrompt = "Write one concise local town memory grounded only in the supplied facts. Treat the AF ruler personality as the main cause of public reputation. Do not invent named events, rewards, game mechanics, tags, or player biography.",
+            SettlementRuleMemoryGenerationUserTemplate = "Town: {settlement}\nRuler: {ruler}\nCulture: {culture}\nRule duration: {duration}\nAF ruler personality and reputation traits: {personality}\nWrite about 100 Chinese characters from the shared perspective of local residents. Show how the ruler's reputation affected daily expectations, fear, trust, or public conduct.",
+            SettlementRuleMemoryGenerationOutputProtocol = "OUTPUT: Return exactly one JSON object and nothing else: {\"memory\":\"80-120 Chinese characters\"}",
+            SettlementRuleMemoryDeveloperMenuOption = "Developer: edit current town memory",
+            SettlementRuleMemoryDeveloperSelectionTitle = "Town memory editor",
+            SettlementRuleMemoryDeveloperSelectionDescription = "Select one of the retained ruler memories.",
+            SettlementRuleMemoryDeveloperEntryTemplate = "{ruler} | {duration}",
+            SettlementRuleMemoryDeveloperEditTitleTemplate = "Edit town memory: {ruler}",
+            SettlementRuleMemoryDeveloperEditHint = "Edit the local memory article. Clearing it allows generation again.",
+            SettlementRuleMemoryDeveloperSaveLabel = "Save",
+            SettlementRuleMemoryDeveloperCancelLabel = "Cancel",
+            SettlementRuleMemoryDeveloperRegenerateLabel = "Regenerate current memory",
             PlunderLedgerContextTemplate = "Plunder ledger: {state}; acquired value {acquired_value}/{available_value} ({progress}); merchants {merchant_count}, notables {notable_count}, civilians {civilian_count}; gold {gold}, item value {item_value}.",
             PlunderLedgerActiveState = "active",
             PlunderLedgerStoppedState = "stopped; prior loot and consequences remain",

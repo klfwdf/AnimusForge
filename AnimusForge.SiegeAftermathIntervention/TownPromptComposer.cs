@@ -164,47 +164,115 @@ public static class TownPromptComposer
         }
 
         TownPromptTextCatalog text = TownPromptTextCatalog.Resolve(textCatalog);
-        int elapsedDays = Math.Max(0, Math.Max(0, currentDay) - Math.Max(0, record.RuleStartDay));
-        bool durationUsesMinimum = record.MinimumRuleDurationDays > elapsedDays;
-        string currentDuration = FormatRuleDuration(
-            SettlementRuleMemoryStore.GetEffectiveRuleDurationDays(record, currentDay),
-            durationUsesMinimum,
-            text);
-        string current = text.SettlementRuleMemoryCurrentTemplate;
-        current = ApplyTemplate(current, "ruler", NormalizeRuleMemoryValue(record.RulerName, record.RulerId, text.SettlementRuleMemoryUnknownRuler));
-        current = ApplyTemplate(current, "settlement", NormalizeRuleMemoryValue(record.SettlementName, record.SettlementId));
-        current = ApplyTemplate(current, "culture", NormalizeRuleMemoryValue(record.CultureName, record.CultureId, text.SettlementRuleMemoryUnknownCulture));
-        current = ApplyTemplate(current, "duration", currentDuration);
-
-        var lines = new List<string> { current };
-        if (!string.IsNullOrWhiteSpace(record.RulerPersonality))
+        var lines = new List<string>();
+        for (int index = 0; index < record.RulerMemories.Count; index++)
         {
-            lines.Add(ApplyTemplate(
-                text.SettlementRuleMemoryPersonalityTemplate,
-                "personality",
-                record.RulerPersonality.Trim()));
+            SettlementRuleMemoryEntry entry = record.RulerMemories[index];
+            bool isCurrent = index == 0;
+            lines.Add(BuildRuleEntryFacts(record, entry, currentDay, isCurrent, text));
+            if (isCurrent && !string.IsNullOrWhiteSpace(entry.RulerPersonality))
+            {
+                lines.Add(ApplyTemplate(
+                    text.SettlementRuleMemoryPersonalityTemplate,
+                    "personality",
+                    entry.RulerPersonality.Trim()));
+            }
+            if (!string.IsNullOrWhiteSpace(entry.Narrative))
+            {
+                string narrativeTemplate = isCurrent
+                    ? text.SettlementRuleMemoryNarrativeTemplate
+                    : text.SettlementRuleMemoryPreviousNarrativeTemplate;
+                string narrative = ApplyTemplate(narrativeTemplate, "ruler", ResolveRulerName(entry, text));
+                lines.Add(ApplyTemplate(narrative, "narrative", entry.Narrative.Trim()));
+            }
         }
-
-        if (record.HasPreviousRule)
-        {
-            bool cultureOnlyTransition = IsSameRuleMemoryValue(
-                record.RulerId,
-                record.RulerName,
-                record.PreviousRulerId,
-                record.PreviousRulerName);
-            string previous = cultureOnlyTransition
-                ? text.SettlementRuleMemoryPreviousCultureTemplate
-                : text.SettlementRuleMemoryPreviousTemplate;
-            previous = ApplyTemplate(previous, "ruler", NormalizeRuleMemoryValue(record.PreviousRulerName, record.PreviousRulerId, text.SettlementRuleMemoryUnknownRuler));
-            previous = ApplyTemplate(previous, "culture", NormalizeRuleMemoryValue(record.PreviousCultureName, record.PreviousCultureId, text.SettlementRuleMemoryUnknownCulture));
-            previous = ApplyTemplate(
-                previous,
-                "duration",
-                FormatRuleDuration(record.PreviousRuleDurationDays, record.PreviousDurationWasMinimum, text));
-            lines.Add(previous);
-        }
-
         return string.Join(Environment.NewLine, lines);
+    }
+
+    public static string BuildSettlementRuleMemoryEncyclopediaText(
+        SettlementRuleMemoryRecord record,
+        int currentDay,
+        bool generationPending,
+        TownPromptTextCatalog textCatalog)
+    {
+        if (record == null || record.CurrentRule == null)
+        {
+            return string.Empty;
+        }
+
+        TownPromptTextCatalog text = TownPromptTextCatalog.Resolve(textCatalog);
+        var sections = new List<string> { text.SettlementRuleMemoryEncyclopediaHeader };
+        for (int index = 0; index < record.RulerMemories.Count; index++)
+        {
+            SettlementRuleMemoryEntry entry = record.RulerMemories[index];
+            bool isCurrent = index == 0;
+            string template = isCurrent
+                ? text.SettlementRuleMemoryEncyclopediaCurrentTemplate
+                : text.SettlementRuleMemoryEncyclopediaPreviousTemplate;
+            string section = ApplyRuleEntryTemplate(template, record, entry, currentDay, isCurrent, text);
+            string narrative = entry.Narrative.Trim();
+            if (isCurrent && string.IsNullOrWhiteSpace(narrative) && generationPending)
+            {
+                narrative = text.SettlementRuleMemoryEncyclopediaGenerating;
+            }
+            section = ApplyTemplate(section, "narrative", narrative);
+            sections.Add(section.Trim());
+        }
+        return string.Join(Environment.NewLine + Environment.NewLine, sections);
+    }
+
+    public static SettlementRuleMemoryGenerationPrompt BuildSettlementRuleMemoryGenerationPrompt(
+        SettlementRuleMemoryRecord record,
+        int currentDay,
+        TownPromptTextCatalog textCatalog)
+    {
+        if (record == null || record.CurrentRule == null)
+        {
+            return new SettlementRuleMemoryGenerationPrompt(string.Empty, string.Empty);
+        }
+
+        TownPromptTextCatalog text = TownPromptTextCatalog.Resolve(textCatalog);
+        SettlementRuleMemoryEntry entry = record.CurrentRule;
+        string userPrompt = ApplyRuleEntryTemplate(
+            text.SettlementRuleMemoryGenerationUserTemplate,
+            record,
+            entry,
+            currentDay,
+            true,
+            text);
+        userPrompt = ApplyTemplate(
+            userPrompt,
+            "personality",
+            NormalizeRuleMemoryValue(entry.RulerPersonality, string.Empty, text.SettlementRuleMemoryUnknownPersonality));
+        userPrompt = userPrompt.Trim()
+            + Environment.NewLine
+            + Environment.NewLine
+            + text.SettlementRuleMemoryGenerationOutputProtocol.Trim();
+        return new SettlementRuleMemoryGenerationPrompt(
+            text.SettlementRuleMemoryGenerationSystemPrompt.Trim(),
+            userPrompt);
+    }
+
+    public static string BuildSettlementRuleMemoryDeveloperEntryText(
+        SettlementRuleMemoryRecord record,
+        int entryIndex,
+        int currentDay,
+        TownPromptTextCatalog textCatalog)
+    {
+        if (record == null || entryIndex < 0 || entryIndex >= record.RulerMemories.Count)
+        {
+            return string.Empty;
+        }
+
+        TownPromptTextCatalog text = TownPromptTextCatalog.Resolve(textCatalog);
+        SettlementRuleMemoryEntry entry = record.RulerMemories[entryIndex];
+        return ApplyRuleEntryTemplate(
+            text.SettlementRuleMemoryDeveloperEntryTemplate,
+            record,
+            entry,
+            currentDay,
+            entryIndex == 0,
+            text).Trim();
     }
 
     public static string BuildTownOperationLedgerContext(
@@ -294,6 +362,57 @@ public static class TownPromptComposer
         return (template ?? string.Empty).Replace("{" + key + "}", value ?? string.Empty);
     }
 
+    private static string BuildRuleEntryFacts(
+        SettlementRuleMemoryRecord record,
+        SettlementRuleMemoryEntry entry,
+        int currentDay,
+        bool isCurrent,
+        TownPromptTextCatalog text)
+    {
+        string template = isCurrent
+            ? text.SettlementRuleMemoryCurrentTemplate
+            : text.SettlementRuleMemoryPreviousTemplate;
+        return ApplyRuleEntryTemplate(template, record, entry, currentDay, isCurrent, text);
+    }
+
+    private static string ApplyRuleEntryTemplate(
+        string template,
+        SettlementRuleMemoryRecord record,
+        SettlementRuleMemoryEntry entry,
+        int currentDay,
+        bool isCurrent,
+        TownPromptTextCatalog text)
+    {
+        int elapsed = Math.Max(0, Math.Max(0, currentDay) - entry.RuleStartDay);
+        bool usesMinimum = isCurrent
+            ? entry.MinimumRuleDurationDays > elapsed
+            : entry.DurationWasMinimum;
+        string result = ApplyTemplate(template, "ruler", ResolveRulerName(entry, text));
+        result = ApplyTemplate(
+            result,
+            "settlement",
+            NormalizeRuleMemoryValue(record.SettlementName, record.SettlementId));
+        result = ApplyTemplate(
+            result,
+            "culture",
+            NormalizeRuleMemoryValue(entry.CultureName, entry.CultureId, text.SettlementRuleMemoryUnknownCulture));
+        return ApplyTemplate(
+            result,
+            "duration",
+            FormatRuleDuration(
+                SettlementRuleMemoryStore.GetEffectiveRuleDurationDays(entry, currentDay, isCurrent),
+                usesMinimum,
+                text));
+    }
+
+    private static string ResolveRulerName(SettlementRuleMemoryEntry entry, TownPromptTextCatalog text)
+    {
+        return NormalizeRuleMemoryValue(
+            entry?.RulerName,
+            entry?.RulerId,
+            text.SettlementRuleMemoryUnknownRuler);
+    }
+
     private static string FormatRuleDuration(int durationDays, bool usesMinimum, TownPromptTextCatalog text)
     {
         if (usesMinimum)
@@ -332,25 +451,6 @@ public static class TownPromptComposer
         }
         string fallbackValue = (fallback ?? string.Empty).Trim();
         return string.IsNullOrWhiteSpace(fallbackValue) ? (unknown ?? string.Empty).Trim() : fallbackValue;
-    }
-
-    private static bool IsSameRuleMemoryValue(
-        string currentId,
-        string currentName,
-        string previousId,
-        string previousName)
-    {
-        string normalizedCurrentId = (currentId ?? string.Empty).Trim();
-        string normalizedPreviousId = (previousId ?? string.Empty).Trim();
-        if (!string.IsNullOrWhiteSpace(normalizedCurrentId) || !string.IsNullOrWhiteSpace(normalizedPreviousId))
-        {
-            return string.Equals(normalizedCurrentId, normalizedPreviousId, StringComparison.OrdinalIgnoreCase);
-        }
-
-        return string.Equals(
-            (currentName ?? string.Empty).Trim(),
-            (previousName ?? string.Empty).Trim(),
-            StringComparison.OrdinalIgnoreCase);
     }
 
     private static string NormalizeSettlementName(string settlementName)

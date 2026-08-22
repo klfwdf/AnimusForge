@@ -5,11 +5,12 @@ using System.Linq;
 namespace AnimusForge.SiegeAftermathIntervention;
 
 /// <summary>
-/// Owns the single in-memory governance record for each settlement.
+/// Owns the single in-memory governance history for each town.
 /// </summary>
 public sealed class SettlementRuleMemoryStore
 {
-    public const int CurrentSchemaVersion = 1;
+    public const int CurrentSchemaVersion = 2;
+    public const int MaximumRulerMemories = 3;
     public const int MinimumFallbackRuleDays = 168;
 
     private readonly Dictionary<string, SettlementRuleMemoryRecord> _records =
@@ -26,72 +27,44 @@ public sealed class SettlementRuleMemoryStore
 
         string settlementId = Normalize(observation.SettlementId);
         int currentDay = Math.Max(0, observation.CurrentDay);
-        if (!_records.TryGetValue(settlementId, out SettlementRuleMemoryRecord existing))
+        if (!_records.TryGetValue(settlementId, out SettlementRuleMemoryRecord existing)
+            || existing.CurrentRule == null)
         {
             var initialized = new SettlementRuleMemoryRecord(
                 CurrentSchemaVersion,
                 settlementId,
                 Normalize(observation.SettlementName),
-                Normalize(observation.RulerId),
-                Normalize(observation.RulerName),
-                Normalize(observation.CultureId),
-                Normalize(observation.CultureName),
-                Normalize(observation.RulerPersonality),
                 currentDay,
-                currentDay,
-                observation.UseMinimumDurationFallback ? MinimumFallbackRuleDays : 0,
-                string.Empty,
-                string.Empty,
-                string.Empty,
-                string.Empty,
-                string.Empty,
-                0,
-                false);
+                new[] { CreateObservedEntry(observation, currentDay) });
             _records[settlementId] = initialized;
             return new SettlementRuleMemoryUpdate(true, initialized, true, false, false);
         }
 
+        SettlementRuleMemoryEntry current = existing.CurrentRule;
         string observedRulerId = Normalize(observation.RulerId);
         string observedCultureId = Normalize(observation.CultureId);
-        bool rulerChanged = !string.IsNullOrWhiteSpace(observedRulerId)
-            && !string.IsNullOrWhiteSpace(existing.RulerId)
-            && !string.Equals(observedRulerId, existing.RulerId, StringComparison.OrdinalIgnoreCase);
-        bool cultureChanged = !string.IsNullOrWhiteSpace(observedCultureId)
-            && !string.IsNullOrWhiteSpace(existing.CultureId)
-            && !string.Equals(observedCultureId, existing.CultureId, StringComparison.OrdinalIgnoreCase);
+        bool rulerChanged = HasChanged(observedRulerId, current.RulerId);
+        bool cultureChanged = HasChanged(observedCultureId, current.CultureId);
+        var entries = new List<SettlementRuleMemoryEntry>(MaximumRulerMemories);
 
-        string rulerId = PickObserved(observedRulerId, existing.RulerId);
-        string rulerName = PickObserved(observation.RulerName, existing.RulerName);
-        string cultureId = PickObserved(observedCultureId, existing.CultureId);
-        string cultureName = PickObserved(observation.CultureName, existing.CultureName);
-        string personality = rulerChanged
-            ? Normalize(observation.RulerPersonality)
-            : PickObserved(observation.RulerPersonality, existing.RulerPersonality);
-        int previousDuration = GetEffectiveRuleDurationDays(existing, currentDay);
-        int elapsedBeforeChange = Math.Max(0, currentDay - Math.Max(0, existing.RuleStartDay));
-        bool previousDurationWasMinimum = existing.MinimumRuleDurationDays > elapsedBeforeChange;
+        if (rulerChanged)
+        {
+            entries.Add(CreateObservedEntry(observation, currentDay));
+            entries.Add(FreezeCurrentEntry(current, currentDay));
+            entries.AddRange(existing.RulerMemories.Skip(1));
+        }
+        else
+        {
+            entries.Add(UpdateCurrentEntry(current, observation, cultureChanged));
+            entries.AddRange(existing.RulerMemories.Skip(1));
+        }
 
         var updated = new SettlementRuleMemoryRecord(
             CurrentSchemaVersion,
             settlementId,
             PickObserved(observation.SettlementName, existing.SettlementName),
-            rulerId,
-            rulerName,
-            cultureId,
-            cultureName,
-            personality,
-            rulerChanged ? currentDay : Math.Max(0, existing.RuleStartDay),
-            cultureChanged ? currentDay : Math.Max(0, existing.CultureStartDay),
-            rulerChanged
-                ? (observation.UseMinimumDurationFallback ? MinimumFallbackRuleDays : 0)
-                : Math.Max(0, existing.MinimumRuleDurationDays),
-            rulerChanged || cultureChanged ? existing.RulerId : existing.PreviousRulerId,
-            rulerChanged || cultureChanged ? existing.RulerName : existing.PreviousRulerName,
-            rulerChanged || cultureChanged ? existing.CultureId : existing.PreviousCultureId,
-            rulerChanged || cultureChanged ? existing.CultureName : existing.PreviousCultureName,
-            rulerChanged || cultureChanged ? existing.RulerPersonality : existing.PreviousRulerPersonality,
-            rulerChanged || cultureChanged ? previousDuration : Math.Max(0, existing.PreviousRuleDurationDays),
-            rulerChanged || cultureChanged ? previousDurationWasMinimum : existing.PreviousDurationWasMinimum);
+            cultureChanged ? currentDay : existing.CultureStartDay,
+            entries.Take(MaximumRulerMemories));
         _records[settlementId] = updated;
         return new SettlementRuleMemoryUpdate(true, updated, false, rulerChanged, cultureChanged);
     }
@@ -99,6 +72,65 @@ public sealed class SettlementRuleMemoryStore
     public bool TryGet(string settlementId, out SettlementRuleMemoryRecord record)
     {
         return _records.TryGetValue(Normalize(settlementId), out record);
+    }
+
+    public bool TrySetNarrative(
+        string settlementId,
+        string rulerId,
+        string narrative,
+        bool narrativeIsManual,
+        out SettlementRuleMemoryRecord updatedRecord)
+    {
+        return TrySetNarrative(
+            settlementId,
+            rulerId,
+            null,
+            narrative,
+            narrativeIsManual,
+            out updatedRecord);
+    }
+
+    public bool TrySetNarrative(
+        string settlementId,
+        string rulerId,
+        int? ruleStartDay,
+        string narrative,
+        bool narrativeIsManual,
+        out SettlementRuleMemoryRecord updatedRecord)
+    {
+        updatedRecord = null;
+        if (!_records.TryGetValue(Normalize(settlementId), out SettlementRuleMemoryRecord existing))
+        {
+            return false;
+        }
+
+        string targetRulerId = Normalize(rulerId);
+        string normalizedNarrative = SettlementRuleMemoryNarrativePolicy.NormalizeForStorage(narrative);
+        var entries = new List<SettlementRuleMemoryEntry>(existing.RulerMemories.Count);
+        bool replaced = false;
+        foreach (SettlementRuleMemoryEntry entry in existing.RulerMemories)
+        {
+            bool matches = !replaced
+                && IsSameRuler(entry, targetRulerId)
+                && (!ruleStartDay.HasValue || entry.RuleStartDay == Math.Max(0, ruleStartDay.Value));
+            entries.Add(matches
+                ? CopyEntry(entry, normalizedNarrative, narrativeIsManual)
+                : entry);
+            replaced |= matches;
+        }
+        if (!replaced)
+        {
+            return false;
+        }
+
+        updatedRecord = new SettlementRuleMemoryRecord(
+            CurrentSchemaVersion,
+            existing.SettlementId,
+            existing.SettlementName,
+            existing.CultureStartDay,
+            entries);
+        _records[existing.SettlementId] = updatedRecord;
+        return true;
     }
 
     public int Restore(IEnumerable<SettlementRuleMemoryRecord> records)
@@ -132,12 +164,94 @@ public sealed class SettlementRuleMemoryStore
 
     public static int GetEffectiveRuleDurationDays(SettlementRuleMemoryRecord record, int currentDay)
     {
-        if (record == null)
+        return GetEffectiveRuleDurationDays(record?.CurrentRule, currentDay, true);
+    }
+
+    public static int GetEffectiveRuleDurationDays(SettlementRuleMemoryEntry entry, int currentDay, bool isCurrent)
+    {
+        if (entry == null)
         {
             return 0;
         }
-        int elapsed = Math.Max(0, Math.Max(0, currentDay) - Math.Max(0, record.RuleStartDay));
-        return Math.Max(elapsed, Math.Max(0, record.MinimumRuleDurationDays));
+        if (!isCurrent)
+        {
+            return Math.Max(entry.RecordedRuleDurationDays, entry.MinimumRuleDurationDays);
+        }
+        int elapsed = Math.Max(0, Math.Max(0, currentDay) - entry.RuleStartDay);
+        return Math.Max(elapsed, entry.MinimumRuleDurationDays);
+    }
+
+    private static SettlementRuleMemoryEntry CreateObservedEntry(SettlementRuleMemoryObservation observation, int currentDay)
+    {
+        return new SettlementRuleMemoryEntry(
+            Normalize(observation.RulerId),
+            Normalize(observation.RulerName),
+            Normalize(observation.CultureId),
+            Normalize(observation.CultureName),
+            Normalize(observation.RulerPersonality),
+            currentDay,
+            observation.UseMinimumDurationFallback ? MinimumFallbackRuleDays : 0,
+            0,
+            false,
+            string.Empty,
+            false);
+    }
+
+    private static SettlementRuleMemoryEntry FreezeCurrentEntry(SettlementRuleMemoryEntry entry, int currentDay)
+    {
+        int elapsed = Math.Max(0, currentDay - entry.RuleStartDay);
+        int duration = GetEffectiveRuleDurationDays(entry, currentDay, true);
+        return new SettlementRuleMemoryEntry(
+            entry.RulerId,
+            entry.RulerName,
+            entry.CultureId,
+            entry.CultureName,
+            entry.RulerPersonality,
+            entry.RuleStartDay,
+            0,
+            duration,
+            entry.MinimumRuleDurationDays > elapsed,
+            entry.Narrative,
+            entry.NarrativeIsManual);
+    }
+
+    private static SettlementRuleMemoryEntry UpdateCurrentEntry(
+        SettlementRuleMemoryEntry entry,
+        SettlementRuleMemoryObservation observation,
+        bool cultureChanged)
+    {
+        string narrative = cultureChanged && !entry.NarrativeIsManual ? string.Empty : entry.Narrative;
+        return new SettlementRuleMemoryEntry(
+            PickObserved(observation.RulerId, entry.RulerId),
+            PickObserved(observation.RulerName, entry.RulerName),
+            PickObserved(observation.CultureId, entry.CultureId),
+            PickObserved(observation.CultureName, entry.CultureName),
+            PickObserved(observation.RulerPersonality, entry.RulerPersonality),
+            entry.RuleStartDay,
+            entry.MinimumRuleDurationDays,
+            0,
+            false,
+            narrative,
+            entry.NarrativeIsManual);
+    }
+
+    private static SettlementRuleMemoryEntry CopyEntry(
+        SettlementRuleMemoryEntry entry,
+        string narrative,
+        bool narrativeIsManual)
+    {
+        return new SettlementRuleMemoryEntry(
+            entry.RulerId,
+            entry.RulerName,
+            entry.CultureId,
+            entry.CultureName,
+            entry.RulerPersonality,
+            entry.RuleStartDay,
+            entry.MinimumRuleDurationDays,
+            entry.RecordedRuleDurationDays,
+            entry.DurationWasMinimum,
+            narrative,
+            narrativeIsManual);
     }
 
     private static SettlementRuleMemoryRecord NormalizeRecord(SettlementRuleMemoryRecord record)
@@ -149,25 +263,50 @@ public sealed class SettlementRuleMemoryStore
             return null;
         }
 
+        SettlementRuleMemoryEntry[] entries = record.RulerMemories
+            .Where(entry => entry != null && entry.HasIdentity)
+            .Select(entry => new SettlementRuleMemoryEntry(
+                Normalize(entry.RulerId),
+                Normalize(entry.RulerName),
+                Normalize(entry.CultureId),
+                Normalize(entry.CultureName),
+                Normalize(entry.RulerPersonality),
+                entry.RuleStartDay,
+                entry.MinimumRuleDurationDays,
+                entry.RecordedRuleDurationDays,
+                entry.DurationWasMinimum,
+                SettlementRuleMemoryNarrativePolicy.NormalizeForStorage(entry.Narrative),
+                entry.NarrativeIsManual))
+            .Take(MaximumRulerMemories)
+            .ToArray();
+        if (entries.Length == 0)
+        {
+            return null;
+        }
         return new SettlementRuleMemoryRecord(
             CurrentSchemaVersion,
             Normalize(record.SettlementId),
             Normalize(record.SettlementName),
-            Normalize(record.RulerId),
-            Normalize(record.RulerName),
-            Normalize(record.CultureId),
-            Normalize(record.CultureName),
-            Normalize(record.RulerPersonality),
-            Math.Max(0, record.RuleStartDay),
-            Math.Max(0, record.CultureStartDay),
-            Math.Max(0, record.MinimumRuleDurationDays),
-            Normalize(record.PreviousRulerId),
-            Normalize(record.PreviousRulerName),
-            Normalize(record.PreviousCultureId),
-            Normalize(record.PreviousCultureName),
-            Normalize(record.PreviousRulerPersonality),
-            Math.Max(0, record.PreviousRuleDurationDays),
-            record.PreviousDurationWasMinimum);
+            record.CultureStartDay,
+            entries);
+    }
+
+    private static bool IsSameRuler(SettlementRuleMemoryEntry entry, string targetRulerId)
+    {
+        if (entry == null)
+        {
+            return false;
+        }
+        return !string.IsNullOrWhiteSpace(targetRulerId)
+            ? string.Equals(entry.RulerId, targetRulerId, StringComparison.OrdinalIgnoreCase)
+            : string.IsNullOrWhiteSpace(entry.RulerId);
+    }
+
+    private static bool HasChanged(string observed, string existing)
+    {
+        return !string.IsNullOrWhiteSpace(observed)
+            && !string.IsNullOrWhiteSpace(existing)
+            && !string.Equals(observed, existing, StringComparison.OrdinalIgnoreCase);
     }
 
     private static string PickObserved(string observed, string existing)
