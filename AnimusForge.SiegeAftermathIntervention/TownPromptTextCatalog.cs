@@ -54,6 +54,14 @@ public sealed class TownPromptTextCatalog
 
     public string SettlementRuleMemoryDurationYearsTemplate { get; set; }
 
+    public string PlunderLedgerContextTemplate { get; set; }
+
+    public string PlunderLedgerActiveState { get; set; }
+
+    public string PlunderLedgerStoppedState { get; set; }
+
+    public string PlunderLedgerCompletedState { get; set; }
+
     public string StateSectionTitle { get; set; }
 
     public string DefaultState { get; set; }
@@ -153,6 +161,10 @@ public sealed class TownPromptTextCatalog
             SettlementRuleMemoryDurationDaysTemplate = Pick(source.SettlementRuleMemoryDurationDaysTemplate, fallback.SettlementRuleMemoryDurationDaysTemplate),
             SettlementRuleMemoryDurationWeeksTemplate = Pick(source.SettlementRuleMemoryDurationWeeksTemplate, fallback.SettlementRuleMemoryDurationWeeksTemplate),
             SettlementRuleMemoryDurationYearsTemplate = Pick(source.SettlementRuleMemoryDurationYearsTemplate, fallback.SettlementRuleMemoryDurationYearsTemplate),
+            PlunderLedgerContextTemplate = Pick(source.PlunderLedgerContextTemplate, fallback.PlunderLedgerContextTemplate),
+            PlunderLedgerActiveState = Pick(source.PlunderLedgerActiveState, fallback.PlunderLedgerActiveState),
+            PlunderLedgerStoppedState = Pick(source.PlunderLedgerStoppedState, fallback.PlunderLedgerStoppedState),
+            PlunderLedgerCompletedState = Pick(source.PlunderLedgerCompletedState, fallback.PlunderLedgerCompletedState),
             StateSectionTitle = Pick(source.StateSectionTitle, fallback.StateSectionTitle),
             DefaultState = Pick(source.DefaultState, fallback.DefaultState),
             PlunderState = Pick(source.PlunderState, fallback.PlunderState),
@@ -224,6 +236,10 @@ public sealed class TownPromptTextCatalog
             SettlementRuleMemoryDurationDaysTemplate = "{value} days",
             SettlementRuleMemoryDurationWeeksTemplate = "{value} weeks",
             SettlementRuleMemoryDurationYearsTemplate = "{value} years",
+            PlunderLedgerContextTemplate = "Plunder ledger: {state}; acquired value {acquired_value}/{available_value} ({progress}); merchants {merchant_count}, notables {notable_count}, civilians {civilian_count}; gold {gold}, item value {item_value}.",
+            PlunderLedgerActiveState = "active",
+            PlunderLedgerStoppedState = "stopped; prior loot and consequences remain",
+            PlunderLedgerCompletedState = "completed",
             StateSectionTitle = "[4. CURRENT STATE]",
             DefaultState = "No massacre state is active. Use runtime facts for all other outcomes.",
             PlunderState = "Plunder is active but has not escalated to massacre.",
