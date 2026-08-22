@@ -242,6 +242,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static readonly Regex PlunderTagRegex = new Regex(SiegeActionTagCatalog.PlunderTagPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
 	private static readonly Regex MassacreTagRegex = new Regex(SiegeActionTagCatalog.MassacreTagPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
 	private static readonly Regex StopMassacreTagRegex = new Regex(SiegeActionTagCatalog.StopMassacreTagPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+	private static readonly Regex ConstructiveCultureChangeTagRegex = new Regex(SiegeActionTagCatalog.ConstructiveCultureChangeTagPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
 	private static readonly Regex AnySiegeTagRegex = new Regex(SiegeActionTagCatalog.AnyActionTagPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
 	private static readonly Regex AnyCastleActionTagRegex = new Regex(SiegeCastleActionTagCatalog.AnyActionTagPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
 	private static readonly TownEntryPresentationSession TownEntryPresentation = new TownEntryPresentationSession();
@@ -2972,6 +2973,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			GcczTownRuleMemoryRuntimeBridge.BuildPromptContext(activeSettlement, _previousSettlementOwnerClan, IsActiveInCurrentMission()));
 		memoryContext = AppendRuntimeContext(
 			memoryContext,
+			BuildConstructiveCultureChangePromptContext(activeSettlement, dialogueRole, alliedSoldier, replyIsDirectPlayerResponse: true));
+		memoryContext = AppendRuntimeContext(
+			memoryContext,
 			TownPromptComposer.BuildTownOperationLedgerContext(
 				ActiveTownOperationLedger.Snapshot(),
 				GcczTownPromptResourceProvider.GetCatalog()));
@@ -3128,6 +3132,59 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static TownConstructiveCultureChangeDecision EvaluateConstructiveCultureChange(
+		Settlement settlement,
+		TownDialogueRole dialogueRole,
+		bool isAlliedSoldier,
+		bool replyIsDirectPlayerResponse,
+		out CultureObject targetCulture)
+	{
+		targetCulture = ResolveCulturalRepopulationTargetCulture(out _);
+		bool activeTownStage = IsActiveInCurrentMission() && settlement?.IsTown == true;
+		bool massacreActive = _massacreStarted && !_massacreStopped && !_massacreVictoryReached;
+		bool colonizationStateActive = ActiveTownColonization.State != TownColonizationState.None;
+		return TownConstructiveCultureChangePolicy.Evaluate(new TownConstructiveCultureChangeFacts(
+			activeTownStage,
+			settlement?.StringId,
+			settlement?.Culture?.StringId,
+			targetCulture?.StringId,
+			dialogueRole,
+			isAlliedSoldier,
+			replyIsDirectPlayerResponse,
+			massacreActive,
+			colonizationStateActive));
+	}
+
+	private static string BuildConstructiveCultureChangePromptContext(
+		Settlement settlement,
+		TownDialogueRole dialogueRole,
+		bool isAlliedSoldier,
+		bool replyIsDirectPlayerResponse)
+	{
+		TownConstructiveCultureChangeDecision decision = EvaluateConstructiveCultureChange(
+			settlement,
+			dialogueRole,
+			isAlliedSoldier,
+			replyIsDirectPlayerResponse,
+			out CultureObject targetCulture);
+		if (!decision.CanApply)
+		{
+			return string.Empty;
+		}
+		return TownConstructiveCultureChangeTextProfile.BuildPromptContext(
+			settlement?.Name?.ToString(),
+			ResolveCultureName(settlement?.Culture),
+			ResolveCultureName(targetCulture),
+			decision.CanApply,
+			GcczTownPromptResourceProvider.GetCatalog());
+	}
+
+	private static string ResolveCultureName(CultureObject culture)
+	{
+		string name = culture?.Name?.ToString();
+		return string.IsNullOrWhiteSpace(name) ? culture?.StringId ?? string.Empty : name;
+	}
+
 	internal static bool ShouldUsePersistentPersonalMemoryForExternal(Hero hero, CharacterObject character, int agentIndex)
 	{
 		try
@@ -3275,15 +3332,23 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			CharacterObject townCharacter = townAgent?.Character as CharacterObject;
 			Hero townHero = townCharacter?.HeroObject;
 			bool townAlliedSoldier = IsRuntimeAlliedSoldierAgent(townAgent, townCharacter, townHero);
+			TownDialogueRole townDialogueRole = ResolveTownDialogueRole(townAgent, townCharacter, townHero, townAlliedSoldier);
+			TownConstructiveCultureChangeDecision cultureChangeDecision = EvaluateConstructiveCultureChange(
+				ResolveCurrentSettlement(),
+				townDialogueRole,
+				townAlliedSoldier,
+				replyIsDirectPlayerResponse,
+				out _);
 			var eligibilityFacts = new SiegePostprocessRuleEligibilityFacts(
 				destructiveLocked,
 				_soldierAppeasementRequired,
 				_soldierAppeasementApplied,
-				ResolveTownDialogueRole(townAgent, townCharacter, townHero, townAlliedSoldier),
+				townDialogueRole,
 				townAlliedSoldier,
 				replyIsDirectPlayerResponse,
 				massacreActive: _massacreStarted && !_massacreVictoryReached,
-				colonizationAvailable: ActiveTownColonization.State == TownColonizationState.None);
+				colonizationAvailable: ActiveTownColonization.State == TownColonizationState.None,
+				constructiveCultureChangeAvailable: cultureChangeDecision.CanApply);
 			List<PostprocessRuleEntry> filtered = new List<PostprocessRuleEntry>();
 			foreach (PostprocessRuleEntry rule in rules)
 			{
@@ -3380,6 +3445,13 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					ResolveCurrentSettlement(),
 					_previousSettlementOwnerClan,
 					IsActiveInCurrentMission()));
+			memoryContext = AppendRuntimeContext(
+				memoryContext,
+				BuildConstructiveCultureChangePromptContext(
+					ResolveCurrentSettlement(),
+					dialogueRole,
+					alliedSoldier,
+					replyIsDirectPlayerResponse));
 			memoryContext = AppendRuntimeContext(
 				memoryContext,
 				IsActiveInCurrentMission()
@@ -3518,6 +3590,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			CharacterObject agentCharacter = targetAgent?.Character as CharacterObject;
 			CharacterObject resolvedTargetCharacter = targetCharacter ?? agentCharacter ?? targetHero?.CharacterObject;
 			bool targetIsAlliedSoldier = IsRuntimeAlliedSoldierAgent(targetAgent, resolvedTargetCharacter, targetHero ?? resolvedTargetCharacter?.HeroObject);
+			TownDialogueRole targetDialogueRole = ResolveTownDialogueRole(
+				targetAgent,
+				resolvedTargetCharacter,
+				targetHero ?? resolvedTargetCharacter?.HeroObject,
+				targetIsAlliedSoldier);
 			bool targetWasLegacyRegistered = targetAgent != null && AlliedAgentIndexes.Contains(targetAgent.Index);
 			bool hasSharedReliefPool = HasSharedCivilianReliefPool();
 			bool targetIsCivilian = IsCivilianReliefConversationTarget(targetAgentIndex, resolvedTargetCharacter);
@@ -3661,6 +3738,15 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				{
 					TryTriggerAmbientReactionsForAction(SiegeInterventionActionKind.Massacre, targetAgentIndex, targetAgentIndex, includeCivilians: true, includeSoldiers: true);
 				}
+			}
+			if (ConstructiveCultureChangeTagRegex.IsMatch(text)
+				&& inputActionKinds.Count == 1
+				&& inputActionKinds[0] == SiegeInterventionActionKind.ConstructiveCultureChange)
+			{
+				actionHandled |= ApplyConstructiveCultureChange(
+					targetDialogueRole,
+					targetIsAlliedSoldier,
+					replyIsDirectPlayerResponse);
 			}
 			if (massacreStopWasEligible
 				&& StopMassacreTagRegex.IsMatch(text)
@@ -8322,6 +8408,77 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("SiegeAiIntervention", "RequestCulturalRepopulation failed: " + ex.Message);
+			return false;
+		}
+	}
+
+	private static bool ApplyConstructiveCultureChange(
+		TownDialogueRole dialogueRole,
+		bool isAlliedSoldier,
+		bool replyIsDirectPlayerResponse)
+	{
+		try
+		{
+			Settlement settlement = ResolveCurrentSettlement();
+			TownConstructiveCultureChangeDecision decision = EvaluateConstructiveCultureChange(
+				settlement,
+				dialogueRole,
+				isAlliedSoldier,
+				replyIsDirectPlayerResponse,
+				out CultureObject targetCulture);
+			if (!decision.CanApply)
+			{
+				GcczDiagnosticLog.Log("ConstructiveCultureChange", "rejected status=" + decision.Status
+					+ " settlement=" + (settlement?.StringId ?? "null")
+					+ " role=" + dialogueRole
+					+ " alliedSoldier=" + isAlliedSoldier
+					+ " direct=" + replyIsDirectPlayerResponse);
+				return false;
+			}
+
+			CultureObject currentCulture = settlement.Culture;
+			string settlementName = settlement.Name?.ToString();
+			string currentCultureName = ResolveCultureName(currentCulture);
+			string targetCultureName = ResolveCultureName(targetCulture);
+			TownPromptTextCatalog textCatalog = GcczTownPromptResourceProvider.GetCatalog();
+
+			settlement.Culture = targetCulture;
+			GcczTownRuleMemoryRuntimeBridge.RefreshAfterRuntimeTransition(
+				settlement,
+				_previousSettlementOwnerClan,
+				IsActiveInCurrentMission(),
+				"constructive_culture_change");
+			RecordInterventionMemory(
+				textCatalog.ConstructiveCultureChangeMemoryTitle,
+				TownConstructiveCultureChangeTextProfile.BuildMemory(
+					settlementName,
+					currentCultureName,
+					targetCultureName,
+					textCatalog));
+			InformationManager.DisplayMessage(new InformationMessage(
+				TownConstructiveCultureChangeTextProfile.BuildSuccessMessage(
+					settlementName,
+					currentCultureName,
+					targetCultureName,
+					textCatalog),
+				Color.FromUint(TownConstructiveCultureChangeTextProfile.SuccessMessageColor)));
+
+			Logger.Log("SiegeAiIntervention", "Applied constructive town culture change. Settlement="
+				+ (settlement.StringId ?? "N/A")
+				+ ", OldCulture=" + (currentCulture?.StringId ?? "N/A")
+				+ ", NewCulture=" + (targetCulture.StringId ?? "N/A")
+				+ ", Role=" + dialogueRole);
+			GcczDiagnosticLog.Log("ConstructiveCultureChange", "applied settlement="
+				+ (settlement.StringId ?? "N/A")
+				+ " oldCulture=" + (currentCulture?.StringId ?? "N/A")
+				+ " newCulture=" + (targetCulture.StringId ?? "N/A")
+				+ " role=" + dialogueRole);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "ApplyConstructiveCultureChange failed: " + ex.Message);
+			GcczDiagnosticLog.Log("ConstructiveCultureChange", "apply failed error=" + ex);
 			return false;
 		}
 	}

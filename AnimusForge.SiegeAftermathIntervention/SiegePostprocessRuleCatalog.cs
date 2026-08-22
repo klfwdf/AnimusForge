@@ -25,6 +25,7 @@ public static class SiegePostprocessRuleCatalog
         new SiegePostprocessRuleDefinition(SiegeActionTagCatalog.MassacrePromptTag, "Start or resume a massacre only when an allied soldier directly accepts the player's current explicit order. Before all captured targets die, a later eligible response may use [ACTION:11] to stop further killing."),
         new SiegePostprocessRuleDefinition(SiegeActionTagCatalog.CulturalRepopulationPromptTag, "殖民：只有玩家己方入城士兵直接回应玩家本轮明确要求杀尽原住民并迁入玩家方人口/强行改文化时输出；普通民众、士兵互聊或主动请示都禁止输出；可直接触发或血洗后升级。"),
         new SiegePostprocessRuleDefinition(SiegeActionTagCatalog.StopMassacrePromptTag, "Stop an active massacre only when an allied soldier directly accepts the player's current order to cease further killing. Do not use for pleas, suggestions, indirect speech, or an inactive massacre."),
+        new SiegePostprocessRuleDefinition(SiegeActionTagCatalog.ConstructiveCultureChangePromptTag, "Apply ordinary town culture administration only when an authorized noble, companion, local notable, or allied soldier directly accepts the player's current non-destructive decree. This action changes only the town culture; never use it for killing, expulsion, forced repopulation, or colonization."),
     };
 
     public static IReadOnlyList<SiegePostprocessRuleDefinition> GetFallbackRules()
