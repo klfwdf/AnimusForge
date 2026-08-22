@@ -24,12 +24,6 @@ public static class SiegeCivilianGatherUiProfile
 
     public const string FormationCompleteMemory = "民众已经完成聚集并编入玩家可调度的民众队列，后续NPC应知道民众已到场听命。";
 
-    public static string BuildCivilianPreparedMessage(int civilianCount)
-    {
-        int safeCivilianCount = civilianCount < 0 ? 0 : civilianCount;
-        return "【攻城处置】城内有 " + safeCivilianCount + " 名普通民众等待处置。士兵已跟随你入城。";
-    }
-
     public static string BuildPropagationStartedMemory(bool seedIsSoldier)
     {
         return "玩家已下令召集民众，" + (seedIsSoldier ? "己方士兵" : "平民") + "开始作为传令者通知城内民众前来听训/接受处置。";

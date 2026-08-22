@@ -372,7 +372,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static string _directPlunderLastDeferKey = "";
 	private static readonly SiegeOutcomeMessageDeduplicator OutcomeMessageDeduplicator = new SiegeOutcomeMessageDeduplicator();
 	private static bool _civilianAssemblyPointReady;
-	private static bool _civilianAssemblyMessageShown;
 	private static Vec3 _civilianAssemblyAnchor;
 	private static Vec3 _civilianAssemblyForward;
 	private static Clan _previousSettlementOwnerClan;
@@ -1455,7 +1454,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_directPlunderLastDeferKey = "";
 		ResetOutcomeMessageDedup();
 		_civilianAssemblyPointReady = false;
-		_civilianAssemblyMessageShown = false;
 		_civilianAssemblyAnchor = Vec3.Zero;
 		_civilianAssemblyForward = Vec3.Forward;
 		CaptureNativeSiegeContext(settlement);
@@ -2018,9 +2016,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			if (ResolveCurrentSettlement()?.IsTown == true
 				&& mission is Mission missionPopulation
-				&& missionPopulation.GetMissionBehavior<InterventionNativeTownCivilianPopulationMissionBehavior>() == null)
+				&& missionPopulation.GetMissionBehavior<InterventionHiddenResidentSpawnMissionBehavior>() == null)
 			{
-				missionPopulation.AddMissionBehavior(new InterventionNativeTownCivilianPopulationMissionBehavior(_activeSettlementId));
+				missionPopulation.AddMissionBehavior(new InterventionHiddenResidentSpawnMissionBehavior(_activeSettlementId));
 			}
 			if (mission is Mission mission2 && mission2.GetMissionBehavior<InterventionMissionBehavior>() == null)
 			{
@@ -8780,7 +8778,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			int desiredCount = GetDesiredCivilianAssemblyCount(mission);
 			EnsureCivilianAssemblyPopulation(mission);
 			int total = 0;
 			foreach (Agent agent in mission.Agents.ToList().OrderBy(a => a?.Index ?? int.MaxValue))
@@ -8795,12 +8792,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				ApplyOneTimeFrightenedCivilianAction(agent, allowGathered: true);
 			}
 			_lastSceneCivilianSpawnedCount = Math.Max(_lastSceneCivilianSpawnedCount, Math.Max(total, SceneCivilianAgentIndexes.Count));
-			if (!_civilianAssemblyMessageShown && total > 0)
-			{
-				_civilianAssemblyMessageShown = true;
-				InformationManager.DisplayMessage(new InformationMessage(SiegeCivilianGatherUiProfile.BuildCivilianPreparedMessage(total), Color.FromUint(SiegeCivilianGatherUiProfile.MessageColor)));
-				Logger.Log("SiegeAiIntervention", "Civilian town population prepared. Source=" + (source ?? "N/A") + ", Civilians=" + total + ", Desired=" + desiredCount);
-			}
 		}
 		catch (Exception ex)
 		{
@@ -8846,6 +8837,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			if (mission?.Agents == null || main == null || !main.IsActive() || _massacreStarted || _massacreVictoryReached)
 			{
 				return false;
+			}
+			if (SiegeCivilianGatherInteractionProfile.IsExplicitSemanticGatherSource(source))
+			{
+				TryBringOutHiddenResidentsForGather(mission, source);
 			}
 			Agent seed = TryGetAgent(seedAgentIndex);
 			bool seedIsSoldier = IsInterventionAlliedSoldierForExternal(seed, requireActive: true);
@@ -10262,6 +10257,46 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		catch
 		{
 			return TownDialogueRoleClassifier.SafeFallbackRole;
+		}
+	}
+
+	private static TownHiddenResidentSpawnOutcome TryBringOutHiddenResidentsForGather(Mission mission, string source)
+	{
+		TownHiddenResidentSpawnOutcome outcome;
+		try
+		{
+			InterventionHiddenResidentSpawnMissionBehavior behavior =
+				mission?.GetMissionBehavior<InterventionHiddenResidentSpawnMissionBehavior>();
+			if (behavior == null)
+			{
+				outcome = new TownHiddenResidentSpawnOutcome(TownHiddenResidentSpawnStatus.RuntimeUnavailable, 0, 0);
+			}
+			else
+			{
+				TownOperationLedgerSnapshot operation = ActiveTownOperationLedger.Snapshot();
+				bool operationSnapshotLocked = operation.TargetSnapshotSealed || operation.VictimSnapshotSealed;
+				bool destructiveCombatActive = _massacreStarted || _massacreVictoryReached;
+				outcome = behavior.TryBringOutHiddenResidents(operationSnapshotLocked, destructiveCombatActive, source);
+			}
+
+			TownHiddenResidentTextCatalog text = GcczTownHiddenResidentResourceProvider.GetCatalog();
+			if (outcome.HasSpawnedResidents)
+			{
+				TrackSceneCivilianAgents(mission);
+				RecordInterventionMemory(text.MemoryTitle, text.BuildMemory(outcome.SpawnedCount));
+			}
+			if (string.Equals(source, SiegePostprocessActionEffectProfile.GatherCiviliansSource, StringComparison.OrdinalIgnoreCase))
+			{
+				InformationManager.DisplayMessage(new InformationMessage(
+					text.BuildMessage(outcome),
+					Color.FromUint(SiegeCivilianGatherUiProfile.MessageColor)));
+			}
+			return outcome;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "TryBringOutHiddenResidentsForGather failed: " + ex.Message);
+			return new TownHiddenResidentSpawnOutcome(TownHiddenResidentSpawnStatus.SpawnFailed, 0, 0);
 		}
 	}
 
@@ -16582,7 +16617,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		LastAgentWallRescueLogTimes.Clear();
 		LastAgentWallRescueTeleportTimes.Clear();
 		_civilianAssemblyPointReady = false;
-		_civilianAssemblyMessageShown = false;
 		_civilianAssemblyAnchor = Vec3.Zero;
 		_civilianAssemblyForward = Vec3.Forward;
 		_interventionCivilianEnemyTeam = null;

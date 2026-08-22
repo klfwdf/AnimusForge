@@ -117,6 +117,11 @@ public static class SiegeCivilianGatherInteractionProfile
         return FormationQueueSourcePrefix + (reason ?? UnavailableSourceSuffix);
     }
 
+    public static bool IsExplicitSemanticGatherSource(string source)
+    {
+        return string.Equals(source, SiegePostprocessActionEffectProfile.GatherCiviliansSource, StringComparison.OrdinalIgnoreCase);
+    }
+
     public static bool ShouldReleaseSoldiersForCommandControlRepeat(bool formationControlPending, bool formationControlComplete, bool seedIsSoldier, string source)
     {
         if (!seedIsSoldier || (!formationControlPending && !formationControlComplete))
@@ -124,6 +129,6 @@ public static class SiegeCivilianGatherInteractionProfile
             return false;
         }
 
-        return string.Equals(source, SiegePostprocessActionEffectProfile.GatherCiviliansSource, StringComparison.OrdinalIgnoreCase);
+        return IsExplicitSemanticGatherSource(source);
     }
 }
