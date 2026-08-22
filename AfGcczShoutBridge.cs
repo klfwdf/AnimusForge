@@ -13,21 +13,11 @@ namespace AnimusForge;
 /// </summary>
 internal static class AfGcczShoutBridge
 {
-	private static readonly string[] ExclusiveRuntimeBlockedRuleIds =
-	{
-		"duel",
-		"reward",
-		"loan",
-		"surroundings",
-		"scene_mechanism_actions",
-		"worldmap_party_command",
-		"meeting_taunt",
-		"duel_stake"
-	};
-
 	internal static string RuleId => SiegePostprocessRuleCatalog.RuleId;
 
 	internal static string InjectedRuleBlockMarker => SiegePostprocessRuleCatalog.InjectedRuleBlockMarker;
+
+	internal static string MeetingTauntRuleBlockMarker => "\u3010\u9644\u52a0\u89c4\u5219:meeting_taunt\u3011";
 
 	internal static bool IsActive()
 	{
@@ -41,17 +31,18 @@ internal static class AfGcczShoutBridge
 
 	internal static bool ShouldUseExclusivePreprocessRuleRouting()
 	{
-		return IsTownOrCastleAftermathActive();
+		return IsTownOrCastleAftermathActive()
+			&& GetTownDialoguePhase() != TownAfDialoguePhase.NormalOccupation;
 	}
 
 	internal static bool ShouldUseExclusivePostprocessRuleRouting()
 	{
-		return IsTownOrCastleAftermathActive();
+		return ShouldUseExclusivePreprocessRuleRouting();
 	}
 
 	internal static bool ShouldBypassPreprocessForActiveScene()
 	{
-		return IsTownOrCastleAftermathActive();
+		return ShouldUseExclusivePreprocessRuleRouting();
 	}
 
 	internal static bool IsExclusivePreprocessRuleId(string ruleId)
@@ -59,13 +50,20 @@ internal static class AfGcczShoutBridge
 		return string.Equals((ruleId ?? string.Empty).Trim(), RuleId, StringComparison.OrdinalIgnoreCase);
 	}
 
-	internal static List<string> BuildExclusivePreprocessRuleExclusions(IEnumerable<string> ruleIds)
+	internal static List<string> BuildRuntimePreprocessRuleExclusions(IEnumerable<string> ruleIds)
 	{
-		HashSet<string> excluded = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		if (!ShouldUseExclusivePreprocessRuleRouting())
+		if (!IsTownOrCastleAftermathActive())
 		{
-			return excluded.ToList();
+			return new List<string>();
 		}
+
+		TownAfDialoguePhase phase = GetTownDialoguePhase();
+		if (phase == TownAfDialoguePhase.NormalOccupation)
+		{
+			return TownAfRuleRoutingPolicy.BuildExcludedRuleIds(phase, ruleIds).ToList();
+		}
+
+		var excluded = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		foreach (string ruleId in ruleIds ?? Enumerable.Empty<string>())
 		{
 			string id = (ruleId ?? string.Empty).Trim();
@@ -74,21 +72,21 @@ internal static class AfGcczShoutBridge
 				excluded.Add(id);
 			}
 		}
-		foreach (string runtimeRuleId in ExclusiveRuntimeBlockedRuleIds)
+		foreach (string blockedRuleId in TownAfRuleRoutingPolicy.GetCollisionBlockedRuleIds())
 		{
-			excluded.Add(runtimeRuleId);
+			excluded.Add(blockedRuleId);
 		}
 		return excluded.ToList();
 	}
 
-	internal static void AddExclusivePreprocessRuleExclusions(HashSet<string> excludedRuleIds)
+	internal static void AddRuntimePreprocessRuleExclusions(HashSet<string> excludedRuleIds)
 	{
-		if (excludedRuleIds == null || !ShouldUseExclusivePreprocessRuleRouting())
+		if (excludedRuleIds == null || !IsTownOrCastleAftermathActive())
 		{
 			return;
 		}
 		excludedRuleIds.Remove(RuleId);
-		foreach (string ruleId in BuildExclusivePreprocessRuleExclusions(AIConfigHandler.GetEnabledGuardrailRuleIdsForExternal()))
+		foreach (string ruleId in BuildRuntimePreprocessRuleExclusions(AIConfigHandler.GetEnabledGuardrailRuleIdsForExternal()))
 		{
 			string id = (ruleId ?? string.Empty).Trim();
 			if (!string.IsNullOrWhiteSpace(id))
@@ -96,6 +94,33 @@ internal static class AfGcczShoutBridge
 				excludedRuleIds.Add(id);
 			}
 		}
+	}
+
+	internal static bool ShouldAllowAfRuleForCurrentStage(string ruleId)
+	{
+		if (!IsTownOrCastleAftermathActive())
+		{
+			return true;
+		}
+
+		TownAfDialoguePhase phase = GetTownDialoguePhase();
+		if (phase == TownAfDialoguePhase.Inactive)
+		{
+			phase = TownAfDialoguePhase.AtrocityCombat;
+		}
+		return TownAfRuleRoutingPolicy.IsAllowed(phase, ruleId);
+	}
+
+	internal static bool ShouldUseTownPostprocessDecisionContract()
+	{
+		return GetTownDialoguePhase() != TownAfDialoguePhase.Inactive;
+	}
+
+	internal static string ValidateTownPostprocessDecision(string normalizedTags)
+	{
+		return ShouldUseTownPostprocessDecisionContract()
+			? TownPostprocessDecisionValidator.KeepSinglePrimaryAction(normalizedTags)
+			: normalizedTags ?? string.Empty;
 	}
 
 	internal static bool HasPreprocessRuleHit(IEnumerable<string> preprocessRuleHits)
@@ -248,10 +273,10 @@ internal static class AfGcczShoutBridge
 
 	internal static string AppendTownPostprocessDecisionContract(
 		string userPrompt,
-		bool useExclusiveTownContract,
+		bool useTownContract,
 		IEnumerable<PostprocessRuleEntry> rules)
 	{
-		if (!useExclusiveTownContract)
+		if (!useTownContract)
 		{
 			return userPrompt ?? string.Empty;
 		}
@@ -270,6 +295,11 @@ internal static class AfGcczShoutBridge
 		return string.IsNullOrWhiteSpace(userPrompt)
 			? contract
 			: userPrompt.TrimEnd() + "\n\n" + contract;
+	}
+
+	private static TownAfDialoguePhase GetTownDialoguePhase()
+	{
+		return SiegeAiInterventionBehavior.GetTownAfDialoguePhaseForExternal();
 	}
 
 	internal static string BuildImmediateReactionIdentityOverride(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex)

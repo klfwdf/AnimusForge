@@ -3212,6 +3212,31 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		return IsActiveInCurrentMission();
 	}
 
+	internal static TownAfDialoguePhase GetTownAfDialoguePhaseForExternal()
+	{
+		try
+		{
+			if (!IsActiveInCurrentMission() || ResolveCurrentSettlement()?.IsTown != true)
+			{
+				return TownAfDialoguePhase.Inactive;
+			}
+
+			bool massacreCombatActive = _massacreStarted
+				&& !_massacreStopped
+				&& !_massacreVictoryReached;
+			TownColonizationState colonizationState = ActiveTownColonization.State;
+			bool colonizationCombatActive = colonizationState == TownColonizationState.Pending
+				|| colonizationState == TownColonizationState.ReadyToCommit;
+			return massacreCombatActive || colonizationCombatActive
+				? TownAfDialoguePhase.AtrocityCombat
+				: TownAfDialoguePhase.NormalOccupation;
+		}
+		catch
+		{
+			return TownAfDialoguePhase.Inactive;
+		}
+	}
+
 	internal static string GetRuntimeInjectedRuleBlockMarkerForExternal()
 	{
 		return SiegePostprocessRuleCatalog.InjectedRuleBlockMarker;
