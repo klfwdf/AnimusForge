@@ -1,0 +1,8 @@
+{
+  "Version": 1,
+  "UnknownSettlementName": "这座被占领的城镇",
+  "SelectionPromptTemplate": "【攻城处置】挑选至多 {max_count} 名随行者；入城后直接通过现场对话下令。",
+  "SceneNarrationTemplate": "你披上战装，带着挑选出的 {arrived_count} 名随行者踏入 {settlement}。占领后的街巷正等着你的第一句话；此时离场仍按原有攻城处置流程继续。",
+  "AutomaticSelectionNarrationTemplate": "你披上战装踏入 {settlement}，身后是临时集结的 {arrived_count} 名可用随行者。占领后的街巷正等着你的第一句话；此时离场仍按原有攻城处置流程继续。",
+  "NoFollowersArrivedNarrationTemplate": "你披上战装踏入 {settlement}，却没有随行者在街巷中跟上你。占领后的街巷正等着你的第一句话；此时离场仍按原有攻城处置流程继续。"
+}
