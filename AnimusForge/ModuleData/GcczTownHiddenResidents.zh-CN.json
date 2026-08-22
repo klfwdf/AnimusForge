@@ -1,0 +1,14 @@
+{
+  "Version": 1,
+  "SpawnedMessageTemplate": "侧巷里传来迟疑的脚步声，{count} 名躲藏的居民在远处现身，惶恐地等候发落。",
+  "ResidentsAlreadyVisibleMessage": "街上已经有足够多的居民露面，传令者没有再把藏身者带出来。",
+  "SceneSpawnLimitReachedMessage": "藏身处再没有人回应这场召集，本次进城不会继续增加居民。",
+  "SceneAgentLimitReachedMessage": "街巷已经过于拥挤，传令者无法再安全带出一批居民。",
+  "OperationSnapshotLockedMessage": "当前处置已经锁定目标，传令者没有把新的藏身者暴露在行动中。",
+  "DestructiveCombatActiveMessage": "杀戮尚未停止，没有躲藏的居民愿意走上街头。",
+  "RuntimeUnavailableMessage": "命令传进了侧巷，但眼下无法把藏身的居民带出来。",
+  "NoSafeCornerMessage": "传令者没找到能够让居民安全现身的侧巷，只得空手回来。",
+  "SpawnFailedMessage": "传令者找到了藏身处，但最终没有居民走上街头。",
+  "MemoryTitle": "藏民",
+  "MemoryTemplate": "玩家命人带出躲藏居民，已有 {count} 名普通平民从安全侧巷进入当前现场；这段经历只属于本次场景。"
+}
