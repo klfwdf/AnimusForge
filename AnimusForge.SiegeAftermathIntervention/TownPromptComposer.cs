@@ -207,6 +207,37 @@ public static class TownPromptComposer
         return string.Join(Environment.NewLine, lines);
     }
 
+    public static string BuildTownOperationLedgerContext(
+        TownOperationLedgerSnapshot snapshot,
+        TownPromptTextCatalog textCatalog)
+    {
+        if (snapshot == null
+            || snapshot.Kind != TownOperationKind.Plunder
+            || snapshot.State == TownOperationState.None)
+        {
+            return string.Empty;
+        }
+
+        TownPromptTextCatalog text = TownPromptTextCatalog.Resolve(textCatalog);
+        string state = snapshot.State == TownOperationState.Stopped
+            ? text.PlunderLedgerStoppedState
+            : snapshot.State == TownOperationState.Completed
+                ? text.PlunderLedgerCompletedState
+                : text.PlunderLedgerActiveState;
+        string progress = (snapshot.ProgressBasisPoints / 100m).ToString("0.##", CultureInfo.InvariantCulture) + "%";
+        string result = text.PlunderLedgerContextTemplate;
+        result = ApplyTemplate(result, "state", state);
+        result = ApplyTemplate(result, "acquired_value", snapshot.AcquiredValue.ToString(CultureInfo.InvariantCulture));
+        result = ApplyTemplate(result, "available_value", snapshot.TotalAvailableValue.ToString(CultureInfo.InvariantCulture));
+        result = ApplyTemplate(result, "progress", progress);
+        result = ApplyTemplate(result, "merchant_count", snapshot.MerchantTargetCount.ToString(CultureInfo.InvariantCulture));
+        result = ApplyTemplate(result, "notable_count", snapshot.NotableTargetCount.ToString(CultureInfo.InvariantCulture));
+        result = ApplyTemplate(result, "civilian_count", snapshot.CivilianTargetCount.ToString(CultureInfo.InvariantCulture));
+        result = ApplyTemplate(result, "gold", snapshot.AcquiredGold.ToString(CultureInfo.InvariantCulture));
+        result = ApplyTemplate(result, "item_value", snapshot.AcquiredItemValue.ToString(CultureInfo.InvariantCulture));
+        return result.Trim();
+    }
+
     private static void AppendSection(StringBuilder prompt, string title, string content)
     {
         AppendSection(prompt, title, new[] { content });

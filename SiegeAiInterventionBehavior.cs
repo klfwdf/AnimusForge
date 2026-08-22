@@ -317,8 +317,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static int _lastMarketGoldLoot;
 	private static int _lastCivilianGoldLoot;
 	private static int _lastCivilianTargetsLooted;
-	private static int _civilianRobberyTargetsLooted;
-	private static int _civilianRobberyPenaltyLevelApplied;
 	private static int _lastSceneCivilianSpawnedCount;
 	private static int _lastKilledCivilianUnits;
 	private static int _lastKilledNotables;
@@ -333,6 +331,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static readonly Dictionary<string, int> SharedCivilianReliefItems = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 	private static readonly Dictionary<string, ItemObject> SharedCivilianReliefItemObjects = new Dictionary<string, ItemObject>(StringComparer.OrdinalIgnoreCase);
 	private static readonly TownSceneMemoryStore InterventionSceneMemory = new TownSceneMemoryStore(SiegeInterventionMemoryContextBuilder.MaxMemoryEvents);
+	private static readonly TownOperationLedger ActiveTownOperationLedger = new TownOperationLedger();
 	private static bool _pendingSummarySwitch;
 	private static SiegeAftermathAction.SiegeAftermath _pendingSummaryAftermath;
 	private static ItemRoster _pendingLootRoster = new ItemRoster();
@@ -396,8 +395,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static Dictionary<MobileParty, float> _partyContributions = new Dictionary<MobileParty, float>();
 	private static readonly Dictionary<int, PlunderInteraction> ActivePlunderInteractions = new Dictionary<int, PlunderInteraction>();
 	private static readonly Dictionary<int, CivilianGatherInteraction> ActiveCivilianGatherInteractions = new Dictionary<int, CivilianGatherInteraction>();
-	private static readonly HashSet<string> LootedTargets = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-	private static readonly HashSet<string> CivilianRobberyTargets = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+	private static readonly HashSet<string> MassacreLootedTargets = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 	private static readonly HashSet<int> AlliedAgentIndexes = new HashSet<int>();
 	private static readonly HashSet<int> BannerBearerAgentIndexes = new HashSet<int>();
 	private static readonly HashSet<int> CountedMassacreVictims = new HashSet<int>();
@@ -2866,6 +2864,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		memoryContext = AppendRuntimeContext(
 			memoryContext,
 			GcczTownRuleMemoryRuntimeBridge.BuildPromptContext(activeSettlement, _previousSettlementOwnerClan, IsActiveInCurrentMission()));
+		memoryContext = AppendRuntimeContext(
+			memoryContext,
+			TownPromptComposer.BuildTownOperationLedgerContext(
+				ActiveTownOperationLedger.Snapshot(),
+				GcczTownPromptResourceProvider.GetCatalog()));
 		memoryContext = AppendRuntimeContext(memoryContext, BuildPlayerCommanderRuntimeContext(ordinaryAlliedSoldier, civilian));
 		return SiegeRuntimePromptProfile.Build(new SiegeRuntimePromptFacts(
 			settlementName,
@@ -3267,6 +3270,13 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					ResolveCurrentSettlement(),
 					_previousSettlementOwnerClan,
 					IsActiveInCurrentMission()));
+			memoryContext = AppendRuntimeContext(
+				memoryContext,
+				IsActiveInCurrentMission()
+					? TownPromptComposer.BuildTownOperationLedgerContext(
+						ActiveTownOperationLedger.Snapshot(),
+						GcczTownPromptResourceProvider.GetCatalog())
+					: string.Empty);
 			memoryContext = AppendRuntimeContext(memoryContext, BuildPlayerCommanderRuntimeContext(ordinaryAlliedSoldier, civilian));
 			var facts = new SiegePostprocessContextFacts(
 				settlementName: _activeSettlementName,
@@ -3512,7 +3522,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			bool hasPlunderTag = PlunderTagRegex.IsMatch(text);
 			if (destructiveAllowed && actionRouting.CanApplyCivilianRobberyAction)
 			{
-				bool handled = ApplyCivilianRobberyChoice(targetAgentIndex, resolvedTargetCharacter, targetHero, text);
+				bool handled = ApplyCivilianRobberyChoice(targetAgentIndex, resolvedTargetCharacter, targetHero);
 				actionHandled |= handled;
 				if (handled)
 				{
@@ -7037,11 +7047,17 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (!_plunderStarted || _massacreStarted || _culturalRepopulationRequested)
+			TownOperationLedgerSnapshot ledger = ActiveTownOperationLedger.Snapshot();
+			bool hasActivePlunderLedger = ledger.Kind == TownOperationKind.Plunder
+				&& ledger.State == TownOperationState.Active;
+			if ((!_plunderStarted && !hasActivePlunderLedger)
+				|| _massacreStarted
+				|| _culturalRepopulationRequested)
 			{
 				return;
 			}
 			_plunderStarted = false;
+			ActiveTownOperationLedger.Stop();
 			ActivePlunderInteractions.Clear();
 			LastMassacreSoldierFollowOrderTimes.Clear();
 			LastMassacreSoldierTargetOrderTimes.Clear();
@@ -7522,6 +7538,130 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static bool EnsurePlunderOperationLedger(Mission mission)
+	{
+		try
+		{
+			Settlement settlement = ResolveCurrentSettlement();
+			if (!IsActiveInCurrentMission() || settlement?.IsTown != true || settlement.IsCastle || mission?.Agents == null)
+			{
+				return false;
+			}
+
+			TownOperationLedgerSnapshot current = ActiveTownOperationLedger.Snapshot();
+			if (current.State == TownOperationState.None)
+			{
+				if (!ActiveTownOperationLedger.Begin(TownOperationKind.Plunder, EstimateTownPlunderAvailableValue(settlement, mission)))
+				{
+					return false;
+				}
+				ActiveTownOperationLedger.RegisterTarget(
+					BuildTownOperationMarketTargetKey(settlement, "gold"),
+					TownOperationTargetKind.FullTown);
+				ActiveTownOperationLedger.RegisterTarget(
+					BuildTownOperationMarketTargetKey(settlement, "inventory"),
+					TownOperationTargetKind.FullTown);
+				foreach (Agent agent in mission.Agents)
+				{
+					if (!IsEligibleCivilianAgent(agent, includeHeroes: true))
+					{
+						continue;
+					}
+					CharacterObject character = agent.Character as CharacterObject;
+					ActiveTownOperationLedger.RegisterTarget(
+						BuildTargetKey(agent),
+						ClassifyPlunderTarget(character, character?.HeroObject));
+				}
+				ActiveTownOperationLedger.SealTargetSnapshot();
+				TownOperationLedgerSnapshot initialized = ActiveTownOperationLedger.Snapshot();
+				Logger.Log(
+					"SiegeAiIntervention",
+					"Initialized target-aware plunder ledger. Settlement=" + (settlement.StringId ?? "N/A")
+					+ ", Targets=" + initialized.Targets.Count
+					+ ", AvailableValue=" + initialized.TotalAvailableValue);
+				return true;
+			}
+
+			return current.Kind == TownOperationKind.Plunder
+				&& ActiveTownOperationLedger.Begin(TownOperationKind.Plunder, current.TotalAvailableValue);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "EnsurePlunderOperationLedger failed: " + ex.Message);
+			return false;
+		}
+	}
+
+	private static long EstimateTownPlunderAvailableValue(Settlement settlement, Mission mission)
+	{
+		long total = Math.Max(0, settlement?.Town?.Gold ?? 0);
+		try
+		{
+			ItemRoster roster = settlement?.ItemRoster;
+			if (roster != null)
+			{
+				for (int i = 0; i < roster.Count; i++)
+				{
+					ItemRosterElement element = roster.GetElementCopyAtIndex(i);
+					if (element.EquipmentElement.Item == null || element.Amount <= 0)
+					{
+						continue;
+					}
+					int unitValue = Math.Max(
+						0,
+						RewardSystemBehavior.Instance?.GetInventoryActualItemUnitValueForExternal(element.EquipmentElement)
+							?? element.EquipmentElement.Item.Value);
+					total = AddTownOperationValue(total, (long)unitValue * element.Amount);
+				}
+			}
+			if (mission?.Agents != null)
+			{
+				foreach (Agent agent in mission.Agents)
+				{
+					if (!IsEligibleCivilianAgent(agent, includeHeroes: true))
+					{
+						continue;
+					}
+					Hero hero = (agent.Character as CharacterObject)?.HeroObject;
+					long personalValue = hero != null && hero != Hero.MainHero
+						? (hero.Gold > 0 ? hero.Gold : SiegeCivilianRobberyProfile.HeroFallbackGoldMax)
+						: SiegeCivilianRobberyProfile.CommonerMaxGold;
+					total = AddTownOperationValue(total, personalValue);
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "EstimateTownPlunderAvailableValue used partial snapshot: " + ex.Message);
+		}
+		return Math.Max(0L, total);
+	}
+
+	private static long AddTownOperationValue(long current, long addition)
+	{
+		long safeCurrent = Math.Max(0L, current);
+		long safeAddition = Math.Max(0L, addition);
+		return safeAddition > long.MaxValue - safeCurrent ? long.MaxValue : safeCurrent + safeAddition;
+	}
+
+	private static TownOperationTargetKind ClassifyPlunderTarget(CharacterObject character, Hero hero)
+	{
+		if (IsMerchantRobberyCharacter(character))
+		{
+			return TownOperationTargetKind.Merchant;
+		}
+		if (hero?.IsNotable == true)
+		{
+			return TownOperationTargetKind.Notable;
+		}
+		return TownOperationTargetKind.Civilian;
+	}
+
+	private static string BuildTownOperationMarketTargetKey(Settlement settlement, string source)
+	{
+		return "town_market:" + (settlement?.StringId ?? "unknown") + ":" + (source ?? "unknown");
+	}
+
 	private static bool StartPlunder(string triggerSource, string triggerDetail)
 	{
 		if (_massacreStarted)
@@ -7529,6 +7669,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			return false;
 		}
 		SiegeDestructiveChoiceProfile plunderProfile = SiegeDestructiveChoiceProfile.BuildPlunder();
+		EnsurePlunderOperationLedger(Mission.Current);
 		ClearCivicPositiveBuffForSettlement(ResolveCurrentSettlement());
 		_activeMode = InterventionMode.Plunder;
 		if (!_plunderStarted)
@@ -7546,7 +7687,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		return false;
 	}
 
-	private static bool ApplyCivilianRobberyChoice(int targetAgentIndex, CharacterObject targetCharacter, Hero targetHero, string actionText)
+	private static bool ApplyCivilianRobberyChoice(int targetAgentIndex, CharacterObject targetCharacter, Hero targetHero)
 	{
 		if (_massacreStarted || _culturalRepopulationRequested)
 		{
@@ -7564,42 +7705,59 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		string targetKey = BuildTargetKey(targetAgent);
-		if (!CivilianRobberyTargets.Add(targetKey))
+		if (!EnsurePlunderOperationLedger(Mission.Current))
 		{
 			return false;
 		}
-		bool lootedGold = TryLootCivilianRobberyGold(targetAgent, targetKey);
-		bool wantsGoods = RobberyRequestsGoods(actionText);
-		bool lootedGoods = wantsGoods && TryLootCivilianRobberyMarketInventory();
+		string targetKey = BuildTargetKey(targetAgent);
+		if (!ActiveTownOperationLedger.TryClaimTarget(targetKey))
+		{
+			return false;
+		}
+		TownOperationTargetKind targetKind = ClassifyPlunderTarget(resolvedCharacter, resolvedHero);
+		int goldBefore = _lastCivilianGoldLoot + _lastMarketGoldLoot;
+		int itemValueBefore = _lastLootValue;
+		int itemCountBefore = _lastLootItemTotal;
+		bool lootedGold = TryLootCivilianRobberyGold(targetAgent);
+		bool lootedGoods = targetKind == TownOperationTargetKind.Merchant && TryLootCivilianRobberyMarketInventory();
 		if (!lootedGold && !lootedGoods)
 		{
-			CivilianRobberyTargets.Remove(targetKey);
+			ActiveTownOperationLedger.ReleaseTarget(targetKey);
 			return false;
 		}
-		_civilianRobberyTargetsLooted++;
-		ApplyCivilianRobberyPenaltyIfNeeded();
+		long acquiredGold = Math.Max(0, _lastCivilianGoldLoot + _lastMarketGoldLoot - goldBefore);
+		long acquiredItemValue = Math.Max(0, _lastLootValue - itemValueBefore);
+		int acquiredItemCount = Math.Max(0, _lastLootItemTotal - itemCountBefore);
+		ActiveTownOperationLedger.CompleteTarget(
+			targetKey,
+			TownOperationAcquisitionSource.DirectRobbery,
+			acquiredGold,
+			acquiredItemValue,
+			acquiredItemCount);
+		ApplyPlunderLedgerConsequencesIfNeeded();
 		RecordInterventionMemory(
 			SiegeCivilianRobberyProfile.MemoryTitle,
 			lootedGoods ? SiegeCivilianRobberyProfile.GoodsMemoryText : SiegeCivilianRobberyProfile.GoldMemoryText);
-		Logger.Log("SiegeAiIntervention", $"Applied civilian robbery. Target={targetKey}, Gold={lootedGold}, Goods={lootedGoods}, Count={_civilianRobberyTargetsLooted}, PenaltyLevel={_civilianRobberyPenaltyLevelApplied}");
+		TownOperationLedgerSnapshot ledger = ActiveTownOperationLedger.Snapshot();
+		Logger.Log("SiegeAiIntervention", $"Applied target-aware civilian robbery. Target={targetKey}, TargetKind={targetKind}, Gold={acquiredGold}, ItemValue={acquiredItemValue}, DirectTargets={ActiveTownOperationLedger.GetCompletedTargetCount(TownOperationAcquisitionSource.DirectRobbery)}, ProgressBasisPoints={ledger.ProgressBasisPoints}, CommittedProgressBasisPoints={ledger.CommittedProgressBasisPoints}");
 		return true;
 	}
 
-	private static bool TryLootCivilianRobberyGold(Agent agent, string targetKey)
+	private static bool TryLootCivilianRobberyGold(Agent agent)
 	{
 		if (!IsEligibleCivilianAgent(agent, includeHeroes: true))
-		{
-			return false;
-		}
-		if (!LootedTargets.Add(targetKey))
 		{
 			return false;
 		}
 		CharacterObject character = agent.Character as CharacterObject;
 		Hero hero = character?.HeroObject;
 		int amount = 0;
-		if (hero != null && hero != Hero.MainHero)
+		if (IsMerchantRobberyCharacter(character)
+			&& TryLootSettlementMarketGoldPortion(SiegeCivilianRobberyProfile.MerchantGoldMinRatio, SiegeCivilianRobberyProfile.MerchantGoldMaxRatio, out amount))
+		{
+			// Amount already moved from settlement market gold into the player's purse.
+		}
+		else if (hero != null && hero != Hero.MainHero)
 		{
 			amount = hero.Gold > 0
 				? RandomPercent(hero.Gold, SiegeCivilianRobberyProfile.HeroGoldMinRatio, SiegeCivilianRobberyProfile.HeroGoldMaxRatio)
@@ -7617,10 +7775,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				AwardGoldToPlayer(amount, SiegeLootAccountingProfile.CivilianHeroFallbackGoldSource);
 			}
 		}
-		else if (IsMerchantRobberyCharacter(character) && TryLootSettlementMarketGoldPortion(SiegeCivilianRobberyProfile.MerchantGoldMinRatio, SiegeCivilianRobberyProfile.MerchantGoldMaxRatio, out amount))
-		{
-			// Amount already moved from settlement market gold into the player's purse.
-		}
 		else
 		{
 			amount = MBRandom.RandomInt(SiegeCivilianRobberyProfile.CommonerMinGold, SiegeCivilianRobberyProfile.CommonerMaxGold + 1);
@@ -7628,7 +7782,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 		if (amount <= 0)
 		{
-			LootedTargets.Remove(targetKey);
 			return false;
 		}
 		_lastCivilianGoldLoot += amount;
@@ -7665,13 +7818,13 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static bool TryLootCivilianRobberyMarketInventory()
 	{
 		int itemTotalBefore = _lastLootItemTotal;
-		LootSettlementMarketInventory(SiegeCivilianRobberyProfile.MarketInventoryMinRatio, SiegeCivilianRobberyProfile.MarketInventoryMaxRatio, SiegeCivilianRobberyProfile.MarketInventoryLootReason);
+		LootSettlementMarketInventory(
+			SiegeCivilianRobberyProfile.MarketInventoryMinRatio,
+			SiegeCivilianRobberyProfile.MarketInventoryMaxRatio,
+			SiegeCivilianRobberyProfile.MarketInventoryLootReason,
+			showMessage: true,
+			recordPlunderOperation: false);
 		return _lastLootItemTotal > itemTotalBefore;
-	}
-
-	private static bool RobberyRequestsGoods(string text)
-	{
-		return ContainsAny(text, "物资", "货物", "货品", "粮食", "粮草", "库存", "商品", "军需", "辎重", "给货", "交货", "交出货", "交出物", "拿货");
 	}
 
 	private static bool IsMerchantRobberyCharacter(CharacterObject character)
@@ -7697,62 +7850,48 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void ApplyCivilianRobberyPenaltyIfNeeded()
+	private static void ApplyPlunderLedgerConsequencesIfNeeded()
 	{
 		try
 		{
 			Settlement settlement = ResolveCurrentSettlement();
-			if (settlement == null)
+			TownOperationLedgerSnapshot ledger = ActiveTownOperationLedger.Snapshot();
+			if (settlement?.IsTown != true
+				|| settlement.IsCastle
+				|| ledger.Kind != TownOperationKind.Plunder)
 			{
 				return;
 			}
-			if (_civilianRobberyPenaltyLevelApplied < 1)
+			TownOperationProgressCommit progress = ActiveTownOperationLedger.CommitCurrentProgress();
+			if (!progress.HasDelta)
 			{
-				ApplyCivilianRobberyPenaltyDelta(
-					settlement,
-					SiegeCivilianRobberyProfile.LocalPenaltyKey,
-					SiegeCivilianRobberyProfile.LocalSettlementPublicTrustDelta,
-					SiegeCivilianRobberyProfile.LocalSettlementPublicTrustReason,
-					SiegeCivilianRobberyProfile.LocalBoundVillagePublicTrustDelta,
-					SiegeCivilianRobberyProfile.LocalBoundVillagePublicTrustReason,
-					SiegeCivilianRobberyProfile.LocalNotableRelationDelta,
-					SiegeCivilianRobberyProfile.LocalNotableRelationReason);
-				_civilianRobberyPenaltyLevelApplied = 1;
+				return;
 			}
-			if (_civilianRobberyPenaltyLevelApplied < 2 && SiegeCivilianRobberyProfile.ShouldEscalateToFullPillagePenalty(_civilianRobberyTargetsLooted))
-			{
-				ApplyCivilianRobberyPenaltyDelta(
-					settlement,
-					SiegeCivilianRobberyProfile.FullPillagePenaltyKey,
-					SiegeCivilianRobberyProfile.EscalatedSettlementPublicTrustDelta,
-					SiegeCivilianRobberyProfile.EscalatedSettlementPublicTrustReason,
-					SiegeCivilianRobberyProfile.EscalatedBoundVillagePublicTrustDelta,
-					SiegeCivilianRobberyProfile.EscalatedBoundVillagePublicTrustReason,
-					SiegeCivilianRobberyProfile.EscalatedNotableRelationDelta,
-					SiegeCivilianRobberyProfile.EscalatedNotableRelationReason);
-				_civilianRobberyPenaltyLevelApplied = 2;
-			}
+			TownPlunderConsequenceDelta delta = TownPlunderConsequenceDelta.FromProgressCommit(progress);
+			AdjustSettlementPublicTrustOnly(
+				settlement,
+				delta.SettlementPublicTrustDelta,
+				TownPlunderConsequenceDelta.SettlementPublicTrustReason);
+			int villageTrustAdjusted = AdjustBoundVillagePublicTrust(
+				settlement,
+				delta.BoundVillagePublicTrustDelta,
+				TownPlunderConsequenceDelta.BoundVillagePublicTrustReason);
+			int notableRelationAdjusted = AdjustSettlementAndBoundVillageNotableRelations(
+				settlement,
+				delta.NotableRelationDelta,
+				TownPlunderConsequenceDelta.NotableRelationReason);
+			int notableTrustAdjusted = AdjustSettlementAndBoundVillageNotableTrust(
+				settlement,
+				delta.NotableTrustDelta,
+				TownPlunderConsequenceDelta.NotableTrustReason);
+			Logger.Log(
+				"SiegeAiIntervention",
+				$"Applied incremental plunder consequences. Settlement={settlement.StringId ?? "N/A"}, DeltaBasisPoints={delta.DeltaBasisPoints}, CumulativeBasisPoints={delta.CumulativeBasisPoints}, SettlementTrust={delta.SettlementPublicTrustDelta}, VillageTrust={delta.BoundVillagePublicTrustDelta}x{villageTrustAdjusted}, NotableRelation={delta.NotableRelationDelta}x{notableRelationAdjusted}, NotableTrust={delta.NotableTrustDelta}x{notableTrustAdjusted}");
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("SiegeAiIntervention", "ApplyCivilianRobberyPenaltyIfNeeded failed: " + ex.Message);
+			Logger.Log("SiegeAiIntervention", "ApplyPlunderLedgerConsequencesIfNeeded failed: " + ex.Message);
 		}
-	}
-
-	private static void ApplyCivilianRobberyPenaltyDelta(
-		Settlement settlement,
-		string key,
-		int settlementTrustDelta,
-		string settlementTrustReason,
-		int boundVillageTrustDelta,
-		string boundVillageTrustReason,
-		int notableRelationDelta,
-		string notableRelationReason)
-	{
-		AdjustSettlementPublicTrustOnly(settlement, settlementTrustDelta, settlementTrustReason);
-		int villageTrustAdjusted = AdjustBoundVillagePublicTrust(settlement, boundVillageTrustDelta, boundVillageTrustReason);
-		int notableRelationAdjusted = AdjustSettlementAndBoundVillageNotableRelations(settlement, notableRelationDelta, notableRelationReason);
-		Logger.Log("SiegeAiIntervention", $"Applied civilian robbery settlement penalty. Key={key}, Settlement={settlement?.StringId ?? "N/A"}, SettlementTrust={settlementTrustDelta}, VillageTrust={boundVillageTrustDelta}x{villageTrustAdjusted}, NotableRelation={notableRelationDelta}x{notableRelationAdjusted}");
 	}
 
 	private static bool StartMassacre(string triggerSource, string triggerDetail)
@@ -10927,7 +11066,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				HashSet<int> activeTargets = new HashSet<int>(ActivePlunderInteractions.Keys);
 				Agent target = mission.Agents
-					.Where(a => IsEligibleCivilianAgent(a, includeHeroes: true) && !LootedTargets.Contains(BuildTargetKey(a)) && !activeTargets.Contains(a.Index))
+					.Where(a => IsEligibleCivilianAgent(a, includeHeroes: true) && !ActiveTownOperationLedger.HasCompletedTarget(BuildTargetKey(a)) && !activeTargets.Contains(a.Index))
 					.OrderBy(a => CountNearbyAssignedPlunderSoldiers(a, mission))
 					.ThenBy(a => Agent.Main != null ? a.Position.DistanceSquared(Agent.Main.Position) : 0f)
 					.FirstOrDefault();
@@ -10952,7 +11091,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return 0;
 			}
 			int activeSoldiers = mission.Agents.Count(a => IsCommandableInterventionSoldier(a, requireActive: true));
-			int remainingTargets = mission.Agents.Count(a => IsEligibleCivilianAgent(a, includeHeroes: true) && !LootedTargets.Contains(BuildTargetKey(a)) && !ActivePlunderInteractions.ContainsKey(a.Index));
+			int remainingTargets = mission.Agents.Count(a => IsEligibleCivilianAgent(a, includeHeroes: true) && !ActiveTownOperationLedger.HasCompletedTarget(BuildTargetKey(a)) && !ActivePlunderInteractions.ContainsKey(a.Index));
 			int byRatio = (int)MathF.Ceiling(activeSoldiers * PlunderSoldierAssignmentRatio);
 			int desired = Math.Min(MaxConcurrentPlunderInteractions, Math.Max(1, byRatio));
 			return Math.Max(0, Math.Min(remainingTargets + ActivePlunderInteractions.Count, desired));
@@ -11001,7 +11140,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				Agent target = mission.Agents.FirstOrDefault(a => a != null && a.Index == interaction.TargetAgentIndex);
 				Agent soldier = mission.Agents.FirstOrDefault(a => a != null && a.Index == interaction.SoldierAgentIndex);
-				if (target == null || soldier == null || !target.IsActive() || !soldier.IsActive() || LootedTargets.Contains(BuildTargetKey(target)) || !IsEligibleCivilianAgent(target, includeHeroes: true))
+				if (target == null || soldier == null || !target.IsActive() || !soldier.IsActive() || ActiveTownOperationLedger.HasCompletedTarget(BuildTargetKey(target)) || !IsEligibleCivilianAgent(target, includeHeroes: true))
 				{
 					ActivePlunderInteractions.Remove(interaction.TargetAgentIndex);
 					continue;
@@ -11125,13 +11264,24 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			return false;
 		}
 		string targetKey = BuildTargetKey(agent);
-		if (!force && !LootedTargets.Add(targetKey))
+		if (massacre)
 		{
-			return false;
+			if (!force && !MassacreLootedTargets.Add(targetKey))
+			{
+				return false;
+			}
+			if (force)
+			{
+				MassacreLootedTargets.Add(targetKey);
+			}
 		}
-		if (force)
+		else
 		{
-			LootedTargets.Add(targetKey);
+			if (!EnsurePlunderOperationLedger(Mission.Current)
+				|| !ActiveTownOperationLedger.TryClaimTarget(targetKey))
+			{
+				return false;
+			}
 		}
 		CharacterObject character = agent.Character as CharacterObject;
 		Hero hero = character?.HeroObject;
@@ -11171,7 +11321,23 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			_lastCivilianTargetsLooted++;
 			string targetName = agent.Name?.ToString();
 			InformationManager.DisplayMessage(new InformationMessage(SiegeLootAccountingProfile.BuildCivilianLootMessage(actorName, targetName, amount), Color.FromUint(SiegeLootAccountingProfile.LootMessageColor)));
+			if (!massacre)
+			{
+				ActiveTownOperationLedger.CompleteTarget(
+					targetKey,
+					string.IsNullOrWhiteSpace(actorName)
+						? TownOperationAcquisitionSource.ExitSweep
+						: TownOperationAcquisitionSource.SoldierPlunder,
+					amount,
+					0,
+					0);
+				ApplyPlunderLedgerConsequencesIfNeeded();
+			}
 			return true;
+		}
+		if (!massacre)
+		{
+			ActiveTownOperationLedger.ReleaseTarget(targetKey);
 		}
 		return false;
 	}
@@ -13327,6 +13493,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private static void LootSettlementMarketGold(string reason, bool showMessage = true)
 	{
+		string operationTargetKey = string.Empty;
+		bool operationTargetClaimed = false;
 		try
 		{
 			Settlement settlement = ResolveCurrentSettlement();
@@ -13335,10 +13503,32 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
+			bool recordPlunderOperation = _plunderStarted
+				&& !_massacreStarted
+				&& ActiveTownOperationLedger.Snapshot().Kind == TownOperationKind.Plunder;
+			if (recordPlunderOperation)
+			{
+				operationTargetKey = BuildTownOperationMarketTargetKey(settlement, "gold");
+				operationTargetClaimed = ActiveTownOperationLedger.TryClaimTarget(operationTargetKey);
+				if (!operationTargetClaimed)
+				{
+					return;
+				}
+			}
 			int amount = town.Gold;
 			town.ChangeGold(-amount);
 			AwardGoldToPlayer(amount, SiegeLootAccountingProfile.MarketGoldSource);
 			_lastMarketGoldLoot += amount;
+			if (operationTargetClaimed)
+			{
+				ActiveTownOperationLedger.CompleteTarget(
+					operationTargetKey,
+					TownOperationAcquisitionSource.SettlementTreasury,
+					amount,
+					0,
+					0);
+				ApplyPlunderLedgerConsequencesIfNeeded();
+			}
 			if (showMessage)
 			{
 				InformationManager.DisplayMessage(new InformationMessage(SiegeLootAccountingProfile.BuildMarketGoldMessage(reason, amount), Color.FromUint(SiegeLootAccountingProfile.LootMessageColor)));
@@ -13346,12 +13536,23 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
+			if (operationTargetClaimed)
+			{
+				ActiveTownOperationLedger.ReleaseTarget(operationTargetKey);
+			}
 			Logger.Log("SiegeAiIntervention", "LootSettlementMarketGold failed: " + ex.Message);
 		}
 	}
 
-	private static void LootSettlementMarketInventory(float minRatio, float maxRatio, string reason, bool showMessage = true)
+	private static void LootSettlementMarketInventory(
+		float minRatio,
+		float maxRatio,
+		string reason,
+		bool showMessage = true,
+		bool recordPlunderOperation = true)
 	{
+		string operationTargetKey = string.Empty;
+		bool operationTargetClaimed = false;
 		try
 		{
 			Settlement settlement = ResolveCurrentSettlement();
@@ -13359,6 +13560,19 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			if (sourceRoster == null || MobileParty.MainParty == null || sourceRoster.Count <= 0)
 			{
 				return;
+			}
+			bool shouldRecordPlunderOperation = recordPlunderOperation
+				&& _plunderStarted
+				&& !_massacreStarted
+				&& ActiveTownOperationLedger.Snapshot().Kind == TownOperationKind.Plunder;
+			if (shouldRecordPlunderOperation)
+			{
+				operationTargetKey = BuildTownOperationMarketTargetKey(settlement, "inventory");
+				operationTargetClaimed = ActiveTownOperationLedger.TryClaimTarget(operationTargetKey);
+				if (!operationTargetClaimed)
+				{
+					return;
+				}
 			}
 			if (_pendingLootRoster == null)
 			{
@@ -13381,6 +13595,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			if (totalAmount <= 0 || stacks.Count == 0)
 			{
+				if (operationTargetClaimed)
+				{
+					ActiveTownOperationLedger.ReleaseTarget(operationTargetKey);
+				}
 				return;
 			}
 			float ratio = minRatio + MBRandom.RandomFloat * Math.Max(0f, maxRatio - minRatio);
@@ -13417,6 +13635,23 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			_lastLootItemTotal += movedTotal;
 			_lastLootStackKinds += movedKindKeys.Count;
 			_lastLootValue += movedValue;
+			if (operationTargetClaimed)
+			{
+				if (movedTotal > 0)
+				{
+					ActiveTownOperationLedger.CompleteTarget(
+						operationTargetKey,
+						TownOperationAcquisitionSource.SettlementInventory,
+						0,
+						movedValue,
+						movedTotal);
+					ApplyPlunderLedgerConsequencesIfNeeded();
+				}
+				else
+				{
+					ActiveTownOperationLedger.ReleaseTarget(operationTargetKey);
+				}
+			}
 			if (showMessage && movedTotal > 0)
 			{
 				InformationManager.DisplayMessage(new InformationMessage(SiegeLootAccountingProfile.BuildMarketInventoryMessage(reason, movedTotal, movedKindKeys.Count, movedValue), Color.FromUint(SiegeLootAccountingProfile.LootMessageColor)));
@@ -13424,6 +13659,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
+			if (operationTargetClaimed)
+			{
+				ActiveTownOperationLedger.ReleaseTarget(operationTargetKey);
+			}
 			Logger.Log("SiegeAiIntervention", "LootSettlementMarketInventory failed: " + ex.Message);
 		}
 	}
@@ -13860,6 +14099,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				previousOwner,
 				IsActiveInCurrentMission(),
 				"aftermath_finalized");
+			if (!castleAftermath && aftermath == SiegeAftermathAction.SiegeAftermath.Pillage)
+			{
+				ApplyPendingMarketLootForFinalAftermath(aftermath);
+			}
 			if (aftermath == SiegeAftermathAction.SiegeAftermath.Devastate)
 			{
 				if (_culturalRepopulationRequested)
@@ -13874,8 +14117,17 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				_nativeDevastateAftermathFlowActive = true;
 				_nativeDevastateSummaryContinueHandled = false;
 			}
-			if (aftermath == SiegeAftermathAction.SiegeAftermath.Pillage && _plunderStarted)
+			bool ledgerBackedFullPlunder = aftermath == SiegeAftermathAction.SiegeAftermath.Pillage
+				&& _plunderStarted
+				&& ActiveTownOperationLedger.Snapshot().Kind == TownOperationKind.Plunder;
+			if (ledgerBackedFullPlunder)
 			{
+				ActiveTownOperationLedger.CompleteFullOutcome();
+				ApplyPlunderLedgerConsequencesIfNeeded();
+			}
+			else if (aftermath == SiegeAftermathAction.SiegeAftermath.Pillage && _plunderStarted)
+			{
+				// Preserve the legacy complete outcome if the guarded runtime ledger could not initialize.
 				ApplyFinalizedSettlementOutcomeEffects(settlement, SiegeSettlementOutcomeProfile.BuildPlunder(), prosperityBefore);
 			}
 			if (!castleAftermath)
@@ -13884,9 +14136,16 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				ApplyPendingPositiveNotableTrustForFinalAftermath(settlement, aftermath);
 			}
 			CommitPendingInterventionNotableDeaths(SiegeNotableSceneDeathProfile.SettlementResolutionKillReason);
-			if (!castleAftermath)
+			if (!castleAftermath && aftermath != SiegeAftermathAction.SiegeAftermath.Pillage)
 			{
 				ApplyPendingMarketLootForFinalAftermath(aftermath);
+			}
+			TownOperationLedgerSnapshot plunderLedger = ActiveTownOperationLedger.Snapshot();
+			if (plunderLedger.Kind == TownOperationKind.Plunder
+				&& plunderLedger.State != TownOperationState.Completed)
+			{
+				ApplyPlunderLedgerConsequencesIfNeeded();
+				ActiveTownOperationLedger.CompletePartialOutcome();
 			}
 			TrySetNativePlayerEncounterAftermathForSummary(aftermath);
 			MyBehavior.Instance?.RecordAnimusForgeSiegeInterventionForExternal(attackerParty, settlement, aftermath, previousOwner, _pendingAftermathTrigger, _pendingAftermathDetail, Math.Min(AutoSummonCount, CountHealthyMainPartySoldiers()), _lastLootItemTotal, _lastLootStackKinds, _lastLootValue, _lastMarketGoldLoot, _lastCivilianGoldLoot, _lastCivilianTargetsLooted, _lastKilledCivilianUnits, _lastKilledNotables, _plunderStarted, _massacreStarted);
@@ -13900,6 +14159,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				+ " reason=" + (reason ?? "N/A")
 				+ " lootItems=" + _lastLootItemTotal
 				+ " lootValue=" + _lastLootValue
+				+ " plunderProgressBasisPoints=" + ActiveTownOperationLedger.Snapshot().ProgressBasisPoints
 				+ " killedCivilians=" + _lastKilledCivilianUnits
 				+ " killedNotables=" + _lastKilledNotables);
 			return true;
@@ -15778,8 +16038,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_lastMarketGoldLoot = 0;
 		_lastCivilianGoldLoot = 0;
 		_lastCivilianTargetsLooted = 0;
-		_civilianRobberyTargetsLooted = 0;
-		_civilianRobberyPenaltyLevelApplied = 0;
 		_lastSceneCivilianSpawnedCount = 0;
 		_lastKilledCivilianUnits = 0;
 		_lastKilledNotables = 0;
@@ -15794,6 +16052,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		SharedCivilianReliefItems.Clear();
 		SharedCivilianReliefItemObjects.Clear();
 		InterventionSceneMemory.Reset();
+		ActiveTownOperationLedger.Reset();
 		_pendingLootRoster = new ItemRoster();
 		_pendingLootScreen = false;
 		_pendingLootScreenShown = false;
@@ -15806,8 +16065,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		ResetOutcomeMessageDedup();
 		ActivePlunderInteractions.Clear();
 		ActiveCivilianGatherInteractions.Clear();
-		LootedTargets.Clear();
-		CivilianRobberyTargets.Clear();
+		MassacreLootedTargets.Clear();
 		AlliedAgentIndexes.Clear();
 		BannerBearerAgentIndexes.Clear();
 		CountedMassacreVictims.Clear();
