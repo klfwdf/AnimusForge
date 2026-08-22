@@ -564,47 +564,32 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		Dictionary<string, int> current = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 		dataStore.SyncData(initializedKey, ref hasCurrentStorage);
 		dataStore.SyncData(currentKey, ref current);
-		if (hasCurrentStorage)
-		{
-			_recruitmentSlowdownUntilDayBySettlement = current == null
-				? new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
-				: new Dictionary<string, int>(current, StringComparer.OrdinalIgnoreCase);
-			return;
-		}
-
 		bool hasV2Storage = false;
 		Dictionary<string, int> legacyV2 = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-		dataStore.SyncData(legacyInitializedKeyV2, ref hasV2Storage);
-		dataStore.SyncData(legacyKeyV2, ref legacyV2);
-		Dictionary<string, int> migrated;
-		string source;
-		if (hasV2Storage)
+		Dictionary<string, int> legacyV1 = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		if (!hasCurrentStorage)
 		{
-			migrated = legacyV2 == null
-				? new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
-				: new Dictionary<string, int>(legacyV2, StringComparer.OrdinalIgnoreCase);
-			source = "v2";
-		}
-		else
-		{
-			Dictionary<string, int> legacyV1 = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-			dataStore.SyncData(legacyKeyV1, ref legacyV1);
-			migrated = legacyV1 == null
-				? new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
-				: new Dictionary<string, int>(legacyV1, StringComparer.OrdinalIgnoreCase);
-			source = "v1";
-		}
-		int restoredRepopulationEntries = 0;
-		foreach (KeyValuePair<string, int> repopulationEntry in _repopulationProsperityDebuffUntilDayBySettlement ?? new Dictionary<string, int>())
-		{
-			if (!migrated.TryGetValue(repopulationEntry.Key, out int existingUntilDay) || existingUntilDay < repopulationEntry.Value)
+			dataStore.SyncData(legacyInitializedKeyV2, ref hasV2Storage);
+			dataStore.SyncData(legacyKeyV2, ref legacyV2);
+			if (!hasV2Storage)
 			{
-				migrated[repopulationEntry.Key] = repopulationEntry.Value;
-				restoredRepopulationEntries++;
+				dataStore.SyncData(legacyKeyV1, ref legacyV1);
 			}
 		}
-		_recruitmentSlowdownUntilDayBySettlement = migrated;
-		Logger.Log("SiegeAiIntervention", $"Migrated recruitment slowdown storage {source}->v3. Entries={migrated.Count}, RestoredRepopulation={restoredRepopulationEntries}");
+		TownRecruitmentSlowdownMigrationResult migration = TownRecruitmentSlowdownSaveMigration.Resolve(
+			hasCurrentStorage,
+			current,
+			hasV2Storage,
+			legacyV2,
+			legacyV1,
+			_repopulationProsperityDebuffUntilDayBySettlement);
+		_recruitmentSlowdownUntilDayBySettlement = migration.CopyEntries();
+		if (migration.SourceVersion != TownRecruitmentSlowdownStorageVersion.CurrentV3)
+		{
+			Logger.Log(
+				"SiegeAiIntervention",
+				$"Migrated recruitment slowdown storage v{(int)migration.SourceVersion}->v3. Entries={migration.EntryCount}, RestoredRepopulation={migration.RestoredRepopulationEntryCount}");
+		}
 	}
 
 	private void OnDailyTickTown(Town town)
