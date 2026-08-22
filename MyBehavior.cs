@@ -16,6 +16,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using AnimusForge.SiegeAftermathIntervention;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SandBox.Tournaments.MissionLogics;
@@ -29108,7 +29109,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				stringBuilder.AppendLine(text3.Trim());
 			}
-			if (!AfGcczShoutBridge.ShouldUseExclusivePreprocessRuleRouting() && !suppressForcedMeetingTaunt && stringBuilder.ToString().IndexOf("【附加规则:meeting_taunt】", StringComparison.OrdinalIgnoreCase) < 0)
+			if (AfGcczShoutBridge.ShouldAllowAfRuleForCurrentStage(TownAfRuleRoutingPolicy.MeetingTauntRuleId) && !suppressForcedMeetingTaunt && stringBuilder.ToString().IndexOf(AfGcczShoutBridge.MeetingTauntRuleBlockMarker, StringComparison.OrdinalIgnoreCase) < 0)
 			{
 				string text4 = SceneTauntBehavior.BuildUnifiedTauntRuntimeInstructionForExternal(targetHero ?? targetCharacter?.HeroObject, targetCharacter, targetAgentIndex);
 				if (!string.IsNullOrWhiteSpace(text4))
@@ -30349,7 +30350,7 @@ public class MyBehavior : CampaignBehaviorBase
 		HashSet<string> excludedRuleIdSet = BuildPromptRuleIdSet(excludedRuleIds);
 		AddPlayerCompanionOrFamilyRuleExclusionsForTarget(excludedRuleIdSet, targetHero, targetCharacter);
 		AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter, targetAgentIndex);
-		AfGcczShoutBridge.AddExclusivePreprocessRuleExclusions(excludedRuleIdSet);
+		AfGcczShoutBridge.AddRuntimePreprocessRuleExclusions(excludedRuleIdSet);
 		AddPreprocessOnlyResidentRuleExclusions(excludedRuleIdSet);
 		if (AfGcczShoutBridge.ShouldBypassPreprocessForActiveScene())
 		{
@@ -30513,7 +30514,7 @@ public class MyBehavior : CampaignBehaviorBase
 		AddPlayerCompanionOrFamilyRuleExclusionsForTarget(excludedRuleIdSet, targetHero, targetCharacter);
 		AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter, targetAgentIndex);
 		AddSceneMoveRuleExclusionForCurrentMission(excludedRuleIdSet);
-		AfGcczShoutBridge.AddExclusivePreprocessRuleExclusions(excludedRuleIdSet);
+		AfGcczShoutBridge.AddRuntimePreprocessRuleExclusions(excludedRuleIdSet);
 		// These are topics removed from the candidate list before routing. They are
 		// intentionally unrelated to topics the preprocessing LLM saw but did not select.
 		bool completeRuntimeExcludedRuleIds = preprocessExcludedRuleIds == null;
@@ -30525,7 +30526,7 @@ public class MyBehavior : CampaignBehaviorBase
 				preprocessExcludedRuleIdSet.Add(excludedRuleId.Trim());
 			}
 		}
-		AfGcczShoutBridge.AddExclusivePreprocessRuleExclusions(preprocessExcludedRuleIdSet);
+		AfGcczShoutBridge.AddRuntimePreprocessRuleExclusions(preprocessExcludedRuleIdSet);
 		AddPreprocessOnlyResidentRuleExclusions(preprocessExcludedRuleIdSet);
 		string targetKingdomId = ResolveTargetKingdomIdForRules(targetHero, targetCharacter, kingdomIdOverride);
 		AIConfigHandler.SetGuardrailRuntimeTargetKingdom(targetKingdomId);
