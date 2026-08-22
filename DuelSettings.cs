@@ -1094,11 +1094,11 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	{
 		try
 		{
-			return GetSettings()?.GcczNpcResponseUnlimited ?? true;
+			return GetSettings()?.GcczNpcResponseUnlimited ?? SiegeNpcResponseLimitProfile.DefaultUnlimited;
 		}
 		catch
 		{
-			return true;
+			return SiegeNpcResponseLimitProfile.DefaultUnlimited;
 		}
 	}
 
@@ -2219,11 +2219,11 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("12. 事件系统（开发）")]
 	public bool EnablePlayerKingdomRebellionImmunity { get; set; } = false;
 
-	[SettingPropertyBool("NPC回应无限数量", Order = 0, RequireRestart = false, HintText = "仅影响攻城后处置(GCCZ)场景。开启后，NPC对处置标签的环境回应、以及玩家集体喊话可回应的NPC不再套用下方 1-10 人数限制；关闭后使用下方人数上限。")]
+	[SettingPropertyBool("{=gccz_npc_response_unlimited_name}NPC Response Unlimited", Order = 0, RequireRestart = false, HintText = "{=gccz_npc_response_unlimited_hint}Removes the configured numeric cap in active GCCZ town scenes while retaining event deduplication and queue safety.")]
 	[SettingPropertyGroup(SiegeNpcResponseLimitProfile.McmGroupName)]
-	public bool GcczNpcResponseUnlimited { get; set; } = true;
+	public bool GcczNpcResponseUnlimited { get; set; } = SiegeNpcResponseLimitProfile.DefaultUnlimited;
 
-	[SettingPropertyInteger("NPC回应数量限制", SiegeNpcResponseLimitProfile.MinResponseLimit, SiegeNpcResponseLimitProfile.MaxResponseLimit, "0", Order = 1, RequireRestart = false, HintText = "关闭“NPC回应无限数量”后生效：限制每次GCCZ处置标签环境回应、以及玩家一次集体喊话最多有多少NPC开口回应。范围 1-10。")]
+	[SettingPropertyInteger("{=gccz_npc_response_limit_name}NPC Response Limit", SiegeNpcResponseLimitProfile.MinResponseLimit, SiegeNpcResponseLimitProfile.MaxResponseLimit, "0", Order = 1, RequireRestart = false, HintText = "{=gccz_npc_response_limit_hint}Limits ambient NPC replies per player utterance, semantic action, or player attack event in an active GCCZ town scene.")]
 	[SettingPropertyGroup(SiegeNpcResponseLimitProfile.McmGroupName)]
 	public int GcczNpcResponseLimit { get; set; } = SiegeNpcResponseLimitProfile.DefaultResponseLimit;
 

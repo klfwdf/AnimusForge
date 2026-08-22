@@ -14,6 +14,8 @@ public static class SiegeNpcResponseLimitProfile
 
     public const int DefaultResponseLimit = MaxResponseLimit;
 
+    public const bool DefaultUnlimited = false;
+
     public const string McmGroupName = "14. 攻城处置&内部暴乱";
 
     public const string DiagnosticLogFileName = "GCCZ_Debug.log";

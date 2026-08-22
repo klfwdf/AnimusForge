@@ -26052,7 +26052,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		});
 	}
 
-	private static List<NpcDataPacket> BuildGroupSpeakingCandidatesWithGcczLimit(List<NpcDataPacket> allNpcData, NpcDataPacket primaryNpc, string source)
+	private static List<NpcDataPacket> BuildGroupSpeakingCandidates(List<NpcDataPacket> allNpcData, NpcDataPacket primaryNpc)
 	{
 		List<NpcDataPacket> speakingCandidates = new List<NpcDataPacket>();
 		HashSet<int> addedAgentIndices = new HashSet<int>();
@@ -26072,36 +26072,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 		}
 		return speakingCandidates;
-	}
-
-	private static int ResolveGroupReplyTurnBudget(string source)
-	{
-		int budget = AUTO_GROUP_CHAT_MAX_LINES;
-		if (AfGcczShoutBridge.IsActive())
-		{
-			budget = AfGcczShoutBridge.ResolveNpcResponseLimitForExternal(AUTO_GROUP_CHAT_MAX_LINES, source);
-		}
-		return Math.Max(0, Math.Min(AUTO_GROUP_CHAT_MAX_LINES, budget));
-	}
-
-	private static int CountPotentialGroupSpeakingCandidates(List<NpcDataPacket> allNpcData, NpcDataPacket primaryNpc)
-	{
-		HashSet<int> candidateAgentIndices = new HashSet<int>();
-		if (primaryNpc != null)
-		{
-			candidateAgentIndices.Add(primaryNpc.AgentIndex);
-		}
-		if (allNpcData != null)
-		{
-			foreach (NpcDataPacket n in allNpcData)
-			{
-				if (n != null)
-				{
-					candidateAgentIndices.Add(n.AgentIndex);
-				}
-			}
-		}
-		return candidateAgentIndices.Count;
 	}
 
 	private async Task HandleGroupResponse(string playerText, List<NpcDataPacket> allNpcData, string sceneDesc, NpcDataPacket primaryNpc, string extraFact, Dictionary<int, PrecomputedShoutRagContext> precomputedContexts, Dictionary<int, Hero> resolvedHeroes, int conversationEpoch, SceneShoutConversationScope conversationScope, List<NpcDataPacket> framedNpcData)
@@ -26124,7 +26094,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					return;
 				}
 				DuelSettings settings = DuelSettings.GetSettings();
-				List<NpcDataPacket> speakingCandidates = BuildGroupSpeakingCandidatesWithGcczLimit(allNpcData, primaryNpc, "group_shout_stream");
+				List<NpcDataPacket> speakingCandidates = BuildGroupSpeakingCandidates(allNpcData, primaryNpc);
 				List<string> patienceStatusLines = new List<string>();
 				List<NpcDataPacket> speakableCandidates = new List<NpcDataPacket>();
 				foreach (NpcDataPacket npc in speakingCandidates)
@@ -26535,7 +26505,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				allNpcData = new List<NpcDataPacket>();
 			}
-			List<NpcDataPacket> speakableCandidates = BuildGroupSpeakingCandidatesWithGcczLimit(allNpcData, primaryNpc, "group_shout_independent");
+			List<NpcDataPacket> speakableCandidates = BuildGroupSpeakingCandidates(allNpcData, primaryNpc);
 			Dictionary<int, NpcDataPacket> audienceByAgentIndex = new Dictionary<int, NpcDataPacket>();
 			for (int i = 0; i < speakableCandidates.Count; i++)
 			{
@@ -26574,7 +26544,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			engagedAgentIndices.Add(currentSpeaker.AgentIndex);
 			HashSet<int> personaPreparedAgentIndices = new HashSet<int>();
 			bool firstTurn = true;
-			int remainingTurns = ResolveGroupReplyTurnBudget("group_shout_independent");
+			bool useTownResponseBudget = AfGcczShoutBridge.ShouldUseTownNpcResponseBudgetForExternal();
+			int remainingTurns = useTownResponseBudget
+				? Math.Min(SiegeNpcResponseEventBudget.MaxPendingRequests, speakableCandidates.Count)
+				: Math.Min(AUTO_GROUP_CHAT_MAX_LINES, speakableCandidates.Count);
+			string responseEventId = "player_utterance:" + conversationEpoch;
 			while (currentSpeaker != null && remainingTurns-- > 0)
 			{
 				Stopwatch turnSw = Stopwatch.StartNew();
@@ -26601,6 +26575,18 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					break;
 				}
 				currentSpeaker = validatedCurrentSpeaker;
+				if (useTownResponseBudget
+					&& !AfGcczShoutBridge.TryClaimNpcResponseForExternal(
+						responseEventId,
+						currentSpeaker.AgentIndex,
+						firstTurn ? SiegeNpcResponseEventOrigin.DirectPlayerReply : SiegeNpcResponseEventOrigin.PlayerUtterance,
+						Math.Max(0, speakableCandidates.Count - 1),
+						pendingRequestCount: 0,
+						source: "group_shout_independent",
+						out _))
+				{
+					break;
+				}
 				engagedAgentIndices.Add(currentSpeaker.AgentIndex);
 				if (personaPreparedAgentIndices.Add(currentSpeaker.AgentIndex))
 				{
@@ -26938,7 +26924,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					if (!endRequested && remainingTurns > 0)
 					{
 						SceneRelayEligibilitySnapshot nextEligibility = await RunNativeConversationMainThreadFuncAsync("scene_relay_next_candidates", currentSpeaker.Name, currentSpeaker.AgentIndex, () => BuildSceneRelayEligibilitySnapshot(conversationScope, audienceByAgentIndex, resolvedHeroes, conversationEpoch), new SceneRelayEligibilitySnapshot());
-						relayCandidatesForNextTurn = nextEligibility.Candidates;
+						relayCandidatesForNextTurn = nextEligibility.Candidates
+							.Where(candidate => candidate != null
+								&& candidate.AgentIndex != currentSpeaker.AgentIndex
+								&& !roundNpcSpeakerIndices.Contains(candidate.AgentIndex))
+							.ToList();
 					}
 					relayPostprocessSelected = !endRequested && remainingTurns > 0 && relayCandidatesForNextTurn.Count > 0;
 					bool flag11 = duelPostprocessSelected || rewardPostprocessSelected || loanPostprocessSelected || persistentAdpDebtPostprocessSelected || kingdomServicePostprocessSelected || kingdomVassalagePostprocessSelected || kingdomAnnexationPostprocessSelected || lordsHallPostprocessSelected || meetingReleasePostprocessSelected || vanillaIssuePostprocessSelected || heroJoinPartyPostprocessSelected || sceneMechanismPostprocessSelected || partyTransferPostprocessSelected || voteDealPostprocessSelected || customPolicyAgendaPostprocessSelected || diplomacyPostprocessSelected || worldMapPartyCommandPostprocessSelected || nobleGatheringPostprocessSelected || marriagePostprocessSelected || proposeAgendaPostprocessSelected || siegeInterventionPostprocessSelected || npcSurrenderPostprocessSelected || royalPostprocessSelected || relayPostprocessSelected;
@@ -34006,6 +33996,19 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		catch
 		{
 			return false;
+		}
+	}
+
+	internal static int GetPendingImmediateSceneReactionCountForExternal()
+	{
+		ShoutBehavior instance = CurrentInstance;
+		if (instance == null)
+		{
+			return 0;
+		}
+		lock (instance._immediateSceneReactionGateLock)
+		{
+			return instance._pendingImmediateSceneReactionRequests.Count;
 		}
 	}
 
