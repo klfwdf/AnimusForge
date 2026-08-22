@@ -1982,7 +1982,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		CastleAftermathArmyRosterRuntimeBridge.TryCapturePlayerCastleBattleStart();
 		if (_pendingMode == InterventionMode.None)
 		{
-			EndInterventionSceneMemory("unrelated_mission_started");
+			EndInterventionSceneScope("unrelated_mission_started");
 			return;
 		}
 		bool preparedCastleInspection = _activeSettlement?.IsCastle == true
@@ -2179,16 +2179,79 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 		finally
 		{
-			EndInterventionSceneMemory("mission_ended");
+			EndInterventionSceneScope("mission_ended");
 		}
 	}
 
-	private static void EndInterventionSceneMemory(string reason)
+	private static void EndInterventionSceneScope(string reason)
 	{
-		if (InterventionSceneMemory.EndScene())
+		bool memoryCleared = InterventionSceneMemory.EndScene();
+		ClearInterventionSceneTransientState();
+		if (memoryCleared)
 		{
 			GcczDiagnosticLog.LogVerbose("Lifecycle", "scene-local memory cleared reason=" + (reason ?? "N/A"));
 		}
+	}
+
+	private static void ClearInterventionSceneTransientState()
+	{
+		lock (CastleSoldierReactionLock)
+		{
+			PendingCastleSoldierReactionActions.Clear();
+			PendingCastleSoldierReactionAffectedCounts.Clear();
+		}
+		_regionalConflictIncidentCount = 0;
+		RegionalConflictDebtCenters.Clear();
+		PendingAmbientReactionRequests.Clear();
+		ActivePlunderInteractions.Clear();
+		ActiveCivilianGatherInteractions.Clear();
+		AlliedAgentIndexes.Clear();
+		BannerBearerAgentIndexes.Clear();
+		PendingInterventionNotableDeaths.Clear();
+		SceneCivilianAgentIndexes.Clear();
+		VictoryCheerAgentIndexes.Clear();
+		CordonReadyAgentIndexes.Clear();
+		CivilianCalmedAgentIndexes.Clear();
+		CivilianPositiveCheerAgentIndexes.Clear();
+		CivilianFrightenedActionAgentIndexes.Clear();
+		CivilianPreMassacrePreparedAgentIndexes.Clear();
+		ClearLocalPlayerAttackState();
+		CivilianGatherMovePreparedAgentIndexes.Clear();
+		CivilianGatherFollowerAgentIndexes.Clear();
+		CivilianGatherReadyFormationAgentIndexes.Clear();
+		CivilianGatherMessengerAgentIndexes.Clear();
+		CivilianGatherMessengerSpeechAgentIndexes.Clear();
+		CommandableOriginRuntimeIds.Clear();
+		MassacreReadySoldierAgentIndexes.Clear();
+		MassacreCombatPreparedAgentIndexes.Clear();
+		MassacreCaughtFleeingVictimAgentIndexes.Clear();
+		CivilianSpeechRallySlots.Clear();
+		LastCordonMoveOrderTimesBySoldier.Clear();
+		LastCordonLookOrderTimesBySoldier.Clear();
+		CivilianHideTargets.Clear();
+		LastCivilianHideOrderTimes.Clear();
+		CivilianHideSettledAgentIndexes.Clear();
+		CivilianInteriorHidePointPool.Clear();
+		CivilianEscapePointPool.Clear();
+		_civilianRoutPointPoolSceneName = string.Empty;
+		LastMassacreSoldierFollowOrderTimes.Clear();
+		LastMassacreSoldierTargetOrderTimes.Clear();
+		MassacreSoldierTargetAgentIndexes.Clear();
+		MassacreSoldierTargetSlots.Clear();
+		LastMassacreSoldierProbePositions.Clear();
+		LastMassacreSoldierProbeTimes.Clear();
+		LastCivilianGatherFollowOrderTimes.Clear();
+		LastCivilianGatherFollowTargets.Clear();
+		LastAgentWallRescueProbePositions.Clear();
+		LastAgentWallRescueProbeTimes.Clear();
+		AgentWallRescueUntilTimes.Clear();
+		LastAgentWallRescueLogTimes.Clear();
+		LastAgentWallRescueTeleportTimes.Clear();
+		_civilianAssemblyPointReady = false;
+		_civilianAssemblyAnchor = Vec3.Zero;
+		_civilianAssemblyForward = Vec3.Forward;
+		_interventionPlayerCommandTeam = null;
+		_interventionCivilianEnemyTeam = null;
 	}
 
 	private static void FinalizeInterventionMissionEnd()
@@ -3320,6 +3383,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			if (!IsActiveInCurrentMission())
+			{
+				return new List<PostprocessRuleEntry>();
+			}
 			if (ResolveCurrentSettlement()?.IsCastle == true)
 			{
 				Agent agent = TryGetAgent(targetAgentIndex);
@@ -3433,6 +3500,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			if (!IsActiveInCurrentMission())
+			{
+				return string.Empty;
+			}
 			Agent agent = TryGetAgent(targetAgentIndex);
 			CharacterObject character = agent?.Character as CharacterObject;
 			bool alliedSoldier = IsRuntimeAlliedSoldierAgent(agent, character, character?.HeroObject);
@@ -3537,6 +3608,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			if (!IsActiveInCurrentMission())
+			{
+				return string.Empty;
+			}
 			List<string> allowed = new List<string>();
 			foreach (PostprocessRuleEntry rule in rules ?? new List<PostprocessRuleEntry>())
 			{
@@ -10926,7 +11001,16 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			return mission != null && !mission.IsMissionEnding && (_activeMode != InterventionMode.None || (_pendingMode != InterventionMode.None && DoesLiveCurrentSettlementMatchActiveIntervention()));
+			if (mission == null || mission.IsMissionEnding)
+			{
+				return false;
+			}
+			bool activeScene = ReferenceEquals(mission, Mission.Current) && IsActiveInCurrentMission();
+			bool missionMatchesPendingRuntime = Mission.Current == null || ReferenceEquals(mission, Mission.Current);
+			bool matchingPendingScene = _pendingMode != InterventionMode.None
+				&& missionMatchesPendingRuntime
+				&& DoesLiveCurrentSettlementMatchActiveIntervention();
+			return activeScene || matchingPendingScene;
 		}
 		catch
 		{
@@ -16733,26 +16817,18 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_castleSecurityBeforeNativeMercy = -1f;
 		_castlePendingDispositionProposal = SiegeCastlePrisonerDispositionKind.None;
 		_castlePendingDispositionProposalAgentIndex = -1;
-		lock (CastleSoldierReactionLock)
-		{
-			PendingCastleSoldierReactionActions.Clear();
-			PendingCastleSoldierReactionAffectedCounts.Clear();
-		}
 		_pendingPositiveNotableRelationDelta = 0;
 		_pendingPositiveNotableRelationIncludesBoundVillages = false;
 		_pendingPositiveNotableRelationReason = "";
 		_pendingPositiveNotableTrustDelta = 0;
 		_pendingPositiveNotableTrustIncludesBoundVillages = false;
 		_pendingPositiveNotableTrustReason = "";
-		_regionalConflictIncidentCount = 0;
-		RegionalConflictDebtCenters.Clear();
 		_lastMassacreRealKillMissionTime = -100f;
 		_lastDestructiveInquiryMissionTime = -100f;
 		_lastDestructiveInquirySourceAgentIndex = -1;
 		_lastAmbientCivilianReactionMissionTime = -100f;
 		_lastAmbientSoldierReactionMissionTime = -100f;
 		_nextAmbientReactionRequestMissionTime = -100f;
-		PendingAmbientReactionRequests.Clear();
 		_hasPendingAftermath = false;
 		_pendingAftermathTrigger = "";
 		_pendingAftermathDetail = "";
@@ -16790,54 +16866,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_directPlunderScriptTicks = 0;
 		_directPlunderLastDeferKey = "";
 		ResetOutcomeMessageDedup();
-		ActivePlunderInteractions.Clear();
-		ActiveCivilianGatherInteractions.Clear();
-		AlliedAgentIndexes.Clear();
-		BannerBearerAgentIndexes.Clear();
-		PendingInterventionNotableDeaths.Clear();
-		SceneCivilianAgentIndexes.Clear();
-		VictoryCheerAgentIndexes.Clear();
-		CordonReadyAgentIndexes.Clear();
-		CivilianCalmedAgentIndexes.Clear();
-		CivilianPositiveCheerAgentIndexes.Clear();
-		CivilianFrightenedActionAgentIndexes.Clear();
-		CivilianPreMassacrePreparedAgentIndexes.Clear();
-		ClearLocalPlayerAttackState();
-		CivilianGatherMovePreparedAgentIndexes.Clear();
-		CivilianGatherFollowerAgentIndexes.Clear();
-		CivilianGatherReadyFormationAgentIndexes.Clear();
-		CivilianGatherMessengerAgentIndexes.Clear();
-		CivilianGatherMessengerSpeechAgentIndexes.Clear();
-		CommandableOriginRuntimeIds.Clear();
-		MassacreReadySoldierAgentIndexes.Clear();
-		MassacreCombatPreparedAgentIndexes.Clear();
-		MassacreCaughtFleeingVictimAgentIndexes.Clear();
-		CivilianSpeechRallySlots.Clear();
-		LastCordonMoveOrderTimesBySoldier.Clear();
-		LastCordonLookOrderTimesBySoldier.Clear();
-		CivilianHideTargets.Clear();
-		LastCivilianHideOrderTimes.Clear();
-		CivilianHideSettledAgentIndexes.Clear();
-		CivilianInteriorHidePointPool.Clear();
-		CivilianEscapePointPool.Clear();
-		_civilianRoutPointPoolSceneName = "";
-		LastMassacreSoldierFollowOrderTimes.Clear();
-		LastMassacreSoldierTargetOrderTimes.Clear();
-		MassacreSoldierTargetAgentIndexes.Clear();
-		MassacreSoldierTargetSlots.Clear();
-		LastMassacreSoldierProbePositions.Clear();
-		LastMassacreSoldierProbeTimes.Clear();
-		LastCivilianGatherFollowOrderTimes.Clear();
-		LastCivilianGatherFollowTargets.Clear();
-		LastAgentWallRescueProbePositions.Clear();
-		LastAgentWallRescueProbeTimes.Clear();
-		AgentWallRescueUntilTimes.Clear();
-		LastAgentWallRescueLogTimes.Clear();
-		LastAgentWallRescueTeleportTimes.Clear();
-		_civilianAssemblyPointReady = false;
-		_civilianAssemblyAnchor = Vec3.Zero;
-		_civilianAssemblyForward = Vec3.Forward;
-		_interventionCivilianEnemyTeam = null;
+		ClearInterventionSceneTransientState();
 	}
 
 	private static void ResetAftermathRuntimeGuards(string reason)
