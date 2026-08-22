@@ -124,7 +124,7 @@ public static class SiegePostprocessTagNormalizer
             selectedTownKind,
             extractedKinds.Count,
             rejectedTownActionCount,
-            UsesLegacyTownTagFormat(text, extractedKinds));
+            LegacyTownTagAdapter.ContainsLegacyTag(text));
     }
 
     private static SiegeInterventionActionKind? ResolvePreferredTownKind(
@@ -201,29 +201,4 @@ public static class SiegePostprocessTagNormalizer
         return false;
     }
 
-    private static bool UsesLegacyTownTagFormat(
-        string raw,
-        IEnumerable<SiegeInterventionActionKind> extractedKinds)
-    {
-        if (string.IsNullOrWhiteSpace(raw) || extractedKinds == null)
-        {
-            return false;
-        }
-
-        foreach (SiegeInterventionActionKind kind in extractedKinds)
-        {
-            IReadOnlyList<string> aliases = SiegeActionTagCatalog.GetAliases(kind);
-            for (int i = 1; i < aliases.Count; i++)
-            {
-                string legacyAlias = (aliases[i] ?? string.Empty).Trim();
-                if (!string.IsNullOrWhiteSpace(legacyAlias)
-                    && raw.IndexOf(legacyAlias, StringComparison.OrdinalIgnoreCase) >= 0)
-                {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
 }

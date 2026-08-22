@@ -231,19 +231,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private const float AmbientReactionWindowSeconds = SiegeAmbientReactionProfile.WindowSeconds;
 	private const float AmbientReactionRequestSpacingSeconds = SiegeAmbientReactionProfile.RequestSpacingSeconds;
 
-	private static readonly Regex MercyTagRegex = new Regex(SiegeActionTagCatalog.MercyTagPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
-	private static readonly Regex ReliefTagRegex = new Regex(SiegeActionTagCatalog.ReliefTagPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
-	private static readonly Regex InspireTagRegex = new Regex(SiegeActionTagCatalog.InspireTagPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
-	private static readonly Regex RallyOathTagRegex = new Regex(SiegeActionTagCatalog.RallyOathTagPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
-	private static readonly Regex SoldierAppeasementTagRegex = new Regex(SiegeActionTagCatalog.SoldierAppeasementTagPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
-	private static readonly Regex RepopulationTagRegex = new Regex(SiegeActionTagCatalog.CulturalRepopulationTagPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
-	private static readonly Regex GatherCiviliansTagRegex = new Regex(SiegeActionTagCatalog.GatherCiviliansTagPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
-	private static readonly Regex CivilianRobberyTagRegex = new Regex(SiegeActionTagCatalog.CivilianRobberyTagPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
-	private static readonly Regex PlunderTagRegex = new Regex(SiegeActionTagCatalog.PlunderTagPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
-	private static readonly Regex MassacreTagRegex = new Regex(SiegeActionTagCatalog.MassacreTagPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
-	private static readonly Regex StopMassacreTagRegex = new Regex(SiegeActionTagCatalog.StopMassacreTagPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
-	private static readonly Regex ConstructiveCultureChangeTagRegex = new Regex(SiegeActionTagCatalog.ConstructiveCultureChangeTagPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
-	private static readonly Regex AnySiegeTagRegex = new Regex(SiegeActionTagCatalog.AnyActionTagPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
 	private static readonly Regex AnyCastleActionTagRegex = new Regex(SiegeCastleActionTagCatalog.AnyActionTagPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
 	private static readonly TownEntryPresentationSession TownEntryPresentation = new TownEntryPresentationSession();
 
@@ -3571,8 +3558,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		string speakerReplyText = null)
 	{
 		actionHandled = false;
-		bool hasTownTag = !string.IsNullOrWhiteSpace(text)
-			&& (AnySiegeTagRegex.IsMatch(text) || StopMassacreTagRegex.IsMatch(text));
+		IReadOnlyList<SiegeInterventionActionKind> inputActionKinds = SiegeActionTagCatalog.ExtractKinds(text);
+		bool hasTownTag = inputActionKinds.Count > 0;
 		bool hasCastleTag = !string.IsNullOrWhiteSpace(text) && AnyCastleActionTagRegex.IsMatch(text);
 		if (!hasTownTag && !hasCastleTag)
 		{
@@ -3582,8 +3569,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			if (!IsActiveInCurrentMission())
 			{
-				if (hasTownTag
-					&& GatherCiviliansTagRegex.IsMatch(text)
+				if (inputActionKinds.Contains(SiegeInterventionActionKind.GatherCivilians)
 					&& SettlementEntryTroopSelectionBehavior.TryGatherSettlementCiviliansForExternal(targetAgentIndex, SetsSettlementCivilianGatherProfile.AiActionTagSource))
 				{
 					text = StripSiegeTags(text);
@@ -3611,6 +3597,13 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				GcczDiagnosticLog.Log("CastleAction", "stripped castle tag outside castle stage targetAgent=" + targetAgentIndex);
 				return true;
 			}
+			if (inputActionKinds.Count != 1)
+			{
+				GcczDiagnosticLog.Log("TownAction", "rejected ambiguous action count=" + inputActionKinds.Count
+					+ " targetAgent=" + targetAgentIndex);
+				text = StripSiegeTags(text);
+				return true;
+			}
 			bool destructiveAllowed = IsDestructiveInterventionAllowed();
 			Agent targetAgent = TryGetAgent(targetAgentIndex);
 			CharacterObject agentCharacter = targetAgent?.Character as CharacterObject;
@@ -3624,24 +3617,14 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			bool targetWasLegacyRegistered = targetAgent != null && AlliedAgentIndexes.Contains(targetAgent.Index);
 			bool hasSharedReliefPool = HasSharedCivilianReliefPool();
 			bool targetIsCivilian = IsCivilianReliefConversationTarget(targetAgentIndex, resolvedTargetCharacter);
-			IReadOnlyList<SiegeInterventionActionKind> inputActionKinds = SiegeActionTagCatalog.ExtractKinds(text);
+			SiegeInterventionActionKind selectedAction = inputActionKinds[0];
 			bool massacreStopWasEligible = _massacreStarted && !_massacreVictoryReached;
-			SiegeActionRoutingDecision actionRouting = SiegeActionRoutingPolicy.Evaluate(new SiegeActionRoutingFacts(
-				text,
+			SiegeActionRoutingDecision actionRouting = SiegeActionRoutingPolicy.Evaluate(
+				selectedAction,
 				HasDestructiveOutcomeLocked(),
 				targetIsAlliedSoldier,
 				hasSharedReliefPool,
-				replyIsDirectPlayerResponse));
-			if (SiegeSharedReliefMercyUpgradePolicy.ShouldUpgradeMercyToRelief(text, hasSharedReliefPool, targetIsAlliedSoldier, targetIsCivilian))
-			{
-				text = MercyTagRegex.Replace(text, SiegePostprocessActionEffectProfile.NormalizedReliefTag);
-				actionRouting = SiegeActionRoutingPolicy.Evaluate(new SiegeActionRoutingFacts(
-					text,
-					HasDestructiveOutcomeLocked(),
-					targetIsAlliedSoldier,
-					hasSharedReliefPool,
-					replyIsDirectPlayerResponse));
-			}
+				replyIsDirectPlayerResponse);
 			bool containsDestructiveTag = actionRouting.ContainsDestructiveAction;
 			bool canApplyMercyTrack = actionRouting.CanApplyMercyTrack;
 			bool canApplySoldierMediatedDestructive = actionRouting.CanApplySoldierMediatedDestructiveAction && targetIsAlliedSoldier;
@@ -3657,14 +3640,17 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			if (actionRouting.ShouldDowngradeSoldierReliefToMercy)
 			{
-				text = ReliefTagRegex.Replace(text, SiegePostprocessActionEffectProfile.NormalizedMercyTag);
+				selectedAction = SiegeInterventionActionKind.Mercy;
 			}
-			bool soldierPositiveCapToRelief = actionRouting.ShouldCapSoldierPositiveToRelief;
+			if (actionRouting.ShouldCapSoldierPositiveToRelief)
+			{
+				selectedAction = SiegeInterventionActionKind.Relief;
+			}
 			if (!canApplyMercyTrack && !containsDestructiveTag && actionRouting.HasMercyTrackAction)
 			{
 				actionHandled |= TryBlockMercyTrackAfterDestructive(SiegePostprocessActionEffectProfile.BlockedMercyTrackActionName);
 			}
-			if (SoldierAppeasementTagRegex.IsMatch(text))
+			if (selectedAction == SiegeInterventionActionKind.AppeaseSoldiers)
 			{
 				bool handled = ApplySoldierAppeasementChoice(targetAgentIndex);
 				actionHandled |= handled;
@@ -3673,7 +3659,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					TryTriggerAmbientReactionsForAction(SiegeInterventionActionKind.AppeaseSoldiers, targetAgentIndex, targetAgentIndex, includeCivilians: false, includeSoldiers: true);
 				}
 			}
-			if (GatherCiviliansTagRegex.IsMatch(text))
+			if (selectedAction == SiegeInterventionActionKind.GatherCivilians)
 			{
 				bool handled = GatherCiviliansForSpeech(SiegePostprocessActionEffectProfile.GatherCiviliansSource, targetAgentIndex);
 				actionHandled |= handled;
@@ -3682,7 +3668,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					TryTriggerAmbientReactionsForAction(SiegeInterventionActionKind.GatherCivilians, targetAgentIndex, targetAgentIndex, includeCivilians: true, includeSoldiers: true);
 				}
 			}
-			if (canApplyMercyTrack && MercyTagRegex.IsMatch(text))
+			if (canApplyMercyTrack && selectedAction == SiegeInterventionActionKind.Mercy)
 			{
 				bool handled = ApplyMercyChoice(SiegePostprocessActionEffectProfile.MercyTriggerSource, SiegePostprocessActionEffectProfile.MercyTriggerDetail);
 				actionHandled |= handled;
@@ -3692,7 +3678,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					ApplyCivilianMoraleReactionForPositiveAction(SiegeInterventionActionKind.Mercy, targetAgentIndex);
 				}
 			}
-			if (canApplyMercyTrack && ReliefTagRegex.IsMatch(text))
+			if (canApplyMercyTrack && selectedAction == SiegeInterventionActionKind.Relief)
 			{
 				bool handled = targetIsAlliedSoldier
 					? ApplySoldierMaterialReliefChoice(targetAgentIndex, SiegePostprocessActionEffectProfile.SoldierMaterialReliefTriggerSource, SiegePostprocessActionEffectProfile.SoldierMaterialReliefTriggerDetail)
@@ -3704,17 +3690,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					ApplyCivilianMoraleReactionForPositiveAction(SiegeInterventionActionKind.Relief, targetAgentIndex);
 				}
 			}
-			if (canApplyMercyTrack && soldierPositiveCapToRelief)
-			{
-				bool handled = ApplySoldierMaterialReliefChoice(targetAgentIndex, SiegePostprocessActionEffectProfile.SoldierMaterialReliefTriggerSource, SiegePostprocessActionEffectProfile.SoldierMaterialReliefTriggerDetail);
-				actionHandled |= handled;
-				if (handled)
-				{
-					TryTriggerAmbientReactionsForAction(SiegeInterventionActionKind.Relief, targetAgentIndex, targetAgentIndex, includeCivilians: true, includeSoldiers: true);
-					ApplyCivilianMoraleReactionForPositiveAction(SiegeInterventionActionKind.Relief, targetAgentIndex);
-				}
-			}
-			if (canApplyMercyTrack && !soldierPositiveCapToRelief && InspireTagRegex.IsMatch(text))
+			if (canApplyMercyTrack && selectedAction == SiegeInterventionActionKind.Inspire)
 			{
 				bool handled = ApplyInspirationChoice(SiegePostprocessActionEffectProfile.InspirationTriggerSource, SiegePostprocessActionEffectProfile.InspirationTriggerDetail);
 				actionHandled |= handled;
@@ -3724,7 +3700,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					ApplyCivilianMoraleReactionForPositiveAction(SiegeInterventionActionKind.Inspire, targetAgentIndex);
 				}
 			}
-			if (canApplyMercyTrack && !soldierPositiveCapToRelief && RallyOathTagRegex.IsMatch(text))
+			if (canApplyMercyTrack && selectedAction == SiegeInterventionActionKind.RallyOath)
 			{
 				bool handled = ApplyRallyOathChoice(SiegePostprocessActionEffectProfile.RallyOathTriggerSource, SiegePostprocessActionEffectProfile.RallyOathTriggerDetail);
 				actionHandled |= handled;
@@ -3734,7 +3710,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					ApplyCivilianMoraleReactionForPositiveAction(SiegeInterventionActionKind.RallyOath, targetAgentIndex);
 				}
 			}
-			bool hasPlunderTag = PlunderTagRegex.IsMatch(text);
 			if (destructiveAllowed && actionRouting.CanApplyCivilianRobberyAction)
 			{
 				bool handled = ApplyCivilianRobberyChoice(targetAgentIndex, resolvedTargetCharacter, targetHero);
@@ -3745,7 +3720,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				}
 				TryPromptSoldierDestructiveInquiry(targetAgent, targetAgentIndex, SiegeDestructiveInquiryProfile.CivilianRobberyReason);
 			}
-			if (destructiveAllowed && hasPlunderTag && canApplySoldierMediatedDestructive
+			if (destructiveAllowed && selectedAction == SiegeInterventionActionKind.Plunder && canApplySoldierMediatedDestructive
 				&& TryEnsureRuntimeAlliedSoldierActionTarget(targetAgentIndex))
 			{
 				bool handled = StartPlunder(SiegePostprocessActionEffectProfile.PlunderTriggerSource, SiegePostprocessActionEffectProfile.PlunderTriggerDetail);
@@ -3755,7 +3730,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					TryTriggerAmbientReactionsForAction(SiegeInterventionActionKind.Plunder, targetAgentIndex, targetAgentIndex, includeCivilians: true, includeSoldiers: true);
 				}
 			}
-			if (destructiveAllowed && MassacreTagRegex.IsMatch(text) && canApplySoldierMediatedDestructive
+			if (destructiveAllowed && selectedAction == SiegeInterventionActionKind.Massacre && canApplySoldierMediatedDestructive
 				&& TryEnsureRuntimeAlliedSoldierActionTarget(targetAgentIndex))
 			{
 				bool handled = StartMassacre(SiegePostprocessActionEffectProfile.MassacreTriggerSource, SiegePostprocessActionEffectProfile.MassacreTriggerDetail);
@@ -3765,9 +3740,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					TryTriggerAmbientReactionsForAction(SiegeInterventionActionKind.Massacre, targetAgentIndex, targetAgentIndex, includeCivilians: true, includeSoldiers: true);
 				}
 			}
-			if (ConstructiveCultureChangeTagRegex.IsMatch(text)
-				&& inputActionKinds.Count == 1
-				&& inputActionKinds[0] == SiegeInterventionActionKind.ConstructiveCultureChange)
+			if (selectedAction == SiegeInterventionActionKind.ConstructiveCultureChange)
 			{
 				actionHandled |= ApplyConstructiveCultureChange(
 					targetDialogueRole,
@@ -3775,7 +3748,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					replyIsDirectPlayerResponse);
 			}
 			if (massacreStopWasEligible
-				&& StopMassacreTagRegex.IsMatch(text)
+				&& selectedAction == SiegeInterventionActionKind.StopMassacre
 				&& canApplySoldierMediatedDestructive
 				&& TryEnsureRuntimeAlliedSoldierActionTarget(targetAgentIndex))
 			{
@@ -3784,7 +3757,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					SiegePostprocessActionEffectProfile.MassacreStopTriggerDetail,
 					showMessage: true);
 			}
-			if (destructiveAllowed && RepopulationTagRegex.IsMatch(text) && canApplySoldierMediatedDestructive)
+			if (destructiveAllowed && selectedAction == SiegeInterventionActionKind.CulturalRepopulation && canApplySoldierMediatedDestructive)
 			{
 				bool handled = RequestCulturalRepopulation(targetAgentIndex, SiegePostprocessActionEffectProfile.CulturalRepopulationTriggerSource, SiegePostprocessActionEffectProfile.CulturalRepopulationTriggerDetail);
 				actionHandled |= handled;
@@ -16562,8 +16535,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private static string StripSiegeTags(string text)
 	{
-		string stripped = AnySiegeTagRegex.Replace(text ?? "", "");
-		stripped = StopMassacreTagRegex.Replace(stripped, "");
+		string stripped = SiegeActionTagCatalog.StripRecognizedTags(text);
 		return AnyCastleActionTagRegex.Replace(stripped, "").Trim();
 	}
 

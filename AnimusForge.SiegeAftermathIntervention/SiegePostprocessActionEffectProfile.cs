@@ -6,10 +6,6 @@ namespace AnimusForge.SiegeAftermathIntervention;
 /// </summary>
 public static class SiegePostprocessActionEffectProfile
 {
-    public const string NormalizedMercyTag = "[ACTION:宽恕]";
-
-    public const string NormalizedReliefTag = "[ACTION:救济]";
-
     public const string BlockedMercyTrackActionName = "降级处置";
 
     public const string GatherCiviliansSource = "ai_tag";

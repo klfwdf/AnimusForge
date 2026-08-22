@@ -14803,32 +14803,10 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private static bool IsWeeklyMemoryMaterialSiegeTag(string tag)
 	{
-		string text = (tag ?? "").Trim();
-		string[] tags =
-		{
-			"[ACTION:宽恕]",
-			"[ACTION:救济]",
-			"[ACTION:宣抚]",
-			"[ACTION:盟誓]",
-			"[ACTION:安兵]",
-			"[ACTION:召集]",
-			"[ACTION:抢钱]",
-			"[ACTION:搜掠]",
-			"[ACTION:血洗]",
-			"[ACTION:殖民]",
-			"[ACTION:SIEGE_MERCY]",
-			"[ACTION:SIEGE_RELIEF]",
-			"[ACTION:SIEGE_INSPIRE]",
-			"[ACTION:SIEGE_RALLY_OATH]",
-			"[ACTION:SIEGE_APPEASE_SOLDIERS]",
-			"[ACTION:SIEGE_GATHER_CIVILIANS]",
-			"[ACTION:SIEGE_ROBBERY]",
-			"[ACTION:SIEGE_PLUNDER]",
-			"[ACTION:SIEGE_MASSACRE]",
-			"[ACTION:SIEGE_CULTURAL_REPOPULATION]",
-			"[ACTION:SIEGE_PURGE_REPOPULATION]"
-		};
-		return tags.Any((string x) => string.Equals(x, text, StringComparison.OrdinalIgnoreCase));
+		IReadOnlyList<SiegeInterventionActionKind> actions = SiegeActionTagCatalog.ExtractKinds(tag);
+		return actions.Count == 1
+			&& actions[0] != SiegeInterventionActionKind.StopMassacre
+			&& actions[0] != SiegeInterventionActionKind.ConstructiveCultureChange;
 	}
 
 	private static string BuildWeeklyMemoryMaterialTagLabel(string tag)
