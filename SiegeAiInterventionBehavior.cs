@@ -321,7 +321,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static bool _sharedCivilianReliefReturned;
 	private static readonly Dictionary<string, int> SharedCivilianReliefItems = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 	private static readonly Dictionary<string, ItemObject> SharedCivilianReliefItemObjects = new Dictionary<string, ItemObject>(StringComparer.OrdinalIgnoreCase);
-	private static readonly TownSceneMemoryStore InterventionSceneMemory = new TownSceneMemoryStore(SiegeInterventionMemoryContextBuilder.MaxMemoryEvents);
+	private static readonly TownSceneMemorySession InterventionSceneMemory = new TownSceneMemorySession(SiegeInterventionMemoryContextBuilder.MaxMemoryEvents);
 	private static readonly TownOperationLedger ActiveTownOperationLedger = new TownOperationLedger();
 	private static readonly TownColonizationStateMachine ActiveTownColonization = new TownColonizationStateMachine();
 	private static bool _pendingSummarySwitch;
@@ -1982,6 +1982,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		CastleAftermathArmyRosterRuntimeBridge.TryCapturePlayerCastleBattleStart();
 		if (_pendingMode == InterventionMode.None)
 		{
+			EndInterventionSceneMemory("unrelated_mission_started");
 			return;
 		}
 		bool preparedCastleInspection = _activeSettlement?.IsCastle == true
@@ -1996,6 +1997,15 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		CastleAftermathMissionEntryBridge.Complete("intervention_mission_started");
 		_activeMode = _pendingMode;
 		_pendingMode = InterventionMode.None;
+		Settlement sceneSettlement = ResolveCurrentSettlement() ?? _activeSettlement;
+		string sceneSettlementId = sceneSettlement?.StringId ?? _activeSettlementId;
+		if (!InterventionSceneMemory.Begin(sceneSettlementId))
+		{
+			GcczDiagnosticLog.Log("Mission", "pending start rejected missingSettlementScope");
+			Logger.Log("SiegeAiIntervention", "Ignored pending GCCZ mission start because no settlement scope was available for scene-local memory.");
+			ResetAftermathRuntimeGuards("pending_mission_missing_settlement_scope");
+			return;
+		}
 		GcczDiagnosticLog.Log("Mission", "started settlement=" + (_activeSettlementId ?? "N/A")
 			+ " mode=" + _activeMode
 			+ " location=" + (_activeInterventionLocationId ?? "N/A"));
@@ -2163,6 +2173,26 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private void OnMissionEnded(IMission mission)
 	{
 		CastleAftermathArmyRosterRuntimeBridge.RefreshTrackedPlayerCastleBattle("mission_end");
+		try
+		{
+			FinalizeInterventionMissionEnd();
+		}
+		finally
+		{
+			EndInterventionSceneMemory("mission_ended");
+		}
+	}
+
+	private static void EndInterventionSceneMemory(string reason)
+	{
+		if (InterventionSceneMemory.EndScene())
+		{
+			GcczDiagnosticLog.LogVerbose("Lifecycle", "scene-local memory cleared reason=" + (reason ?? "N/A"));
+		}
+	}
+
+	private static void FinalizeInterventionMissionEnd()
+	{
 		if (_activeMode == InterventionMode.None && _pendingMode == InterventionMode.None)
 		{
 			return;
@@ -16615,7 +16645,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		return true;
+		string sceneSettlementId = !string.IsNullOrWhiteSpace(_activeSettlementId)
+			? _activeSettlementId
+			: settlement?.StringId;
+		return InterventionSceneMemory.IsActiveFor(sceneSettlementId);
 	}
 
 	private static bool ShouldForceDirectPlayerMountedSpawn()
