@@ -40,9 +40,9 @@ public sealed class SiegeCivicChoiceProfile
 
     public const int PositiveBuffYears = TownOutcomeCompatibilityProfile.PositiveBuffYears;
 
-    public const string InspirationBlockedAfterDestructiveActionName = "安民宣抚";
+    public const string InspirationBlockedAfterDestructiveActionKey = TownActionPresentationKeys.Inspiration;
 
-    public const string RallyOathBlockedAfterDestructiveActionName = "归心盟誓";
+    public const string RallyOathBlockedAfterDestructiveActionKey = TownActionPresentationKeys.RallyOath;
 
     private SiegeCivicChoiceProfile(
         string soldierAppeasementReason,
@@ -62,12 +62,7 @@ public sealed class SiegeCivicChoiceProfile
         string sharedPoolEffectReason,
         string gatherSource,
         string messageKey,
-        string messageText,
-        string memoryTitle,
-        string memoryText,
-        string repeatSharedPoolEffectReason,
-        string repeatMemoryTitle,
-        string repeatMemoryText)
+        string repeatSharedPoolEffectReason)
     {
         SoldierAppeasementReason = soldierAppeasementReason;
         SettlementPublicTrustDelta = settlementPublicTrustDelta;
@@ -86,13 +81,8 @@ public sealed class SiegeCivicChoiceProfile
         SharedPoolEffectReason = sharedPoolEffectReason;
         GatherSource = gatherSource;
         MessageKey = messageKey;
-        MessageText = messageText;
         MessageColor = PositiveMessageColor;
-        MemoryTitle = memoryTitle;
-        MemoryText = memoryText;
         RepeatSharedPoolEffectReason = repeatSharedPoolEffectReason;
-        RepeatMemoryTitle = repeatMemoryTitle;
-        RepeatMemoryText = repeatMemoryText;
     }
 
     public string SoldierAppeasementReason { get; }
@@ -133,19 +123,10 @@ public sealed class SiegeCivicChoiceProfile
 
     public string MessageKey { get; }
 
-    public string MessageText { get; }
-
     public uint MessageColor { get; }
-
-    public string MemoryTitle { get; }
-
-    public string MemoryText { get; }
 
     public string RepeatSharedPoolEffectReason { get; }
 
-    public string RepeatMemoryTitle { get; }
-
-    public string RepeatMemoryText { get; }
 
     public bool HasProsperityGrowthBuff => ProsperityGrowthMultiplier > 1.001f && EffectYears > 0;
 
@@ -154,7 +135,7 @@ public sealed class SiegeCivicChoiceProfile
     public static SiegeCivicChoiceProfile BuildInspiration()
     {
         return new SiegeCivicChoiceProfile(
-            soldierAppeasementReason: "宣抚",
+            soldierAppeasementReason: TownActionPresentationKeys.Inspiration,
             settlementPublicTrustDelta: InspirationPublicTrustBonus,
             boundVillagePublicTrustDelta: InspirationPublicTrustBonus,
             loyaltyDelta: InspirationLoyaltyBonus,
@@ -170,20 +151,15 @@ public sealed class SiegeCivicChoiceProfile
             effectYears: PositiveBuffYears,
             sharedPoolEffectReason: "inspiration",
             gatherSource: "inspiration",
-            messageKey: "inspiration",
-            messageText: "【攻城处置】安民宣抚完成：忠诚度提升，繁荣增长暂时加快，本地与周边民众的公信力上升。",
-            memoryTitle: "宣抚",
-            memoryText: "玩家已进行安民宣抚，召集民众并宣示新秩序；该地获得一年繁荣增长加速，本地和周边村庄公信力提升。",
-            repeatSharedPoolEffectReason: "inspiration_repeat",
-            repeatMemoryTitle: "宣抚",
-            repeatMemoryText: "玩家继续维持安民宣抚路线，NPC应承认民众已被安抚和宣示新秩序。");
+            messageKey: TownActionPresentationKeys.Inspiration,
+            repeatSharedPoolEffectReason: "inspiration_repeat");
     }
 
     public static SiegeCivicChoiceProfile BuildRallyOath(int currentInspirationLevel)
     {
         bool alreadyInspired = currentInspirationLevel >= 1;
         return new SiegeCivicChoiceProfile(
-            soldierAppeasementReason: "盟誓",
+            soldierAppeasementReason: TownActionPresentationKeys.RallyOath,
             settlementPublicTrustDelta: alreadyInspired ? Math.Max(0, RallyOathSettlementPublicTrustBonus - InspirationPublicTrustBonus) : RallyOathSettlementPublicTrustBonus,
             boundVillagePublicTrustDelta: alreadyInspired ? Math.Max(0, RallyOathBoundVillagePublicTrustBonus - InspirationPublicTrustBonus) : RallyOathBoundVillagePublicTrustBonus,
             loyaltyDelta: 0f,
@@ -199,12 +175,7 @@ public sealed class SiegeCivicChoiceProfile
             effectYears: PositiveBuffYears,
             sharedPoolEffectReason: "rally_oath",
             gatherSource: "rally_oath",
-            messageKey: "rally_oath",
-            messageText: "【攻城处置】归心盟誓完成：一年内忠诚度维持在100，繁荣增长与要人募兵刷新显著加快。",
-            memoryTitle: "盟誓",
-            memoryText: "玩家已组织公开归心盟誓；一年内该地忠诚度维持在100，繁荣增长翻倍，要人/头人募兵刷新加快。",
-            repeatSharedPoolEffectReason: "rally_oath_repeat",
-            repeatMemoryTitle: "盟誓",
-            repeatMemoryText: "玩家继续维持归心盟誓路线，本地民众和要人应被视为已被公开争取归附。");
+            messageKey: TownActionPresentationKeys.RallyOath,
+            repeatSharedPoolEffectReason: "rally_oath_repeat");
     }
 }

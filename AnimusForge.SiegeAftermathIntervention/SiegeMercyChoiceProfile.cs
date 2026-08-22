@@ -10,21 +10,16 @@ public sealed class SiegeMercyChoiceProfile
 
     public const float LoyaltyBonus = TownOutcomeCompatibilityProfile.MercyLoyaltyBonus;
 
-    public const string BlockedAfterDestructiveActionName = "宽恕";
+    public const string BlockedAfterDestructiveActionKey = TownActionPresentationKeys.Mercy;
 
     public string StopPlunderReason => "mercy";
 
-    public string SoldierAppeasementReason => "宽恕";
+    public string SoldierAppeasementReason => TownActionPresentationKeys.Mercy;
 
     public string SharedPoolEffectReason => "mercy";
 
-    public string MessageKey => "mercy";
-
-    public string MessageText => "【攻城处置】你选择宽恕民众；离场后按宽恕处置结算。";
+    public string MessageKey => TownActionPresentationKeys.Mercy;
 
     public uint MessageColor => PositiveMessageColor;
 
-    public string MemoryTitle => "宽恕";
-
-    public string MemoryText => "玩家已选择宽恕普通民众，不杀不抢；后续NPC应知道玩家已经给出宽恕处置。";
 }
