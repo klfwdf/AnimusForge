@@ -142,13 +142,35 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		+ "只执行尾部 MODE：MODE=DECLARE 起草宣言；MODE=COMPACT 只整理历史，不发布宣言或执行动作；其他 MODE 只做尾部指定任务。MODE=DECLARE与MODE=COMPACT的字段、JSON结构和长度服从第一条system消息中的同名固定任务合同及尾部动态参数；其他MODE服从尾部指定格式。要求JSON时只输出可解析JSON，不加代码围栏或解释。\n"
 		+ "保持王国、统治者和ID对应，只使用任务给出的合法ID。不得泄露AI、提示词、缓存、阈值或程序机制。后台数值只能转化为世界内判断。玩家可见宣言必须是可独立颁布和归档的国家公文，不是君主私聊。";
 
-	private const string DefaultWorldDiplomacyContractCore = "【AnimusForge 王国外交共同契约 v23】\n"
+	private const string PreviousDefaultWorldDiplomacyContractCoreV23 = "【AnimusForge 王国外交共同契约 v23】\n"
 		+ "处理诸王国公开外交。共同契约优先于后续偏好；请求尾部的 MODE 决定本次唯一任务和输出结构。\n"
 		+ "【事实】\n"
 		+ "当前任务明确给出的国家状态、战争、统治者、亲属、领地、关系、合法动作和已发生事件是最高优先级硬事实。长期外交历史档案向所有王国公开，可引用其中的世界周报、政策沿革、已发布宣言和已确认外交结果；历史与当前状态冲突时，以当前状态为准。\n"
 		+ "政策记录只说明当时目标、变化或结果，不能证明未明确记载的现实后果。提议、接受、拒绝和已确认执行结果彼此有别；只有已确认执行结果可视为现实状态变化。不得从沉默推导接受、从敌意推导宣战，也不得补写材料未支持的战斗、密约、领土承诺、使节往来或人物动机。\n"
 		+ "【外交】\n"
 		+ "MODE=DECLARE通常必须选择会登记或执行机制状态的实际外交动作并明确合法对象；只有动态状态明确允许statement时，才允许发布一次无动作表态。威胁不等于宣战。每项待回应提议只有原对象国可以接受或拒绝；正式行动只有实际执行成功才算发生。\n"
+		+ "【模式与输出】\n"
+		+ "只执行尾部 MODE：MODE=DECLARE 起草宣言；MODE=COMPACT 只整理历史，不发布宣言或执行动作；其他 MODE 只做尾部指定任务。MODE=DECLARE与MODE=COMPACT的字段、JSON结构和长度服从第一条system消息中的同名固定任务合同及尾部动态参数；其他MODE服从尾部指定格式。要求JSON时只输出可解析JSON，不加代码围栏或解释。\n"
+		+ "保持王国、统治者和ID对应，只使用任务给出的合法ID。不得泄露AI、提示词、缓存、阈值或程序机制。后台数值只能转化为世界内判断。玩家可见宣言必须是可独立颁布和归档的国家公文，不是君主私聊。";
+
+	private const string PreviousDefaultWorldDiplomacyContractCoreV24 = "【AnimusForge 王国外交共同契约 v24】\n"
+		+ "处理诸王国公开外交。共同契约优先于后续偏好；请求尾部的 MODE 决定本次唯一任务和输出结构。\n"
+		+ "【事实】\n"
+		+ "当前任务明确给出的国家状态、战争、统治者、亲属、领地、关系、合法动作和已发生事件是最高优先级硬事实。长期外交历史档案向所有王国公开，可引用其中的世界周报、政策沿革、已发布宣言和已确认外交结果；历史与当前状态冲突时，以当前状态为准。\n"
+		+ "政策记录只说明当时目标、变化或结果，不能证明未明确记载的现实后果。提议、接受、拒绝和已确认执行结果彼此有别；只有已确认执行结果可视为现实状态变化。不得从沉默推导接受、从敌意推导宣战，也不得补写材料未支持的战斗、密约、领土承诺、使节往来或人物动机。\n"
+		+ "【外交】\n"
+		+ "MODE=DECLARE通常应选择会登记或执行机制状态的实际外交动作并明确合法对象；动态状态明确允许statement时，可以进行一次结构化谈判动作，但必须提出新问题、条件、解释、回应、修订或明确收束，不得重复立场。拒绝只关闭被拒绝的提案，不自动结束整场外交回合。连续无机械外交行为的往来受动态阶段限制，最终阶段必须行动、退出或宣布僵局。威胁不等于宣战；正式行动只有实际执行成功才算发生。\n"
+		+ "【模式与输出】\n"
+		+ "只执行尾部 MODE：MODE=DECLARE 起草宣言；MODE=COMPACT 只整理历史，不发布宣言或执行动作；其他 MODE 只做尾部指定任务。MODE=DECLARE与MODE=COMPACT的字段、JSON结构和长度服从第一条system消息中的同名固定任务合同及尾部动态参数；其他MODE服从尾部指定格式。要求JSON时只输出可解析JSON，不加代码围栏或解释。\n"
+		+ "保持王国、统治者和ID对应，只使用任务给出的合法ID。不得泄露AI、提示词、缓存、阈值或程序机制。后台数值只能转化为世界内判断。玩家可见宣言必须是可独立颁布和归档的国家公文，不是君主私聊。";
+
+	private const string DefaultWorldDiplomacyContractCore = "【AnimusForge 王国外交共同契约 v25】\n"
+		+ "处理诸王国公开外交。共同契约优先于后续偏好；请求尾部的 MODE 决定本次唯一任务和输出结构。\n"
+		+ "【事实】\n"
+		+ "当前任务明确给出的国家状态、战争、统治者、亲属、领地、关系、合法动作和已发生事件是最高优先级硬事实。长期外交历史档案向所有王国公开，可引用其中的世界周报、政策沿革、已发布宣言和已确认外交结果；历史与当前状态冲突时，以当前状态为准。\n"
+		+ "政策记录只说明当时目标、变化或结果，不能证明未明确记载的现实后果。提议、接受、拒绝和已确认执行结果彼此有别；只有已确认执行结果可视为现实状态变化。不得从沉默推导接受、从敌意推导宣战，也不得补写材料未支持的战斗、密约、领土承诺、使节往来或人物动机。\n"
+		+ "【外交】\n"
+		+ "MODE=DECLARE通常应选择会登记或执行机制状态的实际外交动作并明确合法对象；动态状态明确允许statement时，可以进行一次结构化谈判动作，但必须提出新问题、条件、解释、回应、修订或明确收束，不得重复立场。拒绝只关闭被拒绝的提案，不自动结束整场外交回合。连续无机械外交行为的往来受动态阶段限制，最终阶段必须行动、退出或宣布僵局。威胁不等于宣战；正式行动只有实际执行成功才算发生。\n"
 		+ "【模式与输出】\n"
 		+ "只执行尾部 MODE：MODE=DECLARE 起草宣言；MODE=COMPACT 只整理历史，不发布宣言或执行动作；其他 MODE 只做尾部指定任务。MODE=DECLARE与MODE=COMPACT的字段、JSON结构和长度服从第一条system消息中的同名固定任务合同及尾部动态参数；其他MODE服从尾部指定格式。要求JSON时只输出可解析JSON，不加代码围栏或解释。\n"
 		+ "保持王国、统治者和ID对应，只使用任务给出的合法ID。不得泄露AI、提示词、缓存、阈值或程序机制。后台数值只能转化为世界内判断。玩家可见宣言必须是可独立颁布和归档的国家公文，不是君主私聊。";
@@ -3760,6 +3782,8 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		preference = "";
 		if (string.IsNullOrWhiteSpace(text)) return false;
 		bool knownContract = text.StartsWith(DefaultWorldDiplomacyContractCore, StringComparison.Ordinal)
+			|| text.StartsWith(PreviousDefaultWorldDiplomacyContractCoreV24, StringComparison.Ordinal)
+			|| text.StartsWith(PreviousDefaultWorldDiplomacyContractCoreV23, StringComparison.Ordinal)
 			|| text.StartsWith(PreviousDefaultWorldDiplomacyContractCoreV22, StringComparison.Ordinal)
 			|| text.StartsWith(PreviousDefaultWorldDiplomacyContractCoreV21, StringComparison.Ordinal)
 			|| text.StartsWith(PreviousDefaultWorldDiplomacyContractCoreV20, StringComparison.Ordinal)

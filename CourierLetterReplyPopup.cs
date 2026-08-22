@@ -29,12 +29,12 @@ public sealed class CourierLetterReplyPopup
 
 	public static bool IsOpen => _activePopup != null && !_activePopup._isClosed;
 
-	private CourierLetterReplyPopup(ScreenBase screen, string titleText, string subtitleText, string bodyText, Action onClose, string closeText, Action onReply, string replyText)
+	private CourierLetterReplyPopup(ScreenBase screen, string titleText, string subtitleText, string bodyText, Action onClose, string closeText, Action onReply, string replyText, string impactText)
 	{
 		_screen = screen;
 		_onClose = onClose;
 		_onReply = onReply;
-		_dataSource = new CourierLetterReplyPopupVM(titleText, subtitleText, bodyText, 22, HandleCloseRequested, closeText, onReply == null ? null : HandleReplyRequested, replyText);
+		_dataSource = new CourierLetterReplyPopupVM(titleText, subtitleText, bodyText, 22, HandleCloseRequested, closeText, onReply == null ? null : HandleReplyRequested, replyText, impactText);
 		_layer = new GauntletLayer("CourierLetterReplyPopup", 4100, false);
 	}
 
@@ -46,15 +46,15 @@ public sealed class CourierLetterReplyPopup
 
 	public static bool Show(string titleText, string subtitleText, string bodyText, Action onClose = null, string closeText = null)
 	{
-		return ShowInternal(titleText, subtitleText, bodyText, onClose, closeText, null, null);
+		return ShowInternal(titleText, subtitleText, bodyText, onClose, closeText, null, null, null);
 	}
 
-	public static bool ShowWithReply(string titleText, string subtitleText, string bodyText, Action onReply, string replyText = null, Action onClose = null, string closeText = null)
+	public static bool ShowWithReply(string titleText, string subtitleText, string bodyText, Action onReply, string replyText = null, Action onClose = null, string closeText = null, string impactText = null)
 	{
-		return ShowInternal(titleText, subtitleText, bodyText, onClose, closeText, onReply, replyText);
+		return ShowInternal(titleText, subtitleText, bodyText, onClose, closeText, onReply, replyText, impactText);
 	}
 
-	private static bool ShowInternal(string titleText, string subtitleText, string bodyText, Action onClose, string closeText, Action onReply, string replyText)
+	private static bool ShowInternal(string titleText, string subtitleText, string bodyText, Action onClose, string closeText, Action onReply, string replyText, string impactText)
 	{
 		ScreenBase topScreen = ScreenManager.TopScreen;
 		if (topScreen == null)
@@ -64,7 +64,7 @@ public sealed class CourierLetterReplyPopup
 		try
 		{
 			_activePopup?.Close(silent: true);
-			CourierLetterReplyPopup popup = new CourierLetterReplyPopup(topScreen, titleText, subtitleText, bodyText, onClose, closeText, onReply, replyText);
+			CourierLetterReplyPopup popup = new CourierLetterReplyPopup(topScreen, titleText, subtitleText, bodyText, onClose, closeText, onReply, replyText, impactText);
 			popup.Open();
 			_activePopup = popup;
 			return true;

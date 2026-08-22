@@ -6,6 +6,6 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\..\WorldDiplomacyResultSettlementRules.cs" Link="WorldDiplomacyResultSettlementRules.cs" />
+    <Compile Include="..\..\WeeklyReportSchedulePolicy.cs" Link="WeeklyReportSchedulePolicy.cs" />
   </ItemGroup>
 </Project>

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Reflection;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
@@ -49,12 +50,15 @@ public static class EncyclopediaKingdomStabilityPatch
 			}
 			Kingdom kingdom = ResolveKingdom(__instance);
 			string stabilityText = MyBehavior.BuildKingdomStabilityEncyclopediaTextForExternal(kingdom);
-			if (string.IsNullOrWhiteSpace(stabilityText))
+			string standingText = WorldDiplomacyBehavior.BuildKingdomDiplomaticStandingEncyclopediaTextForExternal(kingdom);
+			string combinedText = string.Join("\n\n", new[] { stabilityText, standingText }
+				.Where(x => !string.IsNullOrWhiteSpace(x)));
+			if (string.IsNullOrWhiteSpace(combinedText))
 			{
 				__instance.InformationText = RemoveExistingStabilityBlock(__instance.InformationText);
 				return;
 			}
-			__instance.InformationText = AppendOrReplaceStabilityBlock(__instance.InformationText, stabilityText);
+			__instance.InformationText = AppendOrReplaceStabilityBlock(__instance.InformationText, combinedText);
 		}
 		catch (Exception ex)
 		{
