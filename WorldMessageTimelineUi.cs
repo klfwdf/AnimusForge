@@ -237,6 +237,7 @@ public static class WorldMessageTimelineUi
 				string authorName = FirstNonEmpty(document.AuthorKingdomName, document.AuthorKingdomId, "未知国家");
 				string targetName = BuildDiplomacyTargetText(document);
 				string label = BuildDiplomacyLabel(document);
+				string diplomacyImpact = WorldDiplomacyBehavior.BuildDiplomaticStandingImpactTextForExternal(document);
 				WorldMessageTimelineEntryData entry = new WorldMessageTimelineEntryData
 				{
 					EntryId = "diplomacy:" + FirstNonEmpty(document.DocumentId, document.CreatedUtcTicks.ToString(CultureInfo.InvariantCulture)),
@@ -247,8 +248,8 @@ public static class WorldMessageTimelineUi
 					MetaText = BuildDiplomacyMetaText(document, label, authorName, targetName),
 					BodySectionTitleText = "外交公文",
 					BodyText = LimitMultiline(document.Body, DetailCharacterLimit, DetailLineLimit, "（该外交消息正文已经整理入外交编年档案。）"),
-					ImpactSectionTitleText = string.IsNullOrWhiteSpace(document.MechanicalResult) ? "" : "外交结果",
-					ImpactText = (document.MechanicalResult ?? "").Trim(),
+					ImpactSectionTitleText = "外交结果与外交影响",
+					ImpactText = diplomacyImpact,
 					Day = Math.Max(0, document.Day),
 					CreatedUtcTicks = document.CreatedUtcTicks,
 					Sequence = 0L,

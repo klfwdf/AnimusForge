@@ -12,8 +12,10 @@ public sealed class CourierLetterReplyPopupVM : ViewModel
 	private string _bodyText;
 	private string _closeText;
 	private string _replyText;
+	private string _impactText;
 	private int _bodyFontSize;
 	private bool _canReply;
+	private bool _hasImpact;
 
 	[DataSourceProperty]
 	public string TitleText
@@ -113,7 +115,35 @@ public sealed class CourierLetterReplyPopupVM : ViewModel
 		}
 	}
 
-	public CourierLetterReplyPopupVM(string titleText, string subtitleText, string bodyText, int bodyFontSize, Action onClose, string closeText, Action onReply, string replyText)
+	[DataSourceProperty]
+	public string ImpactText
+	{
+		get => _impactText;
+		set
+		{
+			if (value != _impactText)
+			{
+				_impactText = value;
+				OnPropertyChangedWithValue(value, "ImpactText");
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public bool HasImpact
+	{
+		get => _hasImpact;
+		set
+		{
+			if (value != _hasImpact)
+			{
+				_hasImpact = value;
+				OnPropertyChangedWithValue(value, "HasImpact");
+			}
+		}
+	}
+
+	public CourierLetterReplyPopupVM(string titleText, string subtitleText, string bodyText, int bodyFontSize, Action onClose, string closeText, Action onReply, string replyText, string impactText = null)
 	{
 		_onClose = onClose;
 		_onReply = onReply;
@@ -124,6 +154,8 @@ public sealed class CourierLetterReplyPopupVM : ViewModel
 		CloseText = string.IsNullOrWhiteSpace(closeText) ? "关闭" : closeText;
 		ReplyText = string.IsNullOrWhiteSpace(replyText) ? "回信" : replyText;
 		CanReply = onReply != null;
+		ImpactText = (impactText ?? "").Trim();
+		HasImpact = !string.IsNullOrWhiteSpace(ImpactText);
 	}
 
 	public void ExecuteClose()

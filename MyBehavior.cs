@@ -1215,6 +1215,8 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private sealed class PendingWeeklyReportCommitContext
 	{
+		public long RuntimeGeneration;
+
 		public int WeekIndex;
 
 		public int StartDay;
@@ -1742,6 +1744,18 @@ public class MyBehavior : CampaignBehaviorBase
 	private readonly HashSet<string> _pendingMemoryOverviewCandidateScanIdSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
 	private PendingAutoWeeklyReportBuild _pendingAutoWeeklyReportBuild;
+
+	private List<string> _dailyMemoryDraftSealOwnerKeys;
+
+	private int _dailyMemoryDraftSealOwnerIndex;
+
+	private int _dailyMemoryDraftSealDraftIndex = -1;
+
+	private int _dailyMemoryDraftSealTargetDay = -1;
+
+	private HashSet<string> _dailyMemoryDraftSealQueued;
+
+	private HashSet<string> _dailyMemoryDraftSealQueuedMajor;
 
 	private readonly object _pendingWeeklyReportCommitLock = new object();
 
@@ -2303,6 +2317,7 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			List<PendingWeeklyReportCommitContext> abandonedWeeklyReportCommits;
 			ClearRuleStickyCarry();
 			_playerDefeatedHeroBattleFactKeys.Clear();
 			_memorySummaryProcessing = false;
@@ -2312,14 +2327,22 @@ public class MyBehavior : CampaignBehaviorBase
 			_activeNativeConversationMemorySessionId = -1;
 			_pendingWeeklyMemoryMaterialTriggers.Clear();
 			_pendingAutoWeeklyReportBuild = null;
+			_weeklyReportGenerationInProgress = false;
+			_pendingAutoWeeklyReportWeek = 0;
 			ResetPendingWeeklyKingdomRebellionMaintenance();
 			lock (_pendingWeeklyReportCommitLock)
 			{
+				abandonedWeeklyReportCommits = _pendingWeeklyReportCommits.ToList();
 				_pendingWeeklyReportCommits.Clear();
 				Volatile.Write(ref _hasPendingWeeklyReportCommits, 0);
 			}
+			foreach (PendingWeeklyReportCommitContext context in abandonedWeeklyReportCommits)
+			{
+				CompletePendingWeeklyReportCommit(context, new WeeklyReportGenerationResult());
+			}
 			_dailyMaintenanceQueue.Clear();
 			_dailyMaintenanceJobKeys.Clear();
+			ResetDailyMemoryDraftSealSliceState();
 			_destroyedPartyMemoryCleanupDedup.Clear();
 			_dirtyMemoryOverviewIds.Clear();
 			_pendingMemoryOverviewCandidateScanIds.Clear();
@@ -4587,14 +4610,13 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private bool TrySealPastDailyMemoryDrafts(long startTimestamp = 0L, double budgetMs = double.MaxValue)
 	{
-		bool completed = true;
 		try
 		{
 			if (_dailyMemoryDrafts == null || _dailyMemoryDrafts.Count <= 0)
 			{
+				ResetDailyMemoryDraftSealSliceState();
 				return true;
 			}
-			int currentDay = (int)CampaignTime.Now.ToDays;
 			if (_memorySummaryQueue == null)
 			{
 				_memorySummaryQueue = new List<MemorySummaryJob>();
@@ -4603,26 +4625,46 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				_npcMajorActionSummaryQueue = new List<MajorActionSummaryJob>();
 			}
-			HashSet<string> queued = new HashSet<string>(_memorySummaryQueue.Where((MemorySummaryJob x) => x != null).Select((MemorySummaryJob x) => NormalizeMemoryHeroId(x.HeroId) + "|" + x.GameDayIndex), StringComparer.OrdinalIgnoreCase);
-			HashSet<string> queuedMajor = new HashSet<string>(_npcMajorActionSummaryQueue.Where((MajorActionSummaryJob x) => x != null).Select((MajorActionSummaryJob x) => NormalizeMemoryHeroId(x.HeroId)), StringComparer.OrdinalIgnoreCase);
-			List<string> emptyKeys = new List<string>();
-			foreach (KeyValuePair<string, List<DailyMemoryDraft>> item in _dailyMemoryDrafts.ToList())
+			if (_dailyMemoryDraftSealOwnerKeys == null)
+			{
+				_dailyMemoryDraftSealOwnerKeys = _dailyMemoryDrafts.Keys.ToList();
+				_dailyMemoryDraftSealOwnerIndex = 0;
+				_dailyMemoryDraftSealDraftIndex = -1;
+				_dailyMemoryDraftSealTargetDay = (int)CampaignTime.Now.ToDays;
+				_dailyMemoryDraftSealQueued = new HashSet<string>(_memorySummaryQueue.Where((MemorySummaryJob x) => x != null).Select((MemorySummaryJob x) => NormalizeMemoryHeroId(x.HeroId) + "|" + x.GameDayIndex), StringComparer.OrdinalIgnoreCase);
+				_dailyMemoryDraftSealQueuedMajor = new HashSet<string>(_npcMajorActionSummaryQueue.Where((MajorActionSummaryJob x) => x != null).Select((MajorActionSummaryJob x) => NormalizeMemoryHeroId(x.HeroId)), StringComparer.OrdinalIgnoreCase);
+			}
+			while (_dailyMemoryDraftSealOwnerIndex < _dailyMemoryDraftSealOwnerKeys.Count)
 			{
 				if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
 				{
-					completed = false;
-					break;
+					return false;
 				}
-				List<DailyMemoryDraft> list = item.Value ?? new List<DailyMemoryDraft>();
-				for (int i = list.Count - 1; i >= 0; i--)
+				string ownerKey = _dailyMemoryDraftSealOwnerKeys[_dailyMemoryDraftSealOwnerIndex];
+				if (!_dailyMemoryDrafts.TryGetValue(ownerKey, out var list) || list == null)
+				{
+					_dailyMemoryDraftSealOwnerIndex++;
+					_dailyMemoryDraftSealDraftIndex = -1;
+					continue;
+				}
+				if (_dailyMemoryDraftSealDraftIndex < 0)
+				{
+					_dailyMemoryDraftSealDraftIndex = list.Count - 1;
+				}
+				while (_dailyMemoryDraftSealDraftIndex >= 0)
 				{
 					if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
 					{
-						completed = false;
+						return false;
+					}
+					int draftIndex = Math.Min(_dailyMemoryDraftSealDraftIndex, list.Count - 1);
+					_dailyMemoryDraftSealDraftIndex = draftIndex - 1;
+					if (draftIndex < 0)
+					{
 						break;
 					}
-					DailyMemoryDraft draft = list[i];
-					if (draft == null || draft.GameDayIndex >= currentDay)
+					DailyMemoryDraft draft = list[draftIndex];
+					if (draft == null || draft.GameDayIndex >= _dailyMemoryDraftSealTargetDay)
 					{
 						continue;
 					}
@@ -4632,19 +4674,19 @@ public class MyBehavior : CampaignBehaviorBase
 					{
 						if (!hasAfefLines)
 						{
-							list.RemoveAt(i);
+							list.RemoveAt(draftIndex);
 						}
 						continue;
 					}
-					TryEnqueueMajorActionSummaryForDraft(draft, queuedMajor);
+					TryEnqueueMajorActionSummaryForDraft(draft, _dailyMemoryDraftSealQueuedMajor);
 					string text = NormalizeMemoryHeroId(draft.HeroId);
 					string key = text + "|" + draft.GameDayIndex;
 					if (HasCompressedMemoryBlock(text, draft.GameDayIndex))
 					{
-						list.RemoveAt(i);
+						list.RemoveAt(draftIndex);
 						continue;
 					}
-					if (!queued.Contains(key))
+					if (!_dailyMemoryDraftSealQueued.Contains(key))
 					{
 						_memorySummaryQueue.Add(new MemorySummaryJob
 						{
@@ -4653,32 +4695,43 @@ public class MyBehavior : CampaignBehaviorBase
 							GameDayIndex = draft.GameDayIndex,
 							GameDate = draft.GameDate
 						});
-						queued.Add(key);
+						_dailyMemoryDraftSealQueued.Add(key);
 					}
 					draft.QueuedForSummary = true;
 				}
 				list = SanitizeDailyMemoryDrafts(list);
 				if (list.Count > 0)
 				{
-					_dailyMemoryDrafts[item.Key] = list;
+					_dailyMemoryDrafts[ownerKey] = list;
 				}
 				else
 				{
-					emptyKeys.Add(item.Key);
+					_dailyMemoryDrafts.Remove(ownerKey);
 				}
-			}
-			foreach (string key2 in emptyKeys)
-			{
-				_dailyMemoryDrafts.Remove(key2);
+				_dailyMemoryDraftSealOwnerIndex++;
+				_dailyMemoryDraftSealDraftIndex = -1;
 			}
 			_memorySummaryQueue = SanitizeMemorySummaryQueue(_memorySummaryQueue);
 			_npcMajorActionSummaryQueue = SanitizeMajorActionSummaryQueue(_npcMajorActionSummaryQueue);
+			ResetDailyMemoryDraftSealSliceState();
+			return true;
 		}
 		catch (Exception ex)
 		{
+			ResetDailyMemoryDraftSealSliceState();
 			Logger.Log("CompressedMemory", "[ERROR] TrySealPastDailyMemoryDrafts failed: " + ex.Message);
+			return true;
 		}
-		return completed;
+	}
+
+	private void ResetDailyMemoryDraftSealSliceState()
+	{
+		_dailyMemoryDraftSealOwnerKeys = null;
+		_dailyMemoryDraftSealOwnerIndex = 0;
+		_dailyMemoryDraftSealDraftIndex = -1;
+		_dailyMemoryDraftSealTargetDay = -1;
+		_dailyMemoryDraftSealQueued = null;
+		_dailyMemoryDraftSealQueuedMajor = null;
 	}
 
 	private bool HasCompressedMemoryBlock(string heroId, int dayIndex)
@@ -5777,7 +5830,8 @@ public class MyBehavior : CampaignBehaviorBase
 			return;
 		}
 		DuelSettings settings = DuelSettings.GetSettings();
-		if (settings == null || !settings.AutoGenerateWeeklyReports || currentGameDayIndexSafe <= 0 || currentGameDayIndexSafe % 7 != 0 || weekIndex <= 0 || _lastAutoGeneratedWeeklyReportWeek >= weekIndex)
+		int missingWeek = WeeklyReportSchedulePolicy.ResolveOldestMissingWeek(_lastAutoGeneratedWeeklyReportWeek, currentGameDayIndexSafe);
+		if (settings == null || !settings.AutoGenerateWeeklyReports || missingWeek <= 0)
 		{
 			return;
 		}
@@ -5786,12 +5840,18 @@ public class MyBehavior : CampaignBehaviorBase
 			_pendingAutoWeeklyReportWeek = Math.Max(_pendingAutoWeeklyReportWeek, weekIndex);
 			return;
 		}
-		StartAutoWeeklyReportsForWeek(weekIndex, currentGameDayIndexSafe);
+		StartAutoWeeklyReportsForWeek(missingWeek, currentGameDayIndexSafe);
 	}
 
 	private void EnqueueDailyMaintenanceForCurrentDay(string reason)
 	{
 		int currentGameDayIndexSafe = GetCurrentGameDayIndexSafe();
+		int weekIndex = (currentGameDayIndexSafe > 0) ? (currentGameDayIndexSafe / 7) : 0;
+		if (currentGameDayIndexSafe > 0 && currentGameDayIndexSafe % 7 == 0)
+		{
+			EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind.ProcessWeeklyKingdomRebellions, currentGameDayIndexSafe, weekIndex, reason: reason);
+		}
+		QueueDeferredAutoWeeklyReportsForWeek(weekIndex, currentGameDayIndexSafe, reason);
 		EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind.SealPastDailyMemoryDrafts, currentGameDayIndexSafe, reason: reason);
 		EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind.QueueDirtyMemoryOverviewScan, currentGameDayIndexSafe, reason: reason);
 		EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind.StartMemorySummaryQueue, currentGameDayIndexSafe, reason: reason);
@@ -5799,17 +5859,12 @@ public class MyBehavior : CampaignBehaviorBase
 		EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind.EnsureWeekZeroOpeningSummaryEvents, currentGameDayIndexSafe, reason: reason);
 		EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind.RecordMissedStrategicWorldEvents, currentGameDayIndexSafe, reason: reason);
 		EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind.ApplyKingdomStabilityRelationAdjustments, currentGameDayIndexSafe, reason: reason);
-		int weekIndex = (currentGameDayIndexSafe > 0) ? (currentGameDayIndexSafe / 7) : 0;
-		if (currentGameDayIndexSafe > 0 && currentGameDayIndexSafe % 7 == 0)
-		{
-			EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind.ProcessWeeklyKingdomRebellions, currentGameDayIndexSafe, weekIndex, reason: reason);
-			QueueDeferredAutoWeeklyReportsForWeek(weekIndex, currentGameDayIndexSafe, reason);
-		}
 	}
 
 	private void QueueDeferredAutoWeeklyReportsForWeek(int weekIndex, int currentGameDayIndexSafe, string reason)
 	{
-		if (weekIndex <= 0 || _lastAutoGeneratedWeeklyReportWeek >= weekIndex || _weeklyReportGenerationInProgress)
+		int missingWeek = WeeklyReportSchedulePolicy.ResolveOldestMissingWeek(_lastAutoGeneratedWeeklyReportWeek, currentGameDayIndexSafe);
+		if (weekIndex <= 0 || missingWeek <= 0 || missingWeek > weekIndex || _weeklyReportGenerationInProgress)
 		{
 			return;
 		}
@@ -5823,9 +5878,9 @@ public class MyBehavior : CampaignBehaviorBase
 			_pendingAutoWeeklyReportWeek = Math.Max(_pendingAutoWeeklyReportWeek, weekIndex);
 			return;
 		}
-		int startDay = Math.Max(0, (weekIndex - 1) * 7);
-		int endDay = currentGameDayIndexSafe - 1;
-		EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind.PrepareAutoWeeklyReports, currentGameDayIndexSafe, weekIndex, startDay, endDay, reason);
+		int startDay = WeeklyReportSchedulePolicy.GetStartDay(missingWeek);
+		int endDay = WeeklyReportSchedulePolicy.GetEndDay(missingWeek);
+		EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind.PrepareAutoWeeklyReports, endDay, missingWeek, startDay, endDay, reason);
 	}
 
 	private void EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind kind, int dayIndex = -1, int weekIndex = 0, int startDay = 0, int endDay = 0, string reason = "")
@@ -5874,6 +5929,17 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		double budgetMs = GetDailyMaintenanceFrameBudgetMs();
 		long startTimestamp = Stopwatch.GetTimestamp();
+		if (_pendingAutoWeeklyReportBuild != null && !_automaticKingdomRebellionFlowActive)
+		{
+			using (PerfProbe.Scope("MyBehavior.DeferredDailyMaintenance.ProcessPendingAutoWeeklyReportBuild"))
+			{
+				ProcessPendingAutoWeeklyReportBuildBudget(startTimestamp, budgetMs);
+			}
+			if (_pendingAutoWeeklyReportBuild != null || IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+			{
+				return;
+			}
+		}
 		int processedScanCount;
 		using (PerfProbe.Scope("MyBehavior.DeferredDailyMaintenance.ProcessMemoryOverviewCandidateScan"))
 		{
@@ -6366,8 +6432,8 @@ public class MyBehavior : CampaignBehaviorBase
 			_pendingAutoWeeklyReportWeek = Math.Max(_pendingAutoWeeklyReportWeek, weekIndex);
 			return;
 		}
-		int startDay = Math.Max(0, (weekIndex - 1) * 7);
-		int endDay = currentGameDayIndexSafe - 1;
+		int startDay = WeeklyReportSchedulePolicy.GetStartDay(weekIndex);
+		int endDay = WeeklyReportSchedulePolicy.GetEndDay(weekIndex);
 		List<WeeklyEventMaterialPreviewGroup> list = OrderWeeklyReportGenerationGroups(BuildWeeklyEventMaterialPreviewGroups(startDay, endDay));
 		_weeklyReportGenerationInProgress = true;
 		_pendingAutoWeeklyReportWeek = 0;
@@ -6395,22 +6461,29 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		int missingWeek = WeeklyReportSchedulePolicy.ResolveOldestMissingWeek(_lastAutoGeneratedWeeklyReportWeek, currentGameDayIndexSafe);
+		if (missingWeek <= 0)
+		{
+			_pendingAutoWeeklyReportWeek = 0;
+			return;
+		}
 		if (IsDeferredDailyMaintenanceEnabled())
 		{
 			QueueDeferredAutoWeeklyReportsForWeek(_pendingAutoWeeklyReportWeek, currentGameDayIndexSafe, "deferred_auto_weekly_resume");
 		}
 		else
 		{
-			StartAutoWeeklyReportsForWeek(_pendingAutoWeeklyReportWeek, currentGameDayIndexSafe);
+			StartAutoWeeklyReportsForWeek(missingWeek, currentGameDayIndexSafe);
 		}
 	}
 
 	private async Task GenerateAutoWeeklyReportsAsync(List<WeeklyEventMaterialPreviewGroup> groups, int weekIndex, int startDay, int endDay, List<WeeklyReportBatchRequest> preparedBatches = null)
 	{
+		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		try
 		{
-			WeeklyReportGenerationResult weeklyReportGenerationResult = await GenerateWeeklyReportsBatchedAsyncInternal(groups, weekIndex, startDay, endDay, BuildWeeklyEpicWeekLabel(weekIndex) + "自动周报", openViewerWhenDone: false, queueBlockingPopupOnFatalFailure: true, isAutoGeneration: true, popupCandidateKingdomIdsOverride: null, preparedBatches: preparedBatches);
-			if (weeklyReportGenerationResult != null && weeklyReportGenerationResult.Completed && !weeklyReportGenerationResult.BlockedByFatalFailure)
+			WeeklyReportGenerationResult weeklyReportGenerationResult = await GenerateWeeklyReportsBatchedAsyncInternal(groups, weekIndex, startDay, endDay, BuildWeeklyEpicWeekLabel(weekIndex) + "自动周报", openViewerWhenDone: false, queueBlockingPopupOnFatalFailure: true, isAutoGeneration: true, popupCandidateKingdomIdsOverride: null, preparedBatches: preparedBatches, runtimeGeneration: runtimeGeneration);
+			if (!SaveRuntimeGuard.IsStale(runtimeGeneration, "auto_weekly_report_complete") && weeklyReportGenerationResult != null && weeklyReportGenerationResult.Completed && !weeklyReportGenerationResult.BlockedByFatalFailure)
 			{
 				_lastAutoGeneratedWeeklyReportWeek = Math.Max(_lastAutoGeneratedWeeklyReportWeek, weekIndex);
 			}
@@ -6421,7 +6494,10 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		finally
 		{
-			_weeklyReportGenerationInProgress = false;
+			if (SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration))
+			{
+				_weeklyReportGenerationInProgress = false;
+			}
 		}
 	}
 
@@ -20026,6 +20102,7 @@ public class MyBehavior : CampaignBehaviorBase
 		if (IsDeferredDailyMaintenanceEnabled())
 		{
 			int currentDay = GetCurrentGameDayIndexSafe();
+			QueueDeferredAutoWeeklyReportsForWeek((currentDay > 0) ? (currentDay / 7) : 0, currentDay, "game_load_finished");
 			EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind.DiscontinueLandlessRebelKingdoms, currentDay, reason: "game_load_finished");
 			EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind.SealPastDailyMemoryDrafts, currentDay, reason: "game_load_finished");
 			EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind.QueueFullMemoryOverviewScan, currentDay, reason: "game_load_finished");
@@ -20038,6 +20115,12 @@ public class MyBehavior : CampaignBehaviorBase
 			QueueAllMemoryOverviewCandidatesForDeferredScan();
 			ProcessMemoryOverviewCandidateScanBudget(0L, double.MaxValue);
 			TryStartMemorySummaryQueue();
+			int currentDay = GetCurrentGameDayIndexSafe();
+			int missingWeek = WeeklyReportSchedulePolicy.ResolveOldestMissingWeek(_lastAutoGeneratedWeeklyReportWeek, currentDay);
+			if (missingWeek > 0)
+			{
+				StartAutoWeeklyReportsForWeek(missingWeek, currentDay);
+			}
 		}
 	}
 
@@ -46828,9 +46911,17 @@ public class MyBehavior : CampaignBehaviorBase
 		await GenerateWeeklyReportsBatchedAsyncInternal(list, num2, num, currentGameDayIndexSafe, "本周周报草案", openViewerWhenDone: false, queueBlockingPopupOnFatalFailure: true, isAutoGeneration: false);
 	}
 
-	private async Task<WeeklyReportGenerationResult> GenerateWeeklyReportsMinuteBurstAsyncInternal(List<WeeklyEventMaterialPreviewGroup> list, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool queueBlockingPopupOnFatalFailure, bool isAutoGeneration, IEnumerable<string> popupCandidateKingdomIdsOverride = null, List<WeeklyReportBatchRequest> preparedBatches = null)
+	private async Task<WeeklyReportGenerationResult> GenerateWeeklyReportsMinuteBurstAsyncInternal(List<WeeklyEventMaterialPreviewGroup> list, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool queueBlockingPopupOnFatalFailure, bool isAutoGeneration, IEnumerable<string> popupCandidateKingdomIdsOverride = null, List<WeeklyReportBatchRequest> preparedBatches = null, long runtimeGeneration = 0L)
 	{
 		WeeklyReportGenerationResult generationResult = new WeeklyReportGenerationResult();
+		if (runtimeGeneration <= 0L)
+		{
+			runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
+		}
+		if (SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_report_before_prepare"))
+		{
+			return generationResult;
+		}
 		list = (list ?? new List<WeeklyEventMaterialPreviewGroup>()).Where((WeeklyEventMaterialPreviewGroup x) => x != null && IsWeeklyReportGroupEligible(x)).ToList();
 		if (list.Count == 0)
 		{
@@ -46860,6 +46951,10 @@ public class MyBehavior : CampaignBehaviorBase
 		InformationManager.DisplayMessage(new InformationMessage("开始生成" + displayLabel + "，共 " + list.Count + " 条周报目标，" + batches.Count + " 个批次；将按分钟整批发送，每分钟同时发送 " + burstSize + " 个请求。"));
 		for (int i = 0; i < batches.Count; i += burstSize)
 		{
+			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_report_before_wave"))
+			{
+				return generationResult;
+			}
 			List<WeeklyReportBatchRequest> wave = batches.Skip(i).Take(burstSize).Where((WeeklyReportBatchRequest x) => x != null && x.Groups != null && x.Groups.Count > 0).ToList();
 			if (wave.Count == 0)
 			{
@@ -46876,10 +46971,18 @@ public class MyBehavior : CampaignBehaviorBase
 			if (i + burstSize < batches.Count)
 			{
 				await Task.Delay(60000);
+				if (SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_report_after_wave_delay"))
+				{
+					return generationResult;
+				}
 			}
 		}
 		WeeklyReportBatchExecutionResult[] completed = await Task.WhenAll(runningTasks);
-		return await EnqueueWeeklyReportCommitAsync(list, weekIndex, startDay, endDay, displayLabel, openViewerWhenDone, queueBlockingPopupOnFatalFailure, isAutoGeneration, list2, groupMap, completed);
+		if (SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_report_before_commit_enqueue"))
+		{
+			return generationResult;
+		}
+		return await EnqueueWeeklyReportCommitAsync(list, weekIndex, startDay, endDay, displayLabel, openViewerWhenDone, queueBlockingPopupOnFatalFailure, isAutoGeneration, list2, groupMap, completed, runtimeGeneration);
 #if false
 		int successCount = 0;
 		int failureCount = 0;
@@ -46973,11 +47076,12 @@ public class MyBehavior : CampaignBehaviorBase
 #endif
 	}
 
-	private Task<WeeklyReportGenerationResult> EnqueueWeeklyReportCommitAsync(List<WeeklyEventMaterialPreviewGroup> groups, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool queueBlockingPopupOnFatalFailure, bool isAutoGeneration, List<string> popupCandidateKingdomIds, Dictionary<string, WeeklyEventMaterialPreviewGroup> groupMap, IEnumerable<WeeklyReportBatchExecutionResult> executions)
+	private Task<WeeklyReportGenerationResult> EnqueueWeeklyReportCommitAsync(List<WeeklyEventMaterialPreviewGroup> groups, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool queueBlockingPopupOnFatalFailure, bool isAutoGeneration, List<string> popupCandidateKingdomIds, Dictionary<string, WeeklyEventMaterialPreviewGroup> groupMap, IEnumerable<WeeklyReportBatchExecutionResult> executions, long runtimeGeneration)
 	{
 		TaskCompletionSource<WeeklyReportGenerationResult> completionSource = new TaskCompletionSource<WeeklyReportGenerationResult>();
 		PendingWeeklyReportCommitContext context = new PendingWeeklyReportCommitContext
 		{
+			RuntimeGeneration = runtimeGeneration,
 			WeekIndex = weekIndex,
 			StartDay = startDay,
 			EndDay = endDay,
@@ -47054,6 +47158,11 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		try
 		{
+			if (context.RuntimeGeneration > 0L && SaveRuntimeGuard.IsStale(context.RuntimeGeneration, "weekly_report_commit"))
+			{
+				CompletePendingWeeklyReportCommit(context, new WeeklyReportGenerationResult());
+				return true;
+			}
 			if (context.GroupMap == null)
 			{
 				using (PerfProbe.Scope("MyBehavior.WeeklyReportCommit.BuildGroupMap"))
@@ -47781,9 +47890,13 @@ public class MyBehavior : CampaignBehaviorBase
 		QueueWeeklyReportMapNotice(eventId);
 	}
 
-	private async Task<WeeklyReportGenerationResult> GenerateWeeklyReportsBatchedAsyncInternal(List<WeeklyEventMaterialPreviewGroup> list, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool queueBlockingPopupOnFatalFailure, bool isAutoGeneration, IEnumerable<string> popupCandidateKingdomIdsOverride = null, List<WeeklyReportBatchRequest> preparedBatches = null)
+	private async Task<WeeklyReportGenerationResult> GenerateWeeklyReportsBatchedAsyncInternal(List<WeeklyEventMaterialPreviewGroup> list, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool queueBlockingPopupOnFatalFailure, bool isAutoGeneration, IEnumerable<string> popupCandidateKingdomIdsOverride = null, List<WeeklyReportBatchRequest> preparedBatches = null, long runtimeGeneration = 0L)
 	{
-		return await GenerateWeeklyReportsMinuteBurstAsyncInternal(list, weekIndex, startDay, endDay, displayLabel, openViewerWhenDone, queueBlockingPopupOnFatalFailure, isAutoGeneration, popupCandidateKingdomIdsOverride, preparedBatches);
+		if (runtimeGeneration <= 0L)
+		{
+			runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
+		}
+		return await GenerateWeeklyReportsMinuteBurstAsyncInternal(list, weekIndex, startDay, endDay, displayLabel, openViewerWhenDone, queueBlockingPopupOnFatalFailure, isAutoGeneration, popupCandidateKingdomIdsOverride, preparedBatches, runtimeGeneration);
 #if false
 		WeeklyReportGenerationResult weeklyReportGenerationResult = new WeeklyReportGenerationResult();
 		list = (list ?? new List<WeeklyEventMaterialPreviewGroup>()).Where((WeeklyEventMaterialPreviewGroup x) => x != null && IsWeeklyReportGroupEligible(x)).ToList();
@@ -48203,6 +48316,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		_dailyMaintenanceQueue.Clear();
 		_dailyMaintenanceJobKeys.Clear();
+		ResetDailyMemoryDraftSealSliceState();
 		_dirtyMemoryOverviewIds.Clear();
 		_pendingMemoryOverviewCandidateScanIds.Clear();
 		_pendingMemoryOverviewCandidateScanIdSet.Clear();
