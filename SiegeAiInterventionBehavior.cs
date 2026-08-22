@@ -740,7 +740,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		try
 		{
 			starter.AddGameMenu(SiegeInterventionCompletionUiProfile.DoneMenuId, "{=!}{AF_SIEGE_DONE_TEXT}", AfSiegeInterventionDoneOnInit, GameMenu.MenuOverlayType.None, GameMenu.MenuFlags.None, null);
-			starter.AddGameMenuOption(SiegeInterventionCompletionUiProfile.DoneMenuId, SiegeInterventionCompletionUiProfile.DoneContinueOptionId, SiegeInterventionCompletionUiProfile.DoneContinueMenuOptionText, AfSiegeInterventionDoneContinueCondition, AfSiegeInterventionDoneContinueConsequence, isLeave: false, -1);
+			starter.AddGameMenuOption(SiegeInterventionCompletionUiProfile.DoneMenuId, SiegeInterventionCompletionUiProfile.DoneContinueOptionId, GetTownActionPresentationText().DoneContinueOptionText, AfSiegeInterventionDoneContinueCondition, AfSiegeInterventionDoneContinueConsequence, isLeave: false, -1);
 			starter.AddGameMenu(SetsOwnedSettlementIncidentProfile.MenuId, "{=!}{AF_SETS_OWNED_TOWN_INCIDENT_TEXT}", SetsOwnedSettlementIncidentOnInit, GameMenu.MenuOverlayType.None, GameMenu.MenuFlags.None, null);
 			starter.AddGameMenuOption(SetsOwnedSettlementIncidentProfile.MenuId, SetsOwnedSettlementIncidentProfile.EntryOptionId, SetsOwnedSettlementIncidentProfile.EntryOptionText, SetsOwnedSettlementIncidentEntryCondition, SetsOwnedSettlementIncidentEntryConsequence, isLeave: false, 0);
 			starter.AddGameMenuOption(SetsOwnedSettlementIncidentProfile.MenuId, SetsOwnedSettlementIncidentProfile.LeaveOptionId, SetsOwnedSettlementIncidentProfile.LeaveOptionText, SetsOwnedSettlementIncidentLeaveCondition, SetsOwnedSettlementIncidentLeaveConsequence, isLeave: true, 1);
@@ -761,7 +761,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string text = string.IsNullOrWhiteSpace(_completedSummaryText) ? SiegeInterventionCompletionUiProfile.DoneMenuFallbackText : _completedSummaryText;
+			string text = string.IsNullOrWhiteSpace(_completedSummaryText) ? GetTownActionPresentationText().DoneMenuFallbackText : _completedSummaryText;
 			MBTextManager.SetTextVariable("AF_SIEGE_DONE_TEXT", text, false);
 			args?.MenuContext?.SetBackgroundMeshName("encounter_win");
 		}
@@ -1904,30 +1904,31 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private static CultureObject ResolveCulturalRepopulationTargetCulture(out string sourceLabel)
 	{
-		sourceLabel = SiegeCulturalRepopulationProfile.PlayerHeroCultureSourceLabel;
+		TownActionPresentationTextCatalog presentation = GetTownActionPresentationText();
+		sourceLabel = presentation.PlayerHeroCultureSourceLabel;
 		try
 		{
 			Hero mainHero = Hero.MainHero;
 			Kingdom playerKingdom = mainHero?.Clan?.Kingdom;
 			if (playerKingdom?.Culture != null)
 			{
-				sourceLabel = SiegeCulturalRepopulationProfile.PlayerKingdomCultureSourceLabel;
+				sourceLabel = presentation.PlayerKingdomCultureSourceLabel;
 				return playerKingdom.Culture;
 			}
 			IFaction mapFaction = mainHero?.MapFaction;
 			if (mapFaction != null && !ReferenceEquals(mapFaction, mainHero?.Clan) && mapFaction.Culture != null)
 			{
-				sourceLabel = SiegeCulturalRepopulationProfile.PlayerKingdomCultureSourceLabel;
+				sourceLabel = presentation.PlayerKingdomCultureSourceLabel;
 				return mapFaction.Culture;
 			}
 			if (mainHero?.Culture != null)
 			{
-				sourceLabel = SiegeCulturalRepopulationProfile.PlayerHeroCultureSourceLabel;
+				sourceLabel = presentation.PlayerHeroCultureSourceLabel;
 				return mainHero.Culture;
 			}
 			if (mainHero?.Clan?.Culture != null)
 			{
-				sourceLabel = SiegeCulturalRepopulationProfile.PlayerClanCultureSourceLabel;
+				sourceLabel = presentation.PlayerClanCultureSourceLabel;
 				return mainHero.Clan.Culture;
 			}
 		}
@@ -1935,7 +1936,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			Logger.Log("SiegeAiIntervention", "ResolveCulturalRepopulationTargetCulture failed: " + ex.Message);
 		}
-		sourceLabel = SiegeCulturalRepopulationProfile.PlayerCultureFallbackLabel;
+		sourceLabel = presentation.PlayerCultureFallbackLabel;
 		return null;
 	}
 
@@ -1968,11 +1969,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				cultureName = culture?.StringId;
 			}
-			return SiegeCulturalRepopulationProfile.BuildTargetCultureMessageText(cultureName, sourceLabel);
+			return GetTownActionPresentationText().DescribeCulture(cultureName, sourceLabel);
 		}
 		catch
 		{
-			return SiegeCulturalRepopulationProfile.NormalizeCultureSourceLabel(sourceLabel);
+			return GetTownActionPresentationText().NormalizeCultureSourceLabel(sourceLabel);
 		}
 	}
 
@@ -7240,13 +7241,13 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		return SiegeInterventionActionRules.HasDestructiveOutcomeLocked(GetStandaloneOutcome(), IsCulturalRepopulationOutcome, HasPendingDevastateAftermath());
 	}
 
-	private static bool TryBlockMercyTrackAfterDestructive(string actionName)
+	private static bool TryBlockMercyTrackAfterDestructive(string actionKey)
 	{
 		if (!HasDestructiveOutcomeLocked())
 		{
 			return false;
 		}
-		InformationManager.DisplayMessage(new InformationMessage(SiegeMercyTrackTransitionProfile.BuildBlockedAfterDestructiveMessage(actionName), Color.FromUint(SiegeMercyTrackTransitionProfile.BlockedAfterDestructiveMessageColor)));
+		InformationManager.DisplayMessage(new InformationMessage(SiegeMercyTrackTransitionProfile.BuildBlockedAfterDestructiveMessage(GetTownActionPresentation(actionKey).ActionLabel), Color.FromUint(SiegeMercyTrackTransitionProfile.BlockedAfterDestructiveMessageColor)));
 		return true;
 	}
 
@@ -7537,12 +7538,12 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			if (!TryEnsureRuntimeAlliedSoldierActionTarget(targetAgentIndex))
 			{
-				InformationManager.DisplayMessage(new InformationMessage(SiegeReliefChoiceProfile.SoldierMaterialReliefTargetMessage, Color.FromUint(SiegeReliefChoiceProfile.ValidationMessageColor)));
+				InformationManager.DisplayMessage(new InformationMessage(GetTownActionPresentationText().ReliefSoldierTargetValidation, Color.FromUint(SiegeReliefChoiceProfile.ValidationMessageColor)));
 				return false;
 			}
 			if (!HasSharedCivilianReliefPool())
 			{
-				InformationManager.DisplayMessage(new InformationMessage(SiegeReliefChoiceProfile.SoldierMaterialReliefMissingPoolMessage, Color.FromUint(SiegeReliefChoiceProfile.ValidationMessageColor)));
+				InformationManager.DisplayMessage(new InformationMessage(GetTownActionPresentationText().ReliefMissingSharedPoolValidation, Color.FromUint(SiegeReliefChoiceProfile.ValidationMessageColor)));
 				return false;
 			}
 			return ApplyReliefChoiceCore(triggerSource, triggerDetail, requireSharedMaterial: true, civilianVerbalOnly: false);
@@ -7563,17 +7564,17 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (TryBlockMercyTrackAfterDestructive(SiegeReliefChoiceProfile.BlockedAfterDestructiveActionName))
+			if (TryBlockMercyTrackAfterDestructive(SiegeReliefChoiceProfile.BlockedAfterDestructiveActionKey))
 			{
 				return false;
 			}
 			bool hasSharedPool = HasSharedCivilianReliefPool();
 			if (requireSharedMaterial && !hasSharedPool)
 			{
-				InformationManager.DisplayMessage(new InformationMessage(SiegeReliefChoiceProfile.RequiredSharedMaterialMissingMessage, Color.FromUint(SiegeReliefChoiceProfile.ValidationMessageColor)));
+				InformationManager.DisplayMessage(new InformationMessage(GetTownActionPresentationText().ReliefRequiredSharedMaterialValidation, Color.FromUint(SiegeReliefChoiceProfile.ValidationMessageColor)));
 				return false;
 			}
-			SiegeReliefChoiceProfile reliefProfile = SiegeReliefChoiceProfile.Build(hasSharedPool, civilianVerbalOnly, DescribeSharedCivilianReliefPoolForContext());
+			SiegeReliefChoiceProfile reliefProfile = SiegeReliefChoiceProfile.Build(hasSharedPool, civilianVerbalOnly);
 			StopReversiblePlunderForMercyTrack(SiegeReliefChoiceProfile.StopReversiblePlunderReason);
 			if (_reliefChoiceApplied)
 			{
@@ -7581,13 +7582,13 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				{
 					ApplySharedCivilianReliefPoolEffects(ResolveCurrentSettlement(), reliefProfile.RepeatSharedPoolEffectReason);
 				}
-				RecordInterventionMemory(reliefProfile.RepeatMemoryTitle, reliefProfile.RepeatMemoryText);
+				RecordTownActionMemory(reliefProfile.MessageKey, repeat: true, sharedPoolDescription: DescribeSharedCivilianReliefPoolForContext());
 				return true;
 			}
 			_reliefChoiceApplied = true;
 			_activeMode = InterventionMode.MercyRelief;
 			MarkPendingAftermath(SiegeAftermathAction.SiegeAftermath.ShowMercy, triggerSource, triggerDetail);
-			MaybeTriggerSoldierAppeasementNeed(reliefProfile.SoldierAppeasementReason);
+			MaybeTriggerSoldierAppeasementNeed(GetTownActionPresentation(reliefProfile.SoldierAppeasementReason).ActionLabel);
 			Settlement settlement = ResolveCurrentSettlement();
 			AdjustSettlementAfterRelief(
 				settlement,
@@ -7600,8 +7601,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				ApplySharedCivilianReliefPoolEffects(settlement, reliefProfile.SharedPoolEffectReason);
 			}
-			ShowOutcomeMessageOnce(reliefProfile.MessageKey, reliefProfile.MessageText, reliefProfile.MessageColor);
-			RecordInterventionMemory(reliefProfile.MemoryTitle, reliefProfile.MemoryText);
+			ShowOutcomeMessageOnce(reliefProfile.MessageKey, reliefProfile.MessageColor);
+			RecordTownActionMemory(reliefProfile.MessageKey, repeat: false, sharedPoolDescription: DescribeSharedCivilianReliefPoolForContext());
 			Logger.Log("SiegeAiIntervention", "Applied relief choice. Settlement=" + (settlement?.StringId ?? "N/A") + ", QueuedRelationDelta=" + reliefProfile.NotableRelationDelta);
 			return true;
 		}
@@ -7616,7 +7617,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (TryBlockMercyTrackAfterDestructive(SiegeCivicChoiceProfile.InspirationBlockedAfterDestructiveActionName))
+			if (TryBlockMercyTrackAfterDestructive(SiegeCivicChoiceProfile.InspirationBlockedAfterDestructiveActionKey))
 			{
 				return false;
 			}
@@ -7625,13 +7626,13 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			if (_inspirationLevelApplied >= 1)
 			{
 				ApplySharedCivilianReliefPoolEffects(ResolveCurrentSettlement(), civicProfile.RepeatSharedPoolEffectReason);
-				RecordInterventionMemory(civicProfile.RepeatMemoryTitle, civicProfile.RepeatMemoryText);
+				RecordTownActionMemory(civicProfile.MessageKey, repeat: true);
 				return true;
 			}
 			Settlement settlement = ResolveCurrentSettlement();
 			_activeMode = InterventionMode.MercyRelief;
 			MarkPendingAftermath(SiegeAftermathAction.SiegeAftermath.ShowMercy, triggerSource, triggerDetail);
-			MaybeTriggerSoldierAppeasementNeed(civicProfile.SoldierAppeasementReason);
+			MaybeTriggerSoldierAppeasementNeed(GetTownActionPresentation(civicProfile.SoldierAppeasementReason).ActionLabel);
 			ApplyCivicChoiceSettlementEffects(settlement, civicProfile, SiegeSettlementEffectProfile.InspirationSettlementPublicTrustReason, SiegeSettlementEffectProfile.InspirationBoundVillagePublicTrustReason);
 			ApplySharedCivilianReliefPoolEffects(settlement, civicProfile.SharedPoolEffectReason);
 			BeginCivicPositiveBuff(settlement, civicProfile);
@@ -7640,8 +7641,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			QueuePositiveNotableTrustForFinalAftermath(ReducePositiveIntDeltaForRegionalConflict(civicProfile.NotableTrustDelta, "inspiration_notable_trust"), includeBoundVillages: true, SiegeSettlementEffectProfile.InspirationNotableTrustReason);
 			int powerAdjusted = 0;
 			GatherCiviliansForSpeech(civicProfile.GatherSource);
-			ShowOutcomeMessageOnce(civicProfile.MessageKey, civicProfile.MessageText, civicProfile.MessageColor);
-			RecordInterventionMemory(civicProfile.MemoryTitle, civicProfile.MemoryText);
+			ShowOutcomeMessageOnce(civicProfile.MessageKey, civicProfile.MessageColor);
+			RecordTownActionMemory(civicProfile.MessageKey, repeat: false);
 			Logger.Log("SiegeAiIntervention", "Applied inspiration choice. Settlement=" + (settlement?.StringId ?? "N/A") + ", QueuedRelationDelta=" + civicProfile.NotableRelationDelta + ", PowerAdjusted=" + powerAdjusted);
 			return true;
 		}
@@ -7656,7 +7657,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (TryBlockMercyTrackAfterDestructive(SiegeCivicChoiceProfile.RallyOathBlockedAfterDestructiveActionName))
+			if (TryBlockMercyTrackAfterDestructive(SiegeCivicChoiceProfile.RallyOathBlockedAfterDestructiveActionKey))
 			{
 				return false;
 			}
@@ -7665,13 +7666,13 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			if (_inspirationLevelApplied >= 2)
 			{
 				ApplySharedCivilianReliefPoolEffects(ResolveCurrentSettlement(), civicProfile.RepeatSharedPoolEffectReason);
-				RecordInterventionMemory(civicProfile.RepeatMemoryTitle, civicProfile.RepeatMemoryText);
+				RecordTownActionMemory(civicProfile.MessageKey, repeat: true);
 				return true;
 			}
 			Settlement settlement = ResolveCurrentSettlement();
 			_activeMode = InterventionMode.MercyRelief;
 			MarkPendingAftermath(SiegeAftermathAction.SiegeAftermath.ShowMercy, triggerSource, triggerDetail);
-			MaybeTriggerSoldierAppeasementNeed(civicProfile.SoldierAppeasementReason);
+			MaybeTriggerSoldierAppeasementNeed(GetTownActionPresentation(civicProfile.SoldierAppeasementReason).ActionLabel);
 			ApplyCivicChoiceSettlementEffects(settlement, civicProfile, SiegeSettlementEffectProfile.RallyOathSettlementPublicTrustReason, SiegeSettlementEffectProfile.RallyOathBoundVillagePublicTrustReason);
 			ApplySharedCivilianReliefPoolEffects(settlement, civicProfile.SharedPoolEffectReason);
 			BeginCivicPositiveBuff(settlement, civicProfile);
@@ -7680,8 +7681,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			QueuePositiveNotableTrustForFinalAftermath(ReducePositiveIntDeltaForRegionalConflict(civicProfile.NotableTrustDelta, "rally_oath_notable_trust"), includeBoundVillages: true, SiegeSettlementEffectProfile.RallyOathNotableTrustReason);
 			int powerAdjusted = 0;
 			GatherCiviliansForSpeech(civicProfile.GatherSource);
-			ShowOutcomeMessageOnce(civicProfile.MessageKey, civicProfile.MessageText, civicProfile.MessageColor);
-			RecordInterventionMemory(civicProfile.MemoryTitle, civicProfile.MemoryText);
+			ShowOutcomeMessageOnce(civicProfile.MessageKey, civicProfile.MessageColor);
+			RecordTownActionMemory(civicProfile.MessageKey, repeat: false);
 			Logger.Log("SiegeAiIntervention", "Applied rally oath choice. Settlement=" + (settlement?.StringId ?? "N/A") + ", QueuedRelationDelta=" + civicProfile.NotableRelationDelta + ", QueuedTrustDelta=" + civicProfile.NotableTrustDelta + ", PowerAdjusted=" + powerAdjusted);
 			return true;
 		}
@@ -7696,7 +7697,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (TryBlockMercyTrackAfterDestructive(SiegeMercyChoiceProfile.BlockedAfterDestructiveActionName))
+			if (TryBlockMercyTrackAfterDestructive(SiegeMercyChoiceProfile.BlockedAfterDestructiveActionKey))
 			{
 				return false;
 			}
@@ -7704,10 +7705,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			StopReversiblePlunderForMercyTrack(mercyProfile.StopPlunderReason);
 			_activeMode = InterventionMode.MercyRelief;
 			MarkPendingAftermath(SiegeAftermathAction.SiegeAftermath.ShowMercy, triggerSource, triggerDetail);
-			MaybeTriggerSoldierAppeasementNeed(mercyProfile.SoldierAppeasementReason);
+			MaybeTriggerSoldierAppeasementNeed(GetTownActionPresentation(mercyProfile.SoldierAppeasementReason).ActionLabel);
 			ApplySharedCivilianReliefPoolEffects(ResolveCurrentSettlement(), mercyProfile.SharedPoolEffectReason);
-			ShowOutcomeMessageOnce(mercyProfile.MessageKey, mercyProfile.MessageText, mercyProfile.MessageColor);
-			RecordInterventionMemory(mercyProfile.MemoryTitle, mercyProfile.MemoryText);
+			ShowOutcomeMessageOnce(mercyProfile.MessageKey, mercyProfile.MessageColor);
+			RecordTownActionMemory(mercyProfile.MessageKey, repeat: false);
 			return true;
 		}
 		catch (Exception ex)
@@ -7885,12 +7886,12 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			MarkPendingAftermath(ToNativeAftermathKind(plunderProfile.AftermathKind), triggerSource, triggerDetail);
 			EnsureAlliedTroopsSummoned();
 			MaintainCivilianAssembly(Mission.Current, plunderProfile.AssemblySource, force: false);
-			ShowOutcomeMessageOnce(plunderProfile.MessageKey, plunderProfile.MessageText, plunderProfile.MessageColor);
-			RecordInterventionMemory(plunderProfile.MemoryTitle, plunderProfile.FirstMemoryText);
+			ShowOutcomeMessageOnce(plunderProfile.MessageKey, plunderProfile.MessageColor);
+			RecordTownActionMemory(plunderProfile.MessageKey, repeat: false);
 			return true;
 		}
 		MarkPendingAftermath(ToNativeAftermathKind(plunderProfile.AftermathKind), triggerSource, triggerDetail);
-		RecordInterventionMemory(plunderProfile.MemoryTitle, plunderProfile.RepeatMemoryText);
+		RecordTownActionMemory(plunderProfile.MessageKey, repeat: true);
 		return false;
 	}
 
@@ -8353,8 +8354,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		DriveMassacreCombatState(Mission.Current);
 		if (first)
 		{
-			ShowOutcomeMessageOnce(massacreProfile.MessageKey, massacreProfile.MessageText, massacreProfile.MessageColor);
-			RecordInterventionMemory(massacreProfile.MemoryTitle, massacreProfile.BuildMassacreMemoryText(triggerSource));
+			ShowOutcomeMessageOnce(massacreProfile.MessageKey, massacreProfile.MessageColor);
+			RecordTownActionMemory(massacreProfile.MessageKey, repeat: false);
 		}
 		return first || resuming;
 	}
@@ -8365,7 +8366,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			if (!TryEnsureRuntimeAlliedSoldierActionTarget(targetAgentIndex))
 			{
-				InformationManager.DisplayMessage(new InformationMessage(SiegeCulturalRepopulationProfile.TargetValidationMessage, Color.FromUint(SiegeCulturalRepopulationProfile.ValidationMessageColor)));
+				InformationManager.DisplayMessage(new InformationMessage(GetTownActionPresentationText().CulturalRepopulationTargetValidation, Color.FromUint(SiegeCulturalRepopulationProfile.ValidationMessageColor)));
 				return false;
 			}
 			bool handled = true;
@@ -8388,7 +8389,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return false;
 			}
 			MarkPendingAftermath(ToNativeAftermathKind(repopulationProfile.AftermathKind), triggerSource, triggerDetail);
-			RecordInterventionMemory(repopulationProfile.MemoryTitle, repopulationProfile.BuildRequestMemoryText(targetCultureText));
+			RecordTownActionMemory(repopulationProfile.MessageKey, repeat: false, targetCultureDescription: targetCultureText);
 			GcczDiagnosticLog.Log("CulturalRepopulation", "requested targetAgent=" + targetAgentIndex
 				+ " settlement=" + (ResolveCurrentSettlement()?.StringId ?? "N/A")
 				+ " targetCulture=" + (targetCulture?.StringId ?? "N/A")
@@ -8400,7 +8401,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			else
 			{
-				InformationManager.DisplayMessage(new InformationMessage(repopulationProfile.BuildPendingMessageText(targetCultureText), Color.FromUint(repopulationProfile.PendingMessageColor)));
+				ShowOutcomeMessageOnce(repopulationProfile.MessageKey, repopulationProfile.PendingMessageColor, targetCultureText);
 			}
 			return handled;
 		}
@@ -8538,10 +8539,15 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			CountNotableVolunteerState(settlement, out int recruitmentEligibleNotables, out int populatedVolunteerSlots, out int volunteerSlotCapacity);
 			_lastKilledNotables += killedNotables;
 			SiegeCulturalRepopulationProfile repopulationProfile = new SiegeCulturalRepopulationProfile();
-			string notableResultText = repopulationProfile.BuildCompletedNotableResultText(settlement.IsTown, killedNotables, spawnedNotables);
 			string settlementName = settlement.Name?.ToString();
 			string targetCultureText = DescribeCultureForMessage(targetCulture, targetCultureSource);
-			InformationManager.DisplayMessage(new InformationMessage(repopulationProfile.BuildCompletedMessageText(settlementName, targetCultureText, notableResultText), Color.FromUint(repopulationProfile.CompletedMessageColor)));
+			string sceneTransitionMessage = GetTownActionPresentationText().BuildSceneTransition(
+				repopulationProfile.MessageKey,
+				settlementName,
+				targetCultureText,
+				settlement.IsTown ? killedNotables : 0,
+				settlement.IsTown ? spawnedNotables : 0);
+			InformationManager.DisplayMessage(new InformationMessage(sceneTransitionMessage, Color.FromUint(repopulationProfile.SceneTransitionMessageColor)));
 			Logger.Log("SiegeAiIntervention", "Applied purge repopulation. Source=" + (source ?? "N/A") + ", Settlement=" + (settlement.StringId ?? "N/A") + ", OldCulture=" + (oldCulture?.StringId ?? "N/A") + ", NewCulture=" + (targetCulture.StringId ?? "N/A") + ", TargetCultureSource=" + (targetCultureSource ?? "N/A") + ", BoundVillages=" + boundVillagesChanged + ", KilledNotables=" + killedNotables + ", SpawnedNotables=" + spawnedNotables + ", RecruitmentEligibleNotables=" + recruitmentEligibleNotables + ", VolunteerSlots=" + populatedVolunteerSlots + "/" + volunteerSlotCapacity);
 			GcczDiagnosticLog.Log("CulturalRepopulation", "applied source=" + (source ?? "N/A")
 				+ " settlement=" + (settlement.StringId ?? "N/A")
@@ -12883,11 +12889,12 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				ApplyCulturalRepopulationNow(SiegeCulturalRepopulationProfile.MassacreVictoryApplySource);
 			}
 		}
-		InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionCompletionUiProfile.MassacreVictoryMessage, Color.FromUint(SiegeInterventionCompletionUiProfile.MassacreVictoryMessageColor)));
+		TownActionPresentationTextCatalog presentationText = GetTownActionPresentationText();
+		InformationManager.DisplayMessage(new InformationMessage(presentationText.MassacreVictoryMessage, Color.FromUint(SiegeInterventionCompletionUiProfile.MassacreVictoryMessageColor)));
 		ShowMassacreVictoryLootMessages();
 		try
 		{
-			MBInformationManager.AddQuickInformation(new TextObject(SiegeInterventionCompletionUiProfile.MassacreVictoryQuickText), 0, null, null, "event:/ui/mission/arena_victory");
+			MBInformationManager.AddQuickInformation(new TextObject(presentationText.MassacreVictoryQuickText), 0, null, null, "event:/ui/mission/arena_victory");
 		}
 		catch
 		{
@@ -14529,10 +14536,32 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		OutcomeMessageDeduplicator.ResetForTrack(track);
 	}
 
-	private static void ShowOutcomeMessageOnce(string key, string message, uint color)
+	private static TownActionPresentationTextCatalog GetTownActionPresentationText()
+	{
+		return GcczTownActionPresentationResourceProvider.GetCatalog();
+	}
+
+	private static TownActionPresentationText GetTownActionPresentation(string key)
+	{
+		return GetTownActionPresentationText().GetAction(key);
+	}
+
+	private static void RecordTownActionMemory(
+		string key,
+		bool repeat,
+		string sharedPoolDescription = null,
+		string targetCultureDescription = null)
+	{
+		TownActionPresentationTextCatalog text = GetTownActionPresentationText();
+		TownActionPresentationText action = text.GetAction(key);
+		RecordInterventionMemory(action.MemoryTitle, text.BuildMemory(key, repeat, sharedPoolDescription, targetCultureDescription));
+	}
+
+	private static void ShowOutcomeMessageOnce(string key, uint color, string targetCultureDescription = null)
 	{
 		try
 		{
+			string message = GetTownActionPresentationText().BuildCommandConfirmation(key, targetCultureDescription);
 			if (!OutcomeMessageDeduplicator.ShouldShow(key, message))
 			{
 				return;
@@ -15801,11 +15830,12 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				_lastLootValue,
 				_lastMarketGoldLoot,
 				_lastCivilianGoldLoot,
-				_lastCivilianTargetsLooted));
+				_lastCivilianTargetsLooted),
+				GetTownActionPresentationText());
 		}
 		catch
 		{
-			_completedSummaryText = SiegeInterventionCompletionUiProfile.CompletedSummaryFallbackText;
+			_completedSummaryText = GetTownActionPresentationText().CompletedSummaryFallbackText;
 		}
 	}
 
@@ -16441,11 +16471,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			if (!_pendingSummaryMenuPresented)
 			{
-				InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionCompletionUiProfile.BuildCompletedEncounterMessage(ToStandaloneAftermathKind(aftermath), IsCulturalRepopulationOutcome), Color.FromUint(SiegeInterventionCompletionUiProfile.CompletionMessageColor)));
+				InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionCompletionUiProfile.BuildCompletedEncounterMessage(ToStandaloneAftermathKind(aftermath), IsCulturalRepopulationOutcome, GetTownActionPresentationText()), Color.FromUint(SiegeInterventionCompletionUiProfile.CompletionMessageColor)));
 			}
 			if (_lastLootItemTotal > 0 || _lastMarketGoldLoot > 0 || _lastCivilianGoldLoot > 0)
 			{
-				InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionCompletionUiProfile.BuildLootSettlementSummaryMessage(_lastLootItemTotal, _lastLootStackKinds, _lastMarketGoldLoot, _lastCivilianGoldLoot), Color.FromUint(SiegeInterventionCompletionUiProfile.CompletionMessageColor)));
+				InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionCompletionUiProfile.BuildLootSettlementSummaryMessage(_lastLootItemTotal, _lastLootStackKinds, _lastMarketGoldLoot, _lastCivilianGoldLoot, GetTownActionPresentationText()), Color.FromUint(SiegeInterventionCompletionUiProfile.CompletionMessageColor)));
 			}
 		}
 		catch
@@ -16453,7 +16483,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			MBInformationManager.AddQuickInformation(new TextObject(SiegeInterventionCompletionUiProfile.LeaveEncounterQuickText), 0, null, null, "event:/ui/mission/arena_victory");
+			MBInformationManager.AddQuickInformation(new TextObject(GetTownActionPresentationText().LeaveEncounterQuickText), 0, null, null, "event:/ui/mission/arena_victory");
 		}
 		catch
 		{

@@ -1,0 +1,96 @@
+{
+  "Version": 1,
+  "Actions": {
+    "mercy": {
+      "ActionLabel": "宽恕",
+      "CommandConfirmation": "宽恕的军令沿街传开。士兵收起武器、约束队列，惊惶的居民仍在观察你是否言出必行；真正的战后结算会在离城时完成。",
+      "MemoryTitle": "宽恕",
+      "FirstMemoryTemplate": "玩家已经下令宽恕普通民众，不杀不抢，并要求入城士兵维持军纪。",
+      "RepeatMemoryTemplate": "玩家再次重申宽恕与军纪，现场人物应知道这道命令仍然有效。"
+    },
+    "relief": {
+      "ActionLabel": "救济",
+      "CommandConfirmation": "士兵开始清点你此前交给在场人员的物资，并在居民的注视下分发。有人仍然戒备，也有人终于敢靠近队列。",
+      "MemoryTitle": "救济",
+      "FirstMemoryTemplate": "玩家命令把通过AF给予交付的第纳尔、粮食或物资分发给民众。共享物资状态：{shared_pool}。",
+      "RepeatMemoryTemplate": "玩家再次要求分发尚未使用的共享物资。共享物资状态：{shared_pool}。"
+    },
+    "civilian_verbal_relief": {
+      "ActionLabel": "口头安抚",
+      "CommandConfirmation": "保护、安置与恢复秩序的承诺从这场对话传向附近街巷。居民没有立刻放松，但已经有人愿意留下听完。",
+      "MemoryTitle": "救济",
+      "FirstMemoryTemplate": "玩家没有分发物资，但通过面对面对话承诺保护、军纪与安置，安抚了战败平民。",
+      "RepeatMemoryTemplate": "玩家继续通过直接对话安抚居民，现场人物应承认保护与秩序承诺仍然有效。"
+    },
+    "inspiration": {
+      "ActionLabel": "安民宣抚",
+      "CommandConfirmation": "士兵让出一片空地，仍在躲避的人被谨慎地引向人群。你的宣告开始在街巷间传递，新秩序正接受第一轮审视。",
+      "MemoryTitle": "宣抚",
+      "FirstMemoryTemplate": "玩家召集民众并公开宣示受约束的新秩序，现场居民与要人已经听到这次安民宣抚。",
+      "RepeatMemoryTemplate": "玩家继续维持安民宣抚路线，现场人物应承认民众已经听过新秩序的公开承诺。"
+    },
+    "rally_oath": {
+      "ActionLabel": "归心盟誓",
+      "CommandConfirmation": "代表被请到人群前方，广场渐渐安静下来。盟誓不再只是菜单上的选择，而是一场所有在场者都要表态见证的公开仪式。",
+      "MemoryTitle": "盟誓",
+      "FirstMemoryTemplate": "玩家组织了公开归心盟誓，现场民众、头人与要人共同见证了归附仪式。",
+      "RepeatMemoryTemplate": "玩家继续维持归心盟誓路线，本地民众与要人应被视为已经公开接受争取。"
+    },
+    "plunder": {
+      "ActionLabel": "搜掠",
+      "CommandConfirmation": "搜掠命令按小队传下。士兵只对实际找到的商人、头人、要人与居民动手，并逐笔记录所得；喊停只会阻止后续行为，不会抹去已经夺走的财物与后果。",
+      "MemoryTitle": "搜掠",
+      "FirstMemoryTemplate": "玩家下令按实际目标搜掠，士兵开始盘问居民并登记取得的财物；在升级为血洗前，这道命令仍可被喊停或由正向处置取代。",
+      "RepeatMemoryTemplate": "玩家继续维持当前搜掠命令，现场人物应知道士兵仍在按账本执行。"
+    },
+    "massacre": {
+      "ActionLabel": "血洗",
+      "CommandConfirmation": "军令使占领现场骤然失控。士兵开始追击本次行动已经锁定的目标，幸存者四散、躲藏或求饶；在目标全部死亡前，你仍可喊停后续追杀，但已经发生的死亡与后果不会逆转。",
+      "MemoryTitle": "血洗",
+      "FirstMemoryTemplate": "玩家把处置升级为血洗，士兵开始追击行动开始时锁定的平民、头人与要人；即使随后喊停，幸存者也会继续恐惧、逃离或保持戒备。",
+      "RepeatMemoryTemplate": "玩家继续维持血洗命令，士兵仍在追击已锁定且尚未死亡的目标。"
+    },
+    "cultural_repopulation": {
+      "ActionLabel": "屠民迁殖",
+      "CommandConfirmation": "屠民迁殖已经作为最高级处置列入军令，目标文化为 {target_culture}。留在现场时，士兵会继续追杀行动开始时锁定的平民、头人与要人；目标清空前喊停只结算部分血洗，直接离城则立即提交迁殖。",
+      "MemoryTitle": "殖民",
+      "FirstMemoryTemplate": "玩家通过己方士兵下令屠民迁殖，要求清除已锁定的原住民并把定居点改为 {target_culture}；目标清空前仍可喊停并转为部分血洗。",
+      "RepeatMemoryTemplate": "玩家继续维持向 {target_culture} 迁殖的命令，士兵仍按原快照追击幸存目标。",
+      "SceneTransitionTemplate": "{settlement} 的迁殖目标已经清空，文化已转为 {target_culture}；旧要人处死 {killed_notables} 人，新要人扶立 {spawned_notables} 人。毁坏、奖励与惩罚仍将在离城时统一提交。"
+    }
+  },
+  "SharedPoolUnavailableText": "共享物资统计不可用",
+  "ReliefSoldierTargetValidation": "【攻城处置】命令分发共享物资需要对己方入城士兵进行。",
+  "ReliefMissingSharedPoolValidation": "【攻城处置】让士兵分发救济前，需要先通过AF给予功能把第纳尔、粮食或物资交给士兵或在场人物。",
+  "ReliefRequiredSharedMaterialValidation": "【攻城处置】救济分发需要已有共享物资；若只是要求不杀不抢，请选择宽恕。",
+  "CulturalRepopulationTargetValidation": "【攻城处置】屠民迁殖只能通过己方入城士兵下令，平民与其他人物不能代为触发。",
+  "PlayerHeroCultureSourceLabel": "玩家角色文化",
+  "PlayerKingdomCultureSourceLabel": "玩家所属王国文化",
+  "PlayerClanCultureSourceLabel": "玩家家族文化",
+  "PlayerCultureFallbackLabel": "玩家文化",
+  "CultureSourceWrapperTemplate": "{culture}（{source}）",
+  "DoneContinueOptionText": "继续……",
+  "DoneMenuFallbackText": "这次入城处置已经完成。继续后将离开攻城遭遇。",
+  "CompletedSummaryFallbackText": "这次入城处置已经完成，正在结束攻城遭遇。",
+  "MassacreVictoryMessage": "【攻城处置】本次血洗锁定的目标已经全部死亡。最终战利品与后果仍将在离城时统一结算。",
+  "MassacreVictoryQuickText": "血洗目标已清空；离城时统一结算。",
+  "LeaveEncounterQuickText": "入城处置已完成，正在离开攻城遭遇。",
+  "CulturalRepopulationCompletedLabel": "屠民迁殖",
+  "DevastateCompletedLabel": "血洗与毁坏",
+  "PlunderCompletedLabel": "搜掠",
+  "MercyCompletedLabel": "宽恕与安抚",
+  "DefaultCompletedLabel": "处置",
+  "CompletedEncounterTemplate": "【攻城处置】{action}的最终结算已经提交，正在结束攻城遭遇。",
+  "LootSettlementSummaryTemplate": "【战利清点】最终入账：市场物资 {market_item_total} 件 / {market_stack_kinds} 类，市场金库 {market_gold}，民众第纳尔 {civilian_gold}。",
+  "SummaryTitleTemplate": "{settlement} 的战后{action}已经完成。",
+  "UnknownSettlementName": "这座定居点",
+  "UnknownTargetCultureText": "目标文化",
+  "SummaryCulturalRepopulationTemplate": "不可逆的屠民迁殖已经提交：定居点按毁坏处置结算，文化被强行改为 {target_culture}。",
+  "SummaryMassacreText": "血洗已经进入最终结算；死亡、幸存者状态与累计惩罚都以本次行动账本为准。",
+  "SummaryPlunderText": "搜掠已经进入最终结算；所得与惩罚只按账本中实际取得的金钱和物资累计计算。",
+  "SummaryMercyText": "宽恕与安抚已经进入最终结算；此前的承诺、救济与现场反应会留在本地记忆中。",
+  "SummaryMarketItemsTemplate": "市场物资：{market_item_total} 件 / {market_stack_kinds} 类，估值 {market_item_value}。",
+  "SummaryMarketGoldTemplate": "市场金库：{market_gold} 第纳尔。",
+  "SummaryCivilianGoldTemplate": "民众第纳尔：{civilian_gold}，实际目标数 {civilian_targets}。",
+  "SummaryClosingText": "继续后将离开攻城遭遇。"
+}

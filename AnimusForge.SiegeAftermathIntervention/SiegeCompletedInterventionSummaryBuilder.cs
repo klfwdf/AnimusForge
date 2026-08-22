@@ -6,55 +6,83 @@ public static class SiegeCompletedInterventionSummaryBuilder
 {
     public static string Build(SiegeCompletedInterventionSummaryFacts facts)
     {
+        return Build(facts, TownActionPresentationTextCatalog.CreateEnglishFallback());
+    }
+
+    public static string Build(SiegeCompletedInterventionSummaryFacts facts, TownActionPresentationTextCatalog text)
+    {
+        TownActionPresentationTextCatalog resolvedText = TownActionPresentationTextCatalog.Resolve(text);
         if (facts == null)
         {
-            return "攻城后的入城处置已经完成，正在结束本次攻城遭遇。";
+            return resolvedText.CompletedSummaryFallbackText;
         }
 
-        string settlementName = string.IsNullOrWhiteSpace(facts.SettlementName) ? "这座定居点" : facts.SettlementName.Trim();
-        string action = DescribeAction(facts.AftermathKind, facts.CulturalRepopulationApplied);
+        string settlementName = string.IsNullOrWhiteSpace(facts.SettlementName) ? resolvedText.UnknownSettlementName : facts.SettlementName.Trim();
+        string action = resolvedText.GetCompletedLabel(facts.AftermathKind, facts.CulturalRepopulationApplied);
         var sb = new StringBuilder();
-        sb.AppendLine(settlementName + " 的攻城后" + action + "已经完成。");
+        sb.AppendLine(ReplaceMany(
+            resolvedText.SummaryTitleTemplate,
+            ("{settlement}", settlementName),
+            ("{action}", action)));
         sb.AppendLine();
         if (facts.CulturalRepopulationApplied)
         {
-            string targetCultureText = string.IsNullOrWhiteSpace(facts.TargetCultureText) ? "目标文化" : facts.TargetCultureText.Trim();
-            sb.AppendLine("你选择了最高级不可逆处置：屠民迁殖。城镇将按毁坏结算，并被强行改为 " + targetCultureText + "。");
+            string targetCultureText = string.IsNullOrWhiteSpace(facts.TargetCultureText) ? resolvedText.UnknownTargetCultureText : facts.TargetCultureText.Trim();
+            sb.AppendLine(ReplaceMany(
+                resolvedText.SummaryCulturalRepopulationTemplate,
+                ("{target_culture}", targetCultureText)));
         }
         else if (facts.MassacreStarted)
         {
-            sb.AppendLine("你的士兵已完成战后处置，城内残余抵抗均已肃清。");
+            sb.AppendLine(resolvedText.SummaryMassacreText);
         }
         else if (facts.PlunderStarted)
         {
-            sb.AppendLine("你的士兵已经按胜利方战利权搜掠财物；离场结算已记录市场库存、市场金库和平民第纳尔。");
+            sb.AppendLine(resolvedText.SummaryPlunderText);
         }
         else
         {
-            sb.AppendLine("你选择在场景中安抚民众，已按宽恕或安抚结果结算。");
+            sb.AppendLine(resolvedText.SummaryMercyText);
         }
 
         sb.AppendLine();
-        sb.AppendLine("市场物资：" + facts.MarketItemTotal + " 件 / " + facts.MarketStackKinds + " 类，估值 " + facts.MarketItemValue + "。");
-        sb.AppendLine("市场金库：" + facts.MarketGold + " 第纳尔。");
-        sb.AppendLine("民众第纳尔：" + facts.CivilianGold + "，目标数 " + facts.CivilianTargetsLooted + "。");
+        sb.AppendLine(ReplaceMany(
+            resolvedText.SummaryMarketItemsTemplate,
+            ("{market_item_total}", facts.MarketItemTotal.ToString()),
+            ("{market_stack_kinds}", facts.MarketStackKinds.ToString()),
+            ("{market_item_value}", facts.MarketItemValue.ToString())));
+        sb.AppendLine(ReplaceMany(
+            resolvedText.SummaryMarketGoldTemplate,
+            ("{market_gold}", facts.MarketGold.ToString())));
+        sb.AppendLine(ReplaceMany(
+            resolvedText.SummaryCivilianGoldTemplate,
+            ("{civilian_gold}", facts.CivilianGold.ToString()),
+            ("{civilian_targets}", facts.CivilianTargetsLooted.ToString())));
         sb.AppendLine();
-        sb.AppendLine("正在结束本次攻城遭遇，并进入后续结算。");
+        sb.AppendLine(resolvedText.SummaryClosingText);
         return sb.ToString();
     }
 
     public static string DescribeAction(SiegeAftermathResolutionKind aftermathKind, bool culturalRepopulationApplied)
     {
-        switch (aftermathKind)
+        return TownActionPresentationTextCatalog.CreateEnglishFallback().GetCompletedLabel(aftermathKind, culturalRepopulationApplied);
+    }
+
+    public static string DescribeAction(
+        SiegeAftermathResolutionKind aftermathKind,
+        bool culturalRepopulationApplied,
+        TownActionPresentationTextCatalog text)
+    {
+        return TownActionPresentationTextCatalog.Resolve(text).GetCompletedLabel(aftermathKind, culturalRepopulationApplied);
+    }
+
+    private static string ReplaceMany(string value, params (string Token, string Replacement)[] replacements)
+    {
+        string result = value ?? string.Empty;
+        foreach ((string token, string replacement) in replacements)
         {
-            case SiegeAftermathResolutionKind.Devastate:
-                return culturalRepopulationApplied ? "屠民迁殖" : "血洗与毁坏";
-            case SiegeAftermathResolutionKind.Pillage:
-                return "搜掠";
-            case SiegeAftermathResolutionKind.ShowMercy:
-                return "安抚";
-            default:
-                return "处置";
+            result = result.Replace(token, replacement ?? string.Empty);
         }
+        return result;
     }
 }

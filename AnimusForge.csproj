@@ -87,6 +87,10 @@
       <LogicalName>AnimusForge.Defaults.GcczTownEntryPresentation.zh-CN.json</LogicalName>
       <WithCulture>false</WithCulture>
     </EmbeddedResource>
+    <EmbeddedResource Include="AnimusForge\ModuleData\GcczTownActionPresentation.zh-CN.json">
+      <LogicalName>AnimusForge.Defaults.GcczTownActionPresentation.zh-CN.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
     <EmbeddedResource Include="AnimusForge\ModuleData\GcczTownHiddenResidents.zh-CN.json">
       <LogicalName>AnimusForge.Defaults.GcczTownHiddenResidents.zh-CN.json</LogicalName>
       <WithCulture>false</WithCulture>
