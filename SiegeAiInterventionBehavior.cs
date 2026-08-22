@@ -244,6 +244,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static readonly Regex StopMassacreTagRegex = new Regex(SiegeActionTagCatalog.StopMassacreTagPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
 	private static readonly Regex AnySiegeTagRegex = new Regex(SiegeActionTagCatalog.AnyActionTagPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
 	private static readonly Regex AnyCastleActionTagRegex = new Regex(SiegeCastleActionTagCatalog.AnyActionTagPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+	private static readonly TownEntryPresentationSession TownEntryPresentation = new TownEntryPresentationSession();
 
 	private static InterventionMode _activeMode = InterventionMode.None;
 	private static InterventionMode _pendingMode = InterventionMode.None;
@@ -1002,12 +1003,19 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				+ " location=" + (location.StringId ?? "N/A")
 				+ " setsVictory=" + _setsSettlementEntryVictoryContext
 				+ " setsOwnedIncident=" + _setsOwnedSettlementIncidentContext);
-			InformationManager.DisplayMessage(new InformationMessage(
-				settlement.IsCastle
+			bool usesStagedTownPresentation = UsesStagedTownEntryPresentation(settlement);
+			string selectionInstruction = usesStagedTownPresentation
+				? TownEntryPresentation.BuildSelectionPrompt(GcczTownEntryPresentationResourceProvider.GetCatalog(), AutoSummonCount)
+				: settlement.IsCastle
 					? SiegeCastleRosterSelectionProfile.BuildInstructionMessage()
-					: SiegeInterventionEntryProfile.BuildTroopSelectionInstructionMessage(AutoSummonCount),
+					: SiegeInterventionEntryProfile.BuildTroopSelectionInstructionMessage(AutoSummonCount);
+			InformationManager.DisplayMessage(new InformationMessage(
+				selectionInstruction,
 				Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
-			InformationManager.DisplayMessage(new InformationMessage(_setsOwnedSettlementIncidentContext ? SetsOwnedSettlementIncidentProfile.BuildEntryInstruction(ResolveSetsSettlementSceneKind(settlement)) : SiegeInterventionEntryProfile.BuildDecisionPolicyMessage(settlement.IsCastle), Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
+			if (!usesStagedTownPresentation)
+			{
+				InformationManager.DisplayMessage(new InformationMessage(_setsOwnedSettlementIncidentContext ? SetsOwnedSettlementIncidentProfile.BuildEntryInstruction(ResolveSetsSettlementSceneKind(settlement)) : SiegeInterventionEntryProfile.BuildDecisionPolicyMessage(settlement.IsCastle), Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
+			}
 			bool selectionOpened = settlement.IsCastle
 				? TryOpenCastleInterventionRosterSelection(location)
 				: TryOpenInterventionTroopSelection(args, location);
@@ -1026,6 +1034,35 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			GcczDiagnosticLog.Log("Entry", "failed error=" + ex);
 			Logger.Log("SiegeAiIntervention", "EnterIntervention failed: " + ex);
 			InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.EntryFailedMessage, Color.FromUint(SiegeInterventionEntryProfile.MissingSceneMessageColor)));
+		}
+	}
+
+	private static bool UsesStagedTownEntryPresentation(Settlement settlement = null)
+	{
+		settlement ??= _activeSettlement ?? ResolveCurrentSettlement();
+		return settlement?.IsTown == true && !_setsOwnedSettlementIncidentContext;
+	}
+
+	private static void ShowTownEntrySceneNarration(int arrivedCount, bool usedAutomaticSelection)
+	{
+		if (!UsesStagedTownEntryPresentation())
+		{
+			return;
+		}
+
+		if (TownEntryPresentation.TryBuildSceneNarration(
+			GcczTownEntryPresentationResourceProvider.GetCatalog(),
+			_activeSettlementName,
+			arrivedCount,
+			usedAutomaticSelection,
+			out string narration))
+		{
+			InformationManager.DisplayMessage(new InformationMessage(
+				narration,
+				Color.FromUint(SiegeInterventionEntryProfile.SummonedTroopsMessageColor)));
+			GcczDiagnosticLog.Log("Entry", "staged narration shown settlement=" + (_activeSettlementId ?? "N/A")
+				+ " arrived=" + Math.Max(0, arrivedCount)
+				+ " automaticSelection=" + usedAutomaticSelection);
 		}
 	}
 
@@ -1450,13 +1487,16 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				StoreSelectedInterventionRoster(selectedRoster, AutoSummonCount);
 				int selectedCount = _selectedInterventionRoster?.TotalManCount ?? 0;
-				if (selectedCount > 0)
+				if (!UsesStagedTownEntryPresentation())
 				{
-					InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.BuildSelectionConfirmedMessage(selectedCount), Color.FromUint(SiegeInterventionEntryProfile.SelectionConfirmedMessageColor)));
-				}
-				else
-				{
-					InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.SelectionFallbackMessage, Color.FromUint(SiegeInterventionEntryProfile.SelectionFallbackMessageColor)));
+					if (selectedCount > 0)
+					{
+						InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.BuildSelectionConfirmedMessage(selectedCount), Color.FromUint(SiegeInterventionEntryProfile.SelectionConfirmedMessageColor)));
+					}
+					else
+					{
+						InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.SelectionFallbackMessage, Color.FromUint(SiegeInterventionEntryProfile.SelectionFallbackMessageColor)));
+					}
 				}
 				OpenInterventionMissionNow(location, SiegeInterventionEntryProfile.TroopSelectionDoneMissionSource);
 			};
@@ -8529,7 +8569,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			main.UpdateSpawnEquipmentAndRefreshVisuals(equipment);
 			main.WieldInitialWeapons(Agent.WeaponWieldActionType.InstantAfterPickUp, Equipment.InitialWeaponEquipPreference.Any);
 			_playerBattleEquipmentApplied = true;
-			InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.BattleEquipmentAppliedMessage, Color.FromUint(SiegeInterventionEntryProfile.BattleEquipmentAppliedMessageColor)));
+			if (!UsesStagedTownEntryPresentation())
+			{
+				InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.BattleEquipmentAppliedMessage, Color.FromUint(SiegeInterventionEntryProfile.BattleEquipmentAppliedMessageColor)));
+			}
 		}
 		catch (Exception ex)
 		{
@@ -13034,10 +13077,17 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 		int maxSummonCount = MaxSummonPerAction;
 		int count = Math.Max(1, Math.Min(requestedCount, maxSummonCount));
-		List<CharacterObject> troops = PickInterventionTroops(count);
+		List<CharacterObject> troops = PickInterventionTroops(count, out bool usedAutomaticSelection);
 		if (troops.Count == 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.NoHealthyTroopsMessage, Color.FromUint(SiegeInterventionEntryProfile.NoHealthyTroopsMessageColor)));
+			if (UsesStagedTownEntryPresentation())
+			{
+				ShowTownEntrySceneNarration(0, usedAutomaticSelection: true);
+			}
+			else
+			{
+				InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.NoHealthyTroopsMessage, Color.FromUint(SiegeInterventionEntryProfile.NoHealthyTroopsMessageColor)));
+			}
 			return false;
 		}
 		int spawned = 0;
@@ -13141,8 +13191,19 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			SpawnInterventionBannerBearers(mission, main, team, party, source);
 			TrySetPlayerFormationFollowOrder(FormationClass.Infantry, SiegeSoldierCordonProfile.SpawnFollowAfterBatchSource);
 			TryPrimePlayerOrderController(mission, SiegeSoldierCordonProfile.SpawnAlliedBatchOrderControllerSource, force: true);
-			InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.BuildSummonedTroopsMessage(spawned), Color.FromUint(SiegeInterventionEntryProfile.SummonedTroopsMessageColor)));
+			if (UsesStagedTownEntryPresentation())
+			{
+				ShowTownEntrySceneNarration(spawned, usedAutomaticSelection);
+			}
+			else
+			{
+				InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.BuildSummonedTroopsMessage(spawned), Color.FromUint(SiegeInterventionEntryProfile.SummonedTroopsMessageColor)));
+			}
 			return true;
+		}
+		if (UsesStagedTownEntryPresentation())
+		{
+			ShowTownEntrySceneNarration(0, usedAutomaticSelection);
 		}
 		return false;
 	}
@@ -13744,13 +13805,15 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		return false;
 	}
 
-	private static List<CharacterObject> PickInterventionTroops(int count)
+	private static List<CharacterObject> PickInterventionTroops(int count, out bool usedAutomaticSelection)
 	{
 		List<CharacterObject> selectedTroops = ExpandSelectedInterventionRoster(count);
 		if (selectedTroops.Count > 0)
 		{
+			usedAutomaticSelection = false;
 			return selectedTroops;
 		}
+		usedAutomaticSelection = true;
 		return PickTroopsFromMainParty(count);
 	}
 
@@ -16362,6 +16425,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private static void ResetSessionCounters()
 	{
+		TownEntryPresentation.Reset();
 		_alliedTroopsAutoSummoned = false;
 		_nextControlTickTime = 0f;
 		_nextPlunderTickTime = 0f;

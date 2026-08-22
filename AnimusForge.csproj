@@ -83,6 +83,10 @@
       <LogicalName>AnimusForge.Defaults.GcczTownPrompt.zh-CN.json</LogicalName>
       <WithCulture>false</WithCulture>
     </EmbeddedResource>
+    <EmbeddedResource Include="AnimusForge\ModuleData\GcczTownEntryPresentation.zh-CN.json">
+      <LogicalName>AnimusForge.Defaults.GcczTownEntryPresentation.zh-CN.json</LogicalName>
+      <WithCulture>false</WithCulture>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="原版游戏本体代码\**\*.cs" />
