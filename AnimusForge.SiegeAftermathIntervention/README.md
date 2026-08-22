@@ -2,6 +2,12 @@
 
 Standalone GCCZ source area.
 
+## Town manual boundary
+
+`TownManualCatalog` validates the localized town-manual resource and owns bounded page navigation without AF or Bannerlord dependencies. Player-facing manual text lives in `AnimusForge/ModuleData/GcczTownManual.zh-CN.json`; MCM entry strings live under `AnimusForge/ModuleData/Languages/CNs/`.
+
+The AF-side integration is deliberately thin: `GcczTownManualResourceProvider` loads the resource, `GcczTownManualInquiryPresenter` presents native inquiry pages, and `GcczTownManualMcmBridge` adds one action at the top of the existing GCCZ group. The manual path does not mutate occupation state or settlement outcomes.
+
 Current first extraction slice:
 
 - `SiegeInterventionOutcome` mirrors the existing fused outcome state names.
