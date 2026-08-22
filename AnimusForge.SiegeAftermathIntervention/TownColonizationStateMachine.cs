@@ -151,12 +151,7 @@ public sealed class TownColonizationStateMachine
     public void Restore(TownColonizationSnapshot snapshot)
     {
         Reset();
-        if (snapshot == null
-            || !Enum.IsDefined(typeof(TownColonizationState), snapshot.State)
-            || !Enum.IsDefined(typeof(TownColonizationCommitReason), snapshot.CommitReason)
-            || snapshot.State == TownColonizationState.None
-            || string.IsNullOrWhiteSpace(snapshot.SettlementId)
-            || string.IsNullOrWhiteSpace(snapshot.TargetCultureId))
+        if (!TownColonizationLoadRecoveryPolicy.IsSemanticallyValid(snapshot))
         {
             return;
         }

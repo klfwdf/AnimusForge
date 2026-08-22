@@ -48,7 +48,7 @@ using TaleWorlds.ScreenSystem;
 
 namespace AnimusForge;
 
-public class SiegeAiInterventionBehavior : CampaignBehaviorBase
+public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 {
 	private enum InterventionMode
 	{
@@ -516,7 +516,12 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 		if (dataStore.IsSaving)
 		{
-			string payload = TownColonizationSnapshotCodec.Encode(ActiveTownColonization.Snapshot());
+			TownColonizationSnapshot snapshot = ActiveTownColonization.Snapshot();
+			if (snapshot.State == TownColonizationState.None && _loadedTownColonizationSnapshot != null)
+			{
+				snapshot = _loadedTownColonizationSnapshot;
+			}
+			string payload = TownColonizationSnapshotCodec.Encode(snapshot);
 			dataStore.SyncData(storageKey, ref payload);
 			return;
 		}
@@ -527,13 +532,15 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 		string loadedPayload = string.Empty;
 		dataStore.SyncData(storageKey, ref loadedPayload);
+		ActiveTownColonization.Reset();
+		_loadedTownColonizationRecoveryReady = false;
 		if (TownColonizationSnapshotCodec.TryDecode(loadedPayload, out TownColonizationSnapshot loaded))
 		{
-			ActiveTownColonization.Restore(loaded);
-			Logger.Log("SiegeAiIntervention", "Restored GCCZ town colonization state. Settlement=" + loaded.SettlementId + ", State=" + loaded.State + ", OutcomeCommitted=" + loaded.SettlementOutcomeCommitted);
+			_loadedTownColonizationSnapshot = loaded;
+			Logger.Log("SiegeAiIntervention", "Queued GCCZ town colonization state for guarded load recovery. Settlement=" + loaded.SettlementId + ", State=" + loaded.State + ", OutcomeCommitted=" + loaded.SettlementOutcomeCommitted);
 			return;
 		}
-		ActiveTownColonization.Reset();
+		_loadedTownColonizationSnapshot = null;
 	}
 
 	private static void SyncRecruitmentSlowdownData(IDataStore dataStore)
@@ -612,6 +619,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private void OnNewGameCreated(CampaignGameStarter starter)
 	{
+		_loadedTownColonizationSnapshot = null;
+		_loadedTownColonizationRecoveryReady = false;
 		GcczTownRuleMemoryRuntimeBridge.ClearForNewGame();
 		CastleAftermathPrisonerTrustRuntimeBridge.ClearForNewGame();
 		CastleAftermathSettlementRuntimeBridge.ClearForNewGame();
@@ -626,6 +635,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private void OnGameLoaded(CampaignGameStarter starter)
 	{
+		_loadedTownColonizationRecoveryReady = false;
 		GcczVolunteerRecruitmentRatePatch.EnsurePatched();
 		CastleAftermathArmyRosterRuntimeBridge.ClearBattleSnapshot("game_loaded");
 		ClearCastleLordDefeatProvenance("game_loaded");
@@ -637,6 +647,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		CastleAftermathArmyRosterRuntimeBridge.ClearBattleSnapshot("game_load_finished");
 		ClearCastleLordDefeatProvenance("game_load_finished");
 		ResetAftermathRuntimeGuards(SiegeAftermathTransitionSourceProfile.ResetGameLoadFinishedSource);
+		_loadedTownColonizationRecoveryReady = _loadedTownColonizationSnapshot != null;
 	}
 
 	private void OnPlayerBattleEndForCastleLordProvenance(MapEvent mapEvent)
@@ -2359,6 +2370,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private void OnCampaignTick(float dt)
 	{
+		if (TryRecoverLoadedTownColonizationState())
+		{
+			return;
+		}
 		if (TryRunDirectMassacreAftermathScript())
 		{
 			return;

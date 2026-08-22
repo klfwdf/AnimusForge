@@ -56,13 +56,19 @@ public static class TownColonizationSnapshotCodec
             return false;
         }
 
-        snapshot = new TownColonizationSnapshot(
+        TownColonizationSnapshot decoded = new TownColonizationSnapshot(
             state,
             (TownColonizationCommitReason)reasonValue,
             settlementId,
             targetCultureId,
             capturedTargetCount,
             parts[6] == "1");
+        if (!TownColonizationLoadRecoveryPolicy.IsSemanticallyValid(decoded))
+        {
+            return false;
+        }
+
+        snapshot = decoded;
         return true;
     }
 
