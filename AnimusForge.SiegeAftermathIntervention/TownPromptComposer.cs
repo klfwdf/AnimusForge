@@ -32,6 +32,10 @@ public static class TownPromptComposer
         {
             TownDialogueRoleContextProfile.Build(role),
             roleInstruction,
+            text.PersonalityPriorityInstruction,
+            text.RelationshipAndWitnessInstruction,
+            text.SameCultureSecondaryInstruction,
+            text.ActionExpressionVariationInstruction,
         };
         if (facts.IsAlliedSoldier)
         {

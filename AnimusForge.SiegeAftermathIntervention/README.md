@@ -2,12 +2,6 @@
 
 Standalone GCCZ source area.
 
-## Town manual boundary
-
-`TownManualCatalog` validates the localized town-manual resource and owns bounded page navigation without AF or Bannerlord dependencies. Player-facing manual text lives in `AnimusForge/ModuleData/GcczTownManual.zh-CN.json`; MCM entry strings live under `AnimusForge/ModuleData/Languages/CNs/`.
-
-The AF-side integration is deliberately thin: `GcczTownManualResourceProvider` loads the resource, `GcczTownManualInquiryPresenter` presents native inquiry pages, and `GcczTownManualMcmBridge` adds one action at the top of the existing GCCZ group. The manual path does not mutate occupation state or settlement outcomes.
-
 Current first extraction slice:
 
 - `SiegeInterventionOutcome` mirrors the existing fused outcome state names.
@@ -189,9 +183,9 @@ Same-culture destructive blocking has been removed from this profile. AF adapter
 
 `TownConstructiveCultureChangeTextProfile` formats localized prompt context, completion UI, and scene memory. The AF adapter may mutate only the current town culture and refresh settlement rule memory; it must not modify bound villages, notables, operation ledgers, pending aftermath, rewards, penalties, or completion requirements. Destructive cultural repopulation remains a separate action and state machine.
 
-## Soldier thinking profile
+## Town role reaction guidance
 
-`SiegeSoldierThinkingProfile` owns dependency-free allied-soldier behavior-chain wording for the active GCCZ scene. It keeps the visible rule that soldiers obey the player as the victorious commander while still preserving original troop/culture voice and AF knowledge-library access. Same-culture can make a soldier sound tense, ashamed, quiet, or uncomfortable, but cannot block destructive choices. 血洗 cannot downgrade back to 搜掠/宽恕/救济, but can still upgrade into 屠民迁殖; 屠民迁殖 can also be triggered directly at the start.
+`TownPromptComposer` injects the active six-role reaction matrix from `GcczTownPrompt.zh-CN.json`. AF continues to supply live named or unnamed personality, relationship, identity, knowledge, and memory facts. The GCCZ resource sets the reaction priority, keeps shared culture secondary, and varies dialogue expression without changing action eligibility or settlement outcomes.
 
 
 ## Soldier appeasement profile
