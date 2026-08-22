@@ -450,6 +450,14 @@ public class SubModule : MBSubModuleBase
 			}
 			try
 			{
+				EncyclopediaTownRuleMemoryPatch.EnsurePatched(harmony);
+			}
+			catch (Exception ex18aab)
+			{
+				Logger.LogTrace("SubModule", ">>> EncyclopediaTownRuleMemoryPatch init failed: " + ex18aab.Message);
+			}
+			try
+			{
 				EncyclopediaKingdomStabilityPatch.EnsurePatched(harmony);
 			}
 			catch (Exception ex18aaa)
@@ -725,6 +733,7 @@ public class SubModule : MBSubModuleBase
 		BannerlordExceptionSentinel.OnApplicationTick();
 		McmDropdownRuntimeRefresh.OnApplicationTick();
 		EncyclopediaHeroPersonaPatch.OnApplicationTick();
+		EncyclopediaTownRuleMemoryPatch.OnApplicationTick();
 		SiegeAiInterventionBehavior.OnEngineTickForExternal();
 		ModOnboardingBehavior.Instance?.OnEngineTick();
 		MyBehavior.Instance?.OnEngineTick();
@@ -761,6 +770,7 @@ public class SubModule : MBSubModuleBase
 			RunWatchedTickPhase("SubModule.BannerlordExceptionSentinel.OnApplicationTick", () => BannerlordExceptionSentinel.OnApplicationTick());
 			RunWatchedTickPhase("SubModule.McmDropdownRuntimeRefresh.OnApplicationTick", () => McmDropdownRuntimeRefresh.OnApplicationTick());
 			RunWatchedTickPhase("SubModule.EncyclopediaHeroPersonaPatch.OnApplicationTick", () => EncyclopediaHeroPersonaPatch.OnApplicationTick());
+			RunWatchedTickPhase("SubModule.EncyclopediaTownRuleMemoryPatch.OnApplicationTick", () => EncyclopediaTownRuleMemoryPatch.OnApplicationTick());
 			RunWatchedTickPhase("SubModule.SiegeAiInterventionBehavior.OnEngineTick", () => SiegeAiInterventionBehavior.OnEngineTickForExternal());
 			RunWatchedTickPhase("SubModule.ModOnboardingBehavior.OnEngineTick", () => ModOnboardingBehavior.Instance?.OnEngineTick());
 			RunWatchedTickPhase("SubModule.MyBehavior.OnEngineTick", () => MyBehavior.Instance?.OnEngineTick());

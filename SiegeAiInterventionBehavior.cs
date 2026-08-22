@@ -634,6 +634,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private void OnSessionLaunched(CampaignGameStarter starter)
 	{
 		GcczVolunteerRecruitmentRatePatch.EnsurePatched();
+		GcczTownRuleMemoryDeveloperBridge.Register(starter);
 		AddGameMenus(starter);
 	}
 

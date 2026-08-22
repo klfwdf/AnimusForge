@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace AnimusForge.SiegeAftermathIntervention;
 
 /// <summary>
@@ -5,6 +9,28 @@ namespace AnimusForge.SiegeAftermathIntervention;
 /// </summary>
 public sealed class SettlementRuleMemoryRecord
 {
+    private readonly SettlementRuleMemoryEntry[] _rulerMemories;
+
+    public SettlementRuleMemoryRecord(
+        int schemaVersion,
+        string settlementId,
+        string settlementName,
+        int cultureStartDay,
+        IEnumerable<SettlementRuleMemoryEntry> rulerMemories)
+    {
+        SchemaVersion = schemaVersion;
+        SettlementId = settlementId ?? string.Empty;
+        SettlementName = settlementName ?? string.Empty;
+        CultureStartDay = Math.Max(0, cultureStartDay);
+        _rulerMemories = (rulerMemories ?? Array.Empty<SettlementRuleMemoryEntry>())
+            .Where(entry => entry != null && entry.HasIdentity)
+            .Take(SettlementRuleMemoryStore.MaximumRulerMemories)
+            .ToArray();
+    }
+
+    /// <summary>
+    /// Retained for source compatibility with the v1 flat record shape.
+    /// </summary>
     public SettlementRuleMemoryRecord(
         int schemaVersion,
         string settlementId,
@@ -28,21 +54,41 @@ public sealed class SettlementRuleMemoryRecord
         SchemaVersion = schemaVersion;
         SettlementId = settlementId ?? string.Empty;
         SettlementName = settlementName ?? string.Empty;
-        RulerId = rulerId ?? string.Empty;
-        RulerName = rulerName ?? string.Empty;
-        CultureId = cultureId ?? string.Empty;
-        CultureName = cultureName ?? string.Empty;
-        RulerPersonality = rulerPersonality ?? string.Empty;
-        RuleStartDay = ruleStartDay;
-        CultureStartDay = cultureStartDay;
-        MinimumRuleDurationDays = minimumRuleDurationDays;
-        PreviousRulerId = previousRulerId ?? string.Empty;
-        PreviousRulerName = previousRulerName ?? string.Empty;
-        PreviousCultureId = previousCultureId ?? string.Empty;
-        PreviousCultureName = previousCultureName ?? string.Empty;
-        PreviousRulerPersonality = previousRulerPersonality ?? string.Empty;
-        PreviousRuleDurationDays = previousRuleDurationDays;
-        PreviousDurationWasMinimum = previousDurationWasMinimum;
+        CultureStartDay = Math.Max(0, cultureStartDay);
+        var entries = new List<SettlementRuleMemoryEntry>
+        {
+            new SettlementRuleMemoryEntry(
+                rulerId,
+                rulerName,
+                cultureId,
+                cultureName,
+                rulerPersonality,
+                ruleStartDay,
+                minimumRuleDurationDays,
+                0,
+                false,
+                string.Empty,
+                false),
+        };
+        if (!string.IsNullOrWhiteSpace(previousRulerId)
+            || !string.IsNullOrWhiteSpace(previousRulerName)
+            || !string.IsNullOrWhiteSpace(previousCultureId)
+            || !string.IsNullOrWhiteSpace(previousCultureName))
+        {
+            entries.Add(new SettlementRuleMemoryEntry(
+                previousRulerId,
+                previousRulerName,
+                previousCultureId,
+                previousCultureName,
+                previousRulerPersonality,
+                0,
+                0,
+                previousRuleDurationDays,
+                previousDurationWasMinimum,
+                string.Empty,
+                false));
+        }
+        _rulerMemories = entries.Where(entry => entry.HasIdentity).ToArray();
     }
 
     public int SchemaVersion { get; }
@@ -51,40 +97,46 @@ public sealed class SettlementRuleMemoryRecord
 
     public string SettlementName { get; }
 
-    public string RulerId { get; }
+    public IReadOnlyList<SettlementRuleMemoryEntry> RulerMemories => _rulerMemories;
 
-    public string RulerName { get; }
+    public SettlementRuleMemoryEntry CurrentRule => _rulerMemories.Length > 0 ? _rulerMemories[0] : null;
 
-    public string CultureId { get; }
+    public string RulerId => CurrentRule?.RulerId ?? string.Empty;
 
-    public string CultureName { get; }
+    public string RulerName => CurrentRule?.RulerName ?? string.Empty;
 
-    public string RulerPersonality { get; }
+    public string CultureId => CurrentRule?.CultureId ?? string.Empty;
 
-    public int RuleStartDay { get; }
+    public string CultureName => CurrentRule?.CultureName ?? string.Empty;
+
+    public string RulerPersonality => CurrentRule?.RulerPersonality ?? string.Empty;
+
+    public int RuleStartDay => CurrentRule?.RuleStartDay ?? 0;
 
     public int CultureStartDay { get; }
 
-    public int MinimumRuleDurationDays { get; }
+    public int MinimumRuleDurationDays => CurrentRule?.MinimumRuleDurationDays ?? 0;
 
-    public string PreviousRulerId { get; }
+    public string PreviousRulerId => GetPreviousValue(entry => entry.RulerId, string.Empty);
 
-    public string PreviousRulerName { get; }
+    public string PreviousRulerName => GetPreviousValue(entry => entry.RulerName, string.Empty);
 
-    public string PreviousCultureId { get; }
+    public string PreviousCultureId => GetPreviousValue(entry => entry.CultureId, string.Empty);
 
-    public string PreviousCultureName { get; }
+    public string PreviousCultureName => GetPreviousValue(entry => entry.CultureName, string.Empty);
 
-    public string PreviousRulerPersonality { get; }
+    public string PreviousRulerPersonality => GetPreviousValue(entry => entry.RulerPersonality, string.Empty);
 
-    public int PreviousRuleDurationDays { get; }
+    public int PreviousRuleDurationDays => GetPreviousValue(entry => entry.RecordedRuleDurationDays, 0);
 
-    public bool PreviousDurationWasMinimum { get; }
+    public bool PreviousDurationWasMinimum => GetPreviousValue(entry => entry.DurationWasMinimum, false);
 
-    public bool HasPreviousRule => !string.IsNullOrWhiteSpace(PreviousRulerId)
-        || !string.IsNullOrWhiteSpace(PreviousRulerName)
-        || !string.IsNullOrWhiteSpace(PreviousCultureId)
-        || !string.IsNullOrWhiteSpace(PreviousCultureName);
+    public bool HasPreviousRule => _rulerMemories.Length > 1;
+
+    private T GetPreviousValue<T>(Func<SettlementRuleMemoryEntry, T> selector, T fallback)
+    {
+        return _rulerMemories.Length > 1 ? selector(_rulerMemories[1]) : fallback;
+    }
 }
 
 /// <summary>

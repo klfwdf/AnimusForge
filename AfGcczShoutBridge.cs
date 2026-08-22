@@ -215,16 +215,22 @@ internal static class AfGcczShoutBridge
 			{
 				return;
 			}
-			string siegePrompt = VillageAftermathBehavior.IsActive()
+			bool villageActive = VillageAftermathBehavior.IsActive();
+			bool siegeAftermathActive = IsTownOrCastleAftermathActive();
+			string siegePrompt = villageActive
 				? VillageAftermathBehavior.BuildRuntimePromptForExternal()
-				: SiegeAiInterventionBehavior.BuildRuntimePromptForPromptContext(targetHero, targetCharacter, targetAgentIndex, cultureIdOverride);
+				: siegeAftermathActive
+					? SiegeAiInterventionBehavior.BuildRuntimePromptForPromptContext(targetHero, targetCharacter, targetAgentIndex, cultureIdOverride)
+					: GcczTownRuleMemoryRuntimeBridge.BuildLocalDialoguePromptContext(targetHero, targetCharacter, targetAgentIndex);
 			if (string.IsNullOrWhiteSpace(siegePrompt))
 			{
 				return;
 			}
-			string marker = VillageAftermathBehavior.IsActive()
+			string marker = villageActive
 				? VillageAftermathRuntimePromptProfile.InjectedRuleBlockMarker
-				: SiegeAiInterventionBehavior.GetRuntimeInjectedRuleBlockMarkerForExternal();
+				: siegeAftermathActive
+					? SiegeAiInterventionBehavior.GetRuntimeInjectedRuleBlockMarkerForExternal()
+					: "[GCCZ_TOWN_LOCAL_MEMORY]";
 			string siegeSection = (string.IsNullOrWhiteSpace(marker) ? InjectedRuleBlockMarker : marker.Trim()) + "\n" + siegePrompt.Trim();
 			shoutPromptContext.Extras = string.IsNullOrWhiteSpace(shoutPromptContext.Extras)
 				? siegeSection
