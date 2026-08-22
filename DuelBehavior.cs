@@ -1713,6 +1713,26 @@ public class DuelBehavior : CampaignBehaviorBase
 
 	public static bool IsArenaMissionActive => _arenaMissionActive;
 
+	internal static bool IsAnimusForgeIndependentDuelMission(Mission mission)
+	{
+		if (mission == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (mission.GetMissionBehavior<ArenaDuelMissionBehavior>() != null)
+			{
+				return true;
+			}
+			return mission.GetMissionBehavior<WildernessDuelBattleMissionLogic>() != null;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	internal static bool ShouldSuppressReinforcementSystem(Mission mission)
 	{
 		try
@@ -2040,6 +2060,10 @@ public class DuelBehavior : CampaignBehaviorBase
 			Logger.Log("DuelBehavior", "[ArenaTeleport] 收到空目标的决斗请求，已忽略。");
 			return;
 		}
+		if (TryBlockDuelForFourberieCombat())
+		{
+			return;
+		}
 		if (!CanTargetNpcStartDuel(target, out string blockedReason))
 		{
 			Logger.Log("DuelBehavior", "[DuelEligibilityGate] " + blockedReason);
@@ -2186,6 +2210,10 @@ public class DuelBehavior : CampaignBehaviorBase
 		if (targetCharacter == null)
 		{
 			Logger.Log("DuelBehavior", "[CharacterDuel] 收到空 CharacterObject 的决斗请求，已忽略。");
+			return;
+		}
+		if (TryBlockDuelForFourberieCombat())
+		{
 			return;
 		}
 		if (targetCharacter.HeroObject != null)
@@ -3967,6 +3995,7 @@ public class DuelBehavior : CampaignBehaviorBase
 			LogWildernessDuelDiagnostic("OpenBattleMission.before", diagnosticId, target, rec);
 			LogDuelLoadingCheckpoint("wilderness.OpenBattleMission.before", diagnosticId, target, rec, immediate: true);
 			battleMissionOpenRequested = true;
+			FourberieDuelCompatibility.BeginWildernessMissionOpening();
 			IMission openedMission = CampaignMission.OpenBattleMission(rec);
 			LogDuelLoadingCheckpoint("wilderness.OpenBattleMission.after_return type=" + (openedMission?.GetType().FullName ?? "null"), diagnosticId, target, rec, immediate: true);
 			Mission mission = openedMission as Mission;
@@ -3984,12 +4013,14 @@ public class DuelBehavior : CampaignBehaviorBase
 			mission.AddMissionBehavior(new WildernessDuelBattleMissionLogic(runtime));
 			mission.AddMissionBehavior(new DuelPlayerDeathAgentStateDeciderLogic());
 			mission.AddMissionBehavior(new DuelMainHeroDeathMissionBehavior());
+			FourberieDuelCompatibility.CompleteWildernessMissionOpening();
 			LogWildernessDuelDiagnostic("OpenBattleMission.after returned=" + (mission.SceneName ?? "null"), diagnosticId, target, rec);
 			LogDuelLoadingCheckpoint("wilderness.behaviors.added returnedScene=" + (mission.SceneName ?? "null"), diagnosticId, target, rec, immediate: true);
 			return true;
 		}
 		catch (Exception ex)
 		{
+			FourberieDuelCompatibility.CancelWildernessMissionOpening();
 			CleanupWildernessDuelRuntime(_wildernessDuelRuntime, "open.error");
 			ResetWildernessDuelOpeningState();
 			Logger.Log("DuelBehavior", "[WildernessDuel][ERROR] " + ex.ToString());
@@ -5732,8 +5763,29 @@ public class DuelBehavior : CampaignBehaviorBase
 		StartDuelInternal(agent);
 	}
 
+	private static bool TryBlockDuelForFourberieCombat()
+	{
+		if (!FourberieDuelCompatibility.TryGetDuelStartBlockReason(out string blockedReason))
+		{
+			return false;
+		}
+		Logger.Log("DuelBehavior", "[FourberieCompat] Duel start blocked: " + blockedReason);
+		try
+		{
+			InformationManager.DisplayMessage(new InformationMessage(blockedReason, Color.FromUint(4294901760u)));
+		}
+		catch
+		{
+		}
+		return true;
+	}
+
 	private void StartDuelInternal(Agent agent)
 	{
+		if (TryBlockDuelForFourberieCombat())
+		{
+			return;
+		}
 		DuelSettings settings = DuelSettings.GetSettings();
 		if (Hero.MainHero?.Clan == null || settings == null)
 		{

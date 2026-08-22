@@ -1248,8 +1248,8 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			List<InquiryElement> list = new List<InquiryElement>
 			{
 				new InquiryElement("support", "支持AnimusForge制作组", null, isEnabled: true, "打开爱发电支持页面。"),
-				new InquiryElement("deepseek_flash", "使用deepseek-flash推荐API组合进行游玩", null, isEnabled: true, "自动填写 DeepSeek Flash 预设，只需输入一次 API Key。"),
-				new InquiryElement("deepseek_pro", "使用deepseek-pro推荐API组合进行游玩", null, isEnabled: true, "自动填写 DeepSeek Pro 预设，只需输入一次 API Key。"),
+				new InquiryElement("deepseek_flash", "使用官方deepseek-flash推荐API组合进行游玩", null, isEnabled: true, "自动填写 DeepSeek Flash 预设，只需输入一次 API Key。"),
+				new InquiryElement("deepseek_pro", "使用官方deepseek-pro推荐API组合进行游玩", null, isEnabled: true, "自动填写 DeepSeek Pro 预设，只需输入一次 API Key。"),
 				new InquiryElement("custom", "使用完全自定义的API进行游玩", null, isEnabled: true, "进入旧路径，逐项填写 Base URL、API Key 和模型。"),
 				new InquiryElement("existing_config", "使用现有配置进行游玩", null, isEnabled: true, "直接测试当前 MCM 配置；周报和叛乱API未配置完整时会跳过该项。")
 			};
@@ -2761,7 +2761,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			}
 			if (_lastFetchedModelNames.Count > 0)
 			{
-				text += "\n\n已从当前接口拉取到可用模型列表，你也可以选择手动输入。";
+				text += "";
 			}
 			else
 			{
@@ -2773,7 +2773,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			}
 			if (yjApiSetupActive)
 			{
-				text = text + "\n\n【本通道模型选择建议（仅供参考）】\n" + CurrentYjApiModelRecommendation() + "\n最终选择由你自行决定。\n\nYJ API 中转站使用固定 Base URL；如需更换分组 Key，请选择“重新填写API key”。";
+				text = text + "\n\n【本通道模型选择建议（仅供参考）】\n" + CurrentYjApiModelRecommendation() + "\n最终选择由你自行决定。";
 			}
 			else
 			{

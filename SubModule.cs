@@ -522,6 +522,14 @@ public class SubModule : MBSubModuleBase
 			}
 			try
 			{
+				FourberieDuelCompatibility.EnsurePatched(harmony);
+			}
+			catch (Exception ex18d0Fourberie)
+			{
+				Logger.LogTrace("SubModule", ">>> Fourberie duel compatibility init failed: " + ex18d0Fourberie.Message);
+			}
+			try
+			{
 				CourierDeliveryBehavior.RegisterHarmonyPatches(harmony);
 			}
 			catch (Exception ex18d)
