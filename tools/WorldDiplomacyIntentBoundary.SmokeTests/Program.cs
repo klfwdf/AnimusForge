@@ -525,11 +525,13 @@ internal static class Program
 		string impactBuilder = ExtractMethod(source, "public static string BuildDiplomaticStandingImpactTextForExternal(");
 		string boundaryImpact = ExtractMethod(source, "private static string BuildInternationalReputationImpactDeltaText(");
 		string timeline = File.ReadAllText(FindRepositoryFile("WorldMessageTimelineUi.cs"), Encoding.UTF8);
-		Test.True(impactBuilder.Contains("【外交影响】", StringComparison.Ordinal)
-			&& impactBuilder.Contains("国际声誉 ", StringComparison.Ordinal)
-			&& impactBuilder.Contains("国家威望 ", StringComparison.Ordinal)
+		Test.True(impactBuilder.Contains("【外交结果】", StringComparison.Ordinal)
+			&& impactBuilder.Contains("【国际声誉】", StringComparison.Ordinal)
+			&& impactBuilder.Contains("【国家威望】", StringComparison.Ordinal)
+			&& impactBuilder.Contains("变化：", StringComparison.Ordinal)
+			&& impactBuilder.Contains("原因：", StringComparison.Ordinal)
 			&& timeline.Contains("BuildDiplomaticStandingImpactTextForExternal(document)", StringComparison.Ordinal),
-			"the persisted declaration detail must always render both diplomatic standing lines and reasons");
+			"the persisted declaration detail must render diplomatic results and standing changes as separate readable sections");
 		Test.True(boundaryImpact.Contains("已达上限100", StringComparison.Ordinal)
 			&& boundaryImpact.Contains("已达下限0", StringComparison.Ordinal)
 			&& boundaryImpact.Contains("无实际变化（评价", StringComparison.Ordinal),
@@ -569,6 +571,10 @@ internal static class Program
 		string encyclopedia = File.ReadAllText(FindRepositoryFile("EncyclopediaKingdomStabilityPatch.cs"), Encoding.UTF8);
 		Test.True(encyclopedia.Contains("BuildKingdomDiplomaticStandingEncyclopediaTextForExternal", StringComparison.Ordinal),
 			"kingdom encyclopedia refresh must append prestige and international reputation beside stability");
+		string encyclopediaStanding = ExtractMethod(source, "public static string BuildKingdomDiplomaticStandingEncyclopediaTextForExternal(");
+		Test.True(encyclopediaStanding.Contains("该国的外交信用与威慑", StringComparison.Ordinal)
+			&& encyclopediaStanding.Contains("他国对该国的评价", StringComparison.Ordinal),
+			"kingdom encyclopedia standing values must include concise player-facing explanations");
 	}
 
 	private static void RunRecoveredDiplomacyRegressionContractTests(string source)

@@ -400,8 +400,10 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			int prestige = behavior.GetNationalPrestige(kingdom.StringId);
 			int reputation = behavior.GetInternationalReputation(kingdom.StringId);
 			return "【国家威望与国际声誉】\n"
-				+ "国家威望：" + prestige.ToString(CultureInfo.InvariantCulture) + "/100\n"
-				+ "国际声誉：" + reputation.ToString(CultureInfo.InvariantCulture) + "/100";
+				+ "国家威望：" + prestige.ToString(CultureInfo.InvariantCulture)
+				+ "/100（该国的外交信用与威慑；过低会损害国内贵族关系）\n"
+				+ "国际声誉：" + reputation.ToString(CultureInfo.InvariantCulture)
+				+ "/100（他国对该国的评价；影响合作意愿与施压倾向）";
 		}
 		catch
 		{
@@ -431,21 +433,31 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			sb.AppendLine(document.MechanicalResult.Trim());
 			sb.AppendLine();
 		}
-		sb.AppendLine("【外交影响】");
-		sb.AppendLine("国际声誉 " + BuildInternationalReputationImpactDeltaText(document, international));
+		sb.AppendLine("【国际声誉】");
+		sb.AppendLine("变化：" + BuildInternationalReputationImpactDeltaText(document, international));
 		sb.AppendLine("原因：" + FirstNonEmpty(international?.Reason,
 			document.InternationalReputationEvaluationReason,
 			"本篇没有形成明确的国际声誉变化。"));
-		sb.AppendLine("国家威望 " + FormatSignedStandingDelta(prestigeDelta));
+		sb.AppendLine();
+		sb.AppendLine("【国家威望】");
+		sb.AppendLine("变化：" + FormatSignedStandingDelta(prestigeDelta));
 		sb.AppendLine("原因：" + (prestigeChanges.Count == 0 || string.IsNullOrWhiteSpace(prestigeReason)
 			? "本篇没有触发国家威望结算。"
 			: prestigeReason));
+		bool hasOtherKingdomImpact = false;
 		foreach (WorldDiplomacyStandingChange other in changes.Where(x => x != null
 			&& !string.Equals(x.KingdomId, document.AuthorKingdomId, StringComparison.OrdinalIgnoreCase)))
 		{
-			sb.AppendLine("另受影响：" + FirstNonEmpty(other.KingdomName, other.KingdomId, "未知国家")
-				+ "的" + (string.Equals(other.Kind, "national_prestige", StringComparison.OrdinalIgnoreCase) ? "国家威望 " : "国际声誉 ")
-				+ FormatSignedStandingDelta(other.Delta) + "（" + FirstNonEmpty(other.Reason, "无说明") + "）");
+			sb.AppendLine();
+			if (!hasOtherKingdomImpact)
+			{
+				sb.AppendLine("【其他国家影响】");
+				hasOtherKingdomImpact = true;
+			}
+			sb.AppendLine(FirstNonEmpty(other.KingdomName, other.KingdomId, "未知国家") + "："
+				+ (string.Equals(other.Kind, "national_prestige", StringComparison.OrdinalIgnoreCase) ? "国家威望" : "国际声誉"));
+			sb.AppendLine("变化：" + FormatSignedStandingDelta(other.Delta));
+			sb.AppendLine("原因：" + FirstNonEmpty(other.Reason, "无说明"));
 		}
 		return sb.ToString().TrimEnd();
 	}
