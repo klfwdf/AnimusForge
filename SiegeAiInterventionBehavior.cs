@@ -5157,8 +5157,28 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			string sourceName = sourceAgent?.Name?.ToString();
 			string factText = SiegeDestructiveInquiryProfile.BuildInquiryFact(sourceName, reason);
+			string responseEventId = ResolveAmbientResponseEventId(
+				SiegeInterventionActionKind.Unknown,
+				sourceAgentIndex,
+				sourceAgentIndex);
 			foreach (Agent soldier in soldiers)
 			{
+				if (!AfGcczShoutBridge.TryClaimNpcResponseForExternal(
+					responseEventId,
+					soldier.Index,
+					SiegeNpcResponseEventOrigin.SemanticAction,
+					soldiers.Count,
+					ShoutBehavior.GetPendingImmediateSceneReactionCountForExternal(),
+					SiegeDestructiveInquiryProfile.InvalidSoldierMediatedTagReason,
+					out SiegeNpcResponseDecision decision))
+				{
+					if (decision.Reason == SiegeNpcResponseDecisionReason.EventLimitReached
+						|| decision.Reason == SiegeNpcResponseDecisionReason.QueueCapacityReached)
+					{
+						break;
+					}
+					continue;
+				}
 				if (!ShoutBehavior.TriggerImmediateSceneBehaviorReactionForExternal(factText, soldier.Index, persistHeroPrivateHistory: true, suppressStare: true, postSpeechLeaveSeconds: -1f))
 				{
 					continue;
