@@ -62,6 +62,26 @@ public sealed class TownPromptTextCatalog
 
     public string PlunderLedgerCompletedState { get; set; }
 
+    public string MassacreLedgerContextTemplate { get; set; }
+
+    public string MassacreLedgerActiveState { get; set; }
+
+    public string MassacreLedgerStoppedState { get; set; }
+
+    public string MassacreLedgerCompletedState { get; set; }
+
+    public string MassacreStoppedMessageTemplate { get; set; }
+
+    public string MassacreSoldierMemoryPerspective { get; set; }
+
+    public string OutcomeNoDecision { get; set; }
+
+    public string OutcomeMassacreActive { get; set; }
+
+    public string OutcomePlunderActive { get; set; }
+
+    public string OutcomePendingTemplate { get; set; }
+
     public string StateSectionTitle { get; set; }
 
     public string DefaultState { get; set; }
@@ -165,6 +185,16 @@ public sealed class TownPromptTextCatalog
             PlunderLedgerActiveState = Pick(source.PlunderLedgerActiveState, fallback.PlunderLedgerActiveState),
             PlunderLedgerStoppedState = Pick(source.PlunderLedgerStoppedState, fallback.PlunderLedgerStoppedState),
             PlunderLedgerCompletedState = Pick(source.PlunderLedgerCompletedState, fallback.PlunderLedgerCompletedState),
+            MassacreLedgerContextTemplate = Pick(source.MassacreLedgerContextTemplate, fallback.MassacreLedgerContextTemplate),
+            MassacreLedgerActiveState = Pick(source.MassacreLedgerActiveState, fallback.MassacreLedgerActiveState),
+            MassacreLedgerStoppedState = Pick(source.MassacreLedgerStoppedState, fallback.MassacreLedgerStoppedState),
+            MassacreLedgerCompletedState = Pick(source.MassacreLedgerCompletedState, fallback.MassacreLedgerCompletedState),
+            MassacreStoppedMessageTemplate = Pick(source.MassacreStoppedMessageTemplate, fallback.MassacreStoppedMessageTemplate),
+            MassacreSoldierMemoryPerspective = Pick(source.MassacreSoldierMemoryPerspective, fallback.MassacreSoldierMemoryPerspective),
+            OutcomeNoDecision = Pick(source.OutcomeNoDecision, fallback.OutcomeNoDecision),
+            OutcomeMassacreActive = Pick(source.OutcomeMassacreActive, fallback.OutcomeMassacreActive),
+            OutcomePlunderActive = Pick(source.OutcomePlunderActive, fallback.OutcomePlunderActive),
+            OutcomePendingTemplate = Pick(source.OutcomePendingTemplate, fallback.OutcomePendingTemplate),
             StateSectionTitle = Pick(source.StateSectionTitle, fallback.StateSectionTitle),
             DefaultState = Pick(source.DefaultState, fallback.DefaultState),
             PlunderState = Pick(source.PlunderState, fallback.PlunderState),
@@ -240,6 +270,16 @@ public sealed class TownPromptTextCatalog
             PlunderLedgerActiveState = "active",
             PlunderLedgerStoppedState = "stopped; prior loot and consequences remain",
             PlunderLedgerCompletedState = "completed",
+            MassacreLedgerContextTemplate = "Massacre ledger: {state}; killed {killed_count}/{captured_count}, ordinary civilians {civilian_deaths}, notables {notable_deaths}, weighted progress {progress}. Only captured targets count.",
+            MassacreLedgerActiveState = "active and interruptible",
+            MassacreLedgerStoppedState = "stopped; prior deaths and consequences remain",
+            MassacreLedgerCompletedState = "completed and locked",
+            MassacreStoppedMessageTemplate = "Massacre stopped. {survivor_count} captured targets survive; prior deaths and consequences remain.",
+            MassacreSoldierMemoryPerspective = "Massacre is active, but a stop order remains valid until every captured target is dead. Obedience may still sound tense or distressed.",
+            OutcomeNoDecision = "No final aftermath has been selected.",
+            OutcomeMassacreActive = "Massacre is active and may be stopped before every captured target is dead; prior deaths remain.",
+            OutcomePlunderActive = "Plunder is active and remains reversible.",
+            OutcomePendingTemplate = "Pending aftermath: {aftermath}",
             StateSectionTitle = "[4. CURRENT STATE]",
             DefaultState = "No massacre state is active. Use runtime facts for all other outcomes.",
             PlunderState = "Plunder is active but has not escalated to massacre.",
@@ -261,7 +301,7 @@ public sealed class TownPromptTextCatalog
             PostprocessNoMemory = "No additional GCCZ event memory is available.",
             PostprocessStateTemplate = "Outcome: {outcome}. Shared relief pool: {relief_pool}. Destructive runtime gate={destructive_allowed}.",
             PostprocessSharedReliefRule = "AF transfers in this stage belong to the shared civilian relief pool.",
-            PostprocessTransitionRule = "Mercy may stop reversible plunder. Massacre cannot be downgraded but may escalate to colonization.",
+            PostprocessTransitionRule = "Mercy may stop reversible plunder. An eligible stop action may interrupt massacre before every captured target is dead. Colonization commit depends only on runtime state.",
             PostprocessContractTitle = "[GCCZ SEMANTIC ACTION DECISION]",
             PostprocessDecisionInstruction = "Use full semantics and current authority. Select zero or one primary GCCZ action from the eligible list. Never use keyword matching as the decision.",
             PostprocessCandidateTitle = "[ELIGIBLE CANDIDATES]",

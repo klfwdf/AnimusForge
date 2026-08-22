@@ -7,26 +7,34 @@ public static class SiegePostprocessOutcomeTextBuilder
 {
     public static string Build(SiegePostprocessOutcomeFacts facts)
     {
+        return Build(facts, TownPromptTextCatalog.CreateEnglishFallback());
+    }
+
+    public static string Build(SiegePostprocessOutcomeFacts facts, TownPromptTextCatalog promptText)
+    {
+        TownPromptTextCatalog text = TownPromptTextCatalog.Resolve(promptText);
         if (facts == null)
         {
-            return "尚未选择最终处置";
+            return text.OutcomeNoDecision;
         }
 
         if (facts.MassacreStarted)
         {
-            return "血洗已开始，不可回退";
+            return text.OutcomeMassacreActive;
         }
 
         if (facts.PlunderStarted)
         {
-            return "搜掠已开始，但可被后续宽恕/安抚/宣抚覆盖";
+            return text.OutcomePlunderActive;
         }
 
         if (facts.HasPendingAftermath)
         {
-            return "已有待结算处置：" + (facts.PendingAftermathName ?? string.Empty).Trim();
+            return text.OutcomePendingTemplate.Replace(
+                "{aftermath}",
+                (facts.PendingAftermathName ?? string.Empty).Trim());
         }
 
-        return "尚未选择最终处置";
+        return text.OutcomeNoDecision;
     }
 }

@@ -36,6 +36,14 @@ public enum TownOperationAcquisitionSource
     ExitSweep = 3,
     SettlementTreasury = 4,
     SettlementInventory = 5,
+    MassacreVictim = 6,
+}
+
+public enum TownOperationVictimKind
+{
+    None = 0,
+    OrdinaryCivilian = 1,
+    Notable = 2,
 }
 
 /// <summary>
@@ -54,6 +62,12 @@ public sealed class TownOperationLedger
     private int _committedProgressBasisPoints;
     private bool _targetSnapshotSealed;
     private bool _fullOutcomeForced;
+    private int _totalVictimWeight;
+    private int _killedVictimWeight;
+    private int _committedVictimProgressBasisPoints;
+    private bool _victimSnapshotSealed;
+    private bool _victimConsequenceBaselineCommitted;
+    private bool _fullVictimOutcomeForced;
 
     public TownOperationKind Kind { get; private set; }
 
@@ -83,6 +97,54 @@ public sealed class TownOperationLedger
         return State == TownOperationState.Active;
     }
 
+    public bool BeginAtrocity(TownOperationKind kind)
+    {
+        if ((kind != TownOperationKind.Massacre && kind != TownOperationKind.Colonization)
+            || State == TownOperationState.Completed)
+        {
+            return false;
+        }
+        if (State == TownOperationState.None)
+        {
+            Kind = kind;
+            State = TownOperationState.Active;
+            return true;
+        }
+        if (Kind == TownOperationKind.Plunder)
+        {
+            Kind = kind;
+            State = TownOperationState.Active;
+            return true;
+        }
+        if (Kind == TownOperationKind.Massacre && kind == TownOperationKind.Colonization)
+        {
+            Kind = kind;
+            State = TownOperationState.Active;
+            return true;
+        }
+        if (Kind != kind)
+        {
+            return false;
+        }
+        if (State == TownOperationState.Stopped)
+        {
+            State = TownOperationState.Active;
+        }
+        return State == TownOperationState.Active;
+    }
+
+    public bool CancelColonizationToMassacre()
+    {
+        if (Kind != TownOperationKind.Colonization
+            || State == TownOperationState.None
+            || State == TownOperationState.Completed)
+        {
+            return false;
+        }
+        Kind = TownOperationKind.Massacre;
+        return true;
+    }
+
     public bool RegisterTarget(string targetId, TownOperationTargetKind targetKind)
     {
         string key = NormalizeKey(targetId);
@@ -109,6 +171,82 @@ public sealed class TownOperationLedger
             return false;
         }
         _targetSnapshotSealed = true;
+        return true;
+    }
+
+    public bool RegisterVictim(
+        string targetId,
+        TownOperationTargetKind targetKind,
+        TownOperationVictimKind victimKind,
+        int victimWeight)
+    {
+        string key = NormalizeKey(targetId);
+        int safeWeight = Math.Max(0, victimWeight);
+        if (string.IsNullOrWhiteSpace(key)
+            || (Kind != TownOperationKind.Massacre && Kind != TownOperationKind.Colonization)
+            || State == TownOperationState.None
+            || State == TownOperationState.Completed
+            || _victimSnapshotSealed
+            || victimKind == TownOperationVictimKind.None
+            || safeWeight == 0)
+        {
+            return false;
+        }
+
+        if (!_targets.TryGetValue(key, out MutableTarget target))
+        {
+            target = new MutableTarget(key, targetKind);
+            _targets[key] = target;
+        }
+        if (target.VictimEligible)
+        {
+            return false;
+        }
+
+        target.VictimEligible = true;
+        target.VictimKind = victimKind;
+        target.VictimWeight = safeWeight;
+        _totalVictimWeight = AddClamped(_totalVictimWeight, safeWeight);
+        return true;
+    }
+
+    public bool SealVictimSnapshot()
+    {
+        if ((Kind != TownOperationKind.Massacre && Kind != TownOperationKind.Colonization)
+            || State == TownOperationState.None
+            || State == TownOperationState.Completed)
+        {
+            return false;
+        }
+        _victimSnapshotSealed = true;
+        return true;
+    }
+
+    public bool HasVictim(string targetId)
+    {
+        return _targets.TryGetValue(NormalizeKey(targetId), out MutableTarget target)
+            && target.VictimEligible;
+    }
+
+    public bool HasRecordedVictimDeath(string targetId)
+    {
+        return _targets.TryGetValue(NormalizeKey(targetId), out MutableTarget target)
+            && target.VictimKilled;
+    }
+
+    public bool RecordVictimDeath(string targetId)
+    {
+        if (!_victimSnapshotSealed
+            || (State != TownOperationState.Active && State != TownOperationState.Stopped)
+            || !_targets.TryGetValue(NormalizeKey(targetId), out MutableTarget target)
+            || !target.VictimEligible
+            || target.VictimKilled)
+        {
+            return false;
+        }
+
+        target.VictimKilled = true;
+        _killedVictimWeight = AddClamped(_killedVictimWeight, target.VictimWeight);
         return true;
     }
 
@@ -242,6 +380,36 @@ public sealed class TownOperationLedger
         return new TownOperationProgressCommit(cumulative, delta);
     }
 
+    public TownOperationVictimProgressCommit CommitVictimProgress(bool includeConsequenceBaseline)
+    {
+        int cumulative = GetVictimProgressBasisPoints();
+        int delta = Math.Max(0, cumulative - _committedVictimProgressBasisPoints);
+        bool appliesBaseline = includeConsequenceBaseline && !_victimConsequenceBaselineCommitted;
+        if (delta > 0)
+        {
+            _committedVictimProgressBasisPoints = cumulative;
+        }
+        if (appliesBaseline)
+        {
+            _victimConsequenceBaselineCommitted = true;
+        }
+        return new TownOperationVictimProgressCommit(cumulative, delta, appliesBaseline);
+    }
+
+    public bool ForceFullVictimOutcome()
+    {
+        if ((Kind != TownOperationKind.Massacre && Kind != TownOperationKind.Colonization)
+            || State == TownOperationState.None
+            || State == TownOperationState.Completed
+            || !_victimSnapshotSealed
+            || _totalVictimWeight <= 0)
+        {
+            return false;
+        }
+        _fullVictimOutcomeForced = true;
+        return true;
+    }
+
     public TownOperationLedgerSnapshot Snapshot()
     {
         TownOperationTargetSnapshot[] targets = _targets.Values
@@ -253,19 +421,30 @@ public sealed class TownOperationLedger
                 target.Completed,
                 target.AcquiredGold,
                 target.AcquiredItemValue,
-                target.AcquiredItemCount))
+                target.AcquiredItemCount,
+                target.VictimEligible,
+                target.VictimKind,
+                target.VictimWeight,
+                target.VictimKilled))
             .ToArray();
         return new TownOperationLedgerSnapshot(
             Kind,
             State,
             _targetSnapshotSealed,
             _fullOutcomeForced,
+            _victimSnapshotSealed,
+            _victimConsequenceBaselineCommitted,
+            _fullVictimOutcomeForced,
             _totalAvailableValue,
             _acquiredGold,
             _acquiredItemValue,
             _acquiredItemCount,
             GetProgressBasisPoints(),
             _committedProgressBasisPoints,
+            _totalVictimWeight,
+            _killedVictimWeight,
+            GetVictimProgressBasisPoints(),
+            _committedVictimProgressBasisPoints,
             targets);
     }
 
@@ -281,6 +460,12 @@ public sealed class TownOperationLedger
         _committedProgressBasisPoints = 0;
         _targetSnapshotSealed = false;
         _fullOutcomeForced = false;
+        _totalVictimWeight = 0;
+        _killedVictimWeight = 0;
+        _committedVictimProgressBasisPoints = 0;
+        _victimSnapshotSealed = false;
+        _victimConsequenceBaselineCommitted = false;
+        _fullVictimOutcomeForced = false;
     }
 
     private int GetProgressBasisPoints()
@@ -305,11 +490,34 @@ public sealed class TownOperationLedger
         return AddClamped(_acquiredGold, _acquiredItemValue);
     }
 
+    private int GetVictimProgressBasisPoints()
+    {
+        if (_fullVictimOutcomeForced)
+        {
+            return FullProgressBasisPoints;
+        }
+        if (_killedVictimWeight <= 0 || _totalVictimWeight <= 0)
+        {
+            return 0;
+        }
+        decimal ratio = Math.Min(1m, _killedVictimWeight / (decimal)_totalVictimWeight);
+        return Math.Min(FullProgressBasisPoints, Math.Max(0, (int)Math.Round(
+            ratio * FullProgressBasisPoints,
+            MidpointRounding.AwayFromZero)));
+    }
+
     private static long AddClamped(long current, long addition)
     {
         long safeCurrent = Math.Max(0L, current);
         long safeAddition = Math.Max(0L, addition);
         return safeAddition > long.MaxValue - safeCurrent ? long.MaxValue : safeCurrent + safeAddition;
+    }
+
+    private static int AddClamped(int current, int addition)
+    {
+        int safeCurrent = Math.Max(0, current);
+        int safeAddition = Math.Max(0, addition);
+        return safeAddition > int.MaxValue - safeCurrent ? int.MaxValue : safeCurrent + safeAddition;
     }
 
     private static string NormalizeKey(string value)
@@ -340,6 +548,14 @@ public sealed class TownOperationLedger
         public long AcquiredItemValue { get; set; }
 
         public int AcquiredItemCount { get; set; }
+
+        public bool VictimEligible { get; set; }
+
+        public TownOperationVictimKind VictimKind { get; set; }
+
+        public int VictimWeight { get; set; }
+
+        public bool VictimKilled { get; set; }
     }
 }
 
@@ -350,24 +566,38 @@ public sealed class TownOperationLedgerSnapshot
         TownOperationState state,
         bool targetSnapshotSealed,
         bool fullOutcomeForced,
+        bool victimSnapshotSealed,
+        bool victimConsequenceBaselineCommitted,
+        bool fullVictimOutcomeForced,
         long totalAvailableValue,
         long acquiredGold,
         long acquiredItemValue,
         int acquiredItemCount,
         int progressBasisPoints,
         int committedProgressBasisPoints,
+        int totalVictimWeight,
+        int killedVictimWeight,
+        int victimProgressBasisPoints,
+        int committedVictimProgressBasisPoints,
         IReadOnlyList<TownOperationTargetSnapshot> targets)
     {
         Kind = kind;
         State = state;
         TargetSnapshotSealed = targetSnapshotSealed;
         FullOutcomeForced = fullOutcomeForced;
+        VictimSnapshotSealed = victimSnapshotSealed;
+        VictimConsequenceBaselineCommitted = victimConsequenceBaselineCommitted;
+        FullVictimOutcomeForced = fullVictimOutcomeForced;
         TotalAvailableValue = Math.Max(0L, totalAvailableValue);
         AcquiredGold = Math.Max(0L, acquiredGold);
         AcquiredItemValue = Math.Max(0L, acquiredItemValue);
         AcquiredItemCount = Math.Max(0, acquiredItemCount);
         ProgressBasisPoints = Math.Min(TownOperationLedger.FullProgressBasisPoints, Math.Max(0, progressBasisPoints));
         CommittedProgressBasisPoints = Math.Min(TownOperationLedger.FullProgressBasisPoints, Math.Max(0, committedProgressBasisPoints));
+        TotalVictimWeight = Math.Max(0, totalVictimWeight);
+        KilledVictimWeight = Math.Max(0, killedVictimWeight);
+        VictimProgressBasisPoints = Math.Min(TownOperationLedger.FullProgressBasisPoints, Math.Max(0, victimProgressBasisPoints));
+        CommittedVictimProgressBasisPoints = Math.Min(TownOperationLedger.FullProgressBasisPoints, Math.Max(0, committedVictimProgressBasisPoints));
         Targets = targets ?? Array.Empty<TownOperationTargetSnapshot>();
     }
 
@@ -378,6 +608,12 @@ public sealed class TownOperationLedgerSnapshot
     public bool TargetSnapshotSealed { get; }
 
     public bool FullOutcomeForced { get; }
+
+    public bool VictimSnapshotSealed { get; }
+
+    public bool VictimConsequenceBaselineCommitted { get; }
+
+    public bool FullVictimOutcomeForced { get; }
 
     public long TotalAvailableValue { get; }
 
@@ -390,6 +626,14 @@ public sealed class TownOperationLedgerSnapshot
     public int ProgressBasisPoints { get; }
 
     public int CommittedProgressBasisPoints { get; }
+
+    public int TotalVictimWeight { get; }
+
+    public int KilledVictimWeight { get; }
+
+    public int VictimProgressBasisPoints { get; }
+
+    public int CommittedVictimProgressBasisPoints { get; }
 
     public IReadOnlyList<TownOperationTargetSnapshot> Targets { get; }
 
@@ -405,9 +649,22 @@ public sealed class TownOperationLedgerSnapshot
 
     public int CivilianTargetCount => CountCompleted(TownOperationTargetKind.Civilian);
 
+    public int CapturedVictimCount => Targets.Count(target => target.VictimEligible);
+
+    public int KilledVictimCount => Targets.Count(target => target.VictimKilled);
+
+    public int KilledOrdinaryCivilianCount => CountKilled(TownOperationVictimKind.OrdinaryCivilian);
+
+    public int KilledNotableCount => CountKilled(TownOperationVictimKind.Notable);
+
     private int CountCompleted(TownOperationTargetKind kind)
     {
         return Targets.Count(target => target.Completed && target.TargetKind == kind);
+    }
+
+    private int CountKilled(TownOperationVictimKind kind)
+    {
+        return Targets.Count(target => target.VictimKilled && target.VictimKind == kind);
     }
 }
 
@@ -420,7 +677,11 @@ public sealed class TownOperationTargetSnapshot
         bool completed,
         long acquiredGold,
         long acquiredItemValue,
-        int acquiredItemCount)
+        int acquiredItemCount,
+        bool victimEligible,
+        TownOperationVictimKind victimKind,
+        int victimWeight,
+        bool victimKilled)
     {
         TargetId = targetId ?? string.Empty;
         TargetKind = targetKind;
@@ -429,6 +690,10 @@ public sealed class TownOperationTargetSnapshot
         AcquiredGold = Math.Max(0L, acquiredGold);
         AcquiredItemValue = Math.Max(0L, acquiredItemValue);
         AcquiredItemCount = Math.Max(0, acquiredItemCount);
+        VictimEligible = victimEligible;
+        VictimKind = victimKind;
+        VictimWeight = Math.Max(0, victimWeight);
+        VictimKilled = victimKilled;
     }
 
     public string TargetId { get; }
@@ -444,6 +709,14 @@ public sealed class TownOperationTargetSnapshot
     public long AcquiredItemValue { get; }
 
     public int AcquiredItemCount { get; }
+
+    public bool VictimEligible { get; }
+
+    public TownOperationVictimKind VictimKind { get; }
+
+    public int VictimWeight { get; }
+
+    public bool VictimKilled { get; }
 }
 
 public readonly struct TownOperationProgressCommit
@@ -459,4 +732,25 @@ public readonly struct TownOperationProgressCommit
     public int DeltaBasisPoints { get; }
 
     public bool HasDelta => DeltaBasisPoints > 0;
+}
+
+public readonly struct TownOperationVictimProgressCommit
+{
+    public TownOperationVictimProgressCommit(
+        int cumulativeBasisPoints,
+        int deltaBasisPoints,
+        bool appliesConsequenceBaseline)
+    {
+        CumulativeBasisPoints = Math.Min(TownOperationLedger.FullProgressBasisPoints, Math.Max(0, cumulativeBasisPoints));
+        DeltaBasisPoints = Math.Min(CumulativeBasisPoints, Math.Max(0, deltaBasisPoints));
+        AppliesConsequenceBaseline = appliesConsequenceBaseline;
+    }
+
+    public int CumulativeBasisPoints { get; }
+
+    public int DeltaBasisPoints { get; }
+
+    public bool AppliesConsequenceBaseline { get; }
+
+    public bool HasDelta => AppliesConsequenceBaseline || DeltaBasisPoints > 0;
 }

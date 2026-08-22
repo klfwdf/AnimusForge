@@ -35,6 +35,12 @@ public static class SiegePostprocessRuleFilter
             return false;
         }
 
+        bool stopMassacreTag = kinds.Contains(SiegeInterventionActionKind.StopMassacre);
+        if (stopMassacreTag && !facts.MassacreActive)
+        {
+            return false;
+        }
+
         bool soldierAppeasementTag = kinds.Contains(SiegeInterventionActionKind.AppeaseSoldiers);
         if (soldierAppeasementTag
             && (!TownDialogueRoleClassifier.CanExecuteAlliedSoldierOrders(facts.DialogueRole, facts.IsAlliedSoldier)

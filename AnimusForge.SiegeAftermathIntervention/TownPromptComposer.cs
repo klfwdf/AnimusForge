@@ -211,14 +211,34 @@ public static class TownPromptComposer
         TownOperationLedgerSnapshot snapshot,
         TownPromptTextCatalog textCatalog)
     {
-        if (snapshot == null
-            || snapshot.Kind != TownOperationKind.Plunder
-            || snapshot.State == TownOperationState.None)
+        if (snapshot == null || snapshot.State == TownOperationState.None)
         {
             return string.Empty;
         }
 
         TownPromptTextCatalog text = TownPromptTextCatalog.Resolve(textCatalog);
+        if (snapshot.Kind == TownOperationKind.Massacre || snapshot.Kind == TownOperationKind.Colonization)
+        {
+            string massacreState = snapshot.State == TownOperationState.Stopped
+                ? text.MassacreLedgerStoppedState
+                : snapshot.State == TownOperationState.Completed
+                    ? text.MassacreLedgerCompletedState
+                    : text.MassacreLedgerActiveState;
+            string victimProgress = (snapshot.VictimProgressBasisPoints / 100m).ToString("0.##", CultureInfo.InvariantCulture) + "%";
+            string massacreResult = text.MassacreLedgerContextTemplate;
+            massacreResult = ApplyTemplate(massacreResult, "state", massacreState);
+            massacreResult = ApplyTemplate(massacreResult, "killed_count", snapshot.KilledVictimCount.ToString(CultureInfo.InvariantCulture));
+            massacreResult = ApplyTemplate(massacreResult, "captured_count", snapshot.CapturedVictimCount.ToString(CultureInfo.InvariantCulture));
+            massacreResult = ApplyTemplate(massacreResult, "civilian_deaths", snapshot.KilledOrdinaryCivilianCount.ToString(CultureInfo.InvariantCulture));
+            massacreResult = ApplyTemplate(massacreResult, "notable_deaths", snapshot.KilledNotableCount.ToString(CultureInfo.InvariantCulture));
+            massacreResult = ApplyTemplate(massacreResult, "progress", victimProgress);
+            return massacreResult.Trim();
+        }
+        if (snapshot.Kind != TownOperationKind.Plunder)
+        {
+            return string.Empty;
+        }
+
         string state = snapshot.State == TownOperationState.Stopped
             ? text.PlunderLedgerStoppedState
             : snapshot.State == TownOperationState.Completed

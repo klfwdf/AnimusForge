@@ -17,6 +17,14 @@ public static class SiegeInterventionMemoryContextBuilder
 
     public static string Build(IReadOnlyList<string> memoryEvents, SiegeInterventionMemoryAudience audience)
     {
+        return Build(memoryEvents, audience, TownPromptTextCatalog.CreateEnglishFallback());
+    }
+
+    public static string Build(
+        IReadOnlyList<string> memoryEvents,
+        SiegeInterventionMemoryAudience audience,
+        TownPromptTextCatalog promptText)
+    {
         if (memoryEvents == null || memoryEvents.Count == 0)
         {
             return string.Empty;
@@ -24,11 +32,17 @@ public static class SiegeInterventionMemoryContextBuilder
 
         string baseContext = "【攻城处置记忆】" + string.Join("；", memoryEvents)
             + "。这些是本次入城处置内已经发生的事实，后续NPC必须承认大概情况，不能表现得像玩家没有下过这些命令或民众没有被聚集过。";
-        string perspective = BuildPerspective(memoryEvents, audience);
+        string perspective = BuildPerspective(
+            memoryEvents,
+            audience,
+            TownPromptTextCatalog.Resolve(promptText));
         return string.IsNullOrWhiteSpace(perspective) ? baseContext : baseContext + perspective;
     }
 
-    private static string BuildPerspective(IReadOnlyList<string> memoryEvents, SiegeInterventionMemoryAudience audience)
+    private static string BuildPerspective(
+        IReadOnlyList<string> memoryEvents,
+        SiegeInterventionMemoryAudience audience,
+        TownPromptTextCatalog promptText)
     {
         string joined = string.Join("；", memoryEvents ?? new List<string>());
         if (string.IsNullOrWhiteSpace(joined))
@@ -53,7 +67,7 @@ public static class SiegeInterventionMemoryContextBuilder
             }
             else if (hasMassacre)
             {
-                parts.Add("你应知道血洗已经开始或被明确下令，这是不可回退的升级；同文化只会让你更压抑，不会让你抗命。");
+                parts.Add(promptText.MassacreSoldierMemoryPerspective);
             }
             else if (hasPlunder)
             {

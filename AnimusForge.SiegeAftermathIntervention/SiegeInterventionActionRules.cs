@@ -26,13 +26,13 @@ public static class SiegeInterventionActionRules
     {
         return action == SiegeInterventionActionKind.Plunder
             || action == SiegeInterventionActionKind.Massacre
-            || action == SiegeInterventionActionKind.CulturalRepopulation;
+            || action == SiegeInterventionActionKind.CulturalRepopulation
+            || action == SiegeInterventionActionKind.StopMassacre;
     }
 
     public static bool IsIrreversible(SiegeInterventionActionKind action)
     {
-        return action == SiegeInterventionActionKind.Massacre
-            || action == SiegeInterventionActionKind.CulturalRepopulation;
+        return action == SiegeInterventionActionKind.CulturalRepopulation;
     }
 
     public static bool HasDestructiveOutcomeLocked(
@@ -65,6 +65,13 @@ public static class SiegeInterventionActionRules
         }
 
         bool destructiveLocked = HasDestructiveOutcomeLocked(currentOutcome, culturalRepopulationRequested, pendingDevastateAftermath);
+
+        if (action == SiegeInterventionActionKind.StopMassacre)
+        {
+            return currentOutcome == SiegeInterventionOutcome.Massacre
+                ? Allow(action, currentOutcome, SiegeInterventionOutcome.Plunder, stopsReversiblePlunder: false, "massacre_stop_allowed")
+                : Block(action, currentOutcome, "massacre_stop_requires_active_massacre");
+        }
 
         if (IsMercyTrack(action))
         {
@@ -105,7 +112,7 @@ public static class SiegeInterventionActionRules
 
         if (action == SiegeInterventionActionKind.Massacre)
         {
-            return Allow(action, currentOutcome, SiegeInterventionOutcome.Massacre, stopsReversiblePlunder: false, "massacre_allowed_irreversible");
+            return Allow(action, currentOutcome, SiegeInterventionOutcome.Massacre, stopsReversiblePlunder: false, "massacre_allowed_interruptible");
         }
 
         if (action == SiegeInterventionActionKind.CulturalRepopulation)
