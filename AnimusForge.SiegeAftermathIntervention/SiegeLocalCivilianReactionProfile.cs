@@ -12,8 +12,6 @@ public static class SiegeLocalCivilianReactionProfile
 
     public const int MaxWitnessesPerIncident = 18;
 
-    public const int MaxSpeakersPerIncident = 4;
-
     public const int MaxDefiantWitnessesPerIncident = 3;
 
     public const float LocalFleeMinDistance = 28f;
@@ -93,11 +91,6 @@ public static class SiegeLocalCivilianReactionProfile
             || !hasTarget
             || !hasLastOrder
             || (!reachedTarget && elapsedSeconds >= LocalFleeRefreshSeconds);
-    }
-
-    public static bool ShouldAssignWitnessSpeech(int currentSpeakerCount)
-    {
-        return currentSpeakerCount >= 0 && currentSpeakerCount < MaxSpeakersPerIncident;
     }
 
     public static string BuildPlayerDownMessage(string targetName)

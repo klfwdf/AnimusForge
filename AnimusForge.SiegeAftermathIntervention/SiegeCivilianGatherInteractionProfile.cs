@@ -35,13 +35,11 @@ public static class SiegeCivilianGatherInteractionProfile
     // FormationClass.Cavalry, displayed as command group 3.
     public const int NativeCommandFormationClassIndex = 2;
 
-    public const int MessengerSpeechMinCount = 2;
-
-    public const int MessengerSpeechMaxCount = 3;
-
     public const string TargetWaitSource = "gather_target_wait";
 
     public const string MessengerMoveSource = "gather_messenger_move";
+
+    public const string MessengerSpeechSource = "gather_messenger_speech";
 
     public const string FollowPrepareSource = "gather_follow_prepare_once";
 

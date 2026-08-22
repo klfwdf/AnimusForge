@@ -7,5 +7,9 @@
     <string id="gccz_town_manual_setting_name" text="城镇说明书" />
     <string id="gccz_town_manual_setting_content" text="打开说明书" />
     <string id="gccz_town_manual_setting_hint" text="打开仅介绍 GCCZ 城镇处置的分页说明书。" />
+    <string id="gccz_npc_response_unlimited_name" text="NPC回应无限数量" />
+    <string id="gccz_npc_response_unlimited_hint" text="仅影响GCCZ城镇处置场景。开启后取消下方 1-10 人数限制，但同一事件中每个NPC仍只回应一次，并继续受实际人数、队列容量和退出清理保护。" />
+    <string id="gccz_npc_response_limit_name" text="NPC回应数量限制" />
+    <string id="gccz_npc_response_limit_hint" text="关闭“NPC回应无限数量”后生效：限制每次玩家话语、GCCZ语义处置或玩家攻击事件最多有多少名周围NPC开口。直接交谈对象的正常回复不被额外环境回应挤占。范围 1-10。" />
   </strings>
 </base>

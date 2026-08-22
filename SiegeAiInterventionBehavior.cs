@@ -89,6 +89,8 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private sealed class AmbientReactionRequest
 	{
+		public string EventId;
+
 		public SiegeInterventionActionKind Action;
 
 		public bool AlliedSoldier;
@@ -212,8 +214,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private const float CivilianFormationControlInitialDelaySeconds = SiegeCivilianGatherInteractionProfile.FormationControlInitialDelaySeconds;
 	private const float CivilianFormationControlBatchIntervalSeconds = SiegeCivilianGatherInteractionProfile.FormationControlBatchIntervalSeconds;
 	private const int CivilianFormationControlBatchSize = SiegeCivilianGatherInteractionProfile.FormationControlBatchSize;
-	private const int CivilianGatherMessengerSpeechMinCount = SiegeCivilianGatherInteractionProfile.MessengerSpeechMinCount;
-	private const int CivilianGatherMessengerSpeechMaxCount = SiegeCivilianGatherInteractionProfile.MessengerSpeechMaxCount;
 	private const int TownCivilianAssemblySceneCap = SiegeCivilianAssemblyProfile.TownSceneCap;
 	private const int SceneTotalAgentSoftCap = SiegeCivilianAssemblyProfile.SceneTotalAgentSoftCap;
 	private const int MinimumCivilianAssemblySceneCap = SiegeCivilianAssemblyProfile.MinimumSceneCap;
@@ -256,7 +256,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static bool _civilianOrderControllerPrimed;
 	private static float _civilianGatherStartedAt = -1f;
 	private static float _nextCivilianGatherTickTime;
-	private static int _civilianGatherMessengerSpeechBudget;
 	private static int _civilianGatherMessengerSpeechCount;
 	private static float _civilianFormationControlNotBeforeTime = -1f;
 	private static float _nextCivilianFormationControlBatchTime;
@@ -295,6 +294,8 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static float _lastAmbientSoldierReactionMissionTime = -100f;
 	private static float _nextAmbientReactionRequestMissionTime = -100f;
 	private static readonly List<AmbientReactionRequest> PendingAmbientReactionRequests = new List<AmbientReactionRequest>();
+	private static readonly Dictionary<SiegeInterventionActionKind, string> ActiveAmbientResponseEventIds = new Dictionary<SiegeInterventionActionKind, string>();
+	private static int _ambientResponseEventSequence;
 	private static bool _hasPendingAftermath;
 	private static SiegeAftermathAction.SiegeAftermath _pendingAftermath;
 	private static string _pendingAftermathTrigger = "";
@@ -2199,6 +2200,9 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_regionalConflictIncidentCount = 0;
 		RegionalConflictDebtCenters.Clear();
 		PendingAmbientReactionRequests.Clear();
+		ActiveAmbientResponseEventIds.Clear();
+		_ambientResponseEventSequence = 0;
+		AfGcczShoutBridge.ResetNpcResponseBudgetForExternal("town_scene_transient_clear");
 		ActivePlunderInteractions.Clear();
 		ActiveCivilianGatherInteractions.Clear();
 		AlliedAgentIndexes.Clear();
@@ -3848,20 +3852,30 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			if (selectedAction == SiegeInterventionActionKind.ConstructiveCultureChange)
 			{
-				actionHandled |= ApplyConstructiveCultureChange(
+				bool handled = ApplyConstructiveCultureChange(
 					targetDialogueRole,
 					targetIsAlliedSoldier,
 					replyIsDirectPlayerResponse);
+				actionHandled |= handled;
+				if (handled)
+				{
+					TryTriggerAmbientReactionsForAction(SiegeInterventionActionKind.ConstructiveCultureChange, targetAgentIndex, targetAgentIndex, includeCivilians: true, includeSoldiers: true);
+				}
 			}
 			if (massacreStopWasEligible
 				&& selectedAction == SiegeInterventionActionKind.StopMassacre
 				&& canApplySoldierMediatedDestructive
 				&& TryEnsureRuntimeAlliedSoldierActionTarget(targetAgentIndex))
 			{
-				actionHandled |= StopMassacre(
+				bool handled = StopMassacre(
 					SiegePostprocessActionEffectProfile.MassacreStopTriggerSource,
 					SiegePostprocessActionEffectProfile.MassacreStopTriggerDetail,
 					showMessage: true);
+				actionHandled |= handled;
+				if (handled)
+				{
+					TryTriggerAmbientReactionsForAction(SiegeInterventionActionKind.StopMassacre, targetAgentIndex, targetAgentIndex, includeCivilians: true, includeSoldiers: true);
+				}
 			}
 			if (destructiveAllowed && selectedAction == SiegeInterventionActionKind.CulturalRepopulation && canApplySoldierMediatedDestructive)
 			{
@@ -5220,11 +5234,13 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			int civilianCount = includeCivilians ? TryTriggerAmbientReactionAudience(action, false, directAgentIndex, focusAgentIndex) : 0;
-			int soldierCount = includeSoldiers ? TryTriggerAmbientReactionAudience(action, true, directAgentIndex, focusAgentIndex) : 0;
+			string eventId = ResolveAmbientResponseEventId(action, directAgentIndex, focusAgentIndex);
+			int availableCount = CountAmbientReactionCandidates(action, directAgentIndex, focusAgentIndex, includeCivilians, includeSoldiers);
+			int civilianCount = includeCivilians ? TryTriggerAmbientReactionAudience(action, false, directAgentIndex, focusAgentIndex, eventId, availableCount) : 0;
+			int soldierCount = includeSoldiers ? TryTriggerAmbientReactionAudience(action, true, directAgentIndex, focusAgentIndex, eventId, availableCount) : 0;
 			if (civilianCount > 0 || soldierCount > 0)
 			{
-				Logger.Log("SiegeAiIntervention", "Queued staggered ambient reactions. Action=" + action + ", Civilians=" + civilianCount + ", Soldiers=" + soldierCount + ", DirectAgent=" + directAgentIndex);
+				Logger.Log("SiegeAiIntervention", "Queued staggered ambient reactions. Event=" + eventId + ", Action=" + action + ", Civilians=" + civilianCount + ", Soldiers=" + soldierCount + ", DirectAgent=" + directAgentIndex);
 			}
 		}
 		catch (Exception ex)
@@ -5237,7 +5253,9 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		SiegeInterventionActionKind action,
 		bool alliedSoldier,
 		int directAgentIndex,
-		int focusAgentIndex)
+		int focusAgentIndex,
+		string eventId,
+		int availableCount)
 	{
 		try
 		{
@@ -5260,21 +5278,31 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				.OrderBy(a => anchor != null ? a.Position.DistanceSquared(anchor.Position) : a.Index)
 				.ThenBy(a => a.Index)
 				.ToList();
-			int allowedSpeakers = AfGcczShoutBridge.ResolveNpcResponseLimitForExternal(
-				allCandidates.Count,
-				"ambient_action_" + action + (alliedSoldier ? "_soldier" : "_civilian"));
-			List<Agent> candidates = allCandidates
-				.Take(Math.Max(0, allowedSpeakers))
-				.ToList();
-			if (candidates.Count == 0)
+			if (allCandidates.Count == 0 || availableCount <= 0)
 			{
 				return 0;
 			}
-			MarkAmbientReactionAudienceWindowStarted(alliedSoldier, now);
 			int queued = 0;
-			foreach (Agent agent in candidates)
+			string source = "ambient_action_" + action + (alliedSoldier ? "_soldier" : "_civilian");
+			foreach (Agent agent in allCandidates)
 			{
-				if (!QueueAmbientReactionRequest(action, agent, alliedSoldier, directAgentIndex, focusAgentIndex, focusName, now))
+				if (!AfGcczShoutBridge.TryClaimNpcResponseForExternal(
+					eventId,
+					agent.Index,
+					SiegeNpcResponseEventOrigin.SemanticAction,
+					availableCount,
+					PendingAmbientReactionRequests.Count,
+					source,
+					out SiegeNpcResponseDecision decision))
+				{
+					if (decision.Reason == SiegeNpcResponseDecisionReason.EventLimitReached
+						|| decision.Reason == SiegeNpcResponseDecisionReason.QueueCapacityReached)
+					{
+						break;
+					}
+					continue;
+				}
+				if (!QueueAmbientReactionRequest(eventId, action, agent, alliedSoldier, directAgentIndex, focusAgentIndex, focusName, now))
 				{
 					continue;
 				}
@@ -5282,6 +5310,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			if (queued > 0)
 			{
+				MarkAmbientReactionAudienceWindowStarted(alliedSoldier, now);
 				PumpPendingAmbientReactions(mission);
 			}
 			return queued;
@@ -5299,6 +5328,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	}
 
 	private static bool QueueAmbientReactionRequest(
+		string eventId,
 		SiegeInterventionActionKind action,
 		Agent agent,
 		bool alliedSoldier,
@@ -5314,6 +5344,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		float notBefore = Math.Max(now, _nextAmbientReactionRequestMissionTime);
 		PendingAmbientReactionRequests.Add(new AmbientReactionRequest
 		{
+			EventId = eventId,
 			Action = action,
 			AlliedSoldier = alliedSoldier,
 			AgentIndex = agent.Index,
@@ -5352,7 +5383,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			if (TryTriggerAmbientReactionForAgent(request.Action, agent, request.AlliedSoldier, request.FocusName))
 			{
-				Logger.Log("SiegeAiIntervention", "Started staggered ambient reaction request. Action=" + request.Action + ", Agent=" + request.AgentIndex + ", AlliedSoldier=" + request.AlliedSoldier + ", NextQueue=" + PendingAmbientReactionRequests.Count);
+				Logger.Log("SiegeAiIntervention", "Started staggered ambient reaction request. Event=" + request.EventId + ", Action=" + request.Action + ", Agent=" + request.AgentIndex + ", AlliedSoldier=" + request.AlliedSoldier + ", NextQueue=" + PendingAmbientReactionRequests.Count);
 			}
 		}
 		catch (Exception ex)
@@ -6416,17 +6447,24 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			Agent player = main ?? Agent.Main ?? mission.MainAgent;
 			float now = mission.CurrentTime;
-			TryTriggerLocalSoldierWitnessInquiry(mission, victim, victimDown, targetName);
 			List<Agent> witnesses = mission.Agents
 				.Where(agent => IsLocalCivilianWitnessCandidate(agent, victim))
 				.OrderBy(agent => agent.Position.DistanceSquared(victim.Position))
 				.ThenBy(agent => agent.Index)
 				.Take(SiegeLocalCivilianReactionProfile.MaxWitnessesPerIncident)
 				.ToList();
-			if (witnesses.Count == 0)
+			List<Agent> soldiers = mission.Agents
+				.Where(agent => IsLocalSoldierWitnessCandidate(agent, victim))
+				.OrderBy(agent => agent.Position.DistanceSquared(victim.Position))
+				.ThenBy(agent => agent.Index)
+				.ToList();
+			if (witnesses.Count == 0 && soldiers.Count == 0)
 			{
 				return;
 			}
+			string responseEventId = "player_attack:" + victim.Index;
+			int availableSpeakerCount = witnesses.Count + soldiers.Count;
+			TryTriggerLocalSoldierWitnessInquiry(mission, victim, victimDown, targetName, soldiers, responseEventId, availableSpeakerCount);
 			int defiantEligibleCount = witnesses.Count(ShouldCivilianDefyLocalAttack);
 			int maxDefiantWitnesses = SiegeLocalCivilianReactionProfile.CalculateMaxDefiantWitnesses(witnesses.Count, defiantEligibleCount);
 			int defiantCount = 0;
@@ -6449,9 +6487,16 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					PrepareLocalFleeingCivilian(witness, mission, player, SiegeLocalCivilianReactionProfile.WitnessFleeSource);
 					fleeingCount++;
 				}
-				if (SiegeLocalCivilianReactionProfile.ShouldAssignWitnessSpeech(speakerCount))
+				if (AfGcczShoutBridge.TryClaimNpcResponseForExternal(
+					responseEventId,
+					witness.Index,
+					SiegeNpcResponseEventOrigin.PlayerAttack,
+					availableSpeakerCount,
+					ShoutBehavior.GetPendingImmediateSceneReactionCountForExternal(),
+					SiegeLocalCivilianReactionProfile.WitnessFleeSource,
+					out _)
+					&& TryTriggerLocalCivilianWitnessSpeech(witness, targetName, victimDown, witnessWillDefy))
 				{
-					TryTriggerLocalCivilianWitnessSpeech(witness, targetName, victimDown, witnessWillDefy);
 					speakerCount++;
 				}
 			}
@@ -6523,7 +6568,14 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static bool TryTriggerLocalSoldierWitnessInquiry(Mission mission, Agent victim, bool victimDown, string targetName)
+	private static bool TryTriggerLocalSoldierWitnessInquiry(
+		Mission mission,
+		Agent victim,
+		bool victimDown,
+		string targetName,
+		IReadOnlyList<Agent> soldiers,
+		string responseEventId,
+		int availableSpeakerCount)
 	{
 		try
 		{
@@ -6535,18 +6587,31 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			List<Agent> soldiers = mission.Agents
-				.Where(agent => IsLocalSoldierWitnessCandidate(agent, victim))
-				.OrderBy(agent => agent.Position.DistanceSquared(victim.Position))
-				.ThenBy(agent => agent.Index)
-				.ToList();
-			if (soldiers.Count == 0)
+			if (soldiers == null || soldiers.Count == 0)
 			{
 				LocalSoldierWitnessInquiryVictimAgentIndexes.Remove(victim.Index);
 				return false;
 			}
+			Agent claimedFallbackSoldier = null;
 			foreach (Agent soldier in soldiers)
 			{
+				if (!AfGcczShoutBridge.TryClaimNpcResponseForExternal(
+					responseEventId,
+					soldier.Index,
+					SiegeNpcResponseEventOrigin.PlayerAttack,
+					availableSpeakerCount,
+					ShoutBehavior.GetPendingImmediateSceneReactionCountForExternal(),
+					SiegeLocalCivilianReactionProfile.SoldierWitnessInquirySource,
+					out SiegeNpcResponseDecision decision))
+				{
+					if (decision.Reason == SiegeNpcResponseDecisionReason.EventLimitReached
+						|| decision.Reason == SiegeNpcResponseDecisionReason.QueueCapacityReached)
+					{
+						break;
+					}
+					continue;
+				}
+				claimedFallbackSoldier ??= soldier;
 				string soldierPersonaText = ResolveLocalSoldierWitnessPersonaText(soldier);
 				bool soldierIsBloodthirsty = SiegeLocalCivilianReactionProfile.ResolveSoldierWitnessBloodthirstyFromPersona(soldierPersonaText);
 				string factText = SiegeLocalCivilianReactionProfile.BuildSoldierWitnessInquiryFact(targetName, victimDown, _activeSettlementName, soldierIsBloodthirsty, soldierPersonaText);
@@ -6558,7 +6623,11 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				Logger.Log("SiegeAiIntervention", "Triggered local soldier witness inquiry. Source=" + SiegeLocalCivilianReactionProfile.SoldierWitnessInquirySource + ", Soldier=" + soldier.Index + ", Victim=" + victim.Index + ", Down=" + victimDown + ", Bloodthirsty=" + soldierIsBloodthirsty);
 				return true;
 			}
-			Agent fallbackSoldier = soldiers[0];
+			Agent fallbackSoldier = claimedFallbackSoldier;
+			if (fallbackSoldier == null)
+			{
+				return false;
+			}
 			string fallbackSoldierPersonaText = ResolveLocalSoldierWitnessPersonaText(fallbackSoldier);
 			bool fallbackSoldierIsBloodthirsty = SiegeLocalCivilianReactionProfile.ResolveSoldierWitnessBloodthirstyFromPersona(fallbackSoldierPersonaText);
 			InformationManager.DisplayMessage(new InformationMessage(
@@ -7851,6 +7920,35 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static string ResolveAmbientResponseEventId(SiegeInterventionActionKind action, int directAgentIndex, int focusAgentIndex)
+	{
+		bool beginsNewEvent = directAgentIndex >= 0 || focusAgentIndex >= 0;
+		if (beginsNewEvent || !ActiveAmbientResponseEventIds.TryGetValue(action, out string eventId))
+		{
+			_ambientResponseEventSequence++;
+			eventId = "semantic_action:" + action + ":" + _ambientResponseEventSequence;
+			ActiveAmbientResponseEventIds[action] = eventId;
+		}
+		return eventId;
+	}
+
+	private static int CountAmbientReactionCandidates(
+		SiegeInterventionActionKind action,
+		int directAgentIndex,
+		int focusAgentIndex,
+		bool includeCivilians,
+		bool includeSoldiers)
+	{
+		Mission mission = Mission.Current;
+		if (mission?.Agents == null)
+		{
+			return 0;
+		}
+		return mission.Agents.Count(agent =>
+			(includeCivilians && IsAmbientReactionCandidate(agent, action, false, directAgentIndex, focusAgentIndex))
+			|| (includeSoldiers && IsAmbientReactionCandidate(agent, action, true, directAgentIndex, focusAgentIndex)));
+	}
+
 	private static bool EnsurePlunderOperationLedger(Mission mission)
 	{
 		try
@@ -9135,7 +9233,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				_nextCivilianFormationControlBatchTime = 0f;
 				_nextCivilianGatherTickTime = 0f;
 				_civilianGatherStartedAt = mission.CurrentTime;
-				_civilianGatherMessengerSpeechBudget = CivilianGatherMessengerSpeechMinCount + ((CivilianGatherMessengerSpeechMaxCount > CivilianGatherMessengerSpeechMinCount && MBRandom.RandomFloat >= 0.5f) ? 1 : 0);
 				_civilianGatherMessengerSpeechCount = 0;
 				ActiveCivilianGatherInteractions.Clear();
 				CivilianGatherReadyFormationAgentIndexes.Clear();
@@ -9728,10 +9825,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			if (_civilianGatherMessengerSpeechCount >= _civilianGatherMessengerSpeechBudget)
-			{
-				return;
-			}
 			bool messengerIsSoldier = IsInterventionAlliedSoldierForExternal(messenger, requireActive: true);
 			float now = (Mission.Current ?? messenger.Mission)?.CurrentTime ?? 0f;
 			if (!CanStartAmbientReactionAudience(messengerIsSoldier, now) || HasPendingAmbientReactionAudience(messengerIsSoldier))
@@ -9740,6 +9833,20 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			if (!CivilianGatherMessengerSpeechAgentIndexes.Add(messenger.Index))
 			{
+				return;
+			}
+			string responseEventId = ResolveAmbientResponseEventId(SiegeInterventionActionKind.GatherCivilians, directAgentIndex: -1, focusAgentIndex: -1);
+			int availableSpeakerCount = Math.Max(1, CivilianGatherMessengerAgentIndexes.Count);
+			if (!AfGcczShoutBridge.TryClaimNpcResponseForExternal(
+				responseEventId,
+				messenger.Index,
+				SiegeNpcResponseEventOrigin.SemanticAction,
+				availableSpeakerCount,
+				ShoutBehavior.GetPendingImmediateSceneReactionCountForExternal(),
+				SiegeCivilianGatherInteractionProfile.MessengerSpeechSource,
+				out SiegeNpcResponseDecision responseDecision))
+			{
+				CivilianGatherMessengerSpeechAgentIndexes.Remove(messenger.Index);
 				return;
 			}
 			string messengerName = messenger.Name?.ToString() ?? SiegeCivilianGatherUiProfile.MessengerFallbackName;
@@ -9752,7 +9859,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			_civilianGatherMessengerSpeechCount++;
 			MarkAmbientReactionAudienceStarted(messengerIsSoldier, now);
-			Logger.Log("SiegeAiIntervention", "Triggered gather messenger speech. Messenger=" + messenger.Index + "/" + messengerName + ", Target=" + target.Index + "/" + targetName + ", Count=" + _civilianGatherMessengerSpeechCount + ", Budget=" + _civilianGatherMessengerSpeechBudget);
+			Logger.Log("SiegeAiIntervention", "Triggered gather messenger speech. Event=" + responseEventId + ", Messenger=" + messenger.Index + "/" + messengerName + ", Target=" + target.Index + "/" + targetName + ", Count=" + _civilianGatherMessengerSpeechCount + ", Allowed=" + responseDecision.AllowedCount);
 		}
 		catch (Exception ex)
 		{
@@ -16789,7 +16896,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_activeInterventionLocationId = "";
 		_civilianGatherStartedAt = -1f;
 		_nextCivilianGatherTickTime = 0f;
-		_civilianGatherMessengerSpeechBudget = 0;
 		_civilianGatherMessengerSpeechCount = 0;
 		_civilianFormationControlNotBeforeTime = -1f;
 		_nextCivilianFormationControlBatchTime = 0f;

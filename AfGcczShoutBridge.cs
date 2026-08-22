@@ -13,6 +13,9 @@ namespace AnimusForge;
 /// </summary>
 internal static class AfGcczShoutBridge
 {
+	private static readonly object NpcResponseBudgetLock = new object();
+	private static readonly SiegeNpcResponseEventBudget NpcResponseBudget = new SiegeNpcResponseEventBudget();
+
 	internal static string RuleId => SiegePostprocessRuleCatalog.RuleId;
 
 	internal static string InjectedRuleBlockMarker => SiegePostprocessRuleCatalog.InjectedRuleBlockMarker;
@@ -188,23 +191,69 @@ internal static class AfGcczShoutBridge
 		return string.IsNullOrWhiteSpace(source) ? "unknown" : source.Trim();
 	}
 
-	internal static int ResolveNpcResponseLimitForExternal(int availableCount, string source)
+	internal static bool ShouldUseTownNpcResponseBudgetForExternal()
 	{
-		int safeAvailableCount = Math.Max(0, availableCount);
-		if (!IsActive())
-		{
-			return safeAvailableCount;
-		}
+		return GetTownDialoguePhase() != TownAfDialoguePhase.Inactive;
+	}
 
+	internal static bool TryClaimNpcResponseForExternal(
+		string eventId,
+		int speakerAgentIndex,
+		SiegeNpcResponseEventOrigin origin,
+		int availableCount,
+		int pendingRequestCount,
+		string source,
+		out SiegeNpcResponseDecision decision)
+	{
+		bool activeTownStage = GetTownDialoguePhase() != TownAfDialoguePhase.Inactive;
 		bool unlimited = DuelSettings.IsGcczNpcResponseUnlimitedEnabled();
 		int configuredLimit = DuelSettings.GetGcczNpcResponseLimit();
-		int allowed = SiegeNpcResponseLimitProfile.ResolveAllowedResponseCount(unlimited, configuredLimit, safeAvailableCount);
-		GcczDiagnosticLog.LogVerbose("ResponseLimit", "source=" + NormalizeThrottleSource(source)
+		lock (NpcResponseBudgetLock)
+		{
+			if (activeTownStage && !NpcResponseBudget.IsSceneActive)
+			{
+				NpcResponseBudget.BeginScene();
+			}
+			else if (!activeTownStage && NpcResponseBudget.IsSceneActive)
+			{
+				NpcResponseBudget.EndScene();
+			}
+
+			decision = NpcResponseBudget.TryClaim(
+				eventId,
+				speakerAgentIndex >= 0 ? speakerAgentIndex.ToString() : string.Empty,
+				origin,
+				unlimited,
+				configuredLimit,
+				availableCount,
+				pendingRequestCount);
+		}
+
+		GcczDiagnosticLog.LogVerbose("ResponseBudget", "event=" + NormalizeResponseEventId(eventId)
+			+ " source=" + NormalizeThrottleSource(source)
 			+ " unlimited=" + unlimited
 			+ " configured=" + configuredLimit
-			+ " available=" + safeAvailableCount
-			+ " allowed=" + allowed);
-		return allowed;
+			+ " available=" + Math.Max(0, availableCount)
+			+ " allowed=" + decision.AllowedCount
+			+ " claimed=" + decision.ClaimedCount
+			+ " accepted=" + decision.Allowed
+			+ " reason=" + decision.Reason);
+		return decision.Allowed;
+	}
+
+	internal static void ResetNpcResponseBudgetForExternal(string source)
+	{
+		lock (NpcResponseBudgetLock)
+		{
+			NpcResponseBudget.EndScene();
+		}
+		GcczDiagnosticLog.LogVerbose("ResponseBudget", "reset source=" + NormalizeThrottleSource(source));
+	}
+
+	private static string NormalizeResponseEventId(string eventId)
+	{
+		string normalized = (eventId ?? string.Empty).Trim();
+		return string.IsNullOrWhiteSpace(normalized) ? "invalid" : normalized;
 	}
 
 	internal static void AppendRuntimePromptToShoutContext(MyBehavior.ShoutPromptContext shoutPromptContext, Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string cultureIdOverride)
