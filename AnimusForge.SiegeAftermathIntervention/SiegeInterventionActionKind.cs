@@ -15,5 +15,6 @@ public enum SiegeInterventionActionKind
     CivilianRobbery = 10,
     Plunder = 7,
     Massacre = 8,
-    CulturalRepopulation = 9
+    CulturalRepopulation = 9,
+    StopMassacre = 11
 }

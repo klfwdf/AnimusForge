@@ -22,8 +22,9 @@ public static class SiegePostprocessRuleCatalog
         new SiegePostprocessRuleDefinition(SiegeActionTagCatalog.GatherCiviliansPromptTag, "召集：NPC明确接受、传达或执行召集/通知/带来民众听训、演讲、游说或接受处置；看语义，不靠固定词。"),
         new SiegePostprocessRuleDefinition(SiegeActionTagCatalog.CivilianRobberyPromptTag, "抢钱：战败平民/商人/工匠/头人/要人直接回应玩家索取第纳尔、货物、粮食或物资时输出；局部抢钱，不触发原版Pillage；士兵禁用，用[ACTION:8]。"),
         new SiegePostprocessRuleDefinition(SiegeActionTagCatalog.PlunderPromptTag, "搜掠：只有玩家己方入城士兵直接回应玩家明确命令全城搜掠、收缴财物或组织战利品时输出；平民/商人/要人禁用，只能用[ACTION:7]。"),
-        new SiegePostprocessRuleDefinition(SiegeActionTagCatalog.MassacrePromptTag, "血洗：只有玩家己方入城士兵直接回应玩家明确下令血洗/屠城/清洗时输出；平民恐惧、听闻、互聊或主动请示都不要输出；触发后不可回退，可再升级[ACTION:10]。"),
+        new SiegePostprocessRuleDefinition(SiegeActionTagCatalog.MassacrePromptTag, "Start or resume a massacre only when an allied soldier directly accepts the player's current explicit order. Before all captured targets die, a later eligible response may use [ACTION:11] to stop further killing."),
         new SiegePostprocessRuleDefinition(SiegeActionTagCatalog.CulturalRepopulationPromptTag, "殖民：只有玩家己方入城士兵直接回应玩家本轮明确要求杀尽原住民并迁入玩家方人口/强行改文化时输出；普通民众、士兵互聊或主动请示都禁止输出；可直接触发或血洗后升级。"),
+        new SiegePostprocessRuleDefinition(SiegeActionTagCatalog.StopMassacrePromptTag, "Stop an active massacre only when an allied soldier directly accepts the player's current order to cease further killing. Do not use for pleas, suggestions, indirect speech, or an inactive massacre."),
     };
 
     public static IReadOnlyList<SiegePostprocessRuleDefinition> GetFallbackRules()

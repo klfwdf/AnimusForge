@@ -241,6 +241,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static readonly Regex CivilianRobberyTagRegex = new Regex(SiegeActionTagCatalog.CivilianRobberyTagPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
 	private static readonly Regex PlunderTagRegex = new Regex(SiegeActionTagCatalog.PlunderTagPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
 	private static readonly Regex MassacreTagRegex = new Regex(SiegeActionTagCatalog.MassacreTagPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+	private static readonly Regex StopMassacreTagRegex = new Regex(SiegeActionTagCatalog.StopMassacreTagPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
 	private static readonly Regex AnySiegeTagRegex = new Regex(SiegeActionTagCatalog.AnyActionTagPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
 	private static readonly Regex AnyCastleActionTagRegex = new Regex(SiegeCastleActionTagCatalog.AnyActionTagPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
@@ -254,6 +255,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static bool _playerBattleEquipmentApplied;
 	private static bool _plunderStarted;
 	private static bool _massacreStarted;
+	private static bool _massacreStopped;
 	private static bool _massacreVictoryReached;
 	private static bool _civilianSpeechRallyActive;
 	private static bool _civilianGatherPropagationActive;
@@ -395,10 +397,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static Dictionary<MobileParty, float> _partyContributions = new Dictionary<MobileParty, float>();
 	private static readonly Dictionary<int, PlunderInteraction> ActivePlunderInteractions = new Dictionary<int, PlunderInteraction>();
 	private static readonly Dictionary<int, CivilianGatherInteraction> ActiveCivilianGatherInteractions = new Dictionary<int, CivilianGatherInteraction>();
-	private static readonly HashSet<string> MassacreLootedTargets = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 	private static readonly HashSet<int> AlliedAgentIndexes = new HashSet<int>();
 	private static readonly HashSet<int> BannerBearerAgentIndexes = new HashSet<int>();
-	private static readonly HashSet<int> CountedMassacreVictims = new HashSet<int>();
 	private static readonly HashSet<Hero> PendingInterventionNotableDeaths = new HashSet<Hero>();
 	private static readonly HashSet<int> SceneCivilianAgentIndexes = new HashSet<int>();
 	private static readonly HashSet<int> VictoryCheerAgentIndexes = new HashSet<int>();
@@ -2135,6 +2135,14 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			if (_massacreStarted && !_massacreVictoryReached && !_culturalRepopulationRequested)
+			{
+				TryCompleteMassacreIfAllTargetsDown(Mission.Current);
+				if (!_massacreVictoryReached)
+				{
+					StopMassacre("mission_exit_partial_massacre", "mission_exit_before_all_captured_victims_died", showMessage: false);
+				}
+			}
 			bool needsFallbackPolicy = !_culturalRepopulationRequested && !_massacreStarted && !_plunderStarted && !_hasPendingAftermath;
 			bool isCastle = ResolveCurrentSettlement()?.IsCastle == true;
 			SiegeMissionExitOutcomeDecision decision = SiegeMissionExitOutcomeProfile.Resolve(
@@ -2592,7 +2600,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return "";
 			}
-			return SiegeInterventionMemoryContextBuilder.Build(memoryEvents, audience);
+			return SiegeInterventionMemoryContextBuilder.Build(
+				memoryEvents,
+				audience,
+				GcczTownPromptResourceProvider.GetCatalog());
 		}
 		catch
 		{
@@ -3175,7 +3186,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				_soldierAppeasementApplied,
 				ResolveTownDialogueRole(townAgent, townCharacter, townHero, townAlliedSoldier),
 				townAlliedSoldier,
-				replyIsDirectPlayerResponse);
+				replyIsDirectPlayerResponse,
+				_massacreStarted && !_massacreVictoryReached);
 			List<PostprocessRuleEntry> filtered = new List<PostprocessRuleEntry>();
 			foreach (PostprocessRuleEntry rule in rules)
 			{
@@ -3261,7 +3273,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			TownDialogueRole dialogueRole = ResolveTownDialogueRole(agent, character, character?.HeroObject, alliedSoldier);
 			bool ordinaryAlliedSoldier = TownDialogueRoleClassifier.CanExecuteAlliedSoldierOrders(dialogueRole, alliedSoldier);
 			bool destructiveAllowed = IsDestructiveInterventionAllowed();
-			string currentOutcome = SiegePostprocessOutcomeTextBuilder.Build(BuildPostprocessOutcomeFacts());
+			string currentOutcome = SiegePostprocessOutcomeTextBuilder.Build(
+				BuildPostprocessOutcomeFacts(),
+				GcczTownPromptResourceProvider.GetCatalog());
 			string gatherContext = BuildCivilianGatherRuntimeContext(Mission.Current);
 			string memoryContext = BuildInterventionMemoryContext(SelectInterventionMemoryAudience(dialogueRole, alliedSoldier));
 			memoryContext = AppendRuntimeContext(
@@ -3363,7 +3377,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		string speakerReplyText = null)
 	{
 		actionHandled = false;
-		bool hasTownTag = !string.IsNullOrWhiteSpace(text) && AnySiegeTagRegex.IsMatch(text);
+		bool hasTownTag = !string.IsNullOrWhiteSpace(text)
+			&& (AnySiegeTagRegex.IsMatch(text) || StopMassacreTagRegex.IsMatch(text));
 		bool hasCastleTag = !string.IsNullOrWhiteSpace(text) && AnyCastleActionTagRegex.IsMatch(text);
 		if (!hasTownTag && !hasCastleTag)
 		{
@@ -3411,6 +3426,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			bool hasSharedReliefPool = HasSharedCivilianReliefPool();
 			bool targetIsCivilian = IsCivilianReliefConversationTarget(targetAgentIndex, resolvedTargetCharacter);
 			IReadOnlyList<SiegeInterventionActionKind> inputActionKinds = SiegeActionTagCatalog.ExtractKinds(text);
+			bool massacreStopWasEligible = _massacreStarted && !_massacreVictoryReached;
 			SiegeActionRoutingDecision actionRouting = SiegeActionRoutingPolicy.Evaluate(new SiegeActionRoutingFacts(
 				text,
 				HasDestructiveOutcomeLocked(),
@@ -3549,6 +3565,16 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				{
 					TryTriggerAmbientReactionsForAction(SiegeInterventionActionKind.Massacre, targetAgentIndex, targetAgentIndex, includeCivilians: true, includeSoldiers: true);
 				}
+			}
+			if (massacreStopWasEligible
+				&& StopMassacreTagRegex.IsMatch(text)
+				&& canApplySoldierMediatedDestructive
+				&& TryEnsureRuntimeAlliedSoldierActionTarget(targetAgentIndex))
+			{
+				actionHandled |= StopMassacre(
+					SiegePostprocessActionEffectProfile.MassacreStopTriggerSource,
+					SiegePostprocessActionEffectProfile.MassacreStopTriggerDetail,
+					showMessage: true);
 			}
 			if (destructiveAllowed && RepopulationTagRegex.IsMatch(text) && canApplySoldierMediatedDestructive)
 			{
@@ -7894,16 +7920,237 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static bool EnsureMassacreOperationLedger(Mission mission, TownOperationKind requestedKind = TownOperationKind.Massacre)
+	{
+		try
+		{
+			Settlement settlement = ResolveCurrentSettlement();
+			if (!IsActiveInCurrentMission()
+				|| settlement?.IsTown != true
+				|| settlement.IsCastle
+				|| mission?.Agents == null
+				|| (requestedKind != TownOperationKind.Massacre && requestedKind != TownOperationKind.Colonization))
+			{
+				return false;
+			}
+
+			if (!ActiveTownOperationLedger.BeginAtrocity(requestedKind))
+			{
+				return false;
+			}
+			TownOperationLedgerSnapshot current = ActiveTownOperationLedger.Snapshot();
+			if (current.VictimSnapshotSealed)
+			{
+				return current.State == TownOperationState.Active;
+			}
+
+			foreach (Agent agent in mission.Agents.ToList())
+			{
+				if (!IsMassacreTargetAgent(agent, includeHeroes: true))
+				{
+					continue;
+				}
+				CharacterObject character = agent.Character as CharacterObject;
+				Hero hero = character?.HeroObject;
+				bool notable = IsInterventionNotableHero(hero);
+				ActiveTownOperationLedger.RegisterVictim(
+					BuildTargetKey(agent),
+					ClassifyPlunderTarget(character, hero),
+					notable ? TownOperationVictimKind.Notable : TownOperationVictimKind.OrdinaryCivilian,
+					notable ? TownMassacreConsequenceDelta.NotableVictimWeight : TownMassacreConsequenceDelta.OrdinaryVictimWeight);
+			}
+			ActiveTownOperationLedger.SealVictimSnapshot();
+			TownOperationLedgerSnapshot initialized = ActiveTownOperationLedger.Snapshot();
+			Logger.Log(
+				"SiegeAiIntervention",
+				$"Initialized massacre victim ledger. Settlement={settlement.StringId ?? "N/A"}, Kind={initialized.Kind}, CapturedVictims={initialized.CapturedVictimCount}, TotalVictimWeight={initialized.TotalVictimWeight}");
+			return initialized.State == TownOperationState.Active;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "EnsureMassacreOperationLedger failed: " + ex.Message);
+			return false;
+		}
+	}
+
+	private static bool IsCapturedMassacreTarget(Agent agent, bool requireActive = true)
+	{
+		if (!IsMassacreTargetAgent(agent, includeHeroes: true, requireActive: requireActive))
+		{
+			return false;
+		}
+		string targetKey = BuildTargetKey(agent);
+		return ActiveTownOperationLedger.HasVictim(targetKey)
+			&& !ActiveTownOperationLedger.HasRecordedVictimDeath(targetKey);
+	}
+
+	private static void ApplyMassacreLedgerConsequencesIfNeeded(bool includePlunderBaseline)
+	{
+		try
+		{
+			Settlement settlement = ResolveCurrentSettlement();
+			TownOperationLedgerSnapshot ledger = ActiveTownOperationLedger.Snapshot();
+			if (!IsActiveInCurrentMission()
+				|| settlement?.IsTown != true
+				|| settlement.IsCastle
+				|| ledger.Kind != TownOperationKind.Massacre)
+			{
+				return;
+			}
+
+			TownOperationVictimProgressCommit progress = ActiveTownOperationLedger.CommitVictimProgress(includePlunderBaseline);
+			if (!progress.HasDelta)
+			{
+				return;
+			}
+			TownMassacreConsequenceDelta delta = TownMassacreConsequenceDelta.FromProgressCommit(
+				progress,
+				ledger.CommittedProgressBasisPoints);
+			if (!delta.HasConsequences)
+			{
+				return;
+			}
+
+			AdjustSettlementPublicTrustOnly(settlement, delta.SettlementPublicTrustDelta, TownMassacreConsequenceDelta.SettlementPublicTrustReason);
+			int villageTrustAdjusted = AdjustBoundVillagePublicTrust(settlement, delta.BoundVillagePublicTrustDelta, TownMassacreConsequenceDelta.BoundVillagePublicTrustReason);
+			int notableRelationAdjusted = AdjustSettlementAndBoundVillageNotableRelations(settlement, delta.NotableRelationDelta, TownMassacreConsequenceDelta.NotableRelationReason);
+			int notableTrustAdjusted = AdjustSettlementAndBoundVillageNotableTrust(settlement, delta.NotableTrustDelta, TownMassacreConsequenceDelta.NotableTrustReason);
+			Logger.Log(
+				"SiegeAiIntervention",
+				$"Applied incremental massacre consequences. Settlement={settlement.StringId ?? "N/A"}, VictimDeltaBasisPoints={delta.DeltaVictimBasisPoints}, VictimCumulativeBasisPoints={delta.CumulativeVictimBasisPoints}, AppliedPlunderBaseline={delta.AppliedPlunderBaseline}, SettlementTrust={delta.SettlementPublicTrustDelta}, VillageTrust={delta.BoundVillagePublicTrustDelta}x{villageTrustAdjusted}, NotableRelation={delta.NotableRelationDelta}x{notableRelationAdjusted}, NotableTrust={delta.NotableTrustDelta}x{notableTrustAdjusted}");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "ApplyMassacreLedgerConsequencesIfNeeded failed: " + ex.Message);
+		}
+	}
+
+	private static void ApplyFinalAtrocityRelationshipAnchor(
+		Settlement settlement,
+		SiegeSettlementOutcomeProfile finalProfile)
+	{
+		if (settlement == null || finalProfile == null)
+		{
+			return;
+		}
+		TownMassacreConsequenceDelta delta = TownMassacreConsequenceDelta.FromLedgerToFinalAnchors(
+			ActiveTownOperationLedger.Snapshot(),
+			finalProfile.SettlementPublicTrustDelta,
+			finalProfile.BoundVillagePublicTrustDelta,
+			finalProfile.NotableRelationDelta,
+			finalProfile.NotableTrustDelta);
+		AdjustSettlementPublicTrustOnly(settlement, delta.SettlementPublicTrustDelta, finalProfile.SettlementPublicTrustReason);
+		AdjustBoundVillagePublicTrust(settlement, delta.BoundVillagePublicTrustDelta, finalProfile.BoundVillagePublicTrustReason);
+		AdjustSettlementAndBoundVillageNotableRelations(settlement, delta.NotableRelationDelta, finalProfile.NotableRelationReason);
+		AdjustSettlementAndBoundVillageNotableTrust(settlement, delta.NotableTrustDelta, finalProfile.NotableTrustReason);
+	}
+
+	private static bool StopMassacre(string triggerSource, string triggerDetail, bool showMessage)
+	{
+		try
+		{
+			Mission mission = Mission.Current;
+			if (!IsActiveInCurrentMission() || !_massacreStarted || _massacreVictoryReached || mission?.Agents == null)
+			{
+				return false;
+			}
+			TownOperationLedgerSnapshot ledger = ActiveTownOperationLedger.Snapshot();
+			if ((ledger.Kind != TownOperationKind.Massacre && ledger.Kind != TownOperationKind.Colonization)
+				|| !ledger.VictimSnapshotSealed
+				|| !ActiveTownOperationLedger.Stop())
+			{
+				return false;
+			}
+
+			if (_culturalRepopulationRequested)
+			{
+				ActiveTownOperationLedger.CancelColonizationToMassacre();
+			}
+			_culturalRepopulationRequested = false;
+			_massacreStarted = false;
+			_massacreStopped = true;
+			_plunderStarted = true;
+			_activeMode = InterventionMode.Plunder;
+			_hasPendingAftermath = true;
+			_pendingAftermath = SiegeAftermathAction.SiegeAftermath.Pillage;
+			_pendingAftermathTrigger = triggerSource ?? string.Empty;
+			_pendingAftermathDetail = triggerDetail ?? string.Empty;
+			ApplyMassacreLedgerConsequencesIfNeeded(includePlunderBaseline: true);
+
+			Team playerTeam = mission.PlayerTeam ?? mission.MainAgent?.Team ?? Agent.Main?.Team;
+			Agent main = Agent.Main ?? mission.MainAgent;
+			int survivorCount = 0;
+			foreach (Agent agent in mission.Agents.ToList())
+			{
+				if (!IsCapturedMassacreTarget(agent))
+				{
+					continue;
+				}
+				survivorCount++;
+				MassacreCombatPreparedAgentIndexes.Remove(agent.Index);
+				MassacreCaughtFleeingVictimAgentIndexes.Remove(agent.Index);
+				ClearLocalDefiantCivilianCombatState(agent);
+				if (playerTeam != null && agent.Team != playerTeam)
+				{
+					agent.SetTeam(playerTeam, true);
+				}
+				PrepareMassacreFleeingCivilian(agent, mission, main);
+			}
+
+			foreach (Agent allied in mission.Agents.Where(agent => IsCommandableInterventionSoldier(agent, requireActive: true)).ToList())
+			{
+				RestoreAlliedSoldierFriendlyState(allied, 0f, triggerSource, forceFollow: true, clearTarget: true);
+			}
+			MassacreReadySoldierAgentIndexes.Clear();
+			LastMassacreSoldierFollowOrderTimes.Clear();
+			LastMassacreSoldierTargetOrderTimes.Clear();
+			MassacreSoldierTargetAgentIndexes.Clear();
+			MassacreSoldierTargetSlots.Clear();
+			LastMassacreSoldierProbePositions.Clear();
+			LastMassacreSoldierProbeTimes.Clear();
+			TryEndNativeMissionFightHandlerForManualExit(mission);
+			if (showMessage)
+			{
+				TownPromptTextCatalog text = GcczTownPromptResourceProvider.GetCatalog();
+				string message = (text.MassacreStoppedMessageTemplate ?? string.Empty)
+					.Replace("{survivor_count}", survivorCount.ToString());
+				if (!string.IsNullOrWhiteSpace(message))
+				{
+					InformationManager.DisplayMessage(new InformationMessage(message, Color.FromUint(TownMassacreConsequenceDelta.StopMessageColor)));
+				}
+			}
+			Logger.Log("SiegeAiIntervention", $"Massacre stopped. Source={triggerSource ?? "N/A"}, Survivors={survivorCount}, Killed={ActiveTownOperationLedger.Snapshot().KilledVictimCount}");
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "StopMassacre failed: " + ex.Message);
+			return false;
+		}
+	}
+
 	private static bool StartMassacre(string triggerSource, string triggerDetail)
 	{
+		TownOperationLedgerSnapshot previousLedger = ActiveTownOperationLedger.Snapshot();
+		bool resuming = previousLedger.State == TownOperationState.Stopped
+			&& previousLedger.Kind == TownOperationKind.Massacre;
+		bool first = previousLedger.Kind != TownOperationKind.Massacre
+			&& previousLedger.Kind != TownOperationKind.Colonization;
+		if (!EnsureMassacreOperationLedger(Mission.Current, TownOperationKind.Massacre))
+		{
+			return false;
+		}
 		SiegeDestructiveChoiceProfile massacreProfile = SiegeDestructiveChoiceProfile.BuildMassacre();
 		ClearCivicPositiveBuffForSettlement(ResolveCurrentSettlement());
 		_activeMode = InterventionMode.Massacre;
 		_civilianGatherPropagationActive = false;
 		ActiveCivilianGatherInteractions.Clear();
-		ClearLocalPlayerAttackState();
-		bool first = !_massacreStarted;
+		if (!resuming)
+		{
+			ClearLocalPlayerAttackState();
+		}
 		_massacreStarted = true;
+		_massacreStopped = false;
 		if (first)
 		{
 			_lastMassacreRealKillMissionTime = Mission.Current?.CurrentTime ?? 0f;
@@ -7918,7 +8165,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			ShowOutcomeMessageOnce(massacreProfile.MessageKey, massacreProfile.MessageText, massacreProfile.MessageColor);
 			RecordInterventionMemory(massacreProfile.MemoryTitle, massacreProfile.BuildMassacreMemoryText(triggerSource));
 		}
-		return first;
+		return first || resuming;
 	}
 
 	private static bool RequestCulturalRepopulation(int targetAgentIndex, string triggerSource, string triggerDetail)
@@ -7938,6 +8185,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			CultureObject targetCulture = ResolveCulturalRepopulationTargetCulture(out string targetCultureSource);
 			string targetCultureText = DescribeCultureForMessage(targetCulture, targetCultureSource);
+			if (!EnsureMassacreOperationLedger(Mission.Current, TownOperationKind.Colonization))
+			{
+				return false;
+			}
 			_culturalRepopulationRequested = true;
 			MarkPendingAftermath(ToNativeAftermathKind(repopulationProfile.AftermathKind), triggerSource, triggerDetail);
 			RecordInterventionMemory(repopulationProfile.MemoryTitle, repopulationProfile.BuildRequestMemoryText(targetCultureText));
@@ -11164,7 +11415,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					}
 					if (now - interaction.TalkStartedAt >= PlunderTalkSeconds)
 					{
-						TryLootCivilianAgent(target, massacre: false, force: false, actorName: soldier.Name?.ToString());
+						TryLootCivilianAgent(target, massacre: false, actorName: soldier.Name?.ToString());
 						ActivePlunderInteractions.Remove(interaction.TargetAgentIndex);
 					}
 				}
@@ -11239,7 +11490,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			foreach (int agentIndex in SceneCivilianAgentIndexes.ToList())
 			{
 				Agent agent = mission.Agents.FirstOrDefault(x => x != null && x.Index == agentIndex);
-				if (agent != null && TryLootCivilianAgent(agent, massacre: false, force: false))
+				if (agent != null && TryLootCivilianAgent(agent, massacre: false))
 				{
 					count++;
 				}
@@ -11255,10 +11506,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static bool TryLootCivilianAgent(Agent agent, bool massacre, bool force, string actorName = null)
+	private static bool TryLootCivilianAgent(Agent agent, bool massacre, string actorName = null)
 	{
 		bool eligibleCivilian = IsEligibleCivilianAgent(agent, includeHeroes: true);
-		bool eligibleMassacreTarget = massacre && IsMassacreTargetAgent(agent, includeHeroes: true);
+		bool eligibleMassacreTarget = massacre && IsMassacreTargetAgent(agent, includeHeroes: true, requireActive: false);
 		if (!eligibleCivilian && !eligibleMassacreTarget)
 		{
 			return false;
@@ -11266,13 +11517,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		string targetKey = BuildTargetKey(agent);
 		if (massacre)
 		{
-			if (!force && !MassacreLootedTargets.Add(targetKey))
+			if (!ActiveTownOperationLedger.HasVictim(targetKey)
+				|| ActiveTownOperationLedger.HasCompletedTarget(targetKey)
+				|| !ActiveTownOperationLedger.TryClaimTarget(targetKey))
 			{
 				return false;
-			}
-			if (force)
-			{
-				MassacreLootedTargets.Add(targetKey);
 			}
 		}
 		else
@@ -11321,24 +11570,23 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			_lastCivilianTargetsLooted++;
 			string targetName = agent.Name?.ToString();
 			InformationManager.DisplayMessage(new InformationMessage(SiegeLootAccountingProfile.BuildCivilianLootMessage(actorName, targetName, amount), Color.FromUint(SiegeLootAccountingProfile.LootMessageColor)));
-			if (!massacre)
-			{
-				ActiveTownOperationLedger.CompleteTarget(
-					targetKey,
-					string.IsNullOrWhiteSpace(actorName)
+			ActiveTownOperationLedger.CompleteTarget(
+				targetKey,
+				massacre
+					? TownOperationAcquisitionSource.MassacreVictim
+					: string.IsNullOrWhiteSpace(actorName)
 						? TownOperationAcquisitionSource.ExitSweep
 						: TownOperationAcquisitionSource.SoldierPlunder,
-					amount,
-					0,
-					0);
+				amount,
+				0,
+				0);
+			if (!massacre)
+			{
 				ApplyPlunderLedgerConsequencesIfNeeded();
 			}
 			return true;
 		}
-		if (!massacre)
-		{
-			ActiveTownOperationLedger.ReleaseTarget(targetKey);
-		}
+		ActiveTownOperationLedger.ReleaseTarget(targetKey);
 		return false;
 	}
 
@@ -11565,7 +11813,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			KeepAlliedVictoryCheer(mission);
 			return;
 		}
-		List<Agent> massacreTargets = mission.Agents.Where(a => IsMassacreTargetAgent(a, includeHeroes: true) && !CountedMassacreVictims.Contains(a.Index)).ToList();
+		List<Agent> massacreTargets = mission.Agents.Where(agent => IsCapturedMassacreTarget(agent)).ToList();
 		foreach (Agent target in massacreTargets)
 		{
 			PrepareCivilianForMassacreCombat(target, mission);
@@ -11629,7 +11877,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			int avoidTargetIndex = -1;
 			if (MassacreSoldierTargetAgentIndexes.TryGetValue(soldier.Index, out int assignedTargetIndex))
 			{
-				Agent assignedTarget = massacreTargets.FirstOrDefault(t => t != null && t.Index == assignedTargetIndex && t.IsActive() && !CountedMassacreVictims.Contains(t.Index));
+				Agent assignedTarget = massacreTargets.FirstOrDefault(t => t != null && t.Index == assignedTargetIndex && t.IsActive());
 				int assignedCount = assignedTarget != null && targetHunterCounts.TryGetValue(assignedTarget.Index, out int currentAssignedCount) ? currentAssignedCount : 0;
 				if (assignedTarget != null && assignedCount < MassacreMaxHuntersPerTarget && !ShouldReassignMassacreSoldier(soldier, assignedTarget, mission))
 				{
@@ -11641,7 +11889,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				ClearMassacreHuntAssignment(soldier.Index);
 			}
 			Agent target = massacreTargets
-				.Where(t => t != null && t.IsActive() && !CountedMassacreVictims.Contains(t.Index) && t.Index != avoidTargetIndex)
+				.Where(t => t != null && t.IsActive() && t.Index != avoidTargetIndex)
 				.Where(t => !targetHunterCounts.TryGetValue(t.Index, out int count) || count < MassacreMaxHuntersPerTarget)
 				.OrderBy(t => t.Position.DistanceSquared(soldier.Position))
 				.FirstOrDefault();
@@ -11672,7 +11920,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return null;
 			}
 			var counts = new Dictionary<int, int>();
-			return SelectMassacreTargetForSoldier(soldier, mission.Agents.Where(a => IsMassacreTargetAgent(a, includeHeroes: true) && !CountedMassacreVictims.Contains(a.Index)).ToList(), counts, mission);
+			return SelectMassacreTargetForSoldier(soldier, mission.Agents.Where(agent => IsCapturedMassacreTarget(agent)).ToList(), counts, mission);
 		}
 		catch
 		{
@@ -11723,7 +11971,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		try
 		{
 			var activeSoldiers = new HashSet<int>((alliedSoldiers ?? new List<Agent>()).Where(a => a != null && a.IsActive()).Select(a => a.Index));
-			var activeTargets = new HashSet<int>((massacreTargets ?? new List<Agent>()).Where(a => a != null && a.IsActive() && !CountedMassacreVictims.Contains(a.Index)).Select(a => a.Index));
+			var activeTargets = new HashSet<int>((massacreTargets ?? new List<Agent>()).Where(a => a != null && a.IsActive()).Select(a => a.Index));
 			foreach (int soldierIndex in MassacreSoldierTargetAgentIndexes.Keys.ToList())
 			{
 				if (!activeSoldiers.Contains(soldierIndex) || !activeTargets.Contains(MassacreSoldierTargetAgentIndexes[soldierIndex]))
@@ -12291,8 +12539,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		int remaining = mission.Agents.Count(a => IsMassacreTargetAgent(a, includeHeroes: true) && !CountedMassacreVictims.Contains(a.Index));
-		if (remaining > 0)
+		TownOperationLedgerSnapshot ledger = ActiveTownOperationLedger.Snapshot();
+		if ((ledger.Kind != TownOperationKind.Massacre && ledger.Kind != TownOperationKind.Colonization)
+			|| !ledger.VictimSnapshotSealed
+			|| ledger.CapturedVictimCount <= 0
+			|| ledger.KilledVictimCount < ledger.CapturedVictimCount)
 		{
 			return;
 		}
@@ -12321,7 +12572,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
-		Logger.Log("SiegeAiIntervention", "Massacre victory completed. Reason=" + (reason ?? "N/A") + ", SpawnedCivilians=" + _lastSceneCivilianSpawnedCount + ", CountedVictims=" + CountedMassacreVictims.Count);
+		TownOperationLedgerSnapshot ledger = ActiveTownOperationLedger.Snapshot();
+		Logger.Log("SiegeAiIntervention", "Massacre victory completed. Reason=" + (reason ?? "N/A") + ", SpawnedCivilians=" + _lastSceneCivilianSpawnedCount + ", CountedVictims=" + ledger.KilledVictimCount + ", CapturedVictims=" + ledger.CapturedVictimCount);
 	}
 
 	private static void TryEndNativeMissionFightHandlerForManualExit(Mission mission)
@@ -12409,37 +12661,44 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static void OnInterventionAgentRemoved(Agent affectedAgent, Agent affectorAgent, AgentState agentState)
 	{
 		TrySpawnTownCivilianSceneGoldDrop(affectedAgent, agentState, "intervention_agent_removed");
-		if (!_massacreStarted)
+		if (!_massacreStarted && !_massacreStopped)
 		{
 			TryHandleLocalPlayerCivilianDownForIntervention(affectedAgent, affectorAgent, agentState);
 			return;
 		}
-		if (affectedAgent == null || CountedMassacreVictims.Contains(affectedAgent.Index))
+		if (affectedAgent == null)
 		{
 			return;
 		}
-		if (agentState != AgentState.Killed && agentState != AgentState.Unconscious)
+		if (!IsCapturedMassacreTarget(affectedAgent, requireActive: false))
 		{
+			if (!_massacreStarted)
+			{
+				TryHandleLocalPlayerCivilianDownForIntervention(affectedAgent, affectorAgent, agentState);
+			}
 			return;
 		}
-		if (!IsMassacreTargetAgent(affectedAgent, includeHeroes: true, requireActive: false))
-		{
-			return;
-		}
-		CountedMassacreVictims.Add(affectedAgent.Index);
-		_lastMassacreRealKillMissionTime = (Mission.Current ?? affectedAgent.Mission)?.CurrentTime ?? _lastMassacreRealKillMissionTime;
 		CharacterObject character = affectedAgent.Character as CharacterObject;
 		Hero hero = character?.HeroObject;
-		if (IsInterventionNotableHero(hero))
+		bool notable = IsInterventionNotableHero(hero);
+		bool fatalOutcome = agentState == AgentState.Killed
+			|| (notable && agentState == AgentState.Unconscious);
+		if (!fatalOutcome || !ActiveTownOperationLedger.RecordVictimDeath(BuildTargetKey(affectedAgent)))
+		{
+			return;
+		}
+		_lastMassacreRealKillMissionTime = (Mission.Current ?? affectedAgent.Mission)?.CurrentTime ?? _lastMassacreRealKillMissionTime;
+		if (notable)
 		{
 			PendingInterventionNotableDeaths.Add(hero);
 			Logger.Log("SiegeAiIntervention", "Queued intervention notable for settlement-resolution death. Hero=" + (hero.StringId ?? "N/A") + ", Agent=" + affectedAgent.Index + ", State=" + agentState);
 		}
-		else if (hero == null)
+		else
 		{
 			_lastKilledCivilianUnits++;
 		}
-		TryLootCivilianAgent(affectedAgent, massacre: true, force: true);
+		TryLootCivilianAgent(affectedAgent, massacre: true);
+		ApplyMassacreLedgerConsequencesIfNeeded(includePlunderBaseline: true);
 	}
 
 	private static void TrySpawnTownCivilianSceneGoldDrop(Agent affectedAgent, AgentState agentState, string source)
@@ -14107,20 +14366,66 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				if (_culturalRepopulationRequested)
 				{
-					ApplyFinalizedSettlementOutcomeEffects(settlement, SiegeSettlementOutcomeProfile.BuildCulturalRepopulation(), prosperityBefore);
+					SiegeSettlementOutcomeProfile repopulationProfile = SiegeSettlementOutcomeProfile.BuildCulturalRepopulation();
+					TownOperationLedgerSnapshot repopulationLedger = ActiveTownOperationLedger.Snapshot();
+					bool ledgerBackedRepopulation = (repopulationLedger.Kind == TownOperationKind.Colonization
+						|| repopulationLedger.Kind == TownOperationKind.Massacre)
+						&& repopulationLedger.VictimSnapshotSealed;
+					if (ledgerBackedRepopulation)
+					{
+						ApplyFinalAtrocityRelationshipAnchor(settlement, repopulationProfile);
+						ApplyFinalizedSettlementOutcomeEffects(
+							settlement,
+							repopulationProfile,
+							prosperityBefore,
+							applyLegacyRelationshipEffects: false);
+					}
+					else
+					{
+						ApplyFinalizedSettlementOutcomeEffects(settlement, repopulationProfile, prosperityBefore);
+					}
 					ApplyCulturalRepopulationNow(SiegeCulturalRepopulationProfile.FinalizeAftermathApplySource);
+					ActiveTownOperationLedger.CompleteFullOutcome();
 				}
 				else if (_massacreStarted)
 				{
-					ApplyFinalizedSettlementOutcomeEffects(settlement, SiegeSettlementOutcomeProfile.BuildMassacre(), prosperityBefore);
+					TownOperationLedgerSnapshot massacreLedger = ActiveTownOperationLedger.Snapshot();
+					bool ledgerBackedFullMassacre = massacreLedger.Kind == TownOperationKind.Massacre
+						&& massacreLedger.VictimSnapshotSealed
+						&& massacreLedger.CapturedVictimCount > 0;
+					if (ledgerBackedFullMassacre)
+					{
+						ActiveTownOperationLedger.ForceFullVictimOutcome();
+						ApplyMassacreLedgerConsequencesIfNeeded(includePlunderBaseline: true);
+						ApplyFinalizedSettlementOutcomeEffects(
+							settlement,
+							SiegeSettlementOutcomeProfile.BuildMassacre(),
+							prosperityBefore,
+							applyLegacyRelationshipEffects: false);
+						ActiveTownOperationLedger.CompleteFullOutcome();
+					}
+					else
+					{
+						// Preserve the legacy complete outcome if the guarded victim ledger could not initialize.
+						ApplyFinalizedSettlementOutcomeEffects(settlement, SiegeSettlementOutcomeProfile.BuildMassacre(), prosperityBefore);
+					}
 				}
 				_nativeDevastateAftermathFlowActive = true;
 				_nativeDevastateSummaryContinueHandled = false;
 			}
+			TownOperationLedgerSnapshot operationLedger = ActiveTownOperationLedger.Snapshot();
+			bool ledgerBackedPartialMassacre = aftermath == SiegeAftermathAction.SiegeAftermath.Pillage
+				&& _massacreStopped
+				&& operationLedger.Kind == TownOperationKind.Massacre;
 			bool ledgerBackedFullPlunder = aftermath == SiegeAftermathAction.SiegeAftermath.Pillage
 				&& _plunderStarted
-				&& ActiveTownOperationLedger.Snapshot().Kind == TownOperationKind.Plunder;
-			if (ledgerBackedFullPlunder)
+				&& operationLedger.Kind == TownOperationKind.Plunder;
+			if (ledgerBackedPartialMassacre)
+			{
+				ApplyMassacreLedgerConsequencesIfNeeded(includePlunderBaseline: true);
+				ActiveTownOperationLedger.CompletePartialOutcome();
+			}
+			else if (ledgerBackedFullPlunder)
 			{
 				ActiveTownOperationLedger.CompleteFullOutcome();
 				ApplyPlunderLedgerConsequencesIfNeeded();
@@ -14148,7 +14453,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				ActiveTownOperationLedger.CompletePartialOutcome();
 			}
 			TrySetNativePlayerEncounterAftermathForSummary(aftermath);
-			MyBehavior.Instance?.RecordAnimusForgeSiegeInterventionForExternal(attackerParty, settlement, aftermath, previousOwner, _pendingAftermathTrigger, _pendingAftermathDetail, Math.Min(AutoSummonCount, CountHealthyMainPartySoldiers()), _lastLootItemTotal, _lastLootStackKinds, _lastLootValue, _lastMarketGoldLoot, _lastCivilianGoldLoot, _lastCivilianTargetsLooted, _lastKilledCivilianUnits, _lastKilledNotables, _plunderStarted, _massacreStarted);
+			MyBehavior.Instance?.RecordAnimusForgeSiegeInterventionForExternal(attackerParty, settlement, aftermath, previousOwner, _pendingAftermathTrigger, _pendingAftermathDetail, Math.Min(AutoSummonCount, CountHealthyMainPartySoldiers()), _lastLootItemTotal, _lastLootStackKinds, _lastLootValue, _lastMarketGoldLoot, _lastCivilianGoldLoot, _lastCivilianTargetsLooted, _lastKilledCivilianUnits, _lastKilledNotables, _plunderStarted, _massacreStarted || _massacreStopped);
 			ApplySetsOwnedSettlementIncidentOutcomePenalty(aftermath, "sets_owned_town_final_" + aftermath);
 			_pendingSummaryAftermath = aftermath;
 			MarkAftermathResolvedForCompletion(settlement, aftermath);
@@ -14161,7 +14466,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				+ " lootValue=" + _lastLootValue
 				+ " plunderProgressBasisPoints=" + ActiveTownOperationLedger.Snapshot().ProgressBasisPoints
 				+ " killedCivilians=" + _lastKilledCivilianUnits
-				+ " killedNotables=" + _lastKilledNotables);
+				+ " killedNotables=" + _lastKilledNotables
+				+ " victimProgressBasisPoints=" + ActiveTownOperationLedger.Snapshot().VictimProgressBasisPoints);
 			return true;
 		}
 		catch (Exception ex)
@@ -14198,7 +14504,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		return result;
 	}
 
-	private static void ApplyFinalizedSettlementOutcomeEffects(Settlement settlement, SiegeSettlementOutcomeProfile profile, float prosperityBeforeNativeAftermath)
+	private static void ApplyFinalizedSettlementOutcomeEffects(
+		Settlement settlement,
+		SiegeSettlementOutcomeProfile profile,
+		float prosperityBeforeNativeAftermath,
+		bool applyLegacyRelationshipEffects = true)
 	{
 		try
 		{
@@ -14206,10 +14516,16 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			AdjustSettlementPublicTrustOnly(settlement, profile.SettlementPublicTrustDelta, profile.SettlementPublicTrustReason);
-			int villageTrustAdjusted = AdjustBoundVillagePublicTrust(settlement, profile.BoundVillagePublicTrustDelta, profile.BoundVillagePublicTrustReason);
-			int notableRelationAdjusted = AdjustSettlementAndBoundVillageNotableRelations(settlement, profile.NotableRelationDelta, profile.NotableRelationReason);
-			int notableTrustAdjusted = AdjustSettlementAndBoundVillageNotableTrust(settlement, profile.NotableTrustDelta, profile.NotableTrustReason);
+			int villageTrustAdjusted = 0;
+			int notableRelationAdjusted = 0;
+			int notableTrustAdjusted = 0;
+			if (applyLegacyRelationshipEffects)
+			{
+				AdjustSettlementPublicTrustOnly(settlement, profile.SettlementPublicTrustDelta, profile.SettlementPublicTrustReason);
+				villageTrustAdjusted = AdjustBoundVillagePublicTrust(settlement, profile.BoundVillagePublicTrustDelta, profile.BoundVillagePublicTrustReason);
+				notableRelationAdjusted = AdjustSettlementAndBoundVillageNotableRelations(settlement, profile.NotableRelationDelta, profile.NotableRelationReason);
+				notableTrustAdjusted = AdjustSettlementAndBoundVillageNotableTrust(settlement, profile.NotableTrustDelta, profile.NotableTrustReason);
+			}
 			float prosperityAfterNativeAftermath = settlement.Town?.Prosperity ?? prosperityBeforeNativeAftermath;
 			float nativeProsperityDelta = prosperityAfterNativeAftermath - prosperityBeforeNativeAftermath;
 			float extraProsperityDelta = 0f;
@@ -14230,7 +14546,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				BeginRecruitmentSlowdownDebuff(settlement, profile);
 			}
 			float prosperityAfterAllEffects = settlement.Town?.Prosperity ?? prosperityAfterNativeAftermath;
-			Logger.Log("SiegeAiIntervention", $"Applied finalized GCCZ settlement outcome. Key={profile.Key}, Settlement={settlement.StringId}, SettlementTrust={profile.SettlementPublicTrustDelta}, VillageTrust={profile.BoundVillagePublicTrustDelta}x{villageTrustAdjusted}, NotableRelation={profile.NotableRelationDelta}x{notableRelationAdjusted}, NotableTrust={profile.NotableTrustDelta}x{notableTrustAdjusted}, ProsperityBefore={prosperityBeforeNativeAftermath:0.##}, NativeProsperityDelta={nativeProsperityDelta:0.##}, ExtraProsperityDelta={extraProsperityDelta:0.##}, ProsperityAfter={prosperityAfterAllEffects:0.##}, TotalProsperityDelta={prosperityAfterAllEffects - prosperityBeforeNativeAftermath:0.##}");
+			Logger.Log("SiegeAiIntervention", $"Applied finalized GCCZ settlement outcome. Key={profile.Key}, Settlement={settlement.StringId}, RelationshipEffects={applyLegacyRelationshipEffects}, SettlementTrust={(applyLegacyRelationshipEffects ? profile.SettlementPublicTrustDelta : 0)}, VillageTrust={(applyLegacyRelationshipEffects ? profile.BoundVillagePublicTrustDelta : 0)}x{villageTrustAdjusted}, NotableRelation={(applyLegacyRelationshipEffects ? profile.NotableRelationDelta : 0)}x{notableRelationAdjusted}, NotableTrust={(applyLegacyRelationshipEffects ? profile.NotableTrustDelta : 0)}x{notableTrustAdjusted}, ProsperityBefore={prosperityBeforeNativeAftermath:0.##}, NativeProsperityDelta={nativeProsperityDelta:0.##}, ExtraProsperityDelta={extraProsperityDelta:0.##}, ProsperityAfter={prosperityAfterAllEffects:0.##}, TotalProsperityDelta={prosperityAfterAllEffects - prosperityBeforeNativeAftermath:0.##}");
 			GcczDiagnosticLog.Log("SettlementOutcome", $"key={profile.Key} settlement={settlement.StringId} prosperityBefore={prosperityBeforeNativeAftermath:0.##} nativeDelta={nativeProsperityDelta:0.##} extraDelta={extraProsperityDelta:0.##} prosperityAfter={prosperityAfterAllEffects:0.##} totalDelta={prosperityAfterAllEffects - prosperityBeforeNativeAftermath:0.##} recruitmentRateMultiplier={profile.RecruitmentRateMultiplier:0.##}");
 		}
 		catch (Exception ex)
@@ -15873,6 +16189,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static string StripSiegeTags(string text)
 	{
 		string stripped = AnySiegeTagRegex.Replace(text ?? "", "");
+		stripped = StopMassacreTagRegex.Replace(stripped, "");
 		return AnyCastleActionTagRegex.Replace(stripped, "").Trim();
 	}
 
@@ -15958,6 +16275,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_playerBattleEquipmentApplied = false;
 		_plunderStarted = false;
 		_massacreStarted = false;
+		_massacreStopped = false;
 		_massacreVictoryReached = false;
 		_civilianSpeechRallyActive = false;
 		_civilianGatherPropagationActive = false;
@@ -16065,10 +16383,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		ResetOutcomeMessageDedup();
 		ActivePlunderInteractions.Clear();
 		ActiveCivilianGatherInteractions.Clear();
-		MassacreLootedTargets.Clear();
 		AlliedAgentIndexes.Clear();
 		BannerBearerAgentIndexes.Clear();
-		CountedMassacreVictims.Clear();
 		PendingInterventionNotableDeaths.Clear();
 		SceneCivilianAgentIndexes.Clear();
 		VictoryCheerAgentIndexes.Clear();

@@ -12,7 +12,8 @@ public readonly struct SiegePostprocessRuleEligibilityFacts
         bool soldierAppeasementApplied,
         TownDialogueRole dialogueRole,
         bool isAlliedSoldier,
-        bool replyIsDirectPlayerResponse)
+        bool replyIsDirectPlayerResponse,
+        bool massacreActive = false)
     {
         DestructiveLocked = destructiveLocked;
         SoldierAppeasementRequired = soldierAppeasementRequired;
@@ -20,6 +21,7 @@ public readonly struct SiegePostprocessRuleEligibilityFacts
         DialogueRole = TownDialogueRoleClassifier.NormalizeForRuntime(dialogueRole);
         IsAlliedSoldier = isAlliedSoldier;
         ReplyIsDirectPlayerResponse = replyIsDirectPlayerResponse;
+        MassacreActive = massacreActive;
     }
 
     public bool DestructiveLocked { get; }
@@ -33,4 +35,6 @@ public readonly struct SiegePostprocessRuleEligibilityFacts
     public bool IsAlliedSoldier { get; }
 
     public bool ReplyIsDirectPlayerResponse { get; }
+
+    public bool MassacreActive { get; }
 }

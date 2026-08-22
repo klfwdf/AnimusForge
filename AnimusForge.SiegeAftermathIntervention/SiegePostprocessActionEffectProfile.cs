@@ -52,6 +52,10 @@ public static class SiegePostprocessActionEffectProfile
 
     public const string MassacreTriggerDetail = "NPC回复表明对话谈崩或玩家已明确下令血洗，攻城后处置升级为血洗。";
 
+    public const string MassacreStopTriggerSource = "ai_tag_massacre_stop";
+
+    public const string MassacreStopTriggerDetail = "player_ordered_massacre_stop";
+
     public const string CulturalRepopulationTriggerSource = "场景对话屠民迁殖";
 
     public const string CulturalRepopulationTriggerDetail = "玩家通过场景对话要求杀尽原住民并将定居点改为己方文化。";
