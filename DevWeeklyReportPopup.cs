@@ -27,7 +27,8 @@ public sealed class DevWeeklyReportPopup
 
 	private readonly Action _onMinimumDwellMet;
 
-	private readonly DateTime _openedAtUtc;
+	// The reading timer is advanced on return so encyclopedia browsing never counts as report-reading dwell time.
+	private DateTime _openedAtUtc;
 
 	private readonly double _minimumDwellSeconds;
 
@@ -38,6 +39,12 @@ public sealed class DevWeeklyReportPopup
 	private bool _pauseRequestRegistered;
 
 	private bool _minimumDwellCallbackInvoked;
+
+	// The report stays allocated during encyclopedia navigation, but its modal layer must be inactive underneath the native page.
+	private bool _isSuspendedForEncyclopediaNavigation;
+	private DateTime _suspendedAtUtc;
+	// The same Escape that closes the encyclopedia must not close the restored report on that frame.
+	private long _resumeInputGuardUntilUtcTicks;
 
 	private DevWeeklyReportPopup(ScreenBase screen, string titleText, string subtitleText, string bodyText, Action onClose, string closeText, bool useChronicleColumns, bool useShortReportLayout, bool showCloseButton, double minimumDwellSeconds, Action onMinimumDwellMet)
 	{
@@ -78,7 +85,7 @@ public sealed class DevWeeklyReportPopup
 	public static void ProcessDeferredCloseIfNeeded()
 	{
 		DevWeeklyReportPopup popup = _activePopup;
-		if (popup == null || popup._isClosed)
+		if (popup == null || popup._isClosed || popup._isSuspendedForEncyclopediaNavigation)
 		{
 			return;
 		}
@@ -118,7 +125,7 @@ public sealed class DevWeeklyReportPopup
 
 	private void ProcessMinimumDwellCallbackIfNeeded()
 	{
-		if (_minimumDwellCallbackInvoked || _onMinimumDwellMet == null || _minimumDwellSeconds <= 0.0)
+		if (_isSuspendedForEncyclopediaNavigation || _minimumDwellCallbackInvoked || _onMinimumDwellMet == null || _minimumDwellSeconds <= 0.0)
 		{
 			return;
 		}
@@ -139,6 +146,10 @@ public sealed class DevWeeklyReportPopup
 
 	private bool ShouldCloseForEscapeKey()
 	{
+		if (_isSuspendedForEncyclopediaNavigation || IsResumeInputGuardActive())
+		{
+			return false;
+		}
 		try
 		{
 			return _layer?.Input != null && (_layer.Input.IsHotKeyReleased("Exit") || _layer.Input.IsKeyReleased(InputKey.Escape));
@@ -165,14 +176,70 @@ public sealed class DevWeeklyReportPopup
 	{
 		if (!_isClosed)
 		{
-			EncyclopediaEntityLinkNavigationCoordinator.Request(link, CloseForEncyclopediaNavigation);
+			EncyclopediaEntityLinkNavigationCoordinator.Request(link, SuspendForEncyclopediaNavigation, ResumeAfterEncyclopediaNavigation);
 		}
 	}
 
-	private void CloseForEncyclopediaNavigation()
+	private void SuspendForEncyclopediaNavigation()
 	{
-		// Navigation intentionally dismisses the report without running its read/close side effects a second time.
-		Close(silent: true);
+		if (_isClosed || _isSuspendedForEncyclopediaNavigation)
+		{
+			return;
+		}
+		try
+		{
+			// Preserve the report VM, its selected layout, and the pause request without granting dwell credit while hidden.
+			_layer.InputRestrictions.ResetInputRestrictions();
+			_layer.IsFocusLayer = false;
+			ScreenManager.TryLoseFocus(_layer);
+			ScreenManager.SetSuspendLayer(_layer, isSuspended: true);
+			_isSuspendedForEncyclopediaNavigation = true;
+			_suspendedAtUtc = DateTime.UtcNow;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("DevWeeklyReportPopup", "[WARN] Failed to suspend popup for encyclopedia: " + ex.Message);
+		}
+	}
+
+	private void ResumeAfterEncyclopediaNavigation()
+	{
+		if (_isClosed || !_isSuspendedForEncyclopediaNavigation)
+		{
+			return;
+		}
+		if (!ReferenceEquals(ScreenManager.TopScreen, _screen))
+		{
+			// A changed game screen invalidates the original modal; close it silently instead of restoring across states.
+			Close(silent: true);
+			return;
+		}
+		try
+		{
+			DateTime restoredAtUtc = DateTime.UtcNow;
+			if (_suspendedAtUtc != default(DateTime))
+			{
+				// Shift the baseline by the hidden duration so a long encyclopedia visit cannot satisfy reading XP dwell time.
+				_openedAtUtc = _openedAtUtc.Add(restoredAtUtc - _suspendedAtUtc);
+			}
+			_suspendedAtUtc = default(DateTime);
+			ScreenManager.SetSuspendLayer(_layer, isSuspended: false);
+			_layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.All);
+			_layer.IsFocusLayer = true;
+			ScreenManager.TrySetFocus(_layer);
+			_isSuspendedForEncyclopediaNavigation = false;
+			_resumeInputGuardUntilUtcTicks = restoredAtUtc.AddMilliseconds(350.0).Ticks;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("DevWeeklyReportPopup", "[WARN] Failed to restore popup after encyclopedia: " + ex.Message);
+			Close(silent: true);
+		}
+	}
+
+	private bool IsResumeInputGuardActive()
+	{
+		return _resumeInputGuardUntilUtcTicks > DateTime.UtcNow.Ticks;
 	}
 
 	private void RequestDeferredClose()
@@ -202,6 +269,9 @@ public sealed class DevWeeklyReportPopup
 			return;
 		}
 		_isClosed = true;
+		// Do not retain a suspension marker once the report has been permanently finalized.
+		_isSuspendedForEncyclopediaNavigation = false;
+		_suspendedAtUtc = default(DateTime);
 		try
 		{
 			// Release the modal input mask before opening the lower-priority encyclopedia layer.

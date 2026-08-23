@@ -445,6 +445,10 @@ public sealed class WorldMessageTimelinePopup
 	private readonly WorldMessageTimelinePopupVM _dataSource;
 	private readonly Action _onClose;
 	private bool _isClosed;
+	// The high-priority timeline layer is suspended, not finalized, while a link opens the lower-priority encyclopedia.
+	private bool _isSuspendedForEncyclopediaNavigation;
+	// Guard the Escape release used to close the encyclopedia so the restored timeline remains open.
+	private long _resumeInputGuardUntilUtcTicks;
 
 	private WorldMessageTimelinePopup(ScreenBase screen, WorldMessageTimelinePopupData data, Action onClose)
 	{
@@ -483,7 +487,7 @@ public sealed class WorldMessageTimelinePopup
 	public static void OnApplicationTick()
 	{
 		WorldMessageTimelinePopup popup = _activePopup;
-		if (popup != null && !popup._isClosed && popup.ShouldCloseForEscapeKey())
+		if (popup != null && !popup._isClosed && !popup._isSuspendedForEncyclopediaNavigation && popup.ShouldCloseForEscapeKey())
 		{
 			popup.HandleCloseRequested();
 		}
@@ -512,6 +516,10 @@ public sealed class WorldMessageTimelinePopup
 
 	private bool ShouldCloseForEscapeKey()
 	{
+		if (_isSuspendedForEncyclopediaNavigation || IsResumeInputGuardActive())
+		{
+			return false;
+		}
 		try
 		{
 			return _layer?.Input != null && (_layer.Input.IsHotKeyReleased("Exit") || _layer.Input.IsKeyReleased(InputKey.Escape));
@@ -539,14 +547,63 @@ public sealed class WorldMessageTimelinePopup
 	{
 		if (!_isClosed)
 		{
-			EncyclopediaEntityLinkNavigationCoordinator.Request(link, CloseForEncyclopediaNavigation);
+			EncyclopediaEntityLinkNavigationCoordinator.Request(link, SuspendForEncyclopediaNavigation, ResumeAfterEncyclopediaNavigation);
 		}
 	}
 
-	private void CloseForEncyclopediaNavigation()
+	private void SuspendForEncyclopediaNavigation()
 	{
-		// The timeline is dismissed without firing its regular close callback before encyclopedia navigation.
-		Close(silent: true);
+		if (_isClosed || _isSuspendedForEncyclopediaNavigation)
+		{
+			return;
+		}
+		try
+		{
+			// Retain the current entry and filter state while releasing the input mask needed by the encyclopedia layer.
+			_layer.InputRestrictions.ResetInputRestrictions();
+			_layer.IsFocusLayer = false;
+			ScreenManager.TryLoseFocus(_layer);
+			ScreenManager.SetSuspendLayer(_layer, isSuspended: true);
+			_isSuspendedForEncyclopediaNavigation = true;
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Failure("WorldMessage", "timeline-popup-suspend-failed", ex.Message, ex.ToString());
+		}
+	}
+
+	private void ResumeAfterEncyclopediaNavigation()
+	{
+		if (_isClosed || !_isSuspendedForEncyclopediaNavigation)
+		{
+			return;
+		}
+		if (!ReferenceEquals(ScreenManager.TopScreen, _screen))
+		{
+			// Avoid reviving an archived timeline above an unrelated screen after a state transition.
+			Close(silent: true);
+			return;
+		}
+		try
+		{
+			// Reactivate the original layer so list selection, country/category filters, and scroll state remain untouched.
+			ScreenManager.SetSuspendLayer(_layer, isSuspended: false);
+			_layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.All);
+			_layer.IsFocusLayer = true;
+			ScreenManager.TrySetFocus(_layer);
+			_isSuspendedForEncyclopediaNavigation = false;
+			_resumeInputGuardUntilUtcTicks = DateTime.UtcNow.AddMilliseconds(350.0).Ticks;
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Failure("WorldMessage", "timeline-popup-resume-failed", ex.Message, ex.ToString());
+			Close(silent: true);
+		}
+	}
+
+	private bool IsResumeInputGuardActive()
+	{
+		return _resumeInputGuardUntilUtcTicks > DateTime.UtcNow.Ticks;
 	}
 
 	private void Close(bool silent)
@@ -556,6 +613,8 @@ public sealed class WorldMessageTimelinePopup
 			return;
 		}
 		_isClosed = true;
+		// Clearing the transient marker keeps a permanently closed timeline out of future return attempts.
+		_isSuspendedForEncyclopediaNavigation = false;
 		try
 		{
 			_layer.InputRestrictions.ResetInputRestrictions();
