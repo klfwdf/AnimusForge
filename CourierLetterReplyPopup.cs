@@ -34,7 +34,7 @@ public sealed class CourierLetterReplyPopup
 		_screen = screen;
 		_onClose = onClose;
 		_onReply = onReply;
-		_dataSource = new CourierLetterReplyPopupVM(titleText, subtitleText, bodyText, 22, HandleCloseRequested, closeText, onReply == null ? null : HandleReplyRequested, replyText, impactText);
+		_dataSource = new CourierLetterReplyPopupVM(titleText, subtitleText, bodyText, 22, HandleCloseRequested, closeText, onReply == null ? null : HandleReplyRequested, replyText, impactText, HandleOpenEncyclopediaLink);
 		_layer = new GauntletLayer("CourierLetterReplyPopup", 4100, false);
 	}
 
@@ -139,6 +139,20 @@ public sealed class CourierLetterReplyPopup
 		RequestDeferredClose(PendingCloseAction.Reply);
 	}
 
+	private void HandleOpenEncyclopediaLink(string link)
+	{
+		if (!_isClosed)
+		{
+			EncyclopediaEntityLinkNavigationCoordinator.Request(link, CloseForEncyclopediaNavigation);
+		}
+	}
+
+	private void CloseForEncyclopediaNavigation()
+	{
+		// Link navigation is a view change, so it intentionally bypasses letter close/reply callbacks.
+		Close(silent: true);
+	}
+
 	private void RequestDeferredClose(PendingCloseAction closeAction)
 	{
 		if (_isClosed || _pendingCloseAction != PendingCloseAction.None)
@@ -176,6 +190,8 @@ public sealed class CourierLetterReplyPopup
 		_isClosed = true;
 		try
 		{
+			// Release this modal input mask before the encyclopedia layer becomes interactive.
+			_layer.InputRestrictions.ResetInputRestrictions();
 			_layer.IsFocusLayer = false;
 			ScreenManager.TryLoseFocus(_layer);
 		}

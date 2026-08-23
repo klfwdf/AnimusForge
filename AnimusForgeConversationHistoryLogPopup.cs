@@ -27,11 +27,11 @@ public sealed class AnimusForgeConversationHistoryLogPopup
 
 	public static bool IsOpen => _activePopup != null && !_activePopup._isClosed;
 
-	private AnimusForgeConversationHistoryLogPopup(ScreenBase screen, string targetName, IReadOnlyList<AnimusForgeDialogueHistoryEntry> entries, Action onClose)
+	private AnimusForgeConversationHistoryLogPopup(ScreenBase screen, string targetName, Hero targetHero, CharacterObject targetCharacter, IReadOnlyList<AnimusForgeDialogueHistoryEntry> entries, Action onClose)
 	{
 		_screen = screen;
 		_onClose = onClose;
-		_dataSource = new AnimusForgeConversationHistoryLogVM(targetName, entries, HandleCloseRequested);
+		_dataSource = new AnimusForgeConversationHistoryLogVM(targetName, entries, targetHero, targetCharacter, HandleCloseRequested, HandleOpenEncyclopediaLink);
 		_layer = new GauntletLayer("AnimusForgeConversationHistoryLog", 1200, false);
 	}
 
@@ -46,6 +46,8 @@ public sealed class AnimusForgeConversationHistoryLogPopup
 		{
 			CloseActive();
 			ShoutBehavior.TryGetNativeConversationPersistentHistoryTargetForExternal(out Hero targetHero, out string targetName, out string memoryId);
+			ShoutBehavior.TryGetNativeConversationLinkTargetForExternal(out Hero resolvedTargetHero, out CharacterObject targetCharacter);
+			targetHero = targetHero ?? resolvedTargetHero;
 			List<AnimusForgeDialogueHistoryEntry> entries = targetHero != null ? MyBehavior.GetDialogueHistoryEntriesForExternal(targetHero, 260) : new List<AnimusForgeDialogueHistoryEntry>();
 			if (entries.Count == 0 && targetHero == null && !string.IsNullOrWhiteSpace(memoryId))
 			{
@@ -58,7 +60,7 @@ public sealed class AnimusForgeConversationHistoryLogPopup
 				entries = ShoutBehavior.GetNativeConversationSessionHistoryEntriesForExternal(260);
 				Logger.Log("NativeConversationHistory", "open source=session target=" + (targetHero?.StringId ?? targetName ?? "") + " entries=" + entries.Count);
 			}
-			AnimusForgeConversationHistoryLogPopup popup = new AnimusForgeConversationHistoryLogPopup(topScreen, targetName, entries, onClose);
+			AnimusForgeConversationHistoryLogPopup popup = new AnimusForgeConversationHistoryLogPopup(topScreen, targetName, targetHero, targetCharacter, entries, onClose);
 			popup.Open();
 			_activePopup = popup;
 			return true;
@@ -134,6 +136,21 @@ public sealed class AnimusForgeConversationHistoryLogPopup
 	{
 		Close(silent: true);
 		_onClose?.Invoke();
+	}
+
+	private void HandleOpenEncyclopediaLink(string link)
+	{
+		if (!_isClosed)
+		{
+			EncyclopediaEntityLinkNavigationCoordinator.Request(link, CloseForEncyclopediaNavigation);
+		}
+	}
+
+	private void CloseForEncyclopediaNavigation()
+	{
+		// Do not invoke _onClose here: it restores the native overlay, which would otherwise cover the encyclopedia layer.
+		Close(silent: true);
+		AnimusForgeNativeConversationOverlay.CloseActive();
 	}
 
 	private void Close(bool silent)

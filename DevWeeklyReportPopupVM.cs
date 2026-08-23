@@ -7,6 +7,8 @@ public sealed class DevWeeklyReportPopupVM : ViewModel
 {
 	private readonly Action _onClose;
 
+	private readonly Action<string> _onOpenEncyclopediaLink;
+
 	private string _titleText;
 
 	private string _subtitleText;
@@ -292,12 +294,16 @@ public sealed class DevWeeklyReportPopupVM : ViewModel
 		}
 	}
 
-	public DevWeeklyReportPopupVM(string titleText, string subtitleText, string bodyText, int bodyFontSize, Action onClose, string closeText, bool useChronicleColumns = false, bool useShortReportLayout = false, bool showCloseButton = true)
+	public DevWeeklyReportPopupVM(string titleText, string subtitleText, string bodyText, int bodyFontSize, Action onClose, Action<string> onOpenEncyclopediaLink, string closeText, bool useChronicleColumns = false, bool useShortReportLayout = false, bool showCloseButton = true)
 	{
 		_onClose = onClose;
-		TitleText = string.IsNullOrWhiteSpace(titleText) ? "\u5468\u62a5\u9884\u89c8" : titleText;
-		SubtitleText = subtitleText ?? "";
-		BodyText = string.IsNullOrWhiteSpace(bodyText) ? "\u5f53\u524d\u5468\u62a5\u6b63\u6587\u4e3a\u7a7a\u3002" : bodyText.Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+		_onOpenEncyclopediaLink = onOpenEncyclopediaLink;
+		TitleText = EncyclopediaEntityLinkFormatter.SanitizeUntrustedRichText(string.IsNullOrWhiteSpace(titleText) ? "\u5468\u62a5\u9884\u89c8" : titleText);
+		SubtitleText = EncyclopediaEntityLinkFormatter.SanitizeUntrustedRichText(subtitleText ?? "");
+		// Split the stored plain report first; only the final strings assigned to RichText widgets receive native link markup.
+		string normalizedBodyText = string.IsNullOrWhiteSpace(bodyText) ? "\u5f53\u524d\u5468\u62a5\u6b63\u6587\u4e3a\u7a7a\u3002" : bodyText.Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+		EncyclopediaEntityLinkFormatter.DisplaySession linkDisplaySession = EncyclopediaEntityLinkFormatter.CreateDisplaySession();
+		BodyText = linkDisplaySession.Format(normalizedBodyText);
 		BodyFontSize = Math.Max(12, Math.Min(36, bodyFontSize));
 		ColumnBodyFontSize = Math.Max(13, Math.Min(22, BodyFontSize));
 		ShortBodyFontSize = Math.Max(16, Math.Min(24, BodyFontSize + 1));
@@ -309,10 +315,10 @@ public sealed class DevWeeklyReportPopupVM : ViewModel
 		ShowCloseButton = showCloseButton;
 		if (useChronicleColumns)
 		{
-			WeeklyReportTextHelper.SplitChronicleBodyForDisplay(BodyText, out string military, out string diplomatic, out string domestic);
-			MilitaryEventsText = military;
-			DiplomaticAffairsText = diplomatic;
-			DomesticRealmText = domestic;
+			WeeklyReportTextHelper.SplitChronicleBodyForDisplay(normalizedBodyText, out string military, out string diplomatic, out string domestic);
+			MilitaryEventsText = linkDisplaySession.Format(military);
+			DiplomaticAffairsText = linkDisplaySession.Format(diplomatic);
+			DomesticRealmText = linkDisplaySession.Format(domestic);
 		}
 		else
 		{
@@ -326,5 +332,10 @@ public sealed class DevWeeklyReportPopupVM : ViewModel
 	public void ExecuteClose()
 	{
 		_onClose?.Invoke();
+	}
+
+	public void ExecuteOpenEncyclopediaLink(string link)
+	{
+		_onOpenEncyclopediaLink?.Invoke(link);
 	}
 }

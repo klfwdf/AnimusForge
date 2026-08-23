@@ -47,7 +47,7 @@ public sealed class DevWeeklyReportPopup
 		_minimumDwellSeconds = Math.Max(0.0, minimumDwellSeconds);
 		_openedAtUtc = DateTime.UtcNow;
 		int bodyFontSize = DuelSettings.GetSettings()?.WeeklyReportPopupBodyFontSize ?? 18;
-		_dataSource = new DevWeeklyReportPopupVM(titleText, subtitleText, bodyText, bodyFontSize, HandleCloseRequested, closeText, useChronicleColumns, useShortReportLayout, showCloseButton);
+		_dataSource = new DevWeeklyReportPopupVM(titleText, subtitleText, bodyText, bodyFontSize, HandleCloseRequested, HandleOpenEncyclopediaLink, closeText, useChronicleColumns, useShortReportLayout, showCloseButton);
 		_layer = new GauntletLayer("DevWeeklyReportPopup", 4000, false);
 	}
 
@@ -161,6 +161,20 @@ public sealed class DevWeeklyReportPopup
 		RequestDeferredClose();
 	}
 
+	private void HandleOpenEncyclopediaLink(string link)
+	{
+		if (!_isClosed)
+		{
+			EncyclopediaEntityLinkNavigationCoordinator.Request(link, CloseForEncyclopediaNavigation);
+		}
+	}
+
+	private void CloseForEncyclopediaNavigation()
+	{
+		// Navigation intentionally dismisses the report without running its read/close side effects a second time.
+		Close(silent: true);
+	}
+
 	private void RequestDeferredClose()
 	{
 		if (_isClosed || _pendingCloseAction != PendingCloseAction.None)
@@ -190,6 +204,8 @@ public sealed class DevWeeklyReportPopup
 		_isClosed = true;
 		try
 		{
+			// Release the modal input mask before opening the lower-priority encyclopedia layer.
+			_layer.InputRestrictions.ResetInputRestrictions();
 			_layer.IsFocusLayer = false;
 			ScreenManager.TryLoseFocus(_layer);
 		}
