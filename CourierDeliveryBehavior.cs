@@ -4162,6 +4162,8 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
+			// 此窗口仅用于选择重试或放弃；完整接口错误改由左下角消息和日志承载。
+			NonBlockingErrorReport.Show("信使回信生成失败", "信使回信正文生成失败：\n\n" + (error ?? "未知错误"));
 			InformationManager.ShowInquiry(new InquiryData(
 				"信使回信生成失败",
 				LlmRetryPrompt.BuildRetryDescription("信使回信正文生成", error),
@@ -4420,6 +4422,8 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
+			// 此窗口仅用于选择重试或放弃；完整接口错误改由左下角消息和日志承载。
+			NonBlockingErrorReport.Show("信使来信生成失败", "信使来信正文生成失败：\n\n" + (error ?? "未知错误"));
 			InformationManager.ShowInquiry(new InquiryData(
 				"信使来信生成失败",
 				LlmRetryPrompt.BuildRetryDescription("信使来信正文生成", error),

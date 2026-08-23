@@ -26,7 +26,7 @@
                  "PostprocessRules":  [
                                           {
                                               "Tag":  "[ACTION:DUEL]",
-                                              "Description":  "玩家和NPC都无条件同意武器决斗时输出。NPC只是提出赌注并问如何/成交吗时禁止。只要输出[ACTION:DUEL]且表内有DUEL_LINE_WIN/LOSE，必须同时输出两条台词。"
+                                              "Description":  "玩家和NPC都无条件同意武器决斗时输出。NPC只是提出赌注并问如何/成交吗时禁止。只要输出[ACTION:DUEL]且表内有DUEL_LINE_WIN/LOSE，必须同时输出两条台词，注意，决斗/单挑和战斗有本质不同，如果不是决斗/单挑，禁止输入此系列标签。"
                                           },
                                           {
                                               "Tag":  "[AD:价值:天数:N/P:备注内容]",
@@ -652,7 +652,7 @@
                                                      },
                                                      {
                                                          "Tag":  "[ACTION:WORLDMAP_ORDER:FOLLOW:{hero|party}:{id}:{days}]",
-                                                         "Description":  "仅当NPC明确同意自己的队伍无条件跟随玩家、指定英雄或指定部队时输出，与成为玩家队伍成员有本质区别。跟随玩家时目标类型写hero，id填写main_hero，天数默认3。单纯去某地、守某地、留在本城不要额外输出FOLLOW。若语境是场景内NPC本人跟随玩家且标签表含SCENE_FOLLOW_PLAYER，使用场景标签。若NPC在玩家主队成员名册中，首个有效任务命令会由代码隐式分兵。"
+                                                         "Description":  "仅当NPC明确同意自己的队伍(而不是其他人的队伍）无条件跟随玩家、指定英雄或指定部队时输出，与成为玩家队伍成员有本质区别。跟随玩家时目标类型写hero，id填写main_hero，天数默认3。单纯去某地、守某地、留在本城不要额外输出FOLLOW。若语境是场景内NPC本人跟随玩家且标签表含SCENE_FOLLOW_PLAYER，使用场景标签。若NPC在玩家主队成员名册中，首个有效任务命令会由代码隐式分兵。"
                                                      },
                                                      {
                                                          "Tag":  "[ACTION:WORLDMAP_ORDER:ATTACK:{hero|party|settlement}:{id}:{days}:{AI|FORCE}]",

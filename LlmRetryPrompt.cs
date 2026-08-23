@@ -52,8 +52,8 @@ public static class LlmRetryPrompt
 	public static string BuildRetryDescription(string stageName, string error)
 	{
 		string stage = string.IsNullOrWhiteSpace(stageName) ? "LLM请求" : stageName.Trim();
-		string detail = NormalizeFullText(error, "未知错误");
-		return stage + "失败：\n\n" + detail + "\n\n是否立即重试？";
+		// 重试窗口只承载“重试/放弃”这个必要决策；完整诊断已在 ShowRetryPrompt 中转到左下角和日志。
+		return stage + "失败。详细错误已显示在左下角消息并写入日志。\n\n是否立即重试？";
 	}
 
 	public static string BuildFailureDetail(string reason, string modelReply, string rawResponse = null)
@@ -80,23 +80,10 @@ public static class LlmRetryPrompt
 	{
 		void Show()
 		{
-			try
-			{
-				InformationManager.ShowInquiry(AiErrorAnalysisInquiry.AddAnalysisOption(new InquiryData(
-					string.IsNullOrWhiteSpace(title) ? "AnimusForge 请求失败" : title.Trim(),
-					NormalizeFullText(message, "未知错误"),
-					isAffirmativeOptionShown: true,
-					isNegativeOptionShown: false,
-					"知道了",
-					"",
-					null,
-					null), forceFailure: true),
-					pauseGameActiveState: true,
-					prioritize: true);
-			}
-			catch
-			{
-			}
+			// 纯 LLM 失败报告改走左下角消息，避免完整 API 响应覆盖正在操作的菜单。
+			NonBlockingErrorReport.Show(
+				string.IsNullOrWhiteSpace(title) ? "AnimusForge 请求失败" : title.Trim(),
+				NormalizeFullText(message, "未知错误"));
 		}
 
 		PostToMainThread(Show);
@@ -150,6 +137,10 @@ public static class LlmRetryPrompt
 		{
 			try
 			{
+				// 保留重试决策窗口，但把可能很长的接口响应从窗口主体迁到非阻塞消息。
+				NonBlockingErrorReport.Show(
+					"AnimusForge 请求失败",
+					(string.IsNullOrWhiteSpace(stageName) ? "LLM请求" : stageName.Trim()) + "失败：\n\n" + NormalizeFullText(error, "未知错误"));
 				InformationManager.ShowInquiry(new InquiryData(
 					"AnimusForge 请求失败",
 					BuildRetryDescription(stageName, error),
