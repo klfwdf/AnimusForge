@@ -734,6 +734,8 @@ public class SubModule : MBSubModuleBase
 		ShoutTextInputPopup.CloseForSystemInterruptionIfNeeded();
 		ShoutTextInputPopup.KeepMissionPausedIfOpen();
 		DevWeeklyReportPopup.ProcessDeferredCloseIfNeeded();
+		// RichText handlers queue layer changes so encyclopedia navigation never mutates layers during widget event dispatch.
+		EncyclopediaEntityLinkNavigationCoordinator.ProcessPending();
 		PlayerNotorietyPopup.ProcessDeferredCloseIfNeeded();
 		PlayerRpForgePopup.ProcessDeferredCloseIfNeeded();
 		AnimusForgeConversationHistoryLogPopup.OnApplicationTick();
@@ -771,6 +773,8 @@ public class SubModule : MBSubModuleBase
 			RunWatchedTickPhase("SubModule.ShoutTextInputPopup.CloseForSystemInterruptionIfNeeded", () => ShoutTextInputPopup.CloseForSystemInterruptionIfNeeded());
 			RunWatchedTickPhase("SubModule.ShoutTextInputPopup.KeepMissionPausedIfOpen", () => ShoutTextInputPopup.KeepMissionPausedIfOpen());
 			RunWatchedTickPhase("SubModule.DevWeeklyReportPopup.ProcessDeferredCloseIfNeeded", () => DevWeeklyReportPopup.ProcessDeferredCloseIfNeeded());
+			// Preserve the same next-frame RichText navigation ordering while detailed performance scopes are enabled.
+			RunWatchedTickPhase("SubModule.EncyclopediaEntityLinkNavigationCoordinator.ProcessPending", () => EncyclopediaEntityLinkNavigationCoordinator.ProcessPending());
 			RunWatchedTickPhase("SubModule.PlayerNotorietyPopup.ProcessDeferredCloseIfNeeded", () => PlayerNotorietyPopup.ProcessDeferredCloseIfNeeded());
 			RunWatchedTickPhase("SubModule.PlayerRpForgePopup.ProcessDeferredCloseIfNeeded", () => PlayerRpForgePopup.ProcessDeferredCloseIfNeeded());
 			RunWatchedTickPhase("SubModule.AnimusForgeConversationHistoryLogPopup.OnApplicationTick", () => AnimusForgeConversationHistoryLogPopup.OnApplicationTick());

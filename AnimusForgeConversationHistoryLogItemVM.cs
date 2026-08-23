@@ -1,3 +1,5 @@
+using System;
+using TaleWorlds.CampaignSystem;
 using TaleWorlds.Library;
 
 namespace AnimusForge;
@@ -11,6 +13,8 @@ public sealed class AnimusForgeConversationHistoryLogItemVM : ViewModel
 	private string _chatText;
 
 	private string _fontColor;
+
+	private readonly Action<string> _onOpenEncyclopediaLink;
 
 	[DataSourceProperty]
 	public string ChatItemTime
@@ -68,12 +72,21 @@ public sealed class AnimusForgeConversationHistoryLogItemVM : ViewModel
 		}
 	}
 
-	public AnimusForgeConversationHistoryLogItemVM(string time, string speaker, string text, string kind)
+	// This constructor receives an internal UI snapshot and is intentionally not part of the public VM surface.
+	internal AnimusForgeConversationHistoryLogItemVM(string time, string speaker, string text, string kind, EncyclopediaEntityLinkFormatter.DisplaySession linkDisplaySession, Hero conversationTargetHero, CharacterObject conversationTargetCharacter, Action<string> onOpenEncyclopediaLink)
 	{
+		_onOpenEncyclopediaLink = onOpenEncyclopediaLink;
 		ChatItemTime = time ?? "";
 		ChatSpeaker = string.IsNullOrWhiteSpace(speaker) ? "\u8bb0\u5f55" : speaker.Trim();
-		ChatText = string.IsNullOrWhiteSpace(ChatSpeaker) ? (text ?? "") : "(" + ChatSpeaker + ")" + (text ?? "");
+		// Build only a disposable RichText copy; the persisted dialogue entry stays plain for memory and LLM reuse.
+		string rawDisplayText = string.IsNullOrWhiteSpace(ChatSpeaker) ? (text ?? "") : "(" + ChatSpeaker + ")" + (text ?? "");
+		ChatText = linkDisplaySession?.Format(rawDisplayText, conversationTargetHero, conversationTargetCharacter) ?? EncyclopediaEntityLinkFormatter.SanitizeUntrustedRichText(rawDisplayText);
 		FontColor = ResolveColor(kind);
+	}
+
+	public void ExecuteOpenEncyclopediaLink(string link)
+	{
+		_onOpenEncyclopediaLink?.Invoke(link);
 	}
 
 	private static string ResolveColor(string kind)
