@@ -67,6 +67,12 @@ AnimusForge                                     # compatibility facades only ins
 
 Do not move all code at once. First extract stable data/rules/state helpers, then route the existing facade methods to the extracted code one slice at a time.
 
+## 2026-08-23 postprocess frequency cleanup
+
+- Removed the unused `SiegePostprocessFrequencyProfile` keyword classifier. It had no live counter or throttle state and was reachable only from obsolete tests and reset labels.
+- Removed `AfGcczShoutBridge.ShouldAllowPostprocessByFrequency(...)` and `ResetPostprocessFrequencyForMissionBoundary(...)`; both were pass-through or log-only compatibility facades.
+- Native conversation, scene shout, and unified postprocess now rely directly on active-scene selection plus the semantic candidate-tag contract. No dialogue keyword list can reopen or suppress a GCCZ postprocess request.
+
 ## 2026-06-08 fused runtime bridge seed
 
 The fused AF test tree now has a real isolated GCCZ source area:

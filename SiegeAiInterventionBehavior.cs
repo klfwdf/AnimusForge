@@ -2008,7 +2008,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			+ " location=" + (_activeInterventionLocationId ?? "N/A"));
 		_nextControlTickTime = 0f;
 		_nextPlunderTickTime = 0f;
-		AfGcczShoutBridge.ResetPostprocessFrequencyForMissionBoundary(SiegePostprocessFrequencyProfile.MissionStartResetSource);
 		try
 		{
 			if (ResolveCurrentSettlement()?.IsTown == true
@@ -2264,7 +2263,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			TroopInspectionBehavior.CleanupRuntime("castle_gccz_mission_ended_before_aftermath");
 		}
-		AfGcczShoutBridge.ResetPostprocessFrequencyForMissionBoundary(SiegePostprocessFrequencyProfile.MissionEndResetSource);
 		GcczDiagnosticLog.Log("Mission", "ending settlement=" + (_activeSettlementId ?? "N/A")
 			+ " mode=" + _activeMode
 			+ " pendingAftermath=" + _hasPendingAftermath

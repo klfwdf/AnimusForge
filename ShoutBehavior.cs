@@ -18486,11 +18486,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		bool worldMapPartyCommandPostprocessSelected = worldMapPartyCommandRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "worldmap_party_command");
 		bool marriagePostprocessSelected = HasPreprocessRuleHit(postprocessPreprocessHits, "marriage");
 		bool siegeInterventionPostprocessSelected = AfGcczShoutBridge.ShouldContinuePostprocess(siegeInterventionRuleInjected, postprocessPreprocessHits);
-		siegeInterventionPostprocessSelected = AfGcczShoutBridge.ShouldAllowPostprocessByFrequency(
-			siegeInterventionPostprocessSelected,
-			shouldRecordPlayerInput ? promptPlayerText : "",
-			shouldRecordPlayerInput,
-			"native_conversation");
 		bool directNoblePrisonerConversation = shouldRecordPlayerInput && noblePrisonerExecutionRuleInjected;
 		if (directNoblePrisonerConversation)
 		{
@@ -21136,8 +21131,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			worldMapPartyCommandRuleInjected = worldMapPartyCommandRuleInjected && AfGcczShoutBridge.ShouldAllowAfRuleForCurrentStage(TownAfRuleRoutingPolicy.WorldMapPartyCommandRuleId);
 			nobleGatheringRuleInjected = nobleGatheringRuleInjected && AfGcczShoutBridge.ShouldAllowAfRuleForCurrentStage(TownAfRuleRoutingPolicy.NobleGatheringRuleId);
 			marriageRuleInjected = marriageRuleInjected && AfGcczShoutBridge.ShouldAllowAfRuleForCurrentStage(TownAfRuleRoutingPolicy.MarriageRuleId);
-			bool siegeInterventionRuleInjected = AfGcczShoutBridge.ShouldRunPostprocessFromPreprocessHits(preprocessRuleHits);
-			siegeInterventionRuleInjected = AfGcczShoutBridge.ShouldAllowPostprocessByFrequency(siegeInterventionRuleInjected, playerText, latestReplyHasPlayerInput, "native");
+			bool siegeInterventionRuleInjected = AfGcczShoutBridge.ShouldRunPostprocessForActiveScene();
 			if (!CanUseSceneMechanismPostprocessForSpeaker(targetAgentIndex))
 			{
 				sceneMechanismRuleInjected = false;
@@ -26918,7 +26912,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					bool proposeAgendaPostprocessSelected = false;
 					bool persistentAdpDebtPostprocessSelected = HasPreprocessRuleHit(postprocessPreprocessHits, PersistentAdpDebtPostprocessRuleId);
 					bool siegeInterventionPostprocessSelected = AfGcczShoutBridge.ShouldContinuePostprocess(siegeInterventionRuleInjected, postprocessPreprocessHits);
-					siegeInterventionPostprocessSelected = AfGcczShoutBridge.ShouldAllowPostprocessByFrequency(siegeInterventionPostprocessSelected, playerText, replyIsDirectPlayerResponse, "scene_queue");
 					bool directNoblePrisonerConversation = replyIsDirectPlayerResponse
 						&& noblePrisonerExecutionRuleInjected;
 					if (directNoblePrisonerConversation)
