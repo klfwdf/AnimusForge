@@ -121,6 +121,9 @@ $activeRuntimeText = ($activeRuntimeFiles | ForEach-Object {
     Assert-Condition (Test-Path -LiteralPath $_ -PathType Leaf) "Missing active GCCZ runtime file: $_"
     [System.IO.File]::ReadAllText($_)
 }) -join "`n"
+$allInterventionRuntimeText = ((Get-ChildItem -LiteralPath $FusedRoot -File -Filter "SiegeAiInterventionBehavior*.cs") | ForEach-Object {
+    [System.IO.File]::ReadAllText($_.FullName)
+}) -join "`n"
 
 $keywordTriggerPatterns = @(
     'playerText\s*\.\s*(Contains|IndexOf|StartsWith|EndsWith)\s*\(',
@@ -137,7 +140,11 @@ $settlementEffectAdapterText = [System.IO.File]::ReadAllText($settlementEffectAd
 $directSettlementMutationPatterns = @(
     'AdjustSettlementLocalPublicTrustForExternal\s*\(',
     'AdjustPersonalTrustWholeDeltaForExternal\s*\(',
-    '\.FoodStocks\s*='
+    'ChangeRelationAction\.ApplyPlayerRelation\s*\(',
+    '\.Prosperity\s*[+\-*/]?=',
+    '\.Loyalty\s*[+\-*/]?=',
+    '\.Security\s*[+\-*/]?=',
+    '\.FoodStocks\s*[+\-*/]?='
 )
 foreach ($runtimeFile in Get-ChildItem -LiteralPath $FusedRoot -File -Filter "SiegeAiInterventionBehavior*.cs") {
     if ($runtimeFile.FullName -eq $settlementEffectAdapterPath) {
@@ -152,11 +159,44 @@ $requiredSettlementEffectEvidence = @(
     'TownSettlementEffectPlan.FromPlunderDelta',
     'TownSettlementEffectPlan.FromMassacreDelta',
     'TownSettlementEffectPlan.FromFinalOutcome',
-    'ApplyTownSettlementEffectPlan('
+    'ApplyTownSettlementEffectPlan(',
+    'ApplyOwnerRelationDelta(',
+    'ApplyExtraNativeDevastateProsperityPenalty(',
+    'BeginRepopulationProsperityGrowthDebuff(',
+    'BeginCivicPositiveBuff('
 )
 $settlementEffectRuntimeText = $activeRuntimeText + "`n" + $settlementEffectAdapterText
 foreach ($snippet in $requiredSettlementEffectEvidence) {
     Assert-Condition ($settlementEffectRuntimeText.Contains($snippet)) "Missing GCCZ settlement-effect evidence: $snippet"
+}
+
+$economyEffectAdapterPath = Join-Path $FusedRoot "SiegeAiInterventionBehavior.TownEconomyEffectAdapter.cs"
+Assert-Condition (Test-Path -LiteralPath $economyEffectAdapterPath -PathType Leaf) "Missing GCCZ economy-effect adapter: $economyEffectAdapterPath"
+$economyEffectAdapterText = [System.IO.File]::ReadAllText($economyEffectAdapterPath)
+$directEconomyMutationPatterns = @(
+    'GiveGoldAction\.ApplyBetweenCharacters\s*\(',
+    '\.ChangeHeroGold\s*\(',
+    'itemRoster\.AddToCounts\s*\(',
+    'sourceRoster\.AddToCounts\s*\(',
+    '_pendingLootRoster\.AddToCounts\s*\('
+)
+foreach ($runtimeFile in Get-ChildItem -LiteralPath $FusedRoot -File -Filter "SiegeAiInterventionBehavior*.cs") {
+    if ($runtimeFile.FullName -eq $economyEffectAdapterPath) {
+        continue
+    }
+    $runtimeFileText = [System.IO.File]::ReadAllText($runtimeFile.FullName)
+    foreach ($pattern in $directEconomyMutationPatterns) {
+        Assert-Condition (-not [System.Text.RegularExpressions.Regex]::IsMatch($runtimeFileText, $pattern)) "GCCZ economy mutation escaped its adapter in $($runtimeFile.Name): $pattern"
+    }
+}
+$requiredEconomyEffectEvidence = @(
+    'AwardGoldToPlayer(',
+    'TransferHeroGoldToPlayer(',
+    'RestoreItemStackToPlayerParty(',
+    'MoveItemStackToPendingLoot('
+)
+foreach ($snippet in $requiredEconomyEffectEvidence) {
+    Assert-Condition ($allInterventionRuntimeText.Contains($snippet)) "Missing GCCZ economy-effect evidence: $snippet"
 }
 
 $directAftermathAdapterPath = Join-Path $FusedRoot "SiegeAiInterventionBehavior.DirectAftermathAdapter.cs"
@@ -188,9 +228,6 @@ foreach ($snippet in $requiredDirectAftermathEvidence) {
 
 $completionStatePath = Join-Path $fusedCore "TownEncounterCompletionState.cs"
 Assert-Condition (Test-Path -LiteralPath $completionStatePath -PathType Leaf) "Missing GCCZ encounter-completion state: $completionStatePath"
-$allInterventionRuntimeText = ((Get-ChildItem -LiteralPath $FusedRoot -File -Filter "SiegeAiInterventionBehavior*.cs") | ForEach-Object {
-    [System.IO.File]::ReadAllText($_.FullName)
-}) -join "`n"
 $obsoleteCompletionPatterns = @(
     '_pendingSummarySwitch',
     '_pendingSummaryAftermath',
@@ -263,6 +300,7 @@ Write-Output "Player resources  : $($resourceMappings.Count)"
 Write-Output "Handoff documents : $($documentMappings.Count)"
 Write-Output "Keyword triggers  : none in active GCCZ runtime"
 Write-Output "Effect mutations  : confined to town settlement adapter"
+Write-Output "Economy mutations : confined to town economy adapter"
 Write-Output "Direct aftermath  : one explicit flow state and adapter"
 Write-Output "Encounter finish  : one explicit completion state"
 Write-Output "Scene control     : one mission-scoped state"
