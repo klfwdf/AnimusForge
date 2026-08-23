@@ -315,6 +315,8 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			new InquiryElement("noble_prisoner_escort", "贵族俘虏随行配置", null, isEnabled: true, "分别配置攻城处置、普通定居点、领主大厅和野外会面中带入的英雄俘虏。"),
 			new InquiryElement("troop_inspection", "检阅士兵", null, isEnabled: true, ""),
 			new InquiryElement("military_exercise", "军事演习", null, isEnabled: true, ""),
+			// This terminal entry is intentionally separate from onboarding and developer import so its replacement scope stays narrow.
+			new InquiryElement("reload_database", "重载数据库", null, isEnabled: true, "替换非主角知识、世界/王国开局知识、王国性格/战略和声音；不修改 NPC 个性、背景、记忆、外貌或提示词。"),
 			new InquiryElement("api_onboarding", "重新进行API首次引导", null, isEnabled: true, "只重新选择和测试 API 配置，不进入数据库导入或首次使用流程。"),
 			// 错误不再自动弹窗；此入口保留玩家按需调用 AI 分析最近错误的原有能力。
 			new InquiryElement("analyze_latest_error", "分析最近错误", null, isEnabled: true, "使用前处理 API 分析本局最近一次 AnimusForge 错误。"),
@@ -371,6 +373,15 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			{
 				CloseTerminal();
 				MilitaryExerciseBehavior.OpenExerciseFromTerminal();
+			}
+			else if (string.Equals(text, "reload_database", StringComparison.Ordinal))
+			{
+				// Keep the terminal session active so every picker/confirmation callback returns to this root menu.
+				if (!MyBehavior.OpenDatabaseReloadFromTerminal(OpenRootMenu))
+				{
+					InformationManager.DisplayMessage(new InformationMessage("无法打开数据库重载流程。"));
+					OpenRootMenu();
+				}
 			}
 			else if (string.Equals(text, "api_onboarding", StringComparison.Ordinal))
 			{
