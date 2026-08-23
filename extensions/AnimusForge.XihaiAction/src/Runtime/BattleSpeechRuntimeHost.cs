@@ -738,6 +738,16 @@ namespace AnimusForge.XihaiAction
             return true;
         }
 
+        internal static bool HasActiveNpcSpeechClaim()
+        {
+            lock (Sync)
+            {
+                return _initialized &&
+                       _replyClaim != null &&
+                       StageSettings != null;
+            }
+        }
+
         internal static bool TryDeferShownNpcReply(
             object behavior,
             object npcPacket,
