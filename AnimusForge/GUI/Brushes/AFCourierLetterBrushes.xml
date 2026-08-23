@@ -33,6 +33,46 @@
     </Styles>
   </Brush>
 
+  <!-- Weekly-report parchment uses a light yellow canvas, so this keeps each native link category distinct while giving it darker readable contrast. -->
+  <Brush Name="AnimusForge.EntityLink.WeeklyReport.LinkPalette" BaseBrush="Info.Text">
+    <Styles>
+      <Style Name="Link" TextColorFactor="1" FontColor="#306F77FF" TextGlowColor="#111111FF" />
+      <Style Name="Link.MouseOver" TextColorFactor="1.12" FontColor="#306F77FF" TextGlowColor="#111111FF" />
+      <Style Name="Link.MouseDown" TextColorFactor="0.72" FontColor="#306F77FF" TextGlowColor="#111111FF" />
+      <Style Name="Link.Settlement" TextColorFactor="1" FontColor="#8D623FFF" TextGlowColor="#111111FF" />
+      <Style Name="Link.Settlement.MouseOver" TextColorFactor="1.12" FontColor="#8D623FFF" TextGlowColor="#111111FF" />
+      <Style Name="Link.Settlement.MouseDown" TextColorFactor="0.72" FontColor="#8D623FFF" TextGlowColor="#111111FF" />
+      <Style Name="Link.Hero" TextColorFactor="1" FontColor="#557F8EFF" TextGlowColor="#111111FF" />
+      <Style Name="Link.Hero.MouseOver" TextColorFactor="1.12" FontColor="#557F8EFF" TextGlowColor="#111111FF" />
+      <Style Name="Link.Hero.MouseDown" TextColorFactor="0.72" FontColor="#557F8EFF" TextGlowColor="#111111FF" />
+      <Style Name="Link.Unit" TextColorFactor="1" FontColor="#8F4B44FF" TextGlowColor="#111111FF" />
+      <Style Name="Link.Unit.MouseOver" TextColorFactor="1.12" FontColor="#8F4B44FF" TextGlowColor="#111111FF" />
+      <Style Name="Link.Unit.MouseDown" TextColorFactor="0.72" FontColor="#8F4B44FF" TextGlowColor="#111111FF" />
+      <Style Name="Link.Concept" TextColorFactor="1" FontColor="#4C7D80FF" TextGlowColor="#111111FF" />
+      <Style Name="Link.Concept.MouseOver" TextColorFactor="1.12" FontColor="#4C7D80FF" TextGlowColor="#111111FF" />
+      <Style Name="Link.Concept.MouseDown" TextColorFactor="0.72" FontColor="#4C7D80FF" TextGlowColor="#111111FF" />
+      <Style Name="Link.Kingdom" TextColorFactor="1" FontColor="#6B7195FF" TextGlowColor="#111111FF" />
+      <Style Name="Link.Kingdom.MouseOver" TextColorFactor="1.12" FontColor="#6B7195FF" TextGlowColor="#111111FF" />
+      <Style Name="Link.Kingdom.MouseDown" TextColorFactor="0.72" FontColor="#6B7195FF" TextGlowColor="#111111FF" />
+      <Style Name="Link.Clan" TextColorFactor="1" FontColor="#466793FF" TextGlowColor="#111111FF" />
+      <Style Name="Link.Clan.MouseOver" TextColorFactor="1.12" FontColor="#466793FF" TextGlowColor="#111111FF" />
+      <Style Name="Link.Clan.MouseDown" TextColorFactor="0.72" FontColor="#466793FF" TextGlowColor="#111111FF" />
+    </Styles>
+  </Brush>
+
+  <!-- These weekly-only variants preserve their existing typography and body colors while inheriting the parchment-safe category palette above. -->
+  <Brush Name="AnimusForge.EntityLink.WeeklyReport.PopupDescription.Text" BaseBrush="AnimusForge.EntityLink.WeeklyReport.LinkPalette" Font="FiraSansExtraCondensed-Regular" TextHorizontalAlignment="Left">
+    <Styles>
+      <Style Name="Default" FontColor="#F1E9DAFF" TextGlowColor="#000000FF" TextOutlineColor="#000000FF" TextOutlineAmount="0" TextGlowRadius="0" TextBlur="0" FontSize="20" />
+    </Styles>
+  </Brush>
+
+  <Brush Name="AnimusForge.EntityLink.WeeklyReport.ParchmentBody.Text" BaseBrush="AnimusForge.EntityLink.WeeklyReport.LinkPalette" Font="simkai" TextHorizontalAlignment="Left" TextVerticalAlignment="Top">
+    <Styles>
+      <Style Name="Default" FontSize="22" FontColor="#15100BFF" TextOutlineAmount="0" TextGlowRadius="0" TextBlur="0" TextShadowOffset="0" />
+    </Styles>
+  </Brush>
+
   <Brush Name="AnimusForge.EntityLink.PopupTitle.Text" BaseBrush="Info.Text" Font="Galahad" TextHorizontalAlignment="Center">
     <Styles>
       <Style Name="Default" FontColor="#E4C59BFF" TextGlowColor="#000000FF" TextOutlineColor="#000000FF" TextOutlineAmount="0.01" TextGlowRadius="0" TextBlur="0" FontSize="36" />
