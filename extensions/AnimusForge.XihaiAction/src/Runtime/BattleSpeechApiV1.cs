@@ -29,7 +29,8 @@ namespace AnimusForge.XihaiAction
             IReadOnlyList<Agent> frozenAudience,
             ActionProgramV4 actionProgram,
             BattleSpeechTacticV2 tactic,
-            IReadOnlyList<string> audienceReplies = null)
+            IReadOnlyList<string> audienceReplies = null,
+            bool tacticDecisionProvided = false)
         {
             Snapshot = snapshot ?? throw new ArgumentNullException(nameof(snapshot));
             Mission = mission ?? throw new ArgumentNullException(nameof(mission));
@@ -38,6 +39,7 @@ namespace AnimusForge.XihaiAction
             ActionProgram = actionProgram;
             Tactic = tactic;
             AudienceReplies = (audienceReplies ?? Array.Empty<string>()).ToArray();
+            TacticDecisionProvided = tacticDecisionProvided;
         }
 
         public BattleSpeechSessionSnapshotV1 Snapshot { get; }
@@ -47,6 +49,7 @@ namespace AnimusForge.XihaiAction
         public ActionProgramV4 ActionProgram { get; }
         public BattleSpeechTacticV2 Tactic { get; }
         public string[] AudienceReplies { get; }
+        public bool TacticDecisionProvided { get; }
     }
 
     public static class BattleSpeechApiV1

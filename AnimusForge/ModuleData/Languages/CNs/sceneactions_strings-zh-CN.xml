@@ -59,6 +59,8 @@
     <string id="SAX_MCM_Command" text="下令手势" />
     <string id="SAX_MCM_FollowMe" text="示意跟上" />
     <string id="SAX_MCM_CutThroat" text="割喉手势" />
+    <string id="SAX_MCM_TKeyBattleSpeechEnabled" text="启用 T 键场景喊话中的演讲识别" />
+    <string id="SAX_MCM_TKeyBattleSpeechEnabled_Hint" text="开启后，T 键场景喊话的内容可以进入演讲通道；Y 键演讲选项仍只在总开关开启且当前阶段允许演讲时显示。" />
     <string id="SAX_MCM_BattleSpeechEnabled" text="启用阵前演讲" />
     <string id="SAX_MCM_ReplyMin" text="演讲正文最少字数（6-30）" />
     <string id="SAX_MCM_ReplyMax" text="演讲正文最多字数（6-30）" />
@@ -77,6 +79,11 @@
     <string id="SAX_MCM_AudienceReplies" text="启用多名士兵简短回复" />
     <string id="SAX_MCM_AudienceReplyCount" text="口头回复的士兵人数" />
     <string id="SAX_MCM_AudienceReplyInterval" text="士兵口头回复间隔" />
+    <string id="SAX_MCM_AudienceReplyWaveSize" text="每波最多同时回复的士兵人数" />
+    <string id="SAX_MCM_AudienceReplyMinimumChars" text="士兵口头回复最少字数" />
+    <string id="SAX_MCM_AudienceReplyMaximumChars" text="士兵口头回复最多字数" />
+    <string id="SAX_MCM_AudienceReplyMinInterval" text="回复波次最短随机间隔" />
+    <string id="SAX_MCM_AudienceReplyMaxInterval" text="回复波次最长随机间隔" />
     <string id="SAX_MCM_Advance" text="演讲后做下令手势并命令全军推进" />
     <string id="SAX_MCM_AdvanceDelay" text="下令手势后推进延迟" />
     <string id="SAX_MCM_EnemyRadius" text="近敌中断半径" />

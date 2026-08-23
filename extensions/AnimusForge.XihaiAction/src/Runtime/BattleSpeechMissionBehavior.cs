@@ -245,7 +245,8 @@ namespace AnimusForge.XihaiAction
                     BattleSpeechSessionStateV1.AwaitingNpcReply,
                     input.ConversationEpoch,
                     input.RawText,
-                    BattleSpeechRuntimeHost.Settings.NpcReplySeconds);
+                    BattleSpeechRuntimeHost.Settings.NpcReplySeconds,
+                    input.DedicatedSpeechEntry);
                 // An explicit NPC command freezes the topic/request, not the final
                 // wording. AF must generate one fresh troop-facing speech body;
                 // the reply claim below captures that one response and prevents
@@ -267,7 +268,8 @@ namespace AnimusForge.XihaiAction
             BattleSpeechSessionStateV1 state,
             int conversationEpoch,
             string requestText,
-            float timeoutSeconds)
+            float timeoutSeconds,
+            bool combinedNpcRequest = false)
         {
             if (!BattleSpeechRuntimeHost.RefreshMcmOverrides(out string refreshError) ||
                 !BattleSpeechRuntimeHost.Settings.Enabled ||
@@ -329,7 +331,14 @@ namespace AnimusForge.XihaiAction
                     speaker,
                     conversationEpoch,
                     _active.RequestText,
-                    _active.ExpiresAtMissionTime);
+                    _active.ExpiresAtMissionTime,
+                    combinedNpcRequest,
+                    combinedNpcRequest
+                        ? BattleSpeechFrameworkV2.ResolveAudienceReplyCount(
+                            BattleSpeechRuntimeHost.StageSettings.AudienceRepliesEnabled,
+                            BattleSpeechRuntimeHost.StageSettings.AudienceReplyCount,
+                            audience.Length)
+                        : 0);
             }
             SceneActionsLog.Info(
                 "BATTLE_SPEECH",
@@ -433,7 +442,20 @@ namespace AnimusForge.XihaiAction
                 _active.PendingNpcReplyText = null;
                 return;
             }
-            PrepareSpeechPlan(_active, _active.PendingNpcReplyText);
+            if (input.CombinedResponse != null)
+            {
+                _active.ActionProgram = input.CombinedResponse.Plan.ActionProgram;
+                _active.Tactic = input.CombinedResponse.Plan.Tactic;
+                _active.AudienceReplies = input.CombinedResponse.Plan.AudienceReplies
+                    .ToArray();
+                _active.TacticDecisionProvided = true;
+                _active.PlanClassificationPending = false;
+                _active.PlanClassificationCompleted = true;
+            }
+            else
+            {
+                PrepareSpeechPlan(_active, _active.PendingNpcReplyText);
+            }
             // The deferred AF replay only releases the visual/TTS payload. Keep
             // the same normalized body on the speech session so the next Mission
             // tick can transition AwaitingNpcReply -> Speaking exactly once.
@@ -754,7 +776,8 @@ namespace AnimusForge.XihaiAction
                 session.Audience,
                 session.ActionProgram,
                 session.Tactic,
-                session.AudienceReplies);
+                session.AudienceReplies,
+                session.TacticDecisionProvided);
         }
 
         private void Notify(TaleWorlds.Localization.TextObject text, Color color)
@@ -833,6 +856,7 @@ namespace AnimusForge.XihaiAction
             public string PendingSpeechText;
             public ActionProgramV4 ActionProgram;
             public BattleSpeechTacticV2 Tactic;
+            public bool TacticDecisionProvided;
             public string[] AudienceReplies = Array.Empty<string>();
             public System.Threading.CancellationTokenSource ClassificationCancellation;
         }

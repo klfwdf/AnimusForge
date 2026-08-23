@@ -114,9 +114,14 @@ namespace AnimusForge.XihaiAction
                 return;
             }
             PrepareSpeechPlan(session, speechText);
+            // Player speech must wait for the dedicated AF plan instead of
+            // falling back after the one-second NPC staging grace period.
+            // NPC speech keeps the grace period only after reaching its line,
+            // so a slow classifier cannot hold an NPC's scripted position
+            // indefinitely.
             if (session.PlanClassificationPending &&
-                (session.SpeakerKind != BattleSpeechSpeakerKindV1.Npc ||
-                 session.ReachedSpeechLine))
+                session.SpeakerKind == BattleSpeechSpeakerKindV1.Npc &&
+                session.ReachedSpeechLine)
             {
                 session.PlanClassificationPlaybackDeadlineMissionTime =
                     Mission.CurrentTime + PlanClassificationPlaybackBudgetSeconds;
@@ -147,11 +152,16 @@ namespace AnimusForge.XihaiAction
             session.Tactic = BattleSpeechTacticV2.None;
 
             BattleSpeechStageSettingsV2 settings = BattleSpeechRuntimeHost.StageSettings;
-            int replyCount = settings != null && settings.AudienceRepliesEnabled
-                ? Math.Min(settings.AudienceReplyCount, session.Audience?.Length ?? 0)
-                : 0;
+            int replyCount = BattleSpeechFrameworkV2.ResolveAudienceReplyCount(
+                settings != null && settings.AudienceRepliesEnabled,
+                settings?.AudienceReplyCount ?? 0,
+                session.Audience?.Length ?? 0);
             session.AudienceReplies = BattleSpeechFrameworkV2
-                .BuildFallbackAudienceReplies(speechText, replyCount)
+                .BuildFallbackAudienceReplies(
+                    speechText,
+                    replyCount,
+                    settings?.AudienceReplyMinimumChars ?? 8,
+                    settings?.AudienceReplyMaximumChars ?? 24)
                 .ToArray();
             if (settings == null || !settings.SemanticClassifierEnabled ||
                 !SceneActionsRuntimeHost.TryGetBattleSpeechClassifier(
@@ -178,7 +188,9 @@ namespace AnimusForge.XihaiAction
                 SpeechText = speechText,
                 AllowedIntentKeys = allowed,
                 AllowAdvance = false,
-                AudienceReplyCount = replyCount
+                AudienceReplyCount = replyCount,
+                AudienceReplyMinimumChars = settings.AudienceReplyMinimumChars,
+                AudienceReplyMaximumChars = settings.AudienceReplyMaximumChars
             };
             _ = RunPlanClassificationAsync(
                 classifier,
@@ -267,6 +279,8 @@ namespace AnimusForge.XihaiAction
                 if (string.IsNullOrEmpty(plan.Error) &&
                     BattleSpeechFrameworkV2.TryParsePlanClassifierOutput(
                         plan.RawOutput,
+                        BattleSpeechRuntimeHost.StageSettings.AudienceReplyMinimumChars,
+                        BattleSpeechRuntimeHost.StageSettings.AudienceReplyMaximumChars,
                         out BattleSpeechPlanDecisionV2 decision,
                         out parseError) &&
                     ProgramUsesOnly(decision.ActionProgram, plan.AllowedIntentKeys))
@@ -275,12 +289,10 @@ namespace AnimusForge.XihaiAction
                     {
                         session.ActionProgram = decision.ActionProgram;
                     }
-                    int maximumReplies = BattleSpeechRuntimeHost.StageSettings
-                        .AudienceRepliesEnabled
-                        ? Math.Min(
-                            BattleSpeechRuntimeHost.StageSettings.AudienceReplyCount,
-                            session.Audience?.Length ?? 0)
-                        : 0;
+                    int maximumReplies = BattleSpeechFrameworkV2.ResolveAudienceReplyCount(
+                        BattleSpeechRuntimeHost.StageSettings.AudienceRepliesEnabled,
+                        BattleSpeechRuntimeHost.StageSettings.AudienceReplyCount,
+                        session.Audience?.Length ?? 0);
                     bool modelRepliesMatchFrozenCount =
                         decision.AudienceReplies.Count == maximumReplies;
                     if (modelRepliesMatchFrozenCount && maximumReplies > 0)
@@ -440,10 +452,10 @@ namespace AnimusForge.XihaiAction
         {
             if (session.SpeakerKind != BattleSpeechSpeakerKindV1.Npc)
             {
-                // Player speech has no positioning phase. Previously it skipped
-                // the one-second classifier grace period and could wait for the
-                // full AF timeout before showing the speech.
-                ExpirePlanClassificationWaitIfNeeded(session, now);
+                // Player speech has no positioning phase. Do not expire its
+                // plan after one second: the speech stays pending until the
+                // AF plan completes or its configured classifier timeout
+                // produces the normal closed-failure fallback.
                 TryResumePendingSpeech(session);
                 return true;
             }

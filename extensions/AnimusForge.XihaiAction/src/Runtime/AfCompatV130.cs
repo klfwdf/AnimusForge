@@ -795,8 +795,11 @@ namespace AnimusForge.XihaiAction
         internal static async Task<DedicatedNpcSpeechResultV1> GenerateDedicatedNpcSpeechAsync(
             Agent speaker,
             IReadOnlyList<Agent> framedTargets,
-            string topic)
+            string topic,
+            CancellationToken cancellationToken,
+            bool allowDiversityRetry = true)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             DedicatedNpcSpeechResultV1 failure = new DedicatedNpcSpeechResultV1
             {
                 Speaker = speaker,
@@ -809,12 +812,14 @@ namespace AnimusForge.XihaiAction
             }
             try
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 object behavior = _currentInstanceProperty?.GetValue(null, null) ?? _behaviorInstance;
                 if (behavior == null)
                 {
                     failure.Error = "AF ShoutBehavior instance is unavailable.";
                     return failure;
                 }
+                cancellationToken.ThrowIfCancellationRequested();
                 object primaryPacket = _extractNpcDataMethod.Invoke(
                     null,
                     new object[] { speaker });
@@ -830,6 +835,7 @@ namespace AnimusForge.XihaiAction
                 {
                     for (int i = 0; i < framedTargets.Count; i++)
                     {
+                        cancellationToken.ThrowIfCancellationRequested();
                         Agent target = framedTargets[i];
                         if (target == null || !target.IsActive() || target.Index == speaker.Index)
                         {
@@ -838,6 +844,7 @@ namespace AnimusForge.XihaiAction
                         object packet = _extractNpcDataMethod.Invoke(
                             null,
                             new object[] { target });
+                        cancellationToken.ThrowIfCancellationRequested();
                         if (packet != null)
                         {
                             packetList.Add(packet);
@@ -847,8 +854,10 @@ namespace AnimusForge.XihaiAction
                 string sceneDescription = "战场";
                 if (_sceneDescriptionMethod != null)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     sceneDescription = _sceneDescriptionMethod.Invoke(null, null) as string ?? sceneDescription;
                 }
+                cancellationToken.ThrowIfCancellationRequested();
                 object responseTask = _passiveNpcResponseMethod.Invoke(
                     behavior,
                     new object[]
@@ -865,7 +874,13 @@ namespace AnimusForge.XihaiAction
                     failure.Error = "AF returned an unexpected NPC speech task.";
                     return failure;
                 }
-                string response = (await task.ConfigureAwait(false) ?? string.Empty).Trim();
+                // AF 1.3.2.1 exposes this reflected method without a token. Stop
+                // waiting as soon as the mission lifetime ends and discard the
+                // late result; the underlying AF task remains owned by AF.
+                string response = (await AwaitWithCancellationAsync(
+                        task,
+                        cancellationToken).ConfigureAwait(false) ?? string.Empty).Trim();
+                cancellationToken.ThrowIfCancellationRequested();
                 if (string.IsNullOrWhiteSpace(response) ||
                     response.StartsWith("（错误", StringComparison.Ordinal) ||
                     response.StartsWith("（API请求失败", StringComparison.Ordinal))
@@ -873,13 +888,82 @@ namespace AnimusForge.XihaiAction
                     failure.Error = "AF returned an empty or failed NPC speech body.";
                     return failure;
                 }
+                BattleSpeechCombinedNpcResponseV2 combined = null;
+                if (BattleSpeechRuntimeHost.TryGetCombinedSpeechContract(
+                        out int minimumChars,
+                        out int maximumChars,
+                        out string[] allowedIntentKeys,
+                        out int audienceReplyCount,
+                        out int audienceReplyMinimumChars,
+                        out int audienceReplyMaximumChars))
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    if (!BattleSpeechFrameworkV2.TryParseCombinedNpcSpeechOutput(
+                            response,
+                            minimumChars,
+                            maximumChars,
+                            allowedIntentKeys,
+                            audienceReplyCount,
+                            audienceReplyMinimumChars,
+                            audienceReplyMaximumChars,
+                            out combined,
+                            out string combinedError))
+                    {
+                        // Keep the single-response protocol shape even when the
+                        // model violates one field: retain a safe正文 and close
+                        // only actions/tactic, while using local varied replies
+                        // instead of launching a second semantic classifier.
+                        string safeBody = BattleSpeechFrameworkV2.NormalizeNpcSpeechReply(
+                            BattleSpeechFrameworkV2.ExtractSpeechBodyForFallback(response),
+                            minimumChars,
+                            maximumChars);
+                        combined = new BattleSpeechCombinedNpcResponseV2(
+                            safeBody,
+                                new BattleSpeechPlanDecisionV2(
+                                null,
+                                BattleSpeechTacticV2.None,
+                                BattleSpeechFrameworkV2.BuildFallbackAudienceReplies(
+                                    safeBody,
+                                    audienceReplyCount,
+                                    audienceReplyMinimumChars,
+                                    audienceReplyMaximumChars)));
+                        SceneActionsLog.Warning(
+                            "BATTLE_SPEECH_INPUT",
+                            "Combined NPC speech protocol was invalid; fields failed closed. " +
+                            (combinedError ?? "unknown"));
+                    }
+                    response = combined.SpeechText;
+                }
+                if (allowDiversityRetry &&
+                    BattleSpeechRuntimeHost.TryBeginSpeechRegeneration(
+                        speaker,
+                        response,
+                        out double similarity))
+                {
+                    SceneActionsLog.Warning(
+                        "BATTLE_SPEECH_INPUT",
+                        "Generated NPC speech exactly repeated a recent speech; requesting one bounded regeneration. " +
+                        "Similarity=" + similarity.ToString("0.000") +
+                        " Agent=" + speaker.Index);
+                    return await GenerateDedicatedNpcSpeechAsync(
+                        speaker,
+                        framedTargets,
+                        topic,
+                        cancellationToken,
+                        false).ConfigureAwait(false);
+                }
                 return new DedicatedNpcSpeechResultV1
                 {
                     Speaker = speaker,
                     AfBehavior = behavior,
                     AfNpcPacket = primaryPacket,
-                    Content = response
+                    Content = response,
+                    CombinedResponse = combined
                 };
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
             }
             catch (TargetInvocationException ex)
             {
@@ -891,6 +975,44 @@ namespace AnimusForge.XihaiAction
                 failure.Error = ex.GetType().Name + ": " + ex.Message;
                 return failure;
             }
+        }
+
+        private static async Task<T> AwaitWithCancellationAsync<T>(
+            Task<T> task,
+            CancellationToken cancellationToken)
+        {
+            if (task == null)
+            {
+                throw new ArgumentNullException(nameof(task));
+            }
+            if (!cancellationToken.CanBeCanceled || task.IsCompleted)
+            {
+                return await task.ConfigureAwait(false);
+            }
+
+            Task cancellationTask = Task.Delay(Timeout.Infinite, cancellationToken);
+            Task winner = await Task.WhenAny(task, cancellationTask).ConfigureAwait(false);
+            if (!ReferenceEquals(winner, task))
+            {
+                ObserveLateTask(task);
+                cancellationToken.ThrowIfCancellationRequested();
+            }
+            return await task.ConfigureAwait(false);
+        }
+
+        private static void ObserveLateTask<T>(Task<T> task)
+        {
+            _ = task.ContinueWith(
+                completed =>
+                {
+                    // Observe exceptions from an AF request that outlived the
+                    // mission; its result is intentionally discarded.
+                    _ = completed.Exception;
+                },
+                CancellationToken.None,
+                TaskContinuationOptions.OnlyOnFaulted |
+                TaskContinuationOptions.ExecuteSynchronously,
+                TaskScheduler.Default);
         }
 
         private static void ObserveQueuedNpcReply(

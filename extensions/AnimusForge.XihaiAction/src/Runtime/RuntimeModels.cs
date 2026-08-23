@@ -51,6 +51,7 @@ namespace AnimusForge.XihaiAction
         public object AfBehavior { get; set; }
         public object AfNpcPacket { get; set; }
         public string Content { get; set; }
+        public BattleSpeechCombinedNpcResponseV2 CombinedResponse { get; set; }
         public string Error { get; set; }
         public bool Succeeded => Speaker != null && AfBehavior != null &&
                                   AfNpcPacket != null && !string.IsNullOrWhiteSpace(Content);

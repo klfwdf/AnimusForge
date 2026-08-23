@@ -49,7 +49,7 @@ namespace AnimusForge.SceneActions.Core
 
     public sealed class BattleSpeechPlanDecisionV2
     {
-        internal BattleSpeechPlanDecisionV2(
+        public BattleSpeechPlanDecisionV2(
             ActionProgramV4 actionProgram,
             BattleSpeechTacticV2 tactic,
             IReadOnlyList<string> audienceReplies = null)
@@ -63,6 +63,26 @@ namespace AnimusForge.SceneActions.Core
         public ActionProgramV4 ActionProgram { get; }
         public BattleSpeechTacticV2 Tactic { get; }
         public IReadOnlyList<string> AudienceReplies { get; }
+    }
+
+    /// <summary>
+    /// The closed response returned by the dedicated NPC speech request.  It
+    /// deliberately reuses the plan decision for the action/tactic/reply
+    /// fields, so the runtime can publish one frozen plan without starting a
+    /// second semantic-classifier request.
+    /// </summary>
+    public sealed class BattleSpeechCombinedNpcResponseV2
+    {
+        public BattleSpeechCombinedNpcResponseV2(
+            string speechText,
+            BattleSpeechPlanDecisionV2 plan)
+        {
+            SpeechText = speechText;
+            Plan = plan ?? throw new ArgumentNullException(nameof(plan));
+        }
+
+        public string SpeechText { get; }
+        public BattleSpeechPlanDecisionV2 Plan { get; }
     }
 
     public sealed class BattleSpeechTriggerClassifierRequestV2
@@ -80,6 +100,8 @@ namespace AnimusForge.SceneActions.Core
             Array.Empty<string>();
         public bool AllowAdvance { get; set; }
         public int AudienceReplyCount { get; set; }
+        public int AudienceReplyMinimumChars { get; set; } = 8;
+        public int AudienceReplyMaximumChars { get; set; } = 24;
     }
 
     public interface IBattleSpeechClassifierV2
@@ -100,8 +122,8 @@ namespace AnimusForge.SceneActions.Core
         public bool SemanticClassifierEnabled { get; set; } = true;
         public string ClassifierProviderId { get; set; } = "animusforge.main.v130";
         public int ClassifierTimeoutMs { get; set; } = 15000;
-        public int ReplyMinimumChars { get; set; } = 20;
-        public int ReplyMaximumChars { get; set; } = 60;
+        public int ReplyMinimumChars { get; set; } = 30;
+        public int ReplyMaximumChars { get; set; } = 80;
         public bool NpcPositioningEnabled { get; set; } = true;
         public float FrontDistanceMeters { get; set; } = 10f;
         public float ArrivalRadiusMeters { get; set; } = 1.5f;
@@ -115,7 +137,7 @@ namespace AnimusForge.SceneActions.Core
         public float PacingMinimumIntervalSeconds { get; set; } = 2.5f;
         public float PacingMaximumIntervalSeconds { get; set; } = 4.5f;
         public bool IncludeAlliedAudience { get; set; } = true;
-        public int MaximumVisualResponders { get; set; } = 48;
+        public int MaximumVisualResponders { get; set; } = 60;
         public int VisualWaveSize { get; set; } = 6;
         public int MaximumVisualSubmissionsPerTick { get; set; } = 6;
         public bool AudienceVoicesEnabled { get; set; } = true;
@@ -123,9 +145,17 @@ namespace AnimusForge.SceneActions.Core
         public int AudienceVoiceWaveSize { get; set; } = 3;
         public float AudienceVoiceWaveIntervalSeconds { get; set; } = 0.18f;
         public bool AudienceRepliesEnabled { get; set; } = true;
-        // Spoken replies are emitted one at a time by the performance behavior;
-        // this raises participation without creating an AF request burst.
-        public int AudienceReplyCount { get; set; } = 16;
+        // Spoken replies are emitted in small same-tick waves by the performance
+        // behavior; this raises participation without creating an AF request burst.
+        public int AudienceReplyCount { get; set; } = 24;
+        // Each wave is deterministically randomized from 2 through this cap.
+        public int AudienceReplyWaveSize { get; set; } = 5;
+        public int AudienceReplyMinimumChars { get; set; } = 8;
+        public int AudienceReplyMaximumChars { get; set; } = 24;
+        public float AudienceReplyMinimumIntervalSeconds { get; set; } = 0.2f;
+        public float AudienceReplyMaximumIntervalSeconds { get; set; } = 0.5f;
+        // Retained for old settings readers and old diagnostics; runtime uses
+        // the bounded random interval above.
         public float AudienceReplyIntervalSeconds { get; set; } = 1.1f;
         public bool TacticalAdvanceEnabled { get; set; } = true;
         public float TacticalAdvanceDelaySeconds { get; set; } = 1.8f;
@@ -163,8 +193,13 @@ namespace AnimusForge.SceneActions.Core
                 AudienceVoiceWaveIntervalSeconds > 1f ||
                 AudienceReplyCount < 0 ||
                 AudienceReplyCount > BattleSpeechFrameworkV2.MaximumAudienceReplies ||
-                AudienceReplyIntervalSeconds < 0.5f ||
-                AudienceReplyIntervalSeconds > 3f ||
+                AudienceReplyWaveSize < 2 || AudienceReplyWaveSize > 20 ||
+                AudienceReplyMinimumChars < 4 ||
+                AudienceReplyMaximumChars > 80 ||
+                AudienceReplyMaximumChars < AudienceReplyMinimumChars ||
+                AudienceReplyMinimumIntervalSeconds < 0.1f ||
+                AudienceReplyMaximumIntervalSeconds > 0.5f ||
+                AudienceReplyMaximumIntervalSeconds < AudienceReplyMinimumIntervalSeconds ||
                 TacticalAdvanceDelaySeconds < 0.5f || TacticalAdvanceDelaySeconds > 5f)
             {
                 errors.Add("Battle speech voice or tactic settings are invalid.");
@@ -176,8 +211,8 @@ namespace AnimusForge.SceneActions.Core
     public static class BattleSpeechFrameworkV2
     {
         // One AF plan request carries the whole set; the mission behavior
-        // emits replies one soldier at a time to avoid a request/UI burst.
-        public const int MaximumAudienceReplies = 24;
+        // emits replies in bounded waves to avoid a request/UI burst.
+        public const int MaximumAudienceReplies = 100;
 
         private static readonly string[] ForcedPlayerSpeechPrefixes =
         {
@@ -241,12 +276,29 @@ namespace AnimusForge.SceneActions.Core
             int minimumChars,
             int maximumChars)
         {
+            return BuildNpcSpeechPromptInstruction(
+                minimumChars,
+                maximumChars,
+                null,
+                0);
+        }
+
+        public static string BuildNpcSpeechPromptInstruction(
+            int minimumChars,
+            int maximumChars,
+            IEnumerable<string> recentSpeechTexts,
+            int generationAttempt)
+        {
             if (minimumChars < 6 || maximumChars > 80 || maximumChars < minimumChars)
             {
                 throw new ArgumentOutOfRangeException(
                     nameof(minimumChars),
                     "Battle speech prompt length must stay within 6..80 characters.");
             }
+            string diversity = BattleSpeechDiversityV1.BuildAvoidanceInstruction(recentSpeechTexts);
+            string attempt = generationAttempt > 0
+                ? "这是第" + (generationAttempt + 1) + "次生成同一场演讲，上一版与历史正文完全重复，必须彻底改换开场、情绪推进、句式和结尾号召。"
+                : string.Empty;
             return "【阵前演讲正文生成任务，优先于上面的常规回复格式】沿用当前场景喊话已经提供的" +
                    "角色身份、文化、战场局势和历史，以该角色自己的口吻，面向己方全体士兵说一段" +
                    "真正的战前动员。你不是在回答或表演给玩家看。只输出实际说出的演讲正文，不得" +
@@ -263,7 +315,96 @@ namespace AnimusForge.SceneActions.Core
                    "避免空洞口号堆砌，不得为了凑字重复同一句、同一短语，不得连续罗列三条以上同类命令。" +
                    "不要回答玩家，不要向玩家反问、请示或索要差使，" +
                    "不要称呼玩家为大人、阁下、领主或您，也不要自称嘴拙、无权或拒绝演讲。正文" +
-                   "长度必须为" + minimumChars + "至" + maximumChars + "个可见字符。";
+                   "长度必须为" + minimumChars + "至" + maximumChars + "个可见字符。" +
+                   diversity + attempt;
+        }
+
+        public static string BuildCombinedNpcSpeechPromptInstruction(
+            int minimumChars,
+            int maximumChars,
+            IEnumerable<string> allowedIntentKeys,
+            int audienceReplyCount)
+        {
+            return BuildCombinedNpcSpeechPromptInstruction(
+                minimumChars,
+                maximumChars,
+                allowedIntentKeys,
+                audienceReplyCount,
+                8,
+                24,
+                null,
+                0);
+        }
+
+        public static string BuildCombinedNpcSpeechPromptInstruction(
+            int minimumChars,
+            int maximumChars,
+            IEnumerable<string> allowedIntentKeys,
+            int audienceReplyCount,
+            int audienceReplyMinimumChars,
+            int audienceReplyMaximumChars)
+        {
+            return BuildCombinedNpcSpeechPromptInstruction(
+                minimumChars,
+                maximumChars,
+                allowedIntentKeys,
+                audienceReplyCount,
+                audienceReplyMinimumChars,
+                audienceReplyMaximumChars,
+                null,
+                0);
+        }
+
+        public static string BuildCombinedNpcSpeechPromptInstruction(
+            int minimumChars,
+            int maximumChars,
+            IEnumerable<string> allowedIntentKeys,
+            int audienceReplyCount,
+            int audienceReplyMinimumChars,
+            int audienceReplyMaximumChars,
+            IEnumerable<string> recentSpeechTexts,
+            int generationAttempt)
+        {
+            if (minimumChars < 6 || maximumChars > 80 || maximumChars < minimumChars)
+            {
+                throw new ArgumentOutOfRangeException(nameof(minimumChars));
+            }
+            ValidateAudienceReplyLength(
+                audienceReplyMinimumChars,
+                audienceReplyMaximumChars);
+            int boundedReplyCount = Math.Max(
+                0,
+                Math.Min(MaximumAudienceReplies, audienceReplyCount));
+            string keys = string.Join(",", (allowedIntentKeys ?? Array.Empty<string>())
+                .Where(key => !string.IsNullOrWhiteSpace(key))
+                .Distinct(StringComparer.Ordinal)
+                .OrderBy(key => key, StringComparer.Ordinal));
+            string replyRule = boundedReplyCount == 0
+                ? "REPLIES NONE"
+                : "REPLIES 后面必须给出恰好" + boundedReplyCount +
+                  "条不同的士兵即时回应，用竖线分隔；每条" +
+                  audienceReplyMinimumChars + "至" + audienceReplyMaximumChars +
+                  "字，不写动作、旁白、姓名、星号或标签。";
+            string diversity = BattleSpeechDiversityV1.BuildAvoidanceInstruction(recentSpeechTexts);
+            string attempt = generationAttempt > 0
+                ? "这是第" + (generationAttempt + 1) + "次生成同一场演讲，上一版与历史正文完全重复；必须彻底改变开场、情绪推进、句式、具体切入点和结尾号召。"
+                : string.Empty;
+            return "【阵前演讲单请求协议】这是一次性生成任务。你要同时生成正文、受控动作、战术字段和" +
+                   "士兵回应，不要再生成普通NPC回复，也不要输出解释。正文必须面向己方士兵而不是玩家，" +
+                   "沿用当前上下文真实的角色身份、性格、情绪和战场细节；先观察或判断，再推进情绪，最后" +
+                   "给出符合该NPC口吻的号召。正文和REPLIES必须使用简体中文，不得输出英文正文、英文回应或" +
+                   "英文格式说明；角色背景即使以英文提供，也要转换为自然中文。不要臆造上下文没有的地形、天气或敌军位置，不要把主题原句" +
+                   "机械复述，不要套用统一口号。正文长度必须为" + minimumChars + "至" + maximumChars +
+                   "个可见字符，且必须是一行实际说出的内容。输出格式必须严格为六行（回复数为0时仍保留" +
+                   "第五行）：\nSPEECH_BEGIN\n<正文单行>\nSPEECH_END\nACTIONS NONE 或 ACTIONS PLAY_ACTION <key> 或 ACTIONS PLAY_PROGRAM <program>\nTACTIC NONE\n" +
+                   replyRule + "\n动作key只能从以下冻结白名单选择：" + keys +
+                   "。动作最多4个，>表示先后，+表示同时；不得输出act_*、目标、演员、强制标志或其他战术。" +
+                   "TACTIC只能输出NONE或ADVANCE；只有正文明确提出立即向前推进、冲锋或开战号召时才输出ADVANCE，" +
+                   "否则输出NONE；本地MCM仍是总开关。士兵回应必须像刚听完演讲的不同" +
+                   "现场士兵：老兵沉着、新兵紧张但振作、粗犷者短促、谨慎者可带迟疑、狂热者可激昂；必须回应" +
+                   "正文中的具体内容，避免所有人同声同句。不要反复使用‘为了胜利’‘为了家园’‘听候您的号令’" +
+                   "‘全军向前’‘我们必胜’‘绝不后退’，不要称呼玩家为您、大人或领主。" +
+                   diversity + attempt;
         }
 
         public static string NormalizeNpcSpeechReply(
@@ -289,7 +430,8 @@ namespace AnimusForge.SceneActions.Core
             text = Regex.Replace(text, @"\s+", " ").Trim();
 
             string candidate = TakeCompleteSpeech(text, minimumChars, maximumChars);
-            if (IsValidTroopAddress(candidate, minimumChars, maximumChars))
+            if (IsValidTroopAddress(candidate, minimumChars, maximumChars) &&
+                ContainsChinese(candidate))
             {
                 return candidate;
             }
@@ -305,6 +447,54 @@ namespace AnimusForge.SceneActions.Core
             string fallback = fallbacks.FirstOrDefault(value =>
                 value.Length >= minimumChars && value.Length <= maximumChars);
             return fallback ?? BuildFallbackForLength(minimumChars, maximumChars);
+        }
+
+        public static string ExtractSpeechBodyForFallback(string rawText)
+        {
+            string source = rawText ?? string.Empty;
+            int contentMarker = source.IndexOf("[CONTENT]", StringComparison.Ordinal);
+            if (contentMarker >= 0)
+            {
+                source = source.Substring(contentMarker + "[CONTENT]".Length);
+            }
+            string[] lines = source.Replace("\r\n", "\n").Replace('\r', '\n').Split('\n');
+            int begin = Array.FindIndex(lines, line =>
+                string.Equals(line.Trim(), "SPEECH_BEGIN", StringComparison.Ordinal));
+            if (begin >= 0)
+            {
+                int end = -1;
+                for (int index = begin + 1; index < lines.Length; index++)
+                {
+                    if (string.Equals(lines[index].Trim(), "SPEECH_END", StringComparison.Ordinal))
+                    {
+                        end = index;
+                        break;
+                    }
+                }
+                if (end > begin)
+                {
+                    return string.Join(string.Empty, lines.Skip(begin + 1).Take(end - begin - 1)).Trim();
+                }
+            }
+            return lines.FirstOrDefault(line => !string.IsNullOrWhiteSpace(line))?.Trim() ?? string.Empty;
+        }
+
+        private static bool ContainsChinese(string text)
+        {
+            return !string.IsNullOrEmpty(text) &&
+                   text.Any(character => character >= '\u4e00' && character <= '\u9fff');
+        }
+
+        private static void ValidateAudienceReplyLength(
+            int minimumChars,
+            int maximumChars)
+        {
+            if (minimumChars < 1 || maximumChars < minimumChars || maximumChars > 80)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(minimumChars),
+                    "Audience reply length must stay within 1..80 characters.");
+            }
         }
 
         private static string BuildFallbackForLength(
@@ -641,8 +831,26 @@ namespace AnimusForge.SceneActions.Core
             out BattleSpeechPlanDecisionV2 decision,
             out string error)
         {
+            return TryParsePlanClassifierOutput(
+                output,
+                1,
+                24,
+                out decision,
+                out error);
+        }
+
+        public static bool TryParsePlanClassifierOutput(
+            string output,
+            int audienceReplyMinimumChars,
+            int audienceReplyMaximumChars,
+            out BattleSpeechPlanDecisionV2 decision,
+            out string error)
+        {
             decision = null;
             error = null;
+            ValidateAudienceReplyLength(
+                audienceReplyMinimumChars,
+                audienceReplyMaximumChars);
             string normalized = (output ?? string.Empty).Replace("\r\n", "\n");
             if (normalized.IndexOf('\r') >= 0)
             {
@@ -732,7 +940,9 @@ namespace AnimusForge.SceneActions.Core
                     foreach (string value in values)
                     {
                         string reply = value.Trim();
-                        if (reply.Length < 1 || reply.Length > 24 ||
+                        if (reply.Length < audienceReplyMinimumChars ||
+                            reply.Length > audienceReplyMaximumChars ||
+                            !ContainsChinese(reply) ||
                             reply != value ||
                             reply.IndexOfAny(new[] { '\r', '\n', '*', '<', '>' }) >= 0 ||
                             replies.Contains(reply, StringComparer.Ordinal))
@@ -748,10 +958,202 @@ namespace AnimusForge.SceneActions.Core
             return true;
         }
 
+        public static bool TryParseCombinedNpcSpeechOutput(
+            string output,
+            int minimumChars,
+            int maximumChars,
+            IEnumerable<string> allowedIntentKeys,
+            int expectedReplyCount,
+            out BattleSpeechCombinedNpcResponseV2 response,
+            out string error)
+        {
+            return TryParseCombinedNpcSpeechOutput(
+                output,
+                minimumChars,
+                maximumChars,
+                allowedIntentKeys,
+                expectedReplyCount,
+                8,
+                24,
+                out response,
+                out error);
+        }
+
+        public static bool TryParseCombinedNpcSpeechOutput(
+            string output,
+            int minimumChars,
+            int maximumChars,
+            IEnumerable<string> allowedIntentKeys,
+            int expectedReplyCount,
+            int audienceReplyMinimumChars,
+            int audienceReplyMaximumChars,
+            out BattleSpeechCombinedNpcResponseV2 response,
+            out string error)
+        {
+            response = null;
+            error = null;
+            ValidateAudienceReplyLength(
+                audienceReplyMinimumChars,
+                audienceReplyMaximumChars);
+            string normalized = NormalizeCombinedProtocolEnvelope(output);
+            if (normalized.IndexOf('\r') >= 0)
+            {
+                error = "Combined speech output contains unsupported line endings.";
+                return false;
+            }
+            normalized = RepairLegacyActionMarker(normalized);
+            string[] lines = normalized.Split('\n');
+            if (lines.Length != 5 && lines.Length != 6 ||
+                lines.Any(line => line != line.Trim()))
+            {
+                error = "Combined speech output must contain the closed five/six-line protocol.";
+                return false;
+            }
+            if (!string.Equals(lines[0], "SPEECH_BEGIN", StringComparison.Ordinal) ||
+                !string.Equals(lines[2], "SPEECH_END", StringComparison.Ordinal))
+            {
+                error = "Combined speech markers are invalid.";
+                return false;
+            }
+            string speech = NormalizeNpcSpeechReply(lines[1], minimumChars, maximumChars);
+            if (!IsValidTroopAddress(speech, minimumChars, maximumChars) ||
+                speech.IndexOf("SPEECH_", StringComparison.Ordinal) >= 0)
+            {
+                error = "Combined speech body is invalid.";
+                return false;
+            }
+            string planOutput = lines.Length == 5
+                ? lines[3] + "\n" + lines[4]
+                : lines[3] + "\n" + lines[4] + "\n" + lines[5];
+            planOutput = RepairLegacyActionMarker(planOutput);
+            if (!TryParsePlanClassifierOutput(
+                    planOutput,
+                    audienceReplyMinimumChars,
+                    audienceReplyMaximumChars,
+                    out BattleSpeechPlanDecisionV2 plan,
+                    out error))
+            {
+                return false;
+            }
+            if (!ProgramUsesAllowedKeys(plan.ActionProgram, allowedIntentKeys))
+            {
+                error = "Combined speech action is outside the frozen allow-list.";
+                return false;
+            }
+            int boundedExpected = Math.Max(0, Math.Min(MaximumAudienceReplies, expectedReplyCount));
+            if (plan.AudienceReplies.Count != boundedExpected)
+            {
+                error = "Combined speech audience reply count does not match the frozen audience.";
+                return false;
+            }
+            response = new BattleSpeechCombinedNpcResponseV2(speech, plan);
+            return true;
+        }
+
+        private static bool ProgramUsesAllowedKeys(
+            ActionProgramV4 program,
+            IEnumerable<string> allowedIntentKeys)
+        {
+            if (program == null)
+            {
+                return true;
+            }
+            HashSet<string> allowed = new HashSet<string>(
+                allowedIntentKeys ?? Array.Empty<string>(),
+                StringComparer.Ordinal);
+            return program.Steps.SelectMany(step => step.IntentKeys).All(allowed.Contains);
+        }
+
+        private static string RepairLegacyActionMarker(string planOutput)
+        {
+            string[] lines = (planOutput ?? string.Empty).Split('\n');
+            if (lines.Length > 0 &&
+                lines[0].StartsWith("ACTIONS PLAY_ACTION ", StringComparison.Ordinal))
+            {
+                string expression = lines[0].Substring("ACTIONS PLAY_ACTION ".Length);
+                if (expression.IndexOf('>') >= 0 || expression.IndexOf('+') >= 0)
+                {
+                    lines[0] = "ACTIONS PLAY_PROGRAM " +
+                               NormalizeLegacyProgramExpression(expression);
+                }
+            }
+            else if (lines.Length > 0 &&
+                     lines[0].StartsWith("ACTIONS PLAY_PROGRAM ", StringComparison.Ordinal))
+            {
+                string expression = lines[0].Substring("ACTIONS PLAY_PROGRAM ".Length);
+                lines[0] = "ACTIONS PLAY_PROGRAM " +
+                           NormalizeLegacyProgramExpression(expression);
+            }
+            return string.Join("\n", lines);
+        }
+
+        private static string NormalizeLegacyProgramExpression(string expression)
+        {
+            string normalized = expression ?? string.Empty;
+            // AF may repeat PLAY_ACTION/PLAY_PROGRAM before every key. This
+            // compatibility pass removes only those known markers and spaces
+            // around the sequencing operators; the closed parser still checks
+            // every resulting key and the four-action limit.
+            normalized = Regex.Replace(
+                normalized,
+                @"\bPLAY_(?:ACTION|PROGRAM)\s+",
+                string.Empty,
+                RegexOptions.CultureInvariant);
+            return Regex.Replace(
+                normalized,
+                @"\s*([>+])\s*",
+                "$1",
+                RegexOptions.CultureInvariant);
+        }
+
+        private static string NormalizeCombinedProtocolEnvelope(string output)
+        {
+            string normalized = (output ?? string.Empty).Replace("\r\n", "\n");
+            int begin = normalized.IndexOf("SPEECH_BEGIN", StringComparison.Ordinal);
+            int end = begin < 0
+                ? -1
+                : normalized.IndexOf(
+                    "SPEECH_END",
+                    begin + "SPEECH_BEGIN".Length,
+                    StringComparison.Ordinal);
+            if (begin < 0 || end < begin)
+            {
+                return normalized;
+            }
+
+            int endExclusive = end + "SPEECH_END".Length;
+            string speechBlock = normalized.Substring(begin, endExclusive - begin).Trim();
+            string[] suffixLines = normalized
+                .Substring(endExclusive)
+                .Split('\n')
+                .Select(line => line.Trim())
+                .Where(line =>
+                    line.StartsWith("ACTIONS ", StringComparison.Ordinal) ||
+                    line.StartsWith("TACTIC ", StringComparison.Ordinal) ||
+                    line.StartsWith("REPLIES ", StringComparison.Ordinal))
+                .Take(3)
+                .ToArray();
+            if (suffixLines.Length == 0)
+            {
+                return speechBlock;
+            }
+            return speechBlock + "\n" + string.Join("\n", suffixLines);
+        }
+
         public static IReadOnlyList<string> BuildFallbackAudienceReplies(
             string speechText,
             int count)
         {
+            return BuildFallbackAudienceReplies(speechText, count, 8, 24);
+        }
+
+        public static IReadOnlyList<string> BuildFallbackAudienceReplies(
+            string speechText,
+            int count,
+            int minimumChars,
+            int maximumChars)
+        {
+            ValidateAudienceReplyLength(minimumChars, maximumChars);
             int boundedCount = Math.Max(0, Math.Min(MaximumAudienceReplies, count));
             if (boundedCount == 0)
             {
@@ -762,33 +1164,165 @@ namespace AnimusForge.SceneActions.Core
             string[] pool = chinese
                 ? new[]
                 {
-                    "为了胜利！", "跟随您！", "绝不后退！", "全军向前！",
-                    "我们必胜！", "并肩作战！", "为了我们的家园！", "让敌人付出代价！",
-                     "听从号令！", "守住阵线！", "随您冲锋！", "绝不退缩！",
-                     "为荣耀而战！", "我们站在这里！", "刀剑已经准备好！", "让他们见识我们的勇气！",
-                     "兄弟们跟上！", "阵线不会崩溃！", "今天必将凯旋！", "听候您的号令！",
-                     "我们绝不孤军奋战！", "盾牌举起来！", "为同袍而战！", "胜利属于我们！"
+                    "北坡不能丢，盾牌靠紧！", "我有点怕，但我不会逃！", "弓弦已经拉满了！", "伤口还能撑住，跟上！",
+                    "别散开，盯住前面的旗！", "他们敢过来就让他们撞上来！", "我守左侧，你们别松手！", "听见了，今天不退！",
+                    "风里全是尘，先看清敌人的位置！", "老兵说得对，阵线要靠紧！", "我跟你守住这条线！", "盾牌举起来，别让他们钻缝！",
+                    "要是他们冲来，我先顶住！", "我还站得住，继续往前！", "别喊空话了，跟紧队列！", "北面的弟兄别落单！",
+                    "我听见了，准备迎上去！", "弓手先稳住，别急着放箭！", "今天这一步不能让！", "把侧翼看好，别被绕后！",
+                    "我会跟上，不留在后面！", "他们的位置看得很清楚！", "让我先把盾墙撑起来！", "这次我们一起扛住！"
                 }
                 : new[]
                 {
-                    "For victory!", "We follow!", "Never retreat!", "Forward!",
-                    "We will prevail!", "Stand together!", "For our homes!", "Make them pay!",
-                     "Awaiting your order!", "Hold the line!", "Forward with you!", "Never yield!",
-                     "For honor!", "We stand here!", "Our blades are ready!", "Show them our courage!",
-                     "Brothers, follow!", "The line will hold!", "Victory today!", "Awaiting your command!",
-                     "We stand together!", "Raise your shields!", "For our comrades!", "Victory is ours!"
+                    "The north slope holds; lock shields!", "I am afraid, but I will stand!", "Bows ready; wait for the mark!", "The wound can wait; keep up!",
+                    "Do not scatter; watch the banner!", "Let them crash into our wall!", "I hold the left; stay close!", "I heard you. No step back!",
+                    "Dust is hiding them; keep your eyes open!", "The old hand is right; close ranks!", "I will hold this line with you!", "Raise shields; leave no gap!",
+                    "If they charge, I will meet them!", "I can still stand; move on!", "No empty cries; keep formation!", "Keep the north flank together!",
+                    "I heard it; ready to meet them!", "Archers steady; do not loose early!", "We cannot yield this ground!", "Watch the flank for a turn!",
+                    "I will follow; I will not lag!", "Their position is clear now!", "Let me brace the shield wall!", "We hold together this time!"
                 };
+            string[] suffixes = chinese
+                ? new[] { "我会跟上。", "我来守住。", "这次不退。", "听见号令了。", "我盯住侧翼。" }
+                : new[] { " I will keep up.", " I will hold.", " No retreat this time.", " I heard the order.", " I will watch the flank." };
+            IEnumerable<string> expandedPool = pool.Concat(
+                pool.SelectMany(value => suffixes.Select(suffix => value + suffix)));
             uint seed = StableHash(speechText ?? string.Empty);
-            return Enumerable.Range(0, pool.Length)
-                .Select(index => new
+            return expandedPool
+                .Select((value, index) => new
                 {
-                    Value = pool[index],
-                    Hash = StableHash(seed + ":reply:" + index)
+                    Value = FitFallbackAudienceReply(
+                        value,
+                        minimumChars,
+                        maximumChars,
+                        index),
+                    Index = index
+                })
+                .Where(value => !string.IsNullOrWhiteSpace(value.Value))
+                .GroupBy(value => value.Value, StringComparer.Ordinal)
+                .Select(group => group.First())
+                .Select(value => new
+                {
+                    value.Value,
+                    Hash = StableHash(seed + ":reply:" + value.Index)
                 })
                 .OrderBy(value => value.Hash)
                 .Select(value => value.Value)
+                .Distinct(StringComparer.Ordinal)
                 .Take(boundedCount)
                 .ToArray();
+        }
+
+        private static string FitFallbackAudienceReply(
+            string value,
+            int minimumChars,
+            int maximumChars,
+            int index)
+        {
+            string result = (value ?? string.Empty).Trim();
+            string[] fillers =
+            {
+                "我会跟紧队列。", "别让侧翼空着。", "听见号令就行动。",
+                "把眼前这条线守住。", "我不会留在后面。"
+            };
+            int fillerIndex = Math.Abs(index) % fillers.Length;
+            while (result.Length < minimumChars)
+            {
+                string filler = fillers[fillerIndex++ % fillers.Length];
+                result += filler;
+            }
+            if (result.Length > maximumChars)
+            {
+                result = result.Substring(0, Math.Max(1, maximumChars - 1)) + "！";
+            }
+            return result;
+        }
+
+        public static int ResolveAudienceReplyWaveSize(
+            int configuredWaveSize,
+            int remainingReplies)
+        {
+            if (remainingReplies <= 0)
+            {
+                return 0;
+            }
+            return Math.Min(
+                Math.Min(20, Math.Max(2, configuredWaveSize)),
+                remainingReplies);
+        }
+
+        public static int ResolveAudienceReplyWaveSize(
+            Guid sessionId,
+            int waveIndex,
+            int configuredMaximumWaveSize,
+            int remainingReplies)
+        {
+            if (remainingReplies <= 0)
+            {
+                return 0;
+            }
+            if (remainingReplies == 1)
+            {
+                return 1;
+            }
+            int maximum = Math.Min(20, Math.Max(2, configuredMaximumWaveSize));
+            int randomSize = 2 + (int)(StableHash(
+                (sessionId == Guid.Empty ? "empty" : sessionId.ToString("N")) +
+                ":audience-wave-size:" + Math.Max(0, waveIndex)) %
+                (uint)(maximum - 1));
+            int waveSize = Math.Min(randomSize, remainingReplies);
+
+            // Never leave a one-person tail wave when the remaining audience
+            // can be partitioned safely. A final singleton looks accidental
+            // and contradicts the same-wave participation contract. For a
+            // cap of 2 and a remainder of 3, the only valid partition is one
+            // three-person wave, so allow that bounded exception rather than
+            // emitting a singleton follow-up.
+            if (waveSize < remainingReplies && remainingReplies - waveSize == 1)
+            {
+                if (waveSize < maximum)
+                {
+                    waveSize++;
+                }
+                else if (waveSize > 2)
+                {
+                    waveSize--;
+                }
+                else if (remainingReplies <= 8)
+                {
+                    waveSize = remainingReplies;
+                }
+            }
+            return waveSize;
+        }
+
+        public static int ResolveAudienceReplyCount(
+            bool enabled,
+            int configuredCount,
+            int audienceCount)
+        {
+            if (!enabled || configuredCount <= 0 || audienceCount <= 0)
+            {
+                return 0;
+            }
+            int bounded = Math.Min(
+                MaximumAudienceReplies,
+                Math.Min(configuredCount, audienceCount));
+            return audienceCount >= 2 ? Math.Max(2, bounded) : bounded;
+        }
+
+        public static double ResolveAudienceReplyWaveDelaySeconds(
+            Guid sessionId,
+            int waveIndex,
+            float minimumSeconds,
+            float maximumSeconds)
+        {
+            if (minimumSeconds < 0.1f || maximumSeconds > 0.5f || maximumSeconds < minimumSeconds)
+            {
+                throw new ArgumentOutOfRangeException(nameof(minimumSeconds));
+            }
+            double fraction = (StableHash(
+                (sessionId == Guid.Empty ? "empty" : sessionId.ToString("N")) +
+                ":audience-wave:" + Math.Max(0, waveIndex)) % 10000u) / 9999d;
+            return minimumSeconds + (maximumSeconds - minimumSeconds) * fraction;
         }
 
         public static bool ShouldOpenAudienceResponse(

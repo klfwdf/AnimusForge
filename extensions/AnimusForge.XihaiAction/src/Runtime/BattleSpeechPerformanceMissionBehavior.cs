@@ -130,6 +130,8 @@ namespace AnimusForge.XihaiAction
                 Audience = frozenAudience,
                 StartedAtMissionTime = speech.Snapshot.StartedAtMissionTime,
                 SpeechEndsAtMissionTime = speech.Snapshot.EndsAtMissionTime,
+                Tactic = speech.Tactic,
+                TacticDecisionProvided = speech.TacticDecisionProvided,
                 TailEndsAtMissionTime = speech.Snapshot.StartedAtMissionTime +
                                         plan.TailEndOffsetSeconds,
                 Cues = cues,
@@ -670,52 +672,72 @@ namespace AnimusForge.XihaiAction
                                performance.ReplyAudienceOrdinals.Length;
             if (!repliesDone && now >= performance.NextReplyAtMissionTime)
             {
-                int replyIndex = performance.NextReplyIndex;
-                int ordinal = performance.ReplyAudienceOrdinals[replyIndex];
-                performance.NextReplyIndex++;
-                Agent actor = ResolveAudienceActor(performance, ordinal);
-                string reply = replyIndex < performance.AudienceReplies.Length
-                    ? performance.AudienceReplies[replyIndex]
-                    : string.Empty;
-                float visualDuration = 0f;
-                string replyError = null;
-                bool played = CanPlayAudienceVoice(actor) &&
-                              AfCompatV130.TryShowAudienceReply(
-                                  actor,
-                                  reply,
-                                  out visualDuration,
-                                  out replyError);
-                if (!played)
+                int remaining = performance.ReplyAudienceOrdinals.Length -
+                                performance.NextReplyIndex;
+                int waveSize = BattleSpeechFrameworkV2.ResolveAudienceReplyWaveSize(
+                    performance.OwnerToken,
+                    performance.ReplyWaveIndex,
+                    stage.AudienceReplyWaveSize,
+                    remaining);
+                float longestVisualDuration = 0f;
+                int playedThisWave = 0;
+                for (int waveOffset = 0; waveOffset < waveSize; waveOffset++)
                 {
-                    SceneActionsLog.Warning(
-                        "BATTLE_SPEECH_REPLY",
-                        "Session=" + performance.OwnerToken.ToString("N") +
-                        " Agent=" + (actor?.Index ?? -1) +
-                        " State=Skipped Reason=" +
-                        (replyError ?? "Actor unavailable."));
+                    int replyIndex = performance.NextReplyIndex++;
+                    int ordinal = performance.ReplyAudienceOrdinals[replyIndex];
+                    Agent actor = ResolveAudienceActor(performance, ordinal);
+                    string reply = replyIndex < performance.AudienceReplies.Length
+                        ? performance.AudienceReplies[replyIndex]
+                        : string.Empty;
+                    float visualDuration = 0f;
+                    string replyError = null;
+                    bool played = CanPlayAudienceVoice(actor) &&
+                                  AfCompatV130.TryShowAudienceReply(
+                                      actor,
+                                      reply,
+                                      out visualDuration,
+                                      out replyError);
+                    longestVisualDuration = Math.Max(
+                        longestVisualDuration,
+                        Math.Min(3f, visualDuration));
+                    if (!played)
+                    {
+                        SceneActionsLog.Warning(
+                            "BATTLE_SPEECH_REPLY",
+                            "Session=" + performance.OwnerToken.ToString("N") +
+                            " Agent=" + (actor?.Index ?? -1) +
+                            " State=Skipped Reason=" +
+                            (replyError ?? "Actor unavailable."));
+                    }
+                    else
+                    {
+                        playedThisWave++;
+                    }
                 }
-                else
-                {
-                    SceneActionsLog.Info(
-                        "BATTLE_SPEECH_REPLY",
-                        "Session=" + performance.OwnerToken.ToString("N") +
-                        " Agent=" + actor.Index +
-                        " ReplyIndex=" + performance.NextReplyIndex);
-                }
+                double randomDelay = BattleSpeechFrameworkV2.ResolveAudienceReplyWaveDelaySeconds(
+                    performance.OwnerToken,
+                    performance.ReplyWaveIndex++,
+                    stage.AudienceReplyMinimumIntervalSeconds,
+                    stage.AudienceReplyMaximumIntervalSeconds);
                 performance.NextReplyAtMissionTime = now + Math.Max(
-                    stage.AudienceReplyIntervalSeconds,
-                    Math.Min(3f, visualDuration));
+                    randomDelay,
+                    longestVisualDuration);
                 performance.TailEndsAtMissionTime = Math.Max(
                     performance.TailEndsAtMissionTime,
                     performance.NextReplyAtMissionTime +
                     performance.Settings.PerformanceTailSeconds);
-                return;
+                SceneActionsLog.Info(
+                    "BATTLE_SPEECH_REPLY",
+                    "Session=" + performance.OwnerToken.ToString("N") +
+                    " WaveSize=" + waveSize +
+                    " Played=" + playedThisWave +
+                    " NextDelay=" + randomDelay.ToString("F2"));
             }
 
-            repliesDone = !stage.AudienceRepliesEnabled ||
-                          performance.NextReplyIndex >=
-                          performance.ReplyAudienceOrdinals.Length;
-            if (repliesDone && stage.AudienceVoicesEnabled &&
+            // Native battle cries are an independent response channel. They
+            // start with the first audience reply wave instead of waiting for
+            // every spoken reply to finish.
+            if (stage.AudienceVoicesEnabled &&
                 now >= performance.NextVoiceAtMissionTime &&
                 performance.NextVoiceIndex < performance.VoiceAudienceOrdinals.Length)
             {
@@ -746,10 +768,10 @@ namespace AnimusForge.XihaiAction
                     stage.AudienceVoiceWaveIntervalSeconds;
             }
 
-            bool voicesDone = !stage.AudienceVoicesEnabled ||
-                              performance.NextVoiceIndex >=
-                              performance.VoiceAudienceOrdinals.Length;
-            if (!voicesDone || performance.AdvanceResolved)
+            // The NPC speech completion is the command boundary. Native
+            // battle cries continue in parallel, but they must not delay the
+            // speaker's command gesture or the subsequent Advance order.
+            if (performance.AdvanceResolved)
             {
                 return;
             }
@@ -1392,6 +1414,8 @@ namespace AnimusForge.XihaiAction
             public double SpeechEndsAtMissionTime;
             public double TailEndsAtMissionTime;
             public bool Completed;
+            public BattleSpeechTacticV2 Tactic;
+            public bool TacticDecisionProvided;
             public BattleSpeechPerformanceSettingsV1 Settings;
             public int[] VoiceAudienceOrdinals = Array.Empty<int>();
             public string[] AudienceReplies = Array.Empty<string>();
@@ -1402,6 +1426,7 @@ namespace AnimusForge.XihaiAction
             public int NextVoiceIndex;
             public double NextVoiceAtMissionTime;
             public int NextReplyIndex;
+            public int ReplyWaveIndex;
             public double NextReplyAtMissionTime;
             public double AdvanceAtMissionTime;
             public bool AdvanceResolved;
