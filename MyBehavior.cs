@@ -12682,7 +12682,8 @@ public class MyBehavior : CampaignBehaviorBase
 		string failureReason = (namingResult?.FailureReason ?? "").Trim();
 		if (!string.IsNullOrWhiteSpace(failureReason))
 		{
-			text += " 最后一次失败原因：" + failureReason;
+			// 原始 API 响应可能很长；交互窗口只保留恢复动作，详情由左下角通知和日志承载。
+			text += " 最后一次失败详情已显示在左下角消息并写入日志。";
 		}
 		return text + " 请重新填写事件/叛乱API信息后再试。";
 	}
@@ -12725,7 +12726,18 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		if (!string.IsNullOrWhiteSpace(namingResult?.FailureReason))
 		{
-			stringBuilder.AppendLine("- 最后一次失败原因：" + namingResult.FailureReason.Trim());
+			// 避免完整模型/API 响应把重试或修复按钮推出可视区域。
+			stringBuilder.AppendLine("- 最后一次失败详情已显示在左下角消息并写入日志。");
+		}
+	}
+
+	private static void ReportRebelKingdomNamingFailure(RebelKingdomNamingResult namingResult)
+	{
+		string failureReason = (namingResult?.FailureReason ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(failureReason))
+		{
+			// 仅在失败 UI 已经准备显示时报告一次，避免后台重试过程反复打断玩家。
+			NonBlockingErrorReport.Show("叛乱建国命名失败", failureReason);
 		}
 	}
 
@@ -13352,6 +13364,10 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		if (context?.NamingResult != null)
 		{
+			if (!success)
+			{
+				ReportRebelKingdomNamingFailure(context.NamingResult);
+			}
 			stringBuilder.AppendLine();
 			AppendRebelKingdomNamingResultLines(stringBuilder, context.NamingResult);
 		}
@@ -13394,6 +13410,7 @@ public class MyBehavior : CampaignBehaviorBase
 			stringBuilder.AppendLine("联合响应家族：" + string.Join("、", followerClans.Select(GetClanDisplayName)));
 		}
 		stringBuilder.AppendLine();
+		ReportRebelKingdomNamingFailure(context?.NamingResult);
 		AppendRebelKingdomNamingResultLines(stringBuilder, context?.NamingResult);
 		stringBuilder.AppendLine();
 		stringBuilder.AppendLine(afterApiRepair ? "API 配置流程已返回。请重新生成叛乱建国命名，或跳过本次自动叛乱。" : "请先重新填写事件/叛乱API信息。修正后可回到这里重新生成命名。");
@@ -20519,6 +20536,10 @@ public class MyBehavior : CampaignBehaviorBase
 		StringBuilder stringBuilder = new StringBuilder();
 		if (pendingDevForcedKingdomRebellionContext.NamingResult != null)
 		{
+			if (!flag)
+			{
+				ReportRebelKingdomNamingFailure(pendingDevForcedKingdomRebellionContext.NamingResult);
+			}
 			AppendRebelKingdomNamingResultLines(stringBuilder, pendingDevForcedKingdomRebellionContext.NamingResult);
 			stringBuilder.AppendLine();
 		}
@@ -20555,6 +20576,7 @@ public class MyBehavior : CampaignBehaviorBase
 			stringBuilder.AppendLine("联合响应家族：" + string.Join("、", followerClans.Select(GetClanDisplayName)));
 		}
 		stringBuilder.AppendLine();
+		ReportRebelKingdomNamingFailure(context?.NamingResult);
 		AppendRebelKingdomNamingResultLines(stringBuilder, context?.NamingResult);
 		stringBuilder.AppendLine();
 		stringBuilder.AppendLine(afterApiRepair ? "API 配置流程已返回。请重新生成叛乱建国命名，或返回王国稳定度详情。" : "请先重新填写事件/叛乱API信息。修正后可回到这里重新生成命名。");
@@ -44629,9 +44651,10 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		if (!string.IsNullOrWhiteSpace(weeklyReportRetryContext.FailedReason))
 		{
+			// 完整 API/模型响应只进入左下角摘要与日志，动作窗口保留给重试和修复选择。
+			NonBlockingErrorReport.Show("周事件生成失败", weeklyReportRetryContext.FailedReason.Trim());
 			stringBuilder.AppendLine();
-			stringBuilder.AppendLine("最后一次失败原因：");
-			stringBuilder.AppendLine(weeklyReportRetryContext.FailedReason.Trim());
+			stringBuilder.AppendLine("详细失败原因已显示在左下角消息并写入日志。");
 		}
 		stringBuilder.AppendLine();
 		stringBuilder.AppendLine(weeklyReportRetryContext.IsRequestsPerMinuteLimit ? "游戏将暂停在这里。你可以先直接修改 RPM 限制并立即重试，或进入 API 配置流程继续排查。" : "游戏将暂停在这里。你可以手动重试本周周报生成，或者先进入 API 配置流程修正后再回来重试。");
@@ -49948,7 +49971,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			string date = string.IsNullOrWhiteSpace(draft.GameDate) ? ("第" + draft.GameDayIndex + "日") : draft.GameDate.Trim();
 			string detail = BuildDevHistoryPreview((draft.Lines ?? new List<DailyMemoryLine>()).Select((DailyMemoryLine x) => x?.Text).FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x)), 260);
-			string meta = "行数：" + ((draft.Lines?.Count).GetValueOrDefault()) + "；已入队：" + (draft.QueuedForSummary ? "是" : "否") + (string.IsNullOrWhiteSpace(draft.LastSummaryError) ? "" : "；最近错误：" + BuildDevHistoryPreview(draft.LastSummaryError, 80));
+			string meta = "行数：" + ((draft.Lines?.Count).GetValueOrDefault()) + "；已入队：" + (draft.QueuedForSummary ? "是" : "否") + (string.IsNullOrWhiteSpace(draft.LastSummaryError) ? "" : "；最近错误：" + BuildDevStoredErrorReference(draft.LastSummaryError));
 			options.Add(new DevLargeSelectionPopup.Option("day:" + draft.GameDayIndex, date, detail, meta));
 		}
 		string name = npc.Name?.ToString() ?? "NPC";
@@ -50843,7 +50866,13 @@ public class MyBehavior : CampaignBehaviorBase
 			return "";
 		}
 		string date = string.IsNullOrWhiteSpace(draft.GameDate) ? ("第" + draft.GameDayIndex + "日") : draft.GameDate.Trim();
-		return "日期：" + date + "\n行数：" + ((draft.Lines?.Count).GetValueOrDefault()) + "\n周报素材触发器：" + ((draft.WeeklyMaterialTriggers?.Count).GetValueOrDefault()) + "\n已入总结队列：" + (draft.QueuedForSummary ? "是" : "否") + "\n最近总结错误：" + (string.IsNullOrWhiteSpace(draft.LastSummaryError) ? "无" : draft.LastSummaryError.Trim());
+		return "日期：" + date + "\n行数：" + ((draft.Lines?.Count).GetValueOrDefault()) + "\n周报素材触发器：" + ((draft.WeeklyMaterialTriggers?.Count).GetValueOrDefault()) + "\n已入总结队列：" + (draft.QueuedForSummary ? "是" : "否") + "\n最近总结错误：" + BuildDevStoredErrorReference(draft.LastSummaryError);
+	}
+
+	private static string BuildDevStoredErrorReference(string error)
+	{
+		// 开发菜单会在返回和翻页时反复重建；这里只放固定短提示，避免历史 API 原文再次挤占操作项。
+		return string.IsNullOrWhiteSpace(error) ? "无" : "已记录（完整详情已写入日志）";
 	}
 
 	private static string BuildDevDailyMemoryDraftEditorDescription(DailyMemoryDraft draft)
@@ -51585,7 +51614,7 @@ public class MyBehavior : CampaignBehaviorBase
 			foreach (MemorySummaryJob job in jobs)
 			{
 				string date = string.IsNullOrWhiteSpace(job.GameDate) ? ("第" + job.GameDayIndex + "日") : job.GameDate.Trim();
-				sb.AppendLine(date + " retry=" + job.RetryCount + " error=" + (job.LastError ?? ""));
+				sb.AppendLine(date + " retry=" + job.RetryCount + " error=" + BuildDevStoredErrorReference(job.LastError));
 			}
 		}
 		if (overviewJobs.Count > 0)
@@ -51598,7 +51627,7 @@ public class MyBehavior : CampaignBehaviorBase
 			foreach (MemoryOverviewJob job in overviewJobs)
 			{
 				string date = string.IsNullOrWhiteSpace(job.TriggerGameDate) ? ("第" + job.TriggerGameDayIndex + "日") : job.TriggerGameDate.Trim();
-				sb.AppendLine(date + " retry=" + job.RetryCount + " error=" + (job.LastError ?? ""));
+				sb.AppendLine(date + " retry=" + job.RetryCount + " error=" + BuildDevStoredErrorReference(job.LastError));
 			}
 		}
 		return sb.ToString().TrimEnd();
@@ -51625,7 +51654,7 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			if (!string.IsNullOrWhiteSpace(state.LastError))
 			{
-				sb.AppendLine("最近失败：" + state.LastError.Trim());
+				sb.AppendLine("最近失败：" + BuildDevStoredErrorReference(state.LastError));
 			}
 			if (!string.IsNullOrWhiteSpace(state.Summary))
 			{
@@ -51656,7 +51685,7 @@ public class MyBehavior : CampaignBehaviorBase
 			foreach (MemoryOverviewJob job in jobs)
 			{
 				string date = string.IsNullOrWhiteSpace(job.TriggerGameDate) ? ("第" + job.TriggerGameDayIndex + "日") : job.TriggerGameDate.Trim();
-				sb.AppendLine(date + " retry=" + job.RetryCount + " error=" + (job.LastError ?? ""));
+				sb.AppendLine(date + " retry=" + job.RetryCount + " error=" + BuildDevStoredErrorReference(job.LastError));
 			}
 		}
 		return sb.ToString().TrimEnd();

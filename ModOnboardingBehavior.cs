@@ -150,13 +150,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private string _pendingApiValidationFailureHint = "";
 
-	private bool _showApiValidationFailedHint;
-
-	private string _lastApiValidationFailureHint = "";
-
 	private bool _apiValidationReturnToModelSelection;
-
-	private bool _showModelSelectionValidationFailedHint;
 
 	private bool _baseUrlValidationInProgress;
 
@@ -189,8 +183,6 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	private string _pendingModelFetchMessage = "";
 
 	private List<string> _pendingModelFetchModels = new List<string>();
-
-	private string _lastModelFetchMessage = "";
 
 	private List<string> _lastFetchedModelNames = new List<string>();
 
@@ -886,6 +878,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		}
 		else
 		{
+			// Base URL 输入框本身已有返回入口；失败详情改为左下角消息后直接回到输入，避免额外报告遮挡操作。
 			_lastBaseUrlValidationFailureMessage = pendingBaseUrlValidationMessage;
 			ShowBaseUrlValidationFailurePopup();
 		}
@@ -913,12 +906,18 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		_welcomeInProgress = false;
 		_activeOnboardingStage = OnboardingUiStage.None;
 		InformationManager.HideInquiry();
-		_showModelSelectionValidationFailedHint = false;
 		_lastFetchedModelNames = list;
-		_lastModelFetchMessage = pendingModelFetchMessage;
-		if (!pendingModelFetchSuccess && !string.IsNullOrWhiteSpace(pendingModelFetchMessage))
+		if (!string.IsNullOrWhiteSpace(pendingModelFetchMessage))
 		{
-			InformationManager.DisplayMessage(new InformationMessage(pendingModelFetchMessage));
+			if (pendingModelFetchSuccess)
+			{
+				// 成功状态同样放入左下角，模型选择框只负责呈现可操作选项。
+				InformationManager.DisplayMessage(new InformationMessage(pendingModelFetchMessage, Colors.Green));
+			}
+			else
+			{
+				NonBlockingErrorReport.Show("模型列表拉取失败", pendingModelFetchMessage);
+			}
 		}
 		ShowModelSelectionPopup();
 	}
@@ -957,9 +956,6 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		}
 		if (pendingApiValidationSuccess)
 		{
-			_showApiValidationFailedHint = false;
-			_showModelSelectionValidationFailedHint = false;
-			_lastApiValidationFailureHint = "";
 			if (setupMenuValidation)
 			{
 				_quickPresetFlowActive = false;
@@ -1031,34 +1027,24 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			{
 				fullFailureText = (fullFailureText + "\n\n排查建议：" + pendingApiValidationFailureHint).Trim();
 			}
+			// 失败详情可能含完整模型/API 响应；仅以摘要通知玩家，完整且脱敏后的文本保留在日志和按需 AI 分析缓存中。
+			NonBlockingErrorReport.Show("API 连接失败", fullFailureText);
 			if (setupMenuValidation)
 			{
 				_quickPresetFlowActive = false;
 				_selectedQuickApiPreset = QuickApiPreset.None;
-				_showApiValidationFailedHint = true;
-				_showModelSelectionValidationFailedHint = false;
-				_lastApiValidationFailureHint = fullFailureText;
 				ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
 			}
 			else if (quickPresetPrimaryValidation)
 			{
-				_showApiValidationFailedHint = true;
-				_showModelSelectionValidationFailedHint = false;
-				_lastApiValidationFailureHint = fullFailureText;
 				ShowQuickPresetApiKeyInput(_selectedQuickApiPreset);
 			}
 			else if (apiValidationReturnToModelSelection)
 			{
-				_showApiValidationFailedHint = false;
-				_showModelSelectionValidationFailedHint = true;
-				_lastApiValidationFailureHint = fullFailureText;
 				ShowModelSelectionPopup();
 			}
 			else
 			{
-				_showApiValidationFailedHint = true;
-				_showModelSelectionValidationFailedHint = false;
-				_lastApiValidationFailureHint = fullFailureText;
 				ReopenCurrentApiEntry(ignoreSuppress: true);
 			}
 		}
@@ -1127,9 +1113,6 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_pendingWelcome = false;
 			_pendingReturnToWelcome = false;
 			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
-			_showApiValidationFailedHint = false;
-			_showModelSelectionValidationFailedHint = false;
-			_lastApiValidationFailureHint = "";
 			_quickPresetFlowActive = false;
 			_selectedQuickApiPreset = QuickApiPreset.None;
 			SetApiRepairFlowActive(active: false);
@@ -1155,9 +1138,6 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		_welcomeInProgress = false;
 		_activeOnboardingStage = OnboardingUiStage.None;
 		_pendingUnexpectedResumeStage = OnboardingUiStage.None;
-		_showApiValidationFailedHint = false;
-		_showModelSelectionValidationFailedHint = false;
-		_lastApiValidationFailureHint = "";
 		InformationManager.HideInquiry();
 		InformationManager.DisplayMessage(new InformationMessage("已取消 API 重新配置。"));
 	}
@@ -1172,9 +1152,6 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		_welcomeInProgress = false;
 		_activeOnboardingStage = OnboardingUiStage.None;
 		_pendingUnexpectedResumeStage = OnboardingUiStage.None;
-		_showApiValidationFailedHint = false;
-		_showModelSelectionValidationFailedHint = false;
-		_lastApiValidationFailureHint = "";
 		TryPersistMcmSettings(DuelSettings.GetSettings());
 		InformationManager.HideInquiry();
 		InformationManager.DisplayMessage(new InformationMessage("API 重新配置已完成：配置已写入 MCM，已返回游戏，不会进入数据库导入或首次使用流程。"));
@@ -1264,10 +1241,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			string text = _apiOnlySetupFlowActive
 				? "你正在从 AnimusForge 终端重新配置 API。\n\n本流程只会写入并测试主API、前处理API、后处理API、周报和叛乱API配置；测试通过后会直接返回游戏，不会进入数据库导入或首次使用流程。"
 				: "请选择首次使用的 API 配置方式。\n\n推荐组合会自动写入主API、前处理API、后处理API、周报和叛乱API的 Base URL、模型、思维链和温度；你只需要填写一次 API Key。";
-			if (_showApiValidationFailedHint && !string.IsNullOrWhiteSpace(_lastApiValidationFailureHint))
-			{
-				text += "\n\n【上次 API 测试失败详情】\n" + _lastApiValidationFailureHint;
-			}
+			// API 失败详情由左下角通知承载，快捷配置菜单始终只显示可操作的配置说明。
 			MultiSelectionInquiryData data = new MultiSelectionInquiryData("AnimusForge - API 快捷配置", text, list, isExitShown: false, 0, 1, "确定", "关闭", delegate(List<InquiryElement> selected)
 			{
 				_welcomeInProgress = false;
@@ -1452,9 +1426,6 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		_yjApiSetupMode = mode;
 		SetApiSetupTarget(ApiSetupTarget.Primary);
 		SetApiRepairFlowActive(active: false);
-		_showApiValidationFailedHint = false;
-		_showModelSelectionValidationFailedHint = false;
-		_lastApiValidationFailureHint = "";
 		BeginYjApiCurrentTargetSetup();
 	}
 
@@ -1532,8 +1503,6 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				}
 				TryPersistMcmSettings(settings);
 				_welcomeInProgress = false;
-				_showApiValidationFailedHint = false;
-				_showModelSelectionValidationFailedHint = false;
 				InformationManager.DisplayMessage(new InformationMessage((singleGroup ? "YJ API 单分组 Key" : CurrentApiKeyDisplayName()) + " 已写入 MCM，正在拉取 " + CurrentApiModelDisplayName() + " 可用模型。"));
 				BeginFetchAvailableModelsForSetup();
 			}, delegate
@@ -1734,14 +1703,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_activeOnboardingStage = OnboardingUiStage.QuickPresetApiKey;
 			string presetName = preset == QuickApiPreset.DeepSeekPro ? "deepseek-pro" : "deepseek-flash";
 			string text = "已写入 " + presetName + " 推荐 API 组合。\n请输入 DeepSeek API Key；该 Key 会同时写入主API、前处理API、后处理API、周报和叛乱API。";
-			if (_showApiValidationFailedHint)
-			{
-				text = "刚才的主链路测试没有通过，请检查 API Key 或当前网络环境。\n\n" + text;
-				if (!string.IsNullOrWhiteSpace(_lastApiValidationFailureHint))
-				{
-					text = text + "\n\n排查建议：" + _lastApiValidationFailureHint;
-				}
-			}
+			// 上次失败已由左下角通知报告；输入框正文保持稳定，避免原始响应挤占输入控件。
 			InformationManager.ShowTextInquiry(new TextInquiryData("填写 DeepSeek API Key", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "保存并测试四条API", "返回", delegate(string input)
 			{
 				string text2 = (input ?? "").Trim();
@@ -1755,12 +1717,10 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				{
 					ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
 					return;
-				}
-				SetApiSetupTarget(ApiSetupTarget.Primary);
-				SetApiRepairFlowActive(active: false);
-				_showApiValidationFailedHint = false;
-				_showModelSelectionValidationFailedHint = false;
-				InformationManager.DisplayMessage(new InformationMessage("DeepSeek 推荐配置已写入 MCM，正在测试四条 API。"));
+			}
+			SetApiSetupTarget(ApiSetupTarget.Primary);
+			SetApiRepairFlowActive(active: false);
+			InformationManager.DisplayMessage(new InformationMessage("DeepSeek 推荐配置已写入 MCM，正在测试四条 API。"));
 				BeginValidateQuickPresetApiConfigAndContinue();
 			}, delegate
 			{
@@ -1916,9 +1876,8 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private void ShowApiConfigSetValidationPrecheckFailure(string message)
 	{
-		_showApiValidationFailedHint = true;
-		_lastApiValidationFailureHint = message ?? "";
-		InformationManager.DisplayMessage(new InformationMessage(string.IsNullOrWhiteSpace(message) ? "API 配置未填写完整，无法开始组合测试。" : message));
+		// 组合预检没有原始响应，直接给出简短左下角提示并返回干净的配置菜单。
+		NonBlockingErrorReport.Show("API 配置不完整", string.IsNullOrWhiteSpace(message) ? "API 配置未填写完整，无法开始组合测试。" : message);
 		ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
 	}
 
@@ -2041,10 +2000,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_activeOnboardingStage = OnboardingUiStage.Welcome;
 			_welcomeInProgress = true;
 			string text = "周事件自动生成失败，请检查你的 Base URL、API Key、模型名或当前网络环境。";
-			if (!string.IsNullOrWhiteSpace(_lastApiValidationFailureHint))
-			{
-				text = text + "\n\n排查建议：" + _lastApiValidationFailureHint;
-			}
+			// 此处只提供修复动作；详细失败内容已在触发时写入左下角消息和日志。
 			InformationManager.ShowInquiry(new InquiryData("调整 API 信息", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "填写 API 信息", "测试已有配置", delegate
 			{
 				_welcomeInProgress = false;
@@ -2079,10 +2035,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			string text = hasExistingConfig
 				? "前处理API（规则检索/规则路由）当前不可用。你可以直接测试 MCM 中的现有配置，也可以重新填写前处理API信息。前处理API为必填，不提供回退RAG选项。"
 				: "前处理API（规则检索/规则路由）当前不可用，请检查前处理API的 Base URL、API Key、模型名称，或当前网络环境。前处理API为必填，不提供回退RAG选项。";
-			if (!string.IsNullOrWhiteSpace(_lastApiValidationFailureHint))
-			{
-				text = text + "\n\n排查建议：" + _lastApiValidationFailureHint;
-			}
+			// 此窗口保留填写/测试动作，不再混入可能很长的失败响应。
 			InformationManager.ShowInquiry(new InquiryData("调整前处理API信息", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "填写前处理API信息", "测试现有配置", delegate
 			{
 				_welcomeInProgress = false;
@@ -2117,10 +2070,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			string text = hasExistingConfig
 				? "后处理API当前不可用。你可以直接测试 MCM 中的现有配置，也可以重新填写后处理API信息。\n\n后处理任务对判定稳定性要求较高，建议优先选择带思考模式的模型，或直接使用更高级模型。"
 				: "后处理API当前不可用。你可以重新填写后处理API信息，或继续回退使用主API处理后处理任务。\n\n后处理任务对判定稳定性要求较高，建议优先选择带思考模式的模型，或直接使用更高级模型。";
-			if (!string.IsNullOrWhiteSpace(_lastApiValidationFailureHint))
-			{
-				text = text + "\n\n排查建议：" + _lastApiValidationFailureHint;
-			}
+			// 此窗口保留填写/回退动作，不再混入可能很长的失败响应。
 			string negativeText = hasExistingConfig ? "测试现有配置" : "继续使用主API";
 			InformationManager.ShowInquiry(new InquiryData("调整后处理API信息", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "填写后处理API", negativeText, delegate
 			{
@@ -2163,10 +2113,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			string text = hasExistingConfig
 				? "事件/叛乱API当前不可用。你可以直接测试 MCM 中的现有配置，也可以重新填写事件/叛乱API信息。\n\n这个接口用于周报生成与叛乱建国命名；叛乱命名失败后不会再使用本地国名兜底。"
 				: "事件/叛乱API当前不可用。请重新填写事件/叛乱API的 Base URL、API Key、模型名称，或检查当前网络环境。\n\n这个接口用于周报生成与叛乱建国命名；叛乱命名失败后不会再使用本地国名兜底。";
-			if (!string.IsNullOrWhiteSpace(_lastApiValidationFailureHint))
-			{
-				text = text + "\n\n排查建议：" + _lastApiValidationFailureHint;
-			}
+			// 此窗口保留填写/测试动作，不再混入可能很长的失败响应。
 			InformationManager.ShowInquiry(new InquiryData("调整事件/叛乱API信息", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "填写事件/叛乱API", "测试现有配置", delegate
 			{
 				_welcomeInProgress = false;
@@ -2203,15 +2150,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_activeOnboardingStage = OnboardingUiStage.Welcome;
 			string title = "欢迎使用 AnimusForge";
 			string text = "开始游玩前，请先确认主API信息。主API用于NPC正文生成，如果未正确配置，AI 对话功能将无法使用。";
-			if (_showApiValidationFailedHint)
-			{
-				title = "主API连接失败";
-				text = "主API测试连接失败，请检查你的网络环境，或者重新填写主API信息。";
-				if (!string.IsNullOrWhiteSpace(_lastApiValidationFailureHint))
-				{
-					text = text + "\n\n排查建议：" + _lastApiValidationFailureHint;
-				}
-			}
+			// 欢迎页只负责提供后续动作，失败报告已在测试完成时显示于左下角。
 			_welcomeInProgress = true;
 			InformationManager.ShowInquiry(new InquiryData(title, text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "填写主API信息", "测试已有配置", delegate
 			{
@@ -2248,30 +2187,16 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_suppressWelcomeUntilUtcTicks = ticks + TimeSpan.FromMilliseconds(250.0).Ticks;
 			_activeOnboardingStage = OnboardingUiStage.AuxiliaryChoice;
 			_welcomeInProgress = true;
-			DuelSettings settings = DuelSettings.GetSettings();
-			bool hasExistingConfig = HasCompleteApiConfigForTarget(settings, ApiSetupTarget.Auxiliary);
 			string title = "配置前处理API（必填）";
 			string text = "前处理API专门用于规则检索/规则路由。启用后，规则话题会先走一次低成本筛选，再进入主API正文生成。前处理API为必填，不提供回退RAG选项。";
-			if (_showApiValidationFailedHint)
-			{
-				title = "前处理API连接失败";
-				text = hasExistingConfig
-					? "刚才的前处理API连接测试没有通过。你可以重新填写前处理API信息，或者再次测试 MCM 中的现有配置。"
-					: "刚才的前处理API连接测试没有通过。你可以重新填写前处理API信息，或者再次测试 MCM 中的现有配置。";
-				if (!string.IsNullOrWhiteSpace(_lastApiValidationFailureHint))
-				{
-					text = text + "\n\n排查建议：" + _lastApiValidationFailureHint;
-				}
-			}
+			// 配置页正文不复用失败详情，保证输入与操作按钮始终可见。
 			InformationManager.ShowInquiry(new InquiryData(title, text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "填写前处理API", "测试现有配置", delegate
 			{
 				_welcomeInProgress = false;
-				_showApiValidationFailedHint = false;
 				OpenApiBaseUrlInput();
 			}, delegate
 			{
 				_welcomeInProgress = false;
-				_showApiValidationFailedHint = false;
 				BeginValidateMcmApiAndContinue();
 			}), pauseGameActiveState: true);
 		}
@@ -2304,27 +2229,15 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			bool hasExistingConfig = HasCompleteApiConfigForTarget(settings, ApiSetupTarget.ActionPostprocess);
 			string title = "配置后处理API";
 			string text = "后处理API专门用于动作标签/情绪标签判定。配置后可以把后处理链路和前处理、主API正文生成彻底拆开；如果你暂时不想配置，也可以继续回退使用主API处理后处理任务。\n\n后处理任务对判定稳定性要求较高，建议优先选择带思考模式的模型，或直接使用更高级模型。";
-			if (_showApiValidationFailedHint)
-			{
-				title = "后处理API连接失败";
-				text = hasExistingConfig
-					? "刚才的后处理API连接测试没有通过。你可以重新填写后处理API信息，或者再次测试 MCM 中的现有配置。\n\n后处理任务对判定稳定性要求较高，建议优先选择带思考模式的模型，或直接使用更高级模型。"
-					: "刚才的后处理API连接测试没有通过。你可以重新填写后处理API信息，或者先继续使用主API处理后处理任务。\n\n后处理任务对判定稳定性要求较高，建议优先选择带思考模式的模型，或直接使用更高级模型。";
-				if (!string.IsNullOrWhiteSpace(_lastApiValidationFailureHint))
-				{
-					text = text + "\n\n排查建议：" + _lastApiValidationFailureHint;
-				}
-			}
+			// 配置页正文不复用失败详情，保证输入与回退操作始终可见。
 			string negativeText = hasExistingConfig ? "测试现有配置" : "继续使用主API";
 			InformationManager.ShowInquiry(new InquiryData(title, text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "填写后处理API", negativeText, delegate
 			{
 				_welcomeInProgress = false;
-				_showApiValidationFailedHint = false;
 				OpenApiBaseUrlInput();
 			}, delegate
 			{
 				_welcomeInProgress = false;
-				_showApiValidationFailedHint = false;
 				if (hasExistingConfig)
 				{
 					BeginValidateMcmApiAndContinue();
@@ -2492,16 +2405,21 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			string text = string.IsNullOrWhiteSpace(_lastBaseUrlValidationFailureMessage) ? "你填写的 Base URL 当前不可用，请重新检查后再试。" : _lastBaseUrlValidationFailureMessage;
 			_welcomeInProgress = true;
 			_activeOnboardingStage = OnboardingUiStage.BaseUrlValidationFailure;
-			string text = string.IsNullOrWhiteSpace(_lastBaseUrlValidationFailureMessage) ? "你填写的 Base URL 当前不可用，请重新检查后再试。" : _lastBaseUrlValidationFailureMessage;
-			InformationManager.ShowInquiry(new InquiryData("base URL 检查失败", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "重新填写base URL", "退出当前存档", delegate
+			_lastBaseUrlValidationFailureMessage = "";
+			// 诊断详情改为左下角消息；仅保留紧凑动作窗，以免丢失原有“退出当前存档”出口。
+			NonBlockingErrorReport.Show("base URL 检查失败", text);
+			InformationManager.ShowInquiry(new InquiryData("下一步怎么做？", "Base URL 当前不可用。请选择重新填写，或退出当前存档。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "重新填写base URL", "退出当前存档", delegate
 			{
 				_welcomeInProgress = false;
+				_activeOnboardingStage = OnboardingUiStage.None;
 				OpenApiBaseUrlInput();
 			}, delegate
 			{
 				_welcomeInProgress = false;
+				_activeOnboardingStage = OnboardingUiStage.None;
 				ExitCurrentGameFromOnboarding();
 			}), pauseGameActiveState: true);
 		}
@@ -2748,17 +2666,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			}
 			list.Add(new InquiryElement("__refresh__", "重新拉取模型列表", null));
 			list.Add(new InquiryElement("__exit__", "退出当前存档", null));
-			string title = "选择模型名称";
 			string text = "请选择一个可用模型名称。";
-			if (_showModelSelectionValidationFailedHint)
-			{
-				title = "API 连接失败";
-				text = "请重新检查base URL，API key，或模型。";
-				if (!string.IsNullOrWhiteSpace(_lastApiValidationFailureHint))
-				{
-					text = text + "\n\n排查建议：" + _lastApiValidationFailureHint;
-				}
-			}
 			if (_lastFetchedModelNames.Count > 0)
 			{
 				text += "";
@@ -2767,10 +2675,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			{
 				text += "\n\n当前没有拉取到模型列表，你可以手动输入模型名称。";
 			}
-			if (!string.IsNullOrWhiteSpace(_lastModelFetchMessage))
-			{
-				text = text + "\n\n提示：" + _lastModelFetchMessage;
-			}
+			// 网络失败详情已显示在左下角；模型选择窗口保持紧凑，只保留当前可执行的恢复操作。
 			if (yjApiSetupActive)
 			{
 				text = text + "\n\n【本通道模型选择建议（仅供参考）】\n" + CurrentYjApiModelRecommendation() + "\n最终选择由你自行决定。";
@@ -2779,7 +2684,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			{
 				text += "\n\n如果你的base URL或API key填写错误，那你也可以将本菜单的滑条拉到最底部重新返回填写。";
 			}
-			MultiSelectionInquiryData data = new MultiSelectionInquiryData(title, text, list, isExitShown: false, 0, 1, "下一步", "返回", delegate(List<InquiryElement> selected)
+			MultiSelectionInquiryData data = new MultiSelectionInquiryData("选择模型名称", text, list, isExitShown: false, 0, 1, "下一步", "返回", delegate(List<InquiryElement> selected)
 			{
 				_welcomeInProgress = false;
 				string text2 = selected?.FirstOrDefault()?.Identifier as string;
@@ -2797,7 +2702,6 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				}
 				else if (text2 == "__base_url__")
 				{
-					_showModelSelectionValidationFailedHint = false;
 					if (IsYjApiSetupActive())
 					{
 						OpenYjApiKeyInput();
@@ -2809,17 +2713,14 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				}
 				else if (text2 == "__api_key__")
 				{
-					_showModelSelectionValidationFailedHint = false;
 					OpenApiKeyInput();
 				}
 				else if (text2 == "__exit__")
 				{
-					_showModelSelectionValidationFailedHint = false;
 					ExitCurrentGameFromOnboarding();
 				}
 				else
 				{
-					_showModelSelectionValidationFailedHint = false;
 					SetModelNameForTarget(settings, _currentApiSetupTarget, text2);
 					TryPersistMcmSettings(settings);
 					InformationManager.DisplayMessage(new InformationMessage(CurrentApiModelDisplayName() + " 已写入 MCM，正在测试完整连接：" + text2));
@@ -2828,7 +2729,6 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			}, delegate
 			{
 				_welcomeInProgress = false;
-				_showModelSelectionValidationFailedHint = false;
 				OpenApiKeyInput();
 			});
 			MBInformationManager.ShowMultiSelectionInquiry(data);
@@ -2861,7 +2761,6 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				}
 				else
 				{
-					_showModelSelectionValidationFailedHint = false;
 					SetModelNameForTarget(settings, _currentApiSetupTarget, text2);
 					TryPersistMcmSettings(settings);
 					InformationManager.DisplayMessage(new InformationMessage(CurrentApiModelDisplayName() + " 已写入 MCM，正在测试完整连接：" + text2));
@@ -3158,8 +3057,6 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_welcomeInProgress = false;
 			_apiRepairFlowActive = false;
 			_currentApiSetupTarget = ApiSetupTarget.Primary;
-			_showApiValidationFailedHint = false;
-			_lastApiValidationFailureHint = "";
 			if (_baseUrlValidationInProgress)
 			{
 				CancelBaseUrlValidationCore();
