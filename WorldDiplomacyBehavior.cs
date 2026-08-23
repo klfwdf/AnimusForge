@@ -45,6 +45,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private const int DefaultApiTimeoutMilliseconds = 90000;
 	private const int GenerationMaxTokens = 1800;
 	private const int MaxGeneratedDraftRepairAttempts = 1;
+	private const int MaxConsecutiveTechnicalGenerationFailuresPerRound = 3;
 	private const int MaxDiplomaticActionsPerDocument = 4;
 	private const int AnalysisMaxTokens = 900;
 	private const int CompressionOutputTokenReserve = 1024;
@@ -2618,6 +2619,13 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			Log("normalized inline response binding job=" + job.JobId + " kind=" + normalizedBindingKind);
 		}
 		NormalizeGeneratedDiplomaticEnvelopeShape(job, json);
+		int removedRedundantStatements = RemoveRedundantStatementActions(json);
+		if (removedRedundantStatements > 0)
+		{
+			Log("normalized redundant statement actions job=" + job.JobId
+				+ " removed=" + removedRedundantStatements.ToString(CultureInfo.InvariantCulture)
+				+ " remaining=" + ((json["actions"] as JArray)?.Count ?? 0).ToString(CultureInfo.InvariantCulture));
+		}
 		if (TryGetGeneratedIntentLegalityViolation(job, json, author, fallbackTarget, out Kingdom generatedTarget, out string legalityReason))
 		{
 			RejectGeneratedDraftBeforePublication(
@@ -2696,6 +2704,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			RejectGeneratedDraftBeforePublication(job, raw, author, target, "generated_semantic_envelope_incomplete", json);
 			return;
 		}
+		if (jobRound != null) jobRound.ConsecutiveTechnicalGenerationFailures = 0;
 		ApplyInternationalReputationEvaluation(document, json);
 		if (string.Equals(document.RoundParticipation, "withdraw", StringComparison.OrdinalIgnoreCase)
 			&& !IsTerminalNegotiationMove(document.NegotiationMove))
@@ -2718,6 +2727,30 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			}
 		}
 		ProcessAnalyzedDocument(document, document.Intent, document.Commitment, document.RequiresResponse, document.Tone, document.Confidence);
+	}
+
+	private static int RemoveRedundantStatementActions(JObject json)
+	{
+		if (json?["actions"] is not JArray actions || actions.Count <= 1) return 0;
+		bool hasSubstantiveAction = actions
+			.OfType<JObject>()
+			.Any(action => !string.Equals(
+				NormalizeIntent(ReadString(action, "intent", "author_intent.intent")),
+				"statement",
+				StringComparison.OrdinalIgnoreCase));
+		if (!hasSubstantiveAction) return 0;
+		int removed = 0;
+		for (int index = actions.Count - 1; index >= 0; index--)
+		{
+			if (actions[index] is not JObject action
+				|| !string.Equals(
+					NormalizeIntent(ReadString(action, "intent", "author_intent.intent")),
+					"statement",
+					StringComparison.OrdinalIgnoreCase)) continue;
+			actions.RemoveAt(index);
+			removed++;
+		}
+		return removed;
 	}
 
 	private bool TryGetGeneratedIntentLegalityViolation(
@@ -3952,12 +3985,23 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		if (job.IsRelayTurn && round != null && string.Equals(round.State, "active", StringComparison.OrdinalIgnoreCase))
 		{
 			round.RelayWaiting = false;
+			round.ConsecutiveTechnicalGenerationFailures = Math.Min(
+				MaxConsecutiveTechnicalGenerationFailuresPerRound,
+				Math.Max(0, round.ConsecutiveTechnicalGenerationFailures) + 1);
+			Log("round technical generation failure round=" + round.RoundId
+				+ " consecutive=" + round.ConsecutiveTechnicalGenerationFailures.ToString(CultureInfo.InvariantCulture)
+				+ " reason=" + (reason ?? ""));
+			if (round.ConsecutiveTechnicalGenerationFailures >= MaxConsecutiveTechnicalGenerationFailuresPerRound)
+			{
+				CloseActiveRound("technical_consecutive_generation_rejections");
+				return;
+			}
 			if (round.ResultSettlementPending)
 			{
 				SkipResultSettlementSlot(round, job.ResultSettlementSlotId, job.AuthorKingdomId, "generation_rejected");
 				ScheduleNextResultSettlementTurn(round);
 			}
-			else AdvanceRelay(round);
+			else AdvanceRelay(round, scheduleImmediately: true);
 			return;
 		}
 		CompleteExchange(job.ExchangeId, "technical_generation_rejected");
@@ -8107,7 +8151,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		return -1;
 	}
 
-	private void ScheduleNextRelayHop(WorldDiplomacyRound round)
+	private void ScheduleNextRelayHop(WorldDiplomacyRound round, bool scheduleImmediately = false)
 	{
 		if (round?.ResultSettlementPending == true)
 		{
@@ -8152,6 +8196,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		int edgeCount = Math.Max(1, route.Count - 1);
 		int progress = round.RelayDirection > 0 ? nextIndex : route.Count - 1 - nextIndex;
 		int plannedDay = round.RelayPassStartedDay + (int)Math.Ceiling(passDurationDays * Math.Max(1, progress) / (double)edgeCount);
+		if (scheduleImmediately) plannedDay = CurrentDay();
 		if (round.FinalActionOpportunityIssued && round.SubstantiveProgressCount <= 0)
 		{
 			plannedDay = Math.Min(plannedDay, round.HardEndDay);
@@ -8333,7 +8378,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void AdvanceRelay(WorldDiplomacyRound round)
+	private void AdvanceRelay(WorldDiplomacyRound round, bool scheduleImmediately = false)
 	{
 		if (round == null || !string.Equals(round.State, "active", StringComparison.OrdinalIgnoreCase)) return;
 		if (round.ResultSettlementPending)
@@ -8348,7 +8393,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			return;
 		}
 		round.RelayWaiting = false;
-		ScheduleNextRelayHop(round);
+		ScheduleNextRelayHop(round, scheduleImmediately);
 	}
 
 	private void RecordPlayerOpportunity(WorldDiplomacyRound round, Kingdom playerKingdom)
@@ -16106,6 +16151,8 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			round.LlmProfiledKingdomIds.Clear();
 			round.LlmLastStateSignatureByKingdom ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			round.LlmLastStateSignatureByKingdom.Clear();
+			round.ConsecutiveTechnicalGenerationFailures = Math.Max(0,
+				Math.Min(MaxConsecutiveTechnicalGenerationFailuresPerRound, round.ConsecutiveTechnicalGenerationFailures));
 			round.PendingOffers.RemoveAll(x => x == null || string.IsNullOrWhiteSpace(x.SourceDocumentId));
 			int normalizedOfferSourceBindings = 0;
 			foreach (WorldDiplomacyRoundOffer offer in round.PendingOffers)
@@ -18207,6 +18254,7 @@ public sealed class WorldDiplomacyRound
 	[JsonProperty("isPlayerInsertion")] public bool IsPlayerInsertion { get; set; }
 	[JsonProperty("automaticDocumentsStarted")] public int AutomaticDocumentsStarted { get; set; }
 	[JsonProperty("automaticCircuitBreakerTripped")] public bool AutomaticCircuitBreakerTripped { get; set; }
+	[JsonProperty("consecutiveTechnicalGenerationFailures")] public int ConsecutiveTechnicalGenerationFailures { get; set; }
 	[JsonProperty("relayPlanned")] public bool RelayPlanned { get; set; }
 	[JsonProperty("relayRouteKingdomIds")] public List<string> RelayRouteKingdomIds { get; set; } = new List<string>();
 	[JsonProperty("relayCursor")] public int RelayCursor { get; set; }

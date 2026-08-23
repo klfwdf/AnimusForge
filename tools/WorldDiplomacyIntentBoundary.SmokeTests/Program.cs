@@ -2039,6 +2039,19 @@ internal static class Program
                       StringComparison.Ordinal)
 				  && generatedCommit.Contains("CanAiAuthorDiplomaticDocument(author", StringComparison.Ordinal),
             "missing or newly unauthorized authors may bypass draft repair; model-output failures must use the shared retry-budget decision");
+		int statementNormalization = generatedCommit.IndexOf("RemoveRedundantStatementActions(json)", StringComparison.Ordinal);
+		int legalityValidation = generatedCommit.IndexOf("TryGetGeneratedIntentLegalityViolation(", StringComparison.Ordinal);
+		Test.True(statementNormalization >= 0 && legalityValidation > statementNormalization,
+			"a redundant statement action must be normalized before generated-action legality validation");
+		Test.True(generatedCommit.Contains("jobRound.ConsecutiveTechnicalGenerationFailures = 0;", StringComparison.Ordinal),
+			"a structurally valid generated declaration must reset the round's consecutive technical failure count");
+		string statementNormalizer = ExtractMethod(
+			source,
+			"private static int RemoveRedundantStatementActions(");
+		Test.True(statementNormalizer.Contains("hasSubstantiveAction", StringComparison.Ordinal)
+			&& statementNormalizer.Contains("actions.RemoveAt(index);", StringComparison.Ordinal)
+			&& statementNormalizer.Contains("return removed;", StringComparison.Ordinal),
+			"mixed statement plus substantive actions must drop only redundant statement entries instead of rejecting the draft");
 
         int parseAttempt = generatedCommit.IndexOf("if (!TryParseJsonObject(raw, out JObject json))", StringComparison.Ordinal);
         int parseRejection = generatedCommit.IndexOf(
@@ -2471,12 +2484,22 @@ internal static class Program
             source,
             "private void AbandonRejectedGeneration(",
             "private bool TryApplyGeneratedSemanticEnvelope(");
-        Test.True(abandonGeneration.Contains("round.RelayWaiting = false;", StringComparison.Ordinal)
-                  && abandonGeneration.Contains("AdvanceRelay(round);", StringComparison.Ordinal)
+		Test.True(abandonGeneration.Contains("round.RelayWaiting = false;", StringComparison.Ordinal)
+				  && abandonGeneration.Contains("AdvanceRelay(round, scheduleImmediately: true);", StringComparison.Ordinal)
+				  && abandonGeneration.Contains("MaxConsecutiveTechnicalGenerationFailuresPerRound", StringComparison.Ordinal)
+				  && abandonGeneration.Contains("CloseActiveRound(\"technical_consecutive_generation_rejections\")", StringComparison.Ordinal)
                   && abandonGeneration.Contains("CompleteExchange(job.ExchangeId, \"technical_generation_rejected\")", StringComparison.Ordinal)
                   && abandonGeneration.Contains("string.IsNullOrWhiteSpace(round.RootDocumentId)", StringComparison.Ordinal)
                   && abandonGeneration.Contains("CloseActiveRound(\"technical_generation_rejected\")", StringComparison.Ordinal),
-            "generated-draft abandonment must clear an active relay turn or close an unpublished root round");
+			"generated-draft abandonment must immediately advance a relay, break repeated technical failures, or close an unpublished root round");
+		string relayScheduling = ExtractMethod(
+			source,
+			"private void ScheduleNextRelayHop(");
+		Test.True(relayScheduling.Contains("bool scheduleImmediately = false", StringComparison.Ordinal)
+			&& relayScheduling.Contains("if (scheduleImmediately) plannedDay = CurrentDay();", StringComparison.Ordinal),
+			"a technical generation rejection must be able to schedule the next relay speaker on the current day");
+		Test.True(source.Contains("[JsonProperty(\"consecutiveTechnicalGenerationFailures\")]", StringComparison.Ordinal),
+			"the consecutive technical generation failure circuit breaker must survive save/load");
     }
 
     private static void AssertOfferCooldownDecision(
