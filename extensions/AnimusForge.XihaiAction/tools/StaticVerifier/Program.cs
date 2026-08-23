@@ -1152,32 +1152,40 @@ internal static class Program
                 (bool)frameworkV2.GetField(
                     "MountedNpcSpeechSupported",
                     BindingFlags.Public | BindingFlags.Static).GetRawConstantValue() &&
-                frameworkV2.GetMethod(
+                FindMethod(frameworkV2,
                     "ParsePlayerShout",
                     BindingFlags.Public | BindingFlags.Static) != null &&
-                frameworkV2.GetMethod(
-                    "TryParsePlanClassifierOutput",
-                    BindingFlags.Public | BindingFlags.Static) != null &&
-                frameworkV2.GetMethod(
+                frameworkV2.GetMethods(BindingFlags.Public | BindingFlags.Static)
+                    .Any(method => method.Name == "TryParsePlanClassifierOutput") &&
+                FindMethod(frameworkV2,
                     "BuildNpcSpeechPromptInstruction",
                     BindingFlags.Public | BindingFlags.Static) != null &&
-                frameworkV2.GetMethod(
+                frameworkV2.GetMethods(BindingFlags.Public | BindingFlags.Static)
+                    .Any(method => method.Name == "BuildCombinedNpcSpeechPromptInstruction") &&
+                frameworkV2.GetMethods(BindingFlags.Public | BindingFlags.Static)
+                    .Any(method => method.Name == "TryParseCombinedNpcSpeechOutput") &&
+                FindMethod(frameworkV2,
                     "ResolveClosingCommandDelaySeconds",
                     BindingFlags.Public | BindingFlags.Static) != null &&
-                frameworkV2.GetMethod(
+                FindMethod(frameworkV2,
                     "ShouldQueueOrdinaryScenePostprocess",
                     BindingFlags.Public | BindingFlags.Static) != null,
             "BattleSpeechFrameworkV2 contract is missing or drifted");
         object stageDefaults = Activator.CreateInstance(stageSettingsV2);
-        Require((int)ReadProperty(stageDefaults, "MaximumVisualResponders") == 48 &&
+        Require((int)ReadProperty(stageDefaults, "MaximumVisualResponders") == 60 &&
                 (int)ReadProperty(stageDefaults, "VisualWaveSize") == 6 &&
                 (int)ReadProperty(stageDefaults, "MaximumVisualSubmissionsPerTick") == 6 &&
-                (int)ReadProperty(stageDefaults, "ReplyMinimumChars") == 20 &&
-                (int)ReadProperty(stageDefaults, "ReplyMaximumChars") == 60 &&
+                (int)ReadProperty(stageDefaults, "ReplyMinimumChars") == 30 &&
+                (int)ReadProperty(stageDefaults, "ReplyMaximumChars") == 80 &&
                 Math.Abs((float)ReadProperty(stageDefaults, "FrontDistanceMeters") - 10f) < 0.0001f &&
                 (int)ReadProperty(stageDefaults, "AudienceVoiceCount") == 22 &&
                 (bool)ReadProperty(stageDefaults, "AudienceRepliesEnabled") &&
-                (int)ReadProperty(stageDefaults, "AudienceReplyCount") == 16 &&
+                (int)ReadProperty(stageDefaults, "AudienceReplyCount") == 24 &&
+                (int)ReadProperty(stageDefaults, "AudienceReplyWaveSize") == 5 &&
+                (int)ReadProperty(stageDefaults, "AudienceReplyMinimumChars") == 8 &&
+                (int)ReadProperty(stageDefaults, "AudienceReplyMaximumChars") == 24 &&
+                Math.Abs((float)ReadProperty(stageDefaults, "AudienceReplyMinimumIntervalSeconds") - 0.2f) < 0.0001f &&
+                Math.Abs((float)ReadProperty(stageDefaults, "AudienceReplyMaximumIntervalSeconds") - 0.5f) < 0.0001f &&
                 Math.Abs((float)ReadProperty(stageDefaults, "AudienceReplyIntervalSeconds") - 1.1f) < 0.0001f &&
                 Math.Abs((float)ReadProperty(stageDefaults, "PacingHalfWidthMeters") - 2f) < 0.0001f &&
                 !(bool)ReadProperty(stageDefaults, "MountedPacingEnabled") &&
@@ -1187,13 +1195,13 @@ internal static class Program
                 Math.Abs((float)ReadProperty(stageDefaults, "TacticalAdvanceDelaySeconds") - 1.8f) < 0.0001f &&
                 GetCount(stageSettingsV2.GetMethod("Validate").Invoke(stageDefaults, null)) == 0,
             "BattleSpeechStageSettingsV2 defaults or validation drifted");
-        Require(runtimeHost.GetMethod(
+        Require(FindMethod(runtimeHost,
                     "SubmitQueuedNpcReplyCandidate",
                     BindingFlags.Public | BindingFlags.Static) != null &&
-                runtimeHost.GetMethod(
+                FindMethod(runtimeHost,
                     "SubmitShownNpcReply",
                     BindingFlags.Public | BindingFlags.Static) != null &&
-                runtimeHost.GetMethod(
+                FindMethod(runtimeHost,
                     "RefreshMcmOverrides",
                     BindingFlags.NonPublic | BindingFlags.Static) != null,
             "BattleSpeechRuntimeHost reply bridge methods are missing");
@@ -1201,11 +1209,11 @@ internal static class Program
             "AnimusForge.XihaiAction.AfCompatV130",
             true,
             false);
-        Require(afCompat.GetMethod(
+        Require(FindMethod(afCompat,
                     "TryShowAudienceReply",
                     BindingFlags.NonPublic | BindingFlags.Static) != null,
             "AF multi-soldier audience-reply bridge is missing");
-        MethodInfo deferReply = runtimeHost.GetMethod(
+        MethodInfo deferReply = FindMethod(runtimeHost,
             "TryDeferShownNpcReply",
             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
         Type replyClaim = assembly.GetType(
@@ -1757,6 +1765,19 @@ internal static class Program
                     "TryApplyBattleSpeech",
                     BindingFlags.Static | BindingFlags.NonPublic) != null,
             "validated MCM runtime override entrypoints are missing");
+        object mcmDefaults = Activator.CreateInstance(settings);
+        Require((int)ReadProperty(mcmDefaults, "ReplyMinimumChars") == 30 &&
+                (int)ReadProperty(mcmDefaults, "ReplyMaximumChars") == 80 &&
+                (int)ReadProperty(mcmDefaults, "MaximumVisualResponders") == 60 &&
+                (int)ReadProperty(mcmDefaults, "AudienceReplyCount") == 24 &&
+                (int)ReadProperty(mcmDefaults, "AudienceReplyWaveSize") == 5 &&
+                (int)ReadProperty(mcmDefaults, "AudienceReplyMinimumChars") == 8 &&
+                (int)ReadProperty(mcmDefaults, "AudienceReplyMaximumChars") == 24 &&
+                Math.Abs((float)ReadProperty(mcmDefaults, "AudienceReplyMinimumIntervalSeconds") - 0.2f) < 0.0001f &&
+                Math.Abs((float)ReadProperty(mcmDefaults, "AudienceReplyMaximumIntervalSeconds") - 0.5f) < 0.0001f &&
+                (bool)ReadProperty(mcmDefaults, "TacticalAdvanceEnabled") &&
+                Math.Abs((float)ReadProperty(mcmDefaults, "TacticalAdvanceDelaySeconds") - 1.8f) < 0.0001f,
+            "MCM shipped defaults do not match the battle-speech defaults");
         string[] actionProperties =
         {
             "Kneel", "StandUp", "Xihai", "Cheer", "Applaud", "Respect", "Threat",
@@ -1806,7 +1827,12 @@ internal static class Program
                 }) &&
                 settings.GetProperty("AudienceVoiceCount") != null &&
                 settings.GetProperty("AudienceRepliesEnabled") != null &&
-                settings.GetProperty("AudienceReplyCount") != null &&
+                 settings.GetProperty("AudienceReplyCount") != null &&
+                 settings.GetProperty("AudienceReplyWaveSize") != null &&
+                 settings.GetProperty("AudienceReplyMinimumChars") != null &&
+                 settings.GetProperty("AudienceReplyMaximumChars") != null &&
+                settings.GetProperty("AudienceReplyMinimumIntervalSeconds") != null &&
+                settings.GetProperty("AudienceReplyMaximumIntervalSeconds") != null &&
                 settings.GetProperty("AudienceReplyIntervalSeconds") != null &&
                 settings.GetProperty("TacticalAdvanceEnabled") != null,
             "MCM battle-speech staging controls or hidden pacing compatibility fields drifted");
@@ -1827,7 +1853,7 @@ internal static class Program
                 (int)ReadProperty(legacyMcm, "ReplyMaximumChars") == 80 &&
                 Math.Abs((float)ReadProperty(legacyMcm, "FrontDistanceMeters") - 10f) < 0.0001f &&
                 (int)ReadProperty(legacyMcm, "AudienceVoiceCount") == 22 &&
-                (int)ReadProperty(legacyMcm, "AudienceReplyCount") == 16 &&
+                (int)ReadProperty(legacyMcm, "AudienceReplyCount") == 24 &&
                 Math.Abs((float)ReadProperty(legacyMcm, "TacticalAdvanceDelaySeconds") - 1.8f) < 0.0001f,
             "complete legacy MCM default set is not migrated atomically");
         object previousIntegratedMcm = Activator.CreateInstance(settings);
@@ -1838,9 +1864,9 @@ internal static class Program
         settings.GetProperty("AudienceReplyCount").SetValue(previousIntegratedMcm, 4);
         settings.GetProperty("TacticalAdvanceDelaySeconds").SetValue(previousIntegratedMcm, 1.2f);
         migrateLegacyDefaults.Invoke(null, new[] { previousIntegratedMcm });
-        Require((int)ReadProperty(previousIntegratedMcm, "ReplyMinimumChars") == 20 &&
-                (int)ReadProperty(previousIntegratedMcm, "ReplyMaximumChars") == 60 &&
-                (int)ReadProperty(previousIntegratedMcm, "AudienceReplyCount") == 16 &&
+        Require((int)ReadProperty(previousIntegratedMcm, "ReplyMinimumChars") == 30 &&
+                (int)ReadProperty(previousIntegratedMcm, "ReplyMaximumChars") == 80 &&
+                (int)ReadProperty(previousIntegratedMcm, "AudienceReplyCount") == 24 &&
                 Math.Abs((float)ReadProperty(previousIntegratedMcm, "TacticalAdvanceDelaySeconds") - 1.8f) < 0.0001f,
             "previous integrated battle-speech defaults were not migrated");
         object customMcm = Activator.CreateInstance(settings);
@@ -1878,7 +1904,7 @@ internal static class Program
                 .Select(value => (string)value.Attribute("id"))
                 .Where(value => value != null && value.StartsWith("SAX_MCM_", StringComparison.Ordinal)),
             StringComparer.Ordinal);
-        Require(englishMcmIds.Count == 71 && englishMcmIds.SetEquals(chineseMcmIds) &&
+        Require(englishMcmIds.Count == 76 && englishMcmIds.SetEquals(chineseMcmIds) &&
                 englishMcmIds.Contains("SAX_MCM_Name") &&
                 englishMcmIds.Contains("SAX_MCM_NaturalReplyActions") &&
                 englishMcmIds.Contains("SAX_MCM_NaturalReplyActions_Hint") &&
@@ -1886,6 +1912,11 @@ internal static class Program
                 !englishMcmIds.Contains("SAX_MCM_InfantryPacing") &&
                 !englishMcmIds.Contains("SAX_MCM_PacingWidth") &&
                 englishMcmIds.Contains("SAX_MCM_AudienceReplyCount") &&
+                englishMcmIds.Contains("SAX_MCM_AudienceReplyWaveSize") &&
+                englishMcmIds.Contains("SAX_MCM_AudienceReplyMinimumChars") &&
+                englishMcmIds.Contains("SAX_MCM_AudienceReplyMaximumChars") &&
+                englishMcmIds.Contains("SAX_MCM_AudienceReplyMinInterval") &&
+                englishMcmIds.Contains("SAX_MCM_AudienceReplyMaxInterval") &&
                 englishMcmIds.Contains("SAX_MCM_Advance"),
             "MCM English/Simplified-Chinese localized option keys are incomplete");
     }
@@ -2959,6 +2990,15 @@ internal static class Program
     {
         return value.GetType().GetProperty(name, BindingFlags.Instance | BindingFlags.Public |
                                                  BindingFlags.NonPublic).GetValue(value, null);
+    }
+
+    private static MethodInfo FindMethod(
+        Type type,
+        string name,
+        BindingFlags flags)
+    {
+        return type.GetMethods(flags).FirstOrDefault(method =>
+            string.Equals(method.Name, name, StringComparison.Ordinal));
     }
 
     private static bool ReadBoolean(object value, string name)

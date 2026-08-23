@@ -20,10 +20,12 @@ namespace AnimusForge.XihaiAction
         private const int OutputTokenLimit = 32;
         private const int ConsentOutputTokenLimit = 8;
         private const int BattleSpeechTriggerOutputTokenLimit = 8;
-        // The plan now may contain up to 24 short audience lines. Keep one
-        // request (and the closed-set parser) while leaving enough room for
-        // the delimiter-separated reply payload.
-        private const int BattleSpeechPlanOutputTokenLimit = 192;
+        // Keep one request (and the closed-set parser), but size the response
+        // budget from the frozen audience settings.  The old fixed 192-token
+        // budget was only large enough for the original 24 short replies and
+        // caused larger plans to be truncated and rejected by the parser.
+        private const int BattleSpeechPlanMinimumOutputTokenLimit = 192;
+        private const int BattleSpeechPlanMaximumOutputTokenLimit = 10000;
 
         private static readonly HashSet<string> LogicalIntentKeys =
             new HashSet<string>(
@@ -76,11 +78,15 @@ namespace AnimusForge.XihaiAction
             "ACTIONS NONE 或 ACTIONS PLAY_ACTION <key> 或 ACTIONS PLAY_PROGRAM <program>\n" +
             "TACTIC NONE 或 TACTIC ADVANCE\n" +
             "REPLIES NONE 或 REPLIES <短句1>|<短句2>|...\n" +
-            "program 用 > 表示先后、+ 表示同时，总动作数最多4；key只能来自定义块，不得输出act_*、演员、目标或强制标志。\n" +
+            "program 用 > 表示先后、+ 表示同时，总动作数最多4；多动作只写一次 PLAY_PROGRAM，例如 PLAY_PROGRAM laugh>command，不要在每个 key 前重复 PLAY_ACTION；key只能来自定义块，不得输出act_*、演员、目标或强制标志。\n" +
             "动作描写可能藏在普通正文，不要求星号。实际身体动作、演讲语气和修辞可选择 explain、point、command、promise、rage 等合适演讲手势；否定、引用、假设和库外动作不能虚构为白名单动作。\n" +
             "战术命令由演讲会话的MCM设置冻结，TACTIC必须输出 NONE。\n" +
-            "audienceReplyCount 冻结需要多少名不同士兵作简短口头回应。大于0时生成恰好该数量的不同短句，" +
-            "每句1至24字，只能是听众对演讲的直接应和、承诺或战吼，不写姓名、动作、旁白、星号、尖括号或竖线。" +
+            "audienceReplyCount 冻结需要多少名不同士兵作简短口头回应；" +
+            "audienceReplyMinimumChars 和 audienceReplyMaximumChars 冻结每条回应的字数范围。" +
+            "大于0时生成恰好该数量的不同短句，只能是听众刚听完演讲后的直接反应，不写姓名、动作、旁白、星号、尖括号或竖线。" +
+            "每条必须像不同的人在现场说话：老兵沉着、新兵紧张但振作、粗犷者短促、谨慎者可迟疑、" +
+            "狂热者可激昂；要回应正文里的具体细节，禁止把所有人写成同一个口号池。避免反复使用‘为了胜利’、" +
+            "‘为了家园’、‘听候您的号令’、‘全军向前’、‘我们必胜’、‘绝不后退’，不要称呼玩家为您、大人或领主。" +
             "为0时必须输出 REPLIES NONE。\n" +
             "你无权输出冲锋、撤退、射击、编队选择或任何其他命令。禁止解释、标点、Markdown和额外行。\n" +
             "以下动作定义由编译冻结，只能使用其中列出的键：\n";
@@ -300,6 +306,8 @@ namespace AnimusForge.XihaiAction
                     Math.Min(
                         BattleSpeechFrameworkV2.MaximumAudienceReplies,
                         request.AudienceReplyCount)),
+                audienceReplyMinimumChars = request.AudienceReplyMinimumChars,
+                audienceReplyMaximumChars = request.AudienceReplyMaximumChars,
                 untrustedSpeechText = speechText
             });
             return await InvokeProviderAsync(
@@ -308,10 +316,33 @@ namespace AnimusForge.XihaiAction
                         new { role = "system", content = systemPrompt },
                         new { role = "user", content = payload }
                     },
-                    BattleSpeechPlanOutputTokenLimit,
+                    CalculateBattleSpeechPlanOutputTokenLimit(
+                        request.AudienceReplyCount,
+                        request.AudienceReplyMaximumChars),
                     cancellationToken,
                     _battleSpeechFlight)
                 .ConfigureAwait(false);
+        }
+
+        internal static int CalculateBattleSpeechPlanOutputTokenLimit(
+            int audienceReplyCount,
+            int audienceReplyMaximumChars)
+        {
+            int boundedCount = Math.Max(
+                0,
+                Math.Min(
+                    BattleSpeechFrameworkV2.MaximumAudienceReplies,
+                    audienceReplyCount));
+            int boundedChars = Math.Max(1, Math.Min(80, audienceReplyMaximumChars));
+
+            // Chinese replies can consume roughly one to two output tokens per
+            // character.  Reserve room for the body, protocol labels, and
+            // separators while keeping a hard cap for provider safety.
+            long estimate = 256L +
+                            (long)boundedCount * (boundedChars * 2L + 8L);
+            return (int)Math.Min(
+                BattleSpeechPlanMaximumOutputTokenLimit,
+                Math.Max(BattleSpeechPlanMinimumOutputTokenLimit, estimate));
         }
 
         private static string BuildClassifierSystemPrompt(IEnumerable<string> allowedIntentKeys)

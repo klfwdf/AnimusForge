@@ -92,10 +92,10 @@ namespace AnimusForge.XihaiAction
 
         [SettingPropertyInteger("{=SAX_MCM_ReplyMin}NPC reply minimum characters", 6, 80,
             "0", Order = 2, RequireRestart = false)]
-        [SettingPropertyGroup(SpeechGroup)] public int ReplyMinimumChars { get; set; } = 20;
+        [SettingPropertyGroup(SpeechGroup)] public int ReplyMinimumChars { get; set; } = 30;
         [SettingPropertyInteger("{=SAX_MCM_ReplyMax}NPC reply maximum characters", 6, 80,
             "0", Order = 3, RequireRestart = false)]
-        [SettingPropertyGroup(SpeechGroup)] public int ReplyMaximumChars { get; set; } = 60;
+        [SettingPropertyGroup(SpeechGroup)] public int ReplyMaximumChars { get; set; } = 80;
 
         [SettingPropertyBool("{=SAX_MCM_NpcPositioning}Move NPC to the front line", Order = 0,
             RequireRestart = false)]
@@ -125,7 +125,7 @@ namespace AnimusForge.XihaiAction
         public bool IncludeAlliedAudience { get; set; } = true;
         [SettingPropertyInteger("{=SAX_MCM_VisualResponders}Maximum visual responders", 1, 128,
             "0", Order = 1, RequireRestart = false)]
-        [SettingPropertyGroup(AudienceGroup)] public int MaximumVisualResponders { get; set; } = 48;
+        [SettingPropertyGroup(AudienceGroup)] public int MaximumVisualResponders { get; set; } = 60;
         [SettingPropertyInteger("{=SAX_MCM_VisualWave}Visual responders per wave", 1, 16,
             "0", Order = 2, RequireRestart = false)]
         [SettingPropertyGroup(AudienceGroup)] public int VisualWaveSize { get; set; } = 6;
@@ -147,17 +147,37 @@ namespace AnimusForge.XihaiAction
         [SettingPropertyBool("{=SAX_MCM_AudienceReplies}Spoken soldier replies", Order = 8,
             RequireRestart = false)]
         [SettingPropertyGroup(AudienceGroup)] public bool AudienceRepliesEnabled { get; set; } = true;
-        [SettingPropertyInteger("{=SAX_MCM_AudienceReplyCount}Soldiers giving spoken replies", 0, 24,
+        [SettingPropertyInteger("{=SAX_MCM_AudienceReplyCount}Soldiers giving spoken replies", 0, 100,
             "0", Order = 9, RequireRestart = false)]
-        [SettingPropertyGroup(AudienceGroup)] public int AudienceReplyCount { get; set; } = 16;
-        [SettingPropertyFloatingInteger("{=SAX_MCM_AudienceReplyInterval}Spoken reply interval", 0.5f, 3f,
-            "0.0 s", Order = 10, RequireRestart = false)]
-        [SettingPropertyGroup(AudienceGroup)] public float AudienceReplyIntervalSeconds { get; set; } = 1.1f;
-        [SettingPropertyBool("{=SAX_MCM_Advance}Command and Advance after speech", Order = 11,
+        [SettingPropertyGroup(AudienceGroup)] public int AudienceReplyCount { get; set; } = 24;
+        [SettingPropertyInteger("{=SAX_MCM_AudienceReplyWaveSize}Maximum soldiers replying together", 2, 20,
+            "0", Order = 10, RequireRestart = false)]
+        // Each wave is deterministically randomized from 2 through this cap;
+        // the shipped default keeps the full 2..8 range enabled.
+        [SettingPropertyGroup(AudienceGroup)] public int AudienceReplyWaveSize { get; set; } = 5;
+        [SettingPropertyInteger("{=SAX_MCM_AudienceReplyMinimumChars}Minimum spoken reply characters", 4, 80,
+            "0", Order = 11, RequireRestart = false)]
+        [SettingPropertyGroup(AudienceGroup)] public int AudienceReplyMinimumChars { get; set; } = 8;
+        [SettingPropertyInteger("{=SAX_MCM_AudienceReplyMaximumChars}Maximum spoken reply characters", 4, 80,
+            "0", Order = 12, RequireRestart = false)]
+        [SettingPropertyGroup(AudienceGroup)] public int AudienceReplyMaximumChars { get; set; } = 24;
+        // Hidden persisted marker used to migrate previous shipped defaults
+        // exactly once without overriding an unrelated custom profile.
+        public int AudienceReplyWaveDefaultsVersion { get; set; } = 0;
+        [SettingPropertyFloatingInteger("{=SAX_MCM_AudienceReplyMinInterval}Minimum random reply wave interval", 0.1f, 0.5f,
+            "0.00 s", Order = 13, RequireRestart = false)]
+        [SettingPropertyGroup(AudienceGroup)] public float AudienceReplyMinimumIntervalSeconds { get; set; } = 0.2f;
+        [SettingPropertyFloatingInteger("{=SAX_MCM_AudienceReplyMaxInterval}Maximum random reply wave interval", 0.1f, 0.5f,
+            "0.00 s", Order = 14, RequireRestart = false)]
+        [SettingPropertyGroup(AudienceGroup)] public float AudienceReplyMaximumIntervalSeconds { get; set; } = 0.5f;
+        // Kept as a migration/diagnostic property for old serialized MCM
+        // profiles; it is intentionally not exposed as a fixed interval UI.
+        public float AudienceReplyIntervalSeconds { get; set; } = 1.1f;
+        [SettingPropertyBool("{=SAX_MCM_Advance}Command and Advance after speech", Order = 16,
             RequireRestart = false)]
         [SettingPropertyGroup(AudienceGroup)] public bool TacticalAdvanceEnabled { get; set; } = true;
         [SettingPropertyFloatingInteger("{=SAX_MCM_AdvanceDelay}Advance delay after command gesture", 1.5f, 5f,
-            "0.0 s", Order = 12, RequireRestart = false)]
+            "0.0 s", Order = 17, RequireRestart = false)]
         [SettingPropertyGroup(AudienceGroup)] public float TacticalAdvanceDelaySeconds { get; set; } = 1.8f;
 
         [SettingPropertyFloatingInteger("{=SAX_MCM_EnemyRadius}Enemy interruption radius", 5f, 75f,
@@ -245,6 +265,13 @@ namespace AnimusForge.XihaiAction
                 current.AudienceVoiceWaveIntervalSeconds;
             stage.AudienceRepliesEnabled = current.AudienceRepliesEnabled;
             stage.AudienceReplyCount = current.AudienceReplyCount;
+            stage.AudienceReplyWaveSize = current.AudienceReplyWaveSize;
+            stage.AudienceReplyMinimumChars = current.AudienceReplyMinimumChars;
+            stage.AudienceReplyMaximumChars = current.AudienceReplyMaximumChars;
+            stage.AudienceReplyMinimumIntervalSeconds =
+                current.AudienceReplyMinimumIntervalSeconds;
+            stage.AudienceReplyMaximumIntervalSeconds =
+                current.AudienceReplyMaximumIntervalSeconds;
             stage.AudienceReplyIntervalSeconds = current.AudienceReplyIntervalSeconds;
             stage.TacticalAdvanceEnabled = current.TacticalAdvanceEnabled;
             stage.TacticalAdvanceDelaySeconds = current.TacticalAdvanceDelaySeconds;
@@ -266,6 +293,16 @@ namespace AnimusForge.XihaiAction
         private static void MigrateLegacyBattleSpeechDefaults(
             SceneActionsMcmSettings current)
         {
+            bool changed = false;
+            if (current.AudienceReplyWaveDefaultsVersion < 1)
+            {
+                if (current.AudienceReplyWaveSize == 2)
+                {
+                    current.AudienceReplyWaveSize = 5;
+                }
+                current.AudienceReplyWaveDefaultsVersion = 1;
+                changed = true;
+            }
             bool completeLegacyDefaults = current.ReplyMinimumChars == 50 &&
                                           current.ReplyMaximumChars == 100 &&
                                           Math.Abs(current.FrontDistanceMeters - 8f) < 0.0001f &&
@@ -281,26 +318,33 @@ namespace AnimusForge.XihaiAction
                                              current.ReplyMaximumChars == 60 &&
                                              Math.Abs(current.FrontDistanceMeters - 10f) < 0.0001f &&
                                              current.AudienceVoiceCount == 22 &&
-                                             Math.Abs(current.TacticalAdvanceDelaySeconds - 1.8f) < 0.0001f;
-            bool changed = completeLegacyDefaults;
-            if (completeLegacyDefaults)
+                                             Math.Abs(current.TacticalAdvanceDelaySeconds - 1.8f) < 0.0001f &&
+                                             current.MaximumVisualResponders == 48 &&
+                                             current.AudienceReplyCount == 16 &&
+                                             current.AudienceReplyWaveSize == 8 &&
+                                             current.AudienceReplyMinimumChars == 8 &&
+                                             current.AudienceReplyMaximumChars == 24 &&
+                                             Math.Abs(current.AudienceReplyMinimumIntervalSeconds - 0.1f) < 0.0001f &&
+                                             Math.Abs(current.AudienceReplyMaximumIntervalSeconds - 0.5f) < 0.0001f &&
+                                             Math.Abs(current.AudienceReplyIntervalSeconds - 1.1f) < 0.0001f;
+            bool migrateToCurrentDefaults = completeLegacyDefaults ||
+                                            previousIntegratedDefaults ||
+                                            currentIntegratedDefaults;
+            if (migrateToCurrentDefaults)
             {
                 current.ReplyMinimumChars = 30;
                 current.ReplyMaximumChars = 80;
                 current.FrontDistanceMeters = 10f;
                 current.AudienceVoiceCount = 22;
                 current.TacticalAdvanceDelaySeconds = 1.8f;
-            }
-            else if (previousIntegratedDefaults)
-            {
-                current.ReplyMinimumChars = 20;
-                current.ReplyMaximumChars = 60;
-                changed = true;
-            }
-            if ((completeLegacyDefaults || previousIntegratedDefaults || currentIntegratedDefaults) &&
-                (current.AudienceReplyCount == 4 || current.AudienceReplyCount == 10))
-            {
-                current.AudienceReplyCount = 16;
+                current.MaximumVisualResponders = 60;
+                current.AudienceReplyCount = 24;
+                current.AudienceReplyWaveSize = 5;
+                current.AudienceReplyMinimumChars = 8;
+                current.AudienceReplyMaximumChars = 24;
+                current.AudienceReplyMinimumIntervalSeconds = 0.2f;
+                current.AudienceReplyMaximumIntervalSeconds = 0.5f;
+                current.AudienceReplyWaveDefaultsVersion = 2;
                 changed = true;
             }
             if (!completeLegacyDefaults &&
@@ -310,11 +354,25 @@ namespace AnimusForge.XihaiAction
                 current.TacticalAdvanceDelaySeconds = 1.8f;
                 changed = true;
             }
+            // Old profiles stored one fixed spoken-reply interval. Preserve a
+            // user-custom value when the new random range is still untouched;
+            // clamp it to the new 0.1..0.5-second contract.
+            if (!migrateToCurrentDefaults &&
+                Math.Abs(current.AudienceReplyMinimumIntervalSeconds - 0.1f) < 0.0001f &&
+                Math.Abs(current.AudienceReplyMaximumIntervalSeconds - 0.5f) < 0.0001f &&
+                Math.Abs(current.AudienceReplyIntervalSeconds - 1.1f) > 0.0001f)
+            {
+                float migrated = Math.Max(0.1f, Math.Min(0.5f,
+                    current.AudienceReplyIntervalSeconds));
+                current.AudienceReplyMinimumIntervalSeconds = 0.1f;
+                current.AudienceReplyMaximumIntervalSeconds = migrated;
+                changed = true;
+            }
             if (changed)
             {
                 SceneActionsLog.Info(
                     "BATTLE_SPEECH_MCM",
-                    "Migrated legacy battle-speech defaults to the longer speech and visible command timing.");
+                    "Migrated legacy battle-speech defaults to the current audience and speech settings.");
             }
         }
 

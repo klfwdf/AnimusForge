@@ -59,6 +59,8 @@
     <string id="SAX_MCM_Command" text="Command" />
     <string id="SAX_MCM_FollowMe" text="Follow-me gesture" />
     <string id="SAX_MCM_CutThroat" text="Cut-throat gesture" />
+    <string id="SAX_MCM_TKeyBattleSpeechEnabled" text="Enable battle-speech recognition from T-key scene shout" />
+    <string id="SAX_MCM_TKeyBattleSpeechEnabled_Hint" text="When enabled, T-key scene-shout text can enter the battle-speech channel. Y-key speech entries still require the main battle-speech switch and an eligible battle phase." />
     <string id="SAX_MCM_BattleSpeechEnabled" text="Enable battle speech" />
     <string id="SAX_MCM_ReplyMin" text="Battle speech minimum characters (6-30)" />
     <string id="SAX_MCM_ReplyMax" text="Battle speech maximum characters (6-30)" />
@@ -77,6 +79,11 @@
     <string id="SAX_MCM_AudienceReplies" text="Spoken replies from multiple soldiers" />
     <string id="SAX_MCM_AudienceReplyCount" text="Soldiers giving spoken replies" />
     <string id="SAX_MCM_AudienceReplyInterval" text="Spoken reply interval" />
+    <string id="SAX_MCM_AudienceReplyWaveSize" text="Maximum soldiers replying together" />
+    <string id="SAX_MCM_AudienceReplyMinimumChars" text="Minimum spoken reply characters" />
+    <string id="SAX_MCM_AudienceReplyMaximumChars" text="Maximum spoken reply characters" />
+    <string id="SAX_MCM_AudienceReplyMinInterval" text="Minimum random reply wave interval" />
+    <string id="SAX_MCM_AudienceReplyMaxInterval" text="Maximum random reply wave interval" />
     <string id="SAX_MCM_Advance" text="Command gesture then order all formations to Advance" />
     <string id="SAX_MCM_AdvanceDelay" text="Advance delay after command gesture" />
     <string id="SAX_MCM_EnemyRadius" text="Enemy interruption radius" />

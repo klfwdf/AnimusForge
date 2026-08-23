@@ -51,7 +51,8 @@ namespace AnimusForge.XihaiAction
                             framed,
                             topic,
                             epoch,
-                            submittedAt).ConfigureAwait(false);
+                            submittedAt,
+                            lifetimeToken).ConfigureAwait(false);
                     }
                     catch (OperationCanceledException)
                     {
@@ -74,13 +75,17 @@ namespace AnimusForge.XihaiAction
             IReadOnlyList<Agent> framed,
             string topic,
             int conversationEpoch,
-            double submittedAt)
+            double submittedAt,
+            CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             DedicatedNpcSpeechResultV1 result =
                 await AfCompatV130.GenerateDedicatedNpcSpeechAsync(
                     speaker,
                     framed,
-                    topic).ConfigureAwait(false);
+                    topic,
+                    cancellationToken).ConfigureAwait(false);
+            cancellationToken.ThrowIfCancellationRequested();
             if (!result.Succeeded)
             {
                 SceneActionsLog.Warning(
@@ -90,6 +95,7 @@ namespace AnimusForge.XihaiAction
                     (result.Error ?? "unknown"));
                 return;
             }
+            cancellationToken.ThrowIfCancellationRequested();
             if (!BattleSpeechRuntimeHost.SubmitGeneratedNpcReply(
                     mission,
                     sessionId,
@@ -97,6 +103,7 @@ namespace AnimusForge.XihaiAction
                     result.Content,
                     result.AfBehavior,
                     result.AfNpcPacket,
+                    result.CombinedResponse,
                     conversationEpoch,
                     submittedAt))
             {

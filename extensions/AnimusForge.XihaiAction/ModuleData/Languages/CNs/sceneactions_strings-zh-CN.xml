@@ -79,6 +79,11 @@
     <string id="SAX_MCM_AudienceReplies" text="启用多名士兵简短回复" />
     <string id="SAX_MCM_AudienceReplyCount" text="口头回复的士兵人数" />
     <string id="SAX_MCM_AudienceReplyInterval" text="士兵口头回复间隔" />
+    <string id="SAX_MCM_AudienceReplyWaveSize" text="每波最多同时回复的士兵人数" />
+    <string id="SAX_MCM_AudienceReplyMinimumChars" text="士兵口头回复最少字数" />
+    <string id="SAX_MCM_AudienceReplyMaximumChars" text="士兵口头回复最多字数" />
+    <string id="SAX_MCM_AudienceReplyMinInterval" text="回复波次最短随机间隔" />
+    <string id="SAX_MCM_AudienceReplyMaxInterval" text="回复波次最长随机间隔" />
     <string id="SAX_MCM_Advance" text="演讲后做下令手势并命令全军推进" />
     <string id="SAX_MCM_AdvanceDelay" text="下令手势后推进延迟" />
     <string id="SAX_MCM_EnemyRadius" text="近敌中断半径" />
