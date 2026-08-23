@@ -783,6 +783,9 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 
 	private Dictionary<string, DebtRecord> _debts = new Dictionary<string, DebtRecord>();
 
+	// New promises are queued until their originating conversation has naturally closed before calling QuestBase.StartQuest.
+	private HashSet<string> _pendingDebtPromiseQuestKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
 	private Dictionary<string, string> _debtStorage = new Dictionary<string, string>();
 
 	private Dictionary<string, int> _npcTrust = new Dictionary<string, int>();
@@ -1764,6 +1767,8 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		RepairInactivePromotedPlayerCompanions("game_load_finished");
 		BackfillHeroJoinOriginalClanRecordsForExistingPlayerCompanions();
 		CleanupStalePlayerJoinedHeroMapPartiesAfterLoad();
+		// A one-time queued reconciliation migrates existing save debts without putting a scan in the daily hot path.
+		QueueDebtPromiseQuestsForActiveDebts();
 	}
 
 	public void OnEngineTick()
@@ -1774,6 +1779,8 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 	private void OnCampaignTick(float dt)
 	{
 		TryClosePendingHeroJoinConversation();
+		// Starting a QuestBase ends the current conversation, so drain only after the conversation manager is idle.
+		DrainPendingDebtPromiseQuestCreations();
 		DrainRpItemIntroductionCompletionsOnCampaignTick();
 		StartQueuedRpItemIntroductionRequestsOnCampaignTick();
 	}
@@ -3680,6 +3687,11 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			// Debt promises already apply their own repayment/penalty rules and must not receive the generic quest trust reward.
+			if (quest is DebtPromiseQuest)
+			{
+				return;
+			}
 			if (quest == null || details != QuestBase.QuestCompleteDetails.Success)
 			{
 				return;
@@ -4086,6 +4098,224 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		catch
 		{
 			return "D" + DateTime.UtcNow.Ticks;
+		}
+	}
+
+	private void QueueDebtPromiseQuest(string ownerKey, string debtId)
+	{
+		string text = (ownerKey ?? "").Trim();
+		string text2 = (debtId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(text2))
+		{
+			return;
+		}
+		if (_pendingDebtPromiseQuestKeys == null)
+		{
+			_pendingDebtPromiseQuestKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		}
+		// The separator cannot occur in generated IDs and avoids allocating a request object for each promise.
+		_pendingDebtPromiseQuestKeys.Add(text + "\u001f" + text2);
+	}
+
+	private void QueueDebtPromiseQuestsForActiveDebts()
+	{
+		if (_debts == null || _debts.Count == 0)
+		{
+			return;
+		}
+		// This migration/reconciliation is called only after load or import, never from the daily debt-maintenance loop.
+		foreach (KeyValuePair<string, DebtRecord> debt in _debts)
+		{
+			if (string.IsNullOrWhiteSpace(debt.Key) || debt.Value == null)
+			{
+				continue;
+			}
+			NormalizeDebtRecord(debt.Value);
+			if (debt.Value.DebtLines == null)
+			{
+				continue;
+			}
+			for (int i = 0; i < debt.Value.DebtLines.Count; i++)
+			{
+				DebtRecord.DebtLine debtLine = debt.Value.DebtLines[i];
+				if (debtLine != null && debtLine.RemainingAmount > 0)
+				{
+					QueueDebtPromiseQuest(debt.Key, debtLine.DebtId);
+				}
+			}
+		}
+	}
+
+	private void DrainPendingDebtPromiseQuestCreations()
+	{
+		if (_pendingDebtPromiseQuestKeys == null || _pendingDebtPromiseQuestKeys.Count == 0 || !CanStartDebtPromiseQuest())
+		{
+			return;
+		}
+		// Copy then clear so a task created by this pass can safely enqueue a later promise without being lost.
+		List<string> list = _pendingDebtPromiseQuestKeys.ToList();
+		_pendingDebtPromiseQuestKeys.Clear();
+		for (int i = 0; i < list.Count; i++)
+		{
+			if (!TryParseDebtPromiseQuestKey(list[i], out var ownerKey, out var debtId)
+				|| !TryGetActiveDebtPromiseQuestData(ownerKey, debtId, out var debtorName, out var debtSummary, out var deadlineText, out var debtNote, out var dueDay, out var isDueUnlimited))
+			{
+				// A same-conversation ADP can clear the debt before this deferred task creation runs.
+				continue;
+			}
+			EnsureDebtPromiseQuest(ownerKey, debtId, debtorName, debtSummary, deadlineText, debtNote, dueDay, isDueUnlimited);
+		}
+	}
+
+	private static bool CanStartDebtPromiseQuest()
+	{
+		try
+		{
+			return Campaign.Current != null && Campaign.Current.QuestManager != null && (Campaign.Current.ConversationManager == null || !Campaign.Current.ConversationManager.IsConversationInProgress);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool TryParseDebtPromiseQuestKey(string value, out string ownerKey, out string debtId)
+	{
+		ownerKey = "";
+		debtId = "";
+		string text = value ?? "";
+		int num = text.IndexOf('\u001f');
+		if (num <= 0 || num >= text.Length - 1)
+		{
+			return false;
+		}
+		ownerKey = text.Substring(0, num).Trim();
+		debtId = text.Substring(num + 1).Trim();
+		return !string.IsNullOrWhiteSpace(ownerKey) && !string.IsNullOrWhiteSpace(debtId);
+	}
+
+	private bool TryGetActiveDebtPromiseQuestData(string ownerKey, string debtId, out string debtorName, out string debtSummary, out string deadlineText, out string debtNote, out float dueDay, out bool isDueUnlimited)
+	{
+		debtorName = "";
+		debtSummary = "";
+		deadlineText = "";
+		debtNote = "";
+		dueDay = 0f;
+		isDueUnlimited = false;
+		DebtRecord debtRecord = GetDebtRecordByKey(ownerKey);
+		if (debtRecord == null)
+		{
+			return false;
+		}
+		NormalizeDebtRecord(debtRecord);
+		DebtRecord.DebtLine debtLine = debtRecord.DebtLines?.FirstOrDefault((DebtRecord.DebtLine x) => x != null && x.RemainingAmount > 0 && string.Equals(x.DebtId ?? "", debtId, StringComparison.OrdinalIgnoreCase));
+		if (debtLine == null)
+		{
+			return false;
+		}
+		Hero hero = null;
+		try
+		{
+			hero = Hero.Find(ownerKey);
+		}
+		catch
+		{
+			hero = null;
+		}
+		if (hero != null)
+		{
+			debtorName = hero.Name?.ToString() ?? ownerKey;
+		}
+		else if (TryParseSettlementMerchantDebtKey(ownerKey, out var settlementId, out var kind))
+		{
+			Settlement settlement = ResolveSettlementById(settlementId);
+			debtorName = BuildSettlementMerchantDebtLabel(settlement, kind);
+		}
+		else
+		{
+			debtorName = ownerKey;
+		}
+		debtSummary = BuildDebtPromiseSummary(debtLine);
+		deadlineText = BuildDebtPromiseDeadlineText(debtLine.DueDay, debtLine.IsDueUnlimited);
+		debtNote = string.IsNullOrWhiteSpace(debtLine.DebtNote) ? "无" : debtLine.DebtNote;
+		// Pass raw deadline state so the task can use the native countdown instead of parsing display text.
+		dueDay = debtLine.DueDay;
+		isDueUnlimited = debtLine.IsDueUnlimited;
+		return true;
+	}
+
+	private static string BuildDebtPromiseSummary(DebtRecord.DebtLine debtLine)
+	{
+		if (debtLine == null)
+		{
+			return "未说明";
+		}
+		int num = Math.Max(0, debtLine.RemainingAmount);
+		if (debtLine.IsGold)
+		{
+			return num + " 第纳尔";
+		}
+		ItemObject itemObject = ResolveItemById(debtLine.ItemId);
+		string text = itemObject?.Name?.ToString();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = string.IsNullOrWhiteSpace(debtLine.ItemId) ? "物品" : debtLine.ItemId;
+		}
+		return text + " ×" + num;
+	}
+
+	private void EnsureDebtPromiseQuest(string ownerKey, string debtId, string debtorName, string debtSummary, string deadlineText, string debtNote, float dueDay, bool isDueUnlimited)
+	{
+		try
+		{
+			foreach (QuestBase quest in Campaign.Current.QuestManager.Quests)
+			{
+				DebtPromiseQuest debtPromiseQuest = quest as DebtPromiseQuest;
+				if (debtPromiseQuest != null && debtPromiseQuest.IsOngoing && debtPromiseQuest.Matches(ownerKey, debtId))
+				{
+					// Existing saves receive the exact ledger deadline during one-time load reconciliation.
+					debtPromiseQuest.SynchronizeDeadline(dueDay, isDueUnlimited);
+					return;
+				}
+			}
+			// The task deliberately has no QuestGiver so it cannot reserve a hero's vanilla issue slot or force a map marker.
+			DebtPromiseQuest debtPromiseQuest2 = new DebtPromiseQuest(debtId, ownerKey, debtorName, debtSummary, deadlineText, debtNote, dueDay, isDueUnlimited);
+			debtPromiseQuest2.StartQuest();
+			Logger.Log("Trust", "[DebtPromiseQuest] created debtId=" + debtId + " owner=" + ownerKey);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("Trust", "[WARN] Debt promise quest creation failed debtId=" + debtId + " owner=" + ownerKey + " error=" + ex.Message);
+		}
+	}
+
+	private void CompleteDebtPromiseQuest(string ownerKey, string debtId)
+	{
+		try
+		{
+			if (string.IsNullOrWhiteSpace(ownerKey) || string.IsNullOrWhiteSpace(debtId) || Campaign.Current?.QuestManager == null)
+			{
+				return;
+			}
+			List<DebtPromiseQuest> list = new List<DebtPromiseQuest>();
+			foreach (QuestBase quest in Campaign.Current.QuestManager.Quests)
+			{
+				DebtPromiseQuest debtPromiseQuest = quest as DebtPromiseQuest;
+				if (debtPromiseQuest != null && debtPromiseQuest.IsOngoing && debtPromiseQuest.Matches(ownerKey, debtId))
+				{
+					list.Add(debtPromiseQuest);
+				}
+			}
+			// Complete every duplicate defensively; only one is normally created per debt ID.
+			for (int i = 0; i < list.Count; i++)
+			{
+				list[i].CompleteByAgreement();
+			}
+		}
+		catch (Exception ex)
+		{
+			// Quest UI/save failures must never roll back a debt release that was already applied to the ledger.
+			Logger.Log("Trust", "[WARN] Debt promise quest completion failed debtId=" + debtId + " owner=" + ownerKey + " error=" + ex.Message);
 		}
 	}
 
@@ -8544,11 +8774,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 						_debts.Remove(item);
 						continue;
 					}
-					string reminderText = BuildDailyMerchantDebtReminderText(settlement, kind, value, campaignDayIndex);
-					if (!string.IsNullOrWhiteSpace(reminderText))
-					{
-						InformationManager.DisplayMessage(new InformationMessage(reminderText, Color.FromUint(4294945331u)));
-					}
+					// The persistent quest journal replaces recurring merchant debt pop-ups; overdue penalties above still apply.
 					continue;
 				}
 				for (int i = 0; i < value.DebtLines.Count; i++)
@@ -8603,11 +8829,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 					_debts.Remove(item);
 					continue;
 				}
-				string text = BuildDailyDebtReminderText(hero, value, campaignDayIndex);
-				if (!string.IsNullOrWhiteSpace(text))
-				{
-					InformationManager.DisplayMessage(new InformationMessage(text, Color.FromUint(4294945331u)));
-				}
+				// The persistent quest journal replaces recurring hero debt pop-ups; overdue penalties above still apply.
 			}
 		}
 		catch (Exception ex)
@@ -9286,6 +9508,8 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			NormalizeDebtRecord(debtRecord);
 			_debts[entry.Key] = debtRecord;
 		}
+		// Imported active lines receive the same task reconciliation as debts restored from a campaign save.
+		QueueDebtPromiseQuestsForActiveDebts();
 	}
 
 	public List<string> GetAllDebtorHeroIds()
@@ -18996,6 +19220,16 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		if (!HasDebtContent(value))
 		{
 			_debts.Remove(stringId);
+			return;
+		}
+		// Public SetDebt callers bypass AD parsing; queue only their new lines instead of scanning every debtor.
+		for (int i = 0; i < value.DebtLines.Count; i++)
+		{
+			DebtRecord.DebtLine debtLine = value.DebtLines[i];
+			if (debtLine != null && debtLine.RemainingAmount > 0)
+			{
+				QueueDebtPromiseQuest(stringId, debtLine.DebtId);
+			}
 		}
 	}
 
@@ -19043,6 +19277,8 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		};
 		orCreateDebtRecord.DebtLines.Add(debtLine);
 		NormalizeDebtRecord(orCreateDebtRecord);
+		// Defer QuestBase.StartQuest until the current AD-tag conversation has finished naturally.
+		QueueDebtPromiseQuest(npc.StringId, debtLine.DebtId);
 		return debtLine;
 	}
 
@@ -19114,6 +19350,8 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		};
 		orCreateDebtRecordByKey.DebtLines.Add(debtLine);
 		NormalizeDebtRecord(orCreateDebtRecordByKey);
+		// Market debts use the same deferred queue so all three conversation channels create tasks safely.
+		QueueDebtPromiseQuest(settlementMerchantDebtKey, debtLine.DebtId);
 		return debtLine;
 	}
 
@@ -19158,6 +19396,8 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		int remainingAmount = Math.Max(0, line.RemainingAmount);
 		line.RemainingAmount = 0;
 		NormalizeDebtRecord(rec);
+		// Complete this exact debt line's task even when the same NPC still has other unpaid lines.
+		CompleteDebtPromiseQuest(npc.StringId, line.DebtId);
 		statusText = $"债务ID {line.DebtId} 已按协商解除（{remainingAmount} -> 0）。";
 		if (!HasDebtContent(rec) && !string.IsNullOrWhiteSpace(npc?.StringId))
 		{
@@ -19203,6 +19443,8 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		int remainingAmount = Math.Max(0, line.RemainingAmount);
 		line.RemainingAmount = 0;
 		NormalizeDebtRecord(rec);
+		// Market obligations also complete by line ID, rather than waiting for the whole market balance to be cleared.
+		CompleteDebtPromiseQuest(BuildSettlementMerchantDebtKey(settlement, kind), line.DebtId);
 		statusText = $"债务ID {line.DebtId} 已按协商解除（{remainingAmount} -> 0）。";
 		if (!HasDebtContent(rec))
 		{

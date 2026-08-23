@@ -260,6 +260,158 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 		}
 	}
 
+	// The U-terminal prepares one immutable source snapshot so confirmation never re-reads a package that may have changed on disk.
+	internal bool TryBuildDatabaseReloadPlan(string importRoot, out KingdomDatabaseReloadPlan plan, out string errorMessage)
+	{
+		plan = null;
+		errorMessage = "";
+		try
+		{
+			if (!TryLoadImportEntries(importRoot, out List<KingdomStrategicProfileRecord> entries, out int invalidCount, out string loadError, allowMissing: false))
+			{
+				errorMessage = loadError;
+				return false;
+			}
+			if (invalidCount > 0)
+			{
+				errorMessage = "资料包中存在 " + invalidCount.ToString(CultureInfo.InvariantCulture) + " 条无效或重复的王国资料。";
+				return false;
+			}
+			KingdomImportTargetIndex kingdomImportTargetIndex = BuildImportTargetIndex();
+			Dictionary<string, KingdomStrategicProfileRecord> dictionary = new Dictionary<string, KingdomStrategicProfileRecord>(StringComparer.OrdinalIgnoreCase);
+			foreach (KingdomStrategicProfileRecord entry in entries)
+			{
+				if (!TryResolveImportTarget(entry, kingdomImportTargetIndex, out Kingdom kingdom, out string warning) || kingdom == null)
+				{
+					errorMessage = "资料包中的王国无法安全匹配当前世界：" + (warning ?? "未知原因");
+					return false;
+				}
+				string text = NormalizeId(kingdom.StringId);
+				if (string.IsNullOrWhiteSpace(text) || dictionary.ContainsKey(text))
+				{
+					errorMessage = "资料包中存在重复或无效的王国目标：" + (kingdom.Name?.ToString() ?? text);
+					return false;
+				}
+				dictionary[text] = CloneForExport(entry);
+			}
+			if (dictionary.Count <= 0)
+			{
+				errorMessage = "资料包中没有可重载的王国性格与战略。";
+				return false;
+			}
+			// Preflight must not initialize missing profiles in the current save.  Count only live campaign kingdoms for the confirmation text.
+			int num = GetCurrentKingdoms().Count((Kingdom x) => x != null && !dictionary.ContainsKey(NormalizeId(x.StringId)));
+			plan = new KingdomDatabaseReloadPlan
+			{
+				SourceProfilesByTargetId = dictionary,
+				CurrentProfilesResetToDefaultCount = num
+			};
+			return true;
+		}
+		catch (Exception ex)
+		{
+			errorMessage = ex.Message;
+			Log("database reload plan failed: " + ex);
+			return false;
+		}
+	}
+
+	// A serialized detached copy lets the terminal restore kingdom state if a future step throws after the candidate swap.
+	internal bool TryCaptureDatabaseReloadRollbackJson(out string snapshotJson, out string errorMessage)
+	{
+		snapshotJson = "";
+		errorMessage = "";
+		try
+		{
+			snapshotJson = JsonConvert.SerializeObject(_storage ?? new KingdomStrategicProfileStorage(), Formatting.None);
+			if (string.IsNullOrWhiteSpace(snapshotJson))
+			{
+				errorMessage = "序列化结果为空。";
+				return false;
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			errorMessage = ex.Message;
+			Log("database reload snapshot failed: " + ex);
+			return false;
+		}
+	}
+
+	// Restore is used only by the same user-confirmed reload click; no normalization is applied so the previous save state is retained verbatim.
+	internal bool TryRestoreDatabaseReloadRollbackJson(string snapshotJson, out string errorMessage)
+	{
+		errorMessage = "";
+		try
+		{
+			if (string.IsNullOrWhiteSpace(snapshotJson))
+			{
+				errorMessage = "回滚快照为空。";
+				return false;
+			}
+			KingdomStrategicProfileStorage restoredStorage = JsonConvert.DeserializeObject<KingdomStrategicProfileStorage>(snapshotJson);
+			if (restoredStorage == null)
+			{
+				errorMessage = "回滚快照无效。";
+				return false;
+			}
+			restoredStorage.Profiles ??= new Dictionary<string, KingdomStrategicProfileRecord>(StringComparer.OrdinalIgnoreCase);
+			_storage = restoredStorage;
+			return true;
+		}
+		catch (Exception ex)
+		{
+			errorMessage = ex.Message;
+			Log("database reload rollback failed: " + ex);
+			return false;
+		}
+	}
+
+	// Apply a fully parsed plan on a cloned storage object, so a failure cannot leave a reset-but-unimported kingdom profile set.
+	internal bool TryApplyDatabaseReloadPlan(KingdomDatabaseReloadPlan plan, out string detailMessage)
+	{
+		detailMessage = "";
+		try
+		{
+			if (plan?.SourceProfilesByTargetId == null || plan.SourceProfilesByTargetId.Count <= 0)
+			{
+				detailMessage = "王国重载计划为空。";
+				return false;
+			}
+			// Never call EnsureCurrentKingdomProfiles here: it writes directly to the live save.  Build and normalize a complete candidate instead.
+			KingdomStrategicProfileStorage kingdomStrategicProfileStorage = BuildDatabaseReloadCandidateStorage();
+			if (kingdomStrategicProfileStorage?.Profiles == null)
+			{
+				detailMessage = "无法创建王国资料重载副本。";
+				return false;
+			}
+			int currentCampaignDay = GetCurrentCampaignDay();
+			foreach (KingdomStrategicProfileRecord value in kingdomStrategicProfileStorage.Profiles.Values)
+			{
+				ResetProfileToDefaultForDatabaseReload(value, currentCampaignDay);
+			}
+			foreach (KeyValuePair<string, KingdomStrategicProfileRecord> sourceProfileByTargetId in plan.SourceProfilesByTargetId)
+			{
+				if (!kingdomStrategicProfileStorage.Profiles.TryGetValue(NormalizeId(sourceProfileByTargetId.Key), out KingdomStrategicProfileRecord value2) || value2 == null)
+				{
+					detailMessage = "当前世界已变化，找不到王国目标：" + sourceProfileByTargetId.Key;
+					return false;
+				}
+				ApplyDatabaseSourceProfile(value2, sourceProfileByTargetId.Value, currentCampaignDay);
+			}
+			_storage = kingdomStrategicProfileStorage;
+			detailMessage = "已重载 " + plan.SourceProfilesByTargetId.Count.ToString(CultureInfo.InvariantCulture) + " 个王国；其余 " + plan.CurrentProfilesResetToDefaultCount.ToString(CultureInfo.InvariantCulture) + " 个当前王国恢复默认资料。";
+			return true;
+		}
+		catch (Exception ex)
+		{
+			detailMessage = ex.Message;
+			Log("database reload apply failed: " + ex);
+			return false;
+		}
+	}
+
 	internal bool ImportAllFromDirectory(string importRoot, bool overwriteExisting, out string detailMessage)
 	{
 		return ImportFromDirectoryInternal(importRoot, null, overwriteExisting, out detailMessage);
@@ -1359,6 +1511,151 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 		};
 	}
 
+	// Deep-copy profile storage before an explicit database reload; it is used as a candidate, never as a hot-path cache.
+	private static KingdomStrategicProfileStorage CloneStorage(KingdomStrategicProfileStorage source)
+	{
+		KingdomStrategicProfileStorage kingdomStrategicProfileStorage = new KingdomStrategicProfileStorage
+		{
+			Version = source?.Version ?? SchemaVersion,
+			Profiles = new Dictionary<string, KingdomStrategicProfileRecord>(StringComparer.OrdinalIgnoreCase)
+		};
+		foreach (KeyValuePair<string, KingdomStrategicProfileRecord> item in source?.Profiles ?? new Dictionary<string, KingdomStrategicProfileRecord>())
+		{
+			string text = NormalizeId(item.Value?.KingdomId ?? item.Key);
+			if (!string.IsNullOrWhiteSpace(text) && item.Value != null)
+			{
+				kingdomStrategicProfileStorage.Profiles[text] = CloneForExport(item.Value);
+			}
+		}
+		return kingdomStrategicProfileStorage;
+	}
+
+	// Build the complete reload candidate without touching _storage; this cold-path copy is the boundary that keeps cancel/failure non-destructive.
+	private KingdomStrategicProfileStorage BuildDatabaseReloadCandidateStorage()
+	{
+		KingdomStrategicProfileStorage candidate = CloneStorage(_storage);
+		foreach (Kingdom kingdom in GetCurrentKingdoms())
+		{
+			string kingdomId = NormalizeId(kingdom?.StringId);
+			if (string.IsNullOrWhiteSpace(kingdomId))
+			{
+				continue;
+			}
+			if (candidate.Profiles.TryGetValue(kingdomId, out KingdomStrategicProfileRecord profile) && profile != null)
+			{
+				// Normalize the cloned record so reset defaults follow the same rules as ordinary campaign initialization.
+				NormalizeProfile(profile, kingdom, recoverInterruptedGeneration: false);
+			}
+			else
+			{
+				candidate.Profiles[kingdomId] = BuildInitialProfileForDatabaseReloadCandidate(kingdom);
+			}
+		}
+		return candidate;
+	}
+
+	// This mirrors EnsureProfile's baseline selection, but reload deliberately keeps dynamic kingdoms on their local fallback instead of queuing an unexpected API generation.
+	private KingdomStrategicProfileRecord BuildInitialProfileForDatabaseReloadCandidate(Kingdom kingdom)
+	{
+		string kingdomId = NormalizeId(kingdom?.StringId);
+		if (string.IsNullOrWhiteSpace(kingdomId))
+		{
+			return null;
+		}
+		KingdomStrategicProfileTemplate template;
+		bool requiresGeneration = IsDynamicKingdomId(kingdomId) && !AuthoredDefaults.TryGetValue(kingdomId, out template);
+		if (requiresGeneration)
+		{
+			template = BuildFoundingFallback(kingdom);
+		}
+		else if (!AuthoredDefaults.TryGetValue(kingdomId, out template))
+		{
+			template = BuildGenericDefault(kingdom);
+		}
+		int day = GetCurrentCampaignDay();
+		return new KingdomStrategicProfileRecord
+		{
+			KingdomId = kingdomId,
+			KingdomName = GetKingdomName(kingdom),
+			CultureId = kingdom?.Culture?.StringId ?? "",
+			RulerHeroId = GetRuler(kingdom)?.StringId ?? "",
+			DefaultNationalPersonality = CleanProfileText(template.NationalPersonality),
+			DefaultLongTermStrategy = CleanProfileText(template.LongTermStrategy),
+			NationalPersonality = CleanProfileText(template.NationalPersonality),
+			LongTermStrategy = CleanProfileText(template.LongTermStrategy),
+			DefaultSource = requiresGeneration ? "database_reload_default" : (AuthoredDefaults.ContainsKey(kingdomId) ? "authored_default" : "generic_default"),
+			IsPlayerOverride = false,
+			RequiresFoundingGeneration = false,
+			GenerationState = "not_required",
+			GenerationAttemptCount = 0,
+			NextGenerationRetryDay = 0,
+			CreatedDay = day,
+			UpdatedDay = day
+		};
+	}
+
+	// Reset only the effective override state; unmatched dynamic kingdoms keep their local baseline and must not cause an implicit LLM request after reload.
+	private static void ResetProfileToDefaultForDatabaseReload(KingdomStrategicProfileRecord profile, int day)
+	{
+		if (profile == null)
+		{
+			return;
+		}
+		profile.NationalPersonality = profile.DefaultNationalPersonality ?? "";
+		profile.LongTermStrategy = profile.DefaultLongTermStrategy ?? "";
+		profile.HasPersonalityOverride = false;
+		profile.HasStrategyOverride = false;
+		profile.IsPlayerOverride = false;
+		profile.DefaultSource = "database_reload_default";
+		profile.RequiresFoundingGeneration = false;
+		profile.GenerationState = "not_required";
+		profile.GenerationAttemptCount = 0;
+		profile.NextGenerationRetryDay = 0;
+		profile.LastGenerationError = "";
+		profile.UpdatedDay = day;
+	}
+
+	// A database package establishes a new baseline, rather than carrying another save's player-override flags forward.
+	private static void ApplyDatabaseSourceProfile(KingdomStrategicProfileRecord current, KingdomStrategicProfileRecord source, int day)
+	{
+		if (current == null || source == null)
+		{
+			return;
+		}
+		string text = CleanProfileText(source.NationalPersonality);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = CleanProfileText(source.DefaultNationalPersonality);
+		}
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = current.DefaultNationalPersonality ?? "";
+		}
+		string text2 = CleanProfileText(source.LongTermStrategy);
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			text2 = CleanProfileText(source.DefaultLongTermStrategy);
+		}
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			text2 = current.DefaultLongTermStrategy ?? "";
+		}
+		current.DefaultNationalPersonality = text;
+		current.DefaultLongTermStrategy = text2;
+		current.NationalPersonality = text;
+		current.LongTermStrategy = text2;
+		current.DefaultSource = "database_reload";
+		current.HasPersonalityOverride = false;
+		current.HasStrategyOverride = false;
+		current.IsPlayerOverride = false;
+		current.RequiresFoundingGeneration = false;
+		current.GenerationState = "not_required";
+		current.GenerationAttemptCount = 0;
+		current.NextGenerationRetryDay = 0;
+		current.LastGenerationError = "";
+		current.UpdatedDay = day;
+	}
+
 	private static void WriteJsonAtomic(string filePath, object value)
 	{
 		string directory = Path.GetDirectoryName(Path.GetFullPath(filePath));
@@ -1703,6 +2000,14 @@ internal sealed class KingdomStrategicProfileStorage
 
 	[JsonProperty("Profiles")]
 	public Dictionary<string, KingdomStrategicProfileRecord> Profiles { get; set; } = new Dictionary<string, KingdomStrategicProfileRecord>(StringComparer.OrdinalIgnoreCase);
+}
+
+// Carries already parsed, target-resolved profile data from terminal preflight to the one-shot storage swap.
+internal sealed class KingdomDatabaseReloadPlan
+{
+	public Dictionary<string, KingdomStrategicProfileRecord> SourceProfilesByTargetId { get; set; } = new Dictionary<string, KingdomStrategicProfileRecord>(StringComparer.OrdinalIgnoreCase);
+
+	public int CurrentProfilesResetToDefaultCount { get; set; }
 }
 
 internal sealed class KingdomStrategicProfileExportPackage

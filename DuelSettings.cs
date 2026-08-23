@@ -3277,19 +3277,16 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	public static void OpenAfdianSupportPageForExternal()
 	{
-		try
+		// 复用缺省浏览器关联的兜底逻辑，确保支持页不会因玩家系统未设置默认浏览器而失效。
+		if (ExternalBrowserLauncher.TryOpen(AfdianSupportUrl, out bool usedLocalBrowserFallback, out string failureMessage))
 		{
 			Logger.Log("DuelSettings", "用户点击了[支持作者（爱发电）]按钮。");
-			Process.Start(new ProcessStartInfo(AfdianSupportUrl)
-			{
-				UseShellExecute = true
-			});
-			InformationManager.DisplayMessage(new InformationMessage("[系统] 正在打开爱发电页面。", Color.FromUint(4278255360u)));
+			InformationManager.DisplayMessage(new InformationMessage(usedLocalBrowserFallback ? "[系统] 默认浏览器无法启动，已使用本机浏览器打开爱发电页面。" : "[系统] 正在打开爱发电页面。", Color.FromUint(4278255360u)));
 		}
-		catch (Exception ex)
+		else
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[系统] 打开爱发电页面失败: " + ex.Message, Color.FromUint(4294901760u)));
-			Logger.Log("DuelSettings", "[WARN] 打开爱发电页面失败: " + ex);
+			InformationManager.DisplayMessage(new InformationMessage("[系统] 打开爱发电页面失败: " + failureMessage, Color.FromUint(4294901760u)));
+			Logger.Log("DuelSettings", "[WARN] 打开爱发电页面失败: " + failureMessage);
 		}
 	}
 

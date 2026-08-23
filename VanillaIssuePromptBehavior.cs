@@ -36,6 +36,11 @@ public class VanillaIssuePromptBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			// DebtPromiseQuest is an AnimusForge ledger entry and must never be described to the LLM as a vanilla issue.
+			if (quest is DebtPromiseQuest)
+			{
+				return;
+			}
 			Hero questGiver = quest?.QuestGiver;
 			if (questGiver == null || string.IsNullOrWhiteSpace(questGiver.StringId))
 			{
