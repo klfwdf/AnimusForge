@@ -153,7 +153,7 @@ internal static class AfGcczShoutBridge
 			|| ruleInspectionBlock.IndexOf("【附加规则:" + RuleId + "】", StringComparison.OrdinalIgnoreCase) >= 0;
 	}
 
-	internal static bool ShouldRunPostprocessFromPreprocessHits(IEnumerable<string> preprocessRuleHits)
+	internal static bool ShouldRunPostprocessForActiveScene()
 	{
 		return IsActive();
 	}
@@ -166,24 +166,6 @@ internal static class AfGcczShoutBridge
 	internal static bool ShouldContinuePostprocess(bool alreadySelected, IEnumerable<string> preprocessRuleHits)
 	{
 		return IsActive() && (ShouldBypassPreprocessForActiveScene() || alreadySelected || HasPreprocessRuleHit(preprocessRuleHits));
-	}
-
-	internal static bool ShouldAllowPostprocessByFrequency(bool selected, string playerText, bool replyIsDirectPlayerResponse, string source)
-	{
-		if (!selected)
-		{
-			return false;
-		}
-		if (!IsActive())
-		{
-			return false;
-		}
-		return true;
-	}
-
-	internal static void ResetPostprocessFrequencyForMissionBoundary(string source)
-	{
-		GcczDiagnosticLog.Log("Postprocess", "boundary source=" + NormalizeThrottleSource(source));
 	}
 
 	private static string NormalizeThrottleSource(string source)
