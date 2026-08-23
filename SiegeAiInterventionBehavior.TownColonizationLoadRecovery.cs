@@ -116,9 +116,9 @@ public partial class SiegeAiInterventionBehavior
 			return false;
 		}
 
-		_pendingSummaryAftermath = SiegeAftermathAction.SiegeAftermath.Devastate;
+		EncounterCompletion.SetSummaryAftermath(SiegeAftermathResolutionKind.Devastate);
 		_nativeDevastateAftermathFlowActive = true;
-		_nativeDevastateSummaryContinueHandled = false;
+		EncounterCompletion.ResetNativeDevastateSummaryContinue();
 		TrySetNativePlayerEncounterAftermathForSummary(SiegeAftermathAction.SiegeAftermath.Devastate);
 		MarkAftermathResolvedForCompletion(settlement, SiegeAftermathAction.SiegeAftermath.Devastate);
 		PrepareCompletedInterventionSummary(SiegeAftermathAction.SiegeAftermath.Devastate);

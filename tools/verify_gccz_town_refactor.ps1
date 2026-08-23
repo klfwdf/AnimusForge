@@ -186,6 +186,33 @@ foreach ($snippet in $requiredDirectAftermathEvidence) {
     Assert-Condition ($directAftermathRuntimeText.Contains($snippet)) "Missing GCCZ direct-aftermath evidence: $snippet"
 }
 
+$completionStatePath = Join-Path $fusedCore "TownEncounterCompletionState.cs"
+Assert-Condition (Test-Path -LiteralPath $completionStatePath -PathType Leaf) "Missing GCCZ encounter-completion state: $completionStatePath"
+$allInterventionRuntimeText = ((Get-ChildItem -LiteralPath $FusedRoot -File -Filter "SiegeAiInterventionBehavior*.cs") | ForEach-Object {
+    [System.IO.File]::ReadAllText($_.FullName)
+}) -join "`n"
+$obsoleteCompletionPatterns = @(
+    '_pendingSummarySwitch',
+    '_pendingSummaryAftermath',
+    '_completedSummaryText',
+    '_pendingSummaryMenuPresented',
+    '_pendingSummaryContinueRequested',
+    '_pendingEncounterFinish',
+    '_nativeDevastateSummaryContinueHandled'
+)
+foreach ($pattern in $obsoleteCompletionPatterns) {
+    Assert-Condition (-not $allInterventionRuntimeText.Contains($pattern)) "Obsolete encounter-completion field returned: $pattern"
+}
+$requiredCompletionEvidence = @(
+    'TownEncounterCompletionState EncounterCompletion',
+    'EncounterCompletion.BeginSummary(',
+    'EncounterCompletion.QueueFinish(',
+    'EncounterCompletion.HasSettledWithoutNativeMenu('
+)
+foreach ($snippet in $requiredCompletionEvidence) {
+    Assert-Condition ($allInterventionRuntimeText.Contains($snippet)) "Missing GCCZ encounter-completion evidence: $snippet"
+}
+
 $requiredLifecycleEvidence = @(
     'IsActiveInCurrentMission()',
     'EndInterventionSceneScope("mission_ended")',
@@ -204,3 +231,4 @@ Write-Output "Handoff documents : $($documentMappings.Count)"
 Write-Output "Keyword triggers  : none in active GCCZ runtime"
 Write-Output "Effect mutations  : confined to town settlement adapter"
 Write-Output "Direct aftermath  : one explicit flow state and adapter"
+Write-Output "Encounter finish  : one explicit completion state"

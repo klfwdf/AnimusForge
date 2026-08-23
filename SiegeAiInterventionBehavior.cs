@@ -325,8 +325,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static readonly TownSceneMemorySession InterventionSceneMemory = new TownSceneMemorySession(SiegeInterventionMemoryContextBuilder.MaxMemoryEvents);
 	private static readonly TownOperationLedger ActiveTownOperationLedger = new TownOperationLedger();
 	private static readonly TownColonizationStateMachine ActiveTownColonization = new TownColonizationStateMachine();
-	private static bool _pendingSummarySwitch;
-	private static SiegeAftermathAction.SiegeAftermath _pendingSummaryAftermath;
+	private static readonly TownEncounterCompletionState EncounterCompletion = new TownEncounterCompletionState();
 	private static ItemRoster _pendingLootRoster = new ItemRoster();
 	private static bool _pendingLootScreen;
 	private static bool _pendingLootScreenShown;
@@ -335,18 +334,8 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static string _completedSettlementName = "";
 	private static bool _completedSettlementIsCastle;
 	private static SiegeAftermathAction.SiegeAftermath _completedAftermath;
-	private static string _completedSummaryText = "";
-	private static bool _pendingSummaryMenuPresented;
-	private static bool _pendingSummaryContinueRequested;
-	private static bool _pendingEncounterFinish;
-	private static SiegeAftermathAction.SiegeAftermath _pendingEncounterFinishAftermath;
-	private static int _pendingEncounterFinishDelayTicks;
-	private static int _pendingEncounterFinishAttempts;
-	private static bool _pendingEncounterFinishMessageShown;
-	private static DateTime _pendingEncounterFinishNoNativeMenuSinceUtc = DateTime.MinValue;
 	private const double EncounterFinishMenuSettleSeconds = 0.35d;
 	private static bool _nativeDevastateAftermathFlowActive;
-	private static bool _nativeDevastateSummaryContinueHandled;
 	private static readonly TownDirectAftermathFlowState DirectAftermathFlow = new TownDirectAftermathFlowState();
 	private static readonly SiegeOutcomeMessageDeduplicator OutcomeMessageDeduplicator = new SiegeOutcomeMessageDeduplicator();
 	private static bool _civilianAssemblyPointReady;
@@ -747,7 +736,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string text = string.IsNullOrWhiteSpace(_completedSummaryText) ? GetTownActionPresentationText().DoneMenuFallbackText : _completedSummaryText;
+			string text = string.IsNullOrWhiteSpace(EncounterCompletion.SummaryText) ? GetTownActionPresentationText().DoneMenuFallbackText : EncounterCompletion.SummaryText;
 			MBTextManager.SetTextVariable("AF_SIEGE_DONE_TEXT", text, false);
 			args?.MenuContext?.SetBackgroundMeshName("encounter_win");
 		}
@@ -764,8 +753,8 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private static void AfSiegeInterventionDoneContinueConsequence(MenuCallbackArgs args)
 	{
-		_pendingSummaryContinueRequested = true;
-		FinishPlayerEncounterAfterIntervention(_pendingSummaryAftermath);
+		EncounterCompletion.RequestSummaryContinue();
+		FinishPlayerEncounterAfterIntervention(ToNativeAftermathKind(EncounterCompletion.SummaryAftermath));
 	}
 
 	private static void SetsOwnedSettlementIncidentOnInit(MenuCallbackArgs args)
@@ -942,7 +931,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			if ((_afAftermathResolved || _pendingEncounterFinish || _pendingSummarySwitch) && DoesCompletedAftermathMatchCurrentSettlement())
+			if ((_afAftermathResolved || EncounterCompletion.HasPendingTransition) && DoesCompletedAftermathMatchCurrentSettlement())
 			{
 				return true;
 			}
@@ -1050,8 +1039,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			if (_activeMode == InterventionMode.None)
 			{
-				return _pendingSummarySwitch
-					|| _pendingEncounterFinish
+				return EncounterCompletion.HasPendingTransition
 					|| _hasPendingAftermath
 					|| DirectAftermathFlow.IsPending;
 			}
@@ -1059,8 +1047,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return IsActiveInCurrentMission();
 			}
-			return _pendingSummarySwitch
-				|| _pendingEncounterFinish
+			return EncounterCompletion.HasPendingTransition
 				|| _hasPendingAftermath
 				|| DirectAftermathFlow.IsPending;
 		}
@@ -1408,11 +1395,8 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_completedSettlementName = "";
 		_completedSettlementIsCastle = false;
 		_completedAftermath = SiegeAftermathAction.SiegeAftermath.ShowMercy;
-		_completedSummaryText = "";
-		_pendingSummaryMenuPresented = false;
-		_pendingSummaryContinueRequested = false;
+		EncounterCompletion.Reset();
 		_nativeDevastateAftermathFlowActive = false;
-		_nativeDevastateSummaryContinueHandled = false;
 		DirectAftermathFlow.Reset();
 		ResetOutcomeMessageDedup();
 		_civilianAssemblyPointReady = false;
@@ -2251,29 +2235,28 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 		bool finalized = FinalizePendingAftermath(SiegeAftermathTransitionSourceProfile.MissionEndFinalizeSource);
 		GcczDiagnosticLog.Log("Mission", "ended finalized=" + finalized
-			+ " aftermath=" + _pendingSummaryAftermath
+			+ " aftermath=" + ToNativeAftermathKind(EncounterCompletion.SummaryAftermath)
 			+ " lootItems=" + (_pendingLootRoster?.Count ?? 0));
 		if (finalized)
 		{
-			_pendingSummarySwitch = true;
-			if (_massacreStarted && _pendingSummaryAftermath == SiegeAftermathAction.SiegeAftermath.Devastate)
+			EncounterCompletion.BeginSummary(EncounterCompletion.SummaryAftermath);
+			if (_massacreStarted && EncounterCompletion.SummaryAftermath == SiegeAftermathResolutionKind.Devastate)
 			{
 				QueueDirectMassacreAftermathScript(SiegeAftermathTransitionSourceProfile.MissionEndFinalizedSource);
 			}
-			else if (_plunderStarted && _pendingSummaryAftermath == SiegeAftermathAction.SiegeAftermath.Pillage)
+			else if (_plunderStarted && EncounterCompletion.SummaryAftermath == SiegeAftermathResolutionKind.Pillage)
 			{
 				QueueDirectPlunderAftermathScript(SiegeAftermathTransitionSourceProfile.MissionEndFinalizedSource);
 			}
 			else
 			{
-				QueueEncounterFinishAfterIntervention(_pendingSummaryAftermath, SiegeAftermathTransitionSourceProfile.MissionEndFinalizedSource, 2, forceDelay: true);
+				QueueEncounterFinishAfterIntervention(ToNativeAftermathKind(EncounterCompletion.SummaryAftermath), SiegeAftermathTransitionSourceProfile.MissionEndFinalizedSource, 2, forceDelay: true);
 			}
 		}
 		else
 		{
-			_pendingSummarySwitch = true;
-			_pendingSummaryAftermath = SiegeAftermathAction.SiegeAftermath.ShowMercy;
-			QueueEncounterFinishAfterIntervention(_pendingSummaryAftermath, SiegeAftermathTransitionSourceProfile.MissionEndNoPendingAftermathSource, 2, forceDelay: true);
+			EncounterCompletion.BeginSummary(SiegeAftermathResolutionKind.ShowMercy);
+			QueueEncounterFinishAfterIntervention(SiegeAftermathAction.SiegeAftermath.ShowMercy, SiegeAftermathTransitionSourceProfile.MissionEndNoPendingAftermathSource, 2, forceDelay: true);
 			ClearActiveState(preserveSummarySwitch: true);
 		}
 	}
@@ -2373,7 +2356,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	internal static bool TryPumpPendingEncounterFinishForExternal(string source)
 	{
-		if ((!_pendingSummarySwitch && !_pendingEncounterFinish) || Mission.Current != null)
+		if (!EncounterCompletion.HasPendingTransition || Mission.Current != null)
 		{
 			return false;
 		}
@@ -2409,20 +2392,20 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				keepPending = true;
 				return true;
 			}
-			SiegeAftermathAction.SiegeAftermath aftermath = _pendingEncounterFinish ? _pendingEncounterFinishAftermath : _pendingSummaryAftermath;
+			SiegeAftermathAction.SiegeAftermath aftermath = ToNativeAftermathKind(EncounterCompletion.PendingAftermath);
 			TrySetNativePlayerEncounterAftermathForSummary(aftermath);
-			if (string.IsNullOrWhiteSpace(_completedSummaryText))
+			if (string.IsNullOrWhiteSpace(EncounterCompletion.SummaryText))
 			{
 				PrepareCompletedInterventionSummary(aftermath);
 			}
 			if (_completedSettlementIsCastle
-				&& !_pendingSummaryContinueRequested
+				&& !EncounterCompletion.IsSummaryContinueRequested
 				&& TryPresentCastleCompletionMenu(finishSource))
 			{
 				keepPending = true;
 				return true;
 			}
-			if (!_pendingEncounterFinish)
+			if (!EncounterCompletion.IsFinishQueued)
 			{
 				QueueEncounterFinishAfterIntervention(aftermath, finishSource, 0, forceDelay: false);
 			}
@@ -2443,8 +2426,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			if (!keepPending)
 			{
-				_pendingSummarySwitch = false;
-				_pendingEncounterFinish = false;
+				EncounterCompletion.ClearTransition(preserveSummary: false);
 				ClearActiveState(preserveSummarySwitch: false);
 			}
 		}
@@ -2486,7 +2468,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private static bool TryPresentCastleCompletionMenu(string source)
 	{
-		if (!_completedSettlementIsCastle || _pendingSummaryContinueRequested)
+		if (!_completedSettlementIsCastle || EncounterCompletion.IsSummaryContinueRequested)
 		{
 			return false;
 		}
@@ -2498,14 +2480,14 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		try
 		{
 			GameMenu.SwitchToMenu(SiegeInterventionCompletionUiProfile.DoneMenuId);
-			_pendingSummaryMenuPresented = true;
+			EncounterCompletion.MarkSummaryMenuPresented();
 			GcczDiagnosticLog.Log("Exit", "presented castle completion summary menu source="
 				+ (source ?? "N/A"));
 			return true;
 		}
 		catch (Exception ex)
 		{
-			_pendingSummaryContinueRequested = true;
+			EncounterCompletion.RequestSummaryContinue();
 			Logger.Log("SiegeAiIntervention", "Present castle completion summary menu failed; falling back to direct finish. Source="
 				+ (source ?? "N/A") + ", Error=" + ex.Message);
 			return false;
@@ -2529,7 +2511,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			if (string.IsNullOrWhiteSpace(_completedSummaryText))
+			if (string.IsNullOrWhiteSpace(EncounterCompletion.SummaryText))
 			{
 				PrepareCompletedInterventionSummary(_completedAftermath);
 			}
@@ -5789,20 +5771,20 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			if (Mission.Current == null && !_hasPendingAftermath && (_pendingSummarySwitch || _pendingEncounterFinish || _afAftermathResolved))
+			if (Mission.Current == null && !_hasPendingAftermath && (EncounterCompletion.HasPendingTransition || _afAftermathResolved))
 			{
 				SiegeAftermathAction.SiegeAftermath aftermath = _afAftermathResolved
 					? _completedAftermath
-					: (_pendingEncounterFinish ? _pendingEncounterFinishAftermath : _pendingSummaryAftermath);
+					: ToNativeAftermathKind(EncounterCompletion.PendingAftermath);
 				string transitionSource = SiegeAftermathTransitionSourceProfile.BuildNativeMenuActivationTransitionSource(menuId);
-				if (string.IsNullOrWhiteSpace(_completedSummaryText))
+				if (string.IsNullOrWhiteSpace(EncounterCompletion.SummaryText))
 				{
 					PrepareCompletedInterventionSummary(aftermath);
 				}
 				QueueEncounterFinishAfterIntervention(aftermath, transitionSource, 0, forceDelay: true);
 				Logger.Log("SiegeAiIntervention", "Queued deferred AF siege encounter finish from native menu activation. Menu=" + menuId + ", Source=" + transitionSource);
 			}
-			Logger.Log("SiegeAiIntervention", "Suppressed native siege aftermath menu during GCCZ transition. Menu=" + menuId + ", MissionActive=" + (Mission.Current != null) + ", PendingSummary=" + _pendingSummarySwitch + ", PendingFinish=" + _pendingEncounterFinish + ", PendingAftermath=" + _hasPendingAftermath + ", Resolved=" + _afAftermathResolved);
+			Logger.Log("SiegeAiIntervention", "Suppressed native siege aftermath menu during GCCZ transition. Menu=" + menuId + ", MissionActive=" + (Mission.Current != null) + ", PendingSummary=" + EncounterCompletion.IsSummaryPending + ", PendingFinish=" + EncounterCompletion.IsFinishQueued + ", PendingAftermath=" + _hasPendingAftermath + ", Resolved=" + _afAftermathResolved);
 			return true;
 		}
 		catch (Exception ex)
@@ -5816,8 +5798,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		return _activeMode != InterventionMode.None
 			|| _pendingMode != InterventionMode.None
-			|| _pendingSummarySwitch
-			|| _pendingEncounterFinish
+			|| EncounterCompletion.HasPendingTransition
 			|| _hasPendingAftermath
 			|| _afAftermathResolved
 			|| DirectAftermathFlow.IsPending;
@@ -5836,7 +5817,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			if (string.IsNullOrWhiteSpace(_completedSummaryText))
+			if (string.IsNullOrWhiteSpace(EncounterCompletion.SummaryText))
 			{
 				PrepareCompletedInterventionSummary(_completedAftermath);
 			}
@@ -5877,11 +5858,10 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			if (_nativeDevastateSummaryContinueHandled)
+			if (!EncounterCompletion.TryHandleNativeDevastateSummaryContinue())
 			{
 				return true;
 			}
-			_nativeDevastateSummaryContinueHandled = true;
 			try
 			{
 				GameMenu.ExitToLast();
@@ -5893,7 +5873,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				_pendingLootScreen = true;
 				_pendingLootScreenShown = true;
-				_pendingSummarySwitch = true;
+				EncounterCompletion.BeginSummary(SiegeAftermathResolutionKind.Devastate);
 				QueueEncounterFinishAfterIntervention(SiegeAftermathAction.SiegeAftermath.Devastate, SiegeAftermathTransitionSourceProfile.NativeDevastateSummaryContinueLootSource, 0, forceDelay: true);
 				InventoryScreenHelper.OpenScreenAsLoot(new Dictionary<PartyBase, ItemRoster>
 				{
@@ -14828,7 +14808,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					}
 				}
 				_nativeDevastateAftermathFlowActive = true;
-				_nativeDevastateSummaryContinueHandled = false;
+				EncounterCompletion.ResetNativeDevastateSummaryContinue();
 			}
 			TownOperationLedgerSnapshot operationLedger = ActiveTownOperationLedger.Snapshot();
 			bool ledgerBackedPartialMassacre = aftermath == SiegeAftermathAction.SiegeAftermath.Pillage
@@ -14872,7 +14852,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			TrySetNativePlayerEncounterAftermathForSummary(aftermath);
 			MyBehavior.Instance?.RecordAnimusForgeSiegeInterventionForExternal(attackerParty, settlement, aftermath, previousOwner, _pendingAftermathTrigger, _pendingAftermathDetail, Math.Min(AutoSummonCount, CountHealthyMainPartySoldiers()), _lastLootItemTotal, _lastLootStackKinds, _lastLootValue, _lastMarketGoldLoot, _lastCivilianGoldLoot, _lastCivilianTargetsLooted, _lastKilledCivilianUnits, _lastKilledNotables, _plunderStarted, _massacreStarted || _massacreStopped);
 			ApplySetsOwnedSettlementIncidentOutcomePenalty(aftermath, "sets_owned_town_final_" + aftermath);
-			_pendingSummaryAftermath = aftermath;
+			EncounterCompletion.SetSummaryAftermath(ToStandaloneAftermathKind(aftermath));
 			MarkAftermathResolvedForCompletion(settlement, aftermath);
 			PrepareCompletedInterventionSummary(aftermath);
 			_hasPendingAftermath = false;
@@ -15606,7 +15586,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					CastleAftermathSettlementRuntimeBridge.GetLastAppliedResult();
 				IReadOnlyList<SiegeCastleDispositionSummaryEntry> regularOutcomes =
 					CastleAftermathDispositionSessionBridge.GetFinalizedRegularOutcomes();
-				_completedSummaryText = SiegeCastleCompletedInterventionSummaryBuilder.Build(
+				EncounterCompletion.SetSummaryText(SiegeCastleCompletedInterventionSummaryBuilder.Build(
 					new SiegeCastleCompletedInterventionSummaryFacts(
 						settlementName,
 						ResolvePlayerCharacterNameForContext(),
@@ -15627,7 +15607,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 						regularActions.Contains(SiegeCastleActionKind.TreatPrisoners),
 						regularActions.Contains(SiegeCastleActionKind.ReceiveArmaments),
 						lordOutcomeSummary,
-						settlementResult.ConstructionSpeedBonusPercent));
+						settlementResult.ConstructionSpeedBonusPercent)));
 				GcczDiagnosticLog.Log("CastleOutcome", "summary settlement=" + (settlement?.StringId ?? _completedSettlementId ?? "N/A")
 					+ " outcomes=" + string.Join(",", regularOutcomes.Select(entry => entry.Action + ":" + entry.AffectedCount))
 					+ " remainingRegular=" + remainingRegularPrisoners
@@ -15648,7 +15628,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				CultureObject targetCulture = ResolveCulturalRepopulationTargetCulture(out string targetCultureSource);
 				targetCultureText = DescribeCultureForMessage(targetCulture, targetCultureSource);
 			}
-			_completedSummaryText = SiegeCompletedInterventionSummaryBuilder.Build(new SiegeCompletedInterventionSummaryFacts(
+			EncounterCompletion.SetSummaryText(SiegeCompletedInterventionSummaryBuilder.Build(new SiegeCompletedInterventionSummaryFacts(
 				settlementName,
 				ToStandaloneAftermathKind(aftermath),
 				culturalRepopulationApplied,
@@ -15661,11 +15641,11 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				_lastMarketGoldLoot,
 				_lastCivilianGoldLoot,
 				_lastCivilianTargetsLooted),
-				GetTownActionPresentationText());
+				GetTownActionPresentationText()));
 		}
 		catch
 		{
-			_completedSummaryText = GetTownActionPresentationText().CompletedSummaryFallbackText;
+			EncounterCompletion.SetSummaryText(GetTownActionPresentationText().CompletedSummaryFallbackText);
 		}
 	}
 
@@ -15686,22 +15666,10 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			bool newlyQueued = !_pendingEncounterFinish;
-			if (!_pendingEncounterFinish)
-			{
-				_pendingEncounterFinish = true;
-				_pendingEncounterFinishAttempts = 0;
-				_pendingEncounterFinishMessageShown = false;
-				_pendingEncounterFinishNoNativeMenuSinceUtc = DateTime.MinValue;
-			}
-			_pendingEncounterFinishAftermath = aftermath;
-			if (forceDelay || _pendingEncounterFinishDelayTicks <= 0)
-			{
-				_pendingEncounterFinishDelayTicks = Math.Max(0, delayTicks);
-			}
+			bool newlyQueued = EncounterCompletion.QueueFinish(ToStandaloneAftermathKind(aftermath), delayTicks, forceDelay);
 			string queueLog = "queued aftermath=" + aftermath
 				+ " reason=" + (reason ?? "N/A")
-				+ " delayTicks=" + _pendingEncounterFinishDelayTicks
+				+ " delayTicks=" + EncounterCompletion.FinishDelayTicks
 				+ " forceDelay=" + forceDelay;
 			if (newlyQueued)
 			{
@@ -15711,7 +15679,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				GcczDiagnosticLog.LogVerbose("Exit", queueLog);
 			}
-			Logger.Log("SiegeAiIntervention", "Queued AF siege encounter finish. Reason=" + (reason ?? "N/A") + ", Aftermath=" + aftermath + ", DelayTicks=" + _pendingEncounterFinishDelayTicks);
+			Logger.Log("SiegeAiIntervention", "Queued AF siege encounter finish. Reason=" + (reason ?? "N/A") + ", Aftermath=" + aftermath + ", DelayTicks=" + EncounterCompletion.FinishDelayTicks);
 		}
 		catch (Exception ex)
 		{
@@ -15724,17 +15692,16 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (!_pendingEncounterFinish)
+			if (!EncounterCompletion.IsFinishQueued)
 			{
 				QueueEncounterFinishAfterIntervention(aftermath, source, 0, forceDelay: true);
 			}
-			if (_pendingEncounterFinishDelayTicks > 0)
+			if (EncounterCompletion.TryConsumeFinishDelayTick())
 			{
-				_pendingEncounterFinishDelayTicks--;
 				return false;
 			}
 			ShowEncounterFinishMessagesOnce(aftermath);
-			_pendingEncounterFinishAttempts++;
+			int finishAttempts = EncounterCompletion.RecordFinishAttempt();
 			try
 			{
 				PlayerEncounter.LeaveEncounter = true;
@@ -15756,9 +15723,9 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				if (PlayerEncounter.Current != null)
 				{
-					_pendingEncounterFinishNoNativeMenuSinceUtc = DateTime.MinValue;
+					EncounterCompletion.ResetNoNativeMenuWait();
 					PlayerEncounter.Finish(true);
-					Logger.Log("SiegeAiIntervention", "Requested PlayerEncounter.Finish(true) after AF intervention. Source=" + (source ?? "N/A") + ", Attempt=" + _pendingEncounterFinishAttempts);
+					Logger.Log("SiegeAiIntervention", "Requested PlayerEncounter.Finish(true) after AF intervention. Source=" + (source ?? "N/A") + ", Attempt=" + finishAttempts);
 				}
 			}
 			catch (Exception ex)
@@ -15770,7 +15737,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				string currentMenuId = Campaign.Current?.CurrentMenuContext?.GameMenu?.StringId;
 				if (string.Equals(currentMenuId, SiegeInterventionCompletionUiProfile.DoneMenuId, StringComparison.OrdinalIgnoreCase))
 				{
-					if (!_pendingSummaryContinueRequested)
+					if (!EncounterCompletion.IsSummaryContinueRequested)
 					{
 						return false;
 					}
@@ -15785,13 +15752,13 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				}
 				if (IsNativeSiegeAftermathMenuId(currentMenuId))
 				{
-					_pendingEncounterFinishNoNativeMenuSinceUtc = DateTime.MinValue;
+					EncounterCompletion.ResetNoNativeMenuWait();
 					try
 					{
 						GameMenu.ExitToLast();
 						GcczDiagnosticLog.LogVerbose("Exit", "dismissed native aftermath menu=" + currentMenuId
 							+ " source=" + (source ?? "N/A")
-							+ " attempts=" + _pendingEncounterFinishAttempts);
+							+ " attempts=" + finishAttempts);
 					}
 					catch (Exception ex)
 					{
@@ -15801,30 +15768,24 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					return false;
 				}
 
-				DateTime nowUtc = DateTime.UtcNow;
-				if (_pendingEncounterFinishNoNativeMenuSinceUtc == DateTime.MinValue)
-				{
-					_pendingEncounterFinishNoNativeMenuSinceUtc = nowUtc;
-					return false;
-				}
-				if ((nowUtc - _pendingEncounterFinishNoNativeMenuSinceUtc).TotalSeconds < EncounterFinishMenuSettleSeconds)
+				if (!EncounterCompletion.HasSettledWithoutNativeMenu(DateTime.UtcNow, EncounterFinishMenuSettleSeconds))
 				{
 					return false;
 				}
 				GcczDiagnosticLog.Log("Exit", "completed source=" + (source ?? "N/A")
 					+ " aftermath=" + aftermath
-					+ " attempts=" + _pendingEncounterFinishAttempts);
+					+ " attempts=" + finishAttempts);
 				Logger.Log("SiegeAiIntervention", "AF siege encounter finish completed. Source=" + (source ?? "N/A"));
 				return true;
 			}
-			if (_pendingEncounterFinishAttempts >= 3)
+			if (finishAttempts >= 3)
 			{
 				try
 				{
 					GameMenu.ExitToLast();
 					GcczDiagnosticLog.Log("Exit", "fallback menu exit source=" + (source ?? "N/A")
-						+ " attempts=" + _pendingEncounterFinishAttempts);
-					Logger.Log("SiegeAiIntervention", "Fallback GameMenu.ExitToLast after AF intervention finish attempts. Source=" + (source ?? "N/A") + ", Attempt=" + _pendingEncounterFinishAttempts);
+						+ " attempts=" + finishAttempts);
+					Logger.Log("SiegeAiIntervention", "Fallback GameMenu.ExitToLast after AF intervention finish attempts. Source=" + (source ?? "N/A") + ", Attempt=" + finishAttempts);
 				}
 				catch
 				{
@@ -15842,14 +15803,13 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private static void ShowEncounterFinishMessagesOnce(SiegeAftermathAction.SiegeAftermath aftermath)
 	{
-		if (_pendingEncounterFinishMessageShown)
+		if (!EncounterCompletion.TryClaimFinishMessage())
 		{
 			return;
 		}
-		_pendingEncounterFinishMessageShown = true;
 		try
 		{
-			if (!_pendingSummaryMenuPresented)
+			if (!EncounterCompletion.IsSummaryMenuPresented)
 			{
 				InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionCompletionUiProfile.BuildCompletedEncounterMessage(ToStandaloneAftermathKind(aftermath), IsCulturalRepopulationOutcome, GetTownActionPresentationText()), Color.FromUint(SiegeInterventionCompletionUiProfile.CompletionMessageColor)));
 			}
@@ -16160,18 +16120,8 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			_completedSettlementName = "";
 			_completedSettlementIsCastle = false;
 			_completedAftermath = SiegeAftermathAction.SiegeAftermath.ShowMercy;
-			_completedSummaryText = "";
-			_pendingSummaryMenuPresented = false;
-			_pendingSummaryContinueRequested = false;
-			_pendingSummarySwitch = false;
-			_pendingEncounterFinish = false;
-			_pendingEncounterFinishAftermath = SiegeAftermathAction.SiegeAftermath.ShowMercy;
-			_pendingEncounterFinishDelayTicks = 0;
-			_pendingEncounterFinishAttempts = 0;
-			_pendingEncounterFinishMessageShown = false;
-			_pendingEncounterFinishNoNativeMenuSinceUtc = DateTime.MinValue;
+			EncounterCompletion.Reset();
 			_nativeDevastateAftermathFlowActive = false;
-			_nativeDevastateSummaryContinueHandled = false;
 			DirectAftermathFlow.Reset();
 			ResetOutcomeMessageDedup();
 			ResetSessionCounters();
@@ -16209,17 +16159,13 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_partyContributions = new Dictionary<MobileParty, float>();
 		if (!preserveSummarySwitch)
 		{
-			_pendingSummarySwitch = false;
-			_pendingSummaryMenuPresented = false;
-			_pendingSummaryContinueRequested = false;
+			EncounterCompletion.ClearTransition(preserveSummary: false);
 		}
-		_pendingEncounterFinish = false;
-		_pendingEncounterFinishDelayTicks = 0;
-		_pendingEncounterFinishAttempts = 0;
-		_pendingEncounterFinishMessageShown = false;
-		_pendingEncounterFinishNoNativeMenuSinceUtc = DateTime.MinValue;
+		else
+		{
+			EncounterCompletion.ClearTransition(preserveSummary: true);
+		}
 		_nativeDevastateAftermathFlowActive = false;
-		_nativeDevastateSummaryContinueHandled = false;
 		DirectAftermathFlow.Reset();
 		ResetOutcomeMessageDedup();
 		ResetSessionCounters();
