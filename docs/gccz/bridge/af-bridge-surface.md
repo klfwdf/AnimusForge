@@ -76,9 +76,10 @@ Do not move all code at once. First extract stable data/rules/state helpers, the
 ## 2026-08-23 settlement-effect adapter
 
 - `TownSettlementEffectPlan` is the reusable, Bannerlord-free representation of immediate town, bound-village, notable, and relief-food effect deltas.
-- `SiegeAiInterventionBehavior.TownSettlementEffectAdapter.cs` is the only AF file allowed to call public-trust and personal-trust mutation APIs for GCCZ town outcomes. It applies one plan and reports the affected target counts for diagnostics.
-- Plunder and massacre controllers still own ledger commits, while the final outcome adapter still owns native prosperity comparison, colonization loyalty reset, and timed debuff registration. None of those controllers duplicate trust or notable mutation loops.
-- The older SETS owner-specific incident relation penalty is deliberately outside this adapter because it targets one clan leader and is not a GCCZ settlement/notable outcome batch.
+- `SiegeAiInterventionBehavior.TownSettlementEffectAdapter.cs` is the only GCCZ AF file allowed to mutate town prosperity, loyalty, security, food stock, public trust, personal trust, or outcome relation deltas. It also owns timed prosperity, recruitment, and civic-buff maintenance plus SETS owner-relation application, while callers retain eligibility and one-shot state decisions.
+- `SiegeAiInterventionBehavior.TownEconomyEffectAdapter.cs` is the only GCCZ AF file allowed to transfer plunder/refund gold or move settlement/refund item stacks. Plunder controllers retain target selection, random amount calculation, ledger ownership, and presentation, but no longer call Bannerlord economy mutation APIs directly.
+- Plunder and massacre controllers still own ledger commits, while the settlement adapter reports affected target counts and owns finalized native-prosperity comparison, colonization loyalty reset, and timed-effect registration. Neither controller duplicates settlement, relation, gold, or item mutation calls.
+- Native `SiegeAftermathAction.ApplyAftermath(...)`, culture replacement, notable death, and ownership transfer remain separate guarded completion side effects. They are not silently folded into settlement or economy plans because doing so could change native completion order; later cleanup must preserve their dedicated one-shot state guards.
 
 ## 2026-08-23 direct aftermath state and adapter
 

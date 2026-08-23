@@ -247,6 +247,7 @@
   - [x] Summary presentation and encounter-finish retries share one explicit completion state with bounded delay, retry, menu-settle, and deduplication transitions.
   - [x] Civilian gathering, formation takeover, controller priming, assembly readiness, and default follow orders share one mission-scoped scene-control state.
 - [ ] 每个奖励或惩罚只允许通过一个结算适配入口提交。
+  - [x] Town stat, public-trust, personal-trust, relation, gold-transfer, and item-transfer mutations are confined to the dedicated settlement/economy AF adapters; native aftermath, culture, ownership, and death side effects remain guarded completion paths pending their final audit.
 - [x] 保存数据增加版本字段和默认迁移，不破坏旧存档读取。
 - [ ] 所有事件订阅必须有对称解除；离开 GCCZ 场景后清理普通角色记忆和临时状态。
 - [ ] 删除被新实现替代的死代码、重复路径、遗留开关、注释旧实现和失效兼容垫片。

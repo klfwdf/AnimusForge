@@ -1278,7 +1278,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				IsCulturalRepopulationOutcome);
 			int nativePenalty = ResolveNativeSettlementOwnerRelationPenalty(aftermath);
 			int additionalPenalty = SetsOwnedSettlementIncidentProfile.ResolveAdditionalPenaltyAfterNative(desiredPenalty, nativePenalty);
-			ChangeRelationAction.ApplyPlayerRelation(ownerLeader, additionalPenalty, true, true);
+			ApplyOwnerRelationDelta(ownerLeader, additionalPenalty);
 			_setsCapturedTownRiotOwnerPenaltyApplied = true;
 			_setsCapturedTownRiotContext = false;
 			InformationManager.DisplayMessage(new InformationMessage(SetsOwnedSettlementIncidentProfile.BuildRelationPenaltyMessage(desiredPenalty), Color.FromUint(SetsOwnedSettlementIncidentProfile.WarningColor)));
@@ -1357,7 +1357,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			ChangeRelationAction.ApplyPlayerRelation(ownerLeader, penalty, true, true);
+			ApplyOwnerRelationDelta(ownerLeader, penalty);
 			_setsOwnedSettlementIncidentPenaltyApplied = true;
 			int reportedPenalty = desiredTotalPenalty < 0 ? desiredTotalPenalty : penalty;
 			InformationManager.DisplayMessage(new InformationMessage(SetsOwnedSettlementIncidentProfile.BuildRelationPenaltyMessage(reportedPenalty), Color.FromUint(SetsOwnedSettlementIncidentProfile.WarningColor)));
@@ -7510,7 +7510,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					Logger.Log("SiegeAiIntervention", "Unable to resolve shared relief item for refund. ItemId=" + (pair.Key ?? ""));
 					continue;
 				}
-				itemRoster.AddToCounts(item, amount);
+				RestoreItemStackToPlayerParty(itemRoster, item, amount);
 				returnedItems += amount;
 				returnedParts.Add(SiegeSharedReliefPoolFormatter.BuildItemAmountText(amount, item.Name?.ToString() ?? pair.Key));
 			}
@@ -7767,34 +7767,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			Logger.Log("SiegeAiIntervention", "ApplyMercyChoice failed: " + ex.Message);
 			return false;
-		}
-	}
-
-	private static void AwardGoldToPlayer(int amount, string source)
-	{
-		if (amount <= 0 || Hero.MainHero == null)
-		{
-			return;
-		}
-		try
-		{
-			int before = Hero.MainHero.Gold;
-			GiveGoldAction.ApplyBetweenCharacters(null, Hero.MainHero, amount, disableNotification: true);
-			if (Hero.MainHero.Gold < before + amount)
-			{
-				Hero.MainHero.ChangeHeroGold(before + amount - Hero.MainHero.Gold);
-			}
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "AwardGoldToPlayer failed (" + source + "): " + ex.Message);
-			try
-			{
-				Hero.MainHero.ChangeHeroGold(amount);
-			}
-			catch
-			{
-			}
 		}
 	}
 
@@ -8056,7 +8028,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				amount = Math.Min(amount, hero.Gold);
 				if (amount > 0)
 				{
-					GiveGoldAction.ApplyBetweenCharacters(hero, Hero.MainHero, amount, disableNotification: true);
+					TransferHeroGoldToPlayer(hero, amount);
 				}
 			}
 			else if (amount > 0)
@@ -11945,7 +11917,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				amount = Math.Min(amount, hero.Gold);
 				if (amount > 0)
 				{
-					GiveGoldAction.ApplyBetweenCharacters(hero, Hero.MainHero, amount, disableNotification: true);
+					TransferHeroGoldToPlayer(hero, amount);
 				}
 			}
 			else if (amount > 0)
@@ -14301,8 +14273,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 						continue;
 					}
 					int move = Math.Max(1, MBRandom.RandomInt(1, available + 1));
-					sourceRoster.AddToCounts(element.EquipmentElement, -move);
-					_pendingLootRoster.AddToCounts(element.EquipmentElement, move);
+					MoveItemStackToPendingLoot(sourceRoster, _pendingLootRoster, element.EquipmentElement, move);
 					_pendingLootScreen = true;
 					element.Amount -= move;
 					remaining -= move;
@@ -14863,501 +14834,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 		}
 		return result;
-	}
-
-	private static float ApplyExtraNativeDevastateProsperityPenalty(Settlement settlement, float prosperityBeforeNativeAftermath, float totalMultiplier)
-	{
-		try
-		{
-			if (settlement?.Town == null || totalMultiplier <= 1f)
-			{
-				return 0f;
-			}
-			float nativeDelta = settlement.Town.Prosperity - prosperityBeforeNativeAftermath;
-			if (nativeDelta >= 0f)
-			{
-				return 0f;
-			}
-			float prosperityBeforeExtraPenalty = settlement.Town.Prosperity;
-			float requestedExtraDelta = nativeDelta * (totalMultiplier - 1f);
-			settlement.Town.Prosperity = MathF.Max(0f, prosperityBeforeExtraPenalty + requestedExtraDelta);
-			return settlement.Town.Prosperity - prosperityBeforeExtraPenalty;
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "ApplyExtraNativeDevastateProsperityPenalty failed: " + ex.Message);
-			return 0f;
-		}
-	}
-
-	private static void BeginRepopulationProsperityGrowthDebuff(Settlement settlement)
-	{
-		try
-		{
-			string key = settlement?.StringId;
-			if (string.IsNullOrWhiteSpace(key) || settlement?.Town == null)
-			{
-				return;
-			}
-			int untilDay = GetCurrentCampaignDay() + Math.Max(1, CampaignTime.DaysInYear * SiegeSettlementOutcomeProfile.CulturalRepopulationProsperityGrowthDebuffYears);
-			_repopulationProsperityDebuffUntilDayBySettlement[key] = untilDay;
-			_repopulationProsperityLastObservedBySettlement[key] = settlement.Town.Prosperity;
-			Logger.Log("SiegeAiIntervention", $"Applied repopulation prosperity growth debuff. Settlement={key}, UntilDay={untilDay}, Reduction={SiegeSettlementOutcomeProfile.CulturalRepopulationProsperityGrowthReductionRatio:P0}");
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "BeginRepopulationProsperityGrowthDebuff failed: " + ex.Message);
-		}
-	}
-
-	private static void ApplyRepopulationProsperityGrowthDebuff(Town town)
-	{
-		try
-		{
-			Settlement settlement = town?.Settlement;
-			string key = settlement?.StringId;
-			if (string.IsNullOrWhiteSpace(key))
-			{
-				return;
-			}
-			int today = GetCurrentCampaignDay();
-			if (!_repopulationProsperityDebuffUntilDayBySettlement.TryGetValue(key, out int untilDay) || today > untilDay)
-			{
-				_repopulationProsperityDebuffUntilDayBySettlement.Remove(key);
-				_repopulationProsperityLastObservedBySettlement.Remove(key);
-				return;
-			}
-			float current = town.Prosperity;
-			if (!_repopulationProsperityLastObservedBySettlement.TryGetValue(key, out float last))
-			{
-				_repopulationProsperityLastObservedBySettlement[key] = current;
-				return;
-			}
-			float growth = current - last;
-			if (growth > 0.01f)
-			{
-				float reduction = growth * SiegeSettlementOutcomeProfile.CulturalRepopulationProsperityGrowthReductionRatio;
-				town.Prosperity = MathF.Max(0f, current - reduction);
-				current = town.Prosperity;
-				Logger.Log("SiegeAiIntervention", $"Repopulation prosperity growth debuff applied. Settlement={key}, Growth={growth:0.##}, Reduction={reduction:0.##}, UntilDay={untilDay}");
-			}
-			_repopulationProsperityLastObservedBySettlement[key] = current;
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "ApplyRepopulationProsperityGrowthDebuff failed: " + ex.Message);
-		}
-	}
-
-	private static void ClearRepopulationProsperityDebuffs()
-	{
-		_repopulationProsperityDebuffUntilDayBySettlement.Clear();
-		_repopulationProsperityLastObservedBySettlement.Clear();
-	}
-
-	private static void BeginRecruitmentSlowdownDebuff(Settlement settlement, SiegeSettlementOutcomeProfile profile)
-	{
-		try
-		{
-			string key = settlement?.StringId;
-			if (string.IsNullOrWhiteSpace(key) || settlement?.Town == null || profile == null || !profile.AppliesRecruitmentSlowdown)
-			{
-				return;
-			}
-			int untilDay = GetCurrentCampaignDay() + Math.Max(1, CampaignTime.DaysInYear * profile.RecruitmentSlowdownYears);
-			_recruitmentSlowdownUntilDayBySettlement[key] = untilDay;
-			Logger.Log("SiegeAiIntervention", $"Applied recruitment slowdown. Settlement={key}, UntilDay={untilDay}, Rate={profile.RecruitmentRateMultiplier:P0}, Reason={profile.RecruitmentSlowdownReason ?? "N/A"}");
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "BeginRecruitmentSlowdownDebuff failed: " + ex.Message);
-		}
-	}
-
-	private static void ApplyRecruitmentSlowdownDebuff(Town town)
-	{
-		try
-		{
-			Settlement settlement = town?.Settlement;
-			string key = settlement?.StringId;
-			if (string.IsNullOrWhiteSpace(key))
-			{
-				return;
-			}
-			int today = GetCurrentCampaignDay();
-			if (!_recruitmentSlowdownUntilDayBySettlement.TryGetValue(key, out int untilDay))
-			{
-				return;
-			}
-			if (today > untilDay)
-			{
-				_recruitmentSlowdownUntilDayBySettlement.Remove(key);
-				Logger.Log("SiegeAiIntervention", $"Recruitment slowdown expired. Settlement={key}, UntilDay={untilDay}");
-			}
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "ApplyRecruitmentSlowdownDebuff failed: " + ex.Message);
-		}
-	}
-
-	internal static bool TryGetActiveRecruitmentRateMultiplier(Settlement settlement, out float multiplier)
-	{
-		multiplier = 1f;
-		try
-		{
-			string key = settlement?.IsVillage == true
-				? settlement.Village?.Bound?.StringId
-				: settlement?.StringId;
-			if (string.IsNullOrWhiteSpace(key)
-				|| !_recruitmentSlowdownUntilDayBySettlement.TryGetValue(key, out int untilDay))
-			{
-				return false;
-			}
-			if (GetCurrentCampaignDay() > untilDay)
-			{
-				_recruitmentSlowdownUntilDayBySettlement.Remove(key);
-				return false;
-			}
-			multiplier = SiegeSettlementOutcomeProfile.DestructiveRecruitmentRateMultiplier;
-			return true;
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "TryGetActiveRecruitmentRateMultiplier failed. Settlement=" + (settlement?.StringId ?? "N/A") + ": " + ex.Message);
-			return false;
-		}
-	}
-
-	private static void ClearRecruitmentSlowdownDebuffs()
-	{
-		_recruitmentSlowdownUntilDayBySettlement.Clear();
-	}
-
-
-	private static void BeginCivicPositiveBuff(Settlement settlement, SiegeCivicChoiceProfile profile)
-	{
-		try
-		{
-			string key = settlement?.StringId;
-			if (string.IsNullOrWhiteSpace(key) || settlement?.Town == null || profile == null || profile.EffectYears <= 0)
-			{
-				return;
-			}
-			int untilDay = GetCurrentCampaignDay() + Math.Max(1, CampaignTime.DaysInYear * profile.EffectYears);
-			if (profile.HasProsperityGrowthBuff)
-			{
-				_civicProsperityBuffUntilDayBySettlement[key] = untilDay;
-				_civicProsperityLastObservedBySettlement[key] = settlement.Town.Prosperity;
-				_civicProsperityGrowthMultiplierBySettlement[key] = MathF.Max(profile.ProsperityGrowthMultiplier, ResolveExistingCivicProsperityMultiplier(key));
-			}
-			if (profile.LocksLoyalty)
-			{
-				float adjustedLockValue = ReducePositiveFloatDeltaForRegionalConflict(profile.LoyaltyLockValue, "civic_buff_loyalty_lock");
-				_rallyOathLoyaltyLockUntilDayBySettlement[key] = untilDay;
-				_rallyOathLoyaltyLockValueBySettlement[key] = adjustedLockValue;
-				settlement.Town.Loyalty = MathF.Max(settlement.Town.Loyalty, adjustedLockValue);
-			}
-			if (profile.HasRecruitmentSpeedBuff)
-			{
-				_rallyOathRecruitmentBuffUntilDayBySettlement[key] = untilDay;
-				int changed = ApplyExtraVolunteerProductionForSettlementAndBoundVillages(settlement);
-				if (changed > 0)
-				{
-					Logger.Log("SiegeAiIntervention", $"Applied immediate rally oath recruitment speed buff. Settlement={key}, ChangedSlots={changed}, UntilDay={untilDay}");
-				}
-			}
-			Logger.Log("SiegeAiIntervention", $"Applied civic positive buff. Settlement={key}, UntilDay={untilDay}, ProsperityMultiplier={profile.ProsperityGrowthMultiplier:0.##}, RecruitmentMultiplier={profile.RecruitmentSpeedMultiplier:0.##}, LoyaltyLock={profile.LocksLoyalty}, RegionalConflictIncidents={_regionalConflictIncidentCount}");
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "BeginCivicPositiveBuff failed: " + ex.Message);
-		}
-	}
-
-	private static float ResolveExistingCivicProsperityMultiplier(string key)
-	{
-		try
-		{
-			return !string.IsNullOrWhiteSpace(key) && _civicProsperityGrowthMultiplierBySettlement.TryGetValue(key, out float multiplier)
-				? multiplier
-				: 1f;
-		}
-		catch
-		{
-			return 1f;
-		}
-	}
-
-	private static void ApplyCivicProsperityGrowthBuff(Town town)
-	{
-		try
-		{
-			Settlement settlement = town?.Settlement;
-			string key = settlement?.StringId;
-			if (string.IsNullOrWhiteSpace(key))
-			{
-				return;
-			}
-			int today = GetCurrentCampaignDay();
-			if (!_civicProsperityBuffUntilDayBySettlement.TryGetValue(key, out int untilDay) || today > untilDay)
-			{
-				_civicProsperityBuffUntilDayBySettlement.Remove(key);
-				_civicProsperityLastObservedBySettlement.Remove(key);
-				_civicProsperityGrowthMultiplierBySettlement.Remove(key);
-				return;
-			}
-			float current = town.Prosperity;
-			if (!_civicProsperityLastObservedBySettlement.TryGetValue(key, out float last))
-			{
-				_civicProsperityLastObservedBySettlement[key] = current;
-				return;
-			}
-			float growth = current - last;
-			float multiplier = MathF.Max(1f, ResolveExistingCivicProsperityMultiplier(key));
-			if (growth > 0.01f && multiplier > 1.001f)
-			{
-				float extra = growth * (multiplier - 1f);
-				town.Prosperity = MathF.Max(0f, current + extra);
-				current = town.Prosperity;
-				Logger.Log("SiegeAiIntervention", $"Civic prosperity growth buff applied. Settlement={key}, Growth={growth:0.##}, Extra={extra:0.##}, Multiplier={multiplier:0.##}, UntilDay={untilDay}");
-			}
-			_civicProsperityLastObservedBySettlement[key] = current;
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "ApplyCivicProsperityGrowthBuff failed: " + ex.Message);
-		}
-	}
-
-	private static void ApplyRallyOathLoyaltyLock(Town town)
-	{
-		try
-		{
-			Settlement settlement = town?.Settlement;
-			string key = settlement?.StringId;
-			if (string.IsNullOrWhiteSpace(key))
-			{
-				return;
-			}
-			int today = GetCurrentCampaignDay();
-			if (!_rallyOathLoyaltyLockUntilDayBySettlement.TryGetValue(key, out int untilDay) || today > untilDay)
-			{
-				_rallyOathLoyaltyLockUntilDayBySettlement.Remove(key);
-				_rallyOathLoyaltyLockValueBySettlement.Remove(key);
-				return;
-			}
-			float lockValue = _rallyOathLoyaltyLockValueBySettlement.TryGetValue(key, out float savedLockValue)
-				? savedLockValue
-				: SiegeCivicChoiceProfile.RallyOathLoyaltyValue;
-			town.Loyalty = MathF.Max(town.Loyalty, lockValue);
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "ApplyRallyOathLoyaltyLock failed: " + ex.Message);
-		}
-	}
-
-	private static void ApplyRallyOathRecruitmentBuff(Town town)
-	{
-		try
-		{
-			Settlement settlement = town?.Settlement;
-			string key = settlement?.StringId;
-			if (string.IsNullOrWhiteSpace(key))
-			{
-				return;
-			}
-			int today = GetCurrentCampaignDay();
-			if (!_rallyOathRecruitmentBuffUntilDayBySettlement.TryGetValue(key, out int untilDay) || today > untilDay)
-			{
-				_rallyOathRecruitmentBuffUntilDayBySettlement.Remove(key);
-				return;
-			}
-			int changed = ApplyExtraVolunteerProductionForSettlementAndBoundVillages(settlement);
-			if (changed > 0)
-			{
-				Logger.Log("SiegeAiIntervention", $"Rally oath recruitment speed buff applied. Settlement={key}, ChangedSlots={changed}, UntilDay={untilDay}");
-			}
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "ApplyRallyOathRecruitmentBuff failed: " + ex.Message);
-		}
-	}
-
-	private static int ApplyExtraVolunteerProductionForSettlementAndBoundVillages(Settlement settlement)
-	{
-		int changed = ApplyExtraVolunteerProductionForSettlement(settlement);
-		try
-		{
-			if (settlement?.BoundVillages != null)
-			{
-				foreach (Village village in settlement.BoundVillages)
-				{
-					changed += ApplyExtraVolunteerProductionForSettlement(village?.Settlement);
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "ApplyExtraVolunteerProductionForSettlementAndBoundVillages failed. Settlement=" + (settlement?.StringId ?? "N/A") + ": " + ex.Message);
-		}
-		return changed;
-	}
-
-	private static int ApplyExtraVolunteerProductionForSettlement(Settlement settlement)
-	{
-		int changed = 0;
-		try
-		{
-			if (settlement?.Notables == null || Campaign.Current?.Models?.VolunteerModel == null)
-			{
-				return 0;
-			}
-			if (settlement.IsTown && settlement.Town?.InRebelliousState == true)
-			{
-				return 0;
-			}
-			if (settlement.IsVillage && settlement.Village?.Bound?.Town?.InRebelliousState == true)
-			{
-				return 0;
-			}
-			foreach (Hero hero in settlement.Notables.ToList())
-			{
-				changed += ApplyExtraVolunteerProductionForNotable(hero, settlement);
-			}
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "ApplyExtraVolunteerProductionForSettlement failed. Settlement=" + (settlement?.StringId ?? "N/A") + ": " + ex.Message);
-		}
-		return changed;
-	}
-
-	private static int ApplyExtraVolunteerProductionForNotable(Hero notable, Settlement settlement)
-	{
-		int changed = 0;
-		try
-		{
-			if (notable == null || !notable.IsAlive || !notable.CanHaveRecruits || notable.VolunteerTypes == null || settlement == null)
-			{
-				return 0;
-			}
-			CharacterObject basicVolunteer = Campaign.Current.Models.VolunteerModel.GetBasicVolunteer(notable);
-			int slots = Math.Min(6, notable.VolunteerTypes.Length);
-			for (int i = 0; i < slots; i++)
-			{
-				if (MBRandom.RandomFloat >= Campaign.Current.Models.VolunteerModel.GetDailyVolunteerProductionProbability(notable, i, settlement))
-				{
-					continue;
-				}
-				CharacterObject current = notable.VolunteerTypes[i];
-				if (current == null)
-				{
-					notable.VolunteerTypes[i] = basicVolunteer;
-					changed++;
-				}
-				else if (current.UpgradeTargets != null && current.UpgradeTargets.Length != 0 && current.Tier < Campaign.Current.Models.VolunteerModel.MaxVolunteerTier)
-				{
-					float upgradeProbability = MathF.Log(MathF.Max(1f, notable.Power) / MathF.Max(1f, (float)current.Tier), 2f) * 0.01f;
-					if (MBRandom.RandomFloat < upgradeProbability)
-					{
-						notable.VolunteerTypes[i] = current.UpgradeTargets[MBRandom.RandomInt(current.UpgradeTargets.Length)];
-						changed++;
-					}
-				}
-			}
-			if (changed > 0)
-			{
-				SortVolunteerSlots(notable.VolunteerTypes, slots);
-			}
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "ApplyExtraVolunteerProductionForNotable failed. Notable=" + (notable?.StringId ?? "N/A") + ": " + ex.Message);
-		}
-		return changed;
-	}
-
-	private static void SortVolunteerSlots(CharacterObject[] volunteerTypes, int slots)
-	{
-		try
-		{
-			for (int j = 1; j < slots; j++)
-			{
-				CharacterObject character = volunteerTypes[j];
-				if (character == null)
-				{
-					continue;
-				}
-				int emptySlots = 0;
-				int previousIndex = j - 1;
-				CharacterObject previous = volunteerTypes[previousIndex];
-				while (previousIndex >= 0 && (previous == null || GetVolunteerSortValue(character) < GetVolunteerSortValue(previous)))
-				{
-					if (previous == null)
-					{
-						previousIndex--;
-						emptySlots++;
-						if (previousIndex >= 0)
-						{
-							previous = volunteerTypes[previousIndex];
-						}
-					}
-					else
-					{
-						volunteerTypes[previousIndex + 1 + emptySlots] = previous;
-						previousIndex--;
-						emptySlots = 0;
-						if (previousIndex >= 0)
-						{
-							previous = volunteerTypes[previousIndex];
-						}
-					}
-				}
-				volunteerTypes[previousIndex + 1 + emptySlots] = character;
-			}
-		}
-		catch
-		{
-		}
-	}
-
-	private static float GetVolunteerSortValue(CharacterObject character)
-	{
-		return character == null ? float.MaxValue : character.Level + (character.IsMounted ? 0.5f : 0f);
-	}
-
-	private static void ClearCivicPositiveBuffForSettlement(Settlement settlement)
-	{
-		try
-		{
-			string key = settlement?.StringId;
-			if (string.IsNullOrWhiteSpace(key))
-			{
-				return;
-			}
-			_civicProsperityBuffUntilDayBySettlement.Remove(key);
-			_civicProsperityLastObservedBySettlement.Remove(key);
-			_civicProsperityGrowthMultiplierBySettlement.Remove(key);
-			_rallyOathLoyaltyLockUntilDayBySettlement.Remove(key);
-			_rallyOathLoyaltyLockValueBySettlement.Remove(key);
-			_rallyOathRecruitmentBuffUntilDayBySettlement.Remove(key);
-		}
-		catch
-		{
-		}
-	}
-
-	private static void ClearCivicPositiveBuffs()
-	{
-		_civicProsperityBuffUntilDayBySettlement.Clear();
-		_civicProsperityLastObservedBySettlement.Clear();
-		_civicProsperityGrowthMultiplierBySettlement.Clear();
-		_rallyOathLoyaltyLockUntilDayBySettlement.Clear();
-		_rallyOathLoyaltyLockValueBySettlement.Clear();
-		_rallyOathRecruitmentBuffUntilDayBySettlement.Clear();
 	}
 
 	private static int CommitPendingInterventionNotableDeaths(string reason)
