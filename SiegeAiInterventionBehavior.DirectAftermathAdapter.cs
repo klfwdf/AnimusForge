@@ -32,14 +32,14 @@ public partial class SiegeAiInterventionBehavior
 		try
 		{
 			DirectAftermathFlow.Queue(kind);
-			_pendingSummarySwitch = true;
-			_pendingEncounterFinish = false;
-			_pendingEncounterFinishDelayTicks = 0;
-			_pendingEncounterFinishAttempts = 0;
+			EncounterCompletion.BeginSummary(kind == TownDirectAftermathKind.Massacre
+				? SiegeAftermathResolutionKind.Devastate
+				: SiegeAftermathResolutionKind.Pillage);
+			EncounterCompletion.ClearTransition(preserveSummary: true);
 			if (kind == TownDirectAftermathKind.Massacre)
 			{
 				_nativeDevastateAftermathFlowActive = false;
-				_nativeDevastateSummaryContinueHandled = true;
+				EncounterCompletion.TryHandleNativeDevastateSummaryContinue();
 			}
 			Logger.Log(
 				"SiegeAiIntervention",
@@ -94,7 +94,7 @@ public partial class SiegeAiInterventionBehavior
 			if (kind == TownDirectAftermathKind.Massacre)
 			{
 				_nativeDevastateAftermathFlowActive = false;
-				_nativeDevastateSummaryContinueHandled = true;
+				EncounterCompletion.TryHandleNativeDevastateSummaryContinue();
 			}
 			TryExitCurrentCampaignMenu();
 
@@ -141,7 +141,7 @@ public partial class SiegeAiInterventionBehavior
 		}
 
 		DirectAftermathFlow.Complete(kind);
-		_pendingSummarySwitch = false;
+		EncounterCompletion.ClearTransition(preserveSummary: false);
 		ClearActiveState(preserveSummarySwitch: false);
 		Logger.Log(
 			"SiegeAiIntervention",
@@ -262,7 +262,7 @@ public partial class SiegeAiInterventionBehavior
 			if (kind == TownDirectAftermathKind.Massacre)
 			{
 				_nativeDevastateAftermathFlowActive = false;
-				_nativeDevastateSummaryContinueHandled = true;
+				EncounterCompletion.TryHandleNativeDevastateSummaryContinue();
 			}
 			ShowDirectAftermathLootMessage(kind);
 			TryExitCurrentCampaignMenu();
