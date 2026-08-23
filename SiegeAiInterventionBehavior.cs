@@ -246,20 +246,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static bool _massacreStarted;
 	private static bool _massacreStopped;
 	private static bool _massacreVictoryReached;
-	private static bool _civilianSpeechRallyActive;
-	private static bool _civilianGatherPropagationActive;
-	private static bool _civilianFormationControlPending;
-	private static bool _civilianFormationControlComplete;
-	private static bool _civilianFormationControlMessageShown;
-	private static bool _soldierDefaultFollowOrderIssued;
-	private static bool _playerOrderControllerPrimed;
-	private static bool _civilianOrderControllerPrimed;
-	private static float _civilianGatherStartedAt = -1f;
-	private static float _nextCivilianGatherTickTime;
-	private static int _civilianGatherMessengerSpeechCount;
-	private static float _civilianFormationControlNotBeforeTime = -1f;
-	private static float _nextCivilianFormationControlBatchTime;
-	private static float _nextPlayerOrderControllerPrimeTime;
+	private static readonly TownSceneControlState SceneControl = new TownSceneControlState();
 	private static bool IsCulturalRepopulationOutcome => ActiveTownColonization.ResolvesAsColonization;
 	private static bool IsCulturalRepopulationCommitted => ActiveTownColonization.IsCommitted;
 	private static bool _reliefChoiceApplied;
@@ -338,7 +325,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static bool _nativeDevastateAftermathFlowActive;
 	private static readonly TownDirectAftermathFlowState DirectAftermathFlow = new TownDirectAftermathFlowState();
 	private static readonly SiegeOutcomeMessageDeduplicator OutcomeMessageDeduplicator = new SiegeOutcomeMessageDeduplicator();
-	private static bool _civilianAssemblyPointReady;
 	private static Vec3 _civilianAssemblyAnchor;
 	private static Vec3 _civilianAssemblyForward;
 	private static Clan _previousSettlementOwnerClan;
@@ -1399,7 +1385,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_nativeDevastateAftermathFlowActive = false;
 		DirectAftermathFlow.Reset();
 		ResetOutcomeMessageDedup();
-		_civilianAssemblyPointReady = false;
+		SceneControl.ResetCivilianAssemblyPoint();
 		_civilianAssemblyAnchor = Vec3.Zero;
 		_civilianAssemblyForward = Vec3.Forward;
 		CaptureNativeSiegeContext(settlement);
@@ -2206,7 +2192,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		AgentWallRescueUntilTimes.Clear();
 		LastAgentWallRescueLogTimes.Clear();
 		LastAgentWallRescueTeleportTimes.Clear();
-		_civilianAssemblyPointReady = false;
+		SceneControl.ResetCivilianAssemblyPoint();
 		_civilianAssemblyAnchor = Vec3.Zero;
 		_civilianAssemblyForward = Vec3.Forward;
 		_interventionPlayerCommandTeam = null;
@@ -2591,10 +2577,10 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			int ready = CivilianGatherReadyFormationAgentIndexes.Count;
 			int messengers = CivilianGatherMessengerAgentIndexes.Count;
 			return SiegeCivilianGatherContextBuilder.Build(new SiegeCivilianGatherContextFacts(
-				_civilianSpeechRallyActive,
-				_civilianGatherPropagationActive,
-				_civilianFormationControlPending,
-				_civilianFormationControlComplete,
+				SceneControl.IsCivilianSpeechRallyActive,
+				SceneControl.IsCivilianGatherPropagationActive,
+				SceneControl.IsCivilianFormationControlPending,
+				SceneControl.IsCivilianFormationControlComplete,
 				followers,
 				ready,
 				messengers,
@@ -5181,7 +5167,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					includeSoldiers: true);
 				return;
 			}
-			if (_civilianGatherPropagationActive && !_civilianFormationControlComplete && !_massacreStarted)
+			if (SceneControl.IsCivilianGatherPropagationActive && !SceneControl.IsCivilianFormationControlComplete && !_massacreStarted)
 			{
 				TryTriggerAmbientReactionsForAction(
 					SiegeInterventionActionKind.GatherCivilians,
@@ -8426,7 +8412,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		SiegeDestructiveChoiceProfile massacreProfile = SiegeDestructiveChoiceProfile.BuildMassacre();
 		ClearCivicPositiveBuffForSettlement(ResolveCurrentSettlement());
 		_activeMode = InterventionMode.Massacre;
-		_civilianGatherPropagationActive = false;
+		SceneControl.StopCivilianGatherPropagation();
 		ActiveCivilianGatherInteractions.Clear();
 		if (!resuming)
 		{
@@ -9078,7 +9064,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 		_civilianAssemblyAnchor = anchor;
 		_civilianAssemblyForward = forward;
-		_civilianAssemblyPointReady = true;
+		SceneControl.MarkCivilianAssemblyPointReady();
 	}
 
 	private static bool GatherCiviliansForSpeech(string source, int seedAgentIndex = -1)
@@ -9097,9 +9083,9 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			Agent seed = TryGetAgent(seedAgentIndex);
 			bool seedIsSoldier = IsInterventionAlliedSoldierForExternal(seed, requireActive: true);
-			if (_civilianFormationControlPending || _civilianFormationControlComplete)
+			if (SceneControl.IsCivilianFormationControlPending || SceneControl.IsCivilianFormationControlComplete)
 			{
-				if (SiegeCivilianGatherInteractionProfile.ShouldReleaseSoldiersForCommandControlRepeat(_civilianFormationControlPending, _civilianFormationControlComplete, seedIsSoldier, source))
+				if (SiegeCivilianGatherInteractionProfile.ShouldReleaseSoldiersForCommandControlRepeat(SceneControl.IsCivilianFormationControlPending, SceneControl.IsCivilianFormationControlComplete, seedIsSoldier, source))
 				{
 					string releaseSource = SiegeCivilianGatherInteractionProfile.BuildGatherSoldierReturnSource(SiegeCivilianGatherInteractionProfile.CommandControlRepeatSoldierReleaseSource);
 					int returned = ReturnAlliedGatherSoldiersToFormation(mission, releaseSource);
@@ -9109,19 +9095,9 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				Logger.Log("SiegeAiIntervention", "Civilian gathering already entering command control; ignored new messenger trigger. Source=" + (source ?? "N/A"));
 				return false;
 			}
-			bool firstStart = !_civilianSpeechRallyActive && !_civilianGatherPropagationActive;
+			bool firstStart = SceneControl.TryStartCivilianGather(mission.CurrentTime);
 			if (firstStart)
 			{
-				_civilianSpeechRallyActive = true;
-				_civilianGatherPropagationActive = true;
-				_civilianFormationControlPending = false;
-				_civilianFormationControlComplete = false;
-				_civilianFormationControlMessageShown = false;
-				_civilianFormationControlNotBeforeTime = -1f;
-				_nextCivilianFormationControlBatchTime = 0f;
-				_nextCivilianGatherTickTime = 0f;
-				_civilianGatherStartedAt = mission.CurrentTime;
-				_civilianGatherMessengerSpeechCount = 0;
 				ActiveCivilianGatherInteractions.Clear();
 				CivilianGatherReadyFormationAgentIndexes.Clear();
 				CivilianGatherMessengerAgentIndexes.Clear();
@@ -9200,11 +9176,11 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (!_civilianSpeechRallyActive || mission?.Agents == null || _massacreStarted || _massacreVictoryReached)
+			if (!SceneControl.IsCivilianSpeechRallyActive || mission?.Agents == null || _massacreStarted || _massacreVictoryReached)
 			{
 				return;
 			}
-			if (_civilianFormationControlPending || _civilianFormationControlComplete)
+			if (SceneControl.IsCivilianFormationControlPending || SceneControl.IsCivilianFormationControlComplete)
 			{
 				return;
 			}
@@ -9220,7 +9196,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				RebuildCivilianSpeechRallySlots(mission);
 			}
 			float now = mission.CurrentTime;
-			if (_civilianGatherPropagationActive && _civilianGatherStartedAt >= 0f && now - _civilianGatherStartedAt >= CivilianGatherFallbackSeconds)
+			if (SceneControl.HasCivilianGatherFallbackElapsed(now, CivilianGatherFallbackSeconds))
 			{
 				foreach (Agent agent in mission.Agents.ToList().Where(a => IsEligibleCivilianAgent(a, includeHeroes: true)))
 				{
@@ -9230,16 +9206,15 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				QueueCivilianFormationControl(mission, SiegeCivilianGatherInteractionProfile.FallbackElapsedFormationSource);
 				return;
 			}
-			if (_civilianGatherPropagationActive && now >= _nextCivilianGatherTickTime)
+			if (SceneControl.TryScheduleCivilianGatherTick(now, 0.5f))
 			{
-				_nextCivilianGatherTickTime = now + 0.5f;
 				UpdateCivilianGatherInteractions(mission);
 				AssignCivilianGatherInteractions(mission);
 			}
 			bool allFollowing = AreAllCiviliansGatherFollowing(mission);
 			if (allFollowing)
 			{
-				_civilianGatherPropagationActive = false;
+				SceneControl.StopCivilianGatherPropagation();
 				ActiveCivilianGatherInteractions.Clear();
 				MaintainCivilianGatherFollowers(mission, main, force: true);
 				if (AreAllCivilianGatherFollowersSettled(mission, main))
@@ -9745,9 +9720,9 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				CivilianGatherMessengerSpeechAgentIndexes.Remove(messenger.Index);
 				return;
 			}
-			_civilianGatherMessengerSpeechCount++;
+			int messengerSpeechCount = SceneControl.RecordCivilianGatherMessengerSpeech();
 			MarkAmbientReactionAudienceStarted(messengerIsSoldier, now);
-			Logger.Log("SiegeAiIntervention", "Triggered gather messenger speech. Event=" + responseEventId + ", Messenger=" + messenger.Index + "/" + messengerName + ", Target=" + target.Index + "/" + targetName + ", Count=" + _civilianGatherMessengerSpeechCount + ", Allowed=" + responseDecision.AllowedCount);
+			Logger.Log("SiegeAiIntervention", "Triggered gather messenger speech. Event=" + responseEventId + ", Messenger=" + messenger.Index + "/" + messengerName + ", Target=" + target.Index + "/" + targetName + ", Count=" + messengerSpeechCount + ", Allowed=" + responseDecision.AllowedCount);
 		}
 		catch (Exception ex)
 		{
@@ -9766,7 +9741,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			int total = Math.Max(1, CivilianSpeechRallySlots.Count);
 			foreach (Agent agent in mission.Agents.ToList().Where(a => IsEligibleCivilianAgent(a, includeHeroes: true) && CivilianGatherFollowerAgentIndexes.Contains(a.Index)))
 			{
-				if (_civilianGatherPropagationActive && CivilianGatherMessengerAgentIndexes.Contains(agent.Index))
+				if (SceneControl.IsCivilianGatherPropagationActive && CivilianGatherMessengerAgentIndexes.Contains(agent.Index))
 				{
 					continue;
 				}
@@ -9892,18 +9867,15 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (_civilianFormationControlComplete)
+			if (SceneControl.IsCivilianFormationControlComplete)
 			{
 				return;
 			}
 			StopCivilianGatherScriptFollowForCommandControl(mission, SiegeCivilianGatherInteractionProfile.BuildFormationQueueSource(reason));
 			TrySetPlayerFormationFollowOrder(ResolveCivilianCommandFormationClass(), SiegeCivilianGatherInteractionProfile.FormationControlBeginSource);
 			float now = mission?.CurrentTime ?? 0f;
-			if (!_civilianFormationControlPending)
+			if (SceneControl.TryQueueCivilianFormationControl(now, CivilianFormationControlInitialDelaySeconds))
 			{
-				_civilianFormationControlPending = true;
-				_civilianFormationControlNotBeforeTime = now + CivilianFormationControlInitialDelaySeconds;
-				_nextCivilianFormationControlBatchTime = _civilianFormationControlNotBeforeTime;
 				RecordInterventionMemory(SiegeCivilianGatherUiProfile.AssemblyMemoryTitle, SiegeCivilianGatherUiProfile.BuildFormationQueuedMemory(reason));
 				Logger.Log("SiegeAiIntervention", "Queued civilian formation control. Reason=" + (reason ?? "N/A"));
 			}
@@ -9950,8 +9922,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			_civilianSpeechRallyActive = false;
-			_civilianGatherPropagationActive = false;
+			SceneControl.StopCivilianGatherScript();
 			ActiveCivilianGatherInteractions.Clear();
 			ReturnGatherSoldierMessengersToFormation(mission, source);
 			CivilianGatherMessengerAgentIndexes.Clear();
@@ -10084,7 +10055,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (!_civilianFormationControlPending || _civilianFormationControlComplete || mission?.Agents == null || _massacreStarted || _massacreVictoryReached)
+			if (!SceneControl.IsCivilianFormationControlPending || SceneControl.IsCivilianFormationControlComplete || mission?.Agents == null || _massacreStarted || _massacreVictoryReached)
 			{
 				return;
 			}
@@ -10093,11 +10064,10 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return;
 			}
 			float now = mission.CurrentTime;
-			if (now < _civilianFormationControlNotBeforeTime || now < _nextCivilianFormationControlBatchTime)
+			if (!SceneControl.TryScheduleCivilianFormationControlBatch(now, CivilianFormationControlBatchIntervalSeconds))
 			{
 				return;
 			}
-			_nextCivilianFormationControlBatchTime = now + CivilianFormationControlBatchIntervalSeconds;
 			List<Agent> pending = mission.Agents
 				.ToList()
 				.Where(a => IsEligibleCivilianAgent(a, includeHeroes: true) && CivilianGatherFollowerAgentIndexes.Contains(a.Index) && !CivilianGatherReadyFormationAgentIndexes.Contains(a.Index))
@@ -10129,18 +10099,16 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			_civilianFormationControlPending = false;
-			_civilianFormationControlComplete = true;
+			SceneControl.CompleteCivilianFormationControl();
 			ApplyCivilianFormationFollowOrder(mission, SiegeCivilianGatherInteractionProfile.FormationReadyFollowSource);
 			RecordInterventionMemory(SiegeCivilianGatherUiProfile.AssemblyMemoryTitle, SiegeCivilianGatherUiProfile.FormationCompleteMemory);
-			if (!_civilianFormationControlMessageShown)
+			if (SceneControl.TryClaimFormationReadyMessage())
 			{
-				_civilianFormationControlMessageShown = true;
 				InformationManager.DisplayMessage(new InformationMessage(SiegeCivilianGatherUiProfile.FormationReadyMessage, Color.FromUint(SiegeCivilianGatherUiProfile.MessageColor)));
 			}
-			if (!_civilianOrderControllerPrimed)
+			if (!SceneControl.IsCivilianOrderControllerPrimed)
 			{
-				_civilianOrderControllerPrimed = TryPrimePlayerOrderController(mission, SiegeCivilianGatherInteractionProfile.FormationReadyOrderControllerSource, force: true);
+				SceneControl.SetCivilianOrderControllerPrimed(TryPrimePlayerOrderController(mission, SiegeCivilianGatherInteractionProfile.FormationReadyOrderControllerSource, force: true));
 			}
 		}
 		catch (Exception ex)
@@ -10767,15 +10735,11 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return false;
 			}
 			float now = mission.CurrentTime;
-			if (!force && _playerOrderControllerPrimed)
+			if (!SceneControl.CanPrimePlayerOrderController(now, force))
 			{
 				return false;
 			}
-			if (!force && now < _nextPlayerOrderControllerPrimeTime)
-			{
-				return false;
-			}
-			_nextPlayerOrderControllerPrimeTime = now + 2.0f;
+			SceneControl.ScheduleNextPlayerOrderControllerPrime(now, 2.0f);
 			Team playerTeam = mission.PlayerTeam ?? _interventionPlayerCommandTeam ?? Agent.Main?.Team;
 			if (playerTeam == null)
 			{
@@ -10848,7 +10812,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				{
 				}
 			}
-			_playerOrderControllerPrimed = true;
+			SceneControl.MarkPlayerOrderControllerPrimed();
 			Logger.Log("SiegeAiIntervention", "Primed player order controller. Source=" + (source ?? "N/A") + ", Commandable=" + commandable + ", Formations=" + commandFormations.Count + ", PreserveSelection=" + preserveSelection + ", ExistingSelection=" + hasExistingSelection + ", InitializedSelection=" + shouldInitializeSelection);
 			return true;
 		}
@@ -11352,7 +11316,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (soldiers == null || soldiers.Count == 0 || mission == null || !_civilianAssemblyPointReady)
+			if (soldiers == null || soldiers.Count == 0 || mission == null || !SceneControl.IsCivilianAssemblyPointReady)
 			{
 				return;
 			}
@@ -11393,7 +11357,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (soldier == null || mission == null || !soldier.IsActive() || !_civilianAssemblyPointReady)
+			if (soldier == null || mission == null || !soldier.IsActive() || !SceneControl.IsCivilianAssemblyPointReady)
 			{
 				return false;
 			}
@@ -11503,7 +11467,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				point = fallbackTarget.Position;
 			}
-			else if (_civilianAssemblyPointReady)
+			else if (SceneControl.IsCivilianAssemblyPointReady)
 			{
 				point = GetCivilianAssemblyCenter(Mission.Current ?? agent.Mission);
 			}
@@ -11644,9 +11608,9 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					{
 						DisableCompanionStyleFollow(agent);
 						AssignAgentToPlayerFormation(agent, FormationClass.Infantry);
-						if (!_soldierDefaultFollowOrderIssued)
+						if (!SceneControl.IsSoldierDefaultFollowOrderIssued)
 						{
-							_soldierDefaultFollowOrderIssued = TrySetPlayerFormationFollowOrder(FormationClass.Infantry, SiegeSoldierCordonProfile.AlliedDefaultFollowSource);
+							SceneControl.RecordSoldierDefaultFollowOrderResult(TrySetPlayerFormationFollowOrder(FormationClass.Infantry, SiegeSoldierCordonProfile.AlliedDefaultFollowSource));
 						}
 						agent.WieldInitialWeapons(Agent.WeaponWieldActionType.InstantAfterPickUp, Equipment.InitialWeaponEquipPreference.Any);
 					}
@@ -11669,9 +11633,9 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			bool firstGuardTick = CordonReadyAgentIndexes.Add(soldier.Index);
 			AssignAgentToPlayerFormation(soldier, FormationClass.Infantry, refreshFormationOrders: firstGuardTick);
-			if (!_soldierDefaultFollowOrderIssued)
+			if (!SceneControl.IsSoldierDefaultFollowOrderIssued)
 			{
-				_soldierDefaultFollowOrderIssued = TrySetPlayerFormationFollowOrder(FormationClass.Infantry, SiegePlunderInteractionProfile.GuardFollowSource);
+				SceneControl.RecordSoldierDefaultFollowOrderResult(TrySetPlayerFormationFollowOrder(FormationClass.Infantry, SiegePlunderInteractionProfile.GuardFollowSource));
 			}
 			if (firstGuardTick)
 			{
@@ -13473,17 +13437,17 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					{
 						DisableCompanionStyleFollow(spawnedAgent);
 						spawnedAgent.SetWatchState(Agent.WatchState.Patrolling);
-						if (!_soldierDefaultFollowOrderIssued)
+						if (!SceneControl.IsSoldierDefaultFollowOrderIssued)
 						{
-							_soldierDefaultFollowOrderIssued = TrySetPlayerFormationFollowOrder(FormationClass.Infantry, SiegeSoldierCordonProfile.SpawnDefaultFollowSource);
+							SceneControl.RecordSoldierDefaultFollowOrderResult(TrySetPlayerFormationFollowOrder(FormationClass.Infantry, SiegeSoldierCordonProfile.SpawnDefaultFollowSource));
 						}
 					}
 					else
 					{
 						DisableCompanionStyleFollow(spawnedAgent);
-						if (!_soldierDefaultFollowOrderIssued)
+						if (!SceneControl.IsSoldierDefaultFollowOrderIssued)
 						{
-							_soldierDefaultFollowOrderIssued = TrySetPlayerFormationFollowOrder(FormationClass.Infantry, SiegeSoldierCordonProfile.SpawnDefaultFollowSource);
+							SceneControl.RecordSoldierDefaultFollowOrderResult(TrySetPlayerFormationFollowOrder(FormationClass.Infantry, SiegeSoldierCordonProfile.SpawnDefaultFollowSource));
 						}
 					}
 				}
@@ -15997,14 +15961,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_massacreStarted = false;
 		_massacreStopped = false;
 		_massacreVictoryReached = false;
-		_civilianSpeechRallyActive = false;
-		_civilianGatherPropagationActive = false;
-		_civilianFormationControlPending = false;
-		_civilianFormationControlComplete = false;
-		_civilianFormationControlMessageShown = false;
-		_soldierDefaultFollowOrderIssued = false;
-		_playerOrderControllerPrimed = false;
-		_civilianOrderControllerPrimed = false;
+		SceneControl.Reset();
 		_selectedInterventionRoster = null;
 		CastleAftermathArmyRosterRuntimeBridge.ClearSelectedGuestLeaders("reset_session_counters");
 		CastleAftermathLordExecutionRuntimeBridge.Reset("reset_session_counters");
@@ -16013,12 +15970,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		CastleAftermathDispositionSessionBridge.Reset("reset_session_counters");
 		CastleAftermathSettlementRuntimeBridge.ResetSession("reset_session_counters");
 		_activeInterventionLocationId = "";
-		_civilianGatherStartedAt = -1f;
-		_nextCivilianGatherTickTime = 0f;
-		_civilianGatherMessengerSpeechCount = 0;
-		_civilianFormationControlNotBeforeTime = -1f;
-		_nextCivilianFormationControlBatchTime = 0f;
-		_nextPlayerOrderControllerPrimeTime = 0f;
 		ActiveTownColonization.Reset();
 		_reliefChoiceApplied = false;
 		_inspirationLevelApplied = 0;
