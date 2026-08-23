@@ -450,7 +450,7 @@ public sealed class WorldMessageTimelinePopup
 	{
 		_screen = screen;
 		_onClose = onClose;
-		_dataSource = new WorldMessageTimelinePopupVM(data, HandleCloseRequested);
+		_dataSource = new WorldMessageTimelinePopupVM(data, HandleCloseRequested, HandleOpenEncyclopediaLink);
 		_layer = new GauntletLayer("AnimusForgeWorldMessageTimelinePopup", 4101, false);
 	}
 
@@ -535,6 +535,20 @@ public sealed class WorldMessageTimelinePopup
 		_onClose?.Invoke();
 	}
 
+	private void HandleOpenEncyclopediaLink(string link)
+	{
+		if (!_isClosed)
+		{
+			EncyclopediaEntityLinkNavigationCoordinator.Request(link, CloseForEncyclopediaNavigation);
+		}
+	}
+
+	private void CloseForEncyclopediaNavigation()
+	{
+		// The timeline is dismissed without firing its regular close callback before encyclopedia navigation.
+		Close(silent: true);
+	}
+
 	private void Close(bool silent)
 	{
 		if (_isClosed)
@@ -573,6 +587,8 @@ public sealed class WorldMessageTimelinePopup
 public sealed class WorldMessageTimelinePopupVM : ViewModel
 {
 	private readonly Action _onClose;
+	private readonly Action<string> _onOpenEncyclopediaLink;
+	private readonly EncyclopediaEntityLinkFormatter.DisplaySession _linkDisplaySession;
 	private List<WorldMessageTimelineEntryData> _allEntries;
 	private List<WorldMessageTimelineCountryData> _knownCountries;
 	// Empty country selection represents the explicit "全部国家" state. Keeping the
@@ -610,9 +626,12 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 	private string _selectedRecordEntryId;
 	private string _selectedWeeklyReportEventId;
 
-	public WorldMessageTimelinePopupVM(WorldMessageTimelinePopupData data, Action onClose)
+	public WorldMessageTimelinePopupVM(WorldMessageTimelinePopupData data, Action onClose, Action<string> onOpenEncyclopediaLink)
 	{
 		_onClose = onClose;
+		_onOpenEncyclopediaLink = onOpenEncyclopediaLink;
+		// This catalog is built once when the rumor timeline opens; records are linked lazily only after selection.
+		_linkDisplaySession = EncyclopediaEntityLinkFormatter.CreateDisplaySession();
 		WorldMessageTimelinePopupData source = data ?? new WorldMessageTimelinePopupData();
 		TitleText = FirstNonEmpty(source.TitleText, "传闻");
 		SubtitleText = FirstNonEmpty(source.SubtitleText, "外交、政策与周报按时间正序汇总，最新消息位于底部。");
@@ -696,6 +715,7 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 	public void ExecuteSelectWeekly() => ToggleCategory(WorldMessageTimelineUi.WeeklyCategoryId);
 	public void ExecuteGenerateFullWeeklyReport() => GenerateFullWeeklyReportAsync(_selectedWeeklyReportEventId, _selectedRecordEntryId);
 	public void ExecuteClose() => _onClose?.Invoke();
+	public void ExecuteOpenEncyclopediaLink(string link) => _onOpenEncyclopediaLink?.Invoke(link);
 
 	private async void GenerateFullWeeklyReportAsync(string eventId, string preferredRecordEntryId)
 	{
@@ -897,13 +917,14 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 				selected.MarkRead();
 			}
 		}
-		SelectedRecordTitleText = selected.TitleText;
+		// Keep ledger entries plain and derive links only for the selected rumor detail pane.
+		SelectedRecordTitleText = _linkDisplaySession.Format(selected.TitleText);
 		SelectedRecordCategoryText = selected.CategoryLabel;
-		SelectedRecordMetaText = selected.MetaText;
+		SelectedRecordMetaText = _linkDisplaySession.Format(selected.MetaText);
 		SelectedRecordBodySectionTitleText = selected.BodySectionTitleText;
-		SelectedRecordBodyText = selected.BodyText;
+		SelectedRecordBodyText = _linkDisplaySession.Format(selected.BodyText);
 		SelectedRecordImpactSectionTitleText = selected.ImpactSectionTitleText;
-		SelectedRecordImpactText = selected.ImpactText;
+		SelectedRecordImpactText = _linkDisplaySession.Format(selected.ImpactText);
 		HasSelectedRecord = true;
 		HasSelectedRecordImpact = selected.HasImpact;
 		_selectedRecordEntryId = selected.EntryId ?? "";

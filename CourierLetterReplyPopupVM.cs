@@ -7,6 +7,7 @@ public sealed class CourierLetterReplyPopupVM : ViewModel
 {
 	private readonly Action _onClose;
 	private readonly Action _onReply;
+	private readonly Action<string> _onOpenEncyclopediaLink;
 	private string _titleText;
 	private string _subtitleText;
 	private string _bodyText;
@@ -143,18 +144,21 @@ public sealed class CourierLetterReplyPopupVM : ViewModel
 		}
 	}
 
-	public CourierLetterReplyPopupVM(string titleText, string subtitleText, string bodyText, int bodyFontSize, Action onClose, string closeText, Action onReply, string replyText, string impactText = null)
+	public CourierLetterReplyPopupVM(string titleText, string subtitleText, string bodyText, int bodyFontSize, Action onClose, string closeText, Action onReply, string replyText, string impactText, Action<string> onOpenEncyclopediaLink)
 	{
 		_onClose = onClose;
 		_onReply = onReply;
-		TitleText = string.IsNullOrWhiteSpace(titleText) ? "信使带回了回信" : titleText;
-		SubtitleText = subtitleText ?? "";
-		BodyText = string.IsNullOrWhiteSpace(bodyText) ? "（无回信正文）" : bodyText;
+		_onOpenEncyclopediaLink = onOpenEncyclopediaLink;
+		TitleText = EncyclopediaEntityLinkFormatter.SanitizeUntrustedRichText(string.IsNullOrWhiteSpace(titleText) ? "信使带回了回信" : titleText);
+		SubtitleText = EncyclopediaEntityLinkFormatter.SanitizeUntrustedRichText(subtitleText ?? "");
+		// Letters stay plain in storage; this one popup-only copy gets safe native entity markup.
+		EncyclopediaEntityLinkFormatter.DisplaySession linkDisplaySession = EncyclopediaEntityLinkFormatter.CreateDisplaySession();
+		BodyText = linkDisplaySession.Format(string.IsNullOrWhiteSpace(bodyText) ? "（无回信正文）" : bodyText);
 		BodyFontSize = Math.Max(14, Math.Min(34, bodyFontSize));
 		CloseText = string.IsNullOrWhiteSpace(closeText) ? "关闭" : closeText;
 		ReplyText = string.IsNullOrWhiteSpace(replyText) ? "回信" : replyText;
 		CanReply = onReply != null;
-		ImpactText = (impactText ?? "").Trim();
+		ImpactText = linkDisplaySession.Format((impactText ?? "").Trim());
 		HasImpact = !string.IsNullOrWhiteSpace(ImpactText);
 	}
 
@@ -169,5 +173,10 @@ public sealed class CourierLetterReplyPopupVM : ViewModel
 		{
 			_onReply?.Invoke();
 		}
+	}
+
+	public void ExecuteOpenEncyclopediaLink(string link)
+	{
+		_onOpenEncyclopediaLink?.Invoke(link);
 	}
 }

@@ -30,7 +30,7 @@
                                         <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="18" MarginRight="12" MarginTop="6" MarginBottom="4" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                                           <Children>
                                             <RichTextWidget WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="190" MarginRight="10" Brush="Conversation.HeaderText" DoNotAcceptEvents="true" Brush.FontSize="20" Text="@ChatItemTime" />
-                                            <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Conversation.HeaderText" Brush.FontSize="20" DoNotAcceptEvents="true" Text="@ChatText" CanBreakWords="true" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" Brush.FontColor="@FontColor" />
+                                            <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Conversation.ConversedPartyLine.Text" Brush.FontSize="20" DoNotAcceptEvents="false" Command.LinkClick="ExecuteOpenEncyclopediaLink" Command.LinkAlternateClick="ExecuteOpenEncyclopediaLink" Text="@ChatText" CanBreakWords="true" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" Brush.FontColor="@FontColor" />
                                           </Children>
                                         </ListPanel>
                                       </ItemTemplate>

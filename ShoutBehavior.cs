@@ -14570,6 +14570,29 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
+	// History RichText needs the concrete non-hero character too, so NPC tokens can retain the same link target as live dialogue.
+	public static bool TryGetNativeConversationLinkTargetForExternal(out Hero targetHero, out CharacterObject targetCharacter)
+	{
+		targetHero = null;
+		targetCharacter = null;
+		try
+		{
+			if (!TryResolveNativeConversationTarget(out var hero, out var character, out _))
+			{
+				return false;
+			}
+			targetHero = hero ?? character?.HeroObject;
+			targetCharacter = character;
+			return targetHero != null || targetCharacter != null;
+		}
+		catch
+		{
+			targetHero = null;
+			targetCharacter = null;
+			return false;
+		}
+	}
+
 	public static bool TryGetNativeConversationPersistentHistoryTargetForExternal(out Hero targetHero, out string targetName, out string memoryId)
 	{
 		targetHero = null;
