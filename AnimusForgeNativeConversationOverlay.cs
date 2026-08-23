@@ -902,6 +902,8 @@ public sealed class AnimusForgeNativeConversationOverlay
 		bool receivedVisibleText = false;
 		bool offerPreprocessRetry = false;
 		bool suppressReadyNotice = false;
+		string completedDisplayReply = "";
+		bool needsFinalDisplayAfterTts = false;
 		_isSubmitting = true;
 		ClearPendingPostprocessNotice();
 		_dataSource.SetBusy(true);
@@ -933,7 +935,8 @@ public sealed class AnimusForgeNativeConversationOverlay
 						}
 						receivedVisibleText = true;
 						StopWaitingDotsAnimation(generation);
-						ConversationHelper.UpdateDialogText(partial);
+						// Stream fragments remain plain text because incomplete RichText markup would break the native typewriter/UI parser.
+						ConversationHelper.UpdateDialogText(EncyclopediaEntityLinkFormatter.SanitizeUntrustedRichText(partial));
 					}
 				});
 			}, originalDialogText, delegate(string npcName)
@@ -986,9 +989,16 @@ public sealed class AnimusForgeNativeConversationOverlay
 				{
 					receivedVisibleText = true;
 					StopWaitingDotsAnimation(generation);
+					// Linkify only the completed display copy; the raw reply has already been retained for TTS and memory.
+					completedDisplayReply = ShoutBehavior.FormatNativeConversationDisplayTextForExternal(completedReply);
 					if (!suppressVisibleStreamingForTts || !ConversationHelper.IsTypewriterActive)
 					{
-						ConversationHelper.UpdateDialogText(completedReply);
+						ConversationHelper.UpdateDialogText(completedDisplayReply);
+					}
+					else
+					{
+						// The raw TTS typewriter must finish before its final text can be replaced by trusted RichText markup.
+						needsFinalDisplayAfterTts = true;
 					}
 				}
 				else if (IsSubmitGenerationActive(generation) && !receivedVisibleText)
@@ -999,6 +1009,15 @@ public sealed class AnimusForgeNativeConversationOverlay
 			if (suppressVisibleStreamingForTts && IsSubmitGenerationCurrent(generation))
 			{
 				await ShoutBehavior.WaitForNativeConversationTtsPlaybackFinishedForExternalAsync();
+				RunOnMainThread(delegate
+				{
+					if (_isClosed || !needsFinalDisplayAfterTts || !IsSubmitGenerationActive(generation) || !ShoutBehavior.IsNativeConversationResponseTargetAvailableForExternal())
+					{
+						return;
+					}
+					// This one post-TTS update is intentionally not a rescan; it uses the completed UI-only RichText copy.
+					ConversationHelper.UpdateDialogText(completedDisplayReply);
+				});
 			}
 		}
 		catch (Exception ex)
@@ -1065,6 +1084,8 @@ public sealed class AnimusForgeNativeConversationOverlay
 		bool receivedVisibleText = false;
 		bool offerPreprocessRetry = false;
 		bool suppressReadyNotice = false;
+		string completedDisplayReply = "";
+		bool needsFinalDisplayAfterTts = false;
 		_isSubmitting = true;
 		ClearPendingPostprocessNotice();
 		_dataSource.SetBusy(true);
@@ -1096,7 +1117,8 @@ public sealed class AnimusForgeNativeConversationOverlay
 						}
 						receivedVisibleText = true;
 						StopWaitingDotsAnimation(generation);
-						ConversationHelper.UpdateDialogText(partial);
+						// Stream fragments remain plain text because incomplete RichText markup would break the native typewriter/UI parser.
+						ConversationHelper.UpdateDialogText(EncyclopediaEntityLinkFormatter.SanitizeUntrustedRichText(partial));
 					}
 				});
 			}, originalDialogText, delegate(string npcName)
@@ -1150,9 +1172,16 @@ public sealed class AnimusForgeNativeConversationOverlay
 				{
 					receivedVisibleText = true;
 					StopWaitingDotsAnimation(generation);
+					// Linkify only the completed display copy; the raw reply has already been retained for TTS and memory.
+					completedDisplayReply = ShoutBehavior.FormatNativeConversationDisplayTextForExternal(completedReply);
 					if (!suppressVisibleStreamingForTts || !ConversationHelper.IsTypewriterActive)
 					{
-						ConversationHelper.UpdateDialogText(completedReply);
+						ConversationHelper.UpdateDialogText(completedDisplayReply);
+					}
+					else
+					{
+						// The raw TTS typewriter must finish before its final text can be replaced by trusted RichText markup.
+						needsFinalDisplayAfterTts = true;
 					}
 				}
 				else if (IsSubmitGenerationActive(generation) && !receivedVisibleText)
@@ -1163,6 +1192,15 @@ public sealed class AnimusForgeNativeConversationOverlay
 			if (suppressVisibleStreamingForTts && IsSubmitGenerationCurrent(generation))
 			{
 				await ShoutBehavior.WaitForNativeConversationTtsPlaybackFinishedForExternalAsync();
+				RunOnMainThread(delegate
+				{
+					if (_isClosed || !needsFinalDisplayAfterTts || !IsSubmitGenerationActive(generation) || !ShoutBehavior.IsNativeConversationResponseTargetAvailableForExternal())
+					{
+						return;
+					}
+					// This one post-TTS update is intentionally not a rescan; it uses the completed UI-only RichText copy.
+					ConversationHelper.UpdateDialogText(completedDisplayReply);
+				});
 			}
 		}
 		catch (Exception ex)
