@@ -1,0 +1,17 @@
+{
+  "schemaId": "urn:animusforge:sceneactions:battle-speech-performance:v1",
+  "documentType": "battle-speech-performance-settings",
+  "schemaVersion": 1,
+  "enabled": true,
+  "speakerGesturesEnabled": true,
+  "maxSpeakerGestures": 4,
+  "minimumSpeakerGestureSpacingSeconds": 1.4,
+  "audienceReactionsEnabled": true,
+  "audienceParticipationRatio": 0.35,
+  "maximumAudiencePerformers": 96,
+  "audienceWaveSize": 8,
+  "audienceWaveIntervalSeconds": 0.3,
+  "audienceMemberStaggerSeconds": 0.035,
+  "audienceFinalDelaySeconds": 0.25,
+  "performanceTailSeconds": 3.5
+}

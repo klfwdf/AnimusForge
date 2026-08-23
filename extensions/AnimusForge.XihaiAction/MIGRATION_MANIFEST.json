@@ -1,0 +1,484 @@
+{
+  "schemaVersion": 1,
+  "sourceModule": "F:\\SteamLibrary\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\AnimusForge_XihaiAction",
+  "sourceModuleVersion": "v1.1.0",
+  "repository": "F:\\AnimusForge-main",
+  "branch": "codex/natural-language-actions",
+  "sourceHead": "ac65ec3137aaeea8d76cb05d793f1bd3489b075a",
+  "copiedAtUtc": "2026-08-21T12:39:11.4728449Z",
+  "includedFileCount": 93,
+  "includedBytes": 12471698.0,
+  "excludedGeneratedPaths": [
+    "bin/**",
+    "**/bin/**",
+    "**/obj/**",
+    "Logs/**"
+  ],
+  "files": [
+    {
+      "path": "AssetPackages/pack0.tpac",
+      "size": 11205263,
+      "sha256": "22CDE3B08F08D175F14AE6595F8A69C9332827B32B82F42A3104E954E4A5773D"
+    },
+    {
+      "path": "ModuleData/action_sets.xml",
+      "size": 412,
+      "sha256": "E4022D23E070404CEE4F60D8FB5A55FD8840893A4B939757939A41CE32363D54"
+    },
+    {
+      "path": "ModuleData/action_types.xml",
+      "size": 140,
+      "sha256": "1BA1ADBC07B903D58E8BA983B7C60C7C5F526ABCED62D1CC705A9D88FCE0716A"
+    },
+    {
+      "path": "ModuleData/combat_parameters.xml",
+      "size": 186,
+      "sha256": "F6336722194FFF4FC1F4789A20CD324DAC6C35A66CFF09177C05F6A6EEE92A47"
+    },
+    {
+      "path": "ModuleData/items.xml",
+      "size": 1955,
+      "sha256": "13F96782C583041E84E9FC2EC4F231AAF0AC2777E0F80C50806EE4858E76B70F"
+    },
+    {
+      "path": "ModuleData/Languages/CNs/language_data.xml",
+      "size": 274,
+      "sha256": "A26D57740731539B66C8319CBB050BB29D8A640F3C8B0F4FF696706820DC6023"
+    },
+    {
+      "path": "ModuleData/Languages/CNs/sceneactions_strings-zh-CN.xml",
+      "size": 5343,
+      "sha256": "258A114F2B186EC656F6C5D9E29EBD18A4C9E0E7F91DCCD23104D8E8FFD25F17"
+    },
+    {
+      "path": "ModuleData/Languages/language_data.xml",
+      "size": 395,
+      "sha256": "B3CA370328D00153C4A924AF030862947CE876E1E240A310719F896145C07A22"
+    },
+    {
+      "path": "ModuleData/Languages/sceneactions_strings.xml",
+      "size": 5456,
+      "sha256": "5B8281EA558F3EC75FE1447B79EFB59A2E2D1D23708F48DA6757144D166DB5EB"
+    },
+    {
+      "path": "ModuleData/project.mbproj",
+      "size": 420,
+      "sha256": "20EBC807A55967D31607FFAF04BC4DC3E54C0E8D1B763FA9DCCA82DF70645A58"
+    },
+    {
+      "path": "ModuleData/SceneActions/battle-speech-performance.v1.json",
+      "size": 565,
+      "sha256": "145D7E0244B4D91FF3B77F68938DC91F1789428AF3A5A43B82CC10DA8FD1F862"
+    },
+    {
+      "path": "ModuleData/SceneActions/battle-speech.v1.json",
+      "size": 577,
+      "sha256": "720D52824F5A81923C970FFF8C7C55E8991BDB935D07841491A6E8F9C9EC36BB"
+    },
+    {
+      "path": "ModuleData/SceneActions/settings.v1.json",
+      "size": 1576,
+      "sha256": "3A1CE880E6D08C421D8FA772075913BCD323BBF315175992EA1327502B036CF0"
+    },
+    {
+      "path": "ModuleData/SceneActions/settings.v2.json",
+      "size": 2275,
+      "sha256": "17D94C506B9AB4BF842518A25B013EAA8A0A6531DA9C7067E60ABD22F013CCD4"
+    },
+    {
+      "path": "ModuleData/SceneActions/settings.v3.json",
+      "size": 2643,
+      "sha256": "7A214EADE413392D0B4236BF7E74392146C3A2B2A6FD249DCF8AE2C16C2AD573"
+    },
+    {
+      "path": "ModuleData/SceneActions/settings.v4.json",
+      "size": 2788,
+      "sha256": "20E46E8215A5FFF3FD2CD356D0B82D91A69C19D2552B9670695783B6DBFEADB4"
+    },
+    {
+      "path": "README.SceneActions.md",
+      "size": 30996,
+      "sha256": "7C9CA26B01E103C256F648EF0C4C2FF458E882FE7AEEAE219993E32F1981DAC4"
+    },
+    {
+      "path": "RELEASE_MANIFEST.json",
+      "size": 17382,
+      "sha256": "014F3637A643752DC2784AE9640D8D3B4506A16F3B31E696A879D16C82FE562B"
+    },
+    {
+      "path": "src/AnimusForge.XihaiAction.csproj",
+      "size": 3532,
+      "sha256": "999F9C227D14D6FB23C46FD4E15D516D561F19DA3DDBC3DE87522409E141533B"
+    },
+    {
+      "path": "src/CoreProject/ActionProgramV2.cs",
+      "size": 7722,
+      "sha256": "77CAF076FDA31AD1523EEEA302637A126B4EED22453173410DC47A78303625A1"
+    },
+    {
+      "path": "src/CoreProject/ActionProgramV3.cs",
+      "size": 7864,
+      "sha256": "97CFDDD6C1E1FB4E467A3E69C8AA1B36CC134438CE8DCB6BEBE15327968ED100"
+    },
+    {
+      "path": "src/CoreProject/ActionProgramV4.cs",
+      "size": 9402,
+      "sha256": "BF288A8272071366C7AAB219807DA12D21FFCD0AC345921BE7EC6668DA8A306F"
+    },
+    {
+      "path": "src/CoreProject/AnimusForge.SceneActions.Core.csproj",
+      "size": 375,
+      "sha256": "A1779D4603970477F5AEF4F87B5DED09FA3BBDDB2424495A82DDBE8C04921B3A"
+    },
+    {
+      "path": "src/CoreProject/BattleSpeechFrameworkV1.cs",
+      "size": 12014,
+      "sha256": "FFEF609F7E1907E03999A1F0A9140A95DD16B2391D768EB275A89B30BDB9F5E0"
+    },
+    {
+      "path": "src/CoreProject/BattleSpeechFrameworkV2.cs",
+      "size": 19679,
+      "sha256": "23B11031BB44799BBD903832C66B6143ADD9A89C721E3ED8AE632C919450E40A"
+    },
+    {
+      "path": "src/CoreProject/BattleSpeechPerformancePlannerV1.cs",
+      "size": 19982,
+      "sha256": "F35DDE9C54A4AEAFE489A638177853414AAFD57D7595BDF69051D74FFB8D1849"
+    },
+    {
+      "path": "src/CoreProject/BattleSpeechReplyBindingV1.cs",
+      "size": 3280,
+      "sha256": "DDBF7E57E85860C2B079C95936C68974040EEFB131F084802DFF59C403D6DE03"
+    },
+    {
+      "path": "src/CoreProject/BuiltInContent.cs",
+      "size": 33006,
+      "sha256": "8AB9DBD24F9C1447C9AF75B6EAB47AA508BBFCBFC8B98A406CD1630E5EE79F83"
+    },
+    {
+      "path": "src/CoreProject/Catalog.cs",
+      "size": 19045,
+      "sha256": "D0E90E1CB97933EF213CC26D81B48D72FDAC7008A73B70FD155563A620A7CEE3"
+    },
+    {
+      "path": "src/CoreProject/CommandParser.cs",
+      "size": 44797,
+      "sha256": "C5915354861D2CB0B50A233055EE5CD0EB66AD791D7BFE5E45BBC87A6B2573A5"
+    },
+    {
+      "path": "src/CoreProject/Consent.cs",
+      "size": 14658,
+      "sha256": "33AD4D5135BBC835F3592EC59C4DFA418D6C126B04CD859881453AC50B788ED9"
+    },
+    {
+      "path": "src/CoreProject/Contracts.cs",
+      "size": 19261,
+      "sha256": "A2B309417D348F245174B0D0DA726E00B461C6B79CC428DCC297259A36B5559B"
+    },
+    {
+      "path": "src/CoreProject/ImplicitEmotionInferenceV1.cs",
+      "size": 20942,
+      "sha256": "ABCCBE96F2D10837775F90532FF7DB1A7EA72AFF34772FC2D76354877F028EEB"
+    },
+    {
+      "path": "src/CoreProject/RequestGate.cs",
+      "size": 3375,
+      "sha256": "25ACA001D39D4E53824B106D842166BC33EA3E59769E477F289D758E6E0A87DA"
+    },
+    {
+      "path": "src/CoreProject/SceneActionFrameworkV1.cs",
+      "size": 56630,
+      "sha256": "E9A421FAD0570C6989DB7A3F2A25AB2B8C4D2E7885629C2FB87024099EFE9512"
+    },
+    {
+      "path": "src/CoreProject/SceneActionFrameworkV2.cs",
+      "size": 21467,
+      "sha256": "A95BA7BF760BA8A5F3F3BB22062BB90AE6E72CECCE0A82C214949630F9300A68"
+    },
+    {
+      "path": "src/CoreProject/SceneActionFrameworkV3.cs",
+      "size": 46543,
+      "sha256": "65D7034AB1AA0E665D747C58C16471C9F11DA7FC142C8771E5D7DDB631B367B6"
+    },
+    {
+      "path": "src/CoreProject/SceneActionFrameworkV4.cs",
+      "size": 27719,
+      "sha256": "E785BD2603AFECBEAC6CBEDCBCC19C7284FEA2CE06889981098DDC1224EE82CD"
+    },
+    {
+      "path": "src/CoreProject/SceneActionRuntimeControlsV1.cs",
+      "size": 827,
+      "sha256": "EEAA3DC428E8E19BB736DCABBEF44BB2B487CB753A26C360C0A6F06A9EA192BC"
+    },
+    {
+      "path": "src/CoreProject/Scheduler.cs",
+      "size": 5782,
+      "sha256": "24B9F92EB982DCF380BEFA25606BAD71FEF10FC791B8DF8A8C525CC23411D7FD"
+    },
+    {
+      "path": "src/Runtime/ActionProviders.cs",
+      "size": 12407,
+      "sha256": "47904258DF538CFED2CCEA663C078B98EC36313CCE17A81F985C79FC99B6543E"
+    },
+    {
+      "path": "src/Runtime/AfClassifierTransport.cs",
+      "size": 2263,
+      "sha256": "534B3074F07376EA62287AE7F1E520C8120AC60D48A0FD1BD2BE91AACC3E8461"
+    },
+    {
+      "path": "src/Runtime/AfCompatV130.cs",
+      "size": 40229,
+      "sha256": "063486F5ABED17D665D5A812653ABD272390A6713F63B67E4F089D0164FD7E4D"
+    },
+    {
+      "path": "src/Runtime/AfV130AuxiliaryTextClassifier.cs",
+      "size": 19021,
+      "sha256": "6EEB7DDDAD3AED93F78C7B7FBEE2A31754FA19449FCDC460B625ACE5E98D008B"
+    },
+    {
+      "path": "src/Runtime/BattleSpeechApiV1.cs",
+      "size": 7588,
+      "sha256": "BD792B75CC7E5D91F2B33D6C2903E16826854653C512C653ABAB40E983DE4B1D"
+    },
+    {
+      "path": "src/Runtime/BattleSpeechMissionBehavior.cs",
+      "size": 28368,
+      "sha256": "57B69D5D5C82A0B9952E322781C2F4760B77454939CFBDA7FCA328889BDC48D9"
+    },
+    {
+      "path": "src/Runtime/BattleSpeechMissionBehavior.V2.cs",
+      "size": 26246,
+      "sha256": "F1AD13EE69ADB3390D3D89E3294DA24D6C593FE0B123E3D736256CE1AE163DEE"
+    },
+    {
+      "path": "src/Runtime/BattleSpeechPerformanceMissionBehavior.cs",
+      "size": 24587,
+      "sha256": "E3BDA6B2DF30C678C7459FDAD8C5A442189ABD757804A218236E23EA38E0E34F"
+    },
+    {
+      "path": "src/Runtime/BattleSpeechPerformanceSettingsLoader.cs",
+      "size": 8692,
+      "sha256": "08486B76576FEBD167903B022719445EFBC2B3E7666F1FF96F98EDDDCE065741"
+    },
+    {
+      "path": "src/Runtime/BattleSpeechRuntimeHost.cs",
+      "size": 16312,
+      "sha256": "7D26806637E2DFD9D4583368BDCAD1F4029AF16BE38A24D94A5AF14B00B95E77"
+    },
+    {
+      "path": "src/Runtime/BattleSpeechSettingsLoader.cs",
+      "size": 8192,
+      "sha256": "57F4B8922626B2A5AE1F5CB054D4B0056759A7EA85EDCCD8647896950FDEBE26"
+    },
+    {
+      "path": "src/Runtime/RuntimeModels.cs",
+      "size": 1556,
+      "sha256": "D9022F1C8F20E48509FA1A6C00A33F9A491596B591C7337C0E64B3583EAD9C2E"
+    },
+    {
+      "path": "src/Runtime/RuntimeSettingsLoader.cs",
+      "size": 34963,
+      "sha256": "76D7C9F05C7CDE792970F72957C15FC3A78E766DBDBFD855781F16D486B4B6E1"
+    },
+    {
+      "path": "src/Runtime/SceneActionChannelOwner.cs",
+      "size": 2824,
+      "sha256": "4E405E421959BEA3F0F3B846956004BB7B0E1053A1E2CEA8DCBD09224195C35F"
+    },
+    {
+      "path": "src/Runtime/SceneActionInputPermissionRouter.cs",
+      "size": 2938,
+      "sha256": "F92772E25D528B6A8778C9D97B843793BB4EF75FE4AD163F78EB801D6C7F4C48"
+    },
+    {
+      "path": "src/Runtime/SceneActionsAfBridge.cs",
+      "size": 2804,
+      "sha256": "6018ED45C96610DF64C7AB215C579137D18A063788C462D12AA8190400A26D32"
+    },
+    {
+      "path": "src/Runtime/SceneActionsApiV1.cs",
+      "size": 1374,
+      "sha256": "18F9DE0213A1FE2859D336212021C50683DFF154B5EE6EE8321171C726571604"
+    },
+    {
+      "path": "src/Runtime/SceneActionsApiV2.cs",
+      "size": 1037,
+      "sha256": "01156A94EBC51F0B1167B460A444C817D6CEE84BF341663963146CE3285A7CE3"
+    },
+    {
+      "path": "src/Runtime/SceneActionsApiV3.cs",
+      "size": 1037,
+      "sha256": "A4E818B6F9234F2B8A5B1D0828C794875CFEBB0F116BB12D02B9F8208FB7CC52"
+    },
+    {
+      "path": "src/Runtime/SceneActionsApiV4.cs",
+      "size": 1037,
+      "sha256": "CF485A13FDC086332511FAFE0E6A2D19C63FD8D22239FDFF77D18707AEC20CA3"
+    },
+    {
+      "path": "src/Runtime/SceneActionsLog.cs",
+      "size": 2832,
+      "sha256": "71508D1EE90009B7D36556FC618DC426BC4EC3A2BC97EA4FA5704027193E6261"
+    },
+    {
+      "path": "src/Runtime/SceneActionsMcmSettings.cs",
+      "size": 21503,
+      "sha256": "6664D51686378BBE3663070216A553BF60B135E0833EF6F914F08C5BC16D9757"
+    },
+    {
+      "path": "src/Runtime/SceneActionsMissionBehavior.Classification.cs",
+      "size": 18213,
+      "sha256": "E32AB13B2561C0CC657F386DA4220CF2F16AF0CBEDE15EB96E20AB9B27C19FC5"
+    },
+    {
+      "path": "src/Runtime/SceneActionsMissionBehavior.Consent.cs",
+      "size": 12260,
+      "sha256": "D84F0013F2E5BF716491524E023ACE52F4554FEA96459046700CAEA962BE958F"
+    },
+    {
+      "path": "src/Runtime/SceneActionsMissionBehavior.Context.cs",
+      "size": 4809,
+      "sha256": "95B0E03CCAC7852FCD1B7B10A5B596EB492283EB1560C528D487A337A9822C9F"
+    },
+    {
+      "path": "src/Runtime/SceneActionsMissionBehavior.cs",
+      "size": 3820,
+      "sha256": "7EDAF5A90DFB13C13B89ECF4148FCCEF7D76BD96444233966DCC96012504A385"
+    },
+    {
+      "path": "src/Runtime/SceneActionsMissionBehavior.Input.cs",
+      "size": 8445,
+      "sha256": "F1236F2E7F89674A4E6CA429FF5CA304EDEC54316B0184F58C6403DA97621BEF"
+    },
+    {
+      "path": "src/Runtime/SceneActionsMissionBehavior.Lifecycle.cs",
+      "size": 11130,
+      "sha256": "39F168C9CD0CF4C6602BBE824CF5515C0DCBCC7D3B4CC90F037CD19EF7A26F00"
+    },
+    {
+      "path": "src/Runtime/SceneActionsMissionBehavior.Models.cs",
+      "size": 11413,
+      "sha256": "C45975B77D97A9E985022D68AD7D1734F39F4C000A34223F42679228EFFE2840"
+    },
+    {
+      "path": "src/Runtime/SceneActionsMissionBehavior.Playback.Cooldown.cs",
+      "size": 1944,
+      "sha256": "53DEEFF1D42C29D744CEAB5ACF187C02B6B80EA6C633575C09A623CCED1FAA14"
+    },
+    {
+      "path": "src/Runtime/SceneActionsMissionBehavior.Playback.Engine.cs",
+      "size": 4631,
+      "sha256": "B4A74D846884C0EDF93680F7B3DDD12B0EA51CBB6BB9AAB206C40B9396F8266F"
+    },
+    {
+      "path": "src/Runtime/SceneActionsMissionBehavior.Playback.Execute.cs",
+      "size": 10865,
+      "sha256": "F472A930E0FB766AD434A140DFC444DD76E5E0BC6FE284C9E8DEA342F7DEA9BA"
+    },
+    {
+      "path": "src/Runtime/SceneActionsMissionBehavior.Playback.Ownership.cs",
+      "size": 6574,
+      "sha256": "F9DA0A1F3C7E092F345730C56AF36976572A24E49B2427CC332D5CC2225623CD"
+    },
+    {
+      "path": "src/Runtime/SceneActionsMissionBehavior.Playback.Targets.cs",
+      "size": 1947,
+      "sha256": "7BB22C328EAA20E345BA702A1460CE906D7FAB69C67C18FF9CF73AA250848D3C"
+    },
+    {
+      "path": "src/Runtime/SceneActionsMissionBehavior.Program.Barrier.cs",
+      "size": 5834,
+      "sha256": "CA1BBB401AEAD1267CE95B94B70C25F8B3D459C6E92661773EA35548020D8A26"
+    },
+    {
+      "path": "src/Runtime/SceneActionsMissionBehavior.Program.Build.cs",
+      "size": 20448,
+      "sha256": "5FD78F904331C48D1EF72928D9922EE6472F155F6F49067F3263DE948D663EF2"
+    },
+    {
+      "path": "src/Runtime/SceneActionsMissionBehavior.Program.Completion.cs",
+      "size": 4404,
+      "sha256": "A30EEF7AC797E154272E64309D60D7342D9EA3017122309448F9C321612A0EEA"
+    },
+    {
+      "path": "src/Runtime/SceneActionsMissionBehavior.Program.Progress.cs",
+      "size": 14211,
+      "sha256": "5C164D7230EF382604A9A3897CEABDDFAE3D03AFD092AF6292C7A2D3911FE101"
+    },
+    {
+      "path": "src/Runtime/SceneActionsMissionBehavior.Program.Start.cs",
+      "size": 16579,
+      "sha256": "FE9378BF4368B9B4CE97AAE56C53FAA45807C53DF110F114DD0C0AC68667ADBA"
+    },
+    {
+      "path": "src/Runtime/SceneActionsMissionBehavior.Readiness.cs",
+      "size": 6124,
+      "sha256": "233DA0D1D522F25BC2C52A9BDD453D709280211C8085548B9A3DEDD7EF5FE540"
+    },
+    {
+      "path": "src/Runtime/SceneActionsMissionBehavior.Results.cs",
+      "size": 7845,
+      "sha256": "7FBD360F02E62E3F79CFDE4CADF03550687E8E8F3D5203CE766DE685BCA2BDF9"
+    },
+    {
+      "path": "src/Runtime/SceneActionsMissionBehavior.Scheduling.cs",
+      "size": 1542,
+      "sha256": "2DEAAA5173343E9ACDA7C29EB2AB9D419ABA1901A9B6E417504B7CE4EC402C37"
+    },
+    {
+      "path": "src/Runtime/SceneActionsMissionBehavior.State.cs",
+      "size": 2464,
+      "sha256": "296E5CFDE294DE96F38EA42089D468676E93404B87B20917B356B2753AA4140D"
+    },
+    {
+      "path": "src/Runtime/SceneActionsMissionBehavior.Stateful.cs",
+      "size": 15123,
+      "sha256": "CE8C844BBAE42924B5818E7D79055A5345BA5321F93BEE0454CD918251113C6F"
+    },
+    {
+      "path": "src/Runtime/SceneActionsMissionBehavior.Trusted.cs",
+      "size": 9422,
+      "sha256": "45E8A8CC521A2AF39C9DE80F047566D9543E1F1DA81687E4A66566B5B2A70D13"
+    },
+    {
+      "path": "src/Runtime/SceneActionsRuntimeHost.cs",
+      "size": 19989,
+      "sha256": "CA4DD6C510FB09AD3D2C41F29A587101438BD410A1C7C5B3166A85720731A312"
+    },
+    {
+      "path": "src/Runtime/SceneActionsText.cs",
+      "size": 2168,
+      "sha256": "C4E0054A72214585A004D0A8A388F52B3D8CEB1DA5C8D91177D595EB651B44DB"
+    },
+    {
+      "path": "src/SubModule.cs",
+      "size": 7719,
+      "sha256": "2CD104311F2ED5CC9833ACE83E0377434DA27134D2D002266E6A069CC1A53F4F"
+    },
+    {
+      "path": "SubModule.xml",
+      "size": 1411,
+      "sha256": "381D12F45CD23B9AAD553080C58860D595868A91449068C41687F2BCAE0D3B07"
+    },
+    {
+      "path": "tests/AnimusForge.SceneActions.Core.Tests.csproj",
+      "size": 392,
+      "sha256": "4672F2F7CABF32F6F3C43D0D3F58B70BC83EB1FAA151F8B4C33AF5D6790B53AF"
+    },
+    {
+      "path": "tests/Program.cs",
+      "size": 153084,
+      "sha256": "9E093EBD5ABE83F314710A6620DCDCA368C35E101254103C959B3D395D1C640F"
+    },
+    {
+      "path": "tools/StaticVerifier/AnimusForge.SceneActions.StaticVerifier.csproj",
+      "size": 422,
+      "sha256": "3E1C7B31B1FD2D7FF7BEE63262F853C05548A19F64616D3F23624D3BDF19D8EA"
+    },
+    {
+      "path": "tools/StaticVerifier/Program.cs",
+      "size": 142108,
+      "sha256": "AB326E3790AFAA487EFDEC7C235B89EA10DFA103D7ADCD2D8064167FF7C44A9A"
+    }
+  ]
+}

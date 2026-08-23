@@ -14,6 +14,11 @@
     <BannerlordApiCompatibility Condition="'$(BannerlordApiCompatibility)' == ''">$(BannerlordApi)</BannerlordApiCompatibility>
     <AssemblySearchPaths>{HintPathFromItem};{CandidateAssemblyFiles};{TargetFrameworkDirectory};{RawFileName}</AssemblySearchPaths>
   </PropertyGroup>
+  <ItemGroup>
+    <!-- Standalone extension projects and rollback artifacts live under the repo root,
+         but they are not part of either AnimusForge implementation assembly. -->
+    <Compile Remove="extensions\**\*.cs;artifacts\**\*.cs" />
+  </ItemGroup>
   <PropertyGroup Condition="$([System.String]::Copy('$(BannerlordApi)').StartsWith('1.4'))">
     <DefineConstants>$(DefineConstants);BANNERLORD_1_4_OR_GREATER</DefineConstants>
   </PropertyGroup>
@@ -106,6 +111,7 @@
     <Compile Remove="阅兵\**\*.cs" />
     <Compile Remove="111\**\*.cs" />
     <Compile Remove="tools\**\*.cs" />
+    <Compile Remove="extensions\AnimusForge.XihaiAction\**\*.cs" />
     <Compile Remove="AnimusForge.SiegeAftermathIntervention\bin\**\*.cs" />
     <Compile Remove="AnimusForge.SiegeAftermathIntervention\obj\**\*.cs" />
     <Compile Remove="AnimusForge.Bootstrap\**\*.cs" />
@@ -135,6 +141,14 @@
     <None Remove="FUYONG\**\*" />
     <None Remove="_codex_tmp\**\*" />
     <None Remove="tmp\**\*" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="extensions\AnimusForge.XihaiAction\src\CoreProject\*.cs">
+      <Link>SceneActions\Core\%(Filename)%(Extension)</Link>
+    </Compile>
+    <Compile Include="extensions\AnimusForge.XihaiAction\src\Runtime\*.cs">
+      <Link>SceneActions\Runtime\%(Filename)%(Extension)</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Core" />

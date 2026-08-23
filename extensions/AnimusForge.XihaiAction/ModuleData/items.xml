@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Items>
+  <Item
+    id="af_xihai_naci_hat"
+    name="西海军帽"
+    mesh="naci_hat"
+    is_merchandise="true"
+    subtype="head_armor"
+    weight="0.5"
+    appearance="1"
+    Type="HeadArmor">
+    <ItemComponent>
+      <Armor
+        head_armor="25"
+        has_gender_variations="false"
+        hair_cover_type="none"
+        beard_cover_type="none"
+        modifier_group="cloth_unarmoured"
+        material_type="Cloth" />
+    </ItemComponent>
+    <Flags
+      Civilian="true" />
+  </Item>
+
+  <Item
+    id="af_xihai_naci_clothes"
+    name="西海战衣"
+    mesh="naciclothes"
+    is_merchandise="true"
+    subtype="body_armor"
+    weight="4.0"
+    appearance="2"
+    Type="BodyArmor">
+    <ItemComponent>
+      <Armor
+        body_armor="45"
+        leg_armor="18"
+        arm_armor="18"
+        has_gender_variations="false"
+        covers_body="true"
+        modifier_group="cloth_unarmoured"
+        material_type="Cloth" />
+    </ItemComponent>
+    <Flags
+      Civilian="true" />
+  </Item>
+
+  <Item
+    id="af_xihai_daimao_head"
+    name="呆猫cos"
+    mesh="daimaohead"
+    is_merchandise="true"
+    subtype="head_armor"
+    weight="0.8"
+    appearance="1"
+    Type="HeadArmor">
+    <ItemComponent>
+      <Armor
+        head_armor="28"
+        has_gender_variations="false"
+        hair_cover_type="all"
+        beard_cover_type="none"
+        modifier_group="cloth_unarmoured"
+        material_type="Cloth" />
+    </ItemComponent>
+    <Flags
+      Civilian="true" />
+  </Item>
+
+  <Item
+    id="af_xihai_naci_shoes"
+    name="西海秋裤"
+    mesh="nacishoes"
+    is_merchandise="true"
+    subtype="leg_armor"
+    weight="1.2"
+    appearance="1"
+    Type="LegArmor">
+    <ItemComponent>
+      <Armor
+        leg_armor="22"
+        covers_legs="true"
+        modifier_group="cloth_unarmoured"
+        material_type="Cloth" />
+    </ItemComponent>
+    <Flags
+      Civilian="true" />
+  </Item>
+</Items>

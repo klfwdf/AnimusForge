@@ -1,0 +1,43 @@
+<Module>
+  <Name value="AnimusForge Xihai Action" />
+  <Id value="AnimusForge_XihaiAction" />
+  <Version value="v1.1.0" />
+  <SingleplayerModule value="true" />
+  <MultiplayerModule value="false" />
+  <DependedModules>
+    <DependedModule Id="Bannerlord.Harmony" />
+    <DependedModule Id="Bannerlord.ButterLib" />
+    <DependedModule Id="Bannerlord.UIExtenderEx" />
+    <DependedModule Id="Bannerlord.MBOptionScreen" />
+    <DependedModule Id="Native" />
+    <DependedModule Id="SandBoxCore" />
+    <DependedModule Id="Sandbox" />
+    <DependedModule Id="StoryMode" />
+    <DependedModule Id="CustomBattle" />
+    <DependedModule Id="AnimusForge" />
+  </DependedModules>
+  <SubModules>
+    <SubModule>
+      <Name value="AnimusForge Xihai Action" />
+      <DLLName value="AnimusForge.XihaiAction.dll" />
+      <SubModuleClassType value="AnimusForge.XihaiAction.SubModule" />
+      <Tags>
+        <Tag key="DedicatedServerType" value="none" />
+        <Tag key="IsNoRenderModeElement" value="false" />
+      </Tags>
+    </SubModule>
+  </SubModules>
+  <Assemblies>
+    <Assembly value="AnimusForge.XihaiAction.dll" />
+  </Assemblies>
+  <Xmls>
+    <XmlNode>
+      <XmlName id="Items" path="items" />
+      <IncludedGameTypes>
+        <GameType value="Campaign" />
+        <GameType value="CampaignStoryMode" />
+        <GameType value="CustomGame" />
+      </IncludedGameTypes>
+    </XmlNode>
+  </Xmls>
+</Module>

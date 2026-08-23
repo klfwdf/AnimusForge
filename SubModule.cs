@@ -39,6 +39,7 @@ public class SubModule : MBSubModuleBase
 	protected override void OnSubModuleLoad()
 	{
 		base.OnSubModuleLoad();
+		SceneActionsIntegrationBoundary.InitializeRuntime();
 		if (_uiExtenderInitialized)
 		{
 			return;
@@ -58,6 +59,24 @@ public class SubModule : MBSubModuleBase
 			Logger.LogTrace("SubModule", ">>> UIExtenderEx init failed: " + ex.Message);
 			_uiExtenderInitialized = false;
 		}
+	}
+
+	public override void OnBeforeMissionBehaviorInitialize(Mission mission)
+	{
+		base.OnBeforeMissionBehaviorInitialize(mission);
+		SceneActionsIntegrationBoundary.RegisterBeforeMissionInitialization(mission);
+	}
+
+	public override void OnMissionBehaviorInitialize(Mission mission)
+	{
+		base.OnMissionBehaviorInitialize(mission);
+		SceneActionsIntegrationBoundary.VerifyMissionInitialization(mission);
+	}
+
+	protected override void OnSubModuleUnloaded()
+	{
+		SceneActionsIntegrationBoundary.ShutdownRuntime();
+		base.OnSubModuleUnloaded();
 	}
 
 	protected override void OnBeforeInitialModuleScreenSetAsRoot()

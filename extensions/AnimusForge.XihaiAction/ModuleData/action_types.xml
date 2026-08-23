@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<action_types>
+  <action name="act_af_xihai" />
+  <action name="act_af_kneel_loop" />
+  <action name="act_af_speech_nacisword1" />
+</action_types>

@@ -10,7 +10,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using AnimusForge.SceneActions.Core;
 using AnimusForge.SiegeAftermathIntervention;
+using AnimusForge.XihaiAction;
 using SandBox;
 using SandBox.Missions.AgentBehaviors;
 using SandBox.Missions.MissionLogics;
@@ -19114,9 +19116,29 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		if (!TryPrepareShoutTarget(out var primaryDataPacket))
 		{
+			// The vanilla Y menu requires a framed NPC. Keep a small fallback for
+			// battle speech so the player can still address the whole allied line
+			// when no NPC is framed; this must never replace the vanilla menu when
+			// a normal shout target exists.
+			if (BattleSpeechRuntimeHost.CanOpenSpeechMenu(Mission.Current))
+			{
+				TriggerBattleSpeechMenu();
+			}
 			return;
 		}
 		string text = primaryDataPacket?.Name ?? "附近的人";
+		bool battleSpeechMenu = BattleSpeechRuntimeHost.CanOpenSpeechMenu(Mission.Current);
+		List<Agent> battleSpeechFramedTargets = null;
+		Agent battleSpeechPrimaryTarget = null;
+		if (battleSpeechMenu)
+		{
+			battleSpeechFramedTargets = GetAgentsForShoutTargetingContext(_activeShoutTargetingContext) ?? new List<Agent>();
+			battleSpeechPrimaryTarget = ResolvePrimaryAgentForShoutTargetingContext(
+				_activeShoutTargetingContext,
+				battleSpeechFramedTargets);
+			battleSpeechPrimaryTarget ??= battleSpeechFramedTargets.FirstOrDefault(
+				agent => agent != null && agent.IsActive());
+		}
 		List<InquiryElement> inquiryElements = new List<InquiryElement>
 		{
 			new InquiryElement("normal", "交流", null, isEnabled: true, ""),
@@ -19130,6 +19152,21 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			inquiryElements.Add(new InquiryElement("tag_test", "标签测试", null, isEnabled: true, "输入 NPC 可见正文和后处理标签，不调用 API，按当前目标立即执行。"));
 		}
+		if (battleSpeechMenu)
+		{
+			inquiryElements.Add(new InquiryElement(
+				"battle_speech_player",
+				"演讲",
+				null,
+				isEnabled: Agent.Main != null && Agent.Main.IsActive(),
+				"你亲自面向己方士兵发表演讲。"));
+			inquiryElements.Add(new InquiryElement(
+				"battle_speech_npc",
+				"他人演讲",
+				null,
+				isEnabled: battleSpeechPrimaryTarget != null && battleSpeechPrimaryTarget.IsActive(),
+				"让当前框选的主目标走到阵前并面向己方士兵演讲。"));
+		}
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData(text, "当前目标：" + text + "\n此菜单用于边交流边给予或展示物品，也可转移部队、俘虏或固定资产。\n请选择交流方式：", inquiryElements, isExitShown: true, 1, 1, "确定", "取消", delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
@@ -19139,7 +19176,15 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			else
 			{
 				string text2 = (selected[0]?.Identifier ?? "").ToString();
-				if (text2 == "give")
+				if (text2 == "battle_speech_player" || text2 == "battle_speech_npc")
+				{
+					OpenBattleSpeechFromShoutMenu(
+						text2 == "battle_speech_npc",
+						battleSpeechPrimaryTarget,
+						battleSpeechFramedTargets,
+						_sceneConversationEpoch);
+				}
+				else if (text2 == "give")
 				{
 					BeginShoutTradeFlow(primaryDataPacket, ShoutChatMode.Give);
 				}
@@ -19172,6 +19217,111 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			OnShoutCancelled();
 		}, "", isSeachAvailable: true);
+		MBInformationManager.ShowMultiSelectionInquiry(data, pauseGameActiveState: true);
+	}
+
+	private void OpenBattleSpeechFromShoutMenu(
+		bool npcSpeech,
+		Agent primaryTarget,
+		IReadOnlyList<Agent> framedTargets,
+		int conversationEpoch)
+	{
+		// TryPrepareShoutTarget paused AF and acquired ordinary scene-shout
+		// movement control. The dedicated speech channel owns the following UI,
+		// so release only that control before handing the frozen agent snapshot
+		// to BattleSpeechRuntimeHost.
+		DeactivateMultiSceneMovementSuppression();
+		EndShoutProcessing("battle_speech_menu_takeover");
+		Agent player = Agent.Main;
+		AfCompatV130.BeginDedicatedSpeechMenuInput();
+		bool opened = BattleSpeechRuntimeHost.TryOpenSpeechInputFromShoutMenu(
+			Mission.Current,
+			npcSpeech,
+			player,
+			primaryTarget,
+			framedTargets ?? Array.Empty<Agent>(),
+			conversationEpoch);
+		if (!opened)
+		{
+			InformationManager.DisplayMessage(new InformationMessage(
+				"演讲输入框无法打开，已返回普通场景状态。",
+				new Color(1f, 0.5f, 0.3f)));
+			AfCompatV130.CompleteDedicatedSpeechMenuInput();
+		}
+	}
+
+	private void TriggerBattleSpeechMenu()
+	{
+		Mission mission = Mission.Current;
+		List<Agent> framedTargets = GetAgentsForShoutTargetingContext(_activeShoutTargetingContext) ?? new List<Agent>();
+		Agent primaryTarget = ResolvePrimaryAgentForShoutTargetingContext(_activeShoutTargetingContext, framedTargets);
+		primaryTarget ??= framedTargets.FirstOrDefault(agent => agent != null && agent.IsActive());
+		Agent player = Agent.Main;
+		List<InquiryElement> inquiryElements = new List<InquiryElement>
+		{
+			new InquiryElement(
+				"battle_speech_player",
+				"演讲",
+				null,
+				isEnabled: player != null && player.IsActive(),
+				"你亲自面向己方士兵发表演讲。"),
+			new InquiryElement(
+				"battle_speech_npc",
+				"他人演讲",
+				null,
+				isEnabled: primaryTarget != null && primaryTarget.IsActive(),
+				"让当前框选的主目标走到阵前并面向己方士兵演讲。")
+		};
+		string targetName = primaryTarget?.Name?.ToString() ?? "未选择目标";
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(
+			"阵前演讲",
+			"选择演讲方式。当前主目标：" + targetName +
+			"\n此处输入直接进入演讲专用通道，不经过普通场景喊话解析。",
+			inquiryElements,
+			isExitShown: true,
+			1,
+			1,
+			"确定",
+			"取消",
+			delegate(List<InquiryElement> selected)
+			{
+				string identifier = selected != null && selected.Count > 0
+					? (selected[0]?.Identifier ?? "").ToString()
+					: string.Empty;
+				bool npcSpeech = string.Equals(
+					identifier,
+					"battle_speech_npc",
+					StringComparison.Ordinal);
+				if (!npcSpeech && !string.Equals(
+					identifier,
+					"battle_speech_player",
+					StringComparison.Ordinal))
+				{
+					AfCompatV130.CompleteDedicatedSpeechMenuInput();
+					return;
+				}
+				bool opened = BattleSpeechRuntimeHost.TryOpenSpeechInputFromShoutMenu(
+					mission,
+					npcSpeech,
+					player,
+					primaryTarget,
+					framedTargets,
+					_sceneConversationEpoch);
+				if (!opened)
+				{
+					InformationManager.DisplayMessage(new InformationMessage(
+						"演讲输入框无法打开，已返回普通场景状态。",
+						new Color(1f, 0.5f, 0.3f)));
+					AfCompatV130.CompleteDedicatedSpeechMenuInput();
+				}
+			},
+			delegate
+			{
+				AfCompatV130.CompleteDedicatedSpeechMenuInput();
+			},
+			"",
+			isSeachAvailable: false);
+		AfCompatV130.BeginDedicatedSpeechMenuInput();
 		MBInformationManager.ShowMultiSelectionInquiry(data, pauseGameActiveState: true);
 	}
 
@@ -26596,6 +26746,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			engagedAgentIndices.Add(currentSpeaker.AgentIndex);
 			HashSet<int> personaPreparedAgentIndices = new HashSet<int>();
 			bool firstTurn = true;
+			bool battleSpeechClaimedRound = false;
 			bool useTownResponseBudget = AfGcczShoutBridge.ShouldUseTownNpcResponseBudgetForExternal();
 			int remainingTurns = useTownResponseBudget
 				? Math.Min(SiegeNpcResponseEventBudget.MaxPendingRequests, speakableCandidates.Count)
@@ -26894,6 +27045,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				List<NpcDataPacket> relayCandidatesForNextTurn = new List<NpcDataPacket>();
 				NpcDataPacket nextSpeaker = null;
 				Agent currentSpeakerAgent = conversationScope.TryGetEntry(currentSpeaker.AgentIndex, out var postReplySpeakerEntry) ? postReplySpeakerEntry.AgentReference : null;
+				bool battleSpeechClaimedReply = BattleSpeechRuntimeHost.IsClaimedSpeechSpeaker(currentSpeakerAgent);
+				bool battleSpeechPerformanceActive = BattleSpeechApiV1.ShouldSuppressOrdinarySceneFollowups(Mission.Current);
+				bool suppressBattleSpeechFollowups = battleSpeechClaimedReply || battleSpeechPerformanceActive;
+				battleSpeechClaimedRound |= suppressBattleSpeechFollowups;
 				bool flag9 = endRequested && IsAgentFollowingPlayerBySceneCommand(currentSpeakerAgent);
 				bool flag10 = endRequested && TryGetSceneSummonConversationSessionForAgentIndex(currentSpeaker.AgentIndex) != null;
 				cleaned = StripAutoGroupRelaySignal(cleaned);
@@ -26972,7 +27127,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					// 场景喊话同样按国王身份常驻排队，不依赖本轮 preprocess hits。
 					bool royalPostprocessSelected = AIConfigHandler.CanUseAuxiliaryActionPostprocess()
 						&& AIConfigHandler.IsRoyalAbdicationPostprocessTargetForExternal(speakingHero ?? npcCharacter?.HeroObject);
-					if (!endRequested && remainingTurns > 0)
+					if (!suppressBattleSpeechFollowups && !endRequested && remainingTurns > 0)
 					{
 						SceneRelayEligibilitySnapshot nextEligibility = await RunNativeConversationMainThreadFuncAsync("scene_relay_next_candidates", currentSpeaker.Name, currentSpeaker.AgentIndex, () => BuildSceneRelayEligibilitySnapshot(conversationScope, audienceByAgentIndex, resolvedHeroes, conversationEpoch), new SceneRelayEligibilitySnapshot());
 						relayCandidatesForNextTurn = nextEligibility.Candidates
@@ -26981,9 +27136,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 								&& !roundNpcSpeakerIndices.Contains(candidate.AgentIndex))
 							.ToList();
 					}
-					relayPostprocessSelected = !endRequested && remainingTurns > 0 && relayCandidatesForNextTurn.Count > 0;
-					bool flag11 = duelPostprocessSelected || rewardPostprocessSelected || loanPostprocessSelected || persistentAdpDebtPostprocessSelected || kingdomServicePostprocessSelected || kingdomVassalagePostprocessSelected || kingdomAnnexationPostprocessSelected || lordsHallPostprocessSelected || meetingReleasePostprocessSelected || vanillaIssuePostprocessSelected || heroJoinPartyPostprocessSelected || sceneMechanismPostprocessSelected || partyTransferPostprocessSelected || voteDealPostprocessSelected || customPolicyAgendaPostprocessSelected || diplomacyPostprocessSelected || worldMapPartyCommandPostprocessSelected || nobleGatheringPostprocessSelected || marriagePostprocessSelected || proposeAgendaPostprocessSelected || siegeInterventionPostprocessSelected || npcSurrenderPostprocessSelected || royalPostprocessSelected || relayPostprocessSelected;
-					Logger.Log("ShoutBehavior", "[RuleInjectionDebug] stage=scene_queue npc=" + GetSceneNpcHistoryNameForPrompt(currentSpeaker) + " duelInjected=" + duelRuleInjected + " rewardInjected=" + rewardRuleInjected + " loanInjected=" + loanRuleInjected + " persistentAdpDebtSelected=" + persistentAdpDebtPostprocessSelected + " kingdomServiceInjected=" + kingdomServiceRuleInjected + " kingdomVassalageInjected=" + kingdomVassalageRuleInjected + " kingdomAnnexationInjected=" + kingdomAnnexationRuleInjected + " lordsHallInjected=" + lordsHallRuleInjected + " meetingReleaseInjected=" + meetingReleaseRuleInjected + " vanillaIssueInjected=" + vanillaIssueRuleInjected + " heroJoinPartyInjected=" + heroJoinPartyRuleInjected + " sceneMechanismInjected=" + sceneMechanismRuleInjected + " partyTransferInjected=" + partyTransferRuleInjected + " voteDealInjected=" + voteDealRuleInjected + " customPolicyAgendaSelected=" + customPolicyAgendaPostprocessSelected + " diplomacyInjected=" + diplomacyRuleInjected + " independentClanPeaceResident=" + independentClanPeaceResident + " worldMapInjected=" + worldMapPartyCommandRuleInjected + " nobleGatheringSelected=" + nobleGatheringPostprocessSelected + " marriageSelected=" + marriagePostprocessSelected + " proposeAgendaSelected=" + proposeAgendaPostprocessSelected + " siegeInterventionSelected=" + siegeInterventionPostprocessSelected + " npcSurrenderSelected=" + npcSurrenderPostprocessSelected + " royalSelected=" + royalPostprocessSelected + " relaySelected=" + relayPostprocessSelected + " replyIsDirectPlayerResponse=" + replyIsDirectPlayerResponse + " preprocessHits=" + ((postprocessPreprocessHits == null || postprocessPreprocessHits.Count == 0) ? "(none)" : string.Join(",", postprocessPreprocessHits)) + " queueDeferred=" + flag11 + " replyLen=" + cleaned.Length);
+				relayPostprocessSelected = !suppressBattleSpeechFollowups && !endRequested && remainingTurns > 0 && relayCandidatesForNextTurn.Count > 0;
+				bool flag11 = BattleSpeechFrameworkV2.ShouldQueueOrdinaryScenePostprocess(suppressBattleSpeechFollowups, duelPostprocessSelected || rewardPostprocessSelected || loanPostprocessSelected || persistentAdpDebtPostprocessSelected || kingdomServicePostprocessSelected || kingdomVassalagePostprocessSelected || kingdomAnnexationPostprocessSelected || lordsHallPostprocessSelected || meetingReleasePostprocessSelected || vanillaIssuePostprocessSelected || heroJoinPartyPostprocessSelected || sceneMechanismPostprocessSelected || partyTransferPostprocessSelected || voteDealPostprocessSelected || customPolicyAgendaPostprocessSelected || diplomacyPostprocessSelected || worldMapPartyCommandPostprocessSelected || nobleGatheringPostprocessSelected || marriagePostprocessSelected || proposeAgendaPostprocessSelected || siegeInterventionPostprocessSelected || npcSurrenderPostprocessSelected || royalPostprocessSelected || relayPostprocessSelected);
+				Logger.Log("ShoutBehavior", "[RuleInjectionDebug] stage=scene_queue npc=" + GetSceneNpcHistoryNameForPrompt(currentSpeaker) + " battleSpeechClaimed=" + battleSpeechClaimedReply + " duelInjected=" + duelRuleInjected + " rewardInjected=" + rewardRuleInjected + " loanInjected=" + loanRuleInjected + " persistentAdpDebtSelected=" + persistentAdpDebtPostprocessSelected + " kingdomServiceInjected=" + kingdomServiceRuleInjected + " kingdomVassalageInjected=" + kingdomVassalageRuleInjected + " kingdomAnnexationInjected=" + kingdomAnnexationRuleInjected + " lordsHallInjected=" + lordsHallRuleInjected + " meetingReleaseInjected=" + meetingReleaseRuleInjected + " vanillaIssueInjected=" + vanillaIssueRuleInjected + " heroJoinPartyInjected=" + heroJoinPartyRuleInjected + " sceneMechanismInjected=" + sceneMechanismRuleInjected + " partyTransferInjected=" + partyTransferRuleInjected + " voteDealInjected=" + voteDealRuleInjected + " customPolicyAgendaSelected=" + customPolicyAgendaPostprocessSelected + " diplomacyInjected=" + diplomacyRuleInjected + " independentClanPeaceResident=" + independentClanPeaceResident + " worldMapInjected=" + worldMapPartyCommandRuleInjected + " nobleGatheringSelected=" + nobleGatheringPostprocessSelected + " marriageSelected=" + marriagePostprocessSelected + " proposeAgendaSelected=" + proposeAgendaPostprocessSelected + " siegeInterventionSelected=" + siegeInterventionPostprocessSelected + " npcSurrenderSelected=" + npcSurrenderPostprocessSelected + " royalSelected=" + royalPostprocessSelected + " relaySelected=" + relayPostprocessSelected + " replyIsDirectPlayerResponse=" + replyIsDirectPlayerResponse + " preprocessHits=" + ((postprocessPreprocessHits == null || postprocessPreprocessHits.Count == 0) ? "(none)" : string.Join(",", postprocessPreprocessHits)) + " queueDeferred=" + flag11 + " replyLen=" + cleaned.Length);
 					float dynamicTimeoutSeconds = ResolveDynamicSceneConversationTimeoutSeconds(playerText, roundNpcVisibleTexts, roundNpcSpeakerIndices.Count, Math.Max(1, speakableCandidates.Count));
 					EnqueueSpeechLineWithOptions(
 						currentSpeaker,
@@ -27053,12 +27208,23 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				currentSpeaker = nextSpeaker;
 				firstTurn = false;
 			}
-			List<NpcDataPacket> finalEngagedParticipants = speakableCandidates.Where((NpcDataPacket npc) => npc != null && engagedAgentIndices.Contains(npc.AgentIndex)).ToList();
-			await RunNativeConversationMainThreadFuncAsync("scene_relay_idle_timeout", primaryNpc?.Name, primaryNpc?.AgentIndex ?? (-1), delegate
+			if (battleSpeechClaimedRound)
 			{
-				PrepareAutoGroupParticipantsForIdleTimeout(finalEngagedParticipants, lastSpeakerOutputText, playerText, roundNpcVisibleTexts, roundNpcSpeakerIndices.Count);
-				return true;
-			}, fallback: false);
+				await RunNativeConversationMainThreadFuncAsync("battle_speech_followup_suppression", primaryNpc?.Name, primaryNpc?.AgentIndex ?? (-1), delegate
+				{
+					SuppressOrdinarySceneFollowupsForBattleSpeech(speakableCandidates);
+					return true;
+				}, fallback: false);
+			}
+			else
+			{
+				List<NpcDataPacket> finalEngagedParticipants = speakableCandidates.Where((NpcDataPacket npc) => npc != null && engagedAgentIndices.Contains(npc.AgentIndex)).ToList();
+				await RunNativeConversationMainThreadFuncAsync("scene_relay_idle_timeout", primaryNpc?.Name, primaryNpc?.AgentIndex ?? (-1), delegate
+				{
+					PrepareAutoGroupParticipantsForIdleTimeout(finalEngagedParticipants, lastSpeakerOutputText, playerText, roundNpcVisibleTexts, roundNpcSpeakerIndices.Count);
+					return true;
+				}, fallback: false);
+			}
 		}
 		catch (Exception ex)
 		{
@@ -34972,6 +35138,26 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
+	private void SuppressOrdinarySceneFollowupsForBattleSpeech(
+		IEnumerable<NpcDataPacket> participants)
+	{
+		int[] agentIndices = (participants ?? Enumerable.Empty<NpcDataPacket>())
+			.Where(npc => npc != null && npc.AgentIndex >= 0)
+			.Select(npc => npc.AgentIndex)
+			.Distinct()
+			.ToArray();
+		foreach (int agentIndex in agentIndices)
+		{
+			_pendingInteractionTimeoutArms.Remove(agentIndex);
+			_activeInteractionSessions.Remove(agentIndex);
+		}
+		RemoveSceneMovementSuppressionAgents(agentIndices);
+		Logger.Log(
+			"ShoutBehavior",
+			"[BattleSpeech] suppressed ordinary idle/relay follow-ups participants=" +
+			agentIndices.Length);
+	}
+
 	private void RefreshSceneConversationParticipantInteractions(List<NpcDataPacket> participants, float timeoutSeconds = -1f, ShoutTargetingContext shoutTargetingContext = null)
 	{
 		if (participants == null || participants.Count == 0 || Mission.Current == null)
@@ -35196,6 +35382,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	private void ApplyMultiSceneMovementSuppression(Agent agent)
 	{
 		if (ShouldSuppressSceneConversationControlForMeeting())
+		{
+			return;
+		}
+		if (BattleSpeechRuntimeHost.IsClaimedSpeechSpeaker(agent))
 		{
 			return;
 		}
@@ -38197,6 +38387,30 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return;
 		}
+		for (int i = _staringAgents.Count - 1; i >= 0; i--)
+		{
+			Agent controlledSpeaker = _staringAgents[i];
+			if (!BattleSpeechRuntimeHost.IsClaimedSpeechSpeaker(controlledSpeaker))
+			{
+				continue;
+			}
+			_staringAgents.RemoveAt(i);
+			_staringAgentAnchors.Remove(controlledSpeaker.Index);
+			_staringUseConversationAgents.Remove(controlledSpeaker.Index);
+			try
+			{
+				controlledSpeaker.SetLookAgent(null);
+				controlledSpeaker.SetMaximumSpeedLimit(-1f, isMultiplier: false);
+			}
+			catch
+			{
+			}
+		}
+		if (_staringAgents.Count == 0)
+		{
+			_stopStaringTime = 0f;
+			return;
+		}
 		float currentTime = mission.CurrentTime;
 		if (currentTime < _stopStaringTime)
 		{
@@ -38248,6 +38462,17 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		if (ShouldSuppressSceneConversationControlForMeeting())
 		{
+			return;
+		}
+		if (BattleSpeechRuntimeHost.IsClaimedSpeechSpeaker(agent))
+		{
+			try
+			{
+				agent?.SetLookAgent(null);
+			}
+			catch
+			{
+			}
 			return;
 		}
 		if (agent != null)
