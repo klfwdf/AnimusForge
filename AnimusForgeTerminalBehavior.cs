@@ -316,6 +316,8 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			new InquiryElement("troop_inspection", "检阅士兵", null, isEnabled: true, ""),
 			new InquiryElement("military_exercise", "军事演习", null, isEnabled: true, ""),
 			new InquiryElement("api_onboarding", "重新进行API首次引导", null, isEnabled: true, "只重新选择和测试 API 配置，不进入数据库导入或首次使用流程。"),
+			// 错误不再自动弹窗；此入口保留玩家按需调用 AI 分析最近错误的原有能力。
+			new InquiryElement("analyze_latest_error", "分析最近错误", null, isEnabled: true, "使用前处理 API 分析本局最近一次 AnimusForge 错误。"),
 			new InquiryElement("tag_catalog", "标签列表", null, isEnabled: true, "查看从当前 AnimusForge 模块文件和程序集里提取到的正文/后处理标签。")
 		};
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData("你现在想做什么？", "请选择终端功能：", list, isExitShown: true, 1, 1, "确定", "关闭", delegate(List<InquiryElement> selected)
@@ -377,6 +379,12 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 				{
 					InformationManager.DisplayMessage(new InformationMessage("无法打开 API 首次引导。"));
 				}
+			}
+			else if (string.Equals(text, "analyze_latest_error", StringComparison.Ordinal))
+			{
+				// 先关闭选择窗口，避免玩家主动查看的分析结果与终端菜单叠加。
+				CloseTerminal();
+				AiErrorAnalysisInquiry.AnalyzeLatestFailure();
 			}
 			else if (string.Equals(text, "tag_catalog", StringComparison.Ordinal))
 			{
