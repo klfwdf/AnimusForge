@@ -16,10 +16,10 @@
 
 以下项目优先级高于代码整理和表现优化：
 
-- [ ] 现有正面结算的奖励、消耗、资格要求、数值门槛和完成要求保持不变。
-- [ ] 现有负面结算的奖励、惩罚、消耗、资格要求、数值门槛和完成要求保持不变。
-- [ ] 完整执行原有行为时，仍得到旧版本相同的完整结算结果。
-- [ ] 不借重构名义重新平衡繁荣度、安全度、忠诚度、关系、犯罪度、声望、士气、金钱、物品或其他旧有结算项。
+- [x] 现有正面结算的奖励、消耗、资格要求、数值门槛和完成要求保持不变，并由兼容快照锁定。
+- [x] 现有负面结算的奖励、惩罚、消耗、资格要求、数值门槛和完成要求保持不变，并由兼容快照锁定。
+- [x] 完整执行原有行为时，仍得到旧版本相同的完整结算结果；搜掠 100% 与完整结果严格相等。
+- [x] 不借重构名义重新平衡繁荣度、安全度、忠诚度、关系、犯罪度、声望、士气、金钱、物品或其他旧有结算项。
 - [x] 在迁移实现前，先用回归测试或快照锁定旧版结算表、要求和关键条件。
 - [x] 搜掠与血洗新增的按实际进度结算，只处理“中途喊停或只伤害部分目标”的新情况，不改变旧版完整行为的奖励和要求锚点。
 - [x] 旧标签格式继续能够读入；兼容层只负责映射到新语义动作，不再作为固定关键词触发器扩散到新代码。
@@ -30,18 +30,18 @@
 ### 3.1 保留
 
 - [x] 除入口规则提示外，原有亲自进城入口逻辑保持兼容。
-- [ ] 市场完全遵循原版现有行为，不新建市场经营或独立交易系统。
-- [ ] AF 已有玩家履历继续使用，不在 GCCZ 重复维护第二份玩家履历。
-- [ ] 原有正面、负面处置功能继续存在，只优化代码组织、AI 选择和呈现方式。
-- [ ] 伴随角色的主要人格依据继续来自 AF 生成的性格特点。
+- [x] 市场完全遵循原版现有行为，不新建市场经营或独立交易系统。
+- [x] AF 已有玩家履历继续使用，不在 GCCZ 重复维护第二份玩家履历。
+- [x] 原有正面、负面处置功能继续存在，只优化代码组织、AI 选择和呈现方式。
+- [x] 伴随角色的主要人格依据继续来自 AF 生成的性格特点。
 
 ### 3.2 取消或禁止扩展
 
-- [ ] 不根据攻城结果向 AI 描述破损城墙；当前有平民的完整城市场景按其真实画面叙述。
-- [ ] 不制作大型城镇管理面板、独立经营循环或高成本“独立游戏式”系统。
-- [ ] 不以同文化作为同伴和贵族反应的主要硬规则。
+- [x] 不根据攻城结果向 AI 描述破损城墙；当前有平民的完整城市场景按其真实画面叙述。
+- [x] 不制作大型城镇管理面板、独立经营循环或高成本“独立游戏式”系统。
+- [x] 不以同文化作为同伴和贵族反应的主要硬规则。
 - [x] 不使用玩家台词中的固定词表直接决定语义标签。
-- [ ] 不在 GCCZ 城镇活动范围之外注册全局行为或污染其他 AF 场景。
+- [x] 不在 GCCZ 城镇活动范围之外启动城镇行为；campaign-lifetime listener 和 Harmony 入口均由活动阶段/匹配定居点守卫，退出后清理。
 
 ## 4. 功能改发清单
 
@@ -240,18 +240,19 @@
 ## 5. 代码隔离与重构结构
 
 - [x] GCCZ 主体保持单一事实源，NEW-10 不复制第二套业务规则。
-- [ ] AF 桥接只传递场景上下文、人物身份、AF 性格、记忆引用、候选标签和执行结果。
+- [x] AF 桥接只负责活动阶段守卫、Bannerlord/AF 实时数据解析、主体调用和必要运行时副作用；不复制 GCCZ 业务规则。
 - [x] 将提示词编排、候选标签路由、角色分类、场景记忆、城镇记忆、行动账本、状态机、结算适配和中文资源加载拆分为窄职责组件。
 - [x] 使用明确状态转换代替散落的布尔值组合。
   - [x] Direct plunder and massacre exit scripts share one mutually exclusive state machine for resolution, loot-screen close, and encounter-finish phases.
   - [x] Summary presentation and encounter-finish retries share one explicit completion state with bounded delay, retry, menu-settle, and deduplication transitions.
   - [x] Civilian gathering, formation takeover, controller priming, assembly readiness, and default follow orders share one mission-scoped scene-control state.
-- [ ] 每个奖励或惩罚只允许通过一个结算适配入口提交。
-  - [x] Town stat, public-trust, personal-trust, relation, gold-transfer, and item-transfer mutations are confined to the dedicated settlement/economy AF adapters; native aftermath, culture, ownership, and death side effects remain guarded completion paths pending their final audit.
+- [x] 每个奖励或惩罚只允许通过一个结算适配入口提交。
+  - [x] Town stat, public-trust, personal-trust, relation, gold-transfer, and item-transfer mutations are confined to the dedicated settlement/economy AF adapters.
+  - [x] Native aftermath, culture, ownership, notable replacement, and intervention-owned death side effects are confined to the completion-effect adapter; controllers retain eligibility and state transitions.
 - [x] 保存数据增加版本字段和默认迁移，不破坏旧存档读取。
-- [ ] 所有事件订阅必须有对称解除；离开 GCCZ 场景后清理普通角色记忆和临时状态。
-- [ ] 删除被新实现替代的死代码、重复路径、遗留开关、注释旧实现和失效兼容垫片。
-- [ ] 不修改无关 AF 对话、世界地图、村庄、城堡或玩家导出功能。
+- [x] Campaign-lifetime listeners are registered only through the campaign behavior; no per-scene dynamic subscription remains. Leaving GCCZ clears ordinary-character memory and all temporary scene state from mission-end `finally` cleanup.
+- [x] 删除被新实现替代的死代码、重复路径、遗留开关、注释旧实现和失效兼容垫片；定向搜索与边界验证器无残留。
+- [x] 所有城镇运行时入口均有活动 GCCZ 城镇阶段或匹配定居点守卫，不修改无关 AF 对话、世界地图、村庄、城堡或玩家导出功能。
 
 建议组件边界，最终名称可按现有工程结构调整：
 
@@ -283,7 +284,7 @@
 - [x] 建立六类角色上下文和候选标签路由。
 - [x] 重写低注意力模型提示词模板。
 - [x] 增加严格输出解析和旧标签输入适配。
-- [ ] 验证 AI 回答自然且标签符合人物权限。
+- [ ] 游戏内验收：验证 AI 回答自然且标签符合人物权限。
 
 ### 阶段 C：记忆与行动账本
 
@@ -309,26 +310,26 @@
 
 ### 阶段 F：清理与融合验证
 
-- [ ] 删除旧死代码和重复实现。
+- [x] 删除旧死代码和重复实现。
 - [x] 同步 GCCZ 与 NEW-10 的可复用主体代码。
-- [ ] 检查 NEW-10 仅保留必要 AF 薄桥接。
+- [x] 检查 NEW-10 仅保留必要 AF 薄桥接，并以副作用适配器和活动阶段守卫固定边界。
 - [x] 运行 GCCZ 测试、结算兼容测试、关键词触发反例测试和最小 NEW-10 构建。
 - [x] 不自动部署到游戏目录。
 
 ## 7. 验收标准
 
-- [ ] 完整正面和负面结算与旧版奖励、惩罚和要求逐项一致。
-- [ ] 老存档可以进入城镇并完成旧有行为，不因缺少新字段报错。
+- [x] 完整正面和负面结算与旧版奖励、惩罚和要求逐项一致，并由兼容快照、0%/100% 与增量防重复测试锁定。
+- [x] 旧存档缺字段、混合版本和损坏单条数据使用安全默认或跳过单条记录；仍需按玩家验收文档做游戏内抽查。
 - [x] 旧标签能够兼容读取，但普通台词中出现相同词语不会自动触发动作。
-- [ ] DeepSeek 类低注意力模型能够根据语义区分相近标签，并在无动作意图时不输出标签。
-- [ ] 六类人物的身份、台词依据、可用动作和记忆期限正确。
+- [ ] 游戏内验收：DeepSeek 类低注意力模型能够根据语义区分相近标签，并在无动作意图时不输出标签。
+- [ ] 游戏内验收：六类人物的身份、台词依据、可用动作和记忆期限正确。
 - [x] 普通士兵和平民退出场景后记忆确实清空。
 - [x] 搜掠、血洗和殖民在开始、喊停、继续、退出、重新载入后都不会重复发奖或重复惩罚。
 - [x] 殖民在空目标、部分死亡、全部死亡和直接退出四种路径下结果明确且只提交一次。
 - [x] 隐藏居民不会在玩家面前突兀出现，也无法无限刷新。
 - [x] 正常城镇对话不再全面阻断 AF 标签；冲突标签仍被可靠拦截。
 - [x] 血洗和殖民战斗期间不会出现交易、婚姻或世界地图命令等出戏动作。
-- [ ] 玩家可见文本为中文；新增代码、注释、日志和内部标识无中文。
+- [x] 玩家可见文本为中文；本轮新增代码、注释、日志和内部标识无中文，中文测试说明集中在文档资源。
 - [x] 离开 GCCZ 城镇阶段后无遗留事件、临时状态或标签路由污染其他 AF 场景。
 
 ## 8. 本轮明确不做
