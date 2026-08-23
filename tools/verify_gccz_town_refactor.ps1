@@ -213,6 +213,39 @@ foreach ($snippet in $requiredCompletionEvidence) {
     Assert-Condition ($allInterventionRuntimeText.Contains($snippet)) "Missing GCCZ encounter-completion evidence: $snippet"
 }
 
+$sceneControlStatePath = Join-Path $fusedCore "TownSceneControlState.cs"
+Assert-Condition (Test-Path -LiteralPath $sceneControlStatePath -PathType Leaf) "Missing GCCZ scene-control state: $sceneControlStatePath"
+$obsoleteSceneControlPatterns = @(
+    '_civilianSpeechRallyActive',
+    '_civilianGatherPropagationActive',
+    '_civilianFormationControlPending',
+    '_civilianFormationControlComplete',
+    '_civilianFormationControlMessageShown',
+    '_soldierDefaultFollowOrderIssued',
+    '_playerOrderControllerPrimed',
+    '_civilianOrderControllerPrimed',
+    '_civilianGatherStartedAt',
+    '_nextCivilianGatherTickTime',
+    '_civilianGatherMessengerSpeechCount',
+    '_civilianFormationControlNotBeforeTime',
+    '_nextCivilianFormationControlBatchTime',
+    '_nextPlayerOrderControllerPrimeTime',
+    '_civilianAssemblyPointReady'
+)
+foreach ($pattern in $obsoleteSceneControlPatterns) {
+    Assert-Condition (-not $allInterventionRuntimeText.Contains($pattern)) "Obsolete scene-control field returned: $pattern"
+}
+$requiredSceneControlEvidence = @(
+    'TownSceneControlState SceneControl',
+    'SceneControl.TryStartCivilianGather(',
+    'SceneControl.TryQueueCivilianFormationControl(',
+    'SceneControl.TryScheduleCivilianFormationControlBatch(',
+    'SceneControl.CanPrimePlayerOrderController('
+)
+foreach ($snippet in $requiredSceneControlEvidence) {
+    Assert-Condition ($allInterventionRuntimeText.Contains($snippet)) "Missing GCCZ scene-control evidence: $snippet"
+}
+
 $requiredLifecycleEvidence = @(
     'IsActiveInCurrentMission()',
     'EndInterventionSceneScope("mission_ended")',
@@ -232,3 +265,4 @@ Write-Output "Keyword triggers  : none in active GCCZ runtime"
 Write-Output "Effect mutations  : confined to town settlement adapter"
 Write-Output "Direct aftermath  : one explicit flow state and adapter"
 Write-Output "Encounter finish  : one explicit completion state"
+Write-Output "Scene control     : one mission-scoped state"
