@@ -51,6 +51,8 @@ The abandoned `SiegePostprocessFrequencyProfile` keyword list and its AF no-op f
 - `TownOutcomeCompatibilityProfile` snapshots the legacy full positive and negative anchors.
 - `TownSettlementEffectPlan` converts plunder, massacre, final outcome, relief, civic, and local-conflict decisions into immutable settlement-effect batches without referencing Bannerlord types.
 - `SiegeAiInterventionBehavior.TownSettlementEffectAdapter.cs` is the single Bannerlord mutation boundary for immediate town public trust, bound-village public trust, notable relation, notable trust, loyalty, security, and relief-food effects. It also owns the final colonization loyalty reset and finalized prosperity/debuff bridge.
+- `SiegeAiInterventionBehavior.TownEconomyEffectAdapter.cs` is the single Bannerlord mutation boundary for player gold awards, hero-to-player gold transfer, item restoration, and pending-loot item transfer.
+- `SiegeAiInterventionBehavior.TownCompletionEffectAdapter.cs` is the single raw Bannerlord mutation boundary for native aftermath application, settlement ownership, culture assignment, notable power reset, replacement notable creation/placement, and intervention-owned notable death/removal.
 - `SiegeAiInterventionBehavior.DirectAftermathAdapter.cs` is the single Bannerlord boundary for direct destructive loot UI, native aftermath menu interception, guarded pump retries, and encounter finish. Plunder and massacre share one implementation while retaining their existing aftermath types and source codes.
 - Operation controllers still decide when a ledger delta may commit, but they no longer repeat or directly apply the settlement/notable mutations. SETS owner-specific incident penalties remain a separate pre-existing SETS path because they target a specific clan leader rather than the GCCZ town-effect batch.
 
@@ -64,6 +66,7 @@ The abandoned `SiegePostprocessFrequencyProfile` keyword list and its AF no-op f
 ## Global Registration And Isolation Points
 
 - Campaign event listeners are registered on the campaign behavior, but mission handlers return unless a matching pending or active intervention exists.
+- Campaign listeners are campaign-lifetime `AddNonSerializedListener` registrations owned by the campaign behavior and occur only in `RegisterEvents`; the GCCZ runtime creates no dynamic per-scene event subscription that would require a matching `-=` call.
 - Harmony patches remain installed for the campaign lifetime. Every town-sensitive prefix or postfix checks `IsOccupationSceneActiveForExternal` or a stricter matching-settlement guard and otherwise falls through to original behavior.
 - `AfGcczShoutBridge` does not activate town prompt or response policy outside a live town dialogue phase.
 - `ShoutBehavior` clears speech, immediate-reaction, postprocess, movement, and scene-history queues on mission removal and mission end.
@@ -84,7 +87,10 @@ The verifier fails when:
 - a reusable core filename or namespace is duplicated in the AF root;
 - an active GCCZ adapter starts classifying `playerText` with fixed dialogue keywords;
 - immediate GCCZ public-trust or notable-trust mutation escapes the dedicated settlement-effect adapter;
+- gold/item mutation escapes the dedicated economy-effect adapter;
+- native aftermath, ownership, culture, notable creation/placement, or intervention death mutation escapes the dedicated completion-effect adapter;
 - the required active-stage and mission-exit cleanup seams disappear.
+- a campaign listener is registered outside `RegisterEvents`, a dynamic per-scene event subscription appears, or mission-end cleanup stops running from `finally`;
 - parallel direct plunder/massacre flow fields or duplicate direct loot-screen runners return to the AF runtime.
 
 This verifier is an architecture regression guard. It does not replace the standalone behavior tests, compatibility snapshots, dual Bannerlord builds, or in-game acceptance sequence.

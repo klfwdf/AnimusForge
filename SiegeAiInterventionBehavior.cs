@@ -1214,7 +1214,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			try
 			{
-				ChangeOwnerOfSettlementAction.ApplyBySiege(mainHero, mainHero, settlement);
+				ApplySettlementOwnershipBySiege(mainHero, settlement);
 			}
 			catch (Exception siegeEx)
 			{
@@ -1223,14 +1223,14 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			if (settlement.OwnerClan != playerClan)
 			{
 				Logger.Log("SiegeAiIntervention", "SETS settlement-entry ApplyBySiege did not leave player ownership; applying direct ownership fallback. Settlement=" + (settlement.StringId ?? "N/A") + ", CurrentOwner=" + (settlement.OwnerClan?.StringId ?? "null"));
-				ChangeOwnerOfSettlementAction.ApplyByDefault(mainHero, settlement);
+				ApplySettlementOwnershipByDefault(mainHero, settlement);
 			}
 			if (settlement.OwnerClan != playerClan)
 			{
 				Logger.Log("SiegeAiIntervention", "SETS settlement-entry ownership transfer failed. Settlement=" + (settlement.StringId ?? "N/A") + ", CurrentOwner=" + (settlement.OwnerClan?.StringId ?? "null") + ", Reason=" + (reason ?? "N/A"));
 				return;
 			}
-			settlement.Town.IsOwnerUnassigned = false;
+			ConfirmSettlementOwnershipAssignment(settlement);
 			Logger.Log("SiegeAiIntervention", "Applied SETS settlement-entry capture ownership. Settlement=" + (settlement.StringId ?? "N/A") + ", PreviousOwner=" + (ownerBefore?.StringId ?? "null") + ", NewOwner=" + (settlement.OwnerClan?.StringId ?? "null") + ", Reason=" + (reason ?? "N/A"));
 			InformationManager.DisplayMessage(new InformationMessage("【SETS内部暴乱】" + (settlement.Name?.ToString() ?? ("该" + SetsSettlementEntryProfile.GetSettlementNoun(ResolveSetsSettlementSceneKind(settlement)))) + " 已由你的家族接管。", Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
 		}
@@ -8491,7 +8491,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			string targetCultureName = ResolveCultureName(targetCulture);
 			TownPromptTextCatalog textCatalog = GcczTownPromptResourceProvider.GetCatalog();
 
-			settlement.Culture = targetCulture;
+			ApplySettlementCulture(settlement, targetCulture);
 			GcczTownRuleMemoryRuntimeBridge.RefreshAfterRuntimeTransition(
 				settlement,
 				_previousSettlementOwnerClan,
@@ -8558,7 +8558,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return false;
 			}
 			CultureObject oldCulture = settlement.Culture;
-			settlement.Culture = targetCulture;
+			ApplySettlementCulture(settlement, targetCulture);
 			GcczTownRuleMemoryRuntimeBridge.RefreshAfterRuntimeTransition(
 				settlement,
 				_previousSettlementOwnerClan,
@@ -8573,7 +8573,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					{
 						if (village?.Settlement != null)
 						{
-							village.Settlement.Culture = targetCulture;
+							ApplySettlementCulture(village.Settlement, targetCulture);
 							boundVillagesChanged++;
 						}
 					}
@@ -8659,17 +8659,17 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				float power = notable.Power;
 				if (Math.Abs(power) > 0.01f)
 				{
-					notable.AddPower(-power);
+					ClearNotablePowerForReplacement(notable, power);
 				}
 			}
 			catch (Exception ex)
 			{
 				Logger.Log("SiegeAiIntervention", "Failed to zero notable power before purge replacement. Source=" + (source ?? "N/A") + ", Notable=" + (notable.StringId ?? "N/A") + ": " + ex.Message);
 			}
-			KillCharacterAction.ApplyByMurder(notable, Hero.MainHero, false);
+			KillInterventionNotableByMurder(notable);
 			if (notable.IsAlive)
 			{
-				KillCharacterAction.ApplyByRemove(notable, false, true);
+				RemoveInterventionNotable(notable);
 			}
 			if (!notable.IsAlive)
 			{
@@ -8703,7 +8703,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				try
 				{
-					Hero newNotable = HeroCreator.CreateNotable(occupation, settlement);
+					Hero newNotable = CreateReplacementNotable(occupation, settlement);
 					if (newNotable == null)
 					{
 						Logger.Log("SiegeAiIntervention", "Purge repopulation failed to create replacement notable. Source=" + (source ?? "N/A") + ", Settlement=" + (settlement.StringId ?? "N/A") + ", Occupation=" + occupation);
@@ -8711,11 +8711,11 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					}
 					if (newNotable.Culture != targetCulture)
 					{
-						newNotable.Culture = targetCulture;
+						ApplyHeroCulture(newNotable, targetCulture);
 					}
 					if (!IsReplacementNotableAlreadyPlaced(newNotable, settlement))
 					{
-						EnterSettlementAction.ApplyForCharacterOnly(newNotable, settlement);
+						PlaceReplacementNotable(newNotable, settlement);
 					}
 					spawnedNotables++;
 				}
@@ -14651,7 +14651,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					// Set before entering native code. If a downstream event throws after native
 					// state changed, a retry must finish our bridge without charging mercy twice.
 					_castleNativeMercyApplied = true;
-					SiegeAftermathAction.ApplyAftermath(attackerParty, settlement, aftermath, previousOwner, contributions);
+					ApplyNativeSettlementAftermath(attackerParty, settlement, aftermath, previousOwner, contributions);
 				}
 				else
 				{
@@ -14675,7 +14675,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			else
 			{
-				SiegeAftermathAction.ApplyAftermath(attackerParty, settlement, aftermath, previousOwner, contributions);
+				ApplyNativeSettlementAftermath(attackerParty, settlement, aftermath, previousOwner, contributions);
 				ApplySoldierAppeasementMoralePenaltyIfNeeded(aftermath);
 			}
 			GcczTownRuleMemoryRuntimeBridge.RefreshAfterRuntimeTransition(
@@ -14880,15 +14880,15 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			try
 			{
-				KillCharacterAction.ApplyByBattle(notable, Hero.MainHero, true);
+				KillInterventionNotableByBattle(notable);
 			}
 			catch
 			{
-				KillCharacterAction.ApplyByMurder(notable, Hero.MainHero, false);
+				KillInterventionNotableByMurder(notable);
 			}
 			if (notable.IsAlive)
 			{
-				KillCharacterAction.ApplyByRemove(notable, false, true);
+				RemoveInterventionNotable(notable);
 			}
 			bool killed = !notable.IsAlive;
 			Logger.Log("SiegeAiIntervention", "Resolved GCCZ notable knockdown death. Hero=" + (notable.StringId ?? "N/A") + ", Killed=" + killed + ", Reason=" + (reason ?? "N/A"));

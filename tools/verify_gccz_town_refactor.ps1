@@ -92,7 +92,8 @@ foreach ($mapping in $resourceMappings) {
 $documentMappings = @(
     @("docs\plans\gccz-town-refactor-feature-list-20260821.md", "docs\gccz\plans\gccz-town-refactor-feature-list-20260821.md"),
     @("docs\bridge\af-bridge-surface.md", "docs\gccz\bridge\af-bridge-surface.md"),
-    @("docs\audits\gccz-town-runtime-inventory.md", "docs\gccz\audits\gccz-town-runtime-inventory.md")
+    @("docs\audits\gccz-town-runtime-inventory.md", "docs\gccz\audits\gccz-town-runtime-inventory.md"),
+    @("docs\testing\gccz-town-player-test-sequence.md", "docs\testing\gccz-town-player-test-sequence.md")
 )
 foreach ($mapping in $documentMappings) {
     Assert-NormalizedMirror (Join-Path $StandaloneRoot $mapping[0]) (Join-Path $FusedRoot $mapping[1]) "handoff document $($mapping[0])"
@@ -199,6 +200,45 @@ foreach ($snippet in $requiredEconomyEffectEvidence) {
     Assert-Condition ($allInterventionRuntimeText.Contains($snippet)) "Missing GCCZ economy-effect evidence: $snippet"
 }
 
+$completionEffectAdapterPath = Join-Path $FusedRoot "SiegeAiInterventionBehavior.TownCompletionEffectAdapter.cs"
+Assert-Condition (Test-Path -LiteralPath $completionEffectAdapterPath -PathType Leaf) "Missing GCCZ completion-effect adapter: $completionEffectAdapterPath"
+$completionEffectAdapterText = [System.IO.File]::ReadAllText($completionEffectAdapterPath)
+$directCompletionMutationPatterns = @(
+    'ChangeOwnerOfSettlementAction\.',
+    'SiegeAftermathAction\.ApplyAftermath\s*\(',
+    'KillCharacterAction\.',
+    'HeroCreator\.CreateNotable\s*\(',
+    'EnterSettlementAction\.ApplyForCharacterOnly\s*\(',
+    '\.AddPower\s*\(',
+    '\.Culture\s*=(?!=)',
+    '\.IsOwnerUnassigned\s*=(?!=)'
+)
+foreach ($runtimeFile in Get-ChildItem -LiteralPath $FusedRoot -File -Filter "SiegeAiInterventionBehavior*.cs") {
+    if ($runtimeFile.FullName -eq $completionEffectAdapterPath) {
+        continue
+    }
+    $runtimeFileText = [System.IO.File]::ReadAllText($runtimeFile.FullName)
+    foreach ($pattern in $directCompletionMutationPatterns) {
+        Assert-Condition (-not [System.Text.RegularExpressions.Regex]::IsMatch($runtimeFileText, $pattern)) "GCCZ completion mutation escaped its adapter in $($runtimeFile.Name): $pattern"
+    }
+}
+$requiredCompletionEffectEvidence = @(
+    'ApplySettlementOwnershipBySiege(',
+    'ApplySettlementOwnershipByDefault(',
+    'ApplyNativeSettlementAftermath(',
+    'ApplySettlementCulture(',
+    'ApplyHeroCulture(',
+    'ClearNotablePowerForReplacement(',
+    'CreateReplacementNotable(',
+    'PlaceReplacementNotable(',
+    'KillInterventionNotableByBattle(',
+    'KillInterventionNotableByMurder(',
+    'RemoveInterventionNotable('
+)
+foreach ($snippet in $requiredCompletionEffectEvidence) {
+    Assert-Condition ($allInterventionRuntimeText.Contains($snippet)) "Missing GCCZ completion-effect evidence: $snippet"
+}
+
 $directAftermathAdapterPath = Join-Path $FusedRoot "SiegeAiInterventionBehavior.DirectAftermathAdapter.cs"
 Assert-Condition (Test-Path -LiteralPath $directAftermathAdapterPath -PathType Leaf) "Missing GCCZ direct-aftermath adapter: $directAftermathAdapterPath"
 $directAftermathAdapterText = [System.IO.File]::ReadAllText($directAftermathAdapterPath)
@@ -288,11 +328,32 @@ $requiredLifecycleEvidence = @(
     'EndInterventionSceneScope("mission_ended")',
     'InterventionSceneMemory.EndScene()',
     'ClearInterventionSceneTransientState()',
-    'ResetNpcResponseBudgetForExternal("town_scene_transient_clear")'
+    'ResetNpcResponseBudgetForExternal("town_scene_transient_clear")',
+    'PendingAmbientReactionRequests.Clear()',
+    'ActiveAmbientResponseEventIds.Clear()'
 )
 foreach ($snippet in $requiredLifecycleEvidence) {
     Assert-Condition ($activeRuntimeText.Contains($snippet)) "Missing GCCZ lifecycle evidence: $snippet"
 }
+$mainRuntimePath = Join-Path $FusedRoot "SiegeAiInterventionBehavior.cs"
+$mainRuntimeText = [System.IO.File]::ReadAllText($mainRuntimePath)
+$campaignListenerCount = [System.Text.RegularExpressions.Regex]::Matches($mainRuntimeText, 'CampaignEvents\.[A-Za-z0-9_]+\.AddNonSerializedListener\s*\(\s*this\s*,').Count
+Assert-Condition ($campaignListenerCount -gt 0) "No campaign-lifetime GCCZ listeners were found in RegisterEvents."
+$registerEventsMatch = [System.Text.RegularExpressions.Regex]::Match(
+    $mainRuntimeText,
+    'public\s+override\s+void\s+RegisterEvents\s*\(\s*\)\s*\{(?<body>.*?)\n\s*\}',
+    [System.Text.RegularExpressions.RegexOptions]::Singleline
+)
+Assert-Condition ($registerEventsMatch.Success) "Could not locate the GCCZ RegisterEvents body."
+$listenersOutsideRegisterEvents = $mainRuntimeText.Remove($registerEventsMatch.Index, $registerEventsMatch.Length)
+Assert-Condition (-not [System.Text.RegularExpressions.Regex]::IsMatch($listenersOutsideRegisterEvents, 'AddNonSerializedListener\s*\(')) "A GCCZ campaign listener is registered outside RegisterEvents."
+$dynamicEventSubscriptionPattern = '(?m)\b[A-Za-z_][A-Za-z0-9_.]*(?:Event|Events|Dispatcher)\s*[+\-]='
+foreach ($runtimeFile in Get-ChildItem -LiteralPath $FusedRoot -File -Filter "SiegeAiInterventionBehavior*.cs") {
+    $runtimeFileText = [System.IO.File]::ReadAllText($runtimeFile.FullName)
+    Assert-Condition (-not [System.Text.RegularExpressions.Regex]::IsMatch($runtimeFileText, $dynamicEventSubscriptionPattern)) "Dynamic GCCZ event subscription requires symmetric cleanup in $($runtimeFile.Name)."
+}
+$missionEndFinallyPattern = 'private\s+void\s+OnMissionEnded\s*\([^)]*\)\s*\{.*?finally\s*\{.*?EndInterventionSceneScope\("mission_ended"\)'
+Assert-Condition ([System.Text.RegularExpressions.Regex]::IsMatch($mainRuntimeText, $missionEndFinallyPattern, [System.Text.RegularExpressions.RegexOptions]::Singleline)) "OnMissionEnded must clear GCCZ scene scope from a finally block."
 
 Write-Output "GCCZ town refactor boundary verification passed."
 Write-Output "Core source files : $($standaloneCoreFiles.Count)"
@@ -301,6 +362,8 @@ Write-Output "Handoff documents : $($documentMappings.Count)"
 Write-Output "Keyword triggers  : none in active GCCZ runtime"
 Write-Output "Effect mutations  : confined to town settlement adapter"
 Write-Output "Economy mutations : confined to town economy adapter"
+Write-Output "Completion effects: confined to native completion adapter"
 Write-Output "Direct aftermath  : one explicit flow state and adapter"
 Write-Output "Encounter finish  : one explicit completion state"
 Write-Output "Scene control     : one mission-scoped state"
+Write-Output "Event lifecycle   : campaign-owned listeners and mission-finally cleanup"

@@ -470,3 +470,12 @@ Follow-up isolation: GCCZ postprocess frequency policy now lives in `SiegePostpr
 - Fused AF must expose the GCCZ NPC response limit under MCM group `13. GCCZ攻城后处置`. The limit controls how many NPCs may speak after a GCCZ action-tag/event reaction and how many NPCs may answer one player group shout during the active GCCZ scene. It must not throttle or skip ACTION postprocess itself; ACTION tags still come only from AI postprocess.
 - The same MCM group should expose a one-click `GCCZ_Debug.log` export button. The fused AF bridge owns file-system export/open-folder side effects; GCCZ core owns only the diagnostic filename constant.
 - Positive civilian morale body reactions use `SiegeCivilianMoraleReactionProfile`: while the active GCCZ mission is running, mercy-track actions clear frightened/panic civilian state, and higher civic-positive actions (`宣抚` / `盟誓`) additionally trigger one-shot civilian cheer animations. The fused AF bridge owns live `Agent` animation/movement cleanup and must not run this in ordinary AF town scenes.
+
+## 2026-08-23 final town completion-effect boundary
+
+- `SiegeAiInterventionBehavior.TownSettlementEffectAdapter.cs` is the only AF mutation boundary for GCCZ settlement statistics, public trust, personal trust, and relation effects.
+- `SiegeAiInterventionBehavior.TownEconomyEffectAdapter.cs` is the only AF mutation boundary for GCCZ gold and item transfers.
+- `SiegeAiInterventionBehavior.TownCompletionEffectAdapter.cs` is the only AF mutation boundary for raw native aftermath application, ownership transfer, settlement/hero culture assignment, notable power reset, replacement notable creation and placement, and GCCZ-owned notable death/removal.
+- Operation controllers retain eligibility checks, compatibility anchors, ledger commits, state transitions, and player presentation. The completion adapter intentionally contains no outcome selection or reward calculation.
+- Campaign event listeners remain campaign-lifetime registrations owned by the behavior and are registered only in `RegisterEvents`. GCCZ creates no dynamic scene event subscription. `OnMissionEnded` calls scene-scope cleanup from `finally`, and the cleanup clears scene memory, ambient request queues, response budgets, event identifiers, agent caches, movement throttles, and temporary combat references.
+- `tools/verify_gccz_town_refactor.ps1` enforces these mutation and lifecycle boundaries in addition to core/resource/document mirrors.
