@@ -29,10 +29,13 @@ public static class AiErrorAnalysisInquiry
 
 	private static readonly ConcurrentQueue<Action> MainThreadActions = new ConcurrentQueue<Action>();
 	private static readonly object AnalysisCacheLock = new object();
+	private static readonly object LatestFailureLock = new object();
 	private static readonly Dictionary<string, string> AnalysisCache = new Dictionary<string, string>(StringComparer.Ordinal);
 	private static readonly Queue<string> AnalysisCacheOrder = new Queue<string>();
 	private static int _patchState;
 	private static int _analysisInProgress;
+	private static string _latestFailureTitle = "";
+	private static string _latestFailureDetail = "";
 	[ThreadStatic]
 	private static bool _suppressEnhancement;
 
@@ -80,15 +83,56 @@ public static class AiErrorAnalysisInquiry
 				Logger.Log("AiErrorAnalysis", "主线程回调失败: " + ex.Message);
 			}
 		}
+		// 统一在已有主线程 tick 中延后执行被拦截错误报告的“返回/关闭”回调，避免 Harmony 前缀重入 UI。
+		NonBlockingErrorReport.OnApplicationTick();
 	}
 
-	private static void ShowInquiryPrefix(ref InquiryData data)
+	/// <summary>
+	/// Caches the latest automatic error so the player can still request AI analysis after error popups became non-blocking.
+	/// </summary>
+	internal static void RememberFailure(string title, string detail)
+	{
+		string safeTitle = NormalizeText(title, "AnimusForge 报错");
+		string safeDetail = LimitForAnalysis(NormalizeText(detail, "未知错误"));
+		lock (LatestFailureLock)
+		{
+			_latestFailureTitle = safeTitle;
+			_latestFailureDetail = safeDetail;
+		}
+	}
+
+	/// <summary>
+	/// Starts analysis only when the player explicitly selects the terminal action; normal error delivery remains non-blocking.
+	/// </summary>
+	public static void AnalyzeLatestFailure()
+	{
+		string title;
+		string detail;
+		lock (LatestFailureLock)
+		{
+			title = _latestFailureTitle;
+			detail = _latestFailureDetail;
+		}
+		if (string.IsNullOrWhiteSpace(detail))
+		{
+			InformationManager.DisplayMessage(new InformationMessage("[AnimusForge] 当前没有可分析的最近错误。", Colors.Yellow));
+			return;
+		}
+		BeginAnalysis(title, detail, null);
+	}
+
+	private static bool ShowInquiryPrefix(ref InquiryData data)
 	{
 		try
 		{
 			if (_suppressEnhancement || !HasAnimusForgeCaller())
 			{
-				return;
+				return true;
+			}
+			// 纯确认型报错不再遮挡当前选项；需要重试或二选一决策的窗口仍会保留。
+			if (NonBlockingErrorReport.TryRouteAcknowledgementInquiry(data))
+			{
+				return false;
 			}
 			data = AddAnalysisOption(data);
 		}
@@ -96,6 +140,7 @@ public static class AiErrorAnalysisInquiry
 		{
 			Logger.Log("AiErrorAnalysis", "注入 AI 分析按钮失败: " + ex.Message);
 		}
+		return true;
 	}
 
 	internal static InquiryData AddAnalysisOption(InquiryData data, bool forceFailure = false)
@@ -335,18 +380,9 @@ public static class AiErrorAnalysisInquiry
 			+ NormalizeText(originalTitle, "AnimusForge 报错")
 			+ "\n"
 			+ LimitForDisplay(originalDetail, 8000);
-		ShowWithoutEnhancement(new InquiryData(
-			"AI 分析失败",
-			text,
-			isAffirmativeOptionShown: true,
-			isNegativeOptionShown: false,
-			"知道了",
-			"",
-			delegate
-			{
-				SafeInvoke(onClosed);
-			},
-			null));
+		// AI 分析失败本身也是纯诊断报告，保持为左下角消息并恢复原来的关闭回调。
+		NonBlockingErrorReport.Show("AI 分析失败", text, rememberForAnalysis: false);
+		SafeInvoke(onClosed);
 	}
 
 	private static void ShowWithoutEnhancement(InquiryData data)

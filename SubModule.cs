@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using Bannerlord.UIExtenderEx;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
@@ -13,6 +15,11 @@ namespace AnimusForge;
 
 public class SubModule : MBSubModuleBase
 {
+	// 此标记存于模块日志目录，独立于任何存档，用于跨游戏重启去重主界面欢迎弹窗。
+	private const string InitialApiGuideNoticeMarkerFileName = ".initial_api_guide_notice_v1";
+
+	private const string InitialApiGuideNoticeMarkerValue = "animusforge-main-menu-welcome-v1";
+
 	private UIExtender _uiExtender;
 
 	private static bool _uiExtenderInitialized;
@@ -885,12 +892,52 @@ public class SubModule : MBSubModuleBase
 			{
 				return;
 			}
+			// 仅在启动延迟结束后读取一次标记；已展示过时不再创建或排队弹窗。
+			if (HasInitialApiGuideNoticeMarker())
+			{
+				_pendingInitialApiGuideNotice = false;
+				_initialApiGuideNoticeShown = true;
+				return;
+			}
 			_pendingInitialApiGuideNotice = false;
 			_initialApiGuideNoticeShown = true;
-			InformationManager.DisplayMessage(new InformationMessage("欢迎使用 AnimusForge。若要配置 API 信息，你无需进入 MCM 页面；进入存档之后的首次引导会引导你填写 API 信息。", Colors.Yellow));
+			InformationManager.ShowInquiry(new InquiryData("欢迎使用 AnimusForge", "若要配置 API 信息，你无需进入 MCM 页面；进入存档之后的首次引导会引导你填写 API 信息。", isAffirmativeOptionShown: true, isNegativeOptionShown: false, "知道了", "", null, null), pauseGameActiveState: false, prioritize: false);
+			TryWriteInitialApiGuideNoticeMarker();
 		}
 		catch
 		{
+		}
+	}
+
+	private static bool HasInitialApiGuideNoticeMarker()
+	{
+		try
+		{
+			string markerPath = AnimusForgeModulePaths.GetLogFilePath(InitialApiGuideNoticeMarkerFileName);
+			return File.Exists(markerPath) && string.Equals(File.ReadAllText(markerPath, Encoding.UTF8).Trim(), InitialApiGuideNoticeMarkerValue, StringComparison.Ordinal);
+		}
+		catch (Exception ex)
+		{
+			Logger.LogTrace("SubModule", ">>> Initial API guide marker read failed: " + ex.Message);
+			return false;
+		}
+	}
+
+	private static void TryWriteInitialApiGuideNoticeMarker()
+	{
+		try
+		{
+			string markerPath = AnimusForgeModulePaths.GetLogFilePath(InitialApiGuideNoticeMarkerFileName);
+			string directoryName = Path.GetDirectoryName(markerPath);
+			if (!string.IsNullOrWhiteSpace(directoryName) && !Directory.Exists(directoryName))
+			{
+				Directory.CreateDirectory(directoryName);
+			}
+			File.WriteAllText(markerPath, InitialApiGuideNoticeMarkerValue, Encoding.UTF8);
+		}
+		catch (Exception ex)
+		{
+			Logger.LogTrace("SubModule", ">>> Initial API guide marker write failed: " + ex.Message);
 		}
 	}
 
