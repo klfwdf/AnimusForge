@@ -1,28 +1,41 @@
 <Brushes>
-  <Brush Name="AFCourierLetter.Title.Text" Font="simkai" TextHorizontalAlignment="Center" TextVerticalAlignment="Center">
+  <Brush Name="AFCourierLetter.Title.Text" BaseBrush="Info.Text" Font="simkai" TextHorizontalAlignment="Center" TextVerticalAlignment="Center">
     <Styles>
       <Style Name="Default" FontSize="34" FontColor="#15100BFF" TextOutlineAmount="0" TextGlowRadius="0" TextBlur="0" TextShadowOffset="0" />
     </Styles>
   </Brush>
 
-  <Brush Name="AFCourierLetter.Meta.Text" Font="simkai" TextHorizontalAlignment="Left" TextVerticalAlignment="Top">
+  <Brush Name="AFCourierLetter.Meta.Text" BaseBrush="Info.Text" Font="simkai" TextHorizontalAlignment="Left" TextVerticalAlignment="Top">
     <Styles>
       <Style Name="Default" FontSize="20" FontColor="#15100BFF" TextOutlineAmount="0" TextGlowRadius="0" TextBlur="0" TextShadowOffset="0" />
     </Styles>
   </Brush>
 
-  <Brush Name="AFCourierLetter.Body.Text" Font="simkai" TextHorizontalAlignment="Left" TextVerticalAlignment="Top">
+  <Brush Name="AFCourierLetter.Body.Text" BaseBrush="Info.Text" Font="simkai" TextHorizontalAlignment="Left" TextVerticalAlignment="Top">
     <Styles>
       <Style Name="Default" FontSize="22" FontColor="#15100BFF" TextOutlineAmount="0" TextGlowRadius="0" TextBlur="0" TextShadowOffset="0" />
     </Styles>
   </Brush>
 
-  <Brush Name="AFCourierLetter.Button.Text" Font="simkai" TextHorizontalAlignment="Center" TextVerticalAlignment="Center">
+  <Brush Name="AFCourierLetter.Button.Text" BaseBrush="Info.Text" Font="simkai" TextHorizontalAlignment="Center" TextVerticalAlignment="Center">
     <Styles>
       <Style Name="Default" FontSize="22" FontColor="#15100BFF" TextOutlineAmount="0" TextGlowRadius="0" TextBlur="0" TextShadowOffset="0" />
       <Style Name="Hovered" FontColor="#2B2117FF" />
       <Style Name="Pressed" FontColor="#0D0906FF" />
       <Style Name="Disabled" FontColor="#15100B88" />
+    </Styles>
+  </Brush>
+
+  <!-- Inherit Info.Text's native Link.Hero/Settlement/Kingdom/Clan/Unit styles while retaining the popup's original typography. -->
+  <Brush Name="AnimusForge.EntityLink.PopupDescription.Text" BaseBrush="Info.Text" Font="FiraSansExtraCondensed-Regular" TextHorizontalAlignment="Left">
+    <Styles>
+      <Style Name="Default" FontColor="#F1E9DAFF" TextGlowColor="#000000FF" TextOutlineColor="#000000FF" TextOutlineAmount="0" TextGlowRadius="0" TextBlur="0" FontSize="20" />
+    </Styles>
+  </Brush>
+
+  <Brush Name="AnimusForge.EntityLink.PopupTitle.Text" BaseBrush="Info.Text" Font="Galahad" TextHorizontalAlignment="Center">
+    <Styles>
+      <Style Name="Default" FontColor="#E4C59BFF" TextGlowColor="#000000FF" TextOutlineColor="#000000FF" TextOutlineAmount="0.01" TextGlowRadius="0" TextBlur="0" FontSize="36" />
     </Styles>
   </Brush>
 </Brushes>

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TaleWorlds.CampaignSystem;
 using TaleWorlds.Library;
 
 namespace AnimusForge;
@@ -7,6 +8,8 @@ namespace AnimusForge;
 public sealed class AnimusForgeConversationHistoryLogVM : ViewModel
 {
 	private readonly Action _onClose;
+
+	private readonly Action<string> _onOpenEncyclopediaLink;
 
 	private MBBindingList<AnimusForgeConversationHistoryLogItemVM> _items;
 
@@ -56,12 +59,15 @@ public sealed class AnimusForgeConversationHistoryLogVM : ViewModel
 		}
 	}
 
-	public AnimusForgeConversationHistoryLogVM(string targetName, IReadOnlyList<AnimusForgeDialogueHistoryEntry> entries, Action onClose)
+	public AnimusForgeConversationHistoryLogVM(string targetName, IReadOnlyList<AnimusForgeDialogueHistoryEntry> entries, Hero conversationTargetHero, CharacterObject conversationTargetCharacter, Action onClose, Action<string> onOpenEncyclopediaLink)
 	{
 		_onClose = onClose;
+		_onOpenEncyclopediaLink = onOpenEncyclopediaLink;
 		TitleText = "AnimusForge 对话历史";
 		SubtitleText = string.IsNullOrWhiteSpace(targetName) ? "当前对话对象" : targetName.Trim();
 		Items = new MBBindingList<AnimusForgeConversationHistoryLogItemVM>();
+		// One short-lived entity catalog serves all history rows, avoiding a campaign-wide entity scan per row.
+		EncyclopediaEntityLinkFormatter.DisplaySession linkDisplaySession = EncyclopediaEntityLinkFormatter.CreateDisplaySession();
 		if (entries != null && entries.Count > 0)
 		{
 			foreach (AnimusForgeDialogueHistoryEntry entry in entries)
@@ -70,12 +76,12 @@ public sealed class AnimusForgeConversationHistoryLogVM : ViewModel
 				{
 					continue;
 				}
-				Items.Add(new AnimusForgeConversationHistoryLogItemVM(entry.GameDate, entry.Speaker, entry.Text, entry.Kind));
+				Items.Add(new AnimusForgeConversationHistoryLogItemVM(entry.GameDate, entry.Speaker, entry.Text, entry.Kind, linkDisplaySession, conversationTargetHero, conversationTargetCharacter, _onOpenEncyclopediaLink));
 			}
 		}
 		if (Items.Count == 0)
 		{
-			Items.Add(new AnimusForgeConversationHistoryLogItemVM("", "AnimusForge", "当前对象还没有可显示的 AnimusForge 对话历史。", "system"));
+			Items.Add(new AnimusForgeConversationHistoryLogItemVM("", "AnimusForge", "当前对象还没有可显示的 AnimusForge 对话历史。", "system", linkDisplaySession, conversationTargetHero, conversationTargetCharacter, _onOpenEncyclopediaLink));
 		}
 	}
 

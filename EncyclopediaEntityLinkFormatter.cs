@@ -39,6 +39,256 @@ internal static class EncyclopediaEntityLinkFormatter
 			.Replace("}", "）");
 	}
 
+	// A display session snapshots names only for one opened UI, so multi-line history never rescans every campaign entity per row.
+	internal static DisplaySession CreateDisplaySession()
+	{
+		return new DisplaySession();
+	}
+
+	internal sealed class DisplaySession
+	{
+		private enum DescriptorKind
+		{
+			Hero,
+			Settlement,
+			Clan,
+			Kingdom,
+			Troop
+		}
+
+		private sealed class LinkDescriptor
+		{
+			public readonly string Name;
+			public readonly object Entity;
+			public readonly DescriptorKind Kind;
+			public readonly int Order;
+
+			public LinkDescriptor(string name, object entity, DescriptorKind kind, int order)
+			{
+				Name = name;
+				Entity = entity;
+				Kind = kind;
+				Order = order;
+			}
+
+			public TextObject GetNativeLink()
+			{
+				switch (Kind)
+				{
+					case DescriptorKind.Hero:
+						return ((Hero)Entity).EncyclopediaLinkWithName;
+					case DescriptorKind.Settlement:
+						return ((Settlement)Entity).EncyclopediaLinkWithName;
+					case DescriptorKind.Clan:
+						return ((Clan)Entity).EncyclopediaLinkWithName;
+					case DescriptorKind.Kingdom:
+						return ((Kingdom)Entity).EncyclopediaLinkWithName;
+					case DescriptorKind.Troop:
+						return ((CharacterObject)Entity).EncyclopediaLinkWithName;
+					default:
+						return null;
+				}
+			}
+		}
+
+		private readonly Dictionary<int, List<LinkDescriptor>> _descriptorsByPrefix = new Dictionary<int, List<LinkDescriptor>>();
+
+		private readonly Dictionary<string, LinkDescriptor> _descriptorsByName = new Dictionary<string, LinkDescriptor>(StringComparer.Ordinal);
+
+		private int _nextOrder;
+
+		internal DisplaySession()
+		{
+			BuildDescriptorSnapshot();
+		}
+
+		// The caller owns this disposable UI copy; raw history, reports, letters, AFEF, TTS and LLM input remain untouched.
+		internal string Format(string rawText, Hero conversationTargetHero = null, CharacterObject conversationTargetCharacter = null)
+		{
+			string text = SanitizeUntrustedRichText(rawText);
+			if (string.IsNullOrWhiteSpace(text) || text.IndexOf(LinkPlaceholderStart) >= 0 || text.IndexOf(LinkPlaceholderEnd) >= 0)
+			{
+				return text;
+			}
+
+			HashSet<int> textTwoCharacterPairs = BuildTextTwoCharacterPairs(text);
+			List<LinkCandidate> candidates = new List<LinkCandidate>();
+			HashSet<string> seenNames = new HashSet<string>(StringComparer.Ordinal);
+			int replacementOrder = 0;
+			AddConversationContextCandidates(text, textTwoCharacterPairs, conversationTargetHero, conversationTargetCharacter, candidates, seenNames, ref replacementOrder);
+
+			// The prefix buckets reduce a report line to only names that can actually occur in that line.
+			Dictionary<string, LinkDescriptor> matchingByName = new Dictionary<string, LinkDescriptor>(StringComparer.Ordinal);
+			foreach (int pair in textTwoCharacterPairs)
+			{
+				if (!_descriptorsByPrefix.TryGetValue(pair, out List<LinkDescriptor> descriptors))
+				{
+					continue;
+				}
+				for (int index = 0; index < descriptors.Count; index++)
+				{
+					LinkDescriptor descriptor = descriptors[index];
+					if (!matchingByName.ContainsKey(descriptor.Name))
+					{
+						matchingByName.Add(descriptor.Name, descriptor);
+					}
+				}
+			}
+
+			List<LinkDescriptor> matchingDescriptors = new List<LinkDescriptor>(matchingByName.Values);
+			matchingDescriptors.Sort(delegate(LinkDescriptor left, LinkDescriptor right)
+			{
+				return left.Order.CompareTo(right.Order);
+			});
+			for (int index = 0; index < matchingDescriptors.Count; index++)
+			{
+				LinkDescriptor descriptor = matchingDescriptors[index];
+				if (seenNames.Contains(descriptor.Name) || text.IndexOf(descriptor.Name, StringComparison.Ordinal) < 0)
+				{
+					continue;
+				}
+				try
+				{
+					AddLinkCandidate(descriptor.Name, descriptor.GetNativeLink(), candidates, seenNames, ref replacementOrder);
+				}
+				catch
+				{
+					// A campaign entity disappearing while its popup is open leaves only that name as plain text.
+				}
+			}
+			return ReplaceMatchesWithNativeLinks(text, candidates);
+		}
+
+		private void BuildDescriptorSnapshot()
+		{
+			AddHeroDescriptors();
+			AddSettlementDescriptors();
+			AddClanDescriptors();
+			AddKingdomDescriptors();
+			AddTroopDescriptors();
+		}
+
+		private void AddHeroDescriptors()
+		{
+			try
+			{
+				var allHeroes = Hero.AllAliveHeroes;
+				for (int index = 0; index < allHeroes.Count; index++)
+				{
+					Hero hero = allHeroes[index];
+					if (hero != null)
+					{
+						AddDescriptor(hero.Name?.ToString(), hero, DescriptorKind.Hero);
+					}
+				}
+			}
+			catch
+			{
+				// Campaign collections are transient during save/load; an incomplete UI snapshot is still safe to display.
+			}
+		}
+
+		private void AddSettlementDescriptors()
+		{
+			try
+			{
+				var allSettlements = Settlement.All;
+				for (int index = 0; index < allSettlements.Count; index++)
+				{
+					Settlement settlement = allSettlements[index];
+					if (settlement != null)
+					{
+						AddDescriptor(settlement.Name?.ToString(), settlement, DescriptorKind.Settlement);
+					}
+				}
+			}
+			catch
+			{
+				// Keep the popup usable if settlement data is not ready yet.
+			}
+		}
+
+		private void AddClanDescriptors()
+		{
+			try
+			{
+				var allClans = Clan.All;
+				for (int index = 0; index < allClans.Count; index++)
+				{
+					Clan clan = allClans[index];
+					if (clan != null)
+					{
+						AddDescriptor(clan.Name?.ToString(), clan, DescriptorKind.Clan);
+					}
+				}
+			}
+			catch
+			{
+				// Keep the popup usable if clan data is not ready yet.
+			}
+		}
+
+		private void AddKingdomDescriptors()
+		{
+			try
+			{
+				var allKingdoms = Kingdom.All;
+				for (int index = 0; index < allKingdoms.Count; index++)
+				{
+					Kingdom kingdom = allKingdoms[index];
+					if (kingdom == null)
+					{
+						continue;
+					}
+					AddDescriptor(kingdom.Name?.ToString(), kingdom, DescriptorKind.Kingdom);
+					AddDescriptor(kingdom.InformalName?.ToString(), kingdom, DescriptorKind.Kingdom);
+				}
+			}
+			catch
+			{
+				// Keep the popup usable if kingdom data is not ready yet.
+			}
+		}
+
+		private void AddTroopDescriptors()
+		{
+			try
+			{
+				var allCharacters = CharacterObject.All;
+				for (int index = 0; index < allCharacters.Count; index++)
+				{
+					CharacterObject troop = allCharacters[index];
+					if (troop != null && !troop.IsHero)
+					{
+						AddDescriptor(troop.Name?.ToString(), troop, DescriptorKind.Troop);
+					}
+				}
+			}
+			catch
+			{
+				// Keep the popup usable if character data is not ready yet.
+			}
+		}
+
+		private void AddDescriptor(string rawName, object entity, DescriptorKind kind)
+		{
+			string name = (rawName ?? string.Empty).Trim();
+			if (entity == null || name.Length < 2 || _descriptorsByName.ContainsKey(name))
+			{
+				return;
+			}
+			LinkDescriptor descriptor = new LinkDescriptor(name, entity, kind, _nextOrder++);
+			_descriptorsByName.Add(name, descriptor);
+			int prefix = PackTwoCharacters(name[0], name[1]);
+			if (!_descriptorsByPrefix.TryGetValue(prefix, out List<LinkDescriptor> descriptors))
+			{
+				descriptors = new List<LinkDescriptor>();
+				_descriptorsByPrefix.Add(prefix, descriptors);
+			}
+			descriptors.Add(descriptor);
+		}
+	}
+
 	// This deliberately runs only once for a completed reply, never from a streaming or campaign-tick path.
 	internal static string FormatNativeConversationText(string rawText, Hero conversationTargetHero, CharacterObject conversationTargetCharacter)
 	{
