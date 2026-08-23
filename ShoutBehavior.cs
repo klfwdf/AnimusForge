@@ -3747,6 +3747,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 		try
 		{
 			string uiText = SanitizeSceneSpeechText(visibleText);
+			// TTS retains the plain reply, while the typewriter receives a safe display copy so model markup cannot become live RichText mid-word.
+			string typewriterText = EncyclopediaEntityLinkFormatter.SanitizeUntrustedRichText(uiText);
 			string ttsText = SanitizeSceneSpeechTextForTts(uiText);
 			if (string.IsNullOrWhiteSpace(ttsText))
 			{
@@ -3825,10 +3827,10 @@ public class ShoutBehavior : CampaignBehaviorBase
 				accepted = TtsEngine.Instance.SpeakAsync(ttsText, -1, -1f, effectiveAgentIndex, voiceId);
 				if (accepted)
 				{
-					float estimatedDuration = Math.Max(0.75f, EstimateBubbleTypingDurationSeconds(uiText));
-					long waitToken = RegisterNativeConversationTtsPlaybackWait(effectiveAgentIndex, estimatedDuration, uiText.Length);
-					ConversationHelper.StartTypewriterText(uiText, estimatedDuration, waitForPlayback: true);
-					ScheduleNativeConversationTypewriterPlaybackFallback(waitToken, effectiveAgentIndex, estimatedDuration, uiText.Length);
+					float estimatedDuration = Math.Max(0.75f, EstimateBubbleTypingDurationSeconds(typewriterText));
+					long waitToken = RegisterNativeConversationTtsPlaybackWait(effectiveAgentIndex, estimatedDuration, typewriterText.Length);
+					ConversationHelper.StartTypewriterText(typewriterText, estimatedDuration, waitForPlayback: true);
+					ScheduleNativeConversationTypewriterPlaybackFallback(waitToken, effectiveAgentIndex, estimatedDuration, typewriterText.Length);
 				}
 			}
 			catch (Exception ex2)
@@ -13911,6 +13913,22 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		catch (Exception ex)
 		{
 			Logger.Log("NativeConversation", "[TTS] wait for native playback failed: " + ex.Message);
+		}
+	}
+
+	// Builds a UI-only RichText copy after the raw reply has already completed its LLM/history/TTS pipeline.
+	public static string FormatNativeConversationDisplayTextForExternal(string rawVisibleText)
+	{
+		try
+		{
+			TryResolveNativeConversationTarget(out var targetHero, out var targetCharacter, out var _);
+			return EncyclopediaEntityLinkFormatter.FormatNativeConversationText(rawVisibleText, targetHero, targetCharacter);
+		}
+		catch (Exception ex)
+		{
+			// A display-only failure must fall back to safe plain text and never invalidate a completed dialogue turn.
+			Logger.LogTrace("NativeConversation", "[WARN] Could not format encyclopedia links for a visible reply: " + ex.Message);
+			return EncyclopediaEntityLinkFormatter.SanitizeUntrustedRichText(rawVisibleText);
 		}
 	}
 

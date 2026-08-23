@@ -55,6 +55,9 @@ public class MyBehavior : CampaignBehaviorBase
 {
 	public static MyBehavior Instance { get; private set; }
 
+	// Database packages are user-authored files; reject invalid byte sequences instead of silently replacing characters during reload preflight.
+	private static readonly UTF8Encoding DatabaseReloadStrictUtf8 = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
+
 	private enum ChatMode
 	{
 		Normal,
@@ -372,6 +375,9 @@ public class MyBehavior : CampaignBehaviorBase
 
 		public string Error = "";
 
+		// A queued source can disappear while waiting for the daily worker; it is not an API failure and must not retry.
+		public bool IsObsolete;
+
 		public bool Success => Block != null;
 	}
 
@@ -412,6 +418,9 @@ public class MyBehavior : CampaignBehaviorBase
 		public MemoryOverviewState State;
 
 		public string Error = "";
+
+		// A queued source can disappear while waiting for the daily worker; it is not an API failure and must not retry.
+		public bool IsObsolete;
 
 		public bool Success => State != null && !string.IsNullOrWhiteSpace(State.Summary);
 	}
@@ -455,6 +464,9 @@ public class MyBehavior : CampaignBehaviorBase
 		public MajorActionSummaryState State;
 
 		public string Error = "";
+
+		// A queued source can disappear while waiting for the daily worker; it is not an API failure and must not retry.
+		public bool IsObsolete;
 
 		public bool Success => State != null && !string.IsNullOrWhiteSpace(State.Summary);
 	}
@@ -1036,6 +1048,48 @@ public class MyBehavior : CampaignBehaviorBase
 		public bool HasEventRecordsFile;
 
 		public List<EventRecordEntry> EventRecords = new List<EventRecordEntry>();
+	}
+
+	// A fully preflighted, in-memory database replacement plan prevents the U-terminal flow from reading files after it starts changing the save.
+	private sealed class DatabaseReloadPlan
+	{
+		public string ImportDirectory = "";
+
+		public List<KnowledgeLibraryBehavior.LoreRule> KnowledgeRules = new List<KnowledgeLibraryBehavior.LoreRule>();
+
+		// Duplicate source RuleIds are made unique in memory from their source filenames, so reload preserves every package entry without rewriting package files.
+		public int KnowledgeRuleIdDisambiguationCount;
+
+		// When a split duplicate RuleId shares a trigger keyword with its original, the source keyword remains on one rule to keep exact-keyword lookup deterministic.
+		public int KnowledgeKeywordDeduplicationCount;
+
+		public string VoiceMappingJson = "";
+
+		public Dictionary<string, string> NpcVoiceIds = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+		public EventImportPayload OpeningKnowledge = new EventImportPayload();
+
+		public KingdomDatabaseReloadPlan KingdomProfilePlan;
+
+		public int CurrentKingdomProfilesResetToDefaultCount;
+	}
+
+	// A snapshot is held only during one confirmation click and restores already-mutated subsystems if an unexpected later step fails.
+	private sealed class DatabaseReloadRollbackSnapshot
+	{
+		public string KnowledgeJson = "";
+
+		public string VoiceMappingJson = "";
+
+		public string NpcPersonaProfilesJson = "";
+
+		public string EventWorldOpeningSummary = "";
+
+		public Dictionary<string, string> EventKingdomOpeningSummaries = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+		public string EventRecordsJson = "[]";
+
+		public string KingdomProfilesJson = "";
 	}
 
 	private sealed class WeeklyEventMaterialPreviewGroup
@@ -2584,6 +2638,11 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			// DebtPromiseQuest is bookkeeping for an already-recorded debt action, not a separate narrative quest result.
+			if (quest is DebtPromiseQuest)
+			{
+				return;
+			}
 			Hero questGiver = quest?.QuestGiver;
 			string questTitle = (quest?.Title?.ToString() ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(questTitle))
@@ -4037,6 +4096,9 @@ public class MyBehavior : CampaignBehaviorBase
 				RecordNpcMajorAction(leader, text2, text + ":clan", npcActionFacts2);
 				RecordNpcRecentAction(leader, text2, text + ":clan", facts: npcActionFacts2);
 			}
+			// Death/removal can leave persisted daily jobs behind. Keep raw history and weekly material,
+			// but cancel deferred LLM work before it can issue another request for this Hero.
+			CancelUnavailableHeroCompressionWorkById(GetMemoryHeroId(victim), "hero_killed");
 		}
 		catch (Exception ex)
 		{
@@ -4384,7 +4446,7 @@ public class MyBehavior : CampaignBehaviorBase
 		_activeNativeConversationMemorySessionId = -1;
 	}
 
-	private void TryEnqueueMajorActionSummaryForDraft(DailyMemoryDraft draft, HashSet<string> queuedMajorHeroIds)
+	private void TryEnqueueMajorActionSummaryForDraft(DailyMemoryDraft draft, HashSet<string> queuedMajorHeroIds, bool ownerAlreadyEligible = false)
 	{
 		try
 		{
@@ -4393,8 +4455,9 @@ public class MyBehavior : CampaignBehaviorBase
 				return;
 			}
 			string heroId = NormalizeMemoryHeroId(draft.HeroId);
-			if (string.IsNullOrWhiteSpace(heroId) || _npcMajorActions == null || !_npcMajorActions.TryGetValue(heroId, out var actions) || actions == null)
+			if (string.IsNullOrWhiteSpace(heroId) || IsNonHeroMemoryId(heroId) || (!ownerAlreadyEligible && !IsMemoryEntityEligibleForCompressedMemory(heroId)) || _npcMajorActions == null || !_npcMajorActions.TryGetValue(heroId, out var actions) || actions == null)
 			{
+				// Major-action summaries belong to Heroes only; callers may reuse an owner-level eligibility check for a slice.
 				return;
 			}
 			List<NpcActionEntry> sanitizedActions = SanitizeNpcActionEntries(actions, keepOnlyRecentWindow: false);
@@ -4647,6 +4710,15 @@ public class MyBehavior : CampaignBehaviorBase
 					_dailyMemoryDraftSealDraftIndex = -1;
 					continue;
 				}
+				string ownerMemoryId = NormalizeMemoryHeroId(ownerKey);
+				if (!IsMemoryEntityEligibleForCompressedMemory(ownerMemoryId))
+				{
+					// Cancel orphaned work, while preserving source drafts because they can carry weekly-report trigger facts.
+					CancelUnavailableHeroCompressionWorkById(ownerMemoryId, "seal_past_daily_drafts");
+					_dailyMemoryDraftSealOwnerIndex++;
+					_dailyMemoryDraftSealDraftIndex = -1;
+					continue;
+				}
 				if (_dailyMemoryDraftSealDraftIndex < 0)
 				{
 					_dailyMemoryDraftSealDraftIndex = list.Count - 1;
@@ -4668,6 +4740,14 @@ public class MyBehavior : CampaignBehaviorBase
 					{
 						continue;
 					}
+					if (!string.Equals(NormalizeMemoryHeroId(draft.HeroId), ownerMemoryId, StringComparison.OrdinalIgnoreCase))
+					{
+						// Never redirect memory by display name. Skip an untrusted mapping but retain its raw/weekly material.
+						draft.QueuedForSummary = false;
+						Logger.Log("CompressedMemory", "skipped mismatched daily memory draft owner=" + ownerMemoryId + " draftHero=" + NormalizeMemoryHeroId(draft.HeroId) + " day=" + draft.GameDayIndex);
+						continue;
+					}
+					draft.HeroId = ownerMemoryId;
 					bool hasSummarySource = CountDailyMemorySummarySourceChars(draft) > 0;
 					bool hasAfefLines = HasDailyMemoryDraftAfefLines(draft);
 					if (!draft.HasLlmDialogue || !hasSummarySource)
@@ -4678,8 +4758,15 @@ public class MyBehavior : CampaignBehaviorBase
 						}
 						continue;
 					}
-					TryEnqueueMajorActionSummaryForDraft(draft, _dailyMemoryDraftSealQueuedMajor);
-					string text = NormalizeMemoryHeroId(draft.HeroId);
+					// The owner was validated once above, avoiding a repeated Hero registry lookup for each old daily draft.
+					TryEnqueueMajorActionSummaryForDraft(draft, _dailyMemoryDraftSealQueuedMajor, ownerAlreadyEligible: true);
+					if (draft.SummaryRetryCount >= 3)
+					{
+						// Three attempts are terminal for automatic work; preserve the draft and error for manual inspection.
+						draft.QueuedForSummary = false;
+						continue;
+					}
+					string text = ownerMemoryId;
 					string key = text + "|" + draft.GameDayIndex;
 					if (HasCompressedMemoryBlock(text, draft.GameDayIndex))
 					{
@@ -4711,8 +4798,9 @@ public class MyBehavior : CampaignBehaviorBase
 				_dailyMemoryDraftSealOwnerIndex++;
 				_dailyMemoryDraftSealDraftIndex = -1;
 			}
-			_memorySummaryQueue = SanitizeMemorySummaryQueue(_memorySummaryQueue);
-			_npcMajorActionSummaryQueue = SanitizeMajorActionSummaryQueue(_npcMajorActionSummaryQueue);
+			// Do not persist terminal retries or removed targets just because this sealing slice completed successfully.
+			_memorySummaryQueue = SanitizeMemorySummaryQueue(_memorySummaryQueue.Where(HasMemorySummaryJobStillPending).ToList());
+			_npcMajorActionSummaryQueue = SanitizeMajorActionSummaryQueue(_npcMajorActionSummaryQueue.Where(HasMajorActionSummaryJobStillPending).ToList());
 			ResetDailyMemoryDraftSealSliceState();
 			return true;
 		}
@@ -4752,9 +4840,16 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			bool hasMemoryJobs = _memorySummaryQueue != null && _memorySummaryQueue.Count > 0;
-			bool hasMajorActionJobs = _npcMajorActionSummaryQueue != null && _npcMajorActionSummaryQueue.Count > 0;
-			bool hasOverviewJobs = _memoryOverviewQueue != null && _memoryOverviewQueue.Count > 0;
+			// Validate only the bounded queues here; the full saved-memory owner scan is reserved for load finish.
+			CancelUnavailableHeroCompressionQueuedJobs("queue_start");
+			// Persist only runnable work so old terminal or malformed entries cannot survive until a later unrelated batch.
+			_memorySummaryQueue = SanitizeMemorySummaryQueue((_memorySummaryQueue ?? new List<MemorySummaryJob>()).Where(HasMemorySummaryJobStillPending).ToList());
+			_npcMajorActionSummaryQueue = SanitizeMajorActionSummaryQueue((_npcMajorActionSummaryQueue ?? new List<MajorActionSummaryJob>()).Where(HasMajorActionSummaryJobStillPending).ToList());
+			_memoryOverviewQueue = SanitizeMemoryOverviewQueue((_memoryOverviewQueue ?? new List<MemoryOverviewJob>()).Where(HasMemoryOverviewJobStillPending).ToList());
+			// The queues were just filtered, so raw counts avoid another Hero registry lookup on this hot scheduler path.
+			bool hasMemoryJobs = _memorySummaryQueue.Count > 0;
+			bool hasMajorActionJobs = _npcMajorActionSummaryQueue.Count > 0;
+			bool hasOverviewJobs = _memoryOverviewQueue.Count > 0;
 			if (!hasMemoryJobs && !hasMajorActionJobs && !hasOverviewJobs && ShouldScanMemoryOverviewCandidates(forceOverviewCandidateScan))
 			{
 				using (PerfProbe.Scope("MyBehavior.TryStartMemorySummaryQueue.EnqueueMemoryOverviewForAllCandidates"))
@@ -4768,9 +4863,10 @@ public class MyBehavior : CampaignBehaviorBase
 						QueueDirtyMemoryOverviewCandidatesForDeferredScan();
 					}
 				}
-				hasMemoryJobs = _memorySummaryQueue != null && _memorySummaryQueue.Count > 0;
-				hasMajorActionJobs = _npcMajorActionSummaryQueue != null && _npcMajorActionSummaryQueue.Count > 0;
-				hasOverviewJobs = _memoryOverviewQueue != null && _memoryOverviewQueue.Count > 0;
+				// Candidate creation validates owners itself; use its filtered queue counts without repeating the bounded scan.
+				hasMemoryJobs = _memorySummaryQueue.Count > 0;
+				hasMajorActionJobs = _npcMajorActionSummaryQueue.Count > 0;
+				hasOverviewJobs = _memoryOverviewQueue.Count > 0;
 			}
 			if (!hasMemoryJobs && !hasMajorActionJobs && !hasOverviewJobs)
 			{
@@ -4812,12 +4908,19 @@ public class MyBehavior : CampaignBehaviorBase
 		try
 		{
 			QueueDirtyMemoryOverviewCandidatesForDeferredScan();
-			List<MemorySummaryJob> jobs = SanitizeMemorySummaryQueue(_memorySummaryQueue);
-			List<MajorActionSummaryJob> majorJobs = SanitizeMajorActionSummaryQueue(_npcMajorActionSummaryQueue);
+			// A Hero can die or be removed after the scheduler's snapshot; discard those bounded queue entries first.
+			CancelUnavailableHeroCompressionQueuedJobs("queue_execute");
+			List<MemorySummaryJob> jobs = SanitizeMemorySummaryQueue(_memorySummaryQueue).Where(HasMemorySummaryJobStillPending).ToList();
+			List<MajorActionSummaryJob> majorJobs = SanitizeMajorActionSummaryQueue(_npcMajorActionSummaryQueue).Where(HasMajorActionSummaryJobStillPending).ToList();
 			HashSet<string> memoryJobHeroIds = new HashSet<string>(jobs.Where((MemorySummaryJob job) => job != null).Select((MemorySummaryJob job) => NormalizeMemoryHeroId(job.HeroId)), StringComparer.OrdinalIgnoreCase);
-			List<MemoryOverviewJob> overviewJobs = SanitizeMemoryOverviewQueue(_memoryOverviewQueue).Where((MemoryOverviewJob job) => job != null && HasMemoryOverviewJobStillPending(job) && !memoryJobHeroIds.Contains(NormalizeMemoryHeroId(job.HeroId))).ToList();
+			List<MemoryOverviewJob> pendingOverviewJobs = SanitizeMemoryOverviewQueue(_memoryOverviewQueue).Where(HasMemoryOverviewJobStillPending).ToList();
+			List<MemoryOverviewJob> overviewJobs = pendingOverviewJobs.Where((MemoryOverviewJob job) => !memoryJobHeroIds.Contains(NormalizeMemoryHeroId(job.HeroId))).ToList();
 			if (jobs.Count <= 0 && majorJobs.Count <= 0 && overviewJobs.Count <= 0)
 			{
+				// Persist the filtered snapshot so exhausted or obsolete jobs cannot wake maintenance every tick.
+				_memorySummaryQueue = jobs;
+				_npcMajorActionSummaryQueue = majorJobs;
+				_memoryOverviewQueue = pendingOverviewJobs;
 				return;
 			}
 			int burstSize = GetMemorySummaryRequestsPerMinuteFromSettings();
@@ -4842,6 +4945,11 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
+				// Target/source cleanup is normal save recovery, not an actionable API error or popup condition.
+				if (result.IsObsolete)
+				{
+					continue;
+				}
 				if (result.Success)
 				{
 					ApplyMemorySummarySuccess(result.Job, result.Block);
@@ -4855,6 +4963,11 @@ public class MyBehavior : CampaignBehaviorBase
 			foreach (MajorActionSummaryExecutionResult result2 in majorResults)
 			{
 				if (result2 == null || result2.Job == null)
+				{
+					continue;
+				}
+				// Target/source cleanup is normal save recovery, not an actionable API error or popup condition.
+				if (result2.IsObsolete)
 				{
 					continue;
 				}
@@ -4874,6 +4987,11 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
+				// Target/source cleanup is normal save recovery, not an actionable API error or popup condition.
+				if (result3.IsObsolete)
+				{
+					continue;
+				}
 				if (result3.Success)
 				{
 					ApplyMemoryOverviewSuccess(result3.Job, result3.State);
@@ -4885,7 +5003,7 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 			}
 			QueueDirtyMemoryOverviewCandidatesForDeferredScan();
-			HashSet<string> processedOverviewHeroIds = new HashSet<string>(overviewResults.Where((MemoryOverviewExecutionResult x) => x?.Job != null).Select((MemoryOverviewExecutionResult x) => NormalizeMemoryHeroId(x.Job.HeroId)), StringComparer.OrdinalIgnoreCase);
+			HashSet<string> processedOverviewHeroIds = new HashSet<string>(overviewResults.Where((MemoryOverviewExecutionResult x) => x?.Job != null && !x.IsObsolete).Select((MemoryOverviewExecutionResult x) => NormalizeMemoryHeroId(x.Job.HeroId)), StringComparer.OrdinalIgnoreCase);
 			List<MemoryOverviewJob> extraOverviewJobs = SanitizeMemoryOverviewQueue(_memoryOverviewQueue).Where((MemoryOverviewJob job) => job != null && HasMemoryOverviewJobStillPending(job) && !processedOverviewHeroIds.Contains(NormalizeMemoryHeroId(job.HeroId))).ToList();
 			if (extraOverviewJobs.Count > 0)
 			{
@@ -4911,6 +5029,11 @@ public class MyBehavior : CampaignBehaviorBase
 					{
 						continue;
 					}
+					// A target removed during the delayed overview wave is intentionally silent and is dropped below.
+					if (result4.IsObsolete)
+					{
+						continue;
+					}
 					if (result4.Success)
 					{
 						ApplyMemoryOverviewSuccess(result4.Job, result4.State);
@@ -4923,7 +5046,8 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 				overviewResults.AddRange(extraOverviewResults);
 			}
-			_memorySummaryQueue = SanitizeMemorySummaryQueue(_memorySummaryQueue.Where((MemorySummaryJob job) => job != null && !HasCompressedMemoryBlock(job.HeroId, job.GameDayIndex)).ToList());
+			// Keep only runnable work; terminal retries and invalid targets must not be serialized back into the save.
+			_memorySummaryQueue = SanitizeMemorySummaryQueue((_memorySummaryQueue ?? new List<MemorySummaryJob>()).Where(HasMemorySummaryJobStillPending).ToList());
 			_npcMajorActionSummaryQueue = SanitizeMajorActionSummaryQueue((_npcMajorActionSummaryQueue ?? new List<MajorActionSummaryJob>()).Where((MajorActionSummaryJob job) => job != null && HasMajorActionSummaryJobStillPending(job)).ToList());
 			_memoryOverviewQueue = SanitizeMemoryOverviewQueue((_memoryOverviewQueue ?? new List<MemoryOverviewJob>()).Where((MemoryOverviewJob job) => job != null && HasMemoryOverviewJobStillPending(job)).ToList());
 			if (failures.Count > 0)
@@ -5021,7 +5145,27 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return null;
 		}
-		return value.FirstOrDefault((DailyMemoryDraft x) => x != null && x.GameDayIndex == job.GameDayIndex);
+		// A persisted queue key must agree with the draft owner; never summarize or retarget an ambiguous old-save draft.
+		return value.FirstOrDefault((DailyMemoryDraft x) => x != null && x.GameDayIndex == job.GameDayIndex && string.Equals(NormalizeMemoryHeroId(x.HeroId), text, StringComparison.OrdinalIgnoreCase));
+	}
+
+	private bool HasMemorySummaryJobStillPending(MemorySummaryJob job)
+	{
+		try
+		{
+			string heroId = NormalizeMemoryHeroId(job?.HeroId);
+			if (job == null || job.RetryCount >= 3 || string.IsNullOrWhiteSpace(heroId) || !IsMemoryEntityEligibleForCompressedMemory(heroId) || HasCompressedMemoryBlock(heroId, job.GameDayIndex))
+			{
+				return false;
+			}
+			DailyMemoryDraft draft = FindMemoryDraft(job);
+			// Retry exhaustion is stored on both queue and draft, so old saves cannot silently recreate a terminal job.
+			return draft != null && draft.SummaryRetryCount < 3 && draft.HasLlmDialogue && CountDailyMemorySummarySourceChars(draft) > 0;
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	private async Task<MemorySummaryExecutionResult> ExecuteMemorySummaryJobAsync(MemorySummaryJob job, int maxAttempts)
@@ -5035,13 +5179,21 @@ public class MyBehavior : CampaignBehaviorBase
 			string memoryId = NormalizeMemoryHeroId(job?.HeroId);
 			Hero hero = FindHeroById(memoryId);
 			DailyMemoryDraft draft = FindMemoryDraft(job);
-			if (!IsMemoryEntityEligibleForCompressedMemory(memoryId) || draft == null || draft.Lines == null || draft.Lines.Count <= 0)
+			bool isEligible = IsNonHeroMemoryId(memoryId) || IsHeroNpcEligibleForCompressedMemory(hero);
+			if (!isEligible || draft == null || draft.Lines == null || draft.Lines.Count <= 0)
 			{
-				result.Error = "找不到待总结 NPC 或原始历史。";
+				// Missing/removed saved sources are stale queue data, not API failures that should block the campaign.
+				result.IsObsolete = true;
 				return result;
 			}
 			for (int i = 1; i <= Math.Max(1, maxAttempts); i++)
 			{
+				if (!HasMemorySummaryJobStillPending(job))
+				{
+					// The owner or source can vanish during retry backoff; do not send a second request for stale work.
+					result.IsObsolete = true;
+					return result;
+				}
 				ApiCallResult apiCallResult = await CallUniversalApiDetailed(BuildMemorySummarySystemPrompt(draft), BuildMemorySummaryUserPrompt(hero, draft), logToEventLogs: false, eventLogSource: "CompressedMemory", route: UniversalApiRoute.Auxiliary, streamResponse: false, forceThinkingDisabled: true);
 				if (apiCallResult.Success)
 				{
@@ -5078,17 +5230,19 @@ public class MyBehavior : CampaignBehaviorBase
 		};
 		try
 		{
-			Hero hero = FindHeroById(job?.HeroId);
 			string heroId = NormalizeMemoryHeroId(job?.HeroId);
-			if (hero == null || string.IsNullOrWhiteSpace(heroId) || _npcMajorActions == null || !_npcMajorActions.TryGetValue(heroId, out var rawActions) || rawActions == null)
+			Hero hero = FindHeroById(heroId);
+			if (!IsHeroNpcEligibleForCompressedMemory(hero) || string.IsNullOrWhiteSpace(heroId) || _npcMajorActions == null || !_npcMajorActions.TryGetValue(heroId, out var rawActions) || rawActions == null)
 			{
-				result.Error = "找不到待总结 NPC 或重大履历。";
+				// Major-action ledgers are retained for weekly reports, but an unavailable Hero must never reach the LLM.
+				result.IsObsolete = true;
 				return result;
 			}
 			List<NpcActionEntry> allActions = SanitizeNpcActionEntries(rawActions, keepOnlyRecentWindow: false);
 			if (allActions.Count <= 0)
 			{
-				result.Error = "该 NPC 没有可总结的重大履历。";
+				// A queue can outlive its last source action after save repair; discard it silently.
+				result.IsObsolete = true;
 				return result;
 			}
 			MajorActionSummaryState existingState = GetMajorActionSummaryState(heroId);
@@ -5101,12 +5255,19 @@ public class MyBehavior : CampaignBehaviorBase
 					result.State = existingState;
 					return result;
 				}
-				result.Error = "没有新增重大履历需要总结。";
+				// No source material means the persisted work item is obsolete rather than an API error.
+				result.IsObsolete = true;
 				return result;
 			}
 			int targetChars = GetMajorActionSummaryTargetChars(existingState, hero, sourceActions);
 			for (int i = 1; i <= Math.Max(1, maxAttempts); i++)
 			{
+				if (!HasMajorActionSummaryJobStillPending(job))
+				{
+					// Re-check after retry backoff so a Hero removed between API attempts never receives another request.
+					result.IsObsolete = true;
+					return result;
+				}
 				ApiCallResult apiCallResult = await CallUniversalApiDetailed(BuildMajorActionSummarySystemPrompt(targetChars), BuildMajorActionSummaryUserPrompt(hero, existingState, sourceActions, targetChars), logToEventLogs: false, eventLogSource: "NpcMajorSummary", route: UniversalApiRoute.Auxiliary, streamResponse: false, forceThinkingDisabled: true);
 				if (apiCallResult.Success)
 				{
@@ -5145,16 +5306,19 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			string heroId = NormalizeMemoryHeroId(job?.HeroId);
 			Hero hero = FindHeroById(heroId);
-			if (!IsMemoryEntityEligibleForCompressedMemory(heroId) || string.IsNullOrWhiteSpace(heroId) || _compressedMemoryBlocks == null || !_compressedMemoryBlocks.TryGetValue(heroId, out var rawBlocks) || rawBlocks == null)
+			bool isEligible = IsNonHeroMemoryId(heroId) || IsHeroNpcEligibleForCompressedMemory(hero);
+			if (!isEligible || string.IsNullOrWhiteSpace(heroId) || _compressedMemoryBlocks == null || !_compressedMemoryBlocks.TryGetValue(heroId, out var rawBlocks) || rawBlocks == null)
 			{
-				result.Error = "找不到待总结 NPC 或压缩记忆块。";
+				// A removed owner or cleaned block set is stale queue state and must not surface as an API failure.
+				result.IsObsolete = true;
 				return result;
 			}
 			List<CompressedMemoryBlock> allBlocks = SanitizeCompressedMemoryBlocks(rawBlocks);
 			int threshold = GetMemoryOverviewStartBlockCountFromSettings();
 			if (allBlocks.Count < threshold)
 			{
-				result.Error = "压缩记忆块数量未达到大总结启动阈值。";
+				// Blocks can be edited or pruned after enqueue; below-threshold work should simply disappear.
+				result.IsObsolete = true;
 				return result;
 			}
 			MemoryOverviewState existingState = GetMemoryOverviewState(heroId);
@@ -5173,12 +5337,19 @@ public class MyBehavior : CampaignBehaviorBase
 					result.State = existingState;
 					return result;
 				}
-				result.Error = "没有可纳入记忆总览的压缩记忆块。";
+				// With no new blocks and no reusable state, there is nothing for the queue worker to call the API for.
+				result.IsObsolete = true;
 				return result;
 			}
 			int targetChars = GetMemoryOverviewTargetCharsFromSettings();
 			for (int i = 1; i <= Math.Max(1, maxAttempts); i++)
 			{
+				if (!HasMemoryOverviewJobStillPending(job))
+				{
+					// Re-check after retry backoff so removed owners and edited-away blocks cannot trigger another request.
+					result.IsObsolete = true;
+					return result;
+				}
 				ApiCallResult apiCallResult = await CallUniversalApiDetailed(BuildMemoryOverviewSummarySystemPrompt(targetChars), BuildMemoryOverviewSummaryUserPrompt(hero, promptExistingState, sourceBlocks, targetChars), logToEventLogs: false, eventLogSource: "MemoryOverview", route: UniversalApiRoute.Auxiliary, streamResponse: false, forceThinkingDisabled: true);
 				if (apiCallResult.Success)
 				{
@@ -5352,6 +5523,13 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		Hero hero = FindHeroById(heroId);
+		if (!IsNonHeroMemoryId(heroId) && !IsHeroNpcEligibleForCompressedMemory(hero))
+		{
+			// The target can disappear while the async API request is in flight; never write its stale result back.
+			CancelUnavailableHeroCompressionWorkById(heroId, "memory_overview_apply");
+			return;
+		}
 		if (_memoryOverviewStates == null)
 		{
 			_memoryOverviewStates = new Dictionary<string, MemoryOverviewState>(StringComparer.OrdinalIgnoreCase);
@@ -5497,6 +5675,12 @@ public class MyBehavior : CampaignBehaviorBase
 		string heroId = NormalizeMemoryHeroId(job.HeroId);
 		if (string.IsNullOrWhiteSpace(heroId))
 		{
+			return;
+		}
+		if (!IsHeroNpcEligibleForCompressedMemory(FindHeroById(heroId)))
+		{
+			// Raw major actions remain for weekly reports, but an in-flight result cannot recreate derived memory for a removed Hero.
+			CancelUnavailableHeroCompressionWorkById(heroId, "major_action_summary_apply");
 			return;
 		}
 		if (_npcMajorActionSummaries == null)
@@ -5714,11 +5898,13 @@ public class MyBehavior : CampaignBehaviorBase
 			return;
 		}
 		string memoryId = NormalizeMemoryHeroId(job.HeroId);
-		if (!IsMemoryEntityEligibleForCompressedMemory(memoryId))
+		Hero hero = FindHeroById(memoryId);
+		if (!IsNonHeroMemoryId(memoryId) && !IsHeroNpcEligibleForCompressedMemory(hero))
 		{
+			// The target can disappear while the async API request is in flight; drop the result and stale derived state.
+			CancelUnavailableHeroCompressionWorkById(memoryId, "memory_summary_apply");
 			return;
 		}
-		Hero hero = FindHeroById(memoryId);
 		List<CompressedMemoryBlock> blocks = LoadCompressedMemoryBlocksById(memoryId);
 		blocks.RemoveAll((CompressedMemoryBlock x) => x != null && x.GameDayIndex == job.GameDayIndex);
 		blocks.Add(block);
@@ -6501,7 +6687,8 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void EnsureWeekZeroOpeningSummaryEvents()
+	// Normal callers keep the existing sanitation behavior; database reload passes false to preserve unrelated dynamic history exactly.
+	private void EnsureWeekZeroOpeningSummaryEvents(bool sanitizeAfter = true)
 	{
 		FreezeWatchdog.Mark("WeeklyPrompt.EnsureWeek0.start", "entries=" + (_eventRecordEntries?.Count ?? 0) + " thread=" + Thread.CurrentThread.ManagedThreadId);
 		bool flag = UpsertWeekZeroOpeningSummaryEvent("world", "", "第0天世界开局概要", _eventWorldOpeningSummary, "世界开局概要", "world_opening_summary", sanitizeAfter: false);
@@ -6520,7 +6707,7 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			FreezeWatchdog.Mark("WeeklyPrompt.EnsureWeek0.kingdom_done", "index=" + kingdomIndex + " kingdom=" + diagnosticKingdomId + " entries=" + (_eventRecordEntries?.Count ?? 0));
 		}
-		if (flag)
+		if (flag && sanitizeAfter)
 		{
 			_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
 		}
@@ -17722,7 +17909,8 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			currentDay = 0;
 		}
-		bool hasQueuedWork = (_memorySummaryQueue != null && _memorySummaryQueue.Count > 0) || (_npcMajorActionSummaryQueue != null && _npcMajorActionSummaryQueue.Count > 0) || (_memoryOverviewQueue != null && _memoryOverviewQueue.Count > 0);
+		// Queues are small and bounded; check runnable work so exhausted stale items cannot trigger per-tick maintenance.
+		bool hasQueuedWork = (_memorySummaryQueue != null && _memorySummaryQueue.Any(HasMemorySummaryJobStillPending)) || (_npcMajorActionSummaryQueue != null && _npcMajorActionSummaryQueue.Any(HasMajorActionSummaryJobStillPending)) || (_memoryOverviewQueue != null && _memoryOverviewQueue.Any(HasMemoryOverviewJobStillPending));
 		if (!hasQueuedWork && currentDay == _lastMemoryMaintenanceObservedGameDay)
 		{
 			return;
@@ -17765,6 +17953,12 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			foreach (KeyValuePair<string, List<DailyMemoryDraft>> item in _dailyMemoryDrafts)
 			{
+				string ownerMemoryId = NormalizeMemoryHeroId(item.Key);
+				if (!IsMemoryEntityEligibleForCompressedMemory(ownerMemoryId))
+				{
+					// Validate each owner once; a stale owner must not make every stored draft wake maintenance.
+					continue;
+				}
 				List<DailyMemoryDraft> drafts = item.Value;
 				if (drafts == null || drafts.Count <= 0)
 				{
@@ -17773,7 +17967,7 @@ public class MyBehavior : CampaignBehaviorBase
 				for (int i = 0; i < drafts.Count; i++)
 				{
 					DailyMemoryDraft draft = drafts[i];
-					if (draft != null && draft.GameDayIndex < currentDay && draft.HasLlmDialogue && CountDailyMemorySummarySourceChars(draft) > 0 && !HasCompressedMemoryBlock(draft.HeroId, draft.GameDayIndex))
+					if (draft != null && string.Equals(NormalizeMemoryHeroId(draft.HeroId), ownerMemoryId, StringComparison.OrdinalIgnoreCase) && draft.SummaryRetryCount < 3 && draft.GameDayIndex < currentDay && draft.HasLlmDialogue && CountDailyMemorySummarySourceChars(draft) > 0 && !HasCompressedMemoryBlock(ownerMemoryId, draft.GameDayIndex))
 					{
 						return true;
 					}
@@ -20094,6 +20288,9 @@ public class MyBehavior : CampaignBehaviorBase
 		QueueMissingOnnxGateCheck(TimeSpan.Zero);
 		RebuildRuntimeDerivedIndexes();
 		SyncModCreatedRebelKingdomBannersOnGameLoad();
+		// The campaign Hero registry is complete at this lifecycle point, so stale saved compression work can be
+		// cancelled before load-finished maintenance queues any LLM request.
+		CancelUnavailableHeroCompressionWorkAfterLoad();
 		if (IsDeferredDailyMaintenanceEnabled())
 		{
 			int currentDay = GetCurrentGameDayIndexSafe();
@@ -26150,6 +26347,164 @@ public class MyBehavior : CampaignBehaviorBase
 		return partyNeedles.Any((string needle) => ContainsExactNonHeroPartyNeedle(text, needle));
 	}
 
+	private bool CancelUnavailableHeroCompressionWorkById(string memoryId, string reason)
+	{
+		string text = NormalizeMemoryHeroId(memoryId);
+		if (string.IsNullOrWhiteSpace(text) || IsNonHeroMemoryId(text))
+		{
+			return false;
+		}
+		// Cancel only LLM work and its derived summaries. Source drafts/blocks/pending triggers are retained because
+		// they can still carry weekly-report facts even after the Hero is no longer a valid conversation target.
+		bool removed = false;
+		if (_memorySummaryQueue != null)
+		{
+			removed |= _memorySummaryQueue.RemoveAll((MemorySummaryJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), text, StringComparison.OrdinalIgnoreCase)) > 0;
+		}
+		if (_memoryOverviewStates != null)
+		{
+			removed |= _memoryOverviewStates.Remove(text);
+		}
+		if (_memoryOverviewStateStorage != null)
+		{
+			removed |= _memoryOverviewStateStorage.Remove(text);
+		}
+		if (_memoryOverviewQueue != null)
+		{
+			removed |= _memoryOverviewQueue.RemoveAll((MemoryOverviewJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), text, StringComparison.OrdinalIgnoreCase)) > 0;
+		}
+		if (_npcMajorActionSummaries != null)
+		{
+			removed |= _npcMajorActionSummaries.Remove(text);
+		}
+		if (_npcMajorActionSummaryStorage != null)
+		{
+			removed |= _npcMajorActionSummaryStorage.Remove(text);
+		}
+		if (_npcMajorActionSummaryQueue != null)
+		{
+			removed |= _npcMajorActionSummaryQueue.RemoveAll((MajorActionSummaryJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), text, StringComparison.OrdinalIgnoreCase)) > 0;
+		}
+		if (_dirtyMemoryOverviewIds.Remove(text))
+		{
+			removed = true;
+		}
+		if (_pendingMemoryOverviewCandidateScanIdSet.Remove(text))
+		{
+			removed = true;
+		}
+		if (_pendingMemoryOverviewCandidateScanIds.Count > 0)
+		{
+			List<string> kept = _pendingMemoryOverviewCandidateScanIds.Where((string x) => !string.Equals(NormalizeMemoryHeroId(x), text, StringComparison.OrdinalIgnoreCase)).ToList();
+			if (kept.Count != _pendingMemoryOverviewCandidateScanIds.Count)
+			{
+				removed = true;
+				_pendingMemoryOverviewCandidateScanIds.Clear();
+				foreach (string item in kept)
+				{
+					_pendingMemoryOverviewCandidateScanIds.Enqueue(item);
+				}
+			}
+		}
+		if (_dailyMemoryDraftSealQueued != null)
+		{
+			_dailyMemoryDraftSealQueued.RemoveWhere((string x) => (x ?? "").StartsWith(text + "|", StringComparison.OrdinalIgnoreCase));
+		}
+		_dailyMemoryDraftSealQueuedMajor?.Remove(text);
+		if (removed)
+		{
+			Logger.Log("CompressedMemory", "cancelled unavailable hero compression work hero=" + text + " reason=" + (reason ?? ""));
+		}
+		return removed;
+	}
+
+	private void CancelUnavailableHeroCompressionWorkAfterLoad()
+	{
+		try
+		{
+			// This is a single load-time registry pass, not a per-tick Hero.FindFirst scan over saved memory.
+			HashSet<string> eligibleHeroIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			int observedAliveHeroCount = 0;
+			foreach (Hero hero in Hero.AllAliveHeroes)
+			{
+				observedAliveHeroCount++;
+				if (IsHeroNpcEligibleForCompressedMemory(hero))
+				{
+					eligibleHeroIds.Add(GetMemoryHeroId(hero));
+				}
+			}
+			if (observedAliveHeroCount <= 0)
+			{
+				Logger.Log("CompressedMemory", "skip unavailable hero compression cancellation because the alive Hero registry is empty at load finish");
+				return;
+			}
+			HashSet<string> candidateIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			void AddCandidateIds(IEnumerable<string> ids)
+			{
+				foreach (string id in ids ?? Enumerable.Empty<string>())
+				{
+					string normalizedId = NormalizeMemoryHeroId(id);
+					if (!string.IsNullOrWhiteSpace(normalizedId) && !IsNonHeroMemoryId(normalizedId))
+					{
+						candidateIds.Add(normalizedId);
+					}
+				}
+			}
+			AddCandidateIds(_dailyMemoryDrafts?.Keys);
+			AddCandidateIds(_compressedMemoryBlocks?.Keys);
+			AddCandidateIds(_memoryOverviewStates?.Keys);
+			AddCandidateIds(_memoryOverviewStateStorage?.Keys);
+			AddCandidateIds(_npcMajorActionSummaries?.Keys);
+			AddCandidateIds(_npcMajorActionSummaryStorage?.Keys);
+			AddCandidateIds((_memorySummaryQueue ?? new List<MemorySummaryJob>()).Select((MemorySummaryJob x) => x?.HeroId));
+			AddCandidateIds((_memoryOverviewQueue ?? new List<MemoryOverviewJob>()).Select((MemoryOverviewJob x) => x?.HeroId));
+			AddCandidateIds((_npcMajorActionSummaryQueue ?? new List<MajorActionSummaryJob>()).Select((MajorActionSummaryJob x) => x?.HeroId));
+			AddCandidateIds(_dirtyMemoryOverviewIds);
+			AddCandidateIds(_pendingMemoryOverviewCandidateScanIds);
+			int cancelledCount = 0;
+			foreach (string id in candidateIds)
+			{
+				if (!eligibleHeroIds.Contains(id) && CancelUnavailableHeroCompressionWorkById(id, "game_load_finished"))
+				{
+					cancelledCount++;
+				}
+			}
+			if (cancelledCount > 0)
+			{
+				Logger.Log("CompressedMemory", "cancelled unavailable hero compression work after load count=" + cancelledCount);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CompressedMemory", "[WARN] unavailable hero compression cancellation after load failed: " + ex.Message);
+		}
+	}
+
+	private void CancelUnavailableHeroCompressionQueuedJobs(string reason)
+	{
+		// Queue sizes are bounded by pending daily work, so validate only queued owners between full load-time scans.
+		HashSet<string> candidateIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (MemorySummaryJob job in _memorySummaryQueue ?? new List<MemorySummaryJob>())
+		{
+			candidateIds.Add(NormalizeMemoryHeroId(job?.HeroId));
+		}
+		foreach (MemoryOverviewJob job2 in _memoryOverviewQueue ?? new List<MemoryOverviewJob>())
+		{
+			candidateIds.Add(NormalizeMemoryHeroId(job2?.HeroId));
+		}
+		foreach (MajorActionSummaryJob job3 in _npcMajorActionSummaryQueue ?? new List<MajorActionSummaryJob>())
+		{
+			candidateIds.Add(NormalizeMemoryHeroId(job3?.HeroId));
+		}
+		foreach (string id in candidateIds)
+		{
+			if (!string.IsNullOrWhiteSpace(id) && !IsNonHeroMemoryId(id) && !IsMemoryEntityEligibleForCompressedMemory(id))
+			{
+				CancelUnavailableHeroCompressionWorkById(id, reason);
+			}
+		}
+	}
+
 	private void RemoveMemoryEntityDataById(string memoryId)
 	{
 		string text = NormalizeMemoryHeroId(memoryId);
@@ -26285,7 +26640,8 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private static bool IsHeroNpcEligibleForCompressedMemory(Hero hero)
 	{
-		return hero != null && !string.IsNullOrWhiteSpace(hero.StringId) && (Hero.MainHero == null || !object.ReferenceEquals(hero, Hero.MainHero));
+		// Dead and disabled Heroes remain addressable in Bannerlord's object registry, but cannot own live dialogue memory.
+		return hero != null && hero.IsAlive && !hero.IsDisabled && !string.IsNullOrWhiteSpace(hero.StringId) && (Hero.MainHero == null || !object.ReferenceEquals(hero, Hero.MainHero));
 	}
 
 	private static List<WeeklyMemoryMaterialTrigger> SanitizeWeeklyMemoryMaterialTriggers(IEnumerable<WeeklyMemoryMaterialTrigger> triggers)
@@ -26578,6 +26934,11 @@ public class MyBehavior : CampaignBehaviorBase
 			return false;
 		}
 		MemoryOverviewState state = GetMemoryOverviewState(heroId);
+		if (state != null && !string.IsNullOrWhiteSpace(state.LastError))
+		{
+			// A completed three-attempt failure stays visible for manual repair, but must not auto-enqueue forever.
+			return false;
+		}
 		if (state == null || string.IsNullOrWhiteSpace(state.Summary))
 		{
 			return true;
@@ -26591,7 +26952,7 @@ public class MyBehavior : CampaignBehaviorBase
 		try
 		{
 			string heroId = NormalizeMemoryHeroId(job?.HeroId);
-			if (string.IsNullOrWhiteSpace(heroId) || _compressedMemoryBlocks == null || !_compressedMemoryBlocks.TryGetValue(heroId, out var blocks) || blocks == null)
+			if (job == null || job.RetryCount >= 3 || string.IsNullOrWhiteSpace(heroId) || !IsMemoryEntityEligibleForCompressedMemory(heroId) || _compressedMemoryBlocks == null || !_compressedMemoryBlocks.TryGetValue(heroId, out var blocks) || blocks == null)
 			{
 				return false;
 			}
@@ -26703,6 +27064,11 @@ public class MyBehavior : CampaignBehaviorBase
 			return false;
 		}
 		MajorActionSummaryState state = GetMajorActionSummaryState(heroId);
+		if (state != null && !string.IsNullOrWhiteSpace(state.LastError))
+		{
+			// A completed three-attempt failure remains inspectable, but cannot recreate an automatic queue on every day tick.
+			return false;
+		}
 		if (state == null || string.IsNullOrWhiteSpace(state.Summary))
 		{
 			return true;
@@ -26716,8 +27082,9 @@ public class MyBehavior : CampaignBehaviorBase
 		try
 		{
 			string heroId = NormalizeMemoryHeroId(job?.HeroId);
-			if (string.IsNullOrWhiteSpace(heroId) || _npcMajorActions == null || !_npcMajorActions.TryGetValue(heroId, out var actions) || actions == null)
+			if (job == null || job.RetryCount >= 3 || string.IsNullOrWhiteSpace(heroId) || IsNonHeroMemoryId(heroId) || !IsMemoryEntityEligibleForCompressedMemory(heroId) || _npcMajorActions == null || !_npcMajorActions.TryGetValue(heroId, out var actions) || actions == null)
 			{
+				// Major-action summaries are Hero-only; malformed nonhero queue data must not stay runnable.
 				return false;
 			}
 			return HasMajorActionsNeedingSummary(heroId, SanitizeNpcActionEntries(actions, keepOnlyRecentWindow: false));
@@ -29251,6 +29618,26 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		catch
 		{
+			return false;
+		}
+	}
+
+	// The U-terminal uses this narrow bridge instead of exposing developer import menus or their broader data scopes.
+	public static bool OpenDatabaseReloadFromTerminal(Action onReturn)
+	{
+		try
+		{
+			MyBehavior myBehavior = Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			if (myBehavior == null)
+			{
+				return false;
+			}
+			myBehavior.OpenDatabaseReloadFolderPicker(onReturn);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("DatabaseReload", "[WARN] Failed to open database reload terminal flow: " + ex.Message);
 			return false;
 		}
 	}
@@ -53222,6 +53609,890 @@ public class MyBehavior : CampaignBehaviorBase
 			onReturn();
 		});
 		MBInformationManager.ShowMultiSelectionInquiry(data);
+	}
+
+	// The terminal owns the return callback, so this picker never falls through to the developer-data root menu.
+	private void OpenDatabaseReloadFolderPicker(Action onReturn)
+	{
+		Action action = onReturn ?? delegate
+		{
+		};
+		try
+		{
+			string playerExportsRootPath = GetPlayerExportsRootPath();
+			List<InquiryElement> list = new List<InquiryElement>
+			{
+				new InquiryElement("__input__", "手动输入资料包文件夹/路径…", null),
+				new InquiryElement("__latest__", "使用最新导出（自动）", null)
+			};
+			if (!string.IsNullOrWhiteSpace(playerExportsRootPath) && Directory.Exists(playerExportsRootPath))
+			{
+				foreach (DirectoryInfo item in new DirectoryInfo(playerExportsRootPath).GetDirectories().OrderByDescending((DirectoryInfo x) => x.LastWriteTimeUtc))
+				{
+					list.Add(new InquiryElement(item.Name, item.Name + "  (" + item.LastWriteTime.ToString("yyyy-MM-dd HH:mm") + ")", null));
+				}
+			}
+			MultiSelectionInquiryData data = new MultiSelectionInquiryData("重载数据库 - 选择资料包", "选择来源资料包；系统会在确认前校验知识、王国性格/战略和声音数据。", list, isExitShown: true, 1, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+			{
+				if (selected == null || selected.Count == 0)
+				{
+					action();
+					return;
+				}
+				string text = selected[0].Identifier as string;
+				if (string.Equals(text, "__input__", StringComparison.Ordinal))
+				{
+					InformationManager.ShowTextInquiry(new TextInquiryData("输入资料包文件夹/路径", "留空会使用最新导出；也可输入完整资料包文件夹路径。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "继续", "返回", delegate(string input)
+					{
+						BeginDatabaseReloadPreflight(input, action);
+					}, delegate
+					{
+						action();
+					}));
+					return;
+				}
+				BeginDatabaseReloadPreflight(string.Equals(text, "__latest__", StringComparison.Ordinal) ? "" : text, action);
+			}, delegate
+			{
+				action();
+			}, "", isSeachAvailable: true);
+			MBInformationManager.ShowMultiSelectionInquiry(data, pauseGameActiveState: true);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("DatabaseReload", "[WARN] Failed to open source picker: " + ex.Message);
+			InformationManager.DisplayMessage(new InformationMessage("无法打开资料包选择器：" + ex.Message));
+			action();
+		}
+	}
+
+	// Preflight reads every needed source before the destructive confirmation; it deliberately never imports AIConfig.json or prompt files.
+	private void BeginDatabaseReloadPreflight(string folderName, Action onReturn)
+	{
+		Action action = onReturn ?? delegate
+		{
+		};
+		if (!TryBuildDatabaseReloadPlan(folderName, out var plan, out var error))
+		{
+			InformationManager.ShowInquiry(new InquiryData("数据库资料包校验失败", "本次重载尚未修改存档。\n\n" + error, isAffirmativeOptionShown: true, isNegativeOptionShown: false, "重新选择", "", delegate
+			{
+				OpenDatabaseReloadFolderPicker(action);
+			}, null), pauseGameActiveState: true, prioritize: false);
+			return;
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.AppendLine("来源资料包：");
+		stringBuilder.AppendLine(plan.ImportDirectory);
+		stringBuilder.AppendLine();
+		stringBuilder.AppendLine("将删除并重载：");
+		stringBuilder.AppendLine("• 非主角知识 " + plan.KnowledgeRules.Count + " 条");
+		if (plan.KnowledgeRuleIdDisambiguationCount > 0)
+		{
+			stringBuilder.AppendLine("• 资料包内 " + plan.KnowledgeRuleIdDisambiguationCount + " 个同 ID 知识条目将按文件名生成稳定 ID（不修改资料包文件）");
+		}
+		if (plan.KnowledgeKeywordDeduplicationCount > 0)
+		{
+			stringBuilder.AppendLine("• 其中 " + plan.KnowledgeKeywordDeduplicationCount + " 个重复触发词只保留在原条目，避免拆分后的知识争抢同一关键词");
+		}
+		stringBuilder.AppendLine("• 世界开局知识 1 份，以及王国开局知识 " + plan.OpeningKnowledge.KingdomSummaries.Count + " 条");
+		stringBuilder.AppendLine("• 上述开局知识的第 0 日派生记录（游戏日达到 7 天后，可能按现有 API 设置请求 LLM 生成短摘要）");
+		stringBuilder.AppendLine("• 王国性格与长期战略 " + (plan.KingdomProfilePlan?.SourceProfilesByTargetId?.Count ?? 0) + " 个王国");
+		stringBuilder.AppendLine("• 声音映射 1 份，以及 NPC 声音 ID " + plan.NpcVoiceIds.Count + " 条");
+		if (plan.CurrentKingdomProfilesResetToDefaultCount > 0)
+		{
+			stringBuilder.AppendLine("• 未出现在资料包的当前王国 " + plan.CurrentKingdomProfilesResetToDefaultCount + " 个，将恢复为其当前默认资料（不会因此自动请求王国 LLM）");
+		}
+		stringBuilder.AppendLine();
+		stringBuilder.AppendLine("会保留且不会从资料包导入：");
+		stringBuilder.AppendLine("• 主角外貌、背景、主角专用知识和直接声音 ID");
+		stringBuilder.AppendLine("• NPC 个性、背景、记忆和外貌");
+		stringBuilder.AppendLine("• 动态事件记录、API 配置、LLM 提示词及其他设置");
+		stringBuilder.AppendLine();
+		stringBuilder.Append("此操作会覆盖当前存档中的上述数据库数据，是否继续？");
+		InformationManager.ShowInquiry(new InquiryData("确认重载数据库", stringBuilder.ToString().TrimEnd(), isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确认重载", "取消", delegate
+		{
+			if (ApplyDatabaseReloadPlan(plan, out var detail))
+			{
+				InformationManager.DisplayMessage(new InformationMessage("数据库重载完成：" + detail));
+			}
+			else
+			{
+				InformationManager.DisplayMessage(new InformationMessage("数据库重载失败：" + detail));
+			}
+			action();
+		}, delegate
+		{
+			action();
+		}), pauseGameActiveState: true, prioritize: false);
+	}
+
+	// This performs only strict file reads and bounded source scans, keeping every normal validation failure before confirmation non-destructive.
+	private bool TryBuildDatabaseReloadPlan(string folderName, out DatabaseReloadPlan plan, out string error)
+	{
+		plan = null;
+		error = "";
+		try
+		{
+			string text = ResolveImportFolderPath(folderName);
+			if (string.IsNullOrWhiteSpace(text) || !Directory.Exists(text))
+			{
+				error = "找不到资料包文件夹。";
+				return false;
+			}
+			if (!TryLoadDatabaseReloadKnowledgeRules(text, out List<KnowledgeLibraryBehavior.LoreRule> list, out int knowledgeRuleIdDisambiguationCount, out int knowledgeKeywordDeduplicationCount, out error))
+			{
+				return false;
+			}
+			list = list.Where((KnowledgeLibraryBehavior.LoreRule x) => x != null && !KnowledgeLibraryBehavior.IsPlayerPersonaRuleId(x.Id)).ToList();
+			if (list.Count <= 0)
+			{
+				error = "资料包中未找到可重载的非主角知识规则。";
+				return false;
+			}
+			KnowledgeLibraryBehavior knowledgeLibraryBehavior = KnowledgeLibraryBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<KnowledgeLibraryBehavior>();
+			if (knowledgeLibraryBehavior == null || !knowledgeLibraryBehavior.TryValidateDatabaseRulesPreservingPlayer(list, out var _, out var _, out error))
+			{
+				error = string.IsNullOrWhiteSpace(error) ? "知识库未初始化或知识规则校验失败。" : error;
+				return false;
+			}
+			string text2 = Path.Combine(text, "voice_mapping", "VoiceMapping.json");
+			if (!File.Exists(text2))
+			{
+				text2 = Path.Combine(text, "VoiceMapping.json");
+			}
+			if (!File.Exists(text2) || !TryReadDatabaseReloadUtf8Text(text2, out string text3, out error))
+			{
+				error = string.IsNullOrWhiteSpace(error) ? "资料包中缺少 voice_mapping\\VoiceMapping.json。" : error;
+				return false;
+			}
+			if (!TryValidateDatabaseReloadVoiceMapping(text3, out error))
+			{
+				error = "VoiceMapping.json 无法用于重载：" + error;
+				return false;
+			}
+			if (!TryLoadDatabaseReloadOpeningKnowledge(text, out EventImportPayload eventImportPayload, out error))
+			{
+				return false;
+			}
+			KingdomStrategicProfileBehavior kingdomStrategicProfileBehavior = KingdomStrategicProfileBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<KingdomStrategicProfileBehavior>();
+			if (kingdomStrategicProfileBehavior == null || !kingdomStrategicProfileBehavior.TryBuildDatabaseReloadPlan(text, out KingdomDatabaseReloadPlan kingdomDatabaseReloadPlan, out error))
+			{
+				error = string.IsNullOrWhiteSpace(error) ? "王国性格与战略数据行为尚未初始化。" : error;
+				return false;
+			}
+			DatabaseReloadPlan databaseReloadPlan = new DatabaseReloadPlan
+			{
+				ImportDirectory = text,
+				KnowledgeRules = list,
+				KnowledgeRuleIdDisambiguationCount = knowledgeRuleIdDisambiguationCount,
+				KnowledgeKeywordDeduplicationCount = knowledgeKeywordDeduplicationCount,
+				VoiceMappingJson = text3,
+				OpeningKnowledge = eventImportPayload,
+				KingdomProfilePlan = kingdomDatabaseReloadPlan,
+				CurrentKingdomProfilesResetToDefaultCount = kingdomDatabaseReloadPlan.CurrentProfilesResetToDefaultCount
+			};
+			string text4 = Path.Combine(text, "personality_background");
+			string text5 = (Hero.MainHero?.StringId ?? "").Trim();
+			if (Directory.Exists(text4))
+			{
+				// Persona files contribute VoiceId only; strict parsing guarantees a damaged file cannot silently erase a current voice assignment.
+				foreach (string item in Directory.GetFiles(text4, "*.json", SearchOption.TopDirectoryOnly).OrderBy((string x) => x, StringComparer.OrdinalIgnoreCase))
+				{
+					if (!TryResolveNpcDataFileHeroIdForImport(item, out string resolvedHeroId, out string warning))
+					{
+						error = "无法安全匹配声音文件 “" + Path.GetFileName(item) + "”：" + warning;
+						return false;
+					}
+					if (!TryReadDatabaseReloadJson(item, out NpcPersonaProfile npcPersonaProfile, out error))
+					{
+						error = "无法读取声音文件 “" + Path.GetFileName(item) + "”：" + error;
+						return false;
+					}
+					string text6 = (npcPersonaProfile.VoiceId ?? "").Trim();
+					string text7 = (resolvedHeroId ?? "").Trim();
+					if (string.IsNullOrWhiteSpace(text6) || string.IsNullOrWhiteSpace(text7) || string.Equals(text7, text5, StringComparison.OrdinalIgnoreCase))
+					{
+						continue;
+					}
+					if (databaseReloadPlan.NpcVoiceIds.ContainsKey(text7))
+					{
+						error = "资料包中有多个声音文件映射到同一 NPC：" + text7;
+						return false;
+					}
+					databaseReloadPlan.NpcVoiceIds[text7] = text6;
+				}
+			}
+			plan = databaseReloadPlan;
+			return true;
+		}
+		catch (Exception ex2)
+		{
+			error = ex2.Message;
+			Logger.Log("DatabaseReload", "[WARN] Source preflight failed: " + ex2);
+			return false;
+		}
+	}
+
+	// This is an explicit user-confirmed O(n) save update; none of its loops run on the campaign tick path.
+	private bool ApplyDatabaseReloadPlan(DatabaseReloadPlan plan, out string detail)
+	{
+		detail = "";
+		KnowledgeLibraryBehavior knowledgeLibraryBehavior = null;
+		KingdomStrategicProfileBehavior kingdomStrategicProfileBehavior = null;
+		DatabaseReloadRollbackSnapshot databaseReloadRollbackSnapshot = null;
+		try
+		{
+			if (plan == null || string.IsNullOrWhiteSpace(plan.ImportDirectory))
+			{
+				detail = "重载计划无效。";
+				return false;
+			}
+			knowledgeLibraryBehavior = KnowledgeLibraryBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<KnowledgeLibraryBehavior>();
+			kingdomStrategicProfileBehavior = KingdomStrategicProfileBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<KingdomStrategicProfileBehavior>();
+			string error = "";
+			if (knowledgeLibraryBehavior == null || kingdomStrategicProfileBehavior == null || !TryCaptureDatabaseReloadRollbackSnapshot(knowledgeLibraryBehavior, kingdomStrategicProfileBehavior, out databaseReloadRollbackSnapshot, out error))
+			{
+				detail = string.IsNullOrWhiteSpace(error) ? "知识库、王国资料行为未初始化或无法创建重载回滚快照。" : error;
+				return false;
+			}
+			if (!knowledgeLibraryBehavior.ReplaceDatabaseRulesPreservingPlayer(plan.KnowledgeRules, out var removedCount, out var importedCount, out error))
+			{
+				detail = string.IsNullOrWhiteSpace(error) ? "知识规则校验失败。" : error;
+				return false;
+			}
+			if (!VoiceMapper.ImportMappingJson(plan.VoiceMappingJson, overwriteExisting: true, saveToFile: false))
+			{
+				return RestoreDatabaseReloadAfterFailure(knowledgeLibraryBehavior, kingdomStrategicProfileBehavior, databaseReloadRollbackSnapshot, "声音映射导入失败。", out detail);
+			}
+			_voiceMappingJsonStorage = VoiceMapper.ExportMappingJson(pretty: false) ?? "";
+			int num = ReplaceNpcVoiceAssignmentsForDatabaseReload(plan.NpcVoiceIds, out var appliedVoiceIdCount);
+			ReplaceDatabaseOpeningKnowledge(plan.OpeningKnowledge);
+			if (!kingdomStrategicProfileBehavior.TryApplyDatabaseReloadPlan(plan.KingdomProfilePlan, out var detailMessage))
+			{
+				return RestoreDatabaseReloadAfterFailure(knowledgeLibraryBehavior, kingdomStrategicProfileBehavior, databaseReloadRollbackSnapshot, "王国性格与战略导入失败：" + detailMessage, out detail);
+			}
+			detail = "知识删除 " + removedCount + " 条、导入 " + importedCount + " 条" + ((plan.KnowledgeRuleIdDisambiguationCount > 0) ? ("（同 ID 稳定重命名 " + plan.KnowledgeRuleIdDisambiguationCount + " 条）") : "") + ((plan.KnowledgeKeywordDeduplicationCount > 0) ? ("（重复触发词去重 " + plan.KnowledgeKeywordDeduplicationCount + " 个）") : "") + "；NPC 声音 ID 清除 " + num + " 条、导入 " + appliedVoiceIdCount + " 条；" + detailMessage;
+			Logger.Log("DatabaseReload", "completed importDir=" + plan.ImportDirectory + " knowledgeRemoved=" + removedCount + " knowledgeImported=" + importedCount + " knowledgeRuleIdsDisambiguated=" + plan.KnowledgeRuleIdDisambiguationCount + " knowledgeKeywordsDeduplicated=" + plan.KnowledgeKeywordDeduplicationCount + " npcVoiceCleared=" + num + " npcVoiceImported=" + appliedVoiceIdCount + " kingdomProfiles=" + (plan.KingdomProfilePlan?.SourceProfilesByTargetId?.Count ?? 0));
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("DatabaseReload", "[ERROR] Apply failed: " + ex);
+			if (knowledgeLibraryBehavior != null && databaseReloadRollbackSnapshot != null)
+			{
+				return RestoreDatabaseReloadAfterFailure(knowledgeLibraryBehavior, kingdomStrategicProfileBehavior, databaseReloadRollbackSnapshot, ex.Message, out detail);
+			}
+			detail = ex.Message;
+			return false;
+		}
+	}
+
+	// Clear only NPC VoiceId fields, preserving all stored profile metadata, personality and background text byte-for-byte.
+	private int ReplaceNpcVoiceAssignmentsForDatabaseReload(Dictionary<string, string> sourceVoiceIds, out int appliedVoiceIdCount)
+	{
+		appliedVoiceIdCount = 0;
+		if (_npcPersonaProfiles == null)
+		{
+			_npcPersonaProfiles = new Dictionary<string, NpcPersonaProfile>();
+		}
+		int num = 0;
+		string text = (Hero.MainHero?.StringId ?? "").Trim();
+		foreach (KeyValuePair<string, NpcPersonaProfile> item in _npcPersonaProfiles.ToList())
+		{
+			string text2 = (item.Key ?? "").Trim();
+			NpcPersonaProfile value = item.Value;
+			if (string.IsNullOrWhiteSpace(text2) || value == null || string.Equals(text2, text, StringComparison.OrdinalIgnoreCase))
+			{
+				continue;
+			}
+			if (!string.IsNullOrWhiteSpace(value.VoiceId))
+			{
+				num++;
+			}
+			value.VoiceId = "";
+			if (string.IsNullOrWhiteSpace(value.Personality) && string.IsNullOrWhiteSpace(value.Background))
+			{
+				_npcPersonaProfiles.Remove(text2);
+				continue;
+			}
+		}
+		if (sourceVoiceIds == null)
+		{
+			return num;
+		}
+		foreach (KeyValuePair<string, string> sourceVoiceId in sourceVoiceIds)
+		{
+			string text3 = (sourceVoiceId.Key ?? "").Trim();
+			string text4 = (sourceVoiceId.Value ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text3) || string.IsNullOrWhiteSpace(text4) || string.Equals(text3, text, StringComparison.OrdinalIgnoreCase))
+			{
+				continue;
+			}
+			bool flag = !_npcPersonaProfiles.TryGetValue(text3, out var value2) || value2 == null;
+			if (flag)
+			{
+				value2 = new NpcPersonaProfile();
+			}
+			value2.VoiceId = text4;
+			if (flag)
+			{
+				// Only a newly created voice-only profile needs identity metadata stamped from the current Hero registry.
+				StampNpcPersonaProfile(text3, value2);
+			}
+			_npcPersonaProfiles[text3] = value2;
+			appliedVoiceIdCount++;
+		}
+		return num;
+	}
+
+	// Read package JSON with a throwing UTF-8 decoder so an invalid byte sequence never becomes a silent, destructive default value.
+	private static bool TryReadDatabaseReloadUtf8Text(string filePath, out string text, out string error)
+	{
+		text = "";
+		error = "";
+		try
+		{
+			if (string.IsNullOrWhiteSpace(filePath) || !File.Exists(filePath))
+			{
+				error = "文件不存在。";
+				return false;
+			}
+			text = File.ReadAllText(filePath, DatabaseReloadStrictUtf8);
+			return true;
+		}
+		catch (DecoderFallbackException)
+		{
+			error = "文件不是有效的 UTF-8 编码。";
+			return false;
+		}
+		catch (Exception ex)
+		{
+			error = ex.Message;
+			return false;
+		}
+	}
+
+	// Deserialization is intentionally strict for this replace flow; ordinary developer imports keep their existing tolerant behavior.
+	private static bool TryReadDatabaseReloadJson<T>(string filePath, out T value, out string error) where T : class
+	{
+		value = null;
+		error = "";
+		if (!TryReadDatabaseReloadUtf8Text(filePath, out string text, out error))
+		{
+			return false;
+		}
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			error = "JSON 文件为空。";
+			return false;
+		}
+		try
+		{
+			value = JsonConvert.DeserializeObject<T>(text);
+			if (value == null)
+			{
+				error = "JSON 内容为空或结构无效。";
+				return false;
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			error = "JSON 解析失败：" + ex.Message;
+			return false;
+		}
+	}
+
+	// VoiceMapper treats unknown or wrongly typed properties as empty pools, so verify the complete export shape before overwrite can clear a live mapping.
+	private static bool TryValidateDatabaseReloadVoiceMapping(string json, out string error)
+	{
+		error = "";
+		try
+		{
+			if (string.IsNullOrWhiteSpace(json))
+			{
+				error = "文件为空。";
+				return false;
+			}
+			JObject root = JObject.Parse(json);
+			foreach (string groupKey in VoiceMapper.AllGroupKeys)
+			{
+				JToken groupToken = root[groupKey];
+				if (groupToken == null)
+				{
+					error = "缺少声音分组：" + groupKey;
+					return false;
+				}
+				if (groupToken.Type != JTokenType.Array)
+				{
+					error = "声音分组 “" + groupKey + "” 必须是数组。";
+					return false;
+				}
+				HashSet<string> voiceIds = new HashSet<string>(StringComparer.Ordinal);
+				foreach (JToken voiceToken in groupToken.Children())
+				{
+					if (voiceToken.Type != JTokenType.String)
+					{
+						error = "声音分组 “" + groupKey + "” 包含非字符串声音 ID。";
+						return false;
+					}
+					string voiceId = (voiceToken.ToString() ?? "").Trim();
+					if (string.IsNullOrWhiteSpace(voiceId) || !voiceIds.Add(voiceId))
+					{
+						error = "声音分组 “" + groupKey + "” 包含空或重复声音 ID。";
+						return false;
+					}
+				}
+			}
+			JToken fallbackToken = root["fallback"];
+			if (fallbackToken == null || fallbackToken.Type != JTokenType.String)
+			{
+				error = "fallback 必须存在且为字符串。";
+				return false;
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			error = "JSON 解析失败：" + ex.Message;
+			return false;
+		}
+	}
+
+	// Gather every supported lore source before confirmation.  This O(n) scan occurs only after the player explicitly chooses reload.
+	private static bool TryLoadDatabaseReloadKnowledgeRules(string importDir, out List<KnowledgeLibraryBehavior.LoreRule> rules, out int disambiguatedRuleIdCount, out int deduplicatedKeywordCount, out string error)
+	{
+		rules = new List<KnowledgeLibraryBehavior.LoreRule>();
+		disambiguatedRuleIdCount = 0;
+		deduplicatedKeywordCount = 0;
+		error = "";
+		if (string.IsNullOrWhiteSpace(importDir) || !Directory.Exists(importDir))
+		{
+			error = "知识资料包目录不存在。";
+			return false;
+		}
+		HashSet<string> ruleIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		Dictionary<string, string> keywordOwnerOriginalRuleIds = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		List<string> ruleDirectories = new List<string>
+		{
+			Path.Combine(importDir, "knowledge", "rules"),
+			Path.Combine(importDir, "knowledge", "single_rules"),
+			Path.Combine(importDir, "knowledge")
+		};
+		int sourceFileCount = 0;
+		foreach (string ruleDirectory in ruleDirectories.Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase))
+		{
+			if (!Directory.Exists(ruleDirectory))
+			{
+				continue;
+			}
+			foreach (string filePath in Directory.GetFiles(ruleDirectory, "*.json", SearchOption.TopDirectoryOnly).OrderBy((string x) => x, StringComparer.OrdinalIgnoreCase))
+			{
+				string fileName = Path.GetFileName(filePath) ?? "";
+				// AIConfig is deliberately excluded: database reload must never change API configuration or any prompt-related configuration.
+				if (string.Equals(fileName, "AIConfig.json", StringComparison.OrdinalIgnoreCase) || string.Equals(fileName, "KnowledgeRules.json", StringComparison.OrdinalIgnoreCase))
+				{
+					continue;
+				}
+				sourceFileCount++;
+				if (!TryReadDatabaseReloadJson(filePath, out KnowledgeLibraryBehavior.LoreRule rule, out string readError))
+				{
+					error = "知识文件 “" + fileName + "” 无法读取：" + readError;
+					return false;
+				}
+				if (!TryAddDatabaseReloadKnowledgeRule(rule, fileName, ruleIds, keywordOwnerOriginalRuleIds, rules, ref disambiguatedRuleIdCount, ref deduplicatedKeywordCount, out error))
+				{
+					return false;
+				}
+			}
+		}
+		string aggregatePath = Path.Combine(importDir, "knowledge", "KnowledgeRules.json");
+		if (File.Exists(aggregatePath))
+		{
+			sourceFileCount++;
+			if (!TryReadDatabaseReloadJson(aggregatePath, out KnowledgeLibraryBehavior.KnowledgeFile aggregate, out string aggregateError))
+			{
+				error = "知识汇总文件无法读取：" + aggregateError;
+				return false;
+			}
+			if (aggregate.Rules == null)
+			{
+				error = "知识汇总文件缺少 Rules 列表。";
+				return false;
+			}
+			foreach (KnowledgeLibraryBehavior.LoreRule rule2 in aggregate.Rules)
+			{
+				if (rule2 == null)
+				{
+					error = "知识汇总文件包含空知识条目。";
+					return false;
+				}
+				if (!TryAddDatabaseReloadKnowledgeRule(rule2, "KnowledgeRules_" + (rules.Count + 1), ruleIds, keywordOwnerOriginalRuleIds, rules, ref disambiguatedRuleIdCount, ref deduplicatedKeywordCount, out error))
+				{
+					return false;
+				}
+			}
+		}
+		if (sourceFileCount <= 0 || rules.Count <= 0)
+		{
+			error = "资料包中未找到 knowledge\\rules 下的知识文件或 knowledge\\KnowledgeRules.json。";
+			return false;
+		}
+		return true;
+	}
+
+	// Preserve source entries with accidental duplicate IDs by deriving a deterministic in-memory ID; source files remain immutable.
+	private static bool TryAddDatabaseReloadKnowledgeRule(KnowledgeLibraryBehavior.LoreRule rule, string sourceLabel, HashSet<string> knownRuleIds, Dictionary<string, string> keywordOwnerOriginalRuleIds, List<KnowledgeLibraryBehavior.LoreRule> rules, ref int disambiguatedRuleIdCount, ref int deduplicatedKeywordCount, out string error)
+	{
+		error = "";
+		if (rule == null)
+		{
+			error = "资料包包含空知识条目。";
+			return false;
+		}
+		string originalRuleId = (rule.Id ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(originalRuleId))
+		{
+			error = "知识条目 “" + (sourceLabel ?? "") + "” 的 RuleId 为空。";
+			return false;
+		}
+		// Never turn a second package player-profile entry into ordinary lore by renaming it.
+		if (KnowledgeLibraryBehavior.IsPlayerPersonaRuleId(originalRuleId))
+		{
+			return true;
+		}
+		string effectiveRuleId = originalRuleId;
+		bool disambiguatedRuleId = false;
+		if (!knownRuleIds.Add(effectiveRuleId))
+		{
+			effectiveRuleId = BuildDatabaseReloadDisambiguatedRuleId(originalRuleId, sourceLabel, knownRuleIds);
+			if (string.IsNullOrWhiteSpace(effectiveRuleId) || !knownRuleIds.Add(effectiveRuleId))
+			{
+				error = "无法为重复知识 RuleId 生成稳定 ID：" + originalRuleId;
+				return false;
+			}
+			rule.Id = effectiveRuleId;
+			disambiguatedRuleId = true;
+			disambiguatedRuleIdCount++;
+			Logger.Log("DatabaseReload", "[WARN] Disambiguated duplicate knowledge RuleId source=" + (sourceLabel ?? "") + " old=" + originalRuleId + " new=" + effectiveRuleId);
+		}
+		else
+		{
+			rule.Id = effectiveRuleId;
+		}
+		if (disambiguatedRuleId)
+		{
+			// Exact-keyword lookup returns one rule only, so a split duplicate keeps each shared trigger on the original rule and retains its unique triggers here.
+			deduplicatedKeywordCount += RemoveDuplicateKeywordsFromDisambiguatedDatabaseRule(rule, sourceLabel, originalRuleId, keywordOwnerOriginalRuleIds);
+		}
+		foreach (string keyword in rule.Keywords ?? new List<string>())
+		{
+			string normalizedKeyword = NormalizeKeywordForCompare(keyword);
+			if (!string.IsNullOrWhiteSpace(normalizedKeyword) && !keywordOwnerOriginalRuleIds.ContainsKey(normalizedKeyword))
+			{
+				keywordOwnerOriginalRuleIds[normalizedKeyword] = originalRuleId;
+			}
+		}
+		rules.Add(rule);
+		return true;
+	}
+
+	// Only same-original-ID collisions are removed; unrelated source rules still reach the strict validator and are rejected rather than silently changed.
+	private static int RemoveDuplicateKeywordsFromDisambiguatedDatabaseRule(KnowledgeLibraryBehavior.LoreRule rule, string sourceLabel, string originalRuleId, Dictionary<string, string> keywordOwnerOriginalRuleIds)
+	{
+		if (rule?.Keywords == null || rule.Keywords.Count <= 0 || keywordOwnerOriginalRuleIds == null)
+		{
+			return 0;
+		}
+		int removedCount = 0;
+		List<string> retainedKeywords = new List<string>(rule.Keywords.Count);
+		foreach (string keyword in rule.Keywords)
+		{
+			string normalizedKeyword = NormalizeKeywordForCompare(keyword);
+			if (!string.IsNullOrWhiteSpace(normalizedKeyword)
+				&& keywordOwnerOriginalRuleIds.TryGetValue(normalizedKeyword, out string ownerOriginalRuleId)
+				&& string.Equals(ownerOriginalRuleId, originalRuleId, StringComparison.OrdinalIgnoreCase))
+			{
+				removedCount++;
+				Logger.Log("DatabaseReload", "[WARN] Kept duplicate source keyword on original rule source=" + (sourceLabel ?? "") + " ruleId=" + originalRuleId + " keyword=" + normalizedKeyword);
+				continue;
+			}
+			retainedKeywords.Add(keyword);
+		}
+		if (removedCount > 0)
+		{
+			rule.Keywords = retainedKeywords;
+		}
+		return removedCount;
+	}
+
+	// File names are stable inside an exported package, with a numeric suffix only when a package repeats the same filename-derived identity.
+	private static string BuildDatabaseReloadDisambiguatedRuleId(string originalRuleId, string sourceLabel, HashSet<string> knownRuleIds)
+	{
+		string fileStem = Path.GetFileNameWithoutExtension(sourceLabel ?? "") ?? "";
+		int separatorIndex = fileStem.IndexOf("__", StringComparison.Ordinal);
+		string suffix = (separatorIndex >= 0 && separatorIndex + 2 < fileStem.Length) ? fileStem.Substring(separatorIndex + 2).Trim() : fileStem.Trim();
+		if (string.IsNullOrWhiteSpace(suffix))
+		{
+			suffix = "duplicate";
+		}
+		string baseId = (originalRuleId ?? "").Trim() + "__" + suffix;
+		string candidate = baseId;
+		int suffixIndex = 2;
+		while (knownRuleIds != null && knownRuleIds.Contains(candidate))
+		{
+			candidate = baseId + "_" + suffixIndex++;
+		}
+		return candidate;
+	}
+
+	// Opening summaries are static world knowledge.  Dynamic EventRecords are purposely not read by this reload workflow.
+	private static bool TryLoadDatabaseReloadOpeningKnowledge(string importDir, out EventImportPayload payload, out string error)
+	{
+		payload = new EventImportPayload();
+		error = "";
+		string eventDirectory = Path.Combine(importDir ?? "", "event_data");
+		if (!Directory.Exists(eventDirectory))
+		{
+			eventDirectory = importDir ?? "";
+		}
+		string worldPath = Path.Combine(eventDirectory, "WorldOpeningSummary.json");
+		string kingdomsPath = Path.Combine(eventDirectory, "KingdomOpeningSummaries.json");
+		if (!File.Exists(worldPath) || !File.Exists(kingdomsPath))
+		{
+			error = "资料包必须同时包含 event_data\\WorldOpeningSummary.json 与 event_data\\KingdomOpeningSummaries.json。";
+			return false;
+		}
+		if (!TryReadDatabaseReloadJson(worldPath, out EventWorldOpeningSummaryJson worldSummary, out string worldError))
+		{
+			error = "世界开局知识无法读取：" + worldError;
+			return false;
+		}
+		if (!TryReadDatabaseReloadJson(kingdomsPath, out Dictionary<string, string> kingdomSummaries, out string kingdomsError))
+		{
+			error = "王国开局知识无法读取：" + kingdomsError;
+			return false;
+		}
+		payload.HasWorldSummaryFile = true;
+		payload.WorldSummary = (worldSummary.Summary ?? "").Trim();
+		payload.HasKingdomSummariesFile = true;
+		foreach (KeyValuePair<string, string> kingdomSummary in kingdomSummaries)
+		{
+			string kingdomId = (kingdomSummary.Key ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(kingdomId))
+			{
+				error = "王国开局知识包含空王国 ID。";
+				return false;
+			}
+			if (payload.KingdomSummaries.ContainsKey(kingdomId))
+			{
+				error = "王国开局知识包含重复王国 ID：" + kingdomId;
+				return false;
+			}
+			payload.KingdomSummaries[kingdomId] = (kingdomSummary.Value ?? "").Trim();
+		}
+		return true;
+	}
+
+	// Capture all mutable reload targets before the first replacement.  Serialized copies avoid aliasing existing save objects during rollback.
+	private bool TryCaptureDatabaseReloadRollbackSnapshot(KnowledgeLibraryBehavior knowledgeLibraryBehavior, KingdomStrategicProfileBehavior kingdomStrategicProfileBehavior, out DatabaseReloadRollbackSnapshot snapshot, out string error)
+	{
+		snapshot = null;
+		error = "";
+		try
+		{
+			if (knowledgeLibraryBehavior == null || kingdomStrategicProfileBehavior == null)
+			{
+				error = "知识库或王国资料行为未初始化。";
+				return false;
+			}
+			string knowledgeJson = knowledgeLibraryBehavior.ExportRulesJson(pretty: false);
+			if (string.IsNullOrWhiteSpace(knowledgeJson))
+			{
+				error = "无法导出当前知识库快照。";
+				return false;
+			}
+			if (!kingdomStrategicProfileBehavior.TryCaptureDatabaseReloadRollbackJson(out string kingdomProfilesJson, out string kingdomError))
+			{
+				error = "无法导出当前王国资料快照：" + kingdomError;
+				return false;
+			}
+			snapshot = new DatabaseReloadRollbackSnapshot
+			{
+				KnowledgeJson = knowledgeJson,
+				VoiceMappingJson = VoiceMapper.ExportMappingJson(pretty: false) ?? "",
+				NpcPersonaProfilesJson = JsonConvert.SerializeObject(_npcPersonaProfiles ?? new Dictionary<string, NpcPersonaProfile>()),
+				EventWorldOpeningSummary = _eventWorldOpeningSummary ?? "",
+				EventRecordsJson = JsonConvert.SerializeObject(_eventRecordEntries ?? new List<EventRecordEntry>()),
+				KingdomProfilesJson = kingdomProfilesJson
+			};
+			foreach (KeyValuePair<string, string> summary in _eventKingdomOpeningSummaries ?? new Dictionary<string, string>())
+			{
+				snapshot.EventKingdomOpeningSummaries[summary.Key ?? ""] = summary.Value ?? "";
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			snapshot = null;
+			error = "创建回滚快照失败：" + ex.Message;
+			return false;
+		}
+	}
+
+	// Roll back every subsystem that may have changed before a later subsystem rejected the preflighted plan.
+	private bool RestoreDatabaseReloadAfterFailure(KnowledgeLibraryBehavior knowledgeLibraryBehavior, KingdomStrategicProfileBehavior kingdomStrategicProfileBehavior, DatabaseReloadRollbackSnapshot snapshot, string failure, out string detail)
+	{
+		List<string> restoreErrors = new List<string>();
+		if (knowledgeLibraryBehavior == null || snapshot == null)
+		{
+			detail = (failure ?? "重载失败") + "；缺少回滚快照。";
+			return false;
+		}
+		try
+		{
+			if (!knowledgeLibraryBehavior.ImportRulesJson(snapshot.KnowledgeJson, overwrite: true))
+			{
+				restoreErrors.Add("知识库");
+			}
+		}
+		catch (Exception ex)
+		{
+			restoreErrors.Add("知识库(" + ex.Message + ")");
+		}
+		try
+		{
+			if (!VoiceMapper.ImportMappingJson(snapshot.VoiceMappingJson, overwriteExisting: true, saveToFile: false))
+			{
+				restoreErrors.Add("声音映射");
+			}
+			else
+			{
+				_voiceMappingJsonStorage = VoiceMapper.ExportMappingJson(pretty: false) ?? "";
+			}
+		}
+		catch (Exception ex2)
+		{
+			restoreErrors.Add("声音映射(" + ex2.Message + ")");
+		}
+		try
+		{
+			Dictionary<string, NpcPersonaProfile> restoredProfiles = JsonConvert.DeserializeObject<Dictionary<string, NpcPersonaProfile>>(snapshot.NpcPersonaProfilesJson);
+			if (restoredProfiles == null)
+			{
+				restoreErrors.Add("NPC 声音 ID");
+			}
+			else
+			{
+				_npcPersonaProfiles = restoredProfiles;
+			}
+		}
+		catch (Exception ex3)
+		{
+			restoreErrors.Add("NPC 声音 ID(" + ex3.Message + ")");
+		}
+		try
+		{
+			string previousWorldWeeklyProductsFingerprint = BuildPublishedWorldWeeklyProductsFingerprint();
+			List<EventRecordEntry> restoredRecords = JsonConvert.DeserializeObject<List<EventRecordEntry>>(snapshot.EventRecordsJson);
+			if (restoredRecords == null)
+			{
+				restoreErrors.Add("开局知识和事件记录");
+			}
+			else
+			{
+				_eventWorldOpeningSummary = snapshot.EventWorldOpeningSummary ?? "";
+				_eventKingdomOpeningSummaries = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+				foreach (KeyValuePair<string, string> summary in snapshot.EventKingdomOpeningSummaries ?? new Dictionary<string, string>())
+				{
+					_eventKingdomOpeningSummaries[summary.Key ?? ""] = summary.Value ?? "";
+				}
+				_eventRecordEntries = restoredRecords;
+				if (!string.Equals(previousWorldWeeklyProductsFingerprint, BuildPublishedWorldWeeklyProductsFingerprint(), StringComparison.Ordinal))
+				{
+					Interlocked.Increment(ref _publishedWorldWeeklyHistoryRevision);
+				}
+			}
+		}
+		catch (Exception ex4)
+		{
+			restoreErrors.Add("开局知识和事件记录(" + ex4.Message + ")");
+		}
+		try
+		{
+			string kingdomError = "";
+			if (kingdomStrategicProfileBehavior == null || !kingdomStrategicProfileBehavior.TryRestoreDatabaseReloadRollbackJson(snapshot.KingdomProfilesJson, out kingdomError))
+			{
+				restoreErrors.Add("王国性格与战略" + (string.IsNullOrWhiteSpace(kingdomError) ? "" : "(" + kingdomError + ")"));
+			}
+		}
+		catch (Exception ex5)
+		{
+			restoreErrors.Add("王国性格与战略(" + ex5.Message + ")");
+		}
+		if (restoreErrors.Count <= 0)
+		{
+			detail = (failure ?? "重载失败") + "；已自动回滚本次重载。";
+		}
+		else
+		{
+			detail = (failure ?? "重载失败") + "；自动回滚不完整：" + string.Join("、", restoreErrors);
+		}
+		Logger.Log("DatabaseReload", "[WARN] Reload failed and rollback was attempted: " + detail);
+		return false;
+	}
+
+	// Replace only static opening knowledge, then rebuild the derived week-zero entries while leaving all dynamic event records untouched.
+	private void ReplaceDatabaseOpeningKnowledge(EventImportPayload payload)
+	{
+		if (payload == null || !payload.HasWorldSummaryFile || !payload.HasKingdomSummariesFile)
+		{
+			throw new InvalidOperationException("开局知识重载计划不完整。");
+		}
+		_eventWorldOpeningSummary = (payload.WorldSummary ?? "").Trim();
+		_eventKingdomOpeningSummaries = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		foreach (KeyValuePair<string, string> sourceSummary in payload.KingdomSummaries ?? new Dictionary<string, string>())
+		{
+			string kingdomId = (sourceSummary.Key ?? "").Trim();
+			string summary = (sourceSummary.Value ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(kingdomId) && !string.IsNullOrWhiteSpace(summary))
+			{
+				_eventKingdomOpeningSummaries[kingdomId] = summary;
+			}
+		}
+		if (_eventRecordEntries == null)
+		{
+			_eventRecordEntries = new List<EventRecordEntry>();
+		}
+		bool removedWorldOpeningRecord = _eventRecordEntries.Any((EventRecordEntry x) => IsDatabaseReloadOpeningEvent(x) && string.Equals((x.EventKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase));
+		int removedOpeningRecordCount = _eventRecordEntries.RemoveAll(IsDatabaseReloadOpeningEvent);
+		// Pending requests are tied to old derived entries.  Keep in-flight requests: their source-hash guard rejects stale results safely.
+		lock (_weekZeroShortSummaryQueueLock)
+		{
+			_weekZeroShortSummaryPendingQueue.RemoveAll((WeekZeroShortSummaryRequest x) => IsDatabaseReloadOpeningEventId(x?.EventId));
+			_weekZeroShortSummaryGenerationAttempted.RemoveWhere(IsDatabaseReloadOpeningEventId);
+		}
+		// A blank world summary removes the published week-zero world report, so it needs a revision signal even though no new report is upserted.
+		if (removedWorldOpeningRecord && string.IsNullOrWhiteSpace(_eventWorldOpeningSummary))
+		{
+			Interlocked.Increment(ref _publishedWorldWeeklyHistoryRevision);
+		}
+		// Reload owns only canonical week-zero entries.  Skipping the usual global sanitation keeps arbitrary dynamic history byte-for-byte untouched.
+		EnsureWeekZeroOpeningSummaryEvents(sanitizeAfter: false);
+		Logger.Log("DatabaseReload", "replaced static opening knowledge; removedDerivedWeekZeroRecords=" + removedOpeningRecordCount + " kingdomSummaries=" + _eventKingdomOpeningSummaries.Count);
+	}
+
+	// Only canonical week-zero world/kingdom IDs are derived from opening summaries; every other event record remains save-owned dynamic history.
+	private static bool IsDatabaseReloadOpeningEvent(EventRecordEntry entry)
+	{
+		return entry != null && entry.WeekIndex == 0 && IsDatabaseReloadOpeningEventId(entry.EventId);
+	}
+
+	private static bool IsDatabaseReloadOpeningEventId(string eventId)
+	{
+		string normalizedEventId = (eventId ?? "").Trim();
+		return normalizedEventId.StartsWith("weekly_report:world:0:", StringComparison.OrdinalIgnoreCase)
+			|| normalizedEventId.StartsWith("weekly_report:kingdom:0:", StringComparison.OrdinalIgnoreCase);
 	}
 
 	private void ShowDuplicateImportInquiry(string title, string text, Action onOverwrite, Action onSkipDuplicates, Action onCancel)

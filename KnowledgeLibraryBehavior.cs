@@ -2685,6 +2685,12 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		return rule != null && string.Equals((rule.Id ?? "").Trim(), PlayerPersonaRuleId, StringComparison.OrdinalIgnoreCase);
 	}
 
+	// Keeps external database importers from guessing which lore rule is the player's protected profile.
+	public static bool IsPlayerPersonaRuleId(string ruleId)
+	{
+		return string.Equals((ruleId ?? "").Trim(), PlayerPersonaRuleId, StringComparison.OrdinalIgnoreCase);
+	}
+
 	private static bool CanObserverReceivePlayerPersona(Hero npcHero, CharacterObject npcCharacter)
 	{
 		try
@@ -6689,6 +6695,138 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 		catch
 		{
+			return false;
+		}
+	}
+
+	// The terminal calls this read-only pass before confirmation, so malformed source lore cannot start a partial reload.
+	public bool TryValidateDatabaseRulesPreservingPlayer(IEnumerable<LoreRule> sourceRules, out int removedCount, out int importedCount, out string error)
+	{
+		return TryBuildDatabaseRulesPreservingPlayer(sourceRules, out var _, out removedCount, out importedCount, out error);
+	}
+
+	// This user-triggered replacement is intentionally a one-shot O(n) operation: it swaps database lore while
+	// retaining the only two player-owned fields, so normal retrieval never pays this cost.
+	public bool ReplaceDatabaseRulesPreservingPlayer(IEnumerable<LoreRule> sourceRules, out int removedCount, out int importedCount, out string error)
+	{
+		if (!TryBuildDatabaseRulesPreservingPlayer(sourceRules, out KnowledgeFile knowledgeFile, out removedCount, out importedCount, out error))
+		{
+			return false;
+		}
+		_file = knowledgeFile;
+		StripSemanticPrototypes();
+		try
+		{
+			_storageJson = JsonConvert.SerializeObject(_file, Formatting.None);
+		}
+		catch
+		{
+		}
+		TouchRuleData();
+		return true;
+	}
+
+	// Build the replacement on locals first, so validation failure leaves the current save's knowledge untouched.
+	private bool TryBuildDatabaseRulesPreservingPlayer(IEnumerable<LoreRule> sourceRules, out KnowledgeFile replacement, out int removedCount, out int importedCount, out string error)
+	{
+		replacement = null;
+		removedCount = 0;
+		importedCount = 0;
+		error = "";
+		try
+		{
+			if (sourceRules == null)
+			{
+				error = "资料包中没有可重载的知识规则。";
+				return false;
+			}
+			List<LoreRule> list = new List<LoreRule>();
+			HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			foreach (LoreRule sourceRule in sourceRules)
+			{
+				if (sourceRule == null)
+				{
+					continue;
+				}
+				string text = (sourceRule.Id ?? "").Trim();
+				if (string.IsNullOrWhiteSpace(text))
+				{
+					error = "资料包中存在 RuleId 为空的知识条目。";
+					return false;
+				}
+				// A source package may contain its own player profile, but it must never replace this save's player data.
+				if (IsPlayerPersonaRuleId(text))
+				{
+					continue;
+				}
+				if (!hashSet.Add(text))
+				{
+					error = "资料包中存在重复 RuleId：" + text;
+					return false;
+				}
+				sourceRule.Id = text;
+				if (!TryValidateRagShortTexts(sourceRule, requireAtLeastOne: false, out var text2) || !ValidateVariantConditionsUnique(sourceRule, out var _, out var _))
+				{
+					error = string.IsNullOrWhiteSpace(text2) ? ("资料包中的知识条目无效：" + text) : text2;
+					return false;
+				}
+				list.Add(sourceRule);
+			}
+			if (list.Count <= 0)
+			{
+				error = "资料包中没有可替换的非主角知识。";
+				return false;
+			}
+			KnowledgeFile knowledgeFile = _file ?? new KnowledgeFile();
+			List<LoreRule> list2 = knowledgeFile.Rules ?? new List<LoreRule>();
+			LoreRule loreRule = list2.FirstOrDefault(IsPlayerPersonaRule);
+			Dictionary<string, string> dictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			if (loreRule != null)
+			{
+				foreach (string keyword in loreRule.Keywords ?? Enumerable.Empty<string>())
+				{
+					string text3 = NormalizeKeywordForCompare(keyword);
+					if (!string.IsNullOrWhiteSpace(text3))
+					{
+						dictionary[text3] = PlayerPersonaRuleId;
+					}
+				}
+			}
+			foreach (LoreRule loreRule2 in list)
+			{
+				foreach (string keyword2 in loreRule2.Keywords ?? Enumerable.Empty<string>())
+				{
+					string text4 = NormalizeKeywordForCompare(keyword2);
+					if (string.IsNullOrWhiteSpace(text4))
+					{
+						continue;
+					}
+					if (dictionary.TryGetValue(text4, out var value) && !string.Equals(value, loreRule2.Id, StringComparison.OrdinalIgnoreCase))
+					{
+						error = "知识关键词与保留的主角资料或资料包规则冲突：" + text4;
+						return false;
+					}
+					dictionary[text4] = loreRule2.Id;
+				}
+			}
+			removedCount = list2.Count((LoreRule rule) => rule != null && !IsPlayerPersonaRule(rule));
+			replacement = new KnowledgeFile
+			{
+				Version = (knowledgeFile.Version > 0) ? knowledgeFile.Version : 1,
+				PlayerAppearance = NormalizePlayerAppearanceForStorage(knowledgeFile.PlayerAppearance),
+				Rules = new List<LoreRule>()
+			};
+			if (loreRule != null)
+			{
+				replacement.Rules.Add(loreRule);
+			}
+			replacement.Rules.AddRange(list);
+			importedCount = list.Count;
+			return true;
+		}
+		catch (Exception ex)
+		{
+			error = "重载知识库失败：" + ex.Message;
 			return false;
 		}
 	}

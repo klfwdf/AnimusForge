@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -1400,17 +1399,14 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private static void OpenYjApiExternalPage(string url, string pageName)
 	{
-		try
+		// 无默认浏览器时由共享启动器仅在用户点击时执行一次有界本机查找，不影响游戏热路径。
+		if (ExternalBrowserLauncher.TryOpen(url, out bool usedLocalBrowserFallback, out string failureMessage))
 		{
-			Process.Start(new ProcessStartInfo(url)
-			{
-				UseShellExecute = true
-			});
-			InformationManager.DisplayMessage(new InformationMessage("[系统] 正在打开 YJ API " + pageName + "页面。"));
+			InformationManager.DisplayMessage(new InformationMessage(usedLocalBrowserFallback ? "[系统] 默认浏览器无法启动，已使用本机浏览器打开 YJ API " + pageName + "页面。" : "[系统] 正在打开 YJ API " + pageName + "页面。"));
 		}
-		catch (Exception ex)
+		else
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[系统] 打开 YJ API " + pageName + "页面失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage("[系统] 打开 YJ API " + pageName + "页面失败：" + failureMessage));
 		}
 	}
 
@@ -1591,17 +1587,14 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private static void OpenDeepSeekApiKeysPage()
 	{
-		try
+		// 与 YJ 页面复用同一受限浏览器发现逻辑，避免缺少默认关联时中断引导。
+		if (ExternalBrowserLauncher.TryOpen(DeepSeekApiKeysUrl, out bool usedLocalBrowserFallback, out string failureMessage))
 		{
-			Process.Start(new ProcessStartInfo(DeepSeekApiKeysUrl)
-			{
-				UseShellExecute = true
-			});
-			InformationManager.DisplayMessage(new InformationMessage("[系统] 正在打开 DeepSeek 官方 API Keys 页面。"));
+			InformationManager.DisplayMessage(new InformationMessage(usedLocalBrowserFallback ? "[系统] 默认浏览器无法启动，已使用本机浏览器打开 DeepSeek 官方 API Keys 页面。" : "[系统] 正在打开 DeepSeek 官方 API Keys 页面。"));
 		}
-		catch (Exception ex)
+		else
 		{
-			InformationManager.DisplayMessage(new InformationMessage("[系统] 打开 DeepSeek 官方页面失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage("[系统] 打开 DeepSeek 官方页面失败：" + failureMessage));
 		}
 	}
 
