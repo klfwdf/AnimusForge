@@ -80,6 +80,13 @@ Do not move all code at once. First extract stable data/rules/state helpers, the
 - Plunder and massacre controllers still own ledger commits, while the final outcome adapter still owns native prosperity comparison, colonization loyalty reset, and timed debuff registration. None of those controllers duplicate trust or notable mutation loops.
 - The older SETS owner-specific incident relation penalty is deliberately outside this adapter because it targets one clan leader and is not a GCCZ settlement/notable outcome batch.
 
+## 2026-08-23 direct aftermath state and adapter
+
+- `TownDirectAftermathFlowState` is the Bannerlord-free lifecycle for exactly one direct destructive result: plunder or massacre. Its phases are inactive, awaiting resolution, awaiting loot close, and awaiting encounter finish.
+- `SiegeAiInterventionBehavior.DirectAftermathAdapter.cs` owns the native menu interception, MapState safety probe, loot screen, one-shot presentation, retry pump, and encounter finish side effects.
+- The two destructive results retain their existing `Pillage`/`Devastate` outcomes, source codes, loot summaries, colonization commit hook, and external compatibility facades, but no longer maintain duplicate runners or twelve parallel state fields.
+- Session cleanup may clear a direct plunder script without erasing a direct massacre script that must survive mission exit; full runtime reset clears the single flow state. This preserves the earlier transition boundary explicitly instead of relying on a partial boolean reset list.
+
 ## 2026-06-08 fused runtime bridge seed
 
 The fused AF test tree now has a real isolated GCCZ source area:
@@ -173,7 +180,7 @@ Follow-up isolation: civilian loot-accounting UI now uses `SiegeLootAccountingPr
 Follow-up isolation: market/civilian-spoils loot UI now also uses `SiegeLootAccountingProfile`; AF keeps town gold/inventory mutation, pending loot roster construction, random stack selection, and display side effects while GCCZ core owns market gold, market inventory, and civilian-spoils wording.
 
 
-Follow-up isolation: direct aftermath loot status UI now also uses `SiegeLootAccountingProfile`; AF keeps direct loot-screen timing/state flags and display side effects while GCCZ core owns direct devastate/plunder settlement notices and credited loot summary wording.
+Follow-up isolation: direct aftermath loot status UI uses `SiegeLootAccountingProfile`; `TownDirectAftermathFlowState` now owns timing phases and one-shot claims, while the dedicated AF adapter keeps only Bannerlord loot-screen and display side effects.
 
 
 Follow-up isolation: market-loot settlement reasons and capture ratios now also use `SiegeLootAccountingProfile`; AF keeps town gold/inventory mutation plus one-time guards while GCCZ core owns the plunder/massacre labels and percentage constants.
