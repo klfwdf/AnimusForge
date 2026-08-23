@@ -26,6 +26,10 @@ public sealed class CourierLetterReplyPopup
 	private PendingCloseAction _pendingCloseAction;
 	private bool _isClosed;
 	private bool _pauseRequestRegistered;
+	// Encyclopedia navigation keeps this popup alive, but its high-priority layer must be inactive while the native page is open.
+	private bool _isSuspendedForEncyclopediaNavigation;
+	// Swallow the Escape release that closed the encyclopedia instead of immediately closing the restored letter.
+	private long _resumeInputGuardUntilUtcTicks;
 
 	public static bool IsOpen => _activePopup != null && !_activePopup._isClosed;
 
@@ -81,7 +85,7 @@ public sealed class CourierLetterReplyPopup
 	public static void ProcessDeferredCloseIfNeeded()
 	{
 		CourierLetterReplyPopup popup = _activePopup;
-		if (popup == null || popup._isClosed)
+		if (popup == null || popup._isClosed || popup._isSuspendedForEncyclopediaNavigation)
 		{
 			return;
 		}
@@ -112,6 +116,10 @@ public sealed class CourierLetterReplyPopup
 
 	private bool ShouldCloseForEscapeKey()
 	{
+		if (_isSuspendedForEncyclopediaNavigation || IsResumeInputGuardActive())
+		{
+			return false;
+		}
 		try
 		{
 			return _layer?.Input != null && (_layer.Input.IsHotKeyReleased("Exit") || _layer.Input.IsKeyReleased(InputKey.Escape));
@@ -143,14 +151,63 @@ public sealed class CourierLetterReplyPopup
 	{
 		if (!_isClosed)
 		{
-			EncyclopediaEntityLinkNavigationCoordinator.Request(link, CloseForEncyclopediaNavigation);
+			EncyclopediaEntityLinkNavigationCoordinator.Request(link, SuspendForEncyclopediaNavigation, ResumeAfterEncyclopediaNavigation);
 		}
 	}
 
-	private void CloseForEncyclopediaNavigation()
+	private void SuspendForEncyclopediaNavigation()
 	{
-		// Link navigation is a view change, so it intentionally bypasses letter close/reply callbacks.
-		Close(silent: true);
+		if (_isClosed || _isSuspendedForEncyclopediaNavigation)
+		{
+			return;
+		}
+		try
+		{
+			// Keep the loaded VM and pause request intact so the exact letter can be restored without replaying callbacks.
+			_layer.InputRestrictions.ResetInputRestrictions();
+			_layer.IsFocusLayer = false;
+			ScreenManager.TryLoseFocus(_layer);
+			ScreenManager.SetSuspendLayer(_layer, isSuspended: true);
+			_isSuspendedForEncyclopediaNavigation = true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CourierLetterReplyPopup", "[WARN] Failed to suspend popup for encyclopedia: " + ex.Message);
+		}
+	}
+
+	private void ResumeAfterEncyclopediaNavigation()
+	{
+		if (_isClosed || !_isSuspendedForEncyclopediaNavigation)
+		{
+			return;
+		}
+		if (!ReferenceEquals(ScreenManager.TopScreen, _screen))
+		{
+			// Never revive a modal across a changed game screen; regular cleanup still releases its pause request.
+			Close(silent: true);
+			return;
+		}
+		try
+		{
+			// Official layer suspension preserves the movie, view-model, and visual scroll state across the encyclopedia.
+			ScreenManager.SetSuspendLayer(_layer, isSuspended: false);
+			_layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.All);
+			_layer.IsFocusLayer = true;
+			ScreenManager.TrySetFocus(_layer);
+			_isSuspendedForEncyclopediaNavigation = false;
+			_resumeInputGuardUntilUtcTicks = DateTime.UtcNow.AddMilliseconds(350.0).Ticks;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CourierLetterReplyPopup", "[WARN] Failed to restore popup after encyclopedia: " + ex.Message);
+			Close(silent: true);
+		}
+	}
+
+	private bool IsResumeInputGuardActive()
+	{
+		return _resumeInputGuardUntilUtcTicks > DateTime.UtcNow.Ticks;
 	}
 
 	private void RequestDeferredClose(PendingCloseAction closeAction)
@@ -188,6 +245,8 @@ public sealed class CourierLetterReplyPopup
 			return;
 		}
 		_isClosed = true;
+		// A permanently closed popup must never remain marked as an encyclopedia return target.
+		_isSuspendedForEncyclopediaNavigation = false;
 		try
 		{
 			// Release this modal input mask before the encyclopedia layer becomes interactive.

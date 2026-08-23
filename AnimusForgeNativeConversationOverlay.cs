@@ -320,6 +320,11 @@ public sealed class AnimusForgeNativeConversationOverlay
 		}
 		if (_temporarySystemUiActive)
 		{
+			if (AnimusForgeConversationHistoryLogPopup.IsOpen)
+			{
+				// The encyclopedia already closed, but its history child still owns this conversation; do not restore/focus the parent underneath it.
+				return true;
+			}
 			RestoreOverlayAfterTemporarySystemUi();
 		}
 		return false;
