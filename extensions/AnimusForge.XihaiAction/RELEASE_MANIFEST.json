@@ -1,0 +1,270 @@
+{
+  "moduleId": "AnimusForge_XihaiAction",
+  "moduleVersion": "v1.1.0",
+  "releaseStatus": "candidate-standalone-af-bridge-battle-speech-v2-multi-replies-not-game-validated",
+  "gameVersion": "v1.4.8.119303",
+  "animusForgeVersion": "v1.3.4",
+  "animusForgeAssemblyPath": "Modules/AnimusForge/bin/Win64_Shipping_Client/versions/1.4/AnimusForge.dll",
+  "animusForgeSha256": "1D9EBC20DA645826AC3C6AECD91CAFDE2C9C5FAAFC5BFA78AF5CD0C7C0B1DFE5",
+  "taleWorldsLibrarySha256": "AB4FF23E94A6F4B6F293D0CB4333CAE731A0499063FE4A8B6C6A3770DE32C4E5",
+  "auditScope": {
+    "kind": "stable deployed runtime, resource, configuration, symbol, and documentation files",
+    "includedStableFiles": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "excludedMutableFiles": [
+      "bin/Win64_Shipping_Client/AnimusForge.XihaiAction.log"
+    ],
+    "selfHashExcluded": "RELEASE_MANIFEST.json"
+  },
+  "artifacts": {
+    "AssetPackages/pack0.tpac": {
+      "size": 11205263,
+      "sha256": "22CDE3B08F08D175F14AE6595F8A69C9332827B32B82F42A3104E954E4A5773D"
+    },
+    "bin/Win64_Shipping_Client/AnimusForge.SceneActions.Core.dll": {
+      "size": 225792,
+      "sha256": "218A5A174243C3C870BA3DA4F81D8CEABD1BABAC34F5D977673968D2FC2DB45A"
+    },
+    "bin/Win64_Shipping_Client/AnimusForge.SceneActions.Core.pdb": {
+      "size": 57108,
+      "sha256": "99B1159AB21D301BD148B4EF63889E2D6AB206F833D2600E179647B1C9F51509"
+    },
+    "bin/Win64_Shipping_Client/AnimusForge.XihaiAction.dll": {
+      "size": 272384,
+      "sha256": "9D3AAA928C9AD8E7942F0A4AEA71D5CBE470D9BD6D4BE7134B6935585D6654CC"
+    },
+    "bin/Win64_Shipping_Client/AnimusForge.XihaiAction.pdb": {
+      "size": 71524,
+      "sha256": "461AB835EB9F21CECE18824B026A260BF1C16E12D825F1D08DB1EC1A465197E6"
+    },
+    "ModuleData/action_sets.xml": {
+      "size": 412,
+      "sha256": "E4022D23E070404CEE4F60D8FB5A55FD8840893A4B939757939A41CE32363D54"
+    },
+    "ModuleData/action_types.xml": {
+      "size": 140,
+      "sha256": "1BA1ADBC07B903D58E8BA983B7C60C7C5F526ABCED62D1CC705A9D88FCE0716A"
+    },
+    "ModuleData/combat_parameters.xml": {
+      "size": 186,
+      "sha256": "F6336722194FFF4FC1F4789A20CD324DAC6C35A66CFF09177C05F6A6EEE92A47"
+    },
+    "ModuleData/items.xml": {
+      "size": 1955,
+      "sha256": "13F96782C583041E84E9FC2EC4F231AAF0AC2777E0F80C50806EE4858E76B70F"
+    },
+    "ModuleData/Languages/CNs/language_data.xml": {
+      "size": 274,
+      "sha256": "A26D57740731539B66C8319CBB050BB29D8A640F3C8B0F4FF696706820DC6023"
+    },
+    "ModuleData/Languages/CNs/sceneactions_strings-zh-CN.xml": {
+      "size": 6061,
+      "sha256": "6F9C43DA12A5A31F7A0D310A1E79B4DC918A2D892A9B869A00E6A682D22BCF06"
+    },
+    "ModuleData/Languages/language_data.xml": {
+      "size": 395,
+      "sha256": "B3CA370328D00153C4A924AF030862947CE876E1E240A310719F896145C07A22"
+    },
+    "ModuleData/Languages/sceneactions_strings.xml": {
+      "size": 6194,
+      "sha256": "834A415DB0CD357FD00C9669C8177D6169D7D24E05363C7ED8CC106F3D773E06"
+    },
+    "ModuleData/project.mbproj": {
+      "size": 420,
+      "sha256": "20EBC807A55967D31607FFAF04BC4DC3E54C0E8D1B763FA9DCCA82DF70645A58"
+    },
+    "ModuleData/SceneActions/battle-speech-performance.v1.json": {
+      "size": 565,
+      "sha256": "145D7E0244B4D91FF3B77F68938DC91F1789428AF3A5A43B82CC10DA8FD1F862"
+    },
+    "ModuleData/SceneActions/battle-speech.v1.json": {
+      "size": 577,
+      "sha256": "720D52824F5A81923C970FFF8C7C55E8991BDB935D07841491A6E8F9C9EC36BB"
+    },
+    "ModuleData/SceneActions/settings.v1.json": {
+      "size": 1576,
+      "sha256": "3A1CE880E6D08C421D8FA772075913BCD323BBF315175992EA1327502B036CF0"
+    },
+    "ModuleData/SceneActions/settings.v2.json": {
+      "size": 2275,
+      "sha256": "17D94C506B9AB4BF842518A25B013EAA8A0A6531DA9C7067E60ABD22F013CCD4"
+    },
+    "ModuleData/SceneActions/settings.v3.json": {
+      "size": 2643,
+      "sha256": "7A214EADE413392D0B4236BF7E74392146C3A2B2A6FD249DCF8AE2C16C2AD573"
+    },
+    "ModuleData/SceneActions/settings.v4.json": {
+      "size": 2788,
+      "sha256": "20E46E8215A5FFF3FD2CD356D0B82D91A69C19D2552B9670695783B6DBFEADB4"
+    },
+    "README.SceneActions.md": {
+      "size": 32155,
+      "sha256": "5816C53DDF06007DD8C0AE9464D770E81AFED4E58C31EDBCA29D3FEAE724EA78"
+    },
+    "SubModule.xml": {
+      "size": 1411,
+      "sha256": "381D12F45CD23B9AAD553080C58860D595868A91449068C41687F2BCAE0D3B07"
+    }
+  },
+  "verification": {
+    "releaseBuildWarnings": 0,
+    "releaseBuildErrors": 0,
+    "coreTestsPassed": 82,
+    "coreTestsFailed": 0,
+    "staticVerifierPassed": 13,
+    "staticVerifierFailed": 0,
+    "runtimeControls": "stop_action,draw_weapon,sheathe_weapon-local-only-classifier-closed",
+    "ownedPlaybackRelease": "non-stateful-action-channel-ownership-registered-and-safe-release-implemented",
+    "replacementPreparation": "owned-previous-action-cleared-before-one-shot-draw-sheathe-and-program-step;failure-closed",
+    "stopActionGestureCues": "lower-arm-and-end-salute-player-framed-forced-and-npc-stage-direction-negation-covered",
+    "npcLaughPerformedCue": "burst-of-laughter-real-af-reply-local-match-and-negation-covered",
+    "realAfTokenStatsEvidence": "trace-vf-20260816213318233-23-primary-reply-contained-burst-of-laughter;v5.3.0-parser-returned-noaction-before-fix",
+    "weaponControlApi": "Bannerlord-1.4.8-Agent-TryToWieldWeaponInSlot-and-TryToSheathWeaponInHand-static-verified",
+    "runtimeExactFingerprintGate": "removed-user-requested",
+    "afRuntimeCompatibility": "structural-contract-verified-without-exact-dll-hashes",
+    "afBridgeArchitecture": "ISceneActionsAfBridge-host-reflection-v130-current-typed-bridge-future",
+    "afBridgeLifecycle": "submodule-installs-and-uninstalls-through-bridge-host-static-verified",
+    "afClassifierTransport": "semantic-classifier-separated-from-v130-reflection-call-transport;legacy-constructor-preserved",
+    "afIntegrationState": "standalone-module-not-integrated-into-AnimusForge",
+    "moduleJsonDocumentsParsed": 7,
+    "moduleXmlDocumentsParsed": 10,
+    "nativeXmlDocumentsInspected": 2,
+    "settingsV4StrictStructure": "valid-fail-closed",
+    "settingsV3MigrationFallback": "valid-new-v4-actions-disabled",
+    "settingsV2MigrationFallback": "valid-new-v3-v4-actions-disabled",
+    "settingsV1MigrationFallback": "valid-new-v2-v3-v4-actions-disabled",
+    "nativeV4AddedOrExpandedActionDeclarations": "14-of-14-exactly-once",
+    "nativeV4AddedOrExpandedWarriorMappings": "14-of-14-exactly-once",
+    "nativeCatalogActionDeclarations": "60-of-60-exactly-once",
+    "nativeDirectWarriorMappings": "55-of-55-exactly-once",
+    "nativeHistoricalApplauseMappings": "4-of-4-exactly-once-non-warrior",
+    "moduleDanceWarriorMapping": "1-of-1-exactly-once",
+    "missionLifecycleOrder": "OnBeforeMissionBehaviorInitialize-before-OnBehaviorInitialize-before-OnMissionBehaviorInitialize-v1.4.8-verified",
+    "missionBehaviorRegistration": "pre-initialization-hook-and-post-initialization-active-session-audit-verified",
+    "deployedBuildOutputsMatched": true,
+    "artifactHashesReverseChecked": true,
+    "complexNaturalLanguageProbe": "100-samples-0-mismatches",
+    "adversarialLanguageProbe": "105-cases-0-mismatches",
+    "deepLanguageStress": "78-lines-0-failures",
+    "gameLaunched": false,
+    "realModelRequestMade": false,
+    "zipCreated": false,
+    "missionSessionInGameValidation": "not-run-after-v5.1.0-implicit-emotion-context",
+    "v4GestureVisualValidation": "not-run-user-authorized-experimental",
+    "v4VariantVisualValidation": "not-run-user-authorized-experimental",
+    "dualChannelVisualValidation": "not-run-user-authorized-experimental",
+    "warriorDanceVisualValidation": "not-run-user-authorized-experimental",
+    "kneelLoopStaticValidation": "act_af_kneel_loop-and-loop-animation-binding-validated",
+    "kneelLoopVisualValidation": "not-run-user-must-confirm-in-game",
+    "implicitEmotionPressure": "1000-offline-cases-800-indirect-positive-200-neutral-or-contrary-negative-0-failures",
+    "implicitEmotionContextPayload": "offline-static-verified-player-stage-full-reply-json-isolated-and-target-blind",
+    "implicitEmotionDeployedProbe": "fear-score-10-visible-pallor-forced-composure-lethal-threat-vulnerability",
+    "npcSoftTriage": "raw-act-id-hard-invalid;confirmed-nonperformed-none;complex-or-mixed-visible-description-af-closed-classifier",
+    "afClassifierCallPath": "AnimusForge.ShoutNetwork.CallApiWithMessages-main-configured-model-temperature-0-max-32-target-blind",
+    "realAfCorpusReplay": "990-deduplicated-npc-descriptions-offline-current-v5.2.0-baseline",
+    "realAfCorpusReplayV511Counts": "blocked_invalid=136,matched_local=171,needs_af_classifier=673,no_action=10",
+    "realAfCorpusReplayCurrentCounts": "blocked_invalid=0,matched_local=171,needs_af_classifier=753,no_action=66",
+    "realAfCorpusFormerBlockedSplit": "80-needs-af-classifier,56-confirmed-none",
+    "realAfCorpusNonBlockedRegressionCount": 0,
+    "realAfCorpusReplayReport": "artifacts/codex-staging/sceneactions-af-real-corpus/replay-v520/DIFF_REPORT.md",
+    "offlineModelSubstitute": "80-reviewed-34-action-or-program-46-none-80-of-80-protocol-valid",
+    "offlineModelSubstituteReport": "artifacts/codex-staging/sceneactions-af-real-corpus/model-substitute-v520/REPORT.md",
+    "stateStoreRefactor": "SceneActionStateStore-partial-owns-per-mission-ledgers-and-channel-ownership-aliases-preserve-verifier-contract",
+    "stateStoreSource": "src/Runtime/SceneActionsMissionBehavior.State.cs",
+    "inputRoutingRefactor": "SceneActionInputRouter-source-enable-and-player-npc-route-pure-static-policy",
+    "permissionRoutingRefactor": "SceneActionPermissionRouter-target-consent-force-barrier-and-stagger-pure-static-policy",
+    "permissionCompatibilityAnchors": "ShouldRegisterNpcConsent-and-ShouldStaggerBatch-retained-for-reflection-integrations",
+    "scheduleQueueRefactor": "SceneActionScheduleQueue-wraps-StableScheduler-with-identical-capacity-order-dequeue-cancel-contract",
+    "refactorVerifierCoverage": "channel-owner-state-store-input-router-permission-router-schedule-queue-offline-reflection-verified",
+    "refactorOovPressure": "1000-cases-27-actions-4000-player-npc-classifier-checks-0-mismatches",
+    "refactorRealAfCorpusReplay": "990-deduplicated-descriptions-counts-identical-changed-0",
+    "refactorDownloadsTokenReplay": "20-files-1997114-lines-1707-unique-results-sha256-identical-to-pre-refactor",
+    "refactorDownloadsTokenResultsSha256": "41889BE74956D2BE587F2E93EFCF8B78519F95A97DE14926B9CEB2ED04729663",
+    "refactorRegressionReport": "artifacts/codex-staging/sceneactions-v1-final-refactor/20260819-072000",
+    "permissionFailClosed": "TryResolveTargetMode-rejects-null-decision-or-intent-and-all-three-Mission-routes-cancel-invalid-request",
+    "channelDiagnostics": "TryReleaseOwnedChannelWithContext-logs-channel-context-current-action-and-exception-type-failure-closed",
+    "staticVerifierPermissionProbe": "missing-decision-and-intent-returns-false-verified",
+    "regressionAfterPermissionFix": "oov-1000-zero-mismatch-real-af-990-changed-zero",
+    "missionInputPartial": "SceneActionsMissionBehavior.Input.cs-private-input-and-permission-routing-moved-without-behavior-change",
+    "missionContextPartial": "SceneActionsMissionBehavior.Context.cs-bounded-player-context-and-implicit-emotion-moved-without-behavior-change",
+    "missionMainFileReduction": "approximately-4420-to-4119-lines",
+    "partialSplitRegression": "release-zero-warning-core-67-static-10-oov-1000-zero-mismatch-real-af-990-changed-zero",
+    "missionConsentPartial": "SceneActionsMissionBehavior.Consent.cs-per-npc-frozen-consent-registration-resolution-and-consumption",
+    "missionReadinessPartial": "SceneActionsMissionBehavior.Readiness.cs-classifier-allow-list-and-provider-resource-readiness",
+    "missionMainFileReductionV2": "approximately-4420-to-3732-lines",
+    "consentSplitRegression": "release-zero-warning-core-67-static-10-oov-1000-zero-mismatch-real-af-990-changed-zero",
+    "missionClassificationPartial": "SceneActionsMissionBehavior.Classification.cs-AF-classifier-start-consent-start-timeout-cancellation-late-task-and-Mission-completion-queues",
+    "classificationThreadBoundary": "background-tasks-only-enqueue-completions-Mission-thread-applies-target-permission-and-action-state",
+    "missionMainFileReductionV3": "approximately-4420-to-3351-lines",
+    "classificationSplitRegression": "release-zero-warning-core-67-static-10-oov-1000-zero-mismatch-real-af-990-changed-zero",
+    "missionBehaviorFullPartialSplit": "main-shell-73-lines-zero-business-methods-fields-constructor-and-public-properties-only",
+    "missionLifecyclePartial": "SceneActionsMissionBehavior.Lifecycle.cs",
+    "missionProgramPartial": "SceneActionsMissionBehavior.Program.cs",
+    "missionPlaybackPartial": "SceneActionsMissionBehavior.Playback.cs",
+    "missionStatefulPartial": "SceneActionsMissionBehavior.Stateful.cs",
+    "missionResultsPartial": "SceneActionsMissionBehavior.Results.cs",
+    "missionModelsPartial": "SceneActionsMissionBehavior.Models.cs",
+    "fullSplitMechanicalAudit": "76-method-spans-and-19-nested-model-types-moved-by-brace-aware-staging-script",
+    "fullSplitRegression": "release-zero-warning-core-67-static-10-oov-1000-zero-mismatch-real-af-990-changed-zero",
+    "missionFineGrainedSplit": "22-partial-files-main-shell-69-lines-zero-business-methods-max-file-472-lines",
+    "programFineSplit": "Build-Start-Progress-Barrier-Completion",
+    "playbackFineSplit": "Ownership-Targets-Execute-Engine-Cooldown",
+    "emptyPartialShellsRemoved": "SceneActionsMissionBehavior.Program.cs-and-Playback.cs",
+    "fineSplitRegression": "release-zero-warning-core-67-static-10-oov-1000-zero-mismatch-real-af-990-changed-zero",
+    "battleSpeechV1": "player-two-step-inline-and-frozen-primary-npc-session-framework",
+    "battleSpeechNpcBinding": "record-player-epoch-queued-direct-reply-candidate-and-shown-fingerprint-required",
+    "battleSpeechSafety": "deployment-and-pre-engagement-gates-hit-speaker-enemy-radius-and-timeout-cancellation",
+    "battleSpeechAudience": "35-percent-participation-max96-wave8-0.3s-interval-0.035s-member-stagger",
+    "battleSpeechEnemyScan": "0.25-second-throttled-cache-invalidated-on-speaker-change-hit-removal-and-team-change",
+    "battleSpeechSettings": "strict-json-comments-duplicates-trailing-unknown-missing-and-type-errors-rejected",
+    "battleSpeechLocalization": "English-and-Simplified-Chinese-stable-string-ids",
+    "battleSpeechGameValidation": "not-run-after-v1.1.0-final-build",
+    "battleSpeechVisibleNormalization": "AF-internal-tags-stage-directions-patience-badge-normalized-before-strict-reply-match",
+    "battleSpeechPerformance": "speaker-semantic-gesture-planner-and-deterministic-batched-audience-reactions",
+    "battleSpeechPerformanceWhitelist": "explain-point-command-promise-rage-agree-greet-cheer-only;stateful-looping-and-act_ids-rejected",
+    "battleSpeechPerformanceQueue": "trusted-mission-thread-one-shot-queue-with-catalog-provider-cooldown-and-owner-token",
+    "battleSpeechPerformanceBackpressure": "maximum-8-cue-submissions-per-mission-tick;failed-admission-not-consumed-before-tail-deadline",
+    "battleSpeechPerformanceTailOrdering": "tail-cancellation-waits-until-all-cues-consumed-and-no-cue-submitted-that-tick;successful-late-submission-renews-3.5-second-tail",
+    "battleSpeechTtsSynchronization": "text-duration-estimate-only;real-AF-TTS-playback-finished-event-not-bridged",
+    "battleSpeechCheerOwnership": "cheer-is-owner-token-tracked-and-released-on-cancel-or-tail-completion",
+    "battleSpeechPerformanceVisualValidation": "not-run-by-user-request",
+    "battleSpeechV2": "natural-local-and-af-closed-trigger-npc-reply-claim-deferred-display-and-v4-program",
+    "battleSpeechNaturalTriggerPressure": "1000-varied-npc-request-sentences-plus-real-token-stats-request-0-mismatches",
+    "battleSpeechHiddenBodyAction": "full-body-text-local-action-parsing-without-star-requirement;military-salute-excluded-from-respect",
+    "battleSpeechNpcStage": "front-line-navigation-mounted-or-dismounted-dynamic-audience-facing-and-deterministic-two-meter-lateral-pacing",
+    "battleSpeechMountedNpc": "supported-without-forced-dismount;scripted-positioning-keeps-the-current-mount-state",
+    "battleSpeechMovementTimeout": "recenter-at-current-position-or-release-owned-scripted-movement-no-teleport",
+    "battleSpeechRemoteCombat": "active-session-survives-deployment-to-battle-transition-and-distant-agent-hits",
+    "battleSpeechSpeakerCombat": "speaker-hit-or-ready-release-kick-bash-hitobject-passive-attack-cancels",
+    "battleSpeechTriggerGeneration": "every-new-player-input-invalidates-older-async-trigger-result",
+    "battleSpeechClassifierLifetime": "mission-close-cancels-v2-trigger-and-plan-classifier-work",
+    "battleSpeechAudienceV2": "all-same-side-frozen-snapshot-max48-visual-wave6-tick-budget6",
+    "battleSpeechSpokenRepliesV2": "single-af-plan-call-up-to8-distinct-short-lines-default4-deterministic-agents-sequential-bubble-tts-local-fallback",
+    "battleSpeechVoicesV2": "deterministic-default22-native-victory-yell-batched-after-spoken-replies",
+    "battleSpeechTacticV2": "mcm-frozen-command-gesture-then-player-team-formation-advance-with-three-second-queue-timeout",
+    "battleSpeechMcmV2": "independent-71-key-bilingual-mcm-page-runtime-values-revalidated",
+    "battleSpeechAf1321": "private-structural-harmony-contract-and-classifier-prompts-offline-verified"
+  }
+}

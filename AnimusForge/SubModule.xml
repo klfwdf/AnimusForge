@@ -36,6 +36,15 @@
                 <GameType value="EditorGame" />
             </IncludedGameTypes>
         </XmlNode>
+        <XmlNode>
+            <XmlName id="Items" path="sceneactions_items" />
+            <IncludedGameTypes>
+                <GameType value="Campaign" />
+                <GameType value="CampaignStoryMode" />
+                <GameType value="CustomGame" />
+                <GameType value="EditorGame" />
+            </IncludedGameTypes>
+        </XmlNode>
     </Xmls>
     <Assemblies>
         <Assembly value="AnimusForge.Bootstrap.dll" />

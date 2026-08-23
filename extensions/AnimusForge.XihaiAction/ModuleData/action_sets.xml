@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<action_sets>
+  <action_set
+    id="as_human_warrior"
+    skeleton="human_skeleton"
+    movement_system="bipedal">
+    <action type="act_af_xihai" animation="nacirase" />
+    <action type="act_af_speech_nacisword1" animation="nacisword1" />
+    <action type="act_af_kneel_loop" animation="anim_main_story_conspirator_kneel_down_1_loop" />
+    <action type="act_dance_norse" animation="anim_tavern_dance_norse" />
+  </action_set>
+</action_sets>

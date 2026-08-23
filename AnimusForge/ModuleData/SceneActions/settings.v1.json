@@ -1,0 +1,75 @@
+{
+  "schemaId": "urn:animusforge:sceneactions:schema:v1:settings",
+  "documentType": "scene-actions-settings",
+  "schemaVersion": 1,
+  "packageId": "animusforge.xihai-action.settings",
+  "enabled": true,
+  "inputSources": {
+    "playerSceneShout": true,
+    "npcSceneShoutReply": true
+  },
+  "resolvers": {
+    "forceExact": {
+      "enabled": true
+    },
+    "exactCommand": {
+      "enabled": true
+    },
+    "aiClassifier": {
+      "enabled": true,
+      "providerId": "animusforge.main.v130",
+      "timeoutMs": 6000,
+      "maxOutputChars": 64
+    }
+  },
+  "requestGate": {
+    "requestTtlMs": 8000,
+    "consentReplyTtlMs": 30000,
+    "maxPendingRequests": 64
+  },
+  "scheduler": {
+    "staggerFromTargetCount": 4,
+    "staggerSeconds": 0.1,
+    "maxBatchTargets": 16,
+    "maxBatchTailSeconds": 2.0,
+    "overflowPolicy": "reject",
+    "maxQueuedTargets": 128
+  },
+  "actionOverrides": {
+    "kneel": {
+      "enabled": true,
+      "blendInSeconds": 0.35,
+      "cooldownSeconds": 0.5
+    },
+    "xihai": {
+      "enabled": true,
+      "blendInSeconds": 0.18,
+      "cooldownSeconds": 0.5
+    },
+    "cheer": {
+      "enabled": true
+    },
+    "applaud": {
+      "enabled": true
+    },
+    "respect": {
+      "enabled": true
+    },
+    "threat": {
+      "enabled": true
+    },
+    "surrender": {
+      "enabled": true
+    }
+  },
+  "userAliases": [],
+  "diagnostics": {
+    "logLevel": "information",
+    "screenBatchSummary": false,
+    "failureRateLimitSeconds": 5
+  },
+  "developerDiagnostics": {
+    "enabled": false,
+    "allowRegisteredActionIdProbe": false
+  }
+}

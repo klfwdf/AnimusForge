@@ -1,0 +1,212 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using AnimusForge.SceneActions.Core;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
+namespace AnimusForge.XihaiAction
+{
+    internal static class BattleSpeechPerformanceSettingsLoader
+    {
+        private const string SchemaId =
+            "urn:animusforge:sceneactions:battle-speech-performance:v1";
+        private const string DocumentType = "battle-speech-performance-settings";
+        private static readonly HashSet<string> AllowedProperties = new HashSet<string>(
+            new[]
+            {
+                "schemaId", "documentType", "schemaVersion", "enabled",
+                "speakerGesturesEnabled", "maxSpeakerGestures",
+                "minimumSpeakerGestureSpacingSeconds", "audienceReactionsEnabled",
+                "audienceParticipationRatio", "maximumAudiencePerformers",
+                "audienceWaveSize", "audienceWaveIntervalSeconds",
+                "audienceMemberStaggerSeconds", "audienceFinalDelaySeconds",
+                "performanceTailSeconds"
+            },
+            StringComparer.Ordinal);
+
+        public static BattleSpeechPerformanceSettingsV1 Load(
+            string moduleRoot,
+            out bool valid,
+            out string reason)
+        {
+            valid = false;
+            reason = null;
+            BattleSpeechPerformanceSettingsV1 defaults =
+                new BattleSpeechPerformanceSettingsV1();
+            if (string.IsNullOrWhiteSpace(moduleRoot))
+            {
+                reason = "Module root is empty.";
+                return defaults;
+            }
+            string path = Path.Combine(
+                moduleRoot,
+                "ModuleData",
+                "SceneActions",
+                "battle-speech-performance.v1.json");
+            if (!File.Exists(path))
+            {
+                valid = true;
+                reason = "battle-speech-performance.v1.json is missing; audited defaults selected.";
+                return defaults;
+            }
+
+            try
+            {
+                JObject document = LoadStrictObject(path);
+                RequireShape(document);
+                RequireString(document, "schemaId", SchemaId);
+                RequireString(document, "documentType", DocumentType);
+                if (RequireInt(document, "schemaVersion") != 1)
+                {
+                    throw new JsonException("schemaVersion must equal 1.");
+                }
+                BattleSpeechPerformanceSettingsV1 settings =
+                    new BattleSpeechPerformanceSettingsV1
+                    {
+                        Enabled = RequireBool(document, "enabled"),
+                        SpeakerGesturesEnabled = RequireBool(
+                            document,
+                            "speakerGesturesEnabled"),
+                        MaxSpeakerGestures = RequireInt(document, "maxSpeakerGestures"),
+                        MinimumSpeakerGestureSpacingSeconds = RequireFloat(
+                            document,
+                            "minimumSpeakerGestureSpacingSeconds"),
+                        AudienceReactionsEnabled = RequireBool(
+                            document,
+                            "audienceReactionsEnabled"),
+                        AudienceParticipationRatio = RequireFloat(
+                            document,
+                            "audienceParticipationRatio"),
+                        MaximumAudiencePerformers = RequireInt(
+                            document,
+                            "maximumAudiencePerformers"),
+                        AudienceWaveSize = RequireInt(document, "audienceWaveSize"),
+                        AudienceWaveIntervalSeconds = RequireFloat(
+                            document,
+                            "audienceWaveIntervalSeconds"),
+                        AudienceMemberStaggerSeconds = RequireFloat(
+                            document,
+                            "audienceMemberStaggerSeconds"),
+                        AudienceFinalDelaySeconds = RequireFloat(
+                            document,
+                            "audienceFinalDelaySeconds"),
+                        PerformanceTailSeconds = RequireFloat(
+                            document,
+                            "performanceTailSeconds")
+                    };
+                IReadOnlyList<string> errors = settings.Validate();
+                if (errors.Count > 0)
+                {
+                    reason = string.Join("; ", errors);
+                    return defaults;
+                }
+                valid = true;
+                reason = "Strict battle speech performance settings loaded: " + path;
+                return settings;
+            }
+            catch (Exception ex)
+            {
+                reason = ex.GetType().Name + ": " + ex.Message;
+                return defaults;
+            }
+        }
+
+        private static JObject LoadStrictObject(string path)
+        {
+            using (StreamReader commentStream = new StreamReader(path, true))
+            using (JsonTextReader commentReader = new JsonTextReader(commentStream))
+            {
+                commentReader.DateParseHandling = DateParseHandling.None;
+                commentReader.MaxDepth = 16;
+                while (commentReader.Read())
+                {
+                    if (commentReader.TokenType == JsonToken.Comment)
+                    {
+                        throw new JsonException("JSON comments are not allowed.");
+                    }
+                }
+            }
+            using (StreamReader stream = new StreamReader(path, true))
+            using (JsonTextReader reader = new JsonTextReader(stream))
+            {
+                reader.DateParseHandling = DateParseHandling.None;
+                reader.FloatParseHandling = FloatParseHandling.Double;
+                reader.MaxDepth = 16;
+                JObject root = JObject.Load(reader, new JsonLoadSettings
+                {
+                    CommentHandling = CommentHandling.Load,
+                    DuplicatePropertyNameHandling = DuplicatePropertyNameHandling.Error,
+                    LineInfoHandling = LineInfoHandling.Load
+                });
+                while (reader.Read())
+                {
+                    if (reader.TokenType != JsonToken.None)
+                    {
+                        throw new JsonException("Trailing JSON content is not allowed.");
+                    }
+                }
+                return root;
+            }
+        }
+
+        private static void RequireShape(JObject document)
+        {
+            JProperty unknown = document.Properties().FirstOrDefault(property =>
+                !AllowedProperties.Contains(property.Name));
+            if (unknown != null)
+            {
+                throw new JsonException(
+                    "Unknown battle speech performance property: " + unknown.Name);
+            }
+            string missing = AllowedProperties.FirstOrDefault(name => document[name] == null);
+            if (missing != null)
+            {
+                throw new JsonException(
+                    "Missing battle speech performance property: " + missing);
+            }
+        }
+
+        private static void RequireString(JObject document, string name, string expected)
+        {
+            JToken token = document[name];
+            if (token?.Type != JTokenType.String ||
+                !string.Equals(token.Value<string>(), expected, StringComparison.Ordinal))
+            {
+                throw new JsonException(name + " must equal " + expected + ".");
+            }
+        }
+
+        private static bool RequireBool(JObject document, string name)
+        {
+            JToken token = document[name];
+            if (token?.Type != JTokenType.Boolean)
+            {
+                throw new JsonException(name + " must be a boolean.");
+            }
+            return token.Value<bool>();
+        }
+
+        private static int RequireInt(JObject document, string name)
+        {
+            JToken token = document[name];
+            if (token?.Type != JTokenType.Integer)
+            {
+                throw new JsonException(name + " must be an integer.");
+            }
+            return token.Value<int>();
+        }
+
+        private static float RequireFloat(JObject document, string name)
+        {
+            JToken token = document[name];
+            if (token == null ||
+                (token.Type != JTokenType.Float && token.Type != JTokenType.Integer))
+            {
+                throw new JsonException(name + " must be numeric.");
+            }
+            return token.Value<float>();
+        }
+    }
+}

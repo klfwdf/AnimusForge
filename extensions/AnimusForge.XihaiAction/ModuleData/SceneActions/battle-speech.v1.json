@@ -1,0 +1,20 @@
+{
+  "schemaId": "urn:animusforge:sceneactions:battle-speech:v1",
+  "documentType": "battle-speech-settings",
+  "schemaVersion": 1,
+  "enabled": true,
+  "allowDeployment": true,
+  "allowPreEngagement": true,
+  "playerCaptureSeconds": 60.0,
+  "npcReplySeconds": 60.0,
+  "maxSpeechChars": 4096,
+  "audienceRadiusMeters": 80.0,
+  "enemyInterruptRadiusMeters": 35.0,
+  "enemyScanIntervalSeconds": 0.25,
+  "minimumAudience": 1,
+  "maximumAudience": 512,
+  "minimumDurationSeconds": 6.0,
+  "maximumDurationSeconds": 45.0,
+  "charactersPerSecond": 8.0,
+  "screenNotifications": true
+}

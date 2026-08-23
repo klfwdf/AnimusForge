@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+  <tags><tag language="English" /></tags>
+  <strings>
+    <string id="SAX_Loaded" text="AnimusForge Xihai Action loaded (v1.1 / Framework V4 + Battle Speech V2)." />
+    <string id="SAX_Disabled" text="AnimusForge Xihai Action disabled: the required AnimusForge runtime contract is unavailable." />
+    <string id="SAX_InitializationFailed" text="AnimusForge Xihai Action initialization failed: {REASON}" />
+    <string id="SAX_BattleSpeechStarted" text="Battle speech started: {SPEAKER}, addressing {COUNT} soldiers." />
+    <string id="SAX_BattleSpeechCancelled" text="Battle speech ended: {REASON}" />
+    <string id="SAX_BattleSpeechLine" text="[Battle Speech] {SPEAKER}: {SPEECH}" />
+    <string id="SAX_BattleSpeechNoAudience" text="Battle speech did not start: no eligible allied soldiers were found." />
+    <string id="SAX_BattleSpeechNotReady" text="Battle speech is available only while deployment or an active battle is continuing." />
+    <string id="SAX_BattleSpeechSpeakerUnavailable" text="Battle speech did not start: the selected speaker is unavailable." />
+    <string id="SAX_BattleSpeechSpeakerInCombat" text="Battle speech did not start: the selected speaker is attacking or preparing an attack." />
+    <string id="SAX_BattleSpeechEnemyNearby" text="Battle speech did not start: an enemy is too close to the speaker." />
+    <string id="SAX_MCM_Name" text="Natural Actions and Battle Speech" />
+    <string id="SAX_MCM_Group_General" text="General" />
+    <string id="SAX_MCM_Group_Language" text="Natural language and AF" />
+    <string id="SAX_MCM_Group_Actions" text="Controlled actions" />
+    <string id="SAX_MCM_Group_Speech" text="Battle speech" />
+    <string id="SAX_MCM_Group_Stage" text="NPC staging" />
+    <string id="SAX_MCM_Group_Audience" text="Audience response" />
+    <string id="SAX_MCM_Group_Safety" text="Safety and diagnostics" />
+    <string id="SAX_MCM_Enabled" text="Enable extension" />
+    <string id="SAX_MCM_ActionsEnabled" text="Enable natural actions" />
+    <string id="SAX_MCM_NaturalReplyActions" text="Natural-language reply actions" />
+    <string id="SAX_MCM_NaturalReplyActions_Hint" text="Recognizes natural action wording in player shouts and NPC replies, uses AF closed-set fallback for complex wording, and recognizes natural battle-speech requests and speech gestures. Disable it to stop these natural-language paths." />
+    <string id="SAX_MCM_PlayerInput" text="Player scene-shout actions" />
+    <string id="SAX_MCM_NpcInput" text="NPC reply actions" />
+    <string id="SAX_MCM_DualChannel" text="Experimental kneel plus gesture" />
+    <string id="SAX_MCM_AFClassifier" text="Use AF closed-set classifier" />
+    <string id="SAX_MCM_SpeechNaturalTrigger" text="Loose speech requests" />
+    <string id="SAX_MCM_SpeechTriggerClassifier" text="AF speech-trigger fallback" />
+    <string id="SAX_MCM_SpeechSemanticClassifier" text="AF speech action and audience-reply analysis" />
+    <string id="SAX_MCM_Kneel" text="Kneel" />
+    <string id="SAX_MCM_StandUp" text="Stand up" />
+    <string id="SAX_MCM_Xihai" text="Xihai salute" />
+    <string id="SAX_MCM_Cheer" text="Cheer" />
+    <string id="SAX_MCM_Applaud" text="Applaud" />
+    <string id="SAX_MCM_Respect" text="Respect" />
+    <string id="SAX_MCM_Threat" text="Threaten" />
+    <string id="SAX_MCM_Surrender" text="Surrender" />
+    <string id="SAX_MCM_Laugh" text="Laugh" />
+    <string id="SAX_MCM_Point" text="Point" />
+    <string id="SAX_MCM_Rage" text="Rage" />
+    <string id="SAX_MCM_Fear" text="Fear" />
+    <string id="SAX_MCM_Disappointed" text="Disappointed" />
+    <string id="SAX_MCM_Challenge" text="Challenge" />
+    <string id="SAX_MCM_Search" text="Look around" />
+    <string id="SAX_MCM_Dance" text="Dance" />
+    <string id="SAX_MCM_Greet" text="Greet" />
+    <string id="SAX_MCM_Agree" text="Agree" />
+    <string id="SAX_MCM_Disagree" text="Disagree" />
+    <string id="SAX_MCM_Unsure" text="Unsure" />
+    <string id="SAX_MCM_Explain" text="Explain" />
+    <string id="SAX_MCM_Promise" text="Promise" />
+    <string id="SAX_MCM_CrossArms" text="Cross arms" />
+    <string id="SAX_MCM_DeepBow" text="Deep bow" />
+    <string id="SAX_MCM_Command" text="Command" />
+    <string id="SAX_MCM_FollowMe" text="Follow-me gesture" />
+    <string id="SAX_MCM_CutThroat" text="Cut-throat gesture" />
+    <string id="SAX_MCM_BattleSpeechEnabled" text="Enable battle speech" />
+    <string id="SAX_MCM_TKeyBattleSpeechEnabled" text="Enable battle-speech recognition from T-key scene shout" />
+    <string id="SAX_MCM_TKeyBattleSpeechEnabled_Hint" text="When enabled, T-key scene-shout text can enter the battle-speech channel. Y-key speech entries still require the main battle-speech switch and an eligible battle phase." />
+    <string id="SAX_MCM_ReplyMin" text="Battle speech minimum characters (6-80)" />
+    <string id="SAX_MCM_ReplyMax" text="Battle speech maximum characters (6-80)" />
+    <string id="SAX_MCM_NpcPositioning" text="Move NPC to the front line" />
+    <string id="SAX_MCM_FrontDistance" text="Distance in front of troops" />
+    <string id="SAX_MCM_ArrivalRadius" text="Arrival radius" />
+    <string id="SAX_MCM_MoveTimeout" text="Movement timeout" />
+    <string id="SAX_MCM_AlliedAudience" text="Include allied troops" />
+    <string id="SAX_MCM_VisualResponders" text="Soldiers responding with actions" />
+    <string id="SAX_MCM_VisualWave" text="Action responders per wave" />
+    <string id="SAX_MCM_TickBudget" text="Maximum actions submitted per tick" />
+    <string id="SAX_MCM_Voices" text="Native audience voices" />
+    <string id="SAX_MCM_VoiceCount" text="Audience voice count" />
+    <string id="SAX_MCM_VoiceWave" text="Voices per wave" />
+    <string id="SAX_MCM_VoiceInterval" text="Voice wave interval" />
+    <string id="SAX_MCM_AudienceReplies" text="Spoken replies from multiple soldiers" />
+    <string id="SAX_MCM_AudienceReplyCount" text="Soldiers giving spoken replies" />
+    <string id="SAX_MCM_AudienceReplyInterval" text="Spoken reply interval" />
+    <string id="SAX_MCM_Advance" text="Command gesture then order all formations to Advance" />
+    <string id="SAX_MCM_AdvanceDelay" text="Advance delay after command gesture" />
+    <string id="SAX_MCM_EnemyRadius" text="Enemy interruption radius" />
+    <string id="SAX_MCM_Notifications" text="Screen notifications" />
+    <string id="SAX_MCM_Diagnostics" text="Detailed diagnostics" />
+  </strings>
+</base>

@@ -1,0 +1,134 @@
+{
+  "schemaId": "urn:animusforge:sceneactions:schema:v3:settings",
+  "documentType": "scene-actions-settings",
+  "schemaVersion": 3,
+  "packageId": "animusforge.xihai-action.settings-v3",
+  "enabled": true,
+  "inputSources": {
+    "playerSceneShout": true,
+    "npcSceneShoutReply": true
+  },
+  "resolvers": {
+    "forceExact": {
+      "enabled": true
+    },
+    "exactCommand": {
+      "enabled": true
+    },
+    "aiClassifier": {
+      "enabled": true,
+      "providerId": "animusforge.main.v130",
+      "timeoutMs": 6000,
+      "maxOutputChars": 128
+    }
+  },
+  "requestGate": {
+    "requestTtlMs": 8000,
+    "consentReplyTtlMs": 30000,
+    "maxPendingRequests": 64
+  },
+  "scheduler": {
+    "staggerFromTargetCount": 4,
+    "staggerSeconds": 0.1,
+    "forceMultiTargetThreshold": 3,
+    "forceStaggerMinSeconds": 0.01,
+    "forceStaggerMaxSeconds": 0.02,
+    "maxBatchTargets": 16,
+    "maxBatchTailSeconds": 2.0,
+    "overflowPolicy": "reject",
+    "maxQueuedTargets": 128
+  },
+  "programExecution": {
+    "maxActions": 4,
+    "stepTimeoutSeconds": 6.0,
+    "intermediateKneelHoldSeconds": 1.0,
+    "intermediateDanceSeconds": 4.0,
+    "dualChannelExperimental": true
+  },
+  "actionOverrides": {
+    "kneel": {
+      "enabled": true,
+      "blendInSeconds": 0.35,
+      "cooldownSeconds": 0.5
+    },
+    "xihai": {
+      "enabled": true,
+      "blendInSeconds": 0.18,
+      "cooldownSeconds": 0.5
+    },
+    "cheer": {
+      "enabled": true
+    },
+    "applaud": {
+      "enabled": true
+    },
+    "respect": {
+      "enabled": true
+    },
+    "threat": {
+      "enabled": true
+    },
+    "surrender": {
+      "enabled": true
+    },
+    "laugh": {
+      "enabled": true
+    },
+    "point": {
+      "enabled": true
+    },
+    "rage": {
+      "enabled": true
+    },
+    "fear": {
+      "enabled": true
+    },
+    "disappointed": {
+      "enabled": true
+    },
+    "challenge": {
+      "enabled": true
+    },
+    "search": {
+      "enabled": true
+    },
+    "dance": {
+      "enabled": true,
+      "blendInSeconds": 0.25
+    },
+    "greet": {
+      "enabled": true
+    },
+    "agree": {
+      "enabled": true
+    },
+    "disagree": {
+      "enabled": true
+    },
+    "unsure": {
+      "enabled": true
+    },
+    "explain": {
+      "enabled": true
+    },
+    "promise": {
+      "enabled": true
+    },
+    "cross_arms": {
+      "enabled": true
+    },
+    "deep_bow": {
+      "enabled": true
+    }
+  },
+  "userAliases": [],
+  "diagnostics": {
+    "logLevel": "information",
+    "screenBatchSummary": false,
+    "failureRateLimitSeconds": 5
+  },
+  "developerDiagnostics": {
+    "enabled": false,
+    "allowRegisteredActionIdProbe": false
+  }
+}

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="combat_parameters">
+  <definitions />
+  <combat_parameters>
+    <combat_parameter id="anim_af_xihai" />
+  </combat_parameters>
+</base>

@@ -21,4 +21,7 @@ AnimusForge/ONNX/reranker/
 
 # Local Codex/release-prep scratch and large handoff backups.
 _codex_tmp/
+.codex_tmp/
+artifacts/
+AnimusForge/PlayerExports/
 FUYONG/
