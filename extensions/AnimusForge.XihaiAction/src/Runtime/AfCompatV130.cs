@@ -24,6 +24,7 @@ namespace AnimusForge.XihaiAction
         private static MethodInfo _queuedNpcReplyMethod;
         private static MethodInfo _shownNpcReplyMethod;
         private static MethodInfo _replyPromptMethod;
+        private static MethodInfo _strictSceneMessagesSystemPromptMethod;
         private static FieldInfo _shownVisualDurationField;
         private static MethodInfo _classifierApiMethod;
         private static MethodInfo _getAgentsMethod;
@@ -306,6 +307,21 @@ namespace AnimusForge.XihaiAction
                 }
                 _replyPromptMethod = promptCandidates[0];
 
+                MethodInfo[] strictPromptCandidates = behaviorType.GetMethods(
+                        BindingFlags.Static | BindingFlags.NonPublic)
+                    .Where(method => string.Equals(
+                        method.Name,
+                        "BuildStrictSceneMessagesSystemPrompt",
+                        StringComparison.Ordinal))
+                    .ToArray();
+                if (strictPromptCandidates.Length != 1 ||
+                    !IsExpectedStrictSceneMessagesSystemPromptMethod(strictPromptCandidates[0]))
+                {
+                    reason = "AF strict scene system prompt signature drifted";
+                    return false;
+                }
+                _strictSceneMessagesSystemPromptMethod = strictPromptCandidates[0];
+
                 _resumeGameMethod = behaviorType.GetMethod(
                     "ResumeGame",
                     instanceFlags,
@@ -364,10 +380,10 @@ namespace AnimusForge.XihaiAction
                     nameof(DeferBattleSpeechReply),
                     BindingFlags.Static | BindingFlags.NonPublic);
                 MethodInfo promptPrefix = typeof(AfCompatV130).GetMethod(
-                    nameof(OverrideBattleSpeechReplyLength),
+                    nameof(ReplaceBattleSpeechReplyPrompt),
                     BindingFlags.Static | BindingFlags.NonPublic);
-                MethodInfo promptPostfix = typeof(AfCompatV130).GetMethod(
-                    nameof(AppendBattleSpeechReplyInstruction),
+                MethodInfo strictPromptPrefix = typeof(AfCompatV130).GetMethod(
+                    nameof(ReplaceBattleSpeechOrdinaryTaskPreamble),
                     BindingFlags.Static | BindingFlags.NonPublic);
                 _harmony = new Harmony(HarmonyId);
                 _harmony.Patch(_patchedMethod, prefix: new HarmonyMethod(prefix));
@@ -383,8 +399,10 @@ namespace AnimusForge.XihaiAction
                     postfix: new HarmonyMethod(shownPostfix));
                 _harmony.Patch(
                     _replyPromptMethod,
-                    prefix: new HarmonyMethod(promptPrefix),
-                    postfix: new HarmonyMethod(promptPostfix));
+                    prefix: new HarmonyMethod(promptPrefix));
+                _harmony.Patch(
+                    _strictSceneMessagesSystemPromptMethod,
+                    prefix: new HarmonyMethod(strictPromptPrefix));
                 _classifierProvider =
                     new AfV130AuxiliaryTextClassifier(_classifierApiMethod);
                 _classifierRegistration = SceneActionsRuntimeHost.RegisterClassifier(
@@ -450,6 +468,7 @@ namespace AnimusForge.XihaiAction
                 _queuedNpcReplyMethod = null;
                 _shownNpcReplyMethod = null;
                 _replyPromptMethod = null;
+                _strictSceneMessagesSystemPromptMethod = null;
                 _shownVisualDurationField = null;
                 _classifierApiMethod = null;
                 _getAgentsMethod = null;
@@ -1029,33 +1048,12 @@ namespace AnimusForge.XihaiAction
             }
         }
 
-        private static void OverrideBattleSpeechReplyLength(
+        private static bool ReplaceBattleSpeechReplyPrompt(
             string __0,
-            ref int __2,
-            ref int __3)
-        {
-            try
-            {
-                if (BattleSpeechRuntimeHost.TryGetReplyLengthOverride(
-                    __0,
-                    out int minimumChars,
-                    out int maximumChars))
-                {
-                    __2 = minimumChars;
-                    __3 = maximumChars;
-                }
-            }
-            catch (Exception ex)
-            {
-                SceneActionsLog.Error(
-                    "BATTLE_SPEECH_COMPAT",
-                    "Reply-length override failed open.",
-                    ex);
-            }
-        }
-
-        private static void AppendBattleSpeechReplyInstruction(
-            string __0,
+            bool __1,
+            int __2,
+            int __3,
+            string __4,
             ref string __result)
         {
             try
@@ -1064,18 +1062,78 @@ namespace AnimusForge.XihaiAction
                         __0,
                         out string instruction))
                 {
-                    return;
+                    return true;
                 }
-                __result = string.IsNullOrWhiteSpace(__result)
-                    ? instruction
-                    : __result.TrimEnd() + "\n\n" + instruction;
+                // AF's original block contains the ordinary-NPC contract
+                // (actions, inner thoughts and player-facing replies). Appending
+                // our text left those instructions active and caused the model
+                // to produce a normal reply which was later rejected. Replace
+                // the whole block only for the currently claimed speech NPC.
+                __result = instruction;
+                SceneActionsLog.Info(
+                    "BATTLE_SPEECH_COMPAT",
+                    "Replaced AF ordinary NPC prompt with dedicated battle-speech prompt. " +
+                    "Npc=" + (__0 ?? string.Empty));
+                return false;
             }
             catch (Exception ex)
             {
                 SceneActionsLog.Error(
                     "BATTLE_SPEECH_COMPAT",
-                    "Battle-speech prompt append failed open.",
+                    "Battle-speech prompt replacement failed open.",
                     ex);
+                return true;
+            }
+        }
+
+        private static bool ReplaceBattleSpeechOrdinaryTaskPreamble(
+            string __0,
+            bool __1,
+            ref string __result)
+        {
+            try
+            {
+                if (!BattleSpeechRuntimeHost.HasActiveNpcSpeechClaim() ||
+                    string.IsNullOrWhiteSpace(__0))
+                {
+                    return true;
+                }
+
+                const string ordinaryPreamble =
+                    "你是【站在你旁边的人】中的NPC角色,可能是多个人。你们的唯一任务是：根据下方提供的角色信息、场景信息和对话历史，以NPC身份直接回复";
+                const string ordinaryPreambleEnd =
+                    "\n禁止生成任何【】章节标题或格式说明。";
+                int start = __0.IndexOf(ordinaryPreamble, StringComparison.Ordinal);
+                if (start < 0)
+                {
+                    return true;
+                }
+                int end = __0.IndexOf(
+                    ordinaryPreambleEnd,
+                    start + ordinaryPreamble.Length,
+                    StringComparison.Ordinal);
+                if (end < 0)
+                {
+                    return true;
+                }
+
+                const string battleSpeechPreamble =
+                    "你是当前阵前演讲中的NPC演讲者。你的唯一任务是：根据下方提供的角色身份、战场处境和对话历史，面向己方士兵发表战前动员。你不是在回复玩家，也不是在进行普通闲聊。";
+                __result = __0.Substring(0, start) +
+                           battleSpeechPreamble +
+                           __0.Substring(end + ordinaryPreambleEnd.Length);
+                SceneActionsLog.Info(
+                    "BATTLE_SPEECH_COMPAT",
+                    "Removed AF ordinary player-reply task preamble from speech system prompt.");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                SceneActionsLog.Error(
+                    "BATTLE_SPEECH_COMPAT",
+                    "Battle-speech task-preamble replacement failed open.",
+                    ex);
+                return true;
             }
         }
 
@@ -1532,6 +1590,17 @@ namespace AnimusForge.XihaiAction
                    parameters[2].ParameterType == typeof(int) &&
                    parameters[3].ParameterType == typeof(int) &&
                    parameters[4].ParameterType == typeof(string);
+        }
+
+        private static bool IsExpectedStrictSceneMessagesSystemPromptMethod(MethodInfo method)
+        {
+            ParameterInfo[] parameters = method?.GetParameters();
+            return method != null &&
+                   method.IsStatic &&
+                   method.ReturnType == typeof(string) &&
+                   parameters.Length == 2 &&
+                   parameters[0].ParameterType == typeof(string) &&
+                   parameters[1].ParameterType == typeof(bool);
         }
 
         private static bool IsExpectedClassifierMethod(MethodInfo method)

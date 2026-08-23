@@ -3527,6 +3527,11 @@ internal static class Program
         True(prompt.Contains("不是在回答或表演给玩家看"));
         True(prompt.Contains("沿用当前场景喊话已经提供的"));
         True(prompt.Contains("冒号后的内容只是主题或风格要求"));
+        True(prompt.Contains("具体战场细节"));
+        True(prompt.Contains("敌军所在方向或位置、地形、天气"));
+        True(prompt.Contains("性格、身份和当前情绪"));
+        True(prompt.Contains("愤怒、悲壮、冷静、嘲讽、坚定或鼓舞"));
+        True(prompt.Contains("不要统一写成‘全军前进’"));
         True(prompt.Contains("不得为了凑字重复同一句、同一短语"));
         True(prompt.Contains("不得强制套用固定称呼"));
         True(!prompt.Contains("合格示例"));
