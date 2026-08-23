@@ -131,6 +131,34 @@ foreach ($pattern in $keywordTriggerPatterns) {
     Assert-Condition (-not [System.Text.RegularExpressions.Regex]::IsMatch($activeRuntimeText, $pattern, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)) "Active GCCZ runtime contains a dialogue keyword trigger matching: $pattern"
 }
 
+$settlementEffectAdapterPath = Join-Path $FusedRoot "SiegeAiInterventionBehavior.TownSettlementEffectAdapter.cs"
+Assert-Condition (Test-Path -LiteralPath $settlementEffectAdapterPath -PathType Leaf) "Missing GCCZ settlement-effect adapter: $settlementEffectAdapterPath"
+$settlementEffectAdapterText = [System.IO.File]::ReadAllText($settlementEffectAdapterPath)
+$directSettlementMutationPatterns = @(
+    'AdjustSettlementLocalPublicTrustForExternal\s*\(',
+    'AdjustPersonalTrustWholeDeltaForExternal\s*\(',
+    '\.FoodStocks\s*='
+)
+foreach ($runtimeFile in Get-ChildItem -LiteralPath $FusedRoot -File -Filter "SiegeAiInterventionBehavior*.cs") {
+    if ($runtimeFile.FullName -eq $settlementEffectAdapterPath) {
+        continue
+    }
+    $runtimeFileText = [System.IO.File]::ReadAllText($runtimeFile.FullName)
+    foreach ($pattern in $directSettlementMutationPatterns) {
+        Assert-Condition (-not [System.Text.RegularExpressions.Regex]::IsMatch($runtimeFileText, $pattern)) "GCCZ settlement mutation escaped its adapter in $($runtimeFile.Name): $pattern"
+    }
+}
+$requiredSettlementEffectEvidence = @(
+    'TownSettlementEffectPlan.FromPlunderDelta',
+    'TownSettlementEffectPlan.FromMassacreDelta',
+    'TownSettlementEffectPlan.FromFinalOutcome',
+    'ApplyTownSettlementEffectPlan('
+)
+$settlementEffectRuntimeText = $activeRuntimeText + "`n" + $settlementEffectAdapterText
+foreach ($snippet in $requiredSettlementEffectEvidence) {
+    Assert-Condition ($settlementEffectRuntimeText.Contains($snippet)) "Missing GCCZ settlement-effect evidence: $snippet"
+}
+
 $requiredLifecycleEvidence = @(
     'IsActiveInCurrentMission()',
     'EndInterventionSceneScope("mission_ended")',
@@ -147,3 +175,4 @@ Write-Output "Core source files : $($standaloneCoreFiles.Count)"
 Write-Output "Player resources  : $($resourceMappings.Count)"
 Write-Output "Handoff documents : $($documentMappings.Count)"
 Write-Output "Keyword triggers  : none in active GCCZ runtime"
+Write-Output "Effect mutations  : confined to town settlement adapter"

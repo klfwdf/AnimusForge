@@ -48,7 +48,9 @@ The abandoned `SiegePostprocessFrequencyProfile` keyword list and its AF no-op f
 - `TownColonizationStateMachine` owns pending, stopped, ready, and committed colonization transitions.
 - `TownPlunderConsequenceDelta` and `TownMassacreConsequenceDelta` convert ledger progress into incremental consequence deltas.
 - `TownOutcomeCompatibilityProfile` snapshots the legacy full positive and negative anchors.
-- Bannerlord mutations remain in the AF adapter. Current settlement-effect entry points are `ApplyPlunderLedgerConsequencesIfNeeded`, `ApplyMassacreLedgerConsequencesIfNeeded`, and `ApplyFinalizedSettlementOutcomeEffects`. Consolidating every positive and negative side effect behind one adapter is still a remaining final-cleanup task.
+- `TownSettlementEffectPlan` converts plunder, massacre, final outcome, relief, civic, and local-conflict decisions into immutable settlement-effect batches without referencing Bannerlord types.
+- `SiegeAiInterventionBehavior.TownSettlementEffectAdapter.cs` is the single Bannerlord mutation boundary for immediate town public trust, bound-village public trust, notable relation, notable trust, loyalty, security, and relief-food effects. It also owns the final colonization loyalty reset and finalized prosperity/debuff bridge.
+- Operation controllers still decide when a ledger delta may commit, but they no longer repeat or directly apply the settlement/notable mutations. SETS owner-specific incident penalties remain a separate pre-existing SETS path because they target a specific clan leader rather than the GCCZ town-effect batch.
 
 ## Save Surface
 
@@ -79,6 +81,7 @@ The verifier fails when:
 - a mirrored GCCZ player resource or handoff document differs;
 - a reusable core filename or namespace is duplicated in the AF root;
 - an active GCCZ adapter starts classifying `playerText` with fixed dialogue keywords;
+- immediate GCCZ public-trust or notable-trust mutation escapes the dedicated settlement-effect adapter;
 - the required active-stage and mission-exit cleanup seams disappear.
 
 This verifier is an architecture regression guard. It does not replace the standalone behavior tests, compatibility snapshots, dual Bannerlord builds, or in-game acceptance sequence.

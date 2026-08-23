@@ -6114,10 +6114,12 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return false;
 			}
 			_regionalConflictIncidentCount++;
-			AdjustSettlementPublicTrustOnly(
+			ApplyTownSettlementEffectPlan(
 				settlement,
-				SiegeRegionalConflictProfile.SettlementPublicTrustDeltaPerIncident,
-				SiegeRegionalConflictProfile.SettlementPublicTrustReason);
+				new TownSettlementEffectPlan(
+					"regional_conflict",
+					settlementPublicTrustDelta: SiegeRegionalConflictProfile.SettlementPublicTrustDeltaPerIncident,
+					settlementPublicTrustReason: SiegeRegionalConflictProfile.SettlementPublicTrustReason));
 			InformationManager.DisplayMessage(new InformationMessage(
 				SiegeRegionalConflictProfile.BuildConflictNoticeMessage(targetName, victimDown),
 				Color.FromUint(SiegeLocalAttackProfile.MessageColor)));
@@ -7693,25 +7695,20 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			_appliedSharedCivilianReliefGold = _sharedCivilianReliefGold;
 			_appliedSharedCivilianReliefFoodUnits = _sharedCivilianReliefFoodUnits;
 			_appliedSharedCivilianReliefItemValue = _sharedCivilianReliefItemValue;
-			if (reliefEffect.NewFoodUnits > 0)
-			{
-				try
-				{
-					if (settlement?.Town != null)
-					{
-						settlement.Town.FoodStocks = Math.Min(settlement.Town.FoodStocks + reliefEffect.NewFoodUnits, settlement.Town.FoodStocksUpperLimit());
-					}
-				}
-				catch
-				{
-				}
-			}
 			int adjustedPublicTrustDelta = ReducePositiveIntDeltaForRegionalConflict(reliefEffect.PublicTrustDelta, "shared_relief_public_trust");
 			float adjustedLoyaltyDelta = ReducePositiveFloatDeltaForRegionalConflict(reliefEffect.LoyaltyDelta, "shared_relief_loyalty");
 			float adjustedSecurityDelta = ReducePositiveFloatDeltaForRegionalConflict(reliefEffect.SecurityDelta, "shared_relief_security");
-			if (adjustedPublicTrustDelta != 0 || Math.Abs(adjustedLoyaltyDelta) > 0.001f || Math.Abs(adjustedSecurityDelta) > 0.001f)
+			if (reliefEffect.NewFoodUnits > 0 || adjustedPublicTrustDelta != 0 || Math.Abs(adjustedLoyaltyDelta) > 0.001f || Math.Abs(adjustedSecurityDelta) > 0.001f)
 			{
-				AdjustSettlementAfterRelief(settlement, adjustedPublicTrustDelta, adjustedLoyaltyDelta, adjustedSecurityDelta);
+				ApplyTownSettlementEffectPlan(
+					settlement,
+					new TownSettlementEffectPlan(
+						"shared_relief",
+						settlementPublicTrustDelta: adjustedPublicTrustDelta,
+						settlementPublicTrustReason: SiegeSettlementEffectProfile.PositivePublicTrustReason,
+						loyaltyDelta: adjustedLoyaltyDelta,
+						securityDelta: adjustedSecurityDelta,
+						foodStockDelta: reliefEffect.NewFoodUnits));
 			}
 			InformationManager.DisplayMessage(new InformationMessage(SiegeSharedReliefPoolFormatter.BuildAppliedEffectMessage(DescribeSharedCivilianReliefPoolForContext()), Color.FromUint(SiegeSharedReliefPoolFormatter.AppliedEffectMessageColor)));
 			Logger.Log("SiegeAiIntervention", "Applied shared civilian relief pool effects. Reason=" + (reason ?? "N/A") + ", NewGold=" + reliefEffect.NewGold + ", NewFood=" + reliefEffect.NewFoodUnits + ", NewMaterialValue=" + reliefEffect.NewMaterialValue + ", PublicTrustDelta=" + adjustedPublicTrustDelta + ", LoyaltyDelta=" + adjustedLoyaltyDelta + ", SecurityDelta=" + adjustedSecurityDelta + ", RegionalConflictIncidents=" + _regionalConflictIncidentCount);
@@ -7782,11 +7779,14 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			MarkPendingAftermath(SiegeAftermathAction.SiegeAftermath.ShowMercy, triggerSource, triggerDetail);
 			MaybeTriggerSoldierAppeasementNeed(GetTownActionPresentation(reliefProfile.SoldierAppeasementReason).ActionLabel);
 			Settlement settlement = ResolveCurrentSettlement();
-			AdjustSettlementAfterRelief(
+			ApplyTownSettlementEffectPlan(
 				settlement,
-				ReducePositiveIntDeltaForRegionalConflict(reliefProfile.PublicTrustDelta, "relief_public_trust"),
-				ReducePositiveFloatDeltaForRegionalConflict(reliefProfile.LoyaltyDelta, "relief_loyalty"),
-				ReducePositiveFloatDeltaForRegionalConflict(reliefProfile.SecurityDelta, "relief_security"));
+				new TownSettlementEffectPlan(
+					"relief",
+					settlementPublicTrustDelta: ReducePositiveIntDeltaForRegionalConflict(reliefProfile.PublicTrustDelta, "relief_public_trust"),
+					settlementPublicTrustReason: SiegeSettlementEffectProfile.PositivePublicTrustReason,
+					loyaltyDelta: ReducePositiveFloatDeltaForRegionalConflict(reliefProfile.LoyaltyDelta, "relief_loyalty"),
+					securityDelta: ReducePositiveFloatDeltaForRegionalConflict(reliefProfile.SecurityDelta, "relief_security")));
 			QueuePositiveNotableRelationForFinalAftermath(ReducePositiveIntDeltaForRegionalConflict(reliefProfile.NotableRelationDelta, "relief_notable_relation"), includeBoundVillages: false, SiegeSettlementEffectProfile.ReliefNotableRelationReason);
 			QueuePositiveNotableTrustForFinalAftermath(ReducePositiveIntDeltaForRegionalConflict(reliefProfile.NotableTrustDelta, "relief_notable_trust"), includeBoundVillages: false, SiegeSettlementEffectProfile.ReliefNotableTrustReason);
 			if (reliefProfile.HasSharedPool && !string.IsNullOrWhiteSpace(reliefProfile.SharedPoolEffectReason))
@@ -8297,25 +8297,12 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return;
 			}
 			TownPlunderConsequenceDelta delta = TownPlunderConsequenceDelta.FromProgressCommit(progress);
-			AdjustSettlementPublicTrustOnly(
+			TownSettlementEffectApplicationResult applied = ApplyTownSettlementEffectPlan(
 				settlement,
-				delta.SettlementPublicTrustDelta,
-				TownPlunderConsequenceDelta.SettlementPublicTrustReason);
-			int villageTrustAdjusted = AdjustBoundVillagePublicTrust(
-				settlement,
-				delta.BoundVillagePublicTrustDelta,
-				TownPlunderConsequenceDelta.BoundVillagePublicTrustReason);
-			int notableRelationAdjusted = AdjustSettlementAndBoundVillageNotableRelations(
-				settlement,
-				delta.NotableRelationDelta,
-				TownPlunderConsequenceDelta.NotableRelationReason);
-			int notableTrustAdjusted = AdjustSettlementAndBoundVillageNotableTrust(
-				settlement,
-				delta.NotableTrustDelta,
-				TownPlunderConsequenceDelta.NotableTrustReason);
+				TownSettlementEffectPlan.FromPlunderDelta(delta));
 			Logger.Log(
 				"SiegeAiIntervention",
-				$"Applied incremental plunder consequences. Settlement={settlement.StringId ?? "N/A"}, DeltaBasisPoints={delta.DeltaBasisPoints}, CumulativeBasisPoints={delta.CumulativeBasisPoints}, SettlementTrust={delta.SettlementPublicTrustDelta}, VillageTrust={delta.BoundVillagePublicTrustDelta}x{villageTrustAdjusted}, NotableRelation={delta.NotableRelationDelta}x{notableRelationAdjusted}, NotableTrust={delta.NotableTrustDelta}x{notableTrustAdjusted}");
+				$"Applied incremental plunder consequences. Settlement={settlement.StringId ?? "N/A"}, DeltaBasisPoints={delta.DeltaBasisPoints}, CumulativeBasisPoints={delta.CumulativeBasisPoints}, SettlementTrust={delta.SettlementPublicTrustDelta}, VillageTrust={delta.BoundVillagePublicTrustDelta}x{applied.BoundVillageTrustAdjusted}, NotableRelation={delta.NotableRelationDelta}x{applied.NotableRelationsAdjusted}, NotableTrust={delta.NotableTrustDelta}x{applied.NotableTrustAdjusted}");
 		}
 		catch (Exception ex)
 		{
@@ -8414,13 +8401,12 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return;
 			}
 
-			AdjustSettlementPublicTrustOnly(settlement, delta.SettlementPublicTrustDelta, TownMassacreConsequenceDelta.SettlementPublicTrustReason);
-			int villageTrustAdjusted = AdjustBoundVillagePublicTrust(settlement, delta.BoundVillagePublicTrustDelta, TownMassacreConsequenceDelta.BoundVillagePublicTrustReason);
-			int notableRelationAdjusted = AdjustSettlementAndBoundVillageNotableRelations(settlement, delta.NotableRelationDelta, TownMassacreConsequenceDelta.NotableRelationReason);
-			int notableTrustAdjusted = AdjustSettlementAndBoundVillageNotableTrust(settlement, delta.NotableTrustDelta, TownMassacreConsequenceDelta.NotableTrustReason);
+			TownSettlementEffectApplicationResult applied = ApplyTownSettlementEffectPlan(
+				settlement,
+				TownSettlementEffectPlan.FromMassacreDelta(delta));
 			Logger.Log(
 				"SiegeAiIntervention",
-				$"Applied incremental massacre consequences. Settlement={settlement.StringId ?? "N/A"}, VictimDeltaBasisPoints={delta.DeltaVictimBasisPoints}, VictimCumulativeBasisPoints={delta.CumulativeVictimBasisPoints}, AppliedPlunderBaseline={delta.AppliedPlunderBaseline}, SettlementTrust={delta.SettlementPublicTrustDelta}, VillageTrust={delta.BoundVillagePublicTrustDelta}x{villageTrustAdjusted}, NotableRelation={delta.NotableRelationDelta}x{notableRelationAdjusted}, NotableTrust={delta.NotableTrustDelta}x{notableTrustAdjusted}");
+				$"Applied incremental massacre consequences. Settlement={settlement.StringId ?? "N/A"}, VictimDeltaBasisPoints={delta.DeltaVictimBasisPoints}, VictimCumulativeBasisPoints={delta.CumulativeVictimBasisPoints}, AppliedPlunderBaseline={delta.AppliedPlunderBaseline}, SettlementTrust={delta.SettlementPublicTrustDelta}, VillageTrust={delta.BoundVillagePublicTrustDelta}x{applied.BoundVillageTrustAdjusted}, NotableRelation={delta.NotableRelationDelta}x{applied.NotableRelationsAdjusted}, NotableTrust={delta.NotableTrustDelta}x{applied.NotableTrustAdjusted}");
 		}
 		catch (Exception ex)
 		{
@@ -8442,10 +8428,20 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			finalProfile.BoundVillagePublicTrustDelta,
 			finalProfile.NotableRelationDelta,
 			finalProfile.NotableTrustDelta);
-		AdjustSettlementPublicTrustOnly(settlement, delta.SettlementPublicTrustDelta, finalProfile.SettlementPublicTrustReason);
-		AdjustBoundVillagePublicTrust(settlement, delta.BoundVillagePublicTrustDelta, finalProfile.BoundVillagePublicTrustReason);
-		AdjustSettlementAndBoundVillageNotableRelations(settlement, delta.NotableRelationDelta, finalProfile.NotableRelationReason);
-		AdjustSettlementAndBoundVillageNotableTrust(settlement, delta.NotableTrustDelta, finalProfile.NotableTrustReason);
+		ApplyTownSettlementEffectPlan(
+			settlement,
+			new TownSettlementEffectPlan(
+				finalProfile.Key + "_anchor",
+				settlementPublicTrustDelta: delta.SettlementPublicTrustDelta,
+				settlementPublicTrustReason: finalProfile.SettlementPublicTrustReason,
+				boundVillagePublicTrustDelta: delta.BoundVillagePublicTrustDelta,
+				boundVillagePublicTrustReason: finalProfile.BoundVillagePublicTrustReason,
+				notableRelationDelta: delta.NotableRelationDelta,
+				notableRelationReason: finalProfile.NotableRelationReason,
+				includeBoundVillageNotableRelations: true,
+				notableTrustDelta: delta.NotableTrustDelta,
+				notableTrustReason: finalProfile.NotableTrustReason,
+				includeBoundVillageNotableTrust: true));
 	}
 
 	private static bool StopMassacre(string triggerSource, string triggerDetail, bool showMessage)
@@ -14512,25 +14508,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void AdjustSettlementAfterRelief(Settlement settlement, int publicTrustDelta, float loyaltyDelta, float securityDelta)
-	{
-		try
-		{
-			if (settlement != null && publicTrustDelta != 0 && RewardSystemBehavior.Instance != null)
-			{
-				RewardSystemBehavior.Instance.AdjustSettlementLocalPublicTrustForExternal(settlement, publicTrustDelta, SiegeSettlementEffectProfile.PositivePublicTrustReason);
-			}
-			if (settlement?.Town != null)
-			{
-				settlement.Town.Loyalty += loyaltyDelta;
-				settlement.Town.Security += securityDelta;
-			}
-		}
-		catch
-		{
-		}
-	}
-
 	private static int ReducePositiveIntDeltaForRegionalConflict(int delta, string effectName)
 	{
 		int adjusted = SiegeRegionalConflictProfile.ReducePositiveIntDelta(delta, _regionalConflictIncidentCount);
@@ -14553,71 +14530,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				+ ", Original=" + delta.ToString("0.##")
 				+ ", Adjusted=" + adjusted.ToString("0.##")
 				+ ", Incidents=" + _regionalConflictIncidentCount);
-		}
-		return adjusted;
-	}
-
-	private static void ApplyCivicChoiceSettlementEffects(Settlement settlement, SiegeCivicChoiceProfile profile, string settlementTrustReason, string boundVillageTrustReason)
-	{
-		try
-		{
-			if (settlement == null || profile == null)
-			{
-				return;
-			}
-			AdjustSettlementPublicTrustOnly(settlement, ReducePositiveIntDeltaForRegionalConflict(profile.SettlementPublicTrustDelta, "civic_settlement_public_trust"), settlementTrustReason);
-			AdjustBoundVillagePublicTrust(settlement, ReducePositiveIntDeltaForRegionalConflict(profile.BoundVillagePublicTrustDelta, "civic_bound_village_public_trust"), boundVillageTrustReason);
-			if (settlement.Town != null)
-			{
-				if (profile.LocksLoyalty)
-				{
-					float adjustedLockValue = ReducePositiveFloatDeltaForRegionalConflict(profile.LoyaltyLockValue, "civic_loyalty_lock");
-					settlement.Town.Loyalty = MathF.Max(settlement.Town.Loyalty, adjustedLockValue);
-				}
-				else
-				{
-					settlement.Town.Loyalty += ReducePositiveFloatDeltaForRegionalConflict(profile.LoyaltyDelta, "civic_loyalty");
-				}
-				settlement.Town.Security += ReducePositiveFloatDeltaForRegionalConflict(profile.SecurityDelta, "civic_security");
-			}
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "ApplyCivicChoiceSettlementEffects failed: " + ex.Message);
-		}
-	}
-
-	private static int AdjustSettlementNotableRelations(Settlement settlement, int relationDelta, string reason)
-	{
-		int adjusted = 0;
-		try
-		{
-			if (settlement?.Notables == null || relationDelta == 0)
-			{
-				return 0;
-			}
-			HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			foreach (Hero notable in settlement.Notables.ToList())
-			{
-				string key = notable?.StringId;
-				if (notable == null || notable == Hero.MainHero || !notable.IsAlive || string.IsNullOrWhiteSpace(key) || !seen.Add(key))
-				{
-					continue;
-				}
-				try
-				{
-					ChangeRelationAction.ApplyPlayerRelation(notable, relationDelta, true, true);
-					adjusted++;
-				}
-				catch (Exception ex)
-				{
-					Logger.Log("SiegeAiIntervention", "Settlement notable relation adjustment failed. Reason=" + (reason ?? "N/A") + ", Notable=" + key + ": " + ex.Message);
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "AdjustSettlementNotableRelations failed: " + ex.Message);
 		}
 		return adjusted;
 	}
@@ -14681,9 +14593,14 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				Logger.Log("SiegeAiIntervention", "Skipped queued positive notable relations because final aftermath is not mercy. Aftermath=" + aftermath + ", Delta=" + relationDelta);
 				return 0;
 			}
-			int adjusted = includeBoundVillages
-				? AdjustSettlementAndBoundVillageNotableRelations(settlement, relationDelta, reason)
-				: AdjustSettlementNotableRelations(settlement, relationDelta, reason);
+			TownSettlementEffectApplicationResult result = ApplyTownSettlementEffectPlan(
+				settlement,
+				new TownSettlementEffectPlan(
+					"pending_positive_notable_relation",
+					notableRelationDelta: relationDelta,
+					notableRelationReason: reason,
+					includeBoundVillageNotableRelations: includeBoundVillages));
+			int adjusted = result.NotableRelationsAdjusted;
 			Logger.Log("SiegeAiIntervention", "Applied queued positive notable relations after final mercy aftermath. Delta=" + relationDelta + ", IncludeBoundVillages=" + includeBoundVillages + ", Adjusted=" + adjusted + ", Reason=" + (reason ?? "N/A"));
 			return adjusted;
 		}
@@ -14713,9 +14630,14 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				Logger.Log("SiegeAiIntervention", "Skipped queued positive notable trust because final aftermath is not mercy. Aftermath=" + aftermath + ", Delta=" + trustDelta);
 				return 0;
 			}
-			int adjusted = includeBoundVillages
-				? AdjustSettlementAndBoundVillageNotableTrust(settlement, trustDelta, reason)
-				: AdjustSettlementNotableTrust(settlement, trustDelta, reason);
+			TownSettlementEffectApplicationResult result = ApplyTownSettlementEffectPlan(
+				settlement,
+				new TownSettlementEffectPlan(
+					"pending_positive_notable_trust",
+					notableTrustDelta: trustDelta,
+					notableTrustReason: reason,
+					includeBoundVillageNotableTrust: includeBoundVillages));
+			int adjusted = result.NotableTrustAdjusted;
 			Logger.Log("SiegeAiIntervention", "Applied queued positive notable trust after final mercy aftermath. Delta=" + trustDelta + ", IncludeBoundVillages=" + includeBoundVillages + ", Adjusted=" + adjusted + ", Reason=" + (reason ?? "N/A"));
 			return adjusted;
 		}
@@ -14723,20 +14645,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			Logger.Log("SiegeAiIntervention", "ApplyPendingPositiveNotableTrustForFinalAftermath failed: " + ex.Message);
 			return 0;
-		}
-	}
-
-	private static void AdjustSettlementPublicTrustOnly(Settlement settlement, int publicTrustDelta, string reason)
-	{
-		try
-		{
-			if (settlement != null && RewardSystemBehavior.Instance != null)
-			{
-				RewardSystemBehavior.Instance.AdjustSettlementLocalPublicTrustForExternal(settlement, publicTrustDelta, reason);
-			}
-		}
-		catch
-		{
 		}
 	}
 
@@ -15117,217 +15025,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 		}
 		return result;
-	}
-
-	private static void ApplyFinalizedSettlementOutcomeEffects(
-		Settlement settlement,
-		SiegeSettlementOutcomeProfile profile,
-		float prosperityBeforeNativeAftermath,
-		bool applyLegacyRelationshipEffects = true)
-	{
-		try
-		{
-			if (settlement == null || profile == null)
-			{
-				return;
-			}
-			int villageTrustAdjusted = 0;
-			int notableRelationAdjusted = 0;
-			int notableTrustAdjusted = 0;
-			if (applyLegacyRelationshipEffects)
-			{
-				AdjustSettlementPublicTrustOnly(settlement, profile.SettlementPublicTrustDelta, profile.SettlementPublicTrustReason);
-				villageTrustAdjusted = AdjustBoundVillagePublicTrust(settlement, profile.BoundVillagePublicTrustDelta, profile.BoundVillagePublicTrustReason);
-				notableRelationAdjusted = AdjustSettlementAndBoundVillageNotableRelations(settlement, profile.NotableRelationDelta, profile.NotableRelationReason);
-				notableTrustAdjusted = AdjustSettlementAndBoundVillageNotableTrust(settlement, profile.NotableTrustDelta, profile.NotableTrustReason);
-			}
-			float prosperityAfterNativeAftermath = settlement.Town?.Prosperity ?? prosperityBeforeNativeAftermath;
-			float nativeProsperityDelta = prosperityAfterNativeAftermath - prosperityBeforeNativeAftermath;
-			float extraProsperityDelta = 0f;
-			if (profile.AppliesAdditionalNativeDevastateProsperityPenalty)
-			{
-				extraProsperityDelta = ApplyExtraNativeDevastateProsperityPenalty(settlement, prosperityBeforeNativeAftermath, profile.NativeDevastateProsperityMultiplier);
-			}
-			if (profile.ResetsLoyaltyToInitial && settlement.Town != null)
-			{
-				settlement.Town.Loyalty = SiegeSettlementOutcomeProfile.CulturalRepopulationInitialLoyalty;
-			}
-			if (profile.AppliesProsperityGrowthDebuff)
-			{
-				BeginRepopulationProsperityGrowthDebuff(settlement);
-			}
-			if (profile.AppliesRecruitmentSlowdown)
-			{
-				BeginRecruitmentSlowdownDebuff(settlement, profile);
-			}
-			float prosperityAfterAllEffects = settlement.Town?.Prosperity ?? prosperityAfterNativeAftermath;
-			Logger.Log("SiegeAiIntervention", $"Applied finalized GCCZ settlement outcome. Key={profile.Key}, Settlement={settlement.StringId}, RelationshipEffects={applyLegacyRelationshipEffects}, SettlementTrust={(applyLegacyRelationshipEffects ? profile.SettlementPublicTrustDelta : 0)}, VillageTrust={(applyLegacyRelationshipEffects ? profile.BoundVillagePublicTrustDelta : 0)}x{villageTrustAdjusted}, NotableRelation={(applyLegacyRelationshipEffects ? profile.NotableRelationDelta : 0)}x{notableRelationAdjusted}, NotableTrust={(applyLegacyRelationshipEffects ? profile.NotableTrustDelta : 0)}x{notableTrustAdjusted}, ProsperityBefore={prosperityBeforeNativeAftermath:0.##}, NativeProsperityDelta={nativeProsperityDelta:0.##}, ExtraProsperityDelta={extraProsperityDelta:0.##}, ProsperityAfter={prosperityAfterAllEffects:0.##}, TotalProsperityDelta={prosperityAfterAllEffects - prosperityBeforeNativeAftermath:0.##}");
-			GcczDiagnosticLog.Log("SettlementOutcome", $"key={profile.Key} settlement={settlement.StringId} prosperityBefore={prosperityBeforeNativeAftermath:0.##} nativeDelta={nativeProsperityDelta:0.##} extraDelta={extraProsperityDelta:0.##} prosperityAfter={prosperityAfterAllEffects:0.##} totalDelta={prosperityAfterAllEffects - prosperityBeforeNativeAftermath:0.##} recruitmentRateMultiplier={profile.RecruitmentRateMultiplier:0.##}");
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "ApplyFinalizedSettlementOutcomeEffects failed: " + ex.Message);
-		}
-	}
-
-	private static int AdjustBoundVillagePublicTrust(Settlement settlement, int publicTrustDelta, string reason)
-	{
-		int adjusted = 0;
-		try
-		{
-			if (settlement?.BoundVillages == null || publicTrustDelta == 0 || RewardSystemBehavior.Instance == null)
-			{
-				return 0;
-			}
-			HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			foreach (Village village in settlement.BoundVillages)
-			{
-				Settlement villageSettlement = village?.Settlement;
-				string key = villageSettlement?.StringId;
-				if (villageSettlement == null || string.IsNullOrWhiteSpace(key) || !seen.Add(key))
-				{
-					continue;
-				}
-				RewardSystemBehavior.Instance.AdjustSettlementLocalPublicTrustForExternal(villageSettlement, publicTrustDelta, reason ?? "siege_ai_bound_village");
-				adjusted++;
-			}
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "AdjustBoundVillagePublicTrust failed: " + ex.Message);
-		}
-		return adjusted;
-	}
-
-	private static int AdjustSettlementAndBoundVillageNotableRelations(Settlement settlement, int relationDelta, string reason)
-	{
-		int adjusted = 0;
-		try
-		{
-			if (settlement == null || relationDelta == 0)
-			{
-				return 0;
-			}
-			HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			foreach (Hero notable in EnumerateSettlementAndBoundVillageNotables(settlement))
-			{
-				string key = notable?.StringId;
-				if (notable == null || notable == Hero.MainHero || !notable.IsAlive || string.IsNullOrWhiteSpace(key) || !seen.Add(key))
-				{
-					continue;
-				}
-				try
-				{
-					ChangeRelationAction.ApplyPlayerRelation(notable, relationDelta, true, true);
-					adjusted++;
-				}
-				catch (Exception ex)
-				{
-					Logger.Log("SiegeAiIntervention", "Notable relation adjustment failed. Reason=" + (reason ?? "N/A") + ", Notable=" + (key ?? "N/A") + ": " + ex.Message);
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "AdjustSettlementAndBoundVillageNotableRelations failed: " + ex.Message);
-		}
-		return adjusted;
-	}
-
-	private static int AdjustSettlementNotableTrust(Settlement settlement, int trustDelta, string reason)
-	{
-		int adjusted = 0;
-		try
-		{
-			if (settlement?.Notables == null || trustDelta == 0 || RewardSystemBehavior.Instance == null)
-			{
-				return 0;
-			}
-			HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			foreach (Hero notable in settlement.Notables.ToList())
-			{
-				string key = notable?.StringId;
-				if (notable == null || notable == Hero.MainHero || !notable.IsAlive || string.IsNullOrWhiteSpace(key) || !seen.Add(key))
-				{
-					continue;
-				}
-				try
-				{
-					RewardSystemBehavior.Instance.AdjustPersonalTrustWholeDeltaForExternal(notable, trustDelta, reason ?? "siege_ai_notable_trust");
-					adjusted++;
-				}
-				catch (Exception ex)
-				{
-					Logger.Log("SiegeAiIntervention", "Settlement notable trust adjustment failed. Reason=" + (reason ?? "N/A") + ", Notable=" + key + ": " + ex.Message);
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "AdjustSettlementNotableTrust failed: " + ex.Message);
-		}
-		return adjusted;
-	}
-
-	private static int AdjustSettlementAndBoundVillageNotableTrust(Settlement settlement, int trustDelta, string reason)
-	{
-		int adjusted = 0;
-		try
-		{
-			if (settlement == null || trustDelta == 0 || RewardSystemBehavior.Instance == null)
-			{
-				return 0;
-			}
-			HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			foreach (Hero notable in EnumerateSettlementAndBoundVillageNotables(settlement))
-			{
-				string key = notable?.StringId;
-				if (notable == null || notable == Hero.MainHero || !notable.IsAlive || string.IsNullOrWhiteSpace(key) || !seen.Add(key))
-				{
-					continue;
-				}
-				try
-				{
-					RewardSystemBehavior.Instance.AdjustPersonalTrustWholeDeltaForExternal(notable, trustDelta, reason ?? "siege_ai_notable_trust");
-					adjusted++;
-				}
-				catch (Exception ex)
-				{
-					Logger.Log("SiegeAiIntervention", "Notable trust adjustment failed. Reason=" + (reason ?? "N/A") + ", Notable=" + key + ": " + ex.Message);
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "AdjustSettlementAndBoundVillageNotableTrust failed: " + ex.Message);
-		}
-		return adjusted;
-	}
-
-	private static IEnumerable<Hero> EnumerateSettlementAndBoundVillageNotables(Settlement settlement)
-	{
-		if (settlement?.Notables != null)
-		{
-			foreach (Hero notable in settlement.Notables)
-			{
-				yield return notable;
-			}
-		}
-		if (settlement?.BoundVillages == null)
-		{
-			yield break;
-		}
-		foreach (Village village in settlement.BoundVillages)
-		{
-			if (village?.Settlement?.Notables == null)
-			{
-				continue;
-			}
-			foreach (Hero notable in village.Settlement.Notables)
-			{
-				yield return notable;
-			}
-		}
 	}
 
 	private static float ApplyExtraNativeDevastateProsperityPenalty(Settlement settlement, float prosperityBeforeNativeAftermath, float totalMultiplier)
