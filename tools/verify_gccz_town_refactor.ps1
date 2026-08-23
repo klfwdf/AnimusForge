@@ -159,6 +159,33 @@ foreach ($snippet in $requiredSettlementEffectEvidence) {
     Assert-Condition ($settlementEffectRuntimeText.Contains($snippet)) "Missing GCCZ settlement-effect evidence: $snippet"
 }
 
+$directAftermathAdapterPath = Join-Path $FusedRoot "SiegeAiInterventionBehavior.DirectAftermathAdapter.cs"
+Assert-Condition (Test-Path -LiteralPath $directAftermathAdapterPath -PathType Leaf) "Missing GCCZ direct-aftermath adapter: $directAftermathAdapterPath"
+$directAftermathAdapterText = [System.IO.File]::ReadAllText($directAftermathAdapterPath)
+$directAftermathStatePath = Join-Path $fusedCore "TownDirectAftermathFlowState.cs"
+Assert-Condition (Test-Path -LiteralPath $directAftermathStatePath -PathType Leaf) "Missing GCCZ direct-aftermath state: $directAftermathStatePath"
+$directAftermathRuntimeText = $activeRuntimeText + "`n" + $directAftermathAdapterText
+$obsoleteDirectAftermathPatterns = @(
+    '_directMassacreAftermathScriptPending',
+    '_directMassacreLootScreenOpened',
+    '_directMassacreWaitingForLootClose',
+    '_directPlunderAftermathScriptPending',
+    '_directPlunderLootScreenOpened',
+    '_directPlunderWaitingForLootClose'
+)
+foreach ($pattern in $obsoleteDirectAftermathPatterns) {
+    Assert-Condition (-not $directAftermathRuntimeText.Contains($pattern)) "Obsolete direct-aftermath field returned: $pattern"
+}
+$requiredDirectAftermathEvidence = @(
+    'TownDirectAftermathFlowState DirectAftermathFlow',
+    'TryRunDirectAftermathScript(',
+    'TryHandleDirectAftermathMenuForExternal(',
+    'TryOpenDirectAftermathLootScreenNow('
+)
+foreach ($snippet in $requiredDirectAftermathEvidence) {
+    Assert-Condition ($directAftermathRuntimeText.Contains($snippet)) "Missing GCCZ direct-aftermath evidence: $snippet"
+}
+
 $requiredLifecycleEvidence = @(
     'IsActiveInCurrentMission()',
     'EndInterventionSceneScope("mission_ended")',
@@ -176,3 +203,4 @@ Write-Output "Player resources  : $($resourceMappings.Count)"
 Write-Output "Handoff documents : $($documentMappings.Count)"
 Write-Output "Keyword triggers  : none in active GCCZ runtime"
 Write-Output "Effect mutations  : confined to town settlement adapter"
+Write-Output "Direct aftermath  : one explicit flow state and adapter"

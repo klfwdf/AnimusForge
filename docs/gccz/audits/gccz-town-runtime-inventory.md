@@ -46,10 +46,12 @@ The abandoned `SiegePostprocessFrequencyProfile` keyword list and its AF no-op f
 
 - `TownOperationLedger` is the source of target claims, acquired value, unique deaths, committed progress, and duplicate prevention for plunder, massacre, and colonization.
 - `TownColonizationStateMachine` owns pending, stopped, ready, and committed colonization transitions.
+- `TownDirectAftermathFlowState` owns the mutually exclusive direct plunder or massacre campaign transition through pending resolution, loot-screen wait, and encounter finish. It replaces twelve parallel AF boolean/counter/string fields and prevents both direct scripts from being pending together.
 - `TownPlunderConsequenceDelta` and `TownMassacreConsequenceDelta` convert ledger progress into incremental consequence deltas.
 - `TownOutcomeCompatibilityProfile` snapshots the legacy full positive and negative anchors.
 - `TownSettlementEffectPlan` converts plunder, massacre, final outcome, relief, civic, and local-conflict decisions into immutable settlement-effect batches without referencing Bannerlord types.
 - `SiegeAiInterventionBehavior.TownSettlementEffectAdapter.cs` is the single Bannerlord mutation boundary for immediate town public trust, bound-village public trust, notable relation, notable trust, loyalty, security, and relief-food effects. It also owns the final colonization loyalty reset and finalized prosperity/debuff bridge.
+- `SiegeAiInterventionBehavior.DirectAftermathAdapter.cs` is the single Bannerlord boundary for direct destructive loot UI, native aftermath menu interception, guarded pump retries, and encounter finish. Plunder and massacre share one implementation while retaining their existing aftermath types and source codes.
 - Operation controllers still decide when a ledger delta may commit, but they no longer repeat or directly apply the settlement/notable mutations. SETS owner-specific incident penalties remain a separate pre-existing SETS path because they target a specific clan leader rather than the GCCZ town-effect batch.
 
 ## Save Surface
@@ -83,5 +85,6 @@ The verifier fails when:
 - an active GCCZ adapter starts classifying `playerText` with fixed dialogue keywords;
 - immediate GCCZ public-trust or notable-trust mutation escapes the dedicated settlement-effect adapter;
 - the required active-stage and mission-exit cleanup seams disappear.
+- parallel direct plunder/massacre flow fields or duplicate direct loot-screen runners return to the AF runtime.
 
 This verifier is an architecture regression guard. It does not replace the standalone behavior tests, compatibility snapshots, dual Bannerlord builds, or in-game acceptance sequence.

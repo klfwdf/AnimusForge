@@ -243,6 +243,8 @@
 - [ ] AF 桥接只传递场景上下文、人物身份、AF 性格、记忆引用、候选标签和执行结果。
 - [x] 将提示词编排、候选标签路由、角色分类、场景记忆、城镇记忆、行动账本、状态机、结算适配和中文资源加载拆分为窄职责组件。
 - [ ] 使用明确状态转换代替散落的布尔值组合。
+  - [x] Direct plunder and massacre exit scripts share one mutually exclusive state machine for resolution, loot-screen close, and encounter-finish phases.
+  - [ ] Audit the remaining summary, encounter-finish, and scene-control boolean groups before completing the parent item.
 - [ ] 每个奖励或惩罚只允许通过一个结算适配入口提交。
 - [x] 保存数据增加版本字段和默认迁移，不破坏旧存档读取。
 - [ ] 所有事件订阅必须有对称解除；离开 GCCZ 场景后清理普通角色记忆和临时状态。

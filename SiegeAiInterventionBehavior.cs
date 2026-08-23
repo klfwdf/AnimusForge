@@ -347,18 +347,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private const double EncounterFinishMenuSettleSeconds = 0.35d;
 	private static bool _nativeDevastateAftermathFlowActive;
 	private static bool _nativeDevastateSummaryContinueHandled;
-	private static bool _directMassacreAftermathScriptPending;
-	private static bool _directMassacreLootScreenOpened;
-	private static bool _directMassacreWaitingForLootClose;
-	private static bool _directMassacreScriptMessageShown;
-	private static int _directMassacreScriptTicks;
-	private static string _directMassacreLastDeferKey = "";
-	private static bool _directPlunderAftermathScriptPending;
-	private static bool _directPlunderLootScreenOpened;
-	private static bool _directPlunderWaitingForLootClose;
-	private static bool _directPlunderScriptMessageShown;
-	private static int _directPlunderScriptTicks;
-	private static string _directPlunderLastDeferKey = "";
+	private static readonly TownDirectAftermathFlowState DirectAftermathFlow = new TownDirectAftermathFlowState();
 	private static readonly SiegeOutcomeMessageDeduplicator OutcomeMessageDeduplicator = new SiegeOutcomeMessageDeduplicator();
 	private static bool _civilianAssemblyPointReady;
 	private static Vec3 _civilianAssemblyAnchor;
@@ -1064,8 +1053,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return _pendingSummarySwitch
 					|| _pendingEncounterFinish
 					|| _hasPendingAftermath
-					|| _directMassacreAftermathScriptPending
-					|| _directPlunderAftermathScriptPending;
+					|| DirectAftermathFlow.IsPending;
 			}
 			if (Mission.Current != null)
 			{
@@ -1074,8 +1062,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			return _pendingSummarySwitch
 				|| _pendingEncounterFinish
 				|| _hasPendingAftermath
-				|| _directMassacreAftermathScriptPending
-				|| _directPlunderAftermathScriptPending;
+				|| DirectAftermathFlow.IsPending;
 		}
 		catch
 		{
@@ -1426,18 +1413,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_pendingSummaryContinueRequested = false;
 		_nativeDevastateAftermathFlowActive = false;
 		_nativeDevastateSummaryContinueHandled = false;
-		_directMassacreAftermathScriptPending = false;
-		_directMassacreLootScreenOpened = false;
-		_directMassacreWaitingForLootClose = false;
-		_directMassacreScriptMessageShown = false;
-		_directMassacreScriptTicks = 0;
-		_directMassacreLastDeferKey = "";
-		_directPlunderAftermathScriptPending = false;
-		_directPlunderLootScreenOpened = false;
-		_directPlunderWaitingForLootClose = false;
-		_directPlunderScriptMessageShown = false;
-		_directPlunderScriptTicks = 0;
-		_directPlunderLastDeferKey = "";
+		DirectAftermathFlow.Reset();
 		ResetOutcomeMessageDedup();
 		_civilianAssemblyPointReady = false;
 		_civilianAssemblyAnchor = Vec3.Zero;
@@ -2573,7 +2549,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (_directMassacreAftermathScriptPending || !_nativeDevastateAftermathFlowActive || Mission.Current != null || !_afAftermathResolved || !DoesCompletedAftermathMatchCurrentSettlement())
+			if (DirectAftermathFlow.IsPendingFor(TownDirectAftermathKind.Massacre) || !_nativeDevastateAftermathFlowActive || Mission.Current != null || !_afAftermathResolved || !DoesCompletedAftermathMatchCurrentSettlement())
 			{
 				return false;
 			}
@@ -5844,15 +5820,14 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			|| _pendingEncounterFinish
 			|| _hasPendingAftermath
 			|| _afAftermathResolved
-			|| _directMassacreAftermathScriptPending
-			|| _directPlunderAftermathScriptPending;
+			|| DirectAftermathFlow.IsPending;
 	}
 
 	internal static bool TryHandleNativeAftermathMenuInitForExternal(string source)
 	{
 		try
 		{
-			if (_directPlunderAftermathScriptPending)
+			if (DirectAftermathFlow.IsPendingFor(TownDirectAftermathKind.Plunder))
 			{
 				TryRunDirectPlunderAftermathScript(SiegeAftermathTransitionSourceProfile.BuildNativeMenuInitSource(source));
 				return true;
@@ -5939,87 +5914,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			Logger.Log("SiegeAiIntervention", "TryHandleNativeAftermathSummaryContinueForExternal failed: " + ex.Message);
 			return false;
-		}
-	}
-
-	internal static bool TryHandleDirectMassacreAftermathMenuForExternal(string menuId, string source)
-	{
-		try
-		{
-			if (!_directMassacreAftermathScriptPending || string.IsNullOrWhiteSpace(menuId))
-			{
-				return false;
-			}
-			if (!IsNativeSiegeAftermathMenuId(menuId))
-			{
-				return false;
-			}
-			Logger.Log("SiegeAiIntervention", "Intercepted native siege aftermath menu for direct AF massacre loot script. Menu=" + menuId + ", Source=" + (source ?? "N/A"));
-			if (Mission.Current != null)
-			{
-				LogDirectMassacreLootDeferOnce(SiegeDirectAftermathSourceProfile.BuildNativeMenuMissionCurrentSource(menuId), "Suppressed native siege aftermath menu while Mission.Current is still active; direct AF massacre loot will be pumped after MapState. Menu=" + menuId + ", Source=" + (source ?? "N/A"));
-				return true;
-			}
-			if (!TryOpenDirectMassacreLootScreenNow(source ?? SiegeDirectAftermathSourceProfile.NativeMenuInterceptSource) && IsSafeToOpenDirectMassacreLootScreen(source ?? SiegeDirectAftermathSourceProfile.NativeMenuInterceptNoLootProbeSource))
-			{
-				QueueEncounterFinishAfterIntervention(SiegeAftermathAction.SiegeAftermath.Devastate, SiegeDirectAftermathSourceProfile.DirectMassacreNativeMenuNoLootSource, 0, forceDelay: true);
-				TryFinishPlayerEncounterAfterInterventionNow(SiegeAftermathAction.SiegeAftermath.Devastate, SiegeDirectAftermathSourceProfile.DirectMassacreNativeMenuNoLootSource);
-			}
-			return true;
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "TryHandleDirectMassacreAftermathMenuForExternal failed: " + ex.Message);
-			return false;
-		}
-	}
-
-	internal static bool TryHandleDirectPlunderAftermathMenuForExternal(string menuId, string source)
-	{
-		try
-		{
-			if (!_directPlunderAftermathScriptPending || string.IsNullOrWhiteSpace(menuId))
-			{
-				return false;
-			}
-			if (!IsNativeSiegeAftermathMenuId(menuId))
-			{
-				return false;
-			}
-			Logger.Log("SiegeAiIntervention", "Intercepted native siege aftermath menu for direct AF plunder loot script. Menu=" + menuId + ", Source=" + (source ?? "N/A"));
-			if (Mission.Current != null)
-			{
-				LogDirectPlunderLootDeferOnce(SiegeDirectAftermathSourceProfile.BuildNativeMenuMissionCurrentSource(menuId), "Suppressed native siege aftermath menu while Mission.Current is still active; direct AF plunder loot will be pumped after MapState. Menu=" + menuId + ", Source=" + (source ?? "N/A"));
-				return true;
-			}
-			if (!TryOpenDirectPlunderLootScreenNow(source ?? SiegeDirectAftermathSourceProfile.NativeMenuInterceptSource) && IsSafeToOpenDirectPlunderLootScreen(source ?? SiegeDirectAftermathSourceProfile.NativeMenuInterceptNoLootProbeSource))
-			{
-				QueueEncounterFinishAfterIntervention(SiegeAftermathAction.SiegeAftermath.Pillage, SiegeDirectAftermathSourceProfile.DirectPlunderNativeMenuNoLootSource, 0, forceDelay: true);
-				TryFinishPlayerEncounterAfterInterventionNow(SiegeAftermathAction.SiegeAftermath.Pillage, SiegeDirectAftermathSourceProfile.DirectPlunderNativeMenuNoLootSource);
-			}
-			return true;
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "TryHandleDirectPlunderAftermathMenuForExternal failed: " + ex.Message);
-			return false;
-		}
-	}
-
-	internal static bool TryPumpDirectMassacreAftermathScriptForExternal(string source)
-	{
-		try
-		{
-			if (!_directMassacreAftermathScriptPending)
-			{
-				return false;
-			}
-			return TryRunDirectMassacreAftermathScript(source ?? SiegeDirectAftermathSourceProfile.ExternalDirectMassacreScriptSource);
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "TryPumpDirectMassacreAftermathScriptForExternal failed. Source=" + (source ?? "N/A") + ", Error=" + ex.Message);
-			return true;
 		}
 	}
 
@@ -15946,456 +15840,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void QueueDirectMassacreAftermathScript(string reason)
-	{
-		try
-		{
-			_directMassacreAftermathScriptPending = true;
-			_directMassacreLootScreenOpened = false;
-			_directMassacreWaitingForLootClose = false;
-			_directMassacreScriptMessageShown = false;
-			_directMassacreScriptTicks = 0;
-			_directMassacreLastDeferKey = "";
-			_pendingSummarySwitch = true;
-			_pendingEncounterFinish = false;
-			_pendingEncounterFinishDelayTicks = 0;
-			_pendingEncounterFinishAttempts = 0;
-			_nativeDevastateAftermathFlowActive = false;
-			_nativeDevastateSummaryContinueHandled = true;
-			Logger.Log("SiegeAiIntervention", "Queued direct AF massacre aftermath script. Reason=" + (reason ?? "N/A") + ", LootItems=" + (_pendingLootRoster?.Count ?? 0) + ", MarketGold=" + _lastMarketGoldLoot + ", CivilianGold=" + _lastCivilianGoldLoot);
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "QueueDirectMassacreAftermathScript failed: " + ex.Message);
-		}
-	}
-
-	private static bool TryRunDirectMassacreAftermathScript(string source = SiegeDirectAftermathSourceProfile.CampaignTickDirectMassacreScriptSource)
-	{
-		if (!_directMassacreAftermathScriptPending || Mission.Current != null)
-		{
-			return false;
-		}
-		try
-		{
-			_directMassacreScriptTicks++;
-			if (_hasPendingAftermath)
-			{
-				FinalizePendingAftermath(SiegeDirectAftermathSourceProfile.DirectMassacrePendingAftermathSource);
-			}
-			if (!_afAftermathResolved)
-			{
-				return true;
-			}
-			string pumpSource = source ?? SiegeDirectAftermathSourceProfile.DirectMassacreFallbackPumpSource;
-			if (!IsSafeToOpenDirectMassacreLootScreen(pumpSource))
-			{
-				return true;
-			}
-			_nativeDevastateAftermathFlowActive = false;
-			_nativeDevastateSummaryContinueHandled = true;
-			try
-			{
-				if (Campaign.Current?.CurrentMenuContext != null)
-				{
-					GameMenu.ExitToLast();
-				}
-			}
-			catch
-			{
-			}
-			if (_directMassacreWaitingForLootClose)
-			{
-				if (Game.Current?.GameStateManager?.ActiveState is InventoryState)
-				{
-					return true;
-				}
-				_directMassacreWaitingForLootClose = false;
-				QueueEncounterFinishAfterIntervention(SiegeAftermathAction.SiegeAftermath.Devastate, SiegeDirectAftermathSourceProfile.DirectMassacreAfterLootSource, 0, forceDelay: true);
-				if (!TryFinishPlayerEncounterAfterInterventionNow(SiegeAftermathAction.SiegeAftermath.Devastate, SiegeDirectAftermathSourceProfile.DirectMassacreAfterLootSource))
-				{
-					return true;
-				}
-				_directMassacreAftermathScriptPending = false;
-				_pendingSummarySwitch = false;
-				ClearActiveState(preserveSummarySwitch: false);
-				Logger.Log("SiegeAiIntervention", "Direct AF massacre aftermath script completed after loot screen.");
-				return true;
-			}
-			if (!_directMassacreLootScreenOpened && _pendingLootRoster != null && _pendingLootRoster.Count > 0)
-			{
-				TryOpenDirectMassacreLootScreenNow(pumpSource);
-				return true;
-			}
-			ShowDirectMassacreLootMessage();
-			QueueEncounterFinishAfterIntervention(SiegeAftermathAction.SiegeAftermath.Devastate, SiegeDirectAftermathSourceProfile.DirectMassacreNoLootSource, 0, forceDelay: true);
-			if (!TryFinishPlayerEncounterAfterInterventionNow(SiegeAftermathAction.SiegeAftermath.Devastate, SiegeDirectAftermathSourceProfile.DirectMassacreNoLootSource))
-			{
-				return true;
-			}
-			_directMassacreAftermathScriptPending = false;
-			_pendingSummarySwitch = false;
-			ClearActiveState(preserveSummarySwitch: false);
-			Logger.Log("SiegeAiIntervention", "Direct AF massacre aftermath script completed without loot screen.");
-			return true;
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "TryRunDirectMassacreAftermathScript failed: " + ex.Message);
-			return true;
-		}
-	}
-
-	private static void QueueDirectPlunderAftermathScript(string reason)
-	{
-		try
-		{
-			_directPlunderAftermathScriptPending = true;
-			_directPlunderLootScreenOpened = false;
-			_directPlunderWaitingForLootClose = false;
-			_directPlunderScriptMessageShown = false;
-			_directPlunderScriptTicks = 0;
-			_directPlunderLastDeferKey = "";
-			_pendingSummarySwitch = true;
-			_pendingEncounterFinish = false;
-			_pendingEncounterFinishDelayTicks = 0;
-			_pendingEncounterFinishAttempts = 0;
-			Logger.Log("SiegeAiIntervention", "Queued direct AF plunder aftermath loot script. Reason=" + (reason ?? "N/A") + ", LootItems=" + (_pendingLootRoster?.Count ?? 0) + ", MarketGold=" + _lastMarketGoldLoot + ", CivilianGold=" + _lastCivilianGoldLoot);
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "QueueDirectPlunderAftermathScript failed: " + ex.Message);
-		}
-	}
-
-	private static bool TryRunDirectPlunderAftermathScript(string source = SiegeDirectAftermathSourceProfile.CampaignTickDirectPlunderScriptSource)
-	{
-		if (!_directPlunderAftermathScriptPending || Mission.Current != null)
-		{
-			return false;
-		}
-		try
-		{
-			_directPlunderScriptTicks++;
-			if (_hasPendingAftermath)
-			{
-				FinalizePendingAftermath(SiegeDirectAftermathSourceProfile.DirectPlunderPendingAftermathSource);
-			}
-			if (!_afAftermathResolved)
-			{
-				return true;
-			}
-			string pumpSource = source ?? SiegeDirectAftermathSourceProfile.DirectPlunderFallbackPumpSource;
-			if (!IsSafeToOpenDirectPlunderLootScreen(pumpSource))
-			{
-				return true;
-			}
-			try
-			{
-				if (Campaign.Current?.CurrentMenuContext != null)
-				{
-					GameMenu.ExitToLast();
-				}
-			}
-			catch
-			{
-			}
-			if (_directPlunderWaitingForLootClose)
-			{
-				if (Game.Current?.GameStateManager?.ActiveState is InventoryState)
-				{
-					return true;
-				}
-				_directPlunderWaitingForLootClose = false;
-				QueueEncounterFinishAfterIntervention(SiegeAftermathAction.SiegeAftermath.Pillage, SiegeDirectAftermathSourceProfile.DirectPlunderAfterLootSource, 0, forceDelay: true);
-				if (!TryFinishPlayerEncounterAfterInterventionNow(SiegeAftermathAction.SiegeAftermath.Pillage, SiegeDirectAftermathSourceProfile.DirectPlunderAfterLootSource))
-				{
-					return true;
-				}
-				_directPlunderAftermathScriptPending = false;
-				_pendingSummarySwitch = false;
-				ClearActiveState(preserveSummarySwitch: false);
-				Logger.Log("SiegeAiIntervention", "Direct AF plunder aftermath loot script completed after loot screen.");
-				return true;
-			}
-			if (!_directPlunderLootScreenOpened && _pendingLootRoster != null && _pendingLootRoster.Count > 0)
-			{
-				TryOpenDirectPlunderLootScreenNow(pumpSource);
-				return true;
-			}
-			ShowDirectPlunderLootMessage();
-			QueueEncounterFinishAfterIntervention(SiegeAftermathAction.SiegeAftermath.Pillage, SiegeDirectAftermathSourceProfile.DirectPlunderNoLootSource, 0, forceDelay: true);
-			if (!TryFinishPlayerEncounterAfterInterventionNow(SiegeAftermathAction.SiegeAftermath.Pillage, SiegeDirectAftermathSourceProfile.DirectPlunderNoLootSource))
-			{
-				return true;
-			}
-			_directPlunderAftermathScriptPending = false;
-			_pendingSummarySwitch = false;
-			ClearActiveState(preserveSummarySwitch: false);
-			Logger.Log("SiegeAiIntervention", "Direct AF plunder aftermath loot script completed without loot screen.");
-			return true;
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "TryRunDirectPlunderAftermathScript failed: " + ex.Message);
-			return true;
-		}
-	}
-
-	internal static bool TryPumpDirectPlunderAftermathScriptForExternal(string source)
-	{
-		try
-		{
-			if (!_directPlunderAftermathScriptPending)
-			{
-				return false;
-			}
-			return TryRunDirectPlunderAftermathScript(source ?? SiegeDirectAftermathSourceProfile.ExternalDirectPlunderScriptSource);
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "TryPumpDirectPlunderAftermathScriptForExternal failed. Source=" + (source ?? "N/A") + ", Error=" + ex.Message);
-			return true;
-		}
-	}
-
-	private static bool TryOpenDirectMassacreLootScreenNow(string source)
-	{
-		try
-		{
-			if (!_directMassacreAftermathScriptPending || _directMassacreLootScreenOpened || _pendingLootRoster == null || _pendingLootRoster.Count <= 0)
-			{
-				return false;
-			}
-			if (!IsSafeToOpenDirectMassacreLootScreen(source))
-			{
-				return false;
-			}
-			_directMassacreLootScreenOpened = true;
-			_directMassacreWaitingForLootClose = true;
-			_pendingLootScreen = true;
-			_pendingLootScreenShown = true;
-			_directMassacreLastDeferKey = "";
-			_nativeDevastateAftermathFlowActive = false;
-			_nativeDevastateSummaryContinueHandled = true;
-			ShowDirectMassacreLootMessage();
-			try
-			{
-				if (Campaign.Current?.CurrentMenuContext != null)
-				{
-					GameMenu.ExitToLast();
-				}
-			}
-			catch
-			{
-			}
-			InventoryScreenHelper.OpenScreenAsLoot(new Dictionary<PartyBase, ItemRoster>
-			{
-				{
-					PartyBase.MainParty,
-					_pendingLootRoster
-				}
-			});
-			Logger.Log("SiegeAiIntervention", "Direct AF massacre script opened loot screen immediately. Source=" + (source ?? "N/A") + ", LootItems=" + _pendingLootRoster.Count + ", MarketGold=" + _lastMarketGoldLoot + ", CivilianGold=" + _lastCivilianGoldLoot);
-			return true;
-		}
-		catch (Exception ex)
-		{
-			_directMassacreLootScreenOpened = false;
-			_directMassacreWaitingForLootClose = false;
-			_pendingLootScreenShown = false;
-			Logger.Log("SiegeAiIntervention", "TryOpenDirectMassacreLootScreenNow failed. Source=" + (source ?? "N/A") + ", Error=" + ex.Message);
-			return false;
-		}
-	}
-
-	private static bool TryOpenDirectPlunderLootScreenNow(string source)
-	{
-		try
-		{
-			if (!_directPlunderAftermathScriptPending || _directPlunderLootScreenOpened || _pendingLootRoster == null || _pendingLootRoster.Count <= 0)
-			{
-				return false;
-			}
-			if (!IsSafeToOpenDirectPlunderLootScreen(source))
-			{
-				return false;
-			}
-			_directPlunderLootScreenOpened = true;
-			_directPlunderWaitingForLootClose = true;
-			_pendingLootScreen = true;
-			_pendingLootScreenShown = true;
-			_directPlunderLastDeferKey = "";
-			ShowDirectPlunderLootMessage();
-			try
-			{
-				if (Campaign.Current?.CurrentMenuContext != null)
-				{
-					GameMenu.ExitToLast();
-				}
-			}
-			catch
-			{
-			}
-			InventoryScreenHelper.OpenScreenAsLoot(new Dictionary<PartyBase, ItemRoster>
-			{
-				{
-					PartyBase.MainParty,
-					_pendingLootRoster
-				}
-			});
-			Logger.Log("SiegeAiIntervention", "Direct AF plunder script opened loot screen immediately. Source=" + (source ?? "N/A") + ", LootItems=" + _pendingLootRoster.Count + ", MarketGold=" + _lastMarketGoldLoot + ", CivilianGold=" + _lastCivilianGoldLoot);
-			return true;
-		}
-		catch (Exception ex)
-		{
-			_directPlunderLootScreenOpened = false;
-			_directPlunderWaitingForLootClose = false;
-			_pendingLootScreenShown = false;
-			Logger.Log("SiegeAiIntervention", "TryOpenDirectPlunderLootScreenNow failed. Source=" + (source ?? "N/A") + ", Error=" + ex.Message);
-			return false;
-		}
-	}
-
-	private static bool IsSafeToOpenDirectMassacreLootScreen(string source)
-	{
-		try
-		{
-			if (Mission.Current != null)
-			{
-				LogDirectMassacreLootDeferOnce(SiegeDirectAftermathSourceProfile.MissionCurrentLootDeferSource, "Direct massacre loot screen deferred because Mission.Current is still active. Source=" + (source ?? "N/A"));
-				return false;
-			}
-			object activeState = Game.Current?.GameStateManager?.ActiveState;
-			if (activeState == null)
-			{
-				LogDirectMassacreLootDeferOnce(SiegeDirectAftermathSourceProfile.NullStateLootDeferSource, "Direct massacre loot screen deferred because active game state is null. Source=" + (source ?? "N/A"));
-				return false;
-			}
-			if (activeState is InventoryState)
-			{
-				return false;
-			}
-			if (activeState is MapState)
-			{
-				return true;
-			}
-			string stateName = activeState.GetType().FullName ?? activeState.GetType().Name;
-			LogDirectMassacreLootDeferOnce(SiegeDirectAftermathSourceProfile.BuildActiveStateLootDeferSource(stateName), "Direct massacre loot screen deferred until MapState. Source=" + (source ?? "N/A") + ", ActiveState=" + stateName);
-			return false;
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "IsSafeToOpenDirectMassacreLootScreen failed. Source=" + (source ?? "N/A") + ", Error=" + ex.Message);
-			return false;
-		}
-	}
-
-	private static bool IsSafeToOpenDirectPlunderLootScreen(string source)
-	{
-		try
-		{
-			if (Mission.Current != null)
-			{
-				LogDirectPlunderLootDeferOnce(SiegeDirectAftermathSourceProfile.MissionCurrentLootDeferSource, "Direct plunder loot screen deferred because Mission.Current is still active. Source=" + (source ?? "N/A"));
-				return false;
-			}
-			object activeState = Game.Current?.GameStateManager?.ActiveState;
-			if (activeState == null)
-			{
-				LogDirectPlunderLootDeferOnce(SiegeDirectAftermathSourceProfile.NullStateLootDeferSource, "Direct plunder loot screen deferred because active game state is null. Source=" + (source ?? "N/A"));
-				return false;
-			}
-			if (activeState is InventoryState)
-			{
-				return false;
-			}
-			if (activeState is MapState)
-			{
-				return true;
-			}
-			string stateName = activeState.GetType().FullName ?? activeState.GetType().Name;
-			LogDirectPlunderLootDeferOnce(SiegeDirectAftermathSourceProfile.BuildActiveStateLootDeferSource(stateName), "Direct plunder loot screen deferred until MapState. Source=" + (source ?? "N/A") + ", ActiveState=" + stateName);
-			return false;
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "IsSafeToOpenDirectPlunderLootScreen failed. Source=" + (source ?? "N/A") + ", Error=" + ex.Message);
-			return false;
-		}
-	}
-
-	private static void LogDirectMassacreLootDeferOnce(string key, string message)
-	{
-		try
-		{
-			if (string.Equals(_directMassacreLastDeferKey, key ?? "", StringComparison.Ordinal))
-			{
-				return;
-			}
-			_directMassacreLastDeferKey = key ?? "";
-			Logger.Log("SiegeAiIntervention", message);
-		}
-		catch
-		{
-		}
-	}
-
-	private static void LogDirectPlunderLootDeferOnce(string key, string message)
-	{
-		try
-		{
-			if (string.Equals(_directPlunderLastDeferKey, key ?? "", StringComparison.Ordinal))
-			{
-				return;
-			}
-			_directPlunderLastDeferKey = key ?? "";
-			Logger.Log("SiegeAiIntervention", message);
-		}
-		catch
-		{
-		}
-	}
-
-	private static void ShowDirectMassacreLootMessage()
-	{
-		if (_directMassacreScriptMessageShown)
-		{
-			return;
-		}
-		if (IsCulturalRepopulationOutcome && !IsCulturalRepopulationCommitted)
-		{
-			ApplyCulturalRepopulationNow(SiegeCulturalRepopulationProfile.DirectMassacreLootMessageApplySource);
-		}
-		_directMassacreScriptMessageShown = true;
-		try
-		{
-			string action = IsCulturalRepopulationOutcome ? SiegeLootAccountingProfile.CulturalRepopulationActionName : SiegeLootAccountingProfile.MassacreActionName;
-			InformationManager.DisplayMessage(new InformationMessage(SiegeLootAccountingProfile.BuildDirectDevastateSettlementMessage(action), Color.FromUint(SiegeLootAccountingProfile.DirectDevastateSettlementMessageColor)));
-			InformationManager.DisplayMessage(new InformationMessage(SiegeLootAccountingProfile.BuildLootCreditedSummaryMessage(_lastMarketGoldLoot, _lastCivilianGoldLoot, _lastLootItemTotal, _lastLootStackKinds), Color.FromUint(SiegeLootAccountingProfile.LootMessageColor)));
-		}
-		catch
-		{
-		}
-	}
-
-	private static void ShowDirectPlunderLootMessage()
-	{
-		if (_directPlunderScriptMessageShown)
-		{
-			return;
-		}
-		_directPlunderScriptMessageShown = true;
-		try
-		{
-			InformationManager.DisplayMessage(new InformationMessage(SiegeLootAccountingProfile.BuildDirectPlunderSettlementMessage(), Color.FromUint(SiegeLootAccountingProfile.DirectPlunderSettlementMessageColor)));
-			InformationManager.DisplayMessage(new InformationMessage(SiegeLootAccountingProfile.BuildLootCreditedSummaryMessage(_lastMarketGoldLoot, _lastCivilianGoldLoot, _lastLootItemTotal, _lastLootStackKinds), Color.FromUint(SiegeLootAccountingProfile.LootMessageColor)));
-		}
-		catch
-		{
-		}
-	}
-
 	private static void ShowEncounterFinishMessagesOnce(SiegeAftermathAction.SiegeAftermath aftermath)
 	{
 		if (_pendingEncounterFinishMessageShown)
@@ -16680,12 +16124,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_pendingLootRoster = new ItemRoster();
 		_pendingLootScreen = false;
 		_pendingLootScreenShown = false;
-		_directPlunderAftermathScriptPending = false;
-		_directPlunderLootScreenOpened = false;
-		_directPlunderWaitingForLootClose = false;
-		_directPlunderScriptMessageShown = false;
-		_directPlunderScriptTicks = 0;
-		_directPlunderLastDeferKey = "";
+		DirectAftermathFlow.ResetIfKind(TownDirectAftermathKind.Plunder);
 		ResetOutcomeMessageDedup();
 		ClearInterventionSceneTransientState();
 	}
@@ -16733,18 +16172,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			_pendingEncounterFinishNoNativeMenuSinceUtc = DateTime.MinValue;
 			_nativeDevastateAftermathFlowActive = false;
 			_nativeDevastateSummaryContinueHandled = false;
-			_directMassacreAftermathScriptPending = false;
-			_directMassacreLootScreenOpened = false;
-			_directMassacreWaitingForLootClose = false;
-			_directMassacreScriptMessageShown = false;
-			_directMassacreScriptTicks = 0;
-			_directMassacreLastDeferKey = "";
-			_directPlunderAftermathScriptPending = false;
-			_directPlunderLootScreenOpened = false;
-			_directPlunderWaitingForLootClose = false;
-			_directPlunderScriptMessageShown = false;
-			_directPlunderScriptTicks = 0;
-			_directPlunderLastDeferKey = "";
+			DirectAftermathFlow.Reset();
 			ResetOutcomeMessageDedup();
 			ResetSessionCounters();
 			GcczDiagnosticLog.LogVerbose("Lifecycle", "runtime guards reset reason=" + (reason ?? "N/A"));
@@ -16792,18 +16220,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_pendingEncounterFinishNoNativeMenuSinceUtc = DateTime.MinValue;
 		_nativeDevastateAftermathFlowActive = false;
 		_nativeDevastateSummaryContinueHandled = false;
-		_directMassacreAftermathScriptPending = false;
-		_directMassacreLootScreenOpened = false;
-		_directMassacreWaitingForLootClose = false;
-		_directMassacreScriptMessageShown = false;
-		_directMassacreScriptTicks = 0;
-		_directMassacreLastDeferKey = "";
-		_directPlunderAftermathScriptPending = false;
-		_directPlunderLootScreenOpened = false;
-		_directPlunderWaitingForLootClose = false;
-		_directPlunderScriptMessageShown = false;
-		_directPlunderScriptTicks = 0;
-		_directPlunderLastDeferKey = "";
+		DirectAftermathFlow.Reset();
 		ResetOutcomeMessageDedup();
 		ResetSessionCounters();
 	}
