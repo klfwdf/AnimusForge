@@ -73,6 +73,13 @@ Do not move all code at once. First extract stable data/rules/state helpers, the
 - Removed `AfGcczShoutBridge.ShouldAllowPostprocessByFrequency(...)` and `ResetPostprocessFrequencyForMissionBoundary(...)`; both were pass-through or log-only compatibility facades.
 - Native conversation, scene shout, and unified postprocess now rely directly on active-scene selection plus the semantic candidate-tag contract. No dialogue keyword list can reopen or suppress a GCCZ postprocess request.
 
+## 2026-08-23 settlement-effect adapter
+
+- `TownSettlementEffectPlan` is the reusable, Bannerlord-free representation of immediate town, bound-village, notable, and relief-food effect deltas.
+- `SiegeAiInterventionBehavior.TownSettlementEffectAdapter.cs` is the only AF file allowed to call public-trust and personal-trust mutation APIs for GCCZ town outcomes. It applies one plan and reports the affected target counts for diagnostics.
+- Plunder and massacre controllers still own ledger commits, while the final outcome adapter still owns native prosperity comparison, colonization loyalty reset, and timed debuff registration. None of those controllers duplicate trust or notable mutation loops.
+- The older SETS owner-specific incident relation penalty is deliberately outside this adapter because it targets one clan leader and is not a GCCZ settlement/notable outcome batch.
+
 ## 2026-06-08 fused runtime bridge seed
 
 The fused AF test tree now has a real isolated GCCZ source area:
