@@ -34,6 +34,8 @@ public static class WorldMessageTimelineUi
 	private const int MaxTimelineEntries = 600;
 	private const int DetailCharacterLimit = 12000;
 	private const int DetailLineLimit = 320;
+	// The open popup compares these cheap source revisions once per second before rebuilding its bounded projection.
+	internal const long DynamicSourceRefreshIntervalTicks = TimeSpan.TicksPerSecond;
 
 	public static bool Show(Action onClose = null)
 	{
@@ -43,7 +45,9 @@ public static class WorldMessageTimelineUi
 			{
 				return false;
 			}
-			return WorldMessageTimelinePopup.Show(BuildData(), onClose);
+			// Capture before materializing the projection, so an event arriving during the initial build is refreshed on the next poll.
+			WorldMessageTimelineSourceVersion sourceVersion = CaptureSourceVersion();
+			return WorldMessageTimelinePopup.Show(BuildData(), onClose, sourceVersion);
 		}
 		catch (Exception ex)
 		{
@@ -102,6 +106,17 @@ public static class WorldMessageTimelineUi
 			Countries = BuildKnownCountries(ordered)
 		};
 		return data;
+	}
+
+	internal static WorldMessageTimelineSourceVersion CaptureSourceVersion()
+	{
+		// Each source exposes a monotonic revision, avoiding an allocation-heavy source enumeration on ordinary UI ticks.
+		return new WorldMessageTimelineSourceVersion
+		{
+			PolicySequence = CustomPolicyBehavior.GetPublishedPolicyArtifactCurrentSequenceForExternal(),
+			WeeklyRevision = MyBehavior.GetWorldMessageWeeklyTimelineRevisionForExternal(),
+			DiplomacyRevision = WorldDiplomacyBehavior.GetWorldMessageTimelineRevisionForExternal()
+		};
 	}
 
 	private static void AppendPolicyEntries(List<WorldMessageTimelineEntryData> target)
@@ -436,6 +451,28 @@ public static class WorldMessageTimelineUi
 	}
 }
 
+// Compact value used only by the active popup to decide whether new source data needs to be projected.
+internal struct WorldMessageTimelineSourceVersion
+{
+	public long PolicySequence;
+	public long WeeklyRevision;
+	public long DiplomacyRevision;
+
+	public bool Matches(WorldMessageTimelineSourceVersion other)
+	{
+		return PolicySequence == other.PolicySequence
+			&& WeeklyRevision == other.WeeklyRevision
+			&& DiplomacyRevision == other.DiplomacyRevision;
+	}
+}
+
+// Runtime state supplied by the popup owner so the view-model remains free of direct campaign-time mutations.
+internal struct WorldMessageTimelineGameTimeControlState
+{
+	public bool IsPaused;
+	public bool CanToggle;
+}
+
 public sealed class WorldMessageTimelinePopup
 {
 	private static WorldMessageTimelinePopup _activePopup;
@@ -444,23 +481,36 @@ public sealed class WorldMessageTimelinePopup
 	private readonly GauntletLayer _layer;
 	private readonly WorldMessageTimelinePopupVM _dataSource;
 	private readonly Action _onClose;
+	// The baseline and deadline keep source polling bounded to the active popup instead of the global frame rate.
+	private WorldMessageTimelineSourceVersion _sourceVersion;
+	private long _nextSourceRefreshUtcTicks;
+	// Preserve the player-visible normal/fast running mode when this popup's pause button resumes the map.
+	private CampaignTimeControlMode _resumeGameTimeControlMode = CampaignTimeControlMode.StoppablePlay;
 	private bool _isClosed;
 	// The high-priority timeline layer is suspended, not finalized, while a link opens the lower-priority encyclopedia.
 	private bool _isSuspendedForEncyclopediaNavigation;
 	// Guard the Escape release used to close the encyclopedia so the restored timeline remains open.
 	private long _resumeInputGuardUntilUtcTicks;
 
-	private WorldMessageTimelinePopup(ScreenBase screen, WorldMessageTimelinePopupData data, Action onClose)
+	private WorldMessageTimelinePopup(ScreenBase screen, WorldMessageTimelinePopupData data, Action onClose, WorldMessageTimelineSourceVersion sourceVersion)
 	{
 		_screen = screen;
 		_onClose = onClose;
-		_dataSource = new WorldMessageTimelinePopupVM(data, HandleCloseRequested, HandleOpenEncyclopediaLink);
+		_sourceVersion = sourceVersion;
+		_dataSource = new WorldMessageTimelinePopupVM(
+			data,
+			HandleCloseRequested,
+			HandleOpenEncyclopediaLink,
+			ToggleGamePause,
+			GetGameTimeControlState,
+			SynchronizeSourceVersionAfterReload);
 		_layer = new GauntletLayer("AnimusForgeWorldMessageTimelinePopup", 4101, false);
 	}
 
 	public static bool IsOpen => _activePopup != null && !_activePopup._isClosed;
 
-	public static bool Show(WorldMessageTimelinePopupData data, Action onClose = null)
+	// The structured overload is implementation-local; callers use WorldMessageTimelineUi.Show instead.
+	internal static bool Show(WorldMessageTimelinePopupData data, Action onClose, WorldMessageTimelineSourceVersion sourceVersion)
 	{
 		ScreenBase topScreen = ScreenManager.TopScreen;
 		if (topScreen == null)
@@ -470,7 +520,7 @@ public sealed class WorldMessageTimelinePopup
 		try
 		{
 			_activePopup?.Close(silent: true);
-			WorldMessageTimelinePopup popup = new WorldMessageTimelinePopup(topScreen, data ?? new WorldMessageTimelinePopupData(), onClose);
+			WorldMessageTimelinePopup popup = new WorldMessageTimelinePopup(topScreen, data ?? new WorldMessageTimelinePopupData(), onClose, sourceVersion);
 			popup.Open();
 			_activePopup = popup;
 			return true;
@@ -487,7 +537,12 @@ public sealed class WorldMessageTimelinePopup
 	public static void OnApplicationTick()
 	{
 		WorldMessageTimelinePopup popup = _activePopup;
-		if (popup != null && !popup._isClosed && !popup._isSuspendedForEncyclopediaNavigation && popup.ShouldCloseForEscapeKey())
+		if (popup == null || popup._isClosed || popup._isSuspendedForEncyclopediaNavigation)
+		{
+			return;
+		}
+		popup.RefreshRuntimeState();
+		if (popup.ShouldCloseForEscapeKey())
 		{
 			popup.HandleCloseRequested();
 		}
@@ -512,6 +567,117 @@ public sealed class WorldMessageTimelinePopup
 		_screen.AddLayer(_layer);
 		_layer.IsFocusLayer = true;
 		ScreenManager.TrySetFocus(_layer);
+		// This overlay is informational: it immediately releases a normal map pause instead of behaving like a blocking popup.
+		ResumeGameTimeAfterOpening();
+		_dataSource.RefreshGameTimeControlState();
+	}
+
+	private void RefreshRuntimeState()
+	{
+		// Reading the time-control enum is O(1), while the source refresh below is throttled to one check per second.
+		_dataSource.RefreshGameTimeControlState();
+		TryRefreshSourceData();
+	}
+
+	private void TryRefreshSourceData()
+	{
+		if (_dataSource == null || !_dataSource.CanRefreshExternalSources)
+		{
+			return;
+		}
+		long nowTicks = DateTime.UtcNow.Ticks;
+		if (nowTicks < _nextSourceRefreshUtcTicks)
+		{
+			return;
+		}
+		_nextSourceRefreshUtcTicks = nowTicks + WorldMessageTimelineUi.DynamicSourceRefreshIntervalTicks;
+		WorldMessageTimelineSourceVersion currentVersion = WorldMessageTimelineUi.CaptureSourceVersion();
+		if (_sourceVersion.Matches(currentVersion))
+		{
+			return;
+		}
+		// Rebuild only after a producer has published a new revision; filters and the selected entry are preserved by the VM.
+		_dataSource.ReloadFromExternalSourceChange();
+	}
+
+	private void SynchronizeSourceVersionAfterReload()
+	{
+		// Capture after materialization so a source changed during the rebuild schedules one additional, safe refresh.
+		_sourceVersion = WorldMessageTimelineUi.CaptureSourceVersion();
+	}
+
+	private void ResumeGameTimeAfterOpening()
+	{
+		Campaign campaign = Campaign.Current;
+		if (campaign == null || campaign.TimeControlModeLock)
+		{
+			return;
+		}
+		CampaignTimeControlMode mode = campaign.TimeControlMode;
+		if (mode == CampaignTimeControlMode.Stop)
+		{
+			_resumeGameTimeControlMode = CampaignTimeControlMode.StoppablePlay;
+			campaign.TimeControlMode = _resumeGameTimeControlMode;
+		}
+		else if (mode == CampaignTimeControlMode.FastForwardStop)
+		{
+			_resumeGameTimeControlMode = CampaignTimeControlMode.StoppableFastForward;
+			campaign.TimeControlMode = _resumeGameTimeControlMode;
+		}
+		else if (IsStoppableRunningMode(mode))
+		{
+			_resumeGameTimeControlMode = mode;
+		}
+	}
+
+	private void ToggleGamePause()
+	{
+		Campaign campaign = Campaign.Current;
+		if (campaign == null || campaign.TimeControlModeLock)
+		{
+			return;
+		}
+		CampaignTimeControlMode mode = campaign.TimeControlMode;
+		if (IsGameTimePaused(mode))
+		{
+			campaign.TimeControlMode = _resumeGameTimeControlMode;
+		}
+		else if (IsStoppableRunningMode(mode))
+		{
+			_resumeGameTimeControlMode = mode;
+			campaign.TimeControlMode = mode == CampaignTimeControlMode.StoppableFastForward
+				? CampaignTimeControlMode.FastForwardStop
+				: CampaignTimeControlMode.Stop;
+		}
+	}
+
+	private WorldMessageTimelineGameTimeControlState GetGameTimeControlState()
+	{
+		Campaign campaign = Campaign.Current;
+		if (campaign == null)
+		{
+			return new WorldMessageTimelineGameTimeControlState();
+		}
+		CampaignTimeControlMode mode = campaign.TimeControlMode;
+		if (IsStoppableRunningMode(mode))
+		{
+			_resumeGameTimeControlMode = mode;
+		}
+		return new WorldMessageTimelineGameTimeControlState
+		{
+			IsPaused = IsGameTimePaused(mode),
+			CanToggle = !campaign.TimeControlModeLock && (IsGameTimePaused(mode) || IsStoppableRunningMode(mode))
+		};
+	}
+
+	private static bool IsGameTimePaused(CampaignTimeControlMode mode)
+	{
+		return mode == CampaignTimeControlMode.Stop || mode == CampaignTimeControlMode.FastForwardStop;
+	}
+
+	private static bool IsStoppableRunningMode(CampaignTimeControlMode mode)
+	{
+		return mode == CampaignTimeControlMode.StoppablePlay || mode == CampaignTimeControlMode.StoppableFastForward;
 	}
 
 	private bool ShouldCloseForEscapeKey()
@@ -647,6 +813,9 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 {
 	private readonly Action _onClose;
 	private readonly Action<string> _onOpenEncyclopediaLink;
+	private readonly Action _onToggleGamePause;
+	private readonly Func<WorldMessageTimelineGameTimeControlState> _getGameTimeControlState;
+	private readonly Action _onSourceDataReloaded;
 	private readonly EncyclopediaEntityLinkFormatter.DisplaySession _linkDisplaySession;
 	private List<WorldMessageTimelineEntryData> _allEntries;
 	private List<WorldMessageTimelineCountryData> _knownCountries;
@@ -682,13 +851,25 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 	private MBBindingList<WorldMessageTimelineCountryItemVM> _countryItems;
 	private MBBindingList<WorldMessageTimelineRecordItemVM> _recordItems;
 	private string _generateFullWeeklyReportText;
+	private string _pauseGameText;
+	private bool _canToggleGamePause;
 	private string _selectedRecordEntryId;
 	private string _selectedWeeklyReportEventId;
 
-	public WorldMessageTimelinePopupVM(WorldMessageTimelinePopupData data, Action onClose, Action<string> onOpenEncyclopediaLink)
+	// The VM is constructed only by the popup layer, so its internal runtime delegates do not become an external API contract.
+	internal WorldMessageTimelinePopupVM(
+		WorldMessageTimelinePopupData data,
+		Action onClose,
+		Action<string> onOpenEncyclopediaLink,
+		Action onToggleGamePause,
+		Func<WorldMessageTimelineGameTimeControlState> getGameTimeControlState,
+		Action onSourceDataReloaded)
 	{
 		_onClose = onClose;
 		_onOpenEncyclopediaLink = onOpenEncyclopediaLink;
+		_onToggleGamePause = onToggleGamePause;
+		_getGameTimeControlState = getGameTimeControlState;
+		_onSourceDataReloaded = onSourceDataReloaded;
 		// This catalog is built once when the rumor timeline opens; records are linked lazily only after selection.
 		_linkDisplaySession = EncyclopediaEntityLinkFormatter.CreateDisplaySession();
 		WorldMessageTimelinePopupData source = data ?? new WorldMessageTimelinePopupData();
@@ -697,12 +878,15 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 		EmptyStateText = FirstNonEmpty(source.EmptyStateText, "暂无传闻。");
 		CloseText = FirstNonEmpty(source.CloseText, "关闭");
 		GenerateFullWeeklyReportText = "生成完整周报";
+		// The initial label is replaced immediately with the campaign's real time-control state below.
+		PauseGameText = "暂停游戏";
 		ReplaceSourceData(source);
 		CountryItems = new MBBindingList<WorldMessageTimelineCountryItemVM>();
 		RecordItems = new MBBindingList<WorldMessageTimelineRecordItemVM>();
 		SelectAllCategories();
 		RefreshCategorySelectionState();
 		RebuildCountriesAndTimeline();
+		RefreshGameTimeControlState();
 	}
 
 	[DataSourceProperty]
@@ -748,6 +932,10 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 	[DataSourceProperty]
 	public string GenerateFullWeeklyReportText { get => _generateFullWeeklyReportText; set { if (value != _generateFullWeeklyReportText) { _generateFullWeeklyReportText = value; OnPropertyChangedWithValue(value, nameof(GenerateFullWeeklyReportText)); } } }
 	[DataSourceProperty]
+	public string PauseGameText { get => _pauseGameText; set { if (value != _pauseGameText) { _pauseGameText = value; OnPropertyChangedWithValue(value, nameof(PauseGameText)); } } }
+	[DataSourceProperty]
+	public bool CanToggleGamePause { get => _canToggleGamePause; set { if (value != _canToggleGamePause) { _canToggleGamePause = value; OnPropertyChangedWithValue(value, nameof(CanToggleGamePause)); } } }
+	[DataSourceProperty]
 	public bool IsAllCategorySelected { get => _isAllCategorySelected; set { if (value != _isAllCategorySelected) { _isAllCategorySelected = value; OnPropertyChangedWithValue(value, nameof(IsAllCategorySelected)); } } }
 	[DataSourceProperty]
 	public bool IsDiplomacyCategorySelected { get => _isDiplomacyCategorySelected; set { if (value != _isDiplomacyCategorySelected) { _isDiplomacyCategorySelected = value; OnPropertyChangedWithValue(value, nameof(IsDiplomacyCategorySelected)); } } }
@@ -773,8 +961,41 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 	public void ExecuteSelectPolicy() => ToggleCategory(WorldMessageTimelineUi.PolicyCategoryId);
 	public void ExecuteSelectWeekly() => ToggleCategory(WorldMessageTimelineUi.WeeklyCategoryId);
 	public void ExecuteGenerateFullWeeklyReport() => GenerateFullWeeklyReportAsync(_selectedWeeklyReportEventId, _selectedRecordEntryId);
+	public void ExecuteToggleGamePause()
+	{
+		// The popup owns the campaign mutation; the VM only requests it and immediately mirrors the resulting state.
+		_onToggleGamePause?.Invoke();
+		RefreshGameTimeControlState();
+	}
 	public void ExecuteClose() => _onClose?.Invoke();
 	public void ExecuteOpenEncyclopediaLink(string link) => _onOpenEncyclopediaLink?.Invoke(link);
+
+	public bool CanRefreshExternalSources => !_isGeneratingFullWeeklyReport;
+
+	public void RefreshGameTimeControlState()
+	{
+		WorldMessageTimelineGameTimeControlState state = new WorldMessageTimelineGameTimeControlState();
+		try
+		{
+			if (_getGameTimeControlState != null)
+			{
+				state = _getGameTimeControlState();
+			}
+		}
+		catch
+		{
+		}
+		CanToggleGamePause = state.CanToggle;
+		PauseGameText = state.CanToggle
+			? (state.IsPaused ? "继续游戏" : "暂停游戏")
+			: "时间已锁定不可操作";
+	}
+
+	public void ReloadFromExternalSourceChange()
+	{
+		// Keep the selected record where possible so injected entries do not interrupt reading an older rumor.
+		ReloadFromCurrentSources(_selectedRecordEntryId);
+	}
 
 	private async void GenerateFullWeeklyReportAsync(string eventId, string preferredRecordEntryId)
 	{
@@ -817,17 +1038,21 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 		}
 	}
 
-	private void ReloadFromCurrentSources(string preferredRecordEntryId)
+	private bool ReloadFromCurrentSources(string preferredRecordEntryId)
 	{
 		try
 		{
 			ReplaceSourceData(WorldMessageTimelineUi.BuildData());
 			RebuildCountriesAndTimeline(preferredRecordEntryId);
+			// The owner refreshes its cheap revision baseline only after the projection was rebuilt successfully.
+			_onSourceDataReloaded?.Invoke();
+			return true;
 		}
 		catch (Exception ex)
 		{
 			PolicySystemLog.Failure("WorldMessage", "weekly-full-refresh-failed", ex.Message, ex.ToString());
 			RefreshFullWeeklyReportActionState();
+			return false;
 		}
 	}
 
