@@ -190,7 +190,7 @@ public static class KingdomAgendaCustomPolicyBehavior
 			}
 			try
 			{
-				InformationManager.DisplayMessage(new InformationMessage("统治者已接受建议，正在拟定政策并准备提交王国议程。", Colors.Green));
+				InformationManager.DisplayMessage(new InformationMessage("统治者已接受建议，AF 正在拟定；完成后将直接提交目标王国议程，无需再次确认。", Colors.Green));
 			}
 			catch (Exception ex)
 			{

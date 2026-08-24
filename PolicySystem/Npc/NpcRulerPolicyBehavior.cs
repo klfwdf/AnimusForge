@@ -214,12 +214,12 @@ public sealed partial class NpcRulerPolicyBehavior : CampaignBehaviorBase
 
 	public void OnEngineTick()
 	{
+		ProcessPendingPolicySnapshotJobs();
 		ProcessPendingPolicyCommits();
 	}
 
 	private void OnCampaignTick(float dt)
 	{
-		ProcessPendingPolicySnapshotJobs();
 		ProcessInitialGenerationCheck(dt);
 	}
 
@@ -798,12 +798,7 @@ public sealed partial class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				CustomPolicyBehavior.DisplayKingdomPolicyAnnouncementMessage(
-					source,
-					record.PolicyId,
-					record.KingdomName,
-					record.PolicyName,
-					record.PolicyContent);
+				CustomPolicyBehavior.DisplayPolicyAnnouncementMessage(source, record);
 				if (!record.PublicFeedbackNoticeShown && record.PublicFeedbackNoticeDueHour < 0)
 				{
 					SchedulePublicFeedbackNotice(record, source);

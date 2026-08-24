@@ -307,12 +307,22 @@ internal static class Program
 			{
 				TestPlayerPolicyPermanentDurationContract();
 				TestPolicyResultRetryPopupContract();
+				TestNpcSuggestedPolicyAgendaFlowContracts();
+				TestPlayerVassalPolicyAttributionContracts();
 				TestPlayerPolicyExecutableCostProjectionContract();
 				TestLocalPolicySettlementOwnerGoldContracts();
 				TestPlayerPolicyMaintenanceAllocationContract();
 				TestPlayerPolicyAgendaAutoSubmissionContract();
 				TestClanInfluenceVanillaDisplayBridgeContract();
 				Console.WriteLine("PASS playerPolicyUiAssertions=" + _assertionCount.ToString(CultureInfo.InvariantCulture)
+					+ " elapsedMs=" + stopwatch.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture));
+				return 0;
+			}
+			if ((args ?? Array.Empty<string>()).Any(value => string.Equals(value, "--ruler-policy-agenda-only", StringComparison.OrdinalIgnoreCase)))
+			{
+				TestNpcSuggestedPolicyAgendaFlowContracts();
+				TestPlayerVassalPolicyAttributionContracts();
+				Console.WriteLine("PASS rulerPolicyAgendaAssertions=" + _assertionCount.ToString(CultureInfo.InvariantCulture)
 					+ " elapsedMs=" + stopwatch.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture));
 				return 0;
 			}
@@ -357,6 +367,8 @@ internal static class Program
 			TestFundingStrategies();
 			TestPlayerPolicyPermanentDurationContract();
 			TestPolicyResultRetryPopupContract();
+			TestNpcSuggestedPolicyAgendaFlowContracts();
+			TestPlayerVassalPolicyAttributionContracts();
 			TestPlayerPolicyDualGoldCostContract();
 			TestPlayerPolicyMaintenanceAllocationContract();
 			TestVersionedModuleContractsAndHookCapabilities();
@@ -4952,8 +4964,8 @@ internal static class Program
 		object builtMatrix = InvokeStatic(
 			behaviorType,
 			"BuildPolicyTargetHandleDirectory",
-			new object[] { matrixHandles, matrixModules, matrixResolver },
-			3);
+			new object[] { matrixHandles, matrixModules, matrixResolver, "issuer_contract" },
+			4);
 		JObject builtMatrixToken = JObject.FromObject(builtMatrix);
 		Check(builtMatrixToken.Value<int>("structureVersion") == 2
 			&& builtMatrixToken["targets"]?["L0"] != null
@@ -11361,6 +11373,133 @@ internal static class Program
 		MethodInfo showRetry = typeof(CustomPolicyResultPopup).GetMethod("ShowRetry", BindingFlags.NonPublic | BindingFlags.Static);
 		Check(showRetry != null && showRetry.GetParameters().Length == 4,
 			"The result popup must expose one internal retry-mode entry point without adding an external API.");
+	}
+
+	private static void TestNpcSuggestedPolicyAgendaFlowContracts()
+	{
+		string repositoryRoot = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
+		string behaviorSource = File.ReadAllText(Path.Combine(
+			repositoryRoot, "PolicySystem", "Npc", "NpcRulerPolicyBehavior.cs"), Encoding.UTF8);
+		int engineStart = behaviorSource.IndexOf("public void OnEngineTick()", StringComparison.Ordinal);
+		int campaignStart = behaviorSource.IndexOf("private void OnCampaignTick(float dt)", engineStart, StringComparison.Ordinal);
+		int campaignEnd = behaviorSource.IndexOf("public static bool RegisterPlayerPolicyForExternal", campaignStart, StringComparison.Ordinal);
+		Check(engineStart >= 0 && campaignStart > engineStart && campaignEnd > campaignStart,
+			"NPC policy engine/campaign tick method boundaries are missing.");
+		string engineTick = behaviorSource.Substring(engineStart, campaignStart - engineStart);
+		string campaignTick = behaviorSource.Substring(campaignStart, campaignEnd - campaignStart);
+		int snapshotIndex = engineTick.IndexOf("ProcessPendingPolicySnapshotJobs();", StringComparison.Ordinal);
+		int commitIndex = engineTick.IndexOf("ProcessPendingPolicyCommits();", StringComparison.Ordinal);
+		Check(snapshotIndex >= 0 && commitIndex > snapshotIndex,
+			"Engine tick must drain pending policy snapshots before pending commits so conversation missions cannot strand accepted proposals.");
+		Check(campaignTick.IndexOf("ProcessPendingPolicySnapshotJobs();", StringComparison.Ordinal) < 0,
+			"Campaign tick must not remain a second consumer of the policy snapshot queue.");
+
+		string agendaSource = File.ReadAllText(Path.Combine(
+			repositoryRoot, "PolicySystem", "Agenda", "KingdomAgendaCustomPolicyBehavior.cs"), Encoding.UTF8);
+		Check(agendaSource.IndexOf("统治者已接受建议，AF 正在拟定；完成后将直接提交目标王国议程，无需再次确认。", StringComparison.Ordinal) >= 0
+			&& agendaSource.IndexOf("Colors.Green", StringComparison.Ordinal) >= 0,
+			"An accepted agenda action tag must keep a green acknowledgement and promise direct submission without a second confirmation.");
+
+		string generationSource = File.ReadAllText(Path.Combine(
+			repositoryRoot, "PolicySystem", "Npc", "NpcRulerPolicyBehavior.Generation.cs"), Encoding.UTF8);
+		int submitStart = generationSource.IndexOf("case PendingNpcPolicyCommitStage.SubmitAgenda:", StringComparison.Ordinal);
+		int submitEnd = generationSource.IndexOf("case PendingNpcPolicyCommitStage.UpsertPolicyEvent:", submitStart, StringComparison.Ordinal);
+		Check(submitStart >= 0 && submitEnd > submitStart,
+			"NPC policy submit-agenda stage boundaries are missing.");
+		string submitStage = generationSource.Substring(submitStart, submitEnd - submitStart);
+		int submitCall = submitStage.IndexOf("CustomPolicyBehavior.TrySubmitNpcPolicyAgendaForExternal", StringComparison.Ordinal);
+		int submittedNotice = submitStage.IndexOf("NotifySuggestedPolicyAgendaSubmitted(record);", StringComparison.Ordinal);
+		Check(submitCall >= 0 && submittedNotice > submitCall,
+			"A player-suggested policy must publish its green submitted notice only after the shared agenda submitter confirms the decision.");
+		Check(generationSource.IndexOf("ShowSuggestedPolicyGenerationRetry(job, error);", StringComparison.Ordinal) >= 0
+			&& generationSource.IndexOf("RetrySuggestedPolicyGeneration(", StringComparison.Ordinal) >= 0,
+			"Deterministic player-suggested generation failures must reuse the manual retry flow with a fresh generation job.");
+
+		string lifecycleSource = File.ReadAllText(Path.Combine(
+			repositoryRoot, "PolicySystem", "Core", "CustomPolicyBehavior.Lifecycle.cs"), Encoding.UTF8);
+		string coreSource = File.ReadAllText(Path.Combine(
+			repositoryRoot, "PolicySystem", "Core", "CustomPolicyBehavior.cs"), Encoding.UTF8);
+		Check(coreSource.IndexOf("PlayerKingdomDynamicPolicyAdoptionReviewDays = 21f", StringComparison.Ordinal) >= 0
+			&& coreSource.IndexOf("ForeignKingdomDynamicPolicyAdoptionReviewDays = 3f", StringComparison.Ordinal) >= 0,
+			"Player and foreign dynamic policy review periods must remain 21 and 3 days respectively.");
+		Check(lifecycleSource.IndexOf("Patch_KingdomElection_GetAiChoice_Postfix", StringComparison.Ordinal) >= 0
+			&& lifecycleSource.IndexOf("outcome.ShouldDecisionBeEnforced", StringComparison.Ordinal) >= 0
+			&& lifecycleSource.IndexOf("__result = adoption;", StringComparison.Ordinal) >= 0,
+			"NPC ruler agendas must retain the forced adoption election outcome.");
+	}
+
+	private static void TestPlayerVassalPolicyAttributionContracts()
+	{
+		NpcRulerPolicyRecord record = new NpcRulerPolicyRecord
+		{
+			PolicyId = "player-vassal-attribution",
+			PolicyKind = "vassal",
+			IsPlayerPolicy = true,
+			IssuerKingdomId = "kingdom_suzerain",
+			IssuerKingdomName = "宗主王国",
+			KingdomId = "kingdom_vassal",
+			KingdomName = "附庸王国",
+			RulerHeroId = "main_hero",
+			RulerName = "玩家",
+			PolicyName = "自治保障令",
+			PolicyContent = "保障附庸自治。",
+			PolicyDigest = "保障附庸自治"
+		};
+
+		Type behaviorType = SutType("AnimusForge.CustomPolicyBehavior");
+		string announcement = (string)InvokeStatic(
+			behaviorType,
+			"BuildPolicyAnnouncementText",
+			new object[] { record },
+			1);
+		Check(announcement.IndexOf("【附庸国政策】", StringComparison.Ordinal) >= 0
+			&& announcement.IndexOf("宗主玩家（宗主王国）发布", StringComparison.Ordinal) >= 0
+			&& announcement.IndexOf("对附庸国附庸王国生效", StringComparison.Ordinal) >= 0,
+			"Player-issued vassal announcements must identify the player suzerain as publisher and the vassal kingdom as target.");
+
+		Type serviceType = SutType("AnimusForge.PolicyHistoryRetrievalService");
+		Type entryType = SutType("AnimusForge.NpcPolicyHistoryEntry");
+		object entry = Activator.CreateInstance(entryType);
+		SetProperty(entryType, entry, "EntryId", record.PolicyId);
+		SetProperty(entryType, entry, "SourceKind", "player_vassal");
+		SetProperty(entryType, entry, "ScopeKind", "vassal");
+		SetProperty(entryType, entry, "OwnerKingdomId", record.KingdomId);
+		SetProperty(entryType, entry, "OwnerKingdomName", record.KingdomName);
+		SetProperty(entryType, entry, "IssuerKingdomId", record.IssuerKingdomId);
+		SetProperty(entryType, entry, "IssuerKingdomName", record.IssuerKingdomName);
+		SetProperty(entryType, entry, "PolicyName", record.PolicyName);
+		SetProperty(entryType, entry, "PolicyContent", record.PolicyContent);
+		SetProperty(entryType, entry, "PolicyStatus", "active");
+		SetProperty(entryType, entry, "RawPolicyStatus", "active");
+		SetProperty(entryType, entry, "TargetKingdomIds", new List<string> { record.KingdomId });
+		IList current = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(entryType));
+		IList historical = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(entryType));
+		current.Add(entry);
+		string dialoguePrompt = (string)InvokeStatic(serviceType, "BuildDialoguePrompt", new object[] { current, historical }, 2);
+		string retrievalText = (string)InvokeStatic(serviceType, "BuildDialogueRetrievalText", new[] { entry }, 1);
+		Check(dialoguePrompt.IndexOf("发布方：宗主玩家（宗主王国）", StringComparison.Ordinal) >= 0
+			&& dialoguePrompt.IndexOf("生效对象：附庸国附庸王国", StringComparison.Ordinal) >= 0
+			&& dialoguePrompt.IndexOf("不是附庸统治者自行颁布", StringComparison.Ordinal) >= 0,
+			"Dialogue policy knowledge must distinguish the player suzerain publisher from the vassal target.");
+		Check(retrievalText.IndexOf("政策发布方：宗主玩家（宗主王国）", StringComparison.Ordinal) >= 0
+			&& retrievalText.IndexOf("政策生效国：附庸王国", StringComparison.Ordinal) >= 0,
+			"Vassal policy retrieval documents must preserve target ownership while embedding correct publisher attribution.");
+
+		Type npcBehaviorType = SutType("AnimusForge.NpcRulerPolicyBehavior");
+		object attribution = InvokeStatic(npcBehaviorType, "ResolveUnifiedPolicyWeeklyAttribution", new object[] { record }, 1);
+		Type attributionType = attribution.GetType();
+		Check((bool)Property(attributionType, attribution, "IsPlayerVassalPolicy")
+			&& string.Equals((string)Property(attributionType, attribution, "MaterialKind"), "player_vassal_policy", StringComparison.Ordinal)
+			&& string.Equals((string)Property(attributionType, attribution, "IssuerKingdomId"), record.IssuerKingdomId, StringComparison.Ordinal)
+			&& string.Equals((string)Property(attributionType, attribution, "TargetKingdomId"), record.KingdomId, StringComparison.Ordinal),
+			"Weekly material routing must use the suzerain as issuer and the vassal as target.");
+		string weeklySnapshot = (string)InvokeStatic(npcBehaviorType, "BuildUnifiedPolicyWeeklySnapshot",
+			new[] { (object)record, attribution, "附庸王国", "无持续数值变化" }, 4);
+		Check(weeklySnapshot.IndexOf("玩家附庸政策", StringComparison.Ordinal) >= 0
+			&& weeklySnapshot.IndexOf("发布方：宗主玩家（宗主王国）", StringComparison.Ordinal) >= 0
+			&& weeklySnapshot.IndexOf("生效对象：附庸王国", StringComparison.Ordinal) >= 0
+			&& weeklySnapshot.IndexOf("不是附庸统治者自行颁布", StringComparison.Ordinal) >= 0,
+			"Weekly material text must not attribute a player-issued vassal policy to the target ruler.");
 	}
 
 	private static void TestPlayerPolicyDualGoldCostContract()
