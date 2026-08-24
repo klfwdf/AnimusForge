@@ -471,21 +471,31 @@ internal struct WorldMessageTimelineGameTimeControlState
 {
 	public bool IsPaused;
 	public bool CanToggle;
+	// The popup samples the established developer mode once and exposes the extra continuation choice to its VM.
+	public bool IsDeveloperFastForwardAvailable;
 }
 
 public sealed class WorldMessageTimelinePopup
 {
 	private static WorldMessageTimelinePopup _activePopup;
+	// Campaign.SetTimeSpeed accepts slots 0/1/2; slot 2 uses these multipliers for the timeline's requested continuation speeds.
+	private const float StandardTimelineFastForwardMultiplier = 3f;
+	private const float DeveloperTimelineFastForwardMultiplier = 10f;
 
 	private readonly ScreenBase _screen;
 	private readonly GauntletLayer _layer;
 	private readonly WorldMessageTimelinePopupVM _dataSource;
 	private readonly Action _onClose;
+	// Developer mode is sampled once per popup, keeping the hot UI tick free of repeated settings reads.
+	private readonly bool _isDeveloperFastForwardEnabled;
 	// The baseline and deadline keep source polling bounded to the active popup instead of the global frame rate.
 	private WorldMessageTimelineSourceVersion _sourceVersion;
 	private long _nextSourceRefreshUtcTicks;
-	// Preserve the player-visible normal/fast running mode when this popup's pause button resumes the map.
-	private CampaignTimeControlMode _resumeGameTimeControlMode = CampaignTimeControlMode.StoppablePlay;
+	// The temporary multiplier is restored when the overlay closes so this UI does not permanently change the player's map-speed setting.
+	private Campaign _speedOverrideCampaign;
+	private float _previousSpeedUpMultiplier;
+	private float _installedTimelineFastForwardMultiplier;
+	private bool _hasSpeedUpMultiplierOverride;
 	private bool _isClosed;
 	// The high-priority timeline layer is suspended, not finalized, while a link opens the lower-priority encyclopedia.
 	private bool _isSuspendedForEncyclopediaNavigation;
@@ -497,11 +507,14 @@ public sealed class WorldMessageTimelinePopup
 		_screen = screen;
 		_onClose = onClose;
 		_sourceVersion = sourceVersion;
+		// Reuse the existing MCM developer-data-management switch as this mod's established developer-mode indicator.
+		_isDeveloperFastForwardEnabled = MyBehavior.IsDevDataManagementEnabledForExternal();
 		_dataSource = new WorldMessageTimelinePopupVM(
 			data,
 			HandleCloseRequested,
 			HandleOpenEncyclopediaLink,
 			ToggleGamePause,
+			StartTimelineFastForwardAtDeveloperSpeed,
 			GetGameTimeControlState,
 			SynchronizeSourceVersionAfterReload);
 		_layer = new GauntletLayer("AnimusForgeWorldMessageTimelinePopup", 4101, false);
@@ -567,8 +580,8 @@ public sealed class WorldMessageTimelinePopup
 		_screen.AddLayer(_layer);
 		_layer.IsFocusLayer = true;
 		ScreenManager.TrySetFocus(_layer);
-		// This overlay is informational: it immediately releases a normal map pause instead of behaving like a blocking popup.
-		ResumeGameTimeAfterOpening();
+		// Reading starts from a stable world state; the player explicitly chooses the 3x continuation from the popup button.
+		PauseGameTimeAfterOpening();
 		_dataSource.RefreshGameTimeControlState();
 	}
 
@@ -606,28 +619,15 @@ public sealed class WorldMessageTimelinePopup
 		_sourceVersion = WorldMessageTimelineUi.CaptureSourceVersion();
 	}
 
-	private void ResumeGameTimeAfterOpening()
+	private void PauseGameTimeAfterOpening()
 	{
 		Campaign campaign = Campaign.Current;
 		if (campaign == null || campaign.TimeControlModeLock)
 		{
 			return;
 		}
-		CampaignTimeControlMode mode = campaign.TimeControlMode;
-		if (mode == CampaignTimeControlMode.Stop)
-		{
-			_resumeGameTimeControlMode = CampaignTimeControlMode.StoppablePlay;
-			campaign.TimeControlMode = _resumeGameTimeControlMode;
-		}
-		else if (mode == CampaignTimeControlMode.FastForwardStop)
-		{
-			_resumeGameTimeControlMode = CampaignTimeControlMode.StoppableFastForward;
-			campaign.TimeControlMode = _resumeGameTimeControlMode;
-		}
-		else if (IsStoppableRunningMode(mode))
-		{
-			_resumeGameTimeControlMode = mode;
-		}
+		// Native slot zero produces the matching Stop/FastForwardStop state in both supported game versions.
+		campaign.SetTimeSpeed(0);
 	}
 
 	private void ToggleGamePause()
@@ -640,15 +640,61 @@ public sealed class WorldMessageTimelinePopup
 		CampaignTimeControlMode mode = campaign.TimeControlMode;
 		if (IsGameTimePaused(mode))
 		{
-			campaign.TimeControlMode = _resumeGameTimeControlMode;
+			StartTimelineFastForward(campaign, StandardTimelineFastForwardMultiplier);
 		}
-		else if (IsStoppableRunningMode(mode))
+		else if (IsGameTimeRunningMode(mode))
 		{
-			_resumeGameTimeControlMode = mode;
-			campaign.TimeControlMode = mode == CampaignTimeControlMode.StoppableFastForward
-				? CampaignTimeControlMode.FastForwardStop
-				: CampaignTimeControlMode.Stop;
+			// Native slot zero selects the correct Stop/FastForwardStop state for every running mode.
+			campaign.SetTimeSpeed(0);
 		}
+	}
+
+	private void StartTimelineFastForwardAtDeveloperSpeed()
+	{
+		Campaign campaign = Campaign.Current;
+		if (!_isDeveloperFastForwardEnabled
+			|| campaign == null
+			|| campaign.TimeControlModeLock
+			|| !IsGameTimePaused(campaign.TimeControlMode))
+		{
+			return;
+		}
+		// The UI exposes this path only in developer mode, and this guard keeps the callback safe if invoked indirectly.
+		StartTimelineFastForward(campaign, DeveloperTimelineFastForwardMultiplier);
+	}
+
+	private void StartTimelineFastForward(Campaign campaign, float requestedMultiplier)
+	{
+		if (campaign == null)
+		{
+			return;
+		}
+		if (!_hasSpeedUpMultiplierOverride)
+		{
+			// Cache once per popup so closing it returns the campaign to the user's previous fast-forward preference.
+			_speedOverrideCampaign = campaign;
+			_previousSpeedUpMultiplier = campaign.SpeedUpMultiplier;
+			_hasSpeedUpMultiplierOverride = true;
+		}
+		_installedTimelineFastForwardMultiplier = requestedMultiplier;
+		campaign.SpeedUpMultiplier = requestedMultiplier;
+		// Slot 2 is the cross-version native fast-forward command; a raw slot 3 is intentionally unsupported by the game API.
+		campaign.SetTimeSpeed(2);
+	}
+
+	private void RestoreTimelineFastForwardMultiplier()
+	{
+		Campaign campaign = Campaign.Current;
+		if (_hasSpeedUpMultiplierOverride
+			&& campaign != null
+			&& ReferenceEquals(campaign, _speedOverrideCampaign)
+			&& Math.Abs(campaign.SpeedUpMultiplier - _installedTimelineFastForwardMultiplier) < 0.001f)
+		{
+			// Restore only the value this popup installed, preserving any later change made by another game system.
+			campaign.SpeedUpMultiplier = _previousSpeedUpMultiplier;
+		}
+		_hasSpeedUpMultiplierOverride = false;
+		_speedOverrideCampaign = null;
 	}
 
 	private WorldMessageTimelineGameTimeControlState GetGameTimeControlState()
@@ -659,14 +705,12 @@ public sealed class WorldMessageTimelinePopup
 			return new WorldMessageTimelineGameTimeControlState();
 		}
 		CampaignTimeControlMode mode = campaign.TimeControlMode;
-		if (IsStoppableRunningMode(mode))
-		{
-			_resumeGameTimeControlMode = mode;
-		}
 		return new WorldMessageTimelineGameTimeControlState
 		{
 			IsPaused = IsGameTimePaused(mode),
-			CanToggle = !campaign.TimeControlModeLock && (IsGameTimePaused(mode) || IsStoppableRunningMode(mode))
+			CanToggle = !campaign.TimeControlModeLock && (IsGameTimePaused(mode) || IsGameTimeRunningMode(mode)),
+			// Normal users receive the standard continuation; developer mode adds a separate 10x choice without removing 3x.
+			IsDeveloperFastForwardAvailable = _isDeveloperFastForwardEnabled
 		};
 	}
 
@@ -675,9 +719,13 @@ public sealed class WorldMessageTimelinePopup
 		return mode == CampaignTimeControlMode.Stop || mode == CampaignTimeControlMode.FastForwardStop;
 	}
 
-	private static bool IsStoppableRunningMode(CampaignTimeControlMode mode)
+	private static bool IsGameTimeRunningMode(CampaignTimeControlMode mode)
 	{
-		return mode == CampaignTimeControlMode.StoppablePlay || mode == CampaignTimeControlMode.StoppableFastForward;
+		return mode == CampaignTimeControlMode.StoppablePlay
+			|| mode == CampaignTimeControlMode.StoppableFastForward
+			|| mode == CampaignTimeControlMode.UnstoppablePlay
+			|| mode == CampaignTimeControlMode.UnstoppableFastForward
+			|| mode == CampaignTimeControlMode.UnstoppableFastForwardForPartyWaitTime;
 	}
 
 	private bool ShouldCloseForEscapeKey()
@@ -779,6 +827,8 @@ public sealed class WorldMessageTimelinePopup
 			return;
 		}
 		_isClosed = true;
+		// Closing the overlay must not leave its temporary 3x multiplier installed on the wider campaign UI.
+		RestoreTimelineFastForwardMultiplier();
 		// Clearing the transient marker keeps a permanently closed timeline out of future return attempts.
 		_isSuspendedForEncyclopediaNavigation = false;
 		try
@@ -814,6 +864,7 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 	private readonly Action _onClose;
 	private readonly Action<string> _onOpenEncyclopediaLink;
 	private readonly Action _onToggleGamePause;
+	private readonly Action _onContinueGameAtDeveloperSpeed;
 	private readonly Func<WorldMessageTimelineGameTimeControlState> _getGameTimeControlState;
 	private readonly Action _onSourceDataReloaded;
 	private readonly EncyclopediaEntityLinkFormatter.DisplaySession _linkDisplaySession;
@@ -853,6 +904,10 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 	private string _generateFullWeeklyReportText;
 	private string _pauseGameText;
 	private bool _canToggleGamePause;
+	// This bound visibility state adds the optional 10x control without changing the normal 3x pause button.
+	private bool _showDeveloperFastForwardButton;
+	// A bound version signal restarts the list widget's short bottom-scroll window after a visible live message arrives.
+	private int _recordAutoScrollRequestVersion;
 	private string _selectedRecordEntryId;
 	private string _selectedWeeklyReportEventId;
 
@@ -862,12 +917,14 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 		Action onClose,
 		Action<string> onOpenEncyclopediaLink,
 		Action onToggleGamePause,
+		Action onContinueGameAtDeveloperSpeed,
 		Func<WorldMessageTimelineGameTimeControlState> getGameTimeControlState,
 		Action onSourceDataReloaded)
 	{
 		_onClose = onClose;
 		_onOpenEncyclopediaLink = onOpenEncyclopediaLink;
 		_onToggleGamePause = onToggleGamePause;
+		_onContinueGameAtDeveloperSpeed = onContinueGameAtDeveloperSpeed;
 		_getGameTimeControlState = getGameTimeControlState;
 		_onSourceDataReloaded = onSourceDataReloaded;
 		// This catalog is built once when the rumor timeline opens; records are linked lazily only after selection.
@@ -936,6 +993,8 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 	[DataSourceProperty]
 	public bool CanToggleGamePause { get => _canToggleGamePause; set { if (value != _canToggleGamePause) { _canToggleGamePause = value; OnPropertyChangedWithValue(value, nameof(CanToggleGamePause)); } } }
 	[DataSourceProperty]
+	public bool ShowDeveloperFastForwardButton { get => _showDeveloperFastForwardButton; set { if (value != _showDeveloperFastForwardButton) { _showDeveloperFastForwardButton = value; OnPropertyChangedWithValue(value, nameof(ShowDeveloperFastForwardButton)); } } }
+	[DataSourceProperty]
 	public bool IsAllCategorySelected { get => _isAllCategorySelected; set { if (value != _isAllCategorySelected) { _isAllCategorySelected = value; OnPropertyChangedWithValue(value, nameof(IsAllCategorySelected)); } } }
 	[DataSourceProperty]
 	public bool IsDiplomacyCategorySelected { get => _isDiplomacyCategorySelected; set { if (value != _isDiplomacyCategorySelected) { _isDiplomacyCategorySelected = value; OnPropertyChangedWithValue(value, nameof(IsDiplomacyCategorySelected)); } } }
@@ -955,6 +1014,8 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 	public MBBindingList<WorldMessageTimelineCountryItemVM> CountryItems { get => _countryItems; set { if (value != _countryItems) { _countryItems = value; OnPropertyChangedWithValue(value, nameof(CountryItems)); } } }
 	[DataSourceProperty]
 	public MBBindingList<WorldMessageTimelineRecordItemVM> RecordItems { get => _recordItems; set { if (value != _recordItems) { _recordItems = value; OnPropertyChangedWithValue(value, nameof(RecordItems)); } } }
+	[DataSourceProperty]
+	public int RecordAutoScrollRequestVersion { get => _recordAutoScrollRequestVersion; set { if (value != _recordAutoScrollRequestVersion) { _recordAutoScrollRequestVersion = value; OnPropertyChangedWithValue(value, nameof(RecordAutoScrollRequestVersion)); } } }
 
 	public void ExecuteSelectAll() => ToggleCategory(WorldMessageTimelineUi.AllCategoryId);
 	public void ExecuteSelectDiplomacy() => ToggleCategory(WorldMessageTimelineUi.DiplomacyCategoryId);
@@ -965,6 +1026,12 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 	{
 		// The popup owns the campaign mutation; the VM only requests it and immediately mirrors the resulting state.
 		_onToggleGamePause?.Invoke();
+		RefreshGameTimeControlState();
+	}
+	public void ExecuteContinueGameAtDeveloperSpeed()
+	{
+		// The guarded popup callback verifies developer mode and a paused campaign before installing the optional 10x multiplier.
+		_onContinueGameAtDeveloperSpeed?.Invoke();
 		RefreshGameTimeControlState();
 	}
 	public void ExecuteClose() => _onClose?.Invoke();
@@ -986,15 +1053,49 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 		{
 		}
 		CanToggleGamePause = state.CanToggle;
+		// The 10x button appears only alongside the 3x continuation choice while the timeline is paused.
+		ShowDeveloperFastForwardButton = state.CanToggle && state.IsPaused && state.IsDeveloperFastForwardAvailable;
 		PauseGameText = state.CanToggle
-			? (state.IsPaused ? "继续游戏" : "暂停游戏")
+			? (state.IsPaused ? "继续游戏（3倍）" : "暂停游戏")
 			: "时间已锁定不可操作";
 	}
 
 	public void ReloadFromExternalSourceChange()
 	{
-		// Keep the selected record where possible so injected entries do not interrupt reading an older rumor.
-		ReloadFromCurrentSources(_selectedRecordEntryId);
+		// This bounded snapshot makes an automatic scroll conditional on a truly new item in the current filtered projection.
+		HashSet<string> previouslyVisibleEntryIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		if (RecordItems != null)
+		{
+			for (int i = 0; i < RecordItems.Count; i++)
+			{
+				string entryId = RecordItems[i]?.EntryId;
+				if (!string.IsNullOrWhiteSpace(entryId))
+				{
+					previouslyVisibleEntryIds.Add(entryId);
+				}
+			}
+		}
+
+		// Preserve the prior selection during the rebuild; a newly visible record deliberately receives focus below.
+		if (!ReloadFromCurrentSources(_selectedRecordEntryId) || RecordItems == null)
+		{
+			return;
+		}
+		// The list is chronological, so scanning backwards chooses the newest record when a batch arrives together.
+		for (int i = RecordItems.Count - 1; i >= 0; i--)
+		{
+			string entryId = RecordItems[i]?.EntryId;
+			if (!string.IsNullOrWhiteSpace(entryId) && !previouslyVisibleEntryIds.Contains(entryId))
+			{
+				// Selecting first keeps the detail pane synchronized with the bottom-scroll request for the incoming message.
+				SelectRecord(i);
+				// The custom panel consumes this version change after the rebuilt item layout is available.
+				RecordAutoScrollRequestVersion = RecordAutoScrollRequestVersion == int.MaxValue
+					? 1
+					: RecordAutoScrollRequestVersion + 1;
+				return;
+			}
+		}
 	}
 
 	private async void GenerateFullWeeklyReportAsync(string eventId, string preferredRecordEntryId)
@@ -1042,7 +1143,14 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 	{
 		try
 		{
-			ReplaceSourceData(WorldMessageTimelineUi.BuildData());
+			WorldMessageTimelinePopupData refreshedData = WorldMessageTimelineUi.BuildData();
+			if (HasSameProjectedSourceData(refreshedData))
+			{
+				// A producer revision can change for non-display bookkeeping; acknowledge it without rebinding the visible UI.
+				_onSourceDataReloaded?.Invoke();
+				return true;
+			}
+			ReplaceSourceData(refreshedData);
 			RebuildCountriesAndTimeline(preferredRecordEntryId);
 			// The owner refreshes its cheap revision baseline only after the projection was rebuilt successfully.
 			_onSourceDataReloaded?.Invoke();
@@ -1054,6 +1162,85 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 			RefreshFullWeeklyReportActionState();
 			return false;
 		}
+	}
+
+	private bool HasSameProjectedSourceData(WorldMessageTimelinePopupData candidate)
+	{
+		// BuildData already returns chronological entries, matching ReplaceSourceData's sort order; this runs only after a revision mismatch.
+		IList<WorldMessageTimelineEntryData> candidateEntries = candidate?.Entries;
+		if (_allEntries == null || candidateEntries == null || _allEntries.Count != candidateEntries.Count)
+		{
+			return false;
+		}
+		for (int i = 0; i < _allEntries.Count; i++)
+		{
+			if (!ProjectedEntryMatches(_allEntries[i], candidateEntries[i]))
+			{
+				return false;
+			}
+		}
+		// Country filters are derived solely from the entries, so equal projected entries also guarantee equal country choices/counts.
+		return true;
+	}
+
+	private static bool ProjectedEntryMatches(WorldMessageTimelineEntryData left, WorldMessageTimelineEntryData right)
+	{
+		if (ReferenceEquals(left, right))
+		{
+			return true;
+		}
+		if (left == null || right == null)
+		{
+			return false;
+		}
+		return string.Equals(left.EntryId, right.EntryId, StringComparison.Ordinal)
+			&& string.Equals(left.CategoryId, right.CategoryId, StringComparison.Ordinal)
+			&& string.Equals(left.CategoryLabel, right.CategoryLabel, StringComparison.Ordinal)
+			&& string.Equals(left.TitleText, right.TitleText, StringComparison.Ordinal)
+			&& string.Equals(left.DateText, right.DateText, StringComparison.Ordinal)
+			&& string.Equals(left.MetaText, right.MetaText, StringComparison.Ordinal)
+			&& string.Equals(left.BodySectionTitleText, right.BodySectionTitleText, StringComparison.Ordinal)
+			&& string.Equals(left.BodyText, right.BodyText, StringComparison.Ordinal)
+			&& string.Equals(left.ImpactSectionTitleText, right.ImpactSectionTitleText, StringComparison.Ordinal)
+			&& string.Equals(left.ImpactText, right.ImpactText, StringComparison.Ordinal)
+			&& left.Day == right.Day
+			&& left.CreatedUtcTicks == right.CreatedUtcTicks
+			&& left.Sequence == right.Sequence
+			&& left.IsUnread == right.IsUnread
+			&& left.CanMarkRead == right.CanMarkRead
+			&& string.Equals(left.ReadKind, right.ReadKind, StringComparison.Ordinal)
+			&& string.Equals(left.ReadSourceId, right.ReadSourceId, StringComparison.Ordinal)
+			&& left.CanGenerateFullWeeklyReport == right.CanGenerateFullWeeklyReport
+			&& string.Equals(left.WeeklyReportEventId, right.WeeklyReportEventId, StringComparison.Ordinal)
+			&& ProjectedCountriesMatch(left.Countries, right.Countries);
+	}
+
+	private static bool ProjectedCountriesMatch(IList<WorldMessageTimelineCountryReference> left, IList<WorldMessageTimelineCountryReference> right)
+	{
+		int leftCount = left?.Count ?? 0;
+		int rightCount = right?.Count ?? 0;
+		if (leftCount != rightCount)
+		{
+			return false;
+		}
+		for (int i = 0; i < leftCount; i++)
+		{
+			WorldMessageTimelineCountryReference leftCountry = left[i];
+			WorldMessageTimelineCountryReference rightCountry = right[i];
+			if (ReferenceEquals(leftCountry, rightCountry))
+			{
+				continue;
+			}
+			if (leftCountry == null
+				|| rightCountry == null
+				|| !string.Equals(leftCountry.CountryId, rightCountry.CountryId, StringComparison.Ordinal)
+				|| !string.Equals(leftCountry.CountryName, rightCountry.CountryName, StringComparison.Ordinal)
+				|| leftCountry.IsWorldWeekly != rightCountry.IsWorldWeekly)
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private void ToggleCategory(string categoryId)
@@ -1084,8 +1271,9 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 	private void RebuildCountriesAndTimeline(string preferredRecordEntryId = null)
 	{
 		List<WorldMessageTimelineEntryData> categoryEntries = GetCategoryEntries().ToList();
-		CountryItems.Clear();
-		CountryItems.Add(new WorldMessageTimelineCountryItemVM(
+		// Build the entire collection off-binding, then publish it once to avoid a visible empty/partially-filled filter list.
+		MBBindingList<WorldMessageTimelineCountryItemVM> rebuiltCountryItems = new MBBindingList<WorldMessageTimelineCountryItemVM>();
+		rebuiltCountryItems.Add(new WorldMessageTimelineCountryItemVM(
 			WorldMessageTimelineUi.AllCountriesId,
 			"全部国家",
 			categoryEntries.Count,
@@ -1097,13 +1285,14 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 			.ThenBy(x => x.CountryName ?? x.CountryId ?? "", StringComparer.CurrentCulture))
 		{
 			int count = categoryEntries.Count(entry => EntryMatchesCountry(entry, country.CountryId));
-			CountryItems.Add(new WorldMessageTimelineCountryItemVM(
+			rebuiltCountryItems.Add(new WorldMessageTimelineCountryItemVM(
 				country.CountryId,
 				FirstNonEmpty(country.CountryName, "未知国家"),
 				count,
 				SelectCountry));
 		}
 
+		CountryItems = rebuiltCountryItems;
 		NormalizeSelectedCountries();
 		RefreshCountrySelectionState();
 		RebuildTimeline(preferredRecordEntryId);
@@ -1151,11 +1340,13 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 		List<WorldMessageTimelineEntryData> records = GetCategoryEntries()
 			.Where(EntryMatchesSelectedCountries)
 			.ToList();
-		RecordItems.Clear();
+		// Populate before binding so a source refresh produces one list replacement instead of Clear plus up to 600 add notifications.
+		MBBindingList<WorldMessageTimelineRecordItemVM> rebuiltRecordItems = new MBBindingList<WorldMessageTimelineRecordItemVM>();
 		for (int i = 0; i < records.Count; i++)
 		{
-			RecordItems.Add(new WorldMessageTimelineRecordItemVM(records[i], i, SelectRecord));
+			rebuiltRecordItems.Add(new WorldMessageTimelineRecordItemVM(records[i], i, SelectRecord));
 		}
+		RecordItems = rebuiltRecordItems;
 		HasTimelineRecords = RecordItems.Count > 0;
 		ShowFilteredEmptyState = HasMessages && !HasTimelineRecords;
 		TimelineTitleText = BuildTimelineTitle(records.Count);
