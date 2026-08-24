@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "executed_local_date": "2026-08-08",
+  "test": "policy_target_legal_handle_selection",
+  "api": {
+    "host": "api.deepseek.com",
+    "model": "deepseek-v4-pro",
+    "request_count": 1,
+    "retry_count": 0,
+    "max_tokens": 2000,
+    "temperature": 0.25,
+    "json_object_response_format": true,
+    "thinking_type": "disabled",
+    "api_key_recorded": false,
+    "prompt_recorded": false,
+    "response_content_recorded": false
+  },
+  "http_status": 200,
+  "elapsed_ms": 2930.8,
+  "finish_reason": "stop",
+  "usage": {
+    "prompt_tokens": 618,
+    "completion_tokens": 180,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 618
+  },
+  "request_error": "",
+  "cases": [
+    {
+      "case_id": "north_enemy_kingdom",
+      "passed": true,
+      "selected_targets": [
+        "K2"
+      ],
+      "expected_targets": [
+        "K2"
+      ],
+      "errors": []
+    },
+    {
+      "case_id": "richest_domestic_clan",
+      "passed": true,
+      "selected_targets": [
+        "C1"
+      ],
+      "expected_targets": [
+        "C1"
+      ],
+      "errors": []
+    },
+    {
+      "case_id": "border_granary_city",
+      "passed": true,
+      "selected_targets": [
+        "L2"
+      ],
+      "expected_targets": [
+        "L2"
+      ],
+      "errors": []
+    },
+    {
+      "case_id": "vassal_east_weakest_enemy",
+      "passed": true,
+      "selected_targets": [
+        "K3"
+      ],
+      "expected_targets": [
+        "K3"
+      ],
+      "errors": []
+    },
+    {
+      "case_id": "contact_report_only",
+      "passed": true,
+      "selected_targets": [],
+      "expected_targets": [],
+      "errors": []
+    }
+  ],
+  "passed": true
+}

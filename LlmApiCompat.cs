@@ -34,6 +34,19 @@ public static class LlmApiCompat
 		return text.IndexOf("/anthropic", StringComparison.OrdinalIgnoreCase) >= 0 || text.EndsWith("/v1/messages", StringComparison.OrdinalIgnoreCase);
 	}
 
+	public static bool IsOfficialDeepSeekUrl(string apiUrl)
+	{
+		try
+		{
+			return Uri.TryCreate((apiUrl ?? string.Empty).Trim(), UriKind.Absolute, out Uri uri)
+				&& string.Equals(uri.Host, "api.deepseek.com", StringComparison.OrdinalIgnoreCase);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	public static string GetEffectiveChatApiUrl(string rawUrl)
 	{
 		string text = (rawUrl ?? "").Trim();

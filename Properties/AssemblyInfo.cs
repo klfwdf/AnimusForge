@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 
 [assembly: AssemblyVersion("0.0.0.0")]
+[assembly: InternalsVisibleTo("PolicyEffectModule.ContractTests")]
 
 #if BANNERLORD_1_4_OR_GREATER
 [assembly: AssemblyMetadata("AnimusForge.BannerlordApi", "1.4")]
