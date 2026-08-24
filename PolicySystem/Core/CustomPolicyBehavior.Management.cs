@@ -821,9 +821,50 @@ public sealed partial class CustomPolicyBehavior
 	{
 		try
 		{
-			string issuer = CompactPolicyContextText(kingdomName ?? "");
-			string name = CompactPolicyContextText(policyName ?? "");
-			string content = CompactPolicyContextText(policyContent ?? "");
+			InformationManager.DisplayMessage(new InformationMessage(
+				BuildKingdomPolicyAnnouncementText(kingdomName, policyName, policyContent),
+				Color.FromUint(4294945331u)));
+			PolicySystemLog.Write("Notice", "policy-announcement-displayed",
+				"source=" + (source ?? "")
+				+ " policyId=" + (policyId ?? "")
+				+ " contentChars=" + CompactPolicyContextText(policyContent ?? "").Length.ToString(CultureInfo.InvariantCulture));
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Write("Notice", "policy-announcement-failed",
+				"source=" + (source ?? "") + " policyId=" + (policyId ?? "") + " " + ex);
+		}
+	}
+
+	internal static void DisplayPolicyAnnouncementMessage(string source, NpcRulerPolicyRecord record)
+	{
+		try
+		{
+			InformationManager.DisplayMessage(new InformationMessage(
+				BuildPolicyAnnouncementText(record),
+				Color.FromUint(4294945331u)));
+			PolicySystemLog.Write("Notice", "policy-announcement-displayed",
+				"source=" + (source ?? "")
+				+ " policyId=" + (record?.PolicyId ?? "")
+				+ " policyKind=" + (record?.PolicyKind ?? "")
+				+ " contentChars=" + CompactPolicyContextText(record?.PolicyContent ?? "").Length.ToString(CultureInfo.InvariantCulture));
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Write("Notice", "policy-announcement-failed",
+				"source=" + (source ?? "") + " policyId=" + (record?.PolicyId ?? "") + " " + ex);
+		}
+	}
+
+	private static string BuildPolicyAnnouncementText(NpcRulerPolicyRecord record)
+	{
+		if (record?.IsPlayerPolicy == true
+			&& string.Equals(record.PolicyKind ?? string.Empty, PolicyScopeVassal, StringComparison.OrdinalIgnoreCase))
+		{
+			string issuer = CompactPolicyContextText(record.IssuerKingdomName ?? string.Empty);
+			string target = CompactPolicyContextText(record.KingdomName ?? string.Empty);
+			string name = CompactPolicyContextText(record.PolicyName ?? string.Empty);
+			string content = CompactPolicyContextText(record.PolicyContent ?? string.Empty);
 			if (string.IsNullOrWhiteSpace(name))
 			{
 				name = "未命名政策";
@@ -832,20 +873,28 @@ public sealed partial class CustomPolicyBehavior
 			{
 				content = "未记录政策正文。";
 			}
-			string policySubject = string.IsNullOrWhiteSpace(issuer) ? "王国" : issuer;
-			InformationManager.DisplayMessage(new InformationMessage(
-				"【王国政策】" + policySubject + "颁布《" + name + "》：" + content,
-				Color.FromUint(4294945331u)));
-			PolicySystemLog.Write("Notice", "policy-announcement-displayed",
-				"source=" + (source ?? "")
-				+ " policyId=" + (policyId ?? "")
-				+ " contentChars=" + content.Length.ToString(CultureInfo.InvariantCulture));
+			string publisher = string.IsNullOrWhiteSpace(issuer) ? "宗主玩家" : "宗主玩家（" + issuer + "）";
+			string targetLabel = string.IsNullOrWhiteSpace(target) ? "目标附庸国" : "附庸国" + target;
+			return "【附庸国政策】" + publisher + "发布《" + name + "》，对" + targetLabel + "生效：" + content;
 		}
-		catch (Exception ex)
+		return BuildKingdomPolicyAnnouncementText(record?.KingdomName, record?.PolicyName, record?.PolicyContent);
+	}
+
+	private static string BuildKingdomPolicyAnnouncementText(string kingdomName, string policyName, string policyContent)
+	{
+		string issuer = CompactPolicyContextText(kingdomName ?? string.Empty);
+		string name = CompactPolicyContextText(policyName ?? string.Empty);
+		string content = CompactPolicyContextText(policyContent ?? string.Empty);
+		if (string.IsNullOrWhiteSpace(name))
 		{
-			PolicySystemLog.Write("Notice", "policy-announcement-failed",
-				"source=" + (source ?? "") + " policyId=" + (policyId ?? "") + " " + ex);
+			name = "未命名政策";
 		}
+		if (string.IsNullOrWhiteSpace(content))
+		{
+			content = "未记录政策正文。";
+		}
+		string policySubject = string.IsNullOrWhiteSpace(issuer) ? "王国" : issuer;
+		return "【王国政策】" + policySubject + "颁布《" + name + "》：" + content;
 	}
 
 	internal static bool DisplayKingdomPolicyFeedbackMessage(string source, string policyId, string kingdomName, string policyName, string publicFeedback)

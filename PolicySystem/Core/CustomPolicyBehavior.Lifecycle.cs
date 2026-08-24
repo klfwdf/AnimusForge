@@ -1902,6 +1902,11 @@ public sealed partial class CustomPolicyBehavior
 			: ForeignKingdomDynamicPolicyAdoptionReviewDays;
 	}
 
+	internal static float GetDynamicPolicyAdoptionReviewDaysForExternal(Kingdom owner)
+	{
+		return GetDynamicPolicyAdoptionReviewDays(owner);
+	}
+
 	private static bool TryConfigureDynamicPolicyAdoptionReviewTime(KingdomPolicyDecision decision, float reviewDays, out string failureReason)
 	{
 		failureReason = "";

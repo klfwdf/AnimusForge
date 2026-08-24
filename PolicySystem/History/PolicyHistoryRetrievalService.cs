@@ -430,11 +430,24 @@ internal static class PolicyHistoryRetrievalService
 			? 0
 			: Math.Max(20, Math.Min(80, DialogueDocumentEffectsBudget / effects.Count));
 		StringBuilder text = new StringBuilder();
-		text.Append("政策发布国：").Append(Limit(ownerLabel, 100))
+		if (IsPlayerVassalPolicyEntry(entry))
+		{
+			text.Append("政策发布方：").Append(BuildDialogueOwner(entry))
+				.Append("；政策生效国：").Append(Limit(FirstNonEmpty(entry.OwnerKingdomName, entry.OwnerKingdomId, "目标附庸国"), 60))
+				.Append("；归属说明：由宗主玩家发布，不是附庸统治者自行颁布")
+				.Append("；来源：").Append(Limit(entry.SourceKind, 32))
+				.Append("；范围：").Append(Limit(entry.ScopeKind, 32))
+				.Append("；状态：").Append(Limit(FirstNonEmpty(entry.RawPolicyStatus, entry.PolicyStatus, entry.HistoryBucket), 32))
+				.AppendLine("。");
+		}
+		else
+		{
+			text.Append("政策发布国：").Append(Limit(ownerLabel, 100))
 			.Append("；来源：").Append(Limit(entry.SourceKind, 32))
 			.Append("；范围：").Append(Limit(entry.ScopeKind, 32))
 			.Append("；状态：").Append(Limit(FirstNonEmpty(entry.RawPolicyStatus, entry.PolicyStatus, entry.HistoryBucket), 32))
 			.AppendLine("。");
+		}
 		text.Append("政策名称：").AppendLine(Limit(entry.PolicyName, 50));
 		if (content.Length > 0)
 		{
@@ -812,7 +825,13 @@ internal static class PolicyHistoryRetrievalService
 				.Append("；来源：").Append(BuildDialogueSourceLabel(entry.SourceKind))
 				.Append("；状态：").Append(BuildDialogueStatusLabel(entry))
 				.Append("；政策：").Append(Limit(entry.PolicyName, 50))
-				.Append("；范围：").Append(BuildDialogueScope(entry))
+				.Append("；范围：").Append(BuildDialogueScope(entry));
+			if (IsPlayerVassalPolicyEntry(entry))
+			{
+				prompt.Append("；生效对象：附庸国").Append(Limit(FirstNonEmpty(entry.OwnerKingdomName, entry.OwnerKingdomId, "目标附庸国"), 40))
+					.Append("；归属说明：由宗主玩家发布，不是附庸统治者自行颁布");
+			}
+			prompt
 				.Append("；内容：").Append(summary.Length == 0 ? "无摘要" : summary)
 				.AppendLine();
 			List<string> effects = (entry.EffectSummaries ?? new List<string>())
@@ -834,6 +853,11 @@ internal static class PolicyHistoryRetrievalService
 
 	private static string BuildDialogueOwner(NpcPolicyHistoryEntry entry)
 	{
+		if (IsPlayerVassalPolicyEntry(entry))
+		{
+			string issuer = Limit(FirstNonEmpty(entry?.IssuerKingdomName, entry?.IssuerKingdomId), 30);
+			return string.IsNullOrWhiteSpace(issuer) ? "宗主玩家" : "宗主玩家（" + issuer + "）";
+		}
 		return Limit(FirstNonEmpty(
 			entry?.OwnerKingdomName,
 			entry?.OwnerKingdomId,
@@ -841,6 +865,11 @@ internal static class PolicyHistoryRetrievalService
 			entry?.IssuerKingdomId,
 			entry?.OwnerClanId,
 			"未知发布方"), 40);
+	}
+
+	private static bool IsPlayerVassalPolicyEntry(NpcPolicyHistoryEntry entry)
+	{
+		return string.Equals(entry?.SourceKind ?? string.Empty, "player_vassal", StringComparison.OrdinalIgnoreCase);
 	}
 
 	private static string BuildDialogueSourceLabel(string sourceKind)

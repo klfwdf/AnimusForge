@@ -19,6 +19,7 @@ using AnimusForge.PolicyTargets;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.Settlements;
+using TaleWorlds.Core;
 using TaleWorlds.Library;
 
 namespace AnimusForge;
@@ -1031,6 +1032,7 @@ public sealed partial class NpcRulerPolicyBehavior
 						PolicySystemLog.Write("Npc", "agenda-submitted", "policyId=" + (record.PolicyId ?? "") + " kingdom=" + (record.KingdomId ?? "")
 							+ (record.IsPlayerSuggested ? " source=player-suggested chain=" + Limit(record.SuggestionChainName ?? "", SuggestedChainNameMaxChars) : ""));
 						RecordSuggestedPolicyAgendaSubmissionFact(record);
+						NotifySuggestedPolicyAgendaSubmitted(record);
 					}
 					else
 					{
@@ -1053,6 +1055,7 @@ public sealed partial class NpcRulerPolicyBehavior
 						}
 						context.SavedCount++;
 						PolicySystemLog.Write("Npc", "agenda-submit-rejected", "policyId=" + (record.PolicyId ?? "") + " reason=" + (agendaFailure ?? ""));
+						NotifySuggestedPolicyAgendaSubmissionUnconfirmed(record);
 					}
 					_policyRecords[record.PolicyId] = JsonConvert.SerializeObject(record);
 					AdvancePendingPolicyRecord(context);
@@ -1074,12 +1077,7 @@ public sealed partial class NpcRulerPolicyBehavior
 					}
 					if (context.IsAgendaApprovalCommit && !record.ApprovalAnnouncementPublished)
 					{
-						CustomPolicyBehavior.DisplayKingdomPolicyAnnouncementMessage(
-							"npc",
-							record.PolicyId,
-							record.KingdomName,
-							record.PolicyName,
-							record.PolicyContent);
+						CustomPolicyBehavior.DisplayPolicyAnnouncementMessage("npc", record);
 						SchedulePublicFeedbackNotice(record, "npc");
 						record.ApprovalAnnouncementPublished = true;
 						_policyRecords[record.PolicyId] = JsonConvert.SerializeObject(record);
@@ -1294,6 +1292,53 @@ public sealed partial class NpcRulerPolicyBehavior
 		}
 	}
 
+	private static void NotifySuggestedPolicyAgendaSubmitted(NpcRulerPolicyRecord record)
+	{
+		if (record?.IsPlayerSuggested != true)
+		{
+			return;
+		}
+		try
+		{
+			Kingdom owner = ResolveNpcPolicyKingdomById(record.KingdomId);
+			float reviewDays = CustomPolicyBehavior.GetDynamicPolicyAdoptionReviewDaysForExternal(owner);
+			string kingdomName = FirstNonEmpty(owner?.Name?.ToString(), record.KingdomName, record.KingdomId, "目标王国");
+			string policyName = FirstNonEmpty(record.PolicyName, "新政策");
+			InformationManager.DisplayMessage(new InformationMessage(
+				"AF 已确认《" + Limit(policyName, 70) + "》进入" + Limit(kingdomName, 50)
+				+ "议程，预计 " + reviewDays.ToString("0.#", CultureInfo.InvariantCulture) + " 天后审议；统治者将推动采纳。",
+				Colors.Green));
+			PolicySystemLog.Write("Notice", "suggested-policy-agenda-confirmed",
+				"policyId=" + (record.PolicyId ?? "") + " kingdom=" + (record.KingdomId ?? "")
+				+ " reviewDays=" + reviewDays.ToString("0.#", CultureInfo.InvariantCulture));
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Failure("Notice", "suggested-policy-agenda-confirmation-failed", ex.Message,
+				"policyId=" + (record?.PolicyId ?? "") + " " + ex);
+		}
+	}
+
+	private static void NotifySuggestedPolicyAgendaSubmissionUnconfirmed(NpcRulerPolicyRecord record)
+	{
+		if (record?.IsPlayerSuggested != true)
+		{
+			return;
+		}
+		try
+		{
+			InformationManager.DisplayMessage(new InformationMessage(
+				"AF 未能确认《" + Limit(FirstNonEmpty(record.PolicyName, "新政策"), 70)
+				+ "》已进入目标王国议程。为避免重复决定，本次不提供直接重试；请查看政策日志。",
+				Colors.Red));
+		}
+		catch (Exception ex)
+		{
+			PolicySystemLog.Failure("Notice", "suggested-policy-agenda-unconfirmed-notice-failed", ex.Message,
+				"policyId=" + (record?.PolicyId ?? "") + " " + ex);
+		}
+	}
+
 	private static void AdvancePendingPolicyRecord(PendingNpcPolicyCommitContext context)
 	{
 		if (context == null)
@@ -1331,6 +1376,89 @@ public sealed partial class NpcRulerPolicyBehavior
 		_lastPolicyRetryContext = CreatePolicyRetryContext(job, result, _lastGenerationError);
 		Log("generation-failed batch=" + (job.BatchId ?? "") + " attempts=" + _lastGenerationRetryCount.ToString(CultureInfo.InvariantCulture) + " rateLimit=" + (result?.IsRateLimit ?? false).ToString(CultureInfo.InvariantCulture) + " rpm=" + (result?.IsRequestsPerMinuteLimit ?? false).ToString(CultureInfo.InvariantCulture) + " quota=" + (result?.IsQuotaLimit ?? false).ToString(CultureInfo.InvariantCulture) + " authFailure=" + (result?.IsAuthFailure ?? false).ToString(CultureInfo.InvariantCulture) + " retryAfter=" + ((result?.RetryAfterSeconds)?.ToString(CultureInfo.InvariantCulture) ?? "") + " rawRetryAfter=" + ((result?.RetryAfterSecondsRaw)?.ToString(CultureInfo.InvariantCulture) ?? "") + " retryAfterCapped=" + ((result?.RetryAfterSecondsCapped ?? false) ? "true" : "false") + " error=" + Limit(_lastGenerationError, 500));
 		PolicyTraceLog("generation-failed", BuildPolicyResultTracePrefix(result), _lastGenerationError + "\n\n" + string.Join("\n", result?.FailureMessages ?? new List<string>()));
+		ShowSuggestedPolicyGenerationRetry(job, error);
+	}
+
+	private void ShowSuggestedPolicyGenerationRetry(NpcPolicyGenerationJob job, string error)
+	{
+		NpcRulerPolicyBatchContext context = job?.Context;
+		if (context?.IsSuggestedPolicy != true)
+		{
+			return;
+		}
+		NpcRulerPolicySnapshotTarget pendingTarget = context.PendingTargets?.FirstOrDefault();
+		NpcRulerPolicyKingdomContext frozenTarget = context.Kingdoms?.FirstOrDefault();
+		SuggestedPolicyRetryRequest retry = new SuggestedPolicyRetryRequest
+		{
+			PreviousBatchId = job.BatchId ?? string.Empty,
+			KingdomId = FirstNonEmpty(pendingTarget?.KingdomId, frozenTarget?.KingdomId),
+			ExpectedRulerHeroId = FirstNonEmpty(pendingTarget?.ExpectedRulerHeroId, frozenTarget?.RulerHeroId),
+			ProposalText = context.ProposalText ?? string.Empty,
+			NpcReplyText = context.NpcReplyText ?? string.Empty,
+			HistoryContext = context.HistoryContext ?? string.Empty,
+			ChainName = context.ChainName ?? string.Empty
+		};
+		ShowSuggestedPolicyGenerationRetry(retry,
+			"统治者政策拟定、解析或提交前安全校验失败，政策尚未进入议程。详细信息已写入日志。");
+	}
+
+	private void ShowSuggestedPolicyGenerationRetry(SuggestedPolicyRetryRequest retry, string visibleReason)
+	{
+		if (retry == null)
+		{
+			return;
+		}
+		string body = "阶段：统治者政策拟定\n原因：" + FirstNonEmpty(visibleReason, "政策拟定失败。")
+			+ "\n原请求编号：" + Limit(retry.PreviousBatchId, 80)
+			+ "\n\n可点击下方“手动重试”重新提交原建议，或点击右上角 X 关闭。"
+			+ "\n本次没有发布政策，也没有应用任何效果。";
+		Action retryAction = delegate { RetrySuggestedPolicyGeneration(retry); };
+		if (CustomPolicyResultPopup.ShowRetry("统治者政策拟定失败", body, "手动重试", retryAction))
+		{
+			return;
+		}
+		InformationManager.ShowInquiry(new InquiryData(
+			"统治者政策拟定失败",
+			body,
+			isAffirmativeOptionShown: true,
+			isNegativeOptionShown: true,
+			"手动重试",
+			"关闭",
+			retryAction,
+			null),
+			pauseGameActiveState: true);
+	}
+
+	private void RetrySuggestedPolicyGeneration(SuggestedPolicyRetryRequest retry)
+	{
+		if (retry == null)
+		{
+			return;
+		}
+		Kingdom kingdom = ResolveNpcPolicyKingdomById(retry.KingdomId);
+		Hero ruler = kingdom?.Leader ?? kingdom?.RulingClan?.Leader;
+		if (kingdom == null || kingdom.IsEliminated || ruler == null || ruler.IsDead || !ruler.IsAlive
+			|| (!string.IsNullOrWhiteSpace(retry.ExpectedRulerHeroId)
+				&& !string.Equals(ruler.StringId ?? string.Empty, retry.ExpectedRulerHeroId, StringComparison.OrdinalIgnoreCase)))
+		{
+			ShowSuggestedPolicyGenerationRetry(retry, "目标王国或接受建议的统治者已经变化，当前不能重新提交。");
+			return;
+		}
+		if (TryStartSuggestedPolicyInternal(
+			ruler,
+			retry.ProposalText,
+			retry.NpcReplyText,
+			retry.HistoryContext,
+			retry.ChainName,
+			out string failureReason))
+		{
+			InformationManager.DisplayMessage(new InformationMessage(
+				"已手动重新提交统治者政策建议；AF 将冻结新快照并生成新的议程请求。",
+				Colors.Green));
+			return;
+		}
+		ShowSuggestedPolicyGenerationRetry(retry,
+			string.IsNullOrWhiteSpace(failureReason) ? "当前无法重新提交政策建议。" : failureReason.Trim());
 	}
 
 	private static void CopyApiResultToPolicyResult(NpcPolicyGenerationResult result, NpcPolicyApiCallResult apiResult, bool accumulateAttempts)

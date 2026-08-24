@@ -119,16 +119,22 @@ public sealed partial class NpcRulerPolicyBehavior
 		{
 			return;
 		}
+		UnifiedPolicyWeeklyAttribution attribution = ResolveUnifiedPolicyWeeklyAttribution(policy);
 		List<NpcRulerPolicyEffectDto> effects = (policy.Effects ?? new List<NpcRulerPolicyEffectDto>()).Where(IsActivePolicyEffect).ToList();
 		Dictionary<string, List<NpcRulerPolicyEffectDto>> recipients = new Dictionary<string, List<NpcRulerPolicyEffectDto>>(StringComparer.OrdinalIgnoreCase);
-		string issuerId = (policy.KingdomId ?? "").Trim();
+		string issuerId = (attribution.IssuerKingdomId ?? string.Empty).Trim();
 		if (!string.IsNullOrWhiteSpace(issuerId))
 		{
 			recipients[issuerId] = new List<NpcRulerPolicyEffectDto>();
 		}
+		string policyTargetId = (attribution.TargetKingdomId ?? string.Empty).Trim();
+		if (!string.IsNullOrWhiteSpace(policyTargetId) && !recipients.ContainsKey(policyTargetId))
+		{
+			recipients[policyTargetId] = new List<NpcRulerPolicyEffectDto>();
+		}
 		foreach (NpcRulerPolicyEffectDto effect in effects)
 		{
-			string targetId = FirstNonEmpty(effect.TargetKingdomId, issuerId).Trim();
+			string targetId = FirstNonEmpty(effect.TargetKingdomId, policyTargetId, issuerId).Trim();
 			if (string.IsNullOrWhiteSpace(targetId))
 			{
 				continue;
@@ -147,21 +153,21 @@ public sealed partial class NpcRulerPolicyBehavior
 			List<NpcRulerPolicyEffectDto> relevantEffects = isIssuer ? effects : recipient.Value;
 			NpcRulerPolicyEffectDto targetEffect = recipient.Value.FirstOrDefault();
 			string targetName = Limit(isIssuer
-				? FirstNonEmpty(policy.KingdomName, issuerId)
-				: FirstNonEmpty(targetEffect?.TargetKingdomName, targetId), 50);
+				? FirstNonEmpty(attribution.IssuerKingdomName, issuerId)
+				: string.Equals(targetId, policyTargetId, StringComparison.OrdinalIgnoreCase)
+					? FirstNonEmpty(attribution.TargetKingdomName, targetEffect?.TargetKingdomName, targetId)
+					: FirstNonEmpty(targetEffect?.TargetKingdomName, targetId), 50);
 			string policyName = Limit(FirstNonEmpty(policy.PolicyName, "未命名政策"), 70);
 			string effectSummary = Limit(BuildEffectSummary(relevantEffects), 120);
 			if (string.IsNullOrWhiteSpace(effectSummary))
 			{
 				effectSummary = "无持续数值变化";
 			}
-			string snapshot = Limit("统治者政策。发布国：" + Limit(FirstNonEmpty(policy.KingdomName, policy.KingdomId), 50)
-				+ "。发布者：" + Limit(policy.RulerName, 50) + "。政策：《" + policyName + "》"
-				+ "。政策摘要：" + Limit(policy.PolicyDigest, 140) + "。衍生事件：" + Limit(policy.FeedbackDigest, 70)
-				+ "。周报归属国：" + targetName + "。相关每日影响：" + effectSummary + "。", 360);
-			MyBehavior.RecordPolicySystemWeeklyMaterialForExternal("ruler_policy", "统治者政策 - " + targetName + " / " + policyName, snapshot,
+			string snapshot = BuildUnifiedPolicyWeeklySnapshot(policy, attribution, targetName, effectSummary);
+			string materialLabel = attribution.IsPlayerVassalPolicy ? "玩家附庸政策" : "统治者政策";
+			MyBehavior.RecordPolicySystemWeeklyMaterialForExternal(attribution.MaterialKind, materialLabel + " - " + targetName + " / " + policyName, snapshot,
 				"unified_policy:" + policy.PolicyId + ":weekly:" + NormalizeKeyPart(targetId), targetId, recipients.Count > 1 || !isIssuer,
-				policy.RulerHeroId ?? "", policy.KingdomId ?? "", Math.Max(0, policy.Day), policy.GameDate ?? "");
+				policy.RulerHeroId ?? "", attribution.IssuerKingdomId ?? "", Math.Max(0, policy.Day), policy.GameDate ?? "");
 			PolicySystemLog.Write("Weekly", "material-recorded", "policyId=" + policy.PolicyId
 				+ " issuer=" + issuerId
 				+ " target=" + targetId
@@ -169,6 +175,65 @@ public sealed partial class NpcRulerPolicyBehavior
 				+ " effects=" + relevantEffects.Count.ToString(CultureInfo.InvariantCulture)
 				+ " chars=" + snapshot.Length.ToString(CultureInfo.InvariantCulture));
 		}
+	}
+
+	private static UnifiedPolicyWeeklyAttribution ResolveUnifiedPolicyWeeklyAttribution(NpcRulerPolicyRecord policy)
+	{
+		bool isPlayerVassalPolicy = policy?.IsPlayerPolicy == true
+			&& string.Equals(policy.PolicyKind ?? string.Empty, "vassal", StringComparison.OrdinalIgnoreCase);
+		string targetKingdomId = (policy?.KingdomId ?? string.Empty).Trim();
+		string targetKingdomName = FirstNonEmpty(policy?.KingdomName, targetKingdomId, "目标附庸国");
+		Kingdom playerKingdom = TryResolvePlayerKingdomForWeeklyAttribution();
+		string issuerKingdomId = isPlayerVassalPolicy
+			? FirstNonEmpty(policy?.IssuerKingdomId, playerKingdom?.StringId)
+			: targetKingdomId;
+		string issuerKingdomName = isPlayerVassalPolicy
+			? FirstNonEmpty(policy?.IssuerKingdomName, playerKingdom?.Name?.ToString(), issuerKingdomId)
+			: FirstNonEmpty(policy?.KingdomName, targetKingdomName, issuerKingdomId);
+		string publisherLabel = isPlayerVassalPolicy
+			? string.IsNullOrWhiteSpace(issuerKingdomName) ? "宗主玩家" : "宗主玩家（" + issuerKingdomName + "）"
+			: FirstNonEmpty(issuerKingdomName, "未知发布国");
+		return new UnifiedPolicyWeeklyAttribution
+		{
+			IsPlayerVassalPolicy = isPlayerVassalPolicy,
+			MaterialKind = isPlayerVassalPolicy ? "player_vassal_policy" : "ruler_policy",
+			IssuerKingdomId = issuerKingdomId,
+			IssuerKingdomName = issuerKingdomName,
+			TargetKingdomId = targetKingdomId,
+			TargetKingdomName = targetKingdomName,
+			PublisherLabel = publisherLabel
+		};
+	}
+
+	private static Kingdom TryResolvePlayerKingdomForWeeklyAttribution()
+	{
+		try
+		{
+			return Clan.PlayerClan?.Kingdom;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static string BuildUnifiedPolicyWeeklySnapshot(
+		NpcRulerPolicyRecord policy,
+		UnifiedPolicyWeeklyAttribution attribution,
+		string targetName,
+		string effectSummary)
+	{
+		string policyName = Limit(FirstNonEmpty(policy?.PolicyName, "未命名政策"), 70);
+		string prefix = attribution?.IsPlayerVassalPolicy == true
+			? "玩家附庸政策。发布方：" + FirstNonEmpty(attribution.PublisherLabel, "宗主玩家")
+				+ "。生效对象：" + Limit(FirstNonEmpty(attribution.TargetKingdomName, attribution.TargetKingdomId, "目标附庸国"), 50)
+				+ "。发布者：" + Limit(FirstNonEmpty(policy?.RulerName, "玩家"), 50)
+				+ "。归属说明：由宗主玩家发布，不是附庸统治者自行颁布"
+			: "统治者政策。发布国：" + Limit(FirstNonEmpty(attribution?.IssuerKingdomName, policy?.KingdomName, policy?.KingdomId), 50)
+				+ "。发布者：" + Limit(policy?.RulerName, 50);
+		return Limit(prefix + "。政策：《" + policyName + "》"
+			+ "。政策摘要：" + Limit(policy?.PolicyDigest, 140) + "。衍生事件：" + Limit(policy?.FeedbackDigest, 70)
+			+ "。周报归属国：" + Limit(targetName, 50) + "。相关每日影响：" + Limit(effectSummary, 120) + "。", 420);
 	}
 
 	private static bool TryDeserializePolicyRecords(string json, out List<NpcRulerPolicyRecord> records, out Exception exception)
@@ -1881,6 +1946,28 @@ public sealed partial class NpcRulerPolicyBehavior
 		public int? RetryAfterSeconds;
 		public List<string> FailedKingdomIds = new List<string>();
 		public List<string> FailureMessages = new List<string>();
+	}
+
+	private sealed class SuggestedPolicyRetryRequest
+	{
+		public string PreviousBatchId = string.Empty;
+		public string KingdomId = string.Empty;
+		public string ExpectedRulerHeroId = string.Empty;
+		public string ProposalText = string.Empty;
+		public string NpcReplyText = string.Empty;
+		public string HistoryContext = string.Empty;
+		public string ChainName = string.Empty;
+	}
+
+	private sealed class UnifiedPolicyWeeklyAttribution
+	{
+		public bool IsPlayerVassalPolicy { get; set; }
+		public string MaterialKind { get; set; } = string.Empty;
+		public string IssuerKingdomId { get; set; } = string.Empty;
+		public string IssuerKingdomName { get; set; } = string.Empty;
+		public string TargetKingdomId { get; set; } = string.Empty;
+		public string TargetKingdomName { get; set; } = string.Empty;
+		public string PublisherLabel { get; set; } = string.Empty;
 	}
 
 	private sealed class PendingNpcPolicyCommitContext
