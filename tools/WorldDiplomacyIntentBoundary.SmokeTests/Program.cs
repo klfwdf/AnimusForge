@@ -3231,11 +3231,11 @@ internal static class Program
 
     private static void RunPolicyThreatComplianceConsequenceContractTests(string source)
     {
-        string customPolicy = File.ReadAllText(
-            FindRepositoryFile("CustomPolicyBehavior.cs"),
-            Encoding.UTF8);
+		string customPolicy = File.ReadAllText(
+			FindRepositoryFile(Path.Combine("PolicySystem", "Core", "CustomPolicyBehavior.Lifecycle.cs")),
+			Encoding.UTF8);
         string policyContext = File.ReadAllText(
-            FindRepositoryFile("WorldDiplomacyPolicyContext.cs"),
+			FindRepositoryFile(Path.Combine("PolicySystem", "Context", "WorldDiplomacyPolicyContext.cs")),
             Encoding.UTF8);
         string settings = File.ReadAllText(
             FindRepositoryFile("DuelSettings.cs"),
@@ -3301,13 +3301,18 @@ internal static class Program
                   && resolvePolicyCondition.Contains("signal.IssuerKingdomId", StringComparison.Ordinal)
                   && resolvePolicyCondition.Contains("signal.TargetKingdomId", StringComparison.Ordinal),
             "a policy condition must still be active under its exact policy, owner, and affected kingdom IDs");
-        string activePolicySignal = ExtractMethod(
-            policyContext,
-            "public static bool IsForeignPolicySignalActive(");
-        Test.True(activePolicySignal.Contains("record.AgendaStatus.Trim(), \"active\"", StringComparison.Ordinal)
-                  && activePolicySignal.Contains("record.AgendaStatus.Trim(), \"expiry_vote_pending\"", StringComparison.Ordinal)
-                  && activePolicySignal.Contains("record.Effects", StringComparison.Ordinal),
-            "a cancellable threat condition must require both a live policy agenda and its exact active foreign effect");
+		string activePolicySignal = ExtractMethod(
+			policyContext,
+			"public static bool IsForeignPolicySignalActive(");
+		string activePolicyTargets = ExtractMethod(
+			policyContext,
+			"private static IEnumerable<string> EnumerateActiveTargetKingdomIds(");
+		Test.True(activePolicySignal.Contains("record.AgendaStatus.Trim(), \"active\"", StringComparison.Ordinal)
+				  && activePolicySignal.Contains("record.AgendaStatus.Trim(), \"expiry_vote_pending\"", StringComparison.Ordinal)
+				  && activePolicySignal.Contains("EnumerateActiveTargetKingdomIds(record)", StringComparison.Ordinal)
+				  && activePolicyTargets.Contains("record?.Effects", StringComparison.Ordinal)
+				  && activePolicyTargets.Contains("Where(IsActiveContinuousInstance)", StringComparison.Ordinal),
+			"a cancellable threat condition must require both a live policy agenda and its exact active foreign effect");
         Test.True(resolvePolicyCondition.Contains("policyOwnerRepresentative.StringId, threatTarget.StringId", StringComparison.Ordinal)
                   && resolvePolicyCondition.Contains("affectedRepresentative.StringId, threatIssuer.StringId", StringComparison.Ordinal),
             "the threatened kingdom must own the policy and the threatening kingdom must be its affected party");
@@ -3377,22 +3382,23 @@ internal static class Program
         string externalPolicyCancellation = ExtractMethod(
             customPolicy,
             "private bool TryCancelActiveKingdomPolicyInternal(");
-        Test.True(externalPolicyCancellation.Contains("candidate.RecordId ?? \"\", normalizedPolicyId", StringComparison.Ordinal)
-                  && externalPolicyCancellation.Contains("candidate.OwnerKingdomId ?? \"\", normalizedOwnerKingdomId", StringComparison.Ordinal)
-                  && externalPolicyCancellation.Contains("CompleteDynamicPolicyAbolition(matched, policy, cancellationReason)", StringComparison.Ordinal),
-            "the CustomPolicy bridge must match RecordId plus owner and reuse the complete abolition lifecycle");
+		Test.True(externalPolicyCancellation.Contains("candidate.RecordId ?? string.Empty).Trim(), normalizedPolicyId", StringComparison.Ordinal)
+				  && externalPolicyCancellation.Contains("candidate.OwnerKingdomId ?? string.Empty).Trim(), normalizedOwnerKingdomId", StringComparison.Ordinal)
+				  && externalPolicyCancellation.Contains("CompleteDynamicPolicyAbolition(", StringComparison.Ordinal)
+				  && externalPolicyCancellation.Contains("\"record:\" + normalizedPolicyId + \":external_cancel\"", StringComparison.Ordinal),
+			"the CustomPolicy bridge must match RecordId plus owner and reuse the complete abolition lifecycle");
         string completePolicyAbolition = ExtractMethod(
             customPolicy,
             "private void CompleteDynamicPolicyAbolition(");
-        int lifecycleSettlement = completePolicyAbolition.IndexOf("TryHandleConditionalPolicyAbolition(", StringComparison.Ordinal);
-        int externalStatusSettlement = completePolicyAbolition.IndexOf("UpdatePolicyAgendaStatusForExternal(", StringComparison.Ordinal);
-        int artifactSettlement = completePolicyAbolition.IndexOf("RecordPolicySnapshotForRecordId(", StringComparison.Ordinal);
-        int terminalRegistryCommit = completePolicyAbolition.IndexOf("StoreDynamicPolicy(data);", StringComparison.Ordinal);
-        Test.True(lifecycleSettlement >= 0
-                  && externalStatusSettlement > lifecycleSettlement
-                  && artifactSettlement > externalStatusSettlement
-                  && terminalRegistryCommit > artifactSettlement,
-            "dynamic abolition must commit its terminal registry state only after lifecycle, external status, and artifact side effects succeed");
+		int terminalRegistryCommit = completePolicyAbolition.IndexOf("StoreDynamicPolicy(data);", StringComparison.Ordinal);
+		int lifecycleSettlement = completePolicyAbolition.IndexOf("EndPolicyEffectsForAgendaAbolition(", StringComparison.Ordinal);
+		int externalStatusSettlement = completePolicyAbolition.IndexOf("UpdatePolicyAgendaStatusForExternal(", StringComparison.Ordinal);
+		int objectCleanup = completePolicyAbolition.IndexOf("TryUnregisterDynamicPolicyObject(", StringComparison.Ordinal);
+		Test.True(terminalRegistryCommit >= 0
+				  && lifecycleSettlement > terminalRegistryCommit
+				  && externalStatusSettlement > lifecycleSettlement
+				  && objectCleanup > externalStatusSettlement,
+			"dynamic abolition must persist the local terminal state, end modular effects, publish external status, and unregister the policy object in order");
 
         string fixedDeclarationContract = ExtractMethod(
             source,

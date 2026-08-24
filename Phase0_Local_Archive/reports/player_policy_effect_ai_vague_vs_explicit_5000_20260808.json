@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "executed_local_date": "2026-08-08",
+  "test": "player_policy_effect_ai_vague_vs_explicit_5000",
+  "api": {
+    "host": "api.deepseek.com",
+    "model": "deepseek-v4-pro",
+    "request_count": 2,
+    "retry_count": 0,
+    "max_tokens": 5000,
+    "temperature": 0.25,
+    "json_object_response_format": true,
+    "thinking_type": "disabled",
+    "api_key_recorded": false
+  },
+  "hypothesis": "Compare a vague original policy against an explicit original while keeping the same multi-effect numericIntent.",
+  "results": [
+    {
+      "case_id": "vague-original",
+      "success": true,
+      "http_status": 200,
+      "elapsed_ms": 2313.1,
+      "finish_reason": "stop",
+      "prompt_tokens": 859,
+      "completion_tokens": 88,
+      "cache_hit_tokens": 0,
+      "cache_miss_tokens": 859,
+      "parse_error": "",
+      "modules": [
+        "prosperityPerDay",
+        "constructionPerDay",
+        "foodPerDay",
+        "loyaltyPerDay",
+        "securityPerDay"
+      ],
+      "result": {
+        "impactSummary": "王国投资将持续推动繁荣、公共工程、粮食供给、民众忠诚和社会治安改善。",
+        "durationDays": 30,
+        "effects": [
+          {
+            "targets": [
+              "K0"
+            ],
+            "changes": {
+              "prosperityPerDay": 1,
+              "constructionPerDay": 2,
+              "foodPerDay": 1,
+              "loyaltyPerDay": 1,
+              "securityPerDay": 1
+            },
+            "reason": "百万投资推动王国整体发展"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "explicit-original",
+      "success": true,
+      "http_status": 200,
+      "elapsed_ms": 2611.8,
+      "finish_reason": "stop",
+      "prompt_tokens": 894,
+      "completion_tokens": 139,
+      "cache_hit_tokens": 0,
+      "cache_miss_tokens": 894,
+      "parse_error": "",
+      "modules": [
+        "prosperityPerDay",
+        "foodPerDay",
+        "loyaltyPerDay",
+        "securityPerDay",
+        "constructionPerDay"
+      ],
+      "result": {
+        "impactSummary": "王国投资将持续推动繁荣、公共工程、粮食供给、民众忠诚和社会治安改善。",
+        "durationDays": 30,
+        "effects": [
+          {
+            "targets": [
+              "K0"
+            ],
+            "changes": {
+              "prosperityPerDay": 1,
+              "foodPerDay": 1,
+              "loyaltyPerDay": 1,
+              "securityPerDay": 1,
+              "constructionPerDay": 1
+            },
+            "reason": "巨额投资用于公共工程、粮仓扩充、民众安抚和治安巡逻，全面提升王国城镇发展。"
+          }
+        ]
+      }
+    }
+  ]
+}

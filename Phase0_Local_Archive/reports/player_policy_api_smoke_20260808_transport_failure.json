@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "executed_local_date": "2026-08-08",
+  "test": "direct_player_policy_api_two_stage_smoke",
+  "policy": {
+    "name": "百万发展基金",
+    "text": "我出一百万为了王国发展。",
+    "scope": "kingdom",
+    "target_handles": [
+      "K0"
+    ]
+  },
+  "api": {
+    "host": "api.deepseek.com",
+    "model": "deepseek-v4-pro",
+    "json_object_response_format": true,
+    "main_max_tokens": 12000,
+    "postprocess_max_tokens": 1000,
+    "api_key_recorded": false
+  },
+  "attempts": [
+    {
+      "stage": "transport_probe_python",
+      "reached_http": false,
+      "result": "tls_handshake_failed",
+      "error": "SSL UNEXPECTED_EOF_WHILE_READING"
+    },
+    {
+      "stage": "transport_probe_curl",
+      "reached_http": true,
+      "result": "HTTP 401 without authentication, proving curl Schannel connectivity"
+    },
+    {
+      "stage": "main",
+      "transport": "curl-schannel",
+      "reached_http": true,
+      "result": "success",
+      "validated": {
+        "json_parsed": true,
+        "required_fields_present": true,
+        "forbidden_effect_fields_absent": true,
+        "positive_integer_duration": true
+      },
+      "usage": "not persisted before the following transport failure"
+    },
+    {
+      "stage": "postprocess",
+      "transport": "curl-schannel",
+      "reached_http": false,
+      "result": "tls_handshake_failed",
+      "error": "curl 35: schannel failed to receive handshake"
+    }
+  ],
+  "retry_count": 0,
+  "partial_effect_committed": false,
+  "conclusion": "Main-stage official DeepSeek JSON mode is verified. Postprocess model output, token usage and effect quality remain unverified because its only permitted attempt failed before HTTP."
+}

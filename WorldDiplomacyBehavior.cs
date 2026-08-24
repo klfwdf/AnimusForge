@@ -14124,9 +14124,14 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 		if (_storage.HistoryMemorySchemaVersion >= 3)
 		{
-			history.LastPolicyArtifactLedgerId =
+			string currentPolicyLedgerId =
 				(WorldDiplomacyPolicyContext.GetPublishedPolicyHistoryLedgerId() ?? "").Trim();
-			if (history.LastPolicyArtifactSequence > 0L)
+			if (!string.Equals(history.LastPolicyArtifactLedgerId, currentPolicyLedgerId, StringComparison.Ordinal))
+			{
+				history.LastPolicyArtifactLedgerId = currentPolicyLedgerId;
+				history.LastPolicyArtifactSequence = 0L;
+			}
+			else if (history.LastPolicyArtifactSequence > 0L)
 			{
 				RebuildPublishedPolicySignaturesThrough(history.LastPolicyArtifactSequence);
 			}

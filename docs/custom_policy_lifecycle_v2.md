@@ -1,5 +1,11 @@
 # 自定义政策效果与条件生命周期 v2
 
+> **历史资料（已停用）**
+>
+> 本文描述的是已经被新政策 Overlay 完全覆盖的旧生命周期实现，不是当前政策功能规范。
+> 当前代码不得据此恢复 `CustomPolicyBehavior.LifecycleV2.cs`、条件生命周期、志愿兵指标或其他旧政策路径；
+> 当前生产实现以仓库根目录 `PolicySystem/` 为权威来源；`dist/` 下的 FullSourceOverlay 仅为历史归档，并由 `AnimusForge.csproj` 的 `Compile Remove="dist\**\*.cs"` 排除。
+
 ## 兼容原则
 
 - 未返回 `lifecycle` 的政策继续使用原有 `durationDays + effects` 固定时长流程。

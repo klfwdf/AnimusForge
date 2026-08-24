@@ -876,6 +876,8 @@ public class MyBehavior : CampaignBehaviorBase
 		// AsyncLocal auxiliary-entity cache is no longer a reliable source.
 		public MentionedWorldEntities MentionedEntities = new MentionedWorldEntities();
 
+		public List<string> ExplicitMentionedKingdomIds = new List<string>();
+
 		public List<string> PreprocessRuleIds = new List<string>();
 
 		public List<string> PreprocessExcludedRuleIds = new List<string>();
@@ -31601,6 +31603,10 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			LogShoutPromptContextStage("entity_context_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "rules=" + string.Join(",", entityRetrievalRuleIds));
 			WorldEntityPromptContext entityPromptContext = WorldEntityRetrievalService.BuildPromptContext(mentionedEntities, BuildPlayerPublicDisplayNameForPrompt(entityContextHero, targetCharacter, targetAgentIndex), entityContextHero, includeResidentKingdomEntities, entityRetrievalRuleIds, input, includeResidentPlayerEntities);
+			shoutPromptContext.ExplicitMentionedKingdomIds = entityPromptContext?.ExplicitMentionedKingdomIds?
+				.Where(value => !string.IsNullOrWhiteSpace(value))
+				.Distinct(StringComparer.OrdinalIgnoreCase)
+				.ToList() ?? new List<string>();
 			if (entityPromptContext != null && entityPromptContext.HasContent)
 			{
 				if (!string.IsNullOrWhiteSpace(entityPromptContext.MainPromptBlock))

@@ -1,0 +1,624 @@
+{
+  "schema_version": 1,
+  "collected_utc": "2026-08-08T13:43:42.4337163Z",
+  "implementation_version": "1.4",
+  "models": {
+    "embedding_sha256": "69b353bb2aa2d09ab606ddbbc35437b03c843615a6bff28216a37fee7309c2aa",
+    "reranker_sha256": "15b9a8c3da82eddf263df571281166e00e9308fe19d077084b642ebfcaf06d2b"
+  },
+  "rules": {
+    "entity_recall_limit": 10,
+    "facet_recall_limit": 8,
+    "facet_group_limit": 2,
+    "minimum_logit_margin": 0.08,
+    "reranker_scores_are_probabilities": false,
+    "calibration_scores_all_facets": true
+  },
+  "cases": [
+    {
+      "case_id": "facet_northern_enemy_kingdom",
+      "query": "制裁北方敌国的商路",
+      "passed": true,
+      "missing_expected_facets": [],
+      "production_facet_ids": [
+        "relation_enemy",
+        "direction_north",
+        "relation_foreign",
+        "type_kingdom",
+        "direction_south",
+        "metric_fiefs_low",
+        "geography_border",
+        "metric_fiefs_high"
+      ],
+      "entity_top_id": "",
+      "expected_entity_id": "",
+      "ranked_facets": [
+        {
+          "id": "geography_border",
+          "score": 0.114668
+        },
+        {
+          "id": "direction_north",
+          "score": 0.10466
+        },
+        {
+          "id": "direction_south",
+          "score": 0.099235
+        },
+        {
+          "id": "metric_fiefs_high",
+          "score": 0.052691
+        },
+        {
+          "id": "relation_enemy",
+          "score": 0.036578
+        },
+        {
+          "id": "metric_fiefs_low",
+          "score": 0.027287
+        },
+        {
+          "id": "relation_foreign",
+          "score": 0.022939
+        },
+        {
+          "id": "type_kingdom",
+          "score": 3.7E-05
+        }
+      ],
+      "ranked_entities": []
+    },
+    {
+      "case_id": "facet_richest_domestic_clan",
+      "query": "向本国最富有家族的领地征税",
+      "passed": true,
+      "missing_expected_facets": [],
+      "production_facet_ids": [
+        "metric_wealth_high",
+        "type_ruler",
+        "metric_fiefs_high",
+        "relation_domestic",
+        "type_clan",
+        "relation_foreign",
+        "geography_border",
+        "distance_nearest"
+      ],
+      "entity_top_id": "",
+      "expected_entity_id": "",
+      "ranked_facets": [
+        {
+          "id": "metric_wealth_high",
+          "score": 0.592528
+        },
+        {
+          "id": "relation_domestic",
+          "score": 0.024906
+        },
+        {
+          "id": "metric_fiefs_high",
+          "score": 0.015426
+        },
+        {
+          "id": "type_clan",
+          "score": 0.014073
+        },
+        {
+          "id": "type_ruler",
+          "score": 0.004595
+        },
+        {
+          "id": "relation_foreign",
+          "score": 0.000564
+        },
+        {
+          "id": "geography_border",
+          "score": 0.000138
+        },
+        {
+          "id": "distance_nearest",
+          "score": 3.7E-05
+        }
+      ],
+      "ranked_entities": []
+    },
+    {
+      "case_id": "facet_border_granary_city",
+      "query": "增援边境粮仓城市",
+      "passed": true,
+      "missing_expected_facets": [],
+      "production_facet_ids": [
+        "geography_border",
+        "metric_food_high",
+        "metric_food_low",
+        "type_city",
+        "type_settlement",
+        "relation_domestic",
+        "relation_enemy",
+        "direction_south"
+      ],
+      "entity_top_id": "",
+      "expected_entity_id": "",
+      "ranked_facets": [
+        {
+          "id": "metric_food_high",
+          "score": 0.140203
+        },
+        {
+          "id": "geography_border",
+          "score": 0.084978
+        },
+        {
+          "id": "direction_south",
+          "score": 0.046562
+        },
+        {
+          "id": "type_city",
+          "score": 0.02255
+        },
+        {
+          "id": "type_settlement",
+          "score": 0.021254
+        },
+        {
+          "id": "relation_domestic",
+          "score": 0.009427
+        },
+        {
+          "id": "metric_food_low",
+          "score": 0.008479
+        },
+        {
+          "id": "relation_enemy",
+          "score": 0.006728
+        }
+      ],
+      "ranked_entities": []
+    },
+    {
+      "case_id": "facet_east_weakest_enemy",
+      "query": "援助附庸以东最弱的敌国",
+      "passed": true,
+      "missing_expected_facets": [],
+      "production_facet_ids": [
+        "metric_strength_low",
+        "metric_influence_low",
+        "relation_enemy",
+        "direction_east",
+        "relation_foreign",
+        "geography_border",
+        "direction_south",
+        "type_kingdom"
+      ],
+      "entity_top_id": "",
+      "expected_entity_id": "",
+      "ranked_facets": [
+        {
+          "id": "metric_strength_low",
+          "score": 0.726463
+        },
+        {
+          "id": "metric_influence_low",
+          "score": 0.224532
+        },
+        {
+          "id": "direction_east",
+          "score": 0.053046
+        },
+        {
+          "id": "relation_enemy",
+          "score": 0.05005
+        },
+        {
+          "id": "geography_border",
+          "score": 0.021178
+        },
+        {
+          "id": "relation_foreign",
+          "score": 0.019063
+        },
+        {
+          "id": "direction_south",
+          "score": 0.013522
+        },
+        {
+          "id": "type_kingdom",
+          "score": 3.7E-05
+        }
+      ],
+      "ranked_entities": []
+    },
+    {
+      "case_id": "entity_kingdom_typo",
+      "query": "封锁维兰迪亚王国的商路",
+      "passed": true,
+      "missing_expected_facets": [],
+      "production_facet_ids": [
+        "metric_fiefs_high",
+        "metric_prosperity_high",
+        "type_city",
+        "relation_domestic",
+        "geography_border",
+        "type_castle",
+        "direction_south",
+        "direction_west"
+      ],
+      "entity_top_id": "kingdom_vlandia",
+      "expected_entity_id": "kingdom_vlandia",
+      "ranked_facets": [
+        {
+          "id": "type_castle",
+          "score": 0.01556
+        },
+        {
+          "id": "direction_south",
+          "score": 0.014238
+        },
+        {
+          "id": "geography_border",
+          "score": 0.009936
+        },
+        {
+          "id": "relation_domestic",
+          "score": 0.007011
+        },
+        {
+          "id": "direction_west",
+          "score": 0.00636
+        },
+        {
+          "id": "metric_fiefs_high",
+          "score": 0.002931
+        },
+        {
+          "id": "metric_prosperity_high",
+          "score": 0.00093
+        },
+        {
+          "id": "type_city",
+          "score": 0.000241
+        }
+      ],
+      "ranked_entities": [
+        {
+          "id": "kingdom_vlandia",
+          "score": 0.001364
+        },
+        {
+          "id": "kingdom_aserai",
+          "score": 4.7E-05
+        },
+        {
+          "id": "kingdom_sturgia",
+          "score": 4.7E-05
+        },
+        {
+          "id": "kingdom_battania",
+          "score": 3.7E-05
+        }
+      ]
+    },
+    {
+      "case_id": "entity_settlement_typo",
+      "query": "修缮帕拉汶的城墙与粮仓",
+      "passed": true,
+      "missing_expected_facets": [],
+      "production_facet_ids": [
+        "metric_food_high",
+        "metric_food_low",
+        "type_settlement",
+        "type_castle",
+        "relation_domestic",
+        "geography_border",
+        "direction_south",
+        "direction_east"
+      ],
+      "entity_top_id": "town_pravend",
+      "expected_entity_id": "town_pravend",
+      "ranked_facets": [
+        {
+          "id": "metric_food_high",
+          "score": 0.166335
+        },
+        {
+          "id": "type_castle",
+          "score": 0.01664
+        },
+        {
+          "id": "metric_food_low",
+          "score": 0.010389
+        },
+        {
+          "id": "geography_border",
+          "score": 0.006288
+        },
+        {
+          "id": "type_settlement",
+          "score": 0.005854
+        },
+        {
+          "id": "relation_domestic",
+          "score": 0.003912
+        },
+        {
+          "id": "direction_east",
+          "score": 0.001884
+        },
+        {
+          "id": "direction_south",
+          "score": 0.001492
+        }
+      ],
+      "ranked_entities": [
+        {
+          "id": "town_pravend",
+          "score": 0.010919
+        },
+        {
+          "id": "town_galen",
+          "score": 0.00053
+        },
+        {
+          "id": "town_sargot",
+          "score": 0.000395
+        },
+        {
+          "id": "town_jaculan",
+          "score": 0.000168
+        }
+      ]
+    },
+    {
+      "case_id": "entity_clan_alias",
+      "query": "免除科尔提家族领地的赋税",
+      "passed": true,
+      "missing_expected_facets": [],
+      "production_facet_ids": [
+        "metric_fiefs_low",
+        "type_ruler",
+        "metric_fiefs_high",
+        "type_settlement",
+        "geography_border",
+        "relation_domestic",
+        "distance_nearest",
+        "direction_south"
+      ],
+      "entity_top_id": "clan_dey_corti",
+      "expected_entity_id": "clan_dey_corti",
+      "ranked_facets": [
+        {
+          "id": "metric_fiefs_low",
+          "score": 0.02424
+        },
+        {
+          "id": "metric_fiefs_high",
+          "score": 0.022278
+        },
+        {
+          "id": "type_settlement",
+          "score": 0.015953
+        },
+        {
+          "id": "relation_domestic",
+          "score": 0.009359
+        },
+        {
+          "id": "type_ruler",
+          "score": 0.001847
+        },
+        {
+          "id": "geography_border",
+          "score": 0.000875
+        },
+        {
+          "id": "direction_south",
+          "score": 0.000837
+        },
+        {
+          "id": "distance_nearest",
+          "score": 3.7E-05
+        }
+      ],
+      "ranked_entities": [
+        {
+          "id": "clan_dey_corti",
+          "score": 0.002489
+        },
+        {
+          "id": "clan_dey_meroc",
+          "score": 6.2E-05
+        },
+        {
+          "id": "clan_dey_arromanc",
+          "score": 3.8E-05
+        },
+        {
+          "id": "clan_dey_valant",
+          "score": 3.7E-05
+        }
+      ]
+    },
+    {
+      "case_id": "negative_generic_domestic_development",
+      "query": "发展本国经济并改善人民生活",
+      "passed": true,
+      "missing_expected_facets": [],
+      "production_facet_ids": [
+        "relation_domestic",
+        "metric_prosperity_high",
+        "type_kingdom",
+        "metric_prosperity_low",
+        "type_city",
+        "direction_south",
+        "relation_foreign",
+        "direction_east"
+      ],
+      "entity_top_id": "kingdom_aserai",
+      "expected_entity_id": "",
+      "ranked_facets": [
+        {
+          "id": "relation_domestic",
+          "score": 0.327586
+        },
+        {
+          "id": "metric_prosperity_high",
+          "score": 0.314208
+        },
+        {
+          "id": "metric_prosperity_low",
+          "score": 0.105266
+        },
+        {
+          "id": "relation_foreign",
+          "score": 0.007234
+        },
+        {
+          "id": "type_city",
+          "score": 0.00089
+        },
+        {
+          "id": "direction_east",
+          "score": 0.000397
+        },
+        {
+          "id": "type_kingdom",
+          "score": 0.000345
+        },
+        {
+          "id": "direction_south",
+          "score": 0.000278
+        }
+      ],
+      "ranked_entities": [
+        {
+          "id": "kingdom_aserai",
+          "score": 7E-05
+        },
+        {
+          "id": "kingdom_vlandia",
+          "score": 4.4E-05
+        },
+        {
+          "id": "kingdom_sturgia",
+          "score": 3.7E-05
+        },
+        {
+          "id": "kingdom_battania",
+          "score": 3.7E-05
+        }
+      ]
+    }
+  ],
+  "facet_calibration": [
+    {
+      "id": "direction_east",
+      "min_positive": 0.053046,
+      "max_negative": 0.000397,
+      "min_positive_logit": -2.882091,
+      "max_negative_logit": -7.830073,
+      "margin_logit": 4.947982,
+      "threshold": 0.004697,
+      "passed": true
+    },
+    {
+      "id": "direction_north",
+      "min_positive": 0.10466,
+      "max_negative": 0.000126,
+      "min_positive_logit": -2.146482,
+      "max_negative_logit": -8.977186,
+      "margin_logit": 6.830704,
+      "threshold": 0.003827,
+      "passed": true
+    },
+    {
+      "id": "geography_border",
+      "min_positive": 0.084978,
+      "max_negative": 0.000773,
+      "min_positive_logit": -2.376559,
+      "max_negative_logit": -7.163839,
+      "margin_logit": 4.78728,
+      "threshold": 0.008407,
+      "passed": true
+    },
+    {
+      "id": "metric_food_high",
+      "min_positive": 0.140203,
+      "max_negative": 0.003294,
+      "min_positive_logit": -1.813606,
+      "max_negative_logit": -5.712369,
+      "margin_logit": 3.898763,
+      "threshold": 0.022688,
+      "passed": true
+    },
+    {
+      "id": "metric_strength_low",
+      "min_positive": 0.726463,
+      "max_negative": 0.00159,
+      "min_positive_logit": 0.976749,
+      "max_negative_logit": -6.44234,
+      "margin_logit": 7.419089,
+      "threshold": 0.061066,
+      "passed": true
+    },
+    {
+      "id": "metric_wealth_high",
+      "min_positive": 0.592528,
+      "max_negative": 0.009599,
+      "min_positive_logit": 0.374427,
+      "max_negative_logit": -4.636473,
+      "margin_logit": 5.0109,
+      "threshold": 0.106118,
+      "passed": true
+    },
+    {
+      "id": "relation_domestic",
+      "min_positive": 0.024906,
+      "max_negative": 0.015884,
+      "min_positive_logit": -3.667444,
+      "max_negative_logit": -4.126442,
+      "margin_logit": 0.458998,
+      "threshold": 0.0199,
+      "passed": true
+    },
+    {
+      "id": "relation_enemy",
+      "min_positive": 0.036578,
+      "max_negative": 0.003792,
+      "min_positive_logit": -3.271031,
+      "max_negative_logit": -5.57111,
+      "margin_logit": 2.300079,
+      "threshold": 0.011879,
+      "passed": true
+    },
+    {
+      "id": "type_city",
+      "min_positive": 0.02255,
+      "max_negative": 0.00089,
+      "min_positive_logit": -3.769226,
+      "max_negative_logit": -7.023266,
+      "margin_logit": 3.25404,
+      "threshold": 0.004513,
+      "passed": true
+    },
+    {
+      "id": "type_clan",
+      "min_positive": 0.014073,
+      "max_negative": 0.000264,
+      "min_positive_logit": -4.249294,
+      "max_negative_logit": -8.237989,
+      "margin_logit": 3.988695,
+      "threshold": 0.001939,
+      "passed": true
+    }
+  ],
+  "entity_calibration": {
+    "min_positive": 0.001364,
+    "max_negative": 0.00053,
+    "min_positive_logit": -6.595812,
+    "max_negative_logit": -7.542481,
+    "margin_logit": 0.94667,
+    "threshold": 0.00085,
+    "passed": true
+  },
+  "passed": true,
+  "api_calls": 0
+}

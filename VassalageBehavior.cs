@@ -77,6 +77,44 @@ internal sealed class VassalageAgreement
 	}
 }
 
+internal enum VassalPolicyExternalCommitResultKind
+{
+	Committed = 0,
+	AlreadyCommitted = 1,
+	Unchanged = 2,
+	Conflict = 3,
+	Unknown = 4
+}
+
+internal sealed class VassalPolicyExternalCommitPlan
+{
+	internal string TransactionId { get; set; } = string.Empty;
+	internal string IdempotencyKey { get; set; } = string.Empty;
+	internal string AgreementId { get; set; } = string.Empty;
+	internal string VassalKingdomId { get; set; } = string.Empty;
+	internal int IndependenceBefore { get; set; }
+	internal int IndependenceExpected { get; set; }
+	internal bool BreakawayExpected { get; set; }
+	internal int PublicationCost { get; set; }
+	internal int QualityDelta { get; set; }
+}
+
+internal sealed class VassalPolicyExternalCommitObservation
+{
+	internal bool Observable { get; set; }
+	internal bool AgreementPresent { get; set; }
+	internal bool AgreementMatches { get; set; }
+	internal int IndependenceActual { get; set; }
+	internal bool BreakawayActual { get; set; }
+}
+
+internal sealed class VassalPolicyExternalCommitResult
+{
+	internal VassalPolicyExternalCommitResultKind Kind { get; set; }
+	internal VassalPolicyExternalCommitObservation Observation { get; set; }
+	internal string Error { get; set; } = string.Empty;
+}
+
 internal sealed class TributaryPaymentNoticeRecord
 {
 	public string NoticeId { get; set; } = "";
@@ -894,6 +932,39 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		after = 0;
 		brokeAway = false;
 		return Instance?.TryApplyDirectVassalPolicyIndependence(vassalKingdomId, publicationCost, qualityDelta, policyName, out before, out after, out brokeAway) == true;
+	}
+
+	internal static bool TryPrepareDirectVassalPolicyIndependenceForExternal(
+		string transactionId,
+		string vassalKingdomId,
+		int publicationCost,
+		int qualityDelta,
+		out VassalPolicyExternalCommitPlan plan,
+		out string error)
+	{
+		plan = null;
+		error = string.Empty;
+		return Instance?.TryPrepareDirectVassalPolicyIndependence(
+			transactionId, vassalKingdomId, publicationCost, qualityDelta, out plan, out error) == true;
+	}
+
+	internal static VassalPolicyExternalCommitObservation ObserveDirectVassalPolicyIndependenceForExternal(
+		VassalPolicyExternalCommitPlan plan)
+	{
+		return Instance?.ObserveDirectVassalPolicyIndependence(plan)
+			?? new VassalPolicyExternalCommitObservation();
+	}
+
+	internal static VassalPolicyExternalCommitResult CommitDirectVassalPolicyIndependenceForExternal(
+		VassalPolicyExternalCommitPlan plan,
+		string policyName)
+	{
+		return Instance?.CommitDirectVassalPolicyIndependence(plan, policyName)
+			?? new VassalPolicyExternalCommitResult
+			{
+				Kind = VassalPolicyExternalCommitResultKind.Unknown,
+				Error = "VassalageBehavior is unavailable"
+			};
 	}
 
 	internal static bool ShouldAllowCampaignLogNotification(LogEntry log)
@@ -5238,6 +5309,152 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			return false;
 		}
 		return TryGetSubjectIndependenceStatus(agreement, out independence, out breakawayThreshold, out rulerRelation, out rulerName);
+	}
+
+	private bool TryPrepareDirectVassalPolicyIndependence(
+		string transactionId,
+		string vassalKingdomId,
+		int publicationCost,
+		int qualityDelta,
+		out VassalPolicyExternalCommitPlan plan,
+		out string error)
+	{
+		plan = null;
+		error = string.Empty;
+		string normalizedTransactionId = (transactionId ?? string.Empty).Trim();
+		string id = (vassalKingdomId ?? string.Empty).Trim();
+		if (normalizedTransactionId.Length == 0)
+		{
+			error = "external transaction id is required";
+			return false;
+		}
+		if (!_agreementsByVassalId.TryGetValue(id, out VassalageAgreement agreement)
+			|| agreement == null
+			|| string.IsNullOrWhiteSpace(agreement.AgreementId)
+			|| NormalizeVassalageType(agreement.Type) != AfVassalageType.Vassal
+			|| !TryGetSubjectIndependenceStatus(agreement, out int before, out int threshold, out _, out _))
+		{
+			error = "direct vassal agreement is unavailable";
+			return false;
+		}
+		int normalizedQuality = NormalizeVassalPolicyIndependenceDelta(qualityDelta);
+		int expected = ApplySubjectIndependenceChange(before, publicationCost, normalizedQuality);
+		plan = new VassalPolicyExternalCommitPlan
+		{
+			TransactionId = normalizedTransactionId,
+			IdempotencyKey = normalizedTransactionId + ":" + agreement.AgreementId,
+			AgreementId = agreement.AgreementId,
+			VassalKingdomId = id,
+			IndependenceBefore = before,
+			IndependenceExpected = expected,
+			BreakawayExpected = expected >= threshold,
+			PublicationCost = Math.Max(0, publicationCost),
+			QualityDelta = normalizedQuality
+		};
+		return true;
+	}
+
+	private VassalPolicyExternalCommitObservation ObserveDirectVassalPolicyIndependence(
+		VassalPolicyExternalCommitPlan plan)
+	{
+		VassalPolicyExternalCommitObservation observation = new VassalPolicyExternalCommitObservation();
+		if (plan == null || string.IsNullOrWhiteSpace(plan.VassalKingdomId))
+		{
+			return observation;
+		}
+		if (!_agreementsByVassalId.TryGetValue(plan.VassalKingdomId, out VassalageAgreement agreement)
+			|| agreement == null)
+		{
+			observation.Observable = true;
+			observation.AgreementPresent = false;
+			observation.BreakawayActual = true;
+			observation.IndependenceActual = plan.IndependenceExpected;
+			return observation;
+		}
+		observation.AgreementPresent = true;
+		observation.AgreementMatches = string.Equals(
+			agreement.AgreementId, plan.AgreementId, StringComparison.OrdinalIgnoreCase);
+		if (!observation.AgreementMatches
+			|| !TryGetSubjectIndependenceStatus(agreement, out int actual, out _, out _, out _))
+		{
+			return observation;
+		}
+		observation.Observable = true;
+		observation.IndependenceActual = actual;
+		return observation;
+	}
+
+	private VassalPolicyExternalCommitResult CommitDirectVassalPolicyIndependence(
+		VassalPolicyExternalCommitPlan plan,
+		string policyName)
+	{
+		if (plan == null
+			|| string.IsNullOrWhiteSpace(plan.TransactionId)
+			|| string.IsNullOrWhiteSpace(plan.IdempotencyKey)
+			|| string.IsNullOrWhiteSpace(plan.AgreementId)
+			|| string.IsNullOrWhiteSpace(plan.VassalKingdomId))
+		{
+			return new VassalPolicyExternalCommitResult
+			{
+				Kind = VassalPolicyExternalCommitResultKind.Unknown,
+				Error = "external vassal commit plan is incomplete"
+			};
+		}
+		VassalPolicyExternalCommitObservation before = ObserveDirectVassalPolicyIndependence(plan);
+		if (before.Observable && ((plan.BreakawayExpected && before.BreakawayActual)
+			|| (!plan.BreakawayExpected && before.AgreementMatches
+				&& before.IndependenceActual == plan.IndependenceExpected)))
+		{
+			return new VassalPolicyExternalCommitResult
+			{
+				Kind = VassalPolicyExternalCommitResultKind.AlreadyCommitted,
+				Observation = before
+			};
+		}
+		if (!before.Observable || !before.AgreementMatches
+			|| before.IndependenceActual != plan.IndependenceBefore)
+		{
+			return new VassalPolicyExternalCommitResult
+			{
+				Kind = before.Observable ? VassalPolicyExternalCommitResultKind.Conflict : VassalPolicyExternalCommitResultKind.Unknown,
+				Observation = before,
+				Error = "external vassal state no longer matches the prepared snapshot"
+			};
+		}
+		try
+		{
+			bool applied = TryApplyDirectVassalPolicyIndependence(
+				plan.VassalKingdomId,
+				plan.PublicationCost,
+				plan.QualityDelta,
+				policyName,
+				out _, out _, out _);
+			VassalPolicyExternalCommitObservation after = ObserveDirectVassalPolicyIndependence(plan);
+			bool committed = after.Observable && ((plan.BreakawayExpected && after.BreakawayActual)
+				|| (!plan.BreakawayExpected && after.AgreementMatches
+					&& after.IndependenceActual == plan.IndependenceExpected));
+			return new VassalPolicyExternalCommitResult
+			{
+				Kind = committed
+					? VassalPolicyExternalCommitResultKind.Committed
+					: applied ? VassalPolicyExternalCommitResultKind.Conflict : VassalPolicyExternalCommitResultKind.Unchanged,
+				Observation = after,
+				Error = committed ? string.Empty : "external vassal mutation result does not match its prepared contract"
+			};
+		}
+		catch (Exception ex)
+		{
+			VassalPolicyExternalCommitObservation after = ObserveDirectVassalPolicyIndependence(plan);
+			bool committed = after.Observable && ((plan.BreakawayExpected && after.BreakawayActual)
+				|| (!plan.BreakawayExpected && after.AgreementMatches
+					&& after.IndependenceActual == plan.IndependenceExpected));
+			return new VassalPolicyExternalCommitResult
+			{
+				Kind = committed ? VassalPolicyExternalCommitResultKind.Committed : VassalPolicyExternalCommitResultKind.Unknown,
+				Observation = after,
+				Error = ex.GetType().Name + ": " + ex.Message
+			};
+		}
 	}
 
 	private bool TryApplyDirectVassalPolicyIndependence(string vassalKingdomId, int publicationCost, int qualityDelta, string policyName, out int before, out int after, out bool brokeAway)

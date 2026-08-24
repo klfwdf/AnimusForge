@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using AnimusForge.PolicyEffects;
 using System.IO;
 using System.Text;
 using Bannerlord.UIExtenderEx;
@@ -757,6 +758,7 @@ public class SubModule : MBSubModuleBase
 		EncyclopediaEntityLinkNavigationCoordinator.ProcessPending();
 		PlayerNotorietyPopup.ProcessDeferredCloseIfNeeded();
 		PlayerRpForgePopup.ProcessDeferredCloseIfNeeded();
+		PolicyEffectModuleManagerPopup.ProcessDeferredCloseIfNeeded();
 		AnimusForgeConversationHistoryLogPopup.OnApplicationTick();
 		AnimusForgeNativeConversationOverlay.OnApplicationTick();
 		AiErrorAnalysisInquiry.OnApplicationTick();
@@ -796,6 +798,7 @@ public class SubModule : MBSubModuleBase
 			RunWatchedTickPhase("SubModule.EncyclopediaEntityLinkNavigationCoordinator.ProcessPending", () => EncyclopediaEntityLinkNavigationCoordinator.ProcessPending());
 			RunWatchedTickPhase("SubModule.PlayerNotorietyPopup.ProcessDeferredCloseIfNeeded", () => PlayerNotorietyPopup.ProcessDeferredCloseIfNeeded());
 			RunWatchedTickPhase("SubModule.PlayerRpForgePopup.ProcessDeferredCloseIfNeeded", () => PlayerRpForgePopup.ProcessDeferredCloseIfNeeded());
+			RunWatchedTickPhase("SubModule.PolicyEffectModuleManagerPopup.ProcessDeferredCloseIfNeeded", () => PolicyEffectModuleManagerPopup.ProcessDeferredCloseIfNeeded());
 			RunWatchedTickPhase("SubModule.AnimusForgeConversationHistoryLogPopup.OnApplicationTick", () => AnimusForgeConversationHistoryLogPopup.OnApplicationTick());
 			RunWatchedTickPhase("SubModule.AnimusForgeNativeConversationOverlay.OnApplicationTick", () => AnimusForgeNativeConversationOverlay.OnApplicationTick());
 			RunWatchedTickPhase("SubModule.AiErrorAnalysisInquiry.OnApplicationTick", () => AiErrorAnalysisInquiry.OnApplicationTick());

@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "executed_local_date": "2026-08-08",
+  "test": "authorized_standalone_postprocess_followup",
+  "policy": {
+    "name": "百万发展基金",
+    "text": "我出一百万为了王国发展。",
+    "scope": "kingdom",
+    "target_handles": [
+      "K0"
+    ]
+  },
+  "api": {
+    "host": "api.deepseek.com",
+    "model": "deepseek-v4-pro",
+    "transport": "curl-schannel-http1.1-tls1.2-via-env-proxy",
+    "max_tokens": 1000,
+    "json_object_response_format": true,
+    "api_key_recorded": false
+  },
+  "request": {
+    "authorized_attempt_count": 1,
+    "retry_count": 0,
+    "reached_http": false,
+    "result": "tls_handshake_failed",
+    "error": "curl 35: schannel failed to receive handshake"
+  },
+  "proxy_observation": {
+    "http_proxy": "127.0.0.1:7890",
+    "https_proxy": "127.0.0.1:7890",
+    "all_proxy": "127.0.0.1:7890",
+    "credentials_recorded": false,
+    "winhttp_proxy": "direct"
+  },
+  "production_transport_difference": "The smoke harness starts a separate curl process for each stage and therefore opens a new TLS tunnel. Production PolicyLlmClient uses DuelSettings.GlobalClient, a shared HttpClient that may reuse an established connection.",
+  "partial_effect_committed": false,
+  "conclusion": "The follow-up request failed before HTTP, so no prompt or JSON validation ran. Because the earlier main request reached the same host successfully and the shell transport is routed through a local environment proxy, the strongest current inference is intermittent TLS tunneling or upstream-route failure on the local proxy path, not postprocess prompt content."
+}

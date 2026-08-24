@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "executed_local_date": "2026-08-08",
+  "test": "production_equivalent_postprocess_12000",
+  "policy": {
+    "name": "??????",
+    "text": "????????????",
+    "scope": "kingdom",
+    "target_handles": [
+      "K0"
+    ]
+  },
+  "api": {
+    "host": "api.deepseek.com",
+    "model": "deepseek-v4-pro",
+    "transport": "curl-schannel-http1.1-tls1.2-via-env-proxy",
+    "request_count": 1,
+    "retry_count": 0,
+    "json_object_response_format": true,
+    "thinking_type": "disabled",
+    "max_tokens": 12000,
+    "api_key_recorded": false
+  },
+  "partial_effect_committed": false,
+  "elapsed_ms": 3256.1,
+  "request": {
+    "reached_http": true,
+    "http_status": 200,
+    "result": "success"
+  },
+  "usage": {
+    "prompt_tokens": 594,
+    "completion_tokens": 104,
+    "cache_hit_tokens": 512,
+    "cache_miss_tokens": 82
+  },
+  "finish_reason": "stop",
+  "returned_duration": 30,
+  "duration_corrected": false,
+  "outside_recall_modules": [],
+  "result": {
+    "impactSummary": "政策旨在提升王国整体繁荣，通过改善贸易与生产条件，使所有城镇每日繁荣稳步增长。",
+    "durationDays": 30,
+    "effects": [
+      {
+        "targets": [
+          "K0"
+        ],
+        "changes": {
+          "prosperityPerDay": 1
+        },
+        "reason": "政策促进王国全境商业与生产活动，每日为每座城镇带来少量繁荣提升。"
+      }
+    ]
+  },
+  "validation": {
+    "json_parsed": true,
+    "effects_array": true,
+    "targets_in_scope": true,
+    "modules_registered": true,
+    "finite_values": true,
+    "no_duplicate_target_module": true
+  }
+}

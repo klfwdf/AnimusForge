@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "executed_local_date": "2026-08-08",
+  "test": "policy_target_crl_precision_legal_handle_selection",
+  "api": {
+    "host": "api.deepseek.com",
+    "model": "deepseek-v4-pro",
+    "request_count": 1,
+    "retry_count": 0,
+    "max_tokens": 2000,
+    "temperature": 0.25,
+    "json_object_response_format": true,
+    "thinking_type": "disabled",
+    "api_key_recorded": false,
+    "prompt_recorded": false,
+    "response_content_recorded": false
+  },
+  "http_status": 200,
+  "elapsed_ms": 5720.0,
+  "finish_reason": "stop",
+  "usage": {
+    "prompt_tokens": 1004,
+    "completion_tokens": 404,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 1004
+  },
+  "request_error": "",
+  "cases": [
+    {
+      "case_id": "clan_typo_mechanical_vs_background",
+      "passed": true,
+      "selected_targets": [
+        "C1"
+      ],
+      "expected_targets": [
+        "C1"
+      ],
+      "errors": []
+    },
+    {
+      "case_id": "ruler_typo_family_target",
+      "passed": true,
+      "selected_targets": [
+        "R1"
+      ],
+      "expected_targets": [
+        "R1"
+      ],
+      "errors": []
+    },
+    {
+      "case_id": "city_typo_vs_named_village",
+      "passed": true,
+      "selected_targets": [
+        "L1"
+      ],
+      "expected_targets": [
+        "L1"
+      ],
+      "errors": []
+    },
+    {
+      "case_id": "castle_typo_vs_bound_village",
+      "passed": true,
+      "selected_targets": [
+        "L1"
+      ],
+      "expected_targets": [
+        "L1"
+      ],
+      "errors": []
+    },
+    {
+      "case_id": "village_typo_vs_bound_castle",
+      "passed": true,
+      "selected_targets": [
+        "L1"
+      ],
+      "expected_targets": [
+        "L1"
+      ],
+      "errors": []
+    },
+    {
+      "case_id": "richest_clan_materialized_top1",
+      "passed": true,
+      "selected_targets": [
+        "C1"
+      ],
+      "expected_targets": [
+        "C1"
+      ],
+      "errors": []
+    },
+    {
+      "case_id": "border_granary_city_materialized_top1",
+      "passed": true,
+      "selected_targets": [
+        "L1"
+      ],
+      "expected_targets": [
+        "L1"
+      ],
+      "errors": []
+    },
+    {
+      "case_id": "named_contacts_without_mechanical_effect",
+      "passed": true,
+      "selected_targets": [],
+      "expected_targets": [],
+      "errors": []
+    }
+  ],
+  "passed": true
+}
