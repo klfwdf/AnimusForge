@@ -13918,12 +13918,27 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	// Builds a UI-only RichText copy after the raw reply has already completed its LLM/history/TTS pipeline.
+	// Builds a UI-only RichText copy from a completed main/final reply; callers must never pass incomplete stream fragments.
 	public static string FormatNativeConversationDisplayTextForExternal(string rawVisibleText)
 	{
 		try
 		{
 			TryResolveNativeConversationTarget(out var targetHero, out var targetCharacter, out var _);
+			return FormatNativeConversationDisplayTextForExternal(rawVisibleText, targetHero, targetCharacter);
+		}
+		catch (Exception ex)
+		{
+			// A display-only failure must fall back to safe plain text and never invalidate a completed dialogue turn.
+			Logger.LogTrace("NativeConversation", "[WARN] Could not format encyclopedia links for a visible reply: " + ex.Message);
+			return EncyclopediaEntityLinkFormatter.SanitizeUntrustedRichText(rawVisibleText);
+		}
+	}
+
+	// The completed-reply callback carries its original target so a later action cannot redirect NPC/玩家 links before the UI formats them on the main thread.
+	public static string FormatNativeConversationDisplayTextForExternal(string rawVisibleText, Hero targetHero, CharacterObject targetCharacter)
+	{
+		try
+		{
 			return EncyclopediaEntityLinkFormatter.FormatNativeConversationText(rawVisibleText, targetHero, targetCharacter);
 		}
 		catch (Exception ex)
@@ -16251,23 +16266,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	public static Task<string> SubmitNativeConversationTextForExternalAsync(string playerText, Action<string> onStreamText, string currentDialogTextOverride, Action<string> onPostprocessStarted)
 	{
-		ShoutBehavior currentInstance = CurrentInstance;
-		if (currentInstance == null)
-		{
-			return Task.FromResult("AnimusForge ShoutBehavior is not ready.");
-		}
-		if (PlayerEncounterCompat.IsInPostBattleResultFlow())
-		{
-			return Task.FromResult("");
-		}
-		return Task.Run(async delegate
-		{
-			SynchronizationContext.SetSynchronizationContext(null);
-			return await currentInstance.SubmitNativeConversationTextInternalAsync(playerText, onStreamText, currentDialogTextOverride, onPostprocessStarted).ConfigureAwait(false);
-		});
+		return SubmitNativeConversationTextForExternalAsync(playerText, onStreamText, currentDialogTextOverride, onPostprocessStarted, null);
 	}
 
-	public static Task<string> SubmitNativeConversationNpcInitiatedOpeningForExternalAsync(Action<string> onStreamText, string currentDialogTextOverride, Action<string> onPostprocessStarted)
+	// The main-reply callback is deliberately separate from postprocess start so UI can present a completed reply while actions still resolve.
+	public static Task<string> SubmitNativeConversationTextForExternalAsync(string playerText, Action<string> onStreamText, string currentDialogTextOverride, Action<string> onPostprocessStarted, Action<string, Hero, CharacterObject> onMainReplyReady)
 	{
 		ShoutBehavior currentInstance = CurrentInstance;
 		if (currentInstance == null)
@@ -16281,7 +16284,31 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return Task.Run(async delegate
 		{
 			SynchronizationContext.SetSynchronizationContext(null);
-			return await currentInstance.SubmitNativeConversationTextInternalAsync("", onStreamText, currentDialogTextOverride, onPostprocessStarted, npcInitiatedOpening: true).ConfigureAwait(false);
+			return await currentInstance.SubmitNativeConversationTextInternalAsync(playerText, onStreamText, currentDialogTextOverride, onPostprocessStarted, onMainReplyReady).ConfigureAwait(false);
+		});
+	}
+
+	public static Task<string> SubmitNativeConversationNpcInitiatedOpeningForExternalAsync(Action<string> onStreamText, string currentDialogTextOverride, Action<string> onPostprocessStarted)
+	{
+		return SubmitNativeConversationNpcInitiatedOpeningForExternalAsync(onStreamText, currentDialogTextOverride, onPostprocessStarted, null);
+	}
+
+	// Keep the existing three-argument entry point intact while exposing the same early completed-reply signal for NPC openings.
+	public static Task<string> SubmitNativeConversationNpcInitiatedOpeningForExternalAsync(Action<string> onStreamText, string currentDialogTextOverride, Action<string> onPostprocessStarted, Action<string, Hero, CharacterObject> onMainReplyReady)
+	{
+		ShoutBehavior currentInstance = CurrentInstance;
+		if (currentInstance == null)
+		{
+			return Task.FromResult("AnimusForge ShoutBehavior is not ready.");
+		}
+		if (PlayerEncounterCompat.IsInPostBattleResultFlow())
+		{
+			return Task.FromResult("");
+		}
+		return Task.Run(async delegate
+		{
+			SynchronizationContext.SetSynchronizationContext(null);
+			return await currentInstance.SubmitNativeConversationTextInternalAsync("", onStreamText, currentDialogTextOverride, onPostprocessStarted, onMainReplyReady, npcInitiatedOpening: true).ConfigureAwait(false);
 		});
 	}
 
@@ -18171,7 +18198,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private async Task<string> SubmitNativeConversationTextInternalAsync(string playerText, Action<string> onStreamText = null, string currentDialogTextOverride = null, Action<string> onPostprocessStarted = null, bool npcInitiatedOpening = false)
+	private async Task<string> SubmitNativeConversationTextInternalAsync(string playerText, Action<string> onStreamText = null, string currentDialogTextOverride = null, Action<string> onPostprocessStarted = null, Action<string, Hero, CharacterObject> onMainReplyReady = null, bool npcInitiatedOpening = false)
 	{
 		Stopwatch nativeTurnSw = Stopwatch.StartNew();
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
@@ -18486,6 +18513,16 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			RollbackNativeConversationPendingPlayerHistory(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, npc, nativePendingPlayerHistoryEventSequence, reason);
 			Logger.Log("ShoutBehavior", "[NativeConversation] skipped postprocess because target is unavailable target=" + nativeTargetLog + " agentIndex=" + nativeTargetAgentIndex + " reason=" + reason);
 			return "";
+		}
+		try
+		{
+			// Only the completed, normalized main reply is safe to linkify; streamed fragments remain plain text.
+			onMainReplyReady?.Invoke(nativeMainVisibleForTts, targetHero, targetCharacter);
+			Logger.Log("Logic", "[NativePerf] main_reply_display_ready target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " visibleLen=" + nativeMainVisibleForTts.Length + " elapsedMs=" + Math.Round(nativeTurnSw.Elapsed.TotalMilliseconds, 2));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ShoutBehavior", "[NativeConversation] main-reply-ready callback failed: " + ex.Message);
 		}
 		try
 		{
@@ -24508,6 +24545,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			if (string.IsNullOrWhiteSpace(text3))
 			{
 				continue;
+			}
+			if (text3.StartsWith("[ACTION:C_J_K:", StringComparison.OrdinalIgnoreCase))
+			{
+				// Accept only this provider-side envelope alias, then reuse the existing ID whitelist below.
+				text3 = "[A:C_J_K:" + text3.Substring("[ACTION:C_J_K:".Length);
 			}
 			if (string.Equals(text3, "[A:H_J_P_P_C&L]", StringComparison.OrdinalIgnoreCase))
 			{

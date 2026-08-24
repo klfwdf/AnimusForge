@@ -1866,6 +1866,8 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private List<EventRecordEntry> _eventRecordEntries = new List<EventRecordEntry>();
 	private long _publishedWorldWeeklyHistoryRevision = 1L;
+	// Runtime-only revision lets the open world-message timeline detect weekly additions without resanitizing this list every frame.
+	private long _worldMessageWeeklyTimelineRevision = 1L;
 
 	private string _eventRecordJsonStorage = "";
 
@@ -7074,6 +7076,8 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 				eventRecordEntry.ShortSummary = text3;
 				eventRecordEntry.PromptText = BuildWeekZeroPromptText(text2, llmGenerated: true);
+				// The generated short text replaces the list/detail preview while the timeline may already be open.
+				NotifyWorldMessageWeeklyTimelineChanged();
 				taskCompletionSource.TrySetResult(true);
 			}
 			catch (Exception ex)
@@ -7282,6 +7286,8 @@ public class MyBehavior : CampaignBehaviorBase
 			FreezeWatchdog.Mark("WeeklyPrompt.UpsertWeek0.sanitize_done", "kind=" + (eventKind ?? "") + " kingdom=" + (kingdomId ?? "") + " entries=" + (_eventRecordEntries?.Count ?? 0));
 		}
 		NotifyPublishedWorldWeeklyProductChanged(previousPublishedProductState, publishedProductEntry);
+		// Week-zero entries are visible in the same timeline as normal weekly reports.
+		NotifyWorldMessageWeeklyTimelineChanged();
 		TryQueueWeekZeroShortSummaryGeneration(eventRecordEntry, text6);
 		FreezeWatchdog.Mark("WeeklyPrompt.UpsertWeek0.queue_done", "kind=" + (eventKind ?? "") + " kingdom=" + (kingdomId ?? "") + " entries=" + (_eventRecordEntries?.Count ?? 0));
 		return true;
@@ -38516,6 +38522,8 @@ public class MyBehavior : CampaignBehaviorBase
 			_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
 			EventRecordEntry updatedEntry = FindWeeklyReportRecordById(storedEntry.EventId);
 			NotifyPublishedWorldWeeklyProductChanged(previousPublishedProductState, updatedEntry);
+			// Developer edits use the same projected text, so refresh an open timeline without polling record contents.
+			NotifyWorldMessageWeeklyTimelineChanged();
 			InformationManager.DisplayMessage(new InformationMessage("周报标题已更新。"));
 			OpenDevEventRecordDetail(updatedEntry ?? entry, returnPage);
 		}, delegate
@@ -38539,6 +38547,8 @@ public class MyBehavior : CampaignBehaviorBase
 			_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
 			EventRecordEntry updatedEntry = FindWeeklyReportRecordById(storedEntry.EventId);
 			NotifyPublishedWorldWeeklyProductChanged(previousPublishedProductState, updatedEntry);
+			// Developer edits use the same projected text, so refresh an open timeline without polling record contents.
+			NotifyWorldMessageWeeklyTimelineChanged();
 			InformationManager.DisplayMessage(new InformationMessage("周报正文已更新。"));
 			OpenDevEventRecordDetail(updatedEntry ?? entry, returnPage);
 		}, delegate
@@ -38798,6 +38808,8 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				Interlocked.Increment(ref _publishedWorldWeeklyHistoryRevision);
 			}
+			// Imported report records may add timeline entries while the archive window is already open.
+			NotifyWorldMessageWeeklyTimelineChanged();
 		}
 	}
 
@@ -44124,6 +44136,26 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static long GetWorldMessageWeeklyTimelineRevisionForExternal()
+	{
+		try
+		{
+			// This is a constant-time runtime signal for an already open UI; it does not serialize or traverse report records.
+			MyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			return behavior == null ? 0L : Math.Max(0L, Volatile.Read(ref behavior._worldMessageWeeklyTimelineRevision));
+		}
+		catch
+		{
+			return 0L;
+		}
+	}
+
+	private void NotifyWorldMessageWeeklyTimelineChanged()
+	{
+		// All mutation sites call this after publishing a visible weekly record or changing its displayed text.
+		Interlocked.Increment(ref _worldMessageWeeklyTimelineRevision);
+	}
+
 	private static string BuildPublishedWorldWeeklyProductState(EventRecordEntry entry)
 	{
 		if (entry == null
@@ -44419,6 +44451,8 @@ public class MyBehavior : CampaignBehaviorBase
 			eventRecordEntry.Materials = CloneWeeklyReportMaterials(eventRecordEntry.Materials);
 			_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
 			NotifyPublishedWorldWeeklyProductChanged(previousPublishedProductState, FindWeeklyReportRecordById(eventRecordEntry.EventId));
+			// The completed full report changes the selected timeline item's body and action state.
+			NotifyWorldMessageWeeklyTimelineChanged();
 			InformationManager.HideInquiry();
 			InformationManager.DisplayMessage(new InformationMessage("完整周报已生成。"));
 			return true;
@@ -46272,6 +46306,8 @@ public class MyBehavior : CampaignBehaviorBase
 			publishedProductEntry = FindWeeklyReportRecordById(text3) ?? eventRecordEntry;
 		}
 		NotifyPublishedWorldWeeklyProductChanged(previousPublishedProductState, publishedProductEntry);
+		// A completed weekly upsert can append a new short report, so wake only the active timeline projection.
+		NotifyWorldMessageWeeklyTimelineChanged();
 	}
 
 	private List<EventSourceMaterialEntry> GetWeeklyEventSourceMaterialsForBuild()

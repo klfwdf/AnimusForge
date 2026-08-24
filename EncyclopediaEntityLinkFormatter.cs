@@ -45,6 +45,88 @@ internal static class EncyclopediaEntityLinkFormatter
 		return new DisplaySession();
 	}
 
+	// A live reply owns one snapshot, then matches the entity catalog only against the newly extended tail between stream updates.
+	internal static StreamingDisplaySession CreateStreamingDisplaySession()
+	{
+		return new StreamingDisplaySession();
+	}
+
+	internal sealed class StreamingDisplaySession
+	{
+		private readonly DisplaySession _descriptorSnapshot;
+
+		private bool _hasRenderedText;
+
+		private string _lastPlainText = string.Empty;
+
+		private string _lastFormattedText = string.Empty;
+
+		private string _lastRawText = string.Empty;
+
+		private Hero _lastTargetHero;
+
+		private CharacterObject _lastTargetCharacter;
+
+		internal StreamingDisplaySession()
+		{
+			// This snapshot is intentionally created once per reply, never once per stream fragment.
+			_descriptorSnapshot = new DisplaySession();
+		}
+
+		// The overlay calls this only on its main-thread action queue, so the session needs no locks or cross-thread copies.
+		internal string FormatStreamingText(string rawText, Hero conversationTargetHero, CharacterObject conversationTargetCharacter)
+		{
+			string rawTextValue = rawText ?? string.Empty;
+			bool contextChanged = !_hasRenderedText
+				|| !object.ReferenceEquals(_lastTargetHero, conversationTargetHero)
+				|| !object.ReferenceEquals(_lastTargetCharacter, conversationTargetCharacter);
+			if (!contextChanged && string.Equals(rawTextValue, _lastRawText, StringComparison.Ordinal))
+			{
+				// Providers may repeat an identical preview at completion; returning the cached RichText avoids all repeat work.
+				return _lastFormattedText;
+			}
+			bool isRawAppend = !contextChanged && rawTextValue.StartsWith(_lastRawText, StringComparison.Ordinal);
+			// Sanitization is character-local, so a verified raw append can reuse earlier plain text and sanitize only the new suffix.
+			string text = isRawAppend
+				? string.Concat(_lastPlainText, SanitizeUntrustedRichText(rawTextValue.Substring(_lastRawText.Length)))
+				: SanitizeUntrustedRichText(rawTextValue);
+			if (string.IsNullOrWhiteSpace(text) || text.IndexOf(LinkPlaceholderStart) >= 0 || text.IndexOf(LinkPlaceholderEnd) >= 0)
+			{
+				RememberRenderedText(rawTextValue, text, text, conversationTargetHero, conversationTargetCharacter);
+				return text;
+			}
+
+			// A provider-side normalizer can revise an earlier preview; only a true append may reuse existing RichText safely.
+			if (isRawAppend)
+			{
+				string appendedText = text.Substring(_lastPlainText.Length);
+				int tailStart = Math.Max(0, _lastPlainText.Length - (_descriptorSnapshot.MaximumLinkNameLength - 1));
+				if (!_descriptorSnapshot.ContainsNewLinkCandidate(text, _lastPlainText.Length, tailStart, conversationTargetHero, conversationTargetCharacter))
+				{
+					// No complete name crossed the append boundary, so preserve trusted prior links and append only safe plain text.
+					string appendedDisplayText = string.Concat(_lastFormattedText, appendedText);
+					RememberRenderedText(rawTextValue, text, appendedDisplayText, conversationTargetHero, conversationTargetCharacter);
+					return appendedDisplayText;
+				}
+			}
+
+			// A completed entity label or a rewritten preview needs one snapshot-only full reply pass to place exact native markup.
+			string formattedText = _descriptorSnapshot.Format(text, conversationTargetHero, conversationTargetCharacter);
+			RememberRenderedText(rawTextValue, text, formattedText, conversationTargetHero, conversationTargetCharacter);
+			return formattedText;
+		}
+
+		private void RememberRenderedText(string rawText, string plainText, string formattedText, Hero conversationTargetHero, CharacterObject conversationTargetCharacter)
+		{
+			_hasRenderedText = true;
+			_lastRawText = rawText ?? string.Empty;
+			_lastPlainText = plainText ?? string.Empty;
+			_lastFormattedText = formattedText ?? string.Empty;
+			_lastTargetHero = conversationTargetHero;
+			_lastTargetCharacter = conversationTargetCharacter;
+		}
+	}
+
 	internal sealed class DisplaySession
 	{
 		private enum DescriptorKind
@@ -96,6 +178,17 @@ internal static class EncyclopediaEntityLinkFormatter
 		private readonly Dictionary<string, LinkDescriptor> _descriptorsByName = new Dictionary<string, LinkDescriptor>(StringComparer.Ordinal);
 
 		private int _nextOrder;
+
+		private int _maximumDescriptorNameLength;
+
+		// NPC is the longest contextual token, so a tail this long always covers a name that crossed an append boundary.
+		internal int MaximumLinkNameLength
+		{
+			get
+			{
+				return Math.Max(_maximumDescriptorNameLength, 3);
+			}
+		}
 
 		internal DisplaySession()
 		{
@@ -286,6 +379,64 @@ internal static class EncyclopediaEntityLinkFormatter
 				_descriptorsByPrefix.Add(prefix, descriptors);
 			}
 			descriptors.Add(descriptor);
+			// Preserve the exact longest snapshot label so stream tail checks remain bounded without losing cross-boundary matches.
+			_maximumDescriptorNameLength = Math.Max(_maximumDescriptorNameLength, name.Length);
+		}
+
+		// This bounded probe ignores labels that were already complete in the previous preview, avoiding a full rerender on every following token.
+		internal bool ContainsNewLinkCandidate(string text, int previousTextLength, int tailStart, Hero conversationTargetHero, CharacterObject conversationTargetCharacter)
+		{
+			if (string.IsNullOrEmpty(text))
+			{
+				return false;
+			}
+			if ((conversationTargetHero != null || conversationTargetCharacter != null)
+				&& HasCandidateEndingAfter(text, "NPC", tailStart, previousTextLength))
+			{
+				return true;
+			}
+			try
+			{
+				if (Hero.MainHero != null && HasCandidateEndingAfter(text, "玩家", tailStart, previousTextLength))
+				{
+					return true;
+				}
+			}
+			catch
+			{
+				// A loading transition can withhold MainHero; the completed reply pass will retry safely later.
+			}
+
+			HashSet<int> textTwoCharacterPairs = BuildTextTwoCharacterPairs(text, tailStart);
+			foreach (int pair in textTwoCharacterPairs)
+			{
+				if (!_descriptorsByPrefix.TryGetValue(pair, out List<LinkDescriptor> descriptors))
+				{
+					continue;
+				}
+				for (int index = 0; index < descriptors.Count; index++)
+				{
+					if (HasCandidateEndingAfter(text, descriptors[index].Name, tailStart, previousTextLength))
+					{
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
+		private static bool HasCandidateEndingAfter(string text, string candidateName, int startIndex, int previousTextLength)
+		{
+			int candidateIndex = text.IndexOf(candidateName, Math.Max(0, startIndex), StringComparison.Ordinal);
+			while (candidateIndex >= 0)
+			{
+				if (candidateIndex + candidateName.Length > previousTextLength)
+				{
+					return true;
+				}
+				candidateIndex = text.IndexOf(candidateName, candidateIndex + 1, StringComparison.Ordinal);
+			}
+			return false;
 		}
 	}
 
@@ -519,8 +670,15 @@ internal static class EncyclopediaEntityLinkFormatter
 	// Packing UTF-16 pairs avoids per-candidate substring allocation while keeping the prefilter exact for every two-code-unit name prefix.
 	private static HashSet<int> BuildTextTwoCharacterPairs(string text)
 	{
+		return BuildTextTwoCharacterPairs(text, 0);
+	}
+
+	// Streaming probes begin at a bounded tail offset, so ordinary stream chunks never rescan the whole accumulated reply.
+	private static HashSet<int> BuildTextTwoCharacterPairs(string text, int startIndex)
+	{
 		HashSet<int> pairs = new HashSet<int>();
-		for (int index = 0; index + 1 < text.Length; index++)
+		int firstIndex = Math.Max(0, startIndex);
+		for (int index = firstIndex; index + 1 < text.Length; index++)
 		{
 			pairs.Add(PackTwoCharacters(text[index], text[index + 1]));
 		}

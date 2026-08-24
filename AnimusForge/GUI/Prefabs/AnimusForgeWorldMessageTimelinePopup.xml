@@ -12,6 +12,12 @@
                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="100" VerticalAlignment="Top" Sprite="General\CharacterCreation\character_creation_background_gradient" AlphaFactor="0.3" Color="#000000FF">
                   <Children>
                     <AutoHideRichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Top" MarginLeft="28" MarginRight="28" MarginTop="14" Brush="Popup.Title.Text" Brush.TextHorizontalAlignment="Center" Text="@TitleText" />
+                    <!-- This control changes only campaign time; the message overlay itself remains non-blocking. -->
+                    <ButtonWidget DoNotPassEventsToChildren="true" IsEnabled="@CanToggleGamePause" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="172" SuggestedHeight="34" HorizontalAlignment="Right" VerticalAlignment="Top" MarginRight="16" MarginTop="10" Brush="Popup.Done.Button" Command.Click="ExecuteToggleGamePause" UpdateChildrenStates="true">
+                      <Children>
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="20" VerticalAlignment="Center" MarginLeft="10" MarginRight="10" Brush="Popup.Button.Text" Brush.FontSize="15" Brush.TextHorizontalAlignment="Center" Text="@PauseGameText" DoNotAcceptEvents="true" />
+                      </Children>
+                    </ButtonWidget>
                     <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Bottom" MarginLeft="28" MarginRight="28" MarginBottom="12" Brush="Popup.Description.Text" Text="@SubtitleText" />
                   </Children>
                 </Widget>
