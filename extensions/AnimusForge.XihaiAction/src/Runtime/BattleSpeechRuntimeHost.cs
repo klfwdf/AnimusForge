@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using AnimusForge.SceneActions.Core;
 using TaleWorlds.MountAndBlade;
 
@@ -9,6 +10,8 @@ namespace AnimusForge.XihaiAction
     internal static class BattleSpeechRuntimeHost
     {
         private static readonly object Sync = new object();
+        private static readonly AsyncLocal<BattleSpeechPromptScopeV2> ReplyPromptScope =
+            new AsyncLocal<BattleSpeechPromptScopeV2>();
         private const int MaximumSpeechHistoryEntries = 48;
         private const int MaximumSpeechHistoryPerSpeaker = 6;
         private static readonly List<GeneratedSpeechHistoryEntryV1> SpeechHistory =
@@ -53,6 +56,11 @@ namespace AnimusForge.XihaiAction
                 PerformanceConfigurationValid = performanceValid;
                 _sourcePerformanceConfigurationValid = performanceValid;
                 StageSettings = new BattleSpeechStageSettingsV2();
+                if (Settings != null)
+                {
+                    StageSettings.MaximumAudienceReplySubmissionsPerTick =
+                        Settings.MaximumAudienceReplySubmissionsPerTick;
+                }
                 if (valid && performanceValid &&
                     SceneActionsMcmSettings.TryApplyBattleSpeech(
                         Settings,
@@ -299,8 +307,9 @@ namespace AnimusForge.XihaiAction
             {
                 InputKind = BattleSpeechInputKindV1.PlayerShout,
                 DedicatedSpeechEntry = true,
+                DedicatedNpcSpeechEntry = true,
                 Mission = mission,
-                RawText = "你演讲：",
+                RawText = string.Empty,
                 Player = player,
                 PrimaryTarget = primaryTarget,
                 FramedTargets = (framedTargets ?? Array.Empty<Agent>()).ToArray(),
@@ -356,7 +365,7 @@ namespace AnimusForge.XihaiAction
         internal static bool SubmitGeneratedNpcReply(
             Mission mission,
             Guid sessionId,
-            Agent speaker,
+            int speakerAgentIndex,
             string replyText,
             object afBehavior,
             object afNpcPacket,
@@ -370,7 +379,7 @@ namespace AnimusForge.XihaiAction
                 SessionId = sessionId,
                 Mission = mission,
                 RawText = replyText,
-                Speaker = speaker,
+                SpeakerAgentIndex = speakerAgentIndex,
                 AfBehavior = afBehavior,
                 AfNpcPacket = afNpcPacket,
                 CombinedResponse = combinedResponse,
@@ -379,7 +388,7 @@ namespace AnimusForge.XihaiAction
             });
             if (accepted)
             {
-                RecordGeneratedNpcSpeech(mission, speaker, replyText, now);
+                RecordGeneratedNpcSpeech(mission, speakerAgentIndex, replyText, now);
             }
             return accepted;
         }
@@ -417,19 +426,6 @@ namespace AnimusForge.XihaiAction
                 return false;
             }
 
-            // NPC commands use AF once to generate a new speech body from the
-            // text after the colon. Claim the route here so SceneActions does not
-            // also interpret the same shout, but leave AF's original generation
-            // pipeline enabled. ObserveRecordedPlayerMessage will create the
-            // reply claim before AF starts the group response.
-            if (decision.Kind == BattleSpeechTriggerKindV2.RequestNpcSpeech)
-            {
-                SceneActionsLog.Info(
-                    "BATTLE_SPEECH_COMPAT",
-                    "T-key NPC speech request rejected; NPC speech is available only through the Y-menu route.");
-                return false;
-            }
-
             bool queued = session.TryEnqueue(new BattleSpeechCapturedInputV1
             {
                 InputKind = BattleSpeechInputKindV1.PlayerShout,
@@ -446,11 +442,7 @@ namespace AnimusForge.XihaiAction
             {
                 SceneActionsLog.Info(
                     "BATTLE_SPEECH_COMPAT",
-                    "Forced speech claimed before AF ordinary scene route. " +
-                    "Speaker=" +
-                    (decision.Kind == BattleSpeechTriggerKindV2.RequestNpcSpeech
-                        ? "framed-primary"
-                        : "player"));
+                    "Forced player speech claimed before AF ordinary scene route. Speaker=player");
             }
             return queued;
         }
@@ -480,12 +472,11 @@ namespace AnimusForge.XihaiAction
             allowOriginalAfGeneration = false;
             BattleSpeechTriggerDecisionV2 decision =
                 BattleSpeechFrameworkV2.ParsePlayerShout(rawText);
-            if (decision.Force ||
-                (decision.Kind != BattleSpeechTriggerKindV2.DeliverPlayerSpeech &&
-                 decision.Kind != BattleSpeechTriggerKindV2.ArmPlayerSpeech &&
-                 decision.Kind != BattleSpeechTriggerKindV2.Cancel &&
-                 decision.Kind != BattleSpeechTriggerKindV2.NeedsClassifier &&
-                 decision.Kind != BattleSpeechTriggerKindV2.RequestNpcSpeech))
+             if (decision.Force ||
+                 (decision.Kind != BattleSpeechTriggerKindV2.DeliverPlayerSpeech &&
+                  decision.Kind != BattleSpeechTriggerKindV2.ArmPlayerSpeech &&
+                  decision.Kind != BattleSpeechTriggerKindV2.Cancel &&
+                  decision.Kind != BattleSpeechTriggerKindV2.NeedsClassifier))
             {
                 return false;
             }
@@ -511,17 +502,6 @@ namespace AnimusForge.XihaiAction
                      StageSettings.ClassifierProviderId,
                      out IBattleSpeechClassifierV2 _)))
             {
-                return false;
-            }
-
-            // A locally certain NPC request still needs AF's own response body.
-            // Claiming it here prevents SceneActions from interpreting the same
-            // text, while returning true lets the original AF generation run once.
-            if (decision.Kind == BattleSpeechTriggerKindV2.RequestNpcSpeech)
-            {
-                SceneActionsLog.Info(
-                    "BATTLE_SPEECH_COMPAT",
-                    "T-key natural NPC speech request rejected; routing to ordinary AF scene shout.");
                 return false;
             }
 
@@ -618,7 +598,7 @@ namespace AnimusForge.XihaiAction
             return session != null && session.TryEnqueue(input);
         }
 
-    internal static void PublishNpcReplyClaim(
+        internal static void PublishNpcReplyClaim(
             Guid sessionId,
             Mission mission,
             Agent speaker,
@@ -632,9 +612,10 @@ namespace AnimusForge.XihaiAction
             {
                 return;
             }
+            BattleSpeechReplyClaimV2 claim;
             lock (Sync)
             {
-                _replyClaim = new BattleSpeechReplyClaimV2
+                claim = new BattleSpeechReplyClaimV2
                 {
                     SessionId = sessionId,
                     Mission = mission,
@@ -648,7 +629,18 @@ namespace AnimusForge.XihaiAction
                     RecentSpeechTexts = GetRecentSpeechTextsUnsafe(mission, speaker.Index),
                     RegenerationAttempts = 0
                 };
+                claim.PromptSnapshot = CreateReplyPromptSnapshotUnsafe(claim);
+                _replyClaim = claim;
                 _deferredReply = null;
+            }
+            if (claim.PromptSnapshot != null)
+            {
+                SceneActionsLog.Info(
+                    "BATTLE_SPEECH_INPUT",
+                    "Speech prompt length snapshot frozen. Session=" +
+                    sessionId.ToString("N") +
+                    " Minimum=" + claim.PromptSnapshot.MinimumChars +
+                    " Maximum=" + claim.PromptSnapshot.MaximumChars);
             }
         }
 
@@ -709,25 +701,15 @@ namespace AnimusForge.XihaiAction
             out int minimumChars,
             out int maximumChars)
         {
-            lock (Sync)
+            minimumChars = 0;
+            maximumChars = 0;
+            if (!TryCaptureReplyPromptSnapshot(npcName, out BattleSpeechReplyPromptSnapshotV2 snapshot))
             {
-                minimumChars = 0;
-                maximumChars = 0;
-                if (!_initialized || _replyClaim == null || StageSettings == null)
-                {
-                    return false;
-                }
-                if (!string.IsNullOrWhiteSpace(npcName) &&
-                    !string.IsNullOrWhiteSpace(_replyClaim.SpeakerName) &&
-                    npcName.IndexOf(_replyClaim.SpeakerName, StringComparison.OrdinalIgnoreCase) < 0 &&
-                    _replyClaim.SpeakerName.IndexOf(npcName, StringComparison.OrdinalIgnoreCase) < 0)
-                {
-                    return false;
-                }
-                minimumChars = StageSettings.ReplyMinimumChars;
-                maximumChars = StageSettings.ReplyMaximumChars;
-                return true;
+                return false;
             }
+            minimumChars = snapshot.MinimumChars;
+            maximumChars = snapshot.MaximumChars;
+            return true;
         }
 
         internal static bool TryGetReplyPromptInstruction(
@@ -735,39 +717,151 @@ namespace AnimusForge.XihaiAction
             out string instruction)
         {
             instruction = null;
-            if (!TryGetReplyLengthOverride(
+            if (!TryCaptureReplyPromptSnapshot(
                     npcName,
-                    out int minimumChars,
-                    out int maximumChars))
+                    out BattleSpeechReplyPromptSnapshotV2 snapshot))
             {
                 return false;
             }
-            BattleSpeechReplyClaimV2 claim;
-            lock (Sync)
-            {
-                claim = _replyClaim;
-            }
-            if (claim != null && claim.CombinedRequest)
+            if (snapshot.CombinedRequest)
             {
                 instruction = BattleSpeechFrameworkV2.BuildCombinedNpcSpeechPromptInstruction(
-                    minimumChars,
-                    maximumChars,
-                    GetEnabledSpeechIntentKeys(),
-                    claim.AudienceReplyCount,
-                    StageSettings.AudienceReplyMinimumChars,
-                    StageSettings.AudienceReplyMaximumChars,
-                    claim.RecentSpeechTexts,
-                    claim.RegenerationAttempts);
+                    snapshot.MinimumChars,
+                    snapshot.MaximumChars,
+                    snapshot.AllowedIntentKeys,
+                    snapshot.AudienceReplyCount,
+                    snapshot.AudienceReplyMinimumChars,
+                    snapshot.AudienceReplyMaximumChars,
+                    snapshot.RecentSpeechTexts,
+                    snapshot.RegenerationAttempts);
             }
             else
             {
                 instruction = BattleSpeechFrameworkV2.BuildNpcSpeechPromptInstruction(
-                    minimumChars,
-                    maximumChars,
-                    claim?.RecentSpeechTexts,
-                    claim?.RegenerationAttempts ?? 0);
+                    snapshot.MinimumChars,
+                    snapshot.MaximumChars,
+                    snapshot.RecentSpeechTexts,
+                    snapshot.RegenerationAttempts);
             }
             return true;
+        }
+
+        internal static IDisposable BeginNpcSpeechPromptScope(
+            Guid sessionId,
+            Mission mission,
+            int speakerAgentIndex)
+        {
+            BattleSpeechPromptScopeV2 previous = ReplyPromptScope.Value;
+            ReplyPromptScope.Value = new BattleSpeechPromptScopeV2(
+                sessionId,
+                mission,
+                speakerAgentIndex);
+            return new ScopeLeaseV2(previous);
+        }
+
+        internal static void RestoreNpcSpeechPromptScope(
+            BattleSpeechPromptScopeV2 previous)
+        {
+            ReplyPromptScope.Value = previous;
+        }
+
+        internal static bool TryGetActiveReplyPromptSnapshot(
+            out BattleSpeechReplyPromptSnapshotV2 snapshot)
+        {
+            snapshot = ReplyPromptScope.Value?.PromptSnapshot;
+            return snapshot != null;
+        }
+
+        internal static bool HasNpcSpeechPromptScope => ReplyPromptScope.Value != null;
+
+        internal static bool IsReplyPromptReplacementRequired(string npcName)
+        {
+            BattleSpeechPromptScopeV2 scope = ReplyPromptScope.Value;
+            // A claimed request may outlive the global claim while AF is still
+            // unwinding its asynchronous prompt chain.  Once this execution
+            // context has a frozen snapshot, it must remain fail-closed rather
+            // than falling through to AF's player-facing prompt.
+            if (scope?.PromptSnapshot != null)
+            {
+                return true;
+            }
+            lock (Sync)
+            {
+                if (!_initialized || _replyClaim == null || StageSettings == null)
+                {
+                    return false;
+                }
+                if (scope != null)
+                {
+                    return scope.SessionId == _replyClaim.SessionId &&
+                           ReferenceEquals(scope.Mission, _replyClaim.Mission) &&
+                           scope.SpeakerAgentIndex == _replyClaim.SpeakerAgentIndex;
+                }
+                return NamesMatchClaimUnsafe(npcName, _replyClaim);
+            }
+        }
+
+        private static bool TryCaptureReplyPromptSnapshot(
+            string npcName,
+            out BattleSpeechReplyPromptSnapshotV2 snapshot)
+        {
+            snapshot = null;
+            BattleSpeechPromptScopeV2 scope = ReplyPromptScope.Value;
+            if (scope?.PromptSnapshot != null)
+            {
+                snapshot = scope.PromptSnapshot;
+                return true;
+            }
+            lock (Sync)
+            {
+                if (!_initialized || _replyClaim == null || StageSettings == null)
+                {
+                    return false;
+                }
+                bool matched = scope != null
+                    ? scope.SessionId == _replyClaim.SessionId &&
+                      ReferenceEquals(scope.Mission, _replyClaim.Mission) &&
+                      scope.SpeakerAgentIndex == _replyClaim.SpeakerAgentIndex
+                    : NamesMatchClaimUnsafe(npcName, _replyClaim);
+                if (!matched)
+                {
+                    return false;
+                }
+                // All mutable claim, MCM and whitelist values are copied while
+                // holding the same lock. The claim snapshot is created once at
+                // session admission so prompt construction and reply display
+                // cannot observe different MCM values.
+                snapshot = _replyClaim.PromptSnapshot ??
+                           CreateReplyPromptSnapshotUnsafe(_replyClaim);
+                _replyClaim.PromptSnapshot = snapshot;
+                if (snapshot == null)
+                {
+                    return false;
+                }
+                if (scope != null)
+                {
+                    scope.PromptSnapshot = snapshot;
+                }
+                return true;
+            }
+        }
+
+        private static bool NamesMatchClaimUnsafe(
+            string npcName,
+            BattleSpeechReplyClaimV2 claim)
+        {
+            // Name matching is only a legacy last resort.  An empty display
+            // name must never match every active Claim; the strong binding is
+            // the SessionId/Mission/AgentIndex scope above.
+            if (string.IsNullOrWhiteSpace(npcName) ||
+                string.IsNullOrWhiteSpace(claim?.SpeakerName))
+            {
+                return false;
+            }
+            string requested = npcName.Trim();
+            string claimed = claim.SpeakerName.Trim();
+            return requested.IndexOf(claimed, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                   claimed.IndexOf(requested, StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
         internal static bool TryGetCombinedSpeechContract(
@@ -791,18 +885,32 @@ namespace AnimusForge.XihaiAction
             out double similarity)
         {
             similarity = 0d;
+            return speaker != null && TryBeginSpeechRegeneration(
+                speaker.Mission,
+                speaker.Index,
+                candidate,
+                out similarity);
+        }
+
+        internal static bool TryBeginSpeechRegeneration(
+            Mission mission,
+            int speakerAgentIndex,
+            string candidate,
+            out double similarity)
+        {
+            similarity = 0d;
             lock (Sync)
             {
-                if (speaker == null || _replyClaim == null ||
-                    !ReferenceEquals(_replyClaim.Mission, speaker.Mission) ||
-                    _replyClaim.SpeakerAgentIndex != speaker.Index ||
+                if (mission == null || speakerAgentIndex < 0 || _replyClaim == null ||
+                    !ReferenceEquals(_replyClaim.Mission, mission) ||
+                    _replyClaim.SpeakerAgentIndex != speakerAgentIndex ||
                     _replyClaim.RegenerationAttempts >= 1)
                 {
                     return false;
                 }
                 string[] previous = GetRecentSpeechTextsUnsafe(
                     _replyClaim.Mission,
-                    speaker.Index);
+                    speakerAgentIndex);
                 if (!BattleSpeechDiversityV1.IsExactRepeat(
                         candidate,
                         previous,
@@ -817,11 +925,11 @@ namespace AnimusForge.XihaiAction
 
         private static void RecordGeneratedNpcSpeech(
             Mission mission,
-            Agent speaker,
+            int speakerAgentIndex,
             string content,
             double now)
         {
-            if (mission == null || speaker == null || string.IsNullOrWhiteSpace(content))
+            if (mission == null || speakerAgentIndex < 0 || string.IsNullOrWhiteSpace(content))
             {
                 return;
             }
@@ -830,7 +938,7 @@ namespace AnimusForge.XihaiAction
                 SpeechHistory.Add(new GeneratedSpeechHistoryEntryV1
                 {
                     Mission = mission,
-                    SpeakerAgentIndex = speaker.Index,
+                    SpeakerAgentIndex = speakerAgentIndex,
                     Content = content,
                     MissionTime = now
                 });
@@ -839,7 +947,7 @@ namespace AnimusForge.XihaiAction
                 {
                     GeneratedSpeechHistoryEntryV1 entry = SpeechHistory[i];
                     if (ReferenceEquals(entry.Mission, mission) &&
-                        entry.SpeakerAgentIndex == speaker.Index)
+                        entry.SpeakerAgentIndex == speakerAgentIndex)
                     {
                         perSpeaker++;
                         if (perSpeaker > MaximumSpeechHistoryPerSpeaker)
@@ -884,7 +992,41 @@ namespace AnimusForge.XihaiAction
             out int audienceReplyMinimumChars,
             out int audienceReplyMaximumChars)
         {
-            lock (Sync)
+            BattleSpeechReplyPromptSnapshotV2 snapshot = ReplyPromptScope.Value?.PromptSnapshot;
+            if (snapshot == null)
+            {
+                lock (Sync)
+                {
+                    if (!_initialized || _replyClaim == null ||
+                        !_replyClaim.CombinedRequest || StageSettings == null)
+                    {
+                        minimumChars = 0;
+                        maximumChars = 0;
+                        allowedIntentKeys = Array.Empty<string>();
+                        audienceReplyCount = 0;
+                        audienceReplyMinimumChars = 0;
+                        audienceReplyMaximumChars = 0;
+                        return false;
+                    }
+                    snapshot = new BattleSpeechReplyPromptSnapshotV2(
+                        _replyClaim.SessionId,
+                        _replyClaim.Mission,
+                        _replyClaim.SpeakerAgentIndex,
+                        _replyClaim.SpeakerName,
+                        true,
+                        StageSettings.ReplyMinimumChars,
+                        StageSettings.ReplyMaximumChars,
+                        GetEnabledSpeechIntentKeys().ToArray(),
+                        Math.Min(
+                            BattleSpeechFrameworkV2.MaximumAudienceReplies,
+                            Math.Max(0, _replyClaim.AudienceReplyCount)),
+                        StageSettings.AudienceReplyMinimumChars,
+                        StageSettings.AudienceReplyMaximumChars,
+                        _replyClaim.RecentSpeechTexts?.ToArray() ?? Array.Empty<string>(),
+                        _replyClaim.RegenerationAttempts);
+                }
+            }
+            if (!snapshot.CombinedRequest)
             {
                 minimumChars = 0;
                 maximumChars = 0;
@@ -892,21 +1034,15 @@ namespace AnimusForge.XihaiAction
                 audienceReplyCount = 0;
                 audienceReplyMinimumChars = 0;
                 audienceReplyMaximumChars = 0;
-                if (!_initialized || _replyClaim == null ||
-                    !_replyClaim.CombinedRequest || StageSettings == null)
-                {
-                    return false;
-                }
-                minimumChars = StageSettings.ReplyMinimumChars;
-                maximumChars = StageSettings.ReplyMaximumChars;
-                allowedIntentKeys = GetEnabledSpeechIntentKeys();
-                audienceReplyCount = Math.Min(
-                    BattleSpeechFrameworkV2.MaximumAudienceReplies,
-                    Math.Max(0, _replyClaim.AudienceReplyCount));
-                audienceReplyMinimumChars = StageSettings.AudienceReplyMinimumChars;
-                audienceReplyMaximumChars = StageSettings.AudienceReplyMaximumChars;
-                return true;
+                return false;
             }
+            minimumChars = snapshot.MinimumChars;
+            maximumChars = snapshot.MaximumChars;
+            allowedIntentKeys = snapshot.AllowedIntentKeys.ToArray();
+            audienceReplyCount = snapshot.AudienceReplyCount;
+            audienceReplyMinimumChars = snapshot.AudienceReplyMinimumChars;
+            audienceReplyMaximumChars = snapshot.AudienceReplyMaximumChars;
+            return true;
         }
 
         internal static string[] GetEnabledSpeechIntentKeys()
@@ -948,6 +1084,61 @@ namespace AnimusForge.XihaiAction
                 return _initialized &&
                        _replyClaim != null &&
                        StageSettings != null;
+            }
+        }
+
+        internal static bool IsActiveNpcSpeechSystemPrompt(string systemPrompt)
+        {
+            if (string.IsNullOrWhiteSpace(systemPrompt))
+            {
+                return false;
+            }
+
+            try
+            {
+                bool hasSpeechPromptMarker =
+                    systemPrompt.IndexOf(
+                        "【阵前演讲正文生成任务",
+                        StringComparison.Ordinal) >= 0 ||
+                    systemPrompt.IndexOf(
+                        "【阵前演讲单请求协议】",
+                        StringComparison.Ordinal) >= 0;
+                if (!hasSpeechPromptMarker)
+                {
+                    return false;
+                }
+
+                BattleSpeechPromptScopeV2 scope = ReplyPromptScope.Value;
+                // Keep a prompt chain that already captured a speech snapshot
+                // on the speech contract even if session cleanup cleared the
+                // process-wide claim before a later strict-system callback.
+                if (scope?.PromptSnapshot != null)
+                {
+                    return true;
+                }
+                lock (Sync)
+                {
+                    if (!_initialized || _replyClaim == null || StageSettings == null ||
+                        (scope != null
+                            ? scope.SessionId != _replyClaim.SessionId ||
+                              !ReferenceEquals(scope.Mission, _replyClaim.Mission) ||
+                              scope.SpeakerAgentIndex != _replyClaim.SpeakerAgentIndex
+                            : !ReferenceEquals(_replyClaim.Mission, Mission.Current)))
+                    {
+                        return false;
+                    }
+
+                    Mission currentMission = scope?.Mission ?? Mission.Current;
+                    double now = currentMission?.CurrentTime ?? double.NaN;
+                    return !double.IsNaN(now) && !double.IsInfinity(now) &&
+                           !double.IsNaN(_replyClaim.ExpiresAtMissionTime) &&
+                           !double.IsInfinity(_replyClaim.ExpiresAtMissionTime) &&
+                           now <= _replyClaim.ExpiresAtMissionTime;
+                }
+            }
+            catch
+            {
+                return false;
             }
         }
 
@@ -1032,16 +1223,46 @@ namespace AnimusForge.XihaiAction
 
         private static string NormalizeClaimedNpcSpeechUnsafe(Agent speaker, string content)
         {
-            if (speaker == null || _replyClaim == null || StageSettings == null ||
+            if (speaker == null || _replyClaim == null ||
                 !ReferenceEquals(_replyClaim.Mission, speaker.Mission) ||
                 _replyClaim.SpeakerAgentIndex != speaker.Index)
             {
                 return content;
             }
+            BattleSpeechReplyPromptSnapshotV2 snapshot =
+                _replyClaim.PromptSnapshot ?? CreateReplyPromptSnapshotUnsafe(_replyClaim);
+            _replyClaim.PromptSnapshot = snapshot;
+            if (snapshot == null)
+            {
+                return content;
+            }
             return BattleSpeechFrameworkV2.NormalizeNpcSpeechReply(
                 content,
+                snapshot.MinimumChars,
+                snapshot.MaximumChars);
+        }
+
+        private static BattleSpeechReplyPromptSnapshotV2 CreateReplyPromptSnapshotUnsafe(
+            BattleSpeechReplyClaimV2 claim)
+        {
+            if (claim == null || StageSettings == null)
+            {
+                return null;
+            }
+            return new BattleSpeechReplyPromptSnapshotV2(
+                claim.SessionId,
+                claim.Mission,
+                claim.SpeakerAgentIndex,
+                claim.SpeakerName,
+                claim.CombinedRequest,
                 StageSettings.ReplyMinimumChars,
-                StageSettings.ReplyMaximumChars);
+                StageSettings.ReplyMaximumChars,
+                GetEnabledSpeechIntentKeys(),
+                claim.AudienceReplyCount,
+                StageSettings.AudienceReplyMinimumChars,
+                StageSettings.AudienceReplyMaximumChars,
+                claim.RecentSpeechTexts?.ToArray() ?? Array.Empty<string>(),
+                claim.RegenerationAttempts);
         }
 
         internal static bool TryTakeDeferredNpcReply(
@@ -1115,6 +1336,104 @@ namespace AnimusForge.XihaiAction
         }
     }
 
+    internal sealed class BattleSpeechReplyPromptSnapshotV2
+    {
+        public BattleSpeechReplyPromptSnapshotV2(
+            Guid sessionId,
+            Mission mission,
+            int speakerAgentIndex,
+            string speakerName,
+            bool combinedRequest,
+            int minimumChars,
+            int maximumChars,
+            string[] allowedIntentKeys,
+            int audienceReplyCount,
+            int audienceReplyMinimumChars,
+            int audienceReplyMaximumChars,
+            string[] recentSpeechTexts,
+            int regenerationAttempts)
+        {
+            SessionId = sessionId;
+            Mission = mission;
+            SpeakerAgentIndex = speakerAgentIndex;
+            SpeakerName = speakerName ?? string.Empty;
+            CombinedRequest = combinedRequest;
+            MinimumChars = minimumChars;
+            MaximumChars = maximumChars;
+            AllowedIntentKeys = (allowedIntentKeys ?? Array.Empty<string>()).ToArray();
+            AudienceReplyCount = Math.Min(
+                BattleSpeechFrameworkV2.MaximumAudienceReplies,
+                Math.Max(0, audienceReplyCount));
+            AudienceReplyMinimumChars = audienceReplyMinimumChars;
+            AudienceReplyMaximumChars = audienceReplyMaximumChars;
+            RecentSpeechTexts = (recentSpeechTexts ?? Array.Empty<string>()).ToArray();
+            RegenerationAttempts = Math.Max(0, regenerationAttempts);
+        }
+
+        public Guid SessionId { get; }
+        public Mission Mission { get; }
+        public int SpeakerAgentIndex { get; }
+        public string SpeakerName { get; }
+        public bool CombinedRequest { get; }
+        public int MinimumChars { get; }
+        public int MaximumChars { get; }
+        public string[] AllowedIntentKeys { get; }
+        public int AudienceReplyCount { get; }
+        public int AudienceReplyMinimumChars { get; }
+        public int AudienceReplyMaximumChars { get; }
+        public string[] RecentSpeechTexts { get; }
+        public int RegenerationAttempts { get; }
+    }
+
+    internal sealed class BattleSpeechPromptScopeV2
+    {
+        public BattleSpeechPromptScopeV2(
+            Guid sessionId,
+            Mission mission,
+            int speakerAgentIndex)
+        {
+            SessionId = sessionId;
+            Mission = mission;
+            SpeakerAgentIndex = speakerAgentIndex;
+        }
+
+        public Guid SessionId { get; }
+        public Mission Mission { get; }
+        public int SpeakerAgentIndex { get; }
+        public BattleSpeechReplyPromptSnapshotV2 PromptSnapshot { get; set; }
+    }
+
+    internal sealed class ScopeLeaseV2 : IDisposable
+    {
+        private readonly BattleSpeechPromptScopeV2 _previous;
+        private bool _disposed;
+
+        public ScopeLeaseV2(BattleSpeechPromptScopeV2 previous)
+        {
+            _previous = previous;
+        }
+
+        public void Dispose()
+        {
+            if (_disposed)
+            {
+                return;
+            }
+            _disposed = true;
+            ReplyPromptScopeRestorer.Restore(_previous);
+        }
+    }
+
+    // Keeps AsyncLocal restoration private to the host while allowing the small
+    // disposable lease above to remain a plain data object.
+    internal static class ReplyPromptScopeRestorer
+    {
+        internal static void Restore(BattleSpeechPromptScopeV2 previous)
+        {
+            BattleSpeechRuntimeHost.RestoreNpcSpeechPromptScope(previous);
+        }
+    }
+
     internal sealed class BattleSpeechReplyClaimV2
     {
         public Guid SessionId;
@@ -1130,6 +1449,7 @@ namespace AnimusForge.XihaiAction
         public int AudienceReplyCount;
         public string[] RecentSpeechTexts;
         public int RegenerationAttempts;
+        public BattleSpeechReplyPromptSnapshotV2 PromptSnapshot;
     }
 
     internal sealed class GeneratedSpeechHistoryEntryV1
@@ -1157,18 +1477,21 @@ namespace AnimusForge.XihaiAction
         PlayerShout,
         QueuedNpcReplyCandidate,
         ShownNpcReply,
-        GeneratedNpcReply
+        GeneratedNpcReply,
+        DedicatedNpcSpeechRetry
     }
 
     internal sealed class BattleSpeechCapturedInputV1
     {
         public BattleSpeechInputKindV1 InputKind { get; set; }
         public bool DedicatedSpeechEntry { get; set; }
+        public bool DedicatedNpcSpeechEntry { get; set; }
         public Guid SessionId { get; set; }
         public Mission Mission { get; set; }
         public string RawText { get; set; }
         public Agent Player { get; set; }
         public Agent Speaker { get; set; }
+        public int SpeakerAgentIndex { get; set; } = -1;
         public Agent PrimaryTarget { get; set; }
         public Agent[] FramedTargets { get; set; } = Array.Empty<Agent>();
         public int ConversationEpoch { get; set; }
