@@ -8241,7 +8241,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				TownSettlementEffectPlan.FromMassacreDelta(delta));
 			Logger.Log(
 				"SiegeAiIntervention",
-				$"Applied incremental massacre consequences. Settlement={settlement.StringId ?? "N/A"}, VictimDeltaBasisPoints={delta.DeltaVictimBasisPoints}, VictimCumulativeBasisPoints={delta.CumulativeVictimBasisPoints}, AppliedPlunderBaseline={delta.AppliedPlunderBaseline}, SettlementTrust={delta.SettlementPublicTrustDelta}, VillageTrust={delta.BoundVillagePublicTrustDelta}x{applied.BoundVillageTrustAdjusted}, NotableRelation={delta.NotableRelationDelta}x{applied.NotableRelationsAdjusted}, NotableTrust={delta.NotableTrustDelta}x{applied.NotableTrustAdjusted}");
+				$"Applied incremental massacre consequences. Settlement={settlement.StringId ?? "N/A"}, VictimDeltaBasisPoints={delta.DeltaVictimBasisPoints}, VictimCumulativeBasisPoints={delta.CumulativeVictimBasisPoints}, AppliedPlunderBaseline={delta.AppliedPlunderBaseline}, SettlementTrust={delta.SettlementPublicTrustDelta}, VillageTrust={delta.BoundVillagePublicTrustDelta}x{applied.BoundVillageTrustAdjusted}, NotableRelationDeferred=True, NotableRelationApplied=0, NotableTrust={delta.NotableTrustDelta}x{applied.NotableTrustAdjusted}");
 		}
 		catch (Exception ex)
 		{
@@ -8249,7 +8249,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void ApplyFinalAtrocityRelationshipAnchor(
+	private static void ApplyFinalAtrocityNonRelationAnchors(
 		Settlement settlement,
 		SiegeSettlementOutcomeProfile finalProfile)
 	{
@@ -8271,12 +8271,46 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				settlementPublicTrustReason: finalProfile.SettlementPublicTrustReason,
 				boundVillagePublicTrustDelta: delta.BoundVillagePublicTrustDelta,
 				boundVillagePublicTrustReason: finalProfile.BoundVillagePublicTrustReason,
-				notableRelationDelta: delta.NotableRelationDelta,
-				notableRelationReason: finalProfile.NotableRelationReason,
-				includeBoundVillageNotableRelations: true,
 				notableTrustDelta: delta.NotableTrustDelta,
 				notableTrustReason: finalProfile.NotableTrustReason,
-				includeBoundVillageNotableTrust: true));
+				notableTrustScope: TownNotableEffectScope.SettlementAndBoundVillages));
+	}
+
+	private static void ApplyMassacreNotableRelationAnchors(
+		Settlement settlement,
+		int targetAnchor,
+		bool includeBoundVillages,
+		string source)
+	{
+		if (settlement == null)
+		{
+			return;
+		}
+
+		int townDelta = ActiveTownOperationLedger.CommitTownNotableRelationAnchor(targetAnchor);
+		TownSettlementEffectApplicationResult townResult = ApplyTownSettlementEffectPlan(
+			settlement,
+			TownMassacreRelationTimingProfile.BuildTownPlan(townDelta));
+		int villageDelta = 0;
+		var villageResult = new TownSettlementEffectApplicationResult();
+		if (includeBoundVillages)
+		{
+			villageDelta = ActiveTownOperationLedger.CommitBoundVillageNotableRelationAnchor(targetAnchor);
+			villageResult = ApplyTownSettlementEffectPlan(
+				settlement,
+				TownMassacreRelationTimingProfile.BuildBoundVillagePlan(villageDelta));
+		}
+
+		GcczDiagnosticLog.Log(
+			"MassacreRelation",
+			"source=" + (source ?? "N/A")
+			+ " settlement=" + (settlement.StringId ?? "N/A")
+			+ " targetAnchor=" + targetAnchor
+			+ " townDelta=" + townDelta
+			+ " townAdjusted=" + townResult.NotableRelationsAdjusted
+			+ " villageDeferred=" + (!includeBoundVillages)
+			+ " villageDelta=" + villageDelta
+			+ " villageAdjusted=" + villageResult.NotableRelationsAdjusted);
 	}
 
 	private static bool StopMassacre(string triggerSource, string triggerDetail, bool showMessage)
@@ -8384,6 +8418,11 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
+		ApplyMassacreNotableRelationAnchors(
+			ResolveCurrentSettlement(),
+			TownMassacreRelationTimingProfile.MassacreRelationAnchor,
+			includeBoundVillages: false,
+			"massacre_trigger");
 		SiegeDestructiveChoiceProfile massacreProfile = SiegeDestructiveChoiceProfile.BuildMassacre();
 		ClearCivicPositiveBuffForSettlement(ResolveCurrentSettlement());
 		_activeMode = InterventionMode.Massacre;
@@ -14411,7 +14450,9 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					"pending_positive_notable_relation",
 					notableRelationDelta: relationDelta,
 					notableRelationReason: reason,
-					includeBoundVillageNotableRelations: includeBoundVillages));
+					notableRelationScope: includeBoundVillages
+						? TownNotableEffectScope.SettlementAndBoundVillages
+						: TownNotableEffectScope.SettlementOnly));
 			int adjusted = result.NotableRelationsAdjusted;
 			Logger.Log("SiegeAiIntervention", "Applied queued positive notable relations after final mercy aftermath. Delta=" + relationDelta + ", IncludeBoundVillages=" + includeBoundVillages + ", Adjusted=" + adjusted + ", Reason=" + (reason ?? "N/A"));
 			return adjusted;
@@ -14448,7 +14489,9 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					"pending_positive_notable_trust",
 					notableTrustDelta: trustDelta,
 					notableTrustReason: reason,
-					includeBoundVillageNotableTrust: includeBoundVillages));
+					notableTrustScope: includeBoundVillages
+						? TownNotableEffectScope.SettlementAndBoundVillages
+						: TownNotableEffectScope.SettlementOnly));
 			int adjusted = result.NotableTrustAdjusted;
 			Logger.Log("SiegeAiIntervention", "Applied queued positive notable trust after final mercy aftermath. Delta=" + trustDelta + ", IncludeBoundVillages=" + includeBoundVillages + ", Adjusted=" + adjusted + ", Reason=" + (reason ?? "N/A"));
 			return adjusted;
@@ -14703,7 +14746,12 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 							&& repopulationLedger.VictimSnapshotSealed;
 						if (ledgerBackedRepopulation)
 						{
-							ApplyFinalAtrocityRelationshipAnchor(settlement, repopulationProfile);
+							ApplyFinalAtrocityNonRelationAnchors(settlement, repopulationProfile);
+							ApplyMassacreNotableRelationAnchors(
+								settlement,
+								TownMassacreRelationTimingProfile.ColonizationRelationAnchor,
+								includeBoundVillages: true,
+								"colonization_final");
 							ApplyFinalizedSettlementOutcomeEffects(
 								settlement,
 								repopulationProfile,
@@ -14732,6 +14780,11 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					{
 						ActiveTownOperationLedger.ForceFullVictimOutcome();
 						ApplyMassacreLedgerConsequencesIfNeeded(includePlunderBaseline: true);
+						ApplyMassacreNotableRelationAnchors(
+							settlement,
+							TownMassacreRelationTimingProfile.MassacreRelationAnchor,
+							includeBoundVillages: true,
+							"massacre_final");
 						ApplyFinalizedSettlementOutcomeEffects(
 							settlement,
 							SiegeSettlementOutcomeProfile.BuildMassacre(),
@@ -14749,8 +14802,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				EncounterCompletion.ResetNativeDevastateSummaryContinue();
 			}
 			TownOperationLedgerSnapshot operationLedger = ActiveTownOperationLedger.Snapshot();
-			bool ledgerBackedPartialMassacre = aftermath == SiegeAftermathAction.SiegeAftermath.Pillage
-				&& _massacreStopped
+			bool ledgerBackedPartialMassacre = _massacreStopped
 				&& operationLedger.Kind == TownOperationKind.Massacre;
 			bool ledgerBackedFullPlunder = aftermath == SiegeAftermathAction.SiegeAftermath.Pillage
 				&& _plunderStarted
@@ -14758,6 +14810,11 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			if (ledgerBackedPartialMassacre)
 			{
 				ApplyMassacreLedgerConsequencesIfNeeded(includePlunderBaseline: true);
+				ApplyMassacreNotableRelationAnchors(
+					settlement,
+					TownMassacreRelationTimingProfile.MassacreRelationAnchor,
+					includeBoundVillages: true,
+					"stopped_massacre_final");
 				ActiveTownOperationLedger.CompletePartialOutcome();
 			}
 			else if (ledgerBackedFullPlunder)

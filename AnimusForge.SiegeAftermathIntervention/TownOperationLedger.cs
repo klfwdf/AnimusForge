@@ -68,6 +68,8 @@ public sealed class TownOperationLedger
     private bool _victimSnapshotSealed;
     private bool _victimConsequenceBaselineCommitted;
     private bool _fullVictimOutcomeForced;
+    private int _committedTownNotableRelationDelta;
+    private int _committedBoundVillageNotableRelationDelta;
 
     public TownOperationKind Kind { get; private set; }
 
@@ -410,6 +412,16 @@ public sealed class TownOperationLedger
         return true;
     }
 
+    public int CommitTownNotableRelationAnchor(int targetDelta)
+    {
+        return CommitNotableRelationAnchor(targetDelta, ref _committedTownNotableRelationDelta);
+    }
+
+    public int CommitBoundVillageNotableRelationAnchor(int targetDelta)
+    {
+        return CommitNotableRelationAnchor(targetDelta, ref _committedBoundVillageNotableRelationDelta);
+    }
+
     public TownOperationLedgerSnapshot Snapshot()
     {
         TownOperationTargetSnapshot[] targets = _targets.Values
@@ -445,6 +457,8 @@ public sealed class TownOperationLedger
             _killedVictimWeight,
             GetVictimProgressBasisPoints(),
             _committedVictimProgressBasisPoints,
+            _committedTownNotableRelationDelta,
+            _committedBoundVillageNotableRelationDelta,
             targets);
     }
 
@@ -466,6 +480,27 @@ public sealed class TownOperationLedger
         _victimSnapshotSealed = false;
         _victimConsequenceBaselineCommitted = false;
         _fullVictimOutcomeForced = false;
+        _committedTownNotableRelationDelta = 0;
+        _committedBoundVillageNotableRelationDelta = 0;
+    }
+
+    private int CommitNotableRelationAnchor(int targetDelta, ref int committedDelta)
+    {
+        if ((Kind != TownOperationKind.Massacre && Kind != TownOperationKind.Colonization)
+            || State == TownOperationState.None
+            || State == TownOperationState.Completed)
+        {
+            return 0;
+        }
+
+        long difference = (long)targetDelta - committedDelta;
+        int incrementalDelta = difference > int.MaxValue
+            ? int.MaxValue
+            : difference < int.MinValue
+                ? int.MinValue
+                : (int)difference;
+        committedDelta = targetDelta;
+        return incrementalDelta;
     }
 
     private int GetProgressBasisPoints()
@@ -579,6 +614,8 @@ public sealed class TownOperationLedgerSnapshot
         int killedVictimWeight,
         int victimProgressBasisPoints,
         int committedVictimProgressBasisPoints,
+        int committedTownNotableRelationDelta,
+        int committedBoundVillageNotableRelationDelta,
         IReadOnlyList<TownOperationTargetSnapshot> targets)
     {
         Kind = kind;
@@ -598,6 +635,8 @@ public sealed class TownOperationLedgerSnapshot
         KilledVictimWeight = Math.Max(0, killedVictimWeight);
         VictimProgressBasisPoints = Math.Min(TownOperationLedger.FullProgressBasisPoints, Math.Max(0, victimProgressBasisPoints));
         CommittedVictimProgressBasisPoints = Math.Min(TownOperationLedger.FullProgressBasisPoints, Math.Max(0, committedVictimProgressBasisPoints));
+        CommittedTownNotableRelationDelta = committedTownNotableRelationDelta;
+        CommittedBoundVillageNotableRelationDelta = committedBoundVillageNotableRelationDelta;
         Targets = targets ?? Array.Empty<TownOperationTargetSnapshot>();
     }
 
@@ -634,6 +673,10 @@ public sealed class TownOperationLedgerSnapshot
     public int VictimProgressBasisPoints { get; }
 
     public int CommittedVictimProgressBasisPoints { get; }
+
+    public int CommittedTownNotableRelationDelta { get; }
+
+    public int CommittedBoundVillageNotableRelationDelta { get; }
 
     public IReadOnlyList<TownOperationTargetSnapshot> Targets { get; }
 
