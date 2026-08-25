@@ -137,14 +137,14 @@ public partial class DuelSettings
 
 	[SettingPropertyInteger(
 		"{=SAX_MCM_VoiceCount}战吼士兵人数",
-		0, 40, "0", Order = 1, RequireRestart = false,
+		0, 24, "0", Order = 1, RequireRestart = false,
 		HintText = "{=SAX_MCM_VoiceCount_Hint}本场最多参与原生战吼的士兵数量；只影响声音规模和性能。")]
 	[SettingPropertyGroup(SceneActionsAudienceVoiceGroup)]
 	public int AudienceVoiceCount { get; set; } = 22;
 
 	[SettingPropertyInteger(
 		"{=SAX_MCM_VoiceWave}每波战吼人数",
-		1, 12, "0", Order = 2, RequireRestart = false,
+		1, 8, "0", Order = 2, RequireRestart = false,
 		HintText = "{=SAX_MCM_VoiceWave_Hint}每一波同时触发的原生战吼人数；越小越自然，也越分散性能峰值。")]
 	[SettingPropertyGroup(SceneActionsAudienceVoiceGroup)]
 	public int AudienceVoiceWaveSize { get; set; } = 3;
