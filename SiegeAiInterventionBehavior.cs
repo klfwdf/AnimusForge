@@ -601,6 +601,9 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private void OnGameLoaded(CampaignGameStarter starter)
 	{
 		_loadedTownColonizationRecoveryReady = false;
+		GcczSettlementCulturePersistenceBehavior.ImportCommittedColonizationSnapshot(
+			_loadedTownColonizationSnapshot,
+			"legacy_committed_colonization_load");
 		GcczVolunteerRecruitmentRatePatch.EnsurePatched();
 		CastleAftermathArmyRosterRuntimeBridge.ClearBattleSnapshot("game_loaded");
 		ClearCastleLordDefeatProvenance("game_loaded");
@@ -8491,7 +8494,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			string targetCultureName = ResolveCultureName(targetCulture);
 			TownPromptTextCatalog textCatalog = GcczTownPromptResourceProvider.GetCatalog();
 
-			ApplySettlementCulture(settlement, targetCulture);
+			ApplySettlementCulture(settlement, targetCulture, "constructive_town_culture_change");
 			GcczTownRuleMemoryRuntimeBridge.RefreshAfterRuntimeTransition(
 				settlement,
 				_previousSettlementOwnerClan,
@@ -8558,7 +8561,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return false;
 			}
 			CultureObject oldCulture = settlement.Culture;
-			ApplySettlementCulture(settlement, targetCulture);
+			ApplySettlementCulture(settlement, targetCulture, "town_colonization");
 			GcczTownRuleMemoryRuntimeBridge.RefreshAfterRuntimeTransition(
 				settlement,
 				_previousSettlementOwnerClan,
@@ -8573,7 +8576,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					{
 						if (village?.Settlement != null)
 						{
-							ApplySettlementCulture(village.Settlement, targetCulture);
+							ApplySettlementCulture(village.Settlement, targetCulture, "town_colonization_bound_village");
 							boundVillagesChanged++;
 						}
 					}
