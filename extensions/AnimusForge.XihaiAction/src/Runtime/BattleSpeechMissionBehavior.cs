@@ -16,9 +16,6 @@ namespace AnimusForge.XihaiAction
         private ActiveBattleSpeechSessionV1 _active;
         private bool _closed = true;
         private long _nextSessionGeneration;
-        private double _nextEnemyScanAtMissionTime;
-        private bool _enemyScanDirty = true;
-        private bool _cachedNearbyEnemy;
 
         public override MissionBehaviorType BehaviorType => MissionBehaviorType.Other;
         internal bool IsSessionActive => !_closed;
@@ -40,9 +37,7 @@ namespace AnimusForge.XihaiAction
                 return;
             }
             _closed = false;
-            _enemyScanDirty = true;
-            _cachedNearbyEnemy = false;
-            _nextEnemyScanAtMissionTime = 0d;
+            BattleSpeechEnemyProximityCache.Reset(Mission);
             BattleSpeechRuntimeHost.BindSession(this);
             SceneActionsLog.Info("BATTLE_SPEECH", "Mission framework session activated.");
         }
@@ -90,12 +85,20 @@ namespace AnimusForge.XihaiAction
                 in affectorWeapon,
                 in blow,
                 in attackCollisionData);
-            _enemyScanDirty = true;
+            BattleSpeechEnemyProximityCache.Invalidate(
+                Mission,
+                affectedAgent,
+                affectorAgent);
             if (_active != null &&
                 (ReferenceEquals(_active.Speaker, affectedAgent) ||
                  ReferenceEquals(_active.Speaker, affectorAgent)))
             {
-                CancelActive("The speaker entered combat.");
+                // Being hit or attacking is precisely the supported
+                // in-combat speech case.  Keep the speech session alive,
+                // release any staging control, and let the performance layer
+                // suppress only presentation/Advance work that is unsafe
+                // while the speaker is fighting.
+                EnterCombatSpeechMode(_active);
             }
         }
 
@@ -106,7 +109,10 @@ namespace AnimusForge.XihaiAction
             KillingBlow blow)
         {
             base.OnAgentRemoved(affectedAgent, affectorAgent, agentState, blow);
-            _enemyScanDirty = true;
+            BattleSpeechEnemyProximityCache.Invalidate(
+                Mission,
+                affectedAgent,
+                affectorAgent);
             if (_active != null && ReferenceEquals(_active.Speaker, affectedAgent))
             {
                 CancelActive("The speaker left the Mission.");
@@ -116,7 +122,7 @@ namespace AnimusForge.XihaiAction
         public override void OnAgentTeamChanged(Team previousTeam, Team newTeam, Agent agent)
         {
             base.OnAgentTeamChanged(previousTeam, newTeam, agent);
-            _enemyScanDirty = true;
+            BattleSpeechEnemyProximityCache.Invalidate(Mission, agent, null);
             if (_active != null && ReferenceEquals(_active.Speaker, agent))
             {
                 CancelActive("The speaker changed team.");
@@ -164,7 +170,31 @@ namespace AnimusForge.XihaiAction
             }
             if (input.InputKind == BattleSpeechInputKindV1.GeneratedNpcReply)
             {
+                // Background AF completion carries only the frozen AgentIndex.
+                // Resolve the live Agent on the Mission thread before any
+                // Bannerlord object is inspected or queued for playback.
+                if (input.Speaker == null && input.SpeakerAgentIndex >= 0)
+                {
+                    input.Speaker = Mission.Agents?.FirstOrDefault(agent =>
+                        agent != null && agent.Index == input.SpeakerAgentIndex);
+                }
                 TryAcceptGeneratedNpcReply(input);
+                return;
+            }
+            if (input.InputKind == BattleSpeechInputKindV1.DedicatedNpcSpeechRetry)
+            {
+                if (_active != null &&
+                    _active.SessionId == input.SessionId &&
+                    _active.State == BattleSpeechSessionStateV1.AwaitingNpcReply &&
+                    _active.Speaker != null &&
+                    _active.Speaker.Index == input.SpeakerAgentIndex &&
+                    input.ConversationEpoch == _active.ConversationEpoch)
+                {
+                    StartDedicatedNpcSpeechGeneration(
+                        _active,
+                        input.RawText,
+                        allowDiversityRetry: false);
+                }
                 return;
             }
 
@@ -172,9 +202,22 @@ namespace AnimusForge.XihaiAction
             // Otherwise a slow classifier could replace a session created by a later exact command.
             _triggerGeneration++;
 
-            BattleSpeechTriggerDecisionV2 command = input.DedicatedSpeechEntry
-                ? BattleSpeechFrameworkV2.ParseDedicatedSpeechInput(input.RawText)
-                : BattleSpeechFrameworkV2.ParsePlayerShout(input.RawText);
+            BattleSpeechTriggerDecisionV2 command = input.DedicatedNpcSpeechEntry
+                ? BattleSpeechFrameworkV2.ParseDedicatedNpcSpeechInput()
+                : input.DedicatedSpeechEntry
+                    ? BattleSpeechFrameworkV2.ParseDedicatedSpeechInput(input.RawText)
+                    : BattleSpeechFrameworkV2.ParsePlayerShout(input.RawText);
+            if (input.DedicatedNpcSpeechEntry &&
+                !AreNpcSpeechTargetsOnPlayerSide(
+                    input.Player,
+                    input.PrimaryTarget,
+                    input.FramedTargets))
+            {
+                RejectSpeechStart(
+                    "NpcSpeechTargetNotAllied",
+                    SceneActionsText.BattleSpeechNpcTargetNotAllied());
+                return;
+            }
             if (command.Kind == BattleSpeechTriggerKindV2.None)
             {
                 if (_active != null &&
@@ -245,7 +288,8 @@ namespace AnimusForge.XihaiAction
                     BattleSpeechSessionStateV1.AwaitingNpcReply,
                     input.ConversationEpoch,
                     input.RawText,
-                    BattleSpeechRuntimeHost.Settings.NpcReplySeconds);
+                    BattleSpeechRuntimeHost.Settings.NpcReplySeconds,
+                    input.DedicatedSpeechEntry);
                 // An explicit NPC command freezes the topic/request, not the final
                 // wording. AF must generate one fresh troop-facing speech body;
                 // the reply claim below captures that one response and prevents
@@ -254,8 +298,8 @@ namespace AnimusForge.XihaiAction
                 {
                     StartDedicatedNpcSpeechGeneration(
                         session,
-                        input,
-                        command.SpeechText);
+                        command.SpeechText,
+                        allowDiversityRetry: true);
                 }
             }
         }
@@ -267,7 +311,8 @@ namespace AnimusForge.XihaiAction
             BattleSpeechSessionStateV1 state,
             int conversationEpoch,
             string requestText,
-            float timeoutSeconds)
+            float timeoutSeconds,
+            bool combinedNpcRequest = false)
         {
             if (!BattleSpeechRuntimeHost.RefreshMcmOverrides(out string refreshError) ||
                 !BattleSpeechRuntimeHost.Settings.Enabled ||
@@ -285,17 +330,9 @@ namespace AnimusForge.XihaiAction
                 RejectSpeechStart("SpeakerUnavailable", SceneActionsText.BattleSpeechSpeakerUnavailable());
                 return null;
             }
-            if (IsSpeakerInCombatAction(speaker))
-            {
-                RejectSpeechStart("SpeakerInCombat", SceneActionsText.BattleSpeechSpeakerInCombat());
-                return null;
-            }
-            _enemyScanDirty = true;
-            if (HasNearbyEnemyThrottled(speaker))
-            {
-                RejectSpeechStart("EnemyNearby", SceneActionsText.BattleSpeechEnemyNearby());
-                return null;
-            }
+            BattleSpeechEnemyProximityCache.Invalidate(Mission, speaker, null);
+            bool combatSpeechMode = IsSpeakerInCombatAction(speaker) ||
+                                     HasNearbyEnemyThrottled(speaker);
 
             Agent[] audience = FreezeAudience(speaker);
             if (audience.Length < BattleSpeechRuntimeHost.Settings.MinimumAudience)
@@ -318,7 +355,8 @@ namespace AnimusForge.XihaiAction
                 RequestText = requestText ?? string.Empty,
                 Generation = ++_nextSessionGeneration,
                 RequestedAtMissionTime = now,
-                ExpiresAtMissionTime = now + timeoutSeconds
+                ExpiresAtMissionTime = now + timeoutSeconds,
+                CombatSpeechMode = combatSpeechMode
             };
             InitializeV2Stage(_active);
             if (speakerKind == BattleSpeechSpeakerKindV1.Npc)
@@ -329,7 +367,14 @@ namespace AnimusForge.XihaiAction
                     speaker,
                     conversationEpoch,
                     _active.RequestText,
-                    _active.ExpiresAtMissionTime);
+                    _active.ExpiresAtMissionTime,
+                    combinedNpcRequest,
+                    combinedNpcRequest
+                        ? BattleSpeechFrameworkV2.ResolveAudienceReplyCount(
+                            BattleSpeechRuntimeHost.StageSettings.AudienceRepliesEnabled,
+                            BattleSpeechRuntimeHost.StageSettings.AudienceReplyCount,
+                            audience.Length)
+                        : 0);
             }
             SceneActionsLog.Info(
                 "BATTLE_SPEECH",
@@ -433,7 +478,20 @@ namespace AnimusForge.XihaiAction
                 _active.PendingNpcReplyText = null;
                 return;
             }
-            PrepareSpeechPlan(_active, _active.PendingNpcReplyText);
+            if (input.CombinedResponse != null)
+            {
+                _active.ActionProgram = input.CombinedResponse.Plan.ActionProgram;
+                _active.Tactic = input.CombinedResponse.Plan.Tactic;
+                _active.AudienceReplies = input.CombinedResponse.Plan.AudienceReplies
+                    .ToArray();
+                _active.TacticDecisionProvided = true;
+                _active.PlanClassificationPending = false;
+                _active.PlanClassificationCompleted = true;
+            }
+            else
+            {
+                PrepareSpeechPlan(_active, _active.PendingNpcReplyText);
+            }
             // The deferred AF replay only releases the visual/TTS payload. Keep
             // the same normalized body on the speech session so the next Mission
             // tick can transition AwaitingNpcReply -> Speaking exactly once.
@@ -500,19 +558,15 @@ namespace AnimusForge.XihaiAction
                 CancelActive("Speaker became unavailable.");
                 return;
             }
-            if (IsSpeakerInCombatAction(_active.Speaker))
+            if (!_active.CombatSpeechMode &&
+                (IsSpeakerInCombatAction(_active.Speaker) ||
+                 HasNearbyEnemyThrottled(_active.Speaker)))
             {
-                CancelActive("The speaker entered combat.");
-                return;
+                EnterCombatSpeechMode(_active);
             }
             if (!IsActiveSpeechPhaseOpen())
             {
                 CancelActive("Battle speech phase closed.");
-                return;
-            }
-            if (HasNearbyEnemyThrottled(_active.Speaker))
-            {
-                CancelActive("Enemy entered the battle speech safety radius.");
                 return;
             }
             if (!ProgressV2Stage(_active, now))
@@ -593,6 +647,42 @@ namespace AnimusForge.XihaiAction
                    !speaker.IsUsingGameObject;
         }
 
+        private bool AreNpcSpeechTargetsOnPlayerSide(
+            Agent player,
+            Agent primaryTarget,
+            IReadOnlyList<Agent> framedTargets)
+        {
+            if (!IsEligibleSpeaker(primaryTarget) ||
+                (player != null && ReferenceEquals(primaryTarget, player)))
+            {
+                return false;
+            }
+
+            if (framedTargets == null || framedTargets.Count == 0)
+            {
+                return true;
+            }
+
+            foreach (Agent target in framedTargets)
+            {
+                // Stale selection entries are harmless after the menu has been
+                // opened; the primary target above is always checked live.
+                if (target == null || !target.IsActive())
+                {
+                    continue;
+                }
+                if (!ReferenceEquals(target.Mission, Mission) ||
+                    target.Team == null ||
+                    !target.Team.IsValid ||
+                    Mission.PlayerTeam == null ||
+                    target.Team.Side != Mission.PlayerTeam.Side)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         private static bool IsSpeakerInCombatAction(Agent speaker)
         {
             if (speaker == null)
@@ -658,39 +748,11 @@ namespace AnimusForge.XihaiAction
 
         private bool HasNearbyEnemyThrottled(Agent speaker)
         {
-            if (speaker == null)
-            {
-                return false;
-            }
-            double now = Mission?.CurrentTime ?? 0d;
-            if (_enemyScanDirty || now >= _nextEnemyScanAtMissionTime)
-            {
-                _cachedNearbyEnemy = HasNearbyEnemy(speaker);
-                _enemyScanDirty = false;
-                _nextEnemyScanAtMissionTime = now +
-                    BattleSpeechRuntimeHost.Settings.EnemyScanIntervalSeconds;
-            }
-            return _cachedNearbyEnemy;
-        }
-
-        private bool HasNearbyEnemy(Agent speaker)
-        {
-            float radiusSquared = BattleSpeechRuntimeHost.Settings.EnemyInterruptRadiusMeters *
-                                  BattleSpeechRuntimeHost.Settings.EnemyInterruptRadiusMeters;
-            foreach (Team team in Mission.Teams)
-            {
-                if (team == null || !team.IsValid || team.Side == speaker.Team.Side) continue;
-                foreach (Agent enemy in team.ActiveAgents)
-                {
-                    if (enemy != null && enemy.Team != null && enemy.Team.IsValid &&
-                        enemy.IsActive() && enemy.IsHuman &&
-                        enemy.Position.AsVec2.DistanceSquared(speaker.Position.AsVec2) <= radiusSquared)
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
+            return BattleSpeechEnemyProximityCache.HasNearbyEnemy(
+                Mission,
+                speaker,
+                BattleSpeechRuntimeHost.Settings.EnemyInterruptRadiusMeters,
+                BattleSpeechRuntimeHost.Settings.EnemyScanIntervalSeconds);
         }
 
         private void CompleteActive()
@@ -754,7 +816,9 @@ namespace AnimusForge.XihaiAction
                 session.Audience,
                 session.ActionProgram,
                 session.Tactic,
-                session.AudienceReplies);
+                session.AudienceReplies,
+                session.TacticDecisionProvided,
+                session.CombatSpeechMode);
         }
 
         private void Notify(TaleWorlds.Localization.TextObject text, Color color)
@@ -783,6 +847,7 @@ namespace AnimusForge.XihaiAction
             while (_inbound.TryDequeue(out _)) { }
             _closed = true;
             BattleSpeechRuntimeHost.UnbindSession(this);
+            BattleSpeechEnemyProximityCache.Reset(Mission);
             BattleSpeechApiV1.Reset();
             SceneActionsLog.Info("BATTLE_SPEECH", "Mission framework session closed. " + reason);
         }
@@ -833,6 +898,8 @@ namespace AnimusForge.XihaiAction
             public string PendingSpeechText;
             public ActionProgramV4 ActionProgram;
             public BattleSpeechTacticV2 Tactic;
+            public bool TacticDecisionProvided;
+            public bool CombatSpeechMode;
             public string[] AudienceReplies = Array.Empty<string>();
             public System.Threading.CancellationTokenSource ClassificationCancellation;
         }

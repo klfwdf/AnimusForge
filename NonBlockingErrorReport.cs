@@ -1,18 +1,16 @@
 using System;
 using System.Collections.Concurrent;
-using System.Text;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 
 namespace AnimusForge;
 
 /// <summary>
-/// Sends acknowledgement-only failures to Bannerlord's lower-left message feed.
-/// Full diagnostics stay in the mod log so long API responses never hide the active choices.
+/// Sends single-action failures to Bannerlord's lower-left message feed.
+/// Full redacted diagnostics are shown in the message feed and additionally kept in the mod log.
 /// </summary>
 public static class NonBlockingErrorReport
 {
-	private const int VisibleDetailCharacterLimit = 420;
 	private const long DuplicateNotificationWindowTicks = TimeSpan.TicksPerSecond * 2;
 	private static readonly ConcurrentQueue<Action> DeferredAcknowledgements = new ConcurrentQueue<Action>();
 	private static readonly object NotificationLock = new object();
@@ -20,7 +18,7 @@ public static class NonBlockingErrorReport
 	private static long _lastNotificationUtcTicks;
 
 	/// <summary>
-	/// Shows a bounded, non-blocking failure summary and writes the redacted full detail to the log.
+	/// Shows the full redacted failure detail without truncation and writes the same detail to the log.
 	/// This method is only called from UI/main-thread paths or LlmRetryPrompt's main-thread dispatcher.
 	/// </summary>
 	public static void Show(string title, string detail, bool rememberForAnalysis = true)
@@ -37,20 +35,27 @@ public static class NonBlockingErrorReport
 		{
 			return;
 		}
-		// 相同故障短时间内只保留一次日志与 HUD 消息，防止重试循环造成无效分配和磁盘写入。
+		// 相同故障短时间内只保留一次完整 HUD 消息与日志，防止重试循环造成无效分配和磁盘写入。
 		Logger.Log("NonBlockingErrorReport", "title=" + normalizedTitle + "\n" + normalizedDetail);
+		bool displayed = false;
 		try
 		{
 			InformationManager.DisplayMessage(new InformationMessage(notification, Colors.Red));
+			displayed = true;
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("NonBlockingErrorReport", "左下角错误消息显示失败: " + ex.Message);
 		}
+		if (displayed && rememberForAnalysis)
+		{
+			// 先让完整错误进入左下角；AI 分析确认框由主线程 tick 以优先队列方式显示，原操作窗口会自动恢复。
+			AiErrorAnalysisInquiry.RequestLatestFailureAnalysis();
+		}
 	}
 
 	/// <summary>
-	/// Converts only one-button acknowledgement reports; confirmations and retry/abort decisions remain modal.
+/// Converts one-button error reports; confirmations and retry/abort decisions remain modal.
 	/// </summary>
 	internal static bool TryRouteAcknowledgementInquiry(InquiryData data)
 	{
@@ -90,8 +95,7 @@ public static class NonBlockingErrorReport
 			|| data.NegativeAction != null
 			|| !string.IsNullOrWhiteSpace(data.NegativeText)
 			|| data.TimeoutAction != null
-			|| !HasFailureSignal(data.TitleText, data.Text)
-			|| !IsAcknowledgementCaption(data.AffirmativeText))
+			|| !HasFailureSignal(data.TitleText, data.Text))
 		{
 			return false;
 		}
@@ -128,19 +132,6 @@ public static class NonBlockingErrorReport
 			|| text.IndexOf("not found", StringComparison.OrdinalIgnoreCase) >= 0;
 	}
 
-	private static bool IsAcknowledgementCaption(string value)
-	{
-		string caption = (value ?? "").Trim();
-		return string.IsNullOrEmpty(caption)
-			|| string.Equals(caption, "知道了", StringComparison.Ordinal)
-			|| string.Equals(caption, "我知道了", StringComparison.Ordinal)
-			|| string.Equals(caption, "关闭", StringComparison.Ordinal)
-			|| string.Equals(caption, "返回", StringComparison.Ordinal)
-			|| string.Equals(caption, "返回编辑器", StringComparison.Ordinal)
-			|| string.Equals(caption, "确定", StringComparison.Ordinal)
-			|| string.Equals(caption, "ESC关闭", StringComparison.Ordinal);
-	}
-
 	private static void QueueAcknowledgement(Action acknowledgement)
 	{
 		if (acknowledgement != null)
@@ -151,41 +142,8 @@ public static class NonBlockingErrorReport
 
 	private static string BuildVisibleMessage(string title, string detail)
 	{
-		string summary = ExtractSummary(detail);
-		string prefix = "[AnimusForge] " + title + "：";
-		int remaining = Math.Max(0, VisibleDetailCharacterLimit - prefix.Length);
-		if (summary.Length > remaining)
-		{
-			summary = summary.Substring(0, remaining).TrimEnd() + "…";
-		}
-		return prefix + summary + "（完整详情已写入 AnimusForge 日志）";
-	}
-
-	private static string ExtractSummary(string detail)
-	{
-		string text = Normalize(detail, "未知错误");
-		int modelReplyIndex = text.IndexOf("【模型回复（完整）】", StringComparison.Ordinal);
-		int rawResponseIndex = text.IndexOf("【API原始响应（完整）】", StringComparison.Ordinal);
-		int cutoff = modelReplyIndex >= 0 && rawResponseIndex >= 0
-			? Math.Min(modelReplyIndex, rawResponseIndex)
-			: Math.Max(modelReplyIndex, rawResponseIndex);
-		if (cutoff >= 0)
-		{
-			text = text.Substring(0, cutoff);
-		}
-		StringBuilder compact = new StringBuilder(text.Length);
-		bool previousWasWhitespace = false;
-		for (int i = 0; i < text.Length; i++)
-		{
-			char character = text[i];
-			bool isWhitespace = char.IsWhiteSpace(character);
-			if (!isWhitespace || !previousWasWhitespace)
-			{
-				compact.Append(isWhitespace ? ' ' : character);
-			}
-			previousWasWhitespace = isWhitespace;
-		}
-		return Normalize(compact.ToString(), "未知错误");
+		// 用户需要在左下角直接阅读模型回复和 API 原始响应，不能在此处再裁剪或移除任何诊断段落。
+		return "[AnimusForge] " + title + "：\n" + Normalize(detail, "未知错误");
 	}
 
 	private static bool ShouldSuppressDuplicate(string title, string detail)

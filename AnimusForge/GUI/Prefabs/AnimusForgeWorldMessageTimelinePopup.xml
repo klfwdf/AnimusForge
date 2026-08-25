@@ -12,6 +12,18 @@
                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="100" VerticalAlignment="Top" Sprite="General\CharacterCreation\character_creation_background_gradient" AlphaFactor="0.3" Color="#000000FF">
                   <Children>
                     <AutoHideRichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Top" MarginLeft="28" MarginRight="28" MarginTop="14" Brush="Popup.Title.Text" Brush.TextHorizontalAlignment="Center" Text="@TitleText" />
+                    <!-- The primary control pauses the campaign, or continues a paused campaign at the normal 3x speed. -->
+                    <ButtonWidget DoNotPassEventsToChildren="true" IsEnabled="@CanToggleGamePause" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="172" SuggestedHeight="34" HorizontalAlignment="Right" VerticalAlignment="Top" MarginRight="16" MarginTop="10" Brush="Popup.Done.Button" Command.Click="ExecuteToggleGamePause" UpdateChildrenStates="true">
+                      <Children>
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="20" VerticalAlignment="Center" MarginLeft="10" MarginRight="10" Brush="Popup.Button.Text" Brush.FontSize="15" Brush.TextHorizontalAlignment="Center" Text="@PauseGameText" DoNotAcceptEvents="true" />
+                      </Children>
+                    </ButtonWidget>
+                    <!-- Developer mode keeps the normal 3x button and adds this separate, paused-only 10x continuation choice. -->
+                    <ButtonWidget IsVisible="@ShowDeveloperFastForwardButton" DoNotPassEventsToChildren="true" IsEnabled="@CanToggleGamePause" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="172" SuggestedHeight="34" HorizontalAlignment="Right" VerticalAlignment="Top" MarginRight="196" MarginTop="10" Brush="Popup.Done.Button" Command.Click="ExecuteContinueGameAtDeveloperSpeed" UpdateChildrenStates="true">
+                      <Children>
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="20" VerticalAlignment="Center" MarginLeft="10" MarginRight="10" Brush="Popup.Button.Text" Brush.FontSize="15" Brush.TextHorizontalAlignment="Center" Text="继续游戏（10倍）" DoNotAcceptEvents="true" />
+                      </Children>
+                    </ButtonWidget>
                     <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Bottom" MarginLeft="28" MarginRight="28" MarginBottom="12" Brush="Popup.Description.Text" Text="@SubtitleText" />
                   </Children>
                 </Widget>
@@ -97,7 +109,8 @@
                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="8" MarginLeft="18" MarginRight="18" MarginTop="52" Sprite="StdAssets\Popup\divider" />
                             <Widget IsVisible="@HasTimelineRecords" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="14" MarginRight="12" MarginTop="68" MarginBottom="14">
                               <Children>
-                                <AnimusForgeConversationHistoryAutoScrollPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="RecordClipRect" InnerPanel="RecordClipRect\RecordInnerPanel" MarginRight="7" AutoHideScrollBars="true" MouseScrollAxis="Vertical" VerticalScrollbar="..\RecordScrollbar\Scrollbar">
+                                <!-- New visible messages advance this version; the timeline opts into a short smooth descent after layout settles. -->
+                                <AnimusForgeConversationHistoryAutoScrollPanel AutoScrollRequestVersion="@RecordAutoScrollRequestVersion" SmoothAutoScroll="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="RecordClipRect" InnerPanel="RecordClipRect\RecordInnerPanel" MarginRight="7" AutoHideScrollBars="true" MouseScrollAxis="Vertical" VerticalScrollbar="..\RecordScrollbar\Scrollbar">
                                   <Children>
                                     <Widget Id="RecordClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
                                       <Children>
@@ -106,10 +119,15 @@
                                             <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="98" MarginBottom="9" Brush="Popup.Cancel.Button" Command.Click="ExecuteSelect" IsSelected="@IsSelected" UpdateChildrenStates="true">
                                               <Children>
                                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#2A2017FF" AlphaFactor="0.84" IsEnabled="false" />
+                                                <!-- The selected record receives a full-width highlight and bright frame so it remains identifiable while reading details. -->
+                                                <Widget IsVisible="@IsSelected" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="2" MarginRight="2" MarginTop="2" MarginBottom="2" Sprite="BlankWhiteSquare_9" Color="#80663DFF" AlphaFactor="0.88" IsEnabled="false" />
+                                                <Widget IsVisible="@IsSelected" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="3" VerticalAlignment="Top" MarginLeft="8" MarginRight="8" MarginTop="3" Sprite="BlankWhiteSquare_9" Color="#F0D48AFF" AlphaFactor="0.96" IsEnabled="false" />
                                                 <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="5" HorizontalAlignment="Left" MarginTop="8" MarginBottom="8" Sprite="BlankWhiteSquare_9" Color="#8C785AFF" AlphaFactor="0.88" IsEnabled="false" />
+                                                <Widget IsVisible="@IsSelected" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="5" HorizontalAlignment="Left" MarginTop="6" MarginBottom="6" Sprite="BlankWhiteSquare_9" Color="#E7C46CFF" AlphaFactor="0.98" IsEnabled="false" />
                                                 <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="20" MarginLeft="16" MarginRight="42" MarginTop="8" Brush="Popup.Description.Text" Brush.FontSize="15" Brush.FontColor="#DDBB73FF" Text="@CategoryLabel" DoNotAcceptEvents="true" />
                                                 <AutoHideRichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="38" MarginLeft="16" MarginRight="42" MarginTop="28" Brush="Popup.Title.Text" Brush.FontSize="19" Brush.FontColor="#E7C46CFF" Text="@TitleText" CanBreakWords="true" DoNotAcceptEvents="true" />
                                                 <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Bottom" MarginLeft="16" MarginRight="16" MarginBottom="8" Brush="Popup.Description.Text" Brush.FontSize="14" Text="@MetaText" DoNotAcceptEvents="true" />
+                                                <TextWidget IsVisible="@IsSelected" WidthSizePolicy="Fixed" SuggestedWidth="36" HeightSizePolicy="Fixed" SuggestedHeight="20" HorizontalAlignment="Right" VerticalAlignment="Top" MarginRight="42" MarginTop="7" Brush="Popup.Title.Text" Brush.FontSize="13" Brush.FontColor="#F0D48AFF" Brush.TextHorizontalAlignment="Center" Text="已选" DoNotAcceptEvents="true" />
                                                 <TextWidget WidthSizePolicy="Fixed" SuggestedWidth="32" HeightSizePolicy="Fixed" SuggestedHeight="22" HorizontalAlignment="Right" VerticalAlignment="Top" MarginRight="6" MarginTop="7" Brush="Popup.Button.Text" Brush.FontSize="14" Brush.TextHorizontalAlignment="Center" Text="@UnreadMarkerText" DoNotAcceptEvents="true" />
                                               </Children>
                                             </ButtonWidget>

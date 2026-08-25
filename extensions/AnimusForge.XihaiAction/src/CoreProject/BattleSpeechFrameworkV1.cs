@@ -110,8 +110,11 @@ namespace AnimusForge.SceneActions.Core
         public float NpcReplySeconds { get; set; } = 60f;
         public int MaxSpeechChars { get; set; } = BattleSpeechFrameworkV1.MaximumSpeechChars;
         public float AudienceRadiusMeters { get; set; } = 80f;
-        public float EnemyInterruptRadiusMeters { get; set; } = 35f;
-        public float EnemyScanIntervalSeconds { get; set; } = 0.25f;
+        public float EnemyInterruptRadiusMeters { get; set; } = 10f;
+        public float EnemyScanIntervalSeconds { get; set; } = 0.4f;
+        // Independent from the logical wave size: this is the hard per-Mission-
+        // Tick budget for bridge submissions.
+        public int MaximumAudienceReplySubmissionsPerTick { get; set; } = 8;
         public int MinimumAudience { get; set; } = 1;
         public int MaximumAudience { get; set; } = 512;
         public float MinimumDurationSeconds { get; set; } = 6f;
@@ -144,6 +147,11 @@ namespace AnimusForge.SceneActions.Core
             if (EnemyScanIntervalSeconds < 0.05f || EnemyScanIntervalSeconds > 2f)
             {
                 errors.Add("EnemyScanIntervalSeconds must be within 0.05..2 seconds.");
+            }
+            if (MaximumAudienceReplySubmissionsPerTick < 2 ||
+                MaximumAudienceReplySubmissionsPerTick > 20)
+            {
+                errors.Add("MaximumAudienceReplySubmissionsPerTick must be within 2..20.");
             }
             if (MinimumAudience < 1 || MaximumAudience < MinimumAudience || MaximumAudience > 1024)
             {
