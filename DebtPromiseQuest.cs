@@ -30,7 +30,7 @@ public sealed class DebtPromiseQuest : QuestBase
 	[SaveableField(6)]
 	private string _debtNote;
 
-	// This version lets old saves refresh participant/location links and restore the fixed completion condition exactly once.
+	// Version 7 rebuilds saved active promise journals once, removing unsafe non-hero troop hyperlinks from pre-existing entries.
 	[SaveableField(7)]
 	private int _journalFormatVersion;
 
@@ -45,7 +45,7 @@ public sealed class DebtPromiseQuest : QuestBase
 	[SaveableField(10)]
 	private bool _isExpired;
 
-	private const int CurrentJournalFormatVersion = 6;
+	private const int CurrentJournalFormatVersion = 7;
 
 	public string DebtId => (_debtId ?? string.Empty).Trim();
 
@@ -360,7 +360,7 @@ public sealed class DebtPromiseQuest : QuestBase
 		AddSettlementLinkCandidates(note, candidates, seenNames);
 		AddClanLinkCandidates(note, candidates, seenNames);
 		AddKingdomLinkCandidates(note, candidates, seenNames);
-		AddTroopLinkCandidates(note, candidates, seenNames);
+		// Troop templates deliberately stay plain because opening their native encyclopedia pages can crash the game.
 
 		// Replace longer names first so a nested entity label cannot consume part of a more specific one.
 		candidates.Sort((left, right) => right.Key.Length.CompareTo(left.Key.Length));
@@ -426,27 +426,6 @@ public sealed class DebtPromiseQuest : QuestBase
 		catch
 		{
 			// Keep the task journal usable even if a kingdom object cannot build its encyclopedia label.
-		}
-	}
-
-	private static void AddTroopLinkCandidates(string note, List<KeyValuePair<string, TextObject>> candidates, HashSet<string> seenNames)
-	{
-		try
-		{
-			for (int index = 0; index < CharacterObject.All.Count; index++)
-			{
-				CharacterObject troop = CharacterObject.All[index];
-				// Only actual non-hero troop definitions are considered, avoiding broad accidental links to named heroes.
-				if (troop == null || troop.IsHero)
-				{
-					continue;
-				}
-				AddEntityLinkCandidate(note, troop.Name?.ToString(), troop.EncyclopediaLinkWithName, candidates, seenNames);
-			}
-		}
-		catch
-		{
-			// Invalid troop templates safely remain ordinary text rather than breaking a saved task journal.
 		}
 	}
 

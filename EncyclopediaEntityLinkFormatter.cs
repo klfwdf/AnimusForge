@@ -134,8 +134,7 @@ internal static class EncyclopediaEntityLinkFormatter
 			Hero,
 			Settlement,
 			Clan,
-			Kingdom,
-			Troop
+			Kingdom
 		}
 
 		private sealed class LinkDescriptor
@@ -165,8 +164,6 @@ internal static class EncyclopediaEntityLinkFormatter
 						return ((Clan)Entity).EncyclopediaLinkWithName;
 					case DescriptorKind.Kingdom:
 						return ((Kingdom)Entity).EncyclopediaLinkWithName;
-					case DescriptorKind.Troop:
-						return ((CharacterObject)Entity).EncyclopediaLinkWithName;
 					default:
 						return null;
 				}
@@ -258,7 +255,7 @@ internal static class EncyclopediaEntityLinkFormatter
 			AddSettlementDescriptors();
 			AddClanDescriptors();
 			AddKingdomDescriptors();
-			AddTroopDescriptors();
+			// Non-hero troop templates are deliberately excluded: their native encyclopedia navigation can destabilize the UI.
 		}
 
 		private void AddHeroDescriptors()
@@ -343,26 +340,6 @@ internal static class EncyclopediaEntityLinkFormatter
 			}
 		}
 
-		private void AddTroopDescriptors()
-		{
-			try
-			{
-				var allCharacters = CharacterObject.All;
-				for (int index = 0; index < allCharacters.Count; index++)
-				{
-					CharacterObject troop = allCharacters[index];
-					if (troop != null && !troop.IsHero)
-					{
-						AddDescriptor(troop.Name?.ToString(), troop, DescriptorKind.Troop);
-					}
-				}
-			}
-			catch
-			{
-				// Keep the popup usable if character data is not ready yet.
-			}
-		}
-
 		private void AddDescriptor(string rawName, object entity, DescriptorKind kind)
 		{
 			string name = (rawName ?? string.Empty).Trim();
@@ -390,7 +367,9 @@ internal static class EncyclopediaEntityLinkFormatter
 			{
 				return false;
 			}
-			if ((conversationTargetHero != null || conversationTargetCharacter != null)
+			// CharacterObject may supply its Hero fallback, but its own non-hero encyclopedia entry is never used.
+			Hero npcHero = ResolveHeroLinkTarget(conversationTargetHero, conversationTargetCharacter);
+			if (npcHero != null
 				&& HasCandidateEndingAfter(text, "NPC", tailStart, previousTextLength))
 			{
 				return true;
@@ -463,21 +442,20 @@ internal static class EncyclopediaEntityLinkFormatter
 		AddSettlementLinkCandidates(text, textTwoCharacterPairs, candidates, seenNames, ref order);
 		AddClanLinkCandidates(text, textTwoCharacterPairs, candidates, seenNames, ref order);
 		AddKingdomLinkCandidates(text, textTwoCharacterPairs, candidates, seenNames, ref order);
-		AddTroopLinkCandidates(text, textTwoCharacterPairs, candidates, seenNames, ref order);
+		// Non-hero troop templates remain plain text because their encyclopedia hyperlinks are not safe to navigate.
 		return ReplaceMatchesWithNativeLinks(text, candidates);
 	}
 
-	// NPC and 玩家 are contextual tokens: their visible label becomes the current conversation target or the player hero.
+	// NPC and 玩家 are contextual tokens: NPC links only to a Hero, while non-hero scene NPCs deliberately remain plain text.
 	private static void AddConversationContextCandidates(string text, HashSet<int> textTwoCharacterPairs, Hero conversationTargetHero, CharacterObject conversationTargetCharacter, List<LinkCandidate> candidates, HashSet<string> seenNames, ref int order)
 	{
-		if (TryGetMentionedName(text, "NPC", textTwoCharacterPairs, seenNames, out string npcToken))
+		// CharacterObject may supply its Hero fallback, but its own non-hero encyclopedia entry is never used.
+		Hero npcHero = ResolveHeroLinkTarget(conversationTargetHero, conversationTargetCharacter);
+		if (npcHero != null && TryGetMentionedName(text, "NPC", textTwoCharacterPairs, seenNames, out string npcToken))
 		{
 			try
 			{
-				TextObject targetLink = conversationTargetHero != null
-					? conversationTargetHero.EncyclopediaLinkWithName
-					: conversationTargetCharacter?.EncyclopediaLinkWithName;
-				AddLinkCandidate(npcToken, targetLink, candidates, seenNames, ref order);
+				AddLinkCandidate(npcToken, npcHero.EncyclopediaLinkWithName, candidates, seenNames, ref order);
 			}
 			catch
 			{
@@ -498,7 +476,24 @@ internal static class EncyclopediaEntityLinkFormatter
 		}
 	}
 
-	// Hero names are considered before general troop names so an identical label always resolves to the named character.
+	// A target CharacterObject is consulted only to recover an actual Hero; failure leaves NPC as safe plain text.
+	private static Hero ResolveHeroLinkTarget(Hero conversationTargetHero, CharacterObject conversationTargetCharacter)
+	{
+		if (conversationTargetHero != null)
+		{
+			return conversationTargetHero;
+		}
+		try
+		{
+			return conversationTargetCharacter?.HeroObject;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	// Hero names resolve only to hero encyclopedia pages; matching non-hero troop labels deliberately stay plain.
 	private static void AddHeroLinkCandidates(string text, HashSet<int> textTwoCharacterPairs, List<LinkCandidate> candidates, HashSet<string> seenNames, ref int order)
 	{
 		try
@@ -625,35 +620,6 @@ internal static class EncyclopediaEntityLinkFormatter
 		catch
 		{
 			// The reply remains usable if the kingdom registry changes during the display pass.
-		}
-	}
-
-	// Only non-hero troop templates are added here because heroes were resolved first with their hero encyclopedia pages.
-	private static void AddTroopLinkCandidates(string text, HashSet<int> textTwoCharacterPairs, List<LinkCandidate> candidates, HashSet<string> seenNames, ref int order)
-	{
-		try
-		{
-			var allCharacters = CharacterObject.All;
-			for (int index = 0; index < allCharacters.Count; index++)
-			{
-				CharacterObject troop = allCharacters[index];
-				if (troop == null || troop.IsHero || !TryGetMentionedName(text, troop.Name?.ToString(), textTwoCharacterPairs, seenNames, out string name))
-				{
-					continue;
-				}
-				try
-				{
-					AddLinkCandidate(name, troop.EncyclopediaLinkWithName, candidates, seenNames, ref order);
-				}
-				catch
-				{
-					// Hidden or invalid troop encyclopedia entries are safely ignored.
-				}
-			}
-		}
-		catch
-		{
-			// Never let a temporary character-registry failure suppress a completed conversation reply.
 		}
 	}
 
