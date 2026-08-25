@@ -25,6 +25,8 @@ namespace AnimusForge.XihaiAction
         private const int IntegratedMigrationVersion = 2;
         private const string DuelSettingsTypeName = "AnimusForge.DuelSettings";
         private const string LegacySettingsFileName = "AnimusForge_XihaiAction.json";
+        private const int MaximumAudienceVoiceCount = 24;
+        private const int MaximumAudienceVoiceWaveSize = 8;
 
         private static readonly object AccessorSync = new object();
         private static readonly string[] MigratedPropertyNames =
@@ -147,6 +149,7 @@ namespace AnimusForge.XihaiAction
                 return false;
             }
             EnsureLegacyMigration(settings);
+            bool correctedPersistedValues = false;
             snapshot = new Snapshot
             {
                 NaturalLanguageReplyActionsEnabled = Read(settings, "NaturalLanguageReplyActionsEnabled", true),
@@ -163,8 +166,20 @@ namespace AnimusForge.XihaiAction
                 VisualWaveSize = Read(settings, "VisualWaveSize", 6),
                 MaximumVisualSubmissionsPerTick = Read(settings, "MaximumVisualSubmissionsPerTick", 6),
                 AudienceVoicesEnabled = Read(settings, "AudienceVoicesEnabled", true),
-                AudienceVoiceCount = Read(settings, "AudienceVoiceCount", 22),
-                AudienceVoiceWaveSize = Read(settings, "AudienceVoiceWaveSize", 3),
+                AudienceVoiceCount = ReadClampedInt(
+                    settings,
+                    "AudienceVoiceCount",
+                    22,
+                    0,
+                    MaximumAudienceVoiceCount,
+                    ref correctedPersistedValues),
+                AudienceVoiceWaveSize = ReadClampedInt(
+                    settings,
+                    "AudienceVoiceWaveSize",
+                    3,
+                    1,
+                    MaximumAudienceVoiceWaveSize,
+                    ref correctedPersistedValues),
                 AudienceVoiceWaveIntervalSeconds = Read(settings, "AudienceVoiceWaveIntervalSeconds", 0.18f),
                 AudienceRepliesEnabled = Read(settings, "AudienceRepliesEnabled", true),
                 AudienceReplyCount = Read(settings, "AudienceReplyCount", 24),
@@ -181,7 +196,34 @@ namespace AnimusForge.XihaiAction
                 ScreenNotifications = Read(settings, "ScreenNotifications", true),
                 DiagnosticsEnabled = Read(settings, "DiagnosticsEnabled", false)
             };
+            if (correctedPersistedValues)
+            {
+                TryPersistSettings(settings);
+                SceneActionsLog.Warning(
+                    "BATTLE_SPEECH_MCM",
+                    "Corrected persisted battle-speech voice bounds to Core limits: " +
+                    "AudienceVoiceCount=0.." + MaximumAudienceVoiceCount +
+                    ", AudienceVoiceWaveSize=1.." + MaximumAudienceVoiceWaveSize + ".");
+            }
             return true;
+        }
+
+        private static int ReadClampedInt(
+            object settings,
+            string name,
+            int fallback,
+            int minimum,
+            int maximum,
+            ref bool corrected)
+        {
+            int value = Read(settings, name, fallback);
+            int normalized = Math.Max(minimum, Math.Min(maximum, value));
+            if (normalized != value)
+            {
+                Write(settings, name, normalized);
+                corrected = true;
+            }
+            return normalized;
         }
 
         private static object ResolveDuelSettings()
