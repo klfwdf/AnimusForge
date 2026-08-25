@@ -356,28 +356,12 @@ namespace AnimusForge.XihaiAction
                     PrepareSpeech(session, input.RawText);
                 }
             }
-            else if (kind == BattleSpeechTriggerKindV2.RequestNpcSpeech &&
-                     input.PrimaryTarget != null)
+            else
             {
-                // The original AF shout method was held while the classifier ran.
-                // Replay it once so AF creates the NPC response body; the recorded
-                // message observer then starts the frozen NPC speech session.
-                if (!AfCompatV130.TryReplayOriginalPlayerShout(
-                        input,
-                        observeForBattleSpeech: true,
-                        out string replayError))
-                {
-                    SceneActionsLog.Warning(
-                        "BATTLE_SPEECH_COMPAT",
-                        "NPC speech classification resolved, but AF replay failed: " +
-                        replayError);
-                }
-            }
-            else if (kind == BattleSpeechTriggerKindV2.RequestNpcSpeech)
-            {
-                // The classifier selected an NPC actor but the frozen target was
-                // unavailable. Do not synthesize a new target; restore AF's normal
-                // scene route instead.
+                // RequestNpcSpeech is reserved for the Y-menu internal route and
+                // can never be produced by the T-key trigger classifier. Treat any
+                // unexpected value as an ordinary AF shout rather than allowing a
+                // classifier response to retarget an NPC.
                 ReplayOrdinaryAfShout(input);
             }
         }
@@ -402,10 +386,34 @@ namespace AnimusForge.XihaiAction
             }
         }
 
+        private void EnterCombatSpeechMode(ActiveBattleSpeechSessionV1 session)
+        {
+            if (session == null || session.CombatSpeechMode)
+            {
+                return;
+            }
+            session.CombatSpeechMode = true;
+            session.ReachedSpeechLine = true;
+            ReleaseOwnedScriptedMovement(session);
+            SceneActionsLog.Info(
+                "BATTLE_SPEECH_STAGE",
+                "Session=" + session.SessionId.ToString("N") +
+                " State=CombatInPlace NoScriptedMovement=True");
+        }
+
         private void InitializeV2Stage(ActiveBattleSpeechSessionV1 session)
         {
             session.ReachedSpeechLine = session.SpeakerKind == BattleSpeechSpeakerKindV1.Player;
             session.PlanClassificationCompleted = false;
+            if (session.CombatSpeechMode)
+            {
+                session.ReachedSpeechLine = true;
+                SceneActionsLog.Info(
+                    "BATTLE_SPEECH_STAGE",
+                    "Session=" + session.SessionId.ToString("N") +
+                    " State=CombatInPlace NoScriptedMovement=True");
+                return;
+            }
             if (session.SpeakerKind != BattleSpeechSpeakerKindV1.Npc ||
                 !BattleSpeechRuntimeHost.StageSettings.NpcPositioningEnabled ||
                 !TryBuildSpeechLine(
@@ -450,6 +458,16 @@ namespace AnimusForge.XihaiAction
 
         private bool ProgressV2Stage(ActiveBattleSpeechSessionV1 session, double now)
         {
+            // Combat mode is sticky for the whole speech.  Once the first
+            // contact is detected, the performance layer suppresses visual
+            // presentation, battle cries and Advance; do not keep polling
+            // the shared proximity cache for the remainder of this session.
+            if (!session.CombatSpeechMode &&
+                (IsSpeakerInCombatAction(session.Speaker) ||
+                 HasNearbyEnemyThrottled(session.Speaker)))
+            {
+                EnterCombatSpeechMode(session);
+            }
             if (session.SpeakerKind != BattleSpeechSpeakerKindV1.Npc)
             {
                 // Player speech has no positioning phase. Do not expire its

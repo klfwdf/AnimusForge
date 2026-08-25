@@ -37,6 +37,30 @@ namespace AnimusForge.XihaiAction
         public static string ModuleRoot { get; private set; }
         public static string CatalogHash { get; private set; }
         public static bool ConfigurationValid { get; private set; }
+
+        /// <summary>
+        /// Small, non-command prompt hint used by AF's native AI conversation.
+        /// The model still writes ordinary dialogue; it may include a natural
+        /// stage direction only when the story actually makes the action happen.
+        /// The closed-set parser consumes that prose after the reply and never
+        /// accepts native act_* ids from user/model text.
+        /// </summary>
+        internal static string BuildNativeConversationActionInstruction()
+        {
+            lock (Sync)
+            {
+                if (!_initialized || !ConfigurationValid || Settings == null || !Settings.Enabled ||
+                    !Settings.NpcSceneShoutReplyEnabled)
+                {
+                    return string.Empty;
+                }
+            }
+            return "【自然语言动作】这是普通角色对话，不是动作菜单。只有当角色确实在当前情境中做了动作时，" +
+                   "才在自然回复中简短写出已发生的身体描写，例如‘他慢慢跪下’、‘她抬手指向山口’、" +
+                   "‘他抱臂摇头’；不要为了触发动作而凭空添加动作，不要输出动作键、act_*、标签、括号说明或" +
+                   "动作清单。纯粹说‘我同意/我不知道/我保证’不等于动作；否定、假设、引用和计划中的动作不要写成已发生。" +
+                   "回复仍应先自然回答玩家，动作描写只在语义确实发生时出现。";
+        }
         public static bool IsInitialized
         {
             get

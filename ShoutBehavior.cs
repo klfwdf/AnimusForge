@@ -18422,7 +18422,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			nativeHistoryMessages = RemoveNativeMessagesAlreadyInPersistentMemory(nativeHistoryMessages, persistentMemoryRoleMessages);
 		}
 		string taskSystemBlock = BuildSceneSingleNpcTaskSystemBlock(GetSceneNpcHistoryNameForPrompt(npc), false, minTokens, maxTokens, playerName);
-		string layeredPrompt = BuildSceneCompositeUserBlock("", roleTopIntro, taskSystemBlock, ctx?.PreprocessExcludedRuleBlock);
+		string nativeSceneActionInstruction = SceneActionsRuntimeHost.BuildNativeConversationActionInstruction();
+		string layeredPrompt = BuildSceneCompositeUserBlock("", roleTopIntro, taskSystemBlock, nativeSceneActionInstruction, ctx?.PreprocessExcludedRuleBlock);
 		layeredPrompt = AppendPlayerCustomPromptRuleToSystemPrompt(layeredPrompt);
 		string sceneDynamicUserBlock = BuildSceneCompositeUserBlock("", roleRuntimeContext, nativeNpcListBlock, trustBlock, miscExtrasSection);
 		List<object> messages = BuildStrictSceneMessagesForNpc(nativeTargetAgentIndex, layeredPrompt, new string[4] { privateRecentWindowSection, persistedWithoutRecentWindow, sceneDynamicUserBlock, BuildSceneCompositeUserBlock("", knowledgeExtrasSection, systemRuleBlock, nativeMeetingTauntRuleBlock) }, new string[1] { npcInitiatedOpening ? npcOpeningUserText : "" }, currentInputAlreadyRecorded: true, currentPlayerInput: promptPlayerText, injectedHistoryMessages: nativeHistoryMessages, includeSceneHistory: false, persistentHistoryMessages: persistentMemoryRoleMessages, pendingCurrentAfefFactMessages: pendingNativeCurrentAfefFacts, useSceneDistanceSpeechLabels: false);
@@ -18489,6 +18490,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			Logger.Log("ShoutBehavior", "[NativeConversation] dropped main reply before postprocess because target is unavailable target=" + nativeTargetLog + " agentIndex=" + nativeTargetAgentIndex + " reason=" + reason);
 			return "";
 		}
+		// Native AI conversation replies do not pass through AF's scene-shout
+		// publication hook. Feed the completed natural prose into the same
+		// SceneActions parser so descriptions such as “他慢慢跪下并指向旁边”
+		// work in the conversation input shown in the native dialogue screen.
+		SubmitNativeConversationSceneActionObservation(postprocessReply, nativeTargetAgentIndex);
 		// Keep role-play action prose for the postprocessor; display/TTS retains the
 		// existing stage-direction cleanup below.
 		string cleaned = StripStageDirectionsForPassiveShout(postprocessReply);
@@ -18768,6 +18774,45 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			_mainThreadActions.Enqueue(() => CloseNativeConversationForSceneMechanism("worldmap_implicit_party_creation"));
 		}
 		return finalVisible;
+	}
+
+	private static void SubmitNativeConversationSceneActionObservation(string replyText, int agentIndex)
+	{
+		try
+		{
+			if (string.IsNullOrWhiteSpace(replyText) || agentIndex < 0 ||
+				!SceneActionsRuntimeHost.IsInitialized ||
+				SceneActionsRuntimeHost.Settings?.NpcSceneShoutReplyEnabled != true ||
+				Mission.Current == null)
+			{
+				return;
+			}
+			Mission mission = Mission.Current;
+			Agent speaker = mission.Agents?.FirstOrDefault(agent => agent != null && agent.Index == agentIndex);
+			if (speaker == null)
+			{
+				return;
+			}
+			bool submitted = SceneActionsRuntimeHost.SubmitNpcReply(
+				Guid.NewGuid(),
+				mission,
+				speaker,
+				replyText,
+				mission.CurrentTime);
+			if (submitted)
+			{
+				SceneActionsLog.Info(
+					"NATIVE_CONVERSATION_ACTION",
+					"Submitted native AI conversation reply to the natural-action parser. Agent=" + agentIndex);
+			}
+		}
+		catch (Exception ex)
+		{
+			// A parser failure must not discard an otherwise valid native conversation.
+			SceneActionsLog.Warning(
+				"NATIVE_CONVERSATION_ACTION",
+				"Natural-action observation failed open: " + ex.Message);
+		}
 	}
 
 	private static bool IsNativeConversationNoSpeechPlaceholder(string text)
@@ -19294,6 +19339,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		Agent primaryTarget = ResolvePrimaryAgentForShoutTargetingContext(_activeShoutTargetingContext, framedTargets);
 		primaryTarget ??= framedTargets.FirstOrDefault(agent => agent != null && agent.IsActive());
 		Agent player = Agent.Main;
+		bool npcSpeechTargetAllowed = IsPlayerSideBattleSpeechTarget(
+			mission,
+			player,
+			primaryTarget,
+			framedTargets);
 		List<InquiryElement> inquiryElements = new List<InquiryElement>
 		{
 			new InquiryElement(
@@ -19306,8 +19356,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				"battle_speech_npc",
 				"他人演讲",
 				null,
-				isEnabled: primaryTarget != null && primaryTarget.IsActive(),
-				"让当前框选的主目标走到阵前并面向己方士兵演讲。")
+				isEnabled: npcSpeechTargetAllowed,
+				npcSpeechTargetAllowed
+					? "让当前框选的己方士兵走到阵前并面向己方士兵演讲。"
+					: "仅能让当前框选的己方士兵演讲；敌方或混合框选不可用。")
 		};
 		string targetName = primaryTarget?.Name?.ToString() ?? "未选择目标";
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData(
@@ -19360,6 +19412,45 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			isSeachAvailable: false);
 		AfCompatV130.BeginDedicatedSpeechMenuInput();
 		MBInformationManager.ShowMultiSelectionInquiry(data, pauseGameActiveState: true);
+	}
+
+	private static bool IsPlayerSideBattleSpeechTarget(
+		Mission mission,
+		Agent player,
+		Agent primaryTarget,
+		IReadOnlyList<Agent> framedTargets)
+	{
+		if (mission?.PlayerTeam == null ||
+			player == null ||
+			primaryTarget == null ||
+			!primaryTarget.IsActive() ||
+			ReferenceEquals(primaryTarget, player) ||
+			primaryTarget.Team == null ||
+			!primaryTarget.Team.IsValid ||
+			primaryTarget.Team.Side != mission.PlayerTeam.Side)
+		{
+			return false;
+		}
+
+		if (framedTargets == null)
+		{
+			return true;
+		}
+		foreach (Agent target in framedTargets)
+		{
+			if (target == null || !target.IsActive())
+			{
+				continue;
+			}
+			if (!ReferenceEquals(target.Mission, mission) ||
+				target.Team == null ||
+				!target.Team.IsValid ||
+				target.Team.Side != mission.PlayerTeam.Side)
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private void TriggerShoutDirectInput()

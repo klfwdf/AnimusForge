@@ -25,6 +25,7 @@ namespace AnimusForge.XihaiAction
         private static MethodInfo _shownNpcReplyMethod;
         private static MethodInfo _replyPromptMethod;
         private static MethodInfo _strictSceneMessagesSystemPromptMethod;
+        private static MethodInfo _playerCustomPromptRuleBlockMethod;
         private static FieldInfo _shownVisualDurationField;
         private static MethodInfo _classifierApiMethod;
         private static MethodInfo _getAgentsMethod;
@@ -321,6 +322,16 @@ namespace AnimusForge.XihaiAction
                     return false;
                 }
                 _strictSceneMessagesSystemPromptMethod = strictPromptCandidates[0];
+                _playerCustomPromptRuleBlockMethod = behaviorType.GetMethod(
+                    "BuildPlayerCustomPromptRuleBlock",
+                    BindingFlags.Static | BindingFlags.NonPublic,
+                    null,
+                    Type.EmptyTypes,
+                    null);
+                if (_playerCustomPromptRuleBlockMethod?.ReturnType != typeof(string))
+                {
+                    _playerCustomPromptRuleBlockMethod = null;
+                }
 
                 _resumeGameMethod = behaviorType.GetMethod(
                     "ResumeGame",
@@ -469,6 +480,7 @@ namespace AnimusForge.XihaiAction
                 _shownNpcReplyMethod = null;
                 _replyPromptMethod = null;
                 _strictSceneMessagesSystemPromptMethod = null;
+                _playerCustomPromptRuleBlockMethod = null;
                 _shownVisualDurationField = null;
                 _classifierApiMethod = null;
                 _getAgentsMethod = null;
@@ -678,25 +690,6 @@ namespace AnimusForge.XihaiAction
                 {
                     return true;
                 }
-                if (!localDecision.Force &&
-                    localDecision.Kind == BattleSpeechTriggerKindV2.RequestNpcSpeech &&
-                    BattleSpeechRuntimeHost.TryPreRouteNaturalPlayerShout(
-                        __instance,
-                        mission,
-                        shoutText,
-                        extraFact,
-                        forcedPrimaryAgentIndex,
-                        player,
-                        primary,
-                        framed,
-                        conversationEpoch,
-                        mission.CurrentTime,
-                        out bool allowNpcOriginal))
-                {
-                    // Natural NPC speech intentionally runs the AF body generator;
-                    // its recorded-message observer will create the frozen session.
-                    return allowNpcOriginal;
-                }
                 SceneActionsRuntimeHost.SubmitPlayerSceneShout(
                     Guid.NewGuid(),
                     mission,
@@ -792,141 +785,161 @@ namespace AnimusForge.XihaiAction
             }
         }
 
-        internal static async Task<DedicatedNpcSpeechResultV1> GenerateDedicatedNpcSpeechAsync(
+        internal static bool TryStartDedicatedNpcSpeechRequest(
+            Mission mission,
+            Guid sessionId,
             Agent speaker,
-            IReadOnlyList<Agent> framedTargets,
             string topic,
+            out DedicatedNpcSpeechSnapshotV1 request,
+            out string error)
+        {
+            request = null;
+            error = null;
+            if (!_installed || _passiveNpcResponseMethod == null ||
+                _extractNpcDataMethod == null || _npcDataPacketType == null ||
+                mission == null || sessionId == Guid.Empty || speaker == null ||
+                !ReferenceEquals(speaker.Mission, mission) || !speaker.IsActive())
+            {
+                error = "AF dedicated NPC speech bridge is unavailable or the speaker is no longer active.";
+                return false;
+            }
+            try
+            {
+                object behavior = _currentInstanceProperty?.GetValue(null, null) ?? _behaviorInstance;
+                if (behavior == null)
+                {
+                    error = "AF ShoutBehavior instance is unavailable.";
+                    return false;
+                }
+                object primaryPacket = _extractNpcDataMethod.Invoke(
+                    null,
+                    new object[] { speaker });
+                if (primaryPacket == null)
+                {
+                    error = "AF could not build the NPC speech packet.";
+                    return false;
+                }
+                string sceneDescription = _sceneDescriptionMethod?.Invoke(null, null) as string ?? "战场";
+                Type listType = typeof(List<>).MakeGenericType(_npcDataPacketType);
+                IList packetList = (IList)Activator.CreateInstance(listType);
+                // Y-key actor selection is already frozen to the primary target.
+                // Never send the full framed list as additional NPC background.
+                packetList.Add(primaryPacket);
+                Task<string> responseTask;
+                using (BattleSpeechRuntimeHost.BeginNpcSpeechPromptScope(
+                           sessionId,
+                           mission,
+                           speaker.Index))
+                {
+                    object rawTask = _passiveNpcResponseMethod.Invoke(
+                        behavior,
+                        new object[]
+                        {
+                            primaryPacket,
+                            sceneDescription,
+                            topic ?? string.Empty,
+                            string.Empty,
+                            packetList,
+                            new Dictionary<int, TaleWorlds.CampaignSystem.Hero>()
+                        });
+                    responseTask = rawTask as Task<string>;
+                    if (responseTask == null)
+                    {
+                        error = "AF returned an unexpected NPC speech task.";
+                        return false;
+                    }
+                    if (!BattleSpeechRuntimeHost.TryGetActiveReplyPromptSnapshot(
+                            out BattleSpeechReplyPromptSnapshotV2 promptSnapshot))
+                    {
+                        error = "Dedicated NPC speech prompt was not claimed by the speech scope.";
+                        return false;
+                    }
+                    request = new DedicatedNpcSpeechSnapshotV1
+                    {
+                        Mission = mission,
+                        SessionId = sessionId,
+                        SpeakerAgentIndex = speaker.Index,
+                        SpeakerName = speaker.Name ?? string.Empty,
+                        AfBehavior = behavior,
+                        AfNpcPacket = primaryPacket,
+                        SceneDescription = sceneDescription,
+                        ResponseTask = responseTask,
+                        PromptSnapshot = promptSnapshot
+                    };
+                }
+                return true;
+            }
+            catch (TargetInvocationException ex)
+            {
+                error = (ex.InnerException ?? ex).Message;
+                return false;
+            }
+            catch (Exception ex)
+            {
+                error = ex.GetType().Name + ": " + ex.Message;
+                return false;
+            }
+        }
+
+        internal static async Task<DedicatedNpcSpeechResultV1> GenerateDedicatedNpcSpeechAsync(
+            DedicatedNpcSpeechSnapshotV1 request,
             CancellationToken cancellationToken,
             bool allowDiversityRetry = true)
         {
-            cancellationToken.ThrowIfCancellationRequested();
             DedicatedNpcSpeechResultV1 failure = new DedicatedNpcSpeechResultV1
             {
-                Speaker = speaker,
+                SpeakerAgentIndex = request?.SpeakerAgentIndex ?? -1,
                 Error = "AF dedicated NPC speech generation is unavailable."
             };
-            if (!_installed || _passiveNpcResponseMethod == null ||
-                _extractNpcDataMethod == null || speaker == null || !speaker.IsActive())
+            if (request == null || request.ResponseTask == null ||
+                request.PromptSnapshot == null)
             {
                 return failure;
             }
             try
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                object behavior = _currentInstanceProperty?.GetValue(null, null) ?? _behaviorInstance;
-                if (behavior == null)
-                {
-                    failure.Error = "AF ShoutBehavior instance is unavailable.";
-                    return failure;
-                }
-                cancellationToken.ThrowIfCancellationRequested();
-                object primaryPacket = _extractNpcDataMethod.Invoke(
-                    null,
-                    new object[] { speaker });
-                if (primaryPacket == null)
-                {
-                    failure.Error = "AF could not build the NPC speech packet.";
-                    return failure;
-                }
-                Type listType = typeof(List<>).MakeGenericType(_npcDataPacketType);
-                IList packetList = (IList)Activator.CreateInstance(listType);
-                packetList.Add(primaryPacket);
-                if (framedTargets != null)
-                {
-                    for (int i = 0; i < framedTargets.Count; i++)
-                    {
-                        cancellationToken.ThrowIfCancellationRequested();
-                        Agent target = framedTargets[i];
-                        if (target == null || !target.IsActive() || target.Index == speaker.Index)
-                        {
-                            continue;
-                        }
-                        object packet = _extractNpcDataMethod.Invoke(
-                            null,
-                            new object[] { target });
-                        cancellationToken.ThrowIfCancellationRequested();
-                        if (packet != null)
-                        {
-                            packetList.Add(packet);
-                        }
-                    }
-                }
-                string sceneDescription = "战场";
-                if (_sceneDescriptionMethod != null)
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    sceneDescription = _sceneDescriptionMethod.Invoke(null, null) as string ?? sceneDescription;
-                }
-                cancellationToken.ThrowIfCancellationRequested();
-                object responseTask = _passiveNpcResponseMethod.Invoke(
-                    behavior,
-                    new object[]
-                    {
-                        primaryPacket,
-                        sceneDescription,
-                        topic ?? string.Empty,
-                        string.Empty,
-                        packetList,
-                        new Dictionary<int, TaleWorlds.CampaignSystem.Hero>()
-                    });
-                if (!(responseTask is Task<string> task))
-                {
-                    failure.Error = "AF returned an unexpected NPC speech task.";
-                    return failure;
-                }
-                // AF 1.3.2.1 exposes this reflected method without a token. Stop
-                // waiting as soon as the mission lifetime ends and discard the
-                // late result; the underlying AF task remains owned by AF.
                 string response = (await AwaitWithCancellationAsync(
-                        task,
+                        request.ResponseTask,
                         cancellationToken).ConfigureAwait(false) ?? string.Empty).Trim();
                 cancellationToken.ThrowIfCancellationRequested();
                 if (string.IsNullOrWhiteSpace(response) ||
                     response.StartsWith("（错误", StringComparison.Ordinal) ||
+                    response.StartsWith("（没说话", StringComparison.Ordinal) ||
                     response.StartsWith("（API请求失败", StringComparison.Ordinal))
                 {
                     failure.Error = "AF returned an empty or failed NPC speech body.";
                     return failure;
                 }
                 BattleSpeechCombinedNpcResponseV2 combined = null;
-                if (BattleSpeechRuntimeHost.TryGetCombinedSpeechContract(
-                        out int minimumChars,
-                        out int maximumChars,
-                        out string[] allowedIntentKeys,
-                        out int audienceReplyCount,
-                        out int audienceReplyMinimumChars,
-                        out int audienceReplyMaximumChars))
+                BattleSpeechReplyPromptSnapshotV2 prompt = request.PromptSnapshot;
+                if (prompt.CombinedRequest)
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
                     if (!BattleSpeechFrameworkV2.TryParseCombinedNpcSpeechOutput(
                             response,
-                            minimumChars,
-                            maximumChars,
-                            allowedIntentKeys,
-                            audienceReplyCount,
-                            audienceReplyMinimumChars,
-                            audienceReplyMaximumChars,
+                            prompt.MinimumChars,
+                            prompt.MaximumChars,
+                            prompt.AllowedIntentKeys,
+                            prompt.AudienceReplyCount,
+                            prompt.AudienceReplyMinimumChars,
+                            prompt.AudienceReplyMaximumChars,
                             out combined,
                             out string combinedError))
                     {
-                        // Keep the single-response protocol shape even when the
-                        // model violates one field: retain a safe正文 and close
-                        // only actions/tactic, while using local varied replies
-                        // instead of launching a second semantic classifier.
                         string safeBody = BattleSpeechFrameworkV2.NormalizeNpcSpeechReply(
                             BattleSpeechFrameworkV2.ExtractSpeechBodyForFallback(response),
-                            minimumChars,
-                            maximumChars);
+                            prompt.MinimumChars,
+                            prompt.MaximumChars);
                         combined = new BattleSpeechCombinedNpcResponseV2(
                             safeBody,
-                                new BattleSpeechPlanDecisionV2(
+                            new BattleSpeechPlanDecisionV2(
                                 null,
                                 BattleSpeechTacticV2.None,
                                 BattleSpeechFrameworkV2.BuildFallbackAudienceReplies(
                                     safeBody,
-                                    audienceReplyCount,
-                                    audienceReplyMinimumChars,
-                                    audienceReplyMaximumChars)));
+                                    prompt.AudienceReplyCount,
+                                    prompt.AudienceReplyMinimumChars,
+                                    prompt.AudienceReplyMaximumChars)));
                         SceneActionsLog.Warning(
                             "BATTLE_SPEECH_INPUT",
                             "Combined NPC speech protocol was invalid; fields failed closed. " +
@@ -936,27 +949,25 @@ namespace AnimusForge.XihaiAction
                 }
                 if (allowDiversityRetry &&
                     BattleSpeechRuntimeHost.TryBeginSpeechRegeneration(
-                        speaker,
+                        request.Mission,
+                        request.SpeakerAgentIndex,
                         response,
                         out double similarity))
                 {
                     SceneActionsLog.Warning(
                         "BATTLE_SPEECH_INPUT",
-                        "Generated NPC speech exactly repeated a recent speech; requesting one bounded regeneration. " +
+                        "Generated NPC speech exactly repeated a recent speech; retry queued on Mission thread. " +
                         "Similarity=" + similarity.ToString("0.000") +
-                        " Agent=" + speaker.Index);
-                    return await GenerateDedicatedNpcSpeechAsync(
-                        speaker,
-                        framedTargets,
-                        topic,
-                        cancellationToken,
-                        false).ConfigureAwait(false);
+                        " Agent=" + request.SpeakerAgentIndex);
+                    failure.RequiresRegeneration = true;
+                    failure.Error = "Exact repeat requires one bounded regeneration.";
+                    return failure;
                 }
                 return new DedicatedNpcSpeechResultV1
                 {
-                    Speaker = speaker,
-                    AfBehavior = behavior,
-                    AfNpcPacket = primaryPacket,
+                    SpeakerAgentIndex = request.SpeakerAgentIndex,
+                    AfBehavior = request.AfBehavior,
+                    AfNpcPacket = request.AfNpcPacket,
                     Content = response,
                     CombinedResponse = combined
                 };
@@ -964,11 +975,6 @@ namespace AnimusForge.XihaiAction
             catch (OperationCanceledException)
             {
                 throw;
-            }
-            catch (TargetInvocationException ex)
-            {
-                failure.Error = (ex.InnerException ?? ex).Message;
-                return failure;
             }
             catch (Exception ex)
             {
@@ -1184,6 +1190,11 @@ namespace AnimusForge.XihaiAction
                         __0,
                         out string instruction))
                 {
+                    if (BattleSpeechRuntimeHost.HasNpcSpeechPromptScope)
+                    {
+                        __result = "【阵前演讲失败】只输出（错误：阵前演讲 Claim 已失效），不要生成普通NPC回复。";
+                        return false;
+                    }
                     return true;
                 }
                 // AF's original block contains the ordinary-NPC contract
@@ -1202,8 +1213,17 @@ namespace AnimusForge.XihaiAction
             {
                 SceneActionsLog.Error(
                     "BATTLE_SPEECH_COMPAT",
-                    "Battle-speech prompt replacement failed open.",
+                    "Battle-speech prompt replacement failed.",
                     ex);
+                if (BattleSpeechRuntimeHost.IsReplyPromptReplacementRequired(__0))
+                {
+                    // This request was already claimed as a speech. Letting AF
+                    // continue with its ordinary player-facing prompt would
+                    // silently turn it into a normal shout and could duplicate
+                    // SceneActions. Fail the claimed path closed instead.
+                    __result = "【阵前演讲失败】只输出（错误：阵前演讲提示词不可用），不要生成普通NPC回复。";
+                    return false;
+                }
                 return true;
             }
         }
@@ -1215,22 +1235,23 @@ namespace AnimusForge.XihaiAction
         {
             try
             {
-                if (!BattleSpeechRuntimeHost.HasActiveNpcSpeechClaim() ||
-                    string.IsNullOrWhiteSpace(__0))
+                if (!BattleSpeechRuntimeHost.IsActiveNpcSpeechSystemPrompt(__0))
                 {
                     return true;
                 }
 
+                string promptWithoutPlayerCustomRule =
+                    RemovePlayerCustomPromptRuleForNpcSpeech(__0);
                 const string ordinaryPreamble =
                     "你是【站在你旁边的人】中的NPC角色,可能是多个人。你们的唯一任务是：根据下方提供的角色信息、场景信息和对话历史，以NPC身份直接回复";
                 const string ordinaryPreambleEnd =
                     "\n禁止生成任何【】章节标题或格式说明。";
-                int start = __0.IndexOf(ordinaryPreamble, StringComparison.Ordinal);
+                int start = promptWithoutPlayerCustomRule.IndexOf(ordinaryPreamble, StringComparison.Ordinal);
                 if (start < 0)
                 {
                     return true;
                 }
-                int end = __0.IndexOf(
+                int end = promptWithoutPlayerCustomRule.IndexOf(
                     ordinaryPreambleEnd,
                     start + ordinaryPreamble.Length,
                     StringComparison.Ordinal);
@@ -1241,22 +1262,53 @@ namespace AnimusForge.XihaiAction
 
                 const string battleSpeechPreamble =
                     "你是当前阵前演讲中的NPC演讲者。你的唯一任务是：根据下方提供的角色身份、战场处境和对话历史，面向己方士兵发表战前动员。你不是在回复玩家，也不是在进行普通闲聊。";
-                __result = __0.Substring(0, start) +
+                __result = promptWithoutPlayerCustomRule.Substring(0, start) +
                            battleSpeechPreamble +
-                           __0.Substring(end + ordinaryPreambleEnd.Length);
+                           promptWithoutPlayerCustomRule.Substring(end + ordinaryPreambleEnd.Length);
                 SceneActionsLog.Info(
                     "BATTLE_SPEECH_COMPAT",
-                    "Removed AF ordinary player-reply task preamble from speech system prompt.");
+                    "Removed AF ordinary player-reply task preamble and ignored PlayerCustomPromptRule for NPC battle speech.");
                 return false;
             }
             catch (Exception ex)
             {
                 SceneActionsLog.Error(
                     "BATTLE_SPEECH_COMPAT",
-                    "Battle-speech task-preamble replacement failed open.",
+                    "Battle-speech task-preamble replacement failed.",
                     ex);
+                if (BattleSpeechRuntimeHost.HasNpcSpeechPromptScope)
+                {
+                    __result = "【阵前演讲失败】只输出（错误：阵前演讲系统提示词不可用），不要生成普通NPC回复。";
+                    return false;
+                }
                 return true;
             }
+        }
+
+        private static string RemovePlayerCustomPromptRuleForNpcSpeech(string prompt)
+        {
+            if (string.IsNullOrWhiteSpace(prompt) || _playerCustomPromptRuleBlockMethod == null)
+            {
+                return prompt;
+            }
+
+            try
+            {
+                string customRuleBlock = _playerCustomPromptRuleBlockMethod.Invoke(null, null) as string;
+                if (!string.IsNullOrWhiteSpace(customRuleBlock) &&
+                    prompt.StartsWith(customRuleBlock, StringComparison.Ordinal))
+                {
+                    return prompt.Substring(customRuleBlock.Length).TrimStart();
+                }
+            }
+            catch (Exception ex)
+            {
+                SceneActionsLog.Warning(
+                    "BATTLE_SPEECH_COMPAT",
+                    "Could not read AF PlayerCustomPromptRule block; leaving the prompt unchanged. " +
+                    ex.GetType().Name + ": " + ex.Message);
+            }
+            return prompt;
         }
 
         internal static bool TryReplayOriginalPlayerShout(
@@ -1367,6 +1419,7 @@ namespace AnimusForge.XihaiAction
         internal static bool TryShowAudienceReply(
             Agent speaker,
             string content,
+            bool allowTts,
             out float visualDurationSeconds,
             out string error)
         {
@@ -1394,7 +1447,15 @@ namespace AnimusForge.XihaiAction
                 }
                 object result = _shownNpcReplyMethod.Invoke(
                     behavior,
-                    new object[] { npcPacket, speaker, content, true, true, true });
+                    new object[]
+                    {
+                        npcPacket,
+                        speaker,
+                        content,
+                        allowTts,
+                        allowTts,
+                        true
+                    });
                 if (result == null)
                 {
                     error = "AF returned no audience-reply playback result.";

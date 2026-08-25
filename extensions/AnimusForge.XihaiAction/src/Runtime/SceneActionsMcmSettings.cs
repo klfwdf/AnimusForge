@@ -1,203 +1,60 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using AnimusForge.SceneActions.Core;
-using MCM.Abstractions.Attributes;
-using MCM.Abstractions.Attributes.v2;
-using MCM.Abstractions.Base.Global;
-using TaleWorlds.Localization;
+using Newtonsoft.Json.Linq;
 
 namespace AnimusForge.XihaiAction
 {
-    public sealed class SceneActionsMcmSettings :
-        AttributeGlobalSettings<SceneActionsMcmSettings>
+    /// <summary>
+    /// Compatibility bridge for the integrated AF MCM.  This type deliberately
+    /// does not inherit AttributeGlobalSettings and has no MCM attributes, so
+    /// only AnimusForge.DuelSettings is registered by MCM.  Reflection keeps
+    /// the standalone XihaiAction build independent from the AF assembly.
+    /// Reflection metadata is cached and this bridge runs only at initialization
+    /// or an explicit MCM refresh, never from Mission Tick.
+    /// </summary>
+    internal static class SceneActionsMcmSettings
     {
-        private const string GeneralGroup = "{=SAX_MCM_Group_General}General";
-        private const string SpeechGroup = "{=SAX_MCM_Group_Speech}Battle speech";
-        private const string StageGroup = "{=SAX_MCM_Group_Stage}NPC staging";
-        private const string AudienceGroup = "{=SAX_MCM_Group_Audience}Audience response";
-        private const string SafetyGroup = "{=SAX_MCM_Group_Safety}Safety and diagnostics";
+        // Version 2 re-runs the battle-speech defaults migration for users who
+        // already completed the original integrated-MCM migration.  The old
+        // version could leave the legacy 30/80 speech-length profile active.
+        private const int IntegratedMigrationVersion = 2;
+        private const string DuelSettingsTypeName = "AnimusForge.DuelSettings";
+        private const string LegacySettingsFileName = "AnimusForge_XihaiAction.json";
 
-        public override string Id => "AnimusForge_XihaiAction";
-        public override string DisplayName => new TextObject(
-            "{=SAX_MCM_Name}Natural Actions and Battle Speech").ToString();
-        public override string FolderName => "AnimusForge_XihaiAction";
-        public override string FormatType => "json2";
+        private static readonly object AccessorSync = new object();
+        private static readonly string[] MigratedPropertyNames =
+        {
+            "NaturalLanguageReplyActionsEnabled", "BattleSpeechEnabled", "TKeyBattleSpeechEnabled",
+            "ReplyMinimumChars", "ReplyMaximumChars", "NpcPositioningEnabled", "FrontDistanceMeters",
+            "ArrivalRadiusMeters", "MovementTimeoutSeconds", "IncludeAlliedAudience", "MaximumVisualResponders",
+            "VisualWaveSize", "MaximumVisualSubmissionsPerTick", "AudienceVoicesEnabled", "AudienceVoiceCount",
+            "AudienceVoiceWaveSize", "AudienceVoiceWaveIntervalSeconds", "AudienceRepliesEnabled", "AudienceReplyCount",
+            "AudienceReplyWaveSize", "MaximumAudienceReplySubmissionsPerTick", "AudienceReplyMinimumChars",
+            "AudienceReplyMaximumChars", "AudienceReplyMinimumIntervalSeconds", "AudienceReplyMaximumIntervalSeconds",
+            "AudienceReplyIntervalSeconds", "TacticalAdvanceEnabled", "TacticalAdvanceDelaySeconds",
+            "EnemyInterruptRadiusMeters", "ScreenNotifications", "DiagnosticsEnabled", "PacingEnabled",
+            "MountedPacingEnabled", "InfantryPacingEnabled", "PacingHalfWidthMeters", "PacingMinimumIntervalSeconds",
+            "PacingMaximumIntervalSeconds", "DualChannelEnabled", "AfClassifierEnabled", "NaturalSpeechTriggerEnabled",
+            "SpeechTriggerClassifierEnabled", "SpeechSemanticClassifierEnabled", "Kneel", "StandUp", "Xihai", "Cheer",
+            "Applaud", "Respect", "Threat", "Surrender", "Laugh", "Point", "Rage", "Fear", "Disappointed",
+            "Challenge", "Search", "Dance", "Greet", "Agree", "Disagree", "Unsure", "Explain", "Promise",
+            "CrossArms", "DeepBow", "Command", "FollowMe", "CutThroat"
+        };
 
-        // Hidden compatibility fields keep existing json2 settings readable. The integrated
-        // runtime is always present; users control its natural-language paths with one switch.
-        public bool Enabled { get; set; } = true;
+        private static bool _accessorSearched;
+        private static MethodInfo _getSettingsMethod;
+        private static readonly Dictionary<string, PropertyInfo> Properties =
+            new Dictionary<string, PropertyInfo>(StringComparer.Ordinal);
 
-        [SettingPropertyBool(
-            "{=SAX_MCM_NaturalReplyActions}Natural-language reply actions",
-            Order = 0,
-            RequireRestart = false,
-            HintText = "{=SAX_MCM_NaturalReplyActions_Hint}Recognizes natural action wording in player shouts and NPC replies, uses AF closed-set fallback for complex wording, and recognizes natural battle-speech requests and speech gestures. Disable it to stop these natural-language paths.")]
-        [SettingPropertyGroup(GeneralGroup, GroupOrder = 0)]
-        public bool NaturalLanguageReplyActionsEnabled { get; set; } = true;
-
-        // Retained as hidden serialization compatibility fields for pre-integration MCM files.
-        // Runtime behavior is now governed by NaturalLanguageReplyActionsEnabled.
-        public bool ActionsEnabled { get; set; } = true;
-        public bool PlayerInputEnabled { get; set; } = true;
-        public bool NpcInputEnabled { get; set; } = true;
-
-        public bool DualChannelEnabled { get; set; } = true;
-
-        public bool AfClassifierEnabled { get; set; } = true;
-        public bool NaturalSpeechTriggerEnabled { get; set; } = true;
-        public bool SpeechTriggerClassifierEnabled { get; set; } = true;
-        public bool SpeechSemanticClassifierEnabled { get; set; } = true;
-
-        public bool Kneel { get; set; } = true;
-        public bool StandUp { get; set; } = true;
-        public bool Xihai { get; set; } = true;
-        public bool Cheer { get; set; } = true;
-        public bool Applaud { get; set; } = true;
-        public bool Respect { get; set; } = true;
-        public bool Threat { get; set; } = true;
-        public bool Surrender { get; set; } = true;
-        public bool Laugh { get; set; } = true;
-        public bool Point { get; set; } = true;
-        public bool Rage { get; set; } = true;
-        public bool Fear { get; set; } = true;
-        public bool Disappointed { get; set; } = true;
-        public bool Challenge { get; set; } = true;
-        public bool Search { get; set; } = true;
-        public bool Dance { get; set; } = true;
-        public bool Greet { get; set; } = true;
-        public bool Agree { get; set; } = true;
-        public bool Disagree { get; set; } = true;
-        public bool Unsure { get; set; } = true;
-        public bool Explain { get; set; } = true;
-        public bool Promise { get; set; } = true;
-        public bool CrossArms { get; set; } = true;
-        public bool DeepBow { get; set; } = true;
-        public bool Command { get; set; } = true;
-        public bool FollowMe { get; set; } = true;
-        public bool CutThroat { get; set; } = true;
-
-        [SettingPropertyBool("{=SAX_MCM_BattleSpeechEnabled}Enable battle speech", Order = 0,
-            RequireRestart = false)]
-        [SettingPropertyGroup(SpeechGroup, GroupOrder = 3)]
-        public bool BattleSpeechEnabled { get; set; } = true;
-
-        [SettingPropertyBool(
-            "{=SAX_MCM_TKeyBattleSpeechEnabled}Enable battle-speech recognition from T-key scene shout",
-            Order = 1,
-            RequireRestart = false,
-            HintText = "{=SAX_MCM_TKeyBattleSpeechEnabled_Hint}When enabled, T-key scene-shout text can be routed to the battle-speech channel. The Y-key speech entries remain controlled by the main battle-speech switch and current battle phase.")]
-        [SettingPropertyGroup(SpeechGroup)]
-        public bool TKeyBattleSpeechEnabled { get; set; } = true;
-
-        [SettingPropertyInteger("{=SAX_MCM_ReplyMin}NPC reply minimum characters", 6, 80,
-            "0", Order = 2, RequireRestart = false)]
-        [SettingPropertyGroup(SpeechGroup)] public int ReplyMinimumChars { get; set; } = 30;
-        [SettingPropertyInteger("{=SAX_MCM_ReplyMax}NPC reply maximum characters", 6, 80,
-            "0", Order = 3, RequireRestart = false)]
-        [SettingPropertyGroup(SpeechGroup)] public int ReplyMaximumChars { get; set; } = 80;
-
-        [SettingPropertyBool("{=SAX_MCM_NpcPositioning}Move NPC to the front line", Order = 0,
-            RequireRestart = false)]
-        [SettingPropertyGroup(StageGroup, GroupOrder = 4)]
-        public bool NpcPositioningEnabled { get; set; } = true;
-        [SettingPropertyFloatingInteger("{=SAX_MCM_FrontDistance}Distance in front of troops", 2f, 25f,
-            "0.0 m", Order = 1, RequireRestart = false)]
-        [SettingPropertyGroup(StageGroup)] public float FrontDistanceMeters { get; set; } = 10f;
-        [SettingPropertyFloatingInteger("{=SAX_MCM_ArrivalRadius}Arrival radius", 0.5f, 4f,
-            "0.0 m", Order = 2, RequireRestart = false)]
-        [SettingPropertyGroup(StageGroup)] public float ArrivalRadiusMeters { get; set; } = 1.5f;
-        [SettingPropertyFloatingInteger("{=SAX_MCM_MoveTimeout}Movement timeout", 3f, 45f,
-            "0.0 s", Order = 3, RequireRestart = false)]
-        [SettingPropertyGroup(StageGroup)] public float MovementTimeoutSeconds { get; set; } = 15f;
-        // Hidden compatibility fields for older MCM json2 files. Lateral pacing
-        // has been removed and none of these values are copied into runtime.
-        public bool PacingEnabled { get; set; } = false;
-        public bool MountedPacingEnabled { get; set; } = false;
-        public bool InfantryPacingEnabled { get; set; } = false;
-        public float PacingHalfWidthMeters { get; set; } = 2f;
-        public float PacingMinimumIntervalSeconds { get; set; } = 2.5f;
-        public float PacingMaximumIntervalSeconds { get; set; } = 4.5f;
-
-        [SettingPropertyBool("{=SAX_MCM_AlliedAudience}Include allied troops", Order = 0,
-            RequireRestart = false)]
-        [SettingPropertyGroup(AudienceGroup, GroupOrder = 5)]
-        public bool IncludeAlliedAudience { get; set; } = true;
-        [SettingPropertyInteger("{=SAX_MCM_VisualResponders}Maximum visual responders", 1, 128,
-            "0", Order = 1, RequireRestart = false)]
-        [SettingPropertyGroup(AudienceGroup)] public int MaximumVisualResponders { get; set; } = 60;
-        [SettingPropertyInteger("{=SAX_MCM_VisualWave}Visual responders per wave", 1, 16,
-            "0", Order = 2, RequireRestart = false)]
-        [SettingPropertyGroup(AudienceGroup)] public int VisualWaveSize { get; set; } = 6;
-        [SettingPropertyInteger("{=SAX_MCM_TickBudget}Maximum actions submitted per tick", 1, 16,
-            "0", Order = 3, RequireRestart = false)]
-        [SettingPropertyGroup(AudienceGroup)] public int MaximumVisualSubmissionsPerTick { get; set; } = 6;
-        [SettingPropertyBool("{=SAX_MCM_Voices}Native audience voices", Order = 4,
-            RequireRestart = false)]
-        [SettingPropertyGroup(AudienceGroup)] public bool AudienceVoicesEnabled { get; set; } = true;
-        [SettingPropertyInteger("{=SAX_MCM_VoiceCount}Audience voice count", 0, 24,
-            "0", Order = 5, RequireRestart = false)]
-        [SettingPropertyGroup(AudienceGroup)] public int AudienceVoiceCount { get; set; } = 22;
-        [SettingPropertyInteger("{=SAX_MCM_VoiceWave}Voices per wave", 1, 8,
-            "0", Order = 6, RequireRestart = false)]
-        [SettingPropertyGroup(AudienceGroup)] public int AudienceVoiceWaveSize { get; set; } = 3;
-        [SettingPropertyFloatingInteger("{=SAX_MCM_VoiceInterval}Voice wave interval", 0.05f, 1f,
-            "0.00 s", Order = 7, RequireRestart = false)]
-        [SettingPropertyGroup(AudienceGroup)] public float AudienceVoiceWaveIntervalSeconds { get; set; } = 0.18f;
-        [SettingPropertyBool("{=SAX_MCM_AudienceReplies}Spoken soldier replies", Order = 8,
-            RequireRestart = false)]
-        [SettingPropertyGroup(AudienceGroup)] public bool AudienceRepliesEnabled { get; set; } = true;
-        [SettingPropertyInteger("{=SAX_MCM_AudienceReplyCount}Soldiers giving spoken replies", 0, 100,
-            "0", Order = 9, RequireRestart = false)]
-        [SettingPropertyGroup(AudienceGroup)] public int AudienceReplyCount { get; set; } = 24;
-        [SettingPropertyInteger("{=SAX_MCM_AudienceReplyWaveSize}Maximum soldiers replying together", 2, 20,
-            "0", Order = 10, RequireRestart = false)]
-        // Each wave is deterministically randomized from 2 through this cap;
-        // the shipped default keeps the full 2..8 range enabled.
-        [SettingPropertyGroup(AudienceGroup)] public int AudienceReplyWaveSize { get; set; } = 5;
-        [SettingPropertyInteger("{=SAX_MCM_AudienceReplyMinimumChars}Minimum spoken reply characters", 4, 80,
-            "0", Order = 11, RequireRestart = false)]
-        [SettingPropertyGroup(AudienceGroup)] public int AudienceReplyMinimumChars { get; set; } = 8;
-        [SettingPropertyInteger("{=SAX_MCM_AudienceReplyMaximumChars}Maximum spoken reply characters", 4, 80,
-            "0", Order = 12, RequireRestart = false)]
-        [SettingPropertyGroup(AudienceGroup)] public int AudienceReplyMaximumChars { get; set; } = 24;
-        // Hidden persisted marker used to migrate previous shipped defaults
-        // exactly once without overriding an unrelated custom profile.
-        public int AudienceReplyWaveDefaultsVersion { get; set; } = 0;
-        [SettingPropertyFloatingInteger("{=SAX_MCM_AudienceReplyMinInterval}Minimum random reply wave interval", 0.1f, 0.5f,
-            "0.00 s", Order = 13, RequireRestart = false)]
-        [SettingPropertyGroup(AudienceGroup)] public float AudienceReplyMinimumIntervalSeconds { get; set; } = 0.2f;
-        [SettingPropertyFloatingInteger("{=SAX_MCM_AudienceReplyMaxInterval}Maximum random reply wave interval", 0.1f, 0.5f,
-            "0.00 s", Order = 14, RequireRestart = false)]
-        [SettingPropertyGroup(AudienceGroup)] public float AudienceReplyMaximumIntervalSeconds { get; set; } = 0.5f;
-        // Kept as a migration/diagnostic property for old serialized MCM
-        // profiles; it is intentionally not exposed as a fixed interval UI.
-        public float AudienceReplyIntervalSeconds { get; set; } = 1.1f;
-        [SettingPropertyBool("{=SAX_MCM_Advance}Command and Advance after speech", Order = 16,
-            RequireRestart = false)]
-        [SettingPropertyGroup(AudienceGroup)] public bool TacticalAdvanceEnabled { get; set; } = true;
-        [SettingPropertyFloatingInteger("{=SAX_MCM_AdvanceDelay}Advance delay after command gesture", 1.5f, 5f,
-            "0.0 s", Order = 17, RequireRestart = false)]
-        [SettingPropertyGroup(AudienceGroup)] public float TacticalAdvanceDelaySeconds { get; set; } = 1.8f;
-
-        [SettingPropertyFloatingInteger("{=SAX_MCM_EnemyRadius}Enemy interruption radius", 5f, 75f,
-            "0.0 m", Order = 0, RequireRestart = false)]
-        [SettingPropertyGroup(SafetyGroup, GroupOrder = 6)]
-        public float EnemyInterruptRadiusMeters { get; set; } = 35f;
-        [SettingPropertyBool("{=SAX_MCM_Notifications}Screen notifications", Order = 1,
-            RequireRestart = false)]
-        [SettingPropertyGroup(SafetyGroup)] public bool ScreenNotifications { get; set; } = true;
-        [SettingPropertyBool("{=SAX_MCM_Diagnostics}Detailed diagnostics", Order = 2,
-            RequireRestart = false)]
-        [SettingPropertyGroup(SafetyGroup)] public bool DiagnosticsEnabled { get; set; }
-
-        internal static bool TryApplySceneActions(
-            SceneActionSettings settings,
-            out string error)
+        internal static bool TryApplySceneActions(SceneActionSettings settings, out string error)
         {
             error = null;
-            SceneActionsMcmSettings current = GlobalSettings<SceneActionsMcmSettings>.Instance;
-            if (current == null)
+            if (!TryReadSnapshot(out Snapshot current))
             {
                 return false;
             }
@@ -206,9 +63,7 @@ namespace AnimusForge.XihaiAction
             settings.PlayerSceneShoutEnabled = naturalLanguageEnabled;
             settings.NpcSceneShoutReplyEnabled = naturalLanguageEnabled;
             settings.AiClassifierEnabled = naturalLanguageEnabled;
-            settings.AiClassifierProviderId = naturalLanguageEnabled
-                ? "animusforge.main.v130"
-                : null;
+            settings.AiClassifierProviderId = naturalLanguageEnabled ? "animusforge.main.v130" : null;
             settings.DualChannelExperimentalEnabled = naturalLanguageEnabled;
             settings.ScreenBatchSummary = current.DiagnosticsEnabled;
             settings.DeveloperDiagnosticsEnabled = current.DiagnosticsEnabled;
@@ -229,16 +84,15 @@ namespace AnimusForge.XihaiAction
             out string error)
         {
             error = null;
-            SceneActionsMcmSettings current = GlobalSettings<SceneActionsMcmSettings>.Instance;
-            if (current == null)
+            if (!TryReadSnapshot(out Snapshot current))
             {
                 return false;
             }
-            MigrateLegacyBattleSpeechDefaults(current);
             speech.Enabled = current.BattleSpeechEnabled;
             speech.TKeyEnabled = current.TKeyBattleSpeechEnabled;
             speech.EnemyInterruptRadiusMeters = current.EnemyInterruptRadiusMeters;
             speech.ScreenNotifications = current.ScreenNotifications;
+            speech.MaximumAudienceReplySubmissionsPerTick = current.MaximumAudienceReplySubmissionsPerTick;
             performance.Enabled = speech.Enabled;
             bool naturalLanguageEnabled = current.NaturalLanguageReplyActionsEnabled;
             stage.NaturalTriggerEnabled = naturalLanguageEnabled;
@@ -256,30 +110,23 @@ namespace AnimusForge.XihaiAction
             stage.IncludeAlliedAudience = current.IncludeAlliedAudience;
             stage.MaximumVisualResponders = current.MaximumVisualResponders;
             stage.VisualWaveSize = current.VisualWaveSize;
-            stage.MaximumVisualSubmissionsPerTick =
-                current.MaximumVisualSubmissionsPerTick;
+            stage.MaximumVisualSubmissionsPerTick = current.MaximumVisualSubmissionsPerTick;
             stage.AudienceVoicesEnabled = current.AudienceVoicesEnabled;
             stage.AudienceVoiceCount = current.AudienceVoiceCount;
             stage.AudienceVoiceWaveSize = current.AudienceVoiceWaveSize;
-            stage.AudienceVoiceWaveIntervalSeconds =
-                current.AudienceVoiceWaveIntervalSeconds;
+            stage.AudienceVoiceWaveIntervalSeconds = current.AudienceVoiceWaveIntervalSeconds;
             stage.AudienceRepliesEnabled = current.AudienceRepliesEnabled;
             stage.AudienceReplyCount = current.AudienceReplyCount;
             stage.AudienceReplyWaveSize = current.AudienceReplyWaveSize;
+            stage.MaximumAudienceReplySubmissionsPerTick = current.MaximumAudienceReplySubmissionsPerTick;
             stage.AudienceReplyMinimumChars = current.AudienceReplyMinimumChars;
             stage.AudienceReplyMaximumChars = current.AudienceReplyMaximumChars;
-            stage.AudienceReplyMinimumIntervalSeconds =
-                current.AudienceReplyMinimumIntervalSeconds;
-            stage.AudienceReplyMaximumIntervalSeconds =
-                current.AudienceReplyMaximumIntervalSeconds;
+            stage.AudienceReplyMinimumIntervalSeconds = current.AudienceReplyMinimumIntervalSeconds;
+            stage.AudienceReplyMaximumIntervalSeconds = current.AudienceReplyMaximumIntervalSeconds;
             stage.AudienceReplyIntervalSeconds = current.AudienceReplyIntervalSeconds;
             stage.TacticalAdvanceEnabled = current.TacticalAdvanceEnabled;
             stage.TacticalAdvanceDelaySeconds = current.TacticalAdvanceDelaySeconds;
-
-            List<string> errors = speech.Validate()
-                .Concat(performance.Validate())
-                .Concat(stage.Validate())
-                .ToList();
+            List<string> errors = speech.Validate().Concat(performance.Validate()).Concat(stage.Validate()).ToList();
             if (errors.Count == 0)
             {
                 return true;
@@ -290,91 +137,360 @@ namespace AnimusForge.XihaiAction
             return true;
         }
 
-        private static void MigrateLegacyBattleSpeechDefaults(
-            SceneActionsMcmSettings current)
+        private static bool TryReadSnapshot(out Snapshot snapshot)
+        {
+            snapshot = null;
+            object settings = ResolveDuelSettings();
+            if (settings == null)
+            {
+                SceneActionsLog.Warning("MCM", "AF DuelSettings was not found; integrated MCM overrides are unavailable.");
+                return false;
+            }
+            EnsureLegacyMigration(settings);
+            snapshot = new Snapshot
+            {
+                NaturalLanguageReplyActionsEnabled = Read(settings, "NaturalLanguageReplyActionsEnabled", true),
+                BattleSpeechEnabled = Read(settings, "BattleSpeechEnabled", true),
+                TKeyBattleSpeechEnabled = Read(settings, "TKeyBattleSpeechEnabled", true),
+                ReplyMinimumChars = Read(settings, "ReplyMinimumChars", 60),
+                ReplyMaximumChars = Read(settings, "ReplyMaximumChars", 160),
+                NpcPositioningEnabled = Read(settings, "NpcPositioningEnabled", true),
+                FrontDistanceMeters = Read(settings, "FrontDistanceMeters", 10f),
+                ArrivalRadiusMeters = Read(settings, "ArrivalRadiusMeters", 1.5f),
+                MovementTimeoutSeconds = Read(settings, "MovementTimeoutSeconds", 15f),
+                IncludeAlliedAudience = Read(settings, "IncludeAlliedAudience", true),
+                MaximumVisualResponders = Read(settings, "MaximumVisualResponders", 60),
+                VisualWaveSize = Read(settings, "VisualWaveSize", 6),
+                MaximumVisualSubmissionsPerTick = Read(settings, "MaximumVisualSubmissionsPerTick", 6),
+                AudienceVoicesEnabled = Read(settings, "AudienceVoicesEnabled", true),
+                AudienceVoiceCount = Read(settings, "AudienceVoiceCount", 22),
+                AudienceVoiceWaveSize = Read(settings, "AudienceVoiceWaveSize", 3),
+                AudienceVoiceWaveIntervalSeconds = Read(settings, "AudienceVoiceWaveIntervalSeconds", 0.18f),
+                AudienceRepliesEnabled = Read(settings, "AudienceRepliesEnabled", true),
+                AudienceReplyCount = Read(settings, "AudienceReplyCount", 24),
+                AudienceReplyWaveSize = Read(settings, "AudienceReplyWaveSize", 5),
+                MaximumAudienceReplySubmissionsPerTick = Read(settings, "MaximumAudienceReplySubmissionsPerTick", 8),
+                AudienceReplyMinimumChars = Read(settings, "AudienceReplyMinimumChars", 8),
+                AudienceReplyMaximumChars = Read(settings, "AudienceReplyMaximumChars", 24),
+                AudienceReplyMinimumIntervalSeconds = Read(settings, "AudienceReplyMinimumIntervalSeconds", 0.2f),
+                AudienceReplyMaximumIntervalSeconds = Read(settings, "AudienceReplyMaximumIntervalSeconds", 0.5f),
+                AudienceReplyIntervalSeconds = Read(settings, "AudienceReplyIntervalSeconds", 1.1f),
+                TacticalAdvanceEnabled = Read(settings, "TacticalAdvanceEnabled", true),
+                TacticalAdvanceDelaySeconds = Read(settings, "TacticalAdvanceDelaySeconds", 1.8f),
+                EnemyInterruptRadiusMeters = Read(settings, "EnemyInterruptRadiusMeters", 10f),
+                ScreenNotifications = Read(settings, "ScreenNotifications", true),
+                DiagnosticsEnabled = Read(settings, "DiagnosticsEnabled", false)
+            };
+            return true;
+        }
+
+        private static object ResolveDuelSettings()
+        {
+            lock (AccessorSync)
+            {
+                EnsureAccessorLocked();
+                if (_getSettingsMethod == null)
+                {
+                    return null;
+                }
+                try
+                {
+                    return _getSettingsMethod.Invoke(null, null);
+                }
+                catch (Exception ex)
+                {
+                    SceneActionsLog.Warning("MCM", "Unable to read AF DuelSettings: " + ex.GetBaseException().Message);
+                    return null;
+                }
+            }
+        }
+
+        private static void EnsureAccessorLocked()
+        {
+            if (_accessorSearched)
+            {
+                return;
+            }
+            _accessorSearched = true;
+            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                Type type = assembly.GetType(DuelSettingsTypeName, false);
+                if (type == null)
+                {
+                    continue;
+                }
+                MethodInfo method = type.GetMethod("GetSettings", BindingFlags.Public | BindingFlags.Static);
+                if (method == null)
+                {
+                    continue;
+                }
+                _getSettingsMethod = method;
+                foreach (PropertyInfo property in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+                {
+                    Properties[property.Name] = property;
+                }
+                return;
+            }
+        }
+
+        private static T Read<T>(object settings, string name, T fallback)
+        {
+            lock (AccessorSync)
+            {
+                if (!Properties.TryGetValue(name, out PropertyInfo property) || !property.CanRead)
+                {
+                    return fallback;
+                }
+                try
+                {
+                    object value = property.GetValue(settings, null);
+                    if (value == null)
+                    {
+                        return fallback;
+                    }
+                    if (value is T typed)
+                    {
+                        return typed;
+                    }
+                    return (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
+                }
+                catch
+                {
+                    return fallback;
+                }
+            }
+        }
+
+        private static void Write(object settings, string name, object value)
+        {
+            lock (AccessorSync)
+            {
+                if (!Properties.TryGetValue(name, out PropertyInfo property) || !property.CanWrite)
+                {
+                    return;
+                }
+                try
+                {
+                    object converted = value;
+                    if (value != null && !property.PropertyType.IsInstanceOfType(value))
+                    {
+                        converted = Convert.ChangeType(value, property.PropertyType, CultureInfo.InvariantCulture);
+                    }
+                    property.SetValue(settings, converted, null);
+                }
+                catch
+                {
+                }
+            }
+        }
+
+        private static void EnsureLegacyMigration(object settings)
+        {
+            if (Read(settings, "SceneActionsMcmMigrationVersion", 0) >= IntegratedMigrationVersion)
+            {
+                return;
+            }
+            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                "Mount and Blade II Bannerlord", "Configs", "ModSettings", "Global",
+                "AnimusForge_XihaiAction", LegacySettingsFileName);
+            bool imported = false;
+            if (File.Exists(path) && IsSceneActionsDefaultProfile(settings))
+            {
+                try
+                {
+                    JObject legacy = JObject.Parse(File.ReadAllText(path));
+                    foreach (string name in MigratedPropertyNames)
+                    {
+                        if (!Properties.TryGetValue(name, out PropertyInfo property) ||
+                            !legacy.TryGetValue(name, StringComparison.OrdinalIgnoreCase, out JToken token))
+                        {
+                            continue;
+                        }
+                        property.SetValue(settings, token.ToObject(property.PropertyType), null);
+                        imported = true;
+                    }
+                    SceneActionsLog.Info("MCM", "Migrated legacy AnimusForge_XihaiAction MCM values into AF DuelSettings.");
+                }
+                catch (Exception ex)
+                {
+                    SceneActionsLog.Warning("MCM", "Legacy XihaiAction MCM migration failed: " + ex.GetBaseException().Message);
+                }
+            }
+            MigrateLegacyBattleSpeechDefaults(settings);
+            Write(settings, "SceneActionsMcmMigrationVersion", IntegratedMigrationVersion);
+            TryPersistSettings(settings);
+            if (!imported && !File.Exists(path))
+            {
+                SceneActionsLog.Info("MCM", "No legacy XihaiAction MCM file found; AF defaults retained.");
+            }
+        }
+
+        private static bool IsSceneActionsDefaultProfile(object settings)
+        {
+            return Read(settings, "NaturalLanguageReplyActionsEnabled", true) &&
+                Read(settings, "BattleSpeechEnabled", true) &&
+                Read(settings, "ReplyMinimumChars", 60) == 60 &&
+                Read(settings, "ReplyMaximumChars", 160) == 160 &&
+                Math.Abs(Read(settings, "FrontDistanceMeters", 10f) - 10f) < 0.0001f &&
+                Read(settings, "AudienceReplyCount", 24) == 24 &&
+                Read(settings, "MaximumVisualResponders", 60) == 60 &&
+                Math.Abs(Read(settings, "TacticalAdvanceDelaySeconds", 1.8f) - 1.8f) < 0.0001f &&
+                Math.Abs(Read(settings, "EnemyInterruptRadiusMeters", 10f) - 10f) < 0.0001f;
+        }
+
+        private static void MigrateLegacyBattleSpeechDefaults(object settings)
         {
             bool changed = false;
-            if (current.AudienceReplyWaveDefaultsVersion < 1)
+            if (Read(settings, "AudienceReplyWaveDefaultsVersion", 0) < 1)
             {
-                if (current.AudienceReplyWaveSize == 2)
+                if (Read(settings, "AudienceReplyWaveSize", 5) == 2)
                 {
-                    current.AudienceReplyWaveSize = 5;
+                    Write(settings, "AudienceReplyWaveSize", 5);
                 }
-                current.AudienceReplyWaveDefaultsVersion = 1;
+                Write(settings, "AudienceReplyWaveDefaultsVersion", 1);
                 changed = true;
             }
-            bool completeLegacyDefaults = current.ReplyMinimumChars == 50 &&
-                                          current.ReplyMaximumChars == 100 &&
-                                          Math.Abs(current.FrontDistanceMeters - 8f) < 0.0001f &&
-                                          current.AudienceVoiceCount == 12 &&
-                                          Math.Abs(current.TacticalAdvanceDelaySeconds - 0.6f) < 0.0001f;
-            bool previousIntegratedDefaults = current.ReplyMinimumChars == 6 &&
-                                              current.ReplyMaximumChars == 30 &&
-                                              Math.Abs(current.FrontDistanceMeters - 10f) < 0.0001f &&
-                                              current.AudienceVoiceCount == 22 &&
-                                              (Math.Abs(current.TacticalAdvanceDelaySeconds - 0.6f) < 0.0001f ||
-                                               Math.Abs(current.TacticalAdvanceDelaySeconds - 1.2f) < 0.0001f);
-            bool currentIntegratedDefaults = current.ReplyMinimumChars == 20 &&
-                                             current.ReplyMaximumChars == 60 &&
-                                             Math.Abs(current.FrontDistanceMeters - 10f) < 0.0001f &&
-                                             current.AudienceVoiceCount == 22 &&
-                                             Math.Abs(current.TacticalAdvanceDelaySeconds - 1.8f) < 0.0001f &&
-                                             current.MaximumVisualResponders == 48 &&
-                                             current.AudienceReplyCount == 16 &&
-                                             current.AudienceReplyWaveSize == 8 &&
-                                             current.AudienceReplyMinimumChars == 8 &&
-                                             current.AudienceReplyMaximumChars == 24 &&
-                                             Math.Abs(current.AudienceReplyMinimumIntervalSeconds - 0.1f) < 0.0001f &&
-                                             Math.Abs(current.AudienceReplyMaximumIntervalSeconds - 0.5f) < 0.0001f &&
-                                             Math.Abs(current.AudienceReplyIntervalSeconds - 1.1f) < 0.0001f;
-            bool migrateToCurrentDefaults = completeLegacyDefaults ||
-                                            previousIntegratedDefaults ||
-                                            currentIntegratedDefaults;
+            if (Read(settings, "CombatSpeechDefaultsVersion", 0) < 1)
+            {
+                if (Math.Abs(Read(settings, "EnemyInterruptRadiusMeters", 10f) - 35f) < 0.0001f)
+                {
+                    Write(settings, "EnemyInterruptRadiusMeters", 10f);
+                }
+                Write(settings, "CombatSpeechDefaultsVersion", 1);
+                changed = true;
+            }
+            bool completeLegacyDefaults = Read(settings, "ReplyMinimumChars", 60) == 50 &&
+                Read(settings, "ReplyMaximumChars", 160) == 100 &&
+                Math.Abs(Read(settings, "FrontDistanceMeters", 10f) - 8f) < 0.0001f &&
+                Read(settings, "AudienceVoiceCount", 22) == 12 &&
+                Math.Abs(Read(settings, "TacticalAdvanceDelaySeconds", 1.8f) - 0.6f) < 0.0001f;
+            bool previousIntegratedDefaults = Read(settings, "ReplyMinimumChars", 60) == 6 &&
+                Read(settings, "ReplyMaximumChars", 160) == 30 &&
+                Math.Abs(Read(settings, "FrontDistanceMeters", 10f) - 10f) < 0.0001f &&
+                Read(settings, "AudienceVoiceCount", 22) == 22 &&
+                (Math.Abs(Read(settings, "TacticalAdvanceDelaySeconds", 1.8f) - 0.6f) < 0.0001f ||
+                 Math.Abs(Read(settings, "TacticalAdvanceDelaySeconds", 1.8f) - 1.2f) < 0.0001f);
+            bool currentIntegratedDefaults = Read(settings, "ReplyMinimumChars", 60) == 20 &&
+                Read(settings, "ReplyMaximumChars", 160) == 60 &&
+                Math.Abs(Read(settings, "FrontDistanceMeters", 10f) - 10f) < 0.0001f &&
+                Read(settings, "AudienceVoiceCount", 22) == 22 &&
+                Math.Abs(Read(settings, "TacticalAdvanceDelaySeconds", 1.8f) - 1.8f) < 0.0001f &&
+                Read(settings, "MaximumVisualResponders", 60) == 48 &&
+                Read(settings, "AudienceReplyCount", 24) == 16 &&
+                Read(settings, "AudienceReplyWaveSize", 5) == 8 &&
+                Read(settings, "AudienceReplyMinimumChars", 8) == 8 &&
+                Read(settings, "AudienceReplyMaximumChars", 24) == 24 &&
+                Math.Abs(Read(settings, "AudienceReplyMinimumIntervalSeconds", 0.2f) - 0.1f) < 0.0001f &&
+                Math.Abs(Read(settings, "AudienceReplyMaximumIntervalSeconds", 0.5f) - 0.5f) < 0.0001f;
+            bool currentShortDefaults = Read(settings, "ReplyMinimumChars", 60) == 30 &&
+                Read(settings, "ReplyMaximumChars", 160) == 80 &&
+                Math.Abs(Read(settings, "FrontDistanceMeters", 10f) - 10f) < 0.0001f &&
+                Read(settings, "AudienceVoiceCount", 22) == 22 &&
+                Math.Abs(Read(settings, "TacticalAdvanceDelaySeconds", 1.8f) - 1.8f) < 0.0001f &&
+                Read(settings, "MaximumVisualResponders", 60) == 60 &&
+                Read(settings, "AudienceReplyCount", 24) == 24 &&
+                Read(settings, "AudienceReplyWaveSize", 5) == 5 &&
+                Read(settings, "AudienceReplyMinimumChars", 8) == 8 &&
+                Read(settings, "AudienceReplyMaximumChars", 24) == 24 &&
+                Math.Abs(Read(settings, "AudienceReplyMinimumIntervalSeconds", 0.2f) - 0.2f) < 0.0001f &&
+                Math.Abs(Read(settings, "AudienceReplyMaximumIntervalSeconds", 0.5f) - 0.5f) < 0.0001f;
+            bool migrateToCurrentDefaults = completeLegacyDefaults || previousIntegratedDefaults ||
+                currentIntegratedDefaults || currentShortDefaults;
             if (migrateToCurrentDefaults)
             {
-                current.ReplyMinimumChars = 30;
-                current.ReplyMaximumChars = 80;
-                current.FrontDistanceMeters = 10f;
-                current.AudienceVoiceCount = 22;
-                current.TacticalAdvanceDelaySeconds = 1.8f;
-                current.MaximumVisualResponders = 60;
-                current.AudienceReplyCount = 24;
-                current.AudienceReplyWaveSize = 5;
-                current.AudienceReplyMinimumChars = 8;
-                current.AudienceReplyMaximumChars = 24;
-                current.AudienceReplyMinimumIntervalSeconds = 0.2f;
-                current.AudienceReplyMaximumIntervalSeconds = 0.5f;
-                current.AudienceReplyWaveDefaultsVersion = 2;
+                Write(settings, "ReplyMinimumChars", 60);
+                Write(settings, "ReplyMaximumChars", 160);
+                Write(settings, "FrontDistanceMeters", 10f);
+                Write(settings, "AudienceVoiceCount", 22);
+                Write(settings, "TacticalAdvanceDelaySeconds", 1.8f);
+                Write(settings, "MaximumVisualResponders", 60);
+                Write(settings, "AudienceReplyCount", 24);
+                Write(settings, "AudienceReplyWaveSize", 5);
+                Write(settings, "AudienceReplyMinimumChars", 8);
+                Write(settings, "AudienceReplyMaximumChars", 24);
+                Write(settings, "AudienceReplyMinimumIntervalSeconds", 0.2f);
+                Write(settings, "AudienceReplyMaximumIntervalSeconds", 0.5f);
+                Write(settings, "AudienceReplyWaveDefaultsVersion", 2);
                 changed = true;
             }
-            if (!completeLegacyDefaults &&
-                (Math.Abs(current.TacticalAdvanceDelaySeconds - 0.6f) < 0.0001f ||
-                 Math.Abs(current.TacticalAdvanceDelaySeconds - 1.2f) < 0.0001f))
+            if (Math.Abs(Read(settings, "TacticalAdvanceDelaySeconds", 1.8f) - 0.6f) < 0.0001f ||
+                Math.Abs(Read(settings, "TacticalAdvanceDelaySeconds", 1.8f) - 1.2f) < 0.0001f)
             {
-                current.TacticalAdvanceDelaySeconds = 1.8f;
+                Write(settings, "TacticalAdvanceDelaySeconds", 1.8f);
                 changed = true;
             }
-            // Old profiles stored one fixed spoken-reply interval. Preserve a
-            // user-custom value when the new random range is still untouched;
-            // clamp it to the new 0.1..0.5-second contract.
             if (!migrateToCurrentDefaults &&
-                Math.Abs(current.AudienceReplyMinimumIntervalSeconds - 0.1f) < 0.0001f &&
-                Math.Abs(current.AudienceReplyMaximumIntervalSeconds - 0.5f) < 0.0001f &&
-                Math.Abs(current.AudienceReplyIntervalSeconds - 1.1f) > 0.0001f)
+                Math.Abs(Read(settings, "AudienceReplyMinimumIntervalSeconds", 0.2f) - 0.1f) < 0.0001f &&
+                Math.Abs(Read(settings, "AudienceReplyMaximumIntervalSeconds", 0.5f) - 0.5f) < 0.0001f &&
+                Math.Abs(Read(settings, "AudienceReplyIntervalSeconds", 1.1f) - 1.1f) > 0.0001f)
             {
-                float migrated = Math.Max(0.1f, Math.Min(0.5f,
-                    current.AudienceReplyIntervalSeconds));
-                current.AudienceReplyMinimumIntervalSeconds = 0.1f;
-                current.AudienceReplyMaximumIntervalSeconds = migrated;
+                float migrated = Math.Max(0.1f, Math.Min(0.5f, Read(settings, "AudienceReplyIntervalSeconds", 1.1f)));
+                Write(settings, "AudienceReplyMinimumIntervalSeconds", 0.1f);
+                Write(settings, "AudienceReplyMaximumIntervalSeconds", migrated);
                 changed = true;
             }
             if (changed)
             {
-                SceneActionsLog.Info(
-                    "BATTLE_SPEECH_MCM",
-                    "Migrated legacy battle-speech defaults to the current audience and speech settings.");
+                SceneActionsLog.Info("BATTLE_SPEECH_MCM", "Migrated legacy battle-speech defaults in AF DuelSettings.");
             }
         }
 
+        private static void TryPersistSettings(object settings)
+        {
+            try
+            {
+                Type providerType = AppDomain.CurrentDomain.GetAssemblies()
+                    .Select(a => a.GetType("MCM.Common.BaseSettingsProvider", false))
+                    .FirstOrDefault(t => t != null);
+                object provider = providerType?.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static)?.GetValue(null, null);
+                if (provider == null)
+                {
+                    return;
+                }
+                MethodInfo save = provider.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance)
+                    .Where(m => m.Name == "SaveSettings" && m.GetParameters().Length == 1)
+                    .FirstOrDefault(m => m.GetParameters()[0].ParameterType.IsInstanceOfType(settings));
+                save?.Invoke(provider, new[] { settings });
+            }
+            catch (Exception ex)
+            {
+                SceneActionsLog.Warning("MCM", "Unable to persist integrated MCM migration: " + ex.GetBaseException().Message);
+            }
+        }
+
+        private sealed class Snapshot
+        {
+            public bool NaturalLanguageReplyActionsEnabled;
+            public bool BattleSpeechEnabled;
+            public bool TKeyBattleSpeechEnabled;
+            public int ReplyMinimumChars;
+            public int ReplyMaximumChars;
+            public bool NpcPositioningEnabled;
+            public float FrontDistanceMeters;
+            public float ArrivalRadiusMeters;
+            public float MovementTimeoutSeconds;
+            public bool IncludeAlliedAudience;
+            public int MaximumVisualResponders;
+            public int VisualWaveSize;
+            public int MaximumVisualSubmissionsPerTick;
+            public bool AudienceVoicesEnabled;
+            public int AudienceVoiceCount;
+            public int AudienceVoiceWaveSize;
+            public float AudienceVoiceWaveIntervalSeconds;
+            public bool AudienceRepliesEnabled;
+            public int AudienceReplyCount;
+            public int AudienceReplyWaveSize;
+            public int MaximumAudienceReplySubmissionsPerTick;
+            public int AudienceReplyMinimumChars;
+            public int AudienceReplyMaximumChars;
+            public float AudienceReplyMinimumIntervalSeconds;
+            public float AudienceReplyMaximumIntervalSeconds;
+            public float AudienceReplyIntervalSeconds;
+            public bool TacticalAdvanceEnabled;
+            public float TacticalAdvanceDelaySeconds;
+            public float EnemyInterruptRadiusMeters;
+            public bool ScreenNotifications;
+            public bool DiagnosticsEnabled;
+        }
     }
 }
