@@ -93,7 +93,9 @@ $documentMappings = @(
     @("docs\plans\gccz-town-refactor-feature-list-20260821.md", "docs\gccz\plans\gccz-town-refactor-feature-list-20260821.md"),
     @("docs\bridge\af-bridge-surface.md", "docs\gccz\bridge\af-bridge-surface.md"),
     @("docs\audits\gccz-town-runtime-inventory.md", "docs\gccz\audits\gccz-town-runtime-inventory.md"),
-    @("docs\testing\gccz-town-player-test-sequence.md", "docs\testing\gccz-town-player-test-sequence.md")
+    @("docs\testing\gccz-town-player-test-sequence.md", "docs\testing\gccz-town-player-test-sequence.md"),
+    @("docs\handoff\sets-urban-capture-refactor-handoff-20260825.md", "docs\gccz\handoff\sets-urban-capture-refactor-handoff-20260825.md"),
+    @("docs\handoff\sets-urban-capture-refactor-progress-20260826.md", "docs\gccz\handoff\sets-urban-capture-refactor-progress-20260826.md")
 )
 foreach ($mapping in $documentMappings) {
     Assert-NormalizedMirror (Join-Path $StandaloneRoot $mapping[0]) (Join-Path $FusedRoot $mapping[1]) "handoff document $($mapping[0])"
@@ -160,6 +162,10 @@ $requiredSettlementEffectEvidence = @(
     'TownSettlementEffectPlan.FromPlunderDelta',
     'TownSettlementEffectPlan.FromMassacreDelta',
     'TownSettlementEffectPlan.FromFinalOutcome',
+    'TownMassacreRelationTimingProfile.BuildTownPlan',
+    'TownMassacreRelationTimingProfile.BuildBoundVillagePlan',
+    'CommitTownNotableRelationAnchor',
+    'CommitBoundVillageNotableRelationAnchor',
     'ApplyTownSettlementEffectPlan(',
     'ApplyOwnerRelationDelta(',
     'ApplyExtraNativeDevastateProsperityPenalty(',
@@ -355,6 +361,67 @@ foreach ($runtimeFile in Get-ChildItem -LiteralPath $FusedRoot -File -Filter "Si
 $missionEndFinallyPattern = 'private\s+void\s+OnMissionEnded\s*\([^)]*\)\s*\{.*?finally\s*\{.*?EndInterventionSceneScope\("mission_ended"\)'
 Assert-Condition ([System.Text.RegularExpressions.Regex]::IsMatch($mainRuntimeText, $missionEndFinallyPattern, [System.Text.RegularExpressions.RegexOptions]::Singleline)) "OnMissionEnded must clear GCCZ scene scope from a finally block."
 
+# --- SETS urban-capture legacy contract (Slice A snapshot; handoff 2026-08-25) ---
+$setsBehaviorPath = Join-Path $FusedRoot "SettlementEntryTroopSelectionBehavior.cs"
+Assert-Condition (Test-Path -LiteralPath $setsBehaviorPath -PathType Leaf) "Missing SETS behavior file: $setsBehaviorPath"
+$setsBehaviorText = [System.IO.File]::ReadAllText($setsBehaviorPath)
+
+$setsFrozenConstantEvidence = @(
+    'OwnSettlementEntryLimit = SetsOwnedSettlementMassacreProfile.MaxAlliedAttackers',
+    'OtherSettlementEntryLimit = 10',
+    'DefenderReserveWaveSize = 30',
+    'DefenderReservePhaseCount = 3',
+    'MaxActiveDefenderReserveWaves = 4',
+    'DefenderReserveWaveIntervalSeconds = 30f',
+    'AlliedSpawnBatchSize = 10',
+    'AlliedSpawnInitialDelaySeconds = 0.75f',
+    'AlliedSpawnBatchIntervalSeconds = 0.15f',
+    'DefenderReserveWorkshopSpawnGroupSize = 10',
+    'VictoryEndMissionFallbackDelaySeconds = 2f'
+)
+foreach ($snippet in $setsFrozenConstantEvidence) {
+    Assert-Condition ($setsBehaviorText.Contains($snippet)) "SETS frozen numerical contract drifted: $snippet"
+}
+
+$setsSaveKeyEvidence = @(
+    'dataStore.SyncData("_setsOwnSettlementEntryProfile_v1", ref _ownSettlementProfile);',
+    'dataStore.SyncData("_setsOtherSettlementEntryProfile_v1", ref _otherSettlementProfile);'
+)
+foreach ($snippet in $setsSaveKeyEvidence) {
+    Assert-Condition ($setsBehaviorText.Contains($snippet)) "SETS follower-profile save key drifted: $snippet"
+}
+
+Assert-Condition ($setsBehaviorText.Contains('PatchEncounterEntry(harmony, typeof(TownEncounter), nameof(TownEncounter.CreateAndOpenMissionController), nameof(TownCreateAndOpenMissionControllerPrefix), "town-center");')) "SETS town center entry patch registration is missing."
+Assert-Condition ($setsBehaviorText.Contains('ReachVictory("all_defenders_defeated")')) "SETS victory must still require defeated defenders plus exhausted reserves."
+Assert-Condition ($setsBehaviorText.Contains('if (_defenderConflictEnabled && _conflictActive && !_victoryReached && main != null && main.IsActive())')) "SETS active-conflict TAB exit block condition drifted."
+Assert-Condition ($setsBehaviorText.Contains('skipOwnershipTransfer: _isOwnSettlement || _ownedSettlementIncidentTriggered')) "SETS owned or attached settlements must queue with ownership transfer skipped."
+Assert-Condition ($setsBehaviorText.Contains('SiegeAiInterventionBehavior.TryOpenSettlementEntryVictoryMenu(settlement, pending.SurvivingRoster, bridgeSource, !pending.SkipOwnershipTransfer, pending.SetsOwnedIncident, pending.SetsTownRiotKilledNotable);')) "SETS victory-menu bridge call signature drifted."
+Assert-Condition (-not $setsBehaviorText.Contains('ChangeOwnerOfSettlementAction')) "SETS behavior must never apply ownership directly; ownership lives behind the completion effect adapter."
+
+$setsBridgeOwnershipEvidence = @(
+    'PrepareSetsCapturedTownRiotContext(',
+    'ApplySetsSettlementEntryCaptureIfNeeded(',
+    'PrepareNativeSettlementTakenMenuContextForSets('
+)
+foreach ($snippet in $setsBridgeOwnershipEvidence) {
+    Assert-Condition ($mainRuntimeText.Contains($snippet)) "Missing SETS hostile-capture bridge evidence: $snippet"
+}
+
+$setsNativeReflectionFieldNames = @(
+    '"_besiegerParty"',
+    '"_prevSettlementOwnerClan"',
+    '"_siegeEventPartyContributions"',
+    '"_wasPlayerArmyMember"',
+    '"_settlementProsperityCache"',
+    '"_playerEncounterAftermathDamagedBuildings"',
+    '"_playerEncounterAftermath"'
+)
+foreach ($fieldName in $setsNativeReflectionFieldNames) {
+    Assert-Condition ($mainRuntimeText.Contains($fieldName)) "SETS native settlement-taken reflection field name drifted: $fieldName"
+}
+# --- end SETS urban-capture legacy contract ---
+
+
 Write-Output "GCCZ town refactor boundary verification passed."
 Write-Output "Core source files : $($standaloneCoreFiles.Count)"
 Write-Output "Player resources  : $($resourceMappings.Count)"
@@ -367,3 +434,4 @@ Write-Output "Direct aftermath  : one explicit flow state and adapter"
 Write-Output "Encounter finish  : one explicit completion state"
 Write-Output "Scene control     : one mission-scoped state"
 Write-Output "Event lifecycle   : campaign-owned listeners and mission-finally cleanup"
+Write-Output "SETS contract     : frozen limits, entry patch, exit block, ownership route, reflection fields"

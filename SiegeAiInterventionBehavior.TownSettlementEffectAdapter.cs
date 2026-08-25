@@ -42,12 +42,12 @@ public partial class SiegeAiInterventionBehavior
 		result.NotableRelationsAdjusted = ApplyNotableRelations(
 			settlement,
 			plan.NotableRelationDelta,
-			plan.IncludeBoundVillageNotableRelations,
+			plan.NotableRelationScope,
 			plan.NotableRelationReason);
 		result.NotableTrustAdjusted = ApplyNotableTrust(
 			settlement,
 			plan.NotableTrustDelta,
-			plan.IncludeBoundVillageNotableTrust,
+			plan.NotableTrustScope,
 			plan.NotableTrustReason);
 
 		try
@@ -86,7 +86,9 @@ public partial class SiegeAiInterventionBehavior
 			+ " settlementTrust=" + plan.SettlementPublicTrustDelta
 			+ " villageTrust=" + plan.BoundVillagePublicTrustDelta + "x" + result.BoundVillageTrustAdjusted
 			+ " notableRelation=" + plan.NotableRelationDelta + "x" + result.NotableRelationsAdjusted
+			+ " notableRelationScope=" + plan.NotableRelationScope
 			+ " notableTrust=" + plan.NotableTrustDelta + "x" + result.NotableTrustAdjusted
+			+ " notableTrustScope=" + plan.NotableTrustScope
 			+ " loyaltyDelta=" + plan.LoyaltyDelta.ToString("0.##")
 			+ " loyaltyFloor=" + (plan.HasLoyaltyFloor ? plan.LoyaltyFloor.ToString("0.##") : "none")
 			+ " securityDelta=" + plan.SecurityDelta.ToString("0.##")
@@ -146,7 +148,7 @@ public partial class SiegeAiInterventionBehavior
 	private static int ApplyNotableRelations(
 		Settlement settlement,
 		int delta,
-		bool includeBoundVillages,
+		TownNotableEffectScope scope,
 		string reason)
 	{
 		int adjusted = 0;
@@ -158,7 +160,7 @@ public partial class SiegeAiInterventionBehavior
 			}
 
 			var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			foreach (Hero notable in EnumerateEffectNotables(settlement, includeBoundVillages))
+			foreach (Hero notable in EnumerateEffectNotables(settlement, scope))
 			{
 				string key = notable?.StringId;
 				if (notable == null || notable == Hero.MainHero || !notable.IsAlive || string.IsNullOrWhiteSpace(key) || !seen.Add(key))
@@ -192,7 +194,7 @@ public partial class SiegeAiInterventionBehavior
 	private static int ApplyNotableTrust(
 		Settlement settlement,
 		int delta,
-		bool includeBoundVillages,
+		TownNotableEffectScope scope,
 		string reason)
 	{
 		int adjusted = 0;
@@ -204,7 +206,7 @@ public partial class SiegeAiInterventionBehavior
 			}
 
 			var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			foreach (Hero notable in EnumerateEffectNotables(settlement, includeBoundVillages))
+			foreach (Hero notable in EnumerateEffectNotables(settlement, scope))
 			{
 				string key = notable?.StringId;
 				if (notable == null || notable == Hero.MainHero || !notable.IsAlive || string.IsNullOrWhiteSpace(key) || !seen.Add(key))
@@ -233,9 +235,12 @@ public partial class SiegeAiInterventionBehavior
 		return adjusted;
 	}
 
-	private static IEnumerable<Hero> EnumerateEffectNotables(Settlement settlement, bool includeBoundVillages)
+	private static IEnumerable<Hero> EnumerateEffectNotables(Settlement settlement, TownNotableEffectScope scope)
 	{
-		if (settlement?.Notables != null)
+		bool includeSettlement = scope != TownNotableEffectScope.BoundVillagesOnly;
+		bool includeBoundVillages = scope == TownNotableEffectScope.SettlementAndBoundVillages
+			|| scope == TownNotableEffectScope.BoundVillagesOnly;
+		if (includeSettlement && settlement?.Notables != null)
 		{
 			foreach (Hero notable in settlement.Notables)
 			{
