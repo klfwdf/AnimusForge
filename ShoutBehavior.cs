@@ -14587,7 +14587,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	// History RichText needs the concrete non-hero character too, so NPC tokens can retain the same link target as live dialogue.
+	// History retains the concrete non-hero target for identity, but the formatter links NPC only when that target resolves to a Hero.
 	public static bool TryGetNativeConversationLinkTargetForExternal(out Hero targetHero, out CharacterObject targetCharacter)
 	{
 		targetHero = null;
