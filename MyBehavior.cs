@@ -27443,7 +27443,8 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			if (IsNonHeroMemoryId(stringId))
 			{
-				LogNonHeroMemoryTrace("stage=load_dialogue_hit memoryId=" + stringId + " days=" + value.Count + " lines=" + CountDialogueHistoryLines(value));
+				// Keep verbose-only diagnostics from adding a full history-line count to normal history opens.
+				LogNonHeroMemoryTrace(() => "stage=load_dialogue_hit memoryId=" + stringId + " days=" + value.Count + " lines=" + CountDialogueHistoryLines(value));
 			}
 			return value;
 		}
@@ -28029,14 +28030,23 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 				return result;
 			}
-			foreach (DialogueDay record in records.OrderBy((DialogueDay d) => d?.GameDayIndex ?? 0))
+			int limit = Math.Max(1, Math.Min(260, maxLines <= 0 ? 260 : maxLines));
+			// The popup displays only the newest bounded window.  Walk the exact chronological ordering backwards,
+			// stop once that window is full, then reverse it below so callers retain the previous oldest-to-newest result.
+			// Sorting the day list remains necessary because save migration/merge paths do not promise storage order.
+			List<DialogueDay> orderedRecords = records.OrderBy((DialogueDay d) => d?.GameDayIndex ?? 0).ToList();
+			for (int recordIndex = orderedRecords.Count - 1; recordIndex >= 0 && result.Count < limit; recordIndex--)
 			{
+				DialogueDay record = orderedRecords[recordIndex];
 				if (record?.Lines == null)
 				{
 					continue;
 				}
-				foreach (string rawLine in record.Lines)
+				// Lines are written in chronological order.  Reverse iteration avoids classifying old history that
+				// cannot survive the newest-limit trim, while preserving every accepted line after result.Reverse().
+				for (int lineIndex = record.Lines.Count - 1; lineIndex >= 0 && result.Count < limit; lineIndex--)
 				{
+					string rawLine = record.Lines[lineIndex];
 					string line = (rawLine ?? "").Trim();
 					if (string.IsNullOrWhiteSpace(line))
 					{
@@ -28058,14 +28068,12 @@ public class MyBehavior : CampaignBehaviorBase
 					});
 				}
 			}
-			int limit = Math.Max(1, Math.Min(260, maxLines <= 0 ? 260 : maxLines));
-			if (result.Count > limit)
-			{
-				result = result.Skip(result.Count - limit).ToList();
-			}
+			// The reverse walk collected the same newest records in newest-to-oldest order; restore the UI/LLM-facing order.
+			result.Reverse();
 			if (IsNonHeroMemoryId(normalizedMemoryId))
 			{
-				LogNonHeroMemoryTrace("stage=entries_read memoryId=" + normalizedMemoryId + " days=" + records.Count + " lines=" + CountDialogueHistoryLines(records) + " entries=" + result.Count + " maxLines=" + maxLines);
+				// Keep the tail-read fast when verbose diagnostics are disabled; the line total is diagnostic-only.
+				LogNonHeroMemoryTrace(() => "stage=entries_read memoryId=" + normalizedMemoryId + " days=" + records.Count + " lines=" + CountDialogueHistoryLines(records) + " entries=" + result.Count + " maxLines=" + maxLines);
 			}
 		}
 		catch (Exception ex)

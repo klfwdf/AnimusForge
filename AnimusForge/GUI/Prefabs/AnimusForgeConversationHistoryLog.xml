@@ -13,39 +13,49 @@
                 <TextWidget WidthSizePolicy="CoverChildren" DoNotAcceptEvents="true" HeightSizePolicy="Fixed" SuggestedHeight="30" Brush="Conversation.HeaderText" Brush.TextHorizontalAlignment="Right" Text="关闭" Brush.FontSize="26" />
               </Children>
             </ButtonWidget>
-            <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" PositionYOffset="10" MarginTop="70">
+            <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" PositionXOffset="0" PositionYOffset="10" MarginTop="70" LayoutImp.LayoutMethod="VerticalTopToBottom">
               <Children>
-                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" HorizontalAlignment="Left">
+                <!-- Paging keeps every record available while bounding the live RichText widget count on large hyperlink-heavy histories. -->
+                <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="42" MarginLeft="18" MarginRight="28" MarginBottom="4" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                   <Children>
-                    <ListPanel HeightSizePolicy="CoverChildren" WidthSizePolicy="StretchToParent" PositionXOffset="0" PositionYOffset="0">
+                    <ButtonWidget DoNotPassEventsToChildren="true" IsEnabled="@CanLoadOlderPage" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="112" SuggestedHeight="34" Brush="Popup.Cancel.Button" Command.Click="LoadOlderPage" UpdateChildrenStates="true">
                       <Children>
-                        <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" LayoutImp.LayoutMethod="HorizontalLeftToRight">
-                          <Children>
-                            <AnimusForgeConversationHistoryAutoScrollPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginRight="8" AutoHideScrollBars="true" ClipRect="ItemListRect" InnerPanel="ItemListRect\ItemListPanel" MouseScrollAxis="Vertical" VerticalScrollbar="..\ItemListScrollbar2\Scrollbar">
-                              <Children>
-                                <Widget Id="ItemListRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
-                                  <Children>
-                                    <ListPanel Id="ItemListPanel" DataSource="{Items}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalTopToBottom">
-                                      <ItemTemplate>
-                                        <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="18" MarginRight="12" MarginTop="6" MarginBottom="4" LayoutImp.LayoutMethod="HorizontalLeftToRight">
-                                          <Children>
-                                            <RichTextWidget WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="190" MarginRight="10" Brush="Conversation.HeaderText" DoNotAcceptEvents="true" Brush.FontSize="20" Text="@ChatItemTime" />
-                                            <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Conversation.ConversedPartyLine.Text" Brush.FontSize="20" DoNotAcceptEvents="false" Command.LinkClick="ExecuteOpenEncyclopediaLink" Command.LinkAlternateClick="ExecuteOpenEncyclopediaLink" Text="@ChatText" CanBreakWords="true" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" Brush.FontColor="@FontColor" />
-                                          </Children>
-                                        </ListPanel>
-                                      </ItemTemplate>
-                                    </ListPanel>
-                                  </Children>
-                                </Widget>
-                              </Children>
-                            </AnimusForgeConversationHistoryAutoScrollPanel>
-                            <Standard.VerticalScrollbar Id="ItemListScrollbar2" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
-                          </Children>
-                        </ListPanel>
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Text="更早记录" />
                       </Children>
-                    </ListPanel>
+                    </ButtonWidget>
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="34" Brush="Conversation.HeaderText" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@PageStatusText" Brush.FontSize="18" DoNotAcceptEvents="true" />
+                    <ButtonWidget DoNotPassEventsToChildren="true" IsEnabled="@CanLoadNewerPage" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="112" SuggestedHeight="34" Brush="Popup.Done.Button" Command.Click="LoadNewerPage" UpdateChildrenStates="true">
+                      <Children>
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Text="更新记录" />
+                      </Children>
+                    </ButtonWidget>
                   </Children>
-                </Widget>
+                </ListPanel>
+                <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                  <Children>
+                    <AnimusForgeConversationHistoryAutoScrollPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginRight="8" AutoHideScrollBars="true" AutoScrollRequestVersion="@AutoScrollRequestVersion" AutoScrollTopRequestVersion="@AutoScrollTopRequestVersion" ClipRect="ItemListRect" InnerPanel="ItemListRect\ItemListPanel" MouseScrollAxis="Vertical" VerticalScrollbar="..\ItemListScrollbar2\Scrollbar">
+                      <Children>
+                        <Widget Id="ItemListRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                          <Children>
+                            <ListPanel Id="ItemListPanel" DataSource="{Items}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalTopToBottom">
+                              <ItemTemplate>
+                                <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="18" MarginRight="12" MarginTop="6" MarginBottom="4" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                                  <Children>
+                                    <!-- Timestamps never contain hyperlinks, so plain TextWidget removes one needless RichText update per record. -->
+                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="190" MarginRight="10" Brush="Conversation.HeaderText" DoNotAcceptEvents="true" Brush.FontSize="20" Text="@ChatItemTime" />
+                                    <!-- Page bounds keep this native RichTextWidget at fifty rows, preserving its exact hyperlink press/release behavior. -->
+                                    <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Conversation.ConversedPartyLine.Text" Brush.FontSize="20" DoNotAcceptEvents="false" Command.LinkClick="ExecuteOpenEncyclopediaLink" Command.LinkAlternateClick="ExecuteOpenEncyclopediaLink" Text="@ChatText" CanBreakWords="true" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" Brush.FontColor="@FontColor" />
+                                  </Children>
+                                </ListPanel>
+                              </ItemTemplate>
+                            </ListPanel>
+                          </Children>
+                        </Widget>
+                      </Children>
+                    </AnimusForgeConversationHistoryAutoScrollPanel>
+                    <Standard.VerticalScrollbar Id="ItemListScrollbar2" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+                  </Children>
+                </ListPanel>
               </Children>
             </ListPanel>
           </Children>
