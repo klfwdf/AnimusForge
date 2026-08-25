@@ -13,8 +13,10 @@ public class AnimusForgeConversationHistoryAutoScrollPanel : ScrollablePanel
 	private const float SmoothAutoScrollDurationSeconds = 0.66f;
 
 	private int _remainingAutoScrollFrames = InitialAutoScrollFrames;
+	private int _remainingTopAutoScrollFrames;
 	private int _stableScrollbarFrames;
 	private int _autoScrollRequestVersion;
+	private int _autoScrollTopRequestVersion;
 	private float _lastObservedScrollbarMaximum = float.NaN;
 	private bool _smoothAutoScroll;
 	private bool _isSmoothAutoScrollActive;
@@ -46,6 +48,24 @@ public class AnimusForgeConversationHistoryAutoScrollPanel : ScrollablePanel
 	}
 
 	/// <summary>
+	/// Receives a monotonically increasing request to reveal the top of a replacement page.
+	/// This keeps previous/next page navigation continuous in chronological history lists.
+	/// </summary>
+	public int AutoScrollTopRequestVersion
+	{
+		get => _autoScrollTopRequestVersion;
+		set
+		{
+			if (_autoScrollTopRequestVersion == value)
+			{
+				return;
+			}
+			_autoScrollTopRequestVersion = value;
+			RequestTopScrollAfterLayout();
+		}
+	}
+
+	/// <summary>
 	/// Enables a short easing animation for automatic bottom-scroll requests.
 	/// The world-message timeline opts in while older conversation history keeps its existing instant behavior.
 	/// </summary>
@@ -69,6 +89,11 @@ public class AnimusForgeConversationHistoryAutoScrollPanel : ScrollablePanel
 
 		if (VerticalScrollbar == null)
 		{
+			return;
+		}
+		if (_remainingTopAutoScrollFrames > 0)
+		{
+			UpdateAutomaticTopScrollTargetAfterLayout();
 			return;
 		}
 		if (_remainingAutoScrollFrames > 0)
@@ -113,10 +138,26 @@ public class AnimusForgeConversationHistoryAutoScrollPanel : ScrollablePanel
 	private void RequestBottomScrollAfterLayout()
 	{
 		// A bounded retry covers deferred Gauntlet measurement without continually forcing the content transform.
+		_remainingTopAutoScrollFrames = 0;
 		_remainingAutoScrollFrames = InitialAutoScrollFrames;
 		_stableScrollbarFrames = 0;
 		_lastObservedScrollbarMaximum = float.NaN;
 		_isSmoothAutoScrollActive = false;
+	}
+
+	private void RequestTopScrollAfterLayout()
+	{
+		// The replacement page may bind before its rows receive height; keep the top anchored through that short layout window.
+		_remainingTopAutoScrollFrames = InitialAutoScrollFrames;
+		_remainingAutoScrollFrames = 0;
+		_isSmoothAutoScrollActive = false;
+	}
+
+	private void UpdateAutomaticTopScrollTargetAfterLayout()
+	{
+		// Zero is valid before and after measurement, so no maximum-value probe is needed for a deterministic top anchor.
+		VerticalScrollbar.ValueFloat = 0f;
+		_remainingTopAutoScrollFrames--;
 	}
 
 	private void MoveScrollbarToBottomIfNeeded(float maximum)
@@ -189,6 +230,7 @@ public class AnimusForgeConversationHistoryAutoScrollPanel : ScrollablePanel
 	private void CancelAutomaticScrolling()
 	{
 		// Any explicit player scroll wins over pending automatic positioning and its easing animation.
+		_remainingTopAutoScrollFrames = 0;
 		_remainingAutoScrollFrames = 0;
 		_isSmoothAutoScrollActive = false;
 	}

@@ -147,6 +147,11 @@ public sealed class AnimusForgeConversationHistoryLogPopup
 		catch
 		{
 		}
+		if (!_isClosed)
+		{
+			// Preformat a few unseen page rows after input, keeping later page changes instant without delaying close/navigation.
+			_dataSource?.WarmDisplayCache();
+		}
 	}
 
 	private void HandleCloseRequested()
@@ -247,6 +252,8 @@ public sealed class AnimusForgeConversationHistoryLogPopup
 				Logger.Log("NativeConversationHistory", "[WARN] Failed to remove history log layer: " + ex.Message);
 			}
 		}
+		// Stop idle work before finalizing so a closed popup cannot retain history or campaign entity references.
+		_dataSource?.CancelDeferredFormatting();
 		_dataSource?.OnFinalize();
 		if (ReferenceEquals(_activePopup, this))
 		{
