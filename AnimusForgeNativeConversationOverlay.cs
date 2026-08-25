@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using SandBox.View.Map;
+using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.Engine.GauntletUI;
 using TaleWorlds.InputSystem;
@@ -909,6 +910,13 @@ public sealed class AnimusForgeNativeConversationOverlay
 		bool suppressReadyNotice = false;
 		string completedDisplayReply = "";
 		bool needsFinalDisplayAfterTts = false;
+		string mainReplyBeforePostprocess = "";
+		bool hasMainReplyBeforePostprocess = false;
+		EncyclopediaEntityLinkFormatter.StreamingDisplaySession streamingLinkDisplaySession = null;
+		Hero streamLinkTargetHero = null;
+		CharacterObject streamLinkTargetCharacter = null;
+		// Capture before the background stream begins, so an action that later changes target cannot redirect NPC links mid-reply.
+		ShoutBehavior.TryGetNativeConversationLinkTargetForExternal(out streamLinkTargetHero, out streamLinkTargetCharacter);
 		_isSubmitting = true;
 		ClearPendingPostprocessNotice();
 		_dataSource.SetBusy(true);
@@ -940,8 +948,12 @@ public sealed class AnimusForgeNativeConversationOverlay
 						}
 						receivedVisibleText = true;
 						StopWaitingDotsAnimation(generation);
-						// Stream fragments remain plain text because incomplete RichText markup would break the native typewriter/UI parser.
-						ConversationHelper.UpdateDialogText(EncyclopediaEntityLinkFormatter.SanitizeUntrustedRichText(partial));
+						// The snapshot is built once on the UI thread; later fragments probe just their appended tail.
+						if (streamingLinkDisplaySession == null)
+						{
+							streamingLinkDisplaySession = EncyclopediaEntityLinkFormatter.CreateStreamingDisplaySession();
+						}
+						ConversationHelper.UpdateDialogText(streamingLinkDisplaySession.FormatStreamingText(partial, streamLinkTargetHero, streamLinkTargetCharacter));
 					}
 				});
 			}, originalDialogText, delegate(string npcName)
@@ -962,6 +974,28 @@ public sealed class AnimusForgeNativeConversationOverlay
 						return;
 					}
 					QueuePostprocessNotice(generation, npcName);
+				});
+			}, delegate(string mainReply, Hero mainReplyTargetHero, CharacterObject mainReplyTargetCharacter)
+			{
+				mainReplyBeforePostprocess = (mainReply ?? "").Replace("\r", "").Trim();
+				hasMainReplyBeforePostprocess = !string.IsNullOrWhiteSpace(mainReplyBeforePostprocess);
+				if (!hasMainReplyBeforePostprocess || suppressVisibleStreamingForTts)
+				{
+					return;
+				}
+				RunOnMainThread(delegate
+				{
+					if (_isClosed || !IsSubmitGenerationActive(generation) || !ShoutBehavior.IsNativeConversationResponseTargetAvailableForExternal())
+					{
+						return;
+					}
+					receivedVisibleText = true;
+					StopWaitingDotsAnimation(generation);
+					// Reuse the streaming snapshot when possible, so the completed main reply does not rescan all campaign entities.
+					completedDisplayReply = streamingLinkDisplaySession != null
+						? streamingLinkDisplaySession.FormatStreamingText(mainReplyBeforePostprocess, mainReplyTargetHero, mainReplyTargetCharacter)
+						: ShoutBehavior.FormatNativeConversationDisplayTextForExternal(mainReplyBeforePostprocess, mainReplyTargetHero, mainReplyTargetCharacter);
+					ConversationHelper.UpdateDialogText(completedDisplayReply);
 				});
 			});
 			string completedReply = reply;
@@ -990,11 +1024,14 @@ public sealed class AnimusForgeNativeConversationOverlay
 					ConversationHelper.UpdateDialogText(originalDialogText ?? "");
 					return;
 				}
-				if (IsSubmitGenerationActive(generation) && !string.IsNullOrWhiteSpace(completedReply))
+				bool finalReplyMatchesMainReply = !suppressVisibleStreamingForTts
+					&& hasMainReplyBeforePostprocess
+					&& string.Equals(completedReply, mainReplyBeforePostprocess, StringComparison.Ordinal);
+				if (IsSubmitGenerationActive(generation) && !string.IsNullOrWhiteSpace(completedReply) && !finalReplyMatchesMainReply)
 				{
 					receivedVisibleText = true;
 					StopWaitingDotsAnimation(generation);
-					// Linkify only the completed display copy; the raw reply has already been retained for TTS and memory.
+					// Only an action/postprocess-modified final reply needs a second display scan.
 					completedDisplayReply = ShoutBehavior.FormatNativeConversationDisplayTextForExternal(completedReply);
 					if (!suppressVisibleStreamingForTts || !ConversationHelper.IsTypewriterActive)
 					{
@@ -1006,7 +1043,7 @@ public sealed class AnimusForgeNativeConversationOverlay
 						needsFinalDisplayAfterTts = true;
 					}
 				}
-				else if (IsSubmitGenerationActive(generation) && !receivedVisibleText)
+				else if (IsSubmitGenerationActive(generation) && !receivedVisibleText && !finalReplyMatchesMainReply)
 				{
 					ConversationHelper.UpdateDialogText(originalDialogText ?? "");
 				}
@@ -1091,6 +1128,13 @@ public sealed class AnimusForgeNativeConversationOverlay
 		bool suppressReadyNotice = false;
 		string completedDisplayReply = "";
 		bool needsFinalDisplayAfterTts = false;
+		string mainReplyBeforePostprocess = "";
+		bool hasMainReplyBeforePostprocess = false;
+		EncyclopediaEntityLinkFormatter.StreamingDisplaySession streamingLinkDisplaySession = null;
+		Hero streamLinkTargetHero = null;
+		CharacterObject streamLinkTargetCharacter = null;
+		// Capture before the background stream begins, so an action that later changes target cannot redirect NPC links mid-reply.
+		ShoutBehavior.TryGetNativeConversationLinkTargetForExternal(out streamLinkTargetHero, out streamLinkTargetCharacter);
 		_isSubmitting = true;
 		ClearPendingPostprocessNotice();
 		_dataSource.SetBusy(true);
@@ -1122,8 +1166,12 @@ public sealed class AnimusForgeNativeConversationOverlay
 						}
 						receivedVisibleText = true;
 						StopWaitingDotsAnimation(generation);
-						// Stream fragments remain plain text because incomplete RichText markup would break the native typewriter/UI parser.
-						ConversationHelper.UpdateDialogText(EncyclopediaEntityLinkFormatter.SanitizeUntrustedRichText(partial));
+						// The snapshot is built once on the UI thread; later fragments probe just their appended tail.
+						if (streamingLinkDisplaySession == null)
+						{
+							streamingLinkDisplaySession = EncyclopediaEntityLinkFormatter.CreateStreamingDisplaySession();
+						}
+						ConversationHelper.UpdateDialogText(streamingLinkDisplaySession.FormatStreamingText(partial, streamLinkTargetHero, streamLinkTargetCharacter));
 					}
 				});
 			}, originalDialogText, delegate(string npcName)
@@ -1144,6 +1192,28 @@ public sealed class AnimusForgeNativeConversationOverlay
 						return;
 					}
 					QueuePostprocessNotice(generation, npcName);
+				});
+			}, delegate(string mainReply, Hero mainReplyTargetHero, CharacterObject mainReplyTargetCharacter)
+			{
+				mainReplyBeforePostprocess = (mainReply ?? "").Replace("\r", "").Trim();
+				hasMainReplyBeforePostprocess = !string.IsNullOrWhiteSpace(mainReplyBeforePostprocess);
+				if (!hasMainReplyBeforePostprocess || suppressVisibleStreamingForTts)
+				{
+					return;
+				}
+				RunOnMainThread(delegate
+				{
+					if (_isClosed || !IsSubmitGenerationActive(generation) || !ShoutBehavior.IsNativeConversationResponseTargetAvailableForExternal())
+					{
+						return;
+					}
+					receivedVisibleText = true;
+					StopWaitingDotsAnimation(generation);
+					// Reuse the streaming snapshot when possible, so the completed main reply does not rescan all campaign entities.
+					completedDisplayReply = streamingLinkDisplaySession != null
+						? streamingLinkDisplaySession.FormatStreamingText(mainReplyBeforePostprocess, mainReplyTargetHero, mainReplyTargetCharacter)
+						: ShoutBehavior.FormatNativeConversationDisplayTextForExternal(mainReplyBeforePostprocess, mainReplyTargetHero, mainReplyTargetCharacter);
+					ConversationHelper.UpdateDialogText(completedDisplayReply);
 				});
 			});
 			string completedReply = reply;
@@ -1173,11 +1243,14 @@ public sealed class AnimusForgeNativeConversationOverlay
 					_dataSource.InputText = text;
 					return;
 				}
-				if (IsSubmitGenerationActive(generation) && !string.IsNullOrWhiteSpace(completedReply))
+				bool finalReplyMatchesMainReply = !suppressVisibleStreamingForTts
+					&& hasMainReplyBeforePostprocess
+					&& string.Equals(completedReply, mainReplyBeforePostprocess, StringComparison.Ordinal);
+				if (IsSubmitGenerationActive(generation) && !string.IsNullOrWhiteSpace(completedReply) && !finalReplyMatchesMainReply)
 				{
 					receivedVisibleText = true;
 					StopWaitingDotsAnimation(generation);
-					// Linkify only the completed display copy; the raw reply has already been retained for TTS and memory.
+					// Only an action/postprocess-modified final reply needs a second display scan.
 					completedDisplayReply = ShoutBehavior.FormatNativeConversationDisplayTextForExternal(completedReply);
 					if (!suppressVisibleStreamingForTts || !ConversationHelper.IsTypewriterActive)
 					{
@@ -1189,7 +1262,7 @@ public sealed class AnimusForgeNativeConversationOverlay
 						needsFinalDisplayAfterTts = true;
 					}
 				}
-				else if (IsSubmitGenerationActive(generation) && !receivedVisibleText)
+				else if (IsSubmitGenerationActive(generation) && !receivedVisibleText && !finalReplyMatchesMainReply)
 				{
 					ConversationHelper.UpdateDialogText(originalDialogText ?? "");
 				}

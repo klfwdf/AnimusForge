@@ -176,6 +176,8 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private bool _disabledStateApplied;
 	private MapNotificationView _registeredMapNotificationView;
 	private long _runtimeGeneration;
+	// Runtime-only revision lets the world-message timeline detect a published document without cloning the archive every tick.
+	private long _worldMessageTimelineRevision = 1L;
 	private bool _nativeDiplomacyDecisionQueueSanitized;
 	private int _aiDocumentsStartedDay = -1;
 	private int _aiDocumentsStartedToday;
@@ -389,6 +391,20 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		catch
 		{
 			return new List<WorldDiplomacyDocument>();
+		}
+	}
+
+	public static long GetWorldMessageTimelineRevisionForExternal()
+	{
+		try
+		{
+			// A scalar revision avoids the JSON-cloning archive query unless the open timeline actually needs new data.
+			WorldDiplomacyBehavior behavior = ResolveInstance();
+			return behavior == null ? 0L : Math.Max(0L, behavior._worldMessageTimelineRevision);
+		}
+		catch
+		{
+			return 0L;
 		}
 	}
 
@@ -13464,6 +13480,16 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			.OrderBy(x => x.Day)
 			.ThenBy(x => x.CreatedUtcTicks)
 			.ToList();
+		// This runs only on publication/update, not during the message UI's frame tick.
+		AdvanceWorldMessageTimelineRevision();
+	}
+
+	private void AdvanceWorldMessageTimelineRevision()
+	{
+		// Overflow is practically unreachable, but preserving a nonzero revision keeps the comparison valid in long-running sessions.
+		_worldMessageTimelineRevision = _worldMessageTimelineRevision == long.MaxValue
+			? 1L
+			: _worldMessageTimelineRevision + 1L;
 	}
 
 	private void EnsureCanonicalHistoryInitialized()

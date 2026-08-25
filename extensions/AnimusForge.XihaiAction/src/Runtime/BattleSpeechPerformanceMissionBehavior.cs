@@ -19,9 +19,6 @@ namespace AnimusForge.XihaiAction
             new Dictionary<string, ActionIndexCache>(StringComparer.Ordinal);
         private const string SpeechOpeningActionId = "act_af_speech_nacisword1";
         private bool _closed = true;
-        private double _nextEnemyScanAtMissionTime;
-        private bool _enemyScanDirty = true;
-        private bool _cachedNearbyEnemy;
 
         public override MissionBehaviorType BehaviorType => MissionBehaviorType.Other;
         internal bool IsSessionActive => !_closed;
@@ -81,12 +78,18 @@ namespace AnimusForge.XihaiAction
                 in affectorWeapon,
                 in blow,
                 in attackCollisionData);
-            _enemyScanDirty = true;
+            BattleSpeechEnemyProximityCache.Invalidate(
+                Mission,
+                affectedAgent,
+                affectorAgent);
             if (_active != null &&
                 (ReferenceEquals(_active.Speaker, affectedAgent) ||
                  ReferenceEquals(_active.Speaker, affectorAgent)))
             {
-                CancelActive("The speech performer entered combat.");
+                // A hit/attack must not cancel an in-combat speech.  Mark the
+                // performance in-place and remove every presentation channel
+                // owned by this speech; the speaker remains free to fight.
+                EnterCombatPerformanceMode(_active, "AgentHit");
             }
         }
 
@@ -130,6 +133,9 @@ namespace AnimusForge.XihaiAction
                 Audience = frozenAudience,
                 StartedAtMissionTime = speech.Snapshot.StartedAtMissionTime,
                 SpeechEndsAtMissionTime = speech.Snapshot.EndsAtMissionTime,
+                Tactic = speech.Tactic,
+                TacticDecisionProvided = speech.TacticDecisionProvided,
+                CombatSpeechMode = speech.CombatSpeechMode,
                 TailEndsAtMissionTime = speech.Snapshot.StartedAtMissionTime +
                                         plan.TailEndOffsetSeconds,
                 Cues = cues,
@@ -155,9 +161,7 @@ namespace AnimusForge.XihaiAction
             };
             TryPlaySpeechOpeningGesture(_active);
             BattleSpeechRuntimeHost.MarkPerformanceStarted(speech.Mission);
-            _enemyScanDirty = true;
-            _cachedNearbyEnemy = false;
-            _nextEnemyScanAtMissionTime = 0d;
+            BattleSpeechEnemyProximityCache.Invalidate(Mission, speech.Speaker, null);
             SceneActionsLog.Info(
                 "BATTLE_SPEECH_PERFORMANCE",
                 "Session=" + _active.OwnerToken.ToString("N") +
@@ -176,7 +180,8 @@ namespace AnimusForge.XihaiAction
                 return;
             }
             _active.Completed = true;
-            if (BattleSpeechRuntimeHost.StageSettings.TacticalAdvanceEnabled)
+            if (BattleSpeechRuntimeHost.StageSettings.TacticalAdvanceEnabled &&
+                !_active.CombatSpeechMode)
             {
                 TryHoldSpeakerAtSpeechLine(_active);
             }
@@ -233,6 +238,28 @@ namespace AnimusForge.XihaiAction
             base.OnRemoveBehavior();
         }
 
+        private void EnterCombatPerformanceMode(
+            ActivePerformance performance,
+            string trigger)
+        {
+            if (performance == null || performance.CombatSpeechMode)
+            {
+                return;
+            }
+            performance.CombatSpeechMode = true;
+            int releasedAudience = ReleaseOwnedAudiencePerformanceChannels(performance);
+            ReleaseHeldSpeaker(performance);
+            CancelTrustedPlaybackOnce(
+                performance,
+                "Combat speech mode entered; visual presentation cancelled.");
+            SceneActionsLog.Info(
+                "BATTLE_SPEECH_PERFORMANCE",
+                "Session=" + performance.OwnerToken.ToString("N") +
+                " State=CombatInPlace Trigger=" +
+                (trigger ?? "Unknown") +
+                " ReleasedAudienceChannels=" + releasedAudience);
+        }
+
         private void Progress(double now)
         {
             ActivePerformance performance = _active;
@@ -244,10 +271,10 @@ namespace AnimusForge.XihaiAction
                 CancelActive("Performance speaker became unavailable.");
                 return;
             }
-            if (HasNearbyEnemyThrottled(performance.Speaker, now))
+            if (!performance.CombatSpeechMode &&
+                HasNearbyEnemyThrottled(performance.Speaker))
             {
-                CancelActive("Enemy entered the battle speech performance safety radius.");
-                return;
+                EnterCombatPerformanceMode(performance, "EnemyNearby");
             }
 
             int submittedThisTick = 0;
@@ -256,6 +283,16 @@ namespace AnimusForge.XihaiAction
                        .MaximumVisualSubmissionsPerTick)
             {
                 RuntimeCue runtimeCue = performance.Cues[performance.NextCueIndex];
+                if (!BattleSpeechFrameworkV2.ShouldSubmitAudienceVisuals(
+                        performance.CombatSpeechMode,
+                        configuredEnabled: true))
+                {
+                    // Combat speeches retain only written audience replies.
+                    // Fast-forward every queued visual cue without waiting for
+                    // its original presentation offset.
+                    performance.NextCueIndex++;
+                    continue;
+                }
                 double due = performance.StartedAtMissionTime + runtimeCue.Cue.OffsetSeconds;
                 if (now + 0.0001d < due)
                 {
@@ -396,8 +433,7 @@ namespace AnimusForge.XihaiAction
                 !actor.Team.IsValid ||
                 actor.IsRunningAway ||
                 actor.IsRetreating() ||
-                actor.IsUsingGameObject ||
-                actor.IsInBeingStruckAction)
+                actor.IsUsingGameObject)
             {
                 return false;
             }
@@ -410,7 +446,9 @@ namespace AnimusForge.XihaiAction
             // conversation gestures are not guaranteed to have a horse-safe
             // animation path, and skipping mounted listeners avoids replacing
             // their combat/mount channel on every reaction wave.
-            return IsEligiblePerformanceActor(actor) && actor.MountAgent == null;
+            return IsEligiblePerformanceActor(actor) &&
+                   !actor.IsInBeingStruckAction &&
+                   actor.MountAgent == null;
         }
 
         private bool CanPlaySpeakerGesture(Agent actor)
@@ -419,13 +457,22 @@ namespace AnimusForge.XihaiAction
             // channel is owned and released by this performance just like an
             // infantry speaker's channel; mount facing is handled by the
             // staging behavior.
-            return IsEligiblePerformanceActor(actor);
+            return IsEligiblePerformanceActor(actor) &&
+                   !actor.IsInBeingStruckAction;
         }
 
         private void TryPlaySpeechOpeningGesture(ActivePerformance performance)
         {
             if (performance == null)
             {
+                return;
+            }
+            if (performance.CombatSpeechMode)
+            {
+                SceneActionsLog.Info(
+                    "BATTLE_SPEECH_PERFORMANCE",
+                    "Session=" + performance.OwnerToken.ToString("N") +
+                    " SpeechOpeningGesture=Skipped Reason=CombatSpeechInPlace");
                 return;
             }
             Agent speaker = performance.Speaker;
@@ -628,7 +675,7 @@ namespace AnimusForge.XihaiAction
 
         private void TryOpenAudienceResponse(ActivePerformance performance, double now)
         {
-            if (performance.ResponseOpened || !performance.Completed)
+            if (performance.ResponseOpened)
             {
                 return;
             }
@@ -637,7 +684,8 @@ namespace AnimusForge.XihaiAction
                     performance.Completed,
                     performance.FinalAudienceSubmitted,
                     performance.FirstVisualWaveTarget,
-                    allVisualCuesProcessed))
+                    allVisualCuesProcessed,
+                    allowDuringSpeech: true))
             {
                 return;
             }
@@ -670,52 +718,91 @@ namespace AnimusForge.XihaiAction
                                performance.ReplyAudienceOrdinals.Length;
             if (!repliesDone && now >= performance.NextReplyAtMissionTime)
             {
-                int replyIndex = performance.NextReplyIndex;
-                int ordinal = performance.ReplyAudienceOrdinals[replyIndex];
-                performance.NextReplyIndex++;
-                Agent actor = ResolveAudienceActor(performance, ordinal);
-                string reply = replyIndex < performance.AudienceReplies.Length
-                    ? performance.AudienceReplies[replyIndex]
-                    : string.Empty;
-                float visualDuration = 0f;
-                string replyError = null;
-                bool played = CanPlayAudienceVoice(actor) &&
-                              AfCompatV130.TryShowAudienceReply(
-                                  actor,
-                                  reply,
-                                  out visualDuration,
-                                  out replyError);
-                if (!played)
+                int remaining = performance.ReplyAudienceOrdinals.Length -
+                                performance.NextReplyIndex;
+                if (performance.ReplyWaveRemaining <= 0)
                 {
-                    SceneActionsLog.Warning(
-                        "BATTLE_SPEECH_REPLY",
-                        "Session=" + performance.OwnerToken.ToString("N") +
-                        " Agent=" + (actor?.Index ?? -1) +
-                        " State=Skipped Reason=" +
-                        (replyError ?? "Actor unavailable."));
+                    performance.ReplyWaveRemaining =
+                        BattleSpeechFrameworkV2.ResolveAudienceReplyWaveSize(
+                            performance.OwnerToken,
+                            performance.ReplyWaveIndex,
+                            stage.AudienceReplyWaveSize,
+                            remaining);
                 }
-                else
+                int waveSize = performance.ReplyWaveRemaining;
+                int submissionsThisTick = Math.Min(
+                    waveSize,
+                    stage.MaximumAudienceReplySubmissionsPerTick);
+                float longestVisualDuration = 0f;
+                int playedThisWave = 0;
+                for (int waveOffset = 0;
+                     waveOffset < submissionsThisTick;
+                     waveOffset++)
                 {
-                    SceneActionsLog.Info(
-                        "BATTLE_SPEECH_REPLY",
-                        "Session=" + performance.OwnerToken.ToString("N") +
-                        " Agent=" + actor.Index +
-                        " ReplyIndex=" + performance.NextReplyIndex);
+                    int replyIndex = performance.NextReplyIndex++;
+                    performance.ReplyWaveRemaining--;
+                    int ordinal = performance.ReplyAudienceOrdinals[replyIndex];
+                    Agent actor = ResolveAudienceActor(performance, ordinal);
+                    string reply = replyIndex < performance.AudienceReplies.Length
+                        ? performance.AudienceReplies[replyIndex]
+                        : string.Empty;
+                    float visualDuration = 0f;
+                    string replyError = null;
+                    bool played = CanPlayAudienceVoice(actor) &&
+                                  AfCompatV130.TryShowAudienceReply(
+                                      actor,
+                                      reply,
+                                      !performance.CombatSpeechMode,
+                                      out visualDuration,
+                                      out replyError);
+                    longestVisualDuration = Math.Max(
+                        longestVisualDuration,
+                        Math.Min(3f, visualDuration));
+                    if (!played)
+                    {
+                        SceneActionsLog.Warning(
+                            "BATTLE_SPEECH_REPLY",
+                            "Session=" + performance.OwnerToken.ToString("N") +
+                            " Agent=" + (actor?.Index ?? -1) +
+                            " State=Skipped Reason=" +
+                            (replyError ?? "Actor unavailable."));
+                    }
+                    else
+                    {
+                        playedThisWave++;
+                    }
                 }
+                bool waveCompleted = performance.ReplyWaveRemaining <= 0;
+                double randomDelay = waveCompleted
+                    ? BattleSpeechFrameworkV2.ResolveAudienceReplyWaveDelaySeconds(
+                        performance.OwnerToken,
+                        performance.ReplyWaveIndex++,
+                        stage.AudienceReplyMinimumIntervalSeconds,
+                        stage.AudienceReplyMaximumIntervalSeconds)
+                    : 0.01d;
                 performance.NextReplyAtMissionTime = now + Math.Max(
-                    stage.AudienceReplyIntervalSeconds,
-                    Math.Min(3f, visualDuration));
+                    waveCompleted ? randomDelay : 0.01d,
+                    longestVisualDuration);
                 performance.TailEndsAtMissionTime = Math.Max(
                     performance.TailEndsAtMissionTime,
                     performance.NextReplyAtMissionTime +
                     performance.Settings.PerformanceTailSeconds);
-                return;
+                SceneActionsLog.Info(
+                    "BATTLE_SPEECH_REPLY",
+                    "Session=" + performance.OwnerToken.ToString("N") +
+                    " WaveSize=" + waveSize +
+                    " SubmittedThisTick=" + submissionsThisTick +
+                    " WaveCompleted=" + waveCompleted +
+                    " Played=" + playedThisWave +
+                    " NextDelay=" + randomDelay.ToString("F2"));
             }
 
-            repliesDone = !stage.AudienceRepliesEnabled ||
-                          performance.NextReplyIndex >=
-                          performance.ReplyAudienceOrdinals.Length;
-            if (repliesDone && stage.AudienceVoicesEnabled &&
+            // Native battle cries are an independent response channel. They
+            // start with the first audience reply wave instead of waiting for
+            // every spoken reply to finish.
+            if (BattleSpeechFrameworkV2.ShouldPlayAudienceVoices(
+                    performance.CombatSpeechMode,
+                    stage.AudienceVoicesEnabled) &&
                 now >= performance.NextVoiceAtMissionTime &&
                 performance.NextVoiceIndex < performance.VoiceAudienceOrdinals.Length)
             {
@@ -746,17 +833,35 @@ namespace AnimusForge.XihaiAction
                     stage.AudienceVoiceWaveIntervalSeconds;
             }
 
-            bool voicesDone = !stage.AudienceVoicesEnabled ||
-                              performance.NextVoiceIndex >=
-                              performance.VoiceAudienceOrdinals.Length;
-            if (!voicesDone || performance.AdvanceResolved)
+            // Written replies and battle cries may overlap the speech. The
+            // command gesture and Advance order remain a strict completion
+            // boundary so an unfinished speech can never move the formations.
+            if (!performance.Completed)
             {
                 return;
             }
-            if (!stage.TacticalAdvanceEnabled)
+
+            // The NPC speech completion is the command boundary. Native
+            // battle cries continue in parallel, but they must not delay the
+            // speaker's command gesture or the subsequent Advance order.
+            if (performance.AdvanceResolved)
+            {
+                return;
+            }
+            if (!BattleSpeechFrameworkV2.ShouldIssueTacticalAdvance(
+                    performance.Completed,
+                    performance.CombatSpeechMode,
+                    stage.TacticalAdvanceEnabled))
             {
                 performance.AdvanceResolved = true;
                 ReleaseHeldSpeaker(performance);
+                if (performance.CombatSpeechMode)
+                {
+                    SceneActionsLog.Info(
+                        "BATTLE_SPEECH_TACTIC",
+                        "Session=" + performance.OwnerToken.ToString("N") +
+                        " TacticSuppressed=CombatSpeechInPlace");
+                }
                 return;
             }
             if (!performance.CommandSubmitted)
@@ -1142,7 +1247,9 @@ namespace AnimusForge.XihaiAction
             {
                 return true;
             }
-            bool voicesDone = !BattleSpeechRuntimeHost.StageSettings.AudienceVoicesEnabled ||
+            bool voicesDone = !BattleSpeechFrameworkV2.ShouldPlayAudienceVoices(
+                                  performance.CombatSpeechMode,
+                                  BattleSpeechRuntimeHost.StageSettings.AudienceVoicesEnabled) ||
                               performance.NextVoiceIndex >=
                               performance.VoiceAudienceOrdinals.Length;
             bool repliesDone = !BattleSpeechRuntimeHost.StageSettings.AudienceRepliesEnabled ||
@@ -1152,33 +1259,13 @@ namespace AnimusForge.XihaiAction
             return repliesDone && voicesDone && tacticDone;
         }
 
-        private bool HasNearbyEnemyThrottled(Agent speaker, double now)
+        private bool HasNearbyEnemyThrottled(Agent speaker)
         {
-            if (speaker == null)
-            {
-                return false;
-            }
-            if (!_enemyScanDirty && now < _nextEnemyScanAtMissionTime)
-            {
-                return _cachedNearbyEnemy;
-            }
-            float radius = BattleSpeechRuntimeHost.Settings.EnemyInterruptRadiusMeters;
-            float radiusSquared = radius * radius;
-            _cachedNearbyEnemy = Mission.Teams.Any(team =>
-                team != null &&
-                team.IsValid &&
-                team.Side != speaker.Team.Side &&
-                team.ActiveAgents.Any(enemy =>
-                    enemy != null &&
-                    enemy.IsActive() &&
-                    enemy.IsHuman &&
-                    enemy.Team != null &&
-                    enemy.Team.IsValid &&
-                    enemy.Position.AsVec2.DistanceSquared(speaker.Position.AsVec2) <= radiusSquared));
-            _enemyScanDirty = false;
-            _nextEnemyScanAtMissionTime = now +
-                BattleSpeechRuntimeHost.Settings.EnemyScanIntervalSeconds;
-            return _cachedNearbyEnemy;
+            return BattleSpeechEnemyProximityCache.HasNearbyEnemy(
+                Mission,
+                speaker,
+                BattleSpeechRuntimeHost.Settings.EnemyInterruptRadiusMeters,
+                BattleSpeechRuntimeHost.Settings.EnemyScanIntervalSeconds);
         }
 
         private bool Matches(BattleSpeechRuntimeContextV1 speech)
@@ -1358,6 +1445,7 @@ namespace AnimusForge.XihaiAction
             CancelActive(reason);
             BattleSpeechRuntimeHost.UnbindPerformanceEffect(this);
             BattleSpeechRuntimeHost.MarkPerformanceEnded(Mission);
+            BattleSpeechEnemyProximityCache.Reset(Mission);
             _closed = true;
             _registration?.Dispose();
             _registration = null;
@@ -1392,6 +1480,9 @@ namespace AnimusForge.XihaiAction
             public double SpeechEndsAtMissionTime;
             public double TailEndsAtMissionTime;
             public bool Completed;
+            public BattleSpeechTacticV2 Tactic;
+            public bool TacticDecisionProvided;
+            public bool CombatSpeechMode;
             public BattleSpeechPerformanceSettingsV1 Settings;
             public int[] VoiceAudienceOrdinals = Array.Empty<int>();
             public string[] AudienceReplies = Array.Empty<string>();
@@ -1402,6 +1493,8 @@ namespace AnimusForge.XihaiAction
             public int NextVoiceIndex;
             public double NextVoiceAtMissionTime;
             public int NextReplyIndex;
+            public int ReplyWaveIndex;
+            public int ReplyWaveRemaining;
             public double NextReplyAtMissionTime;
             public double AdvanceAtMissionTime;
             public bool AdvanceResolved;
