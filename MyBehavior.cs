@@ -45072,7 +45072,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		if (!string.IsNullOrWhiteSpace(weeklyReportRetryContext.FailedReason))
 		{
-			// 完整 API/模型响应只进入左下角摘要与日志，动作窗口保留给重试和修复选择。
+			// 完整 API/模型响应直接进入左下角，动作窗口仅保留给重试和修复选择。
 			NonBlockingErrorReport.Show("周事件生成失败", weeklyReportRetryContext.FailedReason.Trim());
 			stringBuilder.AppendLine();
 			stringBuilder.AppendLine("详细失败原因已显示在左下角消息并写入日志。");
@@ -51295,7 +51295,7 @@ public class MyBehavior : CampaignBehaviorBase
 	private static string BuildDevStoredErrorReference(string error)
 	{
 		// 开发菜单会在返回和翻页时反复重建；这里只放固定短提示，避免历史 API 原文再次挤占操作项。
-		return string.IsNullOrWhiteSpace(error) ? "无" : "已记录（完整详情已写入日志）";
+		return string.IsNullOrWhiteSpace(error) ? "无" : "已记录（详情已在触发时显示于左下角）";
 	}
 
 	private static string BuildDevDailyMemoryDraftEditorDescription(DailyMemoryDraft draft)
