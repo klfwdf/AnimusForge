@@ -6260,7 +6260,9 @@ internal static class Program
 		Type handleType = behaviorType.GetNestedType("PolicyTargetHandleSaveData", All);
 		Type entityType = SutType("AnimusForge.PolicyTargets.PolicyTargetEntitySnapshot");
 		Type snapshotType = SutType("AnimusForge.PolicyTargets.PolicyTargetWorldSnapshot");
-		Check(requestType != null && handleType != null && entityType != null && snapshotType != null,
+		Type objectiveEvidenceType = SutType("AnimusForge.PolicyTargets.PolicyTargetObjectiveEvidence");
+		Check(requestType != null && handleType != null && entityType != null && snapshotType != null
+			&& objectiveEvidenceType != null,
 			"Deterministic player target authorization contract types must remain discoverable.");
 
 		object BuildEntity(string id, string kind, string ownerKingdomId, string displayName, params string[] aliases)
@@ -6282,11 +6284,20 @@ internal static class Program
 		object playerClan = BuildEntity("sky_clan", "clan", "player_empire", "苍穹家族", "sky_clan");
 		object playerSettlement = BuildEntity("source-town", "settlement", "player_empire", "苍穹城", "source-town");
 		SetProperty(entityType, playerSettlement, "IsCity", true);
-		Array entities = Array.CreateInstance(entityType, 8);
+		object carBanseth = BuildEntity(
+			"town_B3",
+			"settlement",
+			"battania",
+			"卡·班塞斯",
+			"班塞斯",
+			"格纳特·纳尔",
+			"纳尔");
+		SetProperty(entityType, carBanseth, "IsCity", true);
+		Array entities = Array.CreateInstance(entityType, 9);
 		new[]
 		{
 			playerKingdom, northKingdom, southKingdom, westKingdom, northRuler, northSettlement,
-			playerClan, playerSettlement
+			playerClan, playerSettlement, carBanseth
 		}
 			.CopyTo(entities, 0);
 		object snapshot = Activator.CreateInstance(snapshotType, nonPublic: true);
@@ -6330,6 +6341,36 @@ internal static class Program
 		object north = BuildHandle("K2", "kingdom", "empire", "empire");
 		object south = BuildHandle("K3", "kingdom", "empire_s", "empire_s");
 		object west = BuildHandle("K4", "kingdom", "empire_w", "empire_w");
+		string[] StrictSettlementMentions(string query) => Items(InvokeStatic(
+			objectiveEvidenceType,
+			"FindStrictMentionedEntities",
+			new object[] { entities, query, "settlement" },
+			3))
+			.Select(entity => Convert.ToString(Property(entityType, entity, "EntityId"), CultureInfo.InvariantCulture))
+			.Where(id => !string.IsNullOrWhiteSpace(id))
+			.ToArray();
+		Check(!StrictSettlementMentions("由阿尔纳尔主持国内军队训练。").Contains("town_B3", StringComparer.OrdinalIgnoreCase),
+			"A short suffix derived from the bound village 格纳特·纳尔 must not mis-authorize Car Banseth when an unrelated hero name merely contains 纳尔.");
+		Check(StrictSettlementMentions("在卡·班塞斯推行城镇治安改革。").Contains("town_B3", StringComparer.OrdinalIgnoreCase)
+			&& StrictSettlementMentions("在卡班塞斯推行城镇治安改革。").Contains("town_B3", StringComparer.OrdinalIgnoreCase),
+			"The full Car Banseth name must remain an objective settlement mention with or without the middle dot.");
+		string[] ExplicitCrossKingdomIds(string policyContent)
+		{
+			object authorization = InvokeStatic(
+				behaviorType,
+				"EnsurePlayerPolicyTargetAuthorization",
+				new[] { BuildRequest(policyContent) },
+				1);
+			return Items(Property(authorization.GetType(), authorization, "ExplicitCrossKingdomIds"))
+				.Select(id => Convert.ToString(id, CultureInfo.InvariantCulture))
+				.Where(id => !string.IsNullOrWhiteSpace(id))
+				.ToArray();
+		}
+		Check(!ExplicitCrossKingdomIds("由阿尔纳尔主持国内军队训练。").Contains("battania", StringComparer.OrdinalIgnoreCase),
+			"The player authorization chain must not expose Battania through the generated short village suffix 纳尔.");
+		Check(ExplicitCrossKingdomIds("在卡·班塞斯推行城镇治安改革。").Contains("battania", StringComparer.OrdinalIgnoreCase)
+			&& ExplicitCrossKingdomIds("在卡班塞斯推行城镇治安改革。").Contains("battania", StringComparer.OrdinalIgnoreCase),
+			"The player authorization chain must preserve an explicitly named Car Banseth target with or without the middle dot.");
 		Check(IsAllowed(BuildRequest("推行农业改革。"), k0),
 			"K0 must remain an unconditional objective maximum-scope anchor.");
 		Check(!IsAllowed(BuildRequest("帝国应推行农业改革。"), north)

@@ -138,6 +138,7 @@ internal static class PolicyTargetObjectiveEvidence
 		{
 			return Array.Empty<PolicyTargetEntitySnapshot>();
 		}
+		string compactQuery = CompactQualifiedName(query);
 		List<PolicyTargetEntitySnapshot> candidates = (entities ?? Enumerable.Empty<PolicyTargetEntitySnapshot>())
 			.Where(entity => entity != null
 				&& string.Equals(entity.Kind, kind, StringComparison.OrdinalIgnoreCase)
@@ -145,10 +146,14 @@ internal static class PolicyTargetObjectiveEvidence
 			.GroupBy(entity => entity.EntityId, StringComparer.OrdinalIgnoreCase)
 			.Select(group => group.First())
 			.ToList();
+		Dictionary<string, string[]> strictAliasesByEntityId = candidates.ToDictionary(
+			entity => entity.EntityId,
+			entity => EnumerateStrictAliases(entity).ToArray(),
+			StringComparer.OrdinalIgnoreCase);
 		Dictionary<string, int> aliasOwners = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 		foreach (PolicyTargetEntitySnapshot entity in candidates)
 		{
-			foreach (string alias in EnumerateAliases(entity).Distinct(StringComparer.OrdinalIgnoreCase))
+			foreach (string alias in strictAliasesByEntityId[entity.EntityId])
 			{
 				if (!GenericAliases.Contains(alias))
 				{
@@ -158,11 +163,11 @@ internal static class PolicyTargetObjectiveEvidence
 		}
 		return candidates
 			.Where(entity => MentionsIdentifier(query, entity.EntityId)
-				|| EnumerateAliases(entity).Any(alias =>
+				|| strictAliasesByEntityId[entity.EntityId].Any(alias =>
 					!GenericAliases.Contains(alias)
 					&& aliasOwners.TryGetValue(alias, out int count)
 					&& count == 1
-					&& query.IndexOf(alias, StringComparison.OrdinalIgnoreCase) >= 0))
+					&& MentionsStrictAlias(query, compactQuery, alias)))
 			.OrderBy(entity => entity.EntityId, StringComparer.Ordinal)
 			.ToArray();
 	}
@@ -201,6 +206,45 @@ internal static class PolicyTargetObjectiveEvidence
 			.Select(value => (value ?? string.Empty).Trim())
 			.Where(value => value.Length >= 2
 				&& !string.Equals(value, entity?.EntityId ?? string.Empty, StringComparison.OrdinalIgnoreCase));
+	}
+
+	private static IEnumerable<string> EnumerateStrictAliases(PolicyTargetEntitySnapshot entity)
+	{
+		string[] aliases = EnumerateAliases(entity)
+			.Distinct(StringComparer.OrdinalIgnoreCase)
+			.ToArray();
+		return aliases.Where(alias => !aliases.Any(candidate => IsGeneratedNameSuffix(candidate, alias)));
+	}
+
+	private static bool IsGeneratedNameSuffix(string qualifiedName, string alias)
+	{
+		string value = (qualifiedName ?? string.Empty).Trim();
+		string candidate = (alias ?? string.Empty).Trim();
+		int separator = Math.Max(value.LastIndexOf('·'), value.LastIndexOf('.'));
+		return separator >= 0
+			&& separator + 1 < value.Length
+			&& string.Equals(value.Substring(separator + 1), candidate, StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool MentionsStrictAlias(string query, string compactQuery, string alias)
+	{
+		if ((query ?? string.Empty).IndexOf(alias ?? string.Empty, StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return true;
+		}
+		string value = alias ?? string.Empty;
+		if (value.IndexOf('·') < 0 && value.IndexOf('.') < 0)
+		{
+			return false;
+		}
+		string compactAlias = CompactQualifiedName(value);
+		return compactAlias.Length >= 2
+			&& (compactQuery ?? string.Empty).IndexOf(compactAlias, StringComparison.OrdinalIgnoreCase) >= 0;
+	}
+
+	private static string CompactQualifiedName(string value)
+	{
+		return (value ?? string.Empty).Replace("·", string.Empty).Replace(".", string.Empty);
 	}
 
 	private static bool IsIdentifierCharacter(char value)
