@@ -12,6 +12,8 @@ namespace AnimusForge.XihaiAction
     {
         private const string SchemaId = "urn:animusforge:sceneactions:battle-speech:v1";
         private const string DocumentType = "battle-speech-settings";
+        private const float LegacyEnemyScanIntervalSeconds = 0.25f;
+        private const float CurrentEnemyScanIntervalSeconds = 0.4f;
         private static readonly HashSet<string> AllowedProperties = new HashSet<string>(
             new[]
             {
@@ -19,6 +21,7 @@ namespace AnimusForge.XihaiAction
                 "allowDeployment", "allowPreEngagement", "playerCaptureSeconds",
                 "npcReplySeconds", "maxSpeechChars", "audienceRadiusMeters",
                 "enemyInterruptRadiusMeters", "enemyScanIntervalSeconds",
+                "maximumAudienceReplySubmissionsPerTick",
                 "minimumAudience", "maximumAudience", "minimumDurationSeconds",
                 "maximumDurationSeconds", "charactersPerSecond", "screenNotifications"
             },
@@ -69,6 +72,9 @@ namespace AnimusForge.XihaiAction
                     AudienceRadiusMeters = RequireFloat(document, "audienceRadiusMeters"),
                     EnemyInterruptRadiusMeters = RequireFloat(document, "enemyInterruptRadiusMeters"),
                     EnemyScanIntervalSeconds = RequireFloat(document, "enemyScanIntervalSeconds"),
+                    MaximumAudienceReplySubmissionsPerTick = document["maximumAudienceReplySubmissionsPerTick"] == null
+                        ? defaults.MaximumAudienceReplySubmissionsPerTick
+                        : RequireInt(document, "maximumAudienceReplySubmissionsPerTick", int.MinValue, int.MaxValue),
                     MinimumAudience = RequireInt(document, "minimumAudience", int.MinValue, int.MaxValue),
                     MaximumAudience = RequireInt(document, "maximumAudience", int.MinValue, int.MaxValue),
                     MinimumDurationSeconds = RequireFloat(document, "minimumDurationSeconds"),
@@ -76,6 +82,7 @@ namespace AnimusForge.XihaiAction
                     CharactersPerSecond = RequireFloat(document, "charactersPerSecond"),
                     ScreenNotifications = RequireBool(document, "screenNotifications")
                 };
+                bool migratedEnemyScanInterval = MigrateLegacyDefaults(settings);
                 var errors = settings.Validate();
                 if (errors.Count > 0)
                 {
@@ -83,7 +90,10 @@ namespace AnimusForge.XihaiAction
                     return defaults;
                 }
                 valid = true;
-                reason = "Strict battle speech settings loaded: " + path;
+                reason = "Strict battle speech settings loaded: " + path +
+                         (migratedEnemyScanInterval
+                             ? "; migrated enemyScanIntervalSeconds 0.25 -> 0.4."
+                             : ".");
                 return settings;
             }
             catch (Exception ex)
@@ -91,6 +101,18 @@ namespace AnimusForge.XihaiAction
                 reason = ex.GetType().Name + ": " + ex.Message;
                 return defaults;
             }
+        }
+
+        internal static bool MigrateLegacyDefaults(BattleSpeechSettingsV1 settings)
+        {
+            if (settings == null ||
+                Math.Abs(settings.EnemyScanIntervalSeconds -
+                         LegacyEnemyScanIntervalSeconds) > 0.0001f)
+            {
+                return false;
+            }
+            settings.EnemyScanIntervalSeconds = CurrentEnemyScanIntervalSeconds;
+            return true;
         }
 
         private static JObject LoadStrictObject(string path)
@@ -140,7 +162,12 @@ namespace AnimusForge.XihaiAction
             {
                 throw new JsonException("Unknown battle speech property: " + unknown.Name);
             }
-            string missing = AllowedProperties.FirstOrDefault(name => document[name] == null);
+            string missing = AllowedProperties
+                .Where(name => !string.Equals(
+                    name,
+                    "maximumAudienceReplySubmissionsPerTick",
+                    StringComparison.Ordinal))
+                .FirstOrDefault(name => document[name] == null);
             if (missing != null)
             {
                 throw new JsonException("Missing battle speech property: " + missing);

@@ -26,8 +26,16 @@ namespace AnimusForge.XihaiAction
         private static readonly Dictionary<string, IBattleSpeechClassifierV2>
             BattleSpeechClassifiers =
                 new Dictionary<string, IBattleSpeechClassifierV2>(StringComparer.Ordinal);
+        private const double McmRefreshIntervalSeconds = 1d;
         private static SceneActionsMissionBehavior _activeSession;
         private static bool _initialized;
+        // Keep the immutable settings-file result separate from the current
+        // MCM overlay result.  An invalid live override must fail closed for
+        // the current sample, but it must not make a later corrected MCM value
+        // unrecoverable for the rest of the process.
+        private static bool _sourceConfigurationValid;
+        private static double _nextMcmRefreshMissionTime;
+        private static bool _mcmRefreshWarningLogged;
 
         public static RuntimeIdentity Runtime { get; private set; }
         public static SceneActionSettings Settings { get; private set; }
@@ -37,6 +45,30 @@ namespace AnimusForge.XihaiAction
         public static string ModuleRoot { get; private set; }
         public static string CatalogHash { get; private set; }
         public static bool ConfigurationValid { get; private set; }
+
+        /// <summary>
+        /// Small, non-command prompt hint used by AF's native AI conversation.
+        /// The model still writes ordinary dialogue; it may include a natural
+        /// stage direction only when the story actually makes the action happen.
+        /// The closed-set parser consumes that prose after the reply and never
+        /// accepts native act_* ids from user/model text.
+        /// </summary>
+        internal static string BuildNativeConversationActionInstruction()
+        {
+            lock (Sync)
+            {
+                if (!_initialized || !ConfigurationValid || Settings == null || !Settings.Enabled ||
+                    !Settings.NpcSceneShoutReplyEnabled)
+                {
+                    return string.Empty;
+                }
+            }
+            return "【自然语言动作】这是普通角色对话，不是动作菜单。只有当角色确实在当前情境中做了动作时，" +
+                   "才在自然回复中简短写出已发生的身体描写，例如‘他慢慢跪下’、‘她抬手指向山口’、" +
+                   "‘他抱臂摇头’；不要为了触发动作而凭空添加动作，不要输出动作键、act_*、标签、括号说明或" +
+                   "动作清单。纯粹说‘我同意/我不知道/我保证’不等于动作；否定、假设、引用和计划中的动作不要写成已发生。" +
+                   "回复仍应先自然回答玩家，动作描写只在语义确实发生时出现。";
+        }
         public static bool IsInitialized
         {
             get
@@ -76,6 +108,7 @@ namespace AnimusForge.XihaiAction
                 SettingsLoadResult load = RuntimeSettingsLoader.Load(settingsPath);
                 Settings = load.Settings;
                 ConfigurationValid = load.IsValid;
+                _sourceConfigurationValid = load.IsValid;
                 if (load.IsValid && SceneActionsMcmSettings.TryApplySceneActions(
                         Settings,
                         out string mcmError))
@@ -104,6 +137,7 @@ namespace AnimusForge.XihaiAction
                     Settings = RuntimeSettingsLoader.CreateAuditedDefault();
                     Settings.Enabled = false;
                     ConfigurationValid = false;
+                    _sourceConfigurationValid = false;
                     Catalog = BuiltInContent.CreateRuntimeV4(Runtime);
                     load.Error = ex.Message;
                 }
@@ -111,6 +145,8 @@ namespace AnimusForge.XihaiAction
                 Parser = new CommandParser(Catalog);
                 Providers = new ActionProviderRegistry(ModuleRoot);
                 CatalogHash = ComputeCatalogHash(Catalog);
+                _nextMcmRefreshMissionTime = 0d;
+                _mcmRefreshWarningLogged = false;
                 _initialized = true;
 
                 if (ConfigurationValid)
@@ -218,8 +254,117 @@ namespace AnimusForge.XihaiAction
                 ConsentClassifiers.Clear();
                 BattleSpeechClassifiers.Clear();
                 _initialized = false;
+                _sourceConfigurationValid = false;
+                _nextMcmRefreshMissionTime = 0d;
+                _mcmRefreshWarningLogged = false;
             }
             activeSession?.StopFromHost();
+        }
+
+        /// <summary>
+        /// Re-reads only the integrated SceneActions MCM values.  BattleSpeech
+        /// has a separate refresh path and is deliberately not changed here.
+        /// This is called at mission setup and at a low frequency while a
+        /// mission is running, never from the per-request hot path.
+        /// </summary>
+        internal static bool RefreshMcmOverrides(out string error)
+        {
+            SceneActionsMissionBehavior session = null;
+            bool disableNaturalActions = false;
+            bool previousEnabled;
+            bool currentEnabled;
+            bool invalidOverride = false;
+            lock (Sync)
+            {
+                error = null;
+                if (!_initialized || Settings == null)
+                {
+                    error = "SceneActions runtime is not initialized.";
+                    return false;
+                }
+                if (!_sourceConfigurationValid)
+                {
+                    error = "SceneActions source configuration is invalid.";
+                    return false;
+                }
+
+                previousEnabled = Settings.Enabled;
+                if (!SceneActionsMcmSettings.TryApplySceneActions(
+                        Settings,
+                        out string mcmError))
+                {
+                    error = "Integrated AF MCM is not available yet.";
+                    return false;
+                }
+                if (!string.IsNullOrEmpty(mcmError))
+                {
+                    Settings.Enabled = false;
+                    ConfigurationValid = false;
+                    error = "MCM runtime override is invalid: " + mcmError;
+                    currentEnabled = false;
+                    invalidOverride = true;
+                }
+                else
+                {
+                    // A corrected MCM snapshot can recover a previous
+                    // fail-closed override as long as the source JSON itself
+                    // remains valid.
+                    ConfigurationValid = true;
+                    currentEnabled = Settings.Enabled;
+                }
+                disableNaturalActions = previousEnabled && !currentEnabled;
+                session = _activeSession;
+            }
+
+            if (disableNaturalActions && session != null)
+            {
+                session.DisableNaturalLanguageFromHost(
+                    "Natural-language reply actions disabled in MCM.");
+            }
+            if (previousEnabled != currentEnabled)
+            {
+                SceneActionsLog.Info(
+                    "MCM",
+                    "NaturalLanguageReplyActionsEnabled=" + currentEnabled +
+                    " (BattleSpeech is refreshed independently)." );
+            }
+            return !invalidOverride;
+        }
+
+        internal static void RefreshMcmOverridesIfDue(double missionTime)
+        {
+            bool due;
+            lock (Sync)
+            {
+                if (!_initialized || double.IsNaN(missionTime) ||
+                    missionTime < _nextMcmRefreshMissionTime)
+                {
+                    return;
+                }
+                _nextMcmRefreshMissionTime = missionTime + McmRefreshIntervalSeconds;
+                due = true;
+            }
+            string error = null;
+            bool refreshed = due && RefreshMcmOverrides(out error);
+            if (!refreshed)
+            {
+                if (!string.IsNullOrEmpty(error))
+                {
+                    lock (Sync)
+                    {
+                        if (!_mcmRefreshWarningLogged)
+                        {
+                            _mcmRefreshWarningLogged = true;
+                            SceneActionsLog.Warning("MCM", error);
+                        }
+                    }
+                }
+                return;
+            }
+            lock (Sync)
+            {
+                _mcmRefreshWarningLogged = false;
+            }
         }
 
         public static void BindSession(SceneActionsMissionBehavior behavior)
@@ -231,6 +376,11 @@ namespace AnimusForge.XihaiAction
             lock (Sync)
             {
                 _activeSession = behavior;
+                // Mission.CurrentTime starts again at zero for every Mission.
+                // Reset the sampled-MCM deadline here so a long previous Mission
+                // cannot postpone the first live refresh of the new one.
+                _nextMcmRefreshMissionTime = 0d;
+                _mcmRefreshWarningLogged = false;
             }
         }
 
@@ -296,10 +446,24 @@ namespace AnimusForge.XihaiAction
             double submittedAtMissionTime,
             string diagnosticSource)
         {
+            // Trusted requests are produced by BattleSpeech, not by ordinary
+            // SceneActions input.  Check its own gate before taking the
+            // SceneActions lock; keeping this order avoids a cross-host lock
+            // inversion with BattleSpeech's classifier/claim paths.
+            if (!BattleSpeechRuntimeHost.IsPerformanceEnabled)
+            {
+                return false;
+            }
             SceneActionsMissionBehavior session;
             lock (Sync)
             {
-                if (!_initialized || !ConfigurationValid || Settings == null || !Settings.Enabled)
+                // The ordinary natural-language toggle is deliberately not
+                // consulted here: a valid SceneActions MCM=false snapshot still
+                // leaves ConfigurationValid=true, so trusted BattleSpeech work
+                // remains independent.  A genuinely invalid overlay/source,
+                // however, must fail closed because the shared catalog/settings
+                // substrate may be unsafe.
+                if (!_initialized || !ConfigurationValid || Settings == null)
                 {
                     return false;
                 }
@@ -346,7 +510,8 @@ namespace AnimusForge.XihaiAction
             SceneActionsMissionBehavior session;
             lock (Sync)
             {
-                if (!_initialized || !Settings.Enabled)
+                if (!_initialized || !ConfigurationValid || Settings == null ||
+                    !Settings.Enabled)
                 {
                     return false;
                 }

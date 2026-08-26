@@ -1973,7 +1973,7 @@ internal static class Program
 		Check(customPromptText.IndexOf("语义腿", StringComparison.Ordinal) < 0
 			&& customPromptText.IndexOf("assignment", StringComparison.OrdinalIgnoreCase) < 0
 			&& customPromptText.IndexOf("effectIntents", StringComparison.OrdinalIgnoreCase) < 0
-			&& customPromptText.IndexOf("daily=60", StringComparison.Ordinal) >= 0,
+			&& customPromptText.IndexOf("每日60已属极强", StringComparison.Ordinal) >= 0,
 			"The editable soldierTroopXp JSON must retain domain calibration without duplicating semantic-ledger wire contracts.");
 		string liveProbeText = File.ReadAllText(
 			Path.Combine(repositoryRoot, "tools", "PolicyEffectModule.ContractTests", "run_player_policy_effect_live_probe.ps1"),

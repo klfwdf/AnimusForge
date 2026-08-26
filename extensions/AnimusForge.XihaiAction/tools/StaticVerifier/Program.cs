@@ -21,6 +21,10 @@ internal static class Program
     private static float? _fakeOverrideTemperature;
     private static int _passed;
     private static int _failed;
+    private static string _verificationModuleRoot;
+    private static Assembly _moduleAssembly;
+    private static Assembly _coreAssembly;
+    private static bool _unifiedModuleLayout;
 
     private static int Main(string[] args)
     {
@@ -31,7 +35,9 @@ internal static class Program
         }
         string moduleRoot = Path.GetFullPath(args[0]);
         string gameRoot = Path.GetFullPath(args[1]);
+        _verificationModuleRoot = moduleRoot;
         ConfigureResolver(moduleRoot, gameRoot);
+        _unifiedModuleLayout = IsUnifiedModuleLayout(moduleRoot);
 
         Run("deployed module paths exist", () => VerifyPaths(moduleRoot, gameRoot));
         Run("Native V4 declarations and audited action-set mappings exist exactly once",
@@ -45,8 +51,8 @@ internal static class Program
             () => VerifyBattleSpeechContract(moduleRoot));
         Run("battle speech performance planner, trusted queue, ownership, and Native mappings",
             () => VerifyBattleSpeechPerformance(moduleRoot, gameRoot));
-        Run("MCM settings, dependencies, and localized option keys",
-            () => VerifyMcmContract(moduleRoot));
+        Run("integrated AF MCM settings, dependencies, and localized option keys",
+            () => VerifyMcmContract(moduleRoot, gameRoot));
         Run("composition root initializes without game execution", () => VerifyCompositionRoot(moduleRoot));
         Run("AF structural compatibility contract without exact DLL fingerprints",
             () => VerifyAfContract(gameRoot));
@@ -63,6 +69,10 @@ internal static class Program
     private static void ConfigureResolver(string moduleRoot, string gameRoot)
     {
         AddDirectory(Path.Combine(moduleRoot, "bin", "Win64_Shipping_Client"));
+        AddDirectory(Path.Combine(
+            moduleRoot, "bin", "Win64_Shipping_Client", "versions", "1.3"));
+        AddDirectory(Path.Combine(
+            moduleRoot, "bin", "Win64_Shipping_Client", "versions", "1.4"));
         AddDirectory(Path.Combine(gameRoot, "bin", "Win64_Shipping_Client"));
         string modulesRoot = Path.Combine(gameRoot, "Modules");
         if (Directory.Exists(modulesRoot))
@@ -82,6 +92,110 @@ internal static class Program
             }
         }
         AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
+    }
+
+    private static bool IsUnifiedModuleLayout(string moduleRoot)
+    {
+        return File.Exists(GetUnifiedImplementationPath(moduleRoot, "1.3")) ||
+               File.Exists(GetUnifiedImplementationPath(moduleRoot, "1.4")) ||
+               File.Exists(Path.Combine(
+                   moduleRoot, "bin", "Win64_Shipping_Client", "AnimusForge.Bootstrap.dll"));
+    }
+
+    private static string GetUnifiedImplementationPath(string moduleRoot, string version)
+    {
+        return Path.Combine(
+            moduleRoot,
+            "bin",
+            "Win64_Shipping_Client",
+            "versions",
+            version,
+            "AnimusForge.dll");
+    }
+
+    private static string GetModuleAssemblyPath(string moduleRoot)
+    {
+        string legacy = Path.Combine(
+            moduleRoot, "bin", "Win64_Shipping_Client", "AnimusForge.XihaiAction.dll");
+        if (File.Exists(legacy))
+        {
+            return legacy;
+        }
+
+        string unified14 = GetUnifiedImplementationPath(moduleRoot, "1.4");
+        if (File.Exists(unified14))
+        {
+            return unified14;
+        }
+        string unified13 = GetUnifiedImplementationPath(moduleRoot, "1.3");
+        if (File.Exists(unified13))
+        {
+            return unified13;
+        }
+
+        string rootAssembly = Path.Combine(
+            moduleRoot, "bin", "Win64_Shipping_Client", "AnimusForge.dll");
+        return rootAssembly;
+    }
+
+    private static Assembly GetModuleAssembly(string moduleRoot = null)
+    {
+        if (_moduleAssembly != null)
+        {
+            return _moduleAssembly;
+        }
+        string root = moduleRoot ?? _verificationModuleRoot;
+        string path = GetModuleAssemblyPath(root);
+        if (!File.Exists(path))
+        {
+            throw new FileNotFoundException("SceneActions implementation assembly is missing.", path);
+        }
+        _moduleAssembly = Assembly.LoadFrom(path);
+        return _moduleAssembly;
+    }
+
+    private static Assembly GetCoreAssembly(string moduleRoot = null)
+    {
+        if (_coreAssembly != null)
+        {
+            return _coreAssembly;
+        }
+        string root = moduleRoot ?? _verificationModuleRoot;
+        string standaloneCore = Path.Combine(
+            root, "bin", "Win64_Shipping_Client", "AnimusForge.SceneActions.Core.dll");
+        _coreAssembly = File.Exists(standaloneCore)
+            ? Assembly.LoadFrom(standaloneCore)
+            : GetModuleAssembly(root);
+        return _coreAssembly;
+    }
+
+    private static Type GetModuleType(string fullName, bool throwOnError = true)
+    {
+        Assembly module = GetModuleAssembly();
+        Type type = module.GetType(fullName, false, false);
+        if (type == null && _unifiedModuleLayout &&
+            fullName.StartsWith("AnimusForge.XihaiAction.", StringComparison.Ordinal))
+        {
+            // The integrated build keeps the extension namespace, so this is
+            // primarily a diagnostic guard for a future namespace flattening.
+            type = module.GetType(
+                "AnimusForge." + fullName.Substring("AnimusForge.XihaiAction.".Length),
+                false,
+                false);
+        }
+        if (type == null && throwOnError)
+        {
+            throw new InvalidOperationException(
+                "Module type is missing: " + fullName + " in " + module.FullName);
+        }
+        return type;
+    }
+
+    private static Type GetSubModuleType(Assembly module)
+    {
+        return module.GetType("AnimusForge.XihaiAction.SubModule", false, false) ??
+               module.GetType("AnimusForge.SubModule", false, false) ??
+               module.GetType("AnimusForge.Bootstrap.BootstrapSubModule", false, false);
     }
 
     private static void AddDirectory(string path)
@@ -128,12 +242,20 @@ internal static class Program
     {
         Require(Directory.Exists(moduleRoot), "module root missing");
         Require(File.Exists(Path.Combine(moduleRoot, "SubModule.xml")), "SubModule.xml missing");
-        Require(File.Exists(Path.Combine(
-            moduleRoot, "bin", "Win64_Shipping_Client", "AnimusForge.XihaiAction.dll")),
-            "main DLL missing");
-        Require(File.Exists(Path.Combine(
-            moduleRoot, "bin", "Win64_Shipping_Client", "AnimusForge.SceneActions.Core.dll")),
-            "Core DLL missing");
+        Require(File.Exists(GetModuleAssemblyPath(moduleRoot)),
+            "SceneActions implementation DLL missing");
+        if (!_unifiedModuleLayout)
+        {
+            Require(File.Exists(Path.Combine(
+                moduleRoot, "bin", "Win64_Shipping_Client", "AnimusForge.SceneActions.Core.dll")),
+                "Core DLL missing");
+        }
+        else
+        {
+            Require(File.Exists(Path.Combine(
+                moduleRoot, "bin", "Win64_Shipping_Client", "AnimusForge.Bootstrap.dll")),
+                "unified Bootstrap DLL missing");
+        }
         Require(File.Exists(Path.Combine(
             moduleRoot, "ModuleData", "SceneActions", "settings.v2.json")),
             "V2 settings file missing");
@@ -345,15 +467,18 @@ internal static class Program
 
     private static void VerifyModuleAssembly(string moduleRoot, string gameRoot)
     {
-        string assemblyPath = Path.Combine(
-            moduleRoot,
-            "bin",
-            "Win64_Shipping_Client",
-            "AnimusForge.XihaiAction.dll");
-        Assembly assembly = Assembly.LoadFrom(assemblyPath);
-        Require(assembly.GetName().Version == new Version(1, 1, 0, 0),
-            "assembly version is not 1.1.0.0");
-        Require(assembly.GetType("AnimusForge.XihaiAction.SubModule", false) != null,
+        Assembly assembly = GetModuleAssembly(moduleRoot);
+        if (!_unifiedModuleLayout)
+        {
+            Require(assembly.GetName().Version == new Version(1, 1, 0, 0),
+                "standalone assembly version is not 1.1.0.0");
+        }
+        else
+        {
+            Require(assembly.GetName().Version != null,
+                "integrated implementation assembly has no assembly identity version");
+        }
+        Require(GetSubModuleType(assembly) != null,
             "SubModule entry type missing");
         Type api = assembly.GetType("AnimusForge.XihaiAction.SceneActionsApiV1", false);
         Require(api != null && api.IsPublic, "SceneActionsApiV1 is not public");
@@ -622,11 +747,7 @@ internal static class Program
                     BindingFlags.Instance | BindingFlags.NonPublic) != null,
             "owned-playback stop or real weapon-control runtime is missing");
 
-        Assembly coreAssembly = Assembly.LoadFrom(Path.Combine(
-            moduleRoot,
-            "bin",
-            "Win64_Shipping_Client",
-            "AnimusForge.SceneActions.Core.dll"));
+        Assembly coreAssembly = GetCoreAssembly(moduleRoot);
         Type controls = coreAssembly.GetType(
             "AnimusForge.SceneActions.Core.SceneActionRuntimeControlsV1",
             true,
@@ -750,12 +871,9 @@ internal static class Program
                 behaviorPosition < afterPosition,
             "Bannerlord Mission lifecycle order drifted");
 
-        Assembly module = AppDomain.CurrentDomain.GetAssemblies().First(value =>
-            value.GetName().Name == "AnimusForge.XihaiAction");
-        Type subModule = module.GetType(
-            "AnimusForge.XihaiAction.SubModule",
-            true,
-            false);
+        Assembly module = GetModuleAssembly(moduleRoot);
+        Type subModule = GetSubModuleType(module);
+        Require(subModule != null, "SceneActions SubModule entry type is missing");
         Type missionBehavior = module.GetType(
             "AnimusForge.XihaiAction.SceneActionsMissionBehavior",
             true,
@@ -763,6 +881,13 @@ internal static class Program
         MethodInfo preHook = subModule.GetMethod(
             "OnBeforeMissionBehaviorInitialize",
             BindingFlags.Instance | BindingFlags.Public);
+        Type integrationBoundary = module.GetType(
+            "AnimusForge.SceneActionsIntegrationBoundary",
+            false,
+            false);
+        MethodInfo boundaryRegistration = integrationBoundary?.GetMethod(
+            "RegisterBeforeMissionInitialization",
+            BindingFlags.Static | BindingFlags.NonPublic);
         MethodInfo postHook = subModule.GetMethod(
             "OnMissionBehaviorInitialize",
             BindingFlags.Instance | BindingFlags.Public);
@@ -776,7 +901,9 @@ internal static class Program
             "IsSessionActive",
             BindingFlags.Instance | BindingFlags.NonPublic);
         Require(preHook != null && preHook.DeclaringType == subModule &&
-                MethodBodyReferences(preHook, addMissionBehavior),
+                (MethodBodyReferences(preHook, addMissionBehavior) ||
+                 (_unifiedModuleLayout && boundaryRegistration != null &&
+                  MethodBodyReferences(preHook, boundaryRegistration))),
             "SceneActions behavior is not registered by the pre-initialization hook");
         Require(postHook != null && postHook.DeclaringType == subModule &&
                 !MethodBodyReferences(postHook, addMissionBehavior),
@@ -787,8 +914,7 @@ internal static class Program
 
     private static void VerifySettingsLoader(string moduleRoot)
     {
-        Assembly assembly = AppDomain.CurrentDomain.GetAssemblies().First(value =>
-            value.GetName().Name == "AnimusForge.XihaiAction");
+        Assembly assembly = GetModuleAssembly(moduleRoot);
         Type loader = assembly.GetType(
             "AnimusForge.XihaiAction.RuntimeSettingsLoader",
             true,
@@ -1091,13 +1217,8 @@ internal static class Program
 
     private static void VerifyBattleSpeechContract(string moduleRoot)
     {
-        Assembly assembly = AppDomain.CurrentDomain.GetAssemblies().First(value =>
-            value.GetName().Name == "AnimusForge.XihaiAction");
-        Assembly coreAssembly = Assembly.LoadFrom(Path.Combine(
-            moduleRoot,
-            "bin",
-            "Win64_Shipping_Client",
-            "AnimusForge.SceneActions.Core.dll"));
+        Assembly assembly = GetModuleAssembly(moduleRoot);
+        Assembly coreAssembly = GetCoreAssembly(moduleRoot);
         Type framework = coreAssembly.GetType(
             "AnimusForge.SceneActions.Core.BattleSpeechFrameworkV1",
             true,
@@ -1126,6 +1247,10 @@ internal static class Program
             "AnimusForge.XihaiAction.BattleSpeechSettingsLoader",
             true,
             false);
+        Type proximityCache = assembly.GetType(
+            "AnimusForge.XihaiAction.BattleSpeechEnemyProximityCache",
+            true,
+            false);
         Require((int)framework.GetField(
                     "ContractVersion",
                     BindingFlags.Public | BindingFlags.Static).GetRawConstantValue() == 1 &&
@@ -1152,32 +1277,51 @@ internal static class Program
                 (bool)frameworkV2.GetField(
                     "MountedNpcSpeechSupported",
                     BindingFlags.Public | BindingFlags.Static).GetRawConstantValue() &&
-                frameworkV2.GetMethod(
+                FindMethod(frameworkV2,
                     "ParsePlayerShout",
                     BindingFlags.Public | BindingFlags.Static) != null &&
-                frameworkV2.GetMethod(
-                    "TryParsePlanClassifierOutput",
-                    BindingFlags.Public | BindingFlags.Static) != null &&
-                frameworkV2.GetMethod(
+                frameworkV2.GetMethods(BindingFlags.Public | BindingFlags.Static)
+                    .Any(method => method.Name == "TryParsePlanClassifierOutput") &&
+                FindMethod(frameworkV2,
                     "BuildNpcSpeechPromptInstruction",
                     BindingFlags.Public | BindingFlags.Static) != null &&
-                frameworkV2.GetMethod(
+                frameworkV2.GetMethods(BindingFlags.Public | BindingFlags.Static)
+                    .Any(method => method.Name == "BuildCombinedNpcSpeechPromptInstruction") &&
+                frameworkV2.GetMethods(BindingFlags.Public | BindingFlags.Static)
+                    .Any(method => method.Name == "TryParseCombinedNpcSpeechOutput") &&
+                FindMethod(frameworkV2,
                     "ResolveClosingCommandDelaySeconds",
                     BindingFlags.Public | BindingFlags.Static) != null &&
-                frameworkV2.GetMethod(
+                FindMethod(frameworkV2,
                     "ShouldQueueOrdinaryScenePostprocess",
                     BindingFlags.Public | BindingFlags.Static) != null,
             "BattleSpeechFrameworkV2 contract is missing or drifted");
+        Require(FindMethod(proximityCache,
+                    "HasNearbyEnemy",
+                    BindingFlags.NonPublic | BindingFlags.Static) != null &&
+                FindMethod(proximityCache,
+                    "Invalidate",
+                    BindingFlags.NonPublic | BindingFlags.Static) != null &&
+                FindMethod(proximityCache,
+                    "Reset",
+                    BindingFlags.NonPublic | BindingFlags.Static) != null,
+            "session/performance near-enemy cache contract is missing");
         object stageDefaults = Activator.CreateInstance(stageSettingsV2);
-        Require((int)ReadProperty(stageDefaults, "MaximumVisualResponders") == 48 &&
+        Require((int)ReadProperty(stageDefaults, "MaximumVisualResponders") == 60 &&
                 (int)ReadProperty(stageDefaults, "VisualWaveSize") == 6 &&
                 (int)ReadProperty(stageDefaults, "MaximumVisualSubmissionsPerTick") == 6 &&
-                (int)ReadProperty(stageDefaults, "ReplyMinimumChars") == 20 &&
-                (int)ReadProperty(stageDefaults, "ReplyMaximumChars") == 60 &&
+                (int)ReadProperty(stageDefaults, "ReplyMinimumChars") == 60 &&
+                (int)ReadProperty(stageDefaults, "ReplyMaximumChars") == 160 &&
                 Math.Abs((float)ReadProperty(stageDefaults, "FrontDistanceMeters") - 10f) < 0.0001f &&
                 (int)ReadProperty(stageDefaults, "AudienceVoiceCount") == 22 &&
                 (bool)ReadProperty(stageDefaults, "AudienceRepliesEnabled") &&
-                (int)ReadProperty(stageDefaults, "AudienceReplyCount") == 16 &&
+                (int)ReadProperty(stageDefaults, "AudienceReplyCount") == 24 &&
+                (int)ReadProperty(stageDefaults, "AudienceReplyWaveSize") == 5 &&
+                (int)ReadProperty(stageDefaults, "MaximumAudienceReplySubmissionsPerTick") == 8 &&
+                (int)ReadProperty(stageDefaults, "AudienceReplyMinimumChars") == 8 &&
+                (int)ReadProperty(stageDefaults, "AudienceReplyMaximumChars") == 24 &&
+                Math.Abs((float)ReadProperty(stageDefaults, "AudienceReplyMinimumIntervalSeconds") - 0.2f) < 0.0001f &&
+                Math.Abs((float)ReadProperty(stageDefaults, "AudienceReplyMaximumIntervalSeconds") - 0.5f) < 0.0001f &&
                 Math.Abs((float)ReadProperty(stageDefaults, "AudienceReplyIntervalSeconds") - 1.1f) < 0.0001f &&
                 Math.Abs((float)ReadProperty(stageDefaults, "PacingHalfWidthMeters") - 2f) < 0.0001f &&
                 !(bool)ReadProperty(stageDefaults, "MountedPacingEnabled") &&
@@ -1187,13 +1331,16 @@ internal static class Program
                 Math.Abs((float)ReadProperty(stageDefaults, "TacticalAdvanceDelaySeconds") - 1.8f) < 0.0001f &&
                 GetCount(stageSettingsV2.GetMethod("Validate").Invoke(stageDefaults, null)) == 0,
             "BattleSpeechStageSettingsV2 defaults or validation drifted");
-        Require(runtimeHost.GetMethod(
+        Require(FindMethod(runtimeHost,
                     "SubmitQueuedNpcReplyCandidate",
                     BindingFlags.Public | BindingFlags.Static) != null &&
-                runtimeHost.GetMethod(
+                FindMethod(runtimeHost,
                     "SubmitShownNpcReply",
                     BindingFlags.Public | BindingFlags.Static) != null &&
-                runtimeHost.GetMethod(
+                FindMethod(runtimeHost,
+                    "IsActiveNpcSpeechSystemPrompt",
+                    BindingFlags.NonPublic | BindingFlags.Static) != null &&
+                FindMethod(runtimeHost,
                     "RefreshMcmOverrides",
                     BindingFlags.NonPublic | BindingFlags.Static) != null,
             "BattleSpeechRuntimeHost reply bridge methods are missing");
@@ -1201,11 +1348,11 @@ internal static class Program
             "AnimusForge.XihaiAction.AfCompatV130",
             true,
             false);
-        Require(afCompat.GetMethod(
+        Require(FindMethod(afCompat,
                     "TryShowAudienceReply",
                     BindingFlags.NonPublic | BindingFlags.Static) != null,
             "AF multi-soldier audience-reply bridge is missing");
-        MethodInfo deferReply = runtimeHost.GetMethod(
+        MethodInfo deferReply = FindMethod(runtimeHost,
             "TryDeferShownNpcReply",
             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
         Type replyClaim = assembly.GetType(
@@ -1307,9 +1454,10 @@ internal static class Program
             "\"schemaVersion\": 1",
             "\"allowDeployment\": true",
             "\"allowPreEngagement\": true",
-            "\"enemyScanIntervalSeconds\": 0.25",
+            "\"enemyScanIntervalSeconds\": 0.4",
+            "\"maximumAudienceReplySubmissionsPerTick\": 8",
             "\"audienceRadiusMeters\": 80.0",
-            "\"enemyInterruptRadiusMeters\": 35.0"
+            "\"enemyInterruptRadiusMeters\": 10.0"
         })
         {
             Require(speechSource.Contains(token),
@@ -1323,8 +1471,12 @@ internal static class Program
         Require((bool)packagedArguments[1] &&
                 Math.Abs((float)ReadProperty(
                     packagedSettings,
-                    "EnemyScanIntervalSeconds") - 0.25f) < 0.0001f,
+                    "EnemyScanIntervalSeconds") - 0.4f) < 0.0001f,
             "packaged battle speech settings were rejected or drifted");
+        Require((int)ReadProperty(
+                    packagedSettings,
+                    "MaximumAudienceReplySubmissionsPerTick") == 8,
+                "packaged audience reply tick budget was not loaded");
 
         string temporaryRoot = Path.Combine(
             Path.GetTempPath(),
@@ -1347,6 +1499,32 @@ internal static class Program
             Require(!(bool)invalidArguments[1] &&
                     ((string)invalidArguments[2]).Contains("Unknown battle speech property"),
                 "present invalid battle speech settings did not fail closed");
+            File.WriteAllText(
+                temporaryConfig,
+                speechSource.Replace(
+                    "\"enemyScanIntervalSeconds\": 0.4",
+                    "\"enemyScanIntervalSeconds\": 0.25"));
+            object[] migratedArguments = { temporaryRoot, null, null };
+            object migratedSettings = loadSettings.Invoke(null, migratedArguments);
+            Require((bool)migratedArguments[1] &&
+                    Math.Abs((float)ReadProperty(
+                        migratedSettings,
+                        "EnemyScanIntervalSeconds") - 0.4f) < 0.0001f &&
+                    ((string)migratedArguments[2]).Contains("migrated enemyScanIntervalSeconds"),
+                "legacy 0.25-second enemy scan interval was not migrated to 0.4 seconds");
+            string legacyBudgetSource = speechSource.Replace(
+                "  \"maximumAudienceReplySubmissionsPerTick\": 8,\r\n",
+                string.Empty).Replace(
+                "  \"maximumAudienceReplySubmissionsPerTick\": 8,\n",
+                string.Empty);
+            File.WriteAllText(temporaryConfig, legacyBudgetSource);
+            object[] missingBudgetArguments = { temporaryRoot, null, null };
+            object missingBudgetSettings = loadSettings.Invoke(null, missingBudgetArguments);
+            Require((bool)missingBudgetArguments[1] &&
+                    (int)ReadProperty(
+                        missingBudgetSettings,
+                        "MaximumAudienceReplySubmissionsPerTick") == 8,
+                "legacy battle speech settings did not migrate the missing tick budget");
             File.Delete(temporaryConfig);
             object[] missingArguments = { temporaryRoot, null, null };
             object defaultSettings = loadSettings.Invoke(null, missingArguments);
@@ -1354,7 +1532,7 @@ internal static class Program
                     ReadBoolean(defaultSettings, "Enabled") &&
                     Math.Abs((float)ReadProperty(
                         defaultSettings,
-                        "EnemyScanIntervalSeconds") - 0.25f) < 0.0001f,
+                        "EnemyScanIntervalSeconds") - 0.4f) < 0.0001f,
                 "missing battle speech settings did not select audited defaults");
         }
         finally
@@ -1391,10 +1569,8 @@ internal static class Program
 
     private static void VerifyBattleSpeechPerformance(string moduleRoot, string gameRoot)
     {
-        Assembly module = AppDomain.CurrentDomain.GetAssemblies().First(value =>
-            value.GetName().Name == "AnimusForge.XihaiAction");
-        Assembly core = AppDomain.CurrentDomain.GetAssemblies().First(value =>
-            value.GetName().Name == "AnimusForge.SceneActions.Core");
+        Assembly module = GetModuleAssembly(moduleRoot);
+        Assembly core = GetCoreAssembly(moduleRoot);
         Type planner = core.GetType(
             "AnimusForge.SceneActions.Core.BattleSpeechPerformancePlannerV1",
             true,
@@ -1531,6 +1707,7 @@ internal static class Program
         MethodInfo audienceRelease = performanceBehavior.GetMethod(
             "ReleaseOwnedAudiencePerformanceChannels",
             BindingFlags.Static | BindingFlags.NonPublic);
+        MethodInfo audienceClear = performanceBehavior.GetMethod("AreOwnedAudienceChannelsClear", BindingFlags.Static | BindingFlags.NonPublic);
         MethodInfo filterFrozenAudience = performanceBehavior.GetMethod(
             "FilterFrozenAudience",
             BindingFlags.Instance | BindingFlags.NonPublic);
@@ -1564,11 +1741,17 @@ internal static class Program
                         BindingFlags.Instance | BindingFlags.Public),
                     filterFrozenAudience) &&
                 audienceRelease != null &&
+                audienceClear != null &&
                 MethodBodyReferences(
                     performanceBehavior.GetMethod(
                         "ProgressAudienceVoicesAndTactic",
                         BindingFlags.Instance | BindingFlags.NonPublic),
-                    audienceRelease),
+                    audienceRelease) &&
+                MethodBodyReferences(
+                    performanceBehavior.GetMethod(
+                        "ProgressAudienceVoicesAndTactic",
+                        BindingFlags.Instance | BindingFlags.NonPublic),
+                    audienceClear),
             "battle speech visual budget, Native voice, or Advance stages are missing");
         Require(openingGesture != null && openingGesturePlaying != null &&
                 MethodBodyReferences(
@@ -1657,17 +1840,27 @@ internal static class Program
                 MethodBodyReferences(missionTick, drainOneShots),
             "trusted battle speech requests are not drained on the Mission thread");
 
-        Type subModule = module.GetType("AnimusForge.XihaiAction.SubModule", true, false);
+        Type subModule = GetSubModuleType(module);
+        Require(subModule != null, "battle speech SubModule entry type is missing");
         MethodInfo beforeInitialize = subModule.GetMethod(
             "OnBeforeMissionBehaviorInitialize",
             BindingFlags.Instance | BindingFlags.Public);
+        Type integrationBoundary = module.GetType(
+            "AnimusForge.SceneActionsIntegrationBoundary",
+            false,
+            false);
+        MethodInfo boundaryRegistration = integrationBoundary?.GetMethod(
+            "RegisterBeforeMissionInitialization",
+            BindingFlags.Static | BindingFlags.NonPublic);
         ConstructorInfo performanceConstructor = performanceBehavior.GetConstructor(
             BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
             null,
             Type.EmptyTypes,
             null);
         Require(performanceConstructor != null &&
-                MethodBodyReferences(beforeInitialize, performanceConstructor),
+                (MethodBodyReferences(beforeInitialize, performanceConstructor) ||
+                 (_unifiedModuleLayout && boundaryRegistration != null &&
+                  MethodBodyReferences(boundaryRegistration, performanceConstructor))),
             "battle speech performance behavior is not registered before Mission initialization");
 
         Dictionary<string, string> expectedMappings = new Dictionary<string, string>(
@@ -1716,47 +1909,97 @@ internal static class Program
         }
     }
 
-    private static void VerifyMcmContract(string moduleRoot)
+    private static void VerifyMcmContract(string moduleRoot, string gameRoot)
     {
         XDocument subModule = XDocument.Load(
             Path.Combine(moduleRoot, "SubModule.xml"),
             LoadOptions.None);
         XElement root = subModule.Root;
-        Require((string)root?.Element("Version")?.Attribute("value") == "v1.1.0",
-            "SubModule product version is not v1.1.0");
+        string productVersion = (string)root?.Element("Version")?.Attribute("value");
+        Require(_unifiedModuleLayout
+                ? !string.IsNullOrWhiteSpace(productVersion) &&
+                  productVersion.StartsWith("v1.3.", StringComparison.Ordinal)
+                : productVersion == "v1.1.0",
+            _unifiedModuleLayout
+                ? "unified SubModule product version is not a v1.3.x AF version"
+                : "SubModule product version is not v1.1.0");
         HashSet<string> dependencies = new HashSet<string>(
             root?.Element("DependedModules")?.Elements("DependedModule")
                 .Select(value => (string)value.Attribute("Id")) ?? Array.Empty<string>(),
             StringComparer.Ordinal);
-        foreach (string dependency in new[]
-        {
-            "Bannerlord.ButterLib", "Bannerlord.UIExtenderEx", "Bannerlord.MBOptionScreen",
-            "AnimusForge"
-        })
+        string[] requiredDependencies = _unifiedModuleLayout
+            ? new[] { "Bannerlord.ButterLib", "Bannerlord.UIExtenderEx", "Bannerlord.MBOptionScreen" }
+            : new[]
+            {
+                "Bannerlord.ButterLib", "Bannerlord.UIExtenderEx", "Bannerlord.MBOptionScreen",
+                "AnimusForge"
+            };
+        foreach (string dependency in requiredDependencies)
         {
             Require(dependencies.Contains(dependency),
                 "MCM/AF module dependency missing: " + dependency);
         }
 
-        Assembly module = AppDomain.CurrentDomain.GetAssemblies().First(value =>
-            value.GetName().Name == "AnimusForge.XihaiAction");
-        Type settings = module.GetType(
+        Assembly module = GetModuleAssembly(moduleRoot);
+        Type bridge = module.GetType(
             "AnimusForge.XihaiAction.SceneActionsMcmSettings",
             true,
             false);
-        Require(settings.IsPublic &&
+        Require(!bridge.IsPublic && bridge.IsAbstract && bridge.IsSealed &&
+                bridge.BaseType == typeof(object) &&
+                bridge.GetCustomAttributes(inherit: false).Length == 0,
+            "standalone XihaiAction must not register a second MCM settings type");
+        Require(bridge.GetMethod("TryApplySceneActions", BindingFlags.Static | BindingFlags.NonPublic) != null &&
+                bridge.GetMethod("TryApplyBattleSpeech", BindingFlags.Static | BindingFlags.NonPublic) != null &&
+                bridge.GetMethod("EnsureLegacyMigration", BindingFlags.Static | BindingFlags.NonPublic) != null,
+            "integrated MCM bridge entrypoints or legacy migration are missing");
+
+        Assembly af = AppDomain.CurrentDomain.GetAssemblies()
+            .FirstOrDefault(value => value.GetName().Name == "AnimusForge");
+        if (af == null)
+        {
+            string[] candidates =
+            {
+                Path.Combine(moduleRoot, "bin", "Win64_Shipping_Client", "AnimusForge.dll"),
+                Path.Combine(moduleRoot, "bin", "Win64_Shipping_Client", "versions", "1.4", "AnimusForge.dll"),
+                Path.Combine(gameRoot, "Modules", "AnimusForge", "bin", "Win64_Shipping_Client", "versions", "1.4", "AnimusForge.dll")
+            };
+            string path = candidates.FirstOrDefault(File.Exists);
+            if (path != null)
+            {
+                af = Assembly.LoadFrom(path);
+            }
+        }
+        Require(af != null, "AF implementation assembly for integrated MCM was not found");
+        Type settings = af?.GetType("AnimusForge.DuelSettings", true, false);
+        Require(settings != null && settings.IsPublic &&
                 settings.BaseType != null &&
                 settings.BaseType.FullName.StartsWith(
                     "MCM.Abstractions.Base.Global.AttributeGlobalSettings`1",
                     StringComparison.Ordinal),
-            "public MCM AttributeGlobalSettings contract is missing");
-        Require(settings.GetMethod(
-                    "TryApplySceneActions",
-                    BindingFlags.Static | BindingFlags.NonPublic) != null &&
-                settings.GetMethod(
-                    "TryApplyBattleSpeech",
-                    BindingFlags.Static | BindingFlags.NonPublic) != null,
-            "validated MCM runtime override entrypoints are missing");
+            "AF DuelSettings AttributeGlobalSettings contract is missing");
+        int globalSettingsCount = af == null
+            ? 0
+            : af.GetTypes().Count(type => type.BaseType != null &&
+                type.BaseType.FullName != null &&
+                type.BaseType.FullName.StartsWith(
+                    "MCM.Abstractions.Base.Global.AttributeGlobalSettings`1",
+                    StringComparison.Ordinal));
+        Require(globalSettingsCount == 1, "AF must expose exactly one MCM AttributeGlobalSettings type");
+        object mcmDefaults = settings == null ? null : Activator.CreateInstance(settings);
+        Require((int)ReadProperty(mcmDefaults, "ReplyMinimumChars") == 60 &&
+                (int)ReadProperty(mcmDefaults, "ReplyMaximumChars") == 160 &&
+                (int)ReadProperty(mcmDefaults, "MaximumVisualResponders") == 60 &&
+                 (int)ReadProperty(mcmDefaults, "AudienceReplyCount") == 24 &&
+                 (int)ReadProperty(mcmDefaults, "AudienceReplyWaveSize") == 5 &&
+                 (int)ReadProperty(mcmDefaults, "MaximumAudienceReplySubmissionsPerTick") == 8 &&
+                 (int)ReadProperty(mcmDefaults, "AudienceReplyMinimumChars") == 8 &&
+                (int)ReadProperty(mcmDefaults, "AudienceReplyMaximumChars") == 24 &&
+                Math.Abs((float)ReadProperty(mcmDefaults, "AudienceReplyMinimumIntervalSeconds") - 0.2f) < 0.0001f &&
+                Math.Abs((float)ReadProperty(mcmDefaults, "AudienceReplyMaximumIntervalSeconds") - 0.5f) < 0.0001f &&
+                (bool)ReadProperty(mcmDefaults, "TacticalAdvanceEnabled") &&
+                Math.Abs((float)ReadProperty(mcmDefaults, "TacticalAdvanceDelaySeconds") - 1.8f) < 0.0001f,
+            "MCM shipped defaults do not match the battle-speech defaults");
         string[] actionProperties =
         {
             "Kneel", "StandUp", "Xihai", "Cheer", "Applaud", "Respect", "Threat",
@@ -1777,8 +2020,20 @@ internal static class Program
         }), "the 27 compatibility action fields must stay serialized but hidden from MCM");
         PropertyInfo naturalLanguageSwitch = settings.GetProperty(
             "NaturalLanguageReplyActionsEnabled");
+        PropertyInfo battleSpeechSwitch = settings.GetProperty("BattleSpeechEnabled");
+        PropertyInfo tKeyBattleSpeechSwitch = settings.GetProperty("TKeyBattleSpeechEnabled");
         Require(naturalLanguageSwitch != null &&
+                battleSpeechSwitch != null &&
+                tKeyBattleSpeechSwitch != null &&
                 naturalLanguageSwitch.CustomAttributes.Any(attribute =>
+                    attribute.AttributeType.Name.StartsWith(
+                        "SettingPropertyBool",
+                        StringComparison.Ordinal)) &&
+                battleSpeechSwitch.CustomAttributes.Any(attribute =>
+                    attribute.AttributeType.Name.StartsWith(
+                        "SettingPropertyBool",
+                        StringComparison.Ordinal)) &&
+                tKeyBattleSpeechSwitch.CustomAttributes.Any(attribute =>
                     attribute.AttributeType.Name.StartsWith(
                         "SettingPropertyBool",
                         StringComparison.Ordinal)) &&
@@ -1790,7 +2045,7 @@ internal static class Program
                             "SettingProperty",
                             StringComparison.Ordinal));
                 }),
-            "MCM natural-language section must expose only its single unified switch");
+            "MCM natural-language and battle-speech switches are not independently exposed");
         Require(new[]
                 {
                     "PacingEnabled", "MountedPacingEnabled", "InfantryPacingEnabled",
@@ -1806,63 +2061,21 @@ internal static class Program
                 }) &&
                 settings.GetProperty("AudienceVoiceCount") != null &&
                 settings.GetProperty("AudienceRepliesEnabled") != null &&
-                settings.GetProperty("AudienceReplyCount") != null &&
+                  settings.GetProperty("AudienceReplyCount") != null &&
+                  settings.GetProperty("AudienceReplyWaveSize") != null &&
+                  settings.GetProperty("MaximumAudienceReplySubmissionsPerTick") != null &&
+                  settings.GetProperty("AudienceReplyMinimumChars") != null &&
+                 settings.GetProperty("AudienceReplyMaximumChars") != null &&
+                settings.GetProperty("AudienceReplyMinimumIntervalSeconds") != null &&
+                settings.GetProperty("AudienceReplyMaximumIntervalSeconds") != null &&
+                settings.GetProperty("AudienceResponseStartDelaySeconds") != null &&
+                settings.GetProperty("AudienceFinalReactionHoldSeconds") != null &&
                 settings.GetProperty("AudienceReplyIntervalSeconds") != null &&
                 settings.GetProperty("TacticalAdvanceEnabled") != null,
             "MCM battle-speech staging controls or hidden pacing compatibility fields drifted");
-        MethodInfo migrateLegacyDefaults = settings.GetMethod(
-            "MigrateLegacyBattleSpeechDefaults",
-            BindingFlags.NonPublic | BindingFlags.Static);
-        Require(migrateLegacyDefaults != null,
-            "legacy MCM default migration helper is missing");
-        object legacyMcm = Activator.CreateInstance(settings);
-        settings.GetProperty("ReplyMinimumChars").SetValue(legacyMcm, 50);
-        settings.GetProperty("ReplyMaximumChars").SetValue(legacyMcm, 100);
-        settings.GetProperty("FrontDistanceMeters").SetValue(legacyMcm, 8f);
-        settings.GetProperty("AudienceVoiceCount").SetValue(legacyMcm, 12);
-        settings.GetProperty("AudienceReplyCount").SetValue(legacyMcm, 4);
-        settings.GetProperty("TacticalAdvanceDelaySeconds").SetValue(legacyMcm, 0.6f);
-        migrateLegacyDefaults.Invoke(null, new[] { legacyMcm });
-        Require((int)ReadProperty(legacyMcm, "ReplyMinimumChars") == 30 &&
-                (int)ReadProperty(legacyMcm, "ReplyMaximumChars") == 80 &&
-                Math.Abs((float)ReadProperty(legacyMcm, "FrontDistanceMeters") - 10f) < 0.0001f &&
-                (int)ReadProperty(legacyMcm, "AudienceVoiceCount") == 22 &&
-                (int)ReadProperty(legacyMcm, "AudienceReplyCount") == 16 &&
-                Math.Abs((float)ReadProperty(legacyMcm, "TacticalAdvanceDelaySeconds") - 1.8f) < 0.0001f,
-            "complete legacy MCM default set is not migrated atomically");
-        object previousIntegratedMcm = Activator.CreateInstance(settings);
-        settings.GetProperty("ReplyMinimumChars").SetValue(previousIntegratedMcm, 6);
-        settings.GetProperty("ReplyMaximumChars").SetValue(previousIntegratedMcm, 30);
-        settings.GetProperty("FrontDistanceMeters").SetValue(previousIntegratedMcm, 10f);
-        settings.GetProperty("AudienceVoiceCount").SetValue(previousIntegratedMcm, 22);
-        settings.GetProperty("AudienceReplyCount").SetValue(previousIntegratedMcm, 4);
-        settings.GetProperty("TacticalAdvanceDelaySeconds").SetValue(previousIntegratedMcm, 1.2f);
-        migrateLegacyDefaults.Invoke(null, new[] { previousIntegratedMcm });
-        Require((int)ReadProperty(previousIntegratedMcm, "ReplyMinimumChars") == 20 &&
-                (int)ReadProperty(previousIntegratedMcm, "ReplyMaximumChars") == 60 &&
-                (int)ReadProperty(previousIntegratedMcm, "AudienceReplyCount") == 16 &&
-                Math.Abs((float)ReadProperty(previousIntegratedMcm, "TacticalAdvanceDelaySeconds") - 1.8f) < 0.0001f,
-            "previous integrated battle-speech defaults were not migrated");
-        object customMcm = Activator.CreateInstance(settings);
-        settings.GetProperty("ReplyMinimumChars").SetValue(customMcm, 7);
-        settings.GetProperty("ReplyMaximumChars").SetValue(customMcm, 30);
-        settings.GetProperty("FrontDistanceMeters").SetValue(customMcm, 8f);
-        settings.GetProperty("AudienceVoiceCount").SetValue(customMcm, 12);
-        settings.GetProperty("TacticalAdvanceDelaySeconds").SetValue(customMcm, 0.6f);
-        migrateLegacyDefaults.Invoke(null, new[] { customMcm });
-        Require((int)ReadProperty(customMcm, "ReplyMinimumChars") == 7 &&
-                Math.Abs((float)ReadProperty(customMcm, "FrontDistanceMeters") - 8f) < 0.0001f &&
-                (int)ReadProperty(customMcm, "AudienceVoiceCount") == 12 &&
-                Math.Abs((float)ReadProperty(customMcm, "TacticalAdvanceDelaySeconds") - 1.8f) < 0.0001f,
-            "unrelated custom MCM values were overwritten by legacy-default migration");
-        object shortSpeechMcm = Activator.CreateInstance(settings);
-        settings.GetProperty("ReplyMinimumChars").SetValue(shortSpeechMcm, 6);
-        settings.GetProperty("ReplyMaximumChars").SetValue(shortSpeechMcm, 30);
-        settings.GetProperty("TacticalAdvanceDelaySeconds").SetValue(shortSpeechMcm, 1.8f);
-        migrateLegacyDefaults.Invoke(null, new[] { shortSpeechMcm });
-        Require((int)ReadProperty(shortSpeechMcm, "ReplyMinimumChars") == 6 &&
-                (int)ReadProperty(shortSpeechMcm, "ReplyMaximumChars") == 30,
-            "an explicit post-migration short-speech range was overwritten");
+        Require(settings.GetProperty("SceneActionsMcmMigrationVersion") != null &&
+                settings.GetProperty("NaturalLanguageReplyActionsEnabled") != null,
+            "AF DuelSettings integrated SceneActions fields are missing");
 
         XDocument english = XDocument.Load(Path.Combine(
             moduleRoot, "ModuleData", "Languages", "sceneactions_strings.xml"));
@@ -1878,22 +2091,58 @@ internal static class Program
                 .Select(value => (string)value.Attribute("id"))
                 .Where(value => value != null && value.StartsWith("SAX_MCM_", StringComparison.Ordinal)),
             StringComparer.Ordinal);
-        Require(englishMcmIds.Count == 71 && englishMcmIds.SetEquals(chineseMcmIds) &&
+        string englishSceneActionsTitle = english.Descendants("string")
+            .Where(value => (string)value.Attribute("id") == "SAX_MCM_Name")
+            .Select(value => (string)value.Attribute("text"))
+            .FirstOrDefault();
+        string chineseSceneActionsTitle = chinese.Descendants("string")
+            .Where(value => (string)value.Attribute("id") == "SAX_MCM_Name")
+            .Select(value => (string)value.Attribute("text"))
+            .FirstOrDefault();
+        string[] localizedHintIds =
+        {
+            "SAX_MCM_BattleSpeechEnabled_Hint", "SAX_MCM_ReplyMin_Hint", "SAX_MCM_ReplyMax_Hint",
+            "SAX_MCM_NpcPositioning_Hint", "SAX_MCM_FrontDistance_Hint", "SAX_MCM_ArrivalRadius_Hint",
+            "SAX_MCM_MoveTimeout_Hint", "SAX_MCM_AlliedAudience_Hint", "SAX_MCM_VisualResponders_Hint",
+            "SAX_MCM_VisualWave_Hint", "SAX_MCM_TickBudget_Hint", "SAX_MCM_Voices_Hint",
+            "SAX_MCM_VoiceCount_Hint", "SAX_MCM_VoiceWave_Hint", "SAX_MCM_VoiceInterval_Hint",
+            "SAX_MCM_AudienceReplies_Hint", "SAX_MCM_AudienceReplyCount_Hint",
+            "SAX_MCM_AudienceReplyWaveSize_Hint", "SAX_MCM_AudienceReplyMinimumChars_Hint",
+            "SAX_MCM_AudienceReplyMaximumChars_Hint", "SAX_MCM_AudienceReplyMinInterval_Hint",
+            "SAX_MCM_AudienceReplyMaxInterval_Hint", "SAX_MCM_AudienceResponseStartDelay_Hint",
+            "SAX_MCM_AudienceFinalReactionHold_Hint", "SAX_MCM_Advance_Hint",
+            "SAX_MCM_AdvanceDelay_Hint", "SAX_MCM_Notifications_Hint", "SAX_MCM_Diagnostics_Hint"
+        };
+        Require(englishMcmIds.Count == 112 && englishMcmIds.SetEquals(chineseMcmIds) &&
+                englishSceneActionsTitle != null && englishSceneActionsTitle.StartsWith("18.", StringComparison.Ordinal) &&
+                chineseSceneActionsTitle != null && chineseSceneActionsTitle.StartsWith("18.", StringComparison.Ordinal) &&
+                localizedHintIds.All(englishMcmIds.Contains) &&
                 englishMcmIds.Contains("SAX_MCM_Name") &&
+                englishMcmIds.Contains("SAX_MCM_Group_Voices") &&
+                englishMcmIds.Contains("SAX_MCM_Group_Replies") &&
+                englishMcmIds.Contains("SAX_MCM_Group_Advance") &&
                 englishMcmIds.Contains("SAX_MCM_NaturalReplyActions") &&
                 englishMcmIds.Contains("SAX_MCM_NaturalReplyActions_Hint") &&
                 !englishMcmIds.Contains("SAX_MCM_MountedPacing") &&
                 !englishMcmIds.Contains("SAX_MCM_InfantryPacing") &&
                 !englishMcmIds.Contains("SAX_MCM_PacingWidth") &&
                 englishMcmIds.Contains("SAX_MCM_AudienceReplyCount") &&
+                englishMcmIds.Contains("SAX_MCM_AudienceReplyWaveSize") &&
+                englishMcmIds.Contains("SAX_MCM_AudienceReplyTickBudget") &&
+                englishMcmIds.Contains("SAX_MCM_AudienceReplyTickBudget_Hint") &&
+                englishMcmIds.Contains("SAX_MCM_AudienceReplyMinimumChars") &&
+                englishMcmIds.Contains("SAX_MCM_AudienceReplyMaximumChars") &&
+                englishMcmIds.Contains("SAX_MCM_AudienceReplyMinInterval") &&
+                englishMcmIds.Contains("SAX_MCM_AudienceReplyMaxInterval") &&
+                englishMcmIds.Contains("SAX_MCM_AudienceResponseStartDelay") &&
+                englishMcmIds.Contains("SAX_MCM_AudienceFinalReactionHold") &&
                 englishMcmIds.Contains("SAX_MCM_Advance"),
             "MCM English/Simplified-Chinese localized option keys are incomplete");
     }
 
     private static void VerifyCompositionRoot(string moduleRoot)
     {
-        Assembly assembly = AppDomain.CurrentDomain.GetAssemblies().First(value =>
-            value.GetName().Name == "AnimusForge.XihaiAction");
+        Assembly assembly = GetModuleAssembly(moduleRoot);
         Type host = assembly.GetType(
             "AnimusForge.XihaiAction.SceneActionsRuntimeHost",
             true,
@@ -2499,8 +2748,7 @@ internal static class Program
 
     private static void VerifyCompatPatchInstallation()
     {
-        Assembly module = AppDomain.CurrentDomain.GetAssemblies().First(value =>
-            value.GetName().Name == "AnimusForge.XihaiAction");
+        Assembly module = GetModuleAssembly();
         Type compat = module.GetType(
             "AnimusForge.XihaiAction.AfCompatV130",
             true,
@@ -2574,8 +2822,7 @@ internal static class Program
 
     private static void VerifyClassifierProviderOffline()
     {
-        Assembly module = AppDomain.CurrentDomain.GetAssemblies().First(value =>
-            value.GetName().Name == "AnimusForge.XihaiAction");
+        Assembly module = GetModuleAssembly();
         Type providerType = module.GetType(
             "AnimusForge.XihaiAction.AfV130AuxiliaryTextClassifier",
             true,
@@ -2719,8 +2966,7 @@ internal static class Program
 
     private static void VerifyConsentClassifierProviderOffline()
     {
-        Assembly module = AppDomain.CurrentDomain.GetAssemblies().First(value =>
-            value.GetName().Name == "AnimusForge.XihaiAction");
+        Assembly module = GetModuleAssembly();
         Type providerType = module.GetType(
             "AnimusForge.XihaiAction.AfV130AuxiliaryTextClassifier",
             true,
@@ -2959,6 +3205,15 @@ internal static class Program
     {
         return value.GetType().GetProperty(name, BindingFlags.Instance | BindingFlags.Public |
                                                  BindingFlags.NonPublic).GetValue(value, null);
+    }
+
+    private static MethodInfo FindMethod(
+        Type type,
+        string name,
+        BindingFlags flags)
+    {
+        return type.GetMethods(flags).FirstOrDefault(method =>
+            string.Equals(method.Name, name, StringComparison.Ordinal));
     }
 
     private static bool ReadBoolean(object value, string name)

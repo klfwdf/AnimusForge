@@ -28,6 +28,11 @@ namespace AnimusForge.XihaiAction
             _planCompletions = new ConcurrentQueue<BattleSpeechPlanCompletionV2>();
         private readonly CancellationTokenSource _v2LifetimeCancellation =
             new CancellationTokenSource();
+        // Unlike the Mission lifetime token, this token is reset when the
+        // BattleSpeech MCM switch is toggled off.  That cancels an in-flight AF
+        // request without making a later re-enable permanently unusable.
+        private CancellationTokenSource _v2RequestCancellation =
+            new CancellationTokenSource();
         private long _triggerGeneration;
 
         private void StartTriggerClassification(BattleSpeechCapturedInputV1 input)
@@ -85,7 +90,8 @@ namespace AnimusForge.XihaiAction
                 Generation = generation
             };
             using (CancellationTokenSource timeout = CancellationTokenSource.CreateLinkedTokenSource(
-                       _v2LifetimeCancellation.Token))
+                       _v2LifetimeCancellation.Token,
+                       _v2RequestCancellation.Token))
             {
                 timeout.CancelAfter(timeoutMs);
                 try
@@ -114,9 +120,14 @@ namespace AnimusForge.XihaiAction
                 return;
             }
             PrepareSpeechPlan(session, speechText);
+            // Player speech must wait for the dedicated AF plan instead of
+            // falling back after the one-second NPC staging grace period.
+            // NPC speech keeps the grace period only after reaching its line,
+            // so a slow classifier cannot hold an NPC's scripted position
+            // indefinitely.
             if (session.PlanClassificationPending &&
-                (session.SpeakerKind != BattleSpeechSpeakerKindV1.Npc ||
-                 session.ReachedSpeechLine))
+                session.SpeakerKind == BattleSpeechSpeakerKindV1.Npc &&
+                session.ReachedSpeechLine)
             {
                 session.PlanClassificationPlaybackDeadlineMissionTime =
                     Mission.CurrentTime + PlanClassificationPlaybackBudgetSeconds;
@@ -147,11 +158,16 @@ namespace AnimusForge.XihaiAction
             session.Tactic = BattleSpeechTacticV2.None;
 
             BattleSpeechStageSettingsV2 settings = BattleSpeechRuntimeHost.StageSettings;
-            int replyCount = settings != null && settings.AudienceRepliesEnabled
-                ? Math.Min(settings.AudienceReplyCount, session.Audience?.Length ?? 0)
-                : 0;
+            int replyCount = BattleSpeechFrameworkV2.ResolveAudienceReplyCount(
+                settings != null && settings.AudienceRepliesEnabled,
+                settings?.AudienceReplyCount ?? 0,
+                session.Audience?.Length ?? 0);
             session.AudienceReplies = BattleSpeechFrameworkV2
-                .BuildFallbackAudienceReplies(speechText, replyCount)
+                .BuildFallbackAudienceReplies(
+                    speechText,
+                    replyCount,
+                    settings?.AudienceReplyMinimumChars ?? 8,
+                    settings?.AudienceReplyMaximumChars ?? 24)
                 .ToArray();
             if (settings == null || !settings.SemanticClassifierEnabled ||
                 !SceneActionsRuntimeHost.TryGetBattleSpeechClassifier(
@@ -170,7 +186,8 @@ namespace AnimusForge.XihaiAction
             }
             session.PlanClassificationPending = true;
             session.ClassificationCancellation = CancellationTokenSource.CreateLinkedTokenSource(
-                _v2LifetimeCancellation.Token);
+                _v2LifetimeCancellation.Token,
+                _v2RequestCancellation.Token);
             session.ClassificationCancellation.CancelAfter(settings.ClassifierTimeoutMs);
             BattleSpeechPlanClassifierRequestV2 request = new BattleSpeechPlanClassifierRequestV2
             {
@@ -178,7 +195,9 @@ namespace AnimusForge.XihaiAction
                 SpeechText = speechText,
                 AllowedIntentKeys = allowed,
                 AllowAdvance = false,
-                AudienceReplyCount = replyCount
+                AudienceReplyCount = replyCount,
+                AudienceReplyMinimumChars = settings.AudienceReplyMinimumChars,
+                AudienceReplyMaximumChars = settings.AudienceReplyMaximumChars
             };
             _ = RunPlanClassificationAsync(
                 classifier,
@@ -267,6 +286,8 @@ namespace AnimusForge.XihaiAction
                 if (string.IsNullOrEmpty(plan.Error) &&
                     BattleSpeechFrameworkV2.TryParsePlanClassifierOutput(
                         plan.RawOutput,
+                        BattleSpeechRuntimeHost.StageSettings.AudienceReplyMinimumChars,
+                        BattleSpeechRuntimeHost.StageSettings.AudienceReplyMaximumChars,
                         out BattleSpeechPlanDecisionV2 decision,
                         out parseError) &&
                     ProgramUsesOnly(decision.ActionProgram, plan.AllowedIntentKeys))
@@ -275,12 +296,10 @@ namespace AnimusForge.XihaiAction
                     {
                         session.ActionProgram = decision.ActionProgram;
                     }
-                    int maximumReplies = BattleSpeechRuntimeHost.StageSettings
-                        .AudienceRepliesEnabled
-                        ? Math.Min(
-                            BattleSpeechRuntimeHost.StageSettings.AudienceReplyCount,
-                            session.Audience?.Length ?? 0)
-                        : 0;
+                    int maximumReplies = BattleSpeechFrameworkV2.ResolveAudienceReplyCount(
+                        BattleSpeechRuntimeHost.StageSettings.AudienceRepliesEnabled,
+                        BattleSpeechRuntimeHost.StageSettings.AudienceReplyCount,
+                        session.Audience?.Length ?? 0);
                     bool modelRepliesMatchFrozenCount =
                         decision.AudienceReplies.Count == maximumReplies;
                     if (modelRepliesMatchFrozenCount && maximumReplies > 0)
@@ -344,28 +363,12 @@ namespace AnimusForge.XihaiAction
                     PrepareSpeech(session, input.RawText);
                 }
             }
-            else if (kind == BattleSpeechTriggerKindV2.RequestNpcSpeech &&
-                     input.PrimaryTarget != null)
+            else
             {
-                // The original AF shout method was held while the classifier ran.
-                // Replay it once so AF creates the NPC response body; the recorded
-                // message observer then starts the frozen NPC speech session.
-                if (!AfCompatV130.TryReplayOriginalPlayerShout(
-                        input,
-                        observeForBattleSpeech: true,
-                        out string replayError))
-                {
-                    SceneActionsLog.Warning(
-                        "BATTLE_SPEECH_COMPAT",
-                        "NPC speech classification resolved, but AF replay failed: " +
-                        replayError);
-                }
-            }
-            else if (kind == BattleSpeechTriggerKindV2.RequestNpcSpeech)
-            {
-                // The classifier selected an NPC actor but the frozen target was
-                // unavailable. Do not synthesize a new target; restore AF's normal
-                // scene route instead.
+                // RequestNpcSpeech is reserved for the Y-menu internal route and
+                // can never be produced by the T-key trigger classifier. Treat any
+                // unexpected value as an ordinary AF shout rather than allowing a
+                // classifier response to retarget an NPC.
                 ReplayOrdinaryAfShout(input);
             }
         }
@@ -390,10 +393,34 @@ namespace AnimusForge.XihaiAction
             }
         }
 
+        private void EnterCombatSpeechMode(ActiveBattleSpeechSessionV1 session)
+        {
+            if (session == null || session.CombatSpeechMode)
+            {
+                return;
+            }
+            session.CombatSpeechMode = true;
+            session.ReachedSpeechLine = true;
+            ReleaseOwnedScriptedMovement(session);
+            SceneActionsLog.Info(
+                "BATTLE_SPEECH_STAGE",
+                "Session=" + session.SessionId.ToString("N") +
+                " State=CombatInPlace NoScriptedMovement=True");
+        }
+
         private void InitializeV2Stage(ActiveBattleSpeechSessionV1 session)
         {
             session.ReachedSpeechLine = session.SpeakerKind == BattleSpeechSpeakerKindV1.Player;
             session.PlanClassificationCompleted = false;
+            if (session.CombatSpeechMode)
+            {
+                session.ReachedSpeechLine = true;
+                SceneActionsLog.Info(
+                    "BATTLE_SPEECH_STAGE",
+                    "Session=" + session.SessionId.ToString("N") +
+                    " State=CombatInPlace NoScriptedMovement=True");
+                return;
+            }
             if (session.SpeakerKind != BattleSpeechSpeakerKindV1.Npc ||
                 !BattleSpeechRuntimeHost.StageSettings.NpcPositioningEnabled ||
                 !TryBuildSpeechLine(
@@ -438,12 +465,22 @@ namespace AnimusForge.XihaiAction
 
         private bool ProgressV2Stage(ActiveBattleSpeechSessionV1 session, double now)
         {
+            // Combat mode is sticky for the whole speech.  Once the first
+            // contact is detected, the performance layer suppresses visual
+            // presentation, battle cries and Advance; do not keep polling
+            // the shared proximity cache for the remainder of this session.
+            if (!session.CombatSpeechMode &&
+                (IsSpeakerInCombatAction(session.Speaker) ||
+                 HasNearbyEnemyThrottled(session.Speaker)))
+            {
+                EnterCombatSpeechMode(session);
+            }
             if (session.SpeakerKind != BattleSpeechSpeakerKindV1.Npc)
             {
-                // Player speech has no positioning phase. Previously it skipped
-                // the one-second classifier grace period and could wait for the
-                // full AF timeout before showing the speech.
-                ExpirePlanClassificationWaitIfNeeded(session, now);
+                // Player speech has no positioning phase. Do not expire its
+                // plan after one second: the speech stays pending until the
+                // AF plan completes or its configured classifier timeout
+                // produces the normal closed-failure fallback.
                 TryResumePendingSpeech(session);
                 return true;
             }
@@ -993,8 +1030,30 @@ namespace AnimusForge.XihaiAction
             {
             }
             _v2LifetimeCancellation.Dispose();
+            try
+            {
+                _v2RequestCancellation.Cancel();
+            }
+            catch (ObjectDisposedException)
+            {
+            }
+            _v2RequestCancellation.Dispose();
             while (_triggerCompletions.TryDequeue(out _)) { }
             while (_planCompletions.TryDequeue(out _)) { }
+        }
+
+        private void ResetV2RequestCancellation()
+        {
+            CancellationTokenSource previous = _v2RequestCancellation;
+            try
+            {
+                previous.Cancel();
+            }
+            catch (ObjectDisposedException)
+            {
+            }
+            previous.Dispose();
+            _v2RequestCancellation = new CancellationTokenSource();
         }
 
         private sealed class BattleSpeechTriggerCompletionV2

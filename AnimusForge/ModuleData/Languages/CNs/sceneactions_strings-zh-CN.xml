@@ -11,20 +11,24 @@
     <string id="SAX_BattleSpeechNoAudience" text="阵前演讲未开始：没有找到符合条件的友军听众。" />
     <string id="SAX_BattleSpeechNotReady" text="阵前演讲未开始：仅支持部署阶段或仍在进行的战斗。" />
     <string id="SAX_BattleSpeechSpeakerUnavailable" text="阵前演讲未开始：当前演讲者已失效、离场、逃跑或正在使用场景物体。" />
+    <string id="SAX_BattleSpeechNpcTargetNotAllied" text="阵前演讲未开始：“他人演讲”只能选择己方士兵。" />
     <string id="SAX_BattleSpeechSpeakerInCombat" text="阵前演讲未开始：当前演讲者正在攻击或准备攻击。" />
     <string id="SAX_BattleSpeechEnemyNearby" text="阵前演讲未开始：演讲者附近存在敌人。" />
-    <string id="SAX_MCM_Name" text="自然语言动作与阵前演讲" />
-    <string id="SAX_MCM_Group_General" text="总控" />
+    <string id="SAX_MCM_Name" text="18. 自然语言动作与阵前演讲" />
+    <string id="SAX_MCM_Group_General" text="18. 自然语言动作与阵前演讲" />
     <string id="SAX_MCM_Group_Language" text="自然语言与 AF" />
     <string id="SAX_MCM_Group_Actions" text="受控动作" />
     <string id="SAX_MCM_Group_Speech" text="阵前演讲" />
-    <string id="SAX_MCM_Group_Stage" text="NPC 阵前站位" />
+    <string id="SAX_MCM_Group_Stage" text="演讲者站位" />
     <string id="SAX_MCM_Group_Audience" text="听众回应" />
+    <string id="SAX_MCM_Group_Voices" text="原生战吼" />
+    <string id="SAX_MCM_Group_Replies" text="士兵文字回应" />
+    <string id="SAX_MCM_Group_Advance" text="演讲后发令" />
     <string id="SAX_MCM_Group_Safety" text="安全与诊断" />
     <string id="SAX_MCM_Enabled" text="启用西海扩展" />
     <string id="SAX_MCM_ActionsEnabled" text="启用自然语言动作" />
     <string id="SAX_MCM_NaturalReplyActions" text="自然语言回复动作" />
-    <string id="SAX_MCM_NaturalReplyActions_Hint" text="识别玩家喊话和 NPC 回复里的自然动作描写，复杂措辞可交给 AF 闭集判断，并识别自然语言阵前演讲请求及演讲动作。关闭后停用这些自然语言路径。" />
+    <string id="SAX_MCM_NaturalReplyActions_Hint" text="只控制普通 AF 对话和场景喊话回复中的自然语言动作解析与播放。关闭后保留普通文字回复，不影响独立的阵前演讲子系统。" />
     <string id="SAX_MCM_PlayerInput" text="玩家场景喊话动作" />
     <string id="SAX_MCM_NpcInput" text="NPC 回复动作" />
     <string id="SAX_MCM_DualChannel" text="实验性跪姿叠加手势" />
@@ -59,9 +63,11 @@
     <string id="SAX_MCM_Command" text="下令手势" />
     <string id="SAX_MCM_FollowMe" text="示意跟上" />
     <string id="SAX_MCM_CutThroat" text="割喉手势" />
+    <string id="SAX_MCM_TKeyBattleSpeechEnabled" text="启用 T 键场景喊话中的演讲识别" />
+    <string id="SAX_MCM_TKeyBattleSpeechEnabled_Hint" text="开启后，T 键场景喊话的内容可以进入演讲通道；Y 键演讲选项仍只在总开关开启且当前阶段允许演讲时显示。" />
     <string id="SAX_MCM_BattleSpeechEnabled" text="启用阵前演讲" />
-    <string id="SAX_MCM_ReplyMin" text="演讲正文最少字数（6-30）" />
-    <string id="SAX_MCM_ReplyMax" text="演讲正文最多字数（6-30）" />
+    <string id="SAX_MCM_ReplyMin" text="演讲正文最少字数（6-160）" />
+    <string id="SAX_MCM_ReplyMax" text="演讲正文最多字数（6-160）" />
     <string id="SAX_MCM_NpcPositioning" text="NPC 移动到阵线前方" />
     <string id="SAX_MCM_FrontDistance" text="距士兵阵线前移距离" />
     <string id="SAX_MCM_ArrivalRadius" text="到位判定半径" />
@@ -77,10 +83,48 @@
     <string id="SAX_MCM_AudienceReplies" text="启用多名士兵简短回复" />
     <string id="SAX_MCM_AudienceReplyCount" text="口头回复的士兵人数" />
     <string id="SAX_MCM_AudienceReplyInterval" text="士兵口头回复间隔" />
+    <string id="SAX_MCM_AudienceReplyWaveSize" text="每波最多同时回复的士兵人数" />
+    <string id="SAX_MCM_AudienceReplyTickBudget" text="每 Tick 最多提交文字回应" />
+    <string id="SAX_MCM_AudienceReplyTickBudget_Hint" text="独立于每波人数的 Mission Tick 提交预算，用于限制文字回应桥接调用和单帧负载。" />
+    <string id="SAX_MCM_AudienceReplyMinimumChars" text="士兵口头回复最少字数" />
+    <string id="SAX_MCM_AudienceReplyMaximumChars" text="士兵口头回复最多字数" />
+    <string id="SAX_MCM_AudienceReplyMinInterval" text="回复波次最短随机间隔" />
+    <string id="SAX_MCM_AudienceReplyMaxInterval" text="回复波次最长随机间隔" />
+    <string id="SAX_MCM_AudienceResponseStartDelay" text="听众回应开始延迟" />
+    <string id="SAX_MCM_AudienceFinalReactionHold" text="结尾听众动作保持时间" />
     <string id="SAX_MCM_Advance" text="演讲后做下令手势并命令全军推进" />
     <string id="SAX_MCM_AdvanceDelay" text="下令手势后推进延迟" />
     <string id="SAX_MCM_EnemyRadius" text="近敌中断半径" />
+    <string id="SAX_MCM_EnemyRadius_Hint" text="敌人进入该半径后演讲继续但留在原地；士兵只可文字回应，抑制演讲者和听众动作、战吼、发令动作及 Advance。" />
     <string id="SAX_MCM_Notifications" text="屏幕通知" />
     <string id="SAX_MCM_Diagnostics" text="详细诊断日志" />
+    <string id="SAX_MCM_BattleSpeechEnabled_Hint" text="阵前演讲总开关。关闭后隐藏本组的 T 键演讲、正文长度、站位、听众回应和演讲后发令设置。" />
+    <string id="SAX_MCM_ReplyMin_Hint" text="限制 AF 生成的阵前演讲正文长度；实际显示与生成使用同一份快照。必须不大于最多字数。" />
+    <string id="SAX_MCM_ReplyMax_Hint" text="限制 AF 生成的阵前演讲正文长度；超过此上限的结果会被拒绝并按失败关闭处理。" />
+    <string id="SAX_MCM_NpcPositioning_Hint" text="NPC 演讲时先走到己方阵线前方并转向士兵；关闭后保留原地演讲，不使用脚本移动。" />
+    <string id="SAX_MCM_FrontDistance_Hint" text="NPC 相对己方阵线中心向前移动的距离；只在“演讲者走到阵前”开启时生效。" />
+    <string id="SAX_MCM_ArrivalRadius_Hint" text="NPC 与目标站位相距不超过此半径即视为到位；只影响站位移动判定。" />
+    <string id="SAX_MCM_MoveTimeout_Hint" text="NPC 走向阵前的最长等待时间；超时会在当前位置安全开讲，不传送、不重复请求。" />
+    <string id="SAX_MCM_AlliedAudience_Hint" text="听众快照是否包含同侧盟军；盟军可以回应，但不会接受演讲后的玩家编队 Advance。" />
+    <string id="SAX_MCM_VisualResponders_Hint" text="演讲结束后最多抽取多少名士兵播放受控动作；采用确定性抽样和分批提交，避免全军同帧同步。" />
+    <string id="SAX_MCM_VisualWave_Hint" text="每一批提交的士兵动作人数；只是批次大小，不等于每 Tick 允许的桥接调用上限。" />
+    <string id="SAX_MCM_TickBudget_Hint" text="每个 Mission Tick 最多提交多少个动作桥接调用；用于限制单帧负载，与每波人数独立。" />
+    <string id="SAX_MCM_Voices_Hint" text="启用后在士兵回应阶段分批播放原生战吼；不调用 AF TTS。关闭后隐藏战吼人数、批次和间隔。" />
+    <string id="SAX_MCM_VoiceCount_Hint" text="本场最多参与原生战吼的士兵数量；只影响声音规模和性能。" />
+    <string id="SAX_MCM_VoiceWave_Hint" text="每一波同时触发的原生战吼人数；越小越自然，也越分散性能峰值。" />
+    <string id="SAX_MCM_VoiceInterval_Hint" text="战吼批次之间的间隔；不影响士兵文字回应的随机间隔。" />
+    <string id="SAX_MCM_AudienceReplies_Hint" text="启用后让多名士兵用短句回应演讲；关闭后隐藏文字回应人数、批次、字数和间隔。" />
+    <string id="SAX_MCM_AudienceReplyCount_Hint" text="本场最多生成文字回应的士兵数量；每个士兵只提交一次请求。" />
+    <string id="SAX_MCM_AudienceReplyWaveSize_Hint" text="同一批最多提交的文字回应人数；是逻辑波次大小，不等于每 Tick 提交预算。" />
+    <string id="SAX_MCM_AudienceReplyMinimumChars_Hint" text="每条士兵文字回应的最少字数；只影响回应生成与显示，不影响演讲正文。" />
+    <string id="SAX_MCM_AudienceReplyMaximumChars_Hint" text="每条士兵文字回应的最多字数；建议保持简短，避免多人同时显示造成阅读和性能压力。" />
+    <string id="SAX_MCM_AudienceReplyMinInterval_Hint" text="连续文字回应波次的随机间隔下限；与每 Tick 提交预算共同限制请求峰值。" />
+    <string id="SAX_MCM_AudienceReplyMaxInterval_Hint" text="连续文字回应波次的随机间隔上限；必须不小于最小随机间隔。" />
+    <string id="SAX_MCM_AudienceResponseStartDelay_Hint" text="演讲正文完成后至少再等待多久才开始士兵文字回应和原生战吼；正文未完成时不会插入听众回应。" />
+    <string id="SAX_MCM_AudienceFinalReactionHold_Hint" text="最后一批欢呼或回应提交后，至少保持多久才允许清理动作并执行 Advance；用于避免欢呼抽搐。" />
+    <string id="SAX_MCM_Advance_Hint" text="演讲和听众回应完成后，演讲者播放发令动作，再向玩家直属编队下达 Advance；盟军只回应，不接受该命令。" />
+    <string id="SAX_MCM_AdvanceDelay_Hint" text="发令动作完成后等待多久再向玩家直属编队下达 Advance；只在上方开关开启时生效。" />
+    <string id="SAX_MCM_Notifications_Hint" text="显示演讲开始、取消和结束等状态提示；关闭只影响 UI，不影响演讲执行。" />
+    <string id="SAX_MCM_Diagnostics_Hint" text="写入自然语言动作和阵前演讲的诊断日志；关闭可减少日志 I/O，不改变功能。" />
   </strings>
 </base>

@@ -1868,6 +1868,8 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private List<EventRecordEntry> _eventRecordEntries = new List<EventRecordEntry>();
 	private long _publishedWorldWeeklyHistoryRevision = 1L;
+	// Runtime-only revision lets the open world-message timeline detect weekly additions without resanitizing this list every frame.
+	private long _worldMessageWeeklyTimelineRevision = 1L;
 
 	private string _eventRecordJsonStorage = "";
 
@@ -7076,6 +7078,8 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 				eventRecordEntry.ShortSummary = text3;
 				eventRecordEntry.PromptText = BuildWeekZeroPromptText(text2, llmGenerated: true);
+				// The generated short text replaces the list/detail preview while the timeline may already be open.
+				NotifyWorldMessageWeeklyTimelineChanged();
 				taskCompletionSource.TrySetResult(true);
 			}
 			catch (Exception ex)
@@ -7284,6 +7288,8 @@ public class MyBehavior : CampaignBehaviorBase
 			FreezeWatchdog.Mark("WeeklyPrompt.UpsertWeek0.sanitize_done", "kind=" + (eventKind ?? "") + " kingdom=" + (kingdomId ?? "") + " entries=" + (_eventRecordEntries?.Count ?? 0));
 		}
 		NotifyPublishedWorldWeeklyProductChanged(previousPublishedProductState, publishedProductEntry);
+		// Week-zero entries are visible in the same timeline as normal weekly reports.
+		NotifyWorldMessageWeeklyTimelineChanged();
 		TryQueueWeekZeroShortSummaryGeneration(eventRecordEntry, text6);
 		FreezeWatchdog.Mark("WeeklyPrompt.UpsertWeek0.queue_done", "kind=" + (eventKind ?? "") + " kingdom=" + (kingdomId ?? "") + " entries=" + (_eventRecordEntries?.Count ?? 0));
 		return true;
@@ -27439,7 +27445,8 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			if (IsNonHeroMemoryId(stringId))
 			{
-				LogNonHeroMemoryTrace("stage=load_dialogue_hit memoryId=" + stringId + " days=" + value.Count + " lines=" + CountDialogueHistoryLines(value));
+				// Keep verbose-only diagnostics from adding a full history-line count to normal history opens.
+				LogNonHeroMemoryTrace(() => "stage=load_dialogue_hit memoryId=" + stringId + " days=" + value.Count + " lines=" + CountDialogueHistoryLines(value));
 			}
 			return value;
 		}
@@ -28025,14 +28032,23 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 				return result;
 			}
-			foreach (DialogueDay record in records.OrderBy((DialogueDay d) => d?.GameDayIndex ?? 0))
+			int limit = Math.Max(1, Math.Min(260, maxLines <= 0 ? 260 : maxLines));
+			// The popup displays only the newest bounded window.  Walk the exact chronological ordering backwards,
+			// stop once that window is full, then reverse it below so callers retain the previous oldest-to-newest result.
+			// Sorting the day list remains necessary because save migration/merge paths do not promise storage order.
+			List<DialogueDay> orderedRecords = records.OrderBy((DialogueDay d) => d?.GameDayIndex ?? 0).ToList();
+			for (int recordIndex = orderedRecords.Count - 1; recordIndex >= 0 && result.Count < limit; recordIndex--)
 			{
+				DialogueDay record = orderedRecords[recordIndex];
 				if (record?.Lines == null)
 				{
 					continue;
 				}
-				foreach (string rawLine in record.Lines)
+				// Lines are written in chronological order.  Reverse iteration avoids classifying old history that
+				// cannot survive the newest-limit trim, while preserving every accepted line after result.Reverse().
+				for (int lineIndex = record.Lines.Count - 1; lineIndex >= 0 && result.Count < limit; lineIndex--)
 				{
+					string rawLine = record.Lines[lineIndex];
 					string line = (rawLine ?? "").Trim();
 					if (string.IsNullOrWhiteSpace(line))
 					{
@@ -28054,14 +28070,12 @@ public class MyBehavior : CampaignBehaviorBase
 					});
 				}
 			}
-			int limit = Math.Max(1, Math.Min(260, maxLines <= 0 ? 260 : maxLines));
-			if (result.Count > limit)
-			{
-				result = result.Skip(result.Count - limit).ToList();
-			}
+			// The reverse walk collected the same newest records in newest-to-oldest order; restore the UI/LLM-facing order.
+			result.Reverse();
 			if (IsNonHeroMemoryId(normalizedMemoryId))
 			{
-				LogNonHeroMemoryTrace("stage=entries_read memoryId=" + normalizedMemoryId + " days=" + records.Count + " lines=" + CountDialogueHistoryLines(records) + " entries=" + result.Count + " maxLines=" + maxLines);
+				// Keep the tail-read fast when verbose diagnostics are disabled; the line total is diagnostic-only.
+				LogNonHeroMemoryTrace(() => "stage=entries_read memoryId=" + normalizedMemoryId + " days=" + records.Count + " lines=" + CountDialogueHistoryLines(records) + " entries=" + result.Count + " maxLines=" + maxLines);
 			}
 		}
 		catch (Exception ex)
@@ -38522,6 +38536,8 @@ public class MyBehavior : CampaignBehaviorBase
 			_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
 			EventRecordEntry updatedEntry = FindWeeklyReportRecordById(storedEntry.EventId);
 			NotifyPublishedWorldWeeklyProductChanged(previousPublishedProductState, updatedEntry);
+			// Developer edits use the same projected text, so refresh an open timeline without polling record contents.
+			NotifyWorldMessageWeeklyTimelineChanged();
 			InformationManager.DisplayMessage(new InformationMessage("周报标题已更新。"));
 			OpenDevEventRecordDetail(updatedEntry ?? entry, returnPage);
 		}, delegate
@@ -38545,6 +38561,8 @@ public class MyBehavior : CampaignBehaviorBase
 			_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
 			EventRecordEntry updatedEntry = FindWeeklyReportRecordById(storedEntry.EventId);
 			NotifyPublishedWorldWeeklyProductChanged(previousPublishedProductState, updatedEntry);
+			// Developer edits use the same projected text, so refresh an open timeline without polling record contents.
+			NotifyWorldMessageWeeklyTimelineChanged();
 			InformationManager.DisplayMessage(new InformationMessage("周报正文已更新。"));
 			OpenDevEventRecordDetail(updatedEntry ?? entry, returnPage);
 		}, delegate
@@ -38804,6 +38822,8 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				Interlocked.Increment(ref _publishedWorldWeeklyHistoryRevision);
 			}
+			// Imported report records may add timeline entries while the archive window is already open.
+			NotifyWorldMessageWeeklyTimelineChanged();
 		}
 	}
 
@@ -44130,6 +44150,26 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static long GetWorldMessageWeeklyTimelineRevisionForExternal()
+	{
+		try
+		{
+			// This is a constant-time runtime signal for an already open UI; it does not serialize or traverse report records.
+			MyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			return behavior == null ? 0L : Math.Max(0L, Volatile.Read(ref behavior._worldMessageWeeklyTimelineRevision));
+		}
+		catch
+		{
+			return 0L;
+		}
+	}
+
+	private void NotifyWorldMessageWeeklyTimelineChanged()
+	{
+		// All mutation sites call this after publishing a visible weekly record or changing its displayed text.
+		Interlocked.Increment(ref _worldMessageWeeklyTimelineRevision);
+	}
+
 	private static string BuildPublishedWorldWeeklyProductState(EventRecordEntry entry)
 	{
 		if (entry == null
@@ -44425,6 +44465,8 @@ public class MyBehavior : CampaignBehaviorBase
 			eventRecordEntry.Materials = CloneWeeklyReportMaterials(eventRecordEntry.Materials);
 			_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
 			NotifyPublishedWorldWeeklyProductChanged(previousPublishedProductState, FindWeeklyReportRecordById(eventRecordEntry.EventId));
+			// The completed full report changes the selected timeline item's body and action state.
+			NotifyWorldMessageWeeklyTimelineChanged();
 			InformationManager.HideInquiry();
 			InformationManager.DisplayMessage(new InformationMessage("完整周报已生成。"));
 			return true;
@@ -45044,7 +45086,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		if (!string.IsNullOrWhiteSpace(weeklyReportRetryContext.FailedReason))
 		{
-			// 完整 API/模型响应只进入左下角摘要与日志，动作窗口保留给重试和修复选择。
+			// 完整 API/模型响应直接进入左下角，动作窗口仅保留给重试和修复选择。
 			NonBlockingErrorReport.Show("周事件生成失败", weeklyReportRetryContext.FailedReason.Trim());
 			stringBuilder.AppendLine();
 			stringBuilder.AppendLine("详细失败原因已显示在左下角消息并写入日志。");
@@ -46278,6 +46320,8 @@ public class MyBehavior : CampaignBehaviorBase
 			publishedProductEntry = FindWeeklyReportRecordById(text3) ?? eventRecordEntry;
 		}
 		NotifyPublishedWorldWeeklyProductChanged(previousPublishedProductState, publishedProductEntry);
+		// A completed weekly upsert can append a new short report, so wake only the active timeline projection.
+		NotifyWorldMessageWeeklyTimelineChanged();
 	}
 
 	private List<EventSourceMaterialEntry> GetWeeklyEventSourceMaterialsForBuild()
@@ -51265,7 +51309,7 @@ public class MyBehavior : CampaignBehaviorBase
 	private static string BuildDevStoredErrorReference(string error)
 	{
 		// 开发菜单会在返回和翻页时反复重建；这里只放固定短提示，避免历史 API 原文再次挤占操作项。
-		return string.IsNullOrWhiteSpace(error) ? "无" : "已记录（完整详情已写入日志）";
+		return string.IsNullOrWhiteSpace(error) ? "无" : "已记录（详情已在触发时显示于左下角）";
 	}
 
 	private static string BuildDevDailyMemoryDraftEditorDescription(DailyMemoryDraft draft)

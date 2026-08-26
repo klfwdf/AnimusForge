@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
@@ -130,6 +131,98 @@ public static class ShoutNetwork
 		return false;
 	}
 
+	private const string GenericContinuationInstruction =
+		"请继续完成当前请求，只输出最终结果。";
+
+	private const string BattleSpeechContinuationInstruction =
+		"请继续完成当前阵前演讲请求，只输出协议规定的最终结果，不要生成普通NPC回复。";
+
+	private static bool IsBattleSpeechRequest(IEnumerable<object> messages)
+	{
+		foreach (object message in messages ?? Enumerable.Empty<object>())
+		{
+			if (!TryReadMessage(message, out _, out string content))
+			{
+				continue;
+			}
+			string text = content ?? string.Empty;
+			if (text.IndexOf("【阵前演讲", StringComparison.Ordinal) >= 0 ||
+				text.IndexOf("SPEECH_BEGIN", StringComparison.Ordinal) >= 0)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static string GetLastMessageRole(
+		IEnumerable<object> messages,
+		out string lastContent)
+	{
+		string lastRole = string.Empty;
+		lastContent = string.Empty;
+		foreach (object message in messages ?? Enumerable.Empty<object>())
+		{
+			if (!TryReadMessage(message, out string role, out string content))
+			{
+				continue;
+			}
+			if (string.IsNullOrWhiteSpace(role) && string.IsNullOrWhiteSpace(content))
+			{
+				continue;
+			}
+			lastRole = (role ?? string.Empty).Trim();
+			lastContent = content ?? string.Empty;
+		}
+		return lastRole;
+	}
+
+	private static List<object> EnsureFinalUserTurn(
+		IEnumerable<object> messages,
+		out string originalLastRole)
+	{
+		List<object> result = new List<object>();
+		foreach (object message in messages ?? Enumerable.Empty<object>())
+		{
+			result.Add(message);
+		}
+
+		string lastContent;
+		originalLastRole = GetLastMessageRole(result, out lastContent);
+		if (string.Equals(originalLastRole, "user", StringComparison.OrdinalIgnoreCase) &&
+			!string.IsNullOrWhiteSpace(lastContent))
+		{
+			return result;
+		}
+
+		result.Add(new
+		{
+			role = "user",
+			content = IsBattleSpeechRequest(result)
+				? BattleSpeechContinuationInstruction
+				: GenericContinuationInstruction
+		});
+		return result;
+	}
+
+	private static void LogNormalizedMessageTail(
+		string mode,
+		string originalLastRole,
+		IEnumerable<object> messages)
+	{
+		if (string.Equals(originalLastRole, "user", StringComparison.OrdinalIgnoreCase))
+		{
+			return;
+		}
+		string finalRole = GetLastMessageRole(messages, out _);
+		int count = messages == null ? 0 : messages.Count();
+		Logger.Log(
+			"ShoutNetwork",
+			"[PrimaryChat] normalized message tail mode=" + (mode ?? string.Empty) +
+			" originalLastRole=" + (originalLastRole ?? string.Empty) +
+			" finalRole=" + finalRole +
+			" messages=" + count);
+	}
 	private static List<object> BuildEmptyResponseRetryMessages(List<object> messages)
 	{
 		List<object> list = new List<object>();
@@ -159,7 +252,7 @@ public static class ShoutNetwork
 				content = EmptyResponseRetryInstruction
 			});
 		}
-		return list;
+		return EnsureFinalUserTurn(list, out _);
 	}
 
 	private static string ExtractTextFromGeminiCandidateParts(JToken candidate)
@@ -304,6 +397,7 @@ public static class ShoutNetwork
 
 	private static JObject BuildPrimaryChatPayload(List<object> messages, DuelSettings settings, string apiUrl, string modelName, int actualMaxTokens, bool stream, out string thinkingMode, bool forceDisableThinking = false)
 	{
+		messages = EnsureFinalUserTurn(messages, out _);
 		JObject jObject = new JObject
 		{
 			["model"] = modelName ?? "",
@@ -325,7 +419,13 @@ public static class ShoutNetwork
 			});
 		}
 		jObject["messages"] = jArray;
-		TryApplyPrimaryThinkingControls(jObject, settings, apiUrl, modelName, forceDisableThinking, out thinkingMode);
+		TryApplyPrimaryThinkingControls(
+			jObject,
+			settings,
+			apiUrl,
+			modelName,
+			forceDisableThinking || IsBattleSpeechRequest(messages),
+			out thinkingMode);
 		return jObject;
 	}
 
@@ -433,6 +533,8 @@ public static class ShoutNetwork
 		try
 		{
 			List<object> normalizedMessages = ApplyPlayerDisplayNameToOutgoingMessages(messages);
+			normalizedMessages = EnsureFinalUserTurn(normalizedMessages, out string originalLastRole);
+			LogNormalizedMessageTail("token_stats", originalLastRole, normalizedMessages);
 			int inputTokens = Logger.EstimateTokensFromMessages(normalizedMessages);
 			DuelSettings settings = DuelSettings.GetSettings();
 			if (settings == null || string.IsNullOrEmpty(settings.ApiKey))
@@ -651,6 +753,8 @@ public static class ShoutNetwork
 		LlmRetryPrompt.CaptureMainThreadContext();
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		messages = ApplyPlayerDisplayNameToOutgoingMessages(messages);
+		messages = EnsureFinalUserTurn(messages, out string originalLastRole);
+		LogNormalizedMessageTail("non_stream", originalLastRole, messages);
 		Stopwatch sw = Stopwatch.StartNew();
 		int msgCount = messages?.Count ?? 0;
 		int inputTokens = Logger.EstimateTokensFromMessages(messages);
@@ -890,6 +994,8 @@ public static class ShoutNetwork
 		LlmRetryPrompt.CaptureMainThreadContext();
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		messages = ApplyPlayerDisplayNameToOutgoingMessages(messages);
+		messages = EnsureFinalUserTurn(messages, out string originalLastRole);
+		LogNormalizedMessageTail("stream", originalLastRole, messages);
 		PlayerReferenceStreamFilter outputFilter = new PlayerReferenceStreamFilter();
 		StringBuilder fullText = new StringBuilder();
 		StringBuilder fullReasoning = new StringBuilder();

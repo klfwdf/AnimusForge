@@ -247,7 +247,10 @@ public partial class VoteDealBehavior
 			{
 				view.RegisterMapNotificationType(typeof(AnimusForgeAgendaMapNotification), typeof(AnimusForgeAgendaMapNotificationItemVM));
 				_agendaRegisteredMapNotificationView = view;
-				_publishedAgendaMapNotices.Clear();
+				// MapNotificationView is recreated when the player returns to the campaign map.
+				// Published decisions belong to this campaign runtime, not to one view instance;
+				// clearing them here republishes every still-pending agenda (especially allied
+				// calls to war) each time the map UI is rebuilt.
 				_agendaMapNoticeReconcilePending = true;
 			}
 			return true;

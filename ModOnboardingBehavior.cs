@@ -1026,7 +1026,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			{
 				fullFailureText = (fullFailureText + "\n\n排查建议：" + pendingApiValidationFailureHint).Trim();
 			}
-			// 失败详情可能含完整模型/API 响应；仅以摘要通知玩家，完整且脱敏后的文本保留在日志和按需 AI 分析缓存中。
+			// 失败详情可能含完整模型/API 响应；完整且脱敏后的文本直接显示在左下角，并保留给按需 AI 分析。
 			NonBlockingErrorReport.Show("API 连接失败", fullFailureText);
 			if (setupMenuValidation)
 			{
