@@ -15,7 +15,13 @@ namespace AnimusForge.XihaiAction
             new ConcurrentQueue<BattleSpeechCapturedInputV1>();
         private ActiveBattleSpeechSessionV1 _active;
         private bool _closed = true;
+        private bool _mcmDisabled;
         private long _nextSessionGeneration;
+        private bool _battlefieldBaselineInitialized;
+        private int _battlefieldBaselineFriendlyCount = -1;
+        private int _battlefieldBaselineEnemyCount = -1;
+        private int _battlefieldFriendlyRemoved;
+        private int _battlefieldEnemyRemoved;
 
         public override MissionBehaviorType BehaviorType => MissionBehaviorType.Other;
         internal bool IsSessionActive => !_closed;
@@ -37,6 +43,12 @@ namespace AnimusForge.XihaiAction
                 return;
             }
             _closed = false;
+            _mcmDisabled = !BattleSpeechRuntimeHost.IsSpeechEnabled;
+            _battlefieldBaselineInitialized = false;
+            _battlefieldBaselineFriendlyCount = -1;
+            _battlefieldBaselineEnemyCount = -1;
+            _battlefieldFriendlyRemoved = 0;
+            _battlefieldEnemyRemoved = 0;
             BattleSpeechEnemyProximityCache.Reset(Mission);
             BattleSpeechRuntimeHost.BindSession(this);
             SceneActionsLog.Info("BATTLE_SPEECH", "Mission framework session activated.");
@@ -44,7 +56,8 @@ namespace AnimusForge.XihaiAction
 
         internal bool TryEnqueue(BattleSpeechCapturedInputV1 input)
         {
-            if (_closed || input == null || !ReferenceEquals(input.Mission, Mission))
+            if (_closed || !BattleSpeechRuntimeHost.IsSpeechEnabled ||
+                input == null || !ReferenceEquals(input.Mission, Mission))
             {
                 return false;
             }
@@ -58,6 +71,20 @@ namespace AnimusForge.XihaiAction
             if (_closed || !ReferenceEquals(Mission.Current, Mission)) return;
             try
             {
+                if (!BattleSpeechRuntimeHost.IsSpeechEnabled)
+                {
+                    DisableFromHost(
+                        "BattleSpeech disabled in MCM; pending speech input was discarded.");
+                    return;
+                }
+                if (_mcmDisabled)
+                {
+                    _mcmDisabled = false;
+                    SceneActionsLog.Info(
+                        "BATTLE_SPEECH_MCM",
+                        "BattleSpeech re-enabled for the active Mission.");
+                }
+                EnsureBattlefieldBaseline();
                 while (_inbound.TryDequeue(out BattleSpeechCapturedInputV1 input))
                 {
                     ProcessInput(input);
@@ -108,6 +135,7 @@ namespace AnimusForge.XihaiAction
             AgentState agentState,
             KillingBlow blow)
         {
+            RecordBattlefieldRemoval(affectedAgent);
             base.OnAgentRemoved(affectedAgent, affectorAgent, agentState, blow);
             BattleSpeechEnemyProximityCache.Invalidate(
                 Mission,
@@ -315,8 +343,7 @@ namespace AnimusForge.XihaiAction
             bool combinedNpcRequest = false)
         {
             if (!BattleSpeechRuntimeHost.RefreshMcmOverrides(out string refreshError) ||
-                !BattleSpeechRuntimeHost.Settings.Enabled ||
-                !BattleSpeechRuntimeHost.PerformanceSettings.Enabled)
+                !BattleSpeechRuntimeHost.IsSpeechEnabled)
             {
                 SceneActionsLog.Warning(
                     "BATTLE_SPEECH_MCM",
@@ -331,8 +358,14 @@ namespace AnimusForge.XihaiAction
                 return null;
             }
             BattleSpeechEnemyProximityCache.Invalidate(Mission, speaker, null);
-            bool combatSpeechMode = IsSpeakerInCombatAction(speaker) ||
-                                     HasNearbyEnemyThrottled(speaker);
+            bool speakerInCombat = IsSpeakerInCombatAction(speaker);
+            BattleSpeechBattlefieldFactsV1 battlefieldFacts = speakerKind ==
+                                                               BattleSpeechSpeakerKindV1.Npc
+                ? CaptureBattlefieldFacts(speaker, phase, speakerInCombat)
+                : null;
+            bool combatSpeechMode = speakerInCombat ||
+                                     (battlefieldFacts?.EnemyNearby ??
+                                      HasNearbyEnemyThrottled(speaker));
 
             Agent[] audience = FreezeAudience(speaker);
             if (audience.Length < BattleSpeechRuntimeHost.Settings.MinimumAudience)
@@ -374,7 +407,8 @@ namespace AnimusForge.XihaiAction
                             BattleSpeechRuntimeHost.StageSettings.AudienceRepliesEnabled,
                             BattleSpeechRuntimeHost.StageSettings.AudienceReplyCount,
                             audience.Length)
-                        : 0);
+                        : 0,
+                    battlefieldFacts);
             }
             SceneActionsLog.Info(
                 "BATTLE_SPEECH",
@@ -382,7 +416,14 @@ namespace AnimusForge.XihaiAction
                 " State=" + state +
                 " Speaker=" + speaker.Index +
                 " Audience=" + audience.Length +
-                " Phase=" + phase);
+                " Phase=" + phase +
+                (battlefieldFacts == null
+                    ? string.Empty
+                    : " FactsFriendly=" + battlefieldFacts.FriendlyActiveHumanCount +
+                      " FactsEnemy=" + battlefieldFacts.EnemyActiveHumanCount +
+                      " FactsFriendlyRemoved=" + battlefieldFacts.FriendlyRemovedSinceBaseline +
+                      " FactsEnemyRemoved=" + battlefieldFacts.EnemyRemovedSinceBaseline +
+                      " EnemyNearby=" + battlefieldFacts.EnemyNearby));
             return _active;
         }
 
@@ -746,6 +787,146 @@ namespace AnimusForge.XihaiAction
                 .ToArray();
         }
 
+        private BattleSpeechBattlefieldFactsV1 CaptureBattlefieldFacts(
+            Agent speaker,
+            BattleSpeechPhaseV1 phase,
+            bool speakerInCombat)
+        {
+            EnsureBattlefieldBaseline();
+            CountActiveBattlefieldAgents(
+                speaker,
+                out int friendlyActive,
+                out int enemyActive,
+                out bool enemyNearby);
+
+            if (!_battlefieldBaselineInitialized && friendlyActive + enemyActive > 0)
+            {
+                _battlefieldBaselineInitialized = true;
+                _battlefieldBaselineFriendlyCount = friendlyActive;
+                _battlefieldBaselineEnemyCount = enemyActive;
+            }
+
+            string battleType = Mission.IsSiegeBattle
+                ? "攻城战"
+                : Mission.IsSallyOutBattle
+                    ? "出城战"
+                    : Mission.IsFieldBattle
+                        ? "野战"
+                        : "战斗";
+            string phaseText = phase == BattleSpeechPhaseV1.Deployment
+                ? "部署阶段"
+                : "战斗阶段";
+            int friendlyRemoved = _battlefieldBaselineInitialized
+                ? Math.Max(
+                    _battlefieldFriendlyRemoved,
+                    Math.Max(0, _battlefieldBaselineFriendlyCount - friendlyActive))
+                : -1;
+            int enemyRemoved = _battlefieldBaselineInitialized
+                ? Math.Max(
+                    _battlefieldEnemyRemoved,
+                    Math.Max(0, _battlefieldBaselineEnemyCount - enemyActive))
+                : -1;
+            return new BattleSpeechBattlefieldFactsV1(
+                friendlyActive,
+                enemyActive,
+                friendlyRemoved,
+                enemyRemoved,
+                enemyNearby,
+                speakerInCombat,
+                battleType,
+                phaseText);
+        }
+
+        private void EnsureBattlefieldBaseline()
+        {
+            if (_battlefieldBaselineInitialized || Mission?.PlayerTeam == null ||
+                !Mission.IsLoadingFinished)
+            {
+                return;
+            }
+            CountActiveBattlefieldAgents(
+                null,
+                out int friendlyActive,
+                out int enemyActive,
+                out _);
+            if (friendlyActive + enemyActive <= 0)
+            {
+                return;
+            }
+            _battlefieldBaselineInitialized = true;
+            _battlefieldBaselineFriendlyCount = friendlyActive;
+            _battlefieldBaselineEnemyCount = enemyActive;
+        }
+
+        private void CountActiveBattlefieldAgents(
+            Agent speaker,
+            out int friendlyActive,
+            out int enemyActive,
+            out bool enemyNearby)
+        {
+            friendlyActive = 0;
+            enemyActive = 0;
+            enemyNearby = false;
+            float radius = Math.Max(
+                0f,
+                BattleSpeechRuntimeHost.Settings?.EnemyInterruptRadiusMeters ?? 10f);
+            float radiusSquared = radius * radius;
+            bool canCheckNearby = speaker != null && speaker.IsActive();
+            Vec2 speakerPosition = canCheckNearby
+                ? speaker.Position.AsVec2
+                : default(Vec2);
+
+            foreach (Team team in Mission.Teams)
+            {
+                if (team == null || !team.IsValid)
+                {
+                    continue;
+                }
+                bool sameSide = Mission.PlayerTeam != null &&
+                                team.Side == Mission.PlayerTeam.Side;
+                foreach (Agent agent in team.ActiveAgents)
+                {
+                    if (agent == null || !agent.IsActive() || !agent.IsHuman ||
+                        agent.Team == null || !agent.Team.IsValid)
+                    {
+                        continue;
+                    }
+                    if (sameSide)
+                    {
+                        friendlyActive++;
+                    }
+                    else
+                    {
+                        enemyActive++;
+                        if (canCheckNearby && !enemyNearby &&
+                            agent.Position.AsVec2.DistanceSquared(speakerPosition) <=
+                            radiusSquared)
+                        {
+                            enemyNearby = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void RecordBattlefieldRemoval(Agent affectedAgent)
+        {
+            if (!_battlefieldBaselineInitialized || affectedAgent == null ||
+                Mission?.PlayerTeam == null || affectedAgent.Team == null ||
+                !affectedAgent.Team.IsValid || !affectedAgent.IsHuman)
+            {
+                return;
+            }
+            if (affectedAgent.Team.Side == Mission.PlayerTeam.Side)
+            {
+                _battlefieldFriendlyRemoved++;
+            }
+            else
+            {
+                _battlefieldEnemyRemoved++;
+            }
+        }
+
         private bool HasNearbyEnemyThrottled(Agent speaker)
         {
             return BattleSpeechEnemyProximityCache.HasNearbyEnemy(
@@ -848,8 +1029,47 @@ namespace AnimusForge.XihaiAction
             _closed = true;
             BattleSpeechRuntimeHost.UnbindSession(this);
             BattleSpeechEnemyProximityCache.Reset(Mission);
+            _battlefieldBaselineInitialized = false;
+            _battlefieldBaselineFriendlyCount = -1;
+            _battlefieldBaselineEnemyCount = -1;
+            _battlefieldFriendlyRemoved = 0;
+            _battlefieldEnemyRemoved = 0;
             BattleSpeechApiV1.Reset();
             SceneActionsLog.Info("BATTLE_SPEECH", "Mission framework session closed. " + reason);
+        }
+
+        /// <summary>
+        /// Disables only the BattleSpeech work for the current Mission.  Unlike
+        /// Close(), this keeps the behavior and its V2 lifetime token alive so a
+        /// later MCM re-enable can accept a new speech request in the same Mission.
+        /// </summary>
+        internal void DisableFromHost(string reason)
+        {
+            if (_closed)
+            {
+                return;
+            }
+            bool transitioned = !_mcmDisabled;
+            _mcmDisabled = true;
+            CancelActive(reason ?? "BattleSpeech disabled.", notify: false);
+            ResetV2RequestCancellation();
+            _triggerGeneration++;
+            while (_inbound.TryDequeue(out _))
+            {
+            }
+            while (_triggerCompletions.TryDequeue(out _))
+            {
+            }
+            while (_planCompletions.TryDequeue(out _))
+            {
+            }
+            if (transitioned)
+            {
+                SceneActionsLog.Info(
+                    "BATTLE_SPEECH_MCM",
+                    "BattleSpeech session disabled without closing Mission behavior. Reason=" +
+                    (reason ?? string.Empty));
+            }
         }
 
         private sealed class ActiveBattleSpeechSessionV1

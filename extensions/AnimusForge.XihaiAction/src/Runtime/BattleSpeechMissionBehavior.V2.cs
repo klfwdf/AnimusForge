@@ -28,6 +28,11 @@ namespace AnimusForge.XihaiAction
             _planCompletions = new ConcurrentQueue<BattleSpeechPlanCompletionV2>();
         private readonly CancellationTokenSource _v2LifetimeCancellation =
             new CancellationTokenSource();
+        // Unlike the Mission lifetime token, this token is reset when the
+        // BattleSpeech MCM switch is toggled off.  That cancels an in-flight AF
+        // request without making a later re-enable permanently unusable.
+        private CancellationTokenSource _v2RequestCancellation =
+            new CancellationTokenSource();
         private long _triggerGeneration;
 
         private void StartTriggerClassification(BattleSpeechCapturedInputV1 input)
@@ -85,7 +90,8 @@ namespace AnimusForge.XihaiAction
                 Generation = generation
             };
             using (CancellationTokenSource timeout = CancellationTokenSource.CreateLinkedTokenSource(
-                       _v2LifetimeCancellation.Token))
+                       _v2LifetimeCancellation.Token,
+                       _v2RequestCancellation.Token))
             {
                 timeout.CancelAfter(timeoutMs);
                 try
@@ -180,7 +186,8 @@ namespace AnimusForge.XihaiAction
             }
             session.PlanClassificationPending = true;
             session.ClassificationCancellation = CancellationTokenSource.CreateLinkedTokenSource(
-                _v2LifetimeCancellation.Token);
+                _v2LifetimeCancellation.Token,
+                _v2RequestCancellation.Token);
             session.ClassificationCancellation.CancelAfter(settings.ClassifierTimeoutMs);
             BattleSpeechPlanClassifierRequestV2 request = new BattleSpeechPlanClassifierRequestV2
             {
@@ -1023,8 +1030,30 @@ namespace AnimusForge.XihaiAction
             {
             }
             _v2LifetimeCancellation.Dispose();
+            try
+            {
+                _v2RequestCancellation.Cancel();
+            }
+            catch (ObjectDisposedException)
+            {
+            }
+            _v2RequestCancellation.Dispose();
             while (_triggerCompletions.TryDequeue(out _)) { }
             while (_planCompletions.TryDequeue(out _)) { }
+        }
+
+        private void ResetV2RequestCancellation()
+        {
+            CancellationTokenSource previous = _v2RequestCancellation;
+            try
+            {
+                previous.Cancel();
+            }
+            catch (ObjectDisposedException)
+            {
+            }
+            previous.Dispose();
+            _v2RequestCancellation = new CancellationTokenSource();
         }
 
         private sealed class BattleSpeechTriggerCompletionV2

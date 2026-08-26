@@ -37,8 +37,8 @@
     },
     {
       "path": "ModuleData/items.xml",
-      "size": 1955,
-      "sha256": "13F96782C583041E84E9FC2EC4F231AAF0AC2777E0F80C50806EE4858E76B70F"
+      "size": 2036,
+      "sha256": "C1CEBE7F89863004E3FB9DB91C8D6FC0B816C31F6876C1F66D40CFF84F42490C"
     },
     {
       "path": "ModuleData/Languages/CNs/language_data.xml",
@@ -97,8 +97,8 @@
     },
     {
       "path": "README.SceneActions.md",
-      "size": 30996,
-      "sha256": "7C9CA26B01E103C256F648EF0C4C2FF458E882FE7AEEAE219993E32F1981DAC4"
+      "size": 38264,
+      "sha256": "29AC8CBC7D8E532C1B9C1134F7973930EDFB234740E6113BACA3B06425FF99DA"
     },
     {
       "path": "RELEASE_MANIFEST.json",
