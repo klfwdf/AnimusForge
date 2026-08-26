@@ -65,6 +65,31 @@ internal static class SceneActionsIntegrationBoundary
         }
     }
 
+    internal static void RefreshMcmOverrides()
+    {
+        if (!_runtimeInitialized)
+        {
+            return;
+        }
+
+        try
+        {
+            if (SceneActionsRuntimeHost.IsInitialized &&
+                !SceneActionsRuntimeHost.RefreshMcmOverrides(out string sceneActionsMcmError))
+            {
+                SceneActionsLog.Warning("SCENE_ACTIONS_MCM", sceneActionsMcmError);
+            }
+            if (BattleSpeechRuntimeHost.IsInitialized &&
+                !BattleSpeechRuntimeHost.RefreshMcmOverrides(out string battleSpeechMcmError))
+            {
+                SceneActionsLog.Warning("BATTLE_SPEECH_MCM", battleSpeechMcmError);
+            }
+        }
+        catch (Exception ex)
+        {
+            SceneActionsLog.Error("MCM", "Integrated SceneActions MCM refresh failed closed.", ex);
+        }
+    }
     internal static void RegisterBeforeMissionInitialization(Mission mission)
     {
         if (!_runtimeInitialized || !SceneActionsRuntimeHost.IsInitialized || mission == null)
@@ -74,11 +99,7 @@ internal static class SceneActionsIntegrationBoundary
 
         try
         {
-            if (BattleSpeechRuntimeHost.IsInitialized &&
-                !BattleSpeechRuntimeHost.RefreshMcmOverrides(out string mcmError))
-            {
-                SceneActionsLog.Warning("BATTLE_SPEECH_MCM", mcmError);
-            }
+            RefreshMcmOverrides();
 
             if (mission.GetMissionBehavior<SceneActionsMissionBehavior>() == null)
             {
@@ -86,16 +107,13 @@ internal static class SceneActionsIntegrationBoundary
             }
             if (BattleSpeechRuntimeHost.IsInitialized &&
                 BattleSpeechRuntimeHost.ConfigurationValid &&
-                BattleSpeechRuntimeHost.Settings.Enabled &&
                 mission.GetMissionBehavior<BattleSpeechMissionBehavior>() == null)
             {
                 mission.AddMissionBehavior(new BattleSpeechMissionBehavior());
             }
             if (BattleSpeechRuntimeHost.IsInitialized &&
                 BattleSpeechRuntimeHost.ConfigurationValid &&
-                BattleSpeechRuntimeHost.Settings.Enabled &&
                 BattleSpeechRuntimeHost.PerformanceConfigurationValid &&
-                BattleSpeechRuntimeHost.PerformanceSettings.Enabled &&
                 mission.GetMissionBehavior<BattleSpeechPerformanceMissionBehavior>() == null)
             {
                 mission.AddMissionBehavior(new BattleSpeechPerformanceMissionBehavior());
@@ -124,8 +142,7 @@ internal static class SceneActionsIntegrationBoundary
             return;
         }
 
-        if (BattleSpeechRuntimeHost.ConfigurationValid &&
-            BattleSpeechRuntimeHost.Settings.Enabled)
+        if (BattleSpeechRuntimeHost.ConfigurationValid)
         {
             BattleSpeechMissionBehavior speech =
                 mission.GetMissionBehavior<BattleSpeechMissionBehavior>();

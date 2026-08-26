@@ -587,7 +587,12 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 			{
 				KillVillageNotables(village, "village_purge_colonization");
 			}
-			ApplyVillageCultureNow(village, targetCulture, clearVolunteerTypes: true, spawnReplacementNotables: mode == VillageCultureChangeMode.PurgeColonization);
+			ApplyVillageCultureNow(
+				village,
+				targetCulture,
+				clearVolunteerTypes: true,
+				spawnReplacementNotables: mode == VillageCultureChangeMode.PurgeColonization,
+				source: "village_" + mode);
 			ApplyOwnerRelation(mode == VillageCultureChangeMode.PurgeColonization
 				? VillageCultureChangeProfile.PurgeColonizationOwnerRelationDelta
 				: VillageCultureChangeProfile.MigrantResettlementOwnerRelationDelta);
@@ -641,7 +646,12 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 				CultureObject culture = Game.Current?.ObjectManager?.GetObject<CultureObject>(cultureId);
 				if (village?.IsVillage == true && culture != null)
 				{
-					ApplyVillageCultureNow(village, culture, clearVolunteerTypes: true, spawnReplacementNotables: false);
+					ApplyVillageCultureNow(
+						village,
+						culture,
+						clearVolunteerTypes: true,
+						spawnReplacementNotables: false,
+						source: "village_gradual_education_completed");
 					InformationManager.DisplayMessage(new InformationMessage(
 						"【GCCZ村庄】" + (village.Name?.ToString() ?? villageId) + "的教化改俗完成，文化已转为" + (culture.Name?.ToString() ?? culture.StringId) + "。",
 						Color.FromUint(SuccessColor)));
@@ -656,9 +666,14 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void ApplyVillageCultureNow(Settlement village, CultureObject targetCulture, bool clearVolunteerTypes, bool spawnReplacementNotables)
+	private static void ApplyVillageCultureNow(
+		Settlement village,
+		CultureObject targetCulture,
+		bool clearVolunteerTypes,
+		bool spawnReplacementNotables,
+		string source)
 	{
-		village.Culture = targetCulture;
+		GcczSettlementCulturePersistenceBehavior.ApplyAndRemember(village, targetCulture, source);
 		foreach (Hero notable in village.Notables?.Where(hero => hero != null && hero.IsAlive && hero.IsRuralNotable).ToList() ?? new List<Hero>())
 		{
 			notable.Culture = targetCulture;

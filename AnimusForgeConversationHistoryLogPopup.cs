@@ -25,6 +25,11 @@ public sealed class AnimusForgeConversationHistoryLogPopup
 
 	private bool _escapeWasDown;
 
+	// History remains alive beneath the encyclopedia so its formatted entries and scroll position return unchanged.
+	private bool _isSuspendedForEncyclopediaNavigation;
+	// Prevent the Escape release that closes the encyclopedia from immediately dismissing the restored history log.
+	private long _resumeInputGuardUntilUtcTicks;
+
 	public static bool IsOpen => _activePopup != null && !_activePopup._isClosed;
 
 	private AnimusForgeConversationHistoryLogPopup(ScreenBase screen, string targetName, Hero targetHero, CharacterObject targetCharacter, IReadOnlyList<AnimusForgeDialogueHistoryEntry> entries, Action onClose)
@@ -101,8 +106,20 @@ public sealed class AnimusForgeConversationHistoryLogPopup
 
 	private void Tick()
 	{
-		if (_isClosed)
+		if (_isClosed || _isSuspendedForEncyclopediaNavigation)
 		{
+			return;
+		}
+		if (IsResumeInputGuardActive())
+		{
+			try
+			{
+				// Keep the edge detector synchronized while the closing Escape key is still held.
+				_escapeWasDown = Input.IsKeyDown(InputKey.Escape);
+			}
+			catch
+			{
+			}
 			return;
 		}
 		try
@@ -130,6 +147,11 @@ public sealed class AnimusForgeConversationHistoryLogPopup
 		catch
 		{
 		}
+		if (!_isClosed)
+		{
+			// Preformat a few unseen page rows after input, keeping later page changes instant without delaying close/navigation.
+			_dataSource?.WarmDisplayCache();
+		}
 	}
 
 	private void HandleCloseRequested()
@@ -142,15 +164,63 @@ public sealed class AnimusForgeConversationHistoryLogPopup
 	{
 		if (!_isClosed)
 		{
-			EncyclopediaEntityLinkNavigationCoordinator.Request(link, CloseForEncyclopediaNavigation);
+			EncyclopediaEntityLinkNavigationCoordinator.Request(link, SuspendForEncyclopediaNavigation, ResumeAfterEncyclopediaNavigation);
 		}
 	}
 
-	private void CloseForEncyclopediaNavigation()
+	private void SuspendForEncyclopediaNavigation()
 	{
-		// Do not invoke _onClose here: it restores the native overlay, which would otherwise cover the encyclopedia layer.
-		Close(silent: true);
-		AnimusForgeNativeConversationOverlay.CloseActive();
+		if (_isClosed || _isSuspendedForEncyclopediaNavigation)
+		{
+			return;
+		}
+		try
+		{
+			// Suspend instead of finalizing: the parent conversation overlay stays hidden until this child actually closes.
+			_layer.InputRestrictions.ResetInputRestrictions();
+			_layer.IsFocusLayer = false;
+			ScreenManager.TryLoseFocus(_layer);
+			ScreenManager.SetSuspendLayer(_layer, isSuspended: true);
+			_isSuspendedForEncyclopediaNavigation = true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NativeConversationHistory", "[WARN] Failed to suspend history for encyclopedia: " + ex.Message);
+		}
+	}
+
+	private void ResumeAfterEncyclopediaNavigation()
+	{
+		if (_isClosed || !_isSuspendedForEncyclopediaNavigation)
+		{
+			return;
+		}
+		if (!ReferenceEquals(ScreenManager.TopScreen, _screen))
+		{
+			// The conversation screen changed while the encyclopedia was open, so dispose without restoring a stale child modal.
+			Close(silent: true);
+			return;
+		}
+		try
+		{
+			// Official layer suspension retains the movie/VM state and makes the history modal focusable again.
+			ScreenManager.SetSuspendLayer(_layer, isSuspended: false);
+			_layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.All);
+			_layer.IsFocusLayer = true;
+			ScreenManager.TrySetFocus(_layer);
+			_isSuspendedForEncyclopediaNavigation = false;
+			_resumeInputGuardUntilUtcTicks = DateTime.UtcNow.AddMilliseconds(350.0).Ticks;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NativeConversationHistory", "[WARN] Failed to restore history after encyclopedia: " + ex.Message);
+			Close(silent: true);
+		}
+	}
+
+	private bool IsResumeInputGuardActive()
+	{
+		return _resumeInputGuardUntilUtcTicks > DateTime.UtcNow.Ticks;
 	}
 
 	private void Close(bool silent)
@@ -160,6 +230,8 @@ public sealed class AnimusForgeConversationHistoryLogPopup
 			return;
 		}
 		_isClosed = true;
+		// A terminal close cancels any outstanding encyclopedia-return state.
+		_isSuspendedForEncyclopediaNavigation = false;
 		try
 		{
 			_layer.InputRestrictions.ResetInputRestrictions();
@@ -180,6 +252,8 @@ public sealed class AnimusForgeConversationHistoryLogPopup
 				Logger.Log("NativeConversationHistory", "[WARN] Failed to remove history log layer: " + ex.Message);
 			}
 		}
+		// Stop idle work before finalizing so a closed popup cannot retain history or campaign entity references.
+		_dataSource?.CancelDeferredFormatting();
 		_dataSource?.OnFinalize();
 		if (ReferenceEquals(_activePopup, this))
 		{

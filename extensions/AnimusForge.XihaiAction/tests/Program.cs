@@ -42,6 +42,8 @@ internal static class Program
             TestBattleSpeechFrozenProgramPlan);
         Run("Battle speech performance settings fail closed outside safe bounds",
             TestBattleSpeechPerformanceSettings);
+        Run("Battle speech spoken replies have an independent per-tick budget",
+            TestBattleSpeechReplyTickBudget);
         Run("ForceExact uses one leading ASCII star", TestForceExact);
         Run("ForceExact routes self and framed targets", TestForceExactTargetRouting);
         Run("Framework V1 freezes exactly eight logical actions", TestFrameworkV1);
@@ -73,6 +75,8 @@ internal static class Program
             TestV2ExtendedActionMatrix);
         Run("V2 classifier program protocol is strict and normalized",
             TestV2ProgramProtocol);
+        Run("Battle speech diversity blocks repeated bodies and enriches prompts",
+            TestBattleSpeechDiversity);
         Run("Natural multi-action text requests a frozen AI program",
             TestV2NaturalProgramFallback);
         Run("Kneel dual-layer programs normalize and degrade deterministically",
@@ -2943,6 +2947,12 @@ internal static class Program
     {
         BattleSpeechSettingsV1 settings = new BattleSpeechSettingsV1();
         Equal(0, settings.Validate().Count);
+        Equal(10f, settings.EnemyInterruptRadiusMeters);
+        Equal(0.4f, settings.EnemyScanIntervalSeconds);
+        True(!BattleSpeechFrameworkV2.ShouldSubmitAudienceVisuals(true, true));
+        True(!BattleSpeechFrameworkV2.ShouldPlayAudienceVoices(true, true));
+        True(!BattleSpeechFrameworkV2.ShouldIssueTacticalAdvance(true, true));
+        True(BattleSpeechFrameworkV2.ShouldSubmitAudienceVisuals(false, true));
         Equal(6f, BattleSpeechFrameworkV1.EstimateDurationSeconds("短句", settings));
         Equal(
             45f,
@@ -3167,6 +3177,19 @@ internal static class Program
         True(settings.Validate().Count > 0);
     }
 
+    private static void TestBattleSpeechReplyTickBudget()
+    {
+        BattleSpeechStageSettingsV2 settings = new BattleSpeechStageSettingsV2();
+        Equal(8, settings.MaximumAudienceReplySubmissionsPerTick);
+        Equal(0, settings.Validate().Count);
+        settings.MaximumAudienceReplySubmissionsPerTick = 1;
+        True(settings.Validate().Count > 0);
+        settings.MaximumAudienceReplySubmissionsPerTick = 20;
+        Equal(0, settings.Validate().Count);
+        settings.MaximumAudienceReplySubmissionsPerTick = 21;
+        True(settings.Validate().Count > 0);
+    }
+
     private static void TestBattleSpeechV2NaturalTriggers()
     {
         foreach (string text in new[]
@@ -3174,12 +3197,11 @@ internal static class Program
             "来给大家讲俩句",
             "你去给弟兄们说几句",
             "上前鼓舞一下全军",
-            "麻烦向将士们作个战前动员",
-            "你来向士兵们演讲"
+            "麻烦向将士们作个战前动员"
         })
         {
             Equal(
-                BattleSpeechTriggerKindV2.RequestNpcSpeech,
+                BattleSpeechTriggerKindV2.NeedsClassifier,
                 BattleSpeechFrameworkV2.ParsePlayerShout(text).Kind);
         }
 
@@ -3199,10 +3221,10 @@ internal static class Program
             "不要害怕，如果他们冲上来就守住阵线！",
             inlineWithSafetyWords.SpeechText);
         Equal(
-            BattleSpeechTriggerKindV2.RequestNpcSpeech,
+            BattleSpeechTriggerKindV2.NeedsClassifier,
             BattleSpeechFrameworkV2.ParsePlayerShout("你能不能给大家说几句").Kind);
         Equal(
-            BattleSpeechTriggerKindV2.RequestNpcSpeech,
+            BattleSpeechTriggerKindV2.NeedsClassifier,
             BattleSpeechFrameworkV2.ParsePlayerShout(
                 "给大家讲俩句，演讲：用悲壮但坚定的风格鼓舞士气").Kind);
 
@@ -3292,11 +3314,10 @@ internal static class Program
             "强制指令框选目标演讲：保持阵线！"
         })
         {
-            BattleSpeechTriggerDecisionV2 forcedNpc =
+            BattleSpeechTriggerDecisionV2 formerNpc =
                 BattleSpeechFrameworkV2.ParsePlayerShout(text);
-            Equal(BattleSpeechTriggerKindV2.RequestNpcSpeech, forcedNpc.Kind);
-            True(forcedNpc.Force);
-            True(!string.IsNullOrWhiteSpace(forcedNpc.SpeechText));
+            True(formerNpc.Kind != BattleSpeechTriggerKindV2.RequestNpcSpeech);
+            True(!formerNpc.Force);
         }
 
         BattleSpeechTriggerDecisionV2 forcedDefault =
@@ -3317,10 +3338,10 @@ internal static class Program
         Equal(BattleSpeechTriggerKindV2.DeliverPlayerSpeech, shortForcedSelf.Kind);
         True(shortForcedSelf.Force);
 
-        BattleSpeechTriggerDecisionV2 ordinaryNpc =
+        BattleSpeechTriggerDecisionV2 formerNpcRequest =
             BattleSpeechFrameworkV2.ParsePlayerShout("你来向士兵们演讲");
-        Equal(BattleSpeechTriggerKindV2.RequestNpcSpeech, ordinaryNpc.Kind);
-        True(!ordinaryNpc.Force);
+        True(formerNpcRequest.Kind != BattleSpeechTriggerKindV2.RequestNpcSpeech);
+        True(!formerNpcRequest.Force);
 
         foreach (string text in new[]
         {
@@ -3351,18 +3372,18 @@ internal static class Program
             "弟兄们，身后就是家园，稳住阵线，准备前进！",
             direct.SpeechText);
 
-        BattleSpeechTriggerDecisionV2 npc =
+        BattleSpeechTriggerDecisionV2 formerNpc =
             BattleSpeechFrameworkV2.ParseDedicatedSpeechInput(
                 "你演讲：围绕守住城门鼓舞士气");
+        Equal(BattleSpeechTriggerKindV2.DeliverPlayerSpeech, formerNpc.Kind);
+        True(!formerNpc.Force);
+        Equal("你演讲：围绕守住城门鼓舞士气", formerNpc.SpeechText);
+
+        BattleSpeechTriggerDecisionV2 npc =
+            BattleSpeechFrameworkV2.ParseDedicatedNpcSpeechInput();
         Equal(BattleSpeechTriggerKindV2.RequestNpcSpeech, npc.Kind);
         True(npc.Force);
-        Equal("围绕守住城门鼓舞士气", npc.SpeechText);
-
-        BattleSpeechTriggerDecisionV2 npcAuto =
-            BattleSpeechFrameworkV2.ParseDedicatedSpeechInput("你演讲：");
-        Equal(BattleSpeechTriggerKindV2.RequestNpcSpeech, npcAuto.Kind);
-        True(npcAuto.Force);
-        True(string.IsNullOrWhiteSpace(npcAuto.Reason));
+        True(string.IsNullOrWhiteSpace(npc.SpeechText));
 
         BattleSpeechTriggerDecisionV2 cancel =
             BattleSpeechFrameworkV2.ParseDedicatedSpeechInput("取消阵前演讲");
@@ -3397,9 +3418,9 @@ internal static class Program
         foreach (string request in requests)
         {
             string text = opener + audience + request + "，让队列里的每个人都听清楚";
-            Equal(
-                BattleSpeechTriggerKindV2.RequestNpcSpeech,
-                BattleSpeechFrameworkV2.ParsePlayerShout(text).Kind);
+            True(
+                BattleSpeechFrameworkV2.ParsePlayerShout(text).Kind !=
+                BattleSpeechTriggerKindV2.RequestNpcSpeech);
             checkedCount++;
         }
         Equal(1000, checkedCount);
@@ -3407,10 +3428,10 @@ internal static class Program
 
     private static void TestBattleSpeechV2ClassifierProtocols()
     {
-        True(BattleSpeechFrameworkV2.TryParseTriggerClassifierOutput(
+        True(!BattleSpeechFrameworkV2.TryParseTriggerClassifierOutput(
             "NPC_SPEECH",
             out BattleSpeechTriggerKindV2 npc));
-        Equal(BattleSpeechTriggerKindV2.RequestNpcSpeech, npc);
+        Equal(BattleSpeechTriggerKindV2.None, npc);
         True(BattleSpeechFrameworkV2.TryParseTriggerClassifierOutput(
             "ORDINARY_SCENE",
             out BattleSpeechTriggerKindV2 ordinary));
@@ -3431,6 +3452,86 @@ internal static class Program
         Equal("为了胜利！", plan.AudienceReplies[0]);
 
         True(BattleSpeechFrameworkV2.TryParsePlanClassifierOutput(
+            "ACTIONS NONE\nTACTIC NONE\n" +
+            "REPLIES  稳住左翼，别让敌人撕开。 | 先看清敌旗，再压上去。 | 盾牌靠紧，别留缝隙。",
+            out BattleSpeechPlanDecisionV2 whitespacePlan,
+            out string whitespaceError));
+        Equal(null, whitespaceError);
+        Equal(3, whitespacePlan.AudienceReplies.Count);
+        Equal("稳住左翼，别让敌人撕开。", whitespacePlan.AudienceReplies[0]);
+        Equal("盾牌靠紧，别留缝隙。", whitespacePlan.AudienceReplies[2]);
+
+        string combinedOutput =
+            "SPEECH_BEGIN\n" +
+            "北坡的尘土已经遮住敌人的旗，盾牌靠紧，别让他们撕开左翼！\n" +
+            "SPEECH_END\n" +
+            "ACTIONS PLAY_PROGRAM explain>command\n" +
+            "TACTIC NONE\n" +
+            "REPLIES 北坡不能丢，盾牌靠紧！|我有点怕，但我不会逃！";
+        True(BattleSpeechFrameworkV2.TryParseCombinedNpcSpeechOutput(
+            combinedOutput,
+            20,
+            60,
+            new[] { "explain", "command" },
+            2,
+            out BattleSpeechCombinedNpcResponseV2 combined,
+            out string combinedError));
+        Equal(null, combinedError);
+        Equal("explain>command", combined.Plan.ActionProgram.ProtocolExpression);
+        Equal(2, combined.Plan.AudienceReplies.Count);
+        True(BattleSpeechFrameworkV2.TryParseCombinedNpcSpeechOutput(
+            combinedOutput.Replace(
+                "北坡不能丢，盾牌靠紧！|我有点怕，但我不会逃！",
+                "盾牌靠紧，别让左翼被撕开！|我有点怕，但我会跟上！"),
+            20,
+            60,
+            new[] { "explain", "command" },
+            2,
+            10,
+            20,
+            out _,
+            out _));
+        True(!BattleSpeechFrameworkV2.TryParseCombinedNpcSpeechOutput(
+            combinedOutput.Replace("REPLIES 北坡不能丢，盾牌靠紧！|我有点怕，但我不会逃！", "REPLIES 重复|重复"),
+            20,
+            60,
+            new[] { "explain", "command" },
+            2,
+            out _,
+            out _));
+        string malformedMultiAction = combinedOutput.Replace(
+            "ACTIONS PLAY_PROGRAM explain>command",
+            "ACTIONS PLAY_ACTION explain>command");
+        True(BattleSpeechFrameworkV2.TryParseCombinedNpcSpeechOutput(
+            malformedMultiAction,
+            20,
+            60,
+            new[] { "explain", "command" },
+            2,
+            out BattleSpeechCombinedNpcResponseV2 repairedCombined,
+            out _));
+        Equal("explain>command", repairedCombined.Plan.ActionProgram.ProtocolExpression);
+
+        string repeatedActionMarkers =
+            "[REASONING]\n模型内部说明\n[CONTENT]\n" +
+            combinedOutput.Replace(
+                "ACTIONS PLAY_PROGRAM explain>command",
+                "ACTIONS PLAY_ACTION explain > PLAY_ACTION command") +
+            "\n----\n";
+        True(BattleSpeechFrameworkV2.TryParseCombinedNpcSpeechOutput(
+            repeatedActionMarkers,
+            20,
+            60,
+            new[] { "explain", "command" },
+            2,
+            out BattleSpeechCombinedNpcResponseV2 wrappedCombined,
+            out string wrappedError));
+        Equal(null, wrappedError);
+        Equal("explain>command", wrappedCombined.Plan.ActionProgram.ProtocolExpression);
+        Equal("北坡的尘土已经遮住敌人的旗，盾牌靠紧，别让他们撕开左翼！",
+            wrappedCombined.SpeechText);
+
+        True(BattleSpeechFrameworkV2.TryParsePlanClassifierOutput(
             "ACTIONS NONE\nTACTIC NONE",
             out BattleSpeechPlanDecisionV2 none,
             out _));
@@ -3445,8 +3546,7 @@ internal static class Program
             "ACTIONS PLAY_ACTION explain TACTIC ADVANCE",
             "ACTIONS PLAY_ACTION explain\nTACTIC ADVANCE\nEXTRA",
             "ACTIONS NONE\nTACTIC NONE\nREPLIES 重复|重复",
-            "ACTIONS NONE\nTACTIC NONE\nREPLIES *挥手*",
-            "ACTIONS NONE\nTACTIC NONE\nREPLIES 一|二|三|四|五|六|七|八|九|十|十一|十二|十三|十四|十五|十六|十七|十八|十九|二十|二十一|二十二|二十三|二十四|二十五"
+            "ACTIONS NONE\nTACTIC NONE\nREPLIES *挥手*"
         })
         {
             True(!BattleSpeechFrameworkV2.TryParsePlanClassifierOutput(
@@ -3454,6 +3554,14 @@ internal static class Program
                 out _,
                 out _));
         }
+        Equal(
+            BattleSpeechTriggerKindV2.None,
+            BattleSpeechFrameworkV2.ParsePlayerShout("你来向士兵们演讲").Kind);
+        True(!BattleSpeechFrameworkV2.TryParsePlanClassifierOutput(
+            "ACTIONS NONE\nTACTIC NONE\nREPLIES " +
+            string.Join("|", Enumerable.Range(0, 101).Select(index => "回应" + index)),
+            out _,
+            out _));
 
         True(BattleSpeechFrameworkV2.TryResolveLocalActionProgram(
             "他讲到一半抬手指向远处的山脊，然后继续说下去。",
@@ -3491,21 +3599,82 @@ internal static class Program
     {
         BattleSpeechStageSettingsV2 settings = new BattleSpeechStageSettingsV2();
         Equal(0, settings.Validate().Count);
-        Equal(20, settings.ReplyMinimumChars);
-        Equal(60, settings.ReplyMaximumChars);
+        Equal(60, settings.ReplyMinimumChars);
+        Equal(160, settings.ReplyMaximumChars);
         Equal(10f, settings.FrontDistanceMeters);
         Equal(22, settings.AudienceVoiceCount);
-        Equal(16, settings.AudienceReplyCount);
+        Equal(24, settings.AudienceReplyCount);
         Equal(1.1f, settings.AudienceReplyIntervalSeconds);
+        Equal(5, settings.AudienceReplyWaveSize);
+        Equal(8, settings.AudienceReplyMinimumChars);
+        Equal(24, settings.AudienceReplyMaximumChars);
+        Equal(0.2f, settings.AudienceReplyMinimumIntervalSeconds);
+        Equal(0.5f, settings.AudienceReplyMaximumIntervalSeconds);
+        settings.AudienceReplyCount = 100;
+        settings.AudienceReplyWaveSize = 20;
+        settings.AudienceReplyMinimumChars = 10;
+        settings.AudienceReplyMaximumChars = 30;
+        Equal(0, settings.Validate().Count);
+        settings.AudienceReplyCount = 101;
+        True(settings.Validate().Count > 0);
+        settings.AudienceReplyCount = 100;
+        settings.AudienceReplyWaveSize = 21;
+        True(settings.Validate().Count > 0);
+        settings.AudienceReplyWaveSize = 20;
+        settings.AudienceReplyMaximumChars = 9;
+        True(settings.Validate().Count > 0);
+        settings.AudienceReplyMaximumChars = 30;
+        Equal(2, BattleSpeechFrameworkV2.ResolveAudienceReplyCount(true, 1, 10));
+        Equal(2, BattleSpeechFrameworkV2.ResolveAudienceReplyWaveSize(2, 5));
+        double delayA = BattleSpeechFrameworkV2.ResolveAudienceReplyWaveDelaySeconds(
+            Guid.Parse("11111111-1111-1111-1111-111111111111"), 0, 0.1f, 0.5f);
+        double delayB = BattleSpeechFrameworkV2.ResolveAudienceReplyWaveDelaySeconds(
+            Guid.Parse("11111111-1111-1111-1111-111111111111"), 0, 0.1f, 0.5f);
+        Equal(delayA, delayB);
+        True(delayA >= 0.1d && delayA <= 0.5d);
+        int randomWave = BattleSpeechFrameworkV2.ResolveAudienceReplyWaveSize(
+            Guid.Parse("11111111-1111-1111-1111-111111111111"),
+            0,
+            8,
+            8);
+        True(randomWave >= 2 && randomWave <= 8);
+        HashSet<int> observedWaveSizes = new HashSet<int>();
+        for (int waveIndex = 0; waveIndex < 12; waveIndex++)
+        {
+            observedWaveSizes.Add(BattleSpeechFrameworkV2.ResolveAudienceReplyWaveSize(
+                Guid.Parse("11111111-1111-1111-1111-111111111111"),
+                waveIndex,
+                8,
+                24));
+        }
+        True(observedWaveSizes.Count > 1);
+        for (int remaining = 2; remaining <= 24; remaining++)
+        {
+            for (int waveIndex = 0; waveIndex < 12; waveIndex++)
+            {
+                int wave = BattleSpeechFrameworkV2.ResolveAudienceReplyWaveSize(
+                    Guid.Parse("11111111-1111-1111-1111-111111111111"),
+                    waveIndex,
+                    20,
+                    remaining);
+                True(wave >= 2 && wave <= 20 && wave <= remaining);
+                True(wave == remaining || remaining - wave >= 2);
+            }
+        }
         Equal(1.8f, settings.TacticalAdvanceDelaySeconds);
         True(!settings.MountedPacingEnabled);
         True(!settings.InfantryPacingEnabled);
         Equal(4, BattleSpeechFrameworkV2.BuildFallbackAudienceReplies(
             "为了家园而战！",
             4).Count);
-        Equal(24, BattleSpeechFrameworkV2.BuildFallbackAudienceReplies(
-            "Stand together!",
-            99).Count);
+        Equal(100, BattleSpeechFrameworkV2.BuildFallbackAudienceReplies(
+            "为了阵线！",
+            100).Count);
+        True(BattleSpeechFrameworkV2.BuildFallbackAudienceReplies(
+            "为了阵线！",
+            20,
+            10,
+            18).All(reply => reply.Length >= 10 && reply.Length <= 18));
         True(BattleSpeechFrameworkV2.ShouldOpenAudienceResponse(
             true,
             0,
@@ -3517,25 +3686,108 @@ internal static class Program
             6,
             true));
         True(BattleSpeechFrameworkV2.ShouldOpenAudienceResponse(
+            false,
+            0,
+            6,
+            false,
+            allowDuringSpeech: true));
+        True(BattleSpeechFrameworkV2.ShouldOpenAudienceResponse(
             true,
             6,
             6,
             false));
+        True(!BattleSpeechFrameworkV2.ShouldIssueTacticalAdvance(
+            false,
+            false,
+            true));
+        True(BattleSpeechFrameworkV2.ShouldIssueTacticalAdvance(
+            true,
+            false,
+            true));
         True(BattleSpeechFrameworkV2.MountedNpcSpeechSupported);
         string prompt = BattleSpeechFrameworkV2.BuildNpcSpeechPromptInstruction(20, 60);
         True(prompt.Contains("面向己方全体士兵"));
         True(prompt.Contains("不是在回答或表演给玩家看"));
         True(prompt.Contains("沿用当前场景喊话已经提供的"));
-        True(prompt.Contains("冒号后的内容只是主题或风格要求"));
+        True(prompt.Contains("主题或风格要求只用于确定动员重点"));
+        True(prompt.Contains("具体战场细节"));
+        True(prompt.Contains("敌军所在方向或位置、地形、天气"));
+        True(prompt.Contains("性格、身份和当前情绪"));
+        True(prompt.Contains("我方兵力明显占优时用鼓舞或坚定"));
+        True(prompt.Contains("敌人逼近或已经交战时用冷静、愤怒或坚定"));
+        True(prompt.Contains("愤怒、悲壮、冷静、嘲讽、坚定或鼓舞"));
+        True(prompt.Contains("不要统一写成‘全军前进’"));
         True(prompt.Contains("不得为了凑字重复同一句、同一短语"));
         True(prompt.Contains("不得强制套用固定称呼"));
+        True(prompt.Contains("一段连续口语"));
+        True(prompt.Contains("最多使用两个事实"));
+        True(prompt.Contains("玩家姓名"));
         True(!prompt.Contains("合格示例"));
         True(!prompt.Contains("握紧兵刃"));
         True(prompt.Contains("正文长度必须为20至60个可见字符"));
+        True(prompt.Contains("演讲内容最终优先级"));
+        True(prompt.Contains("PlayerCustomPromptRule"));
+        BattleSpeechBattlefieldFactsV1 facts = new BattleSpeechBattlefieldFactsV1(
+            65,
+            40,
+            12,
+            30,
+            false,
+            false,
+            "野战",
+            "战斗阶段");
+        string factsBlock = facts.ToPromptBlock();
+        True(factsBlock.Contains("我方当前有效人类约65人"));
+        True(factsBlock.Contains("敌方当前有效人类约40人"));
+        True(factsBlock.Contains("本模组记录的战斗中减员"));
+        True(factsBlock.Contains("程序事实，不是预先给出的主题结论"));
+        True(!factsBlock.Contains("主风格：鼓舞"));
+        string factsPrompt = BattleSpeechFrameworkV2.BuildNpcSpeechPromptInstruction(
+            20,
+            60,
+            null,
+            0,
+            facts);
+        True(factsPrompt.Contains("当前战场事实快照"));
+        True(factsPrompt.Contains("我方当前有效人类约65人"));
+        True(factsPrompt.Contains("明确要求悲壮、鼓舞、冷静、坚定、愤怒或嘲讽等文风，优先遵守"));
+        True(!factsPrompt.Contains("THEME"));
+        True(!factsPrompt.Contains("TONE"));
+        BattleSpeechBattlefieldFactsV1 unknownFacts = new BattleSpeechBattlefieldFactsV1(
+            -1,
+            -1,
+            -1,
+            -1,
+            true,
+            true,
+            "野战",
+            "战斗阶段");
+        string unknownFactsBlock = unknownFacts.ToPromptBlock();
+        True(!unknownFactsBlock.Contains("约-1人"));
+        True(unknownFactsBlock.Contains("敌人是否已接近演讲者：是"));
+        string combinedPrompt = BattleSpeechFrameworkV2.BuildCombinedNpcSpeechPromptInstruction(
+            20,
+            60,
+            new[] { "explain", "command" },
+            2);
+        True(combinedPrompt.Contains("SPEECH_BEGIN"));
+        True(combinedPrompt.Contains("TACTIC只能输出NONE或ADVANCE"));
+        True(combinedPrompt.Contains("不同现场士兵"));
+        True(combinedPrompt.Contains("必须使用简体中文"));
+        True(combinedPrompt.Contains("双方接近时用冷静或坚定"));
+        True(combinedPrompt.Contains("输出必须严格为六行"));
+        True(combinedPrompt.Contains("REPLIES <短句1>|<短句2>"));
+        string noAudienceRepliesPrompt =
+            BattleSpeechFrameworkV2.BuildCombinedNpcSpeechPromptInstruction(
+                20,
+                60,
+                new[] { "explain" },
+                0);
+        True(noAudienceRepliesPrompt.Contains("REPLIES NONE"));
         Throws<ArgumentOutOfRangeException>(() =>
             BattleSpeechFrameworkV2.BuildNpcSpeechPromptInstruction(5, 30));
         Throws<ArgumentOutOfRangeException>(() =>
-            BattleSpeechFrameworkV2.BuildNpcSpeechPromptInstruction(20, 81));
+            BattleSpeechFrameworkV2.BuildNpcSpeechPromptInstruction(20, 161));
         Equal(
             "弟兄们，敌人就在前方！握紧兵刃，随我杀敌！",
             BattleSpeechFrameworkV2.NormalizeNpcSpeechReply(
@@ -3550,6 +3802,21 @@ internal static class Program
                 naturalGeneratedSpeech,
                 20,
                 60));
+        Equal(
+            "北坡的尘土遮住了敌旗，盾牌靠紧，听我号令一起向前！",
+            BattleSpeechFrameworkV2.ExtractSpeechBodyForFallback(
+                "[REASONING]\nEnglish reasoning\n[CONTENT]\nSPEECH_BEGIN\n" +
+                "北坡的尘土遮住了敌旗，盾牌靠紧，听我号令一起向前！\n" +
+                "SPEECH_END\nACTIONS PLAY_ACTION command>follow_me\nTACTIC ADVANCE"));
+        string localizedFallback = BattleSpeechFrameworkV2.NormalizeNpcSpeechReply(
+            "English reasoning and speech body",
+            20,
+            60);
+        True(localizedFallback.Length >= 20 && localizedFallback.Length <= 60);
+        True(localizedFallback.Any(character => character >= '\u4e00' && character <= '\u9fff'));
+        True(!localizedFallback.Contains("English", StringComparison.OrdinalIgnoreCase));
+        True(!localizedFallback.Contains("SPEECH_BEGIN", StringComparison.Ordinal));
+        True(!localizedFallback.Contains("TACTIC", StringComparison.Ordinal));
         string repaired = BattleSpeechFrameworkV2.NormalizeNpcSpeechReply(
             "*向玩家行礼*大人，我只是个拿赏金办事的士兵，听凭您的调遣！",
             30,
@@ -3557,6 +3824,53 @@ internal static class Program
         Equal(30, repaired.Length);
         True(!repaired.Contains("大人") && !repaired.Contains("玩家"));
         True(!repaired.Contains("握紧兵刃，守住阵线，握紧兵刃"));
+        string thirdPersonTitle =
+            "兄弟们，看看加尼密诺斯大人骑着马守在前方，先看清敌旗再稳住阵线！";
+        Equal(
+            thirdPersonTitle,
+            BattleSpeechFrameworkV2.NormalizeNpcSpeechReply(
+                thirdPersonTitle,
+                20,
+                60));
+        string directTitle = BattleSpeechFrameworkV2.NormalizeNpcSpeechReply(
+            "大人，请听我把前方的敌情说完，再决定是否推进。",
+            20,
+            60,
+            out string directTitleReason);
+        Equal("direct_player_address", directTitleReason);
+        True(!directTitle.Contains("大人"));
+        string playerNameFiltered = BattleSpeechFrameworkV2.NormalizeNpcSpeechReply(
+            "兄弟们，别看加尼密诺斯，先看前方的敌旗，稳住你们的队形！",
+            20,
+            60,
+            new[] { "加尼密诺斯" },
+            out string playerNameReason);
+        Equal("player_name", playerNameReason);
+        True(!playerNameFiltered.Contains("加尼密诺斯"));
+        string metaFallback = BattleSpeechFrameworkV2.NormalizeNpcSpeechReply(
+            "下面是10段可用于测试的阵前演讲正文。第一段：兄弟们，稳住阵线，听我号令！",
+            20,
+            60,
+            out string metaFallbackReason);
+        Equal("meta_or_test_text", metaFallbackReason);
+        True(!metaFallback.Contains("下面是"));
+        string scenicFallback = BattleSpeechFrameworkV2.NormalizeNpcSpeechReply(
+            "弟兄们，看看这平原上的晨光，还有身后的俘虏和旗帜。大家打起精神，继续行军！",
+            20,
+            160,
+            out string scenicFallbackReason);
+        Equal("scenic_opening", scenicFallbackReason);
+        True(!scenicFallback.Contains("看看这平原上的晨光"));
+        IReadOnlyList<string> localFallbackVariants =
+            BattleSpeechFrameworkV2.GetLocalFallbackSpeechVariants();
+        Equal(6, localFallbackVariants.Count);
+        Equal(6, localFallbackVariants.Distinct(StringComparer.Ordinal).Count());
+        foreach (string variant in localFallbackVariants)
+        {
+            True(variant.Length >= 60 && variant.Length <= 160);
+            True(!variant.Contains("玩家"));
+            True(!variant.Contains("下面是"));
+        }
         for (int exactLength = 6; exactLength <= 30; exactLength++)
         {
             string boundedFallback = BattleSpeechFrameworkV2.NormalizeNpcSpeechReply(
@@ -3695,6 +4009,53 @@ internal static class Program
             ValidationReportId = "report-001",
             ActionIds = new[] { "act_wave" }
         };
+    }
+
+    private static void TestBattleSpeechDiversity()
+    {
+        const string first = "北坡的雨水正在浸透泥地，盾牌靠紧，等我举旗便压住左翼。";
+        const string repeated = "北坡的雨水正在浸透泥地，盾牌靠紧，等我举旗便压住左翼。";
+        const string nearRepeated = "北坡的雨水正在浸透泥地，盾牌靠紧，等我举旗便压住左翼；不要让缺口被敌人撕开。";
+        const string different = "看那片被烟尘遮住的浅滩，敌人的骑手会从那里绕来；弓手先稳住呼吸，步卒守住缺口。";
+        True(BattleSpeechDiversityV1.Similarity(first, repeated) >= 0.99d);
+        True(BattleSpeechDiversityV1.IsTooSimilar(
+            repeated,
+            new[] { first },
+            out double repeatedScore));
+        True(repeatedScore >= BattleSpeechDiversityV1.DefaultSimilarityThreshold);
+        True(BattleSpeechDiversityV1.IsTooSimilar(
+            nearRepeated,
+            new[] { first },
+            out double nearRepeatedScore));
+        True(nearRepeatedScore >= BattleSpeechDiversityV1.DefaultSimilarityThreshold);
+        True(BattleSpeechDiversityV1.IsExactRepeat(
+            repeated,
+            new[] { first },
+            out double exactScore));
+        Equal(1d, exactScore);
+        True(!BattleSpeechDiversityV1.IsExactRepeat(
+            nearRepeated,
+            new[] { first },
+            out double nonExactScore));
+        Equal(0d, nonExactScore);
+        True(!BattleSpeechDiversityV1.IsTooSimilar(
+            different,
+            new[] { first },
+            out double differentScore));
+        True(differentScore < BattleSpeechDiversityV1.DefaultSimilarityThreshold);
+        string instruction = BattleSpeechDiversityV1.BuildAvoidanceInstruction(new[] { first });
+        True(instruction.Contains("不得复用"));
+        string prompt = BattleSpeechFrameworkV2.BuildCombinedNpcSpeechPromptInstruction(
+            20,
+            60,
+            new[] { "command" },
+            2,
+            8,
+            24,
+            new[] { first },
+            1);
+        True(prompt.Contains("历史正文完全重复"));
+        True(prompt.Contains("北坡的雨水正在浸透泥地"));
     }
 
     private static void TestKneelLoopOnly()

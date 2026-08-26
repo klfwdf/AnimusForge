@@ -3570,6 +3570,29 @@ public class ShoutBehavior : CampaignBehaviorBase
 		EnqueuePendingSceneDialogueFeed(agentIndex, npcDisplayName, content, new Color(1f, 0.8f, 0.2f), flag, executeAtMissionTime);
 	}
 
+	// BattleSpeech publishes its body immediately in the AF message feed. The
+	// normal scene-shout path waits for TTS completion, which is appropriate for
+	// ordinary replies but makes a long battle speech appear to be missing from
+	// the lower-left feed while its world bubble is already visible.
+	internal void PublishBattleSpeechMessageFeed(NpcDataPacket npc, Agent liveAgent, string content)
+	{
+		if (!CanAgentParticipateInSceneSpeech(liveAgent) || liveAgent.Index < 0)
+		{
+			return;
+		}
+		string text = SanitizeSceneSpeechText(content);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return;
+		}
+		string speakerLabel = GetSceneNpcHistoryNameForPrompt(npc);
+		ClearPendingSceneDialogueFeedForAgent(liveAgent.Index);
+		RecordSceneDialogueToMessageFeed(
+			speakerLabel,
+			text,
+			new Color(1f, 0.8f, 0.2f));
+	}
+
 	private SceneSpeechPlaybackInfo ShowNpcSpeechOutput(NpcDataPacket npc, Agent liveAgent, string content, bool allowTts = true, bool attachTtsToSceneAgent = true, bool suppressInteractionTimeoutArm = false)
 	{
 		SceneSpeechPlaybackInfo sceneSpeechPlaybackInfo = new SceneSpeechPlaybackInfo();
@@ -13918,12 +13941,27 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	// Builds a UI-only RichText copy after the raw reply has already completed its LLM/history/TTS pipeline.
+	// Builds a UI-only RichText copy from a completed main/final reply; callers must never pass incomplete stream fragments.
 	public static string FormatNativeConversationDisplayTextForExternal(string rawVisibleText)
 	{
 		try
 		{
 			TryResolveNativeConversationTarget(out var targetHero, out var targetCharacter, out var _);
+			return FormatNativeConversationDisplayTextForExternal(rawVisibleText, targetHero, targetCharacter);
+		}
+		catch (Exception ex)
+		{
+			// A display-only failure must fall back to safe plain text and never invalidate a completed dialogue turn.
+			Logger.LogTrace("NativeConversation", "[WARN] Could not format encyclopedia links for a visible reply: " + ex.Message);
+			return EncyclopediaEntityLinkFormatter.SanitizeUntrustedRichText(rawVisibleText);
+		}
+	}
+
+	// The completed-reply callback carries its original target so a later action cannot redirect NPC/玩家 links before the UI formats them on the main thread.
+	public static string FormatNativeConversationDisplayTextForExternal(string rawVisibleText, Hero targetHero, CharacterObject targetCharacter)
+	{
+		try
+		{
 			return EncyclopediaEntityLinkFormatter.FormatNativeConversationText(rawVisibleText, targetHero, targetCharacter);
 		}
 		catch (Exception ex)
@@ -14572,7 +14610,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	// History RichText needs the concrete non-hero character too, so NPC tokens can retain the same link target as live dialogue.
+	// History retains the concrete non-hero target for identity, but the formatter links NPC only when that target resolves to a Hero.
 	public static bool TryGetNativeConversationLinkTargetForExternal(out Hero targetHero, out CharacterObject targetCharacter)
 	{
 		targetHero = null;
@@ -16251,23 +16289,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	public static Task<string> SubmitNativeConversationTextForExternalAsync(string playerText, Action<string> onStreamText, string currentDialogTextOverride, Action<string> onPostprocessStarted)
 	{
-		ShoutBehavior currentInstance = CurrentInstance;
-		if (currentInstance == null)
-		{
-			return Task.FromResult("AnimusForge ShoutBehavior is not ready.");
-		}
-		if (PlayerEncounterCompat.IsInPostBattleResultFlow())
-		{
-			return Task.FromResult("");
-		}
-		return Task.Run(async delegate
-		{
-			SynchronizationContext.SetSynchronizationContext(null);
-			return await currentInstance.SubmitNativeConversationTextInternalAsync(playerText, onStreamText, currentDialogTextOverride, onPostprocessStarted).ConfigureAwait(false);
-		});
+		return SubmitNativeConversationTextForExternalAsync(playerText, onStreamText, currentDialogTextOverride, onPostprocessStarted, null);
 	}
 
-	public static Task<string> SubmitNativeConversationNpcInitiatedOpeningForExternalAsync(Action<string> onStreamText, string currentDialogTextOverride, Action<string> onPostprocessStarted)
+	// The main-reply callback is deliberately separate from postprocess start so UI can present a completed reply while actions still resolve.
+	public static Task<string> SubmitNativeConversationTextForExternalAsync(string playerText, Action<string> onStreamText, string currentDialogTextOverride, Action<string> onPostprocessStarted, Action<string, Hero, CharacterObject> onMainReplyReady)
 	{
 		ShoutBehavior currentInstance = CurrentInstance;
 		if (currentInstance == null)
@@ -16281,7 +16307,31 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return Task.Run(async delegate
 		{
 			SynchronizationContext.SetSynchronizationContext(null);
-			return await currentInstance.SubmitNativeConversationTextInternalAsync("", onStreamText, currentDialogTextOverride, onPostprocessStarted, npcInitiatedOpening: true).ConfigureAwait(false);
+			return await currentInstance.SubmitNativeConversationTextInternalAsync(playerText, onStreamText, currentDialogTextOverride, onPostprocessStarted, onMainReplyReady).ConfigureAwait(false);
+		});
+	}
+
+	public static Task<string> SubmitNativeConversationNpcInitiatedOpeningForExternalAsync(Action<string> onStreamText, string currentDialogTextOverride, Action<string> onPostprocessStarted)
+	{
+		return SubmitNativeConversationNpcInitiatedOpeningForExternalAsync(onStreamText, currentDialogTextOverride, onPostprocessStarted, null);
+	}
+
+	// Keep the existing three-argument entry point intact while exposing the same early completed-reply signal for NPC openings.
+	public static Task<string> SubmitNativeConversationNpcInitiatedOpeningForExternalAsync(Action<string> onStreamText, string currentDialogTextOverride, Action<string> onPostprocessStarted, Action<string, Hero, CharacterObject> onMainReplyReady)
+	{
+		ShoutBehavior currentInstance = CurrentInstance;
+		if (currentInstance == null)
+		{
+			return Task.FromResult("AnimusForge ShoutBehavior is not ready.");
+		}
+		if (PlayerEncounterCompat.IsInPostBattleResultFlow())
+		{
+			return Task.FromResult("");
+		}
+		return Task.Run(async delegate
+		{
+			SynchronizationContext.SetSynchronizationContext(null);
+			return await currentInstance.SubmitNativeConversationTextInternalAsync("", onStreamText, currentDialogTextOverride, onPostprocessStarted, onMainReplyReady, npcInitiatedOpening: true).ConfigureAwait(false);
 		});
 	}
 
@@ -18171,7 +18221,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private async Task<string> SubmitNativeConversationTextInternalAsync(string playerText, Action<string> onStreamText = null, string currentDialogTextOverride = null, Action<string> onPostprocessStarted = null, bool npcInitiatedOpening = false)
+	private async Task<string> SubmitNativeConversationTextInternalAsync(string playerText, Action<string> onStreamText = null, string currentDialogTextOverride = null, Action<string> onPostprocessStarted = null, Action<string, Hero, CharacterObject> onMainReplyReady = null, bool npcInitiatedOpening = false)
 	{
 		Stopwatch nativeTurnSw = Stopwatch.StartNew();
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
@@ -18395,7 +18445,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			nativeHistoryMessages = RemoveNativeMessagesAlreadyInPersistentMemory(nativeHistoryMessages, persistentMemoryRoleMessages);
 		}
 		string taskSystemBlock = BuildSceneSingleNpcTaskSystemBlock(GetSceneNpcHistoryNameForPrompt(npc), false, minTokens, maxTokens, playerName);
-		string layeredPrompt = BuildSceneCompositeUserBlock("", roleTopIntro, taskSystemBlock, ctx?.PreprocessExcludedRuleBlock);
+		string nativeSceneActionInstruction = SceneActionsRuntimeHost.BuildNativeConversationActionInstruction();
+		string layeredPrompt = BuildSceneCompositeUserBlock("", roleTopIntro, taskSystemBlock, nativeSceneActionInstruction, ctx?.PreprocessExcludedRuleBlock);
 		layeredPrompt = AppendPlayerCustomPromptRuleToSystemPrompt(layeredPrompt);
 		string sceneDynamicUserBlock = BuildSceneCompositeUserBlock("", roleRuntimeContext, nativeNpcListBlock, trustBlock, miscExtrasSection);
 		List<object> messages = BuildStrictSceneMessagesForNpc(nativeTargetAgentIndex, layeredPrompt, new string[4] { privateRecentWindowSection, persistedWithoutRecentWindow, sceneDynamicUserBlock, BuildSceneCompositeUserBlock("", knowledgeExtrasSection, systemRuleBlock, nativeMeetingTauntRuleBlock) }, new string[1] { npcInitiatedOpening ? npcOpeningUserText : "" }, currentInputAlreadyRecorded: true, currentPlayerInput: promptPlayerText, injectedHistoryMessages: nativeHistoryMessages, includeSceneHistory: false, persistentHistoryMessages: persistentMemoryRoleMessages, pendingCurrentAfefFactMessages: pendingNativeCurrentAfefFacts, useSceneDistanceSpeechLabels: false);
@@ -18462,6 +18513,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			Logger.Log("ShoutBehavior", "[NativeConversation] dropped main reply before postprocess because target is unavailable target=" + nativeTargetLog + " agentIndex=" + nativeTargetAgentIndex + " reason=" + reason);
 			return "";
 		}
+		// Native AI conversation replies do not pass through AF's scene-shout
+		// publication hook. Feed the completed natural prose into the same
+		// SceneActions parser so descriptions such as “他慢慢跪下并指向旁边”
+		// work in the conversation input shown in the native dialogue screen.
+		SubmitNativeConversationSceneActionObservation(postprocessReply, nativeTargetAgentIndex);
 		// Keep role-play action prose for the postprocessor; display/TTS retains the
 		// existing stage-direction cleanup below.
 		string cleaned = StripStageDirectionsForPassiveShout(postprocessReply);
@@ -18486,6 +18542,16 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			RollbackNativeConversationPendingPlayerHistory(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, npc, nativePendingPlayerHistoryEventSequence, reason);
 			Logger.Log("ShoutBehavior", "[NativeConversation] skipped postprocess because target is unavailable target=" + nativeTargetLog + " agentIndex=" + nativeTargetAgentIndex + " reason=" + reason);
 			return "";
+		}
+		try
+		{
+			// Only the completed, normalized main reply is safe to linkify; streamed fragments remain plain text.
+			onMainReplyReady?.Invoke(nativeMainVisibleForTts, targetHero, targetCharacter);
+			Logger.Log("Logic", "[NativePerf] main_reply_display_ready target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " visibleLen=" + nativeMainVisibleForTts.Length + " elapsedMs=" + Math.Round(nativeTurnSw.Elapsed.TotalMilliseconds, 2));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ShoutBehavior", "[NativeConversation] main-reply-ready callback failed: " + ex.Message);
 		}
 		try
 		{
@@ -18731,6 +18797,45 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			_mainThreadActions.Enqueue(() => CloseNativeConversationForSceneMechanism("worldmap_implicit_party_creation"));
 		}
 		return finalVisible;
+	}
+
+	private static void SubmitNativeConversationSceneActionObservation(string replyText, int agentIndex)
+	{
+		try
+		{
+			if (string.IsNullOrWhiteSpace(replyText) || agentIndex < 0 ||
+				!SceneActionsRuntimeHost.IsInitialized ||
+				SceneActionsRuntimeHost.Settings?.NpcSceneShoutReplyEnabled != true ||
+				Mission.Current == null)
+			{
+				return;
+			}
+			Mission mission = Mission.Current;
+			Agent speaker = mission.Agents?.FirstOrDefault(agent => agent != null && agent.Index == agentIndex);
+			if (speaker == null)
+			{
+				return;
+			}
+			bool submitted = SceneActionsRuntimeHost.SubmitNpcReply(
+				Guid.NewGuid(),
+				mission,
+				speaker,
+				replyText,
+				mission.CurrentTime);
+			if (submitted)
+			{
+				SceneActionsLog.Info(
+					"NATIVE_CONVERSATION_ACTION",
+					"Submitted native AI conversation reply to the natural-action parser. Agent=" + agentIndex);
+			}
+		}
+		catch (Exception ex)
+		{
+			// A parser failure must not discard an otherwise valid native conversation.
+			SceneActionsLog.Warning(
+				"NATIVE_CONVERSATION_ACTION",
+				"Natural-action observation failed open: " + ex.Message);
+		}
 	}
 
 	private static bool IsNativeConversationNoSpeechPlaceholder(string text)
@@ -19257,6 +19362,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		Agent primaryTarget = ResolvePrimaryAgentForShoutTargetingContext(_activeShoutTargetingContext, framedTargets);
 		primaryTarget ??= framedTargets.FirstOrDefault(agent => agent != null && agent.IsActive());
 		Agent player = Agent.Main;
+		bool npcSpeechTargetAllowed = IsPlayerSideBattleSpeechTarget(
+			mission,
+			player,
+			primaryTarget,
+			framedTargets);
 		List<InquiryElement> inquiryElements = new List<InquiryElement>
 		{
 			new InquiryElement(
@@ -19269,8 +19379,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				"battle_speech_npc",
 				"他人演讲",
 				null,
-				isEnabled: primaryTarget != null && primaryTarget.IsActive(),
-				"让当前框选的主目标走到阵前并面向己方士兵演讲。")
+				isEnabled: npcSpeechTargetAllowed,
+				npcSpeechTargetAllowed
+					? "让当前框选的己方士兵走到阵前并面向己方士兵演讲。"
+					: "仅能让当前框选的己方士兵演讲；敌方或混合框选不可用。")
 		};
 		string targetName = primaryTarget?.Name?.ToString() ?? "未选择目标";
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData(
@@ -19323,6 +19435,45 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			isSeachAvailable: false);
 		AfCompatV130.BeginDedicatedSpeechMenuInput();
 		MBInformationManager.ShowMultiSelectionInquiry(data, pauseGameActiveState: true);
+	}
+
+	private static bool IsPlayerSideBattleSpeechTarget(
+		Mission mission,
+		Agent player,
+		Agent primaryTarget,
+		IReadOnlyList<Agent> framedTargets)
+	{
+		if (mission?.PlayerTeam == null ||
+			player == null ||
+			primaryTarget == null ||
+			!primaryTarget.IsActive() ||
+			ReferenceEquals(primaryTarget, player) ||
+			primaryTarget.Team == null ||
+			!primaryTarget.Team.IsValid ||
+			primaryTarget.Team.Side != mission.PlayerTeam.Side)
+		{
+			return false;
+		}
+
+		if (framedTargets == null)
+		{
+			return true;
+		}
+		foreach (Agent target in framedTargets)
+		{
+			if (target == null || !target.IsActive())
+			{
+				continue;
+			}
+			if (!ReferenceEquals(target.Mission, mission) ||
+				target.Team == null ||
+				!target.Team.IsValid ||
+				target.Team.Side != mission.PlayerTeam.Side)
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private void TriggerShoutDirectInput()
@@ -24508,6 +24659,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			if (string.IsNullOrWhiteSpace(text3))
 			{
 				continue;
+			}
+			if (text3.StartsWith("[ACTION:C_J_K:", StringComparison.OrdinalIgnoreCase))
+			{
+				// Accept only this provider-side envelope alias, then reuse the existing ID whitelist below.
+				text3 = "[A:C_J_K:" + text3.Substring("[ACTION:C_J_K:".Length);
 			}
 			if (string.Equals(text3, "[A:H_J_P_P_C&L]", StringComparison.OrdinalIgnoreCase))
 			{

@@ -30,7 +30,7 @@
                               <Children>
                                 <Widget Id="ViewerInnerPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="620">
                                   <Children>
-                                    <RichTextWidget Text="@BodyText" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="620" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="16" MarginRight="16" MarginTop="16" MarginBottom="16" Brush="AnimusForge.EntityLink.PopupDescription.Text" Brush.FontSize="@BodyFontSize" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" DoNotAcceptEvents="false" Command.LinkClick="ExecuteOpenEncyclopediaLink" Command.LinkAlternateClick="ExecuteOpenEncyclopediaLink" />
+                                    <RichTextWidget Text="@BodyText" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="620" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="16" MarginRight="16" MarginTop="16" MarginBottom="16" Brush="AnimusForge.EntityLink.WeeklyReport.PopupDescription.Text" Brush.FontSize="@BodyFontSize" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" DoNotAcceptEvents="false" Command.LinkClick="ExecuteOpenEncyclopediaLink" Command.LinkAlternateClick="ExecuteOpenEncyclopediaLink" />
                                   </Children>
                                 </Widget>
                               </Children>
@@ -56,7 +56,7 @@
                                       <Children>
                                         <Widget Id="MilitaryInnerPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="480">
                                           <Children>
-                                            <RichTextWidget Text="@MilitaryEventsText" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="480" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="6" MarginRight="6" MarginTop="4" MarginBottom="18" Brush="AnimusForge.EntityLink.PopupDescription.Text" Brush.FontSize="@ColumnBodyFontSize" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" CanBreakWords="true" DoNotAcceptEvents="false" Command.LinkClick="ExecuteOpenEncyclopediaLink" Command.LinkAlternateClick="ExecuteOpenEncyclopediaLink" />
+                                            <RichTextWidget Text="@MilitaryEventsText" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="480" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="6" MarginRight="6" MarginTop="4" MarginBottom="18" Brush="AnimusForge.EntityLink.WeeklyReport.PopupDescription.Text" Brush.FontSize="@ColumnBodyFontSize" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" CanBreakWords="true" DoNotAcceptEvents="false" Command.LinkClick="ExecuteOpenEncyclopediaLink" Command.LinkAlternateClick="ExecuteOpenEncyclopediaLink" />
                                           </Children>
                                         </Widget>
                                       </Children>
@@ -84,7 +84,7 @@
                                       <Children>
                                         <Widget Id="DiplomaticInnerPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="480">
                                           <Children>
-                                            <RichTextWidget Text="@DiplomaticAffairsText" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="480" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="6" MarginRight="6" MarginTop="4" MarginBottom="18" Brush="AnimusForge.EntityLink.PopupDescription.Text" Brush.FontSize="@ColumnBodyFontSize" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" CanBreakWords="true" DoNotAcceptEvents="false" Command.LinkClick="ExecuteOpenEncyclopediaLink" Command.LinkAlternateClick="ExecuteOpenEncyclopediaLink" />
+                                            <RichTextWidget Text="@DiplomaticAffairsText" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="480" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="6" MarginRight="6" MarginTop="4" MarginBottom="18" Brush="AnimusForge.EntityLink.WeeklyReport.PopupDescription.Text" Brush.FontSize="@ColumnBodyFontSize" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" CanBreakWords="true" DoNotAcceptEvents="false" Command.LinkClick="ExecuteOpenEncyclopediaLink" Command.LinkAlternateClick="ExecuteOpenEncyclopediaLink" />
                                           </Children>
                                         </Widget>
                                       </Children>
@@ -112,7 +112,7 @@
                                       <Children>
                                         <Widget Id="DomesticInnerPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="480">
                                           <Children>
-                                            <RichTextWidget Text="@DomesticRealmText" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="480" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="6" MarginRight="6" MarginTop="4" MarginBottom="18" Brush="AnimusForge.EntityLink.PopupDescription.Text" Brush.FontSize="@ColumnBodyFontSize" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" CanBreakWords="true" DoNotAcceptEvents="false" Command.LinkClick="ExecuteOpenEncyclopediaLink" Command.LinkAlternateClick="ExecuteOpenEncyclopediaLink" />
+                                            <RichTextWidget Text="@DomesticRealmText" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="480" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="6" MarginRight="6" MarginTop="4" MarginBottom="18" Brush="AnimusForge.EntityLink.WeeklyReport.PopupDescription.Text" Brush.FontSize="@ColumnBodyFontSize" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" CanBreakWords="true" DoNotAcceptEvents="false" Command.LinkClick="ExecuteOpenEncyclopediaLink" Command.LinkAlternateClick="ExecuteOpenEncyclopediaLink" />
                                           </Children>
                                         </Widget>
                                       </Children>
@@ -158,7 +158,7 @@
                   <Children>
                     <Widget Id="ChronicleMilitaryInnerPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="354">
                       <Children>
-                        <RichTextWidget Text="@MilitaryEventsText" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="354" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="8" MarginRight="10" MarginTop="6" MarginBottom="20" Brush="AFCourierLetter.Body.Text" Brush.FontSize="@ColumnBodyFontSize" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" CanBreakWords="true" DoNotAcceptEvents="false" Command.LinkClick="ExecuteOpenEncyclopediaLink" Command.LinkAlternateClick="ExecuteOpenEncyclopediaLink" />
+                        <RichTextWidget Text="@MilitaryEventsText" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="354" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="8" MarginRight="10" MarginTop="6" MarginBottom="20" Brush="AnimusForge.EntityLink.WeeklyReport.ParchmentBody.Text" Brush.FontSize="@ColumnBodyFontSize" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" CanBreakWords="true" DoNotAcceptEvents="false" Command.LinkClick="ExecuteOpenEncyclopediaLink" Command.LinkAlternateClick="ExecuteOpenEncyclopediaLink" />
                       </Children>
                     </Widget>
                   </Children>
@@ -180,7 +180,7 @@
                   <Children>
                     <Widget Id="ChronicleDiplomaticInnerPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="354">
                       <Children>
-                        <RichTextWidget Text="@DiplomaticAffairsText" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="354" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="8" MarginRight="10" MarginTop="6" MarginBottom="20" Brush="AFCourierLetter.Body.Text" Brush.FontSize="@ColumnBodyFontSize" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" CanBreakWords="true" DoNotAcceptEvents="false" Command.LinkClick="ExecuteOpenEncyclopediaLink" Command.LinkAlternateClick="ExecuteOpenEncyclopediaLink" />
+                        <RichTextWidget Text="@DiplomaticAffairsText" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="354" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="8" MarginRight="10" MarginTop="6" MarginBottom="20" Brush="AnimusForge.EntityLink.WeeklyReport.ParchmentBody.Text" Brush.FontSize="@ColumnBodyFontSize" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" CanBreakWords="true" DoNotAcceptEvents="false" Command.LinkClick="ExecuteOpenEncyclopediaLink" Command.LinkAlternateClick="ExecuteOpenEncyclopediaLink" />
                       </Children>
                     </Widget>
                   </Children>
@@ -202,7 +202,7 @@
                   <Children>
                     <Widget Id="ChronicleDomesticInnerPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="354">
                       <Children>
-                        <RichTextWidget Text="@DomesticRealmText" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="354" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="8" MarginRight="10" MarginTop="6" MarginBottom="20" Brush="AFCourierLetter.Body.Text" Brush.FontSize="@ColumnBodyFontSize" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" CanBreakWords="true" DoNotAcceptEvents="false" Command.LinkClick="ExecuteOpenEncyclopediaLink" Command.LinkAlternateClick="ExecuteOpenEncyclopediaLink" />
+                        <RichTextWidget Text="@DomesticRealmText" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="354" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="8" MarginRight="10" MarginTop="6" MarginBottom="20" Brush="AnimusForge.EntityLink.WeeklyReport.ParchmentBody.Text" Brush.FontSize="@ColumnBodyFontSize" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" CanBreakWords="true" DoNotAcceptEvents="false" Command.LinkClick="ExecuteOpenEncyclopediaLink" Command.LinkAlternateClick="ExecuteOpenEncyclopediaLink" />
                       </Children>
                     </Widget>
                   </Children>
@@ -236,7 +236,7 @@
                   <Children>
                     <Widget Id="ShortBodyInnerPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="300">
                       <Children>
-                        <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="300" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="10" MarginRight="14" MarginTop="6" MarginBottom="18" Brush="AFCourierLetter.Body.Text" Brush.FontSize="@ShortBodyFontSize" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" Text="@BodyText" CanBreakWords="true" DoNotAcceptEvents="false" Command.LinkClick="ExecuteOpenEncyclopediaLink" Command.LinkAlternateClick="ExecuteOpenEncyclopediaLink" />
+                        <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="300" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="10" MarginRight="14" MarginTop="6" MarginBottom="18" Brush="AnimusForge.EntityLink.WeeklyReport.ParchmentBody.Text" Brush.FontSize="@ShortBodyFontSize" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" Text="@BodyText" CanBreakWords="true" DoNotAcceptEvents="false" Command.LinkClick="ExecuteOpenEncyclopediaLink" Command.LinkAlternateClick="ExecuteOpenEncyclopediaLink" />
                       </Children>
                     </Widget>
                   </Children>

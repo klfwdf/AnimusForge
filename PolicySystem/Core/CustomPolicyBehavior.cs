@@ -389,6 +389,18 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 		Instance = this;
 	}
 
+	public static long GetPublishedPolicyArtifactCurrentSequenceForExternal()
+	{
+		try
+		{
+			return WorldDiplomacyPolicyContext.GetPublishedPolicyHistoryCurrentRevision();
+		}
+		catch
+		{
+			return 0L;
+		}
+	}
+
 	internal static bool TryRegisterPolicyEffectBundleForExternal(PolicyEffectBundleRegistration registration, out string effectId, out string failureReason)
 	{
 		effectId = string.Empty;

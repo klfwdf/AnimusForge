@@ -78,6 +78,7 @@ internal static class WorldDiplomacyPolicyContext
 	private static ulong _sourceSignature;
 	private static long _publishedHistoryRuntimeGeneration = -1L;
 	private static long _publishedHistoryNextRefreshTimestamp;
+	private static long _publishedHistoryRevision;
 	private static string _publishedHistoryLedgerId = string.Empty;
 	private static List<PublishedPolicyArtifactLedgerEntry> _publishedPolicyArtifacts = new List<PublishedPolicyArtifactLedgerEntry>();
 
@@ -188,6 +189,15 @@ internal static class WorldDiplomacyPolicyContext
 		}
 	}
 
+	public static long GetPublishedPolicyHistoryCurrentRevision()
+	{
+		lock (CacheLock)
+		{
+			RefreshPublishedPolicyHistoryIfNeeded();
+			return _publishedHistoryRevision;
+		}
+	}
+
 	public static IReadOnlyList<PublishedPolicyArtifactLedgerEntry> GetPublishedPolicyHistoryArtifacts(
 		long afterSequence = 0L,
 		int maxCount = 256)
@@ -227,6 +237,7 @@ internal static class WorldDiplomacyPolicyContext
 			SnapshotByKingdomId.Clear();
 			_publishedHistoryRuntimeGeneration = -1L;
 			_publishedHistoryNextRefreshTimestamp = 0L;
+			_publishedHistoryRevision = 0L;
 			_publishedHistoryLedgerId = string.Empty;
 			_publishedPolicyArtifacts.Clear();
 		}
@@ -247,6 +258,7 @@ internal static class WorldDiplomacyPolicyContext
 			out List<NpcPolicyHistoryEntry> historyEntries,
 			out _))
 		{
+			_publishedHistoryRevision = 0L;
 			_publishedHistoryLedgerId = string.Empty;
 			_publishedPolicyArtifacts = new List<PublishedPolicyArtifactLedgerEntry>();
 			return;
@@ -306,6 +318,7 @@ internal static class WorldDiplomacyPolicyContext
 			AppendHash(ref ledgerSignature, artifact.ContentHash);
 		}
 		_publishedPolicyArtifacts = artifacts;
+		_publishedHistoryRevision = unchecked((long)ledgerSignature);
 		_publishedHistoryLedgerId = UnifiedPolicyHistoryLedgerPrefix
 			+ ledgerSignature.ToString("X16", CultureInfo.InvariantCulture);
 	}

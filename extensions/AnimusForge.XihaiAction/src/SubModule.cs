@@ -81,7 +81,6 @@ namespace AnimusForge.XihaiAction
 
                 if (BattleSpeechRuntimeHost.IsInitialized &&
                     BattleSpeechRuntimeHost.ConfigurationValid &&
-                    BattleSpeechRuntimeHost.Settings.Enabled &&
                     mission.GetMissionBehavior<BattleSpeechMissionBehavior>() == null)
                 {
                     mission.AddMissionBehavior(new BattleSpeechMissionBehavior());
@@ -91,9 +90,7 @@ namespace AnimusForge.XihaiAction
                 }
                 if (BattleSpeechRuntimeHost.IsInitialized &&
                     BattleSpeechRuntimeHost.ConfigurationValid &&
-                    BattleSpeechRuntimeHost.Settings.Enabled &&
                     BattleSpeechRuntimeHost.PerformanceConfigurationValid &&
-                    BattleSpeechRuntimeHost.PerformanceSettings.Enabled &&
                     mission.GetMissionBehavior<BattleSpeechPerformanceMissionBehavior>() == null)
                 {
                     mission.AddMissionBehavior(new BattleSpeechPerformanceMissionBehavior());
@@ -132,8 +129,7 @@ namespace AnimusForge.XihaiAction
                 }
 
                 if (BattleSpeechRuntimeHost.IsInitialized &&
-                    BattleSpeechRuntimeHost.ConfigurationValid &&
-                    BattleSpeechRuntimeHost.Settings.Enabled)
+                    BattleSpeechRuntimeHost.ConfigurationValid)
                 {
                     BattleSpeechMissionBehavior battleSpeech =
                         mission.GetMissionBehavior<BattleSpeechMissionBehavior>();
@@ -144,8 +140,7 @@ namespace AnimusForge.XihaiAction
                             "Battle speech behavior did not activate; this Mission remains fail-closed for speeches.");
                         return;
                     }
-                    if (BattleSpeechRuntimeHost.PerformanceConfigurationValid &&
-                        BattleSpeechRuntimeHost.PerformanceSettings.Enabled)
+                    if (BattleSpeechRuntimeHost.PerformanceConfigurationValid)
                     {
                         BattleSpeechPerformanceMissionBehavior performance =
                             mission.GetMissionBehavior<BattleSpeechPerformanceMissionBehavior>();

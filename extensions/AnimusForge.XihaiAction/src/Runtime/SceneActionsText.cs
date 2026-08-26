@@ -55,6 +55,11 @@ namespace AnimusForge.XihaiAction
             return new TextObject("{=SAX_BattleSpeechSpeakerUnavailable}Battle speech did not start: the selected speaker is unavailable.");
         }
 
+        public static TextObject BattleSpeechNpcTargetNotAllied()
+        {
+            return new TextObject("{=SAX_BattleSpeechNpcTargetNotAllied}Battle speech did not start: other-speaker speech requires a selected allied soldier.");
+        }
+
         public static TextObject BattleSpeechSpeakerInCombat()
         {
             return new TextObject("{=SAX_BattleSpeechSpeakerInCombat}Battle speech did not start: the selected speaker is attacking or preparing an attack.");

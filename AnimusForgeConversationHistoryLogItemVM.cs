@@ -81,7 +81,17 @@ public sealed class AnimusForgeConversationHistoryLogItemVM : ViewModel
 		// Build only a disposable RichText copy; the persisted dialogue entry stays plain for memory and LLM reuse.
 		string rawDisplayText = string.IsNullOrWhiteSpace(ChatSpeaker) ? (text ?? "") : "(" + ChatSpeaker + ")" + (text ?? "");
 		ChatText = linkDisplaySession?.Format(rawDisplayText, conversationTargetHero, conversationTargetCharacter) ?? EncyclopediaEntityLinkFormatter.SanitizeUntrustedRichText(rawDisplayText);
-		FontColor = ResolveColor(kind);
+		FontColor = ResolveFontColor(kind);
+	}
+
+	// Paged history has already prepared trusted RichText, so revisiting a page must not repeat entity matching or string replacement.
+	internal AnimusForgeConversationHistoryLogItemVM(string time, string speaker, string formattedText, string fontColor, Action<string> onOpenEncyclopediaLink)
+	{
+		_onOpenEncyclopediaLink = onOpenEncyclopediaLink;
+		ChatItemTime = time ?? "";
+		ChatSpeaker = string.IsNullOrWhiteSpace(speaker) ? "记录" : speaker.Trim();
+		ChatText = formattedText ?? "";
+		FontColor = string.IsNullOrWhiteSpace(fontColor) ? "#D6D6D6FF" : fontColor;
 	}
 
 	public void ExecuteOpenEncyclopediaLink(string link)
@@ -89,7 +99,8 @@ public sealed class AnimusForgeConversationHistoryLogItemVM : ViewModel
 		_onOpenEncyclopediaLink?.Invoke(link);
 	}
 
-	private static string ResolveColor(string kind)
+	// Shared by the page-level cache so row colors remain identical whether the record is first formatted or restored from cache.
+	internal static string ResolveFontColor(string kind)
 	{
 		switch ((kind ?? "").Trim())
 		{

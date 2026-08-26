@@ -22,65 +22,83 @@ namespace AnimusForge.XihaiAction
     {
         private void StartDedicatedNpcSpeechGeneration(
             ActiveBattleSpeechSessionV1 session,
-            BattleSpeechCapturedInputV1 input,
-            string topic)
+            string topic,
+            bool allowDiversityRetry = true)
         {
-            if (session == null || input == null || session.Speaker == null)
+            if (session == null || session.Speaker == null)
             {
                 return;
             }
-            Agent speaker = session.Speaker;
-            Agent[] framed = input.FramedTargets ?? Array.Empty<Agent>();
             Guid sessionId = session.SessionId;
             int epoch = session.ConversationEpoch;
             Mission mission = Mission;
             double submittedAt = mission?.CurrentTime ?? 0d;
-            CancellationToken lifetimeToken = _v2LifetimeCancellation.Token;
-            // AF's reflection bridge builds the NPC packet, scene context and
-            // prompt before its first await. Run that whole preparation off the
-            // Mission thread so Y-menu selection cannot freeze the battle UI.
-            _ = Task.Run(
-                async () =>
-                {
-                    try
-                    {
-                        await GenerateAndQueueDedicatedNpcSpeechAsync(
-                            mission,
-                            sessionId,
-                            speaker,
-                            framed,
-                            topic,
-                            epoch,
-                            submittedAt).ConfigureAwait(false);
-                    }
-                    catch (OperationCanceledException)
-                    {
-                    }
-                    catch (Exception ex)
-                    {
-                        SceneActionsLog.Error(
-                            "BATTLE_SPEECH_INPUT",
-                            "Dedicated NPC speech background task failed closed.",
-                            ex);
-                    }
-                },
+            // The request-scoped token is cancelled both when this Mission is
+            // closed and when BattleSpeech is disabled in MCM; unlike creating
+            // a throwaway linked source here, it has no per-request disposal
+            // leak.
+            CancellationToken lifetimeToken = _v2RequestCancellation.Token;
+            if (!AfCompatV130.TryStartDedicatedNpcSpeechRequest(
+                    mission,
+                    sessionId,
+                    session.Speaker,
+                    topic,
+                    out DedicatedNpcSpeechSnapshotV1 request,
+                    out string requestError))
+            {
+                SceneActionsLog.Warning(
+                    "BATTLE_SPEECH_INPUT",
+                    "Dedicated NPC speech request failed closed before AF network wait. Session=" +
+                    sessionId.ToString("N") + " Reason=" + (requestError ?? "unknown"));
+                return;
+            }
+
+            // The AF async method is entered on the Mission thread so its
+            // synchronous prompt/context phase never touches Bannerlord state
+            // from a thread-pool worker. Only the already-created response task
+            // is awaited off-thread; the Mission tick remains non-blocking.
+            _ = GenerateAndQueueDedicatedNpcSpeechAsync(
+                mission,
+                sessionId,
+                request,
+                topic,
+                epoch,
+                submittedAt,
+                allowDiversityRetry,
                 lifetimeToken);
         }
 
         private async Task GenerateAndQueueDedicatedNpcSpeechAsync(
             Mission mission,
             Guid sessionId,
-            Agent speaker,
-            IReadOnlyList<Agent> framed,
+            DedicatedNpcSpeechSnapshotV1 request,
             string topic,
             int conversationEpoch,
-            double submittedAt)
+            double submittedAt,
+            bool allowDiversityRetry,
+            CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             DedicatedNpcSpeechResultV1 result =
                 await AfCompatV130.GenerateDedicatedNpcSpeechAsync(
-                    speaker,
-                    framed,
-                    topic).ConfigureAwait(false);
+                    request,
+                    cancellationToken,
+                    allowDiversityRetry).ConfigureAwait(false);
+            cancellationToken.ThrowIfCancellationRequested();
+            if (result.RequiresRegeneration)
+            {
+                TryEnqueue(new BattleSpeechCapturedInputV1
+                {
+                    InputKind = BattleSpeechInputKindV1.DedicatedNpcSpeechRetry,
+                    SessionId = sessionId,
+                    Mission = mission,
+                    RawText = topic ?? string.Empty,
+                    SpeakerAgentIndex = request.SpeakerAgentIndex,
+                    ConversationEpoch = conversationEpoch,
+                    SubmittedAtMissionTime = submittedAt
+                });
+                return;
+            }
             if (!result.Succeeded)
             {
                 SceneActionsLog.Warning(
@@ -90,13 +108,15 @@ namespace AnimusForge.XihaiAction
                     (result.Error ?? "unknown"));
                 return;
             }
+            cancellationToken.ThrowIfCancellationRequested();
             if (!BattleSpeechRuntimeHost.SubmitGeneratedNpcReply(
                     mission,
                     sessionId,
-                    speaker,
+                    result.SpeakerAgentIndex,
                     result.Content,
                     result.AfBehavior,
                     result.AfNpcPacket,
+                    result.CombinedResponse,
                     conversationEpoch,
                     submittedAt))
             {
@@ -131,9 +151,14 @@ namespace AnimusForge.XihaiAction
                     Colors.Yellow);
                 return false;
             }
-            if (npcSpeech && !IsEligibleSpeaker(primaryTarget))
+            if (npcSpeech && !AreNpcSpeechTargetsOnPlayerSide(
+                    player,
+                    primaryTarget,
+                    framedTargets))
             {
-                NotifyDedicatedSpeechMessage("当前目标不能作为演讲者。", Colors.Yellow);
+                NotifyDedicatedSpeechMessage(
+                    SceneActionsText.BattleSpeechNpcTargetNotAllied().ToString(),
+                    Colors.Yellow);
                 return false;
             }
 
@@ -181,10 +206,9 @@ namespace AnimusForge.XihaiAction
                 {
                     return;
                 }
-                // Always wrap the body with the menu-owned actor prefix. This
-                // prevents text entered in one menu branch from retargeting the
-                // request through an embedded "你演讲："/"他演讲：" phrase.
-                string routedText = (npcSpeech ? "你演讲：" : "我演讲：") + content;
+                // The Y menu owns the actor selection. The NPC branch above is
+                // submitted without text; this textbox is therefore player-only.
+                string routedText = "我演讲：" + content;
                 bool queued = false;
                 try
                 {

@@ -62,6 +62,11 @@ public class SubModule : MBSubModuleBase
 		}
 	}
 
+	public override void OnConfigChanged()
+	{
+		base.OnConfigChanged();
+		SceneActionsIntegrationBoundary.RefreshMcmOverrides();
+	}
 	public override void OnBeforeMissionBehaviorInitialize(Mission mission)
 	{
 		base.OnBeforeMissionBehaviorInitialize(mission);
@@ -638,6 +643,7 @@ public class SubModule : MBSubModuleBase
 			campaignGameStarter.AddBehavior(new RewardSystemBehavior());
 			campaignGameStarter.AddBehavior(new PlayerNotorietyBehavior());
 			campaignGameStarter.AddBehavior(new AnimusForgeTerminalBehavior());
+			campaignGameStarter.AddBehavior(new AnimusForgeUniqueCosmeticItemBehavior());
 			campaignGameStarter.AddBehavior(new CustomPolicyBehavior());
 			campaignGameStarter.AddBehavior(new NpcRulerPolicyBehavior());
 			campaignGameStarter.AddBehavior(new AnimusForgeWorldEventBehavior());
@@ -648,6 +654,7 @@ public class SubModule : MBSubModuleBase
 			campaignGameStarter.AddBehavior(new ProactiveNpcRequestBehavior());
 			campaignGameStarter.AddBehavior(new CompanionProactiveChatBehavior());
 			campaignGameStarter.AddBehavior(new SceneTauntBehavior());
+			campaignGameStarter.AddBehavior(new GcczSettlementCulturePersistenceBehavior());
 			campaignGameStarter.AddBehavior(new SiegeAiInterventionBehavior());
 			campaignGameStarter.AddBehavior(new VillageAftermathBehavior());
 			campaignGameStarter.AddBehavior(new SettlementEntryTroopSelectionBehavior());

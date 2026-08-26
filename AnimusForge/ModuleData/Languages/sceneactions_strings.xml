@@ -11,20 +11,24 @@
     <string id="SAX_BattleSpeechNoAudience" text="Battle speech did not start: no eligible allied soldiers were found." />
     <string id="SAX_BattleSpeechNotReady" text="Battle speech is available only while deployment or an active battle is continuing." />
     <string id="SAX_BattleSpeechSpeakerUnavailable" text="Battle speech did not start: the selected speaker is unavailable." />
+    <string id="SAX_BattleSpeechNpcTargetNotAllied" text="Battle speech did not start: other-speaker speech requires a selected allied soldier." />
     <string id="SAX_BattleSpeechSpeakerInCombat" text="Battle speech did not start: the selected speaker is attacking or preparing an attack." />
     <string id="SAX_BattleSpeechEnemyNearby" text="Battle speech did not start: an enemy is too close to the speaker." />
-    <string id="SAX_MCM_Name" text="Natural Actions and Battle Speech" />
-    <string id="SAX_MCM_Group_General" text="General" />
+    <string id="SAX_MCM_Name" text="18. Natural Actions and Battle Speech" />
+    <string id="SAX_MCM_Group_General" text="18. Natural Actions and Battle Speech" />
     <string id="SAX_MCM_Group_Language" text="Natural language and AF" />
     <string id="SAX_MCM_Group_Actions" text="Controlled actions" />
     <string id="SAX_MCM_Group_Speech" text="Battle speech" />
-    <string id="SAX_MCM_Group_Stage" text="NPC staging" />
+    <string id="SAX_MCM_Group_Stage" text="Speaker staging" />
     <string id="SAX_MCM_Group_Audience" text="Audience response" />
+    <string id="SAX_MCM_Group_Voices" text="Native battle cries" />
+    <string id="SAX_MCM_Group_Replies" text="Soldier spoken replies" />
+    <string id="SAX_MCM_Group_Advance" text="Post-speech order" />
     <string id="SAX_MCM_Group_Safety" text="Safety and diagnostics" />
     <string id="SAX_MCM_Enabled" text="Enable extension" />
     <string id="SAX_MCM_ActionsEnabled" text="Enable natural actions" />
     <string id="SAX_MCM_NaturalReplyActions" text="Natural-language reply actions" />
-    <string id="SAX_MCM_NaturalReplyActions_Hint" text="Recognizes natural action wording in player shouts and NPC replies, uses AF closed-set fallback for complex wording, and recognizes natural battle-speech requests and speech gestures. Disable it to stop these natural-language paths." />
+    <string id="SAX_MCM_NaturalReplyActions_Hint" text="Controls natural-language action parsing and playback in ordinary AF dialogue and scene-shout replies. Disabling it keeps ordinary text replies and does not affect the independent battle-speech subsystem." />
     <string id="SAX_MCM_PlayerInput" text="Player scene-shout actions" />
     <string id="SAX_MCM_NpcInput" text="NPC reply actions" />
     <string id="SAX_MCM_DualChannel" text="Experimental kneel plus gesture" />
@@ -59,9 +63,11 @@
     <string id="SAX_MCM_Command" text="Command" />
     <string id="SAX_MCM_FollowMe" text="Follow-me gesture" />
     <string id="SAX_MCM_CutThroat" text="Cut-throat gesture" />
+    <string id="SAX_MCM_TKeyBattleSpeechEnabled" text="Enable battle-speech recognition from T-key scene shout" />
+    <string id="SAX_MCM_TKeyBattleSpeechEnabled_Hint" text="When enabled, T-key scene-shout text can enter the battle-speech channel. Y-key speech entries still require the main battle-speech switch and an eligible battle phase." />
     <string id="SAX_MCM_BattleSpeechEnabled" text="Enable battle speech" />
-    <string id="SAX_MCM_ReplyMin" text="Battle speech minimum characters (6-30)" />
-    <string id="SAX_MCM_ReplyMax" text="Battle speech maximum characters (6-30)" />
+    <string id="SAX_MCM_ReplyMin" text="Battle speech minimum characters (6-160)" />
+    <string id="SAX_MCM_ReplyMax" text="Battle speech maximum characters (6-160)" />
     <string id="SAX_MCM_NpcPositioning" text="Move NPC to the front line" />
     <string id="SAX_MCM_FrontDistance" text="Distance in front of troops" />
     <string id="SAX_MCM_ArrivalRadius" text="Arrival radius" />
@@ -77,10 +83,48 @@
     <string id="SAX_MCM_AudienceReplies" text="Spoken replies from multiple soldiers" />
     <string id="SAX_MCM_AudienceReplyCount" text="Soldiers giving spoken replies" />
     <string id="SAX_MCM_AudienceReplyInterval" text="Spoken reply interval" />
+    <string id="SAX_MCM_AudienceReplyWaveSize" text="Maximum soldiers replying together" />
+    <string id="SAX_MCM_AudienceReplyTickBudget" text="Maximum spoken replies submitted per tick" />
+    <string id="SAX_MCM_AudienceReplyTickBudget_Hint" text="Hard Mission-tick budget for spoken soldier reply bridge calls; independent from the logical wave size." />
+    <string id="SAX_MCM_AudienceReplyMinimumChars" text="Minimum spoken reply characters" />
+    <string id="SAX_MCM_AudienceReplyMaximumChars" text="Maximum spoken reply characters" />
+    <string id="SAX_MCM_AudienceReplyMinInterval" text="Minimum random reply wave interval" />
+    <string id="SAX_MCM_AudienceReplyMaxInterval" text="Maximum random reply wave interval" />
+    <string id="SAX_MCM_AudienceResponseStartDelay" text="Audience response start delay" />
+    <string id="SAX_MCM_AudienceFinalReactionHold" text="Final audience reaction hold" />
     <string id="SAX_MCM_Advance" text="Command gesture then order all formations to Advance" />
     <string id="SAX_MCM_AdvanceDelay" text="Advance delay after command gesture" />
     <string id="SAX_MCM_EnemyRadius" text="Enemy interruption radius" />
+    <string id="SAX_MCM_EnemyRadius_Hint" text="When an enemy enters this radius, the speech continues in place. Soldiers may show written replies, but speaker/audience actions, native battle cries, command gestures, and Advance are suppressed." />
     <string id="SAX_MCM_Notifications" text="Screen notifications" />
     <string id="SAX_MCM_Diagnostics" text="Detailed diagnostics" />
+    <string id="SAX_MCM_BattleSpeechEnabled_Hint" text="Master switch for battle speech. Disabling it hides T-key routing, speech length, staging, audience response, and post-speech order options." />
+    <string id="SAX_MCM_ReplyMin_Hint" text="Minimum AF-generated battle-speech body length. Generation and display share the same frozen snapshot. Must not exceed the maximum." />
+    <string id="SAX_MCM_ReplyMax_Hint" text="Maximum AF-generated battle-speech body length. Results beyond this limit are rejected fail-closed." />
+    <string id="SAX_MCM_NpcPositioning_Hint" text="Moves an NPC speaker in front of the friendly line and turns them toward the soldiers. Disabling keeps the speaker in place and takes no scripted movement control." />
+    <string id="SAX_MCM_FrontDistance_Hint" text="Distance the NPC moves forward from the friendly line center. Used only while speaker staging is enabled." />
+    <string id="SAX_MCM_ArrivalRadius_Hint" text="The NPC is considered in position inside this radius. This affects only staging arrival detection." />
+    <string id="SAX_MCM_MoveTimeout_Hint" text="Maximum staging wait. On timeout the NPC safely speaks from the current position; no teleport and no duplicate request." />
+    <string id="SAX_MCM_AlliedAudience_Hint" text="Includes same-side allies in the frozen audience. Allies may respond but never receive the player's post-speech Advance order." />
+    <string id="SAX_MCM_VisualResponders_Hint" text="Maximum soldiers sampled for controlled response actions. Sampling is deterministic and submissions are batched to avoid full-army frame synchronization." />
+    <string id="SAX_MCM_VisualWave_Hint" text="Soldier actions in one logical wave. This is a wave size, not the per-Mission-tick bridge-call budget." />
+    <string id="SAX_MCM_TickBudget_Hint" text="Maximum action bridge calls submitted per Mission tick. Limits frame load independently from the logical wave size." />
+    <string id="SAX_MCM_Voices_Hint" text="Plays native battle cries in batches during audience response without AF TTS. Disabling hides battle-cry count, wave, and interval options." />
+    <string id="SAX_MCM_VoiceCount_Hint" text="Maximum soldiers using native battle cries in this speech. Affects sound scale and performance only." />
+    <string id="SAX_MCM_VoiceWave_Hint" text="Native battle cries triggered together in one wave. Smaller waves sound less synchronized and spread the performance load." />
+    <string id="SAX_MCM_VoiceInterval_Hint" text="Delay between native battle-cry waves. Does not change the random interval for written soldier replies." />
+    <string id="SAX_MCM_AudienceReplies_Hint" text="Lets multiple soldiers answer the speech with short lines. Disabling hides reply count, waves, length, and interval options." />
+    <string id="SAX_MCM_AudienceReplyCount_Hint" text="Maximum soldiers generating written replies for this speech. Each selected soldier is submitted only once." />
+    <string id="SAX_MCM_AudienceReplyWaveSize_Hint" text="Maximum written replies in one logical wave. Independent from the per-Mission-tick submission budget." />
+    <string id="SAX_MCM_AudienceReplyMinimumChars_Hint" text="Minimum length of each soldier reply. Does not affect the battle-speech body." />
+    <string id="SAX_MCM_AudienceReplyMaximumChars_Hint" text="Maximum length of each soldier reply. Keep replies short to reduce reading and performance pressure when many soldiers answer." />
+    <string id="SAX_MCM_AudienceReplyMinInterval_Hint" text="Lower bound of the random delay between written-reply waves. Works with the per-tick budget to limit request spikes." />
+    <string id="SAX_MCM_AudienceReplyMaxInterval_Hint" text="Upper bound of the random delay between written-reply waves. Must not be below the minimum interval." />
+    <string id="SAX_MCM_AudienceResponseStartDelay_Hint" text="Minimum delay after the speech body finishes before written soldier replies and native battle cries begin. Audience reactions never interrupt an unfinished speech." />
+    <string id="SAX_MCM_AudienceFinalReactionHold_Hint" text="Minimum hold after the final audience reaction is submitted before its action channels may be cleared and Advance is issued." />
+    <string id="SAX_MCM_Advance_Hint" text="After the speech and audience response, the speaker performs a command gesture and orders the player's formations to Advance. Allies respond but are not ordered." />
+    <string id="SAX_MCM_AdvanceDelay_Hint" text="Delay between the command gesture and Advance orders to the player's formations. Used only while post-speech Advance is enabled." />
+    <string id="SAX_MCM_Notifications_Hint" text="Shows battle-speech start, cancellation, and completion notices. Disabling affects UI only, not execution." />
+    <string id="SAX_MCM_Diagnostics_Hint" text="Writes detailed natural-action and battle-speech diagnostics. Disabling reduces log I/O without changing behavior." />
   </strings>
 </base>
